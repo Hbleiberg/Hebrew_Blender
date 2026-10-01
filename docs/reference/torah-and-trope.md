@@ -1223,11 +1223,16 @@ Both pages sync one settings blob (and the Trope Tutor its mastery progress) thr
   `shared.fonts.missing_note` under `#fontOptions`.
 - **A deliberate reset is a write like any other** and reaches the account and every other signed-in device
   at its next load; while a session is stored the confirms say so (`torah.confirm.reset_all_cloud`,
-  `trope.confirm.reset_all_cloud`, `trope.confirm.reset_progress_cloud`). The Trope Tutor's progress reset also
+  `trope.confirm.reset_all_cloud`, `trope.confirm.reset_progress_cloud`). *Reset all settings* writes the
+  defaults instead of removing the key (the Trainer through `storedSettings()`, skipped while a handout print
+  is up; the Tutor its `DEFAULTS` clone; each cancels its pending debounced save first): a settings row gone
+  from the account is put back by the next device that still holds one, while a written default travels as
+  the newer value. The Trope Tutor's progress reset also
   stamps `resetAt = Date.now()` — the registry's `watermark` for that row — so the lossless merge (max per
   trope) cannot bring older mastery straight back from another device: the side whose watermark is older
   counts as empty, the newest watermark is kept, and `loadProgress()` and the hook's re-read keep the field
-  (the hub's `tropeProgressMerge` and the `.ivrit` apply carry it too). Practice on a device that had not yet
+  (the hub's `tropeProgressMerge` and the `.ivrit` apply carry it too, and the hub's merge drops the side whose
+  watermark is older). Practice on a device that had not yet
   loaded the reset is dropped, and the confirm says so.
 - By design: `?parsha=` / `?holiday=` / `?ref=` deep links persist the reading and travel (a bookmark on one
   device is the next device's starting point, and a favorite is the durable form of the same reading); a

@@ -231,9 +231,10 @@ account when you are back online*: the Generator and Flash Cards under *Advanced
 Dictionary inside the Word Lists manager, the Torah Trainer, Trope Tutor and Classroom Dashboard in their
 settings drawer, and the home page's *Import / Export All Settings* modal under *Your account*. Nothing asks you
 to choose between two versions: an item changed in two places is kept twice (the other copy named "… (from
-another device)"), a tool's settings take the account's copy the first time a device syncs them and the device's
-own edits afterwards, and practice progress, class lists, word lists and folder layouts merge without losing
-anything. The first time you sign in on a device that already holds saved items, one card asks what to do with
+another device)"), a tool's settings take the account's copy the first time a device syncs them (the device's
+earlier settings stay downloadable from the status line until you dismiss the note) and merge setting by setting
+afterwards — a setting changed on one device keeps that change, one changed on both takes the later — and
+practice progress, class lists, word lists and folder layouts merge without losing anything. The first time you sign in on a device that already holds saved items, one card asks what to do with
 them — **Add to my account**, **Download a backup (.ivrit)** or **Remove from this device** — and a sign-in
 without a name (an emailed code) asks for one first. The chip's menu has **Account…** (the account page) and
 **Sign out**, which sends the last edits, removes the account's items from that device and keeps your

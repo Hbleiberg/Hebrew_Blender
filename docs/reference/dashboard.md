@@ -525,10 +525,18 @@ carry the class **name** (`activeRosterName`, written by `getSettings({forPreset
 id): `applySettings` picks the class with that name here, else an older preset's id when it exists here, else
 keeps the current class; `presetClassName` (the schedule's class-for-preset lookup) resolves by name first.
 `IVRIT_CFG.apply` also takes class lists (`dashboardRosters` from the account backup, `roster` from a single
-row's file), merged by id, and returns whether anything landed. A blob a hydration wrote before this dashboard
+row's file), merged by id, and returns whether anything landed. On a Merge it never assigns a settings blob's
+`rosters` (signed in, swapping the map would delete every class the file lacks from the account and every
+device): the blob's classes join the file's class lists in that same merge by id, and the blob's
+`pickerSessions` and `activeRosterId` are dropped, so this device's pick sessions and active class stay; a
+Replace swaps them. The hub's import and paste split a `dashboardSettings` blob the same way
+(`dashboardSettingsSplit` → `mergeDashboardRosters`). A blob a hydration wrote before this dashboard
 was ever opened here (class lists only) still counts as a first run (`_storedBlobIsFirstRun`), and with a
 stored session the Quick-start card (`openFirstRun()`) waits for the first `ivritsuite:hydrated` naming
-`Dashboard` (10 s fallback) and opens only if no settings row landed. Deleting a class (`deleteClass`) is a
+`Dashboard` and opens only if no settings row landed and the last listing (`IvritSaves.lastPlan('Dashboard')`)
+shows none in the account — a starter would overwrite them. Its 10 s fallback (a hydration that never finishes)
+waits while the device-extras card (`.ivsav-overlay`) is open, since the hydration holds there for as long as
+the teacher reads it, then asks the same. Deleting a class (`deleteClass`) is a
 write like any other and reaches the account; while a session is stored its confirm says so
 (`dashboard.picker.delete_class_confirm_cloud`). The 30-second `checkSchedule` can write storage at a period
 boundary (through `applySettings` → `applyZoom`); the module re-reads the store after every write and treats a

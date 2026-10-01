@@ -13,7 +13,7 @@
 | `generatorPresets` | `hebrewBlender_presets` | Hebrew Blend Generator saved presets |
 | `dashboardPresets` | `hebrewDashboard_presets` | Classroom Dashboard saved presets |
 | `dashboardSchedules` | `hebrewDashboard_schedules` | Classroom Dashboard saved schedules (legacy single-day `[{preset,until}]` arrays AND v2 weekly entries `{v:2, week:{…}}` — both shapes coexist in the same map) |
-| `dashboardSettings` | `hebrewDashboard_settings` | All Classroom Dashboard settings (zoom, video URL, header size, Jewish-calendar widget toggles `showHolidayCountdown`/`showShabbatTimes` (Shabbat times reuse the weather `location`), Timer toggles `showTimer`/`showTimerFullscreen`, Omer toggles `showOmerCounter`/`showOmerEnglish`/`showOmerProgress`, the weekly Schedule Sync grid `scheduleWeek` (present only once a user builds/imports one — its presence selects the weekly engine) + the class-color map `presetColors`, etc.; the drawer collapses nothing any more, so an older blob's `panelsCollapsed` map only rides along unread) |
+| `dashboardSettings` | `hebrewDashboard_settings` | All Classroom Dashboard settings (zoom, video URL, header size, Jewish-calendar widget toggles `showHolidayCountdown`/`showShabbatTimes` (Shabbat times reuse the weather `location`), Timer toggles `showTimer`/`showTimerFullscreen`, Omer toggles `showOmerCounter`/`showOmerEnglish`/`showOmerProgress`, the weekly Schedule Sync grid `scheduleWeek` (present only once a user builds/imports one — its presence selects the weekly engine) + the class-color map `presetColors`, etc.; the drawer collapses nothing any more, so an older blob's `panelsCollapsed` map only rides along unread). It also holds the class lists (`rosters`), so a Merge — the hub's file import and paste (`dashboardSettingsSplit`), the dashboard's own `.ivrit` restore — never assigns the blob's `rosters`: they are merged by id through `mergeDashboardRosters` (names unioned) and this device's `pickerSessions` / `activeRosterId` stay; only a Replace swaps the blob whole |
 | `flashCardPresets` | `hebrewFlashCards_presets` | Flash Cards saved presets |
 | `blenderLastState` | `hebrewBlender_lastState` | Generator last-session state (the `?s=` share-state diff, persisted on change); object blob, empty = never-set (skipped on import) |
 | `generatorPresetFolders` / `dashboardPresetFolders` / `dashboardScheduleFolders` / `flashCardPresetFolders` / `flashCardProfileFolders` / `torahTrainerFavoriteFolders` | `hebrewBlender_presetsFolders` / `hebrewDashboard_presetsFolders` / `hebrewDashboard_schedulesFolders` / `hebrewFlashCards_presetsFolders` / `hebrewFlashCards_profilesFolders` / `hebrewTorahTrainer_favoritesFolders` | The six folder trees (`{v:1,root:[…]}`) that organize the preset lists — see "Nested Folders" below. Always merged via `ftImportTree(key, incoming, false)`, **never** `Object.assign` (that clobbers `root`) |
@@ -26,7 +26,7 @@
 | `torahTrainerSettings` | `hebrewTorahTrainer_settings` | Torah Trainer settings |
 | `torahTrainerFavorites` | `hebrewTorahTrainer_favorites` | Torah Trainer favorite readings (the drawer's Favorites tab): a flat map by name, `{ [name]: { v:1, ref, color, ts, settings? } }` — `ref` is one of the three practice-link forms (`parsha` / `holiday` / `ref`), `settings` an optional display snapshot in the `LINK_DISPLAY` vocabulary; merged via `ivritSafeAssign`. Its tree is `torahTrainerFavoriteFolders` in the folder-trees row above. The Torah Trainer has no `IVRIT_CFG` of its own, so both travel only through this file and the account (`docs/reference/torah-and-trope.md` → *Settings drawer → Favorites*) |
 | `tropeTutorSettings` | `hebrewTropeTutor_settings` | Trope Tutor settings (tradition, melody, key and voice, font, drill toggles, playback rate); object blob merged via `ivritSafeAssign`, empty = never-set (skipped on import) |
-| `tropeTutorProgress` | `hebrewTropeTutor_progress` | Trope Tutor mastery (`{v:1,tropes:{key:{r,w}},families:{},pbStreak}`); imported via `tropeProgressMerge` — per-trope `r`/`w` and `pbStreak` as **max** of existing vs incoming, visited families as **union** (never a shallow assign) |
+| `tropeTutorProgress` | `hebrewTropeTutor_progress` | Trope Tutor mastery (`{v:1,tropes:{key:{r,w}},families:{},pbStreak}`); imported via `tropeProgressMerge` — per-trope `r`/`w` and `pbStreak` as **max** of existing vs incoming, visited families as **union** (never a shallow assign); the newest `resetAt` watermark is kept and a side whose watermark is older is dropped, so mastery from before a reset does not come back |
 | `userFonts` | *(IndexedDB `ivritsuite-fonts`, not localStorage)* | Custom fonts, base64-bundled at export — see "My Fonts" section. With an account each font is also one `Suite`/`font` row (`docs/reference/accounts-and-cloud.md` → *A teacher's own fonts*); the backup accepts either shape, an array from this page's own export or one entry per font name from the account |
 | `inputMode` | `hebrewBlender_inputMode` | Backup UI preference: `'auto'` (.ivrit file) or `'manual'` (text block) — see ".ivrit Save Files" below |
 | `hebFont` / `hebFontSize` | `hebrewBlender_hebFont` / `_hebFontSize` | Shared Generator+Dictionary display prefs (selected Hebrew font + size); scalar strings, empty = never-set (skipped on import); both readers clamp the size to 0–100 |
@@ -109,12 +109,15 @@ export/import as a bug to fix, not a pattern to copy.
   `-code-verifier`) is written by the Supabase SDK, `ivritSuite_accountCache` and `ivritSuite_signInRequest` (the
   address a sign-in code was last asked for here, which an emailed link fills in) by `js/ivrit-account.js`,
   and, by `js/ivrit-saves.js`, `ivritSuite_syncMeta2` (what this device last synced, per account — the v2 sync
-  memory, the old v1 memory kept as a hint, the once-per-account mark that the device-extras card was asked, and
-  `held`, the suite-wide preference fields this device could not apply) and `ivritSuite_syncMeta` (now only the
-  write stamps other tabs re-read on and the sign-out broadcast); none of them ride export/import (a session must
+  memory, the old v1 memory kept as a hint, the mark that the device-extras card was asked for that account, the
+  settings rows and folder trees *Remove from this device* held back, and `held`, the suite-wide preference fields
+  this device could not apply), `ivritSuite_syncMeta` (now only the write stamps other tabs re-read on and the
+  sign-out broadcast), `ivritSuite_syncBase` (each settings row's last synced value, the base of a field-by-field
+  merge) and `ivritSuite_replaced` (a device's own settings the account's copy replaced at a first sign-in, kept
+  for download until dismissed); none of them ride export/import (a session must
   never travel in a file, and sync memory is per device), and `eraseAllSettings` calls `IvritSaves.suspend()`
   right after its final confirm (so nothing it removes goes up as a deletion) and removes every `sb-` key plus
-  the four `ivritSuite_*` keys — "erase" also means signed out on this device — then reloads when a session was
+  the six `ivritSuite_*` keys — "erase" also means signed out on this device — then reloads when a session was
   there. Which of the keys above have an account copy is decided in one place, `IVRIT_SYNC_REGISTRY` in
   `js/ivrit-saves.js` (never here). Details: `docs/reference/accounts-and-cloud.md`.
 

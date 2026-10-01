@@ -54,11 +54,14 @@ the module wraps the block's `saveUserFont` once write-through is armed (after i
 row is sent), and never `deleteUserFont` — the block calls it to evict the oldest font at `IV_FONTS_CAP`,
 which is not a deletion. Its own download write is deliberately **not** `saveUserFont`: eviction is right for
 an upload the teacher just chose and wrong for a font arriving from the account, so at the cap the eleventh
-font is skipped quietly (a note on the status line, `shared.cloud.status_font_full`, never a toast) and the
-account keeps its row; an eleventh *upload* evicts locally as the block always did, and the account keeps the
-evicted font too. A font leaves the account only through an explicit delete — the hub's `deleteMyFontFile`
-and the Font Maker's remove-font modal call `IvritSaves.fontDeleted(name)` while a session is stored
-(`IvritAccount.hasStoredSession()`). After a font lands, the module fires `ivritsuite:fonts` on `window`;
+font is skipped quietly and not even fetched (a note on the status line, `shared.cloud.status_font_full`, never a
+toast) and the account keeps its row; an eleventh *upload* evicts locally as the block always did, and the
+account keeps the evicted font too — it lands on this device again once there is room. A font leaves the account
+only through an explicit delete — the hub's `deleteMyFontFile` and the Font Maker's remove-font modal call
+`IvritSaves.fontDeleted(name)` while a session is stored (`IvritAccount.hasStoredSession()`), and their
+confirms then say so (`home.alltools.myfonts.remove_confirm_cloud`, `fontmaker.modals.remove_font_body_cloud`).
+The deletion is marked in the module's sync memory before any request, so one made while the SDK is still
+loading or offline is sent by the next signed-in load. After a font lands, the module fires `ivritsuite:fonts` on `window`;
 every picker page (the Font Maker and the hub included) listens and re-runs `refreshMyFonts()`. Every module
 page hydrates `Suite`: a tool page through its own `attach()`, the hub, the Font Maker and the account page
 through `attach({ tool: 'Suite' })`.

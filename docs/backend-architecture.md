@@ -131,19 +131,24 @@ sequenceDiagram
 The rules the module follows are in `docs/reference/accounts-and-cloud.md`, *The saves adapter*: one row per
 saved item, a hash on both sides, "newer" decided by the row's server timestamp plus a per-device memory, and
 no dialog ever — an item changed in two places is kept twice (the other copy named "… (from another device)"),
-a tool's settings take the account's copy on a device that never synced them and that device's edits
-afterwards, and practice progress, class lists, word lists and folder layouts merge without losing anything.
+a tool's settings take the account's copy on a device that never synced them (that device's earlier settings
+kept for download) and afterwards merge setting by setting — a setting only one device changed keeps that
+change, a setting both changed takes the later one — and practice progress, class lists, word lists and folder
+layouts merge without losing anything. Each open tab compares with the copy it last saw, so a tab left open
+with an older view never overwrites a newer change; it takes it, or merges with it.
 Deletions propagate both ways, and the later human action wins. Four guards keep it honest: after every
 download the page re-reads the key and the module re-reads the store, and when the page's own re-apply changed
 it, that normalized form goes back up at once; the suite-wide preferences (language, theme, keyboard, Hebrew
 font, the Font Maker author name, the Dictionary's display choices) are one row landed first, so a language
 change shows before the tools' rows; a listing that lacks every row the device remembers is checked with the
-Auth server before anything is removed (a deleted account would otherwise look like "everything was deleted");
+Auth server before anything is removed (a deleted account would otherwise look like "everything was deleted";
+only a definite answer counts, and an empty listing for an account that still exists removes nothing);
 and the first time an account signs in on a device that already holds saved items, one card asks whether to
 add them to the account, download them as a `.ivrit` backup, or remove them from the device — the only decision
-the layer ever asks. Signing out with the account button sends the last edits, then removes the account's
-items from that device (the suite-wide preferences and My Fonts stay); a session that ends by itself removes
-nothing.
+the layer ever asks. Signing out with the account button sends the last edits (the Font Maker saves an open account project first),
+then removes the account's items from that device (the suite-wide preferences, My Fonts and the settings each
+tool keeps per device stay); a session that ends by itself removes nothing and keeps the device's memory
+of what it synced, so edits made since still reach the account at the next sign-in.
 
 ### Saving a Font Maker project
 
@@ -196,7 +201,7 @@ removed, 100 at a time, recursing into each project's folder.
 | Saved items: presets, decks, settings, word lists, mastery progress, student profiles, class lists | one row each in `saves` (the item's JSON inside the row) | 2 MB per item at the database; **1.8 MB is the real limit**, refused in the browser before anything is sent. 2000 items per account | that account | deleting the item in its tool while signed in (it leaves the account within seconds and every other signed-in device at its next load); *Delete my account* |
 | Font Maker projects | a `font_projects` row plus files in three private buckets: the gzipped project, the photos it was traced from (original size), the latest exported font | 25 projects per account; 20 / 15 / 5 MB per file | that account | 🗑 in *Load Project ▾ → In your account*; *Delete my account* |
 | The session | that browser's localStorage | — | that browser | *Sign out* (which also removes the account's items from that device), *Erase All Settings* |
-| This device's sync memory (what it last synced, and whether it has asked about the device's own items) | that browser's localStorage (`ivritSuite_syncMeta2`; the cross-tab stamps in `ivritSuite_syncMeta`) | — | that browser | *Erase All Settings*; *Sign out* and *Delete my account* forget that account's part |
+| This device's sync memory (what it last synced, and whether it has asked about the device's own items) | that browser's localStorage (`ivritSuite_syncMeta2`; the cross-tab stamps in `ivritSuite_syncMeta`; each settings row's last synced value, the base of a setting-by-setting merge, in `ivritSuite_syncBase`; a device's own settings that the account's copy replaced at a first sign-in, kept for download until dismissed, in `ivritSuite_replaced`) | — | that browser | *Erase All Settings*; *Delete my account* forgets that account's part; *Sign out* forgets the rows it removed |
 | Everything anonymous: every tool's saves, `.ivrit` files, custom fonts | the browser and the teacher's own files | — | — | the teacher |
 
 Nothing about a student reaches Supabase unless a teacher is signed in — Flash Cards profiles and Classroom

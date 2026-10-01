@@ -22,7 +22,9 @@ new bare keys), `hebrewFontMaker_tourDone`, `hebrewFontMaker_inputMode`, `hebrew
 `getRecentProjects()`, which keeps only `{name: string, data: object}` members of an array — any other
 stored shape reads as empty and is rewritten on the next save),
 `hebrewFontMaker_mobileWarnDismissed`, `hebrewFontMaker_autosave` (image-stripped fallback). Primary
-autosave is **IndexedDB** db `hebrewFontMaker`, store `autosave` (gzip blob, id `'current'`). Shared
+autosave is **IndexedDB** db `hebrewFontMaker`, store `autosave` (gzip blob, id `'current'`), written by
+`autosaveNow()` one snapshot at a time: a request while one is being written is not dropped — the writer runs
+once more when it finishes (`_autosaveAgain`), so the newest edit always reaches the snapshot. Shared
 site-wide key it also reads: `hebrewBlender_darkMode`. **One AllTools exception:**
 `hebrewFontMaker_lastAuthor` (the onboarding wizard's remembered author name — a scalar identity pref
 like `hebFont`, not project data) IS registered in all five AllTools sites as `fmLastAuthor`. A project's
@@ -61,7 +63,11 @@ The page loads `/js/supabase-config.js`, `/js/ivrit-account.js`, `/js/ivrit-save
   sets `_cloudDirty` and arms a 10 s `fmCloudAutosave()` (skipped while signed out, offline, busy or paused;
   an `online` event re-arms). The toolbar `#cloudPip` (Saved / Saving… / Unsaved / Couldn't save — click to
   retry) is shown only while the project has a `cloudId` and someone is signed in; `beforeunload` also warns
-  while `_cloudDirty || _cloudBusy`.
+  while `_cloudDirty || _cloudBusy`. *Continue where you left off* (`_bootLaunchPrompt`, and the `?start=` boot's
+  Continue) from a snapshot whose `cloudClean` is `false` — the tab closed, the teacher signed out inside the
+  autosave window, or the save failed offline — resumes the cloud save (`fmCloudResumeAfterRestore`: `_cloudDirty`
+  set, armed at once when signed in, else at the next sign-in); `fmCloudWrite`'s revision check still catches a
+  newer account copy.
 - **Opening**: Load Project ▾ gets an "In your account" section (`fmCloudLoadSection` + the asynchronous
   `fmCloudFillLoadMenu`, which writes only into the still-open menu); its rows use their own classes
   (`.load-menu-cdel`, `.load-menu-cdl`) so `reopenLoadMenu`'s 🗑 index keeps counting Recent rows.
@@ -77,10 +83,22 @@ The page loads `/js/supabase-config.js`, `/js/ivrit-account.js`, `/js/ivrit-save
   `.hebrewfont` from the cloud copy through `IvritProjects.projectFile(id)` — the module's own generic walk over
   the `cloud:` strings the packed manifest names, photos put back as data URLs, `cloudSources` dropped — so the
   file is what Save Project writes. `fmCloudUnpack` stays the path for opening in this page.
+- **Signing out** (the chip, the name step's *Sign out instead*): `init()` registers `fmBeforeSignOut` on
+  `IvritAccount.onSignOut`, so the last edits are safe before the session goes — the cloud timer is cancelled,
+  a dirty project's local snapshot finishes (it waits for one already in flight, runs `autosaveNow()` and waits
+  for that one, up to 4 s each), and a cloud project with changes the account has not received is saved to it
+  (`fmCloudWrite('auto')`, after up to 6 s for a save already running) — except on a `keepLocal` sign-out (the account is gone or going: saving would
+  put a project back into it), while paused, or offline. The account module bounds the hook at 10 s; anything
+  unfinished stays in the snapshot and resumes later. The page is not reloaded after a sign-out
+  (`IvritSaves.needsReload()` is false on a page that attaches only `Suite`), so the open project stays —
+  in this tab's own sign-out and when another tab signs out.
 - **The account's own rows**: the boot wiring calls `IvritSaves.attach({ tool: 'Suite' })`, so the suite-wide
   preferences (`hebrewFontMaker_lastAuthor` among them) and My Fonts hydrate here like on every module page (the
-  `ivritsuite:fonts` listener re-lists them); the remove-font modal calls `IvritSaves.fontDeleted(name)` while a
-  session is stored (`IvritAccount.hasStoredSession()`) — the one way a font leaves the account. No status line
+  `ivritsuite:fonts` listener re-lists them, and an `ivritsuite:prefs` listener in `init()` follows a downloaded
+  theme through `toggleDark()`); the remove-font modal calls `IvritSaves.fontDeleted(name)` while a session is
+  stored (`IvritAccount.hasStoredSession()`) — the one way a font leaves the account — and while one is
+  stored its body says the font leaves the account and the other devices too
+  (`fontmaker.modals.remove_font_body_cloud` in place of `remove_font_body`). No status line
   and no summary hook here: the account page counts the projects.
 - **Test**: `node scripts/smoke-fontmaker.mjs --sdk <supabase.js>` (port 8082) replays the whole flow
   against a fake cloud that also fakes Storage.

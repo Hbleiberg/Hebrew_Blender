@@ -28,7 +28,7 @@ most easily lost if the project is ever rebuilt from scratch:
 
 | Object | Kind | Why it matters |
 |---|---|---|
-| `set_updated_at()` | function + one trigger, on `profiles` only | `updated_at` is the **only** ordering signal the sync uses (`client_updated_at` is display-only). `saves` and `font_projects` do not use this trigger — each sets its own `updated_at` inside its `before_write` function |
+| `set_updated_at()` | function + one trigger, on `profiles` only | `updated_at` is the **only** ordering signal for conditional writes; `client_updated_at` (the writing device's clock) only breaks a tie inside a settings row's field-by-field merge — which side changed a field last. `saves` and `font_projects` do not use this trigger — each sets its own `updated_at` inside its `before_write` function |
 | `handle_new_user()` | `security definer` function + a trigger **on `auth.users`** (`after insert`) | creates the `profiles` row from Google's name or the email's local part. The only object outside `public` / `storage`, and the one a rebuild forgets |
 | `saves_before_write()` | function + trigger (`before insert or update`) | sets `bytes` and `updated_at`, and raises the 2000-row cap |
 | `font_projects_before_write()` | function + trigger (`before insert or update`) | sets `updated_at`, and raises the 25-project cap |
