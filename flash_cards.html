@@ -4661,20 +4661,17 @@ function _persistedSettings() {
   try { const s = ivritSafeParse(localStorage.getItem(SETTINGS_KEY) || 'null'); return (s && typeof s === 'object' && !Array.isArray(s)) ? s : null; } catch (e) { return null; }
 }
 function loadSettings() {
+  let s = null;
   try {
-    const s = ivritSafeParse(localStorage.getItem(SETTINGS_KEY) || 'null');
+    s = ivritSafeParse(localStorage.getItem(SETTINGS_KEY) || 'null');
     if (s) applySettings(s);
-    else {
-      // sensible defaults: all letters except sofit, main vowels
-      getDisplayLetters().forEach(L => { if (!L.sofit) selectedLetters.add(L.heb); });
-      VOWEL_GROUPS.forEach(g => g.vowels.forEach(v => { if (v.isMain) selectedVowels.add(v.key); }));
-      vowelPositions = new Set([mode]);
-    }
-  } catch(e) {
-    getDisplayLetters().forEach(L => { if (!L.sofit) selectedLetters.add(L.heb); });
-    VOWEL_GROUPS.forEach(g => g.vowels.forEach(v => { if (v.isMain) selectedVowels.add(v.key); }));
-    vowelPositions = new Set([mode]);
-  }
+  } catch(e) { s = null; }
+  // sensible defaults: all letters except sofit, main vowels — with no blob, and for a blob that holds no
+  // lesson: a button sign-out leaves only this device's own fields (audio, voice speed, the hidden home
+  // button, two-sided printing), and applySettings reads an absent selection as an empty one.
+  if (!s || !Array.isArray(s.selectedLetters)) getDisplayLetters().forEach(L => { if (!L.sofit) selectedLetters.add(L.heb); });
+  if (!s || !Array.isArray(s.selectedVowels)) VOWEL_GROUPS.forEach(g => g.vowels.forEach(v => { if (v.isMain) selectedVowels.add(v.key); }));
+  if (!s) vowelPositions = new Set([mode]);
 }
 
 function readPresets() {
