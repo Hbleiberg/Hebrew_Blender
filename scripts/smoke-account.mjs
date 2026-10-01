@@ -522,7 +522,10 @@ try {
       const { ctx, page, errors } = await openPage(browser, { serveSdk: true, auth: nameAuth({ calls }) });
       await signInByCode(page);
       await page.waitForSelector('.ivacct-modal', { timeout: 10000 });
+      let asked = '';
+      page.on('dialog', d => { asked = d.message(); d.accept(); });
       await Promise.all([page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 15000 }).catch(() => {}), page.click('.ivacct-modal [data-ivk=signout]')]);
+      check('K5: "Sign out instead" asks the same question as the chip first', /Sign out\?/.test(asked) && /removed from this device/.test(asked), asked);
       await page.waitForSelector('.ivacct-btn', { timeout: 10000 });
       await page.waitForFunction(() => window.IvritAccount && IvritAccount.status() !== 'loading', null, { timeout: 10000 }).catch(() => {});
       const st = await page.evaluate((k) => ({ status: IvritAccount.status(), key: localStorage.getItem(k), modal: !!document.querySelector('.ivacct-modal') }), AUTH_KEY);

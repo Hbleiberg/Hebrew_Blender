@@ -4,8 +4,9 @@
  * saves live", js/ivrit-saves.js) against a FAKE cloud. Playwright serves the pinned SDK from a local file,
  * seeds a remembered session, and answers every request to the project's /rest/v1/saves endpoint from an
  * in-memory table (PostgREST's eq. / in.(…) filters, multi-key order, offset/limit or Range, select, the
- * Prefer / Accept headers, the 23505 duplicate, the conditional PATCH and DELETE), plus /auth/v1/user,
- * /auth/v1/logout and a 404 for /rest/v1/profiles. No real network is used.
+ * Prefer / Accept headers, the 23505 duplicate, the conditional PATCH and DELETE), plus /auth/v1/user (200, or a
+ * 401 / 500 on demand), /auth/v1/logout and /rest/v1/profiles (a 404 unless the scenario gives the fake a profile
+ * row). A scenario can hold a request back (delayFor) to act while a hydration waits on it. No real network is used.
  *
  * Scenarios (one fresh fake cloud and browser context each, so a failure stays local):
  *   0. Capture the dashboard's own settings blob (the story's account row is that blob minus the per-device
@@ -54,11 +55,48 @@
  *      failed" warning is reporting the module, not the harness.
  *  11. Erase All on the hub while signed in: no DELETE and the page ends anonymous; a cancelled Erase leaves
  *      write-through on (a later page write still POSTs).
+ *   D. Data-safety regressions (one fresh fake cloud and context each):
+ *  D1. Two dashboard tabs: tab A changes the location and adds a student to an account class (its write-through
+ *      lands); tab B, which never re-read, saves another field from its stale in-memory copy → the account's
+ *      settings row holds A's location and B's field, the class row A's student, no DELETE.
+ *  D2. Two devices, both hydrated (memory + base): B changes the location (PATCH); A, never re-hydrated, changes a
+ *      size → its PATCH is refused (0 rows), it re-hydrates and merges field by field: the account and A's page
+ *      hold both.
+ *  D3. A v1 hint for the settings row, a local edit since, and the account's row moved on another field → the
+ *      device's edited field reaches the account (never reverted).
+ *  D4. A session that ended by itself: a load with no stored session drops hydrated[uid] and keeps the memory; an
+ *      edit made signed out is PATCHed at the next sign-in, not replaced by the account's copy.
+ *  D5. The dashboard's .ivrit Merge with a liveState whose class map lacks an account class and adds another →
+ *      no DELETE, the account's class stays here and in the account, the new one is inserted.
+ *  D6. Sign-out on the Torah Trainer keeps the settings row's per-device fields (lastPos, loopVerse, *Collapsed)
+ *      in the stored blob; every travelling field leaves.
+ *  D7. Tab B changes a setting and tab A signs out inside B's 2 s debounce → B sends nothing after the logout,
+ *      keeps its change and a memory record for the row; the next sign-in PATCHes the change up.
+ *  D8. The Torah Trainer's "Reset all settings" (confirmed) → a PATCH of the settings row carrying the defaults,
+ *      no DELETE.
+ *  D9. A first sign-in whose account settings replace the device's own: ivritSuite_replaced keeps the device's
+ *      copy, the status line names it, Download gives an .ivrit holding it, Dismiss clears the key and the note.
+ *  D10. An empty listing for a live account (getUser 200, profiles 200) whose rows the memory names → nothing
+ *      removed, the status line is an error, no DELETE.
+ *  D11. A preset deleted while the page's first hydration waits on its (delayed) listing → a DELETE is sent and
+ *      the preset does not come back.
+ *  D12. The card's "Remove from this device", then a reload → the settings blob is still held back; a later
+ *      change → it is inserted.
+ *  D13. Sign out, sign in again within two minutes on a new page, then visibilitychange / pageshow → the old
+ *      broadcast is ignored: no removal, no reload, the rows intact.
+ *  D14. A button sign-out while /auth/v1/user answers 401 (the account was deleted elsewhere) → nothing removed;
+ *      with 500 (trouble, not an answer) → the normal removal.
+ *  D15. The hub's restores (the .ivrit apply and the pasted export) of an older Trope progress backup against a
+ *      newer reset watermark → the old mastery does not come back, here or in the account.
+ *  D16. Flash Cards: an unknown field in the stored settings survives a settings change made through the page,
+ *      locally and in the account.
+ *  D17. A stale second tab at the sign-out: tab A's newer location stays in the account after the next sign-in,
+ *      and tab B's own unsaved board text still goes up.
  *
  * Every scenario asserts 0 pageerrors. Run from the repo root:
  *   node scripts/smoke-sync.mjs --sdk path/to/supabase.js [--port 8081]
  * The script starts python3 -m http.server itself (port 8081 by default, so it can run beside the others).
- * SMOKE_DEBUG=1 echoes the pages' console; SMOKE_ONLY=3,6 runs only those scenarios (0 always runs).
+ * SMOKE_DEBUG=1 echoes the pages' console; SMOKE_ONLY=3,6,D2 runs only those scenarios (0 always runs).
  */
 import pkg from '/opt/node22/lib/node_modules/playwright/index.js';
 import { spawn } from 'node:child_process';
@@ -81,8 +119,8 @@ const SDK_BYTES = SDK_FILE && fs.existsSync(SDK_FILE) ? fs.readFileSync(SDK_FILE
 if (!SDK_BYTES) { console.error('smoke-sync: pass --sdk <path to the pinned supabase.js UMD build>'); process.exit(2); }
 const SHOTS = process.env.SMOKE_SHOTS || path.join(process.env.TMPDIR || '/tmp', 'smoke-sync');
 fs.mkdirSync(SHOTS, { recursive: true });
-const ONLY = process.env.SMOKE_ONLY ? process.env.SMOKE_ONLY.split(',').map(Number) : null;
-const want = (...ns) => !ONLY || ns.some(n => ONLY.includes(n));
+const ONLY = process.env.SMOKE_ONLY ? process.env.SMOKE_ONLY.split(',').map(s => s.trim().toUpperCase()) : null;
+const want = (...ns) => !ONLY || ns.some(n => ONLY.includes(String(n).toUpperCase()));
 const UID = '11111111-1111-4111-8111-111111111111';
 const EMAIL = 'teacher@example.org';
 // user_metadata.full_name: the account has a name, so the required-name step never opens (it would sit above the card).
@@ -105,11 +143,13 @@ const hashOf = (v) => '1.' + crypto.createHash('sha256').update(canonJson(v), 'u
 
 /* ---------- the fake cloud ---------- */
 // The account's rows, answered the way PostgREST would for the queries the module makes. Every call is logged
-// as { m, table, search, body, status, rows }. Flags: failUser (401 on /auth/v1/user), failLogout (500 on
-// /auth/v1/logout), revoked (401 on every /rest call: the token is dead server-side), refuse(m, body) → a
-// { status, body } to answer instead, abortWhen(url, m) → the connection dies.
+// as { m, table, search, body, status, rows }. Flags: failUser (true or 401: the auth server no longer knows the
+// session; another number: that status, e.g. 500), failLogout (500 on /auth/v1/logout), revoked (401 on every
+// /rest call: the token is dead server-side), refuse(m, body) → a { status, body } to answer instead,
+// abortWhen(url, m) → the connection dies, profiles (an array of { id }: /rest/v1/profiles answers them instead
+// of a 404), delayFor(url, m) → milliseconds to hold that request back (`delayed` counts the held ones).
 class FakeCloud {
-  constructor(rows) { this.n = 0; this.log = []; this.rows = (rows || []).map(r => this.fresh(r)); this.failUser = false; this.failLogout = false; this.revoked = false; this.refuse = null; this.abortWhen = null; this.user = JSON.parse(JSON.stringify(SESSION.user)); }
+  constructor(rows) { this.n = 0; this.log = []; this.rows = (rows || []).map(r => this.fresh(r)); this.failUser = false; this.failLogout = false; this.revoked = false; this.refuse = null; this.abortWhen = null; this.profiles = null; this.delayFor = null; this.delayed = 0; this.user = JSON.parse(JSON.stringify(SESSION.user)); }
   stamp() { return new Date(Date.UTC(2026, 8, 14, 20, 0, 0) + (++this.n) * 1000).toISOString(); }
   fresh(r) {
     const at = this.stamp();
@@ -124,6 +164,11 @@ class FakeCloud {
       .map(([k, v]) => v.startsWith('in.') ? [k, v.slice(4, -1).split(',').map(x => x.trim().replace(/^"(.*)"$/, '$1'))] : [k, v.slice(3)]);
   }
   handle(route) {
+    const d = this.delayFor ? this.delayFor(new URL(route.request().url()), route.request().method()) : 0;
+    if (d > 0) { this.delayed++; return sleep(d).then(() => this.answer(route)); }
+    return this.answer(route);
+  }
+  answer(route) {
     const req = route.request(), url = new URL(req.url()), m = req.method(), headers = req.headers();
     const cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': 'GET,POST,PATCH,PUT,DELETE,OPTIONS', 'access-control-expose-headers': '*' };
     const json = (status, body, extra) => route.fulfill({ status, headers: Object.assign({ 'content-type': 'application/json; charset=utf-8' }, cors, extra || {}), body: body === undefined ? '' : JSON.stringify(body) });
@@ -131,9 +176,11 @@ class FakeCloud {
     if (this.abortWhen && this.abortWhen(url, m)) { this.log.push({ m, path: url.pathname, search: url.search, aborted: true }); return route.abort('failed'); }
     // ---- Auth ----
     if (url.pathname.endsWith('/auth/v1/user')) {
-      const entry = { m, kind: 'user', body: req.postData() ? JSON.parse(req.postData()) : null, status: this.failUser ? 401 : 200 };
+      const userStatus = this.failUser === true ? 401 : (typeof this.failUser === 'number' ? this.failUser : 200);
+      const entry = { m, kind: 'user', body: req.postData() ? JSON.parse(req.postData()) : null, status: userStatus };
       this.log.push(entry);
-      if (this.failUser) return json(401, { code: 401, error_code: 'session_not_found', msg: 'Session from session_id claim in JWT does not exist' });
+      if (userStatus === 401) return json(401, { code: 401, error_code: 'session_not_found', msg: 'Session from session_id claim in JWT does not exist' });
+      if (userStatus !== 200) return json(userStatus, { code: userStatus, error_code: 'unexpected_failure', msg: 'auth trouble (smoke)' });
       if (m === 'PUT' && entry.body && entry.body.data) this.user.user_metadata = Object.assign({}, this.user.user_metadata, entry.body.data);
       return json(200, this.user);
     }
@@ -148,6 +195,12 @@ class FakeCloud {
     if (!tm) { this.log.push({ m, path: url.pathname, unexpected: true }); return json(404, { message: 'not found' }); }
     const table = tm[1], q = url.searchParams;
     if (this.revoked) { this.log.push({ m, table, search: url.search, status: 401, revoked: true }); return json(401, { code: 'PGRST301', details: null, hint: null, message: 'JWT expired' }); }
+    if (table === 'profiles' && Array.isArray(this.profiles) && m === 'GET') {
+      const pf = this.filtersOf(q), hits = this.profiles.filter(r => pf.every(([k, v]) => Array.isArray(v) ? v.includes(String(r[k])) : String(r[k]) === v)).map(r => this.pick(r, q.get('select')));
+      this.log.push({ m, table, search: url.search, status: 200, rows: hits.length });
+      if (/vnd\.pgrst\.object/.test(headers.accept || '')) return hits.length === 1 ? json(200, hits[0]) : json(406, { code: 'PGRST116', details: 'The result contains ' + hits.length + ' rows', hint: null, message: 'JSON object requested, multiple (or no) rows returned' });
+      return json(200, hits);
+    }
     if (table !== 'saves') { this.log.push({ m, table, search: url.search, status: 404 }); return json(404, { code: 'PGRST205', details: null, hint: null, message: "Could not find the table 'public." + table + "' in the schema cache" }); }
     const filters = this.filtersOf(q);
     const match = r => filters.every(([k, v]) => Array.isArray(v) ? v.includes(String(r[k])) : String(r[k]) === v);
@@ -380,6 +433,13 @@ const param = (e, k) => new URLSearchParams(e.search || '').get(k);
 const reqs = (cloud, from, m, kind) => cloud.log.slice(from).filter(e => e.table === 'saves' && (!m || e.m === m) && (!kind || (e.body && e.body.kind === kind)));
 const patchesOn = (cloud, id) => cloud.log.filter(e => e.m === 'PATCH' && param(e, 'id') === 'eq.' + id).length;
 const methods = (cloud, from) => cloud.log.slice(from).map(e => e.m + (e.table ? ' ' + e.table : e.kind ? ' ' + e.kind : '') + (e.body && e.body.kind ? ' ' + e.body.kind + ':' + e.body.name : e.hit && e.m !== 'GET' ? ' ' + e.hit.join(',') : e.hit && e.hit.length === 1 ? ' ' + e.hit[0] : '') + (e.status && e.status !== 200 && e.status !== 201 ? ' ' + e.status : '') + (e.rows === 0 && e.m !== 'GET' ? ' (0 rows)' : '')).join(' | ');
+
+// The D scenarios' helpers.
+const TORAH_TOOLS = ['TorahTrainer', 'Suite'], FC_TOOLS = ['FlashCards', 'Suite', 'Dictionary'];
+const setSession = (page) => page.evaluate(([k, v]) => localStorage.setItem(k, v), [AUTH_KEY, JSON.stringify(SESSION)]);
+const waitSignedIn = (page) => page.waitForFunction(() => window.IvritAccount && window.IvritSaves && IvritAccount.status() === 'signed-in', null, { timeout: HYDRATE_MS });
+const patchesSince = (cloud, from, id) => reqs(cloud, from, 'PATCH').filter(e => param(e, 'id') === 'eq.' + id);
+const statusLine = (page, host) => page.evaluate((h) => { const n = document.querySelector(h + ' .ivsav-status'); return n ? { text: n.textContent, error: n.classList.contains('is-error') } : null; }, host);
 
 const browser = await chromium.launch();
 const srv = await startServer();
@@ -840,8 +900,8 @@ try {
       const { page, errors } = await openPage(ctx, 'classroom_dashboard.html', { settle: false });
       await page.waitForFunction(() => IvritAccount.status() === 'anonymous', null, { timeout: HYDRATE_MS }).catch(() => {});
       await page.waitForTimeout(500);
-      const r = await page.evaluate((UID) => ({ status: IvritAccount.status(), presets: Object.keys(JSON.parse(localStorage.getItem('hebrewDashboard_presets') || '{}')), schedules: Object.keys(JSON.parse(localStorage.getItem('hebrewDashboard_schedules') || '{}')), rosters: Object.keys(JSON.parse(localStorage.getItem('hebrewDashboard_settings') || '{}').rosters || {}).sort(), users: Object.keys(JSON.parse(localStorage.getItem('ivritSuite_syncMeta2') || '{}').users || {}), sb: Object.keys(localStorage).filter(k => k.startsWith('sb-')) }), UID);
-      check('S6: the next hydrate on device B removes nothing (getUser answered 401): every local copy stays, the memory of that account is forgotten, the device is signed out', r.status === 'anonymous' && r.presets.includes('Morning') && r.schedules.includes('2026-2027') && r.rosters.includes('lap_0') && !r.users.includes(UID) && r.sb.length === 0 && cloud.log.some(e => e.kind === 'user' && e.status === 401) && cloud.log.filter(e => e.m === 'DELETE').length === 0, JSON.stringify({ r, calls: methods(cloud, 0) }));
+      const r = await page.evaluate((UID) => ({ status: IvritAccount.status(), presets: Object.keys(JSON.parse(localStorage.getItem('hebrewDashboard_presets') || '{}')), schedules: Object.keys(JSON.parse(localStorage.getItem('hebrewDashboard_schedules') || '{}')), rosters: Object.keys(JSON.parse(localStorage.getItem('hebrewDashboard_settings') || '{}').rosters || {}).sort(), users: Object.keys(JSON.parse(localStorage.getItem('ivritSuite_syncMeta2') || '{}').users || {}), hydrated: !!((JSON.parse(localStorage.getItem('ivritSuite_syncMeta2') || '{}').hydrated || {})[UID]), sb: Object.keys(localStorage).filter(k => k.startsWith('sb-')) }), UID);
+      check('S6: the next hydrate on device B removes nothing (getUser answered 401): every local copy stays, the memory stays but the account is no longer marked set up here, the device is signed out', r.status === 'anonymous' && r.presets.includes('Morning') && r.schedules.includes('2026-2027') && r.rosters.includes('lap_0') && r.users.includes(UID) && !r.hydrated && r.sb.length === 0 && cloud.log.some(e => e.kind === 'user' && e.status === 401) && cloud.log.filter(e => e.m === 'DELETE').length === 0, JSON.stringify({ r, calls: methods(cloud, 0) }));
       check('S6: 0 pageerrors', errors.length === 0, errors.join(' | '));
       await ctx.close();
     }
@@ -902,6 +962,396 @@ try {
     const after = await page.evaluate(() => ({ status: IvritAccount.status(), sb: Object.keys(localStorage).filter(k => k.startsWith('sb-')), keys: Object.keys(localStorage).filter(k => /^hebrew|^ivritSuite|^sb-/.test(k)).sort() }));
     check('11: Erase All signed in sends no DELETE (nothing reaches the account) and the page ends anonymous with the keys gone', reloaded && cloud.log.slice(from).filter(e => e.m === 'DELETE').length === 0 && after.status === 'anonymous' && after.sb.length === 0 && !Object.keys(snap).some(k => /^hebrewDashboard_|^hebrewBlender_presets|^ivritSuite_syncMeta|^sb-/.test(k)) && dialogs.seen.some(d => /erased|Erased/i.test(d.message)) && cloud.rows.some(r => r.kind === 'preset' && r.name === 'Morning'), JSON.stringify({ reloaded, after, snapKeys: Object.keys(snap).filter(k => /^hebrew|^ivritSuite|^sb-/.test(k)), calls: methods(cloud, from) }));
     check('11: 0 pageerrors', errors.length === 0, errors.join(' | '));
+    await ctx.close();
+  }
+  /* ---------- D. data-safety regressions (one fresh fake cloud and context each) ---------- */
+  // ---- D1. two dashboard tabs: a stale tab's save merges with the other tab's write-through, never over it ----
+  if (want('D1')) {
+    const cloud = new FakeCloud(CLOUD_ROWS());
+    const sRow = cloud.find('settings', 'default'), rRow = cloud.find('roster', 'lap_0');
+    const ctx = await openContext(browser, cloud, SEED({ device: true }));
+    const A = await openPage(ctx, 'classroom_dashboard.html');
+    const B = await openPage(ctx, 'classroom_dashboard.html');
+    const from = cloud.log.length;
+    await A.page.evaluate(() => {
+      document.getElementById('locationInput').value = 'Jerusalem'; updateLocation();
+      switchClass('lap_0');
+      const ta = document.getElementById('pickerRoster');
+      ta.value = (settings.rosters.lap_0.names || []).concat(['Yael']).join('\n');
+      commitRosterFromTextarea();
+    });
+    const okA = await settled(A.page, DASH_TOOLS);
+    const bStale = await B.page.evaluate(() => ({ location: settings.location, names: (settings.rosters.lap_0 || {}).names || [] }));
+    check("D1: tab A's location and new student reached the account; tab B's in-memory copy never re-read them", okA && sRow.data.location === 'Jerusalem' && rRow.data.names.includes('Yael') && bStale.location !== 'Jerusalem' && !bStale.names.includes('Yael'), JSON.stringify({ okA, location: sRow.data.location, names: rRow.data.names, bStale, calls: methods(cloud, from) }));
+    const fromB = cloud.log.length;
+    await B.page.evaluate(() => { setHebDateSize(3.3); saveSettingsToStorage(); });
+    const okB = await settled(B.page, DASH_TOOLS, 10000);
+    const bAfter = await B.page.evaluate(() => { const s = JSON.parse(localStorage.getItem('hebrewDashboard_settings')); return { location: s.location, size: s.hebDateSize, names: ((s.rosters || {}).lap_0 || {}).names || [], live: settings.location, liveSize: settings.hebDateSize, liveNames: (settings.rosters.lap_0 || {}).names || [] }; });
+    check("D1: after tab B's stale save the account's settings row holds A's location AND B's size, the class row A's student; no DELETE", okB && sRow.data.location === 'Jerusalem' && sRow.data.hebDateSize === 3.3 && rRow.data.names.includes('Yael') && reqs(cloud, from, 'DELETE').length === 0 && !!cloud.find('roster', 'lap_0'), JSON.stringify({ okB, expected: { location: 'Jerusalem', size: 3.3 }, got: { location: sRow.data.location, size: sRow.data.hebDateSize }, names: rRow.data.names, calls: methods(cloud, fromB), warnings: B.warnings }));
+    check('D1: tab B holds both too (its storage and its live page)', bAfter.location === 'Jerusalem' && bAfter.size === 3.3 && bAfter.names.includes('Yael') && bAfter.live === 'Jerusalem' && bAfter.liveSize === 3.3 && bAfter.liveNames.includes('Yael'), JSON.stringify(Object.assign({ expected: { location: 'Jerusalem', size: 3.3 } }, bAfter)));
+    check('D1: 0 pageerrors in both tabs', A.errors.length === 0 && B.errors.length === 0, A.errors.concat(B.errors).join(' | '));
+    await ctx.close();
+  }
+  // ---- D2. two devices: a refused PATCH re-hydrates and merges field by field against the base ----
+  if (want('D2')) {
+    const cloud = new FakeCloud(CLOUD_ROWS());
+    const row = cloud.find('settings', 'default');
+    const ctxA = await openContext(browser, cloud, SEED({ device: true }));
+    const A = await openPage(ctxA, 'classroom_dashboard.html');
+    const ctxB = await openContext(browser, cloud, SEED({ device: true }));
+    const B = await openPage(ctxB, 'classroom_dashboard.html');
+    const baseOf = (page) => page.evaluate((UID) => {
+      const b = JSON.parse(localStorage.getItem('ivritSuite_syncBase') || 'null'), m = JSON.parse(localStorage.getItem('ivritSuite_syncMeta2') || '{}');
+      const rec = (((b || {}).users || {})[UID] || {})['Dashboard/settings/default'], mem = ((((m.users || {})[UID] || {}).Dashboard || {}).settings || {}).default;
+      return { base: !!rec, same: !!(rec && mem && rec.h === mem.h), u: mem ? mem.u : null };
+    }, UID);
+    const bA = await baseOf(A.page), bB = await baseOf(B.page);
+    check('D2: both devices hydrated with a memory and a base for the settings row, at the same row version', bA.same && bB.same && bA.u === bB.u && bA.u === row.updated_at, JSON.stringify({ bA, bB, u: row.updated_at }));
+    let from = cloud.log.length;
+    await B.page.evaluate(() => { document.getElementById('locationInput').value = 'Haifa'; updateLocation(); });
+    const okB = await settled(B.page, DASH_TOOLS);
+    check('D2: device B changed the location → one PATCH of the settings row', okB && row.data.location === 'Haifa' && patchesSince(cloud, from, row.id).length === 1, JSON.stringify({ okB, location: row.data.location, calls: methods(cloud, from) }));
+    from = cloud.log.length;
+    await A.page.evaluate(() => { setHebDateSize(3.3); saveSettingsToStorage(); });
+    const okA = await settled(A.page, DASH_TOOLS, 10000);
+    const patches = patchesSince(cloud, from, row.id);
+    const aView = await A.page.evaluate(() => ({ location: settings.location, size: settings.hebDateSize, input: document.getElementById('locationInput').value, slider: document.getElementById('hebDateSizeSlider').value, stored: JSON.parse(localStorage.getItem('hebrewDashboard_settings')).location }));
+    check("D2: device A's stale PATCH was refused (0 rows), it re-hydrated and merged field by field: the account holds B's location and A's size", okA && patches.length >= 2 && patches[0].rows === 0 && patches[patches.length - 1].rows === 1 && row.data.location === 'Haifa' && row.data.hebDateSize === 3.3 && reqs(cloud, from, 'DELETE').length === 0, JSON.stringify({ okA, location: row.data.location, size: row.data.hebDateSize, calls: methods(cloud, from), warnings: A.warnings }));
+    check("D2: device A's page shows both (its settings, the location box, the size slider, its storage)", aView.location === 'Haifa' && aView.size === 3.3 && aView.input === 'Haifa' && Number(aView.slider) === 3.3 && aView.stored === 'Haifa', JSON.stringify(aView));
+    check('D2: 0 pageerrors on both devices', A.errors.length === 0 && B.errors.length === 0, A.errors.concat(B.errors).join(' | '));
+    await ctxA.close(); await ctxB.close();
+  }
+  // ---- D3. the old module's hint, a local edit since, the account moved on another field: merged, not reverted ----
+  if (want('D3')) {
+    const cloud = new FakeCloud(CLOUD_ROWS());
+    const row = cloud.find('settings', 'default');
+    const v1 = { v: 1, users: { [UID]: { Dashboard: { settings: { default: { h: row.data_hash, id: row.id, u: row.updated_at, at: '2026-09-01T00:00:00.000Z' } } } } }, welcomed: { [UID]: '2026-09-01T00:00:00.000Z' } };
+    // another device changed a different field since the old module synced the row here
+    row.data = Object.assign({}, row.data, { engDateFmt: 'DMY' }); row.updated_at = cloud.stamp(); row.data_hash = hashOf(row.data); row.client_updated_at = row.updated_at;
+    const blob = Object.assign({}, DEVICE_SETTINGS, ACCOUNT_SETTINGS, { location: 'Haifa' });   // the account's settings as the old module landed them, then edited here
+    const ctx = await openContext(browser, cloud, SEED({ meta2: false, device: blob, extra: { ivritSuite_syncMeta: JSON.stringify(v1) } }));
+    const { page, errors } = await openPage(ctx, 'classroom_dashboard.html');
+    const d = await dashState(page), states = await planStates(page);
+    check("D3: a v1 hint, a newer local edit and an account row moved on another field → the device's edited field is in the account (PATCH), not reverted here", patchesOn(cloud, row.id) >= 1 && row.data.location === 'Haifa' && d.location === 'Haifa' && states && states['settings:default'] === 'synced' && (await overlays(page)) === 0, JSON.stringify({ patches: patchesOn(cloud, row.id), cloudLocation: row.data.location, cloudEngDateFmt: row.data.engDateFmt, d, states, calls: methods(cloud, 0) }));
+    check('D3: 0 pageerrors', errors.length === 0, errors.join(' | '));
+    await ctx.close();
+  }
+  // ---- D4. a session that ended by itself: the memory stays, an edit made signed out goes up at the next sign-in ----
+  if (want('D4')) {
+    const cloud = new FakeCloud(CLOUD_ROWS());
+    const row = cloud.find('settings', 'default');
+    const seed = SEED({ device: Object.assign({}, DEVICE_SETTINGS, ACCOUNT_SETTINGS), memory: { Dashboard: { settings: { default: memOf(row) } } } });
+    delete seed[AUTH_KEY];   // the SDK dropped the session while the device was away
+    const ctx = await openContext(browser, cloud, seed);
+    const P1 = await openPage(ctx, 'classroom_dashboard.html', { signedIn: false });
+    await P1.page.waitForFunction(() => window.IvritAccount && IvritAccount.status() === 'anonymous', null, { timeout: HYDRATE_MS }).catch(() => {});
+    await P1.page.waitForTimeout(300);
+    const m1 = (await meta2(P1.page)) || {};
+    check('D4: a load with no stored session drops hydrated[uid] and keeps the sync memory (users[uid])', !(m1.hydrated || {})[UID] && !!((((m1.users || {})[UID] || {}).Dashboard || {}).settings || {}).default, JSON.stringify({ hydrated: m1.hydrated, users: Object.keys(m1.users || {}) }));
+    await P1.page.evaluate(() => { document.getElementById('locationInput').value = 'Haifa'; updateLocation(); });
+    const storedOut = ((await lsJSON(P1.page, 'hebrewDashboard_settings')) || {}).location;
+    await setSession(P1.page);   // the teacher signs in again
+    await P1.page.close();
+    const from = cloud.log.length;
+    const P2 = await openPage(ctx, 'classroom_dashboard.html');
+    const d = await dashState(P2.page), live = await P2.page.evaluate(() => settings.location);
+    check('D4: signed in again, the edit made signed out was PATCHed to the account (not replaced by the account copy)', storedOut === 'Haifa' && patchesSince(cloud, from, row.id).length >= 1 && row.data.location === 'Haifa' && d.location === 'Haifa' && live === 'Haifa' && reqs(cloud, from, 'DELETE').length === 0, JSON.stringify({ storedOut, cloudLocation: row.data.location, local: d.location, live, calls: methods(cloud, from) }));
+    check('D4: 0 pageerrors', P1.errors.length === 0 && P2.errors.length === 0, P1.errors.concat(P2.errors).join(' | '));
+    await ctx.close();
+  }
+  // ---- D5. the dashboard's .ivrit Merge never drops a class the file lacks ----
+  if (want('D5')) {
+    const cloud = new FakeCloud(CLOUD_ROWS());
+    const ctx = await openContext(browser, cloud, SEED({ device: true }));
+    const { page, errors } = await openPage(ctx, 'classroom_dashboard.html');
+    const from = cloud.log.length;
+    const applied = await page.evaluate(() => {
+      const ls = JSON.parse(localStorage.getItem('hebrewDashboard_settings'));
+      ls.rosters = { zz_9: { name: 'Kitah Zayin', names: ['Ziv', 'Gali'] } }; ls.activeRosterId = 'zz_9'; ls.pickerSessions = {};
+      return IVRIT_CFG.apply({ liveState: ls }, 'merge');
+    });
+    const ok = await settled(page, DASH_TOOLS);
+    const local = (await lsJSON(page, 'hebrewDashboard_settings')) || {};
+    const rl = local.rosters || {};
+    const posted = reqs(cloud, from, 'POST', 'roster').map(e => e.body.name);
+    check("D5: a Merge whose liveState lacks class lap_0 and adds zz_9 → no DELETE; lap_0 kept here and in the account; zz_9 inserted", applied === true && ok && reqs(cloud, from, 'DELETE').length === 0 && !!rl.lap_0 && (rl.lap_0.names || []).length === 2 && !!cloud.find('roster', 'lap_0') && !!rl.zz_9 && posted.includes('zz_9') && !!cloud.find('roster', 'zz_9') && cloud.find('roster', 'zz_9').data.names.length === 2, JSON.stringify({ applied, ok, rosters: Object.keys(rl), posted, calls: methods(cloud, from) }));
+    check('D5: 0 pageerrors', errors.length === 0, errors.join(' | '));
+    await ctx.close();
+  }
+  // ---- D6. a sign-out on the Torah Trainer keeps the settings row's per-device fields ----
+  if (want('D6')) {
+    const cloud = new FakeCloud(CLOUD_ROWS());
+    const lastPos = { readingKey: 'parsha:Bereshit', verse: '2:7', ts: 1759000000000 };
+    const ctx = await openContext(browser, cloud, SEED({ extra: { hebrewTorahTrainer_settings: JSON.stringify({ hebFontSize: 2.2, showTranslit: true, lastPos, loopVerse: '1:3', karaokeBarCollapsed: true }) } }));
+    const { page, errors, warnings } = await openPage(ctx, 'torah_trainer.html', { tools: TORAH_TOOLS });
+    await page.waitForTimeout(2500);   // past the debounce: a save the page makes on its own has gone up by now
+    await settled(page, TORAH_TOOLS);
+    const omit = await page.evaluate(() => (IvritSaves.registry().find(e => e.tool === 'TorahTrainer' && e.kind === 'settings') || {}).omit || []);
+    const isOmitted = (k) => omitted(k, omit);
+    const row = cloud.find('settings', 'default', 'TorahTrainer');
+    const before = (await lsJSON(page, 'hebrewTorahTrainer_settings')) || {};
+    check('D6: the Torah Trainer settings went up without their per-device fields; the device holds lastPos and loopVerse', omit.includes('lastPos') && omit.includes('loopVerse') && !!row && row.data.hebFontSize === 2.2 && !Object.keys(row.data).some(isOmitted) && before.loopVerse === '1:3' && !!before.lastPos && before.lastPos.verse === '2:7', JSON.stringify({ omit, row: row && Object.keys(row.data).filter(isOmitted), before: { loopVerse: before.loopVerse, lastPos: before.lastPos } }));
+    const reloaded = await clickSignOut(page);
+    const snap = await lsAtLoad(page);
+    const s = snap.hebrewTorahTrainer_settings ? JSON.parse(snap.hebrewTorahTrainer_settings) : null;
+    check('D6: after the sign-out the stored blob keeps only the per-device fields (lastPos, loopVerse, *Collapsed); every travelling field is gone', reloaded && !!s && Object.keys(s).length > 0 && Object.keys(s).every(isOmitted) && s.loopVerse === '1:3' && !!s.lastPos && s.lastPos.verse === '2:7' && s.lastPos.ts === lastPos.ts && s.karaokeBarCollapsed === true && !('hebFontSize' in s) && !('showTranslit' in s), JSON.stringify({ reloaded, keys: s && Object.keys(s), warnings }));
+    check('D6: 0 pageerrors', errors.length === 0, errors.join(' | '));
+    await ctx.close();
+  }
+  // ---- D7. a sign-out in tab A inside tab B's debounce: B sends nothing, keeps its change and the memory that sends it later ----
+  if (want('D7')) {
+    const cloud = new FakeCloud(CLOUD_ROWS());
+    const row = cloud.find('settings', 'default');
+    const ctx = await openContext(browser, cloud, SEED({ device: true }));
+    const A = await openPage(ctx, 'classroom_dashboard.html');
+    const B = await openPage(ctx, 'classroom_dashboard.html');
+    await A.page.evaluate(() => { window.__before = true; IvritAccount.openMenu(); });
+    await A.page.locator('[data-ivk="signout"]').waitFor({ state: 'visible', timeout: 5000 });
+    await B.page.evaluate(() => { window.__before = true; document.getElementById('locationInput').value = 'Tiberias'; updateLocation(); });
+    const t0 = Date.now();
+    await A.page.locator('[data-ivk="signout"]').click();
+    const reloadedA = await afterReload(A.page);
+    const bcAt = (((await lsJSON(B.page, 'ivritSuite_syncMeta').catch(() => null)) || {}).signedOut || {}).at || null;
+    const reloadedB = await afterReload(B.page);
+    const iOut = cloud.log.findIndex(e => e.kind === 'logout');
+    const afterOut = iOut >= 0 ? cloud.log.slice(iOut + 1).filter(e => e.table === 'saves') : [];
+    const sentTiberias = cloud.log.some(e => e.table === 'saves' && e.body && e.body.data && e.body.data.location === 'Tiberias');
+    check("D7: tab A signed out inside tab B's 2 s window; B sent nothing after the logout and its change never reached the account", reloadedA && reloadedB && iOut >= 0 && afterOut.length === 0 && !sentTiberias && row.data.location !== 'Tiberias', JSON.stringify({ reloadedA, reloadedB, broadcastAfterMs: bcAt && bcAt - t0, afterOut: afterOut.map(e => e.m), calls: methods(cloud, 0) }));
+    const bNow = await B.page.evaluate((UID) => {
+      const s = JSON.parse(localStorage.getItem('hebrewDashboard_settings') || '{}'), m = JSON.parse(localStorage.getItem('ivritSuite_syncMeta2') || '{}');
+      return { status: IvritAccount.status(), location: s.location, mem: ((((m.users || {})[UID] || {}).Dashboard || {}).settings || {}).default || null };
+    }, UID);
+    check("D7: tab B's changed settings stayed in localStorage and the sync memory holds a record for that row (id and stamp)", bNow.status === 'anonymous' && bNow.location === 'Tiberias' && !!bNow.mem && bNow.mem.id === row.id && bNow.mem.u === row.updated_at, JSON.stringify(Object.assign(bNow, { warnings: A.warnings.concat(B.warnings) })));
+    check('D7: 0 pageerrors in both tabs (through the sign-out)', A.errors.length === 0 && B.errors.length === 0, A.errors.concat(B.errors).join(' | '));
+    await A.page.close();
+    // the next sign-in on this device sends the change up
+    const from = cloud.log.length;
+    await setSession(B.page);
+    await B.page.reload({ waitUntil: 'domcontentloaded' });
+    await waitSignedIn(B.page);
+    const ok = await settled(B.page, DASH_TOOLS, HYDRATE_MS);
+    const local = ((await lsJSON(B.page, 'hebrewDashboard_settings')) || {}).location;
+    check('D7: the next sign-in PATCHes that change up (not the account copy over it)', ok && patchesSince(cloud, from, row.id).length >= 1 && row.data.location === 'Tiberias' && local === 'Tiberias' && reqs(cloud, from, 'DELETE').length === 0, JSON.stringify({ ok, cloudLocation: row.data.location, local, calls: methods(cloud, from) }));
+    check('D7: 0 pageerrors after the sign-in', B.errors.length === 0, B.errors.join(' | '));
+    await ctx.close();
+  }
+  // ---- D8. the Torah Trainer's "Reset all settings" writes the defaults (a PATCH), never removes the row ----
+  if (want('D8')) {
+    const cloud = new FakeCloud(CLOUD_ROWS().concat([{ tool: 'TorahTrainer', kind: 'settings', name: 'default', data: { hebFontSize: 2.4, showTranslit: true, layout: 'interlinear' } }]));
+    const row = cloud.find('settings', 'default', 'TorahTrainer');
+    const ctx = await openContext(browser, cloud, SEED({}));
+    const { page, errors, dialogs } = await openPage(ctx, 'torah_trainer.html', { tools: TORAH_TOOLS });
+    await page.waitForTimeout(500);
+    await settled(page, TORAH_TOOLS);
+    const landed = await page.evaluate(() => ({ size: settings.hebFontSize, translit: settings.showTranslit }));
+    const from = cloud.log.length;
+    const atOnce = await page.evaluate(() => { resetAllSettings(); const raw = localStorage.getItem('hebrewTorahTrainer_settings'); return raw === null ? null : JSON.parse(raw).hebFontSize; });
+    const ok = await settled(page, TORAH_TOOLS);
+    const exp = await page.evaluate(() => { const e = IvritSaves.registry().find(x => x.tool === 'TorahTrainer' && x.kind === 'settings'); return { canon: IvritSaves._test.canonJson(IvritSaves._test.project(e, JSON.parse(JSON.stringify(DEFAULTS)))), size: DEFAULTS.hebFontSize, translit: DEFAULTS.showTranslit }; });
+    const patches = patchesSince(cloud, from, row.id), last = patches[patches.length - 1];
+    check('D8: "Reset all settings" writes the defaults to the stored key at once (the key is never removed)', atOnce === exp.size, JSON.stringify({ atOnce, expected: exp.size }));
+    check('D8: "Reset all settings" (confirmed) → a PATCH of the settings row carrying the defaults; no DELETE, the row still there', landed.size === 2.4 && landed.translit === true && ok && !!last && last.rows === 1 && last.body.data.hebFontSize === exp.size && last.body.data.showTranslit === exp.translit && canonJson(row.data) === exp.canon && reqs(cloud, from, 'DELETE').length === 0 && !!cloud.find('settings', 'default', 'TorahTrainer') && dialogs.seen.some(d => d.type === 'confirm'), JSON.stringify({ landed, ok, patches: patches.length, same: !!last && canonJson(last.body.data) === exp.canon, cloud: { size: row.data.hebFontSize, translit: row.data.showTranslit }, calls: methods(cloud, from), dialogs: dialogs.seen.map(d => d.message.slice(0, 80)) }));
+    check('D8: 0 pageerrors', errors.length === 0, errors.join(' | '));
+    await ctx.close();
+  }
+  // ---- D9. a first sign-in whose account settings replace the device's own: kept for download, then dismissed ----
+  if (want('D9')) {
+    const cloud = new FakeCloud(CLOUD_ROWS());
+    const ctx = await openContext(browser, cloud, SEED({ meta2: false, device: true }));
+    const { page, errors } = await openPage(ctx, 'classroom_dashboard.html');
+    const d = await dashState(page);
+    const rep = await lsJSON(page, 'ivritSuite_replaced');
+    const kept = rep && rep.users && rep.users[UID] && rep.users[UID]['Dashboard/settings/default'];
+    const note = () => page.evaluate(() => { const n = document.querySelector('#cloudSavesPanel .ivsav-replaced'); return n ? { text: n.textContent, buttons: [...n.querySelectorAll('button')].map(b => b.textContent) } : null; });
+    const n1 = await note();
+    check("D9: the account's settings landed and ivritSuite_replaced keeps the device's own (projected: no per-device field)", d.location === 'Atlanta, GA' && !!kept && !!kept.value && kept.value.location === 'Boston, MA' && !('rosters' in kept.value) && !('zoomLevel' in kept.value), JSON.stringify({ local: d.location, kept: kept && { tool: kept.tool, kind: kept.kind, location: kept.value && kept.value.location, keys: kept.value && Object.keys(kept.value).length } }));
+    check('D9: the status line carries the note with Download and Dismiss', !!n1 && /replaced the ones this device had before you signed in/.test(n1.text) && n1.buttons.length === 2 && /Download/.test(n1.buttons[0]) && /Dismiss/.test(n1.buttons[1]), JSON.stringify(n1));
+    const dl = n1 ? (await Promise.all([page.waitForEvent('download', { timeout: 15000 }).catch(() => null), page.evaluate(() => document.querySelectorAll('#cloudSavesPanel .ivsav-replaced button')[0].click())]))[0] : null;
+    const file = dl ? JSON.parse(fs.readFileSync(await dl.path(), 'utf8')) : {};
+    check("D9: Download → an .ivrit (AllTools, partial) whose data holds the device's earlier settings; the note stays", !!dl && /\.ivrit$/.test(dl.suggestedFilename()) && file.format === 'ivrit-save' && file.tool === 'AllTools' && !!file.data && !!file.data.dashboardSettings && file.data.dashboardSettings.location === 'Boston, MA' && file.data.dashboardSettings.dashTextHTML === '<div>hi</div>' && (await ls(page, 'ivritSuite_replaced')) !== null && !!(await note()), JSON.stringify({ name: dl && dl.suggestedFilename(), keys: Object.keys(file.data || {}), location: file.data && file.data.dashboardSettings && file.data.dashboardSettings.location }));
+    if (n1) await page.evaluate(() => document.querySelectorAll('#cloudSavesPanel .ivsav-replaced button')[1].click());
+    const n2 = await note();
+    check('D9: Dismiss → the key is gone and so is the note', !!n1 && (await ls(page, 'ivritSuite_replaced')) === null && n2 === null, JSON.stringify({ key: await ls(page, 'ivritSuite_replaced'), n2 }));
+    check('D9: 0 pageerrors', errors.length === 0, errors.join(' | '));
+    await ctx.close();
+  }
+  // ---- D10. an empty listing for a live account whose rows this device remembers: nothing removed, an error ----
+  if (want('D10')) {
+    const cloud = new FakeCloud(CLOUD_ROWS());
+    cloud.profiles = [{ id: UID }];
+    const mem = { Dashboard: { preset: { Morning: memOf(cloud.find('preset', 'Morning')) }, schedule: { '2026-2027': memOf(cloud.find('schedule', '2026-2027')) }, roster: { lap_0: memOf(cloud.find('roster', 'lap_0')) } } };
+    const blob = Object.assign({}, DEVICE_SETTINGS, { rosters: { dev1_0: { name: 'My class', names: [] }, lap_0: { name: 'Kitah Alef', names: ['Noa', 'Eitan'] } }, activeRosterId: 'lap_0' });
+    const ctx = await openContext(browser, cloud, SEED({ device: blob, memory: mem, extra: { hebrewDashboard_presets: JSON.stringify({ Morning: cloud.find('preset', 'Morning').data }), hebrewDashboard_schedules: JSON.stringify({ '2026-2027': cloud.find('schedule', '2026-2027').data }) } }));
+    cloud.rows = [];   // the account answers no row at all (a broken policy or grant), yet it is alive
+    const { page, errors } = await openPage(ctx, 'classroom_dashboard.html', { settle: false });
+    const ok = await settled(page, DASH_TOOLS, HYDRATE_MS);
+    await page.waitForTimeout(500);
+    const r = await page.evaluate(() => ({ status: IvritAccount.status(), presets: Object.keys(JSON.parse(localStorage.getItem('hebrewDashboard_presets') || '{}')), schedules: Object.keys(JSON.parse(localStorage.getItem('hebrewDashboard_schedules') || '{}')), rosters: Object.keys(JSON.parse(localStorage.getItem('hebrewDashboard_settings') || '{}').rosters || {}).sort() }));
+    const mem2 = await memoryOf(page, 'Dashboard', 'preset');
+    const st = await statusLine(page, '#cloudSavesPanel');
+    const asked = cloud.log.some(e => e.kind === 'user' && e.status === 200) && cloud.log.some(e => e.table === 'profiles' && e.status === 200 && e.rows === 1);
+    check('D10: an empty listing for a live account (getUser 200, profiles 200) whose rows the memory names removes nothing: every local copy and the memory stay', ok && asked && r.presets.includes('Morning') && r.schedules.includes('2026-2027') && r.rosters.includes('lap_0') && mem2.includes('Morning'), JSON.stringify({ ok, asked, r, mem2, calls: methods(cloud, 0) }));
+    check('D10: the status line is an error, no DELETE, still signed in', !!st && st.error && reqs(cloud, 0, 'DELETE').length === 0 && r.status === 'signed-in', JSON.stringify({ st, status: r.status }));
+    check('D10: 0 pageerrors', errors.length === 0, errors.join(' | '));
+    await ctx.close();
+  }
+  // ---- D11. a deletion made while the first hydration waits on its listing is honoured ----
+  if (want('D11')) {
+    const rows = CLOUD_ROWS().filter(r => r.kind !== 'presetFolders').concat([
+      { tool: 'Dashboard', kind: 'preset', name: 'Tefillah', data: { headerLang: 'he', showTimer: false } },
+      { tool: 'Dashboard', kind: 'presetFolders', name: 'default', data: { v: 1, root: [{ t: 'item', name: 'Morning' }, { t: 'item', name: 'Tefillah' }] } }
+    ]);
+    const cloud = new FakeCloud(rows);
+    const morning = cloud.find('preset', 'Morning'), tefillah = cloud.find('preset', 'Tefillah');
+    const ctx = await openContext(browser, cloud, SEED({ device: true, memory: { Dashboard: { preset: { Morning: memOf(morning), Tefillah: memOf(tefillah) } } }, extra: { hebrewDashboard_presets: JSON.stringify({ Morning: morning.data, Tefillah: tefillah.data }) } }));
+    // the page's first listing is held back 3 s: the teacher deletes the preset meanwhile
+    cloud.delayFor = (url, m) => (m === 'GET' && /\/rest\/v1\/saves$/.test(url.pathname) && !url.searchParams.has('id') && cloud.delayed === 0) ? 3000 : 0;
+    const { page, errors, dialogs } = await openPage(ctx, 'classroom_dashboard.html', { settle: false });
+    const waiting = await waitLog(() => cloud.delayed > 0, HYDRATE_MS);
+    const deletedEarly = await page.evaluate(() => { deletePreset('Tefillah'); return !JSON.parse(localStorage.getItem('hebrewDashboard_presets') || '{}').Tefillah && !window.IvritSaves._test.settled(['Dashboard']); });
+    const ok = await settled(page, DASH_TOOLS, HYDRATE_MS);
+    await page.waitForTimeout(2500);   // past the debounce: nothing brings it back
+    const presets = (await lsJSON(page, 'hebrewDashboard_presets')) || {};
+    const dels = reqs(cloud, 0, 'DELETE'), mem = await memoryOf(page, 'Dashboard', 'preset');
+    check('D11: a preset deleted while the first hydration waited on its listing → one conditional DELETE after it, the row gone; the preset did not come back', waiting && deletedEarly && ok && dels.length === 1 && param(dels[0], 'id') === 'eq.' + tefillah.id && !cloud.find('preset', 'Tefillah') && !presets.Tefillah && !!presets.Morning && !mem.includes('Tefillah') && mem.includes('Morning') && reqs(cloud, 0, 'POST', 'preset').length === 0 && dialogs.seen.some(d => /account/i.test(d.message)), JSON.stringify({ waiting, deletedEarly, ok, presets: Object.keys(presets), mem, calls: methods(cloud, 0) }));
+    check('D11: 0 pageerrors', errors.length === 0, errors.join(' | '));
+    await ctx.close();
+  }
+  // ---- D12. "Remove from this device" holds the settings blob back across a reload, until it changes ----
+  if (want('D12')) {
+    const cloud = new FakeCloud(WORKSHEET_ROWS());
+    const deviceBlob = Object.assign({}, DEVICE_SETTINGS, { rosters: { dev_0: { name: 'Kitah Alef', names: ['Noa', 'Eitan'] } }, activeRosterId: 'dev_0' });
+    const ctx = await openContext(browser, cloud, SEED({ meta2: false, device: deviceBlob, extra: { hebrewDashboard_presets: JSON.stringify({ Morning: { headerLang: 'en', showTimer: true } }) } }));
+    const { page, errors } = await openPage(ctx, 'classroom_dashboard.html', { settle: false });
+    const card = await page.waitForFunction(() => !!document.querySelector('.ivsav-overlay .ivsav-card'), null, { timeout: HYDRATE_MS }).then(() => true, () => false);
+    await page.click('.ivsav-overlay .ivsav-btn[data-act="remove"]');
+    const ok1 = await settled(page, DASH_TOOLS, HYDRATE_MS);
+    await page.waitForTimeout(2500);
+    const held = ((((await meta2(page)) || {}).noUpload || {})[UID]) || {};
+    const settingsPosts = (from) => reqs(cloud, from, 'POST', 'settings').filter(e => e.body.tool === 'Dashboard');
+    check('D12: Remove → the settings blob is held back in the sync memory (noUpload) and not uploaded', card && ok1 && typeof held['Dashboard/settings/default'] === 'string' && settingsPosts(0).length === 0 && !cloud.find('settings', 'default', 'Dashboard'), JSON.stringify({ card, ok1, held: Object.keys(held), calls: methods(cloud, 0) }));
+    const from = cloud.log.length;
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await waitSignedIn(page);
+    const ok2 = await settled(page, DASH_TOOLS, HYDRATE_MS);
+    await page.waitForTimeout(2500);
+    const held2 = ((((await meta2(page)) || {}).noUpload || {})[UID]) || {};
+    check("D12: after a reload the device's settings blob is still not inserted (the hold survived the reload)", ok2 && settingsPosts(from).length === 0 && !cloud.find('settings', 'default', 'Dashboard') && typeof held2['Dashboard/settings/default'] === 'string' && (await overlays(page)) === 0, JSON.stringify({ ok2, held2: Object.keys(held2), calls: methods(cloud, from) }));
+    const from2 = cloud.log.length;
+    await page.evaluate(() => { document.getElementById('locationInput').value = 'Haifa'; updateLocation(); });
+    const ok3 = await settled(page, DASH_TOOLS);
+    const sRow = cloud.find('settings', 'default', 'Dashboard');
+    check('D12: a later settings change → the blob is inserted (one POST carrying the change)', ok3 && settingsPosts(from2).length === 1 && !!sRow && sRow.data.location === 'Haifa', JSON.stringify({ ok3, calls: methods(cloud, from2) }));
+    check('D12: 0 pageerrors', errors.length === 0, errors.join(' | '));
+    await ctx.close();
+  }
+  // ---- D13. sign out, sign in again within two minutes: the old broadcast is not about the new session ----
+  if (want('D13')) {
+    const cloud = new FakeCloud(CLOUD_ROWS());
+    const ctx = await openContext(browser, cloud, SEED({ device: true }));
+    const P1 = await openPage(ctx, 'classroom_dashboard.html');
+    const reloaded = await clickSignOut(P1.page);
+    const bc = ((await lsJSON(P1.page, 'ivritSuite_syncMeta')) || {}).signedOut || null;
+    await setSession(P1.page);   // signs in again (a fresh session) right away
+    await P1.page.close();
+    const from = cloud.log.length;
+    const P2 = await openPage(ctx, 'classroom_dashboard.html');
+    const before = await dashState(P2.page);
+    check("D13: signed out (the broadcast stamp written) and signed in again on a new page within two minutes; the account's rows landed", reloaded && !!bc && bc.uid === UID && Date.now() - bc.at < 120000 && before.presets.includes('Morning') && before.rosters.includes('lap_0') && before.location === 'Atlanta, GA', JSON.stringify({ reloaded, bc: bc && { uid: bc.uid, age: Date.now() - bc.at, rows: (bc.rows || []).length }, before }));
+    await P2.page.evaluate(() => { window.__d13 = 1; document.dispatchEvent(new Event('visibilitychange')); window.dispatchEvent(new Event('pageshow')); });
+    await P2.page.waitForTimeout(1500);
+    const ok = await settled(P2.page, DASH_TOOLS);
+    const after = await dashState(P2.page);
+    const still = await P2.page.evaluate(() => ({ marker: window.__d13 === 1, status: IvritAccount.status() }));
+    check('D13: visibilitychange and pageshow on the new page ignore the earlier broadcast: no removal, no reload, the rows intact here and in the account', ok && still.marker && still.status === 'signed-in' && after.presets.includes('Morning') && after.schedules.includes('2026-2027') && after.rosters.includes('lap_0') && after.location === 'Atlanta, GA' && after.memory && reqs(cloud, from, 'DELETE').length === 0 && !!cloud.find('preset', 'Morning') && !!cloud.find('roster', 'lap_0'), JSON.stringify({ ok, still, after, calls: methods(cloud, from) }));
+    check('D13: 0 pageerrors', P1.errors.length === 0 && P2.errors.length === 0, P1.errors.concat(P2.errors).join(' | '));
+    await ctx.close();
+  }
+  // ---- D14. a button sign-out checks the account first: a definite "gone" removes nothing, trouble removes as usual ----
+  if (want('D14')) {
+    for (const code of [401, 500]) {
+      const cloud = new FakeCloud(CLOUD_ROWS());
+      const ctx = await openContext(browser, cloud, SEED({ device: true }));
+      const { page, errors, warnings } = await openPage(ctx, 'classroom_dashboard.html');
+      const before = await dashState(page);
+      const from = cloud.log.length;
+      cloud.failUser = code;   // from here on /auth/v1/user answers this
+      const reloaded = await clickSignOut(page);
+      const snap = await lsAtLoad(page);
+      const s = JSON.parse(snap.hebrewDashboard_settings || '{}'), presets = JSON.parse(snap.hebrewDashboard_presets || '{}'), schedules = JSON.parse(snap.hebrewDashboard_schedules || '{}');
+      const asked = cloud.log.slice(from).some(e => e.kind === 'user' && e.status === code);
+      const st = await page.evaluate(() => ({ status: IvritAccount.status(), sb: Object.keys(localStorage).filter(k => k.startsWith('sb-')).length }));
+      const kept = { preset: !!presets.Morning, schedule: !!schedules['2026-2027'], roster: !!(s.rosters || {}).lap_0, location: s.location || null };
+      if (code === 401) check('D14: a sign-out while /auth/v1/user answers 401 (the account was deleted elsewhere) removes nothing: the preset, the schedule, the class list and the settings fields stay', before.presets.includes('Morning') && reloaded && asked && kept.preset && kept.schedule && kept.roster && kept.location === before.location && st.status === 'anonymous' && reqs(cloud, from, 'DELETE').length === 0, JSON.stringify({ reloaded, asked, kept, st, calls: methods(cloud, from), warnings }));
+      else check('D14: with 500 instead (trouble, not an answer) the normal removal happens: the account\'s rows leave the device', before.presets.includes('Morning') && reloaded && asked && !kept.preset && !kept.schedule && !kept.roster && !kept.location && 'zoomLevel' in s && st.status === 'anonymous' && reqs(cloud, from, 'DELETE').length === 0, JSON.stringify({ reloaded, asked, kept, st, calls: methods(cloud, from), warnings }));
+      check('D14 (' + code + '): 0 pageerrors', errors.length === 0, errors.join(' | '));
+      await ctx.close();
+    }
+  }
+  // ---- D15. the hub's restore of an older Trope progress backup honours the reset watermark ----
+  if (want('D15')) {
+    const cloud = new FakeCloud(CLOUD_ROWS());
+    const device = { v: 1, resetAt: 1759000000000, tropes: { sofpasuk: { r: 1, w: 0 } }, families: {}, pbStreak: 0 };
+    const ctx = await openContext(browser, cloud, SEED({ extra: { hebrewTropeTutor_progress: JSON.stringify(device) } }));
+    const { page, errors, dialogs } = await openPage(ctx, 'index.html', { tools: [] });
+    const clean = (p) => !!p && !(p.tropes || {}).etnachta && ((p.tropes || {}).sofpasuk || {}).r === 1 && !(p.families || {}).disjunctive && !p.pbStreak && p.resetAt === device.resetAt;
+    const viaFile = await page.evaluate((old) => IVRIT_CFG.apply({ tropeTutorProgress: old }, 'merge'), Object.assign({}, TROPE_PROGRESS, { resetAt: 1700000000000 }));
+    const p1 = await lsJSON(page, 'hebrewTropeTutor_progress');
+    check("D15: the hub's .ivrit Merge of an older Trope progress backup (its resetAt older than the device's) brings no old mastery back; the watermark stays", viaFile === true && clean(p1), JSON.stringify(p1));
+    await page.evaluate((old) => { document.getElementById('ieTextarea').value = JSON.stringify({ _hebrewBlenderExport: 1, tropeTutorProgress: old }); return importAllSettings(); }, TROPE_PROGRESS);
+    const p2 = await lsJSON(page, 'hebrewTropeTutor_progress');
+    check('D15: the pasted AllTools export of a backup with no watermark at all brings none back either', clean(p2) && dialogs.seen.some(d => d.type === 'confirm'), JSON.stringify({ p2, dialogs: dialogs.seen.map(d => d.type + ': ' + d.message.slice(0, 60)) }));
+    const ok = await settled(page, [], 8000);
+    const pRow = cloud.find('progress', 'default', 'TropeTutor');
+    check("D15: the account's progress row (the hub syncs every tool) carries no old mastery either", ok && (!pRow || clean(pRow.data)), JSON.stringify({ ok, row: pRow && pRow.data, calls: methods(cloud, 0) }));
+    check('D15: 0 pageerrors', errors.length === 0, errors.join(' | '));
+    await ctx.close();
+  }
+  // ---- D16. Flash Cards keep a field this build does not know ----
+  if (want('D16')) {
+    const cloud = new FakeCloud(WORKSHEET_ROWS());
+    const future = { level: 3, note: 'from a newer build' };
+    const ctx = await openContext(browser, cloud, SEED({ extra: { hebrewFlashCards_settings: JSON.stringify({ sheetPracticed: false, futureField: future }) } }));
+    const { page, errors } = await openPage(ctx, 'flash_cards.html', { tools: FC_TOOLS });
+    await page.waitForTimeout(2500);
+    await settled(page, FC_TOOLS);
+    const from = cloud.log.length;
+    await page.evaluate(() => { const t = document.getElementById('sheetPracticedToggle'); t.checked = true; t.dispatchEvent(new Event('change', { bubbles: true })); });
+    const ok = await settled(page, FC_TOOLS);
+    const s = (await lsJSON(page, 'hebrewFlashCards_settings')) || {};
+    const row = cloud.find('settings', 'default', 'FlashCards');
+    check('D16: a settings change through the page (the practiced-sheet toggle) keeps the unknown futureField in the stored blob', s.sheetPracticed === true && canonJson(s.futureField) === canonJson(future), JSON.stringify({ sheetPracticed: s.sheetPracticed, futureField: s.futureField }));
+    check("D16: ...and in the account's settings row", ok && !!row && row.data.sheetPracticed === true && canonJson(row.data.futureField) === canonJson(future), JSON.stringify({ ok, row: row && { sheetPracticed: row.data.sheetPracticed, futureField: row.data.futureField }, calls: methods(cloud, from) }));
+    check('D16: 0 pageerrors', errors.length === 0, errors.join(' | '));
+    await ctx.close();
+  }
+  // ---- D17. a stale second tab at the sign-out: what it never changed does not come back over the account's newer copy ----
+  if (want('D17')) {
+    const cloud = new FakeCloud(CLOUD_ROWS());
+    const row = cloud.find('settings', 'default');
+    const ctx = await openContext(browser, cloud, SEED({ device: true }));
+    const A = await openPage(ctx, 'classroom_dashboard.html');
+    const B = await openPage(ctx, 'classroom_dashboard.html');
+    // tab A changes the location and it reaches the account; tab B, in the background, still holds the old one in memory
+    await A.page.evaluate(() => { document.getElementById('locationInput').value = 'Haifa'; updateLocation(); });
+    const up = await waitLog(() => row.data.location === 'Haifa', WRITE_MS);
+    const bOld = await B.page.evaluate(() => settings.location);
+    // tab B has board text typed and not yet saved: its final flush at the sign-out writes it, with its stale location
+    await B.page.evaluate(() => { window.__before = true; document.getElementById('dashEditor').innerHTML = '<div>from tab B</div>'; });
+    const reloadedA = await clickSignOut(A.page);
+    const reloadedB = await afterReload(B.page);
+    const bNow = await B.page.evaluate(() => JSON.parse(localStorage.getItem('hebrewDashboard_settings') || '{}'));
+    check("D17: tab A's location reached the account while tab B still held the old one; both tabs reloaded signed out; tab B's typed board text stayed on the device", up && bOld !== 'Haifa' && reloadedA && reloadedB && bNow.dashTextHTML === '<div>from tab B</div>', JSON.stringify({ up, bOld, reloadedA, reloadedB, board: bNow.dashTextHTML, location: bNow.location, warnings: A.warnings.concat(B.warnings) }));
+    await A.page.close();
+    // the next sign-in on this device: tab B's own change goes up, its stale location does not
+    const from = cloud.log.length;
+    await setSession(B.page);
+    await B.page.reload({ waitUntil: 'domcontentloaded' });
+    await waitSignedIn(B.page);
+    const ok = await settled(B.page, DASH_TOOLS, HYDRATE_MS);
+    const local = (await lsJSON(B.page, 'hebrewDashboard_settings')) || {};
+    check("D17: the next sign-in keeps tab A's newer location in the account and on the device (tab B's stale copy did not revert it), and tab B's typed board text reached the account", ok && row.data.location === 'Haifa' && local.location === 'Haifa' && row.data.dashTextHTML === '<div>from tab B</div>' && local.dashTextHTML === '<div>from tab B</div>' && reqs(cloud, from, 'DELETE').length === 0, JSON.stringify({ ok, cloud: { location: row.data.location, board: row.data.dashTextHTML }, local: { location: local.location, board: local.dashTextHTML }, calls: methods(cloud, from) }));
+    check('D17: 0 pageerrors in both tabs', A.errors.length === 0 && B.errors.length === 0, A.errors.concat(B.errors).join(' | '));
     await ctx.close();
   }
 } finally {

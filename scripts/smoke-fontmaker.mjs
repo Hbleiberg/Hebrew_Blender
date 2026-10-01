@@ -22,6 +22,16 @@
  *   7. Storage refuses a photo (413): the save fails cleanly, no row stays behind, the badge stays hidden.
  *   8. ?start=<unknown>&error=access_denied: both params stripped, 0 pageerrors.
  *   9. Hebrew + dark at 800 px: the Load menu's cloud section renders (screenshot).
+ *  10. Sign out from the chip with unsaved changes to a cloud project: the change reaches the account (a PATCH
+ *      of the row) BEFORE the logout, the page does not reload (the project stays in memory), the local snapshot
+ *      records the account copy as clean.
+ *  11. Another tab signs out (the hub): the Font Maker tab is not reloaded — its in-memory edit and its local
+ *      snapshot survive — and it ends signed out.
+ *  12. "Continue where you left off" from a snapshot taken while the cloud save was pending: the save resumes
+ *      (the badge says Unsaved and the next cloud autosave updates the row).
+ *  13. My Fonts: removing a font while the SDK has not loaded (signed in, offline) marks the deletion in the sync
+ *      memory and sends no request; the next signed-in load sends the DELETE and the font stays gone; the
+ *      signed-in remove dialog says the font leaves the account.
  *
  * Run from the repo root:  node scripts/smoke-fontmaker.mjs --sdk path/to/supabase.js [--port 8082]
  */
@@ -50,7 +60,7 @@ const SHOTS = process.env.SMOKE_SHOTS || path.join(process.env.TMPDIR || '/tmp',
 fs.mkdirSync(SHOTS, { recursive: true });
 const PAGE = 'Hebrew_Font_Maker.html';
 const UID = '11111111-1111-4111-8111-111111111111';
-const SESSION = { access_token: 'x', refresh_token: 'y', expires_at: 4102444800, token_type: 'bearer', user: { id: UID, email: 'teacher@example.org' } };
+const SESSION = { access_token: 'x', refresh_token: 'y', expires_at: 4102444800, token_type: 'bearer', user: { id: UID, email: 'teacher@example.org', user_metadata: { full_name: 'Test Teacher' } } };   // a name, so the name step stays closed
 const LIMITS = { 'font-projects': { size: 20 * 1024 * 1024, types: ['application/gzip', 'application/x-gzip'] }, 'font-sources': { size: 15 * 1024 * 1024, types: ['image/jpeg', 'image/png', 'image/webp'] }, 'font-exports': { size: 5 * 1024 * 1024, types: ['font/ttf', 'font/woff2', 'application/zip', 'application/octet-stream'] } };
 
 /* ---------- the fake cloud: PostgREST tables + Storage ---------- */
@@ -97,6 +107,7 @@ class FakeCloud {
     if (m === 'OPTIONS') return route.fulfill({ status: 204, headers: cors });
     if (url.pathname.endsWith('/auth/v1/user')) return json(200, SESSION.user);
     if (url.pathname.endsWith('/auth/v1/token')) return json(200, Object.assign({ expires_in: 3600 }, SESSION));
+    if (url.pathname.endsWith('/auth/v1/logout')) { this.log.push({ m, kind: 'logout' }); return route.fulfill({ status: 204, headers: cors }); }
     // ---- Storage ----
     let sm = /\/storage\/v1\/object\/list\/([^/]+)$/.exec(url.pathname);
     if (sm && m === 'POST') {
@@ -142,8 +153,9 @@ class FakeCloud {
     const tm = /\/rest\/v1\/([A-Za-z_]+)$/.exec(url.pathname);
     if (!tm || !this.tables[tm[1]]) { this.log.push({ m, path: url.pathname, unexpected: true }); return json(404, { message: 'not found' }); }
     const table = tm[1], q = url.searchParams;
-    const filters = [...q.entries()].filter(([k, v]) => !['select', 'order', 'offset', 'limit'].includes(k) && v.startsWith('eq.')).map(([k, v]) => [k, v.slice(3)]);
-    const match = r => filters.every(([k, v]) => String(r[k]) === v);
+    const filters = [...q.entries()].filter(([k, v]) => !['select', 'order', 'offset', 'limit'].includes(k) && /^(eq|in)\./.test(v))
+      .map(([k, v]) => v.startsWith('in.') ? [k, v.slice(4, -1).split(',').map(x => x.replace(/^"|"$/g, ''))] : [k, v.slice(3)]);
+    const match = r => filters.every(([k, v]) => Array.isArray(v) ? v.includes(String(r[k])) : String(r[k]) === v);
     const single = /vnd\.pgrst\.object/.test(req.headers().accept || '');
     const entry = { m, table, search: url.search, body: req.postData() ? JSON.parse(req.postData()) : null, status: 200 };
     this.log.push(entry);
@@ -423,6 +435,138 @@ try {
     check('9: the cloud section renders in Hebrew', /[א-ת]/.test(he) && /גופן לדוגמה/.test(he), he.slice(0, 120));
     await page.screenshot({ path: path.join(SHOTS, '9-he-dark-800.png') });
     check('9: 0 pageerrors', errors.length === 0, errors.join(' | '));
+    await ctx.close();
+  }
+  // ---- 10. sign out from the chip with an unsaved cloud project: saved first, no reload ----------------
+  {
+    const c10 = new FakeCloud();
+    const ctx = await openContext(browser, c10, seedFor(true));
+    const { page, errors } = await openPage(ctx, { signedIn: true });
+    await page.evaluate(FIXTURE);
+    await page.evaluate(() => fmCloudWrite('new'));
+    const row = c10.tables.font_projects[0];
+    const rev0 = row && row.updated_at;
+    await page.evaluate(() => { window.__noReload = 1; udDo([{ t: 'item', kind: 'letter', cp: '05D0' }], 'smoke', () => { const l = project.letters.find(l => l.codepoint === '05D0'); l.advance = (l.advance || 600) + 7; }); });
+    const dirtyPip = (await state(page)).pip;
+    page.on('dialog', d => d.accept());
+    const from = c10.log.length;
+    await page.click('.ivacct-btn');
+    await page.waitForSelector('.ivacct-menu:not([hidden])', { timeout: 5000 });
+    await page.evaluate(() => { const b = [...document.querySelectorAll('.ivacct-menu button')].find(b => /Sign out/.test(b.textContent)); b.click(); });
+    await page.waitForFunction(() => window.IvritAccount && IvritAccount.status() === 'anonymous', null, { timeout: 30000 }).catch(() => {});
+    await page.waitForTimeout(800);
+    const after = await page.evaluate(() => ({ kept: window.__noReload === 1, adv: project && project.letters.find(l => l.codepoint === '05D0').advance, status: IvritAccount.status(), cloudDirty: _cloudDirty }));
+    const log = c10.log.slice(from);
+    const patchAt = log.findIndex(e => e.table === 'font_projects' && e.m === 'PATCH');
+    const logoutAt = log.findIndex(e => e.kind === 'logout');
+    const snap = await page.evaluate(async () => { const r = await autosaveGet(); return r ? { cloudClean: r.cloudClean, cloudRev: r.cloudRev } : null; });
+    check('10: the edit made the account copy Unsaved before the sign-out', dirtyPip && dirtyPip.state === 'unsaved', JSON.stringify(dirtyPip));
+    check('10: the sign-out saved the project to the account first (a PATCH of the row before the logout) and the row moved', patchAt >= 0 && logoutAt > patchAt && row.updated_at !== rev0, JSON.stringify(log.map(e => (e.table || e.kind) + ':' + e.m)));
+    check('10: the page did not reload — the project with the edit is still open — and it is signed out', after.kept && after.status === 'anonymous' && after.cloudDirty === false, JSON.stringify(after));
+    check('10: the local snapshot records the account copy as clean at the new revision', !!snap && snap.cloudClean === true && snap.cloudRev === row.updated_at, JSON.stringify(snap));
+    check('10: 0 pageerrors', errors.length === 0, errors.join(' | '));
+    await ctx.close();
+  }
+  // ---- 11. another tab signs out: the Font Maker tab keeps its work and is not reloaded -----------------
+  {
+    const c11 = new FakeCloud();
+    const ctx = await openContext(browser, c11, seedFor(true));
+    const { page: fm, errors: fmErr } = await openPage(ctx, { signedIn: true });
+    await fm.evaluate(FIXTURE);
+    await fm.evaluate(() => { window.__noReload = 1; udDo([{ t: 'item', kind: 'letter', cp: '05D0' }], 'smoke', () => { const l = project.letters.find(l => l.codepoint === '05D0'); l.advance = 4242; }); });
+    let fmNavigations = 0;
+    fm.on('framenavigated', f => { if (f === fm.mainFrame()) fmNavigations++; });
+    const hub = await ctx.newPage();
+    const hubErr = [];
+    hub.on('pageerror', e => hubErr.push(String(e && e.message || e)));
+    hub.on('dialog', d => d.accept());
+    await hub.goto(BASE + '/index.html', { waitUntil: 'domcontentloaded' });
+    await hub.waitForFunction(() => window.IvritAccount && IvritAccount.status() === 'signed-in', null, { timeout: 25000 });
+    await hub.waitForTimeout(800);
+    await hub.click('.ivacct-btn');
+    await hub.waitForSelector('.ivacct-menu:not([hidden])', { timeout: 5000 });
+    await hub.evaluate(() => { const b = [...document.querySelectorAll('.ivacct-menu button')].find(b => /Sign out/.test(b.textContent)); b.click(); });
+    await fm.waitForFunction(() => IvritAccount.status() === 'anonymous', null, { timeout: 30000 }).catch(() => {});
+    await fm.waitForTimeout(1500);
+    const st = await fm.evaluate(async () => { const r = await autosaveGet().catch(() => null); return { kept: window.__noReload === 1, adv: project && project.letters.find(l => l.codepoint === '05D0').advance, status: IvritAccount.status(), snap: !!(r && r.gz) }; });
+    check('11: the Font Maker tab was not reloaded by the other tab\'s sign-out and still holds the edit', fmNavigations === 0 && st.kept && st.adv === 4242, JSON.stringify({ fmNavigations, st }));
+    check('11: it ended signed out, with its local snapshot in place', st.status === 'anonymous' && st.snap, JSON.stringify(st));
+    check('11: 0 pageerrors on both pages', fmErr.length === 0 && hubErr.length === 0, fmErr.concat(hubErr).join(' | '));
+    await ctx.close();
+  }
+  // ---- 12. Continue from a snapshot taken while the cloud save was pending: the save resumes ---------------
+  {
+    const c12 = new FakeCloud();
+    const ctx = await openContext(browser, c12, seedFor(true));
+    const { page, errors } = await openPage(ctx, { signedIn: true });
+    await page.evaluate(FIXTURE);
+    await page.evaluate(() => fmCloudWrite('new'));
+    const row = c12.tables.font_projects[0];
+    await page.evaluate(() => { udDo([{ t: 'item', kind: 'letter', cp: '05D0' }], 'smoke', () => { const l = project.letters.find(l => l.codepoint === '05D0'); l.advance = 777; }); clearTimeout(_cloudTimer); });
+    // a snapshot may still be in flight from the save above; the requested one runs after it (never dropped)
+    await page.evaluate(async () => { await autosaveNow(); while (_autosaveInFlight) await new Promise(r => setTimeout(r, 50)); });
+    const snap = await page.evaluate(async () => { const r = await autosaveGet(); if (!r) return null; let adv = null; try { const d = JSON.parse(await gunzipText(r.gz)); adv = d.letters.find(l => l.codepoint === '05D0').advance; } catch (e) {} return { cloudClean: r.cloudClean, adv }; });
+    await page.close();
+    const p2 = await ctx.newPage();
+    const e2 = [];
+    p2.on('pageerror', e => e2.push(String(e && e.message || e)));
+    await p2.goto(BASE + '/' + PAGE, { waitUntil: 'domcontentloaded' });
+    await p2.waitForFunction(() => window.IvritAccount && IvritAccount.status() === 'signed-in', null, { timeout: 25000 });
+    const clicked = await clickAsk(p2, '^Continue');
+    await p2.waitForFunction(() => project && project.cloudId, null, { timeout: 15000 }).catch(() => {});
+    await p2.waitForTimeout(300);
+    const resumed = await p2.evaluate(() => ({ dirty: _cloudDirty, pip: (document.getElementById('cloudPip') || {}).dataset && document.getElementById('cloudPip').dataset.state, adv: project.letters.find(l => l.codepoint === '05D0').advance }));
+    const rev1 = row.updated_at;
+    await p2.evaluate(() => fmCloudAutosave());
+    const packed = (() => { const f = folderObjects(c12, 'font-projects', row.id); return f.length ? gunzipJson(f[f.length - 1].obj.bytes) : null; })();
+    check('12: the snapshot holds the latest edit even though another snapshot was being written, and was taken with the cloud save pending', !!snap && snap.cloudClean === false && snap.adv === 777, JSON.stringify(snap));
+    check('12: Continue restored the edit and the account copy reads Unsaved again', /Continue/.test(clicked) && resumed.dirty === true && resumed.pip === 'unsaved' && resumed.adv === 777, JSON.stringify({ clicked, resumed }));
+    check('12: the resumed cloud autosave updated the row with the edit', row.updated_at !== rev1 && !!packed && packed.letters.find(l => l.codepoint === '05D0').advance === 777, JSON.stringify({ rev1, now: row.updated_at }));
+    check('12: 0 pageerrors', errors.length === 0 && e2.length === 0, errors.concat(e2).join(' | '));
+    await ctx.close();
+  }
+  // ---- 13. My Fonts: a removal while the SDK has not loaded is remembered and sent at the next load -----------
+  {
+    const c13 = new FakeCloud();
+    const TTF = Buffer.concat([Buffer.from([0, 1, 0, 0]), crypto.randomBytes(60)]).toString('base64');
+    const fontData = { name: 'Morah Hand', b64: TTF, family: 'Morah Hand' };
+    const canon = '{' + Object.keys(fontData).sort().map(k => JSON.stringify(k) + ':' + JSON.stringify(fontData[k])).join(',') + '}';   // the module's canonJson for a flat object
+    const fontHash = '1.' + crypto.createHash('sha256').update(canon).digest('base64url');
+    c13.tables.saves.push(c13.freshRow('saves', { tool: 'Suite', kind: 'font', name: 'Morah Hand', data: fontData, data_hash: fontHash, bytes: canon.length }));
+    const ctx = await openContext(browser, c13, seedFor(true));
+    const { page, errors } = await openPage(ctx, { signedIn: true });
+    await page.waitForFunction(() => window.IvritSaves && IvritSaves._test.settled(['Suite']), null, { timeout: 25000 }).catch(() => {});
+    const landed = await page.evaluate(() => listUserFonts().then(l => l.map(f => f.name)));
+    const body = await page.evaluate(() => { deleteMyFontUI('Morah Hand'); const o = document.getElementById('askOverlay'); const t = o ? o.textContent : ''; document.querySelectorAll('.overlay.open').forEach(x => x.classList.remove('open')); return t; });
+    await page.close();
+    // the SDK cannot load: the session is stored, the account module has no user
+    let blockSdk = true;
+    await ctx.route(CFG.sdk, route => blockSdk ? route.abort() : route.fallback());
+    const p2 = await ctx.newPage();
+    const e2 = [];
+    p2.on('pageerror', e => e2.push(String(e && e.message || e)));
+    await p2.goto(BASE + '/' + PAGE, { waitUntil: 'domcontentloaded' });
+    await p2.waitForFunction(() => window.IvritAccount && IvritAccount.status() !== 'loading', null, { timeout: 25000 }).catch(() => {});
+    const from = c13.log.length;
+    const off = await p2.evaluate(async () => { const before = IvritAccount.user(); await deleteUserFont('Morah Hand'); await IvritSaves.fontDeleted('Morah Hand'); const m = JSON.parse(localStorage.getItem('ivritSuite_syncMeta2') || '{}'); const rec = (((m.users || {})['11111111-1111-4111-8111-111111111111'] || {}).Suite || {}).font; return { user: !!before, fonts: (await listUserFonts()).map(f => f.name), rec: rec && rec['Morah Hand'] }; });
+    const sentOffline = c13.log.slice(from).filter(e => e.table === 'saves' && e.m === 'DELETE').length;
+    await p2.close();
+    blockSdk = false;
+    await ctx.unroute(CFG.sdk);
+    const p3 = await ctx.newPage();
+    const e3 = [];
+    p3.on('pageerror', e => e3.push(String(e && e.message || e)));
+    await p3.goto(BASE + '/' + PAGE, { waitUntil: 'domcontentloaded' });
+    await p3.waitForFunction(() => window.IvritAccount && IvritAccount.status() === 'signed-in', null, { timeout: 25000 });
+    await p3.waitForFunction(() => IvritSaves._test.settled(['Suite']), null, { timeout: 25000 }).catch(() => {});
+    await p3.waitForTimeout(500);
+    const dels = c13.log.filter(e => e.table === 'saves' && e.m === 'DELETE');
+    const end = await p3.evaluate(async () => ({ fonts: (await listUserFonts()).map(f => f.name) }));
+    check('13: the account font landed in My Fonts at the first signed-in load', JSON.stringify(landed) === '["Morah Hand"]', JSON.stringify(landed));
+    check('13: signed in, the remove dialog says the font also leaves the account', /removed from your account/.test(body), body.slice(0, 200));
+    check('13: removed while the SDK could not load: gone here, no request, the memory marks it deleted', off.user === false && off.fonts.length === 0 && sentOffline === 0 && !!off.rec && off.rec.deleted === true, JSON.stringify({ off, sentOffline }));
+    check('13: the next signed-in load sent the DELETE, the account row is gone and the font did not come back', dels.length === 1 && /updated_at=eq\./.test(dels[0].search) && c13.tables.saves.length === 0 && end.fonts.length === 0, JSON.stringify({ dels: dels.map(d => d.search), rows: c13.tables.saves.length, end }));
+    check('13: 0 pageerrors', errors.length === 0 && e2.length === 0 && e3.length === 0, errors.concat(e2, e3).join(' | '));
     await ctx.close();
   }
 } finally {

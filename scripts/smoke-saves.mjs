@@ -85,7 +85,7 @@ try {
     check('A: local backend checks all pass', summaryOk(local), await page.evaluate(() => [...document.querySelectorAll('#localChecks li')].filter(l => /FAIL/.test(l.textContent)).map(l => l.textContent).join(' | ')));
     const after = await page.evaluate(() => JSON.stringify(Object.entries(localStorage).sort()));
     check('A: localStorage is byte-identical after the round trip', before === after, after);
-    const bad = await page.evaluate(() => Object.keys(localStorage).filter(k => k.startsWith('sb-') || k === 'ivritSuite_syncMeta' || k === 'ivritSuite_syncMeta2'));
+    const bad = await page.evaluate(() => Object.keys(localStorage).filter(k => k.startsWith('sb-') || k === 'ivritSuite_syncMeta' || k === 'ivritSuite_syncMeta2' || k === 'ivritSuite_syncBase' || k === 'ivritSuite_replaced'));
     check('A: no sb-* key and no sync memory created', bad.length === 0, bad.join(','));
     check('A: 0 pageerrors', errors.length === 0, errors.join(' | '));
     await page.screenshot({ path: path.join(SHOTS, 'A-anon-light-1280.png'), fullPage: true });

@@ -319,7 +319,7 @@ try {
       }
       const after = await dump(page);
       check(tag + ' A: localStorage byte-identical to the control run', after === control, diffKeys(control, after));
-      const bad = await page.evaluate(() => Object.keys(localStorage).filter(k => k.startsWith('sb-') || k === 'ivritSuite_syncMeta' || k === 'ivritSuite_syncMeta2'));
+      const bad = await page.evaluate(() => Object.keys(localStorage).filter(k => k.startsWith('sb-') || k === 'ivritSuite_syncMeta' || k === 'ivritSuite_syncMeta2' || k === 'ivritSuite_syncBase' || k === 'ivritSuite_replaced'));
       check(tag + ' A: no sb-* key and no sync memory', bad.length === 0, bad.join(','));
       const overlays = await page.evaluate(() => document.querySelectorAll('.ivsav-overlay, .ivacct-modal').length);
       check(tag + ' A: no card and no name step open by themselves', overlays === 0, String(overlays));

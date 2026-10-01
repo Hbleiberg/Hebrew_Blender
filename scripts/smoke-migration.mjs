@@ -289,7 +289,7 @@ const showWrites = (w) => Object.keys(w).map(t => t + ': ' + (w[t].length ? w[t]
 const ivritFontNames = (v) => Array.isArray(v) ? v.map(f => f && f.name) : (v && typeof v === 'object' ? Object.keys(v) : []);
 
 /* ---------- the classifier ---------- */
-const IGNORED = new Set([AUTH_KEY, 'ivritSuite_accountCache', 'ivritSuite_syncMeta', 'ivritSuite_syncMeta2', '__smoke_seeded']);
+const IGNORED = new Set([AUTH_KEY, 'ivritSuite_accountCache', 'ivritSuite_syncMeta', 'ivritSuite_syncMeta2', 'ivritSuite_syncBase', 'ivritSuite_replaced', '__smoke_seeded']);
 const omitted = (field, omit) => (omit || []).some(p => p === field || (p.startsWith('*') && field.endsWith(p.slice(1))) || (p.endsWith('*') && field.startsWith(p.slice(0, -1))));
 const isPlain = (v) => !!v && typeof v === 'object' && !Array.isArray(v);
 const parse = (s) => { if (typeof s !== 'string') return undefined; try { return JSON.parse(s); } catch (e) { return undefined; } };
