@@ -2507,10 +2507,10 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
           <button class="sreset" onclick="resetTTSRate()" type="button" title="Restore default" aria-label="Restore default" data-i18n-aria-label="torah.display.restore_default" data-i18n-title="torah.display.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
         </div>
         <div class="form-row" style="margin-top:8px;">
-          <label for="optLoopPause"><span data-i18n="torah.audio.loop_pause_label">Pause between repeats</span>
+          <label for="optLoopPause"><span id="lblLoopPause" data-i18n="torah.audio.loop_pause_label">Pause between repeats</span>
             <span class="tip-wrap" data-i18n-tip="torah.audio.loop_pause_tip" data-tip="When you loop a verse (🔁), wait this long before repeating it — handy for practicing along."><i class="tip-icon">?</i></span>
           </label>
-          <select id="optLoopPause">
+          <select id="optLoopPause" aria-labelledby="lblLoopPause">
             <option value="0" data-i18n="torah.audio.loop_pause_none">None</option>
             <option value="500" data-i18n="torah.audio.loop_pause_half">0.5 seconds</option>
             <option value="1000" data-i18n="torah.audio.loop_pause_1">1 second</option>
@@ -2654,8 +2654,8 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
              visit. Open loads the parasha (a doubled week's first; the picker's › reaches the second) or, on a
              festival Shabbat with a reading in HOLIDAY_READINGS, that reading. -->
         <div class="form-row">
-          <label for="lookupDate"><span data-i18n="torah.lookup.date_label">Date</span> <span class="tip-wrap" data-i18n-tip="torah.lookup.date_tip" data-tip="Any date, past or future: the reading of the Shabbat on or after it, on the calendar chosen under Reading schedule (Diaspora or Israel)."><i class="tip-icon">?</i></span></label>
-          <input type="date" id="lookupDate" min="1900-01-01" max="2200-12-31">
+          <label for="lookupDate"><span id="lblLookupDate" data-i18n="torah.lookup.date_label">Date</span> <span class="tip-wrap" data-i18n-tip="torah.lookup.date_tip" data-tip="Any date, past or future: the reading of the Shabbat on or after it, on the calendar chosen under Reading schedule (Diaspora or Israel)."><i class="tip-icon">?</i></span></label>
+          <input type="date" id="lookupDate" aria-labelledby="lblLookupDate" min="1900-01-01" max="2200-12-31">
         </div>
         <div id="lookupResult" aria-live="polite" style="font-size:0.82rem;line-height:1.5;margin-bottom:10px;"></div>
         <div class="form-row" id="lookupOpenRow" hidden>
@@ -2737,8 +2737,8 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
           </span>
         </div>
         <div class="form-row">
-          <label for="optCopyBlankLines"><span data-i18n="torah.copy.blank_lines">Blank lines after each verse</span> <span class="tip-wrap" data-i18n-tip="torah.copy.blank_lines_tip" data-tip="Adds empty lines under each verse — room for students to write their own translation or notes on a printed handout."><i class="tip-icon">?</i></span></label>
-          <select id="optCopyBlankLines">
+          <label for="optCopyBlankLines"><span id="lblCopyBlankLines" data-i18n="torah.copy.blank_lines">Blank lines after each verse</span> <span class="tip-wrap" data-i18n-tip="torah.copy.blank_lines_tip" data-tip="Adds empty lines under each verse — room for students to write their own translation or notes on a printed handout."><i class="tip-icon">?</i></span></label>
+          <select id="optCopyBlankLines" aria-labelledby="lblCopyBlankLines">
             <option value="0">0</option>
             <option value="1">1</option>
             <option value="2">2</option>
