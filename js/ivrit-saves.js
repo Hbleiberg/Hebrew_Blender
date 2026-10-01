@@ -2318,13 +2318,19 @@
         var mine = false;
         try { mine = this === window.localStorage && !!keyMap()[key]; } catch (e) { mine = false; }
         if (mine && purging && selfWrite === 0 && !suiteOnlyKey(key)) return;   // a preference is never removed by a sign-out: it is written as usual
-        var r;
-        try { r = orig.apply(this, arguments); }
+        var r, self = this, args = arguments;
+        try { r = orig.apply(self, args); }
         catch (e) {
           // A page's own write (a class list, a Font Maker Recent project) refused for lack of room: the module's merge
           // bases make room first — they are the one thing here that can be rebuilt — and the write is tried once more.
-          if (!(orig === origSet && this === window.localStorage && selfWrite === 0 && isQuotaError(e) && freeBases())) throw e;
-          r = orig.apply(this, arguments);
+          var pageWrite = orig === origSet && self === window.localStorage && selfWrite === 0 && isQuotaError(e), err = e, done = false;
+          if (pageWrite && freeBases()) { try { r = orig.apply(self, args); done = true; } catch (e2) { err = e2; } }
+          if (!done) {
+            // Still no room for a saved item of this page's own (a class, a preset, the board): the edit is on screen
+            // only. Nothing from the account may land over it now, and the status line says why (storage full).
+            if (pageWrite && mine) noteStorageFull();
+            throw err;
+          }
         }
         try { if (mine && hookOn && selfWrite === 0 && !suspended) onPageWrite(key); } catch (e) {}
         return r;

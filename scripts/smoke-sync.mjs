@@ -122,7 +122,8 @@
  *  D31. Trope practice done signed out after a button sign-out merges with the account's at the next sign-in, under
  *      an old reset watermark.
  *  D32. A nearly full storage: with no merge base to drop, an edit stays here (not reverted), nothing loops and the
- *      status line says why; with one, the base is dropped and the edit goes up.
+ *      status line says why; with one, the base is dropped and the edit goes up; a page's own save refused for lack of
+ *      room stops syncing on that page (nothing lands over the unsaved edit) and says why.
  *  D33. A preset too big for the account, saved after the hydration, is counted by pendingSignOut.
  *  D34. A first sign-in whose suite-wide preferences differ keeps this device's (nikud colours, keyboard) for download.
  *  D35. A preset edited while a hydration that would remove it (deleted elsewhere) runs stays with the edit, out of
@@ -1807,6 +1808,23 @@ try {
         check('D32: storage full with a merge base: the base is dropped to make room, and the location goes up to the account', loc === 'Eilat' && base === null && row.data.location === 'Eilat' && calls <= 6, JSON.stringify({ loc, base: base && base.length, account: row.data.location, calls, st }));
       }
       check('D32 (' + (withBase ? 'base' : 'no base') + '): 0 pageerrors', errors.length === 0, errors.join(' | '));
+      await ctx.close();
+    }
+    // a page's own save refused for lack of room after a normal load: the status line says so, and nothing from the
+    // account lands over the edit that is only on screen
+    {
+      const cloud = new FakeCloud(CLOUD_ROWS());
+      const ctx = await openContext(browser, cloud, SEED({ device: true }));
+      const { page } = await openPage(ctx, 'classroom_dashboard.html');
+      await fill(page, 0);
+      const refusedWrite = await page.evaluate(() => { try { const p = JSON.parse(localStorage.getItem('hebrewDashboard_presets') || '{}'); p['New one'] = { headerLang: 'he', note: 'q'.repeat(2000) }; localStorage.setItem('hebrewDashboard_presets', JSON.stringify(p)); return false; } catch (e) { return e.name; } });
+      const state = await page.evaluate(() => IvritSaves._test.tabState());
+      const from = cloud.log.length;
+      await page.evaluate(() => IvritSaves._test.hydrate(['Dashboard']).catch(() => null));
+      await page.waitForTimeout(1500);
+      const st = await statusLine(page, '#cloudSavesPanel');
+      const lists = cloud.log.slice(from).filter(e => e.table === 'saves' && e.m === 'GET').length;
+      check("D32: a page's own save refused for lack of room stops syncing on that page (no listing, nothing lands over the edit on screen) and the status line says storage is full", refusedWrite === 'QuotaExceededError' && state.storageFull === true && lists === 0 && !!st && /storage for this site is full/.test(st.text), JSON.stringify({ refusedWrite, full: state.storageFull, lists, st }));
       await ctx.close();
     }
   }

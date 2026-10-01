@@ -485,7 +485,9 @@ are dropped (`freeBases`) and the write tried once more. A sync memory that stil
 win over every edit made here (a revert every 2 s and a request loop with no end). From then on that page sends and
 lands nothing — `flushInner` and `hydrateInner` stop at once, the edits stay here and dirty — and every status line
 reads `shared.cloud.status_full` until the teacher makes room and reloads. The hook also gives a page's own refused
-write (a class list, a Font Maker Recent project) the bases' room before it fails.
+write (a class list, a Font Maker Recent project) the bases' room before it fails; when a page's write to a synced key
+still fails, the edit exists only on screen, so the hook sets the same stop (no hydration may land over it) and the
+status line says why.
 
 **This tab's view.** Each tab records, per item, the hash it last saw (`seenNames[tool][kind][name]`; `true`
 until a hash is known) and, for a settings row, the value (`tabBase`): at attach and at a sign-in
