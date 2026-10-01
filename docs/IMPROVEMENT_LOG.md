@@ -8,6 +8,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P4 (**NEW S437 G — gate 2, copy**) | index.html | **Import All Settings' confirm still says it "will overwrite your current dashboard settings and merge … presets and schedules"**; it merges every tool's data. | found S437
+
 - [ ] P3 (**NEW S436 M — layout, gate 3/4**) | hebrew_blend_generator.html | **The bingo preview is unreadable in a narrow window**: at 800px a 4-up card is ~120px and its blends overrun their cells (print/PDF fine since `141aa8f7`). | found S436
 
 - [ ] P4 (**NEW S436 M**) | hebrew_blend_generator.html | **Export PDF below 700px still carries the phone rules** (stacked header, Hebrew at 0.75×) (`141aa8f7` pins only the width). | found S436
@@ -33,10 +35,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S428**) | torah_trainer.html | **Colour-coded copy's rich fallback leaves the focus on `<body>`** (a framed page; HEAD too). | found S428
 
 - [ ] P4 (**NEW S429 B; NEW pattern**) | torah_trainer.html + hebrew_blend_generator.html | **Two panels forget their open/closed state on a reload** (torah "Trope staff", generator "Saved Presets"): their title keys sit on an inner span the panel memory never reads. | found S429
-
-- [ ] P4 (**NEW S429**) | hebrew_dictionary.html | **The empty state's "Clear search" and "Search without vowels" drop the focus to `<body>`**; reuse `refocusAfterFilterReset`. | found S429
-
-- [ ] P4 (**NEW S427**) | hebrew_dictionary.html | **Closing Add to Word List, opened from a word's details, drops the focus to `<body>`.** | found S427
 
 - [ ] P4 (**NEW S427 Pass C — four small ones**) | hebrew_dictionary.html | **(1)** the emoji tree's ▾ 15×9 px, rows 21 px apart; **(2)** "♀ Feminine" 4.42:1 at 0.62rem; **(3)** Shoresh's empty tiles 2.79:1 / 3.13:1; **(4)** Enter in Save as Word List's name field does nothing. | found S427
 
@@ -270,19 +268,21 @@ _(none)_
 
 ## Done
 
-- [x] 2026-10-01 | (S436 close-out) | branch/deploy note | **S436 = pass M (`hebrew_blend_generator.html`, its first M) + 4 fixes, continuing draft PR #303 (`claude/nice-mayer-bzr3d9`, base `43570d4`, unmerged).** DRIFT: none (keep-alive #19 green). sw v903→v904 (generator, flash, torah). FM: no bump (untouched). Gates: none asked; deferred: the bingo preview's layout (gate 3/4, a Candidate).
+- [x] 2026-10-01 | (S437 close-out) | branch/deploy note | **S437 = pass G (`index.html` + the chrome pages; first G there since S306) + 4 fixes, continuing draft PR #303 (`claude/nice-mayer-bzr3d9`, base `43570d4`, unmerged).** DRIFT: none (keep-alive #19 green). sw v904→v905 (index, resources, dictionary). FM: no bump (untouched). Gates: none asked; …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-10-01 | `cb2aeedb` | torah_trainer.html | (S436; E's candidate) **Two comments name every case that still asks Sefaria** (Pesach 8 / Shavuot 2 too). | verified: check-inline-js; 8 load cells, 0 pageerrors
+- [x] 2026-10-01 | `cd41b928` | hebrew_dictionary.html | (S437; S427's P4; button-focus-lost-to-its-own-rebuild) **Closing Add to Word List from a word's details returns the focus to the word.** | verified: real clicks, HEAD <body> 8/8 → the card 8/8
 
-- [x] 2026-10-01 | `5dd9b0b4` | flash_cards.html | (S436; S435's P3) **Deleting a saved result deletes that result after another tab saved one** (found again by `savedAt`). | verified: two-tab probe HEAD 4/4 fail at the cap → 8/8; f3 16/16
+- [x] 2026-10-01 | `c98070a5` | hebrew_dictionary.html | (S437; S429's P4; button-focus-lost-to-its-own-rebuild) **The empty state's Clear search and Search without vowels keep the focus** | verified: real clicks, <body> 8/8 → field 8/8
 
-- [x] 2026-10-01 | `141aa8f7` | hebrew_blend_generator.html | (S436 M, P1 export) **Export PDF lays the sheet out at full width from any window**. | verified: real exportPDF, 6 types, 800 = 1280
+- [x] 2026-10-01 | `5320a668` | resources.html | (S437 G, P3; NEW dark-literal-escapes-the-print-tokens) **A dark-mode print keeps the cards' badge, grades and links in ink.** | verified: 16 PDFs, dark ink −8% → equal
 
-- [x] 2026-10-01 | `d4cd3d96` | hebrew_blend_generator.html | (S436 M; physical-property-that-never-mirrors) **Segmented pickers keep their separators in Hebrew and between rows**; the empty cell is blank. | verified: pixel probe 82 → 0, plant 17/cell
+- [x] 2026-10-01 | `386cc2ef` | index.html | (S437 G, P2) **An account backup pasted into Import All Settings fills in, as the file does**. | verified: paste probe, partial/kept/full
 
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-01 | **S437** | iters: 1 pass (**G**) + 4 fixes = **5** | tools: index, resources, dictionary ×2 | patterns fixed: button-focus-lost-to-its-own-rebuild ×2, dark-literal-escapes-the-print-tokens ×1 (NEW) | pass run: G | SW: v904→v905
 
 - 2026-10-01 | **S436** | iters: 1 pass (**M**) + 4 fixes = **5** | tools: generator ×2, flash, torah | patterns fixed: physical-property-that-never-mirrors ×1 | pass run: M | SW: v903→v904
 
@@ -322,11 +322,9 @@ _(none)_
 
 - 2026-09-25 | **S418** | iters: 1 pass (**L**) + 4 fixes = **5** | tools: torah, 404, dictionary + resources, resources | patterns fixed: stale-html-fallback-behind-its-csv-value ×3 | pass run: L | SW: v851→v852
 
-- 2026-09-25 | **S417** | iters: 1 pass (**E**) + 4 fixes = **5** | tools: README, shared-components.md, dictionary + flash, trope | patterns fixed: flash-restores-captured-text-not-its-key ×2 (NEW) | pass run: E | SW: v850→v851
-
 ### Tool coverage (last-touched date per tool)
 
-- **S436 (2026-10-01):** generator (**S436** ×2; M S436, first); flash (**S436**; P S435); torah (**S436**; **C-next** C S298); js/ivrit-saves.js, account, dashboard, trope (S433); terms (S432); licences, README, ops.md, font-maker.md (S431); dictionary (S429; **H-next** H S292); js/ivrit-account.js (S429); manifest (S426); resources (S422); index (S421; **G-next**); FM (S419); 404 (S418); **P-next** account.html; dashboard **D-next**; **N-next** torah or dashboard; **M yet to run:** flash, terms.
+- **S437 (2026-10-01):** dictionary (**S437** ×2; **H-next** H S292); index (**S437**; G S437); resources (**S437**); generator (S436; M S436, first); flash (S436; P S435); torah (S436; **C-next** C S298); js/ivrit-saves.js, account, dashboard, trope (S433); terms (S432); licences, README, ops.md, font-maker.md (S431); js/ivrit-account.js (S429); manifest (S426); FM (S419; **G-next** after torah S324); 404 (S418); **P-next** account.html; dashboard **D-next**; **N-next** torah or dashboard; **M yet:** flash, terms.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -338,7 +336,9 @@ _(none)_
 
 - **`copy-claims-success-on-a-refused-clipboard`** (NEW S428; FIXED `bbd5f65`, `0d2a941`; 7 open): ACTIVE, streak 0. Detection `f428/copy.mjs`: sentinel, real click, 3 contexts.
 
-- **`button-focus-lost-to-its-own-rebuild`** (**S426 account `e091820`; S427 the dictionary's Word Lists `7a631f6`, chips/Reset FIXED `cea92bf`; empty-state Clear OPEN; S430 torah's cycle-note Try again FIXED S434 `dfc25af8` (focus → the checked radio)**): ACTIVE, streak 0. …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`button-focus-lost-to-its-own-rebuild`** (**S426 account `e091820`; S427 the dictionary's Word Lists `7a631f6`, chips/Reset FIXED `cea92bf`; S434 torah's Try again `dfc25af8`; S437 the dictionary's empty-state buttons `c98070a5` and Add to Word List's close `cd41b928`**): …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- **`dark-literal-escapes-the-print-tokens`** (NEW S437 G; resources FIXED `5320a668`): ACTIVE, streak 0. Detection: PDFs dark vs light, ink per page (<200 at 40 dpi); a lighter dark sheet = a `body.dark` literal the print token reset misses. Exempt: active-state borders. S437: 6 chrome pages, 1 hit.
 
 - **`editor-re-parse-caps-a-merged-list`** (**NEW S421 Pass P — 1 carrier, FIXED `288af4a`**): ACTIVE, consequence-critical (a sync carries the cut list to the account); never retires. A list the sync merges uncapped is re-parsed by its tool's editor or restore path through the …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -608,7 +608,7 @@ _(none)_
 
 - A recurring-pattern sweep: 2026-09-30 (**S430 — 34th A: the delta `a907bf1..99f9fa5` + S416→now; 14 arms, every zero controlled, Hebcal as oracle. FOUND P2, P3 ×2, 4 stale fallbacks, NEW pattern ×4, 3 P4s; FIXED 3.**)
 
-- G print & export fidelity (one tool): 2026-09-27 (**S423 — `flash_cards.html`, its 4th G (S159 → S219 → S279 → S423), over 80 commits since. 8 arms, every zero behind a control: a census of every printable card (13,081 words, 275 emoji, 26 colours, 0–9999) at 4 paper widths, 9 sheet PDFs (duplex 84/84), 20 report + 16 certificate PDFs, plain print, the .ivrit Replace round trip 6/6, share links …[full text: IMPROVEMENT_ARCHIVE.md]
+- G print & export fidelity (one tool): 2026-10-01 (**S437 — `index.html` + the chrome pages, first G there since S306. 5 arms (key census, export = gather, .ivrit round trip, paste vs file, 48 PDFs light vs dark), every zero controlled. FOUND + FIXED: a …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - D performance (one tool): 2026-09-28 (**S424 — `torah_trainer.html`, its 4th D (S184/185 → S307 → S424), 71 commits since. A full-parsha stub (146 verses / 2,117 words), 15 cold cells, 21 interactions at 1× and 4×, chant + pitch, idle, heap after GC; the S307-era and pre-S422 pages as controls. FOUND + FIXED: Chant all never started or advanced over a whole parsha (P1, `50d48bd`), every …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -626,4 +626,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-09-29 (**S428 — the copy contract: 13 controls × direct / LMS frame / planted double failure, every zero controlled. FOUND 3 claiming over the old clipboard (P3, FIXED `bbd5f65`, `0d2a941`), 9 ignoring execCommand (2 fixed), 4 unannounced.**)
 
-**Next session (S437):** **BRANCH/PR: S435 + S436 on `claude/nice-mayer-bzr3d9` → draft PR #303 (base `43570d4`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v904**, FM **5.58**, SDK **2.116.0**; backend unchanged (0001–0003 live, delete-account v3 = repo source); email template `Live?` = no. ⚑ Stalest: G (S423); O stays blocked (the sandbox refuses the detector). ⚑ Strongest untaken: the bingo preview at 800 (P3, a layout question for the maintainer).
+**Next session (S438):** **BRANCH/PR: S435–S437 on `claude/nice-mayer-bzr3d9` → draft PR #303 (base `43570d4`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v905**, FM **5.58**, SDK **2.116.0**; backend unchanged (0001–0003 live, delete-account v3 = repo source); email template `Live?` = no. ⚑ Stalest: F (S428); O stays blocked (the sandbox refuses the detector). ⚑ Strongest untaken: the bingo preview at 800 (P3, a layout question for the maintainer).
