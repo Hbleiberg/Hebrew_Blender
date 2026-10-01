@@ -2118,6 +2118,11 @@ body.dark .hi-sun{display:inline-block;}
 
     .btn { font-size: 0.85rem; padding: 10px; }
 
+    /* This page has no global border-box, so the tour card's 300px / 92vw width excluded its
+       36px padding: 338px wide — wider than a 320px phone, which the clamp then pushed 20px
+       off the left edge. Border-box here, as on the six sibling pages (desktop unchanged). */
+    .tour-card { box-sizing: border-box; }
+
     /* The action group shows inline in the (stacked) sidebar on mobile too, matching desktop;
        the old bottom .mobile-fab bar is retired in favor of the shared .gen-fab frozen footer. */
     .desktop-buttons { display: block; }
