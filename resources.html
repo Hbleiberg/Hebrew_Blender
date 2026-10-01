@@ -450,6 +450,13 @@ body.dark #fontToast{background:#2a4070;}
     --warm-gray:#e8e0d0;--text:#1a2744;--muted:#6b6050;--border:#c8bfa8;--white:#fff;--gold-text:#7f5a13;
     background:#fff !important; color:#1a2744 !important;
   }
+  /* The tokens above reach only what reads a token; these dark rules name literal colours (or
+     --gold-light), so on paper they kept pale ink -- the cards' badge, grades line and link. */
+  body.dark .card-cat-badge, body.dark .card-link, body.dark .font-badge,
+  body.dark .font-actions a, body.dark .font-actions button { color: var(--navy); }
+  body.dark .card-grade { color: var(--gold-text); }
+  body.dark .fp-yes { color: #2e7d3f; }
+  body.dark .fp-no { color: #c0392b; }
   /* Nothing on paper can be clicked, so the header's controls -- the "Back" link, the EN/HE
      switcher and the Dark Mode toggle -- are inert ink wherever this suite prints. They share
      one container, so hiding it drops all three while the header keeps its identity: the star,
