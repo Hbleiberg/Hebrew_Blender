@@ -266,7 +266,7 @@ _(none)_
 
 ## Done
 
-- [x] 2026-10-01 | (S433 close-out) | branch/deploy note | **S433 = pass K + 4 fixes → draft PR on `claude/wizardly-allen-gwuj58` (base `4e19a1c`).** DRIFT: 43 outside-loop commits (PRs #294–#300; sw v889→v899, FM 5.56→5.58); backend unchanged. sw v899→v900; FM not bumped; 5 smokes. …[full text: IMPROVEMENT_ARCHIVE.md]
+- [x] 2026-10-01 | (S433 close-out) | branch/deploy note | **S433 = pass K + 4 fixes → draft PR #301 on `claude/wizardly-allen-gwuj58` (base `4e19a1c`).** DRIFT: 43 outside-loop commits (PRs #294–#300; sw v889→v899, FM 5.56→5.58); backend unchanged. sw v899→v900; FM not bumped; 5 smokes. …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-10-01 | `b3ec5d33` | account, dashboard, flash, generator, trope | (S433 K; stale-fallback) **12 static fallbacks match their CSV** (the account notes ×5, four "Cloud saves" headings, dashboard ×3). | verified: census 14 → 2; 90 cells vs HEAD; smoke-account-page 65, smoke-tools 135
 
@@ -620,7 +620,7 @@ _(none)_
 
 - F cross-tool consistency: 2026-09-29 (**S428 — the copy contract: 13 controls × direct / LMS frame / planted double failure, every zero controlled. FOUND 3 claiming over the old clipboard (P3, FIXED `bbd5f65`, `0d2a941`), 9 ignoring execCommand (2 fixed), 4 unannounced.**)
 
-**Next session (S434):** **BRANCH/PR: S433 on `claude/wizardly-allen-gwuj58` → draft PR (base `4e19a1c`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v900**, FM **5.58**, SDK **2.116.0**; backend unchanged (0001–0003 live, delete-account unchanged, keep-alive #19 green); email template `Live?` = no.
+**Next session (S434):** **BRANCH/PR: S433 on `claude/wizardly-allen-gwuj58` → draft PR #301 (base `4e19a1c`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v900**, FM **5.58**, SDK **2.116.0**; backend unchanged (0001–0003 live, delete-account unchanged, keep-alive #19 green); email template `Live?` = no.
 
 **⚑ STALEST PASS: O (S346 — BLOCKED, no permission rule), N (S420), then P M G D I H C F B A E L K.** Take **N**. P follows it: the account layer went cloud-first after S421 (PR #300) and no P has seen it.
 
