@@ -8,6 +8,12 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P3 (**NEW S435 P, measured**) | flash_cards.html | **Deleting a result while another tab saves one can delete the wrong result**: the button splices the index captured at render; at the 100-result cap the other tab's new result went and the clicked one stayed. Find it by `savedAt`. | found S435
+
+- [ ] P4 (**NEW S435 P**) | flash_cards.html + hebrew_blend_generator.html | **A `?wl=` link whose list is only in the account opens without it**: the id is resolved once at load; the list that lands later is never selected. | found S435
+
+- [ ] P4 (**NEW S435 P — gate 2, new copy ×5**) | dashboard, generator, torah, dictionary, flash | **The vowel-colour reset confirm names no account-wide effect while signed in**, though all five reset overrides that travel. | found S435
+
 - [ ] P4 (**NEW S434 N**) | hebrew_blend_generator.html | **Dead code from retired UI**: `makeSortable()` is never called (the folder tree replaced it), and the retired `.mobile-fab` (5 hidden buttons with ids, `display:none` everywhere) still ships with its `wireFab` disabled-tap toast handler. | found S434
 
 - [ ] P4 (**NEW S432 L — gate 2**) | index.html | **The hub's og:/twitter:description name every tool but the Font Maker.** | found S432
@@ -264,19 +270,21 @@ _(none)_
 
 ## Done
 
-- [x] 2026-10-01 | (S434 close-out) | branch/deploy note | **S434 = pass N (`hebrew_blend_generator.html`, its 2nd N: S262 → S434) + 4 fixes, continued on draft PR #301 (`claude/wizardly-allen-gwuj58`, base `4e19a1c`).** DRIFT: none (`origin/main` = base; sw v900, FM 5.58, SDK 2.116.0, 0001–0003, delete-account and keep-alive untouched). sw v900→v901 (generator, torah). FM not bumped (untouched). …[full text: IMPROVEMENT_ARCHIVE.md]
+- [x] 2026-10-01 | (S435 close-out) | branch/deploy note | **S435 = pass P (`flash_cards.html`'s own wiring, its first P alone) + 4 fixes → draft PR #303 (`claude/nice-mayer-bzr3d9`, base `43570d4`).** DRIFT: 1 outside-loop commit (`43570d4`, the social cards; sw v901→v902); backend unchanged (0001–0003 live, delete-account v3 = repo, SDK 2.116.0, keep-alive #19 green). sw v902→v903 (flash, …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-10-01 | `dfc25af8` | torah_trainer.html | (S434; button-focus-lost-to-its-own-rebuild) **The cycle note's Try again keeps the focus** (on the checked cycle radio, not `<body>`). | verified: leyning aborted, Enter: HEAD body 8/8 → #cycTriennial 8/8; EN/HE × light/dark × 1280/800
+- [x] 2026-10-01 | `dbeff968` | docs/reference/accounts-and-cloud.md | (S435) **The Flash Cards row's results cap reads 100** (said 50). | verified: on the page 60+60 → the newest 100, 20+20 → 40
 
-- [x] 2026-10-01 | `b4edf5c3` | torah_trainer.html | (S434; stale-fallback) **Two static fallbacks match their CSV** ("Your account", the Favorites button's title). | verified: i18n.js aborted HEAD old / fix CSV; loaded ×16 equal
+- [x] 2026-10-01 | `352af28a` | scripts/smoke-sync.mjs | (S435) **D31 reads what the sign-out left before the reloaded page runs** (`__lsAtLoad`). | verified: 6/6 (old: 1 fail in 3); a planted skip of TropeTutor still fails it
 
-- [x] 2026-10-01 | `6bd80add` | hebrew_blend_generator.html | (S434 N) **The tour card fits a 320px phone** (border-box in the phone block; was 338px wide, 20px off the left edge). | verified: 16 phone cells, card 13..307 at 320; desktop ×8 unchanged (338)
+- [x] 2026-10-01 | `e56d95be` | flash_cards.html | (S435 P; account-wide-delete-confirm-without-signed-in-wording, gate 2 approved) **Deleting a saved result while signed in says it leaves the account.** | verified: 16 cells by real clicks; HEAD plain in 8/8 signed in
 
-- [x] 2026-10-01 | `b5f10abf` | hebrew_blend_generator.html | (S434 N) **Help bubbles open on tap in Hebrew on narrow phones** (the hover preview is `(hover: hover)` only; it flickered the RTL page 16px every frame). | verified: 32/32 badges tapped at 320/390 × EN/HE, HEAD 1 fail → 0; desktop hover ×8 kept
+- [x] 2026-10-01 | `a2e12303` | flash_cards.html | (S435 P) **After a button sign-out the letters and vowels stay chosen** (an absent selection takes the defaults). | verified: a real Sign out HEAD 0/0 → 26/9; recipe 16 cells; smokes
 
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-01 | **S435** | iters: 1 pass (**P**) + 4 fixes = **5** | tools: flash ×2, smoke-sync, the accounts doc | patterns fixed: account-wide-delete-confirm-without-signed-in-wording ×1 (NEW) | pass run: P | SW: v902→v903
 
 - 2026-10-01 | **S434** | iters: 1 pass (**N**) + 4 fixes = **5** | tools: generator ×2, torah ×2 | patterns fixed: stale-fallback ×1, button-focus-lost ×1 | pass run: N | SW: v900→v901
 
@@ -316,13 +324,13 @@ _(none)_
 
 - 2026-09-24 | **S416** | iters: 1 pass (**A**) + 4 fixes = **5** | tools: flash, trope ×2, FM | patterns fixed: visible-label, toggle-name, translated-key, author-display | pass run: A | SW: v846→v847
 
-- 2026-09-24 | **S415** | iters: 1 pass (**B**) + 4 fixes = **5** | tools: flash ×2, FM ×2 + i18n.js, gen. ×2, torah, 8 more footers | patterns fixed: textContent-rewrite ×2, 3 NEW (label-in-name, key-miss probe, pinned-english) | pass run: B | SW: v837→v838
-
 ### Tool coverage (last-touched date per tool)
 
-- **S434 (2026-10-01):** generator (**S434** ×2; N S434); torah (**S434** ×2; S433; **C-next** C S298); js/ivrit-saves.js, account, dashboard, flash, trope (S433); terms (S432); licences, README, ops.md, font-maker.md (S431); dictionary (S429; **H-next** H S292); js/ivrit-account.js (S429); manifest (S426); resources (S422); index (S421; **G-next**); FM (S419); 404 (S418); flash **P-next**; dashboard **D-next**; **N-next**: torah (N never) or dashboard; chrome + i18n.js (S415); no M: generator, flash, terms.
+- **S435 (2026-10-01):** flash (**S435** ×2; P S435); generator (S434; N S434); torah (S434; **C-next** C S298); scripts/smoke-sync.mjs, accounts-and-cloud.md (S435); js/ivrit-saves.js, account, dashboard, trope (S433); terms (S432); licences, README, ops.md, font-maker.md (S431); dictionary (S429; **H-next** H S292); js/ivrit-account.js (S429); manifest (S426); resources (S422); index (S421; **G-next**); FM (S419); 404 (S418); **P-next** account.html; dashboard **D-next**; **N-next**: torah (N never) or dashboard; chrome + …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`account-wide-delete-confirm-without-signed-in-wording`** (NEW S435 P; flash's result delete FIXED `e56d95be`; the colour reset ×5 OPEN, gate 2): ACTIVE, consequence-adjacent (a teacher reads a deletion as local), streak 0. A `confirm()` before a delete/reset of a synced …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`tip-name-joins-its-field's-name`** (NEW S430; torah ×3 + generator OPEN): ACTIVE, streak 0. A `<label>` holding a `.tip-wrap` names its field "… More information". Detection `a430/moreinfo.mjs` (AX tree, panels open, a planted control). Fix: `aria-labelledby` on the text …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -586,7 +594,7 @@ _(none)_
 
 ### Discovery-pass rotation (run one per session, stalest first)
 
-- P accounts & cloud (one surface): 2026-09-25 (**S421 — 4th P, first since S407; stalest runnable (O blocked). Surface: the dashboard's own wiring, the first P on one tool page. 8 arms + 9 fake-cloud scenarios + 17 static checks, every zero controlled. FOUND + FIXED: a merged 65-name class cut to 60 by one edit and carried to the account (P2, `288af4a`, NEW pattern); a cloud-only class/word list …[full text: IMPROVEMENT_ARCHIVE.md]
+- P accounts & cloud (one surface): 2026-10-01 (**S435 — 5th P, first since S421: `flash_cards.html`'s own wiring, its first P alone, after the cloud-first rewrite. 8 arms + 8 fake-cloud scenarios + a sign-out probe + 7 static checks, every zero controlled; smokes tools 21/21, sync 201/201, migration 47/47, the live project read-only. FOUND + FIXED: a sign-out left no letters or vowels (P2, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - O deslop — AI-design-tell sweep (one surface): 2026-09-08 (**S346 — 6th O, `flash_cards.html`. ⚑ BLOCKED HERE TWICE (S399, S403) — NOT "needs an attended session". Clone + the 4 parsers install fine; EXECUTING the detector is refused by the sandbox's auto-mode classifier ("Code from External"), and the refusal names the remedy: the maintainer adds a Bash permission rule for the detector (or …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -618,10 +626,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-09-29 (**S428 — the copy contract: 13 controls × direct / LMS frame / planted double failure, every zero controlled. FOUND 3 claiming over the old clipboard (P3, FIXED `bbd5f65`, `0d2a941`), 9 ignoring execCommand (2 fixed), 4 unannounced.**)
 
-**Next session (S435):** **BRANCH/PR: S433 + S434 on `claude/wizardly-allen-gwuj58` → draft PR #301 (base `4e19a1c`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v901**, FM **5.58**, SDK **2.116.0**; backend unchanged (0001–0003 live, delete-account unchanged); email template `Live?` = no.
-
-**⚑ STALEST PASS: O (S346 — BLOCKED, no permission rule), P (S421), then M G D I H C F B A E L K N.** Take **P**: the account layer went cloud-first after S421 (PR #300) and no P has seen it.
-
-**⚑ STRONGEST UNTAKEN:** the generator's dead code (P4, new), the `#cloudSavesPanel` comment ×5, torah's Sefaria comments. Gate 2 waiting: the holiday names in Hebrew (S433), the hub's og (S432), "Aliyah" (S430). P4s: tip-name ×4, 7 copy carriers. **Seed bench: 30.**
-
-**⚑ HARNESS: traps 1–224 in loop-findings** (`n434/`; `--sdk` = `npm pack @supabase/supabase-js@2.116.0`); compaction once (trap 140); the old handoff and the oldest Done move by hand.
+**Next session (S436):** **BRANCH/PR: S435 on `claude/nice-mayer-bzr3d9` → draft PR #303 (base `43570d4`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v903**, FM **5.58**, SDK **2.116.0**; backend unchanged (0001–0003 live, delete-account v3 = repo source); email template `Live?` = no.
