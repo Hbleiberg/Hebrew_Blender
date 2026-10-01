@@ -790,6 +790,35 @@
     var b = baseAll(), u = b.users[uid], k = baseKey(tool, kind, name);
     if (isPlainObject(u) && hasOwn(u, k)) { delete u[k]; baseSave(b); }
   }
+  // A row whose stored copy derives from an older view than the memory's (this tab's page was behind when it wrote):
+  // remembered against that view — its hash, no stamp (so the account reads as moved too), and for a settings row the
+  // view itself as the merge base — so whichever tab next compares it merges a settings row field by field, keeps
+  // both copies of an item and merges a class list, rather than sending the older copy up as "changed here".
+  function rememberView(uid, tool, entry, name, seenH, mem) {
+    if (!mem || !mem.id) return;
+    metaSet(uid, tool, entry.kind, name, { h: seenH, id: mem.id, u: null, at: now() });
+    var view = entry.merge === 'assign' ? tabBaseOf(tool, entry.kind, name) : null;
+    if (view) { var b = baseAll(); if (!isPlainObject(b.users[uid])) b.users[uid] = {}; b.users[uid][baseKey(tool, entry.kind, name)] = { h: seenH, text: view }; baseSave(b); }
+    else if (entry.merge === 'assign') baseDelete(uid, tool, entry.kind, name);
+  }
+  // This tab wrote a kind another tab has written since this tab last read it (a page-write stamp marked it stale):
+  // every row of it this tab saw at an older version than the memory's is remembered against that view. The write
+  // may never be followed by this tab's own corrective hydration (the tab is closing, the network is gone), and the
+  // next tab to open — tomorrow — must not take the older copy for this device's newer edit.
+  function persistStaleView(tool, kind) {
+    var user = currentUser(); if (!user) return;
+    if (!(stale[tool] && stale[tool][kind])) return;
+    var entry = entryFor(tool, kind);
+    if (!entry || entry.virtual || entry.shape === 'tree') return;
+    var seen = seenNames[tool] && seenNames[tool][kind];
+    if (!isPlainObject(seen)) return;
+    Object.keys(seen).forEach(function (name) {
+      var seenH = seen[name];
+      if (typeof seenH !== 'string') return;
+      var mem = metaGet(user.id, tool, kind, name);
+      if (mem && mem.id && mem.h !== seenH) rememberView(user.id, tool, entry, name, seenH, mem);
+    });
+  }
   // After a row was remembered at hash h: the local item's projected value becomes the base when it still hashes to h.
   function rememberBase(uid, tool, kind, name, h) {
     var entry = entryFor(tool, kind);
@@ -2102,6 +2131,7 @@
       if (hydratedTools[e.tool] !== user.id) return;
       markDirty(e.tool, e.kind);
       stampPageWrite(e);
+      persistStaleView(e.tool, e.kind);
     });
   }
   // The other tabs learn of a page write at once (not only when it is sent 2 s later), so a background tab never
@@ -2140,6 +2170,7 @@
     dirty[tool] = {};
     var res = { tool: tool, done: 0, skipped: 0, skips: [], error: null, needHydrate: false };
     if (pages[tool] && !pages[tool].pulled) withSelfWrite(function () { flushPage(tool); });
+    kinds.forEach(function (kind) { persistStaleView(tool, kind); });
     return seqMap(kinds, function (kind) {
       var entry = entryFor(tool, kind);
       if (!entry) return Promise.resolve();
@@ -2565,13 +2596,7 @@
     // tab last read it): kept, and remembered against what this tab saw (no stamp, so the account reads as moved
     // too) — the next sign-in merges a settings row field by field against that view (the base) and keeps both
     // copies of an item, so neither this tab's change nor the newer one is lost.
-    var keepAgainstView = function (tool, entry, name, seenH, mem) {
-      if (!mem || !mem.id) return;
-      metaSet(uid, tool, entry.kind, name, { h: seenH, id: mem.id, u: null, at: now() });
-      var view = entry.merge === 'assign' ? tabBaseOf(tool, entry.kind, name) : null;
-      if (view) { var b = baseAll(); if (!isPlainObject(b.users[uid])) b.users[uid] = {}; b.users[uid][baseKey(tool, entry.kind, name)] = { h: seenH, text: view }; baseSave(b); }
-      else if (entry.merge === 'assign') baseDelete(uid, tool, entry.kind, name);
-    };
+    var keepAgainstView = function (tool, entry, name, seenH, mem) { rememberView(uid, tool, entry, name, seenH, mem); };
     var finalFlush = Promise.resolve().then(function () {
       Object.keys(pages).forEach(function (tool) { var cfg = pages[tool]; if (cfg && !cfg.pulled) withSelfWrite(function () { try { if (typeof cfg.finalFlush === 'function') cfg.finalFlush(); else flushPage(tool); } catch (e) { warn('finalFlush failed:', e); } }); });
       if (follower) { dirty = {}; return null; }   // the other tab's session is ending: nothing is sent from here
@@ -2737,6 +2762,7 @@
       var cfg = pages[tool]; if (!cfg || cfg.pulled) return;
       if (staleWhileHidden(tool)) return;   // closing a background tab another tab has written since: nothing new here
       withSelfWrite(function () { try { if (typeof cfg.finalFlush === 'function') cfg.finalFlush(); else if (typeof cfg.flush === 'function') cfg.flush(); } catch (e) {} });
+      registryFor(tool).forEach(function (e) { persistStaleView(tool, e.kind); });
       if (hydratedTools[tool] === uid) registryFor(tool).forEach(function (e) { if (!e.virtual) { if (!dirty[tool]) dirty[tool] = {}; dirty[tool][e.kind] = true; } });
     });
     Object.keys(dirty).forEach(function (tool) { if (Object.keys(dirty[tool] || {}).length) { if (timers[tool]) { clearTimeout(timers[tool]); timers[tool] = null; } flush(tool).catch(noop); } });

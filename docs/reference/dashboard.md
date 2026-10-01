@@ -538,7 +538,10 @@ stored session the Quick-start card (`openFirstRun()`) waits for the first `ivri
 `Dashboard` and opens only if no settings row landed and the last listing (`IvritSaves.lastPlan('Dashboard')`)
 shows none in the account — a starter would overwrite them. Its 10 s fallback (a hydration that never finishes)
 waits while the device-extras card (`.ivsav-overlay`) is open, since the hydration holds there for as long as
-the teacher reads it, then asks the same. Deleting a class (`deleteClass`) is a
+the teacher reads it, then asks the same. A card that opened on that guess (`_frAutoOpened`: a listing slower than
+10 s) closes, unapplied, when the account's settings land (`frAccountLanded`, from the `settings` reload and from the
+next `ivritsuite:hydrated`), and a starter picked on it while the account holds settings is never applied
+(`frApplyStarter` checks `frAccountHasSettings()` first); the drawer's own Quick-start button is unaffected. Deleting a class (`deleteClass`) is a
 write like any other and reaches the account; while a session is stored its confirm says so
 (`dashboard.picker.delete_class_confirm_cloud`). The 30-second `checkSchedule` can write storage at a period
 boundary (through `applySettings` → `applyZoom`); the module re-reads the store after every write and treats a

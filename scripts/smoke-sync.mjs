@@ -105,6 +105,10 @@
  *      setup alone, on the device and in the account.
  *  D23. A board being typed in a window without the focus survives another tab's download of a change made on
  *      another device; when the edit ends both the board text and that change reach the account.
+ *  D24. A stale projector tab that closes while the network is gone writes its older class list and board text into
+ *      the store; the next fresh tab keeps the account's newer copy instead of sending the older one up.
+ *  D25. A fresh device whose listing takes 13 s: the Dashboard's starter card opens on its 10 s guess and closes
+ *      unapplied when the account's settings land; the account's board text is untouched.
  *
  * Every scenario asserts 0 pageerrors. Run from the repo root:
  *   node scripts/smoke-sync.mjs --sdk path/to/supabase.js [--port 8081]
@@ -1529,6 +1533,59 @@ try {
     check("D23: after the edit ends the account holds the board text and the phone's location, and so does the board tab", okA && /field trip forms due/.test(row.data.dashTextHTML || '') && row.data.location === 'Tiberias' && /field trip forms due/.test(aNow.board || '') && aNow.location === 'Tiberias', JSON.stringify({ okA, account: { board: row.data.dashTextHTML, location: row.data.location }, aNow }));
     check('D23: 0 pageerrors in every tab', A.errors.length === 0 && B.errors.length === 0 && P.errors.length === 0, A.errors.concat(B.errors, P.errors).join(' | '));
     await ctx1.close(); await ctx2.close();
+  }
+  // ---- D24. a stale tab that closes with the network gone: the next fresh tab does not send its older copy up ----
+  if (want('D24')) {
+    const cloud = new FakeCloud(CLOUD_ROWS());
+    const row = cloud.find('settings', 'default'), roster = cloud.find('roster', 'lap_0');
+    const ctx = await openContext(browser, cloud, SEED({ device: true }));
+    const A = await openPage(ctx, 'classroom_dashboard.html');   // the laptop tab where the teacher edits
+    const B = await openPage(ctx, 'classroom_dashboard.html');   // the projector tab, open all day
+    // A adds a student to Kitah Alef and writes a new board message; both reach the account
+    await A.page.evaluate(() => { settings.rosters.lap_0.names.push('Yael'); document.getElementById('dashEditor').innerHTML = '<div>Newer board</div>'; saveSettingsToStorage(); });
+    const okA = await settled(A.page, DASH_TOOLS, 15000);
+    const upA = okA && (roster.data.names || []).includes('Yael') && /Newer board/.test(row.data.dashTextHTML || '');
+    await A.page.close();
+    // end of the day: the projector tab is closed while the network is gone (its corrective hydration cannot run)
+    cloud.refuse = () => ({ status: 503, body: { message: 'Service Unavailable' } });
+    await B.page.evaluate(() => { Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'hidden' }); document.dispatchEvent(new Event('visibilitychange')); });
+    await sleep(500);
+    await B.page.close({ runBeforeUnload: false });
+    cloud.refuse = null;
+    const P = await ctx.newPage();
+    await P.goto(BASE + '/llms.txt', { waitUntil: 'domcontentloaded' }).catch(() => {});   // a plain file: reads the store without running a page
+    const store = await P.evaluate(() => { const s = JSON.parse(localStorage.getItem('hebrewDashboard_settings') || '{}'); return { names: ((s.rosters || {}).lap_0 || {}).names || [], board: s.dashTextHTML || '' }; });
+    await P.close();
+    check('D24: tab A\'s new student and board message reached the account; the projector tab then wrote its older copy into this device\'s store as it closed', upA && !store.names.includes('Yael') && !/Newer board/.test(store.board), JSON.stringify({ upA, store }));
+    // the next morning a fresh tab opens
+    const from = cloud.log.length;
+    const C = await openPage(ctx, 'classroom_dashboard.html');
+    await sleep(2500);
+    const okC = await settled(C.page, DASH_TOOLS, 15000);
+    const cNow = await C.page.evaluate(() => ({ names: ((settings.rosters || {}).lap_0 || {}).names || [], board: settings.dashTextHTML || '' }));
+    check("D24: the next fresh tab keeps the account's newer copy: Yael and the new board message stay in the account and come back to the device", okC && (roster.data.names || []).includes('Yael') && /Newer board/.test(row.data.dashTextHTML || '') && cNow.names.includes('Yael') && /Newer board/.test(cNow.board), JSON.stringify({ okC, account: { names: roster.data.names, board: row.data.dashTextHTML }, cNow, calls: methods(cloud, from) }));
+    check('D24: 0 pageerrors', A.errors.length === 0 && B.errors.length === 0 && C.errors.length === 0, A.errors.concat(B.errors, C.errors).join(' | '));
+    await ctx.close();
+  }
+  // ---- D25. a slow listing: the starter card opens on the 10 s guess and closes, unapplied, when the account's settings land ----
+  if (want('D25')) {
+    const cloud = new FakeCloud(CLOUD_ROWS());
+    const row = cloud.find('settings', 'default');
+    const board = row.data.dashTextHTML;
+    cloud.delayFor = (url, m) => (m === 'GET' && /\/rest\/v1\/saves$/.test(url.pathname) && !url.searchParams.has('id') && cloud.delayed === 0) ? 13000 : 0;
+    const ctx = await openContext(browser, cloud, SEED({ firstRun: true, hydrated: false }));
+    const { page, errors } = await openPage(ctx, 'classroom_dashboard.html', { settle: false });
+    const opened = await page.waitForFunction(() => document.getElementById('frModal').classList.contains('open'), null, { timeout: 15000 }).then(() => true, () => false);
+    const ok = await settled(page, DASH_TOOLS, HYDRATE_MS);
+    await sleep(500);
+    const after = await page.evaluate(() => ({ open: document.getElementById('frModal').classList.contains('open'), seen: localStorage.getItem('hebrewDashboard_setupSeen'), board: settings.dashTextHTML }));
+    // the teacher, back at the screen, picks a starter if the card is still showing
+    const clicked = after.open ? await page.evaluate(() => { const b = document.querySelector('#frStarters .fr-starter'); if (b) b.click(); return !!b; }) : false;
+    const ok2 = await settled(page, DASH_TOOLS, 10000);
+    await sleep(500);
+    check("D25: with the listing 13 s slow the starter card opened on the 10 s guess, then closed by itself when the account's settings landed, so no starter replaced them: the account's board text is untouched here and in the account", opened && ok && ok2 && !after.open && !clicked && after.seen === '1' && after.board === board && row.data.dashTextHTML === board, JSON.stringify({ opened, ok, after, clicked, account: row.data.dashTextHTML }));
+    check('D25: 0 pageerrors', errors.length === 0, errors.join(' | '));
+    await ctx.close();
   }
 } finally {
   await browser.close();

@@ -3531,6 +3531,17 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
     saveSettingsToStorage();
   }
   let _frPrevFocus = null;
+  // The starter card opened by itself on a signed-in first visit, before the account's settings were known (a slow
+  // listing): if they land while it is still open it closes, and a starter is never applied over them.
+  let _frAutoOpened = false;
+  function frAccountHasSettings() {
+    try { const p = window.IvritSaves && IvritSaves.lastPlan && IvritSaves.lastPlan('Dashboard'); return !!(p && p.rows && p.rows.some(r => r.kind === 'settings' && r.cloud)); } catch (e) { return false; }
+  }
+  function frAccountLanded() {
+    if (!_frAutoOpened || !document.getElementById('frModal').classList.contains('open')) return;
+    _frAutoOpened = false;
+    frDismiss();   // its save writes the settings that just landed: the same value, nothing new goes up
+  }
   function openFirstRun() {
     _frPrevFocus = document.activeElement;   // restore target for the drawer-button path (body on auto first-visit)
     document.getElementById('frStarters').innerHTML = STARTERS.map(s =>
@@ -3565,6 +3576,7 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
     _frPrevFocus = null;
   }
   function frApplyStarter(key) {
+    if (_frAutoOpened && frAccountHasSettings()) { _frAutoOpened = false; frDismiss(); return; }   // the account's settings arrived meanwhile: they stay
     applyStarter(key);                                             // resets settings (incl. location) to pristine + diff
     frCaptureLocation();                                           // re-apply the user's typed location on top
     frDismiss();
@@ -7553,6 +7565,7 @@ function mountFolderTree(cfg){
         else fetchShabbat(false);
         fetchHolidays();
         updateOmerDisplay();
+        frAccountLanded();   // a starter card that opened by itself before the account's settings arrived closes, unapplied (after the reload: its save writes what landed)
       }
     });
     // A sync that ran on another page (the home page, the generator) wrote the class lists without this
@@ -10931,14 +10944,16 @@ async function onUploadEngFontPick(input){
       if (!pending) openFirstRun();
       else {
         let decided = false;
-        const decide = (landed) => { if (decided) return; decided = true; if (!landed && !localStorage.getItem('hebrewDashboard_setupSeen')) openFirstRun(); };
+        const decide = (landed) => { if (decided) return; decided = true; if (!landed && !localStorage.getItem('hebrewDashboard_setupSeen')) { _frAutoOpened = true; openFirstRun(); } };
         // The account already holds dashboard settings (they landed, or are on their way): a starter would overwrite them.
-        const accountHasSettings = () => { try { const p = IvritSaves.lastPlan && IvritSaves.lastPlan('Dashboard'); return !!(p && p.rows && p.rows.some(r => r.kind === 'settings' && r.cloud)); } catch (e) { return false; } };
+        const accountHasSettings = frAccountHasSettings;
         window.addEventListener('ivritsuite:hydrated', function onHyd(e) {
           const d = (e && e.detail) || {};
           if (!Array.isArray(d.tools) || d.tools.indexOf('Dashboard') < 0) return;
+          const landed = !!(d.landed && d.landed.Dashboard && d.landed.Dashboard.indexOf('settings') >= 0) || accountHasSettings();
+          if (decided) { if (landed) { frAccountLanded(); window.removeEventListener('ivritsuite:hydrated', onHyd); } return; }   // the card opened on the 10 s guess: it closes when the settings arrive
           window.removeEventListener('ivritsuite:hydrated', onHyd);
-          decide(!!(d.landed && d.landed.Dashboard && d.landed.Dashboard.indexOf('settings') >= 0) || accountHasSettings());
+          decide(landed);
         });
         // The fallback (a hydration that never finishes) waits while the device-extras card is open: the hydration holds
         // there for as long as the teacher reads it.
