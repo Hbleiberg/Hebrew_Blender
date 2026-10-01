@@ -8,6 +8,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P4 (**NEW S444 A**) | index.html | **All Settings' Copy reads "Copy" after a copy**, not its own "Copy to Clipboard" (`copy_reset` vs `copy_button`). | found S444
+
 - [ ] P3 (**S440 H, gate 2**) | hebrew_dictionary.html | **A theme saved over 200 words drops its A→Z tail** (Animals loses fox, octopus, chicken…). | found S440
 
 - [ ] P3 (**S440 H, gate 2**) | hebrew_dictionary.html | **"Words from this root" calls the word's letters its root** on 9,321 words (findings S440). | found S440
@@ -32,7 +34,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**S430 A — the maintainer's call**) | torah_trainer.html | **The reading header keeps "Aliyah {n}" English in the Hebrew UI** beside a translated cycle label (also the copy heading, the handout). | found S430
 
-- [ ] P4 (**NEW S428 Pass F — 7 carriers**) | index, dashboard, generator ×2, flash ×3 | **A copy both routes refused still says "Copied"** (`execCommand`'s answer ignored; model `dictCopyText`); the backup-textarea Copy buttons go unannounced. | found S428
+- [ ] P4 (**NEW S428 Pass F — 7 carriers; S444 index `90e1a057` + dashboard `18344f69` FIXED, 5 open**) | generator ×2, flash ×3 | **A copy both routes refused still says "Copied"** (`execCommand`'s answer ignored; model `dictCopyText`); the backup-textarea Copy buttons go unannounced. | found S428
 
 - [ ] P4 (**NEW S427 Pass C — (4) FIXED S439 `3f0408fc`, (2) FIXED S441 `1a3d87f8`**) | hebrew_dictionary.html | **(1)** the emoji tree's ▾ 15×9 px, rows 21 px apart; **(2)** "♀ Feminine" 4.42:1 at 0.62rem; **(3)** Shoresh's empty tiles 2.79:1 / 3.13:1. | found S427
 
@@ -238,6 +240,16 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-01 | (S444 close-out) | branch/deploy note | **S444 = pass A + 4 fixes on draft PR #303 (unmerged).** DRIFT: none (main `43570d4`, FM 5.58, SDK 2.116.0, 0001–0003 live, keep-alive green 10-01). sw v911→v912. FM: no bump. check-i18n + check-inline-js clean; no backend file (no smokes owed). Deferred: none new. |
+
+- [x] 2026-10-01 | `18344f69` | classroom_dashboard.html | (S444; S428 F's; copy-claims-success-on-a-refused-clipboard) **The manual backup's Copy checks only when a route copied.** | verified: `a444/copy.mjs` 3 modes; both refused → no check (HEAD checks); 4-cell load clean.
+
+- [x] 2026-10-01 | `90e1a057` | index.html | (S444; S428 F's; copy-claims-success-on-a-refused-clipboard) **All Settings' Copy says Copied only when a route copied**. | verified: `a444/copy.mjs` 3 modes, HEAD claims in all 3.
+
+- [x] 2026-10-01 | `6277a308` | torah_trainer.html | (S444 A; NEW) **The favorite dialog's Save looks locked while its note says why**. | verified: real Save → .55/not-allowed, typing → 1/pointer; HEAD 1/pointer; 4 cells.
+
+- [x] 2026-10-01 | `2854e747` | torah_trainer.html | (S444 A; stored-json-of-the-wrong-shape-trusted) **A malformed favorite no longer throws on Recolor or Duplicate** (left as it came). | verified: real clicks, 4 cells, 0 pageerrors; HEAD throws on both.
+
 - [x] 2026-10-01 | (S443 close-out) | branch/deploy note | **S443 = pass B (the console, all 17 pages) + 4 fixes, continuing draft PR #303 (unmerged).** DRIFT: none (main `43570d4`, v910 on the branch, FM 5.58, SDK 2.116.0, 0001–0003 live, `db/functions` and the keep-alive file untouched since `d514f84`, keep-alive scheduled run green 10-01). sw v910→v911. FM: no bump (a CSS ring, no feature). …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-10-01 | `2d89c022` | dashboard, flash, generator, torah, trope | (S443; S433 K's) **The `#cloudSavesPanel` comment names the status line it hosts.** Comment only. | verified: each page 0 errors, the same status line as HEAD (1 child, same text); check-inline-js clean.
@@ -278,19 +290,11 @@ _(none)_
 
 - [x] 2026-10-01 | `23b7bb0f` | hebrew_dictionary.html | (S440 H; NEW logical-inset) **Card buttons no longer cover the Hebrew word in Hebrew.** | verified: rect overlap HE 60/60 → 1/60 (= EN), 4 cells
 
-- [x] 2026-10-01 | (S439 close-out) | branch/deploy note | **S439 = pass I (the whole suite, its 33rd; first since S425) + 4 fixes, continuing draft PR #303 (`claude/nice-mayer-bzr3d9`, base `43570d4`, unmerged).** DRIFT: none. sw v906→v907 (dashboard, generator, dictionary, torah). FM: no bump (untouched). Gates: none asked. Torah half of S429's panel candidate stale (its panels no longer …[full …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-10-01 | `947aa60d` | torah_trainer.html | (S439; S428's P4; button-focus-lost-to-its-own-rebuild) **Rich colour-coded copy gives the focus back.** | verified: real click, rich path counted; HEAD `<body>` 4/4 → the button 4/4
-
-- [x] 2026-10-01 | `3f0408fc` | hebrew_dictionary.html | (S439; S427's (4)) **Enter in Save as Word List's name field saves the list**. | verified: real Enter, HEAD 0 lists 4/4 → 1; IME Enter 0
-
-- [x] 2026-10-01 | `1ce9eabd` | hebrew_blend_generator.html | (S439; S429's P4; panel-title-keyed-on-an-inner-span) **The Saved Presets panel remembers being closed**. | verified: toggle + reload, HEAD reopened 4/4 → kept 4/4; keyed control kept in both
-
-- [x] 2026-10-01 | `13095c8e` | classroom_dashboard.html | (S439 I; NEW) **The projected clock reads "6:04 PM", not "PM 6:04", in the Hebrew UI** (`dir="ltr"` on `#currentTime`). | verified: glyph-rect probe, HEAD reversed 8/8 HE cells → 0, EN 0; centred 32/32
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-01 | **S444** | iters: 1 pass (**A**) + 4 fixes = **5** | tools: torah ×2, index, dashboard | patterns fixed: stored-json-of-the-wrong-shape-trusted ×1, copy-claims-success-on-a-refused-clipboard ×2 | pass run: A | SW: v911→v912
 
 - 2026-10-01 | **S443** | iters: 1 pass (**B**) + 4 fixes = **5** | tools: shared ×1 (ivrit-saves), FM, torah, dashboard, flash, generator, trope (comment) | patterns fixed: ring-below-3-on-light ×2 | pass run: B | SW: v910→v911
 
@@ -330,11 +334,9 @@ _(none)_
 
 - 2026-09-28 | **S425** | iters: 1 pass (**I**) + 4 fixes = **5** (full budget) | tools: trope ×2, js/ivrit-account.js (shared), torah | patterns fixed: author-display-defeats-the-hidden-attribute ×2, visible-label-missing-from-the-accessible-name ×1 | pass run: I | SW: v867→v868
 
-- 2026-09-28 | **S424** | iters: 1 pass (**D**) + 4 fixes = **5** (full budget) | tools: torah ×2, flash ×2 | patterns fixed: — | pass run: D | SW: v866→v867
-
 ### Tool coverage (last-touched date per tool)
 
-- **S443 (2026-10-01):** js/ivrit-saves.js, Hebrew_Font_Maker.html, torah, dashboard, flash, generator, trope (**S443**; **C-next** C S312 trope; **H-next** H S305 resources); **S442:** every root page (the `--focus-ring` token), js/i18n.js, js/ivrit-account.js, js/ivrit-saves.js, torah, generator, flash, shared-components.md, storage-and-backup.md (**S442**; **C-next** C S312 trope; **H-next** H S305 resources); trope, dictionary, dashboard, resources (S441); index (S437); account (S433); terms (S432); licences, README, ops.md, font-maker.md …[full text: IMPROVEMENT_ARCHIVE.md]
+- **S444 (2026-10-01):** torah, index, dashboard (**S444**); **S443:** js/ivrit-saves.js, Hebrew_Font_Maker.html, torah, dashboard, flash, generator, trope (**S443**; **C-next** C S312 trope; **H-next** H S305 resources); **S442:** every root page (the `--focus-ring` token), js/i18n.js, js/ivrit-account.js, js/ivrit-saves.js, torah, generator, flash, shared-components.md, storage-and-backup.md (**S442**; **C-next** C S312 trope; **H-next** H S305 resources); trope, dictionary, dashboard, resources (S441); index (S437); account (S433); terms …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -350,7 +352,7 @@ _(none)_
 
 - **`panel-title-keyed-on-an-inner-span`** (NEW S429; S439 generator FIXED `1ce9eabd`, torah stale — no collapsing panels left): ACTIVE, streak 0. Detection: a `.panel-title` with no own `data-i18n`, then toggle + reload.
 
-- **`copy-claims-success-on-a-refused-clipboard`** (NEW S428; FIXED `bbd5f65`, `0d2a941`; 7 open): ACTIVE, streak 0. Detection `f428/copy.mjs`: sentinel, real click, 3 contexts.
+- **`copy-claims-success-on-a-refused-clipboard`** (NEW S428; FIXED `bbd5f65`, `0d2a941`; S444 index `90e1a057`, dashboard `18344f69`; 5 open: generator ×2, flash ×3): ACTIVE, streak 0. S444 arm `a444/copy.mjs`: top / writeText refused / both refused (execCommand planted false), …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`button-focus-lost-to-its-own-rebuild`** (**S441 torah's trope chip `17cd7334`; S426 account `e091820`; S427 the dictionary's Word Lists `7a631f6`, chips/Reset FIXED `cea92bf`; S434 torah's Try again `dfc25af8`; S437 the dictionary's empty-state buttons `c98070a5` and Add to …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -408,7 +410,7 @@ _(none)_
 
 - **`tile-grid-built-hidden-never-roved`** (registered 2026-09-15 (S382) — 11 carriers, all fixed): ACTIVE. A `roveTileGrid()` call placed in a builder that runs while the container is `display:none` silently does nothing: the helper's tile list filters `offsetParent !== null`, …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`stored-json-of-the-wrong-shape-trusted`**: ACTIVE. **S379: a SCALAR sibling FIXED (`4f9a2e7`, the shared `.ivrit` engine's `setIvritMode` normalises an unknown stored mode on 4 carriers; the hub's AllTools import validates it); the I corrupt-key arm (52 cells + 8 controls) …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`stored-json-of-the-wrong-shape-trusted`**: ACTIVE. **S444 (Pass A): 1 NEW carrier FIXED `2854e747` — torah's Favorites: a string row threw on Recolor/Duplicate (strict mode); streak 0.** **S379: a SCALAR sibling FIXED (`4f9a2e7`, the shared `.ivrit` engine's `setIvritMode` …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`validation-note-stores-rendered-text`**: ACTIVE. **S371 (Pass A, delta): the dashboard's `#swmPrintBtn` empty-week title re-reads in Hebrew after `setLang('he')`, the FM export label held from S370 — hits 0, clean streak 1.** **S364: 1 FIXED (`cabd6ca` the generator's …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -622,7 +624,7 @@ _(none)_
 
 - C accessibility (one tool): 2026-10-01 (**S441 — `torah_trainer.html`, first since S298. Tab census (44 page stops, 124 drawer stops over 7 tabs), ring contrast, 7 triggers × Escape, tips on 5 pages; every zero controlled. FOUND 2 focus drops, the drawer-closing tip Escape, the 2.6:1 gold ring; FIXED `17cd7334`, `97c54dfb`. C-next: trope (S312).**)
 
-- A recurring-pattern sweep: 2026-09-30 (**S430 — 34th A: the delta `a907bf1..99f9fa5` + S416→now; 14 arms, every zero controlled, Hebcal as oracle. FOUND P2, P3 ×2, 4 stale fallbacks, NEW pattern ×4, 3 P4s; FIXED 3.**)
+- A recurring-pattern sweep: 2026-10-01 (**S444 — 35th A: delta `99f9fa5..eeaf279` (114 commits). 10 arms, every zero controlled (receipts: findings S444). FOUND 2 + 2 P4 logged; FIXED 4.**)
 
 - G print & export fidelity (one tool): 2026-10-01 (**S437 — `index.html` + the chrome pages, first G there since S306. 5 arms (key census, export = gather, .ivrit round trip, paste vs file, 48 PDFs light vs dark), every zero controlled. FOUND + FIXED: a …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -642,4 +644,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-01 (**S442 — the keyboard focus ring on all 14 pages + the 3 shared modules' injected rings: a real-Tab walk (EN light/dark 1280, HE light/dark 800 on 6), ring colour and contrast against its surface, transitions disabled; HEAD as the control (58 light stops under 3:1, 0 dark). FIXED `91fede71` (the `--focus-ring` token), `a46342c1` (modules); logged 2 P4 …[full text: IMPROVEMENT_ARCHIVE.md]
 
-**Next session (S444):** **BRANCH/PR: S435–S443 on `claude/nice-mayer-bzr3d9` → draft PR #303 (base `43570d4`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v911**, FM **5.58**, SDK **2.116.0**; backend unchanged (0001–0003 live, delete-account v3 = repo source); email template `Live?` = no. ⚑ Stalest: A (S430), then E (S431), L (S432); O stays blocked. ⚑ Strongest untaken: the dictionary's theme cap (P3, gate 2), the bingo preview at 800 (P3, layout), the `.mobile-fab` readers (P4). ⚑ A new ring rule uses `var(--focus-ring)`, never `var(--gold)` (shared-components.md §7).
+**Next session (S445):** **BRANCH/PR: S435–S444 on `claude/nice-mayer-bzr3d9` → draft PR #303 (base `43570d4`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v912**, FM **5.58**, SDK **2.116.0**; backend unchanged (0001–0003 live, delete-account v3 = repo source); email template `Live?` = no. ⚑ Stalest: E (S431), then L (S432), K (S433); O stays blocked. ⚑ Strongest untaken: the copy claim on generator ×2 + flash ×3 (P4, `a444/copy.mjs` ready), the hub's Copy label reset (P4).
