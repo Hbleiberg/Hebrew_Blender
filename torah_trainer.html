@@ -690,7 +690,7 @@ body.dark .tt-jumpnav { background:var(--navy-deep); }
 .tt-jump-chip.active { background:var(--gold); border-color:var(--gold); color:var(--navy); }
 .tt-holiday-list { display:flex; flex-wrap:wrap; gap:6px; }   /* the Calendar tab's holiday readings, one button each */
 .tt-holiday-opt.active { background:var(--gold); border-color:var(--gold); color:var(--navy); }
-.tt-jump-pos { margin-left:auto; font-size:0.78rem; font-weight:600; color:var(--muted); font-variant-numeric:tabular-nums; }
+.tt-jump-pos { margin-inline-start:auto; font-size:0.78rem; font-weight:600; color:var(--muted); font-variant-numeric:tabular-nums; }
 body.fullscreen .tt-jumpnav { padding-right:84px; }   /* clear the fullscreen exit button */
 
 /* Inline aliyah divider (block; full-parsha only). Muted, thin rules, RTL-safe. */
@@ -1149,12 +1149,12 @@ body.layout-staff .tt-audio-bar .tt-audio-rates .row.tt-audio-tune { display:fle
 }
 .tt-audio-bar .tt-audio-credit {
   font-size:0.65rem; color:var(--gold-light);
-  margin-left:auto; text-align:right; line-height:1.3;
+  margin-inline-start:auto; text-align:end; line-height:1.3;
   max-width:240px;
 }
 .tt-audio-bar .tt-audio-credit a { color:var(--gold-light); text-decoration:underline; }
 @media (max-width: 900px) {
-  .tt-audio-bar .tt-audio-credit { flex-basis:100%; margin-left:0; padding-top:4px; max-width:none; }
+  .tt-audio-bar .tt-audio-credit { flex-basis:100%; margin-inline-start:0; padding-top:4px; max-width:none; }
 }
 .tt-audio-bar .tt-audio-collapse,
 .tt-audio-bar .tt-audio-playpause {
