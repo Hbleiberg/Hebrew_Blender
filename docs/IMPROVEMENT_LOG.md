@@ -8,7 +8,9 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P3 (**NEW S435 P, measured**) | flash_cards.html | **Deleting a result while another tab saves one can delete the wrong result**: the button splices the index captured at render; at the 100-result cap the other tab's new result went and the clicked one stayed. Find it by `savedAt`. | found S435
+- [ ] P3 (**NEW S436 M — layout, gate 3/4**) | hebrew_blend_generator.html | **The bingo preview is unreadable in a narrow window**: at 800px a 4-up card is ~120px and its blends overrun their cells (print/PDF fine since `141aa8f7`). | found S436
+
+- [ ] P4 (**NEW S436 M**) | hebrew_blend_generator.html | **Export PDF below 700px still carries the phone rules** (stacked header, Hebrew at 0.75×) (`141aa8f7` pins only the width). | found S436
 
 - [ ] P4 (**NEW S435 P**) | flash_cards.html + hebrew_blend_generator.html | **A `?wl=` link whose list is only in the account opens without it**: the id is resolved once at load; the list that lands later is never selected. | found S435
 
@@ -25,8 +27,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**S430 A; NEW pattern**) | torah ×3 + generator | **Four fields are named "… More information"** (the label's tip joins the name; model `#ttShareSettings`). | found S430
 
 - [ ] P4 (**S430 A — the maintainer's call**) | torah_trainer.html | **The reading header keeps "Aliyah {n}" English in the Hebrew UI** beside a translated cycle label (also the copy heading, the handout). | found S430
-
-- [ ] P4 (**NEW S431 E**) | torah_trainer.html | **Two comments name only Chol HaMoed as the Sefaria fallback** (`goToCurrentParshah`, `init`); since `8cb1a2c` the Diaspora's Pesach 8 / Shavuot 2 too. | found S431
 
 - [ ] P4 (**NEW S428 Pass F — 7 carriers**) | index, dashboard, generator ×2, flash ×3 | **A copy both routes refused still says "Copied"** (`execCommand`'s answer ignored; model `dictCopyText`); the backup-textarea Copy buttons go unannounced. | found S428
 
@@ -270,19 +270,21 @@ _(none)_
 
 ## Done
 
-- [x] 2026-10-01 | (S435 close-out) | branch/deploy note | **S435 = pass P (`flash_cards.html`'s own wiring, its first P alone) + 4 fixes → draft PR #303 (`claude/nice-mayer-bzr3d9`, base `43570d4`).** DRIFT: 1 outside-loop commit (`43570d4`, the social cards; sw v901→v902); backend unchanged (0001–0003 live, delete-account v3 = repo, SDK 2.116.0, keep-alive #19 green). sw v902→v903 (flash, …[full text: IMPROVEMENT_ARCHIVE.md]
+- [x] 2026-10-01 | (S436 close-out) | branch/deploy note | **S436 = pass M (`hebrew_blend_generator.html`, its first M) + 4 fixes, continuing draft PR #303 (`claude/nice-mayer-bzr3d9`, base `43570d4`, unmerged).** DRIFT: none (keep-alive #19 green). sw v903→v904 (generator, flash, torah). FM: no bump (untouched). Gates: none asked; deferred: the bingo preview's layout (gate 3/4, a Candidate).
 
-- [x] 2026-10-01 | `dbeff968` | docs/reference/accounts-and-cloud.md | (S435) **The Flash Cards row's results cap reads 100** (said 50). | verified: on the page 60+60 → the newest 100, 20+20 → 40
+- [x] 2026-10-01 | `cb2aeedb` | torah_trainer.html | (S436; E's candidate) **Two comments name every case that still asks Sefaria** (Pesach 8 / Shavuot 2 too). | verified: check-inline-js; 8 load cells, 0 pageerrors
 
-- [x] 2026-10-01 | `352af28a` | scripts/smoke-sync.mjs | (S435) **D31 reads what the sign-out left before the reloaded page runs** (`__lsAtLoad`). | verified: 6/6 (old: 1 fail in 3); a planted skip of TropeTutor still fails it
+- [x] 2026-10-01 | `5dd9b0b4` | flash_cards.html | (S436; S435's P3) **Deleting a saved result deletes that result after another tab saved one** (found again by `savedAt`). | verified: two-tab probe HEAD 4/4 fail at the cap → 8/8; f3 16/16
 
-- [x] 2026-10-01 | `e56d95be` | flash_cards.html | (S435 P; account-wide-delete-confirm-without-signed-in-wording, gate 2 approved) **Deleting a saved result while signed in says it leaves the account.** | verified: 16 cells by real clicks; HEAD plain in 8/8 signed in
+- [x] 2026-10-01 | `141aa8f7` | hebrew_blend_generator.html | (S436 M, P1 export) **Export PDF lays the sheet out at full width from any window**. | verified: real exportPDF, 6 types, 800 = 1280
 
-- [x] 2026-10-01 | `a2e12303` | flash_cards.html | (S435 P) **After a button sign-out the letters and vowels stay chosen** (an absent selection takes the defaults). | verified: a real Sign out HEAD 0/0 → 26/9; recipe 16 cells; smokes
+- [x] 2026-10-01 | `d4cd3d96` | hebrew_blend_generator.html | (S436 M; physical-property-that-never-mirrors) **Segmented pickers keep their separators in Hebrew and between rows**; the empty cell is blank. | verified: pixel probe 82 → 0, plant 17/cell
 
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-01 | **S436** | iters: 1 pass (**M**) + 4 fixes = **5** | tools: generator ×2, flash, torah | patterns fixed: physical-property-that-never-mirrors ×1 | pass run: M | SW: v903→v904
 
 - 2026-10-01 | **S435** | iters: 1 pass (**P**) + 4 fixes = **5** | tools: flash ×2, smoke-sync, the accounts doc | patterns fixed: account-wide-delete-confirm-without-signed-in-wording ×1 (NEW) | pass run: P | SW: v902→v903
 
@@ -322,11 +324,9 @@ _(none)_
 
 - 2026-09-25 | **S417** | iters: 1 pass (**E**) + 4 fixes = **5** | tools: README, shared-components.md, dictionary + flash, trope | patterns fixed: flash-restores-captured-text-not-its-key ×2 (NEW) | pass run: E | SW: v850→v851
 
-- 2026-09-24 | **S416** | iters: 1 pass (**A**) + 4 fixes = **5** | tools: flash, trope ×2, FM | patterns fixed: visible-label, toggle-name, translated-key, author-display | pass run: A | SW: v846→v847
-
 ### Tool coverage (last-touched date per tool)
 
-- **S435 (2026-10-01):** flash (**S435** ×2; P S435); generator (S434; N S434); torah (S434; **C-next** C S298); scripts/smoke-sync.mjs, accounts-and-cloud.md (S435); js/ivrit-saves.js, account, dashboard, trope (S433); terms (S432); licences, README, ops.md, font-maker.md (S431); dictionary (S429; **H-next** H S292); js/ivrit-account.js (S429); manifest (S426); resources (S422); index (S421; **G-next**); FM (S419); 404 (S418); **P-next** account.html; dashboard **D-next**; **N-next**: torah (N never) or dashboard; chrome + …[full text: IMPROVEMENT_ARCHIVE.md]
+- **S436 (2026-10-01):** generator (**S436** ×2; M S436, first); flash (**S436**; P S435); torah (**S436**; **C-next** C S298); js/ivrit-saves.js, account, dashboard, trope (S433); terms (S432); licences, README, ops.md, font-maker.md (S431); dictionary (S429; **H-next** H S292); js/ivrit-account.js (S429); manifest (S426); resources (S422); index (S421; **G-next**); FM (S419); 404 (S418); **P-next** account.html; dashboard **D-next**; **N-next** torah or dashboard; **M yet to run:** flash, terms.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -388,7 +388,7 @@ _(none)_
 
 - **`hover-feedback-survives-the-disabled-state`** (registered 2026-09-15, S383 Pass F): ACTIVE — consequence-adjacent (a locked destructive control that still lights up invites the click), so it never retires on a clean streak. **S394: the LAST open carrier CLOSED (`767064e`, …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`physical-property-that-never-mirrors`** (**NEW, registered 2026-09-16 (S388 Pass K) — the shape has now surfaced in THREE sessions (S248, S376, S388), which is what makes it recurring rather than incidental**): ACTIVE. **S422: 2 torah carriers open (`.tt-jump-pos`, …[full …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`physical-property-that-never-mirrors`** (registered S388 K): ACTIVE. A physical `margin-`/`padding-`/`border-left|right`, `left`/`right` inset, `text-align:left|right` or `float` on content that mirrors under `dir=rtl`. **Detection:** grep the delta's added CSS for the six …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`tile-grid-built-hidden-never-roved`** (registered 2026-09-15 (S382) — 11 carriers, all fixed): ACTIVE. A `roveTileGrid()` call placed in a builder that runs while the container is `display:none` silently does nothing: the helper's tile list filters `offsetParent !== null`, …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -600,7 +600,7 @@ _(none)_
 
 - N mobile & touch-device (one surface): 2026-10-01 (**S434 — 20th N, `hebrew_blend_generator.html`, its 2nd (S262 → S434). 16 cells on real descriptors (320/390/412 + landscape × EN/HE × light/dark) × 5 views; all 32 help badges tapped (mode sections unhidden), every zero behind a plant. FOUND + FIXED: the Hebrew help bubble untappable at 320 (hover flicker, `b5f10abf`), the tour card off-screen …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- M aesthetics & visual design (one surface): 2026-09-27 (**S422 — 19th M, `torah_trainer.html`, its FIRST: the coverage row's "no M" list, and changed outside the loop since S421. 16 cells × 6 views (48 loads) in the real web fonts, Sefaria stubbed from the repo's MAM phrases, the chant from a WAV, transliteration bundled from npm; 38,480 contrast rows behind 8 plants; 0 pageerrors. FOUND: vowel …[full text: IMPROVEMENT_ARCHIVE.md]
+- M aesthetics & visual design (one surface): 2026-10-01 (**S436 — 20th M, `hebrew_blend_generator.html`, its FIRST. 8 cells × 5 views, a pixel probe over 22 segmented groups, the real exportPDF; every zero planted. FOUND + FIXED: separators lost in Hebrew and between rows (`d4cd3d96`), a narrow window's PDF (P1, `141aa8f7`). Logged: the bingo preview at 800 (P3, gate 3/4), the PDF under 700px …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - K i18n / localization audit: 2026-10-01 (**S433 — 29th K. Delta `bf028cdc..4e19a1c`: 161 commits, CSV +367/−110. Gates A–E clean, 7 plants fire; 11 arms, 28 runtime cells, 9 delta surfaces, every zero controlled. FOUND: the saves module's stale fallbacks (P3), FAQ a5's one-sided edit, 14 stale static fallbacks, the holiday names (gate 2); FIXED 4.**)
 
@@ -626,4 +626,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-09-29 (**S428 — the copy contract: 13 controls × direct / LMS frame / planted double failure, every zero controlled. FOUND 3 claiming over the old clipboard (P3, FIXED `bbd5f65`, `0d2a941`), 9 ignoring execCommand (2 fixed), 4 unannounced.**)
 
-**Next session (S436):** **BRANCH/PR: S435 on `claude/nice-mayer-bzr3d9` → draft PR #303 (base `43570d4`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v903**, FM **5.58**, SDK **2.116.0**; backend unchanged (0001–0003 live, delete-account v3 = repo source); email template `Live?` = no.
+**Next session (S437):** **BRANCH/PR: S435 + S436 on `claude/nice-mayer-bzr3d9` → draft PR #303 (base `43570d4`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v904**, FM **5.58**, SDK **2.116.0**; backend unchanged (0001–0003 live, delete-account v3 = repo source); email template `Live?` = no. ⚑ Stalest: G (S423); O stays blocked (the sandbox refuses the detector). ⚑ Strongest untaken: the bingo preview at 800 (P3, a layout question for the maintainer).
