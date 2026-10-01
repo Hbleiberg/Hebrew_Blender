@@ -8,9 +8,13 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P4 (**S432 L, gate 2 APPROVED; S433**) | torah_trainer.html | **Search copy omits the Trope staff.** FAQ a1 (page + JSON-LD) + "a Trope staff layout (beta) that draws the reading on a music staff with each word under its notes," after "cantillation strip,"; app description + "a Trope staff layout that draws the reading on a music staff," after "trope-family clause coloring,". | found S432
+- [ ] P4 (**NEW S433 K; stale-fallback — the torah cap held them**) | torah_trainer.html | **Two static fallbacks are behind their CSV**: the More tab's "Cloud saves" heading (`torah.settings.panel_cloud` = "Your account") and the Favorites button's `title` ("Save current selection as favorite" vs `torah.fav.add_title`). | found S433
 
 - [ ] P4 (**NEW S432 L — gate 2**) | index.html | **The hub's og:/twitter:description name every tool but the Font Maker.** | found S432
+
+- [ ] P4 (**NEW S433 K — gate 2, the maintainer's call**) | torah_trainer.html | **The 17 holiday readings keep English names in the Hebrew UI** ("Passover — Day 1 — Exodus 12:21-51" on the drawer's buttons, the picker's optgroup and the reading header) while the new date lookup names the same holidays in Hebrew (`torah.lookup.holiday_*`); `buildHolidayPicker` calls reading names content. | found …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] P4 (**NEW S433 K — for E**) | dashboard, flash, generator, torah, trope | **The `#cloudSavesPanel` comment still names a panel**; it hosts the status line now. | found S433
 
 - [ ] P4 (**S430 A**) | torah_trainer.html | **The cycle note's "Try again" drops the focus to `<body>`** (a failed load). | found S430
 
@@ -262,21 +266,21 @@ _(none)_
 
 ## Done
 
-- [x] 2026-09-30 | (account cleanup — outside the loop, branch `claude/account-system-cleanup-iv9j2n`) | js/ivrit-saves.js, js/ivrit-account.js, the 7 wired pages | **The Cloud saves panels, the account screen, the splash, `forgetRow` and `registerSummary` are gone: signed in, the account is where saves live** (hydrate at load, write-through, one status line, two gates). Closed as moot: the late-`attach()` offer (session 430), the panel error (428), the screen's self-link (426), the empty band (422), the `restoreLastSetup` sibling (382), the empty-account seed (426 H).
+- [x] 2026-10-01 | (S433 close-out) | branch/deploy note | **S433 = pass K + 4 fixes → draft PR on `claude/wizardly-allen-gwuj58` (base `4e19a1c`).** DRIFT: 43 outside-loop commits (PRs #294–#300; sw v889→v899, FM 5.56→5.58); backend unchanged. sw v899→v900; FM not bumped; 5 smokes. …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-09-30 | (S432 close-out) | branch/deploy note | **S432 = pass L + 4 fixes → draft PR #293.** DRIFT: none. sw v888→v889; FM not bumped. Gates 5/5. Smokes: none owed.
+- [x] 2026-10-01 | `616e7a58` | account, dashboard, flash, generator, trope | (S433 K; stale-fallback) **12 static fallbacks match their CSV** (the account notes ×5, four "Cloud saves" headings, dashboard ×3). | verified: census 14 → 2; 90 cells vs HEAD; smoke-account-page 65, smoke-tools 135
 
-- [x] 2026-09-30 | `7fb0eea` | terms.html | (S432 L, gate 2) **The Hebcal line names the Torah Trainer's data (BSD-2); effective date Sept 30.** | verified: HEAD vs fix ×4 + static; 11 slots
+- [x] 2026-10-01 | `d3dd513c` | torah_trainer.html (CSV) | (S433 K) **FAQ 5's Hebrew says highlight or underline**, as its English does (the one one-sided edit since S419). | verified: Q5 by real clicks ×8 vs HEAD's locales; EN identical
 
-- [x] 2026-09-30 | `1badd3d` | trope_tutor.html | (S432 L, gate 2) **The Settings tour step names the Haftarah melody.** | verified: real clicks to 8/8 ×4; HEAD control
+- [x] 2026-10-01 | `66993c4e` | torah_trainer.html | (S433, S432's gate 2) **The search copy names the Trope staff layout** (FAQ 1 EN + HE + JSON-LD; the WebApplication description; llms-full). | verified: Q1 ×8 vs HEAD; JSON-LD = visible = CSV
 
-- [x] 2026-09-30 | `3cdc95e` | torah_trainer.html | (S432 L, gate 2) **FAQ 6: the page finds this week's reading itself** (EN + HE + JSON-LD). | verified: ×4 + HEAD; 105 Shabbatot (D 3 / IL 2 ask Sefaria); set-clock clicks
-
-- [x] 2026-09-30 | `8938513` | trope_tutor.html + torah_trainer.html | (S432 L) **Two static fallbacks match their CSV** (trope's intro, torah's tip). | verified: detector 2 → 0 (5 plants); HEAD vs fix ×8
+- [x] 2026-10-01 | `b818b566` | js/ivrit-saves.js | (S433 K) **The module's 8 English fallbacks match the account wording** (6 keys: a Keep-both copy minted before the dictionary loaded was named "(cloud copy)"). | verified: saves-test, /locales/ aborted, HEAD's own copyNameFor check fails, the fix passes; smoke-saves 15, smoke-sync 201, smoke-migration 47
 
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-01 | **S433** | iters: 1 pass (**K**) + 4 fixes = **5** | tools: js/ivrit-saves.js (shared), torah ×2, account, dashboard, flash, generator, trope | patterns fixed: stale-fallback ×2 | pass run: K | SW: v899→v900
 
 - 2026-09-30 | **S432** | iters: 1 pass (**L**) + 4 fixes = **5** | tools: torah ×2, trope ×2, terms | patterns fixed: stale-fallback ×2, JSON-LD parity ×1 | pass run: L | SW: v888→v889
 
@@ -316,11 +320,9 @@ _(none)_
 
 - 2026-09-24 | **S414** | iters: 1 pass (**F**) + 4 fixes = **5** | tools: flash ×2, dict., FM, gen. | patterns fixed: author-display-defeats-the-hidden-attribute (un-retired), translated-key-exists-page-hardcodes-english, toggle-name-flips-with-its-pressed-state ×2 | pass run: F | SW: v836→v837
 
-- 2026-09-23 | **S413** | iters: 1 pass (**C**) + 4 fixes = **5** | tools: resources ×2 (at cap), contact, 404 | patterns fixed: dark-mode-token-as-text-on-a-light-ground ×1 (REOPENED), button-group-label-not-programmatic ×8 rows (NEW) | pass run: C | SW: v835→v836
-
 ### Tool coverage (last-touched date per tool)
 
-- **S432 (2026-09-30):** torah (**S432** ×2; S431; **C-next** C S298); trope (**S432** ×2; S430); terms (**S432**); licences, README, ops.md, font-maker.md (S431); js/ivrit-saves.js (S430); dictionary (S429; **H-next** H S292); js/ivrit-account.js (S429); account (S427); manifest (S426); flash (S424; **P-next**); resources (S422); index (S421; **G-next**); dashboard (S421; **D-next**); FM (S419); 404 (S418); generator (S415; **N-next**); chrome + i18n.js (S415); no M: generator, flash, terms.
+- **S433 (2026-10-01):** js/ivrit-saves.js (**S433**); torah (**S433** ×2; S432; **C-next** C S298); account, dashboard, flash, generator, trope (**S433**, the fallback sweep); terms (S432); licences, README, ops.md, font-maker.md (S431); dictionary (S429; **H-next** H S292); js/ivrit-account.js (S429); manifest (S426); resources (S422); index (S421; **G-next**); FM (S419); 404 (S418); flash **P-next**; dashboard **D-next**; generator **N-next**; chrome + i18n.js (S415); no M: generator, flash, terms.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -362,7 +364,7 @@ _(none)_
 
 - **`textContent-rewrite-erases-a-control-icon`** (S405; 7 writers FIXED `1e8991f`; "Copied!" flashes: dictionary `53d3579`, flash ×2 `38e5b62` S415): ACTIVE, streak 2 (S416; S430 torah + trope, a plant −1). Detection: (a) EN→HE→EN icon count; (b) key census vs whole-control …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`translated-key-exists-page-hardcodes-english`** (S420: flash "Untitled list" `73554ab`, the S405 census' LAST carrier — 0 known open; S419: FM `whoHasCp` `58a04a2` + torah licence labels `e3700cc`; S416 trope `3331a54`; registered S405 Pass K — flash `0a420fc`, generator …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`translated-key-exists-page-hardcodes-english`** (S433 K: 0 new — the orphan census 121 raw, 86 with a live English twin, all S405/S419 classes; the delta's surfaces by a runtime EN-in-HE detector, 3 plants fire, 0 beyond by-design text; S420: flash "Untitled list" …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`per-page-code-inside-a-shared-block`** (**NEW, registered 2026-09-22 (S403 Pass E) — 2 carriers, both fixed `6e28af3`**): ACTIVE, clean streak 1 (S416). Page code pasted INSIDE a `═══` block instead of below its end …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -432,7 +434,7 @@ _(none)_
 
 - **fixed-width-third-party-embed-inflates-phone-layout**: **REGISTERED + first swept suite-wide 2026-08-28 (S276 Pass N) — hits: 2 carriers, BOTH fixed in-session (`23b2387` contact inline auto-render → data-size=compact ≤388 + ≤430 containment belt; `e4aaa44` resources …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **stale-html-fallback-behind-its-csv-value**: ACTIVE, clean streak 0. **S432 (8th sweep, `l432/fallback.py`: 2,614 sites incl. 73 `data-i18n-html` — S430's had no html arm): 2 hits, trope `trope.learn.intro` (NEW) + torah's tip (S430's), FIXED `8938513`; 5 plants fire, 1 …[full text: IMPROVEMENT_ARCHIVE.md]
+- **stale-html-fallback-behind-its-csv-value**: ACTIVE, clean streak 0. **S433 (9th sweep, `k433/stale2.py` — nesting-aware, 2,605 sites): 14 hits, 12 FIXED `616e7a58` (account ×5, dashboard ×4, flash, generator, trope), torah ×2 OPEN (cap); NEW JS arm (`k433/fallbacks.py`, 423 …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **undocumented-global-keyboard-shortcut**: ACTIVE. **Re-swept 2026-09-09 (S357 Pass A, delta-only): 0 new `document`-level `keydown` handlers (the erase gate's is scoped to its overlay: Escape + Tab trap, exempt shapes) — hits 0, clean streak 2.** S264 1 hit fixed (`f65ce58`); …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -594,7 +596,7 @@ _(none)_
 
 - M aesthetics & visual design (one surface): 2026-09-27 (**S422 — 19th M, `torah_trainer.html`, its FIRST: the coverage row's "no M" list, and changed outside the loop since S421. 16 cells × 6 views (48 loads) in the real web fonts, Sefaria stubbed from the repo's MAM phrases, the chant from a WAV, transliteration bundled from npm; 38,480 contrast rows behind 8 plants; 0 pageerrors. FOUND: vowel …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- K i18n / localization audit: 2026-09-25 (**S419 — 28th K, first since S405 (14 sessions); stalest runnable (O blocked). Delta `14c185d..HEAD`: 89 commits, i18n surface 21 files +1,718/−831, CSV +54/−7. Gates A–E clean, 7 plants fire every class. 9 arms, every zero controlled; 28 runtime cells clean. FOUND 0 new; 2 S405 carriers fixed (`58a04a2`, `e3700cc`); the 6-key prune `6ffce11`; census 196 …[full text: IMPROVEMENT_ARCHIVE.md]
+- K i18n / localization audit: 2026-10-01 (**S433 — 29th K. Delta `bf028cdc..4e19a1c`: 161 commits, CSV +367/−110. Gates A–E clean, 7 plants fire; 11 arms, 28 runtime cells, 9 delta surfaces, every zero controlled. FOUND: the saves module's stale fallbacks (P3), FAQ a5's one-sided edit, 14 stale static fallbacks, the holiday names (gate 2); FIXED 4.**)
 
 - C accessibility (one tool): 2026-09-28 (**S427 — `hebrew_dictionary.html`, first since S285. Census, Tab walks, 13 scenarios, modes, dialogs; every zero controlled. FOUND 5 P3 + 4 P4; FIXED `7a631f6`, `ee5f6f2`. C-next: torah (S298).**)
 
@@ -618,10 +620,10 @@ _(none)_
 
 - F cross-tool consistency: 2026-09-29 (**S428 — the copy contract: 13 controls × direct / LMS frame / planted double failure, every zero controlled. FOUND 3 claiming over the old clipboard (P3, FIXED `bbd5f65`, `0d2a941`), 9 ignoring execCommand (2 fixed), 4 unannounced.**)
 
-**Next session (S433):** **BRANCH/PR: S430–S432 on `claude/improve-loop-s430` → draft PR #293 (base `99f9fa5`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v889**, FM **5.56**, SDK **2.116.0**; backend unchanged (keep-alive #17); email template `Live?` = no.
+**Next session (S434):** **BRANCH/PR: S433 on `claude/wizardly-allen-gwuj58` → draft PR (base `4e19a1c`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v900**, FM **5.58**, SDK **2.116.0**; backend unchanged (0001–0003 live, delete-account unchanged, keep-alive #19 green); email template `Live?` = no.
 
-**⚑ STALEST PASS: O (S346 — BLOCKED, no permission rule), K (S419), then N P M G D I H C F B A E L.** Take **K**.
+**⚑ STALEST PASS: O (S346 — BLOCKED, no permission rule), N (S420), then P M G D I H C F B A E L K.** Take **N**. P follows it: the account layer went cloud-first after S421 (PR #300) and no P has seen it.
 
-**⚑ STRONGEST UNTAKEN:** first torah's Trope-staff copy (APPROVED, wording in its Candidate). P4s: tip-name ×4, Try again, inner-span panels, 7 copy carriers, torah's 2 Sefaria comments, the hub's og (gate 2); "Aliyah" is the maintainer's call. **Seed bench: 30.**
+**⚑ STRONGEST UNTAKEN:** torah's 2 stale fallbacks (the top Candidate; the cap held them). Gate 2 waiting: the holiday names in Hebrew (S433), the hub's og (S432), "Aliyah" (S430). P4s: tip-name ×4, Try again, inner-span panels, 7 copy carriers, torah's 2 Sefaria comments. **Seed bench: 30.**
 
-**⚑ HARNESS: traps 1–217 in loop-findings** (`l432/`, `a430/`; `--sdk` = `npm pack @supabase/supabase-js@2.116.0`); compaction once (trap 140); the old handoff and the oldest Done move by hand.
+**⚑ HARNESS: traps 1–223 in loop-findings** (`k433/`; `--sdk` = `npm pack @supabase/supabase-js@2.116.0`); compaction once (trap 140); the old handoff and the oldest Done move by hand.
