@@ -5722,7 +5722,8 @@ function renderProfileHistory(name) {
         <button class="btn sm danger" data-act="del" aria-label="${esc(I18n.t('flashcards.actions.delete_aria', { name: dateStr }))}"><svg class="hi hi-sm hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
       `;
       li.querySelector('[data-act=del]').addEventListener('click', () => {
-        if (!confirm(I18n.t('flashcards.profile.delete_result_confirm'))) return;
+        const signedIn = !!(window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession());
+        if (!confirm(I18n.t(signedIn ? 'flashcards.profile.delete_result_confirm_cloud' : 'flashcards.profile.delete_result_confirm'))) return;
         const db2 = readProfiles();
         db2.profiles[name].results.splice(realIdx, 1);
         writeProfiles(db2);

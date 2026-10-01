@@ -1362,6 +1362,7 @@
   "flashcards.profile.delete_confirm": "Delete profile \"{name}\" and all of its saved results? This cannot be undone.",
   "flashcards.profile.delete_confirm_cloud": "Delete profile \"{name}\" and all of its saved results? You are signed in, so it is removed from your account and from every device. This cannot be undone.",
   "flashcards.profile.delete_result_confirm": "Delete this saved result?",
+  "flashcards.profile.delete_result_confirm_cloud": "Delete this saved result? You are signed in, so it is removed from your account and from every device.",
   "flashcards.profile.history_pct_frac": "({correct}/{total})",
   "flashcards.profile.merge_confirm": "Profile \"{newName}\" already exists — merge \"{oldName}\" into it?",
   "flashcards.profile.merge_confirm_cloud": "Profile \"{newName}\" already exists — merge \"{oldName}\" into it? You are signed in, so the merge is saved to your account.",
