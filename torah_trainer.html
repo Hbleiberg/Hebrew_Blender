@@ -2341,7 +2341,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       <div class="tt-set" data-set="favorites">
         <h3 class="tt-set-title" tabindex="-1" data-i18n="torah.fav.title">Favorite readings</h3>
         <div class="form-row">
-          <button type="button" class="btn btn-xs hi-btn" id="ttFavAddBtn" onclick="openFavoriteDialog()" title="Save current selection as favorite" data-i18n-title="torah.fav.add_title"><svg class="hi hi-sm hi-plus" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.8v8.4M7.8 12h8.4"/></svg><span class="hi-lbl" data-i18n="torah.fav.add">Save current selection as favorite</span></button>
+          <button type="button" class="btn btn-xs hi-btn" id="ttFavAddBtn" onclick="openFavoriteDialog()" title="Save the reading on screen to your favorites" data-i18n-title="torah.fav.add_title"><svg class="hi hi-sm hi-plus" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.8v8.4M7.8 12h8.4"/></svg><span class="hi-lbl" data-i18n="torah.fav.add">Save current selection as favorite</span></button>
         </div>
         <p class="tt-set-note" id="ttFavEmpty" data-i18n="torah.fav.empty" hidden>No favorites yet. Open a reading, then save it with the button above.</p>
         <div id="ttFavList"></div>
@@ -2794,7 +2794,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
     <div class="tt-tabpanel" id="ttTabPanelMore" role="tabpanel" aria-labelledby="ttTabMore" hidden>
       <!-- Cloud saves (optional accounts): the shared js/ivrit-saves.js panel renders into #cloudSavesPanel; see initCloudSaves() -->
       <div class="tt-set" data-set="cloud">
-        <h3 class="tt-set-title" tabindex="-1" data-i18n="torah.settings.panel_cloud">Cloud saves</h3>
+        <h3 class="tt-set-title" tabindex="-1" data-i18n="torah.settings.panel_cloud">Your account</h3>
         <div id="cloudSavesPanel"></div>
       </div>
       <div class="tt-set" data-set="about">
