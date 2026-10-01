@@ -1583,7 +1583,7 @@ async function eraseAllSettings() {
   // for, and the cloud-saves sync memory. Erase =
   // signed out on this device; when a session was there the page reloads afterwards, so the chip and
   // the cloud panels (and the SDK's in-memory copy of the session) start from the emptied storage.
-  const accountKeys = Object.keys(localStorage).filter(k => k.startsWith('sb-') || k === 'ivritSuite_accountCache' || k === 'ivritSuite_signInRequest' || k === 'ivritSuite_syncMeta' || k === 'ivritSuite_syncMeta2' || k === 'ivritSuite_syncBase' || k === 'ivritSuite_replaced');
+  const accountKeys = Object.keys(localStorage).filter(k => k.startsWith('sb-') || k === 'ivritSuite_accountCache' || k === 'ivritSuite_signInRequest' || k === 'ivritSuite_syncMeta' || k === 'ivritSuite_syncMeta2' || k === 'ivritSuite_syncBase' || k === 'ivritSuite_replaced' || k === 'ivritSuite_removedByAccount');
   accountKeys.forEach(k => localStorage.removeItem(k));
   // Awaited: when a session was there the page reloads right after the alert, and a delete still pending
   // then is lost — the teacher's fonts stayed behind whenever the reload was quick (offline, from the cache).
@@ -1642,11 +1642,14 @@ const IVRIT_CFG = {
     };
   },
   async apply(data, mode) {
+    // fill (the account's own backup): what this device already holds wins — a stored name or field keeps its value,
+    // only missing ones are added; a preference already set here stays
     const mergeObj = (key, val) => {
       if (val === undefined) return;
       const base = mode === 'replace' ? {} : ivritSafeParse(localStorage.getItem(key) || '{}');
-      localStorage.setItem(key, JSON.stringify(ivritSafeAssign(base, val)));
+      localStorage.setItem(key, JSON.stringify(mode === 'fill' ? ivritSafeAssign(ivritSafeAssign({}, val), base) : ivritSafeAssign(base, val)));
     };
+    const setPref = (key, val) => { if (mode === 'fill' && localStorage.getItem(key) !== null) return; localStorage.setItem(key, val); };
     ivritUnfoldSuitePrefs(data);
     let touched = false;
     if (data.generatorPresets)    { mergeObj('hebrewBlender_presets',         data.generatorPresets);    touched = true; }
@@ -1682,29 +1685,30 @@ const IVRIT_CFG = {
     if (data.torahTrainerFavorites){ mergeObj('hebrewTorahTrainer_favorites', data.torahTrainerFavorites); touched = true; }
     if (data.tropeTutorSettings && Object.keys(data.tropeTutorSettings).length) { mergeObj('hebrewTropeTutor_settings', data.tropeTutorSettings); touched = true; }
     if (data.tropeTutorProgress && Object.keys(data.tropeTutorProgress).length) { tropeProgressMerge(data.tropeTutorProgress, mode === 'replace'); touched = true; }
-    if (data.wordLists)           { wlMergeIntoStorage(data.wordLists, mode === 'replace'); touched = true; }
-    if (data.dictAudioEnabled  !== undefined) { localStorage.setItem('hebrewDictionary_audioEnabled',  data.dictAudioEnabled);  touched = true; }
-    if (data.dictTranslitStyle !== undefined) { localStorage.setItem('hebrewDictionary_translitStyle', data.dictTranslitStyle); touched = true; }
-    if (data.dictTtsRate       !== undefined) { localStorage.setItem('hebrewDictionary_ttsRate',       data.dictTtsRate);       touched = true; }
-    if (data.inputMode === 'auto' || data.inputMode === 'manual') { localStorage.setItem('hebrewBlender_inputMode', data.inputMode); }
+    if (data.wordLists)           { wlMergeIntoStorage(data.wordLists, mode === 'replace', mode === 'fill'); touched = true; }
+    if (data.dictAudioEnabled  !== undefined) { setPref('hebrewDictionary_audioEnabled', data.dictAudioEnabled);  touched = true; }
+    if (data.dictTranslitStyle !== undefined) { setPref('hebrewDictionary_translitStyle', data.dictTranslitStyle); touched = true; }
+    if (data.dictTtsRate       !== undefined) { setPref('hebrewDictionary_ttsRate', data.dictTtsRate);       touched = true; }
+    if (data.inputMode === 'auto' || data.inputMode === 'manual') { setPref('hebrewBlender_inputMode', data.inputMode); }
     // Shared display prefs (Generator + Dictionary): empty string = never set, skip.
-    if (data.hebFont)     { localStorage.setItem('hebrewBlender_hebFont',     data.hebFont);     touched = true; }
-    if (data.hebFontSize) { localStorage.setItem('hebrewBlender_hebFontSize', data.hebFontSize); touched = true; }
-    if (data.livePreview) { localStorage.setItem('hebrewBlender_livePreview', data.livePreview); touched = true; }
-    if (data.fmLastAuthor) { localStorage.setItem('hebrewFontMaker_lastAuthor', data.fmLastAuthor); touched = true; }
-    if (data.kbdLayout) { localStorage.setItem('hebrewBlender_kbdLayout', data.kbdLayout); touched = true; }
-    if (data.uiLang && _ivLangOk(data.uiLang)) { localStorage.setItem('hebrewBlender_lang', data.uiLang); touched = true; }
-    if (data.darkMode === '1' || data.darkMode === '0') { localStorage.setItem('hebrewBlender_darkMode', data.darkMode); touched = true; }
+    if (data.hebFont)     { setPref('hebrewBlender_hebFont', data.hebFont);     touched = true; }
+    if (data.hebFontSize) { setPref('hebrewBlender_hebFontSize', data.hebFontSize); touched = true; }
+    if (data.livePreview) { setPref('hebrewBlender_livePreview', data.livePreview); touched = true; }
+    if (data.fmLastAuthor) { setPref('hebrewFontMaker_lastAuthor', data.fmLastAuthor); touched = true; }
+    if (data.kbdLayout) { setPref('hebrewBlender_kbdLayout', data.kbdLayout); touched = true; }
+    if (data.uiLang && _ivLangOk(data.uiLang)) { setPref('hebrewBlender_lang', data.uiLang); touched = true; }
+    if (data.darkMode === '1' || data.darkMode === '0') { setPref('hebrewBlender_darkMode', data.darkMode); touched = true; }
     // The hub must follow the two keys it just wrote: the success alert says "reload any open
     // tool pages", and this page is not one, so a restored Hebrew/dark backup used to leave the hub
     // English and light until the next visit. Both switches are already live — toggleDark flips
     // body.dark + the 🌙 button, I18n.setLang re-renders through applyI18n — so call them here.
-    if ((data.darkMode === '1' || data.darkMode === '0') && document.body.classList.contains('dark') !== (data.darkMode === '1')) toggleDark();
-    if (data.uiLang && _ivLangOk(data.uiLang) && window.I18n && I18n.lang !== data.uiLang) I18n.setLang(data.uiLang);
+    { const dm = localStorage.getItem('hebrewBlender_darkMode'); if ((data.darkMode === '1' || data.darkMode === '0') && (dm === '1' || dm === '0') && document.body.classList.contains('dark') !== (dm === '1')) toggleDark(); }   // follow what is stored now (a fill keeps this device's)
+    { const ul = localStorage.getItem('hebrewBlender_lang'); if (data.uiLang && ul && _ivLangOk(ul) && window.I18n && I18n.lang !== ul) I18n.setLang(ul); }
     if (data.generatorPanels && Object.keys(data.generatorPanels).length) { mergeObj('hebrewBlender_panels',      data.generatorPanels); touched = true; }
     if (data.flashCardPanels && Object.keys(data.flashCardPanels).length) { mergeObj('hebrewFlashCards_panels',   data.flashCardPanels); touched = true; }
     if (data.dictPanels      && Object.keys(data.dictPanels).length)      { mergeObj('hebrewDictionary_panels',   data.dictPanels);      touched = true; }
-    const _dFonts = ivritFontList(data.userFonts);
+    let _dFonts = ivritFontList(data.userFonts);
+    if (mode === 'fill' && _dFonts.length && window.indexedDB) { const have = new Set(((await Promise.resolve(listUserFonts()).catch(() => [])) || []).map(f => f.name)); _dFonts = _dFonts.filter(uf => !have.has(uf.name)); }   // a font held here keeps its bytes
     if (_dFonts.length && window.indexedDB) {
       await Promise.all(_dFonts.map(uf => Promise.resolve().then(() => saveUserFont(uf.name, _ivB64ToBytes(uf.b64), uf.family)).catch(() => {})));   // awaited: the success line is honest
       await Promise.resolve(refreshFontsBackupCache()).catch(() => {}); touched = true;
@@ -1731,11 +1735,12 @@ function ivritSafeAssign(target, src) {
 }
 // Merge a suite-wide Word Lists blob ({v:1,lists:{}}) into localStorage, one level deep
 // (a shallow top-level assign would clobber `lists`). Returns true if anything applied.
-function wlMergeIntoStorage(incoming, replace) {
+function wlMergeIntoStorage(incoming, replace, fill) {
   if (!incoming || !incoming.lists || typeof incoming.lists !== 'object') return false;
   const cur = replace ? { v: 1, lists: {} } : ivritSafeParse(localStorage.getItem('ivritSuite_wordLists') || '{}');
   const base = (cur && cur.lists && typeof cur.lists === 'object') ? cur.lists : {};
-  localStorage.setItem('ivritSuite_wordLists', JSON.stringify({ v: 1, lists: ivritSafeAssign(base, incoming.lists) }));
+  // fill (the account's own backup): a list this device already holds keeps its copy; only missing ones are added
+  localStorage.setItem('ivritSuite_wordLists', JSON.stringify({ v: 1, lists: fill ? ivritSafeAssign(ivritSafeAssign({}, incoming.lists), base) : ivritSafeAssign(base, incoming.lists) }));
   return true;
 }
 function ivritDateStamp() {
@@ -1928,9 +1933,10 @@ async function ivritRestore(text, sourceName) {
   // Merge/Replace question, then "no all-tools data", then "Restored successfully" — three answers to
   // one drop. Say the one true thing before asking anything.
   if (payload.tool && payload.tool !== IVRIT_CFG.tool) { alert(I18n.t('home.alltools.no_data_alert')); return; }
-  // partial: an account's copies only (per-device settings are not in it) — merged, never replacing
+  // partial: an account's copies only (per-device settings are not in it) — 'fill': what is missing here is added,
+  // nothing this device already holds is replaced (a backup is older than what it is restored over)
   const partial = payload.partial === true;
-  const mode = partial ? 'merge' : await ivritAskMode();
+  const mode = partial ? 'fill' : await ivritAskMode();
   if (!mode) return;
   let applied;
   try { applied = await IVRIT_CFG.apply(payload.data || {}, mode); }

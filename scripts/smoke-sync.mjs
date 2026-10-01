@@ -109,6 +109,12 @@
  *      the store; the next fresh tab keeps the account's newer copy instead of sending the older one up.
  *  D25. A fresh device whose listing takes 13 s: the Dashboard's starter card opens on its 10 s guess and closes
  *      unapplied when the account's settings land; the account's board text is untouched.
+ *  D26. A preset that disappears from the account (no one deleted it here) leaves the device only into the recovery
+ *      bin: the status line names it, its Download holds it, Dismiss clears it.
+ *  D27. Restoring the account's own backup (a partial .ivrit) on the hub and on the generator adds the preset only the
+ *      backup has and leaves the newer same-named preset alone, here and in the account.
+ *  D28. An old-module tab's Delete from cloud (the copy on this device stays): the next new-module load keeps the
+ *      copy, does not send it up again, and does not put it in the recovery bin.
  *
  * Every scenario asserts 0 pageerrors. Run from the repo root:
  *   node scripts/smoke-sync.mjs --sdk path/to/supabase.js [--port 8081]
@@ -1585,6 +1591,79 @@ try {
     await sleep(500);
     check("D25: with the listing 13 s slow the starter card opened on the 10 s guess, then closed by itself when the account's settings landed, so no starter replaced them: the account's board text is untouched here and in the account", opened && ok && ok2 && !after.open && !clicked && after.seen === '1' && after.board === board && row.data.dashTextHTML === board, JSON.stringify({ opened, ok, after, clicked, account: row.data.dashTextHTML }));
     check('D25: 0 pageerrors', errors.length === 0, errors.join(' | '));
+    await ctx.close();
+  }
+  // ---- D26. a row the account no longer has leaves the device only into the recovery bin, offered for download ----
+  if (want('D26')) {
+    const cloud = new FakeCloud(CLOUD_ROWS());
+    const morning = JSON.parse(JSON.stringify(cloud.find('preset', 'Morning').data));
+    const ctx = await openContext(browser, cloud, SEED({ device: true }));
+    const { page, errors } = await openPage(ctx, 'classroom_dashboard.html');
+    const landed = !!((await lsJSON(page, 'hebrewDashboard_presets')) || {}).Morning;
+    // the row disappears from the account without anyone deleting it here (another device, an operator, a restore)
+    cloud.rows = cloud.rows.filter(r => !(r.kind === 'preset' && r.name === 'Morning'));
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await waitSignedIn(page);
+    const ok = await settled(page, DASH_TOOLS, HYDRATE_MS);
+    const presets = (await lsJSON(page, 'hebrewDashboard_presets')) || {};
+    const bin = (((await lsJSON(page, 'ivritSuite_removedByAccount')) || {}).users || {})[UID] || {};
+    const kept = bin['Dashboard/preset/Morning'];
+    check('D26: the preset the account no longer lists left the device, and a copy of it is in the recovery bin', landed && ok && !presets.Morning && !!kept && canonJson(kept.value) === canonJson(morning), JSON.stringify({ landed, ok, presets: Object.keys(presets), kept: kept && kept.name }));
+    await page.evaluate(() => { const h = document.getElementById('cloudSavesPanel'); let n = h; while (n) { if (n.classList) n.classList.remove('collapsed'); n = n.parentElement; } });
+    const note = await page.evaluate(() => { const b = document.querySelector('#cloudSavesPanel .ivsav-replaced[data-why="removed"]'); return b ? b.innerText : null; });
+    let file = null;
+    if (note) {
+      const [dl] = await Promise.all([page.waitForEvent('download', { timeout: 8000 }).catch(() => null), page.evaluate(() => document.querySelector('#cloudSavesPanel .ivsav-replaced[data-why="removed"] button').click())]);
+      if (dl) { const fp = await dl.path(); file = { name: dl.suggestedFilename(), json: fp ? JSON.parse(fs.readFileSync(fp, 'utf8')) : null }; }
+    }
+    const filePreset = file && file.json && file.json.data && (file.json.data.dashboardPresets || {}).Morning;
+    check('D26: the status line names it and its Download is an .ivrit holding the removed preset', !!note && /no longer has it/.test(note) && !!file && /_removed_/.test(file.name) && canonJson(filePreset) === canonJson(morning), JSON.stringify({ note, file: file && file.name, filePreset }));
+    await page.evaluate(() => [...document.querySelectorAll('#cloudSavesPanel .ivsav-replaced[data-why="removed"] button')].pop().click());
+    await sleep(200);
+    const after = { key: await ls(page, 'ivritSuite_removedByAccount'), note: await page.evaluate(() => !!document.querySelector('#cloudSavesPanel .ivsav-replaced[data-why="removed"]')) };
+    check('D26: Dismiss clears the bin and the note', after.key === null && !after.note, JSON.stringify(after));
+    check('D26: 0 pageerrors', errors.length === 0, errors.join(' | '));
+    await ctx.close();
+  }
+  // ---- D27. restoring the account's own backup (a partial file) adds what is missing and replaces nothing ----
+  if (want('D27')) {
+    for (const where of ['index.html', 'hebrew_blend_generator.html']) {
+      const cloud = new FakeCloud(WORKSHEET_ROWS());
+      const week1 = cloud.find('preset', 'Week 1', 'Worksheet');
+      const newer = JSON.parse(JSON.stringify(week1.data));
+      const ctx = await openContext(browser, cloud, SEED({}));
+      const { page, errors } = await openPage(ctx, where, { tools: where === 'index.html' ? [] : GEN_TOOLS });
+      await sleep(500);
+      const from = cloud.log.length;
+      // last term's account backup: an older Week 1 and a preset deleted since
+      const file = { _ivritSuite: 1, format: 'ivrit-save', version: 1, tool: 'AllTools', partial: true, savedAt: '2025-06-01T00:00:00.000Z',
+        data: { generatorPresets: { 'Week 1': { selectedLetters: ['ק'], selectedVowels: ['shva'], pageSize: 'a4' }, 'Old one': { selectedLetters: ['ז'] } } } };
+      await page.evaluate((t) => ivritRestore(t, 'backup.ivrit'), JSON.stringify(file));
+      await sleep(2600);
+      const ok = await settled(page, where === 'index.html' ? [] : GEN_TOOLS, 15000);
+      const local = (await lsJSON(page, 'hebrewBlender_presets')) || {};
+      const oldRow = cloud.find('preset', 'Old one', 'Worksheet');
+      check('D27 (' + where + "): the backup's older Week 1 did not replace the newer one, here or in the account; the preset only the backup had was added and went up", ok && canonJson(local['Week 1']) === canonJson(newer) && canonJson(week1.data) === canonJson(newer) && !!local['Old one'] && !!oldRow && patchesSince(cloud, from, week1.id).length === 0, JSON.stringify({ ok, local1: local['Week 1'], account1: week1.data, added: !!local['Old one'], oldRow: !!oldRow, calls: methods(cloud, from) }));
+      check('D27 (' + where + '): 0 pageerrors', errors.length === 0, errors.join(' | '));
+      await ctx.close();
+    }
+  }
+  // ---- D28. an old-module tab's "delete from the cloud, keep it here" is honoured: the copy stays and is not re-sent ----
+  if (want('D28')) {
+    const cloud = new FakeCloud(CLOUD_ROWS());
+    const row = cloud.find('preset', 'Morning');
+    const mem = memOf(row);
+    const v1 = { v: 1, users: { [UID]: { Dashboard: { preset: { Morning: { deletedCloud: true, h: mem.h, at: '2026-09-30T08:00:00.000Z' } } } } } };
+    const ctx = await openContext(browser, cloud, SEED({ device: true, memory: { Dashboard: { preset: { Morning: mem } } }, extra: { hebrewDashboard_presets: JSON.stringify({ Morning: row.data, Default: {} }), ivritSuite_syncMeta: JSON.stringify(v1) } }));
+    cloud.rows = cloud.rows.filter(r => r !== row);   // the old tab deleted it from the account
+    const { page, errors } = await openPage(ctx, 'classroom_dashboard.html');
+    await sleep(2600);
+    const ok = await settled(page, DASH_TOOLS, 15000);
+    const presets = (await lsJSON(page, 'hebrewDashboard_presets')) || {};
+    const bin = (((await lsJSON(page, 'ivritSuite_removedByAccount')) || {}).users || {})[UID] || {};
+    const sent = cloud.log.some(e => e.m === 'POST' && e.body && (Array.isArray(e.body) ? e.body : [e.body]).some(b => b.kind === 'preset' && b.name === 'Morning'));
+    check("D28: the preset an old-module tab deleted from the account only (\"the copy on this device stays\") stays on the device, is not sent up again, and is not put in the recovery bin", ok && !!presets.Morning && !sent && !cloud.find('preset', 'Morning') && !bin['Dashboard/preset/Morning'], JSON.stringify({ ok, presets: Object.keys(presets), sent, bin: Object.keys(bin) }));
+    check('D28: 0 pageerrors', errors.length === 0, errors.join(' | '));
     await ctx.close();
   }
 } finally {

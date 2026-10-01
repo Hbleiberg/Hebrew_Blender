@@ -115,7 +115,8 @@ export/import as a bug to fix, not a pattern to copy.
   sign-out broadcast), `ivritSuite_syncBase` (each settings row's last synced value, the base of a field-by-field
   merge) and `ivritSuite_replaced` (a settings version a merge did not keep — the device's own settings the
   account's copy replaced at a first sign-in, or the other side's version of a setting both changed — kept for
-  download until dismissed); none of them ride export/import (a session must
+  download until dismissed) and `ivritSuite_removedByAccount` (the recovery bin: a copy of each item removed here
+  because the account no longer lists it, for 30 days or until dismissed); none of them ride export/import (a session must
   never travel in a file, and sync memory is per device), and `eraseAllSettings` calls `IvritSaves.suspend()`
   right after its final confirm (so nothing it removes goes up as a deletion) and removes every `sb-` key plus
   the six `ivritSuite_*` keys — "erase" also means signed out on this device — then reloads when a session was
@@ -144,7 +145,7 @@ Implemented on: `hebrew_blend_generator.html` (tool `Worksheet`), `classroom_das
   "version": 1,
   "tool": "Worksheet",        // tool identity — survives the user renaming the file
   "savedAt": "2026-05-30T...",// ISO timestamp
-  "partial": true,            // optional — an account's copies only: merged, never replacing (see below)
+  "partial": true,            // optional — an account's copies only: filled in, never replacing (see below)
   "data": { /* presets + liveState, or the AllTools bundle */ }
 }
 ```
@@ -164,12 +165,16 @@ Implemented on: `hebrew_blend_generator.html` (tool `Worksheet`), `classroom_das
   three byte-identical tool copies and the hub's adapted AllTools copy — applies the rule, and a Merge while
   signed in writes through like any edit, which is how a `.ivrit` file or the account page's zip refills an
   account.
-- **`partial: true` skips the question and merges.** The saves module writes it on the account backup
+- **`partial: true` skips the question and fills in.** The saves module writes it on the account backup
   (`IvritSaves.bundleAll()`, the account page's zip) and on the device-extras card's backup of the device's own
   items: those files hold one side's copies only
   — a settings row omits the per-device fields (zoom, panel layout, collapsed panels…) — so a Replace would
-  delete what the device alone holds. Every carrier's `ivritRestore` and the hub's copy read the flag, apply
-  with `mode = 'merge'` and say so (`shared.ivrit.status_partial_merged`); `IVRIT_CFG.apply` is awaited and
+  delete what the device alone holds, and a backup is older than what it is restored over, so a Merge would put
+  its older copies over newer ones (and, signed in, into the account). Every carrier's `ivritRestore` and the
+  hub's copy read the flag and apply with `mode = 'fill'`: a name, list id, settings field or preference this
+  device already holds keeps its value, a font it holds keeps its bytes, and only what is missing is added
+  (class lists, profiles, progress and trees merge as they always do); then they say so
+  (`shared.ivrit.status_partial_merged`); `IVRIT_CFG.apply` is awaited and
   a `false` return means "nothing for this tool" (`shared.ivrit.nothing_for_tool`). The account backup also
   carries `dashboardRosters` (`{ rosters: { id: { name, names } } }`, imported by the hub's
   `mergeDashboardRosters` after `dashboardSettings` and by the dashboard's own `IVRIT_CFG.apply`) and, under

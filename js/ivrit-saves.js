@@ -82,6 +82,8 @@
   var META_KEY = 'ivritSuite_syncMeta';    // the cross-tab write stamps and the sign-out broadcast (both module versions read it)
   var META2_KEY = 'ivritSuite_syncMeta2';  // what this device last synced, per account (v2; erase-only, never exported)
   var BASE_KEY = 'ivritSuite_syncBase';    // the last synced value of each settings row (merge 'assign'), the base of a field-by-field merge (erase-only)
+  var REMOVED_KEY = 'ivritSuite_removedByAccount'; // items a hydration removed from this device because the account no longer has them, kept for download (erase-only)
+  var BIN_ITEM_MAX = 1000000, BIN_TOTAL_MAX = 1500000, BIN_DAYS = 30;
   var REPLACED_KEY = 'ivritSuite_replaced'; // a device's own settings that the account's copy replaced at a first sign-in, kept for download (erase-only)
   var HASH_PREFIX = '1.';                 // SHA-256 over the canonical JSON, base64url, 45 chars
   var FALLBACK_PREFIX = '0.';             // FNV-1a pair, only where crypto.subtle is missing (a plain http:// host)
@@ -872,6 +874,89 @@
     var w = why === 'both' ? 'both' : 'signin';   // one slot per reason: a later conflict never overwrites the copy kept at a first sign-in
     r.users[uid][baseKey(entry.tool, entry.kind, name) + (w === 'both' ? '#both' : '')] = { tool: entry.tool, kind: entry.kind, name: name, at: now(), why: w, value: value };
     replacedSave(r);
+  }
+  /* ---------- the recovery bin: what the account's absence removed from this device ---------- */
+  // A remembered item the account no longer lists goes from this device too (a deletion made on another device — or a
+  // row lost on the server, which the device cannot tell apart). Before it goes, a copy is kept here, per account, for
+  // 30 days or until dismissed, and the status line offers it as an .ivrit download: no removal by absence is final.
+  function binAll() { try { var b = safeParse(lsGet(REMOVED_KEY) || 'null'); if (isPlainObject(b) && b.v === 1 && isPlainObject(b.users)) return b; } catch (e) {} return { v: 1, users: {} }; }
+  function binSave(b) {
+    try {
+      withSelfWrite(function () {
+        var empty = !Object.keys(b.users).some(function (u) { return isPlainObject(b.users[u]) && Object.keys(b.users[u]).length; });
+        if (empty) localStorage.removeItem(REMOVED_KEY); else localStorage.setItem(REMOVED_KEY, JSON.stringify(b));
+      });
+      return true;
+    } catch (e) { return false; }
+  }
+  // Keeps the item; false when it cannot be kept (too big, no room): the caller then leaves it on the device.
+  function binKeep(uid, entry, name, label, value) {
+    var text = canonJson(value);
+    if (text.length > BIN_ITEM_MAX) return false;
+    var b = binAll(); if (!isPlainObject(b.users[uid])) b.users[uid] = {};
+    var u = b.users[uid], cutoff = Date.now() - BIN_DAYS * 86400000;
+    Object.keys(u).forEach(function (k) { if (!isPlainObject(u[k]) || !(Date.parse(u[k].at) >= cutoff)) delete u[k]; });
+    u[baseKey(entry.tool, entry.kind, name)] = { tool: entry.tool, kind: entry.kind, name: name, label: label || name, at: now(), value: value };
+    var size = function () { return JSON.stringify(b).length; };
+    while (size() > BIN_TOTAL_MAX) {
+      var keys = Object.keys(u).filter(function (k) { return k !== baseKey(entry.tool, entry.kind, name); }).sort(function (x, y) { return String(u[x].at).localeCompare(String(u[y].at)); });
+      if (!keys.length) { delete u[baseKey(entry.tool, entry.kind, name)]; binSave(b); return false; }
+      delete u[keys[0]];
+    }
+    return binSave(b);
+  }
+  // The old module's "deleted from the cloud, kept on this device" record for a row, if any (its own key, written by a
+  // tab that has not reloaded since the upgrade, or the hint carried into the v2 memory at the upgrade).
+  function v1Tombstone(uid, tool, kind, name) {
+    var pick = function (u) { var r = isPlainObject(u) && isPlainObject(u[tool]) && isPlainObject(u[tool][kind]) ? u[tool][kind][name] : null; return (isPlainObject(r) && r.deletedCloud === true && typeof r.h === 'string') ? r : null; };
+    var st = stampsAll(), m = metaAll();
+    return pick(isPlainObject(st.users) ? st.users[uid] : null) || pick(isPlainObject(m.legacy) ? m.legacy[uid] : null);
+  }
+  function binFresh(x) { return isPlainObject(x) && Date.parse(x.at) >= Date.now() - BIN_DAYS * 86400000; }
+  function binFor(uid, tool) {
+    var u = binAll().users[uid];
+    if (!isPlainObject(u)) return [];
+    return Object.keys(u).filter(function (k) { return binFresh(u[k]) && (!tool || u[k].tool === tool); }).map(function (k) { return u[k]; });
+  }
+  // Copies older than BIN_DAYS go when the status line is drawn (not only at the next removal).
+  function binPrune(uid) {
+    var b = binAll(), u = b.users[uid];
+    if (!isPlainObject(u)) return;
+    var gone = Object.keys(u).filter(function (k) { return !binFresh(u[k]); });
+    if (!gone.length) return;
+    gone.forEach(function (k) { delete u[k]; });
+    binSave(b);
+  }
+  function binDrop(uid, tool) {
+    var b = binAll(), u = b.users[uid];
+    if (!isPlainObject(u)) return;
+    Object.keys(u).forEach(function (k) { if (isPlainObject(u[k]) && u[k].tool === tool) delete u[k]; });
+    binSave(b);
+  }
+  function binDownload(uid, tool) {
+    var list = binFor(uid, tool);
+    if (!list.length) return;
+    var b = bundleFromRows(registryFor(tool), list.map(function (x) { return { tool: x.tool, kind: x.kind, name: x.name, data: x.value }; }));
+    downloadJson({ _ivritSuite: 1, format: 'ivrit-save', version: 1, tool: 'AllTools', partial: true, savedAt: now(), data: b.data }, 'IvritSuite_' + tool + '_removed_' + now().slice(0, 10) + '.ivrit');
+  }
+  function renderRemoved(root, tool) {
+    var u = currentUser(); if (!u) return;
+    if (lsGet(REMOVED_KEY) !== null) binPrune(u.id);
+    var list = binFor(u.id, tool === 'Suite' ? null : tool);
+    var tools = [];
+    list.forEach(function (x) { if (tools.indexOf(x.tool) < 0) tools.push(x.tool); });
+    tools.forEach(function (tl) {
+      var n = list.filter(function (x) { return x.tool === tl; }).length;
+      var box = el('div', 'ivsav-replaced');
+      box.setAttribute('data-why', 'removed');
+      box.appendChild(el('p', 'ivsav-note', t(n === 1 ? 'shared.cloud.removed_note.one' : 'shared.cloud.removed_note.other',
+        n === 1 ? '1 {tool} item was removed from this device because your account no longer has it (deleted on another device, or gone from the account). A copy is kept here until you dismiss this note.'
+                : '{n} {tool} items were removed from this device because your account no longer has them (deleted on another device, or gone from the account). A copy is kept here until you dismiss this note.',
+        { n: n, tool: toolName(tl) })));
+      box.appendChild(button(t('shared.cloud.removed_download', 'Download them (.ivrit)'), '', function () { binDownload(u.id, tl); }));
+      box.appendChild(button(t('shared.cloud.replaced_dismiss', 'Dismiss'), '', function () { binDrop(u.id, tl); renderAllStatuses(); }));
+      root.appendChild(box);
+    });
   }
   function replacedWhy(x) { return x && x.why === 'both' ? 'both' : 'signin'; }
   // A field-by-field merge dropped a value `side` had changed (against `base`): that side's version is the one to keep.
@@ -1841,6 +1926,15 @@
           function (err) { if (err && err.code === 'changed' && row.downloadable) return actDownload(tool, row); throw err; });
       }
       if (action === 'removeLocal') {
+        // A tab still running the old module offered "Delete from cloud — the copy on this device stays and is not
+        // uploaded again unless you change it": its tombstone (the old key's memory, or the hint carried over from it)
+        // keeps that promise — the copy stays here, forgotten and held back from the account until it changes.
+        var v1 = v1Tombstone(uid, tool, row.kind, row.name);
+        if (v1 && row.local && v1.h === row.local.hash) { metaDelete(uid, tool, row.kind, row.name); holdBack(uid, tool, row.kind, row.name, row.local.hash); return { action: 'keptLocal', row: row }; }
+        // the account no longer has it: a copy goes to the recovery bin first; one too big for it stays on the device
+        // (unremembered, so it goes up again: a deletion elsewhere is undone rather than an only copy lost)
+        var it = localItem(row.entry, row.name);
+        if (it && !binKeep(uid, row.entry, row.name, row.label, it.value)) { metaDelete(uid, tool, row.kind, row.name); return { action: 'keptLocal', row: row }; }
         return localRemove(row.entry, row.name).then(function () { metaDelete(uid, tool, row.kind, row.name); notifyPage(tool, row.kind, row.name); return { action: 'removeLocal', row: row }; });
       }
       throw makeError('bad_action', 'IvritSaves: unknown action ' + action);
@@ -2313,6 +2407,7 @@
       p.rows.forEach(function (r) { if (!r.seed && (r.state === 'local-only' || r.state === 'local-changed' || r.state === 'conflict')) n++; });
     });
     Object.keys(dirty).forEach(function (tool) { n += Object.keys(dirty[tool] || {}).length; });
+    if (eventUser) n += binFor(eventUser, null).length;   // copies of items the account no longer has: device data that stays
     // `unknown`: this page could not compare everything with the account (a hydration that has not succeeded, a write
     // in flight) — the confirm then says so instead of promising that everything is in the account.
     var unknown = Object.keys(busy).some(function (tool) { return busy[tool]; }) ||
@@ -2430,6 +2525,7 @@
       if (st === 'error') root.appendChild(button(t('shared.cloud.status_retry', 'Retry'), '', function () { retry(tool); }));
     }
     renderReplaced(root, tool);
+    renderRemoved(root, tool);
   }
   // The device's own settings that the account's copy replaced at a first sign-in: one note per tool, with a download
   // of the earlier settings as an .ivrit file (restored through any tool's Backup panel) and a dismiss. The hub's status

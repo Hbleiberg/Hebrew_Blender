@@ -134,6 +134,7 @@ class FakeCloud {
     if (sm && m === 'GET') {
       const key = decodeURIComponent(sm[2]), o = this.objects[sm[1] + '|' + key];
       this.log.push({ m, kind: 'download', bucket: sm[1], key, found: !!o });
+      if (this.failPhotos && sm[1] === 'font-sources') return json(503, { statusCode: '503', error: 'unavailable', message: 'Service Unavailable' });
       if (!o) return json(404, { statusCode: '404', error: 'not_found', message: 'Object not found' });
       return route.fulfill({ status: 200, headers: Object.assign({ 'content-type': o.type }, cors), body: o.bytes });
     }
@@ -360,11 +361,24 @@ try {
     check('4: Download everything from the offer builds the same zip', /^IvritSuite-account-\d{4}-\d{2}-\d{2}\.zip$/.test(dl2.suggestedFilename()) && cloud.log.length > dlBefore, dl2.suggestedFilename());
     await page.waitForFunction(() => /Downloaded/.test(document.getElementById('delDlStatus').textContent), null, { timeout: 30000 });
     check('4: the offer\'s own status line reports the download', /Downloaded 12 items and 1 project/.test(await text(page, '#delDlStatus')), await text(page, '#delDlStatus'));
+    // a download that could not fetch the photos: the confirmation step still says so (until a new download or Cancel)
+    cloud.failPhotos = true;
+    const [dl3] = await Promise.all([page.waitForEvent('download', { timeout: 60000 }).catch(() => null), page.click('#delDl')]);
+    await page.waitForFunction(() => /could not be downloaded/.test(document.getElementById('delDlStatus').textContent), null, { timeout: 30000 }).catch(() => {});
+    cloud.failPhotos = false;
+    await page.click('#delContinue');
+    await page.waitForFunction(() => !document.getElementById('delConfirm').hidden, null, { timeout: 5000 });
+    const warn = await page.evaluate(() => { const w = document.getElementById('delWarn'); return { shown: !w.hidden, text: w.textContent }; });
+    check('4: after a download that missed photos, the confirmation step repeats it and says to download again', !!dl3 && warn.shown && /2 photos could not be downloaded/.test(warn.text) && /Download again before deleting/.test(warn.text), JSON.stringify(warn));
+    await page.click('#delCancel');
+    check('4: Cancel clears that warning', await page.evaluate(() => document.getElementById('delWarn').hidden && !document.getElementById('delWarn').textContent));
+    await page.click('#delBtn');
     await page.keyboard.press('Escape');
     check('4: Escape closes the offer back to the button', (await visible(page, '#delBtn')) && !(await visible(page, '#delBefore')));
     await page.click('#delBtn');
     await page.click('#delContinue');
     await page.waitForFunction(() => !document.getElementById('delConfirm').hidden, null, { timeout: 5000 });
+    check('4: with no download since, the confirmation carries no warning', await page.evaluate(() => document.getElementById('delWarn').hidden));
     check('4: Continue opens the confirmation, headed "This cannot be undone"', /cannot be undone/.test(await text(page, '#delConfirm h3')) && !(await visible(page, '#delBefore')));
     check('4: Delete permanently starts disabled', await disabled(page, '#delGo'));
     await page.check('#delCheck');

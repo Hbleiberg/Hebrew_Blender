@@ -354,6 +354,7 @@ body.dark .hi-sun{display:inline-block;}
       <!-- Step 2: the confirmation proper. -->
       <div class="confirm-box" id="delConfirm" hidden>
         <h3 data-i18n="account.delete.confirm_head">Are you sure? This cannot be undone.</h3>
+        <p class="status is-error" id="delWarn" role="status" aria-live="polite" hidden></p>
         <label class="check"><input type="checkbox" id="delCheck"> <span data-i18n="account.delete.check">I have downloaded everything I want to keep, or I do not need it.</span></label>
         <div class="field">
           <label for="delEmail" id="delEmailLabel" data-i18n="account.delete.email_label">Type your email address to confirm</label>
@@ -606,10 +607,14 @@ function saveBlob(blob, filename) {
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1500);
 }
+// What the pre-deletion download could not include (photos, exported fonts): carried into the confirmation step, so the
+// last screen before Delete permanently still says the backup is incomplete (a new download or Cancel clears it).
+let lastDelDlMissing = null;
 async function downloadAll(btnId, statusId) {
   // Shared by the Download everything section (#dlBtn / #dlStatus) and the pre-deletion box (#delDl / #delDlStatus).
   btnId = btnId || 'dlBtn'; statusId = statusId || 'dlStatus';
   if (busyDl || !user || isDisabled($(btnId))) return;
+  if (statusId === 'delDlStatus') lastDelDlMissing = null;
   busyDl = true; setBusy('dlBtn', true); setBusy('delDl', true);
   // The teacher's own date, as every other export in the suite: toISOString() is UTC, so an evening download in
   // the Americas was named for the next day and an early-morning one in Israel for the day before.
@@ -651,6 +656,7 @@ async function downloadAll(btnId, statusId) {
     say(statusId, () => t('account.download.done', { items: plural('account.count.items', n), and_projects: plural('account.count.and_projects', p), size: size })
       + (missingPhotos ? ' ' + plural('account.download.photos_missing', missingPhotos) : '')
       + (missingFonts ? ' ' + plural('account.download.fonts_missing', missingFonts) : ''));
+    if (statusId === 'delDlStatus') lastDelDlMissing = (missingPhotos || missingFonts) ? { photos: missingPhotos, fonts: missingFonts } : null;
   } catch (err) {
     say(statusId, () => IvritSaves.errorText(err), true);
   } finally {
@@ -700,12 +706,16 @@ function continueDel() {
   $('delBefore').hidden = true; $('delConfirm').hidden = false;
   $('delCheck').checked = false; $('delEmail').value = '';
   say('delStatus', null); validateDel();
+  const miss = lastDelDlMissing;
+  say('delWarn', miss ? () => [miss.photos ? plural('account.download.photos_missing', miss.photos) : '', miss.fonts ? plural('account.download.fonts_missing', miss.fonts) : '', t('account.delete.backup_incomplete')].filter(Boolean).join(' ') : null, true);
+  $('delWarn').hidden = !miss;
   $('delCheck').focus();
 }
 function cancelDel() {
   if (deleting) return;
   $('delConfirm').hidden = true; $('delBefore').hidden = true; $('delBtn').hidden = false;
   say('delDlStatus', null);
+  lastDelDlMissing = null; say('delWarn', null); $('delWarn').hidden = true;
   $('delBtn').focus();
 }
 async function deleteNow() {
