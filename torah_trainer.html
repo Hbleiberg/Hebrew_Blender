@@ -8297,7 +8297,7 @@ function renameFavorite(name) {
 }
 function recolorFavorite(name) {
   const map = readFavorites();
-  if (!map[name]) return;
+  if (!map[name] || typeof map[name] !== 'object') return;   // a malformed row (a file, another device) is left as it came
   const i = FAV_PALETTE.indexOf(favColorOf(map[name]));
   map[name].color = FAV_PALETTE[(i + 1) % FAV_PALETTE.length];
   writeFavorites(map);
@@ -8305,7 +8305,7 @@ function recolorFavorite(name) {
 }
 function duplicateFavorite(name) {
   const map = readFavorites();
-  if (!map[name]) return;
+  if (!map[name] || typeof map[name] !== 'object') return;
   const nn = ftDuplicateName(name, x => map[x] !== undefined);
   map[nn] = JSON.parse(JSON.stringify(map[name]));
   map[nn].ts = Date.now();
