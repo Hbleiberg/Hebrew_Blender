@@ -5706,7 +5706,6 @@ function renderProfileHistory(name) {
   } else {
     histEmpty.style.display = 'none';
     results.forEach((r) => {
-      const realIdx = db.profiles[name].results.indexOf(r);
       const li = document.createElement('li');
       li.className = 'result-item';
       const d = new Date(r.savedAt);
@@ -5724,9 +5723,12 @@ function renderProfileHistory(name) {
       li.querySelector('[data-act=del]').addEventListener('click', () => {
         const signedIn = !!(window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession());
         if (!confirm(I18n.t(signedIn ? 'flashcards.profile.delete_result_confirm_cloud' : 'flashcards.profile.delete_result_confirm'))) return;
+        // Find the row again in a fresh read: another tab's save at the cap shifts every index, so the one
+        // captured at render could name a different result. Gone already → nothing to delete.
         const db2 = readProfiles();
-        db2.profiles[name].results.splice(realIdx, 1);
-        writeProfiles(db2);
+        const list2 = (db2.profiles[name] && db2.profiles[name].results) || [];
+        const at = list2.findIndex(x => x && x.savedAt === r.savedAt && x.pct === r.pct && x.correct === r.correct && x.total === r.total);
+        if (at >= 0) { list2.splice(at, 1); writeProfiles(db2); }
         renderProfiles();
       });
       histList.appendChild(li);
