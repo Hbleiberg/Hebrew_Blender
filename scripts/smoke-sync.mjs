@@ -103,6 +103,8 @@
  *      refused and nothing leaves the device; the next complete listing applies the deletion.
  *  D22. The Dictionary's "use in generator" link (?wl=) opens Real Words from that list and leaves the remembered
  *      setup alone, on the device and in the account.
+ *  D23. A board being typed in a window without the focus survives another tab's download of a change made on
+ *      another device; when the edit ends both the board text and that change reach the account.
  *
  * Every scenario asserts 0 pageerrors. Run from the repo root:
  *   node scripts/smoke-sync.mjs --sdk path/to/supabase.js [--port 8081]
@@ -1498,6 +1500,35 @@ try {
     check('D22: the ?wl= link opened Real Words from that list, and the remembered setup stayed the teacher\'s on the device and in the account (no PATCH of it)', ok && view.rw === 'lists' && !!view.stored && view.stored.wsTitle === mine.wsTitle && lastRow.data.wsTitle === mine.wsTitle && patchesSince(cloud, 0, lastRow.id).length === 0, JSON.stringify({ ok, view: { rw: view.rw, title: view.stored && view.stored.wsTitle }, account: lastRow.data.wsTitle, calls: methods(cloud, 0).slice(-300) }));
     check('D22: 0 pageerrors', errors.length === 0, errors.join(' | '));
     await ctx.close();
+  }
+  // ---- D23. a board being typed in a window without the focus survives another tab's download ----
+  if (want('D23')) {
+    const cloud = new FakeCloud(CLOUD_ROWS());
+    const row = cloud.find('settings', 'default');
+    const ctx1 = await openContext(browser, cloud, SEED({ device: true }));
+    const A = await openPage(ctx1, 'classroom_dashboard.html');   // the board, on the projector
+    const B = await openPage(ctx1, 'classroom_dashboard.html');   // a second tab on the same laptop
+    // the teacher is typing a board message in tab A, then clicks into another window (A loses the focus, still visible)
+    await A.page.evaluate(() => { enterInPlaceEdit(); const d = document.getElementById('dashTextDisplay'); d.innerHTML = '<div>Today: field trip forms due</div>'; d.dispatchEvent(new Event('input', { bubbles: true })); document.hasFocus = () => false; });
+    // her phone changes the location in the account meanwhile
+    const ctx2 = await openContext(browser, cloud, SEED({ device: true }));
+    const P = await openPage(ctx2, 'classroom_dashboard.html');
+    await P.page.evaluate(() => { document.getElementById('locationInput').value = 'Tiberias'; updateLocation(); });
+    const okP = await settled(P.page, DASH_TOOLS);
+    // tab B hydrates (a reload, a retry) and downloads it: a module write the board tab hears about
+    await B.page.evaluate(() => IvritSaves.hydrate(['Dashboard']).catch(() => null));
+    await settled(B.page, DASH_TOOLS);
+    await sleep(600);
+    const onBoard = await A.page.evaluate(() => ({ text: document.getElementById('dashTextDisplay').innerText, editing: document.getElementById('dashTextDisplay').getAttribute('contenteditable') }));
+    check("D23: the board text typed in the unfocused window is still on the board after another tab downloaded a change", okP && row.data.location === 'Tiberias' && /field trip forms due/.test(onBoard.text) && onBoard.editing === 'true', JSON.stringify({ okP, account: row.data.location, onBoard }));
+    // she finishes the edit: both the board text and the phone's location end up in the account and on the board tab
+    await A.page.evaluate(() => { exitInPlaceEdit(true); });
+    const okA = await settled(A.page, DASH_TOOLS, 15000);
+    await sleep(500);
+    const aNow = await A.page.evaluate(() => ({ board: settings.dashTextHTML, location: settings.location }));
+    check("D23: after the edit ends the account holds the board text and the phone's location, and so does the board tab", okA && /field trip forms due/.test(row.data.dashTextHTML || '') && row.data.location === 'Tiberias' && /field trip forms due/.test(aNow.board || '') && aNow.location === 'Tiberias', JSON.stringify({ okA, account: { board: row.data.dashTextHTML, location: row.data.location }, aNow }));
+    check('D23: 0 pageerrors in every tab', A.errors.length === 0 && B.errors.length === 0 && P.errors.length === 0, A.errors.concat(B.errors, P.errors).join(' | '));
+    await ctx1.close(); await ctx2.close();
   }
 } finally {
   await browser.close();

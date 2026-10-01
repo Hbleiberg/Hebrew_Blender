@@ -45,11 +45,12 @@
  *      entry `follows` its items' kind and is synced after them, never on its own row in the list.
  *
  * Exposes window.IvritSaves:
- *   attach(cfg)               { tool, status?, entries?, merges?, flush?, finalFlush?, onLocalChanged?, alsoPull?, paused?, hydrate? }
+ *   attach(cfg)               { tool, status?, entries?, merges?, flush?, finalFlush?, onLocalChanged?, alsoPull?, paused?, editing?, hydrate? }
  *                             status: element | selector for the status line; alsoPull: other tools this page
  *                             reads (hydrated with this page's hooks); paused(): the hook only postpones while
- *                             true; finalFlush(): pagehide / sign-out only; hydrate: false (a harness) = nothing
- *                             automatic. onLocalChanged(kind, name, names, { pending }).
+ *                             true; finalFlush(): pagehide / sign-out only; editing(): a live edit is open (another
+ *                             tab's download then waits instead of re-rendering over it); hydrate: false (a harness)
+ *                             = nothing automatic. onLocalChanged(kind, name, names, { pending }).
  *   hydrate(tools)            Promise — list, download, upload, merge for those tools (queued, deduplicated)
  *   flush(tool)               Promise — write this tool's dirty kinds through now
  *   suspend()                 stop write-through for this page (the hub's Erase All calls it first)
@@ -2647,6 +2648,9 @@
   // `live`: called from a storage event while this tab may be in use. A download in another tab then only marks the kind
   // stale in a tab that has the focus (the teacher may be typing there; its next write merges, actionFor), and the stamp
   // stays unread so the next look — the tab shown again, pageshow — re-reads it.
+  // The page says a live edit is open (a board being typed, a class list in its box) — in a window that may not have
+  // the focus: another tab's download is then held like one arriving in a focused tab, never re-rendered over the edit.
+  function pageEditing(tool) { var cfg = pages[tool]; try { return !!(cfg && typeof cfg.editing === 'function' && cfg.editing()); } catch (e) { return false; } }
   function recheckWrites(live) {
     var m, stamps, lw, touched = {};
     var focused = false; try { focused = !!live && document.hasFocus(); } catch (e) {}
@@ -2663,7 +2667,7 @@
         if (!pages[tool]) { markSeen(tool, kind, at); return; }
         var pw = isPlainObject(m.pageWrites) && isPlainObject(m.pageWrites[tool]) ? m.pageWrites[tool][kind] : null;
         var pageWrite = pw === at || (lw.tool === tool && lw.kind === kind && lw.at === at && lw.source === 'page');
-        if (pageWrite || (focused && !pages[tool].pulled)) { if (!stale[tool]) stale[tool] = {}; stale[tool][kind] = true; if (pageWrite) markSeen(tool, kind, at); return; }
+        if (pageWrite || ((focused || pageEditing(tool)) && !pages[tool].pulled)) { if (!stale[tool]) stale[tool] = {}; stale[tool][kind] = true; if (pageWrite) markSeen(tool, kind, at); return; }
         markSeen(tool, kind, at);
         notifyPage(tool, kind, (lw.tool === tool && lw.kind === kind) ? lw.name : null);
         touched[tool] = true;
@@ -2723,8 +2727,6 @@
       try { if (typeof window.I18n.onChange === 'function') window.I18n.onChange(renderAllStatuses); } catch (e) {}
     }
   }
-  // The page is leaving or hidden: the last edits go up now (their pagehide writers ran first — the pages add
-  // theirs in their own DOMContentLoaded, before this deferred module's listener is added at boot).
   // The page is being hidden or left: its own last writes (the debounced settings save, a class list being typed, an
   // open board edit) are made now, and every kind of its tool is compared with the memory and sent if it changed —
   // the page's own pagehide writers may run after this listener, and a write made under selfWrite marks nothing dirty.

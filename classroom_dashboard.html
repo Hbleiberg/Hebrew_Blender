@@ -7506,6 +7506,9 @@ function mountFolderTree(cfg){
       // happens in finalFlush (pagehide, sign-out), as the page's own pagehide handler does.
       flush: () => { flushRosterIfTyping(); if (_activeEditable) syncActive(); saveSettingsToStorage(); },
       finalFlush: () => { if (_activeEditable) exitInPlaceEdit(true); flushRosterIfTyping(); saveSettingsToStorage(); },
+      // a board, an Intermission screen or a class list being typed (the window may have lost the focus meanwhile):
+      // another tab's download waits for the next save here instead of re-rendering over the typing
+      editing: () => { if (_activeEditable) return true; const ae = document.activeElement; return !!ae && (ae.id === 'pickerRoster' || ae.id === 'dashEditor' || ae.id === 'intermissionEditor'); },
       merges: {
         presetFolders: ftMergeTrees,
         scheduleFolders: ftMergeTrees,

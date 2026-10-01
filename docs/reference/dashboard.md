@@ -498,7 +498,9 @@ of the More tab holds the module's status line, nothing else. What matters here:
 `flushRosterIfTyping()` + a non-exiting commit of the in-place editor (`syncActive()`) + `saveSettingsToStorage()`
 (synchronous, and it reads `#dashEditor` into `settings` first) — the module calls it at every hydration and
 before every write-through, so it must never throw a teacher out of an edit; `finalFlush` adds
-`exitInPlaceEdit(true)` and runs only on `pagehide` and sign-out, as the page's own `pagehide` handler does. The
+`exitInPlaceEdit(true)` and runs only on `pagehide` and sign-out, as the page's own `pagehide` handler does.
+`editing` reports a live edit (`_activeEditable`, or the focus in `#pickerRoster`, `#dashEditor` or
+`#intermissionEditor`), so another tab's download waits for the next save instead of re-rendering over the typing. The
 settings row **omits** every per-device field (`*Collapsed`, `panelLayout`, `videoLayout`, `zoomLevel`,
 `hideZoomBar`, `keepAwake`, `lockPanelWidths`, `showTextSizeOptions`), the ephemeral `pickerSessions`, the
 derived `_geoCoords`, the live `activeRosterId` and the `rosters` — the class lists are their own rows on the
