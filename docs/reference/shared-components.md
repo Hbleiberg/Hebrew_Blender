@@ -729,8 +729,9 @@ touch-primary tools get gesture equivalents; every new interactive element must 
 - **Hand-rolled overlays and floating menus carry a keyboard contract**: a modal (`.ie-modal`, `.sg-backdrop`, the settings drawers, `fcModalize`, `ivritAskMode`, the dashboard's `_trapTabWithin` dialogs) remembers its opener, moves focus in, wraps Tab/Shift+Tab inside, closes on Escape and restores focus on every close path; a floating menu (the folder-tree Move ▾, the dashboard ⋯ day menu, the flash cards sheet menu) is `role="menu"` of `menuitem`s with `aria-haspopup`/`aria-expanded` on its trigger, focus on the first item, Tab/arrows cycling, Escape closing and refocusing the trigger (stopped, so a page-level Escape does not also fire). Tour cards are the deliberate exception (`aria-modal="false"`; Tab walks the page, Escape ends the tour and restores focus). Measure it, never assume it — the hub's engine copy and the chrome pages drifted silently.
 
 **Focus ring colour.** Every page declares `--focus-ring` next to its `--gold` (light `#a0701c`, dark
-`var(--gold)`), and every `:focus` / `:focus-visible` outline in the page's own CSS uses it, as does the shared
-`sidebar-resize` CSS (`var(--focus-ring,var(--gold,#c9922a))`). The light value clears 3:1 against
+`var(--gold)`), and every `:focus` / `:focus-visible` outline in the page's own CSS uses it, as do the shared
+`sidebar-resize` CSS and the rings `js/i18n.js`, `js/ivrit-account.js` and `js/ivrit-saves.js` inject
+(`var(--focus-ring,var(--gold,#c9922a))`, so a page without the token keeps the old gold). The light value clears 3:1 against
 white, cream, the warm-grey tab strips and the navy header alike; `--gold` itself is 2.1–2.75:1 on the
 light surfaces, and `--gold-text` is 2.4:1 on navy, so neither can be the ring. A new ring rule uses the
 token, never `var(--gold)`.

@@ -666,7 +666,7 @@
       '.ivacct-ico{display:inline-flex;width:16px;height:16px;flex-shrink:0;}.ivacct-ico svg{width:16px;height:16px;}' +
       '.ivacct-btn:hover{background:var(--warm-gray,#e8e0d0);}' +
       'body.dark .ivacct-btn:hover{background:#2a3349;}' +
-      '.ivacct-btn:focus-visible,.ivacct-item:focus-visible,.ivacct-input:focus-visible{outline:2px solid var(--gold,#c9922a);outline-offset:1px;}' +
+      '.ivacct-btn:focus-visible,.ivacct-item:focus-visible,.ivacct-input:focus-visible{outline:2px solid var(--focus-ring,var(--gold,#c9922a));outline-offset:1px;}' +
       '.ivacct-btn[data-state="offline"],.ivacct-btn[data-state="unavailable"]{opacity:.72;}' +
       // Navy on the gold disc, not white: gold is a LIGHT surface in both themes, so white initials read
       // 2.75:1 light and 2.14:1 dark at 10.56px bold (2.40 / 2.02 on flash cards, whose --gold is paler)

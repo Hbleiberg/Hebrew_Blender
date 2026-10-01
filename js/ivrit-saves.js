@@ -2614,7 +2614,7 @@
         'font-family:inherit;font-size:0.8rem;line-height:1.3;cursor:pointer;margin-inline-end:6px;}' +
       '.ivsav-btn:hover:not([aria-disabled="true"]){background:var(--warm-gray,#e8e0d0);}' +
       'body.dark .ivsav-btn:hover:not([aria-disabled="true"]){background:#2a3349;}' +
-      '.ivsav-btn:focus-visible{outline:2px solid var(--gold,#c9922a);outline-offset:1px;}' +
+      '.ivsav-btn:focus-visible{outline:2px solid var(--focus-ring,var(--gold,#c9922a));outline-offset:1px;}' +
       '.ivsav-btn[aria-disabled="true"]{opacity:.55;cursor:default;}' +
       '.ivsav-btn.ivsav-primary{border-color:var(--gold,#c9922a);font-weight:600;}' +
       '.ivsav-status{margin:4px 0 8px;font-size:0.82rem;color:var(--muted,#6b6050);min-block-size:1.2em;overflow-wrap:anywhere;}' +

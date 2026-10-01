@@ -238,7 +238,7 @@
       // rest colour; the literal is the suite's dark hover pair (generator .blend-type-btn, S314).
       // Pattern dark-hover-resolves-to-the-rest-colour.
       'body.dark .i18n-switch select.i18n-select:hover{background:#2a3349;}' +
-      '.i18n-switch select.i18n-select:focus-visible{outline:2px solid var(--gold,#c9922a);outline-offset:1px;}' +
+      '.i18n-switch select.i18n-select:focus-visible{outline:2px solid var(--focus-ring,var(--gold,#c9922a));outline-offset:1px;}' +
       // The flag: a 20x14 inline SVG over the select's start edge (the wrapper is direction:ltr, so
       // "start" is the left on every page), clipped to a soft corner by the span, never a hit target.
       '.i18n-flag{position:absolute;inset-inline-start:8px;top:50%;transform:translateY(-50%);width:20px;height:14px;' +
