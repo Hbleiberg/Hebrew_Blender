@@ -9667,6 +9667,7 @@ function ttCopyToClipboard(text, done, html) {
 // contenteditable and running execCommand('copy') still puts a text/html flavor on the
 // clipboard. Degrades to the plain textarea path if the command reports failure.
 function _ttCopyRichFallback(text, done, html) {
+  const prev = document.activeElement;   // selecting inside the editable div takes the focus; it goes back below
   const d = document.createElement('div');
   d.setAttribute('contenteditable', 'true');
   d.innerHTML = html;   // built in-page from esc()'d tokens — never raw remote markup
@@ -9679,6 +9680,7 @@ function _ttCopyRichFallback(text, done, html) {
   let ok = false;
   try { ok = document.execCommand('copy'); } catch (e) {}
   sel.removeAllRanges(); d.remove();
+  if (prev && prev !== document.body && prev.focus) prev.focus({ preventScroll: true });
   if (ok) done(); else _ttCopyFallback(text, done);
 }
 // Only a copy that happened says so (a page framed in an LMS refuses the async clipboard, and a
