@@ -8,6 +8,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P3 (**NEW S441 Pass C**) | torah_trainer.html (+ the suite's other gold rings) | **The 2px `var(--gold)` focus ring reads 2.6–2.75:1 on the light page** (12 `:focus-visible` rules: tabs, toggles, radios, words, selects, the skip link), under 1.4.11's 3:1; `--gold-text` (#7f5a13, dark = `--gold`) is the in-file fix. A suite question, so F or A. | found S441
+
 - [ ] P3 (**S440 H, gate 2**) | hebrew_dictionary.html | **A theme saved over 200 words drops its A→Z tail** (Animals loses fox, octopus, chicken…). | found S440
 
 - [ ] P3 (**S440 H, gate 2**) | hebrew_dictionary.html | **"Words from this root" calls the word's letters its root** on 9,321 words (findings S440). | found S440
@@ -24,7 +26,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S435 P — gate 2, new copy ×5**) | dashboard, generator, torah, dictionary, flash | **The vowel-colour reset confirm names no account-wide effect while signed in**, though all five reset overrides that travel. | found S435
 
-- [ ] P4 (**NEW S434 N**) | hebrew_blend_generator.html | **Dead code from retired UI**: `makeSortable()` is never called (the folder tree replaced it), and the retired `.mobile-fab` (5 hidden buttons with ids, `display:none` everywhere) still ships with its `wireFab` disabled-tap toast handler. | found S434
+- [ ] P4 (**NEW S434 N — S441 looked, split: the `.mobile-fab` ids are still read at ~10 sites, the tour's share step falls back to `#shareBtnMob`; take `makeSortable()` alone first**) | hebrew_blend_generator.html | **Dead code from retired UI**: `makeSortable()` is never called (the folder tree replaced it), and the retired `.mobile-fab` (5 hidden buttons with ids, `display:none` everywhere) …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S432 L — gate 2**) | index.html | **The hub's og:/twitter:description name every tool but the Font Maker.** | found S432
 
@@ -38,7 +40,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S428 Pass F — 7 carriers**) | index, dashboard, generator ×2, flash ×3 | **A copy both routes refused still says "Copied"** (`execCommand`'s answer ignored; model `dictCopyText`); the backup-textarea Copy buttons go unannounced. | found S428
 
-- [ ] P4 (**NEW S427 Pass C — (4) FIXED S439 `3f0408fc`**) | hebrew_dictionary.html | **(1)** the emoji tree's ▾ 15×9 px, rows 21 px apart; **(2)** "♀ Feminine" 4.42:1 at 0.62rem; **(3)** Shoresh's empty tiles 2.79:1 / 3.13:1. | found S427
+- [ ] P4 (**NEW S427 Pass C — (4) FIXED S439 `3f0408fc`, (2) FIXED S441 `1a3d87f8`**) | hebrew_dictionary.html | **(1)** the emoji tree's ▾ 15×9 px, rows 21 px apart; **(2)** "♀ Feminine" 4.42:1 at 0.62rem; **(3)** Shoresh's empty tiles 2.79:1 / 3.13:1. | found S427
 
 - [ ] P4 (**NEW S421 Pass P**) | classroom_dashboard.html | **The "Now showing {name} — the classes from your account are in the class list" switch runs on every signed-in load and credits the account even when it holds nothing**: with the pointer on the untouched default and a class this device made itself, the page switches to that class and says it came from the account …[full text: …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -72,8 +74,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S412 Pass H**) | data/hebrew_emojis.json | **🥝 קִיוִוי reads "kivivy"** (+ "di.en.eyy.", "beruneyy"); the fix bumps the corpus `?v=`. | found S412
 
-- [ ] P4 (**NEW S413 Pass C**) | resources.html | **Card focus lacks hover's affordances** (the trio's (1) directory `lang="en"` and (3) ✓ 3.41:1 FIXED S422 `8c56a89`, `d28cf34`). | found S413
-
 - [ ] P4 (**NEW S413 Pass C — gate 3**) | 404.html | **The lost star wanders forever with no pause** (WCAG 2.2.2); only reduced motion stops it. | found S413
 
 - [ ] P4 (**NEW S414 Pass F — gates 2/3 + K**) | chrome pages, the 7 tools, 404, CSV | gate 2: **(1)** dark mode's visible "Light", and FM's fullscreen "Show/Hide Panels" (S415), are not in their fixed toggle names (2.5.3); **(2)** "Back" goes to the home page (tools say "Home"); **(3)** 404 lists 4 of 7 tools. Gate 3: **(4)** Tour / Dark / Full Screen / Settings order differs per tool. K: …[full …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -104,8 +104,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S403 Pass E arm 20 — K's to fix; CLASSIFIED S405**) | locales/ui-strings.csv | **121 rows keep a `leading-emoji` note although their `en` no longer leads with a glyph** (the icon sweep re-noted 74 others `svg-icon-in-markup`); a translator adding a third language would put the emoji back. S405 read every row's use sites: 99 ICON → `svg-icon-in-markup`, 11 PLAIN → drop the token, 9 …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] P4 (**NEW S398 Pass B — REPLACES the S397 flash-cards line and CORRECTS its trope verdict; measured on the RENDERED outline, not the static DOM**) | flash_cards.html, Hebrew_Font_Maker.html, trope_tutor.html | **Three pages skip a heading level for a reason the tour card is not.** Rendered at load: flash `h1,h3×8` and FM `h1,h3×16` both jump 1→3 (their h3s are panel/modal titles, all …[full …[full text: IMPROVEMENT_ARCHIVE.md]
-
 - [ ] P4 (**NEW S396 Pass C — filed rather than fixed BECAUSE it cannot be measured in this harness; do not ship it on an assertion**) | account.html | **`#holdsList` carries `list-style:none`, which is the shape that makes WebKit/VoiceOver drop a list's semantics** (the count and the "list" role), leaving the account's holdings as loose text. The nested `.holds-kinds` / `.holds-names` keep their …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**S394 census, retuned S395 — `04892f3` took the three SHADOWED ones that were accidents; what is left here is judgement, not dead code**) | hebrew_blend_generator.html | **The `.bingo-card-num` / `.bingo-grid` IDENTICAL twins and the `.bingo-card` SHADOWED one sit inside a deliberate later layer that re-declares the bingo shapes in print-safe literals, and `body.dark …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -118,13 +116,9 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S388 Pass K RTL arm — MEASURED and deliberately logged, not shipped; the third session to adjudicate this shape the same way (S248 `#fsExitBtn`, S376 `.pick-close`)**) | classroom_dashboard.html | **`.dash-edit-pencil` is pinned `top:4px; right:4px` and does not mirror — logical start-offset 520px in `en`, 4px in `he`, the physical right corner in both.** Held back because the …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] P4 (**NEW S382 Pass P census — a JUDGEMENT call, not the same defect: these are action toolbars, not homogeneous selection grids, and one stop per button is defensible**) | classroom_dashboard.html + torah_trainer.html | **`.fs-strip-btn` ×6, `.timer-preset-btn` ×5, `drawerToolbar .ed-btn` ×9; torah `.tt-fs-btn` ×6, `#ttTropeLegend .tt-trope-chip` ×6.** ARIA APG would rove a toolbar; the …[full text: IMPROVEMENT_ARCHIVE.md]
-
 - [ ] P4 (**NEW S380 Pass H — dead copy or a hint-logic choice; the copy half is gate 2**) | Hebrew_Font_Maker.html | **`nexthint_nikkud` ("Letters done! Place nikkud on {name} — {count} to go.") and the `export_nikkud_*` guard can never fire in the trace flow: `finalizeWithOutline` seeds `l.anchors` on every trace, so `coreLetterStats().unanchored` is always empty and the hint jumps from the …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S377 Pass G — a CONTENT question (gate 2), so logged not shipped; if stray, one regex over `data/hebrew_words.json` + `?v=6→7` on the three fetching pages**) | data/hebrew_words.json | **Phrase entries …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [ ] P4 (**NEW S378 Pass D — GATE 2: a drag-behaviour choice, deferred unattended; numbers in loop-findings**) | hebrew_dictionary.html | **The sidebar seam drag relays out every visible word card per pointer move: 40 real moves = 40 tasks of 107–139ms @4× at the default 100 cards (max 204), 238ms avg at 400 cards; 0 longtasks @1× at 100 cards.** The S325 scoping holds (one `aside@style` write …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S378 Pass D — GATE 2: a preview-size choice, deferred unattended**) | hebrew_dictionary.html | **"Select all matching" on the unfiltered corpus is a 339 + 274ms block @1× (1.7s @4×) and only 27ms of it is JS: the browser lays out the 13,081-line bulk textarea.** Proposal: cap the textarea preview (first 500 lines + "…and N more") while copy/export keep the full set. | found S378
 
@@ -139,10 +133,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S364 Pass G — GATE 2: a default-output choice, deferred unattended; numbers + screens in loop-findings (`g364/out/board-print-en-dark.png`)**) | classroom_dashboard.html | **With background graphics ON, the board's day plates print in their screen colours under the print block's navy ink (`.day-item.colored { color: var(--text) }`): 1.12:1 on Friday's indigo, 1.58 purple, 2.58 …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S364 — pattern `sub-floor touch target`, an M call like the `.toggle` switches**) | hebrew_blend_generator.html | **The bingo card stepper's ▲/▼ buttons are 18.7×10.5 / 18.7×9.5px at 8.8px type (Bingo mode, `.bingo-step`).** A 24px pair doubles the 90px control's height — a visible size change, not a hit-box trick (the two stack inside a 1px-bordered box). | found S364
-
-- [ ] P4 (**S357 Pass A → PARTLY FIXED S365 (`d86e728`: the 7 unscaled 40×22 toggles → 40×24); pattern `sub-floor touch target`, the rest are M calls**) | hebrew_blend_generator.html + Hebrew_Font_Maker.html | **Three sub-option toggles carry `style="transform:scale(0.75)"` (32×19 / 30×18 after the floor); the Font Maker's `#rulerCorner` zoom-reset is 22×22, sized by `--rl-w`.** Unscaling the …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [ ] P4 (**NEW S353 Pass I — a default-behaviour choice for the maintainer (gate 2-class); found on the `f2384a7` surface**) | resources.html | **The font-preview modal's render stack is `'<gallery font>', serif` with no `'IvritSuite Taamim'` fallback (`_fpFamily`), so a trop-less gallery font previews cantillation — typed from the keyboard's own Trop tab into the preview box — as boxes on stock …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S351 Pass G — GATE 2 copy, for L/the maintainer**) | trope_tutor.html (`locales/ui-strings.csv`, the FAQ JSON-LD) | **The FAQ answer `trope.footer.faq_a7` and its JSON-LD copy promise "prints all 26 marks as one reference sheet"; the chart is 8 sheets at Letter / 9 at A4 since `d9541e3` (S353; it was 13).** "as one reference chart" (the button's own wording) would be accurate; the …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -165,8 +155,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P3 (**NEW S292 Pass H — the pass's headline finding; GATE 2 ASKED, maintainer chose "log it only, change nothing"**) | hebrew_dictionary.html | **"⭑ Save as Word List…" is discoverable only from a theme.** Word …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S285 Pass C — a cross-tool DIVERGENCE, filed for F rather than as a defect**) | classroom_dashboard.html vs the other four tooltip carriers | **The dashboard binds its tooltip to the `.tip-icon`; the other four bind the `.tip-wrap`.** `wire()` sets `tabIndex`/`role`/`aria-expanded`/`aria-describedby` on the inner icon, while `bindTip` sets them on the wrapper. Both are …[full …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [ ] P4 (**NEW S277 Pass M — a DISMISSAL with reasoning, the S276 email-period lesson's sibling**) | resources.html (+ any HE surface showing numeric ranges) | **HE grade ranges displaying '12–9' are Hebrew range typography, not scrambled data.** In an RTL paragraph a '9–12' range's digits stay LTR but the range reads right-to-left — Hebrew style legitimately writes ranges this way, and the …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S260 Pass L; HALF-CLOSED S262** — one of the two shipped, one deliberately not) | flash_cards.html + hebrew_blend_generator.html | **~~(1) The dictionary is printable and never says so~~ — ✅ CLOSED S262, `ef8fc5a`, GATE-2 ASKED AND APPROVED ("dictionary printability only").** Shipped as the FAQ + `WebApplication.description` + visible `<details>` twin, all in one commit; copy …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -268,6 +256,16 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-01 | (S441 close-out) | branch/deploy note | **S441 = pass C (`torah_trainer.html`, first C there since S298) + 4 fixes, continuing draft PR #303 (unmerged).** DRIFT: none (main `43570d4`, v908, FM 5.58, SDK 2.116.0, 0003 live, keep-alive green 10-01). sw v908→v909. FM: no bump (no FM change). Gates: none asked. Scripts: check-i18n, check-inline-js clean. Deferred: none new.
+
+- [x] 2026-10-01 | `1a3d87f8` | hebrew_dictionary.html | (S441; S427's (2)) **The emoji cards' "♀ Feminine" meets 4.5:1 and both gender labels the 0.7rem floor.** | verified: Emoji mode, 4 cells, lowest 4.42 → 5.04 light, 0 overflow
+
+- [x] 2026-10-01 | `3bd6a9e9` | resources.html | (S441; S413's P4) **A keyboard-focused card shows what hover shows.** | verified: Tab, 4 cells (one reduced-motion), HEAD resting 4/4 → hover look 4/4
+
+- [x] 2026-10-01 | `97c54dfb` | torah, trope, dictionary, flash, dashboard | (S441 C; NEW tip-escape-drops-focus) **Escape on a tip closes only the bubble and keeps the focus**; it closed the torah and dashboard drawers too. | verified: keyboard, 12 cells, focus kept 0/12 → 12/12, drawer kept 0/4 → 4/4
+
+- [x] 2026-10-01 | `17cd7334` | torah_trainer.html | (S441 C; button-focus-lost-to-its-own-rebuild) **"Color-code the trope" hands its focus to the legend.** | verified: Enter + click, 8 cells, BODY 8/8 → legend 8/8
+
 - [x] 2026-10-01 | (S440 close-out) | branch/deploy note | **S440 = pass H (dictionary) + 4 fixes, continuing draft PR #303 (unmerged).** DRIFT: none. sw v907→v908. FM: no bump. Gates: none asked; 3 gate-2 items logged.
 
 - [x] 2026-10-01 | `10a0c18f` | hebrew_blend_generator.html | (S440; tip-name) **The vav checkbox is named without "More information".** | verified: CDP AX name, HEAD 4/4 → 0/4
@@ -301,6 +299,8 @@ _(none)_
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-01 | **S441** | iters: 1 pass (**C**) + 4 fixes = **5** | tools: torah ×2, trope, dictionary ×2, flash, dashboard, resources | patterns fixed: tip-escape-drops-focus ×1 (NEW, 5 carriers), button-focus-lost-to-its-own-rebuild ×1 | pass run: C | SW: v908→v909
 
 - 2026-10-01 | **S440** | iters: 1 pass (**H**) + 4 fixes = **5** | tools: dictionary ×2, dashboard, generator | patterns fixed: logical-inset-mirrors-onto-pinned-content ×1 (NEW), tip-name-joins-its-field's-name ×1 | pass run: H | SW: v907→v908
 
@@ -340,13 +340,13 @@ _(none)_
 
 - 2026-09-27 | **S422** | iters: 1 pass (**M**) + 4 fixes = **5** (full budget) | tools: torah ×2, resources ×2 | patterns fixed: contrast-below-AA-on-a-tinted-or-coloured-plate ×1, pinned-english-without-lang ×1 | pass run: M | SW: v864→v865
 
-- 2026-09-25 | **S421** | iters: 1 pass (**P**) + 3 fixes = **4** | tools: dashboard, index, js/ivrit-saves.js (shared) | patterns fixed: editor-re-parse-caps-a-merged-list ×1 (NEW) | pass run: P | SW: v854→v855
-
 ### Tool coverage (last-touched date per tool)
 
-- **S440 (2026-10-01):** dictionary, dashboard, generator (**S440**; **C-next** C S298 torah; **H-next** H S305 resources); torah (S439); flash (S438); index, resources (S437); js/ivrit-saves.js, account, trope (S433); terms (S432); licences, README, ops.md, font-maker.md (S431)
+- **S441 (2026-10-01):** torah, trope, dictionary, flash, dashboard, resources (**S441**; **C-next** C S312 trope; **H-next** H S305 resources); generator (S440); index (S437); js/ivrit-saves.js, account (S433); terms (S432); licences, README, ops.md, font-maker.md (S431)
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`tip-escape-drops-focus`** (NEW S441; all 5 carriers FIXED `97c54dfb`): ACTIVE, streak 0. A keyboard tooltip whose Escape calls `blur()` drops the focus to the body, and an unstopped Escape closes the drawer under it. Detection (scratchpad `c441/v2.mjs`): Tab onto a visible …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`account-wide-delete-confirm-without-signed-in-wording`** (NEW S435 P; flash's result delete FIXED `e56d95be`; the colour reset ×5 OPEN, gate 2): ACTIVE, consequence-adjacent (a teacher reads a deletion as local), streak 0. A `confirm()` before a delete/reset of a synced …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -358,7 +358,7 @@ _(none)_
 
 - **`copy-claims-success-on-a-refused-clipboard`** (NEW S428; FIXED `bbd5f65`, `0d2a941`; 7 open): ACTIVE, streak 0. Detection `f428/copy.mjs`: sentinel, real click, 3 contexts.
 
-- **`button-focus-lost-to-its-own-rebuild`** (**S426 account `e091820`; S427 the dictionary's Word Lists `7a631f6`, chips/Reset FIXED `cea92bf`; S434 torah's Try again `dfc25af8`; S437 the dictionary's empty-state buttons `c98070a5` and Add to Word List's close `cd41b928`; S439 …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`button-focus-lost-to-its-own-rebuild`** (**S441 torah's trope chip `17cd7334`; S426 account `e091820`; S427 the dictionary's Word Lists `7a631f6`, chips/Reset FIXED `cea92bf`; S434 torah's Try again `dfc25af8`; S437 the dictionary's empty-state buttons `c98070a5` and Add to …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`dark-literal-escapes-the-print-tokens`** (NEW S437 G; resources FIXED `5320a668`): ACTIVE, streak 0. Detection: PDFs dark vs light, ink per page (<200 at 40 dpi); a lighter dark sheet = a `body.dark` literal the print token reset misses. Exempt: active-state borders. S437: …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -626,7 +626,7 @@ _(none)_
 
 - K i18n / localization audit: 2026-10-01 (**S433 — 29th K. Delta `bf028cdc..4e19a1c`: 161 commits, CSV +367/−110. Gates A–E clean, 7 plants fire; 11 arms, 28 runtime cells, 9 delta surfaces, every zero controlled. FOUND: the saves module's stale fallbacks (P3), FAQ a5's one-sided edit, 14 stale static fallbacks, the holiday names (gate 2); FIXED 4.**)
 
-- C accessibility (one tool): 2026-09-28 (**S427 — `hebrew_dictionary.html`, first since S285. Census, Tab walks, 13 scenarios, modes, dialogs; every zero controlled. FOUND 5 P3 + 4 P4; FIXED `7a631f6`, `ee5f6f2`. C-next: torah (S298).**)
+- C accessibility (one tool): 2026-10-01 (**S441 — `torah_trainer.html`, first since S298. Tab census (44 page stops, 124 drawer stops over 7 tabs), ring contrast, 7 triggers × Escape, tips on 5 pages; every zero controlled. FOUND 2 focus drops, the drawer-closing tip Escape, the 2.6:1 gold ring; FIXED `17cd7334`, `97c54dfb`. C-next: trope (S312).**)
 
 - A recurring-pattern sweep: 2026-09-30 (**S430 — 34th A: the delta `a907bf1..99f9fa5` + S416→now; 14 arms, every zero controlled, Hebcal as oracle. FOUND P2, P3 ×2, 4 stale fallbacks, NEW pattern ×4, 3 P4s; FIXED 3.**)
 
@@ -648,4 +648,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-09-29 (**S428 — the copy contract: 13 controls × direct / LMS frame / planted double failure, every zero controlled. FOUND 3 claiming over the old clipboard (P3, FIXED `bbd5f65`, `0d2a941`), 9 ignoring execCommand (2 fixed), 4 unannounced.**)
 
-**Next session (S441):** **BRANCH/PR: S435–S440 on `claude/nice-mayer-bzr3d9` → draft PR #303 (base `43570d4`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v908**, FM **5.58**, SDK **2.116.0**; backend unchanged (0001–0003 live, delete-account v3 = repo source); email template `Live?` = no. ⚑ Stalest: C (S427), then F (S428), B (S429); O stays blocked. ⚑ Strongest untaken: the dictionary's theme cap (P3, gate 2) and the bingo preview at 800 (P3, layout).
+**Next session (S442):** **BRANCH/PR: S435–S441 on `claude/nice-mayer-bzr3d9` → draft PR #303 (base `43570d4`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v909**, FM **5.58**, SDK **2.116.0**; backend unchanged (0001–0003 live, delete-account v3 = repo source); email template `Live?` = no. ⚑ Stalest: F (S428), then B (S429), A (S430); O stays blocked. ⚑ Strongest untaken: the gold focus ring under 3:1 on light (P3, suite-wide → F or A), the dictionary's theme cap (P3, gate 2), the bingo preview at 800 (P3, layout).
