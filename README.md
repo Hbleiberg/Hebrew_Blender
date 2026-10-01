@@ -400,7 +400,7 @@ upgrade of an older device's sync memory (nothing deleted, nothing removed from 
 | `splash/` | iOS launch/splash screens + `gen_splash.py` generator (and its bundled Libre Baskerville fonts) |
 | `starting-fonts/` + `scripts/add_os_font.py`, `scripts/audit-os-fonts.mjs`, `scripts/stage_os_fonts.py` | Partner "starting fonts" behind `Hebrew_Font_Maker.html?start=<id>` (manifest + each font's upstream license). Staged either by hand through the `/addOSFont` skill or by the weekly workflow, which audits the partner's published list and runs the same license gate on whatever is new |
 | `partners/` | Partner marks shown inside a tool — currently the Open Siddur Project's logo beside the Font Maker's starting-font picker, vendored unmodified with its provenance and license terms in `NOTICE.md` (not precached) |
-| `icons/`, `apple-touch-icon.png`, `icon-192.png`, `icon-512.png`, `og-card.png`, `og-fontmaker.png` | PWA / home-screen icons and the social cards (the suite's, and the Font Maker's own) |
+| `icons/`, `apple-touch-icon.png`, `icon-192.png`, `icon-512.png`, `og-card.png`, `og-fontmaker.png`, `og-trope.png` | PWA / home-screen icons and the social cards (the suite's, the Font Maker's own, and the Trope Tutor + Torah Trainer's shared one) |
 | `zelle-qr.jpg` | Donation QR code shown on the contact page |
 | `fonts/` | Bundled Hebrew fonts + their license files: the display faces (Frank Ruhl Libre, Lakhish Bold, Reuben, TzviScript, TzviScript Stroke Guide) and `NotoSerifHebrew-Taamim.ttf`, the Hebrew-block subset of Noto Serif Hebrew declared as `'IvritSuite Taamim'` — the te'amim fallback every Hebrew font stack ends with, because Frank Ruhl Libre has no cantillation glyphs |
 | `LICENSE` | CC BY-NC-SA 4.0 |
