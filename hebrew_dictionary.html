@@ -5917,13 +5917,13 @@ function renderDictEmptyState(isEmoji) {
     if (bare && bare !== q && _dictPreQuery.some(w => dictTextMatch(w, lower))) {
       const v = document.createElement('button'); v.className = 'empty-btn';
       v.textContent = I18n.t('dictionary.empty.search_without_vowels');
-      v.addEventListener('click', () => { document.getElementById('searchInput').value = bare; onFilter(); });
+      v.addEventListener('click', () => { const si = document.getElementById('searchInput'); si.value = bare; onFilter(); updateSearchClear(); si.focus(); });   // the button leaves with the empty state: the focus goes to the query it changed
       actions.appendChild(v);
     }
   }
   if (q) {
     const b = document.createElement('button'); b.className = 'empty-btn'; b.textContent = I18n.t('dictionary.empty.clear_search');
-    b.addEventListener('click', () => { document.getElementById('searchInput').value = ''; onFilter(); });
+    b.addEventListener('click', clearDictSearch);   // the search ✕'s own path: the field keeps the focus, the ✕ hides
     actions.appendChild(b);
   }
   const r = document.createElement('button'); r.className = 'empty-btn'; r.textContent = I18n.t('dictionary.empty.reset_all');
