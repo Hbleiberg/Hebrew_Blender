@@ -4017,7 +4017,8 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
     if (!HHMM_RE.test(hhmm || '')) return hhmm || '';   // '', '—', '⋯' and half-filled rows pass through
     if (settings.timeFmt === '24') return hhmm;         // already exactly the 24-hr rendering
     const [h, m] = hhmm.split(':').map(Number);
-    return new Date(2000, 0, 1, h, m).toLocaleTimeString('en-US', clockOpts());
+    // An LTR isolate (LRI…PDI, invisible): in the Hebrew UI an unisolated "11:00 PM" read "PM 11:00".
+    return '\u2066' + new Date(2000, 0, 1, h, m).toLocaleTimeString('en-US', clockOpts()) + '\u2069';
   }
   function updateTimeOnly(now) {
     const timeEl = document.getElementById('currentTime');
