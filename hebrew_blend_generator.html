@@ -9334,6 +9334,13 @@ async function exportPDF() {
   const pdfBtn = document.getElementById('pdfBtn');
   pdfBtn.textContent = I18n.t('worksheet.actions.pdf_generating');
   pdfBtn.disabled = true;
+  // The sheet is fluid on screen and the capture takes it as laid out, so a narrow window (a tablet,
+  // a half-screen laptop) exported a narrow layout: at 800px the bingo cells ran into each other and a
+  // reading sheet became a 281px strip stretched over the page. Pin the worksheet at its own
+  // max-width, the width a wide window gives it, for the capture; finally{} lets it go.
+  const wsPin = { width: ws.style.width, maxWidth: ws.style.maxWidth };
+  ws.style.width = getComputedStyle(ws).maxWidth;
+  ws.style.maxWidth = 'none';
 
   try {
     // jspdf.umd comes from cdnjs and nothing precaches it, so offline — or behind a school filter —
@@ -9559,6 +9566,8 @@ async function exportPDF() {
     showPreviewNotice(() => I18n.t('worksheet.validation.pdf_failed'), { kind: 'warn', dismissible: true });
     console.error(err);
   } finally {
+    ws.style.width = wsPin.width;
+    ws.style.maxWidth = wsPin.maxWidth;
     pdfBtn.textContent = I18n.t('worksheet.actions.export_pdf');
     pdfBtn.disabled = false;
   }

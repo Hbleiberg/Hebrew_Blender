@@ -306,3 +306,7 @@ without it jsPDF stores the decoded raster raw (~10 MB per page, 107 MB for an 8
 cut lines are drawn as vector primitives after the image, at positions measured from the captured canvas.
 The capture itself is synchronous and costs ~0.3–1 s of main thread per page; the button reads
 "Generating…" for the duration.
+For the capture `#worksheet` is pinned at its own computed `max-width` (inline `width`, `max-width:none`,
+restored in `finally`): the sheet is fluid on screen and the capture takes it as laid out, so without the pin
+a narrow window exported a narrow layout. Below 700px the phone rules still restyle the sheet's contents
+(header stacked, Hebrew at 0.75×); only the width is pinned.
