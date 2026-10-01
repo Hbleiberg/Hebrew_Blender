@@ -10049,7 +10049,8 @@ function closeCopyBar() {
 async function goToCurrentParshah() {
   // The local calendar first (js/hebrew-calendar.js: no network, any week); a doubled week opens its first
   // parasha, as the Sefaria path below always did. A festival Shabbat with a reading in HOLIDAY_READINGS opens
-  // it; a Shabbat Chol HaMoed still asks Sefaria's calendar for the day's reading.
+  // it; a Shabbat Chol HaMoed and the Diaspora's Pesach 8 / Shavuot 2 (see HOLIDAY_KEY_BY_CAL) still ask
+  // Sefaria's calendar for the day's reading.
   const wk = localWeekReading();
   let match = wk && wk.kind === 'parsha' ? parshaByIdx(wk.idx[0]) : null;
   if (!match) {
@@ -10224,7 +10225,8 @@ async function init() {
   } catch (e) { /* never let a bad URL break init */ }
 
   // Determine starting parsha: the local calendar first (offline, no Sefaria call), Sefaria for a Shabbat
-  // Chol HaMoed (its reading is not one of HOLIDAY_READINGS) or when the calendar module is missing.
+  // Chol HaMoed or the Diaspora's Pesach 8 / Shavuot 2 (none opens from HOLIDAY_READINGS; see
+  // HOLIDAY_KEY_BY_CAL) or when the calendar module is missing.
   if (!settings.parshahKey) {
     const wk = localWeekReading();
     const lp = wk && wk.kind === 'parsha' ? parshaByIdx(wk.idx[0]) : null;
