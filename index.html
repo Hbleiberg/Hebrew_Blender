@@ -1287,7 +1287,10 @@ async function importAllSettings() {
   if (!raw) { alert(I18n.t('home.alltools.import_err_empty')); return; }
   let parsed;
   try { parsed = ivritSafeParse(raw); } catch(e) { alert(I18n.t('home.alltools.import_err_json')); return; }
-  // An .ivrit file pasted whole (the account backup, a cloud row's file): its data is the export blob
+  // An account backup (partial) or a kept copy pasted whole takes the file route, which fills in / merges as a drop
+  // of the same file does; this path's merge would put a backup's older copies over newer ones (and, signed in, into the account)
+  if (parsed && parsed.format === 'ivrit-save' && (parsed.partial === true || parsed.kept === true)) { await ivritRestore(raw); return; }
+  // An .ivrit file pasted whole (a cloud row's file): its data is the export blob
   if (parsed && parsed.format === 'ivrit-save' && parsed.data && typeof parsed.data === 'object' && !Array.isArray(parsed.data)) { parsed = parsed.data; parsed._hebrewBlenderExport = 1; }
   ivritUnfoldSuitePrefs(parsed);
   if (!parsed._hebrewBlenderExport) { alert(I18n.t('home.alltools.import_err_notexport')); return; }
