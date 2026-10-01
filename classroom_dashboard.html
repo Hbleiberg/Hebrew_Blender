@@ -7379,8 +7379,10 @@ function mountFolderTree(cfg){
     const box = document.getElementById('presetBackupBox');
     const btn = document.getElementById('presetCopyBtn');
     if (!box.value) return;
-    navigator.clipboard.writeText(box.value).catch(() => { box.select(); document.execCommand('copy'); });
-    btn.innerHTML = ICON_CHECK_SM; setTimeout(() => btn.textContent = I18n.t('shared.ivrit.manual_copy'), 1500);
+    const done = () => { btn.innerHTML = ICON_CHECK_SM; setTimeout(() => btn.textContent = I18n.t('shared.ivrit.manual_copy'), 1500); };
+    // Claimed only once a route copied (the dictionary's dictCopyText): a refused copy leaves the text selected to copy by hand.
+    const viaSelect = () => { box.select(); let ok = false; try { ok = document.execCommand('copy'); } catch (e) {} if (ok) done(); };
+    if (navigator.clipboard) navigator.clipboard.writeText(box.value).then(done, viaSelect); else viaSelect();
   }
   function importPresets() {
     try {
