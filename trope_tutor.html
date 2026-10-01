@@ -1557,8 +1557,11 @@ function resetAllSettings() {
   const signedIn = !!(window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession());
   if (!confirm(I18n.t(signedIn ? 'trope.confirm.reset_all_cloud' : 'trope.confirm.reset_all'))) return;
   // Signed in, the reset is a write like any other: it reaches the account and every device (the confirm says so).
-  localStorage.removeItem(STORAGE_KEY);
   settings = JSON.parse(JSON.stringify(DEFAULTS));
+  // The defaults are written, not the key removed: signed in, a removed settings row is put back by the next device
+  // that still holds one, while a written default travels as the newer value.
+  if (_saveTimer) { clearTimeout(_saveTimer); _saveTimer = null; }
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(settings)); } catch (e) { console.warn('resetAllSettings', e); }
   dropMelodyParam();   // a reset is back to defaults, a link's per-visit melody included
   applyHebFontSize();
   setHebFont(settings.hebFont);

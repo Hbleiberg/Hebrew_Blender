@@ -778,6 +778,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // This page has its own (required) name field, so the post-sign-in name step stays closed here; attaching Suite
     // keeps the suite-wide preferences and My Fonts hydrated like every other module page.
     IvritAccount.init({ nameStep: false });
+    // A suite-wide preference from the account landed: follow the theme now (the module switches the language itself).
+    window.addEventListener('ivritsuite:prefs', () => {
+      const want = localStorage.getItem('hebrewBlender_darkMode');
+      if ((want === '1' || want === '0') && document.body.classList.contains('dark') !== (want === '1')) toggleDark();
+    });
     try { IvritSaves.attach({ tool: 'Suite' }); } catch (e) { console.warn(e); }
     IvritAccount.onChange(onAccount);
   } else { say('busyNote', () => t('account.out.offline')); show('acctBusy'); }

@@ -803,7 +803,8 @@ async function downloadMyFontFile(name) {
   } catch (e) { console.error(e); }
 }
 function deleteMyFontFile(name) {
-  if (!confirm(I18n.t('home.alltools.myfonts.remove_confirm', {name: name}))) return;
+  const _signedIn = !!(window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession());
+  if (!confirm(I18n.t(_signedIn ? 'home.alltools.myfonts.remove_confirm_cloud' : 'home.alltools.myfonts.remove_confirm', {name: name}))) return;
   // A teacher's own deletion: the account's row goes too (the shared block's cap eviction never does — that is not a deletion).
   deleteUserFont(name).then(() => { if (window.IvritSaves && window.IvritAccount && IvritAccount.hasStoredSession()) IvritSaves.fontDeleted(name); }).then(renderMyFontsManager).catch(e => console.error(e));
 }
@@ -1184,6 +1185,9 @@ function tropeProgressMerge(incoming, replace) {
   if (wm > 0) out.resetAt = wm;
   for (const src of [base, incoming]) {
     if (!src || typeof src !== 'object') continue;
+    // A side whose watermark is older than the other's (an old backup against a newer reset, or the reverse) is
+    // mastery from before that reset: it does not come back (the module's deepMax rule, applied here too).
+    if ((Number(src.resetAt) || 0) < wm) continue;
     const tr = src.tropes;
     if (tr && typeof tr === 'object') for (const k in tr) {
       if (!Object.prototype.hasOwnProperty.call(tr, k) ||
@@ -1302,8 +1306,10 @@ async function importAllSettings() {
       localStorage.setItem('hebrewDashboard_schedules', JSON.stringify(ivritSafeAssign(existing, parsed.dashboardSchedules)));
     }
     if (parsed.dashboardSettings) {
+      const split = dashboardSettingsSplit(parsed.dashboardSettings);
       const existing = ivritSafeParse(localStorage.getItem('hebrewDashboard_settings') || '{}');
-      localStorage.setItem('hebrewDashboard_settings', JSON.stringify(ivritSafeAssign(existing, parsed.dashboardSettings)));
+      localStorage.setItem('hebrewDashboard_settings', JSON.stringify(ivritSafeAssign(existing, split.rest)));
+      if (split.rosters) mergeDashboardRosters(split.rosters, false);
     }
     if (parsed.dashboardRosters && parsed.dashboardRosters.rosters) mergeDashboardRosters(parsed.dashboardRosters.rosters, false);
     if (parsed.flashCardPresets) {
@@ -1469,7 +1475,21 @@ async function eraseAllSettings() {
     break;
   }
   const signedIn = !!(window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession());
-  if (!confirm(I18n.t(signedIn ? 'home.alltools.erase_confirm2_signed_in' : 'home.alltools.erase_confirm2'))) return;
+  // Signed in, the account keeps what it holds — but not what never reached it (a font too big for it, an edit not
+  // sent yet). Pending edits are sent first (bounded), and the last confirm names what would be lost for good.
+  let unsynced = 0, unknown = false;
+  if (signedIn && window.IvritSaves && typeof IvritSaves.flush === 'function') {
+    try {
+      const tools = ['Suite', 'Worksheet', 'FlashCards', 'Dictionary', 'TorahTrainer', 'TropeTutor', 'Dashboard'];
+      await Promise.race([Promise.all(tools.map(t => IvritSaves.flush(t).catch(() => null))), new Promise(r => setTimeout(r, 5000))]);
+      const ps = (typeof IvritSaves.pendingSignOut === 'function' && IvritSaves.pendingSignOut()) || {};
+      unsynced = Number(ps.unsynced) || 0; unknown = !!ps.unknown;
+    } catch (e) { unknown = true; }
+  }
+  const eraseKey = !signedIn ? 'home.alltools.erase_confirm2'
+    : unsynced ? 'home.alltools.erase_confirm2_signed_in_unsynced' + (unsynced === 1 ? '.one' : '.other')
+    : unknown ? 'home.alltools.erase_confirm2_signed_in_unknown' : 'home.alltools.erase_confirm2_signed_in';
+  if (!confirm(I18n.t(eraseKey, { n: unsynced }))) return;
   // Signed in, nothing below may reach the account: write-through stops before the first key goes (after the
   // confirms, so a cancelled Erase leaves it running).
   if (window.IvritSaves && typeof IvritSaves.suspend === 'function') IvritSaves.suspend();
@@ -1563,7 +1583,7 @@ async function eraseAllSettings() {
   // for, and the cloud-saves sync memory. Erase =
   // signed out on this device; when a session was there the page reloads afterwards, so the chip and
   // the cloud panels (and the SDK's in-memory copy of the session) start from the emptied storage.
-  const accountKeys = Object.keys(localStorage).filter(k => k.startsWith('sb-') || k === 'ivritSuite_accountCache' || k === 'ivritSuite_signInRequest' || k === 'ivritSuite_syncMeta' || k === 'ivritSuite_syncMeta2');
+  const accountKeys = Object.keys(localStorage).filter(k => k.startsWith('sb-') || k === 'ivritSuite_accountCache' || k === 'ivritSuite_signInRequest' || k === 'ivritSuite_syncMeta' || k === 'ivritSuite_syncMeta2' || k === 'ivritSuite_syncBase' || k === 'ivritSuite_replaced');
   accountKeys.forEach(k => localStorage.removeItem(k));
   // Awaited: when a session was there the page reloads right after the alert, and a delete still pending
   // then is lost — the teacher's fonts stayed behind whenever the reload was quick (offline, from the cache).
@@ -1632,7 +1652,11 @@ const IVRIT_CFG = {
     if (data.generatorPresets)    { mergeObj('hebrewBlender_presets',         data.generatorPresets);    touched = true; }
     if (data.dashboardPresets)    { mergeObj('hebrewDashboard_presets',       data.dashboardPresets);    touched = true; }
     if (data.dashboardSchedules)  { mergeObj('hebrewDashboard_schedules',     data.dashboardSchedules);  touched = true; }
-    if (data.dashboardSettings)   { mergeObj('hebrewDashboard_settings',      data.dashboardSettings);   touched = true; }
+    if (data.dashboardSettings) {   // a Merge merges the class lists by id; only a Replace swaps the blob whole
+      if (mode === 'replace') mergeObj('hebrewDashboard_settings', data.dashboardSettings);
+      else { const split = dashboardSettingsSplit(data.dashboardSettings); mergeObj('hebrewDashboard_settings', split.rest); if (split.rosters) mergeDashboardRosters(split.rosters, false); }
+      touched = true;
+    }
     if (data.dashboardRosters && data.dashboardRosters.rosters) { mergeDashboardRosters(data.dashboardRosters.rosters, mode === 'replace'); touched = true; }   // after the settings blob: class lists live inside it
     if (data.flashCardPresets)    { mergeObj('hebrewFlashCards_presets',      data.flashCardPresets);    touched = true; }
     if (data.flashCardSettings)   { mergeObj('hebrewFlashCards_settings',     data.flashCardSettings);   touched = true; }
@@ -1747,6 +1771,16 @@ function dictScalarsIfSet() {
     if (v !== null) out[k] = v;
   });
   return out;
+}
+// A Classroom Dashboard settings blob from a file, for a Merge: its class lists come apart (merged by id through
+// mergeDashboardRosters, never swapped wholesale — that would drop every class the file lacks, and signed in, delete
+// them from the account and every device), and this device's pick sessions and active class stay.
+function dashboardSettingsSplit(ds) {
+  if (!ds || typeof ds !== 'object' || Array.isArray(ds)) return { rest: ds, rosters: null };
+  const rest = Object.assign({}, ds);
+  const rosters = (rest.rosters && typeof rest.rosters === 'object' && !Array.isArray(rest.rosters)) ? rest.rosters : null;
+  delete rest.rosters; delete rest.pickerSessions; delete rest.activeRosterId;
+  return { rest, rosters };
 }
 // Class lists from an account backup (dashboardRosters: { rosters: { id: { name, names } } }): merged by id
 // into hebrewDashboard_settings.rosters — names unioned, a class only the file has added — or, on Replace,

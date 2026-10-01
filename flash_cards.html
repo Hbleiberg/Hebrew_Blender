@@ -4652,7 +4652,9 @@ function saveSettings() {
   // keeps the teacher's persisted settings untouched across all ~70 call sites; _ladderExit()
   // restores the snapshot and then writes once.
   if (_ladderActive || _sharedDrill) return;
-  try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(getSettings())); } catch(e){}
+  // Fields this build does not know (a newer build wrote them, on this device or — signed in — another) are kept:
+  // getSettings() lists only the controls this build has, and dropping the rest would send an emptier blob up.
+  try { const prev = _persistedSettings() || {}; const out = Object.assign({}, prev, getSettings()); localStorage.setItem(SETTINGS_KEY, JSON.stringify(out)); } catch(e){}
 }
 // The stored settings as they are — what a file or a listing must carry while a transient drill runs.
 function _persistedSettings() {

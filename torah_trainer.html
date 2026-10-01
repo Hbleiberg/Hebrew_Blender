@@ -3059,8 +3059,12 @@ function resetAllSettings() {
   if (!confirm(I18n.t(signedIn ? 'torah.confirm.reset_all_cloud' : 'torah.confirm.reset_all'))) return;
   // Signed in, the reset is a write like any other: it reaches the account and every device (the confirm says so).
   linkViewEnd();     // a practice link's display settings go with everything else
-  localStorage.removeItem(STORAGE_KEY);   // favorites (FAV_KEY, FAV_TREE_KEY) deliberately stay: they are the teacher's content, not settings
   settings = JSON.parse(JSON.stringify(DEFAULTS));
+  // The defaults are written, not the key removed: signed in, a removed settings row is put back by the next device
+  // that still holds one, while a written default travels as the newer value. Favorites (FAV_KEY, FAV_TREE_KEY)
+  // deliberately stay: they are the teacher's content, not settings.
+  if (_saveTimer) { clearTimeout(_saveTimer); _saveTimer = null; }
+  if (!_handoutActive) { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(storedSettings())); } catch (e) { console.warn('resetAllSettings', e); } }
   syncFormToSettings();
   setHebFont(settings.hebFont);
   initColorPickers();

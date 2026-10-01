@@ -151,6 +151,33 @@
     return out;
   }
   function hasStoredSession() { return lsGet(AUTH_KEY) !== null; }
+  // The stored session's account id, without the SDK (a page may need it while the SDK is still loading or
+  // offline: the saves module keys a deliberate font deletion to it). Null when there is none or it is unreadable.
+  function storedUserId() {
+    try { var s = JSON.parse(lsGet(AUTH_KEY) || 'null'); var u = s && (s.user || (s.currentSession && s.currentSession.user)); return (u && typeof u.id === 'string') ? u.id : null; } catch (e) { return null; }
+  }
+  // After a sign-out the page reloads so no in-memory copy of a removed item is written back — unless the saves
+  // module says this page holds none (the Font Maker, the account page: a reload there would cut off the Font
+  // Maker's asynchronous autosave and lose the last edits).
+  // What a sign-out will do, in one confirm (the chip and the name step's Sign out instead ask the same question):
+  // the account's items leave this device, anything not in the account yet stays, preferences and My Fonts stay.
+  function signOutConfirmText() {
+    var n = 0, unknown = false;
+    try { var S = window.IvritSaves; if (S && typeof S.pendingSignOut === 'function') { var ps = S.pendingSignOut() || {}; n = Number(ps.unsynced) || 0; unknown = !!ps.unknown; } } catch (e) { n = 0; }
+    var msg = unknown
+      ? t('shared.account.sign_out_confirm_unknown', 'Sign out? What your account holds is removed from this device. This page could not check everything with your account just now, so anything not in your account yet stays here as this device\'s own data. Your preferences and My Fonts stay here.')
+      : n
+      ? t('shared.account.sign_out_confirm_kept' + (n === 1 ? '.one' : '.other'), n === 1
+          ? 'Sign out? Your saved items stay in your account and are removed from this device. 1 item on this device is not in your account yet and stays here as this device\'s own data. Your preferences and My Fonts stay here.'
+          : 'Sign out? Your saved items stay in your account and are removed from this device. {n} items on this device are not in your account yet and stay here as this device\'s own data. Your preferences and My Fonts stay here.', { n: n })
+      : t('shared.account.sign_out_confirm', 'Sign out? Your saved items stay in your account and are removed from this device. Your preferences and My Fonts stay here.');
+    return msg;
+  }
+  function reloadAfterSignOut() {
+    var s = window.IvritSaves;
+    if (s && typeof s.needsReload === 'function') { try { if (!s.needsReload()) return; } catch (e) {} }
+    location.reload();
+  }
   function hasVerifier() { return lsGet(VERIFIER_KEY) !== null; }
   // Is this page load the return leg of a sign-in? (An error return counts; a ?code= only counts when
   // THIS browser started the flow — otherwise the link was opened elsewhere and the SDK must not see it.)
@@ -427,8 +454,9 @@
     });
     out.addEventListener('click', function () {
       if (busy) return;
+      if (!window.confirm(signOutConfirmText())) return;   // the same question the chip asks: a first hydration may already have landed the account's items
       busy = true; sync(); out.setAttribute('aria-disabled', 'true');
-      signOut().then(function () { location.reload(); }, function () { location.reload(); });
+      signOut().then(reloadAfterSignOut, reloadAfterSignOut);
     });
     var row = el('div');
     row.appendChild(cont); row.appendChild(later); row.appendChild(out);
@@ -943,17 +971,11 @@
         // the last edits and removes that cache (the confirm says so, and names what has not reached the
         // account yet, which stays here as this device's own data). The page reloads either way: it holds
         // in-memory copies of its settings, and a reload is the one reliable way to drop them.
-        var n = 0;
-        try { var S = window.IvritSaves; if (S && typeof S.pendingSignOut === 'function') n = Number((S.pendingSignOut() || {}).unsynced) || 0; } catch (e) { n = 0; }
-        var msg = n
-          ? t('shared.account.sign_out_confirm_kept' + (n === 1 ? '.one' : '.other'), n === 1
-              ? 'Sign out? Your saved items stay in your account and are removed from this device. 1 item on this device is not in your account yet and stays here as this device\'s own data. Your preferences and My Fonts stay here.'
-              : 'Sign out? Your saved items stay in your account and are removed from this device. {n} items on this device are not in your account yet and stay here as this device\'s own data. Your preferences and My Fonts stay here.', { n: n })
-          : t('shared.account.sign_out_confirm', 'Sign out? Your saved items stay in your account and are removed from this device. Your preferences and My Fonts stay here.');
+        var msg = signOutConfirmText();
         if (!window.confirm(msg)) return;
         setBusy(true);
         setNote(t('shared.account.sending', 'Sending…'), false);
-        signOut().then(function () { location.reload(); }, function () { location.reload(); });
+        signOut().then(reloadAfterSignOut, reloadAfterSignOut);
       });
       m.appendChild(out);
       m.appendChild(note);
@@ -1198,6 +1220,7 @@
     },
     needsName: needsName,
     hasStoredSession: function () { return enabled && (!!currentUser || hasStoredSession()); },
+    storedUserId: function () { return enabled ? ((currentUser && currentUser.id) || storedUserId()) : null; },
     signOutHandled: function () { return signOutHandledUid; },
     openNameStep: openNameStep,
     sessionSource: function () { return sessionSource; },

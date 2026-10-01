@@ -7421,7 +7421,15 @@ function mountFolderTree(cfg){
       }
       if (sf) ftImportTree('hebrewDashboard_schedulesFolders', sf, mode === 'replace');
       if ((sch || sf) && typeof renderSavedSchedules === 'function') renderSavedSchedules();
-      const ls = data.liveState || data.dashboardSettings;
+      // A Merge never swaps the class-list map: the file's classes are merged by id below (names unioned) and this
+      // device's pick sessions and active class stay — a settings blob carries `rosters` whole, and assigning it would
+      // drop every class the file does not have (signed in, from the account and every device too).
+      let ls = data.liveState || data.dashboardSettings, lsRosters = null;
+      if (mode !== 'replace' && ls && typeof ls === 'object' && !Array.isArray(ls)) {
+        ls = Object.assign({}, ls);
+        if (ls.rosters && typeof ls.rosters === 'object' && !Array.isArray(ls.rosters)) lsRosters = ls.rosters;
+        delete ls.rosters; delete ls.pickerSessions; delete ls.activeRosterId;
+      }
       if (ls && typeof ls === 'object' && !Array.isArray(ls) && Object.keys(ls).length) {   // a string has keys too (apply-settings-trusts-collection-members)
         applySettings(ls);
         // applySettings preserves the live schedule keys (a display preset must never clobber them),
@@ -7440,7 +7448,8 @@ function mountFolderTree(cfg){
       }
       // Class lists: the account backup's key (dashboardRosters) or a single row's file (roster), both
       // { rosters: { id: { name, names } } } — merged by id (Replace mode swaps the map), never dropped.
-      const rs = (data.dashboardRosters && data.dashboardRosters.rosters) || (data.roster && data.roster.rosters);
+      const rsFile = (data.dashboardRosters && data.dashboardRosters.rosters) || (data.roster && data.roster.rosters);
+      const rs = (lsRosters && rsFile && typeof rsFile === 'object' && !Array.isArray(rsFile)) ? Object.assign({}, lsRosters, rsFile) : (rsFile || lsRosters);
       if (rs && typeof rs === 'object' && !Array.isArray(rs)) {
         ensureActiveClass();
         if (mode === 'replace') { settings.rosters = {}; settings.pickerSessions = {}; }
@@ -10920,13 +10929,18 @@ async function onUploadEngFontPick(input){
       else {
         let decided = false;
         const decide = (landed) => { if (decided) return; decided = true; if (!landed && !localStorage.getItem('hebrewDashboard_setupSeen')) openFirstRun(); };
+        // The account already holds dashboard settings (they landed, or are on their way): a starter would overwrite them.
+        const accountHasSettings = () => { try { const p = IvritSaves.lastPlan && IvritSaves.lastPlan('Dashboard'); return !!(p && p.rows && p.rows.some(r => r.kind === 'settings' && r.cloud)); } catch (e) { return false; } };
         window.addEventListener('ivritsuite:hydrated', function onHyd(e) {
           const d = (e && e.detail) || {};
           if (!Array.isArray(d.tools) || d.tools.indexOf('Dashboard') < 0) return;
           window.removeEventListener('ivritsuite:hydrated', onHyd);
-          decide(!!(d.landed && d.landed.Dashboard && d.landed.Dashboard.indexOf('settings') >= 0));
+          decide(!!(d.landed && d.landed.Dashboard && d.landed.Dashboard.indexOf('settings') >= 0) || accountHasSettings());
         });
-        setTimeout(() => decide(false), 10000);
+        // The fallback (a hydration that never finishes) waits while the device-extras card is open: the hydration holds
+        // there for as long as the teacher reads it.
+        const fallback = () => { if (decided) return; if (document.querySelector('.ivsav-overlay')) { setTimeout(fallback, 2000); return; } decide(accountHasSettings()); };
+        setTimeout(fallback, 10000);
       }
     }
 

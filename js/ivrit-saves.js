@@ -55,6 +55,7 @@
  *   suspend()                 stop write-through for this page (the hub's Erase All calls it first)
  *   fontDeleted(name)         a teacher deleted a font on purpose: remove its account row
  *   pendingSignOut()          { unsynced } — what a sign-out would leave on this device (the confirm names it)
+ *   needsReload()             whether this page must reload after a sign-out (false when it attaches only Suite)
  *   mountStatus(target, tool) element | selector — renders the status line there
  *   lastPlan(tool)            the last classification for a tool (a page hook reads a row's state from it)
  *   inventory()               Promise<[{tool, name, kinds:[{kind, label, count, bytes, names}], count, bytes}]> — what the
@@ -79,6 +80,8 @@
   var MERGES = ['item', 'assign', 'deepMax', 'max', 'page'];
   var META_KEY = 'ivritSuite_syncMeta';    // the cross-tab write stamps and the sign-out broadcast (both module versions read it)
   var META2_KEY = 'ivritSuite_syncMeta2';  // what this device last synced, per account (v2; erase-only, never exported)
+  var BASE_KEY = 'ivritSuite_syncBase';    // the last synced value of each settings row (merge 'assign'), the base of a field-by-field merge (erase-only)
+  var REPLACED_KEY = 'ivritSuite_replaced'; // a device's own settings that the account's copy replaced at a first sign-in, kept for download (erase-only)
   var HASH_PREFIX = '1.';                 // SHA-256 over the canonical JSON, base64url, 45 chars
   var FALLBACK_PREFIX = '0.';             // FNV-1a pair, only where crypto.subtle is missing (a plain http:// host)
   var MAX_BYTES = 1887436;                // 1.8 MB of canonical JSON; the server allows 2 MB of its own, slightly wider, text
@@ -88,7 +91,8 @@
   var NEEDS_HOOK = { single: true, scalar: true, tree: true, mapIn: true };   // shapes a page must re-read after a download
   var ROW_COLS = 'id, kind, name, data_hash, bytes, updated_at';
   var FLUSH_DEBOUNCE_MS = 2000;           // write-through waits this long after the last write to a key
-  var SIGNOUT_FLUSH_MS = 10000;           // the longest a sign-out waits for its final flush
+  var SIGNOUT_FLUSH_MS = 6000;            // the longest a sign-out waits for its final flush: the account module gives each
+                                          // sign-out hook 10 s, and the account check, the removal and the broadcast follow it
   // The Classroom Dashboard seeds one preset named "Default" on every fresh device (its loadPresets()); untouched, it
   // is a seed, not a teacher's work: never listed as a device extra, never uploaded by itself. The canonical JSON of
   // that seed (scripts/smoke-sync.mjs asserts it still matches the page's DEFAULT_PRESET.Default).
@@ -337,8 +341,8 @@
   var dirty = {};          // tool → kind → true: a page wrote that key since the last flush
   var timers = {};         // tool → the debounce timer
   var stale = {};          // tool → kind → true: another tab wrote that kind; hydrate before diffing
-  var seenNames = {};      // tool → kind → { name: true } this tab saw present at its last hydrate / flush
-  var noUploadUntilChanged = {};   // tool → kind → true after "Remove from this device": a settings blob goes up only once changed
+  var seenNames = {};      // tool → kind → { name: hash (or true before it is known) } — each item as this tab last saw it
+  var tabBase = {};        // tool → kind → { name: canonical JSON } — a settings row as this tab last saw it (its own merge base)
   var hookOn = false;      // write-through is armed (a signed-in hydration ran on this page)
   var hookInstalled = false;
   var selfWrite = 0;       // > 0 while the module itself writes localStorage (the hook ignores those writes)
@@ -348,6 +352,7 @@
   var listening = false;
   var listedFor = {};      // tool → the user id an account event last hydrated it for (listen)
   var eventUser = null;    // the user id the last account event was handled for (listen)
+  var signedInAt = 0;      // when this tab first saw the current account (a sign-out broadcast older than that is not about this session)
   var card = null;         // the open device-extras card: { root, opener, onKey } or null
   var cardPending = null;  // extras waiting for the card's choice: { uid, tools, extras, resolve }
   var firstHydrationDone = {};   // uid → true once the card's choice settled on this page load
@@ -639,6 +644,7 @@
     if (!isPlainObject(store)) return Promise.resolve();
     var kept = {};
     for (var k in store) if (hasOwn(store, k) && isOmitted(entry, k)) kept[k] = store[k];
+    if (!Object.keys(kept).length && !sharesKey(entry)) { withSelfWrite(function () { lsRemove(entry.lsKey); }); return Promise.resolve(); }
     return writeText(entry.lsKey, JSON.stringify(kept));
   }
   function sharesKey(entry) {
@@ -767,9 +773,125 @@
   function metaDelete(uid, tool, kind, name) {
     var m = metaAll(), b = metaBranch(m, uid, tool, kind, false);
     if (b && hasOwn(b, name)) { delete b[name]; metaSave(m); }
+    baseDelete(uid, tool, kind, name);
+  }
+  /* ---------- the base of a settings row (what both sides last agreed on) ---------- */
+  // Kept only for `assign` rows (settings blobs, the suite-wide preferences, the remembered worksheet setup): the
+  // projected value as canonical JSON with its hash. A conflict on such a row is then merged field by field — a
+  // field only one side changed since the base takes that side's value — instead of one whole side winning.
+  function baseAll() { try { var b = safeParse(lsGet(BASE_KEY) || 'null'); if (isPlainObject(b) && b.v === 1 && isPlainObject(b.users)) return b; } catch (e) {} return { v: 1, users: {} }; }
+  function baseSave(b) { try { withSelfWrite(function () { localStorage.setItem(BASE_KEY, JSON.stringify(b)); }); } catch (e) {} }
+  function baseKey(tool, kind, name) { return tool + '/' + kind + '/' + name; }
+  function baseGet(uid, tool, kind, name) { var b = baseAll(), u = b.users[uid]; var r = isPlainObject(u) ? u[baseKey(tool, kind, name)] : null; return (isPlainObject(r) && typeof r.h === 'string' && typeof r.text === 'string') ? r : null; }
+  function baseDelete(uid, tool, kind, name) {
+    var raw = lsGet(BASE_KEY); if (raw === null) return;
+    var b = baseAll(), u = b.users[uid], k = baseKey(tool, kind, name);
+    if (isPlainObject(u) && hasOwn(u, k)) { delete u[k]; baseSave(b); }
+  }
+  // After a row was remembered at hash h: the local item's projected value becomes the base when it still hashes to h.
+  function rememberBase(uid, tool, kind, name, h) {
+    var entry = entryFor(tool, kind);
+    if (!entry || entry.merge !== 'assign') return;
+    var it = localItem(entry, name);
+    if (!it) return;
+    var text = canonJson(project(entry, it.value));
+    if (text.length > MAX_BYTES) return;
+    Promise.resolve(hashText(text)).then(function (hh) {
+      if (hh !== h || !stillMe(uid)) return;
+      var b = baseAll(); if (!isPlainObject(b.users[uid])) b.users[uid] = {};
+      b.users[uid][baseKey(tool, kind, name)] = { h: h, text: text };
+      baseSave(b);
+    }).catch(noop);
+  }
+  // The field-by-field merge of a settings row: per top-level field, a value only one side changed since the base
+  // takes that side's; a field both changed to different values takes the side changed last (`preferLocal`).
+  // A field removed on the winning side stays removed. Pure.
+  function merge3(base, local, cloud, preferLocal) {
+    var out = {}, keys = {}, k;
+    [base, local, cloud].forEach(function (o) { if (isPlainObject(o)) for (k in o) if (hasOwn(o, k) && !badName(k)) keys[k] = true; });
+    var c = function (o, key) { return (isPlainObject(o) && hasOwn(o, key)) ? canonJson(o[key]) : '\u0000none'; };
+    Object.keys(keys).forEach(function (key) {
+      var b = c(base, key), l = c(local, key), r = c(cloud, key), side;
+      if (l === r || r === b) side = local; else if (l === b) side = cloud; else side = preferLocal ? local : cloud;
+      if (isPlainObject(side) && hasOwn(side, key)) out[key] = side[key];
+    });
+    return out;
+  }
+  /* ---------- a device's own settings the account's copy replaced (first sign-in), kept for download ---------- */
+  function replacedAll() { try { var r = safeParse(lsGet(REPLACED_KEY) || 'null'); if (isPlainObject(r) && r.v === 1 && isPlainObject(r.users)) return r; } catch (e) {} return { v: 1, users: {} }; }
+  function replacedSave(r) {
+    try {
+      withSelfWrite(function () {
+        var empty = !Object.keys(r.users).some(function (u) { return isPlainObject(r.users[u]) && Object.keys(r.users[u]).length; });
+        if (empty) localStorage.removeItem(REPLACED_KEY); else localStorage.setItem(REPLACED_KEY, JSON.stringify(r));
+      });
+    } catch (e) {}
+  }
+  function replacedFor(uid, tool) {
+    var u = replacedAll().users[uid];
+    if (!isPlainObject(u)) return [];
+    return Object.keys(u).filter(function (k) { return isPlainObject(u[k]) && (!tool || u[k].tool === tool); }).map(function (k) { return u[k]; });
+  }
+  function replacedKeep(uid, entry, name, value) {
+    var text = canonJson(value);
+    if (text.length > MAX_BYTES) return;
+    var r = replacedAll(); if (!isPlainObject(r.users[uid])) r.users[uid] = {};
+    r.users[uid][baseKey(entry.tool, entry.kind, name)] = { tool: entry.tool, kind: entry.kind, name: name, at: now(), value: value };
+    replacedSave(r);
+  }
+  function replacedDrop(uid, tool) {
+    var r = replacedAll(), u = r.users[uid];
+    if (!isPlainObject(u)) return;
+    Object.keys(u).forEach(function (k) { if (isPlainObject(u[k]) && u[k].tool === tool) delete u[k]; });
+    replacedSave(r);
+  }
+  function replacedDownload(uid, tool) {
+    var list = replacedFor(uid, tool);
+    if (!list.length) return;
+    var rows = list.map(function (x) { return { tool: x.tool, kind: x.kind, name: x.name, data: x.value }; });
+    var b = bundleFromRows(registryFor(tool), rows);
+    downloadJson({ _ivritSuite: 1, format: 'ivrit-save', version: 1, tool: 'AllTools', partial: true, savedAt: now(), data: b.data }, 'IvritSuite_' + tool + '_settings_before_sign_in_' + now().slice(0, 10) + '.ivrit');
   }
   function hydratedAt(uid) { var m = metaAll(); return (isPlainObject(m.hydrated) && m.hydrated[uid]) || null; }
   function markHydrated(uid) { var m = metaAll(); if (!isPlainObject(m.hydrated)) m.hydrated = {}; m.hydrated[uid] = now(); metaSave(m); }
+  // "Remove from this device" on the card: the device's settings rows and trees go into the account only once they
+  // change. Kept per account in the sync memory as name → the hash they had then.
+  function holdBack(uid, tool, kind, name, h) {
+    var m = metaAll(); if (!isPlainObject(m.noUpload)) m.noUpload = {}; if (!isPlainObject(m.noUpload[uid])) m.noUpload[uid] = {};
+    m.noUpload[uid][baseKey(tool, kind, name)] = h; metaSave(m);
+  }
+  // A settings row a button sign-out removed from this device: what the page writes there afterwards is its own
+  // defaults (or signed-out use), so when the account's copy lands at the next sign-in it is not kept as "this device's
+  // earlier settings" (the replaced copy would be a false alarm at every sign-in on a shared computer).
+  function markStripped(uid, tool, kind, name) {
+    var m = metaAll(); if (!isPlainObject(m.stripped)) m.stripped = {}; if (!isPlainObject(m.stripped[uid])) m.stripped[uid] = {};
+    m.stripped[uid][baseKey(tool, kind, name)] = true; metaSave(m);
+  }
+  function takeStripped(uid, tool, kind, name) {
+    var m = metaAll(), u = isPlainObject(m.stripped) ? m.stripped[uid] : null, k = baseKey(tool, kind, name);
+    if (!isPlainObject(u) || !hasOwn(u, k)) return false;
+    delete u[k]; metaSave(m); return true;
+  }
+  function heldBack(uid, tool, kind, name, h) {
+    var m = metaAll(), u = isPlainObject(m.noUpload) ? m.noUpload[uid] : null, k = baseKey(tool, kind, name);
+    if (!isPlainObject(u) || !hasOwn(u, k)) return false;
+    if (u[k] === h) return true;
+    delete u[k]; metaSave(m);   // changed since: it goes up like any other edit
+    return false;
+  }
+  // The device was signed out (a session that ended by itself, a sign-out seen at load): the next sign-in is a first
+  // hydration again — this device's own new items are asked about on the card, and a remembered item absent here is
+  // downloaded rather than deleted from the account (signed out, the device is its own). The sync memory itself is
+  // kept, so an edit made since (an unflushed one, or one made signed out) still reads as changed here and goes up
+  // instead of being replaced by the account's older copy.
+  function dropHydrated(uid) {
+    var m = metaAll();
+    if (!isPlainObject(m.hydrated)) return;
+    if (uid) { if (!m.hydrated[uid]) return; delete m.hydrated[uid]; }
+    else { if (!Object.keys(m.hydrated).length) return; m.hydrated = {}; }
+    metaSave(m);
+    if (uid) delete firstHydrationDone[uid]; else firstHydrationDone = {};
+  }
   // Forget items that are gone on both sides. keep = { kind: { name: true } }.
   function metaPrune(uid, tool, keep) {
     var m = metaAll(), u = m.users[uid], tl = isPlainObject(u) && u[tool], changed = false;
@@ -811,17 +933,23 @@
   }
   // One tool (a string) or several (an array — one request, the rows carrying their `tool`: kinds repeat
   // across tools, so the caller groups by it). No data: about 150 bytes per row.
+  // The listing is the only signal that a row left the account, so it must be complete: the first page asks for the
+  // exact count and paging goes on until that many rows arrived (a server whose page size is below PAGE_SIZE would
+  // otherwise end the listing early, and every row past it would read as deleted).
   function cloudList(toolOrTools) {
-    var many = Array.isArray(toolOrTools), all = [];
+    var many = Array.isArray(toolOrTools), all = [], total = null;
     function page(from) {
       return withClient(function (c) {
-        var q = c.from('saves').select(many ? 'tool, ' + ROW_COLS : ROW_COLS);
+        var q = c.from('saves').select(many ? 'tool, ' + ROW_COLS : ROW_COLS, from === 0 ? { count: 'exact' } : undefined);
         q = many ? q.in('tool', toolOrTools) : q.eq('tool', toolOrTools);
-        return q.order('tool').order('kind').order('name').order('id').range(from, from + PAGE_SIZE - 1);
-      }).then(function (rows) {
-        rows = rows || [];
+        return q.order('tool').order('kind').order('name').order('id').range(from, from + PAGE_SIZE - 1)
+          .then(function (r) { return (r && !r.error) ? { data: { rows: r.data || [], count: r.count }, error: null } : r; });
+      }).then(function (res) {
+        var rows = (res && res.rows) || [];
+        if (from === 0 && res && typeof res.count === 'number') total = res.count;
         if (!many) rows.forEach(function (r) { r.tool = toolOrTools; });
         all = all.concat(rows);
+        if (total !== null) return (rows.length && all.length < total) ? page(from + rows.length) : all;
         return rows.length === PAGE_SIZE ? page(from + PAGE_SIZE) : all;
       });
     }
@@ -842,7 +970,7 @@
     return page(0);
   }
   function cloudLoad(id) {
-    return withClient(function (c) { return c.from('saves').select('id, kind, name, data, data_hash, bytes, updated_at').eq('id', id).maybeSingle(); })
+    return withClient(function (c) { return c.from('saves').select('id, kind, name, data, data_hash, bytes, updated_at, client_updated_at').eq('id', id).maybeSingle(); })
       .then(function (row) {
         if (!row) throw makeError('changed', 'IvritSaves: the row is gone');
         row.data = clone(row.data);   // re-parsed through the prototype-safe parser
@@ -875,12 +1003,16 @@
   }
   // Does the account still exist? (A listing that lacks every remembered row is checked here first: a
   // still-valid token on a device whose account was deleted elsewhere lists nothing under RLS.)
+  // Gone only on a definite answer (the auth server no longer knows the user, or the profile row is gone); a network
+  // failure or a timeout is "don't know", which counts as alive — nothing is ever removed on a guess.
   function accountAlive() {
     return client().then(function (c) { return c.auth.getUser(); }).then(function (r) {
+      if (r && r.error && (isConnectionError(r.error) || !r.error.status || r.error.status >= 500 || r.error.name === 'AuthRetryableFetchError')) return true;
       if (!r || r.error || !r.data || !r.data.user) return false;
       return withClient(function (c) { return c.from('profiles').select('id').eq('id', r.data.user.id).maybeSingle(); }).then(function (p) { return !!p; }, function () { return true; });   // profiles unreachable: not a deletion
-    }, function () { return false; });
+    }, function () { return true; });
   }
+  function accountAliveWithin(ms) { return Promise.race([accountAlive().catch(function () { return true; }), new Promise(function (r) { setTimeout(function () { r(true); }, ms); })]); }
   // Every failure becomes one localized sentence.
   function errorText(err) {
     var code = String((err && err.code) || '');
@@ -1065,7 +1197,7 @@
       }
       // A tool this page renders needs its re-read hook before a settings blob may land; a tool this page
       // does not render holds nothing in memory here (other tabs re-read through the write stamp).
-      r.downloadable = pages[tool] ? !(NEEDS_HOOK[r.entry.shape] && typeof cfg.onLocalChanged !== 'function') : true;
+      r.downloadable = pages[tool] ? !(NEEDS_HOOK[r.entry.shape] && !r.entry.virtual && typeof cfg.onLocalChanged !== 'function') : true;   // a virtual store (the preferences) applies a download itself
       r.mergeable = r.entry.merge === 'deepMax' || r.entry.merge === 'max' || (r.entry.merge === 'page' && typeof (cfg.merges && cfg.merges[r.kind]) === 'function');
       return r;
     });
@@ -1138,7 +1270,9 @@
     return hashItem(row.entry, it.value).then(function (h) { if (h !== row.local.hash) throw makeError('changed_here', 'IvritSaves: the local item changed meanwhile'); });
   }
   function remember(uid, tool, kind, name, h, saved) {
-    if (stillMe(uid)) metaSet(uid, tool, kind, name, { h: h, id: saved.id, u: saved.updated_at, at: now() });
+    if (!stillMe(uid)) return;
+    metaSet(uid, tool, kind, name, { h: h, id: saved.id, u: saved.updated_at, at: now() });
+    rememberBase(uid, tool, kind, name, h);
   }
   // The one ending of every local write the module makes (a download, a merge, a folder tree, the copy of
   // Keep both): tell the page, let the page's own writer land whatever it re-applied, then make the two
@@ -1199,6 +1333,11 @@
       });
     });
   }
+  // Both sides changed a settings row. With the base (the value both last agreed on) the row is merged field by field
+  // (merge3): what only the other device changed lands here, what only this device changed goes up, and a field both
+  // changed takes the side changed last (this device's last write of the kind against the other device's clock on
+  // the row). Without a base (a row remembered before bases were kept, or the old module's hint) this device's fields
+  // win and fields only the account has survive.
   function actKeepMineAssign(tool, row) {
     var uid = ensureUser();
     return cloudLoad(row.cloud.id).then(function (full) {
@@ -1207,9 +1346,37 @@
       var it = localItem(row.entry, row.name);
       return assertLocalAsPlanned(row, it).then(function () {
         if (!it) throw makeError('changed_here');
+        var base = row.memory ? baseGet(uid, tool, row.kind, row.name) : null;
+        if (base && base.h === row.memory.h) {
+          var baseVal = null; try { baseVal = safeParse(base.text); } catch (e) { baseVal = null; }
+          if (isPlainObject(baseVal)) {
+            var st = stampsAll(), pw = isPlainObject(st.pageWrites) && isPlainObject(st.pageWrites[tool]) ? Number(st.pageWrites[tool][row.kind]) || 0 : 0;
+            var theirs = Date.parse(full.client_updated_at || '') || 0;
+            var merged3 = merge3(baseVal, project(row.entry, it.value), project(row.entry, full.data), pw > theirs);
+            return writeBothSides(tool, uid, row, restoreOmitted(row.entry, merged3, it.value), full);
+          }
+        }
         var merged = safeAssign(clone(restoreOmitted(row.entry, full.data, it.value)), it.value);
         return writeBothSides(tool, uid, row, merged, full);
       }).then(function () { return { action: 'upload', row: row }; });
+    });
+  }
+  // A settings row both this tab and another tab or device changed since this tab last saw it: merged field by field
+  // against what this tab saw (merge3); a field both changed takes this tab's value when it has the focus (the
+  // teacher is working here), else the other's.
+  function actTabMerge(tool, row, baseText) {
+    var uid = ensureUser();
+    return cloudLoad(row.cloud.id).then(function (full) {
+      if (!validateShape(row.entry, full.data)) throw makeError('shape');
+      flushPage(tool);
+      var it = localItem(row.entry, row.name);
+      return assertLocalAsPlanned(row, it).then(function () {
+        if (!it) throw makeError('changed_here');
+        var baseVal = null; try { baseVal = safeParse(baseText || 'null'); } catch (e) { baseVal = null; }
+        var focused = false; try { focused = !!document.hasFocus(); } catch (e) {}
+        var merged = merge3(isPlainObject(baseVal) ? baseVal : {}, project(row.entry, it.value), project(row.entry, full.data), focused);
+        return writeBothSides(tool, uid, row, restoreOmitted(row.entry, merged, it.value), full);
+      }).then(function () { return { action: 'merge', row: row }; });
     });
   }
   function actDownload(tool, row) {
@@ -1270,6 +1437,12 @@
       return assertLocalAsPlanned(row, it).then(function () {
         var local = it ? it.value : null;
         var merged = safeAssign(isPlainObject(local) ? clone(local) : {}, restoreOmitted(row.entry, full.data, local));
+        // A first sign-in on a device with its own settings for this tool: the account's copy wins (the device's could be
+        // untouched defaults or years of work — the module cannot tell), and the device's copy is kept for download.
+        if (!row.memory && isPlainObject(local) && !row.entry.virtual && !takeStripped(uid, tool, row.kind, row.name)) {
+          var mine = project(row.entry, local);
+          if (canonJson(mine) !== canonJson(project(row.entry, full.data))) replacedKeep(uid, row.entry, row.name, mine);
+        }
         return writeBothSides(tool, uid, row, merged, full);
       });
     });
@@ -1444,7 +1617,7 @@
   // helper, a row that moved between the listing and the action, a page hook that failed — skip that row;
   // the run goes on and names it. Anything else (the connection, the session, the device's storage, the
   // server) stops the tool, and re-running resumes.
-  var ROW_ERRORS = { too_big: true, name: true, chars: true, shape: true, no_merge: true, changed: true, changed_here: true, hook: true, cap: true };
+  var ROW_ERRORS = { too_big: true, name: true, chars: true, shape: true, no_merge: true, changed: true, changed_here: true, hook: true, cap: true, '23514': true, '22P05': true };   // 23514: the account's row limit; 22P05: a value the server cannot store
   function isRowError(err) { return !!(err && ROW_ERRORS[String(err.code)]); }
   // Errors that would fail every tool the same way: a bulk run does not go on to the next tool.
   function isConnectionError(err) {
@@ -1517,8 +1690,12 @@
     if (isPlainObject(m.users)) delete m.users[uid];
     if (isPlainObject(m.legacy)) delete m.legacy[uid];
     if (isPlainObject(m.hydrated)) delete m.hydrated[uid];
+    if (isPlainObject(m.noUpload)) delete m.noUpload[uid];
+    if (isPlainObject(m.stripped)) delete m.stripped[uid];
     metaSave(m);
     delete firstHydrationDone[uid];
+    if (lsGet(BASE_KEY) !== null) { var b = baseAll(); if (hasOwn(b.users, uid)) { delete b.users[uid]; baseSave(b); } }
+    if (lsGet(REPLACED_KEY) !== null) { var rp = replacedAll(); if (hasOwn(rp.users, uid)) { delete rp.users[uid]; replacedSave(rp); } }
   }
 
   /* ---------- queue ---------- */
@@ -1550,7 +1727,8 @@
     if (r.state === 'synced' || r.state === 'none') return null;
     if (r.state === 'cloud-only') return r.downloadable ? 'download' : null;
     if (r.state === 'deleted-here') {
-      if (first || r.entry.noDeleteByAbsence || !saw) return r.entry.noDeleteByAbsence ? null : (r.downloadable ? 'download' : null);
+      if (r.memory && r.memory.deleted) return 'deleteCloud';   // an explicit delete (fontDeleted) that could not be sent then
+      if (first || r.entry.noDeleteByAbsence || !saw) return r.downloadable ? 'download' : null;   // a font gone here without fontDeleted (the ten-font limit evicted it) lands again once there is room
       return 'deleteCloud';
     }
     if (r.state === 'local-only' || r.state === 'cloud-deleted') {
@@ -1567,7 +1745,7 @@
     if (r.state === 'conflict') {
       if (r.seed) return r.downloadable ? 'download' : null;
       if (m === 'item') return r.downloadable ? 'keepBoth' : 'keepMine';
-      if (m === 'assign') return (r.memory && !r.legacy) ? 'keepMine' : (r.downloadable ? 'useCloud' : 'keepMine');
+      if (m === 'assign') return (r.memory || r.legacy) ? 'keepMine' : (r.downloadable ? 'useCloud' : 'keepMine');   // memory or the old module's hint: this device moved since; merged, never reverted
       return (r.mergeable && r.downloadable) ? 'merge' : null;
     }
     return null;
@@ -1580,6 +1758,7 @@
       if (action === 'keepBoth') return actKeepBoth(tool, row);
       if (action === 'merge') return actMerge(tool, row);
       if (action === 'useCloud') return actUseCloud(tool, row);
+      if (action === 'tabMerge') return actTabMerge(tool, row, tabBaseOf(tool, row.kind, row.name));
       if (action === 'deleteCloud') {
         return cloudRemoveIf(row.cloud.id, row.memory.u).then(function () { metaDelete(uid, tool, row.kind, row.name); return { action: 'deleteCloud', row: row }; },
           function (err) { if (err && err.code === 'changed' && row.downloadable) return actDownload(tool, row); throw err; });
@@ -1627,18 +1806,23 @@
       return ids.length > 0 && !rows.some(function (r) { return ids.indexOf(r.id) >= 0; });
     });
     if (!suspect) return Promise.resolve(false);
-    return accountAlive().then(function (alive) { return !alive; });
+    return accountAlive().then(function (alive) {
+      if (!alive) return true;
+      // Alive, yet the account answered no row at all although this device remembers some: a listing that cannot be
+      // trusted (a policy or grant broken on the server) — removing everything it lacks would empty the device.
+      if (!rows.length) throw makeError('listing_suspect', 'IvritSaves: an empty listing for an account this device remembers rows of');
+      return false;
+    });
   }
   function landedNote(landed, tool, kind) { if (!landed[tool]) landed[tool] = []; if (landed[tool].indexOf(kind) < 0) landed[tool].push(kind); }
   // Runs one phase of a tool's plan: 'down' (what the account has that this device lacks or has older) or
   // 'rest' (everything else). Row errors skip the row and are named; a connection error stops the run.
   function sawHere(tool, r) {
-    if (stale[tool] && stale[tool][r.kind]) return false;
     return !!(seenNames[tool] && seenNames[tool][r.kind] && seenNames[tool][r.kind][r.name]);
   }
   function runPhase(tool, p, uid, first, phase, res) {
     var order = p.rows.filter(function (r) {
-      var a = hydrateActionFor(r, first, sawHere(tool, r));
+      var a = actionFor(tool, r, first);
       if (!a || a === 'extra') return false;
       var down = (a === 'download');
       if (phase === 'down') return down;
@@ -1646,23 +1830,69 @@
       return true;
     });
     return seqMap(order, function (row) {
-      var action = hydrateActionFor(row, first, sawHere(tool, row));
+      var action = actionFor(tool, row, first);
       if (action === 'upload' && !localItem(row.entry, row.name)) return Promise.resolve();   // gone meanwhile (folded into another item)
-      if (action === 'upload' && noUploadUntilChanged[tool] && noUploadUntilChanged[tool][row.kind]) return Promise.resolve();
+      if (action === 'upload' && !row.memory && row.local && heldBack(uid, tool, row.kind, row.name, row.local.hash)) return Promise.resolve();
+      if (action === 'download' && tool === 'Suite' && row.kind === 'font') {   // My Fonts is full here: not even fetched (a font row can be ~2 MB), named on the hub
+        var fc = USER_FONTS.cache || {};
+        if (!hasOwn(fc, row.name) && Object.keys(fc).length >= FONTS_CAP) { res.fontFull.push(row.label); return Promise.resolve(); }
+      }
       return runHydrateAction(tool, action, row, uid).then(function (r) {
         res.done++;
-        if (action === 'download' || action === 'merge' || action === 'useCloud' || action === 'keepBoth' || action === 'removeLocal') landedNote(res.landed, tool, row.kind);
+        if (action === 'download' || action === 'merge' || action === 'useCloud' || action === 'keepBoth' || action === 'removeLocal' || action === 'tabMerge') landedNote(res.landed, tool, row.kind);
         if (r && r.hint) res.hint = true;
       }, function (err) {
         if (err && err.code === 'cap' && action === 'download') { res.fontFull.push(row.label); return; }   // a font this device has no room for: not an error
+        if (row.kind === 'font' && tool === 'Suite' && action === 'download') { warn('a font could not be stored on this device:', row.name, err); return; }   // no IndexedDB here (a private window): the account keeps it
         if (!isRowError(err)) throw err;
         noteSkip(res, row, err);
       });
     });
   }
+  // What this tab's page holds, per item: recorded after each hydration (the page was told about every landing) and
+  // at attach / sign-in (what the page loaded). A remembered row absent here is a deletion made here only when this tab
+  // saw it; a row whose memory moved past what this tab saw was written by another tab or device meanwhile.
   function snapshotNames(tool, p) {
-    seenNames[tool] = {};
-    p.rows.forEach(function (r) { if (r.local) { if (!seenNames[tool][r.kind]) seenNames[tool][r.kind] = {}; seenNames[tool][r.kind][r.name] = true; } });
+    seenNames[tool] = {}; tabBase[tool] = {};
+    p.rows.forEach(function (r) {
+      if (!r.local) return;
+      if (!seenNames[tool][r.kind]) seenNames[tool][r.kind] = {};
+      seenNames[tool][r.kind][r.name] = r.local.hash || true;
+      if (r.entry.merge === 'assign') {   // plan rows carry only the hash and size: the value is read from the store
+        var it = localItem(r.entry, r.name);
+        if (it) { if (!tabBase[tool][r.kind]) tabBase[tool][r.kind] = {}; tabBase[tool][r.kind][r.name] = canonJson(project(r.entry, it.value)); }
+      }
+    });
+  }
+  function snapshotLocal(tools) {
+    tools.forEach(function (tool) {
+      if (seenNames[tool]) return;
+      seenNames[tool] = {}; tabBase[tool] = {};
+      registryFor(tool).forEach(function (e) {
+        if (e.virtual || e.shape === 'tree') return;
+        localItems(e).forEach(function (it) {
+          if (!seenNames[tool][e.kind]) seenNames[tool][e.kind] = {};
+          seenNames[tool][e.kind][it.name] = true;
+          if (e.merge === 'assign') { if (!tabBase[tool][e.kind]) tabBase[tool][e.kind] = {}; tabBase[tool][e.kind][it.name] = canonJson(project(e, it.value)); }
+        });
+      });
+    });
+  }
+  function seenHashOf(tool, kind, name) { var s = seenNames[tool] && seenNames[tool][kind]; var h = s ? s[name] : null; return typeof h === 'string' ? h : null; }
+  function tabBaseOf(tool, kind, name) { var b = tabBase[tool] && tabBase[tool][kind]; return (b && typeof b[name] === 'string' && b[name].charAt(0) === '{') ? b[name] : null; }
+  // The hydration action, adjusted for this tab's view: when the device's memory of a row moved past what this tab
+  // saw (another tab or device wrote it since), this tab's copy is not "changed here" — if this tab changed nothing
+  // it takes the newer copy, if it did a settings row is merged against what this tab saw and an item keeps both.
+  function actionFor(tool, r, first) {
+    var a = hydrateActionFor(r, first, sawHere(tool, r));
+    var seenH = seenHashOf(tool, r.kind, r.name);
+    if (r.local && r.cloud && r.memory && seenH && seenH !== r.memory.h && (a === 'upload' || a === 'keepMine' || a === 'keepBoth' || a === 'useCloud')) {
+      if (r.local.hash === seenH) return r.downloadable ? 'download' : null;
+      if (r.entry.merge === 'assign') return (tabBaseOf(tool, r.kind, r.name) && r.downloadable) ? 'tabMerge' : 'keepMine';
+      if (r.entry.merge === 'item') return r.downloadable ? 'keepBoth' : 'keepMine';
+      if (r.mergeable && r.downloadable) return 'merge';
+    }
+    return a;
   }
   function hydrateInner(tools) {
     var uid = ensureUser();
@@ -1702,7 +1932,15 @@
           return seqMap(extras, function (x) {
             return localRemove(x.row.entry, x.row.name).then(function () { notifyPage(x.tool, x.row.kind, x.row.name); }, function (err) { warn('remove failed:', err); });
           }).then(function () {
-            listTools.forEach(function (tool) { noUploadUntilChanged[tool] = {}; registryFor(tool).forEach(function (e) { if (e.merge === 'assign' || e.shape === 'tree') noUploadUntilChanged[tool][e.kind] = true; }); });
+            // Nothing else of this device goes into the account until the teacher changes it: each settings row and folder
+            // tree is held back at its present hash (kept in the sync memory, so a reload does not release it).
+            var held = [];
+            listTools.forEach(function (tool) { registryFor(tool).forEach(function (e) {
+              if (e.virtual || !(e.merge === 'assign' || e.shape === 'tree')) return;
+              if (e.shape === 'tree') { var tr = localTree(e); if (tr) held.push({ tool: tool, e: e, name: DEFAULT_NAME, value: tr }); }
+              else localItems(e).forEach(function (it) { held.push({ tool: tool, e: e, name: it.name, value: it.value }); });
+            }); });
+            return seqMap(held, function (x) { return hashItem(x.e, x.value).then(function (h) { holdBack(uid, x.tool, x.e.kind, x.name, h); }); });
           });
         }).then(function () { markHydrated(uid); firstHydrationDone[uid] = true; return cloudList(tools).then(function (rows2) { return seqMap(tools, function (tool) { return planTool(tool, rows2).then(function (p) { byTool[tool] = p; }); }); }); });
       }).then(function () {
@@ -1730,7 +1968,7 @@
       tools.forEach(function (tool) { hydrating[tool] = false; });
       if (r.error) {
         if (r.error.accountGone) {
-          forgetUser(uid); hookOn = false;
+          dropHydrated(uid); hookOn = false;   // the copies and the memory stay; nothing is removed on this signal
           tools.forEach(function (tool) { setStatus(tool, 'error', errorText(r.error)); });
           var a = A(); if (a && typeof a.signOut === 'function') a.signOut({ keepLocal: true }).catch(noop);
         } else {
@@ -1780,7 +2018,7 @@
       return function (key) {
         var mine = false;
         try { mine = this === window.localStorage && !!keyMap()[key]; } catch (e) { mine = false; }
-        if (mine && purging && selfWrite === 0) return;
+        if (mine && purging && selfWrite === 0 && !suiteOnlyKey(key)) return;   // a preference is never removed by a sign-out: it is written as usual
         var r = orig.apply(this, arguments);
         try { if (mine && hookOn && selfWrite === 0 && !suspended) onPageWrite(key); } catch (e) {}
         return r;
@@ -1805,12 +2043,15 @@
     }
   }
   function armHook() { installHook(); hookOn = true; }
+  // A sign-out removes only the tools' own keys (never the suite-wide preferences or My Fonts), so a page whose
+  // only attachment is Suite holds nothing in memory the removal could be undone by: no reload there.
+  function needsReload() { return Object.keys(pages).some(function (tool) { return tool !== 'Suite'; }); }
+  function suiteOnlyKey(key) { var list = keyMap()[key] || []; return list.length > 0 && list.every(function (e) { return e.tool === 'Suite'; }); }
   function onPageWrite(key) {
     var user = currentUser();
     if (!user) return;
     (keyMap()[key] || []).forEach(function (e) {
       if (hydratedTools[e.tool] !== user.id) return;
-      if (noUploadUntilChanged[e.tool]) delete noUploadUntilChanged[e.tool][e.kind];
       markDirty(e.tool, e.kind);
     });
   }
@@ -1873,23 +2114,27 @@
     var items = localItems(entry).filter(function (it) { return !isSeed(entry, it.name, it.value); });
     var present = {};
     return seqMap(items, function (it) {
-      present[it.name] = true;
+      present[it.name] = (seenNames[tool] && seenNames[tool][entry.kind] && seenNames[tool][entry.kind][it.name]) || true;   // what this tab saw stays until a write lands
       var projected = project(entry, it.value);
       var g = guardUpload(entry, it.name, projected);
       if (g) { noteSkip(res, { label: it.label }, g); return Promise.resolve(); }
       return hashText(canonJson(projected)).then(function (h) {
         var mem = metaGet(uid, tool, entry.kind, it.name);
-        if (mem && mem.h === h) return null;
+        if (mem && mem.h === h) { present[it.name] = h; return null; }
+        var seenH = seenHashOf(tool, entry.kind, it.name);
+        if (mem && seenH && seenH !== mem.h) { res.needHydrate = true; return null; }   // the account copy moved since this tab saw it: the hydration decides (newer copy, merge or both)
+        var landed = function (saved) { remember(uid, tool, entry.kind, it.name, h, saved); present[it.name] = h; if (entry.merge === 'assign') { if (!tabBase[tool]) tabBase[tool] = {}; if (!tabBase[tool][entry.kind]) tabBase[tool][entry.kind] = {}; tabBase[tool][entry.kind][it.name] = canonJson(projected); } res.done++; };
         if (!mem) {
+          if (heldBack(uid, tool, entry.kind, it.name, h)) return null;   // "Remove from this device": unchanged since
           var hint = legacyGet(uid, tool, entry.kind, it.name);
           if (hint && hint.id && hint.u) {   // a row this device synced under the old module: update it in place
-            return cloudUpdateIf(hint.id, hint.u, projected, h).then(function (saved) { remember(uid, tool, entry.kind, it.name, h, saved); res.done++; },
+            return cloudUpdateIf(hint.id, hint.u, projected, h).then(landed,
               function (err) { if (err && err.code === 'changed') { res.needHydrate = true; return; } throw err; });
           }
-          return cloudInsert(entry, it.name, projected, h).then(function (saved) { remember(uid, tool, entry.kind, it.name, h, saved); res.done++; },
+          return cloudInsert(entry, it.name, projected, h).then(landed,
             function (err) { if (err && err.code === '23505') { res.needHydrate = true; return; } throw err; });
         }
-        return cloudUpdateIf(mem.id, mem.u, projected, h).then(function (saved) { remember(uid, tool, entry.kind, it.name, h, saved); res.done++; },
+        return cloudUpdateIf(mem.id, mem.u, projected, h).then(landed,
           function (err) { if (err && err.code === 'changed') { res.needHydrate = true; return; } throw err; });
       }).catch(function (err) { if (!isRowError(err)) throw err; noteSkip(res, { label: it.label }, err); });
     }).then(function () {
@@ -1917,6 +2162,7 @@
     return hashItem(entry, local).then(function (h) {
       var mem = metaGet(uid, tool, entry.kind, DEFAULT_NAME);
       if (mem && mem.h === h) return;
+      if (!mem && heldBack(uid, tool, entry.kind, DEFAULT_NAME, h)) return;
       var write = mem ? cloudUpdateIf(mem.id, mem.u, local, h) : cloudInsert(entry, DEFAULT_NAME, local, h);
       return write.then(function (saved) { remember(uid, tool, entry.kind, DEFAULT_NAME, h, saved); res.done++; },
         function (err) { if (err && (err.code === 'changed' || err.code === '23505')) { res.needHydrate = true; return; } throw err; });
@@ -1941,14 +2187,26 @@
     }).catch(function (err) { setStatus('Suite', 'error', errorText(err)); });
   }
   // A teacher deleted a font on purpose (the hub's My Fonts manager, the Font Maker's remove): the account's row goes too.
+  // A teacher removed a font on purpose (the hub's My Fonts manager, the Font Maker's window). The page already
+  // deleted it from IndexedDB with the unwrapped deleteUserFont, so the module's snapshot drops it too (a later
+  // flush would otherwise upload it again). The memory record is marked `deleted` before any request: if the
+  // DELETE cannot be sent now (the SDK still loading, offline, a failure), the next hydration sends it, so the
+  // font never comes back from the account by itself. A row another device changed since is not deleted (its
+  // newer copy wins and lands again).
   function fontDeleted(name) {
-    var user = currentUser();
-    if (!user) return Promise.resolve(false);
+    if (USER_FONTS.cache && hasOwn(USER_FONTS.cache, name)) delete USER_FONTS.cache[name];
+    var a = A(), user = currentUser();
+    var uid = user ? user.id : (a && typeof a.storedUserId === 'function' ? a.storedUserId() : null);
+    if (!uid) return Promise.resolve(false);
+    var mem0 = metaGet(uid, 'Suite', 'font', name);
+    if (!mem0) return Promise.resolve(false);
+    if (!mem0.deleted) { var marked = {}; for (var k in mem0) if (hasOwn(mem0, k)) marked[k] = mem0[k]; marked.deleted = true; metaSet(uid, 'Suite', 'font', name, marked); }
+    if (!user) return Promise.resolve(false);   // the next hydration finishes it
     return enqueue('Suite', function () {
-      var mem = metaGet(user.id, 'Suite', 'font', name);
+      var mem = metaGet(uid, 'Suite', 'font', name);
       if (!mem) return false;
-      return cloudRemoveIf(mem.id, mem.u).then(function () { metaDelete(user.id, 'Suite', 'font', name); return true; },
-        function (err) { if (err && err.code === 'changed') { metaDelete(user.id, 'Suite', 'font', name); return false; } throw err; });
+      return cloudRemoveIf(mem.id, mem.u).then(function () { metaDelete(uid, 'Suite', 'font', name); return true; },
+        function (err) { if (err && err.code === 'changed') { metaDelete(uid, 'Suite', 'font', name); return false; } throw err; });
     }).catch(function (err) { setStatus('Suite', 'error', errorText(err)); return false; });
   }
   function suspend() {
@@ -1966,7 +2224,11 @@
       p.rows.forEach(function (r) { if (!r.seed && (r.state === 'local-only' || r.state === 'local-changed' || r.state === 'conflict')) n++; });
     });
     Object.keys(dirty).forEach(function (tool) { n += Object.keys(dirty[tool] || {}).length; });
-    return { unsynced: n };
+    // `unknown`: this page could not compare everything with the account (a hydration that has not succeeded, a write
+    // in flight) — the confirm then says so instead of promising that everything is in the account.
+    var unknown = Object.keys(busy).some(function (tool) { return busy[tool]; }) ||
+      attachedTools().some(function (tool) { return hydratedTools[tool] !== eventUser; });
+    return { unsynced: n, unknown: unknown };
   }
   function flushAllNow() {
     var tools = Object.keys(hydratedTools).filter(function (tool) { return dirty[tool] && Object.keys(dirty[tool]).length; });
@@ -2078,6 +2340,23 @@
       line.classList.add('is-error');
       if (st === 'error') root.appendChild(button(t('shared.cloud.status_retry', 'Retry'), '', function () { retry(tool); }));
     }
+    renderReplaced(root, tool);
+  }
+  // The device's own settings that the account's copy replaced at a first sign-in: one note per tool, with a download
+  // of the earlier settings as an .ivrit file (restored through any tool's Backup panel) and a dismiss. The hub's status
+  // line lists every tool's.
+  function renderReplaced(root, tool) {
+    var u = currentUser(); if (!u) return;
+    var list = replacedFor(u.id, tool === 'Suite' ? null : tool);
+    var tools = [];
+    list.forEach(function (x) { if (tools.indexOf(x.tool) < 0) tools.push(x.tool); });
+    tools.forEach(function (tl) {
+      var box = el('div', 'ivsav-replaced');
+      box.appendChild(el('p', 'ivsav-note', t('shared.cloud.replaced_note', 'Your account\'s {tool} settings replaced the ones this device had before you signed in. This device\'s earlier settings are kept here until you dismiss this note.', { tool: toolName(tl) })));
+      box.appendChild(button(t('shared.cloud.replaced_download', 'Download the earlier settings (.ivrit)'), '', function () { replacedDownload(u.id, tl); }));
+      box.appendChild(button(t('shared.cloud.replaced_dismiss', 'Dismiss'), '', function () { replacedDrop(u.id, tl); renderAllStatuses(); }));
+      root.appendChild(box);
+    });
   }
   function retry(tool) {
     if (!currentUser()) return;
@@ -2195,58 +2474,92 @@
   // unfinished flush stay as this device's own data; preferences and My Fonts stay; the memory of removed rows
   // goes, the mark goes, other tabs are told through the broadcast stamp, and the page's own writers are
   // swallowed until the reload.
+  // A button sign-out (this tab: the account module awaits this before its SDK sign-out) or another tab's (`opts.rows`, its
+  // broadcast). The removal is decided per row against the sync memory: only a row whose projected hash still equals
+  // what the account was last known to hold leaves the device; anything else stays as this device's own data.
+  //  - This tab: the page's pending edits are flushed first (bounded), then — unless the account turns out to be
+  //    gone (a definite answer, never a guess), in which case nothing is removed — the removal, then the broadcast.
+  //  - A tab following another's sign-out: nothing is sent (that session is ending); the page's in-memory state is
+  //    written to storage so the comparison sees it, the other tab's removed rows (with their memory, which it already
+  //    deleted) are the reference, and a row this tab changed keeps that memory, so the next sign-in sends the change
+  //    up instead of replacing it with the account's copy.
+  //  - A single row with per-device fields (the registry's omit list) loses only the fields that travel.
   function removeAccountCache(uid, opts) {
     opts = opts || {};
     if (!uid) return Promise.resolve({ removed: 0 });
     closeCard();
     if (cardPending) { cardPending = null; }
     Object.keys(timers).forEach(function (tool) { if (timers[tool]) { clearTimeout(timers[tool]); timers[tool] = null; } });
-    if (opts.keepLocal) { forgetUser(uid); hookOn = false; return Promise.resolve({ removed: 0, kept: true }); }
+    if (opts.keepLocal) { dropHydrated(uid); hookOn = false; return Promise.resolve({ removed: 0, kept: true }); }
+    var follower = Array.isArray(opts.rows);
     var removed = 0, removedRows = [];
-    var hinted = {};   // from another tab's broadcast: the rows it removed (its memory records are gone by now)
-    (Array.isArray(opts.rows) ? opts.rows : []).forEach(function (x) { if (x && x.tool && x.kind && x.name && x.h) hinted[x.tool + '\u0001' + x.kind + '\u0001' + x.name] = { h: x.h }; });
+    var hinted = {};   // the rows another tab removed, with the memory it held for them
+    (follower ? opts.rows : []).forEach(function (x) { if (x && x.tool && x.kind && x.name && x.h) hinted[x.tool + '\u0001' + x.kind + '\u0001' + x.name] = { h: x.h, id: x.id || null, u: x.u || null }; });
     var memOf = function (tool, kind, name) { return metaGet(uid, tool, kind, name) || hinted[tool + '\u0001' + kind + '\u0001' + name] || null; };
+    var keepWithMemory = function (tool, kind, name, mem) {   // a row this tab changed: keep it, and the memory that makes it "changed here"
+      if (!metaGet(uid, tool, kind, name) && mem && mem.id) metaSet(uid, tool, kind, name, { h: mem.h, id: mem.id, u: mem.u, at: now() });
+    };
+    // A row this tab changed on top of an older copy than the account's (another tab or device wrote it since this
+    // tab last read it): kept, and remembered against what this tab saw (no stamp, so the account reads as moved
+    // too) — the next sign-in merges a settings row field by field against that view (the base) and keeps both
+    // copies of an item, so neither this tab's change nor the newer one is lost.
+    var keepAgainstView = function (tool, entry, name, seenH, mem) {
+      if (!mem || !mem.id) return;
+      metaSet(uid, tool, entry.kind, name, { h: seenH, id: mem.id, u: null, at: now() });
+      var view = entry.merge === 'assign' ? tabBaseOf(tool, entry.kind, name) : null;
+      if (view) { var b = baseAll(); if (!isPlainObject(b.users[uid])) b.users[uid] = {}; b.users[uid][baseKey(tool, entry.kind, name)] = { h: seenH, text: view }; baseSave(b); }
+      else if (entry.merge === 'assign') baseDelete(uid, tool, entry.kind, name);
+    };
     var finalFlush = Promise.resolve().then(function () {
       Object.keys(pages).forEach(function (tool) { var cfg = pages[tool]; if (cfg && !cfg.pulled) withSelfWrite(function () { try { if (typeof cfg.finalFlush === 'function') cfg.finalFlush(); else flushPage(tool); } catch (e) { warn('finalFlush failed:', e); } }); });
+      if (follower) { dirty = {}; return null; }   // the other tab's session is ending: nothing is sent from here
       Object.keys(hydratedTools).forEach(function (tool) { if (hydratedTools[tool] !== uid) return; registryFor(tool).forEach(function (e) { if (!dirty[tool]) dirty[tool] = {}; dirty[tool][e.kind] = true; }); });
       return flushAllNow();
     });
     var bounded = Promise.race([finalFlush, new Promise(function (r) { setTimeout(r, SIGNOUT_FLUSH_MS); })]);
     return bounded.catch(noop).then(function () {
+      return follower ? true : accountAliveWithin(2500);
+    }).then(function (alive) {
+      if (!alive) { dropHydrated(uid); hookOn = false; return 'gone'; }   // deleted on another device: both copies must not go
       hookOn = false;
       installHook();
       purging = true;
       var tools = toolsWithEntries().filter(function (tool) { return tool !== 'Suite'; });
       return seqMap(tools, function (tool) {
-        var entries = registryFor(tool), removedByKey = {};
+        var entries = registryFor(tool);
         return seqMap(entries.filter(function (e) { return e.shape !== 'tree'; }), function (entry) {
           return seqMap(localItems(entry), function (it) {
             var mem = memOf(tool, entry.kind, it.name);
             if (!mem) return Promise.resolve();
             return hashItem(entry, it.value).then(function (h) {
-              if (h !== mem.h) return;
+              if (h !== mem.h) {
+                var seenH = seenHashOf(tool, entry.kind, it.name);
+                if (!seenH || seenH === mem.h) { keepWithMemory(tool, entry.kind, it.name, mem); return; }
+                if (h !== seenH) { keepAgainstView(tool, entry, it.name, seenH, mem); return; }
+                // this tab's copy is exactly what it last saw and the account holds a newer one: it goes like a synced row
+              }
               var op;
               if (entry.shape === 'map' || entry.shape === 'mapIn') op = localRemove(entry, it.name);
-              else if (sharesKey(entry)) op = localStripProjected(entry);   // the sibling's items on this key are decided on their own
+              else if (sharesKey(entry) || (entry.omit && entry.omit.length)) op = localStripProjected(entry);   // per-device fields and a sibling's items stay
               else op = localRemove(entry, it.name);
-              return op.then(function () { removed++; removedRows.push({ tool: tool, kind: entry.kind, name: it.name, h: h }); metaDelete(uid, tool, entry.kind, it.name); removedByKey[entry.lsKey] = true; });
+              return op.then(function () { removed++; removedRows.push({ tool: tool, kind: entry.kind, name: it.name, h: mem.h, id: mem.id || null, u: mem.u || null }); metaDelete(uid, tool, entry.kind, it.name); if (entry.merge === 'assign') markStripped(uid, tool, entry.kind, it.name); });
             });
           });
         }).then(function () {
           return seqMap(entries.filter(function (e) { return e.shape === 'tree'; }), function (entry) {
             var local = localTree(entry), mem = memOf(tool, entry.kind, DEFAULT_NAME);
             if (!local || !mem) return Promise.resolve();
-            return hashItem(entry, local).then(function (h) { if (h === mem.h) return localRemove(entry, DEFAULT_NAME).then(function () { removedRows.push({ tool: tool, kind: entry.kind, name: DEFAULT_NAME, h: h }); metaDelete(uid, tool, entry.kind, DEFAULT_NAME); }); });
+            return hashItem(entry, local).then(function (h) {
+              if (h !== mem.h) { keepWithMemory(tool, entry.kind, DEFAULT_NAME, mem); return; }
+              return localRemove(entry, DEFAULT_NAME).then(function () { removedRows.push({ tool: tool, kind: entry.kind, name: DEFAULT_NAME, h: h, id: mem.id || null, u: mem.u || null }); metaDelete(uid, tool, entry.kind, DEFAULT_NAME); });
+            });
           });
         });
       });
-    }).then(function () {
-      var m = metaAll();
-      if (isPlainObject(m.hydrated)) delete m.hydrated[uid];
-      metaSave(m);
-      delete firstHydrationDone[uid];
-      var st = stampsAll();
-      if (!Array.isArray(opts.rows)) { st.signedOut = { uid: uid, at: Date.now(), rows: removedRows }; stampsSave(st); }   // the broadcast (a tab following one does not re-broadcast)
+    }).then(function (outcome) {
+      if (outcome === 'gone') return { removed: 0, kept: true, accountGone: true };
+      dropHydrated(uid);
+      if (!follower) { var st = stampsAll(); st.signedOut = { uid: uid, at: Date.now(), rows: removedRows }; stampsSave(st); }   // the broadcast (a tab following one does not re-broadcast)
       return { removed: removed };
     });
   }
@@ -2256,13 +2569,13 @@
     var st = stampsAll(), bc = isPlainObject(st.signedOut) ? st.signedOut : null;
     var mine = a && typeof a.signOutHandled === 'function' && a.signOutHandled();
     if (mine) return;   // this tab's own sign-out: the hook already ran (or keepLocal said not to)
-    if (bc && bc.uid === prevUid && Date.now() - bc.at < 120000) {
+    if (bc && bc.uid === prevUid && Date.now() - bc.at < 120000 && bc.at >= signedInAt) {
       // a button sign-out in another tab: the same removal here, then a reload so the in-memory copy goes too
-      removeAccountCache(prevUid, { rows: bc.rows || [] }).catch(noop).then(function () { location.reload(); });
+      removeAccountCache(prevUid, { rows: bc.rows || [] }).catch(noop).then(function () { if (needsReload()) location.reload(); });
       return;
     }
-    // a session that ended by itself: the copies stay as this device's own data
-    forgetUser(prevUid);
+    // a session that ended by itself: the copies stay as this device's own data, and so does the memory (dropHydrated)
+    dropHydrated(prevUid);
     hookOn = false;
   }
 
@@ -2270,23 +2583,27 @@
   // Another tab's write: a module write (a download there) → re-read that key here and hydrate; a page write →
   // mark the kind stale here (the next flush hydrates before diffing, and never deletes by absence), because
   // replacing a live setup or a board mid-edit with another tab's write would be worse than a moment's staleness.
-  function recheckWrites() {
+  // `live`: called from a storage event while this tab may be in use. A download in another tab then only marks the kind
+  // stale in a tab that has the focus (the teacher may be typing there; its next write merges, actionFor), and the stamp
+  // stays unread so the next look — the tab shown again, pageshow — re-reads it.
+  function recheckWrites(live) {
     var m, stamps, lw, touched = {};
+    var focused = false; try { focused = !!live && document.hasFocus(); } catch (e) {}
     try { m = stampsAll(); stamps = stampsOf(m); } catch (e) { return false; }
     lw = isPlainObject(m.lastWrite) ? m.lastWrite : {};
-    if (isPlainObject(m.signedOut) && eventUser && m.signedOut.uid === eventUser && Date.now() - m.signedOut.at < 120000) {
+    if (isPlainObject(m.signedOut) && eventUser && m.signedOut.uid === eventUser && Date.now() - m.signedOut.at < 120000 && m.signedOut.at >= signedInAt) {   // not a sign-out from before this tab's session
       var a = A();
-      if (!(a && typeof a.signOutHandled === 'function' && a.signOutHandled())) { eventUser = null; removeAccountCache(m.signedOut.uid, { rows: m.signedOut.rows || [] }).catch(noop).then(function () { location.reload(); }); return true; }
+      if (!(a && typeof a.signOutHandled === 'function' && a.signOutHandled())) { eventUser = null; removeAccountCache(m.signedOut.uid, { rows: m.signedOut.rows || [] }).catch(noop).then(function () { if (needsReload()) location.reload(); }); return true; }
     }
     Object.keys(stamps).forEach(function (tool) {
       Object.keys(stamps[tool]).forEach(function (kind) {
         var at = stamps[tool][kind];
         if (seen[tool] && seen[tool][kind] === at) return;
-        markSeen(tool, kind, at);
-        if (!pages[tool]) return;
+        if (!pages[tool]) { markSeen(tool, kind, at); return; }
         var pw = isPlainObject(m.pageWrites) && isPlainObject(m.pageWrites[tool]) ? m.pageWrites[tool][kind] : null;
         var pageWrite = pw === at || (lw.tool === tool && lw.kind === kind && lw.at === at && lw.source === 'page');
-        if (pageWrite) { if (!stale[tool]) stale[tool] = {}; stale[tool][kind] = true; return; }
+        if (pageWrite || (focused && !pages[tool].pulled)) { if (!stale[tool]) stale[tool] = {}; stale[tool][kind] = true; if (pageWrite) markSeen(tool, kind, at); return; }
+        markSeen(tool, kind, at);
         notifyPage(tool, kind, (lw.tool === tool && lw.kind === kind) ? lw.name : null);
         touched[tool] = true;
       });
@@ -2308,7 +2625,8 @@
       a.onChange(function (user) {
         var uid = user ? user.id : null;
         if (user) {
-          if (uid !== eventUser) { listedFor = {}; stale = {}; seenNames = {}; hydratedTools = {}; noUploadUntilChanged = {}; }
+          if (uid !== eventUser) { listedFor = {}; stale = {}; seenNames = {}; tabBase = {}; hydratedTools = {}; signedInAt = Date.now(); snapshotLocal(attachedTools()); }
+          purging = false;   // a page that did not reload after a sign-out (needsReload) is signed in again: writes go through
           var todo = attachedTools().filter(function (tool) { return listedFor[tool] !== uid; });
           eventUser = uid;
           renderAllStatuses();
@@ -2319,6 +2637,7 @@
         }
         var prev = eventUser;
         eventUser = null; listedFor = {}; plans = {}; hookOn = false;
+        if (!prev && !(a && typeof a.hasStoredSession === 'function' && a.hasStoredSession())) dropHydrated(null);   // a load with no session: the device was signed out since
         Object.keys(statuses).forEach(function (tool) { statuses[tool].state = null; });
         renderAllStatuses();
         closeCard();
@@ -2328,7 +2647,7 @@
     if (a && typeof a.onSignOut === 'function') a.onSignOut(function (uid, opts) { return removeAccountCache(uid, opts); });
     if (a && typeof a.onNameStep === 'function') a.onNameStep(function () { nameStepDone = true; if (nameStepWaiting) { var open = nameStepWaiting; nameStepWaiting = null; whenReady(open); } });
     try { seen = stampsOf(stampsAll()); } catch (e) {}
-    window.addEventListener('storage', function (e) { if (e.key === META_KEY && e.newValue) recheckWrites(); });
+    window.addEventListener('storage', function (e) { if (e.key === META_KEY && e.newValue) recheckWrites(true); });
     document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') recheckWrites(); else finalFlushNow(); });
     window.addEventListener('pageshow', function () { recheckWrites(); });
     window.addEventListener('pagehide', finalFlushNow);
@@ -2345,9 +2664,17 @@
   }
   // The page is leaving or hidden: the last edits go up now (their pagehide writers ran first — the pages add
   // theirs in their own DOMContentLoaded, before this deferred module's listener is added at boot).
+  // The page is being hidden or left: its own last writes (the debounced settings save, a class list being typed, an
+  // open board edit) are made now, and every kind of its tool is compared with the memory and sent if it changed —
+  // the page's own pagehide writers may run after this listener, and a write made under selfWrite marks nothing dirty.
   function finalFlushNow() {
     if (!hookOn || purging || suspended || !currentUser()) return;
-    Object.keys(pages).forEach(function (tool) { var cfg = pages[tool]; if (cfg && !cfg.pulled && typeof cfg.finalFlush === 'function') withSelfWrite(function () { try { cfg.finalFlush(); } catch (e) {} }); });
+    var uid = currentUser().id;
+    Object.keys(pages).forEach(function (tool) {
+      var cfg = pages[tool]; if (!cfg || cfg.pulled) return;
+      withSelfWrite(function () { try { if (typeof cfg.finalFlush === 'function') cfg.finalFlush(); else if (typeof cfg.flush === 'function') cfg.flush(); } catch (e) {} });
+      if (hydratedTools[tool] === uid) registryFor(tool).forEach(function (e) { if (!e.virtual) { if (!dirty[tool]) dirty[tool] = {}; dirty[tool][e.kind] = true; } });
+    });
     Object.keys(dirty).forEach(function (tool) { if (Object.keys(dirty[tool] || {}).length) { if (timers[tool]) { clearTimeout(timers[tool]); timers[tool] = null; } flush(tool).catch(noop); } });
   }
   function whenReady(fn) { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { fn(); }); else fn(); }
@@ -2377,6 +2704,7 @@
       pages[other] = safeAssign({ pulled: true }, { merges: cfg.merges, onLocalChanged: cfg.onLocalChanged, paused: cfg.paused, hydrate: cfg.hydrate });
     });
     if (cfg.status) mountStatus(cfg.status, tool);
+    snapshotLocal(toolsOf(cfg));   // what this page loaded is what it holds (a deletion before the first hydration is a deletion)
     listen();   // IvritAccount.onChange fires once when the state is known — that call hydrates every attached tool
     if (cfg.hydrate !== false && currentUser()) {
       var uid = currentUser().id;
@@ -2395,6 +2723,7 @@
     flush: flush,
     suspend: suspend,
     fontDeleted: fontDeleted,
+    needsReload: needsReload,
     pendingSignOut: pendingSignOut,
     lastPlan: function (tool) { return plans[tool] || null; },   // the last classification, synchronously (a page hook reads a row's state from it)
     registry: function () { return registryAll().map(function (e) { return safeAssign({}, e); }); },

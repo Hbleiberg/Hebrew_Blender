@@ -13782,6 +13782,7 @@ let _lastSetupRestoring = false;   // suppress saves while a restore (or a delib
 let _lastSetupHeld = false;        // a remembered setup this page could not apply: kept as it is until a Generate replaces it
 let _answerKeyView = false;        // the ?ak= view shows no setup of its own — nothing is remembered from it
 let _urlSetupActive = false;       // a ?s= / ?wl= link's setup is on the controls: a remembered setup landing from the account must not replace it
+let _urlSetupText = null;          // that setup as it arrived: while the controls still equal it, it is not remembered as the teacher's own
 
 // force: a deliberate save (Generate, a restored file) replaces a held setup too; the routine saves —
 // pagehide and the cloud module's flush — leave a held one alone.
@@ -13793,6 +13794,9 @@ function rememberSetup(force = false) {
   try { s = getSettings(); } catch (e) { return; }
   for (const f in _unapplied) { const u = _unapplied[f]; if (JSON.stringify(s[f]) === JSON.stringify(u.live)) s[f] = u.value; }
   const text = JSON.stringify(s);
+  // A colleague's link that was only opened is not the teacher's own setup: it is remembered (and, signed in, sent to the
+  // account) once a control changes it, never just because the page was left or the account module flushed.
+  if (_urlSetupActive && _urlSetupText !== null) { let live = null; try { live = JSON.stringify(getSettings()); } catch (e) {} if (live === _urlSetupText) return; }
   // A pristine setup is the absence of a setup: with nothing remembered and every control at its default,
   // nothing is written — so "Start fresh" leaves no blank setup behind to be synced over a real one.
   let had = null;
@@ -13855,6 +13859,7 @@ function restoreFromURL() {
       if (rwT) rwT.checked = true;
       selectedWordListIds = new Set([wlParam]);
       _urlSetupActive = true;
+      try { _urlSetupText = JSON.stringify(getSettings()); } catch (e) { _urlSetupText = null; }
       rwSource = 'lists';        // set before toggleRealWordsUI so its setRwSource(rwSource) skips the corpus load
       toggleRealWordsUI();       // enter Real-Words mode; setRwSource('lists') renders the picker (list pre-checked)
       try { generate(); } catch(e) {}
@@ -13871,6 +13876,7 @@ function restoreFromURL() {
   if (!diff || typeof diff !== 'object') return;
   try { applySettings(ivritSafeAssign(Object.assign({}, SHARE_DEFAULTS), diff)); } catch(e) { return; }
   _urlSetupActive = true;
+  try { _urlSetupText = JSON.stringify(getSettings()); } catch (e) { _urlSetupText = null; }
   // Auto-generate. Real-words drills need REAL_WORDS; generateRealWords() lazy-loads
   // it via ensureRealWords() and re-renders when ready, so a plain generate() suffices.
   try { generate(); } catch(e) {}
