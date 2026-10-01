@@ -315,7 +315,7 @@ body.dark .hi-sun{display:inline-block;}
           <label for="nameInput" data-i18n="account.who.name_label">Display name</label>
           <input type="text" id="nameInput" name="name" required maxlength="80" autocomplete="name" autocapitalize="words" autocorrect="off" spellcheck="false">
         </div>
-        <p class="note" data-i18n="account.who.name_note">Shown in the header when you are signed in. Only you see it.</p>
+        <p class="note" data-i18n="account.who.name_note">Shown in the header while you are signed in and stored with your account. Only you see it.</p>
         <button class="btn ghost" type="submit" id="nameSave" data-i18n="account.who.name_save">Save name</button>
         <p class="status" id="nameNote" role="status" aria-live="polite"></p>
       </form>
@@ -323,7 +323,7 @@ body.dark .hi-sun{display:inline-block;}
 
     <section class="tile" id="secHolds" aria-labelledby="holdsHead">
       <h2 id="holdsHead" data-i18n="account.holds.head">What your account holds</h2>
-      <p class="note" data-i18n="account.holds.note">Copies of the items you uploaded from the tools. To sync, download or delete a single item, use that tool's Cloud saves panel (Font Maker projects: Load Project ▾ → In your account).</p>
+      <p class="note" data-i18n="account.holds.note">Everything the tools saved while you were signed in: presets, decks, settings, word lists, student profiles, class lists, fonts and practice progress, plus your Font Maker projects. To change or delete an item, open it in its tool (Font Maker projects: Load Project ▾ → In your account).</p>
       <ul id="holdsList"></ul>
       <p id="holdsTotal"></p>
       <button class="btn ghost" type="button" id="refreshBtn" data-i18n="account.holds.refresh">Refresh</button>
@@ -332,14 +332,14 @@ body.dark .hi-sun{display:inline-block;}
 
     <section class="tile" id="secDownload" aria-labelledby="dlHead">
       <h2 id="dlHead" data-i18n="account.download.head">Download everything</h2>
-      <p class="note" data-i18n="account.download.note">One .zip file with everything in your account: an .ivrit file of every saved item (restore it with Import / Export All Settings on the home page — it is merged into what is on that device, never replacing anything, and per-device settings such as zoom and panel layout are not in it) and each Font Maker project as a .hebrewfont file with its photos, plus its exported font when you kept one. Photo projects make this large; the size is shown above.</p>
+      <p class="note" data-i18n="account.download.note">One .zip file with everything in your account: an .ivrit file of every saved item (restore it with Import / Export All Settings on the home page — it is merged into what is on that device, never replacing anything; while you are signed in there, the merge refills your account) and each Font Maker project as a .hebrewfont file with its photos, plus its exported font when you kept one. Per-device settings such as zoom and panel layout are not in it. Photo projects make this large; the size is shown above.</p>
       <button class="btn" type="button" id="dlBtn" aria-disabled="true" data-i18n="account.download.btn">Download everything (.zip)</button>
       <p class="status" id="dlStatus" role="status" aria-live="polite"></p>
     </section>
 
     <section class="tile danger" id="secDelete" aria-labelledby="delHead">
       <h2 id="delHead" data-i18n="account.delete.head">Delete my account</h2>
-      <p class="note" data-i18n="account.delete.note">This deletes your account and everything in it — every saved item, every Font Maker project with its photos and exported fonts — right away and for good. Nothing on this device or any other device is touched: your browsers keep their own copies, and your .ivrit and .hebrewfont files stay yours.</p>
+      <p class="note" data-i18n="account.delete.note">This deletes your account and everything in it — every saved item, every Font Maker project with its photos and exported fonts — right away and for good. The copies on this device stay as this device's own data, and your .ivrit and .hebrewfont files stay yours. Other devices drop the account's items when you sign out there; a device whose session ends by itself keeps its copies as its own data until erased.</p>
       <button class="btn ghost" type="button" id="delBtn" data-i18n="account.delete.btn">Delete my account…</button>
       <!-- Step 1: the backup offer. Download everything is the same zip as the section above (downloadAll with
            this box's button and status line); Continue opens the real confirmation below. -->
@@ -374,7 +374,7 @@ body.dark .hi-sun{display:inline-block;}
        tile by its own heading. -->
   <section class="tile" id="acctGone" tabindex="-1" aria-labelledby="goneHead" hidden>
     <h2 id="goneHead" data-i18n="account.gone.head">Your account was deleted</h2>
-    <p data-i18n="account.gone.body">Your account and everything in it are gone. Everything saved on this device stays exactly as it was, and you can keep using every tool without an account.</p>
+    <p data-i18n="account.gone.body">Your account and everything in it are gone. Everything saved on this device stays exactly as it was, as this device's own data, and you can keep using every tool without an account.</p>
     <p class="muted" id="goneCounts"></p>
     <p><a href="/" data-i18n="account.gone.home">Back to the home page</a></p>
   </section>
