@@ -268,7 +268,7 @@ _(none)_
 
 - [x] 2026-10-01 | (S433 close-out) | branch/deploy note | **S433 = pass K + 4 fixes → draft PR on `claude/wizardly-allen-gwuj58` (base `4e19a1c`).** DRIFT: 43 outside-loop commits (PRs #294–#300; sw v889→v899, FM 5.56→5.58); backend unchanged. sw v899→v900; FM not bumped; 5 smokes. …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-10-01 | `616e7a58` | account, dashboard, flash, generator, trope | (S433 K; stale-fallback) **12 static fallbacks match their CSV** (the account notes ×5, four "Cloud saves" headings, dashboard ×3). | verified: census 14 → 2; 90 cells vs HEAD; smoke-account-page 65, smoke-tools 135
+- [x] 2026-10-01 | `b3ec5d33` | account, dashboard, flash, generator, trope | (S433 K; stale-fallback) **12 static fallbacks match their CSV** (the account notes ×5, four "Cloud saves" headings, dashboard ×3). | verified: census 14 → 2; 90 cells vs HEAD; smoke-account-page 65, smoke-tools 135
 
 - [x] 2026-10-01 | `d3dd513c` | torah_trainer.html (CSV) | (S433 K) **FAQ 5's Hebrew says highlight or underline**, as its English does (the one one-sided edit since S419). | verified: Q5 by real clicks ×8 vs HEAD's locales; EN identical
 
@@ -434,7 +434,7 @@ _(none)_
 
 - **fixed-width-third-party-embed-inflates-phone-layout**: **REGISTERED + first swept suite-wide 2026-08-28 (S276 Pass N) — hits: 2 carriers, BOTH fixed in-session (`23b2387` contact inline auto-render → data-size=compact ≤388 + ≤430 containment belt; `e4aaa44` resources …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **stale-html-fallback-behind-its-csv-value**: ACTIVE, clean streak 0. **S433 (9th sweep, `k433/stale2.py` — nesting-aware, 2,605 sites): 14 hits, 12 FIXED `616e7a58` (account ×5, dashboard ×4, flash, generator, trope), torah ×2 OPEN (cap); NEW JS arm (`k433/fallbacks.py`, 423 …[full text: IMPROVEMENT_ARCHIVE.md]
+- **stale-html-fallback-behind-its-csv-value**: ACTIVE, clean streak 0. **S433 (9th sweep, `k433/stale2.py` — nesting-aware, 2,605 sites): 14 hits, 12 FIXED `b3ec5d33` (account ×5, dashboard ×4, flash, generator, trope), torah ×2 OPEN (cap); NEW JS arm (`k433/fallbacks.py`, 423 …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **undocumented-global-keyboard-shortcut**: ACTIVE. **Re-swept 2026-09-09 (S357 Pass A, delta-only): 0 new `document`-level `keydown` handlers (the erase gate's is scoped to its overlay: Escape + Tab trap, exempt shapes) — hits 0, clean streak 2.** S264 1 hit fixed (`f65ce58`); …[full text: IMPROVEMENT_ARCHIVE.md]
 

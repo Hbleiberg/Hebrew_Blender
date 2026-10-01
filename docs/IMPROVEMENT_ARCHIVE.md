@@ -71771,7 +71771,7 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - **fixed-width-third-party-embed-inflates-phone-layout**: **REGISTERED + first swept suite-wide 2026-08-28 (S276 Pass N) — hits: 2 carriers, BOTH fixed in-session (`23b2387` contact inline auto-render → data-size=compact ≤388 + ≤430 containment belt; `e4aaa44` resources …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **stale-html-fallback-behind-its-csv-value**: ACTIVE, clean streak 0. **S433 (9th sweep, `k433/stale2.py` — nesting-aware, 2,605 sites): 14 hits, 12 FIXED `616e7a58` (account ×5, dashboard ×4, flash, generator, trope), torah ×2 OPEN (cap); NEW JS arm (`k433/fallbacks.py`, 423 `t(key, fallback)` sites): ivrit-saves.js 8 FIXED `b818b566`.** S432: 2 FIXED `8938513`. Detection + controls in …[full text: IMPROVEMENT_ARCHIVE.md]
+- **stale-html-fallback-behind-its-csv-value**: ACTIVE, clean streak 0. **S433 (9th sweep, `k433/stale2.py` — nesting-aware, 2,605 sites): 14 hits, 12 FIXED `b3ec5d33` (account ×5, dashboard ×4, flash, generator, trope), torah ×2 OPEN (cap); NEW JS arm (`k433/fallbacks.py`, 423 `t(key, fallback)` sites): ivrit-saves.js 8 FIXED `b818b566`.** S432: 2 FIXED `8938513`. Detection + controls in …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **undocumented-global-keyboard-shortcut**: ACTIVE. **Re-swept 2026-09-09 (S357 Pass A, delta-only): 0 new `document`-level `keydown` handlers (the erase gate's is scoped to its overlay: Escape + Tab trap, exempt shapes) — hits 0, clean streak 2.** S264 1 hit fixed (`f65ce58`); …[full text: IMPROVEMENT_ARCHIVE.md]
 
