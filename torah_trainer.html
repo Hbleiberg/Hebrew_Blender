@@ -1331,7 +1331,8 @@ body.dark .preset-item { background:var(--navy-deep); }
 #ttFavList .preset-item > .drag-handle { order:-2; }
 .tt-fav-dot { order:-1; position:relative; flex:0 0 auto; width:14px; height:14px; border-radius:50%; border:1px solid rgba(0,0,0,0.25); background:var(--fav-c,#9e9e9e); padding:0; margin:0; cursor:pointer; }
 .tt-fav-dot::after { content:''; position:absolute; inset:-5px; }   /* a 24px hit box on a 14px dot */
-.tt-fav-dot:hover, .tt-fav-dot:focus-visible { box-shadow:0 0 0 2px var(--gold); outline:none; }
+.tt-fav-dot:hover { box-shadow:0 0 0 2px var(--gold); }
+.tt-fav-dot:focus-visible { outline:2px solid var(--focus-ring); outline-offset:2px; }
 .tt-fav-swatches { display:flex; flex-wrap:wrap; gap:8px; }
 .tt-fav-swatch { width:24px; height:24px; border-radius:6px; border:1px solid rgba(0,0,0,0.25); background:var(--fav-c,#9e9e9e); padding:0; margin:0; cursor:pointer; }
 .tt-fav-swatch:hover, .tt-fav-swatch:focus-visible { box-shadow:0 0 0 2px var(--gold-light); outline:none; }
