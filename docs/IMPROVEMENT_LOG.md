@@ -8,7 +8,9 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P3 (**NEW S441 Pass C**) | torah_trainer.html (+ the suite's other gold rings) | **The 2px `var(--gold)` focus ring reads 2.6–2.75:1 on the light page** (12 `:focus-visible` rules: tabs, toggles, radios, words, selects, the skip link), under 1.4.11's 3:1; `--gold-text` (#7f5a13, dark = `--gold`) is the in-file fix. A suite question, so F or A. | found S441
+- [ ] P4 (**NEW S442 Pass F**) | Hebrew_Font_Maker.html | **Two inputs mark focus without a ring**: `.anc-xy input:focus` (a `--gold` border, `outline:none`) and `.me-piece-row .me-coord:focus-within` (a 25% gold glow), both under 3:1 on light; give them the `--focus-ring` outline. | found S442
+
+- [ ] P4 (**NEW S442 Pass F**) | torah_trainer.html | **`.tt-fav-dot`'s focus ring is a `box-shadow` of `--gold`** (2.6:1 on cream), outside the `--focus-ring` token the page's outlines now use. | found S442
 
 - [ ] P3 (**S440 H, gate 2**) | hebrew_dictionary.html | **A theme saved over 200 words drops its A→Z tail** (Animals loses fox, octopus, chicken…). | found S440
 
@@ -26,15 +28,13 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S435 P — gate 2, new copy ×5**) | dashboard, generator, torah, dictionary, flash | **The vowel-colour reset confirm names no account-wide effect while signed in**, though all five reset overrides that travel. | found S435
 
-- [ ] P4 (**NEW S434 N — S441 looked, split: the `.mobile-fab` ids are still read at ~10 sites, the tour's share step falls back to `#shareBtnMob`; take `makeSortable()` alone first**) | hebrew_blend_generator.html | **Dead code from retired UI**: `makeSortable()` is never called (the folder tree replaced it), and the retired `.mobile-fab` (5 hidden buttons with ids, `display:none` everywhere) …[full text: IMPROVEMENT_ARCHIVE.md]
+- [ ] P4 (**NEW S434 N — `makeSortable()` REMOVED S442 `57e774db`; the rest open**) | hebrew_blend_generator.html | **The retired `.mobile-fab` bar (5 hidden buttons with ids, `display:none` everywhere) is still read at ~10 sites** and the tour's share step falls back to `#shareBtnMob`; untangle the readers before removing it. | found S434
 
 - [ ] P4 (**NEW S432 L — gate 2**) | index.html | **The hub's og:/twitter:description name every tool but the Font Maker.** | found S432
 
 - [ ] P4 (**NEW S433 K — gate 2, the maintainer's call**) | torah_trainer.html | **The 17 holiday readings keep English names in the Hebrew UI** ("Passover — Day 1 — Exodus 12:21-51" on the drawer's buttons, the picker's optgroup and the reading header) while the new date lookup names the same holidays in Hebrew (`torah.lookup.holiday_*`); `buildHolidayPicker` calls reading names content. | found …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S433 K — for E**) | dashboard, flash, generator, torah, trope | **The `#cloudSavesPanel` comment still names a panel**; it hosts the status line now. | found S433
-
-- [ ] P4 (**S430 A; NEW pattern**) | torah ×3 | **Three fields are named "… More information"** (generator FIXED S440 `10a0c18f`; the label's tip joins the name; model `#ttShareSettings`). | found S430
 
 - [ ] P4 (**S430 A — the maintainer's call**) | torah_trainer.html | **The reading header keeps "Aliyah {n}" English in the Hebrew UI** beside a translated cycle label (also the copy heading, the handout). | found S430
 
@@ -156,17 +156,9 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S285 Pass C — a cross-tool DIVERGENCE, filed for F rather than as a defect**) | classroom_dashboard.html vs the other four tooltip carriers | **The dashboard binds its tooltip to the `.tip-icon`; the other four bind the `.tip-wrap`.** `wire()` sets `tabIndex`/`role`/`aria-expanded`/`aria-describedby` on the inner icon, while `bindTip` sets them on the wrapper. Both are …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] P4 (**NEW S260 Pass L; HALF-CLOSED S262** — one of the two shipped, one deliberately not) | flash_cards.html + hebrew_blend_generator.html | **~~(1) The dictionary is printable and never says so~~ — ✅ CLOSED S262, `ef8fc5a`, GATE-2 ASKED AND APPROVED ("dictionary printability only").** Shipped as the FAQ + `WebApplication.description` + visible `<details>` twin, all in one commit; copy …[full text: IMPROVEMENT_ARCHIVE.md]
-
 - [ ] P4 (**NEW S258** - re-logged from the S257 candidate with the reason it was not taken; a geometry change, so **gate 3** if ever pursued) | Hebrew_Font_Maker.html | **`#rulerCorner.rl-corner` is 22x22, under the 24px touch floor, and cannot be fixed with a `min-height`.** Its `width`/`height` are both `var(--rl-w)` - the ruler thickness declared on `.rl-layer` (22px) - so the corner is the …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] P4 (**NEW S248 Pass M** — the SIXTH carrier of the standing suite-wide shape; no longer a per-page note) | classroom_dashboard.html (+ Hebrew_Font_Maker S225, hebrew_dictionary S237, trope_tutor S245, index S246, hebrew_blend_generator S247) | **Type-scale and radius micro-fragmentation on the projected board: 13 distinct font sizes over 47 text-bearing nodes, and 5 distinct radii …[full …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [ ] P4 (**NEW S247 Pass M** — the FIFTH page with this exact shape; a suite-wide convergence question, unchanged in kind since FM S225) | hebrew_blend_generator.html (+ Hebrew_Font_Maker S225, hebrew_dictionary S237, trope_tutor S245, index S246) | **Type-scale micro-fragmentation and radius fragmentation, at the largest scale yet measured.** The generator renders text at **23 distinct sizes**, …[full text: IMPROVEMENT_ARCHIVE.md]
-
 - [ ] P4 (**NEW S246 Pass M** — the FOURTH page with this exact shape, so it is now a suite-wide convergence question rather than a per-page note) | index.html (+ Hebrew_Font_Maker S225, hebrew_dictionary S237, trope_tutor S245) | **Four text sizes inside a 2.08px band: 12 / 12.8 / 13.12 / 14.08px.** `button.ie-btn`+`footer` at 12, `#darkBtn`+`.card-attr` at 12.8, `p`+`.bookmark-btn` at 13.12, …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [ ] P4 (**NEW S242 Pass L** — the deliberately-unshipped half of the gate-2 answer; ask again when the maintainer next wants SEO reach) | Hebrew_Font_Maker.html + index.html | **Three of the five crawler-facing FM surfaces still frame the tool as handwriting-only.** S242 fixed the WebApplication summary + added an import FAQ, because gate 2 was answered "minimal — structured data only". Still …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S230 Pass K**, arm 1 — the corpus's one genuine placeholder gap, recorded rather than fixed because the reason it exists is linguistic, not an oversight) | `locales/ui-strings.csv` | …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -175,10 +167,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (needs a gate — it is a mapping decision, not wiring) | hebrew_dictionary.html | **The part-of-speech badge prints raw corpus vocabulary** (`noun`, `verb`, `adjective`, … from `w.pos`, ~L2768) and stays English in the Hebrew UI. Unlike the rest of the S192 haul this is **not** authored-but-unreferenced: the string match to `dictionary.shoresh.pattern_noun` is coincidental (that key …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (needs a gate — same mapping-decision class as the pos badge above) | flash_cards.html | **The Colors-mode selection tiles label their swatches in raw English** (`.color-tile-label` renders `c.name` — …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [ ] P4 (**GATE 2 — panel copy/IA wording**; split from the S180 set S209) | torah_trainer.html | **The "Hebrew font" panel holds 17 typefaces and no size control, while the size sliders live ~330px away under "Display → Font sizes"** — neither panel references the other. Any fix is wording/IA (a cross-reference hint line, or moving a slider), so the wording is the maintainer's. | found: …[full …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [ ] P4 (**NEW S283** — Culmus follow-ons from the meteg build; each names its source in Iorsh's fontforge-scripts) | Hebrew_Font_Maker.html | **Narrow-vowel variants under narrow letters** (vav/yod/nun/gimel/zayin/quf) when a meteg is present — `NarrowVowels.fea` + `CreatePrecomposedGlyphs.py`. Needs synthesized `.narrow` vowel glyphs + a ccmp chain keyed on the base letter. The natural next …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S283**) | Hebrew_Font_Maker.html | **Holam+rafe and shin-dot+rafe collision anchors** — `AddHebrewContextualGPOS.py`'s collision-avoidance anchors for above-mark pairs; today both attach at the shared above anchor and can overlap. Same contextual single-pos device the meteg pair uses, above class. | found: 2026-08-29, S283
 
@@ -256,6 +244,16 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-01 | (S442 close-out) | branch/deploy note | **S442 = pass F (the keyboard focus ring, all 14 pages + the 3 shared modules) + 4 fixes, continuing draft PR #303 (unmerged).** DRIFT: none (main `43570d4`, v909, FM 5.58, SDK 2.116.0, 0003 live, keep-alive green 10-01). sw v909→v910. FM: no bump (a CSS token, no feature). Gates: none asked. Scripts: check-i18n, check-inline-js clean; …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-01 | `57e774db` | hebrew_blend_generator.html, flash_cards.html, storage-and-backup.md | (S442; S434's split) **The uncalled `makeSortable()` removed from both pages; the reference stops teaching it.** | verified: grep finds only the definitions; both pages 0 errors EN light 1280 / HE dark 800; the generator's presets still render with folder-tree handles; check-inline-js clean
+
+- [x] 2026-10-01 | `d477e15c` | torah_trainer.html | (S442; S430's ×3; tip-name-joins-its-field's-name) **Pause between repeats, Date and Blank lines name themselves without "More information"** (`aria-labelledby` on the label span, the `#ttShareSettings` shape). | verified: AX tree with all 7 drawer tabs opened, 3 → 0; names EN + HE exact; label click still focuses
+
+- [x] 2026-10-01 | `a46342c1` | js/i18n.js, js/ivrit-account.js, js/ivrit-saves.js | (S442 F; ring-below-3-on-light) **The modules' injected rings read `var(--focus-ring,var(--gold,#c9922a))`.** | verified: real-focus rings, the account input 2.6 → 4.11, the status-line button 2.13 → 3.85, the header picker 5.38 → 3.41; dark identical; 4 smokes green
+
+- [x] 2026-10-01 | `91fede71` | 14 root pages + shared-components.md | (S442 F; NEW ring-below-3-on-light) **Light-theme focus rings clear 3:1 on every page: `--focus-ring` (#a0701c light, `var(--gold)` dark) on every `:focus` outline + the sidebar-resize CSS.** | verified: real-Tab walk, 14 pages × light/dark at 1280 + 6 pages HE 800: light stops under 3:1 58 → 0, dark colours identical; block …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [x] 2026-10-01 | (S441 close-out) | branch/deploy note | **S441 = pass C (`torah_trainer.html`, first C there since S298) + 4 fixes, continuing draft PR #303 (unmerged).** DRIFT: none (main `43570d4`, v908, FM 5.58, SDK 2.116.0, 0003 live, keep-alive green 10-01). sw v908→v909. FM: no bump (no FM change). Gates: none asked. Scripts: check-i18n, check-inline-js clean. Deferred: none new.
 
 - [x] 2026-10-01 | `1a3d87f8` | hebrew_dictionary.html | (S441; S427's (2)) **The emoji cards' "♀ Feminine" meets 4.5:1 and both gender labels the 0.7rem floor.** | verified: Emoji mode, 4 cells, lowest 4.42 → 5.04 light, 0 overflow
@@ -300,6 +298,8 @@ _(none)_
 
 ### Per-session log (one line per session)
 
+- 2026-10-01 | **S442** | iters: 1 pass (**F**) + 4 fixes = **5** | tools: all 14 pages (one CSS token each), shared ×3 (i18n, ivrit-account, ivrit-saves), torah, generator, flash | patterns fixed: ring-below-3-on-light ×2 (NEW), tip-name-joins-its-field's-name ×1 | pass run: F | SW: v909→v910
+
 - 2026-10-01 | **S441** | iters: 1 pass (**C**) + 4 fixes = **5** | tools: torah ×2, trope, dictionary ×2, flash, dashboard, resources | patterns fixed: tip-escape-drops-focus ×1 (NEW, 5 carriers), button-focus-lost-to-its-own-rebuild ×1 | pass run: C | SW: v908→v909
 
 - 2026-10-01 | **S440** | iters: 1 pass (**H**) + 4 fixes = **5** | tools: dictionary ×2, dashboard, generator | patterns fixed: logical-inset-mirrors-onto-pinned-content ×1 (NEW), tip-name-joins-its-field's-name ×1 | pass run: H | SW: v907→v908
@@ -338,13 +338,13 @@ _(none)_
 
 - 2026-09-27 | **S423** | iters: 1 pass (**G**) + 4 fixes = **5** (full budget) | tools: flash ×2, torah ×2 | patterns fixed: visible-label-missing-from-the-accessible-name ×1 | pass run: G | SW: v865→v866
 
-- 2026-09-27 | **S422** | iters: 1 pass (**M**) + 4 fixes = **5** (full budget) | tools: torah ×2, resources ×2 | patterns fixed: contrast-below-AA-on-a-tinted-or-coloured-plate ×1, pinned-english-without-lang ×1 | pass run: M | SW: v864→v865
-
 ### Tool coverage (last-touched date per tool)
 
-- **S441 (2026-10-01):** torah, trope, dictionary, flash, dashboard, resources (**S441**; **C-next** C S312 trope; **H-next** H S305 resources); generator (S440); index (S437); js/ivrit-saves.js, account (S433); terms (S432); licences, README, ops.md, font-maker.md (S431)
+- **S442 (2026-10-01):** every root page (the `--focus-ring` token), js/i18n.js, js/ivrit-account.js, js/ivrit-saves.js, torah, generator, flash, shared-components.md, storage-and-backup.md (**S442**; **C-next** C S312 trope; **H-next** H S305 resources); trope, dictionary, dashboard, resources (S441); index (S437); account (S433); terms (S432); licences, README, ops.md, font-maker.md (S431)
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`ring-below-3-on-light`** (NEW S442; FIXED on 14 pages `91fede71` + 3 modules `a46342c1`): ACTIVE, streak 0. A focus outline drawn in `--gold` (2.1–2.75:1 on the light surfaces). Detection: `grep -n ':focus' *.html | grep 'solid var(--gold)'` = 0 outside border/box-shadow …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`tip-escape-drops-focus`** (NEW S441; all 5 carriers FIXED `97c54dfb`): ACTIVE, streak 0. A keyboard tooltip whose Escape calls `blur()` drops the focus to the body, and an unstopped Escape closes the drawer under it. Detection (scratchpad `c441/v2.mjs`): Tab onto a visible …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -352,7 +352,7 @@ _(none)_
 
 - **`logical-inset-mirrors-onto-pinned-content`** (NEW S440; FIXED `23b7bb0f`): ACTIVE, streak 0. A logical inset over physically pinned content lands on it in Hebrew. Detection: HE, text Range rects ∩ the control's box.
 
-- **`tip-name-joins-its-field's-name`** (NEW S430; generator FIXED S440 `10a0c18f`; torah ×3 OPEN): ACTIVE, streak 0. A `<label>` holding a `.tip-wrap` names its field "… More information". Detection `a430/moreinfo.mjs` (AX tree, panels open, a planted control). Fix: …[full …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`tip-name-joins-its-field's-name`** (NEW S430; generator FIXED S440 `10a0c18f`; torah ×3 FIXED S442 `d477e15c`): ACTIVE, streak 0 (no open carrier). A `<label>` holding a `.tip-wrap` names its field "… More information". Detection: the AX tree with every panel and drawer tab …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`panel-title-keyed-on-an-inner-span`** (NEW S429; S439 generator FIXED `1ce9eabd`, torah stale — no collapsing panels left): ACTIVE, streak 0. Detection: a `.panel-title` with no own `data-i18n`, then toggle + reload.
 
@@ -646,6 +646,6 @@ _(none)_
 
 - E freshness/site-health: 2026-09-30 (**S431 — 34th E, first since S417 (127 commits). 17 arms, every zero controlled. FOUND 4 (Hebcal data uncredited, README map, CSP/smoke doc claims, 2 comments); FIXED 3.**)
 
-- F cross-tool consistency: 2026-09-29 (**S428 — the copy contract: 13 controls × direct / LMS frame / planted double failure, every zero controlled. FOUND 3 claiming over the old clipboard (P3, FIXED `bbd5f65`, `0d2a941`), 9 ignoring execCommand (2 fixed), 4 unannounced.**)
+- F cross-tool consistency: 2026-10-01 (**S442 — the keyboard focus ring on all 14 pages + the 3 shared modules' injected rings: a real-Tab walk (EN light/dark 1280, HE light/dark 800 on 6), ring colour and contrast against its surface, transitions disabled; HEAD as the control (58 light stops under 3:1, 0 dark). FIXED `91fede71` (the `--focus-ring` token), `a46342c1` (modules); logged 2 P4 …[full text: IMPROVEMENT_ARCHIVE.md]
 
-**Next session (S442):** **BRANCH/PR: S435–S441 on `claude/nice-mayer-bzr3d9` → draft PR #303 (base `43570d4`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v909**, FM **5.58**, SDK **2.116.0**; backend unchanged (0001–0003 live, delete-account v3 = repo source); email template `Live?` = no. ⚑ Stalest: F (S428), then B (S429), A (S430); O stays blocked. ⚑ Strongest untaken: the gold focus ring under 3:1 on light (P3, suite-wide → F or A), the dictionary's theme cap (P3, gate 2), the bingo preview at 800 (P3, layout).
+**Next session (S443):** **BRANCH/PR: S435–S442 on `claude/nice-mayer-bzr3d9` → draft PR #303 (base `43570d4`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v910**, FM **5.58**, SDK **2.116.0**; backend unchanged (0001–0003 live, delete-account v3 = repo source); email template `Live?` = no. ⚑ Stalest: B (S429), then A (S430), E (S431); O stays blocked. ⚑ Strongest untaken: the dictionary's theme cap (P3, gate 2), the bingo preview at 800 (P3, layout), the `.mobile-fab` readers (P4). ⚑ A new ring rule uses `var(--focus-ring)`, never `var(--gold)` (shared-components.md §7).
