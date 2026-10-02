@@ -5471,8 +5471,9 @@ function copyTextarea(id) {
   const box = document.getElementById(id);
   if (!box.value) return;
   const btn = document.getElementById('presetCopyBtn');
-  navigator.clipboard.writeText(box.value).catch(() => { box.select(); document.execCommand('copy'); });
-  if (btn) { btn.innerHTML = ICON_CHECK_SM; setTimeout(() => btn.textContent = I18n.t('worksheet.advanced.copy'), 1500); }
+  const done = () => { if (btn) { btn.innerHTML = ICON_CHECK_SM; setTimeout(() => btn.textContent = I18n.t('worksheet.advanced.copy'), 1500); } };
+  const viaSelect = () => { box.select(); let ok = false; try { ok = document.execCommand('copy'); } catch (e) {} if (ok) done(); };
+  if (navigator.clipboard) navigator.clipboard.writeText(box.value).then(done, viaSelect); else viaSelect();
 }
 
 function exportPresets() {
@@ -13921,12 +13922,18 @@ function openInFlashCards() {
 function copyShareLink(btnId) {
   const url = serializeSettings();
   try { history.replaceState(null, '', url); } catch(e) {}
-  navigator.clipboard.writeText(url).catch(() => {
+  // The check and the announcement only once a route copied: the link is still in the address bar
+  const viaTextarea = () => {
     const ta = document.createElement('textarea');
     ta.value = url; document.body.appendChild(ta); ta.select();
-    try { document.execCommand('copy'); } catch(e) {}
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch(e) {}
     document.body.removeChild(ta);
-  });
+    if (ok) shareLinkCopied();
+  };
+  if (navigator.clipboard) navigator.clipboard.writeText(url).then(shareLinkCopied, viaTextarea); else viaTextarea();
+}
+function shareLinkCopied() {
   ['shareBtn','shareBtnMob'].forEach(id => {
     const b = document.getElementById(id);
     if (!b) return;
