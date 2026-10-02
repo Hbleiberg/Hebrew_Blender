@@ -1223,7 +1223,8 @@ body.dark .ladder-strip-line { color: var(--gold-light); }
   gap: 8px;
   margin-top: 16px;
 }
-.results-actions .btn { padding: 14px; font-size: 1rem; font-weight: 600; }
+.results-actions .btn,
+#saveDeckBtn { padding: 14px; font-size: 1rem; font-weight: 600; }   /* Save as preset is the first ghost of the same results stack (S450: it sat at 38px / 500 / 15.2px above four 49px / 600 / 16px) */
 .results-savedeck { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
 .results-savedeck[hidden] { display: none; } /* its own flex beats the UA hidden rule too: without this the ladder / Mistakes hide never showed */
 .results-savedeck .preset-row[hidden] { display: none; } /* .preset-row's flex beats the UA hidden rule */
