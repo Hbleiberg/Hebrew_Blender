@@ -13745,6 +13745,7 @@ let _lastSetupRestoring = false;   // suppress saves while a restore (or a delib
 let _lastSetupHeld = false;        // a remembered setup this page could not apply: kept as it is until a Generate replaces it
 let _answerKeyView = false;        // the ?ak= view shows no setup of its own — nothing is remembered from it
 let _urlSetupActive = false;       // a ?s= / ?wl= link's setup is on the controls: a remembered setup landing from the account must not replace it
+let _pendingWl = null;            // a ?wl= id whose list is not on this device yet (signed in, it may arrive with the hydration)
 let _urlSetupText = null;          // that setup as it arrived: while the controls still equal it, it is not remembered as the teacher's own
 
 // force: a deliberate save (Generate, a restored file) replaces a held setup too; the routine saves —
@@ -13815,21 +13816,12 @@ function restoreFromURL() {
   // and generates a worksheet from it (the second half of the S72 handshake; the Flash Cards half
   // shipped then). The id is validated against the shared store and used only as an object key / Set
   // member — never interpolated. A link only sets the live view; it never clobbers saved presets.
+  // Signed in, a list that lives only in the account lands a moment later: the link waits for it (onLocalChanged).
   try {
     const wlParam = new URLSearchParams(location.search).get('wl');
-    if (wlParam && wlReadStoreLocal().lists[wlParam]) {
-      const rwT = document.getElementById('realWordsToggle');
-      if (rwT) rwT.checked = true;
-      selectedWordListIds = new Set([wlParam]);
-      _urlSetupActive = true;
-      rwSource = 'lists';        // set before toggleRealWordsUI so its setRwSource(rwSource) skips the corpus load
-      toggleRealWordsUI();       // enter Real-Words mode; setRwSource('lists') renders the picker (list pre-checked)
-      // the link's setup as generate() will read it (Real Words from this list): rememberSetup leaves the teacher's
-      // remembered setup alone until she changes a control
-      try { _urlSetupText = JSON.stringify(getSettings()); } catch (e) { _urlSetupText = null; }
-      try { generate(); } catch(e) {}
-      _stripShareParams();
-      return;                    // ?wl= handled — skip ?s=
+    if (wlParam) {
+      if (openWlLink(wlParam)) return;   // ?wl= handled — skip ?s=
+      _pendingWl = wlParam;
     }
   } catch(e) {}
   try { SHARE_DEFAULTS = getSettings(); } catch(e) { return; } // pristine baseline for diffing
@@ -14023,11 +14015,30 @@ function initCloudSaves() {
     alsoPull: ['Dictionary'],
     paused: () => _answerKeyView,   // the answer-key view has no setup of its own to send
     onLocalChanged: function (kind) {
-      if (kind === 'wordList') return;   // read on demand by the picker
+      if (kind === 'wordList') {   // read on demand by the picker; a ?wl= list that was only in the account opens now
+        if (_pendingWl && !_answerKeyView && openWlLink(_pendingWl)) _pendingWl = null;
+        return;
+      }
       if (kind === 'lastState') { if (_answerKeyView || _urlSetupActive) return; restoreLastSetup(); }   // a link's setup stays; else re-applies the controls under _lastSetupRestoring
       else renderPresets();
     }
   });
+}
+// ?wl=<listId>: Real Words from that saved list, generated; false while the list is not on this device.
+function openWlLink(id) {
+  if (!wlReadStoreLocal().lists[id]) return false;
+  const rwT = document.getElementById('realWordsToggle');
+  if (rwT) rwT.checked = true;
+  selectedWordListIds = new Set([id]);
+  _urlSetupActive = true;
+  rwSource = 'lists';        // set before toggleRealWordsUI so its setRwSource(rwSource) skips the corpus load
+  toggleRealWordsUI();       // enter Real-Words mode; setRwSource('lists') renders the picker (list pre-checked)
+  // the link's setup as generate() will read it (Real Words from this list): rememberSetup leaves the teacher's
+  // remembered setup alone until she changes a control
+  try { _urlSetupText = JSON.stringify(getSettings()); } catch (e) { _urlSetupText = null; }
+  try { generate(); } catch(e) {}
+  _stripShareParams();
+  return true;
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initCloudSaves);
 else initCloudSaves();
