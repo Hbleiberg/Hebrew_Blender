@@ -1371,6 +1371,9 @@ body.dark .tt-fav-note { color:#ffb4a9; }
 body.dark .form-row select, body.dark .form-row input[type="text"], body.dark .form-row input[type="number"], body.dark .form-row input[type="date"] {
   background:var(--navy-deep); color:var(--text);
 }
+/* The one drawer select whose option outgrows the 170px cap: "Modern Israeli [DEFAULT]" (and its Hebrew)
+   showed as "…[DEFAU". Its short "Style" label leaves the row room for the select's own width. */
+#optTranslitStyle { max-width:none; }
 body.dark .form-row input[type="date"] { color-scheme: dark; }   /* the picker's own popup and icon follow the theme */
 .toggle { position:relative; display:inline-block; width:38px; height:24px; flex-shrink:0; }   /* 24px = the WCAG 2.5.8 touch floor */
 .toggle input { opacity:0; width:0; height:0; }
