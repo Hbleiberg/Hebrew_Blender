@@ -387,6 +387,10 @@ header .hright{margin-inline-start:auto;display:flex;align-items:center;gap:10px
 .sidebar-toggle-btn:hover{background:#0f1a33;}
 .sidebar-show-btn{position:fixed;inset-inline-start:0;top:50vh;transform:translateY(-50%);width:24px;height:52px;border-radius:0 6px 6px 0;border:none;background:var(--navy);color:var(--gold-light);font-size:0.8rem;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:100;padding:0;box-shadow:2px 0 6px rgba(0,0,0,0.15);}
 .sidebar-show-btn:hover{background:#0f1a33;}
+/* Dark --navy (#1a2744) sits 1.1:1 on the dark page, so the handle read as a bare chevron: the dark primary pair the
+   page's .color-mode-btn.active / .panel-title:hover already use (pattern dark-navy-fill-matches-its-ground). */
+body.dark .sidebar-toggle-btn,body.dark .sidebar-show-btn{background:#2a4070;}
+body.dark .sidebar-toggle-btn:hover,body.dark .sidebar-show-btn:hover{background:#345090;}
 .search-wrap{position:relative;}
 .search-row{position:relative;}
 .search-wrap input{width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:0.85rem;font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--text);outline:none;box-sizing:border-box;}
@@ -812,6 +816,8 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
 }
 .load-more-btn{background:var(--navy);color:var(--gold-light);border:none;border-radius:6px;padding:8px 28px;font-size:0.85rem;font-family:'Source Sans 3',sans-serif;cursor:pointer;}
 .load-more-btn:hover{background:#0f1a33;}
+body.dark .load-more-btn{background:#2a4070;}   /* the same pair: dark --navy was 1.1:1 on the page, and #0f1a33 went darker than it */
+body.dark .load-more-btn:hover{background:#345090;}
 .empty{text-align:center;padding:60px 20px;color:var(--muted);grid-column:1/-1;}
 .empty .big{font-size:2.5rem;margin-bottom:8px;}
 .loading{text-align:center;padding:60px 20px;color:var(--muted);font-style:italic;}
