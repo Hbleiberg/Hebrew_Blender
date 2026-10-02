@@ -22,6 +22,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S435 P**) | flash_cards.html + hebrew_blend_generator.html | **A `?wl=` link whose list is only in the account opens without it**: the id is resolved once at load; the list that lands later is never selected. | found S435
 
+- [ ] P4 (**NEW S447 K — the corpus's shva slips, the doubled-yod half FIXED `a86b5a16`**) | data/hebrew_emojis.json | **Some transliterations read a silent shva as a vowel or drop a voiced one** ("seport", "michnsey gi'yns", "mistovvim"); a corpus edit with a `?v=3` bump, best done as a reviewed list. | found S447
+
 - [ ] P4 (**NEW S435 P — gate 2, new copy ×5**) | dashboard, generator, torah, dictionary, flash | **The vowel-colour reset confirm names no account-wide effect while signed in**, though all five reset overrides that travel. | found S435
 
 - [ ] P4 (**NEW S432 L — gate 2**) | index.html | **The hub's og:/twitter:description name every tool but the Font Maker.** | found S432
@@ -50,8 +52,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S422 Pass M — gate 3 / gate 2**) | torah_trainer.html | **(1)** dark Chant all is 1.1:1 on the page; **(2)** Hebrew-only side by side keeps an empty half; **(3)** "עִבְרִית" in Libre Baskerville; **(4)** gate 2: the Audio help's 🔊 / 🎵, not the icons. | found S422
 
-- [ ] P4 (**NEW S425 Pass I**) | torah_trainer.html | **A stored layout or translit style this page does not know gets no display fallback** (`layout:'grid'`: side by side, no radio checked; an unknown style: blank); accounts rule 7. | found S425
-
 - [ ] P4 (**NEW S425 Pass I — extract the tour engine first, UX rule 1**) | trope_tutor.html | **With `trope_motifs.json` missing the tour counts "Step 3 of 8 → Step 5 of 8"**; torah/dictionary use `_tourCounter`. | found S425
 
 - [ ] P4 (**NEW S425 Pass I — for F**) | CSV, 8 pages | **22 Hebrew strings end in "→", pointing back in RTL** (home CTAs, trope nav, torah links); 25 use "←". | found S425
@@ -61,8 +61,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S420 Pass N — for F or A; the z-index table is in loop-findings**) | pwa.js + the 7 sheet-bearing pages | **The install banner (position:fixed, z-index 2147483000) floats over any open sheet's bottom band on a short phone**; the hub hides it by its own state (`f44a17e`), and a lower z-index alone is not the suite fix (the generator's `.gen-fab` z 90 equals the dashboard/torah …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S412 Pass H — five small ones; (1) FIXED S446 `c6c509ed`**) | flash_cards.html | **(2)** a timed drill paints the previous value for 1 s; **(3)** the "New" profile button's second `class` is ignored (no `.hi-btn`); **(4)** a load in 1-letter mode narrows "Vowel on letter" `[2]` → `[1]`; **(5)** gate 2: the printed card …[full …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [ ] P4 (**NEW S412 Pass H**) | data/hebrew_emojis.json | **🥝 קִיוִוי reads "kivivy"** (+ "di.en.eyy.", "beruneyy"); the fix bumps the corpus `?v=`. | found S412
 
 - [ ] P4 (**NEW S413 Pass C — gate 3**) | 404.html | **The lost star wanders forever with no pause** (WCAG 2.2.2); only reduced motion stops it. | found S413
 
@@ -81,10 +79,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S410 Pass D**) | Hebrew_Font_Maker.html | **The partner wizard's Create re-renders every grid once per setter** (`setMarkEnabled` ×2, `setAddEnglishLetters`, `setInputMode`…): 3 tasks of 465–678ms @4×, top 146–201ms @1× (engine blocked; with it, Pyodide's own blocks dominate). | found S410
 
 - [ ] P4 (**NEW S409 Pass G**) | account.html | **Printing splits cards across sheets, spends an A4 sheet on the footer and prints 6 inert controls.** | found S409
-
-- [ ] P4 (**NEW S404 — the icon sweep's one missed tab**) | trope_tutor.html + locales/ui-strings.csv | **The Drill tab's label is still `🎯 Drill` / `🎯 תרגול` (CSV note `leading-emoji`) while its sibling Learn tab …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [ ] P4 (**NEW S405 Pass K fallback arm**) | Hebrew_Font_Maker.html | **`_pT('special_intro', …)`'s English fallback still describes only the wide letterforms** ("Pick one, then use the Width slider") since `fdcb140` widened the panel and its CSV text to the dagesh/mapiq forms and yod-with-hiriq; seen only before I18n.ready or with the dictionary missing. Copy the CSV `en` into the fallback. | …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S405 Pass K gate controls — K's, doc-only**) | scripts/check-i18n.js + docs/reference/i18n.md | **The gate's header says `.innerHTML = '<literal>'` is flagged; rule 2 skips innerHTML by design**, and its exit-contract comment omits D and E (both block). i18n.md's "Known blind spot" names template literals, plain arguments and ternaries, not a plain innerHTML literal, and its …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -234,6 +228,16 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-02 | (S447 close-out) | branch/deploy note | **S447 = pass K + 4 fixes on draft PR #303 (unmerged).** DRIFT: none (main `43570d4`, FM 5.58, SDK 2.116.0, 0001–0003 live, db/functions + config + keep-alive file unchanged; keep-alive #19 green 10-01, the 10-02 run not yet fired). sw v914→v915 (FM, torah, trope, flash, generator, dictionary, locales; `data/hebrew_emojis.json` ?v=1→2 on …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-02 | `a86b5a16` | data/hebrew_emojis.json (+ flash, generator, dictionary ?v=2) | (S447; S412 H) **A doubled yod no longer transliterates as "yy"** (13 entries; 🥝 "kivi"). | verified: `k447/em.mjs` all 3 fetchers request ?v=2 and load the fixed rows; HEAD ?v=1 "kivivy"/"beruneyy"; EN/HE, 0 errors.
+
+- [x] 2026-10-02 | `d11fa022` | trope_tutor.html + CSV | (S447; S404) **The Drill tab carries a markup `hi-target` icon and a glyph-free label** like its 3 siblings. | verified: `k447/tr.mjs` 13×13 icon, 5px gap, arrow-key tab nav, EN/HE × light/dark × 1280/800; HEAD "🎯 Drill".
+
+- [x] 2026-10-02 | `2656a391` | torah_trainer.html | (S447; S425 I) **An unknown stored layout / translit style displays the default** (radio, select, transliteration) while settings keeps the stored value. | verified: `k447/tt.mjs` stubbed transliterator, junk/sbl/staff × EN/HE: HEAD no radio + blank select + 0 translit rows, fix side by side + Modern Israeli + 7 rows, stored value kept; known …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-02 | `7a5117e7` | Hebrew_Font_Maker.html | (S447; S405 K) **The special-forms intro's English fallback matches its CSV text.** | verified: `k447/fm.mjs` locales aborted (counted): HEAD old text, fix = CSV `en`; with the dictionary both equal.
+
 - [x] 2026-10-02 | (S446 close-out) | branch/deploy note | **S446 = pass L + 4 fixes on draft PR #303 (unmerged).** DRIFT: none (main `43570d4`, FM 5.58, SDK 2.116.0, 0001–0003 live, db/functions + config + keep-alive file unchanged; keep-alive #19 green 10-01). sw v913→v914 (index, generator, torah, flash, locales). FM: no bump (not touched). check-i18n + check-inline-js clean; build-locales …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-10-02 | `c6c509ed` | flash_cards.html | (S446; S412 H (1)) **A tied streak no longer reads as a new personal best** (a per-drill `sessNewPb` flag). | verified: `f446/pb.mjs` real drills, tie/beat/first/below × views; HEAD shows 🏆 on a tie 4/4, fix 0/4; beat/first/below unchanged.
@@ -274,19 +278,11 @@ _(none)_
 
 - [x] 2026-10-01 | `2c66dfb6` | js/ivrit-saves.js | (S443 B; NEW) **`attach()` no longer warns that the virtual Suite prefs row is upload-only** (every Font Maker and account-page load logged it; the downloadable check and the reference already exempt `virtual`). | verified: HEAD 1 warning per load on both pages, fix 0; a TorahTrainer attach without a hook still warns on both trees; the four …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-10-01 | (S442 close-out) | branch/deploy note | **S442 = pass F (the keyboard focus ring, all 14 pages + the 3 shared modules) + 4 fixes, continuing draft PR #303 (unmerged).** DRIFT: none (main `43570d4`, v909, FM 5.58, SDK 2.116.0, 0003 live, keep-alive green 10-01). sw v909→v910. FM: no bump (a CSS token, no feature). Gates: none asked. Scripts: check-i18n, check-inline-js clean; …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-10-01 | `57e774db` | hebrew_blend_generator.html, flash_cards.html, storage-and-backup.md | (S442; S434's split) **The uncalled `makeSortable()` removed from both pages; the reference stops teaching it.** | verified: grep finds only the definitions; both pages 0 errors EN light 1280 / HE dark 800; the generator's presets still render with folder-tree handles; check-inline-js clean
-
-- [x] 2026-10-01 | `d477e15c` | torah_trainer.html | (S442; S430's ×3; tip-name-joins-its-field's-name) **Pause between repeats, Date and Blank lines name themselves without "More information"** (`aria-labelledby` on the label span, the `#ttShareSettings` shape). | verified: AX tree with all 7 drawer tabs opened, 3 → 0; names EN + HE exact; label click still focuses
-
-- [x] 2026-10-01 | `a46342c1` | js/i18n.js, js/ivrit-account.js, js/ivrit-saves.js | (S442 F; ring-below-3-on-light) **The modules' injected rings read `var(--focus-ring,var(--gold,#c9922a))`.** | verified: real-focus rings, the account input 2.6 → 4.11, the status-line button 2.13 → 3.85, the header picker 5.38 → 3.41; dark identical; 4 smokes green
-
-- [x] 2026-10-01 | `91fede71` | 14 root pages + shared-components.md | (S442 F; NEW ring-below-3-on-light) **Light-theme focus rings clear 3:1 on every page: `--focus-ring` (#a0701c light, `var(--gold)` dark) on every `:focus` outline + the sidebar-resize CSS.** | verified: real-Tab walk, 14 pages × light/dark at 1280 + 6 pages HE 800: light stops under 3:1 58 → 0, dark colours identical; block …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-02 | **S447** | iters: 1 pass (**K**) + 4 fixes = **5** | tools: FM, torah, trope, data (flash/generator/dictionary ?v=) | patterns fixed: stale-html-fallback-behind-its-csv-value ×1 | pass run: K | SW: v914→v915
 
 - 2026-10-02 | **S446** | iters: 1 pass (**L**) + 4 fixes = **5** | tools: index, generator, torah, flash | patterns fixed: — | pass run: L | SW: v913→v914
 
@@ -326,11 +322,9 @@ _(none)_
 
 - 2026-09-29 | **S428** | iters: 1 pass (**F**) + 4 fixes = **5** | tools: torah, dictionary ×2, js/ivrit-saves.js | patterns fixed: copy-claims-success-on-a-refused-clipboard ×2 (NEW) | pass run: F | SW: v883→v884
 
-- 2026-09-28 | **S427** | iters: 1 pass (**C**) + 4 fixes = **5** | tools: dictionary ×2, js/ivrit-account.js (shared), account | patterns fixed: button-focus-lost ×1, visible-label-missing ×1 | pass run: C | SW: v870→v871
-
 ### Tool coverage (last-touched date per tool)
 
-- **S446 (2026-10-02):** index, generator, torah, flash (**S446**); **S445:** generator, flash, dictionary, shared-components.md (**S445**); **S444:** torah, index, dashboard; **S443:** js/ivrit-saves.js, Hebrew_Font_Maker.html, torah, dashboard, flash, generator, trope (**S443**; **C-next** C S312 trope; **H-next** H S305 resources); **S442:** every root page (the `--focus-ring` token), js/i18n.js, js/ivrit-account.js, js/ivrit-saves.js, torah, generator, flash, shared-components.md, storage-and-backup.md (**S442**; **C-next** C S312 trope; …[full text: IMPROVEMENT_ARCHIVE.md]
+- **S447 (2026-10-02):** FM, torah, trope, emoji corpus (+ flash, generator, dictionary `?v=`) (**S447**); **S446 (2026-10-02):** index, generator, torah, flash (**S446**); **S445:** generator, flash, dictionary, shared-components.md (**S445**); **S444:** torah, index, dashboard; **S443:** js/ivrit-saves.js, Hebrew_Font_Maker.html, torah, dashboard, flash, generator, trope (**S443**; **C-next** C S312 trope; **H-next** H S305 resources); **S442:** every root page (the `--focus-ring` token), js/i18n.js, js/ivrit-account.js, js/ivrit-saves.js, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -452,7 +446,7 @@ _(none)_
 
 - **fixed-width-third-party-embed-inflates-phone-layout**: **REGISTERED + first swept suite-wide 2026-08-28 (S276 Pass N) — hits: 2 carriers, BOTH fixed in-session (`23b2387` contact inline auto-render → data-size=compact ≤388 + ≤430 containment belt; `e4aaa44` resources …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **stale-html-fallback-behind-its-csv-value**: ACTIVE, clean streak 0. **S434: torah ×2 FIXED `b4edf5c3` (the S433 census's last two; HEAD census → 0).** **S433 (9th sweep, `k433/stale2.py` — nesting-aware, 2,605 sites): 14 hits, 12 FIXED `b3ec5d33` (account ×5, dashboard ×4, …[full text: IMPROVEMENT_ARCHIVE.md]
+- **stale-html-fallback-behind-its-csv-value**: ACTIVE, clean streak 0. **S447 (K, `k447/stale.py` html.parser census, plants 2/2): 4 hits = S432's `<br>`-only tooltips (by design); the FM `_pT` fallback (S405) FIXED `7a5117e7`.** **S434: torah ×2 FIXED `b4edf5c3` (the S433 …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **undocumented-global-keyboard-shortcut**: ACTIVE. **Re-swept 2026-09-09 (S357 Pass A, delta-only): 0 new `document`-level `keydown` handlers (the erase gate's is scoped to its overlay: Escape + Tab trap, exempt shapes) — hits 0, clean streak 2.** S264 1 hit fixed (`f65ce58`); …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -614,7 +608,7 @@ _(none)_
 
 - M aesthetics & visual design (one surface): 2026-10-01 (**S436 — 20th M, `hebrew_blend_generator.html`, its FIRST. 8 cells × 5 views, a pixel probe over 22 segmented groups, the real exportPDF; every zero planted. FOUND + FIXED: separators lost in Hebrew and between rows (`d4cd3d96`), a narrow window's PDF (P1, `141aa8f7`). Logged: the bingo preview at 800 (P3, gate 3/4), the PDF under 700px …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- K i18n / localization audit: 2026-10-01 (**S433 — 29th K. Delta `bf028cdc..4e19a1c`: 161 commits, CSV +367/−110. Gates A–E clean, 7 plants fire; 11 arms, 28 runtime cells, 9 delta surfaces, every zero controlled. FOUND: the saves module's stale fallbacks (P3), FAQ a5's one-sided edit, 14 stale static fallbacks, the holiday names (gate 2); FIXED 4.**)
+- K i18n / localization audit: 2026-10-02 (**S447 — 30th K. Delta `09f192ab..1b1538f6` (68 commits, CSV +1/−1). Gates A–E clean; runtime 32 cells (16 pages × EN/HE, EN↔HE↔EN) 0 missing, 0 raw, plants (data-i18n + I18n.t miss, EN-in-HE) fired 32/32; static-fallback census 4 (S432's `<br>`-only), plants 2/2; blind spot over added lines 0; RTL 1 (S440's deliberate pin). FOUND nothing new; FIXED 4 …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - C accessibility (one tool): 2026-10-01 (**S441 — `torah_trainer.html`, first since S298. Tab census (44 page stops, 124 drawer stops over 7 tabs), ring contrast, 7 triggers × Escape, tips on 5 pages; every zero controlled. FOUND 2 focus drops, the drawer-closing tip Escape, the 2.6:1 gold ring; FIXED `17cd7334`, `97c54dfb`. C-next: trope (S312).**)
 
@@ -638,4 +632,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-01 (**S442 — the keyboard focus ring on all 14 pages + the 3 shared modules' injected rings: a real-Tab walk (EN light/dark 1280, HE light/dark 800 on 6), ring colour and contrast against its surface, transitions disabled; HEAD as the control (58 light stops under 3:1, 0 dark). FIXED `91fede71` (the `--focus-ring` token), `a46342c1` (modules); logged 2 P4 …[full text: IMPROVEMENT_ARCHIVE.md]
 
-**Next session (S447):** **BRANCH/PR: S435–S446 on `claude/nice-mayer-bzr3d9` → draft PR #303 (base `43570d4`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v914**, FM **5.58**, SDK **2.116.0**; backend unchanged (0001–0003 live, delete-account v3 = repo source); email template `Live?` = no. ⚑ Stalest: K (S433), then N (S434), P (S435); O stays blocked. ⚑ Strongest untaken: the `?wl=` link whose list is only in the account (P4, flash + generator, needs smoke-sync), the torah unknown-layout fallback (P4).
+**Next session (S448):** **BRANCH/PR: S435–S447 on `claude/nice-mayer-bzr3d9` → draft PR #303 (base `43570d4`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v915**, FM **5.58**, SDK **2.116.0**, emoji corpus `?v=2`; backend unchanged (0001–0003 live, delete-account v3 = repo source); email template `Live?` = no. ⚑ Stalest: N (S434), then P (S435), M (S436); O stays blocked. ⚑ Strongest untaken: the `?wl=` link whose list is only in the account (P4, flash + generator, needs smoke-sync), the corpus's shva slips (P4, a reviewed list).
