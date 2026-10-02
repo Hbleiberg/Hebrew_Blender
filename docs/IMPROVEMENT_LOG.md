@@ -8,6 +8,10 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P4 (**NEW S450 M — for A: the census**) | the other 13 pages | **`dark-navy-fill-matches-its-ground` is unswept outside flash cards**: a primary or selected fill of `--navy` where dark mode makes `--navy` the page ground. | found S450
+
+- [ ] P4 (**NEW S450 M**) | flash_cards.html | **The results screen's "Save This Card Set as a Preset" is off the stack's scale**: 38px / weight 500 / 15.2px above four 49px / 600 / 16px siblings. | found S450
+
 - [ ] P3 (**S440 H, gate 2**) | hebrew_dictionary.html | **A theme saved over 200 words drops its A→Z tail** (Animals loses fox, octopus, chicken…). | found S440
 
 - [ ] P3 (**S440 H, gate 2**) | hebrew_dictionary.html | **"Words from this root" calls the word's letters its root** on 9,321 words (findings S440). | found S440
@@ -32,7 +36,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**S430 A — the maintainer's call**) | torah_trainer.html | **The reading header keeps "Aliyah {n}" English in the Hebrew UI** beside a translated cycle label (also the copy heading, the handout). | found S430
 
-- [ ] P4 (**NEW S421 Pass P**) | classroom_dashboard.html | **The "Now showing {name} — the classes from your account are in the class list" switch runs on every signed-in load and credits the account even when it holds nothing**: with the pointer on the untouched default and a class this device made itself, the page switches to that class and says it came from the account …[full text: …[full …[full text: IMPROVEMENT_ARCHIVE.md]
+- [ ] P4 (**NEW S421 Pass P**) | classroom_dashboard.html | **The "Now showing {name} — the classes from your account are in the class list" switch runs on every signed-in load and credits the account even when it holds nothing** (**S450 attempt reverted**: needs the landed ids; findings S450) | found S421
 
 - [ ] P4 (**NEW S421 Pass P — for H**) | classroom_dashboard.html | **A class list beyond the picker's cap keeps its names now (`288af4a`) but the picker draws only the first 60 chips** (`rosterNames()` slices), so students 61+ of a merged class are stored and counted ("65 names (max 60)") yet never picked; say so in the drawer or raise the chip cap. | found S421
 
@@ -226,11 +230,19 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-02 | (S450 close-out) | branch/deploy note | **S450 = pass M on flash + 2 fixes + 1 reverted, draft PR #303 (unmerged).** DRIFT: none (main `43570d4`, FM 5.58, SDK 2.116.0, backend files unchanged, keep-alive #20 green). sw v917→v918 (flash). No FM bump. check-i18n + check-inline-js clean; smoke-sync 201/201. Deferred: none.
+
+- [x] 2026-10-02 | attempted, reverted | classroom_dashboard.html | (S450; S421 P) **The adopt switch limited to classes the listing names as held** — the plan reads the uploaded own class `synced`. | Scratch D37: HEAD and fix both FAIL; re-logged.
+
+- [x] 2026-10-02 | `68055510` | flash_cards.html | (S450 M, NEW) **The chosen card count reads as a selection in dark mode** (the dark pill's `--navy-deep` + gold edge). | `cnt.mjs` 4 cells, preset + a real typed Custom: HEAD fill = edge = page ground → gold edge; light same.
+
+- [x] 2026-10-02 | `c9e2bc2b` | flash_cards.html | (S450 M, NEW) **The dark primary button gets its own plate** (contact's `#2a4070`/`#345090`; Redo was bare gold text). | HEAD dark fill = body → `rgb(42,64,112)`; light same; 7.05:1; a real hover moves it, a disabled one not; 32 shots 0 errors.
+
 - [x] 2026-10-02 | (S449 close-out) | branch/deploy note | **S449 = pass P on `account.html` + 4 fixes on draft PR #303 (unmerged).** DRIFT: none (main `43570d4`, FM 5.58, SDK 2.116.0, 0001–0003 live and recorded, delete-account v3 deployed with its JWT check on = repo source, advisors: performance clean, security the known moot password WARN; keep-alive #19 green 10-01). sw v916→v917 (account, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-10-02 | `1ae29189` | hebrew_dictionary.html | (S449; S427 C (1), the last part) **The emoji category tree's ▾ toggles are 24×24 and its rows 24px** (sub indent 14 → 29px). | `tree.mjs` light/dark × EN/HE × 1280/800 by a real click: HEAD 9×12 / 16px rows 8/8 → 24×24 / ≥24 8/8; `clip.mjs` 0 counts past the sidebar clip, 0 overflowing rows; 0 pageerrors.
 
-- [x] 2026-10-02 | `dd60945a` | hebrew_blend_generator.html | (S449; S435 P) **A `?wl=` link whose list is only in the account generates from it once the list lands** (`openWlLink` + `_pendingWl`, opened from the wordList download). | `gen-w7.mjs` on the fake cloud + pinned SDK: account-only HEAD no list / no sheet / `?wl=` kept → fixed generated, param stripped; on-device control both; …[full text: IMPROVEMENT_ARCHIVE.md]
+- [x] 2026-10-02 | `dd60945a` | hebrew_blend_generator.html | (S449; S435 P) **A `?wl=` link whose list is only in the account generates from it once the list lands** (`openWlLink` + `_pendingWl`, opened from the wordList download). | `gen-w7.mjs` on the fake cloud + pinned SDK: account-only HEAD no list / no sheet / `?wl=` kept → fixed generated, param stripped; on-device control both; …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-10-02 | `44ce9aad` | flash_cards.html | (S449; S435 P) **A `?wl=` link whose list is only in the account opens with it once the list lands** (never mid-ladder or mid-shared-drill). | S435's W7: account-only HEAD fails → fixed passes; on-device control both; W1/W2 still pass; smoke-tools flash 21/21, sync 201/201.
 
@@ -266,19 +278,11 @@ _(none)_
 
 - [x] 2026-10-02 | `b69ed10d` | index.html | (S446; S444 A) **All Settings' Copy resets to "Copy to Clipboard"**; orphan `copy_reset` row removed. | verified: `f446/copy.mjs` real click, EN/HE × light/dark × 1280/800: HEAD "Copy", fix = its own label 4/4.
 
-- [x] 2026-10-02 | (S445 close-out) | branch/deploy note | **S445 = pass E + 4 fixes on draft PR #303 (unmerged).** DRIFT: none (main `43570d4`, FM 5.58, SDK 2.116.0, 0001–0003 live, db/functions + config + keep-alive file unchanged since S431, keep-alive #19 green 10-01). sw v912→v913 (generator, flash, dictionary). FM: no bump (not touched). check-i18n + check-inline-js clean; …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-10-02 | `47be61f0` | docs/reference/shared-components.md | (S445 E) **The panel-memory example and the uploader's handler census match the code.** | verified: `e445/docids.py`, handler census.
-
-- [x] 2026-10-02 | `61be0776` | generator + flash + dictionary | (S445 E) **The panel-collapse memory block's comment names the dedicated key every carrier uses.** | verified: sha identical ×3; 4-cell loads.
-
-- [x] 2026-10-02 | `58ee7a4f` | flash_cards.html | (S445; S428 F's; copy-claims-success-on-a-refused-clipboard) **Backup Copy, Copy Code, Copy Link claim Copied only when a route copied.** | verified: `e445/copy.mjs` 3 modes × 3; HEAD claims; loads clean.
-
-- [x] 2026-10-02 | `3dad5c11` | hebrew_blend_generator.html | (S445; S428 F's; copy-claims-success-on-a-refused-clipboard) **Preset backup Copy and the share link claim Copied only when a route copied.** | verified: `e445/copy.mjs` 3 modes × 2; HEAD claims; loads clean.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-02 | **S450** | iters: 1 pass (**M**) + 2 fixes + 1 reverted = **4** | tools: flash ×2, dashboard (reverted) | patterns fixed: dark-navy-fill-matches-its-ground ×2 (NEW) | pass run: M | SW: v917→v918
 
 - 2026-10-02 | **S449** | iters: 1 pass (**P**) + 4 fixes = **5** | tools: account, flash, generator, dictionary | patterns fixed: sub-floor touch target ×1 | pass run: P | SW: v916→v917
 
@@ -318,13 +322,13 @@ _(none)_
 
 - 2026-09-30 | **S431** | iters: 1 pass (**E**) + 4 fixes = **5** | tools: torah, THIRD_PARTY_LICENSES, README, ops.md + font-maker.md | patterns fixed: toggle-name-flips-with-its-pressed-state ×1 | pass run: E | SW: v887→v888
 
-- 2026-09-30 | **S430** | iters: 1 pass (**A**) + 4 fixes = **5** | tools: torah ×2, trope, js/ivrit-saves.js (shared) | patterns fixed: author-display ×2, stale-fallback ×3 | pass run: A | SW: v886→v887
-
 ### Tool coverage (last-touched date per tool)
 
-- **S449 (2026-10-02):** account, flash, generator, dictionary (**S449**; P S449); **S448 (2026-10-02):** torah ×2, flash, dictionary (**S448**); **S447 (2026-10-02):** FM, torah, trope, emoji corpus (+ flash, generator, dictionary `?v=`) (**S447**); **S446 (2026-10-02):** index, generator, torah, flash (**S446**); **S445:** generator, flash, dictionary, shared-components.md (**S445**); **S444:** torah, index, dashboard; **S443:** js/ivrit-saves.js, Hebrew_Font_Maker.html, torah, dashboard, flash, generator, trope (**S443**; **C-next** C S312 …[full text: IMPROVEMENT_ARCHIVE.md]
+- **S450 (2026-10-02):** flash ×2 (**S450**; M S450); **S449 (2026-10-02):** account, flash, generator, dictionary (**S449**; P S449); **S448 (2026-10-02):** torah ×2, flash, dictionary (**S448**); **S447 (2026-10-02):** FM, torah, trope, emoji corpus (+ flash, generator, dictionary `?v=`) (**S447**); **S446 (2026-10-02):** index, generator, torah, flash (**S446**); **S445:** generator, flash, dictionary, shared-components.md (**S445**); **S444:** torah, index, dashboard; **S443:** js/ivrit-saves.js, Hebrew_Font_Maker.html, torah, dashboard, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`dark-navy-fill-matches-its-ground`** (NEW S450 M; flash ×2 FIXED `c9e2bc2b`, `68055510`): ACTIVE, streak 0; the other pages unswept. A fill of `var(--navy)` where the dark theme redefines `--navy` as the page ground (flash: `#0f1626` = body) leaves a primary or selected …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`ring-below-3-on-light`** (NEW S442; FIXED on 14 pages `91fede71` + 3 modules `a46342c1`; S443 the last two non-outline rings, FM `e05b25d1` + torah's fav dot `1c320ae8`): ACTIVE, streak 0. A focus outline drawn in `--gold` (2.1–2.75:1 on the light surfaces). Detection: …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -598,13 +602,13 @@ _(none)_
 
 ### Discovery-pass rotation (run one per session, stalest first)
 
-- P accounts & cloud (one surface): 2026-10-02 (**S449 — 6th P, `account.html`'s first P alone (S435 → 14 sessions). 8 arms: smoke-account-page 65/65 + smoke-account 112/112 with the pinned SDK; arm 1 controlled (a planted anonymous write → 64/65); static arms 4b–7 (forgetRow 0, CSP 11/11 + gtag keys, CORE_ASSETS, TOOLS = CHECK), each plant fired; a two-tab switch probe; the live project …[full text: IMPROVEMENT_ARCHIVE.md]
+- P accounts & cloud (one surface): 2026-10-02 (**S449 — 6th P, `account.html`'s first P alone (S435 → 14 sessions). 8 arms: smoke-account-page 65/65 + smoke-account 112/112 with the pinned SDK; arm 1 controlled (a planted anonymous write → 64/65); static arms 4b–7 (forgetRow 0, CSP 11/11 + gtag keys, CORE_ASSETS, TOOLS = CHECK), each plant fired; a two-tab switch probe; the live project …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - O deslop — AI-design-tell sweep (one surface): 2026-09-08 (**S346 — 6th O, `flash_cards.html`. ⚑ BLOCKED HERE TWICE (S399, S403) — NOT "needs an attended session". Clone + the 4 parsers install fine; EXECUTING the detector is refused by the sandbox's auto-mode classifier ("Code from External"), and the refusal names the remedy: the maintainer adds a Bash permission rule for the detector (or …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - N mobile & touch-device (one surface): 2026-10-02 (**S448 — 21st N, `torah_trainer.html`, its 3rd (S245, S334 → S448), on the delta: the 7-tab drawer, Favorites + its dialog, the date lookup, the Trope staff layout. 16 cells arm 1 (320/390/412/landscape × EN/HE × light/dark × main + 7 tabs), 12 cells arms 4–6, arm 7 @4×; every zero planted. FOUND + FIXED the staff header overflow ≤348px …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- M aesthetics & visual design (one surface): 2026-10-01 (**S436 — 20th M, `hebrew_blend_generator.html`, its FIRST. 8 cells × 5 views, a pixel probe over 22 segmented groups, the real exportPDF; every zero planted. FOUND + FIXED: separators lost in Hebrew and between rows (`d4cd3d96`), a narrow window's PDF (P1, `141aa8f7`). Logged: the bingo preview at 800 (P3, gate 3/4), the PDF under 700px …[full text: IMPROVEMENT_ARCHIVE.md]
+- M aesthetics & visual design (one surface): 2026-10-02 (**S450 — 21st M, `flash_cards.html` (last ~S249): 32 shots + computed fills, HEAD as the control. FIXED the dark primary's missing plate `c9e2bc2b`, the dark count hole `68055510`; logged the Save-as-preset button off scale. M-next: terms, contact.**)
 
 - K i18n / localization audit: 2026-10-02 (**S447 — 30th K. Delta `09f192ab..1b1538f6` (68 commits, CSV +1/−1). Gates A–E clean; runtime 32 cells (16 pages × EN/HE, EN↔HE↔EN) 0 missing, 0 raw, plants (data-i18n + I18n.t miss, EN-in-HE) fired 32/32; static-fallback census 4 (S432's `<br>`-only), plants 2/2; blind spot over added lines 0; RTL 1 (S440's deliberate pin). FOUND nothing new; FIXED 4 …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -630,4 +634,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-01 (**S442 — the keyboard focus ring on all 14 pages + the 3 shared modules' injected rings: a real-Tab walk (EN light/dark 1280, HE light/dark 800 on 6), ring colour and contrast against its surface, transitions disabled; HEAD as the control (58 light stops under 3:1, 0 dark). FIXED `91fede71` (the `--focus-ring` token), `a46342c1` (modules); logged 2 P4 …[full text: IMPROVEMENT_ARCHIVE.md]
 
-**Next session (S450):** **BRANCH/PR: S435–S449 on `claude/nice-mayer-bzr3d9` → draft PR #303 (base `43570d4`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v917**, FM **5.58**, SDK **2.116.0**, emoji corpus `?v=2`; backend unchanged (0001–0003 live, delete-account v3 = repo source); email template `Live?` = no. ⚑ Stalest: M (S436), then G (S437), D (S438); O stays blocked. ⚑ Strongest untaken: the generator's PDF below 700px keeping the phone rules (P4), the dashboard adopt toast crediting an empty account (P4), the corpus's shva slips (P4, a reviewed list). ⚑ N-next: contact (S276), then FM (S290).
+**Next session (S451):** **BRANCH/PR: S435–S450 on `claude/nice-mayer-bzr3d9` → draft PR #303 (base `43570d4`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v918**, FM **5.58**, SDK **2.116.0**; backend unchanged. ⚑ Stalest: G (S437), D (S438), I (S439); O blocked. ⚑ Strongest untaken: the dark-navy census (for A), the dashboard adopt toast (needs landed ids), the generator PDF <700px. ⚑ N-next: contact, FM.
