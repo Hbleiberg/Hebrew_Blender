@@ -3318,7 +3318,6 @@ home.a11y.skip_to_tools,Skip to the tools,דילוג לכלים,Skip-link (a11y)
 home.alltools.copy_button,Copy to Clipboard,העתקה ללוח,button,
 home.alltools.copy_done,✓ Copied,✓ הועתק,button state,leading-emoji
 home.alltools.copy_err_empty,Nothing to copy — export first.,אין מה להעתיק — ייצאו קודם.,alert,
-home.alltools.copy_reset,Copy,העתקה,button state (reset after copy),
 home.alltools.drop_text,Drop an <b>AllTools .ivrit</b> file here to restore everything,גררו לכאן קובץ <b>AllTools .ivrit</b> כדי לשחזר את הכול,drop zone,html
 home.alltools.erase_button,Erase All Settings,מחיקת כל ההגדרות,button,svg-icon-in-markup
 home.alltools.erase_confirm1,"⚠️ WARNING: This will permanently erase ALL presets, saved schedules, settings, and saved fonts for every IvritSuite tool.\n\nThis cannot be undone. Export a backup first if you want to keep your data.\n\nAre you sure you want to erase everything?","⚠️ אזהרה: פעולה זו תמחק לצמיתות את כל ההגדרות השמורות, מערכות השעות השמורות, ההגדרות והגופנים השמורים של כל כלי IvritSuite.\n\nלא ניתן לבטל פעולה זו. ייצאו גיבוי תחילה אם ברצונכם לשמור את הנתונים שלכם.\n\nהאם אתם בטוחים שברצונכם למחוק את הכול?",confirm,leading-emoji; contains \n

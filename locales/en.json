@@ -3924,7 +3924,6 @@
   "home.alltools.copy_button": "Copy to Clipboard",
   "home.alltools.copy_done": "✓ Copied",
   "home.alltools.copy_err_empty": "Nothing to copy — export first.",
-  "home.alltools.copy_reset": "Copy",
   "home.alltools.drop_text": "Drop an <b>AllTools .ivrit</b> file here to restore everything",
   "home.alltools.erase_backup_first": "💾 Save a backup first",
   "home.alltools.erase_button": "Erase All Settings",
