@@ -410,6 +410,7 @@ let user = null;          // IvritAccount.user() as last reported
 let prof = null;          // { displayName, createdAt } from profiles
 let inv = null;           // IvritSaves.inventory()
 let projects = null;      // IvritProjects.list()
+let lastUid = null;      // the account the forms were filled for
 let deleting = false, gone = false, goneCounts = null, busyDl = false, invFailed = false;   // invFailed: the last listing failed (the pre-deletion box says the count is unknown)
 const namesOpen = {};     // tool:kind → the names list is expanded
 // Status lines keep their RENDERER so a live language switch can repaint them (pattern: contact.html).
@@ -445,11 +446,14 @@ function onAccount(u, status) {
   const was = user; user = u;
   if (u) {
     show('acctIn');
+    if (lastUid && lastUid !== u.id) resetForms();   // another tab signed a different account in: nothing typed for the last one carries over
+    lastUid = u.id;
     renderWho();
     if (!was || was.id !== u.id) { prof = null; inv = null; projects = null; renderHolds(); loadProfile(); loadInventory(); }
     return;
   }
   prof = null; inv = null; projects = null;
+  if (status !== 'loading' && status !== 'offline' && status !== 'unavailable') { resetForms(); lastUid = null; }   // signed out: an armed delete box never outlives it
   if (status === 'disabled') { say('outNote', () => t('account.out.disabled')); $('outBtn').hidden = true; show('acctOut'); }
   else if (status === 'loading') { say('busyNote', () => t('account.out.loading')); show('acctBusy'); }
   else if (status === 'offline' || status === 'unavailable') { say('busyNote', () => t('account.out.offline')); show('acctBusy'); }
@@ -713,10 +717,21 @@ function continueDel() {
 }
 function cancelDel() {
   if (deleting) return;
+  closeDel();
+  $('delBtn').focus();
+}
+function closeDel() {
   $('delConfirm').hidden = true; $('delBefore').hidden = true; $('delBtn').hidden = false;
   say('delDlStatus', null);
   lastDelDlMissing = null; say('delWarn', null); $('delWarn').hidden = true;
-  $('delBtn').focus();
+}
+// The account under the page changed (signed out, or another account signed in from another tab): close the delete
+// flow with its box unticked and its address cleared, drop the status lines, and let the name field show the saved name.
+function resetForms() {
+  closeDel();
+  $('delCheck').checked = false; $('delEmail').value = ''; say('delStatus', null); setBusy('delGo', true);
+  say('nameNote', null); say('dlStatus', null);
+  delete $('nameInput').dataset.touched; $('nameInput').value = '';
 }
 async function deleteNow() {
   if (deleting) return;
