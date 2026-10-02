@@ -5833,6 +5833,10 @@ function setupVerseObserver() {
     }
     let best = null, bestTop = Infinity;
     visible.forEach((top, vk) => { if (top < bestTop) { bestTop = top; best = vk; } });
+    // An empty band with the first verse still below it means the reader is above the reading: at load (the
+    // reading starts under the controls) and after a jump back to the top. "You are here" is then the first
+    // verse, not a blank readout or the last verse the band saw (S422).
+    if (!best && !visible.size && verseEls[0].getBoundingClientRect().top > 70) best = verseEls[0].dataset.vk;
     if (best && best !== _currentVerseLabel) {
       _currentVerseLabel = best;
       onCurrentVerseChanged();      // Section 4: active jump-chip + position readout
