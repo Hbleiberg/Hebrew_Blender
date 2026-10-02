@@ -34,8 +34,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**S430 A — the maintainer's call**) | torah_trainer.html | **The reading header keeps "Aliyah {n}" English in the Hebrew UI** beside a translated cycle label (also the copy heading, the handout). | found S430
 
-- [ ] P4 (**NEW S428 Pass F — 7 carriers; S444 index `90e1a057` + dashboard `18344f69` FIXED, 5 open**) | generator ×2, flash ×3 | **A copy both routes refused still says "Copied"** (`execCommand`'s answer ignored; model `dictCopyText`); the backup-textarea Copy buttons go unannounced. | found S428
-
 - [ ] P4 (**NEW S427 Pass C — (4) FIXED S439 `3f0408fc`, (2) FIXED S441 `1a3d87f8`**) | hebrew_dictionary.html | **(1)** the emoji tree's ▾ 15×9 px, rows 21 px apart; **(2)** "♀ Feminine" 4.42:1 at 0.62rem; **(3)** Shoresh's empty tiles 2.79:1 / 3.13:1. | found S427
 
 - [ ] P4 (**NEW S421 Pass P**) | classroom_dashboard.html | **The "Now showing {name} — the classes from your account are in the class list" switch runs on every signed-in load and credits the account even when it holds nothing**: with the pointer on the untouched default and a class this device made itself, the page switches to that class and says it came from the account …[full text: …[full …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -240,6 +238,16 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-02 | (S445 close-out) | branch/deploy note | **S445 = pass E + 4 fixes on draft PR #303 (unmerged).** DRIFT: none (main `43570d4`, FM 5.58, SDK 2.116.0, 0001–0003 live, db/functions + config + keep-alive file unchanged since S431, keep-alive #19 green 10-01). sw v912→v913 (generator, flash, dictionary). FM: no bump (not touched). check-i18n + check-inline-js clean; …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-02 | `47be61f0` | docs/reference/shared-components.md | (S445 E) **The panel-memory example and the uploader's handler census match the code.** | verified: `e445/docids.py`, handler census.
+
+- [x] 2026-10-02 | `61be0776` | generator + flash + dictionary | (S445 E) **The panel-collapse memory block's comment names the dedicated key every carrier uses.** | verified: sha identical ×3; 4-cell loads.
+
+- [x] 2026-10-02 | `58ee7a4f` | flash_cards.html | (S445; S428 F's; copy-claims-success-on-a-refused-clipboard) **Backup Copy, Copy Code, Copy Link claim Copied only when a route copied.** | verified: `e445/copy.mjs` 3 modes × 3; HEAD claims; loads clean.
+
+- [x] 2026-10-02 | `3dad5c11` | hebrew_blend_generator.html | (S445; S428 F's; copy-claims-success-on-a-refused-clipboard) **Preset backup Copy and the share link claim Copied only when a route copied.** | verified: `e445/copy.mjs` 3 modes × 2; HEAD claims; loads clean.
+
 - [x] 2026-10-01 | (S444 close-out) | branch/deploy note | **S444 = pass A + 4 fixes on draft PR #303 (unmerged).** DRIFT: none (main `43570d4`, FM 5.58, SDK 2.116.0, 0001–0003 live, keep-alive green 10-01). sw v911→v912. FM: no bump. check-i18n + check-inline-js clean; no backend file (no smokes owed). Deferred: none new. |
 
 - [x] 2026-10-01 | `18344f69` | classroom_dashboard.html | (S444; S428 F's; copy-claims-success-on-a-refused-clipboard) **The manual backup's Copy checks only when a route copied.** | verified: `a444/copy.mjs` 3 modes; both refused → no check (HEAD checks); 4-cell load clean.
@@ -280,19 +288,11 @@ _(none)_
 
 - [x] 2026-10-01 | `17cd7334` | torah_trainer.html | (S441 C; button-focus-lost-to-its-own-rebuild) **"Color-code the trope" hands its focus to the legend.** | verified: Enter + click, 8 cells, BODY 8/8 → legend 8/8
 
-- [x] 2026-10-01 | (S440 close-out) | branch/deploy note | **S440 = pass H (dictionary) + 4 fixes, continuing draft PR #303 (unmerged).** DRIFT: none. sw v907→v908. FM: no bump. Gates: none asked; 3 gate-2 items logged.
-
-- [x] 2026-10-01 | `10a0c18f` | hebrew_blend_generator.html | (S440; tip-name) **The vav checkbox is named without "More information".** | verified: CDP AX name, HEAD 4/4 → 0/4
-
-- [x] 2026-10-01 | `d672eaa1` | classroom_dashboard.html | (S440; S439's P4) **Schedule times keep their order in Hebrew.** | verified: Range probe, HEAD HE reversed → 0, EN 0
-
-- [x] 2026-10-01 | `501f6ed0` | hebrew_dictionary.html | (S440 H) **The Theme/Vowel hints are small and muted again.** | verified: computed 16px → 10.88px, 4 cells
-
-- [x] 2026-10-01 | `23b7bb0f` | hebrew_dictionary.html | (S440 H; NEW logical-inset) **Card buttons no longer cover the Hebrew word in Hebrew.** | verified: rect overlap HE 60/60 → 1/60 (= EN), 4 cells
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-02 | **S445** | iters: 1 pass (**E**) + 4 fixes = **5** | tools: generator ×2, flash ×2, dictionary, docs | patterns fixed: copy-claims-success-on-a-refused-clipboard ×2 | pass run: E | SW: v912→v913
 
 - 2026-10-01 | **S444** | iters: 1 pass (**A**) + 4 fixes = **5** | tools: torah ×2, index, dashboard | patterns fixed: stored-json-of-the-wrong-shape-trusted ×1, copy-claims-success-on-a-refused-clipboard ×2 | pass run: A | SW: v911→v912
 
@@ -332,11 +332,9 @@ _(none)_
 
 - 2026-09-28 | **S426** | iters: 1 pass (**H**) + 4 fixes = **5** | tools: account ×2, js/ivrit-saves.js (shared), manifest | patterns fixed: modal-focus-trap ×1, button-focus-lost-to-its-own-rebuild ×1 (NEW) | pass run: H | SW: v869→v870
 
-- 2026-09-28 | **S425** | iters: 1 pass (**I**) + 4 fixes = **5** (full budget) | tools: trope ×2, js/ivrit-account.js (shared), torah | patterns fixed: author-display-defeats-the-hidden-attribute ×2, visible-label-missing-from-the-accessible-name ×1 | pass run: I | SW: v867→v868
-
 ### Tool coverage (last-touched date per tool)
 
-- **S444 (2026-10-01):** torah, index, dashboard (**S444**); **S443:** js/ivrit-saves.js, Hebrew_Font_Maker.html, torah, dashboard, flash, generator, trope (**S443**; **C-next** C S312 trope; **H-next** H S305 resources); **S442:** every root page (the `--focus-ring` token), js/i18n.js, js/ivrit-account.js, js/ivrit-saves.js, torah, generator, flash, shared-components.md, storage-and-backup.md (**S442**; **C-next** C S312 trope; **H-next** H S305 resources); trope, dictionary, dashboard, resources (S441); index (S437); account (S433); terms …[full text: IMPROVEMENT_ARCHIVE.md]
+- **S445 (2026-10-02):** generator, flash, dictionary, shared-components.md (**S445**); **S444:** torah, index, dashboard; **S443:** js/ivrit-saves.js, Hebrew_Font_Maker.html, torah, dashboard, flash, generator, trope (**S443**; **C-next** C S312 trope; **H-next** H S305 resources); **S442:** every root page (the `--focus-ring` token), js/i18n.js, js/ivrit-account.js, js/ivrit-saves.js, torah, generator, flash, shared-components.md, storage-and-backup.md (**S442**; **C-next** C S312 trope; **H-next** H S305 resources); trope, dictionary, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -352,7 +350,7 @@ _(none)_
 
 - **`panel-title-keyed-on-an-inner-span`** (NEW S429; S439 generator FIXED `1ce9eabd`, torah stale — no collapsing panels left): ACTIVE, streak 0. Detection: a `.panel-title` with no own `data-i18n`, then toggle + reload.
 
-- **`copy-claims-success-on-a-refused-clipboard`** (NEW S428; FIXED `bbd5f65`, `0d2a941`; S444 index `90e1a057`, dashboard `18344f69`; 5 open: generator ×2, flash ×3): ACTIVE, streak 0. S444 arm `a444/copy.mjs`: top / writeText refused / both refused (execCommand planted false), …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`copy-claims-success-on-a-refused-clipboard`** (NEW S428; FIXED `bbd5f65`, `0d2a941`; S444 index `90e1a057`, dashboard `18344f69`; **S445 generator `3dad5c11`, flash `58ee7a4f` — all 7 carriers fixed, 0 open**): ACTIVE, streak 0. Detection: every `execCommand('copy')` whose …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`button-focus-lost-to-its-own-rebuild`** (**S441 torah's trope chip `17cd7334`; S426 account `e091820`; S427 the dictionary's Word Lists `7a631f6`, chips/Reset FIXED `cea92bf`; S434 torah's Try again `dfc25af8`; S437 the dictionary's empty-state buttons `c98070a5` and Add to …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -640,8 +638,8 @@ _(none)_
 
 - H teacher walkthrough / paper-cuts (one tool): 2026-10-01 (**S440 — `hebrew_dictionary.html` (S292 →), 5 lessons by real clicks, EN + HE dark 800. FOUND 5 + 2 seeds; FIXED `23b7bb0f`, `501f6ed0`. H-next: resources (S305).**)
 
-- E freshness/site-health: 2026-09-30 (**S431 — 34th E, first since S417 (127 commits). 17 arms, every zero controlled. FOUND 4 (Hebcal data uncredited, README map, CSP/smoke doc claims, 2 comments); FIXED 3.**)
+- E freshness/site-health: 2026-10-02 (**S445 — 35th E on the S431→now delta + main's og cards. 17 arms, every plant fired (findings S445). FOUND + FIXED 3 stale doc/comment claims.**)
 
 - F cross-tool consistency: 2026-10-01 (**S442 — the keyboard focus ring on all 14 pages + the 3 shared modules' injected rings: a real-Tab walk (EN light/dark 1280, HE light/dark 800 on 6), ring colour and contrast against its surface, transitions disabled; HEAD as the control (58 light stops under 3:1, 0 dark). FIXED `91fede71` (the `--focus-ring` token), `a46342c1` (modules); logged 2 P4 …[full text: IMPROVEMENT_ARCHIVE.md]
 
-**Next session (S445):** **BRANCH/PR: S435–S444 on `claude/nice-mayer-bzr3d9` → draft PR #303 (base `43570d4`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v912**, FM **5.58**, SDK **2.116.0**; backend unchanged (0001–0003 live, delete-account v3 = repo source); email template `Live?` = no. ⚑ Stalest: E (S431), then L (S432), K (S433); O stays blocked. ⚑ Strongest untaken: the copy claim on generator ×2 + flash ×3 (P4, `a444/copy.mjs` ready), the hub's Copy label reset (P4).
+**Next session (S446):** **BRANCH/PR: S435–S445 on `claude/nice-mayer-bzr3d9` → draft PR #303 (base `43570d4`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v913**, FM **5.58**, SDK **2.116.0**; backend unchanged (0001–0003 live, delete-account v3 = repo source); email template `Live?` = no. ⚑ Stalest: L (S432), then K (S433), P (S435); O stays blocked. ⚑ Strongest untaken: the hub's Copy label reset (P4), the generator's retired `.mobile-fab` readers (P4).
