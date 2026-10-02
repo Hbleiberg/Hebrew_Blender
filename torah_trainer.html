@@ -4607,6 +4607,14 @@ function tokenizeHebrew(text, wordIdxStartRef, opts, underWord, sink) {
 // library over every verse again — 0.6–1.2 s on a full parsha, 4–7 s on a slow laptop. '' is never stored (the
 // library is still loading), so the translitlibloaded rebuild fills in; the style is in the key, so nothing clears it.
 const _tlMemo = new Map();
+// The style the page draws with. A stored style this page does not offer (a newer device's, a hand-edited
+// blob) draws as the default and shows it selected, while settings keeps the stored value for the round trip
+// (accounts rule 7: only the display falls back). The option list is static markup, so it is read once.
+let _tlStyles = null;
+function translitStyleKey() {
+  if (!_tlStyles) _tlStyles = new Set(Array.from(document.querySelectorAll('#optTranslitStyle option'), o => o.value));
+  return _tlStyles.has(settings.translitStyle) ? settings.translitStyle : 'modernIsraeli';
+}
 function applyTranslit(hebrewText) {
   // Strip cantillation marks before transliterating (library handles nikkud).
   // Substitute the Tetragrammaton with אֲדֹנָי so the library outputs "Adonai"
@@ -4614,10 +4622,11 @@ function applyTranslit(hebrewText) {
   const stripped = replaceTetragrammaton(stripTeamim(hebrewText || ''));
   if (!stripped) return '';
   if (window.HebrewTransliterator && window.HebrewTransliterator.ready) {
-    const key = settings.translitStyle + '|' + stripped;
+    const style = translitStyleKey();
+    const key = style + '|' + stripped;
     const hit = _tlMemo.get(key);
     if (hit !== undefined) return hit;
-    const out = window.HebrewTransliterator.apply(stripped, '', settings.translitStyle) || '';
+    const out = window.HebrewTransliterator.apply(stripped, '', style) || '';
     if (out) { if (_tlMemo.size > 20000) _tlMemo.clear(); _tlMemo.set(key, out); }
     return out;
   }
@@ -4633,7 +4642,7 @@ function applyTranslit(hebrewText) {
 // translitlibloaded rebuild fills every cell in. wireTranslit clears it on a style change.
 const _wtlMemo = new Map();
 function translitForWord(raw, maqafAfter) {
-  const key = settings.translitStyle + '|' + raw + (maqafAfter ? '|m' : '');
+  const key = translitStyleKey() + '|' + raw + (maqafAfter ? '|m' : '');
   const hit = _wtlMemo.get(key);
   if (hit !== undefined) return hit;
   let tl = maqafAfter ? applyTranslit(raw + '־').replace(/[-‐]+$/, '').trim() : '';
@@ -4652,7 +4661,7 @@ function tokenizeTranslit(translitText, firstTwi, hebWordCount) {
   // tokenizer's maqaf split (תֶּל־אָבִיב → "tel" + "aviv", same as the
   // Hebrew side). The simpleStressed scheme uses hyphens as syllable
   // separators inside a single word, so for that scheme keep words intact.
-  const useHyphenSplit = settings.translitStyle !== 'simpleStressed';
+  const useHyphenSplit = translitStyleKey() !== 'simpleStressed';
   const splitter = useHyphenSplit ? /(\s+|-)/ : /(\s+)/;
   const tokens = translitText.split(splitter);
   const out = [];
@@ -7533,7 +7542,7 @@ function toggleTropeOptionsVisibility(show) {
 function wireTranslit() {
   const sel = document.getElementById('optTranslitStyle');
   const status = document.getElementById('optTranslitStatus');
-  sel.value = settings.translitStyle;
+  sel.value = translitStyleKey();
   sel.addEventListener('change', () => {
     settings.translitStyle = sel.value;
     saveSettings();
@@ -8460,7 +8469,7 @@ function syncFormToSettings() {
   toggleColorOptionsVisibility(nikOn);
   syncTropeModeRadios();
   // translit style
-  document.getElementById('optTranslitStyle').value = settings.translitStyle || 'modernIsraeli';
+  document.getElementById('optTranslitStyle').value = translitStyleKey();
   const tp = settings.translitPlacement === 'word' ? 'word' : 'row';
   document.getElementById('tpRow').checked = tp === 'row';
   document.getElementById('tpWord').checked = tp === 'word';
@@ -8482,7 +8491,8 @@ function syncFormToSettings() {
   if (loopPauseBar) loopPauseBar.value = String(parseInt(settings.loopPauseMs, 10) || 0);
   // Text tab: the transliteration and translation switches and the layout (were the toolbar's)
   syncShowSwitches();   // the Text tab's two switches and their toolbar mirrors
-  document.getElementById('ttLayoutSide').checked = settings.layout === 'sidebyside';
+  // renderText draws any layout it does not know as side by side, so that radio shows it (the stored value is kept)
+  document.getElementById('ttLayoutSide').checked = !['interlinear', 'biblepage', 'staff'].includes(settings.layout);
   document.getElementById('ttLayoutInter').checked = settings.layout === 'interlinear';
   document.getElementById('ttLayoutBible').checked = settings.layout === 'biblepage';
   document.getElementById('ttLayoutStaff').checked = settings.layout === 'staff';
