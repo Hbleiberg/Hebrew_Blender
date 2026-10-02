@@ -543,6 +543,10 @@ body.dark .panel-title {
   border-color: var(--navy);
 }
 .btn.primary:hover:not([disabled]):not([aria-disabled="true"]) { background: var(--navy-soft); }
+/* Dark mode: --navy IS the page's dark ground, so the results screen's Redo showed as bare gold text
+   and the Learning Path button sat one step off its card. Contact's/resources' dark primary pair. */
+body.dark .btn.primary { background: #2a4070; border-color: #2a4070; }
+body.dark .btn.primary:hover:not([disabled]):not([aria-disabled="true"]) { background: #345090; border-color: #345090; }
 .btn.gold {
   background: var(--gold);
   color: var(--navy);
