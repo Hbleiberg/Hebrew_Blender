@@ -2905,6 +2905,7 @@ let hasFlipped = [];         // parallel to scores: true once the user has flipp
 /* ===== Session stats / streak (in-memory, except PB) ===== */
 const PB_STREAK_KEY = 'hebrewFlashCards_pbStreak';
 let streakCur = 0, streakBest = 0, sessCorrect = 0, sessAttempted = 0;
+let sessNewPb = false;          // this drill beat the stored best (a tie is not a new best)
 let pbStreak = 0;                 // personal best, persisted
 let countedCards = new Set();     // card indices already tallied (avoid double-count on re-mark)
 
@@ -5310,7 +5311,7 @@ function loadPbStreak() {
   pbStreak = parseInt(localStorage.getItem(PB_STREAK_KEY) || '0', 10) || 0;
 }
 function resetSessionStats() {
-  streakCur = 0; streakBest = 0; sessCorrect = 0; sessAttempted = 0;
+  streakCur = 0; streakBest = 0; sessCorrect = 0; sessAttempted = 0; sessNewPb = false;
   countedCards.clear();
   lastDrillSavedTo = null;   // every drill start comes through here; a new drill has not been saved
   updateStatsBar();
@@ -5326,6 +5327,7 @@ function recordMark(correct) {
     if (streakCur > streakBest) streakBest = streakCur;
     if (streakCur > pbStreak) {
       pbStreak = streakCur;
+      sessNewPb = true;
       try { localStorage.setItem(PB_STREAK_KEY, String(pbStreak)); } catch (e) {}
     }
   } else {
@@ -8214,7 +8216,7 @@ function showResults() {
     const answered = (sessAttempted != null) ? sessAttempted : total;
     let summary = I18n.t('flashcards.results.summary.' + (answered === 1 ? 'one' : 'other'),
       { streak: streakBest, pct: acc, count: answered });
-    if (streakBest > 0 && streakBest >= pbStreak) summary += ' ' + I18n.t('flashcards.results.new_pb');
+    if (sessNewPb && streakBest > 0) summary += ' ' + I18n.t('flashcards.results.new_pb');
     streakEl.textContent = summary;
   }
 
