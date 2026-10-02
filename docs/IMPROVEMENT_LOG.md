@@ -20,8 +20,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S436 M**) | hebrew_blend_generator.html | **Export PDF below 700px still carries the phone rules** (stacked header, Hebrew at 0.75×) (`141aa8f7` pins only the width). | found S436
 
-- [ ] P4 (**NEW S435 P**) | flash_cards.html + hebrew_blend_generator.html | **A `?wl=` link whose list is only in the account opens without it**: the id is resolved once at load; the list that lands later is never selected. | found S435
-
 - [ ] P4 (**NEW S448 N — gate 2, new copy**) | torah_trainer.html | **The one-time tip says "click any Hebrew word" on a touch phone** (the Hebrew "לחצו" covers both); a `tap` twin under `pointer:coarse` is new copy. | found S448
 
 - [ ] P4 (**NEW S447 K — the corpus's shva slips, the doubled-yod half FIXED `a86b5a16`**) | data/hebrew_emojis.json | **Some transliterations read a silent shva as a vowel or drop a voiced one** ("seport", "michnsey gi'yns", "mistovvim"); a corpus edit with a `?v=3` bump, best done as a reviewed list. | found S447
@@ -33,8 +31,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S433 K — gate 2, the maintainer's call**) | torah_trainer.html | **The 17 holiday readings keep English names in the Hebrew UI** ("Passover — Day 1 — Exodus 12:21-51" on the drawer's buttons, the picker's optgroup and the reading header) while the new date lookup names the same holidays in Hebrew (`torah.lookup.holiday_*`); `buildHolidayPicker` calls reading names content. | found …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**S430 A — the maintainer's call**) | torah_trainer.html | **The reading header keeps "Aliyah {n}" English in the Hebrew UI** beside a translated cycle label (also the copy heading, the handout). | found S430
-
-- [ ] P4 (**NEW S427 Pass C — (4) FIXED S439 `3f0408fc`, (2) FIXED S441 `1a3d87f8`, (3) FIXED S448 `fb2b7397`**) | hebrew_dictionary.html | **(1)** the emoji tree's ▾ 15×9 px, rows 21 px apart. | found S427
 
 - [ ] P4 (**NEW S421 Pass P**) | classroom_dashboard.html | **The "Now showing {name} — the classes from your account are in the class list" switch runs on every signed-in load and credits the account even when it holds nothing**: with the pointer on the untouched default and a class this device made itself, the page switches to that class and says it came from the account …[full text: …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -230,6 +226,16 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-02 | (S449 close-out) | branch/deploy note | **S449 = pass P on `account.html` + 4 fixes on draft PR #303 (unmerged).** DRIFT: none (main `43570d4`, FM 5.58, SDK 2.116.0, 0001–0003 live and recorded, delete-account v3 deployed with its JWT check on = repo source, advisors: performance clean, security the known moot password WARN; keep-alive #19 green 10-01). sw v916→v917 (account, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-02 | `1ae29189` | hebrew_dictionary.html | (S449; S427 C (1), the last part) **The emoji category tree's ▾ toggles are 24×24 and its rows 24px** (sub indent 14 → 29px). | `tree.mjs` light/dark × EN/HE × 1280/800 by a real click: HEAD 9×12 / 16px rows 8/8 → 24×24 / ≥24 8/8; `clip.mjs` 0 counts past the sidebar clip, 0 overflowing rows; 0 pageerrors.
+
+- [x] 2026-10-02 | `dd60945a` | hebrew_blend_generator.html | (S449; S435 P) **A `?wl=` link whose list is only in the account generates from it once the list lands** (`openWlLink` + `_pendingWl`, opened from the wordList download). | `gen-w7.mjs` on the fake cloud + pinned SDK: account-only HEAD no list / no sheet / `?wl=` kept → fixed generated, param stripped; on-device control both; …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-02 | `44ce9aad` | flash_cards.html | (S449; S435 P) **A `?wl=` link whose list is only in the account opens with it once the list lands** (never mid-ladder or mid-shared-drill). | S435's W7: account-only HEAD fails → fixed passes; on-device control both; W1/W2 still pass; smoke-tools flash 21/21, sync 201/201.
+
+- [x] 2026-10-02 | `d5d57c72` | account.html | (S449 P, NEW) **A sign-out, or another account's sign-in from another tab, closes the armed delete box and drops the unsaved name** (it stayed ticked with A's address under B's label; A's typed name sat one Save from B's profile). | `switch.mjs` two tabs on the fake cloud + pinned SDK, B and the same-account control: HEAD armed in both → closed / …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [x] 2026-10-02 | (S448 close-out) | branch/deploy note | **S448 = pass N + 4 fixes on draft PR #303 (unmerged).** DRIFT: none (main `43570d4`, FM 5.58, SDK 2.116.0, 0001–0003 live, db/functions + config + keep-alive file unchanged; keep-alive #19 green 10-01, the 10-02 run not yet fired). sw v915→v916 (torah, flash, dictionary). No FM bump (FM untouched). check-i18n + check-inline-js clean; …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-10-02 | `0f9ddbe1` | torah_trainer.html | (S448; S422 M) **The transliteration Style select shows its whole default label** (`#optTranslitStyle` drops the drawer's 170px cap). | Option census over all drawer selects × 7 tabs (plant fires in all 3): 1 clipped → 0, EN + HE × 1280/390; 191/201px fits a 320 drawer; light + dark, 0 pageerrors.
@@ -270,19 +276,11 @@ _(none)_
 
 - [x] 2026-10-02 | `3dad5c11` | hebrew_blend_generator.html | (S445; S428 F's; copy-claims-success-on-a-refused-clipboard) **Preset backup Copy and the share link claim Copied only when a route copied.** | verified: `e445/copy.mjs` 3 modes × 2; HEAD claims; loads clean.
 
-- [x] 2026-10-01 | (S444 close-out) | branch/deploy note | **S444 = pass A + 4 fixes on draft PR #303 (unmerged).** DRIFT: none (main `43570d4`, FM 5.58, SDK 2.116.0, 0001–0003 live, keep-alive green 10-01). sw v911→v912. FM: no bump. check-i18n + check-inline-js clean; no backend file (no smokes owed). Deferred: none new. |
-
-- [x] 2026-10-01 | `18344f69` | classroom_dashboard.html | (S444; S428 F's; copy-claims-success-on-a-refused-clipboard) **The manual backup's Copy checks only when a route copied.** | verified: `a444/copy.mjs` 3 modes; both refused → no check (HEAD checks); 4-cell load clean.
-
-- [x] 2026-10-01 | `90e1a057` | index.html | (S444; S428 F's; copy-claims-success-on-a-refused-clipboard) **All Settings' Copy says Copied only when a route copied**. | verified: `a444/copy.mjs` 3 modes, HEAD claims in all 3.
-
-- [x] 2026-10-01 | `6277a308` | torah_trainer.html | (S444 A; NEW) **The favorite dialog's Save looks locked while its note says why**. | verified: real Save → .55/not-allowed, typing → 1/pointer; HEAD 1/pointer; 4 cells.
-
-- [x] 2026-10-01 | `2854e747` | torah_trainer.html | (S444 A; stored-json-of-the-wrong-shape-trusted) **A malformed favorite no longer throws on Recolor or Duplicate** (left as it came). | verified: real clicks, 4 cells, 0 pageerrors; HEAD throws on both.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-02 | **S449** | iters: 1 pass (**P**) + 4 fixes = **5** | tools: account, flash, generator, dictionary | patterns fixed: sub-floor touch target ×1 | pass run: P | SW: v916→v917
 
 - 2026-10-02 | **S448** | iters: 1 pass (**N**) + 4 fixes = **5** | tools: torah ×2, flash, dictionary | patterns fixed: — | pass run: N | SW: v915→v916
 
@@ -322,11 +320,9 @@ _(none)_
 
 - 2026-09-30 | **S430** | iters: 1 pass (**A**) + 4 fixes = **5** | tools: torah ×2, trope, js/ivrit-saves.js (shared) | patterns fixed: author-display ×2, stale-fallback ×3 | pass run: A | SW: v886→v887
 
-- 2026-09-29 | **S429** | iters: 1 pass (**B**) + 4 fixes = **5** | tools: trope, dictionary ×2, shared ×2 | patterns fixed: button-focus-lost, sub-floor | pass run: B | SW: v884→v885
-
 ### Tool coverage (last-touched date per tool)
 
-- **S448 (2026-10-02):** torah ×2, flash, dictionary (**S448**); **S447 (2026-10-02):** FM, torah, trope, emoji corpus (+ flash, generator, dictionary `?v=`) (**S447**); **S446 (2026-10-02):** index, generator, torah, flash (**S446**); **S445:** generator, flash, dictionary, shared-components.md (**S445**); **S444:** torah, index, dashboard; **S443:** js/ivrit-saves.js, Hebrew_Font_Maker.html, torah, dashboard, flash, generator, trope (**S443**; **C-next** C S312 trope; **H-next** H S305 resources); **S442:** every root page (the …[full text: IMPROVEMENT_ARCHIVE.md]
+- **S449 (2026-10-02):** account, flash, generator, dictionary (**S449**; P S449); **S448 (2026-10-02):** torah ×2, flash, dictionary (**S448**); **S447 (2026-10-02):** FM, torah, trope, emoji corpus (+ flash, generator, dictionary `?v=`) (**S447**); **S446 (2026-10-02):** index, generator, torah, flash (**S446**); **S445:** generator, flash, dictionary, shared-components.md (**S445**); **S444:** torah, index, dashboard; **S443:** js/ivrit-saves.js, Hebrew_Font_Maker.html, torah, dashboard, flash, generator, trope (**S443**; **C-next** C S312 …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -422,7 +418,7 @@ _(none)_
 
 - **`light-literal-text-on-the-gold-token`** (registered 2026-09-17 (S396)): ACTIVE — **S399 (Pass A), FIRST real sweep: 7 NEW carriers, all on `hebrew_dictionary.html`, all fixed `273f449`; clean streak stays 0.** `color:#fff` (or another light literal) painted on `var(--gold)` …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`sub-floor touch target`**: ACTIVE. **S429: `.wm-mini` FIXED `359e0e2`; the emoji ▾ open.** …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`sub-floor touch target`**: ACTIVE. **S449: the emoji ▾ + rows FIXED `1ae29189` (the S427 carrier closed). S429: `.wm-mini` FIXED `359e0e2`.** …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`vh-capped-sheet-without-dvh-twin`**: ACTIVE (registered S375). **S385 (Pass A), first re-sweep since the S377 fixes: 20 raw → 0 real, clean streak 1 of the 3 that retire it.** Every raw hit is an exemption the row names — 11 inner scrollers with their own `overflow:auto`, …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -602,11 +598,11 @@ _(none)_
 
 ### Discovery-pass rotation (run one per session, stalest first)
 
-- P accounts & cloud (one surface): 2026-10-01 (**S435 — 5th P, first since S421: `flash_cards.html`'s own wiring, its first P alone, after the cloud-first rewrite. 8 arms + 8 fake-cloud scenarios + a sign-out probe + 7 static checks, every zero controlled; smokes tools 21/21, sync 201/201, migration 47/47, the live project read-only. FOUND + FIXED: a sign-out left no letters or vowels (P2, …[full text: IMPROVEMENT_ARCHIVE.md]
+- P accounts & cloud (one surface): 2026-10-02 (**S449 — 6th P, `account.html`'s first P alone (S435 → 14 sessions). 8 arms: smoke-account-page 65/65 + smoke-account 112/112 with the pinned SDK; arm 1 controlled (a planted anonymous write → 64/65); static arms 4b–7 (forgetRow 0, CSP 11/11 + gtag keys, CORE_ASSETS, TOOLS = CHECK), each plant fired; a two-tab switch probe; the live project …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - O deslop — AI-design-tell sweep (one surface): 2026-09-08 (**S346 — 6th O, `flash_cards.html`. ⚑ BLOCKED HERE TWICE (S399, S403) — NOT "needs an attended session". Clone + the 4 parsers install fine; EXECUTING the detector is refused by the sandbox's auto-mode classifier ("Code from External"), and the refusal names the remedy: the maintainer adds a Bash permission rule for the detector (or …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- N mobile & touch-device (one surface): 2026-10-02 (**S448 — 21st N, `torah_trainer.html`, its 3rd (S245, S334 → S448), on the delta: the 7-tab drawer, Favorites + its dialog, the date lookup, the Trope staff layout. 16 cells arm 1 (320/390/412/landscape × EN/HE × light/dark × main + 7 tabs), 12 cells arms 4–6, arm 7 @4×; every zero planted. FOUND + FIXED the staff header overflow ≤348px …[full text: IMPROVEMENT_ARCHIVE.md]
+- N mobile & touch-device (one surface): 2026-10-02 (**S448 — 21st N, `torah_trainer.html`, its 3rd (S245, S334 → S448), on the delta: the 7-tab drawer, Favorites + its dialog, the date lookup, the Trope staff layout. 16 cells arm 1 (320/390/412/landscape × EN/HE × light/dark × main + 7 tabs), 12 cells arms 4–6, arm 7 @4×; every zero planted. FOUND + FIXED the staff header overflow ≤348px …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - M aesthetics & visual design (one surface): 2026-10-01 (**S436 — 20th M, `hebrew_blend_generator.html`, its FIRST. 8 cells × 5 views, a pixel probe over 22 segmented groups, the real exportPDF; every zero planted. FOUND + FIXED: separators lost in Hebrew and between rows (`d4cd3d96`), a narrow window's PDF (P1, `141aa8f7`). Logged: the bingo preview at 800 (P3, gate 3/4), the PDF under 700px …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -634,4 +630,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-01 (**S442 — the keyboard focus ring on all 14 pages + the 3 shared modules' injected rings: a real-Tab walk (EN light/dark 1280, HE light/dark 800 on 6), ring colour and contrast against its surface, transitions disabled; HEAD as the control (58 light stops under 3:1, 0 dark). FIXED `91fede71` (the `--focus-ring` token), `a46342c1` (modules); logged 2 P4 …[full text: IMPROVEMENT_ARCHIVE.md]
 
-**Next session (S449):** **BRANCH/PR: S435–S448 on `claude/nice-mayer-bzr3d9` → draft PR #303 (base `43570d4`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v916**, FM **5.58**, SDK **2.116.0**, emoji corpus `?v=2`; backend unchanged (0001–0003 live, delete-account v3 = repo source); email template `Live?` = no. ⚑ Stalest: P (S435), then M (S436), G (S437); O stays blocked. ⚑ Strongest untaken: the `?wl=` link whose list is only in the account (P4, flash + generator, needs smoke-sync), the corpus's shva slips (P4, a reviewed list). ⚑ N-next: contact (S276), then FM (S290) — the S406 history in loop-findings.
+**Next session (S450):** **BRANCH/PR: S435–S449 on `claude/nice-mayer-bzr3d9` → draft PR #303 (base `43570d4`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v917**, FM **5.58**, SDK **2.116.0**, emoji corpus `?v=2`; backend unchanged (0001–0003 live, delete-account v3 = repo source); email template `Live?` = no. ⚑ Stalest: M (S436), then G (S437), D (S438); O stays blocked. ⚑ Strongest untaken: the generator's PDF below 700px keeping the phone rules (P4), the dashboard adopt toast crediting an empty account (P4), the corpus's shva slips (P4, a reviewed list). ⚑ N-next: contact (S276), then FM (S290).
