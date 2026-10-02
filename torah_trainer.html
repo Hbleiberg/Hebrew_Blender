@@ -1736,6 +1736,13 @@ body.fullscreen .tt-hint-toast { bottom: calc(var(--tt-audio-h, 96px) + 90px); }
   .tt-fs-plate { gap:4px; padding:6px; flex-wrap:wrap; justify-content:center; max-inline-size:calc(100% - 16px); }
   .tt-fs-sep { display:none; }
 }
+/* Trope staff adds a third button (Play tune) to the reading header, and that one row cannot wrap:
+   it ran past the page edge up to 334px wide in English and 348px in Hebrew (measured S448 on the
+   iPhone 13 descriptor), while the other layouts' two buttons fit at every width. Below that ceiling
+   the buttons drop under the title. Re-measure whenever the header gains a button. */
+@media (max-width: 348px) {
+  body.layout-staff .tt-ref-hdr { flex-wrap:wrap; }
+}
 
 /* ── Reduced motion: honor the OS "reduce motion" preference for everything this
    tool animates (verse-loop pulse, resume/jump highlight flashes, tour spotlight,
