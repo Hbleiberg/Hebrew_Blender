@@ -645,12 +645,12 @@ body.dark .emoji-gender-btn:hover{background:#2a3349;}   /* dark --warm-gray equ
 body.dark .emoji-gender-btn.active{background:#0a0f1c;}
 #emojiCatTree{display:grid;grid-template-columns:1fr 1fr;column-gap:8px;align-items:start;}
 .emoji-cat-group{break-inside:avoid;}
-.emoji-cat-row{display:flex;align-items:center;gap:5px;padding:2px 0;font-size:0.74rem;cursor:pointer;user-select:none;}
+.emoji-cat-row{display:flex;align-items:center;gap:5px;padding:2px 0;min-height:24px;box-sizing:border-box;font-size:0.74rem;cursor:pointer;user-select:none;}   /* 24px rows and a 24×24 ▾: WCAG 2.5.8 (sub-floor touch target) */
 .emoji-cat-row input{accent-color:var(--gold);width:12px;height:12px;cursor:pointer;flex-shrink:0;}
 .emoji-cat-row.is-cat{font-weight:600;}
-.emoji-cat-row.is-sub{padding-inline-start:14px;font-size:0.7rem;color:var(--muted);}
+.emoji-cat-row.is-sub{padding-inline-start:29px;font-size:0.7rem;color:var(--muted);}
 .emoji-cat-row > span:not(.emoji-cat-arrow):not(.emoji-cat-count){overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;}
-.emoji-cat-arrow{display:inline-block;width:9px;font-size:0.65rem;color:var(--muted);transition:transform 0.15s;flex-shrink:0;}
+.emoji-cat-arrow{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;margin-block:-2px;font-size:0.65rem;color:var(--muted);transition:transform 0.15s;flex-shrink:0;}
 .emoji-cat-group.collapsed .emoji-cat-arrow{transform:rotate(-90deg);}
 .emoji-cat-group.collapsed .emoji-sub-list{display:none;}
 .emoji-cat-count{margin-inline-start:auto;font-size:0.6rem;color:var(--muted);font-weight:400;flex-shrink:0;}
