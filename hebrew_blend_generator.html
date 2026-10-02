@@ -1222,6 +1222,10 @@ body.dark .hi-sun{display:inline-block;}
     box-shadow: 2px 0 6px rgba(0,0,0,0.15);
   }
   .sidebar-show-btn:hover { background: #0f1a33; }
+  /* Dark --navy (#1a2744) sits 1.15:1 on the dark page, so both edge tabs read as a bare chevron: the page's dark
+     primary pair (.letter-tile.selected, .btn-secondary:hover). Pattern dark-navy-fill-matches-its-ground. */
+  body.dark .sidebar-toggle-btn, body.dark .sidebar-show-btn { background: #2a4070; }
+  body.dark .sidebar-toggle-btn:hover, body.dark .sidebar-show-btn:hover { background: #345090; }
   /* RTL: the sidebar sits on the right, so the edge tabs round toward the inline-end (left) side. */
   [dir="rtl"] .sidebar-toggle-btn, [dir="rtl"] .sidebar-show-btn { border-radius: 6px 0 0 6px; box-shadow: -2px 0 6px rgba(0,0,0,0.15); }
 
