@@ -5102,13 +5102,12 @@ function importPresets() {
 }
 function copyTextarea() {
   const ta = document.getElementById('backupArea');
-  ta.select();
-  document.execCommand('copy');
   const btn = document.getElementById('copyBtn');
   // Back to its own key, not the text it replaced: a second click during the flash would otherwise
-  // capture "Copied!" as the label to restore and leave it behind.
-  btn.textContent = I18n.t('shared.toast.copied');
-  setTimeout(() => btn.textContent = I18n.t('shared.ivrit.manual_copy'), 1200);
+  // capture "Copied!" as the label to restore and leave it behind. Claimed only once a route copied.
+  const done = () => { btn.textContent = I18n.t('shared.toast.copied'); setTimeout(() => btn.textContent = I18n.t('shared.ivrit.manual_copy'), 1200); };
+  const viaSelect = () => { ta.select(); let ok = false; try { ok = document.execCommand('copy'); } catch (e) {} if (ok) done(); };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(ta.value).then(done, viaSelect); else viaSelect();
 }
 
 /* =========================================================================
@@ -5187,10 +5186,12 @@ function copyShareCode() {
     lbl.textContent = I18n.t('flashcards.share.copied');
     setTimeout(() => lbl.textContent = I18n.t('flashcards.teachertools.copy_code'), 1500);
   };
+  // Claimed only once a route copied
+  const viaSelect = () => { out.select(); let ok = false; try { ok = document.execCommand('copy'); } catch (e) {} if (ok) done(); };
   if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(text).then(done).catch(() => { out.select(); document.execCommand('copy'); done(); });
+    navigator.clipboard.writeText(text).then(done, viaSelect);
   } else {
-    out.select(); document.execCommand('copy'); done();
+    viaSelect();
   }
 }
 // The ?s= URL twin of the paste code (house share-link convention): same payload, carried in the
@@ -5210,7 +5211,7 @@ function copyShareLink() {
     setTimeout(() => lbl.textContent = I18n.t('flashcards.teachertools.copy_link'), 1500);
   };
   if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(url).then(done).catch(() => copyViaTextarea(url, done));
+    navigator.clipboard.writeText(url).then(done, () => copyViaTextarea(url, done));
   } else {
     copyViaTextarea(url, done);
   }
@@ -5275,8 +5276,10 @@ function openInWorksheet() {
 function copyViaTextarea(text, done) {
   const ta = document.createElement('textarea');
   ta.value = text; document.body.appendChild(ta); ta.select();
-  try { document.execCommand('copy'); } catch (e) {}
-  document.body.removeChild(ta); done();
+  let ok = false;
+  try { ok = document.execCommand('copy'); } catch (e) {}
+  document.body.removeChild(ta);
+  if (ok) done();   // claimed only once it copied
 }
 function shareErr(msg) {
   const el = document.getElementById('shareCodeError');
