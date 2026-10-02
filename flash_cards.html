@@ -802,6 +802,10 @@ body.dark .slider::before { background: #d8dde9; }
 .count-custom:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 1px; }
 .count-custom.active { background: var(--navy); color: var(--gold-light); border-color: var(--navy); }
 .count-custom.active::placeholder { color: var(--gold-light); }
+/* Dark mode: --navy is the page ground, a step DARKER than the count panel, so the chosen count read
+   as a hole rather than a selection — the dark selected pill's idiom (deeper fill + gold hairline). */
+body.dark .count-btn.active,
+body.dark .count-custom.active { background: var(--navy-deep); border-color: var(--gold); }
 
 /* ============== START STICKY ============== */
 .start-cta {
