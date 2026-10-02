@@ -418,7 +418,8 @@ Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_das
   needed nothing), `hi-layout` and `hi-weather` (the dashboard's drawer tabs Display and Weather — a board with
   a header bar and a side column, and a sun behind a cloud; the dashboard is their only carrier so far, markup
   only as well; the strip's other five tabs reuse `hi-calendar`, `hi-group`, `hi-pencil`, `hi-bookmark` and
-  `hi-gear`), `hi-cloud`, `hi-keyboard`, `hi-search`, `hi-warning`,
+  `hi-gear`), `hi-target` (the Trope Tutor's Drill tab — two rings round a filled centre; its only carrier, markup only),
+  `hi-cloud`, `hi-keyboard`, `hi-search`, `hi-warning`,
   `hi-undo` / `hi-redo`, `hi-up` / `hi-down`, `hi-book` (now also on `torah_trainer.html`, its drawer's Text
   tab, copied verbatim from the Trope Tutor), `hi-folder` / `hi-folder-plus` and `hi-move` —
   plus the control family `hi-play`,

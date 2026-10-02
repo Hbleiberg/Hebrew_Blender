@@ -4654,7 +4654,7 @@ trope.status.loading_audio,Loading audio…,טוען שמע…,status,
 trope.status.loading_index,Loading the trope index…,טוען את מפתח הטעמים…,status,
 trope.status.tap_to_hear,Tap ▶ to hear the melody.,הקישו על ▶ כדי לשמוע את המנגינה.,status,
 trope.tabs.aria,Tutor mode,מצב המאמן,tablist aria,aria-label only
-trope.tabs.drill,🎯 Drill,🎯 תרגול,mode tab,leading-emoji
+trope.tabs.drill,Drill,תרגול,mode tab label (the target icon lives in the markup),svg-icon-in-markup
 trope.tabs.learn,Learn,לימוד,mode tab,svg-icon-in-markup
 trope.tabs.phrases,Phrases,צירופים,mode tab label (the music icon lives in the markup),svg-icon-in-markup
 trope.tabs.settings,Settings,הגדרות,mode tab label (the gear icon lives in the markup),svg-icon-in-markup
