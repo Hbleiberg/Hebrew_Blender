@@ -33,8 +33,8 @@ at init. (Use `family` or `stack` to match whatever property that tool's `setHeb
 ### "Upload your own font?" — byte-identical block + per-page pick handler
 A second shared block `/* ═══ My Fonts uploader (shared, identical across pages) ═══ */` defines
 `ivUploadFontFromFile(file)` (validates via `new FontFace(name, bytes).load()`, de-dupes the name,
-`saveUserFont`s it). The block contains ONLY that function (identical across all 7 carriers); the thin **pick handler lives BELOW the end marker and is per-page**: the five tool pickers
-use `onUploadFontPick(input)` (`refreshMyFonts()` + `setHebFont(name)`), the dashboard adds an extra
+`saveUserFont`s it). The block contains ONLY that function (identical across all 7 carriers); the thin **pick handler lives BELOW the end marker and is per-page**: the six tool pickers
+use `onUploadFontPick(input)` (`refreshMyFonts()` + `setHebFont(name)`), the dashboard and flash cards add an extra
 `onUploadEngFontPick` (routes to `setEngFont`), and `index.html`'s gear-modal manager uses
 `onUploadFontPickIndex` (`renderMyFontsManager()` + `refreshFontsBackupCache()`). Each picker has a small
 **"Upload your own font?"** `<label>` (the shared `hi-upload` icon before a `.hi-lbl` span that carries the `data-i18n`; hidden `<input type="file" accept=".ttf,.otf,.woff,.woff2">`)
@@ -763,7 +763,7 @@ const PANEL_MEM_CFG = {
   scope: '.panel-title',                 // '#screenSetup .panel-title' where the page has panels outside the sidebar
   read()      { return ivritSafeParse(localStorage.getItem('hebrew<Tool>_panels')); },   // the dedicated key
   write(map)  { localStorage.setItem('hebrew<Tool>_panels', JSON.stringify(map)); },
-  afterApply() { syncPanelTitleAria(); }                          // the page's own aria-expanded sync
+  afterApply() { syncCollapseAria(); }                            // the page's own aria-expanded sync
 };
 ```
 - **Panels are keyed by the `data-i18n` key on their title**, so identity is language-independent (a
