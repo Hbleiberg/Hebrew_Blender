@@ -8,9 +8,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P4 (**NEW S450 M — for A: the census**) | the other 13 pages | **`dark-navy-fill-matches-its-ground` is unswept outside flash cards**: a primary or selected fill of `--navy` where dark mode makes `--navy` the page ground. | found S450
-
-- [ ] P4 (**NEW S450 M**) | flash_cards.html | **The results screen's "Save This Card Set as a Preset" is off the stack's scale**: 38px / weight 500 / 15.2px above four 49px / 600 / 16px siblings. | found S450
+- [ ] P3 (**NEW S451 G — gate 2, the maintainer's call**) | torah_trainer.html | **In the Trope staff layout the student handout ignores Font size and "Hide cantillation"**: the staff prints at screen scale (Hebrew 27.4pt, Large and Extra large alike) and its notes carry every trope; either print a text layout or say so beside the options. | found S451
 
 - [ ] P3 (**S440 H, gate 2**) | hebrew_dictionary.html | **A theme saved over 200 words drops its A→Z tail** (Animals loses fox, octopus, chicken…). | found S440
 
@@ -47,8 +45,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S424 Pass D**) | torah_trainer.html | **The first transliteration of a reading is still one long task**: ~600 ms @1× / 3.3–4.1 s @4× on a full parsha, the library ~93% (profiled); fill the rows in idle chunks or a worker. `40c5154` fixed every re-render after it. | found S424
 
 - [ ] P4 (**NEW S424 Pass D**) | torah_trainer.html | **Side by side with a translation is layout-bound at 4×**: re-renders 450–930 ms (≤280 @1×), ~80% style/layout; long-standing (the S307-era page 461–676 on the same stub); interlinear ≤195. | found S424
-
-- [ ] P4 (**NEW S422 Pass M — the jump bar's readout; (1) FIXED S438 `947b452d`**) | torah_trainer.html | **The readout is blank on load and stale after a jump to the top**, so a one-aliyah reading shows "CURRENT VERSE" and nothing. | found S422
 
 - [ ] P4 (**NEW S422 Pass M — five small ones; (1) FIXED S446 `0daed724`, (4) FIXED S448 `0f9ddbe1`**) | torah_trainer.html | **(2)** drawer segments break mid-label at 380px; **(3)** Audio tracks start ragged; **(5)** "Custom range…" has no icon. | found S422
 
@@ -230,6 +226,14 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-02 | (S451 close-out) | branch/deploy note | **S451 = pass G on torah + 4 fixes, draft PR #303 (unmerged).** DRIFT: none (main `43570d4`, FM 5.58, SDK 2.116.0, `0003` live, backend files unchanged, keep-alive #20 green). sw v918→v919 (dictionary, generator, flash, torah). No FM bump. check-i18n + check-inline-js clean; sitemap/llms untouched (CSS + one JS line). Deferred: the staff …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-02 | `730887f9` | flash_cards.html | (S450 M) **Save This Card Set as a Preset on the results stack's scale** (38→49px, 500→600, 15.2→16px). | `measure.mjs` light+dark; 12 cells EN/HE 320–800: 0 overflow, wraps to 2 lines at EN 320 / HE 390.
+
+- [x] 2026-10-02 | `f9ca0909` | hebrew_blend_generator.html | (S451 census) **The sidebar's edge tabs get a dark plate** (#2a4070 / #345090). | `v1.mjs` HEAD vs fix ×4: dark plate/page 1.15→1.67, chevron 7.30:1, real hover, show tab too; light same.
+
+- [x] 2026-10-02 | `5deb5472` | hebrew_dictionary.html | (S451 census) **Show more and the sidebar handle get a dark plate** (#2a4070 / #345090). | `v1.mjs` HEAD vs fix ×4: dark 1.15→1.67, text 7.30:1, real hover; light same.
+
 - [x] 2026-10-02 | (S450 close-out) | branch/deploy note | **S450 = pass M on flash + 2 fixes + 1 reverted, draft PR #303 (unmerged).** DRIFT: none (main `43570d4`, FM 5.58, SDK 2.116.0, backend files unchanged, keep-alive #20 green). sw v917→v918 (flash). No FM bump. check-i18n + check-inline-js clean; smoke-sync 201/201. Deferred: none.
 
 - [x] 2026-10-02 | attempted, reverted | classroom_dashboard.html | (S450; S421 P) **The adopt switch limited to classes the listing names as held** — the plan reads the uploaded own class `synced`. | Scratch D37: HEAD and fix both FAIL; re-logged.
@@ -268,19 +272,11 @@ _(none)_
 
 - [x] 2026-10-02 | `7a5117e7` | Hebrew_Font_Maker.html | (S447; S405 K) **The special-forms intro's English fallback matches its CSV text.** | verified: `k447/fm.mjs` locales aborted (counted): HEAD old text, fix = CSV `en`; with the dictionary both equal.
 
-- [x] 2026-10-02 | (S446 close-out) | branch/deploy note | **S446 = pass L + 4 fixes on draft PR #303 (unmerged).** DRIFT: none (main `43570d4`, FM 5.58, SDK 2.116.0, 0001–0003 live, db/functions + config + keep-alive file unchanged; keep-alive #19 green 10-01). sw v913→v914 (index, generator, torah, flash, locales). FM: no bump (not touched). check-i18n + check-inline-js clean; build-locales …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-10-02 | `c6c509ed` | flash_cards.html | (S446; S412 H (1)) **A tied streak no longer reads as a new personal best** (a per-drill `sessNewPb` flag). | verified: `f446/pb.mjs` real drills, tie/beat/first/below × views; HEAD shows 🏆 on a tie 4/4, fix 0/4; beat/first/below unchanged.
-
-- [x] 2026-10-02 | `0daed724` | torah_trainer.html | (S446; S422 M (1)) **Page view's chapter drop cap uses `--gold-text` on screen** (print override now redundant, removed). | verified: `f446/cap.mjs` light 2.60→5.88:1, dark 7.96 unchanged, print 6.22 unchanged; 4 cells.
-
-- [x] 2026-10-02 | `05b14954` | hebrew_blend_generator.html | (S446; S434 N) **The retired `.mobile-fab` bar and its ~10 readers removed.** | verified: `f446/fab.mjs` HEAD vs fix identical (buttons enable, regen title, share label swap/restore, tour share target) in 4 cells; 0 errors.
-
-- [x] 2026-10-02 | `b69ed10d` | index.html | (S446; S444 A) **All Settings' Copy resets to "Copy to Clipboard"**; orphan `copy_reset` row removed. | verified: `f446/copy.mjs` real click, EN/HE × light/dark × 1280/800: HEAD "Copy", fix = its own label 4/4.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-02 | **S451** | iters: 1 pass (**G**) + 4 fixes = **5** | tools: dictionary, generator, flash, torah | patterns fixed: dark-navy-fill-matches-its-ground ×2 | pass run: G | SW: v918→v919
 
 - 2026-10-02 | **S450** | iters: 1 pass (**M**) + 2 fixes + 1 reverted = **4** | tools: flash ×2, dashboard (reverted) | patterns fixed: dark-navy-fill-matches-its-ground ×2 (NEW) | pass run: M | SW: v917→v918
 
@@ -320,15 +316,13 @@ _(none)_
 
 - 2026-09-30 | **S432** | iters: 1 pass (**L**) + 4 fixes = **5** | tools: torah ×2, trope ×2, terms | patterns fixed: stale-fallback ×2, JSON-LD parity ×1 | pass run: L | SW: v888→v889
 
-- 2026-09-30 | **S431** | iters: 1 pass (**E**) + 4 fixes = **5** | tools: torah, THIRD_PARTY_LICENSES, README, ops.md + font-maker.md | patterns fixed: toggle-name-flips-with-its-pressed-state ×1 | pass run: E | SW: v887→v888
-
 ### Tool coverage (last-touched date per tool)
 
-- **S450 (2026-10-02):** flash ×2 (**S450**; M S450); **S449 (2026-10-02):** account, flash, generator, dictionary (**S449**; P S449); **S448 (2026-10-02):** torah ×2, flash, dictionary (**S448**); **S447 (2026-10-02):** FM, torah, trope, emoji corpus (+ flash, generator, dictionary `?v=`) (**S447**); **S446 (2026-10-02):** index, generator, torah, flash (**S446**); **S445:** generator, flash, dictionary, shared-components.md (**S445**); **S444:** torah, index, dashboard; **S443:** js/ivrit-saves.js, Hebrew_Font_Maker.html, torah, dashboard, …[full text: IMPROVEMENT_ARCHIVE.md]
+- **S451 (2026-10-02):** dictionary, generator, flash, torah (**S451**; G S451); **S450 (2026-10-02):** flash ×2 (**S450**; M S450); **S449 (2026-10-02):** account, flash, generator, dictionary (**S449**; P S449); **S448 (2026-10-02):** torah ×2, flash, dictionary (**S448**); **S447 (2026-10-02):** FM, torah, trope, emoji corpus (+ flash, generator, dictionary `?v=`) (**S447**); **S446 (2026-10-02):** index, generator, torah, flash (**S446**); **S445:** generator, flash, dictionary, shared-components.md (**S445**); **S444:** torah, index, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
-- **`dark-navy-fill-matches-its-ground`** (NEW S450 M; flash ×2 FIXED `c9e2bc2b`, `68055510`): ACTIVE, streak 0; the other pages unswept. A fill of `var(--navy)` where the dark theme redefines `--navy` as the page ground (flash: `#0f1626` = body) leaves a primary or selected …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`dark-navy-fill-matches-its-ground`** (NEW S450 M; flash ×2 `c9e2bc2b`, `68055510`; S451 census: dictionary `5deb5472`, generator `f9ca0909`): ACTIVE, streak 0. Detection (`g451/navy.mjs`): every visible button/.btn/[role=button]/.active/[aria-pressed=true] in dark, its fill …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`ring-below-3-on-light`** (NEW S442; FIXED on 14 pages `91fede71` + 3 modules `a46342c1`; S443 the last two non-outline rings, FM `e05b25d1` + torah's fav dot `1c320ae8`): ACTIVE, streak 0. A focus outline drawn in `--gold` (2.1–2.75:1 on the light surfaces). Detection: …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -616,7 +610,7 @@ _(none)_
 
 - A recurring-pattern sweep: 2026-10-01 (**S444 — 35th A: delta `99f9fa5..eeaf279` (114 commits). 10 arms, every zero controlled (receipts: findings S444). FOUND 2 + 2 P4 logged; FIXED 4.**)
 
-- G print & export fidelity (one tool): 2026-10-01 (**S437 — `index.html` + the chrome pages, first G there since S306. 5 arms (key census, export = gather, .ivrit round trip, paste vs file, 48 PDFs light vs dark), every zero controlled. FOUND + FIXED: a …[full text: IMPROVEMENT_ARCHIVE.md]
+- G print & export fidelity (one tool): 2026-10-02 (**S451 — `torah_trainer.html`, its 3rd (S181, S324 → 115 commits). 6 arms, every zero controlled: the Trope staff on paper (16 PDFs), 4 layouts + translit (pinned npm library) light vs dark (ink equal), a word-collision probe (plant 32), the handout in 4 layouts (geniza, numbers, selected verses), the ?s= link round trip (15 keys). FOUND the …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - D performance (one tool): 2026-10-01 (**S438 — `classroom_dashboard.html`, its 5th D (S325 → 94 commits). Cold 3× at 1×/4×, 14 real-click steps with longtask + event timing, 20-cycle hygiene after GC, a 10 s idle tick; the 300 ms click control fired every run. CLEAN: top load task 287–315 ms @4× (S325 648–781), no interaction ≥200 ms, keystrokes ≤32 ms @4×, idle 21 ms task / 10 s. D-next: …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -634,4 +628,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-01 (**S442 — the keyboard focus ring on all 14 pages + the 3 shared modules' injected rings: a real-Tab walk (EN light/dark 1280, HE light/dark 800 on 6), ring colour and contrast against its surface, transitions disabled; HEAD as the control (58 light stops under 3:1, 0 dark). FIXED `91fede71` (the `--focus-ring` token), `a46342c1` (modules); logged 2 P4 …[full text: IMPROVEMENT_ARCHIVE.md]
 
-**Next session (S451):** **BRANCH/PR: S435–S450 on `claude/nice-mayer-bzr3d9` → draft PR #303 (base `43570d4`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v918**, FM **5.58**, SDK **2.116.0**; backend unchanged. ⚑ Stalest: G (S437), D (S438), I (S439); O blocked. ⚑ Strongest untaken: the dark-navy census (for A), the dashboard adopt toast (needs landed ids), the generator PDF <700px. ⚑ N-next: contact, FM.
+**Next session (S452):** **BRANCH/PR: S435–S451 on `claude/nice-mayer-bzr3d9` → draft PR #303 (base `43570d4`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v919**, FM **5.58**, SDK **2.116.0**; backend unchanged. ⚑ Stalest: D (S438), I (S439), H (S440); O blocked. ⚑ Strongest untaken: the staff handout's Font size + Hide cantillation (gate 2, S451), the generator PDF <700px, the dashboard adopt toast (needs landed ids). ⚑ G-next: FM (S337).
