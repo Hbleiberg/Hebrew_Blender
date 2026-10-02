@@ -12036,7 +12036,7 @@ function generateRealWords(reuse) {
 // word's bare (un-niqqud) Hebrew to its emoji glyph. Mirrors the hebrew_words fetch.
 function loadEmojiMap() {
   if (EMOJI_MAP) return Promise.resolve(EMOJI_MAP);
-  return fetch('data/hebrew_emojis.json?v=1')
+  return fetch('data/hebrew_emojis.json?v=2')
     .then(r => r.json())
     .then(data => {
       const m = new Map();

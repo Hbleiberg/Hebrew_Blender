@@ -4915,7 +4915,7 @@ function toggleEmojiMode(on) {
 }
 
 function fetchEmojiData() {
-  return fetchJsonWithProgress('data/hebrew_emojis.json?v=1', (pct) => {
+  return fetchJsonWithProgress('data/hebrew_emojis.json?v=2', (pct) => {
     const rc = document.getElementById('resultCount');
     if (rc) rc.textContent = (pct === null || pct === undefined) ? I18n.t('dictionary.loading.emojis') : I18n.t('dictionary.loading.emojis_pct', { pct: pct });
   })

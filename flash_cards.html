@@ -3704,7 +3704,7 @@ function fetchEmojiData() {
   if (EMOJI_DATA) return Promise.resolve();
   if (_emojiFetchP) return _emojiFetchP;   // reuse the in-flight fetch — the file is ~450KB, never load it twice
   _emojiFailed = false;
-  _emojiFetchP = fetch('data/hebrew_emojis.json?v=1')
+  _emojiFetchP = fetch('data/hebrew_emojis.json?v=2')
     .then(r => r.json())
     .then(data => {
       const allowed = new Set(EMOJI_VISIBLE_CATEGORIES);
