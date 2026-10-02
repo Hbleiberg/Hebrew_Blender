@@ -2125,7 +2125,6 @@ body.dark .hi-sun{display:inline-block;}
     .desktop-buttons { display: block; }
   }
 
-  .mobile-fab { display: none; }   /* retired everywhere — replaced by the shared .gen-fab footer */
   @media (min-width: 701px) {
     .desktop-buttons { display: block; }
   }
@@ -2237,7 +2236,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
        The dashboard, flash cards and dictionary already list it; this converges on them. Hide it
        here, in this page's own print list — never in the shared app-toast CSS block, which must
        stay byte-identical across its four carriers. */
-    .sidebar, header, footer, .mobile-fab, .zoom-bar, .print-tip, .main-toolbar,
+    .sidebar, header, footer, .zoom-bar, .print-tip, .main-toolbar,
     .sidebar-toggle-btn, .sidebar-show-btn, .sbr-split, #fsBtn, #previewNotice, #appToast,
     .score-bar, .self-check-controls, .timer-bar { display: none !important; }
     .app { display: block; min-height: unset; }
@@ -3868,16 +3867,6 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
        aria-label="Drag to resize the sidebar (double-click to reset)"
        data-i18n-title="shared.resize.sidebar_title"
        data-i18n-aria-label="shared.resize.sidebar_title"></div>
-
-  <!-- Mobile FAB -->
-  <div class="mobile-fab">
-    <button class="btn btn-primary hi-btn" onclick="generate()"><svg class="hi hi-sm hi-page" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3H7a2.2 2.2 0 0 0-2.2 2.2v13.6A2.2 2.2 0 0 0 7 21h10a2.2 2.2 0 0 0 2.2-2.2V8.7z"/><path d="M13.5 3v5.7h5.7"/><path d="M8.6 13h6.8M8.6 16.6h4.6"/></svg><span class="hi-lbl" data-i18n="worksheet.actions.generate_mob">Generate</span></button>
-    <div class="gen-note" role="status" aria-live="polite" style="display:none;font-size:0.7rem;color:var(--gold);margin-top:4px;"></div>
-    <button class="btn btn-outline" id="regenBtnMob" onclick="regenerate()" disabled aria-disabled="true" title="Generate a worksheet first" data-i18n-title="worksheet.actions.disabled_hint" style="opacity:0.4;cursor:not-allowed;"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
-    <button class="btn btn-secondary" id="printBtnMob" onclick="window.print()" disabled aria-disabled="true" title="Generate a worksheet first" data-i18n-title="worksheet.actions.disabled_hint" style="opacity:0.4;cursor:not-allowed;"><svg class="hi hi-sm hi-print" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9.2V3.6h10v5.6"/><path d="M7 9.2H5.6A2.1 2.1 0 0 0 3.5 11.3v3.6a2.1 2.1 0 0 0 2.1 2.1H7"/><path d="M17 9.2h1.4a2.1 2.1 0 0 1 2.1 2.1v3.6a2.1 2.1 0 0 1-2.1 2.1H17"/><rect x="7" y="14.2" width="10" height="6.2" rx="1.2"/><circle cx="17.6" cy="12" r="1" fill="currentColor" stroke="none"/></svg></button>
-    <button class="btn btn-outline hi-btn" id="pdfBtnMob" onclick="exportPDF()" disabled aria-disabled="true" title="Generate a worksheet first" data-i18n-title="worksheet.actions.disabled_hint" style="opacity:0.4;cursor:not-allowed;"><svg class="hi hi-sm hi-download" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.4v11.2"/><path d="M7.6 10.4 12 14.8l4.4-4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="worksheet.actions.pdf_mob">PDF</span></button>
-    <button class="btn btn-outline" id="shareBtnMob" onclick="copyShareLink('shareBtnMob')" title="Copy shareable link" aria-label="Copy shareable link" data-i18n-aria-label="worksheet.actions.copy_link_title" data-i18n-title="worksheet.actions.copy_link_title"><svg class="hi hi-sm hi-link" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 13.7a4 4 0 0 0 5.7 0l3-3a4 4 0 1 0-5.7-5.7l-1.7 1.7"/><path d="M13.7 10.3a4 4 0 0 0-5.7 0l-3 3a4 4 0 1 0 5.7 5.7l1.7-1.7"/></svg></button>
-  </div>
 
   <!-- Guided "Take a tour" coach-mark (non-modal spotlight; see tourStart) -->
   <div class="tour-spot" id="tourSpot" hidden></div>
@@ -6683,21 +6672,6 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('resize', () => { if (_openTip) positionTip(_openTip); });
 })();
 
-/* ═══ Disabled-FAB explanation (mobile) — showAppToast lives in the shared app-toast block above ═══ */
-(function () {
-  // Taps on a disabled FAB button fall through to the container (see CSS).
-  function wireFab() {
-    const fab = document.querySelector('.mobile-fab');
-    if (!fab) return;
-    fab.addEventListener('pointerdown', e => {
-      // An enabled button is the event target and handles itself.
-      if (e.target.closest('button:not([disabled])')) return;
-      if (fab.querySelector('button[disabled]')) showAppToast(I18n.t('worksheet.actions.disabled_hint'));
-    });
-  }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wireFab);
-  else wireFab();
-})();
 
 /* ═══ Frozen Generate footer (desktop): hide it while the inline #generateBtn is on screen so the
    two Generate buttons never show at once (S130 Pass-H friction; user-directed) ═══ */
@@ -7077,8 +7051,7 @@ const TOUR_STEPS = [
     reveal: () => _tourOpenSidebar(),
     titleKey: 'worksheet.tour.generate.title',
     bodyKey: 'worksheet.tour.generate.body' },
-  { target: () => { const s = document.getElementById('shareBtn');
-      return _tourVisible(s) ? s : document.getElementById('shareBtnMob'); },
+  { target: () => document.getElementById('shareBtn'),
     reveal: () => _tourOpenSidebar(),
     titleKey: 'worksheet.tour.share.title',
     bodyKey: 'worksheet.tour.share.body' },
@@ -7400,8 +7373,6 @@ function updateModeVisibility() {
     // self-check (interactive on-screen drills, not printable worksheets).
     printBtn:    !testMode,
     pdfBtn:      !testMode,
-    printBtnMob: !testMode,
-    pdfBtnMob:   !testMode,
   };
 
   for (const id in v) {
@@ -9189,7 +9160,7 @@ function regenerate() {
 }
 
 function enableButtons() {
-  ['printBtn','regenBtn','pdfBtn','printBtnMob','regenBtnMob','pdfBtnMob'].forEach(id => {
+  ['printBtn','regenBtn','pdfBtn'].forEach(id => {
     const btn = document.getElementById(id);
     if (!btn) return;
     btn.disabled = false;
@@ -9199,7 +9170,7 @@ function enableButtons() {
     // Give Regenerate its real tooltip; clear the "generate first" hint on the rest.
     // Repoint (regen) / drop (others) data-i18n-title too, so a live language switch
     // doesn't re-apply the disabled "Generate first" hint over an enabled button.
-    if (id === 'regenBtn' || id === 'regenBtnMob') {
+    if (id === 'regenBtn') {
       btn.setAttribute('data-i18n-title', 'worksheet.actions.regen_title');
       btn.title = I18n.t('worksheet.actions.regen_title');
     } else {
@@ -13934,18 +13905,14 @@ function copyShareLink(btnId) {
   if (navigator.clipboard) navigator.clipboard.writeText(url).then(shareLinkCopied, viaTextarea); else viaTextarea();
 }
 function shareLinkCopied() {
-  ['shareBtn','shareBtnMob'].forEach(id => {
-    const b = document.getElementById(id);
-    if (!b) return;
+  const b = document.getElementById('shareBtn');
+  if (b) {
     if (b.dataset.label === undefined) b.dataset.label = b.innerHTML;
-    b.innerHTML = (id === 'shareBtnMob') ? ICON_CHECK_SM : esc(I18n.t('worksheet.share.copied'));
-  });
+    b.innerHTML = esc(I18n.t('worksheet.share.copied'));
+  }
   announce(I18n.t('worksheet.share.copied'));
   setTimeout(() => {
-    ['shareBtn','shareBtnMob'].forEach(id => {
-      const b = document.getElementById(id);
-      if (b && b.dataset.label !== undefined) b.innerHTML = b.dataset.label;
-    });
+    if (b && b.dataset.label !== undefined) b.innerHTML = b.dataset.label;
   }, 1500);
 }
 
@@ -13997,7 +13964,7 @@ function applyI18n() {
   // Re-label an open tour card in place (no re-navigation, so reveal() doesn't re-fire).
   try { if (typeof _tourActive !== 'undefined' && _tourActive && _tourIdx >= 0) _tourShow(_tourIdx, 1); } catch (e) {}
   // Let the share buttons re-capture their freshly-translated label on the next copy.
-  ['shareBtn', 'shareBtnMob'].forEach(id => { const b = document.getElementById(id); if (b) delete b.dataset.label; });
+  { const b = document.getElementById('shareBtn'); if (b) delete b.dataset.label; }
   // The dark toggle's label is JS-driven (not a static data-i18n), so relabel it to match the live state.
   try {
     const _dt = document.getElementById('darkToggle');
