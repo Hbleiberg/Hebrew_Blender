@@ -669,19 +669,6 @@
   }
   body.dark .heb-holiday-line { color: var(--gold-light); }
   .heb-holiday-line .heb-name { font-family: var(--heb-font); direction: rtl; }
-  /* Holiday icon: an inline SVG from HOLIDAY_ICONS (one per holiday family, chosen by the maintainer), sized to the
-     line's own font so the --holiday-size slider and fullscreen scale it with the text. The --hol-* tokens are the
-     icon palette; the dark block below swaps the outline and paper fills (navy outlines vanish on the dark surface). */
-  .heb-holiday-line {
-    --hol-line: #1a2744; --hol-gold: #c9922a; --hol-gold-lt: #f0d080; --hol-paper: #fffaf0; --hol-navy: #2a3b66;
-    --hol-red: #c0392b; --hol-green: #3a7d44; --hol-blue: #3b6fb6; --hol-flame: #f0a030; --hol-ground: #fdf8ef;
-  }
-  html.dark-early body .heb-holiday-line, body.dark .heb-holiday-line {
-    --hol-line: #e8e0d0; --hol-gold: #e0a832; --hol-gold-lt: #f5d97a; --hol-paper: #e8e0d0; --hol-navy: #5a6d9c;
-    --hol-red: #e0584a; --hol-green: #5aa865; --hol-blue: #6a9ae0; --hol-flame: #f6b84a; --hol-ground: #161c2a;
-  }
-  .heb-holiday-line .hol-ico { display: inline-block; width: 1.5em; height: 1.5em; vertical-align: -0.42em; margin-inline-end: 0.3em; }
-  .heb-holiday-line .hol-ico svg { display: block; width: 100%; height: 100%; stroke: var(--hol-line); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
   .shabbat-block {
     margin-top: 14px;
     padding-top: 12px;
@@ -2181,6 +2168,22 @@ body.dark .hi-moon{display:none;}
 body.dark .hi-sun{display:inline-block;}
 [dir="rtl"] .hi-arrow{transform:scaleX(-1);}
 /* ═══ end header-icons CSS ═══ */
+
+/* ═══ holiday-icons CSS ═══ shared block, byte-identical on: classroom_dashboard, torah_trainer (docs/reference/shared-components.md → Holiday icons).
+   One flat 48×48 SVG per holiday family, drawn by holidayIconFor() (the holiday-icons JS block). The --hol-* tokens are
+   the icon palette; the dark block swaps the outline and paper fills (a navy outline vanishes on the dark surface), so a
+   dark toggle needs no re-render. .hol-ico is sized in em, so it scales with the text it leads. */
+.hol-ico {
+  --hol-line: #1a2744; --hol-gold: #c9922a; --hol-gold-lt: #f0d080; --hol-paper: #fffaf0; --hol-navy: #2a3b66;
+  --hol-red: #c0392b; --hol-green: #3a7d44; --hol-blue: #3b6fb6; --hol-flame: #f0a030; --hol-ground: #fdf8ef;
+  display: inline-block; width: 1.5em; height: 1.5em; vertical-align: -0.42em; margin-inline-end: 0.3em; flex: 0 0 auto;
+}
+html.dark-early body .hol-ico, body.dark .hol-ico {
+  --hol-line: #e8e0d0; --hol-gold: #e0a832; --hol-gold-lt: #f5d97a; --hol-paper: #e8e0d0; --hol-navy: #5a6d9c;
+  --hol-red: #e0584a; --hol-green: #5aa865; --hol-blue: #6a9ae0; --hol-flame: #f6b84a; --hol-ground: #161c2a;
+}
+.hol-ico svg { display: block; width: 100%; height: 100%; stroke: var(--hol-line); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+/* ═══ end holiday-icons CSS ═══ */
 </style></head>
 <body>
 <a class="skip-link" href="#mainContent" data-i18n="dashboard.a11y.skip_to_board">Skip to the board</a>
@@ -4408,34 +4411,37 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
     return /tish.?a b.?av|yom kippur|yom hashoah|yom hazikaron/.test(t);
   }
 
-  // Holiday icons: one flat 48×48 SVG per holiday family (the maintainer chose each from three drafts). Fills are
-  // the --hol-* tokens on .heb-holiday-line, so dark mode re-colors them without a re-render. holidayIconFor()
-  // matches Hebcal's English title — Erev / Chol HaMoed / numbered days share their family — and 'generic' is
-  // the calendar page for any title the matcher does not know. The icon is markup, never part of the string.
-  const HOLIDAY_ICONS = {
-    roshhashana: '<path d="M17 17.5 C10.5 15 6 21 7 28.5 C8 36 12.5 41.5 17 40.5 C21.5 41.5 26 36 27 28.5 C28 21 23.5 15 17 17.5Z" fill="var(--hol-red)"/><path d="M17 17.5 V11.5" stroke-width="2.2"/><path d="M17 13.5 C19 9.5 24 9.5 25.5 11.5 C23.5 15 19.5 15.5 17 13.5Z" fill="var(--hol-green)"/><path d="M30 25 H41 A2 2 0 0 1 43 27 V37 A4 4 0 0 1 39 41 H32 A4 4 0 0 1 28 37 V27 A2 2 0 0 1 30 25Z" fill="var(--hol-gold-lt)"/><rect x="28.5" y="20.5" width="14" height="4.5" rx="1.8" fill="var(--hol-gold)"/><path d="M33 31 C35 33 38 33 40 31" stroke-width="1.5" stroke="var(--hol-gold)"/>',
-    yomkippur: '<path d="M24 10 V40" stroke-width="2.4"/><path d="M14 42 H34" stroke-width="2.4"/><circle cx="24" cy="9" r="2.4" fill="var(--hol-gold)"/><path d="M9 12 H39" stroke-width="2.2"/><path d="M10 12 L5.5 26 M10 12 L14.5 26 M38 12 L33.5 26 M38 12 L42.5 26" stroke-width="1.5"/><path d="M4 26 H16 A6 6 0 0 1 4 26Z" fill="var(--hol-gold-lt)"/><path d="M32 26 H44 A6 6 0 0 1 32 26Z" fill="var(--hol-gold-lt)"/>',
-    sukkot: '<rect x="7" y="22" width="34" height="19" fill="var(--hol-gold-lt)"/><rect x="19.5" y="29" width="9" height="12" fill="var(--hol-navy)"/><path d="M4 22 Q8 17.5 12 22 T20 22 T28 22 T36 22 T44 22" stroke="var(--hol-green)" stroke-width="2.4"/><path d="M10 22.5 V27 M16 22.5 V26 M32 22.5 V27 M38 22.5 V26" stroke="var(--hol-green)" stroke-width="2"/><circle cx="12.5" cy="30" r="1.8" fill="var(--hol-red)" stroke="none"/><circle cx="35.5" cy="30" r="1.8" fill="var(--hol-red)" stroke="none"/><path d="M4 41 H44" stroke-width="2.4"/>',
-    shminiatzeret: '<path d="M14 29 H34 A7 7 0 0 0 33.5 15 A9.5 9.5 0 0 0 15.5 14.5 A7.5 7.5 0 0 0 14 29Z" fill="var(--hol-paper)"/><path d="M16.5 34 L14.5 39.5 M24 34 L22 39.5 M31.5 34 L29.5 39.5" stroke="var(--hol-blue)" stroke-width="2.6"/>',
-    simchattorah: '<rect x="11" y="13" width="26" height="22" fill="var(--hol-paper)"/><rect x="5" y="9" width="7" height="30" rx="2.5" fill="var(--hol-gold-lt)"/><rect x="36" y="9" width="7" height="30" rx="2.5" fill="var(--hol-gold-lt)"/><path d="M8.5 9 V5 M8.5 39 V43 M39.5 9 V5 M39.5 39 V43" stroke-width="2.6"/><path d="M16 19 H32 M16 24 H32 M16 29 H26" stroke-width="1.5"/>',
+/* ═══ holiday-icons JS ═══ shared block, byte-identical on: classroom_dashboard, torah_trainer (docs/reference/shared-components.md → Holiday icons).
+   HOLIDAY_ICONS: one flat 48×48 SVG per holiday family (the maintainer chose each from three drafts); fills are the
+   --hol-* tokens of the holiday-icons CSS block. holidayIconFor(title) matches an English holiday title — Hebcal's
+   ("Sukkot III (CH''M)", "Chanukah: 3 Candles") or a reading name ("Passover — Day 7") — so Erev, Chol HaMoed and
+   numbered days share their family; 'generic' (a calendar page) is any title the rules do not know. The icon is
+   markup, never a glyph in a string. */
+const HOLIDAY_ICONS = {
+  roshhashana: '<path d="M17 17.5 C10.5 15 6 21 7 28.5 C8 36 12.5 41.5 17 40.5 C21.5 41.5 26 36 27 28.5 C28 21 23.5 15 17 17.5Z" fill="var(--hol-red)"/><path d="M17 17.5 V11.5" stroke-width="2.2"/><path d="M17 13.5 C19 9.5 24 9.5 25.5 11.5 C23.5 15 19.5 15.5 17 13.5Z" fill="var(--hol-green)"/><path d="M30 25 H41 A2 2 0 0 1 43 27 V37 A4 4 0 0 1 39 41 H32 A4 4 0 0 1 28 37 V27 A2 2 0 0 1 30 25Z" fill="var(--hol-gold-lt)"/><rect x="28.5" y="20.5" width="14" height="4.5" rx="1.8" fill="var(--hol-gold)"/><path d="M33 31 C35 33 38 33 40 31" stroke-width="1.5" stroke="var(--hol-gold)"/>',
+  yomkippur: '<path d="M24 10 V40" stroke-width="2.4"/><path d="M14 42 H34" stroke-width="2.4"/><circle cx="24" cy="9" r="2.4" fill="var(--hol-gold)"/><path d="M9 12 H39" stroke-width="2.2"/><path d="M10 12 L5.5 26 M10 12 L14.5 26 M38 12 L33.5 26 M38 12 L42.5 26" stroke-width="1.5"/><path d="M4 26 H16 A6 6 0 0 1 4 26Z" fill="var(--hol-gold-lt)"/><path d="M32 26 H44 A6 6 0 0 1 32 26Z" fill="var(--hol-gold-lt)"/>',
+  sukkot: '<rect x="7" y="22" width="34" height="19" fill="var(--hol-gold-lt)"/><rect x="19.5" y="29" width="9" height="12" fill="var(--hol-navy)"/><path d="M4 22 Q8 17.5 12 22 T20 22 T28 22 T36 22 T44 22" stroke="var(--hol-green)" stroke-width="2.4"/><path d="M10 22.5 V27 M16 22.5 V26 M32 22.5 V27 M38 22.5 V26" stroke="var(--hol-green)" stroke-width="2"/><circle cx="12.5" cy="30" r="1.8" fill="var(--hol-red)" stroke="none"/><circle cx="35.5" cy="30" r="1.8" fill="var(--hol-red)" stroke="none"/><path d="M4 41 H44" stroke-width="2.4"/>',
+  shminiatzeret: '<path d="M14 29 H34 A7 7 0 0 0 33.5 15 A9.5 9.5 0 0 0 15.5 14.5 A7.5 7.5 0 0 0 14 29Z" fill="var(--hol-paper)"/><path d="M16.5 34 L14.5 39.5 M24 34 L22 39.5 M31.5 34 L29.5 39.5" stroke="var(--hol-blue)" stroke-width="2.6"/>',
+  simchattorah: '<rect x="11" y="13" width="26" height="22" fill="var(--hol-paper)"/><rect x="5" y="9" width="7" height="30" rx="2.5" fill="var(--hol-gold-lt)"/><rect x="36" y="9" width="7" height="30" rx="2.5" fill="var(--hol-gold-lt)"/><path d="M8.5 9 V5 M8.5 39 V43 M39.5 9 V5 M39.5 39 V43" stroke-width="2.6"/><path d="M16 19 H32 M16 24 H32 M16 29 H26" stroke-width="1.5"/>',
 chanukah: '<path d="M4 31 H44" stroke-width="2.6"/><path d="M24 31 V37 M15 40 H33" stroke-width="2.6"/> <rect x="4.1" y="23" width="2.8" height="8" rx="0.7" fill="var(--hol-gold-lt)"/><path d="M5.5 22 c-1.65 -1.65 -1.35 -4.05 0 -5.7 c1.35 1.65 1.65 4.05 0 5.7Z" fill="var(--hol-flame)" stroke="var(--hol-line)" stroke-width="1.4"/> <rect x="8.7" y="23" width="2.8" height="8" rx="0.7" fill="var(--hol-gold-lt)"/><path d="M10.1 22 c-1.65 -1.65 -1.35 -4.05 0 -5.7 c1.35 1.65 1.65 4.05 0 5.7Z" fill="var(--hol-flame)" stroke="var(--hol-line)" stroke-width="1.4"/> <rect x="13.3" y="23" width="2.8" height="8" rx="0.7" fill="var(--hol-gold-lt)"/><path d="M14.7 22 c-1.65 -1.65 -1.35 -4.05 0 -5.7 c1.35 1.65 1.65 4.05 0 5.7Z" fill="var(--hol-flame)" stroke="var(--hol-line)" stroke-width="1.4"/> <rect x="17.9" y="23" width="2.8" height="8" rx="0.7" fill="var(--hol-gold-lt)"/><path d="M19.3 22 c-1.65 -1.65 -1.35 -4.05 0 -5.7 c1.35 1.65 1.65 4.05 0 5.7Z" fill="var(--hol-flame)" stroke="var(--hol-line)" stroke-width="1.4"/> <rect x="27.3" y="23" width="2.8" height="8" rx="0.7" fill="var(--hol-gold-lt)"/><path d="M28.7 22 c-1.65 -1.65 -1.35 -4.05 0 -5.7 c1.35 1.65 1.65 4.05 0 5.7Z" fill="var(--hol-flame)" stroke="var(--hol-line)" stroke-width="1.4"/> <rect x="31.9" y="23" width="2.8" height="8" rx="0.7" fill="var(--hol-gold-lt)"/><path d="M33.3 22 c-1.65 -1.65 -1.35 -4.05 0 -5.7 c1.35 1.65 1.65 4.05 0 5.7Z" fill="var(--hol-flame)" stroke="var(--hol-line)" stroke-width="1.4"/> <rect x="36.5" y="23" width="2.8" height="8" rx="0.7" fill="var(--hol-gold-lt)"/><path d="M37.9 22 c-1.65 -1.65 -1.35 -4.05 0 -5.7 c1.35 1.65 1.65 4.05 0 5.7Z" fill="var(--hol-flame)" stroke="var(--hol-line)" stroke-width="1.4"/> <rect x="41.1" y="23" width="2.8" height="8" rx="0.7" fill="var(--hol-gold-lt)"/><path d="M42.5 22 c-1.65 -1.65 -1.35 -4.05 0 -5.7 c1.35 1.65 1.65 4.05 0 5.7Z" fill="var(--hol-flame)" stroke="var(--hol-line)" stroke-width="1.4"/> <rect x="22.5" y="18" width="3" height="13" rx="0.75" fill="var(--hol-gold)"/><path d="M24 17 c-1.87 -1.87 -1.53 -4.59 0 -6.46 c1.53 1.87 1.87 4.59 0 6.46Z" fill="var(--hol-flame)" stroke="var(--hol-line)" stroke-width="1.4"/>',
-    purim: '<path d="M5 20 C5 11.5 13.5 12 24 16.5 C34.5 12 43 11.5 43 20 C43 30 37 34 30.5 32 C27.5 31 25.5 28 24 28 C22.5 28 20.5 31 17.5 32 C11 34 5 30 5 20Z" fill="var(--hol-blue)"/><ellipse cx="15.5" cy="21.5" rx="4.2" ry="3" fill="var(--hol-ground)"/><ellipse cx="32.5" cy="21.5" rx="4.2" ry="3" fill="var(--hol-ground)"/><path d="M9 15.5 L7 11 M39 15.5 L41 11 M24 15 V11" stroke="var(--hol-gold)" stroke-width="2"/><path d="M38.5 30.5 L45 42" stroke-width="2.4"/>',
-    pesach: '<rect x="7" y="7" width="34" height="34" rx="2.5" fill="var(--hol-gold-lt)"/><path d="M7 15 H41 M7 23.5 H41 M7 32 H41" stroke-width="1.4" stroke-dasharray="2 2.6"/><circle cx="13" cy="11" r="1" fill="var(--hol-gold)" stroke="none"/><circle cx="24" cy="19.5" r="1" fill="var(--hol-gold)" stroke="none"/><circle cx="35" cy="11" r="1" fill="var(--hol-gold)" stroke="none"/><circle cx="13" cy="28" r="1" fill="var(--hol-gold)" stroke="none"/><circle cx="35" cy="28" r="1" fill="var(--hol-gold)" stroke="none"/><circle cx="24" cy="36.5" r="1" fill="var(--hol-gold)" stroke="none"/>',
-    shavuot: '<path d="M5 42 V14 A8.5 8.5 0 0 1 22 14 V42Z" fill="var(--hol-paper)"/><path d="M26 42 V14 A8.5 8.5 0 0 1 43 14 V42Z" fill="var(--hol-paper)"/><path d="M9.5 20 H17.5 M9.5 25 H17.5 M9.5 30 H17.5 M9.5 35 H17.5 M30.5 20 H38.5 M30.5 25 H38.5 M30.5 30 H38.5 M30.5 35 H38.5" stroke-width="1.6"/>',
-    tishabav: '<rect x="5" y="13" width="15" height="9" fill="var(--hol-gold-lt)"/><rect x="22" y="13" width="21" height="9" fill="var(--hol-gold-lt)"/><rect x="5" y="24" width="9" height="9" fill="var(--hol-gold-lt)"/><rect x="16" y="24" width="17" height="9" fill="var(--hol-gold-lt)"/><rect x="35" y="24" width="8" height="9" fill="var(--hol-gold-lt)"/><rect x="5" y="35" width="15" height="8" fill="var(--hol-gold-lt)"/><rect x="22" y="35" width="21" height="8" fill="var(--hol-gold-lt)"/><path d="M30 24 C30 20 32 17 35 16 M30 24 C28 21 26 20 23 20" stroke="var(--hol-green)" stroke-width="2"/><rect x="9" y="27.5" width="3" height="2" fill="var(--hol-paper)" stroke="none"/>',
-    generic: '<rect x="6" y="10" width="36" height="32" rx="3" fill="var(--hol-paper)"/><path d="M6 18 H42" stroke-width="1.6"/><rect x="6" y="10" width="36" height="8" rx="3" fill="var(--hol-navy)"/><path d="M14 6 V13 M34 6 V13" stroke-width="2.6"/><path d="M24 22 L30 32 H18Z M24 36 L30 26 H18Z" stroke="var(--hol-gold)" stroke-width="1.8"/>',
-  };
-  const HOLIDAY_ICON_RULES = [
-    [/rosh hashana|rosh hashanah/, 'roshhashana'], [/yom kippur/, 'yomkippur'], [/sukkot|hoshana raba/, 'sukkot'],
-    [/shmini atzeret/, 'shminiatzeret'], [/simchat torah/, 'simchattorah'], [/chanukah|hanukkah/, 'chanukah'],
-    [/purim/, 'purim'], [/pesach|passover/, 'pesach'], [/shavuot/, 'shavuot'], [/tish.?a b.?av/, 'tishabav'],
-  ];
-  function holidayIconFor(title) {
-    const t = String(title || '').toLowerCase();
-    const hit = HOLIDAY_ICON_RULES.find(([re]) => re.test(t));
-    const key = hit ? hit[1] : 'generic';
-    return `<span class="hol-ico" aria-hidden="true"><svg viewBox="0 0 48 48" focusable="false">${HOLIDAY_ICONS[key]}</svg></span>`;
-  }
+  purim: '<path d="M5 20 C5 11.5 13.5 12 24 16.5 C34.5 12 43 11.5 43 20 C43 30 37 34 30.5 32 C27.5 31 25.5 28 24 28 C22.5 28 20.5 31 17.5 32 C11 34 5 30 5 20Z" fill="var(--hol-blue)"/><ellipse cx="15.5" cy="21.5" rx="4.2" ry="3" fill="var(--hol-ground)"/><ellipse cx="32.5" cy="21.5" rx="4.2" ry="3" fill="var(--hol-ground)"/><path d="M9 15.5 L7 11 M39 15.5 L41 11 M24 15 V11" stroke="var(--hol-gold)" stroke-width="2"/><path d="M38.5 30.5 L45 42" stroke-width="2.4"/>',
+  pesach: '<rect x="7" y="7" width="34" height="34" rx="2.5" fill="var(--hol-gold-lt)"/><path d="M7 15 H41 M7 23.5 H41 M7 32 H41" stroke-width="1.4" stroke-dasharray="2 2.6"/><circle cx="13" cy="11" r="1" fill="var(--hol-gold)" stroke="none"/><circle cx="24" cy="19.5" r="1" fill="var(--hol-gold)" stroke="none"/><circle cx="35" cy="11" r="1" fill="var(--hol-gold)" stroke="none"/><circle cx="13" cy="28" r="1" fill="var(--hol-gold)" stroke="none"/><circle cx="35" cy="28" r="1" fill="var(--hol-gold)" stroke="none"/><circle cx="24" cy="36.5" r="1" fill="var(--hol-gold)" stroke="none"/>',
+  shavuot: '<path d="M5 42 V14 A8.5 8.5 0 0 1 22 14 V42Z" fill="var(--hol-paper)"/><path d="M26 42 V14 A8.5 8.5 0 0 1 43 14 V42Z" fill="var(--hol-paper)"/><path d="M9.5 20 H17.5 M9.5 25 H17.5 M9.5 30 H17.5 M9.5 35 H17.5 M30.5 20 H38.5 M30.5 25 H38.5 M30.5 30 H38.5 M30.5 35 H38.5" stroke-width="1.6"/>',
+  tishabav: '<rect x="5" y="13" width="15" height="9" fill="var(--hol-gold-lt)"/><rect x="22" y="13" width="21" height="9" fill="var(--hol-gold-lt)"/><rect x="5" y="24" width="9" height="9" fill="var(--hol-gold-lt)"/><rect x="16" y="24" width="17" height="9" fill="var(--hol-gold-lt)"/><rect x="35" y="24" width="8" height="9" fill="var(--hol-gold-lt)"/><rect x="5" y="35" width="15" height="8" fill="var(--hol-gold-lt)"/><rect x="22" y="35" width="21" height="8" fill="var(--hol-gold-lt)"/><path d="M30 24 C30 20 32 17 35 16 M30 24 C28 21 26 20 23 20" stroke="var(--hol-green)" stroke-width="2"/><rect x="9" y="27.5" width="3" height="2" fill="var(--hol-paper)" stroke="none"/>',
+  generic: '<rect x="6" y="10" width="36" height="32" rx="3" fill="var(--hol-paper)"/><path d="M6 18 H42" stroke-width="1.6"/><rect x="6" y="10" width="36" height="8" rx="3" fill="var(--hol-navy)"/><path d="M14 6 V13 M34 6 V13" stroke-width="2.6"/><path d="M24 22 L30 32 H18Z M24 36 L30 26 H18Z" stroke="var(--hol-gold)" stroke-width="1.8"/>',
+};
+const HOLIDAY_ICON_RULES = [
+  [/rosh hashana|rosh hashanah/, 'roshhashana'], [/yom kippur/, 'yomkippur'], [/sukkot|hoshana raba/, 'sukkot'],
+  [/sh(e)?mini atzeret/, 'shminiatzeret'], [/simchat torah/, 'simchattorah'], [/chanukah|hanukkah/, 'chanukah'],
+  [/purim/, 'purim'], [/pesach|passover/, 'pesach'], [/shavuot/, 'shavuot'], [/tish.?a b.?av/, 'tishabav'],
+];
+function holidayIconFor(title) {
+  const t = String(title || '').toLowerCase();
+  const hit = HOLIDAY_ICON_RULES.find(([re]) => re.test(t));
+  const key = hit ? hit[1] : 'generic';
+  return `<span class="hol-ico" aria-hidden="true"><svg viewBox="0 0 48 48" focusable="false">${HOLIDAY_ICONS[key]}</svg></span>`;
+}
+/* ═══ end holiday-icons JS ═══ */
 
   function renderHolidayCountdown(items) {
     const el = document.getElementById('holidayCountdown');

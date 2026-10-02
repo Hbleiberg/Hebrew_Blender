@@ -520,6 +520,38 @@ Paste the CSS block, copy the snippets from any carrier (never redraw them), put
 add the page to the carrier list in every block's header comment, sha-verify, and check the header headless
 with the Playwright recipe in light + dark and EN + HE (the arrow must mirror, the toggle must swap moon for sun).
 
+## Holiday icons — shared block (the dashboard's countdown and the Torah Trainer's holiday readings)
+
+One flat 48×48 SVG per holiday family, drawn in the suite's navy and gold and chosen by the maintainer from three
+drafts each: Rosh Hashana (apple & honey), Yom Kippur (scales), Sukkot (sukkah), Shmini Atzeret (rain cloud),
+Simchat Torah (open Torah), Chanukah (chanukiah), Purim (mask), Pesach (matzah), Shavuot (two tablets),
+Tish'a B'Av (Kotel) and `generic` (a calendar page, for any title the matcher does not know). Carriers:
+`classroom_dashboard` (the holiday countdown line) and `torah_trainer` (the Calendar tab's seventeen
+`HOLIDAY_READINGS` buttons and the loaded reading's `.tt-ref-hdr`).
+
+### The two byte-identical blocks
+- **`/* ═══ holiday-icons CSS ═══ */`**, pasted right after the header-icons CSS block: `.hol-ico` carries the
+  `--hol-*` palette (line, gold, gold-lt, paper, navy, red, green, blue, flame, ground) and its size — `1.5em`
+  square, a negative `vertical-align`, `margin-inline-end` so it leads in both UI directions, `flex: 0 0 auto`
+  for a flex host — and `html.dark-early body .hol-ico, body.dark .hol-ico` redefines the palette (a cream outline
+  and paper in place of navy), so a dark toggle needs no re-render. `.hol-ico svg` sets the 2px round outline
+  from `--hol-line`; every fill in the drawings is a `var(--hol-*)`, and `--hol-ground` is the surface colour,
+  used for cut-outs (the mask's eye holes).
+- **`/* ═══ holiday-icons JS ═══ */`**: `HOLIDAY_ICONS` (`{ family: '<svg inner markup>' }`),
+  `HOLIDAY_ICON_RULES` (regexes over a lowercased English title, first match wins) and
+  `holidayIconFor(title)`, which returns `<span class="hol-ico" aria-hidden="true"><svg viewBox="0 0 48 48">…</svg></span>`.
+  It matches Hebcal's titles (`Erev Sukkot`, `Sukkot III (CH''M)`, `Chanukah: 3 Candles`) and the Trainer's
+  reading names (`Passover — Day 7`, `Shemini Atzeret`), so Erev, Chol HaMoed and numbered days share their
+  family.
+
+### Host contract
+- The icon is markup, never a glyph in a string: a page prepends `holidayIconFor(name)` to the escaped text
+  (`el.innerHTML = holidayIconFor(name) + esc(label)`), the way the header-icons rule builds a button. The
+  strings themselves carry no emoji.
+- A `<select>` cannot hold an SVG, so the Trainer's parsha-picker `<optgroup>` keeps plain option labels.
+- Swapping a drawing means replacing that family's entry in `HOLIDAY_ICONS` on **both** carriers, re-truing the
+  carrier list in both markers if a page joins, then sha-verifying the two blocks across carriers.
+
 ## Shared UX components — the conventions all tools are converging on
 
 These are the cross-tool UX patterns the suite is standardizing, documented the same way as the

@@ -571,19 +571,10 @@ the module instead of its inline copy is the next adoption, not yet done. The pa
 
 The countdown line (`#holidayCountdown`, class `heb-holiday-line`) opens with one inline SVG per holiday family,
 in place of the 🎉 / 🕯️ the `dashboard.days.holiday_today*` strings once carried — the icon is markup, never a
-glyph in a string (same rule as the header icons).
-
-- **`HOLIDAY_ICONS`** — `{ family: '<svg inner markup>' }`, each a flat 48×48 drawing (2px outline, round joins).
-  Families: `roshhashana`, `yomkippur`, `sukkot`, `shminiatzeret`, `simchattorah`, `chanukah`, `purim`, `pesach`,
-  `shavuot`, `tishabav`, plus `generic` (a calendar page) for any title the matcher does not know. The maintainer
-  chose each drawing from three drafts; swapping one means replacing that entry's markup only.
-- **`HOLIDAY_ICON_RULES` / `holidayIconFor(title)`** — regex over Hebcal's lowercased English title, first match
-  wins; Erev, Chol HaMoed and numbered days (`Sukkot III (CH''M)`, `Chanukah: 3 Candles`, `Pesach VIII`) therefore
-  share their family's icon. Returns `<span class="hol-ico" aria-hidden="true"><svg viewBox="0 0 48 48">…</svg></span>`,
-  which `renderHolidayCountdown()` prepends to every form of the line (countdown, today, solemn today).
-- **Palette** — fills reference the `--hol-*` tokens declared on `.heb-holiday-line` (line, gold, gold-lt, paper,
-  navy, red, green, blue, flame, ground); `html.dark-early body … , body.dark …` redefines them (a cream outline and
-  paper instead of navy, which vanish on the dark surface), so a dark toggle needs no re-render. `--hol-ground` is
-  the surface color, used for cut-outs (the mask's eye holes).
-- **Size** — `.hol-ico` is `1.5em` square with a negative `vertical-align`, so the `--holiday-size` slider and the
-  fullscreen scale rule size it with the text; `margin-inline-end` keeps it leading in both UI directions.
+glyph in a string (same rule as the header icons). The drawings, the title matcher `holidayIconFor(title)` and the
+`--hol-*` palette live in the shared **holiday-icons** blocks (JS + CSS; `docs/reference/shared-components.md` →
+Holiday icons), which this page shares byte-identically with the Torah Trainer. `renderHolidayCountdown()`
+prepends `holidayIconFor(next.title)` to every form of the line (countdown, today, solemn today); Hebcal's Erev,
+Chol HaMoed and numbered-day titles therefore share their family's icon, and a title the matcher does not know
+gets the calendar page. `.hol-ico` is sized in em, so the `--holiday-size` slider and the fullscreen scale rule
+size it with the text, and the dark block of the CSS swaps its palette without a re-render.

@@ -846,7 +846,9 @@ became **seven tabs of flat sections**, the Trope Tutor's Settings-tab idiom ins
     readings: `#ttHolidayPicker`, a `.tt-holiday-list` of the seventeen `HOLIDAY_READINGS` buttons that
     `buildHolidayPicker()` builds once — `syncFormToSettings` calls it on every drawer open and it returns when
     the list is already built — and `syncHolidayPickerState()` marks the loaded one (`.active` + `aria-pressed`); a press goes
-    through `applyHolidayReading`, the same apply path as the parsha picker's holiday `<optgroup>`). The Custom
+    through `applyHolidayReading`, the same apply path as the parsha picker's holiday `<optgroup>`; each button, and the
+    loaded reading's `.tt-ref-hdr`, leads with the holiday's SVG from the shared `holiday-icons` block — `holidayIconFor(h.name)`,
+    `docs/reference/shared-components.md` → Holiday icons — while the `<optgroup>` stays text). The Custom
     range is not here: it sits in the toolbar (below).
   - **Share** — `print` (Print), `share` (Practice link), `copy` (Copy verses), `handout` (Student handout);
     *The Share tab* below.
