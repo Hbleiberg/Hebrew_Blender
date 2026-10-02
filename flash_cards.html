@@ -8723,16 +8723,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // Deep-link from the Dictionary: ?wl=<listId> auto-selects that saved Word List into the Words
   // drill and lands the teacher on setup (no auto-start — a link only sets the live view). The id is
   // validated against the shared store; used only as an object key / Set member, never interpolated.
+  // Signed in, a list that lives only in the account lands a moment later: the link waits for it (onLocalChanged below).
   try {
     const wlParam = new URLSearchParams(location.search).get('wl');
-    if (wlParam && wlReadStoreLocal().lists[wlParam]) {
-      otherSubMode = 'words';
-      wordsSource = 'mylists';
-      selectedWordListIds = new Set([wlParam]);
-      setOtherMode(true);   // enter Other mode + persist into hebrewFlashCards_settings
-      syncOtherSubUI();     // show Words options + render the picker (list pre-checked) + count
-      document.getElementById('wordsOpts')?.scrollIntoView({ block: 'nearest' });
-    }
+    if (wlParam && !openWlLink(wlParam)) _pendingWl = wlParam;
   } catch (e) {}
 
   // ── i18n: translate static chrome once the locale loads, and re-render live on switch ──
@@ -8823,7 +8817,10 @@ function initCloudSaves() {
       profile: mergeProfileEntry
     },
     onLocalChanged: function (kind) {
-      if (kind === 'wordList') return;   // read on demand by the picker
+      if (kind === 'wordList') {   // read on demand by the picker; a ?wl= list that was only in the account opens now
+        if (_pendingWl && !_ladderActive && !_sharedDrill && openWlLink(_pendingWl)) _pendingWl = null;
+        return;
+      }
       if (kind === 'preset' || kind === 'presetFolders') renderPresets();
       else if (kind === 'profile' || kind === 'profileFolders') renderProfiles();
       else if (kind === 'pbStreak') { loadPbStreak(); updateStatsBar(); }
@@ -8840,6 +8837,19 @@ function initCloudSaves() {
       }
     }
   });
+}
+
+// ?wl=<listId>: select that saved Word List in the Words drill and show setup; false while the list is not on this device.
+let _pendingWl = null;
+function openWlLink(id) {
+  if (!wlReadStoreLocal().lists[id]) return false;
+  otherSubMode = 'words';
+  wordsSource = 'mylists';
+  selectedWordListIds = new Set([id]);
+  setOtherMode(true);   // enter Other mode + persist into hebrewFlashCards_settings
+  syncOtherSubUI();     // show Words options + render the picker (list pre-checked) + count
+  document.getElementById('wordsOpts')?.scrollIntoView({ block: 'nearest' });
+  return true;
 }
 
 // True when the UI is rendering right-to-left (Hebrew). Used to flip Arrow-key nav to visual dir.
