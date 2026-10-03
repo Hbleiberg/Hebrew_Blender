@@ -8,6 +8,18 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P2 (**NEW 2026-10-03**) | Hebrew_Font_Maker.html | **Several photos picked on the English tab fill the current letter, then Hebrew ones**: `_multiUploadTargets` walks the Hebrew-only `LETTER_ORDER`; the tab's own list is `tabDrawCps(_drawCatOf(cp))`. | found 2026-10-03
+
+- [ ] P3 (**NEW 2026-10-03**) | hebrew_blend_generator.html | **Class Set offers N versions where only one prints**: `#rowClassSet` shows for every drill but tracing and the button reads "Generate Class Set (N versions)", but `generate()` reads `classSetCount` only on its 2/3-Letter path (1-Letter, nikkud, real-word and number-practice sheets return earlier). | found 2026-10-03
+
+- [ ] P3 (**NEW 2026-10-03, gate 2**) | hebrew_blend_generator.html | **"Exclude Repeats" promises that no two blends share a letter pair**, but `drawBlends` only rejects a blend repeating one letter (`first === second`) and 1-Letter never reads the switch: fix the behaviour or the tooltip. | found 2026-10-03
+
+- [ ] P3 (**NEW 2026-10-03, gate 2**) | classroom_dashboard.html | **The "General classroom" (secular) starter keeps Hebrew day badges and weather labels**: its `STARTERS` diff sets `headerLang:'en'` but leaves `dowLang` and `weatherLabelLang` at their `'he'` defaults. | found 2026-10-03
+
+- [ ] P4 (**NEW 2026-10-03, gate 2 copy**) | hebrew_dictionary.html | **"Any of these letters" requires every ticked letter** (`onFilter`); the Hebrew label (כל אחת מהאותיות האלה) says so, the English label and its "Any:" chip don't. | found 2026-10-03
+
+- [ ] P4 (**NEW 2026-10-03 — K's**) | Hebrew_Font_Maker.html | **Three hardcoded English strings with no CSV keys**: `uploadCombined`'s two "…pick a letter, then drag a box around it" statuses and `cropSelectSVG`'s "Select area for … — drag a box around it" caption. | found 2026-10-03
+
 - [ ] P3 (**NEW S451 G — gate 2, the maintainer's call**) | torah_trainer.html | **In the Trope staff layout the student handout ignores Font size and "Hide cantillation"**: the staff prints at screen scale (Hebrew 27.4pt, Large and Extra large alike) and its notes carry every trope; either print a text layout or say so beside the options. | found S451
 
 - [ ] P3 (**S440 H, gate 2**) | hebrew_dictionary.html | **A theme saved over 200 words drops its A→Z tail** (Animals loses fox, octopus, chicken…). | found S440
@@ -218,6 +230,48 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] L | torah_trainer.html (+ trope_tutor.html) | **A staff for a whole reading** (verse → parasha) drawn and played under the Hebrew, from `trope_phrases.json`; `docs/tropepatterns.md` § G is the design and `docs/trope_contexts_report.md` the gaps. | found: 2026-09-25, maintainer
 
+- [ ] S–M | hebrew_blend_generator.html | **Print only the student pages, or only the answer keys** — a Class Set with keys prints its pages interleaved. | found: 2026-10-03, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] S–M | hebrew_blend_generator.html | **1-Letter: every chosen letter once, in alef-bet order, with or without vowels** (a bare א–ת sheet). | found: 2026-10-03, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] S | hebrew_blend_generator.html | **Rename a preset** (today: load, save under the new name, delete the old). | found: 2026-10-03, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] S–M | hebrew_blend_generator.html | **A "Previous sheet" button after Regenerate.** | found: 2026-10-03, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] M (dual) | hebrew_blend_generator.html | **Trace your own lines: students' names or this week's words, in Hebrew or English.** | found: 2026-10-03, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] M | hebrew_blend_generator.html (reads the dashboard's class lists) | **Each child's name on their Class Set version, from a dashboard class list.** | found: 2026-10-03, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] S–M | classroom_dashboard.html | **This week's parsha under the Hebrew date** (the board never shows it). | found: 2026-10-03, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] S (dual) | classroom_dashboard.html | **The running timer stays visible on the Intermission screen.** | found: 2026-10-03, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] S–M (dual) | classroom_dashboard.html | **A countdown to the teacher's own event** (a field trip, a siddur party, the last day of school). | found: 2026-10-03, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] S–M (dual) | classroom_dashboard.html | **Today's whole schedule as a strip on the board**, not just Now and Next. | found: 2026-10-03, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] S–M | flash_cards.html | **"All N words, once each" for a word-list deck.** | found: 2026-10-03, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] S | flash_cards.html | **Print the card sheet in the drill's vowel colours.** | found: 2026-10-03, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] M | flash_cards.html | **Paste this week's words into a new word list from inside Words mode.** | found: 2026-10-03, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] L (dual) | flash_cards.html | **Two-sided cards the teacher types, in any language** (English sight words) — not micro. | found: 2026-10-03, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] S–M (dual) | hebrew_dictionary.html | **A search typed in everyday spelling finds the pointed word** (כיתה → כִּתָּה). | found: 2026-10-03, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] S–M | hebrew_dictionary.html | **"Every word must have: [vowel]"** for this week's vowel. | found: 2026-10-03, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] S (dual) | hebrew_dictionary.html | **A "Last letter" row in Filter by Letter** (words ending in ה or ת). | found: 2026-10-03, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] M | hebrew_dictionary.html | **"Letters taught so far": words made only from allowed letters.** | found: 2026-10-03, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] S–M (dual) | Hebrew_Font_Maker.html | **Auto-detect reads the English (and other-alphabet) template sheets.** | found: 2026-10-03, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] S (dual) | Hebrew_Font_Maker.html | **The preview PDF's cover prints the teacher's own sample text.** | found: 2026-10-03, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] L | Hebrew_Font_Maker.html | **Export an English-only handwriting font** — not micro. | found: 2026-10-03, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
 ## In progress
 
 _(none)_
@@ -250,26 +304,6 @@ _(none)_
 
 - [x] 2026-10-02 | `d5d57c72` | account.html | (S449 P, NEW) **A sign-out, or another account's sign-in from another tab, closes the armed delete box and drops the unsaved name** (it stayed ticked with A's address under B's label; A's typed name sat one Save from B's profile). | `switch.mjs` two tabs on the fake cloud + pinned SDK, B and the same-account control: HEAD armed in both → closed / …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-10-02 | (S448 close-out) | branch/deploy note | **S448 = pass N + 4 fixes on draft PR #303 (unmerged).** DRIFT: none (main `43570d4`, FM 5.58, SDK 2.116.0, 0001–0003 live, db/functions + config + keep-alive file unchanged; keep-alive #19 green 10-01, the 10-02 run not yet fired). sw v915→v916 (torah, flash, dictionary). No FM bump (FM untouched). check-i18n + check-inline-js clean; …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-10-02 | `0f9ddbe1` | torah_trainer.html | (S448; S422 M) **The transliteration Style select shows its whole default label** (`#optTranslitStyle` drops the drawer's 170px cap). | Option census over all drawer selects × 7 tabs (plant fires in all 3): 1 clipped → 0, EN + HE × 1280/390; 191/201px fits a 320 drawer; light + dark, 0 pageerrors.
-
-- [x] 2026-10-02 | `fb2b7397` | hebrew_dictionary.html | (S448; S427 C) **Shoresh's empty pattern tiles readable**: `opacity:0.65` dropped from `.shoresh-pat.empty`. | Darkest text pixel vs tile background on כתב: 2.8 → 5.81:1 light, 3.13 → 5.58:1 dark (HEAD reproduces S427), EN + HE × 1280/800; crops compared.
-
-- [x] 2026-10-02 | `c54897da` | flash_cards.html | (S448; S412 H) **The New profile button's duplicate `class` attribute merged** (`.hi-btn` now applies). | HEAD vs fix EN + HE × light + dark × 1280/800: icon–label gap 0 → 5px, offset 1.2 → 0px, height 38 unchanged.
-
-- [x] 2026-10-02 | `cb69c370` | torah_trainer.html | (S448 N, found) **The Trope staff reading header wraps below 349px** instead of running its third button (Play tune) off the page. | 300–1280 sweep × 4 layouts × EN/HE: staff overflow 18/25 widths → 0, widths ≥349 identical; 5 phone widths × EN/HE × light/dark scrollWidth = clientWidth.
-
-- [x] 2026-10-02 | (S447 close-out) | branch/deploy note | **S447 = pass K + 4 fixes on draft PR #303 (unmerged).** DRIFT: none (main `43570d4`, FM 5.58, SDK 2.116.0, 0001–0003 live, db/functions + config + keep-alive file unchanged; keep-alive #19 green 10-01, the 10-02 run not yet fired). sw v914→v915 (FM, torah, trope, flash, generator, dictionary, locales; `data/hebrew_emojis.json` ?v=1→2 on …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-10-02 | `a86b5a16` | data/hebrew_emojis.json (+ flash, generator, dictionary ?v=2) | (S447; S412 H) **A doubled yod no longer transliterates as "yy"** (13 entries; 🥝 "kivi"). | verified: `k447/em.mjs` all 3 fetchers request ?v=2 and load the fixed rows; HEAD ?v=1 "kivivy"/"beruneyy"; EN/HE, 0 errors.
-
-- [x] 2026-10-02 | `d11fa022` | trope_tutor.html + CSV | (S447; S404) **The Drill tab carries a markup `hi-target` icon and a glyph-free label** like its 3 siblings. | verified: `k447/tr.mjs` 13×13 icon, 5px gap, arrow-key tab nav, EN/HE × light/dark × 1280/800; HEAD "🎯 Drill".
-
-- [x] 2026-10-02 | `2656a391` | torah_trainer.html | (S447; S425 I) **An unknown stored layout / translit style displays the default** (radio, select, transliteration) while settings keeps the stored value. | verified: `k447/tt.mjs` stubbed transliterator, junk/sbl/staff × EN/HE: HEAD no radio + blank select + 0 translit rows, fix side by side + Modern Israeli + 7 rows, stored value kept; known …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-10-02 | `7a5117e7` | Hebrew_Font_Maker.html | (S447; S405 K) **The special-forms intro's English fallback matches its CSV text.** | verified: `k447/fm.mjs` locales aborted (counted): HEAD old text, fix = CSV `en`; with the dictionary both equal.
-
 ## Metrics
 
 ### Per-session log (one line per session)
@@ -291,28 +325,6 @@ _(none)_
 - 2026-10-01 | **S444** | iters: 1 pass (**A**) + 4 fixes = **5** | tools: torah ×2, index, dashboard | patterns fixed: stored-json-of-the-wrong-shape-trusted ×1, copy-claims-success-on-a-refused-clipboard ×2 | pass run: A | SW: v911→v912
 
 - 2026-10-01 | **S443** | iters: 1 pass (**B**) + 4 fixes = **5** | tools: shared ×1 (ivrit-saves), FM, torah, dashboard, flash, generator, trope (comment) | patterns fixed: ring-below-3-on-light ×2 | pass run: B | SW: v910→v911
-
-- 2026-10-01 | **S442** | iters: 1 pass (**F**) + 4 fixes = **5** | tools: all 14 pages (one CSS token each), shared ×3 (i18n, ivrit-account, ivrit-saves), torah, generator, flash | patterns fixed: ring-below-3-on-light ×2 (NEW), tip-name-joins-its-field's-name ×1 | pass run: F | SW: v909→v910
-
-- 2026-10-01 | **S441** | iters: 1 pass (**C**) + 4 fixes = **5** | tools: torah ×2, trope, dictionary ×2, flash, dashboard, resources | patterns fixed: tip-escape-drops-focus ×1 (NEW, 5 carriers), button-focus-lost-to-its-own-rebuild ×1 | pass run: C | SW: v908→v909
-
-- 2026-10-01 | **S440** | iters: 1 pass (**H**) + 4 fixes = **5** | tools: dictionary ×2, dashboard, generator | patterns fixed: logical-inset-mirrors-onto-pinned-content ×1 (NEW), tip-name-joins-its-field's-name ×1 | pass run: H | SW: v907→v908
-
-- 2026-10-01 | **S439** | iters: 1 pass (**I**) + 4 fixes = **5** | tools: dashboard, generator, dictionary, torah | patterns fixed: panel-title-keyed-on-an-inner-span ×1, button-focus-lost-to-its-own-rebuild ×1 | pass run: I | SW: v906→v907
-
-- 2026-10-01 | **S438** | iters: 1 pass (**D**) + 4 fixes = **5** | tools: flash, torah, dashboard, dictionary | patterns fixed: physical-property-that-never-mirrors ×1 | pass run: D | SW: v905→v906
-
-- 2026-10-01 | **S437** | iters: 1 pass (**G**) + 4 fixes = **5** | tools: index, resources, dictionary ×2 | patterns fixed: button-focus-lost-to-its-own-rebuild ×2, dark-literal-escapes-the-print-tokens ×1 (NEW) | pass run: G | SW: v904→v905
-
-- 2026-10-01 | **S436** | iters: 1 pass (**M**) + 4 fixes = **5** | tools: generator ×2, flash, torah | patterns fixed: physical-property-that-never-mirrors ×1 | pass run: M | SW: v903→v904
-
-- 2026-10-01 | **S435** | iters: 1 pass (**P**) + 4 fixes = **5** | tools: flash ×2, smoke-sync, the accounts doc | patterns fixed: account-wide-delete-confirm-without-signed-in-wording ×1 (NEW) | pass run: P | SW: v902→v903
-
-- 2026-10-01 | **S434** | iters: 1 pass (**N**) + 4 fixes = **5** | tools: generator ×2, torah ×2 | patterns fixed: stale-fallback ×1, button-focus-lost ×1 | pass run: N | SW: v900→v901
-
-- 2026-10-01 | **S433** | iters: 1 pass (**K**) + 4 fixes = **5** | tools: js/ivrit-saves.js (shared), torah ×2, account, dashboard, flash, generator, trope | patterns fixed: stale-fallback ×2 | pass run: K | SW: v899→v900
-
-- 2026-09-30 | **S432** | iters: 1 pass (**L**) + 4 fixes = **5** | tools: torah ×2, trope ×2, terms | patterns fixed: stale-fallback ×2, JSON-LD parity ×1 | pass run: L | SW: v888→v889
 
 ### Tool coverage (last-touched date per tool)
 
