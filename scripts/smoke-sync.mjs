@@ -70,8 +70,9 @@
  *      no DELETE, the account's class stays here and in the account, the new one is inserted.
  *  D6. Sign-out on the Torah Trainer keeps the settings row's per-device fields (lastPos, loopVerse, *Collapsed)
  *      in the stored blob; every travelling field leaves.
- *  D7. Tab B changes a setting and tab A signs out inside B's 2 s debounce → B sends nothing after the logout,
- *      keeps its change and a memory record for the row; the next sign-in PATCHes the change up.
+ *  D7. Tab B changes a setting and tab A signs out inside B's 2 s debounce → A's sign-out flush sends the change
+ *      B saved (A writes no older copy of its own over it), nothing is sent after the logout, the device copy goes
+ *      with the rest of what the account holds, and the next sign-in PATCHes the row and brings the change back.
  *  D8. The Torah Trainer's "Reset all settings" (confirmed) → a PATCH of the settings row carrying the defaults,
  *      no DELETE.
  *  D9. A first sign-in whose account settings replace the device's own: ivritSuite_replaced keeps the device's
@@ -105,8 +106,9 @@
  *      setup alone, on the device and in the account.
  *  D23. A board being typed in a window without the focus survives another tab's download of a change made on
  *      another device; when the edit ends both the board text and that change reach the account.
- *  D24. A stale projector tab that closes while the network is gone writes its older class list and board text into
- *      the store; the next fresh tab keeps the account's newer copy instead of sending the older one up.
+ *  D24. A stale projector tab hidden while the network is gone writes nothing while it changed nothing; with a change
+ *      of its own it writes its older class list and board text into the store as it closes, and the next fresh tab
+ *      keeps the account's newer copy instead of sending the older one up.
  *  D25. A fresh device whose listing takes 13 s: the Dashboard's starter card opens on its 10 s guess and closes
  *      unapplied when the account's settings land; the account's board text is untouched.
  *  D26. A preset that disappears from the account (no one deleted it here) leaves the device only into the recovery
@@ -1140,7 +1142,7 @@ try {
     check('D6: 0 pageerrors', errors.length === 0, errors.join(' | '));
     await ctx.close();
   }
-  // ---- D7. a sign-out in tab A inside tab B's debounce: B sends nothing, keeps its change and the memory that sends it later ----
+  // ---- D7. a sign-out in tab A inside tab B's debounce: A's flush sends B's saved change, nothing goes after the logout ----
   if (want('D7')) {
     const cloud = new FakeCloud(CLOUD_ROWS());
     const row = cloud.find('settings', 'default');
@@ -1157,13 +1159,15 @@ try {
     const reloadedB = await afterReload(B.page);
     const iOut = cloud.log.findIndex(e => e.kind === 'logout');
     const afterOut = iOut >= 0 ? cloud.log.slice(iOut + 1).filter(e => e.table === 'saves') : [];
-    const sentTiberias = cloud.log.some(e => e.table === 'saves' && e.body && e.body.data && e.body.data.location === 'Tiberias');
-    check("D7: tab A signed out inside tab B's 2 s window; B sent nothing after the logout and its change never reached the account", reloadedA && reloadedB && iOut >= 0 && afterOut.length === 0 && !sentTiberias && row.data.location !== 'Tiberias', JSON.stringify({ reloadedA, reloadedB, broadcastAfterMs: bcAt && bcAt - t0, afterOut: afterOut.map(e => e.m), calls: methods(cloud, 0) }));
+    // A's page flush writes nothing of its own (it changed nothing), so the store holds B's saved change and A's sign-out
+    // flush sends it — before the logout; before that rule A wrote its older copy over it and B had to write it back.
+    const iTiberias = cloud.log.findIndex(e => e.table === 'saves' && e.body && e.body.data && e.body.data.location === 'Tiberias');
+    check("D7: tab A signed out inside tab B's 2 s window; A's sign-out flush sent B's change before the logout, and nothing was sent after it", reloadedA && reloadedB && iOut >= 0 && afterOut.length === 0 && iTiberias >= 0 && iTiberias < iOut && row.data.location === 'Tiberias', JSON.stringify({ reloadedA, reloadedB, broadcastAfterMs: bcAt && bcAt - t0, iTiberias, iOut, afterOut: afterOut.map(e => e.m), calls: methods(cloud, 0) }));
     const bNow = await B.page.evaluate((UID) => {
       const s = JSON.parse(localStorage.getItem('hebrewDashboard_settings') || '{}'), m = JSON.parse(localStorage.getItem('ivritSuite_syncMeta2') || '{}');
       return { status: IvritAccount.status(), location: s.location, mem: ((((m.users || {})[UID] || {}).Dashboard || {}).settings || {}).default || null };
     }, UID);
-    check("D7: tab B's changed settings stayed in localStorage and the sync memory holds a record for that row (id and stamp)", bNow.status === 'anonymous' && bNow.location === 'Tiberias' && !!bNow.mem && bNow.mem.id === row.id && bNow.mem.u === row.updated_at, JSON.stringify(Object.assign(bNow, { warnings: A.warnings.concat(B.warnings) })));
+    check("D7: signed out, the device copy went with what the account holds (the change is in the account) and the sync memory keeps a record for that row", bNow.status === 'anonymous' && bNow.location !== 'Tiberias' && !!bNow.mem && bNow.mem.id === row.id, JSON.stringify(Object.assign(bNow, { warnings: A.warnings.concat(B.warnings) })));
     check('D7: 0 pageerrors in both tabs (through the sign-out)', A.errors.length === 0 && B.errors.length === 0, A.errors.concat(B.errors).join(' | '));
     await A.page.close();
     // the next sign-in on this device sends the change up
@@ -1581,13 +1585,19 @@ try {
     cloud.refuse = () => ({ status: 503, body: { message: 'Service Unavailable' } });
     await B.page.evaluate(() => { Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'hidden' }); document.dispatchEvent(new Event('visibilitychange')); });
     await sleep(500);
+    // untouched, it writes nothing as it is hidden: its older copy never lands over the newer one
+    const kept = await B.page.evaluate(() => { const s = JSON.parse(localStorage.getItem('hebrewDashboard_settings') || '{}'); return { names: ((s.rosters || {}).lap_0 || {}).names || [], board: s.dashTextHTML || '' }; });
+    check('D24: the projector tab, untouched, writes nothing as it is hidden: the store keeps the newer class list and board', upA && kept.names.includes('Yael') && /Newer board/.test(kept.board), JSON.stringify(kept));
+    // with a change of its own (a drawer setting kept until the drawer closes) it still writes its whole, older blob
+    await B.page.evaluate(() => { settings.engFont = 'D24 Font'; document.dispatchEvent(new Event('visibilitychange')); });
+    await sleep(500);
     await B.page.close({ runBeforeUnload: false });
     cloud.refuse = null;
     const P = await ctx.newPage();
     await P.goto(BASE + '/llms.txt', { waitUntil: 'domcontentloaded' }).catch(() => {});   // a plain file: reads the store without running a page
-    const store = await P.evaluate(() => { const s = JSON.parse(localStorage.getItem('hebrewDashboard_settings') || '{}'); return { names: ((s.rosters || {}).lap_0 || {}).names || [], board: s.dashTextHTML || '' }; });
+    const store = await P.evaluate(() => { const s = JSON.parse(localStorage.getItem('hebrewDashboard_settings') || '{}'); return { names: ((s.rosters || {}).lap_0 || {}).names || [], board: s.dashTextHTML || '', font: s.engFont }; });
     await P.close();
-    check('D24: tab A\'s new student and board message reached the account; the projector tab then wrote its older copy into this device\'s store as it closed', upA && !store.names.includes('Yael') && !/Newer board/.test(store.board), JSON.stringify({ upA, store }));
+    check('D24: tab A\'s new student and board message reached the account; the projector tab, with a change of its own, then wrote its older copy into this device\'s store', upA && !store.names.includes('Yael') && !/Newer board/.test(store.board) && store.font === 'D24 Font', JSON.stringify({ upA, store }));
     // the next morning a fresh tab opens
     const from = cloud.log.length;
     const C = await openPage(ctx, 'classroom_dashboard.html');

@@ -6367,10 +6367,25 @@ function mountSidebarResize(cfg) {
     return out;
   }
 
-  function saveSettingsToStorage() {
+  // The blob as saveSettingsToStorage writes it (the board text read from its editor first), and the one this tab last
+  // wrote or read. The leave-the-page saves and the account module's flushes go through saveSettingsIfChanged: they
+  // write what this tab changed since (a drawer setting kept until the drawer closes, board text still being typed),
+  // and nothing when it changed nothing — so closing or hiding an older tab never writes its copy over a newer one
+  // another tab saved since.
+  let _settingsSeen = null;
+  function settingsSnapshot() {
     settings.dashTextHTML = document.getElementById('dashEditor').innerHTML;
-    localStorage.setItem('hebrewDashboard_settings', JSON.stringify(settings));
+    return JSON.stringify(settings);
   }
+  function saveSettingsToStorage() {
+    const text = settingsSnapshot();
+    localStorage.setItem('hebrewDashboard_settings', text);
+    _settingsSeen = text;
+  }
+  function saveSettingsIfChanged() {
+    if (settingsSnapshot() !== _settingsSeen) saveSettingsToStorage();
+  }
+  function settingsSeenNow() { _settingsSeen = settingsSnapshot(); }   // after a (re)load: memory holds what the store does
   // A first run is no stored blob — or a blob a sync wrote before this dashboard was ever opened here
   // (class lists only: no location, no board text), so the first-run card still appears.
   function _storedBlobIsFirstRun() {
@@ -7569,9 +7584,10 @@ function mountFolderTree(cfg){
       status: '#cloudSavesPanel',
       // The module calls flush at every hydration and before every write-through: a roster being typed is
       // committed and the board text mirrored, but nobody is thrown out of an in-place edit — that only
-      // happens in finalFlush (pagehide, sign-out), as the page's own pagehide handler does.
-      flush: () => { flushRosterIfTyping(); if (_activeEditable) syncActive(); saveSettingsToStorage(); },
-      finalFlush: () => { if (_activeEditable) exitInPlaceEdit(true); flushRosterIfTyping(); saveSettingsToStorage(); },
+      // happens in finalFlush (pagehide, sign-out), as the page's own pagehide handler does. Both write only
+      // what this tab changed, so an older tab's flush never puts its copy over a newer one.
+      flush: () => { flushRosterIfTyping(); if (_activeEditable) syncActive(); saveSettingsIfChanged(); },
+      finalFlush: () => { if (_activeEditable) exitInPlaceEdit(true); flushRosterIfTyping(); saveSettingsIfChanged(); },
       // a board, an Intermission screen or a class list being typed (the window may have lost the focus meanwhile):
       // another tab's download waits for the next save here instead of re-rendering over the typing
       editing: () => { if (_activeEditable) return true; const ae = document.activeElement; return !!ae && (ae.id === 'pickerRoster' || ae.id === 'dashEditor' || ae.id === 'intermissionEditor'); },
@@ -7593,6 +7609,7 @@ function mountFolderTree(cfg){
           renderStudentPicker();
           adoptClassFromAccount();   // this device's untouched default → the first class from the account, once
           checkSchedule();
+          settingsSeenNow();
           return;
         }
         // A downloaded blob replaces the in-memory one outright — a merge onto it could never remove a
@@ -7620,6 +7637,7 @@ function mountFolderTree(cfg){
         fetchHolidays();
         updateOmerDisplay();
         frAccountLanded();   // a starter card that opened by itself before the account's settings arrived closes, unapplied (after the reload: its save writes what landed)
+        settingsSeenNow();   // the re-read is what this tab now holds
       }
     });
     // A sync that ran on another page (the home page, the generator) wrote the class lists without this
@@ -10839,7 +10857,7 @@ async function onUploadEngFontPick(input){
     // Chrome exempts an AudioContext from background throttling but clamps setInterval to ~1/min, so a
     // hidden tab would keep ringing — roughly once a minute, from a window with no dismiss surface in
     // sight. Silence it; the alert stays on screen for whenever the teacher comes back to this tab.
-    else { timerStopRinging(); flushRosterIfTyping(); saveSettingsToStorage(); }   // see the pagehide note below
+    else { timerStopRinging(); flushRosterIfTyping(); saveSettingsIfChanged(); }   // see the pagehide note below
   });
   // Refresh/close mid-edit must not eat the text: commit the in-place edit on the way out.
   // pagehide (not beforeunload) so bfcache stays eligible; localStorage writes are sync-safe here.
@@ -10847,8 +10865,9 @@ async function onUploadEngFontPick(input){
   // the drawer persists on CLOSE, so a teacher who tunes a size, recolours a vowel or taps Restore
   // default and then just shuts the lid or swipes to another app loses it. Both events are wired
   // because pagehide alone is unreliable on mobile. Snapshotting here is safe mid-edit: the editable
-  // is #dashTextDisplay while saveSettingsToStorage reads the untouched #dashEditor source.
-  window.addEventListener('pagehide', () => { if (_activeEditable) exitInPlaceEdit(true); flushRosterIfTyping(); saveSettingsToStorage(); });
+  // is #dashTextDisplay while saveSettingsToStorage reads the untouched #dashEditor source. Both write only
+  // what this tab changed (saveSettingsIfChanged): an older tab closing must not put back its copy.
+  window.addEventListener('pagehide', () => { if (_activeEditable) exitInPlaceEdit(true); flushRosterIfTyping(); saveSettingsIfChanged(); });
   // Reveal the strip on any pointer activity while fullscreen; keep it up while hovered
   const _fsReveal = () => { if (document.body.classList.contains('fullscreen')) showFsStrip(); };
   document.addEventListener('pointermove', _fsReveal, { passive: true });
@@ -11061,6 +11080,7 @@ async function onUploadEngFontPick(input){
           `<button class="fr-starter" onclick="frApplyStarter('${esc(st.key)}')"><b>${esc(I18n.t('dashboard.setup.starter_' + st.key + '_label'))}</b><span>${esc(I18n.t('dashboard.setup.starter_' + st.key + '_desc'))}</span></button>`).join(''); } catch (e) {}
     }
     if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); }
+    settingsSeenNow();   // what this tab holds now is what it read: a hide or close with no change since writes nothing
     initCloudSaves();
   });
 
