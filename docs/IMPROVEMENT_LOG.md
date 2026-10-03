@@ -242,8 +242,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] M | hebrew_blend_generator.html (reads the dashboard's class lists) | **Each child's name on their Class Set version, from a dashboard class list.** | found: 2026-10-03, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] S–M | classroom_dashboard.html | **This week's parsha under the Hebrew date** (the board never shows it). | found: 2026-10-03, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
-
 - [ ] S (dual) | classroom_dashboard.html | **The running timer stays visible on the Intermission screen.** | found: 2026-10-03, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] S–M (dual) | classroom_dashboard.html | **A countdown to the teacher's own event** (a field trip, a siddur party, the last day of school). | found: 2026-10-03, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
