@@ -142,10 +142,12 @@ eight hold:
 5. **The grid direction matches the script (§3)**, so the letter "next" lands on is the visual neighbour
    in reading direction — right for LTR, left for RTL. A cycle that disagrees with the tiles is the
    bug this whole section exists to prevent.
-6. **The Save-all button** is the static
-   `<button class="ctl-btn draw-save-all" data-cat="<id>" onclick="drawCommitAll('<id>')">` copied from
-   the English panel (or `drawSaveAllBtnHTML('<id>')` in a JS-built panel); `syncDrawSaveAllBtns`
-   finds it by `[data-cat]` and hides it when nothing is pending.
+6. **The Save-all and Trace-all buttons** are the static
+   `<button class="ctl-btn draw-save-all" data-cat="<id>" onclick="drawCommitAll('<id>')">` and
+   `<button class="ctl-btn trace-all" data-cat="<id>" onclick="traceAll('<id>')">` copied from
+   the English panel (or `drawSaveAllBtnHTML('<id>')` + `traceAllBtnHTML('<id>')` in a JS-built
+   panel); `syncDrawSaveAllBtns` / `syncTraceAllBtns` find them by `[data-cat]` and hide each when
+   nothing is pending.
 7. **`_placementCycleCps` gets the mirror branch** (`is<Stem>(curCp)` → the set's traced items) even
    though the set never enters the placement step — it keeps that precedence identical to `catTabFor`.
 8. **No placement step**: add `is<Stem>(curCp)` to `_setWorkMode`'s anchors→align fallback (every

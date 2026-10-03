@@ -1119,6 +1119,7 @@ body.dark .hi-sun{display:inline-block;}
   #adToolbar .ad-ctl { display: inline-flex; align-items: center; gap: 6px; }
   #adToolbar input[type="range"] { width: 110px; }
   #adToolbar input[type="number"] { width: 62px; padding: 3px 5px; border: 1px solid var(--border); border-radius: 5px; background: var(--white); color: var(--text); font: inherit; }
+  #adToolbar select { padding: 3px 5px; border: 1px solid var(--border); border-radius: 5px; background: var(--white); color: var(--text); font: inherit; }
   #adConfirm { background: var(--cream); border-inline-start: 3px solid var(--gold); border-radius: 6px; padding: 5px 9px; display: inline-flex; align-items: center; gap: 8px; } /* impeccable-disable-line side-tab -- 3px gold accent bar: the suite's callout convention, ratified as brand S315 */
   #adConfirm[hidden] { display: none; }
   #adStage { overflow: auto; background: var(--cream); border: 1px solid var(--border); border-radius: 8px; padding: 4px; }
@@ -1579,7 +1580,7 @@ body.dark .hi-sun{display:inline-block;}
         <button type="button" id="unfinishedBtn" class="hint-link" style="display:none;margin-top:5px;"
           onclick="stepUnfinished(1)" title="Jump to the next letter still missing an outline or its anchors (Shift + ], or Shift + [ to go back)"
           data-i18n="fontmaker.panels.unfinished_btn" data-i18n-title="fontmaker.panels.unfinished_btn_title">Next unfinished letter</button>
-        <div class="ctl-row" style="margin-top:6px;"><button type="button" class="ctl-btn draw-save-all" data-cat="letter" style="display:none;" onclick="drawCommitAll('letter')" title="Save &amp; trace every drawing on this tab that is not saved yet, in one step (one Ctrl+Z undoes them all). Glyphs whose points were edited by hand are left for you to save one at a time." data-i18n-title="fontmaker.draw.save_all_title"><span data-i18n="fontmaker.draw.save_all">Save all drawings</span> <span class="dsa-n"></span></button></div>
+        <div class="ctl-row" style="margin-top:6px;"><button type="button" class="ctl-btn draw-save-all" data-cat="letter" style="display:none;" onclick="drawCommitAll('letter')" title="Save &amp; trace every drawing on this tab that is not saved yet, in one step (one Ctrl+Z undoes them all). Glyphs whose points were edited by hand are left for you to save one at a time." data-i18n-title="fontmaker.draw.save_all_title"><span data-i18n="fontmaker.draw.save_all">Save all drawings</span> <span class="dsa-n"></span></button> <button type="button" class="ctl-btn trace-all" data-cat="letter" style="display:none;" onclick="traceAll('letter')" title="Trace every letter on this tab that has a photo but no outline yet, in one step (one Ctrl+Z undoes them all). Letters that already have an outline are left alone — fine-tune any letter on its Trace step afterwards." data-i18n-title="fontmaker.panels.trace_all_title"><span data-i18n="fontmaker.panels.trace_all">Trace all</span> <span class="tra-n"></span></button></div>
       </div>
     </div>
 
@@ -1610,7 +1611,7 @@ body.dark .hi-sun{display:inline-block;}
           <button class="mode-btn" id="engCaseLower" onclick="setEnglishCase('lower')" aria-pressed="false" data-i18n="fontmaker.panels.eng_case_lower">Lowercase a–z</button>
           <button class="mode-btn" id="engCaseAccent" onclick="setEnglishCase('accent')" aria-pressed="false" style="display:none;" data-i18n="fontmaker.panels.eng_case_accent">Accented &amp; extra</button>
         </div>
-        <div class="ctl-row" style="margin:0 0 8px;"><button type="button" class="ctl-btn draw-save-all" data-cat="english" style="display:none;" onclick="drawCommitAll('english')" title="Save &amp; trace every drawing on this tab that is not saved yet, in one step (one Ctrl+Z undoes them all). Glyphs whose points were edited by hand are left for you to save one at a time." data-i18n-title="fontmaker.draw.save_all_title"><span data-i18n="fontmaker.draw.save_all">Save all drawings</span> <span class="dsa-n"></span></button></div>
+        <div class="ctl-row" style="margin:0 0 8px;"><button type="button" class="ctl-btn draw-save-all" data-cat="english" style="display:none;" onclick="drawCommitAll('english')" title="Save &amp; trace every drawing on this tab that is not saved yet, in one step (one Ctrl+Z undoes them all). Glyphs whose points were edited by hand are left for you to save one at a time." data-i18n-title="fontmaker.draw.save_all_title"><span data-i18n="fontmaker.draw.save_all">Save all drawings</span> <span class="dsa-n"></span></button> <button type="button" class="ctl-btn trace-all" data-cat="english" style="display:none;" onclick="traceAll('english')" title="Trace every letter on this tab that has a photo but no outline yet, in one step (one Ctrl+Z undoes them all). Letters that already have an outline are left alone — fine-tune any letter on its Trace step afterwards." data-i18n-title="fontmaker.panels.trace_all_title"><span data-i18n="fontmaker.panels.trace_all">Trace all</span> <span class="tra-n"></span></button></div>
         <div class="letter-grid" id="englishGrid"></div>
         <div id="englishAccentNote" style="display:none;margin-top:9px;font-size:0.72rem;color:var(--muted);line-height:1.5;"></div>
       </div>
@@ -1622,28 +1623,28 @@ body.dark .hi-sun{display:inline-block;}
           <button class="mode-btn" id="cyrCaseUpper" onclick="setCyrillicCase('upper')" aria-pressed="true" data-i18n="fontmaker.panels.cyr_case_upper">Uppercase А–Я</button>
           <button class="mode-btn" id="cyrCaseLower" onclick="setCyrillicCase('lower')" aria-pressed="false" data-i18n="fontmaker.panels.cyr_case_lower">Lowercase а–я</button>
         </div>
-        <div class="ctl-row" style="margin:0 0 8px;"><button type="button" class="ctl-btn draw-save-all" data-cat="cyrillic" style="display:none;" onclick="drawCommitAll('cyrillic')" title="Save &amp; trace every drawing on this tab that is not saved yet, in one step (one Ctrl+Z undoes them all). Glyphs whose points were edited by hand are left for you to save one at a time." data-i18n-title="fontmaker.draw.save_all_title"><span data-i18n="fontmaker.draw.save_all">Save all drawings</span> <span class="dsa-n"></span></button></div>
+        <div class="ctl-row" style="margin:0 0 8px;"><button type="button" class="ctl-btn draw-save-all" data-cat="cyrillic" style="display:none;" onclick="drawCommitAll('cyrillic')" title="Save &amp; trace every drawing on this tab that is not saved yet, in one step (one Ctrl+Z undoes them all). Glyphs whose points were edited by hand are left for you to save one at a time." data-i18n-title="fontmaker.draw.save_all_title"><span data-i18n="fontmaker.draw.save_all">Save all drawings</span> <span class="dsa-n"></span></button> <button type="button" class="ctl-btn trace-all" data-cat="cyrillic" style="display:none;" onclick="traceAll('cyrillic')" title="Trace every letter on this tab that has a photo but no outline yet, in one step (one Ctrl+Z undoes them all). Letters that already have an outline are left alone — fine-tune any letter on its Trace step afterwards." data-i18n-title="fontmaker.panels.trace_all_title"><span data-i18n="fontmaker.panels.trace_all">Trace all</span> <span class="tra-n"></span></button></div>
         <div class="letter-grid" id="cyrillicGrid"></div>
       </div>
     </div>
     <div class="panel collapsed cat-panel" data-cat="phoenician">
       <div class="panel-title"><span data-i18n="fontmaker.panels.phoenician">Phoenician / Paleo-Hebrew</span> <span id="phoenicianProgress" style="font-size:0.7rem;color:var(--gold-light);"></span></div>
       <div class="panel-body">
-        <div class="ctl-row" style="margin:0 0 8px;"><button type="button" class="ctl-btn draw-save-all" data-cat="phoenician" style="display:none;" onclick="drawCommitAll('phoenician')" title="Save &amp; trace every drawing on this tab that is not saved yet, in one step (one Ctrl+Z undoes them all). Glyphs whose points were edited by hand are left for you to save one at a time." data-i18n-title="fontmaker.draw.save_all_title"><span data-i18n="fontmaker.draw.save_all">Save all drawings</span> <span class="dsa-n"></span></button></div>
+        <div class="ctl-row" style="margin:0 0 8px;"><button type="button" class="ctl-btn draw-save-all" data-cat="phoenician" style="display:none;" onclick="drawCommitAll('phoenician')" title="Save &amp; trace every drawing on this tab that is not saved yet, in one step (one Ctrl+Z undoes them all). Glyphs whose points were edited by hand are left for you to save one at a time." data-i18n-title="fontmaker.draw.save_all_title"><span data-i18n="fontmaker.draw.save_all">Save all drawings</span> <span class="dsa-n"></span></button> <button type="button" class="ctl-btn trace-all" data-cat="phoenician" style="display:none;" onclick="traceAll('phoenician')" title="Trace every letter on this tab that has a photo but no outline yet, in one step (one Ctrl+Z undoes them all). Letters that already have an outline are left alone — fine-tune any letter on its Trace step afterwards." data-i18n-title="fontmaker.panels.trace_all_title"><span data-i18n="fontmaker.panels.trace_all">Trace all</span> <span class="tra-n"></span></button></div>
         <div class="letter-grid" id="phoenicianGrid"></div>
       </div>
     </div>
     <div class="panel collapsed cat-panel" data-cat="aramaic">
       <div class="panel-title"><span data-i18n="fontmaker.panels.aramaic">Imperial Aramaic</span> <span id="aramaicProgress" style="font-size:0.7rem;color:var(--gold-light);"></span></div>
       <div class="panel-body">
-        <div class="ctl-row" style="margin:0 0 8px;"><button type="button" class="ctl-btn draw-save-all" data-cat="aramaic" style="display:none;" onclick="drawCommitAll('aramaic')" title="Save &amp; trace every drawing on this tab that is not saved yet, in one step (one Ctrl+Z undoes them all). Glyphs whose points were edited by hand are left for you to save one at a time." data-i18n-title="fontmaker.draw.save_all_title"><span data-i18n="fontmaker.draw.save_all">Save all drawings</span> <span class="dsa-n"></span></button></div>
+        <div class="ctl-row" style="margin:0 0 8px;"><button type="button" class="ctl-btn draw-save-all" data-cat="aramaic" style="display:none;" onclick="drawCommitAll('aramaic')" title="Save &amp; trace every drawing on this tab that is not saved yet, in one step (one Ctrl+Z undoes them all). Glyphs whose points were edited by hand are left for you to save one at a time." data-i18n-title="fontmaker.draw.save_all_title"><span data-i18n="fontmaker.draw.save_all">Save all drawings</span> <span class="dsa-n"></span></button> <button type="button" class="ctl-btn trace-all" data-cat="aramaic" style="display:none;" onclick="traceAll('aramaic')" title="Trace every letter on this tab that has a photo but no outline yet, in one step (one Ctrl+Z undoes them all). Letters that already have an outline are left alone — fine-tune any letter on its Trace step afterwards." data-i18n-title="fontmaker.panels.trace_all_title"><span data-i18n="fontmaker.panels.trace_all">Trace all</span> <span class="tra-n"></span></button></div>
         <div class="letter-grid" id="aramaicGrid"></div>
       </div>
     </div>
     <div class="panel collapsed cat-panel" data-cat="samaritan">
       <div class="panel-title"><span data-i18n="fontmaker.panels.samaritan">Samaritan</span> <span id="samaritanProgress" style="font-size:0.7rem;color:var(--gold-light);"></span></div>
       <div class="panel-body">
-        <div class="ctl-row" style="margin:0 0 8px;"><button type="button" class="ctl-btn draw-save-all" data-cat="samaritan" style="display:none;" onclick="drawCommitAll('samaritan')" title="Save &amp; trace every drawing on this tab that is not saved yet, in one step (one Ctrl+Z undoes them all). Glyphs whose points were edited by hand are left for you to save one at a time." data-i18n-title="fontmaker.draw.save_all_title"><span data-i18n="fontmaker.draw.save_all">Save all drawings</span> <span class="dsa-n"></span></button></div>
+        <div class="ctl-row" style="margin:0 0 8px;"><button type="button" class="ctl-btn draw-save-all" data-cat="samaritan" style="display:none;" onclick="drawCommitAll('samaritan')" title="Save &amp; trace every drawing on this tab that is not saved yet, in one step (one Ctrl+Z undoes them all). Glyphs whose points were edited by hand are left for you to save one at a time." data-i18n-title="fontmaker.draw.save_all_title"><span data-i18n="fontmaker.draw.save_all">Save all drawings</span> <span class="dsa-n"></span></button> <button type="button" class="ctl-btn trace-all" data-cat="samaritan" style="display:none;" onclick="traceAll('samaritan')" title="Trace every letter on this tab that has a photo but no outline yet, in one step (one Ctrl+Z undoes them all). Letters that already have an outline are left alone — fine-tune any letter on its Trace step afterwards." data-i18n-title="fontmaker.panels.trace_all_title"><span data-i18n="fontmaker.panels.trace_all">Trace all</span> <span class="tra-n"></span></button></div>
         <div class="letter-grid" id="samaritanGrid"></div>
       </div>
     </div>
@@ -2053,6 +2054,12 @@ body.dark .hi-sun{display:inline-block;}
         <input type="number" id="adTh" min="1" max="254" inputmode="numeric"
                aria-label="Detection ink threshold override" data-i18n-aria-label="fontmaker.modals.ad_threshold_aria"
                onchange="adSetTh(this.value)"></span>
+      <span class="ad-ctl"><label for="adSizing" data-i18n="fontmaker.modals.ad_sizing">Sizing</label>
+        <select id="adSizing" aria-label="Sizing — how the letters are scaled onto the canvas" data-i18n-aria-label="fontmaker.modals.ad_sizing_aria"
+                onchange="adSetSizing(this.value)">
+          <option value="sheet" data-i18n="fontmaker.modals.ad_sizing_sheet">Keep the sheet's proportions (one scale for every letter)</option>
+          <option value="each" data-i18n="fontmaker.modals.ad_sizing_each">Fit each letter to its guide lines</option>
+        </select></span>
       <button class="ctl-btn hi-btn" onclick="adRedetect()"><svg class="hi hi-sm hi-retry" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.2 18.58 A7.6 7.6 0 1 1 15.8 18.58 M15.8 18.58 L16.96 15.39 M15.8 18.58 L19.15 19.17"/></svg><span class="hi-lbl" data-i18n="fontmaker.modals.ad_redetect">Re-detect</span></button>
       <span id="adConfirm" hidden><span id="adConfirmMsg"></span>
         <button class="ctl-btn" onclick="adRedetect(true)" data-i18n="fontmaker.modals.ad_discard_redetect">Discard &amp; re-detect</button>
@@ -3943,6 +3950,7 @@ function renderGrids() {
   if (document.getElementById('ladinoPanelBody')) renderLadinoPanel();
   renderCatTabs();   // also (re)builds the tab bar so the Custom glyphs / English / Cyrillic / Specialized / Yiddish / Ladino tabs appear/disappear with their toggles
   syncDrawSaveAllBtns();   // the panels were just rebuilt — restate each tab's pending count
+  syncTraceAllBtns();      // …and the Trace all buttons
 }
 /* ── Custom-mark geometry helpers ──
    Custom mark contours are stored in workspace coords (natural for the editor); the
@@ -4494,7 +4502,7 @@ const ICON_WARN_SM = '<svg class="hi hi-sm hi-warning" viewBox="0 0 24 24" width
 const ICON_PENCIL_SM = '<svg class="hi hi-sm hi-pencil" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.35-5L14.95 5.35a2.6 2.6 0 0 1 3.7 3.7L8.05 19.65Z"/><path d="M12.85 7.5l3.65 3.65"/></svg>';
 const ICON_GEAR_SM = '<svg class="hi hi-sm hi-gear" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12.0 1.8 L14.0 2.0 L15.1 4.6 L16.4 5.3 L19.2 4.8 L20.5 6.3 L19.4 8.9 L19.8 10.4 L22.2 12.0 L22.0 14.0 L19.4 15.1 L18.7 16.4 L19.2 19.2 L17.7 20.5 L15.1 19.4 L13.6 19.8 L12.0 22.2 L10.0 22.0 L8.9 19.4 L7.6 18.7 L4.8 19.2 L3.5 17.7 L4.6 15.1 L4.2 13.6 L1.8 12.0 L2.0 10.0 L4.6 8.9 L5.3 7.6 L4.8 4.8 L6.3 3.5 L8.9 4.6 L10.4 4.2 Z"/><circle cx="12" cy="12" r="3.2"/></svg>';
 const ICON_PLAY_SM = '<svg class="hi hi-sm hi-play" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 5.4 19 12 8.5 18.6Z" fill="currentColor"/></svg>';
-const FONT_MAKER_VERSION = '5.58';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.59';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -4737,6 +4745,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.59</strong> &mdash; <strong>Sheet imports keep every letter&rsquo;s own size, and Trace all does the tracing for you.</strong> When <span class="ui">Auto-detect letters</span> cuts a photographed alphabet sheet into letters, every letter used to be stretched to the full guide height on its own &mdash; so a small yod came out as tall as an alef, and the final letters lost their tails. The sheet now gets one scale for all of its letters, so each keeps the size you drew it at (a new <span class="ui">Sizing</span> choice in the review dialog brings back the old fit-each-letter behaviour, and a letter you box by hand on that sheet afterwards is sized the same way). Fit-each-letter itself now gives a final letter its tail below the baseline instead of squeezing it in above. And under each letter grid a new <span class="ui">Trace all</span> button traces every letter that has a photo but no outline yet, in one step &mdash; one Ctrl+Z undoes them all, and letters you already traced are left alone. <span style="color:var(--muted);">(October 2026)</span></li>
       <li><strong>v5.58</strong> &mdash; <strong>Recent projects can no longer disappear.</strong> Projects you save in this browser now live in the Font Maker's own project storage instead of the small settings space, so the list has no limit of six: nothing leaves <span class="ui">Recent</span> unless you remove it with its trash button. If a save to this browser ever does not fit, the Font Maker says so instead of quietly dropping an older project to make room. Your existing Recent projects move over by themselves the first time you open this version.</li>
       <li><strong>v5.57</strong> &mdash; <strong>Your work is safer around signing in and out.</strong> Signing out of your IvritSuite account now finishes saving first: the copy in this browser is completed and a project kept in your account receives your last changes before the sign-out, and the page is no longer reloaded (signing out in another tab no longer reloads the Font Maker either). If the browser closes while your account copy still has changes waiting, <span class="ui">Continue where you left off</span> picks the saving up again. A save to this browser that is asked for while another is still being written is no longer skipped, so the very last edit before you close the tab is kept. Removing a font from <span class="ui">My Fonts</span> while signed in now says that it also leaves your account, and a removal made while the page is still connecting is no longer lost. An edit you make while a project is being saved to your account is no longer marked as saved before it is sent, and an automatic save never puts a project into the account of whoever signs in next on a shared browser. Continuing from this browser's backup copy without photos no longer replaces the photos of your account copy. While you are signed in, <span class="ui">My Fonts</span> and your suite-wide preferences (language and dark mode) now come from your account here too.</li>
       <li><strong>v5.56</strong> &mdash; <strong>Samaritan vowel signs and marks.</strong> Beside the <span class="ui">Samaritan</span> tab a new <span class="ui">Samaritan marks</span> tab carries the block&rsquo;s 21 combining marks &mdash; the vowel signs, the dagesh and the other marks. Each attaches above its letter at the letter&rsquo;s start, middle or end (the three columns of the Hebrew Square Samaritan face), placed on a new <span class="ui">Place Marks</span> step of every Samaritan letter, sized by its own slider, printed on its own template, and brought across from a font that draws them &mdash; with the font&rsquo;s own positions. Marks you leave blank stay out of the font, and <span class="ui">QA Check</span> gets a <span class="ui">Samaritan marks</span> tab that checks every drawn mark, and any two marks from different columns, on each Samaritan letter. <span style="color:var(--muted);">(September 2026)</span></li>
@@ -4889,7 +4898,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v5_57','v5_56','v5_55','v5_54','v5_53','v5_52','v5_51','v5_50','v5_49','v5_48','v5_47','v5_46','v5_45','v5_44','v5_43','v5_42','v5_41','v5_40','v5_39','v5_38','v5_37','v5_36','v5_35','v5_34','v5_33','v5_32','v5_31','v5_30','v5_29','v5_28','v5_27','v5_26','v5_25','v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v5_58','v5_57','v5_56','v5_55','v5_54','v5_53','v5_52','v5_51','v5_50','v5_49','v5_48','v5_47','v5_46','v5_45','v5_44','v5_43','v5_42','v5_41','v5_40','v5_39','v5_38','v5_37','v5_36','v5_35','v5_34','v5_33','v5_32','v5_31','v5_30','v5_29','v5_28','v5_27','v5_26','v5_25','v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -4902,7 +4911,7 @@ function buildAboutBody() {
   // for en and THIS body for every other language, so a release written only into HELP_CONTENT.about
   // is invisible to non-English readers — which is how v5.10 and v5.11 came to be missing from the
   // Hebrew changelog while showing correctly in English.
-  const CUR_KEY = 'fontmaker.changelog.v5_58';
+  const CUR_KEY = 'fontmaker.changelog.v5_59';
   const cur = T(CUR_KEY);
   const v5li = (cur && cur !== CUR_KEY) ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
@@ -6378,7 +6387,7 @@ function renderPunctPanel() {
     <div class="hint" style="margin:6px 0 9px;">${ on
       ? _pT('punct_on_hint', 'Included in the exported font &amp; the Punctuation practice template. Trace or draw each one like a letter — digits start blank; punctuation comes pre-shaped, and drawing over a built-in shape replaces it. Clear all existing glyphs to start every one blank.')
       : _pT('punct_off_hint', 'Currently <strong>off</strong>: these glyphs are skipped on export and have no practice page. Turn it on to include them.') }</div>
-    <div class="ctl-row" style="margin:0 0 9px;"><button class="ctl-btn" id="punctClearAllBtn" title="${esc(_pT('punct_clear_all_title', 'Remove every outline, drawing and photo on this tab — the built-in shapes too — so each glyph starts blank. Asks first; one Ctrl+Z restores everything.'))}">${_pT('punct_clear_all', 'Clear all existing glyphs…')}</button>${drawSaveAllBtnHTML('punct')}</div>
+    <div class="ctl-row" style="margin:0 0 9px;"><button class="ctl-btn" id="punctClearAllBtn" title="${esc(_pT('punct_clear_all_title', 'Remove every outline, drawing and photo on this tab — the built-in shapes too — so each glyph starts blank. Asks first; one Ctrl+Z restores everything.'))}">${_pT('punct_clear_all', 'Clear all existing glyphs…')}</button>${drawSaveAllBtnHTML('punct')}${traceAllBtnHTML('punct')}</div>
     <div class="letter-grid" id="punctGrid"></div>`;
   // Wired here rather than as an inline handler (the renderFormPanel rule): nothing is interpolated into JS.
   const clearBtn = document.getElementById('punctClearAllBtn'); if (clearBtn) clearBtn.addEventListener('click', clearAllPunct);
@@ -6751,7 +6760,7 @@ function renderCustomGlyphsPanel() {
     .map(L => `<option value="${L.cp}">${esc(gName(L.name))} (${String.fromCodePoint(parseInt(L.cp, 16))})</option>`).join('');
   el.innerHTML = `
     <div class="hint" style="margin-bottom:8px;">${_cgT('glyphs_hint', "Define a glyph at any Unicode code point. Brand-new shapes work best in the Private-Use range <b>U+E000–U+F8FF</b>. Trace each glyph like a letter, or duplicate an existing letter and tweak it.")}</div>
-    <div class="ctl-row" style="margin:0 0 8px;">${drawSaveAllBtnHTML('customglyphs')}</div>
+    <div class="ctl-row" style="margin:0 0 8px;">${drawSaveAllBtnHTML('customglyphs')}${traceAllBtnHTML('customglyphs')}</div>
     <div class="letter-grid" id="customGlyphsGrid"></div>
     <div style="margin-top:10px;border-top:1px solid var(--border);padding-top:10px;">
       <div style="font-weight:700;font-size:0.82rem;margin-bottom:6px;">${_cgT('add_new', "+ Add a new glyph")}</div>
@@ -6891,7 +6900,7 @@ function renderFormPanel(panelId, targets, intro, extras) {
   const srcNote = nSrc
     ? `<div class="form-ready" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">${esc(_pT('form_src_note', 'These forms came ready-made from the imported font.', {count: nSrc}))}<button class="ctl-btn" type="button" id="${panelId}Rebuild" style="padding:3px 8px;font-size:0.7rem;">${esc(_pT('form_src_rebuild', 'Rebuild from my letters'))}</button></div>`
     : '';
-  const saveAll = panelId === 'wideFormsPanelBody' ? `<div class="ctl-row" style="margin:0 0 8px;">${drawSaveAllBtnHTML('wideforms')}</div>` : '';   // converted wide forms are drawable; the composed tabs are not
+  const saveAll = panelId === 'wideFormsPanelBody' ? `<div class="ctl-row" style="margin:0 0 8px;">${drawSaveAllBtnHTML('wideforms')}${traceAllBtnHTML('wideforms')}</div>` : '';   // converted wide forms are drawable; the composed tabs are not
   el.innerHTML = `<div class="hint" style="margin-bottom:8px;">${intro}</div>${summary}${srcNote}${saveAll}<div class="letter-grid" id="${panelId}Grid"></div>`;
   if (nSrc) { const rb = document.getElementById(panelId + 'Rebuild'); if (rb) rb.addEventListener('click', () => precompRebuildForms(targets)); }
   const grid = document.getElementById(panelId + 'Grid'); if (!grid) return;
@@ -7311,6 +7320,34 @@ function autoThresholdFor(src, flatten) {
   const { hist, total } = histOf(lum, pl.mask);
   return otsuThreshold(hist, total);
 }
+/* The ink inside one crop, in src px: the same ≤512px sample and the detection's own binarize
+   (flatten + Otsu), with the two detection filters that matter inside a hand-dragged box — a rule
+   line or cell edge spanning the crop, and a hollow rectangle (the printed box) — so a loose box
+   around a letter still measures the letter. The union box of what survives (the raw ink box when
+   nothing does), or null with no ink. Sheet sizing reads it for a letter boxed by hand. */
+function inkBoundsOf(src) {
+  const sw = src.naturalWidth || src.width, sh = src.naturalHeight || src.height;
+  if (!sw || !sh) return null;
+  const k = Math.min(1, 512 / Math.max(sw, sh));
+  const w = Math.max(1, Math.round(sw * k)), h = Math.max(1, Math.round(sh * k));
+  const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+  const ctx = cv.getContext('2d', { willReadFrequently: true });
+  ctx.drawImage(src, 0, 0, w, h);
+  const bin = adBinarize(ctx.getImageData(0, 0, w, h), null);
+  const { comps, labels } = adComponents(bin.bits, w, h);
+  if (!comps.length) return null;
+  const kept = comps.filter(c => {
+    const ar = c.w / c.h;
+    if ((ar < 0.15 && c.h > 0.5 * h) || (ar > 6 && c.w > 0.5 * w)) return false;   // a rule line / cell edge spanning the crop
+    if (c.fill < 0.15 && _adPerimShare(labels, w, c) > 0.8) return false;         // a hollow rectangle: the printed box
+    return true;
+  });
+  const use = kept.length ? kept : comps;
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  use.forEach(c => { x0 = Math.min(x0, c.x0); y0 = Math.min(y0, c.y0); x1 = Math.max(x1, c.x1); y1 = Math.max(y1, c.y1); });
+  const bx = Math.floor(x0 / k), by = Math.floor(y0 / k);
+  return { x: bx, y: by, w: Math.max(1, Math.ceil((x1 + 1) / k) - bx), h: Math.max(1, Math.ceil((y1 + 1) / k) - by) };
+}
 /* ════════ end Auto-threshold + illumination flattening ════════ */
 
 /* Decode one uploaded raster and return the mutation that assigns it — the async work (file read,
@@ -7449,13 +7486,44 @@ async function uploadCombined(files) {
 /* The working image for a letter: single = the upload; combined = the cropped region. */
 function curImageUrl() { return curLetter().source.dataUrl; }
 function defaultFitTransform(im, cp) {
-  // Scale so the image height ≈ the glyph's own band top; place top-left at (LSB, that top). Passing
-  // cp is what keeps a photographed 'o' from being blown up to a capital's height. Reads effMetrics
-  // rather than the LETTER_TOP const, so a user-edited Top is honoured.
+  // Scale so the image height ≈ the glyph's own band — its top line down to its bottom line — and
+  // place top-left at (LSB, that top). Passing cp is what keeps a photographed 'o' from being blown up
+  // to a capital's height. Reads effMetrics rather than the LETTER_TOP const, so a user-edited Top is
+  // honoured. The band's HEIGHT, not its top alone: a final letter's band reaches the descender line,
+  // so its tail lands below the baseline instead of being squeezed in above it (fitting to the top
+  // alone compressed every final and qof into 0..600). Same numbers as before for every other glyph
+  // while the baseline sits at 0; an edited baseline now lands the image bottom on it, as it should.
   const em = effMetrics();
-  const top = cp ? glyphBand(cp).top : em.letterTop;
-  const k = (top*SC)/im.height;
-  return [k,0,0,k, fx(em.defaultLSB), fy(top)];
+  const b = cp ? glyphBand(cp) : { top: em.letterTop, bottom: em.baseline };
+  const k = ((b.top - b.bottom)*SC)/im.height;
+  return [k,0,0,k, fx(em.defaultLSB), fy(b.top)];
+}
+/* ── Sheet sizing: one scale for every letter of a combined sheet ──
+   Auto-detect crops each letter to its own ink box, so fitting every crop to its guide lines
+   (defaultFitTransform) stretched a short letter — a yod — up to alef's height and shrank a tall
+   handwritten one. Like computeTemplateFit sizing the reference family once from ב, the sheet gets
+   ONE font-units-per-pixel scale (the median body letter spanning its band), and every letter keeps
+   the size it was drawn at. Each letter is then pinned by the edge that does not float: a descending
+   or floating letter (the finals, qof, yod — LETTERS' `high` flag; Latin g/p/q, Cyrillic Д/Ц/Щ) hangs
+   its ink TOP from the band's top line; everything else sits its ink BOTTOM on the band's bottom line
+   — the baseline is what nikkud placement and typesetting align on, so a body letter must never dip
+   under it (its seeded sheva would collide). The scale lives on the sheet (`sheet.fitScale`), so a
+   letter boxed by hand on that sheet afterwards (finalizeCrop) is sized the same way. */
+function _sheetPinTop(meta) { return !!(meta && (meta.desc || meta.high)); }   // which edge is fixed: the top for a floating or descending glyph, the bottom for the rest
+function adSheetScale(prep) {   // font units per sheet px, or null when no box has ink. prep: [{cp, ink:{x,y,w,h}}]
+  const ratio = p => { if (!(p.ink && p.ink.h > 0)) return null; const b = glyphBand(p.cp); return (b.top - b.bottom) / p.ink.h; };
+  const isBody = p => { const m = bandMeta(letterMeta(p.cp)); return !(m.asc || m.desc || m.high); };   // neither tall, hanging nor floating — the letters that span the whole band
+  const body = prep.filter(isBody).map(ratio).filter(r => r != null);
+  const all = prep.map(ratio).filter(r => r != null);
+  const pool = body.length >= 3 ? body : all;   // the median of twenty body letters shrugs off a short or over-tall one; a tiny sheet uses what it has
+  return pool.length ? _adMedian(pool) : null;
+}
+function sheetFitTransform(ink, cp, K) {   // ink: the letter's ink box in crop px; K: adSheetScale's font units per px
+  const em = effMetrics(), b = glyphBand(cp), k = K * SC;
+  const xLeft = em.defaultLSB - ink.x * K;                                                   // ink left edge at the default LSB
+  const yTop = _sheetPinTop(bandMeta(letterMeta(cp))) ? b.top + ink.y * K                    // ink top on the band's top line
+                                                     : b.bottom + (ink.y + ink.h) * K;       // ink bottom on the band's bottom line
+  return [k, 0, 0, k, fx(xLeft), fy(yTop)];
 }
 
 /* ════════ Combined-sheet marquee crop ════════
@@ -7519,13 +7587,15 @@ async function finalizeCrop(l, stageBox) {
   cv.getContext('2d').drawImage(im, rect.x, rect.y, rect.w, rect.h, 0, 0, rect.w, rect.h);
   const url = cv.toDataURL('image/png');
   const csh = curCombinedSheet();
+  const K = (curKind === 'letter' && csh && csh.fitScale > 0) ? csh.fitScale : null;   // a sheet auto-detect sized keeps its scale for the letters boxed by hand afterwards
+  const ink = K ? inkBoundsOf(cv) : null;                                                // the box decides what is included; the ink inside decides the size
   l.source.cropRect = rect; l.source.dataUrl = url; l.source.sheetId = (csh && csh.id) || null;
   if (curKind !== 'letter') l.designMode = 'upload';   // a cropped mark behaves like an uploaded one (coherent if its category later switches to Per Symbol)
   const cim = await loadImg(url);
   l.flattenLighting = true;                          // new cropped image → same Otsu/lighting init as a fresh upload
   l.thresholdUserSet = false;
   l.binThreshold = autoThresholdFor(cim, true);
-  l.transform = defaultFitTransform(cim, l.codepoint);
+  l.transform = (K && ink) ? sheetFitTransform(ink, l.codepoint, K) : defaultFitTransform(cim, l.codepoint);
   l.contours = null; l.anchors = null;
   renderGrids(); renderStage(); renderControls();
   status(I18n.t('fontmaker.status.area_selected', {name: gName(l.name)}));
@@ -7769,14 +7839,19 @@ function adMatchTemplate(rows) {
   }
   return null;
 }
-/* Pad each box (breathing room, like a hand-dragged crop) and map detection px → full-res sheet px. */
+/* Pad each box (breathing room, like a hand-dragged crop) and map detection px → full-res sheet px.
+   `ink` is the UNPADDED box in the same px — the letter's own extent, which sheet sizing reads. */
 function adPadAndMap(comps, pad, scale, imgW, imgH) {
   return comps.map(c => {
     const x0 = Math.max(0, Math.round((c.x0 - pad) / scale));
     const y0 = Math.max(0, Math.round((c.y0 - pad) / scale));
     const x1 = Math.min(imgW, Math.round((c.x1 + 1 + pad) / scale));
     const y1 = Math.min(imgH, Math.round((c.y1 + 1 + pad) / scale));
-    return { x: x0, y: y0, w: Math.max(2, x1 - x0), h: Math.max(2, y1 - y0) };
+    const r = { x: x0, y: y0, w: Math.max(2, x1 - x0), h: Math.max(2, y1 - y0) };
+    const ix0 = Math.max(r.x, Math.round(c.x0 / scale)), iy0 = Math.max(r.y, Math.round(c.y0 / scale));
+    const ix1 = Math.min(r.x + r.w, Math.round((c.x1 + 1) / scale)), iy1 = Math.min(r.y + r.h, Math.round((c.y1 + 1) / scale));
+    r.ink = { x: ix0, y: iy0, w: Math.max(1, ix1 - ix0), h: Math.max(1, iy1 - iy0) };
+    return r;
   });
 }
 
@@ -7789,7 +7864,9 @@ async function openAutoDetect() {
   const sheet = project.combinedSheets[project.combinedIndex];
   if (!sheet || !sheet.dataUrl) { status(I18n.t('fontmaker.status.upload_sheet_first')); return; }
   await loadImg(sheet.dataUrl).catch(() => {});
+  const sizingPref = wsReadPrefs().adSizing;   // the last choice on this device; the sheet's own proportions by default
   adState = { sheetId: sheet.id, url: sheet.dataUrl, scale: 1, sep: 0, thOverride: null, detTh: null,
+              sizing: sizingPref === 'each' ? 'each' : 'sheet',
               boxes: [], matched: null, edits: 0, selId: null };
   document.getElementById('adTitle').textContent = I18n.t('fontmaker.modals.ad_title_sheet', { name: sheet.name || 'sheet' });
   _adWire();
@@ -7846,6 +7923,7 @@ function renderAdOverlay() {
   if (sep) sep.value = adState.sep; if (sv) sv.textContent = adState.sep;
   const th = document.getElementById('adTh');
   if (th) th.value = adState.thOverride != null ? adState.thOverride : (adState.detTh != null ? adState.detTh : '');
+  const sz = document.getElementById('adSizing'); if (sz) sz.value = adState.sizing || 'sheet';
   adConfirmHide(); adPickerClose();
   renderAdSummary(); renderAdStage();
 }
@@ -8058,6 +8136,12 @@ function adSetTh(v) {
   const n = parseInt(v, 10);
   adState.thOverride = isNaN(n) ? null : Math.max(1, Math.min(254, n));
 }
+function adSetSizing(v) {   // an apply-time choice (no re-detect): 'sheet' keeps every letter's size relative to the others, 'each' fits each crop to its own guide lines
+  if (!adState) return;
+  adState.sizing = v === 'each' ? 'each' : 'sheet';
+  const sel = document.getElementById('adSizing'); if (sel && sel.value !== adState.sizing) sel.value = adState.sizing;   // a programmatic call keeps the control in step too
+  wsSavePref('adSizing', adState.sizing);
+}
 function adRedetect(force) {
   if (adState.edits && !force) {
     const n = document.getElementById('adConfirmMsg'); if (n) n.textContent = I18n.t('fontmaker.modals.ad_changed_boxes', { count: adState.edits });
@@ -8072,7 +8156,8 @@ function adConfirmHide() { const c = document.getElementById('adConfirm'); if (c
 /* ── Apply: commit every assigned box through the manual-crop steps, as ONE undo entry.
       Crops come from the ORIGINAL sheet (lighting flattening is trace-time only), so the stored
       PNGs are byte-identical to hand-dragged crops. No synchronous tracing — letters auto-trace
-      on their first Trace visit, exactly like manual crops. ── */
+      on their first Trace visit, exactly like manual crops, or all at once through Trace all under
+      the letter grid. Sizing: adSheetScale / sheetFitTransform, beside defaultFitTransform. ── */
 async function adApply() {
   if (!adState) return;
   const picks = adState.boxes.filter(b => b.cp && !b.skip);
@@ -8086,21 +8171,29 @@ async function adApply() {
     cv.getContext('2d').drawImage(im, r.x, r.y, r.w, r.h, 0, 0, r.w, r.h);   // same draw as finalizeCrop
     const url = cv.toDataURL('image/png');
     await loadImg(url);
-    prep.push({ cp: b.cp, rect: r, url, th: autoThresholdFor(cv, true) });
+    const ink = r.ink ? { x: r.ink.x - r.x, y: r.ink.y - r.y, w: r.ink.w, h: r.ink.h } : null;   // the letter's ink inside its crop (crop px) — what sheet sizing pins
+    prep.push({ cp: b.cp, rect: { x: r.x, y: r.y, w: r.w, h: r.h }, ink, url, th: autoThresholdFor(cv, true) });
     if ((i & 3) === 3) { status(I18n.t('fontmaker.status.preparing_letters', {i: i + 1, total: picks.length}), true); await _adYield(); }
   }
-  const sheetId = adState.sheetId;
+  const sheetId = adState.sheetId, sizing = adState.sizing;   // read before adState goes (right after the udDo)
+  const K = sizing === 'each' ? null : adSheetScale(prep);    // one scale for the whole sheet, or the per-letter fit by choice (null too when no box has ink)
   udDo(prep.map(p => ({ t: 'item', kind: 'letter', cp: p.cp, withSource: true })),
        'auto-detect letters (' + prep.length + ')', () => {
     prep.forEach(p => {
       const l = project.letters.find(x => x.codepoint === p.cp); if (!l) return;
       l.source.kind = 'combined';
       l.source.cropRect = p.rect; l.source.dataUrl = p.url; l.source.sheetId = sheetId;
-      l.transform = defaultFitTransform(imgCache[p.url], l.codepoint);
+      l.transform = (K && p.ink && p.ink.h > 0) ? sheetFitTransform(p.ink, l.codepoint, K)   // the sheet's proportions: yod stays small, a final keeps its tail
+                                                : defaultFitTransform(imgCache[p.url], l.codepoint);
       l.contours = null; l.anchors = null;                    // the fields finalizeCrop clears (curves untouched — parity)
       l.flattenLighting = true; l.thresholdUserSet = false; l.binThreshold = p.th;
     });
   });
+  // The sheet remembers its scale (sheets live outside undo, like uploadCombined's writes; the udDo
+  // above already marked the project dirty), so a letter boxed by hand on it afterwards is sized the
+  // same way — and a later Apply with "fit each letter" clears it again.
+  const sheet = project.combinedSheets.find(x => x.id === sheetId);
+  if (sheet) { if (K) sheet.fitScale = K; else delete sheet.fitScale; }
   adState = null; aCloseModal('adOverlay');
   renderGrids(); renderStage(); renderControls();
   status(I18n.t(prep.length === 1 ? 'fontmaker.status.assigned_letters.one' : 'fontmaker.status.assigned_letters.other', {count: prep.length}));
@@ -11523,6 +11616,91 @@ async function drawCommitAll(cat) {
     if (noInk.length) msg += ' ' + I18n.t('fontmaker.draw.save_all_no_ink', { names: names(noInk) });
     status(msg);
   } finally { _drawSaveAllBusy = false; syncDrawSaveAllBtns(); }
+}
+/* ── Trace all — one button per drawable tab that traces every letter on it with a photo but no
+   outline yet. A photo is traced the first time its Trace step opens (_setWorkMode's courtesy), one
+   letter per visit — a whole alphabet of photos (a multi-photo pick, an auto-detected sheet) is 27
+   visits. Same shape as Save all drawings, except that the EXPENSIVE half of the tracer (rasterize +
+   lighting flatten + marching squares, ~0.3 s per photo) runs per letter in the async phase with a
+   yield between letters, and only the cheap finalize (RDP + curve fit) runs inside the ONE undo
+   entry — 27 photos traced inside a synchronous udDo would freeze the page for seconds. A letter
+   that already has an outline (traced, hand-edited, a stock punctuation shape) is never touched, so
+   there is nothing to warn about; drawings belong to Save all drawings. ── */
+let _traceAllBusy = false;
+function traceAllBtnHTML(cat) {   // cat is a static literal at every call site — never user data — so the inline handler is the file's idiom
+  return `<button type="button" class="ctl-btn trace-all" data-cat="${cat}" style="display:none;" onclick="traceAll('${cat}')" title="${esc(_pT('trace_all_title', 'Trace every letter on this tab that has a photo but no outline yet, in one step (one Ctrl+Z undoes them all). Letters that already have an outline are left alone — fine-tune any letter on its Trace step afterwards.'))}"><span>${_pT('trace_all', 'Trace all')}</span> <span class="tra-n"></span></button>`;
+}
+function tracePendingFor(cat) {   // the letters on this tab with a real photo and no outline — exactly the ones the enter-Trace courtesy would trace one at a time
+  return tabDrawCps(cat).map(cp => (project.letters || []).find(x => x.codepoint === cp)).filter(l =>
+    l && l.source && l.source.dataUrl && l.source.dataUrl !== '[omitted]'   // the image-stripped autosave placeholder is not a photo (nothing ever clears it)
+    && l.source.kind !== 'svg'
+    && !(l.draw && l.draw.strokes && l.draw.strokes.length)                // a drawing — even over a photo — is Save all drawings' (source.kind is re-stamped by setInputMode, so test the strokes)
+    && !l.contours);
+}
+function syncTraceAllBtns() {   // shown only with something to trace (syncDrawSaveAllBtns' idiom)
+  if (!project) return;
+  document.querySelectorAll('.trace-all[data-cat]').forEach(b => {
+    const n = tracePendingFor(b.dataset.cat).length;
+    b.style.display = n ? '' : 'none';
+    b.disabled = _traceAllBusy;
+    const c = b.querySelector('.tra-n'); if (c) c.textContent = n ? '(' + n + ')' : '';
+  });
+}
+async function traceAll(cat) {
+  if (!project || _traceAllBusy) return;
+  const pending = tracePendingFor(cat);
+  if (!pending.length) { status(I18n.t('fontmaker.panels.trace_all_none')); return; }
+  udFlushPending();   // commit any open slider burst before the batch
+  _traceAllBusy = true; syncTraceAllBtns();
+  const proj = project;
+  const retarget = (l, fn) => {   // rasterizeCurrent / traceSig / the anchor seed read the CURRENT item — point them at this letter, then put back whatever was current (a tile clicked mid-batch is respected)
+    const k = curKind, c = curCp; curKind = 'letter'; curCp = l.codepoint;
+    try { return fn(); } finally { curKind = k; curCp = c; }
+  };
+  try {
+    // Phase 1 — async, no project writes: decode each photo (a reloaded project has not yet) and run
+    // the expensive half of the tracer, one letter per turn of the event loop.
+    const prep = [], noInk = [], unreadable = [];
+    for (let i = 0; i < pending.length; i++) {
+      const l = pending[i];
+      status(I18n.t('fontmaker.panels.trace_all_progress', { i: i + 1, total: pending.length }), true);
+      try { await loadImg(l.source.dataUrl); } catch (e) { unreadable.push(l); continue; }
+      if (project !== proj) return;   // the project was replaced meanwhile (New / Load) — nothing of it is ours to trace
+      const got = retarget(l, () => {
+        const raw = rawLoopsFontUnits(l);
+        if (!raw || !raw.length) return null;
+        const inner = l.outlineOnly ? innerLoopsFontUnits(l) : [];   // the hollow letter's inner wall (re-rasterizes; rare)
+        return { l, loops: raw.concat(inner), sig: traceSig(l), on: !!l.outlineOnly, w: l.lineWeight };
+      });
+      if (got) prep.push(got); else noInk.push(l);
+      await _adYield();
+    }
+    if (project !== proj) return;
+    const done = [], changed = [];
+    if (prep.length) {
+      // Phase 2 — sync, atomic: ONE undo entry, exactly finalizeWithOutline's writes per glyph. The raw
+      // loops live only in prep, so the entry's "before" is each untouched letter.
+      udDo(prep.map(p => ({ t: 'item', kind: 'letter', cp: p.l.codepoint })), 'trace all letters (' + prep.length + ')', () => {
+        try {
+          prep.forEach(p => {
+            const l = p.l;
+            retarget(l, () => {
+              if (l.contours || traceSig(l) !== p.sig || !!l.outlineOnly !== p.on || l.lineWeight !== p.w) { changed.push(l); return; }   // edited while we were tracing — its outline would not come from this image
+              (finalizeFromRaw(l, p.loops) ? done : noInk).push(l);
+            });
+          });
+        } finally { _rawTrace = null; }   // the live-slider cache belongs to the current item; scheduleRetrace rebuilds it
+      });
+    }
+    if (workMode === 'nodes') { nodeModel = null; nodeSel.clear(); }   // the current glyph may be one of them — afterUndo's idiom
+    renderGrids(); renderStage(); renderControls();
+    const names = ls => ls.map(l => gName(l.name)).join(', ');
+    let msg = I18n.t(done.length === 1 ? 'fontmaker.panels.trace_all_toast.one' : 'fontmaker.panels.trace_all_toast.other', { count: done.length });
+    if (changed.length) msg += ' ' + I18n.t('fontmaker.panels.trace_all_changed', { names: names(changed) });
+    if (noInk.length) msg += ' ' + I18n.t('fontmaker.draw.save_all_no_ink', { names: names(noInk) });
+    if (unreadable.length) msg += ' ' + I18n.t(unreadable.length === 1 ? 'fontmaker.status.upload_unreadable.one' : 'fontmaker.status.upload_unreadable.other', { count: unreadable.length });
+    status(msg);
+  } finally { _traceAllBusy = false; syncTraceAllBtns(); }
 }
 async function drawEnsureRaster(l) {   // stripped-autosave restore — the raster is deterministic from strokes
   if (!(l.draw && l.draw.strokes.length)) return;
@@ -16056,6 +16234,7 @@ function renderControls() {
   updateStepTicks();   // keep the per-glyph step checklist current on every render (trace/confirm route through here)
   syncPunctClearBtn();   // the Punctuation tab's Clear all follows every stroke and commit — they end here, not in renderGrids
   syncDrawSaveAllBtns();   // …and so do the Save all drawings buttons
+  syncTraceAllBtns();      // …and the Trace all buttons
   const L = document.getElementById('ctlLeft'), R = document.getElementById('ctlRight'), U = document.getElementById('ctlUnder');
   const SB = document.getElementById('stageBelow');
   if (!L || !R || !U) return;
@@ -16979,11 +17158,11 @@ function nudgeSkew(d) { const l=curLetter(); const c=imgCorners(l); if(!c)return
 function snapFit() {   // "Center" button — fit to the glyph height, then center left-right in the advance
   const l = curLetter(); const im = imgCache[curImageUrl()]; if (!im) return;
   udDo([itemScope()], 'center image — ' + l.name, () => {
-    const gTop = glyphBand(l.codepoint).top;          // this glyph's band, as in defaultFitTransform
-    const k = (gTop*SC)/im.height;
-    const wFont = gTop * im.width / im.height;        // scaled width, in font units
+    const b = glyphBand(l.codepoint), bandH = b.top - b.bottom;   // this glyph's whole band, as in defaultFitTransform (a final's tail reaches the descender line)
+    const k = (bandH*SC)/im.height;
+    const wFont = bandH * im.width / im.height;       // scaled width, in font units
     const cx = (effLetterAdvance(l) - wFont) / 2;     // center that width within the glyph's advance
-    l.transform = [k,0,0,k, fx(cx), fy(gTop)];
+    l.transform = [k,0,0,k, fx(cx), fy(b.top)];
     l.contours=null; l.curves=null; l.anchors=null; renderStage(); });
 }
 function wireDrop(id, cb, multi) {

@@ -336,6 +336,27 @@ SVG mode routes through `uploadSvgForCurrent`, which replaces the trace rather t
 stays one-at-a-time. `wireDrop(id, cb, multi)`'s third argument opts a zone into whole-`FileList`
 drops; every other zone keeps the first-file contract.
 
+**Sheet sizing.** Auto-detect crops each letter to its own ink box, so the per-crop fit
+(`defaultFitTransform`: the crop's height onto the glyph's band) stretched a yod up to alef's height
+and shrank a tall handwritten letter — the "yod was resized" report. `adApply` now sizes the sheet
+once: `adPadAndMap` carries each box's unpadded `ink` rect, `adSheetScale(prep)` takes the median of
+`(band.top − band.bottom) / ink.h` over the *body* letters (neither `asc`, `desc` nor `high` in
+`bandMeta(letterMeta(cp))`; every box when fewer than three have ink), and `sheetFitTransform(ink,
+cp, K)` pins each letter by the edge that does not float — a `desc` or `high` glyph (the finals, qof,
+yod — the `high:true` flag on 05D9 exists for this; Latin g/p/q, Cyrillic Д/Ц/Щ) hangs its ink top
+from `band.top`, everything else sits its ink bottom on `band.bottom`, so a body letter never dips
+under the baseline into its seeded sheva. The review dialog's **Sizing** select (`adState.sizing`,
+seeded from the per-device `adSizing` pref in `hebrewFontMaker_uiPrefs`, written by `adSetSizing`)
+offers the old per-crop fit as *Fit each letter to its guide lines*; the sheet remembers the scale as
+`combinedSheets[].fitScale` (a plain number outside undo — undoing the Apply leaves it; a later
+fit-each Apply deletes it), and `finalizeCrop` reads it for a letter boxed by hand on that sheet
+afterwards, measuring the box's ink with `inkBoundsOf` (detection's own binarize plus its
+rule-line and hollow-rectangle filters, so a printed cell border inside a loose box is ignored). Marks
+and sheets never auto-detected behave as before. `defaultFitTransform` itself (and `snapFit`, the
+Center button) now fits the band's *height*, so a final letter's tail lands on the descender line
+instead of being squeezed into 0..600; the numbers are unchanged for every other glyph while the
+baseline is 0.
+
 ### Workspace model + render pipeline
 State: `curKind` (`letter|nikkud|trop`), `curCp`, `workMode` (`align|trace|anchors|nodes`).
 Guarded vs guard-bypass pairs: `selectItem` → `_selectItem`, `setWorkMode` → `_setWorkMode` (the
@@ -548,6 +569,23 @@ whose signature changed while we were rasterising is skipped and named, never st
 signature its outline did not come from; `_drawSaveAllBusy` guards re-entry and an in-flight
 gesture is abandoned first. `syncDrawSaveAllBtns` hides a button with nothing to save and runs from
 `renderGrids` and `renderControls`.
+
+**Trace all** (`traceAll(cat)`, a button beside each tab's Save all via `traceAllBtnHTML` / the static
+`.trace-all[data-cat]` markup, synced by `syncTraceAllBtns` from the same two places): the batch form of
+the enter-Trace courtesy. `tracePendingFor(cat)` lists the tab's letters with a real photo and no outline
+— `source.dataUrl` set and not the `'[omitted]'` autosave placeholder, not SVG, no strokes (a drawing,
+even over a photo, is Save all drawings' — `source.kind` is re-stamped by `setInputMode`, so the strokes
+are the test), `contours` null — so a letter that has an outline (traced, hand-edited, stock
+punctuation) is never touched and there is no confirm; a `handEdited` letter whose outline was cleared
+has nothing to lose and is traced. Unlike Save all drawings, the *expensive* half of the tracer
+(`rawLoopsFontUnits`, plus `innerLoopsFontUnits` for an outline-only letter) runs per letter in the
+async phase with a yield between letters — 27 photos traced inside one synchronous `udDo` would freeze
+the page for seconds — with `curKind`/`curCp` retargeted around each call and put back after it (a tile
+clicked mid-batch is respected); only `finalizeFromRaw` runs inside the one `udDo` (plain item scopes,
+label `trace all letters (N)`), each letter re-checked against its captured `traceSig` and
+outline-only settings and named as *changed* when they differ. Raw loops live only in the prep list,
+never on `project`; `_rawTrace` is dropped afterwards. A batch where nothing traced pushes no undo entry
+(`udPush` drops no-op slices), so the toast counts from `done`.
 
 ### Spacing preview — sample-text direction
 `spacingPreviewLayout` returns `order`, the cell indices in **left-to-right visual order**, and
