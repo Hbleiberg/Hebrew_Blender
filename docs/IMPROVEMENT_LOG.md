@@ -8,8 +8,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P2 (**NEW 2026-10-03, outside the loop — found verifying the tune-practice ship**) | classroom_dashboard.html | **Closing a dashboard tab reverts settings changed in another open tab**: the `pagehide` listener always runs `saveSettingsToStorage()`, which writes the whole in-memory blob (toggle `#countdownShowPresetName` in tab B, close tab A: it flips back). Save on leave only what is pending (in-place edit, roster typing, board text). The trope/torah/dictionary half (a stale debounce handle) is FIXED `c1714e2`. | found 2026-10-03
-
 - [ ] P3 (**NEW S451 G — gate 2, the maintainer's call**) | torah_trainer.html | **In the Trope staff layout the student handout ignores Font size and "Hide cantillation"**: the staff prints at screen scale (Hebrew 27.4pt, Large and Extra large alike) and its notes carry every trope; either print a text layout or say so beside the options. | found S451
 
 - [ ] P3 (**S440 H, gate 2**) | hebrew_dictionary.html | **A theme saved over 200 words drops its A→Z tail** (Animals loses fox, octopus, chicken…). | found S440
