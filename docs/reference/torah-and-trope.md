@@ -1022,7 +1022,9 @@ stored value reads Full and stays stored) and the triennial year (`settings.trie
 `triYearKey()`). All three ride the settings blob (sync, AllTools, reset) and none rides a practice link.
 
 - **The calendar is local.** `js/hebrew-calendar.js` (`window.HebCal`; loaded before `js/trope-staff.js`, in
-  `CORE_ASSETS`) carries the dashboard's Reingold-Dershowitz converter and the weekly reading table of a year,
+  `CORE_ASSETS`; the dashboard loads it too, for its parsha line — `dashboard.md` → *This week's parsha*, which links
+  back here through `?parsha=` / `?holiday=` and mirrors `HOLIDAY_KEY_BY_CAL`, so a change to that map changes both)
+  carries the dashboard's Reingold-Dershowitz converter and the weekly reading table of a year,
   `sedraForYear(hyear, israel)`: not Hebcal's year-type tables (GPL) but a **count-based fit** — every Shabbat from
   Shabbat Bereshit (the first after 22 Tishrei) to the Shabbat before the next Bereshit, the festival Shabbatot
   dropped (Tishrei 1–2, 10, 15–22, 23 in the Diaspora; Nisan 15–21, 22 in the Diaspora; Sivan 6, 7 in the

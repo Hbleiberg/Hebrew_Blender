@@ -568,8 +568,37 @@ uploaded was such a seed.
 The dashboard's Hebrew date and Omer count come from its inline Reingold-Dershowitz block (`gregorianToJDN`,
 `hebrewCalendarElapsedDays`, `hebrewToJDN`, `jdnToHebrew`, `numToHebLetters`, `formatHebDate`). The same converter
 is the first block of `js/hebrew-calendar.js`, the Torah Trainer's module (which adds the weekly reading table;
-`torah-and-trope.md` → *Reading schedule*). The two copies are meant to stay identical; making the dashboard load
-the module instead of its inline copy is the next adoption, not yet done. The parasha is never computed here.
+`torah-and-trope.md` → *Reading schedule*). The two copies are meant to stay identical. The page loads the module too
+(for the parsha line below), but the date and the Omer still read the inline copy; switching them over is the next
+adoption, not yet done.
+
+---
+
+## This week's parsha (`classroom_dashboard.html`)
+
+`#parshaLine`, under the Hebrew date, names the reading of the Shabbat on or after today: `renderParshaLine(now)`,
+called from `updateDateTimeDisplay()`, so a new day, a settings change, `applyI18n` and the colour-coded dark toggle
+all repaint it. The reading comes from `HebCal.parshaForDate(now, { israel })` (`js/hebrew-calendar.js`, offline —
+the Torah Trainer's module) and the names from `data/parshiyot.json?v=1`, the Trainer's `?v=`, so one cached copy
+serves both pages. The file loads on the first render that needs it; a failed load leaves the line hidden until a
+later render tries again (a festival week needs no file).
+
+- **Settings:** `showParsha` (default on; the line shows only while the Hebrew date does, so a board that hides the
+  date never sees it) and `parshaSchedule` (`'diaspora'` | `'israel'`, read through `parshaIsrael()`: anything else
+  reads Diaspora and stays stored). Both ride the settings blob — presets, `.ivrit`, AllTools, the account row — and
+  the Hebrew classroom starter sets `showParsha: true`.
+- **Script:** projected content, so it follows `hebDateScript` (with the date's fallback to English for an unknown
+  value), never `I18n.lang`: `פָּרָשַׁת <name>` through `hebDisplay` (nikkud on/off and colour coding apply),
+  `Parashat <name>`, or both, the English under the Hebrew as the date does. A doubled week joins its names (`–` in
+  Hebrew, `-` in English). Its size is `0.6 ×` the Hebrew date's (`--heb-date-size`), with the date's fullscreen and
+  phone factors.
+- **Festival Shabbatot** show the festival (`PARSHA_HOLIDAY_NAMES`, keyed by HebCal's holiday key, `key:day` where the
+  day changes the name); in Israel Shemini Atzeret shows with Simchat Torah.
+- **The link** opens the reading in the Torah Trainer in a new tab through that page's own deep links: `?parsha=<en>`
+  (a doubled week its first half, as the Trainer's date lookup does) or `?holiday=<key>`. `PARSHA_TRAINER_HOLIDAY`
+  mirrors the Trainer's `HOLIDAY_KEY_BY_CAL` — change both. A Shabbat Chol HaMoed, and the Diaspora's Pesach 8 and
+  Shavuot 2, have no reading there, so that week's line is plain text. The link's title is UI chrome
+  (`dashboard.datetime.parsha_open_title`, empty until the strings load).
 
 ---
 

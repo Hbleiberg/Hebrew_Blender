@@ -392,7 +392,7 @@ function buildDeviceA(D) {
     m1abc_x1y2z: { name: 'Week 3 words', created: 1700000000000, updated: 1700000100000, words: [{ word: 'שָׁלוֹם', translation: 'peace', translit: 'shalom', pos: 'noun', era: 'bib' }] },
     m1abd_q9w8e: { name: 'Colors', created: 1700000200000, updated: 1700000300000, words: [{ word: 'אָדֹם', translation: 'red', translit: 'adom', pos: 'adj', era: 'mod' }, { word: 'כָּחֹל', translation: 'blue', translit: 'kachol', pos: 'adj', era: 'mod' }] } } });
   s.hebrewDashboard_settings = J(mutate('hebrewDashboard_settings', base('hebrewDashboard_settings'), {
-    location: 'Atlanta, GA', engDateFmt: 'LONG', hebDateScript: 'both', timeFmt: '24', headerLang: 'en', dashTextHTML: '<div>Boker tov!</div>',
+    location: 'Atlanta, GA', engDateFmt: 'LONG', hebDateScript: 'both', parshaSchedule: 'israel', timeFmt: '24', headerLang: 'en', dashTextHTML: '<div>Boker tov!</div>',
     scheduleEnabled: true, scheduleWeek: WEEK, presetColors: { Morning: '#aabbcc' }, timeSize: 4.5,   // the other toggles are flipped with every boolean
     zoomLevel: 110, panelsCollapsed: { 'dashboard.settings.panel_weather': true },
     rosters: { a_0: { name: 'Kitah Alef', names: ['Noa', 'Eitan'] }, a_1: { name: 'Kitah Bet', names: ['Ari'] } }, activeRosterId: 'a_0', pickerSessions: {}, _geoCoords: { lat: 33.7, lon: -84.4 } }));

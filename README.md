@@ -50,7 +50,7 @@ A live display board designed for classroom projectors and SmartBoards.
 
 - **Live Hebrew date + clock** (Reingold-Dershowitz calendar, 12/24-hr, Hebrew/English formats) and **Hebrew days of the week** with today / yesterday / tomorrow markers
 - **Live weather** — Open-Meteo geocoded weather (no API key), 30-minute refresh, °F/°C, Hebrew or English labels
-- **Jewish-calendar widgets** — Shabbat candle-lighting times, an **Omer counter** (Hebrew/English + progress bar), and a holiday countdown line
+- **Jewish-calendar widgets** — Shabbat candle-lighting times, an **Omer counter** (Hebrew/English + progress bar), a holiday countdown line, and **this week's parsha** under the Hebrew date (Diaspora or Israel; a click opens it in the Torah Trainer)
 - **Schedule Sync** — assign a preset + end time per period; the board auto-switches configurations with a live Now/Next display and countdown
 - **Classroom timer** with warn / urgent / done states, and a **video embed** sidebar card
 - **Rich-text board message** — bold, italic, RTL/LTR, color, size — edited in place

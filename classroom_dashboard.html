@@ -650,6 +650,19 @@
     line-height: 1.2;
     margin: 4px 0;
   }
+  /* This week's parsha (renderParshaLine): sized from the Hebrew date, so its slider scales both */
+  .parsha-line {
+    font-size: calc(var(--heb-date-size) * 0.6);
+    color: var(--text);
+    font-weight: 500;
+    line-height: 1.25;
+    margin-bottom: 2px;
+  }
+  .parsha-line .parsha-he { font-family: var(--heb-font); direction: rtl; }
+  .parsha-line .parsha-en { font-family: 'Libre Baskerville', serif; }
+  .parsha-line div.parsha-en { font-size: 0.8em; opacity: 0.8; }   /* "Both": the English under the Hebrew, as the date does */
+  .parsha-link { color: inherit; text-decoration: none; }
+  .parsha-link:hover, .parsha-link:focus-visible { text-decoration: underline; text-underline-offset: 0.15em; }
   .current-time {
     font-family: 'Libre Baskerville', serif;
     font-size: var(--time-size);
@@ -1657,6 +1670,7 @@
   /* Scale, never restate — see the .timer-display note above. .weather-emoji has no slider,
      so its literal is the whole story and stays. */
   body.fullscreen .heb-date { font-size: calc(var(--heb-date-size) * 1.231); }
+  body.fullscreen .parsha-line { font-size: calc(var(--heb-date-size) * 0.6 * 1.231); }
   body.fullscreen .current-time { font-size: calc(var(--time-size) * 1.235); }
   body.fullscreen .weather-emoji { font-size: 4.2rem; }
   body.fullscreen .weather-temp { font-size: calc(var(--temp-size) * 1.2); }
@@ -1975,6 +1989,7 @@ button:focus-visible, a:focus-visible { outline:2px solid var(--focus-ring); out
   @media (max-width: 600px) {
     /* Scale, never restate — see the body.fullscreen note. */
     .heb-date { font-size: calc(var(--heb-date-size) * 0.769); }
+    .parsha-line { font-size: calc(var(--heb-date-size) * 0.6 * 0.769); }
     .current-time { font-size: calc(var(--time-size) * 0.765); }
   }
 
@@ -2281,6 +2296,7 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
     <div id="dateTimeBlock" style="width:100%;">
       <div class="eng-date" id="engDate"></div>
       <div class="heb-date" id="hebDate"></div>
+      <div class="parsha-line" id="parshaLine" style="display:none;"></div>
       <div class="heb-holiday-line" id="holidayCountdown" style="display:none;"></div>
       <div class="current-time" id="currentTime" dir="ltr"></div>
       <div id="scheduleCountdown"></div>
@@ -2598,6 +2614,17 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
         <div class="form-row">
           <label data-i18n="dashboard.datetime.hide_heb_date">Hide Hebrew date</label>
           <label class="toggle"><input type="checkbox" id="hideHebDate"><span class="slider"></span></label>
+        </div>
+        <div class="form-row">
+          <label><span data-i18n="dashboard.datetime.show_parsha">Show this week's parsha</span> <span class="tip-wrap" data-tip="The parsha of the coming Shabbat, under the Hebrew date and in its language. In a holiday week it names the holiday. Click it on the board to open the reading in the Torah Trainer." data-i18n-tip="dashboard.datetime.show_parsha_tip"><i class="tip-icon">?</i></span></label>
+          <label class="toggle"><input type="checkbox" id="showParsha"><span class="slider"></span></label>
+        </div>
+        <div class="form-row">
+          <label data-i18n="dashboard.datetime.parsha_schedule">Parsha schedule</label>
+          <div class="radio-group">
+            <input type="radio" name="parshaSchedule" id="ps-diaspora" value="diaspora"><label for="ps-diaspora" data-i18n="dashboard.datetime.parsha_diaspora">Diaspora</label>
+            <input type="radio" name="parshaSchedule" id="ps-israel" value="israel"><label for="ps-israel" data-i18n="dashboard.datetime.parsha_israel">Israel</label>
+          </div>
         </div>
         <div class="form-row">
           <label data-i18n="dashboard.datetime.show_holiday_countdown">Show Countdown to Next Holiday</label>
@@ -3118,7 +3145,7 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
       </div>
     </div>
   </div>
-</div><script>
+</div><script src="/js/hebrew-calendar.js"></script><script>
   /*
    * Classroom Dashboard — UX upgrades (2026-07):
    *   1. Screen Wake Lock — keep the projected display awake in fullscreen or via a
@@ -3405,6 +3432,8 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
     hideEngDate: false,
     hebDateScript: 'he',
     hideHebDate: false,
+    showParsha: true,                 // this week's parsha under the Hebrew date (only while the date shows) — renderParshaLine
+    parshaSchedule: 'diaspora',       // 'diaspora' | 'israel': the weekly-reading calendar it follows; anything else reads Diaspora and stays stored
     timeFmt: '12',
     showSeconds: false,
     hideTime: false,
@@ -3530,7 +3559,7 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
   // applied on tap over the pristine defaults — never injected into the user's preset store.
   const STARTERS = [
     { key:'hebrew', label:'Hebrew classroom', desc:'Everything on — Hebrew headers & date, Shabbat, Omer, holidays, weather.',
-      diff:{ headerLang:'he', hebDateScript:'both', hideHebDate:false, hideDOW:false, hideWeather:false,
+      diff:{ headerLang:'he', hebDateScript:'both', hideHebDate:false, showParsha:true, hideDOW:false, hideWeather:false,
              showShabbatTimes:true, showOmerCounter:true, showHolidayCountdown:true, showTimer:true } },
     { key:'morning', label:'Morning routine', desc:'Days, both dates, a big clock, weather and a timer — minimal chrome.',
       diff:{ hideDOW:false, hideEngDate:false, hideHebDate:false, hideTime:false, timeSize:4.5, hideWeather:false,
@@ -4097,6 +4126,7 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
         hebEl.style.fontFamily = "'Libre Baskerville', serif";
       }
     }
+    renderParshaLine(now);
 
     updateTimeOnly(now);
     updateCountdown();
@@ -4106,6 +4136,87 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
     updateDateTimeDisplay();
     if (clockInterval) clearInterval(clockInterval);
     clockInterval = setInterval(tickClock, 1000);
+  }
+
+  /* ────────── THIS WEEK'S PARSHA ──────────
+     The line under the Hebrew date: the reading of the Shabbat on or after today, from the suite's own
+     calendar (js/hebrew-calendar.js, window.HebCal — the Torah Trainer's module, offline) and the names
+     in data/parshiyot.json. Projected board content, so it follows the Hebrew date's own script
+     (hebDateScript, with the date's fallback for an unknown value), never I18n.lang. A festival Shabbat
+     shows the festival. The line opens that reading in the Torah Trainer in a new tab, through the
+     Trainer's own deep links (?parsha= and ?holiday=). Shown only while the Hebrew date is. */
+  const PARSHA_WORD_HE = 'פָּרָשַׁת';
+  const PARSHA_WORD_EN = 'Parashat';   // i18n-ignore — projected board content: follows hebDateScript
+  // HebCal's festival-Shabbat keys (+ ':' + day where the day changes the name). Projected content, like the word above.
+  const PARSHA_HOLIDAY_NAMES = {
+    rosh_hashanah:      { he: 'רֹאשׁ הַשָּׁנָה', en: 'Rosh Hashanah' },                           // i18n-ignore
+    yom_kippur:         { he: 'יוֹם כִּפּוּר', en: 'Yom Kippur' },                                // i18n-ignore
+    sukkot:             { he: 'סֻכּוֹת', en: 'Sukkot' },                                           // i18n-ignore
+    chol_hamoed_sukkot: { he: 'שַׁבַּת חֹל הַמּוֹעֵד סֻכּוֹת', en: 'Shabbat Chol HaMoed Sukkot' },  // i18n-ignore
+    shmini_atzeret:     { he: 'שְׁמִינִי עֲצֶרֶת', en: 'Shemini Atzeret' },                        // i18n-ignore
+    simchat_torah:      { he: 'שִׂמְחַת תּוֹרָה', en: 'Simchat Torah' },                           // i18n-ignore
+    pesach:             { he: 'פֶּסַח', en: 'Pesach' },                                            // i18n-ignore
+    'pesach:7':         { he: 'שְׁבִיעִי שֶׁל פֶּסַח', en: 'Seventh day of Pesach' },                // i18n-ignore
+    'pesach:8':         { he: 'אַחֲרוֹן שֶׁל פֶּסַח', en: 'Last day of Pesach' },                   // i18n-ignore
+    chol_hamoed_pesach: { he: 'שַׁבַּת חֹל הַמּוֹעֵד פֶּסַח', en: 'Shabbat Chol HaMoed Pesach' },   // i18n-ignore
+    shavuot:            { he: 'שָׁבוּעוֹת', en: 'Shavuot' },                                        // i18n-ignore
+  };
+  // In Israel the one day is both, and the Trainer reads it as Simchat Torah.
+  const PARSHA_ISRAEL_SHMINI = { he: 'שְׁמִינִי עֲצֶרֶת – שִׂמְחַת תּוֹרָה', en: 'Shemini Atzeret – Simchat Torah' };   // i18n-ignore
+  // The Trainer's ?holiday= key for each festival reading it has — a mirror of its HOLIDAY_KEY_BY_CAL (that page's
+  // link contract; change both). A Shabbat Chol HaMoed has no reading there, so that week's line is plain text.
+  const PARSHA_TRAINER_HOLIDAY = {
+    'rosh_hashanah:1': 'rosh-hashanah-1', 'rosh_hashanah:2': 'rosh-hashanah-2', 'yom_kippur:1': 'yom-kippur',
+    'sukkot:1': 'sukkot-1', 'sukkot:2': 'sukkot-2', 'shmini_atzeret:1': 'shemini-atzeret', 'simchat_torah:1': 'simchat-torah',
+    'pesach:1': 'pesach-1', 'pesach:2': 'pesach-2', 'pesach:7': 'pesach-7', 'shavuot:1': 'shavuot-1',
+  };
+  let _parshiyot = null;       // data/parshiyot.json once it has loaded: [{ n, en, he, … }]
+  let _parshiyotLoad = null;   // the fetch in flight; back to null after a failure, so a later render tries again
+  function parshaIsrael() { return settings.parshaSchedule === 'israel'; }
+  function loadParshiyot() {
+    if (_parshiyot || _parshiyotLoad) return;
+    _parshiyotLoad = fetch('data/parshiyot.json?v=1')   // the Torah Trainer's ?v=: one cached copy serves both pages
+      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(d => { if (!Array.isArray(d)) throw new Error('shape'); _parshiyot = d; renderParshaLine(); })
+      .catch(() => {})   // offline before the first load: the line stays hidden until a later render succeeds
+      .finally(() => { _parshiyotLoad = null; });
+  }
+  function renderParshaLine(now) {
+    const el = document.getElementById('parshaLine');
+    if (!el) return;
+    const hide = () => { el.style.display = 'none'; el.innerHTML = ''; };
+    try {
+      if (settings.hideHebDate || settings.showParsha === false || !window.HebCal) return hide();
+      const r = HebCal.parshaForDate(now || new Date(), { israel: parshaIsrael() });
+      if (!r) return hide();
+      let he, en, href = '';
+      if (r.kind === 'parsha') {
+        if (!_parshiyot) { loadParshiyot(); return hide(); }
+        const ps = r.idx.map(i => _parshiyot.find(p => p.n === i + 1));
+        if (!ps.length || !ps.every(Boolean)) return hide();
+        he = PARSHA_WORD_HE + ' ' + ps.map(p => p.he).join('–');
+        en = PARSHA_WORD_EN + ' ' + ps.map(p => p.en).join('-');
+        href = 'torah_trainer.html?parsha=' + encodeURIComponent(ps[0].en);   // a doubled week opens its first half, as the Trainer's date lookup does
+      } else {
+        const israelShmini = r.israel && r.holiday === 'shmini_atzeret';
+        const nm = israelShmini ? PARSHA_ISRAEL_SHMINI : (PARSHA_HOLIDAY_NAMES[r.holiday + ':' + r.day] || PARSHA_HOLIDAY_NAMES[r.holiday]);
+        if (!nm) return hide();
+        he = nm.he; en = nm.en;
+        const key = israelShmini ? 'simchat-torah' : PARSHA_TRAINER_HOLIDAY[r.holiday + ':' + r.day];
+        if (key) href = 'torah_trainer.html?holiday=' + key;
+      }
+      const heHtml = hebDisplay(he), enHtml = esc(en);
+      let inner;
+      if (settings.hebDateScript === 'both') inner = `<div class="parsha-he">${heHtml}</div><div class="parsha-en" dir="ltr">${enHtml}</div>`;
+      else if (settings.hebDateScript === 'he') inner = `<span class="parsha-he">${heHtml}</span>`;
+      else inner = `<span class="parsha-en" dir="ltr">${enHtml}</span>`;
+      // '' until the strings load (t() returns the bare key before then); applyI18n re-renders this line
+      const title = window.I18n && I18n.has('dashboard.datetime.parsha_open_title') ? I18n.t('dashboard.datetime.parsha_open_title') : '';
+      el.innerHTML = href
+        ? `<a class="parsha-link" href="${esc(href)}" target="_blank" rel="noopener" title="${esc(title)}">${inner}</a>`
+        : inner;
+      el.style.display = '';
+    } catch (e) { hide(); }
   }
 
   /* ────────── DAYS LIST ────────── */
@@ -5899,6 +6010,8 @@ function mountSidebarResize(cfg) {
     $('hideEngDate').checked = settings.hideEngDate;
     setRadio('hebDateScript', settings.hebDateScript);
     $('hideHebDate').checked = settings.hideHebDate;
+    $('showParsha').checked = settings.showParsha !== false;
+    setRadio('parshaSchedule', parshaIsrael() ? 'israel' : 'diaspora');   // an unknown stored value shows (and reads) Diaspora, and stays stored
     setRadio('timeFmt', settings.timeFmt);
     $('hideTime').checked = settings.hideTime;
     $('showSeconds').checked = !!settings.showSeconds;
@@ -6102,6 +6215,9 @@ function mountSidebarResize(cfg) {
     document.querySelectorAll('input[name="hebDateScript"]').forEach(r =>
       r.addEventListener('change', () => { settings.hebDateScript = r.value; updateDateTimeDisplay(); saveSettingsToStorage(); }));
     document.getElementById('hideHebDate').addEventListener('change', e => { settings.hideHebDate = e.target.checked; updateDateTimeDisplay(); saveSettingsToStorage(); });
+    document.getElementById('showParsha').addEventListener('change', e => { settings.showParsha = e.target.checked; updateDateTimeDisplay(); saveSettingsToStorage(); });
+    document.querySelectorAll('input[name="parshaSchedule"]').forEach(r =>
+      r.addEventListener('change', () => { settings.parshaSchedule = r.value; updateDateTimeDisplay(); saveSettingsToStorage(); }));
     document.querySelectorAll('input[name="timeFmt"]').forEach(r =>
       r.addEventListener('change', () => { settings.timeFmt = r.value; updateDateTimeDisplay(); saveSettingsToStorage(); }));
     document.getElementById('hideTime').addEventListener('change', e => { settings.hideTime = e.target.checked; updateDateTimeDisplay(); saveSettingsToStorage(); });

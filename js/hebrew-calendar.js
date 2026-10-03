@@ -1,7 +1,8 @@
 /* ══════════════════════════════════════════════════════
    IvritSuite — the Hebrew calendar and the weekly parasha: js/hebrew-calendar.js
-   Loaded by torah_trainer.html as a classic script placed before its inline
-   <script> (window.HebCal). It reads no `settings`, no `I18n` and no DOM: dates
+   Loaded by torah_trainer.html and classroom_dashboard.html (its parsha line), each
+   as a classic script placed before the page's inline <script> (window.HebCal).
+   It reads no `settings`, no `I18n` and no DOM: dates
    go in as {y, m, d} or a Date, readings come out as parasha indices (0 =
    Bereshit … 53 = V'Zot HaBerachah, parshiyot.json's `n` − 1) and holiday keys;
    the page owns every name shown. Proved offline by scripts/smoke-hebrew-calendar.mjs
