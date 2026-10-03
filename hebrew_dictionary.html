@@ -5764,7 +5764,9 @@ function maybeBootstrap() {
 
 // Debounced last-session persistence (excludes the search query).
 let _sessSaveTimer = null;
-function scheduleDictSessionSave() { if (_sessSaveTimer) clearTimeout(_sessSaveTimer); _sessSaveTimer = setTimeout(saveDictSession, 1000); }
+// The timer clears its own handle as it fires, so the flush below writes only a save still pending — never this tab's
+// copy over a newer one another tab wrote since.
+function scheduleDictSessionSave() { if (_sessSaveTimer) clearTimeout(_sessSaveTimer); _sessSaveTimer = setTimeout(() => { _sessSaveTimer = null; saveDictSession(); }, 1000); }
 function saveDictSession() {
   if (!_bootstrapped) return;
   try { const st = getDictState(); delete st.q; localStorage.setItem('hebrewDictionary_lastState', JSON.stringify(st)); } catch (e) {}

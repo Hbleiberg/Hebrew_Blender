@@ -495,10 +495,16 @@ dashboard only says which keys it owns and how to re-read them. Signed in, the a
 schedules, settings and class lists live: they land at every load (one listing, then only what differs) and
 every save, delete or reset reaches the account two seconds after the last write — the *Your account* section
 of the More tab holds the module's status line, nothing else. What matters here: `flush` is
-`flushRosterIfTyping()` + a non-exiting commit of the in-place editor (`syncActive()`) + `saveSettingsToStorage()`
+`flushRosterIfTyping()` + a non-exiting commit of the in-place editor (`syncActive()`) + `saveSettingsIfChanged()`
 (synchronous, and it reads `#dashEditor` into `settings` first) — the module calls it at every hydration and
 before every write-through, so it must never throw a teacher out of an edit; `finalFlush` adds
 `exitInPlaceEdit(true)` and runs only on `pagehide` and sign-out, as the page's own `pagehide` handler does.
+**Every save that is not a teacher's action writes only what this tab changed**: the page's own `pagehide` and
+hidden-tab saves and both module callbacks go through `saveSettingsIfChanged()`, which compares the blob
+`saveSettingsToStorage()` would write with `_settingsSeen` — what this tab last wrote, or read (set by every save, at
+the end of init and at the end of each `onLocalChanged` re-read) — and writes only on a difference (a drawer setting
+kept until the drawer closes, board text still being typed). A tab that changed nothing therefore never writes its
+older copy over one another tab saved since; a tab that did still writes its whole blob, as every save here does.
 `editing` reports a live edit (`_activeEditable`, or the focus in `#pickerRoster`, `#dashEditor` or
 `#intermissionEditor`), so another tab's download waits for the next save instead of re-rendering over the typing. The
 settings row **omits** every per-device field (`*Collapsed`, `panelLayout`, `videoLayout`, `zoomLevel`,

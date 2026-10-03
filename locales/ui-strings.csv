@@ -4411,6 +4411,7 @@ trope.drill.opt_identify,Identify: see a word → name the trope,זיהוי: ר�
 trope.drill.opt_melody,Melody: see a symbol → pick its melody,מנגינה: ראו סימן → בחרו את המנגינה שלו,drill settings label,
 trope.drill.play_melody,Play the melody,השמעת המנגינה,button,leading-emoji
 trope.drill.playback_speed,Playback speed,מהירות השמעה,slider label,
+trope.drill.playback_speed_note,"The recordings' speed. The staffs' tunes have their own, under Sing along.","המהירות של ההקלטות. למנגינות של החמשות יש מהירות משלהן, תחת ""שרים יחד"".",settings note under the Drill group's Playback speed slider,Sing along = the trope.settings.panel_sing group
 trope.drill.q_hear,Listen — which mark carries this melody?,האזינו — איזה טעם נושא את המנגינה הזו?,question prompt,
 trope.drill.q_identify,Which trope is marked on this word?,איזה טעם מסומן על המילה הזו?,question prompt,
 trope.drill.q_melody,Which melody matches this mark?,איזו מנגינה מתאימה לטעם הזה?,question prompt,
@@ -4656,7 +4657,7 @@ trope.settings.panel_drill,Drill,תרגול,Settings tab group heading,
 trope.settings.panel_font,Hebrew Font,גופן עברי,Settings tab group heading,
 trope.settings.panel_names,Names & Tradition,שמות ומסורת,Settings tab group heading,
 trope.settings.panel_progress,Progress,התקדמות,Settings tab group heading,
-trope.settings.panel_sing,Sing along,שרים יחד,Settings tab group heading (Key + Voice + Note names),
+trope.settings.panel_sing,Sing along,שרים יחד,Settings tab group heading (Key + Voice + Note names + Tune speed + Play each tune),
 trope.settings.question_types,Question types,סוגי שאלות,Settings tab item label above the three drill toggles (small caps style),
 trope.settings.reset_size_aria,Reset Hebrew size,איפוס גודל עברית,reset button aria,aria-label only
 trope.settings.reset_size_title,Reset size,איפוס גודל,reset button title,
@@ -4676,7 +4677,7 @@ trope.toast.audio_unreachable_skipped,Audio isn’t reachable — this question 
 trope.toast.clip_switched,That clip wouldn’t load — switched to another example.,הקטע הזה לא נטען — עברנו לדוגמה אחרת.,toast,
 trope.toast.clip_trying_another,That clip wouldn’t load — trying another example.,הקטע הזה לא נטען — מנסים דוגמה אחרת.,toast,
 trope.toast.clip_wont_load,That clip wouldn’t load.,הקטע הזה לא נטען.,toast,
-trope.tour.key_body,"Use the arrows to move every staff and its tune up or down a half step at a time, until it sits in your voice. Press ▶ beside a mark's name to hear its tune.","השתמשו בחצים כדי להעביר כל חמשה ואת המנגינה שלה חצי טון למעלה או למטה בכל פעם, עד שתתאים לקול שלכם. לחצו על ▶ ליד שם הטעם כדי לשמוע את המנגינה שלו.",tour step body,
+trope.tour.key_body,"Use the arrows to move every staff and its tune up or down a half step at a time, until it sits in your voice. Press ▶ beside a mark's name to hear its tune. Slow for learning slows every tune to 0.70×.","השתמשו בחצים כדי להעביר כל חמשה ואת המנגינה שלה חצי טון למעלה או למטה בכל פעם, עד שתתאים לקול שלכם. לחצו על ▶ ליד שם הטעם כדי לשמוע את המנגינה שלו. ""לאט ללמידה"" מאט כל מנגינה ל־0.70×.",tour step body,
 trope.tour.key_title,Sing in your key,שירו בסולם שלכם,tour step title,
 trope.tour.phrases_body,"Every line of the printed chart, grouped by clause: hear each phrase, see its whole melody, and find it in the Torah.","כל שורה בטבלה המודפסת, מקובצת לפי פסוקיות: שמעו כל צירוף, ראו את המנגינה כולה ומצאו אותו בתורה.",tour step body,
 trope.tour.phrases_title,Phrases,צירופים,tour step title,
@@ -4690,7 +4691,7 @@ trope.tour.s4_body,"Step through all seven families, then test yourself.","עב�
 trope.tour.s4_title,Work through them,עברו עליהם,tour step title,
 trope.tour.s5_body,"10 questions per session: name the marked word, match melody to symbol, or symbol to melody.","10 שאלות בכל מפגש: נקבו את המילה המסומנת, התאימו מנגינה לסימן, או סימן למנגינה.",tour step body,
 trope.tour.s5_title,Drill mode,מצב תרגול,tour step title,
-trope.tour.s6_body,"Naming tradition, melody (year-round, High Holidays or Haftarah), key and voice, Hebrew font, question types, and playback speed live here.","מסורת השמות, המנגינה (כל השנה, ימים נוראים או הפטרה), הסולם והקול, הגופן העברי, סוגי השאלות ומהירות ההשמעה נמצאים כאן.",tour step body,
+trope.tour.s6_body,"Naming tradition, melody (year-round, High Holidays or Haftarah), key and voice, the tune's speed and repeats, Hebrew font, question types, and playback speed live here.","מסורת השמות, המנגינה (כל השנה, ימים נוראים או הפטרה), הסולם והקול, מהירות המנגינה והחזרות עליה, הגופן העברי, סוגי השאלות ומהירות ההשמעה נמצאים כאן.",tour step body,
 trope.tour.s6_title,Settings,הגדרות,tour step title,
 trope.tradition.ashkenazi,Ashkenazi,אשכנזי,radio label,
 trope.tradition.note,The recordings themselves follow PocketTorah's Spiro (Conservative) melody either way.,ההקלטות עצמן הולכות אחר מנגינת שפירו (קונסרבטיבי) של PocketTorah כך או כך.,settings note,
@@ -4698,6 +4699,19 @@ trope.tradition.primary_aria,Primary trope names,שמות הטעמים העיק�
 trope.tradition.primary_label,Primary trope names,שמות הטעמים העיקריים,settings label,
 trope.tradition.primary_tip,"Both names are always shown on each card; this picks which one leads. Note the classic collision: Ashkenazi 'pashta' is Sephardi 'kadma', while Ashkenazi 'kadma' is Sephardi 'azla'.","שני השמות מוצגים תמיד בכל כרטיס; כאן בוחרים איזה מהם מוביל. שימו לב להתנגשות הקלאסית: 'פשטא' האשכנזי הוא 'קדמא' הספרדי, בעוד 'קדמא' האשכנזי הוא 'אזלא' הספרדי.",tooltip,
 trope.tradition.sephardi,Sephardi,ספרדי,radio label,
+trope.tune.echo_label,Pause to sing it back,הפסקה כדי לשיר בחזרה,"Settings → Sing along switch: after each play, the class's turn to sing the tune back",
+trope.tune.echo_note,"After each play the staff turns dashed and its notes light up again in time, with no sound, so the class can sing it back.","אחרי כל השמעה החמשה מקבלת מסגרת מקווקוות והתווים שלה נדלקים שוב בקצב, בלי צליל, כדי שהכיתה תשיר אותה בחזרה.",settings note,
+trope.tune.repeat_1,Once,פעם אחת,Play each tune radio: the tune plays once,
+trope.tune.repeat_2,Twice,פעמיים,Play each tune radio: the tune plays twice,
+trope.tune.repeat_3,3 times,3 פעמים,Play each tune radio: the tune plays three times,
+trope.tune.repeat_aria,How many times each tune plays,כמה פעמים כל מנגינה מתנגנת,Settings → Sing along Play each tune radiogroup aria,aria-label only
+trope.tune.repeat_label,Play each tune,כל מנגינה מתנגנת,Settings → Sing along item label (above the once / twice / 3 times choice and the sing-back switch),
+trope.tune.reset_aria,Back to normal speed,חזרה למהירות רגילה,reset title/aria (Settings → Sing along → Tune speed),
+trope.tune.slow,Slow for learning,לאט ללמידה,"toggle button (Settings → Sing along → Tune speed, and the Learn/Phrases key bar): every tune at 0.70×; aria-pressed carries the state",
+trope.tune.slow_title,Plays every tune at 0.70×; press again for normal speed,כל מנגינה מתנגנת ב־0.70×; לחיצה נוספת מחזירה למהירות רגילה,Slow for learning button title (both buttons),title tooltip
+trope.tune.speed_label,Tune speed,מהירות המנגינה,"Settings → Sing along slider label (the synthesized staff tune, not the recordings)",
+trope.tune.speed_note,"How fast every staff's tune plays. The recordings have their own speed, under Drill.","כמה מהר מתנגנת המנגינה של כל חמשה. להקלטות יש מהירות משלהן, תחת ""תרגול"".",settings note,Drill = the trope.settings.panel_drill group
+trope.tune.your_turn,Your turn — sing it back,תורכם — שירו בחזרה,announced as the class's turn in a sing-back pause begins (the staff shows it dashed),screen reader only (aria-live)
 trope.voice.aria,Voice for the tunes,הקול של המנגינות,radiogroup aria,aria-label only
 trope.voice.high,High voices,קולות גבוהים,radio label,
 trope.voice.label,Voice,קול,settings label,

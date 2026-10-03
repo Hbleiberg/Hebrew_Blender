@@ -234,8 +234,9 @@ stop and reconsider. Shell (dark mode, tooltips, tour, toast, My Fonts) is copie
 (Learn | Phrases | Drill | Settings) laid out like the Font Maker's Settings tab: a serif heading per group over a
 hairline rule, the group's items in a grid (three across, two below 1024px, one below 640px) with small
 uppercase item labels, and nothing to collapse — so the page carries no panel-collapse memory. The
-groups are names and tradition (primary names, melody), sing along (key, voice, note names — see *Key and
-voice* and *Note names* below), drill, Hebrew font, and a shared row of progress, your account and about.
+groups are names and tradition (primary names, melody), sing along (key, voice, note names, tune speed, play
+each tune and the sing-back pause — see *Key and voice*, *Note names* and *Tune practice* below), drill, Hebrew
+font, and a shared row of progress, your account and about.
 There is no header gear; `openSettings()` survives only as `setMode('settings')` for the Learn banner's *Change*
 (`openMelodySetting`) and the tools smoke; the *Your account* group (`#setCloud`, `trope.settings.panel_cloud`)
 hosts the shared account status line (`#cloudSavesPanel`). Switching to the tab
@@ -314,9 +315,9 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
   **The tune button** (beside the names on every card with a motif) plays the staff as Web Audio
   oscillator tones at the staff's pitch — the written pitch (B4 = 493.88 Hz, the octave children and
   women sing) moved by the Key setting, an octave lower with Low voices (below) — one
-  `d` unit = 0.32 s divided by the Settings speed slider, lighting each `.tu-motif-note` with
-  `.is-sounding` as it sounds; one tune at a time, it stops the clip engine before starting and a
-  clip start or a mode switch stops it (`stopTune()`). The highlight re-finds the card by its
+  `d` unit = 0.32 s divided by the tune speed (`tuneRate`; *Tune practice* below), lighting each
+  `.tu-motif-note` with `.is-sounding` as it sounds; one tune at a time, it stops the clip engine before
+  starting and a clip start or a mode switch stops it (`stopTune()`). The highlight re-finds the card by its
   `data-key` on every note, so a language-switch re-render mid-tune keeps working. No new CSP
   origin: it is `AudioContext` only.
   The machine path still exists: **`node scripts/build-trope-motifs.mjs`** `[--force]
@@ -484,7 +485,7 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
     as one note, a rest is silent for its whole value and lit while it lasts (the note before it goes
     dark, so nothing looks held through the pause), and a grace note is quick and borrowed from the
     note it leads into.
-    No other note is shorter than `PHRASE_MIN_NOTE` (0.1 s at 1×, scaled by the speed setting). The
+    No other note is shorter than `PHRASE_MIN_NOTE` (0.1 s at 1×, scaled by the tune speed). The
     chart's 32nds (80 ms at this tempo) and triplet 32nds (53 ms: gershayim's turn, the High Holiday
     segol's run) would blur into one sound, so they are held that long and the tune stretches around
     them. The staff still shows the printed rhythm.
@@ -574,6 +575,30 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
     is playing keeps playing, since the tune finds its staff again at each note. `syncTuneControls()` checks the
     radios. The staffs draw no names before the dictionary has loaded (`noteNamesMode()`, the key bar's rule), and
     `applyI18n` re-renders them in the new language. Both print sheets carry the names, printed muted.
+- **Tune practice** (Settings → *Sing along* → Tune speed and Play each tune, and *Slow for learning* on the key
+  bar). Three fields of the settings blob shape every tune, the Learn cards' and the Phrases tab's alike; the staffs
+  never change, so nothing re-renders.
+  - **`tuneRate`** (0.5–1.5×, default 1, clamped by `_sliderNum` on load, read through `tuneRateVal()`) is the
+    tunes' own speed: `playTune` and `togglePhraseTune` divide their 0.32 s eighth by it. The recordings keep the
+    Drill group's `playbackRate`, which no tune reads. *Slow for learning* (`TUNE_SLOW`, 0.70×) is a toggle button in
+    Settings with a twin on the key bar: pressed while the speed is 0.70, back to 1.00 when pressed again.
+  - **`tuneRepeats`** (1, 2 or 3, read through `tuneRepeatsVal()`) and **`tuneEcho`** (on only when `true`) make each
+    press a practice: the tune plays that many times, and with the sing-back pause each play is followed by the
+    class's turn — the staff's listening tint gives way to a dashed frame (`.is-echo`, inset so the Phrases scroller
+    cannot clip it) and its notes light again in time with no sound. A breath of two eighths (0.64 s ÷ the speed)
+    comes before every part but the first; in it the part before goes dark, and a turn's frame shows at once (its
+    lights wait for the breath to end). Any other stored value plays as the default and stays stored.
+  - **One schedule.** `_playTuneCore` lays the practice on one timeline and puts it on the clock at once: every
+    oscillator in `_tuneOscs`, every light and turn in `_tuneTimers`. So `stopTune()` cancels all of it — the button
+    pressed again, a clip, a tab or family switch, a new speed, a print (`beforeprint`, registered before the print
+    builders', and the *Print chart* button) — and clears `.is-echo`. `_tuneTurn` says a turn is showing, so a
+    re-render mid-turn (a language switch) paints the new staff dashed too.
+  - **Spoken.** A turn writes `trope.tune.your_turn` to `#tuTuneLive`, a polite `.vh` region at the top of `<main>`
+    (outside the tab views, which hide); the turn's end and `stopTune()` empty it.
+  - **Writers.** `setTuneRate(v)` (the slider, its reset and both Slow buttons through `toggleTuneSlow`) saves and,
+    since a practice is scheduled whole, stops a playing one rather than let it run on at the old speed.
+    `setTuneRepeats` and `setTuneEcho` save only (Settings tab, where no tune plays). `syncTuneControls()` paints all
+    of them, both Slow buttons' `aria-pressed` included; the buttons keep one name. The bar's Slow is screen-only.
 - **`TROPES` taxonomy** — one `═══`-marked table (26 entries — zarka is a single entry carrying
   both codepoints: key, chars, display, Ashkenazi +
   Sephardi names, family, rare flag) kept **byte-identical** between `scripts/build-trope-index.mjs`
@@ -591,7 +616,8 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
   via `manifest[p].audioBase` (URL = `POCKET_AUDIO_BASE + encodeURIComponent(audioBase + '-' + a + '.mp3')`),
   swaps `src` only when the aliyah file changes, seeks after `loadedmetadata`, and stops at `e` via
   an rAF watcher + `timeupdate` fallback (the `_verseEndStopAt` pattern; iOS timeupdate is ~4 Hz).
-  `playbackRate` is re-asserted in the `play` handler (iOS resets it). Failures add the file to
+  `playbackRate` (the recordings' speed only; the staff tunes read `tuneRate`) is re-asserted in the `play`
+  handler (iOS resets it). Failures add the file to
   `_badFiles` and call `onError` — drills **never dead-end**: substitute example → regenerate
   question (different trope) → skip, with a toast at each step.
 - **Rendering is DOM-built** (`createElement`/`textContent`) for all index-derived Hebrew —
@@ -603,8 +629,8 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
   (`fonts/NotoSerifHebrew-Taamim.ttf`); without it every mark is tofu on stock macOS/iOS.
   Postpositive/prepositive marks sitting at word edges is **correct**, not a bug.
 - **Persistence** (no presets, no `.ivrit` engine — AllTools-only backup):
-  `hebrewTropeTutor_settings` (tradition ashk/seph, `melody`, `tuneShift`, `tuneVoice`, `noteNames`, hebFont,
-  hebFontSize, drill-type toggles, `drillScope`, `drillLength`, playbackRate) and `hebrewTropeTutor_progress` (`{v:1, tropes:{key:{r,w}}, families:{}, pbStreak}`).
+  `hebrewTropeTutor_settings` (tradition ashk/seph, `melody`, `tuneShift`, `tuneVoice`, `noteNames`, `tuneRate`,
+  `tuneRepeats`, `tuneEcho`, hebFont, hebFontSize, drill-type toggles, `drillScope`, `drillLength`, playbackRate) and `hebrewTropeTutor_progress` (`{v:1, tropes:{key:{r,w}}, families:{}, pbStreak}`).
   Registered in all five AllTools sites in `index.html`; progress imports go through
   `tropeProgressMerge` (r/w/pbStreak = max, families = union). `hebrewTropeTutor_tourSeen` is the
   export-exempt, erase-cleared tour flag.

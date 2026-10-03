@@ -475,6 +475,14 @@ body.dark .tu-pstaff .tu-pn.is-sounding ellipse { stroke:var(--gold-light); }
 .tu-pstaff .tu-pn.is-hl .tu-nn { fill:var(--gold-text); }
 body.dark .tu-motif .tu-motif-note.is-sounding .tu-nn, body.dark .tu-pstaff .tu-pn.is-sounding .tu-nn,
 body.dark .tu-pstaff .tu-pn.is-hl .tu-nn { fill:var(--gold-light); }
+/* Tune practice (Settings → Sing along). The class's turn in a sing-back pause: the listening tint gives way to a
+   dashed frame (inset, so the Phrases scroller cannot clip it) while the notes light again in time. Slow for
+   learning, pressed, wears the playing button's colours, hover included. Colour and outline only, no motion. */
+.tu-motif.is-echo, .tu-pstaff.is-echo { background:transparent; outline:2px dashed var(--gold-text); outline-offset:-2px; border-radius:8px; }
+body.dark .tu-motif.is-echo, body.dark .tu-pstaff.is-echo { outline-color:var(--gold-light); }
+.tu-slow-btn[aria-pressed="true"], .tu-slow-btn[aria-pressed="true"]:hover { background:var(--navy); color:var(--gold-light); border-color:var(--navy); }
+body.dark .tu-slow-btn[aria-pressed="true"], body.dark .tu-slow-btn[aria-pressed="true"]:hover { background:var(--gold-light); color:var(--navy-deep); border-color:var(--gold-light); }
+.tu-set-item .tu-echo-row { margin-block-start:10px; }
 .tu-pex { margin-top:2px; }
 .tu-pex-title { font-size:0.72rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin:4px 0 0; }
 .tu-pex .tu-ex-list { padding:4px 0 0; }
@@ -849,9 +857,9 @@ footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-co
      sheet — measured S253 at 14 of 14 pages of a Learn-tab print, text and shadow both. Same
      shape the dictionary closed in S252; torah_trainer already hides its `.tt-hint-toast` here. */
   header .hright, .tu-tabs, footer nav, .tu-ex-play, .tu-qplay, .tu-toast, .tu-melody-change { display:none !important; }
-  /* The key bar's arrows and reset are screen controls; the line itself prints only while the staffs are
+  /* The key bar's arrows, reset and Slow are screen controls; the line itself prints only while the staffs are
      moved, so a chart in the printed key carries no key line and a moved one names its key. */
-  .tu-key-step, .tu-key-reset, .tu-key-bar:not(.is-moved) { display:none !important; }
+  .tu-key-step, .tu-key-reset, .tu-key-slow, .tu-key-bar:not(.is-moved) { display:none !important; }
   /* The footer's FAQ/how-to disclosures are screen navigation; on paper they print as a row of
      closed summaries and, at Letter, spilled onto a 14th sheet holding nothing else. The credits
      stay: the motif staffs derive from PocketTorah audio, so the CC BY-SA notice belongs on the
@@ -1017,6 +1025,9 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
 
 <main class="tu-page" id="tuMain" tabindex="-1">
   <div class="tu-status" id="tuStatus" role="status"></div>
+  <!-- The class's turn in a sing-back pause, for a screen reader (the staff shows it dashed): written only by the
+       tune player, outside the tab views so it speaks on Learn and Phrases alike. -->
+  <span class="vh" id="tuTuneLive" aria-live="polite"></span>
   <!-- Corpus-failure retry. The status above tells the user to check their connection, which is
        only actionable if something lets them try again without reloading the page — the dictionary
        and Torah Trainer both ship an in-place retry (torah's `retryStaticData()` is the model this
@@ -1043,8 +1054,9 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
     </div>
     <!-- The key bar: moves every staff and its tune a half step at a time (settings.tuneShift — the same
          setting as Settings → Sing along → Key). syncTuneControls() writes its text and states; it stays
-         hidden while no motif file is loaded (no staffs to move). The arrows and the reset are screen-only;
-         the line prints only while the staffs are moved (.is-moved), so a moved chart names its key. -->
+         hidden while no motif file is loaded (no staffs to move). Slow for learning is the twin of the
+         Tune speed button in Settings (one writer, setTuneRate). The arrows, the reset and Slow are
+         screen-only; the line prints only while the staffs are moved (.is-moved), so a moved chart names its key. -->
     <div class="tu-key-bar" id="tuKeyBar" role="group" aria-labelledby="tuKeyLbl" hidden>
       <span class="tu-key-lbl" id="tuKeyLbl" data-i18n="trope.key.label">Key</span>
       <button class="btn btn-xs btn-secondary tu-key-step" id="tuKeyDown" type="button" onclick="stepTuneShift(-1)" title="Lower the staffs a half step" aria-label="Lower the staffs a half step" data-i18n-title="trope.key.down_aria" data-i18n-aria-label="trope.key.down_aria"><svg class="hi hi-sm hi-down" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5.6 8.8 12 15.2l6.4-6.4"/></svg></button>
@@ -1052,6 +1064,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
       <button class="btn btn-xs btn-secondary tu-key-step" id="tuKeyUp" type="button" onclick="stepTuneShift(1)" title="Raise the staffs a half step" aria-label="Raise the staffs a half step" data-i18n-title="trope.key.up_aria" data-i18n-aria-label="trope.key.up_aria"><svg class="hi hi-sm hi-up" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5.6 15.2 12 8.8l6.4 6.4"/></svg></button>
       <span class="tu-key-rel" id="tuKeyRel"></span>
       <span class="tu-key-voice" id="tuKeyVoice" data-i18n="trope.key.low_tag" hidden>Low voices: an octave lower</span>
+      <button class="btn btn-xs btn-secondary tu-slow-btn tu-key-slow" id="tuKeySlow" type="button" aria-pressed="false" onclick="toggleTuneSlow()" title="Plays every tune at 0.70×; press again for normal speed" data-i18n="trope.tune.slow" data-i18n-title="trope.tune.slow_title">Slow for learning</button>
       <button class="btn btn-xs btn-secondary hi-btn tu-key-reset" id="tuKeyReset" type="button" onclick="resetTuneShiftFromBar()" title="Back to the printed key" data-i18n-title="trope.key.reset_aria" hidden><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg><span class="hi-lbl" data-i18n="trope.key.reset">As printed</span></button>
       <!-- What the arrows just did, for a screen reader: written only by the bar's own buttons, so the
            Settings slider (which announces its own aria-valuetext) and a language switch stay quiet. -->
@@ -1198,8 +1211,11 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
 
       <!-- Sing along: Key is the Learn tab's key bar twin (one setting, settings.tuneShift, one writer
            setTuneShift); Voice sounds every tune an octave down; Note names writes a name under every
-           staff note (settings.noteNames, one writer setNoteNames). syncTuneControls() fills the readouts
-           and checks the radios. -->
+           staff note (settings.noteNames, one writer setNoteNames). The practice: Tune speed is the tunes'
+           own (settings.tuneRate, one writer setTuneRate; its Slow for learning button has a twin on the key
+           bar), Play each tune repeats it (settings.tuneRepeats) and the pause gives the class its turn after
+           every play (settings.tuneEcho). syncTuneControls() fills the readouts, checks the radios and
+           presses both Slow buttons. -->
       <div class="tu-set-group">
         <h2 class="tu-set-title" data-i18n="trope.settings.panel_sing">Sing along</h2>
         <div class="tu-set-grid">
@@ -1235,6 +1251,32 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
             </span>
             <p class="settings-note" data-i18n="trope.notes.note">Writes a name under every note, and it lights up with its note as the tune plays. Do re mi starts from the note the key is named after (in A major, do is A), so the names stay the same in any key.</p>
           </div>
+          <div class="tu-set-item">
+            <div class="tu-set-label"><span id="optTuneRateLbl" data-i18n="trope.tune.speed_label">Tune speed</span></div>
+            <div class="slider-row">
+              <input type="range" id="optTuneRate" min="0.5" max="1.5" step="0.05" value="1" aria-labelledby="optTuneRateLbl" oninput="setTuneRate(parseFloat(this.value))">
+              <span class="sval" id="optTuneRateVal" dir="ltr">1.00×</span>
+              <button class="sreset" type="button" onclick="setTuneRate(1)" title="Back to normal speed" aria-label="Back to normal speed" data-i18n-title="trope.tune.reset_aria" data-i18n-aria-label="trope.tune.reset_aria"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
+            </div>
+            <button class="btn btn-xs btn-secondary tu-slow-btn" id="optTuneSlow" type="button" aria-pressed="false" onclick="toggleTuneSlow()" title="Plays every tune at 0.70×; press again for normal speed" data-i18n="trope.tune.slow" data-i18n-title="trope.tune.slow_title">Slow for learning</button>
+            <p class="settings-note" data-i18n="trope.tune.speed_note">How fast every staff's tune plays. The recordings have their own speed, under Drill.</p>
+          </div>
+          <div class="tu-set-item">
+            <div class="tu-set-label"><span data-i18n="trope.tune.repeat_label">Play each tune</span></div>
+            <span class="radio-group" role="radiogroup" aria-label="How many times each tune plays" data-i18n-aria-label="trope.tune.repeat_aria">
+              <input type="radio" id="tuneRep1" name="tuTuneRepeats" value="1" onchange="setTuneRepeats(1)">
+              <label for="tuneRep1" data-i18n="trope.tune.repeat_1">Once</label>
+              <input type="radio" id="tuneRep2" name="tuTuneRepeats" value="2" onchange="setTuneRepeats(2)">
+              <label for="tuneRep2" data-i18n="trope.tune.repeat_2">Twice</label>
+              <input type="radio" id="tuneRep3" name="tuTuneRepeats" value="3" onchange="setTuneRepeats(3)">
+              <label for="tuneRep3" data-i18n="trope.tune.repeat_3">3 times</label>
+            </span>
+            <div class="form-row tu-echo-row">
+              <label for="optTuneEcho" data-i18n="trope.tune.echo_label">Pause to sing it back</label>
+              <label class="toggle"><input type="checkbox" id="optTuneEcho" onchange="setTuneEcho(this.checked)"><span class="slider"></span></label>
+            </div>
+            <p class="settings-note" data-i18n="trope.tune.echo_note">After each play the staff turns dashed and its notes light up again in time, with no sound, so the class can sing it back.</p>
+          </div>
         </div>
       </div>
 
@@ -1264,6 +1306,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
               <span class="sval" id="optRateVal">1.00×</span>
               <button class="sreset" onclick="resetPlaybackRate()" title="Reset speed" aria-label="Reset playback speed" data-i18n-title="trope.drill.reset_speed_title" data-i18n-aria-label="trope.drill.reset_speed_aria"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
             </div>
+            <p class="settings-note" data-i18n="trope.drill.playback_speed_note">The recordings' speed. The staffs' tunes have their own, under Sing along.</p>
           </div>
         </div>
       </div>
@@ -1460,6 +1503,9 @@ const DEFAULTS = {
   tuneShift: 0,                 // half steps (−6…6) the staffs and their tunes move from the printed key
   tuneVoice: 'high',            // 'high' | 'low' — low voices hear every tune an octave down (the staff shows the 8)
   noteNames: 'off',             // 'off' | 'letters' | 'solfa' — a name under every staff note (solfa: movable do)
+  tuneRate: 1.0,                // 0.5–1.5× — the staff tunes' own speed (the recordings keep playbackRate); Slow for learning = TUNE_SLOW
+  tuneRepeats: 1,               // 1 | 2 | 3 — how many times each tune plays
+  tuneEcho: false,              // after each play the class's turn: the notes light again in time, silently, to sing it back
   hebFont: 'Frank Ruhl Libre',
   hebFontSize: 2.2,             // rem; applied via --tu-heb-size
   drillIdentify: true,
@@ -1501,6 +1547,7 @@ let _saveTimer = null;
 function saveSettings() {
   if (_saveTimer) clearTimeout(_saveTimer);
   _saveTimer = setTimeout(() => {
+    _saveTimer = null;   // nothing pending now: a later hide or close must not write this tab's copy over another tab's
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(settings)); }
     catch (e) { console.warn('saveSettings', e); }
   }, 300);
@@ -1528,6 +1575,7 @@ function loadSettings() {
   settings.hebFontSize = _sliderNum(settings.hebFontSize, 'optFontSize', DEFAULTS.hebFontSize);
   settings.playbackRate = _sliderNum(settings.playbackRate, 'optRate', DEFAULTS.playbackRate);
   settings.tuneShift = Math.round(_sliderNum(settings.tuneShift, 'optTuneShift', DEFAULTS.tuneShift));   // whole half steps only
+  settings.tuneRate = _sliderNum(settings.tuneRate, 'optTuneRate', DEFAULTS.tuneRate);
 }
 function _sliderNum(val, sliderId, dflt) {
   const sl = document.getElementById(sliderId);
@@ -2147,14 +2195,25 @@ function renderMotifStaff(t, motif) {
    it sounds, so a child can follow the tune along the staff. Written pitch
    (B4 = 493.88 Hz — the octave children and women sing), moved by the Key
    setting like the staff it lights; Low voices sounds it an octave down.
-   The Settings speed slider sets the tempo. One tune at a time: starting one
-   stops the clip engine, and a clip or a mode switch stops the tune (stopTune()).
+   Settings → Sing along sets the practice: the tune's own speed (tuneRate — the
+   recordings keep the Drill's speed), how many times it plays (tuneRepeats), and
+   the sing-back pause (tuneEcho): after each play the class's turn, the staff
+   dashed (.is-echo) while its notes light again in time with no sound. One tune
+   at a time: starting one stops the clip engine, and a clip, a mode or family
+   switch or a print stops the tune, its repeats and turns included (stopTune()).
    The Learn cards and the Phrases tab share the scheduler (_playTuneCore): each
    tune has an id (a Learn card's mark key, or 'phrase:<melody>:<row>'), and
    stopTune() resets whichever is playing.
    ══════════════════════════════════════════════════════ */
 let _tuneCtx = null, _tuneOscs = [], _tuneTimers = [], _tuneKey = null, _tuneBtn = null;
 let _tuneBtnSel = '', _tuneAriaFn = null;   // the live play button's selector, and its label when stopped
+let _tuneTurn = false;   // the class's turn is showing: a mid-tune re-render paints the new staff .is-echo too
+// The practice, read at use time like the key: an unknown stored value plays as the default and stays stored.
+const TUNE_SLOW = 0.7;      // Slow for learning
+const TUNE_BREATH = 0.64;   // the rest between two parts of a practice: two eighths at 1× (0.32 s each, both tunes' scale)
+function tuneRateVal() { const v = Number(settings.tuneRate); return Number.isFinite(v) && v > 0 ? Math.max(0.5, Math.min(1.5, v)) : 1; }
+function tuneRepeatsVal() { const n = Number(settings.tuneRepeats); return n === 2 || n === 3 ? n : 1; }
+function tuneEchoOn() { return settings.tuneEcho === true; }
 // Low voices get a fuller tone: A2–B3 sits below the bass roll-off of phone and Chromebook speakers, and a
 // triangle's overtones (1/9, 1/25 of the fundamental) are too faint to carry the pitch there. Built once per context.
 let _tuneLowWave = null;
@@ -2175,7 +2234,10 @@ function stopTune() {
   for (const id of _tuneTimers) clearTimeout(id);
   _tuneTimers = [];
   document.querySelectorAll('.tu-motif-note.is-sounding, .tu-pn.is-sounding').forEach((g) => g.classList.remove('is-sounding'));
-  document.querySelectorAll('.tu-motif.is-playing, .tu-pstaff.is-playing').forEach((el) => el.classList.remove('is-playing'));
+  document.querySelectorAll('.tu-motif.is-playing, .tu-pstaff.is-playing, .tu-motif.is-echo, .tu-pstaff.is-echo').forEach((el) => el.classList.remove('is-playing', 'is-echo'));
+  _tuneTurn = false;
+  const live = document.getElementById('tuTuneLive');
+  if (live) live.textContent = '';
   // The live button first, found by its selector: a language-switch re-render mid-tune rebuilds the card
   // and paints its new button pressed, while _tuneBtn still points at the detached old one — resetting
   // only that left the fresh button lit for good.
@@ -2187,9 +2249,13 @@ function stopTune() {
   }
   _tuneBtn = null; _tuneKey = null; _tuneBtnSel = ''; _tuneAriaFn = null;
 }
+// Before the print builders' own listeners (registered later): a sheet built from live cards never carries a playing
+// staff, and a print dialog that pauses the timers would leave the lights behind the sound.
+window.addEventListener('beforeprint', stopTune);
 // One tune: `sounds` [{p, at, dur}] (p in semitones from the written B4, already moved; at/dur in
 // seconds) and `lights` [{at, i}] (the note whose data-i lights at that moment, in the staff find()
-// returns, among its `noteSel` groups). The button is pressed until the last sound ends + 120 ms.
+// returns, among its `noteSel` groups), played as the practice Settings sets. The whole practice is
+// scheduled at once, so stopTune() cancels all of it. The button is pressed until the last part ends + 120 ms.
 function _playTuneCore(o) {
   stopClip();                                        // never fight the real clip engine
   stopTune();
@@ -2213,13 +2279,36 @@ function _playTuneCore(o) {
     const note = st.querySelector(o.noteSel + '[data-i="' + i + '"]');
     if (note) note.classList.add('is-sounding');
   };
+  const turn = (on) => {   // a part ends: its last note goes dark, and the class's turn begins (dashed, announced) or ends
+    _tuneTurn = on;
+    const st = o.find();
+    if (st) {
+      st.classList.toggle('is-echo', on);
+      st.querySelectorAll(o.noteSel + '.is-sounding').forEach((x) => x.classList.remove('is-sounding'));
+    }
+    const live = document.getElementById('tuTuneLive');
+    if (live) live.textContent = on && _i18nReady ? I18n.t('trope.tune.your_turn') : '';
+  };
+  // The practice on one timeline: tuneRepeatsVal() plays, each followed while tuneEchoOn() by the class's turn (the
+  // same lights, no sound), and a breath before every part but the first, in which the part before goes dark.
+  const reps = o.total > 0 ? tuneRepeatsVal() : 1, echo = o.total > 0 && tuneEchoOn(), breath = TUNE_BREATH / tuneRateVal();
+  const sounds = [], lights = [];
+  let end = 0;
+  for (let r = 0; r < reps; r++) {
+    for (const play of echo ? [true, false] : [true]) {
+      if (end > 0) { const on = !play; lights.push({ at: end, fn: () => turn(on) }); end += breath; }
+      if (play) for (const n of o.sounds) sounds.push({ p: n.p, at: end + n.at, dur: n.dur });
+      for (const l of o.lights) lights.push({ at: end + l.at, fn: () => light(l.i) });
+      end += o.total;
+    }
+  }
   const lightsUntil = (at) => {   // each light is scheduled after the sounds that start before or with it
-    for (; li < o.lights.length && o.lights[li].at <= at; li++) {
-      const { at: la, i } = o.lights[li];
-      _tuneTimers.push(setTimeout(() => light(i), Math.round((la + 0.05) * 1000)));
+    for (; li < lights.length && lights[li].at <= at; li++) {
+      const { at: la, fn } = lights[li];
+      _tuneTimers.push(setTimeout(fn, Math.round((la + 0.05) * 1000)));
     }
   };
-  for (const n of o.sounds) {
+  for (const n of sounds) {
     const { at, dur } = n;
     const osc = _tuneCtx.createOscillator(), g = _tuneCtx.createGain();
     const wave = o.low ? _tuneLowWaveFor(_tuneCtx) : null;
@@ -2235,10 +2324,10 @@ function _playTuneCore(o) {
     lightsUntil(at);
   }
   lightsUntil(Infinity);
-  _tuneTimers.push(setTimeout(stopTune, Math.round((o.total + 0.05) * 1000) + 120));
+  _tuneTimers.push(setTimeout(stopTune, Math.round((end + 0.05) * 1000) + 120));
 }
 function playTune(t, motif, btn) {
-  const rate = Math.max(0.25, Number(settings.playbackRate) || 1);
+  const rate = tuneRateVal();
   const UNIT = 0.32 / rate;                          // seconds per d unit (an eighth) at 1×
   const low = tuneVoiceKey() === 'low';
   const shift = tuneShiftVal() + (low ? -12 : 0);   // the staff's key, and the octave the 8 under the clef asks for
@@ -2493,7 +2582,7 @@ function buildPhraseCard(m, set, row, forPrint) {
     wrap.setAttribute('aria-label', names ? noteNamesAria(label, names) : label);
   }
   const svg = renderPhraseStaff(row, { key, shift, low: tuneVoiceKey() === 'low', famOf: _phraseFamily, names });
-  if (!forPrint && _tuneKey === id) svg.classList.add('is-playing');
+  if (!forPrint && _tuneKey === id) { svg.classList.add('is-playing'); svg.classList.toggle('is-echo', _tuneTurn); }
   wrap.appendChild(svg);
   card.appendChild(wrap);
   if (!forPrint && m !== 'haftarah') card.appendChild(buildPhraseExamples(m, row));   // no haftarah examples yet (the census reads no Nevi'im text); the banner says so
@@ -2595,7 +2684,7 @@ const PHRASE_MIN_NOTE = 0.1;
 function togglePhraseTune(m, row, btn) {
   const id = 'phrase:' + m + ':' + row.n;
   if (_tuneKey === id) { stopTune(); return; }
-  const rate = Math.max(0.25, Number(settings.playbackRate) || 1);
+  const rate = tuneRateVal();
   const tick = 0.32 / 24 / rate;
   const low = tuneVoiceKey() === 'low';
   const shift = tuneShiftVal() + (low ? -12 : 0);   // the staff's key, and the octave the 8 under the clef asks for
@@ -2775,7 +2864,8 @@ function renderFamilyChips() {
       v.setAttribute('aria-label', I18n.t('trope.learn.visited_aria'));
       btn.appendChild(v);
     }
-    btn.onclick = () => { currentFamily = fam.key; renderLearn(); };
+    // Another family stops the tune: a practice can run a minute, and must not go on for a card no longer shown.
+    btn.onclick = () => { if (fam.key !== currentFamily) stopTune(); currentFamily = fam.key; renderLearn(); };
     wrap.appendChild(btn);
   }
 }
@@ -2862,7 +2952,7 @@ function renderLearn() {
       tune.onclick = () => toggleTune(t, motif, tune);
       head.appendChild(tune);
       const staff = renderMotifStaff(t, motif);
-      if (_tuneKey === t.key) staff.classList.add('is-playing');
+      if (_tuneKey === t.key) { staff.classList.add('is-playing'); staff.classList.toggle('is-echo', _tuneTurn); }
       head.appendChild(staff);
     } else if (melodyKey() === 'highholiday' && MOTIF_SETS.highholiday && motifFor(t.key, MOTIF_SETS.torah)) {
       // The four rare marks the High Holiday readings never use: say why the staff is missing.
@@ -2994,7 +3084,7 @@ function buildPrintChart() {
 }
 /* Cleared after printing so the next job re-reads the live language and tradition. */
 function clearPrintChart() { const h = document.getElementById('tuPrintSheet'); if (h) h.innerHTML = ''; }
-function printChart() { buildPrintChart(); window.print(); }
+function printChart() { stopTune(); buildPrintChart(); window.print(); }   // the sheet is built from live cards: none may be playing
 window.addEventListener('beforeprint', buildPrintChart);   // plain Ctrl+P gets the full chart too
 window.addEventListener('afterprint', clearPrintChart);
 
@@ -3002,6 +3092,7 @@ function nextFamily() {
   const i = TROPE_FAMILY_DEFS.findIndex(f => f.key === currentFamily);
   if (i >= TROPE_FAMILY_DEFS.length - 1) { setMode('drill'); return; }
   currentFamily = TROPE_FAMILY_DEFS[i + 1].key;
+  stopTune();
   renderLearn();
   document.getElementById('tuFamilyChips').scrollIntoView({ block: 'nearest' });
 }
@@ -3618,9 +3709,12 @@ function openMelodySetting() {
   const r = document.getElementById({ highholiday: 'melHH', haftarah: 'melHaf' }[melodyKey()] || 'melTorah');
   if (r) { r.closest('.tu-set-item').scrollIntoView({ block: 'center' }); r.focus({ preventScroll: true }); }
 }
-/* ── Sing along: Key (settings.tuneShift), Voice (settings.tuneVoice) and Note names (settings.noteNames) ──
+/* ── Sing along: Key (settings.tuneShift), Voice (settings.tuneVoice), Note names (settings.noteNames) and the
+   practice — Tune speed (settings.tuneRate), Play each tune (settings.tuneRepeats) and the sing-back pause
+   (settings.tuneEcho) ──
    One writer for the key — the Settings slider, the Learn bar's arrows and both resets all call
-   setTuneShift — and one read-only settings→controls half, syncTuneControls(), which renderLearn,
+   setTuneShift — one for the speed — its slider, its reset and both Slow for learning buttons call
+   setTuneRate — and one read-only settings→controls half, syncTuneControls(), which renderLearn,
    syncFormToSettings and applyI18n call, so a melody change, a reset, a cloud download and a language
    switch all repaint every control. */
 const _KEY_NOTE = { C: 'c', Db: 'db', D: 'd', Eb: 'eb', E: 'e', F: 'f', 'F#': 'fs', G: 'g', Ab: 'ab', A: 'a', Bb: 'bb', B: 'b' };
@@ -3688,6 +3782,29 @@ function setNoteNames(v) {
   renderLearn();
   renderPhrasesIfShown();
 }
+// The practice is read when a tune starts. A practice is scheduled whole, so a new speed stops one that is playing
+// (the key bar's Slow can be pressed mid-tune) rather than let it run on at the old speed; repeats and the pause live
+// on the Settings tab, where no tune plays.
+function setTuneRate(v) {
+  v = _sliderNum(v, 'optTuneRate', DEFAULTS.tuneRate);
+  if (v === settings.tuneRate) { syncTuneControls(); return; }
+  settings.tuneRate = v;
+  saveSettings();
+  stopTune();
+  syncTuneControls();
+}
+function tuneIsSlow() { return Math.abs(tuneRateVal() - TUNE_SLOW) < 0.001; }
+function toggleTuneSlow() { setTuneRate(tuneIsSlow() ? DEFAULTS.tuneRate : TUNE_SLOW); }
+function setTuneRepeats(n) {
+  settings.tuneRepeats = n === 2 || n === 3 ? n : 1;
+  saveSettings();
+  syncTuneControls();
+}
+function setTuneEcho(on) {
+  settings.tuneEcho = !!on;
+  saveSettings();
+  syncTuneControls();
+}
 function syncTuneControls() {
   const s = tuneShiftVal(), low = tuneVoiceKey() === 'low';
   const bar = document.getElementById('tuKeyBar');
@@ -3713,6 +3830,13 @@ function syncTuneControls() {
   document.getElementById('namesOff').checked = names === 'off';
   document.getElementById('namesLetters').checked = names === 'letters';
   document.getElementById('namesSolfa').checked = names === 'solfa';
+  const rate = tuneRateVal(), reps = tuneRepeatsVal();
+  const rs = document.getElementById('optTuneRate');
+  if (rs && parseFloat(rs.value) !== rate) rs.value = rate;
+  document.getElementById('optTuneRateVal').textContent = rate.toFixed(2) + '×';
+  document.querySelectorAll('.tu-slow-btn').forEach((b) => b.setAttribute('aria-pressed', tuneIsSlow() ? 'true' : 'false'));
+  [1, 2, 3].forEach((n) => { document.getElementById('tuneRep' + n).checked = reps === n; });
+  document.getElementById('optTuneEcho').checked = tuneEchoOn();
   // Pre-ready I18n.t returns raw keys; applyI18n runs this again once the dictionary has loaded.
   if (!_i18nReady || !window.I18n) return;
   if (bar) {
