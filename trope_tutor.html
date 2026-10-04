@@ -2822,6 +2822,7 @@ function setMode(mode) {
   if (!TU_TAB_IDS[mode]) mode = 'learn';
   stopClip();
   stopTune();
+  const fromView = document.activeElement && document.activeElement.closest ? document.activeElement.closest('.tu-view') : null;
   for (const m of Object.keys(TU_TAB_IDS)) {
     const on = m === mode, tab = document.getElementById(TU_TAB_IDS[m]);
     tab.setAttribute('aria-selected', on ? 'true' : 'false');
@@ -2844,6 +2845,10 @@ function setMode(mode) {
     updateDrillStart();
   }
   if (mode === 'settings') syncFormToSettings();   // the controls always show what is stored (a cloud download may have changed it)
+  // A button in the tab this switch hides (Next family on the last family, Back to Learn) would drop the focus to the
+  // page: the tab just chosen takes it, as an arrow key in the tab list leaves it (pattern button-focus-lost-to-its-own-
+  // rebuild). A caller that opens something inside the new tab (openLearnFor, openMelodySetting) moves it on from here.
+  if (fromView && fromView.hidden) document.getElementById(TU_TAB_IDS[mode]).focus();
 }
 
 /* ══════════════════════════════════════════════════════
