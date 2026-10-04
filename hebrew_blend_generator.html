@@ -11075,11 +11075,11 @@ function classSetApplies(s = computeModeState()) {
 // Update the Generate button label when Class Set changes (and when the mode does: updateModeVisibility).
 function onClassSetChange() {
   const n = classSetApplies() ? Math.max(1, Math.min(40, parseInt(document.getElementById('classSetCount')?.value) || 1)) : 1;
-  const btn = document.getElementById('generateBtn');
+  const lbl = document.querySelector('#generateBtn .hi-lbl');   // the label only: the page icon beside it is markup
   // Until the strings have loaded (t() returns the bare key before then) the page's own label stays; applyI18n
   // calls this again. Both labels come from keys: English literals here once kept the button English in Hebrew.
-  if (!btn || !window.I18n || !I18n.has('worksheet.actions.generate')) return;
-  btn.textContent = n > 1 ? I18n.t('worksheet.actions.generate_class_set', { count: n }) : I18n.t('worksheet.actions.generate');
+  if (!lbl || !window.I18n || !I18n.has('worksheet.actions.generate')) return;
+  lbl.textContent = n > 1 ? I18n.t('worksheet.actions.generate_class_set', { count: n }) : I18n.t('worksheet.actions.generate');
 }
 
 function setCwClueLang(lang) {
@@ -13991,7 +13991,7 @@ function applyI18n() {
   try { if (_presetNameNoteKey) _setPresetNameNote(_presetNameNoteKey); } catch (e) {}   // ditto for a preset-name note
   try { rerenderPreviewNotice(); } catch (e) {}   // and a live-preview notice ("Settings changed", "waiting for selection"…)
   try { updateCombosCount(); } catch (e) {}
-  // MUST run after applyStaticI18n: that sweep refills #generateBtn from its data-i18n key, which
+  // MUST run after applyStaticI18n: that sweep refills #generateBtn's label from its data-i18n key, which
   // would drop the "(N versions)" a class-set build is showing. This puts the right label back.
   try { onClassSetChange(); } catch (e) {}
   try { updateModeVisibility(); } catch (e) {}   // re-localizes the Name-the-Letter disabled reason;
