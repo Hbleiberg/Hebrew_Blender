@@ -9273,6 +9273,31 @@ function initPanelCollapse() {
   });
 }
 
+// The caller sheet lists every call (2,400+ px for an 8-card set), so Export PDF pages it the way Print
+// does: sheets in the Landscape Print toggle's orientation (never bingo's forced landscape), the capture
+// at full width, each page cut between two rows of calls (Print keeps a .caller-item whole). Fitted to
+// one page like a worksheet, it shrank to a 6 cm strip of 7 pt calls. rowTops: canvas px, ascending.
+function addCallerPdfPages(pdf, canvas, rowTops, first) {
+  const margin = 12, fmt = pageSize === 'a4' ? 'a4' : 'letter';
+  const orient = document.body.classList.contains('landscape-mode') ? 'landscape' : 'portrait';
+  for (let start = 0; start < canvas.height - 1; ) {
+    if (!first || start > 0) pdf.addPage(fmt, orient);
+    const availW = pdf.internal.pageSize.getWidth() - margin * 2;
+    const availH = pdf.internal.pageSize.getHeight() - margin * 2;
+    const mmPerPx = availW / canvas.width, room = Math.floor(availH / mmPerPx);
+    let end = canvas.height;
+    if (end - start > room) {
+      const cuts = rowTops.filter(y => y > start && y <= start + room);
+      end = cuts.length ? cuts[cuts.length - 1] : start + room;
+    }
+    const part = document.createElement('canvas');
+    part.width = canvas.width; part.height = end - start;
+    part.getContext('2d').drawImage(canvas, 0, start, canvas.width, end - start, 0, 0, canvas.width, end - start);
+    pdf.addImage(part.toDataURL('image/png'), 'PNG', margin, margin, availW, (end - start) * mmPerPx, undefined, 'FAST');
+    start = end;
+  }
+}
+
 async function exportPDF() {
   flushWorksheetBuild();   // the export reads every on-screen .sheet — finish any chunked build first
   const ws = document.getElementById('worksheet');
@@ -9363,6 +9388,8 @@ async function exportPDF() {
       const isFourUp = isBingoPage && sheet.classList.contains('four-up');
       const isTwoUp = isBingoPage && sheet.classList.contains('two-up');
       const hasTwoRows = isFourUp && sheet.classList.contains('has-two-rows');
+      const isCaller = sheet.classList.contains('caller-sheet');
+      let callerRows = [];   // where each row of calls starts in the clone that is captured (css px)
       const capW = isBingoPage && bingoRefW ? bingoRefW : sheet.scrollWidth + 8;
       const capH = isBingoPage && bingoRefH ? bingoRefH : sheet.scrollHeight + 8;
       const canvas = await html2canvas(sheet, {
@@ -9389,8 +9416,17 @@ async function exportPDF() {
           if (isBingoPage) {
             el.querySelectorAll('.bingo-cut-line').forEach(d => d.remove());
           }
+          if (isCaller) {
+            const top = el.getBoundingClientRect().top;
+            callerRows = [...new Set([...el.querySelectorAll('.caller-item')].map(it => it.getBoundingClientRect().top - top))];
+          }
         },
       });
+      if (isCaller) {
+        const s = canvas.width / capW;
+        addCallerPdfPages(pdf, canvas, callerRows.map(y => Math.round(y * s)).sort((a, b) => a - b), i === 0);
+        continue;
+      }
 
       const imgData = canvas.toDataURL('image/png');
       // Aspect-preserving fit: scale by whichever dimension constrains, then

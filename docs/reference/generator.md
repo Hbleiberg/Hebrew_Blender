@@ -244,7 +244,9 @@ list (every page unit is a direct child; the tracing probe sheet is appended and
 task) coalesces to a frame and re-counts, which is what keeps it right through a presentation-only
 re-render (Answer Key on/off) and the chunked Class Set pump that appends sheets after
 `enableButtons()` already ran. Zero units (the empty state, before the first Generate) hides both
-hosts; `applyI18n()` re-renders the text on a language switch. The sidebar's `padding-bottom` and
+hosts; `applyI18n()` re-renders the text on a language switch. One known gap: a caller sheet counts as
+one unit though Print and Export PDF both give a long one several pages (an 8-card set's 192 calls take
+three). The sidebar's `padding-bottom` and
 the mobile `.main-content` padding reserve the footer's taller post-Generate height.
 
 ---
@@ -301,7 +303,11 @@ The worksheet header's subtitle is static markup (`data-i18n="worksheet.header_s
 ## PDF export (`exportPDF`)
 
 Each `.sheet` (or `.bingo-page` / `.caller-sheet`) is captured with html2canvas at `scale: 2` and placed with
-one `pdf.addImage(..., undefined, 'FAST')` per page. **The `'FAST'` compression argument is required** —
+one `pdf.addImage(..., undefined, 'FAST')` per page — except the caller sheet, a list of every call that
+runs to several pages: `addCallerPdfPages` places its capture at full width on pages of the Landscape Print
+toggle's orientation (never bingo's forced landscape) and cuts each page between two rows of calls (the
+row tops measured in html2canvas's clone), which is how Print pages it; fitted to one page it shrank to a
+6 cm strip. **The `'FAST'` compression argument is required** —
 without it jsPDF stores the decoded raster raw (~10 MB per page, 107 MB for an 8-card bingo set). Bingo
 cut lines are drawn as vector primitives after the image, at positions measured from the captured canvas.
 The capture itself is synchronous and costs ~0.3–1 s of main thread per page; the button reads
