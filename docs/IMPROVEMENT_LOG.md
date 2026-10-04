@@ -8,6 +8,16 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P2 (**NEW S454 H — gate 2**) | resources.html | **At ten My Fonts, "Use in IvritSuite" silently drops the oldest** (a teacher's own font; the toast says "added"). | found S454
+
+- [ ] P3 (**NEW S454 H — gate 2**) | resources.html | **The FAQ and its JSON-LD say each card notes cost or sign-up; 4 of 43 do.** | found S454
+
+- [ ] P4 (**NEW S454 H**) | resources.html | **The Suggest form's last status stays on reopen** (a stale "sent!" or error). | found S454
+
+- [ ] P4 (**NEW S454 H — gate 2**) | resources.html | **"Jewish Interactive" is listed twice** (one URL; "All" counts 43 for 42). | found S454
+
+- [ ] P4 (**NEW S454 H**) | resources.html | **The IvritSuite card opens the hub in a new tab**: its `_self` branch is dead since `d03425c1`. | found S454
+
 - [ ] P3 (**S452 D — shared**) | js/ivrit-saves.js | **A hydration fetches changed rows one serial `GET` at a time** (31 rows: 4.4 s at 100 ms RTT). | found S452
 
 - [ ] P3 (**NEW 2026-10-03, gate 2**) | hebrew_blend_generator.html | **"Exclude Repeats" promises that no two blends share a letter pair**, but `drawBlends` only rejects a blend repeating one letter (`first === second`) and 1-Letter never reads the switch: fix the behaviour or the tooltip. | found 2026-10-03
@@ -52,7 +62,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S421 Pass P — for H**) | classroom_dashboard.html | **A class list beyond the picker's cap keeps its names now (`288af4a`) but the picker draws only the first 60 chips** (`rosterNames()` slices), so students 61+ of a merged class are stored and counted ("65 names (max 60)") yet never picked; say so in the drawer or raise the chip cap. | found S421
 
-- [ ] P3 (**NEW 2026-09-26**) | trope_tutor.html (trope_index.json) | **8 Learn example clips sit where PocketTorah's taps slip by a word** (`build-trope-phrases.mjs` TIMING_SLIPS), so each likely plays a neighbouring word; the index builder could skip those verses. | found 2026-09-26
+- [ ] P3 (**NEW 2026-09-26**) | trope_tutor.html (trope_index.json) | **8 Learn example clips sit where PocketTorah's taps slip by a word** (`build-trope-phrases.mjs` TIMING_SLIPS), so each likely plays a neighbouring word; the index builder could skip those verses. **S454: not small** (findings S454). | found 2026-09-26
 
 - [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
 
@@ -168,9 +178,9 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S283**) | Hebrew_Font_Maker.html | **The Yerushalam lamed-patah-hiriq rule and `jalt` wide-letter justification alternates** — `AddHebrewContextualGPOS.py` / `WideLetters.fea`. The jalt half overlaps the shipped ss02 wide forms (v5.33): the glyphs exist, only the `jalt` feature registration is missing. | found: 2026-08-29, S283
 
-- [ ] P4 (**NEW S314 Pass O — bucket 4, to loop-findings once confirmed**) | Hebrew_Font_Maker.html | **`tight-leading` reports "1.30x (need >=1.3)" — a rounding false positive in the detector, not a leading defect.** | found S314
-
 ## Feature seeds (micro-features only; see the Micro-feature track in the session prompt)
+
+- [ ] S | resources.html | **The Links filters live in the address** (`?cat=&age=`): bookmarkable, kept on reload. | found S454 H
 
 - [ ] S | hebrew_dictionary.html | **Word Lists offers "Save the N selected words"** while a selection exists (it says "No word lists yet…"). | found S440 H
 
@@ -278,6 +288,14 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-04 | (S454 close-out) | branch/deploy note | **S454 = pass H + 4 fixes, PR #308.** Drift none; sw v926→v927; no FM bump; no smokes (no backend file); deferred: micro-feature, gate 2 ×3.
+
+- [x] 2026-10-04 | `ab9a133e` | torah_trainer.html | (S454) **The translation-version status lines follow a language switch.** | `ttver.mjs` HEAD 3/3 stay English → 12/12 follow.
+
+- [x] 2026-10-04 | `3378bb1f` | resources.html | (S454 H) **The Suggest form takes an address typed without https://.** | `fix2.mjs` 8 cells: 24/24 sent (HEAD 0); a bare word refused.
+
+- [x] 2026-10-04 | `b1eb9659`, `f8706492` | resources.html, contact.html, classroom_dashboard.html | (S454 H) **URL/e-mail fields type LTR in Hebrew; the YouTube field takes the page's style.** | `bidi.mjs` 9/9 → 0, `fix1.mjs` 0 (HEAD 16); `dashurl.mjs` 0 of 7 props off (HEAD 6–7).
+
 - [x] 2026-10-04 | (S453 close-out) | branch/deploy note | **S453 = pass I + 4 fixes, PR #308.** Drift none; sw v925→v926; no FM bump; 7 smokes green; deferred: micro-feature.
 
 - [x] 2026-10-04 | `2baede2d` | js/ivrit-saves.js | (S453) **A load with nothing to send lists once.** | smoke-sync 1 tightened; 7 smokes.
@@ -312,19 +330,11 @@ _(none)_
 
 - [x] 2026-10-02 | `c9e2bc2b` | flash_cards.html | (S450 M, NEW) **The dark primary button gets its own plate** (contact's `#2a4070`/`#345090`; Redo was bare gold text). | HEAD dark fill = body → `rgb(42,64,112)`; light same; 7.05:1; a real hover moves it, a disabled one not; 32 shots 0 errors.
 
-- [x] 2026-10-02 | (S449 close-out) | branch/deploy note | **S449 = pass P on `account.html` + 4 fixes on draft PR #303 (unmerged).** DRIFT: none (main `43570d4`, FM 5.58, SDK 2.116.0, 0001–0003 live and recorded, delete-account v3 deployed with its JWT check on = repo source, advisors: performance clean, security the known moot password WARN; keep-alive #19 green 10-01). sw v916→v917 (account, …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-10-02 | `1ae29189` | hebrew_dictionary.html | (S449; S427 C (1), the last part) **The emoji category tree's ▾ toggles are 24×24 and its rows 24px** (sub indent 14 → 29px). | `tree.mjs` light/dark × EN/HE × 1280/800 by a real click: HEAD 9×12 / 16px rows 8/8 → 24×24 / ≥24 8/8; `clip.mjs` 0 counts past the sidebar clip, 0 overflowing rows; 0 pageerrors.
-
-- [x] 2026-10-02 | `dd60945a` | hebrew_blend_generator.html | (S449; S435 P) **A `?wl=` link whose list is only in the account generates from it once the list lands** (`openWlLink` + `_pendingWl`, opened from the wordList download). | `gen-w7.mjs` on the fake cloud + pinned SDK: account-only HEAD no list / no sheet / `?wl=` kept → fixed generated, param stripped; on-device control both; …[full …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-10-02 | `44ce9aad` | flash_cards.html | (S449; S435 P) **A `?wl=` link whose list is only in the account opens with it once the list lands** (never mid-ladder or mid-shared-drill). | S435's W7: account-only HEAD fails → fixed passes; on-device control both; W1/W2 still pass; smoke-tools flash 21/21, sync 201/201.
-
-- [x] 2026-10-02 | `d5d57c72` | account.html | (S449 P, NEW) **A sign-out, or another account's sign-in from another tab, closes the armed delete box and drops the unsaved name** (it stayed ticked with A's address under B's label; A's typed name sat one Save from B's profile). | `switch.mjs` two tabs on the fake cloud + pinned SDK, B and the same-account control: HEAD armed in both → closed / …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-04 | **S454** | iters: 1 pass (**H**) + 4 fixes = **5** | tools: resources ×2, dashboard ×2, contact, torah | patterns fixed: ltr-machine-text-field-typed-rtl (NEW), pre-ready-interpolated-write-never-healed | pass run: H | SW: v926→v927
 
 - 2026-10-04 | **S453** | iters: 1 pass (**I**) + 4 fixes = **5** | tools: torah, generator ×2, ivrit-saves | patterns fixed: pre-ready-interpolated-write-never-healed (NEW), textContent-rewrite-erases-a-control-icon | pass run: I | SW: v925→v926
 
@@ -350,11 +360,13 @@ _(none)_
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S453 (2026-10-04):** generator, torah, ivrit-saves S453 · FM S452 · flash, dictionary S451 · account S449 · trope S447 · index S446 · dashboard S444 · resources, contact, privacy, terms, 404 S442.
+- **Snapshot S454 (2026-10-04):** resources, contact, dashboard, torah S454 · generator, ivrit-saves S453 · FM S452 · flash, dictionary S451 · account S449 · trope S447 · index S446 · privacy, terms, 404 S442.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
-- **`pre-ready-interpolated-write-never-healed`** (NEW S453; `728e4075`; open P4: torah's 3 post-load lines): ACTIVE, streak 0. Detection: `i453/gates.mjs` `LDELAY=700`.
+- **`ltr-machine-text-field-typed-rtl`** (NEW S454; `b1eb9659`, 4 carriers): ACTIVE, streak 0. Detection: `type="email|url"` (or JS `.type`) without `dir="ltr"`; a translated placeholder adds `:placeholder-shown { direction: inherit }`.
+
+- **`pre-ready-interpolated-write-never-healed`** (NEW S453; `728e4075`; **S454 `ab9a133e`**): ACTIVE, streak 0. Detection: `i453/gates.mjs` `LDELAY=700`; `h454/ttver.mjs`.
 
 - **`cdn-library-parser-blocking-for-one-action`** (NEW S452 D; generator `82bbe313`, FM `d01a33cd`): ACTIVE, streak 0. A parser-blocking CDN `<script src>` in `<head>` for one action. Detection: `grep -n '<script[^>]*src="https\?://' *.html | grep -v ' async\| …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -658,10 +670,10 @@ _(none)_
 
 - L SEO & discoverability audit: 2026-10-02 (**S446 — 23rd L on the S432→now delta (17 crawler files) + the whole surface: a rebuilt `l446/audit.py` (title/description/canonical/noindex set/og+twitter/og:url/image IHDR/JSON-LD parse+URLs+self url+breadcrumb+HowTo/h1/img alt/lang/sitemap set/crawl graph/robots/CNAME), 17 plants in 2 HEAD copies all fired, real tree 0; FAQ 53 / HowTo 42; torah + …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- H teacher walkthrough / paper-cuts (one tool): 2026-10-01 (**S440 — `hebrew_dictionary.html` (S292 →), 5 lessons by real clicks, EN + HE dark 800. FOUND 5 + 2 seeds; FIXED `23b7bb0f`, `501f6ed0`. H-next: resources (S305).**)
+- H teacher walkthrough / paper-cuts (one tool): 2026-10-04 (**S454 — `resources.html` (S305 →), 3 errands by real clicks, EN + HE dark 800. FOUND 8 + 1 seed; FIXED `b1eb9659`, `3378bb1f`. H-next: index (S323).**)
 
 - E freshness/site-health: 2026-10-02 (**S445 — 35th E on the S431→now delta + main's og cards. 17 arms, every plant fired (findings S445). FOUND + FIXED 3 stale doc/comment claims.**)
 
 - F cross-tool consistency: 2026-10-01 (**S442 — the keyboard focus ring on all 14 pages + the 3 shared modules' injected rings: a real-Tab walk (EN light/dark 1280, HE light/dark 800 on 6), ring colour and contrast against its surface, transitions disabled; HEAD as the control (58 light stops under 3:1, 0 dark). FIXED `91fede71` (the `--focus-ring` token), `a46342c1` (modules); logged 2 P4 …[full text: IMPROVEMENT_ARCHIVE.md]
 
-**Next session (S454):** **BRANCH/PR: S452 + S453 on `claude/improveloop-s452` → draft PR #308 (base `c0f3b57`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v926**, FM **5.59**, SDK **2.116.0**. ⚑ Stalest: H (S440), C (S441), F (S442); O blocked. ⚑ Untaken: the saves serial fetches, the caller page count, torah's 3 post-load lines.
+**Next session (S455):** **BRANCH/PR: S452–S454 on `claude/improveloop-s452` → draft PR #308 (base `c0f3b57`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v927**, FM **5.59**, SDK **2.116.0**. ⚑ Stalest: C (S441), F (S442), B (S443); O blocked. ⚑ Untaken: the font-cap note (P2, gate 2), the saves serial fetches.
