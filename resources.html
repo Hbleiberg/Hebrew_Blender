@@ -2151,6 +2151,17 @@ function openSubmitFont(pf) {
     }
   }
 
+  // An address typed the way a browser's bar shows it ("www.example.org") is what the teacher means: give it its
+  // scheme before the browser's own check refuses it as "not a URL". The submit button's click runs before that
+  // check (Enter in a field clicks it too); change covers leaving the field. No dot, no guess: the check still asks.
+  const urlInp = document.getElementById('sgResUrl');
+  function withScheme(){
+    const v = urlInp.value.trim();
+    if (v && !/^[a-z][a-z0-9+.-]*:/i.test(v) && v.indexOf('.') > 0) urlInp.value = 'https://' + v.replace(/^\/+/, '');
+  }
+  urlInp.addEventListener('change', withScheme);
+  form.querySelector('button[type="submit"]').addEventListener('click', withScheme);
+
   window.openSuggestModal = function(){ hcTries = 0; sgDialogOpen('sgBackdrop', '.sg-modal-close'); ensureCaptcha(); };
   window.closeSuggestModal = function(e){ if (e && e.target !== backdrop) return; sgDialogClose('sgBackdrop'); };
 
