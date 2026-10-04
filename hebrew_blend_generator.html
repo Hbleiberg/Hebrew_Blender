@@ -6874,7 +6874,7 @@ function liveIsHeavyMode() {
   if (document.getElementById('numberPracticeToggle')?.checked &&
       document.getElementById('npBingo')?.checked && val('npBingoCards') > 40) return true;
   if (rwOn && rwDrillType === 'bingo' && val('rwBingoCards') > 40) return true;
-  if (val('classSetCount') > 10) return true;
+  if (classSetApplies() && val('classSetCount') > 10) return true;
   return false;
 }
 
@@ -7354,8 +7354,8 @@ function updateModeVisibility() {
     outputOptionsDivider: qrDrill ||
                           (!testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && s.drill !== 'tracing' && !s.bingo && !isNtl) ||
                           (!gemSC && !ntlSC && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && s.drill !== 'tracing' && !s.bingo && !isNtl),
-    // Class Set (multi-version) makes no sense for tracing — hide it there.
-    rowClassSet:       !(blends && s.drill === 'tracing'),
+    // Class Set (multi-version) shows only where it prints versions (classSetApplies).
+    rowClassSet:       classSetApplies(s),
     rowBlendCount:     !testMode && blends && !s.bingo && s.drill !== 'matching',
 
     // Sub-option panels
@@ -7390,6 +7390,7 @@ function updateModeVisibility() {
       el.style.display = '';
     }
   }
+  onClassSetChange();   // the Generate label names versions only in a mode that prints them
 
   // Suppress the output-options divider when no option rows sit between it
   // and the Worksheet Type selector — otherwise it just adds dead space.
@@ -9837,7 +9838,7 @@ function generate(animate = false) {
     return;
   }
 
-  const classSet = Math.max(1, Math.min(40, parseInt(document.getElementById('classSetCount')?.value) || 1));
+  const classSet = classSetApplies() ? Math.max(1, Math.min(40, parseInt(document.getElementById('classSetCount')?.value) || 1)) : 1;
   if (classSet > 1) {
     classSetSheets = [];
     for (let v = 0; v < classSet; v++) classSetSheets.push(drawBlends());
@@ -11062,16 +11063,23 @@ function rwSelectedListUnion() {
   return out;
 }
 
-// Update the Generate button label when Class Set changes.
+// Class Set draws its versions only on generate()'s 2/3-Letter blend path, and only the standard sheets and
+// Matching lay them out; Bingo, Gematria, Tracing, a self-check and the other practice types print one, so the
+// row, the button's "(N versions)" and the count itself act only where this is true.
+function classSetApplies(s = computeModeState()) {
+  const selfCheck = s.selfCheck && s.drill !== 'fillvowels' && s.drill !== 'gematria';
+  return s.source === 'blends' && (s.blendType === 'two' || s.blendType === 'three')
+    && !s.bingo && !selfCheck && s.drill !== 'gematria' && s.drill !== 'tracing';
+}
+
+// Update the Generate button label when Class Set changes (and when the mode does: updateModeVisibility).
 function onClassSetChange() {
-  const n = Math.max(1, Math.min(40, parseInt(document.getElementById('classSetCount')?.value) || 1));
+  const n = classSetApplies() ? Math.max(1, Math.min(40, parseInt(document.getElementById('classSetCount')?.value) || 1)) : 1;
   const btn = document.getElementById('generateBtn');
-  // Both branches were English literals behind a ternary — the shape Check A cannot see — so the
-  // primary button reverted to English the moment a Hebrew-UI teacher touched the Class Set count.
-  if (btn) btn.textContent = window.I18n
-    ? (n > 1 ? I18n.t('worksheet.actions.generate_class_set', { count: n })
-             : I18n.t('worksheet.actions.generate'))
-    : (n > 1 ? `⬡ Generate Class Set (${n} versions)` : '⬡ Generate Worksheet');
+  // Until the strings have loaded (t() returns the bare key before then) the page's own label stays; applyI18n
+  // calls this again. Both labels come from keys: English literals here once kept the button English in Hebrew.
+  if (!btn || !window.I18n || !I18n.has('worksheet.actions.generate')) return;
+  btn.textContent = n > 1 ? I18n.t('worksheet.actions.generate_class_set', { count: n }) : I18n.t('worksheet.actions.generate');
 }
 
 function setCwClueLang(lang) {

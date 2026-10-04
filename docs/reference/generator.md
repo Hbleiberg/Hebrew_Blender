@@ -231,6 +231,12 @@ version 0 synchronously, then streams the remaining versions in `setTimeout(0)` 
 - Headless verification must **poll** for the final `.sheet` count (or `_wsBuildQueue.length === 0`)
   after a large-class-set Generate — never count synchronously.
 
+**Where Class Set applies** (`classSetApplies()`): `generate()` draws versions only on its 2/3-Letter blend
+path, and only the standard sheets and Matching lay them out — so the `#rowClassSet` row, the Generate
+button's "(N versions)" label and the count itself (the draw, `liveIsHeavyMode`) act only there; Bingo,
+Gematria, Tracing, a self-check, 1-Letter, Vowels Only, Real Words and Number Practice print one version.
+The stored count is kept while the row is hidden. A new drill that lays out `classSetSheets` joins that test.
+
 ---
 
 ## Page count under Print / Export PDF (`updatePrintCount`)
