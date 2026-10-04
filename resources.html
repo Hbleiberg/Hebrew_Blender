@@ -2162,7 +2162,14 @@ function openSubmitFont(pf) {
   urlInp.addEventListener('change', withScheme);
   form.querySelector('button[type="submit"]').addEventListener('click', withScheme);
 
-  window.openSuggestModal = function(){ hcTries = 0; sgDialogOpen('sgBackdrop', '.sg-modal-close'); ensureCaptcha(); };
+  // A form opened again starts with an empty status line: the last send's "Thanks" or error belongs to that send, and
+  // a teacher suggesting a second resource read it as the answer to the new one. A send still in flight keeps its
+  // "Sending…" (the button is disabled until it lands, and its answer writes the line as before).
+  window.openSuggestModal = function(){
+    hcTries = 0;
+    if (!form.querySelector('button[type="submit"]').disabled){ statusEl.textContent = ''; statusEl.style.color = ''; }
+    sgDialogOpen('sgBackdrop', '.sg-modal-close'); ensureCaptcha();
+  };
   window.closeSuggestModal = function(e){ if (e && e.target !== backdrop) return; sgDialogClose('sgBackdrop'); };
 
   form.addEventListener('submit', async function(e){
