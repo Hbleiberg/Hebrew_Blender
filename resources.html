@@ -1032,7 +1032,7 @@ function render() {
   grid.innerHTML = filtered.map(r => {
     const cat = CAT_META[r.cat] || { label: r.cat, icon: '📌' };
     const badgeLabel = CAT_BADGE_KEY[r.cat] ? I18n.t('resources.cat_badge.' + CAT_BADGE_KEY[r.cat]) : cat.label;
-    const target = r.url === 'index.html' ? '_self' : '_blank';
+    const target = r.url === 'https://ivritsuite.com/' ? '_self' : '_blank';   // the suite's own card stays in this tab ("You're here now!")
     // The directory's own text stays English in both UIs (third-party data): lang="en" has a Hebrew screen
     // reader voice it in English, and the grade label's dir="ltr" keeps its ranges and parentheses in
     // English order inside the Hebrew sentence (Sefaria's read "6–8, 9–12, Adult/Teacher ,(guided) 5–3").
