@@ -5820,8 +5820,8 @@ async function fetchAndRender() {
     // Only blame the network when the failure happened while fetching. Once the text is in hand
     // (netDone), a throw is a render/code fault — the Hebrew is often already on screen — so
     // "Sefaria API may be unreachable" would misdirect the user.
-    const netHint = netDone ? '' : ' ' + I18n.t('torah.status.net_hint');
-    setStatus(I18n.t('torah.status.reading_load_failed', { label: r.label, error: e.message }) + netHint, true);
+    const netHint = !netDone;
+    setStatus(() => I18n.t('torah.status.reading_load_failed', { label: r.label, error: e.message }) + (netHint ? ' ' + I18n.t('torah.status.net_hint') : ''), true);
     // A failed FIRST load (e.g. offline / Sefaria down) would otherwise leave the
     // reading pane blank — show the failed-load empty card (names the failure +
     // Try again) so the pane isn't dead and doesn't re-instruct the pick the
@@ -5831,9 +5831,12 @@ async function fetchAndRender() {
     _tourOnReadingChanged();   // a parked tour reading-step won't get its content — release it so it skips past
   }
 }
+let _statusRender = null;   // the status line's builder when it was given one (see setStatus)
 function setStatus(msg, isError, key) {
   const el = document.getElementById('ttStatus');
-  el.textContent = msg;
+  // A message built from params or from several keys comes as a function, kept so applyI18n can build it again.
+  _statusRender = typeof msg === 'function' ? msg : null;
+  el.textContent = _statusRender ? _statusRender() : msg;
   el.classList.toggle('error', !!isError);
   // Callers with a plain (non-interpolated) message pass its key, so applyI18n can
   // re-resolve this line when the language changes — or when I18n was not yet ready
@@ -10467,11 +10470,12 @@ function applyI18n() {
       // the stamp so the on-screen variant (pick-a-parsha OR failed+retry) keeps its copy.
       emptyCard.querySelectorAll('[data-i18n-key]').forEach(el => { el.textContent = I18n.t(el.dataset.i18nKey); });
     }
-    // Re-resolve the status line from the key its writer recorded — this both heals a raw
-    // key left by a pre-ready write AND keeps the line following later language switches.
-    // Interpolated messages record no key and are left alone, so nothing is clobbered.
+    // Re-resolve the status line from the key its writer recorded, or rebuild it with the builder its
+    // writer passed — this both heals a raw key left by a pre-ready write AND keeps the line following
+    // later language switches. A plain interpolated string records neither and is left alone.
     const st = document.getElementById('ttStatus');
     if (st && st.dataset.i18nKey) st.textContent = I18n.t(st.dataset.i18nKey);
+    else if (st && _statusRender) st.textContent = _statusRender();
     const ts = document.getElementById('optTranslitStatus');
     if (ts && ts.dataset.i18nKey) ts.textContent = I18n.t(ts.dataset.i18nKey);
     const ps = document.getElementById('optPitchStatus');
