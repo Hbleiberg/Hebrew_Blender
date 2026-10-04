@@ -2458,6 +2458,7 @@ function renderPhrases() {
   document.getElementById('tuPhrMelodyNoteHaf').hidden = m !== 'haftarah';
   syncTuneControls();   // the key bar names the key these staffs are drawn in
   const chipsEl = document.getElementById('tuPhraseChips'), cards = document.getElementById('tuPhraseCards');
+  const hadGroup = chipsEl.contains(document.activeElement) ? document.activeElement.dataset.group : null;   // as renderFamilyChips
   chipsEl.innerHTML = '';
   cards.innerHTML = '';
   const status = document.getElementById('tuPhrStatus');
@@ -2477,9 +2478,11 @@ function renderPhrases() {
     b.className = 'tu-chip fam-' + (PHRASE_GROUP_FAMILY[gr.key] || 'rare') + (gr === g ? ' active' : '');
     b.setAttribute('aria-pressed', gr === g ? 'true' : 'false');
     b.textContent = I18n.t('trope.phrases.group_' + gr.key);
+    b.dataset.group = gr.key;
     b.onclick = () => { currentPhraseGroup = gr.key; stopTune(); renderPhrases(); };
     chipsEl.appendChild(b);
   }
+  if (hadGroup) { const b = [...chipsEl.children].find((x) => x.dataset.group === hadGroup); if (b) b.focus(); }
   for (const row of g.rows) cards.appendChild(buildPhraseCard(m, set, row, false));
   const isLast = groups[groups.length - 1] === g;
   document.getElementById('tuNextGroup').textContent = I18n.t(isLast ? 'trope.learn.ready_drill' : 'trope.phrases.next_group');
@@ -2848,10 +2851,14 @@ function setMode(mode) {
    ══════════════════════════════════════════════════════ */
 function renderFamilyChips() {
   const wrap = document.getElementById('tuFamilyChips');
+  // A press rebuilds the row the chip sits in: the focus follows its family to the new chip, or a keyboard user is
+  // dropped on the page (pattern button-focus-lost-to-its-own-rebuild). A mouse press gets no ring from it.
+  const hadFam = wrap.contains(document.activeElement) ? document.activeElement.dataset.fam : null;
   wrap.innerHTML = '';
   for (const fam of TROPE_FAMILY_DEFS) {
     const btn = document.createElement('button');
     btn.type = 'button';
+    btn.dataset.fam = fam.key;
     btn.className = 'tu-chip fam-' + fam.key + (fam.key === currentFamily ? ' active' : '');
     btn.setAttribute('aria-pressed', fam.key === currentFamily ? 'true' : 'false');
     const nm = document.createElement('span');
@@ -2868,6 +2875,7 @@ function renderFamilyChips() {
     btn.onclick = () => { if (fam.key !== currentFamily) stopTune(); currentFamily = fam.key; renderLearn(); };
     wrap.appendChild(btn);
   }
+  if (hadFam) { const b = [...wrap.children].find((x) => x.dataset.fam === hadFam); if (b) b.focus(); }
 }
 
 /* Pick ≤4 example indices spread across the (parsha-round-robin-ordered) pool. */
