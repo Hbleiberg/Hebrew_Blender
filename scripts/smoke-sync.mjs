@@ -525,7 +525,7 @@ try {
     const gets2 = cloud.log.slice(before).filter(e => e.m === 'GET' && e.table === 'saves');
     const loads2 = gets2.filter(e => /^eq\./.test(param(e, 'id') || '')), listings2 = gets2.filter(e => /^in\./.test(param(e, 'tool') || ''));
     const secondTools = listings2.length ? (param(listings2[0], 'tool') || '').slice(4, -1).split(',').sort() : [];
-    check('1: a reload lists only this page\'s tools and fetches no row (every hash matches the memory)', ok2 && loads2.length === 0 && listings2.length >= 1 && JSON.stringify(secondTools) === '["Dictionary","Suite","Worksheet"]' && /^Saved in your account/.test(await statusText(page, '#cloudSavesPanel') || ''), JSON.stringify({ ok2, loads: loads2.length, tools: secondTools, calls: methods(cloud, before) }));
+    check('1: a reload lists only this page\'s tools, once, and fetches no row (every hash matches the memory)', ok2 && loads2.length === 0 && listings2.length === 1 && JSON.stringify(secondTools) === '["Dictionary","Suite","Worksheet"]' && /^Saved in your account/.test(await statusText(page, '#cloudSavesPanel') || ''), JSON.stringify({ ok2, loads: loads2.length, tools: secondTools, calls: methods(cloud, before) }));
     await page.screenshot({ path: path.join(SHOTS, '1-generator-hydrated.png') });
     check('1: 0 pageerrors', errors.length === 0, errors.join(' | '));
     await ctx.close();

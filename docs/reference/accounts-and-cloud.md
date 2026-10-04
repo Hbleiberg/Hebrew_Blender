@@ -510,8 +510,11 @@ device lacks or holds older; (2) on the first hydration the card, and after *Add
 same-named row → keep both), after *Remove* the extras' removal, then every settings row and folder tree the
 device holds is held back at its present hash (`holdBack` into `ivritSuite_syncMeta2.noUpload[uid]`, so a reload
 does not release it; it goes up only once it changes), then a fresh listing; (3) uploads, merges (`tabMerge`
-among them), the account's deletions and this device's deletions; (4) a fresh listing and the folder trees,
-never on a stale plan, then this tab's view recorded (`snapshotNames`); finally the status line (`saved` with the newest `updated_at`, `error_row` naming skipped
+among them), the account's deletions and this device's deletions; (4) the folder trees, never on a stale plan —
+a fresh listing only when an insert, update or delete was sent or settled since the last one (`cloudWrites`,
+moved by `sent()` in the four cloud write functions), else that listing again, so a load with nothing to send
+lists once —
+then this tab's view recorded (`snapshotNames`); finally the status line (`saved` with the newest `updated_at`, `error_row` naming skipped
 rows, `error` with Retry, or `offline_pending`), `hydratedTools[tool] = uid`, the hook armed,
 `ivritsuite:hydrated` `{ tools, ok, first, landed }` on `window`, and a flush of the kinds a page wrote
 meanwhile. A row's own trouble (too big, an impossible name, a malformed cloud copy, no merge helper on this

@@ -359,6 +359,7 @@
   var suspended = false;   // Erase All: nothing goes up any more on this page
   var storageFull = false; // the sync memory could not be stored (this origin's storage is full): nothing more is sent or landed on this page
   var refused = {};        // 'tool/kind/name' → true: a row write-through could not send (too big, a name the table refuses), until it lands
+  var cloudWrites = 0;     // moves as each insert, update or delete is sent and settles (sent): a hydration lists again only after one
   var seen = {};           // tool → kind → the write stamp this tab last acted on, or made itself (recheckWrites)
   var listening = false;
   var listedFor = {};      // tool → the user id an account event last hydrated it for (listen)
@@ -1214,28 +1215,34 @@
         return row;
       });
   }
+  // Every insert, update and delete goes through here: cloudWrites moves when one is sent and again when it settles,
+  // so a listing asked for while one was in flight is never taken as the account's (hydrateInner, step 4).
+  function sent(p) {
+    cloudWrites++;
+    return p.then(function (v) { cloudWrites++; return v; }, function (err) { cloudWrites++; throw err; });
+  }
   function cloudInsert(entry, name, data, hash) {
-    return withClient(function (c) {
+    return sent(withClient(function (c) {
       return c.from('saves').insert({ tool: entry.tool, kind: entry.kind, name: name, data: data, data_hash: hash, client_updated_at: now() }).select(ROW_COLS).single();
-    });
+    }));
   }
   // Writes only if the row is still the one that was listed, so another device's newer copy is never
   // overwritten unseen; zero rows back means "changed meanwhile: list again and decide again".
   function cloudUpdateIf(id, expectedUpdatedAt, data, hash) {
-    return withClient(function (c) {
+    return sent(withClient(function (c) {
       return c.from('saves').update({ data: data, data_hash: hash, client_updated_at: now() }).eq('id', id).eq('updated_at', expectedUpdatedAt).select(ROW_COLS);
-    }).then(function (rows) {
+    })).then(function (rows) {
       if (!rows || !rows.length) throw makeError('changed', 'IvritSaves: the row changed meanwhile');
       return rows[0];
     });
   }
   function cloudRemove(id) {
-    return withClient(function (c) { return c.from('saves').delete().eq('id', id).select('id'); }).then(function () { return true; });
+    return sent(withClient(function (c) { return c.from('saves').delete().eq('id', id).select('id'); })).then(function () { return true; });
   }
   // Deletes only if the row is still the one this device synced: zero rows back means another device wrote
   // it since — the later human action wins, so the caller downloads instead.
   function cloudRemoveIf(id, expectedUpdatedAt) {
-    return withClient(function (c) { return c.from('saves').delete().eq('id', id).eq('updated_at', expectedUpdatedAt).select('id'); })
+    return sent(withClient(function (c) { return c.from('saves').delete().eq('id', id).eq('updated_at', expectedUpdatedAt).select('id'); }))
       .then(function (rows) { if (!rows || !rows.length) throw makeError('changed', 'IvritSaves: the row changed meanwhile'); return true; });
   }
   // Does the account still exist? (A listing that lacks every remembered row is checked here first: a
@@ -2205,14 +2212,17 @@
     var first = !hydratedAt(uid) && !firstHydrationDone[uid];
     var listTools = first ? toolsWithEntries() : tools;
     var res = { tools: tools, ok: false, first: first, done: 0, skipped: 0, skips: [], fontFull: [], landed: {}, error: null, hint: false };
+    var listed = null, writesAtListing = 0;   // the listing, and cloudWrites when it was asked for (step 4)
     tools.forEach(function (tool) { hydrating[tool] = true; setStatus(tool, 'loading'); });
     return Promise.resolve().then(function () {
       if (storageFull) throw makeError('storage_full', 'IvritSaves: storage is full');
       tools.forEach(function (tool) { if (pages[tool] && !pages[tool].pulled) flushPage(tool); });
       return primeVirtual('Suite');
     }).then(function () {
+      writesAtListing = cloudWrites;
       return cloudList(listTools);
     }).then(function (rows) {
+      listed = rows;
       return accountGoneCheck(uid, listTools, rows).then(function (gone) {
         if (gone) { var e = makeError('signed_out', 'IvritSaves: the account is gone'); e.accountGone = true; throw e; }
         return seqMap(listTools, function (tool) { return planTool(tool, rows); });
@@ -2263,14 +2273,18 @@
             }); });
             return seqMap(held, function (x) { return hashItem(x.e, x.value).then(function (h) { holdBack(uid, x.tool, x.e.kind, x.name, h); }); });
           });
-        }).then(function () { markHydrated(uid); firstHydrationDone[uid] = true; return cloudList(tools).then(function (rows2) { return seqMap(tools, function (tool) { return planTool(tool, rows2).then(function (p) { byTool[tool] = p; }); }); }); });
+        }).then(function () {
+          markHydrated(uid); firstHydrationDone[uid] = true; writesAtListing = cloudWrites;   // the card may have waited: step 4 reuses this listing, not the first
+          return cloudList(tools).then(function (rows2) { listed = rows2; return seqMap(tools, function (tool) { return planTool(tool, rows2).then(function (p) { byTool[tool] = p; }); }); });
+        });
       }).then(function () {
         // 3. Uploads, merges, the account's deletions, this device's deletions.
         return seqMap(tools, function (tool) { return runPhase(tool, byTool[tool], uid, false, 'rest', res); });
       });
     }).then(function () {
-      // 4. List again, then the folder trees follow their items (never on a stale plan).
-      return cloudList(tools).then(function (rows2) {
+      // 4. The folder trees follow their items, never on a stale plan: after an insert, update or delete it lists
+      //    again; when nothing was sent since the last listing that one is still the account's (one listing per load, rule 3).
+      return (cloudWrites === writesAtListing && listed ? Promise.resolve(listed) : cloudList(tools)).then(function (rows2) {
         return seqMap(tools, function (tool) {
           return planTool(tool, rows2).then(function (p2) {
             return syncTrees(tool, p2).then(function (n) { if (n) landedNote(res.landed, tool, 'trees'); }, function (err) { res.treeError = err; }).then(function () { snapshotNames(tool, p2); });
