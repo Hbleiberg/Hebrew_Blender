@@ -12,11 +12,11 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW S454 H — gate 2**) | resources.html | **The FAQ and its JSON-LD say each card notes cost or sign-up; 4 of 43 do.** | found S454
 
-- [ ] P4 (**NEW S454 H**) | resources.html | **The Suggest form's last status stays on reopen** (a stale "sent!" or error). | found S454
-
 - [ ] P4 (**NEW S454 H — gate 2**) | resources.html | **"Jewish Interactive" is listed twice** (one URL; "All" counts 43 for 42). | found S454
 
-- [ ] P4 (**NEW S454 H**) | resources.html | **The IvritSuite card opens the hub in a new tab**: its `_self` branch is dead since `d03425c1`. | found S454
+- [ ] P4 (**NEW S455 C**) | trope_tutor.html | **Both Try again buttons drop the focus after a retry that works** (index and chart; failure path only). | found S455
+
+- [ ] P4 (**NEW S455 C**) | trope_tutor.html | **The Learn and Phrases cards carry no heading** (h1 only), so a screen reader cannot jump card to card. | found S455
 
 - [ ] P3 (**S452 D — shared**) | js/ivrit-saves.js | **A hydration fetches changed rows one serial `GET` at a time** (31 rows: 4.4 s at 100 ms RTT). | found S452
 
@@ -288,6 +288,12 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-04 | (S455 close-out) | branch/deploy note | **S455 = pass C on trope + 4 fixes, PR #308.** Drift none (main `c0f3b57`, keep-alive #22 green); sw v927→v928 (trope, resources); no FM bump; check-i18n + check-inline-js clean; no smokes (no backend file); deferred: micro-feature (gate 1).
+
+- [x] 2026-10-04 | `03cb3ff4`, `12247228` | trope_tutor.html | (S455 C) **The 19 chips keep the focus; a tab switch from inside a tab hands it to the new tab.** | `fix1.mjs` 456/456 body → same chip; `fix2.mjs` 0/8 → 8/8 ×3, controls 16/16.
+
+- [x] 2026-10-04 | `5b22c6f5`, `8ca47048` | resources.html | (S454 H) **The Suggest form opens with an empty status; the IvritSuite card stays in this tab.** | `fix3.mjs` stale 8/8 ×3 → 0, in-flight kept; `fix4.mjs` _blank → _self 8/8.
+
 - [x] 2026-10-04 | (S454 close-out) | branch/deploy note | **S454 = pass H + 4 fixes, PR #308.** Drift none; sw v926→v927; no FM bump; no smokes (no backend file); deferred: micro-feature, gate 2 ×3.
 
 - [x] 2026-10-04 | `ab9a133e` | torah_trainer.html | (S454) **The translation-version status lines follow a language switch.** | `ttver.mjs` HEAD 3/3 stay English → 12/12 follow.
@@ -316,23 +322,15 @@ _(none)_
 
 - [x] 2026-10-02 | (S451 close-out) | branch/deploy note | **S451 = pass G on torah + 4 fixes, draft PR #303 (unmerged).** DRIFT: none (main `43570d4`, FM 5.58, SDK 2.116.0, `0003` live, backend files unchanged, keep-alive #20 green). sw v918→v919 (dictionary, generator, flash, torah). No FM bump. check-i18n + check-inline-js clean; sitemap/llms untouched (CSS + one JS line). Deferred: the staff …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-10-02 | `730887f9` | flash_cards.html | (S450 M) **Save This Card Set as a Preset on the results stack's scale** (38→49px, 500→600, 15.2→16px). | `measure.mjs` light+dark; 12 cells EN/HE 320–800: 0 overflow, wraps to 2 lines at EN 320 / HE 390.
-
 - [x] 2026-10-02 | `f9ca0909` | hebrew_blend_generator.html | (S451 census) **The sidebar's edge tabs get a dark plate** (#2a4070 / #345090). | `v1.mjs` HEAD vs fix ×4: dark plate/page 1.15→1.67, chevron 7.30:1, real hover, show tab too; light same.
 
 - [x] 2026-10-02 | `5deb5472` | hebrew_dictionary.html | (S451 census) **Show more and the sidebar handle get a dark plate** (#2a4070 / #345090). | `v1.mjs` HEAD vs fix ×4: dark 1.15→1.67, text 7.30:1, real hover; light same.
 
-- [x] 2026-10-02 | (S450 close-out) | branch/deploy note | **S450 = pass M on flash + 2 fixes + 1 reverted, draft PR #303 (unmerged).** DRIFT: none (main `43570d4`, FM 5.58, SDK 2.116.0, backend files unchanged, keep-alive #20 green). sw v917→v918 (flash). No FM bump. check-i18n + check-inline-js clean; smoke-sync 201/201. Deferred: none.
-
-- [x] 2026-10-02 | attempted, reverted | classroom_dashboard.html | (S450; S421 P) **The adopt switch limited to classes the listing names as held** — the plan reads the uploaded own class `synced`. | Scratch D37: HEAD and fix both FAIL; re-logged.
-
-- [x] 2026-10-02 | `68055510` | flash_cards.html | (S450 M, NEW) **The chosen card count reads as a selection in dark mode** (the dark pill's `--navy-deep` + gold edge). | `cnt.mjs` 4 cells, preset + a real typed Custom: HEAD fill = edge = page ground → gold edge; light same.
-
-- [x] 2026-10-02 | `c9e2bc2b` | flash_cards.html | (S450 M, NEW) **The dark primary button gets its own plate** (contact's `#2a4070`/`#345090`; Redo was bare gold text). | HEAD dark fill = body → `rgb(42,64,112)`; light same; 7.05:1; a real hover moves it, a disabled one not; 32 shots 0 errors.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-04 | **S455** | iters: 1 pass (**C**) + 4 fixes = **5** | tools: trope ×2, resources ×2 | patterns fixed: button-focus-lost-to-its-own-rebuild ×2 | pass run: C | SW: v927→v928
 
 - 2026-10-04 | **S454** | iters: 1 pass (**H**) + 4 fixes = **5** | tools: resources ×2, dashboard ×2, contact, torah | patterns fixed: ltr-machine-text-field-typed-rtl (NEW), pre-ready-interpolated-write-never-healed | pass run: H | SW: v926→v927
 
@@ -360,7 +358,7 @@ _(none)_
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S454 (2026-10-04):** resources, contact, dashboard, torah S454 · generator, ivrit-saves S453 · FM S452 · flash, dictionary S451 · account S449 · trope S447 · index S446 · privacy, terms, 404 S442.
+- **Snapshot S455 (2026-10-04):** trope, resources S455 · contact, dashboard, torah S454 · generator, ivrit-saves S453 · FM S452 · flash, dictionary S451 · account S449 · index S446 · privacy, terms, 404 S442.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -386,7 +384,7 @@ _(none)_
 
 - **`copy-claims-success-on-a-refused-clipboard`** (NEW S428; FIXED `bbd5f65`, `0d2a941`; S444 index `90e1a057`, dashboard `18344f69`; **S445 generator `3dad5c11`, flash `58ee7a4f` — all 7 carriers fixed, 0 open**): ACTIVE, streak 0. Detection: every `execCommand('copy')` whose …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`button-focus-lost-to-its-own-rebuild`** (**S441 torah's trope chip `17cd7334`; S426 account `e091820`; S427 the dictionary's Word Lists `7a631f6`, chips/Reset FIXED `cea92bf`; S434 torah's Try again `dfc25af8`; S437 the dictionary's empty-state buttons `c98070a5` and Add to …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`button-focus-lost-to-its-own-rebuild`** (**S455 trope `03cb3ff4` (19 chips), `12247228` (3 tab switches); S441 torah `17cd7334`; S426–S439 account, dictionary, torah**): ACTIVE, streak 0. Detection: Enter, Space and a click on each button of a JS-built list, and on each …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`dark-literal-escapes-the-print-tokens`** (NEW S437 G; resources FIXED `5320a668`): ACTIVE, streak 0. Detection: PDFs dark vs light, ink per page (<200 at 40 dpi); a lighter dark sheet = a `body.dark` literal the print token reset misses. Exempt: active-state borders. S437: …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -654,7 +652,7 @@ _(none)_
 
 - K i18n / localization audit: 2026-10-02 (**S447 — 30th K. Delta `09f192ab..1b1538f6` (68 commits, CSV +1/−1). Gates A–E clean; runtime 32 cells (16 pages × EN/HE, EN↔HE↔EN) 0 missing, 0 raw, plants (data-i18n + I18n.t miss, EN-in-HE) fired 32/32; static-fallback census 4 (S432's `<br>`-only), plants 2/2; blind spot over added lines 0; RTL 1 (S440's deliberate pin). FOUND nothing new; FIXED 4 …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- C accessibility (one tool): 2026-10-01 (**S441 — `torah_trainer.html`, first since S298. Tab census (44 page stops, 124 drawer stops over 7 tabs), ring contrast, 7 triggers × Escape, tips on 5 pages; every zero controlled. FOUND 2 focus drops, the drawer-closing tip Escape, the 2.6:1 gold ring; FIXED `17cd7334`, `97c54dfb`. C-next: trope (S312).**)
+- C accessibility (one tool): 2026-10-04 (**S455 — `trope_tutor.html` (S312 → 93 commits: Phrases, the Settings tab, key bar, tune practice). Tab census, a keyboard drill, tour, motion, targets, `lang`, contrast in 4 cells, every zero planted (findings S455). FOUND 26 focus drops + no card headings; FIXED `03cb3ff4`, `12247228`. C-next: generator (S327).**)
 
 - A recurring-pattern sweep: 2026-10-01 (**S444 — 35th A: delta `99f9fa5..eeaf279` (114 commits). 10 arms, every zero controlled (receipts: findings S444). FOUND 2 + 2 P4 logged; FIXED 4.**)
 
@@ -676,4 +674,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-01 (**S442 — the keyboard focus ring on all 14 pages + the 3 shared modules' injected rings: a real-Tab walk (EN light/dark 1280, HE light/dark 800 on 6), ring colour and contrast against its surface, transitions disabled; HEAD as the control (58 light stops under 3:1, 0 dark). FIXED `91fede71` (the `--focus-ring` token), `a46342c1` (modules); logged 2 P4 …[full text: IMPROVEMENT_ARCHIVE.md]
 
-**Next session (S455):** **BRANCH/PR: S452–S454 on `claude/improveloop-s452` → draft PR #308 (base `c0f3b57`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v927**, FM **5.59**, SDK **2.116.0**. ⚑ Stalest: C (S441), F (S442), B (S443); O blocked. ⚑ Untaken: the font-cap note (P2, gate 2), the saves serial fetches.
+**Next session (S456):** **BRANCH/PR: S452–S455 on `claude/improveloop-s452` → draft PR #308 (base `c0f3b57`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v928**, FM **5.59**, SDK **2.116.0**. ⚑ Stalest: F (S442), B (S443), A (S444); O blocked. ⚑ Untaken: the font-cap note (P2, gate 2), the saves serial fetches, trope's Try again focus and card headings (P4).

@@ -241,6 +241,10 @@ There is no header gear; `openSettings()` survives only as `setMode('settings')`
 (`openMelodySetting`) and the tools smoke; the *Your account* group (`#setCloud`, `trope.settings.panel_cloud`)
 hosts the shared account status line (`#cloudSavesPanel`). Switching to the tab
 re-syncs the controls from `settings`; every control saves on change. Print hides the tab like Drill.
+**Focus across rebuilds:** a chip press rebuilds its row (the Learn families, the Phrases groups), and the rebuilt chip
+of the same family or group (`data-fam` / `data-group`) takes the focus back; `setMode` hands the focus to the chosen
+tab when the switch hides the panel that held it (Next family on the last family, Next group on the last group, Back
+to Learn), and a caller that opens something inside the new tab (`openLearnFor`, `openMelodySetting`) moves it on.
 
 - **Index**: `data/trope/trope_index.json` — `{v:1, system:"torah", built, tropes:{<key>:[{p,a,w,ref,he,s,e}]}}`
   where `p` = parsha pocket key, `a` = aliyah "1"–"7", `w` = 0-based sung-word index (= timings
