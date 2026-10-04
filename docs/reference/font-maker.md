@@ -328,8 +328,11 @@ and marks alike — the `markDrop` zone calls it too); `uploadForLetters` wraps 
 Distribution: a file whose **name** names a letter (`alef`, `Alef.jpg`, `01-alef`, `05D0`, `uni05D0`,
 `א`) claims that letter wherever it sits — `_fileNameToCp` reuses `buildSvgNameMap()` +
 `matchSvgEntryToCp`, the same id rules the SVG auto-split uses. Everything else fills the current
-letter first, then the following letters in `LETTER_ORDER` that are still empty (no outline, no
-image, no strokes), skipping `cat:'punct'` (digits and punctuation, which ship default outlines).
+letter first, then the following glyphs of the current letter's own tab that are still empty (no
+outline, no image, no strokes), in `_drawCycleCps()` order — the list *Save letter & next* walks
+(`newglyphset.md` §4), so a pick on the English tab fills English letters, never alef onward, and the
+Letters tab's list leaves out digits and punctuation (which ship default outlines). With no letter
+selected it starts at alef.
 Files with nowhere to go and files that fail to decode are counted in the toast, never dropped
 silently. The `multiple` attribute and the hint line under the drop zone are raster-mode only —
 SVG mode routes through `uploadSvgForCurrent`, which replaces the trace rather than the photo, and

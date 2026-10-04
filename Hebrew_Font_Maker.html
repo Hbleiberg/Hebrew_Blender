@@ -7383,10 +7383,11 @@ async function uploadForCurrent(file) {
 /* ════════ Multi-photo pick: one trip through the OS picker fills many letters ════════
    A file whose NAME names a letter (alef / Alef.jpg / 01-alef.jpg / 05D0 / uni05D0 / א) claims that
    letter wherever it sits, so a scanned-and-renamed set imports in any order. Everything else lands
-   on the current letter first, then on the following letters in alef-bet order that are still empty
-   — no outline, no image, no strokes — skipping punctuation and digits, which either ship a default
-   outline or aren't what a photo batch is for. Files with nowhere to go are reported, never dropped
-   silently. Commits as ONE undo entry (adApply's shape), so a mis-picked batch is one Ctrl+Z. */
+   on the current letter first, then on the following glyphs of ITS OWN TAB that are still empty — no
+   outline, no image, no strokes — in the order "Save letter & next" walks (tabDrawCps), so a pick on
+   the English tab fills English letters, never alef onward; the Letters tab's list leaves out
+   punctuation and digits, which ship a default outline. Files with nowhere to go are reported, never
+   dropped silently. Commits as ONE undo entry (adApply's shape), so a mis-picked batch is one Ctrl+Z. */
 function _fileNameToCp(name, nameMap) {
   const stem = String(name || '').replace(/\.[^.]+$/, '').trim();
   const base = stem.replace(/^\d+\s*[-_. ]+\s*/, '') || stem;   // "01-alef", "3 gimel" — scanner counters
@@ -7399,16 +7400,16 @@ function _fileNameToCp(name, nameMap) {
 function _letterIsEmpty(l) {
   return !!l && !l.contours && !(l.source && l.source.dataUrl) && !(l.draw && l.draw.strokes && l.draw.strokes.length);
 }
-function _multiUploadTargets(n, claimed) {   // → [cp] of length ≤ n: current letter, then the next empty ones
+function _multiUploadTargets(n, claimed) {   // → [cp] of length ≤ n: current letter, then the next empty ones on its tab
   const out = [];
   if (n <= 0) return out;
   const here = (curKind === 'letter' && project.letters.some(x => x.codepoint === curCp)) ? curCp : null;
   if (here && !claimed.has(here)) out.push(here);
-  const i = here ? LETTER_ORDER.indexOf(here) : -1;
-  for (let k = 1; out.length < n && k <= LETTER_ORDER.length; k++) {
-    const cp = LETTER_ORDER[(i + k + LETTER_ORDER.length) % LETTER_ORDER.length];
+  const order = here ? _drawCycleCps() : tabDrawCps('letter');
+  const i = here ? order.indexOf(here) : -1;
+  for (let k = 1; out.length < n && k <= order.length; k++) {
+    const cp = order[(i + k + order.length) % order.length];
     if (claimed.has(cp) || out.indexOf(cp) >= 0) continue;
-    const meta = letterMeta(cp); if (meta && meta.cat === 'punct') continue;
     if (_letterIsEmpty(project.letters.find(x => x.codepoint === cp))) out.push(cp);
   }
   return out;

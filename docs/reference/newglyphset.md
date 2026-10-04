@@ -129,8 +129,8 @@ Both buttons live in `renderDrawStageBelow`: `drawCommit(false)` (stay) and `dra
 eight hold:
 
 1. **`tabDrawCps('<id>')` returns `<STEM>_CPS` filtered to the items that exist with the flag** — the one
-   enumerator (`drawCommitAll`, `drawPendingFor` and the Save-all badge read it too), in the table's
-   order, which is the grid's reading order (§2).
+   enumerator (`drawCommitAll`, `drawPendingFor`, the Save-all badge and a multi-photo pick's
+   `_multiUploadTargets` read it too), in the table's order, which is the grid's reading order (§2).
 2. **`_drawCatOf(cp)` returns `'<id>'` for every code point of the set**, tested right after the
    English line and before the wide / custom / punctuation fallbacks. Miss this and `tabDrawCps` gets
    `'letter'`, `indexOf` returns −1, and "next" walks the user back to alef.
