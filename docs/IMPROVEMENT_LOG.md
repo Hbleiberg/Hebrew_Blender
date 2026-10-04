@@ -8,9 +8,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P3 (**NEW 2026-10-03**) | hebrew_blend_generator.html | **Class Set offers N versions where only one prints**: `#rowClassSet` shows for every drill but tracing and the button reads "Generate Class Set (N versions)", but `generate()` reads `classSetCount` only on its 2/3-Letter path (1-Letter, nikkud, real-word and number-practice sheets return earlier). | found 2026-10-03
-
-- [ ] P3 (**NEW S452 D — shared module; smoke-sync + smoke-migration**) | js/ivrit-saves.js | **(1)** a hydration fetches each changed row by its own serial `GET ?id=eq.` (31 rows: 4.4 s at 100 ms RTT); **(2)** every signed-in load lists twice (rule 3 says once). | found S452
+- [ ] P3 (**S452 D — shared**) | js/ivrit-saves.js | **A hydration fetches changed rows one serial `GET` at a time** (31 rows: 4.4 s at 100 ms RTT). | found S452
 
 - [ ] P3 (**NEW 2026-10-03, gate 2**) | hebrew_blend_generator.html | **"Exclude Repeats" promises that no two blends share a letter pair**, but `drawBlends` only rejects a blend repeating one letter (`first === second`) and 1-Letter never reads the switch: fix the behaviour or the tooltip. | found 2026-10-03
 
@@ -280,6 +278,14 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-04 | (S453 close-out) | branch/deploy note | **S453 = pass I + 4 fixes, PR #308.** Drift none; sw v925→v926; no FM bump; 7 smokes green; deferred: micro-feature.
+
+- [x] 2026-10-04 | `2baede2d` | js/ivrit-saves.js | (S453) **A load with nothing to send lists once.** | smoke-sync 1 tightened; 7 smokes.
+
+- [x] 2026-10-04 | `543791bb`, `ac796dba` | hebrew_blend_generator.html | (S453) **Class Set only where it prints versions; Generate keeps its icon.** | `classset.mjs` 12 → 0; `genicon.mjs` 0/24 → 24/24.
+
+- [x] 2026-10-04 | `728e4075` | torah_trainer.html | (S453 I) **A pre-strings load failure shows words.** | `ttrace.mjs` 8/8 → 0.
+
 - [x] 2026-10-04 | (S452 close-out) | branch/deploy note | **S452 = pass D on the generator + 4 fixes, draft PR #308.** DRIFT: 14 outside commits to `c0f3b57` (holiday icons, FM 5.59, tune practice, stale-tab fixes, parsha line; sw v919→v924); backend unchanged, keep-alive #22 green. sw v924→v925. No FM bump. Gates clean; no smokes. Deferred: micro-feature (gate 1), JPEG pages (gate 2).
 
 - [x] 2026-10-04 | `d01a33cd` | Hebrew_Font_Maker.html | (S452 D) **jsPDF/html2canvas load on the first PDF or template click.** | `fm-lazy.mjs` vs HEAD: FCP 468–480 → 108–120 @1× (CDN +150 ms); same files; offline → modal, retry works; light/dark × 1280/800.
@@ -320,6 +326,8 @@ _(none)_
 
 ### Per-session log (one line per session)
 
+- 2026-10-04 | **S453** | iters: 1 pass (**I**) + 4 fixes = **5** | tools: torah, generator ×2, ivrit-saves | patterns fixed: pre-ready-interpolated-write-never-healed (NEW), textContent-rewrite-erases-a-control-icon | pass run: I | SW: v925→v926
+
 - 2026-10-04 | **S452** | iters: 1 pass (**D**) + 4 fixes = **5** | tools: FM ×2, generator ×2 | patterns fixed: cdn-library-parser-blocking-for-one-action ×2 (NEW) | pass run: D | SW: v924→v925
 
 - 2026-10-02 | **S451** | iters: 1 pass (**G**) + 4 fixes = **5** | tools: dictionary, generator, flash, torah | patterns fixed: dark-navy-fill-matches-its-ground ×2 | pass run: G | SW: v918→v919
@@ -342,11 +350,13 @@ _(none)_
 
 ### Tool coverage (last-touched date per tool)
 
-- **S452 (2026-10-04):** FM ×2, generator ×2 (**S452**; D S452); **S451 (2026-10-02):** dictionary, generator, flash, torah (**S451**; G S451); **S450 (2026-10-02):** flash ×2 (**S450**; M S450); **S449 (2026-10-02):** account, flash, generator, dictionary (**S449**; P S449); **S448 (2026-10-02):** torah ×2, flash, dictionary (**S448**); **S447 (2026-10-02):** FM, torah, trope, emoji corpus (+ flash, generator, dictionary `?v=`) (**S447**); **S446 (2026-10-02):** index, generator, torah, flash (**S446**); **S445:** generator, flash, …[full text: IMPROVEMENT_ARCHIVE.md]
+- **Snapshot S453 (2026-10-04):** generator, torah, ivrit-saves S453 · FM S452 · flash, dictionary S451 · account S449 · trope S447 · index S446 · dashboard S444 · resources, contact, privacy, terms, 404 S442.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
-- **`cdn-library-parser-blocking-for-one-action`** (NEW S452 D; generator `82bbe313`, FM `d01a33cd`): ACTIVE, streak 0. A parser-blocking CDN `<script src>` in `<head>` for one action. Detection: `grep -n '<script[^>]*src="https\?://' *.html | grep -v ' async\| …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`pre-ready-interpolated-write-never-healed`** (NEW S453; `728e4075`; open P4: torah's 3 post-load lines): ACTIVE, streak 0. Detection: `i453/gates.mjs` `LDELAY=700`.
+
+- **`cdn-library-parser-blocking-for-one-action`** (NEW S452 D; generator `82bbe313`, FM `d01a33cd`): ACTIVE, streak 0. A parser-blocking CDN `<script src>` in `<head>` for one action. Detection: `grep -n '<script[^>]*src="https\?://' *.html | grep -v ' async\| …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`dark-navy-fill-matches-its-ground`** (NEW S450 M; flash ×2 `c9e2bc2b`, `68055510`; S451 census: dictionary `5deb5472`, generator `f9ca0909`): ACTIVE, streak 0. Detection (`g451/navy.mjs`): every visible button/.btn/[role=button]/.active/[aria-pressed=true] in dark, its fill …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -396,7 +406,7 @@ _(none)_
 
 - **`text-field-under-16px-zooms-on-ios-focus`** (**NEW S406 Pass N — S408: the sign-in menu's 2 FIXED `0cd524c`; S420: the hub's backup box FIXED `b9ea89f` (16px under `(pointer:coarse)`, the desktop box unchanged); the switcher `<select>` (12.48px on 14 pages, js/i18n.js — …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`textContent-rewrite-erases-a-control-icon`** (S405; 7 writers FIXED `1e8991f`; "Copied!" flashes: dictionary `53d3579`, flash ×2 `38e5b62` S415): ACTIVE, streak 2 (S416; S430 torah + trope, a plant −1). Detection: (a) EN→HE→EN icon count; (b) key census vs whole-control …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`textContent-rewrite-erases-a-control-icon`** (S405; S415; **S453 `ac796dba`**): ACTIVE, streak 0. Add (d): load-time icon count. Detection: (a) EN→HE→EN icon count; (b) key census …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`translated-key-exists-page-hardcodes-english`** (S433 K: 0 new — the orphan census 121 raw, 86 with a live English twin, all S405/S419 classes; the delta's surfaces by a runtime EN-in-HE detector, 3 plants fire, 0 beyond by-design text; S420: flash "Untitled list" …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -640,7 +650,7 @@ _(none)_
 
 - D performance (one tool): 2026-10-04 (**S452 — the generator's 4th D (S338 → 90 commits): cold 1×/4× ± PDF libs + CDN latency, 6 interaction arms, print, GC leak, signed-in load; control fired. FIXED the blocking libs (+ FM), the squeezed caller sheet; logged 3. D-next: index (S352).**)
 
-- I first-load & empty-state: 2026-10-01 (**S439 — 33rd I, first since S425 (136 commits). Gates clean on 34 virgin cells behind 7 plants; census = S425's; 0 SDK requests; the torah date lookup right on 10 dates. FOUND + …[full text: IMPROVEMENT_ARCHIVE.md]
+- I first-load & empty-state: 2026-10-04 (**S453 — 34th I: 34 virgin cells × 9 planted gates, census, slow-locale gate, tours. FIXED `728e4075`.**)
 
 - B console/error audit: 2026-10-01 (**S443 — 34th B (S429 → 116 commits: the cloud-first saves rewrite, torah's drawer/Favorites/cycles/lookup, the dashboard's 7-tab drawer + Intermission, FM 5.58). 4 controls (planted throw/error/warn/404/alert fire, clean twins 0); 68 load cells + 34 interaction cells + 3 delta arms × 2: 0 pageerrors, 0 failed/4xx, 0 dialogs, 0 overflow. FOUND + FIXED the …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -654,4 +664,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-01 (**S442 — the keyboard focus ring on all 14 pages + the 3 shared modules' injected rings: a real-Tab walk (EN light/dark 1280, HE light/dark 800 on 6), ring colour and contrast against its surface, transitions disabled; HEAD as the control (58 light stops under 3:1, 0 dark). FIXED `91fede71` (the `--focus-ring` token), `a46342c1` (modules); logged 2 P4 …[full text: IMPROVEMENT_ARCHIVE.md]
 
-**Next session (S453):** **BRANCH/PR: S452 on `claude/improveloop-s452` → draft PR #308 (base `c0f3b57`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v925**, FM **5.59**, SDK **2.116.0**. ⚑ Stalest: I (S439), H (S440), C (S441); O blocked. ⚑ Strongest untaken: `js/ivrit-saves.js`'s serial row fetches + double listing, the caller page count. ⚑ G-next: FM (S337).
+**Next session (S454):** **BRANCH/PR: S452 + S453 on `claude/improveloop-s452` → draft PR #308 (base `c0f3b57`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v926**, FM **5.59**, SDK **2.116.0**. ⚑ Stalest: H (S440), C (S441), F (S442); O blocked. ⚑ Untaken: the saves serial fetches, the caller page count, torah's 3 post-load lines.
