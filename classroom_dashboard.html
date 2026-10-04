@@ -1183,6 +1183,9 @@
     color: var(--text);
   }
   textarea { max-width: 100%; }
+  /* The video address types left to right (its dir="ltr", or a Hebrew-UI teacher sees "/https://youtu.be/abc"),
+     but its placeholder is a translated sentence: while the field is empty it takes the page's direction. */
+  #videoUrlInput:placeholder-shown { direction: inherit; }
 
   .btn {
     background: var(--gold);
@@ -2560,7 +2563,7 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
               <input type="radio" name="videoLayout" id="vlSidebar" value="sidebar" style="accent-color:var(--gold);"> <span data-i18n="dashboard.video.layout_sidebar">In sidebar</span>
             </label>
           </div>
-          <input type="url" id="videoUrlInput" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Paste YouTube URL…" data-i18n-placeholder="dashboard.video.url_placeholder" aria-label="Paste YouTube URL…" data-i18n-aria-label="dashboard.video.url_placeholder" style="width:100%;box-sizing:border-box;">
+          <input type="url" id="videoUrlInput" dir="ltr" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Paste YouTube URL…" data-i18n-placeholder="dashboard.video.url_placeholder" aria-label="Paste YouTube URL…" data-i18n-aria-label="dashboard.video.url_placeholder" style="width:100%;box-sizing:border-box;">
           <button class="btn btn-xs" onclick="updateVideoEmbed()" data-i18n="dashboard.video.update_button">Update Video</button>
         </div>
       </div>
