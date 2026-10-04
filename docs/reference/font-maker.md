@@ -301,6 +301,11 @@ AND ink), so no cell ever falls back to a system face. One LTR page — a lone b
 mirrored under `direction 'ltr'` and the Hebrew marks are bidi-neutral single glyphs — and the
 cover gains a 0–9 line only once all ten digits ship.
 
+jsPDF (the specimen and the template PDFs) and html2canvas (the template sheets, PDF or PNG) load from
+cdnjs on the first click that needs each — `ensurePdfLib('pdf' | 'canvas')`, which never rejects and
+keeps no failed load — not in `<head>`, where they held every visit's first paint for the CDN; the
+callers' `pdfLibsMissing` checks then run as before and name the missing builder.
+
 ### Undo / dirty / autosave contract — the big one
 **Never mutate `project` directly.** Route every mutation through `udDo(scopes, label, fn)`
 (scopes: `{t:'item',kind,cp}`, `'spacing'`, `'kerning'`, `'kernClasses'`, `'metrics'`, `'guides'`,

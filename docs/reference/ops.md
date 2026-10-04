@@ -330,7 +330,7 @@ pages, not the other way round — `grep -o 'Content-Security-Policy[^>]*' *.htm
   Dyslexia Hebrew, the Culmus faces) every Hebrew font picker offers.
 - **Generator, Flash Cards, Dictionary, Torah Trainer:** `esm.sh` + `cdn.jsdelivr.net` in `script-src` and
   `connect-src` (the transliteration ESM).
-- **Generator, Font Maker:** `cdnjs.cloudflare.com` in `script-src` (html2canvas / jspdf).
+- **Generator, Font Maker:** `cdnjs.cloudflare.com` in `script-src` (html2canvas / jspdf, injected on the first PDF export or template download — never a parser-blocking `<head>` script).
 - **Font Maker:** `'wasm-unsafe-eval'` + `cdn.jsdelivr.net` in `script-src` and `connect-src` (HarfBuzz WASM,
   pyodide, opentype.js).
 - **Dashboard:** `www.hebcal.com`, `api.open-meteo.com`, `geocoding-api.open-meteo.com`, `nominatim.openstreetmap.org`

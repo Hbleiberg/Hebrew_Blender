@@ -139,9 +139,6 @@
   ]
 }
 </script>
-<!-- PDF + canvas libs (reused from the worksheet generator) -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&family=Noto+Sans+Hebrew:wght@400;700&family=David+Libre:wght@400;700&family=Noto+Rashi+Hebrew:wght@400;700&display=swap" media="print" onload="this.media='all'" rel="stylesheet">
@@ -21749,6 +21746,7 @@ async function fidelityApplyFixes(opts) {
 async function generatePreviewPDF() {
   if (!project) return;
   if (!project.letters.some(l => l.contours)) { status(I18n.t('fontmaker.status.trace_first_preview')); return; }
+  await ensurePdfLib('pdf');
   if (pdfLibsMissing(false)) { askModal(I18n.t('fontmaker.modals.preview_error_title'), I18n.t('fontmaker.modals.pdf_libs_offline_body'), [{ label:I18n.t('fontmaker.modals.ok') }]); return; }
   status(I18n.t('fontmaker.status.building_font_preview'), true);
   let fontBytes;
@@ -22010,14 +22008,31 @@ async function renderTemplateCanvases(kind) {
   return canvases;
 }
 // Build + download a template. fmt 'pdf' → one multi-page US-Letter PDF; 'png' → one image per page.
-/* html2canvas + jsPDF load from cdnjs at the top of the page; a school filter or an offline PWA leaves them
-   undefined, and the template/preview catch blocks then showed the raw "html2canvas is not defined" (S380 Pass H). */
+/* html2canvas + jsPDF (563 KB from cdnjs) serve Preview PDF and the template downloads alone, so each loads on
+   the first click that needs it instead of as a parser-blocking <head> script that held every visit's first
+   paint for the CDN. A failed load is not kept (the next click asks again); a school filter or an offline PWA
+   leaves them undefined, and the callers then name the missing builder instead of the raw
+   "html2canvas is not defined" their catch blocks used to show. ensurePdfLib never rejects. */
+const PDF_LIB_SRC = { canvas: 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js', pdf: 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js' };
+const _pdfLibLoads = {};
+function ensurePdfLib(which) {
+  if (which === 'canvas' ? typeof window.html2canvas === 'function' : !pdfLibsMissing(false)) return Promise.resolve();
+  if (!_pdfLibLoads[which]) _pdfLibLoads[which] = new Promise(res => {
+    const s = document.createElement('script');
+    s.src = PDF_LIB_SRC[which];
+    s.onload = res;
+    s.onerror = () => { s.remove(); res(); };
+    document.head.appendChild(s);
+  }).then(() => { delete _pdfLibLoads[which]; });
+  return _pdfLibLoads[which];
+}
 function pdfLibsMissing(needCanvas) {
   return !(window.jspdf && window.jspdf.jsPDF) || (needCanvas && typeof html2canvas !== 'function');
 }
 async function downloadTemplate(kind, fmt) {
   const spec = TEMPLATE_SPECS[kind];
   if (!spec) return;
+  await Promise.all([ensurePdfLib('canvas'), fmt === 'pdf' ? ensurePdfLib('pdf') : null]);
   if (typeof html2canvas !== 'function' || (fmt === 'pdf' && pdfLibsMissing(false))) {
     // Name the builder that is actually missing. A PNG sheet needs only html2canvas, so the PDF
     // message sent a teacher who asked for an image looking for the wrong thing; and a PDF whose
