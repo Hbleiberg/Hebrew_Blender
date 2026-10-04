@@ -302,6 +302,9 @@ The worksheet header's subtitle is static markup (`data-i18n="worksheet.header_s
 
 ## PDF export (`exportPDF`)
 
+html2canvas and jsPDF load from cdnjs on the first click (`ensurePdfLibs`, inside the export's `try`), not
+in `<head>`: as parser-blocking scripts they held every visit's first paint for the CDN. A failed load is
+not cached, so a click after the network returns loads them and clears the failure note it left.
 Each `.sheet` (or `.bingo-page` / `.caller-sheet`) is captured with html2canvas at `scale: 2` and placed with
 one `pdf.addImage(..., undefined, 'FAST')` per page — except the caller sheet, a list of every call that
 runs to several pages: `addCallerPdfPages` places its capture at full width on pages of the Landscape Print

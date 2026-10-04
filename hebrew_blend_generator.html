@@ -156,8 +156,6 @@ body.dark .hi-sun{display:inline-block;}
 [dir="rtl"] .hi-arrow{transform:scaleX(-1);}
 /* ═══ end header-icons CSS ═══ */
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <!-- Hebrew transliteration library loader (lazy via esm.sh).
      Keep in sync across hebrew_blend_generator.html, hebrew_dictionary.html, flash_cards.html. -->
 <script type="module">
@@ -9273,6 +9271,27 @@ function initPanelCollapse() {
   });
 }
 
+// html2canvas + jsPDF (563 KB from cdnjs) serve Export PDF alone, so they load on its first click instead
+// of as parser-blocking <head> scripts that held every visit's first paint for the CDN. A failed load is
+// not kept (the next click asks again); offline or behind a filter the export takes its own failure path.
+const PDF_LIBS = [
+  { src: 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js', ready: () => typeof window.html2canvas === 'function' },
+  { src: 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js', ready: () => !!(window.jspdf && window.jspdf.jsPDF) }
+];
+let _pdfLibsPromise = null;
+const pdfFailedNotice = () => I18n.t('worksheet.validation.pdf_failed');
+function ensurePdfLibs() {
+  if (_pdfLibsPromise) return _pdfLibsPromise;
+  _pdfLibsPromise = Promise.all(PDF_LIBS.filter(l => !l.ready()).map(l => new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = l.src;
+    s.onload = () => (l.ready() ? resolve() : reject(new Error('PDF library missing after load: ' + l.src)));
+    s.onerror = () => { s.remove(); reject(new Error('PDF library failed to load: ' + l.src)); };
+    document.head.appendChild(s);
+  }))).catch(err => { _pdfLibsPromise = null; throw err; });
+  return _pdfLibsPromise;
+}
+
 // The caller sheet lists every call (2,400+ px for an 8-card set), so Export PDF pages it the way Print
 // does: sheets in the Landscape Print toggle's orientation (never bingo's forced landscape), the capture
 // at full width, each page cut between two rows of calls (Print keeps a .caller-item whole). Fitted to
@@ -9315,10 +9334,11 @@ async function exportPDF() {
   ws.style.maxWidth = 'none';
 
   try {
-    // jspdf.umd comes from cdnjs and nothing precaches it, so offline — or behind a school filter —
-    // window.jspdf is simply absent. Read it here, INSIDE the try, so that case takes the page's own
-    // failure path: the warn notice points at Print → Save as PDF, which needs no CDN at all. Outside
-    // the try the destructure threw past the catch, and the button sat there looking ready.
+    // The libraries come from cdnjs and nothing precaches them, so offline — or behind a school filter —
+    // they never arrive. Load them here, INSIDE the try, so that case takes the page's own failure path:
+    // the warn notice points at Print → Save as PDF, which needs no CDN at all. Outside the try the
+    // failure threw past the catch, and the button sat there looking ready.
+    await ensurePdfLibs();
     const { jsPDF } = window.jspdf;
     let sheets = [...ws.querySelectorAll('.sheet')];
     const bingoPages = [...ws.querySelectorAll('.bingo-page')];
@@ -9545,8 +9565,9 @@ async function exportPDF() {
 
     const filename = `${title.replace(/\s+/g, '_')}_Hebrew_Blends.pdf`;
     pdf.save(filename);
+    if (_previewNoticeLast && _previewNoticeLast.render === pdfFailedNotice) hidePreviewNotice();   // a retry that worked (back online) takes the failure note away
   } catch (err) {
-    showPreviewNotice(() => I18n.t('worksheet.validation.pdf_failed'), { kind: 'warn', dismissible: true });
+    showPreviewNotice(pdfFailedNotice, { kind: 'warn', dismissible: true });
     console.error(err);
   } finally {
     ws.style.width = wsPin.width;
