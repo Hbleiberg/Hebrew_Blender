@@ -5752,7 +5752,7 @@ async function fetchAndRender() {
     // in a version name a moment later, but only a user `change` event re-fetches. Result: a
     // labelled, permanently empty English row beside a Version box that reads fine. Dropping the
     // translationVersion requirement from this gate recovers both cases the same way.
-    let fallbackNote = '';
+    let fallbackNote = null;   // built by a function (see setStatus), so the line follows a language switch
     if (settings.showTranslation && verses._engCount === 0 && book) {
       const fb = await pickFallbackVersion(book, effectiveVersion());
       if (seq !== _fetchSeq) return;   // a newer selection superseded this fetch
@@ -5763,7 +5763,8 @@ async function fetchAndRender() {
           // Only report a SWITCH when there was a version to switch away from. On the race path
           // there is nothing to tell the teacher — the footer already names version + license.
           if (settings.translationVersion) {
-            fallbackNote = I18n.t('torah.status.fallback_version', { version: settings.translationVersion, other: fb });
+            const was = settings.translationVersion;
+            fallbackNote = () => I18n.t('torah.status.fallback_version', { version: was, other: fb });
           }
           _versionFallback = fb;   // shown, never saved
           verses = alt;
@@ -5795,10 +5796,8 @@ async function fetchAndRender() {
     if (fallbackNote) {
       setStatus(fallbackNote, false);
     } else if (settings.showTranslation && effectiveVersion() && verses._engCount === 0) {
-      const reason = verses._engFound
-        ? I18n.t('torah.status.version_no_cover', { version: effectiveVersion() })
-        : I18n.t('torah.status.version_not_returned', { version: effectiveVersion() });
-      setStatus(reason, true);
+      const ver = effectiveVersion(), reason = verses._engFound ? 'torah.status.version_no_cover' : 'torah.status.version_not_returned';
+      setStatus(() => I18n.t(reason, { version: ver }), true);
     } else {
       setStatus('', false);
     }
