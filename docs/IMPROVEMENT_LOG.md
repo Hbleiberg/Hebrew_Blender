@@ -8,9 +8,9 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P2 (**NEW 2026-10-03**) | Hebrew_Font_Maker.html | **Several photos picked on the English tab fill the current letter, then Hebrew ones**: `_multiUploadTargets` walks the Hebrew-only `LETTER_ORDER`; the tab's own list is `tabDrawCps(_drawCatOf(cp))`. | found 2026-10-03
-
 - [ ] P3 (**NEW 2026-10-03**) | hebrew_blend_generator.html | **Class Set offers N versions where only one prints**: `#rowClassSet` shows for every drill but tracing and the button reads "Generate Class Set (N versions)", but `generate()` reads `classSetCount` only on its 2/3-Letter path (1-Letter, nikkud, real-word and number-practice sheets return earlier). | found 2026-10-03
+
+- [ ] P3 (**NEW S452 D — shared module; smoke-sync + smoke-migration**) | js/ivrit-saves.js | **(1)** a hydration fetches each changed row by its own serial `GET ?id=eq.` (31 rows: 4.4 s at 100 ms RTT); **(2)** every signed-in load lists twice (rule 3 says once). | found S452
 
 - [ ] P3 (**NEW 2026-10-03, gate 2**) | hebrew_blend_generator.html | **"Exclude Repeats" promises that no two blends share a letter pair**, but `drawBlends` only rejects a blend repeating one letter (`first === second`) and 1-Letter never reads the switch: fix the behaviour or the tooltip. | found 2026-10-03
 
@@ -19,6 +19,10 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW 2026-10-03, gate 2 copy**) | hebrew_dictionary.html | **"Any of these letters" requires every ticked letter** (`onFilter`); the Hebrew label (כל אחת מהאותיות האלה) says so, the English label and its "Any:" chip don't. | found 2026-10-03
 
 - [ ] P4 (**NEW 2026-10-03 — K's**) | Hebrew_Font_Maker.html | **Three hardcoded English strings with no CSV keys**: `uploadCombined`'s two "…pick a letter, then drag a box around it" statuses and `cropSelectSVG`'s "Select area for … — drag a box around it" caption. | found 2026-10-03
+
+- [ ] P4 (**NEW S452 D — G's**) | hebrew_blend_generator.html | **"N pages to print" counts a caller sheet as one page**; an 8-card set's takes 3 (says 3, sends 5). | found S452
+
+- [ ] P4 (**NEW S452 D — gate 2**) | hebrew_blend_generator.html | **jsPDF re-decodes each PNG page in JS** (561–660 ms a bingo page, 1.85 s a caller sheet); JPEG skips it but is lossy. | found S452
 
 - [ ] P3 (**NEW S451 G — gate 2, the maintainer's call**) | torah_trainer.html | **In the Trope staff layout the student handout ignores Font size and "Hide cantillation"**: the staff prints at screen scale (Hebrew 27.4pt, Large and Extra large alike) and its notes carry every trope; either print a text layout or say so beside the options. | found S451
 
@@ -276,6 +280,16 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-04 | (S452 close-out) | branch/deploy note | **S452 = pass D on the generator + 4 fixes, draft PR #308.** DRIFT: 14 outside commits to `c0f3b57` (holiday icons, FM 5.59, tune practice, stale-tab fixes, parsha line; sw v919→v924); backend unchanged, keep-alive #22 green. sw v924→v925. No FM bump. Gates clean; no smokes. Deferred: micro-feature (gate 1), JPEG pages (gate 2).
+
+- [x] 2026-10-04 | `d01a33cd` | Hebrew_Font_Maker.html | (S452 D) **jsPDF/html2canvas load on the first PDF or template click.** | `fm-lazy.mjs` vs HEAD: FCP 468–480 → 108–120 @1× (CDN +150 ms); same files; offline → modal, retry works; light/dark × 1280/800.
+
+- [x] 2026-10-04 | `82bbe313` | hebrew_blend_generator.html | (S452 D) **html2canvas + jsPDF load on the first Export PDF.** | `lazy.mjs` vs HEAD: FCP 460–496 → 88–180 @1× (CDN +150 ms); offline → note, retry downloads and clears it; light/dark × 1280/800.
+
+- [x] 2026-10-04 | `5cf792f0` | hebrew_blend_generator.html | (S452 D) **Export PDF pages the bingo caller sheet like Print.** | `caller-export.mjs` vs HEAD: 8 cards LLL → LLPPP, cut between rows; A4, landscape, real-words bingo; light/dark × 1280/800.
+
+- [x] 2026-10-04 | `b37e64c6` | Hebrew_Font_Maker.html | (S452; the 10-03 P2) **A multi-photo pick fills the current tab's empty glyphs.** | `fm-multi.mjs` vs HEAD: English B "א ב B" → "B C D"; one Ctrl+Z; light/dark × 1280/800.
+
 - [x] 2026-10-02 | (S451 close-out) | branch/deploy note | **S451 = pass G on torah + 4 fixes, draft PR #303 (unmerged).** DRIFT: none (main `43570d4`, FM 5.58, SDK 2.116.0, `0003` live, backend files unchanged, keep-alive #20 green). sw v918→v919 (dictionary, generator, flash, torah). No FM bump. check-i18n + check-inline-js clean; sitemap/llms untouched (CSS + one JS line). Deferred: the staff …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-10-02 | `730887f9` | flash_cards.html | (S450 M) **Save This Card Set as a Preset on the results stack's scale** (38→49px, 500→600, 15.2→16px). | `measure.mjs` light+dark; 12 cells EN/HE 320–800: 0 overflow, wraps to 2 lines at EN 320 / HE 390.
@@ -306,6 +320,8 @@ _(none)_
 
 ### Per-session log (one line per session)
 
+- 2026-10-04 | **S452** | iters: 1 pass (**D**) + 4 fixes = **5** | tools: FM ×2, generator ×2 | patterns fixed: cdn-library-parser-blocking-for-one-action ×2 (NEW) | pass run: D | SW: v924→v925
+
 - 2026-10-02 | **S451** | iters: 1 pass (**G**) + 4 fixes = **5** | tools: dictionary, generator, flash, torah | patterns fixed: dark-navy-fill-matches-its-ground ×2 | pass run: G | SW: v918→v919
 
 - 2026-10-02 | **S450** | iters: 1 pass (**M**) + 2 fixes + 1 reverted = **4** | tools: flash ×2, dashboard (reverted) | patterns fixed: dark-navy-fill-matches-its-ground ×2 (NEW) | pass run: M | SW: v917→v918
@@ -326,9 +342,11 @@ _(none)_
 
 ### Tool coverage (last-touched date per tool)
 
-- **S451 (2026-10-02):** dictionary, generator, flash, torah (**S451**; G S451); **S450 (2026-10-02):** flash ×2 (**S450**; M S450); **S449 (2026-10-02):** account, flash, generator, dictionary (**S449**; P S449); **S448 (2026-10-02):** torah ×2, flash, dictionary (**S448**); **S447 (2026-10-02):** FM, torah, trope, emoji corpus (+ flash, generator, dictionary `?v=`) (**S447**); **S446 (2026-10-02):** index, generator, torah, flash (**S446**); **S445:** generator, flash, dictionary, shared-components.md (**S445**); **S444:** torah, index, …[full text: IMPROVEMENT_ARCHIVE.md]
+- **S452 (2026-10-04):** FM ×2, generator ×2 (**S452**; D S452); **S451 (2026-10-02):** dictionary, generator, flash, torah (**S451**; G S451); **S450 (2026-10-02):** flash ×2 (**S450**; M S450); **S449 (2026-10-02):** account, flash, generator, dictionary (**S449**; P S449); **S448 (2026-10-02):** torah ×2, flash, dictionary (**S448**); **S447 (2026-10-02):** FM, torah, trope, emoji corpus (+ flash, generator, dictionary `?v=`) (**S447**); **S446 (2026-10-02):** index, generator, torah, flash (**S446**); **S445:** generator, flash, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`cdn-library-parser-blocking-for-one-action`** (NEW S452 D; generator `82bbe313`, FM `d01a33cd`): ACTIVE, streak 0. A parser-blocking CDN `<script src>` in `<head>` for one action. Detection: `grep -n '<script[^>]*src="https\?://' *.html | grep -v ' async\| …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`dark-navy-fill-matches-its-ground`** (NEW S450 M; flash ×2 `c9e2bc2b`, `68055510`; S451 census: dictionary `5deb5472`, generator `f9ca0909`): ACTIVE, streak 0. Detection (`g451/navy.mjs`): every visible button/.btn/[role=button]/.active/[aria-pressed=true] in dark, its fill …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -620,7 +638,7 @@ _(none)_
 
 - G print & export fidelity (one tool): 2026-10-02 (**S451 — `torah_trainer.html`, its 3rd (S181, S324 → 115 commits). 6 arms, every zero controlled: the Trope staff on paper (16 PDFs), 4 layouts + translit (pinned npm library) light vs dark (ink equal), a word-collision probe (plant 32), the handout in 4 layouts (geniza, numbers, selected verses), the ?s= link round trip (15 keys). FOUND the …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- D performance (one tool): 2026-10-01 (**S438 — `classroom_dashboard.html`, its 5th D (S325 → 94 commits). Cold 3× at 1×/4×, 14 real-click steps with longtask + event timing, 20-cycle hygiene after GC, a 10 s idle tick; the 300 ms click control fired every run. CLEAN: top load task 287–315 ms @4× (S325 648–781), no interaction ≥200 ms, keystrokes ≤32 ms @4×, idle 21 ms task / 10 s. D-next: …[full text: IMPROVEMENT_ARCHIVE.md]
+- D performance (one tool): 2026-10-04 (**S452 — the generator's 4th D (S338 → 90 commits): cold 1×/4× ± PDF libs + CDN latency, 6 interaction arms, print, GC leak, signed-in load; control fired. FIXED the blocking libs (+ FM), the squeezed caller sheet; logged 3. D-next: index (S352).**)
 
 - I first-load & empty-state: 2026-10-01 (**S439 — 33rd I, first since S425 (136 commits). Gates clean on 34 virgin cells behind 7 plants; census = S425's; 0 SDK requests; the torah date lookup right on 10 dates. FOUND + …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -636,4 +654,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-01 (**S442 — the keyboard focus ring on all 14 pages + the 3 shared modules' injected rings: a real-Tab walk (EN light/dark 1280, HE light/dark 800 on 6), ring colour and contrast against its surface, transitions disabled; HEAD as the control (58 light stops under 3:1, 0 dark). FIXED `91fede71` (the `--focus-ring` token), `a46342c1` (modules); logged 2 P4 …[full text: IMPROVEMENT_ARCHIVE.md]
 
-**Next session (S452):** **BRANCH/PR: S435–S451 on `claude/nice-mayer-bzr3d9` → draft PR #303 (base `43570d4`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v919**, FM **5.58**, SDK **2.116.0**; backend unchanged. ⚑ Stalest: D (S438), I (S439), H (S440); O blocked. ⚑ Strongest untaken: the staff handout's Font size + Hide cantillation (gate 2, S451), the generator PDF <700px, the dashboard adopt toast (needs landed ids). ⚑ G-next: FM (S337).
+**Next session (S453):** **BRANCH/PR: S452 on `claude/improveloop-s452` → draft PR #308 (base `c0f3b57`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v925**, FM **5.59**, SDK **2.116.0**. ⚑ Stalest: I (S439), H (S440), C (S441); O blocked. ⚑ Strongest untaken: `js/ivrit-saves.js`'s serial row fetches + double listing, the caller page count. ⚑ G-next: FM (S337).
