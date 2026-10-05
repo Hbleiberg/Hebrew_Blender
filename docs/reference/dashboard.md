@@ -269,7 +269,10 @@ which the board column titles also use) for the one collapsible left on the page
 Schedules*; and the `.radio-group { flex-wrap: wrap }` rule under 430px (the drawer still clips at its edge).
 The drawer's segmented `.radio-group` radios are visually hidden but focusable (1px, `opacity:0`, the
 `:focus-visible` ring drawn on the label) — the Torah Trainer's and Trope Tutor's rule; `display:none` would take
-every one of them out of the keyboard's and a screen reader's reach.
+every one of them out of the keyboard's and a screen reader's reach. Each group is a `role="radiogroup"` named by
+`aria-labelledby` from its row's visible question `<label id="rg…">` (the two "Display" rows add their section
+heading first), so a screen reader hears "Parsha schedule, radio group", not a bare "Diaspora", and the name follows
+a language switch with no string of its own.
 
 ---
 

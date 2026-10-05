@@ -2550,8 +2550,8 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
           <span style="font-size:0.78rem;color:var(--muted);font-style:italic;" data-i18n="dashboard.layout.lock_widths_hint">Freezes the draggable edges between the columns and on the settings drawer, so a stray touch can't resize them. Widths you already set stay exactly as they are.</span>
         </div>
         <div class="form-row">
-          <label data-i18n="dashboard.display.column_headers">Column headers</label>
-          <div class="radio-group">
+          <label id="rgHeaderLang" data-i18n="dashboard.display.column_headers">Column headers</label>
+          <div class="radio-group" role="radiogroup" aria-labelledby="rgHeaderLang">
             <input type="radio" name="headerLang" id="hl-he" value="he"><label for="hl-he">עִבְרִית</label>
             <input type="radio" name="headerLang" id="hl-en" value="en"><label for="hl-en" data-i18n="dashboard.common.opt_english">English</label>
             <input type="radio" name="headerLang" id="hl-none" value="none"><label for="hl-none" data-i18n="dashboard.common.opt_none">None</label>
@@ -2605,8 +2605,8 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
              so the label wrapped to two lines and the group ran 13px past the row; the group now drops
              under the label, end-aligned like the row's toggles. (S327 Pass C) -->
         <div class="form-row" style="flex-wrap:wrap;">
-          <label data-i18n="dashboard.datetime.date_format">Date format</label>
-          <div class="radio-group" style="margin-inline-start:auto;">
+          <label id="rgEngDateFmt" data-i18n="dashboard.datetime.date_format">Date format</label>
+          <div class="radio-group" role="radiogroup" aria-labelledby="rgEngDateFmt" style="margin-inline-start:auto;">
             <input type="radio" name="engDateFmt" id="ef-mdy" value="MDY"><label for="ef-mdy" data-i18n="dashboard.datetime.fmt_mdy">MM/DD/YYYY</label>
             <input type="radio" name="engDateFmt" id="ef-dmy" value="DMY"><label for="ef-dmy" data-i18n="dashboard.datetime.fmt_dmy">DD/MM/YYYY</label>
             <input type="radio" name="engDateFmt" id="ef-long" value="LONG"><label for="ef-long" data-i18n="dashboard.datetime.fmt_long">Long</label>
@@ -2627,10 +2627,10 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
           <label class="toggle"><input type="checkbox" id="hideEngDate"><span class="slider"></span></label>
         </div>
 
-        <div class="tt-set-sub" data-i18n="dashboard.datetime.sub_hebrew_date">Hebrew Date</div>
+        <div class="tt-set-sub" id="rgHebDateSub" data-i18n="dashboard.datetime.sub_hebrew_date">Hebrew Date</div>
         <div class="form-row">
-          <label data-i18n="dashboard.datetime.hebdate_display">Display</label>
-          <div class="radio-group">
+          <label id="rgHebDateScript" data-i18n="dashboard.datetime.hebdate_display">Display</label>
+          <div class="radio-group" role="radiogroup" aria-labelledby="rgHebDateSub rgHebDateScript">
             <input type="radio" name="hebDateScript" id="hs-he" value="he"><label for="hs-he">עברית</label>
             <input type="radio" name="hebDateScript" id="hs-translit" value="translit"><label for="hs-translit" data-i18n="dashboard.common.opt_english">English</label>
             <input type="radio" name="hebDateScript" id="hs-both" value="both"><label for="hs-both" data-i18n="dashboard.common.opt_both">Both</label>
@@ -2651,8 +2651,8 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
           <label class="toggle"><input type="checkbox" id="showParsha"><span class="slider"></span></label>
         </div>
         <div class="form-row">
-          <label data-i18n="dashboard.datetime.parsha_schedule">Parsha schedule</label>
-          <div class="radio-group">
+          <label id="rgParshaSchedule" data-i18n="dashboard.datetime.parsha_schedule">Parsha schedule</label>
+          <div class="radio-group" role="radiogroup" aria-labelledby="rgParshaSchedule">
             <input type="radio" name="parshaSchedule" id="ps-diaspora" value="diaspora"><label for="ps-diaspora" data-i18n="dashboard.datetime.parsha_diaspora">Diaspora</label>
             <input type="radio" name="parshaSchedule" id="ps-israel" value="israel"><label for="ps-israel" data-i18n="dashboard.datetime.parsha_israel">Israel</label>
           </div>
@@ -2664,8 +2664,8 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
 
         <div class="tt-set-sub" data-i18n="dashboard.datetime.sub_time">Time</div>
         <div class="form-row">
-          <label data-i18n="dashboard.datetime.time_format">Time format</label>
-          <div class="radio-group">
+          <label id="rgTimeFmt" data-i18n="dashboard.datetime.time_format">Time format</label>
+          <div class="radio-group" role="radiogroup" aria-labelledby="rgTimeFmt">
             <input type="radio" name="timeFmt" id="tf-12" value="12"><label for="tf-12" data-i18n="dashboard.datetime.fmt_12">12-hr</label>
             <input type="radio" name="timeFmt" id="tf-24" value="24"><label for="tf-24" data-i18n="dashboard.datetime.fmt_24">24-hr</label>
           </div>
@@ -2686,10 +2686,10 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
         </div>
       </div>
       <div class="tt-set" data-set="dow">
-        <h3 class="tt-set-title" tabindex="-1" data-i18n="dashboard.settings.panel_dow">Day of Week</h3>
+        <h3 class="tt-set-title" tabindex="-1" id="rgDowTitle" data-i18n="dashboard.settings.panel_dow">Day of Week</h3>
         <div class="form-row">
-          <label data-i18n="dashboard.days.display_label">Display</label>
-          <div class="radio-group">
+          <label id="rgDowLang" data-i18n="dashboard.days.display_label">Display</label>
+          <div class="radio-group" role="radiogroup" aria-labelledby="rgDowTitle rgDowLang">
             <input type="radio" name="dowLang" id="dl-he" value="he"><label for="dl-he">עִבְרִית</label>
             <input type="radio" name="dowLang" id="dl-both" value="both"><label for="dl-both" data-i18n="dashboard.common.opt_both">Both</label>
             <input type="radio" name="dowLang" id="dl-en" value="en"><label for="dl-en" data-i18n="dashboard.common.opt_english">English</label>
@@ -2794,8 +2794,8 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
       <div class="tt-set" data-set="weather">
         <h3 class="tt-set-title" tabindex="-1" data-i18n="dashboard.settings.panel_weather">Weather</h3>
         <div class="form-row">
-          <label data-i18n="dashboard.weather.temp_unit">Temperature unit</label>
-          <div class="radio-group">
+          <label id="rgTempUnit" data-i18n="dashboard.weather.temp_unit">Temperature unit</label>
+          <div class="radio-group" role="radiogroup" aria-labelledby="rgTempUnit">
             <input type="radio" name="tempUnit" id="tu-f" value="F"><label for="tu-f" data-i18n="dashboard.weather.unit_f">°F</label>
             <input type="radio" name="tempUnit" id="tu-c" value="C"><label for="tu-c" data-i18n="dashboard.weather.unit_c">°C</label>
           </div>
@@ -2807,8 +2807,8 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
           <button class="btn-xs" onclick="setTempSize(2)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
         </div>
         <div class="form-row">
-          <label data-i18n="dashboard.weather.label_language">Label language</label>
-          <div class="radio-group">
+          <label id="rgWeatherLabelLang" data-i18n="dashboard.weather.label_language">Label language</label>
+          <div class="radio-group" role="radiogroup" aria-labelledby="rgWeatherLabelLang">
             <input type="radio" name="weatherLabelLang" id="wl-he" value="he"><label for="wl-he">עִבְרִית</label>
             <input type="radio" name="weatherLabelLang" id="wl-en" value="en"><label for="wl-en" data-i18n="dashboard.common.opt_english">English</label>
           </div>
@@ -2958,8 +2958,8 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
           <label class="toggle"><input type="checkbox" id="pickerFairCycle"><span class="slider"></span></label>
         </div>
         <div class="form-row">
-          <label data-i18n="dashboard.picker.group_mode">Group Maker mode</label>
-          <div class="radio-group">
+          <label id="rgGroupMode" data-i18n="dashboard.picker.group_mode">Group Maker mode</label>
+          <div class="radio-group" role="radiogroup" aria-labelledby="rgGroupMode">
             <input type="radio" name="groupMode" id="gm-size" value="size"><label for="gm-size" data-i18n="dashboard.picker.group_of_n">Groups of N</label>
             <input type="radio" name="groupMode" id="gm-count" value="count"><label for="gm-count" data-i18n="dashboard.picker.n_groups">N groups</label>
           </div>
@@ -3019,8 +3019,8 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
           <label class="toggle"><input type="checkbox" id="colorCodeNikkud"><span class="slider"></span></label>
         </div>
         <div class="form-row" id="colorModeRow" style="display:none;">
-          <label data-i18n="dashboard.color.color_style">Color style</label>
-          <div class="radio-group">
+          <label id="rgColorMode" data-i18n="dashboard.color.color_style">Color style</label>
+          <div class="radio-group" role="radiogroup" aria-labelledby="rgColorMode">
             <input type="radio" name="colorMode" id="cm-letter" value="letter"><label for="cm-letter" data-i18n="dashboard.color.mode_color">Color</label>
             <input type="radio" name="colorMode" id="cm-highlight" value="highlight"><label for="cm-highlight" data-i18n="dashboard.color.mode_highlight">Highlight</label>
             <input type="radio" name="colorMode" id="cm-underline" value="underline"><label for="cm-underline" data-i18n="dashboard.color.mode_underline">Underline</label>
