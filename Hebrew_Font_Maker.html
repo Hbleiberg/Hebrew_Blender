@@ -23235,7 +23235,10 @@ function migrateProject(data) {
   data.combinedIndex = Math.max(0, Math.min(data.combinedIndex, Math.max(0, data.combinedSheets.length - 1)));
   delete data.combinedImage;
   data.combinedSheets = data.combinedSheets.filter(_isObj);
-  data.precomposed = Array.isArray(data.precomposed) ? data.precomposed.filter(_isObj) : PRECOMPOSED.map(p => ({...p}));
+  // auto-detect's sheet scale (finalizeCrop sizes a letter boxed by hand with it): a raw 1e999 reads Infinity, which
+  // gave that letter a NaN transform — a scale that is not a finite positive number goes, and the letter fits as before.
+  data.combinedSheets.forEach(s => { if (!(Number.isFinite(s.fitScale) && s.fitScale > 0)) delete s.fitScale; });
+  data.precomposed =Array.isArray(data.precomposed) ? data.precomposed.filter(_isObj) : PRECOMPOSED.map(p => ({...p}));
   data.precomposed.forEach(pc => { if (pc.anchor === undefined) pc.anchor = null; if (pc.holam === undefined) pc.holam = null; });   // per-form mark anchor + holam-attach override
   data.precomposed.forEach(sanitizePrecompSrc);   // a form outline taken whole from a source font — shape-checked because it becomes glyph data verbatim
   if (!_isObj(data.template)) data.template = { font:"'Noto Sans Hebrew', sans-serif", opacity:0.35, showOverlay:true };
