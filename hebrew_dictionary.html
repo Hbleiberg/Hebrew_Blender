@@ -856,7 +856,9 @@ footer details > summary:hover{text-decoration:underline;}   /* FAQ / How-To row
   .font-size-row .fs-label { font-size:0.72rem; color:var(--muted); font-weight:600; white-space:nowrap; }
   .font-size-row input[type=range] { flex:1; accent-color:var(--gold); cursor:pointer; height:24px; }
   .font-size-row .fs-val { font-size:0.68rem; color:var(--muted); min-width:38px; text-align:end; font-variant-numeric:tabular-nums; }
-  .font-size-row .fs-reset { background:none; border:1px solid var(--border); border-radius:4px; padding:1px 6px; font-size:0.78rem; cursor:pointer; color:var(--muted); line-height:1.4; font-family:inherit; }
+  .font-size-row .fs-reset { background:none; border:1px solid var(--border); border-radius:4px; padding:1px 6px; font-size:0.78rem; cursor:pointer; color:var(--muted); line-height:1.4; font-family:inherit;
+    /* the 30px floor the generator's identical .fs-reset and torah's .sreset carry — these measured 27×21 */
+    min-height:30px; min-width:30px; display:inline-flex; align-items:center; justify-content:center; }
   .font-size-row .fs-reset:hover { border-color:var(--gold); color:var(--gold-text); }
   .font-selector-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
   .font-opt {
