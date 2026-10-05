@@ -549,6 +549,9 @@ Tish'a B'Av (Kotel) and `generic` (a calendar page, for any title the matcher do
   (`el.innerHTML = holidayIconFor(name) + esc(label)`), the way the header-icons rule builds a button. The
   strings themselves carry no emoji.
 - A `<select>` cannot hold an SVG, so the Trainer's parsha-picker `<optgroup>` keeps plain option labels.
+- A page-only variant wraps `holidayIconFor` in that page's code below the end marker, never inside the block: the
+  dashboard's `dashHolidayIcon()` draws Chanukah with that night's candles (`docs/reference/dashboard.md` →
+  Holiday countdown icon) and hands every other title to `holidayIconFor`.
 - Swapping a drawing means replacing that family's entry in `HOLIDAY_ICONS` on **both** carriers, re-truing the
   carrier list in both markers if a page joins, then sha-verifying the two blocks across carriers.
 

@@ -612,7 +612,11 @@ in place of the 🎉 / 🕯️ the `dashboard.days.holiday_today*` strings once 
 glyph in a string (same rule as the header icons). The drawings, the title matcher `holidayIconFor(title)` and the
 `--hol-*` palette live in the shared **holiday-icons** blocks (JS + CSS; `docs/reference/shared-components.md` →
 Holiday icons), which this page shares byte-identically with the Torah Trainer. `renderHolidayCountdown()`
-prepends `holidayIconFor(next.title)` to every form of the line (countdown, today, solemn today); Hebcal's Erev,
+prepends `dashHolidayIcon(next.title)` to every form of the line (countdown, today, solemn today); Hebcal's Erev,
 Chol HaMoed and numbered-day titles therefore share their family's icon, and a title the matcher does not know
-gets the calendar page. `.hol-ico` is sized in em, so the `--holiday-size` slider and the fullscreen scale rule
+gets the calendar page. The one exception is Chanukah: `dashHolidayIcon()` (page code below the block's end marker,
+so the Trainer keeps the shared full chanukiah) reads the night from Hebcal's `Chanukah: N Candle(s)` title and
+draws the shared chanukiah's geometry with only that night's candles, placed from the right as on a real one and
+an empty cup in every other branch (`Chanukah: 8th Day` shows all eight); every other title goes to
+`holidayIconFor()`. `.hol-ico` is sized in em, so the `--holiday-size` slider and the fullscreen scale rule
 size it with the text, and the dark block of the CSS swaps its palette without a re-render.
