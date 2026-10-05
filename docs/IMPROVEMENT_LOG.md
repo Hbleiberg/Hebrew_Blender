@@ -8,6 +8,12 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P3 (**NEW S459 E**) | source-data/hebrew_emojis.csv | **The emoji corpus's build input keeps the 13 "yy" transliterations `a86b5a16` fixed in the JSON** (every other cell agrees): a rebuild brings them back. | found S459
+
+- [ ] P4 (**NEW S459 E**) | docs/reference/ops.md | **The `/data/` census says `hebrew_emojis.json?v=1`; the three pages fetch `?v=2`.** | found S459
+
+- [ ] P4 (**NEW S459 E**) | README.md | **The data table says the emoji corpus serves the dictionary and flash cards; the generator's Matching worksheet loads it too.** | found S459
+
 - [ ] P4 (**NEW S458 A — C's**) | classroom_dashboard.html | **The drawer's radio groups have no programmatic question** ("Diaspora, radio button", no "Parsha schedule"). | found S458
 
 - [ ] P4 (**NEW S458**) | scripts/smoke-sync.mjs | **Scenario 2 fails Mon 08:00–09:30, Tue 08:00–08:45 local** (its schedule's preset goes up): pin the clock. | found S458
