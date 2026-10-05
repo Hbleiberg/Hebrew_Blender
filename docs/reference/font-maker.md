@@ -357,7 +357,7 @@ under the baseline into its seeded sheva. The review dialog's **Sizing** select 
 seeded from the per-device `adSizing` pref in `hebrewFontMaker_uiPrefs`, written by `adSetSizing`)
 offers the old per-crop fit as *Fit each letter to its guide lines*; the sheet remembers the scale as
 `combinedSheets[].fitScale` (a plain number outside undo — undoing the Apply leaves it; a later
-fit-each Apply deletes it), and `finalizeCrop` reads it for a letter boxed by hand on that sheet
+fit-each Apply deletes it; `migrateProject` drops a loaded one that is not a finite positive number), and `finalizeCrop` reads it for a letter boxed by hand on that sheet
 afterwards, measuring the box's ink with `inkBoundsOf` (detection's own binarize plus its
 rule-line and hollow-rectangle filters, so a printed cell border inside a loose box is ignored). Marks
 and sheets never auto-detected behave as before. `defaultFitTransform` itself (and `snapFit`, the

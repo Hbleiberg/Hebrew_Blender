@@ -390,7 +390,9 @@ since is not deleted: its newer copy lands again.
 is the whole per-page surface: `status` (element or selector) is where the status line is mounted; `entries` is
 for harnesses (real tools list theirs in the registry); `merges` supplies the `page` helpers; `flush()` must cancel
 any debounced writer and write now — the module calls it at every hydration and before every write-through, so it
-must never throw the teacher out of an edit; `finalFlush()` runs only on `pagehide` and sign-out (the dashboard
+must never throw the teacher out of an edit — and write only what this tab changed since it last wrote or read, or
+hiding or closing an older tab puts its copy back over one a newer tab saved since (the Torah Trainer and the Trope
+Tutor flush only a pending save; the dashboard and Flash Cards compare with the copy this tab last wrote or read); `finalFlush()` runs only on `pagehide` and sign-out (the dashboard
 exits its in-place editor there); `editing()` returning `true` says a live edit is open (the dashboard: a board, an
 Intermission screen or a class list being typed), so another tab's download is held as it is for a focused tab — the
 kind marked stale, merged at this page's next save — instead of re-rendered over the typing in a window that lost the

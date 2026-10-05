@@ -8,15 +8,9 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P2 (**NEW S458 A — pattern `native-input-display-none-under-its-label`, NEW**) | classroom_dashboard.html | **The drawer's 27 segmented radios (date format, Hebrew-date script, parsha schedule, clock, day names, weather…) take no keyboard focus and are absent for screen readers**: `.radio-group input { display:none }`; torah and trope hide theirs 1px/opacity 0 with a label ring. | found S458
+- [ ] P4 (**NEW S458 A — C's**) | classroom_dashboard.html | **The drawer's radio groups have no programmatic question** ("Diaspora, radio button", no "Parsha schedule"). | found S458
 
-- [ ] P3 (**NEW S458 A — pattern `stale-tab-flush-writes-its-old-copy`, NEW; c1714e2f/027fc597's class**) | flash_cards.html | **Signed in, closing an older flash-cards tab writes its settings over a newer tab's** (`flush: saveSettings` from the module's final flush): the device-only fields (audio, voice speed, home button, two-sided) stay reverted. | found S458
-
-- [ ] P3 (**NEW S458 A — `non-finite-number-from-a-loaded-file`**) | Hebrew_Font_Maker.html | **A project whose sheet carries a raw `fitScale` of `1e999` loads it as Infinity, and the next letter boxed by hand on that sheet gets a NaN transform** (`migrateProject` never checks it). | found S458
-
-- [ ] P4 (**NEW S458 A — C's**) | classroom_dashboard.html | **The drawer's radio groups carry no programmatic question** (no `role=radiogroup` name): once reachable, "Diaspora, radio button" is heard without "Parsha schedule"; torah's and trope's groups are named. | found S458
-
-- [ ] P4 (**NEW S457 B — G's**) | hebrew_blend_generator.html | **Export PDF names an untitled worksheet "Hebrew_Blends_Hebrew_Blends.pdf"** (the title, then the same suffix). | found S457
+- [ ] P4 (**NEW S458**) | scripts/smoke-sync.mjs | **Scenario 2 fails Mon 08:00–09:30, Tue 08:00–08:45 local** (its schedule's preset goes up): pin the clock. | found S458
 
 - [ ] P2 (**NEW S454 H — gate 2**) | resources.html | **At ten My Fonts, "Use in IvritSuite" silently drops the oldest** (a teacher's own font; the toast says "added"). | found S454
 
@@ -298,6 +292,10 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-05 | (S458 close-out) | branch/deploy note | **S458 = A (+A2) + 4 fixes, PR #308.** No drift; sw v930→v931; no FM bump; gates clean; 4 smokes green; deferred: micro-feature.
+
+- [x] 2026-10-05 | `ea43be7e`, `070582d8`, `2bb2ead0`, `6409fa98` | dashboard, flash, FM, generator | (S458) **Radios take the keyboard; an old tab no longer reverts a newer one; a non-finite sheet scale no longer NaNs a letter; Export PDF stops doubling its name.** | findings S458.
+
 - [x] 2026-10-05 | (S457 close-out) | branch/deploy note | **S457 = B + 4 fixes, PR #308.** No drift (main `c0f3b57`, keep-alive #22 green); sw v929→v930; no FM bump; check-i18n + check-inline-js clean; 7 smokes green; deferred: micro-feature.
 
 - [x] 2026-10-05 | `4c31b627` | js/ivrit-saves.js, smoke-sync | (S457 B) **A new device's first signed-in load takes the account's preferences** (`useCloud` with the downloads). | `prefs2/3.mjs` 0/3 → 3/3; smoke-sync 1b 3/6 → 6/6; 7 smokes.
@@ -328,17 +326,11 @@ _(none)_
 
 - [x] 2026-10-04 | `b1eb9659`, `f8706492` | resources.html, contact.html, classroom_dashboard.html | (S454 H) **URL/e-mail fields type LTR in Hebrew; the YouTube field takes the page's style.** | `bidi.mjs` 9/9 → 0, `fix1.mjs` 0 (HEAD 16); `dashurl.mjs` 0 of 7 props off (HEAD 6–7).
 
-- [x] 2026-10-04 | (S453 close-out) | branch/deploy note | **S453 = pass I + 4 fixes, PR #308.** Drift none; sw v925→v926; no FM bump; 7 smokes green; deferred: micro-feature.
-
-- [x] 2026-10-04 | `2baede2d` | js/ivrit-saves.js | (S453) **A load with nothing to send lists once.** | smoke-sync 1 tightened; 7 smokes.
-
-- [x] 2026-10-04 | `543791bb`, `ac796dba` | hebrew_blend_generator.html | (S453) **Class Set only where it prints versions; Generate keeps its icon.** | `classset.mjs` 12 → 0; `genicon.mjs` 0/24 → 24/24.
-
-- [x] 2026-10-04 | `728e4075` | torah_trainer.html | (S453 I) **A pre-strings load failure shows words.** | `ttrace.mjs` 8/8 → 0.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-05 | **S458** | iters: 1 pass (**A**, +A2) + 4 fixes = **5** | tools: dashboard, flash, FM, generator | patterns fixed: 2 NEW, non-finite ×1 | pass run: A | SW: v930→v931
 
 - 2026-10-05 | **S457** | iters: 1 pass (**B**) + 4 fixes = **5** | tools: ivrit-saves, dictionary, FM, torah | patterns fixed: flex-range-keeps-its-min-content-width (NEW) | pass run: B | SW: v929→v930
 
@@ -372,9 +364,13 @@ _(none)_
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S457 (2026-10-05):** ivrit-saves, dictionary, FM, torah S457 · generator, flash S456 · trope, resources S455 · contact, dashboard S454 · account S449 · index S446 · privacy, terms, 404 S442.
+- **Snapshot S458 (2026-10-05):** dashboard, flash, FM, generator S458 · ivrit-saves, dictionary, torah S457 · trope, resources S455 · contact S454 · account S449 · index S446 · privacy, terms, 404 S442.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`native-input-display-none-under-its-label`** (NEW S458, `ea43be7e`): ACTIVE, streak 0. Detection: `a458/radios.mjs`; control torah. …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- **`stale-tab-flush-writes-its-old-copy`** (NEW S458; `c1714e2f`, `027fc597`, flash `070582d8`): ACTIVE, streak 0. Detection: `a458/twotabsigned.mjs`; control `027fc597^`. …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`flex-range-keeps-its-min-content-width`** (NEW S457; `ddcb4237`): ACTIVE, streak 0. A `flex:1` range without `min-width:0` keeps its 129px and pushes the row's last item out of a narrow card. Detection: grep `input\[type=range\][^{]*{[^}]*flex: *1` lacking `min-width: *0`, …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -488,7 +484,7 @@ _(none)_
 
 - **`dark-mode-token-as-text-on-a-light-ground`** (**REOPENED S413 Pass C — a 3rd carrier the CSS grep could not see: contact's script-written success line, `var(--gold)` 2.75:1 on light, FIXED `f40d142`; open: the generator's `sub.style.color` (A's)**): ACTIVE, streak 0. …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`non-finite-number-from-a-loaded-file`**: ACTIVE (consequence-critical). **S374: the 4 S371 carriers FIXED (`31a84f7` torah `karaokeRate`/`ttsRate`; `5d1d13a` trope `hebFontSize`/`playbackRate`) via `_sliderNum` at `loadSettings`; open hits 0, clean streak 0.** Shape: …[full …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`non-finite-number-from-a-loaded-file`**: ACTIVE (consequence-critical). **S458 FM `fitScale` `2bb2ead0`; S374 torah, trope.** Open 0, streak 0. …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **slider-focus-lost-to-its-own-rebuild**: **CLASS CLOSED 2026-08-29 (S286 iter 2) — the last 6 known carriers fixed (`9a01f3b`); hits: 6, clean streak: 0 — ACTIVE.** Registered S284 (3 fixed, 6 logged unreachable). All six routed through the shared re-focus helper …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -672,7 +668,7 @@ _(none)_
 
 - C accessibility (one tool): 2026-10-04 (**S455 — `trope_tutor.html` (S312 → 93 commits: Phrases, the Settings tab, key bar, tune practice). Tab census, a keyboard drill, tour, motion, targets, `lang`, contrast in 4 cells, every zero planted (findings S455). FOUND 26 focus drops + no card headings; FIXED `03cb3ff4`, `12247228`. C-next: generator (S327).**)
 
-- A recurring-pattern sweep: 2026-10-01 (**S444 — 35th A: delta `99f9fa5..eeaf279` (114 commits). 10 arms, every zero controlled (receipts: findings S444). FOUND 2 + 2 P4 logged; FIXED 4.**)
+- A recurring-pattern sweep: 2026-10-05 (**S458 — 36th A + A2 on `eeaf279..9c97b35b` (84 commits): 13 arms, zeros controlled (findings S458); FIXED 4; A2 none un-retired.**)
 
 - G print & export fidelity (one tool): 2026-10-02 (**S451 — `torah_trainer.html`, its 3rd (S181, S324 → 115 commits). 6 arms, every zero controlled: the Trope staff on paper (16 PDFs), 4 layouts + translit (pinned npm library) light vs dark (ink equal), a word-collision probe (plant 32), the handout in 4 layouts (geniza, numbers, selected verses), the ?s= link round trip (15 keys). FOUND the …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -692,4 +688,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-05 (**S456 — sliders on 7 tools: name, value heard, keys, size; plants fired (findings S456). FIXED 4. F-next: search fields.**)
 
-**Next session (S458):** **BRANCH/PR: S452–S457 on `claude/improveloop-s452` → draft PR #308 (base `c0f3b57`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v930**, FM **5.59**, SDK **2.116.0**. ⚑ Stalest: A (S444), E (S445), L (S446); O blocked. ⚑ Untaken: the font-cap note (P2, gate 2), the serial hydration GETs (P3, shared). ⚑ Signed in, read the status line and the cloud log: the module logs nothing to the console (findings S457).
+**Next session (S459):** **BRANCH/PR: S452–S458 on `claude/improveloop-s452` → draft PR #308 (base `c0f3b57`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v931**, FM **5.59**, SDK **2.116.0**. ⚑ Stalest: E, L, K; O blocked. ⚑ Untaken: font-cap note (P2, gate 2), radio-group names (P4). ⚑ smoke-sync 2 is red Mon 08:00–09:30 / Tue 08:00–08:45 local (findings S458).

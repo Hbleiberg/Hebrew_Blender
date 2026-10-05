@@ -267,6 +267,9 @@ own `dowCollapsed` / `weatherCollapsed` / `timerCollapsed` / `pickerCollapsed` /
 is gone with them. What stays: the `.sub-section*` CSS and `initSubSectionCollapse()` (through `_wireCollapseHdr`,
 which the board column titles also use) for the one collapsible left on the page, the week editor's *Saved
 Schedules*; and the `.radio-group { flex-wrap: wrap }` rule under 430px (the drawer still clips at its edge).
+The drawer's segmented `.radio-group` radios are visually hidden but focusable (1px, `opacity:0`, the
+`:focus-visible` ring drawn on the label) — the Torah Trainer's and Trope Tutor's rule; `display:none` would take
+every one of them out of the keyboard's and a screen reader's reach.
 
 ---
 
