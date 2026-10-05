@@ -505,8 +505,10 @@ decides by the same rule.
 **Order inside one hydration** (`hydrateInner`): the attached pages' `flush()` under the module's self-write
 guard, `primeVirtual('Suite')`, one listing (`cloudList`; an array of tools selects `'tool, ' + ROW_COLS` and
 the first hydration lists every tool in `TOOLS`, since the extras diff is device-wide), the account-gone
-guard, a plan per tool; then (1) `Suite` first, then each tool's downloads — what the account has that this
-device lacks or holds older; (2) on the first hydration the card, and after *Add* the extras' inserts (a
+guard, a plan per tool; then (1) `Suite` first (its downloads, and on a device that never synced the preferences
+their `useCloud`: a tool's re-apply writes preference keys, and the row would then read "changed meanwhile"), then
+each tool's downloads — what the account has that this device lacks or holds older; (2) on the first hydration
+the card, and after *Add* the extras' inserts (a
 same-named row → keep both), after *Remove* the extras' removal, then every settings row and folder tree the
 device holds is held back at its present hash (`holdBack` into `ivritSuite_syncMeta2.noUpload[uid]`, so a reload
 does not release it; it goes up only once it changes), then a fresh listing; (3) uploads, merges (`tabMerge`

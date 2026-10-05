@@ -2136,7 +2136,10 @@
     var order = p.rows.filter(function (r) {
       var a = actionFor(tool, r, first, res.first);
       if (!a || a === 'extra') return false;
-      var down = (a === 'download');
+      // The preferences on a device that never synced them (`useCloud`) land with the downloads, so before any tool's
+      // row: a tool's re-apply writes preference keys (the generator's remembered setup sets the Hebrew size and live
+      // preview), which left the row "changed meanwhile" and the account's preferences unapplied until the next load.
+      var down = (a === 'download') || (a === 'useCloud' && !!r.entry.virtual);
       if (phase === 'down') return down;
       if (phase === 'rest') return !down;
       return true;

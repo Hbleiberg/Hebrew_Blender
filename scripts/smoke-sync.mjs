@@ -16,6 +16,9 @@
  *      status line reads "Saved in your account", no card (the device holds nothing extra); the listing is
  *      one GET with tool=in.(…) and select=tool,…, only rows whose hash differs are fetched, and a reload
  *      fetches nothing.
+ *  1b. A device with its own preferences opens the generator first, the account holding its preferences and the
+ *      generator's remembered setup (whose re-apply writes two preference keys): the account's preferences land
+ *      on that load (the device's own kept for download first), the setup too, "Saved in your account", no insert.
  *   2. A tool opened later on a hydrated device (memory for the generator, none for the dashboard): the
  *      account's dashboard settings win over the page's freshly written defaults, the weekly grid arrives,
  *      the row reads synced in lastPlan, the live page shows Schedule Sync on, the picker adopts the class
@@ -528,6 +531,32 @@ try {
     check('1: a reload lists only this page\'s tools, once, and fetches no row (every hash matches the memory)', ok2 && loads2.length === 0 && listings2.length === 1 && JSON.stringify(secondTools) === '["Dictionary","Suite","Worksheet"]' && /^Saved in your account/.test(await statusText(page, '#cloudSavesPanel') || ''), JSON.stringify({ ok2, loads: loads2.length, tools: secondTools, calls: methods(cloud, before) }));
     await page.screenshot({ path: path.join(SHOTS, '1-generator-hydrated.png') });
     check('1: 0 pageerrors', errors.length === 0, errors.join(' | '));
+    await ctx.close();
+  }
+
+  // ---- 1b. a device with its own preferences opens the generator first: the account's preferences land on this load ----
+  // The account also holds the generator's remembered setup, whose re-apply writes two preference keys (the Hebrew
+  // size and live preview); the preferences' useCloud runs with the downloads, so that write cannot leave the row
+  // "changed meanwhile" (it did until S457: the status line's error, the device's own preferences until a reload).
+  if (want('1B')) {
+    const cloud = new FakeCloud([
+      { tool: 'Suite', kind: 'prefs', name: 'default', data: { lang: 'en', darkMode: '1', kbdLayout: 'qwerty', inputMode: 'auto' } },
+      { tool: 'Worksheet', kind: 'lastState', name: 'default', data: { selectedLetters: ['א', 'ב'], selectedVowels: ['kamatz'], wsTitle: 'Week 2', hebFontSize: 60, livePreview: false } }
+    ]);
+    const ctx = await openContext(browser, cloud, SEED({ meta2: false, extra: { hebrewBlender_darkMode: '0', hebrewBlender_kbdLayout: 'abc' } }));
+    const { page, errors } = await openPage(ctx, 'hebrew_blend_generator.html', { tools: GEN_TOOLS });
+    const r = await page.evaluate((UID) => {
+      const m2 = JSON.parse(localStorage.getItem('ivritSuite_syncMeta2') || '{}'), u = (m2.users || {})[UID] || {};
+      return { dark: localStorage.getItem('hebrewBlender_darkMode'), kbd: localStorage.getItem('hebrewBlender_kbdLayout'), bodyDark: document.body.classList.contains('dark'),
+        remembered: !!(u.Suite && u.Suite.prefs && u.Suite.prefs.default), kept: /Suite\/prefs\/default#/.test(localStorage.getItem('ivritSuite_replaced') || ''),
+        title: (document.getElementById('wsTitle') || {}).value, status: (document.querySelector('#cloudSavesPanel .ivsav-status') || {}).textContent || '' };
+    }, UID);
+    check('1b: the account\'s preferences landed on the first load (dark on, qwerty, the page dark) and the row is remembered', r.dark === '1' && r.kbd === 'qwerty' && r.bodyDark && r.remembered, JSON.stringify(r));
+    check('1b: the device\'s own preferences were kept for download first', r.kept, JSON.stringify(r));
+    check('1b: the remembered setup landed too, and the status line reads "Saved in your account"', r.title === 'Week 2' && /^Saved in your account · /.test(r.status), JSON.stringify({ title: r.title, status: r.status }));
+    const prefsPosts = cloud.log.filter(e => e.m === 'POST' && e.table === 'saves' && e.body && e.body.kind === 'prefs');
+    check('1b: the preferences were never inserted as a second row (no POST, no 409)', prefsPosts.length === 0, JSON.stringify(prefsPosts.map(e => e.status)));
+    check('1b: 0 pageerrors', errors.length === 0, errors.join(' | '));
     await ctx.close();
   }
   // ---- 2. a tool opened later on a hydrated device: the account's settings win over the page's fresh defaults ----
