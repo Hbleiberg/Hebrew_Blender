@@ -137,7 +137,7 @@
   "dashboard.backup.auto_explainer_signed_in": "Your presets, schedules and settings are saved in your account. A <b>.ivrit</b> file is for sharing them or keeping an offline copy; restoring one merges its items into your account.",
   "dashboard.backup.err_invalid_json": "Invalid JSON.",
   "dashboard.backup.placeholder": "Paste backup JSON here, or click Export…",
-  "dashboard.blackout.hint": "Tap, or press Esc, to return",
+  "dashboard.blackout.hint": "Tap, or press any key, to return",
   "dashboard.color.color_code_nikkud": "Color-code nikkud",
   "dashboard.color.color_style": "Color style",
   "dashboard.color.mode_color": "Color",

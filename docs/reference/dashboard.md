@@ -382,9 +382,11 @@ body.dark #tipFloat { background: #0a0f1c; }
   call this, because each already owns its own display and countdown state; `timerAddMinute` would
   otherwise add `timerTotal + 60`) and `timerDismissAlert()` (teardown **plus** clearing the display).
   `timerRepeatMaxSec` is seconds with `0` = never, restored with `??`. The dismiss listeners are
-  **capture-phase and attached only while alerting** — capture because the blackout's Escape handler calls
-  `stopImmediatePropagation()`, and a blanked screen during a work period is exactly when a timer rings —
-  and they never `preventDefault()`, so the dismissing tap still does whatever it was going to do. A plain
+  **capture-phase and attached only while alerting** — capture so a tap on a blanked screen (exactly when a
+  timer rings) silences it on its way to the sheet — and they never `preventDefault()`, so the dismissing tap
+  still does whatever it was going to do. Keys never reach them while a presenter sheet is up: the wake guard
+  (*Presenter sheets* below) takes every key at window capture and calls `timerDismissAlert()` itself, so a
+  key that wakes the board silences the timer too (the maintainer's choice). A plain
   key is ignored while a text surface has focus (the `B`-shortcut guard), Escape is not. The document-level
   fallback is load-bearing, not a convenience: `#timerDisplay` is hidden when the panel is collapsed or
   `showTimerFullscreen` is off, and then the visible Stop does not exist. The "tap to stop" hint is a
@@ -406,10 +408,28 @@ body.dark #tipFloat { background: #0a0f1c; }
   storage key for open/closed (a sheet that survived a reload would read as a broken dashboard). Blank has
   a header button and a strip button; Intermission lives on the fullscreen strip only (right after Blank)
   plus its **I** key, which works in and out of fullscreen.
-- **One key handler serves both.** Escape closes whichever sheet is up (`stopImmediatePropagation`, so the
-  drawer underneath never closes with it); B and I are bare letters that yield to every text surface and
-  to the tour. The strip's two buttons carry the keys as `.fss-key` badges (`@media (pointer: fine)`),
+- **Opening: one key handler.** B and I are bare letters that yield to every text surface and to the tour.
+  The strip's two buttons carry the keys as `.fss-key` badges (`@media (pointer: fine)`),
   `aria-keyshortcuts` and their `title`.
+- **Waking: the wake guard — a tap or key that brings the board back does nothing else.**
+  - *Taps.* A sheet stops taking taps the moment it closes, while it still looks black for its 0.2 s fade, so
+    `setBlackout(false)` / `setIntermission(false)` (when that sheet was open) raise `#wakeShield` — a
+    transparent sheet on the same layer, after both in the DOM — for `WAKE_GUARD_MS`. The rest of a
+    double-tap, an impatient re-tap or a whiteboard driver's duplicate click lands on it (`preventDefault` +
+    `stopPropagation` on pointerdown/mousedown/click/dblclick/auxclick/contextmenu), never on a link, a
+    read-aloud day or the video iframe. Opening either sheet drops the shield (after closing its sibling, so
+    a swap never leaves it over the new sheet).
+  - *Keys.* `presenterKeyGuard` listens at **window capture**, ahead of every document listener (the
+    picker's, the week editor's and the tour's capture-phase Escape handlers included). While Blank is up,
+    **any key** closes it (I swaps to the Intermission screen) and goes no further — a clicker's next button
+    works like a tap. The Intermission screen does the same, except while its words are being edited, for
+    Tab (the pencil stays reachable) and for Enter/Space on its own pencil, links and spoilers (B swaps to
+    Blank). A key the guard took has its keypress, keyup and auto-repeats taken too (`_wakeSwallowed`; a
+    button activates on Space's keyup, after the sheet is gone; a window blur clears it), and while the
+    shield is up only B, I and Escape get past. Ctrl/Cmd/Alt combinations, function keys and lone modifiers
+    are never touched. A wake silences a ringing timer: taps through the timer's own capture listener, keys
+    through `timerDismissAlert()` in the guard. The hint reads "Tap, or press any key, to return"
+    (`dashboard.blackout.hint`, both sheets).
 - **Intermission's words** are `settings.intermissionHTML` — sanitized HTML, `''` meaning "the default
   word", which is projected content and so follows `headerLang` (`'he'` → `hebDisplay('הַפְסָקָה')` with
   `lang="he"`, otherwise *Intermission*), never `I18n.lang`. `#intermissionText` deliberately has no
@@ -419,7 +439,7 @@ body.dark #tipFloat { background: #0a0f1c; }
   period change) and from `PRISTINE_DEFAULTS` (a starter layout never wipes it), while `.ivrit` files,
   AllTools and the cloud settings row carry it. Every write into the page goes through `sanitizeDashHTML`.
 - **Tap to return, except…** the sheet's click closes it unless the click is on the pencil, on a link or a
-  spoiler in the text (the shared `spoilerClick` stops propagation once it reveals), inside the text while
+  spoiler in the text (they keep working — the maintainer's choice) (the shared `spoilerClick` stops propagation once it reveals), inside the text while
   editing, or **the tap that just finished an edit** — `_inplaceOutside` records that pointerdown and the
   sheet's own pointerdown/click pair compares against it, so the first tap outside ends the edit and the
   next one closes the sheet. Opening focuses the sheet (so Tab reaches the pencil) and closing hands focus

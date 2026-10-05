@@ -137,7 +137,7 @@
   "dashboard.backup.auto_explainer_signed_in": "ההגדרות, המערכות והתבניות שלכם נשמרות בחשבון. קובץ <b>.ivrit</b> נועד לשיתוף או לעותק לא מקוון; שחזור קובץ ממזג את הפריטים שבו לחשבון שלכם.",
   "dashboard.backup.err_invalid_json": "JSON לא תקין.",
   "dashboard.backup.placeholder": "הדביקו כאן JSON של גיבוי, או לחצו על ייצוא…",
-  "dashboard.blackout.hint": "הקישו, או לחצו ⁦Esc⁩, כדי לחזור",
+  "dashboard.blackout.hint": "הקישו, או לחצו על מקש כלשהו, כדי לחזור",
   "dashboard.color.color_code_nikkud": "קידוד צבעים לניקוד",
   "dashboard.color.color_style": "סגנון צבע",
   "dashboard.color.mode_color": "צבע",

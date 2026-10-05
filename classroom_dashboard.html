@@ -947,6 +947,10 @@
   .im-edit:hover, .im-edit:focus-visible { color: #fff; border-color: var(--gold); }
   /* The floating toolbar sits at 210, under the sheet: lift it while it is editing this surface. */
   body.im-editing .inplace-toolbar { z-index: 100001; }
+  /* Wake shield (armWakeShield): a transparent sheet on the presenter sheets' layer, after them in the DOM, up for
+     a moment after one closes so the rest of the waking tap never reaches the board. Never animated. */
+  #wakeShield { position: fixed; inset: 0; z-index: 100000; display: none; }
+  #wakeShield.on { display: block; }
   .settings-modal {
     position: fixed;
     top: 0; inset-inline-end: 0;
@@ -2280,7 +2284,7 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
     <button class="fs-strip-btn" type="button" onclick="toggleIntermission()" title="Intermission screen (I)" data-i18n-title="dashboard.intermission.btn_title" aria-keyshortcuts="I"><span class="fss-ico"><svg class="hi hi-intermission" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M9.3 7.8h.8v5.4h-.8zM13.9 7.8h.8v5.4h-.8z" fill="currentColor"/></svg></span><span data-i18n="dashboard.fs.strip_intermission">Intermission</span><kbd class="fss-key" aria-hidden="true">I</kbd></button>
   </div>
 </div>
-<div id="blackout" aria-hidden="true" onclick="setBlackout(false)"><span class="bo-hint" data-i18n="dashboard.blackout.hint">Tap, or press Esc, to return</span></div>
+<div id="blackout" aria-hidden="true" onclick="setBlackout(false)"><span class="bo-hint" data-i18n="dashboard.blackout.hint">Tap, or press any key, to return</span></div>
 <!-- Intermission screen: the blackout's sibling (the same sheet and the same exits) with big text the
      teacher edits in place. #intermissionText carries no data-i18n on purpose: applyStaticI18n rewrites
      every [data-i18n] element on load and on each language switch, which would erase the teacher's words;
@@ -2288,10 +2292,11 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
 <div id="intermission" role="dialog" aria-labelledby="intermissionText" aria-hidden="true" tabindex="-1">
   <div id="intermissionText" class="im-text" dir="auto"></div>
   <div class="im-foot">
-    <span class="bo-hint" data-i18n="dashboard.blackout.hint">Tap, or press Esc, to return</span>
+    <span class="bo-hint" data-i18n="dashboard.blackout.hint">Tap, or press any key, to return</span>
     <button id="intermissionEdit" class="im-edit" type="button" title="Edit the intermission text" data-i18n-title="dashboard.intermission.edit" aria-label="Edit the intermission text" data-i18n-aria-label="dashboard.intermission.edit"><svg class="hi hi-pencil" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.35-5L14.95 5.35a2.6 2.6 0 0 1 3.7 3.7L8.05 19.65Z"/><path d="M12.85 7.5l3.65 3.65"/></svg></button>
   </div>
 </div>
+<div id="wakeShield" aria-hidden="true"></div>
 <div id="pickOverlay" role="dialog" aria-modal="true" aria-label="Student picker" data-i18n-aria-label="dashboard.picker.overlay_aria" style="display:none;">
   <button class="pick-close" type="button" onclick="closePickOverlay()" aria-label="Close" data-i18n-aria-label="dashboard.picker.close_aria"><svg class="hi hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
   <div class="pick-note" id="pickNote"></div>
@@ -3584,6 +3589,10 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
   let _imEdSeed = null;        // the same seed for the drawer's Intermission editor (#intermissionEditor)
   let _imEditEndDown = null;   // the pointerdown that finished an edit (set by _inplaceOutside)…
   let _imTapEndsEdit = false;  // …and whether the sheet's current tap is that one (then it doesn't close)
+  // Wake guard state (see armWakeShield / presenterKeyGuard).
+  const WAKE_GUARD_MS = 500;           // how long #wakeShield stays up after a sheet closes
+  let _wakeShieldTimer = null;
+  const _wakeSwallowed = new Set();    // the code (or key) of each keydown the guard took, until its keyup
 
   /* ────────── FIRST-RUN SETUP + STARTER LAYOUTS ────────── */
   // Pristine copy of the shipped defaults, captured before any load mutates `settings`.
@@ -10795,11 +10804,13 @@ async function onUploadEngFontPick(input){
   function setBlackout(on) {
     const ov = document.getElementById('blackout');
     if (!ov) return;
-    if (on) setIntermission(false);   // one presenter sheet at a time: B over the Intermission screen swaps them
+    const was = ov.classList.contains('open');
+    if (on) { setIntermission(false); armWakeShield(false); }   // one presenter sheet at a time: B over the Intermission screen swaps them
     ov.classList.toggle('open', on);
     ov.setAttribute('aria-hidden', on ? 'false' : 'true');
     const b = document.getElementById('blackoutBtn');
     if (b) b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    if (!on && was) armWakeShield(true);
   }
   function toggleBlackout() {
     const ov = document.getElementById('blackout');
@@ -10881,6 +10892,7 @@ async function onUploadEngFontPick(input){
     if (on) {
       if (_activeEditable) exitInPlaceEdit(true);   // one editor at a time: the board's message commits first
       setBlackout(false);
+      armWakeShield(false);   // a swap from Blank: the shield its closing raised would sit over this sheet
       renderIntermission();
       if (!was) _imPrevFocus = document.activeElement;
       ov.classList.add('open');
@@ -10899,6 +10911,7 @@ async function onUploadEngFontPick(input){
     _imPrevFocus = null;
     ov.classList.remove('open');
     ov.setAttribute('aria-hidden', 'true');
+    if (was) armWakeShield(true);
   }
   function toggleIntermission() { setIntermission(!isIntermissionOpen()); }
   // The input mirror keeps settings current mid-edit, so the visibilitychange/pagehide saves hold the
@@ -10978,8 +10991,70 @@ async function onUploadEngFontPick(input){
     txt.addEventListener('paste', e => { if (isIntermissionEditing()) _pasteSanitized(e); });
     txt.addEventListener('input', () => { if (isIntermissionEditing()) intermissionMirror(); });
   })();
+  /* Wake guard — a tap or key that brings the board back from Blank or the Intermission screen does nothing else.
+     Taps: the sheet stops taking them the moment it closes, while it still looks black for its fade, so closing
+     raises #wakeShield for WAKE_GUARD_MS; the rest of a double-tap, an impatient re-tap or a whiteboard driver's
+     duplicate click lands on it, never on a link, a read-aloud day or the video beneath. Keys: presenterKeyGuard
+     runs at window capture, ahead of every document listener. While Blank is up any key closes it (I swaps to the
+     Intermission screen) and goes no further. The Intermission screen does the same, except while its words are
+     being edited, for Tab (its pencil stays reachable), and for Enter/Space on its own pencil, links and spoilers.
+     A key the guard took has its keypress, keyup and auto-repeats taken too (a button activates on Space's keyup,
+     after the sheet is gone), and while the shield is up only B, I and Esc get past it. Browser shortcuts
+     (Ctrl/Cmd/Alt), function keys and lone modifiers are never touched. A wake still silences a ringing timer (the
+     maintainer's choice): a tap reaches timerAlertPointer on its own, a key stops here, so the guard calls
+     timerDismissAlert itself. */
+  function armWakeShield(on) {
+    const sh = document.getElementById('wakeShield');
+    if (_wakeShieldTimer) { clearTimeout(_wakeShieldTimer); _wakeShieldTimer = null; }
+    if (!sh) return;
+    sh.classList.toggle('on', on);
+    if (on) _wakeShieldTimer = setTimeout(() => { _wakeShieldTimer = null; sh.classList.remove('on'); }, WAKE_GUARD_MS);
+  }
+  (function wireWakeShield() {
+    const sh = document.getElementById('wakeShield');
+    if (!sh) return;
+    ['pointerdown', 'mousedown', 'click', 'dblclick', 'auxclick', 'contextmenu'].forEach(type =>
+      sh.addEventListener(type, e => { e.preventDefault(); e.stopPropagation(); }));
+  })();
+  const WAKE_PASS_KEYS = /^(Shift|Control|Alt|AltGraph|Meta|OS|CapsLock|NumLock|ScrollLock|Fn|FnLock|Hyper|Super|Symbol|SymbolLock|Process|Dead|Unidentified|F\d{1,2})$/;
+  function presenterKeyGuard(e) {
+    const take = () => { e.preventDefault(); e.stopImmediatePropagation(); };
+    const id = e.code || e.key;   // some on-screen keyboards send no code
+    if (e.type !== 'keydown') {   // the keypress / keyup of a key the guard took
+      if (!_wakeSwallowed.has(id)) return;
+      if (e.type === 'keyup') _wakeSwallowed.delete(id);
+      take();
+      return;
+    }
+    const bo = document.getElementById('blackout');
+    const blank = !!(bo && bo.classList.contains('open'));
+    const im = isIntermissionOpen();
+    if (!blank && !im && !_wakeShieldTimer && !_wakeSwallowed.has(id)) return;
+    if (e.ctrlKey || e.metaKey || e.altKey || WAKE_PASS_KEYS.test(e.key)) return;
+    const takeKey = () => { _wakeSwallowed.add(id); take(); };
+    if (e.repeat || _wakeSwallowed.has(id)) { takeKey(); return; }   // a held key never toggles a sheet or reaches the board
+    const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+    if (!blank && !im) {   // the shield's moment after a wake: the sheets' own keys may reopen one at once
+      if (k !== 'b' && k !== 'i' && k !== 'Escape') takeKey();
+      return;
+    }
+    if (im && !blank) {
+      if (isIntermissionEditing() || k === 'Tab') return;
+      const t = e.target;
+      if ((k === 'Enter' || k === ' ') && t && t.closest && t.closest('#intermissionEdit, #intermissionText a[href], #intermissionText .spoiler')) return;
+    }
+    takeKey();
+    timerDismissAlert();
+    if (blank && k === 'i') setIntermission(true);    // a swap, as the I key always did
+    else if (im && k === 'b') setBlackout(true);      // and back
+    else if (blank) setBlackout(false);
+    else setIntermission(false);
+  }
+  ['keydown', 'keypress', 'keyup'].forEach(type => window.addEventListener(type, presenterKeyGuard, true));
+  window.addEventListener('blur', () => _wakeSwallowed.clear());   // a keyup lost to another window must not eat the next press
   // Bare-letter shortcuts (B blank, I intermission), so they must yield to every text surface the
   // dashboard has (the panel editors are contenteditable, not inputs) and to the tour's own key handling.
+  // While a sheet is up, presenterKeyGuard (above) answers every key before this listener sees it.
   document.addEventListener('keydown', e => {
     const ov = document.getElementById('blackout');
     const on = !!(ov && ov.classList.contains('open'));
