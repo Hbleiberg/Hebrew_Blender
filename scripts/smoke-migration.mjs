@@ -613,7 +613,11 @@ try {
     ctxA.gate.offline = true;
     const at0 = cloud.log.length;
     await a.page.evaluate(() => { const db = readProfiles(); db.profiles.Sarah.results.push({ savedAt: '2026-09-03T10:00:00.000Z', pct: 80, correct: 8, total: 10, timeSec: 50, timerMode: 'off', settings: { mode: 2 }, cards: [] }); writeProfiles(db); renderProfiles(); });
-    const tried = await waitLog(cloud, at0, e => e.aborted && e.m === 'PATCH', WRITE_WITHIN_MS);
+    // Sarah's own update refused, then the line given up to 2 s to say so: the fake cloud logs the refusal before the page
+    // hears of it, and a read in that instant can still see "Saving…". A line that never says so still fails.
+    const sarahId = cloud.find('profile', 'Sarah', 'FlashCards').id;
+    const tried = await waitLog(cloud, at0, e => e.aborted && e.m === 'PATCH' && String(e.search).includes('id=eq.' + sarahId), WRITE_WITHIN_MS);
+    await a.page.waitForFunction(() => { const s = document.querySelector('#cloudSavesPanel .ivsav-status'); return !!s && s.classList.contains('is-error'); }, null, { timeout: 2000, polling: 50 }).catch(() => {});
     const stA = await statusOf(a.page, '#cloudSavesPanel');
     errA.push(...a.errors); await a.page.close();
     await new Promise(r => setTimeout(r, 400));   // the page's pagehide flush (refused too) is over before the connection returns
