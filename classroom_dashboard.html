@@ -6533,6 +6533,7 @@ function mountSidebarResize(cfg) {
     applyColCollapse('dowCol', !!settings.dowCollapsed);
     applyColCollapse('weatherCol', !!settings.weatherCollapsed);
     applyColCollapse('timerCol', !!settings.timerCollapsed);
+    updateColTitles();   // the column titles follow headerLang, which a starter, preset, .ivrit file or account download can change
     updateDateTimeDisplay();
     renderDaysList();
     renderWeather();

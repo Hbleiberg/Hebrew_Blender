@@ -400,6 +400,10 @@ body.dark #tipFloat { background: #0a0f1c; }
   persist across days on purpose. `resetPickerCycle()` empties `picked` ("🔄 New round");
   `clearAbsences()` empties `absent` ("✅ Everyone's here", rendered in `#pickerProgress` only while someone
   is marked absent, whether or not the fair cycle is on). Both act on the active class only.
+- **Column titles:** the four card titles (and the video panel's label) are projected content, so they follow
+  `headerLang` (`'none'` hides them), never `I18n.lang`. `updateColTitles()` writes them — and rebuilds the picker
+  title's class switcher — at init, on the `headerLang` radios, in `applyI18n` and in `applySettings`, so a
+  starter, a preset, an `.ivrit` file or an account download that changes `headerLang` re-titles the board at once.
 
 ---
 
