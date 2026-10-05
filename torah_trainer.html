@@ -7118,7 +7118,7 @@ function pitchReadout(n) { n = n | 0; return n > 0 ? '+' + n : n < 0 ? '\u2212' 
 function syncPitchControls() {
   const v = settings.karaokePitch | 0;
   const txt = pitchReadout(v);
-  const vt = I18n.t('torah.audio.pitch_valuetext', { n: txt });
+  const vt = I18n.t('torah.audio.pitch_valuetext' + (Math.abs(v) === 1 ? '.one' : '.other'), { n: txt });   // "+1 semitone", "+2 semitones"
   ['optKaraokePitch', 'ttKaraokePitch'].forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
