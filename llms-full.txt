@@ -205,7 +205,7 @@ Yes. PocketTorah's recordings of all 54 parshiyot and their haftarot stream on d
 
 **Where do the Hebrew text and English translations come from?**
 
-Sefaria's public API. The translation dropdown is populated automatically and defaults to JPS 1985 when available.
+Sefaria's public API. The translation dropdown lists only openly licensed versions and defaults to JPS 1917 (public domain) when available; pick any other version from the same dropdown.
 
 **Can I read without nikkud or cantillation marks?**
 
