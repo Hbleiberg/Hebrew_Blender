@@ -5692,7 +5692,7 @@ function syncStaffControls() {
   const rs = document.getElementById('optStaffTuneRate'), rv = document.getElementById('optStaffTuneRateVal');
   const bs = document.getElementById('ttStaffTuneRate'), bv = document.getElementById('ttStaffTuneRateVal');   // the audio bar's mirror
   if (sl) sl.value = sh;
-  if (val) val.textContent = (sh > 0 ? '+' : '') + sh;
+  if (val) val.textContent = pitchReadout(sh);   // "−3" with a minus sign, as the pitch readouts and the Trope Tutor's Key write it
   if (rs) rs.value = rate;
   if (rv) rv.textContent = rate.toFixed(2) + '×';
   if (bs) bs.value = rate;
