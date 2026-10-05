@@ -8,6 +8,10 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P2 (**NEW S457 B — shared**) | js/ivrit-saves.js | **A new device's first signed-in Generator load skips the account's preferences** (dark mode, language, keyboard…) and shows "Couldn't save "IvritSuite preferences": changed meanwhile" when the account holds the Generator's remembered setup. | found S457
+
+- [ ] P4 (**NEW S457 B — G's**) | hebrew_blend_generator.html | **Export PDF names an untitled worksheet "Hebrew_Blends_Hebrew_Blends.pdf"** (the title, then the same suffix). | found S457
+
 - [ ] P2 (**NEW S454 H — gate 2**) | resources.html | **At ten My Fonts, "Use in IvritSuite" silently drops the oldest** (a teacher's own font; the toast says "added"). | found S454
 
 - [ ] P3 (**NEW S454 H — gate 2**) | resources.html | **The FAQ and its JSON-LD say each card notes cost or sign-up; 4 of 43 do.** | found S454
