@@ -286,8 +286,10 @@ writes anything: no localStorage key, no request, no IndexedDB open, and `Storag
 Signed in, each tool's registered localStorage keys are that device's cache of the account:
 
 - **Hydrate** — at every page load with a session (and after a sign-in) one listing, without data, for the
-  tools this page reads (its own, `Suite`, and its `alsoPull` list); rows whose hash differs are fetched and
-  written into the keys, items before their folder trees, and the page's `onLocalChanged` re-renders.
+  tools this page reads (its own, `Suite`, and its `alsoPull` list); rows whose hash differs are fetched (up
+  to `LOAD_AHEAD` = 6 at once, ahead of the one being written; a font only at its turn, as a full My Fonts skips
+  it unfetched) and written into the keys one at a time in the plan's order, items before their folder trees,
+  and the page's `onLocalChanged` re-renders.
 - **Write-through** — a `Storage.prototype.setItem`/`removeItem` hook, installed only after a signed-in
   hydration, marks a registered kind dirty, waits 2 s after the last write to that tool, then diffs the store
   against this device's sync memory: insert / conditional update / conditional delete (only names this tab

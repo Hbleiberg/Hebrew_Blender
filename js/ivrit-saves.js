@@ -96,6 +96,7 @@
   var MAX_NAME = 120;
   var DEFAULT_NAME = 'default';           // the row name of a single / tree / scalar entry
   var PAGE_SIZE = 1000;                   // PostgREST's maximum rows per request
+  var LOAD_AHEAD = 6;                     // a hydration's downloads asked for at once, ahead of the one being written (runPhase)
   var NEEDS_HOOK = { single: true, scalar: true, tree: true, mapIn: true };   // shapes a page must re-read after a download
   var ROW_COLS = 'id, kind, name, data_hash, bytes, updated_at';
   var FLUSH_DEBOUNCE_MS = 2000;           // write-through waits this long after the last write to a key
@@ -1659,7 +1660,8 @@
   }
   function actDownload(tool, row) {
     var uid = ensureUser();
-    return cloudLoad(row.cloud.id).then(function (full) {
+    var loading = row.loading; row.loading = null;   // asked for early by runPhase: taken once
+    return (loading || cloudLoad(row.cloud.id)).then(function (full) {
       if (!validateShape(row.entry, full.data)) throw makeError('shape');
       flushPage(tool);
       var it = localItem(row.entry, row.name);
@@ -2144,6 +2146,14 @@
       if (phase === 'rest') return !down;
       return true;
     });
+    // Downloads are asked for up to LOAD_AHEAD rows before their turn, not one round trip after another (31 rows took
+    // 4.4 s at a 100 ms round trip); each is still written at its turn, in the plan's order, and its error handled there.
+    // A font waits for its turn: at the My Fonts cap it is skipped and never fetched.
+    var early = phase === 'down' ? order.filter(function (r) { return actionFor(tool, r, first, res.first) === 'download' && !(tool === 'Suite' && r.kind === 'font'); }) : [];
+    function loadAhead(row) {
+      var i = early.indexOf(row);
+      if (i >= 0) early.slice(i, i + LOAD_AHEAD).forEach(function (r) { if (!r.loading) { r.loading = cloudLoad(r.cloud.id); r.loading.catch(noop); } });
+    }
     return seqMap(order, function (row) {
       var action = actionFor(tool, row, first, res.first);
       if (action === 'upload' && !localItem(row.entry, row.name)) return Promise.resolve();   // gone meanwhile (folded into another item)
@@ -2153,6 +2163,7 @@
         if (!hasOwn(fc, row.name) && Object.keys(fc).length >= FONTS_CAP) { res.fontFull.push(row.label); return Promise.resolve(); }
       }
       if (storageFull) return Promise.reject(makeError('storage_full', 'IvritSaves: storage is full'));   // nothing more lands or goes up
+      loadAhead(row);
       return runHydrateAction(tool, action, row, uid).then(function (r) {
         res.done++;
         if (action === 'download' || action === 'merge' || action === 'useCloud' || action === 'keepBoth' || action === 'removeLocal' || action === 'tabMerge') landedNote(res.landed, tool, row.kind);
