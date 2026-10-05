@@ -620,3 +620,16 @@ draws the shared chanukiah's geometry with only that night's candles, placed fro
 an empty cup in every other branch (`Chanukah: 8th Day` shows all eight); every other title goes to
 `holidayIconFor()`. `.hol-ico` is sized in em, so the `--holiday-size` slider and the fullscreen scale rule
 size it with the text, and the dark block of the CSS swaps its palette without a re-render.
+
+## Weather icon (`classroom_dashboard.html`)
+
+The weather column's `.weather-emoji` slot holds an inline SVG, not an emoji: `WEATHER_WMO[code].icon` names one of
+ten families in `WEATHER_ICONS` (clear, mostly sunny, partly cloudy, overcast, fog, drizzle, rain, snow, snow
+showers, thunderstorm — the ten emoji the table once carried; an unknown code gets mostly sunny), drawn as flat
+48×48 SVGs in the holiday icons' style (the maintainer's pick from three drafts per family). `weatherIcon(key, name,
+isHe)` wraps one in `<span class="wx-ico">`: `aria-hidden` while the description shows, `role="img"` named by the
+description's text (in its own language) when `hideWeatherDesc` hides it, so the weather is still announced. The
+`--wx-*` tokens live on `.wx-ico` with a dark block (cream outline, darker cloud fills) — a dark toggle needs no
+re-render — and the print block restores the light palette (the board's token remap cannot reach them). The icon
+is `1.25em` of `.weather-emoji`'s font size, so the fullscreen rule scales it, and `hideWeatherEmoji` still hides it.
+This page is the only carrier; it is not a shared block.

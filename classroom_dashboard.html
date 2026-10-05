@@ -820,6 +820,20 @@
   /* ───── Weather ───── */
   .weather-block { text-align: center; padding: 4px 0; }
   .weather-emoji { font-size: 3.2rem; margin: 4px 0 2px; line-height: 1; }
+  /* The weather icon (weatherIcon()): one flat 48×48 SVG per WEATHER_ICONS family, drawn like the holiday icons
+     (navy outline, flat fills). The --wx-* tokens are its palette; the dark block swaps the outline and cloud
+     fills (a navy outline vanishes on the dark card), so a dark toggle needs no re-render, and the print block
+     puts the light palette back for paper. Sized in em, so the fullscreen .weather-emoji rule scales it. */
+  .wx-ico {
+    --wx-line: #1a2744; --wx-sun: #f6c343; --wx-cloud: #ffffff; --wx-cloud-2: #c8d2e1; --wx-cloud-dk: #9ea9bc;
+    --wx-rain: #3b6fb6; --wx-fog: #8691a5;
+    display: block; width: 1.25em; height: 1.25em; margin-inline: auto;
+  }
+  html.dark-early body .wx-ico, body.dark .wx-ico {
+    --wx-line: #e8e0d0; --wx-sun: #f6c94a; --wx-cloud: #dfe4ec; --wx-cloud-2: #aeb8c9; --wx-cloud-dk: #7f899d;
+    --wx-rain: #6a9ae0; --wx-fog: #a3acbd;
+  }
+  .wx-ico svg { display: block; width: 100%; height: 100%; stroke: var(--wx-line); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
   .weather-temp {
     font-family: 'Libre Baskerville', serif;
     font-size: var(--temp-size);
@@ -2060,6 +2074,12 @@ button:focus-visible, a:focus-visible { outline:2px solid var(--focus-ring); out
       --border: #c8bfa8; --white: #ffffff;
       background: #fff !important; color: #1a2744 !important;
     }
+    /* The weather icon keeps its palette on .wx-ico itself, out of the remap's reach: its dark
+       outline is cream, which would vanish on white paper. */
+    html.dark-early body .wx-ico, body.dark .wx-ico {
+      --wx-line: #1a2744; --wx-sun: #f6c343; --wx-cloud: #ffffff; --wx-cloud-2: #c8d2e1; --wx-cloud-dk: #9ea9bc;
+      --wx-rain: #3b6fb6; --wx-fog: #8691a5;
+    }
     /* Literals the remap cannot reach — white text on the navy plates print drops, and the
        dark theme's literal dark slabs (these surface only when the teacher prints with
        background graphics ON). (.star keeps brand --gold: a mark, not text.) */
@@ -3213,30 +3233,30 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
   const HEB_MONTHS_TRANSLIT = ['Tishrei','Cheshvan','Kislev','Tevet','Shevat','Adar','Adar I','Adar II','Nisan','Iyar','Sivan','Tammuz','Av','Elul'];
 
   const WEATHER_WMO = {
-    0:  {emoji:'☀️',  he:'שֶמֶש',          en:'Clear'},
-    1:  {emoji:'🌤️', he:'מְעֻנָּן חֶלְקִית', en:'Partly Cloudy'},
-    2:  {emoji:'⛅',  he:'מְעֻנָּן חֶלְקִית', en:'Partly Cloudy'},
-    3:  {emoji:'☁️',  he:'עֲנָנִים',         en:'Overcast'},
-    45: {emoji:'🌫️', he:'עֲרָפֶל',          en:'Fog'},
-    48: {emoji:'🌫️', he:'עֲרָפֶל',          en:'Fog'},
-    51: {emoji:'🌦️', he:'טַפְטוּף',          en:'Drizzle'},
-    53: {emoji:'🌦️', he:'טַפְטוּף',          en:'Drizzle'},
-    55: {emoji:'🌦️', he:'טַפְטוּף',          en:'Drizzle'},
-    61: {emoji:'🌧️', he:'גֶּשֶם',           en:'Rain'},
-    63: {emoji:'🌧️', he:'גֶּשֶם',           en:'Rain'},
-    65: {emoji:'🌧️', he:'גֶּשֶם חָזָק',     en:'Heavy Rain'},
-    71: {emoji:'❄️',  he:'שֶלֶג',           en:'Snow'},
-    73: {emoji:'❄️',  he:'שֶלֶג',           en:'Snow'},
-    75: {emoji:'❄️',  he:'שֶלֶג חָזָק',     en:'Heavy Snow'},
-    77: {emoji:'❄️',  he:'שֶלֶג',           en:'Snow Grains'},
-    80: {emoji:'🌧️', he:'גֶּשֶם',           en:'Showers'},
-    81: {emoji:'🌧️', he:'גֶּשֶם',           en:'Showers'},
-    82: {emoji:'🌧️', he:'גֶּשֶם חָזָק',     en:'Heavy Showers'},
-    85: {emoji:'🌨️', he:'שֶלֶג',           en:'Snow Showers'},
-    86: {emoji:'🌨️', he:'שֶלֶג חָזָק',     en:'Snow Showers'},
-    95: {emoji:'⛈️', he:'סְעָרָה',          en:'Thunderstorm'},
-    96: {emoji:'⛈️', he:'סְעָרָה',          en:'Thunderstorm'},
-    99: {emoji:'⛈️', he:'סְעָרָה חֲזָקָה',  en:'Thunderstorm'},
+    0:  {icon:'clear',        he:'שֶמֶש',          en:'Clear'},
+    1:  {icon:'mostlysunny',  he:'מְעֻנָּן חֶלְקִית', en:'Partly Cloudy'},
+    2:  {icon:'partlycloudy', he:'מְעֻנָּן חֶלְקִית', en:'Partly Cloudy'},
+    3:  {icon:'overcast',     he:'עֲנָנִים',         en:'Overcast'},
+    45: {icon:'fog',          he:'עֲרָפֶל',          en:'Fog'},
+    48: {icon:'fog',          he:'עֲרָפֶל',          en:'Fog'},
+    51: {icon:'drizzle',      he:'טַפְטוּף',          en:'Drizzle'},
+    53: {icon:'drizzle',      he:'טַפְטוּף',          en:'Drizzle'},
+    55: {icon:'drizzle',      he:'טַפְטוּף',          en:'Drizzle'},
+    61: {icon:'rain',         he:'גֶּשֶם',           en:'Rain'},
+    63: {icon:'rain',         he:'גֶּשֶם',           en:'Rain'},
+    65: {icon:'rain',         he:'גֶּשֶם חָזָק',     en:'Heavy Rain'},
+    71: {icon:'snow',         he:'שֶלֶג',           en:'Snow'},
+    73: {icon:'snow',         he:'שֶלֶג',           en:'Snow'},
+    75: {icon:'snow',         he:'שֶלֶג חָזָק',     en:'Heavy Snow'},
+    77: {icon:'snow',         he:'שֶלֶג',           en:'Snow Grains'},
+    80: {icon:'rain',         he:'גֶּשֶם',           en:'Showers'},
+    81: {icon:'rain',         he:'גֶּשֶם',           en:'Showers'},
+    82: {icon:'rain',         he:'גֶּשֶם חָזָק',     en:'Heavy Showers'},
+    85: {icon:'snowshowers',  he:'שֶלֶג',           en:'Snow Showers'},
+    86: {icon:'snowshowers',  he:'שֶלֶג חָזָק',     en:'Snow Showers'},
+    95: {icon:'thunder',      he:'סְעָרָה',          en:'Thunderstorm'},
+    96: {icon:'thunder',      he:'סְעָרָה',          en:'Thunderstorm'},
+    99: {icon:'thunder',      he:'סְעָרָה חֲזָקָה',  en:'Thunderstorm'},
   };
 
   const WEATHER_SIMPLE_MAP = {
@@ -3256,6 +3276,20 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
     clouds:        { he:'עֲנָנִים',                       en:'Clouds' },
     snow:          { he:'שֶלֶג',                         en:'Snow' },
     fog:           { he:'עֲרָפֶל',                        en:'Fog' },
+  };
+  // The weather column's icon, one per family (WEATHER_WMO[code].icon), in place of the emoji it once showed: flat 48×48
+  // SVGs in the holiday icons' style, filled from the --wx-* tokens of the .wx-ico CSS. weatherIcon() wraps one.
+  const WEATHER_ICONS = {
+    clear:        '<path d="M37.5 24 L42 24 M33.5 33.5 L36.7 36.7 M24 37.5 L24 42 M14.5 33.5 L11.3 36.7 M10.5 24 L6 24 M14.5 14.5 L11.3 11.3 M24 10.5 L24 6 M33.5 14.5 L36.7 11.3" stroke-width="2.4"/><circle cx="24" cy="24" r="10" fill="var(--wx-sun)"/>',
+    mostlysunny:  '<path d="M30.5 18 L35 18 M27.1 26.1 L30.3 29.3 M19 29.5 L19 34 M10.9 26.1 L7.7 29.3 M7.5 18 L3 18 M10.9 9.9 L7.7 6.7 M19 6.5 L19 2 M27.1 9.9 L30.3 6.7" stroke-width="2.4"/><circle cx="19" cy="18" r="8" fill="var(--wx-sun)"/><path d="M24.4 43 H38.8 A5 5 0 0 0 38.4 32.9 A6.8 6.8 0 0 0 25.5 32.5 A5.4 5.4 0 0 0 24.4 43Z" fill="var(--wx-cloud)"/>',
+    partlycloudy: '<path d="M41.5 18 L46 18 M38.1 26.1 L41.3 29.3 M30 29.5 L30 34 M21.9 26.1 L18.7 29.3 M18.5 18 L14 18 M21.9 9.9 L18.7 6.7 M30 6.5 L30 2 M38.1 9.9 L41.3 6.7" stroke-width="2.4"/><circle cx="30" cy="18" r="8" fill="var(--wx-sun)"/><path d="M9.8 42.5 H27.4 A6.2 6.2 0 0 0 27 30.2 A8.4 8.4 0 0 0 11.1 29.8 A6.6 6.6 0 0 0 9.8 42.5Z" fill="var(--wx-cloud)"/>',
+    overcast:     '<path d="M22.2 25.1 H36.2 A4.9 4.9 0 0 0 35.9 15.3 A6.7 6.7 0 0 0 23.3 15 A5.3 5.3 0 0 0 22.2 25.1Z" fill="var(--wx-cloud-2)"/><path d="M9.7 39 H27.7 A6.3 6.3 0 0 0 27.3 26.4 A8.6 8.6 0 0 0 11.1 26 A6.8 6.8 0 0 0 9.7 39Z" fill="var(--wx-cloud)"/>',
+    fog:          '<path d="M16.6 23.4 H31.6 A5.3 5.3 0 0 0 31.2 12.9 A7.1 7.1 0 0 0 17.7 12.5 A5.6 5.6 0 0 0 16.6 23.4Z" fill="var(--wx-cloud)"/><path d="M8 29.5 H38 M12 35.5 H44 M5 41.5 H33" stroke="var(--wx-fog)" stroke-width="2.8"/>',
+    drizzle:      '<path d="M41 16.5 L45.5 16.5 M38.1 23.6 L41.3 26.8 M31 26.5 L31 31 M23.9 23.6 L20.7 26.8 M21 16.5 L16.5 16.5 M23.9 9.4 L20.7 6.2 M31 6.5 L31 2 M38.1 9.4 L41.3 6.2" stroke-width="2.4"/><circle cx="31" cy="16.5" r="6.5" fill="var(--wx-sun)"/><path d="M10 34.5 H26 A5.6 5.6 0 0 0 25.6 23.3 A7.6 7.6 0 0 0 11.2 22.9 A6 6 0 0 0 10 34.5Z" fill="var(--wx-cloud)"/><path d="M12 38.5 L10.5 42.5 M20 38.5 L18.5 42.5 M28 38.5 L26.5 42.5" stroke="var(--wx-rain)" stroke-width="2.4"/>',
+    rain:         '<path d="M14.6 26.2 H33.6 A6.7 6.7 0 0 0 33.1 12.9 A9 9 0 0 0 16 12.4 A7.1 7.1 0 0 0 14.6 26.2Z" fill="var(--wx-cloud)"/><path d="M14 31 L11.7 37 M22.5 31 L20.2 37 M31 31 L28.7 37 M18.5 39.5 L16.6 44.5 M27 39.5 L25.1 44.5" stroke="var(--wx-rain)" stroke-width="2.6"/>',
+    snow:         '<path d="M24 24 L24 4.5 M24 13.3 L19.6 8.9 M24 13.3 L28.4 8.9 M24 24 L40.9 14.3 M33.3 18.6 L34.9 12.6 M33.3 18.6 L39.3 20.3 M24 24 L40.9 33.8 M33.3 29.4 L39.3 27.7 M33.3 29.4 L34.9 35.4 M24 24 L24 43.5 M24 34.7 L28.4 39.1 M24 34.7 L19.6 39.1 M24 24 L7.1 33.8 M14.7 29.4 L13.1 35.4 M14.7 29.4 L8.7 27.7 M24 24 L7.1 14.2 M14.7 18.6 L8.7 20.3 M14.7 18.6 L13.1 12.6" stroke-width="2.4"/>',
+    snowshowers:  '<path d="M14.6 26.2 H33.6 A6.7 6.7 0 0 0 33.1 12.9 A9 9 0 0 0 16 12.4 A7.1 7.1 0 0 0 14.6 26.2Z" fill="var(--wx-cloud)"/><path d="M14 36.5 L14 32.3 M14 36.5 L17.6 34.4 M14 36.5 L17.6 38.6 M14 36.5 L14 40.7 M14 36.5 L10.4 38.6 M14 36.5 L10.4 34.4" stroke-width="1.9"/><path d="M24 41 L24 36.8 M24 41 L27.6 38.9 M24 41 L27.6 43.1 M24 41 L24 45.2 M24 41 L20.4 43.1 M24 41 L20.4 38.9" stroke-width="1.9"/><path d="M34 36.5 L34 32.3 M34 36.5 L37.6 34.4 M34 36.5 L37.6 38.6 M34 36.5 L34 40.7 M34 36.5 L30.4 38.6 M34 36.5 L30.4 34.4" stroke-width="1.9"/>',
+    thunder:      '<path d="M14.6 26.2 H33.6 A6.7 6.7 0 0 0 33.1 12.9 A9 9 0 0 0 16 12.4 A7.1 7.1 0 0 0 14.6 26.2Z" fill="var(--wx-cloud-dk)"/><path d="M11.5 31.5 L9.2 37.5 M37 31.5 L34.7 37.5" stroke="var(--wx-rain)" stroke-width="2.6"/><path d="M27 23 L17.5 35.5 H24 L20 46 L31.5 31 H25.5 L29.5 23Z" fill="var(--wx-sun)"/>',
   };
 
   const HEB_FONTS = [
@@ -4429,6 +4463,13 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
     });
   }
 
+  // The icon is decoration while the description shows (it says the same thing); with the description hidden it is
+  // the only statement of the weather, so it names it, as the emoji it replaced was read aloud.
+  function weatherIcon(key, name, isHe) {
+    const a11y = name ? `role="img" aria-label="${esc(name)}"${isHe ? ' lang="he"' : ''}` : 'aria-hidden="true"';
+    return `<span class="wx-ico" ${a11y}><svg viewBox="0 0 48 48" focusable="false" aria-hidden="true">${WEATHER_ICONS[key] || WEATHER_ICONS.mostlysunny}</svg></span>`;
+  }
+
   function renderWeather() {
     const block = document.getElementById('weatherBlock');
     if (settings.hideWeather) { block.innerHTML = ''; return; }
@@ -4440,7 +4481,7 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
       ? Math.round(tempC * 9 / 5 + 32) + '°F'
       : Math.round(tempC) + '°C';
     const code = data.current.weathercode;
-    const w = WEATHER_WMO[code] || { emoji: '🌤️', he: 'מֶזֶג אֲוִיר', en: 'Weather' };
+    const w = WEATHER_WMO[code] || { icon: 'mostlysunny', he: 'מֶזֶג אֲוִיר', en: 'Weather' };
     const isHe = settings.weatherLabelLang === 'he';
     let label, labelRaw;
     if (settings.simpleWeatherDesc) {
@@ -4469,7 +4510,7 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
     const ttsOn = settings.tapToReadWeather;
     block.classList.toggle('weather-tts-on', !!ttsOn);
     block.innerHTML = `
-      ${settings.hideWeatherEmoji ? '' : `<div class="weather-emoji">${w.emoji}</div>`}
+      ${settings.hideWeatherEmoji ? '' : `<div class="weather-emoji">${weatherIcon(w.icon, settings.hideWeatherDesc ? labelRaw : '', isHe)}</div>`}
       ${settings.hideTemperature ? '' : `<div class="weather-temp">${tempStr}</div>`}
       ${hlHtml}
       ${settings.hideWeatherDesc ? '' : `<div class="weather-label ${isHe ? '' : 'ltr'}">${label}</div>`}
