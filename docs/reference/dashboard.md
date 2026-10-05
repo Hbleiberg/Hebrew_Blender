@@ -653,3 +653,19 @@ description's text (in its own language) when `hideWeatherDesc` hides it, so the
 re-render — and the print block restores the light palette (the board's token remap cannot reach them). The icon
 is `1.25em` of `.weather-emoji`'s font size, so the fullscreen rule scales it, and `hideWeatherEmoji` still hides it.
 This page is the only carrier; it is not a shared block.
+
+## Schedule Sync — runs (`classroom_dashboard.html`)
+
+Back-to-back periods that hold the same cell are **one period** to the board. `computeWeekState` groups today's
+timed periods into `runs` (`[{preset|null, start, until, firstK, lastK}]`): consecutive periods with the same
+cell — one preset name compared exactly, or free — separated by a passing break of at most `RUN_GAP_MAX_MINS`
+(10; an overlap counts as none). A longer break (a lunch that is not a period of its own) splits them and still
+reads as Passing. In a run, `'active'` covers its inner breaks too; `currentEntry` / `currentIdx` are the run (its
+first period's `periodIdx` and index, its start, its latest end), `nowLeftMins` counts to the run's end, and the
+target (Next, and the countdown line) is the first assigned cell after the run. Because `checkSchedule` keys on
+the date plus `currentEntry.periodIdx`, a run applies its preset **once**, at its start — the board is not reset
+(text, spoilers, the video frame, zoom) in the middle of a double period — while the same preset after a free
+period or a long break re-applies on its own boundary. The drawer's preview draws one chip per run. The legacy
+single-day engine (`currentSchedule`) merges consecutive rows naming the same preset the same way (its rows are
+contiguous, so no break limit), and its `preset|until` key holds across the run. The editor grid, the print
+view and the week summary read the raw grid and still show every period.

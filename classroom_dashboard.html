@@ -3231,6 +3231,7 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
   const WEEK_KEYS = ['sun','mon','tue','wed','thu','fri','sat'];   // index-aligned with Date.getDay() and DAYS
   const DOW_I18N  = ['dow_sunday','dow_monday','dow_tuesday','dow_wednesday','dow_thursday','dow_friday','dow_saturday'];
   const HHMM_RE   = /^([01]\d|2[0-3]):[0-5]\d$/;
+  const RUN_GAP_MAX_MINS = 10;   // back-to-back periods holding the same cell merge across a passing break this short (computeWeekState)
   // Okabe–Ito colorblind-safe palette (orange, sky, green, yellow, blue, vermillion, purple, black)
   const PRESET_PALETTE = ['#e69f00','#56b4e9','#009e73','#f0e442','#0072b2','#d55e00','#cc79a7','#000000'];
 
@@ -8271,9 +8272,13 @@ else ivritInit();
       isTomorrow = true;
     } else {
       status = 'active';
-      currentEntry = sorted[currentIdx];
+      // Consecutive rows naming the same preset are one block: Now counts to the end of the run, Next is the
+      // row after it, and checkSchedule's preset|until key holds for the whole run, so it applies once.
+      let runEnd = currentIdx;
+      while (runEnd + 1 < sorted.length && sorted[runEnd + 1].preset === sorted[currentIdx].preset) runEnd++;
+      currentEntry = { ...sorted[currentIdx], until: sorted[runEnd].until };
       diffMins = timeToMins(currentEntry.until) - nowMins;
-      if (currentIdx + 1 < sorted.length) targetEntry = sorted[currentIdx + 1];
+      if (runEnd + 1 < sorted.length) targetEntry = sorted[runEnd + 1];
       else { targetEntry = sorted[0]; isTomorrow = true; }
     }
     const h = Math.floor(diffMins / 60), m = diffMins % 60;
@@ -8299,12 +8304,20 @@ else ivritInit();
   //   engine:'week'            — discriminator for weekly render branches
   //   status                   — 'empty'|'active'|'gap'|'before'|'after'|'noschool'
   //   sorted                   — TODAY's column of timed periods [{periodIdx, preset|null, start, until}]
-  //   targetEntry              — the next ASSIGNED cell (never a free period), with .start and .dayIdx
+  //   runs                     — TODAY's runs [{preset|null, start, until, firstK, lastK}] (indices into sorted)
+  //   currentEntry/currentIdx  — 'active' only: the current RUN (its first period's periodIdx and index, its
+  //                              start and end), so a run is one period to every surface
+  //   targetEntry              — the next ASSIGNED cell after the current run (never a free period), with
+  //                              .start and .dayIdx
   //   daysAhead                — calendar days to targetEntry (0 = today … 7 = same day next week)
-  //   nowLeftMins/nowLeftStr   — 'active' only: time until the current period ENDS
+  //   nowLeftMins/nowLeftStr   — 'active' only: time until the current run ENDS
+  // A run is consecutive periods holding the same cell — one preset name, or free — with passing breaks of
+  // at most RUN_GAP_MAX_MINS between them: "Grade 4, Grade 4" is one double period (one Now, one apply in
+  // checkSchedule, one preview chip), and its inner break is 'active', never Passing. A longer break (a
+  // lunch that is not a period of its own) still splits it.
   // Two clocks deliberately: legacy blocks were contiguous so one timeStr served both surfaces; with
   // passing gaps, "Next class in {time}" targets the next period's START (diffMins/timeStr) while
-  // "{time} left" targets the current period's END (nowLeftMins/nowLeftStr).
+  // "{time} left" targets the current run's END (nowLeftMins/nowLeftStr).
   function computeWeekState(week, now) {
     const dayIdx = now.getDay();
     const nowMins = now.getHours() * 60 + now.getMinutes();
@@ -8316,11 +8329,23 @@ else ivritInit();
     const colFor = d => week.cells[WEEK_KEYS[d]] || [];
     const entryFor = (d, t) => ({ periodIdx: t.periodIdx, preset: colFor(d)[t.periodIdx] || null, start: t.start, until: t.until, dayIdx: d });
     const isSchoolDay = d => visible.includes(d) && timed.some(t => colFor(d)[t.periodIdx]);
-    const base = { engine: 'week', dayIdx, sorted: [], currentIdx: -1, currentEntry: null,
+    const base = { engine: 'week', dayIdx, sorted: [], runs: [], currentIdx: -1, currentEntry: null,
                    targetEntry: null, daysAhead: 0, isTomorrow: false, diffMins: 0, timeStr: '',
                    nowLeftMins: 0, nowLeftStr: '' };
     if (!timed.length || !visible.some(isSchoolDay)) return { ...base, status: 'empty' };
     base.sorted = visible.includes(dayIdx) ? timed.map(t => entryFor(dayIdx, t)) : [];
+    // Does today's period k run on into period k+1 (same cell, a short enough break; an overlap counts as none)?
+    const sameRun = k => k + 1 < base.sorted.length && base.sorted[k].preset === base.sorted[k + 1].preset
+      && timeToMins(base.sorted[k + 1].start) - timeToMins(base.sorted[k].until) <= RUN_GAP_MAX_MINS;
+    for (let k = 0; k < base.sorted.length; ) {
+      let last = k;
+      while (sameRun(last)) last++;
+      // The run ends at its latest end (a validation-flagged overlap can end an earlier period later).
+      const until = base.sorted.slice(k, last + 1)
+        .reduce((u, e) => timeToMins(e.until) > timeToMins(u) ? e.until : u, base.sorted[k].until);
+      base.runs.push({ preset: base.sorted[k].preset, start: base.sorted[k].start, until, firstK: k, lastK: last });
+      k = last + 1;
+    }
 
     // First assigned cell on `day` from timed-position `fromK` on; null when the day is hidden or dry.
     const firstAssignedFrom = (day, fromK) => {
@@ -8357,13 +8382,16 @@ else ivritInit();
         if (s <= nowMins && nowMins < e) { activeK = k; break; }
         if (s > nowMins) { nextK = k; break; }
       }
-      if (activeK >= 0) {
+      // Inside a period, or in the passing break inside a run: the run is what is on now.
+      const inK = activeK >= 0 ? activeK : (nextK > 0 && nextK < timed.length && sameRun(nextK - 1)) ? nextK - 1 : -1;
+      if (inK >= 0) {
+        const run = base.runs.find(r => r.firstK <= inK && inK <= r.lastK);
         status = 'active';
-        currentIdx = activeK;
-        currentEntry = base.sorted[activeK];
-        base.nowLeftMins = timeToMins(timed[activeK].until) - nowMins;
+        currentIdx = run.firstK;
+        currentEntry = { ...base.sorted[run.firstK], until: run.until };
+        base.nowLeftMins = timeToMins(run.until) - nowMins;
         base.nowLeftStr = formatDiffMins(base.nowLeftMins);
-        target = findTarget(activeK + 1);
+        target = findTarget(run.lastK + 1);
       } else if (nextK === 0) {
         status = 'before';
         target = findTarget(0);
@@ -9783,9 +9811,11 @@ else ivritInit();
     // jumping ahead.
     if (st.status !== 'active' || !st.currentEntry) return;
     const active = st.currentEntry;
-    // Weekly key carries the date + period index so identical cells on different days (and
-    // back-to-back periods sharing a preset) still re-apply on their own boundary. Legacy key
-    // byte-identical.
+    // Weekly key carries the date + the current run's first period index, so identical cells on different
+    // days (and the same preset again after a free period or a long break) re-apply on their own boundary,
+    // while back-to-back periods sharing a preset — one run (computeWeekState) — apply once, at its start:
+    // the board is not reset (text, spoilers, video, zoom) in the middle of a double period. The legacy
+    // key (preset|until) holds across a run the same way, because currentEntry.until is the run's end.
     const key = st.engine === 'week'
       ? new Date().toDateString() + '|' + active.periodIdx + '|' + active.preset
       : active.preset + '|' + active.until;
@@ -9925,10 +9955,12 @@ else ivritInit();
   // Weekly preview: TODAY's column, chips colored like the grid cells. A no-school day says so
   // instead of borrowing another day's periods.
   function renderWeekPreview(el, st) {
-    const sorted = st.sorted || [];
-    const dry = st.status === 'noschool' || !sorted.length;
+    // One chip per run (computeWeekState): back-to-back periods holding the same cell are the one period the
+    // board treats them as.
+    const runs = st.runs || [];
+    const dry = st.status === 'noschool' || !runs.length;
     const key = ['w', st.status, st.dayIdx, st.currentIdx, settings.timeFmt,
-      sorted.map(e => e.start + e.until + (e.preset || '') + presetColor(e.preset)).join('\x1e')].join('\x1f');
+      runs.map(r => r.start + r.until + (r.preset || '') + presetColor(r.preset)).join('\x1e')].join('\x1f');
     if (key === _lastPreviewKey) return;
     _lastPreviewKey = key;
     if (st.status === 'empty' || dry) {
@@ -9937,12 +9969,12 @@ else ivritInit();
         '</span>';
       return;
     }
-    const segs = sorted.map((e, i) => {
-      const col = e.preset ? presetColor(e.preset) : '';
-      const style = e.preset ? ` style="background:${col};color:${contrastText(col)};"` : '';
-      const label = e.preset ? esc(e.preset) : esc(I18n.t('dashboard.schedule.free'));
-      const cls = 'sched-seg wk-seg' + (i === st.currentIdx ? ' sched-seg-active' : '') + (e.preset ? '' : ' wk-seg-free');
-      return `<span class="${cls}"${style}>${esc(fmtClock(e.start))}–${esc(fmtClock(e.until))} · <b>${label}</b></span>`;
+    const segs = runs.map(r => {
+      const col = r.preset ? presetColor(r.preset) : '';
+      const style = r.preset ? ` style="background:${col};color:${contrastText(col)};"` : '';
+      const label = r.preset ? esc(r.preset) : esc(I18n.t('dashboard.schedule.free'));
+      const cls = 'sched-seg wk-seg' + (r.firstK === st.currentIdx ? ' sched-seg-active' : '') + (r.preset ? '' : ' wk-seg-free');
+      return `<span class="${cls}"${style}>${esc(fmtClock(r.start))}–${esc(fmtClock(r.until))} · <b>${label}</b></span>`;
     });
     el.innerHTML = segs.join('<span class="sched-arrow">→</span>');
   }
