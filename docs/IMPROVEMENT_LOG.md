@@ -8,8 +8,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P2 (**NEW S457 B — shared**) | js/ivrit-saves.js | **A new device's first signed-in Generator load skips the account's preferences** (dark mode, language, keyboard…) and shows "Couldn't save "IvritSuite preferences": changed meanwhile" when the account holds the Generator's remembered setup. | found S457
-
 - [ ] P4 (**NEW S457 B — G's**) | hebrew_blend_generator.html | **Export PDF names an untitled worksheet "Hebrew_Blends_Hebrew_Blends.pdf"** (the title, then the same suffix). | found S457
 
 - [ ] P2 (**NEW S454 H — gate 2**) | resources.html | **At ten My Fonts, "Use in IvritSuite" silently drops the oldest** (a teacher's own font; the toast says "added"). | found S454
@@ -21,12 +19,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S455 C**) | trope_tutor.html | **Both Try again buttons drop the focus after a retry that works** (index and chart; failure path only). | found S455
 
 - [ ] P4 (**NEW S455 C**) | trope_tutor.html | **The Learn and Phrases cards carry no heading** (h1 only), so a screen reader cannot jump card to card. | found S455
-
-- [ ] P3 (**NEW S456**) | hebrew_dictionary.html | **The slider rows overflow their box** (TTS Reset across its border): the slider needs `min-width:0`. | found S456
-
-- [ ] P4 (**NEW S456**) | Hebrew_Font_Maker.html | **The auto-detect Separation slider is blue** (no `accent-color`); the rest are gold. | found S456
-
-- [ ] P4 (**NEW S456 F**) | torah_trainer.html | **The Trope staff's Key readout writes "-6" with a hyphen**; its siblings write "−6". | found S456
 
 - [ ] P3 (**S452 D — shared**) | js/ivrit-saves.js | **A hydration fetches changed rows one serial `GET` at a time** (31 rows: 4.4 s at 100 ms RTT). | found S452
 
@@ -298,6 +290,14 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-05 | (S457 close-out) | branch/deploy note | **S457 = B + 4 fixes, PR #308.** No drift (main `c0f3b57`, keep-alive #22 green); sw v929→v930; no FM bump; check-i18n + check-inline-js clean; 7 smokes green; deferred: micro-feature.
+
+- [x] 2026-10-05 | `4c31b627` | js/ivrit-saves.js, smoke-sync | (S457 B) **A new device's first signed-in load takes the account's preferences** (`useCloud` with the downloads). | `prefs2/3.mjs` 0/3 → 3/3; smoke-sync 1b 3/6 → 6/6; 7 smokes.
+
+- [x] 2026-10-05 | `ddcb4237` | hebrew_dictionary.html | (S456's P3) **The slider rows stay inside their cards** (`min-width:0`). | `fix2.mjs` 8 cells: HEAD 0/8 → 8/8.
+
+- [x] 2026-10-05 | `92bdfc63`, `0a82456d` | FM, torah | (S456's P4s) **The Separation slider is gold; the staff Key readout writes "−3".** | `fix3.mjs`, `fix4.mjs` 8 cells: 0/8 → 8/8, 0/24 → 24/24.
+
 - [x] 2026-10-05 | (S456 close-out) | branch/deploy note | **S456 = F + 4 fixes, PR #308.** No drift; sw v928→v929; no FM bump; gates clean; deferred: micro-feature.
 
 - [x] 2026-10-05 | `0ca1e29b` | hebrew_blend_generator.html, hebrew_dictionary.html | (S456 F) **The 0–100 font-size sliders speak their readout.** | `fix1.mjs` 8 cells: HEAD 0 → every path passes.
@@ -328,19 +328,11 @@ _(none)_
 
 - [x] 2026-10-04 | `728e4075` | torah_trainer.html | (S453 I) **A pre-strings load failure shows words.** | `ttrace.mjs` 8/8 → 0.
 
-- [x] 2026-10-04 | (S452 close-out) | branch/deploy note | **S452 = pass D on the generator + 4 fixes, draft PR #308.** DRIFT: 14 outside commits to `c0f3b57` (holiday icons, FM 5.59, tune practice, stale-tab fixes, parsha line; sw v919→v924); backend unchanged, keep-alive #22 green. sw v924→v925. No FM bump. Gates clean; no smokes. Deferred: micro-feature (gate 1), JPEG pages (gate 2).
-
-- [x] 2026-10-04 | `d01a33cd` | Hebrew_Font_Maker.html | (S452 D) **jsPDF/html2canvas load on the first PDF or template click.** | `fm-lazy.mjs` vs HEAD: FCP 468–480 → 108–120 @1× (CDN +150 ms); same files; offline → modal, retry works; light/dark × 1280/800.
-
-- [x] 2026-10-04 | `82bbe313` | hebrew_blend_generator.html | (S452 D) **html2canvas + jsPDF load on the first Export PDF.** | `lazy.mjs` vs HEAD: FCP 460–496 → 88–180 @1× (CDN +150 ms); offline → note, retry downloads and clears it; light/dark × 1280/800.
-
-- [x] 2026-10-04 | `5cf792f0` | hebrew_blend_generator.html | (S452 D) **Export PDF pages the bingo caller sheet like Print.** | `caller-export.mjs` vs HEAD: 8 cards LLL → LLPPP, cut between rows; A4, landscape, real-words bingo; light/dark × 1280/800.
-
-- [x] 2026-10-04 | `b37e64c6` | Hebrew_Font_Maker.html | (S452; the 10-03 P2) **A multi-photo pick fills the current tab's empty glyphs.** | `fm-multi.mjs` vs HEAD: English B "א ב B" → "B C D"; one Ctrl+Z; light/dark × 1280/800.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-05 | **S457** | iters: 1 pass (**B**) + 4 fixes = **5** | tools: ivrit-saves, dictionary, FM, torah | patterns fixed: flex-range-keeps-its-min-content-width (NEW) | pass run: B | SW: v929→v930
 
 - 2026-10-05 | **S456** | iters: 1 pass (**F**) + 4 fixes = **5** | tools: generator, dictionary ×2, flash ×2, FM, torah | patterns fixed: slider-value (NEW), sub-floor ×2 | pass run: F | SW: v928→v929
 
@@ -372,9 +364,11 @@ _(none)_
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S456 (2026-10-05):** generator, dictionary, flash, FM, torah S456 · trope, resources S455 · contact, dashboard S454 · ivrit-saves S453 · account S449 · index S446 · privacy, terms, 404 S442.
+- **Snapshot S457 (2026-10-05):** ivrit-saves, dictionary, FM, torah S457 · generator, flash S456 · trope, resources S455 · contact, dashboard S454 · account S449 · index S446 · privacy, terms, 404 S442.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`flex-range-keeps-its-min-content-width`** (NEW S457; `ddcb4237`): ACTIVE, streak 0. A `flex:1` range without `min-width:0` keeps its 129px and pushes the row's last item out of a narrow card. Detection: grep `input\[type=range\][^{]*{[^}]*flex: *1` lacking `min-width: *0`, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`slider-value-announced-as-its-position`** (NEW S456; `0ca1e29b`): ACTIVE, streak 0. Detection: `f456/census.mjs` (readout numbers lack the value, no `aria-valuetext`).
 
@@ -678,7 +672,7 @@ _(none)_
 
 - I first-load & empty-state: 2026-10-04 (**S453 — 34th I: 34 virgin cells × 9 planted gates, census, slow-locale gate, tours. FIXED `728e4075`.**)
 
-- B console/error audit: 2026-10-01 (**S443 — 34th B (S429 → 116 commits: the cloud-first saves rewrite, torah's drawer/Favorites/cycles/lookup, the dashboard's 7-tab drawer + Intermission, FM 5.58). 4 controls (planted throw/error/warn/404/alert fire, clean twins 0); 68 load cells + 34 interaction cells + 3 delta arms × 2: 0 pageerrors, 0 failed/4xx, 0 dialogs, 0 overflow. FOUND + FIXED the …[full text: IMPROVEMENT_ARCHIVE.md]
+- B console/error audit: 2026-10-05 (**S457 — 35th B on the S443 delta (78 commits): 68 load cells, the new features by real clicks, two tabs × 6 tools, and NEW a signed-in arm (9 pages × 2 devices × 2 cells on a fake cloud); every zero planted (findings S457). FOUND + FIXED the preferences race `4c31b627`.**)
 
 - J metrics-informed: never run — SKIP in rotation until the impact-metrics dashboard/Worker is live (not live)
 
@@ -690,4 +684,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-05 (**S456 — sliders on 7 tools: name, value heard, keys, size; plants fired (findings S456). FIXED 4. F-next: search fields.**)
 
-**Next session (S457):** **BRANCH/PR: S452–S456 on `claude/improveloop-s452` → draft PR #308 (base `c0f3b57`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v929**, FM **5.59**, SDK **2.116.0**. ⚑ Stalest: B (S443), A (S444), E (S445); O blocked. ⚑ Untaken: the font-cap note (P2, gate 2), the dictionary's slider rows (P3).
+**Next session (S458):** **BRANCH/PR: S452–S457 on `claude/improveloop-s452` → draft PR #308 (base `c0f3b57`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v930**, FM **5.59**, SDK **2.116.0**. ⚑ Stalest: A (S444), E (S445), L (S446); O blocked. ⚑ Untaken: the font-cap note (P2, gate 2), the serial hydration GETs (P3, shared). ⚑ Signed in, read the status line and the cloud log: the module logs nothing to the console (findings S457).
