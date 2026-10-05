@@ -4158,6 +4158,8 @@
   "resources.filters.suggest_button": "הצעת משאב",
   "resources.fonts.by_prefix": "מאת {author}",
   "resources.fonts.download_action": "הורדה",
+  "resources.fonts.full_confirm": "יש כבר {cap} גופנים תחת “הגופנים שלי”, המספר המרבי. הוספת “{name}” תסיר את הגופן הישן ביותר שלכם, “{oldest}”. להוסיף בכל זאת?",
+  "resources.fonts.full_confirm_many": "יש {n} גופנים תחת “הגופנים שלי”, ונשמרים לכל היותר {cap}. הוספת “{name}” תסיר את {count} הישנים ביותר שלכם: {oldest}. להוסיף בכל זאת?",
   "resources.fonts.nikkud_label": "ניקוד",
   "resources.fonts.preview_action": "תצוגה מקדימה",
   "resources.fonts.submit.anything_else": "משהו נוסף שכדאי לנו לדעת:",

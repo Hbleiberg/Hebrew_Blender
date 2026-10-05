@@ -1938,6 +1938,17 @@ async function useFontInIvritSuite(i) {
   const f = FONTS[i]; if (!f) return;
   if (!window.indexedDB || !window.FontFace) { fontToast(I18n.t('resources.fonts.toast_no_storage')); return; }
   try {
+    // At IV_FONTS_CAP, saveUserFont evicts the oldest fonts — maybe one the teacher made — so name them and
+    // ask first (the same slice saveUserFont takes). Re-adding a font already in My Fonts evicts nothing.
+    const mine = await listUserFonts();
+    const evict = mine.filter(m => m.name !== f.name).slice(IV_FONTS_CAP - 1);
+    if (evict.length) {
+      const msg = evict.length === 1
+        ? I18n.t('resources.fonts.full_confirm', {cap: IV_FONTS_CAP, name: f.name, oldest: evict[0].name})
+        : I18n.t('resources.fonts.full_confirm_many', {n: mine.length, cap: IV_FONTS_CAP, name: f.name, count: evict.length,
+            oldest: evict.map(m => '“' + m.name + '”').join(', ')});
+      if (!confirm(msg)) return;
+    }
     fontToast(I18n.t('resources.fonts.toast_adding', {name: f.name}));
     const buf = await (await fetch(f.file)).arrayBuffer();
     await saveUserFont(f.name, new Uint8Array(buf), f.family);

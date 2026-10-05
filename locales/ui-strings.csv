@@ -3553,6 +3553,8 @@ resources.filters.submit_font_button,Submit a font,הגשת גופן,CTA button,
 resources.filters.suggest_button,Suggest a Resource,הצעת משאב,CTA button,svg-icon-in-markup
 resources.fonts.by_prefix,By {author},מאת {author},font card byline,template; html
 resources.fonts.download_action,Download,הורדה,font card action,leading-emoji
+resources.fonts.full_confirm,"My Fonts holds {cap} fonts, the most it can. Adding “{name}” removes your oldest font, “{oldest}”. Add it anyway?","יש כבר {cap} גופנים תחת “הגופנים שלי”, המספר המרבי. הוספת “{name}” תסיר את הגופן הישן ביותר שלכם, “{oldest}”. להוסיף בכל זאת?",confirm dialog,template; mixed UI+content — do not translate {…}
+resources.fonts.full_confirm_many,My Fonts holds {n} fonts and keeps at most {cap}. Adding “{name}” removes your {count} oldest: {oldest}. Add it anyway?,"יש {n} גופנים תחת “הגופנים שלי”, ונשמרים לכל היותר {cap}. הוספת “{name}” תסיר את {count} הישנים ביותר שלכם: {oldest}. להוסיף בכל זאת?",confirm dialog,template; {oldest} is a list of quoted font names; mixed UI+content — do not translate {…}
 resources.fonts.nikkud_label,Nikkud,ניקוד,font card meta,
 resources.fonts.preview_action,Preview,תצוגה מקדימה,font card action,svg-icon-in-markup
 resources.fonts.submit.anything_else,Anything else we should know:,משהו נוסף שכדאי לנו לדעת:,prefilled email body label,scope-ambiguous (mailto payload)

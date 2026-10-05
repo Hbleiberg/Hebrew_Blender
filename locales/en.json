@@ -4158,6 +4158,8 @@
   "resources.filters.suggest_button": "Suggest a Resource",
   "resources.fonts.by_prefix": "By {author}",
   "resources.fonts.download_action": "Download",
+  "resources.fonts.full_confirm": "My Fonts holds {cap} fonts, the most it can. Adding “{name}” removes your oldest font, “{oldest}”. Add it anyway?",
+  "resources.fonts.full_confirm_many": "My Fonts holds {n} fonts and keeps at most {cap}. Adding “{name}” removes your {count} oldest: {oldest}. Add it anyway?",
   "resources.fonts.nikkud_label": "Nikkud",
   "resources.fonts.preview_action": "Preview",
   "resources.fonts.submit.anything_else": "Anything else we should know:",

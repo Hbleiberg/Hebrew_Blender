@@ -19,7 +19,9 @@ The store + helpers are delivered as one copy-identical block (like the `.ivrit`
 
 Present (verbatim — sha-verify when you touch it) in **9 files**: `index.html`, `Hebrew_Font_Maker.html`, the six
 font-selector tools (generator, flash cards, dashboard, dictionary, torah trainer, trope tutor), and
-`resources.html` (a store *consumer* — its font gallery reads `listUserFonts` but has no picker/uploader).
+`resources.html` (a store *consumer* — its font gallery reads `listUserFonts` but has no picker/uploader; its
+"Use in IvritSuite" writes through `saveUserFont`, and when that would evict, it first asks with the fonts it would
+remove, the same slice the block takes — `resources.fonts.full_confirm`, or `_many` past the cap).
 
 ### Consumer pattern (in the picker)
 Each font-selector tool keeps the block plus: `let MY_FONTS = []` + `const _loadedUserFonts = new Set()`,
