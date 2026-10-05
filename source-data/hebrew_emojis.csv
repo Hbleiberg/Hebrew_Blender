@@ -92,7 +92,7 @@ emoji,english,category,subcategory,hebrew_masculine,translit_masculine,hebrew_fe
 🥭,Mango,Food,Fruit,מַנְגּוֹ,mango,,
 🍍,Pineapple,Food,Fruit,אֲנָנָס,ananas,,
 🥥,Coconut,Food,Fruit,קוֹקוּס,kokus,,
-🥝,Kiwi,Food,Fruit,קִיוִוי,kivivy,,
+🥝,Kiwi,Food,Fruit,קִיוִוי,kivi,,
 🍅,Tomato,Food,Vegetable,,,עַגְבָנִיָּה,agvaniya
 🫒,Olive,Food,Vegetable,זַיִת,zayit,,
 🥑,Avocado,Food,Vegetable,אֲבוֹקָדוֹ,avokado,,
@@ -138,7 +138,7 @@ emoji,english,category,subcategory,hebrew_masculine,translit_masculine,hebrew_fe
 🍦,Ice Cream,Food,Sweet,,,גְּלִידָה,gelida
 🍰,Cake,Food,Sweet,,,עוּגָה,uga
 🎂,Birthday Cake,Food,Sweet,,,עוּגַת יוֹם הֻלֶּדֶת,ugat yom huledet
-🧁,Cupcake,Food,Sweet,,,קָאפְּקֵייק,kapkeyyk
+🧁,Cupcake,Food,Sweet,,,קָאפְּקֵייק,kapkeyk
 🍪,Cookie,Food,Sweet,,,עוּגִיָּה,ugiya
 🍫,Chocolate,Food,Sweet,שׁוֹקוֹלָד,shokolad,,
 🍬,Candy,Food,Sweet,,,סֻכָּרִיָּה,sukariya
@@ -775,7 +775,7 @@ emoji,english,category,subcategory,hebrew_masculine,translit_masculine,hebrew_fe
 🥮,Moon Cake,Food,Dish,עוּגַת יָרֵחַ,ugat yareach,,
 🍡,Dango,Food,Dish,דַּנְגּוֹ,dango,,
 🥠,Fortune Cookie,Food,Dish,עוּגִית מַזָּל,ugit mazal,,
-🥡,Takeout Box,Food,Dish,קֻפְסַת טֵייקאַוּט,kufsat teyykaut,,
+🥡,Takeout Box,Food,Dish,קֻפְסַת טֵייקאַוּט,kufsat teykaut,,
 🍧,Shaved Ice,Food,Sweet,קֶרַח גָּרוּד,kerach garud,,
 🍨,Ice Cream,Food,Sweet,גְּלִידָה,gelida,,
 🥧,Pie,Food,Sweet,פַּאי,pay,,
@@ -819,7 +819,7 @@ emoji,english,category,subcategory,hebrew_masculine,translit_masculine,hebrew_fe
 🥊,Boxing Glove,Activity,Sport,כְּפָפַת אִגְרוּף,kefafat igruf,,
 🥋,Martial Arts Uniform,Activity,Sport,מַדֵּי קָרָטֶה,madey karate,,
 🎽,Running Shirt,Activity,Sport,חֻלְצַת רִיצָה,chultzat ritza,,
-🛹,Skateboard,Activity,Sport,סְקֵייטְבּוֹרְד,sekeyytbord,,
+🛹,Skateboard,Activity,Sport,סְקֵייטְבּוֹרְד,sekeytbord,,
 🛼,Roller Skate,Activity,Sport,גַּלְגִּלִּיּוֹת,galgiliyot,,
 🛷,Sled,Activity,Sport,,,מִזְחֶלֶת,mizchelet
 🥌,Curling Stone,Activity,Sport,אֶבֶן קֶרְלִינְג,even kerling,,
@@ -895,7 +895,7 @@ emoji,english,category,subcategory,hebrew_masculine,translit_masculine,hebrew_fe
 🚘,Oncoming Automobile,Travel,Land Vehicle,,,מְכוֹנִית מִתְקָרֶבֶת,mechonit mitkarevet
 🚙,Sport Utility Vehicle,Travel,Land Vehicle,גִּ'יפ,gi'yf,,
 🛻,Pickup Truck,Travel,Land Vehicle,טֶנְדֶּר,tender,,
-🚛,Articulated Lorry,Travel,Land Vehicle,,,מַשָּׂאִית סְמִיטְרֵייְלֶר,masait semitreyyler
+🚛,Articulated Lorry,Travel,Land Vehicle,,,מַשָּׂאִית סְמִיטְרֵייְלֶר,masait semitreyler
 🚜,Tractor,Travel,Land Vehicle,טְרַקְטוֹר,teraktor,,
 🛵,Motor Scooter,Travel,Land Vehicle,קָטְנוֹעַ,katnoa,,
 🦽,Manual Wheelchair,Travel,Land Vehicle,כִּסֵּא גַּלְגַּלִּים יָדָנִי,kise galgalim yadani,,
@@ -1106,7 +1106,7 @@ emoji,english,category,subcategory,hebrew_masculine,translit_masculine,hebrew_fe
 ⚖️,Balance Scale,Object,Tool,מֹאזְנַיִם,moznayim,,
 🩺,Stethoscope,Object,Tool,סְטֵטוֹסְקוֹפּ,setetoskop,,
 🩻,X-Ray,Object,Tool,צִלּוּם רֶנְטְגֶן,tzilum rentgen,,
-🧬,DNA,Object,Tool,דִּי.אֶן.אֵיי.,di.en.eyy.,,
+🧬,DNA,Object,Tool,דִּי.אֶן.אֵיי.,di.en.ey.,,
 🔬,Microscope,Object,Tool,מִיקְרוֹסְקוֹפּ,mikroskop,,
 🔭,Telescope,Object,Tool,טֵלֵסְקוֹפּ,teleskop,,
 📡,Satellite Antenna,Object,Tool,אַנְטֵנַת לַוְיָן,antenat lavyan,,
@@ -1298,12 +1298,12 @@ emoji,english,category,subcategory,hebrew_masculine,translit_masculine,hebrew_fe
 🇧🇪,Flag: Belgium,Flag,Europe,בֶּלְגְּיָה,belgya,,
 🇧🇫,Flag: Burkina Faso,Flag,Africa,בּוּרְקִינָה פָאסוֹ,burkina paso,,
 🇧🇬,Flag: Bulgaria,Flag,Europe,בּוּלְגַּרְיָה,bulgarya,,
-🇧🇭,Flag: Bahrain,Flag,Asia,בַּחְרֵיין,bachreyyn,,
+🇧🇭,Flag: Bahrain,Flag,Asia,בַּחְרֵיין,bachreyn,,
 🇧🇮,Flag: Burundi,Flag,Africa,בּוּרוּנְדִי,burundi,,
 🇧🇯,Flag: Benin,Flag,Africa,בֶּנִין,benin,,
 🇧🇱,Flag: St. Barthélemy,Flag,North America,סֶן בַּרְטֶלֶמִי,sen bartelemi,,
 🇧🇲,Flag: Bermuda,Flag,North America,בֶּרְמוּדָה,bermuda,,
-🇧🇳,Flag: Brunei,Flag,Asia,בְּרוּנֵיי,beruneyy,,
+🇧🇳,Flag: Brunei,Flag,Asia,בְּרוּנֵיי,beruney,,
 🇧🇴,Flag: Bolivia,Flag,South America,בּוֹלִיבְיָה,bolivya,,
 🇧🇶,Flag: Caribbean Netherlands,Flag,North America,הוֹלַנְד הַקָּרִיבִּית,holand hakaribit,,
 🇧🇷,Flag: Brazil,Flag,South America,בְּרָזִיל,berazil,,
@@ -1392,7 +1392,7 @@ emoji,english,category,subcategory,hebrew_masculine,translit_masculine,hebrew_fe
 🇮🇸,Flag: Iceland,Flag,Europe,אִיסְלַנְד,island,,
 🇮🇹,Flag: Italy,Flag,Europe,אִיטַלְיָה,italya,,
 🇯🇪,Flag: Jersey,Flag,Europe,גֶּ'רְזִי,ge'rzi,,
-🇯🇲,Flag: Jamaica,Flag,North America,גַּ'מַייקָה,ga'mayyka,,
+🇯🇲,Flag: Jamaica,Flag,North America,גַּ'מַייקָה,ga'mayka,,
 🇯🇴,Flag: Jordan,Flag,Asia,יַרְדֵּן,yarden,,
 🇯🇵,Flag: Japan,Flag,Asia,יָפָּן,yapan,,
 🇰🇪,Flag: Kenya,Flag,Africa,קֶנְיָה,kenya,,
@@ -1403,13 +1403,13 @@ emoji,english,category,subcategory,hebrew_masculine,translit_masculine,hebrew_fe
 🇰🇳,Flag: St. Kitts & Nevis,Flag,North America,סֶנְט קִיטְס וְנֵוִיס,sent kits venevis,,
 🇰🇵,Flag: North Korea,Flag,Asia,צְפוֹן קוֹרֵיאָה,tzefon koreya,,
 🇰🇷,Flag: South Korea,Flag,Asia,דְּרוֹם קוֹרֵיאָה,derom koreya,,
-🇰🇼,Flag: Kuwait,Flag,Asia,כֻּוֵייט,kuveyyt,,
+🇰🇼,Flag: Kuwait,Flag,Asia,כֻּוֵייט,kuveyt,,
 🇰🇾,Flag: Cayman Islands,Flag,North America,אִיֵּי קַיְמָן,iyey kayman,,
 🇰🇿,Flag: Kazakhstan,Flag,Asia,קָזַחְסְטָן,kazachstan,,
 🇱🇦,Flag: Laos,Flag,Asia,לָאוֹס,laos,,
 🇱🇧,Flag: Lebanon,Flag,Asia,לְבָנוֹן,levanon,,
 🇱🇨,Flag: St. Lucia,Flag,North America,סֶנְט לוּסְיָה,sent lusya,,
-🇱🇮,Flag: Liechtenstein,Flag,Europe,לִיכְטֶנְשְׁטֵיין,lichtenshteyyn,,
+🇱🇮,Flag: Liechtenstein,Flag,Europe,לִיכְטֶנְשְׁטֵיין,lichtenshteyn,,
 🇱🇰,Flag: Sri Lanka,Flag,Asia,סְרִי לַנְקָה,seri lanka,,
 🇱🇷,Flag: Liberia,Flag,Africa,לִיבֶּרְיָה,liberya,,
 🇱🇸,Flag: Lesotho,Flag,Africa,לֶסוֹטוֹ,lesoto,,
@@ -1475,7 +1475,7 @@ emoji,english,category,subcategory,hebrew_masculine,translit_masculine,hebrew_fe
 🇷🇼,Flag: Rwanda,Flag,Africa,רְוַנְדָּה,revanda,,
 🇸🇦,Flag: Saudi Arabia,Flag,Asia,עֲרַב הַסְעוּדִית,arav hasudit,,
 🇸🇧,Flag: Solomon Islands,Flag,Oceania,אִיֵּי שְׁלֹמֹה,iyey shelomo,,
-🇸🇨,Flag: Seychelles,Flag,Africa,סֵיישֶׁל,seyyshel,,
+🇸🇨,Flag: Seychelles,Flag,Africa,סֵיישֶׁל,seyshel,,
 🇸🇩,Flag: Sudan,Flag,Africa,סוּדָן,sudan,,
 🇸🇪,Flag: Sweden,Flag,Europe,שְׁוֵדְיָה,shevedya,,
 🇸🇬,Flag: Singapore,Flag,Asia,סִינְגָּפּוּר,singapur,,
@@ -1495,7 +1495,7 @@ emoji,english,category,subcategory,hebrew_masculine,translit_masculine,hebrew_fe
 🇸🇾,Flag: Syria,Flag,Asia,סוּרְיָה,surya,,
 🇸🇿,Flag: Eswatini,Flag,Africa,אֶסְוָאטִינִי,esvatini,,
 🇹🇦,Flag: Tristan da Cunha,Flag,Africa,טְרִיסְטָן דָּה קוּנְיָה,teristan da kunya,,
-🇹🇨,Flag: Turks & Caicos Islands,Flag,North America,אִיֵּי טוּרְקְס וְקֵייקוֹס,iyey turks vekeyykos,,
+🇹🇨,Flag: Turks & Caicos Islands,Flag,North America,אִיֵּי טוּרְקְס וְקֵייקוֹס,iyey turks vekeykos,,
 🇹🇩,Flag: Chad,Flag,Africa,צָ'אד,tza'd,,
 🇹🇫,Flag: French Southern Territories,Flag,Antarctica,הַטֶּרִיטוֹרְיוֹת הַצָּרְפָתִיּוֹת הַדְּרוֹמִיּוֹת,hateritoryot hatzarfatiyot hadromiyot,,
 🇹🇬,Flag: Togo,Flag,Africa,טוֹגוֹ,togo,,
