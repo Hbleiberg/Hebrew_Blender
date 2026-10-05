@@ -1574,7 +1574,7 @@
   "fontmaker.about.faq_a_install": "On Windows, double-click the downloaded .ttf file and choose Install. On Mac, double-click it and click Install Font in Font Book. Google Docs only uses fonts from its own catalog and cannot load a local font, so use a desktop word processor such as Word, Pages, or LibreOffice, or upload the file to a design tool like Canva instead.",
   "fontmaker.about.faq_a_marks": "Yes. As you build each letter you can anchor its nikkud and trop marks, and the exported font uses OpenType GPOS mark positioning so the marks land in the right place automatically as you type. You can also make a letters-only font and skip the marks.",
   "fontmaker.about.faq_a_nikkudtrop": "Yes. The free Hebrew Font Maker positions nikkud (vowels) and cantillation (trop) automatically using OpenType mark positioning.",
-  "fontmaker.about.faq_a_software": "No. The Hebrew Font Maker runs entirely in your browser; the font engine loads only when you export.",
+  "fontmaker.about.faq_a_software": "No. The Hebrew Font Maker runs entirely in your browser; the font engine downloads by itself the first time a step needs it.",
   "fontmaker.about.faq_heading": "Frequently Asked Questions",
   "fontmaker.about.faq_q_commercial": "Are fonts I make here free to use commercially?",
   "fontmaker.about.faq_q_edit": "Can I open and edit an existing Hebrew font?",

@@ -321,7 +321,7 @@ TrueType (TTF), WOFF2 for the web, and editable UFO source — each with a licen
 
 **Do I need to install any software?**
 
-No. The Hebrew Font Maker runs entirely in your browser; the font engine loads only when you export.
+No. The Hebrew Font Maker runs entirely in your browser; the font engine downloads by itself the first time a step needs it.
 
 **How do I install a Hebrew font on Windows, Mac, or Google Docs?**
 
