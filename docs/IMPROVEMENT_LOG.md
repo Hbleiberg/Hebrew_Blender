@@ -8,15 +8,13 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P3 (**NEW S460 L — gate 2**) | torah_trainer.html | **The FAQ says translations default to JPS 1985** (JSON-LD, visible, Hebrew); since `cb40da9f` the page leaves that copyrighted edition out and defaults to JPS 1917 (findings S460). | found S460
+- [ ] P4 (**NEW S460 — pattern radio-set-without-a-question**) | hebrew_dictionary.html | **The three Copy Mode radios sit in no named group** (`d9645fa5`'s idiom fits). | found S460
 
-- [ ] P4 (**NEW S460 L — gate 2**) | Hebrew_Font_Maker.html | **The FAQ says "the font engine loads only when you export"**; it also loads to read an imported font's marks and for Preview PDF, and warms after the first traced letter. | found S460
+- [ ] P4 (**NEW S460 — pattern radio-set-without-a-question**) | classroom_dashboard.html | **The video position radios have no group or question**; a name needs a new string. | found S460
 
-- [ ] P4 (**NEW S458 A — C's**) | classroom_dashboard.html | **The drawer's radio groups have no programmatic question** ("Diaspora, radio button", no "Parsha schedule"). | found S458
+- [ ] P4 (**NEW S460 — gate 2**) | Hebrew_Font_Maker.html | **The About footer says "(the font engine loads on first export)"** (`fontmaker.about.footer_about_body`). | found S460
 
 - [ ] P4 (**NEW S458**) | scripts/smoke-sync.mjs | **Scenario 2 fails Mon 08:00–09:30, Tue 08:00–08:45 local** (its schedule's preset goes up): pin the clock. | found S458
-
-- [ ] P2 (**NEW S454 H — gate 2**) | resources.html | **At ten My Fonts, "Use in IvritSuite" silently drops the oldest** (a teacher's own font; the toast says "added"). | found S454
 
 - [ ] P3 (**NEW S454 H — gate 2**) | resources.html | **The FAQ and its JSON-LD say each card notes cost or sign-up; 4 of 43 do.** | found S454
 
@@ -294,6 +292,12 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-05 | (S460 close-out) | branch/deploy note | **S460 = L + 4 fixes, PR #310.** Drift: #308 + 4 outside-loop dashboard commits (v932→v936), deploy green; backend none; sw v936→v937; no FM bump; gates clean; no smokes; 4 gates answered.
+
+- [x] 2026-10-05 | `d9645fa5` | classroom_dashboard.html | (S458's P4) **The drawer's 10 radio groups are named by their labels.** | `rg.mjs` AX tree, 4 cells: HEAD 0/10 → 10/10.
+
+- [x] 2026-10-05 | `9a2e2f0a`, `7de703e5` | torah, FM, CSV | (S460 L, gate 2) **The Torah FAQ names JPS 1917; the FM FAQ drops "only when you export".** | `jps.mjs`, `faq.mjs` 4 cells vs HEAD.
+
 - [x] 2026-10-05 | (S459 close-out) | branch/deploy note | **S459 = E + 4 fixes, PR #308.** No drift (main `c0f3b57`, keep-alive #22 green); sw v931→v932 (ivrit-saves); no FM bump; check-i18n + check-inline-js clean; 7 smokes green; deferred: micro-feature.
 
 - [x] 2026-10-05 | `81aff4bf`, `0dbb0002` | source-data/hebrew_emojis.csv, ops.md, README | (S459 E) **The emoji CSV source keeps `a86b5a16`'s 13 fixes; ops.md says `?v=2`; README names every corpus consumer.** | CSV = JSON 13 → 0; census arm 1 → 0.
@@ -318,13 +322,11 @@ _(none)_
 
 - [x] 2026-10-05 | `e505005e` | torah_trainer.html, locales | (S456 F) **The pitch sliders say "+1 semitone".** | `fix4.mjs` 8 cells: HEAD ±1 0/24 → 24/24.
 
-- [x] 2026-10-04 | (S455 close-out) | branch/deploy note | **S455 = pass C on trope + 4 fixes, PR #308.** Drift none (main `c0f3b57`, keep-alive #22 green); sw v927→v928 (trope, resources); no FM bump; check-i18n + check-inline-js clean; no smokes (no backend file); deferred: micro-feature (gate 1).
-
-- [x] 2026-10-04 | `03cb3ff4`, `12247228` | trope_tutor.html | (S455 C) **The 19 chips keep the focus; a tab switch from inside a tab hands it to the new tab.** | `fix1.mjs` 456/456 body → same chip; `fix2.mjs` 0/8 → 8/8 ×3, controls 16/16.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-05 | **S460** | iters: 1 pass (**L**) + 4 fixes = **5** | tools: resources, torah, FM, dashboard | patterns fixed: radio-set-without-a-question (NEW) | pass run: L | SW: v936→v937
 
 - 2026-10-05 | **S459** | iters: 1 pass (**E**) + 4 fixes = **5** | tools: source-data, docs, ivrit-saves, smoke-migration | patterns fixed: — | pass run: E | SW: v931→v932
 
@@ -362,9 +364,11 @@ _(none)_
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S459 (2026-10-05):** ivrit-saves S459 · dashboard, flash, FM, generator S458 · dictionary, torah S457 · trope, resources S455 · contact S454 · account S449 · index S446 · privacy, terms, 404 S442.
+- **Snapshot S460 (2026-10-05):** resources, torah, FM, dashboard S460 · ivrit-saves S459 · flash, generator S458 · dictionary S457 · trope S455 · contact S454 · account S449 · index S446 · privacy, terms, 404 S442.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`radio-set-without-a-question`** (NEW S460, `d9645fa5`): ACTIVE, streak 0. Radios with no named radiogroup/group/fieldset. Detection: walk each static radio up to its group; a hit lacks one or its name (JS-built: read the builders). Open: dashboard `videoLayout`, dictionary …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`native-input-display-none-under-its-label`** (NEW S458, `ea43be7e`): ACTIVE, streak 0. Detection: `a458/radios.mjs`; control torah. …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -678,7 +682,7 @@ _(none)_
 
 - J metrics-informed: never run — SKIP in rotation until the impact-metrics dashboard/Worker is live (not live)
 
-- L SEO & discoverability audit: 2026-10-02 (**S446 — 23rd L on the S432→now delta (17 crawler files) + the whole surface: a rebuilt `l446/audit.py` (title/description/canonical/noindex set/og+twitter/og:url/image IHDR/JSON-LD parse+URLs+self url+breadcrumb+HowTo/h1/img alt/lang/sitemap set/crawl graph/robots/CNAME), 17 plants in 2 HEAD copies all fired, real tree 0; FAQ 53 / HowTo 42; torah + …[full text: IMPROVEMENT_ARCHIVE.md]
+- L SEO & discoverability audit: 2026-10-05 (**S460 — 24th L on `dd23c8d..a2cf7f8`: rebuilt `l460/` (20 arms), 22 plants fired, tree 0, crawler text unchanged 17/17. FOUND + FIXED (gate 2) the Torah FAQ's JPS 1985 and the FM's engine claim.**)
 
 - H teacher walkthrough / paper-cuts (one tool): 2026-10-04 (**S454 — `resources.html` (S305 →), 3 errands by real clicks, EN + HE dark 800. FOUND 8 + 1 seed; FIXED `b1eb9659`, `3378bb1f`. H-next: index (S323).**)
 
@@ -686,4 +690,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-05 (**S456 — sliders on 7 tools: name, value heard, keys, size; plants fired (findings S456). FIXED 4. F-next: search fields.**)
 
-**Next session (S460):** **BRANCH/PR: S452–S459 on `claude/improveloop-s452` → draft PR #308 (base `c0f3b57`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v932**, FM **5.59**, SDK **2.116.0**. ⚑ Stalest: L, K, N; O blocked. ⚑ Untaken: font-cap note (P2, gate 2), radio-group names (P4), smoke-sync clock (P4).
+**Next session (S461):** **BRANCH/PR: S460 on `claude/zealous-hamilton-qlwsp2` → draft PR #310 (base `a2cf7f8`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v937**, FM **5.59**, SDK **2.116.0**. ⚑ Stalest: K, N, P; O blocked. ⚑ Untaken: smoke-sync clock, two unnamed radio sets, the FM footer line (gate 2).
