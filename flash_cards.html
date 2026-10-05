@@ -4659,6 +4659,12 @@ function applySettings(s) {
 }
 
 const SETTINGS_KEY = 'hebrewFlashCards_settings';
+// What this tab last wrote or read (getSettings() as JSON). The account module's flush — before it reads the key,
+// and as the page hides or closes — goes through saveSettingsIfChanged: it writes what this tab changed since, and
+// nothing when it changed nothing, so closing an older tab never writes its copy over one a newer tab saved since.
+let _settingsSeen = null;
+function saveSettingsIfChanged() { if (JSON.stringify(getSettings()) !== _settingsSeen) saveSettings(); }
+function settingsSeenNow() { try { _settingsSeen = JSON.stringify(getSettings()); } catch (e) {} }
 function saveSettings() {
   // A Learner Ladder level reconfigures the whole drill transiently. This one guard is what
   // keeps the teacher's persisted settings untouched across all ~70 call sites; _ladderExit()
@@ -4666,7 +4672,7 @@ function saveSettings() {
   if (_ladderActive || _sharedDrill) return;
   // Fields this build does not know (a newer build wrote them, on this device or — signed in — another) are kept:
   // getSettings() lists only the controls this build has, and dropping the rest would send an emptier blob up.
-  try { const prev = _persistedSettings() || {}; const out = Object.assign({}, prev, getSettings()); localStorage.setItem(SETTINGS_KEY, JSON.stringify(out)); } catch(e){}
+  try { const own = getSettings(), prev = _persistedSettings() || {}; const out = Object.assign({}, prev, own); localStorage.setItem(SETTINGS_KEY, JSON.stringify(out)); _settingsSeen = JSON.stringify(own); } catch(e){}
 }
 // The stored settings as they are — what a file or a listing must carry while a transient drill runs.
 function _persistedSettings() {
@@ -8786,6 +8792,7 @@ document.addEventListener('DOMContentLoaded', () => {
       else enterSharedDrill();
     }
   } catch (e) {}
+  settingsSeenNow();   // what this tab holds now is what it read: a hide or close with no change since writes nothing
   initCloudSaves();
 });
 
@@ -8819,7 +8826,7 @@ function initCloudSaves() {
     tool: 'FlashCards',
     status: '#cloudSavesPanel',
     alsoPull: ['Dictionary'],
-    flush: saveSettings,          // the live settings object is what the module must read
+    flush: saveSettingsIfChanged, // the live settings object is what the module must read — if this tab changed it
     merges: {
       presetFolders: ftMergeTrees,
       profileFolders: ftMergeTrees,
