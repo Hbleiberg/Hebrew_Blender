@@ -1280,7 +1280,10 @@
     padding: 3px;
   }
   body.dark .radio-group { background: #2a3349; }
-  .radio-group input { display: none; }
+  /* Visually hidden but focusable (the Torah Trainer's and Trope Tutor's rule): display:none took every
+     radio out of the tab order and away from screen readers, so these settings answered only a mouse. */
+  .radio-group input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; pointer-events: none; }
+  .radio-group input:focus-visible + label { outline: 2px solid var(--focus-ring); outline-offset: 1px; }
   .radio-group label {
     text-align: center;
     padding: 4px 10px;
