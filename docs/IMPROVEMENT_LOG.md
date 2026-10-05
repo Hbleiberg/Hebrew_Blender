@@ -8,6 +8,12 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P3 (**NEW S461 — pattern bulk-apply-skips-a-renderer-the-control-runs**) | classroom_dashboard.html | **A preset, starter, `.ivrit` or download with Hide weather on leaves the empty Weather card until a reload** (only its checkbox hides it). | found S461
+
+- [ ] P4 (**NEW S461 K — gate 2 ANSWERED: use תל-עם**) | classroom_dashboard.html | **The Hebrew UI spells the scheme "TaL AM"** (`scheme_talam`, `reset_confirm`); the other three tools say תל-עם. | found S461
+
+- [ ] P4 (**NEW S461 — gate 2**) | hebrew_blend_generator.html | **Exclude Repeats lets a 3-letter worksheet blend repeat letter 2 as letter 3**; bingo rejects it. | found S461
+
 - [ ] P4 (**NEW S460 — pattern radio-set-without-a-question**) | hebrew_dictionary.html | **The three Copy Mode radios sit in no named group** (`d9645fa5`'s idiom fits). | found S460
 
 - [ ] P4 (**NEW S460 — pattern radio-set-without-a-question**) | classroom_dashboard.html | **The video position radios have no group or question**; a name needs a new string. | found S460
@@ -23,10 +29,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S455 C**) | trope_tutor.html | **Both Try again buttons drop the focus after a retry that works** (index and chart; failure path only). | found S455
 
 - [ ] P4 (**NEW S455 C**) | trope_tutor.html | **The Learn and Phrases cards carry no heading** (h1 only), so a screen reader cannot jump card to card. | found S455
-
-- [ ] P3 (**NEW 2026-10-03, gate 2**) | hebrew_blend_generator.html | **"Exclude Repeats" promises that no two blends share a letter pair**, but `drawBlends` only rejects a blend repeating one letter (`first === second`) and 1-Letter never reads the switch: fix the behaviour or the tooltip. | found 2026-10-03
-
-- [ ] P3 (**NEW 2026-10-03, gate 2**) | classroom_dashboard.html | **The "General classroom" (secular) starter keeps Hebrew day badges and weather labels**: its `STARTERS` diff sets `headerLang:'en'` but leaves `dowLang` and `weatherLabelLang` at their `'he'` defaults. | found 2026-10-03
 
 - [ ] P4 (**NEW 2026-10-03, gate 2 copy**) | hebrew_dictionary.html | **"Any of these letters" requires every ticked letter** (`onFilter`); the Hebrew label (כל אחת מהאותיות האלה) says so, the English label and its "Any:" chip don't. | found 2026-10-03
 
@@ -292,6 +294,14 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-05 | (S461 close-out) | branch/deploy note | **S461 = K + 4 fixes, PR #310.** No drift; keep-alive #23 green; sw v937→v938; no FM bump; gates clean; 4 gates answered.
+
+- [x] 2026-10-05 | `74b2ee0c` | hebrew_dictionary.html | (S461 K) **The Bulk Copy count follows the language.** | `dict.mjs` 2 cells: HEAD 3 wrong → 6/6.
+
+- [x] 2026-10-05 | `70988452` | classroom_dashboard.html, dashboard.md | (S461) **A starter, preset or restore re-titles the board at once.** | `colt.mjs` 4 cells: HEAD 3/3 stale → 0.
+
+- [x] 2026-10-05 | `73ba6e7e`, `ad09e1a6` | generator, dashboard, CSV | (S461, gate 2) **Exclude Repeats' tooltip is true; the secular starter is all English.** | `truth.mjs`, `starter.mjs`.
+
 - [x] 2026-10-05 | (S460 close-out) | branch/deploy note | **S460 = L + 4 fixes, PR #310.** Drift: #308 + 4 outside-loop dashboard commits (v932→v936), deploy green; backend none; sw v936→v937; no FM bump; gates clean; no smokes; 4 gates answered.
 
 - [x] 2026-10-05 | `d9645fa5` | classroom_dashboard.html | (S458's P4) **The drawer's 10 radio groups are named by their labels.** | `rg.mjs` AX tree, 4 cells: HEAD 0/10 → 10/10.
@@ -310,21 +320,11 @@ _(none)_
 
 - [x] 2026-10-05 | `4c31b627` | js/ivrit-saves.js, smoke-sync | (S457 B) **A new device's first signed-in load takes the account's preferences** (`useCloud` with the downloads). | `prefs2/3.mjs` 0/3 → 3/3; smoke-sync 1b 3/6 → 6/6; 7 smokes.
 
-- [x] 2026-10-05 | `ddcb4237` | hebrew_dictionary.html | (S456's P3) **The slider rows stay inside their cards** (`min-width:0`). | `fix2.mjs` 8 cells: HEAD 0/8 → 8/8.
-
-- [x] 2026-10-05 | `92bdfc63`, `0a82456d` | FM, torah | (S456's P4s) **The Separation slider is gold; the staff Key readout writes "−3".** | `fix3.mjs`, `fix4.mjs` 8 cells: 0/8 → 8/8, 0/24 → 24/24.
-
-- [x] 2026-10-05 | (S456 close-out) | branch/deploy note | **S456 = F + 4 fixes, PR #308.** No drift; sw v928→v929; no FM bump; gates clean; deferred: micro-feature.
-
-- [x] 2026-10-05 | `0ca1e29b` | hebrew_blend_generator.html, hebrew_dictionary.html | (S456 F) **The 0–100 font-size sliders speak their readout.** | `fix1.mjs` 8 cells: HEAD 0 → every path passes.
-
-- [x] 2026-10-05 | `85e294b2`, `924c9407` | flash, FM, dictionary | (S456 F) **3 sliders → 24px; 3 slider resets → 30px.** | `fix2.mjs`, `fix3.mjs`, 8 cells.
-
-- [x] 2026-10-05 | `e505005e` | torah_trainer.html, locales | (S456 F) **The pitch sliders say "+1 semitone".** | `fix4.mjs` 8 cells: HEAD ±1 0/24 → 24/24.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-05 | **S461** | iters: 1 pass (**K**) + 4 fixes = **5** | tools: generator, dashboard ×2, dictionary | patterns fixed: translated-key ×1, bulk-apply (NEW) ×1 | pass run: K | SW: v937→v938
 
 - 2026-10-05 | **S460** | iters: 1 pass (**L**) + 4 fixes = **5** | tools: resources, torah, FM, dashboard | patterns fixed: radio-set-without-a-question (NEW) | pass run: L | SW: v936→v937
 
@@ -364,9 +364,11 @@ _(none)_
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S460 (2026-10-05):** resources, torah, FM, dashboard S460 · ivrit-saves S459 · flash, generator S458 · dictionary S457 · trope S455 · contact S454 · account S449 · index S446 · privacy, terms, 404 S442.
+- **Snapshot S461 (2026-10-05):** generator, dashboard, dictionary S461 · resources, torah, FM S460 · ivrit-saves S459 · flash S458 · trope S455 · contact S454 · account S449 · index S446 · privacy, terms, 404 S442.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`bulk-apply-skips-a-renderer-the-control-runs`** (NEW S461, `70988452`): ACTIVE, streak 0. A control re-renders; `applySettings` never does. Detection: `x3/parity.mjs` (apply vs reload, per flipped key). Open: `hideWeather`.
 
 - **`radio-set-without-a-question`** (NEW S460, `d9645fa5`): ACTIVE, streak 0. Radios with no named radiogroup/group/fieldset. Detection: walk each static radio up to its group; a hit lacks one or its name (JS-built: read the builders). Open: dashboard `videoLayout`, dictionary …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -434,7 +436,7 @@ _(none)_
 
 - **`textContent-rewrite-erases-a-control-icon`** (S405; S415; **S453 `ac796dba`**): ACTIVE, streak 0. Add (d): load-time icon count. Detection: (a) EN→HE→EN icon count; (b) key census …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`translated-key-exists-page-hardcodes-english`** (S433 K: 0 new — the orphan census 121 raw, 86 with a live English twin, all S405/S419 classes; the delta's surfaces by a runtime EN-in-HE detector, 3 plants fire, 0 beyond by-design text; S420: flash "Untitled list" …[full …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`translated-key-exists-page-hardcodes-english`** (S461 K: 1 FIXED `74b2ee0c`, dictionary Bulk Copy count; streak 0. S433 K: 0 new — the orphan census 121 raw, 86 with a live English twin, all S405/S419 classes; the delta's surfaces by a runtime EN-in-HE detector, 3 …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`per-page-code-inside-a-shared-block`** (**NEW, registered 2026-09-22 (S403 Pass E) — 2 carriers, both fixed `6e28af3`**): ACTIVE, clean streak 1 (S416). Page code pasted INSIDE a `═══` block instead of below its end …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -666,7 +668,7 @@ _(none)_
 
 - M aesthetics & visual design (one surface): 2026-10-02 (**S450 — 21st M, `flash_cards.html` (last ~S249): 32 shots + computed fills, HEAD as the control. FIXED the dark primary's missing plate `c9e2bc2b`, the dark count hole `68055510`; logged the Save-as-preset button off scale. M-next: terms, contact.**)
 
-- K i18n / localization audit: 2026-10-02 (**S447 — 30th K. Delta `09f192ab..1b1538f6` (68 commits, CSV +1/−1). Gates A–E clean; runtime 32 cells (16 pages × EN/HE, EN↔HE↔EN) 0 missing, 0 raw, plants (data-i18n + I18n.t miss, EN-in-HE) fired 32/32; static-fallback census 4 (S432's `<br>`-only), plants 2/2; blind spot over added lines 0; RTL 1 (S440's deliberate pin). FOUND nothing new; FIXED 4 …[full text: IMPROVEMENT_ARCHIVE.md]
+- K i18n / localization audit: 2026-10-05 (**S461 — 31st K on `1b1538f6..60a09bc2`: gates clean; 96 runtime states 0 missing/raw (plants 480/480); NEW template + hidden-node arm; fallbacks, blind spot, RTL 0; TaL AM (gate 2). FIXED `74b2ee0c` (findings S461).**)
 
 - C accessibility (one tool): 2026-10-04 (**S455 — `trope_tutor.html` (S312 → 93 commits: Phrases, the Settings tab, key bar, tune practice). Tab census, a keyboard drill, tour, motion, targets, `lang`, contrast in 4 cells, every zero planted (findings S455). FOUND 26 focus drops + no card headings; FIXED `03cb3ff4`, `12247228`. C-next: generator (S327).**)
 
@@ -690,4 +692,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-05 (**S456 — sliders on 7 tools: name, value heard, keys, size; plants fired (findings S456). FIXED 4. F-next: search fields.**)
 
-**Next session (S461):** **BRANCH/PR: S460 on `claude/zealous-hamilton-qlwsp2` → draft PR #310 (base `a2cf7f8`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v937**, FM **5.59**, SDK **2.116.0**. ⚑ Stalest: K, N, P; O blocked. ⚑ Untaken: smoke-sync clock, two unnamed radio sets, the FM footer line (gate 2).
+**Next session (S462):** **BRANCH/PR: S460–S461 on `claude/zealous-hamilton-qlwsp2` → draft PR #310 (base `a2cf7f8`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v938**, FM **5.59**, SDK **2.116.0**. ⚑ Stalest: N, P, M; O blocked. ⚑ Ready: תל-עם (answered), the weather card (P3). ⚑ Untaken: smoke-sync clock, 2 radio sets, FM footer.
