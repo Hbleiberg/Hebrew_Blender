@@ -81,7 +81,7 @@ Notes:
   `trope/trope_index.json?v=2`, `trope/trope_motifs.json?v=6`, `trope/trope_motifs_hh.json?v=4`, `trope/trope_motifs_haftarah.json?v=1` (written by the phrases builder),
   `trope/trope_phrases.json?v=2` (fetched by the Trope Tutor **and** the Torah Trainer's Trope staff layout — one value),
   `trope/trope_phrase_examples.json?v=1`,
-  `hebrew_emojis.json?v=1`,
+  `hebrew_emojis.json?v=2`,
   `parshiyot.json?v=1`, `pockettorah/manifest.json?v=1`, `pockettorah/aliyah.json?v=1`
   (the last four had originally shipped with no buster at all), `leyning/weekday.json?v=1` and
   `leyning/triennial.json?v=1` (the Torah Trainer's Triennial and Weekday cycles, fetched only once such a
