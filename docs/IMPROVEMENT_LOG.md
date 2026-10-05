@@ -8,6 +8,10 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P3 (**NEW S460 L — gate 2**) | torah_trainer.html | **The FAQ says translations default to JPS 1985** (JSON-LD, visible, Hebrew); since `cb40da9f` the page leaves that copyrighted edition out and defaults to JPS 1917 (findings S460). | found S460
+
+- [ ] P4 (**NEW S460 L — gate 2**) | Hebrew_Font_Maker.html | **The FAQ says "the font engine loads only when you export"**; it also loads to read an imported font's marks and for Preview PDF, and warms after the first traced letter. | found S460
+
 - [ ] P4 (**NEW S458 A — C's**) | classroom_dashboard.html | **The drawer's radio groups have no programmatic question** ("Diaspora, radio button", no "Parsha schedule"). | found S458
 
 - [ ] P4 (**NEW S458**) | scripts/smoke-sync.mjs | **Scenario 2 fails Mon 08:00–09:30, Tue 08:00–08:45 local** (its schedule's preset goes up): pin the clock. | found S458
