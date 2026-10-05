@@ -774,7 +774,8 @@ token, never `var(--gold)`.
 dictionary's 0–100 font-size and Tracing Spacing/Size sliders, the Torah Trainer's and the Trope Tutor's
 semitone sliders — carries `aria-valuetext` set by the same writer that fills the readout (the readout's text,
 or a sentence naming it), and its markup carries the default's text for the first paint. Measure it in
-Chrome's own accessibility tree, never from the markup.
+Chrome's own accessibility tree, never from the markup. Every slider's box is `height:24px` (the native one is
+about 16px, under the WCAG 2.5.8 floor), and the reset button beside it meets the suite's 30px touch floor.
 
 ### 8. Hebrew text carries `lang="he"` (at rendering chokepoints)
 Hebrew content must be marked `lang="he"` so screen readers switch to a Hebrew voice instead of

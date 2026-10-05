@@ -18,15 +18,11 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S455 C**) | trope_tutor.html | **The Learn and Phrases cards carry no heading** (h1 only), so a screen reader cannot jump card to card. | found S455
 
-- [ ] P3 (**NEW S456 F**) | hebrew_blend_generator.html, hebrew_dictionary.html | **The four 0–100 font-size sliders speak their position, not their size** (Tracing Spacing/Size, Hebrew font Size ×2: "26" for "0.52rem"); every other slider speaks its readout's number or an `aria-valuetext`. | found S456
+- [ ] P3 (**NEW S456**) | hebrew_dictionary.html | **The slider rows overflow their box** (TTS Reset across its border): the slider needs `min-width:0`. | found S456
 
-- [ ] P3 (**NEW S456 F**) | flash_cards.html, Hebrew_Font_Maker.html | **Three sliders sit under the 24px floor**: flash's reading speed (16px; its three twins are 24px), FM's node-editor zoom and auto-detect Separation (16px). | found S456
+- [ ] P4 (**NEW S456**) | Hebrew_Font_Maker.html | **The auto-detect Separation slider is blue** (no `accent-color`); the rest are gold. | found S456
 
-- [ ] P4 (**NEW S456 F**) | hebrew_dictionary.html, flash_cards.html | **Slider reset buttons under the floor**: the dictionary's two `.fs-reset` 27×21 (the generator's identical class is 30×30), flash's speed Restore 27×19. | found S456
-
-- [ ] P4 (**NEW S456 F**) | torah_trainer.html | **The pitch sliders say "+1 semitones"** (HE "−1 חצאי טון"): `torah.audio.pitch_valuetext` has no singular, unlike the Key slider's. | found S456
-
-- [ ] P4 (**NEW S456 F**) | torah_trainer.html | **The Trope staff's Key readout writes "-6" with a hyphen**; torah's pitch readouts and the Trope Tutor's identical Key readout write "−6". | found S456
+- [ ] P4 (**NEW S456 F**) | torah_trainer.html | **The Trope staff's Key readout writes "-6" with a hyphen**; its siblings write "−6". | found S456
 
 - [ ] P3 (**S452 D — shared**) | js/ivrit-saves.js | **A hydration fetches changed rows one serial `GET` at a time** (31 rows: 4.4 s at 100 ms RTT). | found S452
 
@@ -298,6 +294,14 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-05 | (S456 close-out) | branch/deploy note | **S456 = F + 4 fixes, PR #308.** No drift; sw v928→v929; no FM bump; gates clean; deferred: micro-feature.
+
+- [x] 2026-10-05 | `0ca1e29b` | hebrew_blend_generator.html, hebrew_dictionary.html | (S456 F) **The 0–100 font-size sliders speak their readout.** | `fix1.mjs` 8 cells: HEAD 0 → every path passes.
+
+- [x] 2026-10-05 | `85e294b2`, `924c9407` | flash, FM, dictionary | (S456 F) **3 sliders → 24px; 3 slider resets → 30px.** | `fix2.mjs`, `fix3.mjs`, 8 cells.
+
+- [x] 2026-10-05 | `e505005e` | torah_trainer.html, locales | (S456 F) **The pitch sliders say "+1 semitone".** | `fix4.mjs` 8 cells: HEAD ±1 0/24 → 24/24.
+
 - [x] 2026-10-04 | (S455 close-out) | branch/deploy note | **S455 = pass C on trope + 4 fixes, PR #308.** Drift none (main `c0f3b57`, keep-alive #22 green); sw v927→v928 (trope, resources); no FM bump; check-i18n + check-inline-js clean; no smokes (no backend file); deferred: micro-feature (gate 1).
 
 - [x] 2026-10-04 | `03cb3ff4`, `12247228` | trope_tutor.html | (S455 C) **The 19 chips keep the focus; a tab switch from inside a tab hands it to the new tab.** | `fix1.mjs` 456/456 body → same chip; `fix2.mjs` 0/8 → 8/8 ×3, controls 16/16.
@@ -330,15 +334,11 @@ _(none)_
 
 - [x] 2026-10-04 | `b37e64c6` | Hebrew_Font_Maker.html | (S452; the 10-03 P2) **A multi-photo pick fills the current tab's empty glyphs.** | `fm-multi.mjs` vs HEAD: English B "א ב B" → "B C D"; one Ctrl+Z; light/dark × 1280/800.
 
-- [x] 2026-10-02 | (S451 close-out) | branch/deploy note | **S451 = pass G on torah + 4 fixes, draft PR #303 (unmerged).** DRIFT: none (main `43570d4`, FM 5.58, SDK 2.116.0, `0003` live, backend files unchanged, keep-alive #20 green). sw v918→v919 (dictionary, generator, flash, torah). No FM bump. check-i18n + check-inline-js clean; sitemap/llms untouched (CSS + one JS line). Deferred: the staff …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-10-02 | `f9ca0909` | hebrew_blend_generator.html | (S451 census) **The sidebar's edge tabs get a dark plate** (#2a4070 / #345090). | `v1.mjs` HEAD vs fix ×4: dark plate/page 1.15→1.67, chevron 7.30:1, real hover, show tab too; light same.
-
-- [x] 2026-10-02 | `5deb5472` | hebrew_dictionary.html | (S451 census) **Show more and the sidebar handle get a dark plate** (#2a4070 / #345090). | `v1.mjs` HEAD vs fix ×4: dark 1.15→1.67, text 7.30:1, real hover; light same.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-05 | **S456** | iters: 1 pass (**F**) + 4 fixes = **5** | tools: generator, dictionary ×2, flash ×2, FM, torah | patterns fixed: slider-value (NEW), sub-floor ×2 | pass run: F | SW: v928→v929
 
 - 2026-10-04 | **S455** | iters: 1 pass (**C**) + 4 fixes = **5** | tools: trope ×2, resources ×2 | patterns fixed: button-focus-lost-to-its-own-rebuild ×2 | pass run: C | SW: v927→v928
 
@@ -368,9 +368,11 @@ _(none)_
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S455 (2026-10-04):** trope, resources S455 · contact, dashboard, torah S454 · generator, ivrit-saves S453 · FM S452 · flash, dictionary S451 · account S449 · index S446 · privacy, terms, 404 S442.
+- **Snapshot S456 (2026-10-05):** generator, dictionary, flash, FM, torah S456 · trope, resources S455 · contact, dashboard S454 · ivrit-saves S453 · account S449 · index S446 · privacy, terms, 404 S442.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`slider-value-announced-as-its-position`** (NEW S456; `0ca1e29b`): ACTIVE, streak 0. Detection: `f456/census.mjs` (readout numbers lack the value, no `aria-valuetext`).
 
 - **`ltr-machine-text-field-typed-rtl`** (NEW S454; `b1eb9659`, 4 carriers): ACTIVE, streak 0. Detection: `type="email|url"` (or JS `.type`) without `dir="ltr"`; a translated placeholder adds `:placeholder-shown { direction: inherit }`.
 
@@ -472,7 +474,7 @@ _(none)_
 
 - **`light-literal-text-on-the-gold-token`** (registered 2026-09-17 (S396)): ACTIVE — **S399 (Pass A), FIRST real sweep: 7 NEW carriers, all on `hebrew_dictionary.html`, all fixed `273f449`; clean streak stays 0.** `color:#fff` (or another light literal) painted on `var(--gold)` …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`sub-floor touch target`**: ACTIVE. **S449: the emoji ▾ + rows FIXED `1ae29189` (the S427 carrier closed). S429: `.wm-mini` FIXED `359e0e2`.** …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`sub-floor touch target`**: ACTIVE. **S456: `85e294b2`, `924c9407`.** **S449: the emoji ▾ + rows FIXED `1ae29189` (the S427 carrier closed). S429: `.wm-mini` FIXED `359e0e2`.** …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`vh-capped-sheet-without-dvh-twin`**: ACTIVE (registered S375). **S385 (Pass A), first re-sweep since the S377 fixes: 20 raw → 0 real, clean streak 1 of the 3 that retire it.** Every raw hit is an exemption the row names — 11 inner scrollers with their own `overflow:auto`, …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -682,6 +684,6 @@ _(none)_
 
 - E freshness/site-health: 2026-10-02 (**S445 — 35th E on the S431→now delta + main's og cards. 17 arms, every plant fired (findings S445). FOUND + FIXED 3 stale doc/comment claims.**)
 
-- F cross-tool consistency: 2026-10-01 (**S442 — the keyboard focus ring on all 14 pages + the 3 shared modules' injected rings: a real-Tab walk (EN light/dark 1280, HE light/dark 800 on 6), ring colour and contrast against its surface, transitions disabled; HEAD as the control (58 light stops under 3:1, 0 dark). FIXED `91fede71` (the `--focus-ring` token), `a46342c1` (modules); logged 2 P4 …[full text: IMPROVEMENT_ARCHIVE.md]
+- F cross-tool consistency: 2026-10-05 (**S456 — sliders on 7 tools: name, value heard, keys, size; plants fired (findings S456). FIXED 4. F-next: search fields.**)
 
-**Next session (S456):** **BRANCH/PR: S452–S455 on `claude/improveloop-s452` → draft PR #308 (base `c0f3b57`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v928**, FM **5.59**, SDK **2.116.0**. ⚑ Stalest: F (S442), B (S443), A (S444); O blocked. ⚑ Untaken: the font-cap note (P2, gate 2), the saves serial fetches, trope's Try again focus and card headings (P4).
+**Next session (S457):** **BRANCH/PR: S452–S456 on `claude/improveloop-s452` → draft PR #308 (base `c0f3b57`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v929**, FM **5.59**, SDK **2.116.0**. ⚑ Stalest: B (S443), A (S444), E (S445); O blocked. ⚑ Untaken: the font-cap note (P2, gate 2), the dictionary's slider rows (P3).
