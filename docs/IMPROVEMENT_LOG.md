@@ -8,6 +8,14 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P2 (**NEW S458 A — pattern `native-input-display-none-under-its-label`, NEW**) | classroom_dashboard.html | **The drawer's 27 segmented radios (date format, Hebrew-date script, parsha schedule, clock, day names, weather…) take no keyboard focus and are absent for screen readers**: `.radio-group input { display:none }`; torah and trope hide theirs 1px/opacity 0 with a label ring. | found S458
+
+- [ ] P3 (**NEW S458 A — pattern `stale-tab-flush-writes-its-old-copy`, NEW; c1714e2f/027fc597's class**) | flash_cards.html | **Signed in, closing an older flash-cards tab writes its settings over a newer tab's** (`flush: saveSettings` from the module's final flush): the device-only fields (audio, voice speed, home button, two-sided) stay reverted. | found S458
+
+- [ ] P3 (**NEW S458 A — `non-finite-number-from-a-loaded-file`**) | Hebrew_Font_Maker.html | **A project whose sheet carries a raw `fitScale` of `1e999` loads it as Infinity, and the next letter boxed by hand on that sheet gets a NaN transform** (`migrateProject` never checks it). | found S458
+
+- [ ] P4 (**NEW S458 A — C's**) | classroom_dashboard.html | **The drawer's radio groups carry no programmatic question** (no `role=radiogroup` name): once reachable, "Diaspora, radio button" is heard without "Parsha schedule"; torah's and trope's groups are named. | found S458
+
 - [ ] P4 (**NEW S457 B — G's**) | hebrew_blend_generator.html | **Export PDF names an untitled worksheet "Hebrew_Blends_Hebrew_Blends.pdf"** (the title, then the same suffix). | found S457
 
 - [ ] P2 (**NEW S454 H — gate 2**) | resources.html | **At ten My Fonts, "Use in IvritSuite" silently drops the oldest** (a teacher's own font; the toast says "added"). | found S454
