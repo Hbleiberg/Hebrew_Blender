@@ -8,12 +8,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P3 (**NEW S459 E**) | source-data/hebrew_emojis.csv | **The emoji corpus's build input keeps the 13 "yy" transliterations `a86b5a16` fixed in the JSON** (every other cell agrees): a rebuild brings them back. | found S459
-
-- [ ] P4 (**NEW S459 E**) | docs/reference/ops.md | **The `/data/` census says `hebrew_emojis.json?v=1`; the three pages fetch `?v=2`.** | found S459
-
-- [ ] P4 (**NEW S459 E**) | README.md | **The data table says the emoji corpus serves the dictionary and flash cards; the generator's Matching worksheet loads it too.** | found S459
-
 - [ ] P4 (**NEW S458 A — C's**) | classroom_dashboard.html | **The drawer's radio groups have no programmatic question** ("Diaspora, radio button", no "Parsha schedule"). | found S458
 
 - [ ] P4 (**NEW S458**) | scripts/smoke-sync.mjs | **Scenario 2 fails Mon 08:00–09:30, Tue 08:00–08:45 local** (its schedule's preset goes up): pin the clock. | found S458
@@ -27,8 +21,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S455 C**) | trope_tutor.html | **Both Try again buttons drop the focus after a retry that works** (index and chart; failure path only). | found S455
 
 - [ ] P4 (**NEW S455 C**) | trope_tutor.html | **The Learn and Phrases cards carry no heading** (h1 only), so a screen reader cannot jump card to card. | found S455
-
-- [ ] P3 (**S452 D — shared**) | js/ivrit-saves.js | **A hydration fetches changed rows one serial `GET` at a time** (31 rows: 4.4 s at 100 ms RTT). | found S452
 
 - [ ] P3 (**NEW 2026-10-03, gate 2**) | hebrew_blend_generator.html | **"Exclude Repeats" promises that no two blends share a letter pair**, but `drawBlends` only rejects a blend repeating one letter (`first === second`) and 1-Letter never reads the switch: fix the behaviour or the tooltip. | found 2026-10-03
 
@@ -298,6 +290,10 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-05 | (S459 close-out) | branch/deploy note | **S459 = E + 4 fixes, PR #308.** No drift (main `c0f3b57`, keep-alive #22 green); sw v931→v932 (ivrit-saves); no FM bump; check-i18n + check-inline-js clean; 7 smokes green; deferred: micro-feature.
+
+- [x] 2026-10-05 | `81aff4bf`, `0dbb0002` | source-data/hebrew_emojis.csv, ops.md, README | (S459 E) **The emoji CSV source keeps `a86b5a16`'s 13 fixes; ops.md says `?v=2`; README names every corpus consumer.** | CSV = JSON 13 → 0; census arm 1 → 0.
+
 - [x] 2026-10-05 | (S458 close-out) | branch/deploy note | **S458 = A (+A2) + 4 fixes, PR #308.** No drift; sw v930→v931; no FM bump; gates clean; 4 smokes green; deferred: micro-feature.
 
 - [x] 2026-10-05 | `ea43be7e`, `070582d8`, `2bb2ead0`, `6409fa98` | dashboard, flash, FM, generator | (S458) **Radios take the keyboard; an old tab no longer reverts a newer one; a non-finite sheet scale no longer NaNs a letter; Export PDF stops doubling its name.** | findings S458.
@@ -322,19 +318,11 @@ _(none)_
 
 - [x] 2026-10-04 | `03cb3ff4`, `12247228` | trope_tutor.html | (S455 C) **The 19 chips keep the focus; a tab switch from inside a tab hands it to the new tab.** | `fix1.mjs` 456/456 body → same chip; `fix2.mjs` 0/8 → 8/8 ×3, controls 16/16.
 
-- [x] 2026-10-04 | `5b22c6f5`, `8ca47048` | resources.html | (S454 H) **The Suggest form opens with an empty status; the IvritSuite card stays in this tab.** | `fix3.mjs` stale 8/8 ×3 → 0, in-flight kept; `fix4.mjs` _blank → _self 8/8.
-
-- [x] 2026-10-04 | (S454 close-out) | branch/deploy note | **S454 = pass H + 4 fixes, PR #308.** Drift none; sw v926→v927; no FM bump; no smokes (no backend file); deferred: micro-feature, gate 2 ×3.
-
-- [x] 2026-10-04 | `ab9a133e` | torah_trainer.html | (S454) **The translation-version status lines follow a language switch.** | `ttver.mjs` HEAD 3/3 stay English → 12/12 follow.
-
-- [x] 2026-10-04 | `3378bb1f` | resources.html | (S454 H) **The Suggest form takes an address typed without https://.** | `fix2.mjs` 8 cells: 24/24 sent (HEAD 0); a bare word refused.
-
-- [x] 2026-10-04 | `b1eb9659`, `f8706492` | resources.html, contact.html, classroom_dashboard.html | (S454 H) **URL/e-mail fields type LTR in Hebrew; the YouTube field takes the page's style.** | `bidi.mjs` 9/9 → 0, `fix1.mjs` 0 (HEAD 16); `dashurl.mjs` 0 of 7 props off (HEAD 6–7).
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-05 | **S459** | iters: 1 pass (**E**) + 4 fixes = **5** | tools: source-data, docs, ivrit-saves, smoke-migration | patterns fixed: — | pass run: E | SW: v931→v932
 
 - 2026-10-05 | **S458** | iters: 1 pass (**A**, +A2) + 4 fixes = **5** | tools: dashboard, flash, FM, generator | patterns fixed: 2 NEW, non-finite ×1 | pass run: A | SW: v930→v931
 
@@ -370,7 +358,7 @@ _(none)_
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S458 (2026-10-05):** dashboard, flash, FM, generator S458 · ivrit-saves, dictionary, torah S457 · trope, resources S455 · contact S454 · account S449 · index S446 · privacy, terms, 404 S442.
+- **Snapshot S459 (2026-10-05):** ivrit-saves S459 · dashboard, flash, FM, generator S458 · dictionary, torah S457 · trope, resources S455 · contact S454 · account S449 · index S446 · privacy, terms, 404 S442.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -690,8 +678,8 @@ _(none)_
 
 - H teacher walkthrough / paper-cuts (one tool): 2026-10-04 (**S454 — `resources.html` (S305 →), 3 errands by real clicks, EN + HE dark 800. FOUND 8 + 1 seed; FIXED `b1eb9659`, `3378bb1f`. H-next: index (S323).**)
 
-- E freshness/site-health: 2026-10-02 (**S445 — 35th E on the S431→now delta + main's og cards. 17 arms, every plant fired (findings S445). FOUND + FIXED 3 stale doc/comment claims.**)
+- E freshness/site-health: 2026-10-05 (**S459 — 36th E on `dd23c8de..665d7b56` (80 commits): 25 arms, 19 plants fired (findings S459). FOUND the emoji corpus's stale CSV source, ops.md `?v=`, README consumers; FIXED all 3.**)
 
 - F cross-tool consistency: 2026-10-05 (**S456 — sliders on 7 tools: name, value heard, keys, size; plants fired (findings S456). FIXED 4. F-next: search fields.**)
 
-**Next session (S459):** **BRANCH/PR: S452–S458 on `claude/improveloop-s452` → draft PR #308 (base `c0f3b57`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v931**, FM **5.59**, SDK **2.116.0**. ⚑ Stalest: E, L, K; O blocked. ⚑ Untaken: font-cap note (P2, gate 2), radio-group names (P4). ⚑ smoke-sync 2 is red Mon 08:00–09:30 / Tue 08:00–08:45 local (findings S458).
+**Next session (S460):** **BRANCH/PR: S452–S459 on `claude/improveloop-s452` → draft PR #308 (base `c0f3b57`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v932**, FM **5.59**, SDK **2.116.0**. ⚑ Stalest: L, K, N; O blocked. ⚑ Untaken: font-cap note (P2, gate 2), radio-group names (P4), smoke-sync clock (P4).
