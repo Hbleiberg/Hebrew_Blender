@@ -1724,9 +1724,12 @@ function computeCopyText(w, mode) {
 function getWordCopyText(w) { return computeCopyText(w, copyMode); }
 function wordBulkText(w) { return getWordCopyText(w); }
 
+function renderBulkCount() {   // applyI18n calls it too: the markup's "0 selected" is only the pre-JS fallback
+  document.getElementById('bulkCount').textContent = I18n.t('dictionary.copy.bulk_count', { count: bulkSelected.size });
+}
 function updateBulkTextarea() {
   document.getElementById('bulkTextarea').value = [...bulkSelected.values()].map(e => e.text).join('\n');
-  document.getElementById('bulkCount').textContent = I18n.t('dictionary.copy.bulk_count', { count: bulkSelected.size });
+  renderBulkCount();
   updateExportState();
 }
 
@@ -5400,6 +5403,7 @@ function applyI18n() {
   initPosFilters();
   initFontSelector();
   updateExportState();   // export count is built via t() at init (pre-ready), so it needs a re-render here
+  renderBulkCount();     // the Bulk Copy count, written otherwise only when a card is ticked
   updatePrintSizeNote();   // t()-built too, and the wlFilterOverride branch below never reaches dictAfterFilter
   if (typeof window._updateMobileFiltersBtn === 'function') window._updateMobileFiltersBtn();
   positionSidebarTab();   // the live language switch flips dir without a resize event
