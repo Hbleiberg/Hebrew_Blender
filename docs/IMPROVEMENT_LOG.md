@@ -18,6 +18,16 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S455 C**) | trope_tutor.html | **The Learn and Phrases cards carry no heading** (h1 only), so a screen reader cannot jump card to card. | found S455
 
+- [ ] P3 (**NEW S456 F**) | hebrew_blend_generator.html, hebrew_dictionary.html | **The four 0–100 font-size sliders speak their position, not their size** (Tracing Spacing/Size, Hebrew font Size ×2: "26" for "0.52rem"); every other slider speaks its readout's number or an `aria-valuetext`. | found S456
+
+- [ ] P3 (**NEW S456 F**) | flash_cards.html, Hebrew_Font_Maker.html | **Three sliders sit under the 24px floor**: flash's reading speed (16px; its three twins are 24px), FM's node-editor zoom and auto-detect Separation (16px). | found S456
+
+- [ ] P4 (**NEW S456 F**) | hebrew_dictionary.html, flash_cards.html | **Slider reset buttons under the floor**: the dictionary's two `.fs-reset` 27×21 (the generator's identical class is 30×30), flash's speed Restore 27×19. | found S456
+
+- [ ] P4 (**NEW S456 F**) | torah_trainer.html | **The pitch sliders say "+1 semitones"** (HE "−1 חצאי טון"): `torah.audio.pitch_valuetext` has no singular, unlike the Key slider's. | found S456
+
+- [ ] P4 (**NEW S456 F**) | torah_trainer.html | **The Trope staff's Key readout writes "-6" with a hyphen**; torah's pitch readouts and the Trope Tutor's identical Key readout write "−6". | found S456
+
 - [ ] P3 (**S452 D — shared**) | js/ivrit-saves.js | **A hydration fetches changed rows one serial `GET` at a time** (31 rows: 4.4 s at 100 ms RTT). | found S452
 
 - [ ] P3 (**NEW 2026-10-03, gate 2**) | hebrew_blend_generator.html | **"Exclude Repeats" promises that no two blends share a letter pair**, but `drawBlends` only rejects a blend repeating one letter (`first === second`) and 1-Letter never reads the switch: fix the behaviour or the tooltip. | found 2026-10-03
