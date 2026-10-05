@@ -1194,7 +1194,7 @@ footer details > summary:hover{text-decoration:underline;}   /* FAQ / How-To row
           <div class="adv-section-body">
               <div class="font-size-row">
                 <label class="fs-label" for="hebFontSizeSlider" data-i18n="dictionary.advanced.font_size">Size</label>
-                <input type="range" id="hebFontSizeSlider" min="0" max="100" value="50" step="1"
+                <input type="range" id="hebFontSizeSlider" min="0" max="100" value="50" step="1" aria-valuetext="2.00rem"
                        oninput="setHebFontSize(this.value)" ondblclick="resetHebFontSize()">
                 <span class="fs-val" id="hebFontSizeVal">2.00rem</span>
                 <button class="fs-reset" onclick="resetHebFontSize()" title="Reset to default" aria-label="Reset to default" data-i18n-title="dictionary.advanced.font_size_reset_title" data-i18n-aria-label="dictionary.advanced.font_size_reset_title"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
@@ -4807,6 +4807,9 @@ function setHebFontSize(val) {
   document.documentElement.style.setProperty('--heb-font-size', size + 'rem');
   const el = document.getElementById('hebFontSizeVal');
   if (el) el.textContent = size + 'rem';
+  // The slider's 0–100 is a position: a screen reader hears the size the readout shows (the generator's shape)
+  const sl = document.getElementById('hebFontSizeSlider');
+  if (sl) sl.setAttribute('aria-valuetext', size + 'rem');
   try { localStorage.setItem('hebrewBlender_hebFontSize', val); } catch(e) {}
 }
 

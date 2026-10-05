@@ -2872,14 +2872,14 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           <div style="border-top:1px solid var(--border);margin:10px 0 6px;"></div>
           <div class="font-size-row">
             <span class="fs-label" data-i18n="worksheet.modes.tracing.spacing">Spacing</span>
-            <input type="range" id="traceSpacing" min="0" max="100" value="25" step="1"
+            <input type="range" id="traceSpacing" min="0" max="100" value="25" step="1" aria-valuetext="0.50rem"
                    oninput="setTraceSpacing(this.value)" ondblclick="resetTraceSpacing()">
             <span class="fs-val" id="traceSpacingVal">0.50rem</span>
             <button class="fs-reset" onclick="resetTraceSpacing()" title="Reset to default" aria-label="Reset to default" data-i18n-aria-label="worksheet.common.reset_default" data-i18n-title="worksheet.common.reset_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
           </div>
           <div class="font-size-row">
             <span class="fs-label" data-i18n="worksheet.common.size">Size</span>
-            <input type="range" id="traceSize" min="0" max="100" value="50" step="1"
+            <input type="range" id="traceSize" min="0" max="100" value="50" step="1" aria-valuetext="2.00rem"
                    oninput="setHebFontSize(this.value)" ondblclick="resetTraceSize()">
             <span class="fs-val" id="traceSizeVal">2.00rem</span>
             <button class="fs-reset" onclick="resetTraceSize()" title="Reset to default" aria-label="Reset to default" data-i18n-aria-label="worksheet.common.reset_default" data-i18n-title="worksheet.common.reset_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
@@ -3705,7 +3705,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
             <div class="panel-body">
               <div class="font-size-row">
                 <label class="fs-label" for="hebFontSizeSlider" data-i18n="worksheet.common.size">Size</label>
-                <input type="range" id="hebFontSizeSlider" min="0" max="100" value="50" step="1"
+                <input type="range" id="hebFontSizeSlider" min="0" max="100" value="50" step="1" aria-valuetext="2.00rem"
                        oninput="setHebFontSize(this.value)" ondblclick="resetHebFontSize()">
                 <span class="fs-val" id="hebFontSizeVal">2.00rem</span>
                 <button class="fs-reset" onclick="resetHebFontSize()" title="Reset to default" aria-label="Reset to default" data-i18n-title="worksheet.common.reset_default" data-i18n-aria-label="worksheet.common.reset_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
@@ -10459,11 +10459,14 @@ function setTraceDarkness(v)  { traceDarkness  = v; syncTraceButtons(); renderTr
 
 // Spacing slider — sets the gap between trace copies (drives --trace-gap).
 // Live: re-renders so fill-line copy counts recompute for the new gap.
+// The slider's 0–100 is a position, so its aria-valuetext carries the readout: a screen reader hears "0.52rem", not "26".
 function setTraceSpacing(val) {
   const gap = (Number(val) * 0.02).toFixed(2);
   document.documentElement.style.setProperty('--trace-gap', gap + 'rem');
   const el = document.getElementById('traceSpacingVal');
   if (el) el.textContent = gap + 'rem';
+  const sl = document.getElementById('traceSpacing');
+  if (sl) sl.setAttribute('aria-valuetext', gap + 'rem');
   renderTracingIfActive();
 }
 function resetTraceSpacing() {
@@ -13455,6 +13458,8 @@ function setHebFontSize(val) {
   if (trSl && trSl.value != val) trSl.value = val;
   const trVal = document.getElementById('traceSizeVal');
   if (trVal) trVal.textContent = size + 'rem';
+  // Both sliders speak the size their readout shows, not their 0–100 position (as setTraceSpacing)
+  [mainSl, trSl].forEach(s => { if (s) s.setAttribute('aria-valuetext', size + 'rem'); });
   try { localStorage.setItem('hebrewBlender_hebFontSize', val); } catch(e) {}
   // Other worksheets restyle live via CSS; tracing must re-render so fill-line
   // copy counts and height-based pagination recompute for the new glyph size.
