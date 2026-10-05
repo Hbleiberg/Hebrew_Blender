@@ -9564,7 +9564,9 @@ async function exportPDF() {
       }
     }
 
-    const filename = `${title.replace(/\s+/g, '_')}_Hebrew_Blends.pdf`;
+    // "Week_2_Hebrew_Blends.pdf"; a title that already ends with the name (the default "Hebrew Blends") is not doubled
+    const stem = title.replace(/\s+/g, '_');
+    const filename = /(^|_)Hebrew_Blends$/i.test(stem) ? `${stem}.pdf` : `${stem}_Hebrew_Blends.pdf`;
     pdf.save(filename);
     if (_previewNoticeLast && _previewNoticeLast.render === pdfFailedNotice) hidePreviewNotice();   // a retry that worked (back online) takes the failure note away
   } catch (err) {
