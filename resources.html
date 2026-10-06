@@ -277,11 +277,18 @@ footer a:hover{text-decoration:underline;}   /* the only hover feedback the foot
 }
 
 /* ── Suggest a Resource: CTA button + modal ── */
-.filter-bar{position:relative;}
-.suggest-btn{position:absolute;inset-inline-end:18px;bottom:12px;display:inline-flex;align-items:center;gap:6px;background:var(--gold);color:var(--navy);border:none;border-radius:8px;padding:8px 16px;font-size:0.88rem;font-weight:700;font-family:'Source Sans 3',sans-serif;cursor:pointer;transition:background 0.15s,transform 0.05s;}
+/* The CTA was absolutely placed in the bar's corner, which reserves no room: from 862 to ~1000px it
+   sat on the last row's end chips ("Adult / Teacher" hidden and unclickable at 870). A grid gives it a
+   column beside the LAST filter row only (the rows above keep the full width), so that row wraps
+   before reaching it at any label length. The negative block margins keep the old geometry: the
+   button never grows the row, and its bottom stays 12px from the bar's edge. */
+.filter-bar{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:8px;}
+.filter-bar > .filter-row{grid-column:1 / -1;}
+.filter-bar > .filter-row:last-of-type{grid-column:1;}
+.suggest-btn{grid-column:2;align-self:end;margin-block:-12px -4px;display:inline-flex;align-items:center;gap:6px;background:var(--gold);color:var(--navy);border:none;border-radius:8px;padding:8px 16px;font-size:0.88rem;font-weight:700;font-family:'Source Sans 3',sans-serif;cursor:pointer;transition:background 0.15s,transform 0.05s;}
 .suggest-btn:hover{background:var(--gold-light);}
 .suggest-btn:active{transform:scale(0.98);}
-@media(max-width:860px){.suggest-btn{position:static;margin-top:6px;align-self:flex-start;}}
+@media(max-width:860px){.filter-bar > .filter-row:last-of-type{grid-column:1 / -1;}.suggest-btn{grid-column:1 / -1;justify-self:start;align-self:auto;margin:6px 0 0;}}
 
 .sg-backdrop{display:none;position:fixed;inset:0;background:rgba(13,18,32,0.5);z-index:200;align-items:center;justify-content:center;}
 .sg-backdrop.open{display:flex;}
