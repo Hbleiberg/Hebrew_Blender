@@ -374,7 +374,7 @@ body.dark .fp-no{color:#e06b5b;}
    matching JS block (keep byte-identical across carriers; carriers:
    resources.html, hebrew_dictionary.html, Hebrew_Font_Maker.html,
    classroom_dashboard.html). Colors
-   ride the suite tokens (with fallbacks), so dark mode needs no extra rules;
+   ride the suite tokens (with fallbacks), plus one dark rule for the selected states;
    the reduced-motion tail is self-contained so the block stays portable to
    pages without a universal neutralizer. ═══════════════════════════════════ */
 .hk-toggle{display:inline-flex;align-items:center;gap:6px;margin-block-start:10px;font-size:0.8rem;font-weight:600;padding:6px 14px;border:1.5px solid var(--border,#c8bfa8);border-radius:20px;background:transparent;color:var(--text,#1a2744);cursor:pointer;font-family:inherit;transition:border-color 0.15s,color 0.15s;}
@@ -388,6 +388,9 @@ body.dark .fp-no{color:#e06b5b;}
 .hk-tab{font-size:0.74rem;font-weight:600;padding:4px 12px;border:1.5px solid var(--border,#c8bfa8);border-radius:16px;background:var(--white,#fff);color:var(--text,#1a2744);cursor:pointer;font-family:inherit;transition:border-color 0.15s,background 0.15s,color 0.15s;}
 .hk-tab:hover{border-color:var(--gold,#c9922a);}
 .hk-tab.active{background:var(--navy,#1a2744);border-color:var(--navy,#1a2744);color:#fff;}
+/* Every carrier keeps --navy at its light #1a2744 in dark, 1.15:1 on the dark page, so the open
+   toggle and the selected tab showed no plate there; both take the suite's dark selected-tab pair. */
+body.dark .hk-toggle[aria-expanded="true"],body.dark .hk-tab.active{background:#2a4070;border-color:#4a6aaa;}
 .hk-layout{margin-inline-start:auto;font-size:0.68rem;padding:3px 9px;min-block-size:24px;border:1px solid var(--border,#c8bfa8);border-radius:12px;background:transparent;color:var(--muted,#6b6050);cursor:pointer;font-family:inherit;transition:border-color 0.15s,color 0.15s;}
 .hk-layout:hover{border-color:var(--gold,#c9922a);color:var(--gold-text,#7f5a13);}
 .hk-hint{font-size:0.72rem;color:var(--muted,#6b6050);margin-block-end:8px;}

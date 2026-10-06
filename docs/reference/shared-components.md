@@ -101,6 +101,9 @@ shared component so any tool can adopt it.
 - Everything is `HK_`/`hk`-prefixed and self-contained (own `hkSetPressed`, own `HK_GLYPH_CARRIER`),
   so the block drops safely into pages that already define `GLYPH_CARRIER`, `setPressed`, `esc`, etc.
   Per-page wiring lives **below** the end marker (the My-Fonts-uploader convention).
+- Its colours ride the suite tokens, with one exception: every carrier keeps `--navy` at its light value
+  in dark, so the block's single `body.dark` rule gives the open toggle and the selected tab the suite's
+  dark selected-tab pair (`#2a4070`, border `#4a6aaa`) — without it both lose their plate on the dark page.
 
 ### Adding it to another tool (the whole recipe)
 1. Copy the CSS block into the page `<style>` and the JS block into the inline script.
