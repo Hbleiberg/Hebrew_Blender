@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<!-- Preview of the nitzavim parasha emoji (ParashaEmojis.md): the holiday-icons palette, light and dark. -->
+<style>
+svg{--hol-line:#1a2744;--hol-gold:#c9922a;--hol-gold-lt:#f0d080;--hol-paper:#fffaf0;--hol-navy:#2a3b66;--hol-red:#c0392b;--hol-green:#3a7d44;--hol-blue:#3b6fb6;--hol-flame:#f0a030;--hol-ground:#fdf8ef;stroke:var(--hol-line);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+@media (prefers-color-scheme:dark){svg{--hol-line:#e8e0d0;--hol-gold:#e0a832;--hol-gold-lt:#f5d97a;--hol-paper:#e8e0d0;--hol-navy:#5a6d9c;--hol-red:#e0584a;--hol-green:#5aa865;--hol-blue:#6a9ae0;--hol-flame:#f6b84a;--hol-ground:#161c2a}}
+</style>
+<path d="M7 14 H31 A10.4 10.4 0 0 1 31 34.8 H23" stroke-width="7.8"/><path d="M7 14 H31 A10.4 10.4 0 0 1 31 34.8 H23" stroke="var(--hol-gold-lt)" stroke-width="5.6"/><path d="M11 14 H31 A10.4 10.4 0 0 1 31 34.8 H26.4" stroke="var(--hol-green)" stroke-width="2.4"/><path d="M29.2 31.4 L24.8 34.8 L29.2 38.2" stroke="var(--hol-green)" stroke-width="2.4"/><rect x="5.6" y="29" width="17" height="13" fill="var(--hol-paper)"/><path d="M4 30.2 L14.1 21 L24.2 30.2Z" fill="var(--hol-red)"/><rect x="7.6" y="32.4" width="5.2" height="5.6" rx="0.6" fill="var(--hol-gold-lt)" stroke="var(--hol-navy)" stroke-width="1.4"/><path d="M10.2 32.4 V38 M7.6 35.2 H12.8" stroke="var(--hol-navy)" stroke-width="1.2"/><path d="M15.2 42 V35.4 Q15.2 33 17.6 33 Q20 33 20 35.4 V42Z" fill="var(--hol-navy)" stroke-width="1.6"/><path d="M4.2 42.6 H25.2" stroke-width="2.4"/>
+</svg>

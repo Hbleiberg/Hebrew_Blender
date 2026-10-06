@@ -64,17 +64,17 @@ what it shows, why it was chosen, and its markup.
 | 41 | Pinchas | פִּינְחָס | <img src="docs/parasha-emojis/pinchas.svg" width="28" height="28" alt=""> | Passing the staff to Joshua |
 | 42 | Matot | מַטּוֹת | <img src="docs/parasha-emojis/matot.svg" width="28" height="28" alt=""> | Purifying vessels |
 | 43 | Masei | מַסְעֵי | <img src="docs/parasha-emojis/masei.svg" width="28" height="28" alt=""> | The journeys |
-| 44 | Devarim | דְּבָרִים |  |  |
-| 45 | Va'etchanan | וָאֶתְחַנַּן |  |  |
-| 46 | Eikev | עֵקֶב |  |  |
-| 47 | Re'eh | רְאֵה |  |  |
-| 48 | Shoftim | שֹׁפְטִים |  |  |
-| 49 | Ki Teitzei | כִּי-תֵצֵא |  |  |
-| 50 | Ki Tavo | כִּי-תָבוֹא |  |  |
-| 51 | Nitzavim | נִצָּבִים |  |  |
-| 52 | Vayeilech | וַיֵּלֶךְ |  |  |
-| 53 | Ha'azinu | הַאֲזִינוּ |  |  |
-| 54 | V'Zot HaBerachah | וְזֹאת הַבְּרָכָה |  |  |
+| 44 | Devarim | דְּבָרִים | <img src="docs/parasha-emojis/devarim.svg" width="28" height="28" alt=""> | At the edge of the land |
+| 45 | Va'etchanan | וָאֶתְחַנַּן | <img src="docs/parasha-emojis/vaetchanan.svg" width="28" height="28" alt=""> | The mezuzah |
+| 46 | Eikev | עֵקֶב | <img src="docs/parasha-emojis/eikev.svg" width="28" height="28" alt=""> | The seven species |
+| 47 | Re'eh | רְאֵה | <img src="docs/parasha-emojis/reeh.svg" width="28" height="28" alt=""> | Open your hand |
+| 48 | Shoftim | שֹׁפְטִים | <img src="docs/parasha-emojis/shoftim.svg" width="28" height="28" alt=""> | Justice, justice |
+| 49 | Ki Teitzei | כִּי-תֵצֵא | <img src="docs/parasha-emojis/kiteitzei.svg" width="28" height="28" alt=""> | A railing for your roof |
+| 50 | Ki Tavo | כִּי-תָבוֹא | <img src="docs/parasha-emojis/kitavo.svg" width="28" height="28" alt=""> | The first-fruits basket |
+| 51 | Nitzavim | נִצָּבִים | <img src="docs/parasha-emojis/nitzavim.svg" width="28" height="28" alt=""> | Returning |
+| 52 | Vayeilech | וַיֵּלֶךְ | <img src="docs/parasha-emojis/vayeilech.svg" width="28" height="28" alt=""> | A quill writing the Torah |
+| 53 | Ha'azinu | הַאֲזִינוּ | <img src="docs/parasha-emojis/haazinu.svg" width="28" height="28" alt=""> | The song of Moses |
+| 54 | V'Zot HaBerachah | וְזֹאת הַבְּרָכָה | <img src="docs/parasha-emojis/vzothaberachah.svg" width="28" height="28" alt=""> | The Simchat Torah flag |
 
 ## Genesis
 
@@ -903,4 +903,216 @@ route to a tent shows the whole forty-year journey that closes the book of Numbe
 
 ```html
 <path d="M9.6 8.2 C15.6 6.2 20.4 9.6 26.6 8.2 C32.6 6.8 40.2 5.6 42.8 10.8 C44.8 15 41.8 19.4 43 24.8 C44.2 30.2 45.4 36.4 41.4 40.2 C37.4 44 30.4 40.8 24.6 42.4 C18.4 44.2 10.4 45.4 6.4 41.4 C3.2 37.8 6.4 32.6 5 27.2 C3.6 21.8 3 15.6 5.4 11.8 C6.6 10 7.8 8.8 9.6 8.2Z" fill="var(--hol-gold-lt)"/><path d="M10.8 37.2 C19.4 40.2 30.2 38.6 32.2 33.8 C34.2 29 15.6 30.2 13.4 24.8 C11.4 19.4 19.6 15.4 26.4 19.6" stroke="var(--hol-navy)" stroke-width="1.8" stroke-dasharray="2.2 2.4"/><circle cx="10.8" cy="37.2" r="2.9" fill="var(--hol-red)" stroke-width="1.5"/><circle cx="31.7" cy="34.8" r="2.7" fill="var(--hol-blue)" stroke-width="1.5"/><circle cx="21.5" cy="28.9" r="2.6" fill="var(--hol-green)" stroke-width="1.5"/><circle cx="15.8" cy="19" r="2.5" fill="var(--hol-gold)" stroke-width="1.5"/><path d="M34.2 11.4 L34.2 9" stroke-width="1.6"/><path d="M34.2 11.4 L40.4 23 Q40.8 24 41.2 24 L27.2 24 Q27.6 24 28 23Z" fill="var(--hol-red)" stroke-width="1.8"/><path d="M34.2 18.2 L35.6 24 L32.8 24Z" fill="var(--hol-navy)" stroke-width="1.2"/>
+```
+
+## Deuteronomy
+
+### 44. Devarim · דְּבָרִים
+
+<img src="docs/parasha-emojis/devarim.svg" width="96" height="96" alt="The Jordan River with green hills and a palm tree beyond">
+
+**Reading:** Deuteronomy 1:1–3:22
+
+**Summary:** On the plains of Moab, Moses begins his farewell speeches, retelling the forty years in the
+wilderness, from appointing judges to the sin of the spies and the victory over the giant king Og, as the people
+prepare to enter the land.
+
+**Emoji: At the edge of the land.** The people camp by the Jordan, with the land they are about to enter on the
+other side (Deuteronomy 1:1–5).
+
+**Why this emoji:** Devarim opens with the people camped by the Jordan, about to enter the land after forty
+years, and all of Moses’ speeches look across that river, so the river with the land beyond it sets the scene for
+the whole book.
+
+```html
+<path d="M13.5 16.4 L10.9 14.9 M16.4 13.5 L14.9 10.9 M20.4 12.4 L20.4 9.4 M24.4 13.5 L25.9 10.9 M27.3 16.4 L29.9 14.9" stroke-width="1.8"/><circle cx="20.4" cy="20.4" r="5.6" fill="var(--hol-gold-lt)"/><path d="M4.4 31 L4.4 21.4 C8.6 16.4 15.4 16.4 20.4 21.2 C24.6 16.2 31.6 13.6 37.2 16.2 C40 17.4 42.2 19.4 43.6 21.6 L43.6 31Z" fill="var(--hol-green)"/><path d="M34.8 28.8 Q36 21.6 35.6 14.4" stroke-width="3.9"/><path d="M34.8 28.8 Q36 21.6 35.6 14.4" stroke="var(--hol-gold)" stroke-width="2.1"/><path d="M35.6 14.4 Q30.2 13.5 28.9 18.8 Q32.4 16.9 35.6 14.4Z M35.6 14.4 Q41 13.5 42.3 18.8 Q38.8 16.9 35.6 14.4Z M35.6 14.4 Q33.7 10.3 29.9 12.7 Q32.6 14.2 35.6 14.4Z M35.6 14.4 Q37.5 10.3 41.3 12.7 Q38.6 14.2 35.6 14.4Z M35.6 14.4 Q33.2 11.4 36 8.7 Q37.2 11.7 35.6 14.4Z" fill="var(--hol-green)" stroke-width="1.3"/><path d="M4.4 28.8 C11 27.4 17 29.4 24 28.4 C31 27.4 37 27.6 43.6 28 L43.6 35.4 C37 35.8 31 34.6 24 35.6 C17 36.6 11 35.2 4.4 36.6Z" fill="var(--hol-blue)"/><path d="M10.4 32.4 Q12.4 31.1 14.4 32.4 Q16.4 33.7 18.4 32.4 M28.6 31.6 Q30.6 30.3 32.6 31.6 Q34.6 32.9 36.6 31.6" stroke="var(--hol-paper)" stroke-width="1.5"/><path d="M4.4 36.2 C11 34.8 17 36.2 24 35.2 C31 34.2 37 35.4 43.6 35 L43.6 41.4 Q43.6 43.6 41.4 43.6 L6.6 43.6 Q4.4 43.6 4.4 41.4Z" fill="var(--hol-gold-lt)"/><path d="M10 41.4 Q9.6 39.4 7.8 38.2 M10.4 41.4 L10.6 37.4 M10.8 41.4 Q11.4 39.4 13.2 38.4 M30.2 40.6 Q29.9 38.8 28.3 37.7 M30.6 40.6 L30.8 37 M31 40.6 Q31.5 38.8 33.1 37.9" stroke="var(--hol-green)" stroke-width="1.6"/>
+```
+
+### 45. Va'etchanan · וָאֶתְחַנַּן
+
+<img src="docs/parasha-emojis/vaetchanan.svg" width="96" height="96" alt="A mezuzah on a doorpost">
+
+**Reading:** Deuteronomy 3:23–7:11
+
+**Summary:** Moses pleads to enter the land, repeats the Ten Commandments, and teaches the Shema, with the
+mitzvot of loving God, teaching your children, tefillin and the mezuzah.
+
+**Emoji: The mezuzah.** The mezuzah on the doorpost, with the words of the Shema inside (Deuteronomy 6:9).
+
+**Why this emoji:** Va’etchanan teaches the Shema, and its words are written on the parchment inside every
+mezuzah, so the mezuzah children touch at the doorway carries the parasha into every Jewish home.
+
+```html
+<path d="M12.6 3.6 H33.4 V44.4 H12.6Z" fill="var(--hol-gold)" stroke="none"/><path d="M12.6 3.6 H17.6 V44.4 H12.6Z" fill="var(--hol-gold-lt)" stroke="none"/><path d="M29.8 3.6 V44.4" stroke="var(--hol-gold-lt)" stroke-width="1.8" stroke-linecap="butt"/><path d="M12.6 3.6 V44.4 M17.6 3.6 V44.4 M33.4 3.6 V44.4" stroke-linecap="butt"/><g transform="translate(24.6 24.4) rotate(-20)"><rect x="-5.4" y="-16.6" width="10.8" height="33.2" rx="2.6" fill="var(--hol-blue)"/><path d="M-2.8 -8.4 L-2.8 -4.7 Q-2.8 -2.6 -0.7 -2.6 L0.7 -2.6 Q2.8 -2.6 2.8 -4.7 L2.8 -8.4 M0.1 -8.1 L-0.3 -2.6" stroke="var(--hol-gold-lt)" stroke-width="1.8"/><path d="M-4 -8.6 a1.2 1.2 0 1 0 2.4 0 a1.2 1.2 0 1 0 -2.4 0 M-1.1 -8.3 a1.2 1.2 0 1 0 2.4 0 a1.2 1.2 0 1 0 -2.4 0 M1.6 -8.6 a1.2 1.2 0 1 0 2.4 0 a1.2 1.2 0 1 0 -2.4 0" fill="var(--hol-gold-lt)" stroke="none"/><path d="M-1.1 -13.6 a1.1 1.1 0 1 0 2.2 0 a1.1 1.1 0 1 0 -2.2 0 M-1.1 13.6 a1.1 1.1 0 1 0 2.2 0 a1.1 1.1 0 1 0 -2.2 0" fill="var(--hol-gold-lt)" stroke-width="1.2"/><path d="M-2.8 3.4 V9.8" stroke="var(--hol-paper)" stroke-width="1.5"/></g><path d="M6.6 27.4 Q7.2 29.4 9.2 30 Q7.2 30.6 6.6 32.6 Q6 30.6 4 30 Q6 29.4 6.6 27.4Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/><path d="M40.4 15.2 Q40.9 16.9 42.6 17.4 Q40.9 17.9 40.4 19.6 Q39.9 17.9 38.2 17.4 Q39.9 16.9 40.4 15.2Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/>
+```
+
+### 46. Eikev · עֵקֶב
+
+<img src="docs/parasha-emojis/eikev.svg" width="96" height="96" alt="A basket of the seven species">
+
+**Reading:** Deuteronomy 7:12–11:25
+
+**Summary:** Moses promises blessings if the people keep the mitzvot, praises the land of the seven species,
+teaches the blessing after meals, and recalls the golden calf and the second tablets.
+
+**Emoji: The seven species.** A basket of the seven species: wheat, barley, grapes, figs, pomegranates, olives
+and dates (Deuteronomy 8:8).
+
+**Why this emoji:** Eikev praises the Land of Israel as a land of wheat, barley, grapes, figs, pomegranates,
+olives and dates, the seven species children learn about on Tu BiShvat, and a basket of them shows the blessing
+of the land.
+
+```html
+<path d="M13.6 29 L11.4 19.2 M16.8 29 L16.4 17.4" stroke-width="3.8"/><path d="M13.6 29 L11.4 19.2 M16.8 29 L16.4 17.4" stroke="var(--hol-gold)" stroke-width="1.8"/><path d="M9.9 7.5 L11.2 3.6 M7.3 8.1 L4.6 5 M18.1 7.7 L20.3 4.7 M15.7 7.4 L14.4 3.9 " stroke-width="1.2"/><path d="M10.4 16.2 Q12.9 14.4 11.4 12.7 Q12.2 10.8 10.6 9.5 Q11 7.3 8.3 6.2 Q6.2 8.3 7.5 10.1 Q6.5 12 8.1 13.4 Q7.4 15.6 10.4 16.2Z M15.8 15.4 Q18.5 14.6 17.7 12.6 Q19 11.3 18 9.6 Q19 7.9 17.1 6.1 Q14.8 7.3 15.3 9.2 Q13.9 10.6 14.7 12.2 Q13.5 13.9 15.8 15.4Z " fill="var(--hol-gold-lt)" stroke-width="1.5"/><path d="M32.4 19.6 Q37.2 18.9 39.4 14.5 Q34.5 15.2 32.4 19.6Z M32.4 19.6 Q36.3 21.6 40 19.3 Q36.1 17.4 32.4 19.6Z " fill="var(--hol-green)" stroke-width="1.3"/><path d="M34.2 16.6 a1.6 1.6 0 1 0 3.2 0 a1.6 1.6 0 1 0 -3.2 0 M37.9 19.4 a1.5 1.5 0 1 0 3 0 a1.5 1.5 0 1 0 -3 0" fill="var(--hol-navy)" stroke-width="1.2"/><path d="M7.2 28.4 C5.6 25.6 6.8 22.2 9.8 21.6 C11.2 21.4 12.2 20.6 12.8 19.6 C14.6 21.6 16.6 24 15.8 27.6Z" fill="var(--hol-green)" stroke-width="1.8"/><path d="M23.7 12.4 L23.7 10.1 L22 7.7 L23.6 8.7 L24.1 6.7 L25.1 8.7 L26 6.6 L26.4 8.8 L27.8 7.1 L27.9 9.1 L29.7 8.5 L27.4 10.4 L27 12.8Z" fill="var(--hol-red)" stroke-width="1.6"/><path d="M25.4 11.9 C30.6 12.1 33.8 15.8 33.1 20.8 C32.4 26 28.2 28.4 23.7 28 C19.2 27.5 15.7 24.2 16 19 C16.4 14 20.3 11 25.4 11.9Z" fill="var(--hol-red)"/><path d="M19.1 16.8 C19.9 14.2 22.1 12.9 24.5 12.8" stroke="var(--hol-gold-lt)" stroke-width="1.8"/><path d="M13.9 29.1 A2.7 1.7 -24 1 0 18.9 26.9 A2.7 1.7 -24 1 0 13.9 29.1Z M18.7 28.2 A2.7 1.7 8 1 0 24.1 29 A2.7 1.7 8 1 0 18.7 28.2Z M27.9 28.8 A2.6 1.7 -14 1 0 32.9 27.6 A2.6 1.7 -14 1 0 27.9 28.8Z" fill="var(--hol-flame)" stroke-width="1.4"/><path d="M6.8 30.2 L10.4 40.4 Q11 42.8 13.6 42.8 H34.4 Q37 42.8 37.6 40.4 L41.2 30.2Z" fill="var(--hol-gold)"/><path d="M8.8 34.8 H39.2 M10 39.2 H38 M11.6 31.6 V33.6 M13.8 36 V38 M16 31.6 V33.6 M18.2 36 V38 M20.4 31.6 V33.6 M22.6 36 V38 M24.8 31.6 V33.6 M27 36 V38 M29.2 31.6 V33.6 M31.4 36 V38 M33.6 31.6 V33.6 M35.8 36 V38 M38 31.6 V33.6 M40.2 36 V38" stroke="var(--hol-navy)" stroke-width="1.2"/><rect x="5.2" y="28" width="37.6" height="4.4" rx="2.2" fill="var(--hol-gold-lt)"/><path d="M35 22.4 C35.4 20.6 36.6 19.8 38.2 19.6" stroke-width="1.6"/><path d="M33.8 24.6 a2.6 2.6 0 1 0 5.2 0 a2.6 2.6 0 1 0 -5.2 0 M37.9 25.4 a2.5 2.5 0 1 0 5 0 a2.5 2.5 0 1 0 -5 0 M35.2 28.6 a2.6 2.6 0 1 0 5.2 0 a2.6 2.6 0 1 0 -5.2 0 M39.2 29.6 a2.4 2.4 0 1 0 4.8 0 a2.4 2.4 0 1 0 -4.8 0 M36.9 32.6 a2.3 2.3 0 1 0 4.6 0 a2.3 2.3 0 1 0 -4.6 0" fill="var(--hol-blue)" stroke-width="1.5"/>
+```
+
+### 47. Re'eh · רְאֵה
+
+<img src="docs/parasha-emojis/reeh.svg" width="96" height="96" alt="A coin dropping from a hand into a tzedakah box">
+
+**Reading:** Deuteronomy 11:26–16:17
+
+**Summary:** Moses sets before the people a blessing and a curse, and teaches the laws of kosher food, giving
+tzedakah with an open hand, and celebrating Pesach, Shavuot and Sukkot.
+
+**Emoji: Open your hand.** A coin for the tzedakah box: “Open your hand to the poor and the needy.” (Deuteronomy
+15:7–11).
+
+**Why this emoji:** Re’eh commands giving to the poor with an open hand and an open heart, the source of
+tzedakah, and a coin dropping into a tzedakah box is a mitzvah children practice themselves.
+
+```html
+<path d="M28.4 30 L35 25.4 L35 38.8 L28.4 43.4Z" fill="var(--hol-navy)"/><path d="M6 30 L28.4 30 L28.4 43.4 L6 43.4Z" fill="var(--hol-blue)"/><path d="M6 30 L12.6 25.4 L35 25.4 L28.4 30Z" fill="var(--hol-paper)"/><path d="M13.4 27.7 H25.8" stroke="var(--hol-navy)" stroke-width="2.4"/><rect x="10.6" y="32.1" width="13.2" height="9.2" rx="2" fill="var(--hol-paper)" stroke-width="1.5"/><path d="M17.2 40.1 C16 39.1 13.8 37.4 13.8 35.6 C13.8 34.2 15 33.3 16 33.3 C16.7 33.3 17.1 33.7 17.2 34.2 C17.3 33.7 17.7 33.3 18.4 33.3 C19.4 33.3 20.6 34.2 20.6 35.6 C20.6 37.4 18.4 39.1 17.2 40.1Z" fill="var(--hol-red)" stroke-width="1.4"/><circle cx="19.6" cy="20.4" r="4.9" fill="var(--hol-gold)"/><path d="M16.9 19.4 A2.9 2.9 0 0 1 18.8 17.6" stroke="var(--hol-gold-lt)" stroke-width="1.5"/><path d="M40 13.1 C38.2 14.6 36 15.8 33.7 16.5 L30.2 8.5 C32.2 7.2 34.6 6.3 36.8 6.1Z" stroke-width="1.7"/><path d="M33.4 15.4 L30.2 18.8 M32.1 13.6 L26.8 16.9 M31.2 11.6 L25 13.6 M30.8 9.4 L25.1 9.8" stroke-width="3.9"/><path d="M34.7 7.6 L30.6 4.7" stroke-width="4.2"/><path d="M40 13.1 C38.2 14.6 36 15.8 33.7 16.5 L30.2 8.5 C32.2 7.2 34.6 6.3 36.8 6.1Z" fill="var(--hol-gold-lt)" stroke="none"/><path d="M33.4 15.4 L30.2 18.8 M32.1 13.6 L26.8 16.9 M31.2 11.6 L25 13.6 M30.8 9.4 L25.1 9.8" stroke="var(--hol-gold-lt)" stroke-width="2.3"/><path d="M34.7 7.6 L30.6 4.7" stroke="var(--hol-gold-lt)" stroke-width="2.5"/><path d="M39.8 13.9 L36.1 5.7 L40.1 3.9 L43.8 12.2Z" fill="var(--hol-red)" stroke-width="1.7"/><path d="M9 9 Q9.6 11.2 11.8 11.8 Q9.6 12.4 9 14.6 Q8.4 12.4 6.2 11.8 Q8.4 11.2 9 9Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/>
+```
+
+### 48. Shoftim · שֹׁפְטִים
+
+<img src="docs/parasha-emojis/shoftim.svg" width="96" height="96" alt="A judge’s gavel">
+
+**Reading:** Deuteronomy 16:18–21:9
+
+**Summary:** The people must appoint fair judges and pursue justice, the rules for a king, a prophet and the
+cities of refuge are given, and even in war the fruit trees must not be cut down.
+
+**Emoji: Justice, justice.** A judge’s gavel: “Justice, justice you shall pursue.” (Deuteronomy 16:20).
+
+**Why this emoji:** Shoftim begins with appointing judges and the call “Justice, justice you shall pursue,” and
+the gavel says “justice” at a glance while staying apart from the Yom Kippur scales.
+
+```html
+<path d="M6.4 35.4 V39.6 A15 4 0 0 0 36.4 39.6 V35.4 A15 4 0 0 1 6.4 35.4Z" fill="var(--hol-gold)"/><ellipse cx="21.4" cy="35.4" rx="15" ry="4" fill="var(--hol-gold-lt)"/><path d="M23.2 20.8 L37 27.6" stroke-width="5"/><path d="M23.2 20.8 L37 27.6" stroke="var(--hol-gold-lt)" stroke-width="3"/><circle cx="37.4" cy="27.8" r="2.6" fill="var(--hol-gold-lt)"/><path d="M17.7 12.8 L25.3 16.5 L21.1 25.2 L13.5 21.5Z" fill="var(--hol-gold)"/><path d="M18.3 9.4 L27.7 13.9 L26.2 17 L16.8 12.4Z M12.6 21 L22 25.6 L20.5 28.6 L11.1 24.1Z" fill="var(--hol-gold)"/><path d="M17.5 12.7 L25.5 16.7 L24.8 18.1 L16.8 14.2Z M14 19.9 L22 23.8 L21.3 25.3 L13.3 21.3Z" fill="var(--hol-navy)" stroke-width="1.4"/><path d="M39.8 7.6 Q40.5 9.9 42.8 10.6 Q40.5 11.3 39.8 13.6 Q39.1 11.3 36.8 10.6 Q39.1 9.9 39.8 7.6Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/><path d="M9.6 7.4 Q10 9 11.6 9.4 Q10 9.8 9.6 11.4 Q9.2 9.8 7.6 9.4 Q9.2 9 9.6 7.4Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/>
+```
+
+### 49. Ki Teitzei · כִּי-תֵצֵא
+
+<img src="docs/parasha-emojis/kiteitzei.svg" width="96" height="96" alt="A house with a railing around its roof">
+
+**Reading:** Deuteronomy 21:10–25:19
+
+**Summary:** Ki Teitzei holds more mitzvot than any other parasha, from returning lost things and sending away
+the mother bird to building a railing on your roof and paying workers on time.
+
+**Emoji: A railing for your roof.** Build a railing around your roof so that no one falls (Deuteronomy 22:8).
+
+**Why this emoji:** Ki Teitzei holds more mitzvot than any other parasha, and the railing around the roof shows
+one that children can picture right away: taking care of other people’s safety before anything happens.
+
+```html
+<path d="M31 27.4 L39 18.8 L39 34 L31 42.6Z" fill="var(--hol-gold)"/><path d="M5 27.4 L31 27.4 L39 18.8 L13 18.8Z" fill="var(--hol-paper)"/><path d="M13 18.8 L13 14 M5 22.6 L13 14 L39 14" stroke-width="2.8"/><path d="M13 18.8 L13 14 M5 22.6 L13 14 L39 14" stroke="var(--hol-gold)" stroke-width="1.3"/><path d="M15.4 17.9 V8.4 M15.4 14.7 Q10.7 13 10.5 9.8 Q13.9 10.7 15.4 14.7Z M15.4 13 Q19.9 12.2 20.5 9 Q16.9 9.2 15.4 13Z" fill="var(--hol-green)" stroke-width="1.5"/><path d="M15.4 4.3 A1.6 1.6 0 0 1 17.6 5.9 A1.6 1.6 0 0 1 16.8 8.6 A1.6 1.6 0 0 1 14 8.6 A1.6 1.6 0 0 1 13.2 5.9 A1.6 1.6 0 0 1 15.4 4.3 Z" fill="var(--hol-red)" stroke-width="1.3"/><path d="M12.2 17.5 H18.6 L17.8 23.2 H13Z" fill="var(--hol-flame)" stroke-width="1.5"/><rect x="5" y="27.4" width="26" height="15.2" fill="var(--hol-gold-lt)"/><path d="M11.2 42.6 V35.2 Q11.2 31.6 14.6 31.6 Q18 31.6 18 35.2 V42.6Z" fill="var(--hol-navy)"/><rect x="21.7" y="31.7" width="5.8" height="5.8" rx="0.6" fill="var(--hol-blue)" stroke-width="1.6"/><path d="M5 27.4 L5 22.6 M11.5 27.4 L11.5 22.6 M18 27.4 L18 22.6 M24.5 27.4 L24.5 22.6 M31 27.4 L31 22.6 M35 23.1 L35 18.3 M39 18.8 L39 14" stroke-width="2.9"/><path d="M5 27.4 L5 22.6 M11.5 27.4 L11.5 22.6 M18 27.4 L18 22.6 M24.5 27.4 L24.5 22.6 M31 27.4 L31 22.6 M35 23.1 L35 18.3 M39 18.8 L39 14" stroke="var(--hol-gold)" stroke-width="1.3"/><path d="M5 22.6 L31 22.6 L39 14" stroke-width="3.8"/><path d="M5 22.6 L31 22.6 L39 14" stroke="var(--hol-gold)" stroke-width="2"/><path d="M4 42.6 H44" stroke-width="2.4"/><path d="M41.4 6 Q41.9 7.9 43.8 8.4 Q41.9 8.9 41.4 10.8 Q40.9 8.9 39 8.4 Q40.9 7.9 41.4 6Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/>
+```
+
+### 50. Ki Tavo · כִּי-תָבוֹא
+
+<img src="docs/parasha-emojis/kitavo.svg" width="96" height="96" alt="A basket of first fruits with a flower garland">
+
+**Reading:** Deuteronomy 26:1–29:8
+
+**Summary:** Farmers bring their first fruits to the Temple with a declaration of thanks, the Torah is to be
+written on stones after crossing the Jordan, and Moses describes the blessings and curses that follow the
+people’s choices.
+
+**Emoji: The first-fruits basket.** The basket of first fruits brought to the Temple with a declaration of thanks
+(Deuteronomy 26:1–11).
+
+**Why this emoji:** Ki Tavo opens with the bikkurim, the first fruits brought to the Temple in a basket with
+words of thanks, a picture of gratitude that children recreate with baskets of fruit on Shavuot.
+
+```html
+<path d="M15.2 8 L16.8 4 M12.3 8.6 L9.4 5.3" stroke-width="1.3"/><path d="M18 26 L15.2 16.4" stroke-width="1.8"/><path d="M15.2 16.4 Q18.1 14.7 16.5 13 Q17.6 11.2 15.8 9.9 Q16.4 7.8 13.5 6.7 Q11.1 8.8 12.4 10.5 Q11.2 12.3 12.8 13.6 Q11.9 15.8 15.2 16.4Z" fill="var(--hol-gold-lt)" stroke-width="1.5"/><path d="M6.4 15.9 L5.5 13.9" stroke-width="1.6"/><path d="M6.3 15.7 C7.6 15.3 8.9 16.2 10.4 16.6 C12.8 17.2 14.4 19 14.6 20.9 C14.9 22.7 13.9 24.2 12.6 25.1 C11.4 25.9 9.6 26.3 7.9 25.4 C6.3 24.4 5.3 22.3 5.6 19.8 C5.8 18.3 5.4 16.8 6.3 15.7Z" fill="var(--hol-green)"/><path d="M8 22.1 Q9 23.9 10.7 24.1" stroke="var(--hol-gold-lt)" stroke-width="1.2"/><path d="M25.3 15.4 a2.7 2.7 0 1 0 5.4 0 a2.7 2.7 0 1 0 -5.4 0Z M30.9 15.4 a2.7 2.7 0 1 0 5.4 0 a2.7 2.7 0 1 0 -5.4 0Z M36.5 15.4 a2.7 2.7 0 1 0 5.4 0 a2.7 2.7 0 1 0 -5.4 0Z" fill="var(--hol-blue)" stroke-width="1.5"/><path d="M28.1 20.1 a2.7 2.7 0 1 0 5.4 0 a2.7 2.7 0 1 0 -5.4 0Z M33.7 20.1 a2.7 2.7 0 1 0 5.4 0 a2.7 2.7 0 1 0 -5.4 0Z" fill="var(--hol-blue)" stroke-width="1.5"/><path d="M30.9 24.8 a2.7 2.7 0 1 0 5.4 0 a2.7 2.7 0 1 0 -5.4 0Z" fill="var(--hol-blue)" stroke-width="1.5"/><path d="M26.4 14.4 a0.7 0.7 0 1 0 1.4 0 a0.7 0.7 0 1 0 -1.4 0Z M32 14.4 a0.7 0.7 0 1 0 1.4 0 a0.7 0.7 0 1 0 -1.4 0Z M37.6 14.4 a0.7 0.7 0 1 0 1.4 0 a0.7 0.7 0 1 0 -1.4 0Z M29.2 19.1 a0.7 0.7 0 1 0 1.4 0 a0.7 0.7 0 1 0 -1.4 0Z M34.8 19.1 a0.7 0.7 0 1 0 1.4 0 a0.7 0.7 0 1 0 -1.4 0Z M32 23.8 a0.7 0.7 0 1 0 1.4 0 a0.7 0.7 0 1 0 -1.4 0Z" fill="var(--hol-gold-lt)" stroke="none"/><path d="M17.8 15 L17.8 12.4 L15.8 9.6 L18.8 11 L20.4 8.8 L22 11 L25 9.6 L23 12.4 L23 15Z" fill="var(--hol-red)" stroke-width="1.4"/><path d="M20.4 13.2 C24.9 13.2 27.9 16.8 27.7 21 C27.6 25.4 24 27.6 20.4 27.6 C16.8 27.6 13.2 25.4 13.1 21 C12.9 16.8 15.9 13.2 20.4 13.2Z" fill="var(--hol-red)"/><path d="M16.4 17.8 Q16 21.4 18 24" stroke="var(--hol-paper)" stroke-width="1.4"/><path d="M7.4 29.6 C7.8 37 10.8 43 15.4 43 H32.6 C37.2 43 40.2 37 40.6 29.6Z" fill="var(--hol-gold)"/><path d="M10.9 38.1 L14.6 41.8 M8.6 30.6 L19.8 41.8 M13.8 30.6 L25 41.8 M19 30.6 L30.2 41.8 M24.2 30.6 L35.4 41.8 M10.2 30.6 L9 31.8 M29.4 30.6 L37.1 38.3 M15.4 30.6 L10.2 35.8 M34.6 30.6 L38.3 34.3 M20.6 30.6 L11.4 39.8 M25.8 30.6 L14.6 41.8 M31 30.6 L19.8 41.8 M36.2 30.6 L25 41.8 M38.5 33.5 L30.2 41.8 M36.3 40.9 L35.4 41.8" stroke="var(--hol-navy)" stroke-width="1.2"/><rect x="5" y="27.2" width="38" height="4.8" rx="2.4" fill="var(--hol-gold)"/><path d="M8.6 31.2 Q16.3 37.6 24 31.2 Q31.7 37.6 39.4 31.2" stroke-width="3.6"/><path d="M8.6 31.2 Q16.3 37.6 24 31.2 Q31.7 37.6 39.4 31.2" stroke="var(--hol-green)" stroke-width="1.8"/><path d="M7.4 29.2 A1.2 1.2 0 1 1 9.8 29.2 A1.2 1.2 0 1 1 10.5 31.4 A1.2 1.2 0 1 1 8.6 32.8 A1.2 1.2 0 1 1 6.7 31.4 A1.2 1.2 0 1 1 7.4 29.2 Z M38.2 29.2 A1.2 1.2 0 1 1 40.6 29.2 A1.2 1.2 0 1 1 41.3 31.4 A1.2 1.2 0 1 1 39.4 32.8 A1.2 1.2 0 1 1 37.5 31.4 A1.2 1.2 0 1 1 38.2 29.2 Z " fill="var(--hol-red)" stroke-width="1.3"/><path d="M22.8 29.2 A1.2 1.2 0 1 1 25.2 29.2 A1.2 1.2 0 1 1 25.9 31.4 A1.2 1.2 0 1 1 24 32.8 A1.2 1.2 0 1 1 22.1 31.4 A1.2 1.2 0 1 1 22.8 29.2 Z " fill="var(--hol-paper)" stroke-width="1.3"/><path d="M7.6 30.8 a1 1 0 1 0 2 0 a1 1 0 1 0 -2 0Z M23 30.8 a1 1 0 1 0 2 0 a1 1 0 1 0 -2 0Z M38.4 30.8 a1 1 0 1 0 2 0 a1 1 0 1 0 -2 0Z " fill="var(--hol-gold-lt)" stroke="none"/>
+```
+
+### 51. Nitzavim · נִצָּבִים
+
+<img src="docs/parasha-emojis/nitzavim.svg" width="96" height="96" alt="A road that turns back to a little house">
+
+**Reading:** Deuteronomy 29:9–30:20
+
+**Summary:** The whole people stands together to enter God’s covenant, Moses promises that anyone can return to
+God, teaches that the Torah is “not in heaven” but close to us, and urges, “Choose life.”
+
+**Emoji: Returning.** A path that turns back home: anyone can return to God (Deuteronomy 30:1–10).
+
+**Why this emoji:** Nitzavim is always read just before Rosh Hashanah and promises that anyone can return to God,
+so the path that turns back home shows teshuvah, the theme of the season.
+
+```html
+<path d="M7 14 H31 A10.4 10.4 0 0 1 31 34.8 H23" stroke-width="7.8"/><path d="M7 14 H31 A10.4 10.4 0 0 1 31 34.8 H23" stroke="var(--hol-gold-lt)" stroke-width="5.6"/><path d="M11 14 H31 A10.4 10.4 0 0 1 31 34.8 H26.4" stroke="var(--hol-green)" stroke-width="2.4"/><path d="M29.2 31.4 L24.8 34.8 L29.2 38.2" stroke="var(--hol-green)" stroke-width="2.4"/><rect x="5.6" y="29" width="17" height="13" fill="var(--hol-paper)"/><path d="M4 30.2 L14.1 21 L24.2 30.2Z" fill="var(--hol-red)"/><rect x="7.6" y="32.4" width="5.2" height="5.6" rx="0.6" fill="var(--hol-gold-lt)" stroke="var(--hol-navy)" stroke-width="1.4"/><path d="M10.2 32.4 V38 M7.6 35.2 H12.8" stroke="var(--hol-navy)" stroke-width="1.2"/><path d="M15.2 42 V35.4 Q15.2 33 17.6 33 Q20 33 20 35.4 V42Z" fill="var(--hol-navy)" stroke-width="1.6"/><path d="M4.2 42.6 H25.2" stroke-width="2.4"/>
+```
+
+### 52. Vayeilech · וַיֵּלֶךְ
+
+<img src="docs/parasha-emojis/vayeilech.svg" width="96" height="96" alt="A quill, an inkwell and a parchment">
+
+**Reading:** Deuteronomy 31:1–31:30
+
+**Summary:** At 120 years old, Moses tells Joshua and the people to be strong and brave, writes down the Torah,
+and commands that it be read to the whole people every seven years.
+
+**Emoji: A quill writing the Torah.** Moses writes the Torah, and every Jew is commanded to write one
+(Deuteronomy 31:9, 31:19).
+
+**Why this emoji:** In Vayeilech, Moses writes down the Torah and gives it to the people, and the last of the 613
+mitzvot is for every Jew to write a Torah scroll, so the quill links Moses’ work to each of us.
+
+```html
+<path d="M8 27.6 H27.6 Q28.8 27.6 28.8 28.8 V41.4 Q28.8 42.6 27.6 42.6 H8Z" fill="var(--hol-gold-lt)"/><rect x="4" y="26.2" width="6.4" height="17.8" rx="3" fill="var(--hol-gold)"/><path d="M14.6 31.8 H25 M13 35.2 H25 M17.4 38.6 H25" stroke="var(--hol-navy)" stroke-width="1.5"/><path d="M30.4 42.6 C29.6 39 29.6 35.6 31.4 33.6 C32.6 32.4 34.4 32 36.6 32 C38.8 32 40.6 32.4 41.8 33.6 C43.6 35.6 43.6 39 42.8 42.6Z" fill="var(--hol-blue)"/><ellipse cx="36.6" cy="32.4" rx="4.4" ry="1.6" fill="var(--hol-navy)" stroke-width="1.6"/><path d="M35.1 30.3 L11.2 6.2" stroke-width="2"/><path d="M28.2 23.4 C28.3 17.6 23.3 11.2 17.5 7.4 C14.2 5.3 11.4 4.4 9.6 4.6 C9 7.3 9.7 10.9 13.6 15.5 C17.9 19.8 23.5 23.8 28.2 23.4Z" fill="var(--hol-paper)"/><path d="M23 17.9 L24.4 13.3 M18.8 13.6 L20 9.2 M23.8 19.2 L19.4 20.4 M19.6 14.9 L14.8 16.4 M15.3 10.6 L11.3 11.9" stroke="var(--hol-navy)" stroke-width="1.2"/><path d="M28.2 23.4 L11.2 6.2" stroke="var(--hol-navy)" stroke-width="1.3"/>
+```
+
+### 53. Ha'azinu · הַאֲזִינוּ
+
+<img src="docs/parasha-emojis/haazinu.svg" width="96" height="96" alt="Two music notes with sound waves">
+
+**Reading:** Deuteronomy 32:1–32:52
+
+**Summary:** Moses sings a song calling on heaven and earth to listen, reminding the people how God cared for
+them like an eagle over its nest, and God tells Moses to climb Mount Nebo to see the land.
+
+**Emoji: The song of Moses.** Ha’azinu is a song: “Listen, O heavens, and let the earth hear.” (Deuteronomy
+32:1).
+
+**Why this emoji:** Ha’azinu is the song of Moses, written in a Torah scroll in its own special two-column
+layout, and music notes show at a glance that this parasha is a song.
+
+```html
+<path d="M15.4 36.6 V12.9 M32.3 32.2 V8.5" stroke-width="6.6"/><path d="M16.4 34.4 A5.4 3.9 -24 1 1 6.6 38.8 A5.4 3.9 -24 1 1 16.4 34.4Z M33.3 30 A5.4 3.9 -24 1 1 23.5 34.4 A5.4 3.9 -24 1 1 33.3 30Z M14.1 12.2 L33.6 7.1 L33.6 12.1 L14.1 17.2Z" fill="var(--hol-line)" stroke-width="4"/><path d="M15.4 36.6 V12.9 M32.3 32.2 V8.5" stroke="var(--hol-gold)" stroke-width="2.6"/><path d="M16.4 34.4 A5.4 3.9 -24 1 1 6.6 38.8 A5.4 3.9 -24 1 1 16.4 34.4Z M33.3 30 A5.4 3.9 -24 1 1 23.5 34.4 A5.4 3.9 -24 1 1 33.3 30Z M14.1 12.2 L33.6 7.1 L33.6 12.1 L14.1 17.2Z" fill="var(--hol-gold)" stroke="none"/><path d="M8.3 36.8 Q8.9 34.2 11.7 34 M25.2 32.4 Q25.8 29.8 28.6 29.6" stroke="var(--hol-gold-lt)" stroke-width="1.5"/><path d="M37.2 20.5 A5.2 5.2 0 0 1 37.2 27.5 M40.4 17.7 A9.4 9.4 0 0 1 40.4 30.3" stroke-width="2"/><path d="M7.2 5.2 Q7.9 7.9 10.6 8.6 Q7.9 9.3 7.2 12 Q6.5 9.3 3.8 8.6 Q6.5 7.9 7.2 5.2Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/><path d="M41 39 Q41.6 41 43.6 41.6 Q41.6 42.2 41 44.2 Q40.4 42.2 38.4 41.6 Q40.4 41 41 39Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/><path d="M5.6 21.6 Q6 23.2 7.6 23.6 Q6 24 5.6 25.6 Q5.2 24 3.6 23.6 Q5.2 23.2 5.6 21.6Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/>
+```
+
+### 54. V'Zot HaBerachah · וְזֹאת הַבְּרָכָה
+
+<img src="docs/parasha-emojis/vzothaberachah.svg" width="96" height="96" alt="A Simchat Torah flag with a little Torah scroll">
+
+**Reading:** Deuteronomy 33:1–34:12
+
+**Summary:** Moses blesses each of the tribes, climbs Mount Nebo to see the whole land, and dies there; this last
+parasha is read on Simchat Torah, when the Torah ends and begins again.
+
+**Emoji: The Simchat Torah flag.** A flag for Simchat Torah, when this parasha is read and the Torah begins again
+(Deuteronomy 33:1).
+
+**Why this emoji:** V’Zot HaBerachah is the one parasha never read on a Shabbat: it is read on Simchat Torah,
+when the Torah ends and begins again with Bereshit, so the flag children wave that day closes the circle back to
+the first icon.
+
+```html
+<g transform="rotate(12 8.9 43.6)"><path d="M8.9 9.4 L8.9 42.4" stroke-width="4.8"/><path d="M8.9 9.4 L8.9 42.4" stroke="var(--hol-gold)" stroke-width="2.4"/><path d="M10.4 12 L11.9 11.3 L13.4 10.6 L14.9 10 L16.4 9.6 L17.8 9.3 L19.3 9.2 L20.8 9.3 L22.3 9.6 L23.8 10 L25.3 10.6 L26.8 11.3 L28.3 12 L29.8 12.7 L31.2 13.4 L32.7 14 L34.2 14.4 L35.7 14.7 L37.2 14.8 L37.2 34.8 L35.7 34.7 L34.2 34.4 L32.7 34 L31.2 33.4 L29.8 32.7 L28.3 32 L26.8 31.3 L25.3 30.6 L23.8 30 L22.3 29.6 L20.8 29.3 L19.3 29.2 L17.8 29.3 L16.4 29.6 L14.9 30 L13.4 30.6 L11.9 31.3 L10.4 32Z" fill="var(--hol-paper)"/><path d="M13 13.4 L14.2 12.9 L15.4 12.4 L16.6 12.1 L17.8 11.9 L19 11.8 L20.2 11.8 L21.4 12 L22.6 12.2 L23.8 12.6 L25 13.1 L26.2 13.6 L27.4 14.2 L28.6 14.8 L29.8 15.3 L31 15.9 L32.2 16.4 L33.4 16.8 L34.6 17.1 L34.6 31.9 L33.4 31.6 L32.2 31.2 L31 30.7 L29.8 30.1 L28.6 29.6 L27.4 29 L26.2 28.4 L25 27.9 L23.8 27.4 L22.6 27 L21.4 26.8 L20.2 26.6 L19 26.6 L17.8 26.7 L16.6 26.9 L15.4 27.2 L14.2 27.7 L13 28.2Z" stroke="var(--hol-blue)" stroke-width="2.2"/><rect x="19.6" y="16.3" width="8.4" height="7.4" fill="var(--hol-gold-lt)" stroke="var(--hol-navy)" stroke-width="1.3"/><path d="M21.2 18.8 H26.4 M21.2 21.4 H25.2" stroke="var(--hol-navy)" stroke-width="1.1"/><path d="M17.2 16 A1.2 1.2 0 0 1 19.6 16 V24 A1.2 1.2 0 0 1 17.2 24Z M28 16 A1.2 1.2 0 0 1 30.4 16 V24 A1.2 1.2 0 0 1 28 24Z" fill="var(--hol-gold)" stroke="var(--hol-navy)" stroke-width="1.3"/><circle cx="8.9" cy="8.2" r="3" fill="var(--hol-red)"/><circle cx="7.9" cy="7.2" r="0.8" fill="var(--hol-paper)" stroke="none"/></g><path d="M38.8 5.4 Q39.5 7.9 42 8.6 Q39.5 9.3 38.8 11.8 Q38.1 9.3 35.6 8.6 Q38.1 7.9 38.8 5.4Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/><path d="M5.8 19.2 Q6.3 20.9 8 21.4 Q6.3 21.9 5.8 23.6 Q5.3 21.9 3.6 21.4 Q5.3 20.9 5.8 19.2Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/><path d="M42.6 39.4 Q43.1 41.1 44.8 41.6 Q43.1 42.1 42.6 43.8 Q42.1 42.1 40.4 41.6 Q42.1 41.1 42.6 39.4Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/>
 ```
