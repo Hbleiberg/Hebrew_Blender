@@ -8,9 +8,17 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P4 (**NEW S461 K — gate 2 ANSWERED: use תל-עם**) | classroom_dashboard.html | **The Hebrew UI spells the scheme "TaL AM"** (`scheme_talam`, `reset_confirm`); the other three tools say תל-עם. | found S461
+- [ ] P4 (**NEW S464 M**) | resources.html | **The Links/Fonts toggle mixes a line icon with a colour 🔤** (`resources.view.fonts`). | found S464
 
-- [ ] P4 (**NEW S462 N, gate 2 ANSWERED: fix all**) | ui-strings.csv | **42 HE go/next arrows read "→"; six FM Back labels start "←"** (loop-findings S462). | found S462
+- [ ] P4 (**NEW S464 M**) | resources.html | **A font card draws Preview's icon only**; the dialog draws all three. | found S464
+
+- [ ] P4 (**NEW S464 M**) | resources.html | **The Suggest intro sits 4px above its first field** (fields: 14px). | found S464
+
+- [ ] P4 (**NEW S464 M**) | keyboard block ×4 | **A pressed key shows no feedback in dark** (`--warm-gray` = `--white`). | found S464
+
+- [ ] P4 (**NEW S464 M — gate 3 ANSWERED: drop it suite-wide**) | resources.html (+ suite) | **Hebrew labels keep the Latin uppercase tracking** (53 nodes; pattern row). | found S464
+
+- [ ] P4 (**NEW S464 M**) | resources.html | **Below ~1020px wrapped chips flow back under their row label.** | found S464
 
 - [ ] P4 (**NEW S462 N**) | contact.html | **The 15.2px form fields zoom an iPhone 1.05× on focus.** | found S462
 
@@ -296,6 +304,10 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-06 | (S464 close-out) | branch/deploy note | **S464 = M + 4 fixes, PR #311.** No drift; keep-alive #24 green; sw v940→v941; no FM bump; gates clean; gate 3 answered.
+
+- [x] 2026-10-06 | `661c6cc6`, `f98367f8`, `5f7f8a40`, `046cd3ab` | resources, kbd ×4, CSV | (S464) **CTA off the age chips; dark keyboard plates; HE arrows; תל-עם (gates 2).** | findings S464.
+
 - [x] 2026-10-06 | (S463 close-out) | branch/deploy note | **S463 = P + 2 fixes + micro, PR #310.** No drift; keep-alive #23 green; sw v939→v940; no FM bump; gates clean; smokes green (tools ×2, sync, migration); 2 gates answered.
 
 - [x] 2026-10-06 | `1eeaacb8`, `5528d3b8`, `f71f255b` | generator, dashboard, flash, CSV | (S463) **A share link keeps the teacher's font settings (gate 2); a new city brings its own weather and Shabbat times; Print This Card Set (micro).** | findings S463.
@@ -316,13 +328,11 @@ _(none)_
 
 - [x] 2026-10-05 | `9a2e2f0a`, `7de703e5` | torah, FM, CSV | (S460 L, gate 2) **The Torah FAQ names JPS 1917; the FM FAQ drops "only when you export".** | `jps.mjs`, `faq.mjs` 4 cells vs HEAD.
 
-- [x] 2026-10-05 | (S459 close-out) | branch/deploy note | **S459 = E + 4 fixes, PR #308.** No drift (main `c0f3b57`, keep-alive #22 green); sw v931→v932 (ivrit-saves); no FM bump; check-i18n + check-inline-js clean; 7 smokes green; deferred: micro-feature.
-
-- [x] 2026-10-05 | `81aff4bf`, `0dbb0002` | source-data/hebrew_emojis.csv, ops.md, README | (S459 E) **The emoji CSV source keeps `a86b5a16`'s 13 fixes; ops.md says `?v=2`; README names every corpus consumer.** | CSV = JSON 13 → 0; census arm 1 → 0.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-06 | **S464** | iters: 1 pass (**M**) + 4 fixes = **5** | tools: resources, dictionary, FM, dashboard ×2; index, trope, torah, contact, account, privacy | patterns fixed: dark-navy ×1, forward-arrow ×48; latin-tracking NEW | pass run: M | SW: v940→v941
 
 - 2026-10-06 | **S463** | iters: 1 pass (**P**) + 2 fixes + micro (2) = **5** | tools: generator, dashboard, flash | patterns fixed: bulk-apply ×1, share-link (NEW) ×1 | pass run: P | SW: v939→v940
 
@@ -362,15 +372,15 @@ _(none)_
 
 - 2026-10-02 | **S445** | iters: 1 pass (**E**) + 4 fixes = **5** | tools: generator ×2, flash ×2, dictionary, docs | patterns fixed: copy-claims-success-on-a-refused-clipboard ×2 | pass run: E | SW: v912→v913
 
-- 2026-10-01 | **S444** | iters: 1 pass (**A**) + 4 fixes = **5** | tools: torah ×2, index, dashboard | patterns fixed: stored-json-of-the-wrong-shape-trusted ×1, copy-claims-success-on-a-refused-clipboard ×2 | pass run: A | SW: v911→v912
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S463 (2026-10-06):** generator, dashboard, flash S463 · dictionary S461 · resources, torah, FM S460 · ivrit-saves S459 · trope S455 · contact S454 · account S449 · index S446 · privacy, terms, 404 S442.
+- **Snapshot S464 (2026-10-06):** resources, dashboard, dictionary, FM, index, torah, trope, contact, account, privacy S464 · generator, flash S463 · ivrit-saves S459 · terms, 404 S442.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
-- **`forward-arrow-points-back-in-rtl-copy`** (NEW S462 N; 48 cells open): ACTIVE, streak 0. An HE string keeps the English arrow. Detection: the S462 CSV census; exempt "(→)", A→Z.
+- **`latin-tracking-on-hebrew-labels`** (NEW S464 M; gate 3: drop suite-wide; 53 nodes here, ~180 rules/15 pages): ACTIVE, streak 0. Detection: `m464/census.mjs` (a): Hebrew own-text, letter-spacing > 0; exempt `lang="en"`.
+
+- **`forward-arrow-points-back-in-rtl-copy`** (NEW S462 N; FIXED S464 `5f7f8a40` ×48; open 0): ACTIVE, streak 0. Detection: the S462 CSV census; exempt "(→)", A→Z, Back labels, the orphan `flashcards.header.home`.
 
 - **`share-link-writes-the-teachers-saved-preferences`** (NEW S463 P, `1eeaacb8`): ACTIVE, streak 0. A `?s=` restore saves suite-wide pref keys. Detection: `p463/link-fix.mjs` (non-default prefs + a link carrying them; keys + prefs row hold). Next: dictionary `?s=`.
 
@@ -392,7 +402,7 @@ _(none)_
 
 - **`cdn-library-parser-blocking-for-one-action`** (NEW S452 D; generator `82bbe313`, FM `d01a33cd`): ACTIVE, streak 0. A parser-blocking CDN `<script src>` in `<head>` for one action. Detection: `grep -n '<script[^>]*src="https\?://' *.html | grep -v ' async\| …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`dark-navy-fill-matches-its-ground`** (NEW S450 M; flash ×2 `c9e2bc2b`, `68055510`; S451 census: dictionary `5deb5472`, generator `f9ca0909`): ACTIVE, streak 0. Detection (`g451/navy.mjs`): every visible button/.btn/[role=button]/.active/[aria-pressed=true] in dark, its fill …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`dark-navy-fill-matches-its-ground`** (NEW S450 M; flash ×2 `c9e2bc2b`, `68055510`; S451 census: dictionary `5deb5472`, generator `f9ca0909`; S464 keyboard block ×4 `f98367f8`): ACTIVE, streak 0. Detection (`g451/navy.mjs`): every visible …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`ring-below-3-on-light`** (NEW S442; FIXED on 14 pages `91fede71` + 3 modules `a46342c1`; S443 the last two non-outline rings, FM `e05b25d1` + torah's fav dot `1c320ae8`): ACTIVE, streak 0. A focus outline drawn in `--gold` (2.1–2.75:1 on the light surfaces). Detection: …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -672,7 +682,7 @@ _(none)_
 
 - N mobile & touch-device (one surface): 2026-10-06 (**S462 — 22nd N, `contact.html` (S276 →): 144 views, 4 phones × EN/HE × themes, 128 taps, rotation, banner, 4×; zeros planted (findings S462). FOUND: iOS zoom, server-note bidi, banner over footer, 48 HE arrows. N-next: FM (S290).**)
 
-- M aesthetics & visual design (one surface): 2026-10-02 (**S450 — 21st M, `flash_cards.html` (last ~S249): 32 shots + computed fills, HEAD as the control. FIXED the dark primary's missing plate `c9e2bc2b`, the dark count hole `68055510`; logged the Save-as-preset button off scale. M-next: terms, contact.**)
+- M aesthetics & visual design (one surface): 2026-10-06 (**S464 — 22nd M, `resources.html` (S277 →): 80 shots, census, 144-cell sweep, zeros planted. FIXED `661c6cc6`, `f98367f8`; 6 P4s; gate 3 answered. M-next: contact.**)
 
 - K i18n / localization audit: 2026-10-05 (**S461 — 31st K on `1b1538f6..60a09bc2`: gates clean; 96 runtime states 0 missing/raw (plants 480/480); NEW template + hidden-node arm; fallbacks, blind spot, RTL 0; TaL AM (gate 2). FIXED `74b2ee0c` (findings S461).**)
 
@@ -698,4 +708,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-05 (**S456 — sliders on 7 tools: name, value heard, keys, size; plants fired (findings S456). FIXED 4. F-next: search fields.**)
 
-**Next session (S464):** **BRANCH/PR: S460–S463 on `claude/zealous-hamilton-qlwsp2` → draft PR #310 (base `a2cf7f8`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v940**, FM **5.59**, SDK **2.116.0**. ⚑ Stalest: M, G; O blocked. ⚑ Ready (answered) — take first: HE arrows, FM footer, תל-עם. ⚑ Untaken: contact zoom + bidi, pwa banner; the new share-link pattern on the dictionary's `?s=`.
+**Next session (S465):** **BRANCH/PR: S464 on `claude/improveloop-s464` → draft PR #311. Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v941**, FM **5.59**, SDK **2.116.0**. ⚑ Stalest: G, then D/I/H/C; O blocked. ⚑ Ready (answered): the FM About note; Hebrew tracking suite-wide. ⚑ Untaken: contact zoom + bidi, pwa banner, the dictionary's `?s=`, S464's P4s.
