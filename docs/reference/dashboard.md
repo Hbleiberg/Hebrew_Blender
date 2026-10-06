@@ -407,7 +407,12 @@ body.dark #tipFloat { background: #0a0f1c; }
 - **Weather card:** `renderWeather()` sets `#weatherCol`'s visibility from `hideWeather` (as `renderDaysList()` does
   for `hideDOW`), and `applySettings` fetches the weather when it turns the card back on, as the switch does — so a
   starter, preset, `.ivrit` file or account download shows or hides the card at once. A city change arriving the
-  same way still waits for the 30-minute refresh (an open candidate).
+  same way (`settings.location` differs after the merge) drops coordinates captured for the old place unless the
+  incoming settings bring their own `_geoCoords`, and fetches the weather and the Shabbat times afresh, as the city
+  box does (the account download does the same itself, around its `applySettings`). `weatherCache` records the city
+  it was fetched for (`location`), and `resolveShabbatGeo()` reuses its place only for that city: right after a change
+  the weather fetch is still in flight (or the card is hidden and never fetches), so the cache would hand Hebcal the
+  old city.
 
 ---
 

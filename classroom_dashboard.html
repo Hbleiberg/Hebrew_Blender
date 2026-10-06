@@ -4374,6 +4374,7 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
     if (weatherCol) weatherCol.style.display = settings.hideWeather ? 'none' : '';
     if (settings.hideWeather) return;
     _weatherStatus = 'loading'; renderWeatherStatus();
+    const forLocation = settings.location;   // the city this fetch is for: resolveShabbatGeo reuses its place only for that city
     try {
       let place;
       if (settings._geoCoords) {
@@ -4397,7 +4398,7 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
       // Open-Meteo returns an error JSON with a non-200 status; validate before
       // caching so a bad response can't poison weatherCache and later throw in renderWeather.
       if (!wData || !wData.current) throw new Error('weather: no current data');
-      _weatherStatus = null; weatherCache = { data: wData, place };
+      _weatherStatus = null; weatherCache = { data: wData, place, location: forLocation };
       renderWeather();
     } catch (e) {
       _weatherStatus = 'unavailable'; renderWeatherStatus();
@@ -4693,8 +4694,10 @@ function holidayIconFor(title) {
 
   // Resolve { latitude, longitude, tzid } from the same location the weather widget uses.
   async function resolveShabbatGeo() {
-    // Reuse the place the weather widget already geocoded (has lat/lon + timezone).
-    if (weatherCache && weatherCache.place && weatherCache.place.latitude != null) {
+    // Reuse the place the weather widget already geocoded (has lat/lon + timezone) — only for the city it was fetched for:
+    // right after a city change the weather fetch is still in flight (or the card is hidden and never fetches), and the
+    // cache would hand Hebcal the old city.
+    if (weatherCache && weatherCache.place && weatherCache.place.latitude != null && weatherCache.location === settings.location) {
       const p = weatherCache.place;
       return { latitude: p.latitude, longitude: p.longitude, tzid: p.timezone || browserTzid() };
     }
@@ -6469,6 +6472,7 @@ function mountSidebarResize(cfg) {
     }
     const pointerBefore = settings.activeRosterId;
     const weatherWasHidden = !!settings.hideWeather;
+    const placeBefore = settings.location;
     // Preserve schedule configuration — it must never be overwritten by loading a display preset
     // (Schedule Sync applies presets, so a preset carrying schedule state would clobber the very
     // schedule driving it; presetColors is shared class data on the same footing as rosters).
@@ -6541,8 +6545,13 @@ function mountSidebarResize(cfg) {
     updateColTitles();   // the column titles follow headerLang, which a starter, preset, .ivrit file or account download can change
     updateDateTimeDisplay();
     renderDaysList();
+    // Another city reaches the board here too (a preset, starter or .ivrit file): as the city box does, coordinates captured
+    // for the old place go (unless these settings bring their own) and the weather and Shabbat times are fetched afresh.
+    const placeChanged = settings.location !== placeBefore;
+    if (placeChanged && !(s && s._geoCoords)) delete settings._geoCoords;
     renderWeather();
-    if (weatherWasHidden && !settings.hideWeather) fetchWeather();   // as the switch does: nothing was fetched while the card was hidden
+    if ((weatherWasHidden && !settings.hideWeather) || placeChanged) fetchWeather();   // as the switch does: nothing was fetched while the card was hidden
+    if (placeChanged) fetchShabbat(true);
     applyTimerVisibility();
     applyStudentPickerVisibility();
     applyPanelLayout();   // reparent panels + recompute zone emptiness AFTER the visibility appliers above
