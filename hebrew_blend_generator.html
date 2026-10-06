@@ -4996,7 +4996,7 @@ function getSettings() {
     // The size travelled but the chosen font never did, so a restored .ivrit fell back to the
     // default face; same for the live-preview toggle. Both are registered in AllTools, so only
     // the per-tool file was short.
-    hebFont:           localStorage.getItem('hebrewBlender_hebFont') || '',
+    hebFont:           _linkHebFont || localStorage.getItem('hebrewBlender_hebFont') || '',
     livePreview:       livePreviewEnabled,
     vavAsLetter,
     // Color coding
@@ -13393,7 +13393,7 @@ async function refreshMyFonts() {
   } catch (e) { MY_FONTS = []; }
   _myFontsLoaded = true;
   initFontSelector();
-  const saved = localStorage.getItem('hebrewBlender_hebFont');
+  const saved = _linkHebFont || localStorage.getItem('hebrewBlender_hebFont');
   if (saved && MY_FONTS.some(f => f.name === saved)) setHebFont(saved, false);
 }
 /* ═══ My Fonts uploader (shared, identical across pages) ═══ */
@@ -13452,7 +13452,11 @@ function taamimStack(stack) {
   const m = /^(.*?),\s*(serif|sans-serif|cursive|fantasy|monospace|system-ui)\s*$/.exec(stack);
   return m ? m[1] + ", 'IvritSuite Taamim', " + m[2] : stack + ", 'IvritSuite Taamim'";
 }
+// The font a colleague's ?s= link is showing, never saved: the key below is the teacher's own default (a suite-wide
+// preference), so getSettings(), initFontSelector() and refreshMyFonts() read this first. Any saving pick clears it.
+let _linkHebFont = null;
 function setHebFont(name, save = true) {
+  if (save) _linkHebFont = null;
   const font = allFonts().find(f => f.name === name);
   const note = document.getElementById('hebFontMissing');
   if (!font) {
@@ -13511,7 +13515,7 @@ function resetTraceSize() {
 }
 
 function initFontSelector() {
-  const saved = localStorage.getItem('hebrewBlender_hebFont');
+  const saved = _linkHebFont || localStorage.getItem('hebrewBlender_hebFont');
   const active = saved || 'Frank Ruhl Libre';
   if (saved) setHebFont(saved, false);
 
@@ -13939,7 +13943,15 @@ function restoreFromURL() {
   let diff;
   try { diff = ivritSafeParse(shareB64Decode(s)); } catch(e) { return; } // garbage → ignore
   if (!diff || typeof diff !== 'object') return;
-  try { applySettings(ivritSafeAssign(Object.assign({}, SHARE_DEFAULTS), diff)); } catch(e) { return; }
+  // The link shows its font, size and Live update, but they are the teacher's suite-wide preferences (signed in, the
+  // account's IvritSuite row): applySettings saves them, so their keys are put back as they were.
+  const prefKeys = ['hebrewBlender_hebFont', 'hebrewBlender_hebFontSize', 'hebrewBlender_livePreview'];
+  const prefsBefore = prefKeys.map(k => localStorage.getItem(k));
+  const putPrefsBack = () => prefKeys.forEach((k, i) => { try { if (prefsBefore[i] === null) localStorage.removeItem(k); else localStorage.setItem(k, prefsBefore[i]); } catch (e) {} });
+  const shown = ivritSafeAssign(Object.assign({}, SHARE_DEFAULTS), diff);
+  try { applySettings(shown); } catch(e) { putPrefsBack(); return; }
+  if (typeof shown.hebFont === 'string' && shown.hebFont && shown.hebFont !== prefsBefore[0]) _linkHebFont = shown.hebFont;
+  putPrefsBack();
   _urlSetupActive = true;
   try { _urlSetupText = JSON.stringify(getSettings()); } catch (e) { _urlSetupText = null; }
   // Auto-generate. Real-words drills need REAL_WORDS; generateRealWords() lazy-loads
