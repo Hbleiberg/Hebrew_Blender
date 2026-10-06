@@ -54,16 +54,16 @@ what it shows, why it was chosen, and its markup.
 | 31 | Emor | אֱמֹר | <img src="docs/parasha-emojis/emor.svg" width="28" height="28" alt=""> | The four species |
 | 32 | Behar | בְּהַר | <img src="docs/parasha-emojis/behar.svg" width="28" height="28" alt=""> | The land rests |
 | 33 | Bechukotai | בְּחֻקֹּתַי | <img src="docs/parasha-emojis/bechukotai.svg" width="28" height="28" alt=""> | Grapes and wheat |
-| 34 | Bamidbar | בְּמִדְבַּר |  |  |
-| 35 | Nasso | נָשֹׂא |  |  |
-| 36 | Beha'alotcha | בְּהַעֲלֹתְךָ |  |  |
-| 37 | Sh'lach | שְׁלַח לְךָ |  |  |
-| 38 | Korach | קֹרַח |  |  |
-| 39 | Chukat | חֻקַּת |  |  |
-| 40 | Balak | בָּלָק |  |  |
-| 41 | Pinchas | פִּינְחָס |  |  |
-| 42 | Matot | מַטּוֹת |  |  |
-| 43 | Masei | מַסְעֵי |  |  |
+| 34 | Bamidbar | בְּמִדְבַּר | <img src="docs/parasha-emojis/bamidbar.svg" width="28" height="28" alt=""> | In the wilderness |
+| 35 | Nasso | נָשֹׂא | <img src="docs/parasha-emojis/nasso.svg" width="28" height="28" alt=""> | The Priestly Blessing |
+| 36 | Beha'alotcha | בְּהַעֲלֹתְךָ | <img src="docs/parasha-emojis/behaalotcha.svg" width="28" height="28" alt=""> | The quail |
+| 37 | Sh'lach | שְׁלַח לְךָ | <img src="docs/parasha-emojis/shlach.svg" width="28" height="28" alt=""> | Milk and honey |
+| 38 | Korach | קֹרַח | <img src="docs/parasha-emojis/korach.svg" width="28" height="28" alt=""> | The ground opens |
+| 39 | Chukat | חֻקַּת | <img src="docs/parasha-emojis/chukat.svg" width="28" height="28" alt=""> | Water from the rock |
+| 40 | Balak | בָּלָק | <img src="docs/parasha-emojis/balak.svg" width="28" height="28" alt=""> | How good are your tents |
+| 41 | Pinchas | פִּינְחָס | <img src="docs/parasha-emojis/pinchas.svg" width="28" height="28" alt=""> | Passing the staff to Joshua |
+| 42 | Matot | מַטּוֹת | <img src="docs/parasha-emojis/matot.svg" width="28" height="28" alt=""> | Purifying vessels |
+| 43 | Masei | מַסְעֵי | <img src="docs/parasha-emojis/masei.svg" width="28" height="28" alt=""> | The journeys |
 | 44 | Devarim | דְּבָרִים |  |  |
 | 45 | Va'etchanan | וָאֶתְחַנַּן |  |  |
 | 46 | Eikev | עֵקֶב |  |  |
@@ -709,4 +709,198 @@ into the next, and grapes with wheat show that plenty, closing Leviticus on a no
 
 ```html
 <path d="M24.6 42.6 L12.6 20.8 M26.8 42.6 L18 16.8 M28.8 42.6 L23.6 15.6" stroke-width="3.8"/><path d="M24.6 42.6 L12.6 20.8 M26.8 42.6 L18 16.8 M28.8 42.6 L23.6 15.6" stroke="var(--hol-gold)" stroke-width="1.8"/><path d="M9.9 12.9 L9.9 8.7 M7.4 14.3 L3.8 12.1 M16.7 8.6 L17.5 4.4 M14 9.5 L10.9 6.7 M23.4 7.3 L24.8 3.3 M20.7 7.8 L17.9 4.6" stroke-width="1.3"/><path d="M12.6 20.8 Q14.6 18.4 12.6 17.2 Q13 15.2 11 14.5 Q10.8 12.4 7.9 12.2 Q6.4 14.8 8.2 16.1 Q7.7 18.1 9.6 18.9 Q9.5 21.2 12.6 20.8Z M18 16.8 Q20.4 14.7 18.6 13.3 Q19.3 11.4 17.5 10.3 Q17.7 8.2 14.8 7.5 Q13 9.8 14.4 11.4 Q13.6 13.3 15.3 14.4 Q14.8 16.6 18 16.8Z M23.6 15.6 Q26.3 13.9 24.7 12.2 Q25.7 10.4 24 9.1 Q24.5 7 21.7 6 Q19.6 8 20.8 9.7 Q19.7 11.6 21.3 12.8 Q20.5 15 23.6 15.6Z" fill="var(--hol-gold-lt)" stroke-width="1.5"/><path d="M29.6 17.7 C29.6 15.4 31 13.4 32.8 14.4 M30.4 14.2 C26.8 13.6 26.2 10 28.4 9.4 C30 9 30.4 11 29.2 11.6" stroke-width="1.6"/><path d="M37.2 14.2 Q33.3 16.9 30.8 11.1 Q32.2 10.1 34.2 10.3 Q33.2 8.6 33.1 6.3 Q35.1 7.2 36.4 8.7 Q37 6.8 38.5 4.7 Q39.3 7.2 39.1 9.2 Q40.8 8.2 43.1 8.1 Q42.2 10.1 40.7 11.4 Q42.6 12 43.4 13.3 Q41.1 16.9 38.2 13.9 Z" fill="var(--hol-green)"/><path d="M36.5 13.4 L34.6 8.4 M37.2 12.2 L39.1 8.2 M37.2 12.2 L33.3 11.5" stroke="var(--hol-navy)" stroke-width="1.2"/><path d="M20.1 20.4 a3.1 3.1 0 1 0 6.2 0 a3.1 3.1 0 1 0 -6.2 0 M26.8 20.2 a3.1 3.1 0 1 0 6.2 0 a3.1 3.1 0 1 0 -6.2 0 M32.7 20.6 a3.1 3.1 0 1 0 6.2 0 a3.1 3.1 0 1 0 -6.2 0" fill="var(--hol-blue)" stroke-width="1.5"/><path d="M17 25.4 a3.1 3.1 0 1 0 6.2 0 a3.1 3.1 0 1 0 -6.2 0 M23.1 24.9 a3.1 3.1 0 1 0 6.2 0 a3.1 3.1 0 1 0 -6.2 0 M29.7 25.1 a3.1 3.1 0 1 0 6.2 0 a3.1 3.1 0 1 0 -6.2 0 M36.5 24.9 a3.1 3.1 0 1 0 6.2 0 a3.1 3.1 0 1 0 -6.2 0" fill="var(--hol-blue)" stroke-width="1.5"/><path d="M20.4 29.6 a3.1 3.1 0 1 0 6.2 0 a3.1 3.1 0 1 0 -6.2 0 M26.2 30 a3.1 3.1 0 1 0 6.2 0 a3.1 3.1 0 1 0 -6.2 0 M33.2 30.1 a3.1 3.1 0 1 0 6.2 0 a3.1 3.1 0 1 0 -6.2 0" fill="var(--hol-blue)" stroke-width="1.5"/><path d="M23.1 34.3 a3.1 3.1 0 1 0 6.2 0 a3.1 3.1 0 1 0 -6.2 0 M29.7 34.5 a3.1 3.1 0 1 0 6.2 0 a3.1 3.1 0 1 0 -6.2 0" fill="var(--hol-blue)" stroke-width="1.5"/><path d="M26.2 39.4 a3.1 3.1 0 1 0 6.2 0 a3.1 3.1 0 1 0 -6.2 0" fill="var(--hol-blue)" stroke-width="1.5"/><path d="M21.4 19.3 a0.8 0.8 0 1 0 1.5 0 a0.8 0.8 0 1 0 -1.5 0 M28.2 19.1 a0.8 0.8 0 1 0 1.5 0 a0.8 0.8 0 1 0 -1.5 0 M34 19.5 a0.8 0.8 0 1 0 1.5 0 a0.8 0.8 0 1 0 -1.5 0 M18.4 24.3 a0.8 0.8 0 1 0 1.5 0 a0.8 0.8 0 1 0 -1.5 0 M24.4 23.8 a0.8 0.8 0 1 0 1.5 0 a0.8 0.8 0 1 0 -1.5 0 M31.1 24 a0.8 0.8 0 1 0 1.5 0 a0.8 0.8 0 1 0 -1.5 0 M37.8 23.8 a0.8 0.8 0 1 0 1.5 0 a0.8 0.8 0 1 0 -1.5 0 M21.7 28.5 a0.8 0.8 0 1 0 1.5 0 a0.8 0.8 0 1 0 -1.5 0 M27.6 28.9 a0.8 0.8 0 1 0 1.5 0 a0.8 0.8 0 1 0 -1.5 0 M34.5 29 a0.8 0.8 0 1 0 1.5 0 a0.8 0.8 0 1 0 -1.5 0 M24.4 33.2 a0.8 0.8 0 1 0 1.5 0 a0.8 0.8 0 1 0 -1.5 0 M31.1 33.4 a0.8 0.8 0 1 0 1.5 0 a0.8 0.8 0 1 0 -1.5 0 M27.6 38.3 a0.8 0.8 0 1 0 1.5 0 a0.8 0.8 0 1 0 -1.5 0" fill="var(--hol-gold-lt)" stroke="none"/>
+```
+
+## Numbers
+
+### 34. Bamidbar · בְּמִדְבַּר
+
+<img src="docs/parasha-emojis/bamidbar.svg" width="96" height="96" alt="A tent among desert dunes under the stars">
+
+**Reading:** Numbers 1:1–4:20
+
+**Summary:** In the wilderness of Sinai Moses counts the Israelites, each tribe camps around the Mishkan under
+its own banner, and the Levites are given the work of carrying the Mishkan.
+
+**Emoji: In the wilderness.** Bamidbar means “in the wilderness”: the people camp in the desert of Sinai (Numbers
+1:1).
+
+**Why this emoji:** Bamidbar means “in the wilderness,” and the whole book follows the Israelites through the
+desert, so a tent among the dunes sets the scene for Numbers; the Sages teach that the Torah was given in the
+wilderness, a place that belongs to no one, so that it would belong to everyone.
+
+```html
+<path d="M10 6.4 Q10.8 9.4 13.8 10.2 Q10.8 11 10 14 Q9.2 11 6.2 10.2 Q9.2 9.4 10 6.4Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/><path d="M20.6 3.5 Q21.2 5.5 23.1 6 Q21.2 6.6 20.6 8.5 Q20.1 6.6 18.1 6 Q20.1 5.5 20.6 3.5Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/><path d="M37.4 6.5 Q38 8.8 40.3 9.4 Q38 10 37.4 12.3 Q36.8 10 34.5 9.4 Q36.8 8.8 37.4 6.5Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/><path d="M12 42.6 C17 32 25.6 20.2 32.6 19 C37.4 18.6 41.6 23 44 27 V42.6Z" fill="var(--hol-gold-lt)" stroke="none"/><path d="M32.6 19 C30.2 25 28 32 28.6 42.6 H12 C17 32 25.6 20.2 32.6 19Z" fill="var(--hol-gold)" stroke="none"/><path d="M12 42.6 C17 32 25.6 20.2 32.6 19 C37.4 18.6 41.6 23 44 27 V42.6Z"/><path d="M4 30.4 C7 28.4 10.4 27.6 13.4 27.8 C20.6 28.2 30.4 34 44 36.4 V42.6 H4Z" fill="var(--hol-gold-lt)" stroke="none"/><path d="M13.4 27.8 C14.4 32 13.6 37.6 11.6 42.6 H4 V30.4 C7 28.4 10.4 27.6 13.4 27.8Z" fill="var(--hol-gold)" stroke="none"/><path d="M4 30.4 C7 28.4 10.4 27.6 13.4 27.8 C20.6 28.2 30.4 34 44 36.4 V42.6 H4Z"/><path d="M22.6 38.4 L29.4 26 L36.2 38.4Z" fill="var(--hol-red)"/><path d="M29.4 26 L27.6 38.4 H31.2Z" fill="var(--hol-navy)" stroke-width="1.3"/><path d="M29.4 26 V23.2" stroke-width="1.7"/><path d="M4 42.6 H44" stroke-width="2.4"/>
+```
+
+### 35. Nasso · נָשֹׂא
+
+<img src="docs/parasha-emojis/nasso.svg" width="96" height="96" alt="Two hands raised in the Priestly Blessing">
+
+**Reading:** Numbers 4:21–7:89
+
+**Summary:** The Levite families receive their tasks, the Torah teaches about the nazir who gives up wine, the
+kohanim are given the Priestly Blessing, and the twelve tribal leaders bring the same gifts to dedicate the
+Mishkan.
+
+**Emoji: The Priestly Blessing.** The kohanim’s hands raised for the Priestly Blessing, still given in synagogues
+today (Numbers 6:22–27).
+
+**Why this emoji:** Nasso holds the Priestly Blessing, the words kohanim still bless the congregation with and
+many parents say over their children on Friday night, so the raised hands link the parasha to something children
+see and hear.
+
+```html
+<path d="M6.8 19.6 C6.1 23.6 6.6 28.4 9 32 L17 32 C17.6 29.6 18 26 18.4 23.4 C18.6 22 18.8 21 18.8 19.8Z" stroke-width="2"/><path d="M7.9 20.8 L5.7 11.2 M11.1 20 L8.1 7.4 M14.3 20.2 L16.2 6.5 M17.5 20.6 L19.2 8.7" stroke-width="5.2"/><path d="M16.4 29.6 L22.1 26.2" stroke-width="5.6"/><path d="M6.8 19.6 C6.1 23.6 6.6 28.4 9 32 L17 32 C17.6 29.6 18 26 18.4 23.4 C18.6 22 18.8 21 18.8 19.8Z" fill="var(--hol-gold-lt)" stroke="none"/><path d="M7.9 20.8 L5.7 11.2 M11.1 20 L8.1 7.4 M14.3 20.2 L16.2 6.5 M17.5 20.6 L19.2 8.7" stroke="var(--hol-gold-lt)" stroke-width="3.2"/><path d="M16.4 29.6 L22.1 26.2" stroke="var(--hol-gold-lt)" stroke-width="3.6"/><path d="M41.2 19.6 C41.9 23.6 41.4 28.4 39 32 L31 32 C30.4 29.6 30 26 29.6 23.4 C29.4 22 29.2 21 29.2 19.8Z" stroke-width="2"/><path d="M40.1 20.8 L42.3 11.2 M36.9 20 L39.9 7.4 M33.7 20.2 L31.8 6.5 M30.5 20.6 L28.8 8.7" stroke-width="5.2"/><path d="M31.6 29.6 L25.9 26.2" stroke-width="5.6"/><path d="M41.2 19.6 C41.9 23.6 41.4 28.4 39 32 L31 32 C30.4 29.6 30 26 29.6 23.4 C29.4 22 29.2 21 29.2 19.8Z" fill="var(--hol-gold-lt)" stroke="none"/><path d="M40.1 20.8 L42.3 11.2 M36.9 20 L39.9 7.4 M33.7 20.2 L31.8 6.5 M30.5 20.6 L28.8 8.7" stroke="var(--hol-gold-lt)" stroke-width="3.2"/><path d="M31.6 29.6 L25.9 26.2" stroke="var(--hol-gold-lt)" stroke-width="3.6"/><path d="M9.1 18.8 L7.4 11.4 M16.1 18.8 L17.5 9.1 M38.9 18.8 L40.6 11.4 M31.9 18.8 L30.5 9.1" stroke="var(--hol-navy)" stroke-width="1.2"/><path d="M8.2 31 L17.6 31 C18.4 35.4 19.4 40 20.6 44.2 L5.4 44.2 C6.2 40 7.2 35.4 8.2 31Z M39.8 31 L30.4 31 C29.6 35.4 28.6 40 27.4 44.2 L42.6 44.2 C41.8 40 40.8 35.4 39.8 31Z" fill="var(--hol-paper)"/><path d="M7.9 33 L18 33 L18.6 36 L7.2 36Z M40.2 33 L30 33 L29.4 36 L40.8 36Z" fill="var(--hol-blue)" stroke-width="1.4"/>
+```
+
+### 36. Beha'alotcha · בְּהַעֲלֹתְךָ
+
+<img src="docs/parasha-emojis/behaalotcha.svg" width="96" height="96" alt="A round quail">
+
+**Reading:** Numbers 8:1–12:16
+
+**Summary:** Aaron lights the menorah, the Israelites leave Sinai following the cloud and the call of silver
+trumpets, the people complain about the manna and receive quail, and Moses prays for his sister Miriam to be
+healed.
+
+**Emoji: The quail.** The quail God sends when the people complain about the manna (Numbers 11:31–32).
+
+**Why this emoji:** The quail tell the parasha’s main story of the people complaining in the desert and wanting
+meat instead of manna, and the round little bird makes that story friendly and easy to remember.
+
+```html
+<path d="M4 42.6 H44" stroke-width="2.4"/><path d="M19.4 37.6 V42 M16.8 42 H21.4 M26.6 37.6 V42 M24.4 42 H29" stroke-width="1.8"/><path d="M10.4 27.6 L4.8 21.8 C4.2 21 4.8 20.2 5.8 20.4 L13.4 22.6Z" fill="var(--hol-gold)"/><path d="M9.4 30.6 C9.4 22.8 15.4 18.6 23 18.6 C30.6 18.6 36.4 23 36.4 29.6 C36.4 35.8 30.4 39.6 23 39.6 C15.6 39.6 9.4 36.4 9.4 30.6Z" fill="var(--hol-gold-lt)"/><path d="M25.4 29.6 Q27 31.6 28.6 29.6 M29.6 28.4 Q31.2 30.4 32.8 28.4 M27.6 33.6 Q29.2 35.6 30.8 33.6 M22.8 34 Q24.4 36 26 34" stroke="var(--hol-navy)" stroke-width="1.3"/><path d="M11.4 26.4 C14 22.6 19.6 22 23.4 24.6 C25.6 26.2 25 29.8 21.6 31.4 C17.6 33.2 12.4 32.4 11.4 29.4 C11 28.4 11 27.4 11.4 26.4Z" fill="var(--hol-gold)"/><path d="M14.7 26.8 a0.9 0.9 0 1 0 1.8 0 a0.9 0.9 0 1 0 -1.8 0 M18.7 26 a0.9 0.9 0 1 0 1.8 0 a0.9 0.9 0 1 0 -1.8 0 M17.1 29.6 a0.9 0.9 0 1 0 1.8 0 a0.9 0.9 0 1 0 -1.8 0 M13.2 29.8 a0.8 0.8 0 1 0 1.6 0 a0.8 0.8 0 1 0 -1.6 0" fill="var(--hol-navy)" stroke="none"/><path d="M32 12.2 C31.6 9.6 32.4 7.4 34.6 6.6 C36.4 6 37.8 7.2 37.2 8.6 C36.6 9.8 35 9.4 34.8 8.4" stroke-width="1.7"/><circle cx="32.6" cy="17.4" r="6.4" fill="var(--hol-gold)"/><path d="M38.8 15.8 L42.6 17.6 L38.8 19.2Z" fill="var(--hol-flame)" stroke-width="1.5"/><circle cx="34.6" cy="16.2" r="1.4" fill="var(--hol-navy)" stroke="none"/><circle cx="35.1" cy="15.7" r="0.5" fill="var(--hol-paper)" stroke="none"/>
+```
+
+### 37. Sh'lach · שְׁלַח לְךָ
+
+<img src="docs/parasha-emojis/shlach.svg" width="96" height="96" alt="A jug of milk beside a honeycomb">
+
+**Reading:** Numbers 13:1–15:41
+
+**Summary:** Moses sends twelve spies into Canaan, they return with a giant cluster of grapes, ten of them
+frighten the people, and the Israelites must wander forty years; the parasha ends with the mitzvah of tzitzit.
+
+**Emoji: Milk and honey.** “A land flowing with milk and honey,” as the spies describe Canaan (Numbers 13:27).
+
+**Why this emoji:** Even the frightened spies agree that Canaan is “a land flowing with milk and honey,” and milk
+with a honeycomb shows that good land, which is why their fear was mistaken; the honeycomb keeps it apart from
+the Rosh Hashanah apple and honey.
+
+```html
+<g transform="translate(1.2 0)"><path d="M9 18.6 C2.6 17 2.4 25.6 6 27.8" stroke-width="4.6"/><path d="M9 18.6 C2.6 17 2.4 25.6 6 27.8" stroke="var(--hol-blue)" stroke-width="2.2"/><path d="M8.2 13 C8.6 15 9.2 16 9.4 17.4 C5.6 20 4.6 25 5 30 C5.4 35 7.2 39.4 9 42.4 L21 42.4 C22.8 39.4 24.6 35 25 30 C25.4 25 24.4 20 20.6 17.4 C20.8 16 21.4 14.6 22 13.4 L25.6 11.2 C24.6 10.4 23 10.6 21.6 11 C18 10 12 10 8.2 13Z" fill="var(--hol-blue)"/><path d="M8.6 13 C11 11 19 11 21.8 13.2 C21.6 14.4 21 15.4 20.4 15.6 C19.6 15.8 19.4 17.2 19.4 18.4 A1.5 1.5 0 0 1 16.4 18.4 C16.4 17.2 16.2 16.2 15 16.2 C13.8 16.2 13.4 17.6 13.4 20.4 A1.5 1.5 0 0 1 10.4 20.4 C10.4 17.8 10.2 16.4 9.4 15.4 C8.8 14.8 8.6 13.8 8.6 13Z" fill="var(--hol-paper)" stroke-width="1.4"/></g><path d="M29.2 18.1 L32.9 20.3 L32.9 24.5 L29.2 26.7 L25.5 24.5 L25.5 20.3Z M25.5 24.5 L29.2 26.7 L29.2 31 L25.5 33.2 L21.8 31 L21.8 26.7Z M40.4 24.5 L44.1 26.7 L44.1 31 L40.4 33.2 L36.6 31 L36.6 26.7Z M29.2 31 L32.9 33.2 L32.9 37.4 L29.2 39.6 L25.5 37.4 L25.5 33.2Z M36.6 31 L40.4 33.2 L40.4 37.4 L36.6 39.6 L32.9 37.4 L32.9 33.2Z" fill="var(--hol-gold-lt)"/><path d="M36.6 18.1 L40.4 20.3 L40.4 24.5 L36.6 26.7 L32.9 24.5 L32.9 20.3Z M32.9 24.5 L36.6 26.7 L36.6 31 L32.9 33.2 L29.2 31 L29.2 26.7Z" fill="var(--hol-gold)"/><path d="M32.9 20.3 L32.9 24.5 M32.9 24.5 L29.2 26.7 M29.2 26.7 L25.5 24.5 M40.4 24.5 L36.6 26.7 M36.6 26.7 L32.9 24.5 M29.2 26.7 L29.2 31 M29.2 31 L25.5 33.2 M36.6 26.7 L36.6 31 M36.6 31 L32.9 33.2 M32.9 33.2 L29.2 31 M40.4 33.2 L36.6 31 M32.9 33.2 L32.9 37.4" stroke="var(--hol-navy)" stroke-width="1.4"/><path d="M35 38.6 L36.6 39.6 L38.2 38.6 C38.3 41 38.6 41.6 38.6 42.6 A2 2 0 0 1 34.6 42.6 C34.6 41.6 34.9 41 35 38.6Z" fill="var(--hol-gold)" stroke-width="1.5"/>
+```
+
+### 38. Korach · קֹרַח
+
+<img src="docs/parasha-emojis/korach.svg" width="96" height="96" alt="A crack opening in the desert ground">
+
+**Reading:** Numbers 16:1–18:32
+
+**Summary:** Korach leads a rebellion against Moses and Aaron, the earth opens and swallows the rebels, and
+Aaron’s staff blossoms overnight with flowers and almonds to show that God chose him.
+
+**Emoji: The ground opens.** The ground opens up beneath the rebels (Numbers 16:31–33).
+
+**Why this emoji:** The ground opening beneath Korach’s followers is the turning point of the parasha, showing
+that God chose Moses and Aaron, and a calm crack in the earth tells it without frightening children.
+
+```html
+<path d="M2.6 23 H24 V24.4 H45.4 V45.4 H2.6Z" fill="var(--hol-gold)" stroke="none"/><path d="M2.6 23 H24 V24.4 H45.4 V29.4 Q34 31.4 24 28.6 Q12 26.8 2.6 29Z" fill="var(--hol-gold-lt)" stroke="none"/><path d="M3.8 23 H16.6 M31.8 24.4 H44.2" stroke-width="2.4"/><path d="M16.6 23.6 L20.6 28 L18 31.8 L21.7 35.4 L21 38.4 L23.8 43.4 L26.5 38.2 L27.2 35 L30.4 31.4 L27.9 28.2 L31.8 25Z" fill="var(--hol-navy)" stroke-width="1.8"/><path d="M22.2 29.6 a2 2 0 1 0 4 0 a2 2 0 1 0 -4 0 M20.5 17 a1.7 1.7 0 1 0 3.4 0 a1.7 1.7 0 1 0 -3.4 0 M25.8 12.4 a1.4 1.4 0 1 0 2.8 0 a1.4 1.4 0 1 0 -2.8 0" fill="var(--hol-gold-lt)" stroke-width="1.4"/><path d="M20.8 13.6 V11.6 M26 9 V7.2" stroke-width="1.3"/><path d="M9.4 22.6 Q8.8 19.8 7.4 19 M9.8 22.6 Q10.6 19.6 12.2 18.8 M38.2 24 Q37.6 21.2 36.2 20.4 M38.6 24 Q39.4 21 41 20.2" stroke="var(--hol-green)" stroke-width="1.8"/>
+```
+
+### 39. Chukat · חֻקַּת
+
+<img src="docs/parasha-emojis/chukat.svg" width="96" height="96" alt="Water pouring from a rock, with a staff beside it">
+
+**Reading:** Numbers 19:1–22:1
+
+**Summary:** The Torah teaches the law of the red heifer, Miriam dies and the water runs out, Moses strikes the
+rock instead of speaking to it, Aaron dies, and a copper snake on a pole heals people bitten by snakes.
+
+**Emoji: Water from the rock.** Moses strikes the rock and water pours out for the people (Numbers 20:7–11).
+
+**Why this emoji:** Water from the rock is the parasha’s best-known story and its hardest lesson: Moses was told
+to speak to the rock but struck it, and because of that he would not enter the Land of Israel.
+
+```html
+<path d="M6.2 42.7 L5.6 32.5 L9 22.9 L14.7 17 L21.9 15.5 L27.7 18.4 L30.7 25.5 L31 34.2 L29.3 42.7Z" fill="var(--hol-gold-lt)"/><path d="M30.7 25.5 L31 34.2 L29.3 42.7 L23.3 42.7 L25.9 33.2 L25.3 24.6 L27.7 18.4Z" fill="var(--hol-gold)" stroke-width="1.4"/><path d="M14.7 17 L17.4 23.7 L13.3 32" stroke="var(--hol-navy)" stroke-width="1.4"/><path d="M27.8 21.6 L30.4 20.4 L30.2 27 L27.6 25.6Z" fill="var(--hol-navy)" stroke-width="1.4"/><path d="M24.6 40.6 C24.6 37.8 29.4 36.6 34.6 36.4 C35.6 34.6 36.6 33.6 38 33.4 C39.4 33.6 40.2 34.4 41 36.2 C43.2 36.6 44.4 38 44.4 40.6 C44.4 42.4 40 43.6 34.6 43.6 C29.2 43.6 24.6 42.4 24.6 40.6Z" fill="var(--hol-blue)"/><path d="M29.4 20.6 C34.6 18.4 40.6 20.6 41.8 27.4 C42.4 30.6 41.6 33.6 41 36.4 L35.2 36.4 C35.8 33.6 36 31.4 35.2 29.6 C34 27.2 31.8 26.6 29.4 26.8Z" fill="var(--hol-blue)"/><path d="M31.8 22.4 C35 21.4 38.4 22.8 39.4 26.4 M32.6 25 C34.8 24.8 36.6 26 37.2 28 M28.4 40.4 Q30.4 39.2 32.4 40.4 M37.4 40.8 Q39.4 39.6 41.4 40.8" stroke="var(--hol-paper)" stroke-width="1.3"/><path d="M43.4 28.2 C43.7 29 44.4 29.7 44.4 30.6 A1 1 0 0 1 42.4 30.6 C42.4 29.7 43.1 29 43.4 28.2Z M32.4 30.9 C32.7 31.7 33.4 32.3 33.4 33.2 A1 1 0 0 1 31.5 33.2 C31.5 32.3 32.1 31.7 32.4 30.9Z M38.4 13.4 C38.7 14.2 39.4 14.9 39.4 15.8 A1 1 0 0 1 37.4 15.8 C37.4 14.9 38.1 14.2 38.4 13.4Z" fill="var(--hol-blue)" stroke-width="1.2"/><path d="M7.6 42.2 L13.8 7.6" stroke-width="5.6"/><path d="M7.6 42.2 L13.8 7.6" stroke="var(--hol-gold)" stroke-width="3.2"/><path d="M40.6 5.2 Q41.2 7.4 43.4 8 Q41.2 8.6 40.6 10.8 Q40 8.6 37.8 8 Q40 7.4 40.6 5.2Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/>
+```
+
+### 40. Balak · בָּלָק
+
+<img src="docs/parasha-emojis/balak.svg" width="96" height="96" alt="Three tents in a row under the stars">
+
+**Reading:** Numbers 22:2–25:9
+
+**Summary:** King Balak hires the prophet Balaam to curse the Israelites, Balaam’s donkey sees an angel and
+speaks, and every curse Balaam tries comes out as a blessing, including “How good are your tents, O Jacob.”
+
+**Emoji: How good are your tents.** “How good are your tents, O Jacob,” the words that open the Mah Tovu prayer
+(Numbers 24:5).
+
+**Why this emoji:** Balaam comes to curse but blesses instead, and his words “How good are your tents, O Jacob”
+open the Mah Tovu prayer said on entering a synagogue, so the row of tents ties the parasha to daily prayer.
+
+```html
+<path d="M11 23.6 V21.4" stroke-width="1.8"/><path d="M11 23.6 C9.8 29 6.7 35.8 3.5 41.6 H18.5 C15.3 35.8 12.3 29 11 23.6Z" fill="var(--hol-red)" stroke-width="1.6"/><path d="M11 31.2 L8.5 41.6 H13.6Z" fill="var(--hol-navy)" stroke="none"/><path d="M37 23.6 V21.4" stroke-width="1.8"/><path d="M37 23.6 C35.8 29 32.7 35.8 29.5 41.6 H44.5 C41.3 35.8 38.3 29 37 23.6Z" fill="var(--hol-blue)" stroke-width="1.6"/><path d="M37 31.2 L34.5 41.6 H39.6Z" fill="var(--hol-navy)" stroke="none"/><path d="M24 23.6 V21.4" stroke-width="1.8"/><path d="M24 23.6 C22.8 29 19.7 35.8 16.5 41.6 H31.5 C28.3 35.8 25.3 29 24 23.6Z" fill="var(--hol-gold-lt)" stroke-width="1.6"/><path d="M24 31.2 L21.5 41.6 H26.6Z" fill="var(--hol-navy)" stroke="none"/><path d="M3.8 41.6 H44.2" stroke-width="2.4"/><path d="M34.6 6.8 Q35.4 9.8 38.4 10.6 Q35.4 11.4 34.6 14.4 Q33.8 11.4 30.8 10.6 Q33.8 9.8 34.6 6.8Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/><path d="M14 11 Q14.5 12.9 16.4 13.4 Q14.5 13.9 14 15.8 Q13.5 13.9 11.6 13.4 Q13.5 12.9 14 11Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/>
+```
+
+### 41. Pinchas · פִּינְחָס
+
+<img src="docs/parasha-emojis/pinchas.svg" width="96" height="96" alt="Two hands passing a shepherd’s staff">
+
+**Reading:** Numbers 25:10–30:1
+
+**Summary:** Pinchas is given God’s covenant of peace, the five daughters of Tzelofchad win the right to inherit
+their father’s land, Joshua is chosen to lead after Moses, and the offerings for each holiday are listed.
+
+**Emoji: Passing the staff to Joshua.** Moses lays his hands on Joshua and makes him the next leader (Numbers
+27:18–23).
+
+**Why this emoji:** In Pinchas, Moses asks God for a leader to follow him and lays his hands on Joshua, and the
+staff passed from hand to hand shows that handover and Moses’ care for the people’s future.
+
+```html
+<path d="M18.8 42.3 L27.1 9.1 A4.1 4.1 0 0 1 35.1 11.1 L34.5 13.4" stroke-width="5"/><path d="M18.8 42.3 L27.1 9.1 A4.1 4.1 0 0 1 35.1 11.1 L34.5 13.4" stroke="var(--hol-gold)" stroke-width="2.8"/><path d="M15.6 14.4 C17.8 14.1 20 13.1 22.8 13 C24.9 13 26.9 13.4 28.7 13.8 A1.1 1.1 0 0 1 28.3 16 C26.3 15.7 24.6 15.5 23.2 15.7 L24.7 16.3 L23 23.1 C19.1 22.3 16.7 21.6 14.1 20.3Z M31.3 33.4 C29.5 32 28 30.1 25.5 28.7 C23.7 27.8 21.7 27.1 19.9 26.7 A1.1 1.1 0 0 0 19.3 28.8 C21.3 29.5 22.8 30.1 24 30.9 L22.4 30.7 L20.7 37.5 C24.5 38.7 26.9 39.2 29.8 39.3Z" fill="var(--hol-gold-lt)"/><path d="M22.9 14.6 L27.6 15.7 A1 1 0 0 1 27.1 17.7 L28.1 18 A1 1 0 0 1 27.6 19.9 L27.5 19.9 A1 1 0 0 1 27 21.9 L26.2 21.7 A1 1 0 0 1 25.7 23.7 L21 22.5Z M24.7 30.1 L20 28.9 A1 1 0 0 0 19.5 30.9 L18.6 30.6 A1 1 0 0 0 18.1 32.6 L18.2 32.6 A1 1 0 0 0 17.7 34.6 L18.5 34.8 A1 1 0 0 0 18 36.8 L22.7 38Z" fill="var(--hol-gold-lt)" stroke="none"/><path d="M24.6 15 L27.6 15.7 A1 1 0 0 1 27.1 17.7 L28.1 18 A1 1 0 0 1 27.6 19.9 L27.5 19.9 A1 1 0 0 1 27 21.9 L26.2 21.7 A1 1 0 0 1 25.7 23.7 L21.4 22.6 M23 29.6 L20 28.9 A1 1 0 0 0 19.5 30.9 L18.6 30.6 A1 1 0 0 0 18.1 32.6 L18.2 32.6 A1 1 0 0 0 17.7 34.6 L18.5 34.8 A1 1 0 0 0 18 36.8 L22.2 37.9"/><path d="M24.6 17.1 L27.1 17.7 M24.1 19.1 L27.6 19.9 M23.6 21.1 L27 21.9 M22 31.5 L19.5 30.9 M21.5 33.5 L18.1 32.6 M21.1 35.5 L17.7 34.6" stroke="var(--hol-navy)" stroke-width="1.4"/><path d="M22.8 13 C24.9 13 26.9 13.4 28.7 13.8 A1.1 1.1 0 0 1 28.3 16 C26.3 15.7 24.6 15.5 23.2 15.7 L22.2 15.4Z M25.5 28.7 C23.7 27.8 21.7 27.1 19.9 26.7 A1.1 1.1 0 0 0 19.3 28.8 C21.3 29.5 22.8 30.1 24 30.9 L24.9 31.1Z" fill="var(--hol-gold-lt)" stroke="none"/><path d="M22.8 13 C24.9 13 26.9 13.4 28.7 13.8 A1.1 1.1 0 0 1 28.3 16 C26.3 15.7 24.6 15.5 23.2 15.7 M25.5 28.7 C23.7 27.8 21.7 27.1 19.9 26.7 A1.1 1.1 0 0 0 19.3 28.8 C21.3 29.5 22.8 30.1 24 30.9"/><path d="M14.8 21.4 L5.3 19.9 L7.6 10.8 L16.7 13.9Z" fill="var(--hol-blue)"/><path d="M30.5 32.3 L40 33.9 L37.8 43 L28.6 39.9Z" fill="var(--hol-green)"/><path d="M14.8 21.4 L12.1 20.8 L14 13.1 L16.7 13.9Z M30.5 32.3 L33.3 32.9 L31.3 40.7 L28.6 39.9Z" fill="var(--hol-gold)" stroke-width="1.5"/>
+```
+
+### 42. Matot · מַטּוֹת
+
+<img src="docs/parasha-emojis/matot.svg" width="96" height="96" alt="A silver pot of water over a small fire, with sparkles">
+
+**Reading:** Numbers 30:2–32:42
+
+**Summary:** The Torah teaches that a promise must be kept and that metal vessels are made pure with fire and
+water, and the tribes of Reuben and Gad ask to settle east of the Jordan with their flocks, promising to fight
+beside the other tribes first.
+
+**Emoji: Purifying vessels.** Metal vessels are made pure with fire and others with water, the source of
+kashering pots (Numbers 31:21–23).
+
+**Why this emoji:** Matot teaches how vessels are made pure with fire and water, the source of kashering pots and
+of dipping new dishes in a mikveh, things children see at home, especially before Pesach.
+
+```html
+<path d="M14.4 35.4 C16.3 38.4 20 39.4 20 41.3 C20 42.9 17.8 43.2 15.6 43.2 C13.4 43.2 11.2 42.9 11.2 41.3 C11.2 39.4 13.7 38.4 14.4 35.4Z M30.4 35.4 C31.1 38.4 33.6 39.4 33.6 41.3 C33.6 42.9 31.4 43.2 29.2 43.2 C27 43.2 24.8 42.9 24.8 41.3 C24.8 39.4 28.5 38.4 30.4 35.4Z M22.4 33.8 C23.8 37.4 27.2 38.7 27.2 41 C27.2 42.9 24.8 43.2 22.4 43.2 C20 43.2 17.6 42.9 17.6 41 C17.6 38.7 21 37.4 22.4 33.8Z" stroke-width="4"/><path d="M14.4 35.4 C16.3 38.4 20 39.4 20 41.3 C20 42.9 17.8 43.2 15.6 43.2 C13.4 43.2 11.2 42.9 11.2 41.3 C11.2 39.4 13.7 38.4 14.4 35.4Z M30.4 35.4 C31.1 38.4 33.6 39.4 33.6 41.3 C33.6 42.9 31.4 43.2 29.2 43.2 C27 43.2 24.8 42.9 24.8 41.3 C24.8 39.4 28.5 38.4 30.4 35.4Z M22.4 33.8 C23.8 37.4 27.2 38.7 27.2 41 C27.2 42.9 24.8 43.2 22.4 43.2 C20 43.2 17.6 42.9 17.6 41 C17.6 38.7 21 37.4 22.4 33.8Z" fill="var(--hol-flame)" stroke="none"/><path d="M22.4 37 C23.1 39 24.8 39.7 24.8 41 C24.8 42.1 23.6 42.4 22.4 42.4 C21.2 42.4 20 42.1 20 41 C20 39.7 21.7 39 22.4 37Z" fill="var(--hol-gold-lt)" stroke-width="1.4"/><path d="M9.7 19.4 C4.7 18.6 4.5 25 9.7 24.6 M35.1 19.4 C40.1 18.6 40.3 25 35.1 24.6" stroke-width="2.8"/><path d="M9.9 16 C8.3 21.8 10.3 27.2 15.3 28.8 L29.5 28.8 C34.5 27.2 36.5 21.8 34.9 16Z" fill="var(--hol-paper)"/><path d="M9.3 21.4 C17.9 24 26.9 24 35.5 21.4 M14.3 24.6 C14.5 26.6 15.5 28 16.9 28.8" stroke="var(--hol-navy)" stroke-width="1.5"/><ellipse cx="22.4" cy="16" rx="13.1" ry="3.4" fill="var(--hol-paper)"/><ellipse cx="22.4" cy="16.3" rx="10.7" ry="2.1" fill="var(--hol-blue)" stroke-width="1.4"/><path d="M31.4 6.1 C32.6 9.1 31.7 11.1 29.8 10.4 C27.9 9.7 28.5 7.6 31.4 6.1 Z" fill="var(--hol-blue)" stroke-width="1.4"/><path d="M36.8 4.1 C37.4 6.8 36.3 8.2 34.9 7.4 C33.5 6.6 34.2 5 36.8 4.1 Z" fill="var(--hol-blue)" stroke-width="1.4"/><path d="M6.8 5.2 Q7.5 7.9 10.2 8.6 Q7.5 9.3 6.8 12 Q6.1 9.3 3.4 8.6 Q6.1 7.9 6.8 5.2Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/><path d="M41.2 11.6 Q41.7 13.5 43.6 14 Q41.7 14.5 41.2 16.4 Q40.7 14.5 38.8 14 Q40.7 13.5 41.2 11.6Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/>
+```
+
+### 43. Masei · מַסְעֵי
+
+<img src="docs/parasha-emojis/masei.svg" width="96" height="96" alt="A map with a dotted route to a tent">
+
+**Reading:** Numbers 33:1–36:13
+
+**Summary:** The Torah lists all forty-two stops on the Israelites’ journey through the wilderness, sets the
+borders of the Land of Israel, and sets aside cities of refuge where someone who caused a death by accident could
+be safe.
+
+**Emoji: The journeys.** The route of the Israelites’ journeys, with every stop along the way (Numbers 33:1–49).
+
+**Why this emoji:** Masei opens with the list of all forty-two stops between Egypt and the Jordan, and the dotted
+route to a tent shows the whole forty-year journey that closes the book of Numbers.
+
+```html
+<path d="M9.6 8.2 C15.6 6.2 20.4 9.6 26.6 8.2 C32.6 6.8 40.2 5.6 42.8 10.8 C44.8 15 41.8 19.4 43 24.8 C44.2 30.2 45.4 36.4 41.4 40.2 C37.4 44 30.4 40.8 24.6 42.4 C18.4 44.2 10.4 45.4 6.4 41.4 C3.2 37.8 6.4 32.6 5 27.2 C3.6 21.8 3 15.6 5.4 11.8 C6.6 10 7.8 8.8 9.6 8.2Z" fill="var(--hol-gold-lt)"/><path d="M10.8 37.2 C19.4 40.2 30.2 38.6 32.2 33.8 C34.2 29 15.6 30.2 13.4 24.8 C11.4 19.4 19.6 15.4 26.4 19.6" stroke="var(--hol-navy)" stroke-width="1.8" stroke-dasharray="2.2 2.4"/><circle cx="10.8" cy="37.2" r="2.9" fill="var(--hol-red)" stroke-width="1.5"/><circle cx="31.7" cy="34.8" r="2.7" fill="var(--hol-blue)" stroke-width="1.5"/><circle cx="21.5" cy="28.9" r="2.6" fill="var(--hol-green)" stroke-width="1.5"/><circle cx="15.8" cy="19" r="2.5" fill="var(--hol-gold)" stroke-width="1.5"/><path d="M34.2 11.4 L34.2 9" stroke-width="1.6"/><path d="M34.2 11.4 L40.4 23 Q40.8 24 41.2 24 L27.2 24 Q27.6 24 28 23Z" fill="var(--hol-red)" stroke-width="1.8"/><path d="M34.2 18.2 L35.6 24 L32.8 24Z" fill="var(--hol-navy)" stroke-width="1.2"/>
 ```

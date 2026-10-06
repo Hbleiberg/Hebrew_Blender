@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<!-- Preview of the korach parasha emoji (ParashaEmojis.md): the holiday-icons palette, light and dark. -->
+<style>
+svg{--hol-line:#1a2744;--hol-gold:#c9922a;--hol-gold-lt:#f0d080;--hol-paper:#fffaf0;--hol-navy:#2a3b66;--hol-red:#c0392b;--hol-green:#3a7d44;--hol-blue:#3b6fb6;--hol-flame:#f0a030;--hol-ground:#fdf8ef;stroke:var(--hol-line);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+@media (prefers-color-scheme:dark){svg{--hol-line:#e8e0d0;--hol-gold:#e0a832;--hol-gold-lt:#f5d97a;--hol-paper:#e8e0d0;--hol-navy:#5a6d9c;--hol-red:#e0584a;--hol-green:#5aa865;--hol-blue:#6a9ae0;--hol-flame:#f6b84a;--hol-ground:#161c2a}}
+</style>
+<path d="M2.6 23 H24 V24.4 H45.4 V45.4 H2.6Z" fill="var(--hol-gold)" stroke="none"/><path d="M2.6 23 H24 V24.4 H45.4 V29.4 Q34 31.4 24 28.6 Q12 26.8 2.6 29Z" fill="var(--hol-gold-lt)" stroke="none"/><path d="M3.8 23 H16.6 M31.8 24.4 H44.2" stroke-width="2.4"/><path d="M16.6 23.6 L20.6 28 L18 31.8 L21.7 35.4 L21 38.4 L23.8 43.4 L26.5 38.2 L27.2 35 L30.4 31.4 L27.9 28.2 L31.8 25Z" fill="var(--hol-navy)" stroke-width="1.8"/><path d="M22.2 29.6 a2 2 0 1 0 4 0 a2 2 0 1 0 -4 0 M20.5 17 a1.7 1.7 0 1 0 3.4 0 a1.7 1.7 0 1 0 -3.4 0 M25.8 12.4 a1.4 1.4 0 1 0 2.8 0 a1.4 1.4 0 1 0 -2.8 0" fill="var(--hol-gold-lt)" stroke-width="1.4"/><path d="M20.8 13.6 V11.6 M26 9 V7.2" stroke-width="1.3"/><path d="M9.4 22.6 Q8.8 19.8 7.4 19 M9.8 22.6 Q10.6 19.6 12.2 18.8 M38.2 24 Q37.6 21.2 36.2 20.4 M38.6 24 Q39.4 21 41 20.2" stroke="var(--hol-green)" stroke-width="1.8"/>
+</svg>
