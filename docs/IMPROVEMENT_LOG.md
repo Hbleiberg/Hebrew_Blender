@@ -8,8 +8,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P3 (**NEW S462, bulk-apply**) | classroom_dashboard.html | **A preset, `.ivrit` or download changing the city keeps the old city's weather and Shabbat times.** | found S462
-
 - [ ] P4 (**NEW S461 K — gate 2 ANSWERED: use תל-עם**) | classroom_dashboard.html | **The Hebrew UI spells the scheme "TaL AM"** (`scheme_talam`, `reset_confirm`); the other three tools say תל-עם. | found S461
 
 - [ ] P4 (**NEW S462 N, gate 2 ANSWERED: fix all**) | ui-strings.csv | **42 HE go/next arrows read "→"; six FM Back labels start "←"** (loop-findings S462). | found S462
@@ -19,6 +17,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S462 N**) | contact.html | **An English Web3Forms error in the HE status note leads with its period.** | found S462
 
 - [ ] P4 (**NEW S462 N**) | pwa.js | **The iOS install banner hides the footer links at full scroll.** | found S462
+
+- [ ] P4 (**NEW S463 P**) | hebrew_blend_generator.html | **The comment above `saveImportedAsWordList` says a saved list waits for an upload the teacher chooses**; signed in it goes up at once (W5). | found S463
 
 - [ ] P4 (**NEW S460 — pattern radio-set-without-a-question**) | hebrew_dictionary.html | **The three Copy Mode radios sit in no named group** (`d9645fa5`'s idiom fits). | found S460
 
@@ -200,8 +200,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] S–M | flash_cards.html (reads the dashboard's class lists) | **Make student profiles from a class list.** A class already in the dashboard (`hebrewDashboard_settings.rosters`) is re-typed one `prompt()` at a time; a "From a class list…" choice is ~50 lines + 3 keys, a handshake pair. | found: S412 Pass H
 
-- [ ] S | flash_cards.html | **"Print the deck we just drilled" on the results screen.** `wireResultsScreen()` binds Save / Redo / Mistakes / Back only; the only caller of `printCardSheet()` is `#sheetPrintBtn` inside `#sheetMenu`, opened from the setup screen's sticky CTA — and `sheetPracticed` + `savedCards` already exist for exactly this moment (`openSheetMenu` unhides `#sheetPracticedRow` …[full text: IMPROVEMENT_ARCHIVE.md]
-
 - [ ] S | flash_cards.html | **Speech speed reachable mid-drill.** `speakWord()` reads `#ttsRateSlider` live, but the slider sits in `#panelAdvanced` on the setup screen, so a slower 🔊 Hear costs End Practice Early → Advanced → drag → restart. A −/+ pair beside `#fcSpeakBtn` writing the same slider is the torah `#ttLoopPauseBar` mirror shape; ~35 lines, 2 CSV keys, no storage. | found: …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] S | flash_cards.html | **Pause the drill timer.** `startTimer()` is a bare `setInterval`, `stopTimer()` is terminal (clears AND hides `#timerDisplay`; callers: `showResults`, `returnToSetup`, `startTimer`), so an interruption inflates a tracked time or burns a limit. A pause chip on `#timerDisplay` reusing `formatTimerSecs`/`updateTimerDisplay`; ~40 lines, 2 CSV keys, transient state. | …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -298,6 +296,10 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-06 | (S463 close-out) | branch/deploy note | **S463 = P + 2 fixes + micro, PR #310.** No drift; keep-alive #23 green; sw v939→v940; no FM bump; gates clean; smokes green (tools ×2, sync, migration); 2 gates answered.
+
+- [x] 2026-10-06 | `1eeaacb8`, `5528d3b8`, `f71f255b` | generator, dashboard, flash, CSV | (S463) **A share link keeps the teacher's font settings (gate 2); a new city brings its own weather and Shabbat times; Print This Card Set (micro).** | findings S463.
+
 - [x] 2026-10-06 | (S462 close-out) | branch/deploy note | **S462 = N + 2 fixes + micro, PR #310.** No drift; keep-alive #23 green; sw v938→v939; no FM bump; gates clean; 4 gates answered.
 
 - [x] 2026-10-06 | `dbed7d82`, `867ce791`, `4c11abf8` | dashboard, generator, CSV | (S462) **The Weather card follows a preset; no letter twice in a row (gate 2); rename a preset (micro).** | findings S462.
@@ -312,21 +314,17 @@ _(none)_
 
 - [x] 2026-10-05 | (S460 close-out) | branch/deploy note | **S460 = L + 4 fixes, PR #310.** Drift: #308 + 4 outside-loop dashboard commits (v932→v936), deploy green; backend none; sw v936→v937; no FM bump; gates clean; no smokes; 4 gates answered.
 
-- [x] 2026-10-05 | `d9645fa5` | classroom_dashboard.html | (S458's P4) **The drawer's 10 radio groups are named by their labels.** | `rg.mjs` AX tree, 4 cells: HEAD 0/10 → 10/10.
-
 - [x] 2026-10-05 | `9a2e2f0a`, `7de703e5` | torah, FM, CSV | (S460 L, gate 2) **The Torah FAQ names JPS 1917; the FM FAQ drops "only when you export".** | `jps.mjs`, `faq.mjs` 4 cells vs HEAD.
 
 - [x] 2026-10-05 | (S459 close-out) | branch/deploy note | **S459 = E + 4 fixes, PR #308.** No drift (main `c0f3b57`, keep-alive #22 green); sw v931→v932 (ivrit-saves); no FM bump; check-i18n + check-inline-js clean; 7 smokes green; deferred: micro-feature.
 
 - [x] 2026-10-05 | `81aff4bf`, `0dbb0002` | source-data/hebrew_emojis.csv, ops.md, README | (S459 E) **The emoji CSV source keeps `a86b5a16`'s 13 fixes; ops.md says `?v=2`; README names every corpus consumer.** | CSV = JSON 13 → 0; census arm 1 → 0.
 
-- [x] 2026-10-05 | (S458 close-out) | branch/deploy note | **S458 = A (+A2) + 4 fixes, PR #308.** No drift; sw v930→v931; no FM bump; gates clean; 4 smokes green; deferred: micro-feature.
-
-- [x] 2026-10-05 | `ea43be7e`, `070582d8`, `2bb2ead0`, `6409fa98` | dashboard, flash, FM, generator | (S458) **Radios take the keyboard; an old tab no longer reverts a newer one; a non-finite sheet scale no longer NaNs a letter; Export PDF stops doubling its name.** | findings S458.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-06 | **S463** | iters: 1 pass (**P**) + 2 fixes + micro (2) = **5** | tools: generator, dashboard, flash | patterns fixed: bulk-apply ×1, share-link (NEW) ×1 | pass run: P | SW: v939→v940
 
 - 2026-10-06 | **S462** | iters: 1 pass (**N**) + 2 fixes + micro (2) = **5** | tools: dashboard, generator ×2 | patterns fixed: bulk-apply ×1 | pass run: N | SW: v938→v939
 
@@ -366,17 +364,17 @@ _(none)_
 
 - 2026-10-01 | **S444** | iters: 1 pass (**A**) + 4 fixes = **5** | tools: torah ×2, index, dashboard | patterns fixed: stored-json-of-the-wrong-shape-trusted ×1, copy-claims-success-on-a-refused-clipboard ×2 | pass run: A | SW: v911→v912
 
-- 2026-10-01 | **S443** | iters: 1 pass (**B**) + 4 fixes = **5** | tools: shared ×1 (ivrit-saves), FM, torah, dashboard, flash, generator, trope (comment) | patterns fixed: ring-below-3-on-light ×2 | pass run: B | SW: v910→v911
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S462 (2026-10-06):** dashboard, generator S462 · dictionary S461 · resources, torah, FM S460 · ivrit-saves S459 · flash S458 · trope S455 · contact S454 · account S449 · index S446 · privacy, terms, 404 S442.
+- **Snapshot S463 (2026-10-06):** generator, dashboard, flash S463 · dictionary S461 · resources, torah, FM S460 · ivrit-saves S459 · trope S455 · contact S454 · account S449 · index S446 · privacy, terms, 404 S442.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
 - **`forward-arrow-points-back-in-rtl-copy`** (NEW S462 N; 48 cells open): ACTIVE, streak 0. An HE string keeps the English arrow. Detection: the S462 CSV census; exempt "(→)", A→Z.
 
-- **`bulk-apply-skips-a-renderer-the-control-runs`** (NEW S461; FIXED ×2): ACTIVE, streak 0. A control re-renders; `applySettings` never does. Detection: `x3/parity.mjs`, `n462/loc.mjs`. Open: `location`.
+- **`share-link-writes-the-teachers-saved-preferences`** (NEW S463 P, `1eeaacb8`): ACTIVE, streak 0. A `?s=` restore saves suite-wide pref keys. Detection: `p463/link-fix.mjs` (non-default prefs + a link carrying them; keys + prefs row hold). Next: dictionary `?s=`.
+
+- **`bulk-apply-skips-a-renderer-the-control-runs`** (NEW S461; FIXED ×3): ACTIVE, streak 0. A control re-renders; `applySettings` never does. Detection: `x3/parity.mjs`, `p463/loc-fix.mjs` (stubs per city). Open: none known.
 
 - **`radio-set-without-a-question`** (NEW S460, `d9645fa5`): ACTIVE, streak 0. Radios with no named radiogroup/group/fieldset. Detection: walk each static radio up to its group; a hit lacks one or its name (JS-built: read the builders). Open: dashboard `videoLayout`, dictionary …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -668,7 +666,7 @@ _(none)_
 
 ### Discovery-pass rotation (run one per session, stalest first)
 
-- P accounts & cloud (one surface): 2026-10-02 (**S449 — 6th P, `account.html`'s first P alone (S435 → 14 sessions). 8 arms: smoke-account-page 65/65 + smoke-account 112/112 with the pinned SDK; arm 1 controlled (a planted anonymous write → 64/65); static arms 4b–7 (forgetRow 0, CSP 11/11 + gtag keys, CORE_ASSETS, TOOLS = CHECK), each plant fired; a two-tab switch probe; the live project …[full …[full text: IMPROVEMENT_ARCHIVE.md]
+- P accounts & cloud (one surface): 2026-10-06 (**S463 — 7th P, the generator's own wiring (S449's P-next): smoke-tools 23/23 (plant 22/23), sync 207, migration 47; W1–W6 on a fake cloud (rename on 2 devices, ?s=, ?ak=, word list); static 30/30 (plants 9/9); live read-only. FIXED `1eeaacb8` (gate 2). P-next: the hub.**)
 
 - O deslop — AI-design-tell sweep (one surface): 2026-09-08 (**S346 — 6th O, `flash_cards.html`. ⚑ BLOCKED HERE TWICE (S399, S403) — NOT "needs an attended session". Clone + the 4 parsers install fine; EXECUTING the detector is refused by the sandbox's auto-mode classifier ("Code from External"), and the refusal names the remedy: the maintainer adds a Bash permission rule for the detector (or …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -700,4 +698,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-05 (**S456 — sliders on 7 tools: name, value heard, keys, size; plants fired (findings S456). FIXED 4. F-next: search fields.**)
 
-**Next session (S463):** **BRANCH/PR: S460–S462 on `claude/zealous-hamilton-qlwsp2` → draft PR #310 (base `a2cf7f8`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v939**, FM **5.59**, SDK **2.116.0**. ⚑ Stalest: P, M, G; O blocked. ⚑ Ready (answered): HE arrows, FM footer, תל-עם. ⚑ Untaken: city bulk-apply (P3), contact zoom + bidi.
+**Next session (S464):** **BRANCH/PR: S460–S463 on `claude/zealous-hamilton-qlwsp2` → draft PR #310 (base `a2cf7f8`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v940**, FM **5.59**, SDK **2.116.0**. ⚑ Stalest: M, G; O blocked. ⚑ Ready (answered) — take first: HE arrows, FM footer, תל-עם. ⚑ Untaken: contact zoom + bidi, pwa banner; the new share-link pattern on the dictionary's `?s=`.
