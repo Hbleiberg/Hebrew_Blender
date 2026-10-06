@@ -33,17 +33,17 @@ what it shows, why it was chosen, and its markup.
 | 10 | Miketz | מִקֵּץ | <img src="docs/parasha-emojis/miketz.svg" width="28" height="28" alt=""> | The silver goblet in the sack |
 | 11 | Vayigash | וַיִּגַּשׁ | <img src="docs/parasha-emojis/vayigash.svg" width="28" height="28" alt=""> | Down to Egypt |
 | 12 | Vayechi | וַיְחִי | <img src="docs/parasha-emojis/vayechi.svg" width="28" height="28" alt=""> | Crossed hands of blessing |
-| 13 | Shemot | שְׁמוֹת |  |  |
-| 14 | Va'eira | וָאֵרָא |  |  |
-| 15 | Bo | בֹּא |  |  |
-| 16 | Beshalach | בְּשַׁלַּח |  |  |
-| 17 | Yitro | יִתְרוֹ |  |  |
-| 18 | Mishpatim | מִשְׁפָּטִים |  |  |
-| 19 | Terumah | תְּרוּמָה |  |  |
-| 20 | Tetzaveh | תְּצַוֶּה |  |  |
-| 21 | Ki Tisa | כִּי תִשָּׂא |  |  |
-| 22 | Vayakhel | וַיַּקְהֵל |  |  |
-| 23 | Pekudei | פְקוּדֵי |  |  |
+| 13 | Shemot | שְׁמוֹת | <img src="docs/parasha-emojis/shemot.svg" width="28" height="28" alt=""> | The basket in the reeds |
+| 14 | Va'eira | וָאֵרָא | <img src="docs/parasha-emojis/vaeira.svg" width="28" height="28" alt=""> | The Nile turned to blood |
+| 15 | Bo | בֹּא | <img src="docs/parasha-emojis/bo.svg" width="28" height="28" alt=""> | The marked doorway |
+| 16 | Beshalach | בְּשַׁלַּח | <img src="docs/parasha-emojis/beshalach.svg" width="28" height="28" alt=""> | The split sea |
+| 17 | Yitro | יִתְרוֹ | <img src="docs/parasha-emojis/yitro.svg" width="28" height="28" alt=""> | The Ten Commandments |
+| 18 | Mishpatim | מִשְׁפָּטִים | <img src="docs/parasha-emojis/mishpatim.svg" width="28" height="28" alt=""> | Help with the load |
+| 19 | Terumah | תְּרוּמָה | <img src="docs/parasha-emojis/terumah.svg" width="28" height="28" alt=""> | The Ark of the Covenant |
+| 20 | Tetzaveh | תְּצַוֶּה | <img src="docs/parasha-emojis/tetzaveh.svg" width="28" height="28" alt=""> | The breastplate |
+| 21 | Ki Tisa | כִּי תִשָּׂא | <img src="docs/parasha-emojis/kitisa.svg" width="28" height="28" alt=""> | The golden calf |
+| 22 | Vayakhel | וַיַּקְהֵל | <img src="docs/parasha-emojis/vayakhel.svg" width="28" height="28" alt=""> | Shabbat candles |
+| 23 | Pekudei | פְקוּדֵי | <img src="docs/parasha-emojis/pekudei.svg" width="28" height="28" alt=""> | Cloud by day, fire by night |
 | 24 | Vayikra | וַיִּקְרָא |  |  |
 | 25 | Tzav | צַו |  |  |
 | 26 | Shemini | שְׁמִינִי |  |  |
@@ -307,4 +307,216 @@ is the blessing parents still give their children every Friday night, a link chi
 
 ```html
 <path d="M16.1 24.7 L21.3 29.6 L38.5 12.5 L31.8 6.3Z" fill="var(--hol-navy)"/><path d="M16.1 24.7 L21.3 29.6 L23.6 27.3 L18.2 22.3Z" fill="var(--hol-gold)" stroke-width="1.5"/><path d="M21.9 28.9 C21.2 31.9 19.1 34.4 17.1 35.7 L10.2 29.3 C11.4 27.2 13.8 24.9 16.6 24.1Z" stroke-width="2.2"/><path d="M17.1 33.9 L14.7 39.7 M15.1 32.7 L10.2 39.2 M13.2 31.2 L7.1 37.2 M11.9 29.4 L5.7 33.6 M14.4 26.4 L8.2 26" stroke-width="4.6"/><path d="M21.9 28.9 C21.2 31.9 19.1 34.4 17.1 35.7 L10.2 29.3 C11.4 27.2 13.8 24.9 16.6 24.1Z" fill="var(--hol-gold-lt)" stroke="none"/><path d="M17.1 33.9 L14.7 39.7 M15.1 32.7 L10.2 39.2 M13.2 31.2 L7.1 37.2 M11.9 29.4 L5.7 33.6 M14.4 26.4 L8.2 26" stroke="var(--hol-gold-lt)" stroke-width="2.5"/><path d="M26.7 29.6 L31.9 24.7 L16.2 6.3 L9.5 12.5Z" fill="var(--hol-blue)"/><path d="M26.7 29.6 L31.9 24.7 L29.8 22.3 L24.4 27.3Z" fill="var(--hol-gold)" stroke-width="1.5"/><path d="M26.1 28.9 C26.8 31.9 28.9 34.4 30.9 35.7 L37.8 29.3 C36.6 27.2 34.2 24.9 31.4 24.1Z" stroke-width="2.2"/><path d="M30.9 33.9 L33.3 39.7 M32.9 32.7 L37.8 39.2 M34.8 31.2 L40.9 37.2 M36.1 29.4 L42.3 33.6 M33.6 26.4 L39.8 26" stroke-width="4.6"/><path d="M26.1 28.9 C26.8 31.9 28.9 34.4 30.9 35.7 L37.8 29.3 C36.6 27.2 34.2 24.9 31.4 24.1Z" fill="var(--hol-gold-lt)" stroke="none"/><path d="M30.9 33.9 L33.3 39.7 M32.9 32.7 L37.8 39.2 M34.8 31.2 L40.9 37.2 M36.1 29.4 L42.3 33.6 M33.6 26.4 L39.8 26" stroke="var(--hol-gold-lt)" stroke-width="2.5"/>
+```
+
+## Exodus
+
+### 13. Shemot · שְׁמוֹת
+
+<img src="docs/parasha-emojis/shemot.svg" width="96" height="96" alt="A woven basket floating among reeds">
+
+**Reading:** Exodus 1:1–6:1
+
+**Summary:** A new Pharaoh makes the Israelites slaves, baby Moses is saved from the Nile in a basket, and God
+speaks to Moses from a burning bush and sends him to tell Pharaoh, “Let My people go.”
+
+**Emoji: The basket in the reeds.** Baby Moses’ basket hidden among the reeds of the Nile, where Pharaoh’s
+daughter finds him (Exodus 2:3–6).
+
+**Why this emoji:** Shemot begins the story of the Exodus, and Moses’ basket on the Nile is where it turns: a
+baby saved from Pharaoh’s decree grows up to lead his people out of Egypt, and the basket is the picture children
+remember.
+
+```html
+<path d="M13.2 38.2 Q15.5 24 12.6 9.4 Q9.3 23.5 8 37.8Z M10.3 37.7 Q8.7 22.4 4.6 7.4 Q2.3 23.1 4.9 38.3Z M40.2 37.8 Q38.8 24.5 35.4 11.4 Q32.6 25 35 38.2Z M43.1 38.2 Q45.6 22.5 43.2 6.4 Q39.2 22 37.7 37.8Z" fill="var(--hol-green)" stroke-width="1.4"/><path d="M9.4 38 V17.4 M9.4 10 V7.8 M38.8 38 V19.4 M38.8 12.4 V10.2" stroke-width="1.6"/><path d="M7.8 15.8 V11.6 A1.6 1.6 0 0 1 11 11.6 V15.8 A1.6 1.6 0 0 1 7.8 15.8Z M37.2 17.8 V14 A1.6 1.6 0 0 1 40.4 14 V17.8 A1.6 1.6 0 0 1 37.2 17.8Z" fill="var(--hol-gold)" stroke-width="1.5"/><path d="M21.4 26.4 V20.4 C24.8 18.2 29 18.2 31.6 20.6 C34.4 19.2 35.8 21.4 35 26.4Z" fill="var(--hol-paper)"/><path d="M31.6 20.6 C32.4 22 32.4 23.4 31.8 24.8 M22.6 23.2 C26.4 21.8 29.4 22 31 22.8" stroke="var(--hol-navy)" stroke-width="1.3"/><path d="M11.4 25.4 A10 9.4 0 0 1 21.4 16 V25.4Z" fill="var(--hol-gold)"/><path d="M21.4 18.6 L14.6 25.4 M12.8 20.8 L17.4 25.4 M17 17 L21.4 21.4" stroke-width="1.2"/><path d="M21.2 17.2 V25.4" stroke-width="4.6"/><path d="M21.2 17.2 V25.4" stroke="var(--hol-gold-lt)" stroke-width="2.6"/><path d="M12 26.4 C11.2 33.4 15 39 21 39 H27 C33 39 36.8 33.4 36 26.4Z" fill="var(--hol-gold)"/><path d="M11 35 L15 39 M12.6 27.4 L11 29 M11.4 27.4 L23 39 M20.6 27.4 L11 37 M19.4 27.4 L31 39 M28.6 27.4 L17 39 M27.4 27.4 L37 37 M36.6 27.4 L25 39 M35.4 27.4 L37 29 M37 35 L33 39" stroke-width="1.2"/><rect x="10.4" y="24.1" width="27.2" height="4.6" rx="2.3" fill="var(--hol-gold-lt)"/><path d="M4 37.6 Q8 35.6 12 37.6 T20 37.6 T28 37.6 T36 37.6 T44 37.6 V43.6 H4Z" fill="var(--hol-blue)"/>
+```
+
+### 14. Va'eira · וָאֵרָא
+
+<img src="docs/parasha-emojis/vaeira.svg" width="96" height="96" alt="Red river waves with reeds and a water jar">
+
+**Reading:** Exodus 6:2–9:35
+
+**Summary:** God promises to bring the Israelites out of Egypt, Aaron’s staff turns into a snake, and Egypt is
+struck by the first seven plagues, from the Nile turning to blood to frogs and hail.
+
+**Emoji: The Nile turned to blood.** The first plague: the water of the Nile turns to blood (Exodus 7:14–25).
+
+**Why this emoji:** Va’eira brings the first seven plagues, and the first one strikes the Nile, the river all of
+Egypt depended on, opening the contest between God and Pharaoh that fills the parasha.
+
+```html
+<path d="M12.4 29 V14.4 M12.4 6.4 V4.2" stroke-width="1.6"/><path d="M11.2 28.7 Q9.4 17.3 5.6 6.2 Q3.2 18.1 6 29.3Z M18.5 29.5 Q21.7 20.5 19.6 10.4 Q15.8 19.3 13.5 28.5Z M21.6 29.9 Q25.4 24.7 24.4 17.6 Q20.5 22.7 17.6 28.1Z" fill="var(--hol-green)" stroke-width="1.4"/><path d="M10.8 12.8 V8 A1.6 1.6 0 0 1 14 8 V12.8 A1.6 1.6 0 0 1 10.8 12.8Z" fill="var(--hol-gold)" stroke-width="1.5"/><path d="M30.7 11.5 C25.8 10.4 24.7 15.2 27.8 16.6 M37.7 11.5 C42.6 10.4 43.7 15.2 40.6 16.6" stroke-width="1.8"/><path d="M30.5 28 C25.6 26.9 25 19.6 26.9 16.3 C28.3 14.1 30.5 13.5 30.9 11.9 L30.9 10.8 L29.4 9.7 L29.4 7.8 L39 7.8 L39 9.7 L37.5 10.8 L37.5 11.9 C37.9 13.5 40.1 14.1 41.5 16.3 C43.4 19.6 42.8 26.9 37.9 28Z" fill="var(--hol-flame)"/><path d="M26.3 20.1 C31.3 21.6 37.1 21.6 42.1 20.1" stroke="var(--hol-navy)" stroke-width="1.3"/><ellipse cx="34.2" cy="7.8" rx="4" ry="1.4" fill="var(--hol-red)" stroke-width="1.4"/><path d="M5.6 29 Q8.7 26.8 11.7 29 Q14.8 31.2 17.9 29 Q20.9 26.8 24 29 Q27.1 31.2 30.1 29 Q33.2 26.8 36.3 29 Q39.3 31.2 42.4 29 M11.7 35 Q14.8 37.2 17.9 35 Q20.9 32.8 24 35 Q27.1 37.2 30.1 35 Q33.2 32.8 36.3 35 M5.6 40.8 Q8.7 38.6 11.7 40.8 Q14.8 43 17.9 40.8 Q20.9 38.6 24 40.8 Q27.1 43 30.1 40.8 Q33.2 38.6 36.3 40.8 Q39.3 43 42.4 40.8" stroke-width="5.8"/><path d="M5.6 29 Q8.7 26.8 11.7 29 Q14.8 31.2 17.9 29 Q20.9 26.8 24 29 Q27.1 31.2 30.1 29 Q33.2 26.8 36.3 29 Q39.3 31.2 42.4 29 M11.7 35 Q14.8 37.2 17.9 35 Q20.9 32.8 24 35 Q27.1 37.2 30.1 35 Q33.2 32.8 36.3 35 M5.6 40.8 Q8.7 38.6 11.7 40.8 Q14.8 43 17.9 40.8 Q20.9 38.6 24 40.8 Q27.1 43 30.1 40.8 Q33.2 38.6 36.3 40.8 Q39.3 43 42.4 40.8" stroke="var(--hol-red)" stroke-width="3.4"/>
+```
+
+### 15. Bo · בֹּא
+
+<img src="docs/parasha-emojis/bo.svg" width="96" height="96" alt="A doorway with red marks on its posts">
+
+**Reading:** Exodus 10:1–13:16
+
+**Summary:** Locusts and darkness strike Egypt, God gives the mitzvah of the new month, and after the tenth
+plague the Israelites eat the first Passover meal and leave Egypt in a hurry.
+
+**Emoji: The marked doorway.** The Israelites mark their doorposts on the night of the first Passover (Exodus
+12:7, 12:13).
+
+**Why this emoji:** Bo is the parasha of the first Passover, and the marked doorposts are its central sign: the
+Israelites mark their homes, God passes over them, and that night they leave Egypt, the moment retold every year
+at the Seder.
+
+```html
+<path d="M4.2 41.6 H43.8" stroke-width="2.4"/><rect x="18" y="13.6" width="12" height="28" fill="var(--hol-gold-lt)"/><path d="M20.4 16.6 H27.6 V24.8 H20.4Z M20.4 29.2 H27.6 V37.2 H20.4Z" stroke="var(--hol-navy)" stroke-width="1.3"/><circle cx="27.4" cy="27" r="1.1" fill="var(--hol-navy)" stroke="none"/><path d="M11.8 12.6 H18 V41.6 H11.8Z M30 12.6 H36.2 V41.6 H30Z" fill="var(--hol-gold)"/><rect x="9.2" y="6.6" width="29.6" height="6.4" rx="1.4" fill="var(--hol-gold)"/><rect x="10.2" y="38" width="27.6" height="3.6" rx="0.8" fill="var(--hol-gold-lt)"/><path d="M14.6 10.1 Q24 8.9 33.4 10 M14.9 16.6 Q15.4 22.6 14.7 28.6 M33.1 16.6 Q32.6 22.6 33.3 28.6" stroke="var(--hol-red)" stroke-width="2.8"/>
+```
+
+### 16. Beshalach · בְּשַׁלַּח
+
+<img src="docs/parasha-emojis/beshalach.svg" width="96" height="96" alt="Two walls of water with a dry path between them">
+
+**Reading:** Exodus 13:17–17:16
+
+**Summary:** The Israelites cross the sea on dry land and sing the Song of the Sea, Miriam leads the women with
+timbrels, and in the desert God feeds the people with manna and brings water from a rock.
+
+**Emoji: The split sea.** The sea splits so the Israelites can walk through on dry land (Exodus 14:21–29).
+
+**Why this emoji:** The crossing of the sea is the high point of the Exodus, and this Shabbat is called Shabbat
+Shirah after the song the Israelites sing on the far shore; two walls of water with a dry path show the miracle
+at a glance.
+
+```html
+<path d="M14 43.5 V20 Q24 17.4 34 20 V43.5Z" fill="var(--hol-gold)"/><path d="M17.4 43.5 L22.9 18.4 H25.1 L30.6 43.5Z" fill="var(--hol-gold-lt)" stroke-width="1.4"/><path d="M6.4 43.5 C6.4 34 7.4 26 7.8 20 C8.2 10.6 9.8 5 13.6 5 C18.8 5 21.6 9 20.4 12.6 C19.4 15.2 16.4 15.8 15.2 13.8 C14.4 12.6 13 13.4 13.4 15.6 C13.8 17.6 15.6 18.6 15.6 21 L15.6 43.5Z M41.6 43.5 C41.6 34 40.6 26 40.2 20 C39.8 10.6 38.2 5 34.4 5 C29.2 5 26.4 9 27.6 12.6 C28.6 15.2 31.6 15.8 32.8 13.8 C33.6 12.6 35 13.4 34.6 15.6 C34.2 17.6 32.4 18.6 32.4 21 L32.4 43.5Z" fill="var(--hol-blue)"/><path d="M9.4 21 C9 13.8 11.2 8.6 14.8 8.6 C17.4 8.6 18.4 11 17 12.4 M38.6 21 C39 13.8 36.8 8.6 33.2 8.6 C30.6 8.6 29.6 11 31 12.4" stroke="var(--hol-paper)" stroke-width="2.2"/><path d="M7.6 30.6 Q9.6 28.8 11.6 30.6 T15.6 30.6 M7 37.4 Q9 35.6 11 37.4 T15 37.4 M40.4 30.6 Q38.4 28.8 36.4 30.6 T32.4 30.6 M41 37.4 Q39 35.6 37 37.4 T33 37.4" stroke="var(--hol-paper)" stroke-width="1.5"/>
+```
+
+### 17. Yitro · יִתְרוֹ
+
+<img src="docs/parasha-emojis/yitro.svg" width="96" height="96" alt="The two tablets shining on a hill">
+
+**Reading:** Exodus 18:1–20:23
+
+**Summary:** Moses’s father-in-law Jethro advises him to appoint judges to help him, and at Mount Sinai, with
+thunder, lightning and the sound of the shofar, God gives the Ten Commandments.
+
+**Emoji: The Ten Commandments.** The two tablets of the Ten Commandments, shining on Mount Sinai (Exodus
+20:1–14).
+
+**Why this emoji:** Yitro is the parasha of Mount Sinai, and the Ten Commandments are its heart, so much so that
+many congregations stand while they are read; the rays and the mountaintop mark the moment they were given and
+set it apart from the Shavuot holiday icon, which shows two plain tablets.
+
+```html
+<path d="M10.5 26 L6.2 27.2 M10.5 18.8 L6.2 17.6 M14.1 12.5 L11 9.4 M20.4 8.9 L19.2 4.6 M27.6 8.9 L28.8 4.6 M33.9 12.5 L37 9.4 M37.5 18.8 L41.8 17.6 M37.5 26 L41.8 27.2" stroke="var(--hol-gold)" stroke-width="2.4"/><path d="M3.6 43.4 C8.4 37.2 15.6 32.4 24 32.4 C32.4 32.4 39.6 37.2 44.4 43.4Z" fill="var(--hol-gold-lt)"/><path d="M28.4 32.8 C35 33.8 40.6 38 44.4 43.4 H33.6 C33 39 31.4 35.4 28.4 32.8Z" fill="var(--hol-gold)" stroke="none"/><path d="M3.6 43.4 C8.4 37.2 15.6 32.4 24 32.4 C32.4 32.4 39.6 37.2 44.4 43.4Z"/><path d="M15 33.4 V15.8 A4.5 4.5 0 0 1 24 15.8 A4.5 4.5 0 0 1 33 15.8 V33.4Z" fill="var(--hol-paper)"/><path d="M24 16 V33.2" stroke="var(--hol-navy)" stroke-width="1.4"/><path d="M17.4 18.8 H21.8 M26.2 18.8 H30.6 M17.4 23 H21.8 M26.2 23 H30.6 M17.4 27.2 H21.8 M26.2 27.2 H30.6 M17.4 31.4 H20.6 M26.2 31.4 H29.4" stroke="var(--hol-navy)" stroke-width="1.5"/>
+```
+
+### 18. Mishpatim · מִשְׁפָּטִים
+
+<img src="docs/parasha-emojis/mishpatim.svg" width="96" height="96" alt="A donkey carrying a load">
+
+**Reading:** Exodus 21:1–24:18
+
+**Summary:** God gives laws for living together fairly, such as caring for the stranger, the widow and the orphan
+and returning a lost animal, and the people promise, “We will do and we will listen.”
+
+**Emoji: Help with the load.** A donkey with a heavy load: the Torah says to help even someone you dislike when
+their donkey falls under its load (Exodus 23:4–5).
+
+**Why this emoji:** Mishpatim is a parasha of everyday laws, and helping with a fallen donkey’s load, even the
+donkey of someone you dislike, shows its idea of fairness and kindness in a picture children understand.
+
+```html
+<path d="M18.4 31 V40.4 M22.8 31 V40.4 M31.6 31 V40.4 M35.8 31 V40.4" stroke-width="5"/><path d="M18.4 31 V40.4 M22.8 31 V40.4 M31.6 31 V40.4 M35.8 31 V40.4" stroke="var(--hol-gold-lt)" stroke-width="2.8"/><path d="M16.4 41.6 H20.4 M20.8 41.6 H24.8 M29.6 41.6 H33.6 M33.8 41.6 H37.8" stroke-width="2.6" stroke-linecap="butt"/><path d="M38.6 25.4 C41 26.6 41.8 29.4 41.6 32.6" stroke-width="1.8"/><path d="M41.6 31.4 C43 32.6 43 35 41.6 36 C40.2 35 40.2 32.6 41.6 31.4Z" fill="var(--hol-navy)" stroke-width="1.3"/><path d="M15.6 12.4 C15.4 8.6 16.4 5.4 18.4 3.6 C19.8 6 19.4 9.8 17.8 13Z" fill="var(--hol-gold-lt)" stroke-width="1.6"/><path d="M6.4 22.6 C9 23.6 11.6 22.6 13.4 21.4 C14.6 23.4 15 26.4 15.2 29 C15.4 32 17 33.6 20 33.6 L33 33.6 C37 33.6 39.2 31.4 39.2 27.6 C39.2 23.8 37 21.8 33.4 21.8 L22.6 21.8 C20 21.8 18.8 18 17.6 14.6 C17 12.6 15.4 11 13.4 11.2 C11 11.4 8.6 14 6.6 17 C5 19.2 4.6 21.8 6.4 22.6Z" fill="var(--hol-gold-lt)"/><path d="M12.2 12.2 C11 8.6 11.2 5 12.6 3.4 C14.6 5.4 15.2 9.2 14.6 12.6Z" fill="var(--hol-gold-lt)" stroke-width="1.6"/><circle cx="11.6" cy="15.4" r="1.25" fill="var(--hol-navy)" stroke="none"/><path d="M6 20.4 Q7 19.6 7.8 20.6" stroke="var(--hol-navy)" stroke-width="1.2"/><path d="M19.6 21.8 H36.2 V26.6 Q36.2 28.4 34.4 28.4 H21.4 Q19.6 28.4 19.6 26.6Z" fill="var(--hol-blue)" stroke-width="1.6"/><rect x="20" y="12.2" width="18" height="9.8" rx="4.9" fill="var(--hol-red)"/><path d="M25.2 12.4 V21.8 M32.8 12.4 V21.8" stroke="var(--hol-gold-lt)" stroke-width="1.9"/>
+```
+
+### 19. Terumah · תְּרוּמָה
+
+<img src="docs/parasha-emojis/terumah.svg" width="96" height="96" alt="The Ark with two pairs of golden wings">
+
+**Reading:** Exodus 25:1–27:19
+
+**Summary:** God asks the Israelites to bring gifts to build the Mishkan, a portable sanctuary, and describes the
+Ark with its golden cherubim, the table, the menorah and the curtains.
+
+**Emoji: The Ark of the Covenant.** The Ark of the Covenant with its two golden cherubim (Exodus 25:10–22).
+
+**Why this emoji:** Terumah describes the Mishkan and everything in it, and the Ark comes first: it holds the
+tablets of the covenant and stands in the holiest place, with the golden cherubim on its cover.
+
+```html
+<path d="M9.7 23.8 C6.1 18.5 5.6 12.2 8.9 8.3 C11.1 5.7 14.3 4.3 17.2 4.2 Q18.6 5.9 16.9 7.3 Q18.1 9 16.2 10.4 Q17.3 12 15.3 13.3 Q16.5 14.8 14.5 16 C14.5 18.3 15.2 20.3 16.3 22.1Z M38.3 23.8 C41.9 18.5 42.4 12.2 39.1 8.3 C36.9 5.7 33.7 4.3 30.8 4.2 Q29.4 5.9 31.1 7.3 Q29.9 9 31.8 10.4 Q30.7 12 32.7 13.3 Q31.5 14.8 33.5 16 C33.5 18.3 32.8 20.3 31.7 22.1Z" fill="var(--hol-gold)"/><path d="M9.6 23.2 C7.4 17.2 8.4 11 12.6 8 C15.4 6 18.8 5.4 21.6 6 Q22.6 8 20.6 9 Q21.4 10.9 19.2 11.8 Q19.9 13.6 17.6 14.4 Q18.4 16.1 16.2 16.8 C15.6 19 15.8 21.2 16.4 23.2Z M38.4 23.2 C40.6 17.2 39.6 11 35.4 8 C32.6 6 29.2 5.4 26.4 6 Q25.4 8 27.4 9 Q26.6 10.9 28.8 11.8 Q28.1 13.6 30.4 14.4 Q29.6 16.1 31.8 16.8 C32.4 19 32.2 21.2 31.6 23.2Z" fill="var(--hol-gold-lt)"/><path d="M20.6 9 C17.4 9 14.2 10.4 12 13 M19.2 11.8 C16.8 12 14.4 13.4 13 15.8 M17.6 14.4 C15.8 14.6 14.4 16 13.6 18 M27.4 9 C30.6 9 33.8 10.4 36 13 M28.8 11.8 C31.2 12 33.6 13.4 35 15.8 M30.4 14.4 C32.2 14.6 33.6 16 34.4 18" stroke="var(--hol-navy)" stroke-width="1.3"/><path d="M5.6 35.4 H42.4" stroke-width="4.2"/><path d="M5.6 35.4 H42.4" stroke="var(--hol-gold)" stroke-width="2.2"/><rect x="8" y="23.2" width="32" height="3.6" rx="0.8" fill="var(--hol-gold-lt)"/><rect x="10" y="26.8" width="28" height="13.8" fill="var(--hol-gold)"/><rect x="14" y="29.8" width="20" height="5" rx="1" fill="var(--hol-gold-lt)" stroke-width="1.4"/><path d="M5 38.6 H43" stroke-width="4.6"/><path d="M5 38.6 H43" stroke="var(--hol-gold)" stroke-width="2.4"/><path d="M11.8 35.4 H15 V41.8 H11.8Z M33 35.4 H36.2 V41.8 H33Z" fill="var(--hol-gold-lt)" stroke-width="1.4"/>
+```
+
+### 20. Tetzaveh · תְּצַוֶּה
+
+<img src="docs/parasha-emojis/tetzaveh.svg" width="96" height="96" alt="A breastplate with twelve colored stones">
+
+**Reading:** Exodus 27:20–30:10
+
+**Summary:** God commands pure olive oil for a lamp that always burns and describes the special clothes of Aaron
+and his sons, including the breastplate with twelve stones for the twelve tribes.
+
+**Emoji: The breastplate.** The High Priest’s breastplate with twelve stones, one for each tribe (Exodus
+28:15–21).
+
+**Why this emoji:** Tetzaveh is about the priests’ clothes, and the breastplate is the most striking of them: its
+twelve stones carry the names of the twelve tribes, so the High Priest brings all of Israel with him when he
+serves.
+
+```html
+<rect x="8" y="8.6" width="32" height="32" rx="2.8" fill="var(--hol-gold)"/><path d="M13.6 11.8 H17.2 L18.8 13.4 V15.4 L17.2 17 H13.6 L12 15.4 V13.4Z M30.8 25.4 H34.4 L36 27 V29 L34.4 30.6 H30.8 L29.2 29 V27Z" fill="var(--hol-red)" stroke-width="1.4"/><path d="M22.2 11.8 H25.8 L27.4 13.4 V15.4 L25.8 17 H22.2 L20.6 15.4 V13.4Z M22.2 32.2 H25.8 L27.4 33.8 V35.8 L25.8 37.4 H22.2 L20.6 35.8 V33.8Z" fill="var(--hol-gold-lt)" stroke-width="1.4"/><path d="M30.8 11.8 H34.4 L36 13.4 V15.4 L34.4 17 H30.8 L29.2 15.4 V13.4Z M13.6 32.2 H17.2 L18.8 33.8 V35.8 L17.2 37.4 H13.6 L12 35.8 V33.8Z" fill="var(--hol-green)" stroke-width="1.4"/><path d="M13.6 18.6 H17.2 L18.8 20.2 V22.2 L17.2 23.8 H13.6 L12 22.2 V20.2Z M30.8 32.2 H34.4 L36 33.8 V35.8 L34.4 37.4 H30.8 L29.2 35.8 V33.8Z" fill="var(--hol-blue)" stroke-width="1.4"/><path d="M22.2 18.6 H25.8 L27.4 20.2 V22.2 L25.8 23.8 H22.2 L20.6 22.2 V20.2Z" fill="var(--hol-paper)" stroke-width="1.4"/><path d="M30.8 18.6 H34.4 L36 20.2 V22.2 L34.4 23.8 H30.8 L29.2 22.2 V20.2Z M13.6 25.4 H17.2 L18.8 27 V29 L17.2 30.6 H13.6 L12 29 V27Z" fill="var(--hol-flame)" stroke-width="1.4"/><path d="M22.2 25.4 H25.8 L27.4 27 V29 L25.8 30.6 H22.2 L20.6 29 V27Z" fill="var(--hol-navy)" stroke-width="1.4"/><path d="M9.9 8.6 a1.9 1.9 0 1 0 3.8 0 a1.9 1.9 0 1 0 -3.8 0 M34.3 8.6 a1.9 1.9 0 1 0 3.8 0 a1.9 1.9 0 1 0 -3.8 0" fill="var(--hol-gold-lt)" stroke-width="1.4"/>
+```
+
+### 21. Ki Tisa · כִּי תִשָּׂא
+
+<img src="docs/parasha-emojis/kitisa.svg" width="96" height="96" alt="A golden calf on a pedestal">
+
+**Reading:** Exodus 30:11–34:35
+
+**Summary:** Everyone gives a half-shekel, the people build a golden calf while Moses is on Mount Sinai, Moses
+breaks the tablets and prays for forgiveness, and he comes down with new tablets, his face shining.
+
+**Emoji: The golden calf.** The golden calf the people make while Moses is on the mountain (Exodus 32:1–6).
+
+**Why this emoji:** The golden calf is the turning point of Ki Tisa: the people’s mistake while Moses is on the
+mountain leads to the broken tablets, Moses’ prayer for forgiveness and the second tablets, a story of going
+wrong and starting again.
+
+```html
+<path d="M8.4 8.2 Q9.1 10.9 11.8 11.6 Q9.1 12.3 8.4 15 Q7.7 12.3 5 11.6 Q7.7 10.9 8.4 8.2Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/><path d="M19 5.6 Q19.5 7.5 21.4 8 Q19.5 8.5 19 10.4 Q18.5 8.5 16.6 8 Q18.5 7.5 19 5.6Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/><path d="M9 36.4 H39 V40 H9Z M6.4 40 H41.6 V43.6 H6.4Z" fill="var(--hol-gold-lt)"/><path d="M14.5 28 L14.5 34.8 Q14.5 36.4 16.1 36.4 L17.5 36.4 Q19.1 36.4 19.1 34.8 L19.1 28Z M27.1 28 L27.1 34.8 Q27.1 36.4 28.7 36.4 L30.1 36.4 Q31.7 36.4 31.7 34.8 L31.7 28Z" fill="var(--hol-gold)"/><path d="M10.9 23.6 C8.4 24.4 7.4 26.8 8 29.4" stroke-width="1.8"/><path d="M6.5 30.4 a1.6 1.6 0 1 0 3.2 0 a1.6 1.6 0 1 0 -3.2 0" fill="var(--hol-gold)" stroke-width="1.4"/><path d="M12.8 21.2 C15 18.8 21.4 18.2 26.6 18.8 C30.8 19.2 33 22 32.8 25.6 C32.6 29.4 30 31.4 26 31.4 H17.2 C13 31.4 10.4 29.2 10.6 25.6 C10.7 23.6 11.4 22.2 12.8 21.2Z" fill="var(--hol-gold)"/><path d="M11.9 28 L11.9 34.8 Q11.9 36.4 13.5 36.4 L14.9 36.4 Q16.5 36.4 16.5 34.8 L16.5 28Z M24.5 28 L24.5 34.8 Q24.5 36.4 26.1 36.4 L27.5 36.4 Q29.1 36.4 29.1 34.8 L29.1 28Z" fill="var(--hol-gold)"/><path d="M31.2 11.2 C30.2 9.6 30.4 7.6 31.6 6.4 C32.2 7.8 33 8.8 34.2 9.6Z M37.2 9.8 C38 8.4 39.2 7.4 40.6 7.2 C40.8 8.8 40.2 10.2 39.2 11.2Z" fill="var(--hol-gold-lt)" stroke-width="1.5"/><path d="M29.6 14.4 C27.4 13.2 24.6 13.4 23.4 15 C25.2 16.6 27.8 16.8 29.8 16.2Z" fill="var(--hol-gold-lt)" stroke-width="1.5"/><path d="M28.6 16.4 C28.4 12.2 31.4 9.8 34.8 9.8 C38.4 9.8 40.8 12.4 40.8 15.8 C40.8 17.8 41.6 19 41.8 20.4 C42 22.6 40.2 24 37.6 24 C34.2 24 31.4 22.8 29.8 20.6 C29 19.4 28.6 18 28.6 16.4Z" fill="var(--hol-gold)"/><path d="M35.6 20.6 C37.2 19.6 40.2 19.4 41.4 20.6 C42.4 21.8 41.2 23.8 38.4 24 C36.4 24.1 35 23.2 34.9 22 C34.8 21.4 35.1 20.9 35.6 20.6Z" fill="var(--hol-gold-lt)" stroke-width="1.5"/><path d="M32.7 15.4 a1.3 1.3 0 1 0 2.6 0 a1.3 1.3 0 1 0 -2.6 0" fill="var(--hol-navy)" stroke="none"/>
+```
+
+### 22. Vayakhel · וַיַּקְהֵל
+
+<img src="docs/parasha-emojis/vayakhel.svg" width="96" height="96" alt="Two Shabbat candles">
+
+**Reading:** Exodus 35:1–38:20
+
+**Summary:** Moses gathers the people to keep Shabbat and to build the Mishkan, and they bring so many gifts that
+they are told to stop, while Betzalel and the other skilled workers build it.
+
+**Emoji: Shabbat candles.** Shabbat candles: Vayakhel opens with the mitzvah of keeping Shabbat (Exodus 35:1–3).
+
+**Why this emoji:** Vayakhel opens with Shabbat before any of the building, teaching that even the work on the
+Mishkan stops for Shabbat, and Shabbat candles are the picture of Shabbat children know best.
+
+```html
+<path d="M7 42.8 C7 39.4 10.6 38.6 12.4 37.2 L16 37.2 C17.8 38.6 21.4 39.4 21.4 42.8Z M26.6 42.8 C26.6 39.4 30.2 38.6 32 37.2 L35.6 37.2 C37.4 38.6 41 39.4 41 42.8Z" fill="var(--hol-gold)"/><path d="M12.4 30.2 L12.4 37.6 H16 L16 30.2Z M32 30.2 L32 37.6 H35.6 L35.6 30.2Z" fill="var(--hol-gold)"/><path d="M10.8 33.4 A3.4 1.9 0 1 0 17.6 33.4 A3.4 1.9 0 1 0 10.8 33.4Z M30.4 33.4 A3.4 1.9 0 1 0 37.2 33.4 A3.4 1.9 0 1 0 30.4 33.4Z" fill="var(--hol-gold)"/><path d="M8 28.2 H20.4 C20 30.4 16.8 30.8 16 31 H12.4 C11.6 30.8 8.4 30.4 8 28.2Z M27.6 28.2 H40 C39.6 30.4 36.4 30.8 35.6 31 H32 C31.2 30.8 28 30.4 27.6 28.2Z" fill="var(--hol-gold)"/><path d="M11.6 16.6 H16.8 A1 1 0 0 1 17.8 17.6 V27.2 A1 1 0 0 1 16.8 28.2 H11.6 A1 1 0 0 1 10.6 27.2 V17.6 A1 1 0 0 1 11.6 16.6Z M31.2 16.6 H36.4 A1 1 0 0 1 37.4 17.6 V27.2 A1 1 0 0 1 36.4 28.2 H31.2 A1 1 0 0 1 30.2 27.2 V17.6 A1 1 0 0 1 31.2 16.6Z" fill="var(--hol-paper)"/><path d="M14.2 16.6 V14.8 M33.8 16.6 V14.8" stroke-width="1.4"/><path d="M14.2 3.9 C15.7 7 18.5 8.5 18.1 11.7 C17.8 14.5 15.9 15.6 14.2 15.6 C12.5 15.6 10.6 14.5 10.3 11.7 C9.9 8.5 12.7 7 14.2 3.9Z M33.8 3.9 C35.3 7 38.1 8.5 37.7 11.7 C37.4 14.5 35.5 15.6 33.8 15.6 C32.1 15.6 30.2 14.5 29.9 11.7 C29.5 8.5 32.3 7 33.8 3.9Z" fill="var(--hol-flame)"/><path d="M14.2 9.1 C15.7 10.8 15.9 13.9 14.2 14 C12.5 13.9 12.7 10.8 14.2 9.1Z M33.8 9.1 C35.3 10.8 35.5 13.9 33.8 14 C32.1 13.9 32.3 10.8 33.8 9.1Z" fill="var(--hol-gold-lt)" stroke="none"/><path d="M6.2 6.1 Q6.7 7.9 8.5 8.4 Q6.7 8.9 6.2 10.7 Q5.7 8.9 3.9 8.4 Q5.7 7.9 6.2 6.1Z M41.8 6.1 Q42.3 7.9 44.1 8.4 Q42.3 8.9 41.8 10.7 Q41.3 8.9 39.5 8.4 Q41.3 7.9 41.8 6.1Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/>
+```
+
+### 23. Pekudei · פְקוּדֵי
+
+<img src="docs/parasha-emojis/pekudei.svg" width="96" height="96" alt="A cloud and a pillar of fire">
+
+**Reading:** Exodus 38:21–40:38
+
+**Summary:** Moses counts the gold, silver and copper given for the Mishkan, the priests’ clothes are made, the
+Mishkan is set up, and God’s cloud fills it, leading the people by day with fire by night.
+
+**Emoji: Cloud by day, fire by night.** The cloud by day and the fire by night that lead the Israelites on their
+journeys (Exodus 40:36–38).
+
+**Why this emoji:** Exodus ends with God’s cloud filling the finished Mishkan and leading the Israelites on their
+journeys, a cloud by day and fire by night, so the book closes with God’s presence traveling with the people.
+
+```html
+<path d="M3.6 43 V40.6 C9 38 15 37.8 21.6 39.4 C28 41 35 37.6 44.4 39.6 V43Z" fill="var(--hol-gold-lt)"/><path d="M7.8 28.8 C4.4 28.8 3.6 24.3 6.6 23.2 C5.9 19.6 9.3 17.3 12.1 18.5 C11.1 13.8 15.5 10.4 19.2 12.1 C22.8 10.9 26 14.1 24.7 17.7 C27.5 18.5 27.7 22.2 26 23.3 C28.1 25 27.1 28.8 24.3 28.8Z" fill="var(--hol-paper)"/><path d="M30.4 39.4 C27.6 35.6 28.6 30.4 30.2 26.4 C31.4 23.2 30.4 20.4 30.6 17.6 C32.4 19.4 32.8 21.6 33 23.4 C33.8 18.6 33.4 12.4 36.6 7.4 C37.2 11.6 38.6 13.8 40 16.6 C40.6 14.8 40.6 13.2 40.4 11.6 C43.6 15.8 44.2 21.4 43.2 26.4 C42.4 30.8 43.6 35.4 41.2 39.4Z" fill="var(--hol-flame)"/><path d="M32.4 39.2 C31.2 35.6 32.4 32.2 33.8 29.6 C34.6 28 34.6 26 34.4 24.4 C36 26 36.6 28 36.8 29.8 C37.6 27.4 37.8 25 37.4 22.6 C39.8 25.4 41 29.4 40.6 33 C40.4 35.6 40 37.6 39.2 39.2Z" fill="var(--hol-gold-lt)" stroke-width="1.4"/><path d="M28.6 6.8 Q29.1 8.7 31 9.2 Q29.1 9.7 28.6 11.6 Q28.1 9.7 26.2 9.2 Q28.1 8.7 28.6 6.8Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/><path d="M43.2 4.6 Q43.6 5.8 44.8 6.2 Q43.6 6.6 43.2 7.8 Q42.8 6.6 41.6 6.2 Q42.8 5.8 43.2 4.6Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/>
 ```

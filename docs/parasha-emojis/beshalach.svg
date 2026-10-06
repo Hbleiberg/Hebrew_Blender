@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<!-- Preview of the beshalach parasha emoji (ParashaEmojis.md): the holiday-icons palette, light and dark. -->
+<style>
+svg{--hol-line:#1a2744;--hol-gold:#c9922a;--hol-gold-lt:#f0d080;--hol-paper:#fffaf0;--hol-navy:#2a3b66;--hol-red:#c0392b;--hol-green:#3a7d44;--hol-blue:#3b6fb6;--hol-flame:#f0a030;--hol-ground:#fdf8ef;stroke:var(--hol-line);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+@media (prefers-color-scheme:dark){svg{--hol-line:#e8e0d0;--hol-gold:#e0a832;--hol-gold-lt:#f5d97a;--hol-paper:#e8e0d0;--hol-navy:#5a6d9c;--hol-red:#e0584a;--hol-green:#5aa865;--hol-blue:#6a9ae0;--hol-flame:#f6b84a;--hol-ground:#161c2a}}
+</style>
+<path d="M14 43.5 V20 Q24 17.4 34 20 V43.5Z" fill="var(--hol-gold)"/><path d="M17.4 43.5 L22.9 18.4 H25.1 L30.6 43.5Z" fill="var(--hol-gold-lt)" stroke-width="1.4"/><path d="M6.4 43.5 C6.4 34 7.4 26 7.8 20 C8.2 10.6 9.8 5 13.6 5 C18.8 5 21.6 9 20.4 12.6 C19.4 15.2 16.4 15.8 15.2 13.8 C14.4 12.6 13 13.4 13.4 15.6 C13.8 17.6 15.6 18.6 15.6 21 L15.6 43.5Z M41.6 43.5 C41.6 34 40.6 26 40.2 20 C39.8 10.6 38.2 5 34.4 5 C29.2 5 26.4 9 27.6 12.6 C28.6 15.2 31.6 15.8 32.8 13.8 C33.6 12.6 35 13.4 34.6 15.6 C34.2 17.6 32.4 18.6 32.4 21 L32.4 43.5Z" fill="var(--hol-blue)"/><path d="M9.4 21 C9 13.8 11.2 8.6 14.8 8.6 C17.4 8.6 18.4 11 17 12.4 M38.6 21 C39 13.8 36.8 8.6 33.2 8.6 C30.6 8.6 29.6 11 31 12.4" stroke="var(--hol-paper)" stroke-width="2.2"/><path d="M7.6 30.6 Q9.6 28.8 11.6 30.6 T15.6 30.6 M7 37.4 Q9 35.6 11 37.4 T15 37.4 M40.4 30.6 Q38.4 28.8 36.4 30.6 T32.4 30.6 M41 37.4 Q39 35.6 37 37.4 T33 37.4" stroke="var(--hol-paper)" stroke-width="1.5"/>
+</svg>
