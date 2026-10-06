@@ -2306,6 +2306,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <button class="btn primary" id="redoBtn" data-i18n="flashcards.results.redo">Redo This Card Set</button>
     <button class="btn gold" id="mistakesBtn" data-i18n="flashcards.results.practice_mistakes">Practice This Drill's Mistakes</button>
     <button class="btn ghost hi-btn" id="saveResultsBtn"><svg class="hi hi-sm hi-save" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 6.2A2.2 2.2 0 0 1 6.7 4h9.4L20 7.9v9.9a2.2 2.2 0 0 1-2.2 2.2H6.7a2.2 2.2 0 0 1-2.2-2.2z"/><path d="M8 4v5.2h7V4"/><rect x="8" y="13.4" width="8" height="6.6" rx="1.2"/></svg><span class="hi-lbl" data-i18n="flashcards.results.save_button">Save Results</span></button>
+    <button class="btn ghost hi-btn" id="printDeckBtn" type="button"><svg class="hi hi-sm hi-print" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9.2V3.6h10v5.6"/><path d="M7 9.2H5.6A2.1 2.1 0 0 0 3.5 11.3v3.6a2.1 2.1 0 0 0 2.1 2.1H7"/><path d="M17 9.2h1.4a2.1 2.1 0 0 1 2.1 2.1v3.6a2.1 2.1 0 0 1-2.1 2.1H17"/><rect x="7" y="14.2" width="10" height="6.2" rx="1.2"/><circle cx="17.6" cy="12" r="1" fill="currentColor" stroke="none"/></svg><span class="hi-lbl" data-i18n="flashcards.results.print_deck">Print This Card Set</span></button>
     <button class="btn ghost" id="backToSetupBtn" data-i18n="flashcards.results.return_to_options">Return to Options</button>
   </div>
 </section>
@@ -7519,9 +7520,11 @@ function fcsCell(card, isBack, pt) {
   const size = FCS_SIZES.includes(pt) && pt !== FCS_SIZES[0] ? ` style="font-size:${pt}pt"` : '';
   return `<div class="fcs-cell${swatch}">${emoji}<span class="fcs-heb" lang="he" dir="rtl"${size}>${esc(card.heb || '')}</span></div>`;
 }
-function printCardSheet() {
+// deck: the cards to print — the results screen passes the run just finished (same cards, same order) without touching the
+// menu's saved "practiced" choice; none (the menu's Print) = that choice: the practiced run or a fresh draw.
+function printCardSheet(deck) {
   closeSheetMenu();                      // never let the drop-down be on screen behind the dialog
-  const deck = (sheetPracticed && savedCards.length) ? savedCards.slice() : generateDeck(cardCount);
+  if (!Array.isArray(deck)) deck = (sheetPracticed && savedCards.length) ? savedCards.slice() : generateDeck(cardCount);
   if (!deck.length) {
     if (typeof showAppToast === 'function') showAppToast(I18n.t('flashcards.sheet.err_empty'));
     return;
@@ -8612,6 +8615,7 @@ function wireResultsScreen() {
   document.getElementById('saveResultsBtn').addEventListener('click', saveCurrentResult);
   document.getElementById('redoBtn').addEventListener('click', redoSameSet);
   document.getElementById('mistakesBtn').addEventListener('click', practiceMistakes);
+  document.getElementById('printDeckBtn').addEventListener('click', () => printCardSheet(savedCards.slice()));
   document.getElementById('backToSetupBtn').addEventListener('click', returnToSetup);
 }
 

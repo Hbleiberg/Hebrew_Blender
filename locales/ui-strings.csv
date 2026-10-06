@@ -1322,6 +1322,7 @@ flashcards.results.mode_words,Words,מילים,results-history mode label,
 flashcards.results.new_pb,· 🏆 New personal best!,· 🏆 שיא אישי חדש!,results summary suffix,leading-emoji
 flashcards.results.panel_title,Results,תוצאות,results panel title,
 flashcards.results.practice_mistakes,Practice This Drill's Mistakes,תרגלו את הטעויות בתרגול הזה,results action button,disambiguated from teacher-tools weak-cards
+flashcards.results.print_deck,Print This Card Set,הדפיסו את סדרת הכרטיסים,results action button: prints the cards just drilled (same cards and order) as a card sheet,svg-icon-in-markup
 flashcards.results.redo,Redo This Card Set,חזרו על סדרת הכרטיסים,results action button,
 flashcards.results.return_to_options,Return to Options,חזרה לאפשרויות,results action button,
 flashcards.results.save_button,Save Results,שמור תוצאות,results action button,leading-emoji
