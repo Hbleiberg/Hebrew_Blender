@@ -2895,6 +2895,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
   </nav>
 </footer>
 <script src="/js/hebrew-calendar.js"></script>
+<script src="/js/parasha-icons.js"></script>
 <script src="/js/trope-staff.js"></script>
 <script>
 'use strict';
@@ -3005,6 +3006,7 @@ let manifestData = {};      // from data/pockettorah/manifest.json
 let aliyahData = null;      // from data/pockettorah/aliyah.json (lazy)
 let currentVerses = [];     // last-rendered verse objects
 let currentRangeLabel = ''; // for header display
+let currentRangeIcons = []; // the parasha indices (HebCal's) whose names lead currentRangeLabel — set with it; their icons lead the header
 let currentReadingCtx = null; // last resolveRef() result (parshahEntry, custom flag, etc.)
 let textCache = new Map();  // key: ref+version → verses array
 
@@ -3482,13 +3484,14 @@ function resolveRef() {
   const cyc = cycleKey() !== 'full' ? aliyahLookup(p.en) : null;
   const cycAl = cyc && !cyc.pending && cyc.aliyot && cyc.aliyot[1] ? cyc.aliyot : null;
   const cycLabel = cyc ? (cyc.cycle === 'weekday' ? I18n.t('torah.schedule.label_weekday') : I18n.t('torah.schedule.label_triennial', { n: cyc.tri ? cyc.tri.yearNum : '?' })) : '';
-  const cycName = cyc && cyc.tri && triennialPartner(p, cyc.tri) ? [p, triennialPartner(p, cyc.tri)].sort((a, b) => a.n - b.n).map(x => x.en).join('-') : p.en;
+  const cycPair = cyc && cyc.tri && triennialPartner(p, cyc.tri) ? [p, triennialPartner(p, cyc.tri)].sort((a, b) => a.n - b.n) : [p];
+  const cycName = cycPair.map(x => x.en).join('-');   // `named`: the parshiyot a Triennial label names (their icons lead the header)
   if (scope === 'parsha-full') {
     if (cycAl) {
       const nums = Object.keys(cycAl).filter(k => /^\d$/.test(k)).map(Number).sort((a, b) => a - b);
       const first = cycAl[nums[0]], last = cycAl[nums[nums.length - 1]];
       const ref = `${p.book} ${first.startC}:${first.startV}-${last.endC}:${last.endV}`;
-      return { ref, label: `${cycName} — ${cycLabel} (${ref})`, parshahEntry: p, aliyahNum: null, isHaftarah: false, overlay: true, cycle: cyc.cycle };
+      return { ref, label: `${cycName} — ${cycLabel} (${ref})`, parshahEntry: p, aliyahNum: null, isHaftarah: false, overlay: true, cycle: cyc.cycle, named: cycPair };
     }
     return { ref: p.ref, label: `${p.en} — ${p.ref}`, parshahEntry: p, aliyahNum: null, isHaftarah: false };
   }
@@ -3505,7 +3508,7 @@ function resolveRef() {
     if (cycAl && cycAl[n]) {
       const range = cycAl[n];
       const ref = `${p.book} ${range.startC}:${range.startV}-${range.endC}:${range.endV}`;
-      return { ref, label: `${cycName} — ${cycLabel}, Aliyah ${n} (${ref})`, parshahEntry: p, aliyahNum: null, isHaftarah: false, overlay: true, cycle: cyc.cycle, cycleAliyah: n };
+      return { ref, label: `${cycName} — ${cycLabel}, Aliyah ${n} (${ref})`, parshahEntry: p, aliyahNum: null, isHaftarah: false, overlay: true, cycle: cyc.cycle, cycleAliyah: n, named: cycPair };
     }
     const al = aliyahLookup(p.en, 'full');
     if (al && al.aliyot[n]) {
@@ -3717,6 +3720,8 @@ function syncCycleControls() {
    TORAH PORTION LOOKUP — the drawer's date → parasha panel (js/hebrew-calendar.js, no network).
    lookupRender() is read-only (applyI18n and the calendar radios call it); lookupOpen() loads what
    it found through the same writes the picker and the holiday strip use. The date is never stored.
+   The result line leads with the reading's icon: each parasha's (js/parasha-icons.js, both halves of
+   a doubled week) or the festival's family (holidayIconFor).
    ══════════════════════════════════════════════════════ */
 let _lookupTarget = null;   // { parsha, second } | { holiday } — what Open loads
 const LOOKUP_DAY_HOLIDAYS = ['pesach', 'sukkot', 'shavuot', 'rosh_hashanah'];   // the festivals whose day is named
@@ -3742,7 +3747,8 @@ function lookupRender() {
     const ps = r.idx.map(parshaByIdx).filter(Boolean);
     if (!ps.length) { line(I18n.t('torah.lookup.invalid')); return; }
     const name = ps.map(x => x.en).join('-') + ' (' + ps.map(x => x.he).join('–') + ')';
-    line(I18n.t('torah.lookup.parsha', { name, schedule }));
+    const pl = line(I18n.t('torah.lookup.parsha', { name, schedule }));
+    if (window.ParashaIcons) pl.insertAdjacentHTML('afterbegin', ParashaIcons.html(ps.map(x => x.n - 1)));   // a doubled week shows both, in reading order
     if (cycleKey() === 'triennial') line(I18n.t('torah.lookup.triennial_year', { n: HebCal.triennialYear(r.hyear) }));
     if (ps[1]) { const n = line(I18n.t('torah.lookup.doubled_note', { first: ps[0].en, second: ps[1].en })); n.style.color = 'var(--muted)'; }
     _lookupTarget = { parsha: ps[0], second: ps[1] || null };
@@ -3751,7 +3757,7 @@ function lookupRender() {
   }
   let holiday = I18n.t('torah.lookup.holiday_' + r.holiday);
   if (LOOKUP_DAY_HOLIDAYS.includes(r.holiday) && r.day > 0) holiday += ' ' + I18n.t('torah.lookup.day', { n: r.day });
-  line(I18n.t('torah.lookup.holiday', { holiday, schedule }));
+  line(I18n.t('torah.lookup.holiday', { holiday, schedule })).insertAdjacentHTML('afterbegin', holidayIconFor(r.holiday.replace(/_/g, ' ')));   // HebCal's keys read as titles: 'chol_hamoed_sukkot' → the sukkah
   const hk = holidayKeyForCal(r), h = hk ? holidayByKey(hk) : null;
   if (h) { _lookupTarget = { holiday: h }; if (row) row.hidden = false; }
 }
@@ -4845,7 +4851,7 @@ function renderText() {
   const tutorLinkKey = readingTutorMelody() === 'haftarah' ? 'torah.reading.haf_trope_link' : 'torah.reading.hh_trope_link';
   const holRead = settings.scope === 'custom' && settings.holidayKey ? holidayByKey(settings.holidayKey) : null;   // a loaded HOLIDAY_READINGS entry leads with its family's icon (holiday-icons block)
   let html = `<div class="tt-ref-hdr">
-    <span>${holRead ? holidayIconFor(holRead.name) : ''}${esc(currentRangeLabel)}${_readingHasShem
+    <span>${holRead ? holidayIconFor(holRead.name) : window.ParashaIcons ? ParashaIcons.html(currentRangeIcons) : ''}${esc(currentRangeLabel)}${_readingHasShem
       ? ` <span class="tt-shem-chip" lang="he" data-i18n="torah.shem.chip_label" data-i18n-aria-label="torah.shem.chip_label" aria-label="${esc(I18n.t('torah.shem.chip_label'))}" data-i18n-tip="torah.shem.chip_tip" data-tip="${esc(I18n.t('torah.shem.chip_tip'))}">${esc(I18n.t('torah.shem.chip_label'))}</span>`
       : ''}${_translitDead
       ? ` <span class="tt-notice-chip" data-i18n="torah.trans.unavailable_chip" data-i18n-aria-label="torah.trans.unavailable_chip" aria-label="${esc(I18n.t('torah.trans.unavailable_chip'))}" data-i18n-tip="torah.trans.unavailable_tip" data-tip="${esc(I18n.t('torah.trans.unavailable_tip'))}">${esc(I18n.t('torah.trans.unavailable_chip'))}</span>`
@@ -5787,6 +5793,9 @@ async function fetchAndRender() {
       if (ttBulkSelected.size) { ttBulkSelected.clear(); updateCopyTextarea(); }
     }
     currentRangeLabel = r.label;
+    // A weekly reading's label starts with its parasha's name (a Triennial year that reads the pair together names
+    // both: r.named); a custom or holiday range names none — a holiday reading leads with its family's icon instead.
+    currentRangeIcons = r.custom ? [] : (r.named || [r.parshahEntry]).filter(Boolean).map(x => x.n - 1);
     netDone = true;   // all network work succeeded; anything that throws below is a render/code fault
     _readingLoading = false;
     renderText();

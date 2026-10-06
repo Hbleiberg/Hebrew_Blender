@@ -1089,6 +1089,14 @@ stored value reads Full and stays stored) and the triennial year (`settings.trie
   calendar, and the triennial year while that cycle is on; **Open** (`lookupOpen`) loads the parasha through the
   picker's own writes, or the festival reading when `holidayKeyForCal` names one. The calendar radios, the
   cycle radios and `applyI18n` re-render it.
+- **Parasha icons** (`js/parasha-icons.js`, `window.ParashaIcons`; the module and its catalog:
+  `docs/reference/shared-components.md` → Parasha icons) lead a weekly reading's `.tt-ref-hdr` and the lookup's
+  result line. The header shows the loaded parasha's icon, or both halves' when a Triennial year reads the pair
+  together: `resolveRef()` returns the parshiyot its label names as `named`, and `fetchAndRender` stores their
+  indices as `currentRangeIcons` in the same step as `currentRangeLabel`, so a render while another reading loads
+  never pairs one reading's icons with another's name. The lookup shows each parasha of the week (a doubled week
+  both, in reading order) or the festival's `holidayIconFor` family. A custom or holiday range shows no parasha
+  icon (a holiday reading leads with its own).
 
 ---
 

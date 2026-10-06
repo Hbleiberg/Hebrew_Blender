@@ -1,8 +1,8 @@
 # Parasha emojis
 
-One small emoji-style picture for each of the 54 weekly Torah portions, made for the classroom dashboard's
-parsha line and the Torah Trainer. Each drawing was chosen from three drafts, the way the suite's holiday and
-weather icons were. Each portion's section gives its reading, a one-sentence summary of the parasha, the emoji and
+One small emoji-style picture for each of the 54 weekly Torah portions, shown on the classroom dashboard's
+parsha line and in the Torah Trainer (the reading's header and the date lookup). Each drawing was chosen from three
+drafts, the way the suite's holiday and weather icons were. Each portion's section gives its reading, a one-sentence summary of the parasha, the emoji and
 what it shows, why it was chosen, and its markup.
 
 ## How the drawings are built
@@ -16,6 +16,11 @@ what it shows, why it was chosen, and its markup.
   letter is drawn as a path, never set in a font.
 - Each preview image is `docs/parasha-emojis/<key>.svg`: the same markup with both palettes built in (the dark one
   under `prefers-color-scheme: dark`), so it can be opened on its own.
+- **This file is the source.** The pages load the drawings from `js/parasha-icons.js` (`ParashaIcons.html(i)` wraps
+  them as above), which `node scripts/build-parasha-icons.mjs` builds from this file's `html` blocks, together with
+  the preview images. To change a drawing, edit its block here, run the script and bump `VERSION` in `sw.js` (the
+  module is precached); never edit the module or a preview by hand. The script refuses a section whose number,
+  names or drawing break these rules.
 
 ## All 54 portions
 

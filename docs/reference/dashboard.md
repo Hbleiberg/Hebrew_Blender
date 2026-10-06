@@ -633,6 +633,11 @@ later render tries again (a festival week needs no file).
   phone factors.
 - **Festival Shabbatot** show the festival (`PARSHA_HOLIDAY_NAMES`, keyed by HebCal's holiday key, `key:day` where the
   day changes the name); in Israel Shemini Atzeret shows with Simchat Torah.
+- **Icons:** the first line of every script mode leads with the reading's icon: each parasha's
+  (`ParashaIcons.html(r.idx)` from `js/parasha-icons.js`, both halves of a doubled week in reading order;
+  `docs/reference/shared-components.md` → Parasha icons) or the festival's (`holidayIconFor(nm.en)`). Each line
+  carries its own `dir`: the Hebrew-only line is an inline span, and without `dir="rtl"` it takes the board's
+  direction, so the icons would trail the Hebrew.
 - **The link** opens the reading in the Torah Trainer in a new tab through that page's own deep links: `?parsha=<en>`
   (a doubled week its first half, as the Trainer's date lookup does) or `?holiday=<key>`. `PARSHA_TRAINER_HOLIDAY`
   mirrors the Trainer's `HOLIDAY_KEY_BY_CAL` — change both. A Shabbat Chol HaMoed, and the Diaspora's Pesach 8 and

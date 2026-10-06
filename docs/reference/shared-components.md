@@ -531,8 +531,9 @@ One flat 48×48 SVG per holiday family, drawn in the suite's navy and gold and c
 drafts each: Rosh Hashana (apple & honey), Yom Kippur (scales), Sukkot (sukkah), Shmini Atzeret (rain cloud),
 Simchat Torah (open Torah), Chanukah (chanukiah), Purim (mask), Pesach (matzah), Shavuot (two tablets),
 Tish'a B'Av (Kotel) and `generic` (a calendar page, for any title the matcher does not know). Carriers:
-`classroom_dashboard` (the holiday countdown line) and `torah_trainer` (the Calendar tab's seventeen
-`HOLIDAY_READINGS` buttons and the loaded reading's `.tt-ref-hdr`).
+`classroom_dashboard` (the holiday countdown line, and the parsha line on a festival Shabbat) and `torah_trainer`
+(the Calendar tab's seventeen `HOLIDAY_READINGS` buttons, the loaded reading's `.tt-ref-hdr` and the date lookup's
+festival line). The weekly parasha icons reuse the CSS block's `.hol-ico` and palette (*Parasha icons* below).
 
 ### The two byte-identical blocks
 - **`/* ═══ holiday-icons CSS ═══ */`**, pasted right after the header-icons CSS block: `.hol-ico` carries the
@@ -559,6 +560,34 @@ Tish'a B'Av (Kotel) and `generic` (a calendar page, for any title the matcher do
   Holiday countdown icon) and hands every other title to `holidayIconFor`.
 - Swapping a drawing means replacing that family's entry in `HOLIDAY_ICONS` on **both** carriers, re-truing the
   carrier list in both markers if a page joins, then sha-verifying the two blocks across carriers.
+
+## Parasha icons — a generated module (the dashboard's parsha line, the Torah Trainer's header and lookup)
+
+One flat 48×48 SVG per weekly parasha, all 54 chosen by the maintainer from three drafts each, drawn in the holiday
+icons' style and palette. The source is the catalog `ParashaEmojis.md` (repo root): each parasha's reading, a
+one-sentence summary, what its emoji shows and why it was chosen, and the drawing — the inner markup on one line in
+the section's one ```` ```html ```` block. That block is the only hand-edited copy of a drawing.
+`node scripts/build-parasha-icons.mjs` checks the catalog (54 sections in `data/parshiyot.json`'s order and
+spelling, each showing its preview; only the holiday icons' elements and attributes, and every fill and stroke
+`none` or a `var(--hol-*)`) and writes `js/parasha-icons.js` and the previews `docs/parasha-emojis/<key>.svg`
+(the key is the English name lowercased with everything but a–z dropped); `--check` exits 1 when either is stale.
+The module is precached, so a rebuilt one needs the `sw.js` `VERSION` bump.
+
+### Module and host contract
+- `js/parasha-icons.js` is a classic script (`window.ParashaIcons`) loaded right after `js/hebrew-calendar.js` on
+  `classroom_dashboard` and `torah_trainer`; it reads no settings, `I18n` or DOM. `ParashaIcons.html(i)` returns
+  `<span class="hol-ico" aria-hidden="true"><svg viewBox="0 0 48 48" focusable="false">…</svg></span>` for parasha
+  index `i` (HebCal's: 0 = Bereshit … 53 = V'Zot HaBerachah, `parshiyot.json`'s `n − 1`) and `''` for anything
+  else; an array returns one icon per index, in its order.
+- It draws with the holiday-icons CSS block (`.hol-ico`, the `--hol-*` palette and its dark swap), so a page that
+  shows parasha icons carries that block, and a dark toggle needs no re-render.
+- As with a holiday icon, the markup is prepended to the escaped name (the name always follows; the icon is
+  `aria-hidden`), never a glyph in a string, and a `<select>` keeps plain labels. A doubled week shows both halves'
+  icons in DOM order, so the first half leads in either direction; the line holding them needs its own `dir` (an
+  inline span without one takes the surrounding direction, and the icons would trail Hebrew text).
+- Where they show: the dashboard's parsha line (`docs/reference/dashboard.md` → This week's parsha) and the
+  Trainer's reading header and date lookup (`docs/reference/torah-and-trope.md` → Torah portion lookup). A festival
+  week leads with its `holidayIconFor` family instead, and a custom or holiday range in the Trainer shows no parasha icon.
 
 ## Shared UX components — the conventions all tools are converging on
 

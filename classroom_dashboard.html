@@ -3179,7 +3179,7 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
       </div>
     </div>
   </div>
-</div><script src="/js/hebrew-calendar.js"></script><script>
+</div><script src="/js/hebrew-calendar.js"></script><script src="/js/parasha-icons.js"></script><script>
   /*
    * Classroom Dashboard — UX upgrades (2026-07):
    *   1. Screen Wake Lock — keep the projected display awake in fullscreen or via a
@@ -4197,7 +4197,9 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
      in data/parshiyot.json. Projected board content, so it follows the Hebrew date's own script
      (hebDateScript, with the date's fallback for an unknown value), never I18n.lang. A festival Shabbat
      shows the festival. The line opens that reading in the Torah Trainer in a new tab, through the
-     Trainer's own deep links (?parsha= and ?holiday=). Shown only while the Hebrew date is. */
+     Trainer's own deep links (?parsha= and ?holiday=). Shown only while the Hebrew date is. Each parasha leads with
+     its icon (js/parasha-icons.js, window.ParashaIcons: a doubled week shows both, in reading order) and a festival
+     with its holiday family's (holidayIconFor), on the first line of every script mode. */
   const PARSHA_WORD_HE = 'פָּרָשַׁת';
   const PARSHA_WORD_EN = 'Parashat';   // i18n-ignore — projected board content: follows hebDateScript
   // HebCal's festival-Shabbat keys (+ ':' + day where the day changes the name). Projected content, like the word above.
@@ -4242,7 +4244,7 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
       if (settings.hideHebDate || settings.showParsha === false || !window.HebCal) return hide();
       const r = HebCal.parshaForDate(now || new Date(), { israel: parshaIsrael() });
       if (!r) return hide();
-      let he, en, href = '';
+      let he, en, href = '', ico = '';
       if (r.kind === 'parsha') {
         if (!_parshiyot) { loadParshiyot(); return hide(); }
         const ps = r.idx.map(i => _parshiyot.find(p => p.n === i + 1));
@@ -4250,19 +4252,22 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
         he = PARSHA_WORD_HE + ' ' + ps.map(p => p.he).join('–');
         en = PARSHA_WORD_EN + ' ' + ps.map(p => p.en).join('-');
         href = 'torah_trainer.html?parsha=' + encodeURIComponent(ps[0].en);   // a doubled week opens its first half, as the Trainer's date lookup does
+        ico = window.ParashaIcons ? ParashaIcons.html(r.idx) : '';   // markup, never a glyph: one per parasha, both halves of a doubled week
       } else {
         const israelShmini = r.israel && r.holiday === 'shmini_atzeret';
         const nm = israelShmini ? PARSHA_ISRAEL_SHMINI : (PARSHA_HOLIDAY_NAMES[r.holiday + ':' + r.day] || PARSHA_HOLIDAY_NAMES[r.holiday]);
         if (!nm) return hide();
         he = nm.he; en = nm.en;
+        ico = holidayIconFor(nm.en);
         const key = israelShmini ? 'simchat-torah' : PARSHA_TRAINER_HOLIDAY[r.holiday + ':' + r.day];
         if (key) href = 'torah_trainer.html?holiday=' + key;
       }
       const heHtml = hebDisplay(he), enHtml = esc(en);
       let inner;
-      if (settings.hebDateScript === 'both') inner = `<div class="parsha-he">${heHtml}</div><div class="parsha-en" dir="ltr">${enHtml}</div>`;
-      else if (settings.hebDateScript === 'he') inner = `<span class="parsha-he">${heHtml}</span>`;
-      else inner = `<span class="parsha-en" dir="ltr">${enHtml}</span>`;
+      // dir on each line, not only CSS direction: an inline span takes the board's direction otherwise, and the icon would trail the Hebrew
+      if (settings.hebDateScript === 'both') inner = `<div class="parsha-he" dir="rtl">${ico}${heHtml}</div><div class="parsha-en" dir="ltr">${enHtml}</div>`;
+      else if (settings.hebDateScript === 'he') inner = `<span class="parsha-he" dir="rtl">${ico}${heHtml}</span>`;
+      else inner = `<span class="parsha-en" dir="ltr">${ico}${enHtml}</span>`;
       // '' until the strings load (t() returns the bare key before then); applyI18n re-renders this line
       const title = window.I18n && I18n.has('dashboard.datetime.parsha_open_title') ? I18n.t('dashboard.datetime.parsha_open_title') : '';
       el.innerHTML = href
