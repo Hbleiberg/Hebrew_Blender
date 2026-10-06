@@ -4482,6 +4482,10 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
 
   function renderWeather() {
     const block = document.getElementById('weatherBlock');
+    // The card follows hideWeather here, as the days card follows hideDOW in renderDaysList: a starter, preset,
+    // .ivrit file or account download reaches the board through applySettings, never through the switch's handler.
+    const col = document.getElementById('weatherCol');
+    if (col) col.style.display = settings.hideWeather ? 'none' : '';
     if (settings.hideWeather) { block.innerHTML = ''; return; }
     if (!weatherCache || !weatherCache.data || !weatherCache.data.current) { renderWeatherStatus(); return; }
 
@@ -6464,6 +6468,7 @@ function mountSidebarResize(cfg) {
       forcedActiveId = resolveLegacyRosterToClass(s.roster, opts.presetName);
     }
     const pointerBefore = settings.activeRosterId;
+    const weatherWasHidden = !!settings.hideWeather;
     // Preserve schedule configuration — it must never be overwritten by loading a display preset
     // (Schedule Sync applies presets, so a preset carrying schedule state would clobber the very
     // schedule driving it; presetColors is shared class data on the same footing as rosters).
@@ -6537,6 +6542,7 @@ function mountSidebarResize(cfg) {
     updateDateTimeDisplay();
     renderDaysList();
     renderWeather();
+    if (weatherWasHidden && !settings.hideWeather) fetchWeather();   // as the switch does: nothing was fetched while the card was hidden
     applyTimerVisibility();
     applyStudentPickerVisibility();
     applyPanelLayout();   // reparent panels + recompute zone emptiness AFTER the visibility appliers above
