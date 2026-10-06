@@ -44,16 +44,16 @@ what it shows, why it was chosen, and its markup.
 | 21 | Ki Tisa | כִּי תִשָּׂא | <img src="docs/parasha-emojis/kitisa.svg" width="28" height="28" alt=""> | The golden calf |
 | 22 | Vayakhel | וַיַּקְהֵל | <img src="docs/parasha-emojis/vayakhel.svg" width="28" height="28" alt=""> | Shabbat candles |
 | 23 | Pekudei | פְקוּדֵי | <img src="docs/parasha-emojis/pekudei.svg" width="28" height="28" alt=""> | Cloud by day, fire by night |
-| 24 | Vayikra | וַיִּקְרָא |  |  |
-| 25 | Tzav | צַו |  |  |
-| 26 | Shemini | שְׁמִינִי |  |  |
-| 27 | Tazria | תַזְרִיעַ |  |  |
-| 28 | Metzora | מְצֹרָע |  |  |
-| 29 | Achrei Mot | אַחֲרֵי מוֹת |  |  |
-| 30 | Kedoshim | קְדֹשִׁים |  |  |
-| 31 | Emor | אֱמֹר |  |  |
-| 32 | Behar | בְּהַר |  |  |
-| 33 | Bechukotai | בְּחֻקֹּתַי |  |  |
+| 24 | Vayikra | וַיִּקְרָא | <img src="docs/parasha-emojis/vayikra.svg" width="28" height="28" alt=""> | The flour offering |
+| 25 | Tzav | צַו | <img src="docs/parasha-emojis/tzav.svg" width="28" height="28" alt=""> | The fire that never goes out |
+| 26 | Shemini | שְׁמִינִי | <img src="docs/parasha-emojis/shemini.svg" width="28" height="28" alt=""> | Fire from heaven |
+| 27 | Tazria | תַזְרִיעַ | <img src="docs/parasha-emojis/tazria.svg" width="28" height="28" alt=""> | A new baby |
+| 28 | Metzora | מְצֹרָע | <img src="docs/parasha-emojis/metzora.svg" width="28" height="28" alt=""> | Cedar, hyssop and red thread |
+| 29 | Achrei Mot | אַחֲרֵי מוֹת | <img src="docs/parasha-emojis/achreimot.svg" width="28" height="28" alt=""> | White linen clothes |
+| 30 | Kedoshim | קְדֹשִׁים | <img src="docs/parasha-emojis/kedoshim.svg" width="28" height="28" alt=""> | The corner of the field |
+| 31 | Emor | אֱמֹר | <img src="docs/parasha-emojis/emor.svg" width="28" height="28" alt=""> | The four species |
+| 32 | Behar | בְּהַר | <img src="docs/parasha-emojis/behar.svg" width="28" height="28" alt=""> | The land rests |
+| 33 | Bechukotai | בְּחֻקֹּתַי | <img src="docs/parasha-emojis/bechukotai.svg" width="28" height="28" alt=""> | Grapes and wheat |
 | 34 | Bamidbar | בְּמִדְבַּר |  |  |
 | 35 | Nasso | נָשֹׂא |  |  |
 | 36 | Beha'alotcha | בְּהַעֲלֹתְךָ |  |  |
@@ -519,4 +519,194 @@ journeys, a cloud by day and fire by night, so the book closes with God’s pres
 
 ```html
 <path d="M3.6 43 V40.6 C9 38 15 37.8 21.6 39.4 C28 41 35 37.6 44.4 39.6 V43Z" fill="var(--hol-gold-lt)"/><path d="M7.8 28.8 C4.4 28.8 3.6 24.3 6.6 23.2 C5.9 19.6 9.3 17.3 12.1 18.5 C11.1 13.8 15.5 10.4 19.2 12.1 C22.8 10.9 26 14.1 24.7 17.7 C27.5 18.5 27.7 22.2 26 23.3 C28.1 25 27.1 28.8 24.3 28.8Z" fill="var(--hol-paper)"/><path d="M30.4 39.4 C27.6 35.6 28.6 30.4 30.2 26.4 C31.4 23.2 30.4 20.4 30.6 17.6 C32.4 19.4 32.8 21.6 33 23.4 C33.8 18.6 33.4 12.4 36.6 7.4 C37.2 11.6 38.6 13.8 40 16.6 C40.6 14.8 40.6 13.2 40.4 11.6 C43.6 15.8 44.2 21.4 43.2 26.4 C42.4 30.8 43.6 35.4 41.2 39.4Z" fill="var(--hol-flame)"/><path d="M32.4 39.2 C31.2 35.6 32.4 32.2 33.8 29.6 C34.6 28 34.6 26 34.4 24.4 C36 26 36.6 28 36.8 29.8 C37.6 27.4 37.8 25 37.4 22.6 C39.8 25.4 41 29.4 40.6 33 C40.4 35.6 40 37.6 39.2 39.2Z" fill="var(--hol-gold-lt)" stroke-width="1.4"/><path d="M28.6 6.8 Q29.1 8.7 31 9.2 Q29.1 9.7 28.6 11.6 Q28.1 9.7 26.2 9.2 Q28.1 8.7 28.6 6.8Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/><path d="M43.2 4.6 Q43.6 5.8 44.8 6.2 Q43.6 6.6 43.2 7.8 Q42.8 6.6 41.6 6.2 Q42.8 5.8 43.2 4.6Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/>
+```
+
+## Leviticus
+
+### 24. Vayikra · וַיִּקְרָא
+
+<img src="docs/parasha-emojis/vayikra.svg" width="96" height="96" alt="A bowl of flour with oil pouring from a jug">
+
+**Reading:** Leviticus 1:1–5:26
+
+**Summary:** God calls to Moses from the Mishkan and teaches the different offerings, from animals and birds to a
+simple offering of flour and oil, so that even a poor person can bring a gift to God.
+
+**Emoji: The flour offering.** Fine flour with oil poured on it, an offering even a poor person could bring
+(Leviticus 2:1–2).
+
+**Why this emoji:** Vayikra teaches the offerings, and the simplest is fine flour with oil, so even the poorest
+person can bring a gift to God; Rashi teaches that God counts it as if the giver had offered their very soul.
+
+```html
+<path d="M16 41.4 L15 44.4 H25.4 L24.4 41.4Z" fill="var(--hol-blue)"/><path d="M6 32.6 C10.4 31 15.6 27 18.8 25.2 Q20.2 24.4 21.6 25.2 C24.8 27 30 31 34.4 32.6 A14.8 3.2 0 0 1 6 32.6Z" fill="var(--hol-paper)"/><path d="M5.4 32.6 A14.8 3.2 0 0 0 35 32.6 C35 39.2 27.6 42.2 20.2 42.2 C12.8 42.2 5.4 39.2 5.4 32.6Z" fill="var(--hol-blue)"/><path d="M7 36.8 C16.2 39.2 24.2 39.2 33.4 36.8" stroke="var(--hol-gold-lt)" stroke-width="1.8"/><path d="M29.6 11.5 C27.5 6.3 32.3 3.4 36 6.5" stroke-width="3.8"/><path d="M29.6 11.5 C27.5 6.3 32.3 3.4 36 6.5" stroke="var(--hol-flame)" stroke-width="1.8"/><path d="M43 14.9 C42.8 18.7 37.2 20.1 34.5 17.7 C33.1 16.5 32.6 15.4 31.6 15.4 L29.9 15.6 C29.5 16.5 28.6 17.8 27.6 19 C27.1 16.8 26.8 13.6 27 11.4 C27.7 10.9 28.5 11 29.1 11.6 L31 11.3 C32 11 32.1 9.8 33.1 8.3 C35.1 5.2 40.9 4.9 42.1 8.6Z" fill="var(--hol-flame)"/><path d="M27.3 21.2 C29.3 23.3 29 25.2 27.3 25.2 C25.6 25.2 25.4 23.3 27.3 21.2Z" fill="var(--hol-gold-lt)" stroke-width="1.4"/>
+```
+
+### 25. Tzav · צַו
+
+<img src="docs/parasha-emojis/tzav.svg" width="96" height="96" alt="A steady flame on two crossed logs">
+
+**Reading:** Leviticus 6:1–8:36
+
+**Summary:** God teaches the priests how to bring each offering and to keep the fire on the altar burning always,
+and Moses dresses and anoints Aaron and his sons for seven days to begin their service.
+
+**Emoji: The fire that never goes out.** The fire on the altar is kept burning day and night and never goes out
+(Leviticus 6:5–6).
+
+**Why this emoji:** Tzav commands that the fire on the altar must never go out, and every morning the priests add
+wood to keep it burning, a picture of faith kept alight day and night.
+
+```html
+<path d="M4.4 42.6 H43.6" stroke-width="2.4"/><path d="M24 8.6 C27.4 13.2 33.4 17.2 33 25 C32.8 30 29 33 24 33 C19 33 15.2 30 15 25 C14.8 20.6 17.2 17.8 19.4 16.6 C19.2 19 20 20.6 21.4 21.4 C21 16.8 22.4 12.2 24 8.6Z" fill="var(--hol-flame)"/><path d="M24 20 C26.4 22.6 28.4 25 28.2 28 C28 30.4 26.2 32 24 32 C21.8 32 20 30.4 19.8 28 C19.6 25 21.6 22.6 24 20Z" fill="var(--hol-gold-lt)" stroke-width="1.5"/><path d="M11.2 34.6 L35.7 29.4 L36.8 34.6 L12.3 39.8Z" fill="var(--hol-gold)"/><path d="M12.3 29.4 L36.8 34.6 L35.7 39.8 L11.2 34.6Z" fill="var(--hol-gold)"/><path d="M36.2 34.5 A1.7 2.7 0 1 1 36.2 39.9 A1.7 2.7 0 1 1 36.2 34.5Z M11.8 34.5 A1.7 2.7 0 1 1 11.8 39.9 A1.7 2.7 0 1 1 11.8 34.5Z" fill="var(--hol-gold-lt)" stroke-width="1.6"/><path d="M10.6 11.2 Q11.2 13.4 13.4 14 Q11.2 14.6 10.6 16.8 Q10 14.6 7.8 14 Q10 13.4 10.6 11.2Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/><path d="M38.6 9.2 Q39.1 10.9 40.8 11.4 Q39.1 11.9 38.6 13.6 Q38.1 11.9 36.4 11.4 Q38.1 10.9 38.6 9.2Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/>
+```
+
+### 26. Shemini · שְׁמִינִי
+
+<img src="docs/parasha-emojis/shemini.svg" width="96" height="96" alt="Fire coming down from a cloud onto an altar">
+
+**Reading:** Leviticus 9:1–11:47
+
+**Summary:** On the eighth day the Mishkan begins its service and fire from God comes down onto the altar,
+Aaron’s sons Nadav and Avihu die after offering a fire God had not commanded, and God teaches which animals, fish
+and birds may be eaten.
+
+**Emoji: Fire from heaven.** On the eighth day fire from God comes down onto the altar, and the people shout for
+joy (Leviticus 9:23–24).
+
+**Why this emoji:** Shemini begins on the eighth day, when the Mishkan’s service starts and fire from God comes
+down onto the altar, the sign that God accepts the people’s offerings and dwells among them.
+
+```html
+<path d="M4.4 42.6 H43.6" stroke-width="2.4"/><path d="M10.6 34 L10.6 31.6 C10.6 30.4 11 29.6 12 29.2 C13.6 30.4 14 31.8 14 34Z M37.4 34 L37.4 31.6 C37.4 30.4 37 29.6 36 29.2 C34.4 30.4 34 31.8 34 34Z" fill="var(--hol-gold)" stroke-width="1.5"/><path d="M11.4 34 H36.6 V42.6 H11.4Z" fill="var(--hol-gold)"/><path d="M11.4 37.2 H36.6 V40 H11.4Z" fill="var(--hol-gold-lt)" stroke-width="1.5"/><path d="M10.2 33.4 H37.8" stroke-width="2"/><path d="M24 21.2 C25.8 23.6 28.9 25.7 28.7 29.8 C28.6 32.4 26.6 33.9 24 33.9 C21.4 33.9 19.4 32.4 19.3 29.8 C19.2 27.5 20.5 26 21.6 25.4 C21.5 26.6 21.9 27.5 22.6 27.9 C22.4 25.5 23.2 23.1 24 21.2Z" fill="var(--hol-flame)"/><path d="M24 27.2 C25.2 28.5 26.3 29.8 26.2 31.3 C26.1 32.6 25.1 33.4 24 33.4 C22.9 33.4 21.9 32.6 21.8 31.3 C21.7 29.8 22.8 28.5 24 27.2Z" fill="var(--hol-gold-lt)" stroke-width="1.4"/><path d="M15.1 22.6 A1.9 1.9 0 1 0 18.9 21.8 L14.8 12.6Z M22.2 16.8 A1.8 1.8 0 1 0 25.8 16.8 L24 12Z M29.1 21.8 A1.9 1.9 0 1 0 32.9 22.6 L33.2 12.6Z" fill="var(--hol-flame)" stroke-width="1.6"/><path d="M16.1 21.8 A0.8 0.8 0 1 0 17.6 21.4 L15.6 16.2Z M23.2 16.5 A0.8 0.8 0 1 0 24.8 16.5 L24 13.8Z M30.4 21.4 A0.8 0.8 0 1 0 31.9 21.8 L32.4 16.2Z" fill="var(--hol-gold-lt)" stroke="none"/><path d="M17 11.6 C14.5 11.6 14.4 7.9 17 7.8 C17.3 4.9 20.7 3.9 22.7 5.7 C24 2.7 28.9 2.9 29.8 6.3 C32.4 6.1 33.6 9.2 32 10.9 C31.5 11.3 31 11.6 30.2 11.6Z" fill="var(--hol-paper)"/><path d="M7.2 21.8 Q7.8 23.8 9.8 24.4 Q7.8 25 7.2 27 Q6.6 25 4.6 24.4 Q6.6 23.8 7.2 21.8Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/><path d="M41 22.2 Q41.5 23.9 43.2 24.4 Q41.5 24.9 41 26.6 Q40.5 24.9 38.8 24.4 Q40.5 23.9 41 22.2Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/>
+```
+
+### 27. Tazria · תַזְרִיעַ
+
+<img src="docs/parasha-emojis/tazria.svg" width="96" height="96" alt="A swaddled sleeping baby">
+
+**Reading:** Leviticus 12:1–13:59
+
+**Summary:** The Torah teaches what a mother does after a baby is born, including the brit milah on the eighth
+day, and how the kohen examines tzara’at, a skin affliction that can also appear on clothing.
+
+**Emoji: A new baby.** A newborn baby: a boy has his brit milah on the eighth day (Leviticus 12:1–3).
+
+**Why this emoji:** Tazria opens with the birth of a baby and the brit milah on the eighth day, a joyful way into
+a parasha that is mostly about tzara’at, and a picture every child understands.
+
+```html
+<path d="M10.8 26 A13.1 13.1 0 0 1 34 13.6 C38.5 22.2 39.7 30.1 37.7 34.7 Q33.7 41.1 26.2 40.9 C21.2 39.9 15.4 34.5 10.8 26Z" fill="var(--hol-blue)"/><circle cx="23" cy="20.9" r="9.4" fill="var(--hol-gold-lt)"/><path d="M15.6 34.3 C24.2 31.7 33 30.4 39.2 30.8 M25.2 40.4 C28.1 37 33.4 34.2 37.9 33.7" stroke-width="1.6"/><path d="M17.4 21 Q19.9 23 21.1 20.1 M24.3 19.3 Q26.7 21.3 28 18.4" stroke="var(--hol-navy)" stroke-width="1.6"/><path d="M22.5 25.2 Q24.3 26 25.5 24.4" stroke="var(--hol-navy)" stroke-width="1.5"/><circle cx="18.1" cy="25.2" r="1.6" fill="var(--hol-red)" stroke="none"/><circle cx="29.3" cy="22.4" r="1.6" fill="var(--hol-red)" stroke="none"/><path d="M40 6.4 Q40.7 8.9 43.2 9.6 Q40.7 10.3 40 12.8 Q39.3 10.3 36.8 9.6 Q39.3 8.9 40 6.4Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/><path d="M9.6 37.6 Q10.2 39.6 12.2 40.2 Q10.2 40.8 9.6 42.8 Q9 40.8 7 40.2 Q9 39.6 9.6 37.6Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/>
+```
+
+### 28. Metzora · מְצֹרָע
+
+<img src="docs/parasha-emojis/metzora.svg" width="96" height="96" alt="A cedar stick and a hyssop sprig tied with red thread">
+
+**Reading:** Leviticus 14:1–15:33
+
+**Summary:** A person healed of tzara’at is purified with cedar wood, red thread, hyssop and two birds, one of
+which is set free, and the Torah teaches what to do when tzara’at appears on the walls of a house.
+
+**Emoji: Cedar, hyssop and red thread.** The cedar wood, hyssop and red thread used to purify a person healed of
+tzara’at (Leviticus 14:4–6).
+
+**Why this emoji:** Metzora is about becoming pure again, and the cedar, hyssop and red thread begin the
+purification; Rashi reads the tall cedar and the low hyssop as a lesson to set pride aside for humility.
+
+```html
+<path d="M31.8 40.4 L17.1 10.4" stroke-width="1.7"/><path d="M24.9 26.3 Q22.1 22.5 18 24.8 Q20.8 28.6 24.9 26.3Z M24.9 26.3 Q29.2 24.5 28 20 Q23.6 21.8 24.9 26.3Z M22.6 21.5 Q19.8 17.7 15.7 20 Q18.5 23.8 22.6 21.5Z M22.6 21.5 Q26.9 19.7 25.6 15.2 Q21.3 17 22.6 21.5Z M20.4 17 Q17.6 13.2 13.5 15.5 Q16.3 19.3 20.4 17Z M20.4 17 Q24.7 15.2 23.4 10.7 Q19.1 12.5 20.4 17Z M17.1 10.4 Q16.1 5.8 11.5 6.2 Q12.5 10.8 17.1 10.4Z M17.1 10.4 Q20.4 7 17.4 3.4 Q14.2 6.8 17.1 10.4Z M17.1 10.4 Q18.3 5.6 13.8 3.6 Q12.7 8.3 17.1 10.4Z" fill="var(--hol-green)" stroke-width="1.3"/><path d="M20.2 42.8 L36 13.2 A3.1 3.1 0 0 0 30.5 10.3 L14.8 39.9Z" fill="var(--hol-gold)"/><ellipse cx="17.5" cy="41.4" rx="1.5" ry="3.1" transform="rotate(-62 17.5 41.4)" fill="var(--hol-gold-lt)" stroke-width="1.6"/><path d="M32.6 28.3 L17.8 28.1 M32.6 25.7 L17.8 25.5 M32.7 23.1 L17.9 22.9" stroke-width="3.6"/><path d="M32.6 28.3 L17.8 28.1 M32.6 25.7 L17.8 25.5 M32.7 23.1 L17.9 22.9" stroke="var(--hol-red)" stroke-width="1.6"/><path d="M32.8 25.6 C36.4 26.4 35 30.2 37.8 32 M32.8 26.2 C34.4 29 32.4 31.6 33.6 34.2" stroke="var(--hol-red)" stroke-width="1.9"/>
+```
+
+### 29. Achrei Mot · אַחֲרֵי מוֹת
+
+<img src="docs/parasha-emojis/achreimot.svg" width="96" height="96" alt="A white linen tunic, sash and turban">
+
+**Reading:** Leviticus 16:1–18:30
+
+**Summary:** God teaches the Yom Kippur service, when the High Priest enters the Holy of Holies in white linen
+and one goat is sent into the wilderness carrying the people’s sins, and gives laws for living a holy life.
+
+**Emoji: White linen clothes.** On Yom Kippur the High Priest wears plain white linen (Leviticus 16:4).
+
+**Why this emoji:** Achrei Mot describes the Yom Kippur service, when the High Priest sets aside his golden
+garments for plain white linen, which is why many people still wear white on Yom Kippur.
+
+```html
+<path d="M15.6 9.8 C16.2 11.8 17.6 12.8 19.6 12.8 C21.6 12.8 23 11.8 23.6 9.8 L29.4 11.4 L35.4 27 L31 28.6 L27.6 20.6 L28.6 43.8 H10.6 L11.6 20.6 L8.2 28.6 L3.8 27 L9.8 11.4Z" fill="var(--hol-paper)"/><path d="M16.4 10.4 C17.2 12.6 18.2 13.8 19.6 13.8 C21 13.8 22 12.6 22.8 10.4" stroke="var(--hol-navy)" stroke-width="1.3"/><path d="M11.6 20.6 L11.4 24.4 M27.6 20.6 L27.8 24.4 M5.4 25.6 L7.6 26.4 M33.8 25.6 L31.6 26.4" stroke="var(--hol-navy)" stroke-width="1.3"/><path d="M13.4 30 L12.8 38.6 L15.2 38.2 L15.6 30.2 M15.6 30.4 L17.8 37.6" stroke="var(--hol-navy)" stroke-width="1.4" fill="var(--hol-paper)"/><path d="M11.3 26.4 H27.9 L28 30.4 H11.2Z" fill="var(--hol-paper)" stroke="var(--hol-navy)" stroke-width="1.4"/><path d="M16.6 26.8 L18.4 30 M21.6 26.8 L23.4 30" stroke="var(--hol-navy)" stroke-width="1.2"/><path d="M33.3 13.4 C32.4 10.3 32.9 6.8 35.1 5 C36.8 3.7 40.4 3.7 42.1 5 C44.3 6.8 44.8 10.3 43.9 13.4Z" fill="var(--hol-paper)"/><path d="M33.9 12.5 C35.5 10.7 36.8 9.7 38.6 9.4 M43.3 12.5 C41.7 10.7 40.4 9.7 38.6 9.4 M33.6 8.5 C35.5 8.3 37.3 7.2 38.6 5.8 M43.6 8.5 C41.7 8.3 39.9 7.2 38.6 5.8" stroke="var(--hol-navy)" stroke-width="1.2"/><path d="M7.2 4 Q7.7 5.9 9.6 6.4 Q7.7 6.9 7.2 8.8 Q6.7 6.9 4.8 6.4 Q6.7 5.9 7.2 4Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/><path d="M40.6 32.8 Q41.2 34.8 43.2 35.4 Q41.2 36 40.6 38 Q40 36 38 35.4 Q40 34.8 40.6 32.8Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/>
+```
+
+### 30. Kedoshim · קְדֹשִׁים
+
+<img src="docs/parasha-emojis/kedoshim.svg" width="96" height="96" alt="Tall wheat left standing in one corner of a cut field">
+
+**Reading:** Leviticus 19:1–20:27
+
+**Summary:** God tells the people, “You shall be holy,” and shows how: love your neighbor as yourself, leave the
+corners of your field for the poor, do not spread gossip, honor the elderly and be honest in business.
+
+**Emoji: The corner of the field.** A field cut short except for one corner, left standing for the poor
+(Leviticus 19:9–10).
+
+**Why this emoji:** Kedoshim shows that holiness lives in everyday life, and the corner of the field left for the
+poor makes that a picture of a shared harvest, the way Ruth later gathers grain in Boaz’s field.
+
+```html
+<path d="M6 42 L5.2 36.6 M9.9 42 L10.2 34.4 M13.9 42 L13.2 35.8 M17.8 42 L18.4 34.8 M21.8 42 L21.4 36.4" stroke-width="4.4"/><path d="M6 42 L5.2 36.6 M9.9 42 L10.2 34.4 M13.9 42 L13.2 35.8 M17.8 42 L18.4 34.8 M21.8 42 L21.4 36.4" stroke="var(--hol-gold)" stroke-width="2.2"/><path d="M3.8 42.6 H44.2" stroke-width="2.4"/><path d="M28 42 L26.8 23.4 M33.4 42 L33.2 20 M38.8 42 L39.2 23.4" stroke-width="4.6"/><path d="M28 42 L26.8 23.4 M33.4 42 L33.2 20 M38.8 42 L39.2 23.4" stroke="var(--hol-gold)" stroke-width="2.4"/><path d="M28 12.9 L30.5 8 M24.2 13.1 L21 8.6 M35 9.6 L37.8 4.8 M31.2 9.6 L28.3 4.9 M41.3 13 L44.3 8.4 M37.5 12.9 L34.8 8.2" stroke-width="1.3"/><path d="M26.8 24.4 Q30.7 22.5 28.9 19.9 Q30.5 17.6 28.4 15.6 Q29.5 12.8 25.9 10.8 Q22.7 13.2 24 15.9 Q22.3 18.1 24.2 20.2 Q22.7 23 26.8 24.4Z M33.2 21 Q37.2 19.3 35.5 16.6 Q37.2 14.4 35.3 12.3 Q36.5 9.5 33.1 7.4 Q29.7 9.6 30.9 12.3 Q29 14.5 30.8 16.7 Q29.2 19.4 33.2 21Z M39.2 24.4 Q43.2 22.9 41.6 20.1 Q43.4 18 41.6 15.7 Q42.9 13.1 39.5 10.8 Q36 12.9 37.2 15.7 Q35.2 17.8 36.9 20 Q35.2 22.7 39.2 24.4Z" fill="var(--hol-gold-lt)" stroke-width="1.5"/><path d="M18.8 19.4 Q19.6 22.2 22.4 23 Q19.6 23.8 18.8 26.6 Q18 23.8 15.2 23 Q18 22.2 18.8 19.4Z" fill="var(--hol-paper)" stroke-width="1.3"/><path d="M10.2 13 Q10.7 14.9 12.6 15.4 Q10.7 15.9 10.2 17.8 Q9.7 15.9 7.8 15.4 Q9.7 14.9 10.2 13Z" fill="var(--hol-paper)" stroke-width="1.3"/>
+```
+
+### 31. Emor · אֱמֹר
+
+<img src="docs/parasha-emojis/emor.svg" width="96" height="96" alt="A lulav and an etrog">
+
+**Reading:** Leviticus 21:1–24:23
+
+**Summary:** God gives special rules for the kohanim and lists the holy days of the year, from Shabbat, Pesach
+and Shavuot to Rosh Hashanah, Yom Kippur and Sukkot, with the counting of the Omer and the four species.
+
+**Emoji: The four species.** The lulav and etrog, taken on Sukkot (Leviticus 23:40).
+
+**Why this emoji:** Emor lists the holy days of the year, and the lulav and etrog, commanded here for Sukkot,
+turn that list into something children can hold in their hands, while staying apart from the suite’s sukkah icon
+for Sukkot itself.
+
+```html
+<path d="M11.3 35.5 Q15.7 27.7 15.2 16.9 Q10.5 26.6 11.3 35.5Z M9.9 35.9 Q12.1 29.5 9.2 22 Q7.2 29.8 9.9 35.9Z" fill="var(--hol-green)" stroke-width="1.4"/><path d="M16 41.3 L26.3 25.9" stroke-width="1.3"/><path d="M20.9 35.4 C21.6 34 22.3 33.7 23.4 34.3 C24.5 34.8 24.6 35.6 23.9 37 C23.2 38.4 22.5 38.7 21.4 38.2 C20.3 37.6 20.1 36.9 20.9 35.4Z M21 31.7 C21.7 30.3 22.4 29.9 23.5 30.5 C24.6 31.1 24.7 31.8 24 33.2 C23.3 34.7 22.6 35 21.5 34.4 C20.4 33.9 20.3 33.1 21 31.7Z M24 29.4 C24.7 28 25.4 27.6 26.5 28.2 C27.6 28.8 27.7 29.5 27 30.9 C26.3 32.4 25.6 32.7 24.5 32.1 C23.4 31.6 23.2 30.8 24 29.4Z M24.6 25.9 C25.3 24.5 26 24.2 27.1 24.7 C28.2 25.3 28.4 26 27.6 27.5 C26.9 28.9 26.2 29.2 25.1 28.6 C24 28.1 23.9 27.3 24.6 25.9Z" fill="var(--hol-green)" stroke-width="1.3"/><path d="M13.7 33.4 C15 26.2 19.9 17.5 23.7 12.6 C26.7 9.7 28.9 7.4 30.2 5.9 C29.8 7.9 29.2 11 28.6 15.1 C26.9 21 22.7 30.1 17.6 35.4Z" fill="var(--hol-green)"/><path d="M16.1 33.5 L28.4 9.4" stroke="var(--hol-gold-lt)" stroke-width="1.5"/><path d="M11.2 43.1 L13 39.7 M8.9 41 L10.3 38.4 M14.3 43.8 L15.6 41.1" stroke-width="2"/><path d="M7.4 37.8 L17.9 43.2 L18.9 41.2 L8.4 35.8Z M9.2 34.4 L19.7 39.8 L20.7 37.8 L10.2 32.5Z" fill="var(--hol-gold)" stroke-width="1.5"/><path d="M26.2 37.9 L24 38.4" stroke-width="2.4"/><path d="M26.3 37.8 C27.8 43.6 33.3 43.2 36 42.2 C39.9 40.9 42.2 37.9 42.9 34.4 L44.1 33.4 L42.6 33 C40.3 30.3 36.9 28.7 32.8 29.4 C29.9 29.8 24.9 32 26.3 37.8Z" fill="var(--hol-gold-lt)"/><path d="M38.3 37.7 Q35.5 40.2 31.8 39.7" stroke="var(--hol-gold)" stroke-width="1.5"/>
+```
+
+### 32. Behar · בְּהַר
+
+<img src="docs/parasha-emojis/behar.svg" width="96" height="96" alt="A sign with the number 7, a resting plow and wildflowers">
+
+**Reading:** Leviticus 25:1–26:2
+
+**Summary:** Every seventh year the land rests, in the fiftieth year, the Jubilee, the shofar proclaims freedom
+throughout the land, and the Torah commands helping a neighbor who becomes poor.
+
+**Emoji: The land rests.** In the seventh year the plow rests and the field grows on its own (Leviticus 25:2–7).
+
+**Why this emoji:** Behar teaches that every seventh year the land rests, a Shabbat for the earth, and the sign
+with its 7 and the plow set aside show that rest at a glance; the mitzvah is still kept in Israel today as
+shemitah.
+
+```html
+<path d="M3.8 42.6 H44.2" stroke-width="2.4"/><rect x="10" y="20.6" width="3.6" height="21.4" fill="var(--hol-gold)" stroke-width="1.6"/><rect x="3.8" y="6" width="16" height="15.6" rx="2.4" fill="var(--hol-gold-lt)"/><path d="M8 10 H15.8 L11.3 17.6" stroke="var(--hol-navy)" stroke-width="3"/><path d="M5.2 40.4 C9 38.8 13.2 38.4 17.8 39.4" stroke-width="4.8"/><path d="M5.2 40.4 C9 38.8 13.2 38.4 17.8 39.4" stroke="var(--hol-gold)" stroke-width="2.6"/><path d="M16.2 39.4 C17.4 37 18.4 34.8 19.4 32.6" stroke-width="4.4"/><path d="M16.2 39.4 C17.4 37 18.4 34.8 19.4 32.6" stroke="var(--hol-gold)" stroke-width="2.2"/><path d="M15 37.6 L23 40.2 Q23.6 41 22.6 41.5 L15 41.6 Q13.6 39.6 15 37.6Z" fill="var(--hol-navy)" stroke-width="1.5"/><path d="M27.2 42 Q28 35.2 28.2 28.4 M35.8 42 Q35 31.2 34.8 20.4 M42 42 Q41.2 35.7 41 29.5" stroke="var(--hol-green)" stroke-width="2"/><path d="M28.4 35.8 Q26.5 33.3 23.6 34.4 Q25.5 36.9 28.4 35.8Z M40.6 36.2 Q43.6 36.7 44.8 33.9 Q41.9 33.5 40.6 36.2Z M34.4 33.2 Q37.9 33.8 39.7 30.8 Q36.2 30.2 34.4 33.2Z" fill="var(--hol-green)" stroke-width="1.3"/><path d="M24.8 22.3 L26.7 24.5 L28.2 22 L29.7 24.5 L31.6 22.3 C31.9 27.1 30.2 29.1 28.2 29.1 C26.2 29.1 24.5 27.1 24.8 22.3Z M37.9 23.9 L39.6 25.9 L41 23.6 L42.4 25.9 L44.1 23.9 C44.4 28.2 42.9 30.1 41 30.1 C39.1 30.1 37.6 28.2 37.9 23.9Z" fill="var(--hol-red)" stroke-width="1.4"/><path d="M34.8 20.4 C32.2 16.3 33.3 14.4 34.8 15 C36.3 14.4 37.4 16.3 34.8 20.4Z M34.8 20.4 C37.9 16.7 40.1 17.1 39.9 18.7 C41 20 39.5 21.6 34.8 20.4Z M34.8 20.4 C39.3 22.2 39.6 24.4 38 24.8 C37.1 26.2 35.1 25.2 34.8 20.4Z M34.8 20.4 C34.5 25.2 32.5 26.2 31.6 24.8 C30 24.4 30.3 22.2 34.8 20.4Z M34.8 20.4 C30.1 21.6 28.6 20 29.7 18.7 C29.5 17.1 31.7 16.7 34.8 20.4Z" fill="var(--hol-flame)" stroke-width="1.4"/><circle cx="34.8" cy="20.4" r="1.7" fill="var(--hol-gold-lt)" stroke-width="1.3"/>
+```
+
+### 33. Bechukotai · בְּחֻקֹּתַי
+
+<img src="docs/parasha-emojis/bechukotai.svg" width="96" height="96" alt="A bunch of grapes with ears of wheat">
+
+**Reading:** Leviticus 26:3–27:34
+
+**Summary:** God promises rain in its season, plentiful harvests and peace if the people follow the commandments,
+warns of what will happen if they do not, and Leviticus ends with the laws of gifts dedicated to God.
+
+**Emoji: Grapes and wheat.** Grapes and wheat: the threshing will last until the grape harvest (Leviticus 26:5).
+
+**Why this emoji:** Bechukotai opens with the blessings of rain in its season and harvests so rich that one runs
+into the next, and grapes with wheat show that plenty, closing Leviticus on a note of blessing.
+
+```html
+<path d="M24.6 42.6 L12.6 20.8 M26.8 42.6 L18 16.8 M28.8 42.6 L23.6 15.6" stroke-width="3.8"/><path d="M24.6 42.6 L12.6 20.8 M26.8 42.6 L18 16.8 M28.8 42.6 L23.6 15.6" stroke="var(--hol-gold)" stroke-width="1.8"/><path d="M9.9 12.9 L9.9 8.7 M7.4 14.3 L3.8 12.1 M16.7 8.6 L17.5 4.4 M14 9.5 L10.9 6.7 M23.4 7.3 L24.8 3.3 M20.7 7.8 L17.9 4.6" stroke-width="1.3"/><path d="M12.6 20.8 Q14.6 18.4 12.6 17.2 Q13 15.2 11 14.5 Q10.8 12.4 7.9 12.2 Q6.4 14.8 8.2 16.1 Q7.7 18.1 9.6 18.9 Q9.5 21.2 12.6 20.8Z M18 16.8 Q20.4 14.7 18.6 13.3 Q19.3 11.4 17.5 10.3 Q17.7 8.2 14.8 7.5 Q13 9.8 14.4 11.4 Q13.6 13.3 15.3 14.4 Q14.8 16.6 18 16.8Z M23.6 15.6 Q26.3 13.9 24.7 12.2 Q25.7 10.4 24 9.1 Q24.5 7 21.7 6 Q19.6 8 20.8 9.7 Q19.7 11.6 21.3 12.8 Q20.5 15 23.6 15.6Z" fill="var(--hol-gold-lt)" stroke-width="1.5"/><path d="M29.6 17.7 C29.6 15.4 31 13.4 32.8 14.4 M30.4 14.2 C26.8 13.6 26.2 10 28.4 9.4 C30 9 30.4 11 29.2 11.6" stroke-width="1.6"/><path d="M37.2 14.2 Q33.3 16.9 30.8 11.1 Q32.2 10.1 34.2 10.3 Q33.2 8.6 33.1 6.3 Q35.1 7.2 36.4 8.7 Q37 6.8 38.5 4.7 Q39.3 7.2 39.1 9.2 Q40.8 8.2 43.1 8.1 Q42.2 10.1 40.7 11.4 Q42.6 12 43.4 13.3 Q41.1 16.9 38.2 13.9 Z" fill="var(--hol-green)"/><path d="M36.5 13.4 L34.6 8.4 M37.2 12.2 L39.1 8.2 M37.2 12.2 L33.3 11.5" stroke="var(--hol-navy)" stroke-width="1.2"/><path d="M20.1 20.4 a3.1 3.1 0 1 0 6.2 0 a3.1 3.1 0 1 0 -6.2 0 M26.8 20.2 a3.1 3.1 0 1 0 6.2 0 a3.1 3.1 0 1 0 -6.2 0 M32.7 20.6 a3.1 3.1 0 1 0 6.2 0 a3.1 3.1 0 1 0 -6.2 0" fill="var(--hol-blue)" stroke-width="1.5"/><path d="M17 25.4 a3.1 3.1 0 1 0 6.2 0 a3.1 3.1 0 1 0 -6.2 0 M23.1 24.9 a3.1 3.1 0 1 0 6.2 0 a3.1 3.1 0 1 0 -6.2 0 M29.7 25.1 a3.1 3.1 0 1 0 6.2 0 a3.1 3.1 0 1 0 -6.2 0 M36.5 24.9 a3.1 3.1 0 1 0 6.2 0 a3.1 3.1 0 1 0 -6.2 0" fill="var(--hol-blue)" stroke-width="1.5"/><path d="M20.4 29.6 a3.1 3.1 0 1 0 6.2 0 a3.1 3.1 0 1 0 -6.2 0 M26.2 30 a3.1 3.1 0 1 0 6.2 0 a3.1 3.1 0 1 0 -6.2 0 M33.2 30.1 a3.1 3.1 0 1 0 6.2 0 a3.1 3.1 0 1 0 -6.2 0" fill="var(--hol-blue)" stroke-width="1.5"/><path d="M23.1 34.3 a3.1 3.1 0 1 0 6.2 0 a3.1 3.1 0 1 0 -6.2 0 M29.7 34.5 a3.1 3.1 0 1 0 6.2 0 a3.1 3.1 0 1 0 -6.2 0" fill="var(--hol-blue)" stroke-width="1.5"/><path d="M26.2 39.4 a3.1 3.1 0 1 0 6.2 0 a3.1 3.1 0 1 0 -6.2 0" fill="var(--hol-blue)" stroke-width="1.5"/><path d="M21.4 19.3 a0.8 0.8 0 1 0 1.5 0 a0.8 0.8 0 1 0 -1.5 0 M28.2 19.1 a0.8 0.8 0 1 0 1.5 0 a0.8 0.8 0 1 0 -1.5 0 M34 19.5 a0.8 0.8 0 1 0 1.5 0 a0.8 0.8 0 1 0 -1.5 0 M18.4 24.3 a0.8 0.8 0 1 0 1.5 0 a0.8 0.8 0 1 0 -1.5 0 M24.4 23.8 a0.8 0.8 0 1 0 1.5 0 a0.8 0.8 0 1 0 -1.5 0 M31.1 24 a0.8 0.8 0 1 0 1.5 0 a0.8 0.8 0 1 0 -1.5 0 M37.8 23.8 a0.8 0.8 0 1 0 1.5 0 a0.8 0.8 0 1 0 -1.5 0 M21.7 28.5 a0.8 0.8 0 1 0 1.5 0 a0.8 0.8 0 1 0 -1.5 0 M27.6 28.9 a0.8 0.8 0 1 0 1.5 0 a0.8 0.8 0 1 0 -1.5 0 M34.5 29 a0.8 0.8 0 1 0 1.5 0 a0.8 0.8 0 1 0 -1.5 0 M24.4 33.2 a0.8 0.8 0 1 0 1.5 0 a0.8 0.8 0 1 0 -1.5 0 M31.1 33.4 a0.8 0.8 0 1 0 1.5 0 a0.8 0.8 0 1 0 -1.5 0 M27.6 38.3 a0.8 0.8 0 1 0 1.5 0 a0.8 0.8 0 1 0 -1.5 0" fill="var(--hol-gold-lt)" stroke="none"/>
 ```
