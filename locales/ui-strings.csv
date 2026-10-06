@@ -5070,6 +5070,9 @@ worksheet.presets.overwrite_confirm,"Overwrite preset ""{name}"" with current se
 worksheet.presets.overwrite_title,Overwrite with current settings,דריסה עם ההגדרות הנוכחיות,preset action button title,aria-label only
 worksheet.presets.panel_title,Saved Presets,הגדרות שמורות,panel title,
 worksheet.presets.panel_tooltip,"Save your current letter, vowel, and layout settings as a named preset. Load it later to instantly restore everything — great for switching between class levels or drill types.","שמרו את הגדרות האותיות, התנועות והפריסה הנוכחיות שלכם כהגדרה בשם. טענו אותה מאוחר יותר כדי לשחזר הכול מיד — מצוין למעבר בין רמות כיתה או סוגי תרגול.",tooltip,
+worksheet.presets.rename_exists,"A preset named ""{name}"" already exists.","כבר קיימת הגדרה בשם ""{name}"".",toast when a rename collides with an existing preset,mixed UI+content — do not translate {…}
+worksheet.presets.rename_prompt,Rename preset:,שם חדש להגדרה:,prompt dialog,
+worksheet.presets.rename_title,Rename,שינוי שם,preset action button title,aria-label only
 worksheet.presets.save,Save,שמור,button,leading-emoji
 worksheet.preview.adjust_selection,Adjust your selection to continue.,התאימו את הבחירה שלכם כדי להמשיך.,preview notice,
 worksheet.preview.dismiss,Dismiss,סגור,preview notice close button,aria-label only
