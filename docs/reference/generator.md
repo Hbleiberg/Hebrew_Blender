@@ -237,6 +237,12 @@ button's "(N versions)" label and the count itself (the draw, `liveIsHeavyMode`)
 Gematria, Tracing, a self-check, 1-Letter, Vowels Only, Real Words and Number Practice print one version.
 The stored count is kept while the row is hidden. A new drill that lays out `classSetSheets` joins that test.
 
+**Exclude Repeats** (`#excludeRepeats`): no letter twice in a row inside a blend. `drawBlends` (every 2/3-Letter
+sheet and each Class Set version) keeps the 1st ≠ 2nd and redraws a 3rd that repeats the 2nd (a blend is skipped
+when the pool has no other letter), the same rule as `generateBingoBlend` / `generateBingoBlendThree`; a 1st that
+matches the 3rd is allowed. In Name the Letter it tries every chosen letter before one repeats. Whole blends can
+still repeat; the tooltip (`worksheet.layout.exclude_repeats_tooltip`) says exactly this, so change both together.
+
 ---
 
 ## Page count under Print / Export PDF (`updatePrintCount`)

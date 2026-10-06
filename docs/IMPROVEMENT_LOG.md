@@ -8,17 +8,23 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P3 (**NEW S461 — pattern bulk-apply-skips-a-renderer-the-control-runs**) | classroom_dashboard.html | **A preset, starter, `.ivrit` or download with Hide weather on leaves the empty Weather card until a reload** (only its checkbox hides it). | found S461
+- [ ] P3 (**NEW S462, bulk-apply**) | classroom_dashboard.html | **A preset, `.ivrit` or download changing the city keeps the old city's weather and Shabbat times.** | found S462
 
 - [ ] P4 (**NEW S461 K — gate 2 ANSWERED: use תל-עם**) | classroom_dashboard.html | **The Hebrew UI spells the scheme "TaL AM"** (`scheme_talam`, `reset_confirm`); the other three tools say תל-עם. | found S461
 
-- [ ] P4 (**NEW S461 — gate 2**) | hebrew_blend_generator.html | **Exclude Repeats lets a 3-letter worksheet blend repeat letter 2 as letter 3**; bingo rejects it. | found S461
+- [ ] P4 (**NEW S462 N, gate 2 ANSWERED: fix all**) | ui-strings.csv | **42 HE go/next arrows read "→"; six FM Back labels start "←"** (loop-findings S462). | found S462
+
+- [ ] P4 (**NEW S462 N**) | contact.html | **The 15.2px form fields zoom an iPhone 1.05× on focus.** | found S462
+
+- [ ] P4 (**NEW S462 N**) | contact.html | **An English Web3Forms error in the HE status note leads with its period.** | found S462
+
+- [ ] P4 (**NEW S462 N**) | pwa.js | **The iOS install banner hides the footer links at full scroll.** | found S462
 
 - [ ] P4 (**NEW S460 — pattern radio-set-without-a-question**) | hebrew_dictionary.html | **The three Copy Mode radios sit in no named group** (`d9645fa5`'s idiom fits). | found S460
 
 - [ ] P4 (**NEW S460 — pattern radio-set-without-a-question**) | classroom_dashboard.html | **The video position radios have no group or question**; a name needs a new string. | found S460
 
-- [ ] P4 (**NEW S460 — gate 2**) | Hebrew_Font_Maker.html | **The About footer says "(the font engine loads on first export)"** (`fontmaker.about.footer_about_body`). | found S460
+- [ ] P4 (**NEW S460 — ANSWERED S462: drop it**) | Hebrew_Font_Maker.html | **The About footer says "(the font engine loads on first export)"** (`fontmaker.about.footer_about_body`). | found S460
 
 - [ ] P4 (**NEW S458**) | scripts/smoke-sync.mjs | **Scenario 2 fails Mon 08:00–09:30, Tue 08:00–08:45 local** (its schedule's preset goes up): pin the clock. | found S458
 
@@ -252,8 +258,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] S–M | hebrew_blend_generator.html | **1-Letter: every chosen letter once, in alef-bet order, with or without vowels** (a bare א–ת sheet). | found: 2026-10-03, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] S | hebrew_blend_generator.html | **Rename a preset** (today: load, save under the new name, delete the old). | found: 2026-10-03, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
-
 - [ ] S–M | hebrew_blend_generator.html | **A "Previous sheet" button after Regenerate.** | found: 2026-10-03, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] M (dual) | hebrew_blend_generator.html | **Trace your own lines: students' names or this week's words, in Hebrew or English.** | found: 2026-10-03, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -294,6 +298,10 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-06 | (S462 close-out) | branch/deploy note | **S462 = N + 2 fixes + micro, PR #310.** No drift; keep-alive #23 green; sw v938→v939; no FM bump; gates clean; 4 gates answered.
+
+- [x] 2026-10-06 | `dbed7d82`, `867ce791`, `4c11abf8` | dashboard, generator, CSV | (S462) **The Weather card follows a preset; no letter twice in a row (gate 2); rename a preset (micro).** | findings S462.
+
 - [x] 2026-10-05 | (S461 close-out) | branch/deploy note | **S461 = K + 4 fixes, PR #310.** No drift; keep-alive #23 green; sw v937→v938; no FM bump; gates clean; 4 gates answered.
 
 - [x] 2026-10-05 | `74b2ee0c` | hebrew_dictionary.html | (S461 K) **The Bulk Copy count follows the language.** | `dict.mjs` 2 cells: HEAD 3 wrong → 6/6.
@@ -316,13 +324,11 @@ _(none)_
 
 - [x] 2026-10-05 | `ea43be7e`, `070582d8`, `2bb2ead0`, `6409fa98` | dashboard, flash, FM, generator | (S458) **Radios take the keyboard; an old tab no longer reverts a newer one; a non-finite sheet scale no longer NaNs a letter; Export PDF stops doubling its name.** | findings S458.
 
-- [x] 2026-10-05 | (S457 close-out) | branch/deploy note | **S457 = B + 4 fixes, PR #308.** No drift (main `c0f3b57`, keep-alive #22 green); sw v929→v930; no FM bump; check-i18n + check-inline-js clean; 7 smokes green; deferred: micro-feature.
-
-- [x] 2026-10-05 | `4c31b627` | js/ivrit-saves.js, smoke-sync | (S457 B) **A new device's first signed-in load takes the account's preferences** (`useCloud` with the downloads). | `prefs2/3.mjs` 0/3 → 3/3; smoke-sync 1b 3/6 → 6/6; 7 smokes.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-06 | **S462** | iters: 1 pass (**N**) + 2 fixes + micro (2) = **5** | tools: dashboard, generator ×2 | patterns fixed: bulk-apply ×1 | pass run: N | SW: v938→v939
 
 - 2026-10-05 | **S461** | iters: 1 pass (**K**) + 4 fixes = **5** | tools: generator, dashboard ×2, dictionary | patterns fixed: translated-key ×1, bulk-apply (NEW) ×1 | pass run: K | SW: v937→v938
 
@@ -364,11 +370,13 @@ _(none)_
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S461 (2026-10-05):** generator, dashboard, dictionary S461 · resources, torah, FM S460 · ivrit-saves S459 · flash S458 · trope S455 · contact S454 · account S449 · index S446 · privacy, terms, 404 S442.
+- **Snapshot S462 (2026-10-06):** dashboard, generator S462 · dictionary S461 · resources, torah, FM S460 · ivrit-saves S459 · flash S458 · trope S455 · contact S454 · account S449 · index S446 · privacy, terms, 404 S442.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
-- **`bulk-apply-skips-a-renderer-the-control-runs`** (NEW S461, `70988452`): ACTIVE, streak 0. A control re-renders; `applySettings` never does. Detection: `x3/parity.mjs` (apply vs reload, per flipped key). Open: `hideWeather`.
+- **`forward-arrow-points-back-in-rtl-copy`** (NEW S462 N; 48 cells open): ACTIVE, streak 0. An HE string keeps the English arrow. Detection: the S462 CSV census; exempt "(→)", A→Z.
+
+- **`bulk-apply-skips-a-renderer-the-control-runs`** (NEW S461; FIXED ×2): ACTIVE, streak 0. A control re-renders; `applySettings` never does. Detection: `x3/parity.mjs`, `n462/loc.mjs`. Open: `location`.
 
 - **`radio-set-without-a-question`** (NEW S460, `d9645fa5`): ACTIVE, streak 0. Radios with no named radiogroup/group/fieldset. Detection: walk each static radio up to its group; a hit lacks one or its name (JS-built: read the builders). Open: dashboard `videoLayout`, dictionary …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -432,11 +440,11 @@ _(none)_
 
 - **`aria-disabled-lock-no-handler-checks`** (**NEW, registered 2026-09-23 (S407 Pass P) — 1 carrier, fixed `e5c4784`**): ACTIVE, clean streak 0. A control marked busy or invalid by `aria-disabled="true"` whose activation handler never reads that state: the look says locked, a …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`text-field-under-16px-zooms-on-ios-focus`** (**NEW S406 Pass N — S408: the sign-in menu's 2 FIXED `0cd524c`; S420: the hub's backup box FIXED `b9ea89f` (16px under `(pointer:coarse)`, the desktop box unchanged); the switcher `<select>` (12.48px on 14 pages, js/i18n.js — …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`text-field-under-16px-zooms-on-ios-focus`** (NEW S406; FIXED ×2; contact's 4 open): ACTIVE, streak 0. Detection: computed `font-size` < 16px under an iPhone descriptor; plant a 12px field.
 
 - **`textContent-rewrite-erases-a-control-icon`** (S405; S415; **S453 `ac796dba`**): ACTIVE, streak 0. Add (d): load-time icon count. Detection: (a) EN→HE→EN icon count; (b) key census …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`translated-key-exists-page-hardcodes-english`** (S461 K: 1 FIXED `74b2ee0c`, dictionary Bulk Copy count; streak 0. S433 K: 0 new — the orphan census 121 raw, 86 with a live English twin, all S405/S419 classes; the delta's surfaces by a runtime EN-in-HE detector, 3 …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`translated-key-exists-page-hardcodes-english`** (S461 K: 1 FIXED `74b2ee0c`, dictionary Bulk Copy count; streak 0. S433 K: 0 new — the orphan census 121 raw, 86 with a live English twin, all S405/S419 classes; the delta's surfaces by a runtime EN-in-HE detector, 3 …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`per-page-code-inside-a-shared-block`** (**NEW, registered 2026-09-22 (S403 Pass E) — 2 carriers, both fixed `6e28af3`**): ACTIVE, clean streak 1 (S416). Page code pasted INSIDE a `═══` block instead of below its end …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -502,7 +510,7 @@ _(none)_
 
 - **dark-print-shadow-slab**: ACTIVE (registered S279: dictionary `#appToast`, flash `.panel`). **S385 (Pass A): 2 MORE FIXED — trope `.tu-view` (`7be7591`, `var(--shadow-sm)` = rgba(0,0,0,.4) in dark over 4,466,776 px², the largest slab this pattern has produced; the print …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **pinned-english-prose-in-rtl-paragraph** (**NEW, registered 2026-08-28 (S277 Pass M) from S276's `15684a6` + S277's `eb4ce00`/`f70d500` — three carriers of one shape inside two sessions**): deliberately-untranslated English PROSE (attribution credits, directory data, @handles …[full text: IMPROVEMENT_ARCHIVE.md]
+- **pinned-english-prose-in-rtl-paragraph** (NEW S277; FIXED ×3; contact's server note open): ACTIVE, streak 0. Detection: Range x-order of the phrase and its period in the HE UI; exempt lists, single runs, print.
 
 - **fixed-width-third-party-embed-inflates-phone-layout**: **REGISTERED + first swept suite-wide 2026-08-28 (S276 Pass N) — hits: 2 carriers, BOTH fixed in-session (`23b2387` contact inline auto-render → data-size=compact ≤388 + ≤430 containment belt; `e4aaa44` resources …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -664,7 +672,7 @@ _(none)_
 
 - O deslop — AI-design-tell sweep (one surface): 2026-09-08 (**S346 — 6th O, `flash_cards.html`. ⚑ BLOCKED HERE TWICE (S399, S403) — NOT "needs an attended session". Clone + the 4 parsers install fine; EXECUTING the detector is refused by the sandbox's auto-mode classifier ("Code from External"), and the refusal names the remedy: the maintainer adds a Bash permission rule for the detector (or …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- N mobile & touch-device (one surface): 2026-10-02 (**S448 — 21st N, `torah_trainer.html`, its 3rd (S245, S334 → S448), on the delta: the 7-tab drawer, Favorites + its dialog, the date lookup, the Trope staff layout. 16 cells arm 1 (320/390/412/landscape × EN/HE × light/dark × main + 7 tabs), 12 cells arms 4–6, arm 7 @4×; every zero planted. FOUND + FIXED the staff header overflow ≤348px …[full …[full text: IMPROVEMENT_ARCHIVE.md]
+- N mobile & touch-device (one surface): 2026-10-06 (**S462 — 22nd N, `contact.html` (S276 →): 144 views, 4 phones × EN/HE × themes, 128 taps, rotation, banner, 4×; zeros planted (findings S462). FOUND: iOS zoom, server-note bidi, banner over footer, 48 HE arrows. N-next: FM (S290).**)
 
 - M aesthetics & visual design (one surface): 2026-10-02 (**S450 — 21st M, `flash_cards.html` (last ~S249): 32 shots + computed fills, HEAD as the control. FIXED the dark primary's missing plate `c9e2bc2b`, the dark count hole `68055510`; logged the Save-as-preset button off scale. M-next: terms, contact.**)
 
@@ -692,4 +700,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-05 (**S456 — sliders on 7 tools: name, value heard, keys, size; plants fired (findings S456). FIXED 4. F-next: search fields.**)
 
-**Next session (S462):** **BRANCH/PR: S460–S461 on `claude/zealous-hamilton-qlwsp2` → draft PR #310 (base `a2cf7f8`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v938**, FM **5.59**, SDK **2.116.0**. ⚑ Stalest: N, P, M; O blocked. ⚑ Ready: תל-עם (answered), the weather card (P3). ⚑ Untaken: smoke-sync clock, 2 radio sets, FM footer.
+**Next session (S463):** **BRANCH/PR: S460–S462 on `claude/zealous-hamilton-qlwsp2` → draft PR #310 (base `a2cf7f8`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v939**, FM **5.59**, SDK **2.116.0**. ⚑ Stalest: P, M, G; O blocked. ⚑ Ready (answered): HE arrows, FM footer, תל-עם. ⚑ Untaken: city bulk-apply (P3), contact zoom + bidi.

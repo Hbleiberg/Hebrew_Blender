@@ -404,6 +404,10 @@ body.dark #tipFloat { background: #0a0f1c; }
   `headerLang` (`'none'` hides them), never `I18n.lang`. `updateColTitles()` writes them — and rebuilds the picker
   title's class switcher — at init, on the `headerLang` radios, in `applyI18n` and in `applySettings`, so a
   starter, a preset, an `.ivrit` file or an account download that changes `headerLang` re-titles the board at once.
+- **Weather card:** `renderWeather()` sets `#weatherCol`'s visibility from `hideWeather` (as `renderDaysList()` does
+  for `hideDOW`), and `applySettings` fetches the weather when it turns the card back on, as the switch does — so a
+  starter, preset, `.ivrit` file or account download shows or hides the card at once. A city change arriving the
+  same way still waits for the 30-minute refresh (an open candidate).
 
 ---
 

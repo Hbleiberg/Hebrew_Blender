@@ -359,4 +359,9 @@ mountFolderTree({ treeKey, container, listItemNames(), buildItemRow(name)→acti
    trailing number is the base for the next free one), then places the copy right after the original
    in the same folder via `ftInsertAfter(treeKey, name, newName)`, then re-renders. It's additive, so
    no `confirm`. `ftDuplicateName`/`ftInsertAfter` live in the shared folder-tree block.
+5. Where a list offers **Rename** (the dashboard's and the generator's presets, the Torah Trainer's favorites), the
+   per-tool `rename<Thing>(name)` asks with `prompt` (the current name filled in), refuses a name already taken (a
+   toast — never a merge, which would destroy that item), rekeys the store in its order, and renames the tree's item
+   node in place (`ftLocate` → `node.name`) before re-rendering, so the item keeps its folder; left to `syncTree`, the
+   new name would re-surface at root. A rename reaches the account as a delete plus an add (no backend change).
 
