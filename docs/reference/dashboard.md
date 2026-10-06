@@ -623,9 +623,10 @@ serves both pages. The file loads on the first render that needs it; a failed lo
 later render tries again (a festival week needs no file).
 
 - **Settings:** `showParsha` (default on; the line shows only while the Hebrew date does, so a board that hides the
-  date never sees it) and `parshaSchedule` (`'diaspora'` | `'israel'`, read through `parshaIsrael()`: anything else
-  reads Diaspora and stays stored). Both ride the settings blob — presets, `.ivrit`, AllTools, the account row — and
-  the Hebrew classroom starter sets `showParsha: true`.
+  date never sees it), `showParshaIcons` (*Show parsha emojis*, default on; read as `!== false`, so a blob from before
+  it shows the icons) and `parshaSchedule` (`'diaspora'` | `'israel'`, read through `parshaIsrael()`: anything else
+  reads Diaspora and stays stored). All three ride the settings blob — presets, `.ivrit`, AllTools, the account row —
+  and the Hebrew classroom starter sets `showParsha: true`.
 - **Script:** projected content, so it follows `hebDateScript` (with the date's fallback to English for an unknown
   value), never `I18n.lang`: `פָּרָשַׁת <name>` through `hebDisplay` (nikkud on/off and colour coding apply),
   `Parashat <name>`, or both, the English under the Hebrew as the date does. A doubled week joins its names (`–` in
@@ -633,9 +634,10 @@ later render tries again (a festival week needs no file).
   phone factors.
 - **Festival Shabbatot** show the festival (`PARSHA_HOLIDAY_NAMES`, keyed by HebCal's holiday key, `key:day` where the
   day changes the name); in Israel Shemini Atzeret shows with Simchat Torah.
-- **Icons:** the first line of every script mode leads with the reading's icon: each parasha's
-  (`ParashaIcons.html(r.idx)` from `js/parasha-icons.js`, both halves of a doubled week in reading order;
-  `docs/reference/shared-components.md` → Parasha icons) or the festival's (`holidayIconFor(nm.en)`). Each line
+- **Icons:** while `showParshaIcons` is on, the first line of every script mode leads with the reading's icon: each
+  parasha's (`ParashaIcons.html(r.idx)` from `js/parasha-icons.js`, both halves of a doubled week in reading order;
+  `docs/reference/shared-components.md` → Parasha icons) or the festival's (`holidayIconFor(nm.en)`, which stands in
+  for a parasha's, so the same switch hides it; the holiday countdown line keeps its own icon). Each line
   carries its own `dir`: the Hebrew-only line is an inline span, and without `dir="rtl"` it takes the board's
   direction, so the icons would trail the Hebrew.
 - **The link** opens the reading in the Torah Trainer in a new tab through that page's own deep links: `?parsha=<en>`

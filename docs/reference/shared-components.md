@@ -588,6 +588,10 @@ The module is precached, so a rebuilt one needs the `sw.js` `VERSION` bump.
 - Where they show: the dashboard's parsha line (`docs/reference/dashboard.md` → This week's parsha) and the
   Trainer's reading header and date lookup (`docs/reference/torah-and-trope.md` → Torah portion lookup). A festival
   week leads with its `holidayIconFor` family instead, and a custom or holiday range in the Trainer shows no parasha icon.
+- Each host page has its own on/off switch, *Show parsha emojis* (`showParshaIcons` in that page's settings blob,
+  default on): the dashboard's Date & Time section and the Trainer's Display section. Off, the page shows no
+  parasha icon and no festival icon standing in for one; the holiday icons that predate the parasha icons (the
+  dashboard's countdown line, the Trainer's holiday buttons and holiday-reading header) stay.
 
 ## Shared UX components — the conventions all tools are converging on
 

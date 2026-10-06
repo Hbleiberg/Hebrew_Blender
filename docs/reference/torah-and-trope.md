@@ -1091,12 +1091,14 @@ stored value reads Full and stays stored) and the triennial year (`settings.trie
   cycle radios and `applyI18n` re-render it.
 - **Parasha icons** (`js/parasha-icons.js`, `window.ParashaIcons`; the module and its catalog:
   `docs/reference/shared-components.md` → Parasha icons) lead a weekly reading's `.tt-ref-hdr` and the lookup's
-  result line. The header shows the loaded parasha's icon, or both halves' when a Triennial year reads the pair
+  result line while the Display section's *Show parsha emojis* (`showParshaIcons`, default on, read as `!== false`)
+  is on; the switch re-renders both, rides the settings blob and travels in a practice link. The header shows the loaded parasha's icon, or both halves' when a Triennial year reads the pair
   together: `resolveRef()` returns the parshiyot its label names as `named`, and `fetchAndRender` stores their
   indices as `currentRangeIcons` in the same step as `currentRangeLabel`, so a render while another reading loads
   never pairs one reading's icons with another's name. The lookup shows each parasha of the week (a doubled week
-  both, in reading order) or the festival's `holidayIconFor` family. A custom or holiday range shows no parasha
-  icon (a holiday reading leads with its own).
+  both, in reading order) or the festival's `holidayIconFor` family, which stands in for a parasha's and follows the
+  same switch. A custom or holiday range shows no parasha icon: a holiday reading leads with its own, as do the
+  holiday buttons, whatever the switch says.
 
 ---
 
@@ -1195,8 +1197,8 @@ settings** switch under it in that tab (`#ttShareSettings` → `settings.shareIn
 synced with the blob).
 
 - **What travels.** `LINK_DISPLAY` is the one list of carried keys, each with the check a value must
-  pass: layout, the four show-toggles (nikkud, te'amim, transliteration, translation), the
-  transliteration style and placement, the Hebrew font and the three text sizes, vowel coding (on, mode, scheme,
+  pass: layout, the four show-toggles (nikkud, te'amim, transliteration, translation), the parsha emojis switch
+  (`showParshaIcons`), the transliteration style and placement, the Hebrew font and the three text sizes, vowel coding (on, mode, scheme,
   overrides), trope coding (on, look, overrides), karaoke style and follow, and the Trope staff's words, key,
   voice, direction and note names (`staffWords`, `staffShift` as a whole number of half steps, `staffVoice`,
   `staffDir`, `staffNoteNames`; the layout itself travels as `layout: 'staff'`). Enum lists are read from the

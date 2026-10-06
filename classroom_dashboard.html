@@ -2654,6 +2654,10 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
           <label class="toggle"><input type="checkbox" id="showParsha"><span class="slider"></span></label>
         </div>
         <div class="form-row">
+          <label><span data-i18n="dashboard.datetime.show_parsha_icons">Show parsha emojis</span> <span class="tip-wrap" data-tip="A small picture before the parsha's name on the board. A week that reads two parshiyot shows both pictures, and a holiday week shows the holiday's picture." data-i18n-tip="dashboard.datetime.show_parsha_icons_tip"><i class="tip-icon">?</i></span></label>
+          <label class="toggle"><input type="checkbox" id="showParshaIcons"><span class="slider"></span></label>
+        </div>
+        <div class="form-row">
           <label id="rgParshaSchedule" data-i18n="dashboard.datetime.parsha_schedule">Parsha schedule</label>
           <div class="radio-group" role="radiogroup" aria-labelledby="rgParshaSchedule">
             <input type="radio" name="parshaSchedule" id="ps-diaspora" value="diaspora"><label for="ps-diaspora" data-i18n="dashboard.datetime.parsha_diaspora">Diaspora</label>
@@ -3483,6 +3487,7 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
     hideHebDate: false,
     showParsha: true,                 // this week's parsha under the Hebrew date (only while the date shows) — renderParshaLine
     parshaSchedule: 'diaspora',       // 'diaspora' | 'israel': the weekly-reading calendar it follows; anything else reads Diaspora and stays stored
+    showParshaIcons: true,            // the parsha line's picture (js/parasha-icons.js; a festival week's holiday icon) — renderParshaLine
     timeFmt: '12',
     showSeconds: false,
     hideTime: false,
@@ -4199,7 +4204,8 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
      shows the festival. The line opens that reading in the Torah Trainer in a new tab, through the
      Trainer's own deep links (?parsha= and ?holiday=). Shown only while the Hebrew date is. Each parasha leads with
      its icon (js/parasha-icons.js, window.ParashaIcons: a doubled week shows both, in reading order) and a festival
-     with its holiday family's (holidayIconFor), on the first line of every script mode. */
+     with its holiday family's (holidayIconFor), on the first line of every script mode, unless showParshaIcons is off
+     (the festival's icon stands in for a parasha's, so it follows the same switch). */
   const PARSHA_WORD_HE = 'פָּרָשַׁת';
   const PARSHA_WORD_EN = 'Parashat';   // i18n-ignore — projected board content: follows hebDateScript
   // HebCal's festival-Shabbat keys (+ ':' + day where the day changes the name). Projected content, like the word above.
@@ -4245,6 +4251,7 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
       const r = HebCal.parshaForDate(now || new Date(), { israel: parshaIsrael() });
       if (!r) return hide();
       let he, en, href = '', ico = '';
+      const icons = settings.showParshaIcons !== false;
       if (r.kind === 'parsha') {
         if (!_parshiyot) { loadParshiyot(); return hide(); }
         const ps = r.idx.map(i => _parshiyot.find(p => p.n === i + 1));
@@ -4252,13 +4259,13 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
         he = PARSHA_WORD_HE + ' ' + ps.map(p => p.he).join('–');
         en = PARSHA_WORD_EN + ' ' + ps.map(p => p.en).join('-');
         href = 'torah_trainer.html?parsha=' + encodeURIComponent(ps[0].en);   // a doubled week opens its first half, as the Trainer's date lookup does
-        ico = window.ParashaIcons ? ParashaIcons.html(r.idx) : '';   // markup, never a glyph: one per parasha, both halves of a doubled week
+        ico = icons && window.ParashaIcons ? ParashaIcons.html(r.idx) : '';   // markup, never a glyph: one per parasha, both halves of a doubled week
       } else {
         const israelShmini = r.israel && r.holiday === 'shmini_atzeret';
         const nm = israelShmini ? PARSHA_ISRAEL_SHMINI : (PARSHA_HOLIDAY_NAMES[r.holiday + ':' + r.day] || PARSHA_HOLIDAY_NAMES[r.holiday]);
         if (!nm) return hide();
         he = nm.he; en = nm.en;
-        ico = holidayIconFor(nm.en);
+        ico = icons ? holidayIconFor(nm.en) : '';
         const key = israelShmini ? 'simchat-torah' : PARSHA_TRAINER_HOLIDAY[r.holiday + ':' + r.day];
         if (key) href = 'torah_trainer.html?holiday=' + key;
       }
@@ -6107,6 +6114,7 @@ function mountSidebarResize(cfg) {
     setRadio('hebDateScript', settings.hebDateScript);
     $('hideHebDate').checked = settings.hideHebDate;
     $('showParsha').checked = settings.showParsha !== false;
+    $('showParshaIcons').checked = settings.showParshaIcons !== false;
     setRadio('parshaSchedule', parshaIsrael() ? 'israel' : 'diaspora');   // an unknown stored value shows (and reads) Diaspora, and stays stored
     setRadio('timeFmt', settings.timeFmt);
     $('hideTime').checked = settings.hideTime;
@@ -6312,6 +6320,7 @@ function mountSidebarResize(cfg) {
       r.addEventListener('change', () => { settings.hebDateScript = r.value; updateDateTimeDisplay(); saveSettingsToStorage(); }));
     document.getElementById('hideHebDate').addEventListener('change', e => { settings.hideHebDate = e.target.checked; updateDateTimeDisplay(); saveSettingsToStorage(); });
     document.getElementById('showParsha').addEventListener('change', e => { settings.showParsha = e.target.checked; updateDateTimeDisplay(); saveSettingsToStorage(); });
+    document.getElementById('showParshaIcons').addEventListener('change', e => { settings.showParshaIcons = e.target.checked; updateDateTimeDisplay(); saveSettingsToStorage(); });
     document.querySelectorAll('input[name="parshaSchedule"]').forEach(r =>
       r.addEventListener('change', () => { settings.parshaSchedule = r.value; updateDateTimeDisplay(); saveSettingsToStorage(); }));
     document.querySelectorAll('input[name="timeFmt"]').forEach(r =>

@@ -2392,6 +2392,10 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
           <label class="toggle"><input type="checkbox" id="optShowNikkud"><span class="slider"></span></label>
         </div>
         <div class="form-row">
+          <label><span id="lblShowParshaIcons" data-i18n="torah.display.show_parsha_icons">Show parsha emojis</span> <span class="tip-wrap" data-i18n-tip="torah.display.show_parsha_icons_tip" data-tip="A small picture before the parsha's name, in the reading's title and in the Torah portion lookup. A week that reads two parshiyot shows both pictures."><i class="tip-icon">?</i></span></label>
+          <label class="toggle"><input type="checkbox" id="optShowParshaIcons" aria-labelledby="lblShowParshaIcons"><span class="slider"></span></label>
+        </div>
+        <div class="form-row">
           <label><span id="lblClickAction" data-i18n="torah.display.click_word_label">Click on word to</span> <span class="tip-wrap" data-i18n-tip="torah.display.click_word_tip" data-tip="Chant: jump the karaoke audio to that word (auto-loads the right aliyah). Read: speak the verse containing the word via Hebrew TTS."><i class="tip-icon">?</i></span></label>
           <span class="radio-group" role="group" aria-labelledby="lblClickAction">
             <input type="radio" name="optClickAction" id="caChant" value="chant"><label for="caChant" data-i18n="torah.display.click_chant">Chant</label>
@@ -2948,6 +2952,7 @@ const DEFAULTS = {
   translitFontSize: 0.95,  // rem; applied via --tt-translit-size
   englishFontSize: 0.95,   // rem; applied via --tt-english-size
   showNikkud: true,
+  showParshaIcons: true,   // the parsha emojis (js/parasha-icons.js) before a weekly reading's name in the header and the lookup (the lookup's festival icon too)
   colorCodeNikkud: false,
   colorCodingMode: 'letter',
   nikudColorOverrides: {},
@@ -3721,7 +3726,8 @@ function syncCycleControls() {
    lookupRender() is read-only (applyI18n and the calendar radios call it); lookupOpen() loads what
    it found through the same writes the picker and the holiday strip use. The date is never stored.
    The result line leads with the reading's icon: each parasha's (js/parasha-icons.js, both halves of
-   a doubled week) or the festival's family (holidayIconFor).
+   a doubled week) or the festival's family (holidayIconFor), while the Display section's Show parsha
+   emojis is on (the festival's icon stands in for a parasha's, so it follows the same switch).
    ══════════════════════════════════════════════════════ */
 let _lookupTarget = null;   // { parsha, second } | { holiday } — what Open loads
 const LOOKUP_DAY_HOLIDAYS = ['pesach', 'sukkot', 'shavuot', 'rosh_hashanah'];   // the festivals whose day is named
@@ -3733,6 +3739,7 @@ function lookupRender() {
   if (row) row.hidden = true;
   _lookupTarget = null;
   const line = (t) => { const d = document.createElement('div'); d.textContent = t; out.appendChild(d); return d; };
+  const icons = settings.showParshaIcons !== false;
   if (!inp.value) { line(I18n.t('torah.lookup.empty')); return; }
   let r = null;
   try { r = window.HebCal ? HebCal.parshaForDate(inp.value, { israel: settings.schedule === 'israel' }) : null; } catch (e) { r = null; }
@@ -3748,7 +3755,7 @@ function lookupRender() {
     if (!ps.length) { line(I18n.t('torah.lookup.invalid')); return; }
     const name = ps.map(x => x.en).join('-') + ' (' + ps.map(x => x.he).join('–') + ')';
     const pl = line(I18n.t('torah.lookup.parsha', { name, schedule }));
-    if (window.ParashaIcons) pl.insertAdjacentHTML('afterbegin', ParashaIcons.html(ps.map(x => x.n - 1)));   // a doubled week shows both, in reading order
+    if (icons && window.ParashaIcons) pl.insertAdjacentHTML('afterbegin', ParashaIcons.html(ps.map(x => x.n - 1)));   // a doubled week shows both, in reading order
     if (cycleKey() === 'triennial') line(I18n.t('torah.lookup.triennial_year', { n: HebCal.triennialYear(r.hyear) }));
     if (ps[1]) { const n = line(I18n.t('torah.lookup.doubled_note', { first: ps[0].en, second: ps[1].en })); n.style.color = 'var(--muted)'; }
     _lookupTarget = { parsha: ps[0], second: ps[1] || null };
@@ -3757,7 +3764,8 @@ function lookupRender() {
   }
   let holiday = I18n.t('torah.lookup.holiday_' + r.holiday);
   if (LOOKUP_DAY_HOLIDAYS.includes(r.holiday) && r.day > 0) holiday += ' ' + I18n.t('torah.lookup.day', { n: r.day });
-  line(I18n.t('torah.lookup.holiday', { holiday, schedule })).insertAdjacentHTML('afterbegin', holidayIconFor(r.holiday.replace(/_/g, ' ')));   // HebCal's keys read as titles: 'chol_hamoed_sukkot' → the sukkah
+  const hl = line(I18n.t('torah.lookup.holiday', { holiday, schedule }));
+  if (icons) hl.insertAdjacentHTML('afterbegin', holidayIconFor(r.holiday.replace(/_/g, ' ')));   // HebCal's keys read as titles: 'chol_hamoed_sukkot' → the sukkah
   const hk = holidayKeyForCal(r), h = hk ? holidayByKey(hk) : null;
   if (h) { _lookupTarget = { holiday: h }; if (row) row.hidden = false; }
 }
@@ -4851,7 +4859,7 @@ function renderText() {
   const tutorLinkKey = readingTutorMelody() === 'haftarah' ? 'torah.reading.haf_trope_link' : 'torah.reading.hh_trope_link';
   const holRead = settings.scope === 'custom' && settings.holidayKey ? holidayByKey(settings.holidayKey) : null;   // a loaded HOLIDAY_READINGS entry leads with its family's icon (holiday-icons block)
   let html = `<div class="tt-ref-hdr">
-    <span>${holRead ? holidayIconFor(holRead.name) : window.ParashaIcons ? ParashaIcons.html(currentRangeIcons) : ''}${esc(currentRangeLabel)}${_readingHasShem
+    <span>${holRead ? holidayIconFor(holRead.name) : window.ParashaIcons && settings.showParshaIcons !== false ? ParashaIcons.html(currentRangeIcons) : ''}${esc(currentRangeLabel)}${_readingHasShem
       ? ` <span class="tt-shem-chip" lang="he" data-i18n="torah.shem.chip_label" data-i18n-aria-label="torah.shem.chip_label" aria-label="${esc(I18n.t('torah.shem.chip_label'))}" data-i18n-tip="torah.shem.chip_tip" data-tip="${esc(I18n.t('torah.shem.chip_tip'))}">${esc(I18n.t('torah.shem.chip_label'))}</span>`
       : ''}${_translitDead
       ? ` <span class="tt-notice-chip" data-i18n="torah.trans.unavailable_chip" data-i18n-aria-label="torah.trans.unavailable_chip" aria-label="${esc(I18n.t('torah.trans.unavailable_chip'))}" data-i18n-tip="torah.trans.unavailable_tip" data-tip="${esc(I18n.t('torah.trans.unavailable_tip'))}">${esc(I18n.t('torah.trans.unavailable_chip'))}</span>`
@@ -8480,6 +8488,7 @@ function setShowTranslation(on) {
 function syncFormToSettings() {
   document.getElementById('optShowCantillation').checked = !!settings.showCantillation;
   document.getElementById('optShowNikkud').checked = !!settings.showNikkud;
+  document.getElementById('optShowParshaIcons').checked = settings.showParshaIcons !== false;
   // Click-on-word action
   const ca = settings.clickAction || 'chant';
   document.getElementById('caChant').checked = ca === 'chant';
@@ -8606,6 +8615,10 @@ function wireSettingsForm() {
   document.getElementById('optShowNikkud').addEventListener('change', e => {
     settings.showNikkud = e.target.checked;
     saveSettings(); renderText(); updateCopyTextarea();
+  });
+  document.getElementById('optShowParshaIcons').addEventListener('change', e => {
+    settings.showParshaIcons = e.target.checked;
+    saveSettings(); renderText(); lookupRender();
   });
   document.querySelectorAll('input[name="optClickAction"]').forEach(r => {
     r.addEventListener('change', e => {
@@ -10935,6 +10948,7 @@ const LINK_DISPLAY = {
   showCantillation:    _linkBool,
   showTranslit:        _linkBool,
   showTranslation:     _linkBool,
+  showParshaIcons:     _linkBool,
   translitStyle:       v => _linkOneOf(v, _linkChoices('#optTranslitStyle option')),
   translitPlacement:   v => _linkOneOf(v, _linkChoices('input[name="optTranslitPlace"]')),
   hebFont:             v => HEB_FONTS.some(f => f.name === v) ? v : undefined,   // a My Font stays on its device
