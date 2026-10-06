@@ -5712,7 +5712,7 @@
   "worksheet.layout.class_set_tooltip": "Generates multiple unique worksheet versions from the same settings — each with a different random selection and order of blends. Print one per student for variety drills or low-stakes assessment. Each version is labeled 'Version A', 'Version B', etc. in the header.",
   "worksheet.layout.class_set_versions_aria": "Class set versions",
   "worksheet.layout.exclude_repeats": "Exclude Repeats",
-  "worksheet.layout.exclude_repeats_tooltip": "When on, a blend's first two letters are never the same (no בָּב), and Name the Letter tries to show every chosen letter before repeating one. The same blend can still appear twice.",
+  "worksheet.layout.exclude_repeats_tooltip": "When on, a blend never uses the same letter twice in a row (no בָּב), and Name the Letter tries to show every chosen letter before repeating one. The same blend can still appear twice.",
   "worksheet.layout.header.en": "English",
   "worksheet.layout.header.he": "עברית",
   "worksheet.layout.header_labels": "Header Labels",

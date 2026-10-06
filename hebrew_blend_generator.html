@@ -3480,7 +3480,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           <input type="text" id="wsSubtitle" aria-label="Worksheet subtitle" data-i18n-aria-label="worksheet.layout.subtitle_aria" placeholder="Optional instructions..." data-i18n-placeholder="worksheet.layout.subtitle_placeholder" style="width:160px;padding:5px 8px;border:1px solid var(--border);border-radius:5px;font-family:inherit;font-size:0.85rem;">
         </div>
         <div class="option-row" style="margin-top:4px;">
-          <div class="option-label"><span data-i18n="worksheet.layout.exclude_repeats">Exclude Repeats</span> <span class="tooltip-wrap" style="font-size:0.65rem;">?<span class="tooltip-box" data-i18n="worksheet.layout.exclude_repeats_tooltip">When on, a blend's first two letters are never the same (no בָּב), and Name the Letter tries to show every chosen letter before repeating one. The same blend can still appear twice.</span></span></div>
+          <div class="option-label"><span data-i18n="worksheet.layout.exclude_repeats">Exclude Repeats</span> <span class="tooltip-wrap" style="font-size:0.65rem;">?<span class="tooltip-box" data-i18n="worksheet.layout.exclude_repeats_tooltip">When on, a blend never uses the same letter twice in a row (no בָּב), and Name the Letter tries to show every chosen letter before repeating one. The same blend can still appear twice.</span></span></div>
           <label class="toggle"><input type="checkbox" id="excludeRepeats"><span class="slider"></span></label>
         </div>
         <div class="option-row">
@@ -9777,6 +9777,12 @@ function generate(animate = false) {
       // Yud+Yud guard for third position
       if (second === 'י' && third === 'י') {
         const alt = thirdPool.filter(h => h !== 'י');
+        if (alt.length > 0) third = alt[Math.floor(Math.random() * alt.length)];
+        else continue;
+      }
+      // Exclude Repeats: no letter twice in a row, so the third never repeats the second (bingo's rule)
+      if (excludeRepeats && third === second) {
+        const alt = thirdPool.filter(h => h !== second);
         if (alt.length > 0) third = alt[Math.floor(Math.random() * alt.length)];
         else continue;
       }

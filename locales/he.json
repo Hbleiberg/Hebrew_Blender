@@ -5712,7 +5712,7 @@
   "worksheet.layout.class_set_tooltip": "מפיק כמה גרסאות ייחודיות של דף העבודה מאותן הגדרות — כל אחת עם בחירה וסדר אקראיים שונים של צירופים. הדפיסו אחד לכל תלמיד לתרגולי גיוון או להערכה בסיכון נמוך. כל גרסה מסומנת ׳Version A׳, ׳Version B׳ וכו׳ בכותרת.",
   "worksheet.layout.class_set_versions_aria": "גרסאות סט כיתתי",
   "worksheet.layout.exclude_repeats": "ללא חזרות",
-  "worksheet.layout.exclude_repeats_tooltip": "כשמופעל, שתי האותיות הראשונות בצירוף אינן אותה אות (בלי בָּב), וב“שם האות” נעשה ניסיון להציג כל אות שנבחרה לפני שאות חוזרת. אותו צירוף עדיין יכול להופיע פעמיים.",
+  "worksheet.layout.exclude_repeats_tooltip": "כשמופעל, אותה אות אינה מופיעה פעמיים ברצף בצירוף (בלי בָּב), וב“שם האות” נעשה ניסיון להציג כל אות שנבחרה לפני שאות חוזרת. אותו צירוף עדיין יכול להופיע פעמיים.",
   "worksheet.layout.header.en": "אנגלית",
   "worksheet.layout.header.he": "עברית",
   "worksheet.layout.header_labels": "תוויות כותרת",
