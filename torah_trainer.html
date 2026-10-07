@@ -463,6 +463,15 @@ body.fullscreen .tt-hh-link, body.fullscreen .tt-tune-pick, body.fullscreen .tt-
    0.68rem line — the same 25px ::after touch floor the verse chips carry (WCAG 2.5.8), invisible. */
 .tt-shem-chip, .tt-notice-chip { position:relative; }
 .tt-shem-chip::after, .tt-notice-chip::after { content:''; position:absolute; inset-inline:0; inset-block:-3px; }
+/* The reading header's parasha icon is a button (parashaIconsLeadHTML) that opens the emoji gallery. Bare, so the
+   header lays out exactly as with the bare icon; the icon's trailing 0.3em moves onto the button so the focus ring
+   hugs the picture, and a transparent ::after carries the pointer target a few pixels past the ~25px icon. */
+.tt-emo-open { position:relative; display:inline-block; vertical-align:baseline; margin:0; margin-inline-end:0.3em; padding:0; border:0;
+  border-radius:6px; background:none; color:inherit; font:inherit; cursor:pointer; }
+.tt-emo-open .hol-ico:last-child { margin-inline-end:0; }
+.tt-emo-open::after { content:''; position:absolute; inset:-4px; }
+@media (hover:hover) { .tt-emo-open:hover { background:rgba(201,146,42,0.18); } body.dark .tt-emo-open:hover { background:rgba(224,168,50,0.22); } }
+.tt-emo-open:focus-visible { outline:2px solid var(--focus-ring); outline-offset:3px; }
 /* The handout section's conditional rows (Share tab): make hidden win over .form-row's flex
    (same trap as .tt-trope-legend[hidden]). */
 #ttHandoutShemNote[hidden], #ttHandoutGenizaRow[hidden], #ttHandoutSelRow[hidden] { display:none; }
@@ -1376,6 +1385,47 @@ body.dark .tt-fav-dialog { background:var(--navy-deep); }
 body.dark .tt-fav-note { color:#ffb4a9; }
 .tt-fav-note[hidden] { display:none; }
 .tt-fav-actions { display:flex; justify-content:flex-end; gap:8px; margin-block-start:12px; }
+/* ───── Parasha emoji gallery (#ttEmoDialog, opened by the reading header's parasha icon). A sibling in <body>, on the
+   favorite popup's contract: its own Tab trap, and Escape stopped before the drawer's document-level handler.
+   Centred by inset:0 + margin:auto (no transform, so nothing to mirror in RTL); a full-screen sheet on a phone. Above
+   the fullscreen controls (#fsExitBtn / #ttFsBar, 200) so it opens over a projection; below the tour (500) and the
+   toast (2000). No transition — nothing for the reduced-motion block. ───── */
+.tt-emo-backdrop { position:fixed; inset:0; background:rgba(13,18,32,0.45); z-index:210; }
+.tt-emo-dialog { position:fixed; inset:0; margin:auto; z-index:220; display:flex; flex-direction:column;
+  width:min(880px, calc(100vw - 32px)); height:min(90vh, 960px); height:min(90dvh, 960px);
+  background:var(--white); color:var(--text); border:1px solid var(--border); border-radius:10px; box-shadow:0 8px 32px rgba(0,0,0,0.28); }
+body.dark .tt-emo-dialog { background:var(--navy-deep); }
+.tt-emo-backdrop[hidden], .tt-emo-dialog[hidden] { display:none; }
+.tt-emo-dialog:focus { outline:none; }
+.tt-emo-head { flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 16px; border-block-end:2px solid var(--gold); }
+.tt-emo-title { margin:0; font-family:'Libre Baskerville',serif; font-size:1.05rem; color:var(--navy); }
+body.dark .tt-emo-title { color:var(--gold-light); }
+.tt-emo-close { min-width:36px; min-height:36px; display:inline-flex; align-items:center; justify-content:center; }
+.tt-emo-close:focus-visible, .tt-emo-body:focus-visible { outline:2px solid var(--focus-ring); outline-offset:-2px; }
+.tt-emo-body { --tt-emo-book-h:2.4rem; flex:1 1 auto; min-height:0; overflow-y:auto; overscroll-behavior:contain; padding:0 16px 16px; }
+.tt-emo-sec { margin:0; }
+.tt-emo-book { position:sticky; top:0; z-index:1; margin:0; height:var(--tt-emo-book-h); line-height:var(--tt-emo-book-h);
+  background:var(--white); color:var(--navy); font-family:'Libre Baskerville',serif; font-size:0.92rem; border-block-end:1px solid var(--border); }
+body.dark .tt-emo-book { background:var(--navy-deep); color:var(--gold-light); }
+.tt-emo-list { list-style:none; margin:0; padding:10px 0 6px; display:grid; grid-template-columns:repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap:10px; }
+.tt-emo-card { display:grid; grid-template-columns:auto minmax(0,1fr); gap:12px; align-items:start; padding:10px 12px;
+  background:var(--cream); border:1px solid var(--border); border-radius:8px; scroll-margin-top:calc(var(--tt-emo-book-h) + 10px); }
+.tt-emo-card .hol-ico { width:56px; height:56px; margin:0; vertical-align:top; }   /* page-scoped: the shared block sizes it 1.5em */
+.tt-emo-card[aria-current="true"] { border-color:var(--gold); box-shadow:inset 0 0 0 1px var(--gold), 0 0 0 3px rgba(201,146,42,0.25); }
+.tt-emo-card:focus { outline:none; }
+.tt-emo-card:focus-visible { outline:2px solid var(--focus-ring); outline-offset:3px; }
+.tt-emo-badge { display:inline-block; margin-block-end:4px; padding:2px 8px; border-radius:999px; background:var(--gold); color:#1a2744; font-size:0.68rem; font-weight:700; }
+.tt-emo-name { margin:0; font-size:0.98rem; font-weight:700; color:var(--navy); line-height:1.3; overflow-wrap:anywhere; }
+body.dark .tt-emo-name { color:var(--gold-light); }
+.tt-emo-name [lang="he"] { font-family:var(--heb-font); font-size:1.12em; font-weight:400; }
+.tt-emo-alt { font-weight:400; color:var(--muted); }
+.tt-emo-ref { margin:2px 0 6px; font-size:0.76rem; color:var(--muted); }
+.tt-emo-sum, .tt-emo-why { margin:0 0 6px; font-size:0.84rem; line-height:1.45; }
+.tt-emo-why { margin-block-end:0; }
+@media (max-width:600px) {
+  .tt-emo-dialog { width:100%; height:100%; height:100dvh; border:none; border-radius:0; }
+  .tt-emo-card .hol-ico { width:44px; height:44px; }
+}
 
 /* ───── Form rows + toggle ───── */
 .form-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; gap:10px; }
@@ -1838,7 +1888,8 @@ body.fullscreen .tt-hint-toast { bottom: calc(var(--tt-audio-h, 96px) + 90px); }
      .tt-controls also covers the Copy bar; the fixed-position drawer/backdrop/toast/tour
      otherwise re-stamp on EVERY printed page (position:fixed repeats per page in print). */
   header, .tt-controls, #ttStatus, .tt-readall, .tt-chantall, footer, .tt-empty,
-  .settings-modal, .settings-backdrop, #tipFloat, .tt-hint-toast, .tour-spot, .tour-card, #fsExitBtn, #ttFsBar, .tt-shem-chip, .tt-notice-chip { display:none !important; }
+  .settings-modal, .settings-backdrop, #tipFloat, .tt-hint-toast, .tour-spot, .tour-card, #fsExitBtn, #ttFsBar, .tt-shem-chip, .tt-notice-chip,
+  .tt-fav-backdrop, .tt-fav-dialog, .tt-emo-backdrop, .tt-emo-dialog { display:none !important; }
 
   /* Never split a verse (or a side-by-side row) across a page break; best-effort —
      a verse taller than the page still breaks (browser overrides). */
@@ -2907,6 +2958,18 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
     <button type="button" class="btn btn-xs" id="ttFavSaveBtn" onclick="saveFavoriteFromDialog()" data-i18n="torah.fav.dlg_save">Save</button>
   </div>
 </div>
+<!-- Parasha emoji gallery: the reading header's parasha icon opens it (openParashaGallery). Outside #ttReading on
+     purpose (renderText rebuilds that); the same modal contract as the favorite popup (see the .tt-emo-dialog CSS
+     note). The list is built on each open by renderParashaGallery from parshiyot.json, js/parasha-icons.js and
+     js/parasha-notes.js. -->
+<div class="tt-emo-backdrop" id="ttEmoBackdrop" hidden onclick="closeParashaGallery()"></div>
+<div class="tt-emo-dialog" id="ttEmoDialog" role="dialog" aria-modal="true" aria-labelledby="ttEmoTitle" tabindex="-1" hidden>
+  <div class="tt-emo-head">
+    <h2 class="tt-emo-title" id="ttEmoTitle" data-i18n="torah.emojis.title">The parsha emojis</h2>
+    <button type="button" class="btn btn-xs btn-secondary tt-emo-close" id="ttEmoClose" onclick="closeParashaGallery()" title="Close" aria-label="Close" data-i18n-title="torah.emojis.close" data-i18n-aria-label="torah.emojis.close"><svg class="hi hi-sm hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
+  </div>
+  <div class="tt-emo-body" id="ttEmoBody" tabindex="0" role="region" aria-labelledby="ttEmoTitle"></div>
+</div>
 
 <footer>
   <div class="footer-credits">
@@ -2930,6 +2993,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
 </footer>
 <script src="/js/hebrew-calendar.js"></script>
 <script src="/js/parasha-icons.js"></script>
+<script src="/js/parasha-notes.js" defer></script>
 <script src="/js/trope-staff.js"></script>
 <script>
 'use strict';
@@ -5062,7 +5126,7 @@ function renderText() {
   const tutorMelody = tutorLinkMelody();
   const holRead = settings.scope === 'custom' && settings.holidayKey ? holidayByKey(settings.holidayKey) : null;   // a loaded HOLIDAY_READINGS entry leads with its family's icon (holiday-icons block)
   let html = `<div class="tt-ref-hdr">
-    <span>${holRead ? holidayIconFor(holRead.name) : window.ParashaIcons && settings.showParshaIcons !== false ? ParashaIcons.html(currentRangeIcons) : ''}${esc(currentRangeLabel)}${_readingHasShem
+    <span>${holRead ? holidayIconFor(holRead.name) : parashaIconsLeadHTML()}${esc(currentRangeLabel)}${_readingHasShem
       ? ` <span class="tt-shem-chip" lang="he" data-i18n="torah.shem.chip_label" data-i18n-aria-label="torah.shem.chip_label" aria-label="${esc(I18n.t('torah.shem.chip_label'))}" data-i18n-tip="torah.shem.chip_tip" data-tip="${esc(I18n.t('torah.shem.chip_tip'))}">${esc(I18n.t('torah.shem.chip_label'))}</span>`
       : ''}${_translitDead
       ? ` <span class="tt-notice-chip" data-i18n="torah.trans.unavailable_chip" data-i18n-aria-label="torah.trans.unavailable_chip" aria-label="${esc(I18n.t('torah.trans.unavailable_chip'))}" data-i18n-tip="torah.trans.unavailable_tip" data-tip="${esc(I18n.t('torah.trans.unavailable_tip'))}">${esc(I18n.t('torah.trans.unavailable_chip'))}</span>`
@@ -8666,6 +8730,104 @@ function deleteFavorite(name) {
   renderFavorites();
 }
 
+/* ───── Parasha emoji gallery ─────
+   The reading header's parasha icon (one button holding the week's icon, or both of a doubled Triennial week) opens
+   #ttEmoDialog: all 54 parasha emojis, grouped by book in reading order, each with its names, its range, its summary
+   and why that emoji was chosen (js/parasha-notes.js, built from ParashaEmojis.md, English or Hebrew by the UI's
+   language). View only. The reading on screen is marked (aria-current, a gold border and a badge) and opens at the
+   top of the list. */
+let _emoOpener = null, _emoCurrent = [];
+// The header's parasha icon(s) as one button opening the gallery; the icons stay aria-hidden, the button carries the
+// name. '' for a custom range (currentRangeIcons is []), with the Show parsha emojis switch off, or without the module.
+function parashaIconsLeadHTML() {
+  if (!window.ParashaIcons || settings.showParshaIcons === false) return '';
+  const icons = ParashaIcons.html(currentRangeIcons);
+  if (!icons) return '';
+  const name = esc(I18n.t('torah.emojis.open'));
+  return `<button type="button" class="tt-emo-open" onclick="openParashaGallery()" aria-haspopup="dialog" aria-label="${name}" title="${name}" data-i18n-aria-label="torah.emojis.open" data-i18n-title="torah.emojis.open">${icons}</button>`;
+}
+function parashaGalleryOpen() { const d = document.getElementById('ttEmoDialog'); return !!(d && !d.hidden); }
+// A note in the UI's language, else English: { text, lang }, or null.
+function _emoPick(pair) {
+  const lang = (window.I18n && I18n.lang) || 'en';
+  if (pair && pair[lang]) return { text: pair[lang], lang };
+  return pair && pair.en ? { text: pair.en, lang: 'en' } : null;
+}
+// Hebrew always carries its lang and dir (UX rule 8); other text only where it is not the UI's language.
+function _emoLangAttr(lang) {
+  if (lang === 'he') return ' lang="he" dir="rtl"';
+  return lang !== ((window.I18n && I18n.lang) || 'en') ? ` lang="${esc(lang)}" dir="ltr"` : '';
+}
+function renderParashaGallery() {
+  const body = document.getElementById('ttEmoBody');
+  const ui = (window.I18n && I18n.lang) || 'en', notes = window.ParashaNotes || null, cur = new Set(_emoCurrent);
+  const why = esc(I18n.t('torah.emojis.why_label')), badge = esc(I18n.t('torah.emojis.current'));
+  const groups = [];
+  for (const p of parshiyotData.slice().sort((a, b) => a.n - b.n)) {
+    const g = groups[groups.length - 1];
+    if (g && g.book === p.book) g.items.push(p); else groups.push({ book: p.book, items: [p] });
+  }
+  body.innerHTML = groups.map(g => {
+    const bk = String(g.book).toLowerCase().replace(/[^a-z]/g, ''), bookName = esc(I18n.t('torah.custom.book_' + bk));
+    return `<section class="tt-emo-sec" aria-labelledby="ttEmoBook-${bk}"><h3 class="tt-emo-book" id="ttEmoBook-${bk}">${bookName}</h3><ul class="tt-emo-list">`
+      + g.items.map(p => {
+        const i = p.n - 1, on = cur.has(i), nt = notes ? notes.get(i) : null;
+        const sum = nt && _emoPick(nt.summary), wy = nt && _emoPick(nt.why);
+        const en = `<span${_emoLangAttr('en')}>${esc(String(p.en))}</span>`, he = `<span${_emoLangAttr('he')}>${esc(String(p.he))}</span>`;
+        const ref = String(p.ref || ''), range = ref.startsWith(p.book + ' ') ? ref.slice(String(p.book).length + 1) : ref;
+        return `<li class="tt-emo-card" id="ttEmoCard${p.n}" data-n="${p.n}" aria-labelledby="ttEmoName${p.n}"${on ? ' aria-current="true" tabindex="-1"' : ''}>`
+          + ParashaIcons.html(i) + '<div class="tt-emo-text">'
+          + (on ? `<span class="tt-emo-badge">${badge}</span>` : '')
+          + `<h4 class="tt-emo-name" id="ttEmoName${p.n}">${ui === 'he' ? he : en} <span class="tt-emo-alt">· ${ui === 'he' ? en : he}</span></h4>`
+          + `<p class="tt-emo-ref">${bookName} <bdi dir="ltr">${esc(prettyRef(range))}</bdi></p>`
+          + (sum ? `<p class="tt-emo-sum"${_emoLangAttr(sum.lang)}>${esc(sum.text)}</p>` : '')
+          + (wy ? `<p class="tt-emo-why"><strong>${why}</strong> <span${_emoLangAttr(wy.lang)}>${esc(wy.text)}</span></p>` : '')
+          + '</div></li>';
+      }).join('') + '</ul></section>';
+  }).join('');
+}
+// The first current card at the top of the list, under its sticky book heading, at once: scrollTop is set from the
+// card's scroll-margin-top (scrollIntoView would walk every scrolling ancestor and could move the reading behind).
+function _emoPosition(focusCard) {
+  const body = document.getElementById('ttEmoBody'), card = body.querySelector('.tt-emo-card[aria-current="true"]');
+  if (card) {
+    const sm = parseFloat(getComputedStyle(card).scrollMarginTop) || 0;
+    body.scrollTop = Math.max(0, Math.round(card.getBoundingClientRect().top - body.getBoundingClientRect().top - body.clientTop + body.scrollTop - sm));
+  } else body.scrollTop = 0;
+  if (focusCard) { try { (card || body).focus({ preventScroll: true }); } catch (e) {} }
+}
+function openParashaGallery() {
+  const dlg = document.getElementById('ttEmoDialog'), bd = document.getElementById('ttEmoBackdrop');
+  if (!dlg || !bd || !dlg.hidden) return;
+  if (!Array.isArray(parshiyotData) || !parshiyotData.length || !window.ParashaIcons) return;   // fails soft: nothing to show
+  _emoCurrent = currentRangeIcons.slice();
+  _emoOpener = document.activeElement;   // a browser that does not focus a clicked button leaves <body>: close re-queries
+  renderParashaGallery();
+  bd.hidden = false; dlg.hidden = false;
+  dlg.addEventListener('keydown', _emoDialogKey);
+  _emoPosition(true);
+}
+function closeParashaGallery() {
+  const dlg = document.getElementById('ttEmoDialog'), bd = document.getElementById('ttEmoBackdrop');
+  if (!dlg || dlg.hidden) return;
+  dlg.hidden = true; bd.hidden = true;
+  dlg.removeEventListener('keydown', _emoDialogKey);
+  const o = _emoOpener; _emoOpener = null;
+  const back = (o && o !== document.body && o.isConnected && typeof o.focus === 'function') ? o   // renderText may have replaced it
+    : document.querySelector('#ttReading .tt-emo-open') || document.querySelector('#ttReading .tt-word[tabindex="0"]');
+  if (back) { try { back.focus(); } catch (e) {} }
+}
+function _emoDialogKey(e) {
+  if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); closeParashaGallery(); return; }   // stopped: the drawer's Escape is a document listener
+  if (e.key !== 'Tab') return;
+  const f = [...document.getElementById('ttEmoDialog').querySelectorAll('button, [href], [tabindex]:not([tabindex="-1"])')]
+    .filter(el => !el.disabled && el.offsetParent !== null);       // the ✕ and the scrolling list
+  if (!f.length) return;
+  e.preventDefault();                                             // a full loop: focus may sit on the dialog or the current card
+  const i = f.indexOf(document.activeElement), n = f.length;
+  f[i === -1 ? (e.shiftKey ? n - 1 : 0) : (i + (e.shiftKey ? n - 1 : 1)) % n].focus();
+}
+
 /* Settings-drawer resize wiring (per-page; the engine is the shared block above). */
 function initDrawerResize() {
   mountSidebarResize({
@@ -10745,6 +10907,9 @@ function applyI18n() {
   try { refreshScopeLabels(); } catch (e) {}        // scope dropdown per-parsha labels
   try { syncCycleControls(); } catch (e) {}         // the reading-cycle note (year, loading, failed)
   try { lookupRender(); } catch (e) {}              // the portion lookup's result, in the new language
+  try {                                             // the open emoji gallery, in the new language, still at the current reading
+    if (parashaGalleryOpen()) { const ae = document.activeElement, onCard = !!(ae && ae.closest && ae.closest('.tt-emo-card')); renderParashaGallery(); _emoPosition(onCard); }
+  } catch (e) {}
   // refreshScopeLabels leaves custom scope alone — that option is injected by
   // updateScopeSelectState, which only runs on a render — so a language switch while a custom
   // range or a holiday reading is open would strand it in the old language. Every ?ref= link

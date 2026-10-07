@@ -561,17 +561,23 @@ festival line). The weekly parasha icons reuse the CSS block's `.hol-ico` and pa
 - Swapping a drawing means replacing that family's entry in `HOLIDAY_ICONS` on **both** carriers, re-truing the
   carrier list in both markers if a page joins, then sha-verifying the two blocks across carriers.
 
-## Parasha icons — a generated module (the dashboard's parsha line, the Torah Trainer's header and lookup)
+## Parasha icons and notes — generated modules (the dashboard's parsha line, the Torah Trainer's header, lookup and emoji gallery)
 
 One flat 48×48 SVG per weekly parasha, all 54 chosen by the maintainer from three drafts each, drawn in the holiday
 icons' style and palette. The source is the catalog `ParashaEmojis.md` (repo root): each parasha's reading, a
 one-sentence summary, what its emoji shows and why it was chosen, and the drawing — the inner markup on one line in
-the section's one ```` ```html ```` block. That block is the only hand-edited copy of a drawing.
+the section's one ```` ```html ```` block. That block is the only hand-edited copy of a drawing. After the English
+**Summary:** and **Why this emoji:** come their Hebrew twins, **תקציר:** and **למה האימוג׳י הזה:** — unpointed
+modern Hebrew, the same facts, ה׳ for God and אלוקים in a quoted verse (never the Name in full), geresh/gershayim
+for abbreviations, a Torah quote in its own words. The catalog is the only hand-edited copy of those four sentences.
 `node scripts/build-parasha-icons.mjs` checks the catalog (54 sections in `data/parshiyot.json`'s order and
 spelling, each showing its preview; only the holiday icons' elements and attributes, and every fill and stroke
-`none` or a `var(--hol-*)`) and writes `js/parasha-icons.js` and the previews `docs/parasha-emojis/<key>.svg`
-(the key is the English name lowercased with everything but a–z dropped); `--check` exits 1 when either is stale.
-The module is precached, so a rebuilt one needs the `sw.js` `VERSION` bump.
+`none` or a `var(--hol-*)`; the paragraphs in one order, **Reading:** equal to the JSON's `ref`, and each summary and
+reason one plain-text sentence — no markup, entity, ASCII quote or bidi control, the Hebrew ones with no Latin
+letter, no nikkud and no full divine name) and writes `js/parasha-icons.js`, `js/parasha-notes.js` and the previews
+`docs/parasha-emojis/<key>.svg` (the key is the English name lowercased with everything but a–z dropped); it runs
+both modules in a `vm` before writing, `--check` exits 1 when an output is stale, and `--catalog=<path>` checks a
+copy without writing. Both modules are precached, so a rebuilt one needs the `sw.js` `VERSION` bump.
 
 ### Module and host contract
 - `js/parasha-icons.js` is a classic script (`window.ParashaIcons`) loaded right after `js/hebrew-calendar.js` on
@@ -579,6 +585,10 @@ The module is precached, so a rebuilt one needs the `sw.js` `VERSION` bump.
   `<span class="hol-ico" aria-hidden="true"><svg viewBox="0 0 48 48" focusable="false">…</svg></span>` for parasha
   index `i` (HebCal's: 0 = Bereshit … 53 = V'Zot HaBerachah, `parshiyot.json`'s `n − 1`) and `''` for anything
   else; an array returns one icon per index, in its order.
+- `js/parasha-notes.js` (`window.ParashaNotes`) is loaded by `torah_trainer` only, deferred, for its emoji gallery;
+  `ParashaNotes.get(i)` returns a frozen `{ summary: { en, he }, why: { en, he } }` of plain-text sentences for the
+  same index (`null` for anything else), and `count` is 54. The sentences are catalog content with their own English
+  and Hebrew, picked by `I18n.lang` — never CSV keys; a page still escapes them.
 - It draws with the holiday-icons CSS block (`.hol-ico`, the `--hol-*` palette and its dark swap), so a page that
   shows parasha icons carries that block, and a dark toggle needs no re-render.
 - As with a holiday icon, the markup is prepended to the escaped name (the name always follows; the icon is

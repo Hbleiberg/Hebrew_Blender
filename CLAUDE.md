@@ -23,7 +23,7 @@ index below) — read the file for the area you are touching before you touch it
 |---|---|
 | localStorage keys, AllTools export/import/erase, `.ivrit` files, presets, folder trees | `docs/reference/storage-and-backup.md` |
 | Any UI string, CSV/locale build, `check-i18n` details, adding a language | `docs/reference/i18n.md` |
-| A `═══`-marked shared block (fonts store, keyboard, test phrases, resize, toast, panel memory), the parasha icons (`js/parasha-icons.js`, `ParashaEmojis.md`), tours, tooltips, share links, reduced motion, `<kbd>` hints | `docs/reference/shared-components.md` |
+| A `═══`-marked shared block (fonts store, keyboard, test phrases, resize, toast, panel memory), the parasha icons and notes (`js/parasha-icons.js`, `js/parasha-notes.js`, `ParashaEmojis.md`), tours, tooltips, share links, reduced motion, `<kbd>` hints | `docs/reference/shared-components.md` |
 | `Hebrew_Font_Maker.html` (undo/autosave, modals, fidelity, Starting Fonts) | `docs/reference/font-maker.md` |
 | Adding a glyph set to the Font Maker (a new alphabet tab, LTR or RTL, or a tab of composed forms) — its census, direction rules and the Save-letter-&-next contract | `docs/reference/newglyphset.md` |
 | `classroom_dashboard.html` (dark mode, font picker, nikkud colors, drawer, tooltips) | `docs/reference/dashboard.md` |
@@ -96,7 +96,7 @@ Cross-page code ships as `/* ═══ … ═══ */`-marked blocks that are 
 - Paste the block; put per-page wiring **below** the end marker (the cfg object, pick handler, mount call).
 - When a page adopts a block, re-true the carrier list in the marker comments of **all** carriers, anchoring on a multi-line match (the keyboard and test-phrases headers share a sentence), then **sha-verify** identity across carriers — don't eyeball it.
 - The `.ivrit-*` CSS is convention-shared but deliberately not byte-identical (indentation differs per page) — don't "fix" it.
-- **The parasha icons are generated, not pasted:** `ParashaEmojis.md` is the only hand-edited copy of a drawing, and `node scripts/build-parasha-icons.mjs` rebuilds `js/parasha-icons.js` and the `docs/parasha-emojis/` previews from it — never edit either output (the next build silently undoes it).
+- **The parasha icons and notes are generated, not pasted:** `ParashaEmojis.md` is the only hand-edited copy of a drawing and of its summary and why-sentence (English and Hebrew), and `node scripts/build-parasha-icons.mjs` rebuilds `js/parasha-icons.js`, `js/parasha-notes.js` and the `docs/parasha-emojis/` previews from it — never edit an output (the next build silently undoes it).
 - Carriers, host contracts and adoption recipes: `docs/reference/shared-components.md`.
 
 ## Shared UX rules (every tool, every new feature)

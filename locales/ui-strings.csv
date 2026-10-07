@@ -4145,8 +4145,8 @@ torah.display.font_sizes_header,Font sizes,גודלי גופן,sub-heading in th
 torah.display.show_cantillation,Show cantillation marks (te'amim),הצגת טעמי המקרא,settings label,
 torah.display.show_cantillation_tip,Cantillation marks (above and below letters) indicate chanting melody. Toggle off to see only nikkud (vowels).,טעמי המקרא (מעל ומתחת לאותיות) מציינים את מנגינת הטעמים. כבו כדי לראות ניקוד בלבד.,tooltip,
 torah.display.show_nikkud,Show nikkud (vowels),הצגת ניקוד,settings label,
-torah.display.show_parsha_icons,Show parsha emojis,הצגת אמוג'י הפרשה,settings label (a small picture before the parsha's name),
-torah.display.show_parsha_icons_tip,"A small picture before the parsha's name, in the reading's title and in the Torah portion lookup. A week that reads two parshiyot shows both pictures.","תמונה קטנה לפני שם הפרשה, בכותרת הקריאה ובאיתור פרשת השבוע. בשבוע שבו קוראים שתי פרשות מוצגות שתי התמונות.",tooltip,
+torah.display.show_parsha_icons,Show parsha emojis,הצגת אימוג׳י הפרשה,settings label (a small picture before the parsha's name),
+torah.display.show_parsha_icons_tip,"A small picture before the parsha's name, in the reading's title and in the Torah portion lookup. A week that reads two parshiyot shows both pictures. Click the one in the reading's title to see all 54 and why each was chosen.","תמונה קטנה לפני שם הפרשה, בכותרת הקריאה ובאיתור פרשת השבוע. בשבוע שבו קוראים שתי פרשות מוצגות שתי התמונות. לחיצה על התמונה שבכותרת הקריאה מציגה את כל 54 התמונות ולמה נבחרה כל אחת.",tooltip,
 torah.display.size_english,English,אנגלית,slider label,
 torah.display.size_hebrew,Hebrew,עברית,slider label,
 torah.display.size_translit,Translit,תעתיק,slider label,
@@ -4156,6 +4156,11 @@ torah.display.style_none,None,ללא,radio label,
 torah.display.style_outline,Outline,מיתאר,radio label,
 torah.display.style_under,Under,קו תחתון,radio label,
 torah.display.restore_default,Restore default,שחזור ברירת מחדל,Slider reset (↺) button title,title
+torah.emojis.close,Close,סגירה,parasha emoji gallery: the close button (aria-label and title),
+torah.emojis.current,Current reading,הקריאה הנוכחית,parasha emoji gallery: badge on the card of the reading on screen (both cards for a doubled Triennial week),
+torah.emojis.open,Show all the parsha emojis,הצגת כל אימוג׳י הפרשות,reading header: the parasha emoji (one button holding the week's icon or icons) opens the gallery of all 54 — its aria-label and title,
+torah.emojis.title,The parsha emojis,אימוג׳י הפרשות,parasha emoji gallery: dialog heading,
+torah.emojis.why_label,Why this emoji:,למה האימוג׳י הזה:,parasha emoji gallery: bold lead-in before each card's why-sentence (ParashaEmojis.md labels its Hebrew paragraph the same way),
 torah.footer.cantillation_credit,Cantillation audio: PocketTorah · CC BY-SA 4.0,שמע הטעמים: PocketTorah · CC BY-SA 4.0,footer data-source credit,html
 torah.footer.license_note,"Only translations whose license permits redistribution are offered (Public Domain, CC0, CC BY, CC BY-SA, CC BY-NC, CC BY-NC-SA).","מוצעים רק תרגומים שרישיונם מתיר הפצה מחדש (נחלת הכלל, CC0, CC BY, CC BY-SA, CC BY-NC, CC BY-NC-SA).",footer note,
 torah.footer.sefaria_credit,Hebrew text via Sefaria · public domain,טקסט עברי דרך Sefaria · נחלת הכלל,footer data-source credit,html

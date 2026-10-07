@@ -1199,6 +1199,20 @@ stored value reads Full and stays stored) and the triennial year (`settings.trie
   both, in reading order) or the festival's `holidayIconFor` family, which stands in for a parasha's and follows the
   same switch. A custom or holiday range shows no parasha icon: a holiday reading leads with its own, as do the
   holiday buttons, whatever the switch says.
+- **The parasha emoji gallery.** In the reading header the parasha icon (one, or both halves of a doubled Triennial
+  week) is a bare `<button class="tt-emo-open">` built by `parashaIconsLeadHTML()` with an inline `onclick` (it
+  survives every `renderText` rebuild; `onReadingClick` / `onReadingKeydown` leave buttons alone); it lays the
+  header out exactly as the bare icon did, and the lookup's icons stay plain. It opens `#ttEmoDialog` (with
+  `#ttEmoBackdrop`), a sibling of the favorite popup in `<body>` on the same modal contract: its own Tab trap,
+  Escape stopped before the drawer's document handler, focus back to the opener or, when `renderText` replaced it,
+  to the new header button; above the fullscreen controls; hidden in print; no transition.
+  `renderParashaGallery()` builds all 54 cards from `parshiyotData`, `ParashaIcons` and `ParashaNotes` under sticky
+  book headings (`torah.custom.book_*`): the icon, the names in the UI's order (Hebrew carries `lang="he" dir="rtl"`),
+  the localized book with its range isolated left to right, the summary and the why-sentence in `I18n.lang` (English
+  as a marked fallback). Each index in `currentRangeIcons` is marked with `aria-current`, a gold border and a
+  *Current reading* badge; on open the first one is placed at the top of the list under its heading by `scrollTop`
+  (never `scrollIntoView`, which would move the page behind) and takes focus. `applyI18n` re-renders an open
+  gallery. Without `ParashaNotes` the cards show icon, names and range only; without the data nothing opens.
 
 ---
 
