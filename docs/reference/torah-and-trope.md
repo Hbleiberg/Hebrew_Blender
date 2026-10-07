@@ -689,8 +689,10 @@ A fourth Layout (`settings.layout === 'staff'`, the radio beside Page view on th
 suite's `.beta-tag`): the
 reading drawn on a music staff, a verse at a time, the words under their notes. Engine: `js/trope-staff.js`
 (above); data: `data/trope/trope_phrases.json`, fetched lazily on the first staff render with the **same `?v=`
-the tutor uses** (`STAFF_PHRASES_URL`; bump both together) through `ivritSafeParse` + `_phraseSetsFrom`.
-Design: `docs/tropepatterns.md` → G.
+the tutor uses** (`STAFF_PHRASES_URL`; bump both together) through `ivritSafeParse` + `_phraseSetsFrom`, which
+validates each of the six melodies' rows on its own (`TROPE_MELODIES`: torah, highholiday, haftarah, esther,
+megillot, eicha; a row with a value `PHRASE_VALUE` does not list is dropped, so the table carries every value the
+file uses, the Megillot chart's `64` included). Design: `docs/tropepatterns.md` → G.
 
 - **From text to notes.** `tropeUnitsOfVerse(v.hebrew)` reads the verse's marks on the Trainer's own split
   (`/(\s+|־)/`: one *piece* per Hebrew-bearing token, the way `tokenizeHebrew` emits `.tt-word`s): a maqaf
@@ -700,12 +702,14 @@ Design: `docs/tropepatterns.md` → G.
   the beta**), and an unmarked cell sings with the cell after it. `tropeContextsOf(set)` indexes every
   printed figure by the marks before and after it; `tropeChooseFigures` picks one per unit — a connecting
   mark by the mark it leads into, else the pause its chain reaches; a pausing mark by its neighbours; then
-  the Learn card's row (`TROPE_LEARN_ROW`, § A's table, § H's for the Haftarah rows); then the mark's first
-  figure; a mark the High Holiday chart lacks falls back to the year-round chart (the Haftarah rows print
-  every mark and stand alone) — and the last verse of a PocketTorah aliyah (`staffIsAliyahEnd`, from
-  `aliyahLookup`'s `endC/endV`), or of a haftarah (`staffIsHaftarahEnd`: the `C:V` after the last ` - ` of
-  the reading's ref, so a two-part haftarah closes at its second part's end), takes the `[aliyah-end]`
-  closing whose marks end it. `tropeBuildReadingRow` stitches the picks into one row in the phrase file's shape (each figure's own
+  the Learn card's row (`TROPE_LEARN_ROW`, § A's table — one column per melody, which the phrases builder checks
+  against the table on every run); then the mark's first figure; a mark the High Holiday chart lacks falls back
+  to the year-round chart (the four Portnoy–Wolff charts stand alone) — and the last verse of a PocketTorah
+  aliyah (`staffIsAliyahEnd`, from `aliyahLookup`'s `endC/endV`), or of a haftarah (`staffIsHaftarahEnd`: the
+  `C:V` after the last ` - ` of the reading's ref, so a two-part haftarah closes at its second part's end),
+  takes the `[aliyah-end]` closing whose marks end it — the longest, and between two of one length the one
+  `opts.closingRow` names (the Megillot chart's end-of-book 39a beside its end-of-chapter 39).
+  `tropeBuildReadingRow` stitches the picks into one row in the phrase file's shape (each figure's own
   syllables, which carry the beaming; a triplet or slur only when it lies inside one figure) plus `words`,
   one per cell; `tropeSplitSystems` wraps it between words to `#ttReading`'s width (with `opts.namesOf`, at the
   width each system is drawn at with its note names).

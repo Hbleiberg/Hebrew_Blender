@@ -2,7 +2,7 @@
 /* smoke-trope-staff.mjs — checks js/trope-staff.js's reading-staff half (the Torah Trainer's Trope staff
  * layout) without a browser: the module is loaded in a vm with a stub document, the phrase file is read from
  * data/, and a few verses of Genesis are read into units, matched to figures, stitched into a row, laid out
- * and wrapped. Zero dependencies. Exits non-zero on the first failure. Run: node scripts/smoke-trope-staff.mjs */
+ * and wrapped, on all six melodies. Zero dependencies. Exits non-zero on the first failure. Run: node scripts/smoke-trope-staff.mjs */
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
@@ -14,12 +14,18 @@ const same = (a, b, msg) => assert.equal(JSON.stringify(a), JSON.stringify(b), m
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const src = readFileSync(join(root, 'js/trope-staff.js'), 'utf8');
 const stubEl = () => ({ setAttribute() {}, appendChild() {}, style: {}, textContent: '' });
-const api = vm.runInNewContext(src + '\n;({ TROPES, TROPE_CHAR_TO_KEY, tropeUnitsOfVerse, tropeContextsOf, tropeChooseFigures, tropeBuildReadingRow, tropeSubRow, tropeSplitSystems, layoutPhraseStaff, _phraseSetsFrom, shiftedKey, KEY_SHARPS })',
+const api = vm.runInNewContext(src + '\n;({ TROPES, TROPE_CHAR_TO_KEY, TROPE_MELODIES, tropeUnitsOfVerse, tropeContextsOf, tropeChooseFigures, tropeBuildReadingRow, tropeSubRow, tropeSplitSystems, layoutPhraseStaff, _phraseSetsFrom, shiftedKey, KEY_SHARPS })',
   { document: { createElementNS: stubEl }, console });
+const MELS = ['torah', 'highholiday', 'haftarah', 'esther', 'megillot', 'eicha'];
+const STANDALONE = new Set(['haftarah', 'esther', 'megillot', 'eicha']);   // the Portnoy–Wolff charts: never a Torah figure among their notes
 const sets = api._phraseSetsFrom(JSON.parse(readFileSync(join(root, 'data/trope/trope_phrases.json'), 'utf8')));
-assert.ok(sets && sets.torah && sets.highholiday && sets.haftarah, 'phrase sets load');
-assert.equal(sets.haftarah.key, 'Eb', 'the Haftarah chart is E♭ major, three flats');
-const ctx = { torah: api.tropeContextsOf(sets.torah), highholiday: api.tropeContextsOf(sets.highholiday), haftarah: api.tropeContextsOf(sets.haftarah) };
+assert.ok(sets, 'phrase sets load');
+same([...api.TROPE_MELODIES], MELS, 'the engine lists the six melodies in the pages\' order');
+for (const m of MELS) assert.ok(sets[m] && sets[m].rows.length, m + ' set loads');
+for (const [m, k] of [['torah', 'A'], ['highholiday', 'C'], ['haftarah', 'Eb'], ['esther', 'Eb'], ['megillot', 'C'], ['eicha', 'Eb']]) assert.equal(sets[m].key, k, `${m} is written in ${k}`);
+const rowsOf = (m) => JSON.parse(readFileSync(join(root, 'data/trope/trope_phrases.json'), 'utf8')).melodies[m].rows.length;
+for (const m of MELS) assert.equal(sets[m].rows.length, rowsOf(m), `every ${m} row of the file validates (64th notes included)`);
+const ctx = Object.fromEntries(MELS.map((m) => [m, api.tropeContextsOf(sets[m])]));
 
 const G = {
   '1:1': 'בְּרֵאשִׁ֖ית בָּרָ֣א אֱלֹהִ֑ים אֵ֥ת הַשָּׁמַ֖יִם וְאֵ֥ת הָאָֽרֶץ׃',
@@ -50,15 +56,34 @@ const merged = api.tropeUnitsOfVerse('וַיֹּאמֶר אֱלֹהִ֖ים יְ
 same(merged.cells.map((c) => c.pieces), [[0, 1], [2], [3]]); assert.equal(merged.pieces.length, 4);
 ok('an unmarked word joins the word after it; every piece is kept');
 
-// 2. figures for every unit, all three melodies (the Haftarah rows stand alone: no fallback chart)
-for (const m of ['torah', 'highholiday', 'haftarah']) for (const ref of Object.keys(G)) {
+// 2. figures for every unit, all six melodies (the four Portnoy–Wolff charts stand alone: no fallback chart)
+for (const m of MELS) for (const ref of Object.keys(G)) {
   const u = api.tropeUnitsOfVerse(G[ref]);
-  const picks = api.tropeChooseFigures(u.units, ctx[m], { melody: m, fallbackCtx: m === 'haftarah' ? null : ctx.torah, fallbackMelody: 'torah' });
+  const picks = api.tropeChooseFigures(u.units, ctx[m], { melody: m, fallbackCtx: STANDALONE.has(m) ? null : ctx.torah, fallbackMelody: 'torah' });
   assert.ok(picks.every(Boolean), `${m} ${ref}: every unit picks a figure`);
   picks.forEach((p, i) => { const row = sets[p.set].rows.find((r) => r.n === p.n); assert.equal(row.units[p.ui].k, u.units[i].k, 'the pick is a figure of the same mark'); });
-  if (m === 'haftarah') assert.ok(picks.every((p) => p.set === 'haftarah'), `${ref}: every haftarah pick is from the Haftarah rows`);
+  if (STANDALONE.has(m)) assert.ok(picks.every((p) => p.set === m), `${ref}: every ${m} pick is from its own rows`);
 }
-ok('every unit of the three verses gets a figure of its own mark, on all three melodies');
+ok('every unit of the three verses gets a figure of its own mark, on all six melodies');
+// the Megillot chart's 64th notes (rows 29 and 30, the telishas) validate and lay out
+{
+  const r29 = sets.megillot.rows.find((r) => r.n === '29'), r30 = sets.megillot.rows.find((r) => r.n === '30');
+  assert.ok(r29 && r30 && r29.notes.some((x) => x.v === '64') && r30.notes.some((x) => x.v === '64'), 'rows 29 and 30 carry 64th notes');
+  for (const r of [r29, r30]) { const L = api.layoutPhraseStaff(r, 'C', 0); assert.equal(L.notes.length, r.notes.length); assert.ok(L.W > 0); }
+  ok('Megillot rows 29 and 30 (64th notes) validate and lay out');
+}
+// the closings of the four charts: the end of a chapter takes the chart's closing row, the end of a book 39a
+{
+  const units = [{ k: 'munach', ci: 0, pi: 0 }, { k: 'etnachta', ci: 1, pi: 1 }, { k: 'mercha', ci: 2, pi: 2 }, { k: 'tipcha', ci: 3, pi: 3 }, { k: 'mercha', ci: 4, pi: 4 }, { k: 'sof_pasuk', ci: 5, pi: 5 }];
+  const closing = (m, opts) => api.tropeChooseFigures(units, ctx[m], Object.assign({ melody: m, aliyahEnd: true }, opts)).slice(2).map((p) => p.n).join(',');
+  assert.equal(closing('megillot', {}), '39,39,39,39', 'a chapter ends on 39');
+  assert.equal(closing('megillot', { closingRow: '39a' }), '39a,39a,39a,39a', 'the book ends on 39a');
+  assert.equal(closing('megillot', { closingRow: 'nope' }), '39,39,39,39', 'an unknown closingRow changes nothing');
+  assert.equal(closing('esther', { closingRow: '39a' }), '41,41,41,41', 'Esther closes on 41 whatever the caller names');
+  assert.equal(closing('eicha', {}), '38,38,38,38'); assert.equal(closing('haftarah', {}), '40,40,40,40');
+  assert.ok(api.tropeChooseFigures(units, ctx.megillot, { melody: 'megillot' }).every((p) => p.n !== '39' && p.n !== '39a'), 'no closing without aliyahEnd');
+  ok('closings: Megillot 39 / 39a by closingRow, Esther 41, Eicha 38, Haftarah 40');
+}
 // a haftarah verse (Isaiah 40:1) on the Haftarah rows: its own figures throughout, and the closing only on the haftarah's last verse
 {
   const u = api.tropeUnitsOfVerse('נַחֲמ֥וּ נַחֲמ֖וּ עַמִּ֑י יֹאמַ֖ר אֱלֹהֵיכֶֽם׃');

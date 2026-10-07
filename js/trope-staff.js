@@ -242,8 +242,8 @@ function staffHead(g, cx, cy, open, rx = 3.4, ry = 2.5) {   // open: a half note
    so it still sits on the reading side of its note. Without the option the output
    is byte-identical to before it existed.
    ══════════════════════════════════════════════════════ */
-const PHRASE_VALUE = {
-  32: { flags: 3 }, s: { flags: 2 }, ds: { flags: 2, dot: true }, e: { flags: 1 }, de: { flags: 1, dot: true },
+const PHRASE_VALUE = {   // the phrase file's values (64 is the Megillot chart's 64th note)
+  64: { flags: 4 }, 32: { flags: 3 }, s: { flags: 2 }, ds: { flags: 2, dot: true }, e: { flags: 1 }, de: { flags: 1, dot: true },
   q: { flags: 0 }, dq: { flags: 0, dot: true }, h: { flags: 0, open: true }, dh: { flags: 0, open: true, dot: true }, g: { flags: 1 },
 };
 const PHRASE_STEP = 3, PHRASE_STEM = 18, PHRASE_SYL_SIZE = 8.5;
@@ -262,7 +262,7 @@ function _phraseTextWidth(s) {
 function phraseRestGlyph(val) {
   const g = { knobs: [], strokes: [], block: null, dot: null };
   if (val.flags) {
-    const ks = [-2.6, 3.4, -8.6].slice(0, val.flags).sort((a, b) => a - b);   // knob centres, top first
+    const ks = [-2.6, 3.4, -8.6, 9.4].slice(0, val.flags).sort((a, b) => a - b);   // knob centres, top first (a 64th's fourth below the staff)
     const slope = 3 / 10.3, yT = ks[0] - 1.2, yB = val.flags > 1 ? 12 : 6.5;
     const xT = (5.2 + slope * (ks[ks.length - 1] - ks[0])) / 2;              // the stem's top, set to centre the rest
     const stemX = (y) => xT - slope * (y - yT);
@@ -675,17 +675,20 @@ function _validPhraseRow(r) {
   if (!Array.isArray(r.syl) || !r.syl.every((s) => span(s) && typeof s.t === 'string')) return false;
   return ['tup', 'slur'].every((k) => Array.isArray(r[k]) && r[k].every(span));
 }
-// {torah, highholiday, haftarah}: a melody the file lacks is null. The tutor draws the two printed charts;
-// the Torah Trainer's Trope staff draws all three (the Haftarah rows on a haftarah reading).
+// The six melodies of the phrase file (docs/tropepatterns.md → B, C, H–K), in the order the pages list them.
+const TROPE_MELODIES = ['torah', 'highholiday', 'haftarah', 'esther', 'megillot', 'eicha'];
+// {torah, highholiday, haftarah, esther, megillot, eicha}: a melody the file lacks is null. The tutor's Phrases tab
+// draws the melody its bar chooses; the Torah Trainer's Trope staff draws the reading's (the Haftarah rows on a
+// haftarah, a megillah's own chart, the year-round chart otherwise).
 function _phraseSetsFrom(j) {
   if (!j || j.v !== 1 || j.tpq !== 48 || !j.melodies || typeof j.melodies !== 'object') return null;
   const out = {};
-  for (const m of ['torah', 'highholiday', 'haftarah']) {
+  for (const m of TROPE_MELODIES) {
     const s = j.melodies[m];
     const rows = s && Number.isInteger(KEY_SHARPS[s.key]) && Array.isArray(s.rows) ? s.rows.filter(_validPhraseRow) : [];
     out[m] = rows.length ? { key: s.key, rows } : null;
   }
-  return out.torah || out.highholiday || out.haftarah ? out : null;
+  return TROPE_MELODIES.some((m) => out[m]) ? out : null;
 }
 
 /* ══════════════════════════════════════════════════════
@@ -702,8 +705,9 @@ function _phraseSetsFrom(j) {
    ══════════════════════════════════════════════════════ */
 // The connecting ("servant") marks, whose figure depends on the mark they lead into (the builder's list).
 const TROPE_CONJUNCTIVE = new Set(['munach', 'mahpach', 'mercha', 'mercha_kefula', 'darga', 'kadma', 'telisha_ketana', 'yerach_ben_yomo']);
-// The row each Learn card draws its figure from (docs/tropepatterns.md → A, one column per melody): the last
-// resort when the chart prints no figure of a mark in a verse's context, so a word is never left without notes.
+// The row each Learn card draws its figure from (docs/tropepatterns.md → A, one column per melody; the phrases
+// builder checks this table against that one): the last resort when the chart prints no figure of a mark in a
+// verse's context, so a word is never left without notes.
 const TROPE_LEARN_ROW = {
   torah: { mercha: '1', tipcha: '4', munach: '2', etnachta: '4', sof_pasuk: '8', mahpach: '11', pashta: '13', yetiv: '33',
     zakef_katon: '13', zakef_gadol: '31', zarka: '37', segol: '37', shalshelet: '38', revia: '19', darga: '21', tevir: '22',
@@ -716,6 +720,16 @@ const TROPE_LEARN_ROW = {
     zakef_katon: '13', zakef_gadol: '32', zarka: '38', segol: '38', revia: '19', darga: '22', tevir: '23', kadma: '15',
     geresh: '16', gershayim: '20', telisha_ketana: '30', telisha_gedola: '29', pazer: '31', mercha_kefula: '39',
     munach_legarmeh: '17' },
+  esther: { mercha: '1', tipcha: '4', munach: '2', etnachta: '4', sof_pasuk: '8', mahpach: '11', pashta: '13', yetiv: '34',
+    zakef_katon: '13', zakef_gadol: '32', zarka: '38', segol: '38', revia: '19', darga: '22', tevir: '23', kadma: '15',
+    geresh: '16', gershayim: '20', telisha_ketana: '30', telisha_gedola: '29', pazer: '31', karnei_parah: '40',
+    yerach_ben_yomo: '39', munach_legarmeh: '17' },
+  megillot: { mercha: '1', tipcha: '4', munach: '2', etnachta: '4', sof_pasuk: '8', mahpach: '11', pashta: '13', yetiv: '34',
+    zakef_katon: '13', zakef_gadol: '32', zarka: '38', segol: '38', revia: '19', darga: '22', tevir: '23', kadma: '15',
+    geresh: '16', gershayim: '20', telisha_ketana: '30', telisha_gedola: '29', pazer: '31', munach_legarmeh: '17' },
+  eicha: { mercha: '1', tipcha: '4', munach: '2', etnachta: '4', sof_pasuk: '8', mahpach: '11', pashta: '13', yetiv: '33',
+    zakef_katon: '13', zakef_gadol: '31', zarka: '37', segol: '37', revia: '19', darga: '22', tevir: '23', kadma: '15',
+    geresh: '16', gershayim: '20', telisha_ketana: '30', telisha_gedola: '29', munach_legarmeh: '17' },
 };
 const TROPE_MARK_RE = /[֑-֯]/g;   // the te'amim block; U+05BD (meteg / siluk) is deliberately outside it
 // A verse's marks, word by word, on the Torah Trainer's own split (whitespace AND maqaf, one piece per
@@ -776,9 +790,10 @@ function tropeContextsOf(set) {
 // One figure per unit of a verse (docs/tropepatterns.md → G): a connecting mark takes the figure printed before
 // the very mark that follows it, else before the pausing mark its chain leads to; a pausing mark the figure
 // printed between its neighbours; then the Learn card's row; then the mark's first figure. With aliyahEnd, the
-// longest [aliyah-end] row whose marks close the verse takes those last units. A mark the melody's chart lacks
-// is looked up in fallbackCtx (the year-round chart; the Trainer passes none for the Haftarah rows, which stand
-// alone) — picks say which set they came from.
+// longest [aliyah-end] row whose marks close the verse takes those last units — between two of the same length,
+// the one opts.closingRow names (the Megillot chart's end-of-book 39a beside its end-of-chapter 39), else the
+// first printed. A mark the melody's chart lacks is looked up in fallbackCtx (the year-round chart; the Trainer
+// passes none for the Portnoy–Wolff charts, which stand alone) — picks say which set they came from.
 // Returns picks[i] = {set, n, ui} or null.
 function tropeChooseFigures(units, ctx, opts = {}) {
   const ks = units.map((u) => u.k), N = ks.length, picks = new Array(N).fill(null);
@@ -786,9 +801,10 @@ function tropeChooseFigures(units, ctx, opts = {}) {
   let endFrom = N;
   if (opts.aliyahEnd && ctx) {
     let best = null;
+    const better = (c) => !best || c.keys.length > best.keys.length || (c.keys.length === best.keys.length && c.n === opts.closingRow && best.n !== opts.closingRow);
     for (const list of ctx.values()) for (const c of list) {
       if (!c.end || c.ui !== 0 || c.keys.length > N) continue;
-      if (c.keys.every((x, j) => x === ks[N - c.keys.length + j]) && (!best || c.keys.length > best.keys.length)) best = c;
+      if (c.keys.every((x, j) => x === ks[N - c.keys.length + j]) && better(c)) best = c;
     }
     if (best) {
       endFrom = N - best.keys.length;
@@ -823,7 +839,7 @@ function tropeChooseFigures(units, ctx, opts = {}) {
 // one figure (one cut at a figure's edge is drawn by value), and `words`: one per cell, spanning its units'
 // notes, `w` left 0 for the caller to measure. A cell none of whose units got a figure has no notes: its
 // pieces join the word before it (the first cell, the word after), so every piece is still on the page.
-// sets: {torah, highholiday, haftarah} phrase sets (a pick names its set).
+// sets: the phrase sets by melody (_phraseSetsFrom; a pick names its set).
 function tropeBuildReadingRow(units, picks, cells, sets, opts = {}) {
   const notes = [], syl = [], outUnits = [], tup = [], slur = [];
   const byN = {};

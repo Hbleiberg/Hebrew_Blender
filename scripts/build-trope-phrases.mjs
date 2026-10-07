@@ -527,8 +527,10 @@ function reduceUnit(row, unit) {
   return out;
 }
 // Section A's table: for each Learn card (a row whose first cell starts with a TROPES key; "(no card)"
-// rows are skipped), the chart row its staff is read from in each melody, or — for none.
+// rows are skipped), the chart row its staff is read from in each melody, or — for none. The munach legarmeh
+// row (no card) is kept aside for the engine-table check below.
 const emptyCards = () => Object.fromEntries(Object.keys(MELODIES).map((m) => [m, {}]));
+const legarmehRow = {};
 function cardTable(text, path) {
   const lines = text.split('\n');
   const head = lines.findIndex((l) => /^\|\s*Mark \(tutor key\)\s*\|/.test(l));
@@ -544,6 +546,7 @@ function cardTable(text, path) {
   const cards = emptyCards();
   for (let i = head + 2; i < lines.length && lines[i].startsWith('|'); i++) {
     const cells = lines[i].split('|').slice(1, -1).map((c) => c.trim());
+    if (cells[0].startsWith('munach legarmeh')) cols.forEach(([m, idx]) => { if (/^\d+[a-z]?$/.test(cells[idx] || '')) legarmehRow[m] = cells[idx]; });
     if (cells[0].includes('(no card)')) continue;
     const key = cells[0].split(/\s+/)[0];
     if (!TROPES.some((t) => t.key === key)) { fail(`${path}:${i + 1}: section A's "${cells[0]}" starts with no TROPES key (mark a row without a Learn card "(no card)")`); continue; }
@@ -590,6 +593,24 @@ function deriveMotifs(m, d, cards) {
 }
 if (!LENIENT) {
   const cards = cardTable(docText, DOC_PATH.replace(repoRoot + '/', '')) || emptyCards();
+  // js/trope-staff.js's TROPE_LEARN_ROW is the engine's hand copy of section A (the Learn card's row: the last
+  // resort of the Torah Trainer's staff), one column per melody, munach legarmeh included: it must agree with
+  // the table, cell for cell.
+  {
+    const engineSrc = readRepo('js/trope-staff.js');
+    const lit = engineSrc.match(/const TROPE_LEARN_ROW = (\{[\s\S]*?\n\});/);
+    let engine = null;
+    if (!lit) fail('js/trope-staff.js: no TROPE_LEARN_ROW table');
+    else { try { engine = new Function('return ' + lit[1])(); } catch (e) { fail('js/trope-staff.js: TROPE_LEARN_ROW is not a plain object literal: ' + e.message); } }
+    if (engine) for (const [m, d] of Object.entries(MELODIES)) {
+      const want = { ...cards[m] };
+      if (legarmehRow[m]) want.munach_legarmeh = legarmehRow[m];
+      const have = engine[m];
+      if (!have) { fail(`js/trope-staff.js: TROPE_LEARN_ROW has no "${m}" column (section A has a ${d.label} row column)`); continue; }
+      for (const k of new Set([...Object.keys(want), ...Object.keys(have)]))
+        if (want[k] !== have[k]) fail(`js/trope-staff.js: TROPE_LEARN_ROW.${m}.${k} is ${have[k] === undefined ? 'absent' : `'${have[k]}'`}; section A says ${want[k] === undefined ? '— (no row)' : `'${want[k]}'`}`);
+    }
+  }
   for (const [m, d] of Object.entries(MELODIES)) {
     if (!d.motifs) continue;
     const file = d.derived ? deriveMotifs(m, d, cards[m]) : JSON.parse(readFileSync(join(repoRoot, d.motifs), 'utf8'));
@@ -1288,7 +1309,8 @@ async function census() {
   const aliyahData = JSON.parse(readRepo('data/pockettorah/aliyah.json')).parshiot.parsha;
   // the High Holiday readings, from the Torah Trainer's own table
   const tt = readRepo('torah_trainer.html');
-  const hhReadings = [...tt.matchAll(/\{\s*key:'([a-z0-9-]+)',\s*name:'([^']+)',\s*ref:'([A-Za-z]+) (\d+):(\d+)-(?:(\d+):)?(\d+)',\s*melody:'highholiday'\s*\}/g)]
+  // one entry per High Holiday reading, whatever other fields it carries (nameKey, haftarah…): key, name, ref, melody
+  const hhReadings = [...tt.matchAll(/\{\s*key:'([a-z0-9-]+)',[^{}]*?\bname:'([^']+)',[^{}]*?\bref:'([A-Za-z]+) (\d+):(\d+)-(?:(\d+):)?(\d+)',[^{}]*?\bmelody:'highholiday'[^{}]*\}/g)]
     .map((m) => ({ key: m[1], name: m[2], book: m[3], from: [+m[4], +m[5]], to: [m[6] ? +m[6] : +m[4], +m[7]] }));
   if (hhReadings.length !== 4) cf.push(`expected 4 High Holiday readings in torah_trainer.html's HOLIDAY_READINGS, found ${hhReadings.length}`);
 
