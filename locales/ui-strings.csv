@@ -4699,7 +4699,7 @@ trope.phrases.no_example,The Torah has no example of this exact phrase.,אין �
 trope.phrases.no_example_hh,The High Holiday readings have no example of this exact phrase.,אין בקריאות הימים הנוראים דוגמה לצירוף הזה בדיוק.,Phrases card examples empty state (High Holiday melody),
 trope.phrases.play_example_aria,Play phrase {n} as chanted in {parsha} {ref},השמעת צירוף {n} כפי שהוא נקרא ב-{parsha} {ref},Phrases card example play button aria-label (aria-pressed carries the state),aria-label only; do-not-translate {n}/{parsha}/{ref}
 trope.phrases.play_example_title,"Hear these words chanted (PocketTorah, Spiro melody)","האזינו למילים בקריאה (PocketTorah, מנגינת שפירו)",Phrases card example play button title,title tooltip
-trope.melody.highholiday,High Holidays,ימים נוראים,Melody dropdown option (the key bar on the Learn and Phrases tabs),
+trope.melody.highholiday,High Holidays [Binder-Reform],ימים נוראים [בינדר-רפורמי],Melody dropdown option (the Trope Tutor's key bar on the Learn and Phrases tabs; the Torah Trainer's Trope staff panel) and the {melody} of the notes and links that name this chart,the brackets name the chart's source and tradition (A.W. Binder; Reform) — keep them
 trope.melody.haftarah,Haftarah,הפטרה,Melody dropdown option (the key bar on the Learn and Phrases tabs),
 trope.melody.esther,Esther,אסתר,"Melody dropdown option (the key bar on the Learn and Phrases tabs) (the Esther chart, for Megillat Esther on Purim)",
 trope.melody.megillot,Shir HaShirim · Ruth · Kohelet,שיר השירים · רות · קהלת,Melody dropdown option (the key bar on the Learn and Phrases tabs) (one chart for the three festival megillot),
