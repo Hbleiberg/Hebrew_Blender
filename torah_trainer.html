@@ -8542,6 +8542,7 @@ function openFavoriteDialog() {
   document.getElementById('ttFavWithSettings').checked = false;
   syncFavSummary();
   favNote('');
+  dismissHintToast();   // as the gallery: a toast about the page would sit on the dialog
   _favOpener = document.activeElement;
   bd.hidden = false; dlg.hidden = false;
   dlg.addEventListener('keydown', _favDialogKey);
@@ -8800,6 +8801,7 @@ function openParashaGallery() {
   const dlg = document.getElementById('ttEmoDialog'), bd = document.getElementById('ttEmoBackdrop');
   if (!dlg || !bd || !dlg.hidden) return;
   if (!Array.isArray(parshiyotData) || !parshiyotData.length || !window.ParashaIcons) return;   // fails soft: nothing to show
+  dismissHintToast();   // its z-index tops every dialog; a toast about the page would sit on the cards for 8 s
   _emoCurrent = currentRangeIcons.slice();
   _emoOpener = document.activeElement;   // a browser that does not focus a clicked button leaves <body>: close re-queries
   renderParashaGallery();
