@@ -1669,8 +1669,8 @@ function renderFonts() {
       '<div class="font-by">' + by + '</div>' +
       '<div class="font-actions">' +
         '<button type="button" class="hi-btn" onclick="openFontPreview(' + i + ')">' + "<svg class=\"hi hi-sm hi-search\" viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" aria-hidden=\"true\" focusable=\"false\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"10.6\" cy=\"10.6\" r=\"6.4\"/><path d=\"M15.4 15.4l4.6 4.6\"/></svg>" + esc(I18n.t('resources.fonts.preview_action')) + '</button>' +
-        '<button type="button" onclick="downloadFont(' + i + ')">' + esc(I18n.t('resources.fonts.download_action')) + '</button>' +
-        '<button type="button" onclick="useFontInIvritSuite(' + i + ')">' + esc(I18n.t('resources.fonts.use_action')) + '</button>' +
+        '<button type="button" class="hi-btn" onclick="downloadFont(' + i + ')">' + "<svg class=\"hi hi-sm hi-download\" viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" aria-hidden=\"true\" focusable=\"false\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 3.4v11.2\"/><path d=\"M7.6 10.4 12 14.8l4.4-4.4\"/><path d=\"M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9\"/></svg>" + esc(I18n.t('resources.fonts.download_action')) + '</button>' +
+        '<button type="button" class="hi-btn" onclick="useFontInIvritSuite(' + i + ')">' + "<svg class=\"hi hi-sm hi-bookmark\" viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" aria-hidden=\"true\" focusable=\"false\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M6.5 4.4h11a1 1 0 0 1 1 1v14.2l-6.5-4-6.5 4V5.4a1 1 0 0 1 1-1Z\"/></svg>" + esc(I18n.t('resources.fonts.use_action')) + '</button>' +
       '</div>' +
       '<div class="font-meta-row"><span>' + esc(I18n.t('resources.fonts.nikkud_label')) + ' ' + yn(f.nikkud) + '</span>' +
         '<span>' + esc(I18n.t('resources.fonts.trop_label')) + ' ' + yn(f.trop) + '</span>' +
