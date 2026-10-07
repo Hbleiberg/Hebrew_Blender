@@ -84757,3 +84757,27 @@ _(prior — S463 pointer:)_ **Next session (S463):** **BRANCH/PR: S460–S462 on
 - G print & export fidelity (one tool): 2026-10-02 (**S451 — `torah_trainer.html`, its 3rd (S181, S324 → 115 commits). 6 arms, every zero controlled: the Trope staff on paper (16 PDFs), 4 layouts + translit (pinned npm library) light vs dark (ink equal), a word-collision probe (plant 32), the handout in 4 layouts (geniza, numbers, selected verses), the ?s= link round trip (15 keys). FOUND the …[full text: IMPROVEMENT_ARCHIVE.md]
 
 _(prior — S464 pointer:)_ **Next session (S464):** **BRANCH/PR: S460–S463 on `claude/zealous-hamilton-qlwsp2` → draft PR #310 (base `a2cf7f8`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v940**, FM **5.59**, SDK **2.116.0**. ⚑ Stalest: M, G; O blocked. ⚑ Ready (answered) — take first: HE arrows, FM footer, תל-עם. ⚑ Untaken: contact zoom + bidi, pwa banner; the new share-link pattern on the dictionary's `?s=`.
+
+## Archived at the PR #313 close-out (2026-10-07), outside the loop
+
+### Candidate struck (fixed)
+
+- [ ] P4 (**NEW S433 K — gate 2, the maintainer's call**) | torah_trainer.html | **The 17 holiday readings keep English names in the Hebrew UI** ("Passover — Day 1 — Exodus 12:21-51" on the drawer's buttons, the picker's optgroup and the reading header) while the new date lookup names the same holidays in Hebrew (`torah.lookup.holiday_*`); `buildHolidayPicker` calls reading names content. | found …[full text: IMPROVEMENT_ARCHIVE.md]
+
+→ Fixed in PR #313: every `HOLIDAY_READINGS` entry carries a `nameKey` (`torah.reading.name_*`, EN + HE) and `holidayName()` prints it on the picker, the Calendar tab and the reading header.
+
+### Done (S460), moved to make room
+
+- [x] 2026-10-05 | (S460 close-out) | branch/deploy note | **S460 = L + 4 fixes, PR #310.** Drift: #308 + 4 outside-loop dashboard commits (v932→v936), deploy green; backend none; sw v936→v937; no FM bump; gates clean; no smokes; 4 gates answered.
+
+- [x] 2026-10-05 | `9a2e2f0a`, `7de703e5` | torah, FM, CSV | (S460 L, gate 2) **The Torah FAQ names JPS 1917; the FM FAQ drops "only when you export".** | `jps.mjs`, `faq.mjs` 4 cells vs HEAD.
+
+### Per-session log rows, moved to make room
+
+- 2026-10-02 | **S445** | iters: 1 pass (**E**) + 4 fixes = **5** | tools: generator ×2, flash ×2, dictionary, docs | patterns fixed: copy-claims-success-on-a-refused-clipboard ×2 | pass run: E | SW: v912→v913
+
+- 2026-10-02 | **S446** | iters: 1 pass (**L**) + 4 fixes = **5** | tools: index, generator, torah, flash | patterns fixed: — | pass run: L | SW: v913→v914
+
+- 2026-10-02 | **S447** | iters: 1 pass (**K**) + 4 fixes = **5** | tools: FM, torah, trope, data (flash/generator/dictionary ?v=) | patterns fixed: stale-html-fallback-behind-its-csv-value ×1 | pass run: K | SW: v914→v915
+
+- 2026-10-02 | **S448** | iters: 1 pass (**N**) + 4 fixes = **5** | tools: torah ×2, flash, dictionary | patterns fixed: — | pass run: N | SW: v915→v916

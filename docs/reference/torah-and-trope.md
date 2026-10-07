@@ -1172,8 +1172,9 @@ stored value reads Full and stays stored) and the triennial year (`settings.trie
   `chantAllState.overlay`) plays the full aliyot the range spans under the reading in turn — the first from the
   range's first word — and on the last sets `_verseEndStopAt` at the first word after the range
   (`chantAllState.stopsAtRange`, which the timeupdate stop turns into `stopChantAll`); a holiday reading keeps
-  its old navigate-away chain. `readingKey()` adds the cycle (and a triennial range) so `lastPos` never crosses
-  cycles.
+  its old navigate-away chain. *Chant all* on a full parasha ends with aliyah 7: the haftarah is not on screen
+  (it is its own reading, one Reading choice away, with its own recording). `readingKey()` adds the cycle (and a
+  triennial range) so `lastPos` never crosses cycles.
 - **Torah portion lookup** is the Calendar tab's second section: a date field (today by default; never stored) → `lookupRender()`
   writes the Shabbat's civil date (`toLocaleDateString` in the UI's language) and Hebrew date (`torah.lookup.hebdate`
   with the 14 `torah.lookup.month_*` keys), the parasha (`torah.lookup.parsha`, a doubled week joined and noted)

@@ -8,6 +8,14 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P3 (**NEW PR #313 — needs Sefaria**) | scripts/build-trope-phrases.mjs | **`docs/trope_contexts_report.md` is counted against an older `trope_phrases.json`** (the builder warns on every run): run `--census` where Sefaria answers (a 403 from this sandbox) and commit the report. | found PR #313
+
+- [ ] P4 (**NEW PR #313**) | torah_trainer.html | **Sephardi haftarot and the holidays' maftirim are not offered**: `holiday-readings.json` carries `seph` and `fullkriyah.M` for every entry the table keys (the leyning builder's check could carry them). | found PR #313
+
+- [ ] P4 (**NEW PR #313**) | torah_trainer.html | **Shabbat Chazon's haftarah (Isaiah 1) is drawn in the Haftarah chart throughout**; the verses customarily chanted to Eicha's tune need a per-verse tune. | found PR #313
+
+- [ ] P4 (**NEW PR #313**) | classroom_dashboard.html | **The dashboard's parsha line never names a special Shabbat** (Zachor, Parah, Shekalim…) though `HebCal.specialShabbat` now answers by date. | found PR #313
+
 - [ ] P4 (**NEW S464 M**) | resources.html | **The Links/Fonts toggle mixes a line icon with a colour 🔤** (`resources.view.fonts`). | found S464
 
 - [ ] P4 (**NEW S464 M**) | resources.html | **A font card draws Preview's icon only**; the dialog draws all three. | found S464
@@ -73,8 +81,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S435 P — gate 2, new copy ×5**) | dashboard, generator, torah, dictionary, flash | **The vowel-colour reset confirm names no account-wide effect while signed in**, though all five reset overrides that travel. | found S435
 
 - [ ] P4 (**NEW S432 L — gate 2**) | index.html | **The hub's og:/twitter:description name every tool but the Font Maker.** | found S432
-
-- [ ] P4 (**NEW S433 K — gate 2, the maintainer's call**) | torah_trainer.html | **The 17 holiday readings keep English names in the Hebrew UI** ("Passover — Day 1 — Exodus 12:21-51" on the drawer's buttons, the picker's optgroup and the reading header) while the new date lookup names the same holidays in Hebrew (`torah.lookup.holiday_*`); `buildHolidayPicker` calls reading names content. | found …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**S430 A — the maintainer's call**) | torah_trainer.html | **The reading header keeps "Aliyah {n}" English in the Hebrew UI** beside a translated cycle label (also the copy heading, the handout). | found S430
 
@@ -304,6 +310,8 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-07 | `c21e467`…PR #313's head (outside the loop) | data/trope, tropepatterns.md, js/trope-staff.js, trope_tutor.html, js/hebrew-calendar.js, torah_trainer.html, CSV | **Portnoy & Wolff's Haftarah, Esther, Megillot and Eicha charts transcribed (H–K); the Tutor's melody bar (six tunes); the Trainer's holiday, special-Shabbat (by date) and Megillot readings — closes the "holiday readings keep English names" candidate.** | builder round trip; staff smoke 19; calendar `--hebcal` (5700–5900 × 2); tools 114/114; Playwright pw8/pw10/pw11 (Sefaria stubbed); `--census` blocked (403).
+
 - [x] 2026-10-06 | (S464 close-out) | branch/deploy note | **S464 = M + 4 fixes, PR #311.** No drift; keep-alive #24 green; sw v940→v941; no FM bump; gates clean; gate 3 answered.
 
 - [x] 2026-10-06 | `661c6cc6`, `f98367f8`, `5f7f8a40`, `046cd3ab` | resources, kbd ×4, CSV | (S464) **CTA off the age chips; dark keyboard plates; HE arrows; תל-עם (gates 2).** | findings S464.
@@ -323,10 +331,6 @@ _(none)_
 - [x] 2026-10-05 | `70988452` | classroom_dashboard.html, dashboard.md | (S461) **A starter, preset or restore re-titles the board at once.** | `colt.mjs` 4 cells: HEAD 3/3 stale → 0.
 
 - [x] 2026-10-05 | `73ba6e7e`, `ad09e1a6` | generator, dashboard, CSV | (S461, gate 2) **Exclude Repeats' tooltip is true; the secular starter is all English.** | `truth.mjs`, `starter.mjs`.
-
-- [x] 2026-10-05 | (S460 close-out) | branch/deploy note | **S460 = L + 4 fixes, PR #310.** Drift: #308 + 4 outside-loop dashboard commits (v932→v936), deploy green; backend none; sw v936→v937; no FM bump; gates clean; no smokes; 4 gates answered.
-
-- [x] 2026-10-05 | `9a2e2f0a`, `7de703e5` | torah, FM, CSV | (S460 L, gate 2) **The Torah FAQ names JPS 1917; the FM FAQ drops "only when you export".** | `jps.mjs`, `faq.mjs` 4 cells vs HEAD.
 
 ## Metrics
 
@@ -363,14 +367,6 @@ _(none)_
 - 2026-10-02 | **S450** | iters: 1 pass (**M**) + 2 fixes + 1 reverted = **4** | tools: flash ×2, dashboard (reverted) | patterns fixed: dark-navy-fill-matches-its-ground ×2 (NEW) | pass run: M | SW: v917→v918
 
 - 2026-10-02 | **S449** | iters: 1 pass (**P**) + 4 fixes = **5** | tools: account, flash, generator, dictionary | patterns fixed: sub-floor touch target ×1 | pass run: P | SW: v916→v917
-
-- 2026-10-02 | **S448** | iters: 1 pass (**N**) + 4 fixes = **5** | tools: torah ×2, flash, dictionary | patterns fixed: — | pass run: N | SW: v915→v916
-
-- 2026-10-02 | **S447** | iters: 1 pass (**K**) + 4 fixes = **5** | tools: FM, torah, trope, data (flash/generator/dictionary ?v=) | patterns fixed: stale-html-fallback-behind-its-csv-value ×1 | pass run: K | SW: v914→v915
-
-- 2026-10-02 | **S446** | iters: 1 pass (**L**) + 4 fixes = **5** | tools: index, generator, torah, flash | patterns fixed: — | pass run: L | SW: v913→v914
-
-- 2026-10-02 | **S445** | iters: 1 pass (**E**) + 4 fixes = **5** | tools: generator ×2, flash ×2, dictionary, docs | patterns fixed: copy-claims-success-on-a-refused-clipboard ×2 | pass run: E | SW: v912→v913
 
 ### Tool coverage (last-touched date per tool)
 

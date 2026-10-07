@@ -197,7 +197,7 @@ Read the weekly Torah portion in Hebrew with toggleable transliteration, transla
 
 **What is the Torah Trainer?**
 
-A free Hebrew Torah reader. Pick a parsha and read it with optional transliteration, English translation, per-vowel color coding, cantillation strip, a Trope staff layout (beta) that draws the reading on a music staff with each word under its notes, prose TTS, and chanted-audio karaoke that highlights words in time with the recording. When you are done reading, copy the passage out as formatted text or print it as a classroom sheet.
+A free Hebrew Torah reader. Pick a parsha — or a holiday reading, a special Shabbat's maftir and haftarah, or one of the five Megillot — and read it with optional transliteration, English translation, per-vowel color coding, cantillation strip, a Trope staff layout (beta) that draws the reading on a music staff with each word under its notes, prose TTS, and chanted-audio karaoke that highlights words in time with the recording. When you are done reading, copy the passage out as formatted text or print it as a classroom sheet.
 
 **Does Torah Trainer include chanted-audio karaoke?**
 
@@ -256,7 +256,7 @@ A free interactive tutor for the Torah cantillation marks. Learn mode teaches ea
 
 **What melody tradition is this?**
 
-The recordings are PocketTorah's, chanted in the Spiro (Conservative) melody; the staffs follow the Avery/Binder (Reform) charts. Both Ashkenazi and Sephardi trope names are shown, and you can switch the primary naming tradition in settings.
+The recordings are PocketTorah's, chanted in the Spiro (Conservative) melody. The staffs follow printed charts: the Avery/Binder (Reform) charts for the year-round and High Holiday melodies, and The Art of Cantillation (Portnoy & Wolff, UAHC) for the Haftarah, Esther, Shir HaShirim / Ruth / Kohelet and Eicha melodies — the melody bar above the tabs picks one. Both Ashkenazi and Sephardi trope names are shown, and you can switch the primary naming tradition in settings.
 
 **What are trope (te'amim)?**
 
@@ -280,7 +280,7 @@ Yes. In Learn mode, the Print chart button prints all 26 marks as one reference 
 
 **What does the Phrases tab show?**
 
-Every line of the printed cantillation chart, marks as they are sung together, on a full music staff you can play, in the year-round, High Holiday or Haftarah melody and in any key. Each phrase lists real verses where the Torah sings it, with PocketTorah's recording for the year-round melody, and the whole chart prints on one sheet.
+Every line of the printed cantillation chart, marks as they are sung together, on a full music staff you can play, in any of the six melodies — year-round, High Holidays, Haftarah, Esther, the three Megillot or Eicha — and in any key. Each phrase lists real verses where the Torah sings it, with PocketTorah's recording for the year-round melody, and the whole chart prints on one sheet.
 
 ---
 

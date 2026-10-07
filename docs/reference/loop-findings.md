@@ -1662,3 +1662,12 @@
 ## smoke-account.mjs
 
 - [ ] P3 (**NEW S389 Pass N — an incomplete detector that passed clean through 17 real failures; receipts in loop-findings**) | scripts/smoke-account.mjs + scripts/smoke-tools.mjs | **The smoke's "menu stays inside the viewport" check runs ONE cell — `account-test.html` at 800x700 — so it passed while the sign-in menu was 187px off-screen on the generator at 390.** Fix: assert the same rect under a phone descriptor on a page whose header wraps (`smoke-tools` already loads the generator and flash cards). | found S389
+
+
+## PR #313 (2026-10-07) — the trope charts and the readings wiring, outside the loop
+
+- [ ] P4 (**PR #313 — GATE ASKED AND ANSWERED: no general tune override in the Torah Trainer**) | torah_trainer.html | The maintainer chose the Trope Tutor's melody bar as the suite's only tune picker; the Trainer's staff follows the reading (`readingTutorMelody`: the Tisha B'Av haftarah's Eicha/Haftarah choice is the one per-reading switch). Do not re-ask.
+
+- [ ] P4 (**PR #313 — recorded so nobody re-derives it**) | torah_trainer.html | **PocketTorah has no Megillot recordings**, so a megillah reading has no Chant and no overlay audio by design (`parshahEntry` null); the staff's Play tune is its only sound.
+
+- [ ] P4 (**PR #313 — recorded so nobody re-derives it**) | docs/tropepatterns.md | **Sections H–K carry Portnoy & Wolff's charts only — none of Binder's Esther "detours", no blessings (Appendix D pp. 80–82), no exercises — by the maintainer's instruction; a row never changes to match Binder** (the Known-differences paragraphs record the contour cross-check instead).
