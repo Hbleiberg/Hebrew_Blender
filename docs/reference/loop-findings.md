@@ -1666,7 +1666,7 @@
 
 ## PR #313 (2026-10-07) — the trope charts and the readings wiring, outside the loop
 
-- [ ] P4 (**PR #313 — GATE ASKED AND ANSWERED: no general tune override in the Torah Trainer**) | torah_trainer.html | The maintainer chose the Trope Tutor's melody bar as the suite's only tune picker; the Trainer's staff follows the reading (`readingTutorMelody`: the Tisha B'Av haftarah's Eicha/Haftarah choice is the one per-reading switch). Do not re-ask.
+- [ ] P4 (**PR #313 — GATE ASKED TWICE; the second answer stands: a general tune override in the Torah Trainer**) | torah_trainer.html | First answered no (the Trope Tutor's picker was to be the suite's only one); the maintainer then asked for the same dropdown in the Trainer's Trope staff panel — `settings.staffMelody`, *Follow the reading* by default (`readingTutorMelody`; the Tisha B'Av haftarah's Eicha/Haftarah choice stays the per-reading switch while it follows). Do not re-ask either way.
 
 - [ ] P4 (**PR #313 — recorded so nobody re-derives it**) | torah_trainer.html | **PocketTorah has no Megillot recordings**, so a megillah reading has no Chant and no overlay audio by design (`parshahEntry` null); the staff's Play tune is its only sound.
 

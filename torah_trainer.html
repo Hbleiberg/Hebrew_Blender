@@ -2586,11 +2586,24 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
       <div class="tt-set" data-set="staff">
         <h3 class="tt-set-title" tabindex="-1"><span data-i18n="torah.settings.panel_staff">Trope staff</span> <span class="beta-tag" data-i18n="shared.badge.beta">BETA</span></h3>
         <!-- The Trope staff layout (a Layout choice): what sits under the notes while the Translit switch is on (the
-             Hebrew with its Latin line, or the Latin line alone), the key the staff is drawn in and the tune moved by,
+             Hebrew with its Latin line, or the Latin line alone), the chart the staff draws (Melody: Follow the reading, or one of the six printed charts), the key the
+             staff is drawn in and the tune moved by,
              the voice (Low voices: the 8 under the clef, the tune an octave down), the note names and the tune's speed.
              All but the speed travel in a practice link (how the reading looks); the speed never does (it syncs with the
              account's settings like karaokeRate). -->
         <div style="font-size:0.72rem;color:var(--muted);margin-bottom:10px;line-height:1.4;" data-i18n="torah.staff.melody_credit">Staff melody: Avery/Binder (Reform) for the year-round and High Holiday charts; The Art of Cantillation (Portnoy &amp; Wolff, UAHC) for the Haftarah and the Megillot.</div>
+        <div class="form-row">
+          <label for="optStaffMelody"><span data-i18n="torah.staff.melody_label">Melody</span> <span class="tip-wrap" data-i18n-tip="torah.staff.melody_tip" data-tip="Which printed chart the staff draws. Follow the reading picks the chart the reading is chanted to: the year-round melody, High Holidays on Rosh Hashanah and Yom Kippur, Haftarah for a haftarah, a megillah's own. Choose a chart to practise its melody on any text; the recordings keep their own tune, and a mark the chart does not print shows its word without notes."><i class="tip-icon">?</i></span></label>
+          <select id="optStaffMelody" style="margin-inline-start:auto;">
+            <option value="auto" data-i18n="torah.staff.melody_auto">Follow the reading</option>
+            <option value="torah" data-i18n="trope.melody.torah">Year-round</option>
+            <option value="highholiday" data-i18n="trope.melody.highholiday">High Holidays</option>
+            <option value="haftarah" data-i18n="trope.melody.haftarah">Haftarah</option>
+            <option value="esther" data-i18n="trope.melody.esther">Esther</option>
+            <option value="megillot" data-i18n="trope.melody.megillot">Shir HaShirim · Ruth · Kohelet</option>
+            <option value="eicha" data-i18n="trope.melody.eicha">Eicha</option>
+          </select>
+        </div>
         <div class="form-row">
           <label id="lblStaffWords" data-i18n="torah.staff.words_label">Words</label>
           <span class="radio-group" role="group" aria-labelledby="lblStaffWords" aria-describedby="staffWordsNote" style="margin-inline-start:auto;">
@@ -3021,6 +3034,7 @@ const DEFAULTS = {
   staffVoice: 'high',          // 'high' | 'low' — staffVoiceKey()
   staffNoteNames: 'off',       // 'off' | 'letters' | 'solfa' — staffNoteNamesKey(); a name under every staff note
   staffTuneRate: 1.0,          // 0.5–1.5× — staffRateVal()
+  staffMelody: 'auto',         // 'auto' (follow the reading) | one of TROPE_MELODIES — staffMelodyChoice(); the Trope staff panel's Melody dropdown
 };
 let settings = JSON.parse(JSON.stringify(DEFAULTS));
 
@@ -3982,7 +3996,7 @@ function readingTuneEntry() {
 }
 function tuneChoiceHTML() {
   const h = readingTuneEntry();
-  if (!h) return '';
+  if (!h || staffMelodyChoice()) return '';   // a chart chosen in the Trope staff panel overrides the reading's choice
   const cur = readingTune(h);
   return ` <span class="radio-group tt-tune-pick" role="radiogroup" aria-label="${esc(I18n.t('torah.reading.tune_label'))}" data-i18n-aria-label="torah.reading.tune_label">`
     + h.tunes.map(t => `<input type="radio" name="ttReadingTune" id="ttTune_${esc(t)}" value="${esc(t)}"${t === cur ? ' checked' : ''} onchange="setReadingTune(this.value)"><label for="ttTune_${esc(t)}" data-i18n="trope.melody.${esc(t)}">${esc(I18n.t('trope.melody.' + t))}</label>`).join('')
@@ -4311,7 +4325,7 @@ function readingTutorMelody() {
   return ctx && ctx.isHaftarah ? 'haftarah' : null;
 }
 function tropeTutorHref() {
-  const m = readingTutorMelody();
+  const m = tutorLinkMelody();
   return m ? TROPE_TUTOR_URL + '?melody=' + m : TROPE_TUTOR_URL;
 }
 // The legend carries two links: the plain one, and one naming the reading's melody (its text is built here, so
@@ -4320,7 +4334,7 @@ function melodyLabel(m) { return I18n.t('trope.melody.' + m); }   // the Trope T
 function syncTropeTutorLink() {
   const plain = document.getElementById('ttTropeTutorLink'), mel = document.getElementById('ttTropeTutorLinkM');
   if (!plain || !mel || !TROPE_TUTOR_URL) return;
-  const m = readingTutorMelody();
+  const m = tutorLinkMelody();
   plain.href = TROPE_TUTOR_URL;
   mel.href = tropeTutorHref();
   plain.hidden = !!m;
@@ -5040,8 +5054,11 @@ function renderText() {
   // chip beside the link says the recordings are PocketTorah's year-round melody, so a student practising with Chant
   // is told the day's tune is another. Every chip here carries its own aria-label: bindTip would otherwise name
   // it "More information" and hide its text from a screen reader.
-  const hhChantChip = TROPE_TUTOR_URL && readingTutorMelody() === 'highholiday' && canChant;   // a haftarah's recording IS its melody
-  const tutorMelody = readingTutorMelody();
+  const hhChantChip = TROPE_TUTOR_URL && !staffMelodyChoice() && readingTutorMelody() === 'highholiday' && canChant;   // a haftarah's recording IS its melody
+  // A chart chosen in the Trope staff panel: the same notice, generic, while the recording sings another melody
+  // (PocketTorah's year-round melody, or a parasha haftarah's own).
+  const chosenChantChip = TROPE_TUTOR_URL && !hhChantChip && canChant && !!staffMelodyChoice() && staffMelodyChoice() !== (currentReadingCtx && currentReadingCtx.isHaftarah ? 'haftarah' : 'torah');
+  const tutorMelody = tutorLinkMelody();
   const holRead = settings.scope === 'custom' && settings.holidayKey ? holidayByKey(settings.holidayKey) : null;   // a loaded HOLIDAY_READINGS entry leads with its family's icon (holiday-icons block)
   let html = `<div class="tt-ref-hdr">
     <span>${holRead ? holidayIconFor(holRead.name) : window.ParashaIcons && settings.showParshaIcons !== false ? ParashaIcons.html(currentRangeIcons) : ''}${esc(currentRangeLabel)}${_readingHasShem
@@ -5052,7 +5069,7 @@ function renderText() {
       ? ` <a class="tt-hh-link" href="${esc(tropeTutorHref())}">${esc(I18n.t('torah.reading.melody_trope_link', { melody: melodyLabel(tutorMelody) }))}</a>`
       : ''}${tuneChoiceHTML()}${weekSpecialHTML()}${hhChantChip
       ? ` <span class="tt-notice-chip" data-i18n="torah.reading.hh_chant_chip" data-i18n-aria-label="torah.reading.hh_chant_chip" aria-label="${esc(I18n.t('torah.reading.hh_chant_chip'))}" data-i18n-tip="torah.reading.hh_chant_tip" data-tip="${esc(I18n.t('torah.reading.hh_chant_tip'))}">${esc(I18n.t('torah.reading.hh_chant_chip'))}</span>`
-      : ''}${staffHeaderChipsHTML(layout)}</span>
+      : ''}${chosenChantChip ? staffNoticeChip('torah.reading.staff_chant_chip', 'torah.reading.staff_chant_tip') : ''}${staffHeaderChipsHTML(layout)}</span>
     <span style="display:flex;gap:6px;">
       <button class="tt-readall hi-btn" id="ttReadAllBtn" onclick="toggleReadAll()" type="button">${ttsState.readAllActive ? ICON_STOP + esc(I18n.t('torah.reading.stop')) : ICON_SOUND + esc(I18n.t('torah.reading.read_all'))}</button>
       ${canChant ? `<button class="tt-readall tt-chantall hi-btn${chantAllState.active ? ' active' : ''}" id="ttChantAllBtn" onclick="toggleChantAll()" type="button">${chantAllState.active ? ICON_STOP + esc(I18n.t('torah.reading.chant_all_stop')) : ICON_MUSIC + esc(I18n.t('torah.reading.chant_all'))}</button>` : ''}
@@ -5362,7 +5379,21 @@ function retryStaffData() { if (!STAFF_SETS) ensureStaffData(); }
 // The melody a reading is drawn in: the four High Holiday readings take the High Holiday chart, a haftarah the
 // Haftarah rows (the Tisha B'Av haftarah the Eicha rows by default), everything else the year-round chart
 // (readingTutorMelody: the same melody its tutor links carry).
-function staffMelody() { return readingTutorMelody() || 'torah'; }
+// The chart the staff draws: the Trope staff panel's Melody dropdown when a chart is chosen there (settings.staffMelody;
+// 'auto' = follow the reading), else the reading's own (readingTutorMelody), else the year-round chart.
+function staffMelodyChoice() { return TROPE_MELODIES.includes(settings.staffMelody) ? settings.staffMelody : null; }
+function staffMelody() { return staffMelodyChoice() || readingTutorMelody() || 'torah'; }
+function tutorLinkMelody() { const m = staffMelody(); return m === 'torah' ? null : m; }   // the legend's and header's Tutor link name what the staff draws
+function setStaffMelody(v) {   // the Melody dropdown's one writer
+  v = TROPE_MELODIES.includes(v) ? v : 'auto';
+  if (v === (staffMelodyChoice() || 'auto')) return;
+  settings.staffMelody = v;
+  saveSettings();
+  stopStaffTune();   // a tune of the other melody must not keep lighting the redrawn staffs
+  syncStaffControls();
+  syncTropeTutorLink();
+  renderText();   // the staff, the header's melody link and chips (the tune choice hides under a chosen chart)
+}
 // A missing High Holiday half draws the year-round one; a Portnoy–Wolff chart is never drawn in the Torah tune —
 // without its rows the reading shows its words, and the header chip says why (staffHeaderChipsHTML).
 function staffSetName() { const m = staffMelody(); return STAFF_SETS && STAFF_SETS[m] ? m : STAFF_STANDALONE.has(m) ? null : 'torah'; }
@@ -5913,6 +5944,8 @@ function syncStaffControls() {
   const rs = document.getElementById('optStaffTuneRate'), rv = document.getElementById('optStaffTuneRateVal');
   const bs = document.getElementById('ttStaffTuneRate'), bv = document.getElementById('ttStaffTuneRateVal');   // the audio bar's mirror
   if (sl) sl.value = sh;
+  const ms = document.getElementById('optStaffMelody');
+  if (ms) ms.value = staffMelodyChoice() || 'auto';
   if (val) val.textContent = pitchReadout(sh);   // "−3" with a minus sign, as the pitch readouts and the Trope Tutor's Key write it
   if (rs) rs.value = rate;
   if (rv) rv.textContent = rate.toFixed(2) + '×';
@@ -9040,6 +9073,7 @@ function wireSettingsForm() {
     r.addEventListener('change', e => { if (e.target.checked) setStaffDir(e.target.value); });
   });
   document.getElementById('optStaffShift').addEventListener('input', e => setStaffShift(e.target.value));
+  document.getElementById('optStaffMelody').addEventListener('change', e => setStaffMelody(e.target.value));
   ['optStaffTuneRate', 'ttStaffTuneRate'].forEach(id => {   // the drawer's slider and the audio bar's Tune row: one writer
     const el = document.getElementById(id);
     if (el) el.addEventListener('input', e => setStaffTuneRate(e.target.value));
@@ -11225,6 +11259,7 @@ const LINK_DISPLAY = {
   staffVoice:          v => _linkOneOf(v, _linkChoices('input[name="optStaffVoice"]')),
   staffDir:            v => _linkOneOf(v, _linkChoices('input[name="optStaffDir"]')),
   staffNoteNames:      v => _linkOneOf(v, _linkChoices('input[name="optStaffNames"]')),
+  staffMelody:         v => _linkOneOf(v, _linkChoices('#optStaffMelody option')),   // the chart it draws (Follow the reading, or one of the six)
 };
 // Each color list's look, with the on/off switch it shows under. A look is on screen only while its
 // coloring is on, so it rides a link only then, and a reader takes one only then.

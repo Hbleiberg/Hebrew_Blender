@@ -179,7 +179,8 @@ imported blobs are untrusted, AND the value takes an appended `59` alpha suffix 
   reading keeps it), a holiday's or special Shabbat's haftarah part its own tune (`readingTune`: the Haftarah
   chart, or the Eicha chart for the Tisha B'Av haftarah, whose entry lists `tunes:['eicha','haftarah']` — the
   reading header offers the choice, `tuneChoiceHTML` / `setReadingTune`, kept in `settings.staffTuneChoice[key]`),
-  `'haftarah'` for a parasha's haftarah, else null — and then the legend shows its melody link
+  `'haftarah'` for a parasha's haftarah, else null — a chart chosen in the Trope staff panel wins (`tutorLinkMelody()`:
+  `staffMelody()` unless that is the year-round chart) — and then the legend shows its melody link
   `#ttTropeTutorLinkM` (text `torah.trope_legend.tutor_link_melody` with `{melody}` from `trope.melody.*`,
   written by `syncTropeTutorLink()`, which `applyTropeColors` and `applyI18n` call) and the reading header adds
   `.tt-hh-link` (`torah.reading.melody_trope_link`) whether or not trope colour is on (screen-only like the
@@ -724,7 +725,12 @@ file uses, the Megillot chart's `64` included). Design: `docs/tropepatterns.md` 
   syllables, which carry the beaming; a triplet or slur only when it lies inside one figure) plus `words`,
   one per cell; `tropeSplitSystems` wraps it between words to `#ttReading`'s width (with `opts.namesOf`, at the
   width each system is drawn at with its note names).
-- **The melody** is `staffMelody()` = `readingTutorMelody() || 'torah'`: the four High Holiday readings draw
+- **The melody** is `staffMelody()`: the Trope staff panel's Melody dropdown when a chart is chosen there
+  (`#optStaffMelody`; `settings.staffMelody`, `'auto'` by default — `staffMelodyChoice()`; `setStaffMelody` its one
+  writer; it travels in a practice link like the other staff looks; while a chart is chosen the header's Tisha B'Av
+  tune choice hides and, when Chant can play the reading and the chart is not the recording's melody, a
+  `torah.reading.staff_chant` chip says the recording sings its own), else `readingTutorMelody() || 'torah'`: the
+  four High Holiday readings draw
   the High Holiday chart, a haftarah (`currentReadingCtx.isHaftarah` — the haftarah scope is the only Nevi'im
   text the page shows: practice links and the Custom range picker accept the five Torah books only) the
   Haftarah rows (a holiday's or special Shabbat's haftarah part the same, the Tisha B'Av haftarah the Eicha rows
