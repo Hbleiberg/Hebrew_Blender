@@ -908,12 +908,13 @@ became **seven tabs of flat sections**, the Trope Tutor's Settings-tab idiom ins
     nothing).
   - **Calendar** — `schedule` (Reading schedule), `lookup` (Torah portion lookup; under the parasha it names the
     week's special Shabbat, `torah.lookup.special`, with its own Open button `lookupOpenSpecial`), `holiday`
-    (Holiday Torah readings: `#ttHolidayPicker`) and `special` (Special Shabbatot: `#ttSpecialPicker`) — two
-    `.tt-holiday-list`s of `HOLIDAY_READINGS` buttons, by `kind`, that `buildHolidayPicker()` builds once
+    (Holiday Torah readings: `#ttHolidayPicker`), `special` (Special Shabbatot: `#ttSpecialPicker`) and
+    `megillah` (Megillot: `#ttMegillahPicker`) — three `.tt-holiday-list`s of `HOLIDAY_READINGS` buttons, by
+    `kind`, that `buildHolidayPicker()` builds once
     (`syncFormToSettings` calls it on every drawer open and it returns when the lists are built; `applyI18n`
     rebuilds them, their text being the dictionary's) and `syncHolidayPickerState()` marks the loaded one
     (`.active` + `aria-pressed`); a press goes through `applyHolidayReading(h, part)`, the same apply path as the
-    parsha picker's two `<optgroup>`s; each button, and the loaded reading's `.tt-ref-hdr`, leads with the
+    parsha picker's three `<optgroup>`s; each button, and the loaded reading's `.tt-ref-hdr`, leads with the
     holiday's SVG from the shared `holiday-icons` block — `holidayIconFor(h.name)`, the English name;
     `docs/reference/shared-components.md` → Holiday icons — while the `<optgroup>` stays text). The Custom
     range is not here: it sits in the toolbar (below).
@@ -923,24 +924,31 @@ became **seven tabs of flat sections**, the Trope Tutor's Settings-tab idiom ins
     Shabbatot — the four parshiyot, HaGadol, Shuva (one entry per parasha it falls with), the Shabbatot of
     Chanukah (one per day that falls on a Shabbat, the Rosh Chodesh one apart), Rosh Chodesh (Masei's own
     variant), Machar Chodesh, and the haftarah replacements of Pinchas, Ki Teitzei and Kedoshim — with its
-    maftir as `ref` (null where the day has none) and its haftarah. `name` is English (the icon rules and the
+    maftir as `ref` (null where the day has none) and its haftarah; `kind:'megillah'` is one of the five Megillot
+    (`book` is Sefaria's title, `chapters` its count, `melody` its chart: esther, megillot or eicha), whole or a
+    chapter at a time. `name` is English (the icon rules and the
     phrases builder's census read it); the page prints `nameKey` (`holidayName`; `torah.reading.name_*`). Every
     ref and haftarah is `@hebcal/leyning`'s `holiday-readings.json`, keyed by `hebcal`, and
     `scripts/build-leyning-data.mjs` fails when an entry differs from the package's (a two-part haftarah is its
     parts joined by `"; "`; `fetchSefariaText` splits them, `splitRefParts`, fetches each and concatenates the
     verses — PocketTorah's own two-part haftarot, Shemot's among them, load the same way).
-    **The part on screen** is `settings.holidayPart`: null for the entry's Torah text, `'haftarah'` for its
-    haftarah (`holidayPartFor` validates it against the entry; an entry with no Torah text opens on its
-    haftarah). `resolveRef` returns the haftarah part as its own reading — `{ ref: h.haftarah, isHaftarah: true,
-    custom: true, holiday: h, part: 'haftarah', parshahEntry: null }`, so no recording and no overlay audio —
-    with a label in the UI's language (`holidayLabel`: `torah.reading.holiday_haftarah_label`), and the Torah
-    part with `holiday: h, part: null`. While an entry is on screen, whole, the Reading box offers its parts
-    instead of the weekly scopes (`updateScopeSelectState`: *Full reading · ref* and *Haftarah · ref*, values
-    `custom` and `custom-haftarah`; the weekly options are hidden until the Parsha box changes; one part only
-    → the box stays disabled with `torah.controls.scope_holiday_note`), and the scope handler routes a
-    `custom*` value back through `applyHolidayReading`. The part travels: a practice link is
-    `?holiday=<key>&part=haftarah` (`practiceLinkURL`; init gates `part` to a value the entry has), a favorite
-    is `{kind:'holiday', holidayKey, part?}`, and `readingKey()` differs because `customRef` does. A haftarah
+    **The part on screen** is `settings.holidayPart`: null for the entry's text, whole; `'haftarah'` for its
+    haftarah; `'ch:N'` for one chapter of a megillah (`holidayPartFor` validates it against the entry; an entry
+    with no Torah text opens on its haftarah; `holidayPartRef` gives the part's ref, a chapter's being
+    `"<book> N"`). `resolveRef` returns the haftarah part as its own reading — `{ ref: h.haftarah, isHaftarah:
+    true, custom: true, holiday: h, part: 'haftarah', parshahEntry: null }`, so no recording and no overlay
+    audio — and a megillah, whole or a chapter, with `megillah: true` (no parsha behind it), each with a label
+    in the UI's language (`holidayLabel`: `torah.reading.holiday_haftarah_label`, `holiday_chapter_label`), and
+    the Torah part with `holiday: h, part: null`. While an entry is on screen, whole, the Reading box offers its
+    parts instead of the weekly scopes (`updateScopeSelectState`: *Full reading · ref*, *Haftarah · ref*,
+    *Chapter n*; values `custom`, `custom-haftarah`, `custom-ch-N`; the weekly options are hidden until the
+    Parsha box changes; one part only → the box stays disabled with `torah.controls.scope_holiday_note`), and
+    the scope handler routes a `custom*` value back through `applyHolidayReading`. The part travels: a practice
+    link is `?holiday=<key>&part=haftarah|ch-N` (`practiceLinkURL`; init gates `part` to a value the entry
+    has), a favorite is `{kind:'holiday', holidayKey, part?}`, and `readingKey()` differs because `customRef`
+    does. A megillah's staff draws its own chart (`readingTutorMelody` → the entry's `melody`), closing every
+    chapter's last verse on screen and the book's last verse (`staffMegillahEnd`; the three festival megillot's
+    end-of-book row through `closingRow:'39a'`). A haftarah
     ref's book is `bookOfRef(ref)` ("I Kings", "Song of Songs"), which the versions list and the fallback
     translation use; `refToDot` underscores a multi-word title for Sefaria. `prettyRef` prints a ref
     (`Kings_1 4:1 - 4:37` → `I Kings 4:1–4:37`) in the scope box, the labels and the header.

@@ -1321,8 +1321,8 @@ counted between the stems and every flag, dot and rest in doubt compared at 6–
 the same page whose value was certain. The melody is the traditional one; the transcription is
 CC BY-SA 4.0 like the rest of this file. The Trope Tutor's melody bar draws these rows (the Phrases tab
 from the phrase file; the Learn cards from `data/trope/trope_motifs_esther.json`, which the builder
-derives from these rows through section A's Esther column on every run — never edit that file by hand);
-the Torah Trainer's staff does not draw them yet.
+derives from these rows through section A's Esther column on every run — never edit that file by hand), and
+the Torah Trainer's Trope staff draws them on Megillat Esther, whole or a chapter at a time.
 
 **Key and range.** Three flats, E♭ major, like the book's Haftarah and Eicha charts, and one printed
 accidental: the E♮ of the figure F4 E♮4 F4 that closes zarka, segol, yerach ben yomo and the final
@@ -1663,7 +1663,8 @@ figure elsewhere on the page. The melody is the traditional one for Shir HaShiri
 the transcription is CC BY-SA 4.0 like the rest of this file. The Trope Tutor's melody bar draws these
 rows (the Phrases tab from the phrase file; the Learn cards from `data/trope/trope_motifs_megillot.json`,
 which the builder derives from them through section A's Megillot column on every run — never edit that
-file by hand); the Torah Trainer's staff does not draw them yet.
+file by hand), and the Torah Trainer's Trope staff draws them on Shir HaShirim, Ruth and Kohelet, whole or
+a chapter at a time (row 39 closes every chapter, 39a the book).
 
 **Key and range.** No key signature and no accidental anywhere on the chart, so every pitch is a plain
 letter (`key: C`; the builder refuses any sign). The rows lie between C4 and D5: the etnachta closes on
@@ -2003,8 +2004,9 @@ magnified to 4–8× or dumped pixel by pixel, and each figure compared against 
 on the page. The melody is the traditional one for Eicha on Tisha B'Av; the transcription is
 CC BY-SA 4.0 like the rest of this file. The Trope Tutor's melody bar draws these rows (the Phrases tab
 from the phrase file; the Learn cards from `data/trope/trope_motifs_eicha.json`, which the builder
-derives from them through section A's Eicha column on every run — never edit that file by hand); the
-Torah Trainer's staff does not draw them yet.
+derives from them through section A's Eicha column on every run — never edit that file by hand), and the
+Torah Trainer's Trope staff draws them on Megillat Eicha, whole or a chapter at a time — and on the Tisha B'Av
+haftarah, which is chanted to this melody (the reading header offers the Haftarah chart instead).
 
 **Key and range.** Three flats, E♭ major, like the Haftarah chart, and one printed accidental: the E♮
 of the figure F4 E♮4 F4 that opens segol's GOL (rows 34–37). Every B, E and A is written with its sign

@@ -97,7 +97,7 @@
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
-    { "@type": "Question", "name": "What is the Torah Trainer?", "acceptedAnswer": { "@type": "Answer", "text": "A free Hebrew Torah reader. Pick a parsha and read it with optional transliteration, English translation, per-vowel color coding, cantillation strip, a Trope staff layout (beta) that draws the reading on a music staff with each word under its notes, prose TTS, and chanted-audio karaoke that highlights words in time with the recording. When you are done reading, copy the passage out as formatted text or print it as a classroom sheet." } },
+    { "@type": "Question", "name": "What is the Torah Trainer?", "acceptedAnswer": { "@type": "Answer", "text": "A free Hebrew Torah reader. Pick a parsha — or a holiday reading, a special Shabbat's maftir and haftarah, or one of the five Megillot — and read it with optional transliteration, English translation, per-vowel color coding, cantillation strip, a Trope staff layout (beta) that draws the reading on a music staff with each word under its notes, prose TTS, and chanted-audio karaoke that highlights words in time with the recording. When you are done reading, copy the passage out as formatted text or print it as a classroom sheet." } },
     { "@type": "Question", "name": "Does Torah Trainer include chanted-audio karaoke?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. PocketTorah's recordings of all 54 parshiyot and their haftarot stream on demand, with word-level highlighting synchronized to the audio. The audio bar lets you adjust playback speed without re-fetching." } },
     { "@type": "Question", "name": "Where do the Hebrew text and English translations come from?", "acceptedAnswer": { "@type": "Answer", "text": "Sefaria's public API. The translation dropdown lists only openly licensed versions and defaults to JPS 1917 (public domain) when available; pick any other version from the same dropdown." } },
     { "@type": "Question", "name": "Can I read without nikkud or cantillation marks?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The settings drawer has separate toggles for nikkud (vowel points) and cantillation marks (te'amim). The cantillation strip uses Unicode range U+0591-U+05AF and leaves nikkud intact." } },
@@ -2704,6 +2704,12 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
              buildHolidayPicker builds this list. This week's is named in the reading header (weekSpecial). -->
         <div id="ttSpecialPicker" class="tt-holiday-list" role="group" aria-label="Special Shabbatot" data-i18n-aria-label="torah.controls.special_group_label"></div>
       </div>
+      <div class="tt-set" data-set="megillah">
+        <h3 class="tt-set-title" tabindex="-1" data-i18n="torah.settings.panel_megillah">Megillot (the five scrolls)</h3>
+        <!-- The five Megillot (HOLIDAY_READINGS, kind 'megillah'), whole or a chapter at a time through the Reading box,
+             each drawn in its own chart; the same buildHolidayPicker builds this list. -->
+        <div id="ttMegillahPicker" class="tt-holiday-list" role="group" aria-label="Megillot" data-i18n-aria-label="torah.controls.megillah_group_label"></div>
+      </div>
     </div>
     <div class="tt-tabpanel" id="ttTabPanelShare" role="tabpanel" aria-labelledby="ttTabShare" hidden>
       <div class="tt-set" data-set="print">
@@ -2839,7 +2845,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
         <details style="margin:0 0 10px;">
           <summary style="cursor:pointer;font-weight:600;font-size:0.85rem;padding:4px 0;" data-i18n="torah.about.faq_summary">Frequently Asked Questions</summary>
           <div style="padding:4px 0;">
-            <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="torah.about.faq_q1">What is the Torah Trainer?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="torah.about.faq_a1">A free Hebrew Torah reader. Pick a parsha and read it with optional transliteration, English translation, per-vowel color coding, cantillation strip, a Trope staff layout (beta) that draws the reading on a music staff with each word under its notes, prose TTS, and chanted-audio karaoke that highlights words in time with the recording. When you are done reading, copy the passage out as formatted text or print it as a classroom sheet.</p></details>
+            <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="torah.about.faq_q1">What is the Torah Trainer?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="torah.about.faq_a1">A free Hebrew Torah reader. Pick a parsha — or a holiday reading, a special Shabbat's maftir and haftarah, or one of the five Megillot — and read it with optional transliteration, English translation, per-vowel color coding, cantillation strip, a Trope staff layout (beta) that draws the reading on a music staff with each word under its notes, prose TTS, and chanted-audio karaoke that highlights words in time with the recording. When you are done reading, copy the passage out as formatted text or print it as a classroom sheet.</p></details>
             <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="torah.about.faq_q2">Does it include chanted-audio karaoke?</summary><p data-i18n-html="torah.about.faq_a2" style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);">Yes. <a href="https://github.com/rneiss/PocketTorah" target="_blank" rel="noopener" style="color:var(--gold-text);">PocketTorah</a>'s recordings of all 54 parshiyot and haftarot stream on demand, with word-level highlighting synchronized to the audio. Adjust playback speed without re-fetching.</p></details>
             <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="torah.about.faq_q3">Where do the Hebrew texts and translations come from?</summary><p data-i18n-html="torah.about.faq_a3" style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);"><a href="https://www.sefaria.org" target="_blank" rel="noopener" style="color:var(--gold-text);">Sefaria</a>'s public API. The translation dropdown lists only openly licensed versions and defaults to JPS 1917 (public domain) when available; pick any other version from the same dropdown.</p></details>
             <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="torah.about.faq_q4">Can I hide nikkud or cantillation marks?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="torah.about.faq_a4">Yes. The Text tab of the settings drawer has separate toggles for nikkud (vowel points) and cantillation marks (te'amim). They can be hidden independently.</p></details>
@@ -3515,11 +3521,15 @@ function resolveRef() {
     if (h && part === 'haftarah' && settings.customRef === h.haftarah) {
       return { ref: h.haftarah, label: holidayLabel(h, part), parshahEntry: null, aliyahNum: null, isHaftarah: true, custom: true, holiday: h, part };
     }
-    const label = h && !part && settings.customRef === h.ref ? holidayLabel(h, null) : (settings.customLabel || settings.customRef);
+    if (h && part && part.startsWith('ch:') && settings.customRef === holidayPartRef(h, part)) {   // one chapter of a megillah
+      return { ref: settings.customRef, label: holidayLabel(h, part), parshahEntry: null, aliyahNum: null, isHaftarah: false, custom: true, holiday: h, part, megillah: true };
+    }
+    const whole = !!(h && !part && settings.customRef === h.ref);
+    const label = whole ? holidayLabel(h, null) : (settings.customLabel || settings.customRef);
     // Holiday/custom ranges sit inside a weekly parsha; expose it so the reading
-    // stays chantable (PocketTorah audio is keyed by parsha + aliyah).
+    // stays chantable (PocketTorah audio is keyed by parsha + aliyah). A megillah sits in none.
     const pe = parshaContainingRef(settings.customRef);
-    return { ref: settings.customRef, label, parshahEntry: pe, aliyahNum: null, isHaftarah: false, custom: true, holiday: h || null, part: null };
+    return { ref: settings.customRef, label, parshahEntry: pe, aliyahNum: null, isHaftarah: false, custom: true, holiday: h || null, part: null, megillah: !!(whole && h.kind === 'megillah') };
   }
   const p = parshiyotData.find(x => x.en === settings.parshahKey);
   if (!p) return null;
@@ -3853,7 +3863,11 @@ function lookupOpen() {
    `tunes` lists a haftarah's customary tunes where there is more than one (the first is the default, the reading
    header offers the choice — readingTune: the Tisha B'Av haftarah is chanted to the Eicha melody). The PocketTorah
    recordings a holiday's Torah reading borrows are the year-round melody either way; a haftarah part and a special
-   Shabbat have no recording (the staff and the Trope Tutor links carry their tune).
+   Shabbat have no recording (the staff and the Trope Tutor links carry their tune). kind:'megillah' (5): the scroll
+   itself — Sefaria's text, whole or a chapter at a time (`chapters`; the part 'ch:N'), drawn in its own chart
+   (`melody`: esther, megillot — Shir HaShirim, Ruth and Kohelet share one — or eicha), with the chart's closing
+   at every chapter's end and, for the three festival megillot, the chart's end-of-book row at the last verse; no
+   recording. `book` is Sefaria's title (refToDot underscores it).
    ══════════════════════════════════════════════════════ */
 const HOLIDAY_READINGS = [
   { key:'rosh-hashanah-1',  kind:'holiday', name:'Rosh Hashanah — Day 1',  nameKey:'torah.reading.name_rosh_hashanah_1',  ref:'Genesis 21:1-34',           haftarah:'I Samuel 1:1-2:10',                          hebcal:'Rosh Hashana I',    melody:'highholiday' },
@@ -3896,20 +3910,30 @@ const HOLIDAY_READINGS = [
   { key:'shabbat-pinchas-after-17-tammuz',kind:'special',name:'Pinchas after 17 Tammuz',               nameKey:'torah.reading.name_shabbat_pinchas_after_17_tammuz',ref:null,                  haftarah:'Jeremiah 1:1-2:3',                    hebcal:'Pinchas occurring after 17 Tammuz' },
   { key:'shabbat-ki-teitzei-consolation',kind:'special', name:'Ki Teitzei with the third consolation', nameKey:'torah.reading.name_shabbat_ki_teitzei_consolation',ref:null,                   haftarah:'Isaiah 54:1-10; Isaiah 54:11-55:5',   hebcal:'Ki Teitzei with 3rd Haftarah of Consolation' },
   { key:'shabbat-kedoshim-special',      kind:'special', name:'Kedoshim after a special Shabbat',      nameKey:'torah.reading.name_shabbat_kedoshim_special',      ref:null,                   haftarah:'Amos 9:7-15',                         hebcal:'Kedoshim following Special Shabbat' },
+  // the five Megillot, each in its own chart (docs/tropepatterns.md → I, J, K)
+  { key:'megillat-esther', kind:'megillah', name:'Purim — Megillat Esther', nameKey:'torah.reading.name_megillat_esther', ref:'Esther 1:1-10:3',        book:'Esther',        chapters:10, melody:'esther' },
+  { key:'shir-hashirim',   kind:'megillah', name:'Pesach — Shir HaShirim',  nameKey:'torah.reading.name_shir_hashirim',   ref:'Song of Songs 1:1-8:14', book:'Song of Songs', chapters:8,  melody:'megillot' },
+  { key:'ruth',            kind:'megillah', name:'Shavuot — Ruth',          nameKey:'torah.reading.name_ruth',            ref:'Ruth 1:1-4:22',          book:'Ruth',          chapters:4,  melody:'megillot' },
+  { key:'eicha',           kind:'megillah', name:"Tisha B'Av — Eicha",      nameKey:'torah.reading.name_eicha',           ref:'Lamentations 1:1-5:22',  book:'Lamentations',  chapters:5,  melody:'eicha' },
+  { key:'kohelet',         kind:'megillah', name:'Sukkot — Kohelet',        nameKey:'torah.reading.name_kohelet',         ref:'Ecclesiastes 1:1-12:14', book:'Ecclesiastes',  chapters:12, melody:'megillot' },
 ];
 // What the page prints for an entry (its nameKey; the English name until the dictionary has loaded).
 function holidayName(h) { if (!window.I18n || !h.nameKey) return h.name; const s = I18n.t(h.nameKey); return s === h.nameKey ? h.name : s; }
-// The part of an entry a caller asks for, validated against what the entry has: null = its Torah text, 'haftarah' =
-// its haftarah. An entry with no Torah text (a haftarah-only Shabbat) opens on its haftarah.
+// The part of an entry a caller asks for, validated against what the entry has: null = its text, whole; 'haftarah' =
+// its haftarah; 'ch:N' = one chapter of a megillah (1 … chapters). An entry with no Torah text (a haftarah-only
+// Shabbat) opens on its haftarah.
 function holidayPartFor(h, part) {
   if (part === 'haftarah' && h.haftarah) return 'haftarah';
+  const m = /^ch:(\d{1,2})$/.exec(part || '');
+  if (m && h.chapters && +m[1] >= 1 && +m[1] <= h.chapters) return 'ch:' + (+m[1]);
   return !h.ref && h.haftarah ? 'haftarah' : null;
 }
 function holidayPartKey(h) { return holidayPartFor(h, settings.holidayPart); }   // the part the settings name
-function holidayPartRef(h, part) { return part === 'haftarah' ? h.haftarah : h.ref; }
+function holidayPartRef(h, part) { return part === 'haftarah' ? h.haftarah : part && part.startsWith('ch:') ? `${h.book} ${part.slice(3)}` : h.ref; }
 // The reading header's label for an entry (or a part of it), in the UI's language.
 function holidayLabel(h, part) {
   if (part === 'haftarah') return I18n.t('torah.reading.holiday_haftarah_label', { name: holidayName(h), ref: prettyRef(h.haftarah) });
+  if (part && part.startsWith('ch:')) return I18n.t('torah.reading.holiday_chapter_label', { name: holidayName(h), n: part.slice(3) });
   return `${holidayName(h)} — ${h.ref}`;
 }
 // A reading's customary tunes (HOLIDAY_READINGS[].tunes), the chosen one (settings.staffTuneChoice) or the first.
@@ -4005,7 +4029,7 @@ function holidayIconFor(title) {
 function holidayByKey(key) { return HOLIDAY_READINGS.find(h => h.key === key) || null; }
 // "Exodus 19:1-20:23" → { book, startC, startV, endC, endV }
 function parseRefRange(ref) {
-  const m = (ref || '').match(/^([A-Za-z]+)\s+(\d+):(\d+)(?:-(?:(\d+):)?(\d+))?$/);
+  const m = (ref || '').match(/^([A-Za-z]+(?: [A-Za-z]+)*)\s+(\d+):(\d+)(?:-(?:(\d+):)?(\d+))?$/);
   if (!m) return null;
   const startC = +m[2], startV = +m[3];
   const endC = m[4] !== undefined ? +m[4] : startC;
@@ -4282,6 +4306,7 @@ function readingTutorMelody() {
   const ctx = currentReadingCtx;
   const h = settings.scope === 'custom' && settings.holidayKey ? holidayByKey(settings.holidayKey) : null;
   if (ctx && ctx.part === 'haftarah' && h) return readingTune(h);
+  if (ctx && ctx.megillah && h && h.kind === 'megillah') return h.melody;
   if (h && h.melody === 'highholiday') return 'highholiday';
   return ctx && ctx.isHaftarah ? 'haftarah' : null;
 }
@@ -4508,8 +4533,8 @@ function printRangeLabel() {
   const span = a.chapter !== z.chapter ? `${a.chapter}:${a.verse}-${z.chapter}:${z.verse}`
              : a.verse !== z.verse     ? `${a.chapter}:${a.verse}-${z.verse}`
              : `${a.chapter}:${a.verse}`;
-  const r = resolveRef(), pr = r && parseRefRange(r.ref);
-  const ref = (pr ? pr.book + ' ' : '') + span;
+  const r = resolveRef(), book = r && bookOfRef(r.ref);   // the ref's own book: a prophet, a megillah (its chapter ref has no verses to parse), a Torah book
+  const ref = (book ? book + ' ' : '') + span;
   return r && r.ref && currentRangeLabel.includes(r.ref) ? currentRangeLabel.replace(r.ref, ref) : `${currentRangeLabel} — ${ref}`;
 }
 function buildPrintBand() {
@@ -5388,6 +5413,16 @@ function refEnd(ref) {
   const m = last.match(/(\d+):(\d+)(?:\s*[-–—]\s*(?:(\d+):)?(\d+))?\s*$/);
   return m ? { c: +(m[3] || m[1]), v: +(m[4] || m[2]) } : null;
 }
+// A megillah closes every chapter (the chart's "end of each chapter" row — the verse is the last of its chapter on
+// screen) and the book (its ref's last verse; the three festival megillot have their own end-of-book row, 39a).
+function staffMegillahEnd(c, v) {   // 'book' | 'chapter' | null
+  const ctx = currentReadingCtx, h = ctx && ctx.megillah ? ctx.holiday : null;
+  if (!h) return null;
+  const end = refEnd(h.ref);
+  if (end && end.c === +c && end.v === +v) return 'book';
+  const i = (currentVerses || []).findIndex(x => x.chapter === +c && x.verse === +v), next = i >= 0 ? currentVerses[i + 1] : null;
+  return i >= 0 && (!next || next.chapter !== +c) ? 'chapter' : null;
+}
 // The reading's own last verse takes the chart's closing — a haftarah, a holiday's Torah reading, a custom range
 // (refEnd of the reading's ref). Compared by verse label, so a handout selection that leaves the last verse out
 // gets no closing.
@@ -5542,8 +5577,9 @@ function renderStaffView(verses, wordIdxRef, canChant, canLoop, aStartByLabel, u
       if (units.pieces.length === sink.length && units.units.length) {   // the marks and the page's words agree piece for piece
         units.units.forEach(u => { u.fam = sink[u.pi].fam || ''; u.twi = sink[u.pi].twi; });
         const rc = currentReadingCtx || {};
-        const atEnd = rc.isHaftarah ? staffIsRefEnd(v.chapter, v.verse) : (staffIsAliyahEnd(v.chapter, v.verse) || (rc.custom && staffIsRefEnd(v.chapter, v.verse)));
-        const picks = tropeChooseFigures(units.units, ctx, { melody: setName, aliyahEnd: atEnd, fallbackCtx: fbCtx, fallbackMelody: 'torah' });
+        const megEnd = rc.megillah ? staffMegillahEnd(v.chapter, v.verse) : null;
+        const atEnd = rc.megillah ? !!megEnd : rc.isHaftarah ? staffIsRefEnd(v.chapter, v.verse) : (staffIsAliyahEnd(v.chapter, v.verse) || (rc.custom && staffIsRefEnd(v.chapter, v.verse)));
+        const picks = tropeChooseFigures(units.units, ctx, { melody: setName, aliyahEnd: atEnd, closingRow: megEnd === 'book' && setName === 'megillot' ? '39a' : undefined, fallbackCtx: fbCtx, fallbackMelody: 'torah' });
         const row = tropeBuildReadingRow(units.units, picks, units.cells, STAFF_SETS, { n: numLabel });
         if (row.notes.length && row.words.length) {
           for (const w of row.words) w.w = staffWordWidthPx(w, units.cells, sink, underWord, wordsMode) / PHRASE_SCALE;
@@ -7853,7 +7889,7 @@ const TT_SECTION_TAB = {
   display: 'text', font: 'text', translit: 'text', translation: 'text',
   vowel_color: 'colors', trope_color: 'colors',
   audio: 'audio', karaoke: 'audio', staff: 'audio',
-  schedule: 'calendar', lookup: 'calendar', holiday: 'calendar', special: 'calendar',
+  schedule: 'calendar', lookup: 'calendar', holiday: 'calendar', special: 'calendar', megillah: 'calendar',
   share: 'share', copy: 'share', handout: 'share', print: 'share',
   cloud: 'more', about: 'more', reset: 'more'
 };
@@ -8266,7 +8302,7 @@ function _ftRenameNode(treeKey, oldName, newName) {
    three forms a practice link carries, never the reading cycle or the triennial year (those are how this device
    reads, not what it reads):
      { kind:'parsha',  parshahKey, scope }        a weekly parsha: full, one aliyah, or the haftarah
-     { kind:'holiday', holidayKey, part? }        one of HOLIDAY_READINGS, whole (part 'haftarah': its haftarah)
+     { kind:'holiday', holidayKey, part? }        one of HOLIDAY_READINGS, whole (part 'haftarah': its haftarah; 'ch:N': a megillah's chapter)
      { kind:'ref',     customRef, holidayKey? }   a verse range (holidayKey only while the range sits inside it)
    `settings` (optional) is the LINK_DISPLAY vocabulary — exactly what "Include my settings" puts in a link — captured
    only when the teacher ticks the box in the save popup. Opening a favorite is a real change (saved), never a link
@@ -8512,7 +8548,7 @@ function openFavorite(name) {
   } else if (r.kind === 'holiday') {
     const h = (typeof r.holidayKey === 'string' && /^[a-z0-9-]+$/.test(r.holidayKey)) ? holidayByKey(r.holidayKey) : null;
     if (!h) { stale(); return; }
-    const part = holidayPartFor(h, r.part === 'haftarah' ? 'haftarah' : null);
+    const part = holidayPartFor(h, typeof r.part === 'string' ? r.part : null);
     apply = () => {
       settings.holidayKey = h.key; settings.holidayPart = part; settings.customRef = holidayPartRef(h, part);
       settings.customLabel = holidayLabel(h, part); settings.scope = 'custom';
@@ -9043,7 +9079,7 @@ function wireSettingsForm() {
     const v = e.target.value;
     if (v === 'custom' || v.startsWith('custom-')) {   // another part of the entry on screen (updateScopeSelectState's options)
       const h = settings.holidayKey ? holidayByKey(settings.holidayKey) : null;
-      if (h) applyHolidayReading(h, v === 'custom-haftarah' ? 'haftarah' : null);
+      if (h) applyHolidayReading(h, v === 'custom-haftarah' ? 'haftarah' : v.startsWith('custom-ch-') ? 'ch:' + v.slice(10) : null);
       return;
     }
     settings.scope = v;
@@ -9176,7 +9212,7 @@ function populateParshaPicker() {
     opt.textContent = `${p.n}. ${p.en} (${p.he}) — ${p.ref}`;
     sel.appendChild(opt);
   }
-  for (const [kind, labelKey] of [['holiday', 'torah.controls.holiday_group_label'], ['special', 'torah.controls.special_group_label']]) {
+  for (const [kind, labelKey] of [['holiday', 'torah.controls.holiday_group_label'], ['special', 'torah.controls.special_group_label'], ['megillah', 'torah.controls.megillah_group_label']]) {
     const og = document.createElement('optgroup');
     og.label = I18n.t(labelKey);
     for (const h of HOLIDAY_READINGS.filter(x => x.kind === kind)) {
@@ -9323,10 +9359,11 @@ function updateScopeSelectState() {
     const parts = [];
     if (whole && h.ref) parts.push(['custom', I18n.t('torah.schedule.scope_full_reading') + ' · ' + h.ref]);
     if (whole && h.haftarah) parts.push(['custom-haftarah', I18n.t('torah.schedule.scope_haftarah') + ' · ' + prettyRef(h.haftarah)]);
+    if (whole && h.chapters) for (let n = 1; n <= h.chapters; n++) parts.push(['custom-ch-' + n, I18n.t('torah.schedule.scope_chapter', { n })]);
     if (!parts.length) parts.push(['custom', I18n.t('torah.schedule.scope_full_reading')]);
     for (const [v, txt] of parts) { const o = document.createElement('option'); o.value = v; o.dataset.holiday = '1'; o.textContent = txt; scopeSel.appendChild(o); }
     scopeSel.querySelectorAll('option:not([data-holiday])').forEach(o => { o.hidden = true; o.disabled = true; });
-    scopeSel.value = part === 'haftarah' ? 'custom-haftarah' : 'custom';
+    scopeSel.value = part === 'haftarah' ? 'custom-haftarah' : part ? 'custom-ch-' + part.slice(3) : 'custom';
     scopeSel.disabled = parts.length < 2;
   } else {
     scopeSel.value = settings.scope || 'parsha-full';
@@ -9366,7 +9403,7 @@ function holidayOptionText(h) { return `${holidayName(h)} — ${h.ref || prettyR
 // (#ttHolidayPicker) and the special Shabbatot (#ttSpecialPicker); applyI18n rebuilds both (their text is the
 // dictionary's).
 function buildHolidayPicker(rebuild) {
-  for (const [id, kind] of [['ttHolidayPicker', 'holiday'], ['ttSpecialPicker', 'special']]) {
+  for (const [id, kind] of [['ttHolidayPicker', 'holiday'], ['ttSpecialPicker', 'special'], ['ttMegillahPicker', 'megillah']]) {
     const el = document.getElementById(id);
     if (!el || (el.childElementCount && !rebuild)) continue;
     el.innerHTML = '';
@@ -10521,7 +10558,8 @@ async function init() {
       // ?holiday=<key>[&part=haftarah] — the practice link for one of HOLIDAY_READINGS, whole, or its haftarah.
       // The state writes mirror applyHolidayReading minus its render, which init performs below. The weekly
       // parsha stays whatever this device remembers, exactly as the picker leaves it.
-      const _dlPart = holidayPartFor(_dlHol, _dl.get('part') === 'haftarah' ? 'haftarah' : null);   // gated: only a value the entry has
+      const _dlPartRaw = _dl.get('part') || '';   // gated: 'haftarah' or 'ch-N', and only a part the entry has (holidayPartFor)
+      const _dlPart = holidayPartFor(_dlHol, _dlPartRaw === 'haftarah' ? 'haftarah' : /^ch-\d{1,2}$/.test(_dlPartRaw) ? 'ch:' + _dlPartRaw.slice(3) : null);
       settings.holidayKey = _dlHol.key;
       settings.holidayPart = _dlPart;
       settings.customRef = holidayPartRef(_dlHol, _dlPart);
@@ -11066,7 +11104,7 @@ function practiceLinkURL() {
     const h = settings.holidayKey ? holidayByKey(settings.holidayKey) : null;
     const part = h ? holidayPartKey(h) : null;
     const ref = parseSharedRef(settings.customRef);
-    if (h && part && settings.customRef === holidayPartRef(h, part)) { u.searchParams.set('holiday', h.key); u.searchParams.set('part', part); }
+    if (h && part && settings.customRef === holidayPartRef(h, part)) { u.searchParams.set('holiday', h.key); u.searchParams.set('part', part.replace(':', '-')); }   // 'ch:3' travels as ch-3
     else if (h && !part && (!ref || ref === parseSharedRef(h.ref))) u.searchParams.set('holiday', h.key);
     else if (ref) return refLinkURL(u, ref);
     else return null;
