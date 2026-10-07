@@ -12039,6 +12039,20 @@ function _newton(Q, P, u){
   const r=u-num/den;
   return r<0?0:(r>1?1:r);
 }
+/* Resample an open chain so no two neighbours are more than `step` apart. The fit measures its error
+   only at the points it is given, and after RDP a straight side keeps just its two ends — so a side
+   between two round caps became ONE cubic, bent by the caps' tangents, that bowed ~40 units off the
+   outline and still passed (a drawn 90-unit stroke exported 165 wide). The new points sit on the
+   polygon's own edges, so the curves now stay within `error` of it everywhere. */
+function _densifyChain(chain, step){
+  const out = [chain[0]];
+  for (let i=1;i<chain.length;i++){
+    const a=chain[i-1], b=chain[i], k=Math.ceil(Math.hypot(b[0]-a[0], b[1]-a[1]) / step);
+    for (let s=1;s<k;s++) out.push([a[0]+(b[0]-a[0])*s/k, a[1]+(b[1]-a[1])*s/k]);
+    out.push(b);
+  }
+  return out;
+}
 /* One CLOSED, oriented, rounded ring → {winding,start,segments} (cubic + line), or null if degenerate.
    Splits the ring at detected corners (turn > cornerAngleDeg) and fits each open chain with cubics. */
 function fitContourCurves(ring, winding, error, cornerAngleDeg){
@@ -12066,7 +12080,7 @@ function fitContourCurves(ring, winding, error, cornerAngleDeg){
     if (chain.length <= 1) continue;
     if (chain.length === 2){ segments.push({ type:'line', pts:[ rnd(chain[1]) ] }); continue; }
     let cubics=null;
-    try { cubics = fitCurve(chain, error); } catch(e){ cubics = null; }
+    try { cubics = fitCurve(_densifyChain(chain, Math.max(error*2, 4)), error); } catch(e){ cubics = null; }
     if (!cubics || !cubics.length){ segments.push({ type:'line', pts:[ rnd(chain[chain.length-1]) ] }); continue; }
     cubics.forEach(bz => segments.push({ type:'cubic', pts:[ rnd(bz[1]), rnd(bz[2]), rnd(bz[3]) ] }));
   }
