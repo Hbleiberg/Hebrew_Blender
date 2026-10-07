@@ -2014,6 +2014,11 @@ function applyI18n() {
   if (!window.I18n) return;
   I18n.applyStaticI18n();
   try { const _db = document.getElementById('darkBtn'); if (_db) (_db.querySelector('.hi-lbl') || _db).textContent = document.body.classList.contains('dark') ? I18n.t('shared.darkmode.label_light') : I18n.t('shared.darkmode.label_dark'); } catch (e) {}
+  // The font list and the "This file will contain" line live in the AllTools window, which redraws both each time it
+  // opens: rebuilt for a closed window, they cost a busy profile two more tasks (156 + 85 ms on a slow CPU) at every
+  // load and language switch. Open (?alltools=open opens it before the strings are ready), they follow the language.
+  const _bd = document.getElementById('ieBackdrop');
+  if (!_bd || !_bd.classList.contains('open')) return;
   try { if (typeof renderMyFontsManager === 'function' && document.getElementById('myFontsList')) renderMyFontsManager(); } catch (e) {}
   try { renderIvritInventory(); } catch (e) {}
 }
