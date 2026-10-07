@@ -8,6 +8,10 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P4 (**NEW S468 H**) | index.html | **A restore that switches the hub to Hebrew shows its success alert in English**. | found S468
+
+- [ ] P4 (**NEW S468 H**) | index.html | **After Erase All the hub stays Hebrew and dark until reload**. | found S468
+
 - [ ] P2 (**NEW S465 G — maintainer**) | starting-fonts/manifest.json | **14 fonts' `copyright` is empty**: re-stage with `/addOSFont --force` (detector fixed `3609c19`; ids: findings S465). | found S465
 
 - [ ] P4 (**NEW S466 D**) | js/ivrit-saves.js | **A fresh device's first signed-in load rewrites the whole sync memory once per row** (tasks 50→340 ms, settled in 47 s @4×, 410 rows) and fetches each row by its own GET (457). | found S466
@@ -24,13 +28,9 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S464 M**) | resources.html | **The Links/Fonts toggle mixes a line icon with a colour 🔤** (`resources.view.fonts`). | found S464
 
-- [ ] P4 (**NEW S464 M**) | resources.html | **A font card draws Preview's icon only**; the dialog draws all three. | found S464
-
 - [ ] P4 (**NEW S464 M — gate 3 ANSWERED: drop it suite-wide**) | resources.html (+ suite) | **Hebrew labels keep the Latin uppercase tracking** (53 nodes; pattern row). | found S464
 
 - [ ] P4 (**NEW S464 M**) | resources.html | **Below ~1020px wrapped chips flow back under their row label.** | found S464
-
-- [ ] P4 (**NEW S462 N**) | pwa.js | **The iOS install banner hides the footer links at full scroll.** | found S462
 
 - [ ] P4 (**NEW S463 P**) | hebrew_blend_generator.html | **The comment above `saveImportedAsWordList` says a saved list waits for an upload the teacher chooses**; signed in it goes up at once (W5). | found S463
 
@@ -308,6 +308,10 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-07 | (S468 close-out) | branch/deploy note | **S468 = H + 4 fixes, continuing PR #316 (open).** No drift; sw v948→v949; no FM bump; gates clean; no gates asked.
+
+- [x] 2026-10-07 | `4b2eb422` `b70b1acf` `3a29ab99` `8cddee19` | hub ×2 (CSV), resources, pwa.js | (S468) **IvritSuite, not Hebrew Blender; HE presets = תבניות; card icons; banner spacer.** | HEAD controls (findings S468).
+
 - [x] 2026-10-07 | (S467 close-out) | branch/deploy note | **S467 = I + 4 fixes, new draft PR.** Drift: the emoji gallery + notes (sw v946→v947); keep-alive #25 green; sw v947→v948; no FM bump (fixes); gates clean; no gates asked.
 
 - [x] 2026-10-07 | `8be5bdd` `8294d4b` `d9f5a87` `6c4a1a2` | torah, contact, resources, kbd ×4 | (S467) **Dialogs clear the hint toast; server error in `<bdi>`; Suggest intro 14px; dark key press.** | HEAD controls (findings S467).
@@ -324,13 +328,11 @@ _(none)_
 
 - [x] 2026-10-06 | `661c6cc6`, `f98367f8`, `5f7f8a40`, `046cd3ab` | resources, kbd ×4, CSV | (S464) **CTA off the age chips; dark keyboard plates; HE arrows; תל-עם (gates 2).** | findings S464.
 
-- [x] 2026-10-06 | (S463 close-out) | branch/deploy note | **S463 = P + 2 fixes + micro, PR #310.** No drift; keep-alive #23 green; sw v939→v940; no FM bump; gates clean; smokes green (tools ×2, sync, migration); 2 gates answered.
-
-- [x] 2026-10-06 | `1eeaacb8`, `5528d3b8`, `f71f255b` | generator, dashboard, flash, CSV | (S463) **A share link keeps the teacher's font settings (gate 2); a new city brings its own weather and Shabbat times; Print This Card Set (micro).** | findings S463.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-07 | **S468** | iters: 1 pass (**H**) + 4 fixes = **5** | tools: index ×2, resources, pwa.js | patterns fixed: — | pass run: H | SW: v948→v949
 
 - 2026-10-07 | **S467** | iters: 1 pass (**I**) + 4 fixes = **5** | tools: torah, contact, resources ×2, dictionary, FM, dashboard | patterns fixed: — | pass run: I | SW: v947→v948
 
@@ -372,7 +374,7 @@ _(none)_
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S467 (2026-10-07):** torah, contact, resources, dictionary, FM, dashboard S467 · index, ivrit-saves S466 · intake S465 · trope, account, privacy S464 · generator, flash S463 · terms, 404 S442.
+- **Snapshot S468 (2026-10-07):** index, resources, pwa S468 · torah, contact, dictionary, FM, dashboard S467 · ivrit-saves S466 · intake S465 · trope, account, privacy S464 · generator, flash S463 · terms, 404 S442.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -700,10 +702,10 @@ _(none)_
 
 - L SEO & discoverability audit: 2026-10-05 (**S460 — 24th L on `dd23c8d..a2cf7f8`: rebuilt `l460/` (20 arms), 22 plants fired, tree 0, crawler text unchanged 17/17. FOUND + FIXED (gate 2) the Torah FAQ's JPS 1985 and the FM's engine claim.**)
 
-- H teacher walkthrough / paper-cuts (one tool): 2026-10-04 (**S454 — `resources.html` (S305 →), 3 errands by real clicks, EN + HE dark 800. FOUND 8 + 1 seed; FIXED `b1eb9659`, `3378bb1f`. H-next: index (S323).**)
+- H teacher walkthrough / paper-cuts (one tool): 2026-10-07 (**S468 — the hub (S323 →): backup, restore on a fresh device, Manual, Erase, EN + HE. FOUND 5, FIXED 2. H-next: dictionary.**)
 
 - E freshness/site-health: 2026-10-05 (**S459 — 36th E on `dd23c8de..665d7b56` (80 commits): 25 arms, 19 plants fired (findings S459). FOUND the emoji corpus's stale CSV source, ops.md `?v=`, README consumers; FIXED all 3.**)
 
 - F cross-tool consistency: 2026-10-05 (**S456 — sliders on 7 tools: name, value heard, keys, size; plants fired (findings S456). FIXED 4. F-next: search fields.**)
 
-**Next session (S468):** **BRANCH/PR: S467 on `claude/magical-mendel-396njm` → draft PR. Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v948**, FM **5.59**, SDK **2.116.0**. ⚑ Stalest: H, then C (both S454/S455); O blocked. ⚑ Untaken: the fresh-device memory writes (ivrit-saves), pwa banner, resources font-card icon. ⚑ Maintainer: re-stage the 14 fonts (S465).
+**Next session (S469):** **BRANCH/PR: S467–S468 on `claude/magical-mendel-396njm` → draft PR #316. Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v949**, FM **5.59**, SDK **2.116.0**. ⚑ Stalest: C (S455), then A/B/E/F/K/L (S456–S461); O blocked. ⚑ Untaken: ivrit-saves memory writes; hub import copy (gate 2). ⚑ Maintainer: re-stage the 14 fonts (S465).
