@@ -1491,9 +1491,9 @@ fontmaker.ad.unassign,Unassign,בטל הקצאה,picker button,
 fontmaker.ad.unassigned,{count} box(es) have no letter (dashed red) — select one to assign it.,ל-{count} תיבות אין אות (אדום מקווקו) — בחרו אחת כדי להקצות לה.,auto-detect summary fragment,
 fontmaker.ad.unboxed,{count} letter(s) have no box — box them by hand afterwards.,ל-{count} אותיות אין תיבה — תחמו אותן ידנית לאחר מכן.,auto-detect summary fragment,
 fontmaker.ad.unskip_box,Un-skip,בטל דילוג,picker button,
-fontmaker.canvas.anchor_above,"above {x},{y}","מעל {x},{y}",canvas — chart anchor readout,canvas
-fontmaker.canvas.anchor_below,"below {x},{y}","מתחת {x},{y}",canvas — chart anchor readout,canvas
-fontmaker.canvas.anchor_center,"center {x},{y}","מרכז {x},{y}",canvas — chart anchor readout,canvas
+fontmaker.canvas.anchor_above,above {xy},מעל {xy},canvas — chart anchor readout ({xy} = the coordinate pair),canvas
+fontmaker.canvas.anchor_below,below {xy},מתחת {xy},canvas — chart anchor readout ({xy} = the coordinate pair),canvas
+fontmaker.canvas.anchor_center,center {xy},מרכז {xy},canvas — chart anchor readout ({xy} = the coordinate pair),canvas
 fontmaker.canvas.chart_bare,bare,ללא,canvas — chart column header,canvas
 fontmaker.canvas.chart_dagesh,dagesh,דגש,canvas — chart column header,canvas
 fontmaker.canvas.chart_hiriq,hiriq,חיריק,canvas — chart column header,canvas

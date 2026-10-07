@@ -21876,9 +21876,14 @@ async function generatePreviewPDF() {
         if (an && an.below && an.above && an.center) {
           ctx.fillText(L.name, lx, ry + 13);
           ctx.font = "7px 'Source Sans 3', sans-serif"; ctx.fillStyle = '#999';
-          ctx.fillText(I18n.t('fontmaker.canvas.anchor_below',  { x: an.below.x,  y: an.below.y }),  lx, ry + 28);
-          ctx.fillText(I18n.t('fontmaker.canvas.anchor_above',  { x: an.above.x,  y: an.above.y }),  lx, ry + 40);
-          ctx.fillText(I18n.t('fontmaker.canvas.anchor_center', { x: an.center.x, y: an.center.y }), lx, ry + 52);
+          // The pair in one left-to-right isolate (U+2066 … U+2069: a canvas has no unicode-bidi), the line in the UI's own
+          // direction: after the Hebrew word, "106,-45" drew as "45-,106" (the comma and minus between numbers took the
+          // word's direction), and a pair read before its word in a left-to-right line.
+          const xy = p => '\u2066' + p.x + ',' + p.y + '\u2069';
+          ctx.direction = document.documentElement.dir === 'rtl' ? 'rtl' : 'ltr';
+          ctx.fillText(I18n.t('fontmaker.canvas.anchor_below',  { xy: xy(an.below) }),  lx, ry + 28);
+          ctx.fillText(I18n.t('fontmaker.canvas.anchor_above',  { xy: xy(an.above) }),  lx, ry + 40);
+          ctx.fillText(I18n.t('fontmaker.canvas.anchor_center', { xy: xy(an.center) }), lx, ry + 52);
         } else {
           ctx.fillText(L.name, lx, cy);
         }
