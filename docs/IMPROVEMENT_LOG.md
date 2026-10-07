@@ -310,7 +310,7 @@ _(none)_
 
 ## Done
 
-- [x] 2026-10-07 | `c21e467`…PR #313's head (outside the loop) | data/trope, tropepatterns.md, js/trope-staff.js, trope_tutor.html, js/hebrew-calendar.js, torah_trainer.html, CSV | **Portnoy & Wolff's Haftarah, Esther, Megillot and Eicha charts transcribed (H–K); the Tutor's melody bar (six tunes); the Trainer's holiday, special-Shabbat (by date) and Megillot readings — closes the "holiday readings keep English names" candidate.** | builder round trip; staff smoke 19; calendar `--hebcal` (5700–5900 × 2); tools 114/114; Playwright pw8/pw10/pw11 (Sefaria stubbed); `--census` blocked (403).
+- [x] 2026-10-07 | `c21e467`…PR #313's head (outside the loop) | data/trope, tropepatterns.md, js/trope-staff.js, trope_tutor.html, js/hebrew-calendar.js, torah_trainer.html, CSV | **Portnoy & Wolff's Haftarah, Esther, Megillot and Eicha charts transcribed (H–K); the Tutor's Melody dropdown (six tunes); the Trainer's holiday, special-Shabbat (by date) and Megillot readings — closes the "holiday readings keep English names" candidate.** | builder round trip; staff smoke 19; calendar `--hebcal` (5700–5900 × 2); tools 114/114; Playwright pw8/pw10/pw11 (Sefaria stubbed); `--census` blocked (403).
 
 - [x] 2026-10-06 | (S464 close-out) | branch/deploy note | **S464 = M + 4 fixes, PR #311.** No drift; keep-alive #24 green; sw v940→v941; no FM bump; gates clean; gate 3 answered.
 

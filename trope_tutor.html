@@ -96,7 +96,7 @@
   "@type": "FAQPage",
   "mainEntity": [
     { "@type": "Question", "name": "What is the Trope Tutor?", "acceptedAnswer": { "@type": "Answer", "text": "A free interactive tutor for the Torah cantillation marks. Learn mode teaches each mark's symbol, names, and melody with real chanted examples; Phrases shows every line of the printed chart on a full staff; Drill mode quizzes you three ways with per-mark mastery tracking." } },
-    { "@type": "Question", "name": "What melody tradition is this?", "acceptedAnswer": { "@type": "Answer", "text": "The recordings are PocketTorah's, chanted in the Spiro (Conservative) melody. The staffs follow printed charts: the Avery/Binder (Reform) charts for the year-round and High Holiday melodies, and The Art of Cantillation (Portnoy & Wolff, UAHC) for the Haftarah, Esther, Shir HaShirim / Ruth / Kohelet and Eicha melodies — the melody bar above the tabs picks one. Both Ashkenazi and Sephardi trope names are shown, and you can switch the primary naming tradition in settings." } },
+    { "@type": "Question", "name": "What melody tradition is this?", "acceptedAnswer": { "@type": "Answer", "text": "The recordings are PocketTorah's, chanted in the Spiro (Conservative) melody. The staffs follow printed charts: the Avery/Binder (Reform) charts for the year-round and High Holiday melodies, and The Art of Cantillation (Portnoy & Wolff, UAHC) for the Haftarah, Esther, Shir HaShirim / Ruth / Kohelet and Eicha melodies — the Melody dropdown in the key bar picks one. Both Ashkenazi and Sephardi trope names are shown, and you can switch the primary naming tradition in settings." } },
     { "@type": "Question", "name": "What are trope (te'amim)?", "acceptedAnswer": { "@type": "Answer", "text": "Cantillation marks printed above and below the words of the Hebrew Bible. Each mark names a melodic phrase and marks the grammar of the verse — together they tell you how to chant it." } },
     { "@type": "Question", "name": "How does Drill mode work?", "acceptedAnswer": { "@type": "Answer", "text": "Each session asks 5, 10 or 20 questions (your choice) of three kinds: see a marked word and name the trope, hear a clip and pick the symbol, or see a symbol and pick the matching melody. Marks you miss come up more often, and distractors get sneakier (like pashta vs. kadma) as your mastery grows." } },
     { "@type": "Question", "name": "Where do the chanted examples come from?", "acceptedAnswer": { "@type": "Answer", "text": "Every example is a real word from the Torah reading, clipped from PocketTorah's recordings (by Russel Neiss & Rabbi Charlie Schwartz, CC BY-SA 4.0) using their word-level timings. The Hebrew text comes from Sefaria." } },
@@ -266,15 +266,6 @@ body.fs-idle #fsBtn:not(:focus-visible) { opacity:0; pointer-events:none; }
 body.dark .tu-tab[aria-selected="true"] { border-bottom-color:var(--white); }
 .tu-tab:focus-visible { outline:2px solid var(--focus-ring); outline-offset:2px; }
 
-/* ───── The melody bar (above the tabs): which printed chart the staffs draw ───── */
-.tu-melody-bar {
-  display:flex; flex-wrap:wrap; align-items:center; gap:8px 14px; padding:12px 24px 0;
-  max-width:1100px; width:100%; margin:0 auto;
-}
-.tu-melody-lbl { font-size:0.74rem; font-weight:700; color:var(--muted); text-transform:uppercase; white-space:nowrap; }
-.tu-melody-pick { flex-wrap:wrap; }
-.tu-melody-bar .tu-melody-note { flex-basis:100%; margin:0; }
-
 .tu-page {
   flex:1; padding:0 24px 26px; max-width:1100px; width:100%; margin:0 auto;
 }
@@ -342,7 +333,8 @@ body.dark .tu-card { background:#131a29; }
 .tu-motif { max-inline-size:100%; }
 /* High Holiday melody: a mark with no figure in that set says so where its staff would be. */
 .tu-motif-none { margin-inline-start:auto; max-inline-size:240px; font-size:0.76rem; font-style:italic; line-height:1.35; color:var(--muted); }
-/* The melody bar's note: names the melody the staffs show and the chart it comes from (one span per melody). */
+/* The melody note, under the key bar on the Learn and Phrases tabs (it moves with the bar in #tuKeyDock): names the
+   melody the staffs show and the chart it comes from (one span per melody); it prints with the chart. */
 .tu-melody-note {
   display:flex; align-items:center; flex-wrap:wrap; gap:6px 12px; margin:0 0 14px; padding:8px 12px;
   border:1px solid var(--border); border-inline-start:4px solid var(--gold); border-radius:8px;
@@ -359,8 +351,17 @@ body.dark .tu-melody-note { background:#131a29; }
 }
 .tu-key-bar[hidden] { display:none; }
 body.dark .tu-key-bar { background:#131a29; }
-.tu-key-credit { font-size:0.72rem; color:var(--muted); margin-inline-start:auto; }
-.tu-key-credit[hidden] { display:none; }
+/* The key controls wrap as one group; the Melody dropdown sits at the bar's end (which printed chart the staffs
+   draw — setMelody is its one writer) and wraps under them on a phone. */
+.tu-key-ctl { display:inline-flex; align-items:center; flex-wrap:wrap; gap:6px 10px; }
+.tu-key-ctl[hidden] { display:none; }
+.tu-key-melody { display:inline-flex; align-items:center; flex-wrap:wrap; gap:6px; margin-inline-start:auto; min-width:0; max-width:100%; }
+.tu-key-sel {   /* min-width:0 lets the box shrink below its widest option on a 320px phone (the list still shows every name whole) */
+  border:1px solid var(--border); background:var(--white); color:var(--text); min-width:0;
+  padding:3px 6px; border-radius:5px; font:inherit; font-size:0.82rem; min-height:28px; max-width:100%;
+}
+.tu-key-sel:focus { outline:2px solid var(--focus-ring); outline-offset:0; }
+body.dark .tu-key-sel { background:var(--navy-deep); color:var(--text); }
 .tu-key-lbl { font-size:0.74rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; }
 .tu-key-name { display:inline-block; min-inline-size:4.5em; text-align:center; }   /* widest: "D♭ major" 4.2em */
 html[lang="he"] .tu-key-name { min-inline-size:6.5em; }                          /* widest: "לָה במול מז'ור" 6.2em */
@@ -862,7 +863,7 @@ footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-co
   /* `.tu-toast` is position:fixed, so a toast still on screen at print time repeats on EVERY
      sheet — measured S253 at 14 of 14 pages of a Learn-tab print, text and shadow both. Same
      shape the dictionary closed in S252; torah_trainer already hides its `.tt-hint-toast` here. */
-  header .hright, .tu-tabs, footer nav, .tu-ex-play, .tu-qplay, .tu-toast, .tu-melody-lbl, .tu-melody-pick { display:none !important; }
+  header .hright, .tu-tabs, footer nav, .tu-ex-play, .tu-qplay, .tu-toast, .tu-key-melody { display:none !important; }
   /* The key bar's arrows, reset and Slow are screen controls; the line itself prints only while the staffs are
      moved, so a chart in the printed key carries no key line and a moved one names its key. */
   .tu-key-step, .tu-key-reset, .tu-key-slow, .tu-key-bar:not(.is-moved) { display:none !important; }
@@ -963,7 +964,6 @@ footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-co
   header p { display:none; }
   .hbtn { padding:6px 9px; font-size:0.78rem; }
   .tu-tabs { padding:10px 12px 0; }
-  .tu-melody-bar { padding:10px 12px 0; gap:6px 10px; }
   .tu-page { padding:0 12px 18px; }
   .tu-view { padding:14px 12px 18px; }
   .tu-cards { grid-template-columns:1fr; }
@@ -1023,38 +1023,6 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
   </div>
 </header>
 
-<!-- The melody bar: which of the six printed charts the Learn cards, the Phrases tab and their play buttons draw
-     (settings.melody, one of MELODY_KEYS; one writer, setMelody). It stands above the tabs so the choice is in view
-     on every tab — the drill and the recordings are PocketTorah's year-round melody whatever it says, and the note
-     under it says so. A ?melody= link chooses for the visit only (readMelodyParam). The note prints with the chart
-     (it names the melody); the radios do not. -->
-<div class="tu-melody-bar" id="tuMelodyBar" role="group" aria-labelledby="tuMelodyLbl">
-  <span class="tu-melody-lbl" id="tuMelodyLbl"><span data-i18n="trope.melody.label">Melody</span>
-    <span class="tip-wrap" data-i18n-tip="trope.melody.tip" data-tip="The year-round melody is chanted on Shabbat, weekdays and festivals; the High Holiday melody on Rosh Hashanah and Yom Kippur; the Haftarah melody for the reading from the Prophets; the Esther melody for Megillat Esther on Purim; one melody for Shir HaShirim, Ruth and Kohelet on the three festivals; the Eicha melody on Tisha B'Av. A mark a chart does not print has no staff in that melody."><i class="tip-icon">?</i></span></span>
-  <span class="radio-group tu-melody-pick" role="radiogroup" aria-label="Melody for the staffs" data-i18n-aria-label="trope.melody.aria">
-    <input type="radio" id="melTorah" name="tuMelody" value="torah" onchange="setMelody('torah')">
-    <label for="melTorah" data-i18n="trope.melody.torah">Year-round</label>
-    <input type="radio" id="melHH" name="tuMelody" value="highholiday" onchange="setMelody('highholiday')">
-    <label for="melHH" data-i18n="trope.melody.highholiday">High Holidays</label>
-    <input type="radio" id="melHaf" name="tuMelody" value="haftarah" onchange="setMelody('haftarah')">
-    <label for="melHaf" data-i18n="trope.melody.haftarah">Haftarah</label>
-    <input type="radio" id="melEst" name="tuMelody" value="esther" onchange="setMelody('esther')">
-    <label for="melEst" data-i18n="trope.melody.esther">Esther</label>
-    <input type="radio" id="melMeg" name="tuMelody" value="megillot" onchange="setMelody('megillot')">
-    <label for="melMeg" data-i18n="trope.melody.megillot">Shir HaShirim · Ruth · Kohelet</label>
-    <input type="radio" id="melEic" name="tuMelody" value="eicha" onchange="setMelody('eicha')">
-    <label for="melEic" data-i18n="trope.melody.eicha">Eicha</label>
-  </span>
-  <p class="tu-melody-note" id="tuMelodyNote">
-    <span id="tuMelodyNoteTorah" data-i18n="trope.learn.melody_torah_note">These staffs show the year-round melody, for the Torah reading on Shabbat, weekdays and festivals — the Avery/Binder (Reform) chart, in A major.</span>
-    <span id="tuMelodyNoteHH" hidden data-i18n="trope.learn.melody_hh_note">These staffs show the High Holiday melody, for the Torah reading on Rosh Hashanah and Yom Kippur — the Avery/Binder (Reform) chart. There are no High Holiday recordings, so the Phrases examples show the words only.</span>
-    <span id="tuMelodyNoteHaf" hidden data-i18n="trope.learn.melody_haf_note">These staffs show the Haftarah melody, for the reading from the Prophets — The Art of Cantillation's chart (Portnoy &amp; Wolff), transcribed note for note. The Phrases tab has no examples for it yet.</span>
-    <span id="tuMelodyNoteEst" hidden data-i18n="trope.learn.melody_est_note">These staffs show the Esther melody, for Megillat Esther on Purim — The Art of Cantillation's chart (Portnoy &amp; Wolff). Each chapter ends on the chart's closing phrase.</span>
-    <span id="tuMelodyNoteMeg" hidden data-i18n="trope.learn.melody_meg_note">These staffs show the melody for Shir HaShirim (Pesach), Ruth (Shavuot) and Kohelet (Sukkot) — The Art of Cantillation's chart (Portnoy &amp; Wolff), with its own phrase for the end of a book.</span>
-    <span id="tuMelodyNoteEic" hidden data-i18n="trope.learn.melody_eic_note">These staffs show the Eicha melody, for Megillat Eicha on Tisha B'Av — The Art of Cantillation's chart (Portnoy &amp; Wolff).</span>
-  </p>
-</div>
-
 <div class="tu-tabs" role="tablist" aria-label="Tutor mode" data-i18n-aria-label="trope.tabs.aria">
   <button class="tu-tab hi-btn" id="tabLearn" role="tab" aria-selected="true" aria-controls="learnView" onclick="setMode('learn')"><svg class="hi hi-sm hi-book" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7.2v12.4"/><path d="M12 7.2S10 5.4 6 5.4a18 18 0 0 0-2.4.2v12.6A18 18 0 0 1 6 18c4 0 6 1.6 6 1.6s2-1.6 6-1.6a18 18 0 0 1 2.4.2V5.6A18 18 0 0 0 18 5.4c-4 0-6 1.8-6 1.8Z"/></svg><span class="hi-lbl" data-i18n="trope.tabs.learn">Learn</span></button>
   <button class="tu-tab hi-btn" id="tabPhrases" role="tab" aria-selected="false" tabindex="-1" aria-controls="phrasesView" onclick="setMode('phrases')"><svg class="hi hi-sm hi-music" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17.5V5.2l10-2v12.3"/><ellipse cx="6.4" cy="17.8" rx="2.7" ry="2.3" fill="currentColor"/><ellipse cx="16.4" cy="15.5" rx="2.7" ry="2.3" fill="currentColor"/></svg><span class="hi-lbl" data-i18n="trope.tabs.phrases">Phrases</span></button>
@@ -1083,12 +1051,21 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
       Work through them one clause family at a time, then switch to <strong>Drill</strong> to test yourself.
       When you're ready to see them in context, open the companion reader:
       <a href="torah_trainer.html">Torah Trainer →</a></p>
-    <!-- The key bar: moves every staff and its tune a half step at a time (settings.tuneShift — the same
-         setting as Settings → Sing along → Key). syncTuneControls() writes its text and states; it stays
-         hidden while no motif file is loaded (no staffs to move). Slow for learning is the twin of the
-         Tune speed button in Settings (one writer, setTuneRate). The arrows, the reset and Slow are
-         screen-only; the line prints only while the staffs are moved (.is-moved), so a moved chart names its key. -->
+    <!-- The key dock: the key bar and the melody note, moved between the Learn and Phrases tabs by setMode.
+         The key bar moves every staff and its tune a half step at a time (settings.tuneShift — the same
+         setting as Settings → Sing along → Key). syncTuneControls() writes its text and states; its key
+         controls (#tuKeyCtl) stay hidden while no motif file is loaded (no staffs to move), its Melody
+         dropdown (#tuMelodySel: which of the six printed charts the Learn cards, the Phrases tab and their
+         play buttons draw — settings.melody, one of MELODY_KEYS; one writer, setMelody) never does, so a
+         melody whose file is missing can be left. The drill and the recordings are PocketTorah's year-round
+         melody whatever it says, and the note under the bar says so; a ?melody= link chooses for the visit
+         only (readMelodyParam). Slow for learning is the twin of the Tune speed button in Settings (one
+         writer, setTuneRate). The arrows, the reset, Slow and the dropdown are screen-only; the line prints
+         only while the staffs are moved (.is-moved), so a moved chart names its key; the note prints with
+         the chart (it names the melody). -->
+    <div class="tu-key-dock" id="tuKeyDock">
     <div class="tu-key-bar" id="tuKeyBar" role="group" aria-labelledby="tuKeyLbl" hidden>
+      <span class="tu-key-ctl" id="tuKeyCtl">
       <span class="tu-key-lbl" id="tuKeyLbl" data-i18n="trope.key.label">Key</span>
       <button class="btn btn-xs btn-secondary tu-key-step" id="tuKeyDown" type="button" onclick="stepTuneShift(-1)" title="Lower the staffs a half step" aria-label="Lower the staffs a half step" data-i18n-title="trope.key.down_aria" data-i18n-aria-label="trope.key.down_aria"><svg class="hi hi-sm hi-down" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5.6 8.8 12 15.2l6.4-6.4"/></svg></button>
       <strong class="tu-key-name" id="tuKeyName"></strong>
@@ -1100,9 +1077,28 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
       <!-- What the arrows just did, for a screen reader: written only by the bar's own buttons, so the
            Settings slider (which announces its own aria-valuetext) and a language switch stay quiet. -->
       <span class="vh" id="tuKeyLive" aria-live="polite"></span>
-      <!-- The staffs' source, named where the staffs are (the Torah Trainer's Trope staff panel says the same): the
-           chart of the melody on screen (MELODY_INFO.credit; syncTuneControls writes the key and the text). -->
-      <span class="tu-key-credit" id="tuKeyCredit" data-i18n="trope.key.melody_credit">Avery/Binder (Reform) melody</span>
+      </span>
+      <span class="tu-key-melody" id="tuKeyMelody">
+        <label class="tu-key-lbl" for="tuMelodySel" data-i18n="trope.melody.label">Melody</label>
+        <span class="tip-wrap" data-i18n-tip="trope.melody.tip" data-tip="The year-round melody is chanted on Shabbat, weekdays and festivals; the High Holiday melody on Rosh Hashanah and Yom Kippur; the Haftarah melody for the reading from the Prophets; the Esther melody for Megillat Esther on Purim; one melody for Shir HaShirim, Ruth and Kohelet on the three festivals; the Eicha melody on Tisha B'Av. A mark a chart does not print has no staff in that melody."><i class="tip-icon">?</i></span>
+        <select class="tu-key-sel" id="tuMelodySel" onchange="setMelody(this.value)">
+          <option value="torah" data-i18n="trope.melody.torah">Year-round</option>
+          <option value="highholiday" data-i18n="trope.melody.highholiday">High Holidays</option>
+          <option value="haftarah" data-i18n="trope.melody.haftarah">Haftarah</option>
+          <option value="esther" data-i18n="trope.melody.esther">Esther</option>
+          <option value="megillot" data-i18n="trope.melody.megillot">Shir HaShirim · Ruth · Kohelet</option>
+          <option value="eicha" data-i18n="trope.melody.eicha">Eicha</option>
+        </select>
+      </span>
+    </div>
+    <p class="tu-melody-note" id="tuMelodyNote">
+      <span id="tuMelodyNoteTorah" data-i18n="trope.learn.melody_torah_note">These staffs show the year-round melody, for the Torah reading on Shabbat, weekdays and festivals — the Avery/Binder (Reform) chart, in A major.</span>
+      <span id="tuMelodyNoteHH" hidden data-i18n="trope.learn.melody_hh_note">These staffs show the High Holiday melody, for the Torah reading on Rosh Hashanah and Yom Kippur — the Avery/Binder (Reform) chart. There are no High Holiday recordings, so the Phrases examples show the words only.</span>
+      <span id="tuMelodyNoteHaf" hidden data-i18n="trope.learn.melody_haf_note">These staffs show the Haftarah melody, for the reading from the Prophets — The Art of Cantillation's chart (Portnoy &amp; Wolff), transcribed note for note. The Phrases tab has no examples for it yet.</span>
+      <span id="tuMelodyNoteEst" hidden data-i18n="trope.learn.melody_est_note">These staffs show the Esther melody, for Megillat Esther on Purim — The Art of Cantillation's chart (Portnoy &amp; Wolff). Each chapter ends on the chart's closing phrase.</span>
+      <span id="tuMelodyNoteMeg" hidden data-i18n="trope.learn.melody_meg_note">These staffs show the melody for Shir HaShirim (Pesach), Ruth (Shavuot) and Kohelet (Sukkot) — The Art of Cantillation's chart (Portnoy &amp; Wolff), with its own phrase for the end of a book.</span>
+      <span id="tuMelodyNoteEic" hidden data-i18n="trope.learn.melody_eic_note">These staffs show the Eicha melody, for Megillat Eicha on Tisha B'Av — The Art of Cantillation's chart (Portnoy &amp; Wolff).</span>
+    </p>
     </div>
     <div class="tu-chips" id="tuFamilyChips" role="group" aria-label="Trope clause families" data-i18n-aria-label="trope.learn.families_aria"></div>
     <div class="tu-family-note" id="tuFamilyNote"></div>
@@ -1118,7 +1114,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
   <!-- ════════ PHRASES ════════ -->
   <section class="tu-view" id="phrasesView" role="tabpanel" aria-labelledby="tabPhrases" hidden>
     <p class="tu-intro" data-i18n-html="trope.phrases.intro">Each card is one line of the printed cantillation chart: marks as they are sung together, with the whole melody on a staff. Play a card to hear it as the notes light up, or choose a mark to open its Learn card.</p>
-    <!-- The key bar moves here from the Learn tab while this tab is open (setMode). -->
+    <!-- The key dock (the key bar + the melody note) moves here from the Learn tab while this tab is open (setMode). -->
     <div id="tuKeySlotPhrases"></div>
     <div class="tu-phr-status" id="tuPhrStatus" hidden>
       <span id="tuPhrStatusText" role="status"></span>
@@ -1221,7 +1217,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
           </div>
           <div class="tu-set-item">
             <div class="tu-set-label"><span data-i18n="trope.melody.label">Melody</span></div>
-            <p class="settings-note" data-i18n="trope.melody.where">Choose the melody in the bar above the tabs; it follows you to every tab.</p>
+            <p class="settings-note" data-i18n="trope.melody.where">Choose the melody in the Key bar on the Learn and Phrases tabs; it follows you between them.</p>
             <p class="settings-note" data-i18n="trope.melody.note">The staffs and their play buttons follow that choice: the Avery/Binder (Reform) charts for Year-round and High Holidays, The Art of Cantillation's (Portnoy &amp; Wolff, UAHC) for Haftarah, Esther, the three Megillot and Eicha. The recordings and the drill use PocketTorah's Spiro (Conservative) year-round melody either way.</p>
           </div>
         </div>
@@ -1391,7 +1387,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
       <summary style="cursor:pointer;font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);padding:5px 0;" data-i18n="trope.footer.faq_summary">Frequently Asked Questions</summary>
       <div style="padding:4px 0;max-width:640px;margin:0 auto;text-align:start;">
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="trope.footer.faq_q1">What is the Trope Tutor?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a1">A free interactive tutor for the Torah cantillation marks. Learn mode teaches each mark's symbol, names, and melody with real chanted examples; Phrases shows every line of the printed chart on a full staff; Drill mode quizzes you three ways with per-mark mastery tracking.</p></details>
-        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="trope.footer.faq_q2">What melody tradition is this?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a2">The recordings are PocketTorah's, chanted in the Spiro (Conservative) melody. The staffs follow printed charts: the Avery/Binder (Reform) charts for the year-round and High Holiday melodies, and The Art of Cantillation (Portnoy &amp; Wolff, UAHC) for the Haftarah, Esther, Shir HaShirim / Ruth / Kohelet and Eicha melodies — the melody bar above the tabs picks one. Both Ashkenazi and Sephardi trope names are shown, and you can switch the primary naming tradition in settings.</p></details>
+        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="trope.footer.faq_q2">What melody tradition is this?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a2">The recordings are PocketTorah's, chanted in the Spiro (Conservative) melody. The staffs follow printed charts: the Avery/Binder (Reform) charts for the year-round and High Holiday melodies, and The Art of Cantillation (Portnoy &amp; Wolff, UAHC) for the Haftarah, Esther, Shir HaShirim / Ruth / Kohelet and Eicha melodies — the Melody dropdown in the key bar picks one. Both Ashkenazi and Sephardi trope names are shown, and you can switch the primary naming tradition in settings.</p></details>
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="trope.footer.faq_q3">What are trope (te'amim)?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a3">Cantillation marks printed above and below the words of the Hebrew Bible. Each mark names a melodic phrase and marks the grammar of the verse — together they tell you how to chant it.</p></details>
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="trope.footer.faq_q4">How does Drill mode work?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a4">Each session asks 5, 10 or 20 questions (your choice) of three kinds: name the trope on a marked word, pick the symbol for a melody you hear, or pick the melody that matches a symbol. Marks you miss come up more often, and distractors get sneakier (pashta vs. kadma) as your mastery grows.</p></details>
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="trope.footer.faq_q5">Where do the chanted examples come from?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a5">Every example is a real word from the Torah reading, clipped from PocketTorah's recordings (Russel Neiss &amp; Rabbi Charlie Schwartz, CC BY-SA 4.0) using their word-level timings. The Hebrew text comes from Sefaria.</p></details>
@@ -1517,7 +1513,7 @@ const GLYPH_CARRIER = '◌';   // dotted-circle carrier for lone marks; flip to 
 const DEFAULTS = {
   v: 1,
   tradition: 'ashk',            // 'ashk' | 'seph'
-  melody: 'torah',              // one of MELODY_KEYS — which printed chart the staffs draw (the melody bar)
+  melody: 'torah',              // one of MELODY_KEYS — which printed chart the staffs draw (the key bar's Melody dropdown)
   tuneShift: 0,                 // half steps (−6…6) the staffs and their tunes move from the printed key
   tuneVoice: 'high',            // 'high' | 'low' — low voices hear every tune an octave down (the staff shows the 8)
   noteNames: 'off',             // 'off' | 'letters' | 'solfa' — a name under every staff note (solfa: movable do)
@@ -1545,14 +1541,14 @@ let MANIFEST = null;     // data/pockettorah/manifest.json (audioBase lookup)
 // readout names the relative minor (the chart's sof pasuk comes to rest on the sixth degree: haftarah and eicha),
 // whether the Phrases cards have examples (the census reads the Torah and the High Holiday readings only),
 // whether the chart's closing row ends a chapter (the three megillah charts) and the credit the key bar names.
-// trope.melody.<key> is the radio's label; the Torah Trainer's ?melody= links carry the same keys.
+// trope.melody.<key> is the Melody dropdown's option label; the Torah Trainer's ?melody= links carry the same keys.
 const MELODY_INFO = [
-  { key: 'torah',       file: 'data/trope/trope_motifs.json?v=6',          radio: 'melTorah', note: 'tuMelodyNoteTorah', minor: false, examples: true,  chapters: false, credit: 'trope.key.melody_credit' },
-  { key: 'highholiday', file: 'data/trope/trope_motifs_hh.json?v=4',       radio: 'melHH',    note: 'tuMelodyNoteHH',    minor: false, examples: true,  chapters: false, credit: 'trope.key.melody_credit' },
-  { key: 'haftarah',    file: 'data/trope/trope_motifs_haftarah.json?v=2', radio: 'melHaf',   note: 'tuMelodyNoteHaf',   minor: true,  examples: false, chapters: false, credit: 'trope.key.melody_credit_pw' },
-  { key: 'esther',      file: 'data/trope/trope_motifs_esther.json?v=1',   radio: 'melEst',   note: 'tuMelodyNoteEst',   minor: false, examples: false, chapters: true,  credit: 'trope.key.melody_credit_pw' },
-  { key: 'megillot',    file: 'data/trope/trope_motifs_megillot.json?v=1', radio: 'melMeg',   note: 'tuMelodyNoteMeg',   minor: false, examples: false, chapters: true,  credit: 'trope.key.melody_credit_pw' },
-  { key: 'eicha',       file: 'data/trope/trope_motifs_eicha.json?v=1',    radio: 'melEic',   note: 'tuMelodyNoteEic',   minor: true,  examples: false, chapters: true,  credit: 'trope.key.melody_credit_pw' },
+  { key: 'torah',       file: 'data/trope/trope_motifs.json?v=6',          note: 'tuMelodyNoteTorah', minor: false, examples: true,  chapters: false },
+  { key: 'highholiday', file: 'data/trope/trope_motifs_hh.json?v=4',       note: 'tuMelodyNoteHH',    minor: false, examples: true,  chapters: false },
+  { key: 'haftarah',    file: 'data/trope/trope_motifs_haftarah.json?v=2', note: 'tuMelodyNoteHaf',   minor: true,  examples: false, chapters: false },
+  { key: 'esther',      file: 'data/trope/trope_motifs_esther.json?v=1',   note: 'tuMelodyNoteEst',   minor: false, examples: false, chapters: true },
+  { key: 'megillot',    file: 'data/trope/trope_motifs_megillot.json?v=1', note: 'tuMelodyNoteMeg',   minor: false, examples: false, chapters: true },
+  { key: 'eicha',       file: 'data/trope/trope_motifs_eicha.json?v=1',    note: 'tuMelodyNoteEic',   minor: true,  examples: false, chapters: true },
 ];
 const MELODY_KEYS = MELODY_INFO.map((m) => m.key);
 function melodyInfo(k) { return MELODY_INFO.find((m) => m.key === k) || MELODY_INFO[0]; }
@@ -1843,11 +1839,11 @@ async function retryLoadData() {
 function examplesFor(key) {
   return (INDEX && INDEX.tropes && INDEX.tropes[key]) || [];
 }
-// The melody bar. An unknown stored value (a newer page's melody) shows the year-round staffs but stays
+// The Melody dropdown (in the key bar). An unknown stored value (a newer page's melody) shows the year-round staffs but stays
 // in the stored blob, so a round trip through this page never rewrites another device's choice.
 // ?melody=<one of MELODY_KEYS> (the Torah Trainer's links: highholiday from a Rosh Hashanah or Yom Kippur
 // reading, haftarah from a haftarah, a megillah's own melody) shows that melody for this visit only: never saved
-// or synced, silent on any other value. Choosing in the bar, or resetting the settings, replaces it and drops the param.
+// or synced, silent on any other value. Choosing in the dropdown, or resetting the settings, replaces it and drops the param.
 let _melodyOverride = null;
 function readMelodyParam() {
   try {
@@ -1865,9 +1861,11 @@ function dropMelodyParam() {
   } catch (e) {}
 }
 function melodyKey() { const m = _melodyOverride || settings.melody; return MELODY_KEYS.includes(m) ? m : 'torah'; }
-function melodyLabel(k = melodyKey()) { return I18n.t('trope.melody.' + k); }   // the radio's label, for the notes that name the melody
-function syncMelodyNote() {   // the bar's note names the melody on screen (one span per melody, each with its own static data-i18n)
+function melodyLabel(k = melodyKey()) { return I18n.t('trope.melody.' + k); }   // the Melody dropdown's option label, for the notes that name the melody
+function syncMelodyNote() {   // the dropdown shows the melody on screen and the note names it (one span per melody, each with its own static data-i18n)
   const mel = melodyKey();
+  const sel = document.getElementById('tuMelodySel');
+  if (sel && sel.value !== mel) sel.value = mel;
   for (const info of MELODY_INFO) { const el = document.getElementById(info.note); if (el) el.hidden = info.key !== mel; }
 }
 function activeMotifs() { return MOTIF_SETS[melodyKey()]; }
@@ -2907,11 +2905,11 @@ function setMode(mode) {
     tab.tabIndex = on ? 0 : -1;
     document.getElementById(m + 'View').hidden = !on;
   }
-  // One key bar for both staff tabs: it moves to the one on screen (its place in Learn is just above the
-  // family chips).
-  const bar = document.getElementById('tuKeyBar');
-  if (bar && mode === 'phrases') document.getElementById('tuKeySlotPhrases').appendChild(bar);
-  else if (bar && mode === 'learn') document.getElementById('learnView').insertBefore(bar, document.getElementById('tuFamilyChips'));
+  // One key bar (with the Melody dropdown and the melody note: #tuKeyDock) for both staff tabs: it moves to the
+  // one on screen (its place in Learn is just above the family chips).
+  const dock = document.getElementById('tuKeyDock');
+  if (dock && mode === 'phrases') document.getElementById('tuKeySlotPhrases').appendChild(dock);
+  else if (dock && mode === 'learn') document.getElementById('learnView').insertBefore(dock, document.getElementById('tuFamilyChips'));
   if (mode === 'phrases') renderPhrases();
   else if (mode === 'learn') syncTuneControls();
   if (mode === 'drill' && !drill.active) {
@@ -3750,7 +3748,6 @@ function openSettings() { setMode('settings'); }
 function syncFormToSettings() {
   document.getElementById('tradAshk').checked = settings.tradition !== 'seph';
   document.getElementById('tradSeph').checked = settings.tradition === 'seph';
-  for (const info of MELODY_INFO) document.getElementById(info.radio).checked = melodyKey() === info.key;
   syncMelodyNote();
   document.getElementById('optDrillIdentify').checked = !!settings.drillIdentify;
   document.getElementById('optDrillHear').checked = !!settings.drillHear;
@@ -3779,7 +3776,7 @@ function setTradition(v) {
   updateDrillStart();
   syncProgressSummary();
 }
-function setMelody(v) {   // the melody bar's one writer
+function setMelody(v) {   // the Melody dropdown's one writer
   dropMelodyParam();   // a choice made here replaces a link's per-visit melody
   settings.melody = MELODY_KEYS.includes(v) ? v : 'torah';
   saveSettings();
@@ -3787,7 +3784,7 @@ function setMelody(v) {   // the melody bar's one writer
   syncMelodyNote();
   renderLearn();
   renderPhrasesIfShown();
-  syncTuneControls();   // the key bar's name and credit follow the melody on every tab
+  syncTuneControls();   // the key bar's name follows the melody
 }
 /* ── Sing along: Key (settings.tuneShift), Voice (settings.tuneVoice), Note names (settings.noteNames) and the
    practice — Tune speed (settings.tuneRate), Play each tune (settings.tuneRepeats) and the sing-back pause
@@ -3890,15 +3887,12 @@ function syncTuneControls() {
   const s = tuneShiftVal(), low = tuneVoiceKey() === 'low';
   const bar = document.getElementById('tuKeyBar');
   if (bar) {
-    // No staffs to move while the melody's motif file is missing (the melody note's rule), and nothing to
-    // name before the dictionary has loaded: the bar waits for both rather than show an empty line.
-    // On the Phrases tab the bar moves that tab's staffs, so it waits for the phrase chart instead.
-    bar.hidden = !(phrasesShown() ? phraseSet() : activeMotifs()) || !_i18nReady;
-    const credit = document.getElementById('tuKeyCredit');
-    if (credit) {   // the chart the melody on screen comes from; its key is kept on the span so a language switch re-resolves it
-      const ck = melodyInfo(melodyKey()).credit;
-      if (credit.getAttribute('data-i18n') !== ck) { credit.setAttribute('data-i18n', ck); if (_i18nReady && window.I18n) credit.textContent = I18n.t(ck); }
-    }
+    // Nothing to name before the dictionary has loaded: the bar waits for it rather than show an empty line.
+    // Its key controls wait for staffs to move — the melody's motif file (the melody note's rule), or on the
+    // Phrases tab that tab's phrase chart; the Melody dropdown stays, so a melody whose file is missing can be left.
+    bar.hidden = !_i18nReady;
+    const ctl = document.getElementById('tuKeyCtl');
+    if (ctl) ctl.hidden = !(phrasesShown() ? phraseSet() : activeMotifs());
     bar.classList.toggle('is-moved', s !== 0 || low);
     document.getElementById('tuKeyDown').setAttribute('aria-disabled', s <= -TUNE_SHIFT_MAX ? 'true' : 'false');
     document.getElementById('tuKeyUp').setAttribute('aria-disabled', s >= TUNE_SHIFT_MAX ? 'true' : 'false');
@@ -4299,13 +4293,13 @@ function _tourVisible(el) { return !!(el && el.offsetParent !== null); }
 const TOUR_STEPS = [
   { target: () => document.getElementById('tabLearn'),
     titleKey: 'trope.tour.s1_title', bodyKey: 'trope.tour.s1_body' },
-  { target: () => document.getElementById('tuMelodyBar'),
+  { target: () => document.getElementById('tuKeyMelody'),   // skipped while the key bar waits for the dictionary
     titleKey: 'trope.tour.melody_title', bodyKey: 'trope.tour.melody_body' },
   { target: () => document.getElementById('tuFamilyChips'),
     titleKey: 'trope.tour.s2_title', bodyKey: 'trope.tour.s2_body' },
   { target: () => document.querySelector('#tuCards .tu-card'),
     titleKey: 'trope.tour.s3_title', bodyKey: 'trope.tour.s3_body' },
-  { target: () => document.getElementById('tuKeyBar'),   // skipped while hidden (no motif file loaded)
+  { target: () => document.getElementById('tuKeyCtl'),   // skipped while hidden (no motif file loaded)
     titleKey: 'trope.tour.key_title', bodyKey: 'trope.tour.key_body' },
   { target: () => document.getElementById('tuNextFamily'),
     titleKey: 'trope.tour.s4_title', bodyKey: 'trope.tour.s4_body' },

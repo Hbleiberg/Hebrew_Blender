@@ -1319,7 +1319,7 @@ on the second, the last marked "(end of each chapter)". The scan was read the wa
 was (section H): a row at a time at 400 dpi, by eye and by the note-head detector, with the beams
 counted between the stems and every flag, dot and rest in doubt compared at 6–8× against a glyph of
 the same page whose value was certain. The melody is the traditional one; the transcription is
-CC BY-SA 4.0 like the rest of this file. The Trope Tutor's melody bar draws these rows (the Phrases tab
+CC BY-SA 4.0 like the rest of this file. The Trope Tutor's Melody dropdown draws these rows (the Phrases tab
 from the phrase file; the Learn cards from `data/trope/trope_motifs_esther.json`, which the builder
 derives from these rows through section A's Esther column on every run — never edit that file by hand), and
 the Torah Trainer's Trope staff draws them on Megillat Esther, whole or a chapter at a time.
@@ -1660,7 +1660,7 @@ as the Haftarah and Esther charts were (sections H and I): a row at a time at 40
 note-head detector, with the beams counted in the pixel columns between the stems, every dot, flag,
 rest and curve in doubt dumped pixel by pixel, and the rhythm of each figure compared against the same
 figure elsewhere on the page. The melody is the traditional one for Shir HaShirim, Ruth and Kohelet;
-the transcription is CC BY-SA 4.0 like the rest of this file. The Trope Tutor's melody bar draws these
+the transcription is CC BY-SA 4.0 like the rest of this file. The Trope Tutor's Melody dropdown draws these
 rows (the Phrases tab from the phrase file; the Learn cards from `data/trope/trope_motifs_megillot.json`,
 which the builder derives from them through section A's Megillot column on every run — never edit that
 file by hand), and the Torah Trainer's Trope staff draws them on Shir HaShirim, Ruth and Kohelet, whole or
@@ -2002,7 +2002,7 @@ re-cropped rows that keep their bracket numbers and by the note-head detector, w
 run by run in the pixel columns between the stems, every dot, flag, rest, grace note and curve in doubt
 magnified to 4–8× or dumped pixel by pixel, and each figure compared against the same figure elsewhere
 on the page. The melody is the traditional one for Eicha on Tisha B'Av; the transcription is
-CC BY-SA 4.0 like the rest of this file. The Trope Tutor's melody bar draws these rows (the Phrases tab
+CC BY-SA 4.0 like the rest of this file. The Trope Tutor's Melody dropdown draws these rows (the Phrases tab
 from the phrase file; the Learn cards from `data/trope/trope_motifs_eicha.json`, which the builder
 derives from them through section A's Eicha column on every run — never edit that file by hand), and the
 Torah Trainer's Trope staff draws them on Megillat Eicha, whole or a chapter at a time — and on the Tisha B'Av
