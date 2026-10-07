@@ -19434,6 +19434,18 @@ def hfm_build(spec_json):
         # stable sTypo metrics (+ the Line-spacing control) instead of the enlarged clip box.
         _os2.fsSelection = (_os2.fsSelection & ~0x21) | 0x40 | 0x80
     fb.setupPost()
+    # Underline, strikeout, sub- and superscript. FontBuilder leaves every one of them at 0, which
+    # LibreOffice takes literally: underline and strikethrough were drawn with no thickness at all.
+    # These are ufo2ft's own fallbacks -- what the UFO export compiles to, x-height falling back to
+    # half the em -- so the two exports agree.
+    fb.font["post"].underlinePosition = round(-0.075 * upm)
+    fb.font["post"].underlineThickness = round(0.05 * upm)
+    _os2.yStrikeoutSize = round(0.05 * upm)
+    _os2.yStrikeoutPosition = round(0.6 * (int(spec["xHeight"]) if spec.get("xHeight") else upm / 2))
+    _os2.ySubscriptXSize = _os2.ySuperscriptXSize = round(0.65 * upm)
+    _os2.ySubscriptYSize = _os2.ySuperscriptYSize = round(0.6 * upm)
+    _os2.ySubscriptYOffset = round(0.075 * upm)
+    _os2.ySuperscriptYOffset = round(0.35 * upm)
     try:
         addOpenTypeFeaturesFromString(fb.font, spec["fea"])
     except Exception as e:
