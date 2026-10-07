@@ -26,15 +26,9 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S464 M**) | resources.html | **A font card draws Preview's icon only**; the dialog draws all three. | found S464
 
-- [ ] P4 (**NEW S464 M**) | resources.html | **The Suggest intro sits 4px above its first field** (fields: 14px). | found S464
-
-- [ ] P4 (**NEW S464 M**) | keyboard block ×4 | **A pressed key shows no feedback in dark** (`--warm-gray` = `--white`). | found S464
-
 - [ ] P4 (**NEW S464 M — gate 3 ANSWERED: drop it suite-wide**) | resources.html (+ suite) | **Hebrew labels keep the Latin uppercase tracking** (53 nodes; pattern row). | found S464
 
 - [ ] P4 (**NEW S464 M**) | resources.html | **Below ~1020px wrapped chips flow back under their row label.** | found S464
-
-- [ ] P4 (**NEW S462 N**) | contact.html | **An English Web3Forms error in the HE status note leads with its period.** | found S462
 
 - [ ] P4 (**NEW S462 N**) | pwa.js | **The iOS install banner hides the footer links at full scroll.** | found S462
 
@@ -314,6 +308,10 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-07 | (S467 close-out) | branch/deploy note | **S467 = I + 4 fixes, new draft PR.** Drift: the emoji gallery + notes (sw v946→v947); keep-alive #25 green; sw v947→v948; no FM bump (fixes); gates clean; no gates asked.
+
+- [x] 2026-10-07 | `8be5bdd` `8294d4b` `d9f5a87` `6c4a1a2` | torah, contact, resources, kbd ×4 | (S467) **Dialogs clear the hint toast; server error in `<bdi>`; Suggest intro 14px; dark key press.** | HEAD controls (findings S467).
+
 - [x] 2026-10-07 | (S466 close-out) | branch/deploy note | **S466 = D + 4 fixes, PR #315.** No drift (main `bf14523`, keep-alive #25 green); sw v945→v946; no FM bump (fixes); 7 smokes green with `--sdk`; no gates.
 
 - [x] 2026-10-07 | `42b2675e` `5f929d7f` `d76f3129` `48c5f198` | ivrit-saves, hub ×2, FM | (S466) **Memory parsed once per change; one-line export; closed window not redrawn; HE anchor pairs isolated.** | findings S466.
@@ -330,13 +328,11 @@ _(none)_
 
 - [x] 2026-10-06 | `1eeaacb8`, `5528d3b8`, `f71f255b` | generator, dashboard, flash, CSV | (S463) **A share link keeps the teacher's font settings (gate 2); a new city brings its own weather and Shabbat times; Print This Card Set (micro).** | findings S463.
 
-- [x] 2026-10-06 | (S462 close-out) | branch/deploy note | **S462 = N + 2 fixes + micro, PR #310.** No drift; keep-alive #23 green; sw v938→v939; no FM bump; gates clean; 4 gates answered.
-
-- [x] 2026-10-06 | `dbed7d82`, `867ce791`, `4c11abf8` | dashboard, generator, CSV | (S462) **The Weather card follows a preset; no letter twice in a row (gate 2); rename a preset (micro).** | findings S462.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-07 | **S467** | iters: 1 pass (**I**) + 4 fixes = **5** | tools: torah, contact, resources ×2, dictionary, FM, dashboard | patterns fixed: — | pass run: I | SW: v947→v948
 
 - 2026-10-07 | **S466** | iters: 1 pass (**D**) + 4 fixes = **5** | tools: ivrit-saves, index ×2, FM | patterns fixed: parse-per-call ×1 (ivrit-saves) | pass run: D | SW: v945→v946
 
@@ -376,7 +372,7 @@ _(none)_
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S466 (2026-10-07):** index, ivrit-saves, FM S466 · contact, intake S465 · resources, dashboard, dictionary, torah, trope, account, privacy S464 · generator, flash S463 · terms, 404 S442.
+- **Snapshot S467 (2026-10-07):** torah, contact, resources, dictionary, FM, dashboard S467 · index, ivrit-saves S466 · intake S465 · trope, account, privacy S464 · generator, flash S463 · terms, 404 S442.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -608,7 +604,7 @@ _(none)_
 
 - **double-localization** (an already-localized string passed BACK through the localizer, so the lookup key is derived from output rather than from source data. Silent on screen — the fallback that makes these helpers idempotent returns the string unchanged — but it emits a …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **parse-per-call on a growing store** (a helper re-parsing a whole localStorage blob on every call, called once per item, so the cost grows with the teacher's saved work): ACTIVE, consequence-critical (a freeze that scales with use reads as data loss). Hits: flash …[full text: IMPROVEMENT_ARCHIVE.md]
+- **parse-per-call on a growing store** (a helper re-parsing a whole localStorage blob on every call, called once per item, so the cost grows with the teacher's saved work): ACTIVE, consequence-critical (a freeze that scales with use reads as data loss). Hits: flash …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **authored-but-unreferenced i18n key family** (a translated CSV key referenced nowhere): **S365: 1 hit FIXED (`772068b`, `trope.learn.no_example` + `trope.learn.examples_unavailable` — `renderLearn` passed the raw English; Geresh Muqdam has no chanted example, so the Hebrew UI …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -696,7 +692,7 @@ _(none)_
 
 - D performance (one tool): 2026-10-07 (**S466 — the hub's 2nd D (S352 → 48 commits): cold 16 cells, a busy profile × 11 clicks @1×/4×, signed in on a fake cloud, traces; controls fired. FIXED the per-row memory parse, the export box, the closed window; logged 1. D-next: trope (S365).**)
 
-- I first-load & empty-state: 2026-10-04 (**S453 — 34th I: 34 virgin cells × 9 planted gates, census, slow-locale gate, tours. FIXED `728e4075`.**)
+- I first-load & empty-state: 2026-10-07 (**S467 — 35th I: 112 virgin cells, plants 112/112, real 0; the emoji gallery on a Sefaria stub. FOUND + FIXED the hint toast over the gallery `8be5bdd`.**)
 
 - B console/error audit: 2026-10-05 (**S457 — 35th B on the S443 delta (78 commits): 68 load cells, the new features by real clicks, two tabs × 6 tools, and NEW a signed-in arm (9 pages × 2 devices × 2 cells on a fake cloud); every zero planted (findings S457). FOUND + FIXED the preferences race `4c31b627`.**)
 
@@ -710,4 +706,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-05 (**S456 — sliders on 7 tools: name, value heard, keys, size; plants fired (findings S456). FIXED 4. F-next: search fields.**)
 
-**Next session (S467):** **BRANCH/PR: S465–S466 on `claude/bold-cerf-wahllr` → draft PR #315. Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v946**, FM **5.59**, SDK **2.116.0**. ⚑ Stalest: I, then H/C; O blocked. ⚑ Untaken: the fresh-device memory writes (ivrit-saves), contact bidi, pwa banner. ⚑ Maintainer: re-stage the 14 fonts (S465).
+**Next session (S468):** **BRANCH/PR: S467 on `claude/magical-mendel-396njm` → draft PR. Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v948**, FM **5.59**, SDK **2.116.0**. ⚑ Stalest: H, then C (both S454/S455); O blocked. ⚑ Untaken: the fresh-device memory writes (ivrit-saves), pwa banner, resources font-card icon. ⚑ Maintainer: re-stage the 14 fonts (S465).
