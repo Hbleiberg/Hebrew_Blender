@@ -23841,6 +23841,13 @@ async function osPickOpen(origin) {
 function osPickWire() {
   if (_osPickWired) return; _osPickWired = true;
   document.getElementById('osPickSearch').addEventListener('input', osPickFilter);
+  // Escape in a typed search clears it, as the dictionary's search box and a native search field do; the
+  // document's modal handler (bubble phase) would otherwise close the whole picker. An empty field's Escape closes.
+  document.getElementById('osPickSearch').addEventListener('keydown', e => {
+    if (e.key !== 'Escape' || !e.target.value) return;
+    e.preventDefault(); e.stopPropagation();
+    e.target.value = ''; osPickFilter();
+  });
   document.getElementById('osPickNik').addEventListener('change', osPickFilter);
   document.getElementById('osPickTrop').addEventListener('change', osPickFilter);
   document.getElementById('osPickText').addEventListener('input', osPickSetText);
