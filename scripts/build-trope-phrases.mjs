@@ -12,12 +12,13 @@
  * the Learn-card file this script derives from the Haftarah rows). The block grammar is
  * documented in the doc's "How to read this file"; in short:
  *
- *   #<row>[b] [tag]… <Hebrew as printed>           tags: [aliyah-end] [unverified], lowercase, right
- *                                                  after the number (no bracket or Latin letter after)
+ *   #<row>[a-z] [tag]… <Hebrew as printed>         tags: [aliyah-end] [unverified] [derived], lowercase,
+ *                                                  right after the number (no bracket or Latin letter after)
  *   <tropeKey> <SYL>[-] <note>… <SYL>[-] <note>…   one line per mark, keys from TROPES + munach_legarmeh
- *   note  = [3{][~|~~|=|~=]PITCH(VALUE[,>][,-])[}]   PITCH as it sounds (C♯4, G♮4, B♭4)
+ *   note  = [N{][~|~~|=|~=]PITCH(VALUE[,>][,-])[}]   PITCH as it sounds (C♯4, G♮4, B♭4)
  *   VALUE = 32 s ds e de q dq h dh | g (grace)       ~ slur from the previous note, ~~ dashed slur,
- *   rest(VALUE)                                      = tie from it, ~= both; 3{ … } a triplet
+ *   rest(VALUE)                                      = tie from it, ~= both; N{ … } a bracket of N notes
+ *                                                  (3 a triplet, 6 a sextuplet — scaled; any other N as written)
  *
  * Output (CC BY-SA 4.0, like the motif files):
  *   { v:1, built, license, source, tpq:48, values:{<code>:ticks},
@@ -26,8 +27,9 @@
  * where each row is flat — { n, he, tags, notes:[{p, v, t, g?, r?, tie?, a?}], syl:[{t, hyphen,
  * unit, from, to}], units:[{k, from, to}], tup:[{from, to}], slur:[{from, to, dashed?}] } — p =
  * semitones from B4 (the motif files' scale), t = ticks at 48 per quarter (a triplet's notes carry
- * their real length), `tie` marks a note tied to the next, and syllables, units, triplets and
- * slurs are index spans into `notes`, so a triplet or slur may cross from one mark to the next.
+ * their real length), `tie` marks a note tied to the next, and syllables, units, brackets (`tup`, with
+ * `n` when the bracket is not a triplet) and slurs are index spans into `notes`, so a bracket or slur
+ * may cross from one mark to the next.
  * `figures` lists each mark's distinct figures by reference (never copying notes), with the marks
  * before (`prev`, ^ = row start) and after (`next`, $ = row end) every place it is printed.
  * docs/trope_phrases_report.md shows the same catalog in the doc's notation, plus the check below.
@@ -90,7 +92,7 @@ const REPORT_PATH = OUT_DIR ? join(OUT_DIR, 'trope_phrases_report.md') : join(re
 const CENSUS_PATH = OUT_DIR ? join(OUT_DIR, 'trope_contexts_report.md') : join(repoRoot, 'docs', 'trope_contexts_report.md');
 const EXAMPLES_PATH = OUT_DIR ? join(OUT_DIR, 'trope_phrase_examples.json') : join(repoRoot, 'data', 'trope', 'trope_phrase_examples.json');
 const CACHE_DIR = join(repoRoot, 'source-data', 'trope-cache');
-const SIZE_BUDGET = 128 * 1024;
+const SIZE_BUDGET = 256 * 1024;   // six melodies at one row per line (the teacher's two charts and Portnoy & Wolff's four)
 const LICENSE = 'Hand transcriptions of the traditional Ashkenazi Torah and High Holiday cantillation melodies from a printed chart (docs/tropepatterns.md, sections B and C), and an unverified rendering of the Ashkenazi Haftarah melody written from memory (section H). This file is CC BY-SA 4.0.';
 
 const failures = [];
@@ -123,8 +125,11 @@ const CONJUNCTIVE = new Set(['munach', 'mahpach', 'mercha', 'mercha_kefula', 'da
 /* ---------- the notation ---------- */
 const TPQ = 48;
 const VALUES = { 32: 6, s: 12, ds: 18, e: 24, de: 36, q: 48, dq: 72, h: 96, dh: 144, g: 0 };
-// A triplet is two or more sounding notes whose written values add up to three of one value, sung in the time of two.
-const TRIPLET_TOTALS = new Set([3 * VALUES[32], 3 * VALUES.s, 3 * VALUES.e, 3 * VALUES.q]);
+// A bracket N{ … } groups N notes. A triplet (3) is two or more sounding notes whose written values add up to
+// three of one plain value, sung in the time of two, and a sextuplet (6) six of one value in the time of four:
+// both scale their notes by 2/3. Any other bracket the charts print (4, 5, 8, 11) groups a run of exactly N
+// notes and keeps their written values — the books' brackets count the run; they imply no ratio.
+const PLAIN_TICKS = [VALUES[32], VALUES.s, VALUES.e, VALUES.q];
 const MELODIES = {
   torah: { info: 'trope-torah', key: 'A', rows: 41, extra: [], motifs: 'data/trope/trope_motifs.json', label: 'Torah',
     // Every F, C and G is written with its ♯ or ♮ (the key signature makes a bare one ambiguous);
@@ -145,14 +150,14 @@ const MELODIES = {
     rule: 'the Haftarah rows write every B with its ♭ or ♮ and no other accidental' },
 };
 const INFO_TO_MELODY = Object.fromEntries(Object.entries(MELODIES).map(([m, d]) => [d.info, m]));
-const TAGS = new Set(['aliyah-end', 'unverified']);
+const TAGS = new Set(['aliyah-end', 'unverified', 'derived']);   // [derived]: a row not printed but read off a printed one (its number + a letter) — checked below
 const LETTER_PC = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
 const ACC = { '': 0, '♯': 1, '♭': -1, '♮': 0 };
 const P_MIN = -16, P_MAX = 6;   // G3 … F5: the charts' whole range
 
 const SYL_RE = /^([A-Z][A-Z']*)(-?)$/;
-const NOTE_RE = /^(3\{)?(~~|~=|~|=)?([A-G])([♯♭♮]?)(\d)\(([^)]*)\)(\})?$/;
-const REST_RE = /^(3\{)?rest\(([^)]*)\)(\})?$/;
+const NOTE_RE = /^(\d+\{)?(~~|~=|~|=)?([A-G])([♯♭♮]?)(\d)\(([^)]*)\)(\})?$/;
+const REST_RE = /^(\d+\{)?rest\(([^)]*)\)(\})?$/;
 
 function parseDoc(text, path) {
   const lines = text.split('\n');
@@ -179,7 +184,7 @@ function parseRow(block, path) {
   const where = (l) => `${path}:${l}`;
   const lines = block.body.filter((b) => b.text.trim() !== '');
   if (!lines.length) { fail(`${where(block.line)}: empty block`); return null; }
-  const hm = lines[0].text.trim().match(/^#(\d+b?)((?:\s+\[[^\]]*\])*)\s*(.*)$/);
+  const hm = lines[0].text.trim().match(/^#(\d+[a-z]?)((?:\s+\[[^\]]*\])*)\s*(.*)$/);
   if (!hm) { fail(`${where(lines[0].line)}: the first line must be "#<row> [tags] <Hebrew>"`); return null; }
   // Tags come right after the number and only as spelled in TAGS; anything bracketed or Latin after
   // them would otherwise be kept as Hebrew, and the row would silently lose its tag.
@@ -189,7 +194,7 @@ function parseRow(block, path) {
   if (stray) fail(`${where(lines[0].line)}: row #${hm[1]}'s Hebrew holds "${stray[0]}" — tags go right after #${hm[1]}, and the rest of the line is only the Hebrew as printed`);
   const row = { n: hm[1], he: hm[3].trim(), tags, notes: [], syl: [], units: [], tup: [], slur: [] };
   const spell = MELODIES[block.melody].spell;
-  let tupOpen = -1, slurOpen = null;
+  let tupOpen = -1, tupN = 0, slurOpen = null;
   for (const ln of lines.slice(1)) {
     const um = ln.text.trim().match(/^([a-z_]+)\s+(.+)$/);
     if (!um) { fail(`${where(ln.line)}: expected "<tropeKey> <syllables and notes>"`); continue; }
@@ -213,10 +218,10 @@ function parseRow(block, path) {
         continue;
       }
       const note = {};
-      let open = false, close = false, link = '';
+      let open = 0, close = false, link = '';   // open: the bracket's number (the N of N{), 0 for none
       if ((m = tok.match(NOTE_RE))) {
         const [, o, lk, letter, acc, oct, inner, c] = m;
-        open = !!o; close = !!c; link = lk || '';
+        open = o ? parseInt(o, 10) : 0; close = !!c; link = lk || '';
         const [val, ...flags] = inner.split(',');
         if (!Object.hasOwn(VALUES, val)) { fail(`${where(ln.line)}: unknown value "${val}" in ${tok}`); continue; }
         if (!spell[letter].includes(acc))
@@ -234,7 +239,7 @@ function parseRow(block, path) {
         if (accents.length) note.a = accents;
       } else if ((m = tok.match(REST_RE))) {
         const [, o, val, c] = m;
-        open = !!o; close = !!c;
+        open = o ? parseInt(o, 10) : 0; close = !!c;
         if (!Object.hasOwn(VALUES, val) || val === 'g') { fail(`${where(ln.line)}: bad rest value in ${tok}`); continue; }
         note.r = 1; note.v = val; note.t = VALUES[val];
       } else {
@@ -244,8 +249,9 @@ function parseRow(block, path) {
       if (!cur && !note.r) fail(`${where(ln.line)}: ${tok} comes before the first syllable (only a rest may)`);
       const idx = row.notes.length;
       if (open) {
-        if (tupOpen >= 0) fail(`${where(ln.line)}: a triplet opens inside another`);
-        tupOpen = idx;
+        if (tupOpen >= 0) fail(`${where(ln.line)}: a bracket opens inside another`);
+        else if (open < 3) fail(`${where(ln.line)}: ${tok} opens a bracket of ${open} — the charts print none below 3`);
+        tupOpen = idx; tupN = open;
       }
       if (link === '=' || link === '~=') {
         // A tie holds one sound inside one mark's line: each staff merges its own tied notes, and a
@@ -270,15 +276,26 @@ function parseRow(block, path) {
       }
       row.notes.push(note);
       if (close) {
-        if (tupOpen < 0) fail(`${where(ln.line)}: "}" closes no triplet`);
+        if (tupOpen < 0) fail(`${where(ln.line)}: "}" closes no bracket`);
         else {
           const members = row.notes.slice(tupOpen, idx + 1);
           const written = members.reduce((a, n) => a + n.t, 0);
           const sounding = members.filter((n) => !n.r && !n.g).length;
-          if (sounding < 2 || !TRIPLET_TOTALS.has(written))
-            fail(`${where(ln.line)}: triplet of ${sounding} sounding note${sounding === 1 ? '' : 's'} written as ${written} ticks — a triplet is at least two sounding notes whose written values add up to three of one value (three 32nds, sixteenths, eighths or quarters: 18, 36, 72 or 144 ticks), sung in the time of two`);
-          for (const n of members) n.t = n.t * 2 / 3;
-          row.tup.push({ from: tupOpen, to: idx });
+          const N = tupN;
+          if (N === 3 || N === 6) {
+            // a triplet or a sextuplet: N of one plain value, sung in the time of two (or four)
+            if (sounding < 2 || written % N !== 0 || !PLAIN_TICKS.includes(written / N))
+              fail(`${where(ln.line)}: ${N}{ … } of ${sounding} sounding note${sounding === 1 ? '' : 's'} written as ${written} ticks — a ${N === 3 ? 'triplet' : 'sextuplet'} is at least two sounding notes whose written values add up to ${N === 3 ? 'three' : 'six'} of one value (32nds, sixteenths, eighths or quarters: ${PLAIN_TICKS.map((t) => t * N).join(', ')} ticks), sung in the time of ${N === 3 ? 'two' : 'four'}`);
+            for (const n of members) n.t = n.t * 2 / 3;
+          } else {
+            // any other bracket: the chart's number over a run of exactly N notes, kept at their written values
+            const heads = members.filter((n) => !n.g).length;
+            if (sounding < 2 || heads !== N)
+              fail(`${where(ln.line)}: ${N}{ … } holds ${heads} note${heads === 1 ? '' : 's'} — a bracket of ${N} groups exactly ${N} notes (grace notes aside), at least two of them sounding, and keeps their written values`);
+          }
+          const tp = { from: tupOpen, to: idx };
+          if (N !== 3) tp.n = N;   // a plain triplet carries no number
+          row.tup.push(tp);
           tupOpen = -1;
         }
       }
@@ -290,7 +307,7 @@ function parseRow(block, path) {
     else if (row.syl[row.syl.length - 1].hyphen) fail(`${where(ln.line)}: ${unit.k}'s last syllable ${row.syl[row.syl.length - 1].t}- runs on, but the next syllable is another mark's word`);
     row.units.push(unit);
   }
-  if (tupOpen >= 0) fail(`${where(block.line)}: row #${row.n} ends inside a triplet`);
+  if (tupOpen >= 0) fail(`${where(block.line)}: row #${row.n} ends inside a bracket`);
   for (const n of row.notes) if (!Number.isInteger(n.t)) fail(`${where(block.line)}: row #${row.n} has a duration that is not a whole tick`);
   row._src = lines;   // for the round trip; dropped before output
   return row;
@@ -310,7 +327,8 @@ function spellPitch(p, melody) {
 function noteText(row, i, melody) {
   const n = row.notes[i];
   let s = '';
-  if (row.tup.some((t) => t.from === i)) s += '3{';
+  const tp = row.tup.find((t) => t.from === i);
+  if (tp) s += `${tp.n || 3}{`;
   const inSlur = row.slur.find((sl) => sl.from < i && sl.to >= i);
   if (i > 0 && row.notes[i - 1].tie) s += inSlur ? '~=' : '=';
   else if (inSlur) s += inSlur.dashed ? '~~' : '~';
@@ -392,13 +410,36 @@ if (!LENIENT) {
     if (JSON.stringify(want) !== JSON.stringify(have)) fail(`${d.label}: rows ${have.join(',') || '(none)'} — expected 1–${d.rows}${d.extra.length ? ' + ' + d.extra.join(', ') : ''}`);
   }
 }
+// A [derived] row is one the chart does not print but a reader derives from a printed row of the same
+// melody — its number is that row's plus one letter — and the builder proves the derivation: the source
+// exists and is printed, the derived row carries every tag of its source, and its marks are the source's
+// in order with some left out, each unit kept note for note.
+const derivedFrom = [];   // {m, n, from} for the report
+if (!LENIENT) {
+  for (const [m, mel] of Object.entries(melodies)) for (const row of mel.rows) {
+    if (!row.tags.includes('derived')) continue;
+    const label = MELODIES[m].label, src = row.n.match(/^(\d+)[a-z]$/);
+    const from = src && mel.rows.find((r) => r.n === src[1]);
+    if (!from) { fail(`${label} row #${row.n} is [derived], but there is no printed row #${src ? src[1] : '?'} to derive it from (a derived row's number is its source's plus one letter)`); continue; }
+    if (from.tags.includes('derived')) { fail(`${label} row #${row.n} derives from #${from.n}, itself [derived]`); continue; }
+    for (const t of from.tags) if (!row.tags.includes(t)) fail(`${label} row #${row.n} lacks its source #${from.n}'s tag [${t}]`);
+    let j = 0;
+    row.units.forEach((u, i) => {
+      const sig = unitSignature(row, i);
+      while (j < from.units.length && !(from.units[j].k === u.k && unitSignature(from, j) === sig)) j++;
+      if (j >= from.units.length) fail(`${label} row #${row.n}: its ${u.k} (line ${i + 2}) is not a unit of #${from.n}, in order and note for note — a derived row is its source with units left out`);
+      else j++;
+    });
+    derivedFrom.push({ m, n: row.n, from: from.n });
+  }
+}
 
 /* ---------- figures: each mark's distinct figures, by reference ---------- */
 function unitSignature(row, u) {
   const unit = row.units[u];
   const notes = row.notes.slice(unit.from, unit.to + 1).map((n) => [n.p ?? null, n.v, n.t, n.g || 0, n.r || 0, n.tie || 0, (n.a || []).join('')]);
   const syl = row.syl.filter((s) => s.unit === u).map((s) => [s.t, s.hyphen ? 1 : 0, s.from - unit.from, s.to - unit.from]);
-  const tup = row.tup.filter((t) => t.to >= unit.from && t.from <= unit.to).map((t) => [t.from - unit.from, t.to - unit.from]);
+  const tup = row.tup.filter((t) => t.to >= unit.from && t.from <= unit.to).map((t) => [t.from - unit.from, t.to - unit.from, t.n || 3]);
   const slur = row.slur.filter((t) => t.to >= unit.from && t.from <= unit.to).map((t) => [t.from - unit.from, t.to - unit.from, t.dashed ? 1 : 0]);
   return JSON.stringify({ notes, syl, tup, slur });
 }
@@ -457,19 +498,29 @@ function reduceUnit(row, unit) {
 }
 // Section A's table: for each Learn card (a row whose first cell starts with a TROPES key; "(no card)"
 // rows are skipped), the chart row its staff is read from in each melody, or — for none.
+const emptyCards = () => Object.fromEntries(Object.keys(MELODIES).map((m) => [m, {}]));
 function cardTable(text, path) {
   const lines = text.split('\n');
-  const head = lines.findIndex((l) => /^\|\s*Mark \(tutor key\)\s*\|\s*Torah row\s*\|\s*High Holiday row\s*\|\s*Haftarah row\s*\|/.test(l));
-  if (head < 0) { fail(`${path}: no section A table ("| Mark (tutor key) | Torah row | High Holiday row | Haftarah row | … |")`); return null; }
-  const cards = { torah: {}, highholiday: {}, haftarah: {} };
+  const head = lines.findIndex((l) => /^\|\s*Mark \(tutor key\)\s*\|/.test(l));
+  if (head < 0) { fail(`${path}: no section A table ("| Mark (tutor key) | Torah row | … |")`); return null; }
+  // one "<label> row" column per melody, found by its heading, wherever it stands
+  const heads = lines[head].split('|').slice(1, -1).map((c) => c.trim());
+  const cols = [];
+  for (const [m, d] of Object.entries(MELODIES)) {
+    const idx = heads.indexOf(`${d.label} row`);
+    if (idx < 0) fail(`${path}:${head + 1}: section A's table has no "${d.label} row" column`);
+    else cols.push([m, idx]);
+  }
+  const cards = emptyCards();
   for (let i = head + 2; i < lines.length && lines[i].startsWith('|'); i++) {
     const cells = lines[i].split('|').slice(1, -1).map((c) => c.trim());
     if (cells[0].includes('(no card)')) continue;
     const key = cells[0].split(/\s+/)[0];
     if (!TROPES.some((t) => t.key === key)) { fail(`${path}:${i + 1}: section A's "${cells[0]}" starts with no TROPES key (mark a row without a Learn card "(no card)")`); continue; }
-    [['torah', cells[1]], ['highholiday', cells[2]], ['haftarah', cells[3]]].forEach(([m, cell]) => {
+    cols.forEach(([m, idx]) => {
+      const cell = cells[idx];
       if (cell === '—') return;
-      if (!/^\d+b?$/.test(cell || '')) fail(`${path}:${i + 1}: section A gives ${key} the ${MELODIES[m].label} row "${cell}" — a row number, or — for no staff`);
+      if (!/^\d+[a-z]?$/.test(cell || '')) fail(`${path}:${i + 1}: section A gives ${key} the ${MELODIES[m].label} row "${cell}" — a row number, or — for no staff`);
       else if (Object.hasOwn(cards[m], key)) fail(`${path}:${i + 1}: section A names ${key} twice`);
       else cards[m][key] = cell;
     });
@@ -508,7 +559,7 @@ function deriveMotifs(m, d, cards) {
   return file;
 }
 if (!LENIENT) {
-  const cards = cardTable(docText, DOC_PATH.replace(repoRoot + '/', '')) || { torah: {}, highholiday: {}, haftarah: {} };
+  const cards = cardTable(docText, DOC_PATH.replace(repoRoot + '/', '')) || emptyCards();
   for (const [m, d] of Object.entries(MELODIES)) {
     if (!d.motifs) continue;
     const file = d.derived ? deriveMotifs(m, d, cards[m]) : JSON.parse(readFileSync(join(repoRoot, d.motifs), 'utf8'));
@@ -526,6 +577,7 @@ if (!LENIENT) {
       if (entry.source !== source) { bad(`source "${entry.source}", but section A reads this staff from "${source}"`); continue; }
       // a checked transcription is verified:true; a derived entry follows its row's [unverified] tag
       const rowOf = melodies[m].rows.find((r) => r.n === cards[m][key]);
+      if (rowOf && rowOf.tags.includes('derived')) { bad(`section A reads this staff from ${d.label} row #${rowOf.n}, a [derived] row — name the printed row it comes from`); continue; }
       const wantVerified = !(d.derived && rowOf && rowOf.tags.includes('unverified'));
       if (entry.verified !== wantVerified) { bad(wantVerified ? `verified is ${JSON.stringify(entry.verified)} — every staff is a checked transcription (verified: true)` : `verified is ${JSON.stringify(entry.verified)}, but ${d.label} row #${cards[m][key]} is tagged [unverified]`); continue; }
       // the tutor draws d 1–4 and skips a staff whose p or d is not a number, so both must be whole
@@ -565,23 +617,27 @@ if (!LENIENT) {
   const want1 = '-10:24 -7:36 -7:12 -5:36 -2:12 -7:72 -7:24 -9:24 -12:24 -14:12 -14:12 -7:48';
   const got1 = t1 ? t1.notes.map((n) => `${n.p}:${n.t}`).join(' ') : '(missing)';
   if (got1 !== want1) fail(`smoke: Torah row 1 reads ${got1}, expected ${want1}`);
-  const printed = new Set(melodies.torah.rows.flatMap((r) => r.units.map((u) => u.k)));
-  for (const t of TROPES) if (t.key !== 'geresh_muqdam' && !printed.has(t.key)) fail(`smoke: no Torah row prints ${t.key}`);
-  const hh = new Set(melodies.highholiday.rows.flatMap((r) => r.units.map((u) => u.k)));
-  const hhMissing = TROPES.map((t) => t.key).filter((k) => !hh.has(k)).sort().join(',');
-  if (hhMissing !== 'geresh_muqdam,karnei_parah,mercha_kefula,shalshelet,yerach_ben_yomo')
-    fail(`smoke: the High Holiday rows lack ${hhMissing}; expected exactly shalshelet, mercha kefula, karnei parah and yerach ben yomo (+ geresh muqdam)`);
-  // The Haftarah rows draw a whole haftarah on their own (the Trainer never falls back to the Torah chart
-  // for them), so every mark but geresh muqdam is printed, the four verse endings the census counts are
-  // the closings, and no note leaves A3–B♭4 (the rows are D minor, written in F).
-  const haf = melodies.haftarah.rows;
-  const hafPrinted = new Set(haf.flatMap((r) => r.units.map((u) => u.k)));
-  for (const k of KEYS) if (k !== 'geresh_muqdam' && !hafPrinted.has(k)) fail(`smoke: no Haftarah row prints ${k}`);
-  const hafEnds = haf.filter((r) => r.tags.includes('aliyah-end')).map((r) => r.units.map((u) => u.k).join(' ')).sort();
-  const wantEnds = ['mercha tipcha mercha sof_pasuk', 'mercha tipcha sof_pasuk', 'tipcha mercha sof_pasuk', 'tipcha sof_pasuk'].sort();
-  if (JSON.stringify(hafEnds) !== JSON.stringify(wantEnds)) fail(`smoke: the Haftarah closings are ${hafEnds.join(' | ') || '(none)'}; expected the four verse endings`);
-  if (MELODIES.haftarah.key !== 'F') fail('smoke: the Haftarah rows are D minor written with F major\'s signature');
-  for (const r of haf) for (const n of r.notes) if (!n.r && (n.p < -14 || n.p > -1)) fail(`smoke: Haftarah row #${r.n} leaves A3–B♭4`);
+  // Per melody: the marks its chart leaves out (geresh muqdam has a figure nowhere), its key, its sounding
+  // range (semitones from B4) and its closing rows with the verse endings they close. The Haftarah rows draw
+  // a whole haftarah on their own (the Trainer never falls back to the Torah chart for them).
+  const FOUR_ENDINGS = ['mercha tipcha mercha sof_pasuk', 'mercha tipcha sof_pasuk', 'tipcha mercha sof_pasuk', 'tipcha sof_pasuk'];
+  const SMOKE = {
+    torah: { missing: ['geresh_muqdam'], key: 'A', range: [-14, 0], ends: ['41'], endings: [FOUR_ENDINGS[0]] },
+    highholiday: { missing: ['geresh_muqdam', 'karnei_parah', 'mercha_kefula', 'shalshelet', 'yerach_ben_yomo'], key: 'C', range: [-16, -1], ends: ['30', '31', '32', '33'], endings: FOUR_ENDINGS },
+    haftarah: { missing: ['geresh_muqdam'], key: 'F', range: [-14, -1], ends: ['33', '34', '35', '36'], endings: FOUR_ENDINGS },
+  };
+  for (const [m, want] of Object.entries(SMOKE)) {
+    const rows = melodies[m].rows, label = MELODIES[m].label;
+    const printed = new Set(rows.flatMap((r) => r.units.map((u) => u.k)));
+    const missing = KEYS.filter((k) => !printed.has(k)).sort();
+    if (missing.join(',') !== [...want.missing].sort().join(',')) fail(`smoke: the ${label} rows lack ${missing.join(', ') || 'nothing'}; expected exactly ${want.missing.join(', ')}`);
+    const endRows = rows.filter((r) => r.tags.includes('aliyah-end'));
+    if (endRows.map((r) => r.n).join(',') !== want.ends.join(',')) fail(`smoke: the ${label} closings are rows ${endRows.map((r) => r.n).join(', ') || '(none)'}; expected ${want.ends.join(', ')}`);
+    const endings = endRows.map((r) => r.units.map((u) => u.k).join(' ')).sort();
+    if (endings.join('|') !== [...want.endings].sort().join('|')) fail(`smoke: the ${label} closings end ${endings.join(' | ') || '(none)'}; expected ${want.endings.join(' | ')}`);
+    if (MELODIES[m].key !== want.key) fail(`smoke: the ${label} chart is written in ${want.key}, not ${MELODIES[m].key}`);
+    for (const r of rows) for (const n of r.notes) if (!n.r && (n.p < want.range[0] || n.p > want.range[1])) fail(`smoke: ${label} row #${r.n} leaves ${spellPitch(want.range[0], m)}–${spellPitch(want.range[1], m)}`);
+  }
 }
 
 /* ---------- JSON (one row per line, so a diff shows the row that changed) ---------- */
@@ -625,6 +681,7 @@ function report() {
   L.push('- **Source:** `docs/tropepatterns.md` sections B and C — the printed chart\'s rows, transcribed from clean scans — and H, the Haftarah rows (unverified: written from memory of the commonly taught melody)');
   L.push(`- **Output:** \`data/trope/trope_phrases.json\` — ${bytes.toLocaleString('en-US')} bytes (budget ${SIZE_BUDGET.toLocaleString('en-US')})`);
   L.push(`- **Rows:** ${Object.entries(MELODIES).map(([m, d]) => `${d.label} ${melodies[m].rows.length} (${total(m)} notes)`).join(' · ')}`);
+  if (derivedFrom.length) L.push(`- **Derived rows** (not printed: a printed row with units left out, each kept note for note): ${derivedFrom.map((x) => `${MELODIES[x.m].label} ${x.n} from ${x.from}`).join(', ')}`);
   L.push('- **License:** hand transcriptions of the traditional melodies — [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/), like the JSON.');
   L.push('', 'Generated by `node scripts/build-trope-phrases.mjs`; do not edit by hand. To change a note, edit its row',
     'in `docs/tropepatterns.md` and re-run the script.', '');

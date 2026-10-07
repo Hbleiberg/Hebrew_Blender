@@ -487,20 +487,22 @@ function layoutPhraseStaff(row, key, shift, names, opts = {}) {
     const f = fitArc(ns, xa, xb, topOf(a) - 3, topOf(b) - 3, -1, topOf);
     return { from: sl.from, to: sl.to, above: true, xa, xb, ya: f.ya, yb: f.yb, c: f.c, dashed: !!sl.dashed };
   });
-  // Triplets: a bare 3 on the beam when the triplet is exactly one beam, else a bracket above.
+  // Brackets (a triplet, or one of the charts' other N-groups, tp.n): a bare number on the beam when the
+  // group is exactly one beam, else a bracket above.
   const tups = row.tup.map((tp) => {
+    const withN = (o) => (tp.n ? Object.assign(o, { n: tp.n }) : o);
     const ns = notes.slice(tp.from, tp.to + 1);
     const bi = ns[0].beam;
     const oneBeam = bi !== undefined && ns.every((o) => o.beam === bi) && split[bi].length === ns.length;
     const xm = (ns[0].x + ns[ns.length - 1].x) / 2;
     if (oneBeam) {
       const bl = beamLines[bi];
-      return { bracket: false, x: (sx(ns[0]) + sx(ns[ns.length - 1])) / 2, y: bl.at(xm) + (bl.up ? -4 : 11) };
+      return withN({ bracket: false, x: (sx(ns[0]) + sx(ns[ns.length - 1])) / 2, y: bl.at(xm) + (bl.up ? -4 : 11) });
     }
     let top = Math.min(...ns.map((o) => (o.rest ? o.rg.top - 2 : Math.min(o.y - 4, o.up ? o.tip : o.y - 4,
       o.markY === undefined ? Infinity : o.markY - 3 - 6 * (o.marks.length - 1)))), -12);
     for (const sl of slurs) if (sl.above && sl.from <= tp.to && sl.to >= tp.from) top = Math.min(top, sl.c + 1);
-    return { bracket: true, xa: ns[0].x - 4, xb: ns[ns.length - 1].x + 4, x: xm, y: top - 6 };
+    return withN({ bracket: true, xa: ns[0].x - 4, xb: ns[ns.length - 1].x + 4, x: xm, y: top - 6 });
   });
   // Vertical extent: the mark bars ride above everything, the syllables below.
   let top = -12, bottom = 12;
@@ -634,7 +636,7 @@ function renderPhraseStaff(row, opts) {
         fill: 'none', stroke: 'currentColor', 'stroke-width': 0.8 }));
     }
     const n3 = _svgEl('text', { x: Math.round(tp.x * 100) / 100, y: Y(tp.y) + 3, 'font-size': 8, 'font-style': 'italic', 'text-anchor': 'middle', fill: 'currentColor' });
-    n3.textContent = '3';   // the triplet figure of the notation, not a UI string — i18n-ignore
+    n3.textContent = String(tp.n || 3);   // the bracket's number (a triplet's 3): notation, not a UI string — i18n-ignore
     over.appendChild(n3);
   }
   host.appendChild(over);
@@ -845,7 +847,7 @@ function tropeBuildReadingRow(units, picks, cells, sets, opts = {}) {
     }
     const ui = outUnits.length;
     for (const s of row.syl) if (s.unit === p.ui) syl.push({ t: s.t, hyphen: !!s.hyphen, unit: ui, from: s.from + off, to: s.to + off });
-    for (const t of row.tup) if (t.from >= su.from && t.to <= su.to) tup.push({ from: t.from + off, to: t.to + off });
+    for (const t of row.tup) if (t.from >= su.from && t.to <= su.to) { const o = { from: t.from + off, to: t.to + off }; if (t.n) o.n = t.n; tup.push(o); }
     for (const sl of row.slur) if (sl.from >= su.from && sl.to <= su.to) slur.push({ from: sl.from + off, to: sl.to + off, dashed: !!sl.dashed });
     const from = su.from + off, to = su.to + off;
     outUnits.push({ k: u.k, from, to, ci: u.ci, pi: u.pi, fam: u.fam || '', twi: u.twi });

@@ -45,7 +45,10 @@ their rows. To change a note, edit its row here and re-run the builder; never ed
     the chart gives it no Hebrew of its own, so it repeats row 20's). Then come the tags, right after
     the number and in lowercase: `[aliyah-end]` for the closing formula of an aliyah's last verse
     (Torah 41, High Holiday 30–33, Haftarah 33–36), `[unverified]` for a row that has not been checked
-    against a printed chart (none of the book's rows is; every Haftarah row is).
+    against a printed chart (none of the book's rows is; every Haftarah row is), and `[derived]` for a
+    row the chart does not print but a reader derives from a printed one: its number is the printed
+    row's plus a letter, it carries that row's tags, and its marks are the printed row's in order with
+    some left out, each unit kept note for note (the builder checks all of this).
     Then the Hebrew exactly as printed, with its points, dagesh and marks on the letters where the
     chart puts them (High Holiday row 12, whose printed line is a misprint, follows its staff; see
     section C). It holds no brackets or Latin letters, and its marks must name the same marks as the
@@ -63,10 +66,13 @@ their rows. To change a note, edit its row here and re-run the builder; never ed
   - Before a note, `~` is a slur arriving from the note before, `~~` a dashed slur, `=` a tie (one
     held sound) and `~=` a tie under a slur. A tie stays inside one mark's line and never touches a
     grace note, and a slur never arrives from a rest.
-  - `3{` … `}` wraps a printed triplet: at least two sounding notes whose written values add up to
-    three of one value, sung in the time of two (usually three eighths or three sixteenths; High
-    Holiday rows 5–6 write e e s s). The values inside are the printed ones, and a triplet may run
-    from one mark's line into the next.
+  - `N{` … `}` wraps a printed bracket of N notes. `3{` is a triplet: at least two sounding notes whose
+    written values add up to three of one value, sung in the time of two (usually three eighths or three
+    sixteenths; High Holiday rows 5–6 write e e s s); `6{` a sextuplet, six of one value in the time of
+    four. Any other number (the charts print 4, 5, 8 and 11) is the book's bracket over a run of exactly
+    that many notes, grace notes aside: it groups the run and implies no ratio, so the notes keep their
+    written values. The values inside are the printed ones, and a bracket may run from one mark's line
+    into the next.
   - Beams are not written: they follow from the values.
 
 ## A. One figure per mark (the Learn-card staffs)

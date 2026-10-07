@@ -2,7 +2,7 @@
 
 - **Built:** 2026-09-29
 - **Source:** `docs/tropepatterns.md` sections B and C — the printed chart's rows, transcribed from clean scans — and H, the Haftarah rows (unverified: written from memory of the commonly taught melody)
-- **Output:** `data/trope/trope_phrases.json` — 103,788 bytes (budget 131,072)
+- **Output:** `data/trope/trope_phrases.json` — 103,788 bytes (budget 262,144)
 - **Rows:** Torah 41 (436 notes) · High Holiday 34 (459 notes) · Haftarah 36 (336 notes)
 - **License:** hand transcriptions of the traditional melodies — [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/), like the JSON.
 
