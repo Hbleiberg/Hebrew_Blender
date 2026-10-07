@@ -15,3 +15,6 @@ source-data/motif-cache/
 
 # build-leyning-data.mjs tarball cache (@hebcal/leyning + @hebcal/triennial; re-fetched on demand)
 source-data/leyning-cache/
+
+# printed cantillation chart scans and their crops (copyrighted pages; read locally by the transcriber, never committed)
+source-data/charts/
