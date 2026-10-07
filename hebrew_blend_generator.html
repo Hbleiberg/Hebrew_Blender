@@ -415,6 +415,9 @@ body.dark .hi-sun{display:inline-block;}
     min-height: 100vh;
     margin: 0;
   }
+  /* Placeholders take the page's muted text color, as the dictionary's search box always did: the browser's own
+     gray (#757575) read 3.3-4.1:1 on the dark fields and 4.3:1 on cream, under the 4.5:1 floor. */
+  input::placeholder, textarea::placeholder { color: var(--muted); }
 
   /* ── HEADER ── */
   /* ───── Skip link (house pattern; the same rule on every page) ───── */

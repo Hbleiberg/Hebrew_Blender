@@ -207,6 +207,9 @@
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  /* Placeholders take the page's muted text color, as the dictionary's search box always did: the browser's own
+     gray (#757575) read 3.3-4.1:1 on the dark fields and 4.3:1 on cream, under the 4.5:1 floor. */
+  input::placeholder, textarea::placeholder { color: var(--muted); }
 
   body {
     font-family: 'Source Sans 3', sans-serif;

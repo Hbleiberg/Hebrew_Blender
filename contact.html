@@ -118,6 +118,9 @@ html.dark-early body,body.dark {
   --warm-gray:#1e2535;--text:#dde4f0;--muted:#8a94a8;--border:#2a3349;--white:#1e2535;--gold-text:var(--gold);--gold-text-hover:var(--gold-light);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+/* Placeholders take the page's muted text color, as the dictionary's search box always did: the browser's own
+   gray (#757575) read 3.3-4.1:1 on the dark fields and 4.3:1 on cream, under the 4.5:1 floor. */
+input::placeholder,textarea::placeholder{color:var(--muted);}
 body{font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
 /* ───── Skip link (house pattern; the same rule on every page) ───── */
 /* Visually hidden until keyboard focus reaches it, then it drops in at the top inline start. */
