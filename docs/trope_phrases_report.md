@@ -2,7 +2,7 @@
 
 - **Built:** 2026-10-07
 - **Source:** `docs/tropepatterns.md` — section B (Torah: the teacher's cantillation chart (Torah Cantillation)); section C (High Holiday: the teacher's cantillation chart (High Holiday Torah Cantillation)); section H (Haftarah: The Art of Cantillation, Vol. 2 (Portnoy and Wolff, 2001), Appendix D); section I (Esther: The Art of Cantillation, Vol. 2 (Portnoy and Wolff, 2001), Appendix E); section J (Megillot: The Art of Cantillation, Vol. 2 (Portnoy and Wolff, 2001), Appendix F); section K (Eicha: The Art of Cantillation, Vol. 2 (Portnoy and Wolff, 2001), Appendix G) — every row transcribed from scans of the printed chart
-- **Output:** `data/trope/trope_phrases.json` — 226,333 bytes (budget 262,144)
+- **Output:** `data/trope/trope_phrases.json` — 226,428 bytes (budget 262,144)
 - **Rows:** Torah 41 (436 notes) · High Holiday 34 (459 notes) · Haftarah 43 (499 notes) · Esther 41 (485 notes) · Megillot 40 (498 notes) · Eicha 38 (461 notes)
 - **Derived rows** (not printed: a printed row with units left out, each kept note for note): Haftarah 40b from 40, Haftarah 40c from 40, Haftarah 40d from 40
 - **License:** hand transcriptions of the traditional melodies — [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/), like the JSON.
@@ -380,10 +380,10 @@ only) count from A = 1; ′ is the octave above.
 #### mercha
 
 - `MER- 3{G4(e) CHA G4(e)` — rows 1, 3, 5, 7 · after ^ · before tipcha
-- `MER- C4(e) CHA A4(e)` — rows 5, 6 · after tipcha · before sof_pasuk
+- `MER- C4(e) CHA A♭4(e)` — rows 5, 6 · after tipcha · before sof_pasuk
 - `MER- G4(e) CHA B♭4(e) ~F4(q)` — rows 25, 27 · after ^, kadma · before tevir
 - `MER- G4(e) CHA G4(e)` — rows 41 · after ^ · before tipcha
-- `MER- C4(s) CHA A4(e)` — rows 41 · after tipcha · before sof_pasuk
+- `MER- C4(s) CHA A♭4(e)` — rows 41 · after tipcha · before sof_pasuk
 
 #### tipcha
 
@@ -391,7 +391,7 @@ only) count from A = 1; ′ is the octave above.
 - `TIP- G4(e) CHA C5(e) ~G4(e) rest(e)` — rows 2, 4 · after ^ · before munach, etnachta
 - `TIP- G4(e)} CHA G4(e) ~C4(e) rest(e)` — rows 5, 7 · after mercha · before mercha, sof_pasuk
 - `TIP- G4(e) CHA G4(e) ~C4(e) rest(e)` — rows 6, 8 · after ^ · before mercha, sof_pasuk
-- `TIP- C5(e) CHA C5(e) ~C5(32) ~B♭4(32) ~A4(32) ~G4(32) 3{~F4(e) ~E♮4(e) ~F4(e)} ~G4(e) ~F4(e) ~C4(e) rest(s)` — rows 41 · after mercha · before mercha
+- `TIP- C5(e) CHA C5(e) ~C5(32) ~B♭4(32) ~A♭4(32) ~G4(32) 3{~F4(e) ~E♮4(e) ~F4(e)} ~G4(e) ~F4(e) ~C4(e) rest(s)` — rows 41 · after mercha · before mercha
 
 #### munach
 
@@ -399,9 +399,9 @@ only) count from A = 1; ′ is the octave above.
 - `MU- B♭3(e) NACH F4(s) ~D4(s) ~F4(ds)` — rows 9, 10, 12, 14, 33 · after pashta, yetiv · before zakef_katon
 - `MU- B♭4(e) NACH B♭4(s) ~G4(s) ~B♭4(q)` — rows 14, 21, 28 · after ^ · before mahpach, gershayim, darga
 - `MU- G4(e) NACH C5(e) ~B♭4(e) ~G4(ds)` — rows 17, 18 · after munach_legarmeh, ^ · before revia
-- `MU- G4(e) NACH B♭4(g) ~A4(e) ~G4(e) rest(e)` — rows 29, 30, 31, 39 · after ^ · before telisha_gedola, telisha_ketana, pazer, yerach_ben_yomo
-- `MU- F4(e) NACH A4(e) ~G4(e) ~F4(de)` — rows 35, 36 · after ^ · before zarka
-- `MU- C4(e) NACH A4(e) ~G4(q)` — rows 35, 37 · after zarka · before segol
+- `MU- G4(e) NACH B♭4(g) ~A♭4(e) ~G4(e) rest(e)` — rows 29, 30, 31, 39 · after ^ · before telisha_gedola, telisha_ketana, pazer, yerach_ben_yomo
+- `MU- F4(e) NACH A♭4(e) ~G4(e) ~F4(de)` — rows 35, 36 · after ^ · before zarka
+- `MU- C4(e) NACH A♭4(e) ~G4(q)` — rows 35, 37 · after zarka · before segol
 
 #### etnachta
 
@@ -409,8 +409,8 @@ only) count from A = 1; ′ is the octave above.
 
 #### sof_pasuk
 
-- `SOF- A4(s) PA- A4(s) SUK G4(q) ~F4(q)` — rows 5, 6, 7, 8 · after mercha, tipcha · before $
-- `SOF- A4(s) PA- A4(s) SUK G4(e) ~F4(dq)` — rows 41 · after mercha · before $
+- `SOF- A♭4(s) PA- A♭4(s) SUK G4(q) ~F4(q)` — rows 5, 6, 7, 8 · after mercha, tipcha · before $
+- `SOF- A♭4(s) PA- A♭4(s) SUK G4(e) ~F4(dq)` — rows 41 · after mercha · before $
 
 #### mahpach
 
@@ -433,12 +433,12 @@ only) count from A = 1; ′ is the octave above.
 
 #### zakef_gadol
 
-- `ZA- 3{E♭4(e) KEF E♭4(e) GA- G4(e)} DOL B♭4(e) ~B♭4(32) ~A4(32) ~G4(32) ~F4(32) ~G4(e) ~F4(e) ~E♭4(q)` — rows 32 · after ^ · before $
+- `ZA- 3{E♭4(e) KEF E♭4(e) GA- G4(e)} DOL B♭4(e) ~B♭4(32) ~A♭4(32) ~G4(32) ~F4(32) ~G4(e) ~F4(e) ~E♭4(q)` — rows 32 · after ^ · before $
 
 #### zarka
 
-- `ZAR- F4(s) KA C5(q) ~C5(e) ~C5(32) ~B♭4(32) ~A4(32) ~G4(32) 3{~F4(e) ~E♮4(e) ~F4(e)} ~G4(e) ~F4(e) ~C4(e) rest(s)` — rows 35, 36 · after munach · before munach, segol
-- `ZAR- F4(e) KA C5(q) ~C5(e) ~C5(32) ~B♭4(32) ~A4(32) ~G4(32) 3{~F4(e) ~E♮4(e) ~F4(e)} ~G4(e) ~F4(e) ~C4(e) rest(s)` — rows 37, 38 · after ^ · before munach, segol
+- `ZAR- F4(s) KA C5(q) ~C5(e) ~C5(32) ~B♭4(32) ~A♭4(32) ~G4(32) 3{~F4(e) ~E♮4(e) ~F4(e)} ~G4(e) ~F4(e) ~C4(e) rest(s)` — rows 35, 36 · after munach · before munach, segol
+- `ZAR- F4(e) KA C5(q) ~C5(e) ~C5(32) ~B♭4(32) ~A♭4(32) ~G4(32) 3{~F4(e) ~E♮4(e) ~F4(e)} ~G4(e) ~F4(e) ~C4(e) rest(s)` — rows 37, 38 · after ^ · before munach, segol
 
 #### segol
 
@@ -450,7 +450,7 @@ only) count from A = 1; ′ is the octave above.
 
 #### darga
 
-- `DAR- E♭4(s) ~G4(s) GA B♭4(de) ~A4(s) ~G4(s) ~F4(de)` — rows 22, 24, 26, 28 · after ^, kadma, munach · before $, tevir
+- `DAR- E♭4(s) ~G4(s) GA B♭4(de) ~A♭4(s) ~G4(s) ~F4(de)` — rows 22, 24, 26, 28 · after ^, kadma, munach · before $, tevir
 
 #### tevir
 
@@ -470,7 +470,7 @@ only) count from A = 1; ′ is the octave above.
 
 #### gershayim
 
-- `GER- G4(e) SHA- G4(e) YIM B♭4(e) ~B♭4(s) ~A4(s) ~G4(s) ~A4(s) ~B♭4(q)` — rows 20, 21 · after ^, munach · before $
+- `GER- G4(e) SHA- G4(e) YIM B♭4(e) ~B♭4(s) ~A♭4(s) ~G4(s) ~A♭4(s) ~B♭4(q)` — rows 20, 21 · after ^, munach · before $
 
 #### telisha_ketana
 
@@ -478,15 +478,15 @@ only) count from A = 1; ′ is the octave above.
 
 #### telisha_gedola
 
-- `T'- 3{E♭4(32) LI- E♭4(32) SHA E♭4(s) G'- E♭4(32) DO- E♭4(32)} LAH E♭4(s) ~F4(s) ~G4(s) ~A4(s) ~G4(e,-) ~F4(e,-) ~E♭4(q,-)` — rows 29 · after munach · before $
+- `T'- 3{E♭4(32) LI- E♭4(32) SHA E♭4(s) G'- E♭4(32) DO- E♭4(32)} LAH E♭4(s) ~F4(s) ~G4(s) ~A♭4(s) ~G4(e,-) ~F4(e,-) ~E♭4(q,-)` — rows 29 · after munach · before $
 
 #### pazer
 
-- `PA- A4(s) ~G4(s) ZER F4(32) ~G4(32) ~A4(32) ~B♭4(32) ~C5(e) ~B♭4(dq)` — rows 31 · after munach · before $
+- `PA- A♭4(s) ~G4(s) ZER F4(32) ~G4(32) ~A♭4(32) ~B♭4(32) ~C5(e) ~B♭4(dq)` — rows 31 · after munach · before $
 
 #### karnei_parah
 
-- `KAR- 3{F4(e) NE F4(e) PA- F4(e)} RAH F4(s) ~G4(s) ~A4(s) ~B♭4(s) ~C5(e) ~B♭4(dq) ~E♭4(s) ~F4(s) ~G4(s) ~A4(s) ~G4(e) ~F4(e) ~E♭4(q)` — rows 40 · after ^ · before $
+- `KAR- 3{F4(e) NE F4(e) PA- F4(e)} RAH F4(s) ~G4(s) ~A♭4(s) ~B♭4(s) ~C5(e) ~B♭4(dq) ~E♭4(s) ~F4(s) ~G4(s) ~A♭4(s) ~G4(e) ~F4(e) ~E♭4(q)` — rows 40 · after ^ · before $
 
 #### yerach_ben_yomo
 
@@ -626,8 +626,8 @@ only) count from A = 1; ′ is the octave above.
 
 - `TIP- A♭4(s) CHA A♭4(s) ~G4(s) ~F4(e) ~F4(e)` — rows 1, 3 · after mercha · before munach, etnachta
 - `TIP- A♭4(e) CHA A♭4(s) ~G4(s) ~F4(e) ~F4(e)` — rows 2, 4 · after ^ · before munach, etnachta
-- `TIP- A♭4(s) CHA A♭4(s) ~G4(s) ~F4(e)` — rows 5, 7 · after mercha · before mercha, sof_pasuk
-- `TIP- A♭4(e) CHA A♭4(s) ~G4(s) ~F4(e)` — rows 6, 8 · after ^ · before mercha, sof_pasuk
+- `TIP- A♭4(s) CHA A♭4(s) ~G4(s) ~F4(e) rest(e)` — rows 5, 7 · after mercha · before mercha, sof_pasuk
+- `TIP- A♭4(e) CHA A♭4(s) ~G4(s) ~F4(e) rest(e)` — rows 6, 8 · after ^ · before mercha, sof_pasuk
 - `TIP- C5(e) CHA C5(e) ~C5(32) ~B♭4(32) ~A♭4(32) ~G4(32) ~F4(q) rest(e)` — rows 38 · after mercha · before mercha
 
 #### munach

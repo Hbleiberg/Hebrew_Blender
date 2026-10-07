@@ -6,7 +6,7 @@
  * teacher's *Torah Cantillation* chart (section B: 41 rows, three sharps) and *High Holiday Torah
  * Cantillation* chart (section C: 33 rows + row 20's second setting, no key signature), and the charts
  * of The Art of Cantillation, Vol. 2 (Portnoy & Wolff): the Haftarah (section H: 40 rows, three flats,
- * plus the derived closings 40b–40d), Esther (section I: 41 rows, two flats), the three Megillot of
+ * plus the derived closings 40b–40d), Esther (section I: 41 rows, three flats), the three Megillot of
  * Shir HaShirim, Ruth and Kohelet (section J: 39 rows + the end-of-book 39a, no signature) and Eicha
  * (section K: 38 rows, three flats) — each transcribed note for note from scans into fenced
  * ```trope-<melody> blocks. Those blocks are the only hand-edited copy
@@ -149,11 +149,12 @@ const MELODIES = {
   haftarah: { info: 'trope-haftarah', key: 'Eb', rows: 40, extra: ['40b', '40c', '40d'], motifs: 'data/trope/trope_motifs_haftarah.json', derived: true, label: 'Haftarah', examples: false, section: 'H', book: 'The Art of Cantillation, Vol. 2 (Portnoy and Wolff, 2001), Appendix D',
     spell: { A: ['♭', '♮'], B: ['♭', '♮'], C: [''], D: [''], E: ['♭', '♮'], F: [''], G: [''] },
     rule: 'the Haftarah chart (three flats) writes every B, E and A with its ♭ or ♮ and prints no other accidental' },
-  // The Esther chart (section I): Appendix E — two flats, and one printed accidental, the E♮ of rows 35–39 and 41, so
-  // every B and E carries its sign. Derived motif file, no examples (the census reads no Megillah text).
-  esther: { info: 'trope-esther', key: 'Bb', rows: 41, extra: [], motifs: 'data/trope/trope_motifs_esther.json', derived: true, label: 'Esther', examples: false, section: 'I', book: 'The Art of Cantillation, Vol. 2 (Portnoy and Wolff, 2001), Appendix E',
-    spell: { A: [''], B: ['♭', '♮'], C: [''], D: [''], E: ['♭', '♮'], F: [''], G: [''] },
-    rule: 'the Esther chart (two flats) writes every B and E with its ♭ or ♮ and prints no other accidental' },
+  // The Esther chart (section I): Appendix E — three flats like the Haftarah chart, and one printed accidental, the E♮
+  // of rows 35–39 and 41, so every B, E and A carries its sign. Derived motif file, no examples (the census reads no
+  // Megillah text).
+  esther: { info: 'trope-esther', key: 'Eb', rows: 41, extra: [], motifs: 'data/trope/trope_motifs_esther.json', derived: true, label: 'Esther', examples: false, section: 'I', book: 'The Art of Cantillation, Vol. 2 (Portnoy and Wolff, 2001), Appendix E',
+    spell: { A: ['♭', '♮'], B: ['♭', '♮'], C: [''], D: [''], E: ['♭', '♮'], F: [''], G: [''] },
+    rule: 'the Esther chart (three flats) writes every B, E and A with its ♭ or ♮ and prints no other accidental' },
   // The Shir HaShirim / Ruth / Kohelet chart (section J): Appendix F — no signature and no accidental. Row 39a is the
   // chart's own "(end of book)" variant of row 39 (not derived: it is printed). Derived motif file, no examples.
   megillot: { info: 'trope-megillot', key: 'C', rows: 39, extra: ['39a'], motifs: 'data/trope/trope_motifs_megillot.json', derived: true, label: 'Megillot', examples: false, section: 'J', book: 'The Art of Cantillation, Vol. 2 (Portnoy and Wolff, 2001), Appendix F',
@@ -335,7 +336,7 @@ const SPELLING = {
   torah: { 1: 'C♯', 2: 'D', 4: 'E', 6: 'F♯', 7: 'G♮', 8: 'G♯', 9: 'A', 11: 'B' },
   highholiday: { 0: 'C', 2: 'D', 4: 'E', 5: 'F', 6: 'F♯', 7: 'G', 9: 'A', 10: 'B♭', 11: 'B' },
   haftarah: { 0: 'C', 2: 'D', 3: 'E♭', 4: 'E♮', 5: 'F', 7: 'G', 8: 'A♭', 9: 'A♮', 10: 'B♭', 11: 'B♮' },
-  esther: { 0: 'C', 2: 'D', 3: 'E♭', 4: 'E♮', 5: 'F', 7: 'G', 9: 'A', 10: 'B♭', 11: 'B♮' },
+  esther: { 0: 'C', 2: 'D', 3: 'E♭', 4: 'E♮', 5: 'F', 7: 'G', 8: 'A♭', 9: 'A♮', 10: 'B♭', 11: 'B♮' },
   megillot: { 0: 'C', 2: 'D', 4: 'E', 5: 'F', 7: 'G', 9: 'A', 11: 'B' },
   eicha: { 0: 'C', 2: 'D', 3: 'E♭', 4: 'E♮', 5: 'F', 7: 'G', 8: 'A♭', 9: 'A♮', 10: 'B♭', 11: 'B♮' },
 };
@@ -654,7 +655,7 @@ if (!LENIENT) {
     torah: { missing: ['geresh_muqdam'], key: 'A', range: [-14, 0], ends: ['41'], endings: [FOUR_ENDINGS[0]] },
     highholiday: { missing: ['geresh_muqdam', 'karnei_parah', 'mercha_kefula', 'shalshelet', 'yerach_ben_yomo'], key: 'C', range: [-16, -1], ends: ['30', '31', '32', '33'], endings: FOUR_ENDINGS },
     haftarah: { missing: ['geresh_muqdam', 'karnei_parah', 'shalshelet', 'yerach_ben_yomo'], key: 'Eb', range: [-13, 1], ends: ['40', '40b', '40c', '40d'], endings: FOUR_ENDINGS },
-    esther: { missing: ['geresh_muqdam', 'mercha_kefula', 'shalshelet'], key: 'Bb', range: [-13, 4], ends: ['41'], endings: [FOUR_ENDINGS[0]] },
+    esther: { missing: ['geresh_muqdam', 'mercha_kefula', 'shalshelet'], key: 'Eb', range: [-13, 4], ends: ['41'], endings: [FOUR_ENDINGS[0]] },
     megillot: { missing: ['geresh_muqdam', 'karnei_parah', 'mercha_kefula', 'shalshelet', 'yerach_ben_yomo'], key: 'C', range: [-11, 3], ends: ['39', '39a'], endings: [FOUR_ENDINGS[0], FOUR_ENDINGS[0]] },
     eicha: { missing: ['geresh_muqdam', 'karnei_parah', 'mercha_kefula', 'pazer', 'shalshelet', 'yerach_ben_yomo'], key: 'Eb', range: [-13, 1], ends: ['38'], endings: [FOUR_ENDINGS[0]] },
   };
