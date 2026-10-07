@@ -158,6 +158,10 @@ main strong{font-weight:700;}
 .field input,.field textarea{width:100%;border:1px solid var(--border);border-radius:8px;background:var(--white);color:var(--text);padding:10px;font-family:inherit;font-size:0.95rem;}
 .field input:focus,.field textarea:focus{outline:2px solid var(--focus-ring);outline-offset:1px;}
 .field textarea{min-height:130px;resize:vertical;}
+/* Under a finger the fields compute 15.2px, and iOS Safari zooms the page 16/15.2 = 1.05× into a focused field under
+   16px and leaves it zoomed. 16px only where the pointer is coarse; the desktop fields keep their size (index.html's
+   import box sets the same rule). */
+@media (pointer:coarse){.field input,.field textarea{font-size:16px;}}
 .btn-primary{background:var(--navy);color:#fff;border:none;border-radius:8px;padding:11px 22px;font-family:inherit;font-size:0.95rem;font-weight:600;cursor:pointer;transition:background 0.15s,transform 0.05s;}
 .btn-primary:hover{background:#24345c;}
 .btn-primary:active{transform:scale(0.98);}
