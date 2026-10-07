@@ -299,7 +299,10 @@ takes no nikkud) and one `specimenPage` per enabled add-on set, then **the digit
 the font actually carries**: `punctSpecimenChars()` is `letterShips`'s own rule (the Include toggle
 AND ink), so no cell ever falls back to a system face. One LTR page — a lone bracket is never
 mirrored under `direction 'ltr'` and the Hebrew marks are bidi-neutral single glyphs — and the
-cover gains a 0–9 line only once all ten digits ship.
+cover gains a 0–9 line only once all ten digits ship. The chart's anchor readouts
+(`fontmaker.canvas.anchor_*`) carry the pair as one `{xy}` placeholder wrapped in a left-to-right
+isolate (U+2066 … U+2069 — a canvas has no `unicode-bidi`) and are drawn in the UI's direction, so a
+negative pair keeps its order after a Hebrew word and the word still reads first.
 
 jsPDF (the specimen and the template PDFs) and html2canvas (the template sheets, PDF or PNG) load from
 cdnjs on the first click that needs each — `ensurePdfLib('pdf' | 'canvas')`, which never rejects and

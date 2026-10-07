@@ -133,7 +133,7 @@ export/import as a bug to fix, not a pattern to copy.
 Users back up and restore via a downloadable **`.ivrit` file** (a plain JSON text file with a custom extension) — a portable "save file" they keep on their own computer. This is the **default, preferred** backup mechanism going forward. Every tool's backup area has an **Automatic Input / Manual Input** toggle at the top:
 
 - **Automatic Input** (default) — a *Save to .ivrit file* button plus a drag-and-drop / browse zone for restoring. **This is the norm — build it into every new tool.**
-- **Manual Input** — the legacy copy-and-paste textarea (kept for users who already have text backups).
+- **Manual Input** — the legacy copy-and-paste textarea (kept for users who already have text backups). The hub's export is compact JSON on one line — the box's cost is its line count, and an indented busy profile froze the click for seconds; import reads either form.
 
 The toggle choice is remembered site-wide in `localStorage['hebrewBlender_inputMode']` (`'auto'` | `'manual'`).
 

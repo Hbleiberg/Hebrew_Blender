@@ -10,7 +10,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P2 (**NEW S465 G — maintainer**) | starting-fonts/manifest.json | **14 fonts' `copyright` is empty**: re-stage with `/addOSFont --force` (detector fixed `3609c19`; ids: findings S465). | found S465
 
-- [ ] P3 (**NEW S465 G**) | Hebrew_Font_Maker.html | **The HE specimen prints "106,-45" as "45-,106"** (no LTR isolate). | found S465
+- [ ] P4 (**NEW S466 D**) | js/ivrit-saves.js | **A fresh device's first signed-in load rewrites the whole sync memory once per row** (tasks 50→340 ms, settled in 47 s @4×, 410 rows) and fetches each row by its own GET (457). | found S466
 
 - [ ] P4 (**NEW S465 G**) | Hebrew_Font_Maker.html | **3 starting fonts fail Chrome's sanitizer**; the picker says so only on hover. | found S465
 
@@ -314,6 +314,10 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-07 | (S466 close-out) | branch/deploy note | **S466 = D + 4 fixes, PR #315.** No drift (main `bf14523`, keep-alive #25 green); sw v945→v946; no FM bump (fixes); 7 smokes green with `--sdk`; no gates.
+
+- [x] 2026-10-07 | `42b2675e` `5f929d7f` `d76f3129` `48c5f198` | ivrit-saves, hub ×2, FM | (S466) **Memory parsed once per change; one-line export; closed window not redrawn; HE anchor pairs isolated.** | findings S466.
+
 - [x] 2026-10-07 | (S465 close-out) | branch/deploy note | **S465 = G + 4 fixes, PR #315.** Drift: PRs #312–#314 (sw v941→v944); keep-alive #25 green; sw v944→v945; no FM bump (fixes); gates clean; gate 2 answered.
 
 - [x] 2026-10-07 | `beaa7b9` `b585d9b` `3609c19` `5a7a8ed` | FM ×2, intake, contact | (S465) **Straight strokes; underline metrics; copyright detection; 16px fields.** | findings S465.
@@ -330,17 +334,11 @@ _(none)_
 
 - [x] 2026-10-06 | `dbed7d82`, `867ce791`, `4c11abf8` | dashboard, generator, CSV | (S462) **The Weather card follows a preset; no letter twice in a row (gate 2); rename a preset (micro).** | findings S462.
 
-- [x] 2026-10-05 | (S461 close-out) | branch/deploy note | **S461 = K + 4 fixes, PR #310.** No drift; keep-alive #23 green; sw v937→v938; no FM bump; gates clean; 4 gates answered.
-
-- [x] 2026-10-05 | `74b2ee0c` | hebrew_dictionary.html | (S461 K) **The Bulk Copy count follows the language.** | `dict.mjs` 2 cells: HEAD 3 wrong → 6/6.
-
-- [x] 2026-10-05 | `70988452` | classroom_dashboard.html, dashboard.md | (S461) **A starter, preset or restore re-titles the board at once.** | `colt.mjs` 4 cells: HEAD 3/3 stale → 0.
-
-- [x] 2026-10-05 | `73ba6e7e`, `ad09e1a6` | generator, dashboard, CSV | (S461, gate 2) **Exclude Repeats' tooltip is true; the secular starter is all English.** | `truth.mjs`, `starter.mjs`.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-07 | **S466** | iters: 1 pass (**D**) + 4 fixes = **5** | tools: ivrit-saves, index ×2, FM | patterns fixed: parse-per-call ×1 (ivrit-saves) | pass run: D | SW: v945→v946
 
 - 2026-10-07 | **S465** | iters: 1 pass (**G**) + 4 fixes = **5** | tools: FM ×2, intake script, contact | patterns fixed: text-field-under-16px ×4 (contact) | pass run: G | SW: v944→v945
 
@@ -378,7 +376,7 @@ _(none)_
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S465 (2026-10-07):** FM, contact, intake S465 · resources, dashboard, dictionary, index, torah, trope, account, privacy S464 · generator, flash S463 · ivrit-saves S459 · terms, 404 S442.
+- **Snapshot S466 (2026-10-07):** index, ivrit-saves, FM S466 · contact, intake S465 · resources, dashboard, dictionary, torah, trope, account, privacy S464 · generator, flash S463 · terms, 404 S442.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -610,7 +608,7 @@ _(none)_
 
 - **double-localization** (an already-localized string passed BACK through the localizer, so the lookup key is derived from output rather than from source data. Silent on screen — the fallback that makes these helpers idempotent returns the string unchanged — but it emits a …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **parse-per-call on a growing store** (a `read<Store>()` helper that re-parses its whole localStorage blob on every call, called O(n) times per render, over a store that grows without bound as the teacher uses the tool — so the tool punishes use, and the cost is invisible at …[full text: IMPROVEMENT_ARCHIVE.md]
+- **parse-per-call on a growing store** (a helper re-parsing a whole localStorage blob on every call, called once per item, so the cost grows with the teacher's saved work): ACTIVE, consequence-critical (a freeze that scales with use reads as data loss). Hits: flash …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **authored-but-unreferenced i18n key family** (a translated CSV key referenced nowhere): **S365: 1 hit FIXED (`772068b`, `trope.learn.no_example` + `trope.learn.examples_unavailable` — `renderLearn` passed the raw English; Geresh Muqdam has no chanted example, so the Hebrew UI …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -696,7 +694,7 @@ _(none)_
 
 - G print & export fidelity (one tool): 2026-10-07 (**S465 — FM (S337 →): 3 partner flows × every export, LibreOffice, round trip, dark + HE, drawing; plants 3/3. FOUND 6, FIXED 3. G-next: trope (S351).**)
 
-- D performance (one tool): 2026-10-04 (**S452 — the generator's 4th D (S338 → 90 commits): cold 1×/4× ± PDF libs + CDN latency, 6 interaction arms, print, GC leak, signed-in load; control fired. FIXED the blocking libs (+ FM), the squeezed caller sheet; logged 3. D-next: index (S352).**)
+- D performance (one tool): 2026-10-07 (**S466 — the hub's 2nd D (S352 → 48 commits): cold 16 cells, a busy profile × 11 clicks @1×/4×, signed in on a fake cloud, traces; controls fired. FIXED the per-row memory parse, the export box, the closed window; logged 1. D-next: trope (S365).**)
 
 - I first-load & empty-state: 2026-10-04 (**S453 — 34th I: 34 virgin cells × 9 planted gates, census, slow-locale gate, tours. FIXED `728e4075`.**)
 
@@ -712,4 +710,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-05 (**S456 — sliders on 7 tools: name, value heard, keys, size; plants fired (findings S456). FIXED 4. F-next: search fields.**)
 
-**Next session (S466):** **BRANCH/PR: S465 on `claude/bold-cerf-wahllr` → draft PR #315. Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v945**, FM **5.59**, SDK **2.116.0**. ⚑ Stalest: D, then I/H/C; O blocked. ⚑ Answered: FM About note; Hebrew tracking; file name. ⚑ Untaken: HE specimen anchors, contact bidi, pwa banner.
+**Next session (S467):** **BRANCH/PR: S465–S466 on `claude/bold-cerf-wahllr` → draft PR #315. Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v946**, FM **5.59**, SDK **2.116.0**. ⚑ Stalest: I, then H/C; O blocked. ⚑ Untaken: the fresh-device memory writes (ivrit-saves), contact bidi, pwa banner. ⚑ Maintainer: re-stage the 14 fonts (S465).
