@@ -757,6 +757,20 @@
     } catch (e) {}
     return fresh;
   }
+  // The readers' copy. metaGet and legacyGet are asked once per row by every plan, and each parsed the whole memory
+  // again, so a signed-in load grew with the square of the rows (a 410-row account froze the hub's reload for 0.9 s
+  // twice, 4.2 s on a slow CPU). Kept against the stored text, so a write from anywhere (this module, another tab,
+  // an erase) is seen at the next read; only ever read, never handed to a writer (they parse their own to change).
+  var metaRead = null;
+  function metaReadOnly() {
+    var text = lsGet(META2_KEY);
+    if (metaRead && text === metaRead.text) return metaRead.m;
+    var m = null;
+    try { m = text === null ? null : safeParse(text); } catch (e) {}
+    if (isPlainObject(m) && m.v === 2 && isPlainObject(m.users)) { metaRead = { text: text, m: m }; return m; }
+    metaRead = null;
+    return metaAll();   // no v2 memory yet (or an unreadable one): built from the v1 hint each time, as before
+  }
   // The module's own bookkeeping writes. When storage is full the merge bases go first (they only make a merge finer:
   // without one, a setting both sides changed keeps the account's value and this device's version is kept), then the
   // write is tried once more. `text` null removes the key. false = not stored.
@@ -795,12 +809,12 @@
     return k;
   }
   function metaGet(uid, tool, kind, name) {
-    var b = metaBranch(metaAll(), uid, tool, kind, false);
+    var b = metaBranch(metaReadOnly(), uid, tool, kind, false);
     return (b && hasOwn(b, name) && isPlainObject(b[name])) ? b[name] : null;
   }
   // The v1 hint for a row (h, id, u), or null; consumed by the first v2 record of that row.
   function legacyGet(uid, tool, kind, name) {
-    var m = metaAll(), l = isPlainObject(m.legacy) && isPlainObject(m.legacy[uid]) ? m.legacy[uid] : null;
+    var m = metaReadOnly(), l = isPlainObject(m.legacy) && isPlainObject(m.legacy[uid]) ? m.legacy[uid] : null;
     var b = l && isPlainObject(l[tool]) && isPlainObject(l[tool][kind]) ? l[tool][kind] : null;
     var r = b && hasOwn(b, name) && isPlainObject(b[name]) ? b[name] : null;
     return (r && typeof r.h === 'string' && !r.deletedCloud) ? { h: r.h, id: r.id, u: r.u } : null;
