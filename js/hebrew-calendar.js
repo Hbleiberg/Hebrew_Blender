@@ -11,7 +11,9 @@
    carries inline), the weekly reading table for a year (a count-based fit of the
    54 parshiyot to the Shabbatot between one Bereshit and the next, with the
    traditional anchors and doubling preferences — docs/reference/torah-and-trope.md
-   → Reading schedule), and the triennial-cycle helpers.
+   → Reading schedule), the special Shabbatot (the maftir and haftarah that replace a
+   parasha's own: specialShabbat, a port of @hebcal/leyning's precedence, which is
+   BSD-2-Clause), and the triennial-cycle helpers.
    ══════════════════════════════════════════════════════ */
 'use strict';
 (function () {
@@ -112,6 +114,8 @@
   const dayOfWeek = (jdn) => (jdn + 1) % 7;                    // 0 = Sunday … 6 = Shabbat
   const shabbatOnOrAfter = (jdn) => jdn + ((6 - dayOfWeek(jdn) + 7) % 7);
   const shabbatAfter = (jdn) => shabbatOnOrAfter(jdn + 1);
+  const shabbatOnOrBefore = (jdn) => (dayOfWeek(jdn) === 6 ? jdn : jdn - dayOfWeek(jdn) - 1);
+  const shabbatBefore = (jdn) => shabbatOnOrBefore(jdn - 1);
 
   // The 14 month keys (Tishrei = 1; in a leap year 6 is Adar I and 7 Adar II, else 6 is Adar and 7 Nisan).
   const MONTH_KEYS_REGULAR = ['tishrei', 'cheshvan', 'kislev', 'tevet', 'shevat', 'adar', 'nisan', 'iyar', 'sivan', 'tammuz', 'av', 'elul'];
@@ -132,8 +136,8 @@
      festivals (the second days), so both schedules fall out of the same fit. */
   const P = {   // the parasha indices the rules name (parshiyot.json's n − 1)
     BERESHIT: 0, VAYAKHEL: 21, PEKUDEI: 22, TZAV: 24, TAZRIA: 26, METZORA: 27, ACHREI: 28, KEDOSHIM: 29,
-    BEHAR: 31, BECHUKOTAI: 32, BAMIDBAR: 33, NASSO: 34, CHUKAT: 38, BALAK: 39, MATOT: 41, MASEI: 42,
-    DEVARIM: 43, VAETCHANAN: 44, NITZAVIM: 50, VAYEILECH: 51, HAAZINU: 52, VEZOT: 53,
+    BEHAR: 31, BECHUKOTAI: 32, BAMIDBAR: 33, NASSO: 34, CHUKAT: 38, BALAK: 39, PINCHAS: 40, MATOT: 41, MASEI: 42,
+    DEVARIM: 43, VAETCHANAN: 44, KI_TEITZEI: 48, NITZAVIM: 50, VAYEILECH: 51, HAAZINU: 52, VEZOT: 53,
   };
   // The seven pairs that are ever read together (the first of each), in order.
   const DOUBLED_FIRSTS = [P.VAYAKHEL, P.TAZRIA, P.ACHREI, P.BEHAR, P.CHUKAT, P.MATOT, P.NITZAVIM];
@@ -246,6 +250,48 @@
     return null;
   }
 
+  /* ────────── SPECIAL SHABBATOT — the maftir and haftarah that replace a parasha's own ──────────
+     specialShabbat(date, opts) names what the Shabbat on or after `date` reads besides its parasha, or
+     null: the four parshiyot (Shekalim on or before 1 Adar — Adar II in a leap year —, Zachor before
+     Purim, Parah the week before HaChodesh, HaChodesh on or before 1 Nisan) and HaGadol before Pesach;
+     Shabbat Shuva (3–9 Tishrei; its haftarah differs by the parasha, Vayeilech or Ha'azinu); the
+     Shabbatot of Chanukah (with the day, 1–8; on Rosh Chodesh Tevet a third scroll); Shabbat Rosh
+     Chodesh (Masei's own variant) and Machar Chodesh; and the three haftarah replacements of a parasha
+     that falls on a date — Pinchas after 17 Tammuz, Ki Teitzei on 14 Elul (Re'eh was Rosh Chodesh, so
+     its consolation is read with Ki Teitzei's), Kedoshim read alone on 26 or 28 Nisan or 6 Iyar. The
+     precedence is @hebcal/leyning's (BSD-2-Clause: its specialReadings2 and getLeyningKeyForEvent, read
+     for this port, and the oracle of scripts/smoke-hebrew-calendar.mjs --hebcal): a special Shabbat's
+     haftarah first, then, with none, Pinchas, Rosh Chodesh, Ki Teitzei, Kedoshim, Machar Chodesh (never in
+     Av: Re'eh on Erev Rosh Chodesh Elul keeps its own haftarah). The result carries parshaForDate's fields
+     plus `key` and, for Chanukah, `day`; the page owns the readings themselves (the Torah Trainer's
+     HOLIDAY_READINGS), this module only names them. */
+  const SPECIAL_KEYS = ['shuva_vayeilech', 'shuva_haazinu', 'chanukah', 'rosh_chodesh_chanukah', 'shekalim', 'shekalim_rosh_chodesh',
+    'zachor', 'parah', 'hachodesh', 'hachodesh_rosh_chodesh', 'hagadol', 'pinchas_after_17_tammuz', 'rosh_chodesh', 'rosh_chodesh_masei',
+    'ki_teitzei_consolation', 'kedoshim_special', 'machar_chodesh'];
+  function specialShabbat(date, opts) {
+    const r = parshaForDate(date, opts);
+    if (!r || r.kind !== 'parsha') return null;
+    const j = r.jdn, y = r.heb.y, m = r.heb.m, d = r.heb.d, idx = r.idx;
+    const nis = nisanOf(y), adar = nis - 1;   // Adar, or Adar II in a leap year: the month before Nisan
+    const isRC = d === 30 || d === 1;
+    const found = (key, day) => Object.assign({ key }, day ? { day } : {}, r);
+    if (m === 1 && d >= 3 && d <= 9) return found(idx[0] === P.HAAZINU ? 'shuva_haazinu' : 'shuva_vayeilech');
+    const chanukahDay = j - hebrewToJDN(y, 3, 25) + 1;
+    if (chanukahDay >= 1 && chanukahDay <= 8) return found(isRC ? 'rosh_chodesh_chanukah' : 'chanukah', chanukahDay);
+    if (j === shabbatOnOrBefore(hebrewToJDN(y, adar, 1))) return found(isRC ? 'shekalim_rosh_chodesh' : 'shekalim');
+    if (j === shabbatBefore(hebrewToJDN(y, adar, 14))) return found('zachor');
+    const hachodesh = shabbatOnOrBefore(hebrewToJDN(y, nis, 1));
+    if (j === hachodesh) return found(isRC ? 'hachodesh_rosh_chodesh' : 'hachodesh');
+    if (j === hachodesh - 7) return found('parah');
+    if (j === shabbatBefore(hebrewToJDN(y, nis, 15))) return found('hagadol');
+    if (idx.includes(P.PINCHAS) && m === nis + 3 && d > 17) return found('pinchas_after_17_tammuz');
+    if (isRC) return found(idx.includes(P.MASEI) ? 'rosh_chodesh_masei' : 'rosh_chodesh');
+    if (idx[0] === P.KI_TEITZEI && m === nis + 5 && d === 14) return found('ki_teitzei_consolation');
+    if (idx.length === 1 && idx[0] === P.KEDOSHIM && (d === 26 || d === 28 || d === 6)) return found('kedoshim_special');
+    if (m !== nis + 4) { const t = jdnToHebrew(j + 1); if (t.day === 30 || t.day === 1) return found('machar_chodesh'); }
+    return null;
+  }
+
   /* ────────── TRIENNIAL CYCLE (the Conservative movement's three-year division) ────────── */
   const TRIENNIAL_BASE = 5744;   // a cycle's first year; the year number is ((hyear − 5744) mod 3) + 1
   const triennialYear = (hyear) => ((((hyear - TRIENNIAL_BASE) % 3) + 3) % 3) + 1;
@@ -272,7 +318,7 @@
   window.HebCal = {
     gregorianToJDN, jdnToGregorian, hebrewToJDN, jdnToHebrew, hebrewLeapYear, hebrewYearLength, daysInHebrewMonth,
     toJDN, dayOfWeek, shabbatOnOrAfter, monthKeyOf, MONTH_KEYS_LEAP, MONTH_KEYS_REGULAR,
-    sedraForYear, parshaForDate, nextOccurrence, festivalShabbatot,
+    sedraForYear, parshaForDate, nextOccurrence, festivalShabbatot, specialShabbat, SPECIAL_KEYS,
     triennialYear, triennialCycleStart, doubledPattern, doubledFirstOf, DOUBLED_FIRSTS, P,
   };
 })();

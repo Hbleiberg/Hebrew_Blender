@@ -1085,6 +1085,21 @@ stored value reads Full and stays stored) and the triennial year (`settings.trie
   Pesach 8 and Shavuot 2, which on Shabbat read from Deuteronomy 14:22 (the table's entries start at 15:19). Every
   festival Shabbat it opens, 5760–5900 on both calendars (438 of 894), agrees with `@hebcal/leyning`'s Torah
   reading (the oracle, never shipped). An ordinary week therefore needs no network.
+- **The special Shabbatot** (`HebCal.specialShabbat(date, {israel})`: what the Shabbat on or after `date` reads
+  besides its parasha, or null). The keys (`HebCal.SPECIAL_KEYS`): `shekalim` / `shekalim_rosh_chodesh` (the
+  Shabbat on or before 1 Adar — Adar II in a leap year — and whether it is 30 Shevat or 1 Adar), `zachor` (before
+  Purim), `parah` (the week before HaChodesh), `hachodesh` / `hachodesh_rosh_chodesh` (on or before 1 Nisan),
+  `hagadol` (before Pesach), `shuva_vayeilech` / `shuva_haazinu` (3–9 Tishrei; the haftarah differs by the
+  parasha), `chanukah` with `day` 1–8 and `rosh_chodesh_chanukah` (30 Kislev or 1 Tevet, `day` 6 or 7),
+  `rosh_chodesh` / `rosh_chodesh_masei` (a Shabbat on the 30th or the 1st; Masei and Matot-Masei read their own
+  admonition with the Rosh Chodesh maftir), `machar_chodesh` (the day before Rosh Chodesh, never in Av: Re'eh on
+  Erev Rosh Chodesh Elul keeps its own haftarah), and the three haftarah replacements `pinchas_after_17_tammuz`,
+  `ki_teitzei_consolation` (14 Elul, when Re'eh was Rosh Chodesh) and `kedoshim_special` (Kedoshim alone on 26
+  or 28 Nisan or 6 Iyar). The precedence is `@hebcal/leyning`'s (`specialReadings2`, BSD-2-Clause, read for
+  the port): a special Shabbat's haftarah first, then Pinchas, Rosh Chodesh, Ki Teitzei, Kedoshim, Machar
+  Chodesh. The module only names them; the Trainer's `HOLIDAY_READINGS` holds the readings. **Proof:** the
+  smoke pins one date per key and, with `--hebcal`, compares every parasha Shabbat of 5700–5900 on both
+  schedules with `getLeyningOnDate`'s `reason` — 20,000-odd agree.
 - **The cycles.** Full is PocketTorah's `aliyah.json`, as before. Triennial and Weekday read `data/leyning/*.json`
   — `weekday.json` (each parasha's Monday/Thursday reading, its first aliyah in three) and `triennial.json` (the
   three-year divisions: every parasha's `variations`, the seven combined entries' `years` and `patterns`) — built

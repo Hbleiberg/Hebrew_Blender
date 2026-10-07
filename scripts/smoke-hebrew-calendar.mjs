@@ -1,13 +1,16 @@
 #!/usr/bin/env node
 /* smoke-hebrew-calendar.mjs — checks js/hebrew-calendar.js (the Torah Trainer's parasha-by-date) without a
- * browser: the module is loaded in a vm, the converter is round-tripped over two centuries, and the weekly
- * reading table is pinned by dates whose parasha is known, on both schedules. Zero dependencies. Exits
- * non-zero on the first failure. Run: node scripts/smoke-hebrew-calendar.mjs
+ * browser: the module is loaded in a vm, the converter is round-tripped over two centuries, the weekly
+ * reading table is pinned by dates whose parasha is known, on both schedules, and the special Shabbatot
+ * (specialShabbat) by dates whose maftir and haftarah are known. Zero dependencies. Exits non-zero on the
+ * first failure. Run: node scripts/smoke-hebrew-calendar.mjs
  *
  * --hebcal: also compares every Shabbat of 5700–5900 (1939–2140), Diaspora and Israel, against Hebcal's
- * year-type tables. That needs @hebcal/core (GPL-2.0 — a dev-time oracle only; nothing of it is copied or
- * shipped): run `npm install --no-save @hebcal/core` in a directory outside the repo and point at it with
- * HEBCAL_DIR=<that dir>, or install it in the repo root (node_modules/ is gitignored). */
+ * year-type tables, and its special reading against @hebcal/leyning's. That needs @hebcal/core (GPL-2.0 — a
+ * dev-time oracle only; nothing of it is copied or shipped) and @hebcal/leyning (BSD-2-Clause, the source
+ * the special-Shabbat rules are ported from): run `npm install --no-save @hebcal/core @hebcal/leyning` in a
+ * directory outside the repo and point at it with HEBCAL_DIR=<that dir>, or install them in the repo root
+ * (node_modules/ is gitignored). */
 import { readFileSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { dirname, join } from 'node:path';
@@ -93,6 +96,28 @@ for (let y = 5660; y <= 5900; y++) for (const israel of [false, true]) {
 }
 ok('5660–5900 × both schedules: every Shabbat placed, 53 parshiyot once each in order');
 
+// 2b. the special Shabbatot: one date per rule (the reading @hebcal/leyning names on it, nearest 2026), and none on
+// a plain Shabbat, a festival Shabbat, or Re'eh on Erev Rosh Chodesh Elul (no Machar Chodesh in Av)
+const KNOWN_SPECIAL = [
+  ['2026-12-05', 'D', 'chanukah', 1], ['2023-12-09', 'I', 'chanukah', 2], ['2024-12-28', 'D', 'chanukah', 3], ['2028-12-16', 'I', 'chanukah', 4],
+  ['2029-12-08', 'D', 'chanukah', 7], ['2026-12-12', 'I', 'chanukah', 8], ['2025-12-20', 'D', 'rosh_chodesh_chanukah', 6],
+  ['2026-02-14', 'I', 'shekalim'], ['2025-03-01', 'D', 'shekalim_rosh_chodesh'], ['2026-02-28', 'D', 'zachor'], ['2026-03-07', 'I', 'parah'],
+  ['2026-03-14', 'D', 'hachodesh'], ['2029-03-17', 'I', 'hachodesh_rosh_chodesh'], ['2026-03-28', 'D', 'hagadol'],
+  ['2025-09-27', 'I', 'shuva_vayeilech'], ['2026-09-19', 'D', 'shuva_haazinu'],
+  ['2026-07-04', 'D', 'pinchas_after_17_tammuz'], ['2026-04-18', 'I', 'rosh_chodesh'], ['2008-08-02', 'D', 'rosh_chodesh_masei'],
+  ['2025-07-26', 'I', 'rosh_chodesh_masei'], ['2029-08-25', 'D', 'ki_teitzei_consolation'], ['2022-05-07', 'D', 'kedoshim_special'],
+  ['2035-05-05', 'I', 'kedoshim_special'], ['2026-05-16', 'D', 'machar_chodesh'],
+];
+for (const [d, s, key, day] of KNOWN_SPECIAL) {
+  const r = H.specialShabbat(d, { israel: s === 'I' });
+  assert.ok(r && r.key === key && (day === undefined || r.day === day) && r.kind === 'parsha', `${d} ${s}: ${key}${day ? ' day ' + day : ''} (got ${r && r.key} ${r && r.day || ''})`);
+}
+assert.equal(H.specialShabbat('2026-03-21', {}), null, 'Vayikra, 3 Nisan 5786: a plain Shabbat');
+assert.equal(H.specialShabbat('2026-04-04', {}), null, 'Shabbat Chol HaMoed Pesach: no parasha, so nothing to replace');
+assert.equal(H.specialShabbat('2025-08-23', {}), null, "Re'eh on 29 Av 5785, Erev Rosh Chodesh Elul: keeps its own haftarah");
+assert.equal(new Set(KNOWN_SPECIAL.map((k) => k[2])).size, H.SPECIAL_KEYS.length, 'every special key is pinned by a date');
+ok(`${KNOWN_SPECIAL.length} special Shabbatot named right (all ${H.SPECIAL_KEYS.length} keys), and none where there is none`);
+
 // 3. triennial helpers
 assert.equal(H.triennialYear(5786), 1); assert.equal(H.triennialYear(5784), 2); assert.equal(H.triennialYear(5785), 3);
 assert.equal(H.triennialCycleStart(5788), 5786);
@@ -129,6 +154,35 @@ if (process.argv.includes('--hebcal')) {
   }
   assert.equal(bad, 0, `${bad} of ${count} Shabbatot differ from Hebcal`);
   ok(`--hebcal: ${count} Shabbatot of 5700–5900 on both schedules agree with Hebcal`);
+  // the special reading of every parasha Shabbat against @hebcal/leyning's getLeyningOnDate (its `reason` names the
+  // key of holiday-readings.json that replaced the maftir or the haftarah; nothing names one when the parasha reads its own)
+  const ley = await import(pathToFileURL(join(dir, 'node_modules/@hebcal/leyning/dist/esm/index.js')).href);
+  const hebcalKey = (r) => {
+    if (!r) return '';
+    const K = { shuva_vayeilech: 'Shabbat Shuva (with Vayeilech)', shuva_haazinu: "Shabbat Shuva (with Ha'azinu)", rosh_chodesh_chanukah: 'Shabbat Rosh Chodesh Chanukah',
+      shekalim: 'Shabbat Shekalim', shekalim_rosh_chodesh: 'Shabbat Shekalim (on Rosh Chodesh)', zachor: 'Shabbat Zachor', parah: 'Shabbat Parah',
+      hachodesh: 'Shabbat HaChodesh', hachodesh_rosh_chodesh: 'Shabbat HaChodesh (on Rosh Chodesh)', hagadol: 'Shabbat HaGadol',
+      pinchas_after_17_tammuz: 'Pinchas occurring after 17 Tammuz', rosh_chodesh: 'Shabbat Rosh Chodesh', ki_teitzei_consolation: 'Ki Teitzei with 3rd Haftarah of Consolation',
+      kedoshim_special: 'Kedoshim following Special Shabbat', machar_chodesh: 'Shabbat Machar Chodesh' };
+    if (r.key === 'chanukah') return `Chanukah Day ${r.day} (on Shabbat)`;
+    if (r.key === 'rosh_chodesh_masei') return (r.idx.length === 2 ? 'Matot-Masei' : 'Masei') + ' on Shabbat Rosh Chodesh';
+    return K[r.key] || 'unknown ' + r.key;
+  };
+  let sc = 0, sbad = 0;
+  for (let y = 5700; y <= 5900; y++) for (const israel of [false, true]) {
+    const t = H.sedraForYear(y, israel);
+    for (let j = t.bereshit; j < t.bereshitNext; j += 7) {
+      const g = H.jdnToGregorian(j);
+      const reading = ley.getLeyningOnDate(new core.HDate(new Date(g.y, g.m - 1, g.d)), israel);
+      if (!reading || !reading.parsha) continue;   // a festival Shabbat
+      const reason = reading.reason || {};
+      const theirs = reason.haftara || reason.M || '', mine = hebcalKey(H.specialShabbat(g, { israel }));
+      sc++;
+      if (theirs !== mine) { sbad++; if (sbad <= 20) console.log(`  MISMATCH ${g.y}-${g.m}-${g.d} ${israel ? 'IL' : 'D'}: hebcal "${theirs}", ours "${mine}"`); }
+    }
+  }
+  assert.equal(sbad, 0, `${sbad} of ${sc} parasha Shabbatot differ from @hebcal/leyning on the special reading`);
+  ok(`--hebcal: ${sc} parasha Shabbatot of 5700–5900 on both schedules agree with @hebcal/leyning on the special reading`);
 }
 
 console.log(`smoke-hebrew-calendar: ${n} checks passed`);
