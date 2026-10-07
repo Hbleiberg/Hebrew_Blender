@@ -234,11 +234,11 @@ stop and reconsider. Shell (dark mode, tooltips, tour, toast, My Fonts) is copie
 (Learn | Phrases | Drill | Settings) laid out like the Font Maker's Settings tab: a serif heading per group over a
 hairline rule, the group's items in a grid (three across, two below 1024px, one below 640px) with small
 uppercase item labels, and nothing to collapse — so the page carries no panel-collapse memory. The
-groups are names and tradition (primary names, melody), sing along (key, voice, note names, tune speed, play
-each tune and the sing-back pause — see *Key and voice*, *Note names* and *Tune practice* below), drill, Hebrew
-font, and a shared row of progress, your account and about.
-There is no header gear; `openSettings()` survives only as `setMode('settings')` for the Learn banner's *Change*
-(`openMelodySetting`) and the tools smoke; the *Your account* group (`#setCloud`, `trope.settings.panel_cloud`)
+groups are names and tradition (primary names, and a pointer to the melody bar), sing along (key, voice, note
+names, tune speed, play each tune and the sing-back pause — see *Key and voice*, *Note names* and *Tune practice*
+below), drill, Hebrew font, and a shared row of progress, your account and about.
+There is no header gear; `openSettings()` survives only as `setMode('settings')` for the tools smoke; the *Your
+account* group (`#setCloud`, `trope.settings.panel_cloud`)
 hosts the shared account status line (`#cloudSavesPanel`). Switching to the tab
 re-syncs the controls from `settings`; every control saves on change. Print hides the tab like Drill.
 **Focus across rebuilds:** a chip press rebuilds its row (the Learn families, the Phrases groups), and the rebuilt chip
@@ -305,21 +305,29 @@ to Learn), and a caller that opens something inside the new tab (`openLearnFor`,
   **Three more files are derived the same way** — `trope_motifs_esther.json` (Esther, section I, `key:"Eb"`),
   `trope_motifs_megillot.json` (Shir HaShirim, Ruth and Kohelet, section J, `key:"C"`) and
   `trope_motifs_eicha.json` (Eicha, section K, `key:"Eb"`) — each holding the marks its chart prints
-  (`docs/tropepatterns.md` → A names the row behind every entry); no page fetches them yet.
-  **Settings → Melody** (`settings.melody`, `'torah'` by default, `'highholiday'` or `'haftarah'` — the Haftarah
-  radio's label carries the suite's Beta badge, `shared.badge.beta`) picks which file draws the staffs and feeds
-  the tune button; any other stored value shows the year-round staffs and stays stored (`melodyKey()`), so a
-  newer page's choice survives a round trip. **`?melody=highholiday`, `?melody=haftarah` or `?melody=torah`** (the
-  Torah Trainer's Rosh Hashanah and Yom Kippur readings link with the first, its haftarot with the second) shows
-  that melody for the visit only — `_melodyOverride`, read once at init, never saved or synced, silent on any
-  other value; the Settings radios show it. Choosing a melody in Settings, or Reset all, replaces it and
-  drops the param with `history.replaceState` (the other params and the hash stay), so a reload
-  after a choice does not bring the link's melody back. While the High Holiday or the Haftarah melody is on, the
-  Learn tab shows a banner naming it (`#tuMelodyNote`, one span per melody with its own static `data-i18n` — it
-  prints with the chart; its Change button, which opens the setting, does not), a card with no High Holiday
-  figure says why where its staff would be, the staff's aria-label names the melody, and on the Haftarah melody
-  the key bar and Settings readout name the relative minor (`keyNameText` through `trope.key.name_minor`, as the
-  Trainer's staff readout does). The motif builder never reads or writes the High Holiday
+  (`docs/tropepatterns.md` → A names the row behind every entry), fetched `?v=1` each and validated like the others.
+  **The melody bar** (`#tuMelodyBar`, between the header and the tabs, in view on every tab: `settings.melody`,
+  `'torah'` by default, one of `MELODY_KEYS` — torah, highholiday, haftarah, esther, megillot, eicha — through the
+  one writer `setMelody`) picks which file draws the Learn staffs, which chart the Phrases tab shows and what the
+  tune buttons play. `MELODY_INFO` is the one table behind it: each melody's file with its `?v=`, its radio and
+  the note span under the bar, whether the key readout names the relative minor (haftarah and eicha, whose sof
+  pasuk comes to rest on C: `keyNameText` through `trope.key.name_minor`, as the Trainer's staff readout does),
+  whether the Phrases cards have examples (year-round and High Holidays — the census reads no other text),
+  whether the chart's closing ends a chapter (the three megillah charts: their closing group is titled
+  `trope.phrases.group_closing_chapter`) and the credit the key bar names (`#tuKeyCredit`:
+  `trope.key.melody_credit` for the two Avery/Binder charts, `trope.key.melody_credit_pw` for the four
+  Portnoy–Wolff ones; `syncTuneControls` writes the key on the span so a language switch re-resolves it). Any
+  other stored value shows the year-round staffs and stays stored (`melodyKey()`), so a newer page's choice
+  survives a round trip. **`?melody=<key>`** (the Torah Trainer's links: `highholiday` from a Rosh Hashanah or
+  Yom Kippur reading, `haftarah` from a haftarah, a megillah's own melody) shows that melody for the visit only
+  — `_melodyOverride`, read once at init, never saved or synced, silent on any other value; the bar shows it.
+  Choosing in the bar, or Reset all, replaces it and drops the param with `history.replaceState` (the other
+  params and the hash stay), so a reload after a choice does not bring the link's melody back. The bar's note
+  (`#tuMelodyNote`, one span per melody with its own static `data-i18n`, shown by `syncMelodyNote`) names the
+  melody and its chart — it prints with the chart, the radios do not; a card whose chart prints no row for its
+  mark says so where the staff would be (`trope.learn.no_figure_m`); the staff's aria-label names the melody
+  (`trope.learn.motif_aria_m`, `trope.phrases.staff_aria_m`); Settings keeps only a pointer to the bar
+  (`trope.melody.where`); the tour's second step lands on the bar. The motif builder never reads or writes the High Holiday
   file — there are no High Holiday recordings to draft from — so it is edited by hand like a verified
   entry (the phrases builder checks it against its rows), and its `?v=` is bumped on every change.
   **The tune button** (beside the names on every card with a motif) plays the staff as Web Audio
@@ -357,8 +365,9 @@ to Learn), and a caller that opens something inside the new tab (`openLearnFor`,
   and High Holiday charts are the teacher's (Avery/Binder); the other four are *The Art of Cantillation, Vol. 2*
   (Portnoy and Wolff, UAHC Press, 2001), appendices D–G, transcribed in `docs/tropepatterns.md` sections H–K.
   The Phrases tab fetches it (`?v=3`, in `docs/reference/ops.md`'s list — the Torah Trainer's Trope staff
-  fetches the same URL); bump that with every rebuild that changes it. The tutor reads the file through
-  `melodyKey()`, which names three melodies, so the Esther, Megillot and Eicha rows are inert here for now.
+  fetches the same URL); bump that with every rebuild that changes it. The tutor draws the melody the bar
+  chooses (`phraseSet()`, any of the six); `PHRASE_GROUPS` orders each chart's rows into its clause groups (a
+  row the table does not name joins *More phrases*).
   - It is built by `node scripts/build-trope-phrases.mjs` from the fenced row blocks in
     `docs/tropepatterns.md` sections B, C and H–K, which are **the only hand-edited copy of the notes**:
     fix a note there and re-run the builder, never edit the JSON. Every melody's rows are smoke-tested
@@ -828,8 +837,9 @@ file uses, the Megillot chart's `64` included). Design: `docs/tropepatterns.md` 
   section (`torah.staff.melody_credit`) and Audio speeds & pitch section (`torah.audio.recording_credit`), both on
   the drawer's Audio tab, audio-bar credit
   (`torah.audio.recording_melody`) and High Holiday recording chip; the tutor's Learn intro, key-bar caption
-  (`#tuKeyCredit`, `trope.key.melody_credit`, hidden by `syncTuneControls` on the Haftarah melody), Melody and
-  tradition notes, example play buttons, FAQ and footer credit. The repo holds no other source for either name.
+  (`#tuKeyCredit`: `trope.key.melody_credit` or `trope.key.melody_credit_pw`, written by `syncTuneControls` for
+  the melody on screen), the melody bar's notes and the Settings note, example play buttons, FAQ and footer
+  credit. The repo holds no other source for either name.
 - **Note names** (`staffNoteNames`: `'off'`, `'letters'`, `'solfa'`; an unknown stored value shows none and stays
   stored). The tutor's option for the reading: `renderStaffView` builds `namesOf`, a callback giving a row's names
   index-aligned with its notes (a rest has none) from `staffNoteNameAt` — the tutor's `noteNameAt` kept page-local,

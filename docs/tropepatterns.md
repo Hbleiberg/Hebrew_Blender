@@ -1319,11 +1319,10 @@ on the second, the last marked "(end of each chapter)". The scan was read the wa
 was (section H): a row at a time at 400 dpi, by eye and by the note-head detector, with the beams
 counted between the stems and every flag, dot and rest in doubt compared at 6–8× against a glyph of
 the same page whose value was certain. The melody is the traditional one; the transcription is
-CC BY-SA 4.0 like the rest of this file. No page reads these rows yet — the Trope Tutor's Melody picker
-and the Torah Trainer's staff know the Torah, High Holiday and Haftarah sets only (the wiring is a
-candidate in `docs/IMPROVEMENT_LOG.md`) — but the builder derives `data/trope/trope_motifs_esther.json`
-from these rows through section A's Esther column on every run, so the Learn cards are ready for it;
-never edit that file by hand.
+CC BY-SA 4.0 like the rest of this file. The Trope Tutor's melody bar draws these rows (the Phrases tab
+from the phrase file; the Learn cards from `data/trope/trope_motifs_esther.json`, which the builder
+derives from these rows through section A's Esther column on every run — never edit that file by hand);
+the Torah Trainer's staff does not draw them yet.
 
 **Key and range.** Three flats, E♭ major, like the book's Haftarah and Eicha charts, and one printed
 accidental: the E♮ of the figure F4 E♮4 F4 that closes zarka, segol, yerach ben yomo and the final
@@ -1661,10 +1660,10 @@ as the Haftarah and Esther charts were (sections H and I): a row at a time at 40
 note-head detector, with the beams counted in the pixel columns between the stems, every dot, flag,
 rest and curve in doubt dumped pixel by pixel, and the rhythm of each figure compared against the same
 figure elsewhere on the page. The melody is the traditional one for Shir HaShirim, Ruth and Kohelet;
-the transcription is CC BY-SA 4.0 like the rest of this file. No page reads these rows yet (the wiring
-is a candidate in `docs/IMPROVEMENT_LOG.md`), but the builder derives
-`data/trope/trope_motifs_megillot.json` from them through section A's Megillot column on every run, so
-the Learn cards are ready; never edit that file by hand.
+the transcription is CC BY-SA 4.0 like the rest of this file. The Trope Tutor's melody bar draws these
+rows (the Phrases tab from the phrase file; the Learn cards from `data/trope/trope_motifs_megillot.json`,
+which the builder derives from them through section A's Megillot column on every run — never edit that
+file by hand); the Torah Trainer's staff does not draw them yet.
 
 **Key and range.** No key signature and no accidental anywhere on the chart, so every pitch is a plain
 letter (`key: C`; the builder refuses any sign). The rows lie between C4 and D5: the etnachta closes on
@@ -2002,10 +2001,10 @@ re-cropped rows that keep their bracket numbers and by the note-head detector, w
 run by run in the pixel columns between the stems, every dot, flag, rest, grace note and curve in doubt
 magnified to 4–8× or dumped pixel by pixel, and each figure compared against the same figure elsewhere
 on the page. The melody is the traditional one for Eicha on Tisha B'Av; the transcription is
-CC BY-SA 4.0 like the rest of this file. No page reads these rows yet (the wiring is a candidate in
-`docs/IMPROVEMENT_LOG.md`), but the builder derives `data/trope/trope_motifs_eicha.json` from them
-through section A's Eicha column on every run, so the Learn cards are ready; never edit that file by
-hand.
+CC BY-SA 4.0 like the rest of this file. The Trope Tutor's melody bar draws these rows (the Phrases tab
+from the phrase file; the Learn cards from `data/trope/trope_motifs_eicha.json`, which the builder
+derives from them through section A's Eicha column on every run — never edit that file by hand); the
+Torah Trainer's staff does not draw them yet.
 
 **Key and range.** Three flats, E♭ major, like the Haftarah chart, and one printed accidental: the E♮
 of the figure F4 E♮4 F4 that opens segol's GOL (rows 34–37). Every B, E and A is written with its sign
