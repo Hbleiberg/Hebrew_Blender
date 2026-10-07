@@ -7646,6 +7646,20 @@ function mountFolderTree(cfg){
 }
 /* ═══ end folder-tree component ═══ */
 
+  // Duplicate, Rename and Delete rebuild the list, which took the pressed button (and keyboard focus) with it: focus
+  // goes to the same button on the same preset, else on the row now at its place (a rename keeps its place), else
+  // to the name field when the list is empty — the generator's presetActKeepFocus (pattern
+  // button-focus-lost-to-its-own-rebuild).
+  function presetActKeepFocus(b, name, fn) {
+    const row = b.closest('[data-ft-item]'), i = row ? [...row.children].filter(x => x.tagName === 'BUTTON').indexOf(b) : -1;
+    const rowsNow = () => [...document.querySelectorAll('#presetList [data-ft-item]')].filter(r => r.offsetParent !== null);
+    const pos = row ? rowsNow().indexOf(row) : -1;
+    fn();
+    if (b.isConnected || !row) return;
+    const rows = rowsNow(), t = rows.find(r => r.dataset.ftItem === name) || rows[Math.min(pos, rows.length - 1)];
+    const btn = t && [...t.children].filter(x => x.tagName === 'BUTTON')[i];
+    (btn || document.getElementById('presetName')).focus();
+  }
   function renderPresets() {
     mountFolderTree({
       treeKey: 'hebrewDashboard_presetsFolders',
@@ -7661,7 +7675,7 @@ function mountFolderTree(cfg){
           // such a button carries no text, so it always takes the title as its accessible name.
           const isIcon = txt.charAt(0) === '<';
           if (isIcon) b.innerHTML = txt; else b.textContent = txt;
-          if (title) { b.title = title; if (isIcon || !/\p{L}|\p{N}/u.test(txt)) b.setAttribute('aria-label', title); } b.addEventListener('click', fn); return b; };
+          if (title) { b.title = title; if (isIcon || !/\p{L}|\p{N}/u.test(txt)) b.setAttribute('aria-label', title); } b.addEventListener('click', () => presetActKeepFocus(b, name, fn)); return b; };
         f.appendChild(mk(I18n.t('dashboard.preset.load'), '', 'btn btn-xs', () => loadPreset(name)));
         f.appendChild(mk(ICON_RESET_SM, I18n.t('dashboard.preset.overwrite_title'), 'btn btn-xs btn-secondary', () => overwritePreset(name)));
         f.appendChild(mk('⧉', I18n.t('dashboard.preset.duplicate_title'), 'btn btn-xs btn-secondary', () => duplicatePreset(name)));
