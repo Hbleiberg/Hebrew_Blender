@@ -1008,6 +1008,26 @@ the derivation). Dropping the second mercha dissolves the triplet it shared with
 sing SOF as a plain eighth. The Trainer closes a haftarah's last verse on the longest of the four whose
 marks end it.
 
+**Known differences from Binder.** Every row was also set against the same phrase in Binder's
+*Biblical Chant* (Chart 2, printed a tone higher with one flat) and the HUC handwritten page for the
+Prophets, by the contour of each figure: the note-head detector read Binder's staves as it read these,
+and each figure's rises and falls were compared row by row. The two charts agree, note for note after
+transposition, on the etnachta's TA, the munach's five-sixteenth run (14, 21), kadma v'azla and
+geresh (15–16), munach legarmeh and revia (17–19), gershayim (20), the telishas (29–30), the pazer's
+run (31), zakef gadol (32), mercha kefula (39) and on where every clause ends. Where they differ,
+this chart's reading was re-checked against its own page and kept, Portnoy and Wolff being the source
+of record: Binder's mercha before etnachta rises a fourth and falls back a step, and his tipcha,
+before etnachta and before sof pasuk alike, falls to C4 (rows 1–8; here the mercha is C4 E♭4 C4,
+and the tipcha rises to F4 before etnachta and climbs F4 G4 before sof pasuk); his pashta climbs
+from below the staff to A♭4 in sixteenths and his zakef katon walks down a third to E♭4 (9–14; here
+the pashta touches G4 and KA-TON turns F4 G4 E♭4); his darga rises a fifth to C5 (22–28; a fourth to
+B♭4 here); his tevir carries on past E♭4 and falls through a flattened D to C4 (23–28; here it ends
+on E♭4); his yetiv falls an octave (33–34; a fifth here); his zarka opens with a rising run, E♭4 up
+to A♭4, before the fall (35–38; here it starts at the top); and his final cadence ends on C4 like
+any sof pasuk (here row 40 rises through the grace pair to end on A♭4). The HUC page, read for
+contour only, shows Binder's falling tipcha and rising zarka where it is legible, and nothing in it
+contradicts the rest. All of these rows are on the ear-check list.
+
 ```trope-haftarah
 #1 מֵרְכָ֥א טִפְּחָ֖א מֻנָּ֣ח אֶתְנַחְתָּ֑א
 mercha    MER- C4(e) CHA E♭4(e) ~C4(e)
@@ -1351,6 +1371,19 @@ read without aliyot, so the tag here means the end of a chapter, and the chart g
 endings no rows of their own, so none is derived (a reader who needs one sings the printed row with
 the missing marks left out).
 
+**Known differences from Binder.** The same comparison was made against Binder's Esther chart
+(Chart 4), printed in the same key with the same three flats, and the HUC Esther page (one flat).
+Binder's chart agrees with this one, note for note, in every clause: the etnachta and sof pasuk
+clauses (1–8), the zakef katon clause (9–14), kadma v'azla and geresh (15–16), the revia rows
+(17–19), gershayim (20–21), darga and tevir (22–28), telisha gedola and the munach before it (29),
+pazer (31), zakef gadol (32), yetiv (33–34), the segol clause with its E♮ (35–38), yerach ben yomo
+(39), karnei parah (40) and the chapter's closing (41, which Binder also heads as the cadence for the
+end of each chapter) — and it was this agreement that exposed the misread signature noted above. The
+one difference is telisha ketana (30): Binder's rises from F4 through G4 and A♭4 to B♭4 and ends
+there, the shape of his pazer, where this chart's stays on E♭4 and closes E♭4 D4 E♭4 F4 E♭4 — a row
+for the ear check. The HUC page (handwritten) was read for contour only; nothing legible in it
+contradicts either chart.
+
 ```trope-esther
 #1 מֵרְכָ֥א טִפְּחָ֖א מֻנָּ֣ח אֶתְנַחְתָּ֑א
 mercha    MER- 3{G4(e) CHA G4(e)
@@ -1682,6 +1715,17 @@ kadma's A4 is tied into the eighth that follows it (9).
 **The closing rows.** Rows 39 and 39a are the two `[aliyah-end]` rows: the Megillot are read without
 aliyot, so the tag means the end of a chapter (39) or of the book (39a), which differ only in the
 penultimate note (E4 against G4). The chart gives the shorter endings no rows, so none is derived.
+
+**Known differences from Binder.** The same comparison was made against Binder's chart for Ruth,
+Shir HaShirim and Kohelet (Chart 5, printed a tone higher with two sharps) and the HUC Shir HaShirim
+page (one sharp). Binder's chart agrees with this one, note for note after transposition, in every
+clause — the etnachta and sof pasuk clauses (1–8), the zakef katon clause (9–14), kadma v'azla and
+geresh (15–16), the revia rows (17–19), gershayim (20–21), darga and tevir (22–28), both telishas
+(29–30), the pazer's run (31; Binder prints one munach before it where this chart prints two), zakef
+gadol (32), yetiv (33–34), the segol clause (35–38) and the closing with its six sixteenths (39) —
+and no difference was found; the TON of rows 33–34 and the sixty-fourths of the telishas (29–30) are
+on the ear-check list for their engraving here, not for any disagreement. The HUC page (handwritten)
+was read for contour only; nothing legible in it contradicts either chart.
 
 ```trope-megillot
 #1 מֵרְכָ֥א טִפְּחָ֖א מֻנָּ֣ח אֶתְנַחְתָּ֑א
@@ -2022,6 +2066,18 @@ of their own, so none is derived (a reader who needs one sings the printed row w
 left out). Its tipcha opens as the Esther chart's closing tipcha does (section I, row 41), C5 C5 and
 four thirty-seconds down to F4, but settles on a quarter and an eighth rest where Esther's runs on
 through F4 E♮4 F4.
+
+**Known differences from Binder.** The same comparison was made against Binder's Eicha chart (Chart
+6, printed a tone higher with one flat) and the HUC Lamentations page (one flat). Binder's chart
+agrees with this one, note for note after transposition, in every clause — the etnachta and sof
+pasuk clauses with their rests (1–8), the zakef katon clause down to the two small notes before
+mahpach's PACH (9–14), kadma v'azla and geresh (15–16), the revia rows with the `5` over the run
+(17–19), gershayim (20–21), darga and tevir (22–28), both telishas (29–30), zakef gadol (31), yetiv
+(32–33), the segol clause, where Binder prints the same raised lower neighbour in the triplet as a
+sharp in his key (34–37), and the chapter's closing (38) — and no difference was found. The HUC page
+shows the same sharpened note in segol and the same closing shape; read for contour only, nothing
+legible in it contradicts either chart. (Binder also prints three shorter closings; this chart does
+not, and none is derived here.)
 
 ```trope-eicha
 #1 מֵרְכָ֥א טִפְּחָ֖א מֻנָּ֣ח אֶתְנַחְתָּ֑א
