@@ -702,9 +702,8 @@ function _phraseSetsFrom(j) {
    ══════════════════════════════════════════════════════ */
 // The connecting ("servant") marks, whose figure depends on the mark they lead into (the builder's list).
 const TROPE_CONJUNCTIVE = new Set(['munach', 'mahpach', 'mercha', 'mercha_kefula', 'darga', 'kadma', 'telisha_ketana', 'yerach_ben_yomo']);
-// The row each Learn card draws its figure from (docs/tropepatterns.md → A; section H's table for the Haftarah
-// rows, which have no cards): the last resort when the chart prints no figure of a mark in a verse's context,
-// so a word is never left without notes.
+// The row each Learn card draws its figure from (docs/tropepatterns.md → A, one column per melody): the last
+// resort when the chart prints no figure of a mark in a verse's context, so a word is never left without notes.
 const TROPE_LEARN_ROW = {
   torah: { mercha: '1', tipcha: '4', munach: '2', etnachta: '4', sof_pasuk: '8', mahpach: '11', pashta: '13', yetiv: '33',
     zakef_katon: '13', zakef_gadol: '31', zarka: '37', segol: '37', shalshelet: '38', revia: '19', darga: '21', tevir: '22',
@@ -713,10 +712,10 @@ const TROPE_LEARN_ROW = {
   highholiday: { mercha: '1', tipcha: '4', munach: '2', etnachta: '4', sof_pasuk: '8', mahpach: '11', pashta: '10', yetiv: '24',
     zakef_katon: '10', zakef_gadol: '25', zarka: '29', segol: '29', revia: '16', darga: '13', tevir: '13', kadma: '20',
     geresh: '21', gershayim: '22', telisha_ketana: '18', telisha_gedola: '17', pazer: '19', munach_legarmeh: '15' },
-  haftarah: { mercha: '1', tipcha: '4', munach: '2', etnachta: '4', sof_pasuk: '8', mahpach: '10', pashta: '12', yetiv: '15',
-    zakef_katon: '12', zakef_gadol: '13', zarka: '29', segol: '29', shalshelet: '30', revia: '18', darga: '19', tevir: '19',
-    kadma: '21', geresh: '22', gershayim: '23', telisha_ketana: '25', telisha_gedola: '24', pazer: '27', mercha_kefula: '31',
-    karnei_parah: '32', yerach_ben_yomo: '32', munach_legarmeh: '16' },
+  haftarah: { mercha: '1', tipcha: '4', munach: '2', etnachta: '4', sof_pasuk: '8', mahpach: '11', pashta: '13', yetiv: '34',
+    zakef_katon: '13', zakef_gadol: '32', zarka: '38', segol: '38', revia: '19', darga: '22', tevir: '23', kadma: '15',
+    geresh: '16', gershayim: '20', telisha_ketana: '30', telisha_gedola: '29', pazer: '31', mercha_kefula: '39',
+    munach_legarmeh: '17' },
 };
 const TROPE_MARK_RE = /[֑-֯]/g;   // the te'amim block; U+05BD (meteg / siluk) is deliberately outside it
 // A verse's marks, word by word, on the Torah Trainer's own split (whitespace AND maqaf, one piece per

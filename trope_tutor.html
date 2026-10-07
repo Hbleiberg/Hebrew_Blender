@@ -1756,8 +1756,8 @@ async function loadData() {
       // ?v= bump rule applies here too (on every trope_motifs.json / trope_motifs_hh.json change).
       fetch('data/trope/trope_motifs.json?v=6').catch(() => null),
       fetch('data/trope/trope_motifs_hh.json?v=4').catch(() => null),
-      fetch('data/trope/trope_motifs_haftarah.json?v=1').catch(() => null),
-      fetch('data/trope/trope_phrases.json?v=2').catch(() => null),   // the Phrases tab; ?v= bumps with the file
+      fetch('data/trope/trope_motifs_haftarah.json?v=2').catch(() => null),
+      fetch('data/trope/trope_phrases.json?v=3').catch(() => null),   // the Phrases tab; ?v= bumps with the file
       fetch('data/trope/trope_phrase_examples.json?v=1').catch(() => null),
     ]);
     if (!idxRes.ok || !manRes.ok) throw new Error('HTTP ' + idxRes.status + '/' + manRes.status);
@@ -2396,19 +2396,19 @@ const PHRASE_GROUPS = {
     { key: 'segol', rows: ['26', '27', '28', '29'] },
     { key: 'closing', rows: ['30', '31', '32', '33'] },
   ],
-  haftarah: [   // docs/tropepatterns.md → H, in the Torah chart's order
+  haftarah: [   // docs/tropepatterns.md → H, in the chart's own order (Portnoy & Wolff, Appendix D)
     { key: 'etnachta', rows: ['1', '2', '3', '4'] },
     { key: 'sofpasuk', rows: ['5', '6', '7', '8'] },
-    { key: 'katon', rows: ['9', '10', '11', '12'] },
-    { key: 'gadol', rows: ['13', '14', '15'] },
-    { key: 'revia', rows: ['16', '17', '18'] },
-    { key: 'tevir', rows: ['19', '20'] },
-    { key: 'geresh', rows: ['21', '22'] },
-    { key: 'gershayim', rows: ['23'] },
-    { key: 'telisha', rows: ['24', '25', '26', '27'] },
-    { key: 'segol', rows: ['28', '29'] },
-    { key: 'rare', rows: ['30', '31', '32'] },
-    { key: 'closing', rows: ['33', '34', '35', '36'] },
+    { key: 'katon', rows: ['9', '10', '11', '12', '13', '14'] },
+    { key: 'geresh', rows: ['15', '16'] },
+    { key: 'revia', rows: ['17', '18', '19'] },
+    { key: 'gershayim', rows: ['20', '21'] },
+    { key: 'tevir', rows: ['22', '23', '24', '25', '26', '27', '28'] },
+    { key: 'telisha', rows: ['29', '30', '31'] },
+    { key: 'gadol', rows: ['32', '33', '34'] },
+    { key: 'segol', rows: ['35', '36', '37', '38'] },
+    { key: 'rare', rows: ['39'] },
+    { key: 'closing', rows: ['40', '40b', '40c', '40d'] },
   ],
 };
 const PHRASE_GROUP_FAMILY = { etnachta: 'etnachta', sofpasuk: 'sofpasuk', katon: 'katon', geresh: 'geresh', revia: 'revia',

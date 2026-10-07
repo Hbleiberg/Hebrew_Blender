@@ -78,8 +78,8 @@ Notes:
   and every existing visitor keeps the old bytes forever with nothing to see. Where two pages
   fetch the same corpus they must use the **same** value (mismatched ones evict each other's
   copy on alternate visits). Current: `hebrew_words.json?v=6`,
-  `trope/trope_index.json?v=2`, `trope/trope_motifs.json?v=6`, `trope/trope_motifs_hh.json?v=4`, `trope/trope_motifs_haftarah.json?v=1` (written by the phrases builder),
-  `trope/trope_phrases.json?v=2` (fetched by the Trope Tutor **and** the Torah Trainer's Trope staff layout — one value),
+  `trope/trope_index.json?v=2`, `trope/trope_motifs.json?v=6`, `trope/trope_motifs_hh.json?v=4`, `trope/trope_motifs_haftarah.json?v=2` (written by the phrases builder),
+  `trope/trope_phrases.json?v=3` (fetched by the Trope Tutor **and** the Torah Trainer's Trope staff layout — one value),
   `trope/trope_phrase_examples.json?v=1`,
   `hebrew_emojis.json?v=2`,
   `parshiyot.json?v=1`, `pockettorah/manifest.json?v=1`, `pockettorah/aliyah.json?v=1`

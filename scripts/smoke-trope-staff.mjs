@@ -18,7 +18,7 @@ const api = vm.runInNewContext(src + '\n;({ TROPES, TROPE_CHAR_TO_KEY, tropeUnit
   { document: { createElementNS: stubEl }, console });
 const sets = api._phraseSetsFrom(JSON.parse(readFileSync(join(root, 'data/trope/trope_phrases.json'), 'utf8')));
 assert.ok(sets && sets.torah && sets.highholiday && sets.haftarah, 'phrase sets load');
-assert.equal(sets.haftarah.key, 'F', 'the Haftarah rows are D minor written in F');
+assert.equal(sets.haftarah.key, 'Eb', 'the Haftarah chart is E♭ major, three flats');
 const ctx = { torah: api.tropeContextsOf(sets.torah), highholiday: api.tropeContextsOf(sets.highholiday), haftarah: api.tropeContextsOf(sets.haftarah) };
 
 const G = {
@@ -70,13 +70,14 @@ ok('every unit of the three verses gets a figure of its own mark, on all three m
   const end = api.tropeChooseFigures(u.units, ctx.haftarah, { melody: 'haftarah', aliyahEnd: true });
   assert.ok(end.slice(3).every(isEnd) && !end.slice(0, 3).some(isEnd), 'the last verse closes on the [aliyah-end] tipcha sof pasuk');
   assert.ok(end.slice(3).every((p) => p.n === end[3].n), 'one closing row');
+  assert.equal(end[3].n, '40d', 'the tipcha sof pasuk ending closes on the derived row 40d');
   const row = api.tropeBuildReadingRow(u.units, end, u.cells, sets, { n: '40:1' });
-  assert.equal(row.units.length, 5); assert.ok(row.notes.every((n) => n.r || (n.p >= -14 && n.p <= -1)), 'A3–B♭4');
+  assert.equal(row.units.length, 5); assert.ok(row.notes.every((n) => n.r || (n.p >= -13 && n.p <= 1)), 'B♭3–C5');
   row.words.forEach((w) => { w.w = 80; });
-  const L = api.layoutPhraseStaff(row, 'F', 0, null, { lyrics: false, accidentals: 'unit' });
-  for (let i = 1; i < L.words.length; i++) assert.ok(L.words[i].cx - L.words[i].w / 2 >= L.words[i - 1].cx + L.words[i - 1].w / 2 + 6 - 1e-9, 'words do not overlap in F');
+  const L = api.layoutPhraseStaff(row, 'Eb', 0, null, { lyrics: false, accidentals: 'unit' });
+  for (let i = 1; i < L.words.length; i++) assert.ok(L.words[i].cx - L.words[i].w / 2 >= L.words[i - 1].cx + L.words[i - 1].w / 2 + 6 - 1e-9, 'words do not overlap in E♭');
   assert.ok(L.W > 0 && L.notes.length === row.notes.length);
-  ok('Isaiah 40:1 draws from the Haftarah rows alone, closes only as the haftarah\'s last verse, and lays out in F');
+  ok('Isaiah 40:1 draws from the Haftarah rows alone, closes only as the haftarah\'s last verse, and lays out in E♭');
 }
 // Genesis 1:1's munach stands before etnachta: the chart prints that (rows 1–2), never munach before zakef katon
 {
