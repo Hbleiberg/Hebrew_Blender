@@ -84781,3 +84781,11 @@ _(prior — S464 pointer:)_ **Next session (S464):** **BRANCH/PR: S460–S463 on
 - 2026-10-02 | **S447** | iters: 1 pass (**K**) + 4 fixes = **5** | tools: FM, torah, trope, data (flash/generator/dictionary ?v=) | patterns fixed: stale-html-fallback-behind-its-csv-value ×1 | pass run: K | SW: v914→v915
 
 - 2026-10-02 | **S448** | iters: 1 pass (**N**) + 4 fixes = **5** | tools: torah ×2, flash, dictionary | patterns fixed: — | pass run: N | SW: v915→v916
+
+## Archived at the census re-count (2026-10-07), outside the loop
+
+### Candidate struck (fixed)
+
+- [ ] P3 (**NEW PR #313 — needs Sefaria**) | scripts/build-trope-phrases.mjs | **`docs/trope_contexts_report.md` is counted against an older `trope_phrases.json`** (the builder warns on every run): run `--census` where Sefaria answers (a 403 from this sandbox) and commit the report. | found PR #313
+
+→ Fixed in `2202613`: Sefaria's export answered (MAM, last modified 2026-10-01) and `--census` ran green with every count and table unchanged (5,846 verses, 68,771 marks); the report now names the six-chart JSON (sha1 `4f73824cd242`, was `2fb67c25c476`), and its Chart line reads the section list from `MELODIES` like the JSON's `source` (the hand-written "B, C and H" had missed I–K). `trope_phrase_examples.json` byte-identical, so no `?v=` bump.

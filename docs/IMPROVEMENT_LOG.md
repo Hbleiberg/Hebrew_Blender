@@ -8,8 +8,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P3 (**NEW PR #313 — needs Sefaria**) | scripts/build-trope-phrases.mjs | **`docs/trope_contexts_report.md` is counted against an older `trope_phrases.json`** (the builder warns on every run): run `--census` where Sefaria answers (a 403 from this sandbox) and commit the report. | found PR #313
-
 - [ ] P4 (**NEW PR #313**) | torah_trainer.html | **Sephardi haftarot and the holidays' maftirim are not offered**: `holiday-readings.json` carries `seph` and `fullkriyah.M` for every entry the table keys (the leyning builder's check could carry them). | found PR #313
 
 - [ ] P4 (**NEW PR #313**) | torah_trainer.html | **Shabbat Chazon's haftarah (Isaiah 1) is drawn in the Haftarah chart throughout**; the verses customarily chanted to Eicha's tune need a per-verse tune. | found PR #313
@@ -309,6 +307,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 _(none)_
 
 ## Done
+
+- [x] 2026-10-07 | `2202613` (outside the loop) | trope_contexts_report.md, build-trope-phrases.mjs | **The `--census` re-count (Sefaria answered): every count unchanged, the digest now the six-chart JSON’s; the Chart line names its sections from `MELODIES`.** | `--census` ×2 byte-identical; no warning; examples unchanged.
 
 - [x] 2026-10-07 | `c21e467`…PR #313's head (outside the loop) | data/trope, tropepatterns.md, js/trope-staff.js, trope_tutor.html, js/hebrew-calendar.js, torah_trainer.html, CSV | **Portnoy & Wolff's Haftarah, Esther, Megillot and Eicha charts transcribed (H–K); the Tutor's Melody dropdown (six tunes); the Trainer's holiday, special-Shabbat (by date) and Megillot readings — closes the "holiday readings keep English names" candidate.** | builder round trip; staff smoke 19; calendar `--hebcal` (5700–5900 × 2); tools 114/114; Playwright pw8/pw10/pw11 (Sefaria stubbed); `--census` blocked (403).
 
