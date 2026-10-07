@@ -758,6 +758,9 @@ body.dark .hk-toggle[aria-expanded="true"],body.dark .hk-tab.active{background:#
 .hk-key{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:40px;padding:3px 2px;border:1px solid var(--border,#c8bfa8);border-radius:5px;background:var(--white,#fff);color:var(--text,#1a2744);cursor:pointer;font-family:inherit;user-select:none;transition:border-color 0.15s,background 0.15s;}
 .hk-key:hover{border-color:var(--gold,#c9922a);}
 .hk-key:active{background:var(--warm-gray,#e8e0d0);}
+/* In dark every carrier's --warm-gray equals the key's own fill, so a press showed nothing; the dark
+   selected-tab fill marks it. */
+body.dark .hk-key:active{background:#2a4070;}
 .hk-key-glyph{font-family:'Frank Ruhl Libre','IvritSuite Taamim',serif;font-size:1.2rem;line-height:1.25;}
 .hk-key-name{font-size:0.5rem;line-height:1.15;opacity:0.75;text-align:center;overflow-wrap:anywhere;}
 .hk-subhead{font-size:0.7rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted,#6b6050);margin-block:8px 4px;}
