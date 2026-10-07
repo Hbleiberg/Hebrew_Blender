@@ -2425,7 +2425,7 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
   <h2 class="fr-h" id="frTitle" data-i18n="dashboard.setup.title">Welcome! Let's set up your dashboard</h2>
   <p class="fr-sub" data-i18n="dashboard.setup.subtitle">Set your location for accurate weather and Shabbat times, then pick a starting layout. You can change anything later in Settings.</p>
   <div class="fr-loc-row">
-    <input type="text" id="frLocationInput" autocapitalize="words" autocorrect="off" spellcheck="false" placeholder="City, e.g. New York" data-i18n-placeholder="dashboard.display.location_placeholder" aria-label="Location" data-i18n-aria-label="dashboard.settings.panel_location">
+    <input type="text" id="frLocationInput" autocapitalize="words" autocorrect="off" spellcheck="false" onkeydown="if(event.key==='Enter')frUpdateLocation()" placeholder="City, e.g. New York" data-i18n-placeholder="dashboard.display.location_placeholder" aria-label="Location" data-i18n-aria-label="dashboard.settings.panel_location">
     <button class="btn btn-xs" onclick="frUpdateLocation()" data-i18n="dashboard.display.location_update">Update</button>
     <button class="btn btn-xs btn-secondary" id="frCurrentLocBtn" onclick="frUseCurrentLocation()" data-i18n="dashboard.display.current_location">📍 Current Location</button>
   </div>
@@ -2790,7 +2790,7 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
       <div class="tt-set" data-set="location">
         <h3 class="tt-set-title" tabindex="-1" data-i18n="dashboard.settings.panel_location">Location</h3>
         <div class="form-row">
-          <input type="text" id="locationInput" autocapitalize="words" autocorrect="off" spellcheck="false" placeholder="City, e.g. New York" data-i18n-placeholder="dashboard.display.location_placeholder" aria-label="Location" data-i18n-aria-label="dashboard.settings.panel_location" style="max-width:220px;">
+          <input type="text" id="locationInput" autocapitalize="words" autocorrect="off" spellcheck="false" onkeydown="if(event.key==='Enter')updateLocation()" placeholder="City, e.g. New York" data-i18n-placeholder="dashboard.display.location_placeholder" aria-label="Location" data-i18n-aria-label="dashboard.settings.panel_location" style="max-width:220px;">
           <button class="btn btn-xs" onclick="updateLocation()" data-i18n="dashboard.display.location_update">Update</button>
         </div>
         <div class="form-row" style="margin-top:4px;">
