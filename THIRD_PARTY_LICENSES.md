@@ -141,6 +141,17 @@ The curation, filtering, transliteration fields, era classification, and JSON st
 
 ---
 
+## Printed cantillation charts (the trope melodies)
+
+The staffs of `trope_tutor.html` and of the Torah Trainer's Trope staff layout draw the standard Ashkenazi melodies as two printed sources teach them:
+
+- the teacher's cantillation chart — *Torah Cantillation* (Appendix H) and *High Holiday Torah Cantillation* — the year-round and High Holiday charts, which the maintainer identifies as the Avery/Binder (Reform) melody;
+- *The Art of Cantillation, Volume 2* by Marshall Portnoy and Josée Wolff (UAHC Press, New York, 2001) — its Haftarah, Esther, Shir HaShirim / Ruth / Kohelet and Eicha charts (appendices D–G).
+
+The melodies themselves are traditional and belong to no one. What this repository holds is a transcription of the charts' notes — `docs/tropepatterns.md`, the only hand-kept copy, and the `data/trope/*.json` files built from it — released under CC BY-SA 4.0 like the rest of the trope data. No page image, lesson text, exercise, blessing or any other part of either book is reproduced, and the scans the transcription was read from stay outside the repository (`source-data/charts/`, gitignored).
+
+---
+
 ## Third-Party Web Services & APIs
 
 The Classroom Dashboard and the contact / resources forms call these external services at runtime. They

@@ -296,10 +296,16 @@ to Learn), and a caller that opens something inside the new tab (`openLearnFor`,
   Rosh Hashanah or Yom Kippur readings). Its one grace note, yetiv's Y′, is a full eighth as in the
   Torah file (A4 A4 G4; the Torah yetiv is B4 B4 A4). It is fetched `?v=4` beside the Torah file and validated the same way,
   each file on its own, so one failing never blanks the other melody's staffs. **The Haftarah melody is a third
-  file, `data/trope/trope_motifs_haftarah.json`** (`system:"haftarah"`, `key:"F"` — D minor written with F major's
-  one flat), which the phrases builder **derives** from `docs/tropepatterns.md` section H through section A's
-  Haftarah column on every run (never hand-edited; each entry `verified:false` while its row carries
-  `[unverified]`), fetched `?v=1` and validated like the others; every mark but geresh muqdam has a figure in it.
+  file, `data/trope/trope_motifs_haftarah.json`** (`system:"haftarah"`, `key:"Eb"` — three flats, as Portnoy and
+  Wolff print the chart; its sof pasuk comes to rest on C, so the readouts name the relative minor, C minor), which
+  the phrases builder **derives** from `docs/tropepatterns.md` section H through section A's Haftarah column on
+  every run (never hand-edited; every entry `verified:true` — an entry reads `verified:false` only while its row
+  carries `[unverified]`, which no row does), fetched `?v=2` and validated like the others; every mark the chart
+  prints has a figure in it (it prints no row for geresh muqdam, karnei parah, shalshelet or yerach ben yomo).
+  **Three more files are derived the same way** — `trope_motifs_esther.json` (Esther, section I, `key:"Eb"`),
+  `trope_motifs_megillot.json` (Shir HaShirim, Ruth and Kohelet, section J, `key:"C"`) and
+  `trope_motifs_eicha.json` (Eicha, section K, `key:"Eb"`) — each holding the marks its chart prints
+  (`docs/tropepatterns.md` → A names the row behind every entry); no page fetches them yet.
   **Settings → Melody** (`settings.melody`, `'torah'` by default, `'highholiday'` or `'haftarah'` — the Haftarah
   radio's label carries the suite's Beta badge, `shared.badge.beta`) picks which file draws the staffs and feeds
   the tune button; any other stored value shows the year-round staffs and stays stored (`melodyKey()`), so a
@@ -345,24 +351,33 @@ to Learn), and a caller that opens something inside the new tab (`openLearnFor`,
     Rabbi Charlie Schwartz). Both the JSON and the report carry the notice; keep it on anything
     derived from them.
   The script exits non-zero if a smoke test fails — never commit its output without a green run.
-- **Phrases**: `data/trope/trope_phrases.json` — every row of both printed charts note for note (41
-  Torah, 33 High Holiday + row 20's second setting), for a staff of a whole reading, and the 36 Haftarah
-  rows of section H (an unverified rendering written from memory, drawn only by the Torah Trainer's Trope
-  staff: the tutor reads the file through `melodyKey()`, which names the two charts, so the third melody is
-  inert here). The Phrases tab fetches it (`?v=2`, in `docs/reference/ops.md`'s list); bump that with every
-  rebuild that changes it.
+- **Phrases**: `data/trope/trope_phrases.json` — every row of the six printed charts note for note (41
+  Torah, 33 High Holiday + row 20's second setting, 40 Haftarah + the derived closings 40b–40d, 41 Esther,
+  39 Shir HaShirim / Ruth / Kohelet + the end-of-book 39a, 38 Eicha), for a staff of a whole reading. The Torah
+  and High Holiday charts are the teacher's (Avery/Binder); the other four are *The Art of Cantillation, Vol. 2*
+  (Portnoy and Wolff, UAHC Press, 2001), appendices D–G, transcribed in `docs/tropepatterns.md` sections H–K.
+  The Phrases tab fetches it (`?v=3`, in `docs/reference/ops.md`'s list — the Torah Trainer's Trope staff
+  fetches the same URL); bump that with every rebuild that changes it. The tutor reads the file through
+  `melodyKey()`, which names three melodies, so the Esther, Megillot and Eicha rows are inert here for now.
   - It is built by `node scripts/build-trope-phrases.mjs` from the fenced row blocks in
-    `docs/tropepatterns.md` sections B, C and H, which are **the only hand-edited copy of the notes**:
-    fix a note there and re-run the builder, never edit the JSON. A melody without a motif file (the
-    Haftarah rows) skips the Learn-card check; its rows are smoke-tested on their own (every mark printed,
-    the four verse endings as closings, A3–B♭4).
+    `docs/tropepatterns.md` sections B, C and H–K, which are **the only hand-edited copy of the notes**:
+    fix a note there and re-run the builder, never edit the JSON. Every melody's rows are smoke-tested
+    against the builder's per-melody `SMOKE` table (the marks its chart lacks, its key, its range, its
+    `[aliyah-end]` rows and the verse endings they close), and a melody marked `derived: true` in `MELODIES`
+    has its motif file written from section A's column on every run and checked against its rows like the
+    two hand-kept files.
   - Zero dependencies, offline. It writes `docs/trope_phrases_report.md`: every figure of every mark
     in every printed context, and the staff check above.
-  - **Shape.** `{v:1, built, license, source, tpq:48, values, melodies:{torah|highholiday|haftarah:{key, rows}},
-    figures}`. Each row is flat: `{n, he, tags, notes:[{p, v, t, g?, r?, tie?, a?}], syl:[{t, hyphen,
-    unit, from, to}], units:[{k, from, to}], tup:[{from, to}], slur:[{from, to, dashed?}]}`.
+  - **Shape.** `{v:1, built, license, source, tpq:48, values, melodies:{torah|highholiday|haftarah|esther|
+    megillot|eicha:{key, rows}}, figures}`. Each row is flat: `{n, he, tags, notes:[{p, v, t, g?, r?, tie?, a?}],
+    syl:[{t, hyphen, unit, from, to}], units:[{k, from, to}], tup:[{from, to, n?}], slur:[{from, to, dashed?}]}`.
     - `p` is semitones from B4, as in the motif files; a rest (`r`) has no `p`.
-    - `t` is ticks at 48 to the quarter; a triplet note carries its real length.
+    - `t` is ticks at 48 to the quarter; a note under a 3 or 6 bracket carries its real (two-thirds) length,
+      a note under any other bracket number its written length.
+    - `tup` is a printed bracket; `n` is its number when it is not 3 (the `5{…}` over Eicha's revia run, the
+      `8{…}` of the Haftarah geresh). `tags` may carry `aliyah-end` (a closing: the end of an aliyah, or of a
+      chapter and the book on the Megillot charts) and `derived` (a closing the chart does not print, built from
+      its printed one for a shorter verse ending — the Haftarah rows 40b–40d). `values` includes `64`.
     - Syllables, marks, triplets and slurs are spans of note indices, so a triplet or slur may cross
       from one mark into the next. `dashed` marks a dashed slur (`~~`), which no row prints yet.
     - `figures.<melody>.<mark>` lists each distinct figure as `{refs, prev, next}`: `refs` holds the
@@ -698,13 +713,13 @@ Design: `docs/tropepatterns.md` → G.
   the High Holiday chart, a haftarah (`currentReadingCtx.isHaftarah` — the haftarah scope is the only Nevi'im
   text the page shows: practice links and the Custom range picker accept the five Torah books only) the
   Haftarah rows, everything else the year-round chart; the key is `shiftedKey(set.key, staffShift)` — the Haftarah rows are
-  D minor written in F, so the drawer's readout names the relative minor (`staffKeyText`, through
-  `trope.key.name_minor`); Low voices draws the 8 under every clef. **The Haftarah rows stand alone:**
+  printed in E♭ (three flats) and their sof pasuk comes to rest on C, so the drawer's readout names the relative
+  minor, C minor (`staffKeyText`, through `trope.key.name_minor`); Low voices draws the 8 under every clef. **The Haftarah rows stand alone:**
   `staffSetName()` never falls back to the Torah chart for them (no Haftarah rows in the file → the words alone
   and the `no_haftarah` chip), `fallbackCtx` is null, and the haftarah's last verse takes their `[aliyah-end]`
-  closing through `staffIsHaftarahEnd`, never `staffIsAliyahEnd`'s Torah aliyah ends. While the rows carry the
-  `unverified` tag (`docs/tropepatterns.md` → H: a rendering from memory, not a transcription of the chart)
-  the header shows the `haftarah_beta` chip; dropping the tag retires it with no page change.
+  closing through `staffIsHaftarahEnd`, never `staffIsAliyahEnd`'s Torah aliyah ends. The rows are a transcription
+  of Portnoy and Wolff's chart (`docs/tropepatterns.md` → H); the header's `haftarah_beta` chip shows only while
+  a row carries the `unverified` tag, which none does — the mechanism stays for a future row read in doubt.
 - **The markup contract.** `renderStaffView` mirrors `renderInterlinear`'s verse shell — `.tt-verse[data-vk]`,
   the bulk checkbox, `.tt-verse-num`, Read / Chant / **Tune** / Loop / Copy — then `.tt-staff-rows` holding
   one `.tt-staff-sys` per system (`data-svk` = its verse, `data-sys` = its index — **never `data-vk`**, which
@@ -802,8 +817,9 @@ Design: `docs/tropepatterns.md` → G.
   passes it; its Learn and Phrases staffs snapshot the same across melody × key × voice × names, and
   `smoke-trope-staff.mjs` has the rtl case). Tune, chant highlight, click-to-seek and print are untouched: they are
   class- and `data-twi`-based, and the paper render is the same render.
-- **The melodies' names.** The maintainer identifies the transcribed charts as the Avery/Binder (Reform) melody (the
-  year-round and High Holiday charts; the Haftarah rows stay a beta rendering) and PocketTorah's recordings as the
+- **The melodies' names.** The maintainer identifies the teacher's charts (the year-round and High Holiday charts) as
+  the Avery/Binder (Reform) melody; the Haftarah, Esther, Megillot and Eicha rows are transcriptions of *The Art of
+  Cantillation, Vol. 2* (Portnoy and Wolff, UAHC Press, 2001); and PocketTorah's recordings are the
   Spiro (Conservative) melody. Both pages say so where the staffs and the recordings are: the Trainer's Trope staff
   section (`torah.staff.melody_credit`) and Audio speeds & pitch section (`torah.audio.recording_credit`), both on
   the drawer's Audio tab, audio-bar credit
