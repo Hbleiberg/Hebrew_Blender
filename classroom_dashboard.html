@@ -2473,7 +2473,7 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
     <div class="sub-section-hdr" data-i18n="dashboard.schedule.sub_saved">Saved Schedules</div>
     <div class="sub-section-body">
       <div class="swm-saverow">
-        <input type="text" id="swmSaveName" autocapitalize="words" autocorrect="off" spellcheck="false" placeholder="Schedule name" data-i18n-placeholder="dashboard.schedule.save_name_placeholder" aria-label="Schedule name" data-i18n-aria-label="dashboard.schedule.save_name_placeholder" oninput="onWeekSaveNameInput()">
+        <input type="text" id="swmSaveName" autocapitalize="words" autocorrect="off" spellcheck="false" onkeydown="if(event.key==='Enter')saveWeekScheduleAs()" placeholder="Schedule name" data-i18n-placeholder="dashboard.schedule.save_name_placeholder" aria-label="Schedule name" data-i18n-aria-label="dashboard.schedule.save_name_placeholder" oninput="onWeekSaveNameInput()">
         <button class="btn btn-xs" id="swmSaveBtn" onclick="saveWeekScheduleAs()" data-i18n="dashboard.schedule.save_as">Save Schedule As…</button>
       </div>
       <div id="swmSaveNote" class="schedule-validation" role="status" aria-live="polite" style="display:none;"></div>
@@ -2600,7 +2600,7 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
               <input type="radio" name="videoLayout" id="vlSidebar" value="sidebar" style="accent-color:var(--gold);"> <span data-i18n="dashboard.video.layout_sidebar">In sidebar</span>
             </label>
           </div>
-          <input type="url" id="videoUrlInput" dir="ltr" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Paste YouTube URL…" data-i18n-placeholder="dashboard.video.url_placeholder" aria-label="Paste YouTube URL…" data-i18n-aria-label="dashboard.video.url_placeholder" style="width:100%;box-sizing:border-box;">
+          <input type="url" id="videoUrlInput" dir="ltr" autocapitalize="off" autocorrect="off" spellcheck="false" onkeydown="if(event.key==='Enter')updateVideoEmbed()" placeholder="Paste YouTube URL…" data-i18n-placeholder="dashboard.video.url_placeholder" aria-label="Paste YouTube URL…" data-i18n-aria-label="dashboard.video.url_placeholder" style="width:100%;box-sizing:border-box;">
           <button class="btn btn-xs" onclick="updateVideoEmbed()" data-i18n="dashboard.video.update_button">Update Video</button>
         </div>
       </div>
@@ -3070,7 +3070,7 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
         <button class="btn btn-xs btn-secondary" id="starterLayoutsBtn" onclick="openFirstRun()" style="width:100%;margin-bottom:8px;" data-i18n="dashboard.preset.quickstart_button">✨ Quick-start layouts…</button>
         <p style="font-size:0.72rem;color:var(--muted);margin:0 0 10px;line-height:1.4;" data-i18n="dashboard.preset.quickstart_desc">Apply a ready-made setup — including a general-classroom layout — then tweak it and Save it as your own preset.</p>
         <div class="form-row">
-          <input type="text" id="presetName" autocapitalize="words" autocorrect="off" spellcheck="false" placeholder="Preset name" data-i18n-placeholder="dashboard.preset.name_placeholder" aria-label="Preset name" data-i18n-aria-label="dashboard.preset.name_placeholder" style="max-width:200px;" oninput="onPresetNameInput()">
+          <input type="text" id="presetName" autocapitalize="words" autocorrect="off" spellcheck="false" onkeydown="if(event.key==='Enter')savePreset()" placeholder="Preset name" data-i18n-placeholder="dashboard.preset.name_placeholder" aria-label="Preset name" data-i18n-aria-label="dashboard.preset.name_placeholder" style="max-width:200px;" oninput="onPresetNameInput()">
           <button class="btn btn-xs" id="savePresetBtn" onclick="savePreset()" data-i18n="dashboard.preset.save">Save</button>
         </div>
         <div id="presetNameNote" role="status" aria-live="polite" style="display:none;font-size:0.72rem;color:var(--gold-text);margin:-4px 0 8px;"></div>
