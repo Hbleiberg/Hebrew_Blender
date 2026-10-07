@@ -8,6 +8,14 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P2 (**NEW S465 G — maintainer**) | starting-fonts/manifest.json | **14 fonts' `copyright` is empty**: re-stage with `/addOSFont --force` (detector fixed `3609c19`; ids: findings S465). | found S465
+
+- [ ] P3 (**NEW S465 G**) | Hebrew_Font_Maker.html | **The HE specimen prints "106,-45" as "45-,106"** (no LTR isolate). | found S465
+
+- [ ] P4 (**NEW S465 G**) | Hebrew_Font_Maker.html | **3 starting fonts fail Chrome's sanitizer**; the picker says so only on hover. | found S465
+
+- [ ] P4 (**NEW S465 G — gate 2 ANSWERED: name + date**) | Hebrew_Font_Maker.html | **A saved project is named by date alone.** | found S465
+
 - [ ] P4 (**NEW PR #313**) | torah_trainer.html | **Sephardi haftarot and the holidays' maftirim are not offered**: `holiday-readings.json` carries `seph` and `fullkriyah.M` for every entry the table keys (the leyning builder's check could carry them). | found PR #313
 
 - [ ] P4 (**NEW PR #313**) | torah_trainer.html | **Shabbat Chazon's haftarah (Isaiah 1) is drawn in the Haftarah chart throughout**; the verses customarily chanted to Eicha's tune need a per-verse tune. | found PR #313
@@ -25,8 +33,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S464 M — gate 3 ANSWERED: drop it suite-wide**) | resources.html (+ suite) | **Hebrew labels keep the Latin uppercase tracking** (53 nodes; pattern row). | found S464
 
 - [ ] P4 (**NEW S464 M**) | resources.html | **Below ~1020px wrapped chips flow back under their row label.** | found S464
-
-- [ ] P4 (**NEW S462 N**) | contact.html | **The 15.2px form fields zoom an iPhone 1.05× on focus.** | found S462
 
 - [ ] P4 (**NEW S462 N**) | contact.html | **An English Web3Forms error in the HE status note leads with its period.** | found S462
 
@@ -308,9 +314,9 @@ _(none)_
 
 ## Done
 
-- [x] 2026-10-07 | `2202613` (outside the loop) | trope_contexts_report.md, build-trope-phrases.mjs | **The `--census` re-count (Sefaria answered): every count unchanged, the digest now the six-chart JSON’s; the Chart line names its sections from `MELODIES`.** | `--census` ×2 byte-identical; no warning; examples unchanged.
+- [x] 2026-10-07 | (S465 close-out) | branch/deploy note | **S465 = G + 4 fixes, PR #315.** Drift: PRs #312–#314 (sw v941→v944); keep-alive #25 green; sw v944→v945; no FM bump (fixes); gates clean; gate 2 answered.
 
-- [x] 2026-10-07 | `c21e467`…PR #313's head (outside the loop) | data/trope, tropepatterns.md, js/trope-staff.js, trope_tutor.html, js/hebrew-calendar.js, torah_trainer.html, CSV | **Portnoy & Wolff's Haftarah, Esther, Megillot and Eicha charts transcribed (H–K); the Tutor's Melody dropdown (six tunes); the Trainer's holiday, special-Shabbat (by date) and Megillot readings — closes the "holiday readings keep English names" candidate.** | builder round trip; staff smoke 19; calendar `--hebcal` (5700–5900 × 2); tools 114/114; Playwright pw8/pw10/pw11 (Sefaria stubbed); `--census` blocked (403).
+- [x] 2026-10-07 | `beaa7b9` `b585d9b` `3609c19` `5a7a8ed` | FM ×2, intake, contact | (S465) **Straight strokes; underline metrics; copyright detection; 16px fields.** | findings S465.
 
 - [x] 2026-10-06 | (S464 close-out) | branch/deploy note | **S464 = M + 4 fixes, PR #311.** No drift; keep-alive #24 green; sw v940→v941; no FM bump; gates clean; gate 3 answered.
 
@@ -335,6 +341,8 @@ _(none)_
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-07 | **S465** | iters: 1 pass (**G**) + 4 fixes = **5** | tools: FM ×2, intake script, contact | patterns fixed: text-field-under-16px ×4 (contact) | pass run: G | SW: v944→v945
 
 - 2026-10-06 | **S464** | iters: 1 pass (**M**) + 4 fixes = **5** | tools: resources, dictionary, FM, dashboard ×2; index, trope, torah, contact, account, privacy | patterns fixed: dark-navy ×1, forward-arrow ×48; latin-tracking NEW | pass run: M | SW: v940→v941
 
@@ -370,7 +378,7 @@ _(none)_
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S464 (2026-10-06):** resources, dashboard, dictionary, FM, index, torah, trope, contact, account, privacy S464 · generator, flash S463 · ivrit-saves S459 · terms, 404 S442.
+- **Snapshot S465 (2026-10-07):** FM, contact, intake S465 · resources, dashboard, dictionary, index, torah, trope, account, privacy S464 · generator, flash S463 · ivrit-saves S459 · terms, 404 S442.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -444,7 +452,7 @@ _(none)_
 
 - **`aria-disabled-lock-no-handler-checks`** (**NEW, registered 2026-09-23 (S407 Pass P) — 1 carrier, fixed `e5c4784`**): ACTIVE, clean streak 0. A control marked busy or invalid by `aria-disabled="true"` whose activation handler never reads that state: the look says locked, a …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`text-field-under-16px-zooms-on-ios-focus`** (NEW S406; FIXED ×2; contact's 4 open): ACTIVE, streak 0. Detection: computed `font-size` < 16px under an iPhone descriptor; plant a 12px field.
+- **`text-field-under-16px-zooms-on-ios-focus`** (NEW S406; FIXED ×2; S465 contact ×4 `5a7a8ed`; open 0): ACTIVE, streak 0. Detection: computed `font-size` < 16px under an iPhone descriptor; plant a 12px field.
 
 - **`textContent-rewrite-erases-a-control-icon`** (S405; S415; **S453 `ac796dba`**): ACTIVE, streak 0. Add (d): load-time icon count. Detection: (a) EN→HE→EN icon count; (b) key census …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -686,7 +694,7 @@ _(none)_
 
 - A recurring-pattern sweep: 2026-10-05 (**S458 — 36th A + A2 on `eeaf279..9c97b35b` (84 commits): 13 arms, zeros controlled (findings S458); FIXED 4; A2 none un-retired.**)
 
-- G print & export fidelity (one tool): 2026-10-02 (**S451 — `torah_trainer.html`, its 3rd (S181, S324 → 115 commits). 6 arms, every zero controlled: the Trope staff on paper (16 PDFs), 4 layouts + translit (pinned npm library) light vs dark (ink equal), a word-collision probe (plant 32), the handout in 4 layouts (geniza, numbers, selected verses), the ?s= link round trip (15 keys). FOUND the …[full text: IMPROVEMENT_ARCHIVE.md]
+- G print & export fidelity (one tool): 2026-10-07 (**S465 — FM (S337 →): 3 partner flows × every export, LibreOffice, round trip, dark + HE, drawing; plants 3/3. FOUND 6, FIXED 3. G-next: trope (S351).**)
 
 - D performance (one tool): 2026-10-04 (**S452 — the generator's 4th D (S338 → 90 commits): cold 1×/4× ± PDF libs + CDN latency, 6 interaction arms, print, GC leak, signed-in load; control fired. FIXED the blocking libs (+ FM), the squeezed caller sheet; logged 3. D-next: index (S352).**)
 
@@ -704,4 +712,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-05 (**S456 — sliders on 7 tools: name, value heard, keys, size; plants fired (findings S456). FIXED 4. F-next: search fields.**)
 
-**Next session (S465):** **BRANCH/PR: S464 on `claude/improveloop-s464` → draft PR #311. Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v941**, FM **5.59**, SDK **2.116.0**. ⚑ Stalest: G, then D/I/H/C; O blocked. ⚑ Ready (answered): the FM About note; Hebrew tracking suite-wide. ⚑ Untaken: contact zoom + bidi, pwa banner, the dictionary's `?s=`, S464's P4s.
+**Next session (S466):** **BRANCH/PR: S465 on `claude/bold-cerf-wahllr` → draft PR #315. Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v945**, FM **5.59**, SDK **2.116.0**. ⚑ Stalest: D, then I/H/C; O blocked. ⚑ Answered: FM About note; Hebrew tracking; file name. ⚑ Untaken: HE specimen anchors, contact bidi, pwa banner.

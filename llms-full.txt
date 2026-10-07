@@ -256,7 +256,7 @@ A free interactive tutor for the Torah cantillation marks. Learn mode teaches ea
 
 **What melody tradition is this?**
 
-The recordings are PocketTorah's, chanted in the Spiro (Conservative) melody. The staffs follow printed charts: the Avery/Binder (Reform) charts for the year-round and High Holiday melodies, and The Art of Cantillation (Portnoy & Wolff, UAHC) for the Haftarah, Esther, Shir HaShirim / Ruth / Kohelet and Eicha melodies — the melody bar above the tabs picks one. Both Ashkenazi and Sephardi trope names are shown, and you can switch the primary naming tradition in settings.
+The recordings are PocketTorah's, chanted in the Spiro (Conservative) melody. The staffs follow printed charts: the Avery/Binder (Reform) charts for the year-round and High Holiday melodies, and The Art of Cantillation (Portnoy & Wolff, UAHC) for the Haftarah, Esther, Shir HaShirim / Ruth / Kohelet and Eicha melodies — the Melody dropdown in the key bar picks one. Both Ashkenazi and Sephardi trope names are shown, and you can switch the primary naming tradition in settings.
 
 **What are trope (te'amim)?**
 

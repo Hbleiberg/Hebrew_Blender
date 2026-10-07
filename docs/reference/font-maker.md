@@ -595,6 +595,13 @@ outline-only settings and named as *changed* when they differ. Raw loops live on
 never on `project`; `_rawTrace` is dropped afterwards. A batch where nothing traced pushes no undo entry
 (`udPush` drops no-op slices), so the toast counts from `done`.
 
+**The curves are checked along every side.** Every trace (a drawing's commit, a photo, Reduce points) ends
+in `fitContourCurves`, which splits the simplified polygon at its corners and fits each chain with
+Schneider's cubics. That fit measures its error only at the points it is given, and after RDP a straight
+side keeps just its two ends — so each chain is first resampled along its own edges (`_densifyChain`,
+no two points more than twice the tolerance apart). Without it a drawn stroke's side between its two
+round caps became one cubic bowing ~40 units off the outline, and the exported stroke was a lens.
+
 ### Spacing preview — sample-text direction
 `spacingPreviewLayout` returns `order`, the cell indices in **left-to-right visual order**, and
 `spacingLineSVG` always walks it with the pen starting at the left edge. An all-Hebrew line is
@@ -879,7 +886,10 @@ Two engine contracts the exporters depend on: the UFO export writes its `.glif` 
 (a small `AbstractPointPen` + `contents.plist` via plistlib) — never import `fontTools.ufoLib` /
 `glifLib` in `PY_BUILDER`, they import pyfilesystem2 (`fs`), which Pyodide's fonttools package does
 not carry, and the whole export fails (and `buildUfoFontInfo` writes `openTypeOS2Type: []` explicitly —
-absent, ufo2ft/fontmake default to fsType 4 while the TTF export writes 0); and every jsPDF `addImage()` call passes `undefined, 'FAST'`
+absent, ufo2ft/fontmake default to fsType 4 while the TTF export writes 0 — and `hfm_build` writes
+ufo2ft's own underline, strikeout and sub/superscript fallbacks, since FontBuilder's zeros made
+LibreOffice draw underline and strikethrough invisibly; the TTF and a compiled UFO agree field for
+field); and every jsPDF `addImage()` call passes `undefined, 'FAST'`
 as its last two arguments — without a compression argument jsPDF stores the page raster raw
 (~11 MB per page).
 
