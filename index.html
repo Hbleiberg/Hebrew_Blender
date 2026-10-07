@@ -1260,7 +1260,9 @@ function exportAllSettings() {
     wordLists:           lsJSON('ivritSuite_wordLists', { v: 1, lists: {} }),
     userFonts:           _fontsBackupCache || [],
   };
-  document.getElementById('ieTextarea').value = JSON.stringify(blob, null, 2);
+  // Compact, not indented: the box's cost is its line count. Indented, a busy profile came to ~57,000 lines and the
+  // click froze the page 1.9 s (7.9 s on a slow CPU); the same backup on one line costs half. Import reads either.
+  document.getElementById('ieTextarea').value = JSON.stringify(blob);
 }
 // The account backup carries the suite-wide preferences as one `suitePrefs` object (the cloud module's
 // IvritSuite row: language, theme, keyboard layout, backup input mode, shared Hebrew font and size, live
