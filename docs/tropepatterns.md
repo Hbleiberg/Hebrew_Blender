@@ -6,14 +6,16 @@ treble clef, three sharps = A major), the source of `data/trope/trope_motifs.jso
 Torah Cantillation* (33 patterns, no key signature), the source of `data/trope/trope_motifs_hh.json` —
 gives sections B and C. *The Art of Cantillation, Volume 2* (Marshall Portnoy and Josée Wolff, UAHC
 Press, 2001) gives the Haftarah chart of section H (Appendix D: 40 patterns, three flats = E♭ major),
-the source of `data/trope/trope_motifs_haftarah.json`, and the Esther chart of section I (Appendix E:
-41 patterns, two flats = B♭ major), the source of `data/trope/trope_motifs_esther.json`. This file is
-the transcription of those pages,
+the source of `data/trope/trope_motifs_haftarah.json`, the Esther chart of section I (Appendix E:
+41 patterns, two flats = B♭ major), the source of `data/trope/trope_motifs_esther.json`, and the chart
+for Shir HaShirim, Ruth and Kohelet of section J (Appendix F: 39 patterns and an end-of-book setting,
+no key signature), the source of `data/trope/trope_motifs_megillot.json`. This file is the
+transcription of those pages,
 every row note for note, read from scans of the charts. The scans are not in the repository (the pages
 are copyrighted; they live in the gitignored `source-data/charts/`); the melodies themselves are
 traditional. This transcription is CC BY-SA 4.0, like the data files it feeds.
 
-**Sections B, C, H and I are data.** `node scripts/build-trope-phrases.mjs` reads their row blocks and writes
+**Sections B, C and H–J are data.** `node scripts/build-trope-phrases.mjs` reads their row blocks and writes
 `data/trope/trope_phrases.json` — every row's notes, syllables, triplets, ties and slurs, the input for
 a staff of a whole parasha (section G) — together with `docs/trope_phrases_report.md`, which lists
 every figure of every mark in every context the chart prints and checks the tutor's staffs against
@@ -23,8 +25,8 @@ their rows. To change a note, edit its row here and re-run the builder; never ed
 
 - **Pitches** are scientific pitch names as printed in the treble clef: C4 is middle C, A3 the A
   below it, so the Torah chart lives between A3 and B4, the High Holiday chart between G3 and
-  B♭4, the Haftarah chart between B♭3 and C5 and the Esther chart between B♭3 and E♭5 (men sing all
-  of them an octave lower).
+  B♭4, the Haftarah chart between B♭3 and C5, the Esther chart between B♭3 and E♭5 and the Megillot
+  chart between C4 and D5 (men sing all of them an octave lower).
 - **Key and accidentals.** In the Torah chart every F, C and G is sharp unless a natural sign is
   printed; the rows write every one of them with its sign (`F♯4`, `C♯4`, `G♮4`), so a letter without
   one cannot pass for a misreading, and the builder refuses any accidental the chart does not print.
@@ -34,24 +36,27 @@ their rows. To change a note, edit its row here and re-run the builder; never ed
   chart has three flats and prints no accidental, so every B, E and A carries its sign (`B♭4`, `E♭4`,
   `A♭4`; a natural would be written too, and none occurs) and no other sign appears (section H). The
   Esther chart has two flats and prints one accidental, the E♮ of its segol clause (rows 35–39, 41), so
-  every B and E carries its sign (`B♭4`, `E♭4`, `E♮4`) and no other sign appears (section I).
+  every B and E carries its sign (`B♭4`, `E♭4`, `E♮4`) and no other sign appears (section I). The
+  Megillot chart has no key signature and prints no accidental at all (section J).
 - **Scale degrees** are given relative to A for the Torah chart (A = 1, B = 2, C♯ = 3, D = 4,
   E = 5, F♯ = 6, G♯ = 7; ′ is the octave above). The tutor stores `p` = semitones from B4 (B♭4 = −1,
   A4 = −2, G4 = −4, F♯4 = −5, F4 = −6, E4 = −7, D4 = −9, C♯4 = −10, C4 = −11, B3 = −12, A3 = −14,
   G3 = −16).
-- **The row blocks** (sections B, C, H and I) are fenced ` ```trope-torah ` / ` ```trope-hh ` /
-  ` ```trope-haftarah ` / ` ```trope-esther ` blocks:
+- **The row blocks** (sections B, C and H–J) are fenced ` ```trope-torah ` / ` ```trope-hh ` /
+  ` ```trope-haftarah ` / ` ```trope-esther ` / ` ```trope-megillot ` blocks:
 
   ```
   #<row> [tag] <the Hebrew names, pointed and marked as printed>
   <mark>  <SYL>[-] <note> <note> … <SYL>[-] <note> …
   ```
 
-  - The first line is the row number (High Holiday row 20's parenthesized second setting is `#20b`;
-    the chart gives it no Hebrew of its own, so it repeats row 20's). Then come the tags, right after
+  - The first line is the row number (High Holiday row 20's parenthesized second setting is `#20b`,
+    and the Megillot chart's "(end of book)" setting of its row 39 is `#39a`; neither is given Hebrew
+    of its own, so each repeats its row's). Then come the tags, right after
     the number and in lowercase: `[aliyah-end]` for the closing formula of an aliyah's last verse
-    (Torah 41, High Holiday 30–33, Haftarah 40 and its derived 40b–40d, Esther 41 — the end of a
-    chapter, in a book read without aliyot), `[unverified]` for a row that
+    (Torah 41, High Holiday 30–33, Haftarah 40 and its derived 40b–40d, Esther 41 and Megillot 39 and
+    39a — the end of a chapter, or of the book, in a book read without aliyot), `[unverified]` for a
+    row that
     has not been checked against a printed chart (no row carries it today), and `[derived]` for a
     row the chart does not print but a reader derives from a printed one: its number is the printed
     row's plus a letter, it carries that row's tags, and its marks are the printed row's in order with
@@ -66,10 +71,11 @@ their rows. To change a note, edit its row here and re-run the builder; never ed
   - A syllable (MER, CHA, T′ …) starts at the note printed above it and runs to the next syllable; a
     `-` after it means the next syllable continues the same word. Each mark's line is whole words, so
     its last syllable has no `-`, and every syllable has at least one sounding note.
-  - A note is `PITCH(VALUE)`, with `,>` for an accent and `,-` for a tenuto line. Values: `32` a
-    thirty-second, `s` a sixteenth, `ds` a dotted sixteenth, `e` an eighth, `de` a dotted eighth, `q` a
-    quarter, `dq` a dotted quarter, `h` a half, `dh` a dotted half, `g` a grace note (small; no time of
-    its own). `rest(e)` is a rest.
+  - A note is `PITCH(VALUE)`, with `,>` for an accent and `,-` for a tenuto line. Values: `64` a
+    sixty-fourth (only the Megillot telishas, rows 29–30 of section J), `32` a thirty-second, `s` a
+    sixteenth, `ds` a dotted sixteenth, `e` an eighth, `de` a dotted eighth, `q` a quarter, `dq` a
+    dotted quarter, `h` a half, `dh` a dotted half, `g` a grace note (small; no time of its own).
+    `rest(e)` is a rest.
   - Before a note, `~` is a slur arriving from the note before, `~~` a dashed slur, `=` a tie (one
     held sound) and `~=` a tie under a slur. A tie stays inside one mark's line and never touches a
     grace note, and a slur never arrives from a rest.
@@ -95,35 +101,35 @@ The builder checks every staff against its row on each run (`docs/trope_phrases_
 Trope Tutor's staffs against their rows*); the figures themselves, for every melody and in every
 context, are listed in the same report.
 
-| Mark (tutor key) | Torah row | High Holiday row | Haftarah row | Esther row | On the staff |
-|---|---|---|---|---|---|
-| mercha | 1 | 1 | 1 | 1 | |
-| tipcha | 4 | 4 | 4 | 4 | |
-| munach (before etnachta) | 2 | 2 | 2 | 2 | |
-| etnachta | 4 | 4 | 4 | 4 | |
-| sof_pasuk | 8 | 8 | 8 | 8 | |
-| mahpach | 11 | 11 | 11 | 11 | |
-| pashta | 13 | 10 | 13 | 13 | |
-| yetiv | 33 | 24 | 34 | 34 | Y′ is sung on a grace note, drawn as an eighth |
-| zakef_katon | 13 | 10 | 13 | 13 | |
-| zakef_gadol | 31 | 25 | 32 | 32 | |
-| zarka | 37 | 29 | 38 | 38 | Torah: the grace note on F♯4 before KA is drawn as an eighth |
-| segol | 37 | 29 | 38 | 38 | |
-| shalshelet | 38 | — | — | — | |
-| revia | 19 | 16 | 19 | 19 | |
-| darga | 21 | 13 | 22 | 22 | |
-| tevir | 22 | 13 | 23 | 23 | |
-| kadma (in kadma v'azla) | 15 | 20 | 15 | 15 | |
-| geresh (azla) | 16 | 21 | 16 | 16 | |
-| gershayim | 20 | 22 | 20 | 20 | |
-| telisha_ketana | 29 | 18 | 30 | 30 | Torah: T′ is sung on a grace note, drawn as an eighth |
-| telisha_gedola | 28 | 17 | 29 | 29 | Torah: as telisha ketana |
-| pazer | 30 | 19 | 31 | 31 | Torah: PA-ZER's two D4s are held as one quarter — the maintainer's correction of the print; the High Holiday staff keeps both |
-| mercha_kefula | 39 | — | 39 | — | |
-| karnei_parah | 40 | — | — | 40 | |
-| yerach_ben_yomo | 40 | — | — | 39 | |
-| munach legarmeh (no card) | 17 | 15 | 17 | 17 | |
-| sof pasuk at the end of an aliyah (no card) | 41 | 30–33 | 40, 40b–40d | 41 | |
+| Mark (tutor key) | Torah row | High Holiday row | Haftarah row | Esther row | Megillot row | On the staff |
+|---|---|---|---|---|---|---|
+| mercha | 1 | 1 | 1 | 1 | 1 | |
+| tipcha | 4 | 4 | 4 | 4 | 4 | |
+| munach (before etnachta) | 2 | 2 | 2 | 2 | 2 | |
+| etnachta | 4 | 4 | 4 | 4 | 4 | |
+| sof_pasuk | 8 | 8 | 8 | 8 | 8 | |
+| mahpach | 11 | 11 | 11 | 11 | 11 | |
+| pashta | 13 | 10 | 13 | 13 | 13 | |
+| yetiv | 33 | 24 | 34 | 34 | 34 | Y′ is sung on a grace note, drawn as an eighth |
+| zakef_katon | 13 | 10 | 13 | 13 | 13 | |
+| zakef_gadol | 31 | 25 | 32 | 32 | 32 | |
+| zarka | 37 | 29 | 38 | 38 | 38 | Torah: the grace note on F♯4 before KA is drawn as an eighth |
+| segol | 37 | 29 | 38 | 38 | 38 | |
+| shalshelet | 38 | — | — | — | — | |
+| revia | 19 | 16 | 19 | 19 | 19 | |
+| darga | 21 | 13 | 22 | 22 | 22 | |
+| tevir | 22 | 13 | 23 | 23 | 23 | |
+| kadma (in kadma v'azla) | 15 | 20 | 15 | 15 | 15 | |
+| geresh (azla) | 16 | 21 | 16 | 16 | 16 | |
+| gershayim | 20 | 22 | 20 | 20 | 20 | |
+| telisha_ketana | 29 | 18 | 30 | 30 | 30 | Torah: T′ is sung on a grace note, drawn as an eighth |
+| telisha_gedola | 28 | 17 | 29 | 29 | 29 | Torah: as telisha ketana |
+| pazer | 30 | 19 | 31 | 31 | 31 | Torah: PA-ZER's two D4s are held as one quarter — the maintainer's correction of the print; the High Holiday staff keeps both |
+| mercha_kefula | 39 | — | 39 | — | — | |
+| karnei_parah | 40 | — | — | 40 | — | |
+| yerach_ben_yomo | 40 | — | — | 39 | — | |
+| munach legarmeh (no card) | 17 | 15 | 17 | 17 | 17 | |
+| sof pasuk at the end of an aliyah (no card) | 41 | 30–33 | 40, 40b–40d | 41 | 39, 39a | |
 
 `geresh_muqdam` has no figure in either chart and no entry (it never occurs in the Torah text either;
 see section G). Shalshelet, mercha kefula, karnei parah and yerach ben yomo have no High Holiday row:
@@ -133,7 +139,9 @@ Haftarah row (the chart prints none, so a haftarah word carrying one draws no no
 derives `data/trope/trope_motifs_haftarah.json` from the column (section H) rather than checking a
 hand-edited file. The Esther column names section I's rows the same way: shalshelet and mercha kefula
 have no Esther row (the chart prints none), karnei parah and yerach ben yomo have one each (rows 40
-and 39), and `data/trope/trope_motifs_esther.json` is derived from the column.
+and 39), and `data/trope/trope_motifs_esther.json` is derived from the column. The Megillot column
+names section J's rows: shalshelet, mercha kefula, karnei parah and yerach ben yomo have no row there
+(the chart prints none), and `data/trope/trope_motifs_megillot.json` is derived from the column.
 
 The lowered seventh is printed with a natural sign (G♮) in the Torah chart's darga, telisha gedola,
 pazer, mercha kefula and karnei parah, and on the munach before zarka (rows 34–35); the High Holiday
@@ -142,7 +150,8 @@ accents on shalshelet's B4, zarka's C♯4 and karnei parah's E4 and A4, tenuto l
 B4 A4 F♯4 and zakef gadol's ZA-KEF-GA; in the High Holiday chart, accents on the last three notes of
 zakef gadol and pazer and tenuto dashes on zarka's closing B3 A3 G3; in the Esther chart, accents on
 tevir's last three notes (23–28), tenuto dashes on telisha gedola's last three (29) and a marcato
-wedge over yetiv's TIV (33–34), written `>` in the rows. The staffs do not draw these marks.
+wedge over yetiv's TIV (33–34), written `>` in the rows; in the Megillot chart, tenuto dashes on zakef
+katon's TON (9–14) and on telisha gedola's last three notes (29). The staffs do not draw these marks.
 
 ## B. The 41 Torah phrase patterns
 
@@ -855,7 +864,7 @@ The aim is a staff under any reading — a verse, an aliyah, a whole parasha —
 cantillation. The chart supplies the figures. This section records what a builder of that staff needs
 to know, and what the chart leaves open.
 
-- **The data** is `data/trope/trope_phrases.json`, built from sections B, C, H and I. The Trope Tutor's
+- **The data** is `data/trope/trope_phrases.json`, built from sections B, C and H–J. The Trope Tutor's
   Phrases tab draws every row of it, and its renderer (`renderPhraseStaff`,
   `docs/reference/torah-and-trope.md`) is the first building block of this staff. For each
   melody it gives the key and every row as flat arrays:
@@ -1594,4 +1603,334 @@ mercha    MER- G4(e) CHA G4(e)
 tipcha    TIP- C5(e) CHA C5(e) ~C5(32) ~B♭4(32) ~A4(32) ~G4(32) 3{~F4(e) ~E♮4(e) ~F4(e)} ~G4(e) ~F4(e) ~C4(e) rest(s)
 mercha    MER- C4(s) CHA A4(e)
 sof_pasuk SOF- A4(s) PA- A4(s) SUK G4(e) ~F4(dq)
+```
+
+## J. The 39 Shir HaShirim / Ruth / Kohelet phrase patterns
+
+Transcribed note for note from the chart for the three festival Megillot in *The Art of Cantillation,
+Volume 2* (Marshall Portnoy and Josée Wolff, UAHC Press, 2001), Appendix F, pages 91–93: rows 1–11 on
+the first page, 12–31 on the second, 32–39 and the end-of-book setting on the third. The scan was read
+as the Haftarah and Esther charts were (sections H and I): a row at a time at 400 dpi, by eye and by the
+note-head detector, with the beams counted in the pixel columns between the stems, every dot, flag,
+rest and curve in doubt dumped pixel by pixel, and the rhythm of each figure compared against the same
+figure elsewhere on the page. The melody is the traditional one for Shir HaShirim, Ruth and Kohelet;
+the transcription is CC BY-SA 4.0 like the rest of this file. No page reads these rows yet (the wiring
+is a candidate in `docs/IMPROVEMENT_LOG.md`), but the builder derives
+`data/trope/trope_motifs_megillot.json` from them through section A's Megillot column on every run, so
+the Learn cards are ready; never edit that file by hand.
+
+**Key and range.** No key signature and no accidental anywhere on the chart, so every pitch is a plain
+letter (`key: C`; the builder refuses any sign). The rows lie between C4 and D5: the etnachta closes on
+E4, the sof pasuk and the end of a chapter on C4. Row numbers are the chart's own; the chart prints its
+row 39 twice, "(end of each chapter)" and "(end of book)", and the second is `#39a`, like High Holiday
+`#20b` — a printed row, not a derived one.
+
+**The rows.** The chart's order: the etnachta clause (1–4) and the sof pasuk clause (5–8); the zakef
+katon clause (9–14); kadma v'azla and geresh (15–16); revia (17–19); gershayim (20–21); darga and
+tevir (22–28); the telishas (29–30); pazer (31); zakef gadol (32); yetiv (33–34); the segol clause
+(35–38); the closing formula (39, 39a). The chart prints no shalshelet, mercha kefula, karnei parah or
+yerach ben yomo, so those marks have no row and no Learn card (section A). The Hebrew of each row is
+the printed row of section B or H with the same marks.
+
+**Figures that change with their neighbours** (as printed; the report lists every figure). Tipcha's
+CHA ends on a quarter before etnachta (1–4) and on an eighth, followed by an eighth rest, before sof
+pasuk (5–8); its TIP is the sixteenth that completes mercha's dotted eighth (1, 3, 5, 7) and a plain
+eighth when it opens the row (2, 4, 6, 8). Munach–etnachta sings NACH, ET and NACH as a triplet of
+eighths (1–2); without the munach, ET and NACH are a pair of sixteenths (3–4), and sof pasuk's SOF and
+PA follow the same rule (5–6 against 7–8). Zarka's ZAR and segol's SE are the sixteenth that completes
+the munach's dotted eighth (35–37) and an eighth when the mark opens the row (37–38). Kadma's MA is a
+dotted eighth and two sixteenths (9, 26, 27), tied on into an eighth in row 9, where the mahpach's own
+MA follows on the same A4; row 9 draws both beams up to the dotted eighth's stem where rows 26 and 27
+print the usual partial beam, and the three rows are read alike. Zakef katon's KA is a thirty-second
+beamed onto the munach's run (9, 10, 12, 14, 33) and an eighth when it opens the word (11, 13, 34), and
+its TON is a dotted eighth, a sixteenth and a quarter, each with a tenuto line, in rows 9–14 — printed
+after yetiv (33–34) as a dotted sixteenth, a thirty-second and a quarter with no tenuto marks, which
+the rows keep as printed (one for the ear check). Darga's GA and segol's GOL, the sof pasuk's SUK
+(39, 39a) and zarka's KA all run an eighth into four thirty-seconds, as the darga does in the other
+charts of the book.
+
+**Brackets, rests, articulation.** The chart prints a `3` over its triplets — the munach–etnachta and
+mercha–sof pasuk groups (1–2, 5–6), kadma v'azla's and geresh's C5 B4 A4 (15–16) and zakef gadol's
+three groups (32: ZA-KEF-GA, DOL's B4 G4 E4, and G4 F4 E4 written as a dotted eighth, a sixteenth and
+an eighth) — and a `6` under the closing tipcha's six sixteenths (39, 39a). The telishas' name is
+three thirty-seconds and two sixty-fourths (29–30; the fourth beam under the last two notes is
+printed in both rows, and the five notes last an eighth, as the Esther chart's bracketed five do):
+row 30 hyphenates K′-TA and row 29 sets G′DO as one block over its two notes, both kept as printed.
+Rests are printed and the rows keep them: an eighth rest after the tipcha before sof pasuk (5–8),
+after munach legarmeh's run (17), after the munach before the telishas and pazer (29–31) and after
+yetiv's TIV (33–34); a sixteenth rest after pashta's TA (9–14) and after the C4 that ends zarka's run
+(35–38). Yetiv's Y′ is a grace note on B4 (33–34), the chart's only grace. Articulation: tenuto lines
+on zakef katon's TON (9–14) and on telisha gedola's last three notes (29), written `,-`; the chart
+prints no accent. Ties: the etnachta's TA ends on an eighth tied into a quarter under the slur (1–4),
+tevir's VIR the same (23–28), gershayim's YIM ends on a sixteenth tied into a quarter (20–21), and the
+kadma's A4 is tied into the eighth that follows it (9).
+
+**The closing rows.** Rows 39 and 39a are the two `[aliyah-end]` rows: the Megillot are read without
+aliyot, so the tag means the end of a chapter (39) or of the book (39a), which differ only in the
+penultimate note (E4 against G4). The chart gives the shorter endings no rows, so none is derived.
+
+```trope-megillot
+#1 מֵרְכָ֥א טִפְּחָ֖א מֻנָּ֣ח אֶתְנַחְתָּ֑א
+mercha    MER- E4(e) CHA E4(de)
+tipcha    TIP- E4(s) CHA G4(e) ~E4(q)
+munach    MU- E4(e) NACH 3{E4(e)
+etnachta  ET- D4(e) NACH- C4(e)} TA C4(de) ~F4(s) ~E4(e) ~=E4(q)
+```
+
+```trope-megillot
+#2 טִפְּחָ֖א מֻנָּ֣ח אֶתְנַחְתָּ֑א
+tipcha    TIP- E4(e) CHA G4(e) ~E4(q)
+munach    MU- E4(e) NACH 3{E4(e)
+etnachta  ET- D4(e) NACH- C4(e)} TA C4(de) ~F4(s) ~E4(e) ~=E4(q)
+```
+
+```trope-megillot
+#3 מֵרְכָ֥א טִפְּחָ֖א אֶתְנַחְתָּ֑א
+mercha    MER- E4(e) CHA E4(de)
+tipcha    TIP- E4(s) CHA G4(e) ~E4(q)
+etnachta  ET- D4(s) NACH- C4(s) TA C4(de) ~F4(s) ~E4(e) ~=E4(q)
+```
+
+```trope-megillot
+#4 טִפְּחָ֖א אֶתְנַחְתָּ֑א
+tipcha    TIP- E4(e) CHA G4(e) ~E4(q)
+etnachta  ET- D4(s) NACH- C4(s) TA C4(de) ~F4(s) ~E4(e) ~=E4(q)
+```
+
+```trope-megillot
+#5 מֵרְכָ֥א טִפְּחָ֖א מֵרְכָ֥א סוֹף־פָּסֽוּק׃
+mercha    MER- E4(e) CHA E4(de)
+tipcha    TIP- E4(s) CHA G4(e) ~E4(e) rest(e)
+mercha    MER- E4(e) CHA 3{E4(e)
+sof_pasuk SOF- D4(e) PA- C4(e)} SUK D4(e) ~C4(dq)
+```
+
+```trope-megillot
+#6 טִפְּחָ֖א מֵרְכָ֥א סוֹף־פָּסֽוּק׃
+tipcha    TIP- E4(e) CHA G4(e) ~E4(e) rest(e)
+mercha    MER- E4(e) CHA 3{E4(e)
+sof_pasuk SOF- D4(e) PA- C4(e)} SUK D4(e) ~C4(dq)
+```
+
+```trope-megillot
+#7 מֵרְכָ֥א טִפְּחָ֖א סוֹף־פָּסֽוּק׃
+mercha    MER- E4(e) CHA E4(de)
+tipcha    TIP- E4(s) CHA G4(e) ~E4(e) rest(e)
+sof_pasuk SOF- D4(s) PA- C4(s) SUK D4(e) ~C4(dq)
+```
+
+```trope-megillot
+#8 טִפְּחָ֖א סוֹף־פָּסֽוּק׃
+tipcha    TIP- E4(e) CHA G4(e) ~E4(e) rest(e)
+sof_pasuk SOF- D4(s) PA- C4(s) SUK D4(e) ~C4(dq)
+```
+
+```trope-megillot
+#9 קַדְמָ֨א מַהְפָּ֤ךְ פַּשְׁטָא֙ מֻנָּ֣ח קָטֹ֔ן
+kadma       KAD- E4(e) MA E4(de) ~B4(s) ~A4(s) =A4(e)
+mahpach     MA- A4(e) PACH G4(s) ~F4(s) ~E4(q)
+pashta      PASH- E4(e) TA B4(e) rest(s)
+munach      MU- G4(e) NACH G4(s) ~E4(s) ~G4(ds)
+zakef_katon KA- G4(32) TON G4(de,-) ~F4(s,-) ~E4(q,-)
+```
+
+```trope-megillot
+#10 מַהְפָּ֤ךְ פַּשְׁטָא֙ מֻנָּ֣ח קָטֹ֔ן
+mahpach     MA- A4(e) PACH G4(s) ~F4(s) ~E4(q)
+pashta      PASH- E4(e) TA B4(e) rest(s)
+munach      MU- G4(e) NACH G4(s) ~E4(s) ~G4(ds)
+zakef_katon KA- G4(32) TON G4(de,-) ~F4(s,-) ~E4(q,-)
+```
+
+```trope-megillot
+#11 מַהְפָּ֤ךְ פַּשְׁטָא֙ קָטֹ֔ן
+mahpach     MA- A4(e) PACH G4(s) ~F4(s) ~E4(q)
+pashta      PASH- E4(e) TA B4(e) rest(s)
+zakef_katon KA- G4(e) TON G4(de,-) ~F4(s,-) ~E4(q,-)
+```
+
+```trope-megillot
+#12 פַּשְׁטָא֙ מֻנָּ֣ח קָטֹ֔ן
+pashta      PASH- E4(e) TA B4(e) rest(s)
+munach      MU- G4(e) NACH G4(s) ~E4(s) ~G4(ds)
+zakef_katon KA- G4(32) TON G4(de,-) ~F4(s,-) ~E4(q,-)
+```
+
+```trope-megillot
+#13 פַּשְׁטָא֙ קָטֹ֔ן
+pashta      PASH- E4(e) TA B4(e) rest(s)
+zakef_katon KA- G4(e) TON G4(de,-) ~F4(s,-) ~E4(q,-)
+```
+
+```trope-megillot
+#14 מֻנָּ֣ח מַהְפָּ֤ךְ פַּשְׁטָא֙ מֻנָּ֣ח קָטֹ֔ן
+munach      MU- A4(e) NACH A4(s) ~G4(s) ~A4(e)
+mahpach     MA- A4(e) PACH G4(s) ~F4(s) ~E4(q)
+pashta      PASH- E4(e) TA B4(e) rest(s)
+munach      MU- G4(e) NACH G4(s) ~E4(s) ~G4(ds)
+zakef_katon KA- G4(32) TON G4(de,-) ~F4(s,-) ~E4(q,-)
+```
+
+```trope-megillot
+#15 קַדְמָ֨א וְאַזְלָ֜א
+kadma  KAD- E4(e) MA A4(e)
+geresh V'- B4(s) AZ- B4(s) LA 3{C5(e) ~B4(e) ~A4(e)} ~B4(e) ~A4(dq)
+```
+
+```trope-megillot
+#16 גֵּ֜רֵשׁ
+geresh GE- 3{C5(e) ~B4(e) ~A4(e)} ~B4(e) RESH ~A4(dq)
+```
+
+```trope-megillot
+#17 מֻנָּ֣ח ׀ מֻנָּ֣ח רְבִיעִ֗י
+munach_legarmeh MU- E4(e) NACH E4(32) F4(32) G4(32) E4(32) A4(e) rest(e)
+munach          MU- E4(e) NACH G4(de)
+revia           R'- G4(s) VI- G4(s) I G4(q) ~G4(s) ~F4(s) ~E4(s) ~D4(s) ~E4(q)
+```
+
+```trope-megillot
+#18 מֻנָּ֣ח רְבִיעִ֗י
+munach MU- E4(e) NACH G4(de)
+revia  R'- G4(s) VI- G4(s) I G4(q) ~G4(s) ~F4(s) ~E4(s) ~D4(s) ~E4(q)
+```
+
+```trope-megillot
+#19 רְבִיעִ֗י
+revia  R'- G4(s) VI- G4(s) I G4(q) ~G4(s) ~F4(s) ~E4(s) ~D4(s) ~E4(q)
+```
+
+```trope-megillot
+#20 גֵּרְשַׁיִ֞ם
+gershayim GER- E4(e) SHA- E4(e) YIM E4(s) ~F4(s) ~G4(s) ~E4(s) ~A4(s) ~=A4(q)
+```
+
+```trope-megillot
+#21 מֻנָּ֣ח גֵּרְשַׁיִ֞ם
+munach    MU- A4(e) NACH A4(s) ~G4(s) ~A4(e)
+gershayim GER- E4(e) SHA- E4(e) YIM E4(s) ~F4(s) ~G4(s) ~E4(s) ~A4(s) ~=A4(q)
+```
+
+```trope-megillot
+#22 דַּרְגָּ֧א
+darga  DAR- G4(e) GA G4(e) ~G4(32) ~F4(32) ~E4(32) ~D4(32) ~G4(de)
+```
+
+```trope-megillot
+#23 תְּבִ֛יר
+tevir  T'- C4(e) VIR C4(32) ~D4(32) ~E4(32) ~D4(32) ~E4(e) ~=E4(q)
+```
+
+```trope-megillot
+#24 דַּרְגָּ֧א תְּבִ֛יר
+darga  DAR- G4(e) GA G4(e) ~G4(32) ~F4(32) ~E4(32) ~D4(32) ~G4(de)
+tevir  T'- C4(e) VIR C4(32) ~D4(32) ~E4(32) ~D4(32) ~E4(e) ~=E4(q)
+```
+
+```trope-megillot
+#25 מֵרְכָ֥א תְּבִ֛יר
+mercha MER- G4(e) CHA G4(de)
+tevir  T'- C4(e) VIR C4(32) ~D4(32) ~E4(32) ~D4(32) ~E4(e) ~=E4(q)
+```
+
+```trope-megillot
+#26 קַדְמָ֨א דַּרְגָּ֧א תְּבִ֛יר
+kadma  KAD- E4(e) MA E4(de) ~B4(s) ~A4(s)
+darga  DAR- G4(e) GA G4(e) ~G4(32) ~F4(32) ~E4(32) ~D4(32) ~G4(de)
+tevir  T'- C4(e) VIR C4(32) ~D4(32) ~E4(32) ~D4(32) ~E4(e) ~=E4(q)
+```
+
+```trope-megillot
+#27 קַדְמָ֨א מֵרְכָ֥א תְּבִ֛יר
+kadma  KAD- E4(e) MA E4(de) ~B4(s) ~A4(s)
+mercha MER- G4(e) CHA G4(de)
+tevir  T'- C4(e) VIR C4(32) ~D4(32) ~E4(32) ~D4(32) ~E4(e) ~=E4(q)
+```
+
+```trope-megillot
+#28 מֻנָּ֣ח דַּרְגָּ֧א תְּבִ֛יר
+munach MU- A4(e) NACH A4(s) ~G4(s) ~A4(e)
+darga  DAR- G4(e) GA G4(e) ~G4(32) ~F4(32) ~E4(32) ~D4(32) ~G4(de)
+tevir  T'- C4(e) VIR C4(32) ~D4(32) ~E4(32) ~D4(32) ~E4(e) ~=E4(q)
+```
+
+```trope-megillot
+#29 מֻנָּ֣ח תְּ֠לִישָׁא גְּדוֹלָה֠
+munach         MU- E4(e) NACH A4(q) rest(e)
+telisha_gedola T'- C4(32) LI- C4(32) SHA- C4(32) G'DO- C4(64) C4(64) LAH C4(32) ~D4(32) ~E4(32) ~F4(32) ~E4(e,-) ~D4(e,-) ~C4(q,-)
+```
+
+```trope-megillot
+#30 מֻנָּ֣ח תְּלִישָׁא קְטַנָּה֩
+munach         MU- E4(e) NACH A4(q) rest(e)
+telisha_ketana T'- E4(32) LI- E4(32) SHA- E4(32) K'- E4(64) TA- E4(64) NAH A4(s) ~G4(s) ~A4(s) ~E4(s) ~E4(q)
+```
+
+```trope-megillot
+#31 מֻנָּ֣ח מֻנָּ֣ח פָּזֵ֡ר
+munach MU- E4(e) NACH A4(q)
+munach MU- E4(e) NACH A4(q) rest(e)
+pazer  PA- E4(e) ZER A4(s) ~B4(s) ~C5(s) ~B4(s) ~D5(s) ~C5(s) ~B4(s) ~A4(s) ~B4(e) ~A4(q)
+```
+
+```trope-megillot
+#32 זָקֵף גָּד֕וֹל
+zakef_gadol ZA- 3{E4(e) KEF E4(e) GA- E4(e)} DOL 3{B4(e) ~G4(e) ~E4(e)} 3{~G4(de) ~F4(s) ~E4(e)} ~E4(q)
+```
+
+```trope-megillot
+#33 יְ֚תִיב מֻנָּ֣ח קָטֹ֔ן
+yetiv       Y'- B4(g) TIV B4(e) ~E4(e) rest(e)
+munach      MU- G4(e) NACH G4(s) ~E4(s) ~G4(ds)
+zakef_katon KA- G4(32) TON G4(ds) ~F4(32) ~E4(q)
+```
+
+```trope-megillot
+#34 יְ֚תִיב קָטֹ֔ן
+yetiv       Y'- B4(g) TIV B4(e) ~E4(e) rest(e)
+zakef_katon KA- G4(e) TON G4(ds) ~F4(32) ~E4(q)
+```
+
+```trope-megillot
+#35 מֻנָּ֣ח זַרְקָא֮ מֻנָּ֣ח סֶגּוֹל֒
+munach MU- C4(e) NACH G4(de)
+zarka  ZAR- G4(s) KA G4(e) ~G4(32) ~F4(32) ~E4(32) ~D4(32) ~E4(s) ~D4(s) ~C4(e) rest(s)
+munach MU- C4(e) NACH G4(de)
+segol  SE- G4(s) GOL G4(e) ~G4(32) ~F4(32) ~E4(32) ~D4(32) ~A4(e) ~E4(dq)
+```
+
+```trope-megillot
+#36 מֻנָּ֣ח זַרְקָא֮ סֶגּוֹל֒
+munach MU- C4(e) NACH G4(de)
+zarka  ZAR- G4(s) KA G4(e) ~G4(32) ~F4(32) ~E4(32) ~D4(32) ~E4(s) ~D4(s) ~C4(e) rest(s)
+segol  SE- G4(e) GOL G4(e) ~G4(32) ~F4(32) ~E4(32) ~D4(32) ~A4(e) ~E4(dq)
+```
+
+```trope-megillot
+#37 זַרְקָא֮ מֻנָּ֣ח סֶגּוֹל֒
+zarka  ZAR- G4(e) KA G4(e) ~G4(32) ~F4(32) ~E4(32) ~D4(32) ~E4(s) ~D4(s) ~C4(e) rest(s)
+munach MU- C4(e) NACH G4(de)
+segol  SE- G4(s) GOL G4(e) ~G4(32) ~F4(32) ~E4(32) ~D4(32) ~A4(e) ~E4(dq)
+```
+
+```trope-megillot
+#38 זַרְקָא֮ סֶגּוֹל֒
+zarka  ZAR- G4(e) KA G4(e) ~G4(32) ~F4(32) ~E4(32) ~D4(32) ~E4(s) ~D4(s) ~C4(e) rest(s)
+segol  SE- G4(e) GOL G4(e) ~G4(32) ~F4(32) ~E4(32) ~D4(32) ~A4(e) ~E4(dq)
+```
+
+```trope-megillot
+#39 [aliyah-end] מֵרְכָ֥א טִפְּחָ֖א מֵרְכָ֥א סוֹף־פָּסֽוּק׃
+mercha    MER- E4(e) CHA E4(e)
+tipcha    TIP- G4(e) CHA 6{C5(s) ~B4(s) ~A4(s) ~G4(s) ~A4(s) ~B4(s)} ~A4(q)
+mercha    MER- G4(e) CHA G4(e)
+sof_pasuk SOF- G4(s) PA- G4(s) SUK G4(e) ~G4(32) ~F4(32) ~E4(32) ~D4(32) ~E4(e) ~C4(dq)
+```
+
+```trope-megillot
+#39a [aliyah-end] מֵרְכָ֥א טִפְּחָ֖א מֵרְכָ֥א סוֹף־פָּסֽוּק׃
+mercha    MER- E4(e) CHA E4(e)
+tipcha    TIP- G4(e) CHA 6{C5(s) ~B4(s) ~A4(s) ~G4(s) ~A4(s) ~B4(s)} ~A4(q)
+mercha    MER- G4(e) CHA G4(e)
+sof_pasuk SOF- G4(s) PA- G4(s) SUK G4(e) ~G4(32) ~F4(32) ~E4(32) ~D4(32) ~G4(e) ~C4(dq)
 ```

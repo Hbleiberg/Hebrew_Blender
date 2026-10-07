@@ -1,9 +1,9 @@
 # Trope phrases build report
 
 - **Built:** 2026-10-07
-- **Source:** `docs/tropepatterns.md` — section B (Torah: the teacher's cantillation chart (Torah Cantillation)); section C (High Holiday: the teacher's cantillation chart (High Holiday Torah Cantillation)); section H (Haftarah: The Art of Cantillation, Vol. 2 (Portnoy and Wolff, 2001), Appendix D); section I (Esther: The Art of Cantillation, Vol. 2 (Portnoy and Wolff, 2001), Appendix E) — every row transcribed from scans of the printed chart
-- **Output:** `data/trope/trope_phrases.json` — 150,759 bytes (budget 262,144)
-- **Rows:** Torah 41 (436 notes) · High Holiday 34 (459 notes) · Haftarah 43 (499 notes) · Esther 41 (485 notes)
+- **Source:** `docs/tropepatterns.md` — section B (Torah: the teacher's cantillation chart (Torah Cantillation)); section C (High Holiday: the teacher's cantillation chart (High Holiday Torah Cantillation)); section H (Haftarah: The Art of Cantillation, Vol. 2 (Portnoy and Wolff, 2001), Appendix D); section I (Esther: The Art of Cantillation, Vol. 2 (Portnoy and Wolff, 2001), Appendix E); section J (Megillot: The Art of Cantillation, Vol. 2 (Portnoy and Wolff, 2001), Appendix F) — every row transcribed from scans of the printed chart
+- **Output:** `data/trope/trope_phrases.json` — 189,459 bytes (budget 262,144)
+- **Rows:** Torah 41 (436 notes) · High Holiday 34 (459 notes) · Haftarah 43 (499 notes) · Esther 41 (485 notes) · Megillot 40 (498 notes)
 - **Derived rows** (not printed: a printed row with units left out, each kept note for note): Haftarah 40b from 40, Haftarah 40c from 40, Haftarah 40d from 40
 - **License:** hand transcriptions of the traditional melodies — [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/), like the JSON.
 
@@ -496,9 +496,125 @@ only) count from A = 1; ′ is the octave above.
 
 - `MU- E♭4(e) NACH 5{E♭4(s) ~D4(s) ~E♭4(s) ~F4(s) ~E♭4(s)} rest(e)` — rows 17 · after ^ · before munach
 
+### Megillot melody
+
+#### mercha
+
+- `MER- E4(e) CHA E4(de)` — rows 1, 3, 5, 7 · after ^ · before tipcha
+- `MER- E4(e) CHA 3{E4(e)` — rows 5, 6 · after tipcha · before sof_pasuk
+- `MER- G4(e) CHA G4(de)` — rows 25, 27 · after ^, kadma · before tevir
+- `MER- E4(e) CHA E4(e)` — rows 39, 39a · after ^ · before tipcha
+- `MER- G4(e) CHA G4(e)` — rows 39, 39a · after tipcha · before sof_pasuk
+
+#### tipcha
+
+- `TIP- E4(s) CHA G4(e) ~E4(q)` — rows 1, 3 · after mercha · before munach, etnachta
+- `TIP- E4(e) CHA G4(e) ~E4(q)` — rows 2, 4 · after ^ · before munach, etnachta
+- `TIP- E4(s) CHA G4(e) ~E4(e) rest(e)` — rows 5, 7 · after mercha · before mercha, sof_pasuk
+- `TIP- E4(e) CHA G4(e) ~E4(e) rest(e)` — rows 6, 8 · after ^ · before mercha, sof_pasuk
+- `TIP- G4(e) CHA 6{C5(s) ~B4(s) ~A4(s) ~G4(s) ~A4(s) ~B4(s)} ~A4(q)` — rows 39, 39a · after mercha · before mercha
+
+#### munach
+
+- `MU- E4(e) NACH 3{E4(e)` — rows 1, 2 · after tipcha · before etnachta
+- `MU- G4(e) NACH G4(s) ~E4(s) ~G4(ds)` — rows 9, 10, 12, 14, 33 · after pashta, yetiv · before zakef_katon
+- `MU- A4(e) NACH A4(s) ~G4(s) ~A4(e)` — rows 14, 21, 28 · after ^ · before mahpach, gershayim, darga
+- `MU- E4(e) NACH G4(de)` — rows 17, 18 · after munach_legarmeh, ^ · before revia
+- `MU- E4(e) NACH A4(q) rest(e)` — rows 29, 30, 31 · after ^, munach · before telisha_gedola, telisha_ketana, pazer
+- `MU- E4(e) NACH A4(q)` — rows 31 · after ^ · before munach
+- `MU- C4(e) NACH G4(de)` — rows 35, 35, 36, 37 · after ^, zarka · before zarka, segol
+
+#### etnachta
+
+- `ET- D4(e) NACH- C4(e)} TA C4(de) ~F4(s) ~E4(e) ~=E4(q)` — rows 1, 2 · after munach · before $
+- `ET- D4(s) NACH- C4(s) TA C4(de) ~F4(s) ~E4(e) ~=E4(q)` — rows 3, 4 · after tipcha · before $
+
+#### sof_pasuk
+
+- `SOF- D4(e) PA- C4(e)} SUK D4(e) ~C4(dq)` — rows 5, 6 · after mercha · before $
+- `SOF- D4(s) PA- C4(s) SUK D4(e) ~C4(dq)` — rows 7, 8 · after tipcha · before $
+- `SOF- G4(s) PA- G4(s) SUK G4(e) ~G4(32) ~F4(32) ~E4(32) ~D4(32) ~E4(e) ~C4(dq)` — rows 39 · after mercha · before $
+- `SOF- G4(s) PA- G4(s) SUK G4(e) ~G4(32) ~F4(32) ~E4(32) ~D4(32) ~G4(e) ~C4(dq)` — rows 39a · after mercha · before $
+
+#### mahpach
+
+- `MA- A4(e) PACH G4(s) ~F4(s) ~E4(q)` — rows 9, 10, 11, 14 · after kadma, ^, munach · before pashta
+
+#### pashta
+
+- `PASH- E4(e) TA B4(e) rest(s)` — rows 9, 10, 11, 12, 13, 14 · after mahpach, ^ · before munach, zakef_katon
+
+#### yetiv
+
+- `Y'- B4(g) TIV B4(e) ~E4(e) rest(e)` — rows 33, 34 · after ^ · before munach, zakef_katon
+
+#### zakef_katon
+
+- `KA- G4(32) TON G4(de,-) ~F4(s,-) ~E4(q,-)` — rows 9, 10, 12, 14 · after munach · before $
+- `KA- G4(e) TON G4(de,-) ~F4(s,-) ~E4(q,-)` — rows 11, 13 · after pashta · before $
+- `KA- G4(32) TON G4(ds) ~F4(32) ~E4(q)` — rows 33 · after munach · before $
+- `KA- G4(e) TON G4(ds) ~F4(32) ~E4(q)` — rows 34 · after yetiv · before $
+
+#### zakef_gadol
+
+- `ZA- 3{E4(e) KEF E4(e) GA- E4(e)} DOL 3{B4(e) ~G4(e) ~E4(e)} 3{~G4(de) ~F4(s) ~E4(e)} ~E4(q)` — rows 32 · after ^ · before $
+
+#### zarka
+
+- `ZAR- G4(s) KA G4(e) ~G4(32) ~F4(32) ~E4(32) ~D4(32) ~E4(s) ~D4(s) ~C4(e) rest(s)` — rows 35, 36 · after munach · before munach, segol
+- `ZAR- G4(e) KA G4(e) ~G4(32) ~F4(32) ~E4(32) ~D4(32) ~E4(s) ~D4(s) ~C4(e) rest(s)` — rows 37, 38 · after ^ · before munach, segol
+
+#### segol
+
+- `SE- G4(s) GOL G4(e) ~G4(32) ~F4(32) ~E4(32) ~D4(32) ~A4(e) ~E4(dq)` — rows 35, 37 · after munach · before $
+- `SE- G4(e) GOL G4(e) ~G4(32) ~F4(32) ~E4(32) ~D4(32) ~A4(e) ~E4(dq)` — rows 36, 38 · after zarka · before $
+
+#### revia
+
+- `R'- G4(s) VI- G4(s) I G4(q) ~G4(s) ~F4(s) ~E4(s) ~D4(s) ~E4(q)` — rows 17, 18, 19 · after munach, ^ · before $
+
+#### darga
+
+- `DAR- G4(e) GA G4(e) ~G4(32) ~F4(32) ~E4(32) ~D4(32) ~G4(de)` — rows 22, 24, 26, 28 · after ^, kadma, munach · before $, tevir
+
+#### tevir
+
+- `T'- C4(e) VIR C4(32) ~D4(32) ~E4(32) ~D4(32) ~E4(e) ~=E4(q)` — rows 23, 24, 25, 26, 27, 28 · after ^, darga, mercha · before $
+
+#### kadma
+
+- `KAD- E4(e) MA E4(de) ~B4(s) ~A4(s) =A4(e)` — rows 9 · after ^ · before mahpach
+- `KAD- E4(e) MA A4(e)` — rows 15 · after ^ · before geresh
+- `KAD- E4(e) MA E4(de) ~B4(s) ~A4(s)` — rows 26, 27 · after ^ · before darga, mercha
+
+#### geresh
+
+- `V'- B4(s) AZ- B4(s) LA 3{C5(e) ~B4(e) ~A4(e)} ~B4(e) ~A4(dq)` — rows 15 · after kadma · before $
+- `GE- 3{C5(e) ~B4(e) ~A4(e)} ~B4(e) RESH ~A4(dq)` — rows 16 · after ^ · before $
+
+#### gershayim
+
+- `GER- E4(e) SHA- E4(e) YIM E4(s) ~F4(s) ~G4(s) ~E4(s) ~A4(s) ~=A4(q)` — rows 20, 21 · after ^, munach · before $
+
+#### telisha_ketana
+
+- `T'- E4(32) LI- E4(32) SHA- E4(32) K'- E4(64) TA- E4(64) NAH A4(s) ~G4(s) ~A4(s) ~E4(s) ~E4(q)` — rows 30 · after munach · before $
+
+#### telisha_gedola
+
+- `T'- C4(32) LI- C4(32) SHA- C4(32) G'DO- C4(64) C4(64) LAH C4(32) ~D4(32) ~E4(32) ~F4(32) ~E4(e,-) ~D4(e,-) ~C4(q,-)` — rows 29 · after munach · before $
+
+#### pazer
+
+- `PA- E4(e) ZER A4(s) ~B4(s) ~C5(s) ~B4(s) ~D5(s) ~C5(s) ~B4(s) ~A4(s) ~B4(e) ~A4(q)` — rows 31 · after munach · before $
+
+#### munach_legarmeh
+
+- `MU- E4(e) NACH E4(32) F4(32) G4(32) E4(32) A4(e) rest(e)` — rows 17 · after ^ · before munach
+
 ## The Trope Tutor's staffs against their rows
 
-Each Learn-card staff (`trope_motifs.json`, `trope_motifs_hh.json`, `trope_motifs_haftarah.json`, `trope_motifs_esther.json`) is the chart row its
+Each Learn-card staff (`trope_motifs.json`, `trope_motifs_hh.json`, `trope_motifs_haftarah.json`, `trope_motifs_esther.json`, `trope_motifs_megillot.json`) is the chart row its
 `source` names, reduced to the staff's values: a grace note is drawn as an eighth, tied notes merge, rests
 drop, and anything shorter than a quarter is `d` 1 (quarter 2, dotted quarter 3, half 4).
 
@@ -595,4 +711,25 @@ drop, and anything shorter than a quarter is `d` 1 (quarter 2, dotted quarter 3,
 | Esther | pazer | tropepatterns.md Esther #31 | derived from the row |
 | Esther | karnei_parah | tropepatterns.md Esther #40 | derived from the row |
 | Esther | yerach_ben_yomo | tropepatterns.md Esther #39 | derived from the row |
+| Megillot | mercha | tropepatterns.md Megillot #1 | derived from the row |
+| Megillot | tipcha | tropepatterns.md Megillot #4 | derived from the row |
+| Megillot | munach | tropepatterns.md Megillot #2 | derived from the row |
+| Megillot | etnachta | tropepatterns.md Megillot #4 | derived from the row |
+| Megillot | sof_pasuk | tropepatterns.md Megillot #8 | derived from the row |
+| Megillot | mahpach | tropepatterns.md Megillot #11 | derived from the row |
+| Megillot | pashta | tropepatterns.md Megillot #13 | derived from the row |
+| Megillot | yetiv | tropepatterns.md Megillot #34 | derived from the row |
+| Megillot | zakef_katon | tropepatterns.md Megillot #13 | derived from the row |
+| Megillot | zakef_gadol | tropepatterns.md Megillot #32 | derived from the row |
+| Megillot | zarka | tropepatterns.md Megillot #38 | derived from the row |
+| Megillot | segol | tropepatterns.md Megillot #38 | derived from the row |
+| Megillot | revia | tropepatterns.md Megillot #19 | derived from the row |
+| Megillot | darga | tropepatterns.md Megillot #22 | derived from the row |
+| Megillot | tevir | tropepatterns.md Megillot #23 | derived from the row |
+| Megillot | kadma | tropepatterns.md Megillot #15 | derived from the row |
+| Megillot | geresh | tropepatterns.md Megillot #16 | derived from the row |
+| Megillot | gershayim | tropepatterns.md Megillot #20 | derived from the row — 1 tied note drawn at the nearest value |
+| Megillot | telisha_ketana | tropepatterns.md Megillot #30 | derived from the row |
+| Megillot | telisha_gedola | tropepatterns.md Megillot #29 | derived from the row |
+| Megillot | pazer | tropepatterns.md Megillot #31 | derived from the row |
 

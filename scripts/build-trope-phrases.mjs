@@ -6,7 +6,8 @@
  * teacher's *Torah Cantillation* chart (section B: 41 rows, three sharps) and *High Holiday Torah
  * Cantillation* chart (section C: 33 rows + row 20's second setting, no key signature), and the charts
  * of The Art of Cantillation, Vol. 2 (Portnoy & Wolff): the Haftarah (section H: 40 rows, three flats,
- * plus the derived closings 40b–40d) and Esther (section I: 41 rows, two flats) — each transcribed note
+ * plus the derived closings 40b–40d), Esther (section I: 41 rows, two flats) and the three Megillot of
+ * Shir HaShirim, Ruth and Kohelet (section J: 39 rows + the end-of-book 39a, no signature) — each transcribed note
  * for note from scans into fenced ```trope-<melody> blocks. Those blocks are the only hand-edited copy
  * of the notes: fix a note there and re-run this script — never edit the JSON (nor the derived
  * Learn-card files this script writes for every `derived` melody). The block grammar is
@@ -16,13 +17,13 @@
  *                                                  right after the number (no bracket or Latin letter after)
  *   <tropeKey> <SYL>[-] <note>… <SYL>[-] <note>…   one line per mark, keys from TROPES + munach_legarmeh
  *   note  = [N{][~|~~|=|~=]PITCH(VALUE[,>][,-])[}]   PITCH as it sounds (C♯4, G♮4, B♭4)
- *   VALUE = 32 s ds e de q dq h dh | g (grace)       ~ slur from the previous note, ~~ dashed slur,
+ *   VALUE = 64 32 s ds e de q dq h dh | g (grace)    ~ slur from the previous note, ~~ dashed slur,
  *   rest(VALUE)                                      = tie from it, ~= both; N{ … } a bracket of N notes
  *                                                  (3 a triplet, scaled; any other N a run kept as written)
  *
  * Output (CC BY-SA 4.0, like the motif files):
  *   { v:1, built, license, source, tpq:48, values:{<code>:ticks},
- *     melodies: { torah:{key:"A", rows:[…]}, highholiday:{key:"C", rows:[…]}, haftarah:{key:"Eb", rows:[…]}, esther:{key:"Bb", rows:[…]} },
+ *     melodies: { torah:{key:"A", rows:[…]}, highholiday:{key:"C", rows:[…]}, haftarah:{key:"Eb", rows:[…]}, esther:{key:"Bb", rows:[…]}, megillot:{key:"C", rows:[…]} },
  *     figures:  { <melody>: { <tropeKey>: [ {refs:[[row, unitIdx]…], prev:[…], next:[…]} ] } } }
  * where each row is flat — { n, he, tags, notes:[{p, v, t, g?, r?, tie?, a?}], syl:[{t, hyphen,
  * unit, from, to}], units:[{k, from, to}], tup:[{from, to}], slur:[{from, to, dashed?}] } — p =
@@ -93,7 +94,7 @@ const CENSUS_PATH = OUT_DIR ? join(OUT_DIR, 'trope_contexts_report.md') : join(r
 const EXAMPLES_PATH = OUT_DIR ? join(OUT_DIR, 'trope_phrase_examples.json') : join(repoRoot, 'data', 'trope', 'trope_phrase_examples.json');
 const CACHE_DIR = join(repoRoot, 'source-data', 'trope-cache');
 const SIZE_BUDGET = 256 * 1024;   // six melodies at one row per line (the teacher's two charts and Portnoy & Wolff's four)
-const LICENSE = 'Hand transcriptions of the traditional Ashkenazi cantillation melodies from two printed sources: the Torah and High Holiday charts of a teacher\'s cantillation chart (docs/tropepatterns.md, sections B and C) and the Haftarah and Esther charts of The Art of Cantillation, Vol. 2 (Portnoy and Wolff, 2001; sections H and I). The melodies are traditional; this file is CC BY-SA 4.0.';
+const LICENSE = 'Hand transcriptions of the traditional Ashkenazi cantillation melodies from two printed sources: the Torah and High Holiday charts of a teacher\'s cantillation chart (docs/tropepatterns.md, sections B and C) and the Haftarah, Esther and Megillot (Shir HaShirim, Ruth, Kohelet) charts of The Art of Cantillation, Vol. 2 (Portnoy and Wolff, 2001; sections H, I and J). The melodies are traditional; this file is CC BY-SA 4.0.';
 
 const failures = [];
 const fail = (msg) => failures.push(msg);
@@ -124,7 +125,7 @@ const CONJUNCTIVE = new Set(['munach', 'mahpach', 'mercha', 'mercha_kefula', 'da
 
 /* ---------- the notation ---------- */
 const TPQ = 48;
-const VALUES = { 32: 6, s: 12, ds: 18, e: 24, de: 36, q: 48, dq: 72, h: 96, dh: 144, g: 0 };
+const VALUES = { 64: 3, 32: 6, s: 12, ds: 18, e: 24, de: 36, q: 48, dq: 72, h: 96, dh: 144, g: 0 };   // 64: the Megillot telishas' last two notes
 // A bracket N{ … } groups N notes. A triplet (3) is two or more sounding notes whose written values add up to
 // three of one plain value, sung in the time of two, and scales its notes by 2/3. Any other bracket the charts
 // print (4, 5, 6, 8, 11) groups a run of exactly N notes and keeps their written values — the books' brackets
@@ -152,6 +153,11 @@ const MELODIES = {
   esther: { info: 'trope-esther', key: 'Bb', rows: 41, extra: [], motifs: 'data/trope/trope_motifs_esther.json', derived: true, label: 'Esther', examples: false, section: 'I', book: 'The Art of Cantillation, Vol. 2 (Portnoy and Wolff, 2001), Appendix E',
     spell: { A: [''], B: ['♭', '♮'], C: [''], D: [''], E: ['♭', '♮'], F: [''], G: [''] },
     rule: 'the Esther chart (two flats) writes every B and E with its ♭ or ♮ and prints no other accidental' },
+  // The Shir HaShirim / Ruth / Kohelet chart (section J): Appendix F — no signature and no accidental. Row 39a is the
+  // chart's own "(end of book)" variant of row 39 (not derived: it is printed). Derived motif file, no examples.
+  megillot: { info: 'trope-megillot', key: 'C', rows: 39, extra: ['39a'], motifs: 'data/trope/trope_motifs_megillot.json', derived: true, label: 'Megillot', examples: false, section: 'J', book: 'The Art of Cantillation, Vol. 2 (Portnoy and Wolff, 2001), Appendix F',
+    spell: { A: [''], B: [''], C: [''], D: [''], E: [''], F: [''], G: [''] },
+    rule: 'the Megillot chart (Shir HaShirim, Ruth, Kohelet) has no key signature and prints no accidental' },
 };
 const INFO_TO_MELODY = Object.fromEntries(Object.entries(MELODIES).map(([m, d]) => [d.info, m]));
 const TAGS = new Set(['aliyah-end', 'unverified', 'derived']);   // [derived]: a row not printed but read off a printed one (its number + a letter) — checked below
@@ -324,6 +330,7 @@ const SPELLING = {
   highholiday: { 0: 'C', 2: 'D', 4: 'E', 5: 'F', 6: 'F♯', 7: 'G', 9: 'A', 10: 'B♭', 11: 'B' },
   haftarah: { 0: 'C', 2: 'D', 3: 'E♭', 4: 'E♮', 5: 'F', 7: 'G', 8: 'A♭', 9: 'A♮', 10: 'B♭', 11: 'B♮' },
   esther: { 0: 'C', 2: 'D', 3: 'E♭', 4: 'E♮', 5: 'F', 7: 'G', 9: 'A', 10: 'B♭', 11: 'B♮' },
+  megillot: { 0: 'C', 2: 'D', 4: 'E', 5: 'F', 7: 'G', 9: 'A', 11: 'B' },
 };
 function spellPitch(p, melody) {
   const midi = p + 71, pc = ((midi % 12) + 12) % 12, oct = Math.floor(midi / 12) - 1;
@@ -641,6 +648,7 @@ if (!LENIENT) {
     highholiday: { missing: ['geresh_muqdam', 'karnei_parah', 'mercha_kefula', 'shalshelet', 'yerach_ben_yomo'], key: 'C', range: [-16, -1], ends: ['30', '31', '32', '33'], endings: FOUR_ENDINGS },
     haftarah: { missing: ['geresh_muqdam', 'karnei_parah', 'shalshelet', 'yerach_ben_yomo'], key: 'Eb', range: [-13, 1], ends: ['40', '40b', '40c', '40d'], endings: FOUR_ENDINGS },
     esther: { missing: ['geresh_muqdam', 'mercha_kefula', 'shalshelet'], key: 'Bb', range: [-13, 4], ends: ['41'], endings: [FOUR_ENDINGS[0]] },
+    megillot: { missing: ['geresh_muqdam', 'karnei_parah', 'mercha_kefula', 'shalshelet', 'yerach_ben_yomo'], key: 'C', range: [-11, 3], ends: ['39', '39a'], endings: [FOUR_ENDINGS[0], FOUR_ENDINGS[0]] },
   };
   for (const [m, want] of Object.entries(SMOKE)) {
     const rows = melodies[m].rows, label = MELODIES[m].label;
