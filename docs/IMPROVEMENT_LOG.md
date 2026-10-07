@@ -8,6 +8,10 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P3 (**NEW S469 C**) | classroom_dashboard.html, torah_trainer.html | **Unprobed carriers of the preset-row focus drop**. | found S469
+
+- [ ] P4 (**NEW S469 C**) | flash_cards.html | **A preset's Play drops focus to `<body>`**. | found S469
+
 - [ ] P4 (**NEW S468 H**) | index.html | **A restore that switches the hub to Hebrew shows its success alert in English**. | found S468
 
 - [ ] P4 (**NEW S468 H**) | index.html | **After Erase All the hub stays Hebrew and dark until reload**. | found S468
@@ -308,6 +312,10 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-07 | (S469 close-out) | branch/deploy note | **S469 = C + 3 fixes (caps), PR #316.** No drift; sw v949→v950; no FM bump; gates clean.
+
+- [x] 2026-10-07 | `b1638df3` `04a85f46` `e93d2e91` | generator ×2, flash ×2 | (S469) **Duplicate named, not "⧉"; preset actions keep focus (generator 3, flash 2).** | HEAD controls (findings S469).
+
 - [x] 2026-10-07 | (S468 close-out) | branch/deploy note | **S468 = H + 4 fixes, continuing PR #316 (open).** No drift; sw v948→v949; no FM bump; gates clean; no gates asked.
 
 - [x] 2026-10-07 | `4b2eb422` `b70b1acf` `3a29ab99` `8cddee19` | hub ×2 (CSV), resources, pwa.js | (S468) **IvritSuite, not Hebrew Blender; HE presets = תבניות; card icons; banner spacer.** | HEAD controls (findings S468).
@@ -324,13 +332,11 @@ _(none)_
 
 - [x] 2026-10-07 | `beaa7b9` `b585d9b` `3609c19` `5a7a8ed` | FM ×2, intake, contact | (S465) **Straight strokes; underline metrics; copyright detection; 16px fields.** | findings S465.
 
-- [x] 2026-10-06 | (S464 close-out) | branch/deploy note | **S464 = M + 4 fixes, PR #311.** No drift; keep-alive #24 green; sw v940→v941; no FM bump; gates clean; gate 3 answered.
-
-- [x] 2026-10-06 | `661c6cc6`, `f98367f8`, `5f7f8a40`, `046cd3ab` | resources, kbd ×4, CSV | (S464) **CTA off the age chips; dark keyboard plates; HE arrows; תל-עם (gates 2).** | findings S464.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-07 | **S469** | iters: 1 pass (**C**) + 3 fixes = **4** | tools: generator ×2, flash ×2 | patterns fixed: button-focus-lost-to-its-own-rebuild ×2 | pass run: C | SW: v949→v950
 
 - 2026-10-07 | **S468** | iters: 1 pass (**H**) + 4 fixes = **5** | tools: index ×2, resources, pwa.js | patterns fixed: — | pass run: H | SW: v948→v949
 
@@ -370,11 +376,9 @@ _(none)_
 
 - 2026-10-02 | **S450** | iters: 1 pass (**M**) + 2 fixes + 1 reverted = **4** | tools: flash ×2, dashboard (reverted) | patterns fixed: dark-navy-fill-matches-its-ground ×2 (NEW) | pass run: M | SW: v917→v918
 
-- 2026-10-02 | **S449** | iters: 1 pass (**P**) + 4 fixes = **5** | tools: account, flash, generator, dictionary | patterns fixed: sub-floor touch target ×1 | pass run: P | SW: v916→v917
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S468 (2026-10-07):** index, resources, pwa S468 · torah, contact, dictionary, FM, dashboard S467 · ivrit-saves S466 · intake S465 · trope, account, privacy S464 · generator, flash S463 · terms, 404 S442.
+- **Snapshot S469 (2026-10-07):** generator, flash S469 · index, resources, pwa S468 · torah, contact, dictionary, FM, dashboard S467 · ivrit-saves S466 · intake S465 · trope, account, privacy S464 · terms, 404 S442.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -418,7 +422,7 @@ _(none)_
 
 - **`copy-claims-success-on-a-refused-clipboard`** (NEW S428; FIXED `bbd5f65`, `0d2a941`; S444 index `90e1a057`, dashboard `18344f69`; **S445 generator `3dad5c11`, flash `58ee7a4f` — all 7 carriers fixed, 0 open**): ACTIVE, streak 0. Detection: every `execCommand('copy')` whose …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`button-focus-lost-to-its-own-rebuild`** (**S455 trope `03cb3ff4` (19 chips), `12247228` (3 tab switches); S441 torah `17cd7334`; S426–S439 account, dictionary, torah**): ACTIVE, streak 0. Detection: Enter, Space and a click on each button of a JS-built list, and on each …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`button-focus-lost-to-its-own-rebuild`** (**S469 generator `04a85f46`, flash `e93d2e91`; S455 trope `03cb3ff4` (19 chips), `12247228` (3 tab switches); S441 torah `17cd7334`; S426–S439 account, dictionary, torah**): ACTIVE, streak 0. Detection: Enter, Space and a click on …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`dark-literal-escapes-the-print-tokens`** (NEW S437 G; resources FIXED `5320a668`): ACTIVE, streak 0. Detection: PDFs dark vs light, ink per page (<200 at 40 dpi); a lighter dark sheet = a `body.dark` literal the print token reset misses. Exempt: active-state borders. S437: …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -686,7 +690,7 @@ _(none)_
 
 - K i18n / localization audit: 2026-10-05 (**S461 — 31st K on `1b1538f6..60a09bc2`: gates clean; 96 runtime states 0 missing/raw (plants 480/480); NEW template + hidden-node arm; fallbacks, blind spot, RTL 0; TaL AM (gate 2). FIXED `74b2ee0c` (findings S461).**)
 
-- C accessibility (one tool): 2026-10-04 (**S455 — `trope_tutor.html` (S312 → 93 commits: Phrases, the Settings tab, key bar, tune practice). Tab census, a keyboard drill, tour, motion, targets, `lang`, contrast in 4 cells, every zero planted (findings S455). FOUND 26 focus drops + no card headings; FIXED `03cb3ff4`, `12247228`. C-next: generator (S327).**)
+- C accessibility (one tool): 2026-10-07 (**S469 — generator (S327 → 101 commits): names, Tab walk, targets, contrast; plants fired. FIXED ⧉ name + focus drops (+ flash). C-next: dictionary.**)
 
 - A recurring-pattern sweep: 2026-10-05 (**S458 — 36th A + A2 on `eeaf279..9c97b35b` (84 commits): 13 arms, zeros controlled (findings S458); FIXED 4; A2 none un-retired.**)
 
@@ -708,4 +712,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-05 (**S456 — sliders on 7 tools: name, value heard, keys, size; plants fired (findings S456). FIXED 4. F-next: search fields.**)
 
-**Next session (S469):** **BRANCH/PR: S467–S468 on `claude/magical-mendel-396njm` → draft PR #316. Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v949**, FM **5.59**, SDK **2.116.0**. ⚑ Stalest: C (S455), then A/B/E/F/K/L (S456–S461); O blocked. ⚑ Untaken: ivrit-saves memory writes; hub import copy (gate 2). ⚑ Maintainer: re-stage the 14 fonts (S465).
+**Next session (S470):** **BRANCH/PR: S467–S469 on `claude/magical-mendel-396njm` → draft PR #316. Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v950**, FM **5.59**. ⚑ Stalest: F (S456), then A/B/E/K/L. ⚑ Untaken: dashboard/torah focus carriers; hub import copy (gate 2). ⚑ Maintainer: re-stage the 14 fonts (S465).
