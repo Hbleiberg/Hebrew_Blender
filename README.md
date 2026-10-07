@@ -60,8 +60,8 @@ A live display board designed for classroom projectors and SmartBoards.
 ### Torah Trainer (`torah_trainer.html`)
 A reader for the weekly Torah portion (parsha) with toggleable translit, translation, vowel coloring, cantillation, TTS, and chanted-audio karaoke.
 
-- **All 54 parshiyot** + Haftarot, with current-week auto-detection via Sefaria's calendar (diaspora or Israel schedule) and a custom chapter/verse range picker
-- **Holiday Torah readings** — the festival readings in one strip; the Rosh Hashanah and Yom Kippur readings link to the Trope Tutor on its High Holiday melody
+- **All 54 parshiyot** + Haftarot, with this week's parasha and special Shabbat worked out from the Hebrew calendar on the page (Diaspora or Israel schedule; Sefaria's calendar only for a few festival weeks) and a custom chapter/verse range picker
+- **Holiday readings** — the festival Torah readings with their haftarot, and the **special Shabbatot** (Shekalim, Zachor, Parah, HaChodesh, HaGadol, Shuva, Chanukah, Rosh Chodesh, Machar Chodesh and the rest: maftir and haftarah, named in the reading header on their week and in the date lookup); the Rosh Hashanah and Yom Kippur readings link to the Trope Tutor on its High Holiday melody, every haftarah to its Haftarah melody, and the Tisha B'Av haftarah is drawn in the Eicha melody unless you choose the Haftarah one
 - **Aliyah navigation** — aliyah picker, sticky jump-chip nav, "you are here" readout, and inline aliyah dividers
 - **Layouts** — interlinear (Hebrew / translit / translation stacked) or side-by-side columns; mobile collapses to one column
 - **Translations** — version dropdown from Sefaria, filtered to openly-licensed editions (defaults to JPS 1917 Public Domain)

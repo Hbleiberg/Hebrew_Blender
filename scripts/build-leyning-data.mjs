@@ -9,7 +9,9 @@
  * HTTPS_PROXY) into the gitignored source-data/leyning-cache/, so a re-run is offline and byte-identical.
  * The versions are pinned below; bump them, re-run, and bump the two fetches' ?v= in torah_trainer.html
  * (docs/reference/ops.md). Both files are keyed by parasha NUMBER (parshiyot.json's `n`, which is Hebcal's
- * `num`), never by a spelling. Run: node scripts/build-leyning-data.mjs */
+ * `num`), never by a spelling. It also checks the Torah Trainer's HOLIDAY_READINGS table (the holiday and
+ * special-Shabbat readings, kept as literals in torah_trainer.html) against the package's holiday-readings.json,
+ * entry by entry. Run: node scripts/build-leyning-data.mjs */
 import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -114,4 +116,40 @@ write('weekday.json', weekday);
 write('triennial.json', triennial);
 const lic = readFileSync(join(leyDir, 'package', 'LICENSE'), 'utf8').trim();
 writeFileSync(join(outDir, 'LICENSE.txt'), `The files in this folder are built by scripts/build-leyning-data.mjs from\n@hebcal/leyning ${PKGS.leyning} and @hebcal/triennial ${PKGS.triennial} (https://github.com/hebcal),\nredistributed under their license:\n\n${lic}\n`);
+/* ── the Torah Trainer's HOLIDAY_READINGS against holiday-readings.json ───────── */
+// torah_trainer.html keeps the holiday and special-Shabbat readings as literals (the page fetches nothing for
+// them); every entry names its key in @hebcal/leyning's holiday-readings.json (`hebcal`), and this check fails
+// the build when an entry's Torah ref or haftarah is not what the package says — the table is a copy, this is
+// its proof. The Trainer writes refs as "Book c:v-v" inside one chapter and "Book c:v-c:v" across chapters, a
+// one-verse part as "Book c:v", and joins a haftarah's parts with "; ".
+const hol = await importJson(leyDir, 'holiday-readings.json.js');
+const BOOKS = { 1: 'Genesis', 2: 'Exodus', 3: 'Leviticus', 4: 'Numbers', 5: 'Deuteronomy' };
+const span = (b, e) => { const [bc, bv] = b.split(':'), [ec, ev] = e.split(':'); return bc === ec ? (bv === ev ? `${bc}:${bv}` : `${bc}:${bv}-${ev}`) : `${bc}:${bv}-${ec}:${ev}`; };
+const haftOf = (h) => (Array.isArray(h) ? h : [h]).map((p) => `${p.k} ${span(p.b, p.e)}`).join('; ');
+const entryOf = (key) => { let e = hol[key]; for (let i = 0; e && e.alias && i < 3; i++) e = hol[e.key]; return e; };
+// the reading's Torah span: its aliyot in order while they stay in one book (a maftir from another book is left
+// out); for a special Shabbat the maftir alone
+const torahOf = (e, maftirOnly) => {
+  const fk = e.fullkriyah || {}, parts = [];
+  let book = null;
+  for (const k of (maftirOnly ? ['M'] : ['1', '2', '3', '4', '5', '6', '7', 'M'])) { const a = fk[k]; if (!a) continue; if (book === null) book = a.k; if (a.k !== book) break; parts.push(a); }
+  return parts.length ? `${BOOKS[book]} ${span(parts[0].b, parts[parts.length - 1].e)}` : null;
+};
+const tt = readFileSync(join(root, 'torah_trainer.html'), 'utf8');
+const table = tt.match(/const HOLIDAY_READINGS = \[([\s\S]*?)\n\];/);
+assert.ok(table, 'torah_trainer.html: HOLIDAY_READINGS');
+const field = (entry, name) => { const m = entry.match(new RegExp(`\\b${name}:\\s*(?:'((?:[^'\\\\]|\\\\.)*)'|"([^"]*)"|(null))`)); return m ? (m[3] ? null : (m[1] !== undefined ? m[1] : m[2])) : undefined; };
+let checked = 0;
+for (const entry of table[1].match(/\{[^{}]*\}/g)) {
+  const key = field(entry, 'key'), hebcal = field(entry, 'hebcal'), kind = field(entry, 'kind');
+  if (!hebcal) continue;
+  const e = entryOf(hebcal);
+  assert.ok(e, `${key}: holiday-readings.json has no "${hebcal}"`);
+  const wantRef = torahOf(e, kind === 'special'), wantHaft = e.haft ? haftOf(e.haft) : undefined;
+  assert.equal(field(entry, 'ref'), wantRef, `${key}: ref ${JSON.stringify(field(entry, 'ref'))}, but holiday-readings.json ("${hebcal}") gives ${JSON.stringify(wantRef)}`);
+  assert.equal(field(entry, 'haftarah'), wantHaft, `${key}: haftarah ${JSON.stringify(field(entry, 'haftarah'))}, but holiday-readings.json ("${hebcal}") gives ${JSON.stringify(wantHaft)}`);
+  checked++;
+}
+assert.ok(checked >= 39, `${checked} HOLIDAY_READINGS entries checked against holiday-readings.json`);
+console.log(`  ${checked} torah_trainer.html HOLIDAY_READINGS entries agree with holiday-readings.json`);
 console.log('build-leyning-data: ok');

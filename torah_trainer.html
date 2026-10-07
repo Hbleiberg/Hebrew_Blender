@@ -454,7 +454,11 @@ body.dark .tt-notice-chip { color:var(--muted); background:rgba(255,255,255,0.06
 }
 .tt-hh-link:hover { text-decoration:underline; }
 .tt-hh-link:focus-visible { outline:2px solid var(--focus-ring); outline-offset:2px; border-radius:3px; }
-body.fullscreen .tt-hh-link { display:none; }
+body.fullscreen .tt-hh-link, body.fullscreen .tt-tune-pick, body.fullscreen .tt-special-open { display:none; }
+/* The reading header's tune choice (a haftarah with more than one customary tune) and the this-week button: screen-only. */
+.tt-ref-hdr .tt-tune-pick { vertical-align:middle; margin-inline-start:6px; }
+.tt-ref-hdr .tt-special-open { vertical-align:middle; margin-inline-start:4px; }
+@media print { .tt-tune-pick, .tt-special-open { display:none !important; } }
 /* Both chips are tap targets (bindTip: tabindex + role=button) that paint 19px tall at their
    0.68rem line — the same 25px ::after touch floor the verse chips carry (WCAG 2.5.8), invisible. */
 .tt-shem-chip, .tt-notice-chip { position:relative; }
@@ -2243,8 +2247,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
        so the family list lives in one place. -->
   <div class="tt-trope-legend" id="ttTropeLegend" tabindex="-1" hidden>
     <a class="tt-trope-link" id="ttTropeTutorLink" hidden data-i18n="torah.trope_legend.tutor_link">Learn the trope names →</a>
-    <a class="tt-trope-link" id="ttTropeTutorLinkHH" hidden data-i18n="torah.trope_legend.tutor_link_hh">Learn the High Holiday trope →</a>
-    <a class="tt-trope-link" id="ttTropeTutorLinkHaf" hidden data-i18n="torah.trope_legend.tutor_link_haf">Learn the Haftarah trope →</a>
+    <a class="tt-trope-link" id="ttTropeTutorLinkM" hidden></a>
   </div>
   <!-- Print-only sheet-1 key (range label + compact clause key), in flow above the reading.
        Populated by the beforeprint handler; sheets 2..N carry the label in the @page margin
@@ -2587,7 +2590,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
              the voice (Low voices: the 8 under the clef, the tune an octave down), the note names and the tune's speed.
              All but the speed travel in a practice link (how the reading looks); the speed never does (it syncs with the
              account's settings like karaokeRate). -->
-        <div style="font-size:0.72rem;color:var(--muted);margin-bottom:10px;line-height:1.4;" data-i18n="torah.staff.melody_credit">Staff melody: Avery/Binder (Reform), the year-round and High Holiday charts. The Haftarah staff is a beta rendering.</div>
+        <div style="font-size:0.72rem;color:var(--muted);margin-bottom:10px;line-height:1.4;" data-i18n="torah.staff.melody_credit">Staff melody: Avery/Binder (Reform) for the year-round and High Holiday charts; The Art of Cantillation (Portnoy &amp; Wolff, UAHC) for the Haftarah and the Megillot.</div>
         <div class="form-row">
           <label id="lblStaffWords" data-i18n="torah.staff.words_label">Words</label>
           <span class="radio-group" role="group" aria-labelledby="lblStaffWords" aria-describedby="staffWordsNote" style="margin-inline-start:auto;">
@@ -2605,7 +2608,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
         </div>
         <div class="slider-row">
           <label for="optStaffShift"><span id="optStaffShiftLbl" data-i18n="torah.staff.key_label">Key</span>
-            <span class="tip-wrap" data-i18n-tip="torah.staff.key_tip" data-tip="Draws the staff in a higher or lower key and moves the tune with it, in half steps, so it sits in your voice. The printed chart is in A major (C major for the High Holiday melody); the Haftarah tune is written in D minor, with F major's one flat."><i class="tip-icon">?</i></span>
+            <span class="tip-wrap" data-i18n-tip="torah.staff.key_tip" data-tip="Draws the staff in a higher or lower key and moves the tune with it, in half steps, so it sits in your voice. The printed charts are in A major (year-round), C major (High Holidays and the three festival Megillot) and E♭ with three flats (the Haftarah, Esther and Eicha; the Haftarah and Eicha tunes come to rest on C, so their readout says C minor)."><i class="tip-icon">?</i></span>
           </label>
           <input type="range" id="optStaffShift" min="-6" max="6" step="1" value="0" aria-labelledby="optStaffShiftLbl">
           <span class="sval" id="optStaffShiftVal" dir="ltr">0</span>
@@ -2687,12 +2690,19 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
         <div id="lookupResult" aria-live="polite" style="font-size:0.82rem;line-height:1.5;margin-bottom:10px;"></div>
         <div class="form-row" id="lookupOpenRow" hidden>
           <button class="btn btn-xs btn-secondary" id="lookupOpenBtn" type="button" data-i18n="torah.lookup.open">Open this reading</button>
+          <button class="btn btn-xs btn-secondary" id="lookupOpenSpecialBtn" type="button" hidden onclick="lookupOpenSpecial()" data-i18n="torah.lookup.open_special">Open the special reading</button>
         </div>
       </div>
       <div class="tt-set" data-set="holiday">
         <h3 class="tt-set-title" tabindex="-1" data-i18n="torah.settings.panel_holiday">Holiday Torah readings</h3>
         <!-- Built once by buildHolidayPicker() from HOLIDAY_READINGS (syncFormToSettings); syncHolidayPickerState marks the loaded one. -->
         <div id="ttHolidayPicker" class="tt-holiday-list" role="group" aria-label="Holiday Torah Readings" data-i18n-aria-label="torah.controls.holiday_group_label"></div>
+      </div>
+      <div class="tt-set" data-set="special">
+        <h3 class="tt-set-title" tabindex="-1" data-i18n="torah.settings.panel_special">Special Shabbatot (maftir and haftarah)</h3>
+        <!-- The maftir and haftarah that replace the weekly parasha's own (HOLIDAY_READINGS, kind 'special'); the same
+             buildHolidayPicker builds this list. This week's is named in the reading header (weekSpecial). -->
+        <div id="ttSpecialPicker" class="tt-holiday-list" role="group" aria-label="Special Shabbatot" data-i18n-aria-label="torah.controls.special_group_label"></div>
       </div>
     </div>
     <div class="tt-tabpanel" id="ttTabPanelShare" role="tabpanel" aria-labelledby="ttTabShare" hidden>
@@ -2937,6 +2947,8 @@ const DEFAULTS = {
   lastPos: null,           // { readingKey, verse, ts } — one-tap resume for long readings
   customLabel: null,       // optional pretty label for custom scope (e.g. "Shavuot II — Deut 14:22-16:17")
   holidayKey: null,        // selected HOLIDAY_READINGS key when a holiday reading is showing
+  holidayPart: null,       // null (its Torah text) | 'haftarah' — which part of that entry is showing (holidayPartKey validates it)
+  staffTuneChoice: {},     // { [holidayKey]: tune } — the tune chosen for a haftarah that has more than one (HOLIDAY_READINGS[].tunes)
   scope: 'parsha-full',
   schedule: 'diaspora',
   readingCycle: 'full',    // 'full' | 'triennial' | 'weekday' — cycleKey(); which division the Reading picker offers
@@ -3331,13 +3343,33 @@ function refToDot(ref) {
   // [: ]→. replace below leaves the two-word title intact — a 404 otherwise.
   ref = ref.replace(/\b(Kings|Samuel|Chronicles)_([12])\b/g,
     (_, book, n) => (n === '1' ? 'I_' : 'II_') + book);
+  // Any other multi-word title ("I Kings", "Song of Songs") joins with underscores for the same reason.
+  ref = ref.replace(/^([^\d]+?)\s+(\d)/, (_, book, d) => book.trim().replace(/ /g, '_') + ' ' + d);
   // Haftarah refs also put spaces around the range hyphen, e.g.
   // "Zechariah 2:14 - 4:7" — collapse those first, otherwise the [: ]→. replace
   // turns " - " into ".-." and Sefaria can't parse the range (it falls back to
   // the start of the book). Also tolerate en/em dashes.
   return ref.replace(/\s*[-–—]\s*/g, '-').replace(/[: ]/g, '.');
 }
+// "Isaiah 27:6 - 28:13; 29:22 - 29:23" → ["Isaiah 27:6 - 28:13", "Isaiah 29:22 - 29:23"]: the parts of a two-part
+// haftarah (PocketTorah's aliyah.json writes the second without its book; HOLIDAY_READINGS writes every part whole).
+function splitRefParts(ref) {
+  let book = '';
+  return String(ref || '').split(/\s*;\s*/).filter(Boolean).map(p => {
+    const m = p.match(/^(.*?)\s+\d/);
+    if (m && !/^\d/.test(p)) { book = m[1]; return p; }
+    return (book ? book + ' ' : '') + p;
+  });
+}
 async function fetchSefariaText(ref, includeTranslation, version) {
+  const parts = splitRefParts(ref);
+  if (parts.length > 1) {   // each part on its own (cached on its own), then one list of verses in reading order
+    const out = [];
+    let eng = 0, found = false;
+    for (const p of parts) { const v = await fetchSefariaText(p, includeTranslation, version); out.push(...v); eng += v._engCount || 0; found = found || !!v._engFound; }
+    out._engCount = eng; out._engFound = found;
+    return out;
+  }
   const cacheKey = `${ref}|${includeTranslation ? (version || 'eng-default') : 'heb-only'}`;
   if (textCache.has(cacheKey)) return textCache.get(cacheKey);
   const url = new URL(`${SEFARIA_API}/v3/texts/${encodeURIComponent(refToDot(ref))}`);
@@ -3476,11 +3508,18 @@ async function fetchCurrentParshah(diaspora) {
 function resolveRef() {
   // Returns { ref, label, parshahEntry, aliyahNum, isHaftarah }
   if (settings.scope === 'custom' && settings.customRef) {
-    const label = settings.customLabel || settings.customRef;
+    // A HOLIDAY_READINGS entry, whole: its label follows the UI's language, and its haftarah part (holidayPart) is a
+    // reading of its own — no parsha behind it, so no recording; the staff draws its tune (readingTutorMelody).
+    const h = settings.holidayKey ? holidayByKey(settings.holidayKey) : null;
+    const part = h ? holidayPartKey(h) : null;
+    if (h && part === 'haftarah' && settings.customRef === h.haftarah) {
+      return { ref: h.haftarah, label: holidayLabel(h, part), parshahEntry: null, aliyahNum: null, isHaftarah: true, custom: true, holiday: h, part };
+    }
+    const label = h && !part && settings.customRef === h.ref ? holidayLabel(h, null) : (settings.customLabel || settings.customRef);
     // Holiday/custom ranges sit inside a weekly parsha; expose it so the reading
     // stays chantable (PocketTorah audio is keyed by parsha + aliyah).
     const pe = parshaContainingRef(settings.customRef);
-    return { ref: settings.customRef, label, parshahEntry: pe, aliyahNum: null, isHaftarah: false, custom: true };
+    return { ref: settings.customRef, label, parshahEntry: pe, aliyahNum: null, isHaftarah: false, custom: true, holiday: h || null, part: null };
   }
   const p = parshiyotData.find(x => x.en === settings.parshahKey);
   if (!p) return null;
@@ -3503,9 +3542,9 @@ function resolveRef() {
   if (scope === 'parsha-haftarah') {
     const haf = aliyahLookup(p.en);
     if (haf && haf.haftarah) {
-      return { ref: haf.haftarah, label: `${p.en} (Haftarah) — ${haf.haftarah}`, parshahEntry: p, aliyahNum: 'H', isHaftarah: true };
+      return { ref: haf.haftarah, label: I18n.t('torah.reading.haftarah_label', { parsha: p.en, ref: prettyRef(haf.haftarah) }), parshahEntry: p, aliyahNum: 'H', isHaftarah: true };
     }
-    return { ref: p.ref, label: `${p.en} — Haftarah unavailable`, parshahEntry: p, aliyahNum: 'H', isHaftarah: true };
+    return { ref: p.ref, label: I18n.t('torah.reading.haftarah_unavailable_label', { parsha: p.en }), parshahEntry: p, aliyahNum: 'H', isHaftarah: true };
   }
   const m = scope.match(/parsha-aliyah-(\d)/);
   if (m) {
@@ -3758,16 +3797,30 @@ function lookupRender() {
     if (icons && window.ParashaIcons) pl.insertAdjacentHTML('afterbegin', ParashaIcons.html(ps.map(x => x.n - 1)));   // a doubled week shows both, in reading order
     if (cycleKey() === 'triennial') line(I18n.t('torah.lookup.triennial_year', { n: HebCal.triennialYear(r.hyear) }));
     if (ps[1]) { const n = line(I18n.t('torah.lookup.doubled_note', { first: ps[0].en, second: ps[1].en })); n.style.color = 'var(--muted)'; }
-    _lookupTarget = { parsha: ps[0], second: ps[1] || null };
+    let sp = null;
+    try { sp = HebCal.specialShabbat(inp.value, { israel: settings.schedule === 'israel' }); } catch (e) { sp = null; }
+    const sh = sp ? holidayByKey(specialReadingKey(sp)) : null;   // the week's maftir and haftarah, when the Shabbat has them
+    if (sh) { const sl = line(I18n.t('torah.lookup.special', { name: holidayName(sh) })); sl.style.color = 'var(--muted)'; }
+    _lookupTarget = { parsha: ps[0], second: ps[1] || null, special: sh };
     if (row) row.hidden = false;
+    const sb = document.getElementById('lookupOpenSpecialBtn');
+    if (sb) sb.hidden = !sh;
     return;
   }
+  const sb0 = document.getElementById('lookupOpenSpecialBtn');
+  if (sb0) sb0.hidden = true;
   let holiday = I18n.t('torah.lookup.holiday_' + r.holiday);
   if (LOOKUP_DAY_HOLIDAYS.includes(r.holiday) && r.day > 0) holiday += ' ' + I18n.t('torah.lookup.day', { n: r.day });
   const hl = line(I18n.t('torah.lookup.holiday', { holiday, schedule }));
   if (icons) hl.insertAdjacentHTML('afterbegin', holidayIconFor(r.holiday.replace(/_/g, ' ')));   // HebCal's keys read as titles: 'chol_hamoed_sukkot' → the sukkah
   const hk = holidayKeyForCal(r), h = hk ? holidayByKey(hk) : null;
   if (h) { _lookupTarget = { holiday: h }; if (row) row.hidden = false; }
+}
+function lookupOpenSpecial() {   // the special Shabbat's maftir and haftarah (its entry; a haftarah-only one opens on the haftarah)
+  const t = _lookupTarget;
+  if (!t || !t.special) return;
+  clearLoop();
+  applyHolidayReading(t.special);
 }
 function lookupOpen() {
   const t = _lookupTarget;
@@ -3785,34 +3838,139 @@ function lookupOpen() {
 }
 
 /* ══════════════════════════════════════════════════════
-   HOLIDAY TORAH READINGS
-   Each reading is a verse range that sits inside one weekly parsha, so it can
-   be displayed (custom scope) and chanted by mapping back to that parsha's
-   PocketTorah aliyot. Diaspora readings; the day-2 festival readings use the
-   weekday portion (the longer Shabbat variant is a superset). `melody` marks the
-   readings chanted to the High Holiday melody: their links to the Trope Tutor open
-   it on that melody (readingTutorMelody). The PocketTorah recordings they borrow
-   are the year-round melody either way.
+   HOLIDAY AND SPECIAL-SHABBAT READINGS (HOLIDAY_READINGS)
+   One table, two kinds. kind:'holiday' (17): a Torah reading that sits inside one weekly parsha, so it can be
+   displayed (custom scope) and chanted by mapping back to that parsha's PocketTorah aliyot — Diaspora readings; the
+   day-2 festival readings use the weekday portion (the longer Shabbat variant is a superset) — and, where the day has
+   one, its haftarah (`haftarah`; two parts are joined by "; "). kind:'special' (the special Shabbatot): the maftir
+   (`ref`, where the day has one) and the haftarah that replace the weekly parasha's own — the four parshiyot,
+   HaGadol, Shuva (its haftarah by the parasha), the Shabbatot of Chanukah (the day's nasi), Rosh Chodesh (Masei's
+   own variant) and Machar Chodesh, and the haftarah replacements of Pinchas, Ki Teitzei and Kedoshim;
+   js/hebrew-calendar.js's specialShabbat names this week's (weekSpecial, specialReadingKey). Every ref and haftarah
+   is @hebcal/leyning's holiday-readings.json, keyed by `hebcal`: scripts/build-leyning-data.mjs reads this table
+   and fails when one differs from the package's. `name` is English (the icon rules and the phrases builder read it);
+   `nameKey` is what the page prints (holidayName). `melody` marks the readings chanted to the High Holiday melody;
+   `tunes` lists a haftarah's customary tunes where there is more than one (the first is the default, the reading
+   header offers the choice — readingTune: the Tisha B'Av haftarah is chanted to the Eicha melody). The PocketTorah
+   recordings a holiday's Torah reading borrows are the year-round melody either way; a haftarah part and a special
+   Shabbat have no recording (the staff and the Trope Tutor links carry their tune).
    ══════════════════════════════════════════════════════ */
 const HOLIDAY_READINGS = [
-  { key:'rosh-hashanah-1', name:'Rosh Hashanah — Day 1',          ref:'Genesis 21:1-34',   melody:'highholiday' },
-  { key:'rosh-hashanah-2', name:'Rosh Hashanah — Day 2',          ref:'Genesis 22:1-24',   melody:'highholiday' },
-  { key:'yom-kippur',      name:'Yom Kippur — Morning',           ref:'Leviticus 16:1-34', melody:'highholiday' },
-  { key:'yom-kippur-mincha',name:'Yom Kippur — Afternoon',        ref:'Leviticus 18:1-30', melody:'highholiday' },
-  { key:'sukkot-1',        name:'Sukkot — Day 1',                 ref:'Leviticus 22:26-23:44' },
-  { key:'sukkot-2',        name:'Sukkot — Day 2',                 ref:'Leviticus 22:26-23:44' },
-  { key:'shemini-atzeret', name:'Shemini Atzeret',                ref:'Deuteronomy 14:22-16:17' },
-  { key:'simchat-torah',   name:'Simchat Torah',                  ref:'Deuteronomy 33:1-34:12' },
-  { key:'pesach-1',        name:'Passover — Day 1',               ref:'Exodus 12:21-51' },
-  { key:'pesach-2',        name:'Passover — Day 2',               ref:'Leviticus 22:26-23:44' },
-  { key:'pesach-7',        name:'Passover — Day 7',               ref:'Exodus 13:17-15:26' },
-  { key:'pesach-8',        name:'Passover — Day 8',               ref:'Deuteronomy 15:19-16:17' },
-  { key:'shavuot-1',       name:'Shavuot — Day 1',                ref:'Exodus 19:1-20:23' },
-  { key:'shavuot-2',       name:'Shavuot — Day 2',                ref:'Deuteronomy 15:19-16:17' },
-  { key:'chanukah-1',      name:'Chanukah — Day 1',               ref:'Numbers 7:1-17' },
-  { key:'purim',           name:'Purim',                          ref:'Exodus 17:8-16' },
-  { key:'tisha-bav',       name:"Tisha B'Av — Morning",           ref:'Deuteronomy 4:25-40' },
+  { key:'rosh-hashanah-1',  kind:'holiday', name:'Rosh Hashanah — Day 1',  nameKey:'torah.reading.name_rosh_hashanah_1',  ref:'Genesis 21:1-34',           haftarah:'I Samuel 1:1-2:10',                          hebcal:'Rosh Hashana I',    melody:'highholiday' },
+  { key:'rosh-hashanah-2',  kind:'holiday', name:'Rosh Hashanah — Day 2',  nameKey:'torah.reading.name_rosh_hashanah_2',  ref:'Genesis 22:1-24',           haftarah:'Jeremiah 31:2-20',                           hebcal:'Rosh Hashana II',   melody:'highholiday' },
+  { key:'yom-kippur',       kind:'holiday', name:'Yom Kippur — Morning',   nameKey:'torah.reading.name_yom_kippur',       ref:'Leviticus 16:1-34',         haftarah:'Isaiah 57:14-58:14',                         hebcal:'Yom Kippur',        melody:'highholiday' },
+  { key:'yom-kippur-mincha',kind:'holiday', name:'Yom Kippur — Afternoon', nameKey:'torah.reading.name_yom_kippur_mincha',ref:'Leviticus 18:1-30',         haftarah:'Jonah 1:1-4:11; Micah 7:18-20',              hebcal:'Yom Kippur (Mincha)', melody:'highholiday' },
+  { key:'sukkot-1',         kind:'holiday', name:'Sukkot — Day 1',         nameKey:'torah.reading.name_sukkot_1',         ref:'Leviticus 22:26-23:44',     haftarah:'Zechariah 14:1-21',                          hebcal:'Sukkot I' },
+  { key:'sukkot-2',         kind:'holiday', name:'Sukkot — Day 2',         nameKey:'torah.reading.name_sukkot_2',         ref:'Leviticus 22:26-23:44',     haftarah:'I Kings 8:2-21',                             hebcal:'Sukkot II' },
+  { key:'shemini-atzeret',  kind:'holiday', name:'Shemini Atzeret',        nameKey:'torah.reading.name_shemini_atzeret',  ref:'Deuteronomy 14:22-16:17',   haftarah:'I Kings 8:54-66',                            hebcal:'Shmini Atzeret' },
+  { key:'simchat-torah',    kind:'holiday', name:'Simchat Torah',          nameKey:'torah.reading.name_simchat_torah',    ref:'Deuteronomy 33:1-34:12',    haftarah:'Joshua 1:1-18',                              hebcal:'Simchat Torah' },
+  { key:'pesach-1',         kind:'holiday', name:'Passover — Day 1',       nameKey:'torah.reading.name_pesach_1',         ref:'Exodus 12:21-51',           haftarah:'Joshua 3:5-7; Joshua 5:2-6:1; Joshua 6:27',  hebcal:'Pesach I' },
+  { key:'pesach-2',         kind:'holiday', name:'Passover — Day 2',       nameKey:'torah.reading.name_pesach_2',         ref:'Leviticus 22:26-23:44',     haftarah:'II Kings 23:1-9; II Kings 23:21-25',         hebcal:'Pesach II' },
+  { key:'pesach-7',         kind:'holiday', name:'Passover — Day 7',       nameKey:'torah.reading.name_pesach_7',         ref:'Exodus 13:17-15:26',        haftarah:'II Samuel 22:1-51',                          hebcal:'Pesach VII' },
+  { key:'pesach-8',         kind:'holiday', name:'Passover — Day 8',       nameKey:'torah.reading.name_pesach_8',         ref:'Deuteronomy 15:19-16:17',   haftarah:'Isaiah 10:32-12:6',                          hebcal:'Pesach VIII' },
+  { key:'shavuot-1',        kind:'holiday', name:'Shavuot — Day 1',        nameKey:'torah.reading.name_shavuot_1',        ref:'Exodus 19:1-20:23',         haftarah:'Ezekiel 1:1-28; Ezekiel 3:12',               hebcal:'Shavuot I' },
+  { key:'shavuot-2',        kind:'holiday', name:'Shavuot — Day 2',        nameKey:'torah.reading.name_shavuot_2',        ref:'Deuteronomy 15:19-16:17',   haftarah:'Habakkuk 3:1-19',                            hebcal:'Shavuot II' },
+  { key:'chanukah-1',       kind:'holiday', name:'Chanukah — Day 1',       nameKey:'torah.reading.name_chanukah_1',       ref:'Numbers 7:1-17',                                                                   hebcal:'Chanukah Day 1' },
+  { key:'purim',            kind:'holiday', name:'Purim',                  nameKey:'torah.reading.name_purim',            ref:'Exodus 17:8-16',                                                                   hebcal:'Purim' },
+  { key:'tisha-bav',        kind:'holiday', name:"Tisha B'Av — Morning",   nameKey:'torah.reading.name_tisha_bav',        ref:'Deuteronomy 4:25-40',       haftarah:'Jeremiah 8:13-9:23',                         hebcal:"Tish'a B'Av",      tunes:['eicha', 'haftarah'] },
+  // the special Shabbatot — a maftir where the day has one, and the haftarah (specialShabbat's keys, with shabbat- in front)
+  { key:'shabbat-shekalim',              kind:'special', name:'Shabbat Shekalim',                      nameKey:'torah.reading.name_shabbat_shekalim',              ref:'Exodus 30:11-16',      haftarah:'II Kings 12:1-17',                    hebcal:'Shabbat Shekalim' },
+  { key:'shabbat-shekalim-rosh-chodesh', kind:'special', name:'Shabbat Shekalim (on Rosh Chodesh)',    nameKey:'torah.reading.name_shabbat_shekalim_rosh_chodesh', ref:'Exodus 30:11-16',      haftarah:'II Kings 12:1-17',                    hebcal:'Shabbat Shekalim (on Rosh Chodesh)' },
+  { key:'shabbat-zachor',                kind:'special', name:'Shabbat Zachor',                        nameKey:'torah.reading.name_shabbat_zachor',                ref:'Deuteronomy 25:17-19', haftarah:'I Samuel 15:2-34',                    hebcal:'Shabbat Zachor' },
+  { key:'shabbat-parah',                 kind:'special', name:'Shabbat Parah',                         nameKey:'torah.reading.name_shabbat_parah',                 ref:'Numbers 19:1-22',      haftarah:'Ezekiel 36:16-38',                    hebcal:'Shabbat Parah' },
+  { key:'shabbat-hachodesh',             kind:'special', name:'Shabbat HaChodesh',                     nameKey:'torah.reading.name_shabbat_hachodesh',             ref:'Exodus 12:1-20',       haftarah:'Ezekiel 45:16-46:18',                 hebcal:'Shabbat HaChodesh' },
+  { key:'shabbat-hachodesh-rosh-chodesh',kind:'special', name:'Shabbat HaChodesh (on Rosh Chodesh)',   nameKey:'torah.reading.name_shabbat_hachodesh_rosh_chodesh',ref:'Exodus 12:1-20',       haftarah:'Ezekiel 45:16-46:18',                 hebcal:'Shabbat HaChodesh (on Rosh Chodesh)' },
+  { key:'shabbat-hagadol',               kind:'special', name:'Shabbat HaGadol',                       nameKey:'torah.reading.name_shabbat_hagadol',               ref:null,                   haftarah:'Malachi 3:4-24',                      hebcal:'Shabbat HaGadol' },
+  { key:'shabbat-shuva-vayeilech',       kind:'special', name:'Shabbat Shuva (with Vayeilech)',        nameKey:'torah.reading.name_shabbat_shuva_vayeilech',       ref:null,                   haftarah:'Hosea 14:2-10; Micah 7:18-20',        hebcal:'Shabbat Shuva (with Vayeilech)' },
+  { key:'shabbat-shuva-haazinu',         kind:'special', name:"Shabbat Shuva (with Ha'azinu)",         nameKey:'torah.reading.name_shabbat_shuva_haazinu',         ref:null,                   haftarah:'Hosea 14:2-10; Joel 2:15-27',         hebcal:"Shabbat Shuva (with Ha'azinu)" },
+  { key:'shabbat-rosh-chodesh',          kind:'special', name:'Shabbat Rosh Chodesh',                  nameKey:'torah.reading.name_shabbat_rosh_chodesh',          ref:'Numbers 28:9-15',      haftarah:'Isaiah 66:1-24',                      hebcal:'Shabbat Rosh Chodesh' },
+  { key:'shabbat-rosh-chodesh-masei',    kind:'special', name:'Shabbat Rosh Chodesh (Masei)',          nameKey:'torah.reading.name_shabbat_rosh_chodesh_masei',    ref:'Numbers 28:9-15',      haftarah:'Jeremiah 2:4-28; Jeremiah 3:4',       hebcal:'Masei on Shabbat Rosh Chodesh' },
+  { key:'shabbat-machar-chodesh',        kind:'special', name:'Shabbat Machar Chodesh',                nameKey:'torah.reading.name_shabbat_machar_chodesh',        ref:null,                   haftarah:'I Samuel 20:18-42',                   hebcal:'Shabbat Machar Chodesh' },
+  { key:'shabbat-chanukah-1',            kind:'special', name:'Shabbat Chanukah — day 1',              nameKey:'torah.reading.name_shabbat_chanukah_1',            ref:'Numbers 7:1-17',       haftarah:'Zechariah 2:14-4:7',                  hebcal:'Chanukah Day 1 (on Shabbat)' },
+  { key:'shabbat-chanukah-2',            kind:'special', name:'Shabbat Chanukah — day 2',              nameKey:'torah.reading.name_shabbat_chanukah_2',            ref:'Numbers 7:18-23',      haftarah:'Zechariah 2:14-4:7',                  hebcal:'Chanukah Day 2 (on Shabbat)' },
+  { key:'shabbat-chanukah-3',            kind:'special', name:'Shabbat Chanukah — day 3',              nameKey:'torah.reading.name_shabbat_chanukah_3',            ref:'Numbers 7:24-29',      haftarah:'Zechariah 2:14-4:7',                  hebcal:'Chanukah Day 3 (on Shabbat)' },
+  { key:'shabbat-chanukah-4',            kind:'special', name:'Shabbat Chanukah — day 4',              nameKey:'torah.reading.name_shabbat_chanukah_4',            ref:'Numbers 7:30-35',      haftarah:'Zechariah 2:14-4:7',                  hebcal:'Chanukah Day 4 (on Shabbat)' },
+  { key:'shabbat-chanukah-7',            kind:'special', name:'Shabbat Chanukah — day 7',              nameKey:'torah.reading.name_shabbat_chanukah_7',            ref:'Numbers 7:48-53',      haftarah:'Zechariah 2:14-4:7',                  hebcal:'Chanukah Day 7 (on Shabbat)' },
+  { key:'shabbat-chanukah-8',            kind:'special', name:'Shabbat Chanukah — day 8',              nameKey:'torah.reading.name_shabbat_chanukah_8',            ref:'Numbers 7:54-8:4',     haftarah:'I Kings 7:40-50',                     hebcal:'Chanukah Day 8 (on Shabbat)' },
+  { key:'shabbat-rosh-chodesh-chanukah-6',kind:'special',name:'Shabbat Rosh Chodesh Chanukah — day 6', nameKey:'torah.reading.name_shabbat_rosh_chodesh_chanukah_6',ref:'Numbers 7:42-47',     haftarah:'Zechariah 2:14-4:7',                  hebcal:'Shabbat Rosh Chodesh Chanukah' },
+  { key:'shabbat-pinchas-after-17-tammuz',kind:'special',name:'Pinchas after 17 Tammuz',               nameKey:'torah.reading.name_shabbat_pinchas_after_17_tammuz',ref:null,                  haftarah:'Jeremiah 1:1-2:3',                    hebcal:'Pinchas occurring after 17 Tammuz' },
+  { key:'shabbat-ki-teitzei-consolation',kind:'special', name:'Ki Teitzei with the third consolation', nameKey:'torah.reading.name_shabbat_ki_teitzei_consolation',ref:null,                   haftarah:'Isaiah 54:1-10; Isaiah 54:11-55:5',   hebcal:'Ki Teitzei with 3rd Haftarah of Consolation' },
+  { key:'shabbat-kedoshim-special',      kind:'special', name:'Kedoshim after a special Shabbat',      nameKey:'torah.reading.name_shabbat_kedoshim_special',      ref:null,                   haftarah:'Amos 9:7-15',                         hebcal:'Kedoshim following Special Shabbat' },
 ];
+// What the page prints for an entry (its nameKey; the English name until the dictionary has loaded).
+function holidayName(h) { if (!window.I18n || !h.nameKey) return h.name; const s = I18n.t(h.nameKey); return s === h.nameKey ? h.name : s; }
+// The part of an entry a caller asks for, validated against what the entry has: null = its Torah text, 'haftarah' =
+// its haftarah. An entry with no Torah text (a haftarah-only Shabbat) opens on its haftarah.
+function holidayPartFor(h, part) {
+  if (part === 'haftarah' && h.haftarah) return 'haftarah';
+  return !h.ref && h.haftarah ? 'haftarah' : null;
+}
+function holidayPartKey(h) { return holidayPartFor(h, settings.holidayPart); }   // the part the settings name
+function holidayPartRef(h, part) { return part === 'haftarah' ? h.haftarah : h.ref; }
+// The reading header's label for an entry (or a part of it), in the UI's language.
+function holidayLabel(h, part) {
+  if (part === 'haftarah') return I18n.t('torah.reading.holiday_haftarah_label', { name: holidayName(h), ref: prettyRef(h.haftarah) });
+  return `${holidayName(h)} — ${h.ref}`;
+}
+// A reading's customary tunes (HOLIDAY_READINGS[].tunes), the chosen one (settings.staffTuneChoice) or the first.
+function readingTunes(h) { return Array.isArray(h.tunes) && h.tunes.length ? h.tunes : ['haftarah']; }
+function readingTune(h) { const t = readingTunes(h), c = settings.staffTuneChoice && settings.staffTuneChoice[h.key]; return t.includes(c) ? c : t[0]; }
+// A haftarah ref as the page prints it: "Kings_1 4:1 - 4:37" (PocketTorah's aliyah.json) → "I Kings 4:1–4:37".
+function prettyRef(ref) {
+  return String(ref || '').replace(/\b(Kings|Samuel|Chronicles)_([12])\b/g, (_, b, n) => (n === '1' ? 'I ' : 'II ') + b).replace(/\s*[-–—]\s*/g, '–');
+}
+// The book a ref opens ("I Kings", "Song of Songs", "Genesis"): everything before the first digit, de-underscored.
+function bookOfRef(ref) {
+  const m = String(ref || '').match(/^(.*?)\s+\d/);
+  return m ? prettyRef(m[1]) : '';
+}
+// This week's special Shabbat, while the parasha on screen is this week's: stateless — the calendar, today and the
+// reading. The reading header names it (weekSpecialHTML) and opens its entry (openWeekSpecial).
+function specialReadingKey(sp) {   // specialShabbat's key → the HOLIDAY_READINGS key
+  if (!sp) return null;
+  if (sp.key === 'chanukah') return 'shabbat-chanukah-' + sp.day;
+  if (sp.key === 'rosh_chodesh_chanukah') return 'shabbat-rosh-chodesh-chanukah-' + sp.day;
+  return 'shabbat-' + sp.key.replace(/_/g, '-');
+}
+function weekSpecial() {
+  if (!window.HebCal || !/^parsha-/.test(settings.scope || '')) return null;
+  const wk = localWeekReading();
+  const p = wk && wk.kind === 'parsha' ? parshiyotData.find(x => x.en === settings.parshahKey) : null;
+  if (!p || !wk.idx.includes(p.n - 1)) return null;
+  let sp = null;
+  try { sp = HebCal.specialShabbat(new Date(), { israel: settings.schedule === 'israel' }); } catch (e) { sp = null; }
+  const h = sp ? holidayByKey(specialReadingKey(sp)) : null;
+  return h ? { special: sp, reading: h } : null;
+}
+function weekSpecialHTML() {
+  const w = weekSpecial();
+  if (!w) return '';
+  const name = holidayName(w.reading), chip = I18n.t('torah.reading.special_chip', { name });
+  return ` <span class="tt-notice-chip tt-special-chip" aria-label="${esc(chip)}" data-tip="${esc(I18n.t('torah.reading.special_tip', { name }))}">${esc(chip)}</span>`
+    + ` <button type="button" class="btn btn-xs btn-secondary tt-special-open" onclick="openWeekSpecial()">${esc(I18n.t('torah.reading.special_open'))}</button>`;
+}
+function openWeekSpecial() { const w = weekSpecial(); if (w) { clearLoop(); applyHolidayReading(w.reading); } }
+// A haftarah with more than one customary tune (HOLIDAY_READINGS[].tunes: the Tisha B'Av haftarah — Eicha, or the
+// Haftarah chart) offers the choice in the reading header; setReadingTune is its one writer (settings.staffTuneChoice).
+function readingTuneEntry() {
+  const ctx = currentReadingCtx, h = settings.scope === 'custom' && settings.holidayKey ? holidayByKey(settings.holidayKey) : null;
+  return ctx && ctx.part === 'haftarah' && h && Array.isArray(h.tunes) && h.tunes.length > 1 ? h : null;
+}
+function tuneChoiceHTML() {
+  const h = readingTuneEntry();
+  if (!h) return '';
+  const cur = readingTune(h);
+  return ` <span class="radio-group tt-tune-pick" role="radiogroup" aria-label="${esc(I18n.t('torah.reading.tune_label'))}" data-i18n-aria-label="torah.reading.tune_label">`
+    + h.tunes.map(t => `<input type="radio" name="ttReadingTune" id="ttTune_${esc(t)}" value="${esc(t)}"${t === cur ? ' checked' : ''} onchange="setReadingTune(this.value)"><label for="ttTune_${esc(t)}" data-i18n="trope.melody.${esc(t)}">${esc(I18n.t('trope.melody.' + t))}</label>`).join('')
+    + '</span>';
+}
+function setReadingTune(v) {
+  const h = readingTuneEntry();
+  if (!h || !h.tunes.includes(v)) return;
+  settings.staffTuneChoice = Object.assign({}, settings.staffTuneChoice, { [h.key]: v });
+  saveSettings();
+  renderText();
+}
 /* ═══ holiday-icons JS ═══ shared block, byte-identical on: classroom_dashboard, torah_trainer (docs/reference/shared-components.md → Holiday icons).
    HOLIDAY_ICONS: one flat 48×48 SVG per holiday family (the maintainer chose each from three drafts); fills are the
    --hol-* tokens of the holiday-icons CSS block. holidayIconFor(title) matches an English holiday title — Hebcal's
@@ -4116,31 +4274,33 @@ const TROPE_DEFAULTS_DARK = {
 // The legend's "Learn the trope names →" link renders only when this is a real URL.
 const TROPE_TUTOR_URL = 'trope_tutor.html';
 // The melody the reading's tutor links carry and its Trope staff draws: 'highholiday' while a Rosh Hashanah or
-// Yom Kippur reading is showing (HOLIDAY_READINGS[].melody), 'haftarah' on a haftarah (the haftarah scope — the
-// only Nevi'im text the page shows: practice links and the Custom range picker accept the five Torah books only),
-// else null (the year-round chart). The links carry ?melody=<that>, which the tutor shows for that visit only
-// (it never changes the tutor's saved Melody setting).
+// Yom Kippur Torah reading is showing (HOLIDAY_READINGS[].melody); a holiday's or special Shabbat's haftarah part
+// its own tune (readingTune — the Haftarah chart, or the Eicha chart for the Tisha B'Av haftarah); 'haftarah' on a
+// parasha's haftarah; else null (the year-round chart). The links carry ?melody=<that>, which the tutor shows for
+// that visit only (it never changes the tutor's saved melody).
 function readingTutorMelody() {
+  const ctx = currentReadingCtx;
   const h = settings.scope === 'custom' && settings.holidayKey ? holidayByKey(settings.holidayKey) : null;
+  if (ctx && ctx.part === 'haftarah' && h) return readingTune(h);
   if (h && h.melody === 'highholiday') return 'highholiday';
-  return currentReadingCtx && currentReadingCtx.isHaftarah ? 'haftarah' : null;
+  return ctx && ctx.isHaftarah ? 'haftarah' : null;
 }
 function tropeTutorHref() {
   const m = readingTutorMelody();
   return m ? TROPE_TUTOR_URL + '?melody=' + m : TROPE_TUTOR_URL;
 }
-// The legend carries one link per melody (each with its own static data-i18n, so a language switch
-// needs no re-render); only the one matching the reading shows.
+// The legend carries two links: the plain one, and one naming the reading's melody (its text is built here, so
+// applyI18n calls this on a language switch); only the one matching the reading shows.
+function melodyLabel(m) { return I18n.t('trope.melody.' + m); }   // the Trope Tutor's melody-bar label, shared through the locale
 function syncTropeTutorLink() {
-  const plain = document.getElementById('ttTropeTutorLink'), hh = document.getElementById('ttTropeTutorLinkHH'), haf = document.getElementById('ttTropeTutorLinkHaf');
-  if (!plain || !hh || !haf || !TROPE_TUTOR_URL) return;
+  const plain = document.getElementById('ttTropeTutorLink'), mel = document.getElementById('ttTropeTutorLinkM');
+  if (!plain || !mel || !TROPE_TUTOR_URL) return;
   const m = readingTutorMelody();
   plain.href = TROPE_TUTOR_URL;
-  hh.href = tropeTutorHref();
-  haf.href = tropeTutorHref();
+  mel.href = tropeTutorHref();
   plain.hidden = !!m;
-  hh.hidden = m !== 'highholiday';
-  haf.hidden = m !== 'haftarah';
+  mel.hidden = !m;
+  if (m && window.I18n) mel.textContent = I18n.t('torah.trope_legend.tutor_link_melody', { melody: melodyLabel(m) });
 }
 
 // Clause family of one word (raw token, marks intact), or null.
@@ -4856,16 +5016,16 @@ function renderText() {
   // is told the day's tune is another. Every chip here carries its own aria-label: bindTip would otherwise name
   // it "More information" and hide its text from a screen reader.
   const hhChantChip = TROPE_TUTOR_URL && readingTutorMelody() === 'highholiday' && canChant;   // a haftarah's recording IS its melody
-  const tutorLinkKey = readingTutorMelody() === 'haftarah' ? 'torah.reading.haf_trope_link' : 'torah.reading.hh_trope_link';
+  const tutorMelody = readingTutorMelody();
   const holRead = settings.scope === 'custom' && settings.holidayKey ? holidayByKey(settings.holidayKey) : null;   // a loaded HOLIDAY_READINGS entry leads with its family's icon (holiday-icons block)
   let html = `<div class="tt-ref-hdr">
     <span>${holRead ? holidayIconFor(holRead.name) : window.ParashaIcons && settings.showParshaIcons !== false ? ParashaIcons.html(currentRangeIcons) : ''}${esc(currentRangeLabel)}${_readingHasShem
       ? ` <span class="tt-shem-chip" lang="he" data-i18n="torah.shem.chip_label" data-i18n-aria-label="torah.shem.chip_label" aria-label="${esc(I18n.t('torah.shem.chip_label'))}" data-i18n-tip="torah.shem.chip_tip" data-tip="${esc(I18n.t('torah.shem.chip_tip'))}">${esc(I18n.t('torah.shem.chip_label'))}</span>`
       : ''}${_translitDead
       ? ` <span class="tt-notice-chip" data-i18n="torah.trans.unavailable_chip" data-i18n-aria-label="torah.trans.unavailable_chip" aria-label="${esc(I18n.t('torah.trans.unavailable_chip'))}" data-i18n-tip="torah.trans.unavailable_tip" data-tip="${esc(I18n.t('torah.trans.unavailable_tip'))}">${esc(I18n.t('torah.trans.unavailable_chip'))}</span>`
-      : ''}${TROPE_TUTOR_URL && readingTutorMelody()
-      ? ` <a class="tt-hh-link" href="${esc(tropeTutorHref())}" data-i18n="${tutorLinkKey}">${esc(I18n.t(tutorLinkKey))}</a>`
-      : ''}${hhChantChip
+      : ''}${TROPE_TUTOR_URL && tutorMelody
+      ? ` <a class="tt-hh-link" href="${esc(tropeTutorHref())}">${esc(I18n.t('torah.reading.melody_trope_link', { melody: melodyLabel(tutorMelody) }))}</a>`
+      : ''}${tuneChoiceHTML()}${weekSpecialHTML()}${hhChantChip
       ? ` <span class="tt-notice-chip" data-i18n="torah.reading.hh_chant_chip" data-i18n-aria-label="torah.reading.hh_chant_chip" aria-label="${esc(I18n.t('torah.reading.hh_chant_chip'))}" data-i18n-tip="torah.reading.hh_chant_tip" data-tip="${esc(I18n.t('torah.reading.hh_chant_tip'))}">${esc(I18n.t('torah.reading.hh_chant_chip'))}</span>`
       : ''}${staffHeaderChipsHTML(layout)}</span>
     <span style="display:flex;gap:6px;">
@@ -4889,7 +5049,7 @@ function renderText() {
   } else {
     html += renderSideBySide(currentVerses, withTranslitRow, includeTrans, wordIdxRef, canChant, canLoop, aStartByLabel, underWord);
   }
-  try { syncStaffControls(); } catch (e) {}   // the key readout names the reading's melody (a haftarah reads D minor)
+  try { syncStaffControls(); } catch (e) {}   // the key readout names the reading's melody (a haftarah reads C minor)
   root.innerHTML = html;
   // The tooltip IIFE only auto-binds at DOMContentLoaded — the freshly-built
   // chip needs an explicit bind each render for tap/keyboard accessibility.
@@ -5125,7 +5285,11 @@ function effectiveVersion() { return _versionFallback || settings.translationVer
    note and its word; Chant is the recording, and paintKaraokeIdx lights the whole
    figure of the word being sung. docs/reference/torah-and-trope.md → Trope staff.
    ══════════════════════════════════════════════════════ */
-let STAFF_SETS = null;          // {torah, highholiday, haftarah}: the phrase sets (_phraseSetsFrom), once loaded
+let STAFF_SETS = null;          // the phrase sets by melody (_phraseSetsFrom: torah, highholiday, haftarah, esther, megillot, eicha), once loaded
+// The four Portnoy–Wolff charts stand alone: never a Torah figure among their notes, and without their rows the words
+// alone (staffSetName, the no_tune chip); the Haftarah and Eicha charts read in the relative minor (staffKeyText).
+const STAFF_STANDALONE = new Set(['haftarah', 'esther', 'megillot', 'eicha']);
+const STAFF_MINOR_SETS = new Set(['haftarah', 'eicha']);
 let STAFF_CTX = {};             // per melody: tropeContextsOf(set)
 let _staffLoad = null;          // the in-flight fetch, so two renders start one load
 let _staffFailed = false;       // the last load failed (the header chip offers Try again)
@@ -5171,11 +5335,12 @@ function ensureStaffData() {
 }
 function retryStaffData() { if (!STAFF_SETS) ensureStaffData(); }
 // The melody a reading is drawn in: the four High Holiday readings take the High Holiday chart, a haftarah the
-// Haftarah rows, everything else the year-round chart (readingTutorMelody: the same melody its tutor links carry).
+// Haftarah rows (the Tisha B'Av haftarah the Eicha rows by default), everything else the year-round chart
+// (readingTutorMelody: the same melody its tutor links carry).
 function staffMelody() { return readingTutorMelody() || 'torah'; }
-// A missing High Holiday half draws the year-round one; a haftarah is never drawn in the Torah tune — without the
-// Haftarah rows it shows its words, and the header chip says why (staffHeaderChipsHTML).
-function staffSetName() { const m = staffMelody(); return STAFF_SETS && STAFF_SETS[m] ? m : m === 'haftarah' ? null : 'torah'; }
+// A missing High Holiday half draws the year-round one; a Portnoy–Wolff chart is never drawn in the Torah tune —
+// without its rows the reading shows its words, and the header chip says why (staffHeaderChipsHTML).
+function staffSetName() { const m = staffMelody(); return STAFF_SETS && STAFF_SETS[m] ? m : STAFF_STANDALONE.has(m) ? null : 'torah'; }
 function staffSet() { const n = staffSetName(); return STAFF_SETS && n ? STAFF_SETS[n] : null; }
 function staffKeyName(key) {   // the note the key is named after, as the tutor's trope.key.note_* spells it; '' outside the table
   const n = { C: 'c', Db: 'db', D: 'd', Eb: 'eb', E: 'e', F: 'f', 'F#': 'fs', G: 'g', Ab: 'ab', A: 'a', Bb: 'bb', B: 'b' }[key];
@@ -5183,10 +5348,11 @@ function staffKeyName(key) {   // the note the key is named after, as the tutor'
 }
 function staffDrawKey() { const s = staffSet(); return shiftedKey(s ? s.key : 'A', staffShiftVal()); }
 // The drawer's readout for the drawn key: "{note} major" as the tutor names it, or the relative minor for the
-// Haftarah rows, which are D minor written with F major's one flat (a moved staff names the minor it lands in).
+// Haftarah and Eicha rows, printed with E♭ major's three flats but coming to rest on C (a moved staff names the
+// minor it lands in).
 const STAFF_MINOR_OF = { C: 'a', Db: 'bb', D: 'b', Eb: 'c', E: 'cs', F: 'd', 'F#': 'ds', G: 'e', Ab: 'f', A: 'fs', Bb: 'g', B: 'gs' };
 function staffKeyText(key) {
-  if (staffSetName() === 'haftarah') { const n = STAFF_MINOR_OF[key]; return n ? I18n.t('trope.key.name_minor', { note: I18n.t('trope.key.note_' + n) }) : ''; }
+  if (STAFF_MINOR_SETS.has(staffSetName())) { const n = STAFF_MINOR_OF[key]; return n ? I18n.t('trope.key.name_minor', { note: I18n.t('trope.key.note_' + n) }) : ''; }
   const name = staffKeyName(key);
   return name ? I18n.t('trope.key.name', { note: name }) : '';
 }
@@ -5215,18 +5381,22 @@ function staffIsAliyahEnd(c, v) {
   if (!al || !al.aliyot) return false;
   return Object.values(al.aliyot).some(r => r && r.endC === c && r.endV === v);
 }
-// The haftarah's last verse takes the Haftarah rows' closing: the C:V after the last " - " of the reading's own
-// ref (the aliyah file's "Book C:V - C:V", or "…; C:V - C:V" for a two-part haftarah, which closes at its second
-// part's end). Compared by verse label, so a handout selection that leaves the last verse out gets no closing.
-let _staffHafEnd = { ref: null, end: null };
-function staffIsHaftarahEnd(c, v) {
+// The C:V a ref ends with: "Book 1:1-6:8" → 6:8, "Book 21:1-34" → 21:34, "…; 29:22 - 29:23" (a two-part haftarah,
+// which ends at its second part's end) → 29:23, a one-verse part "Joshua 6:27" → 6:27; null for a whole chapter.
+function refEnd(ref) {
+  const last = String(ref || '').split(';').pop();
+  const m = last.match(/(\d+):(\d+)(?:\s*[-–—]\s*(?:(\d+):)?(\d+))?\s*$/);
+  return m ? { c: +(m[3] || m[1]), v: +(m[4] || m[2]) } : null;
+}
+// The reading's own last verse takes the chart's closing — a haftarah, a holiday's Torah reading, a custom range
+// (refEnd of the reading's ref). Compared by verse label, so a handout selection that leaves the last verse out
+// gets no closing.
+let _staffRefEnd = { ref: null, end: null };
+function staffIsRefEnd(c, v) {
   const ctx = currentReadingCtx;
-  if (!ctx || !ctx.isHaftarah) return false;
-  if (_staffHafEnd.ref !== ctx.ref) {
-    const m = String(ctx.ref || '').match(/-\s*(\d+):(\d+)\s*$/);
-    _staffHafEnd = { ref: ctx.ref, end: m ? { c: +m[1], v: +m[2] } : null };
-  }
-  return !!_staffHafEnd.end && _staffHafEnd.end.c === +c && _staffHafEnd.end.v === +v;
+  if (!ctx || !ctx.ref) return false;
+  if (_staffRefEnd.ref !== ctx.ref) _staffRefEnd = { ref: ctx.ref, end: refEnd(ctx.ref) };
+  return !!_staffRefEnd.end && _staffRefEnd.end.c === +c && _staffRefEnd.end.v === +v;
 }
 function staffBook() {   // the aliyah file's numbered books carry an underscore ("Kings_1 18:46 - 19:21")
   const p = currentReadingCtx && currentReadingCtx.parshahEntry;
@@ -5295,16 +5465,16 @@ function staffCellHTML(word, cells, sink) {
 function staffNoticeChip(k, tipK) {
   return ` <span class="tt-notice-chip" data-i18n="${k}" data-i18n-aria-label="${k}" aria-label="${esc(I18n.t(k))}" data-i18n-tip="${tipK}" data-tip="${esc(I18n.t(tipK))}">${esc(I18n.t(k))}</span>`;
 }
-// The reading header's chips: while the staff cannot draw — the file is loading or failed (Try again), or a
-// haftarah's file has no Haftarah rows — and, on a haftarah, while the Haftarah rows are the unverified rendering
-// of docs/tropepatterns.md → H (their [unverified] tag; dropping it retires the chip). The words show on every path.
+// The reading header's chips: while the staff cannot draw — the file is loading or failed (Try again), or the
+// loaded file has no rows for a Portnoy–Wolff tune — and while a row of that tune carries docs/tropepatterns.md's
+// [unverified] tag (none does; the chip waits for a row read in doubt). The words show on every path.
 function staffHeaderChipsHTML(layout) {
   if (layout !== 'staff') return '';
   if (!STAFF_SETS && _staffFailed) return staffNoticeChip('torah.staff.failed_chip', 'torah.staff.failed_tip')
     + ` <button class="tt-readall hi-btn" type="button" onclick="retryStaffData()">${ICON_RETRY}${esc(I18n.t('torah.staff.retry'))}</button>`;
   if (!STAFF_SETS) return staffNoticeChip('torah.staff.loading_chip', 'torah.staff.loading_tip');
-  if (staffMelody() === 'haftarah') {
-    const set = STAFF_SETS.haftarah;
+  if (STAFF_STANDALONE.has(staffMelody())) {
+    const set = STAFF_SETS[staffMelody()];
     if (!set) return staffNoticeChip('torah.staff.no_haftarah_chip', 'torah.staff.no_haftarah_tip');
     if (set.rows.some(r => r.tags.includes('unverified'))) return staffNoticeChip('torah.staff.haftarah_beta_chip', 'torah.staff.haftarah_beta_tip');
   }
@@ -5327,7 +5497,7 @@ function renderStaffView(verses, wordIdxRef, canChant, canLoop, aStartByLabel, u
   aStartByLabel = aStartByLabel || {};
   _staffSystems = {};
   const set = staffSet(), setName = staffSetName(), ctx = setName ? STAFF_CTX[setName] : null;
-  const fbCtx = setName === 'haftarah' ? null : STAFF_CTX.torah;   // the Haftarah rows stand alone: never a Torah figure inside a D-minor staff
+  const fbCtx = STAFF_STANDALONE.has(setName) ? null : STAFF_CTX.torah;   // a Portnoy–Wolff chart stands alone: never a Torah figure among its notes
   if (!set && !_staffFailed) ensureStaffData();
   const shift = staffShiftVal(), key = staffDrawKey(), low = staffVoiceKey() === 'low', wordsMode = staffWordsKey(), nmode = staffNoteNamesMode(), rtlStaff = staffDirKey() === 'rtl';
   const root = document.getElementById('ttReading');
@@ -5371,7 +5541,8 @@ function renderStaffView(verses, wordIdxRef, canChant, canLoop, aStartByLabel, u
       units = tropeUnitsOfVerse(v.hebrew);
       if (units.pieces.length === sink.length && units.units.length) {   // the marks and the page's words agree piece for piece
         units.units.forEach(u => { u.fam = sink[u.pi].fam || ''; u.twi = sink[u.pi].twi; });
-        const atEnd = setName === 'haftarah' ? staffIsHaftarahEnd(v.chapter, v.verse) : staffIsAliyahEnd(v.chapter, v.verse);
+        const rc = currentReadingCtx || {};
+        const atEnd = rc.isHaftarah ? staffIsRefEnd(v.chapter, v.verse) : (staffIsAliyahEnd(v.chapter, v.verse) || (rc.custom && staffIsRefEnd(v.chapter, v.verse)));
         const picks = tropeChooseFigures(units.units, ctx, { melody: setName, aliyahEnd: atEnd, fallbackCtx: fbCtx, fallbackMelody: 'torah' });
         const row = tropeBuildReadingRow(units.units, picks, units.cells, STAFF_SETS, { n: numLabel });
         if (row.notes.length && row.words.length) {
@@ -5751,7 +5922,7 @@ async function fetchAndRender() {
     const wantEnglish = settings.showTranslation || settings.copyIncludeTrans;
     let verses = await fetchSefariaText(r.ref, wantEnglish, effectiveVersion());
     if (seq !== _fetchSeq) return;   // a newer selection superseded this fetch
-    const book = r.parshahEntry ? r.parshahEntry.book : (settings.customRef || '').split(/[ .]/)[0];
+    const book = bookOfRef(r.ref) || (r.parshahEntry ? r.parshahEntry.book : '');   // the ref's own book: a haftarah's prophet, not the parsha's book
     // Requested a translation but Sefaria returned no English for this version +
     // passage (the version doesn't cover it, or its title didn't match — e.g.
     // "Sefaria Community Translation" has gaps and a globally-remembered choice
@@ -5800,7 +5971,9 @@ async function fetchAndRender() {
       _bulkReadingKey = _rk;
       if (ttBulkSelected.size) { ttBulkSelected.clear(); updateCopyTextarea(); }
     }
-    currentRangeLabel = r.label;
+    // The label is resolved again now: a reading fetched before the dictionary landed was labelled with raw keys
+    // (resolveRef reads I18n for a haftarah's or a holiday's label), and the fetch is the one wait in between.
+    { const r2 = resolveRef(); currentRangeLabel = (r2 && r2.label) || r.label; }
     // A weekly reading's label starts with its parasha's name (a Triennial year that reads the pair together names
     // both: r.named); a custom or holiday range names none — a holiday reading leads with its family's icon instead.
     currentRangeIcons = r.custom ? [] : (r.named || [r.parshahEntry]).filter(Boolean).map(x => x.n - 1);
@@ -6248,6 +6421,15 @@ function _navigateToVerseAliyahAndQueue(numLabel, mode) {
   const m = numLabel.match(/^(\d+):(\d+)$/);
   if (!m) return false;
   const tc = parseInt(m[1], 10), tv = parseInt(m[2], 10);
+  const rc = currentReadingCtx;
+  if (rc && rc.isHaftarah && rc.parshahEntry && settings.scope === 'parsha-haftarah') {
+    // The haftarah's own recording (PocketTorah's -H file) is still loading or did not load: queue the verse for it
+    // rather than hunt its chapter:verse among the Torah aliyot (Hosea 2 and Isaiah 1 both fit inside one).
+    if (mode === 'loop') { _pendingLoopVerse = numLabel; _pendingChantVerse = null; } else { _pendingChantVerse = numLabel; _pendingLoopVerse = null; }
+    _pendingLoopArmOnly = false;
+    if (!_karaokeLoad) fetchAndRender();
+    return true;
+  }
   const p = (currentReadingCtx && currentReadingCtx.parshahEntry)
             || parshiyotData.find(x => x.en === settings.parshahKey);
   if (!p) { setStatus(I18n.t('torah.status.pick_parsha_chant_verses'), false, 'torah.status.pick_parsha_chant_verses'); return false; }
@@ -6812,7 +6994,7 @@ async function loadKaraoke(parshahEntry, suffix, expectedWords) {
   syncMiniRate();
   document.getElementById('ttAudioCollapseBtn')?.setAttribute('aria-expanded', settings.karaokeBarCollapsed ? 'false' : 'true');
   document.body.classList.add('tt-karaoke-active');
-  _audioBaseLabel = `${parshahEntry.en} · ${suffix === 'H' ? 'Haftarah' : 'Aliyah ' + suffix}`;
+  _audioBaseLabel = `${parshahEntry.en} · ${suffix === 'H' ? I18n.t('torah.schedule.scope_haftarah') : I18n.t('torah.schedule.scope_aliyah', { n: suffix })}`;
   document.getElementById('ttAudioLabel').textContent = loopState.active ? I18n.t('torah.audio.looping_label', { verse: loopState.verseLabel }) : _audioBaseLabel;
   setKaraokeStatus(I18n.t('torah.status.loaded_timings', { count: timings.length }));
   updateKaraokeWordRefs();
@@ -7671,7 +7853,7 @@ const TT_SECTION_TAB = {
   display: 'text', font: 'text', translit: 'text', translation: 'text',
   vowel_color: 'colors', trope_color: 'colors',
   audio: 'audio', karaoke: 'audio', staff: 'audio',
-  schedule: 'calendar', lookup: 'calendar', holiday: 'calendar',
+  schedule: 'calendar', lookup: 'calendar', holiday: 'calendar', special: 'calendar',
   share: 'share', copy: 'share', handout: 'share', print: 'share',
   cloud: 'more', about: 'more', reset: 'more'
 };
@@ -8084,7 +8266,7 @@ function _ftRenameNode(treeKey, oldName, newName) {
    three forms a practice link carries, never the reading cycle or the triennial year (those are how this device
    reads, not what it reads):
      { kind:'parsha',  parshahKey, scope }        a weekly parsha: full, one aliyah, or the haftarah
-     { kind:'holiday', holidayKey }               one of HOLIDAY_READINGS, whole
+     { kind:'holiday', holidayKey, part? }        one of HOLIDAY_READINGS, whole (part 'haftarah': its haftarah)
      { kind:'ref',     customRef, holidayKey? }   a verse range (holidayKey only while the range sits inside it)
    `settings` (optional) is the LINK_DISPLAY vocabulary — exactly what "Include my settings" puts in a link — captured
    only when the teacher ticks the box in the save popup. Opening a favorite is a real change (saved), never a link
@@ -8111,8 +8293,10 @@ function favColorOf(fav) {
 function favoriteRefNow() {
   if (settings.scope === 'custom') {
     const h = settings.holidayKey ? holidayByKey(settings.holidayKey) : null;
+    const part = h ? holidayPartKey(h) : null;
+    if (h && part && settings.customRef === holidayPartRef(h, part)) return { kind: 'holiday', holidayKey: h.key, part };
     const ref = parseSharedRef(settings.customRef);
-    if (h && (!ref || ref === parseSharedRef(h.ref))) return { kind: 'holiday', holidayKey: h.key };
+    if (h && !part && (!ref || ref === parseSharedRef(h.ref))) return { kind: 'holiday', holidayKey: h.key };
     if (!ref) return null;
     const out = { kind: 'ref', customRef: ref };
     if (h && refWithin(ref, h.ref)) out.holidayKey = h.key;
@@ -8131,7 +8315,7 @@ function favoriteLabelNow() {
 function favoriteLabelOf(fav) {
   const r = fav && fav.ref;
   if (!r || typeof r !== 'object') return '';
-  if (r.kind === 'holiday') { const h = holidayByKey(r.holidayKey); return h ? `${h.name} — ${h.ref}` : ''; }
+  if (r.kind === 'holiday') { const h = holidayByKey(r.holidayKey); return h ? holidayLabel(h, holidayPartFor(h, r.part)) : ''; }
   if (r.kind === 'ref') { const ref = parseSharedRef(r.customRef); return ref ? (labelForCustomRef(ref, r.holidayKey || null) || ref) : ''; }
   if (r.kind === 'parsha') {
     const p = parshiyotData.find(x => x.en === r.parshahKey);
@@ -8328,9 +8512,10 @@ function openFavorite(name) {
   } else if (r.kind === 'holiday') {
     const h = (typeof r.holidayKey === 'string' && /^[a-z0-9-]+$/.test(r.holidayKey)) ? holidayByKey(r.holidayKey) : null;
     if (!h) { stale(); return; }
+    const part = holidayPartFor(h, r.part === 'haftarah' ? 'haftarah' : null);
     apply = () => {
-      settings.holidayKey = h.key; settings.customRef = h.ref;
-      settings.customLabel = `${h.name} — ${h.ref}`; settings.scope = 'custom';
+      settings.holidayKey = h.key; settings.holidayPart = part; settings.customRef = holidayPartRef(h, part);
+      settings.customLabel = holidayLabel(h, part); settings.scope = 'custom';
     };
   } else if (r.kind === 'ref') {
     const ref = parseSharedRef(r.customRef);
@@ -8855,11 +9040,17 @@ function wireSettingsForm() {
   });
   document.getElementById('scopeSelect').addEventListener('change', e => {
     clearLoop();
-    settings.scope = e.target.value;
-    // The scope picker only applies to weekly parshiyot — leaving a holiday/
-    // custom reading drops back to the selected parsha.
+    const v = e.target.value;
+    if (v === 'custom' || v.startsWith('custom-')) {   // another part of the entry on screen (updateScopeSelectState's options)
+      const h = settings.holidayKey ? holidayByKey(settings.holidayKey) : null;
+      if (h) applyHolidayReading(h, v === 'custom-haftarah' ? 'haftarah' : null);
+      return;
+    }
+    settings.scope = v;
+    // The weekly scope options belong to the parsha — leaving a holiday/custom reading drops back to the selected parsha.
     if (settings.holidayKey || settings.customRef) {
       settings.holidayKey = null;
+      settings.holidayPart = null;
       settings.customRef = null;
       settings.customLabel = null;
       syncParshaSelect();
@@ -8985,15 +9176,17 @@ function populateParshaPicker() {
     opt.textContent = `${p.n}. ${p.en} (${p.he}) — ${p.ref}`;
     sel.appendChild(opt);
   }
-  const og = document.createElement('optgroup');
-  og.label = I18n.t('torah.controls.holiday_group_label');
-  for (const h of HOLIDAY_READINGS) {
-    const opt = document.createElement('option');
-    opt.value = 'holiday:' + h.key;
-    opt.textContent = `${h.name} — ${h.ref}`;
-    og.appendChild(opt);
+  for (const [kind, labelKey] of [['holiday', 'torah.controls.holiday_group_label'], ['special', 'torah.controls.special_group_label']]) {
+    const og = document.createElement('optgroup');
+    og.label = I18n.t(labelKey);
+    for (const h of HOLIDAY_READINGS.filter(x => x.kind === kind)) {
+      const opt = document.createElement('option');
+      opt.value = 'holiday:' + h.key;
+      opt.textContent = holidayOptionText(h);
+      og.appendChild(opt);
+    }
+    sel.appendChild(og);
   }
-  sel.appendChild(og);
   syncParshaSelect();
   document.getElementById('scopeSelect').value = settings.scope || 'parsha-full';
   updateScopeSelectState();
@@ -9100,14 +9293,13 @@ function refreshScopeLabels() {
     // Haftarah refs (aliyah.json) space the range hyphen, e.g. "Zechariah 2:14 - 4:7",
     // and use underscores in some book names ("Kings_1"). Collapse the hyphen to an
     // en-dash and de-underscore; the haftarah is from another book, so keep its name.
-    const ref = al.haftarah.replace(/\s*[-–—]\s*/g, '–').replace(/_/g, ' ');
-    hafLabel = `${mark}${I18n.t('torah.schedule.scope_haftarah')} · ${ref}`;
+    hafLabel = `${mark}${I18n.t('torah.schedule.scope_haftarah')} · ${prettyRef(al.haftarah)}`;
   }
   setLabel('parsha-haftarah', hafLabel);
 }
-// Reading scope (full/aliyah/haftarah) only applies to weekly parshiyot. While
-// a holiday/custom reading is showing, swap in a disabled "Full reading" entry
-// so the picker reads sensibly instead of going blank on the unlisted 'custom'.
+// Reading scope (full/aliyah/haftarah) applies to weekly parshiyot. While a HOLIDAY_READINGS entry is showing, the
+// box offers that entry's parts instead — its Torah text ("Full reading") and its haftarah — and the weekly options
+// wait for the Parsha box; a range narrowed inside an entry, or a custom range, shows one disabled "Full reading".
 function updateScopeSelectState() {
   const scopeSel = document.getElementById('scopeSelect');
   if (!scopeSel) return;
@@ -9121,27 +9313,29 @@ function updateScopeSelectState() {
   refreshScopeLabels();
   syncCycleControls();
   const isCustom = settings.scope === 'custom';
-  let customOpt = scopeSel.querySelector('option[value="custom"]');
+  scopeSel.querySelectorAll('option[data-holiday]').forEach(o => o.remove());
   if (isCustom) {
-    if (!customOpt) {
-      customOpt = document.createElement('option');
-      customOpt.value = 'custom';
-      scopeSel.appendChild(customOpt);
-    }
-    // Label on EVERY pass, not just on creation: this option is usually built during init, before
-    // I18n.ready resolves, and refreshScopeLabels above deliberately leaves custom scope alone —
-    // so a create-time-only write stranded the raw key in the picker for the rest of the session.
-    customOpt.textContent = I18n.t('torah.schedule.scope_full_reading');
-    scopeSel.value = 'custom';
+    // Rebuilt on EVERY pass, not just once: the options are usually built during init, before I18n.ready resolves,
+    // and refreshScopeLabels above deliberately leaves custom scope alone.
+    const h = settings.holidayKey ? holidayByKey(settings.holidayKey) : null;
+    const part = h ? holidayPartKey(h) : null;
+    const whole = !!(h && settings.customRef === holidayPartRef(h, part));   // the entry itself, not a range narrowed inside it
+    const parts = [];
+    if (whole && h.ref) parts.push(['custom', I18n.t('torah.schedule.scope_full_reading') + ' · ' + h.ref]);
+    if (whole && h.haftarah) parts.push(['custom-haftarah', I18n.t('torah.schedule.scope_haftarah') + ' · ' + prettyRef(h.haftarah)]);
+    if (!parts.length) parts.push(['custom', I18n.t('torah.schedule.scope_full_reading')]);
+    for (const [v, txt] of parts) { const o = document.createElement('option'); o.value = v; o.dataset.holiday = '1'; o.textContent = txt; scopeSel.appendChild(o); }
+    scopeSel.querySelectorAll('option:not([data-holiday])').forEach(o => { o.hidden = true; o.disabled = true; });
+    scopeSel.value = part === 'haftarah' ? 'custom-haftarah' : 'custom';
+    scopeSel.disabled = parts.length < 2;
   } else {
-    if (customOpt) customOpt.remove();
     scopeSel.value = settings.scope || 'parsha-full';
+    scopeSel.disabled = false;
   }
-  scopeSel.disabled = isCustom;
-  if (isCustom) {
+  if (scopeSel.disabled) {
     // data-i18n-title so applyStaticI18n re-resolves it on a live language switch
     scopeSel.setAttribute('data-i18n-title', 'torah.controls.scope_holiday_note');
-    scopeSel.title = window.I18n ? I18n.t('torah.controls.scope_holiday_note') : 'Reading scope applies to weekly parshiyot, not holiday readings.';
+    scopeSel.title = window.I18n ? I18n.t('torah.controls.scope_holiday_note') : 'This reading has one part; the Parsha box leads back to the weekly parasha.';
   } else {
     scopeSel.removeAttribute('data-i18n-title');
     scopeSel.title = '';
@@ -9151,28 +9345,40 @@ function updateScopeSelectState() {
    <select>, with the word "holiday" appearing nowhere on the page. This surfaces the same list
    as the Holiday Torah readings section of the settings drawer's Calendar tab; it adds no state and no storage key, and both
    entry points now go through one apply path rather than two copies of the same four writes. */
-function applyHolidayReading(h) {
+// `part`: null for the entry's Torah text, 'haftarah' for its haftarah (holidayPartFor validates it; an entry with no
+// Torah text opens on its haftarah).
+function applyHolidayReading(h, part) {
+  part = holidayPartFor(h, part);
   settings.holidayKey = h.key;
-  settings.customRef = h.ref;
-  settings.customLabel = `${h.name} — ${h.ref}`;
+  settings.holidayPart = part;
+  settings.customRef = holidayPartRef(h, part);
+  settings.customLabel = holidayLabel(h, part);
   settings.scope = 'custom';
   saveSettings();
   syncParshaSelect();
   fetchAndRender();
 }
-// Built once (syncFormToSettings calls it on every drawer open; idempotent) — then only the class and aria
-// flip, so re-selecting a reading is a state swap and not a rebuild of 17 buttons.
-function buildHolidayPicker() {
-  const el = document.getElementById('ttHolidayPicker');
-  if (!el || el.childElementCount) return;
-  for (const h of HOLIDAY_READINGS) {
-    const b = document.createElement('button');
-    b.type = 'button';
-    b.className = 'btn btn-xs btn-secondary tt-holiday-opt';
-    b.dataset.holidayKey = h.key;
-    b.innerHTML = holidayIconFor(h.name) + esc(`${h.name} — ${h.ref}`);   // the family's icon leads; reading names are content, like the <option> labels
-    b.addEventListener('click', () => { clearLoop(); applyHolidayReading(h); });
-    el.appendChild(b);
+// The picker's option text and the Calendar tab's button text for an entry: its name and its Torah ref, or its
+// haftarah when that is all it has.
+function holidayOptionText(h) { return `${holidayName(h)} — ${h.ref || prettyRef(h.haftarah)}`; }
+// Built once (syncFormToSettings calls it on every drawer open; idempotent) — then only the class and aria flip,
+// so re-selecting a reading is a state swap and not a rebuild of the buttons. Two lists: the holidays
+// (#ttHolidayPicker) and the special Shabbatot (#ttSpecialPicker); applyI18n rebuilds both (their text is the
+// dictionary's).
+function buildHolidayPicker(rebuild) {
+  for (const [id, kind] of [['ttHolidayPicker', 'holiday'], ['ttSpecialPicker', 'special']]) {
+    const el = document.getElementById(id);
+    if (!el || (el.childElementCount && !rebuild)) continue;
+    el.innerHTML = '';
+    for (const h of HOLIDAY_READINGS.filter(x => x.kind === kind)) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'btn btn-xs btn-secondary tt-holiday-opt';
+      b.dataset.holidayKey = h.key;
+      b.innerHTML = holidayIconFor(h.name) + esc(holidayOptionText(h));   // the family's icon leads
+      b.addEventListener('click', () => { clearLoop(); applyHolidayReading(h); });
+      el.appendChild(b);
+    }
   }
   syncHolidayPickerState();
 }
@@ -9180,7 +9386,7 @@ function syncHolidayPickerState() {
   const el = document.getElementById('ttHolidayPicker');
   if (!el) return;
   const on = settings.scope === 'custom' ? settings.holidayKey : null;
-  el.querySelectorAll('.tt-holiday-opt').forEach(b => {
+  document.querySelectorAll('.tt-holiday-opt').forEach(b => {
     const sel = b.dataset.holidayKey === on;
     b.classList.toggle('active', sel);
     b.setAttribute('aria-pressed', sel ? 'true' : 'false');
@@ -10312,12 +10518,14 @@ async function init() {
         if (_dlV && /^\d+:\d+$/.test(_dlV)) deepVerse = _dlV;   // regex REQUIRED: value flows into a querySelector
       }
     } else if (_dlHol) {
-      // ?holiday=<key> — the practice link for one of the 17 HOLIDAY_READINGS, whole. The state
-      // writes mirror applyHolidayReading minus its render, which init performs below. The weekly
+      // ?holiday=<key>[&part=haftarah] — the practice link for one of HOLIDAY_READINGS, whole, or its haftarah.
+      // The state writes mirror applyHolidayReading minus its render, which init performs below. The weekly
       // parsha stays whatever this device remembers, exactly as the picker leaves it.
+      const _dlPart = holidayPartFor(_dlHol, _dl.get('part') === 'haftarah' ? 'haftarah' : null);   // gated: only a value the entry has
       settings.holidayKey = _dlHol.key;
-      settings.customRef = _dlHol.ref;
-      settings.customLabel = `${_dlHol.name} — ${_dlHol.ref}`;
+      settings.holidayPart = _dlPart;
+      settings.customRef = holidayPartRef(_dlHol, _dlPart);
+      settings.customLabel = holidayLabel(_dlHol, _dlPart);
       settings.scope = 'custom';
       saveSettings();
       syncParshaSelect();   // otherwise the picker and the holiday strip strand on the stale week
@@ -10512,6 +10720,11 @@ function applyI18n() {
     const can = document.getElementById('ttCopyAllNote');
     if (can && can.dataset.i18nKey) can.textContent = I18n.t(can.dataset.i18nKey);
   } catch (e) {}
+  // The reading's label, the legend's melody link and the drawer's reading buttons are built from the dictionary.
+  try { if (currentVerses && currentVerses.length) { const r = resolveRef(); if (r && r.label) currentRangeLabel = r.label; } } catch (e) {}
+  try { syncTropeTutorLink(); } catch (e) {}
+  try { buildHolidayPicker(true); } catch (e) {}
+  try { if (typeof populateParshaPicker === 'function' && parshiyotData.length) { populateParshaPicker(); } } catch (e) {}
   // Re-render the reading so row labels / aliyah markers / verse buttons translate — but NEVER
   // while audio is playing or looping (a renderText() rebuild would desync the karaoke data-twi
   // word-timing). When playing, the reading re-translates the next time it is rebuilt.
@@ -10851,8 +11064,10 @@ function practiceLinkURL() {
     // verses out as ?ref=, rebuilt by parseSharedRef so only a ref this page could have composed
     // ever leaves here (and only one it can re-validate ever comes back).
     const h = settings.holidayKey ? holidayByKey(settings.holidayKey) : null;
+    const part = h ? holidayPartKey(h) : null;
     const ref = parseSharedRef(settings.customRef);
-    if (h && (!ref || ref === parseSharedRef(h.ref))) u.searchParams.set('holiday', h.key);
+    if (h && part && settings.customRef === holidayPartRef(h, part)) { u.searchParams.set('holiday', h.key); u.searchParams.set('part', part); }
+    else if (h && !part && (!ref || ref === parseSharedRef(h.ref))) u.searchParams.set('holiday', h.key);
     else if (ref) return refLinkURL(u, ref);
     else return null;
   } else {

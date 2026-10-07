@@ -173,18 +173,18 @@ imported blobs are untrusted, AND the value takes an appended `59` alpha suffix 
   changes recolor them for free. It shows only when trope coloring is on **and** a
   reading is loaded (hidden over the empty state). The "Learn the trope names →" link renders
   only when `const TROPE_TUTOR_URL` is non-null — set to `'trope_tutor.html'` since the Trope
-  Tutor shipped (see its section below). **A Rosh Hashanah or Yom Kippur reading links to the
-  tutor's High Holiday melody instead:** the four readings carry `melody:'highholiday'` in
-  `HOLIDAY_READINGS`, `readingTutorMelody()` reads it off the loaded reading (custom scope +
-  `holidayKey`, so a range narrowed inside the reading keeps it), and then the legend shows its
-  twin link `#ttTropeTutorLinkHH` (each link has its own static `data-i18n`; `syncTropeTutorLink()`,
-  called from `applyTropeColors`, flips `hidden` and sets the hrefs) and the reading header adds
-  `.tt-hh-link` whether or not trope colour is on (screen-only like the header; off in fullscreen).
-  Both open `trope_tutor.html?melody=highholiday`. **A haftarah links to the tutor's Haftarah melody the same
-  way:** `readingTutorMelody()` returns `'haftarah'` for the haftarah scope (it is also what the Trope staff
-  draws), the legend's third link `#ttTropeTutorLinkHaf` and the header link (`torah.reading.haf_trope_link`)
-  open `?melody=haftarah`, and the recording chip stays off — PocketTorah's haftarah recordings are in that
-  melody. The chant recordings for those readings are
+  Tutor shipped (see its section below). **A reading drawn in another melody links to the tutor on it:**
+  `readingTutorMelody()` names the melody off the loaded reading — `'highholiday'` for the four readings that
+  carry `melody:'highholiday'` in `HOLIDAY_READINGS` (custom scope + `holidayKey`, so a range narrowed inside the
+  reading keeps it), a holiday's or special Shabbat's haftarah part its own tune (`readingTune`: the Haftarah
+  chart, or the Eicha chart for the Tisha B'Av haftarah, whose entry lists `tunes:['eicha','haftarah']` — the
+  reading header offers the choice, `tuneChoiceHTML` / `setReadingTune`, kept in `settings.staffTuneChoice[key]`),
+  `'haftarah'` for a parasha's haftarah, else null — and then the legend shows its melody link
+  `#ttTropeTutorLinkM` (text `torah.trope_legend.tutor_link_melody` with `{melody}` from `trope.melody.*`,
+  written by `syncTropeTutorLink()`, which `applyTropeColors` and `applyI18n` call) and the reading header adds
+  `.tt-hh-link` (`torah.reading.melody_trope_link`) whether or not trope colour is on (screen-only like the
+  header; off in fullscreen). Both open `trope_tutor.html?melody=<key>`; the recording chip stays off on a
+  haftarah — PocketTorah's haftarah recordings are in that melody. The chant recordings for those readings are
   still PocketTorah's year-round melody, and the header says so: while Chant can play the reading
   (`currentReadingChantable()`), a `.tt-notice-chip` right after `.tt-hh-link` reads
   `torah.reading.hh_chant_chip`, and its tap tip (`torah.reading.hh_chant_tip`) says the day's
@@ -725,14 +725,18 @@ file uses, the Megillot chart's `64` included). Design: `docs/tropepatterns.md` 
 - **The melody** is `staffMelody()` = `readingTutorMelody() || 'torah'`: the four High Holiday readings draw
   the High Holiday chart, a haftarah (`currentReadingCtx.isHaftarah` — the haftarah scope is the only Nevi'im
   text the page shows: practice links and the Custom range picker accept the five Torah books only) the
-  Haftarah rows, everything else the year-round chart; the key is `shiftedKey(set.key, staffShift)` — the Haftarah rows are
-  printed in E♭ (three flats) and their sof pasuk comes to rest on C, so the drawer's readout names the relative
-  minor, C minor (`staffKeyText`, through `trope.key.name_minor`); Low voices draws the 8 under every clef. **The Haftarah rows stand alone:**
-  `staffSetName()` never falls back to the Torah chart for them (no Haftarah rows in the file → the words alone
-  and the `no_haftarah` chip), `fallbackCtx` is null, and the haftarah's last verse takes their `[aliyah-end]`
-  closing through `staffIsHaftarahEnd`, never `staffIsAliyahEnd`'s Torah aliyah ends. The rows are a transcription
-  of Portnoy and Wolff's chart (`docs/tropepatterns.md` → H); the header's `haftarah_beta` chip shows only while
-  a row carries the `unverified` tag, which none does — the mechanism stays for a future row read in doubt.
+  Haftarah rows (a holiday's or special Shabbat's haftarah part the same, the Tisha B'Av haftarah the Eicha rows
+  by its tune choice), everything else the year-round chart; the key is `shiftedKey(set.key, staffShift)` — the
+  Haftarah and Eicha rows are printed in E♭ (three flats) and their sof pasuk comes to rest on C, so the drawer's
+  readout names the relative minor, C minor (`STAFF_MINOR_SETS`, `staffKeyText` through `trope.key.name_minor`);
+  Low voices draws the 8 under every clef. **The four Portnoy–Wolff charts stand alone** (`STAFF_STANDALONE`):
+  `staffSetName()` never falls back to the Torah chart for them (no rows for the tune in the file → the words
+  alone and the `no_haftarah` chip, "Tune unavailable"), `fallbackCtx` is null, and the reading's last verse
+  takes their `[aliyah-end]` closing through `staffIsRefEnd` — the C:V the reading's ref ends with (`refEnd`),
+  never `staffIsAliyahEnd`'s Torah aliyah ends; a holiday's Torah text and a custom range close at the containing
+  parsha's PocketTorah aliyah ends and at their own last verse. The rows are a transcription of Portnoy and
+  Wolff's charts (`docs/tropepatterns.md` → H–K); the header's `haftarah_beta` chip shows only while a row of the
+  tune carries the `unverified` tag, which none does — the mechanism stays for a future row read in doubt.
 - **The markup contract.** `renderStaffView` mirrors `renderInterlinear`'s verse shell — `.tt-verse[data-vk]`,
   the bulk checkbox, `.tt-verse-num`, Read / Chant / **Tune** / Loop / Copy — then `.tt-staff-rows` holding
   one `.tt-staff-sys` per system (`data-svk` = its verse, `data-sys` = its index — **never `data-vk`**, which
@@ -902,14 +906,44 @@ became **seven tabs of flat sections**, the Trope Tutor's Settings-tab idiom ins
     both groups' `aria-labelledby` still name it), `staff` (Trope staff, the BETA badge in the heading beside
     the `data-i18n` span — `openSettingsAtPanel('staff')` lands by `data-set`, so the split heading costs
     nothing).
-  - **Calendar** — `schedule` (Reading schedule), `lookup` (Torah portion lookup), `holiday` (Holiday Torah
-    readings: `#ttHolidayPicker`, a `.tt-holiday-list` of the seventeen `HOLIDAY_READINGS` buttons that
-    `buildHolidayPicker()` builds once — `syncFormToSettings` calls it on every drawer open and it returns when
-    the list is already built — and `syncHolidayPickerState()` marks the loaded one (`.active` + `aria-pressed`); a press goes
-    through `applyHolidayReading`, the same apply path as the parsha picker's holiday `<optgroup>`; each button, and the
-    loaded reading's `.tt-ref-hdr`, leads with the holiday's SVG from the shared `holiday-icons` block — `holidayIconFor(h.name)`,
+  - **Calendar** — `schedule` (Reading schedule), `lookup` (Torah portion lookup; under the parasha it names the
+    week's special Shabbat, `torah.lookup.special`, with its own Open button `lookupOpenSpecial`), `holiday`
+    (Holiday Torah readings: `#ttHolidayPicker`) and `special` (Special Shabbatot: `#ttSpecialPicker`) — two
+    `.tt-holiday-list`s of `HOLIDAY_READINGS` buttons, by `kind`, that `buildHolidayPicker()` builds once
+    (`syncFormToSettings` calls it on every drawer open and it returns when the lists are built; `applyI18n`
+    rebuilds them, their text being the dictionary's) and `syncHolidayPickerState()` marks the loaded one
+    (`.active` + `aria-pressed`); a press goes through `applyHolidayReading(h, part)`, the same apply path as the
+    parsha picker's two `<optgroup>`s; each button, and the loaded reading's `.tt-ref-hdr`, leads with the
+    holiday's SVG from the shared `holiday-icons` block — `holidayIconFor(h.name)`, the English name;
     `docs/reference/shared-components.md` → Holiday icons — while the `<optgroup>` stays text). The Custom
     range is not here: it sits in the toolbar (below).
+  - **The readings table** (`HOLIDAY_READINGS`, one entry `{ key, kind, name, nameKey, ref, haftarah?, hebcal,
+    melody?, tunes? }`): `kind:'holiday'` is one of the seventeen holiday Torah readings, a range inside one
+    weekly parsha, with the day's haftarah where it has one; `kind:'special'` is one of the twenty-two special
+    Shabbatot — the four parshiyot, HaGadol, Shuva (one entry per parasha it falls with), the Shabbatot of
+    Chanukah (one per day that falls on a Shabbat, the Rosh Chodesh one apart), Rosh Chodesh (Masei's own
+    variant), Machar Chodesh, and the haftarah replacements of Pinchas, Ki Teitzei and Kedoshim — with its
+    maftir as `ref` (null where the day has none) and its haftarah. `name` is English (the icon rules and the
+    phrases builder's census read it); the page prints `nameKey` (`holidayName`; `torah.reading.name_*`). Every
+    ref and haftarah is `@hebcal/leyning`'s `holiday-readings.json`, keyed by `hebcal`, and
+    `scripts/build-leyning-data.mjs` fails when an entry differs from the package's (a two-part haftarah is its
+    parts joined by `"; "`; `fetchSefariaText` splits them, `splitRefParts`, fetches each and concatenates the
+    verses — PocketTorah's own two-part haftarot, Shemot's among them, load the same way).
+    **The part on screen** is `settings.holidayPart`: null for the entry's Torah text, `'haftarah'` for its
+    haftarah (`holidayPartFor` validates it against the entry; an entry with no Torah text opens on its
+    haftarah). `resolveRef` returns the haftarah part as its own reading — `{ ref: h.haftarah, isHaftarah: true,
+    custom: true, holiday: h, part: 'haftarah', parshahEntry: null }`, so no recording and no overlay audio —
+    with a label in the UI's language (`holidayLabel`: `torah.reading.holiday_haftarah_label`), and the Torah
+    part with `holiday: h, part: null`. While an entry is on screen, whole, the Reading box offers its parts
+    instead of the weekly scopes (`updateScopeSelectState`: *Full reading · ref* and *Haftarah · ref*, values
+    `custom` and `custom-haftarah`; the weekly options are hidden until the Parsha box changes; one part only
+    → the box stays disabled with `torah.controls.scope_holiday_note`), and the scope handler routes a
+    `custom*` value back through `applyHolidayReading`. The part travels: a practice link is
+    `?holiday=<key>&part=haftarah` (`practiceLinkURL`; init gates `part` to a value the entry has), a favorite
+    is `{kind:'holiday', holidayKey, part?}`, and `readingKey()` differs because `customRef` does. A haftarah
+    ref's book is `bookOfRef(ref)` ("I Kings", "Song of Songs"), which the versions list and the fallback
+    translation use; `refToDot` underscores a multi-word title for Sefaria. `prettyRef` prints a ref
+    (`Kings_1 4:1 - 4:37` → `I Kings 4:1–4:37`) in the scope box, the labels and the header.
   - **Share** — `print` (Print), `share` (Practice link), `copy` (Copy verses), `handout` (Student handout);
     *The Share tab* below.
   - **More** — `cloud` (Your account: the shared account status line in `#cloudSavesPanel`), `about` (About & FAQ), `reset` (Reset).
@@ -954,7 +988,8 @@ became **seven tabs of flat sections**, the Trope Tutor's Settings-tab idiom ins
     anything that is not a six-digit hex). `ref` is one of the three forms a practice link carries, never
     `readingCycle` or `triennialYear` (those are how this device reads, not what it reads):
     `{kind:'parsha', parshahKey, scope}` (scope `parsha-full`, `parsha-aliyah-1…7` or `parsha-haftarah`),
-    `{kind:'holiday', holidayKey}` (one of `HOLIDAY_READINGS`, whole) or `{kind:'ref', customRef, holidayKey?}`
+    `{kind:'holiday', holidayKey, part?}` (one of `HOLIDAY_READINGS`, whole — `part:'haftarah'` its haftarah) or
+    `{kind:'ref', customRef, holidayKey?}`
     (a verse range; the holiday key only while the range sits inside that reading). `favoriteRefNow()` derives
     it from `settings` (the loaded reading, never the Copy bar's selection) and returns null when nothing is
     loaded — the Save button then only toasts `torah.fav.none_loaded`. `settings` (optional) is the
@@ -1084,7 +1119,11 @@ stored value reads Full and stays stored) and the triennial year (`settings.trie
   day's reading (`fetchCurrentParshah`, the old path, kept as the fallback): Chol HaMoed, and the Diaspora's
   Pesach 8 and Shavuot 2, which on Shabbat read from Deuteronomy 14:22 (the table's entries start at 15:19). Every
   festival Shabbat it opens, 5760–5900 on both calendars (438 of 894), agrees with `@hebcal/leyning`'s Torah
-  reading (the oracle, never shipped). An ordinary week therefore needs no network.
+  reading (the oracle, never shipped). An ordinary week therefore needs no network. While the parasha on screen
+  is this week's, the reading header names the week's special Shabbat — `weekSpecial()`: `specialShabbat(today)`
+  → `specialReadingKey` → the `HOLIDAY_READINGS` entry; a `.tt-special-chip` (`torah.reading.special_chip`,
+  its tip) and an *Open it* button (`openWeekSpecial` → `applyHolidayReading`); nothing is stored, the chip
+  is recomputed on every render — and the date lookup names it under any date's parasha.
 - **The special Shabbatot** (`HebCal.specialShabbat(date, {israel})`: what the Shabbat on or after `date` reads
   besides its parasha, or null). The keys (`HebCal.SPECIAL_KEYS`): `shekalim` / `shekalim_rosh_chodesh` (the
   Shabbat on or before 1 Adar — Adar II in a leap year — and whether it is 30 Shevat or 1 Adar), `zachor` (before

@@ -4041,8 +4041,56 @@ torah.copy.color_coding_tip,"Copies the vowel and trope colors as formatted text
 torah.copy.bulk_remember,Remember Select verses mode,זכירת מצב בחירת פסוקים,copy option — persist bulk-select mode across Copy bar opens,
 torah.copy.bulk_remember_tip,"The Copy bar opens with Select verses already on, and closing it keeps your selection instead of clearing it.","סרגל ההעתקה נפתח כשבחירת פסוקים כבר פעילה, וסגירתו שומרת על הבחירה במקום לנקות אותה.",tooltip,
 torah.reading.verse_copy,Copy,העתקה,per-verse button,leading-emoji
+torah.reading.name_rosh_hashanah_1,Rosh Hashanah — Day 1,ראש השנה — יום א׳,"a HOLIDAY_READINGS entry's name (the parsha picker, the Calendar tab, the reading header, favorites)",
+torah.reading.name_rosh_hashanah_2,Rosh Hashanah — Day 2,ראש השנה — יום ב׳,"a HOLIDAY_READINGS entry's name (the parsha picker, the Calendar tab, the reading header, favorites)",
+torah.reading.name_yom_kippur,Yom Kippur — Morning,יום כיפור — שחרית,"a HOLIDAY_READINGS entry's name (the parsha picker, the Calendar tab, the reading header, favorites)",
+torah.reading.name_yom_kippur_mincha,Yom Kippur — Afternoon,יום כיפור — מנחה,"a HOLIDAY_READINGS entry's name (the parsha picker, the Calendar tab, the reading header, favorites)",
+torah.reading.name_sukkot_1,Sukkot — Day 1,סוכות — יום א׳,"a HOLIDAY_READINGS entry's name (the parsha picker, the Calendar tab, the reading header, favorites)",
+torah.reading.name_sukkot_2,Sukkot — Day 2,סוכות — יום ב׳,"a HOLIDAY_READINGS entry's name (the parsha picker, the Calendar tab, the reading header, favorites)",
+torah.reading.name_shemini_atzeret,Shemini Atzeret,שמיני עצרת,"a HOLIDAY_READINGS entry's name (the parsha picker, the Calendar tab, the reading header, favorites)",
+torah.reading.name_simchat_torah,Simchat Torah,שמחת תורה,"a HOLIDAY_READINGS entry's name (the parsha picker, the Calendar tab, the reading header, favorites)",
+torah.reading.name_pesach_1,Passover — Day 1,פסח — יום א׳,"a HOLIDAY_READINGS entry's name (the parsha picker, the Calendar tab, the reading header, favorites)",
+torah.reading.name_pesach_2,Passover — Day 2,פסח — יום ב׳,"a HOLIDAY_READINGS entry's name (the parsha picker, the Calendar tab, the reading header, favorites)",
+torah.reading.name_pesach_7,Passover — Day 7,פסח — יום ז׳,"a HOLIDAY_READINGS entry's name (the parsha picker, the Calendar tab, the reading header, favorites)",
+torah.reading.name_pesach_8,Passover — Day 8,פסח — יום ח׳,"a HOLIDAY_READINGS entry's name (the parsha picker, the Calendar tab, the reading header, favorites)",
+torah.reading.name_shavuot_1,Shavuot — Day 1,שבועות — יום א׳,"a HOLIDAY_READINGS entry's name (the parsha picker, the Calendar tab, the reading header, favorites)",
+torah.reading.name_shavuot_2,Shavuot — Day 2,שבועות — יום ב׳,"a HOLIDAY_READINGS entry's name (the parsha picker, the Calendar tab, the reading header, favorites)",
+torah.reading.name_chanukah_1,Chanukah — Day 1,חנוכה — יום א׳,"a HOLIDAY_READINGS entry's name (the parsha picker, the Calendar tab, the reading header, favorites)",
+torah.reading.name_purim,Purim,פורים,"a HOLIDAY_READINGS entry's name (the parsha picker, the Calendar tab, the reading header, favorites)",
+torah.reading.name_tisha_bav,Tisha B'Av — Morning,תשעה באב — שחרית,"a HOLIDAY_READINGS entry's name (the parsha picker, the Calendar tab, the reading header, favorites)",
+torah.reading.name_shabbat_shekalim,Shabbat Shekalim,שבת שקלים,"a HOLIDAY_READINGS entry's name (the parsha picker, the Calendar tab, the reading header, favorites)",
+torah.reading.name_shabbat_shekalim_rosh_chodesh,Shabbat Shekalim (on Rosh Chodesh),שבת שקלים (בראש חודש),"a HOLIDAY_READINGS entry's name (the parsha picker, the Calendar tab, the reading header, favorites)",
+torah.reading.name_shabbat_zachor,Shabbat Zachor,שבת זכור,"a HOLIDAY_READINGS entry's name (the parsha picker, the Calendar tab, the reading header, favorites)",
+torah.reading.name_shabbat_parah,Shabbat Parah,שבת פרה,"a HOLIDAY_READINGS entry's name (the parsha picker, the Calendar tab, the reading header, favorites)",
+torah.reading.name_shabbat_hachodesh,Shabbat HaChodesh,שבת החודש,"a HOLIDAY_READINGS entry's name (the parsha picker, the Calendar tab, the reading header, favorites)",
+torah.reading.name_shabbat_hachodesh_rosh_chodesh,Shabbat HaChodesh (on Rosh Chodesh),שבת החודש (בראש חודש),"a HOLIDAY_READINGS entry's name (the parsha picker, the Calendar tab, the reading header, favorites)",
+torah.reading.name_shabbat_hagadol,Shabbat HaGadol,שבת הגדול,"a HOLIDAY_READINGS entry's name (the parsha picker, the Calendar tab, the reading header, favorites)",
+torah.reading.name_shabbat_shuva_vayeilech,Shabbat Shuva (with Vayeilech),שבת שובה (וילך),"a HOLIDAY_READINGS entry's name (the parsha picker, the Calendar tab, the reading header, favorites)",
+torah.reading.name_shabbat_shuva_haazinu,Shabbat Shuva (with Ha'azinu),שבת שובה (האזינו),"a HOLIDAY_READINGS entry's name (the parsha picker, the Calendar tab, the reading header, favorites)",
+torah.reading.name_shabbat_rosh_chodesh,Shabbat Rosh Chodesh,שבת ראש חודש,"a HOLIDAY_READINGS entry's name (the parsha picker, the Calendar tab, the reading header, favorites)",
+torah.reading.name_shabbat_rosh_chodesh_masei,Shabbat Rosh Chodesh (Masei),שבת ראש חודש (מסעי),"a HOLIDAY_READINGS entry's name (the parsha picker, the Calendar tab, the reading header, favorites)",
+torah.reading.name_shabbat_machar_chodesh,Shabbat Machar Chodesh,שבת מחר חודש,"a HOLIDAY_READINGS entry's name (the parsha picker, the Calendar tab, the reading header, favorites)",
+torah.reading.name_shabbat_chanukah_1,Shabbat Chanukah — day 1,שבת חנוכה — יום א׳,"a HOLIDAY_READINGS entry's name (the parsha picker, the Calendar tab, the reading header, favorites)",
+torah.reading.name_shabbat_chanukah_2,Shabbat Chanukah — day 2,שבת חנוכה — יום ב׳,"a HOLIDAY_READINGS entry's name (the parsha picker, the Calendar tab, the reading header, favorites)",
+torah.reading.name_shabbat_chanukah_3,Shabbat Chanukah — day 3,שבת חנוכה — יום ג׳,"a HOLIDAY_READINGS entry's name (the parsha picker, the Calendar tab, the reading header, favorites)",
+torah.reading.name_shabbat_chanukah_4,Shabbat Chanukah — day 4,שבת חנוכה — יום ד׳,"a HOLIDAY_READINGS entry's name (the parsha picker, the Calendar tab, the reading header, favorites)",
+torah.reading.name_shabbat_chanukah_7,Shabbat Chanukah — day 7,שבת חנוכה — יום ז׳,"a HOLIDAY_READINGS entry's name (the parsha picker, the Calendar tab, the reading header, favorites)",
+torah.reading.name_shabbat_chanukah_8,Shabbat Chanukah — day 8,שבת חנוכה — יום ח׳,"a HOLIDAY_READINGS entry's name (the parsha picker, the Calendar tab, the reading header, favorites)",
+torah.reading.name_shabbat_rosh_chodesh_chanukah_6,Shabbat Rosh Chodesh Chanukah — day 6,שבת ראש חודש חנוכה — יום ו׳,"a HOLIDAY_READINGS entry's name (the parsha picker, the Calendar tab, the reading header, favorites)",
+torah.reading.name_shabbat_pinchas_after_17_tammuz,Pinchas after 17 Tammuz,פינחס אחרי י״ז בתמוז,"a HOLIDAY_READINGS entry's name (the parsha picker, the Calendar tab, the reading header, favorites)",
+torah.reading.name_shabbat_ki_teitzei_consolation,Ki Teitzei with the third consolation,כי תצא עם הנחמה השלישית,"a HOLIDAY_READINGS entry's name (the parsha picker, the Calendar tab, the reading header, favorites)",
+torah.reading.name_shabbat_kedoshim_special,Kedoshim after a special Shabbat,קדושים אחרי שבת מיוחדת,"a HOLIDAY_READINGS entry's name (the parsha picker, the Calendar tab, the reading header, favorites)",
+torah.reading.holiday_haftarah_label,{name} — Haftarah · {ref},{name} — הפטרה · {ref},reading header label for a holiday's or special Shabbat's haftarah,do-not-translate {name} {ref}
+torah.reading.haftarah_label,{parsha} — Haftarah · {ref},{parsha} — הפטרה · {ref},reading header label for a parasha's haftarah,do-not-translate {parsha} {ref}
+torah.reading.haftarah_unavailable_label,{parsha} — Haftarah unavailable,{parsha} — ההפטרה אינה זמינה,reading header label when the aliyah file has no haftarah for the parasha,do-not-translate {parsha}
+torah.reading.tune_label,Tune,מנגינה,aria-label of the reading header's tune choice (a haftarah with more than one customary tune: Tisha B'Av),aria-label only
+torah.reading.special_chip,This Shabbat: {name},השבת: {name},reading header chip while the parasha on screen is this week's and the week has a special maftir or haftarah,do-not-translate {name}
+torah.reading.special_tip,This week the maftir and haftarah of {name} replace the parasha's own. Open them to practise them.,השבוע המפטיר וההפטרה של {name} מחליפים את אלה של הפרשה. פתחו אותם כדי לתרגל.,tap tip of the this-week chip,do-not-translate {name}
+torah.reading.special_open,Open it →,פתיחה ←,button beside the this-week chip (opens the special Shabbat's reading),
+torah.reading.melody_trope_link,{melody} — learn its trope →,{melody} — למדו את הטעמים ←,reading header link on a reading drawn in a melody other than the year-round one (opens the Trope Tutor on it); {melody} is trope.melody.*,do-not-translate {melody}
 torah.reading.verse_copy_aria,Copy verse {verseRef} to the clipboard,העתקת פסוק {verseRef} ללוח,per-verse button aria-label,aria-label only
 torah.controls.holiday_group_label,Holiday Torah Readings,קריאות התורה לחגים,Parsha-picker optgroup header,
+torah.controls.special_group_label,Special Shabbatot,שבתות מיוחדות,Parsha-picker optgroup header + the Calendar tab list aria (the special Shabbatot: maftir and haftarah),
 torah.controls.week_prev,Previous reading,הקריאה הקודמת,week-step button flanking the parsha picker (label before the destination is known),button title + aria-label; REVIEW: HE draft
 torah.controls.week_next,Next reading,הקריאה הבאה,week-step button flanking the parsha picker (label before the destination is known),button title + aria-label; REVIEW: HE draft
 torah.controls.week_prev_named,Previous reading: {name},הקריאה הקודמת: {name},week-step button title naming the parsha it steps to,do-not-translate {name} (a parsha name); REVIEW: HE draft
@@ -4054,7 +4102,7 @@ torah.controls.layout_side,Side by side,זה לצד זה,layout radio,
 torah.controls.parsha_label,Parsha:,פרשה:,control label,
 torah.controls.reading_label,Reading:,קריאה:,control label (scope select),
 torah.controls.scope_aria,Reading scope,היקף הקריאה,scope select aria-label,aria-label only
-torah.controls.scope_holiday_note,"Reading scope applies to weekly parshiyot, not holiday readings.","היקף הקריאה חל על פרשות השבוע, לא על קריאות התורה לחגים.",scope select title while a holiday/custom reading is active,title only
+torah.controls.scope_holiday_note,This reading has one part; the Parsha box leads back to the weekly parasha.,לקריאה הזו חלק אחד בלבד; תיבת הפרשה מחזירה אל פרשת השבוע.,scope select title while it is disabled on a holiday or custom reading with one part,title only
 torah.controls.translation_toggle,Show translation,הצגת תרגום,switch at the top of the Text tab's Translation section (was the toolbar's Translation toggle),
 torah.controls.translit_toggle,Show transliteration,הצגת תעתיק,switch at the top of the Text tab's Transliteration section (was the toolbar's Translit toggle),
 torah.controls.translit_short,Translit,תעתיק,toolbar mirror of the Text tab's Show transliteration switch (short: it sits in the Parsha row),
@@ -4150,8 +4198,6 @@ torah.reading.failed_title,This reading didn't load,הקריאה לא נטענה
 torah.reading.jump_chip_aria,Jump to aliyah {n} ({label}),קפיצה לעלייה {n} ({label}),aliyah jump chip aria,aria-label only; mixed UI+content — do not translate {n}/{label}
 torah.reading.hh_chant_chip,"Recording: Spiro (Conservative), year-round melody","ההקלטה: שפירו (קונסרבטיבי), מנגינת כל השנה",notice chip beside the High Holiday link on a Rosh Hashanah / Yom Kippur reading while Chant can play it (also its aria-label),
 torah.reading.hh_chant_tip,"The Chant buttons play PocketTorah's recordings, which are sung to the Spiro (Conservative) year-round melody. On Rosh Hashanah and Yom Kippur this reading is chanted to the High Holiday melody, which the Trope Tutor shows on its staffs.","כפתורי השירה מנגנים את ההקלטות של PocketTorah, שמושרות במנגינת כל השנה של שפירו (קונסרבטיבי). בראש השנה וביום כיפור קוראים את הקריאה הזו במנגינת הימים הנוראים, ומאמן הטעמים מראה אותה בחמשות שלו.",accessible tooltip on the year-round recording chip,do-not-translate PocketTorah (brand)
-torah.reading.hh_trope_link,High Holiday melody — learn its trope →,מנגינת הימים הנוראים — למדו את הטעמים ←,reading-header link on a Rosh Hashanah / Yom Kippur reading (opens the Trope Tutor on the High Holiday melody),
-torah.reading.haf_trope_link,Haftarah melody — learn its trope →,מנגינת ההפטרה — למדו את הטעמים ←,reading header link on a haftarah (opens the tutor's Haftarah melody),
 torah.reading.kbd_nav,Move word by word,מעבר בין מילים,reading keyboard hint row label for the arrow keys,ARROWS DO NOT MIRROR: the rover follows the always-RTL Hebrew so ArrowLeft is next word in both UIs
 torah.reading.kbd_enter,Enter,Enter,name of the Enter key in the reading keyboard hint row,key cap - Israeli keyboards print this in Latin
 torah.reading.kbd_space,Space,רווח,name of the space bar in the reading keyboard hint row,he mirrors flashcards.card.kbd_space
@@ -4222,6 +4268,7 @@ torah.settings.panel_copy,Copy verses,העתקת פסוקים,section heading (S
 torah.settings.panel_display,Display,תצוגה,section heading (Text tab),
 torah.settings.panel_font,Hebrew font,גופן עברי,section heading (Text tab),
 torah.settings.panel_holiday,Holiday Torah readings,קריאות התורה לחגים,"section heading (Calendar tab): the holiday readings, built by buildHolidayPicker",
+torah.settings.panel_special,Special Shabbatot (maftir and haftarah),שבתות מיוחדות (מפטיר והפטרה),"section heading (Calendar tab): the special Shabbatot, built by buildHolidayPicker",
 torah.settings.panel_karaoke,Karaoke highlighting,הדגשת קריוקי,section heading (Audio tab); the karaoke Style and Follow groups take it into their names,
 torah.settings.panel_lookup,Torah portion lookup,איתור פרשת השבוע,section heading (Calendar tab),
 torah.lookup.date_label,Date,תאריך,settings label,
@@ -4246,6 +4293,7 @@ torah.lookup.month_elul,Elul,אלול,Hebrew month name,
 torah.lookup.parsha,Parashat {name} ({schedule}),פרשת {name} ({schedule}),result line: the weekly parasha and the calendar it is on,do-not-translate {name} {schedule}
 torah.lookup.doubled_note,Open shows {first}; {second} is the next parasha in the picker.,פתיחה מציגה את {first}; {second} היא הפרשה הבאה בבורר.,note under a doubled week,do-not-translate {first} {second}
 torah.lookup.holiday,No weekly parasha: {holiday} ({schedule}),אין פרשת שבוע: {holiday} ({schedule}),result line for a festival Shabbat,do-not-translate {holiday} {schedule}
+torah.lookup.special,Also {name}: its maftir and haftarah replace the parasha's own.,וגם {name}: המפטיר וההפטרה שלה מחליפים את אלה של הפרשה.,result line under the parasha when the Shabbat has a special reading,do-not-translate {name}
 torah.lookup.day,day {n},יום {n},appended to a festival name (Pesach day 7),do-not-translate {n}
 torah.lookup.holiday_rosh_hashanah,Rosh Hashanah,ראש השנה,festival name,
 torah.lookup.holiday_yom_kippur,Yom Kippur,יום כיפור,festival name,
@@ -4258,6 +4306,7 @@ torah.lookup.holiday_chol_hamoed_pesach,Shabbat Chol HaMoed Pesach,שבת חול
 torah.lookup.holiday_shavuot,Shavuot,שבועות,festival name,
 torah.lookup.triennial_year,Triennial cycle: year {n},מחזור תלת-שנתי: שנה {n},result line while the Triennial cycle is chosen,do-not-translate {n}
 torah.lookup.open,Open this reading,פתיחת הקריאה,button,
+torah.lookup.open_special,Open the special reading,פתיחת הקריאה המיוחדת,button (Calendar tab date lookup): the week's maftir and haftarah,
 torah.settings.panel_print,Print,הדפסה,section heading (Share tab),
 torah.settings.panel_reset,Reset,איפוס,section heading (More tab),
 torah.settings.panel_schedule,Reading schedule,לוח קריאה,section heading (Calendar tab),
@@ -4390,8 +4439,7 @@ torah.trope_legend.tip_revia,"A shorter pause inside a clause: revia, together w
 torah.trope_legend.tip_geresh,"Ornament marks that break up a long clause: geresh, gershayim, kadma, telisha ketana, telisha gedola and pazer.","טעמי קישוט המפצלים משפט ארוך: גרש, גרשיים, קדמא, תלישא קטנה, תלישא גדולה ופזר.",tooltip on a trope-family legend chip (what marks are in this family),REVIEW: Hebrew draft — trope names use the taught Ashkenazi forms
 torah.trope_legend.tip_rare,"Marks that appear only a handful of times in the whole Torah: mercha kefula, karnei parah and yerach ben yomo.","טעמים המופיעים רק פעמים בודדות בכל התורה: מרכא כפולה, קרני פרה וירח בן יומו.",tooltip on a trope-family legend chip (what marks are in this family),REVIEW: Hebrew draft — trope names use the taught Ashkenazi forms
 torah.trope_legend.tutor_link,Learn the trope names →,למדו את שמות הטעמים ←,trope legend link,
-torah.trope_legend.tutor_link_hh,Learn the High Holiday trope →,למדו את טעמי הימים הנוראים ←,trope legend link on a Rosh Hashanah / Yom Kippur reading,
-torah.trope_legend.tutor_link_haf,Learn the Haftarah trope →,למדו את טעמי ההפטרה ←,trope legend link on a haftarah reading (opens the tutor's Haftarah melody),
+torah.trope_legend.tutor_link_melody,Learn the {melody} trope →,למדו את הטעמים — {melody} ←,trope legend link on a reading drawn in a melody other than the year-round one; {melody} is trope.melody.*,do-not-translate {melody}
 torah.trope_legend.enable_chip,Color-code the trope,צביעת טעמים,one-way chip above the reading that turns trope color coding on,REVIEW: HE draft
 torah.a11y.skip_to_reading,Skip to the reading,דילוג לקריאה,Skip-link to the reading (a11y),aria/skip-link
 trope.about.body,"Trope Tutor teaches the Torah cantillation marks with real chanted examples mined from <a href=""https://github.com/rneiss/PocketTorah"" target=""_blank"" rel=""noopener"">PocketTorah</a> recordings (CC BY-SA 4.0) and Sefaria's Hebrew text. New here? Press Tour in the header. Companion reader: <a href=""torah_trainer.html"">Torah Trainer</a>.","מאמן הטעמים מלמד את טעמי המקרא של התורה עם דוגמאות מושרות אמיתיות שנלקטו מהקלטות <a href=""https://github.com/rneiss/PocketTorah"" target=""_blank"" rel=""noopener"">PocketTorah</a> (CC BY-SA 4.0) ומהטקסט העברי של Sefaria. חדשים כאן? לחצו על סיור בכותרת. קורא משלים: <a href=""torah_trainer.html"">מאמן התורה</a>.",about panel prose,html; keep the two <a> links
@@ -6055,7 +6103,7 @@ torah.staff.words_both,Hebrew + transliteration,עברית + תעתיק,staff pa
 torah.staff.words_note,Applies while the Translit switch is on.,חל כשמתג התעתיק דולק.,note under the staff panel's Words radios,
 torah.trans.place_staff_note,In the Trope staff layout the transliteration always sits under each word; the Trope staff section's Words choice (Audio tab) says whether the Hebrew shows with it.,בפריסת חמשת הטעמים התעתיק יושב תמיד מתחת לכל מילה; בחירת המילים בחלק חמשת הטעמים (לשונית השמע) קובעת אם העברית מוצגת איתו.,note under the transliteration placement radios; shown only in the Trope staff layout,
 torah.staff.key_label,Key,סולם,staff panel key slider label,
-torah.staff.key_tip,"Draws the staff in a higher or lower key and moves the tune with it, in half steps, so it sits in your voice. The printed chart is in A major (C major for the High Holiday melody); the Haftarah tune is written in D minor, with F major's one flat.","מצייר את החמשה בסולם גבוה או נמוך יותר ומזיז איתה את המנגינה, בחצאי טונים, כדי שתתאים לקול שלכם. הטבלה המודפסת היא בלָה מז'ור (דוֹ מז'ור למנגינת הימים הנוראים); מנגינת ההפטרה כתובה ברֶה מינור, עם הבֶּמול היחיד של פָה מז'ור.",tooltip,
+torah.staff.key_tip,"Draws the staff in a higher or lower key and moves the tune with it, in half steps, so it sits in your voice. The printed charts are in A major (year-round), C major (High Holidays and the three festival Megillot) and E♭ with three flats (the Haftarah, Esther and Eicha; the Haftarah and Eicha tunes come to rest on C, so their readout says C minor).","מצייר את החמשה בסולם גבוה או נמוך יותר ומזיז איתה את המנגינה, בחצאי טונים, כדי שתתאים לקול שלכם. הטבלאות המודפסות הן בלָה מז'ור (כל השנה), בדוֹ מז'ור (הימים הנוראים ושלוש מגילות הרגלים) ובמי במול עם שלושה במולים (ההפטרה, אסתר ואיכה; מנגינות ההפטרה ואיכה נחות על דוֹ, ולכן הקריאה שלהן אומרת דוֹ מינור).",tooltip,
 torah.staff.voice_label,Voice,קול,staff panel voice radio group label,
 torah.staff.voice_high,High voices,קולות גבוהים,"staff panel voice choice (the written octave, as children and women sing)",
 torah.staff.voice_low,Low voices,קולות נמוכים,"staff panel voice choice (an 8 under the clef; the tune sounds an octave down, as men sing)",
@@ -6070,7 +6118,7 @@ torah.staff.dir_label,Direction,כיוון,Trope staff panel label,
 torah.staff.dir_tip,"Left to right is standard notation. Right to left mirrors the staff so the notes run in the Hebrew's reading order, as some Hebrew music is printed: the clef sits at the right and the words read under their notes from right to left.","משמאל לימין הוא הכתיב המוזיקלי הרגיל. מימין לשמאל משקף את החמשה כך שהתווים רצים בכיוון הקריאה של העברית, כפי שנדפסת מוזיקה עברית לעיתים: מפתח הסול בצד ימין והמילים נקראות תחת התווים מימין לשמאל.",tooltip,
 torah.staff.dir_ltr,Left to right,משמאל לימין,radio label,
 torah.staff.dir_rtl,Right to left,מימין לשמאל,radio label,
-torah.staff.melody_credit,"Staff melody: Avery/Binder (Reform), the year-round and High Holiday charts. The Haftarah staff is a beta rendering.","מנגינת החמשה: אייברי/בינדר (רפורמי), טבלאות כל השנה והימים הנוראים. חמשת ההפטרה היא עיבוד בטא.",Trope staff panel: the source of the staff melody,
+torah.staff.melody_credit,"Staff melody: Avery/Binder (Reform) for the year-round and High Holiday charts; The Art of Cantillation (Portnoy & Wolff, UAHC) for the Haftarah and the Megillot.","מנגינת החמשה: אייברי/בינדר (רפורמי) לטבלאות כל השנה והימים הנוראים; The Art of Cantillation (פורטנוי ו-וולף, UAHC) להפטרה ולמגילות.",Trope staff panel: the source of the staff melody,
 torah.audio.recording_credit,"Chant recordings: PocketTorah, Spiro (Conservative) melody.","הקלטות השירה: PocketTorah, מנגינת שפירו (קונסרבטיבי).",Audio panel: the source of the chant recordings,do-not-translate PocketTorah (brand)
 torah.audio.recording_melody,Spiro (Conservative) melody,מנגינת שפירו (קונסרבטיבי),audio bar credit: appended after the CC link,
 trope.key.melody_credit,Avery/Binder (Reform) melody,מנגינת אייברי/בינדר (רפורמי),key bar caption naming the staffs' source (hidden on the Haftarah melody),
@@ -6085,10 +6133,10 @@ torah.staff.loading_tip,The melody file is being fetched; the staff draws as soo
 torah.staff.failed_chip,Staff unavailable,החמשה לא זמינה,reading header chip when the melody file could not be loaded,
 torah.staff.failed_tip,"The melody file could not be loaded, so the words show without their notes. Check the connection and try again.","לא ניתן היה לטעון את קובץ המנגינה, ולכן המילים מוצגות בלי התווים. בדקו את החיבור ונסו שוב.",tooltip,
 torah.staff.retry,Try again,ניסיון נוסף,reading header button beside the failed chip,
-torah.staff.no_haftarah_chip,Haftarah tune unavailable,מנגינת ההפטרה לא זמינה,reading header chip on a haftarah reading when the loaded melody file has no haftarah tune,
-torah.staff.no_haftarah_tip,"The melody file that loaded has no Haftarah tune, so the words show without their notes. Reload the page to fetch the current file.","קובץ המנגינה שנטען אינו כולל את מנגינת ההפטרה, ולכן המילים מוצגות בלי התווים. טענו את הדף מחדש כדי לקבל את הקובץ העדכני.",tooltip,
-torah.staff.haftarah_beta_chip,Haftarah tune: unverified,מנגינת ההפטרה: לא מאומתת,reading header chip on a haftarah while the Haftarah rows carry the [unverified] tag (docs/tropepatterns.md → H),
-torah.staff.haftarah_beta_tip,"The staff follows the standard Ashkenazi haftarah melody as it is commonly taught, written from memory rather than from a printed chart, so a figure may differ from the one you know. Chant plays PocketTorah's recording, which is the authority.","החמשה עוקבת אחרי מנגינת ההפטרה האשכנזית המקובלת כפי שנהוג ללמד אותה, שנכתבה מהזיכרון ולא מטבלה מודפסת, ולכן מנגינה של טעם עשויה להיות שונה מזו שאתם מכירים. השירה מנגנת את ההקלטה של PocketTorah, והיא הקובעת.",tooltip,
+torah.staff.no_haftarah_chip,Tune unavailable,המנגינה אינה זמינה,reading header chip when the loaded melody file has no rows for the reading's tune (a Portnoy–Wolff chart),
+torah.staff.no_haftarah_tip,"The melody file that loaded has no rows for this reading's tune, so the words show without their notes. Reload the page to fetch the current file.","קובץ המנגינה שנטען אינו כולל את מנגינת הקריאה הזו, ולכן המילים מוצגות בלי התווים. טענו את הדף מחדש כדי לקבל את הקובץ העדכני.",tooltip,
+torah.staff.haftarah_beta_chip,Tune: unverified rows,המנגינה: שורות לא מאומתות,reading header chip while a row of the reading's tune carries the [unverified] tag (docs/tropepatterns.md; none does today),
+torah.staff.haftarah_beta_tip,"One or more rows of this tune's chart are still marked unverified in the transcription, so a figure may differ from the print. Chant plays PocketTorah's recording where there is one.","שורה אחת או יותר בטבלת המנגינה הזו עדיין מסומנות כלא מאומתות בתעתיק, ולכן מנגינה של טעם עשויה להיות שונה מהדפוס. השירה מנגנת את ההקלטה של PocketTorah היכן שיש אחת.",tooltip,
 torah.staff.double_chip,Two cantillations,שתי מערכות טעמים,"verse chip: the verse is printed with two sets of marks at once (the Decalogues, Genesis 35:22), so it shows words only",
 torah.staff.double_tip,"This verse is printed with two sets of cantillation marks at once, so the staff leaves it to the words.","הפסוק הזה מודפס עם שתי מערכות טעמים בו־זמנית, ולכן החמשה משאירה אותו למילים בלבד.",tooltip,
 torah.staff.follow_note,"In the Trope staff layout the highlight follows each word under its notes; the transliteration, when shown, moves with it.","בפריסת חמשת הטעמים ההדגשה עוקבת אחרי כל מילה מתחת לתווים שלה; התעתיק, כשהוא מוצג, זז יחד איתה.",note under the karaoke Follow radios while the staff layout is on,
