@@ -82,11 +82,11 @@
       '#pwaInstallBanner .pwa-banner-close:hover{background:rgba(255,255,255,0.28);}',
       '#pwaInstallBanner .pwa-banner-close:active{transform:scale(0.9);}',
       // Mobile only — hide on desktop regardless of how the banner was triggered.
-      '@media (min-width:768px){#pwaInstallBanner{display:none !important;}}',
+      '@media (min-width:768px){#pwaInstallBanner,#pwaBannerSpacer{display:none !important;}}',
       // Never on paper. Print media is measured at the sheet's width (Letter 740px, A4 718px at
       // the dialog's default margins), under the cutoff above, so a desktop print showed the
       // banner that the screen hides — and a position:fixed box repeats on every printed sheet.
-      '@media print{#pwaInstallBanner{display:none !important;}}'
+      '@media print{#pwaInstallBanner,#pwaBannerSpacer{display:none !important;}}'
     ].join('');
     document.head.appendChild(s);
   }
@@ -111,6 +111,12 @@
     banner.querySelector('.pwa-banner-close').setAttribute('aria-label', t('pwa.aria.dismiss', 'Dismiss'));
     document.body.appendChild(banner);
     bannerEl = banner;
+    // The banner is fixed over the page's last band, so a fully scrolled page kept its footer links under it: an
+    // empty block of the banner's height (+ its 12px offset and a 12px gap) ends the page while it shows.
+    var spacer = document.createElement('div');
+    spacer.id = 'pwaBannerSpacer'; spacer.setAttribute('aria-hidden', 'true');
+    spacer.style.height = 'calc(' + (banner.offsetHeight + 24) + 'px + env(safe-area-inset-bottom, 0px))';
+    document.body.appendChild(spacer);
 
     banner.querySelector('.pwa-banner-close').addEventListener('click', function (e) {
       e.stopPropagation();
@@ -140,6 +146,8 @@
     var el = bannerEl;
     bannerEl = null;
     el.classList.remove('pwa-show');
+    var sp = document.getElementById('pwaBannerSpacer');
+    if (sp && sp.parentNode) sp.parentNode.removeChild(sp);
     setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 340);
   }
 
