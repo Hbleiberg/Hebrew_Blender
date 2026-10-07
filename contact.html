@@ -482,7 +482,8 @@ form.addEventListener('submit', async function(e){
       showStatus(() => { statusEl.textContent = I18n.t('contact.form.success'); });
     } else {
       statusEl.style.color = 'var(--muted)';
-      showStatus(() => { statusEl.innerHTML = (data && data.message ? esc(data.message) : I18n.t('contact.form.error_fallback')) +
+      // <bdi>: the server's English message keeps its period at its own end inside the Hebrew note
+      showStatus(() => { statusEl.innerHTML = (data && data.message ? '<bdi>' + esc(data.message) + '</bdi>' : I18n.t('contact.form.error_fallback')) +
         ' ' + I18n.t('contact.form.error_email_suffix', { email: emailLink() }); });
     }
   } catch (err) {
