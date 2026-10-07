@@ -6,9 +6,10 @@
  * teacher's *Torah Cantillation* chart (section B: 41 rows, three sharps) and *High Holiday Torah
  * Cantillation* chart (section C: 33 rows + row 20's second setting, no key signature), and the charts
  * of The Art of Cantillation, Vol. 2 (Portnoy & Wolff): the Haftarah (section H: 40 rows, three flats,
- * plus the derived closings 40b–40d), Esther (section I: 41 rows, two flats) and the three Megillot of
- * Shir HaShirim, Ruth and Kohelet (section J: 39 rows + the end-of-book 39a, no signature) — each transcribed note
- * for note from scans into fenced ```trope-<melody> blocks. Those blocks are the only hand-edited copy
+ * plus the derived closings 40b–40d), Esther (section I: 41 rows, two flats), the three Megillot of
+ * Shir HaShirim, Ruth and Kohelet (section J: 39 rows + the end-of-book 39a, no signature) and Eicha
+ * (section K: 38 rows, three flats) — each transcribed note for note from scans into fenced
+ * ```trope-<melody> blocks. Those blocks are the only hand-edited copy
  * of the notes: fix a note there and re-run this script — never edit the JSON (nor the derived
  * Learn-card files this script writes for every `derived` melody). The block grammar is
  * documented in the doc's "How to read this file"; in short:
@@ -23,7 +24,7 @@
  *
  * Output (CC BY-SA 4.0, like the motif files):
  *   { v:1, built, license, source, tpq:48, values:{<code>:ticks},
- *     melodies: { torah:{key:"A", rows:[…]}, highholiday:{key:"C", rows:[…]}, haftarah:{key:"Eb", rows:[…]}, esther:{key:"Bb", rows:[…]}, megillot:{key:"C", rows:[…]} },
+ *     melodies: { torah:{key:"A", rows:[…]}, highholiday:{key:"C", rows:[…]}, haftarah:{key:"Eb", rows:[…]}, esther:{key:"Bb", rows:[…]}, megillot:{key:"C", rows:[…]}, eicha:{key:"Eb", rows:[…]} },
  *     figures:  { <melody>: { <tropeKey>: [ {refs:[[row, unitIdx]…], prev:[…], next:[…]} ] } } }
  * where each row is flat — { n, he, tags, notes:[{p, v, t, g?, r?, tie?, a?}], syl:[{t, hyphen,
  * unit, from, to}], units:[{k, from, to}], tup:[{from, to}], slur:[{from, to, dashed?}] } — p =
@@ -94,7 +95,7 @@ const CENSUS_PATH = OUT_DIR ? join(OUT_DIR, 'trope_contexts_report.md') : join(r
 const EXAMPLES_PATH = OUT_DIR ? join(OUT_DIR, 'trope_phrase_examples.json') : join(repoRoot, 'data', 'trope', 'trope_phrase_examples.json');
 const CACHE_DIR = join(repoRoot, 'source-data', 'trope-cache');
 const SIZE_BUDGET = 256 * 1024;   // six melodies at one row per line (the teacher's two charts and Portnoy & Wolff's four)
-const LICENSE = 'Hand transcriptions of the traditional Ashkenazi cantillation melodies from two printed sources: the Torah and High Holiday charts of a teacher\'s cantillation chart (docs/tropepatterns.md, sections B and C) and the Haftarah, Esther and Megillot (Shir HaShirim, Ruth, Kohelet) charts of The Art of Cantillation, Vol. 2 (Portnoy and Wolff, 2001; sections H, I and J). The melodies are traditional; this file is CC BY-SA 4.0.';
+const LICENSE = 'Hand transcriptions of the traditional Ashkenazi cantillation melodies from two printed sources: the Torah and High Holiday charts of a teacher\'s cantillation chart (docs/tropepatterns.md, sections B and C) and the Haftarah, Esther, Megillot (Shir HaShirim, Ruth, Kohelet) and Eicha charts of The Art of Cantillation, Vol. 2 (Portnoy and Wolff, 2001; sections H to K). The melodies are traditional; this file is CC BY-SA 4.0.';
 
 const failures = [];
 const fail = (msg) => failures.push(msg);
@@ -158,6 +159,11 @@ const MELODIES = {
   megillot: { info: 'trope-megillot', key: 'C', rows: 39, extra: ['39a'], motifs: 'data/trope/trope_motifs_megillot.json', derived: true, label: 'Megillot', examples: false, section: 'J', book: 'The Art of Cantillation, Vol. 2 (Portnoy and Wolff, 2001), Appendix F',
     spell: { A: [''], B: [''], C: [''], D: [''], E: [''], F: [''], G: [''] },
     rule: 'the Megillot chart (Shir HaShirim, Ruth, Kohelet) has no key signature and prints no accidental' },
+  // The Eicha chart (section K): Appendix G — three flats like the Haftarah chart, and one printed accidental, the
+  // E♮ of segol's triplet (rows 34–37), so every B, E and A carries its sign. Derived motif file, no examples.
+  eicha: { info: 'trope-eicha', key: 'Eb', rows: 38, extra: [], motifs: 'data/trope/trope_motifs_eicha.json', derived: true, label: 'Eicha', examples: false, section: 'K', book: 'The Art of Cantillation, Vol. 2 (Portnoy and Wolff, 2001), Appendix G',
+    spell: { A: ['♭', '♮'], B: ['♭', '♮'], C: [''], D: [''], E: ['♭', '♮'], F: [''], G: [''] },
+    rule: 'the Eicha chart (three flats) writes every B, E and A with its ♭ or ♮ and prints no other accidental' },
 };
 const INFO_TO_MELODY = Object.fromEntries(Object.entries(MELODIES).map(([m, d]) => [d.info, m]));
 const TAGS = new Set(['aliyah-end', 'unverified', 'derived']);   // [derived]: a row not printed but read off a printed one (its number + a letter) — checked below
@@ -331,6 +337,7 @@ const SPELLING = {
   haftarah: { 0: 'C', 2: 'D', 3: 'E♭', 4: 'E♮', 5: 'F', 7: 'G', 8: 'A♭', 9: 'A♮', 10: 'B♭', 11: 'B♮' },
   esther: { 0: 'C', 2: 'D', 3: 'E♭', 4: 'E♮', 5: 'F', 7: 'G', 9: 'A', 10: 'B♭', 11: 'B♮' },
   megillot: { 0: 'C', 2: 'D', 4: 'E', 5: 'F', 7: 'G', 9: 'A', 11: 'B' },
+  eicha: { 0: 'C', 2: 'D', 3: 'E♭', 4: 'E♮', 5: 'F', 7: 'G', 8: 'A♭', 9: 'A♮', 10: 'B♭', 11: 'B♮' },
 };
 function spellPitch(p, melody) {
   const midi = p + 71, pc = ((midi % 12) + 12) % 12, oct = Math.floor(midi / 12) - 1;
@@ -649,6 +656,7 @@ if (!LENIENT) {
     haftarah: { missing: ['geresh_muqdam', 'karnei_parah', 'shalshelet', 'yerach_ben_yomo'], key: 'Eb', range: [-13, 1], ends: ['40', '40b', '40c', '40d'], endings: FOUR_ENDINGS },
     esther: { missing: ['geresh_muqdam', 'mercha_kefula', 'shalshelet'], key: 'Bb', range: [-13, 4], ends: ['41'], endings: [FOUR_ENDINGS[0]] },
     megillot: { missing: ['geresh_muqdam', 'karnei_parah', 'mercha_kefula', 'shalshelet', 'yerach_ben_yomo'], key: 'C', range: [-11, 3], ends: ['39', '39a'], endings: [FOUR_ENDINGS[0], FOUR_ENDINGS[0]] },
+    eicha: { missing: ['geresh_muqdam', 'karnei_parah', 'mercha_kefula', 'pazer', 'shalshelet', 'yerach_ben_yomo'], key: 'Eb', range: [-13, 1], ends: ['38'], endings: [FOUR_ENDINGS[0]] },
   };
   for (const [m, want] of Object.entries(SMOKE)) {
     const rows = melodies[m].rows, label = MELODIES[m].label;
