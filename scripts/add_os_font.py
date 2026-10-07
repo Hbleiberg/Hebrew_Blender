@@ -222,15 +222,18 @@ def copyright_block(license_text, name_copyright):
         keep = [p for p in paras if re.search(r'[Cc]opyright \(|\(c\)|\(C\)|©', p) and 'licensed under' not in p]
         if keep:
             return '\n'.join(keep)
-    first = (name_copyright or '').replace('\r\n', '\n').split('\n\n')[0]
-    first = re.sub(r'\s+', ' ', first).strip()
+    paras = [re.sub(r'\s+', ' ', p).strip() for p in (name_copyright or '').replace('\r\n', '\n').split('\n\n')]
     # Name-table ID 0 is not always a copyright: fonts put a license name there ("SIL Open Font
     # License (OFL)"), a FontForge creation note, or literally "copyright missing". Recording any
     # of those as `copyright` would be worse than recording nothing — an absent copyright is
-    # honestly absent (nesher-gadol/-katon already are).
-    if not re.search(r'copyright|\(c\)|\u00a9', first, re.I) or re.match(r'^copyright missing$', first, re.I):
-        return ''
-    return first
+    # honestly absent (nesher-gadol/-katon already are). Nor does the declaration always come
+    # first: FontForge put its "Created by … with FontForge" note ahead of it in Yoram Gnat's
+    # historic faces, and reading only that paragraph left their derivatives with no upstream
+    # copyright at all — so the first paragraph that IS a copyright is the one.
+    for p in paras:
+        if re.search(r'copyright|\(c\)|\u00a9', p, re.I) and not re.match(r'^copyright missing$', p, re.I):
+            return p
+    return ''
 
 
 def slugify(s):
