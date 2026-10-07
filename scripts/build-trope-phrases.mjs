@@ -696,8 +696,10 @@ if (!LENIENT) {
 
 /* ---------- JSON (one row per line, so a diff shows the row that changed) ---------- */
 const clean = (row) => { const { _src, ...r } = row; return r; };
+// every melody's section ("B, C, … and K"), named alike by the JSON's source and the contexts report
+const SECTIONS = Object.values(MELODIES).map((d) => d.section).join(', ').replace(/, ([^,]*)$/, ' and $1');
 function serialize(built) {
-  const head = { v: 1, built, license: LICENSE, source: `docs/tropepatterns.md, sections ${Object.values(MELODIES).map((d) => d.section).join(', ').replace(/, ([^,]*)$/, ' and $1')}`, tpq: TPQ, values: VALUES };
+  const head = { v: 1, built, license: LICENSE, source: `docs/tropepatterns.md, sections ${SECTIONS}`, tpq: TPQ, values: VALUES };
   let s = JSON.stringify(head).slice(0, -1) + ',"melodies":{\n';
   s += Object.entries(melodies).map(([m, mel]) =>
     `${JSON.stringify(m)}:{"key":${JSON.stringify(mel.key)},"rows":[\n` + mel.rows.map((r) => JSON.stringify(clean(r))).join(',\n') + '\n]}').join(',\n');
@@ -1450,7 +1452,7 @@ function censusReport({ tor, hh, pTorah, pHH, endings, otherEndings, otherEnds, 
   L.push('# Trope contexts report — what a parasha needs against what the chart prints', '');
   L.push(`- **Built:** ${built}`);
   L.push('- **Text:** Sefaria public text export (storage.googleapis.com/sefaria-export, Hebrew merged.json per Torah book), whose Torah text is the *Miqra according to the Masorah* edition (MAM, from Hebrew Wikisource), which Sefaria lists as CC BY-SA. The example words below are quoted from it.');
-  L.push(`- **Chart:** \`data/trope/trope_phrases.json\` (sha1 ${digest}), built from \`docs/tropepatterns.md\` sections B, C and H`);
+  L.push(`- **Chart:** \`data/trope/trope_phrases.json\` (sha1 ${digest}), built from \`docs/tropepatterns.md\` sections ${SECTIONS}`);
   L.push(`- **Torah:** ${fmt(tor.verses)} verses (${tor.excluded.length} double-accented ones left out, so ${fmt(tor.verses - tor.excluded.length)} counted): ${fmt(tor.words)} marked words, ${fmt(tor.units)} marks. Left out: ${tor.excluded.join(', ')}`);
   L.push(`- **High Holiday readings:** ${hhReadings.map((r) => `${r.name} (${r.book} ${r.from.join(':')}–${r.to.join(':')})`).join('; ')} — ${hhVerses} verses`);
   L.push('- **Aliyot:** `data/pockettorah/aliyah.json`, PocketTorah\'s full-reading divisions — the aliyot the Torah Trainer shows — each paired with its parasha in `data/parshiyot.json` by the parasha\'s first verse');
