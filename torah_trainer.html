@@ -1391,9 +1391,10 @@ body.dark .tt-fav-note { color:#ffb4a9; }
 body.dark .form-row select, body.dark .form-row input[type="text"], body.dark .form-row input[type="number"], body.dark .form-row input[type="date"] {
   background:var(--navy-deep); color:var(--text);
 }
-/* The one drawer select whose option outgrows the 170px cap: "Modern Israeli [DEFAULT]" (and its Hebrew)
-   showed as "…[DEFAU". Its short "Style" label leaves the row room for the select's own width. */
-#optTranslitStyle { max-width:none; }
+/* The two drawer selects whose options outgrow the 170px cap: the transliteration Style ("Modern Israeli [DEFAULT]"
+   showed as "…[DEFAU") and the Trope staff's Melody ("Year Round [Binder-Reform]" as "…[Binder-Re"). Their short
+   labels leave the row room for the select's own width; on a phone-narrow drawer the Melody row wraps instead. */
+#optTranslitStyle, #optStaffMelody { max-width:none; }
 body.dark .form-row input[type="date"] { color-scheme: dark; }   /* the picker's own popup and icon follow the theme */
 .toggle { position:relative; display:inline-block; width:38px; height:24px; flex-shrink:0; }   /* 24px = the WCAG 2.5.8 touch floor */
 .toggle input { opacity:0; width:0; height:0; }
@@ -2592,11 +2593,11 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
              All but the speed travel in a practice link (how the reading looks); the speed never does (it syncs with the
              account's settings like karaokeRate). -->
         <div style="font-size:0.72rem;color:var(--muted);margin-bottom:10px;line-height:1.4;" data-i18n="torah.staff.melody_credit">Staff melody: Avery/Binder (Reform) for the year-round and High Holiday charts; The Art of Cantillation (Portnoy &amp; Wolff, UAHC) for the Haftarah and the Megillot.</div>
-        <div class="form-row">
+        <div class="form-row" style="flex-wrap:wrap;">
           <label for="optStaffMelody"><span data-i18n="torah.staff.melody_label">Melody</span> <span class="tip-wrap" data-i18n-tip="torah.staff.melody_tip" data-tip="Which printed chart the staff draws. Follow the reading picks the chart the reading is chanted to: the year-round melody, High Holidays on Rosh Hashanah and Yom Kippur, Haftarah for a haftarah, a megillah's own. Choose a chart to practise its melody on any text; the recordings keep their own tune, and a mark the chart does not print shows its word without notes."><i class="tip-icon">?</i></span></label>
           <select id="optStaffMelody" style="margin-inline-start:auto;">
             <option value="auto" data-i18n="torah.staff.melody_auto">Follow the reading</option>
-            <option value="torah" data-i18n="trope.melody.torah">Year-round</option>
+            <option value="torah" data-i18n="trope.melody.torah">Year Round [Binder-Reform]</option>
             <option value="highholiday" data-i18n="trope.melody.highholiday">High Holidays</option>
             <option value="haftarah" data-i18n="trope.melody.haftarah">Haftarah</option>
             <option value="esther" data-i18n="trope.melody.esther">Esther</option>
