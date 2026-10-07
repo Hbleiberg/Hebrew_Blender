@@ -8,15 +8,11 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P3 (**NEW S469 C; torah `fc3ec234`**) | classroom_dashboard.html | **Preset-row focus drop, unprobed.** | found S469
+- [ ] P4 (**NEW S471 B**) | torah_trainer.html | **The favorite dialog's Name field may ignore Enter** (static read). | found S471
 
 - [ ] P4 (**NEW S469 C**) | flash_cards.html | **A preset's Play drops focus to `<body>`**. | found S469
 
 - [ ] P4 (**NEW S470 F**) | hebrew_dictionary.html | **Root field ignores Escape; EN-UI search keeps typed Hebrew LTR.** | found S470
-
-- [ ] P4 (**NEW S470 F**) | classroom_dashboard.html | **Video URL, schedule and preset names ignore Enter.** | found S470
-
-- [ ] P4 (**NEW S468 H**) | index.html | **A restore that switches the hub to Hebrew shows its success alert in English**. | found S468
 
 - [ ] P4 (**NEW S468 H**) | index.html | **After Erase All the hub stays Hebrew and dark until reload**. | found S468
 
@@ -316,6 +312,10 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-07 | (S471 close-out) | branch/deploy note | **S471 = B + 4 fixes, PR #316.** No drift; sw v951→v952; no FM bump.
+
+- [x] 2026-10-07 | `c0c5856e` `4930a77a` `10aa231e` `91bc624d` | dashboard ×2, generator, hub | (S471) **Preset focus; Enter saves ×5; restore alert in Hebrew.** | findings S471.
+
 - [x] 2026-10-07 | (S470 close-out) | branch/deploy note | **S470 = F + 4 fixes, PR #316.** No drift; sw v950→v951; no FM bump.
 
 - [x] 2026-10-07 | `83e29d12` `45a3073e` `8a7bd8dd` `fc3ec234` | 14 pages | (S470) **City Enter; placeholders 4.5:1; picker Escape; favorites focus.** | findings S470.
@@ -332,13 +332,11 @@ _(none)_
 
 - [x] 2026-10-07 | `8be5bdd` `8294d4b` `d9f5a87` `6c4a1a2` | torah, contact, resources, kbd ×4 | (S467) **Dialogs clear the hint toast; server error in `<bdi>`; Suggest intro 14px; dark key press.** | HEAD controls (findings S467).
 
-- [x] 2026-10-07 | (S466 close-out) | branch/deploy note | **S466 = D + 4 fixes, PR #315.** No drift (main `bf14523`, keep-alive #25 green); sw v945→v946; no FM bump (fixes); 7 smokes green with `--sdk`; no gates.
-
-- [x] 2026-10-07 | `42b2675e` `5f929d7f` `d76f3129` `48c5f198` | ivrit-saves, hub ×2, FM | (S466) **Memory parsed once per change; one-line export; closed window not redrawn; HE anchor pairs isolated.** | findings S466.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-07 | **S471** | iters: 1 pass (**B**) + 4 fixes = **5** | tools: dashboard ×2, generator, index | patterns fixed: enter-ignored (NEW) ×2, button-focus ×1 | pass run: B | SW: v951→v952
 
 - 2026-10-07 | **S470** | iters: 1 pass (**F**) + 4 fixes = **5** | tools: 14 pages (dashboard, FM, torah ×2) | patterns fixed: placeholder ×14, button-focus ×1 | pass run: F | SW: v950→v951
 
@@ -378,13 +376,13 @@ _(none)_
 
 - 2026-10-04 | **S452** | iters: 1 pass (**D**) + 4 fixes = **5** | tools: FM ×2, generator ×2 | patterns fixed: cdn-library-parser-blocking-for-one-action ×2 (NEW) | pass run: D | SW: v924→v925
 
-- 2026-10-02 | **S451** | iters: 1 pass (**G**) + 4 fixes = **5** | tools: dictionary, generator, flash, torah | patterns fixed: dark-navy-fill-matches-its-ground ×2 | pass run: G | SW: v918→v919
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S470 (2026-10-07):** all 14 pages S470 · pwa S468 · ivrit-saves S466 · intake S465.
+- **Snapshot S471 (2026-10-07):** dashboard, generator, index S471 · the other 11 pages S470 · pwa S468 · ivrit-saves S466 · intake S465.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`enter-ignored-beside-its-own-button`** (NEW S471; dashboard ×5 `83e29d12` `4930a77a`, generator ×2 `10aa231e`): ACTIVE, streak 0. Detection: a text field beside its action button with no Enter wiring; probe typed + Enter vs the button.
 
 - **`placeholder-keeps-the-browser-gray`** (NEW S470 `45a3073e`): ACTIVE, streak 0. Detection: `f470/ph.mjs` < 4.5:1 (plant 1.3:1).
 
@@ -428,7 +426,7 @@ _(none)_
 
 - **`copy-claims-success-on-a-refused-clipboard`** (NEW S428; FIXED `bbd5f65`, `0d2a941`; S444 index `90e1a057`, dashboard `18344f69`; **S445 generator `3dad5c11`, flash `58ee7a4f` — all 7 carriers fixed, 0 open**): ACTIVE, streak 0. Detection: every `execCommand('copy')` whose …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`button-focus-lost-to-its-own-rebuild`** (**S470 torah favorites `fc3ec234`; S469 generator `04a85f46`, flash `e93d2e91`; S455 trope ×2; S441 torah; S426–S439 account, dictionary, torah**): ACTIVE, streak 0. …[full …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`button-focus-lost-to-its-own-rebuild`** (**S471 dashboard `c0c5856e`; S470 torah favorites `fc3ec234`; S469 generator `04a85f46`, flash `e93d2e91`; S455 trope ×2; S441 torah; S426–S439 account, dictionary, torah**): ACTIVE, streak 0. …[full …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`dark-literal-escapes-the-print-tokens`** (NEW S437 G; resources FIXED `5320a668`): ACTIVE, streak 0. Detection: PDFs dark vs light, ink per page (<200 at 40 dpi); a lighter dark sheet = a `body.dark` literal the print token reset misses. Exempt: active-state borders. S437: …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -706,7 +704,7 @@ _(none)_
 
 - I first-load & empty-state: 2026-10-07 (**S467 — 35th I: 112 virgin cells, plants 112/112, real 0; the emoji gallery on a Sefaria stub. FOUND + FIXED the hint toast over the gallery `8be5bdd`.**)
 
-- B console/error audit: 2026-10-05 (**S457 — 35th B on the S443 delta (78 commits): 68 load cells, the new features by real clicks, two tabs × 6 tools, and NEW a signed-in arm (9 pages × 2 devices × 2 cells on a fake cloud); every zero planted (findings S457). FOUND + FIXED the preferences race `4c31b627`.**)
+- B console/error audit: 2026-10-07 (**S471 — 36th B on the S457 delta (103 commits): 68 load cells + the outside-loop features by real clicks; plants fired (findings S471). All 0.**)
 
 - J metrics-informed: never run — SKIP in rotation until the impact-metrics dashboard/Worker is live (not live)
 
@@ -718,4 +716,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-07 (**S470 — 5 search fields, 40 cells, 78-field census; plants fired; FIXED 4.**)
 
-**Next session (S471):** **BRANCH/PR: `claude/magical-mendel-396njm` → draft PR #316 (S467–S470): open → continue; merged → restart from `origin/main`.** Closed at `sw.js` **v951**, FM **5.59**. ⚑ Stalest: B (S457), then A/E/L/K. ⚑ Untaken: dashboard focus (P3); hub copy (gate 2). ⚑ Maintainer: re-stage the 14 fonts (S465).
+**Next session (S472):** **BRANCH/PR: `claude/magical-mendel-396njm` → draft PR #316 (S467–S471): open → continue; merged → restart from `origin/main`.** Closed at `sw.js` **v952**, FM **5.59**. ⚑ Stalest: A (S458), then E/L/K. ⚑ Untaken: hub copy (gate 2). ⚑ Maintainer: re-stage the 14 fonts (S465).
