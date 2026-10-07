@@ -8594,6 +8594,20 @@ function saveFavoriteFromDialog() {
   closeFavoriteDialog();
   showHintToast(I18n.t('torah.fav.saved', { name }));
 }
+// Recolor, Rename, Duplicate and Delete rebuild the list, which took the pressed button (and keyboard focus) with it:
+// focus goes to the same button on the same favorite, else on the row now at its place (a rename keeps its place),
+// else to the add button when the list is empty — the generator's presetActKeepFocus (pattern
+// button-focus-lost-to-its-own-rebuild).
+function favActKeepFocus(b, name, fn) {
+  const row = b.closest('[data-ft-item]'), i = row ? [...row.children].filter(x => x.tagName === 'BUTTON').indexOf(b) : -1;
+  const rowsNow = () => [...document.querySelectorAll('#ttFavList [data-ft-item]')].filter(r => r.offsetParent !== null);
+  const pos = row ? rowsNow().indexOf(row) : -1;
+  fn();
+  if (b.isConnected || !row) return;
+  const rows = rowsNow(), t = rows.find(r => r.dataset.ftItem === name) || rows[Math.min(pos, rows.length - 1)];
+  const btn = t && [...t.children].filter(x => x.tagName === 'BUTTON')[i];
+  (btn || document.getElementById('ttFavAddBtn')).focus();
+}
 function renderFavorites() {
   if (!window.I18n || !document.getElementById('ttFavList')) return;
   const map = readFavorites();
@@ -8614,13 +8628,13 @@ function renderFavorites() {
         const isIcon = txt.charAt(0) === '<';
         if (isIcon) b.innerHTML = txt; else b.textContent = txt;
         if (title) { b.title = title; if (isIcon || !/\p{L}|\p{N}/u.test(txt)) b.setAttribute('aria-label', title); }
-        b.addEventListener('click', fn); return b;
+        b.addEventListener('click', () => favActKeepFocus(b, name, fn)); return b;
       };
       const dot = document.createElement('button');
       dot.type = 'button'; dot.className = 'tt-fav-dot';
       dot.style.setProperty('--fav-c', favColorOf(fav));
       dot.title = I18n.t('torah.fav.recolor_title'); dot.setAttribute('aria-label', dot.title);
-      dot.addEventListener('click', () => recolorFavorite(name));
+      dot.addEventListener('click', () => favActKeepFocus(dot, name, () => recolorFavorite(name)));
       f.appendChild(dot);
       f.appendChild(mk(I18n.t('torah.fav.open'), I18n.t('torah.fav.open_title', { ref: favoriteLabelOf(fav) }), 'btn btn-xs', () => openFavorite(name)));
       f.appendChild(mk(ICON_PENCIL_SM, I18n.t('torah.fav.rename_title'), 'btn btn-xs btn-secondary', () => renameFavorite(name)));
