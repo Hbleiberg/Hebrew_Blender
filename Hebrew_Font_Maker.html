@@ -484,6 +484,14 @@ body.dark .hi-sun{display:inline-block;}
     grid-template-columns: repeat(7, minmax(50px, 90px));
     justify-content: left;
   }
+  /* A mark grid reads right to left in either UI, and narrower than its 7 columns (a phone) the row overflows the
+     panel. Packed left, it overflows to the right: an English panel scrolls there, a Hebrew one cannot, so the
+     first column sat past its right edge. `safe` aligns an overflowing row as the grid's start, its right, so a
+     Hebrew page's overflow lands on the left, where its panel scrolls. A row that fits stays packed left; a
+     browser without `safe` keeps the rule above. */
+  [dir="rtl"] body.layout-tabbed #catHost #nikkudGrid,
+  [dir="rtl"] body.layout-tabbed #catHost #tropGrid,
+  [dir="rtl"] body.layout-tabbed #catHost #smrmarksGrid { justify-content: safe left; }
   /* The 21 Samaritan marks take ONE row beside the controls once it fits at 56px a tile, the narrowest that
      still holds "Epenthetic": from 1850px the side has about 1280px (the 460px controls, the gap, the panel
      padding, the body margins and a classic scrollbar take the rest). The side grows into the free width,
