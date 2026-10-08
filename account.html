@@ -226,10 +226,11 @@ footer a:hover{text-decoration:underline;}
   .tile{padding:18px 16px;}
 }
 /* Phone widths: let the header button row wrap onto a second line instead of pushing the page
-   sideways (WCAG 1.4.10 reflow). 466px is this page's MEASURED overflow ceiling, not a device
-   width: the row overflows from 432px up to 466px and fits above it, so the gate ends where the
-   break does. Re-measure when the header gains a control; ungating moves layouts that fit. */
-@media (max-width:466px){
+   sideways (WCAG 1.4.10 reflow). 535px is this page's MEASURED overflow ceiling, not a device
+   width: since the header controls took their icons the row overflows from 432px up to 535px
+   (English, the dark theme's "Light" label the widest) and fits above it, so the gate ends where
+   the break does. Re-measure when a header control changes width; ungating moves layouts that fit. */
+@media (max-width:535px){
   header{flex-wrap:wrap;}
   header .hright{flex-wrap:wrap;max-width:100%;justify-content:flex-end;}
 }

@@ -165,10 +165,12 @@ footer a:hover{text-decoration:underline;}   /* the only hover feedback the foot
 /* Phone widths: let the header button row wrap onto a second line instead of pushing the
    page sideways (WCAG 1.4.10 reflow). max-width is the operative half — nothing makes the row
    wrap until something caps its width, and the header has to wrap too or the title block and
-   the button row keep competing for one line. Same lever and the same 430px scope as the
-   dashboard's header block, and measured inert above it — header heights at 480 through 1280
-   are identical with the rules forced on and with them off. */
-@media (max-width:430px){
+   the button row keep competing for one line.
+   445px is this page's MEASURED overflow ceiling, not a device width: since the header controls
+   took their icons the row overflows from 431px up to 445px (the dark theme's "Light" label is the widest) and fits above it, so the
+   gate ends where the break does — the old 430px left a 440px iPhone Pro Max scrolling sideways.
+   Re-measure whenever a header control changes width; ungating moves layouts that already fit. */
+@media (max-width:445px){
   header{flex-wrap:wrap;}
   header .hright{flex-wrap:wrap;max-width:100%;justify-content:flex-end;}
 }

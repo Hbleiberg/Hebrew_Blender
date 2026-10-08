@@ -525,6 +525,15 @@ Paste the CSS block, copy the snippets from any carrier (never redraw them), put
 add the page to the carrier list in every block's header comment, sha-verify, and check the header headless
 with the Playwright recipe in light + dark and EN + HE (the arrow must mirror, the toggle must swap moon for sun).
 
+### The header's wrap gate (every page)
+Each page lets its header wrap onto a second row only below a `max-width` that is that page's **measured
+overflow ceiling** (its comment names the number): the widest width at which the one-row header still
+spills past the screen, found at 1 px steps across 400–900 in EN and HE, light and dark — the dark theme's
+"Light" label is the widest, and English sets the gate. Anything that widens a header control (an icon, a
+label, padding, a new control) moves every ceiling it touches, so re-measure all carriers and move the gates
+in the same change; below the gate the page wraps, above it nothing moves. Never ungate the rules or give the
+title block a zero flex-basis instead — both move layouts that already fit.
+
 ## Holiday icons — shared block (the dashboard's countdown and the Torah Trainer's holiday readings)
 
 One flat 48×48 SVG per holiday family, drawn in the suite's navy and gold and chosen by the maintainer from three

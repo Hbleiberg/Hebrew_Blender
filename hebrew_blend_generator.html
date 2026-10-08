@@ -2065,12 +2065,12 @@ body.dark .hi-sun{display:inline-block;}
   @page { margin: 0.35in; }
 
   /* The header's overflow band sits just ABOVE the MOBILE gate: the switcher and the account
-     chip widened the nav row, so it overflowed from 702px up to 732px (measured) while the rest
-     of the page is still correctly in its desktop layout there. So the header's wrap lever gets
-     its own gate at that measured ceiling, and the MOBILE block — which stacks the sidebar and
-     rebuilds the whole layout — keeps its 700px scope. Re-measure when the header gains a
-     control. */
-  @media (max-width: 732px) {
+     chip widened the nav row, and the controls' icons widened it again, so it overflows from
+     702px up to 749px (measured, English in the dark theme) while the rest of the page is still
+     correctly in its desktop layout there. So the header's wrap lever gets its own gate at that
+     measured ceiling, and the MOBILE block — which stacks the sidebar and rebuilds the whole
+     layout — keeps its 700px scope. Re-measure when a header control changes width. */
+  @media (max-width: 749px) {
     header { flex-wrap: wrap; row-gap: 8px; }
   }
 

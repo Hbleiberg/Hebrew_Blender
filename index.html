@@ -317,14 +317,15 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
    page sideways (WCAG 1.4.10 reflow). max-width is the operative half — nothing makes the row
    wrap until something caps its width, and the header has to wrap too or the title block and
    the button row keep competing for one line.
-   464px is this page's MEASURED overflow ceiling, not a device width: the row overflows from
-   432px up to 464px and fits above it, so the gate ends exactly where the break does and no
-   width that already fits is touched. Re-measure whenever the header gains a control — the
-   switcher and the account chip are what carried the ceiling past the old 430px, and 430 had
-   been read off the widest phone of its day, so a 440pt iPhone 16 Pro Max clipped the dark
-   toggle right off the screen. Ungating the rules is not the shortcut it looks like: forced
-   on at every width they move 377 layouts that currently fit (measured, all 14 pages). */
-@media (max-width:464px){
+   519px is this page's MEASURED overflow ceiling, not a device width: the row overflows from
+   432px up to 519px (English, the dark theme's "Light" label the widest) and fits above it, so
+   the gate ends exactly where the break does and no width that already fits is touched.
+   Re-measure whenever a header control changes width — the switcher and the account chip
+   carried the ceiling past the old 430px (a 440pt iPhone 16 Pro Max clipped the dark toggle
+   right off the screen), and the controls' icons then carried it from 464px to 519px.
+   Ungating the rules is not the shortcut it looks like: forced on at every width they move
+   377 layouts that currently fit (measured, all 14 pages). */
+@media (max-width:519px){
   header{flex-wrap:wrap;}
   header .hright{flex-wrap:wrap;max-width:100%;justify-content:flex-end;}
 }
