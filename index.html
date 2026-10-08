@@ -1847,12 +1847,29 @@ function mergeDashboardRosters(incoming, replace) {
   s.rosters = cur;
   localStorage.setItem(KEY, JSON.stringify(s));
 }
+// Class lists ride in two places: a backup this device saves keeps them inside the dashboard's settings blob, an
+// account backup carries them as dashboardRosters. Counted once by id, without the empty "My class" a dashboard
+// makes for itself (no saved item, as the account layer treats it).
+function ivritClassCount(d) {
+  const ids = new Set();
+  [(d.dashboardRosters || {}).rosters, (d.dashboardSettings || {}).rosters].forEach(m => {
+    if (!m || typeof m !== 'object' || Array.isArray(m)) return;
+    Object.keys(m).forEach(id => {
+      const c = m[id];
+      if (!c || typeof c !== 'object' || Array.isArray(c)) return;
+      const name = typeof c.name === 'string' ? c.name.trim() : '';
+      const untouched = !(Array.isArray(c.names) && c.names.length) && (!name || name === 'My class' || name === I18n.t('dashboard.picker.default_class_name'));
+      if (!untouched) ids.add(id);
+    });
+  });
+  return ids.size;
+}
 const IVRIT_INV_PARTS = [
   ['presets',   d => Object.keys(d.generatorPresets   || {}).length],
   ['favorites', d => Object.keys(d.torahTrainerFavorites || {}).length],
   ['layouts',   d => Object.keys(d.dashboardPresets   || {}).length],
   ['schedules', d => Object.keys(d.dashboardSchedules || {}).length],
-  ['classes',   d => Object.keys((d.dashboardRosters || {}).rosters || {}).length],
+  ['classes',   ivritClassCount],
   ['decks',     d => Object.keys(d.flashCardPresets   || {}).length],
   ['profiles',  d => Object.keys((d.flashCardProfiles || {}).profiles || {}).length],
   ['wordlists', d => Object.keys((d.wordLists || {}).lists || {}).length],
