@@ -4944,6 +4944,7 @@
   "torah.lookup.triennial_year": "מחזור תלת-שנתי: שנה {n}",
   "torah.reading.aliyah_divider": "עלייה {n} · {label}",
   "torah.reading.aliyah_inline": "✦ עלייה {n}",
+  "torah.reading.aliyah_unavailable_label": "{parsha} — עלייה {n} אינה זמינה",
   "torah.reading.card_pick_aria": "בחרו פרשה",
   "torah.reading.chant_all": "שירת הכול",
   "torah.reading.chant_all_stop": "עצירת השירה",

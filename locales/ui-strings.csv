@@ -4089,6 +4089,7 @@ torah.reading.holiday_haftarah_label,{name} — Haftarah · {ref},{name} — ה�
 torah.reading.holiday_chapter_label,{name} — chapter {n},{name} — פרק {n},reading header label for one chapter of a megillah,do-not-translate {name} {n}
 torah.reading.haftarah_label,{parsha} — Haftarah · {ref},{parsha} — הפטרה · {ref},reading header label for a parasha's haftarah,do-not-translate {parsha} {ref}
 torah.reading.haftarah_unavailable_label,{parsha} — Haftarah unavailable,{parsha} — ההפטרה אינה זמינה,reading header label when the aliyah file has no haftarah for the parasha,do-not-translate {parsha}
+torah.reading.aliyah_unavailable_label,{parsha} — Aliyah {n} unavailable,{parsha} — עלייה {n} אינה זמינה,reading header label when the aliyah file has no range for that aliyah,do-not-translate {parsha}; {n} numeric
 torah.reading.tune_label,Tune,מנגינה,aria-label of the reading header's tune choice (a haftarah with more than one customary tune: Tisha B'Av),aria-label only
 torah.reading.special_chip,This Shabbat: {name},השבת: {name},reading header chip while the parasha on screen is this week's and the week has a special maftir or haftarah,do-not-translate {name}
 torah.reading.special_tip,This week the maftir and haftarah of {name} replace the parasha's own. Open them to practise them.,השבוע המפטיר וההפטרה של {name} מחליפים את אלה של הפרשה. פתחו אותם כדי לתרגל.,tap tip of the this-week chip,do-not-translate {name}

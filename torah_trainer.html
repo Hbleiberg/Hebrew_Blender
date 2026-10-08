@@ -3645,15 +3645,15 @@ function resolveRef() {
     if (cycAl && cycAl[n]) {
       const range = cycAl[n];
       const ref = `${p.book} ${range.startC}:${range.startV}-${range.endC}:${range.endV}`;
-      return { ref, label: `${cycName} — ${cycLabel}, Aliyah ${n} (${ref})`, parshahEntry: p, aliyahNum: null, isHaftarah: false, overlay: true, cycle: cyc.cycle, cycleAliyah: n, named: cycPair };
+      return { ref, label: `${cycName} — ${cycLabel}, ${I18n.t('torah.schedule.scope_aliyah', { n })} (${ref})`, parshahEntry: p, aliyahNum: null, isHaftarah: false, overlay: true, cycle: cyc.cycle, cycleAliyah: n, named: cycPair };
     }
     const al = aliyahLookup(p.en, 'full');
     if (al && al.aliyot[n]) {
       const range = al.aliyot[n];
       const ref = `${p.book} ${range.startC}:${range.startV}-${range.endC}:${range.endV}`;
-      return { ref, label: `${p.en} — Aliyah ${n} (${ref})`, parshahEntry: p, aliyahNum: n, isHaftarah: false };
+      return { ref, label: `${p.en} — ${I18n.t('torah.schedule.scope_aliyah', { n })} (${ref})`, parshahEntry: p, aliyahNum: n, isHaftarah: false };
     }
-    return { ref: p.ref, label: `${p.en} — Aliyah ${n} unavailable`, parshahEntry: p, aliyahNum: n, isHaftarah: false };
+    return { ref: p.ref, label: I18n.t('torah.reading.aliyah_unavailable_label', { parsha: p.en, n }), parshahEntry: p, aliyahNum: n, isHaftarah: false };
   }
   return { ref: p.ref, label: p.en, parshahEntry: p, aliyahNum: null, isHaftarah: false };
 }

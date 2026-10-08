@@ -4944,6 +4944,7 @@
   "torah.lookup.triennial_year": "Triennial cycle: year {n}",
   "torah.reading.aliyah_divider": "Aliyah {n} · {label}",
   "torah.reading.aliyah_inline": "✦ Aliyah {n}",
+  "torah.reading.aliyah_unavailable_label": "{parsha} — Aliyah {n} unavailable",
   "torah.reading.card_pick_aria": "Choose a parsha",
   "torah.reading.chant_all": "Chant all",
   "torah.reading.chant_all_stop": "Stop chant",
