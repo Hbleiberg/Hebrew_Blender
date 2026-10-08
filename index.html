@@ -2089,8 +2089,9 @@ function initCloudSaves() {
     const want = localStorage.getItem('hebrewBlender_darkMode');
     if ((want === '1' || want === '0') && document.body.classList.contains('dark') !== (want === '1')) toggleDark();
   });
-  // A font from the account landed in the shared store: the My Fonts manager and the export cache re-read it.
-  window.addEventListener('ivritsuite:fonts', () => { try { refreshFontsBackupCache(); renderMyFontsManager(); } catch (e) {} });
+  // A font from the account landed in the shared store: the export cache re-reads it, and the My Fonts list
+  // does while the window shows it (opening the window redraws the list).
+  window.addEventListener('ivritsuite:fonts', () => { try { refreshFontsBackupCache(); if (ieWindowOpen()) renderMyFontsManager(); } catch (e) {} });
   // Signed in, the AllTools note says where the saves live; the Backup panel keeps its file paths for sharing.
   if (window.IvritAccount && typeof IvritAccount.onChange === 'function') {
     IvritAccount.onChange(u => {
@@ -2103,14 +2104,18 @@ function initCloudSaves() {
   // One attach for the hub: the suite-wide row plus every tool (nothing on this page holds a tool's state in
   // memory, so every shape may land here). ftMergeTrees is pure (the shared block's one merge rule); a profile
   // or word list changed in both places is left for the tool that owns that merge.
+  // onLocalChanged runs once per landed row, so it redraws only an open window: the "This file will contain:"
+  // counts re-read every tool's keys, and a fresh device's first load lands hundreds of rows (opening the window
+  // redraws both lines; a font's export cache follows the ivritsuite:fonts listener above).
   IvritSaves.attach({
     tool: 'Suite',
     status: '#cloudStatus',
     alsoPull: ['Worksheet', 'FlashCards', 'Dictionary', 'TorahTrainer', 'TropeTutor', 'Dashboard'],
     merges: { presetFolders: ftMergeTrees, profileFolders: ftMergeTrees, scheduleFolders: ftMergeTrees, favoriteFolders: ftMergeTrees },
-    onLocalChanged: (kind) => { renderIvritInventory(); if (kind === 'font') { try { refreshFontsBackupCache(); renderMyFontsManager(); } catch (e) {} } }   // the "This file will contain:" counts read storage
+    onLocalChanged: (kind) => { if (!ieWindowOpen()) return; renderIvritInventory(); if (kind === 'font') { try { refreshFontsBackupCache(); renderMyFontsManager(); } catch (e) {} } }
   });
 }
+function ieWindowOpen() { const bd = document.getElementById('ieBackdrop'); return !!bd && bd.classList.contains('open'); }
 document.addEventListener('keydown', e => {
   const bd = document.getElementById('ieBackdrop');
   if (!bd.classList.contains('open')) return;
