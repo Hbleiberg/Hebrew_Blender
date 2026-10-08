@@ -445,6 +445,7 @@ body.dark .hi-sun{display:inline-block;}
   .work-tabs { display: flex; gap: 6px; margin-bottom: 10px; align-items: center; }
   .wtab-group { display: flex; gap: 6px; flex: 0 1 auto; flex-wrap: wrap; justify-content: center; }   /* the step tabs, kept together + centered; wrap rather than floor the page width */
   .work-current, .work-tabs-spacer { flex: 1 1 0; min-width: 0; }   /* equal side rails keep the tab group centered, with or without a label */
+  .work-tabs-spacer { min-width: max-content; }   /* ...but this rail holds Edit points: at 0px it overflowed the page on a phone (59px at 320–412) and the step tabs wrap instead */
   .work-current { display: flex; align-items: center; gap: 6px; overflow: hidden; white-space: nowrap; font-size: 0.82rem; font-weight: 600; color: var(--muted); }
   .work-current .wc-glyph { font-family: var(--heb-font); font-size: 1.05rem; line-height: 1; color: var(--text); direction: rtl; }
   .wtab { padding: 7px 16px; border: 1px solid var(--border); border-radius: 6px; background: var(--white); cursor: pointer; font-size: 0.84rem; font-weight: 700; color: var(--muted); }
