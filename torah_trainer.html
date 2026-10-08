@@ -1399,6 +1399,9 @@ body.dark .tt-fav-note { color:#ffb4a9; }
   background:var(--white); color:var(--text); border:1px solid var(--border); border-radius:10px; box-shadow:0 8px 32px rgba(0,0,0,0.28); }
 body.dark .tt-emo-dialog { background:var(--navy-deep); }
 .tt-emo-backdrop[hidden], .tt-emo-dialog[hidden] { display:none; }
+/* pwa.js's install hint (fixed at the bottom, above everything) covered a fifth of the last card on a phone, the list
+   scrolled to its end. Hidden while the gallery is open — the hub's erase sheet and the Font Maker's windows do the same. */
+body:has(#ttEmoDialog:not([hidden])) #pwaInstallBanner { visibility:hidden; }
 .tt-emo-dialog:focus { outline:none; }
 .tt-emo-head { flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 16px; border-block-end:2px solid var(--gold); }
 .tt-emo-title { margin:0; font-family:'Libre Baskerville',serif; font-size:1.05rem; color:var(--navy); }
