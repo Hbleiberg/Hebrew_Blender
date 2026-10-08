@@ -207,6 +207,10 @@ body.dark .pill-group .pill.active{background:#2a4070;color:var(--gold-light);}
 .donate-panel.active{display:flex;flex-direction:column;align-items:center;justify-content:center;}
 .donate-handle{font-family:'Libre Baskerville',serif;font-size:1.35rem;color:var(--text);margin:2px 0 2px;}
 .donate-sub{font-size:0.82rem;letter-spacing:0.04em;text-transform:uppercase;color:var(--muted);margin-bottom:18px;}
+/* The translated caption (the Zelle note) in the Hebrew UI: Hebrew has no capitals, and the Latin tracking only
+   spaced its letters apart while the uppercase turned "Zelle" into "ZELLE" mid-sentence. The PayPal and Venmo
+   captions are the brands' names in both languages and keep the small-caps look (latin-tracking-on-hebrew-labels). */
+html[lang="he"] .donate-sub[data-i18n]{letter-spacing:normal;text-transform:none;}
 .donate-btn{display:inline-block;background:var(--gold);color:var(--navy);font-weight:700;text-decoration:none;padding:11px 26px;border-radius:8px;font-size:0.95rem;transition:background 0.15s;}
 .donate-btn:hover{background:var(--gold-light);color:var(--navy);text-decoration:none;}
 .zelle-qr{max-width:230px;width:100%;height:auto;border-radius:8px;border:1px solid var(--border);background:#fff;padding:10px;}
