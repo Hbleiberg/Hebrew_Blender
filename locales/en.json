@@ -4010,7 +4010,7 @@
   "home.alltools.modal_close_aria": "Close",
   "home.alltools.modal_title": "Import / Export All Settings",
   "home.alltools.myfonts.download_title": "Download",
-  "home.alltools.myfonts.empty": "No saved fonts yet. Build one in the Hebrew Font Maker, then “Save to My Fonts”.",
+  "home.alltools.myfonts.empty": "No saved fonts yet. Build one in the Hebrew Font Maker, then choose Save Project ▾ → My IvritSuite Fonts… → Save current font.",
   "home.alltools.myfonts.note": "Fonts you built in the <a href=\"Hebrew_Font_Maker.html\">Hebrew Font Maker</a> — or any <b>.ttf / .otf / .woff</b> you upload — are saved in this browser. Use one across every tool, download it, or remove it.",
   "home.alltools.myfonts.remove_confirm": "Remove “{name}” from My Fonts? Tools using it will fall back to their default font.",
   "home.alltools.myfonts.remove_confirm_cloud": "Remove “{name}” from My Fonts? You are signed in, so it is also removed from your account and, at their next load, from your other devices. Tools using it will fall back to their default font.",

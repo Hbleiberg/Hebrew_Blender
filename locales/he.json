@@ -4010,7 +4010,7 @@
   "home.alltools.modal_close_aria": "סגור",
   "home.alltools.modal_title": "ייבוא / ייצוא כל ההגדרות",
   "home.alltools.myfonts.download_title": "הורדה",
-  "home.alltools.myfonts.empty": "אין עדיין גופנים שמורים. צרו גופן ביוצר הגופנים העברי, ואז “שמירה לגופנים שלי”.",
+  "home.alltools.myfonts.empty": "אין עדיין גופנים שמורים. צרו גופן ביוצר הגופנים העברי, ואז בחרו ׳שמירת פרויקט ▾ ← הגופנים שלי ב-IvritSuite… ← שמור גופן נוכחי׳.",
   "home.alltools.myfonts.note": "גופנים שיצרתם ב<a href=\"Hebrew_Font_Maker.html\">יוצר הגופנים העברי</a> — או כל <b>.ttf / .otf / .woff</b> שתעלו — נשמרים בדפדפן זה. השתמשו בגופן בכל הכלים, הורידו אותו, או הסירו אותו.",
   "home.alltools.myfonts.remove_confirm": "להסיר את “{name}” מהגופנים שלי? כלים המשתמשים בו יחזרו לגופן ברירת המחדל שלהם.",
   "home.alltools.myfonts.remove_confirm_cloud": "להסיר את “{name}” מהגופנים שלי? אתם מחוברים, ולכן הוא יוסר גם מהחשבון, ובטעינה הבאה — גם מהמכשירים האחרים שלכם. כלים המשתמשים בו יחזרו לגופן ברירת המחדל שלהם.",
