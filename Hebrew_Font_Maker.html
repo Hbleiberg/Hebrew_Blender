@@ -831,6 +831,10 @@ body.dark .hi-sun{display:inline-block;}
   /* ── Overlay / modal ── */
   .overlay { position: fixed; inset: 0; background: rgba(13,18,32,0.55); display: none; align-items: center; justify-content: center; z-index: 200; }
   .overlay.open { display: flex; }
+  /* pwa.js's install hint (fixed at the bottom, above everything, phones under 768px) covered a modal's bottom band:
+     on an iPhone the Help window's Close, the mark editor's and the bold generator's Apply, the wizard's Next. Hidden
+     while any modal is open (the CSS state, as the hub's erase sheet does) and back when it closes. */
+  body:has(.overlay.open) #pwaInstallBanner { visibility: hidden; }
   /* askModal is raised OVER the wizard, help, QA, My Fonts and mobile-warn overlays (all later in the DOM at the
      same z-index), so it painted beneath them: the My Fonts 🗑 confirm could not be clicked. One layer up. */
   #askOverlay { z-index: 201; }
