@@ -400,6 +400,11 @@ body.dark .sidebar-toggle-btn:hover,body.dark .sidebar-show-btn:hover{background
 .search-wrap input:focus{border-color:var(--gold);}
 .search-wrap input:focus-visible{outline:2px solid var(--focus-ring);outline-offset:1px;}
 .search-wrap input::placeholder{color:var(--muted);}
+/* What is typed runs in its own direction: Hebrew in the English UI from the right, English in the Hebrew UI from the
+   left. plaintext, not dir="auto": the box keeps the page's direction, so the clear button's reserve
+   (padding-inline-end) stays on the button's side (dir="auto" moved it away and the text ran under the ×), and an
+   empty field keeps its placeholder where it was. */
+.search-wrap input{unicode-bidi:plaintext;}
 /* Section 4: clear-search button (all widths) */
 .search-clear{position:absolute;inset-inline-end:6px;top:50%;transform:translateY(-50%);width:24px;height:24px;border-radius:50%;border:none;background:var(--warm-gray);color:var(--muted);font-size:0.72rem;line-height:1;cursor:pointer;display:none;align-items:center;justify-content:center;padding:0;} /* 24px WCAG floor (touch-target haul) — glyph size unchanged; fits centered in the ~34px input */
 /* --gold is a LIGHT surface in both themes, so white on it reads 2.75:1 (light) and 2.14:1
