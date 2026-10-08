@@ -318,8 +318,12 @@ to Learn), and a caller that opens something inside the new tab (`openLearnFor`)
   The Art of Cantillation — so the bar carries no separate credit), whether the key readout names the relative
   minor (haftarah and eicha, whose sof pasuk comes to rest on C: `keyNameText` through `trope.key.name_minor`,
   as the Trainer's staff readout does), whether the Phrases cards have examples (year-round and High Holidays —
-  the census reads no other text) and whether the chart's closing ends a chapter (the three megillah charts:
-  their closing group is titled `trope.phrases.group_closing_chapter`). Any
+  the census reads no other text) and whether the chart's closing ends a chapter (the three megillah charts).
+  The closing group's title and each closing card's tag name what the closing ends (`closingTitleKey`): an
+  aliyah on the year-round and High Holiday charts (`trope.phrases.group_closing`, the card tag
+  `trope.phrases.aliyah_end_tag`), the haftarah on the Haftarah chart (`trope.phrases.group_closing_haftarah`;
+  a haftarah is read whole), and a chapter and the book on the megillah charts
+  (`trope.phrases.group_closing_chapter`); the Haftarah and megillah cards carry their group's title. Any
   other stored value shows the year-round staffs and stays stored (`melodyKey()`), so a newer page's choice
   survives a round trip. **`?melody=<key>`** (the Torah Trainer's links: `highholiday` from a Rosh Hashanah or
   Yom Kippur reading, `haftarah` from a haftarah, a megillah's own melody) shows that melody for the visit only
@@ -387,8 +391,8 @@ to Learn), and a caller that opens something inside the new tab (`openLearnFor`)
     - `t` is ticks at 48 to the quarter; a note under a 3 or 6 bracket carries its real (two-thirds) length,
       a note under any other bracket number its written length.
     - `tup` is a printed bracket; `n` is its number when it is not 3 (the `5{…}` over Eicha's revia run, the
-      `8{…}` of the Haftarah geresh). `tags` may carry `aliyah-end` (a closing: the end of an aliyah, or of a
-      chapter and the book on the Megillot charts) and `derived` (a closing the chart does not print, built from
+      `8{…}` of the Haftarah geresh). `tags` may carry `aliyah-end` (a closing: the end of an aliyah, of the
+      haftarah on the Haftarah chart, or of a chapter and the book on the Megillot charts) and `derived` (a closing the chart does not print, built from
       its printed one for a shorter verse ending — the Haftarah rows 40b–40d). `values` includes `64`.
     - Syllables, marks, triplets and slurs are spans of note indices, so a triplet or slur may cross
       from one mark into the next. `dashed` marks a dashed slur (`~~`), which no row prints yet.

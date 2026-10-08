@@ -2490,8 +2490,12 @@ const PHRASE_GROUPS = {
     { key: 'closing', rows: ['38'] },
   ],
 };
-// A group's title key: the closing group of a megillah chart ends a chapter (and the book), not an aliyah.
-function phraseGroupTitleKey(groupKey, m) { return groupKey === 'closing' && melodyInfo(m).chapters ? 'trope.phrases.group_closing_chapter' : 'trope.phrases.group_' + groupKey; }
+// The closing group's title names what the chart's closing ends: an aliyah (the year-round and High Holiday charts),
+// the haftarah (read whole, not in aliyot), or a chapter and the book (the megillah charts). A closing card's tag says the same.
+function closingTitleKey(m) {
+  return melodyInfo(m).chapters ? 'trope.phrases.group_closing_chapter' : m === 'haftarah' ? 'trope.phrases.group_closing_haftarah' : 'trope.phrases.group_closing';
+}
+function phraseGroupTitleKey(groupKey, m) { return groupKey === 'closing' ? closingTitleKey(m) : 'trope.phrases.group_' + groupKey; }
 const PHRASE_GROUP_FAMILY = { etnachta: 'etnachta', sofpasuk: 'sofpasuk', katon: 'katon', geresh: 'geresh', revia: 'revia',
   gershayim: 'geresh', tevir: 'revia', telisha: 'geresh', gadol: 'katon', segol: 'segol', rare: 'rare', closing: 'sofpasuk', other: 'rare' };
 // The one phrase mark the tutor has no card for: munach with the legarmeh line after it. Names stay in their
@@ -2608,10 +2612,10 @@ function buildPhraseCard(m, set, row, forPrint) {
   he.dir = 'rtl';
   he.textContent = row.he;
   head.appendChild(he);
-  if (row.tags.includes('aliyah-end')) {
-    const tag = document.createElement('span');
+  if (row.tags.includes('aliyah-end')) {   // a closing row: the tag names what it ends, as its group's title does
+    const tag = document.createElement('span'), ck = closingTitleKey(m);
     tag.className = 'tu-rare-tag';
-    tag.textContent = I18n.t('trope.phrases.aliyah_end_tag');
+    tag.textContent = I18n.t(ck === 'trope.phrases.group_closing' ? 'trope.phrases.aliyah_end_tag' : ck);
     head.appendChild(tag);
   }
   card.appendChild(head);

@@ -4683,11 +4683,12 @@ trope.learn.trope_note_yetiv,"Prepositive — printed at the very start of the w
 trope.learn.trope_note_zakef_gadol,Zakef katon's louder sibling — a vertical bar joins the two dots when the word stands alone in its clause.,אחיו הרם יותר של זקף קטון — קו אנכי מצטרף לשתי הנקודות כשהמילה עומדת לבדה במשפטה.,per-trope teaching note (Learn card),pedagogical prose; scope-ambiguous
 trope.learn.trope_note_zarka,Postpositive — curls off the end of the word and always throws ahead to a segol.,טעם מאחר — מסתלסל בסוף המילה ותמיד משליך קדימה אל סגול.,per-trope teaching note (Learn card),pedagogical prose; scope-ambiguous
 trope.learn.visited_aria,visited,נצפה,family chip visited badge aria,aria-label only
-trope.phrases.aliyah_end_tag,Last verse of an aliyah,פסוק אחרון בעלייה,Phrases card tag on the end-of-aliyah rows,
+trope.phrases.aliyah_end_tag,Last verse of an aliyah,פסוק אחרון בעלייה,"Phrases card tag on the closing rows of the year-round and High Holiday charts (the Haftarah and megillah charts tag theirs with their group's title)",
 trope.phrases.chip_aria,Open the {name} card,פתיחת הכרטיס של {name},Phrases card mark chip aria-label (the chip shows the name),aria-label only; do-not-translate {name} (a glyph-name)
 trope.phrases.chip_title,Open this mark's card in Learn,פתיחת כרטיס הטעם בלימוד,Phrases card mark chip title,title tooltip
 trope.phrases.group_closing,Last verse of an aliyah,הפסוק האחרון בעלייה,Phrases group chip + printed heading,
-trope.phrases.group_closing_chapter,"End of a chapter, and of the book","סוף פרק, וסוף הספר","Phrases group chip + printed heading on the Esther, Megillot and Eicha melodies (their closing ends a chapter)",
+trope.phrases.group_closing_chapter,"End of a chapter, and of the book","סוף פרק, וסוף הספר","Phrases group chip + printed heading + the closing cards' tag on the Esther, Megillot and Eicha melodies (their closing ends a chapter)",
+trope.phrases.group_closing_haftarah,Last verse of the haftarah,הפסוק האחרון בהפטרה,"Phrases group chip + printed heading + the closing cards' tag on the Haftarah melody (a haftarah is read whole, not in aliyot)",
 trope.phrases.group_etnachta,Etnachta clause,פסוקית האתנחתא,Phrases group chip + printed heading,
 trope.phrases.group_gadol,Zakef gadol and yetiv,זקף גדול ויתיב,Phrases group chip + printed heading,
 trope.phrases.group_geresh,Kadma v'azla and geresh,קדמא ואזלא וגרש,Phrases group chip + printed heading,
