@@ -2208,11 +2208,11 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
       <option value="Numbers" data-i18n="torah.custom.book_numbers">Numbers</option>
       <option value="Deuteronomy" data-i18n="torah.custom.book_deuteronomy">Deuteronomy</option>
     </select>
-    <input type="number" id="ttCustomChapter" min="1" max="50" step="1" value="1" placeholder="ch." data-i18n-placeholder="torah.custom.chapter_ph" aria-label="Chapter" data-i18n-aria-label="torah.custom.chapter_label" title="Chapter" data-i18n-title="torah.custom.chapter_label" style="width:58px;">
+    <input type="number" id="ttCustomChapter" onkeydown="if(event.key==='Enter')applyCustomRange()" min="1" max="50" step="1" value="1" placeholder="ch." data-i18n-placeholder="torah.custom.chapter_ph" aria-label="Chapter" data-i18n-aria-label="torah.custom.chapter_label" title="Chapter" data-i18n-title="torah.custom.chapter_label" style="width:58px;">
     <span aria-hidden="true" style="color:var(--muted);">:</span>
-    <input type="number" id="ttCustomVStart" min="1" step="1" placeholder="from" data-i18n-placeholder="torah.custom.verse_from_ph" aria-label="First verse" data-i18n-aria-label="torah.custom.verse_from_aria" style="width:62px;">
+    <input type="number" id="ttCustomVStart" onkeydown="if(event.key==='Enter')applyCustomRange()" min="1" step="1" placeholder="from" data-i18n-placeholder="torah.custom.verse_from_ph" aria-label="First verse" data-i18n-aria-label="torah.custom.verse_from_aria" style="width:62px;">
     <span aria-hidden="true" style="color:var(--muted);">–</span>
-    <input type="number" id="ttCustomVEnd" min="1" step="1" placeholder="to" data-i18n-placeholder="torah.custom.verse_to_ph" aria-label="Last verse" data-i18n-aria-label="torah.custom.verse_to_aria" style="width:62px;">
+    <input type="number" id="ttCustomVEnd" onkeydown="if(event.key==='Enter')applyCustomRange()" min="1" step="1" placeholder="to" data-i18n-placeholder="torah.custom.verse_to_ph" aria-label="Last verse" data-i18n-aria-label="torah.custom.verse_to_aria" style="width:62px;">
     <button class="btn btn-xs" onclick="applyCustomRange()" type="button" data-i18n="torah.custom.go_button">Go</button>
   </span>
   <!-- The two reveal switches a teacher flips in front of a class: mirrors of the Text tab's Show transliteration /
