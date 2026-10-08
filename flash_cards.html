@@ -7609,6 +7609,12 @@ function showScreen(id) {
     const t = ['fcCard', 'lcReplay'].map(x => document.getElementById(x)).find(x => x && x.getClientRects().length);
     if (t) t.focus({ preventScroll: true });
   }
+  // Return to Options (or a ladder strip's way home) left with the results screen the same way: the setup screen's
+  // first control takes the keyboard, at the top the page has just scrolled to (a dialog opened next takes it from there).
+  else if (lost && id === 'screenSetup') {
+    const t = document.querySelector('#screenSetup button');
+    if (t && t.getClientRects().length) t.focus({ preventScroll: true });
+  }
 }
 
 /* =========================================================================
