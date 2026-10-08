@@ -8,6 +8,14 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P3 (S476 N) | Hebrew_Font_Maker.html | **The mark grids keep 7 columns (380px) at ≤412px: in Hebrew a column is cut with no scroll** (3–9 of 18 tiles). | found S476
+
+- [ ] P4 (S476 N) | Hebrew_Font_Maker.html | **Auto-detect's Sizing select is wider than a phone** (436px in 374): the window scrolls sideways. | found S476
+
+- [ ] P4 (S476 N) | Hebrew_Font_Maker.html | **Guides reorder by drag only** (`attachGuideSortable`). | found S476
+
+- [ ] P4 (S476 N — gate 4) | hebrew_blend_generator.html | **On desktop the Generate bar covers 1–3 footer FAQ rows at the page end** (phones fixed `dbf2d7a0`). | found S476
+
 - [ ] P3 (S475 K) | js/i18n.js | **A failed locale load leaves JS-built UI as raw keys** (1,024); no retry. | found S475
 
 - [ ] P4 (S475 K) | torah_trainer.html | **A shown hint toast keeps its language across a switch.** | found S475
@@ -15,10 +23,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (S475 K) | Hebrew_Font_Maker.html | **Kerning "Finals"/"Descenders" are English.** | found S475
 
 - [ ] P4 (**NEW S474 L — gate 2**) | index.html, torah_trainer.html | **The hub's ItemList one-liner and Torah's WebApplication + HowTo descriptions name the weekly parsha only** (not the holidays or Megillot). | found S474
-
-- [ ] P4 (**NEW S472 A**) | torah_trainer.html | **On an iPhone the install banner covers the emoji gallery's last row**. | found S472
-
-- [ ] P4 (**NEW S472 A**) | hebrew_blend_generator.html | **At phone width the fixed Generate bar covers the footer's last 3–5 links, fully scrolled**. | found S472
 
 - [ ] P4 (**NEW S470 F**) | hebrew_dictionary.html | **EN-UI search keeps typed Hebrew LTR** (the root field's Escape fixed S473). | found S470
 
@@ -113,8 +117,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S425 Pass I — for F**) | CSV, 8 pages | **22 Hebrew strings end in "→", pointing back in RTL** (home CTAs, trope nav, torah links); 25 use "←". | found S425
 
 - [ ] P4 (**NEW S418 — the maintainer's dashboard**) | Supabase project | **Security advisor: leaked-password protection is off**; passwords are never used (e-mail code + Google), so enable the toggle or accept it as moot. | found S418
-
-- [ ] P4 (**NEW S420 Pass N — for F or A; the z-index table is in loop-findings**) | pwa.js + the 7 sheet-bearing pages | **The install banner (position:fixed, z-index 2147483000) floats over any open sheet's bottom band on a short phone**; the hub hides it by its own state (`f44a17e`), and a lower z-index alone is not the suite fix (the generator's `.gen-fab` z 90 equals the dashboard/torah …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S412 Pass H — five small ones; (1) FIXED S446 `c6c509ed`, (3) FIXED S448 `c54897da`**) | flash_cards.html | **(2)** a timed drill paints the previous value for 1 s; **(4)** a load in 1-letter mode narrows "Vowel on letter" `[2]` → `[1]`; **(5)** gate 2: the printed card …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -318,6 +320,10 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-08 | (S476 close-out) | branch/deploy note | **S476 = N + 4 fixes, PR #316.** No drift; sw v957; no FM bump.
+
+- [x] 2026-10-08 | `88b811b5` `fe808b64` `30fcc886` `dbf2d7a0` | FM ×2, torah, generator | (S476) **Edit points on screen; windows scroll; gallery banner; generator footer.** S420's banner candidate closed. | findings S476.
+
 - [x] 2026-10-08 | (S475 close-out) | branch/deploy note | **S475 = K + 4 fixes, PR #316.** No drift; sw v956; no FM bump.
 
 - [x] 2026-10-08 | `8d3f2c95` `02965f8f` `ca67ec0d` `15f2e46d` | torah ×2, FM, trope, i18n | (S475) **4 i18n fixes.** | findings S475.
@@ -334,13 +340,11 @@ _(none)_
 
 - [x] 2026-10-08 | `306003c3` `60229f0f` `8081fc83` `56c7a179` | torah ×2, generator + pwa.js, FM | (S472) **Special-reading button hidden; range Enter; Generate bar above the banner; FM windows hide it.** S471's favorite-Enter candidate refuted (4/4). | findings S472.
 
-- [x] 2026-10-07 | (S471 close-out) | branch/deploy note | **S471 = B + 4 fixes, PR #316.** No drift; sw v951→v952; no FM bump.
-
-- [x] 2026-10-07 | `c0c5856e` `4930a77a` `10aa231e` `91bc624d` | dashboard ×2, generator, hub | (S471) **Preset focus; Enter saves ×5; restore alert in Hebrew.** | findings S471.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-08 | **S476** | iters: 5 | tools: FM ×2, torah, generator | patterns fixed: install-banner ×1, tall-window ×1 | pass run: N | SW: v956→v957
 
 - 2026-10-08 | **S475** | iters: 5 | tools: torah ×2, FM, trope, i18n.js | patterns fixed: english-literal ×2, stale ×1 | pass run: K | SW: v955→v956
 
@@ -380,11 +384,9 @@ _(none)_
 
 - 2026-10-05 | **S457** | iters: 1 pass (**B**) + 4 fixes = **5** | tools: ivrit-saves, dictionary, FM, torah | patterns fixed: flex-range-keeps-its-min-content-width (NEW) | pass run: B | SW: v929→v930
 
-- 2026-10-05 | **S456** | iters: 1 pass (**F**) + 4 fixes = **5** | tools: generator, dictionary ×2, flash ×2, FM, torah | patterns fixed: slider-value (NEW), sub-floor ×2 | pass run: F | SW: v928→v929
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S475 (2026-10-08):** torah, FM, trope, i18n.js S475 · flash, index S474 · dictionary, docs S473 · generator, pwa S472 · dashboard S471 · 6 others S470 · ivrit-saves S466 · intake S465.
+- **Snapshot S476 (2026-10-08):** FM, torah, generator S476 · trope, i18n.js S475 · flash, index S474 · dictionary, docs S473 · pwa S472 · dashboard S471 · 6 others S470 · saves S466.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -438,7 +440,9 @@ _(none)_
 
 - **`editor-re-parse-caps-a-merged-list`** (**NEW S421 Pass P — 1 carrier, FIXED `288af4a`**): ACTIVE, consequence-critical (a sync carries the cut list to the account); never retires. A list the sync merges uncapped is re-parsed by its tool's editor or restore path through the …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`install-banner-over-a-sheet's-bottom-controls`** (NEW S420 N, hub `f44a17e`; **S472 generator bar `8081fc83` (pwa.js `--pwa-banner-space`), FM's 16 windows `56c7a179`; open: torah gallery**): ACTIVE, streak 0. Detection: `a472/banner2.mjs` (sheet + page scrolled; plant …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`window-taller-than-a-phone-without-a-scroll`** (NEW S476 N; FM `fe808b64`): ACTIVE, streak 0. Detection: `n476` `modalFit` on an SE + 13 landscape, a tapped last button; plant 900px. …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- **`install-banner-over-a-sheet's-bottom-controls`** (NEW S420 N, hub `f44a17e`; **S472 generator bar `8081fc83` (pwa.js `--pwa-banner-space`), FM's 16 windows `56c7a179`; S476 torah gallery `30fcc886` — no open carrier**): ACTIVE, streak 0. Detection: `a472/banner2.mjs` (sheet …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`flash-restores-captured-text-not-its-key`** (NEW S417 — 2 FIXED `1f7f869`; S415 `38e5b62`): ACTIVE, streak 0. A "Copied!" flash restoring the text captured at click time, so a 2nd click captures the flash. Detection: `orig = (btn|lbl)\.(textContent|innerHTML)` + …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -696,7 +700,7 @@ _(none)_
 
 - O deslop — AI-design-tell sweep (one surface): 2026-09-08 (**S346 — 6th O, `flash_cards.html`. ⚑ BLOCKED HERE TWICE (S399, S403) — NOT "needs an attended session". Clone + the 4 parsers install fine; EXECUTING the detector is refused by the sandbox's auto-mode classifier ("Code from External"), and the refusal names the remedy: the maintainer adds a Bash permission rule for the detector (or …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- N mobile & touch-device (one surface): 2026-10-06 (**S462 — 22nd N, `contact.html` (S276 →): 144 views, 4 phones × EN/HE × themes, 128 taps, rotation, banner, 4×; zeros planted (findings S462). FOUND: iOS zoom, server-note bidi, banner over footer, 48 HE arrows. N-next: FM (S290).**)
+- N mobile & touch-device (one surface): 2026-10-08 (**S476 — 23rd N, FM (S290 →): 632 views, 4 phones, partner path, touch, 4×; plants fired. FIXED 4. N-next: dictionary (S303).**)
 
 - M aesthetics & visual design (one surface): 2026-10-06 (**S464 — 22nd M, `resources.html` (S277 →): 80 shots, census, 144-cell sweep, zeros planted. FIXED `661c6cc6`, `f98367f8`; 6 P4s; gate 3 answered. M-next: contact.**)
 
@@ -724,4 +728,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-07 (**S470 — 5 search fields, 40 cells, 78-field census; plants fired; FIXED 4.**)
 
-**Next session (S476):** **BRANCH/PR: `claude/magical-mendel-396njm` → draft PR #316 (S467–S475): open → continue; merged → restart from `origin/main`.** `sw.js` **v956**, FM **5.59**. ⚑ Stalest: N, P, M. ⚑ Untaken: failed-locale keys (P3); gate-2 descriptions. ⚑ Maintainer: re-stage 14 fonts.
+**Next session (S477):** **BRANCH/PR: `claude/magical-mendel-396njm` → draft PR #316 (S467–S476): open → continue; merged → restart from `origin/main`.** `sw.js` **v957**, FM **5.59**. ⚑ Stalest: P, M, G. ⚑ Untaken: Hebrew mark grid (P3); locale keys (P3). ⚑ Maintainer: re-stage 14 fonts.
