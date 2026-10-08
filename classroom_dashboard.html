@@ -1731,6 +1731,9 @@ body.dark .hk-key:active{background:#2a4070;}
   .fr-sub { font-size: 0.85rem; color: var(--muted); margin: 0 0 16px; line-height: 1.5; }
   .fr-loc-row { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
   .fr-loc-row input { flex: 1; min-width: 140px; }
+  /* A city may be typed in Hebrew in the English UI (ירושלים) or in Latin letters in the Hebrew one: it runs in its own
+     direction. plaintext, not dir="auto": the field keeps the page's direction, as the dictionary's search does. */
+  #locationInput, #frLocationInput { unicode-bidi: plaintext; }
   .fr-starters { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin: 0 0 18px; }
   .fr-starter { text-align: start; border: 1.5px solid var(--border); border-radius: 10px; padding: 12px;
     cursor: pointer; background: var(--white); color: var(--text); transition: border-color 0.15s, background 0.15s; font-family: inherit; }

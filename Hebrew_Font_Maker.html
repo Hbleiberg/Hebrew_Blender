@@ -979,6 +979,10 @@ body.dark .hi-sun{display:inline-block;}
   .os-pick-field { display: flex; flex-direction: column; gap: 3px; font-size: 0.72rem; font-weight: 700; color: var(--muted); }
   .os-pick-field input { font: inherit; font-weight: 400; font-size: 0.86rem; color: var(--text); background: var(--white); border: 1px solid var(--border); border-radius: 6px; padding: 6px 9px; min-inline-size: 0; inline-size: 100%; }
   .os-pick-search { flex: 1 1 200px; }
+  /* A font's or designer's name may be typed in Hebrew in the English UI (or in Latin letters in the Hebrew one): it
+     runs in its own direction. plaintext, not dir="auto": the box keeps the page's direction, so the native clear
+     button stays at its end, as in the dictionary's search. */
+  .os-pick-search input { unicode-bidi: plaintext; }
   .os-pick-text { flex: 1 1 220px; }
   .os-pick-text input { font-family: 'Frank Ruhl Libre', 'IvritSuite Taamim', serif; }
   .os-pick-filters { display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: center; flex: 1 1 100%; }
