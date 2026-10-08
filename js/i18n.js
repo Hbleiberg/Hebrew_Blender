@@ -118,6 +118,10 @@
     ['data-i18n-tip', 'data-tip']   // suite-wide accessible-tooltip attribute (.tip-wrap/.has-tip)
   ];
   function applyStaticI18n(root) {
+    // Until a locale has loaded (a failed fetch: offline with no service worker yet, a filter, a blip) `dict`
+    // is empty and t(k) is the raw key, which would overwrite every authored English fallback on the page.
+    // The page keeps its own copy instead; a missing key in a LOADED dict still shows raw, as a visible signal.
+    if (!dictLoaded) return;
     root = root || document;
     var textNodes = root.querySelectorAll('[data-i18n]');
     for (var i = 0; i < textNodes.length; i++) {
@@ -176,6 +180,7 @@
     lsSet(next);
     loadDict(next).then(function (d) {
       dict = d;
+      dictLoaded = true;   // a switch can be the first locale that loads (the page's own failed)
       lang = next;
       dir = RTL_LANGS.indexOf(lang) !== -1 ? 'rtl' : 'ltr';
       I18n.lang = lang;
