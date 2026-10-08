@@ -825,6 +825,7 @@ body.dark .hi-sun{display:inline-block;}
   @media (max-width: 700px) {
     .gen-fab { width: 100%; border-inline-end: none; } /* mobile: full (stacked) width; sidebar uses border-bottom, no inner divider */
     .main-content { padding-bottom: 96px; }      /* clear the fixed footer (with its page-count line) over the worksheet */
+    body > footer { padding-bottom: 96px; }      /* ...and over the page's own end: fully scrolled, it hid the last 3 (EN) / 5 (HE) links */
   }
   /* pwa.js's install hint is fixed over a phone's bottom band (under 768px, where it shows) and covered this bar's
      Generate button whole; the bar rides above it while it shows, by the space pwa.js publishes. */
