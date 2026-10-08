@@ -1620,6 +1620,13 @@ async function eraseAllSettings() {
   renderIvritInventory();   // the "This file will contain:" line reads storage; it must not keep the erased counts
   alert(I18n.t('home.alltools.erase_success'));
   if (accountKeys.length) location.reload();
+  // With no session there is no reload, and the hub kept the erased language and theme on screen until the next visit:
+  // it now shows what a fresh visit shows (English, the system theme), and both keys stay unset as the erase left them.
+  else {
+    if (document.body.classList.contains('dark') !== !!(window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches)) toggleDark();
+    if (window.I18n && I18n.lang !== 'en') await _ivSetLang('en');
+    ['hebrewBlender_darkMode', 'hebrewBlender_lang'].forEach(k => localStorage.removeItem(k));
+  }
 }
 
 /* ────────── .ivrit SAVE FILE (AllTools) ────────── */
