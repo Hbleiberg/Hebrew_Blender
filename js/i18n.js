@@ -11,7 +11,8 @@
  *                           fallback for an absent key is by design (a glyph table with no rows)
  *   I18n.setLang(code)      switch language LIVE (no reload): swaps the locale, flips dir/lang,
  *                           updates switchers, then fires every onChange handler
- *   I18n.onChange(fn)       register fn(lang, dir) to re-render the page after a live switch
+ *   I18n.onChange(fn)       register fn(lang, dir) to re-render the page after a live switch, or after a
+ *                           first load that failed arrives on a retry
  *   I18n.applyStaticI18n(root)  fill [data-i18n]/[data-i18n-title|aria-label|placeholder|html]
  *   I18n.createSwitcher()   -> a DOM node: a <select> dropdown (EN / עברית) with the current language's
  *                           flag drawn as a small inline SVG laid over the select's start edge
@@ -333,6 +334,36 @@
   }
 
   // ---- Load the active locale ----------------------------------------------------------------
+  // A first load that fails (a blip on school Wi-Fi, offline before the service worker holds the locale)
+  // used to leave every string a page builds in script as its raw key until a reload. The page tries
+  // again a few seconds later (three times, backing off) and whenever the browser comes back online or
+  // the tab is shown again; the first success fires the onChange handlers, which repaint the page as a
+  // live switch does (applyI18n is read-only by contract). One attempt at a time; any loaded locale,
+  // this one or a switch's, ends it.
+  var retrying = false, retryTries = 0;
+  function retryDict() {
+    if (dictLoaded || retrying) return;
+    retrying = true;
+    loadDict(lang).then(function (data) {
+      retrying = false;
+      if (dictLoaded) return;   // a live switch landed its locale first
+      dict = data;
+      dictLoaded = true;
+      updateSwitcherState();
+      fireChange();
+    }, function () {
+      retrying = false;
+      if (++retryTries < 3) setTimeout(retryDict, 3000 * retryTries);
+    });
+  }
+  function armRetry() {
+    try {
+      window.addEventListener('online', retryDict);
+      document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') retryDict(); });
+    } catch (e) {}
+    setTimeout(retryDict, 1500);
+  }
+
   var ready = loadDict(lang)
     .then(function (data) { dict = data; dictLoaded = true; return dict; })
     .catch(function (err) {
@@ -340,6 +371,7 @@
         console.error('[i18n] failed to load /locales/' + lang + '.json:', err);
       }
       dict = {};
+      armRetry();
       return dict;
     });
 
