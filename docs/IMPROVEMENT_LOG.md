@@ -8,15 +8,13 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P4 (**NEW S473 E**) | flash_cards.html | **Results → Return to Options drops focus to `<body>`** (the setup screen needs a landing; S473's `showScreen` fix covers the card screen only). | found S473
+- [ ] P4 (**NEW S474 L — gate 2**) | index.html, torah_trainer.html | **The hub's ItemList one-liner and Torah's WebApplication + HowTo descriptions name the weekly parsha only** (not the holidays or Megillot). | found S474
 
 - [ ] P4 (**NEW S472 A**) | torah_trainer.html | **On an iPhone the install banner covers the emoji gallery's last row**. | found S472
 
 - [ ] P4 (**NEW S472 A**) | hebrew_blend_generator.html | **At phone width the fixed Generate bar covers the footer's last 3–5 links, fully scrolled**. | found S472
 
 - [ ] P4 (**NEW S470 F**) | hebrew_dictionary.html | **EN-UI search keeps typed Hebrew LTR** (the root field's Escape fixed S473). | found S470
-
-- [ ] P4 (**NEW S468 H**) | index.html | **After Erase All the hub stays Hebrew and dark until reload**. | found S468
 
 - [ ] P2 (**NEW S465 G — maintainer**) | starting-fonts/manifest.json | **14 fonts' `copyright` is empty**: re-stage with `/addOSFont --force` (detector fixed `3609c19`; ids: findings S465). | found S465
 
@@ -314,6 +312,10 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-08 | (S474 close-out) | branch/deploy note | **S474 = L + 4 fixes, PR #316.** No drift (main `e2be8874`, FM 5.59, migrations 0001–0003); sw v954→v955; no FM bump; gate 2 asked ×2 → both approved.
+
+- [x] 2026-10-08 | `7c1d19fb` `1d5fa270` `3235f8eb` `a8833e38` | torah ×2, flash, hub | (S474) **Chant how-to without the removed switch; Torah snippet names holidays + Megillot (both gate 2); Return to Options focus; Erase All resets language + theme.** | HEAD controls (findings S474).
+
 - [x] 2026-10-08 | (S473 close-out) | branch/deploy note | **S473 = E + 4 fixes, PR #316.** No drift (main `e2be8874`, FM 5.59, migrations 0001–0003, keep-alive #25 green); sw v953→v954; no FM bump.
 
 - [x] 2026-10-08 | `df0fdc21` `3e8e2f79` `9e8cd004` `9fbcfce8` | docs, flash, dictionary, torah | (S473) **Two removed functions out of torah-and-trope.md + README sizes; a started session lands on the card; root-field Escape; tune radios keep focus.** | HEAD controls (findings S473).
@@ -330,13 +332,11 @@ _(none)_
 
 - [x] 2026-10-07 | `83e29d12` `45a3073e` `8a7bd8dd` `fc3ec234` | 14 pages | (S470) **City Enter; placeholders 4.5:1; picker Escape; favorites focus.** | findings S470.
 
-- [x] 2026-10-07 | (S469 close-out) | branch/deploy note | **S469 = C + 3 fixes (caps), PR #316.** No drift; sw v949→v950; no FM bump; gates clean.
-
-- [x] 2026-10-07 | `b1638df3` `04a85f46` `e93d2e91` | generator ×2, flash ×2 | (S469) **Duplicate named, not "⧉"; preset actions keep focus (generator 3, flash 2).** | HEAD controls (findings S469).
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-08 | **S474** | iters: 1 pass (**L**) + 4 fixes = **5** | tools: torah ×2, flash, index | patterns fixed: button-focus ×1 | pass run: L | SW: v954→v955
 
 - 2026-10-08 | **S473** | iters: 1 pass (**E**) + 4 fixes = **5** | tools: docs, flash, dictionary, torah | patterns fixed: button-focus ×2 | pass run: E | SW: v953→v954
 
@@ -376,11 +376,9 @@ _(none)_
 
 - 2026-10-04 | **S455** | iters: 1 pass (**C**) + 4 fixes = **5** | tools: trope ×2, resources ×2 | patterns fixed: button-focus-lost-to-its-own-rebuild ×2 | pass run: C | SW: v927→v928
 
-- 2026-10-04 | **S454** | iters: 1 pass (**H**) + 4 fixes = **5** | tools: resources ×2, dashboard ×2, contact, torah | patterns fixed: ltr-machine-text-field-typed-rtl (NEW), pre-ready-interpolated-write-never-healed | pass run: H | SW: v926→v927
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S473 (2026-10-08):** torah, flash, dictionary, docs S473 · generator, FM, pwa S472 · dashboard, index S471 · the other 7 pages S470 · ivrit-saves S466 · intake S465.
+- **Snapshot S474 (2026-10-08):** torah, flash, index S474 · dictionary, docs S473 · generator, FM, pwa S472 · dashboard S471 · the other 7 pages S470 · ivrit-saves S466 · intake S465.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -428,7 +426,7 @@ _(none)_
 
 - **`copy-claims-success-on-a-refused-clipboard`** (NEW S428; FIXED `bbd5f65`, `0d2a941`; S444 index `90e1a057`, dashboard `18344f69`; **S445 generator `3dad5c11`, flash `58ee7a4f` — all 7 carriers fixed, 0 open**): ACTIVE, streak 0. Detection: every `execCommand('copy')` whose …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`button-focus-lost-to-its-own-rebuild`** (**S473 flash start `3e8e2f79`, torah tune radios `9fbcfce8`; open: flash Return to Options; S471 dashboard `c0c5856e`; S470 torah favorites `fc3ec234`; S469 generator `04a85f46`, flash `e93d2e91`; S455 trope ×2; S441 torah; S426–S439 …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`button-focus-lost-to-its-own-rebuild`** (**S474 flash Return to Options `3235f8eb`; S473 flash start `3e8e2f79`, torah tune radios `9fbcfce8`; S471 dashboard `c0c5856e`; S470 torah favorites `fc3ec234`; S469 generator `04a85f46`, flash `e93d2e91`; S455 trope ×2; S441 torah; …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`dark-literal-escapes-the-print-tokens`** (NEW S437 G; resources FIXED `5320a668`): ACTIVE, streak 0. Detection: PDFs dark vs light, ink per page (<200 at 40 dpi); a lighter dark sheet = a `body.dark` literal the print token reset misses. Exempt: active-state borders. S437: …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -710,7 +708,7 @@ _(none)_
 
 - J metrics-informed: never run — SKIP in rotation until the impact-metrics dashboard/Worker is live (not live)
 
-- L SEO & discoverability audit: 2026-10-05 (**S460 — 24th L on `dd23c8d..a2cf7f8`: rebuilt `l460/` (20 arms), 22 plants fired, tree 0, crawler text unchanged 17/17. FOUND + FIXED (gate 2) the Torah FAQ's JPS 1985 and the FM's engine claim.**)
+- L SEO & discoverability audit: 2026-10-08 (**S474 — 25th L on `a2cf7f8..4326086a`: `l474/` (20 arms), 21 plants fired, tree 0; 3 FAQ blocks moved, all true. FIXED (gate 2): Torah's stale "Enable karaoke" step; its snippet.**)
 
 - H teacher walkthrough / paper-cuts (one tool): 2026-10-07 (**S468 — the hub (S323 →): backup, restore on a fresh device, Manual, Erase, EN + HE. FOUND 5, FIXED 2. H-next: dictionary.**)
 
@@ -718,4 +716,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-07 (**S470 — 5 search fields, 40 cells, 78-field census; plants fired; FIXED 4.**)
 
-**Next session (S474):** **BRANCH/PR: `claude/magical-mendel-396njm` → draft PR #316 (S467–S473): open → continue; merged → restart from `origin/main`.** Closed at `sw.js` **v954**, FM **5.59**. ⚑ Stalest: L (S460), then K (S461), N (S462). ⚑ Untaken: hub copy (gate 2); Latin tracking (gate 3 answered). ⚑ Maintainer: re-stage the 14 fonts (S465).
+**Next session (S475):** **BRANCH/PR: `claude/magical-mendel-396njm` → draft PR #316 (S467–S474): open → continue; merged → restart from `origin/main`.** Closed at `sw.js` **v955**, FM **5.59**. ⚑ Stalest: K (S461), then N (S462), P (S463). ⚑ Untaken: hub + Torah structured-data descriptions (gate 2, S474); hub copy (gate 2); Latin tracking (gate 3 answered). ⚑ Maintainer: re-stage the 14 fonts (S465).
