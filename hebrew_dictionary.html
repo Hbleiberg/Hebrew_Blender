@@ -1310,7 +1310,7 @@ footer details > summary:hover{text-decoration:underline;}   /* FAQ / How-To row
               </div>
             </div>
             <hr style="border:none;border-top:1px solid var(--border);margin:8px 0;">
-            <label class="cb-label"><input type="checkbox" id="enableSortGematriaCb" style="accent-color:var(--gold);" onchange="toggleGematriaSort(this.checked)"> <span data-i18n="dictionary.gematria.enable_sort">Enable Sort By Gematria Value</span><span class="tip-wrap" data-i18n-tip="dictionary.gematria.enable_sort_tip" data-tip="Adds Gematria ↑ and Gematria ↓ options to the Sort menu, letting you order words by their total Gematria value."><i class="tip-icon">?</i></span></label>
+            <label class="cb-label"><input type="checkbox" id="enableSortGematriaCb" style="accent-color:var(--gold);" onchange="toggleGematriaSort(this.checked);dictStateEdited()"> <span data-i18n="dictionary.gematria.enable_sort">Enable Sort By Gematria Value</span><span class="tip-wrap" data-i18n-tip="dictionary.gematria.enable_sort_tip" data-tip="Adds Gematria ↑ and Gematria ↓ options to the Sort menu, letting you order words by their total Gematria value."><i class="tip-icon">?</i></span></label>
           </div>
         </div>
 
@@ -1692,6 +1692,7 @@ function onShowGematriaChange() {
     onGematriaFilterChange(false);
   }
   rerender();
+  dictStateEdited();
 }
 
 function onGematriaFilterChange(runFilter = true) {
@@ -1757,6 +1758,7 @@ function onCopyModeChange(mode) {
     });
     updateBulkTextarea();
   }
+  dictStateEdited();
 }
 
 // The cards carry role="button" for "view details", so while bulk-selecting their state was
@@ -5609,6 +5611,11 @@ function applyDictState(s) {
       dictKnownMembers(s.vowels, '#vowelFilterGrid input[data-u]', 'u').forEach(u => vowelFilters.add(u));
       document.querySelectorAll('#vowelFilterGrid input[data-u]').forEach(cb => { cb.checked = vowelFilters.has(cb.dataset.u); });
     }
+    if (typeof s.hideNoVowels === 'boolean') {   // getDictState writes it; a reload, a ?s= link and an imported state now read it back
+      hideNoVowels = s.hideNoVowels;
+      const hv = document.getElementById('hideNoVowelsCb');
+      if (hv) hv.checked = hideNoVowels;
+    }
 
     // 4. per-position letters
     if (Array.isArray(s.posLetters)) {
@@ -5815,6 +5822,14 @@ function updateDictToolbar() {
   const rb = document.getElementById('dictResetBtn');
   if (rb) rb.style.display = (serializeDictState().indexOf('?s=') !== -1) ? '' : 'none';
   updatePrintSizeNote();
+}
+
+// A state field whose control runs no onFilter (Copy Mode, the two gematria switches) saves through here: the
+// Reset button and the last-session copy follow it, as dictAfterFilter makes them follow a filter.
+function dictStateEdited() {
+  if (_applyingDictState) return;
+  updateDictToolbar();
+  scheduleDictSessionSave();
 }
 
 // Called at every non-suppressed onFilter exit (words/emoji/shoresh).
