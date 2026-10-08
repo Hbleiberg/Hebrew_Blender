@@ -1194,7 +1194,9 @@ aliyah on their own cycle: other verses).
   with the 14 `torah.lookup.month_*` keys), the parasha (`torah.lookup.parsha`, a doubled week joined and noted)
   or the festival (`torah.lookup.holiday_*`, the day for Pesach, Sukkot, Shavuot and Rosh Hashanah) on the chosen
   calendar, and the triennial year while that cycle is on; **Open** (`lookupOpen`) loads the parasha through the
-  picker's own writes, or the festival reading when `holidayKeyForCal` names one. The calendar radios, the
+  picker's own writes, or the festival reading when `holidayKeyForCal` names one. Open, Open the special reading and
+  the tab's Jump to this week's parsha close the drawer first, as a favorite's Open does (the reading loads behind the
+  modal drawer, under all of it on a phone); the holiday lists keep it open, their pressed button being the feedback. The calendar radios, the
   cycle radios and `applyI18n` re-render it.
 - **Parasha icons** (`js/parasha-icons.js`, `window.ParashaIcons`; the module and its catalog:
   `docs/reference/shared-components.md` → Parasha icons) lead a weekly reading's `.tt-ref-hdr` and the lookup's

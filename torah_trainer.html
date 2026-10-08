@@ -2746,7 +2746,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
         </div>
         <div id="cycleNote" style="font-size:0.72rem;color:var(--muted);margin-top:-4px;margin-bottom:10px;line-height:1.4;" aria-live="polite"></div>
         <div class="form-row">
-          <button class="btn btn-xs btn-secondary" onclick="goToCurrentParshah()" type="button" data-i18n="torah.schedule.jump_this_week">Jump to this week's parsha</button>
+          <button class="btn btn-xs btn-secondary" onclick="closeSettings(); goToCurrentParshah()" type="button" data-i18n="torah.schedule.jump_this_week">Jump to this week's parsha</button>
         </div>
       </div>
       <div class="tt-set" data-set="lookup">
@@ -3916,12 +3916,14 @@ function lookupOpenSpecial() {   // the special Shabbat's maftir and haftarah (i
   const t = _lookupTarget;
   if (!t || !t.special) return;
   clearLoop();
+  closeSettings();   // the reading opens behind the modal drawer (on a phone, under all of it): show it, as a favorite's Open does
   applyHolidayReading(t.special);
 }
 function lookupOpen() {
   const t = _lookupTarget;
   if (!t) return;
   clearLoop();
+  closeSettings();   // as lookupOpenSpecial
   if (t.holiday) { applyHolidayReading(t.holiday); return; }
   settings.parshahKey = t.parsha.en;
   settings.scope = 'parsha-full';
