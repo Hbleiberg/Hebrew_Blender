@@ -11342,6 +11342,13 @@ function practiceLinkURL() {
     else return null;
   } else {
     if (!settings.parshahKey || settings.holidayKey) return null;
+    // ?scope= names an aliyah by number, and the reader's page counts it on the reader's own cycle (a
+    // schedule never travels). So a Triennial or Weekday reading is spelt out as its verses, and the
+    // student opens what the teacher sees; a haftarah is the same on every cycle that offers one.
+    if (cycleKey() !== 'full' && settings.scope !== 'parsha-haftarah') {
+      const ref = currentReadingCtx ? parseSharedRef(currentReadingCtx.ref) : null;
+      if (ref) return refLinkURL(u, ref);
+    }
     u.searchParams.set('parsha', settings.parshahKey);
     if (settings.scope && settings.scope !== 'parsha-full') u.searchParams.set('scope', settings.scope);
   }

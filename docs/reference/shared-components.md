@@ -673,7 +673,9 @@ Writing a link **never navigates**; loading a link **never clobbers** the user's
   student can read, colons and all (`prettyLinkURL` hands back the `%3A` that `URLSearchParams`
   escapes). A verse range is what a teacher assigning six pesukim actually wants to send, so it
   comes from whichever selection the teacher made last: a Copy-bar selection outranks the scope the
-  reading is open at, and a gappy one widens to its full span with the toast saying so. **What makes
+  reading is open at, and a gappy one widens to its full span with the toast saying so. A parasha reading
+  on the Triennial or Weekday cycle travels as `?ref=` too: the cycle stays home, and `?scope=` names an
+  aliyah the reader would count on their own cycle. **What makes
   `?ref=` safe is that neither end trusts a character of it** — `parseSharedRef` rebuilds the ref
   from parsed integers plus a book that must be a key of `TORAH_BOOK_CHAPTERS`, so nothing the URL
   carried can reach Sefaria; anything it cannot rebuild is `null` and the link is ignored in

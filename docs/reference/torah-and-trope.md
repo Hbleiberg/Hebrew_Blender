@@ -1108,7 +1108,9 @@ became **seven tabs of flat sections**, the Trope Tutor's Settings-tab idiom ins
 The drawer's *Reading schedule* section (Calendar tab) holds the calendar (`settings.schedule`, `'diaspora'` | `'israel'`), the
 reading cycle (`settings.readingCycle`, `'full'` | `'triennial'` | `'weekday'`, read through `cycleKey()`: an unknown
 stored value reads Full and stays stored) and the triennial year (`settings.triennialYear`, `'auto'` | 1 | 2 | 3,
-`triYearKey()`). All three ride the settings blob (sync, AllTools, reset) and none rides a practice link.
+`triYearKey()`). All three ride the settings blob (sync, AllTools, reset) and none rides a practice link, so a link
+from a Triennial or Weekday reading carries its verses as `?ref=`, never its `?scope=` (the reader would count that
+aliyah on their own cycle: other verses).
 
 - **The calendar is local.** `js/hebrew-calendar.js` (`window.HebCal`; loaded before `js/trope-staff.js`, in
   `CORE_ASSETS`; the dashboard loads it too, for its parsha line — `dashboard.md` → *This week's parsha*, which links
