@@ -912,6 +912,11 @@ footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-co
      that ring is chart content. Pattern dark-print-shadow-slab (the dashboard already resets
      .dash-col's). */
   .tu-view { box-shadow:none; }
+  /* The plate's frame is a screen edge, and on paper the plate runs the whole chart: only the first sheet shows its
+     top and only the last its bottom, so every sheet between printed its two sides as bare rails down the margins
+     (borders print whether background graphics are on or off). The cards and the family headings frame the sheet.
+     Transparent rather than none: the plate keeps its width, so no line of the chart wraps differently. */
+  .tu-view { border-color:transparent; }
   body.dark .mark-hit { color:#8a6216; }
   /* These slabs only surface when the teacher turns background graphics ON to get the card
      rules; then they print as solid blocks of ink. */
