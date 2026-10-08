@@ -8,15 +8,11 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P4 (**S351 G — gate 2 ANSWERED S479: rewrite; wording in findings S479**) | trope_tutor.html | **The FAQ promises "one reference sheet" of names; the chart is 8–9 sheets.** | found S351
+- [ ] P3 (**NEW S480 D — verify first**) | torah_trainer.html | **Off-screen verses (`content-visibility:auto`) leave Chromium's accessibility tree** (test page 37/200): a screen reader may stop at the rendered ones; check with a real one (findings S480). | found S480
 
 - [ ] P4 (**NEW S479 G**) | trope_tutor.html | **Paper waste: Phrases 9–12 sheets at ~4 cards; 2 Letter charts end on the credits alone, EN Learn on one card.** | found S479
 
-- [ ] P4 (**NEW S479 G**) | trope_tutor.html | **The plate's side borders print as rails down every middle sheet.** | found S479
-
 - [ ] P4 (**NEW S479 G — gate 2**) | trope_tutor.html | **Only the Haftarah note says the Phrases tab has no examples** (Esther, Megillot, Eicha lack them too). | found S479
-
-- [ ] P4 (**NEW S479**) | Hebrew_Font_Maker.html, classroom_dashboard.html | **FM's picker search and 2 city fields keep typed Hebrew LTR in the EN UI** (`3c0db710` fits). | found S479
 
 - [ ] P4 (**NEW S478 M**) | 6 chrome headers | **A phone header leaves the star alone on a row** (EN contact ≤396, account ≤474). | found S478
 
@@ -138,7 +134,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S411 Pass I — K's**) | Hebrew_Font_Maker.html | **QA Check's outline warning names a glyph by its JS-built English `name` in the Hebrew UI** ("A (uppercase)"; the English, Cyrillic, Phoenician and Aramaic tables build `name` with no key, e.g. "Д (Cyrillic de, uppercase)"). | found S411
 
-- [ ] P3 (**NEW S410 Pass D**) | Hebrew_Font_Maker.html | **The Spacing tab renders every kerning pair on each show and each kern edit**: FreeSerif's 2,000 imported pairs → 238ms @1×, 1.3–1.6s @4×; each row finds its members with a linear `project.letters.find` (`kernCpTraced`). **S422: the find is ~ms, not 238ms — profile first (loop-findings S422 (6)).** | found S410
+- [ ] P3 (**S410 D; S480 re-measured; `content-visibility` reverted**) | Hebrew_Font_Maker.html | **The Spacing tab rebuilds all kerning rows on each show, pair click, add and delete**: 2,000 pairs 213–251ms @1×, 1.0–1.2s @4×. Next: a pair click rebuilds the editor only (findings S480). | found S410
 
 - [ ] P4 (**NEW S410 Pass D**) | Hebrew_Font_Maker.html | **Continue runs a synchronous `autosaveNow()` inside the click's task** (88–114ms of 575–616ms @4×), re-saving the snapshot it just restored. | found S410
 
@@ -326,6 +322,10 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-08 | (S480 close-out) | branch/deploy note | **S480 = D + 3 fixes + 1 reverted, PR #317.** No drift; sw v960→v961; no FM bump (fixes); gate 2 shipped (FAQ, approved S479).
+
+- [x] 2026-10-08 | `8136c5d3` `8de41993` `be627bf7` | trope ×2, FM + dashboard | (S480) **FAQ rewrite; no print rails; typed direction in 3 fields.** FM Spacing `content-visibility` attempted, reverted (drops rows from the AX tree). | findings S480.
+
 - [x] 2026-10-08 | (S479 close-out) | branch/deploy note | **S479 = G + 4 fixes, PR #317.** No drift; sw v959→v960; no FM bump; gate 2 ×2 approved.
 
 - [x] 2026-10-08 | `3b5971ca` `2ff133e9` `3c0db710` `ce1be7f6` | trope ×2, dictionary, torah | (S479) **Closing labels; no intro on paper; search text direction; old-language hint.** | findings S479.
@@ -342,13 +342,11 @@ _(none)_
 
 - [x] 2026-10-08 | `88b811b5` `fe808b64` `30fcc886` `dbf2d7a0` | FM ×2, torah, generator | (S476) **Edit points on screen; windows scroll; gallery banner; generator footer.** S420's banner candidate closed. | findings S476.
 
-- [x] 2026-10-08 | (S475 close-out) | branch/deploy note | **S475 = K + 4 fixes, PR #316.** No drift; sw v956; no FM bump.
-
-- [x] 2026-10-08 | `8d3f2c95` `02965f8f` `ca67ec0d` `15f2e46d` | torah ×2, FM, trope, i18n | (S475) **4 i18n fixes.** | findings S475.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-08 | **S480** | iters: 5 | tools: trope ×2, FM ×2 (1 reverted), dashboard | patterns fixed: screen-frame-prints-as-rails (NEW) ×1 | pass run: D | SW: v960→v961
 
 - 2026-10-08 | **S479** | iters: 5 | tools: trope ×2, dictionary, torah | patterns fixed: — | pass run: G | SW: v959→v960
 
@@ -388,13 +386,13 @@ _(none)_
 
 - 2026-10-05 | **S461** | iters: 1 pass (**K**) + 4 fixes = **5** | tools: generator, dashboard ×2, dictionary | patterns fixed: translated-key ×1, bulk-apply (NEW) ×1 | pass run: K | SW: v937→v938
 
-- 2026-10-05 | **S460** | iters: 1 pass (**L**) + 4 fixes = **5** | tools: resources, torah, FM, dashboard | patterns fixed: radio-set-without-a-question (NEW) | pass run: L | SW: v936→v937
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S479 (2026-10-08):** trope, dictionary, torah, docs S479 · contact, privacy, terms, resources, account, index, flash, generator, i18n.js S478 · FM S477 · pwa S472 · dashboard S471 · 404 S470 · saves S466.
+- **Snapshot S480 (2026-10-08):** trope, FM, dashboard S480 · dictionary, torah, docs S479 · contact, privacy, terms, resources, account, index, flash, generator, i18n.js S478 · pwa S472 · 404 S470 · saves S466.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`screen-frame-prints-as-rails`** (NEW S480; trope `8de41993`): ACTIVE, streak 0. A plate's border around multi-sheet content prints its sides down every middle page. Detection: `d480/rails.py` (prove on HEAD). Fix: print `border-color:transparent`.
 
 - **`enter-ignored-beside-its-own-button`** (NEW S471; dashboard ×5, generator ×2; S472 torah range ×3 `60229f0f`): ACTIVE, streak 0. Detection: `a472/enter.py`, then typed Enter vs the button.
 
@@ -444,7 +442,7 @@ _(none)_
 
 - **`button-focus-lost-to-its-own-rebuild`** (**S474 flash Return to Options `3235f8eb`; S473 flash start `3e8e2f79`, torah tune radios `9fbcfce8`; S471 dashboard `c0c5856e`; S470 torah favorites `fc3ec234`; S469 generator `04a85f46`, flash `e93d2e91`; S455 trope ×2; S441 torah; …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`dark-literal-escapes-the-print-tokens`** (NEW S437 G; resources FIXED `5320a668`): ACTIVE, streak 1 (S479 trope clean; plant fired). Detection: PDFs dark vs light, ink per page (<200 at 40 dpi); a lighter dark sheet = a `body.dark` literal the print …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`dark-literal-escapes-the-print-tokens`** (NEW S437 G; resources FIXED `5320a668`): ACTIVE, streak 1 (S479 trope clean; plant fired). Detection: PDFs dark vs light, ink per page (<200 at 40 dpi); a lighter dark sheet = a `body.dark` literal the print …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`editor-re-parse-caps-a-merged-list`** (**NEW S421 Pass P — 1 carrier, FIXED `288af4a`**): ACTIVE, consequence-critical (a sync carries the cut list to the account); never retires. A list the sync merges uncapped is re-parsed by its tool's editor or restore path through the …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -720,7 +718,7 @@ _(none)_
 
 - G print & export fidelity (one tool): 2026-10-08 (**S479 — trope (S351 →): 96 PDFs, variants, every tab, the .ivrit; plants 4/4. FOUND 6, FIXED 2. G-next: dashboard (S364).**)
 
-- D performance (one tool): 2026-10-07 (**S466 — the hub's 2nd D (S352 → 48 commits): cold 16 cells, a busy profile × 11 clicks @1×/4×, signed in on a fake cloud, traces; controls fired. FIXED the per-row memory parse, the export box, the closed window; logged 1. D-next: trope (S365).**)
+- D performance (one tool): 2026-10-08 (**S480 — trope's 5th D (S365 →, 86 commits): 10 cold + 4 interaction cells by real input; controls fired. CLEAN: 0 page-code tasks >200 ms (worst 127 @4×); only the browser's PDF. D-next: dictionary (S378).**)
 
 - I first-load & empty-state: 2026-10-07 (**S467 — 35th I: 112 virgin cells, plants 112/112, real 0; the emoji gallery on a Sefaria stub. FOUND + FIXED the hint toast over the gallery `8be5bdd`.**)
 
@@ -736,4 +734,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-07 (**S470 — 5 search fields, 40 cells, 78-field census; plants fired; FIXED 4.**)
 
-**Next session (S480):** **BRANCH/PR: `claude/loving-carson-pi9e10` → draft PR #317 (S477–S479): open → continue; merged → restart from `origin/main`.** `sw.js` **v960**, FM **5.59**. ⚑ Stalest: D, I, H. ⚑ Approved, ships next: the trope FAQ rewrite (gate 2; wording in findings S479). ⚑ Maintainer: re-stage 14 fonts.
+**Next session (S481):** **BRANCH/PR: `claude/loving-carson-pi9e10` → draft PR #317 (S477–S480): open → continue; merged → restart from `origin/main`.** `sw.js` **v961**, FM **5.59**. ⚑ Stalest: I, H, C. ⚑ Strongest untaken: the FM Spacing P3. ⚑ Maintainer: re-stage 14 fonts; torah's verses vs a real screen reader.
