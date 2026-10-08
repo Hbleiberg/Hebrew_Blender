@@ -6524,7 +6524,7 @@ async function uploadMarkSheet(cat, file) {
   let svgText = null;
   if (svgUploadOn()) {
     try { svgText = await file.text(); } catch (e) {}
-    if (!isProbablySvg(file, svgText)) { askSvgError('Only SVG files can be uploaded while SVG mode is on.'); return; }
+    if (!isProbablySvg(file, svgText)) { askSvgError(I18n.t('fontmaker.modals.svg_only_in_svg_mode')); return; }
   }
   const url = await readFileAsDataUrl(file);
   project.font[cat].combinedImage.dataUrl = url;
@@ -7471,7 +7471,7 @@ async function uploadCombined(files) {
       let svgText = null;
       if (svg) {
         try { svgText = await file.text(); } catch (e) {}
-        if (!isProbablySvg(file, svgText)) { askSvgError('Only SVG files can be uploaded while SVG mode is on.'); continue; }
+        if (!isProbablySvg(file, svgText)) { askSvgError(I18n.t('fontmaker.modals.svg_only_in_svg_mode')); continue; }
       }
       const url = await readFileAsDataUrl(file);
       await loadImg(url);
@@ -7491,8 +7491,8 @@ async function uploadCombined(files) {
     if (!n) status(I18n.t('fontmaker.status.svg_sheet_loaded'));
     return;
   }
-  status(list.length > 1 ? (list.length + ' sheets added — pick a letter, then drag a box around it.')
-                         : 'Sheet loaded. Pick a letter, then drag a box around it.');
+  status(list.length > 1 ? I18n.t('fontmaker.status.sheets_added', {count: list.length})
+                         : I18n.t('fontmaker.status.sheet_loaded'));
 }
 /* The working image for a letter: single = the upload; combined = the cropped region. */
 function curImageUrl() { return curLetter().source.dataUrl; }
@@ -9170,13 +9170,13 @@ function assignSvgContours(it, kind, contours, sheetId, cropRect) {   // commit 
 }
 async function uploadSvgForCurrent(file) {  // single-letter / per-mark SVG upload (replaces trace)
   let text;
-  try { text = await file.text(); } catch (e) { return askSvgError('Could not read that file.'); }
-  if (!isProbablySvg(file, text)) return askSvgError('Only SVG files can be uploaded while SVG mode is on.');
+  try { text = await file.text(); } catch (e) { return askSvgError(I18n.t('fontmaker.modals.svg_read_failed')); }
+  if (!isProbablySvg(file, text)) return askSvgError(I18n.t('fontmaker.modals.svg_only_in_svg_mode'));
   const it = curItem(), kind = curKind;
   let contours;
   try { contours = svgLoopsToContours(parseSvgEntries(text).entries.reduce((a, e) => a.concat(e.loops), []), { span: svgSpanFor(it.codepoint, kind) }); }
   catch (e) { return askSvgError(e.message || String(e)); }
-  if (!contours) return askSvgError('No usable vector paths were found in that SVG.');
+  if (!contours) return askSvgError(I18n.t('fontmaker.modals.svg_no_paths'));
   udDo([itemScope()], 'import SVG — ' + it.name, () => { assignSvgContours(it, kind, contours, null, null); });
   renderGrids(); renderStage(); renderControls();
   if (kind === 'letter') setWorkMode('anchors');   // land on Nikkud, bypassing Align/Trace
@@ -12537,8 +12537,8 @@ function setSelectedSegsType(toCurve) {   // keyboard/panel path: every segment 
     if (count) writeThrough(l);
   });
   renderStage(); renderControls();
-  status(count ? `Converted ${count} segment${count>1?'s':''} to ${toCurve?'curves':'lines'}.`
-               : 'No segments between selected points — select two neighbouring points.');
+  status(count ? I18n.t('fontmaker.status.converted_to_' + (toCurve ? 'curves' : 'lines') + (count === 1 ? '.one' : '.other'), {count})
+               : I18n.t('fontmaker.status.no_segments_between'));
 }
 function retractSelectedHandles() {   // fully straighten: selected nodes lose their handles AND the facing neighbour handles
   if (!nodeModel || !nodeSel.size) return;            // (a stale facing handle would silently resurrect a curve later)
@@ -13573,7 +13573,7 @@ function _deleteContoursNow(l, doomed, empties) {
     nodeModel = null;
     _suppressAutoTrace = true; setWorkMode('trace'); _suppressAutoTrace = false;
     renderGrids();
-    status(l.name + ': outline cleared — re-trace or upload to start again.');
+    status(I18n.t('fontmaker.status.outline_cleared', {name: gName(l.name)}));
   } else {
     renderGrids(); renderStage(); renderControls();
     status(I18n.t(doomed.length===1?'fontmaker.status.deleted_contours.one':'fontmaker.status.deleted_contours.other', {count: doomed.length}));
@@ -13931,7 +13931,7 @@ function _traceCurrentNow() {
     const n = _traceCore(l);
     renderLetterGrid(); renderStage(); renderControls();
     status(n == null ? I18n.t('fontmaker.status.no_ink')
-         : n ? `${l.name}: traced ${n} contour(s).` : 'No usable contours — adjust threshold.');
+         : n ? I18n.t('fontmaker.status.traced_contours', {name: gName(l.name), count: n}) : I18n.t('fontmaker.status.no_usable_contours'));
   });
 }
 function clearTrace() {
@@ -14026,7 +14026,7 @@ function applyOutlineToAll() {
     curKind = savedKind; curCp = savedCp; _rawTrace = null;          // restore current item; drop stale raw cache
   }
   renderGrids(); renderStage(); renderControls();
-  status(on ? 'Applied outline to all traced letters.' : 'Removed outline from all letters.');
+  status(I18n.t(on ? 'fontmaker.status.outline_applied_all' : 'fontmaker.status.outline_removed_all'));
 }
 function doRetrace() {        // the actual rebuild — shared by the RAF and by flushTrace()
   const l = curLetter();
@@ -15235,7 +15235,7 @@ function meApply(scope) {
   }
   closeMarkEdit();
   renderGrids(); renderStage(); renderControls(); markDirty();
-  status(scope === 'all' ? 'Shape applied to all letters.' : 'Shape applied to this letter.');
+  status(I18n.t(scope === 'all' ? 'fontmaker.status.shape_applied_all' : 'fontmaker.status.shape_applied_one'));
 }
 function setTropScale(v) {
   udBurstBegin([{ t:'tropTune' }], 'trop size');   // one undo entry per slider drag
@@ -16034,7 +16034,7 @@ function addOrUpdateKernPair() {
     else project.font.kerning.push({ left, right, value: e.value });
   });
   renderKerningSection();
-  status(e.value ? 'Kerning pair saved.' : 'Pair saved at 0 — set a non-zero gap to apply it.');
+  status(I18n.t(e.value ? 'fontmaker.status.kern_pair_saved' : 'fontmaker.status.kern_pair_saved_zero'));
 }
 function deleteKernPair(i) { udDo([{t:'kerning'}], 'delete kerning pair', () => { (project.font.kerning||[]).splice(i, 1); }); renderKerningSection(); }
 function loadKernPair(i) {
