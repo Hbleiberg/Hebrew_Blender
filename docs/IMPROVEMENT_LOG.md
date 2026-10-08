@@ -8,6 +8,10 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P3 (**NEW S482 H**) | torah_trainer.html | **A `?parsha=&v=` link opens a Weekday or Triennial reader's portion without that verse**, silently (Weekday: Genesis 3:15 → 1:1–13). | found S482
+
+- [ ] P4 (**NEW S482 H — gate 2**) | torah_trainer.html | **"Select verses to copy…" opens the Copy bar with selection off** (as documented): one more click; a verse clicked meanwhile chants. | found S482
+
 - [ ] P3 (**NEW S480 D — verify first**) | torah_trainer.html | **Off-screen verses (`content-visibility:auto`) leave Chromium's accessibility tree** (test page 37/200): a screen reader may stop at the rendered ones; check with a real one (findings S480). | found S480
 
 - [ ] P4 (**NEW S481 I**) | FM, i18n.js, flash, terms | **FM help's old layout; raw keys if a locale never loads; "Click Start", "use my location"** ; `compact-ledger` re-truncates its own marker (findings S481; gate 2 ×2). | found S481
@@ -55,8 +59,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S464 M**) | resources.html | **Below ~1020px wrapped chips flow back under their row label.** | found S464
 
 - [ ] P4 (**NEW S463 P**) | hebrew_blend_generator.html | **The comment above `saveImportedAsWordList` says a saved list waits for an upload the teacher chooses**; signed in it goes up at once (W5). | found S463
-
-- [ ] P4 (**NEW S460 — pattern radio-set-without-a-question**) | hebrew_dictionary.html | **The three Copy Mode radios sit in no named group** (`d9645fa5`'s idiom fits). | found S460
 
 - [ ] P4 (**NEW S460 — pattern radio-set-without-a-question**) | classroom_dashboard.html | **The video position radios have no group or question**; a name needs a new string. | found S460
 
@@ -238,7 +240,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] S–M | classroom_dashboard.html | **One-deep undo in the week editor.** `applyCalendarImport` replaces `settings.scheduleWeek` wholesale, `clearWeekDay` / `copyWeekDayToWeekdays` / `removeWeekPeriod` guard with a native `confirm()` at most, and `weekChanged()` (the choke point) saves immediately with no history. A `weekSnapshot()` at the head of the ~8 mutators + `undoWeek()` + one toolbar …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] M | resources.html | **"Submit a font" is a `mailto:` while "Suggest a Resource" is a real form.** Measured 2026-09-01: `openSubmitFont` builds a `mailto:` with a pre-filled subject and body and sets `window.location.href`; the sibling flow one view away is a Web3Forms POST with 5 required fields, 18 choice pills and hCaptcha. So the contribution pat …[full text: IMPROVEMENT_ARCHIVE.md] …[full text: IMPROVEMENT_ARCHIVE.md]
+- [ ] M | resources.html | **"Submit a font" is a `mailto:` while "Suggest a Resource" is a real form.** Measured 2026-09-01: `openSubmitFont` builds a `mailto:` with a pre-filled subject and body and sets `window.location.href`; the sibling flow one view away is a Web3Forms POST with 5 required fields, 18 choice pills and hCaptcha. So the contribution pat …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] S | index.html | **Show which tools already hold your saved work, on the tool cards.** A returning teacher scanning eight cards has no way to see where their presets live; measured 2026-08-31, index has **no** per-card data indicator and no recency affordance at all — the only `badge` in the file is the flash-cards *Beta* tag, and the two `recent` hits are Font Maker key comments inside …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -324,6 +326,10 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-08 | (S482 close-out) | branch/deploy note | **S482 = H (torah) + 4 fixes, PR #317.** No drift; sw v962→v963; no FM bump; no gate. S468's H-next was a slip (dictionary H'd S440).
+
+- [x] 2026-10-08 | `484c9dd5` `806bf29b` `9528698d` `8d99ad93` | torah ×2, dictionary ×2 | (S482) **Cycle links; lookup drawer; Copy Mode group; 4 settings kept.** | findings S482.
+
 - [x] 2026-10-08 | (S481 close-out) | branch/deploy note | **S481 = I + 4 fixes, PR #317.** No drift; sw v962; no FM bump; gate 2 ×2.
 
 - [x] 2026-10-08 | `b9a24112` `5f1aa8ad` `b6b9d4e0` `d869fbdf` | generator, hub, FM ×2 | (S481) **Sides, labels.** | findings S481.
@@ -340,13 +346,11 @@ _(none)_
 
 - [x] 2026-10-08 | `6fd59ae8` `936629b4` `d46e3056` `92a21164` | privacy, contact, i18n.js, 8 headers | (S478) **Saved schedules named; Hebrew Zelle caption; locale retry; header gates re-measured.** | findings S478.
 
-- [x] 2026-10-08 | (S477 close-out) | branch/deploy note | **S477 = P + 4 fixes, PR #317.** No drift; sw v957→v958; no FM bump; gate 2 ×2 approved.
-
-- [x] 2026-10-08 | `36238bdd` `d4861067` `19759738` `03dd8a68` | hub ×2, resources, FM | (S477) **Class lists in the inventory; no closed-window redraws; FAQ reworded (gate 2); Hebrew mark grids on phones.** | findings S477.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-08 | **S482** | iters: 5 | tools: torah ×2, dictionary ×2 | patterns fixed: radio-set-without-a-question ×1, settings-lost-across-a-load ×1 | pass run: H | SW: v962→v963
 
 - 2026-10-08 | **S481** | iters: 5 | tools: generator, index, FM ×2 | patterns fixed: rtl-copy-names-the-english-side ×2, copy-names-a-control-by-a-label-it-lacks ×2 | pass run: I | SW: v962
 
@@ -386,11 +390,9 @@ _(none)_
 
 - 2026-10-06 | **S463** | iters: 1 pass (**P**) + 2 fixes + micro (2) = **5** | tools: generator, dashboard, flash | patterns fixed: bulk-apply ×1, share-link (NEW) ×1 | pass run: P | SW: v939→v940
 
-- 2026-10-06 | **S462** | iters: 1 pass (**N**) + 2 fixes + micro (2) = **5** | tools: dashboard, generator ×2 | patterns fixed: bulk-apply ×1 | pass run: N | SW: v938→v939
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S481 (2026-10-08):** generator, index, FM S481 · trope, dashboard S480 · dictionary, torah, docs S479 · contact, privacy, terms, resources, account, flash, i18n.js S478 · pwa S472 · 404 S470 · saves S466.
+- **Snapshot S482 (2026-10-08):** torah, dictionary, docs S482 · generator, index, FM S481 · trope, dashboard S480 · contact, privacy, terms, resources, account, flash, i18n.js S478 · pwa S472 · 404 S470 · saves S466.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -414,7 +416,7 @@ _(none)_
 
 - **`bulk-apply-skips-a-renderer-the-control-runs`** (NEW S461; FIXED ×3): ACTIVE, streak 1 (S472 clean). Detection: `x3/parity.mjs`, `p463/loc-fix.mjs`. Open: none known.
 
-- **`radio-set-without-a-question`** (NEW S460, `d9645fa5`): ACTIVE, streak 0. Radios with no named radiogroup/group/fieldset. Detection: walk each static radio up to its group; a hit lacks one or its name (JS-built: read the builders). Open: dashboard `videoLayout`, dictionary …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`radio-set-without-a-question`** (NEW S460; dictionary FIXED S482 `9528698d`): ACTIVE, streak 0. Radios in no named radiogroup/group/fieldset. Detection: walk each static radio up to its group; a hit lacks one or its name. Open: dashboard `videoLayout`.
 
 - **`native-input-display-none-under-its-label`** (NEW S458, `ea43be7e`): ACTIVE, streak 0. Detection: `a458/radios.mjs`; control torah. …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -470,7 +472,7 @@ _(none)_
 
 - **`button-group-label-not-programmatic`** (**NEW S413 Pass C — resources ×8 rows FIXED `945b397`; generator, dictionary, hub unmeasured (no `role="group"` at all)**): ACTIVE, streak 0. A row of `aria-pressed` buttons sits under a visible label (a `<span>`, or a `<label>` with …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`settings-lost-across-a-load`** (**NEW S412 Pass H — flash ×2 FIXED `51e8f3c`, `abb0a1e`; 1 P4 open**): ACTIVE, streak 0. A stored setting comes back changed after a reload because the load path rewrites it. Detection (`h412/v1.mjs`): set each mode / enum control by a real …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`settings-lost-across-a-load`** (NEW S412; flash ×2, dictionary ×4 FIXED S482 `8d99ad93`; 1 P4 open): ACTIVE, streak 0. A setting comes back changed after a reload. Detection (`h482/dictsave.mjs`): change each control by a real click, wait out the save, reload, require it back.
 
 - **`live-region-display-none-while-empty`** (S408; **all 4 FIXED `efbc98a` S409**): ACTIVE, streak 0. Detection: `:empty{display:none}` on a `role=status`/`aria-live` line, then CDP AX on it empty (`notRendered` = hit); flex-wrap rows need `position:absolute`, not height.
 
@@ -734,10 +736,10 @@ _(none)_
 
 - L SEO & discoverability audit: 2026-10-08 (**S474 — 25th L on `a2cf7f8..4326086a`: `l474/` (20 arms), 21 plants fired, tree 0; 3 FAQ blocks moved, all true. FIXED (gate 2): Torah's stale "Enable karaoke" step; its snippet.**)
 
-- H teacher walkthrough / paper-cuts (one tool): 2026-10-07 (**S468 — the hub (S323 →): backup, restore on a fresh device, Manual, Erase, EN + HE. FOUND 5, FIXED 2. H-next: dictionary.**)
+- H teacher walkthrough / paper-cuts (one tool): 2026-10-08 (**S482 — torah (S336 →): 4 lessons, EN + HE, phone. FOUND 4, FIXED 2 (+2 dictionary). H-next: contact (S350).**)
 
 - E freshness/site-health: 2026-10-08 (**S473 — 37th E on `665d7b56..c5bfca3c` (107 commits, 113 files): 30 arms, 17 plants fired (findings S473). FOUND + FIXED `df0fdc21`: torah-and-trope.md named 2 removed functions; README's 2 corpus sizes.**)
 
 - F cross-tool consistency: 2026-10-07 (**S470 — 5 search fields, 40 cells, 78-field census; plants fired; FIXED 4.**)
 
-**Next session (S482):** **BRANCH/PR: `claude/loving-carson-pi9e10` → draft PR #317 (S477–S481): open → continue; merged → restart from `origin/main`.** `sw.js` **v962**, FM **5.59**. ⚑ Stalest: H, C, F. ⚑ Untaken: FM Spacing P3. ⚑ Maintainer: re-stage 14 fonts; torah's verses on a screen reader.
+**Next session (S483):** **BRANCH/PR: `claude/loving-carson-pi9e10` → draft PR #317 (S477–S482): open → continue; merged → restart from `origin/main`.** `sw.js` **v963**, FM **5.59**. ⚑ Stalest: C, F, B. ⚑ Untaken: torah's `?v=` links on a non-Full cycle. ⚑ Maintainer: re-stage 14 fonts; torah's verses on a screen reader.
