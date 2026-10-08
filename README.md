@@ -371,13 +371,13 @@ upgrade of an older device's sync memory (nothing deleted, nothing removed from 
 | `scripts/update-llms-txt.mjs` | Regenerates both from `sitemap.xml` + each page's JSON-LD and `<head>` metadata (plain Node, zero deps; `--check` reports staleness) |
 | `scripts/update-sitemap.mjs` | Refreshes every `<lastmod>` in `sitemap.xml` from each page's last git commit (refuses to run on a shallow clone) |
 | `.github/workflows/os-fonts-audit.yml`, `.github/workflows/supabase-keepalive.yml` | The two authored GitHub Actions workflows: the weekly OpenSiddur font-list audit + intake, and the daily Supabase keep-alive (one database query with the publishable key, plus a check that the account tables refuse an anonymous read) |
-| `data/hebrew_words.json` | Structured word data (~2.93 MB, 13,081 entries) loaded by the generator, dictionary and flash cards via `fetch()` |
+| `data/hebrew_words.json` | Structured word data (~2.96 MB, 13,081 entries) loaded by the generator, dictionary and flash cards via `fetch()` |
 | `source-data/hebrew_dictionary_4_19_2026.csv` | Pipeline-input CSV used to build `data/hebrew_words.json` (Hebrew w/ nikkud, transliteration, translation, POS, era); not served at runtime |
 | `data/hebrew_emojis.json` (+ `source-data/hebrew_emojis.csv` pipeline input) | Hebrew word ↔ emoji mappings used by the dictionary's and flash cards' emoji modes and the generator's Matching worksheet (its emoji targets) |
 | `data/parshiyot.json` | All 54 parshiyot with Hebrew/English names, Sefaria refs, and PocketTorah keys |
 | `data/pockettorah/aliyah.json` | Mirrored from [PocketTorah](https://github.com/rneiss/PocketTorah) — full kriyah verse ranges per parsha |
 | `data/pockettorah/manifest.json` | Maps each parsha+aliyah to its actual upstream label filename |
-| `data/pockettorah/timings/*.txt` | Mirrored PocketTorah word-level timing files (432 files, ~2 MB) |
+| `data/pockettorah/timings/*.txt` | Mirrored PocketTorah word-level timing files (432 files, ~1 MB) |
 | `data/leyning/weekday.json`, `data/leyning/triennial.json` (+ `LICENSE.txt`) | The Torah Trainer's Weekday (each parasha's Monday/Thursday reading) and Triennial (the three-year divisions) cycles, fetched the first time one is chosen — Hebcal's data, BSD 2-Clause, with its notice beside it; never hand-edited |
 | `scripts/build-leyning-data.mjs` | Builds the two leyning files from pinned `@hebcal/leyning` and `@hebcal/triennial` releases (plain Node, zero deps; the tarballs cache in the gitignored `source-data/leyning-cache/`); a rebuild bumps both fetches' `?v=` |
 | `data/trope/trope_index.json` | Pre-built Trope Tutor index — example words + audio clip bounds per cantillation mark (~75 KB) |

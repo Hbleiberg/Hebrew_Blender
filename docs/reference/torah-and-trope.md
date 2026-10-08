@@ -245,7 +245,7 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
 **Focus across rebuilds:** a chip press rebuilds its row (the Learn families, the Phrases groups), and the rebuilt chip
 of the same family or group (`data-fam` / `data-group`) takes the focus back; `setMode` hands the focus to the chosen
 tab when the switch hides the panel that held it (Next family on the last family, Next group on the last group, Back
-to Learn), and a caller that opens something inside the new tab (`openLearnFor`, `openMelodySetting`) moves it on.
+to Learn), and a caller that opens something inside the new tab (`openLearnFor`) moves it on.
 
 - **Index**: `data/trope/trope_index.json` — `{v:1, system:"torah", built, tropes:{<key>:[{p,a,w,ref,he,s,e}]}}`
   where `p` = parsha pocket key, `a` = aliyah "1"–"7", `w` = 0-based sung-word index (= timings
@@ -717,8 +717,9 @@ file uses, the Megillot chart's `64` included). Design: `docs/tropepatterns.md` 
   the Learn card's row (`TROPE_LEARN_ROW`, § A's table — one column per melody, which the phrases builder checks
   against the table on every run); then the mark's first figure; a mark the High Holiday chart lacks falls back
   to the year-round chart (the four Portnoy–Wolff charts stand alone) — and the last verse of a PocketTorah
-  aliyah (`staffIsAliyahEnd`, from `aliyahLookup`'s `endC/endV`), or of a haftarah (`staffIsHaftarahEnd`: the
-  `C:V` after the last ` - ` of the reading's ref, so a two-part haftarah closes at its second part's end),
+  aliyah (`staffIsAliyahEnd`, from `aliyahLookup`'s `endC/endV`), of a haftarah or a custom range (`staffIsRefEnd`:
+  the `C:V` the reading's ref ends with, `refEnd`, so a two-part haftarah closes at its second part's end), or of
+  a megillah's chapter or book (`staffMegillahEnd`),
   takes the `[aliyah-end]` closing whose marks end it — the longest, and between two of one length the one
   `opts.closingRow` names (the Megillot chart's end-of-book 39a beside its end-of-chapter 39).
   `tropeBuildReadingRow` stitches the picks into one row in the phrase file's shape (each figure's own
