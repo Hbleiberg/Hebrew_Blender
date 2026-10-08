@@ -117,6 +117,9 @@
     spacer.id = 'pwaBannerSpacer'; spacer.setAttribute('aria-hidden', 'true');
     spacer.style.height = 'calc(' + (banner.offsetHeight + 24) + 'px + env(safe-area-inset-bottom, 0px))';
     document.body.appendChild(spacer);
+    // A page's own fixed bottom bar (the generator's Generate bar) sat under the banner whole: the same space is
+    // published for such a bar to rise by while the banner shows (the page scopes it to the banner's widths).
+    document.documentElement.style.setProperty('--pwa-banner-space', spacer.style.height);
 
     banner.querySelector('.pwa-banner-close').addEventListener('click', function (e) {
       e.stopPropagation();
@@ -148,6 +151,7 @@
     el.classList.remove('pwa-show');
     var sp = document.getElementById('pwaBannerSpacer');
     if (sp && sp.parentNode) sp.parentNode.removeChild(sp);
+    document.documentElement.style.removeProperty('--pwa-banner-space');
     setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 340);
   }
 

@@ -826,6 +826,9 @@ body.dark .hi-sun{display:inline-block;}
     .gen-fab { width: 100%; border-inline-end: none; } /* mobile: full (stacked) width; sidebar uses border-bottom, no inner divider */
     .main-content { padding-bottom: 96px; }      /* clear the fixed footer (with its page-count line) over the worksheet */
   }
+  /* pwa.js's install hint is fixed over a phone's bottom band (under 768px, where it shows) and covered this bar's
+     Generate button whole; the bar rides above it while it shows, by the space pwa.js publishes. */
+  @media (max-width: 767px) { .gen-fab { bottom: var(--pwa-banner-space, 0px); } }
   .btn-secondary {
     background: var(--navy);
     color: var(--white);
