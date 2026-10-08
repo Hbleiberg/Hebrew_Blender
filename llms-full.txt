@@ -276,7 +276,7 @@ Yes. Materials that incorporate PocketTorah audio are CC BY-SA 4.0; other IvritS
 
 **Can I print a chart of all the trope marks?**
 
-Yes. In Learn mode, the Print chart button prints all 26 marks as one reference sheet — each mark's symbol with its Ashkenazi and Sephardi names, grouped by clause family.
+Yes. In Learn mode, Print chart prints all 26 marks as one reference chart — each mark's symbol, its Ashkenazi and Sephardi names, and its melody on a staff in the melody and key you chose, with chanted examples, grouped by clause family. On the Phrases tab, Print phrases prints every phrase of that melody.
 
 **What does the Phrases tab show?**
 
