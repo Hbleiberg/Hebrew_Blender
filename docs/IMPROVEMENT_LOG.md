@@ -8,6 +8,16 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P4 (**S351 G — gate 2 ANSWERED S479: rewrite; wording in findings S479**) | trope_tutor.html | **The FAQ promises "one reference sheet" of names; the chart is 8–9 sheets.** | found S351
+
+- [ ] P4 (**NEW S479 G**) | trope_tutor.html | **Paper waste: Phrases 9–12 sheets at ~4 cards; 2 Letter charts end on the credits alone, EN Learn on one card.** | found S479
+
+- [ ] P4 (**NEW S479 G**) | trope_tutor.html | **The plate's side borders print as rails down every middle sheet.** | found S479
+
+- [ ] P4 (**NEW S479 G — gate 2**) | trope_tutor.html | **Only the Haftarah note says the Phrases tab has no examples** (Esther, Megillot, Eicha lack them too). | found S479
+
+- [ ] P4 (**NEW S479**) | Hebrew_Font_Maker.html, classroom_dashboard.html | **FM's picker search and 2 city fields keep typed Hebrew LTR in the EN UI** (`3c0db710` fits). | found S479
+
 - [ ] P4 (**NEW S478 M**) | 6 chrome headers | **A phone header leaves the star alone on a row** (EN contact ≤396, account ≤474). | found S478
 
 - [ ] P4 (**NEW S478 M**) | contact, resources | **Dark mode keeps the hCaptcha box light** (no `data-theme`). | found S478
@@ -22,13 +32,9 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (S476 N — gate 4) | hebrew_blend_generator.html | **On desktop the Generate bar covers 1–3 footer FAQ rows at the page end** (phones fixed `dbf2d7a0`). | found S476
 
-- [ ] P4 (S475 K) | torah_trainer.html | **A shown hint toast keeps its language across a switch.** | found S475
-
 - [ ] P4 (S475 K) | Hebrew_Font_Maker.html | **Kerning "Finals"/"Descenders" are English.** | found S475
 
 - [ ] P4 (**NEW S474 L — gate 2**) | index.html, torah_trainer.html | **The hub's ItemList one-liner and Torah's WebApplication + HowTo descriptions name the weekly parsha only** (not the holidays or Megillot). | found S474
-
-- [ ] P4 (**NEW S470 F**) | hebrew_dictionary.html | **EN-UI search keeps typed Hebrew LTR** (the root field's Escape fixed S473). | found S470
 
 - [ ] P2 (**NEW S465 G — maintainer**) | starting-fonts/manifest.json | **14 fonts' `copyright` is empty**: re-stage with `/addOSFont --force` (detector fixed `3609c19`; ids: findings S465). | found S465
 
@@ -178,8 +184,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S364 — pattern `sub-floor touch target`, an M call like the `.toggle` switches**) | hebrew_blend_generator.html | **The bingo card stepper's ▲/▼ buttons are 18.7×10.5 / 18.7×9.5px at 8.8px type (Bingo mode, `.bingo-step`).** A 24px pair doubles the 90px control's height — a visible size change, not a hit-box trick (the two stack inside a 1px-bordered box). | found S364
 
-- [ ] P4 (**NEW S351 Pass G — GATE 2 copy, for L/the maintainer**) | trope_tutor.html (`locales/ui-strings.csv`, the FAQ JSON-LD) | **The FAQ answer `trope.footer.faq_a7` and its JSON-LD copy promise "prints all 26 marks as one reference sheet"; the chart is 8 sheets at Letter / 9 at A4 since `d9541e3` (S353; it was 13).** "as one reference chart" (the button's own wording) would be accurate; the …[full text: IMPROVEMENT_ARCHIVE.md]
-
 - [ ] P4 (**NEW S337 Pass G — GATE 2: a default-behaviour choice, deferred unattended**) | Hebrew_Font_Maker.html | **The tool's two PDFs print on different paper: the Preview PDF specimen is hardcoded A4 (595×842 pt, `format:'a4'`) while the five template sheets are hardcoded Letter (612×792 pt, `format:'letter'`, and the generator's PDFs are Letter too).** A US teacher's specimen comes out …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S332 Pass L — GATE 2 / maintainer fact; deferred unattended**) | index.html | **The hub's Organization `sameAs` and the visible "Created by" link both point at `https://harrisonbleiberg.wpcomstaging.com/`, a WordPress.com staging address.** If a public author URL exists (or the site has moved), both should carry it; if the staging address IS the intended public home, waive this. …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -322,6 +326,10 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-08 | (S479 close-out) | branch/deploy note | **S479 = G + 4 fixes, PR #317.** No drift; sw v959→v960; no FM bump; gate 2 ×2 approved.
+
+- [x] 2026-10-08 | `3b5971ca` `2ff133e9` `3c0db710` `ce1be7f6` | trope ×2, dictionary, torah | (S479) **Closing labels; no intro on paper; search text direction; old-language hint.** | findings S479.
+
 - [x] 2026-10-08 | (S478 close-out) | branch/deploy note | **S478 = M + 4 fixes, PR #317.** No drift; sw v958→v959; no FM bump.
 
 - [x] 2026-10-08 | `6fd59ae8` `936629b4` `d46e3056` `92a21164` | privacy, contact, i18n.js, 8 headers | (S478) **Saved schedules named; Hebrew Zelle caption; locale retry; header gates re-measured.** | findings S478.
@@ -338,13 +346,11 @@ _(none)_
 
 - [x] 2026-10-08 | `8d3f2c95` `02965f8f` `ca67ec0d` `15f2e46d` | torah ×2, FM, trope, i18n | (S475) **4 i18n fixes.** | findings S475.
 
-- [x] 2026-10-08 | (S474 close-out) | branch/deploy note | **S474 = L + 4 fixes, PR #316.** No drift (main `e2be8874`, FM 5.59, migrations 0001–0003); sw v954→v955; no FM bump; gate 2 asked ×2 → both approved.
-
-- [x] 2026-10-08 | `7c1d19fb` `1d5fa270` `3235f8eb` `a8833e38` | torah ×2, flash, hub | (S474) **Chant how-to without the removed switch; Torah snippet names holidays + Megillot (both gate 2); Return to Options focus; Erase All resets language + theme.** | HEAD controls (findings S474).
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-08 | **S479** | iters: 5 | tools: trope ×2, dictionary, torah | patterns fixed: — | pass run: G | SW: v959→v960
 
 - 2026-10-08 | **S478** | iters: 5 | tools: privacy ×2, contact ×2, i18n.js, +6 headers | patterns fixed: latin-tracking ×1, header-gate (NEW) ×8 | pass run: M | SW: v958→v959
 
@@ -384,11 +390,9 @@ _(none)_
 
 - 2026-10-05 | **S460** | iters: 1 pass (**L**) + 4 fixes = **5** | tools: resources, torah, FM, dashboard | patterns fixed: radio-set-without-a-question (NEW) | pass run: L | SW: v936→v937
 
-- 2026-10-05 | **S459** | iters: 1 pass (**E**) + 4 fixes = **5** | tools: source-data, docs, ivrit-saves, smoke-migration | patterns fixed: — | pass run: E | SW: v931→v932
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S478 (2026-10-08):** contact, privacy, terms, resources, account, index, flash, generator, i18n.js, docs S478 · FM S477 · torah S476 · trope S475 · dictionary S473 · pwa S472 · dashboard S471 · 404 S470 · saves S466.
+- **Snapshot S479 (2026-10-08):** trope, dictionary, torah, docs S479 · contact, privacy, terms, resources, account, index, flash, generator, i18n.js S478 · FM S477 · pwa S472 · dashboard S471 · 404 S470 · saves S466.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -440,7 +444,7 @@ _(none)_
 
 - **`button-focus-lost-to-its-own-rebuild`** (**S474 flash Return to Options `3235f8eb`; S473 flash start `3e8e2f79`, torah tune radios `9fbcfce8`; S471 dashboard `c0c5856e`; S470 torah favorites `fc3ec234`; S469 generator `04a85f46`, flash `e93d2e91`; S455 trope ×2; S441 torah; …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`dark-literal-escapes-the-print-tokens`** (NEW S437 G; resources FIXED `5320a668`): ACTIVE, streak 0. Detection: PDFs dark vs light, ink per page (<200 at 40 dpi); a lighter dark sheet = a `body.dark` literal the print token reset misses. Exempt: active-state borders. S437: …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`dark-literal-escapes-the-print-tokens`** (NEW S437 G; resources FIXED `5320a668`): ACTIVE, streak 1 (S479 trope clean; plant fired). Detection: PDFs dark vs light, ink per page (<200 at 40 dpi); a lighter dark sheet = a `body.dark` literal the print …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`editor-re-parse-caps-a-merged-list`** (**NEW S421 Pass P — 1 carrier, FIXED `288af4a`**): ACTIVE, consequence-critical (a sync carries the cut list to the account); never retires. A list the sync merges uncapped is re-parsed by its tool's editor or restore path through the …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -714,7 +718,7 @@ _(none)_
 
 - A recurring-pattern sweep: 2026-10-08 (**S472 — 37th A on `9c97b35b..eb806705` (108 commits): 30 static arms, 9 runtime arms, plants fired (findings S472). FIXED 4; logged 3.**)
 
-- G print & export fidelity (one tool): 2026-10-07 (**S465 — FM (S337 →): 3 partner flows × every export, LibreOffice, round trip, dark + HE, drawing; plants 3/3. FOUND 6, FIXED 3. G-next: trope (S351).**)
+- G print & export fidelity (one tool): 2026-10-08 (**S479 — trope (S351 →): 96 PDFs, variants, every tab, the .ivrit; plants 4/4. FOUND 6, FIXED 2. G-next: dashboard (S364).**)
 
 - D performance (one tool): 2026-10-07 (**S466 — the hub's 2nd D (S352 → 48 commits): cold 16 cells, a busy profile × 11 clicks @1×/4×, signed in on a fake cloud, traces; controls fired. FIXED the per-row memory parse, the export box, the closed window; logged 1. D-next: trope (S365).**)
 
@@ -732,4 +736,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-07 (**S470 — 5 search fields, 40 cells, 78-field census; plants fired; FIXED 4.**)
 
-**Next session (S479):** **BRANCH/PR: `claude/loving-carson-pi9e10` → draft PR #317 (S477–S478): open → continue; merged → restart from `origin/main`.** `sw.js` **v959**, FM **5.59**. ⚑ Stalest: G, D, I. ⚑ Untaken: the header star (P4); dark hCaptcha (P4). ⚑ Maintainer: re-stage 14 fonts.
+**Next session (S480):** **BRANCH/PR: `claude/loving-carson-pi9e10` → draft PR #317 (S477–S479): open → continue; merged → restart from `origin/main`.** `sw.js` **v960**, FM **5.59**. ⚑ Stalest: D, I, H. ⚑ Approved, ships next: the trope FAQ rewrite (gate 2; wording in findings S479). ⚑ Maintainer: re-stage 14 fonts.
