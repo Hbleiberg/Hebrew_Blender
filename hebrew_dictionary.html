@@ -3611,6 +3611,8 @@ function onShoreshInput() {
 }
 function onShoreshKey(e) {
   if (e.key === 'Enter') runShoreshLookup(document.getElementById('shoreshInput').value);
+  // Escape clears the typed root and its chip filter, as it clears the search box (it did nothing here).
+  else if (e.key === 'Escape' && e.target.value) { e.preventDefault(); e.target.value = ''; onShoreshInput(); }
 }
 
 function runShoreshLookup(raw) {
