@@ -8,7 +8,11 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P4 (**NEW S477 P — gate 2 ANSWERED: add "saved schedules"**) | locales | **`privacy.legal.collect`'s account list omits Dashboard schedules** (terms names them). | found S477
+- [ ] P4 (**NEW S478 M**) | 6 chrome headers | **A phone header leaves the star alone on a row** (EN contact ≤396, account ≤474). | found S478
+
+- [ ] P4 (**NEW S478 M**) | contact, resources | **Dark mode keeps the hCaptcha box light** (no `data-theme`). | found S478
+
+- [ ] P4 (**NEW S478 M**) | 6 chrome footers | **A "·" ends a footer line below ~700px.** | found S478
 
 - [ ] P4 (**NEW S477 P**) | js/ivrit-saves.js | **`fontsChanged`'s comment says no page attaches Suite** (the hub, FM and account page do). | found S477
 
@@ -17,8 +21,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (S476 N) | Hebrew_Font_Maker.html | **Guides reorder by drag only** (`attachGuideSortable`). | found S476
 
 - [ ] P4 (S476 N — gate 4) | hebrew_blend_generator.html | **On desktop the Generate bar covers 1–3 footer FAQ rows at the page end** (phones fixed `dbf2d7a0`). | found S476
-
-- [ ] P3 (S475 K) | js/i18n.js | **A failed locale load leaves JS-built UI as raw keys** (1,024); no retry. | found S475
 
 - [ ] P4 (S475 K) | torah_trainer.html | **A shown hint toast keeps its language across a switch.** | found S475
 
@@ -320,6 +322,10 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-08 | (S478 close-out) | branch/deploy note | **S478 = M + 4 fixes, PR #317.** No drift; sw v958→v959; no FM bump.
+
+- [x] 2026-10-08 | `6fd59ae8` `936629b4` `d46e3056` `92a21164` | privacy, contact, i18n.js, 8 headers | (S478) **Saved schedules named; Hebrew Zelle caption; locale retry; header gates re-measured.** | findings S478.
+
 - [x] 2026-10-08 | (S477 close-out) | branch/deploy note | **S477 = P + 4 fixes, PR #317.** No drift; sw v957→v958; no FM bump; gate 2 ×2 approved.
 
 - [x] 2026-10-08 | `36238bdd` `d4861067` `19759738` `03dd8a68` | hub ×2, resources, FM | (S477) **Class lists in the inventory; no closed-window redraws; FAQ reworded (gate 2); Hebrew mark grids on phones.** | findings S477.
@@ -336,13 +342,11 @@ _(none)_
 
 - [x] 2026-10-08 | `7c1d19fb` `1d5fa270` `3235f8eb` `a8833e38` | torah ×2, flash, hub | (S474) **Chant how-to without the removed switch; Torah snippet names holidays + Megillot (both gate 2); Return to Options focus; Erase All resets language + theme.** | HEAD controls (findings S474).
 
-- [x] 2026-10-08 | (S473 close-out) | branch/deploy note | **S473 = E + 4 fixes, PR #316.** No drift (main `e2be8874`, FM 5.59, migrations 0001–0003, keep-alive #25 green); sw v953→v954; no FM bump.
-
-- [x] 2026-10-08 | `df0fdc21` `3e8e2f79` `9e8cd004` `9fbcfce8` | docs, flash, dictionary, torah | (S473) **Two removed functions out of torah-and-trope.md + README sizes; a started session lands on the card; root-field Escape; tune radios keep focus.** | HEAD controls (findings S473).
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-08 | **S478** | iters: 5 | tools: privacy ×2, contact ×2, i18n.js, +6 headers | patterns fixed: latin-tracking ×1, header-gate (NEW) ×8 | pass run: M | SW: v958→v959
 
 - 2026-10-08 | **S477** | iters: 5 | tools: index ×2, resources, FM | patterns fixed: — | pass run: P | SW: v957→v958
 
@@ -382,11 +386,9 @@ _(none)_
 
 - 2026-10-05 | **S459** | iters: 1 pass (**E**) + 4 fixes = **5** | tools: source-data, docs, ivrit-saves, smoke-migration | patterns fixed: — | pass run: E | SW: v931→v932
 
-- 2026-10-05 | **S458** | iters: 1 pass (**A**, +A2) + 4 fixes = **5** | tools: dashboard, flash, FM, generator | patterns fixed: 2 NEW, non-finite ×1 | pass run: A | SW: v930→v931
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S477 (2026-10-08):** index, resources, FM S477 · torah, generator S476 · trope, i18n.js S475 · flash S474 · dictionary, docs S473 · pwa S472 · dashboard S471 · 5 others S470 · saves S466.
+- **Snapshot S478 (2026-10-08):** contact, privacy, terms, resources, account, index, flash, generator, i18n.js, docs S478 · FM S477 · torah S476 · trope S475 · dictionary S473 · pwa S472 · dashboard S471 · 404 S470 · saves S466.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -394,7 +396,9 @@ _(none)_
 
 - **`placeholder-keeps-the-browser-gray`** (NEW S470 `45a3073e`): ACTIVE, streak 0. Detection: `f470/ph.mjs` < 4.5:1 (plant 1.3:1).
 
-- **`latin-tracking-on-hebrew-labels`** (NEW S464 M; gate 3: drop suite-wide; 53 nodes here, ~180 rules/15 pages): ACTIVE, streak 0. Detection: `m464/census.mjs` (a): Hebrew own-text, letter-spacing > 0; exempt `lang="en"`.
+- **`header-wrap-gate-below-its-ceiling`** (NEW S478 M; FIXED ×8 `92a21164`): ACTIVE, streak 0. Detection: `m478/gates.mjs` (1px 400–900, EN/HE × light/dark); HEAD the control.
+
+- **`latin-tracking-on-hebrew-labels`** (NEW S464 M; gate 3: drop suite-wide; ~180 rules/15 pages; S478 contact `936629b4`): ACTIVE, streak 0. Detection: `m464/census.mjs` (a): Hebrew own-text, letter-spacing > 0; exempt `lang="en"`.
 
 - **`forward-arrow-points-back-in-rtl-copy`** (NEW S462 N; FIXED S464 `5f7f8a40` ×48; open 0): ACTIVE, streak 1 (S472: 47 delta rows, 0). Detection: the S462 CSV census; exempt "(→)", A→Z, Back labels, the orphan `flashcards.header.home`.
 
@@ -702,7 +706,7 @@ _(none)_
 
 - N mobile & touch-device (one surface): 2026-10-08 (**S476 — 23rd N, FM (S290 →): 632 views, 4 phones, partner path, touch, 4×; plants fired. FIXED 4. N-next: dictionary (S303).**)
 
-- M aesthetics & visual design (one surface): 2026-10-06 (**S464 — 22nd M, `resources.html` (S277 →): 80 shots, census, 144-cell sweep, zeros planted. FIXED `661c6cc6`, `f98367f8`; 6 P4s; gate 3 answered. M-next: contact.**)
+- M aesthetics & visual design (one surface): 2026-10-08 (**S478 — 23rd M, contact (S291 →): 140 shots, census, plants; FOUND 5 + 8 headers scrolling sideways; FIXED 2. M-next: privacy/terms.**)
 
 - K i18n / localization audit: 2026-10-08 (**S475 — 32nd K: FIXED 4.**)
 
@@ -728,4 +732,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-07 (**S470 — 5 search fields, 40 cells, 78-field census; plants fired; FIXED 4.**)
 
-**Next session (S478):** **BRANCH/PR: `claude/loving-carson-pi9e10` → draft PR #317 (S477): open → continue; merged → restart from `origin/main`.** `sw.js` **v958**, FM **5.59**. ⚑ Stalest: M, G, D. ⚑ Untaken: privacy "saved schedules" (gate 2 ANSWERED); locale retry (P3). ⚑ Maintainer: re-stage 14 fonts.
+**Next session (S479):** **BRANCH/PR: `claude/loving-carson-pi9e10` → draft PR #317 (S477–S478): open → continue; merged → restart from `origin/main`.** `sw.js` **v959**, FM **5.59**. ⚑ Stalest: G, D, I. ⚑ Untaken: the header star (P4); dark hCaptcha (P4). ⚑ Maintainer: re-stage 14 fonts.
