@@ -828,7 +828,9 @@ tab id = panel/grid id prefix = `curKind` — which is what lets `catTabFor`'s `
 family with no new fork. The one exception is the tabbed layout's CSS, which names each mark grid by id:
 a grid left out of its *mark grids* rule (rows of 7) falls back to the letter grid's auto-fill columns,
 and inside the shrink-to-fit `.mark-gridside` those resolve to a single column. `#smrmarksGrid` is in
-that rule, and from a 1850px window it takes one row of all 21 tiles instead.
+that rule, and from a 1850px window it takes one row of all 21 tiles instead. The rule packs the row left; a mark
+grid reads right to left in either UI, so on a Hebrew page its `[dir="rtl"]` twin sets `justify-content: safe left`:
+a row wider than its panel (a phone) then overflows to the left, the side a right-to-left panel scrolls to.
 Every nikkud/trop two-way ternary takes one prefix guard on the table and keeps its Hebrew tail
 (`catOfCp` — whose default for an unknown cp is `'nikkud'` — `markName`, `markClassOf`,
 `markClassFor`, `pinKeyFor`, `whoHasCp`, `alphabetOwnerOf`, `defaultPieces`, `markTilePreviewSVG`,

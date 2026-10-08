@@ -8,7 +8,9 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P3 (S476 N) | Hebrew_Font_Maker.html | **The mark grids keep 7 columns (380px) at ≤412px: in Hebrew a column is cut with no scroll** (3–9 of 18 tiles). | found S476
+- [ ] P4 (**NEW S477 P — gate 2 ANSWERED: add "saved schedules"**) | locales | **`privacy.legal.collect`'s account list omits Dashboard schedules** (terms names them). | found S477
+
+- [ ] P4 (**NEW S477 P**) | js/ivrit-saves.js | **`fontsChanged`'s comment says no page attaches Suite** (the hub, FM and account page do). | found S477
 
 - [ ] P4 (S476 N) | Hebrew_Font_Maker.html | **Auto-detect's Sizing select is wider than a phone** (436px in 374): the window scrolls sideways. | found S476
 
@@ -55,8 +57,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S460 — ANSWERED S462: drop it**) | Hebrew_Font_Maker.html | **The About footer says "(the font engine loads on first export)"** (`fontmaker.about.footer_about_body`). | found S460
 
 - [ ] P4 (**NEW S458**) | scripts/smoke-sync.mjs | **Scenario 2 fails Mon 08:00–09:30, Tue 08:00–08:45 local** (its schedule's preset goes up): pin the clock. | found S458
-
-- [ ] P3 (**NEW S454 H — gate 2**) | resources.html | **The FAQ and its JSON-LD say each card notes cost or sign-up; 4 of 43 do.** | found S454
 
 - [ ] P4 (**NEW S454 H — gate 2**) | resources.html | **"Jewish Interactive" is listed twice** (one URL; "All" counts 43 for 42). | found S454
 
@@ -320,6 +320,10 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-08 | (S477 close-out) | branch/deploy note | **S477 = P + 4 fixes, PR #317.** No drift; sw v957→v958; no FM bump; gate 2 ×2 approved.
+
+- [x] 2026-10-08 | `36238bdd` `d4861067` `19759738` `03dd8a68` | hub ×2, resources, FM | (S477) **Class lists in the inventory; no closed-window redraws; FAQ reworded (gate 2); Hebrew mark grids on phones.** | findings S477.
+
 - [x] 2026-10-08 | (S476 close-out) | branch/deploy note | **S476 = N + 4 fixes, PR #316.** No drift; sw v957; no FM bump.
 
 - [x] 2026-10-08 | `88b811b5` `fe808b64` `30fcc886` `dbf2d7a0` | FM ×2, torah, generator | (S476) **Edit points on screen; windows scroll; gallery banner; generator footer.** S420's banner candidate closed. | findings S476.
@@ -336,13 +340,11 @@ _(none)_
 
 - [x] 2026-10-08 | `df0fdc21` `3e8e2f79` `9e8cd004` `9fbcfce8` | docs, flash, dictionary, torah | (S473) **Two removed functions out of torah-and-trope.md + README sizes; a started session lands on the card; root-field Escape; tune radios keep focus.** | HEAD controls (findings S473).
 
-- [x] 2026-10-08 | (S472 close-out) | branch/deploy note | **S472 = A + 4 fixes, PR #316.** No drift; sw v952→v953; no FM bump.
-
-- [x] 2026-10-08 | `306003c3` `60229f0f` `8081fc83` `56c7a179` | torah ×2, generator + pwa.js, FM | (S472) **Special-reading button hidden; range Enter; Generate bar above the banner; FM windows hide it.** S471's favorite-Enter candidate refuted (4/4). | findings S472.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-08 | **S477** | iters: 5 | tools: index ×2, resources, FM | patterns fixed: — | pass run: P | SW: v957→v958
 
 - 2026-10-08 | **S476** | iters: 5 | tools: FM ×2, torah, generator | patterns fixed: install-banner ×1, tall-window ×1 | pass run: N | SW: v956→v957
 
@@ -382,11 +384,9 @@ _(none)_
 
 - 2026-10-05 | **S458** | iters: 1 pass (**A**, +A2) + 4 fixes = **5** | tools: dashboard, flash, FM, generator | patterns fixed: 2 NEW, non-finite ×1 | pass run: A | SW: v930→v931
 
-- 2026-10-05 | **S457** | iters: 1 pass (**B**) + 4 fixes = **5** | tools: ivrit-saves, dictionary, FM, torah | patterns fixed: flex-range-keeps-its-min-content-width (NEW) | pass run: B | SW: v929→v930
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S476 (2026-10-08):** FM, torah, generator S476 · trope, i18n.js S475 · flash, index S474 · dictionary, docs S473 · pwa S472 · dashboard S471 · 6 others S470 · saves S466.
+- **Snapshot S477 (2026-10-08):** index, resources, FM S477 · torah, generator S476 · trope, i18n.js S475 · flash S474 · dictionary, docs S473 · pwa S472 · dashboard S471 · 5 others S470 · saves S466.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -696,7 +696,7 @@ _(none)_
 
 ### Discovery-pass rotation (run one per session, stalest first)
 
-- P accounts & cloud (one surface): 2026-10-06 (**S463 — 7th P, the generator's own wiring (S449's P-next): smoke-tools 23/23 (plant 22/23), sync 207, migration 47; W1–W6 on a fake cloud (rename on 2 devices, ?s=, ?ak=, word list); static 30/30 (plants 9/9); live read-only. FIXED `1eeaacb8` (gate 2). P-next: the hub.**)
+- P accounts & cloud (one surface): 2026-10-08 (**S477 — 8th P, the hub's own wiring (S463's P-next): smoke-tools 21/21 (plant 20/21), sync 207, migration 47; H1–H8 on a fake cloud by real clicks; static 23/23 (plants 9/9); live read-only. FIXED 2 on the hub. P-next: torah (never alone).**)
 
 - O deslop — AI-design-tell sweep (one surface): 2026-09-08 (**S346 — 6th O, `flash_cards.html`. ⚑ BLOCKED HERE TWICE (S399, S403) — NOT "needs an attended session". Clone + the 4 parsers install fine; EXECUTING the detector is refused by the sandbox's auto-mode classifier ("Code from External"), and the refusal names the remedy: the maintainer adds a Bash permission rule for the detector (or …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -728,4 +728,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-07 (**S470 — 5 search fields, 40 cells, 78-field census; plants fired; FIXED 4.**)
 
-**Next session (S477):** **BRANCH/PR: `claude/magical-mendel-396njm` → draft PR #316 (S467–S476): open → continue; merged → restart from `origin/main`.** `sw.js` **v957**, FM **5.59**. ⚑ Stalest: P, M, G. ⚑ Untaken: Hebrew mark grid (P3); locale keys (P3). ⚑ Maintainer: re-stage 14 fonts.
+**Next session (S478):** **BRANCH/PR: `claude/loving-carson-pi9e10` → draft PR #317 (S477): open → continue; merged → restart from `origin/main`.** `sw.js` **v958**, FM **5.59**. ⚑ Stalest: M, G, D. ⚑ Untaken: privacy "saved schedules" (gate 2 ANSWERED); locale retry (P3). ⚑ Maintainer: re-stage 14 fonts.
