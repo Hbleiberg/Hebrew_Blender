@@ -473,6 +473,8 @@ The Torah Trainer's chanted-audio karaoke and the Trope Tutor's example clips us
 
 Full license text: [creativecommons.org/licenses/by-nc-sa/4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
+**Special permission — Good Egg LLC.** As a special privilege, the author grants Good Egg LLC permission to use this repository without attribution. This covers the author's own work here; third-party material (see `THIRD_PARTY_LICENSES.md`) keeps its own licence and attribution terms.
+
 ---
 
 ## Running Locally
