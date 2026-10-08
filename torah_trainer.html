@@ -1434,6 +1434,7 @@ body.dark .tt-emo-name { color:var(--gold-light); }
 .form-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; gap:10px; }
 .form-row:last-child { margin-bottom:0; }
 .form-row[hidden] { display:none; }   /* [hidden] must beat the flex row (#triYearRow, #lookupOpenRow) — the #ttCopyBulkPanel trap */
+#lookupOpenSpecialBtn[hidden] { display:none; }   /* .btn-xs display:inline-flex would beat the hidden attr: every looked-up date showed a dead Open the special reading */
 .form-row label:not(.toggle) { font-size:0.85rem; font-weight:600; flex:1; color:var(--text); }
 .form-row select, .form-row input[type="text"], .form-row input[type="number"], .form-row input[type="date"] {
   border:1px solid var(--border); background:var(--white); color:var(--text);
