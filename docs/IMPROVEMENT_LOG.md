@@ -8,6 +8,12 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P3 (S475 K) | js/i18n.js | **A failed locale load leaves JS-built UI as raw keys** (1,024); no retry. | found S475
+
+- [ ] P4 (S475 K) | torah_trainer.html | **A shown hint toast keeps its language across a switch.** | found S475
+
+- [ ] P4 (S475 K) | Hebrew_Font_Maker.html | **Kerning "Finals"/"Descenders" are English.** | found S475
+
 - [ ] P4 (**NEW S474 L — gate 2**) | index.html, torah_trainer.html | **The hub's ItemList one-liner and Torah's WebApplication + HowTo descriptions name the weekly parsha only** (not the holidays or Megillot). | found S474
 
 - [ ] P4 (**NEW S472 A**) | torah_trainer.html | **On an iPhone the install banner covers the emoji gallery's last row**. | found S472
@@ -312,6 +318,10 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-08 | (S475 close-out) | branch/deploy note | **S475 = K + 4 fixes, PR #316.** No drift; sw v956; no FM bump.
+
+- [x] 2026-10-08 | `8d3f2c95` `02965f8f` `ca67ec0d` `15f2e46d` | torah ×2, FM, trope, i18n | (S475) **4 i18n fixes.** | findings S475.
+
 - [x] 2026-10-08 | (S474 close-out) | branch/deploy note | **S474 = L + 4 fixes, PR #316.** No drift (main `e2be8874`, FM 5.59, migrations 0001–0003); sw v954→v955; no FM bump; gate 2 asked ×2 → both approved.
 
 - [x] 2026-10-08 | `7c1d19fb` `1d5fa270` `3235f8eb` `a8833e38` | torah ×2, flash, hub | (S474) **Chant how-to without the removed switch; Torah snippet names holidays + Megillot (both gate 2); Return to Options focus; Erase All resets language + theme.** | HEAD controls (findings S474).
@@ -328,13 +338,11 @@ _(none)_
 
 - [x] 2026-10-07 | `c0c5856e` `4930a77a` `10aa231e` `91bc624d` | dashboard ×2, generator, hub | (S471) **Preset focus; Enter saves ×5; restore alert in Hebrew.** | findings S471.
 
-- [x] 2026-10-07 | (S470 close-out) | branch/deploy note | **S470 = F + 4 fixes, PR #316.** No drift; sw v950→v951; no FM bump.
-
-- [x] 2026-10-07 | `83e29d12` `45a3073e` `8a7bd8dd` `fc3ec234` | 14 pages | (S470) **City Enter; placeholders 4.5:1; picker Escape; favorites focus.** | findings S470.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-08 | **S475** | iters: 5 | tools: torah ×2, FM, trope, i18n.js | patterns fixed: english-literal ×2, stale ×1 | pass run: K | SW: v955→v956
 
 - 2026-10-08 | **S474** | iters: 1 pass (**L**) + 4 fixes = **5** | tools: torah ×2, flash, index | patterns fixed: button-focus ×1 | pass run: L | SW: v954→v955
 
@@ -374,11 +382,9 @@ _(none)_
 
 - 2026-10-05 | **S456** | iters: 1 pass (**F**) + 4 fixes = **5** | tools: generator, dictionary ×2, flash ×2, FM, torah | patterns fixed: slider-value (NEW), sub-floor ×2 | pass run: F | SW: v928→v929
 
-- 2026-10-04 | **S455** | iters: 1 pass (**C**) + 4 fixes = **5** | tools: trope ×2, resources ×2 | patterns fixed: button-focus-lost-to-its-own-rebuild ×2 | pass run: C | SW: v927→v928
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S474 (2026-10-08):** torah, flash, index S474 · dictionary, docs S473 · generator, FM, pwa S472 · dashboard S471 · the other 7 pages S470 · ivrit-saves S466 · intake S465.
+- **Snapshot S475 (2026-10-08):** torah, FM, trope, i18n.js S475 · flash, index S474 · dictionary, docs S473 · generator, pwa S472 · dashboard S471 · 6 others S470 · ivrit-saves S466 · intake S465.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -460,6 +466,8 @@ _(none)_
 
 - **`textContent-rewrite-erases-a-control-icon`** (S405; S415; **S453 `ac796dba`**): ACTIVE, streak 0. Add (d): load-time icon count. Detection: (a) EN→HE→EN icon count; (b) key census …[full text: IMPROVEMENT_ARCHIVE.md]
 
+- **`english-literal-passed-to-a-message-helper`** (NEW S475): ACTIVE, streak 0. …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - **`translated-key-exists-page-hardcodes-english`** (S461 K: 1 FIXED `74b2ee0c`, dictionary Bulk Copy count; streak 0. S433 K: 0 new — the orphan census 121 raw, 86 with a live English twin, all S405/S419 classes; the delta's surfaces by a runtime EN-in-HE detector, 3 …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`per-page-code-inside-a-shared-block`** (**NEW, registered 2026-09-22 (S403 Pass E) — 2 carriers, both fixed `6e28af3`**): ACTIVE, clean streak 1 (S416). Page code pasted INSIDE a `═══` block instead of below its end …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -530,7 +538,7 @@ _(none)_
 
 - **fixed-width-third-party-embed-inflates-phone-layout**: **REGISTERED + first swept suite-wide 2026-08-28 (S276 Pass N) — hits: 2 carriers, BOTH fixed in-session (`23b2387` contact inline auto-render → data-size=compact ≤388 + ≤430 containment belt; `e4aaa44` resources …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **stale-html-fallback-behind-its-csv-value**: ACTIVE, clean streak 0. **S447 (K, `k447/stale.py` html.parser census, plants 2/2): 4 hits = S432's `<br>`-only tooltips (by design); the FM `_pT` fallback (S405) FIXED `7a5117e7`.** **S434: torah ×2 FIXED `b4edf5c3` (the S433 …[full text: IMPROVEMENT_ARCHIVE.md]
+- **stale-html-fallback-behind-its-csv-value**: ACTIVE, clean streak 0. **S475: 2 FIXED `ca67ec0d`.** **S447 (K, `k447/stale.py` html.parser census, plants 2/2): 4 hits = S432's …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **undocumented-global-keyboard-shortcut**: ACTIVE. **Re-swept 2026-09-09 (S357 Pass A, delta-only): 0 new `document`-level `keydown` handlers (the erase gate's is scoped to its overlay: Escape + Tab trap, exempt shapes) — hits 0, clean streak 2.** S264 1 hit fixed (`f65ce58`); …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -692,7 +700,7 @@ _(none)_
 
 - M aesthetics & visual design (one surface): 2026-10-06 (**S464 — 22nd M, `resources.html` (S277 →): 80 shots, census, 144-cell sweep, zeros planted. FIXED `661c6cc6`, `f98367f8`; 6 P4s; gate 3 answered. M-next: contact.**)
 
-- K i18n / localization audit: 2026-10-05 (**S461 — 31st K on `1b1538f6..60a09bc2`: gates clean; 96 runtime states 0 missing/raw (plants 480/480); NEW template + hidden-node arm; fallbacks, blind spot, RTL 0; TaL AM (gate 2). FIXED `74b2ee0c` (findings S461).**)
+- K i18n / localization audit: 2026-10-08 (**S475 — 32nd K: FIXED 4.**)
 
 - C accessibility (one tool): 2026-10-07 (**S469 — generator (S327 → 101 commits): names, Tab walk, targets, contrast; plants fired. FIXED ⧉ name + focus drops (+ flash). C-next: dictionary.**)
 
@@ -716,4 +724,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-07 (**S470 — 5 search fields, 40 cells, 78-field census; plants fired; FIXED 4.**)
 
-**Next session (S475):** **BRANCH/PR: `claude/magical-mendel-396njm` → draft PR #316 (S467–S474): open → continue; merged → restart from `origin/main`.** Closed at `sw.js` **v955**, FM **5.59**. ⚑ Stalest: K (S461), then N (S462), P (S463). ⚑ Untaken: hub + Torah structured-data descriptions (gate 2, S474); hub copy (gate 2); Latin tracking (gate 3 answered). ⚑ Maintainer: re-stage the 14 fonts (S465).
+**Next session (S476):** **BRANCH/PR: `claude/magical-mendel-396njm` → draft PR #316 (S467–S475): open → continue; merged → restart from `origin/main`.** `sw.js` **v956**, FM **5.59**. ⚑ Stalest: N, P, M. ⚑ Untaken: failed-locale keys (P3); gate-2 descriptions. ⚑ Maintainer: re-stage 14 fonts.
