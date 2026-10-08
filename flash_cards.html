@@ -7599,8 +7599,16 @@ function showScreen(id) {
   // Early, and Return to Options — instead of a restore sprinkled at each call site.
   if (_ladderActive && id === 'screenSetup') _ladderExit();
   if (_sharedDrill && id === 'screenSetup') _leaveSharedDrill();
+  const ae = document.activeElement, lost = ae && ae.closest && ae.closest('.screen') && !ae.closest('#' + id);
   document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === id));
   window.scrollTo({ top: 0, behavior: 'instant' });
+  // The control that started the session (Start, a preset's Play, a ladder level, Redo, Practice mistakes) left with
+  // its screen and dropped the keyboard to the page top: the card takes it, or the replay button in a listening round
+  // (showResults lands on the score itself; pattern button-focus-lost-to-its-own-rebuild).
+  if (lost && id === 'screenCard') {
+    const t = ['fcCard', 'lcReplay'].map(x => document.getElementById(x)).find(x => x && x.getClientRects().length);
+    if (t) t.focus({ preventScroll: true });
+  }
 }
 
 /* =========================================================================
