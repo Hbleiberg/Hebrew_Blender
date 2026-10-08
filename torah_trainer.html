@@ -10975,6 +10975,10 @@ function applyI18n() {
     if (ts && ts.dataset.i18nKey) ts.textContent = I18n.t(ts.dataset.i18nKey);
     const ps = document.getElementById('optPitchStatus');
     if (ps && ps.dataset.i18nKey) ps.textContent = I18n.t(ps.dataset.i18nKey);
+    // The hint toast is a passing sentence in the language it was shown in: after a switch it would stay up to 8 s
+    // in the old one, so it goes (the status line, which stays, is re-resolved above instead).
+    const ht = document.getElementById('ttHintToast');
+    if (ht && ht.classList.contains('show') && ht.dataset.lang !== I18n.lang) dismissHintToast();
     // The range-picker note IS interpolated, so it also carries its params (own data, but read
     // back through ivritSafeParse — the house rule for every parse that isn't a trusted literal).
     const rn = document.getElementById('ttCopyRangeNote');
@@ -11563,6 +11567,7 @@ function showHintToast(msg) {
     document.body.appendChild(el);
   }
   el.textContent = msg;
+  el.dataset.lang = window.I18n ? I18n.lang : '';   // the language it was written in: applyI18n drops it after a switch
   requestAnimationFrame(() => el.classList.add('show'));
   if (_hintTimer) clearTimeout(_hintTimer);
   _hintTimer = setTimeout(dismissHintToast, 8000);
