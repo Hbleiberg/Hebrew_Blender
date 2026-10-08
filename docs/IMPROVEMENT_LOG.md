@@ -8,7 +8,11 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P4 (**NEW S471 B**) | torah_trainer.html | **The favorite dialog's Name field may ignore Enter** (static read). | found S471
+- [ ] P4 (**NEW S472 A**) | torah_trainer.html | **The Tisha B'Av haftarah's tune radios drop focus to `<body>` on an arrow key** (renderText rebuilds them). | found S472
+
+- [ ] P4 (**NEW S472 A**) | torah_trainer.html | **On an iPhone the install banner covers the emoji gallery's last row**. | found S472
+
+- [ ] P4 (**NEW S472 A**) | hebrew_blend_generator.html | **At phone width the fixed Generate bar covers the footer's last 3–5 links, fully scrolled**. | found S472
 
 - [ ] P4 (**NEW S469 C**) | flash_cards.html | **A preset's Play drops focus to `<body>`**. | found S469
 
@@ -312,6 +316,10 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-08 | (S472 close-out) | branch/deploy note | **S472 = A + 4 fixes, PR #316.** No drift; sw v952→v953; no FM bump.
+
+- [x] 2026-10-08 | `306003c3` `60229f0f` `8081fc83` `56c7a179` | torah ×2, generator + pwa.js, FM | (S472) **Special-reading button hidden; range Enter; Generate bar above the banner; FM windows hide it.** S471's favorite-Enter candidate refuted (4/4). | findings S472.
+
 - [x] 2026-10-07 | (S471 close-out) | branch/deploy note | **S471 = B + 4 fixes, PR #316.** No drift; sw v951→v952; no FM bump.
 
 - [x] 2026-10-07 | `c0c5856e` `4930a77a` `10aa231e` `91bc624d` | dashboard ×2, generator, hub | (S471) **Preset focus; Enter saves ×5; restore alert in Hebrew.** | findings S471.
@@ -328,13 +336,11 @@ _(none)_
 
 - [x] 2026-10-07 | `4b2eb422` `b70b1acf` `3a29ab99` `8cddee19` | hub ×2 (CSV), resources, pwa.js | (S468) **IvritSuite, not Hebrew Blender; HE presets = תבניות; card icons; banner spacer.** | HEAD controls (findings S468).
 
-- [x] 2026-10-07 | (S467 close-out) | branch/deploy note | **S467 = I + 4 fixes, new draft PR.** Drift: the emoji gallery + notes (sw v946→v947); keep-alive #25 green; sw v947→v948; no FM bump (fixes); gates clean; no gates asked.
-
-- [x] 2026-10-07 | `8be5bdd` `8294d4b` `d9f5a87` `6c4a1a2` | torah, contact, resources, kbd ×4 | (S467) **Dialogs clear the hint toast; server error in `<bdi>`; Suggest intro 14px; dark key press.** | HEAD controls (findings S467).
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-08 | **S472** | iters: 1 pass (**A**) + 4 fixes = **5** | tools: torah ×2, generator + pwa.js, FM | patterns fixed: author-display ×1, enter-ignored ×1, install-banner ×2 | pass run: A | SW: v952→v953
 
 - 2026-10-07 | **S471** | iters: 1 pass (**B**) + 4 fixes = **5** | tools: dashboard ×2, generator, index | patterns fixed: enter-ignored (NEW) ×2, button-focus ×1 | pass run: B | SW: v951→v952
 
@@ -374,25 +380,23 @@ _(none)_
 
 - 2026-10-04 | **S453** | iters: 1 pass (**I**) + 4 fixes = **5** | tools: torah, generator ×2, ivrit-saves | patterns fixed: pre-ready-interpolated-write-never-healed (NEW), textContent-rewrite-erases-a-control-icon | pass run: I | SW: v925→v926
 
-- 2026-10-04 | **S452** | iters: 1 pass (**D**) + 4 fixes = **5** | tools: FM ×2, generator ×2 | patterns fixed: cdn-library-parser-blocking-for-one-action ×2 (NEW) | pass run: D | SW: v924→v925
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S471 (2026-10-07):** dashboard, generator, index S471 · the other 11 pages S470 · pwa S468 · ivrit-saves S466 · intake S465.
+- **Snapshot S472 (2026-10-08):** torah, generator, FM, pwa S472 · dashboard, index S471 · the other 9 pages S470 · ivrit-saves S466 · intake S465.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
-- **`enter-ignored-beside-its-own-button`** (NEW S471; dashboard ×5 `83e29d12` `4930a77a`, generator ×2 `10aa231e`): ACTIVE, streak 0. Detection: a text field beside its action button with no Enter wiring; probe typed + Enter vs the button.
+- **`enter-ignored-beside-its-own-button`** (NEW S471; dashboard ×5, generator ×2; S472 torah range ×3 `60229f0f`): ACTIVE, streak 0. Detection: `a472/enter.py`, then typed Enter vs the button.
 
 - **`placeholder-keeps-the-browser-gray`** (NEW S470 `45a3073e`): ACTIVE, streak 0. Detection: `f470/ph.mjs` < 4.5:1 (plant 1.3:1).
 
 - **`latin-tracking-on-hebrew-labels`** (NEW S464 M; gate 3: drop suite-wide; 53 nodes here, ~180 rules/15 pages): ACTIVE, streak 0. Detection: `m464/census.mjs` (a): Hebrew own-text, letter-spacing > 0; exempt `lang="en"`.
 
-- **`forward-arrow-points-back-in-rtl-copy`** (NEW S462 N; FIXED S464 `5f7f8a40` ×48; open 0): ACTIVE, streak 0. Detection: the S462 CSV census; exempt "(→)", A→Z, Back labels, the orphan `flashcards.header.home`.
+- **`forward-arrow-points-back-in-rtl-copy`** (NEW S462 N; FIXED S464 `5f7f8a40` ×48; open 0): ACTIVE, streak 1 (S472: 47 delta rows, 0). Detection: the S462 CSV census; exempt "(→)", A→Z, Back labels, the orphan `flashcards.header.home`.
 
-- **`share-link-writes-the-teachers-saved-preferences`** (NEW S463 P, `1eeaacb8`): ACTIVE, streak 0. A `?s=` restore saves suite-wide pref keys. Detection: `p463/link-fix.mjs` (non-default prefs + a link carrying them; keys + prefs row hold). Next: dictionary `?s=`.
+- **`share-link-writes-the-teachers-saved-preferences`** (NEW S463 P, `1eeaacb8`): ACTIVE, streak 1 (S472 dictionary clean). Detection: `p463/link-fix.mjs`, `a472/dshare.mjs`.
 
-- **`bulk-apply-skips-a-renderer-the-control-runs`** (NEW S461; FIXED ×3): ACTIVE, streak 0. A control re-renders; `applySettings` never does. Detection: `x3/parity.mjs`, `p463/loc-fix.mjs` (stubs per city). Open: none known.
+- **`bulk-apply-skips-a-renderer-the-control-runs`** (NEW S461; FIXED ×3): ACTIVE, streak 1 (S472 clean). Detection: `x3/parity.mjs`, `p463/loc-fix.mjs`. Open: none known.
 
 - **`radio-set-without-a-question`** (NEW S460, `d9645fa5`): ACTIVE, streak 0. Radios with no named radiogroup/group/fieldset. Detection: walk each static radio up to its group; a hit lacks one or its name (JS-built: read the builders). Open: dashboard `videoLayout`, dictionary …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -426,13 +430,13 @@ _(none)_
 
 - **`copy-claims-success-on-a-refused-clipboard`** (NEW S428; FIXED `bbd5f65`, `0d2a941`; S444 index `90e1a057`, dashboard `18344f69`; **S445 generator `3dad5c11`, flash `58ee7a4f` — all 7 carriers fixed, 0 open**): ACTIVE, streak 0. Detection: every `execCommand('copy')` whose …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`button-focus-lost-to-its-own-rebuild`** (**S471 dashboard `c0c5856e`; S470 torah favorites `fc3ec234`; S469 generator `04a85f46`, flash `e93d2e91`; S455 trope ×2; S441 torah; S426–S439 account, dictionary, torah**): ACTIVE, streak 0. …[full …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`button-focus-lost-to-its-own-rebuild`** (**S472 open: torah tune radios; S471 dashboard `c0c5856e`; S470 torah favorites `fc3ec234`; S469 generator `04a85f46`, flash `e93d2e91`; S455 trope ×2; S441 torah; S426–S439 account, dictionary, torah**): ACTIVE, streak 0. …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`dark-literal-escapes-the-print-tokens`** (NEW S437 G; resources FIXED `5320a668`): ACTIVE, streak 0. Detection: PDFs dark vs light, ink per page (<200 at 40 dpi); a lighter dark sheet = a `body.dark` literal the print token reset misses. Exempt: active-state borders. S437: …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`editor-re-parse-caps-a-merged-list`** (**NEW S421 Pass P — 1 carrier, FIXED `288af4a`**): ACTIVE, consequence-critical (a sync carries the cut list to the account); never retires. A list the sync merges uncapped is re-parsed by its tool's editor or restore path through the …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`install-banner-over-a-sheet's-bottom-controls`** (**NEW S420 Pass N — the hub FIXED `f44a17e`, a CSS state hiding it while the sheet is open; 6 other sheet pages unmeasured**): ACTIVE, streak 0. pwa.js's `#pwaInstallBanner` (fixed, bottom, z 2147483000, phones under 768px) …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`install-banner-over-a-sheet's-bottom-controls`** (NEW S420 N, hub `f44a17e`; **S472 generator bar `8081fc83` (pwa.js `--pwa-banner-space`), FM's 16 windows `56c7a179`; open: torah gallery**): ACTIVE, streak 0. Detection: `a472/banner2.mjs` (sheet + page scrolled; plant …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`flash-restores-captured-text-not-its-key`** (NEW S417 — 2 FIXED `1f7f869`; S415 `38e5b62`): ACTIVE, streak 0. A "Copied!" flash restoring the text captured at click time, so a 2nd click captures the flash. Detection: `orig = (btn|lbl)\.(textContent|innerHTML)` + …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -444,7 +448,7 @@ _(none)_
 
 - **`toggle-name-flips-with-its-pressed-state`** (NEW S414 `f9e67b2`; S416 trope tune `96275c2`; S430 found torah's Trope staff Tune all + every verse Tune; **S431 FIXED `aa97e2e`**): ACTIVE, streak 0 (last swept S430). Detection `f414/toggles2.mjs`: real click per …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`author-display-defeats-the-hidden-attribute`** (S414 `391114b`; S416 FM `3bf0112`; S425 trope ×2; **S430 torah ×2 `136cf30`**): ACTIVE, streak 0. Detection: rendered `[hidden]` with display ≠ none (S430 `a430/hiddenrec.mjs`: every `hidden` write + a flex plant) …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`author-display-defeats-the-hidden-attribute`** (S414 `391114b`; S416 FM `3bf0112`; S425 trope ×2; S430 torah ×2; **S472 torah lookup `306003c3`**; S472 detection `a472/hidrec.mjs`): ACTIVE, streak 0. Detection: rendered `[hidden]` with display ≠ none (S430 …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`button-group-label-not-programmatic`** (**NEW S413 Pass C — resources ×8 rows FIXED `945b397`; generator, dictionary, hub unmeasured (no `role="group"` at all)**): ACTIVE, streak 0. A row of `aria-pressed` buttons sits under a visible label (a `<span>`, or a `<label>` with …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -696,7 +700,7 @@ _(none)_
 
 - C accessibility (one tool): 2026-10-07 (**S469 — generator (S327 → 101 commits): names, Tab walk, targets, contrast; plants fired. FIXED ⧉ name + focus drops (+ flash). C-next: dictionary.**)
 
-- A recurring-pattern sweep: 2026-10-05 (**S458 — 36th A + A2 on `eeaf279..9c97b35b` (84 commits): 13 arms, zeros controlled (findings S458); FIXED 4; A2 none un-retired.**)
+- A recurring-pattern sweep: 2026-10-08 (**S472 — 37th A on `9c97b35b..eb806705` (108 commits): 30 static arms, 9 runtime arms, plants fired (findings S472). FIXED 4; logged 3.**)
 
 - G print & export fidelity (one tool): 2026-10-07 (**S465 — FM (S337 →): 3 partner flows × every export, LibreOffice, round trip, dark + HE, drawing; plants 3/3. FOUND 6, FIXED 3. G-next: trope (S351).**)
 
@@ -716,4 +720,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-07 (**S470 — 5 search fields, 40 cells, 78-field census; plants fired; FIXED 4.**)
 
-**Next session (S472):** **BRANCH/PR: `claude/magical-mendel-396njm` → draft PR #316 (S467–S471): open → continue; merged → restart from `origin/main`.** Closed at `sw.js` **v952**, FM **5.59**. ⚑ Stalest: A (S458), then E/L/K. ⚑ Untaken: hub copy (gate 2). ⚑ Maintainer: re-stage the 14 fonts (S465).
+**Next session (S473):** **BRANCH/PR: `claude/magical-mendel-396njm` → draft PR #316 (S467–S472): open → continue; merged → restart from `origin/main`.** Closed at `sw.js` **v953**, FM **5.59**. ⚑ Stalest: E (S459), then L/K. ⚑ Untaken: hub copy (gate 2); Latin tracking (gate 3 answered). ⚑ Maintainer: re-stage the 14 fonts (S465).
