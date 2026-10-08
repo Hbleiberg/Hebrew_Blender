@@ -4076,7 +4076,12 @@ function setReadingTune(v) {
   if (!h || !h.tunes.includes(v)) return;
   settings.staffTuneChoice = Object.assign({}, settings.staffTuneChoice, { [h.key]: v });
   saveSettings();
+  const had = document.activeElement && document.activeElement.name === 'ttReadingTune';
   renderText();
+  // renderText rebuilds the header with these radios, so an arrow key between them dropped the focus to the page:
+  // the chosen one takes it back (pattern button-focus-lost-to-its-own-rebuild).
+  const r = had && document.getElementById('ttTune_' + v);
+  if (r) r.focus();
 }
 /* ═══ holiday-icons JS ═══ shared block, byte-identical on: classroom_dashboard, torah_trainer (docs/reference/shared-components.md → Holiday icons).
    HOLIDAY_ICONS: one flat 48×48 SVG per holiday family (the maintainer chose each from three drafts); fills are the
