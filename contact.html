@@ -448,6 +448,12 @@ if (matchMedia('(max-width: 388px)').matches) {
   const _hc = document.querySelector('.h-captcha');
   if (_hc && !_hc.hasAttribute('data-size')) _hc.setAttribute('data-size', 'compact');
 }
+// The widget paints hCaptcha's light theme whatever the page wears (a light box on the dark tile). Name the page's
+// theme on the box before the helper renders it, from the head's no-flash decision (html.dark-early becomes
+// body.dark). A dark toggle after the widget is up leaves it as rendered until a reload: the Web3Forms helper owns
+// the render, so the page has no handle to redraw it.
+const _hcBox = document.querySelector('.h-captcha');
+if (_hcBox && !_hcBox.hasAttribute('data-theme')) _hcBox.setAttribute('data-theme', document.documentElement.classList.contains('dark-early') ? 'dark' : 'light');
 
 // Contact form → Web3Forms (AJAX, JSON) with hCaptcha. Delivers to the contact address (assembled at runtime).
 const form = document.getElementById('contactForm');

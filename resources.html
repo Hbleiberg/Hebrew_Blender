@@ -2176,7 +2176,9 @@ function openSubmitFont(pf) {
       // body's content box (min(560px, 96vw) − 38px of border+padding) can't hold it, and the
       // widget clips behind an in-modal horizontal scrollbar — in RTL the clipped side is the
       // checkbox's. Ask for hCaptcha's compact variant (164px) there.
-      const hcOpts = { sitekey: HCAPTCHA_SITEKEY };
+      // The widget paints hCaptcha's light theme whatever the page wears (a light box on the dark window); it renders
+      // when the window opens, so the theme the page wears at that moment is the one it takes.
+      const hcOpts = { sitekey: HCAPTCHA_SITEKEY, theme: document.body.classList.contains('dark') ? 'dark' : 'light' };
       if (matchMedia('(max-width: 355px)').matches) hcOpts.size = 'compact';
       try { hcId = window.hcaptcha.render(box, hcOpts); } catch (_) {}
     } else if (++hcTries <= HC_MAX_TRIES) {
