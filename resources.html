@@ -349,6 +349,10 @@ body.dark .sg-btn-primary:disabled:hover{background:#2a4070;}
 .view-toggle button:hover{border-color:var(--gold);color:var(--gold-text);}
 .view-toggle button.active{background:var(--navy);border-color:var(--navy);color:#fff;}
 body.dark .view-toggle button.active{background:#2a3f6a;border-color:#4a6aaa;}
+/* The Hebrew UI's filter labels, category badges, view toggle and Suggest title: Hebrew has no capitals, and the Latin
+   tracking only spaced its letters apart (latin-tracking-on-hebrew-labels). English keeps the small-caps look. The
+   footer heads are the shared chrome footer's, and .tp-label / .hk-subhead belong to their shared blocks. */
+html[lang="he"] .filter-label,html[lang="he"] .card-cat-badge,html[lang="he"] .view-toggle button,html[lang="he"] .sg-modal-hdr h3{letter-spacing:normal;text-transform:none;}
 
 /* ── Font gallery card extras (reuses .resource-card) ── */
 .font-preview-line{font-size:2rem;line-height:1.35;direction:rtl;text-align:center;padding:8px 4px;color:var(--text);min-height:1.35em;overflow:hidden;}
