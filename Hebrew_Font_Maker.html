@@ -7602,8 +7602,17 @@ function cropSelectSVG(l) {
     h += `<rect x="${box.x}" y="${box.y}" width="${box.w}" height="${box.h}" fill="none" stroke="var(--gold)" stroke-width="2" pointer-events="none"/>`;
   }
   const heb = (curKind === 'letter' ? '' : String.fromCodePoint(0x25CC)) + String.fromCodePoint(parseInt(l.codepoint,16));
-  h += `<text x="300" y="${V.y+20}" text-anchor="middle" font-size="13" font-weight="700" fill="var(--navy)" style="paint-order:stroke;stroke:#fff;stroke-width:4px;" pointer-events="none">${esc(_pT('crop_select_caption', `Select area for ${l.name} ${heb} — drag a box around it`, { name: gName(l.name), glyph: heb }))}</text>`;
+  h += `<text id="cropCaption" x="300" y="${cropCaptionY()}" text-anchor="middle" font-size="13" font-weight="700" fill="var(--navy)" style="paint-order:stroke;stroke:#fff;stroke-width:4px;" pointer-events="none">${esc(_pT('crop_select_caption', `Select area for ${l.name} ${heb} — drag a box around it`, { name: gName(l.name), glyph: heb }))}</text>`;
   return h;
+}
+// The crop caption's baseline in viewBox units: 20 below the stage's top edge, or 20 below the top ruler where the ruler
+// covers that edge (.rl-h is a 22px sticky bar over the stage, so a caption at the edge sat under it, unseen with the
+// rulers on, the default). Read from the live layout, so renderRulers re-places it on every zoom, scroll and resize.
+function cropCaptionY() {
+  const sv = stage(), m = sv && sv.getScreenCTM();
+  const bar = _rulersOn && document.querySelector('.rl-layer[data-stage="stage"] .rl-h');
+  const clear = (m && m.d && bar) ? (bar.getBoundingClientRect().bottom - m.f) / m.d : -Infinity;
+  return Math.min(Math.max(STAGE_VB.y, clear) + 20, STAGE_VB.y + STAGE_VB.h - 6).toFixed(1);
 }
 function startCrop(e) {
   const [sx,sy] = clientToStage(e);
@@ -12969,6 +12978,7 @@ function rlDrawOne(st) {
 }
 function renderRulers() {
   document.body.classList.toggle('rulers-on', _rulersOn);
+  const cc = document.getElementById('cropCaption'); if (cc) cc.setAttribute('y', cropCaptionY());   // the bar it clears just moved, came or went
   if (!_rulersOn) return;
   rlStages().forEach(rlDrawOne);
   const c = document.getElementById('rulerCorner');
