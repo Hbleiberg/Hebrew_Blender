@@ -2732,8 +2732,8 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
 
         <div class="tt-set-sub" data-i18n="dashboard.datetime.sub_event">Your own event</div>
         <div class="form-row">
-          <label for="eventTitleInput"><span data-i18n="dashboard.datetime.event_name">Count down to</span> <span class="tip-wrap" data-tip="A line under the date counting the days to a day you choose — a field trip, a siddur party, the last day of school. Monday's board says “3 days until our field trip”. The line leaves by itself once the day has passed; clear the name to turn it off." data-i18n-tip="dashboard.datetime.event_tip"><i class="tip-icon">?</i></span></label>
-          <input type="text" id="eventTitleInput" dir="auto" maxlength="60" autocapitalize="sentences" placeholder="our field trip" data-i18n-placeholder="dashboard.datetime.event_name_placeholder">
+          <label for="eventTitleInput"><span id="eventTitleLbl" data-i18n="dashboard.datetime.event_name">Count down to</span> <span class="tip-wrap" data-tip="A line under the date counting the days to a day you choose — a field trip, a siddur party, the last day of school. Monday's board says “3 days until our field trip”. The line leaves by itself once the day has passed; clear the name to turn it off." data-i18n-tip="dashboard.datetime.event_tip"><i class="tip-icon">?</i></span></label>
+          <input type="text" id="eventTitleInput" aria-labelledby="eventTitleLbl" dir="auto" maxlength="60" autocapitalize="sentences" placeholder="our field trip" data-i18n-placeholder="dashboard.datetime.event_name_placeholder">
         </div>
         <div class="form-row">
           <label for="eventDateInput" data-i18n="dashboard.datetime.event_date">Date</label>
