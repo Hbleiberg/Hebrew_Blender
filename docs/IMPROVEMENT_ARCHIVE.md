@@ -92233,3 +92233,25 @@ _(prior — S488 pointer:)_ **Next session (S488):** **BRANCH/PR: `claude/improv
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 _(prior — S489 pointer:)_ **Next session (S489):** **BRANCH/PR: `claude/nifty-cray-0dvnxz` → draft PR #320 (S488): open → continue; merged → restart from `origin/main`.** `sw.js` **v969**, FM **5.59**. ⚑ Stalest: E (S473), L, K; O blocked. ⚑ Untaken: dashboard header gates, Now/Next tracking, FM crop caption (P4s). ⚑ Seeds: 47 (gate 1). ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.
+
+
+<!-- archived by compact-ledger at the S491 boundary, 2026-10-09 -->
+## Compaction (S491, 2026-10-09) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-09 | (S485 close-out) | branch/deploy note | **S485 = the micro-feature alone (gate 1: the maintainer's pick), PR #319 continued; pass skipped on direction (B stays stalest).** No drift; sw v965→v966; no FM bump; traps 197–198 (findings S485).
+
+- [x] 2026-10-09 | `5163e4ca` | classroom_dashboard.html + locales + 2 reference docs | (S485) **Micro-feature: a countdown to the teacher's own event — name + date under Date & Time → a second gold line under the holiday countdown, gone by itself after the day; out of presets and starters like `intermissionHTML`, carried by `.ivrit`, AllTools and the account row.** | 96 checks (findings S485).
+
+### from Per-session log (one line per session)
+
+- 2026-10-07 | **S470** | iters: 1 pass (**F**) + 4 fixes = **5** | tools: 14 pages (dashboard, FM, torah ×2) | patterns fixed: placeholder ×14, button-focus ×1 | pass run: F | SW: v950→v951
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`latin-tracking-on-hebrew-labels`** (NEW S464 M; gate 3: drop suite-wide; ~180 rules/15 pages; S478 contact `936629b4`; S489 dashboard Now/Next `c046d4fb`; S490 resources `af9ed26f`, dashboard titles + fullscreen `63489ddb`; open: footer heads + 2 blocks): ACTIVE, streak 0. Detection: `l490/track.mjs`, `dash.mjs`: Hebrew own-text tracked or uppercase, its nearest `[lang]` below the root not `en`.
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+_(prior — S490 pointer:)_ **BRANCH/PR: `claude/nifty-cray-0dvnxz` → draft PR #320 (S488–S489): open → continue; merged → restart from `origin/main`.** `sw.js` **v970**, FM **5.59**. ⚑ Stalest: L (S474), K, N; O blocked. ⚑ Untaken: dashboard titles track Hebrew (P4); chrome header star / footer dot (gate 3). ⚑ Seeds: 47 (gate 1). ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.
