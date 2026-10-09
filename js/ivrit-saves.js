@@ -215,8 +215,9 @@
       });
     }
   };
-  // No page attaches the Suite tool, so there is no onLocalChanged to call: every font picker listens for
-  // this instead and re-runs its own refreshMyFonts().
+  // A font row lands in IndexedDB, not in a page's localStorage, so there is no onLocalChanged to call for it (the hub,
+  // the Font Maker and the account page attach the Suite tool for its preference fields): every font picker listens for
+  // this event instead and re-runs its own refreshMyFonts().
   function fontsChanged(name) {
     try { window.dispatchEvent(new CustomEvent('ivritsuite:fonts', { detail: { name: name } })); } catch (e) {}
   }
