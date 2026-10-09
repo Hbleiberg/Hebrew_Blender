@@ -1188,6 +1188,8 @@ body.dark .hi-sun{display:inline-block;}
   .ft-h { font-family: 'Libre Baskerville', serif; font-size: 0.74rem; line-height: 1.4; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); padding: 3px 0; white-space: nowrap; }
   summary.ft-h { cursor: pointer; padding-block: 4px; }   /* 24px+ disclosure row (WCAG 2.5.8); the non-summary .ft-h keeps 3px */
   summary.ft-h:hover { color: var(--text); }
+  /* The Hebrew UI's footer heads: Hebrew has no capitals, and the Latin tracking only spaced its letters apart. */
+  html[lang="he"] .ft-h { letter-spacing: normal; text-transform: none; }
   .ft-dt-body { max-width: 720px; padding: 4px 0 6px; }
   .ft-dt-body p { font-size: 0.78rem; line-height: 1.5; margin: 4px 0 6px; }
   .ft-faq { margin: 4px 0; }

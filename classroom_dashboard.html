@@ -533,6 +533,9 @@
      has no capitals, and the Latin tracking only spaced its letters apart (latin-tracking-on-hebrew-labels). English
      titles keep the small caps. */
   .col-title [lang="he"], #videoHeaderLabel [lang="he"] { letter-spacing: normal; text-transform: none; }
+  /* The Hebrew UI's "Related Hebrew Tools" head in the More tab (the chrome footer's heading, inline 0.08em caps):
+     Hebrew has no capitals, and the tracking only spaced its letters apart. !important outranks the inline style. */
+  html[lang="he"] #dashTabPanelMore [style*="letter-spacing:0.08em"] { letter-spacing: normal !important; text-transform: none !important; }
   .col-body {
     padding: 16px 18px;
     flex: 1;
