@@ -42,13 +42,25 @@ const findings = [];   // blocks (candidate records)
 const stats = [];
 
 const TAIL = ' …[full text: IMPROVEMENT_ARCHIVE.md]';
+const MARK = ' …[full';   // the start of TAIL, which is all a cut through an old marker leaves of it
+const STACKED = /^( …\[full( text:)?)+$/;
 function truncate(block, width) {
-  const first = block[0];
+  let first = block[0];
+  // A line an earlier run cut ends with TAIL, and its full block is in the archive already: judge only the text before
+  // the marker, and drop the fragments an earlier run stacked into it ("…[full text: …[full text: …"). Measured with
+  // the marker included, every cut line was over its width again, so each run re-cut it, stacked a marker and
+  // re-archived the block. Text written after an old marker is not a fragment: it stays, or is cut and archived.
+  const wasCut = first.endsWith(TAIL);
+  if (wasCut) {
+    first = first.slice(0, -TAIL.length);
+    const m = first.indexOf(MARK); if (m !== -1 && STACKED.test(first.slice(m))) first = first.slice(0, m);
+  }
   const cut = first.length > width;
-  if (!cut && block.length === 1) return { block, changed: false };
+  if (!cut && block.length === 1) return { block: wasCut ? [first + TAIL] : block, archive: false };
   let head = cut ? first.slice(0, width) : first;
   if (cut) { const sp = head.lastIndexOf(' '); if (sp > width * 0.6) head = head.slice(0, sp); }
-  return { block: [head + TAIL], changed: true };
+  const m = head.indexOf(MARK); if (m !== -1) head = head.slice(0, m);   // a cut through an old marker keeps none of it
+  return { block: [head + TAIL], archive: true };
 }
 
 const sessionOf = l => { const m = l.match(/\bS(\d{2,3})\b/); return m ? Number(m[1]) : -1; };
@@ -59,7 +71,7 @@ function compactSection(sec) {
   const keep = [];
   const toArchive = [];
   let toFindings = 0;
-  const bump = (b, width) => { const r = truncate(b, width); if (r.changed) toArchive.push(b); keep.push(r.block); };
+  const bump = (b, width) => { const r = truncate(b, width); if (r.archive) toArchive.push(b); keep.push(r.block); };
 
   if (h.startsWith('## Candidates')) {
     for (const b of blocks) {
