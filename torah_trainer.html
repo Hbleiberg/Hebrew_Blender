@@ -2980,9 +2980,10 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
 
 <footer>
   <div class="footer-credits">
-    <span>Hebrew text via <a href="https://www.sefaria.org" target="_blank" rel="noopener" class="sefaria-attr"><img src="https://files.readme.io/87c5652-image.png" alt="Sefaria" class="sefaria-light" loading="lazy"><img src="https://files.readme.io/dcee0a8-image.png" alt="Sefaria" class="sefaria-dark" loading="lazy"></a> · public domain</span>
+    <!-- pinned-English credits (never translated): dir="ltr" keeps each phrase in English order in the RTL UI, and lang="en" has a screen reader voice it in English -->
+    <span dir="ltr" lang="en">Hebrew text via <a href="https://www.sefaria.org" target="_blank" rel="noopener" class="sefaria-attr"><img src="https://files.readme.io/87c5652-image.png" alt="Sefaria" class="sefaria-light" loading="lazy"><img src="https://files.readme.io/dcee0a8-image.png" alt="Sefaria" class="sefaria-dark" loading="lazy"></a> · public domain</span>
     <span id="ttFooterTrans" data-i18n="torah.footer.translation_static">Translation: (none selected)</span>
-    <span>Cantillation audio: <a href="https://github.com/rneiss/PocketTorah" target="_blank" rel="noopener">PocketTorah</a> · CC BY-SA 4.0</span>
+    <span dir="ltr" lang="en">Cantillation audio: <a href="https://github.com/rneiss/PocketTorah" target="_blank" rel="noopener">PocketTorah</a> · CC BY-SA 4.0</span>
     <span data-i18n="torah.footer.license_note">Only translations whose license permits redistribution are offered (Public Domain, CC0, CC BY, CC BY-SA, CC BY-NC, CC BY-NC-SA).</span>
   </div>
   <nav aria-label="Related Hebrew Tools" data-i18n-aria-label="shared.nav.header" style="margin-top:10px;border-top:1px solid var(--border);padding-top:10px;">

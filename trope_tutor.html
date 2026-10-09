@@ -1390,8 +1390,9 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
 
 <footer>
   <div class="footer-credits">
-    <span>Hebrew text via <a href="https://www.sefaria.org" target="_blank" rel="noopener">Sefaria</a> · public domain (extracted at build time — this page never calls Sefaria)</span>
-    <span>Cantillation audio © Russel Neiss &amp; Rabbi Charlie Schwartz, <a href="https://github.com/rneiss/PocketTorah" target="_blank" rel="noopener">PocketTorah</a> · <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a> · <span data-i18n="trope.footer.recording_melody">Spiro (Conservative) melody</span></span>
+    <!-- pinned-English credits (never translated): dir="ltr" keeps each phrase in English order in the RTL UI, and lang="en" has a screen reader voice it in English (the melody's name is the page's own string, so it stays outside its credit's English) -->
+    <span dir="ltr" lang="en">Hebrew text via <a href="https://www.sefaria.org" target="_blank" rel="noopener">Sefaria</a> · public domain (extracted at build time — this page never calls Sefaria)</span>
+    <span><span dir="ltr" lang="en">Cantillation audio © Russel Neiss &amp; Rabbi Charlie Schwartz, <a href="https://github.com/rneiss/PocketTorah" target="_blank" rel="noopener">PocketTorah</a> · <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a></span> · <span data-i18n="trope.footer.recording_melody">Spiro (Conservative) melody</span></span>
     <span data-i18n="trope.footer.materials_note">Materials incorporating PocketTorah audio (including this page's example clips and notated melody motifs) are CC BY-SA 4.0.</span>
   </div>
   <div style="margin-top:10px;">
