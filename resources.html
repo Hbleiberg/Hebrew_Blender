@@ -1846,7 +1846,10 @@ let _toastTimer = null;
 function fontToast(msg) {
   const t = document.getElementById('fontToast');
   t.textContent = msg; t.classList.add('show');
-  clearTimeout(_toastTimer); _toastTimer = setTimeout(() => t.classList.remove('show'), 3400);
+  clearTimeout(_toastTimer);
+  // A longer message stays longer: 3.4 s, then 50 ms per character past that, 8 s at most (the suite's toast rule) —
+  // the 72-character "added — pick it under My Fonts…" used to clear in 3.4 s.
+  _toastTimer = setTimeout(() => t.classList.remove('show'), Math.min(8000, Math.max(3400, 1000 + 50 * String(msg).length)));
 }
 /* Build the LICENSE.txt notice that ships inside the download zip, from the
    font entry's metadata. CC0 is spelled out in full; other licenses get a
