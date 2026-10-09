@@ -8,15 +8,9 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P4 (**NEW S488 A — header-wrap-gate**) | classroom_dashboard.html | **Header gates 558/652 sit under the EN ceilings 564/657**: 1-6px sideways at 559-564, 653-657. | found S488
-
-- [ ] P4 (**NEW S488 A — latin-tracking**) | classroom_dashboard.html | **Now/Next labels track Hebrew** (week chip, `.nn-lbl`). | found S488
-
-- [ ] P4 (**NEW S488 A**) | Hebrew_Font_Maker.html | **The sheet-crop caption sits under the top ruler**: unseen with rulers on (the default). | found S488
+- [ ] P4 (**NEW S489 — latin-tracking**) | classroom_dashboard.html | **The projected column titles (`.col-title`, Hebrew by `headerLang`) and the Fullscreen caption (`.fs-cap`) still track Hebrew** (1.25 / 0.34 px); the titles follow `headerLang`, not `html[lang]`. | found S489
 
 - [ ] P4 (**NEW S484 F**) | app-toast ×4, torah, trope | **Six toasts create their `role=status` element with its first text** (resources and FM pre-render it); pre-create it empty at load — a screen reader decides. | found S484
-
-- [ ] P4 (**NEW S487 B — for K**) | torah_trainer.html | **The Hebrew UI's load-failed status names the reading in English** ("טעינת Bereshit — Genesis 1:1-6:8 נכשלה"): `r.label` is not localized where the status is built; check how the select names it. | found S487
 
 - [ ] P4 (**NEW S483 C — gate 2**) | index.html | **Three `alert()`s stay**: "Use in all tools" repeats the status line; the Manual pane's two validation messages have no inline line (`#ivritStatus` is in the Automatic pane). | found S483
 
@@ -30,9 +24,9 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S479 G — gate 2**) | trope_tutor.html | **Only the Haftarah note says the Phrases tab has no examples** (Esther, Megillot, Eicha lack them too). | found S479
 
-- [ ] P4 (**NEW S478 M**) | 6 chrome headers | **A phone header leaves the star alone on a row** (EN contact ≤396, account ≤474). | found S478
+- [ ] P4 (**NEW S478 M**) | 6 chrome headers | **A phone header leaves the star alone on a row** (EN contact ≤396, account ≤474). S489: a title beside the star stacks 3 lines at 320 (taller) — gate 3. | found S478
 
-- [ ] P4 (**NEW S478 M**) | 6 chrome footers | **A "·" ends a footer line below ~700px.** | found S478
+- [ ] P4 (**NEW S478 M**) | 6 chrome footers | **A "·" ends a footer line below ~700px.** S489: no CSS-only fix; a bound dot starts the line instead — gate 3. | found S478
 
 - [ ] P4 (S476 N) | Hebrew_Font_Maker.html | **Guides reorder by drag only** (`attachGuideSortable`). | found S476
 
@@ -129,8 +123,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S413 Pass C — gate 3**) | 404.html | **The lost star wanders forever with no pause** (WCAG 2.2.2); only reduced motion stops it. | found S413
 
 - [ ] P4 (**NEW S414 Pass F — gates 2/3 + K**) | chrome pages, the 7 tools, 404, CSV | gate 2: **(1)** dark mode's visible "Light", and FM's fullscreen "Show/Hide Panels" (S415), are not in their fixed toggle names (2.5.3); **(2)** "Back" goes to the home page (tools say "Home"); **(3)** 404 lists 4 of 7 tools. Gate 3: **(4)** Tour / Dark / Full Screen / Settings order differs per tool. K: …[full …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [ ] P4 (**NEW S415**) | torah_trainer.html, trope_tutor.html | **The Sefaria / PocketTorah credits are pinned English with no `dir="ltr"` or `lang="en"`**; `dir` changes the Hebrew rendering, so compare crops. | found S415
 
 - [ ] P4 (**NEW S411 Pass I — K's**) | Hebrew_Font_Maker.html | **QA Check's outline warning names a glyph by its JS-built English `name` in the Hebrew UI** ("A (uppercase)"; the English, Cyrillic, Phoenician and Aramaic tables build `name` with no key, e.g. "Д (Cyrillic de, uppercase)"). | found S411
 
@@ -310,6 +302,12 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-09 | (S489 close-out) | branch/deploy note | **S489 = E (clean) + 4 fixes, PR #320 continued.** No drift (main `fee5fe05`, keep-alive #27 green); sw v969→v970; no FM bump (a layout fix); no gate; traps 208–211 (findings S489).
+
+- [x] 2026-10-09 | `f620c768` `e770c9eb` `c046d4fb` `d92d1de1` | dashboard ×2, FM, torah + trope | (S489) **Header gates 564/657; crop caption below the ruler; Hebrew Now/Next untracked; Sefaria/PocketTorah credits `lang="en"`.** | findings S489.
+
+- [x] 2026-10-09 | — | torah_trainer.html | (S489) **Not a defect: the load-failed status names the reading as its header and the select do** (transliteration + Sefaria ref in both UIs). | findings S489.
+
 - [x] 2026-10-09 | (S488 close-out) | branch/deploy note | **S488 = A + 4 fixes; PR #319 merged (deploy `success`), draft PR #320.** No drift; sw v968→v969; no FM bump; no gate; traps 204-207.
 
 - [x] 2026-10-09 | `5da9ecbe` `f722eeba` `183605ba` `87fea4c4` | dashboard ×2, trope, FM | (S488) **Ribbon 9.85:1; "Count down to" named; Try again keeps focus; crop caption in HE.** | findings S488.
@@ -326,13 +324,11 @@ _(none)_
 
 - [x] 2026-10-09 | `5163e4ca` | classroom_dashboard.html + locales + 2 reference docs | (S485) **Micro-feature: a countdown to the teacher's own event — name + date under Date & Time → a second gold line under the holiday countdown, gone by itself after the day; out of presets and starters like `intermissionHTML`, carried by `.ivrit`, AllTools and the account row.** | 96 checks (findings S485).
 
-- [x] 2026-10-09 | (S484 close-out) | branch/deploy note | **S484 = F (toasts) + 4 fixes, PR #319 continued.** No drift; sw v964→v965; no FM bump; no gate; trap 196.
-
-- [x] 2026-10-09 | `8037c22d` `78738db4` `5ffa32ba` `c7726222` | shared toast ×4, 7 toasts, FM ×2 | (S484) **Toast time follows its text (2.6→8 s; FM strip too); no toast stops at half the viewport; kerning labels in Hebrew.** | findings S484.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-09 | **S489** | iters: 1 pass (**E**) + 4 fixes = **5** | tools: dashboard ×2, FM, torah, trope | patterns fixed: header-gate ×1, latin-tracking ×1, pinned-english ×2 | pass run: E | SW: v969→v970
 
 - 2026-10-09 | **S488** | iters: 1 pass (**A**) + 4 fixes = **5** | tools: dashboard ×2, trope, FM | patterns fixed: contrast-plate, tip-name, button-focus | pass run: A | SW: v968→v969
 
@@ -372,11 +368,9 @@ _(none)_
 
 - 2026-10-07 | **S470** | iters: 1 pass (**F**) + 4 fixes = **5** | tools: 14 pages (dashboard, FM, torah ×2) | patterns fixed: placeholder ×14, button-focus ×1 | pass run: F | SW: v950→v951
 
-- 2026-10-07 | **S469** | iters: 1 pass (**C**) + 3 fixes = **4** | tools: generator ×2, flash ×2 | patterns fixed: button-focus-lost-to-its-own-rebuild ×2 | pass run: C | SW: v949→v950
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S488 (2026-10-09):** dashboard, trope, FM S488 · flash, resources, contact, saves S487 · docs S486 · generator, dictionary, torah S484 · index S483 · privacy, terms, account, i18n.js S478 · pwa S472 · 404 S470.
+- **Snapshot S489 (2026-10-09):** dashboard, FM, torah, trope S489 · flash, resources, contact, saves S487 · docs S486 · generator, dictionary S484 · index S483 · privacy, terms, account, i18n.js S478 · pwa S472 · 404 S470.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -396,9 +390,9 @@ _(none)_
 
 - **`placeholder-keeps-the-browser-gray`** (NEW S470 `45a3073e`): ACTIVE, streak 0. Detection: `f470/ph.mjs` < 4.5:1 (plant 1.3:1).
 
-- **`header-wrap-gate-below-its-ceiling`** (NEW S478 M; FIXED ×8 `92a21164`; S488 dashboard open): ACTIVE, streak 0. Detection: `m478/gates.mjs` (1px 400-900, EN/HE × light/dark, every page); HEAD the control.
+- **`header-wrap-gate-below-its-ceiling`** (NEW S478 M; FIXED ×8 `92a21164`; S489 dashboard `f620c768`): ACTIVE, streak 0. Detection: `m478/gates.mjs` / `e489/gates.mjs` (1px 320-1000, EN/HE × light/dark, per page; a gate removed by CSSOM gives its ceiling); HEAD the control.
 
-- **`latin-tracking-on-hebrew-labels`** (NEW S464 M; gate 3: drop suite-wide; ~180 rules/15 pages; S478 contact `936629b4`; S488 +1 dashboard): ACTIVE, streak 0. Detection: `m464/census.mjs` (a): Hebrew own-text, letter-spacing > 0; exempt `lang="en"`.
+- **`latin-tracking-on-hebrew-labels`** (NEW S464 M; gate 3: drop suite-wide; ~180 rules/15 pages; S478 contact `936629b4`; S489 dashboard Now/Next `c046d4fb`; dashboard titles + `.fs-cap` open): ACTIVE, streak 0. Detection: `m464/census.mjs` (a) / `e489/track.mjs`: Hebrew …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`forward-arrow-points-back-in-rtl-copy`** (NEW S462 N; FIXED S464 `5f7f8a40` ×48; open 0): ACTIVE, streak 1 (S472: 47 delta rows, 0). Detection: the S462 CSV census; exempt "(→)", A→Z, Back labels, the orphan `flashcards.header.home`.
 
@@ -454,7 +448,7 @@ _(none)_
 
 - **`designed-key-miss-probed-through-t`** (NEW S415; FM `gName()` FIXED `95d5f46`): ACTIVE, streak 1 (S416: 0 on the delta). Detection: `[i18n] missing key` in B's interaction arm; static: `=== k ?` fallbacks without `I18n.has`.
 
-- **`pinned-english-without-lang`** (NEW S415; 20 FIXED `f4bbfe8`; S422 resources ×43 `8c56a89`; torah/trope open): ACTIVE, streak 0 (S416 `a416/pinned.mjs`: only those). Detection: HE UI, `closest('[lang]')` of each pinned-English element = "en"; control: a planted span …[full …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`pinned-english-without-lang`** (NEW S415; 20 FIXED `f4bbfe8`; S422 resources ×43 `8c56a89`; S489 torah + trope `d92d1de1`; no open carrier): ACTIVE, streak 0. Detection: HE UI, `closest('[lang]')` of each pinned-English text node (Latin, no Hebrew, outside `[data-i18n]`) = …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`toggle-name-flips-with-its-pressed-state`** (NEW S414 `f9e67b2`; S416 trope tune `96275c2`; S430 found torah's Trope staff Tune all + every verse Tune; **S431 FIXED `aa97e2e`**): ACTIVE, streak 0 (last swept S430). Detection `f414/toggles2.mjs`: real click per …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -728,8 +722,8 @@ _(none)_
 
 - H teacher walkthrough / paper-cuts (one tool): 2026-10-08 (**S482 — torah (S336 →): 4 lessons, EN + HE, phone. FOUND 4, FIXED 2 (+2 dictionary). H-next: contact (S350).**)
 
-- E freshness/site-health: 2026-10-08 (**S473 — 37th E on `665d7b56..c5bfca3c` (107 commits, 113 files): 30 arms, 17 plants fired (findings S473). FOUND + FIXED `df0fdc21`: torah-and-trope.md named 2 removed functions; README's 2 corpus sizes.**)
+- E freshness/site-health: 2026-10-09 (**S489 — 38th E on `c5bfca3c..7663499a` (78 commits, 34 files): 15 static arms, docids, runtime CSP 34 cells, generators + smokes; plants 19/19 + 17/17 (findings S489). CLEAN: 0 findings.**)
 
 - F cross-tool consistency: 2026-10-09 (**S484 — 36th F, the toast contract on all 8 carriers (5th look, S111 →): 24 cells + reduce, width, bars; plants 4/4. FOUND 4, FIXED 3 (+ FM kerning). F-next: the tabs / segmented-control keyboard contract (never swept).**)
 
-**Next session (S489):** **BRANCH/PR: `claude/nifty-cray-0dvnxz` → draft PR #320 (S488): open → continue; merged → restart from `origin/main`.** `sw.js` **v969**, FM **5.59**. ⚑ Stalest: E (S473), L, K; O blocked. ⚑ Untaken: dashboard header gates, Now/Next tracking, FM crop caption (P4s). ⚑ Seeds: 47 (gate 1). ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.
+**Next session (S490):** **BRANCH/PR: `claude/nifty-cray-0dvnxz` → draft PR #320 (S488–S489): open → continue; merged → restart from `origin/main`.** `sw.js` **v970**, FM **5.59**. ⚑ Stalest: L (S474), K, N; O blocked. ⚑ Untaken: dashboard titles track Hebrew (P4); chrome header star / footer dot (gate 3). ⚑ Seeds: 47 (gate 1). ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.

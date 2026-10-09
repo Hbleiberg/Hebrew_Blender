@@ -92209,3 +92209,27 @@ _(prior — S487 pointer:)_ **Next session (S487):** **BRANCH/PR: `claude/improv
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 _(prior — S488 pointer:)_ **Next session (S488):** **BRANCH/PR: `claude/improve-loop-s483` → draft PR #319 (S483–S487): open → continue; merged → restart from `origin/main`.** `sw.js` **v968**, FM **5.59**. ⚑ Stalest: A (S472), E, L, K; O blocked. ⚑ Untaken: the 6 chrome footers' trailing "·" (P4 M); smoke-sync's clock pin (P4). ⚑ Seeds: 47 open (gate 1 picks). ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.
+
+
+<!-- archived by compact-ledger at the S490 boundary, 2026-10-09 -->
+## Compaction (S490, 2026-10-09) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-09 | (S484 close-out) | branch/deploy note | **S484 = F (toasts) + 4 fixes, PR #319 continued.** No drift; sw v964→v965; no FM bump; no gate; trap 196.
+
+- [x] 2026-10-09 | `8037c22d` `78738db4` `5ffa32ba` `c7726222` | shared toast ×4, 7 toasts, FM ×2 | (S484) **Toast time follows its text (2.6→8 s; FM strip too); no toast stops at half the viewport; kerning labels in Hebrew.** | findings S484.
+
+### from Per-session log (one line per session)
+
+- 2026-10-07 | **S469** | iters: 1 pass (**C**) + 3 fixes = **4** | tools: generator ×2, flash ×2 | patterns fixed: button-focus-lost-to-its-own-rebuild ×2 | pass run: C | SW: v949→v950
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`latin-tracking-on-hebrew-labels`** (NEW S464 M; gate 3: drop suite-wide; ~180 rules/15 pages; S478 contact `936629b4`; S489 dashboard Now/Next `c046d4fb`; dashboard titles + `.fs-cap` open): ACTIVE, streak 0. Detection: `m464/census.mjs` (a) / `e489/track.mjs`: Hebrew own-text, letter-spacing > 0; exempt `lang="en"`.
+
+- **`pinned-english-without-lang`** (NEW S415; 20 FIXED `f4bbfe8`; S422 resources ×43 `8c56a89`; S489 torah + trope `d92d1de1`; no open carrier): ACTIVE, streak 0. Detection: HE UI, `closest('[lang]')` of each pinned-English text node (Latin, no Hebrew, outside `[data-i18n]`) = "en" (`e489/foot2.mjs`); HEAD the control.
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+_(prior — S489 pointer:)_ **Next session (S489):** **BRANCH/PR: `claude/nifty-cray-0dvnxz` → draft PR #320 (S488): open → continue; merged → restart from `origin/main`.** `sw.js` **v969**, FM **5.59**. ⚑ Stalest: E (S473), L, K; O blocked. ⚑ Untaken: dashboard header gates, Now/Next tracking, FM crop caption (P4s). ⚑ Seeds: 47 (gate 1). ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.
