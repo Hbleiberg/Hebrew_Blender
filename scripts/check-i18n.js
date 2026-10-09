@@ -7,9 +7,12 @@
  * Check A (regression gate): flags hardcoded English UI-string literals that don't go through
  *   I18n.t() / data-i18n* —
  *     - alert()/confirm()/prompt() whose argument isn't I18n.t(…)/t(…),
- *     - .textContent / .innerHTML / .placeholder / .title = '<English literal>',
+ *     - .textContent / .placeholder / .title = '<English literal>', also behind a ternary (rule 2b) or as
+ *       the prose fragments of a concatenation (rule 2c); .innerHTML and backtick strings are not read
+ *       (they build markup and interpolate data, too noisy to classify statically),
  *     - .setAttribute('aria-label'|'title'|'placeholder', '<English literal>'),
- *     - HTML title="…" / aria-label="…" / placeholder="…" attributes with no paired data-i18n-* sibling.
+ *     - (warn-only) HTML title="…" / aria-label="…" / placeholder="…" attributes with no paired
+ *       data-i18n-* sibling.
  * Check B (debt report): lists locales/ui-strings.csv keys with an empty cell in any non-`en`
  *   language column (the CSV schema is column-driven — see build-locales.js).
  * Check C (corpus gate): the localization corpus is DATA, and data-i18n-html writes it straight
@@ -35,14 +38,17 @@
  *   data-i18n-html fallback whose tag multiset disagrees with a built value, and a plain data-i18n
  *   element carrying markup — applyStaticI18n sets textContent there, so the tags are dropped
  *   unconditionally and the CSV cannot rescue them; such a site must become data-i18n-html.
+ * Check E (legal-block gate): privacy.html / terms.html render a data-legal-block by splitting its CSV
+ *   value on \n into the block's <p>/<li> slots, and keep the English silently when the counts differ —
+ *   so every language cell must carry exactly one segment per slot.
  *
  * A literal is only linguistic if it contains an ASCII letter (pure symbol/emoji/number/computed
  * strings like '✕', '⠿', '0.75×', '(' + n + ')' are skipped). RHS/args that contain I18n.t( are
  * compliant; concatenations with a variable are treated as content-derived. Suppress a legitimate
  * literal with a same-line `i18n-ignore` comment.
  *
- * Exit 1 on un-suppressed Check-A violations or any Check-C1/C2 finding (Check B and the C markup-
- * parity report are warn-only). Plain Node, zero deps.
+ * Exit 1 on un-suppressed Check-A violations or any Check-C1/C2, D or E finding (Check B, Check A's
+ * HTML-attribute warnings and the C markup-parity report are warn-only). Plain Node, zero deps.
  * Run: node scripts/check-i18n.js
  */
 
