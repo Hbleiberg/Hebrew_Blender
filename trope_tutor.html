@@ -1841,12 +1841,25 @@ function _setRetryVisible(on) {
 // down network simply leaves the message standing — no retry loop, nothing to undo.
 async function retryLoadData() {
   const b = document.getElementById('tuRetryBtn');
+  // The Try again the keyboard pressed (this one or the Phrases tab's): disabling it for the attempt drops its focus, and a
+  // load that works hides it, so either way the keyboard fell to the page (pattern button-focus-lost-to-its-own-rebuild).
+  const ae = document.activeElement, pressed = ae && (ae.id === 'tuRetryBtn' || ae.id === 'tuPhrRetry') ? ae : null;
   if (b) b.disabled = true;
   await loadData();
   renderPhrasesIfShown();
-  if (!INDEX) { if (b) b.disabled = false; return; }
-  renderLearn();
-  updateDrillStart();
+  if (INDEX) { renderLearn(); updateDrillStart(); }
+  else if (b) b.disabled = false;
+  if (pressed) _focusAfterRetry(pressed);
+}
+// Still shown (the load failed again), the button keeps the keyboard; gone, the view on screen takes it at its first
+// control (a link in a tab's intro would lead out of the page). Rendered-ness first: a just-hidden button still reads
+// as document.activeElement until the next layout.
+function _focusAfterRetry(btn) {
+  if (btn.getClientRects().length) { if (document.activeElement !== btn) btn.focus(); return; }
+  const view = document.querySelector('.tu-view:not([hidden])');
+  const t = view && [...view.querySelectorAll('button, input, select, textarea')]
+    .find((x) => x.tabIndex >= 0 && !x.disabled && x.getClientRects().length);
+  if (t) t.focus();
 }
 function examplesFor(key) {
   return (INDEX && INDEX.tropes && INDEX.tropes[key]) || [];
