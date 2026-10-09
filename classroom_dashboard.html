@@ -289,6 +289,9 @@
   /* 0.7rem (11.2px) is the suite's legibility floor for a functional label; with the 2px block
      padding the stack is 16 + 1 + 11.2 + 4 + 2 (border) = 34.2px, inside the 35px header row. */
   .fs-btn .fs-cap { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.03em; }
+  /* The Hebrew UI's fullscreen captions (this button, the fullscreen strip's labels, the Exit plate): no Latin tracking,
+     which only spaced the Hebrew letters apart (latin-tracking-on-hebrew-labels). */
+  html[lang="he"] .fs-btn .fs-cap, html[lang="he"] .fs-strip-btn, html[lang="he"] #fsExitBtn .fs-label { letter-spacing: normal; }
 
   /* ── i18n / RTL utilities ── */
   /* Mirror directional glyphs (←, ‹, ›, →) when the UI renders right-to-left. */
@@ -526,6 +529,10 @@
     flex-shrink: 0;
   }
   .dash-col.collapsed .col-title::after { transform: rotate(-90deg); }
+  /* The projected titles in Hebrew (hebDisplay's lang="he" span: they follow headerLang, not the UI language): Hebrew
+     has no capitals, and the Latin tracking only spaced its letters apart (latin-tracking-on-hebrew-labels). English
+     titles keep the small caps. */
+  .col-title [lang="he"], #videoHeaderLabel [lang="he"] { letter-spacing: normal; text-transform: none; }
   .col-body {
     padding: 16px 18px;
     flex: 1;
@@ -10849,7 +10856,7 @@ else ivritInit();
     const vLabel = document.getElementById('videoHeaderLabel');
     if (vLabel) {
       const isHebV = (settings.headerLang || 'he') === 'he';
-      vLabel.textContent = isHebV ? 'וִידֵאוֹ' : 'Video';   // i18n-ignore — projected widget CONTENT: follows headerLang, not I18n.lang
+      vLabel.innerHTML = isHebV ? hebDisplay('וִידֵאוֹ') : 'Video';   // i18n-ignore — projected widget CONTENT: follows headerLang, not I18n.lang; hebDisplay like its sibling titles
       vLabel.style.direction = isHebV ? 'rtl' : '';
     }
   }
