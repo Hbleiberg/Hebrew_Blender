@@ -299,11 +299,33 @@ class FakeCloud {
 const DAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 const WEEK = { v: 1, periods: [{ start: '08:00', end: '08:45' }, { start: '08:45', end: '09:30' }], weekend: false, cells: {} };
 DAYS.forEach(d => { WEEK.cells[d] = d === 'mon' ? ['Morning', 'Morning'] : d === 'tue' ? ['Morning', null] : [null, null]; });
+// Schedule Sync applies the grid on the browser's clock: a run whose local time fell in a busy cell (Mon 08:00–09:30,
+// Tue 08:00–08:45) ran the Morning preset (headerLang 'en'), the page synced it as designed, and scenario 2's "nothing
+// else pushed" failed. So every context runs in a zone whose local time stays out of the grid's busy cells for the next
+// two hours: the machine's own zone when it already does (the usual case), else one 6 or 12 hours away.
+function scheduleIdleZone(week, now = Date.now(), spanMs = 2 * 3600e3) {
+  const mins = (hm) => { const [h, m] = hm.split(':').map(Number); return h * 60 + m; };
+  const busy = (zone, t) => {
+    const p = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: zone, weekday: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })
+      .formatToParts(new Date(t)).map(x => [x.type, x.value]));
+    const day = p.weekday.toLowerCase().slice(0, 3), m = Number(p.hour) * 60 + Number(p.minute);
+    return (week.cells[day] || []).some((c, i) => c && m >= mins(week.periods[i].start) && m < mins(week.periods[i].end));
+  };
+  for (const zone of [undefined, 'Etc/GMT-6', 'Etc/GMT+6', 'Etc/GMT-12']) {
+    let idle = true;
+    for (let t = now; t <= now + spanMs && idle; t += 60e3) idle = !busy(zone, t);
+    if (idle) return zone;
+  }
+  throw new Error('smoke-sync: no time zone keeps the fixture schedule idle for the run');
+}
+const IDLE_ZONE = scheduleIdleZone(WEEK);
+const ZONE = IDLE_ZONE ? { timezoneId: IDLE_ZONE } : {};
+if (IDLE_ZONE) console.log(`smoke-sync: the browser runs in ${IDLE_ZONE} (local time here is inside the fixture schedule's busy cells)`);
 let DEVICE_SETTINGS = null, ACCOUNT_SETTINGS = null, OMIT = [];
 const omitted = (field, omit) => omit.some(p => p === field || (p.startsWith('*') && field.endsWith(p.slice(1))) || (p.endsWith('*') && field.startsWith(p.slice(0, -1))));
 const projectSettings = (blob) => Object.fromEntries(Object.entries(blob).filter(([k]) => !omitted(k, OMIT)));
 async function captureDashboardBlob(browser) {
-  const ctx = await browser.newContext({ serviceWorkers: 'block' });
+  const ctx = await browser.newContext({ serviceWorkers: 'block', ...ZONE });
   await ctx.route('**/*', route => (route.request().url().startsWith(BASE) ? route.continue() : route.abort()));
   const page = await ctx.newPage();
   await page.goto(BASE + '/classroom_dashboard.html', { waitUntil: 'domcontentloaded' });
@@ -380,7 +402,7 @@ async function startServer() {
 // snapshots localStorage into window.__lsAtLoad before the page's scripts run (what a sign-out or an erase left)
 // and records the module's window events.
 async function openContext(browser, cloud, seed) {
-  const ctx = await browser.newContext({ serviceWorkers: 'block', viewport: { width: 1280, height: 900 }, acceptDownloads: true });
+  const ctx = await browser.newContext({ serviceWorkers: 'block', viewport: { width: 1280, height: 900 }, acceptDownloads: true, ...ZONE });
   await ctx.addInitScript((seed) => {
     if (!localStorage.getItem('__smoke_seeded')) { for (const k of Object.keys(seed)) localStorage.setItem(k, seed[k]); localStorage.setItem('__smoke_seeded', '1'); }
     try { window.__lsAtLoad = JSON.stringify(Object.assign({}, localStorage)); } catch (e) {}
