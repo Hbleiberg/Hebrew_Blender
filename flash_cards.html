@@ -4514,10 +4514,13 @@ function applySettings(s) {
   const rawFont = (typeof s.hebFontId === 'string' && s.hebFontId) ? s.hebFontId : 'Frank Ruhl Libre';   // any NAME survives (a My Font); only a non-string is garbage
   hebFontId = fontMigration[rawFont] || rawFont;
   engFontId = (typeof s.engFontId === 'string' && s.engFontId) ? s.engFontId : 'Libre Baskerville';
-  // Array members get the same guard as the scalars: only integer positions this (clamped) mode
-  // offers survive — a non-finite or string member from a loaded file used to slip through because
-  // the bound was read from the raw s.mode, and a non-array value threw on .filter.
-  vowelPositions = new Set((Array.isArray(s.vowelPositions) ? s.vowelPositions : []).filter(p => Number.isInteger(p) && p >= 1 && p <= mode));
+  // Array members get the same guard as the scalars: only integer positions a letter mode offers
+  // (1–3, the #modePills range) survive — a non-finite or string member from a loaded file used to
+  // slip through, and a non-array value threw on .filter. A position above THIS mode stays, as it does
+  // in-session (the hidden row keeps it, and the cards read only the positions the mode has): bounded
+  // by the mode, a 1-letter board saved with "2nd" chosen came back on "1st", so the reload lost the
+  // teacher's 2-letter choice and the next save wrote the loss everywhere.
+  vowelPositions = new Set((Array.isArray(s.vowelPositions) ? s.vowelPositions : []).filter(p => Number.isInteger(p) && p >= 1 && p <= 3));
   if (vowelPositions.size === 0) vowelPositions.add(mode);
   anyVowelLock = !!s.anyVowelLock;
   vowelLocks = {
