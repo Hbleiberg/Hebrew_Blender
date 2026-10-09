@@ -316,7 +316,7 @@ _(none)_
 
 - [x] 2026-10-09 | (S486 close-out) | branch/deploy note | **S486 = one L feature on direction (week cycles; 5 answers in chat), PR #319 continued; pass skipped (B stays stalest).** No drift; sw v966→v967; no FM bump; smoke-sync 207/207; trap 199 (findings S486).
 
-- [x] 2026-10-09 | `4875ef78` | classroom_dashboard.html + locales + 2 docs | (S486) **Schedule Sync week cycles: a "Schedule repeats" ribbon (1 / A/B / 3 / 4), week tabs over one bell schedule, "This week is" re-anchoring, Copy from Week A, a Week chip on Now / Next; `cells` stays Week A, so old builds and plain weeks are untouched.** | 144 checks (findings S486).
+- [x] 2026-10-09 | `4875ef78` | classroom_dashboard.html + locales + 2 docs | (S486) **Schedule Sync week cycles: a "Schedule repeats" ribbon (1 / A/B / 3 / 4), week tabs over one bell schedule, "This week is" re-anchoring, Copy from Week A, a Week chip on Now / Next; `cells` stays Week A for old builds.** | 144 checks (findings S486).
 
 - [x] 2026-10-09 | (S485 close-out) | branch/deploy note | **S485 = the micro-feature alone (gate 1: the maintainer's pick), PR #319 continued; pass skipped on direction (B stays stalest).** No drift; sw v965→v966; no FM bump; traps 197–198 (findings S485).
 
@@ -338,7 +338,7 @@ _(none)_
 
 ### Per-session log (one line per session)
 
-- 2026-10-09 | **S486** | iters: 2 (an L feature on direction) | tools: dashboard | patterns fixed: — | pass run: — (skipped; B stays stalest) | SW: v966→v967
+- 2026-10-09 | **S486** | iters: 2 (L feature) | tools: dashboard | patterns fixed: — | pass run: — (skipped; B stays stalest) | SW: v966→v967
 
 - 2026-10-09 | **S485** | iters: 2 (micro-feature) | tools: dashboard | patterns fixed: — | pass run: — (skipped on direction; B stays stalest) | SW: v965→v966
 
@@ -736,4 +736,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-09 (**S484 — 36th F, the toast contract on all 8 carriers (5th look, S111 →): 24 cells + reduce, width, bars; plants 4/4. FOUND 4, FIXED 3 (+ FM kerning). F-next: the tabs / segmented-control keyboard contract (never swept).**)
 
-**Next session (S487):** **BRANCH/PR: `claude/improve-loop-s483` → draft PR #319 (S483–S486): open → continue; merged → restart from `origin/main`.** `sw.js` **v967**, FM **5.59**. ⚑ Stalest: B (S471), A, E; O blocked. ⚑ Untaken: flash's toast on the Start bar (P3). ⚑ Seeds: 47 open; a build needs the maintainer's pick (gate 1). ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; the week cycles under an A/B school's eyes (no day cycle yet).
+**Next session (S487):** **BRANCH/PR: `claude/improve-loop-s483` → draft PR #319 (S483–S486): open → continue; merged → restart from `origin/main`.** `sw.js` **v967**, FM **5.59**. ⚑ Stalest: B (S471), A, E; O blocked. ⚑ Untaken: flash's toast on the Start bar (P3). ⚑ Seeds: 47 open (gate 1 picks). ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.
