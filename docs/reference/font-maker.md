@@ -174,7 +174,7 @@ handler goes through the real setters (`setMarkEnabled`, `setAdd*`, `setInputMod
   wizard, help, QA, My Fonts or mobile-warn overlay is the one under the pointer.
   It auto-closes before running `onClick`; to make elements inside the body interactive (like the
   export-warning letter chips), wire listeners on `#askBody` **after** the `askModal(...)` call.
-- **Toasts**: `status(msg, sticky)` — auto-clears in 4s unless `sticky`.
+- **Toasts**: `status(msg, sticky)` — auto-clears after 4 s (a long message longer: 50 ms per character, 8 s at most) unless `sticky`.
 - **Long waits**: `ipArm(delay)` / `ipClose()` — the `#importProgressOverlay` busy modal (the ONLY
   modal in the file that isn't a decision point). `status()` mirrors into its phase line, so every
   message the operation already emits shows where the eye is; `ipOpen` seeds from `#statusMsg`'s

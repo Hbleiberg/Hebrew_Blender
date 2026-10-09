@@ -4314,7 +4314,9 @@ function status(msg, sticky) {
   document.getElementById('statusMsg').textContent = msg || '';
   ipPhase(msg);   // while an import is running, the progress modal mirrors this strip — every phase it already emits shows up where the eye is
   if (_statusTimer) clearTimeout(_statusTimer);
-  if (!sticky && msg) _statusTimer = setTimeout(() => { document.getElementById('statusMsg').textContent = ''; }, 4000);
+  // A longer message stays longer: 4 s, then 50 ms per character past that, 8 s at most (the suite's toast rule) —
+  // the 124-character "Every letter already has a picture or an outline…" used to clear in 4 s.
+  if (!sticky && msg) _statusTimer = setTimeout(() => { document.getElementById('statusMsg').textContent = ''; }, Math.min(8000, Math.max(4000, 1000 + 50 * String(msg).length)));
 }
 /* ── Import progress modal ────────────────────────────────────────────────────────────────────
    An anchors-on import waits on a COLD engine: ~8 MB of Pyodide + fontTools, then a synchronous
