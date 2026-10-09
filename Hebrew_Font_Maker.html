@@ -15902,13 +15902,13 @@ function kernClassCps(cls) {
 function kernSideDisplay(s) {   // text for the side input: a single glyph, or the class' glyphs/name
   if (!s.cls) return String.fromCodePoint(parseInt(s.cp, 16));
   if (s.cls === 'finals') return 'ך ם ן ף ץ';
-  if (s.cls === 'desc')   return 'Descenders';
+  if (s.cls === 'desc')   return I18n.t('fontmaker.panels.kern_descenders');
   const c = userKernClasses().find(x => x.id === s.cls); return c ? c.name : '?';
 }
 function kernSideCps(s) { return (kernClassCps(s.cls) || [s.cp]).slice(); }                  // the class array, or the single glyph
 function kernSideLabel(cps) {
-  if (sameSet(cps, KERN_CLASS_FINALS)) return 'Finals';
-  if (sameSet(cps, KERN_CLASS_DESC))   return 'Descenders';
+  if (sameSet(cps, KERN_CLASS_FINALS)) return I18n.t('fontmaker.panels.kern_finals_short');
+  if (sameSet(cps, KERN_CLASS_DESC))   return I18n.t('fontmaker.panels.kern_descenders');
   const uc = userKernClasses().find(c => sameSet(cps, c.members)); if (uc) return uc.name;
   return (cps || []).map(cp => String.fromCodePoint(parseInt(cp, 16))).join(' ');
 }

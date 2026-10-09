@@ -2739,6 +2739,7 @@ fontmaker.panels.kern_export_skip,Pairs marked “⚠ untraced” or “set a ga
 fontmaker.panels.kern_export_summary.one,{ready} of 1 pair will be exported.,{ready} מתוך זוג אחד ייוצא.,panel note (total=1),plural
 fontmaker.panels.kern_export_summary.other,{ready} of {total} pairs will be exported.,{ready} מתוך {total} זוגות ייוצאו.,panel note,plural
 fontmaker.panels.kern_finals,Finals (ך ם ן ף ץ),סופיות (ך ם ן ף ץ),kern class option,mixed UI+content — do not translate {…}
+fontmaker.panels.kern_finals_short,Finals,סופיות,kern class label in the pair list (the glyphs are shown beside it),
 fontmaker.panels.kern_first,First (right),ראשונה (ימין),kern side label,
 fontmaker.panels.kern_first_ltr,First (left),ראשונה (שמאל),kern side label when the pair reads left-to-right (Latin),
 fontmaker.panels.kern_gap,Gap,מרווח,slider label,
