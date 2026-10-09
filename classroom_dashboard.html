@@ -1319,7 +1319,9 @@ body.dark .hk-key:active{background:#2a4070;}
     font-size: 0.78rem;
     cursor: pointer;
     font-weight: 600;
-    color: var(--muted);
+    /* --text, as every drawer group already reads (.form-row label outranks this rule): the Schedule Sync
+       ribbon is the one group outside a .form-row, and --muted gave its unchosen options 4.13:1 on the dark plate */
+    color: var(--text);
     transition: background 0.15s, color 0.15s, box-shadow 0.15s;
     flex: none;
   }
