@@ -376,8 +376,10 @@ to Learn), and a caller that opens something inside the new tab (`openLearnFor`)
   chooses (`phraseSet()`, any of the six); `PHRASE_GROUPS` orders each chart's rows into its clause groups (a
   row the table does not name joins *More phrases*).
   - It is built by `node scripts/build-trope-phrases.mjs` from the fenced row blocks in
-    `docs/tropepatterns.md` sections B, C and H–K, which are **the only hand-edited copy of the notes**:
-    fix a note there and re-run the builder, never edit the JSON. Every melody's rows are smoke-tested
+    `docs/tropepatterns.md` sections B, C and H–K, which are **the only hand-edited copy of the notes**,
+    and from section A's table (the first table in that file whose header begins `Mark (tutor key)`);
+    every other line of the file is prose the builder never reads. Fix a note there and re-run the
+    builder, never edit the JSON. Every melody's rows are smoke-tested
     against the builder's per-melody `SMOKE` table (the marks its chart lacks, its key, its range, its
     `[aliyah-end]` rows and the verse endings they close), and a melody marked `derived: true` in `MELODIES`
     has its motif file written from section A's column on every run and checked against its rows like the
@@ -394,8 +396,9 @@ to Learn), and a caller that opens something inside the new tab (`openLearnFor`)
       `8{…}` of the Haftarah geresh). `tags` may carry `aliyah-end` (a closing: the end of an aliyah, of the
       haftarah on the Haftarah chart, or of a chapter and the book on the Megillot charts) and `derived` (a closing the chart does not print, built from
       its printed one for a shorter verse ending — the Haftarah rows 40b–40d). `values` includes `64`.
-    - Syllables, marks, triplets and slurs are spans of note indices, so a triplet or slur may cross
-      from one mark into the next. `dashed` marks a dashed slur (`~~`), which no row prints yet.
+    - Syllables (underlay syllables: the mark's own name, never a Torah word's), marks, triplets and
+      slurs are spans of note indices, so a triplet or slur may cross from one mark into the next.
+      `dashed` marks a dashed slur (`~~`), which no row prints yet.
     - `figures.<melody>.<mark>` lists each distinct figure as `{refs, prev, next}`: `refs` holds the
       `[row, mark index]` pairs that sing it, and `prev`/`next` the marks printed before and after
       it (`^` and `$` are the row's edges).
@@ -461,8 +464,9 @@ to Learn), and a caller that opens something inside the new tab (`openLearnFor`)
         times: listen to a few before trusting a new build.
     - `docs/tropepatterns.md` → *G. Toward a parasha staff* reads the result.
 - **The Phrases tab** (`#phrasesView`) draws that file: one clause group at a time (`PHRASE_GROUPS`, the
-  charts' own teaching order, 12 Torah, 11 High Holiday and 12 Haftarah groups; a row the table misses joins a last
-  "More phrases" group, so every row shows exactly once), in the melody Settings chooses.
+  charts' own teaching order, 12 Torah, 11 High Holiday, 12 Haftarah, 12 Esther, 11 Megillot and 11 Eicha groups; a
+  row the table misses joins a last "More phrases" group, so every row shows exactly once), in the melody the
+  Melody dropdown chooses.
   - **A card per row**: its number, the Hebrew as printed, a chip per mark (glyph and name in the chosen
     tradition; it opens that mark's Learn card through `openLearnFor`, and hovering or focusing it lights
     the mark's notes, bar and syllables), the staff, and a play button.
@@ -484,7 +488,8 @@ to Learn), and a caller that opens something inside the new tab (`openLearnFor`)
       hooked rest has a knob per flag, from the third space down (a 32nd's third in the fourth), on a
       stem to the second line (eighth) or the bottom line; a quarter rest spans the middle three
       spaces; a half rest sits on the middle line; a dot rides in the third space. The layout spaces a
-      rest by the glyph's own reach (both charts print only eighth rests);
+      rest by the glyph's own reach (the charts print eighth rests, and the Esther and Megillot charts
+      sixteenth rests too);
     - beams per syllable, which break at rests and grace notes and split a run over eight at the
       quarter, with deeper beams and stubs for sixteenths and 32nds; the note farthest from the middle
       line turns a beam's stems;
@@ -514,8 +519,9 @@ to Learn), and a caller that opens something inside the new tab (`openLearnFor`)
     - On the High Holiday melody the examples are words only, named by their reading (Rosh Hashanah,
       day 1 or 2; Yom Kippur morning or afternoon). The melody banner says there are no recordings,
       and a row the readings never sing says so.
-    - On the Haftarah melody a card has no examples block at all (the census reads no Nevi'im text); the
-      melody banner (`#tuPhrMelodyNote`, one span per melody) says so.
+    - On the Haftarah, Esther, Megillot and Eicha melodies a card has no examples block at all
+      (`MELODY_INFO`'s `examples`: the census reads the Torah and the High Holiday readings only); the
+      melody banner (`#tuMelodyNote`, one span per melody) says so for the Haftarah only.
   - **The tune** is `togglePhraseTune`, on the Learn tune's scale (an eighth is 0.32 s at 1×): ties sound
     as one note, a rest is silent for its whole value and lit while it lasts (the note before it goes
     dark, so nothing looks held through the pause), and a grace note is quick and borrowed from the
@@ -542,7 +548,7 @@ to Learn), and a caller that opens something inside the new tab (`openLearnFor`)
     any other tab, the Learn chart prints as before.
 - **Key and voice** (Settings → *Sing along*, and the key bar `#tuKeyBar`, on the Learn and Phrases tabs). Two fields of the
   settings blob move every staff and its tune; the motif files are never touched.
-  - **`tuneShift`** (whole half steps, −6…6, default 0) moves every note of both melodies and redraws the
+  - **`tuneShift`** (whole half steps, −6…6, default 0) moves every note of every melody and redraws the
     staff in the key it lands on: `staffKey()` = `shiftedKey(file key, shift)`, which reads the tonic's new
     pitch class off `MAJOR_KEY_BY_PC` (C, D♭, D, E♭, E, F, F♯, G, A♭, A, B♭, B — the fewer-accidentals
     spelling, F♯ for the tritone), and an unmoved chart keeps its own key name. `keySignature` and
@@ -712,8 +718,10 @@ file uses, the Megillot chart's `64` included). Design: `docs/tropepatterns.md` 
 
 - **From text to notes.** `tropeUnitsOfVerse(v.hebrew)` reads the verse's marks on the Trainer's own split
   (`/(\s+|־)/`: one *piece* per Hebrew-bearing token, the way `tokenizeHebrew` emits `.tt-word`s): a maqaf
-  joins the next piece to the cell (one sung word), a repeated mark counts once, pashta written twice (its
-  second glyph is kadma's) is one pashta, the last cell takes `sof_pasuk`, a `׀` token after a munach makes
+  joins the next piece to the cell (one sung word), a repeated mark counts once (this text writes a doubled
+  pashta, segol, zarka or telisha as two of the same sign), a kadma glyph on a word that also carries pashta is
+  read as a double pashta's first half, not a kadma (some editions write it so; this text never does), the last
+  cell takes `sof_pasuk`, a `׀` token after a munach makes
   it `munach_legarmeh` (**a paseq prints the same and cannot be told apart in the API text — accepted for
   the beta**), and an unmarked cell sings with the cell after it. `tropeContextsOf(set)` indexes every
   printed figure by the marks before and after it; `tropeChooseFigures` picks one per unit — a connecting

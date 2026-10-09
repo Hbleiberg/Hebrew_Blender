@@ -39,10 +39,9 @@ their rows. To change a note, edit its row here and re-run the builder; never ed
   `A♭4`; a natural would be written too, and none occurs) and no other sign appears (section H). The
   Esther chart has three flats too and prints one accidental, the E♮ of its segol clause (rows 35–39,
   41), so every B, E and A carries its sign (`B♭4`, `E♭4`, `A♭4`, `E♮4`) and no other sign appears
-  (section I). The
-  Megillot chart has no key signature and prints no accidental at all (section J). The Eicha chart
-  has three flats, like the Haftarah chart, and prints one accidental, the E♮ of its segol clause
-  (rows 34–37), so every B, E and A carries its sign and no other sign appears (section K).
+  (section I). The Megillot chart has no key signature and prints no accidental at all (section J).
+  The Eicha chart has three flats, like the Haftarah chart, and prints one accidental, the E♮ of its
+  segol clause (rows 34–37), so every B, E and A carries its sign and no other sign appears (section K).
 - **Scale degrees** are given relative to A for the Torah chart (A = 1, B = 2, C♯ = 3, D = 4,
   E = 5, F♯ = 6, G♯ = 7; ′ is the octave above). The tutor stores `p` = semitones from B4 (B♭4 = −1,
   A4 = −2, G4 = −4, F♯4 = −5, F4 = −6, E4 = −7, D4 = −9, C♯4 = −10, C4 = −11, B3 = −12, A3 = −14,
@@ -61,9 +60,8 @@ their rows. To change a note, edit its row here and re-run the builder; never ed
     the number and in lowercase: `[aliyah-end]` for the closing formula of an aliyah's last verse
     (Torah 41, High Holiday 30–33, Haftarah 40 and its derived 40b–40d, Esther 41, Megillot 39 and
     39a and Eicha 38 — the end of a chapter, or of the book, in a book read without aliyot),
-    `[unverified]` for a
-    row that
-    has not been checked against a printed chart (no row carries it today), and `[derived]` for a
+    `[unverified]` for a row that has not been checked against a printed chart (no row carries it
+    today), and `[derived]` for a
     row the chart does not print but a reader derives from a printed one: its number is the printed
     row's plus a letter, it carries that row's tags, and its marks are the printed row's in order with
     some left out, each unit kept note for note (the builder checks all of this).
@@ -74,7 +72,7 @@ their rows. To change a note, edit its row here and re-run the builder; never ed
     and telisha gedola, printed at both ends of its name, counts once.
   - Then one line per mark, left to right as printed. The mark is the tutor's key (`TROPES` in
     `js/trope-staff.js`, the staff engine both pages load) or `munach_legarmeh`.
-  - A syllable (MER, CHA, T′ …) starts at the note printed above it and runs to the next syllable; a
+  - A syllable (MER, CHA, T' …) starts at the note printed above it and runs to the next syllable; a
     `-` after it means the next syllable continues the same word. Each mark's line is whole words, so
     its last syllable has no `-`, and every syllable has at least one sounding note.
   - A note is `PITCH(VALUE)`, with `,>` for an accent and `,-` for a tenuto line. Values: `64` a
@@ -93,6 +91,12 @@ their rows. To change a note, edit its row here and re-run the builder; never ed
     readily as over six eighths). The values inside are the printed ones, and a bracket may run from one
     mark's line into the next.
   - Beams are not written: they follow from the values.
+  - **Only the row blocks and section A's table are data.** The builder reads the column-0 `trope-*`
+    fences and the first table whose header begins `Mark (tutor key)`, and nothing else — so no other
+    line of this file may open a fence with an info string beginning `trope-` (not even inside a plain
+    code block), no other table's header may begin that way, and a syllable's shva is the ASCII
+    apostrophe (`T'`) in the rows and the prose alike (′ is kept for the octave above, in the scale
+    degrees).
 
 ## A. One figure per mark (the Learn-card staffs)
 
@@ -116,7 +120,7 @@ context, are listed in the same report.
 | sof_pasuk | 8 | 8 | 8 | 8 | 8 | 8 | |
 | mahpach | 11 | 11 | 11 | 11 | 11 | 11 | |
 | pashta | 13 | 10 | 13 | 13 | 13 | 13 | |
-| yetiv | 33 | 24 | 34 | 34 | 34 | 33 | Y′ is sung on a grace note, drawn as an eighth |
+| yetiv | 33 | 24 | 34 | 34 | 34 | 33 | Y' is sung on a grace note, drawn as an eighth |
 | zakef_katon | 13 | 10 | 13 | 13 | 13 | 13 | |
 | zakef_gadol | 31 | 25 | 32 | 32 | 32 | 31 | |
 | zarka | 37 | 29 | 38 | 38 | 38 | 37 | Torah: the grace note on F♯4 before KA is drawn as an eighth |
@@ -128,7 +132,7 @@ context, are listed in the same report.
 | kadma (in kadma v'azla) | 15 | 20 | 15 | 15 | 15 | 15 | |
 | geresh (azla) | 16 | 21 | 16 | 16 | 16 | 16 | |
 | gershayim | 20 | 22 | 20 | 20 | 20 | 20 | |
-| telisha_ketana | 29 | 18 | 30 | 30 | 30 | 30 | Torah: T′ is sung on a grace note, drawn as an eighth |
+| telisha_ketana | 29 | 18 | 30 | 30 | 30 | 30 | Torah: T' is sung on a grace note, drawn as an eighth |
 | telisha_gedola | 28 | 17 | 29 | 29 | 29 | 29 | Torah: as telisha ketana |
 | pazer | 30 | 19 | 31 | 31 | 31 | — | Torah: PA-ZER's two D4s are held as one quarter — the maintainer's correction of the print; the High Holiday staff keeps both |
 | mercha_kefula | 39 | — | 39 | — | — | — | |
@@ -137,7 +141,7 @@ context, are listed in the same report.
 | munach legarmeh (no card) | 17 | 15 | 17 | 17 | 17 | 17 | |
 | sof pasuk at the end of an aliyah (no card) | 41 | 30–33 | 40, 40b–40d | 41 | 39, 39a | 38 | |
 
-`geresh_muqdam` has no figure in either chart and no entry (it never occurs in the Torah text either;
+`geresh_muqdam` has no figure in any of the six charts and no entry (it never occurs in the Torah text either;
 see section G). Shalshelet, mercha kefula, karnei parah and yerach ben yomo have no High Holiday row:
 they never occur in the Rosh Hashanah or Yom Kippur readings (the census in section G checks this).
 The Haftarah column names section H's rows: shalshelet, karnei parah and yerach ben yomo have no
@@ -450,8 +454,8 @@ Against it, the clean scans show:
   Telisha gedola's run opens with four sixteenths, D4 E4 F♯4 G♮4 (28), and shalshelet's run is
   sixteenths (38), with LET printed under the closing A4. Zakef gadol's B4 A4 are sixteenths, and
   GA carries a tenuto line like ZA and KEF (31).
-- **Yetiv** (32–33): Y′ is sung on a grace note on B4, which the earlier reading took for an eighth
-  rest. It is the same device as the High Holiday yetiv's Y′.
+- **Yetiv** (32–33): Y' is sung on a grace note on B4, which the earlier reading took for an eighth
+  rest. It is the same device as the High Holiday yetiv's Y'.
 - **Zarka** (34–37): the accent sits on the C♯4 before the closing A3. The grace F♯4 is printed
   before KA, and KA starts on the dotted E4.
 - **Munach before segol** (34, 36): the A3 is an eighth, and the D4 after it is tied into a sixteenth.
@@ -459,7 +463,7 @@ Against it, the clean scans show:
   the closing run. The earlier reading missed the E4. RA is printed under the triplet's C♯4.
 - **Smaller rhythm corrections**, none of which reaches a staff: zakef katon's KA is a sixteenth,
   not an eighth (rows 9–14, 32); the mercha before tevir ends on an eighth, not a dotted eighth (24,
-  26); T′ is an eighth in row 26; telisha ketana's run is in sixteenths (29); zarka's accented C♯4 is
+  26); T' is an eighth in row 26; telisha ketana's run is in sixteenths (29); zarka's accented C♯4 is
   an eighth (34–37); karnei parah's accented A4 and the F♯4 E4 after it are eighths (40); and in row
   41 a triplet runs from the second mercha's CHA into sof pasuk.
 - **Row 41 is settled.** Its last note is B3: measured 1½ spaces below the staff, where the print
@@ -755,7 +759,7 @@ sof_pasuk SOF- D4(e) PA- E4(e) SUK E4(s) ~D4(s) ~C4(s) ~B3(s) ~D4(e) ~C4(q)
   F♯4, then A4–E4, before tevir (24, 26). Kadma is A3–D4 in kadma v'azla but D4–F♯4 before mahpach,
   darga and mercha (9, 25, 26). The report lists every such figure with the marks around it.
 - **Short pickups vary between rows that look alike.** Mercha's CHA is a dotted eighth before tipcha
-  and a plain eighth before sof pasuk (row 5). T′ is an eighth in rows 22 and 26 but a sixteenth in 23–25
+  and a plain eighth before sof pasuk (row 5). T' is an eighth in rows 22 and 26 but a sixteenth in 23–25
   and 27, and DAR is an eighth in 21 and 23 but a sixteenth in 25 and 27. A note after a dotted eighth
   is usually a sixteenth. The data keeps each variant as printed.
 - **Azla is the geresh melody.** The tail of kadma v'azla (row 15) sings the same four pitches as the
@@ -772,7 +776,7 @@ sof_pasuk SOF- D4(e) PA- E4(e) SUK E4(s) ~D4(s) ~C4(s) ~B3(s) ~D4(e) ~C4(q)
   munach legarmeh.
 - **Ornaments are notated, not improvised.** Grace notes:
   - in front of zarka's KA;
-  - under the telishas' T′ and yetiv's Y′;
+  - under the telishas' T' and yetiv's Y';
   - before the end-of-aliyah SUK.
 
   Triplets sit inside tevir, gershayim and karnei parah, and run from one word into the next in
@@ -807,7 +811,7 @@ sof_pasuk SOF- D4(e) PA- E4(e) SUK E4(s) ~D4(s) ~C4(s) ~B3(s) ~D4(e) ~C4(q)
   - The clean scans corrected eight staffs:
     - the closing note becomes a quarter in mahpach, zarka, tevir, telisha gedola, pazer and karnei
       parah;
-    - yetiv gains the grace note Y′ is sung on;
+    - yetiv gains the grace note Y' is sung on;
     - karnei parah gains its missing E4;
     - the High Holiday segol loses the G4 that is tied into its run.
 - The file's top-level `key: "A"` tells the Learn-card staff to draw three sharps and to spell
@@ -815,7 +819,7 @@ sof_pasuk SOF- D4(e) PA- E4(e) SUK E4(s) ~D4(s) ~C4(s) ~B3(s) ~D4(e) ~C4(q)
   note outside the key is spelled by the tutor's rule (raised 1st and 4th, lowered 3rd, 6th and
   7th), which gives the charts' own spellings: G♮ here, F♯ and B♭ in the High Holiday file.
 - Rhythm is reduced to the staff's four values (`d` 1–4), as section A says. A grace note is drawn as
-  a full eighth: zarka's F♯4 before KA, the D4 each telisha sings T′ on, and yetiv's Y′ (B4; A4 in the
+  a full eighth: zarka's F♯4 before KA, the D4 each telisha sings T' on, and yetiv's Y' (B4; A4 in the
   High Holiday file). Pazer's two opening D4s are one quarter note on the year-round staff (section A).
   Every figure keeps its full length, and a staff with more than eight notes widens; the longest,
   shalshelet, karnei parah and the High Holiday pazer, have fifteen.
@@ -831,15 +835,15 @@ sof_pasuk SOF- D4(e) PA- E4(e) SUK E4(s) ~D4(s) ~C4(s) ~B3(s) ~D4(e) ~C4(q)
   (`system: "highholiday"`, `key: "C"`: no signature, so B♭ and F♯ carry their accidentals), each entry
   `verified: true` with `source: "tropepatterns.md High Holiday #N"`. The motif builder never reads or
   writes that file (there are no High Holiday recordings to draft from), so it is edited by hand; the
-  phrases builder checks it like the Torah file. The tutor draws it when Settings → Melody is *High
-  Holidays*; the four marks it lacks say so on their cards.
+  phrases builder checks it like the Torah file. The tutor draws it when the key bar's Melody dropdown
+  says *High Holidays*; the four marks it lacks say so on their cards.
 - Neither file is ever rewritten for another key.
   - The Learn tab's key bar (and Settings → Sing along → Key) moves every note of the melody on
     screen by whole half steps, up to six either way, and redraws the staff in the key it lands on.
   - The chart's chromatic notes keep their degree (the lowered 7th, the High Holiday raised 4th), so
     each figure keeps its printed shape.
   - *Low voices* leaves the notes where they are, writes the small 8 under the clef and sounds the tune
-    an octave down, the octave men sing both charts in.
+    an octave down, the octave men sing every chart in.
 
   `docs/reference/torah-and-trope.md` → *Key and voice* has the details.
 
@@ -896,18 +900,21 @@ to know, and what the chart leaves open.
   - Where the chart has no such figure, the fallback is its figure before the disjunctive the chain
     leads to; failing that, any figure of the mark.
   - A disjunctive's figure can change too. In the Torah chart the changes are small: revia's first
-    note is a triplet eighth when the munach's triplet runs into it (rows 17–18), tevir's T′ is an
+    note is a triplet eighth when the munach's triplet runs into it (rows 17–18), tevir's T' is an
     eighth or a sixteenth (section D), and a geresh after kadma, the azla, opens with two quick
     notes (row 15). The High Holiday chart changes more: its tipcha before etnachta (rows 1–4) is
     not the tipcha of the sof pasuk clause (5–8), and its etnachta, sof pasuk, zakef katon, zarka
     and geresh each have two or three forms. So a disjunctive's figure is chosen like a
     conjunctive's, by `prev` and `next`, and the last verse of an aliyah takes the `[aliyah-end]`
     rows for its closing mercha, tipcha and sof pasuk.
-  - The melody (`torah`, `highholiday` or `haftarah`) picks its part of the file.
+  - The melody (`torah`, `highholiday`, `haftarah`, `esther`, `megillot` or `eicha`) picks its part of
+    the file.
 - **Words, as the text gives them.** A word joined to the next by a maqaf (־) usually has no mark
   of its own, so the pair is one word with one figure. Where the first word keeps one (a kadma 84
-  times in the Torah, a tipcha once, Genesis 8:18), the pair is one word with two marks, sung in
-  order. A vertical line (׀) after a munach is one of two signs that print alike. It is either the
+  times in the Torah — a count the census report does not repeat, its *Words with more than one mark*
+  table counting compounds and single words together — a tipcha once, Genesis 8:18), the pair is one
+  word with two marks, sung in order. A vertical line (׀) after a munach is one of two signs that
+  print alike. It is either the
   legarmeh line, which makes the munach munach legarmeh, or a paseq, a short pause that leaves the
   munach a connecting mark (Genesis 22:11, אַבְרָהָ֣ם ׀ אַבְרָהָ֑ם). The census's text draws the
   paseq smaller, and a staff builder's text has to tell the two apart as well. A double pashta, and
@@ -916,7 +923,7 @@ to know, and what the chart leaves open.
   munach or kadma on an earlier syllable before a zakef katon, or a kadma before a geresh. They are sung
   in order, like two words.
 - **Placing a figure on a real word** is the one thing the chart cannot give.
-  - The chart sings every figure on its mark's own name (MER-CHA, T′-LI-SHA G′DO-LA), and the name's
+  - The chart sings every figure on its mark's own name (MER-CHA, T'-LI-SHA G'DO-LA), and the name's
     stress is no guide: pashta's high note falls on TA, not on the stressed PASH.
   - So the data keeps the printed underlay and adds no accent field.
   - The usual teaching puts the figure's opening notes on the syllables before the stressed one and its
@@ -967,9 +974,9 @@ read twice — by eye, and by a note-head detector that names each head from the
 with the beams counted in the pixel columns between the stems and every disagreement settled at 4–6×.
 The melody is the traditional one; the transcription is CC BY-SA 4.0 like the rest of this file. The
 Torah Trainer's Trope staff draws a haftarah from these rows alone, and the Trope Tutor's Haftarah
-melody (Settings → Melody) takes its Learn-card staffs from `data/trope/trope_motifs_haftarah.json`,
-which the builder derives from these rows through section A's Haftarah column on every run — never edit
-that file by hand; a change here bumps the `?v=` of both files.
+melody (the key bar's Melody dropdown) takes its Learn-card staffs from
+`data/trope/trope_motifs_haftarah.json`, which the builder derives from these rows through section A's
+Haftarah column on every run — never edit that file by hand; a change here bumps the `?v=` of both files.
 
 **Key and range.** Three flats, E♭ major, and the chart prints no accidental: every B, E and A is written
 with its flat (`B♭4`, `E♭4`, `A♭4`), nothing else is altered, and the builder refuses any other sign
@@ -989,13 +996,13 @@ are built from its words).
 
 **Brackets, grace notes, variants.** The chart prints a `3` over its triplets — three eighths (15, 32),
 tevir's three quarter notes (23–28), e e s s over the telishas' name (29–30) — and three of them run
-from one mark into the next: munach's NACH into R′ (17–18), mercha's CHA into T′ (25, 27) and the
+from one mark into the next: munach's NACH into R' (17–18), mercha's CHA into T' (25, 27) and the
 closing MER-CHA into SOF (40). Its other brackets count a run and imply no ratio: `4` over munach
 legarmeh's run (17), `5` over munach's five sixteenths before mahpach and gershayim (14, 21; row 28
 prints the same five sixteenths before darga with no number), `6` over telisha gedola's LAH (29: three
 eighths, a grace note, three sixteenths) and mercha kefula's six eighths (39), `8` over the geresh run
 (16), and `11` over pazer's run of twelve sixteenths (31: the transcription puts it over the eleven
-after the first). Grace notes: yetiv's Y′ on C5 (33–34), a G4 before zarka's KA (35–38), a G4 inside
+after the first). Grace notes: yetiv's Y' on C5 (33–34), a G4 before zarka's KA (35–38), a G4 inside
 telisha gedola's run (29) and the pair B♭4 C5 before the closing SUK (40). Darga's GA is B♭4 dotted
 and a falling run: rows 22 and 24 print the run as three sixteenths, rows 26 and 28 as two
 thirty-seconds and a sixteenth, on the same pitches.
@@ -1339,12 +1346,12 @@ tevir (22–28); the telishas (29–30); pazer (31); zakef gadol (32); yetiv (33
 (41). The chart prints no shalshelet and no mercha kefula, so those marks have no row and no Learn card
 (section A). The Hebrew of each row is the printed row of section B or H with the same marks; rows 39
 and 40 are built from section B's row 40. The syllables are the chart's own (KAR-NE PA-RAH, BEN-YO-MO,
-T′-LI-SHA G′-DO-LAH), spelled as section B spells the same mark where the two agree.
+T'-LI-SHA G'-DO-LAH), spelled as section B spells the same mark where the two agree.
 
 **Figures that change with their neighbours** (as printed; the report lists every figure). Mercha and
 tipcha before etnachta (1–4: MER-CHA on G4 G4, TIP-CHA on G4 C5 G4) are not those before sof pasuk
 (5–8: TIP-CHA on G4 G4 C4), and in rows 1, 3, 5 and 7 the mercha's two eighths and the tipcha's first
-make one triplet. Tevir's T′ is a sixteenth after darga's dotted eighth (24, 26, 28) and alone (23),
+make one triplet. Tevir's T' is a sixteenth after darga's dotted eighth (24, 26, 28) and alone (23),
 an eighth after mercha's quarter (25, 27). The munach before zarka ends on a dotted eighth and ZAR is
 the sixteenth that completes it (35–36); zarka opening a row begins on an eighth (37–38). Mahpach's MA
 is a sixteenth in rows 9 and 11 (a stub beam) and an eighth in rows 10 and 14 (a single flag, the same
@@ -1356,7 +1363,7 @@ eighths (the MER-CHA-TIP of 1, 3, 5, 7; geresh 16; zakef gadol's ZA-KEF-GA 32; F
 and 41), e e s s in kadma v'azla (15) and the five notes of each telisha's name (32 32 s 32 32, rows
 29–30; the Haftarah chart's e e s s) — and a `5` over the five sixteenths of munach legarmeh (17).
 Grace notes: a B♭4 before NACH in the munach before telisha, pazer and yerach ben yomo (29–31, 39)
-and yetiv's Y′ on B♭4 (33–34). Rests are printed and the rows keep them: an eighth rest after the
+and yetiv's Y' on B♭4 (33–34). Rests are printed and the rows keep them: an eighth rest after the
 tipcha (1–8), after pashta's TA (9–13; row 14 prints none), after munach legarmeh's run (17), after the munach before the
 telishas, pazer and yerach ben yomo (29–31, 39) and after yetiv's TIV (33–34); a sixteenth rest after
 kadma's MA (9) and after the C4 that ends zarka's and the final tipcha's run (35–38, 41) — there the
@@ -1702,11 +1709,11 @@ three groups (32: ZA-KEF-GA, DOL's B4 G4 E4, and G4 F4 E4 written as a dotted ei
 an eighth) — and a `6` under the closing tipcha's six sixteenths (39, 39a). The telishas' name is
 three thirty-seconds and two sixty-fourths (29–30; the fourth beam under the last two notes is
 printed in both rows, and the five notes last an eighth, as the Esther chart's bracketed five do):
-row 30 hyphenates K′-TA and row 29 sets G′DO as one block over its two notes, both kept as printed.
+row 30 hyphenates K'-TA and row 29 sets G'DO as one block over its two notes, both kept as printed.
 Rests are printed and the rows keep them: an eighth rest after the tipcha before sof pasuk (5–8),
 after munach legarmeh's run (17), after the munach before the telishas and pazer (29–31) and after
 yetiv's TIV (33–34); a sixteenth rest after pashta's TA (9–14) and after the C4 that ends zarka's run
-(35–38). Yetiv's Y′ is a grace note on B4 (33–34), the chart's only grace. Articulation: tenuto lines
+(35–38). Yetiv's Y' is a grace note on B4 (33–34), the chart's only grace. Articulation: tenuto lines
 on zakef katon's TON (9–14) and on telisha gedola's last three notes (29), written `,-`; the chart
 prints no accent. Ties: the etnachta's TA ends on an eighth tied into a quarter under the slur (1–4),
 tevir's VIR the same (23–28), gershayim's YIM ends on a sixteenth tied into a quarter (20–21), and the
@@ -1992,6 +1999,7 @@ tipcha    TIP- G4(e) CHA 6{C5(s) ~B4(s) ~A4(s) ~G4(s) ~A4(s) ~B4(s)} ~A4(q)
 mercha    MER- G4(e) CHA G4(e)
 sof_pasuk SOF- G4(s) PA- G4(s) SUK G4(e) ~G4(32) ~F4(32) ~E4(32) ~D4(32) ~G4(e) ~C4(dq)
 ```
+
 ## K. The 38 Eicha phrase patterns
 
 Transcribed note for note from the Eicha (Lamentations) chart in *The Art of Cantillation, Volume 2*
@@ -2022,7 +2030,7 @@ closing formula (38). There is no pazer row: the chart prints none, as it prints
 kefula, karnei parah or yerach ben yomo, so those five marks have no row and no Learn card (section A),
 and the rows from zakef gadol on are numbered one lower than the Haftarah chart's, whose row 31 is the
 pazer this chart lacks. The Hebrew of each row is the printed row of section B or H with the same
-marks. The syllables are the chart's own (K′-TA-NA with no final H, G′-DO-LAH), spelled as section B
+marks. The syllables are the chart's own (K'-TA-NA with no final H, G'-DO-LAH), spelled as section B
 spells the same mark where the two agree.
 
 **Figures that change with their neighbours** (as printed; the report lists every figure). Mercha's
@@ -2040,8 +2048,8 @@ note of the munach's triplet after a munach (9, 10, 12, 14, 32) and a flagged ei
 13, 33) — and its TON, G4 then E♭4, ends on a quarter after pashta (9–14) and on a dotted quarter
 after yetiv (32, 33). Darga's GA ends on a dotted quarter in rows 22, 24 and 26 and on a plain
 quarter in row 28; mercha's CHA before tevir ends on a quarter in row 25 and on a dotted quarter in
-row 27 — the print's own differences, kept, and listed for the ear check. Tevir's T′ is a plain
-eighth in every row (23–28). Revia's R′ is a sixteenth, beamed onto the munach's NACH (17, 18) and
+row 27 — the print's own differences, kept, and listed for the ear check. Tevir's T' is a plain
+eighth in every row (23–28). Revia's R' is a sixteenth, beamed onto the munach's NACH (17, 18) and
 flagged on its own (19). Gershayim's GER and SHA are a beamed pair in row 20; in row 21 GER is flagged
 and SHA is beamed onto YIM's first note instead, and row 20 closes with an eighth rest that row 21
 lacks. The munach before zarka sings NACH on A♭4 G4 F4 with the ZAR beamed onto its last note (34,
@@ -2049,9 +2057,9 @@ lacks. The munach before zarka sings NACH on A♭4 G4 F4 with the ZAR beamed ont
 
 **Brackets, grace notes, rests, articulation.** The chart prints a `3` over its triplets — mercha's
 CHA with SOF and PA (5, 6, 38), munach's NACH with zakef katon's KA (9, 10, 12, 14, 32), kadma
-v'azla's s s e e (15: the bracket runs from MA into V′-AZ), geresh's three eighths (16), munach
+v'azla's s s e e (15: the bracket runs from MA into V'-AZ), geresh's three eighths (16), munach
 legarmeh's E♭4 D4 E♭4 (17), tevir's VIR (23–28), telisha ketana's NA (30) and segol's F4 E♮4 F4
-(34–37) — and a `5` over the five thirty-seconds of revia's I (17–19). Grace notes: yetiv's Y′ on C5
+(34–37) — and a `5` over the five thirty-seconds of revia's I (17–19). Grace notes: yetiv's Y' on C5
 (32, 33), and a pair of small notes in parentheses, B♭4 C5, printed before mahpach's PACH in every
 mahpach row (9–11, 14), written as two `(g)` notes at the start of PACH. Rests are printed and the
 rows keep them: an eighth rest after the tipcha before sof pasuk (5–8), after munach legarmeh's run
