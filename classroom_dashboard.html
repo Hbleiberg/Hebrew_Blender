@@ -7903,7 +7903,7 @@ function mountFolderTree(cfg){
 
 /* ═══ shared: app-toast ═══ (byte-identical across generator/dashboard/flash_cards/dictionary — copy verbatim; called from the .ivrit engine restore path) ═══ */
 let _appToastTimer = null;
-function showAppToast(msg, ms = 2600) {
+function showAppToast(msg, ms) {
   let t = document.getElementById('appToast');
   if (!t) {
     t = document.createElement('div');
@@ -7912,6 +7912,10 @@ function showAppToast(msg, ms = 2600) {
     document.body.appendChild(t);
   }
   t.textContent = msg;
+  // A longer message stays longer: 2.6 s for a short one, then 50 ms per character, 8 s at most (the Torah
+  // Trainer's hint toast) — a two-line "Merged your X with the one from your account" used to vanish in 2.6 s.
+  // An explicit ms (the 6 s no-Hebrew-voice notice) still wins.
+  if (ms == null) ms = Math.min(8000, Math.max(2600, 1000 + 50 * String(msg).length));
   // Force reflow so the transition runs even on rapid repeats.
   void t.offsetWidth;
   t.classList.add('show');
