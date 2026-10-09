@@ -3008,6 +3008,7 @@
   "fontmaker.panels.copy_outline": "Copy outline…",
   "fontmaker.panels.copy_outline_title": "Start this letter from another letter's outline",
   "fontmaker.panels.corners": "Corners (sharp ↔ round)",
+  "fontmaker.panels.crop_select_caption": "Select area for {name} {glyph} — drag a box around it",
   "fontmaker.panels.custom_add_glyph": "Add glyph",
   "fontmaker.panels.custom_add_new": "+ Add a new glyph",
   "fontmaker.panels.custom_attach_above": "Above the letter",

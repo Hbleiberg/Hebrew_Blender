@@ -5755,6 +5755,7 @@ fontmaker.panels.align_imported_svg,Imported from SVG — set nikkud in step 3.,
 fontmaker.panels.align_loaded_font,Loaded from font — set nikkud in step 3.,נטען מגופן — הגדירו את הניקוד בשלב 3.,Align stage caption for a glyph imported from a font file,
 fontmaker.panels.align_no_image,No image yet — upload below.,עדיין אין תמונה — העלו למטה.,Align stage caption when the letter has no reference image yet,
 fontmaker.panels.loading_sheet,Loading sheet…,טוען גיליון…,Combined-sheet stage caption while the sheet image loads,REVIEW: HE draft
+fontmaker.panels.crop_select_caption,Select area for {name} {glyph} — drag a box around it,בחרו אזור עבור {name} {glyph} — גררו תיבה מסביב,"Combined-sheet stage caption while picking the crop box: {name} the letter or mark, {glyph} the character itself",do not translate {…}; REVIEW: HE draft
 fontmaker.panels.guide_letter_width,letter width,רוחב האות,on-stage reference-line caption under the letter stage,REVIEW: HE draft
 fontmaker.panels.guide_form_width,form width,רוחב הצורה,on-stage reference-line caption under a wide form,REVIEW: HE draft
 fontmaker.panels.guide_baseline,baseline,קו בסיס,on-stage attach-line caption (mark stage),REVIEW: HE draft

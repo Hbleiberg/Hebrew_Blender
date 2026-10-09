@@ -3008,6 +3008,7 @@
   "fontmaker.panels.copy_outline": "העתק מתאר…",
   "fontmaker.panels.copy_outline_title": "התחל אות זו ממתאר של אות אחרת",
   "fontmaker.panels.corners": "פינות (חד ↔ מעוגל)",
+  "fontmaker.panels.crop_select_caption": "בחרו אזור עבור {name} {glyph} — גררו תיבה מסביב",
   "fontmaker.panels.custom_add_glyph": "הוסף גליף",
   "fontmaker.panels.custom_add_new": "+ הוסף גליף חדש",
   "fontmaker.panels.custom_attach_above": "מעל האות",

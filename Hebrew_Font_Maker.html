@@ -7602,7 +7602,7 @@ function cropSelectSVG(l) {
     h += `<rect x="${box.x}" y="${box.y}" width="${box.w}" height="${box.h}" fill="none" stroke="var(--gold)" stroke-width="2" pointer-events="none"/>`;
   }
   const heb = (curKind === 'letter' ? '' : String.fromCodePoint(0x25CC)) + String.fromCodePoint(parseInt(l.codepoint,16));
-  h += `<text x="300" y="${V.y+20}" text-anchor="middle" font-size="13" font-weight="700" fill="var(--navy)" style="paint-order:stroke;stroke:#fff;stroke-width:4px;" pointer-events="none">Select area for ${esc(l.name)} ${heb} — drag a box around it</text>`;
+  h += `<text x="300" y="${V.y+20}" text-anchor="middle" font-size="13" font-weight="700" fill="var(--navy)" style="paint-order:stroke;stroke:#fff;stroke-width:4px;" pointer-events="none">${esc(_pT('crop_select_caption', `Select area for ${l.name} ${heb} — drag a box around it`, { name: gName(l.name), glyph: heb }))}</text>`;
   return h;
 }
 function startCrop(e) {
