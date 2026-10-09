@@ -1086,6 +1086,11 @@ body.dark .lc-replay { color: var(--gold-light); }
 body.dark #appToast { background: #0a0f1c; }
 @media (prefers-reduced-motion: reduce) { #appToast { transition: none !important; } }
 /* ═══ end shared: app-toast CSS ═══ */
+/* Page-local, below the shared block: the setup screen's sticky Start bar (`.start-cta`, 136–138 px tall in EN/HE,
+   z 10) stands where the shared toast lands (84 px from the bottom), so "Restored successfully from…" or "Saved as…"
+   covered the Start label for its whole life. While that screen is up the toast sits above the bar; the card and
+   results screens keep the shared 84 px. (`:has()` is already relied on by this page's upload label.) */
+body:has(#screenSetup.active) #appToast { bottom: 150px; }
 
 /* Honor reduced-motion: neutralize all transitions/animations (page previously had no such block) */
 /* Keyboard-operable font upload (suite-wide S54): `hidden` (display:none) removed the file
