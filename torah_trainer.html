@@ -10730,7 +10730,7 @@ async function init() {
   // SETS settings.parshahKey, the default-selection block below is skipped when it resolves and
   // runs normally otherwise. Anything unresolvable is silently ignored (mirrors the ?lang param).
   // ?ref=<Book C:V-C:V> is the verse-range form, checked first; ?holiday=<key> the whole-reading one.
-  let deepVerse = null, deepRefApplied = false;
+  let deepVerse = null, deepParsha = null, deepRefApplied = false;
   try {
     const _dl = new URLSearchParams(location.search);
     const _dlParsha = _dl.get('parsha');
@@ -10779,7 +10779,7 @@ async function init() {
         syncParshaSelect();
         document.getElementById('scopeSelect').value = settings.scope;
         const _dlV = _dl.get('v');
-        if (_dlV && /^\d+:\d+$/.test(_dlV)) deepVerse = _dlV;   // regex REQUIRED: value flows into a querySelector
+        if (_dlV && /^\d+:\d+$/.test(_dlV)) { deepVerse = _dlV; deepParsha = settings.scope === 'parsha-full' ? dm : null; }   // regex REQUIRED: value flows into a querySelector
       }
     } else if (_dlHol) {
       // ?holiday=<key>[&part=haftarah] — the practice link for one of HOLIDAY_READINGS, whole, or its haftarah.
@@ -10864,6 +10864,23 @@ async function init() {
   document.addEventListener('keydown', _pitchKick, true);
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') _pitchKick(); });
   initCloudSaves();
+  // On the Triennial or Weekday cycle 'parsha-full' is that cycle's portion (Bereshit's weekday reading is
+  // Genesis 1:1-13), so a ?parsha=&v= link could land outside it with nothing shown. The link names the
+  // parsha: a verse outside the portion opens the whole parsha as a range under the parsha's name, and the
+  // device's cycle is left as it was; a verse inside the portion keeps the portion. The divisions are
+  // awaited here because the first render otherwise shows the full aliyot until they land (ensureLeyningData).
+  if (deepVerse && deepParsha && settings.scope === 'parsha-full' && cycleKey() !== 'full') {
+    try { await loadLeyningData(); } catch (e) { /* the full aliyot stand in; the check below then widens */ }
+    const _al = aliyahLookup(deepParsha.en), _cvv = _cv(deepVerse);
+    const _inPortion = !!(_al && !_al.pending && _cvv && Object.values(_al.aliyot || {}).some(a =>
+      vcmp(_cvv[0], _cvv[1], a.startC, a.startV) >= 0 && vcmp(_cvv[0], _cvv[1], a.endC, a.endV) <= 0));
+    if (!_inPortion && deepParsha.ref && parseRefRange(deepParsha.ref)) {
+      settings.scope = 'custom'; settings.customRef = deepParsha.ref; settings.customLabel = labelForCustomRef(deepParsha.ref, null);
+      saveSettings();
+      syncParshaSelect();
+      document.getElementById('scopeSelect').value = settings.scope;
+    }
+  }
   await fetchAndRender();
   if (deepVerse) flashVerse(deepVerse);   // scroll+flash the deep-linked verse (no-ops if not rendered)
 }
