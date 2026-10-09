@@ -92143,3 +92143,31 @@ _(prior — S486 pointer:)_ **Next session (S486):** **BRANCH/PR: `claude/improv
 ### from Per-session log (one line per session)
 
 - 2026-10-07 | **S466** | iters: 1 pass (**D**) + 4 fixes = **5** | tools: ivrit-saves, index ×2, FM | patterns fixed: parse-per-call ×1 (ivrit-saves) | pass run: D | SW: v945→v946
+
+_(prior — S487 pointer:)_ **Next session (S487):** **BRANCH/PR: `claude/improve-loop-s483` → draft PR #319 (S483–S486): open → continue; merged → restart from `origin/main`.** `sw.js` **v967**, FM **5.59**. ⚑ Stalest: B (S471), A, E; O blocked. ⚑ Untaken: flash's toast on the Start bar (P3). ⚑ Seeds: 47 open (gate 1 picks). ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.
+
+
+<!-- archived by compact-ledger at the S488 boundary, 2026-10-09 -->
+## Compaction (S488, 2026-10-09) — moved verbatim from the live ledger
+
+### from Candidates (prioritized, top = next)
+
+### from Feature seeds (micro-features only; see the Micro-feature track in the session prompt)
+
+### from Done
+
+- [x] 2026-10-09 | `6ce2e1fb` `3c539498` `a1df6d90` `eba490f5` | flash, resources ×2, contact, js/ivrit-saves.js | (S487) **Flash's toast sits above the Start bar on setup (150 px); the resources font toast follows its text (3.4 → 4.6 s); hCaptcha takes the page's theme on contact + resources; the saves module's `fontsChanged` comment re-trued.** | HEAD controls, a fake hCaptcha API, smokes (findings S487).
+
+- [x] 2026-10-08 | (S482 close-out) | branch/deploy note | **S482 = H (torah) + 4 fixes, PR #317.** No drift; sw v962→v963; no FM bump; no gate. S468's H-next was a slip (dictionary H'd S440).
+
+- [x] 2026-10-08 | `484c9dd5` `806bf29b` `9528698d` `8d99ad93` | torah ×2, dictionary ×2 | (S482) **Cycle links; lookup drawer; Copy Mode group; 4 settings kept.** | findings S482.
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`fixed-toast-duration-shorter-than-its-text`** (NEW S484 F; FIXED `8037c22d` ×4, `5ffa32ba`; resources `3c539498` S487; open 0): ACTIVE, streak 0. A fixed toast timer under 1000 + 50 ms/char of its longest message. Detection: `f484/durations.mjs`; exempt sticky/explicit-ms calls.
+
+### from Retired patterns
+
+### from Recurring-pattern sweep status
+
+### from Discovery-pass rotation (run one per session, stalest first)

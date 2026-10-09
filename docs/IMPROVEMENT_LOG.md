@@ -8,11 +8,9 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P3 (**NEW S484 F**) | flash_cards.html | **The toast lands on the sticky "Start Practicing!" bar** (`.start-cta`, 137 px, z 10) at every width, hiding the Start label for the toast's life; a page-local `#appToast{bottom}` after the shared block. | found S484
-
 - [ ] P4 (**NEW S484 F**) | app-toast ×4, torah, trope | **Six toasts create their `role=status` element with its first text** (resources and FM pre-render it); pre-create it empty at load — a screen reader decides. | found S484
 
-- [ ] P4 (**NEW S484 F**) | resources.html | **`fontToast` keeps a fixed 3.4 s** (its 88-char "added" message needs ~5.4 s by the suite's new rule). | found S484
+- [ ] P4 (**NEW S487 B — for K**) | torah_trainer.html | **The Hebrew UI's load-failed status names the reading in English** ("טעינת Bereshit — Genesis 1:1-6:8 נכשלה"): `r.label` is not localized where the status is built; check how the select names it. | found S487
 
 - [ ] P4 (**NEW S483 C — gate 2**) | index.html | **Three `alert()`s stay**: "Use in all tools" repeats the status line; the Manual pane's two validation messages have no inline line (`#ivritStatus` is in the Automatic pane). | found S483
 
@@ -28,11 +26,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S478 M**) | 6 chrome headers | **A phone header leaves the star alone on a row** (EN contact ≤396, account ≤474). | found S478
 
-- [ ] P4 (**NEW S478 M**) | contact, resources | **Dark mode keeps the hCaptcha box light** (no `data-theme`). | found S478
-
 - [ ] P4 (**NEW S478 M**) | 6 chrome footers | **A "·" ends a footer line below ~700px.** | found S478
-
-- [ ] P4 (**NEW S477 P**) | js/ivrit-saves.js | **`fontsChanged`'s comment says no page attaches Suite** (the hub, FM and account page do). | found S477
 
 - [ ] P4 (S476 N) | Hebrew_Font_Maker.html | **Guides reorder by drag only** (`attachGuideSortable`). | found S476
 
@@ -314,6 +308,10 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-09 | (S487 close-out) | branch/deploy note | **S487 = B (the S471 delta) + 4 fixes, PR #319 continued.** No drift; sw v967→v968; no FM bump; no gate (unattended: the seed skipped); smoke-saves 15/15, smoke-sync 207/207; traps 200–203 (findings S487).
+
+- [x] 2026-10-09 | `6ce2e1fb` `3c539498` `a1df6d90` `eba490f5` | flash, resources ×2, contact, js/ivrit-saves.js | (S487) **Flash's toast sits above the Start bar on setup (150 px); the resources font toast follows its text (3.4 → 4.6 s); hCaptcha takes the page's theme on contact + resources; the saves module's `fontsChanged` comment re-trued.** | HEAD controls, a fake hCaptcha API, smokes …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [x] 2026-10-09 | (S486 close-out) | branch/deploy note | **S486 = one L feature on direction (week cycles; 5 answers in chat), PR #319 continued; pass skipped (B stays stalest).** No drift; sw v966→v967; no FM bump; smoke-sync 207/207; trap 199 (findings S486).
 
 - [x] 2026-10-09 | `4875ef78` | classroom_dashboard.html + locales + 2 docs | (S486) **Schedule Sync week cycles: a "Schedule repeats" ribbon (1 / A/B / 3 / 4), week tabs over one bell schedule, "This week is" re-anchoring, Copy from Week A, a Week chip on Now / Next; `cells` stays Week A for old builds.** | 144 checks (findings S486).
@@ -330,13 +328,11 @@ _(none)_
 
 - [x] 2026-10-09 | `ab1a235e` `cb226a04` `14c1bad5` `c2d3f51f` | hub, saves modules, torah, FM | (S483) **Font Remove keeps focus; dark error texts 7.6:1; verse links on non-Full cycles show the verse; the Sizing select fits a phone (S476 P4).** | HEAD controls, 4 smokes (findings S483).
 
-- [x] 2026-10-08 | (S482 close-out) | branch/deploy note | **S482 = H (torah) + 4 fixes, PR #317.** No drift; sw v962→v963; no FM bump; no gate. S468's H-next was a slip (dictionary H'd S440).
-
-- [x] 2026-10-08 | `484c9dd5` `806bf29b` `9528698d` `8d99ad93` | torah ×2, dictionary ×2 | (S482) **Cycle links; lookup drawer; Copy Mode group; 4 settings kept.** | findings S482.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-09 | **S487** | iters: 1 pass (**B**) + 4 fixes = **5** | tools: flash, resources ×2, contact, saves | patterns fixed: fixed-toast-duration ×1 | pass run: B | SW: v967→v968
 
 - 2026-10-09 | **S486** | iters: 2 (L feature) | tools: dashboard | patterns fixed: — | pass run: — (skipped; B stays stalest) | SW: v966→v967
 
@@ -376,15 +372,13 @@ _(none)_
 
 - 2026-10-07 | **S468** | iters: 1 pass (**H**) + 4 fixes = **5** | tools: index ×2, resources, pwa.js | patterns fixed: — | pass run: H | SW: v948→v949
 
-- 2026-10-07 | **S467** | iters: 1 pass (**I**) + 4 fixes = **5** | tools: torah, contact, resources ×2, dictionary, FM, dashboard | patterns fixed: — | pass run: I | SW: v947→v948
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S486 (2026-10-09):** dashboard, docs S486 · generator, flash, dictionary, torah, trope, resources, FM S484 · index, saves S483 · contact, privacy, terms, account, i18n.js S478 · pwa S472 · 404 S470.
+- **Snapshot S487 (2026-10-09):** flash, resources, contact, saves S487 · dashboard, docs S486 · generator, dictionary, torah, trope, FM S484 · index S483 · privacy, terms, account, i18n.js S478 · pwa S472 · 404 S470.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
-- **`fixed-toast-duration-shorter-than-its-text`** (NEW S484 F; FIXED `8037c22d` ×4, `5ffa32ba`; resources open): ACTIVE, streak 0. A fixed toast timer under 1000 + 50 ms/char of its longest message. Detection: `f484/durations.mjs`; exempt sticky/explicit-ms calls.
+- **`fixed-toast-duration-shorter-than-its-text`** (NEW S484 F; FIXED `8037c22d` ×4, `5ffa32ba`; resources `3c539498` S487; open 0): ACTIVE, streak 0. A fixed toast timer under 1000 + 50 ms/char of its longest message. Detection: `f484/durations.mjs`; exempt sticky/explicit-ms …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`centred-fixed-box-shrinks-to-half-the-viewport`** (NEW S484 F; FIXED `78738db4` ×7): ACTIVE, streak 0. A fixed `left:50%; translateX(-50%)` box with no width is capped at vw/2. Detection: `f484/width.mjs` (width = vw/2 at 390); fix `width:max-content`.
 
@@ -724,7 +718,7 @@ _(none)_
 
 - I first-load & empty-state: 2026-10-08 (**S481 — 36th I: 136 cells clean, plants fired; label + side-word arms NEW; FIXED 4.**)
 
-- B console/error audit: 2026-10-07 (**S471 — 36th B on the S457 delta (103 commits): 68 load cells + the outside-loop features by real clicks; plants fired (findings S471). All 0.**)
+- B console/error audit: 2026-10-09 (**S487 — 37th B on the S471 delta (73 commits): 68 load cells (8 controls fired) + the delta by real input on every page, the i18n retry, the install banner (findings S487). All 0; one P4 logged for K.**)
 
 - J metrics-informed: never run — SKIP in rotation until the impact-metrics dashboard/Worker is live (not live)
 
@@ -736,4 +730,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-09 (**S484 — 36th F, the toast contract on all 8 carriers (5th look, S111 →): 24 cells + reduce, width, bars; plants 4/4. FOUND 4, FIXED 3 (+ FM kerning). F-next: the tabs / segmented-control keyboard contract (never swept).**)
 
-**Next session (S487):** **BRANCH/PR: `claude/improve-loop-s483` → draft PR #319 (S483–S486): open → continue; merged → restart from `origin/main`.** `sw.js` **v967**, FM **5.59**. ⚑ Stalest: B (S471), A, E; O blocked. ⚑ Untaken: flash's toast on the Start bar (P3). ⚑ Seeds: 47 open (gate 1 picks). ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.
+**Next session (S488):** **BRANCH/PR: `claude/improve-loop-s483` → draft PR #319 (S483–S487): open → continue; merged → restart from `origin/main`.** `sw.js` **v968**, FM **5.59**. ⚑ Stalest: A (S472), E, L, K; O blocked. ⚑ Untaken: the 6 chrome footers' trailing "·" (P4 M); smoke-sync's clock pin (P4). ⚑ Seeds: 47 open (gate 1 picks). ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.
