@@ -92073,3 +92073,27 @@ _(prior — S483 pointer:)_ **Next session (S483):** **BRANCH/PR: `claude/loving
 - **`dark-literal-escapes-the-print-tokens`** (NEW S437 G; resources FIXED `5320a668`): ACTIVE, streak 1 (S479 trope clean; plant fired). Detection: PDFs dark vs light, ink per page (<200 at 40 dpi); a lighter dark sheet = a `body.dark` literal the print …[full text: …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`settings-lost-across-a-load`** (NEW S412; flash ×2, dictionary ×4 FIXED S482 `8d99ad93`; 1 P4 open): ACTIVE, streak 0. A setting comes back changed after a reload. Detection (`h482/dictsave.mjs`): change each control by a real click, wait out the save, reload, require it …[full text: IMPROVEMENT_ARCHIVE.md]
+
+_(prior — S484 pointer:)_ **Next session (S484):** **BRANCH/PR: `claude/improve-loop-s483` → draft PR #319: open → continue; merged → restart from `origin/main`.** `sw.js` **v964**, FM **5.59**. ⚑ Stalest: F (S470), B, A; O blocked. ⚑ Take a one-tool pass's target from the archive's rows, not the pointer (S469's C-next slipped). ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader.
+
+
+<!-- archived by compact-ledger at the S485 boundary, 2026-10-09 -->
+## Compaction (S485, 2026-10-09) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-08 | (S479 close-out) | branch/deploy note | **S479 = G + 4 fixes, PR #317.** No drift; sw v959→v960; no FM bump; gate 2 ×2 approved.
+
+- [x] 2026-10-08 | `3b5971ca` `2ff133e9` `3c0db710` `ce1be7f6` | trope ×2, dictionary, torah | (S479) **Closing labels; no intro on paper; search text direction; old-language hint.** | findings S479.
+
+### from Per-session log (one line per session)
+
+- 2026-10-06 | **S464** | iters: 1 pass (**M**) + 4 fixes = **5** | tools: resources, dictionary, FM, dashboard ×2; index, trope, torah, contact, account, privacy | patterns fixed: dark-navy ×1, forward-arrow ×48; latin-tracking NEW | pass run: M | SW: v940→v941
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`fixed-toast-duration-shorter-than-its-text`** (NEW S484 F; FIXED `8037c22d` shared block ×4, `5ffa32ba` FM strip; resources open): ACTIVE, streak 0. A toast/status writer's fixed timer under what its longest message needs (1000 + 50 ms/char). Detection: `f484/durations.mjs` (findings S484); exempt sticky and explicit-ms calls.
+
+- **`centred-fixed-box-shrinks-to-half-the-viewport`** (NEW S484 F; FIXED `78738db4` ×7): ACTIVE, streak 0. A `position:fixed; left:50%; translateX(-50%)` box with no width is capped at vw/2, so its max-width never applies. Detection: `f484/width.mjs` (width = vw/2 at 390); fix `width:max-content`.
+
+- **`button-focus-lost-to-its-own-rebuild`** (**S483 hub `ab1a235e`; S474 flash Return to Options `3235f8eb`; S473 flash start `3e8e2f79`, torah tune radios `9fbcfce8`; S471 dashboard `c0c5856e`; S470 torah favorites `fc3ec234`; S469 generator `04a85f46`, flash …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]

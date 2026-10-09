@@ -8,6 +8,12 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P3 (**NEW S484 F**) | flash_cards.html | **The toast lands on the sticky "Start Practicing!" bar** (`.start-cta`, 137 px, z 10) at every width, hiding the Start label for the toast's life; a page-local `#appToast{bottom}` after the shared block. | found S484
+
+- [ ] P4 (**NEW S484 F**) | app-toast ×4, torah, trope | **Six toasts create their `role=status` element with its first text** (resources and FM pre-render it); pre-create it empty at load — a screen reader decides. | found S484
+
+- [ ] P4 (**NEW S484 F**) | resources.html | **`fontToast` keeps a fixed 3.4 s** (its 88-char "added" message needs ~5.4 s by the suite's new rule). | found S484
+
 - [ ] P4 (**NEW S483 C — gate 2**) | index.html | **Three `alert()`s stay**: "Use in all tools" repeats the status line; the Manual pane's two validation messages have no inline line (`#ivritStatus` is in the Automatic pane). | found S483
 
 - [ ] P4 (**NEW S482 H — gate 2**) | torah_trainer.html | **"Select verses to copy…" opens the Copy bar with selection off** (as documented): one more click; a verse clicked meanwhile chants. | found S482
@@ -31,8 +37,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (S476 N) | Hebrew_Font_Maker.html | **Guides reorder by drag only** (`attachGuideSortable`). | found S476
 
 - [ ] P4 (S476 N — gate 4) | hebrew_blend_generator.html | **On desktop the Generate bar covers 1–3 footer FAQ rows at the page end** (phones fixed `dbf2d7a0`). | found S476
-
-- [ ] P4 (S475 K) | Hebrew_Font_Maker.html | **Kerning "Finals"/"Descenders" are English.** | found S475
 
 - [ ] P4 (**NEW S474 L — gate 2**) | index.html, torah_trainer.html | **The hub's ItemList one-liner and Torah's WebApplication + HowTo descriptions name the weekly parsha only** (not the holidays or Megillot). | found S474
 
@@ -144,11 +148,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S405 Pass K gate controls — K's, doc-only**) | scripts/check-i18n.js + docs/reference/i18n.md | **The gate's header says `.innerHTML = '<literal>'` is flagged; rule 2 skips innerHTML by design**, and its exit-contract comment omits D and E (both block). i18n.md's "Known blind spot" names template literals, plain arguments and ternaries, not a plain innerHTML literal, and its …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] P4 (**NEW S405 orphan census — a prune list; each key needs S361's proof**) | locales/ui-strings.csv | **Dead duplicates the pages reach through another key:** `dashboard.text.underline`, `dashboard.text.done_btn_title`, `dashboard.weather.city_current`, `fontmaker.adpick.box_title`, `dashboard.weather.wmo_*` (the board's table carries its own he/en), and the 5 `fontmaker.templates.*_meta` …[full text: IMPROVEMENT_ARCHIVE.md]
-
 - [ ] P4 (**NEW S405 — found beside `f78ad1b`**) | Hebrew_Font_Maker.html | **The Upload help tab's link to Download Templates exists only in the English authored HTML** (`openHelp('templates')`); the translated Upload body is CSV prose, so a Hebrew reader gets no link. A `data-fmact` action (the dispatcher's CSV-safe route) would carry it. | found S405
-
-- [ ] P4 (**NEW S403 Pass E arm 20 — K's to fix; CLASSIFIED S405**) | locales/ui-strings.csv | **121 rows keep a `leading-emoji` note although their `en` no longer leads with a glyph** (the icon sweep re-noted 74 others `svg-icon-in-markup`); a translator adding a third language would put the emoji back. S405 read every row's use sites: 99 ICON → `svg-icon-in-markup`, 11 PLAIN → drop the token, 9 …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**S394 census, retuned S395 — `04892f3` took the three SHADOWED ones that were accidents; what is left here is judgement, not dead code**) | hebrew_blend_generator.html | **The `.bingo-card-num` / `.bingo-grid` IDENTICAL twins and the `.bingo-card` SHADOWED one sit inside a deliberate later layer that re-declares the bingo shapes in print-safe literals, and `body.dark …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -318,6 +318,10 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-09 | (S484 close-out) | branch/deploy note | **S484 = F (toasts) + 4 fixes, PR #319 continued.** No drift; sw v964→v965; no FM bump; no gate; trap 196.
+
+- [x] 2026-10-09 | `8037c22d` `78738db4` `5ffa32ba` `c7726222` | shared toast ×4, 7 toasts, FM ×2 | (S484) **Toast time follows its text (2.6→8 s; FM strip too); no toast stops at half the viewport; kerning labels in Hebrew.** | findings S484.
+
 - [x] 2026-10-09 | (S483 close-out) | branch/deploy note | **S483 = C (hub) + 4 fixes, new branch → draft PR #319.** No drift; sw v963→v964; no FM bump; no gate; smoke-sync D31 flaked once (re-run and main 207/207). S469's C-next slipped (hub S340 was stalest).
 
 - [x] 2026-10-09 | `ab1a235e` `cb226a04` `14c1bad5` `c2d3f51f` | hub, saves modules, torah, FM | (S483) **Font Remove keeps focus; dark error texts 7.6:1; verse links on non-Full cycles show the verse; the Sizing select fits a phone (S476 P4).** | HEAD controls, 4 smokes (findings S483).
@@ -334,13 +338,11 @@ _(none)_
 
 - [x] 2026-10-08 | `8136c5d3` `8de41993` `be627bf7` | trope ×2, FM + dashboard | (S480) **FAQ rewrite; no print rails; typed direction in 3 fields.** FM Spacing `content-visibility` attempted, reverted (drops rows from the AX tree). | findings S480.
 
-- [x] 2026-10-08 | (S479 close-out) | branch/deploy note | **S479 = G + 4 fixes, PR #317.** No drift; sw v959→v960; no FM bump; gate 2 ×2 approved.
-
-- [x] 2026-10-08 | `3b5971ca` `2ff133e9` `3c0db710` `ce1be7f6` | trope ×2, dictionary, torah | (S479) **Closing labels; no intro on paper; search text direction; old-language hint.** | findings S479.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-09 | **S484** | iters: 5 | tools: 4 shared-block carriers ×2, torah, trope, resources, FM ×2 | patterns fixed: toast-duration (NEW) ×2, centred-fixed-box (NEW) ×7, translated-key-exists ×1 | pass run: F | SW: v964→v965
 
 - 2026-10-09 | **S483** | iters: 5 | tools: index, saves modules (shared), torah, FM | patterns fixed: button-focus-lost ×1, module-fallback-literal (NEW) ×2 | pass run: C | SW: v963→v964
 
@@ -380,13 +382,15 @@ _(none)_
 
 - 2026-10-07 | **S465** | iters: 1 pass (**G**) + 4 fixes = **5** | tools: FM ×2, intake script, contact | patterns fixed: text-field-under-16px ×4 (contact) | pass run: G | SW: v944→v945
 
-- 2026-10-06 | **S464** | iters: 1 pass (**M**) + 4 fixes = **5** | tools: resources, dictionary, FM, dashboard ×2; index, trope, torah, contact, account, privacy | patterns fixed: dark-navy ×1, forward-arrow ×48; latin-tracking NEW | pass run: M | SW: v940→v941
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S483 (2026-10-09):** index, torah, FM, saves S483 · dictionary, docs S482 · generator S481 · trope, dashboard S480 · contact, privacy, terms, resources, account, flash, i18n.js S478 · pwa S472 · 404 S470.
+- **Snapshot S484 (2026-10-09):** generator, dashboard, flash, dictionary, torah, trope, resources, FM, docs S484 · index, saves S483 · contact, privacy, terms, account, i18n.js S478 · pwa S472 · 404 S470.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`fixed-toast-duration-shorter-than-its-text`** (NEW S484 F; FIXED `8037c22d` ×4, `5ffa32ba`; resources open): ACTIVE, streak 0. A fixed toast timer under 1000 + 50 ms/char of its longest message. Detection: `f484/durations.mjs`; exempt sticky/explicit-ms calls.
+
+- **`centred-fixed-box-shrinks-to-half-the-viewport`** (NEW S484 F; FIXED `78738db4` ×7): ACTIVE, streak 0. A fixed `left:50%; translateX(-50%)` box with no width is capped at vw/2. Detection: `f484/width.mjs` (width = vw/2 at 390); fix `width:max-content`.
 
 - **`shared-module-fallback-literal-without-a-dark-twin`** (NEW S483; FIXED `cb226a04` ×2): ACTIVE, streak 0. A module's `var(--token, #light-literal)` on a page lacking the token. Detection: findings S483 (3); 7 tokens, 1 hit, 0 open.
 
@@ -734,6 +738,6 @@ _(none)_
 
 - E freshness/site-health: 2026-10-08 (**S473 — 37th E on `665d7b56..c5bfca3c` (107 commits, 113 files): 30 arms, 17 plants fired (findings S473). FOUND + FIXED `df0fdc21`: torah-and-trope.md named 2 removed functions; README's 2 corpus sizes.**)
 
-- F cross-tool consistency: 2026-10-07 (**S470 — 5 search fields, 40 cells, 78-field census; plants fired; FIXED 4.**)
+- F cross-tool consistency: 2026-10-09 (**S484 — 36th F, the toast contract on all 8 carriers (5th look, S111 →): 24 cells + reduce, width, bars; plants 4/4. FOUND 4, FIXED 3 (+ FM kerning). F-next: the tabs / segmented-control keyboard contract (never swept).**)
 
-**Next session (S484):** **BRANCH/PR: `claude/improve-loop-s483` → draft PR #319: open → continue; merged → restart from `origin/main`.** `sw.js` **v964**, FM **5.59**. ⚑ Stalest: F (S470), B, A; O blocked. ⚑ Take a one-tool pass's target from the archive's rows, not the pointer (S469's C-next slipped). ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader.
+**Next session (S485):** **BRANCH/PR: `claude/improve-loop-s483` → draft PR #319 (S483–S484): open → continue; merged → restart from `origin/main`.** `sw.js` **v965**, FM **5.59**. ⚑ Stalest: B (S471), A, E; O blocked. ⚑ Untaken: flash's toast on the Start bar (P3). ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader.
