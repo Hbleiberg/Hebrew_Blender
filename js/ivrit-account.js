@@ -700,6 +700,9 @@
       '@media (pointer:coarse){.ivacct-input{font-size:16px;}}' +
       '.ivacct-note{margin:8px 0 0;font-size:0.8rem;color:var(--muted,#6b6050);min-block-size:1em;overflow-wrap:anywhere;}' +
       '.ivacct-note.is-error{color:var(--danger-text,#b3261e);}' +
+      // Pages without a --danger-text token (the hub and most tools) left the fallback red on the dark surface at
+      // 2.34:1; account.html's dark value of that token is the fallback there. A page's own token still wins.
+      'body.dark .ivacct-note.is-error{color:var(--danger-text,#ff9c94);}' +
       '.ivacct-who{margin:0 0 6px;font-size:0.8rem;color:var(--muted,#6b6050);overflow-wrap:anywhere;}' +
       '.ivacct-sep{border:0;border-top:1px solid var(--border,#c8bfa8);margin:8px 0;}' +
       '[hidden].ivacct-code,[hidden].ivacct-form{display:none;}' +

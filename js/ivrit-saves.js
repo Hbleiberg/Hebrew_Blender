@@ -2661,6 +2661,9 @@
       '.ivsav-btn.ivsav-primary{border-color:var(--gold,#c9922a);font-weight:600;}' +
       '.ivsav-status{margin:4px 0 8px;font-size:0.82rem;color:var(--muted,#6b6050);min-block-size:1.2em;overflow-wrap:anywhere;}' +
       '.ivsav-status.is-error{color:var(--danger-text,#b3261e);}' +
+      // Pages without a --danger-text token left the fallback red on the dark surface at 2.34:1 (the hub, 2.6:1 on the
+      // generator); account.html's dark value of that token is the fallback there. A page's own token still wins.
+      'body.dark .ivsav-status.is-error{color:var(--danger-text,#ff9c94);}' +
       '.ivsav-status.is-saved::before{content:"\\2713\\00a0";}' +
       '.ivsav-note{margin:6px 0;font-size:0.85rem;overflow-wrap:anywhere;}' +
       '.ivsav-overlay{position:fixed;inset:0;z-index:9000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.45);}' +
