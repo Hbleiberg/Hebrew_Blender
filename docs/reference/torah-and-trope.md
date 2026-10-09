@@ -668,7 +668,8 @@ to Learn), and a caller that opens something inside the new tab (`openLearnFor`)
   Frank Ruhl Libre has no te'amim or `◌`, so any cluster carrying a mark renders whole (letter +
   nikkud + te'am) from the `'IvritSuite Taamim'` fallback at the end of every `--heb-font` stack
   (`fonts/NotoSerifHebrew-Taamim.ttf`); without it every mark is tofu on stock macOS/iOS.
-  Postpositive/prepositive marks sitting at word edges is **correct**, not a bug.
+  Postpositive/prepositive marks sitting at word edges is **correct**, not a bug — `docs/tropepatterns.md` → G,
+  *Where each mark sits*, says which marks and where.
 - **Persistence** (no presets, no `.ivrit` engine — AllTools-only backup):
   `hebrewTropeTutor_settings` (tradition ashk/seph, `melody`, `tuneShift`, `tuneVoice`, `noteNames`, `tuneRate`,
   `tuneRepeats`, `tuneEcho`, hebFont, hebFontSize, drill-type toggles, `drillScope`, `drillLength`, playbackRate) and `hebrewTropeTutor_progress` (`{v:1, tropes:{key:{r,w}}, families:{}, pbStreak}`).
@@ -714,7 +715,9 @@ reading drawn on a music staff, a verse at a time, the words under their notes. 
 the tutor uses** (`STAFF_PHRASES_URL`; bump both together) through `ivritSafeParse` + `_phraseSetsFrom`, which
 validates each of the six melodies' rows on its own (`TROPE_MELODIES`: torah, highholiday, haftarah, esther,
 megillot, eicha; a row with a value `PHRASE_VALUE` does not list is dropped, so the table carries every value the
-file uses, the Megillot chart's `64` included). Design: `docs/tropepatterns.md` → G.
+file uses, the Megillot chart's `64` included). Design: `docs/tropepatterns.md` → G; its
+*What the syllable data must carry* and *From a figure to a word* are the contract for the syllable placement the
+beta leaves open.
 
 - **From text to notes.** `tropeUnitsOfVerse(v.hebrew)` reads the verse's marks on the Trainer's own split
   (`/(\s+|־)/`: one *piece* per Hebrew-bearing token, the way `tokenizeHebrew` emits `.tt-word`s): a maqaf
@@ -877,7 +880,9 @@ file uses, the Megillot chart's `64` included). Design: `docs/tropepatterns.md` 
   The names are `--muted`, gold while their note sounds (the tune's `.is-sounding`) or is chanted (`.is-hl`), and
   print muted; the SVG stays hidden from assistive tech, so no spoken list is built.
 - **Known beta limits** (said in the section's note): a word sits whole under its figure (no syllable
-  placement); a context the chart never prints takes the nearest figure; a triplet or slur cut at a
+  placement: `docs/tropepatterns.md` → G, *From a figure to a word*, is the rule it will follow and *What the
+  syllable data must carry* the data it waits for); a context the chart never prints takes the nearest figure; a
+  triplet or slur cut at a
   figure's edge draws by value; a sheet narrower than the print wrap (portrait, wide margins) prints the
   staff smaller than the chosen size, uniformly.
 

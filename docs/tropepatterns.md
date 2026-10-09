@@ -72,9 +72,13 @@ their rows. To change a note, edit its row here and re-run the builder; never ed
     and telisha gedola, printed at both ends of its name, counts once.
   - Then one line per mark, left to right as printed. The mark is the tutor's key (`TROPES` in
     `js/trope-staff.js`, the staff engine both pages load) or `munach_legarmeh`.
-  - A syllable (MER, CHA, T' …) starts at the note printed above it and runs to the next syllable; a
-    `-` after it means the next syllable continues the same word. Each mark's line is whole words, so
-    its last syllable has no `-`, and every syllable has at least one sounding note.
+  - An **underlay syllable** (MER, CHA, T' …) is a syllable of the mark's *name* as the chart prints it
+    under the notes — never a syllable of a Torah word (section G calls those **word syllables** and
+    keeps the two apart). It starts at the note printed above it and runs to the next syllable; a `-`
+    after it means the next syllable continues the same word. Each mark's line is whole words, so its
+    last syllable has no `-`, and every syllable has at least one sounding note. The spelling is each
+    chart's own (section B's `R'VI- I` beside section I's `R'- VI- I`; `NA` beside `NAH`), kept as
+    printed.
   - A note is `PITCH(VALUE)`, with `,>` for an accent and `,-` for a tenuto line. Values: `64` a
     sixty-fourth (only the Megillot telishas, rows 29–30 of section J), `32` a thirty-second, `s` a
     sixteenth, `ds` a dotted sixteenth, `e` an eighth, `de` a dotted eighth, `q` a quarter, `dq` a
@@ -874,7 +878,8 @@ Phrases tab, with real Torah examples of each row.)
 ## G. Toward a parasha staff
 
 *Implemented (beta) as the Torah Trainer's Trope staff layout — see `docs/reference/torah-and-trope.md` →
-Trope staff for what the code does with each point below, and which it leaves open.*
+Trope staff for what the code does with each point below, and which it leaves open: the syllable
+placement, in the paragraphs after the census below.*
 
 The aim is a staff under any reading — a verse, an aliyah, a whole parasha — that draws and plays its
 cantillation. The chart supplies the figures. This section records what a builder of that staff needs
@@ -887,7 +892,8 @@ to know, and what the chart leaves open.
   - `notes`: `p` in semitones from B4, `v` the printed value, `t` ticks at 48 to the quarter with a
     triplet note's real length, `g` grace, `r` rest, `tie` tied to the next, and `a` accents and
     tenuto lines;
-  - `syl`: each syllable's text, whether a hyphen follows, its mark and the notes it covers;
+  - `syl`: each underlay syllable's text (the mark's name as its chart spells it, never a Torah word's
+    syllable: *Two kinds of syllable* below), whether a hyphen follows, its mark and the notes it covers;
   - `units`: each mark's notes;
   - `tup`: the triplets;
   - `slur`: the slurs, `dashed` for a dashed one.
@@ -919,18 +925,17 @@ to know, and what the chart leaves open.
   munach a connecting mark (Genesis 22:11, אַבְרָהָ֣ם ׀ אַבְרָהָ֑ם). The census's text draws the
   paseq smaller, and a staff builder's text has to tell the two apart as well. A double pashta, and
   the doubled telishas, segol and zarka, are one mark written twice: one sign at the word's edge,
-  the other on its stressed syllable. A word can carry two different marks, most often a
-  munach or kadma on an earlier syllable before a zakef katon, or a kadma before a geresh. They are sung
-  in order, like two words.
+  the other on its stressed syllable (*Where each mark sits*, below, counts them; the one doubled
+  gershayim the census merges is a quirk of the text, not a convention). A word can carry two
+  different marks, most often a munach or kadma on an earlier syllable before a zakef katon, or a
+  kadma before a geresh. They are sung in order, like two words.
 - **Placing a figure on a real word** is the one thing the chart cannot give.
   - The chart sings every figure on its mark's own name (MER-CHA, T'-LI-SHA G'DO-LA), and the name's
     stress is no guide: pashta's high note falls on TA, not on the stressed PASH.
-  - So the data keeps the printed underlay and adds no accent field.
-  - The usual teaching puts the figure's opening notes on the syllables before the stressed one and its
-    melisma from the stressed syllable on. That is a convention for the builder to confirm by ear
-    against the PocketTorah recordings the tutor already plays.
-  - Most marks sit on the stressed syllable. Pashta, zarka, segol and telisha ketana sit on a word's
-    last letter and telisha gedola and yetiv on its first, so the stress has to come from the text.
+  - So the data keeps the printed underlay and adds no stress field.
+  - The convention for placing it, where each mark is printed, what the syllable data must carry and
+    what is still to be confirmed by ear are the paragraphs from *Two kinds of syllable* to *The
+    ear-check list* at the end of this section.
 - **Keys and voices.** The tutor's key bar functions (`shiftedKey`, `motifPitchPos`) transpose and
   spell these notes the way they do the Learn-card staffs, and *Low voices* works the same way.
 - **What the Torah needs that the chart does not print.** `node scripts/build-trope-phrases.mjs --census`
@@ -964,6 +969,162 @@ to know, and what the chart leaves open.
 
   Each gap is a place where a parasha staff needs a decision, a recording to listen to or a second
   source. The report lists every one with an example verse.
+
+**Two kinds of syllable.** The paragraphs that follow are what the staff needs in order to sing a figure
+*on* a word rather than draw it whole underneath, and what the data for that must carry; until it has
+them, the Torah Trainer's Trope staff sets each word whole under its figure
+(`docs/reference/torah-and-trope.md` → *Trope staff*, *Known beta limits*). An *underlay syllable* is a
+syllable of a mark's name as its chart prints it (`syl` in the data: MER-CHA, T'-LI-SHA); a *word
+syllable* is a syllable of the Torah word being sung, which nothing in this repository can find today:
+the only syllabifier here is the Trainer's transliteration library, whose *Simple Stressed* style
+upper-cases the last syllable of every word (mil'ra assumed), and the code never reads the one stress
+sign the text carries (the siluk, U+05BD, sits outside `TROPE_MARK_RE`). A collaborator's file of every
+Torah word split into word syllables, with the stressed one, is what the next paragraphs are written
+for.
+
+**Where each mark sits.** The sign's place in the printed word is fixed by the mark, not by the stress:
+most sit on the stressed syllable, four at the word's last letter (postpositive), two at its first
+(prepositive), and on a word stressed elsewhere the edge-sitting ones are written twice, the second time
+on the stress — the census's *Repeated marks merged* line counts those words. On a word with two marks
+the second sits on the stress and the first on an earlier syllable (*Words with more than one mark*:
+munach 358 and kadma 159 before zakef katon, kadma 36 before geresh, mercha 17 before tevir); in a maqaf
+compound each piece keeps its own stress.
+
+| Mark | U+ | Sits on | Written twice when the stress is elsewhere (words, census) |
+|---|---|---|---|
+| mercha | 05A5 | the stressed syllable | no |
+| tipcha | 0596 | the stressed syllable | no |
+| munach | 05A3 | the stressed syllable | no |
+| etnachta | 0591 | the stressed syllable | no |
+| sof_pasuk | — (the siluk 05BD, then ׃) | the stressed syllable of the verse's last word, as the siluk | no |
+| mahpach | 05A4 | the stressed syllable | no |
+| pashta | 0599 | the last letter (postpositive) | yes — 923 words |
+| yetiv | 059A | under the first letter (prepositive) | never in the census: yetiv stands on a word stressed on its first syllable (to confirm against the data) |
+| zakef_katon | 0594 | the stressed syllable | no |
+| zakef_gadol | 0595 | the stressed syllable | no |
+| zarka | 0598 and 05AE | the last letter (postpositive) | yes — 59 words |
+| segol | 0592 | the last letter (postpositive) | yes — 78 words |
+| shalshelet | 0593 | the stressed syllable; a paseq follows the word | no |
+| revia | 0597 | the stressed syllable | no |
+| darga | 05A7 | the stressed syllable | no |
+| tevir | 059B | the stressed syllable | no |
+| kadma | 05A8 | the stressed syllable; on a two-mark word, an earlier syllable than the second mark's | no |
+| geresh | 059C | the stressed syllable | no |
+| geresh_muqdam | 059D | never in this text (a geresh printed earlier in the word, in the editions that use it) | no |
+| gershayim | 059E | the stressed syllable | one word in the census, a quirk of the text |
+| telisha_ketana | 05A9 | the last letter (postpositive) | yes — 72 words |
+| telisha_gedola | 05A0 | the first letter (prepositive) | yes — 224 words |
+| pazer | 05A1 | the stressed syllable | no |
+| mercha_kefula | 05A6 | the stressed syllable | no |
+| karnei_parah | 059F | the stressed syllable | no |
+| yerach_ben_yomo | 05AA | the stressed syllable | no |
+| munach_legarmeh | 05A3, then ׀ after the word | the stressed syllable | no |
+
+In the code today a repeated sign counts once, and a kadma beside a pashta is dropped as a doubled
+pashta's first half though this text writes both halves as pashta (`tropeUnitsOfVerse`; the census found
+no kadma-glyph case); both zarka code points read as zarka (Unicode's names are swapped); `sof_pasuk` has
+no code point, so the last cell takes it by position and U+05BD, siluk and meteg alike, is never read; a
+munach before a ׀ is munach legarmeh (281 words) though a paseq prints the same (32 after a munach) and
+the page's text cannot tell them apart; and the Learn cards light every letter carrying the sign
+(`renderMarkedWord`). `TROPES` carries no position field: this table is the specification for one. The
+Font Maker's glyph table (`TROP_DEFS`) flags U+0598, U+0599, U+05A9 and U+05AE postpositive and U+059A
+and U+05A0 prepositive and leaves segol unflagged — that flag anchors a placeholder glyph, not a word
+position; the printed convention, the tutor's card notes and the census's 78 doubled segol words make
+segol postpositive here.
+
+**What the syllable data must carry.** Its format is the collaborator's; it is usable here if the builder
+can read these off it, piece by piece, without guessing.
+
+1. **The edition and the address.** Which text was syllabified (the Trainer shows Sefaria's API text; the
+   census reads the export's *Miqra according to the Masorah*, and a word that differs between the two
+   must be detectable), and for every word its book, chapter, verse and place in the verse.
+2. **The word as the Trainer splits it.** One record per *piece* — the token between whitespace and
+   maqafs, the Trainer's `.tt-word`, the index's `w`, PocketTorah's timing slot — in verse order, with the
+   piece's text verbatim (letters, points and marks as the edition has them), so the builder can lay the
+   records against `tropeUnitsOfVerse(text).pieces` and refuse the verse on any mismatch, as the trope
+   coloring refuses to color on a desync. A maqaf compound is then the cells' business; the data need
+   only flag the pieces that carry no stress of their own (a proclitic, וּמִן־), so a compound's one
+   stress is its last piece's, and say so if a compound ever stresses an earlier piece.
+3. **Boundaries as letter counts, not character offsets.** A boundary is "after the n-th letter", a
+   letter being a base letter with its points and marks (as `renderMarkedWord` clusters them: a base
+   character and the combining marks U+0591–U+05C7 after it), never an index into the string: the marks
+   are combining characters, nothing here is normalized, and Unicode canonical reordering may legally
+   reorder a letter's marks (the Trainer's divine-name check already refuses to assume a fixed order).
+   With letter counts, the letter a mark is found on gives the mark's syllable.
+4. **The stressed syllable** of every piece, as an index into its syllables (mil'ra and mil'el both read
+   off it); secondary stress if the data has it, which the staff does not need. The text's own U+05BD is
+   a hint, not the answer: on the verse's last word it is the siluk, the stress itself; elsewhere a meteg
+   marks a secondary stress (Genesis 1:3 וַֽיְהִי־אֽוֹר׃, a meteg on the vav and the siluk on the alef).
+   The Trainer's *Simple Stressed* transliteration is no source either: it capitalizes the last syllable
+   of every word.
+5. **How a shva and a chataf are counted** — whether a shva na opens a syllable of its own — stated once
+   as the data's rule, with such syllables flagged: the chart sings T' and R' on a note of their own, and
+   the number of syllables before the stress is what a figure's opening notes are spread over.
+6. **Independence from the marks.** Syllables and stress found from letters and points, not from the
+   te'amim, so the text's own hints can check them (next paragraph); if the data was derived from the
+   marks it should say so, because the checks are then circular.
+7. **Coverage.** Every verse of the five books, the 27 double-accented verses included (Genesis 35:22 and
+   the two Decalogues, `STAFF_DOUBLE_CANT`: the staff draws them as words only and the census leaves them
+   out, but they are still shown and transliterated). A verse the data lacks should be absent, not
+   padded.
+
+**Checking the data against the text.** The marks validate the data: for every word whose mark sits on
+the stressed syllable (the table), the letter carrying the mark must fall inside the syllable the data
+calls stressed; for every word written with two signs (1,357 in the census: 923 + 78 + 224 + 72 + 59 +
+1), the sign away from the word's edge must; and for every verse's last word the siluk before ׃ must —
+68,187 marked words in one pass over the text on `tropeUnitsOfVerse`'s split. A disagreement is a
+syllable or a stress to look at on either side. The check belongs in the phrases builder's `--census`
+once the data has a file.
+
+**From a figure to a word.** The usual teaching: a figure's opening notes go on the syllables before the
+stressed one and its melisma runs from the stressed syllable on. A figure is therefore placed by the
+word's *stress*, never by the letter its sign is printed on: on a mil'ra word a postpositive sign's
+letter is the stress, on a mil'el word the doubled sign names it, and a prepositive sign (telisha gedola,
+yetiv) says nothing about the stress. A doubled mark is one figure. The underlay is no guide to where
+the melisma begins (pashta's high note is on TA), so each figure needs its own split between opening
+notes and melisma; the rows carry none — **to confirm by ear**, figure by figure, against the
+PocketTorah recordings the Phrases tab plays for a row's examples (`trope_phrase_examples.json`, each
+with its clip: the first test set), and only then written down (*Where the data would live*). Cases the
+mapping has to define, each **to confirm by ear**:
+
+- **More or fewer syllables than opening notes.** More syllables before the stress than the figure has
+  opening notes: the extra ones recite on the first note; fewer: the extra opening notes join the first
+  syllable there is, so a one-syllable word sings the whole figure as a melisma. The other reading to
+  listen for is dropping opening notes.
+- **A mil'el word.** A syllable follows the stressed one: whether the melisma's closing note moves onto
+  it, or the melisma stays whole on the stress.
+- **A two-mark word, and a maqaf compound.** The first mark's figure takes the syllables up to and
+  including its own letter's syllable (its letter is its stress; the word's stress belongs to the second
+  mark), the second mark's figure the rest from the stressed syllable on — sung in order, as two words.
+  A compound's syllables are its pieces' in order with the last piece's stress, so a proclitic's
+  syllables carry opening notes; an unmarked word that sings with the next lends its syllables the same
+  way.
+- **A syllable on a vocal shva** takes a grace note, as the chart gives T' and Y', or none.
+
+**Where the data would live.** Either a syllable field on the entries the tutor already fetches — the
+index's `{p, a, w, ref, he, s, e}` and the Phrases examples' `ex` entries, enough for the Learn cards and
+the Phrases tab — or, for the Trainer's staff of a whole reading, a file per book or parasha under
+`data/trope/`, each with its own `?v=` and size budget, fetched lazily on the first staff render like
+`trope_phrases.json` (the Trope Tutor's CSP allows no other origin); and, if the ear check finds no single
+split rule, a per-figure split written into the row grammar and carried by `trope_phrases.json` (a
+builder change). The choice waits for the data's size and shape.
+
+**The ear-check list.** What a listener checks against a recording before trusting a staff: the rows the
+charts leave in doubt, and the placement rule above. The Phrases tab plays PocketTorah's recordings of a
+row's examples for the year-round melody only; the other items wait for a reader who knows the tune.
+
+- The placement convention (*From a figure to a word*): where each figure's melisma begins, and the
+  long-word, short-word and mil'el cases — against the year-round recordings.
+- Haftarah (section H): the rows where this chart and Binder differ — mercha and tipcha before etnachta
+  and sof pasuk (1–8), pashta and zakef katon (9–14), darga and tevir (22–28), yetiv (33–34), zarka
+  (35–38) and the closing (40).
+- Esther (section I): telisha ketana (30), the one row Binder's chart sings differently.
+- Shir HaShirim, Ruth and Kohelet (section J): zakef katon's TON after yetiv (33–34) and the telishas'
+  sixty-fourths (29–30), for their engraving here, not for any disagreement.
+- Eicha (section K): darga's GA (22, 24 and 26 against 28) and mercha's CHA before tevir (25 against
+  27), the print's own differences, kept as printed.
+- Torah and High Holiday (sections B and C): nothing open; section A's pazer departure is the
+  maintainer's decision, not a check.
 
 ## H. The 40 Haftarah phrase patterns
 
@@ -1033,7 +1194,7 @@ on E♭4); his yetiv falls an octave (33–34; a fifth here); his zarka opens wi
 to A♭4, before the fall (35–38; here it starts at the top); and his final cadence ends on C4 like
 any sof pasuk (here row 40 rises through the grace pair to end on A♭4). The HUC page, read for
 contour only, shows Binder's falling tipcha and rising zarka where it is legible, and nothing in it
-contradicts the rest. All of these rows are on the ear-check list.
+contradicts the rest. All of these rows are on the ear-check list (section G).
 
 ```trope-haftarah
 #1 מֵרְכָ֥א טִפְּחָ֖א מֻנָּ֣ח אֶתְנַחְתָּ֑א
@@ -1387,8 +1548,8 @@ pazer (31), zakef gadol (32), yetiv (33–34), the segol clause with its E♮ (3
 end of each chapter) — and it was this agreement that exposed the misread signature noted above. The
 one difference is telisha ketana (30): Binder's rises from F4 through G4 and A♭4 to B♭4 and ends
 there, the shape of his pazer, where this chart's stays on E♭4 and closes E♭4 D4 E♭4 F4 E♭4 — a row
-for the ear check. The HUC page (handwritten) was read for contour only; nothing legible in it
-contradicts either chart.
+on the ear-check list (section G). The HUC page (handwritten) was read for contour only; nothing
+legible in it contradicts either chart.
 
 ```trope-esther
 #1 מֵרְכָ֥א טִפְּחָ֖א מֻנָּ֣ח אֶתְנַחְתָּ֑א
@@ -1699,9 +1860,9 @@ print the usual partial beam, and the three rows are read alike. Zakef katon's K
 beamed onto the munach's run (9, 10, 12, 14, 33) and an eighth when it opens the word (11, 13, 34), and
 its TON is a dotted eighth, a sixteenth and a quarter, each with a tenuto line, in rows 9–14 — printed
 after yetiv (33–34) as a dotted sixteenth, a thirty-second and a quarter with no tenuto marks, which
-the rows keep as printed (one for the ear check). Darga's GA and segol's GOL, the sof pasuk's SUK
-(39, 39a) and zarka's KA all run an eighth into four thirty-seconds, as the darga does in the other
-charts of the book.
+the rows keep as printed (on the ear-check list, section G). Darga's GA and segol's GOL, the sof
+pasuk's SUK (39, 39a) and zarka's KA all run an eighth into four thirty-seconds, as the darga does in
+the other charts of the book.
 
 **Brackets, rests, articulation.** The chart prints a `3` over its triplets — the munach–etnachta and
 mercha–sof pasuk groups (1–2, 5–6), kadma v'azla's and geresh's C5 B4 A4 (15–16) and zakef gadol's
@@ -1731,8 +1892,8 @@ geresh (15–16), the revia rows (17–19), gershayim (20–21), darga and tevir
 (29–30), the pazer's run (31; Binder prints one munach before it where this chart prints two), zakef
 gadol (32), yetiv (33–34), the segol clause (35–38) and the closing with its six sixteenths (39) —
 and no difference was found; the TON of rows 33–34 and the sixty-fourths of the telishas (29–30) are
-on the ear-check list for their engraving here, not for any disagreement. The HUC page (handwritten)
-was read for contour only; nothing legible in it contradicts either chart.
+on the ear-check list (section G) for their engraving here, not for any disagreement. The HUC page
+(handwritten) was read for contour only; nothing legible in it contradicts either chart.
 
 ```trope-megillot
 #1 מֵרְכָ֥א טִפְּחָ֖א מֻנָּ֣ח אֶתְנַחְתָּ֑א
@@ -2048,8 +2209,8 @@ note of the munach's triplet after a munach (9, 10, 12, 14, 32) and a flagged ei
 13, 33) — and its TON, G4 then E♭4, ends on a quarter after pashta (9–14) and on a dotted quarter
 after yetiv (32, 33). Darga's GA ends on a dotted quarter in rows 22, 24 and 26 and on a plain
 quarter in row 28; mercha's CHA before tevir ends on a quarter in row 25 and on a dotted quarter in
-row 27 — the print's own differences, kept, and listed for the ear check. Tevir's T' is a plain
-eighth in every row (23–28). Revia's R' is a sixteenth, beamed onto the munach's NACH (17, 18) and
+row 27 — the print's own differences, kept, and on the ear-check list (section G). Tevir's T' is a
+plain eighth in every row (23–28). Revia's R' is a sixteenth, beamed onto the munach's NACH (17, 18) and
 flagged on its own (19). Gershayim's GER and SHA are a beamed pair in row 20; in row 21 GER is flagged
 and SHA is beamed onto YIM's first note instead, and row 20 closes with an eighth rest that row 21
 lacks. The munach before zarka sings NACH on A♭4 G4 F4 with the ZAR beamed onto its last note (34,
