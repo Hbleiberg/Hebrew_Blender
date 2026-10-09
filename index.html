@@ -809,8 +809,19 @@ async function downloadMyFontFile(name) {
 function deleteMyFontFile(name) {
   const _signedIn = !!(window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession());
   if (!confirm(I18n.t(_signedIn ? 'home.alltools.myfonts.remove_confirm_cloud' : 'home.alltools.myfonts.remove_confirm', {name: name}))) return;
+  // The Remove button goes with its row when the list rebuilds, which dropped a keyboard user's focus to
+  // <body> (no ring, a screen reader loses its place): remember the row, and after the rebuild focus the
+  // Remove of the row now in its place (the last row when it was the last), else the upload control.
+  const _rows = Array.from(document.querySelectorAll('#myFontsList > div'));
+  const _idx = _rows.findIndex(r => r.contains(document.activeElement));
   // A teacher's own deletion: the account's row goes too (the shared block's cap eviction never does — that is not a deletion).
-  deleteUserFont(name).then(() => { if (window.IvritSaves && window.IvritAccount && IvritAccount.hasStoredSession()) IvritSaves.fontDeleted(name); }).then(renderMyFontsManager).catch(e => console.error(e));
+  deleteUserFont(name).then(() => { if (window.IvritSaves && window.IvritAccount && IvritAccount.hasStoredSession()) IvritSaves.fontDeleted(name); }).then(renderMyFontsManager).then(() => {
+    if (_idx < 0) return;   // the focus was not in the list (a pointer that never focused the button)
+    const rows = document.querySelectorAll('#myFontsList > div');
+    const row = rows[Math.min(_idx, rows.length - 1)];
+    const target = row ? row.querySelector('button:last-of-type') : document.querySelector('#myFontsSection input.vh-file');
+    if (target) target.focus();
+  }).catch(e => console.error(e));
 }
 function useFontEverywhere(name) {
   // Write the chosen font into every tool's own setting so they all adopt it on next load
