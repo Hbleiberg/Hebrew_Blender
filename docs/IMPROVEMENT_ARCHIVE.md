@@ -92121,3 +92121,25 @@ _(prior — S485 pointer:)_ **Next session (S485):** **BRANCH/PR: `claude/improv
 ### from Per-session log (one line per session)
 
 - 2026-10-07 | **S465** | iters: 1 pass (**G**) + 4 fixes = **5** | tools: FM ×2, intake script, contact | patterns fixed: text-field-under-16px ×4 (contact) | pass run: G | SW: v944→v945
+
+## S486 (2026-10-09) — a Feature seed shipped (moved from the ledger's Feature seeds, verbatim, then the ship)
+
+- [x] L | classroom_dashboard.html | **A/B or rotating week cycles.** Needs a cycle dimension on `scheduleWeek` (cells per cycle-week), a "which week is it" anchor date, and cycle awareness in `computeWeekState`'s next-school-day scan — a real model change, not a sidecar. | found: 2026-08-06, weekly-grid build | **shipped S486 `4875ef78`** (a maintainer-directed L feature, outside the micro budget: the ribbon, week tabs, anchor, Copy from A, the Week chip, the summary strips; `cells` stays Week A for old builds; 21 CSV keys; receipts in loop-findings S486)
+
+### from Discovery-pass rotation — the previous handoff
+
+_(prior — S486 pointer:)_ **Next session (S486):** **BRANCH/PR: `claude/improve-loop-s483` → draft PR #319 (S483–S485): open → continue; merged → restart from `origin/main`.** `sw.js` **v966**, FM **5.59**. ⚑ Stalest: B (S471), A, E; O blocked. ⚑ Untaken: flash's toast on the Start bar (P3). ⚑ Seeds: 48 open; a build needs the maintainer's pick (gate 1). ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader.
+
+
+<!-- archived by compact-ledger at the S487 boundary, 2026-10-09 -->
+## Compaction (S487, 2026-10-09) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-08 | (S481 close-out) | branch/deploy note | **S481 = I + 4 fixes, PR #317.** No drift; sw v962; no FM bump; gate 2 ×2.
+
+- [x] 2026-10-08 | `b9a24112` `5f1aa8ad` `b6b9d4e0` `d869fbdf` | generator, hub, FM ×2 | (S481) **Sides, labels.** | findings S481.
+
+### from Per-session log (one line per session)
+
+- 2026-10-07 | **S466** | iters: 1 pass (**D**) + 4 fixes = **5** | tools: ivrit-saves, index ×2, FM | patterns fixed: parse-per-call ×1 (ivrit-saves) | pass run: D | SW: v945→v946

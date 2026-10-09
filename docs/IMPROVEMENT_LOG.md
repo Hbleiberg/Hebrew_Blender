@@ -238,8 +238,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] M (dual) | classroom_dashboard.html | **Per-day period-time overrides** (early-dismissal Friday). The locked v1 model is ONE shared bell schedule across all days; an `overrides: {fri: [{start,end}…]}` sidecar on `scheduleWeek` could relax that without touching the cells model. The engine already resolves times per-day at one point (`computeWeekState`'s `timed` build). | found: 2026-08-06, …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] L | classroom_dashboard.html | **A/B or rotating week cycles.** Needs a cycle dimension on `scheduleWeek` (cells per cycle-week), a "which week is it" anchor date, and cycle awareness in `computeWeekState`'s next-school-day scan — a real model change, not a sidecar. | found: 2026-08-06, weekly-grid build
-
 - [ ] S | trope_tutor.html | **Calmer Learn cards for young grades: examples per card (2/3/4) and a primary-name-only switch.** | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] M | trope_tutor.html | **The mark in its phrase on its Learn card, and the chart's clause order as a family order.** | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -316,6 +314,10 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-09 | (S486 close-out) | branch/deploy note | **S486 = one L feature on direction (week cycles; 5 answers in chat), PR #319 continued; pass skipped (B stays stalest).** No drift; sw v966→v967; no FM bump; smoke-sync 207/207; trap 199 (findings S486).
+
+- [x] 2026-10-09 | `4875ef78` | classroom_dashboard.html + locales + 2 docs | (S486) **Schedule Sync week cycles: a "Schedule repeats" ribbon (1 / A/B / 3 / 4), week tabs over one bell schedule, "This week is" re-anchoring, Copy from Week A, a Week chip on Now / Next; `cells` stays Week A, so old builds and plain weeks are untouched.** | 144 checks (findings S486).
+
 - [x] 2026-10-09 | (S485 close-out) | branch/deploy note | **S485 = the micro-feature alone (gate 1: the maintainer's pick), PR #319 continued; pass skipped on direction (B stays stalest).** No drift; sw v965→v966; no FM bump; traps 197–198 (findings S485).
 
 - [x] 2026-10-09 | `5163e4ca` | classroom_dashboard.html + locales + 2 reference docs | (S485) **Micro-feature: a countdown to the teacher's own event — name + date under Date & Time → a second gold line under the holiday countdown, gone by itself after the day; out of presets and starters like `intermissionHTML`, carried by `.ivrit`, AllTools and the account row.** | 96 checks (findings S485).
@@ -332,13 +334,11 @@ _(none)_
 
 - [x] 2026-10-08 | `484c9dd5` `806bf29b` `9528698d` `8d99ad93` | torah ×2, dictionary ×2 | (S482) **Cycle links; lookup drawer; Copy Mode group; 4 settings kept.** | findings S482.
 
-- [x] 2026-10-08 | (S481 close-out) | branch/deploy note | **S481 = I + 4 fixes, PR #317.** No drift; sw v962; no FM bump; gate 2 ×2.
-
-- [x] 2026-10-08 | `b9a24112` `5f1aa8ad` `b6b9d4e0` `d869fbdf` | generator, hub, FM ×2 | (S481) **Sides, labels.** | findings S481.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-09 | **S486** | iters: 2 (an L feature on direction) | tools: dashboard | patterns fixed: — | pass run: — (skipped; B stays stalest) | SW: v966→v967
 
 - 2026-10-09 | **S485** | iters: 2 (micro-feature) | tools: dashboard | patterns fixed: — | pass run: — (skipped on direction; B stays stalest) | SW: v965→v966
 
@@ -378,11 +378,9 @@ _(none)_
 
 - 2026-10-07 | **S467** | iters: 1 pass (**I**) + 4 fixes = **5** | tools: torah, contact, resources ×2, dictionary, FM, dashboard | patterns fixed: — | pass run: I | SW: v947→v948
 
-- 2026-10-07 | **S466** | iters: 1 pass (**D**) + 4 fixes = **5** | tools: ivrit-saves, index ×2, FM | patterns fixed: parse-per-call ×1 (ivrit-saves) | pass run: D | SW: v945→v946
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S485 (2026-10-09):** dashboard, docs S485 · generator, flash, dictionary, torah, trope, resources, FM S484 · index, saves S483 · contact, privacy, terms, account, i18n.js S478 · pwa S472 · 404 S470.
+- **Snapshot S486 (2026-10-09):** dashboard, docs S486 · generator, flash, dictionary, torah, trope, resources, FM S484 · index, saves S483 · contact, privacy, terms, account, i18n.js S478 · pwa S472 · 404 S470.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -738,4 +736,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-09 (**S484 — 36th F, the toast contract on all 8 carriers (5th look, S111 →): 24 cells + reduce, width, bars; plants 4/4. FOUND 4, FIXED 3 (+ FM kerning). F-next: the tabs / segmented-control keyboard contract (never swept).**)
 
-**Next session (S486):** **BRANCH/PR: `claude/improve-loop-s483` → draft PR #319 (S483–S485): open → continue; merged → restart from `origin/main`.** `sw.js` **v966**, FM **5.59**. ⚑ Stalest: B (S471), A, E; O blocked. ⚑ Untaken: flash's toast on the Start bar (P3). ⚑ Seeds: 48 open; a build needs the maintainer's pick (gate 1). ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader.
+**Next session (S487):** **BRANCH/PR: `claude/improve-loop-s483` → draft PR #319 (S483–S486): open → continue; merged → restart from `origin/main`.** `sw.js` **v967**, FM **5.59**. ⚑ Stalest: B (S471), A, E; O blocked. ⚑ Untaken: flash's toast on the Start bar (P3). ⚑ Seeds: 47 open; a build needs the maintainer's pick (gate 1). ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; the week cycles under an A/B school's eyes (no day cycle yet).
