@@ -664,6 +664,23 @@ an empty cup in every other branch (`Chanukah: 8th Day` shows all eight); every 
 `holidayIconFor()`. `.hol-ico` is sized in em, so the `--holiday-size` slider and the fullscreen scale rule
 size it with the text, and the dark block of the CSS swaps its palette without a re-render.
 
+## The teacher's own event countdown (`classroom_dashboard.html`)
+
+A second `heb-holiday-line` under the holiday countdown, `#eventCountdown`, counts down to a day the teacher
+chooses in the Date & Time panel's *Your own event* group: a name and a date, `settings.eventTitle` /
+`settings.eventDate` (the picker's `YYYY-MM-DD`). `renderEventCountdown(now)` runs wherever the date renders —
+from `updateDateTimeDisplay()`, so at load, on every settings path (`applySettings`: presets, starters, a `.ivrit`
+restore, an account download; `applyI18n`) and at the midnight rollover — and from the two inputs' own handler,
+which writes through `saveSettingsToStorage()` on each edit. It reuses the holiday line's strings
+(`dashboard.days.holiday_countdown.*`, `dashboard.days.holiday_today`) and `holidayIconFor(title)` (a "Purim
+carnival" gets the Purim mask, anything else the calendar page), escapes the title through `esc()` inside a
+`.bidi-isolate` span, and hides itself when the name is empty, the date is not a real day, or the day has passed.
+It is independent of `showHolidayCountdown` (the General starter turns that off; a secular board still counts down
+to its field trip). Like `intermissionHTML`, the two fields are the board's, not a look's: `getSettings({ forPreset:
+true })` strips them and `PRISTINE_DEFAULTS` lacks them, so presets, Schedule Sync and the starters never carry or
+reset them, while `.ivrit` files, the AllTools export and the account's settings row carry them (they are not in the
+registry row's `omit`).
+
 ## Weather icon (`classroom_dashboard.html`)
 
 The weather column's `.weather-emoji` slot holds an inline SVG, not an emoji: `WEATHER_WMO[code].icon` names one of

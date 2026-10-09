@@ -1193,7 +1193,7 @@ body.dark .hk-key:active{background:#2a4070;}
     border-top: 1px solid var(--border);
   }
 
-  input[type="text"], input[type="url"], select, input[type="number"], textarea {
+  input[type="text"], input[type="url"], input[type="date"], select, input[type="number"], textarea {
     border: 1px solid var(--border);
     background: var(--white);
     color: var(--text);
@@ -1204,11 +1204,12 @@ body.dark .hk-key:active{background:#2a4070;}
     width: 100%;
     max-width: 180px;
   }
-  body.dark input[type="text"], body.dark input[type="url"], body.dark select,
+  body.dark input[type="text"], body.dark input[type="url"], body.dark input[type="date"], body.dark select,
   body.dark input[type="number"], body.dark textarea {
     background: var(--navy-deep);
     color: var(--text);
   }
+  body.dark input[type="date"] { color-scheme: dark; }   /* the native picker's icon and popup follow the dark drawer */
   textarea, input[type="url"] { max-width: 100%; }
   /* The video address types left to right (its dir="ltr", or a Hebrew-UI teacher sees "/https://youtu.be/abc"),
      but its placeholder is a translated sentence: while the field is empty it takes the page's direction. */
@@ -2342,6 +2343,7 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
       <div class="heb-date" id="hebDate"></div>
       <div class="parsha-line" id="parshaLine" style="display:none;"></div>
       <div class="heb-holiday-line" id="holidayCountdown" style="display:none;"></div>
+      <div class="heb-holiday-line" id="eventCountdown" style="display:none;"></div>
       <div class="current-time" id="currentTime" dir="ltr"></div>
       <div id="scheduleCountdown"></div>
       <div id="nowNextBlock" class="now-next" style="display:none;"></div>
@@ -2677,6 +2679,16 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
         <div class="form-row">
           <label data-i18n="dashboard.datetime.show_holiday_countdown">Show Countdown to Next Holiday</label>
           <label class="toggle"><input type="checkbox" id="showHolidayCountdown"><span class="slider"></span></label>
+        </div>
+
+        <div class="tt-set-sub" data-i18n="dashboard.datetime.sub_event">Your own event</div>
+        <div class="form-row">
+          <label for="eventTitleInput"><span data-i18n="dashboard.datetime.event_name">Count down to</span> <span class="tip-wrap" data-tip="A line under the date counting the days to a day you choose — a field trip, a siddur party, the last day of school. Monday's board says “3 days until our field trip”. The line leaves by itself once the day has passed; clear the name to turn it off." data-i18n-tip="dashboard.datetime.event_tip"><i class="tip-icon">?</i></span></label>
+          <input type="text" id="eventTitleInput" dir="auto" maxlength="60" autocapitalize="sentences" placeholder="our field trip" data-i18n-placeholder="dashboard.datetime.event_name_placeholder">
+        </div>
+        <div class="form-row">
+          <label for="eventDateInput" data-i18n="dashboard.datetime.event_date">Date</label>
+          <input type="date" id="eventDateInput">
         </div>
 
         <div class="tt-set-sub" data-i18n="dashboard.datetime.sub_time">Time</div>
@@ -3521,6 +3533,8 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
     enableDashText: true,
     dashTextHTML: '',
     intermissionHTML: '',   // the Intermission screen's words (sanitized HTML); '' = the default word, which follows headerLang
+    eventTitle: '',         // the teacher's own event countdown (a field trip, a siddur party): its name, plain text…
+    eventDate: '',          // …and its day, 'YYYY-MM-DD' from the date picker. Both the board's, kept out of presets and starters like intermissionHTML
     hebFont: 'Frank Ruhl Libre',
     engFont: 'Source Sans 3',
     showNikkud: true,
@@ -3621,8 +3635,8 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
   // leaves rosters/active class/colors alone. (scheduleWeek is absent from the literal, so it's
   // naturally absent here too.)
   // intermissionHTML joins them: a starter is a look for the board, never a reason to lose the
-  // teacher's Intermission words.
-  ['rosters', 'activeRosterId', 'pickerSessions', 'presetColors', 'intermissionHTML'].forEach(k => delete PRISTINE_DEFAULTS[k]);
+  // teacher's Intermission words — nor the event they are counting down to (eventTitle / eventDate).
+  ['rosters', 'activeRosterId', 'pickerSessions', 'presetColors', 'intermissionHTML', 'eventTitle', 'eventDate'].forEach(k => delete PRISTINE_DEFAULTS[k]);
   // Starter layouts (shared by the first-run card and the Presets tab). Each is a settings-diff
   // applied on tap over the pristine defaults — never injected into the user's preset store.
   const STARTERS = [
@@ -4195,6 +4209,7 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
       }
     }
     renderParshaLine(now);
+    renderEventCountdown(now);
 
     updateTimeOnly(now);
     updateCountdown();
@@ -4707,6 +4722,28 @@ function holidayIconFor(title) {
   function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 
   function initHolidayCountdown() { fetchHolidays(); }
+
+  // The teacher's own event (settings.eventTitle + eventDate, the Date & Time panel's "Your own event"): the holiday
+  // line's twin under it — "{count} days until {title}" / "Today is {title}!" through the same strings and icon rules
+  // (a "Purim carnival" gets the Purim mask, anything else the calendar page). Rendered with the date — at load, on an
+  // edit, from every settings path, at midnight — and gone by itself the day after the event; no name or no valid day
+  // shows nothing. Independent of showHolidayCountdown, so a General-starter board counts down to its field trip too.
+  function renderEventCountdown(now) {
+    const el = document.getElementById('eventCountdown');
+    if (!el) return;
+    const title = String(settings.eventTitle || '').trim();
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(settings.eventDate || ''));
+    const day = m ? new Date(+m[1], +m[2] - 1, +m[3]) : null;
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    // A day that is not one (2026-02-31 rolls over in Date) counts as none; NaN fails the >= 0 test as well.
+    const days = (day && day.getMonth() === +m[2] - 1 && day.getDate() === +m[3]) ? Math.round((day - today) / 86400000) : NaN;
+    if (!title || !(days >= 0)) { el.style.display = 'none'; return; }
+    const t = `<span class="bidi-isolate">${esc(title)}</span>`;   // a Hebrew name keeps its own direction inside the English framing, and the other way round
+    el.innerHTML = holidayIconFor(title) + (days === 0
+      ? I18n.t('dashboard.days.holiday_today', { title: t })
+      : I18n.t(days === 1 ? 'dashboard.days.holiday_countdown.one' : 'dashboard.days.holiday_countdown.other', { count: days, title: t }));
+    el.style.display = '';
+  }
 
   /* ────────── SHABBAT CANDLE-LIGHTING (Hebcal) ────────── */
   const SHABBAT_CACHE_KEY = 'hebrewDashboard_shabbatCache';
@@ -6086,6 +6123,8 @@ function mountSidebarResize(cfg) {
     };
     $('locationInput').value = settings.location;
     $('showHolidayCountdown').checked = settings.showHolidayCountdown !== false;
+    $('eventTitleInput').value = typeof settings.eventTitle === 'string' ? settings.eventTitle : '';
+    $('eventDateInput').value = /^\d{4}-\d{2}-\d{2}$/.test(settings.eventDate || '') ? settings.eventDate : '';
     $('showShabbatTimes').checked = settings.showShabbatTimes !== false;
     $('showTimer').checked = settings.showTimer !== false;
     $('showTimerFullscreen').checked = settings.showTimerFullscreen !== false;
@@ -6232,6 +6271,17 @@ function mountSidebarResize(cfg) {
       if (e.target.checked) fetchHolidays();
       else { const el = document.getElementById('holidayCountdown'); if (el) el.style.display = 'none'; }
     });
+    // The teacher's own event: the name as typed (the board follows each keystroke) and the day from the native picker
+    // ('' once cleared). Each edit writes through, so the fields ride the settings row to the account like the board text.
+    const onEventEdit = () => {
+      settings.eventTitle = document.getElementById('eventTitleInput').value.slice(0, 60);
+      settings.eventDate = document.getElementById('eventDateInput').value;
+      saveSettingsToStorage();
+      renderEventCountdown(new Date());
+    };
+    document.getElementById('eventTitleInput').addEventListener('input', onEventEdit);
+    document.getElementById('eventDateInput').addEventListener('input', onEventEdit);
+    document.getElementById('eventDateInput').addEventListener('change', onEventEdit);
     document.getElementById('showShabbatTimes').addEventListener('change', e => {
       settings.showShabbatTimes = e.target.checked;
       saveSettingsToStorage();
@@ -6599,6 +6649,7 @@ function mountSidebarResize(cfg) {
       // The Intermission screen's words are one message for the whole board: in a preset, Schedule
       // Sync would swap them at every period change. (.ivrit files and the cloud row still carry them.)
       delete out.intermissionHTML;
+      delete out.eventTitle; delete out.eventDate;   // the event countdown is the board's too, not a look's
       // Class ids are per device: a preset names its class, and applySettings resolves the name here.
       const live = settings.rosters && settings.rosters[settings.activeRosterId];
       out.activeRosterName = (live && typeof live.name === 'string') ? live.name : '';
