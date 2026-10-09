@@ -48,7 +48,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S464 M**) | resources.html | **The Links/Fonts toggle mixes a line icon with a colour 🔤** (`resources.view.fonts`). | found S464
 
-- [ ] P4 (**S464 M — gate 3 ANSWERED: drop it suite-wide; resources' own labels FIXED S490 `af9ed26f`**) | the chrome footer + 2 shared blocks | **The chrome footer's heads (every page, inline 0.08em caps) and the keyboard / test-phrase blocks' `.hk-subhead` / `.tp-label` still track Hebrew**: one shared-block edit, every carrier at once. | found S464
+- [ ] P4 (**S464 M — gate 3 ANSWERED: drop it suite-wide; footers + both shared blocks FIXED S491**) | generator, dictionary, FM, trope, badges | **Page-level Hebrew labels still track** (census `k491/track.mjs`): generator panel titles + 4 labels, dictionary panel titles + word badges, FM side titles + help history, trope key labels, beta/privacy badges. | found S464
 
 - [ ] P4 (**NEW S464 M**) | resources.html | **Below ~1020px wrapped chips flow back under their row label.** | found S464
 
@@ -114,7 +114,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S418 — the maintainer's dashboard**) | Supabase project | **Security advisor: leaked-password protection is off**; passwords are never used (e-mail code + Google), so enable the toggle or accept it as moot. | found S418
 
-- [ ] P4 (**NEW S412 Pass H — five small ones; (1) FIXED S446 `c6c509ed`, (3) FIXED S448 `c54897da`**) | flash_cards.html | **(2)** a timed drill paints the previous value for 1 s; **(4)** a load in 1-letter mode narrows "Vowel on letter" `[2]` → `[1]`; **(5)** gate 2: the printed card …[full text: IMPROVEMENT_ARCHIVE.md]
+- [ ] P4 (**NEW S412 Pass H — five small ones; (1) FIXED S446 `c6c509ed`, (3) FIXED S448 `c54897da`, (4) FIXED S491 `adce6574`**) | flash_cards.html | **(2)** a timed drill paints the previous value for 1 s; **(5)** gate 2: the printed card …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S413 Pass C — gate 3**) | 404.html | **The lost star wanders forever with no pause** (WCAG 2.2.2); only reduced motion stops it. | found S413
 
@@ -129,8 +129,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S410 Pass D**) | Hebrew_Font_Maker.html | **The partner wizard's Create re-renders every grid once per setter** (`setMarkEnabled` ×2, `setAddEnglishLetters`, `setInputMode`…): 3 tasks of 465–678ms @4×, top 146–201ms @1× (engine blocked; with it, Pyodide's own blocks dominate). | found S410
 
 - [ ] P4 (**NEW S409 Pass G**) | account.html | **Printing splits cards across sheets, spends an A4 sheet on the footer and prints 6 inert controls.** | found S409
-
-- [ ] P4 (**NEW S405 Pass K gate controls — K's, doc-only**) | scripts/check-i18n.js + docs/reference/i18n.md | **The gate's header says `.innerHTML = '<literal>'` is flagged; rule 2 skips innerHTML by design**, and its exit-contract comment omits D and E (both block). i18n.md's "Known blind spot" names template literals, plain arguments and ternaries, not a plain innerHTML literal, and its …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S405 — found beside `f78ad1b`**) | Hebrew_Font_Maker.html | **The Upload help tab's link to Download Templates exists only in the English authored HTML** (`openHelp('templates')`); the translated Upload body is CSV prose, so a Hebrew reader gets no link. A `data-fmact` action (the dispatcher's CSV-safe route) would carry it. | found S405
 
@@ -298,6 +296,10 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-09 | (S491 close-out) | branch/deploy note | **S491 = K (clean) + 4 fixes, PR #320 continued.** No drift (main `fee5fe05`, keep-alive #27 green); sw v971→v972; no FM bump (labels, not a feature); no gate; sitemap + llms current; traps 217–221 (findings S491).
+
+- [x] 2026-10-09 | `83f73895` `12509ea1` `c1159d14` `adce6574` | 8 pages, check-i18n + i18n.md, flash | (S491) **Keyboard + test-phrase labels and every footer head untracked in Hebrew; the gate's header and blind-spot note match the gate; flash keeps "Vowel on letter" across a reload.** | findings S491.
+
 - [x] 2026-10-09 | (S490 close-out) | branch/deploy note | **S490 = L (clean) + 4 fixes, PR #320 continued.** No drift (main `fee5fe05`, keep-alive #27 green); sw v970→v971; no FM bump (no FM change); no gate; smoke-sync 207/207; compact-ledger now runs clean twice; traps 212–216 (findings S490).
 
 - [x] 2026-10-09 | `af9ed26f` `63489ddb` `df33e5e5` `89d1cf66` | resources, dashboard, scripts ×2 | (S490) **Resources' Hebrew labels untracked; the dashboard's projected titles + fullscreen captions untracked (Video through hebDisplay); compact-ledger stops re-cutting its own lines; smoke-sync runs outside its schedule's busy cells.** | findings S490.
@@ -316,13 +318,11 @@ _(none)_
 
 - [x] 2026-10-09 | `6ce2e1fb` `3c539498` `a1df6d90` `eba490f5` | flash, resources ×2, contact, js/ivrit-saves.js | (S487) **Flash's toast sits above the Start bar on setup (150 px); the resources font toast follows its text (3.4 → 4.6 s); hCaptcha takes the page's theme on contact + resources; the saves module's `fontsChanged` comment re-trued.** | HEAD controls, a fake hCaptcha API, smokes …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-10-09 | (S486 close-out) | branch/deploy note | **S486 = one L feature on direction (week cycles; 5 answers in chat), PR #319 continued; pass skipped (B stays stalest).** No drift; sw v966→v967; no FM bump; smoke-sync 207/207; trap 199 (findings S486).
-
-- [x] 2026-10-09 | `4875ef78` | classroom_dashboard.html + locales + 2 docs | (S486) **Schedule Sync week cycles: a "Schedule repeats" ribbon (1 / A/B / 3 / 4), week tabs over one bell schedule, "This week is" re-anchoring, Copy from Week A, a Week chip on Now / Next; `cells` stays Week A for old builds.** | 144 checks (findings S486).
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-09 | **S491** | iters: 1 pass (**K**) + 4 fixes = **5** | tools: FM ×2, dashboard ×2, dictionary ×2, resources ×2, flash ×2, generator, torah, trope, scripts, docs | patterns fixed: latin-tracking ×2, settings-lost-across-a-load ×1 | pass run: K | SW: v971→v972
 
 - 2026-10-09 | **S490** | iters: 1 pass (**L**) + 4 fixes = **5** | tools: resources, dashboard, scripts ×2 | patterns fixed: latin-tracking ×2 | pass run: L | SW: v970→v971
 
@@ -362,11 +362,9 @@ _(none)_
 
 - 2026-10-08 | **S472** | iters: 1 pass (**A**) + 4 fixes = **5** | tools: torah ×2, generator + pwa.js, FM | patterns fixed: author-display ×1, enter-ignored ×1, install-banner ×2 | pass run: A | SW: v952→v953
 
-- 2026-10-07 | **S471** | iters: 1 pass (**B**) + 4 fixes = **5** | tools: dashboard ×2, generator, index | patterns fixed: enter-ignored (NEW) ×2, button-focus ×1 | pass run: B | SW: v951→v952
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S490 (2026-10-09):** dashboard, resources, scripts S490 · FM, torah, trope S489 · flash, contact, saves S487 · docs S486 · generator, dictionary S484 · index S483 · privacy, terms, account, i18n.js S478 · pwa S472 · 404 S470.
+- **Snapshot S491 (2026-10-09):** FM, dashboard, dictionary, resources, flash, generator, torah, trope, scripts, docs S491 · contact, saves S487 · index S483 · privacy, terms, account, i18n.js S478 · pwa S472 · 404 S470.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -388,7 +386,7 @@ _(none)_
 
 - **`header-wrap-gate-below-its-ceiling`** (NEW S478 M; FIXED ×8 `92a21164`; S489 dashboard `f620c768`): ACTIVE, streak 0. Detection: `m478/gates.mjs` / `e489/gates.mjs` (1px 320-1000, EN/HE × light/dark, per page; a gate removed by CSSOM gives its ceiling); HEAD the control.
 
-- **`latin-tracking-on-hebrew-labels`** (NEW S464 M; gate 3: drop suite-wide; ~180 rules/15 pages; S478 contact `936629b4`; S489 dashboard Now/Next `c046d4fb`; S490 resources `af9ed26f`, dashboard titles + fullscreen `63489ddb`; open: footer heads + 2 blocks): ACTIVE, streak 0. …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`latin-tracking-on-hebrew-labels`** (NEW S464 M; gate 3: drop suite-wide; fixed S478–S491: contact, dashboard ×3, resources, footers ×8 `12509ea1`, keyboard + test-phrase blocks `83f73895`; open: page-level labels, candidate): ACTIVE, streak 0. Detection: `k491/track.mjs`.
 
 - **`forward-arrow-points-back-in-rtl-copy`** (NEW S462 N; FIXED S464 `5f7f8a40` ×48; open 0): ACTIVE, streak 1 (S472: 47 delta rows, 0). Detection: the S462 CSV census; exempt "(→)", A→Z, Back labels, the orphan `flashcards.header.home`.
 
@@ -452,7 +450,7 @@ _(none)_
 
 - **`button-group-label-not-programmatic`** (**NEW S413 Pass C — resources ×8 rows FIXED `945b397`; generator, dictionary, hub unmeasured (no `role="group"` at all)**): ACTIVE, streak 0. A row of `aria-pressed` buttons sits under a visible label (a `<span>`, or a `<label>` with …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`settings-lost-across-a-load`** (NEW S412; flash ×2, dictionary ×4 FIXED S482 `8d99ad93`; 1 P4 open): ACTIVE, streak 0. A setting comes back changed after a reload. Detection (`h482/dictsave.mjs`): change each control by a real click, wait out the save, reload, require it …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`settings-lost-across-a-load`** (NEW S412; dictionary ×4 FIXED S482 `8d99ad93`, flash FIXED S491 `adce6574`; 0 open): ACTIVE, streak 0. A setting comes back changed after a reload. Detection (`h482/dictsave.mjs`): change each control by a real click, wait out the save, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`live-region-display-none-while-empty`** (S408; **all 4 FIXED `efbc98a` S409**): ACTIVE, streak 0. Detection: `:empty{display:none}` on a `role=status`/`aria-live` line, then CDP AX on it empty (`notRendered` = hit); flex-wrap rows need `position:absolute`, not height.
 
@@ -698,7 +696,7 @@ _(none)_
 
 - M aesthetics & visual design (one surface): 2026-10-08 (**S478 — 23rd M, contact (S291 →): 140 shots, census, plants; FOUND 5 + 8 headers scrolling sideways; FIXED 2. M-next: privacy/terms.**)
 
-- K i18n / localization audit: 2026-10-08 (**S475 — 32nd K: FIXED 4.**)
+- K i18n / localization audit: 2026-10-09 (**S491 — 33rd K on `98340a10..2fee2f28` (76 commits): `k491/` static (plants 5/5), 84-state round trip + 28 retry loads, delta surfaces by real input, blind arms (plants 6/6). CLEAN: 0 findings.**)
 
 - C accessibility (one tool): 2026-10-09 (**S483 — hub (S340 →): 8 census cells + modal + chip menu, 4 Tab walks, 11 keyboard scenarios ×2, motion, hover, 1.4.12, 320, phone; plants fired. FOUND 2, FIXED 2 (+ torah, FM). C-next: dashboard (S354).**)
 
@@ -722,4 +720,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-09 (**S484 — 36th F, the toast contract on all 8 carriers (5th look, S111 →): 24 cells + reduce, width, bars; plants 4/4. FOUND 4, FIXED 3 (+ FM kerning). F-next: the tabs / segmented-control keyboard contract (never swept).**)
 
-**Next session (S491):** **BRANCH/PR: `claude/nifty-cray-0dvnxz` → draft PR #320 (S488–S490): open → continue; merged → restart from `origin/main`.** `sw.js` **v971**, FM **5.59**. ⚑ Stalest: K (S475), N, P; O blocked. ⚑ Untaken: the chrome footer heads + 2 shared blocks track Hebrew (P4, one shared-block edit); chrome header star / footer dot (gate 3). ⚑ Seeds: 47 (gate 1). ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.
+**Next session (S492):** **BRANCH/PR: `claude/nifty-cray-0dvnxz` → draft PR #320 (S488–S491): open → continue; merged → restart from `origin/main`.** `sw.js` **v972**, FM **5.59**. ⚑ Stalest: N (S476), P, M; O blocked. ⚑ Untaken: page-level Hebrew labels still track on 4 tools (P4, census `k491/track.mjs`); the toasts' live region (S484). ⚑ Seeds: 47 (gate 1). ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.

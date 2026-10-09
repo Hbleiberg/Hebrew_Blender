@@ -92255,3 +92255,25 @@ _(prior — S489 pointer:)_ **Next session (S489):** **BRANCH/PR: `claude/nifty-
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 _(prior — S490 pointer:)_ **BRANCH/PR: `claude/nifty-cray-0dvnxz` → draft PR #320 (S488–S489): open → continue; merged → restart from `origin/main`.** `sw.js` **v970**, FM **5.59**. ⚑ Stalest: L (S474), K, N; O blocked. ⚑ Untaken: dashboard titles track Hebrew (P4); chrome header star / footer dot (gate 3). ⚑ Seeds: 47 (gate 1). ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.
+
+
+<!-- archived by compact-ledger at the S492 boundary, 2026-10-09 -->
+## Compaction (S492, 2026-10-09) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-09 | (S486 close-out) | branch/deploy note | **S486 = one L feature on direction (week cycles; 5 answers in chat), PR #319 continued; pass skipped (B stays stalest).** No drift; sw v966→v967; no FM bump; smoke-sync 207/207; trap 199 (findings S486).
+
+- [x] 2026-10-09 | `4875ef78` | classroom_dashboard.html + locales + 2 docs | (S486) **Schedule Sync week cycles: a "Schedule repeats" ribbon (1 / A/B / 3 / 4), week tabs over one bell schedule, "This week is" re-anchoring, Copy from Week A, a Week chip on Now / Next; `cells` stays Week A for old builds.** | 144 checks (findings S486).
+
+### from Per-session log (one line per session)
+
+- 2026-10-07 | **S471** | iters: 1 pass (**B**) + 4 fixes = **5** | tools: dashboard ×2, generator, index | patterns fixed: enter-ignored (NEW) ×2, button-focus ×1 | pass run: B | SW: v951→v952
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`settings-lost-across-a-load`** (NEW S412; dictionary ×4 FIXED S482 `8d99ad93`, flash FIXED S491 `adce6574`; 0 open): ACTIVE, streak 0. A setting comes back changed after a reload. Detection (`h482/dictsave.mjs`): change each control by a real click, wait out the save, reload, require it …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+_(prior — S491 pointer:)_ **BRANCH/PR: `claude/nifty-cray-0dvnxz` → draft PR #320 (S488–S490): open → continue; merged → restart from `origin/main`.** `sw.js` **v971**, FM **5.59**. ⚑ Stalest: K (S475), N, P; O blocked. ⚑ Untaken: the chrome footer heads + 2 shared blocks track Hebrew (P4, one shared-block edit); chrome header star / footer dot (gate 3). ⚑ Seeds: 47 (gate 1). ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.
