@@ -440,7 +440,7 @@ body.dark .hk-key:active{background:#2a4070;}
 /* ═══ end shared: test-phrases CSS ═══════════════════════════════════════ */
 
 /* ── Toast (Use-in-IvritSuite feedback) ── */
-#fontToast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:11px 20px;border-radius:8px;font-size:0.86rem;box-shadow:0 6px 24px rgba(0,0,0,0.32);z-index:300;opacity:0;pointer-events:none;transition:opacity 0.25s;max-width:90vw;text-align:center;}
+#fontToast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:11px 20px;border-radius:8px;font-size:0.86rem;box-shadow:0 6px 24px rgba(0,0,0,0.32);z-index:300;opacity:0;pointer-events:none;transition:opacity 0.25s;max-width:90vw;width:max-content;text-align:center;}   /* width: a fixed box at left:50% otherwise stops at half the viewport */
 #fontToast.show{opacity:1;}
 body.dark #fontToast{background:#2a4070;}
 

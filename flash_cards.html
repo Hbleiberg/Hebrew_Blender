@@ -1076,6 +1076,7 @@ body.dark .lc-replay { color: var(--gold-light); }
   box-shadow: 0 4px 16px rgba(0,0,0,0.28);
   z-index: 2000;
   max-width: 88vw;
+  width: max-content;   /* a fixed box at left:50% otherwise shrinks to half the viewport, and the 88vw cap never applies */
   text-align: center;
   opacity: 0;
   pointer-events: none;

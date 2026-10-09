@@ -783,7 +783,7 @@ body.fullscreen .tt-jumpnav { padding-right:84px; }   /* clear the fullscreen ex
   position:fixed; left:50%; bottom:96px; transform:translateX(-50%) translateY(8px);
   background:var(--navy); color:#fff; font-size:0.84rem; font-weight:500;
   padding:10px 16px; border-radius:10px; box-shadow:0 4px 16px rgba(0,0,0,0.3);
-  z-index:2000; max-width:88vw; text-align:center; cursor:pointer;
+  z-index:2000; max-width:88vw; width:max-content; text-align:center; cursor:pointer;   /* width: a fixed box at left:50% otherwise stops at half the viewport */
   opacity:0; pointer-events:none; transition:opacity 0.25s ease, transform 0.25s ease;
   white-space:pre-line;   /* a second sentence may ride on its own line (Copy link's "settings included") */
 }
