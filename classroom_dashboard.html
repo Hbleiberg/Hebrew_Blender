@@ -1830,6 +1830,9 @@ body.dark .hk-key:active{background:#2a4070;}
   .now-next .nn-week-chip { align-self: center; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted);
     border: 1px solid var(--border); border-radius: 999px; padding: 2px 9px; }
   body.fullscreen .now-next .nn-week-chip { font-size: 1rem; padding: 4px 14px; }
+  /* The Hebrew UI's Now / Next labels and week chip: Hebrew has no capitals, and the Latin tracking only spaced its
+     letters apart (latin-tracking-on-hebrew-labels). English keeps the small-caps look. */
+  html[lang="he"] .now-next .nn-lbl, html[lang="he"] .now-next .nn-week-chip { letter-spacing: normal; text-transform: none; }
   /* Screen-hidden; the print block below reveals it as the printed sheet's title. */
   #swmPrintHead { display: none; }
   .swm-gridwrap { overflow-x: auto; }
