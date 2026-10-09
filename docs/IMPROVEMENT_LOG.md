@@ -8,6 +8,12 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P4 (**NEW S488 A — header-wrap-gate**) | classroom_dashboard.html | **Header gates 558/652 sit under the EN ceilings 564/657**: 1-6px sideways at 559-564, 653-657. | found S488
+
+- [ ] P4 (**NEW S488 A — latin-tracking**) | classroom_dashboard.html | **Now/Next labels track Hebrew** (week chip, `.nn-lbl`). | found S488
+
+- [ ] P4 (**NEW S488 A**) | Hebrew_Font_Maker.html | **The sheet-crop caption sits under the top ruler**: unseen with rulers on (the default). | found S488
+
 - [ ] P4 (**NEW S484 F**) | app-toast ×4, torah, trope | **Six toasts create their `role=status` element with its first text** (resources and FM pre-render it); pre-create it empty at load — a screen reader decides. | found S484
 
 - [ ] P4 (**NEW S487 B — for K**) | torah_trainer.html | **The Hebrew UI's load-failed status names the reading in English** ("טעינת Bereshit — Genesis 1:1-6:8 נכשלה"): `r.label` is not localized where the status is built; check how the select names it. | found S487
@@ -64,13 +70,9 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S454 H — gate 2**) | resources.html | **"Jewish Interactive" is listed twice** (one URL; "All" counts 43 for 42). | found S454
 
-- [ ] P4 (**NEW S455 C**) | trope_tutor.html | **Both Try again buttons drop the focus after a retry that works** (index and chart; failure path only). | found S455
-
 - [ ] P4 (**NEW S455 C**) | trope_tutor.html | **The Learn and Phrases cards carry no heading** (h1 only), so a screen reader cannot jump card to card. | found S455
 
 - [ ] P4 (**NEW 2026-10-03, gate 2 copy**) | hebrew_dictionary.html | **"Any of these letters" requires every ticked letter** (`onFilter`); the Hebrew label (כל אחת מהאותיות האלה) says so, the English label and its "Any:" chip don't. | found 2026-10-03
-
-- [ ] P4 (**NEW 2026-10-03 — K's**) | Hebrew_Font_Maker.html | **Three hardcoded English strings with no CSV keys**: `uploadCombined`'s two "…pick a letter, then drag a box around it" statuses and `cropSelectSVG`'s "Select area for … — drag a box around it" caption. | found 2026-10-03
 
 - [ ] P4 (**NEW S452 D — G's**) | hebrew_blend_generator.html | **"N pages to print" counts a caller sheet as one page**; an 8-card set's takes 3 (says 3, sends 5). | found S452
 
@@ -308,6 +310,10 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-09 | (S488 close-out) | branch/deploy note | **S488 = A + 4 fixes; PR #319 merged (deploy `success`), draft PR #320.** No drift; sw v968→v969; no FM bump; no gate; traps 204-207.
+
+- [x] 2026-10-09 | `5da9ecbe` `f722eeba` `183605ba` `87fea4c4` | dashboard ×2, trope, FM | (S488) **Ribbon 9.85:1; "Count down to" named; Try again keeps focus; crop caption in HE.** | findings S488.
+
 - [x] 2026-10-09 | (S487 close-out) | branch/deploy note | **S487 = B (the S471 delta) + 4 fixes, PR #319 continued.** No drift; sw v967→v968; no FM bump; no gate (unattended: the seed skipped); smoke-saves 15/15, smoke-sync 207/207; traps 200–203 (findings S487).
 
 - [x] 2026-10-09 | `6ce2e1fb` `3c539498` `a1df6d90` `eba490f5` | flash, resources ×2, contact, js/ivrit-saves.js | (S487) **Flash's toast sits above the Start bar on setup (150 px); the resources font toast follows its text (3.4 → 4.6 s); hCaptcha takes the page's theme on contact + resources; the saves module's `fontsChanged` comment re-trued.** | HEAD controls, a fake hCaptcha API, smokes …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -324,13 +330,11 @@ _(none)_
 
 - [x] 2026-10-09 | `8037c22d` `78738db4` `5ffa32ba` `c7726222` | shared toast ×4, 7 toasts, FM ×2 | (S484) **Toast time follows its text (2.6→8 s; FM strip too); no toast stops at half the viewport; kerning labels in Hebrew.** | findings S484.
 
-- [x] 2026-10-09 | (S483 close-out) | branch/deploy note | **S483 = C (hub) + 4 fixes, new branch → draft PR #319.** No drift; sw v963→v964; no FM bump; no gate; smoke-sync D31 flaked once (re-run and main 207/207). S469's C-next slipped (hub S340 was stalest).
-
-- [x] 2026-10-09 | `ab1a235e` `cb226a04` `14c1bad5` `c2d3f51f` | hub, saves modules, torah, FM | (S483) **Font Remove keeps focus; dark error texts 7.6:1; verse links on non-Full cycles show the verse; the Sizing select fits a phone (S476 P4).** | HEAD controls, 4 smokes (findings S483).
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-09 | **S488** | iters: 1 pass (**A**) + 4 fixes = **5** | tools: dashboard ×2, trope, FM | patterns fixed: contrast-plate, tip-name, button-focus | pass run: A | SW: v968→v969
 
 - 2026-10-09 | **S487** | iters: 1 pass (**B**) + 4 fixes = **5** | tools: flash, resources ×2, contact, saves | patterns fixed: fixed-toast-duration ×1 | pass run: B | SW: v967→v968
 
@@ -370,11 +374,9 @@ _(none)_
 
 - 2026-10-07 | **S469** | iters: 1 pass (**C**) + 3 fixes = **4** | tools: generator ×2, flash ×2 | patterns fixed: button-focus-lost-to-its-own-rebuild ×2 | pass run: C | SW: v949→v950
 
-- 2026-10-07 | **S468** | iters: 1 pass (**H**) + 4 fixes = **5** | tools: index ×2, resources, pwa.js | patterns fixed: — | pass run: H | SW: v948→v949
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S487 (2026-10-09):** flash, resources, contact, saves S487 · dashboard, docs S486 · generator, dictionary, torah, trope, FM S484 · index S483 · privacy, terms, account, i18n.js S478 · pwa S472 · 404 S470.
+- **Snapshot S488 (2026-10-09):** dashboard, trope, FM S488 · flash, resources, contact, saves S487 · docs S486 · generator, dictionary, torah S484 · index S483 · privacy, terms, account, i18n.js S478 · pwa S472 · 404 S470.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -394,9 +396,9 @@ _(none)_
 
 - **`placeholder-keeps-the-browser-gray`** (NEW S470 `45a3073e`): ACTIVE, streak 0. Detection: `f470/ph.mjs` < 4.5:1 (plant 1.3:1).
 
-- **`header-wrap-gate-below-its-ceiling`** (NEW S478 M; FIXED ×8 `92a21164`): ACTIVE, streak 0. Detection: `m478/gates.mjs` (1px 400–900, EN/HE × light/dark); HEAD the control.
+- **`header-wrap-gate-below-its-ceiling`** (NEW S478 M; FIXED ×8 `92a21164`; S488 dashboard open): ACTIVE, streak 0. Detection: `m478/gates.mjs` (1px 400-900, EN/HE × light/dark, every page); HEAD the control.
 
-- **`latin-tracking-on-hebrew-labels`** (NEW S464 M; gate 3: drop suite-wide; ~180 rules/15 pages; S478 contact `936629b4`): ACTIVE, streak 0. Detection: `m464/census.mjs` (a): Hebrew own-text, letter-spacing > 0; exempt `lang="en"`.
+- **`latin-tracking-on-hebrew-labels`** (NEW S464 M; gate 3: drop suite-wide; ~180 rules/15 pages; S478 contact `936629b4`; S488 +1 dashboard): ACTIVE, streak 0. Detection: `m464/census.mjs` (a): Hebrew own-text, letter-spacing > 0; exempt `lang="en"`.
 
 - **`forward-arrow-points-back-in-rtl-copy`** (NEW S462 N; FIXED S464 `5f7f8a40` ×48; open 0): ACTIVE, streak 1 (S472: 47 delta rows, 0). Detection: the S462 CSV census; exempt "(→)", A→Z, Back labels, the orphan `flashcards.header.home`.
 
@@ -430,13 +432,13 @@ _(none)_
 
 - **`logical-inset-mirrors-onto-pinned-content`** (NEW S440; FIXED `23b7bb0f`): ACTIVE, streak 0. A logical inset over physically pinned content lands on it in Hebrew. Detection: HE, text Range rects ∩ the control's box.
 
-- **`tip-name-joins-its-field's-name`** (NEW S430; generator FIXED S440 `10a0c18f`; torah ×3 FIXED S442 `d477e15c`): ACTIVE, streak 0 (no open carrier). A `<label>` holding a `.tip-wrap` names its field "… More information". Detection: the AX tree with every panel and drawer tab …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`tip-name-joins-its-field's-name`** (NEW S430; generator `10a0c18f`; torah ×3 `d477e15c`; S488 dashboard `f722eeba`): ACTIVE, streak 0 (no open carrier). A `<label>` holding a `.tip-wrap` names its field "… More information". …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`panel-title-keyed-on-an-inner-span`** (NEW S429; S439 generator FIXED `1ce9eabd`, torah stale — no collapsing panels left): ACTIVE, streak 0. Detection: a `.panel-title` with no own `data-i18n`, then toggle + reload.
 
 - **`copy-claims-success-on-a-refused-clipboard`** (NEW S428; FIXED `bbd5f65`, `0d2a941`; S444 index `90e1a057`, dashboard `18344f69`; **S445 generator `3dad5c11`, flash `58ee7a4f` — all 7 carriers fixed, 0 open**): ACTIVE, streak 0. Detection: every `execCommand('copy')` whose …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`button-focus-lost-to-its-own-rebuild`** (**S483 hub `ab1a235e`; S474 flash Return to Options `3235f8eb`; S473 flash start `3e8e2f79`, torah tune radios `9fbcfce8`; S471 dashboard `c0c5856e`; S470 torah favorites `fc3ec234`; S469 generator `04a85f46`, flash …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`button-focus-lost-to-its-own-rebuild`** (**S488 trope Try again ×2 `183605ba`; S483 hub `ab1a235e`; S474 flash Return to Options `3235f8eb`; S473 flash start `3e8e2f79`, torah tune radios `9fbcfce8`; S471 dashboard `c0c5856e`; S470 torah favorites `fc3ec234`; S469 generator …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`dark-literal-escapes-the-print-tokens`** (NEW S437 G; resources FIXED `5320a668`): ACTIVE, streak 1 (S479 trope clean; plant fired). Detection: PDFs dark vs light, ink per page (<200 at 40 dpi); a lighter dark sheet = a `body.dark` literal the print …[full text: …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -468,7 +470,7 @@ _(none)_
 
 - **`aria-disabled-lock-no-handler-checks`** (**NEW, registered 2026-09-23 (S407 Pass P) — 1 carrier, fixed `e5c4784`**): ACTIVE, clean streak 0. A control marked busy or invalid by `aria-disabled="true"` whose activation handler never reads that state: the look says locked, a …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`text-field-under-16px-zooms-on-ios-focus`** (NEW S406; FIXED ×2; S465 contact ×4 `5a7a8ed`; open 0): ACTIVE, streak 0. Detection: computed `font-size` < 16px under an iPhone descriptor; plant a 12px field.
+- **`text-field-under-16px-zooms-on-ios-focus`** (NEW S406; FIXED ×2; S465 contact ×4 `5a7a8ed`; S488 +2 in the dashboard's gated drawer): ACTIVE, streak 0. Detection: computed `font-size` < 16px under an iPhone descriptor; plant a 12px field.
 
 - **`textContent-rewrite-erases-a-control-icon`** (S405; S415; **S453 `ac796dba`**): ACTIVE, streak 0. Add (d): load-time icon count. Detection: (a) EN→HE→EN icon count; (b) key census …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -582,7 +584,7 @@ _(none)_
 
 - **dark-override-outranks-hover**: ACTIVE. **Re-swept 2026-09-09 (S357 Pass A): static detector 0/14 pages; runtime 34 cells on the 8 fixed carriers, every one with real-hover feedback (light as the control) — hits 0, clean streak 1.** S354–S356: 8 carriers fixed. Detection: …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **contrast-below-AA-on-a-tinted-or-coloured-plate**: **S422: torah's vowel Letter on the trope tint FIXED `e55b811` (1.85:1; streak 0).** **re-swept 2026-08-23 (S249 Pass M, `flash_cards.html` — card front AND back, results screen, and setup screen with every …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
+- **contrast-below-AA-on-a-tinted-or-coloured-plate**: **S488 dashboard ribbon `5da9ecbe`.** **S422: torah's vowel Letter on the trope tint FIXED `e55b811` (1.85:1; streak 0).** …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **async-store-backed-choice-clobbered-by-a-sync-fallback**: **swept 2026-08-19 (S226 Pass A, 2nd sweep) — CLEAN with receipts, extended past fonts as its own note directed. clean streak: 1 — ACTIVE, and consequence-critical (it destroys saved user data), so it does NOT retire …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -710,7 +712,7 @@ _(none)_
 
 - C accessibility (one tool): 2026-10-09 (**S483 — hub (S340 →): 8 census cells + modal + chip menu, 4 Tab walks, 11 keyboard scenarios ×2, motion, hover, 1.4.12, 320, phone; plants fired. FOUND 2, FIXED 2 (+ torah, FM). C-next: dashboard (S354).**)
 
-- A recurring-pattern sweep: 2026-10-08 (**S472 — 37th A on `9c97b35b..eb806705` (108 commits): 30 static arms, 9 runtime arms, plants fired (findings S472). FIXED 4; logged 3.**)
+- A recurring-pattern sweep: 2026-10-09 (**S488 — 38th A on `eb806705..fee5fe0` (78 commits): 44 static arms, a 14-page battery, the new dashboard surfaces by real input; plants fired. FOUND 5, FIXED 2 (+ trope, FM).**)
 
 - G print & export fidelity (one tool): 2026-10-08 (**S479 — trope (S351 →): 96 PDFs, variants, every tab, the .ivrit; plants 4/4. FOUND 6, FIXED 2. G-next: dashboard (S364).**)
 
@@ -730,4 +732,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-09 (**S484 — 36th F, the toast contract on all 8 carriers (5th look, S111 →): 24 cells + reduce, width, bars; plants 4/4. FOUND 4, FIXED 3 (+ FM kerning). F-next: the tabs / segmented-control keyboard contract (never swept).**)
 
-**Next session (S488):** **BRANCH/PR: `claude/improve-loop-s483` → draft PR #319 (S483–S487): open → continue; merged → restart from `origin/main`.** `sw.js` **v968**, FM **5.59**. ⚑ Stalest: A (S472), E, L, K; O blocked. ⚑ Untaken: the 6 chrome footers' trailing "·" (P4 M); smoke-sync's clock pin (P4). ⚑ Seeds: 47 open (gate 1 picks). ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.
+**Next session (S489):** **BRANCH/PR: `claude/nifty-cray-0dvnxz` → draft PR #320 (S488): open → continue; merged → restart from `origin/main`.** `sw.js` **v969**, FM **5.59**. ⚑ Stalest: E (S473), L, K; O blocked. ⚑ Untaken: dashboard header gates, Now/Next tracking, FM crop caption (P4s). ⚑ Seeds: 47 (gate 1). ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.

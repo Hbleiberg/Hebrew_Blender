@@ -92171,3 +92171,41 @@ _(prior — S487 pointer:)_ **Next session (S487):** **BRANCH/PR: `claude/improv
 ### from Recurring-pattern sweep status
 
 ### from Discovery-pass rotation (run one per session, stalest first)
+
+
+<!-- archived by compact-ledger at the S489 boundary, 2026-10-09 -->
+## Compaction (S489, 2026-10-09) — moved verbatim from the live ledger
+
+### from Candidates (prioritized, top = next)
+
+### from Feature seeds (micro-features only; see the Micro-feature track in the session prompt)
+
+### from Done
+
+- [x] 2026-10-09 | (S483 close-out) | branch/deploy note | **S483 = C (hub) + 4 fixes, new branch → draft PR #319.** No drift; sw v963→v964; no FM bump; no gate; smoke-sync D31 flaked once (re-run and main 207/207). S469's C-next slipped (hub S340 was stalest).
+
+- [x] 2026-10-09 | `ab1a235e` `cb226a04` `14c1bad5` `c2d3f51f` | hub, saves modules, torah, FM | (S483) **Font Remove keeps focus; dark error texts 7.6:1; verse links on non-Full cycles show the verse; the Sizing select fits a phone (S476 P4).** | HEAD controls, 4 smokes (findings S483).
+
+### from Per-session log (one line per session)
+
+- 2026-10-07 | **S468** | iters: 1 pass (**H**) + 4 fixes = **5** | tools: index ×2, resources, pwa.js | patterns fixed: — | pass run: H | SW: v948→v949
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`header-wrap-gate-below-its-ceiling`** (NEW S478 M; FIXED ×8 `92a21164`; **S488 dashboard OPEN: 558/652 under 564/657, pre-delta**): ACTIVE, streak 0. Detection: `m478/gates.mjs` (1px 400–900, EN/HE × light/dark) on every page — S478's tool pages had an 8px census; HEAD the control.
+
+- **`tip-name-joins-its-field's-name`** (NEW S430; generator FIXED S440 `10a0c18f`; torah ×3 FIXED S442 `d477e15c`; **S488 dashboard "Count down to" `f722eeba`**): ACTIVE, streak 0 (no open carrier). A `<label>` holding a `.tip-wrap` names its field "… More information". Detection: the AX tree with every panel and drawer tab …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- **`button-focus-lost-to-its-own-rebuild`** (**S488 trope Try again ×2 `183605ba`; S483 hub `ab1a235e`; S474 flash Return to Options `3235f8eb`; S473 flash start `3e8e2f79`, torah tune radios `9fbcfce8`; S471 dashboard `c0c5856e`; S470 torah favorites `fc3ec234`; S469 generator `04a85f46`, flash …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- **`text-field-under-16px-zooms-on-ios-focus`** (NEW S406; FIXED ×2; S465 contact ×4 `5a7a8ed`; S406's page-field class is gate 4 — S488: the dashboard drawer's 15, the event's 2 new): ACTIVE, streak 0. Detection: computed `font-size` < 16px under an iPhone descriptor; plant a 12px field.
+
+- **contrast-below-AA-on-a-tinted-or-coloured-plate**: **S488: the dashboard's cycle ribbon 4.13:1 dark FIXED `5da9ecbe`.** **S422: torah's vowel Letter on the trope tint FIXED `e55b811` (1.85:1; streak 0).** **re-swept 2026-08-23 (S249 Pass M, `flash_cards.html` — card front AND back, results screen, and setup screen with every …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Retired patterns
+
+### from Recurring-pattern sweep status
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+_(prior — S488 pointer:)_ **Next session (S488):** **BRANCH/PR: `claude/improve-loop-s483` → draft PR #319 (S483–S487): open → continue; merged → restart from `origin/main`.** `sw.js` **v968**, FM **5.59**. ⚑ Stalest: A (S472), E, L, K; O blocked. ⚑ Untaken: the 6 chrome footers' trailing "·" (P4 M); smoke-sync's clock pin (P4). ⚑ Seeds: 47 open (gate 1 picks). ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.
