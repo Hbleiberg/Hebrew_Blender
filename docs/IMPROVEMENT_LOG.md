@@ -286,8 +286,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] S (dual) | classroom_dashboard.html | **The running timer stays visible on the Intermission screen.** | found: 2026-10-03, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] S–M (dual) | classroom_dashboard.html | **A countdown to the teacher's own event** (a field trip, a siddur party, the last day of school). | found: 2026-10-03, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
-
 - [ ] S–M (dual) | classroom_dashboard.html | **Today's whole schedule as a strip on the board**, not just Now and Next. | found: 2026-10-03, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] S–M | flash_cards.html | **"All N words, once each" for a word-list deck.** | found: 2026-10-03, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -318,6 +316,10 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-09 | (S485 close-out) | branch/deploy note | **S485 = the micro-feature alone (gate 1: the maintainer's pick), PR #319 continued; pass skipped on direction (B stays stalest).** No drift; sw v965→v966; no FM bump; traps 197–198 (findings S485).
+
+- [x] 2026-10-09 | `5163e4ca` | classroom_dashboard.html + locales + 2 reference docs | (S485) **Micro-feature: a countdown to the teacher's own event — name + date under Date & Time → a second gold line under the holiday countdown, gone by itself after the day; out of presets and starters like `intermissionHTML`, carried by `.ivrit`, AllTools and the account row.** | 96 checks (findings S485).
+
 - [x] 2026-10-09 | (S484 close-out) | branch/deploy note | **S484 = F (toasts) + 4 fixes, PR #319 continued.** No drift; sw v964→v965; no FM bump; no gate; trap 196.
 
 - [x] 2026-10-09 | `8037c22d` `78738db4` `5ffa32ba` `c7726222` | shared toast ×4, 7 toasts, FM ×2 | (S484) **Toast time follows its text (2.6→8 s; FM strip too); no toast stops at half the viewport; kerning labels in Hebrew.** | findings S484.
@@ -334,13 +336,11 @@ _(none)_
 
 - [x] 2026-10-08 | `b9a24112` `5f1aa8ad` `b6b9d4e0` `d869fbdf` | generator, hub, FM ×2 | (S481) **Sides, labels.** | findings S481.
 
-- [x] 2026-10-08 | (S480 close-out) | branch/deploy note | **S480 = D + 3 fixes + 1 reverted, PR #317.** No drift; sw v960→v961; no FM bump (fixes); gate 2 shipped (FAQ, approved S479).
-
-- [x] 2026-10-08 | `8136c5d3` `8de41993` `be627bf7` | trope ×2, FM + dashboard | (S480) **FAQ rewrite; no print rails; typed direction in 3 fields.** FM Spacing `content-visibility` attempted, reverted (drops rows from the AX tree). | findings S480.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-09 | **S485** | iters: 2 (micro-feature) | tools: dashboard | patterns fixed: — | pass run: — (skipped on direction; B stays stalest) | SW: v965→v966
 
 - 2026-10-09 | **S484** | iters: 5 | tools: 4 shared-block carriers ×2, torah, trope, resources, FM ×2 | patterns fixed: toast-duration (NEW) ×2, centred-fixed-box (NEW) ×7, translated-key-exists ×1 | pass run: F | SW: v964→v965
 
@@ -380,11 +380,9 @@ _(none)_
 
 - 2026-10-07 | **S466** | iters: 1 pass (**D**) + 4 fixes = **5** | tools: ivrit-saves, index ×2, FM | patterns fixed: parse-per-call ×1 (ivrit-saves) | pass run: D | SW: v945→v946
 
-- 2026-10-07 | **S465** | iters: 1 pass (**G**) + 4 fixes = **5** | tools: FM ×2, intake script, contact | patterns fixed: text-field-under-16px ×4 (contact) | pass run: G | SW: v944→v945
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S484 (2026-10-09):** generator, dashboard, flash, dictionary, torah, trope, resources, FM, docs S484 · index, saves S483 · contact, privacy, terms, account, i18n.js S478 · pwa S472 · 404 S470.
+- **Snapshot S485 (2026-10-09):** dashboard, docs S485 · generator, flash, dictionary, torah, trope, resources, FM S484 · index, saves S483 · contact, privacy, terms, account, i18n.js S478 · pwa S472 · 404 S470.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -740,4 +738,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-09 (**S484 — 36th F, the toast contract on all 8 carriers (5th look, S111 →): 24 cells + reduce, width, bars; plants 4/4. FOUND 4, FIXED 3 (+ FM kerning). F-next: the tabs / segmented-control keyboard contract (never swept).**)
 
-**Next session (S485):** **BRANCH/PR: `claude/improve-loop-s483` → draft PR #319 (S483–S484): open → continue; merged → restart from `origin/main`.** `sw.js` **v965**, FM **5.59**. ⚑ Stalest: B (S471), A, E; O blocked. ⚑ Untaken: flash's toast on the Start bar (P3). ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader.
+**Next session (S486):** **BRANCH/PR: `claude/improve-loop-s483` → draft PR #319 (S483–S485): open → continue; merged → restart from `origin/main`.** `sw.js` **v966**, FM **5.59**. ⚑ Stalest: B (S471), A, E; O blocked. ⚑ Untaken: flash's toast on the Start bar (P3). ⚑ Seeds: 48 open; a build needs the maintainer's pick (gate 1). ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader.

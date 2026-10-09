@@ -92097,3 +92097,27 @@ _(prior — S484 pointer:)_ **Next session (S484):** **BRANCH/PR: `claude/improv
 - **`centred-fixed-box-shrinks-to-half-the-viewport`** (NEW S484 F; FIXED `78738db4` ×7): ACTIVE, streak 0. A `position:fixed; left:50%; translateX(-50%)` box with no width is capped at vw/2, so its max-width never applies. Detection: `f484/width.mjs` (width = vw/2 at 390); fix `width:max-content`.
 
 - **`button-focus-lost-to-its-own-rebuild`** (**S483 hub `ab1a235e`; S474 flash Return to Options `3235f8eb`; S473 flash start `3e8e2f79`, torah tune radios `9fbcfce8`; S471 dashboard `c0c5856e`; S470 torah favorites `fc3ec234`; S469 generator `04a85f46`, flash …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
+
+## S485 (2026-10-09) — a Feature seed shipped (moved from the ledger's Feature seeds; the full text as the archive already held it, then the ship)
+
+- [x] S–M (dual) | classroom_dashboard.html | **A countdown to the teacher's own event** (a field trip, a siddur party, the last day of school). The only countdown, `renderHolidayCountdown()`, shows Hebcal holidays (`category === 'holiday'`) and the General starter turns it off, so a class event means retyping the board text every day. A title + date pair under `#showHolidayCountdown` and a `.heb-holiday-line` after `#holidayCountdown` from `updateDateTimeDisplay()`, reusing the `dashboard.days.holiday_countdown.*` / `holiday_today` strings and `holidayIconFor()`; kept out of presets and starters the way `intermissionHTML` is. ~60 lines, ~3 CSV keys, no new storage key. Lesson moment: Monday's board says "3 days until our field trip". | found: 2026-10-03, maintainer (seed hunt over five tools, PR #307 chat) | **shipped S485 `5163e4ca`** (59 lines in the page, 5 CSV keys, 2 reference docs; receipts in loop-findings S485)
+
+### from Discovery-pass rotation — the previous handoff
+
+_(prior — S485 pointer:)_ **Next session (S485):** **BRANCH/PR: `claude/improve-loop-s483` → draft PR #319 (S483–S484): open → continue; merged → restart from `origin/main`.** `sw.js` **v965**, FM **5.59**. ⚑ Stalest: B (S471), A, E; O blocked. ⚑ Untaken: flash's toast on the Start bar (P3). ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader.
+
+
+<!-- archived by compact-ledger at the S486 boundary, 2026-10-09 -->
+## Compaction (S486, 2026-10-09) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-09 | `5163e4ca` | classroom_dashboard.html + locales + 2 reference docs | (S485) **Micro-feature: a countdown to the teacher's own event — name + date under Date & Time → a second gold line under the holiday countdown (its strings and icons), gone by itself after the day; out of presets and starters like `intermissionHTML`, carried by `.ivrit`, AllTools and the account row.** | 96 checks in 4 cells by real drawer input + a fresh profile; gates clean (findings S485).
+
+- [x] 2026-10-08 | (S480 close-out) | branch/deploy note | **S480 = D + 3 fixes + 1 reverted, PR #317.** No drift; sw v960→v961; no FM bump (fixes); gate 2 shipped (FAQ, approved S479).
+
+- [x] 2026-10-08 | `8136c5d3` `8de41993` `be627bf7` | trope ×2, FM + dashboard | (S480) **FAQ rewrite; no print rails; typed direction in 3 fields.** FM Spacing `content-visibility` attempted, reverted (drops rows from the AX tree). | findings S480.
+
+### from Per-session log (one line per session)
+
+- 2026-10-07 | **S465** | iters: 1 pass (**G**) + 4 fixes = **5** | tools: FM ×2, intake script, contact | patterns fixed: text-field-under-16px ×4 (contact) | pass run: G | SW: v944→v945
