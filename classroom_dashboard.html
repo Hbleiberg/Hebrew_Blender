@@ -2042,13 +2042,13 @@ button:focus-visible, a:focus-visible { outline:2px solid var(--focus-ring); out
     header h1 { font-size: 1.15rem; }
     header p { display: none; }
   }
-  /* The header's second overflow band. Above 600px the .hbtn labels come back and the button
-     row is 560px wide again, so it overflowed from 602px up to 652px — measured, and the reason
-     the wrap gate above stops at 558 instead of swallowing the 560-600 widths that already fit.
+  /* The header's second overflow band. With the .hbtn labels showing, the button row overflows
+     from the wrap gate below up to 657px (English; Hebrew fits above 615) — measured, and the
+     reason the wrap gate stops at 564 instead of swallowing the widths that fit once the labels go.
      Closing it by shrinking rather than wrapping is this page's own idiom; the gate is the
      measured ceiling. The date/time scaling keeps its own 600px scope — it is a projection
      size, not a header lever, and nothing up here should move it. */
-  @media (max-width: 652px) {
+  @media (max-width: 657px) {
     .hbtn { padding: 6px 8px; font-size: 0.78rem; }
     .hbtn .hbtn-label { display: none; }
   }
@@ -2065,11 +2065,11 @@ button:focus-visible, a:focus-visible { outline:2px solid var(--focus-ring); out
      the header itself to wrap too: capping .hright alone leaves the title block and the button
      row competing for one line. Scoped, because unscoped it moves the header at desktop widths
      (S223 lever matrix, re-run and still true: forced on everywhere the wrap rules move 377
-     layouts that currently fit). 558px is this page's MEASURED overflow ceiling for this band,
-     not a device width — the row overflows from 432px up to 558px and fits above it, so the
-     gate ends where the break does. The page's second band, 602-652, is not this rule's: it is
-     the .hbtn labels reappearing above their own gate, closed there. */
-  @media (max-width: 558px) {
+     layouts that currently fit). 564px is this page's MEASURED overflow ceiling for this band,
+     not a device width — with the labels hidden the row overflows up to 564px (English; Hebrew
+     541) and fits above it, so the gate ends where the break does. The page's second band, up to
+     657, is not this rule's: it is the .hbtn labels, closed at their own gate. */
+  @media (max-width: 564px) {
     header { flex-wrap:wrap; }
     .hright { flex-wrap:wrap; max-width:100%; justify-content:flex-end; }
   }
