@@ -1802,6 +1802,32 @@ body.dark .hk-key:active{background:#2a4070;}
   .swm-weekend { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; cursor: pointer; color: var(--text); min-block-size: 24px; }   /* the label is the 14px checkbox's touch target (WCAG 2.5.8) */
   .swm-weekend input { accent-color: var(--gold); width: 14px; height: 14px; cursor: pointer; }
   .swm-toolbar-right { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  /* Week cycles (A/B…): the ribbon at the top of the editor (how many weeks), the week tabs under it (which week the
+     grid shows) and the "This week is" control. The board's chip and the drawer summary's letters are below. */
+  .swm-cycle { margin: 2px 0 10px; padding-block-end: 10px; border-block-end: 1px solid var(--border); }
+  .swm-cycle-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .swm-cycle-row > label { font-size: 0.85rem; font-weight: 600; color: var(--text); }
+  .swm-weeks { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+  .swm-weektabs { display: flex; gap: 4px; flex-wrap: wrap; }
+  .swm-weektab { font: inherit; font-size: 0.82rem; font-weight: 600; padding: 5px 14px; border-radius: 999px; border: 1.5px solid var(--border);
+    background: var(--white); color: var(--text); cursor: pointer; position: relative; min-block-size: 28px; }
+  body.dark .swm-weektab { background: var(--navy); }
+  .swm-weektab:hover { border-color: var(--gold); }
+  .swm-weektab[aria-selected="true"] { border-color: var(--gold); background: rgba(201,146,42,0.14); color: var(--navy); }
+  body.dark .swm-weektab[aria-selected="true"] { background: rgba(224,168,50,0.18); color: var(--gold-light); }
+  .swm-weektab:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+  .swm-weektab.is-now::after { content: ''; position: absolute; inset-inline-end: 5px; top: 4px; width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }   /* the week the board is on */
+  .swm-nowweek { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 0.8rem; color: var(--text); }
+  .swm-nowweek label { font-weight: 600; }
+  .swm-nowweek select { width: auto; }
+  .wk-strip-row { display: flex; align-items: center; gap: 6px; margin-top: 3px; }
+  .wk-strip-row .wk-strip { flex: 1; }
+  .wk-strip-letter { font-size: 0.68rem; font-weight: 700; color: var(--muted); min-width: 1.5em; text-align: center; border: 1px solid transparent; border-radius: 4px; line-height: 1.3; }
+  .wk-strip-row.is-now .wk-strip-letter { color: #8a6216; border-color: var(--gold); }   /* the holiday line's dark gold on cream (AA) */
+  body.dark .wk-strip-row.is-now .wk-strip-letter { color: var(--gold-light); }
+  .now-next .nn-week-chip { align-self: center; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted);
+    border: 1px solid var(--border); border-radius: 999px; padding: 2px 9px; }
+  body.fullscreen .now-next .nn-week-chip { font-size: 1rem; padding: 4px 14px; }
   /* Screen-hidden; the print block below reveals it as the printed sheet's title. */
   #swmPrintHead { display: none; }
   .swm-gridwrap { overflow-x: auto; }
@@ -2144,7 +2170,7 @@ button:focus-visible, a:focus-visible { outline:2px solid var(--focus-ring); out
     body.swm-printing .swm-modal > .fr-sub, body.swm-printing .swm-modal > .sub-section,
     body.swm-printing #swmImportCard, body.swm-printing #swmIcalCard, body.swm-printing #swmPurgeCard, body.swm-printing #swmPalette,
     body.swm-printing .swm-toolbar, body.swm-printing #swmValidation,
-    body.swm-printing .swm-footer, body.swm-printing .swm-daymenu-btn { display: none !important; }
+    body.swm-printing .swm-footer, body.swm-printing .swm-daymenu-btn, body.swm-printing .swm-cycle { display: none !important; }
     /* The row-delete × is a GRID ITEM, not decoration inside one. `display:none` on it removes a
        cell from the flow, so every following row slides one track left and the whole week
        scrambles — the sheet printed with times mid-row and classes under the wrong days. Collapse
@@ -2455,6 +2481,27 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
   <p class="fr-sub" data-i18n="dashboard.schedule.editor_sub">Pick a class below, then click or drag across the grid to paint its periods. Changes save automatically.</p>
   <div id="swmImportCard" class="swm-import" style="display:none;"></div>
   <div id="swmEditorBody">
+    <div class="swm-cycle" id="swmCycle">
+      <div class="swm-cycle-row">
+        <label id="rgSwmCycle" data-i18n="dashboard.schedule.cycle_label">Schedule repeats</label>
+        <div class="radio-group" role="radiogroup" aria-labelledby="rgSwmCycle">
+          <input type="radio" name="swmCycle" id="swmCycle1" value="1" onchange="setCycleN(1)"><label for="swmCycle1" data-i18n="dashboard.schedule.cycle_1">Every week</label>
+          <input type="radio" name="swmCycle" id="swmCycle2" value="2" onchange="setCycleN(2)"><label for="swmCycle2" data-i18n="dashboard.schedule.cycle_2">Every 2 weeks (A/B)</label>
+          <input type="radio" name="swmCycle" id="swmCycle3" value="3" onchange="setCycleN(3)"><label for="swmCycle3" data-i18n="dashboard.schedule.cycle_3">Every 3 weeks</label>
+          <input type="radio" name="swmCycle" id="swmCycle4" value="4" onchange="setCycleN(4)"><label for="swmCycle4" data-i18n="dashboard.schedule.cycle_4">Every 4 weeks</label>
+        </div>
+        <span class="tip-wrap" data-tip="For schools whose classes change from one week to the next while the bell times stay the same. Choose how many weeks pass before the pattern repeats; each week gets its own tab of classes below, and the weeks change over every Sunday." data-i18n-tip="dashboard.schedule.cycle_tip"><i class="tip-icon">?</i></span>
+      </div>
+      <div class="swm-weeks" id="swmWeeks" style="display:none;">
+        <div class="swm-weektabs" id="swmWeekTabs" role="tablist" aria-label="Weeks of the cycle" data-i18n-aria-label="dashboard.schedule.week_tabs_aria"></div>
+        <div class="swm-nowweek">
+          <label for="swmNowWeek" data-i18n="dashboard.schedule.now_week_label">This week is</label>
+          <select id="swmNowWeek" onchange="setCycleNowWeek(+this.value)"></select>
+          <span class="tip-wrap" data-tip="Which week the board is on right now. If it shows the wrong week — after a vacation, say — pick the right one here and the whole cycle moves with it." data-i18n-tip="dashboard.schedule.now_week_tip"><i class="tip-icon">?</i></span>
+          <button type="button" class="btn-xs" id="swmCopyA" onclick="copyWeekFromA()" style="display:none;" data-i18n="dashboard.schedule.copy_from_a">Copy Week A's classes here</button>
+        </div>
+      </div>
+    </div>
     <div id="swmPalette" class="swm-palette" role="toolbar" aria-label="Class palette" data-i18n-aria-label="dashboard.schedule.palette_aria"></div>
     <div class="swm-toolbar">
       <label class="swm-weekend"><input type="checkbox" id="swmWeekend" onchange="setWeekWeekend(this.checked)"><span data-i18n="dashboard.schedule.show_weekend">Show weekend</span></label>
@@ -5547,15 +5594,53 @@ function holidayIconFor(title) {
           end:   (typeof p.end   === 'string' && HHMM_RE.test(p.end))   ? p.end   : ''
         }));
     }
-    const cells = (raw.cells && typeof raw.cells === 'object' && !Array.isArray(raw.cells)) ? raw.cells : {};
-    WEEK_KEYS.forEach(d => {
-      const col = Array.isArray(cells[d]) ? cells[d] : [];
-      // Unknown preset names are kept — they render as "missing" cells and recover if the preset returns.
-      week.cells[d] = Array.from({ length: week.periods.length },
-        (_, i) => (typeof col[i] === 'string' && col[i]) ? col[i] : null);
-    });
+    // One week of classes: a column per day, a slot per period. Unknown preset names are kept — they render as
+    // "missing" cells and recover if the preset returns.
+    const normCells = src => {
+      const cells = (src && typeof src === 'object' && !Array.isArray(src)) ? src : {};
+      const out = {};
+      WEEK_KEYS.forEach(d => {
+        const col = Array.isArray(cells[d]) ? cells[d] : [];
+        out[d] = Array.from({ length: week.periods.length }, (_, i) => (typeof col[i] === 'string' && col[i]) ? col[i] : null);
+      });
+      return out;
+    };
+    week.cells = normCells(raw.cells);
+    // v2: a cycle of 2–4 weeks sharing the bell times. `cells` stays Week A — a build that predates cycles reads it as the one
+    // week — and the later weeks' classes sit in cycle.weeks[i - 1]; the anchor is a date inside some Week A ('' until the
+    // teacher sets one, which reads every week as A). A single week keeps v:1 byte for byte, so no stored blob changes.
+    const cyc = raw.cycle;
+    const n = (cyc && typeof cyc === 'object' && !Array.isArray(cyc)) ? Math.trunc(Number(cyc.n)) : 1;
+    if (n >= 2 && n <= 4) {
+      const src = Array.isArray(cyc.weeks) ? cyc.weeks : [];
+      week.v = 2;
+      week.cycle = { n, anchor: (typeof cyc.anchor === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(cyc.anchor)) ? cyc.anchor : '',
+                     weeks: Array.from({ length: n - 1 }, (_, i) => normCells(src[i])) };
+    }
     sortWeekPeriods(week);
     return week;
+  }
+
+  // ── Week cycles: `cells` is Week A, the later weeks live in cycle.weeks. Every reader of a week's classes goes through these. ──
+  const WEEK_LETTER_KEYS = ['a', 'b', 'c', 'd'];
+  function weekCycleN(week) { return week && week.cycle ? week.cycle.n : 1; }
+  function weekCellsAt(week, wi) { return (wi > 0 && week.cycle && week.cycle.weeks[wi - 1]) || week.cells; }
+  function weekAllCells(week) { return week.cycle ? [week.cells].concat(week.cycle.weeks) : [week.cells]; }
+  function weekLetter(wi) { return I18n.t('dashboard.schedule.letter_' + (WEEK_LETTER_KEYS[wi] || 'a')); }
+  function weekName(wi) { return I18n.t('dashboard.schedule.week_name', { letter: weekLetter(wi) }); }
+  function ymdLocal(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+  // The local midnight that starts the week holding `d` (Sunday, the grid's first day).
+  function weekStartOf(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate() - d.getDay()); }
+  // Which week of the cycle a date falls in: 0 (Week A) for a single week or a cycle with no anchor yet; else the whole weeks
+  // since the anchor's week, modulo the cycle. Every calendar week counts, vacations included — the "This week is" control
+  // repairs a drift, and a saved schedule carries no anchor, so loading one never moves the cycle.
+  function cycleIndexAt(week, date) {
+    const n = weekCycleN(week);
+    if (n < 2) return 0;
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(week.cycle.anchor || '');
+    if (!m) return 0;
+    const diff = Math.round((weekStartOf(date) - weekStartOf(new Date(+m[1], +m[2] - 1, +m[3]))) / (7 * 86400000));   // round: a DST hour never shifts a week
+    return ((diff % n) + n) % n;
   }
 
   // Keep only what an <input type="color"> can produce; anything else is dropped and re-auto-assigned.
@@ -5576,7 +5661,7 @@ function holidayIconFor(title) {
       .sort((a, b) => (timeToMins(week.periods[a].start) - timeToMins(week.periods[b].start)) || (a - b));
     if (order.every((o, i) => o === i)) return null;
     week.periods = order.map(i => week.periods[i]);
-    WEEK_KEYS.forEach(d => { week.cells[d] = order.map(i => week.cells[d][i]); });
+    weekAllCells(week).forEach(c => WEEK_KEYS.forEach(d => { c[d] = order.map(i => c[d][i]); }));
     return order;
   }
 
@@ -7399,11 +7484,11 @@ function mountSidebarResize(cfg) {
   function _swapWeekName(week, from, to) {
     let n = 0;
     if (!week || !week.cells) return n;
-    WEEK_KEYS.forEach(d => {
-      const col = week.cells[d];
+    weekAllCells(week).forEach(cells => WEEK_KEYS.forEach(d => {
+      const col = cells[d];
       if (!Array.isArray(col)) return;
       col.forEach((nm, i) => { if (nm === from) { col[i] = to; n++; } });
-    });
+    }));
     return n;
   }
   // Rename the tree's item node in place so the item keeps its folder. Letting syncTree discover
@@ -8434,18 +8519,20 @@ else ivritInit();
     const dayIdx = now.getDay();
     const nowMins = now.getHours() * 60 + now.getMinutes();
     const visible = weekVisibleDays(week);
+    // A cycle (A/B…): today's column is this week's; the target scan below walks the following days through the whole cycle.
+    const cycleN = weekCycleN(week), wiToday = cycleIndexAt(week, now);
     // Periods with a blank/invalid time sit out of the sweep (the editor's validation flags them).
     const timed = week.periods
       .map((p, i) => ({ periodIdx: i, start: p.start, until: p.end }))
       .filter(p => HHMM_RE.test(p.start) && HHMM_RE.test(p.until));
-    const colFor = d => week.cells[WEEK_KEYS[d]] || [];
-    const entryFor = (d, t) => ({ periodIdx: t.periodIdx, preset: colFor(d)[t.periodIdx] || null, start: t.start, until: t.until, dayIdx: d });
-    const isSchoolDay = d => visible.includes(d) && timed.some(t => colFor(d)[t.periodIdx]);
-    const base = { engine: 'week', dayIdx, sorted: [], runs: [], currentIdx: -1, currentEntry: null,
+    const colFor = (wi, d) => weekCellsAt(week, wi)[WEEK_KEYS[d]] || [];
+    const entryFor = (wi, d, t) => ({ periodIdx: t.periodIdx, preset: colFor(wi, d)[t.periodIdx] || null, start: t.start, until: t.until, dayIdx: d, week: wi });
+    const isSchoolDay = (wi, d) => visible.includes(d) && timed.some(t => colFor(wi, d)[t.periodIdx]);
+    const base = { engine: 'week', dayIdx, cycleN, cycleIdx: wiToday, sorted: [], runs: [], currentIdx: -1, currentEntry: null,
                    targetEntry: null, daysAhead: 0, isTomorrow: false, diffMins: 0, timeStr: '',
                    nowLeftMins: 0, nowLeftStr: '' };
-    if (!timed.length || !visible.some(isSchoolDay)) return { ...base, status: 'empty' };
-    base.sorted = visible.includes(dayIdx) ? timed.map(t => entryFor(dayIdx, t)) : [];
+    if (!timed.length || !weekAllCells(week).some((_, wi) => visible.some(d => isSchoolDay(wi, d)))) return { ...base, status: 'empty' };
+    base.sorted = visible.includes(dayIdx) ? timed.map(t => entryFor(wiToday, dayIdx, t)) : [];
     // Does today's period k run on into period k+1 (same cell, a short enough break; an overlap counts as none)?
     const sameRun = k => k + 1 < base.sorted.length && base.sorted[k].preset === base.sorted[k + 1].preset
       && timeToMins(base.sorted[k + 1].start) - timeToMins(base.sorted[k].until) <= RUN_GAP_MAX_MINS;
@@ -8459,30 +8546,31 @@ else ivritInit();
       k = last + 1;
     }
 
-    // First assigned cell on `day` from timed-position `fromK` on; null when the day is hidden or dry.
-    const firstAssignedFrom = (day, fromK) => {
+    // First assigned cell on `day` of cycle week `wi` from timed-position `fromK` on; null when the day is hidden or dry.
+    const firstAssignedFrom = (wi, day, fromK) => {
       if (!visible.includes(day)) return null;
       for (let k = fromK; k < timed.length; k++) {
-        const e = entryFor(day, timed[k]);
+        const e = entryFor(wi, day, timed[k]);
         if (e.preset) return e;
       }
       return null;
     };
-    // Next assigned cell anywhere: the rest of today, then each following day; d=7 legally wraps to
-    // this same weekday next week (the week's only assignment targets itself). Never null once the
-    // empty-check above passed.
+    // Next assigned cell anywhere: the rest of today, then each following day for a whole cycle, each day read from the
+    // week it falls in; d = 7·n legally wraps to this same weekday of this same week next time round (the cycle's only
+    // assignment targets itself). Never null once the empty-check above passed.
     const findTarget = fromKToday => {
-      const today = firstAssignedFrom(dayIdx, fromKToday);
+      const today = firstAssignedFrom(wiToday, dayIdx, fromKToday);
       if (today) return { entry: today, daysAhead: 0 };
-      for (let d = 1; d <= 7; d++) {
-        const e = firstAssignedFrom((dayIdx + d) % 7, 0);
+      for (let d = 1; d <= 7 * cycleN; d++) {
+        const date = new Date(now.getFullYear(), now.getMonth(), now.getDate() + d);
+        const e = firstAssignedFrom(cycleIndexAt(week, date), date.getDay(), 0);
         if (e) return { entry: e, daysAhead: d };
       }
       return null;
     };
 
     let status, currentIdx = -1, currentEntry = null, target;
-    if (!isSchoolDay(dayIdx)) {
+    if (!isSchoolDay(wiToday, dayIdx)) {
       status = 'noschool';
       target = findTarget(0);
     } else {
@@ -8596,6 +8684,7 @@ else ivritInit();
   function weekChanged(opts) {
     _lastScheduleKey = null; _lastPreviewKey = null; _lastNowNextKey = null;
     saveSettingsToStorage();
+    renderCycleBar();   // before the grid: it clamps the shown week to the cycle
     if (!(opts && opts.skipGrid)) renderWeekGrid();
     // skipPalette: a swatch color-drag streams `input` events — rebuilding the palette would
     // destroy the <input type="color"> the native picker is attached to and snap it shut.
@@ -8624,6 +8713,7 @@ else ivritInit();
     if (offerMode) {
       renderWeekImportOffer();
     } else {
+      renderCycleBar();
       renderWeekPalette();
       renderWeekGrid();
       renderWeekValidation();
@@ -8642,6 +8732,96 @@ else ivritInit();
   function setWeekWeekend(on) {
     ensureWeek().weekend = !!on;
     weekChanged();
+  }
+
+  /* ── Week cycles in the editor: the ribbon (how many weeks), the week tabs (which week the grid shows — editor state,
+        never stored), the "This week is" control (moves the anchor) and Copy from Week A. ── */
+  let _swmWeekIdx = 0;
+  function renderCycleBar() {
+    const week = settings.scheduleWeek, n = weekCycleN(week);
+    const r = document.getElementById('swmCycle' + n);
+    if (r) r.checked = true;
+    const weeks = document.getElementById('swmWeeks');
+    if (!weeks) return;
+    weeks.style.display = n > 1 ? '' : 'none';
+    if (n < 2) { _swmWeekIdx = 0; return; }
+    if (_swmWeekIdx >= n) _swmWeekIdx = n - 1;
+    const nowWi = cycleIndexAt(week, new Date());
+    const tabs = document.getElementById('swmWeekTabs');
+    tabs.textContent = '';
+    for (let wi = 0; wi < n; wi++) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'swm-weektab' + (wi === nowWi ? ' is-now' : '');
+      b.setAttribute('role', 'tab');
+      b.setAttribute('aria-selected', wi === _swmWeekIdx ? 'true' : 'false');
+      b.tabIndex = wi === _swmWeekIdx ? 0 : -1;
+      b.dataset.week = wi;
+      b.textContent = weekName(wi);
+      if (wi === nowWi) b.title = I18n.t('dashboard.schedule.week_tab_now_title');
+      b.addEventListener('click', () => showCycleWeek(wi, document.activeElement === b));   // the tabs rebuild: a focused tab (keyboard Enter/Space, or the click that focused it) keeps its focus
+      tabs.appendChild(b);
+    }
+    const sel = document.getElementById('swmNowWeek');
+    sel.textContent = '';
+    for (let wi = 0; wi < n; wi++) { const o = document.createElement('option'); o.value = wi; o.textContent = weekName(wi); sel.appendChild(o); }
+    sel.value = String(nowWi);
+    const shown = weekCellsAt(week, _swmWeekIdx);
+    document.getElementById('swmCopyA').style.display =
+      (_swmWeekIdx > 0 && week.periods.length && !WEEK_KEYS.some(d => shown[d].some(Boolean))) ? '' : 'none';
+  }
+  function showCycleWeek(wi, focus) {
+    _swmWeekIdx = wi;
+    renderCycleBar();
+    renderWeekGrid();
+    if (focus) { const t = document.querySelector('#swmWeekTabs .swm-weektab[data-week="' + wi + '"]'); if (t) t.focus(); }
+  }
+  // The ribbon: 1 drops the cycle, 2–4 size it. Growing adds empty weeks; shrinking removes the weeks past the new last one,
+  // after a confirm when any of them holds classes (the bell times are shared and stay). Turning a cycle on anchors Week A
+  // to this week; the "This week is" control moves it afterwards.
+  function setCycleN(n) {
+    const week = ensureWeek(), cur = weekCycleN(week);
+    if (n === cur) return;
+    if (n < cur) {
+      const dropped = weekAllCells(week).slice(Math.max(1, n));
+      if (dropped.some(c => WEEK_KEYS.some(d => c[d].some(Boolean))) &&
+          !confirm(I18n.t('dashboard.schedule.cycle_shrink_confirm', { option: I18n.t('dashboard.schedule.cycle_' + n), letter: weekLetter(n - 1) }))) {
+        renderCycleBar();   // the radio snaps back to the cycle as it is
+        return;
+      }
+    }
+    if (n < 2) delete week.cycle;
+    else {
+      const blank = () => { const c = {}; WEEK_KEYS.forEach(d => { c[d] = week.periods.map(() => null); }); return c; };
+      const old = week.cycle ? week.cycle.weeks : [];
+      week.cycle = { n, anchor: (week.cycle && week.cycle.anchor) || ymdLocal(new Date()), weeks: Array.from({ length: n - 1 }, (_, i) => old[i] || blank()) };
+    }
+    week.v = week.cycle ? 2 : 1;
+    if (_swmWeekIdx >= n) _swmWeekIdx = n - 1;
+    weekChanged();
+  }
+  // "This week is Week X": re-anchor so that today falls in week X — the anchor becomes a date X weeks back, inside a Week A.
+  function setCycleNowWeek(wi) {
+    const week = settings.scheduleWeek;
+    if (!week || !week.cycle) return;
+    const d = new Date();
+    d.setDate(d.getDate() - 7 * wi);
+    week.cycle.anchor = ymdLocal(d);
+    weekChanged();
+  }
+  function copyWeekFromA() {
+    const week = settings.scheduleWeek;
+    if (!week || !week.cycle || _swmWeekIdx < 1) return;
+    week.cycle.weeks[_swmWeekIdx - 1] = JSON.parse(JSON.stringify(week.cells));
+    weekChanged();
+    const tab = document.querySelector('#swmWeekTabs .swm-weektab[aria-selected="true"]');   // the button just hid itself: focus moves to its week's tab
+    if (tab) tab.focus();
+  }
+  // A saved schedule is the grid and its cycle, never the anchor: loading last year's schedule must not change which week it is now.
+  function weekForSaving(week) {
+    const w = JSON.parse(JSON.stringify(week));
+    if (w.cycle) w.cycle.anchor = '';
+    return w;
   }
 
   // ── The week grid: header row of day names, one row per period (start/end inputs + a paintable
@@ -8675,6 +8855,10 @@ else ivritInit();
     }
     const days = weekVisibleDays(week);
     grid.style.setProperty('--swm-days', days.length);
+    const cycleN = weekCycleN(week);
+    grid.setAttribute('aria-label', cycleN > 1 ? I18n.t('dashboard.schedule.grid_aria_week', { letter: weekLetter(_swmWeekIdx) }) : I18n.t('dashboard.schedule.grid_aria'));
+    const ph = document.getElementById('swmPrintHead');
+    if (ph) ph.textContent = cycleN > 1 ? I18n.t('dashboard.schedule.print_heading_cycle', { letter: weekLetter(_swmWeekIdx) }) : I18n.t('dashboard.schedule.print_heading');
     if (!days.includes(_swmFocus.day)) _swmFocus.day = days[0];
     if (_swmFocus.period >= week.periods.length) _swmFocus.period = Math.max(0, week.periods.length - 1);
     // Header row: sticky Start/End corner · day names with a per-day ⋯ menu · empty remove-column corner
@@ -8745,7 +8929,7 @@ else ivritInit();
   // Shared by the builder and the drag-painter's in-place updates: assignment → color/label/aria.
   function applyCellVisual(cell, d, p) {
     const week = settings.scheduleWeek;
-    const name = week.cells[WEEK_KEYS[d]][p];
+    const name = weekCellsAt(week, _swmWeekIdx)[WEEK_KEYS[d]][p];
     const per = week.periods[p] || { start: '', end: '' };
     const missing = !!name && !presets[name];
     cell.classList.toggle('swm-cell-free', !name);
@@ -8799,7 +8983,7 @@ else ivritInit();
       if (e < 24 * 60) { start = fmt(s); end = fmt(e); } else { start = ''; end = ''; }
     }
     week.periods.push({ start, end });
-    WEEK_KEYS.forEach(d => week.cells[d].push(null));
+    weekAllCells(week).forEach(c => WEEK_KEYS.forEach(d => c[d].push(null)));
     sortWeekPeriods(week);
     _retireWeekSaveEmptyNote();
     weekChanged();
@@ -8808,10 +8992,10 @@ else ivritInit();
   function removeWeekPeriod(p) {
     const week = settings.scheduleWeek;
     if (!week || !week.periods[p]) return;
-    const hasAssignments = WEEK_KEYS.some(d => week.cells[d][p]);
+    const hasAssignments = weekAllCells(week).some(c => WEEK_KEYS.some(d => c[d][p]));
     if (hasAssignments && !confirm(I18n.t('dashboard.schedule.remove_period_confirm', { n: p + 1 }))) return;
     week.periods.splice(p, 1);
-    WEEK_KEYS.forEach(d => week.cells[d].splice(p, 1));
+    weekAllCells(week).forEach(c => WEEK_KEYS.forEach(d => c[d].splice(p, 1)));
     weekChanged();
   }
 
@@ -8823,7 +9007,7 @@ else ivritInit();
   function paintCell(d, p, value) {
     const week = settings.scheduleWeek;
     if (!week || !week.periods[p]) return false;
-    const col = week.cells[WEEK_KEYS[d]];
+    const col = weekCellsAt(week, _swmWeekIdx)[WEEK_KEYS[d]];
     if (col[p] === value) return false;
     col[p] = value;
     const cell = document.querySelector('#swmGrid .swm-cell[data-day="' + d + '"][data-period="' + p + '"]');
@@ -8853,6 +9037,19 @@ else ivritInit();
   function wireWeekGrid() {
     if (_swmGridWired) return;
     _swmGridWired = true;
+    // The week tabs: arrows (mirrored under RTL), Home and End move between the weeks, as the drawer's tab strip does.
+    const wt = document.getElementById('swmWeekTabs');
+    if (wt) wt.addEventListener('keydown', e => {
+      const tabs = [...wt.querySelectorAll('.swm-weektab')], i = tabs.indexOf(document.activeElement);
+      if (i < 0) return;
+      const rtl = document.documentElement.dir === 'rtl';
+      const fwd = rtl ? e.key === 'ArrowLeft' : e.key === 'ArrowRight', back = rtl ? e.key === 'ArrowRight' : e.key === 'ArrowLeft';
+      let next;
+      if (fwd) next = (i + 1) % tabs.length; else if (back) next = (i - 1 + tabs.length) % tabs.length;
+      else if (e.key === 'Home') next = 0; else if (e.key === 'End') next = tabs.length - 1; else return;
+      e.preventDefault();
+      showCycleWeek(next, true);
+    });
     const grid = document.getElementById('swmGrid');
     if (!grid) return;
     grid.addEventListener('click', e => {
@@ -9021,23 +9218,26 @@ else ivritInit();
   function copyWeekDay(from, to) {
     const week = settings.scheduleWeek;
     if (!week) return;
-    week.cells[WEEK_KEYS[to]] = week.cells[WEEK_KEYS[from]].slice();
+    const cells = weekCellsAt(week, _swmWeekIdx);   // the day menu edits the week the grid shows
+    cells[WEEK_KEYS[to]] = cells[WEEK_KEYS[from]].slice();
     weekChanged();
   }
   function copyWeekDayToWeekdays(from) {
     const week = settings.scheduleWeek;
     if (!week) return;
+    const cells = weekCellsAt(week, _swmWeekIdx);
     [1, 2, 3, 4, 5].filter(t => t !== from).forEach(t => {
-      week.cells[WEEK_KEYS[t]] = week.cells[WEEK_KEYS[from]].slice();
+      cells[WEEK_KEYS[t]] = cells[WEEK_KEYS[from]].slice();
     });
     weekChanged();
   }
   function clearWeekDay(d) {
     const week = settings.scheduleWeek;
     if (!week) return;
-    if (week.cells[WEEK_KEYS[d]].some(Boolean) &&
+    const cells = weekCellsAt(week, _swmWeekIdx);
+    if (cells[WEEK_KEYS[d]].some(Boolean) &&
         !confirm(I18n.t('dashboard.schedule.clear_day_confirm', { day: dayName(d) }))) return;
-    week.cells[WEEK_KEYS[d]] = week.cells[WEEK_KEYS[d]].map(() => null);
+    cells[WEEK_KEYS[d]] = cells[WEEK_KEYS[d]].map(() => null);
     weekChanged();
   }
 
@@ -9170,10 +9370,10 @@ else ivritInit();
         else if (timeToMins(timed[i].start) < timeToMins(timed[i - 1].end)) msgs.push(I18n.t('dashboard.schedule.warn_overlap', { a: timed[i - 1].n, b: timed[i].n }));
       }
       const unknown = new Set();
-      WEEK_KEYS.forEach(d => week.cells[d].forEach(nm => { if (nm && !presets[nm]) unknown.add(nm); }));
+      weekAllCells(week).forEach(cells => WEEK_KEYS.forEach(d => cells[d].forEach(nm => { if (nm && !presets[nm]) unknown.add(nm); })));
       // Carried as {text, name} so the row can offer the one-click fix below; every other msg stays a string.
       unknown.forEach(nm => msgs.push({ text: I18n.t('dashboard.schedule.warn_unknown_preset', { name: nm }), name: nm }));
-      if (week.periods.length && !WEEK_KEYS.some(d => week.cells[d].some(Boolean)))
+      if (week.periods.length && !weekAllCells(week).some(cells => WEEK_KEYS.some(d => cells[d].some(Boolean))))
         msgs.push(I18n.t('dashboard.schedule.warn_no_assignments'));
     }
     const hints = [];
@@ -9497,7 +9697,7 @@ else ivritInit();
     writes.forEach((title, key) => {
       const dp = key.split('|');
       daysTouched.add(+dp[0]);
-      const before = cur && +dp[1] < baseLen ? cur.cells[WEEK_KEYS[+dp[0]]][+dp[1]] : null;
+      const before = cur && +dp[1] < baseLen ? weekCellsAt(cur, _swmWeekIdx)[WEEK_KEYS[+dp[0]]][+dp[1]] : null;   // the import lands on the week the grid shows
       if (before && before !== title) overwrites++;
     });
     return { periods: periods, baseLen: baseLen, writes: writes, newPeriods: periods.length - baseLen,
@@ -9600,16 +9800,21 @@ else ivritInit();
     if (!pend || !pend.slots.length) return;
     const plan = planCalendarImport(pend.slots);   // re-plan fresh — the grid may have changed since the preview
     const cur = settings.scheduleWeek || null;
-    const cells = {};
-    WEEK_KEYS.forEach((k, d) => {
-      cells[k] = Array.from({ length: plan.periods.length },
-        (_, p) => (cur && p < plan.baseLen ? cur.cells[k][p] : null));
-    });
+    // Every week of a cycle is resized to the planned periods (its classes kept up to the old count); the file's classes
+    // land on the week the grid shows.
+    const grow = src => {
+      const out = {};
+      WEEK_KEYS.forEach(k => { out[k] = Array.from({ length: plan.periods.length }, (_, p) => (src && p < plan.baseLen ? src[k][p] : null)); });
+      return out;
+    };
+    const all = cur ? weekAllCells(cur).map(grow) : [grow(null)];
+    const target = all[Math.min(_swmWeekIdx, all.length - 1)];
     plan.writes.forEach((title, key) => {
       const dp = key.split('|');
-      cells[WEEK_KEYS[+dp[0]]][+dp[1]] = title;
+      target[WEEK_KEYS[+dp[0]]][+dp[1]] = title;
     });
-    const wk = normalizeScheduleWeek({ v: 1, periods: plan.periods, weekend: plan.weekend, cells: cells });
+    const wk = normalizeScheduleWeek({ v: cur && cur.cycle ? 2 : 1, periods: plan.periods, weekend: plan.weekend, cells: all[0],
+      cycle: cur && cur.cycle ? { n: cur.cycle.n, anchor: cur.cycle.anchor, weeks: all.slice(1) } : undefined });
     if (!wk) return;
     settings.scheduleWeek = wk;
     _swmIcalPending = null;
@@ -9663,7 +9868,7 @@ else ivritInit();
     // row's ↺ button confirms, so Save confirms too (savePreset's shape; the name stays in the field
     // on Cancel so the teacher can rename instead).
     if (savedSchedules[name] !== undefined && !confirm(I18n.t('dashboard.schedule.overwrite_confirm', { name: name }))) return;
-    savedSchedules[name] = { v: 2, week: JSON.parse(JSON.stringify(week)) };
+    savedSchedules[name] = { v: 2, week: weekForSaving(week) };
     saveSchedulesStorage();
     document.getElementById('swmSaveName').value = '';
     renderSavedSchedules();
@@ -9691,7 +9896,7 @@ else ivritInit();
     const rows = normalizeSchedule(JSON.parse(JSON.stringify(entry)))
       .filter(e => e.preset)
       .sort((a, b) => timeToMins(a.until) - timeToMins(b.until));
-    const col = week.cells[WEEK_KEYS[d]];
+    const col = weekCellsAt(week, _swmWeekIdx)[WEEK_KEYS[d]];   // into the week the grid shows
     rows.slice(0, week.periods.length).forEach((r, i) => { col[i] = r.preset; });
     weekChanged();
     const extra = rows.length - week.periods.length;
@@ -9710,29 +9915,46 @@ else ivritInit();
     assignPresetColors();   // in-memory only here; persisted on the next natural save
     el.style.display = '';
     el.textContent = '';
-    const strip = document.createElement('div');
-    strip.className = 'wk-strip';
-    weekVisibleDays(week).forEach(d => {
-      const col = document.createElement('div');
-      col.className = 'wk-strip-col';
-      col.title = dayName(d);
-      week.periods.forEach((p, i) => {
-        const name = week.cells[WEEK_KEYS[d]][i];
-        const cell = document.createElement('span');
-        cell.className = 'wk-strip-cell' + (name ? '' : ' wk-strip-free');
-        if (name) cell.style.background = presetColor(name);
-        col.appendChild(cell);
+    // One strip per week of the cycle, each with its letter; the week the board is on is marked.
+    const cycleN = weekCycleN(week), nowWi = cycleIndexAt(week, new Date());
+    for (let wi = 0; wi < cycleN; wi++) {
+      const cells = weekCellsAt(week, wi);
+      const strip = document.createElement('div');
+      strip.className = 'wk-strip';
+      weekVisibleDays(week).forEach(d => {
+        const col = document.createElement('div');
+        col.className = 'wk-strip-col';
+        col.title = dayName(d);
+        week.periods.forEach((p, i) => {
+          const name = cells[WEEK_KEYS[d]][i];
+          const cell = document.createElement('span');
+          cell.className = 'wk-strip-cell' + (name ? '' : ' wk-strip-free');
+          if (name) cell.style.background = presetColor(name);
+          col.appendChild(cell);
+        });
+        strip.appendChild(col);
       });
-      strip.appendChild(col);
-    });
-    el.appendChild(strip);
+      if (cycleN > 1) {
+        const row = document.createElement('div');
+        row.className = 'wk-strip-row' + (wi === nowWi ? ' is-now' : '');
+        const lt = document.createElement('span');
+        lt.className = 'wk-strip-letter';
+        lt.textContent = weekLetter(wi);
+        lt.title = wi === nowWi ? I18n.t('dashboard.schedule.week_tab_now_title') : weekName(wi);
+        row.appendChild(lt);
+        row.appendChild(strip);
+        el.appendChild(row);
+      } else el.appendChild(strip);
+    }
     const line = document.createElement('div');
     line.className = 'wk-summary-line';
     const n = week.periods.length;
-    line.textContent = I18n.t('dashboard.schedule.summary_line', {
+    let text = I18n.t('dashboard.schedule.summary_line', {
       periods: I18n.t('dashboard.schedule.summary_periods.' + (n === 1 ? 'one' : 'other'), { count: n }),
       days: I18n.t(week.weekend ? 'dashboard.schedule.summary_days_sunsat' : 'dashboard.schedule.summary_days_monfri')
     });
+    if (cycleN > 1) text += ' · ' + I18n.t('dashboard.schedule.summary_cycle', { n: cycleN, letter: weekLetter(nowWi) });
+    line.textContent = text;
     el.appendChild(line);
   }
 
@@ -9755,6 +9977,7 @@ else ivritInit();
     _swmOpener = document.activeElement;
     document.getElementById('swmBackdrop').classList.add('open');
     document.getElementById('swmModal').classList.add('open');
+    _swmWeekIdx = settings.scheduleWeek ? cycleIndexAt(settings.scheduleWeek, new Date()) : 0;   // open on the week the board is on
     wireWeekGrid();
     renderWeekEditor();
     document.addEventListener('keydown', weekEditorKey, true);
@@ -9838,6 +10061,8 @@ else ivritInit();
       if (!confirm(I18n.t('dashboard.schedule.load_week_confirm', { name: name }))) return;
       const wk = normalizeScheduleWeek(entry.week);
       if (!wk) return;
+      // A saved cycle carries no anchor: the board stays on the week it is on (the current anchor, else this week is A).
+      if (wk.cycle && !wk.cycle.anchor) wk.cycle.anchor = (settings.scheduleWeek && settings.scheduleWeek.cycle && settings.scheduleWeek.cycle.anchor) || ymdLocal(new Date());
       settings.scheduleWeek = wk;
       weekChanged();
       return;
@@ -9854,7 +10079,7 @@ else ivritInit();
   function overwriteSavedSchedule(name) {
     if (!confirm(I18n.t('dashboard.schedule.overwrite_confirm', { name: name }))) return;
     savedSchedules[name] = settings.scheduleWeek
-      ? { v: 2, week: JSON.parse(JSON.stringify(settings.scheduleWeek)) }
+      ? { v: 2, week: weekForSaving(settings.scheduleWeek) }
       : JSON.parse(JSON.stringify(settings.currentSchedule || []));
     saveSchedulesStorage();
   }
@@ -9992,6 +10217,7 @@ else ivritInit();
     const live = st.status !== 'off' && st.status !== 'empty';
     const suffix = !st.targetEntry || st.daysAhead === 0 ? ''
       : st.daysAhead === 1 ? ' ' + I18n.t('dashboard.schedule.suffix_tomorrow')
+      : st.cycleN > 1 && st.daysAhead >= 7 ? ' ' + I18n.t('dashboard.schedule.suffix_on_day_week', { day: dayName(st.targetEntry.dayIdx), letter: weekLetter(st.targetEntry.week || 0) })   // "on Monday" alone would read as this coming Monday
       : ' ' + I18n.t('dashboard.schedule.suffix_on_day', { day: dayName(st.targetEntry.dayIdx) });
     // (i) countdown line — targets the next assigned period's START (see computeWeekState)
     const cd = document.getElementById('scheduleCountdown');
@@ -10010,7 +10236,7 @@ else ivritInit();
         const key = ['w', st.status, st.dayIdx, st.currentIdx, st.currentEntry ? st.currentEntry.preset : '',
                      st.nowLeftStr, st.targetEntry ? st.targetEntry.preset : '',
                      st.targetEntry ? st.targetEntry.start : '', st.daysAhead, st.timeStr,
-                     settings.timeFmt].join('\x1f');
+                     settings.timeFmt, st.cycleN, st.cycleIdx].join('\x1f');
         if (key !== _lastNowNextKey) {
           _lastNowNextKey = key;
           const nowItem = (val, sub) =>
@@ -10028,7 +10254,8 @@ else ivritInit();
           const nextCol = st.targetEntry
             ? `<span class="nn-item"><span class="nn-lbl">${esc(I18n.t('dashboard.schedule.next_label'))}</span><span class="nn-val">${esc(st.targetEntry.preset)}</span><span class="nn-in">${I18n.t('dashboard.schedule.next_at', { time: esc(fmtClock(st.targetEntry.start)) })}${morrow}</span></span>`
             : '';
-          nn.innerHTML = nowCol + nextCol;
+          const weekChip = st.cycleN > 1 ? `<span class="nn-week-chip">${esc(weekName(st.cycleIdx))}</span>` : '';   // the week of the cycle the board is on
+          nn.innerHTML = weekChip + nowCol + nextCol;
         }
         nn.style.display = '';
       } else { nn.style.display = 'none'; _lastNowNextKey = null; }

@@ -709,3 +709,37 @@ period or a long break re-applies on its own boundary. The drawer's preview draw
 single-day engine (`currentSchedule`) merges consecutive rows naming the same preset the same way (its rows are
 contiguous, so no break limit), and its `preset|until` key holds across the run. The editor grid, the print
 view and the week summary read the raw grid and still show every period.
+
+## Schedule Sync — week cycles, A/B and up to four (`classroom_dashboard.html`)
+
+The editor's top ribbon (*Schedule repeats*: every week, every 2 weeks (A/B), 3, 4) sizes a cycle of weeks that share
+one bell schedule. **The model:** `scheduleWeek` keeps `periods`, `weekend` and `cells`, and a cycle adds `v: 2` and
+`cycle: { n, anchor, weeks }` — `cells` stays Week A and `weeks[i - 1]` holds the classes of the later weeks, each the
+same `{sun…sat: [slot per period]}` shape, so a build that predates cycles reads the blob as the single Week A and a
+plain week stays `v: 1` byte for byte (no stored blob changes, no sync churn). `normalizeScheduleWeek` validates the
+cycle (`n` outside 2–4 means none; a bad anchor reads `''`) and every reader goes through `weekCycleN`, `weekCellsAt(week,
+wi)` and `weekAllCells` — never `week.cells` for anything but Week A. Periods are shared, so `addWeekPeriod`,
+`removeWeekPeriod`, `sortWeekPeriods` and the calendar import resize every week together.
+
+**Which week it is:** `cycleIndexAt(week, date)` = whole weeks between the Sunday starting the anchor's week and the Sunday
+starting `date`'s, modulo `n` — strict calendar alternation, vacations included, changing over at Sunday midnight; no
+anchor (or a single week) reads 0, Week A. Turning a cycle on anchors Week A to the current week; the editor's *This week
+is* select re-anchors (`setCycleNowWeek`: a date `wi` weeks back) so the board can be put right after a break. A saved
+schedule stores the grid and its cycle with the anchor blanked (`weekForSaving`), and loading one keeps the current anchor,
+else anchors to this week — last year's schedule never moves the cycle. `computeWeekState` reads today's column from
+this week (`cycleIdx`, `cycleN` on the state) and its target scan walks `7·n` days ahead, each day from the week it falls
+in, so Next can be in another week; a target 7 or more days away names its week in the countdown suffix
+(`suffix_on_day_week`), everything else is unchanged. `checkSchedule`'s date-keyed apply needs no change.
+
+**The editor:** the week tabs (`#swmWeekTabs`, roving tabindex, arrows/Home/End) choose `_swmWeekIdx` — editor state,
+never stored, reset on open to the week the board is on — and every grid read and write (`applyCellVisual`, `paintCell`,
+the day menu, the legacy day loader, the calendar import's target) uses it; the grid's `aria-label` and the printed
+heading name the week, and the ribbon never prints. An empty later week offers *Copy Week A's classes here*. Shrinking the
+cycle confirms when a dropped week holds classes (the radio snaps back on Cancel). Letters are the `letter_a…d` strings
+(Hebrew א׳–ד׳), composed through `week_name`.
+
+**The board and the drawer:** the Now / Next block leads with a `.nn-week-chip` ("Week A") while a cycle is on (the memo
+key carries `cycleN`/`cycleIdx`), and the drawer summary draws one lettered strip per week, the current one marked
+(`.wk-strip-row.is-now`), with `summary_cycle` appended to its line. Presets, starters and `applySettings` already
+preserve `scheduleWeek` whole, so a cycle rides them untouched; `.ivrit` files, the AllTools export and the account's
+settings row carry it as part of that one field.

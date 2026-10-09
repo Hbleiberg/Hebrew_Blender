@@ -498,6 +498,27 @@ dashboard.schedule.create_preset_btn,Create preset,צרו תבנית,button on a
 dashboard.schedule.create_preset_title,"Create a preset named “{name}” from the current board settings","צרו תבנית בשם ""{name}"" מהגדרות הלוח הנוכחיות",tooltip/aria-label for the create-preset button on a validation row,mixed UI+content — do not translate {…}; REVIEW: HE draft
 dashboard.schedule.need_presets_hint,Each block switches to a saved preset — save one for each class you teach.,כל מקטע עובר לתבנית שמורה — שמרו אחת לכל כיתה שאתם מלמדים.,schedule builder hint shown when only the Default preset exists; wording avoids naming the Presets panel because the ⚠ rows beneath it now create presets in one tap,REVIEW: HE draft
 dashboard.schedule.touch_paint_hint,"Hold a square for a moment, then drag to fill a row or a column.","החזיקו משבצת לרגע, ואז גררו כדי למלא שורה או עמודה.",schedule builder hint shown on touch devices only — long-press starts paint mode,REVIEW: HE draft
+dashboard.schedule.cycle_label,Schedule repeats,המערכת חוזרת,weekly editor ribbon label (how many weeks before the pattern repeats),
+dashboard.schedule.cycle_1,Every week,כל שבוע,ribbon option: a single week (the default),
+dashboard.schedule.cycle_2,Every 2 weeks (A/B),כל שבועיים (א׳/ב׳),ribbon option,
+dashboard.schedule.cycle_3,Every 3 weeks,כל 3 שבועות,ribbon option,
+dashboard.schedule.cycle_4,Every 4 weeks,כל 4 שבועות,ribbon option,
+dashboard.schedule.cycle_tip,"For schools whose classes change from one week to the next while the bell times stay the same. Choose how many weeks pass before the pattern repeats; each week gets its own tab of classes below, and the weeks change over every Sunday.","לבתי ספר שבהם השיעורים משתנים משבוע לשבוע בעוד שעות הצלצול נשארות. בחרו אחרי כמה שבועות הדפוס חוזר; לכל שבוע כרטיסייה משלו למטה, והשבועות מתחלפים בכל יום ראשון.",tooltip beside the ribbon,
+dashboard.schedule.cycle_shrink_confirm,"Switch to “{option}”? The classes painted in the weeks after Week {letter} will be removed. The bell times stay.","לעבור ל„{option}”? השיעורים שנצבעו בשבועות שאחרי שבוע {letter} יימחקו. שעות הצלצול נשארות.",confirm dialog when the cycle shrinks,mixed UI+content — do not translate {…}
+dashboard.schedule.letter_a,A,א׳,the first week of a cycle (its letter),
+dashboard.schedule.letter_b,B,ב׳,the second week of a cycle (its letter),
+dashboard.schedule.letter_c,C,ג׳,the third week of a cycle (its letter),
+dashboard.schedule.letter_d,D,ד׳,the fourth week of a cycle (its letter),
+dashboard.schedule.week_name,Week {letter},שבוע {letter},a week of the cycle: the editor's tabs and the board's chip,do not translate {…}
+dashboard.schedule.week_tabs_aria,Weeks of the cycle,שבועות המחזור,weekly editor week tabs,aria-label only
+dashboard.schedule.week_tab_now_title,This week,השבוע,title of the week tab (and the summary's letter) the board is on,
+dashboard.schedule.now_week_label,This week is,השבוע הנוכחי הוא,label of the which-week-is-it select,
+dashboard.schedule.now_week_tip,"Which week the board is on right now. If it shows the wrong week — after a vacation, say — pick the right one here and the whole cycle moves with it.","באיזה שבוע הלוח נמצא עכשיו. אם מוצג השבוע הלא נכון — אחרי חופשה, למשל — בחרו כאן את הנכון וכל המחזור יזוז יחד איתו.",tooltip,
+dashboard.schedule.copy_from_a,Copy Week A's classes here,העתקת השיעורים של שבוע א׳ לכאן,button on an empty week tab,
+dashboard.schedule.grid_aria_week,Weekly schedule grid — Week {letter},רשת מערכת שעות שבועית — שבוע {letter},weekly editor grid container in a cycle,aria-label only — do not translate {…}
+dashboard.schedule.print_heading_cycle,Weekly schedule — Week {letter},מערכת שבועית — שבוע {letter},title line on the PRINTED grid of one week of a cycle,do not translate {…}
+dashboard.schedule.summary_cycle,repeats every {n} weeks · this week is Week {letter},חוזרת כל {n} שבועות · השבוע: שבוע {letter},weekly summary line addition in a cycle,do not translate {…}
+dashboard.schedule.suffix_on_day_week,"(on {day}, Week {letter})","(ב{day}, שבוע {letter})",countdown/now-next suffix for a class more than a week away,{day} is the localized weekday name — do not translate {…}
 dashboard.settings.close_aria,Close settings,סגור הגדרות,settings drawer close aria,aria-label only
 dashboard.settings.close_title,Close,סגור,settings drawer close title,
 dashboard.settings.drawer_aria,Dashboard settings,הגדרות לוח המחוונים,settings drawer aria-label,aria-label only
