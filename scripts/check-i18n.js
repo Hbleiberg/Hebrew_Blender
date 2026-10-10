@@ -393,6 +393,14 @@ const JS_URL_RE = /(?:href|src|action)\s*=\s*"?\s*javascript:/i;
 // Tag multiset of a markup string, order-independent: <strong>x</strong> → 'strong,strong'.
 const tagMultiset = (s) => (String(s).match(/<\/?([a-zA-Z][\w-]*)/g) || [])
   .map(t => t.replace(/[<\/]/g, '').toLowerCase()).sort().join(',');
+// Hebrew has no italic (the browser fakes a slant), so a `he` cell marks an English <em> phrase with <strong>
+// (docs/reference/i18n.md). Same tags otherwise, the same number of em+strong, and only em turned into strong.
+const heEmphasisOk = (fb, v) => {
+  const count = (m) => m.split(',').filter(Boolean).reduce((o, t) => (o[t] = (o[t] || 0) + 1, o), {});
+  const a = count(fb), b = count(v), tags = new Set([...Object.keys(a), ...Object.keys(b)]);
+  for (const t of tags) if (t !== 'em' && t !== 'strong' && (a[t] || 0) !== (b[t] || 0)) return false;
+  return (a.em || 0) + (a.strong || 0) === (b.em || 0) + (b.strong || 0) && (b.strong || 0) >= (a.strong || 0);
+};
 // Tags a plain data-i18n element may still carry: applyStaticI18n drops everything, but <br>/<wbr>
 // in a fallback is a deliberate pre-load line break, not lost emphasis.
 const BARE_TAG_OK = new Set(['br', 'wbr']);
@@ -455,7 +463,7 @@ function checkCorpus(targets) {
       const fb = tagMultiset(el.inner);
       for (const [lang, v] of Object.entries(values[key] || {})) {
         if (v === undefined || v === '') continue;     // empty cell falls back to `en` (Check B owns it)
-        if (tagMultiset(v) !== fb) {
+        if (tagMultiset(v) !== fb && !(lang === 'he' && heEmphasisOk(fb, tagMultiset(v)))) {
           parity.push({ file: rel(file), line: el.line, key, msg: 'fallback markup differs from the `' + lang + '` value (fallback [' + fb + '] vs [' + tagMultiset(v) + '])' });
         }
       }
