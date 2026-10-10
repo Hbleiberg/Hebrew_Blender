@@ -140,7 +140,9 @@ header .hright{margin-inline-start:auto;display:flex;gap:10px;align-items:center
 .dark-btn{background:none;border:1px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:5px 14px;font-size:0.8rem;cursor:pointer;font-family:'Source Sans 3',sans-serif;min-height:30px;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
 .dark-btn:hover{background:rgba(255,255,255,0.1);}
 
-main{flex:1;width:100%;max-width:820px;margin:0 auto;padding:48px 24px 64px;}
+/* 680px holds a line of the legal prose to ~75-80 characters (Hebrew ~70); at 820px it ran 90-96 on average and
+   up to 120, past a comfortable reading measure. Phones are narrower than the column, so they are unchanged. */
+main{flex:1;width:100%;max-width:680px;margin:0 auto;padding:48px 24px 64px;}
 main h1.page-title{font-family:'Libre Baskerville',serif;font-size:2rem;color:var(--text);margin-bottom:6px;}
 main .effective{font-size:0.85rem;color:var(--muted);margin-bottom:32px;}
 main h2{font-family:'Libre Baskerville',serif;font-size:1.25rem;color:var(--text);margin:32px 0 12px;border-bottom:1px solid var(--border);padding-bottom:6px;}
@@ -210,6 +212,9 @@ footer a { display: inline-block; padding-block: 5px; }
      This landed here first; it is now the same rule on all six chrome pages, on the simpler
      ground that nothing on paper can be clicked anywhere. */
   header .hright { display: none !important; }
+  /* Paper keeps the old 820px column: the sheet's width already caps the line, and the screen's 680px
+     measure would only add a page to the copy a school files. */
+  main { max-width: 820px; }
 }
 /* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404 (docs/reference/shared-components.md → Header icons).
    The header controls and the in-page control buttons (play, pause, stop, reset, retry, loop, sound) carry inline
