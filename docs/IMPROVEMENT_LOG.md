@@ -8,6 +8,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P3 (**NEW PR #321**) | torah_trainer.html | **A haftarah-only special Shabbat "replaces the maftir" too**: `torah.reading.special_tip` and `torah.lookup.special` say so for every special Shabbat, but Machar Chodesh (`ref:null`) replaces only the haftarah. | found after S493 (PR #321)
+
 - [ ] P3 (**NEW S492 N — needs the tour-engine extraction, UX rule 1**) | 7 tools' tour engines | **A tour does not follow a rotation**: `resize` re-places the card but never scrolls its target back; 4 of 7 dictionary steps strand it off-screen (findings S492). | found S492
 
 - [ ] P4 (**NEW S492 N**) | hebrew_dictionary.html | **`#fsBtn` (z 9999) covers the tour's last Done (z 1500) in a short wide window** (Android landscape). | found S492
@@ -214,10 +216,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] S | flash_cards.html | **Pause the drill timer.** `startTimer()` is a bare `setInterval`, `stopTimer()` is terminal (clears AND hides `#timerDisplay`; callers: `showResults`, `returnToSetup`, `startTimer`), so an interruption inflates a tracked time or burns a limit. A pause chip on `#timerDisplay` reusing `formatTimerSecs`/`updateTimerDisplay`; ~40 lines, 2 CSV keys, transient state. | …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] S | torah_trainer.html | **Maftir in the Reading picker.** `data/pockettorah/aliyah.json` carries a `_num:"M"` entry with `_begin`/`_end` for every parsha (210 entries verified S367) and `aliyahLookup()` keys `aliyot[num]` by the raw `_num`, so `aliyot['M']` is built on every lookup and read nowhere: `resolveRef` matches `/parsha-aliyah-(\d)/`, `refreshScopeLabels` loops 1–7 and `.filter(n …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [ ] S | torah_trainer.html | **Projector mode can't turn the translation / transliteration off.** `#ttShowTranslit` and `#ttShowTranslation` exist only inside `.tt-controls`, which `body.fullscreen .tt-controls { display:none }` removes; the drawer's Display panel (reachable via `#ttFsSettings`) carries cantillation and nikkud but not these two. Two more `.tt-fs-btn` toggles dispatching …[full text: IMPROVEMENT_ARCHIVE.md]
-
 - [ ] S–M | classroom_dashboard.html | **One-deep undo in the week editor.** `applyCalendarImport` replaces `settings.scheduleWeek` wholesale, `clearWeekDay` / `copyWeekDayToWeekdays` / `removeWeekPeriod` guard with a native `confirm()` at most, and `weekChanged()` (the choke point) saves immediately with no history. A `weekSnapshot()` at the head of the ~8 mutators + `undoWeek()` + one toolbar …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] M | resources.html | **"Submit a font" is a `mailto:` while "Suggest a Resource" is a real form.** Measured 2026-09-01: `openSubmitFont` builds a `mailto:` with a pre-filled subject and body and sets `window.location.href`; the sibling flow one view away is a Web3Forms POST with 5 required fields, 18 choice pills and hCaptcha. So the contribution pat …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -301,6 +299,10 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 _(none)_
 
 ## Done
+
+- [x] 2026-10-10 | (after S493: maintainer request) | branch/deploy note | **Two seeds built on request, draft PR #321.** sw v974→v975; no FM bump; sitemap; gates clean; no backend file.
+
+- [x] 2026-10-10 | `b3e91897` `8eee6d69` | torah_trainer.html | (after S493, maintainer request) **Maftir in the Reading picker; Translit / Translation toggles on the projector bar.** | headless: Chant seeks Bereshit-7 to 6:5; Triennial = triennial.json; fullscreen toggles in step, keyboard, reload.
 
 - [x] 2026-10-10 | (S493 close-out) | branch/deploy note | **S493 = P on the Torah Trainer + 4 fixes, PR #320 continued.** No drift (main `fee5fe05`, keep-alive #27 green, delete-account source = repo); sw v973→v974; no FM bump (no FM change); no gate; all seven smokes on the module fix; traps 228–231 (findings S493).
 
@@ -728,4 +730,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-09 (**S484 — 36th F, the toast contract on all 8 carriers (5th look, S111 →): 24 cells + reduce, width, bars; plants 4/4. FOUND 4, FIXED 3 (+ FM kerning). F-next: the tabs / segmented-control keyboard contract (never swept).**)
 
-**Next session (S494):** **BRANCH/PR: `claude/nifty-cray-0dvnxz` → draft PR #320 (S488–S493): open → continue; merged → restart from `origin/main`.** `sw.js` **v974**, FM **5.59**. ⚑ Stalest: M (S478), G, D; O blocked. ⚑ Untaken: the dictionary's `#fsBtn` over the tour's Done (P4); the tour-after-rotation P3 waits on the tour-engine extraction. ⚑ Seeds: 47 (gate 1). ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.
+**Next session (S494):** **BRANCH/PR: #320 merged → start from `origin/main`. Draft PR #321 (`claude/brave-ride-02gvzs`, two seeds built on request) is the maintainer's: still open → bump `sw.js` past its v975.** `sw.js` **v975**, FM **5.59**. ⚑ Stalest: M (S478), G, D; O blocked. ⚑ Untaken: the dictionary's `#fsBtn` over the tour's Done (P4); the tour-after-rotation P3 waits on the tour-engine extraction. ⚑ Seeds: 45 (gate 1). ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.

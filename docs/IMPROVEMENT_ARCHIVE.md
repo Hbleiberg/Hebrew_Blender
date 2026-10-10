@@ -92329,3 +92329,11 @@ _(prior — S492 pointer:)_ **BRANCH/PR: `claude/nifty-cray-0dvnxz` → draft PR
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 _(prior — S493 pointer:)_ **BRANCH/PR: `claude/nifty-cray-0dvnxz` → draft PR #320 (S488–S492): open → continue; merged → restart from `origin/main`.** `sw.js` **v973**, FM **5.59**. ⚑ Stalest: P (S477), M, G; O blocked. ⚑ **P2 FIRST: the dictionary's word list fails on a slow first visit (a one-line `window.I18n` guard).** ⚑ Untaken: the dictionary's Shoresh scroll + `#fsBtn` over Done (P4s). ⚑ Seeds: 47 (gate 1). ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.
+
+## Feature seeds shipped outside a loop session (2026-10-10, after S493, maintainer request, draft PR #321)
+
+Picked by the maintainer from the seed list and built directly (`b3e91897` Maftir, `8eee6d69` the projector toggles). The projector seed's premise was partly stale when built: the switches had since moved to the drawer's Text tab, which the bar's gear reaches, so it was three taps with the drawer over the projection rather than impossible. The new P3 (haftarah-only special Shabbat copy) was measured on 2026-10-10, Shabbat Machar Chodesh, with Maftir on screen: the chip's tip says "This week the maftir and haftarah of Shabbat Machar Chodesh replace the parasha's own", while its HOLIDAY_READINGS entry has `ref:null` (haftarah only).
+
+- [x] SHIPPED 2026-10-10 PR #321 — S | torah_trainer.html | **Maftir in the Reading picker.** `data/pockettorah/aliyah.json` carries a `_num:"M"` entry with `_begin`/`_end` for every parsha (210 entries verified S367) and `aliyahLookup()` keys `aliyot[num]` by the raw `_num`, so `aliyot['M']` is built on every lookup and read nowhere: `resolveRef` matches `/parsha-aliyah-(\d)/`, `refreshScopeLabels` loops 1–7 and `.filter(n …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] SHIPPED 2026-10-10 PR #321 — S | torah_trainer.html | **Projector mode can't turn the translation / transliteration off.** `#ttShowTranslit` and `#ttShowTranslation` exist only inside `.tt-controls`, which `body.fullscreen .tt-controls { display:none }` removes; the drawer's Display panel (reachable via `#ttFsSettings`) carries cantillation and nikkud but not these two. Two more `.tt-fs-btn` toggles dispatching …[full text: IMPROVEMENT_ARCHIVE.md]
