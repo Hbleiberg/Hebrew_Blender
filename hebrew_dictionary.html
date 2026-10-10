@@ -532,6 +532,9 @@ body.dark #fsBtn:hover{background:var(--navy);}   /* pattern dark-override-outra
 /* Idle-hide (shared fullscreen idle-hide block): in fullscreen the floating button fades after 3s without pointer
    activity, returns on the next move, never hides while keyboard-focused. */
 body.fs-idle #fsBtn:not(:focus-visible){opacity:0;pointer-events:none;}
+/* A running tour never points at this button, and in a short wide window (a phone turned sideways) the button
+   (z 9999) sat over the tour card's last Done (z 1500) and took its tap: it steps aside until the tour ends. */
+body:has(#tourCard:not([hidden])) #fsBtn{visibility:hidden;}
 body.fullscreen header{display:none !important;}
 body.fullscreen .app{height:100vh;min-height:unset;}
 .result-count{font-size:0.85rem;color:var(--muted);flex:1;}
