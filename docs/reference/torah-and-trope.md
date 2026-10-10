@@ -866,7 +866,10 @@ beta leaves open.
   the drawer's Audio tab, audio-bar credit
   (`torah.audio.recording_melody`) and High Holiday recording chip; the tutor's Learn intro, the melody note
   under the key bar (one span per melody, each naming its chart's source) and the Settings note, example play
-  buttons, FAQ and footer credit. The repo holds no other source for either name.
+  buttons, FAQ and footer credit. The Trainer's second recording source, Total Torah (*Recording sources* below), is
+  Cantor Arianne Brown's own Conservative melody — named as its own tradition where it plays (the audio-bar credit, the
+  Audio tab's credit, the reading header's chip), never as Spiro's and never as the charts' — and the Spiro chips stand
+  down while it plays.
 - **Note names** (`staffNoteNames`: `'off'`, `'letters'`, `'solfa'`; an unknown stored value shows none and stays
   stored). The tutor's option for the reading: `renderStaffView` builds `namesOf`, a callback giving a row's names
   index-aligned with its notes (a rest has none) from `staffNoteNameAt` — the tutor's `noteNameAt` kept page-local,
@@ -885,6 +888,77 @@ beta leaves open.
   triplet or slur cut at a
   figure's edge draws by value; a sheet narrower than the print wrap (portrait, wide margins) prints the
   staff smaller than the chosen size, uniformly.
+
+---
+
+## Recording sources — PocketTorah and Total Torah (`torah_trainer.html`)
+
+The Chant buttons play one of two recordings, chosen by `settings.recordingSource` (`'pockettorah'` by default,
+`'totaltorah'`; read through `recordingSourceKey()`: any other stored value reads PocketTorah and stays stored). It
+rides the settings blob — synced and exported like `karaokeRate`, a teacher's preference, not a per-device fact — and
+never a practice link (`LINK_DISPLAY` says how a reading looks, never how it sounds).
+
+- **Total Torah** is Cantor Arianne Brown's *Tricks of the Trope – Total Torah* (Adas Israel Congregation): the whole
+  Torah chanted verse by verse, one YouTube video per triennial aliyah, used with her written permission
+  (`THIRD_PARTY_LICENSES.md`; `data/totaltorah/LICENSE.txt`). **Per-verse files**, not aliyah files:
+  `data/totaltorah/audio/gen-001-001.mp3` (book code, chapter, verse, zero-padded), optional per-verse timings
+  `data/totaltorah/timings/gen-001-001.txt` in the PocketTorah label format (comma-separated word onsets, index = word
+  index, one trailing end-of-last-word value), and `data/totaltorah/manifest.json`: a top-level `credit` block (names,
+  URLs, the permission, each source video's title and upload date) beside one entry per verse, keyed `"Genesis 1:1"` —
+  `{ file, dur, video, parsha, year, aliyah, verified, timings, timingsVerified }`. The manifest and the timings are
+  fetched with `TT_DATA_V` (`?v=1`; `/data/` is cache-first and exact-URL keyed); the audio is left to the network by
+  `sw.js` (a Range request must never be answered from the cache).
+- **Verified or nothing.** `ttEntryFor(vk)` returns an entry only while it is `verified: true`, and its timings count
+  only while `timingsVerified: true` — the maintainer flips both by listening (`build-totaltorah-audio.mjs verify`),
+  the trope motifs' discipline. An unverified verse is a verse with no recording (PocketTorah plays it); verified
+  audio with unverified timings plays with a **whole-verse highlight** (`timings = [0]`, `updateKaraokeWordRefs` maps
+  every word of the verse to index 0) and the Karaoke section's `#kfTTNote` says word-by-word follow is not there yet.
+- **The approval gate.** `TOTALTORAH_PUBLIC = false` keeps the option off every page; `?reader=totaltorah`
+  (`ttOffered()`) reveals it for a visit and, when the stored source is PocketTorah, selects it for that visit only
+  (`_recSrcOverride`, the tutor's `?melody=` idea — never saved; a radio press saves a choice and ends it; Reset clears
+  it). Without the flag nothing changes for anyone: the manifest is not fetched (`ensureTotalTorahManifest` returns
+  null), the Recording row (`#optRecSrcRow`) stays `hidden`, `syncAudioCredit` returns before touching the bar, and
+  every entry point asks `ttEntryFor`, which answers null.
+- **One engine.** A loaded verse file is a one-verse "aliyah" to the karaoke engine: `loadTotalTorahVerse` sets
+  verse-local `currentTimings`, `_holidayKaraoke = { map: { [vk]: 0 } }` (so `updateKaraokeWordRefs` lights only that
+  verse's words), `_loadedChantKey = 'tt|' + vk` (so `chantHolidayWord` never matches it) and `_ttLoaded = { vk,
+  entry, wordTimed }`, then `attachKaraokeSource({ audioUrl, timings, label })` — the element wiring `loadKaraoke` also
+  uses (one `<audio>`, the same `playbackRate` and pitch graph, the bar, the pending seek). `computeVerseAudioBounds`
+  answers `{ startIdx: 0, startTime: 0, stopAt: null }` for the loaded verse (the loop wraps at the duration;
+  `defaultAudioEnded` restarts it) and null for any other. The entry points: `chantVerse` → `ttChantVerse(vk, 0)`,
+  a word click → `ttChantVerse(vk, wordInVerse)`, `loopVerse` (offered on an overlay reading too — the file is the
+  verse — through the per-verse `canLoop || ttEntryFor(numLabel)` gate in the three renderers), the boot loop restore
+  (`maybeLoadKaraoke` routes a `_pendingLoopVerse` with an entry here), and *Chant all* (`chantAllState.tt`, the
+  reading's verse keys; `ttChantAllNext` plays each file, `defaultAudioEnded` chains, and at the first verse without
+  an entry `ttChantAllHandover` gives the rest of the reading to the PocketTorah chain from that verse —
+  `chantOverlayNext` on an overlay reading, `playNextChant` on an aliyah or full-parasha scope). A verse without an
+  entry while a verse file is loaded first calls `ttRelease()` — drops `_ttLoaded`, the map, the key, the timings and
+  the element's `src` — so the existing paths see nothing loaded and reload PocketTorah; a haftarah never has an entry
+  (`ttBookNow` answers '' for a haftarah or megillah).
+- **Credit follows the file.** `syncAudioCredit()` writes the audio bar's `.tt-audio-credit`: the Total Torah credit
+  (`torah.recsrc.credit_prefix` + the linked `credit_name`, to the Adas Israel page, and `watch_youtube` to
+  `https://youtu.be/<video>` — the id validated by `TT_VIDEO_RE` before it reaches an href, `target=_blank
+  rel=noopener`, a link and never an embed) while `_ttLoaded`, else the PocketTorah markup (`pocketCreditHTML`, equal
+  to the static HTML). It runs from `attachKaraokeSource`, `teardownKaraokeAudio`, `ttRelease` and `applyI18n` (after
+  `applyStaticI18n`, which rewrites the bar's label — it calls `updateAudioBarLoopUi` to put the loaded label back).
+  The Audio tab: the Recording radios (`name="optRecSrc"`, one writer `setRecordingSource`, the Total option
+  `disabled` with `#optRecSrcNote` while the reading has no verified verse, `ttReadingEntries(true)`), the credit
+  block `#optRecCreditTT` with the same links and one `torah.recsrc.this_reading` line per source video (parasha,
+  year, aliyah — the triennial aliyah the verses on screen come from), shown instead of `#optRecCreditPocket` while
+  the source is on; `syncRecSrcControls()` is the read-only settings → controls half, from `syncFormToSettings`,
+  `applyI18n` and the end of every `fetchAndRender`. The reading header: `torah.recsrc.chip` (its tip says the
+  Trainer's staffs show the Avery/Binder chart) while the reading has entries; the Spiro chips (`hh_chant_chip`,
+  `staff_chant_chip`) stand down then.
+- **The data pipeline** (`scripts/build-totaltorah-audio.mjs`, `scripts/build-totaltorah-timings.mjs` with
+  `scripts/align_totaltorah.py`): the audio script's `VIDEOS` table is the only list of ids it will fetch (yt-dlp into
+  the gitignored `source-data/totaltorah-cache/`, sanity-checked by duration and loudness), `split` cuts by ffmpeg
+  `silencedetect` and refuses a segment count that differs from the ref's verse count (`--boundaries` by hand; never
+  a guess), writes the MP3s, a lossless FLAC per verse for Adas Israel, the manifest (`verified: false`) and the
+  license; the timings script aligns each verse FLAC against its consonantal text (the Trainer's tokenization,
+  ported: split on whitespace and maqaf, a word iff it carries a Hebrew letter) with `torchaudio.functional.forced_align`
+  over a Hebrew wav2vec2 model in an isolated venv, writes the timings file and the per-word scores, and stops — no
+  heuristic aligner — when the model or torch cannot be had. `scripts/build-leyning-data.mjs`'s `triennial.json` is
+  the cross-check for each video's "Year n Aliyah m" range (reported, never fixed).
 
 ---
 

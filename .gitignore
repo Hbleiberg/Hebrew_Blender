@@ -18,3 +18,7 @@ source-data/leyning-cache/
 
 # printed cantillation chart scans and their crops (copyrighted pages; read locally by the transcriber, never committed)
 source-data/charts/
+
+# build-totaltorah-audio.mjs / build-totaltorah-timings.mjs cache (the source video audio and info JSON, the lossless
+# verse FLACs handed back to Adas Israel, the alignment venv and its model, the audit page) — never committed
+source-data/totaltorah-cache/

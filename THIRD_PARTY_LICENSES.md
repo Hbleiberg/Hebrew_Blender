@@ -83,6 +83,20 @@ The site loads **Google Analytics 4** (`gtag.js`) from `googletagmanager.com` on
 
 ---
 
+## Total Torah — Cantor Arianne Brown / Adas Israel Congregation (chanted Torah audio, by permission)
+
+- **Series:** "Tricks of the Trope – Total Torah" — https://www.adasisrael.org/trope (one YouTube video per triennial aliyah)
+- **Reader:** Cantor Arianne Brown, Adas Israel Congregation (Washington, DC)
+- **Rights:** © Cantor Arianne Brown / Adas Israel Congregation. **All rights reserved — not a Creative Commons work.** Used in IvritSuite under written permission (email, October 2026): free access for the suite's users, full credit to the cantor and to Adas Israel with links back, no modification beyond cutting the audio into verses, Adas Israel retains the rights to the verse-cut files, and every verse links to the complete video on YouTube.
+
+**Used by `torah_trainer.html` (the *Total Torah* recording source):**
+- `data/totaltorah/audio/*.mp3` are per-verse cuts of the videos' audio, made by `scripts/build-totaltorah-audio.mjs` (nothing else is changed: mono, padded by 150 ms, re-encoded for the web). `data/totaltorah/timings/*.txt` are word-onset lists derived from those cuts by forced alignment (`scripts/build-totaltorah-timings.mjs`). `data/totaltorah/manifest.json` names each verse's source video and the credit; `data/totaltorah/LICENSE.txt` sits beside the files.
+- The files are served to the Trainer only; they are **not** redistributable under this repository's license. Do not copy them into another project.
+- Attribution is shown in the audio bar whenever a Total Torah verse plays (the credit links the Adas Israel page and the verse's complete video on YouTube), in the Audio tab's recording credit, and as a chip in the reading header.
+- No YouTube embed, iframe or API is used — only a link (`frame-src 'none'` stays).
+
+---
+
 ## Sefaria
 
 - **Project:** https://www.sefaria.org
