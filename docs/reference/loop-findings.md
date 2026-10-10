@@ -1955,3 +1955,62 @@
 
 - [ ] P4 (**NEW S491 — traps**) | probes | **(217)** A hidden container that keeps the old language after a switch is not a finding until it is shown again: re-show it (re-choose the cycle, open the picker) before filing. **(218)** A key census reads `I18n.t('k' + (n === 1 ? '.one' : '.other'))` as the missing key `k`: strip plural builds. **(219)** A legal row's `notes` column also carries `\n`: a plant cutting the line's LAST `\n` hit the notes and Check E stayed green; plant inside the language cell. **(220)** At page end the generator's floating Generate bar takes the click meant for the last footer row (the S476 candidate): a probe falls back to a DOM click and counts it. **(221)** Each keyboard tab ends in one subhead, under its grid, and the panel scrolls (`max-height:min(46vh,340px)`): an element screenshot of the alphabetical layout shows no subhead (it is below the fold), the Israeli layout's shorter rows bring it into view; measure it, or scroll the panel, before reading a shot. | found S491
 
+
+## S492 (2026-10-10) — pass N's 24th run (`hebrew_dictionary.html`, its 3rd: S239 → S303 → S492)
+
+- [ ] P4 (**NEW S492 Pass N — the dictionary's phone receipts, so the next dictionary N starts here**) | hebrew_dictionary.html | **Delta since S303: 114 commits on the file.** Harness `n492/` (scratchpad): `lib.mjs` with real descriptors (iPhone SE 320×568, iPhone 13 390×664 + landscape 750×342, Pixel 7 412×839; `pointer:coarse`, `hover:none`, `maxTouchPoints` asserted per cell), SW blocked, foreign origins aborted, a `git archive HEAD` control on :8082.
+  - **Arm 1 (`arm1.mjs`):** 16 cells × 13 views by real taps (top, a typed search, the keyboard with every tab, Filters with every panel and section open, a word card, Word Lists, Emojis and a card, Shoresh and a root with its patterns, bulk with two picks, the tour, the footer opened) = 208 views plus 112 tour steps, 0 page errors.
+    - Plants (a 2000px child of `.content`, a 900px child in the dialog) fired in every portrait cell. In landscape the desktop `.content` scrolls, so only the outlier detector fires there, by design.
+    - Found: Shoresh sideways at 320 (1px EN, 6px HE); the tour's step-4 ring past the edge; the landscape Done covered (all candidates).
+    - Every dialog fits with its × in view; the card dialog scrolls at 320 and in landscape.
+  - **Arm 2:** one viewport shape (`width=device-width, initial-scale=1`), no `user-scalable`, and neither `viewport-fit` nor `safe-area`.
+  - **Arm 3:** the `100vh` sites are `body{min-height}` (harmless), `.sidebar-toggle-btn{top:50vh}` and `body.fullscreen .app` (desktop or real fullscreen only), and `.hk-panel`'s max-height. `.wm-dialog` already pairs `88dvh`. Nothing to swap.
+  - **Arm 4 (`arm45.mjs`):** no hover-only reveal (the card's copy/search/speak buttons always show, at 0.75 opacity) and no drag-only path.
+    - The tip contract under `hasTouch`: 5 tips show on a tap and close on an outside tap, EN and HE.
+    - Both sliders move by a CDP touch drag (font 50→88, TTS 0.75→1.4).
+  - **Arm 5:** fields under 16px:
+    - search 13.6px, the Sort and transliteration selects 12.8px, the gematria type and values 12px (FIXED);
+    - the readonly bulk box 12px (no keyboard, so no zoom);
+    - the shared language switcher 12.48px (i18n.js, the suite census).
+    - `#shoreshInput` is 18.4px. Search and shoresh carry `autocapitalize=off autocorrect=off spellcheck=false`.
+  - **Arm 6 (`arm67.mjs`):** a typed search survives the bar's relocation both ways (`ספר`, 41 cards). The card dialog fits across a flip, and every view closes by a tap. The tour does not follow a flip (P3, below).
+  - **Arm 7 (`arm7.mjs`, `slow2.mjs`, `speeds.mjs`):** iPhone 13 unthrottled: first cards at 0.6 s, the worst long task 61 ms, a 4-key search 0 long tasks. 4× CPU alone: cards at ~5 s, the worst task 198 ms. Throttled network: **the P2 below**.
+  - | found S492
+
+- [ ] P4 (**NEW S492 — measurements behind the new candidates, recorded so no pass re-derives them**) | hebrew_dictionary.html + the tour engines | **(1) The P2, a slow first visit.** `fetchJsonWithProgress` streams `data/hebrew_words.json` from parse time. Its progress callback `updateDictLoadProgress` writes `I18n.t(...)` on the first chunk; when that arrives before the deferred `js/i18n.js` has run, the ReferenceError rejects the load and the catch paints "Couldn't load the word list…" (the catch itself already guards `I18n`).
+  - Measured on an uncompressed local server (Pages gzips: HTML 419→116 KB, corpus 2.96→0.60 MB, which moves the threshold down): 3/3 FAILED at 1.6 Mbps and 5 Mbps, ok at 10/20/50 Mbps and unthrottled.
+  - A repeat visit with the worker on was ok 3/3 at every speed.
+  - Proof: a scratch copy logging the catch's error (`dbg/`) printed `ReferenceError: I18n is not defined at updateDictLoadProgress`.
+  - The other six tools' slow first visits show no failure. Only the dictionary streams with progress.
+  - The fix: guard the callback's two text writes with `window.I18n` (the bar can still move).
+  - **(2) The tour after a rotation (`fix2.mjs`, tree vs HEAD, each of 7 steps × portrait → landscape → portrait).** The engines re-place the card on `resize` but never scroll the target back. HEAD: 14/56 cells keep the card in the window on its target with × tappable. A page-side re-place after the mobile bar moves gets 28/56: step 1 is fixed; steps 2, 3 and 6 still leave the card off-screen (y −7,800 / +9,200) because their targets moved out of view. Desktop positions without a rotation equal HEAD. All 7 engines share the `resize` → reposition shape. The fix (re-show the step, scrolling, on resize) is engine work, so it waits on UX rule 1's extraction.
+  - **(3) Done covered:** `#fsBtn` z 9999 against `.tour-card` z 1500. `elementFromPoint` at Done's centre returns `fsBtn` in iPhone 13 landscape (emulated) and Pixel 7 landscape (839×412). A real iPhone hides the button (`document.fullscreenEnabled` false). The other six tools' tour cards are z 500 with no `#fsBtn` rule.
+  - **(4) Shoresh at 320:** `.shoresh-input-row` needs 309px (EN) / 314px (HE) inside 296. The input is `flex:1` with no `min-width:0`.
+  - **(5) Phone landscape header:** 198px of 342 (EN), 141 (HE) on iPhone 13 landscape; 141 / 99 of 360 on Pixel 7. It scrolls away, so it is not filed.
+  - | found S492
+
+- [ ] P4 (**NEW S492 — receipts for the three fixes**) | hebrew_dictionary.html, hebrew_blend_generator.html, Hebrew_Font_Maker.html |
+  - **`07177214`** (`fix1.mjs`, 28 cells: SE, 13, 13 landscape, Pixel 7 and iPad Mini × EN/HE × light/dark, plus 1280/800):
+    - on touch, all six fields read 16px and a real tap focuses search at 16px (HEAD 13.6);
+    - desktop fields, boxes and toolbar equal HEAD; overflow 0 everywhere;
+    - in phone landscape the toolbar wraps one row more (93 → 133px), accepted.
+  - **`b4df90b9`** (`gcensus.mjs`, `fix3.mjs`, `wsdiff2.mjs`):
+    - Hebrew small caps 26 → 0 at 1280/800 × themes and on an iPhone;
+    - English: all 754 elements' tracking, case and box equal HEAD;
+    - the five quick-start worksheets by real clicks: every element class's tracking and case equal HEAD (boxes differ only by the random words);
+    - a live switch reads 0 both ways.
+  - **`0079b0f2`** (`fmcensus.mjs`, `fix3.mjs`, `fmsig.mjs`):
+    - Hebrew census across the DOM, the wizard, 7 tabs, Help → About with the history open, the Load menu, QA and Bold: HEAD 57, tree 0, in light and dark;
+    - English: 11/11 views equal HEAD (5,542 elements), and 1280/800 × themes equal HEAD;
+    - iPhone Hebrew: 0 (HEAD 7).
+  - 0 page errors throughout.
+  - | found S492
+
+- [ ] P4 (**NEW S492 — traps**) | probes |
+  - **(222)** A load that "fails" only under throttling may be a swallowed exception, not the network: the dictionary's corpus catch takes any error. Copy the page, log the caught error, then classify.
+  - **(223)** `Network.setBlockedURLs` with `*pockettorah*` also blocks the local `data/pockettorah/` corpus (the Torah Trainer then reports "Couldn't load the Torah readings"). Anchor the host: `*://*.pockettorah.com/*`.
+  - **(224)** Chromium reports `document.fullscreenEnabled` true under an iPhone descriptor, so the dictionary's fullscreen button shows in emulated iPhone landscape; a real iPhone hides it. Use an Android descriptor for anything the button covers.
+  - **(225)** The generator's quick starts draw random words: compare per-class tracking and case, not boxes.
+  - **(226)** `setViewportSize` fires `resize` before a `matchMedia` change listener runs (the rendering steps' order): a `resize` handler reads geometry from before the page's own node moves.
+  - **(227)** The local `http.server` sends no gzip: slow-network timings overstate the corpus transfer about 5× against Pages.
+  - | found S492

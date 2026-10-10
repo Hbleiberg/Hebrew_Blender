@@ -92277,3 +92277,33 @@ _(prior — S490 pointer:)_ **BRANCH/PR: `claude/nifty-cray-0dvnxz` → draft PR
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 _(prior — S491 pointer:)_ **BRANCH/PR: `claude/nifty-cray-0dvnxz` → draft PR #320 (S488–S490): open → continue; merged → restart from `origin/main`.** `sw.js` **v971**, FM **5.59**. ⚑ Stalest: K (S475), N, P; O blocked. ⚑ Untaken: the chrome footer heads + 2 shared blocks track Hebrew (P4, one shared-block edit); chrome header star / footer dot (gate 3). ⚑ Seeds: 47 (gate 1). ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.
+
+
+<!-- archived by compact-ledger at the S493 boundary, 2026-10-10 -->
+## Compaction (S493, 2026-10-10) — moved verbatim from the live ledger
+
+### from Candidates (prioritized, top = next)
+
+- [ ] P2 (**NEW S492 N — found after the budget; FIRST next session**) | hebrew_dictionary.html | **A first visit over a slow connection never loads the word list**: the corpus fetch starts at parse time and `updateDictLoadProgress` calls a bare `I18n.t()` on the first chunk, before the deferred i18n.js runs; the ReferenceError lands in the failure card (uncompressed: 3/3 failed at 1.6 and 5 Mbps, ok at 10+; repeat visits ok). Guard its text writes with `window.I18n` (findings S492). | found S492
+
+- [ ] P3 (**NEW S492 N — the fix is the tour-engine extraction, UX rule 1; attempted in the page, reverted**) | all 7 tools' tour engines | **A tour does not follow a rotation**: `resize` re-places the card beside its target but never scrolls it back into view (and the dictionary moves its search box only after `resize`): 4 of 7 dictionary steps leave the card off-screen over a dimmed page, × unreachable, until a scroll (findings S492). | found S492
+
+### from Done
+
+- [x] 2026-10-09 | (S487 close-out) | branch/deploy note | **S487 = B (the S471 delta) + 4 fixes, PR #319 continued.** No drift; sw v967→v968; no FM bump; no gate (unattended: the seed skipped); smoke-saves 15/15, smoke-sync 207/207; traps 200–203 (findings S487).
+
+- [x] 2026-10-09 | `6ce2e1fb` `3c539498` `a1df6d90` `eba490f5` | flash, resources ×2, contact, js/ivrit-saves.js | (S487) **Flash's toast sits above the Start bar on setup (150 px); the resources font toast follows its text (3.4 → 4.6 s); hCaptcha takes the page's theme on contact + resources; the saves module's `fontsChanged` comment re-trued.** | HEAD controls, a fake hCaptcha API, smokes …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Per-session log (one line per session)
+
+- 2026-10-08 | **S472** | iters: 1 pass (**A**) + 4 fixes = **5** | tools: torah ×2, generator + pwa.js, FM | patterns fixed: author-display ×1, enter-ignored ×1, install-banner ×2 | pass run: A | SW: v952→v953
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`latin-tracking-on-hebrew-labels`** (NEW S464 M; gate 3: drop suite-wide; fixed S478–S492: contact, dashboard ×3, resources, footers ×8, both shared blocks, generator `b4df90b9`, FM `0079b0f2`; open: dictionary, trope, badges): ACTIVE, streak 0. Detection: `n492/gcensus.mjs` / `fmcensus.mjs` (every view opened).
+
+- **`flex-range-keeps-its-min-content-width`** (NEW S457; `ddcb4237`; S492: a text input has the same min-content width — dictionary `#shoreshInput`, candidate): ACTIVE, streak 0. A `flex:1` range without `min-width:0` keeps its 129px and pushes the row's last item out of a narrow card. Detection: grep `input\[type=range\][^{]*{[^}]*flex: *1` lacking `min-width: *0`, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+_(prior — S492 pointer:)_ **BRANCH/PR: `claude/nifty-cray-0dvnxz` → draft PR #320 (S488–S491): open → continue; merged → restart from `origin/main`.** `sw.js` **v972**, FM **5.59**. ⚑ Stalest: N (S476), P, M; O blocked. ⚑ Untaken: page-level Hebrew labels still track on 4 tools (P4, census `k491/track.mjs`); the toasts' live region (S484). ⚑ Seeds: 47 (gate 1). ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.
