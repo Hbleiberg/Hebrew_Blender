@@ -145,6 +145,15 @@ footer details > summary:hover { text-decoration: underline; }   /* FAQ / How-To
 /* The Hebrew UI's footer heads (FAQ, How To, About, Related Hebrew Tools): their inline 0.08em caps are English small
    caps; Hebrew has no capitals, and the tracking only spaced its letters apart. !important outranks the inline style. */
 html[lang="he"] footer [style*="letter-spacing:0.08em"] { letter-spacing: normal !important; text-transform: none !important; }
+/* The Hebrew UI's own labels, the same caps and 0.04–0.08em tracking: the panel titles, the Practice / Worksheet Type
+   heads, Lock Letters / Lock Vowels and their position heads, the font picker's group heads, the transliteration Style,
+   the vowel-colour group heads, the TTS speed and the quick-starts line. The worksheet's own heads follow headerLang and
+   stay as they are. !important outranks the inline styles (the vowel group heads are built with one). */
+html[lang="he"] .panel-title, html[lang="he"] .quick-starts-label, html[lang="he"] .font-section-hdr,
+html[lang="he"] .lock-pos-header .pos-label, html[lang="he"] .vowel-group-header, html[lang="he"] #ctrllbl_focusToggle,
+html[lang="he"] #ctrllbl_vowelLockToggle, html[lang="he"] #ttsSpeedLbl,
+html[lang="he"] [data-i18n="worksheet.modes.practice_type_label"], html[lang="he"] [data-i18n="worksheet.modes.worksheet_type_label"],
+html[lang="he"] [data-i18n="worksheet.advanced.translit_style"] { letter-spacing: normal !important; text-transform: none !important; }
 /* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404 (docs/reference/shared-components.md → Header icons).
    The header controls and the in-page control buttons (play, pause, stop, reset, retry, loop, sound) carry inline
    SVGs from one shared set (.hi-*); ink is currentColor, so each button's own colour applies. .hi-sm is the 13px
