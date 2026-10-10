@@ -8,8 +8,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P3 (**NEW PR #321**) | torah_trainer.html | **A haftarah-only special Shabbat "replaces the maftir" too**: `torah.reading.special_tip` and `torah.lookup.special` say so for every special Shabbat, but Machar Chodesh (`ref:null`) replaces only the haftarah. | found after S493 (PR #321)
-
 - [ ] P3 (**NEW S492 N — needs the tour-engine extraction, UX rule 1**) | 7 tools' tour engines | **A tour does not follow a rotation**: `resize` re-places the card but never scrolls its target back; 4 of 7 dictionary steps strand it off-screen (findings S492). | found S492
 
 - [ ] P4 (**NEW S492 N**) | hebrew_dictionary.html | **`#fsBtn` (z 9999) covers the tour's last Done (z 1500) in a short wide window** (Android landscape). | found S492
@@ -301,6 +299,8 @@ _(none)_
 ## Done
 
 - [x] 2026-10-10 | (after S493: maintainer request) | branch/deploy note | **Two seeds built on request, draft PR #321.** sw v974→v975; no FM bump; sitemap; gates clean; no backend file.
+
+- [x] 2026-10-10 | `5a1c6f57` | torah_trainer.html | (after S493, maintainer request) **A haftarah-only special Shabbat (the 8 `ref:null` entries) no longer "replaces the maftir": chip tip + lookup line take `_haftarah` keys.** | headless, clock fixed: Machar Chodesh ×2 vs Chanukah 1, EN + HE.
 
 - [x] 2026-10-10 | `b3e91897` `8eee6d69` | torah_trainer.html | (after S493, maintainer request) **Maftir in the Reading picker; Translit / Translation toggles on the projector bar.** | headless: Chant seeks Bereshit-7 to 6:5; Triennial = triennial.json; fullscreen toggles in step, keyboard, reload.
 
