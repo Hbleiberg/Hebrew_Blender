@@ -3037,6 +3037,8 @@ function renderLearn() {
     names.className = 'tu-names';
     const p1 = document.createElement('div');
     p1.className = 'tu-name-primary';
+    p1.setAttribute('role', 'heading');   // each card's name is its heading, so a screen reader can jump card to card
+    p1.setAttribute('aria-level', '2');
     // Label the big name with its own tradition, not just the small line under it. The card used
     // to show a bare "Mercha" over "Sephardi: Ma'arich", so the only named tradition was the one
     // the reader had NOT chosen — a first-time tutor had no way to tell what the headline was.
