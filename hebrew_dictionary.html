@@ -936,7 +936,7 @@ footer details > summary:hover{text-decoration:underline;}   /* FAQ / How-To row
   body.shoresh-mode #loadMoreWrap { display: none !important; }
   #shoreshControls { margin-bottom: 14px; }
   .shoresh-input-row { display: flex; gap: 6px; margin-bottom: 10px; }
-  #shoreshInput { flex: 1; font-family: var(--heb-font); direction: rtl; font-size: 1.15rem;
+  #shoreshInput { flex: 1; min-width: 0; /* a text field keeps its min-content width (~20ch): the row ran past a 320px phone */ font-family: var(--heb-font); direction: rtl; font-size: 1.15rem;
     padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px;
     background: var(--white); color: var(--text); outline: none; }
   #shoreshInput:focus { border-color: var(--gold); }
