@@ -2526,13 +2526,17 @@ function updateDictLoadProgress(pct, received) {
   const bar = document.getElementById('loadBar');
   const fill = document.getElementById('loadBarFill');
   if (!txt) return;
+  // The corpus streams from parse time, so on a slow connection the first chunk can arrive before the deferred
+  // i18n.js has run: a bare I18n.t() then threw and failed the whole load. The bar still moves; the text
+  // follows from the next chunk.
+  const i18n = window.I18n;
   if (pct === null || pct === undefined) {
     if (bar) bar.classList.add('indeterminate');
-    txt.textContent = received ? I18n.t('dictionary.loading.dictionary_kb', { kb: Math.round(received / 1024).toLocaleString() }) : I18n.t('dictionary.loading.dictionary');
+    if (i18n) txt.textContent = received ? i18n.t('dictionary.loading.dictionary_kb', { kb: Math.round(received / 1024).toLocaleString() }) : i18n.t('dictionary.loading.dictionary');
   } else {
     if (bar) bar.classList.remove('indeterminate');
     if (fill) fill.style.width = pct + '%';
-    txt.textContent = I18n.t('dictionary.loading.dictionary_pct', { pct: pct });
+    if (i18n) txt.textContent = i18n.t('dictionary.loading.dictionary_pct', { pct: pct });
   }
 }
 
