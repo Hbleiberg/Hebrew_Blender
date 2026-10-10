@@ -1,5 +1,5 @@
 /* IvritSuite service worker — bump VERSION to invalidate the cache on deploy. */
-const VERSION = 'v976';
+const VERSION = 'v977';
 const CACHE = 'ivritsuite-' + VERSION;
 // Version-independent cache for the big data/ corpora (dictionary words / emoji / parshiyot /
 // pockettorah). Kept OUT of the version-scoped CACHE so a routine VERSION bump no longer evicts
@@ -78,6 +78,10 @@ self.addEventListener('fetch', (event) => {
   // doesn't evict them. Match WITHOUT ignoreSearch so a ?v= cache-buster is an intentional
   // miss (the app bumps ?v= when a data file changes); on a fresh store, drop stale entries
   // that share the pathname but have a different ?v= so the cache doesn't grow unbounded.
+  // Media under /data/ (the Total Torah verse MP3s) is left to the network: an <audio> element asks with a
+  // Range header, and a cached full 200 served for a Range request is refused by Safari, while a 206 must
+  // never be cache.put — so neither the cache-first branch below nor DATA_CACHE sees audio.
+  if (req.headers.has('range') || req.destination === 'audio') return;
   if (url.pathname.startsWith('/data/')) {
     event.respondWith(
       caches.open(DATA_CACHE).then((cache) =>

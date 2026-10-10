@@ -2593,6 +2593,16 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
         <div style="font-size:0.72rem;color:var(--muted);margin-bottom:10px;line-height:1.45;" data-i18n-html="torah.audio.speeds_intro">
           Click <strong>🔊 Read</strong> on any verse for browser TTS in Hebrew, or <strong>🎵 Chant</strong> to stream PocketTorah's recording with real-time word highlighting. These sliders mirror the ones in the audio bar at the bottom of the page.
         </div>
+        <!-- Recording source (Total Torah is hidden until it is public: the whole row is `hidden` unless ttOffered(), and the
+             option is disabled with the note while the reading on screen has no verified verse — never a dead button). -->
+        <div class="form-row" id="optRecSrcRow" hidden>
+          <label id="lblRecSrc" data-i18n="torah.recsrc.label">Recording</label>
+          <span class="radio-group" role="group" aria-labelledby="lblRecSrc">
+            <input type="radio" name="optRecSrc" id="rsPocket" value="pockettorah"><label for="rsPocket" data-i18n="torah.recsrc.pockettorah">PocketTorah (Spiro melody)</label>
+            <input type="radio" name="optRecSrc" id="rsTotal" value="totaltorah"><label for="rsTotal" data-i18n="torah.recsrc.totaltorah">Total Torah — Cantor Arianne Brown, Adas Israel</label>
+          </span>
+        </div>
+        <div id="optRecSrcNote" role="status" aria-live="polite" style="font-size:0.7rem;color:var(--muted);margin-top:-4px;margin-bottom:8px;line-height:1.4;" data-i18n="torah.recsrc.none_note" hidden>No Total Torah recording for this reading yet.</div>
         <div class="slider-row">
           <label for="optKaraokeRate" data-i18n="torah.audio.speed_chant">Chant</label>
           <input type="range" id="optKaraokeRate" min="0.5" max="1.5" step="0.05" value="1.0">
@@ -2627,12 +2637,16 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
         </div>
         <div id="optTTSStatus" style="font-size:0.7rem;color:var(--muted);margin-top:6px;"></div>
         <div id="optKaraokeStatus" style="font-size:0.7rem;color:var(--muted);margin-top:4px;"></div>
+        <div id="optRecCreditPocket">
         <div style="font-size:0.72rem;color:var(--muted);margin-top:10px;line-height:1.4;" data-i18n="torah.audio.recording_credit">Chant recordings: PocketTorah, Spiro (Conservative) melody.</div>
         <div style="font-size:0.65rem;color:var(--muted);margin-top:6px;line-height:1.4;">
           Cantillation audio © Russel Neiss &amp; Rabbi Charlie Schwartz,
           <a href="https://github.com/rneiss/PocketTorah" target="_blank" rel="noopener" style="color:var(--gold-text);">PocketTorah</a>,
           <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener" style="color:var(--gold-text);">CC&nbsp;BY-SA&nbsp;4.0</a>.
         </div>
+        </div>
+        <!-- The Total Torah credit + links (syncRecSrcControls builds it; shown instead of the PocketTorah block while that source is on). -->
+        <div id="optRecCreditTT" class="tt-rec-credit" style="font-size:0.72rem;color:var(--muted);margin-top:10px;line-height:1.5;" hidden></div>
       </div>
       <!-- Karaoke highlighting (was the Display panel's "Karaoke settings" sub-block): the two groups take this
            heading into their names — a bare "Style" with its Highlight choice would sound like the vowel and
@@ -2660,6 +2674,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
         </div>
         <div id="kfUnderNote" style="font-size:0.7rem;color:var(--muted);margin-top:4px;line-height:1.4;" data-i18n="torah.display.follow_under_note" hidden>With the transliteration under each word, the highlight follows the Hebrew word and its transliteration moves with it.</div>
         <div id="kfStaffNote" style="font-size:0.7rem;color:var(--muted);margin-top:4px;line-height:1.4;" data-i18n="torah.staff.follow_note" hidden>In the Trope staff layout the highlight follows each word under its notes; the transliteration, when shown, moves with it.</div>
+        <div id="kfTTNote" style="font-size:0.7rem;color:var(--muted);margin-top:4px;line-height:1.4;" data-i18n="torah.recsrc.karaoke_note" hidden>Word-by-word follow isn't available for this Total Torah recording yet, so the whole verse highlights while it plays.</div>
       </div>
       <div class="tt-set" data-set="staff">
         <h3 class="tt-set-title" tabindex="-1"><span data-i18n="torah.settings.panel_staff">Trope staff</span> <span class="beta-tag" data-i18n="shared.badge.beta">BETA</span></h3>
@@ -3050,6 +3065,14 @@ const SEFARIA_API = 'https://www.sefaria.org/api';
 const POCKET_AUDIO_BASE = 'https://raw.githubusercontent.com/rneiss/PocketTorah/master/data/audio/';
 const POCKET_TIMINGS_BASE = 'data/pockettorah/timings/';
 const POCKET_TIMINGS_V = '?v=1';   // cache-buster for the timings corpus — bump when a timings file changes
+// Total Torah (Cantor Arianne Brown, Adas Israel Congregation): a second recording source — per-VERSE MP3s and timings
+// under data/totaltorah/, used only for a verse whose manifest entry is verified, and offered only behind
+// ?reader=totaltorah until TOTALTORAH_PUBLIC flips (docs/reference/torah-and-trope.md → Recording sources).
+const TOTALTORAH_PUBLIC = false;
+const TT_BASE = 'data/totaltorah/';
+const TT_DATA_V = '?v=1';   // cache-buster for the manifest and the timings files (the /data/ cache is exact-URL keyed)
+const TT_CREDIT_URL = 'https://www.adasisrael.org/trope';
+const TT_VIDEO_RE = /^[\w-]{11}$/;   // a video id goes into an href — validated before it does
 const TORAH_BOOK_CHAPTERS = { Genesis:50, Exodus:40, Leviticus:27, Numbers:36, Deuteronomy:34 };
 
 const DEFAULTS = {
@@ -3094,6 +3117,7 @@ const DEFAULTS = {
   karaokeBarCollapsed: false,
   karaokeStyle: 'highlight',   // 'highlight' | 'outline' | 'underline' | 'none'
   karaokeFollow: 'hebrew',     // 'hebrew' | 'translit'
+  recordingSource: 'pockettorah',   // 'pockettorah' | 'totaltorah' — read through recordingSourceKey(); syncs like karaokeRate
   // Student handout (print-flow options; the transient print override itself is never persisted)
   handoutHideNikkud: false,    // strip nikkud on the printed handout
   handoutHideTeamim: false,    // strip te'amim too — both on = a scroll-style (tikkun) column
@@ -3214,6 +3238,7 @@ function resetAllSettings() {
   if (!confirm(I18n.t(signedIn ? 'torah.confirm.reset_all_cloud' : 'torah.confirm.reset_all'))) return;
   // Signed in, the reset is a write like any other: it reaches the account and every device (the confirm says so).
   linkViewEnd();     // a practice link's display settings go with everything else
+  _recSrcOverride = null;
   settings = JSON.parse(JSON.stringify(DEFAULTS));
   // The defaults are written, not the key removed: signed in, a removed settings row is put back by the next device
   // that still holds one, while a written default travels as the newer value. Favorites (FAV_KEY, FAV_TREE_KEY)
@@ -5186,10 +5211,12 @@ function renderText() {
   // chip beside the link says the recordings are PocketTorah's year-round melody, so a student practising with Chant
   // is told the day's tune is another. Every chip here carries its own aria-label: bindTip would otherwise name
   // it "More information" and hide its text from a screen reader.
-  const hhChantChip = TROPE_TUTOR_URL && !staffMelodyChoice() && readingTutorMelody() === 'highholiday' && canChant;   // a haftarah's recording IS its melody
+  // Total Torah on, and the reading has its verses: the header says whose voice chants (its tip: the staffs show another chart).
+  const ttChip = canChant && ttReadingEntries().count > 0;
+  const hhChantChip = TROPE_TUTOR_URL && !staffMelodyChoice() && readingTutorMelody() === 'highholiday' && canChant && !ttChip;   // a haftarah's recording IS its melody
   // A chart chosen in the Trope staff panel: the same notice, generic, while the recording sings another melody
   // (PocketTorah's year-round melody, or a parasha haftarah's own).
-  const chosenChantChip = TROPE_TUTOR_URL && !hhChantChip && canChant && !!staffMelodyChoice() && staffMelodyChoice() !== (currentReadingCtx && currentReadingCtx.isHaftarah ? 'haftarah' : 'torah');
+  const chosenChantChip = TROPE_TUTOR_URL && !hhChantChip && !ttChip && canChant && !!staffMelodyChoice() && staffMelodyChoice() !== (currentReadingCtx && currentReadingCtx.isHaftarah ? 'haftarah' : 'torah');
   const tutorMelody = tutorLinkMelody();
   const holRead = settings.scope === 'custom' && settings.holidayKey ? holidayByKey(settings.holidayKey) : null;   // a loaded HOLIDAY_READINGS entry leads with its family's icon (holiday-icons block)
   let html = `<div class="tt-ref-hdr">
@@ -5201,7 +5228,7 @@ function renderText() {
       ? ` <a class="tt-hh-link" href="${esc(tropeTutorHref())}">${esc(I18n.t('torah.reading.melody_trope_link', { melody: melodyLabel(tutorMelody) }))}</a>`
       : ''}${tuneChoiceHTML()}${weekSpecialHTML()}${hhChantChip
       ? ` <span class="tt-notice-chip" data-i18n="torah.reading.hh_chant_chip" data-i18n-aria-label="torah.reading.hh_chant_chip" aria-label="${esc(I18n.t('torah.reading.hh_chant_chip'))}" data-i18n-tip="torah.reading.hh_chant_tip" data-tip="${esc(I18n.t('torah.reading.hh_chant_tip'))}">${esc(I18n.t('torah.reading.hh_chant_chip'))}</span>`
-      : ''}${chosenChantChip ? staffNoticeChip('torah.reading.staff_chant_chip', 'torah.reading.staff_chant_tip') : ''}${staffHeaderChipsHTML(layout)}</span>
+      : ''}${chosenChantChip ? staffNoticeChip('torah.reading.staff_chant_chip', 'torah.reading.staff_chant_tip') : ''}${ttChip ? staffNoticeChip('torah.recsrc.chip', 'torah.recsrc.chip_tip') : ''}${staffHeaderChipsHTML(layout)}</span>
     <span style="display:flex;gap:6px;">
       <button class="tt-readall hi-btn" id="ttReadAllBtn" onclick="toggleReadAll()" type="button">${ttsState.readAllActive ? ICON_STOP + esc(I18n.t('torah.reading.stop')) : ICON_SOUND + esc(I18n.t('torah.reading.read_all'))}</button>
       ${canChant ? `<button class="tt-readall tt-chantall hi-btn${chantAllState.active ? ' active' : ''}" id="ttChantAllBtn" onclick="toggleChantAll()" type="button">${chantAllState.active ? ICON_STOP + esc(I18n.t('torah.reading.chant_all_stop')) : ICON_MUSIC + esc(I18n.t('torah.reading.chant_all'))}</button>` : ''}
@@ -5257,7 +5284,7 @@ function renderInterlinear(verses, withTranslit, withTrans, wordIdxRef, canChant
     html += `    <span class="tt-verse-buttons">`;
     html += `      <button class="tt-speak hi-btn" onclick="speakVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_read_aria',{verseRef:numLabel}))}">${ICON_SOUND}${esc(I18n.t('torah.reading.verse_read'))}</button>`;
     if (canChant) html += `      <button class="tt-chant hi-btn" onclick="chantVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_chant_aria',{verseRef:numLabel}))}">${ICON_MUSIC}${esc(I18n.t('torah.reading.verse_chant'))}</button>`;
-    if (canLoop) html += `      <button class="tt-loop hi-btn" onclick="loopVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_loop_aria',{verseRef:numLabel}))}">${ICON_LOOP}${esc(I18n.t('torah.reading.verse_loop'))}</button>`;
+    if (canLoop || ttEntryFor(numLabel)) html += `      <button class="tt-loop hi-btn" onclick="loopVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_loop_aria',{verseRef:numLabel}))}">${ICON_LOOP}${esc(I18n.t('torah.reading.verse_loop'))}</button>`;
     html += `      <button class="tt-copy hi-btn" onclick="copyVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_copy_aria',{verseRef:numLabel}))}">${ICON_COPY}${esc(I18n.t('torah.reading.verse_copy'))}</button>`;
     html += `    </span>`;
     html += `  </div>`;
@@ -5343,7 +5370,7 @@ function renderSideBySide(verses, withTranslit, withTrans, wordIdxRef, canChant,
     html += `<input type="checkbox" class="tt-bulk-cb" aria-label="${esc(I18n.t('torah.copy.bulk_cb_aria',{verseRef:numLabel}))}"${ttBulkSelected.has(numLabel) ? ' checked' : ''}>`;
     html += `<button class="tt-speak hi-btn" onclick="speakVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_read_aria',{verseRef:numLabel}))}">${ICON_SOUND}${esc(I18n.t('torah.reading.verse_read'))}</button>`;
     if (canChant) html += `<button class="tt-chant hi-btn" onclick="chantVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_chant_aria',{verseRef:numLabel}))}">${ICON_MUSIC}${esc(I18n.t('torah.reading.verse_chant'))}</button>`;
-    if (canLoop) html += `<button class="tt-loop hi-btn" onclick="loopVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_loop_aria',{verseRef:numLabel}))}">${ICON_LOOP}${esc(I18n.t('torah.reading.verse_loop'))}</button>`;
+    if (canLoop || ttEntryFor(numLabel)) html += `<button class="tt-loop hi-btn" onclick="loopVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_loop_aria',{verseRef:numLabel}))}">${ICON_LOOP}${esc(I18n.t('torah.reading.verse_loop'))}</button>`;
     html += `<button class="tt-copy hi-btn" onclick="copyVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_copy_aria',{verseRef:numLabel}))}">${ICON_COPY}${esc(I18n.t('torah.reading.verse_copy'))}</button>`;
     html += `</span></span>`;
     html += `<span class="tt-cell heb" lang="he">${hebHtml}</span>`;
@@ -5728,7 +5755,7 @@ function renderStaffView(verses, wordIdxRef, canChant, canLoop, aStartByLabel, u
     html += `      <button class="tt-speak hi-btn" onclick="speakVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_read_aria',{verseRef:numLabel}))}">${ICON_SOUND}${esc(I18n.t('torah.reading.verse_read'))}</button>`;
     if (canChant) html += `      <button class="tt-chant hi-btn" onclick="chantVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_chant_aria',{verseRef:numLabel}))}">${ICON_MUSIC}${esc(I18n.t('torah.reading.verse_chant'))}</button>`;
     html += `      <button class="tt-tune hi-btn" onclick="staffTune('${vkEsc}')" type="button" aria-pressed="false" aria-label="${esc(I18n.t('torah.staff.verse_tune_aria',{verseRef:numLabel}))}">${ICON_PLAY_SM}${esc(I18n.t('torah.staff.verse_tune'))}</button>`;
-    if (canLoop) html += `      <button class="tt-loop hi-btn" onclick="loopVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_loop_aria',{verseRef:numLabel}))}">${ICON_LOOP}${esc(I18n.t('torah.reading.verse_loop'))}</button>`;
+    if (canLoop || ttEntryFor(numLabel)) html += `      <button class="tt-loop hi-btn" onclick="loopVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_loop_aria',{verseRef:numLabel}))}">${ICON_LOOP}${esc(I18n.t('torah.reading.verse_loop'))}</button>`;
     html += `      <button class="tt-copy hi-btn" onclick="copyVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_copy_aria',{verseRef:numLabel}))}">${ICON_COPY}${esc(I18n.t('torah.reading.verse_copy'))}</button>`;
     html += `    </span>`;
     html += `  </div>`;
@@ -6198,6 +6225,7 @@ async function fetchAndRender() {
     }
     // Auto-load karaoke audio + timings when the user picks an aliyah/haftarah.
     maybeLoadKaraoke(r);
+    try { syncRecSrcControls(); } catch (e) {}   // whether this reading has Total Torah verses
     // Offer a one-tap resume if we have a saved deep position for this reading.
     maybeShowResumeChip();
     // First-ever chantable render: nudge the (undiscoverable) click-a-word feature.
@@ -6461,6 +6489,9 @@ function speakVerse(numLabel) {
 let _pendingChantVerse = null;
 async function chantVerse(numLabel) {
   stopStaffTune();   // the recording and the tune never sound together
+  // Total Torah: the verse's own file; a verse without one drops a loaded verse file and takes the PocketTorah path below.
+  if (ttEntryFor(numLabel)) { await ttChantVerse(numLabel, 0); return; }
+  if (_ttLoaded) ttRelease();
   // Holiday/custom reading, or a Triennial/Weekday range: chant in place (don't navigate to the parsha aliyah).
   if (readingIsOverlay()) {
     const ok = await chantHolidayWord(numLabel, 0);
@@ -6484,6 +6515,8 @@ function computeVerseAudioBounds(numLabel) {
   if (!currentTimings || !currentAudio) return null;
   const verseEl = document.querySelector(`#ttReading [data-vk="${numLabel}"]`);
   if (!verseEl) return null;
+  // A Total Torah verse file: the whole file is the verse (stopAt null → the duration, once known).
+  if (_ttLoaded) return _ttLoaded.vk === numLabel ? { startIdx: 0, startTime: 0, stopAt: null } : null;
   // Only Hebrew word spans carry the authoritative start/end indices; translit
   // spans share the same data-twi but would confuse the first/last lookup.
   const verseWords = verseEl.querySelectorAll('.tt-heb .tt-word, .tt-cell.heb .tt-word');
@@ -6529,9 +6562,19 @@ function seekToVerseInLoadedAudio(numLabel, silent) {
    when settings.scope === 'custom'.
    ────────────────────────────────────────────────────────── */
 async function loopVerse(numLabel) {
-  if (readingIsOverlay()) return;   // Loop button is hidden here anyway
+  const ttE = ttEntryFor(numLabel);   // a Total Torah verse loops its own file, on an overlay reading too (the file IS the verse)
+  if (readingIsOverlay() && !ttE) return;   // Loop button is hidden here anyway
   // Clicking the verse that's already looping stops it.
   if (loopState.active && loopState.verseLabel === numLabel) { stopLoop(); return; }
+  if (ttE) {
+    if (_ttLoaded && _ttLoaded.vk === numLabel && currentTimings && currentAudio && currentAudio.src) {
+      const b = computeVerseAudioBounds(numLabel);
+      if (b) { startLoop(numLabel, b); return; }
+    }
+    loadTotalTorahVerse(numLabel, ttE, { loopVerse: numLabel });
+    return;
+  }
+  if (_ttLoaded) ttRelease();
   // Fast path: audio for this verse's aliyah is already loaded.
   if (currentTimings && currentAudio) {
     const b = computeVerseAudioBounds(numLabel);
@@ -6834,6 +6877,21 @@ async function toggleChantAll() {
   stopStaffTune();
   if (ttsState.readAllActive) stopReadAll();
   speechSynthesis.cancel();
+  // Total Torah: the reading's verse files in turn (ttChantAllNext; the first verse without one hands over).
+  if (currentVerses && ttReadingEntries().count > 0) {
+    if (_ttLoaded) ttRelease();
+    chantAllState.active = true;
+    chantAllState.tt = currentVerses.map(v => `${v.chapter}:${v.verse}`);
+    chantAllState.queue = null;
+    chantAllState.overlay = null;
+    chantAllState.parsha = currentReadingCtx && currentReadingCtx.parshahEntry;
+    _verseEndStopAt = null;
+    const btn = document.getElementById('ttChantAllBtn');
+    if (btn) { btn.innerHTML = ICON_STOP + esc(I18n.t('torah.reading.chant_all_stop')); btn.classList.add('active'); }
+    await ttChantAllNext();
+    return;
+  }
+  if (_ttLoaded) ttRelease();
   // Build the queue based on the current scope.
   let p, queue, startVerse = null;
   if (settings.scope !== 'custom' && readingIsOverlay()) {
@@ -6957,10 +7015,12 @@ function stopChantAll() {
   chantAllState.queue = null;
   chantAllState.overlay = null;
   chantAllState.stopsAtRange = false;
+  chantAllState.tt = null;
   if (currentAudio) {
     if (!currentAudio.paused) currentAudio.pause();
-    // Restore the default ended handler set by loadKaraoke().
-    currentAudio.onended = () => { clearKaraokeHighlight(); updatePlayPauseIcon(); };
+    // Restore the default ended handler attachKaraokeSource installs (its loop restart included: a per-verse file
+    // ends naturally, so a loop armed after a chant-all would otherwise stall at the end).
+    currentAudio.onended = defaultAudioEnded;
   }
   const btn = document.getElementById('ttChantAllBtn');
   if (btn) { btn.innerHTML = ICON_MUSIC + esc(I18n.t('torah.reading.chant_all')); btn.classList.remove('active'); }
@@ -7024,7 +7084,7 @@ function firstKaraokeSpan(idx) {
 let karaokeRafId = null;
 let lastHighlightedIdx = -1;
 let _verseEndStopAt = null;  // when set, audio auto-pauses at this currentTime
-const chantAllState = { active: false, queue: null, parsha: null, overlay: null, stopsAtRange: false };   // overlay: the Triennial/Weekday range chanting under the reading (chantOverlayNext)
+const chantAllState = { active: false, queue: null, parsha: null, overlay: null, stopsAtRange: false, tt: null };   // tt: the Total Torah chain's verse keys   // overlay: the Triennial/Weekday range chanting under the reading (chantOverlayNext)
 // Verse looping (practice mode): while active, the chant audio repeats one verse
 // hands-free. Mutually exclusive with the single-verse _verseEndStopAt stop.
 let loopState = { active: false, verseLabel: null, startTime: null, stopAt: null };
@@ -7037,11 +7097,243 @@ const LOOP_EPS = 0.04;          // seconds of slack before the verse-end wrap
 // The latest loadKaraoke() promise. fetchAndRender starts the load without awaiting it; Chant all awaits it
 // (playNextChant), since the element and the aliyah's src are only set once the timings arrive.
 let _karaokeLoad = null;
+
+/* ══════════════════════════════════════════════════════
+   TOTAL TORAH — the second recording source (docs/reference/torah-and-trope.md → Recording sources).
+   Per-verse files: a loaded verse is a one-verse "aliyah" to the engine above — verse-local currentTimings,
+   _holidayKaraoke.map = { [vk]: 0 } so updateKaraokeWordRefs lights only that verse's words, and
+   computeVerseAudioBounds answers 0 … the file's end — so chant, click-to-chant, loop, Chant all and the
+   karaoke highlighter run unchanged through the ONE <audio>. A verse without a verified entry (and every
+   haftarah) falls back to PocketTorah, and the audio-bar credit names whichever recording is loaded.
+   ══════════════════════════════════════════════════════ */
+let ttManifest = null;        // { "Genesis 1:1": {file, dur, video, parsha, year, aliyah, verified, timings, timingsVerified} }
+let ttCredit = null;          // the manifest's credit block (names, URLs, the videos' titles)
+let _ttManifestLoad = null;
+let _ttLoaded = null;         // { vk, entry, wordTimed } while a Total Torah verse file is the element's source
+let _recSrcOverride = null;   // 'totaltorah' for this visit when ?reader=totaltorah opened a page whose stored source is PocketTorah (never saved)
+function ttOffered() { return TOTALTORAH_PUBLIC || new URLSearchParams(location.search).get('reader') === 'totaltorah'; }
+// 'totaltorah' only while the option is offered; any other stored value reads PocketTorah and stays stored.
+function recordingSourceKey() {
+  if (!ttOffered()) return 'pockettorah';
+  return (settings.recordingSource === 'totaltorah' || _recSrcOverride === 'totaltorah') ? 'totaltorah' : 'pockettorah';
+}
+// The manifest is fetched only when the source is offered — an ordinary visit downloads nothing extra — and fails soft
+// to "no recordings" (the option disabled, with its note). Same-origin data/ JSON (res.json(), exempt), but every
+// field the page uses is validated: a file name, an 11-character video id, booleans.
+function ensureTotalTorahManifest() {
+  if (ttManifest) return Promise.resolve(ttManifest);
+  if (!ttOffered()) return Promise.resolve(null);
+  if (_ttManifestLoad) return _ttManifestLoad;
+  _ttManifestLoad = fetch(TT_BASE + 'manifest.json' + TT_DATA_V)
+    .then(r => { if (!r.ok) throw new Error(`manifest ${r.status}`); return r.json(); })
+    .then(raw => {
+      const out = {};
+      if (raw && typeof raw === 'object') {
+        Object.keys(raw).forEach(k => {
+          const e = raw[k];
+          if (k === 'credit') { ttCredit = (e && typeof e === 'object') ? e : null; return; }
+          if (!/^[A-Z][a-z]+ \d+:\d+$/.test(k) || !e || typeof e !== 'object') return;
+          if (typeof e.file !== 'string' || !/^[a-z]{3}-\d{3}-\d{3}\.mp3$/.test(e.file)) return;
+          if (typeof e.video !== 'string' || !TT_VIDEO_RE.test(e.video)) return;
+          out[k] = {
+            file: e.file, dur: +e.dur || 0, video: e.video, parsha: String(e.parsha || ''), year: +e.year || 0, aliyah: +e.aliyah || 0,
+            verified: e.verified === true,
+            timings: (typeof e.timings === 'string' && /^[a-z]{3}-\d{3}-\d{3}\.txt$/.test(e.timings)) ? e.timings : null,
+            timingsVerified: e.timingsVerified === true,
+          };
+        });
+      }
+      ttManifest = out;
+      return out;
+    })
+    .catch(e => { console.warn('Total Torah manifest', e); ttManifest = {}; return ttManifest; });
+  return _ttManifestLoad;
+}
+function ttBookNow() {
+  const ctx = currentReadingCtx;
+  if (!ctx || ctx.isHaftarah || ctx.megillah) return '';
+  return bookOfRef(ctx.ref) || (ctx.parshahEntry && ctx.parshahEntry.book) || '';
+}
+// The verified entry for a verse on screen, or null; `anySource` asks whether one exists at all (the radio's state).
+function ttEntryFor(vk, anySource) {
+  if (!ttManifest || !vk || (!anySource && recordingSourceKey() !== 'totaltorah')) return null;
+  const book = ttBookNow();
+  if (!book) return null;
+  const e = ttManifest[`${book} ${vk}`];
+  return e && e.verified ? e : null;
+}
+// The reading on screen: how many verses have a verified entry, how many of those lack verified word timings,
+// and the videos (one entry per video) they come from — the chip, the radio, the credit and the notes read it.
+function ttReadingEntries(anySource) {
+  const out = { count: 0, unTimed: 0, videos: [] };
+  if (!ttManifest || !currentVerses) return out;
+  const seen = {};
+  for (const v of currentVerses) {
+    const e = ttEntryFor(`${v.chapter}:${v.verse}`, anySource);
+    if (!e) continue;
+    out.count++;
+    if (!(e.timings && e.timingsVerified)) out.unTimed++;
+    if (!seen[e.video]) { seen[e.video] = true; out.videos.push(e); }
+  }
+  return out;
+}
+// Load one verse file into the engine. opts: { wordIdx } chant from that word, { loopVerse, armOnly } loop it.
+async function loadTotalTorahVerse(vk, entry, opts) {
+  opts = opts || {};
+  if (chantAllState.active && !chantAllState.tt) stopChantAll();   // a PocketTorah chant-all's onended would replay this file (playNextChant)
+  if (ttsState.readAllActive) stopReadAll();
+  speechSynthesis.cancel();
+  // the pending slots are if/else-if in attachKaraokeSource: only this call's survives
+  _pendingChantWordIdx = null; _pendingChantVerse = null; _pendingLoopVerse = null; _pendingLoopArmOnly = false;
+  _holidayKaraoke = null;
+  setStatus(I18n.t('torah.status.loading_audio_chant', { verseRef: vk }), false);
+  let timings = [0], wordTimed = false;
+  if (entry.timings && entry.timingsVerified) {
+    try {
+      const r = await fetch(TT_BASE + 'timings/' + entry.timings + TT_DATA_V);
+      if (!r.ok) throw new Error(`timings ${r.status}`);
+      const t = (await r.text()).trim().split(',').map(x => parseFloat(x.trim())).filter(n => !isNaN(n));
+      if (t.length) { timings = t; wordTimed = true; }
+    } catch (e) { setKaraokeStatus(I18n.t('torah.status.failed_timings', { error: e.message })); }   // the whole verse highlights instead
+  }
+  const lastWord = wordTimed ? Math.max(0, timings.length - 2) : 0;   // a timed file ends with the last word's end bound
+  if (opts.loopVerse) { _pendingLoopVerse = opts.loopVerse; _pendingLoopArmOnly = !!opts.armOnly; }
+  else _pendingChantWordIdx = Math.max(0, Math.min(opts.wordIdx || 0, lastWord));
+  // The previous file's lit word would otherwise stay lit: the new word refs cover this verse alone, so the old
+  // index paints nothing when it is "turned off".
+  clearKaraokeHighlight();
+  lastHighlightedIdx = -1;
+  _ttLoaded = { vk, entry, wordTimed };
+  _holidayKaraoke = { map: { [vk]: 0 } };
+  _loadedChantKey = 'tt|' + vk;
+  attachKaraokeSource({ audioUrl: TT_BASE + 'audio/' + entry.file, timings, label: I18n.t('torah.recsrc.bar_label', { verse: vk }) });
+}
+// Drop a loaded verse file so the PocketTorah paths see "nothing loaded" and reload (chantVerse's
+// _navigateToVerseAliyahAndQueue, chantHolidayWord's key check, playNextChant's !src branch).
+function ttRelease() {
+  if (!_ttLoaded) return;
+  clearLoop();
+  pauseKaraoke();
+  clearKaraokeHighlight();
+  _ttLoaded = null; _holidayKaraoke = null; _loadedChantKey = null; currentTimings = null;
+  if (currentAudio) currentAudio.removeAttribute('src');
+  syncAudioCredit();
+}
+// Chant a verse that has an entry, from word `wordInVerse` (0 = the verse start). Returns false when it has none.
+async function ttChantVerse(vk, wordInVerse) {
+  const entry = ttEntryFor(vk);
+  if (!entry) return false;
+  stopStaffTune();
+  if (_ttLoaded && _ttLoaded.vk === vk && currentTimings && currentAudio && currentAudio.src) {
+    const lastWord = _ttLoaded.wordTimed ? Math.max(0, currentTimings.length - 2) : 0;
+    seekToTimingIndex(Math.max(0, Math.min(wordInVerse || 0, lastWord)));   // clears a loop, plays
+    return true;
+  }
+  await loadTotalTorahVerse(vk, entry, { wordIdx: wordInVerse || 0 });
+  return true;
+}
+// Chant all over a reading with entries: each verse's file in turn (defaultAudioEnded chains); at the first verse
+// without one the rest of the reading goes to the PocketTorah chain, from that verse, and the credit follows.
+async function ttChantAllNext() {
+  if (!chantAllState.active || !chantAllState.tt) { stopChantAll(); return; }
+  const vk = chantAllState.tt.shift();
+  if (vk == null) { stopChantAll(); return; }
+  const e = ttEntryFor(vk);
+  if (!e) { chantAllState.tt = null; ttRelease(); await ttChantAllHandover(vk); return; }
+  await loadTotalTorahVerse(vk, e, { wordIdx: 0 });
+}
+async function ttChantAllHandover(vk) {
+  const p = currentReadingCtx && currentReadingCtx.parshahEntry;
+  const m = vk.match(/^(\d+):(\d+)$/);
+  if (!p || !manifestData[p.pocket] || !m) { stopChantAll(); return; }
+  chantAllState.parsha = p;
+  if (readingIsOverlay()) {
+    const full = parseRefRange(overlayRef());
+    if (!full) { stopChantAll(); return; }
+    const rng = Object.assign({}, full, { startC: +m[1], startV: +m[2] });
+    chantAllState.queue = overlappingAliyot(p.en, rng);
+    chantAllState.overlay = rng;
+    if (!chantAllState.queue.length) { stopChantAll(); return; }
+    await chantOverlayNext();
+    return;
+  }
+  const al = aliyahLookup(p.en, 'full');
+  let n = null;
+  for (const num of ['1','2','3','4','5','6','7']) { const r = al && al.aliyot && al.aliyot[num]; if (r && verseInRange(+m[1], +m[2], r)) { n = num; break; } }
+  if (!n) { stopChantAll(); return; }
+  chantAllState.queue = /^parsha-aliyah-\d$/.test(settings.scope) ? [n] : ['1','2','3','4','5','6','7'].slice(+n - 1);
+  chantAllState.overlay = null;
+  _pendingChantVerse = vk;
+  await playNextChant();
+}
+// The audio-bar credit names the recording that is loaded — never the other reader. The PocketTorah markup is the
+// static one (so an ordinary visit's bar is untouched); the Total Torah credit links the Adas Israel page and the
+// verse's complete video (target=_blank, never an embed: frame-src stays 'none').
+function pocketCreditHTML() {
+  return `Cantillation © Russel Neiss &amp; Rabbi Charlie Schwartz, <a href="https://github.com/rneiss/PocketTorah" target="_blank" rel="noopener">PocketTorah</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC&nbsp;BY-SA&nbsp;4.0</a> · <span data-i18n="torah.audio.recording_melody">${esc(I18n.t('torah.audio.recording_melody'))}</span>`;
+}
+function ttCreditHTML(entry, linkStyle) {
+  const st = linkStyle ? ` style="${linkStyle}"` : '';
+  let h = `${esc(I18n.t('torah.recsrc.credit_prefix'))} <a href="${TT_CREDIT_URL}" target="_blank" rel="noopener"${st}>${esc(I18n.t('torah.recsrc.credit_name'))}</a>`;
+  if (entry && TT_VIDEO_RE.test(entry.video)) h += ` · <a href="https://youtu.be/${esc(entry.video)}" target="_blank" rel="noopener"${st}>${esc(I18n.t('torah.recsrc.watch_youtube'))}</a>`;
+  return h;
+}
+function syncAudioCredit() {
+  if (!ttOffered()) return;   // an ordinary visit keeps the static bar byte for byte
+  const el = document.querySelector('#ttAudioBar .tt-audio-credit');
+  if (el) el.innerHTML = _ttLoaded ? ttCreditHTML(_ttLoaded.entry) : pocketCreditHTML();
+  updateAudioBarLoopUi();   // applyStaticI18n writes "Karaoke" over #ttAudioLabel (data-i18n); put the loaded source's label back
+}
+// The drawer's Recording row, its note, the credit blocks and the karaoke note — settings → controls, read-only.
+function syncRecSrcControls() {
+  const row = document.getElementById('optRecSrcRow');
+  if (!row) return;
+  const offered = ttOffered();
+  row.hidden = !offered;
+  const note = document.getElementById('optRecSrcNote'), ttDiv = document.getElementById('optRecCreditTT'), pocketDiv = document.getElementById('optRecCreditPocket'), karNote = document.getElementById('kfTTNote');
+  if (!offered) { if (note) note.hidden = true; if (ttDiv) ttDiv.hidden = true; if (pocketDiv) pocketDiv.hidden = false; if (karNote) karNote.hidden = true; return; }
+  const ents = ttReadingEntries(true);
+  const none = ents.count === 0;
+  const total = document.getElementById('rsTotal'), pocket = document.getElementById('rsPocket');
+  const active = recordingSourceKey() === 'totaltorah' && !none;
+  total.disabled = none;
+  total.setAttribute('aria-disabled', none ? 'true' : 'false');
+  total.checked = active;
+  pocket.checked = !active;
+  if (note) note.hidden = !none;
+  if (ttDiv) {
+    ttDiv.hidden = !active;
+    if (active) {
+      const st = 'color:var(--gold-text);';
+      ttDiv.innerHTML = `<div>${ttCreditHTML(null, st)}</div>` + ents.videos.map(e =>
+        `<div style="margin-top:4px;">${esc(I18n.t('torah.recsrc.this_reading', { parsha: e.parsha, year: e.year, aliyah: e.aliyah }))} · <a href="https://youtu.be/${esc(e.video)}" target="_blank" rel="noopener" style="${st}">${esc(I18n.t('torah.recsrc.watch_youtube'))}</a></div>`).join('');
+    }
+  }
+  if (pocketDiv) pocketDiv.hidden = active;
+  if (karNote) karNote.hidden = !(active && ents.unTimed > 0);
+}
+function setRecordingSource(v) {   // the radios' one writer
+  v = v === 'totaltorah' ? 'totaltorah' : 'pockettorah';
+  _recSrcOverride = null;
+  if (settings.recordingSource !== v) { settings.recordingSource = v; saveSettings(); }
+  clearLoop();
+  pauseKaraoke();
+  if (chantAllState.active) stopChantAll();
+  if (_ttLoaded) ttRelease();
+  syncRecSrcControls();
+  if (currentVerses && currentVerses.length) renderText();   // the header chip and the per-verse Loop buttons follow the source
+}
 function maybeLoadKaraoke(rangeInfo) {
   // rangeInfo: { ref, label, parshahEntry, aliyahNum, isHaftarah }
   // Karaoke is always available — only load audio when the user has picked an
   // aliyah/haftarah scope. Otherwise just keep the audio bar hidden quietly;
   // the per-verse 🎵 Chant button auto-switches scope on click.
+  // The boot restore of a loop on a Total Torah verse (init sets _pendingLoopVerse + arm-only) loads that verse's file.
+  if (_pendingLoopVerse && ttEntryFor(_pendingLoopVerse)) {
+    const vk = _pendingLoopVerse, arm = _pendingLoopArmOnly;
+    _karaokeLoad = loadTotalTorahVerse(vk, ttEntryFor(vk), { loopVerse: vk, armOnly: arm });
+    return;
+  }
   if (!rangeInfo || !rangeInfo.parshahEntry || rangeInfo.aliyahNum == null) {
     _karaokeLoad = null;
     teardownKaraokeAudio();
@@ -7049,6 +7341,7 @@ function maybeLoadKaraoke(rangeInfo) {
   }
   // Parsha aliyah/haftarah: rendered text == loaded audio, so use direct
   // data-twi mapping (not the holiday remap).
+  _ttLoaded = null;
   _holidayKaraoke = null;
   _loadedChantKey = null;
   _pendingChantWordIdx = null;
@@ -7074,6 +7367,8 @@ function teardownKaraokeAudio() {
   _loadedChantKey = null;
   _pendingChantWordIdx = null;
   _audioBaseLabel = '';
+  _ttLoaded = null;
+  syncAudioCredit();
 }
 
 async function loadKaraoke(parshahEntry, suffix, expectedWords) {
@@ -7106,8 +7401,29 @@ async function loadKaraoke(parshahEntry, suffix, expectedWords) {
     setKaraokeStatus(I18n.t('torah.status.failed_timings', { error: e.message }));
     return;
   }
-  // Set up audio
-  const audioUrl = POCKET_AUDIO_BASE + encodeURIComponent(`${audioBase}-${suffix}.mp3`);
+  // Set up audio — the element wiring is one function for both sources (attachKaraokeSource)
+  _ttLoaded = null;
+  attachKaraokeSource({ audioUrl: POCKET_AUDIO_BASE + encodeURIComponent(`${audioBase}-${suffix}.mp3`), timings,
+    label: `${parshahEntry.en} · ${suffix === 'H' ? I18n.t('torah.schedule.scope_haftarah') : I18n.t('torah.schedule.scope_aliyah', { n: suffix })}` });
+}
+// The element's default ended handler (restored by stopChantAll too): a loop restarts — a verse loop can reach the
+// very end (the last verse of an aliyah, or a per-verse file) before a timeupdate wraps it — else the highlight
+// clears and a running Chant all hops on (its own Total Torah chain, or the PocketTorah one).
+function defaultAudioEnded() {
+  if (loopState.active) {
+    currentAudio.currentTime = loopState.startTime;
+    lastHighlightedIdx = -1;
+    currentAudio.play().catch(() => {});
+    return;
+  }
+  clearKaraokeHighlight();
+  updatePlayPauseIcon();
+  if (chantAllState.active) { if (chantAllState.tt) ttChantAllNext(); else playNextChant(); }
+}
+// ONE engine: the source element, its handlers, the bar, the word refs and the pending seek, for a PocketTorah
+// aliyah file (loadKaraoke) and a Total Torah verse file (loadTotalTorahVerse) alike. `timings` is the loaded
+// file's word-onset list (index = karaoke index), `label` the bar's text while nothing loops.
+function attachKaraokeSource({ audioUrl, timings, label }) {
   currentTimings = timings;
   if (!currentAudio) currentAudio = document.getElementById('ttAudio');
   // The CORS load is what lets the pitch graph read the samples; a host that refused it once (state 'cors')
@@ -7176,26 +7492,15 @@ async function loadKaraoke(parshahEntry, suffix, expectedWords) {
   currentAudio.ontimeupdate = onAudioTimeUpdate;
   // Keep the chant-all chain alive: loadKaraoke runs after playNextChant has
   // wired its handler, so it must also hop to the next aliyah when chaining.
-  currentAudio.onended = () => {
-    // A verse loop can reach the very end (last verse of an aliyah) before a
-    // timeupdate wraps it — restart from the verse start instead of stopping.
-    if (loopState.active) {
-      currentAudio.currentTime = loopState.startTime;
-      lastHighlightedIdx = -1;
-      currentAudio.play().catch(() => {});
-      return;
-    }
-    clearKaraokeHighlight();
-    updatePlayPauseIcon();
-    if (chantAllState.active) playNextChant();
-  };
+  currentAudio.onended = defaultAudioEnded;
   const bar = document.getElementById('ttAudioBar');
   bar.classList.add('open');
   bar.classList.toggle('collapsed', !!settings.karaokeBarCollapsed);
   syncMiniRate();
   document.getElementById('ttAudioCollapseBtn')?.setAttribute('aria-expanded', settings.karaokeBarCollapsed ? 'false' : 'true');
   document.body.classList.add('tt-karaoke-active');
-  _audioBaseLabel = `${parshahEntry.en} · ${suffix === 'H' ? I18n.t('torah.schedule.scope_haftarah') : I18n.t('torah.schedule.scope_aliyah', { n: suffix })}`;
+  _audioBaseLabel = label;
+  syncAudioCredit();
   document.getElementById('ttAudioLabel').textContent = loopState.active ? I18n.t('torah.audio.looping_label', { verse: loopState.verseLabel }) : _audioBaseLabel;
   setKaraokeStatus(I18n.t('torah.status.loaded_timings', { count: timings.length }));
   updateKaraokeWordRefs();
@@ -7237,6 +7542,17 @@ function updateKaraokeWordRefs() {
   // .tt-word in any row (handled in onReadingClick).
   const f = karaokeFollowEffective();
   karaokeWordSpans = [];
+  // A Total Torah verse without verified word timings: its timings are [0], so every word of the verse lights at
+  // once (whole-verse highlight — never a wrong word).
+  if (_ttLoaded && !_ttLoaded.wordTimed) {
+    const verseEl = document.querySelector(`#ttReading [data-vk="${_ttLoaded.vk}"]`);
+    if (!verseEl) return;
+    const sel = [];
+    if (f === 'hebrew' || f === 'both') sel.push('.tt-heb .tt-word', '.tt-cell.heb .tt-word');
+    if (f === 'translit' || f === 'both') sel.push('.tt-translit .tt-word', '.tt-cell.translit .tt-word');
+    karaokeWordSpans[0] = sel.length ? [...verseEl.querySelectorAll(sel.join(','))] : [];
+    return;
+  }
   // Holiday/custom reading: the displayed range isn't the loaded aliyah, so map
   // each rendered word to its aliyah timing index via the verse-start map.
   if (_holidayKaraoke && _holidayKaraoke.map) {
@@ -7462,6 +7778,9 @@ function onReadingClick(e) {
     if (numLabel) speakVerse(numLabel);
     return;
   }
+  // Total Torah: the verse's own file from the clicked word; a verse without one drops a loaded verse file first.
+  if (numLabel && ttEntryFor(numLabel)) { ttChantVerse(numLabel, hebWordIndexInVerse(verseEl, wordEl)); return; }
+  if (_ttLoaded) ttRelease();
   // Holiday/custom reading (or a Triennial/Weekday range): stay on it and chant the exact clicked word by
   // mapping it onto the containing aliyah's PocketTorah timings.
   if (readingIsOverlay()) {
@@ -8991,6 +9310,7 @@ function setShowTranslation(on) {
   fetchAndRender();
 }
 function syncFormToSettings() {
+  syncRecSrcControls();
   document.getElementById('optShowCantillation').checked = !!settings.showCantillation;
   document.getElementById('optShowNikkud').checked = !!settings.showNikkud;
   document.getElementById('optShowParshaIcons').checked = settings.showParshaIcons !== false;
@@ -9152,6 +9472,10 @@ function wireSettingsForm() {
         if (currentTimings && currentAudio) updateKaraokeWordRefs();
       }
     });
+  });
+  // Recording source
+  document.querySelectorAll('input[name="optRecSrc"]').forEach(r => {
+    r.addEventListener('change', e => { if (e.target.checked) setRecordingSource(e.target.value); });
   });
   // Schedule
   document.querySelectorAll('input[name="optSchedule"]').forEach(r => {
@@ -10758,14 +11082,17 @@ async function retryStaticData() {   // in-card ↻ for a failed corpus load; on
 async function init() {
   initDark();
   loadSettings();
+  // ?reader=totaltorah: the link's visit hears the Total Torah source (a radio press saves a choice; nothing is stored by the flag).
+  if (ttOffered() && settings.recordingSource !== 'totaltorah') _recSrcOverride = 'totaltorah';
   linkViewApply();          // a practice link's ?s= display settings: shown from the first paint, never saved
   _watchAudioBarHeight();   // keeps the bulk dock clear of the sticky karaoke bar at any width
   _watchBulkDockFocus();    // stops the dock vanishing under a keyboard user's own Clear
   const fsBtn = document.getElementById('fsBtn');
   if (fsBtn) fsBtn.innerHTML = FS_ENTER;
 
-  // Fetch static data files (extracted; a failure renders the empty card's ↻ Try again)
-  await loadStaticData();
+  // Fetch static data files (extracted; a failure renders the empty card's ↻ Try again); the Total Torah manifest
+  // rides along only when that source is offered (never rejects), so the first render knows which verses it has.
+  await Promise.all([loadStaticData(), ensureTotalTorahManifest()]);
 
   // Build UI
   applyFontSizes();
@@ -11005,6 +11332,7 @@ function initCloudSaves() {
 function applyI18n() {
   if (!window.I18n) return;
   I18n.applyStaticI18n();
+  try { syncRecSrcControls(); syncAudioCredit(); } catch (e) {}   // the Total Torah credit and notes are I18n.t'd (after applyStaticI18n, which rewrites the bar's label)
   try { initFontSelector(); } catch (e) {}          // My Fonts section headers + [DEFAULT] marker
   try { renderFavorites(); } catch (e) {}           // the Favorites list: first paint on I18n.ready, then every language switch (its buttons are I18n.t'd)
   // Both picker lists set their input aria-label via I18n.t() while building. They build at init,
