@@ -1020,7 +1020,7 @@ became **seven tabs of flat sections**, the Trope Tutor's Settings-tab idiom ins
     `FAV_PALETTE` (the dashboard's Okabe–Ito preset palette, eight colors; `favColorOf` falls back to grey on
     anything that is not a six-digit hex). `ref` is one of the three forms a practice link carries, never
     `readingCycle` or `triennialYear` (those are how this device reads, not what it reads):
-    `{kind:'parsha', parshahKey, scope}` (scope `parsha-full`, `parsha-aliyah-1…7` or `parsha-haftarah`),
+    `{kind:'parsha', parshahKey, scope}` (scope `parsha-full`, `parsha-aliyah-1…7`, `parsha-maftir` or `parsha-haftarah`),
     `{kind:'holiday', holidayKey, part?}` (one of `HOLIDAY_READINGS`, whole — `part:'haftarah'` its haftarah) or
     `{kind:'ref', customRef, holidayKey?}`
     (a verse range; the holiday key only while the range sits inside that reading). `favoriteRefNow()` derives
@@ -1192,6 +1192,13 @@ aliyah on their own cycle: other verses).
   together year, the partner. The Weekday cycle offers aliyot 1–3 and no haftarah: `clampScopeToCycle()` (run
   before every resolve) sends any other stored scope, a link's included, back to the whole reading, and
   `updateScopeSelectState` hides the options (`cycleAliyahMax()` also bounds the fullscreen stepper).
+- **Maftir** (`parsha-maftir`, between Aliyah 7 and Haftarah) is the division's `M` range — PocketTorah's
+  `aliyah.json` on the Full cycle, the year's `M` in `triennial.json` on the Triennial — and `maftirOffered()` says
+  whether there is one: never on the Weekday cycle, never for V'Zot HaBerachah (neither file names one). Where it is
+  not offered, `updateScopeSelectState` hides the option and `clampScopeToCycle()` sends a stored or linked Maftir
+  back to the whole reading. PocketTorah has no maftir file, but the maftir always lies inside aliyah 7, so
+  `resolveRef` marks it `overlay: true` on every cycle: Chant plays aliyah 7's recording from the maftir's first
+  word, and Loop is not offered (the overlay rule below). The fullscreen ‹ › steppers run 1 → 7 → Maftir.
 - **Audio for a cycle range is the holiday overlay.** `readingIsOverlay()` = custom scope or a resolved
   `overlay` reading, `overlayRef()` its range; `chantVerse`, click-to-seek, the Loop guard and the verse controls'
   `canLoop` read it, so a Triennial or Weekday verse chants through `chantHolidayWord` (the containing full

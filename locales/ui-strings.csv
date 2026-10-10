@@ -4301,6 +4301,7 @@ torah.schedule.scope_full,Full parsha,פרשה מלאה,scope option,
 torah.schedule.scope_full_reading,Full reading,קריאה מלאה,scope option (holiday/custom),
 torah.schedule.scope_chapter,Chapter {n},פרק {n},scope option: one chapter of a megillah,do-not-translate {n}
 torah.schedule.scope_haftarah,Haftarah,הפטרה,scope option,
+torah.schedule.scope_maftir,Maftir,מפטיר,"scope option: the parasha's maftir (its last verses, read again at the end of the Shabbat reading); also the reading header, a favorite's name and the option's runtime label",
 torah.schedule.cycle_label,Reading cycle,מחזור קריאה,settings label (Reading schedule panel),
 torah.schedule.cycle_tip,"Full: the whole parasha in its seven aliyot, as read on Shabbat morning. Triennial: the three-year division used in many Conservative congregations (a third of the parasha each year, in seven aliyot). Weekday: the Monday, Thursday and Shabbat-afternoon reading — the coming parasha's first aliyah, in three.","מלא: כל הפרשה בשבע עליותיה, כפי שנקראת בשבת בבוקר. תלת-שנתי: החלוקה לשלוש שנים הנהוגה בקהילות קונסרבטיביות רבות (שליש מהפרשה בכל שנה, בשבע עליות). ימי חול: קריאת שני, חמישי ומנחה של שבת — העלייה הראשונה של פרשת השבוע הבאה, בשלוש עליות.",tooltip,
 torah.schedule.cycle_full,Full (annual),מלא (שנתי),radio label,

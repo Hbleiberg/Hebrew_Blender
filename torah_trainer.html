@@ -2196,6 +2196,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
       <option value="parsha-aliyah-5" data-i18n="torah.schedule.scope_aliyah_5">Aliyah 5</option>
       <option value="parsha-aliyah-6" data-i18n="torah.schedule.scope_aliyah_6">Aliyah 6</option>
       <option value="parsha-aliyah-7" data-i18n="torah.schedule.scope_aliyah_7">Aliyah 7</option>
+      <option value="parsha-maftir" data-i18n="torah.schedule.scope_maftir">Maftir</option>
       <option value="parsha-haftarah" data-i18n="torah.schedule.scope_haftarah">Haftarah</option>
     </select>
   </span>
@@ -3343,7 +3344,8 @@ function fsAliyahIndexAtViewport() {
    • a single aliyah (parsha-aliyah-N) → step the Reading picker to N∓1 and let it re-fetch.
      Done by dispatching 'change' on #scopeSelect, exactly as stepParsha does for the weekly
      cycle: that inherits clearLoop(), the holiday/custom clearing, saveSettings() and
-     fetchAndRender() instead of becoming a second source of truth. Clamped to 1..7 — it
+     fetchAndRender() instead of becoming a second source of truth. Clamped to 1..7, then
+     Maftir (parsha-maftir) where the parasha has one, the order a Shabbat reading runs — it
      deliberately does NOT chain into the neighbouring parsha, which the ‹/› week-step buttons
      already own.
    • anything else (haftarah, holiday, custom, or a parsha with no aliyah data) → aria-disabled,
@@ -3365,11 +3367,13 @@ function stepFsAliyah(dir) {
     return;
   }
   const m = (settings.scope || '').match(/^parsha-aliyah-([1-7])$/);
-  if (!m) return;
-  const n = Math.max(1, Math.min(cycleAliyahMax(), parseInt(m[1], 10) + dir));   // the Weekday cycle has three
+  const max = cycleAliyahMax();   // the Weekday cycle has three; Maftir follows the last, where the parasha has one
+  const cur = m ? parseInt(m[1], 10) : settings.scope === 'parsha-maftir' ? max + 1 : 0;
+  if (!cur) return;
+  const n = Math.max(1, Math.min(max + (maftirOffered() ? 1 : 0), cur + dir));
   const sel = document.getElementById('scopeSelect');
   if (!sel || sel.disabled) return;
-  sel.value = 'parsha-aliyah-' + n;
+  sel.value = n > max ? 'parsha-maftir' : 'parsha-aliyah-' + n;
   sel.dispatchEvent(new Event('change'));
 }
 /* Recompute what the bar can currently do. Read-only with respect to settings, audio and the
@@ -3377,7 +3381,7 @@ function stepFsAliyah(dir) {
    data-i18n-* attributes on every language switch, which would wipe a disabled reason — hence
    the applyI18n hook, the same shape syncWeekStepLabels uses. */
 function syncFsBar() {
-  const scopeN = (settings.scope || '').match(/^parsha-aliyah-([1-7])$/);
+  const scopeN = (settings.scope || '').match(/^parsha-(aliyah-[1-7]|maftir)$/);
   const canStep = !!(_aliyahStarts && _aliyahStarts.length) || !!scopeN;
   for (const [id, key] of [['ttFsAliyahPrev', 'torah.fspresent.aliyah_prev'],
                            ['ttFsAliyahNext', 'torah.fspresent.aliyah_next']]) {
@@ -3646,6 +3650,19 @@ function resolveRef() {
     }
     return { ref: p.ref, label: I18n.t('torah.reading.haftarah_unavailable_label', { parsha: p.en }), parshahEntry: p, aliyahNum: 'H', isHaftarah: true };
   }
+  if (scope === 'parsha-maftir') {
+    // PocketTorah has no maftir file, but the maftir always sits inside aliyah 7: an overlay, so Chant plays that
+    // aliyah's recording under the maftir's verses and stops at their end (the Triennial ranges' route).
+    const full = aliyahLookup(p.en, 'full');
+    const range = cycAl ? cycAl.M : full && full.aliyot.M;
+    if (range) {
+      const ref = `${p.book} ${range.startC}:${range.startV}-${range.endC}:${range.endV}`;
+      const name = I18n.t('torah.schedule.scope_maftir');
+      if (cycAl) return { ref, label: `${cycName} — ${cycLabel}, ${name} (${ref})`, parshahEntry: p, aliyahNum: null, isHaftarah: false, overlay: true, cycle: cyc.cycle, named: cycPair };
+      return { ref, label: `${p.en} — ${name} (${ref})`, parshahEntry: p, aliyahNum: null, isHaftarah: false, overlay: true, cycle: 'full' };
+    }
+    return { ref: p.ref, label: `${p.en} — ${p.ref}`, parshahEntry: p, aliyahNum: null, isHaftarah: false };
+  }
   const m = scope.match(/parsha-aliyah-(\d)/);
   if (m) {
     const n = parseInt(m[1], 10);
@@ -3719,6 +3736,14 @@ const CYCLE_KEYS = ['full', 'triennial', 'weekday'];
 function cycleKey() { return CYCLE_KEYS.includes(settings.readingCycle) ? settings.readingCycle : 'full'; }   // an unknown stored value reads Full and stays stored
 function triYearKey() { const n = Number(settings.triennialYear); return (n === 1 || n === 2 || n === 3) ? n : 'auto'; }
 function cycleAliyahMax() { return cycleKey() === 'weekday' ? 3 : 7; }
+// The Maftir scope: the Full and Triennial divisions name one (`M`) for every parasha but Vezot Haberakhah; the
+// Weekday cycle has none. No data yet → offered, so a stored choice is never dropped before the files arrive.
+function maftirOffered() {
+  if (cycleKey() === 'weekday') return false;
+  const p = parshiyotData.find(x => x.en === settings.parshahKey);
+  const al = p ? aliyahLookup(p.en) : null;
+  return !al || !!(al.aliyot && al.aliyot.M);
+}
 let leyningData = null;      // { weekday, triennial } once both files have arrived
 let _leyningLoad = null;     // the in-flight fetch
 let _leyningFailed = false;
@@ -3795,9 +3820,11 @@ function triennialPartner(p, ctx) {
 // aliyah's audio (the holiday overlay path): the rendered words are mapped onto that file's timings.
 function readingIsOverlay() { return settings.scope === 'custom' || !!(currentReadingCtx && currentReadingCtx.overlay); }
 function overlayRef() { return settings.scope === 'custom' ? (settings.customRef || null) : ((currentReadingCtx && currentReadingCtx.overlay && currentReadingCtx.ref) || null); }
-// The Weekday cycle offers aliyot 1–3 and no haftarah: a stored scope outside its list falls back to the
-// whole reading. Called before every resolve, so a cycle change, a link and a cloud download all land in range.
+// The Weekday cycle offers aliyot 1–3 and no haftarah, and a parasha without a maftir no Maftir: a stored scope
+// outside the list falls back to the whole reading. Called before every resolve, so a cycle change, a link and a
+// cloud download all land in range.
 function clampScopeToCycle() {
+  if (settings.scope === 'parsha-maftir' && !maftirOffered()) { settings.scope = 'parsha-full'; return true; }
   if (cycleKey() !== 'weekday') return false;
   const m = /^parsha-aliyah-([1-7])$/.exec(settings.scope || '');
   if ((m && parseInt(m[1], 10) > 3) || settings.scope === 'parsha-haftarah') { settings.scope = 'parsha-full'; return true; }
@@ -8456,7 +8483,7 @@ function favoriteRefNow() {
   }
   if (!settings.parshahKey || settings.holidayKey) return null;
   if (!parshiyotData.some(p => p.en === settings.parshahKey)) return null;
-  const scope = /^parsha-(full|aliyah-[1-7]|haftarah)$/.test(settings.scope || '') ? settings.scope : 'parsha-full';
+  const scope = /^parsha-(full|aliyah-[1-7]|maftir|haftarah)$/.test(settings.scope || '') ? settings.scope : 'parsha-full';
   return { kind: 'parsha', parshahKey: settings.parshahKey, scope };
 }
 function favoriteLabelNow() {
@@ -8474,6 +8501,7 @@ function favoriteLabelOf(fav) {
     if (!p) return '';
     const m = /^parsha-aliyah-([1-7])$/.exec(r.scope || '');
     if (m) return `${p.en} — ${I18n.t('torah.schedule.scope_aliyah', { n: m[1] })}`;
+    if (r.scope === 'parsha-maftir') return `${p.en} — ${I18n.t('torah.schedule.scope_maftir')}`;
     if (r.scope === 'parsha-haftarah') return `${p.en} — ${I18n.t('torah.schedule.scope_haftarah')}`;
     return `${p.en} — ${p.ref}`;
   }
@@ -8671,7 +8699,7 @@ function openFavorite(name) {
   if (r.kind === 'parsha') {
     const p = parshiyotData.find(x => x.en === r.parshahKey);
     if (!p) { stale(); return; }
-    const scope = /^parsha-(full|aliyah-[1-7]|haftarah)$/.test(r.scope || '') ? r.scope : 'parsha-full';
+    const scope = /^parsha-(full|aliyah-[1-7]|maftir|haftarah)$/.test(r.scope || '') ? r.scope : 'parsha-full';
     apply = () => {
       settings.parshahKey = p.en; settings.scope = scope;
       settings.holidayKey = null; settings.customRef = null; settings.customLabel = null;
@@ -9533,6 +9561,7 @@ function refreshScopeLabels() {
   const fullLabel = I18n.t(fullKey, { n: al && al.tri ? al.tri.yearNum : '' });
   const BASE = { 'parsha-full': fullLabel, 'parsha-haftarah': I18n.t('torah.schedule.scope_haftarah') };
   for (let i = 1; i <= 7; i++) BASE['parsha-aliyah-' + i] = I18n.t('torah.schedule.scope_aliyah', { n: i });
+  BASE['parsha-maftir'] = I18n.t('torah.schedule.scope_maftir');
   const setLabel = (val, txt) => {
     const opt = scopeSel.querySelector(`option[value="${val}"]`);
     if (opt) opt.textContent = txt;
@@ -9555,6 +9584,8 @@ function refreshScopeLabels() {
     const rng = al.aliyot[n] ? fmtRange(al.aliyot[n]) : '';
     setLabel('parsha-aliyah-' + n, `${mark}${I18n.t('torah.schedule.scope_aliyah', { n: n })}${rng ? ' · ' + rng : ''}`);
   }
+  const mRng = al.aliyot.M ? fmtRange(al.aliyot.M) : '';
+  setLabel('parsha-maftir', `${mark}${BASE['parsha-maftir']}${mRng ? ' · ' + mRng : ''}`);
   let hafLabel = `${mark}${I18n.t('torah.schedule.scope_haftarah')}`;
   if (al.haftarah) {
     // Haftarah refs (aliyah.json) space the range hyphen, e.g. "Zechariah 2:14 - 4:7",
@@ -9570,11 +9601,13 @@ function refreshScopeLabels() {
 function updateScopeSelectState() {
   const scopeSel = document.getElementById('scopeSelect');
   if (!scopeSel) return;
-  // The Weekday cycle has three aliyot and no haftarah: the other options leave the list (values never change).
+  // The Weekday cycle has three aliyot and no haftarah, and Maftir leaves where maftirOffered() says so: the other
+  // options leave the list (values never change).
   const maxN = cycleAliyahMax();
   scopeSel.querySelectorAll('option').forEach(o => {
     const m = /^parsha-aliyah-([1-7])$/.exec(o.value);
-    const off = (m && parseInt(m[1], 10) > maxN) || (o.value === 'parsha-haftarah' && cycleKey() === 'weekday');
+    const off = (m && parseInt(m[1], 10) > maxN) || (o.value === 'parsha-haftarah' && cycleKey() === 'weekday')
+      || (o.value === 'parsha-maftir' && !maftirOffered());
     o.hidden = !!off; o.disabled = !!off;
   });
   refreshScopeLabels();
@@ -10777,7 +10810,7 @@ async function init() {
         // emitted only by our own "Copy link" button, so links predating it are unaffected;
         // the regex is REQUIRED because the value is assigned straight into a <select>.
         const _dlScope = _dl.get('scope');
-        settings.scope = /^parsha-(aliyah-[1-7]|haftarah)$/.test(_dlScope || '') ? _dlScope : 'parsha-full';
+        settings.scope = /^parsha-(aliyah-[1-7]|maftir|haftarah)$/.test(_dlScope || '') ? _dlScope : 'parsha-full';
         settings.holidayKey = null; settings.customRef = null; settings.customLabel = null;
         saveSettings();
         syncParshaSelect();
