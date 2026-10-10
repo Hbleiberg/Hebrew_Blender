@@ -1088,7 +1088,9 @@ became **seven tabs of flat sections**, the Trope Tutor's Settings-tab idiom ins
   `.tt-stack-toggles` pair). Those are mirrors of the Text tab's *Show transliteration* / *Show translation*
   rows — one setting shown twice, the way the audio bar's sliders mirror the Audio tab's: `setShowTranslit` /
   `setShowTranslation` are the only writers, and `syncShowSwitches()` (from `syncFormToSettings`) keeps both
-  pairs in step. **The Custom range** is a toolbar button `#ttCustomBtn` (`aria-expanded`, `aria-controls`) that
+  pairs in step. Projector mode (`body.fullscreen`) hides `.tt-controls`, so the presentation bar `#ttFsBar` carries
+  a third copy: the toggle buttons `#ttFsTranslit` / `#ttFsTranslation` (`.tt-fs-text`, the visible word as the
+  name), through `toggleFsReveal()` into the same writers; `syncShowSwitches()` sets their `aria-pressed`. **The Custom range** is a toolbar button `#ttCustomBtn` (`aria-expanded`, `aria-controls`) that
   unfolds one compact group `#ttCustomWrap` (`.tt-ctrl.tt-custom`, `hidden` until pressed: Book `#ttCustomBook`,
   Chapter `#ttCustomChapter`, Verses `#ttCustomVStart`–`#ttCustomVEnd` and Go → `applyCustomRange()`);
   `toggleCustomRange(force?)` is the one writer of the group's hidden state and focuses the Book select on open;

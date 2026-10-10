@@ -4156,10 +4156,10 @@ torah.controls.parsha_label,Parsha:,פרשה:,control label,
 torah.controls.reading_label,Reading:,קריאה:,control label (scope select),
 torah.controls.scope_aria,Reading scope,היקף הקריאה,scope select aria-label,aria-label only
 torah.controls.scope_holiday_note,This reading has one part; the Parsha box leads back to the weekly parasha.,לקריאה הזו חלק אחד בלבד; תיבת הפרשה מחזירה אל פרשת השבוע.,scope select title while it is disabled on a holiday or custom reading with one part,title only
-torah.controls.translation_toggle,Show translation,הצגת תרגום,switch at the top of the Text tab's Translation section (was the toolbar's Translation toggle),
-torah.controls.translit_toggle,Show transliteration,הצגת תעתיק,switch at the top of the Text tab's Transliteration section (was the toolbar's Translit toggle),
-torah.controls.translit_short,Translit,תעתיק,toolbar mirror of the Text tab's Show transliteration switch (short: it sits in the Parsha row),
-torah.controls.translation_short,Translation,תרגום,toolbar mirror of the Text tab's Show translation switch (short: it sits in the Parsha row),
+torah.controls.translation_toggle,Show translation,הצגת תרגום,switch at the top of the Text tab's Translation section (was the toolbar's Translation toggle); also the title of the projector bar's Translation toggle,
+torah.controls.translit_toggle,Show transliteration,הצגת תעתיק,switch at the top of the Text tab's Transliteration section (was the toolbar's Translit toggle); also the title of the projector bar's Translit toggle,
+torah.controls.translit_short,Translit,תעתיק,toolbar mirror of the Text tab's Show transliteration switch (short: it sits in the Parsha row); also the projector bar's toggle button,
+torah.controls.translation_short,Translation,תרגום,toolbar mirror of the Text tab's Show translation switch (short: it sits in the Parsha row); also the projector bar's toggle button,
 torah.controls.version_label,Version,גרסה,Translation section label for the version list (shown while the translation is on),
 torah.controls.version_loading,Loading…,טוען…,select placeholder option,
 torah.custom.book_deuteronomy,Deuteronomy,דברים,book option,glyph-name

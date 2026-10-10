@@ -1770,6 +1770,11 @@ body.fullscreen #ttFsBar.visible .tt-fs-plate { pointer-events: auto; }
    unavailable is the entire point. */
 .tt-fs-btn[aria-disabled="true"] { opacity: 0.45; cursor: not-allowed; }
 .tt-fs-btn[aria-disabled="true"]:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); }
+/* The reveal pair (#ttFsTranslit / #ttFsTranslation): words, not glyphs, so a little padding; on reads by a gold
+   underline as well as the fill, so the state is not color alone. Scoped to .tt-fs-text: #ttFsDark also carries
+   aria-pressed and keeps its own look. */
+.tt-fs-text { padding-inline: 12px; font-size: 0.9rem; }
+.tt-fs-text[aria-pressed="true"] { background: rgba(255,255,255,0.24); border-color: var(--gold); box-shadow: inset 0 -3px 0 var(--gold); }
 .tt-fs-sep { width: 1px; align-self: stretch; background: rgba(255,255,255,0.18); margin: 2px 3px; }
 body.fullscreen.tt-karaoke-active #ttFsBar { bottom: calc(var(--tt-audio-h, 96px) + 12px); }
 /* The toast's resting offset is normally the karaoke bar's; in fullscreen this bar is what it
@@ -2119,7 +2124,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
      init() and syncs every dark toggle by id, so a bar built later would start out of sync.
      role="group" rather than "toolbar" — APG expects a toolbar to support roving arrow-key
      navigation, and ArrowLeft/ArrowRight already mean "next/previous word" inside the reading
-     (onReadingKeydown). Six real <button>s are Tab-reachable and Enter/Space-operable anyway;
+     (onReadingKeydown). Eight real <button>s are Tab-reachable and Enter/Space-operable anyway;
      Escape exits fullscreen natively. #fsExitBtn stays the exit — this bar never duplicates it. -->
 <div id="ttFsBar" role="group" aria-label="Presentation controls" data-i18n-aria-label="torah.fspresent.bar_aria">
   <!-- dir="ltr" on the A−/A+ glyphs only: the sign is bidi-neutral, so in the Hebrew UI it
@@ -2142,6 +2147,16 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
             title="Next aliyah" aria-label="Next aliyah"
             data-i18n-title="torah.fspresent.aliyah_next" data-i18n-aria-label="torah.fspresent.aliyah_next"
             aria-disabled="true"><span class="dir-arrow" aria-hidden="true">&#8250;</span></button>
+    <span class="tt-fs-sep" aria-hidden="true"></span>
+    <!-- The reveal pair: projector mode hides .tt-controls and its Translit / Translation switches, so the bar
+         carries them as toggle buttons. The visible word is the name (no aria-label to override it);
+         syncShowSwitches sets aria-pressed. -->
+    <button type="button" class="tt-fs-btn tt-fs-text" id="ttFsTranslit" onclick="toggleFsReveal('translit')"
+            title="Show transliteration" data-i18n-title="torah.controls.translit_toggle"
+            aria-pressed="false" data-i18n="torah.controls.translit_short">Translit</button>
+    <button type="button" class="tt-fs-btn tt-fs-text" id="ttFsTranslation" onclick="toggleFsReveal('translation')"
+            title="Show translation" data-i18n-title="torah.controls.translation_toggle"
+            aria-pressed="false" data-i18n="torah.controls.translation_short">Translation</button>
     <span class="tt-fs-sep" aria-hidden="true"></span>
     <button type="button" class="tt-fs-btn" id="ttFsDark" onclick="toggleDark()"
             title="Toggle dark mode" aria-label="Toggle dark mode"
@@ -3277,7 +3292,7 @@ document.addEventListener('fullscreenchange', () => {
     if (_fsBarTimer) { clearTimeout(_fsBarTimer); _fsBarTimer = null; }
     const bar = document.getElementById('ttFsBar');
     if (bar) bar.classList.remove('visible');
-    // The bar's five buttons leave the a11y tree with it, so a keyboard user who pressed Escape
+    // The bar's buttons leave the a11y tree with it, so a keyboard user who pressed Escape
     // while standing on one lands on <body>. Hand focus back to the control that got them here —
     // but only if focus was on the fullscreen chrome, never stealing it from a reader.
     const ae = document.activeElement;
@@ -3315,6 +3330,12 @@ function hideFsBar() {
    Goes through setFontSize, so the drawer slider and readout stay in step. */
 function stepFsSize(dir) {
   setFontSize('heb', (parseFloat(settings.hebFontSize) || DEFAULTS.hebFontSize) + dir * 0.1);
+  showFsBar();
+}
+// The reveal pair: the same one writer per setting as the toolbar's switches and the Text tab's rows.
+function toggleFsReveal(which) {
+  if (which === 'translit') setShowTranslit(!settings.showTranslit);
+  else setShowTranslation(!settings.showTranslation);
   showFsBar();
 }
 /* Which aliyah SECTION the viewport is showing, as an index into _aliyahStarts.
@@ -8939,14 +8960,18 @@ function closeSettings() {
   const o = _settingsOpener; _settingsOpener = null;
   if (o && o.focus) { try { o.focus(); } catch (e) {} }
 }
-// The reveal switches: the toolbar's compact mirror (#…Bar) and the Text tab's row are one setting shown
-// twice, so each has one writer and syncShowSwitches keeps both pairs in step from every path that
-// repaints the form (open, reset, cloud re-read, a practice link's view).
+// The reveal switches: the toolbar's compact mirror (#…Bar), the Text tab's row and the projector bar's toggle
+// (#ttFs…) are one setting shown three times, so each has one writer and syncShowSwitches keeps all three in
+// step from every path that repaints the form (open, reset, cloud re-read, a practice link's view).
 function syncShowSwitches() {
   for (const [id, on] of [['ttShowTranslit', settings.showTranslit], ['ttShowTranslitBar', settings.showTranslit],
                           ['ttShowTranslation', settings.showTranslation], ['ttShowTranslationBar', settings.showTranslation]]) {
     const el = document.getElementById(id);
     if (el) el.checked = !!on;
+  }
+  for (const [id, on] of [['ttFsTranslit', settings.showTranslit], ['ttFsTranslation', settings.showTranslation]]) {
+    const b = document.getElementById(id);
+    if (b) b.setAttribute('aria-pressed', on ? 'true' : 'false');
   }
 }
 function setShowTranslit(on) {
