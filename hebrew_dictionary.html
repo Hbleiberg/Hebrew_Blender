@@ -423,6 +423,10 @@ body.dark .sidebar-toggle-btn:hover,body.dark .sidebar-show-btn:hover{background
 .search-kbd-hint{position:absolute;inset-inline-end:7px;top:50%;transform:translateY(-50%);display:none;pointer-events:none;}
 @media (pointer:fine){.search-row:not(:focus-within) .search-kbd-hint{display:block;}}
 .search-wrap input.has-clear ~ .search-kbd-hint{display:none;}
+/* Under a finger these fields compute 12–13.6px, and iOS Safari zooms the page into a focused field under 16px and
+   leaves it zoomed (16/13.6 = 1.18× on the search box). 16px only where the pointer is coarse; the desktop fields keep
+   their size (contact's form sets the same rule). !important outranks the inline sizes; the bulk box is readonly, so no zoom. */
+@media (pointer:coarse){.search-wrap input,.sort-sel,#translitStyleSelect,#gematriaFilterType,#gematriaVal1,#gematriaVal2{font-size:16px !important;}}
 .search-kbd-hint kbd{direction:ltr;unicode-bidi:isolate;display:inline-block;font-family:ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;font-size:0.68rem;line-height:1;padding:2px 5px;min-width:1.1em;text-align:center;background:var(--cream);color:var(--muted);border:1px solid var(--border);border-bottom-width:2px;border-radius:4px;}
 /* Section 4: mobile sticky bar (populated by JS at ≤680px) */
 #mobileBar{display:none;}
