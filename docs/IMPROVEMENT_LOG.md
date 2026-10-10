@@ -8,9 +8,11 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P3 (**NEW S492 N — needs the tour-engine extraction, UX rule 1**) | 7 tools' tour engines | **A tour does not follow a rotation**: `resize` re-places the card but never scrolls its target back; 4 of 7 dictionary steps strand it off-screen (findings S492). | found S492
+- [ ] P4 (**NEW S494 M — take first**) | privacy.html | **The HE FERPA badge keeps Latin small caps.** | found S494
 
-- [ ] P4 (**NEW S492 N**) | hebrew_dictionary.html | **`#fsBtn` (z 9999) covers the tour's last Done (z 1500) in a short wide window** (Android landscape). | found S492
+- [ ] P4 (**NEW S494 M — hebrew-faux-italic**) | 6 pages + folder-tree block | **13 Hebrew hints slant by CSS italic**: upright in HE (findings S494). | found S494
+
+- [ ] P3 (**NEW S492 N — needs the tour-engine extraction, UX rule 1**) | 7 tools' tour engines | **A tour does not follow a rotation**: `resize` re-places the card but never scrolls its target back; 4 of 7 dictionary steps strand it off-screen (findings S492). | found S492
 
 - [ ] P4 (**NEW S492 N — tour engine**) | hebrew_dictionary.html | **The tour ring runs past the window on a full-width target**: `_tourReposition` clamps `left`, not the width. | found S492
 
@@ -66,7 +68,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S454 H — gate 2**) | resources.html | **"Jewish Interactive" is listed twice** (one URL; "All" counts 43 for 42). | found S454
 
-- [ ] P4 (**NEW S455 C**) | trope_tutor.html | **The Learn and Phrases cards carry no heading** (h1 only), so a screen reader cannot jump card to card. | found S455
+- [ ] P4 (**NEW S455 C; Learn FIXED S494**) | trope_tutor.html | **The Phrases cards carry no heading** (its wording: row number + Hebrew). | found S455
 
 - [ ] P4 (**NEW 2026-10-03, gate 2 copy**) | hebrew_dictionary.html | **"Any of these letters" requires every ticked letter** (`onFilter`); the Hebrew label (כל אחת מהאותיות האלה) says so, the English label and its "Any:" chip don't. | found 2026-10-03
 
@@ -298,9 +300,15 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-10 | (S494 close-out) | branch/deploy note | **S494 = M on privacy + terms + 4 fixes, PR #321.** No drift (main `b33a359b`, keep-alive #28 green); sw v975→v976; no FM bump; gates 3 ×2, 1 skip.
+
+- [x] 2026-10-10 | `715f3cc8` `c4e0b86c` | privacy, terms, CSV, check-i18n | (S494) **The legal column 680px (print 820); four Hebrew <em> phrases bold.** | findings S494.
+
+- [x] 2026-10-10 | `2b21e89d` `1dddd25c` | dictionary, trope | (S494) **The tour's Done is tappable on a sideways phone; Learn cards are headings.** | findings S494.
+
 - [x] 2026-10-10 | (after S493: maintainer request) | branch/deploy note | **Two seeds built on request, draft PR #321.** sw v974→v975; no FM bump; sitemap; gates clean; no backend file.
 
-- [x] 2026-10-10 | `5a1c6f57` | torah_trainer.html | (after S493, maintainer request) **A haftarah-only special Shabbat (the 8 `ref:null` entries) no longer "replaces the maftir": chip tip + lookup line take `_haftarah` keys.** | headless, clock fixed: Machar Chodesh ×2 vs Chanukah 1, EN + HE.
+- [x] 2026-10-10 | `5a1c6f57` | torah_trainer.html | (after S493, maintainer request) **A haftarah-only special Shabbat (the 7 `ref:null` entries) no longer "replaces the maftir": chip tip + lookup line take `_haftarah` keys.** | headless, clock fixed: Machar Chodesh ×2 vs Chanukah 1, EN + HE.
 
 - [x] 2026-10-10 | `b3e91897` `8eee6d69` | torah_trainer.html | (after S493, maintainer request) **Maftir in the Reading picker; Translit / Translation toggles on the projector bar.** | headless: Chant seeks Bereshit-7 to 6:5; Triennial = triennial.json; fullscreen toggles in step, keyboard, reload.
 
@@ -322,15 +330,11 @@ _(none)_
 
 - [x] 2026-10-09 | `af9ed26f` `63489ddb` `df33e5e5` `89d1cf66` | resources, dashboard, scripts ×2 | (S490) **Resources' Hebrew labels untracked; the dashboard's projected titles + fullscreen captions untracked (Video through hebDisplay); compact-ledger stops re-cutting its own lines; smoke-sync runs outside its schedule's busy cells.** | findings S490.
 
-- [x] 2026-10-09 | (S489 close-out) | branch/deploy note | **S489 = E (clean) + 4 fixes, PR #320 continued.** No drift (main `fee5fe05`, keep-alive #27 green); sw v969→v970; no FM bump (a layout fix); no gate; traps 208–211 (findings S489).
-
-- [x] 2026-10-09 | `f620c768` `e770c9eb` `c046d4fb` `d92d1de1` | dashboard ×2, FM, torah + trope | (S489) **Header gates 564/657; crop caption below the ruler; Hebrew Now/Next untracked; Sefaria/PocketTorah credits `lang="en"`.** | findings S489.
-
-- [x] 2026-10-09 | — | torah_trainer.html | (S489) **Not a defect: the load-failed status names the reading as its header and the select do** (transliteration + Sefaria ref in both UIs). | findings S489.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-10 | **S494** | iters: 1 pass (**M**) + 4 fixes = **5** | tools: privacy ×2, terms, dictionary, trope, CSV, scripts | patterns fixed: hebrew-faux-italic (NEW) ×4 | pass run: M | SW: v975→v976
 
 - 2026-10-10 | **S493** | iters: 1 pass (**P**) + 4 fixes = **5** | tools: dictionary ×2, js/ivrit-saves.js (the session's one shared script), trope | patterns fixed: stale-tab ×1, flex-range ×1, latin-tracking ×1 | pass run: P | SW: v973→v974
 
@@ -370,13 +374,13 @@ _(none)_
 
 - 2026-10-08 | **S475** | iters: 5 | tools: torah ×2, FM, trope, i18n.js | patterns fixed: english-literal ×2, stale ×1 | pass run: K | SW: v955→v956
 
-- 2026-10-08 | **S474** | iters: 1 pass (**L**) + 4 fixes = **5** | tools: torah ×2, flash, index | patterns fixed: button-focus ×1 | pass run: L | SW: v954→v955
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S493 (2026-10-10):** dictionary, trope, saves, scripts, docs S493 · generator, FM S492 · dashboard, resources, flash, torah S491 · contact S487 · index S483 · privacy, terms, account, i18n.js S478 · pwa S472 · 404 S470.
+- **Snapshot S494 (2026-10-10):** privacy, terms, dictionary, trope, dashboard, generator, 404, scripts S494 · torah, saves S493 · FM S492 · resources, flash S491 · contact S487 · index S483 · account, i18n.js S478 · pwa S472.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`hebrew-faux-italic`** (NEW S494 M; gate 3: a `he` cell's `<em>` is `<strong>`, `c4e0b86c` ×4; open: 13 CSS italics): ACTIVE, streak 0. Detection: `m494/italcensus.mjs`.
 
 - **`fixed-toast-duration-shorter-than-its-text`** (NEW S484 F; FIXED `8037c22d` ×4, `5ffa32ba`; resources `3c539498` S487; open 0): ACTIVE, streak 0. A fixed toast timer under 1000 + 50 ms/char of its longest message. Detection: `f484/durations.mjs`; exempt sticky/explicit-ms …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -396,7 +400,7 @@ _(none)_
 
 - **`header-wrap-gate-below-its-ceiling`** (NEW S478 M; FIXED ×8 `92a21164`; S489 dashboard `f620c768`): ACTIVE, streak 0. Detection: `m478/gates.mjs` / `e489/gates.mjs` (1px 320-1000, EN/HE × light/dark, per page; a gate removed by CSSOM gives its ceiling); HEAD the control.
 
-- **`latin-tracking-on-hebrew-labels`** (NEW S464 M; gate 3: drop suite-wide; fixed S478–S493: contact, dashboard ×3, resources, footers ×8, both shared blocks, generator, FM, trope `31ab260e`; open: dictionary, badges): ACTIVE, streak 0. Detection: `n492/gcensus.mjs`, …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`latin-tracking-on-hebrew-labels`** (NEW S464 M; gate 3: drop suite-wide; fixed S478–S493: contact, dashboard ×3, resources, footers ×8, both shared blocks, generator, FM, trope `31ab260e`; open: dictionary, badges incl. privacy's FERPA one S494): ACTIVE, streak 0. …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`forward-arrow-points-back-in-rtl-copy`** (NEW S462 N; FIXED S464 `5f7f8a40` ×48; open 0): ACTIVE, streak 1 (S472: 47 delta rows, 0). Detection: the S462 CSV census; exempt "(→)", A→Z, Back labels, the orphan `flashcards.header.home`.
 
@@ -704,7 +708,7 @@ _(none)_
 
 - N mobile & touch-device (one surface): 2026-10-10 (**S492 — 24th N, dictionary (S303 →, 114 commits): 4 phones × EN/HE × themes, 208 views by real taps, fields, touch, rotation, 4×; plants fired. FOUND 6, FIXED 1 (+ generator, FM). N-next: privacy/terms/404 (S348).**)
 
-- M aesthetics & visual design (one surface): 2026-10-08 (**S478 — 23rd M, contact (S291 →): 140 shots, census, plants; FOUND 5 + 8 headers scrolling sideways; FIXED 2. M-next: privacy/terms.**)
+- M aesthetics & visual design (one surface): 2026-10-10 (**S494 — 24th M, privacy + terms (S304 →): 160 shots, census, plants. FOUND 3, FIXED 2 (gate 3) (+ dictionary, trope). M-next: dashboard (S322).**)
 
 - K i18n / localization audit: 2026-10-09 (**S491 — 33rd K on `98340a10..2fee2f28` (76 commits): `k491/` static (plants 5/5), 84-state round trip + 28 retry loads, delta surfaces by real input, blind arms (plants 6/6). CLEAN: 0 findings.**)
 
@@ -730,4 +734,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-09 (**S484 — 36th F, the toast contract on all 8 carriers (5th look, S111 →): 24 cells + reduce, width, bars; plants 4/4. FOUND 4, FIXED 3 (+ FM kerning). F-next: the tabs / segmented-control keyboard contract (never swept).**)
 
-**Next session (S494):** **BRANCH/PR: #320 merged → start from `origin/main`. Draft PR #321 (`claude/brave-ride-02gvzs`, two seeds built on request) is the maintainer's: still open → bump `sw.js` past its v975.** `sw.js` **v975**, FM **5.59**. ⚑ Stalest: M (S478), G, D; O blocked. ⚑ Untaken: the dictionary's `#fsBtn` over the tour's Done (P4); the tour-after-rotation P3 waits on the tour-engine extraction. ⚑ Seeds: 45 (gate 1). ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.
+**Next session (S495):** **BRANCH/PR: draft PR #321 (`claude/brave-ride-02gvzs`) open → continue; merged → restart from `origin/main`.** `sw.js` **v976**, FM **5.59**. ⚑ Stalest: G (S479), D, I; O blocked. ⚑ Take first: privacy's HE badge. ⚑ Untaken: 13 CSS italics; trope's Phrases headings. ⚑ Seeds: 45. ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.

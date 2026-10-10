@@ -92337,3 +92337,29 @@ Picked by the maintainer from the seed list and built directly (`b3e91897` Mafti
 - [x] SHIPPED 2026-10-10 PR #321 — S | torah_trainer.html | **Maftir in the Reading picker.** `data/pockettorah/aliyah.json` carries a `_num:"M"` entry with `_begin`/`_end` for every parsha (210 entries verified S367) and `aliyahLookup()` keys `aliyot[num]` by the raw `_num`, so `aliyot['M']` is built on every lookup and read nowhere: `resolveRef` matches `/parsha-aliyah-(\d)/`, `refreshScopeLabels` loops 1–7 and `.filter(n …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] SHIPPED 2026-10-10 PR #321 — S | torah_trainer.html | **Projector mode can't turn the translation / transliteration off.** `#ttShowTranslit` and `#ttShowTranslation` exist only inside `.tt-controls`, which `body.fullscreen .tt-controls { display:none }` removes; the drawer's Display panel (reachable via `#ttFsSettings`) carries cantillation and nikkud but not these two. Two more `.tt-fs-btn` toggles dispatching …[full text: IMPROVEMENT_ARCHIVE.md]
+
+
+<!-- archived by compact-ledger at the S495 boundary, 2026-10-10 -->
+## Compaction (S495, 2026-10-10) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-09 | (S489 close-out) | branch/deploy note | **S489 = E (clean) + 4 fixes, PR #320 continued.** No drift (main `fee5fe05`, keep-alive #27 green); sw v969→v970; no FM bump (a layout fix); no gate; traps 208–211 (findings S489).
+
+- [x] 2026-10-09 | `f620c768` `e770c9eb` `c046d4fb` `d92d1de1` | dashboard ×2, FM, torah + trope | (S489) **Header gates 564/657; crop caption below the ruler; Hebrew Now/Next untracked; Sefaria/PocketTorah credits `lang="en"`.** | findings S489.
+
+- [x] 2026-10-09 | — | torah_trainer.html | (S489) **Not a defect: the load-failed status names the reading as its header and the select do** (transliteration + Sefaria ref in both UIs). | findings S489.
+
+### from Per-session log (one line per session)
+
+- 2026-10-08 | **S474** | iters: 1 pass (**L**) + 4 fixes = **5** | tools: torah ×2, flash, index | patterns fixed: button-focus ×1 | pass run: L | SW: v954→v955
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`hebrew-faux-italic`** (NEW S494 M; gate 3: Hebrew takes no italic, an `<em>` phrase is `<strong>` in the `he` cell, `c4e0b86c` ×4; open: 13 CSS italics, a candidate): ACTIVE, streak 0. Detection: `m494/italcensus.mjs`, every element with Hebrew own-text and a non-normal computed font-style on the 14 pages in HE, hidden ones too (plant: a hidden `<em>` per page); Latin inside Hebrew exempt.
+
+- **`latin-tracking-on-hebrew-labels`** (NEW S464 M; gate 3: drop suite-wide; fixed S478–S493: contact, dashboard ×3, resources, footers ×8, both shared blocks, generator, FM, trope `31ab260e`; open: dictionary, badges incl. privacy's FERPA one S494): ACTIVE, streak 0. Detection: `n492/gcensus.mjs`, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+_(prior — S494 pointer:)_ **BRANCH/PR: #320 merged → start from `origin/main`. Draft PR #321 (`claude/brave-ride-02gvzs`, two seeds built on request) is the maintainer's: still open → bump `sw.js` past its v975.** `sw.js` **v975**, FM **5.59**. ⚑ Stalest: M (S478), G, D; O blocked. ⚑ Untaken: the dictionary's `#fsBtn` over the tour's Done (P4); the tour-after-rotation P3 waits on the tour-engine extraction. ⚑ Seeds: 45 (gate 1). ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.
