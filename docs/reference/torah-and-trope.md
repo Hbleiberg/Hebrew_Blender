@@ -932,7 +932,8 @@ became **seven tabs of flat sections**, the Trope Tutor's Settings-tab idiom ins
     the `data-i18n` span — `openSettingsAtPanel('staff')` lands by `data-set`, so the split heading costs
     nothing).
   - **Calendar** — `schedule` (Reading schedule), `lookup` (Torah portion lookup; under the parasha it names the
-    week's special Shabbat, `torah.lookup.special`, with its own Open button `lookupOpenSpecial`), `holiday`
+    week's special Shabbat, `torah.lookup.special` — `…special_haftarah` for a haftarah-only entry, `ref:null` — with
+    its own Open button `lookupOpenSpecial`), `holiday`
     (Holiday Torah readings: `#ttHolidayPicker`), `special` (Special Shabbatot: `#ttSpecialPicker`) and
     `megillah` (Megillot: `#ttMegillahPicker`) — three `.tt-holiday-list`s of `HOLIDAY_READINGS` buttons, by
     `kind`, that `buildHolidayPicker()` builds once
@@ -1159,7 +1160,8 @@ aliyah on their own cycle: other verses).
   reading (the oracle, never shipped). An ordinary week therefore needs no network. While the parasha on screen
   is this week's, the reading header names the week's special Shabbat — `weekSpecial()`: `specialShabbat(today)`
   → `specialReadingKey` → the `HOLIDAY_READINGS` entry; a `.tt-special-chip` (`torah.reading.special_chip`,
-  its tip) and an *Open it* button (`openWeekSpecial` → `applyHolidayReading`); nothing is stored, the chip
+  its tip `special_tip`, or `special_tip_haftarah` when the entry has no Torah `ref` — the parasha's own maftir
+  is read then) and an *Open it* button (`openWeekSpecial` → `applyHolidayReading`); nothing is stored, the chip
   is recomputed on every render — and the date lookup names it under any date's parasha.
 - **The special Shabbatot** (`HebCal.specialShabbat(date, {israel})`: what the Shabbat on or after `date` reads
   besides its parasha, or null). The keys (`HebCal.SPECIAL_KEYS`): `shekalim` / `shekalim_rosh_chodesh` (the

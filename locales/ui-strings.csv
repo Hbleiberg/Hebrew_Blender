@@ -4137,7 +4137,8 @@ torah.reading.haftarah_unavailable_label,{parsha} — Haftarah unavailable,{pars
 torah.reading.aliyah_unavailable_label,{parsha} — Aliyah {n} unavailable,{parsha} — עלייה {n} אינה זמינה,reading header label when the aliyah file has no range for that aliyah,do-not-translate {parsha}; {n} numeric
 torah.reading.tune_label,Tune,מנגינה,aria-label of the reading header's tune choice (a haftarah with more than one customary tune: Tisha B'Av),aria-label only
 torah.reading.special_chip,This Shabbat: {name},השבת: {name},reading header chip while the parasha on screen is this week's and the week has a special maftir or haftarah,do-not-translate {name}
-torah.reading.special_tip,This week the maftir and haftarah of {name} replace the parasha's own. Open them to practise them.,השבוע המפטיר וההפטרה של {name} מחליפים את אלה של הפרשה. פתחו אותם כדי לתרגל.,tap tip of the this-week chip,do-not-translate {name}
+torah.reading.special_tip,This week the maftir and haftarah of {name} replace the parasha's own. Open them to practise them.,השבוע המפטיר וההפטרה של {name} מחליפים את אלה של הפרשה. פתחו אותם כדי לתרגל.,tap tip of the this-week chip (an entry with a Torah ref: maftir and haftarah),do-not-translate {name}
+torah.reading.special_tip_haftarah,This week the haftarah of {name} replaces the parasha's own. Open it to practise it.,השבוע ההפטרה של {name} מחליפה את זו של הפרשה. פתחו אותה כדי לתרגל.,tap tip of the this-week chip when the special Shabbat changes only the haftarah (ref:null; the parasha's own maftir is read),do-not-translate {name}
 torah.reading.special_open,Open it →,פתיחה ←,button beside the this-week chip (opens the special Shabbat's reading),
 torah.reading.melody_trope_link,{melody} — learn its trope →,{melody} — למדו את הטעמים ←,reading header link on a reading drawn in a melody other than the year-round one (opens the Trope Tutor on it); {melody} is trope.melody.*,do-not-translate {melody}
 torah.reading.verse_copy_aria,Copy verse {verseRef} to the clipboard,העתקת פסוק {verseRef} ללוח,per-verse button aria-label,aria-label only
@@ -4356,7 +4357,8 @@ torah.lookup.month_elul,Elul,אלול,Hebrew month name,
 torah.lookup.parsha,Parashat {name} ({schedule}),פרשת {name} ({schedule}),result line: the weekly parasha and the calendar it is on,do-not-translate {name} {schedule}
 torah.lookup.doubled_note,Open shows {first}; {second} is the next parasha in the picker.,פתיחה מציגה את {first}; {second} היא הפרשה הבאה בבורר.,note under a doubled week,do-not-translate {first} {second}
 torah.lookup.holiday,No weekly parasha: {holiday} ({schedule}),אין פרשת שבוע: {holiday} ({schedule}),result line for a festival Shabbat,do-not-translate {holiday} {schedule}
-torah.lookup.special,Also {name}: its maftir and haftarah replace the parasha's own.,וגם {name}: המפטיר וההפטרה שלה מחליפים את אלה של הפרשה.,result line under the parasha when the Shabbat has a special reading,do-not-translate {name}
+torah.lookup.special,Also {name}: its maftir and haftarah replace the parasha's own.,וגם {name}: המפטיר וההפטרה שלה מחליפים את אלה של הפרשה.,result line under the parasha when the Shabbat has a special reading (an entry with a Torah ref: maftir and haftarah),do-not-translate {name}
+torah.lookup.special_haftarah,Also {name}: its haftarah replaces the parasha's own.,וגם {name}: ההפטרה שלה מחליפה את זו של הפרשה.,result line under the parasha when the Shabbat's special reading is only a haftarah (ref:null; the parasha's own maftir is read),do-not-translate {name}
 torah.lookup.day,day {n},יום {n},appended to a festival name (Pesach day 7),do-not-translate {n}
 torah.lookup.holiday_rosh_hashanah,Rosh Hashanah,ראש השנה,festival name,
 torah.lookup.holiday_yom_kippur,Yom Kippur,יום כיפור,festival name,

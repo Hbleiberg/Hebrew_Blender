@@ -3947,8 +3947,8 @@ function lookupRender() {
     if (ps[1]) { const n = line(I18n.t('torah.lookup.doubled_note', { first: ps[0].en, second: ps[1].en })); n.style.color = 'var(--muted)'; }
     let sp = null;
     try { sp = HebCal.specialShabbat(inp.value, { israel: settings.schedule === 'israel' }); } catch (e) { sp = null; }
-    const sh = sp ? holidayByKey(specialReadingKey(sp)) : null;   // the week's maftir and haftarah, when the Shabbat has them
-    if (sh) { const sl = line(I18n.t('torah.lookup.special', { name: holidayName(sh) })); sl.style.color = 'var(--muted)'; }
+    const sh = sp ? holidayByKey(specialReadingKey(sp)) : null;   // the week's maftir and haftarah, or its haftarah alone (ref:null)
+    if (sh) { const sl = line(I18n.t(sh.ref ? 'torah.lookup.special' : 'torah.lookup.special_haftarah', { name: holidayName(sh) })); sl.style.color = 'var(--muted)'; }
     _lookupTarget = { parsha: ps[0], second: ps[1] || null, special: sh };
     if (row) row.hidden = false;
     const sb = document.getElementById('lookupOpenSpecialBtn');
@@ -4110,7 +4110,8 @@ function weekSpecialHTML() {
   const w = weekSpecial();
   if (!w) return '';
   const name = holidayName(w.reading), chip = I18n.t('torah.reading.special_chip', { name });
-  return ` <span class="tt-notice-chip tt-special-chip" aria-label="${esc(chip)}" data-tip="${esc(I18n.t('torah.reading.special_tip', { name }))}">${esc(chip)}</span>`
+  const tipKey = w.reading.ref ? 'torah.reading.special_tip' : 'torah.reading.special_tip_haftarah';   // ref:null = the haftarah alone
+  return ` <span class="tt-notice-chip tt-special-chip" aria-label="${esc(chip)}" data-tip="${esc(I18n.t(tipKey, { name }))}">${esc(chip)}</span>`
     + ` <button type="button" class="btn btn-xs btn-secondary tt-special-open" onclick="openWeekSpecial()">${esc(I18n.t('torah.reading.special_open'))}</button>`;
 }
 function openWeekSpecial() { const w = weekSpecial(); if (w) { clearLoop(); applyHolidayReading(w.reading); } }
