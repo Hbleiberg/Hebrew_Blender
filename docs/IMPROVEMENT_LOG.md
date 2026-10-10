@@ -8,11 +8,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P2 (**NEW S492 N — FIRST next session**) | hebrew_dictionary.html | **A slow first visit never loads the word list**: the progress callback's bare `I18n.t()` throws before the deferred i18n.js runs (3/3 at ≤5 Mbps); guard it with `window.I18n` (findings S492). | found S492
-
 - [ ] P3 (**NEW S492 N — needs the tour-engine extraction, UX rule 1**) | 7 tools' tour engines | **A tour does not follow a rotation**: `resize` re-places the card but never scrolls its target back; 4 of 7 dictionary steps strand it off-screen (findings S492). | found S492
-
-- [ ] P4 (**NEW S492 N**) | hebrew_dictionary.html | **Shoresh mode scrolls sideways below ~334px**: `#shoreshInput` (`flex:1`) needs `min-width:0`. | found S492
 
 - [ ] P4 (**NEW S492 N**) | hebrew_dictionary.html | **`#fsBtn` (z 9999) covers the tour's last Done (z 1500) in a short wide window** (Android landscape). | found S492
 
@@ -58,7 +54,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S464 M**) | resources.html | **The Links/Fonts toggle mixes a line icon with a colour 🔤** (`resources.view.fonts`). | found S464
 
-- [ ] P4 (**S464 M — gate 3 ANSWERED: drop it suite-wide; footers + shared blocks FIXED S491, generator + FM S492**) | dictionary, trope, badges | **Page-level Hebrew labels still track** (census `n492/gcensus.mjs`): dictionary panel titles + word badges, trope key labels, the suite's Beta badge (5 pages) and privacy badges. | found S464
+- [ ] P4 (**S464 M — gate 3 ANSWERED: drop it suite-wide; footers + shared blocks FIXED S491, generator + FM S492, trope S493**) | dictionary, badges | **Page-level Hebrew labels still track** (census `n492/gcensus.mjs`, `p493/tcensus.mjs`): dictionary panel titles + word badges, the suite's Beta badge (5 pages) and privacy badges. | found S464
 
 - [ ] P4 (**NEW S464 M**) | resources.html | **Below ~1020px wrapped chips flow back under their row label.** | found S464
 
@@ -306,6 +302,10 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-10 | (S493 close-out) | branch/deploy note | **S493 = P on the Torah Trainer + 4 fixes, PR #320 continued.** No drift (main `fee5fe05`, keep-alive #27 green, delete-account source = repo); sw v973→v974; no FM bump (no FM change); no gate; all seven smokes on the module fix; traps 228–231 (findings S493).
+
+- [x] 2026-10-10 | `c36f7a48` `c57f0b79` `dcfdcf16` `31ab260e` | dictionary ×2, js/ivrit-saves.js + smoke-sync + docs, trope | (S493) **A slow first visit loads the word list; a stale tab hidden and shown again never sends its older settings (torah, trope; smoke-sync D37); Shoresh fits a 320px phone; trope's Hebrew labels untracked.** | findings S493.
+
 - [x] 2026-10-10 | (S492 close-out) | branch/deploy note | **S492 = N + 3 fixes + 1 reverted, PR #320.** No drift (main `fee5fe05`, keep-alive #27 green); sw v973; no FM bump; no gate; a P2 logged first; traps 222–227.
 
 - [x] 2026-10-10 | `07177214` `b4df90b9` `0079b0f2` | dictionary, generator, FM | (S492) **Dictionary fields 16px on touch; the generator's 26 and FM's 57 Hebrew labels untracked.** | findings S492.
@@ -326,13 +326,11 @@ _(none)_
 
 - [x] 2026-10-09 | — | torah_trainer.html | (S489) **Not a defect: the load-failed status names the reading as its header and the select do** (transliteration + Sefaria ref in both UIs). | findings S489.
 
-- [x] 2026-10-09 | (S488 close-out) | branch/deploy note | **S488 = A + 4 fixes; PR #319 merged (deploy `success`), draft PR #320.** No drift; sw v968→v969; no FM bump; no gate; traps 204-207.
-
-- [x] 2026-10-09 | `5da9ecbe` `f722eeba` `183605ba` `87fea4c4` | dashboard ×2, trope, FM | (S488) **Ribbon 9.85:1; "Count down to" named; Try again keeps focus; crop caption in HE.** | findings S488.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-10 | **S493** | iters: 1 pass (**P**) + 4 fixes = **5** | tools: dictionary ×2, js/ivrit-saves.js (the session's one shared script), trope | patterns fixed: stale-tab ×1, flex-range ×1, latin-tracking ×1 | pass run: P | SW: v973→v974
 
 - 2026-10-10 | **S492** | iters: 1 pass (**N**) + 3 fixes + 1 reverted = **5** | tools: dictionary ×2, generator, FM | patterns fixed: text-field-under-16px ×1, latin-tracking ×2 | pass run: N | SW: v972→v973
 
@@ -372,11 +370,9 @@ _(none)_
 
 - 2026-10-08 | **S474** | iters: 1 pass (**L**) + 4 fixes = **5** | tools: torah ×2, flash, index | patterns fixed: button-focus ×1 | pass run: L | SW: v954→v955
 
-- 2026-10-08 | **S473** | iters: 1 pass (**E**) + 4 fixes = **5** | tools: docs, flash, dictionary, torah | patterns fixed: button-focus ×2 | pass run: E | SW: v953→v954
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S492 (2026-10-10):** dictionary, generator, FM S492 · dashboard, resources, flash, torah, trope, scripts, docs S491 · contact, saves S487 · index S483 · privacy, terms, account, i18n.js S478 · pwa S472 · 404 S470.
+- **Snapshot S493 (2026-10-10):** dictionary, trope, saves, scripts, docs S493 · generator, FM S492 · dashboard, resources, flash, torah S491 · contact S487 · index S483 · privacy, terms, account, i18n.js S478 · pwa S472 · 404 S470.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -398,7 +394,7 @@ _(none)_
 
 - **`header-wrap-gate-below-its-ceiling`** (NEW S478 M; FIXED ×8 `92a21164`; S489 dashboard `f620c768`): ACTIVE, streak 0. Detection: `m478/gates.mjs` / `e489/gates.mjs` (1px 320-1000, EN/HE × light/dark, per page; a gate removed by CSSOM gives its ceiling); HEAD the control.
 
-- **`latin-tracking-on-hebrew-labels`** (NEW S464 M; gate 3: drop suite-wide; fixed S478–S492: contact, dashboard ×3, resources, footers ×8, both shared blocks, generator `b4df90b9`, FM `0079b0f2`; open: dictionary, trope, badges): ACTIVE, streak 0. Detection: `n492/gcensus.mjs` …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`latin-tracking-on-hebrew-labels`** (NEW S464 M; gate 3: drop suite-wide; fixed S478–S493: contact, dashboard ×3, resources, footers ×8, both shared blocks, generator, FM, trope `31ab260e`; open: dictionary, badges): ACTIVE, streak 0. Detection: `n492/gcensus.mjs`, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`forward-arrow-points-back-in-rtl-copy`** (NEW S462 N; FIXED S464 `5f7f8a40` ×48; open 0): ACTIVE, streak 1 (S472: 47 delta rows, 0). Detection: the S462 CSV census; exempt "(→)", A→Z, Back labels, the orphan `flashcards.header.home`.
 
@@ -410,9 +406,9 @@ _(none)_
 
 - **`native-input-display-none-under-its-label`** (NEW S458, `ea43be7e`): ACTIVE, streak 0. Detection: `a458/radios.mjs`; control torah. …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`stale-tab-flush-writes-its-old-copy`** (NEW S458; `c1714e2f`, `027fc597`, flash `070582d8`): ACTIVE, streak 0. Detection: `a458/twotabsigned.mjs`; control `027fc597^`. …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`stale-tab-flush-writes-its-old-copy`** (NEW S458; `c1714e2f`, `027fc597`, flash `070582d8`; S493 the hidden-flush variant, module `c57f0b79`): ACTIVE, streak 0. Detection: `a458/twotabsigned.mjs`, smoke-sync D37, `p493/t7v.mjs` (4 tab orders); control `027fc597^`. …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`flex-range-keeps-its-min-content-width`** (NEW S457; `ddcb4237`; S492: a text input has the same min-content width — dictionary `#shoreshInput`, candidate): ACTIVE, streak 0. A `flex:1` range without `min-width:0` keeps its 129px and pushes the row's last item out of a …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`flex-range-keeps-its-min-content-width`** (NEW S457; `ddcb4237`; a text input too: dictionary `#shoreshInput` `dcfdcf16` S493): ACTIVE, streak 0. A `flex:1` range without `min-width:0` keeps its 129px and pushes the row's last item out of a …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`slider-value-announced-as-its-position`** (NEW S456; `0ca1e29b`): ACTIVE, streak 0. Detection: `f456/census.mjs` (readout numbers lack the value, no `aria-valuetext`).
 
@@ -700,7 +696,7 @@ _(none)_
 
 ### Discovery-pass rotation (run one per session, stalest first)
 
-- P accounts & cloud (one surface): 2026-10-08 (**S477 — 8th P, the hub's own wiring (S463's P-next): smoke-tools 21/21 (plant 20/21), sync 207, migration 47; H1–H8 on a fake cloud by real clicks; static 23/23 (plants 9/9); live read-only. FIXED 2 on the hub. P-next: torah (never alone).**)
+- P accounts & cloud (one surface): 2026-10-10 (**S493 — 9th P, the Torah Trainer's own wiring (S477's P-next): smoke-tools 18/18 (plant 17/18), sync 207, migration 47; T1–T8 on a fake cloud by real clicks; static 42/42 (plants 7/7); live read-only. FOUND 1 (a stale tab's older settings, torah + trope), FIXED in the module. P-next: trope, then dictionary.**)
 
 - O deslop — AI-design-tell sweep (one surface): 2026-09-08 (**S346 — 6th O, `flash_cards.html`. ⚑ BLOCKED HERE TWICE (S399, S403) — NOT "needs an attended session". Clone + the 4 parsers install fine; EXECUTING the detector is refused by the sandbox's auto-mode classifier ("Code from External"), and the refusal names the remedy: the maintainer adds a Bash permission rule for the detector (or …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -732,4 +728,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-09 (**S484 — 36th F, the toast contract on all 8 carriers (5th look, S111 →): 24 cells + reduce, width, bars; plants 4/4. FOUND 4, FIXED 3 (+ FM kerning). F-next: the tabs / segmented-control keyboard contract (never swept).**)
 
-**Next session (S493):** **BRANCH/PR: `claude/nifty-cray-0dvnxz` → draft PR #320 (S488–S492): open → continue; merged → restart from `origin/main`.** `sw.js` **v973**, FM **5.59**. ⚑ Stalest: P (S477), M, G; O blocked. ⚑ **P2 FIRST: the dictionary's word list fails on a slow first visit (a one-line `window.I18n` guard).** ⚑ Untaken: the dictionary's Shoresh scroll + `#fsBtn` over Done (P4s). ⚑ Seeds: 47 (gate 1). ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.
+**Next session (S494):** **BRANCH/PR: `claude/nifty-cray-0dvnxz` → draft PR #320 (S488–S493): open → continue; merged → restart from `origin/main`.** `sw.js` **v974**, FM **5.59**. ⚑ Stalest: M (S478), G, D; O blocked. ⚑ Untaken: the dictionary's `#fsBtn` over the tour's Done (P4); the tour-after-rotation P3 waits on the tour-engine extraction. ⚑ Seeds: 47 (gate 1). ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.

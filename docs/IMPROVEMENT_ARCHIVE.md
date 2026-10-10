@@ -92307,3 +92307,25 @@ _(prior — S491 pointer:)_ **BRANCH/PR: `claude/nifty-cray-0dvnxz` → draft PR
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 _(prior — S492 pointer:)_ **BRANCH/PR: `claude/nifty-cray-0dvnxz` → draft PR #320 (S488–S491): open → continue; merged → restart from `origin/main`.** `sw.js` **v972**, FM **5.59**. ⚑ Stalest: N (S476), P, M; O blocked. ⚑ Untaken: page-level Hebrew labels still track on 4 tools (P4, census `k491/track.mjs`); the toasts' live region (S484). ⚑ Seeds: 47 (gate 1). ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.
+
+
+<!-- archived by compact-ledger at the S494 boundary, 2026-10-10 -->
+## Compaction (S494, 2026-10-10) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-09 | (S488 close-out) | branch/deploy note | **S488 = A + 4 fixes; PR #319 merged (deploy `success`), draft PR #320.** No drift; sw v968→v969; no FM bump; no gate; traps 204-207.
+
+- [x] 2026-10-09 | `5da9ecbe` `f722eeba` `183605ba` `87fea4c4` | dashboard ×2, trope, FM | (S488) **Ribbon 9.85:1; "Count down to" named; Try again keeps focus; crop caption in HE.** | findings S488.
+
+### from Per-session log (one line per session)
+
+- 2026-10-08 | **S473** | iters: 1 pass (**E**) + 4 fixes = **5** | tools: docs, flash, dictionary, torah | patterns fixed: button-focus ×2 | pass run: E | SW: v953→v954
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`latin-tracking-on-hebrew-labels`** (NEW S464 M; gate 3: drop suite-wide; fixed S478–S493: contact, dashboard ×3, resources, footers ×8, both shared blocks, generator, FM, trope `31ab260e`; open: dictionary, badges): ACTIVE, streak 0. Detection: `n492/gcensus.mjs`, `p493/tcensus.mjs` …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+_(prior — S493 pointer:)_ **BRANCH/PR: `claude/nifty-cray-0dvnxz` → draft PR #320 (S488–S492): open → continue; merged → restart from `origin/main`.** `sw.js` **v973**, FM **5.59**. ⚑ Stalest: P (S477), M, G; O blocked. ⚑ **P2 FIRST: the dictionary's word list fails on a slow first visit (a one-line `window.I18n` guard).** ⚑ Untaken: the dictionary's Shoresh scroll + `#fsBtn` over Done (P4s). ⚑ Seeds: 47 (gate 1). ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.
