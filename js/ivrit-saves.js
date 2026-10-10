@@ -2194,10 +2194,17 @@
   // What this tab's page holds, per item: recorded after each hydration (the page was told about every landing) and
   // at attach / sign-in (what the page loaded). A remembered row absent here is a deletion made here only when this tab
   // saw it; a row whose memory moved past what this tab saw was written by another tab or device meanwhile.
-  function snapshotNames(tool, p) {
+  // A kind another tab wrote (marked stale) whose stored copy moved past what this page last held, with nothing of it
+  // landed by this hydration (`landed`, the kinds it did land, whose pages were told): the store already held the other
+  // tab's copy (a hidden tab's flush writes nothing), so the page is told to re-read it now — recording that copy as
+  // this tab's view without it would let the page's older in-memory copy go up as this tab's edit at its next save.
+  function snapshotNames(tool, p, landed) {
+    var prev = seenNames[tool] || {}, moved = [];
     seenNames[tool] = {}; tabBase[tool] = {};
     p.rows.forEach(function (r) {
       if (!r.local) return;
+      var was = prev[r.kind] && prev[r.kind][r.name];
+      if (stale[tool] && stale[tool][r.kind] && !r.entry.virtual && r.entry.shape !== 'tree' && typeof was === 'string' && r.local.hash && was !== r.local.hash && !(landed && landed.indexOf(r.kind) >= 0)) moved.push(r);
       if (!seenNames[tool][r.kind]) seenNames[tool][r.kind] = {};
       seenNames[tool][r.kind][r.name] = r.local.hash || true;
       if (r.entry.merge === 'assign') {   // plan rows carry only the hash and size: the value is read from the store
@@ -2205,6 +2212,7 @@
         if (it) { if (!tabBase[tool][r.kind]) tabBase[tool][r.kind] = {}; tabBase[tool][r.kind][r.name] = canonJson(project(r.entry, it.value)); }
       }
     });
+    if (moved.length && !pageEditing(tool)) moved.forEach(function (r) { notifyPage(tool, r.kind, r.name); });
   }
   function snapshotLocal(tools) {
     tools.forEach(function (tool) {
@@ -2316,7 +2324,7 @@
       return (cloudWrites === writesAtListing && listed ? Promise.resolve(listed) : cloudList(tools)).then(function (rows2) {
         return seqMap(tools, function (tool) {
           return planTool(tool, rows2).then(function (p2) {
-            return syncTrees(tool, p2).then(function (n) { if (n) landedNote(res.landed, tool, 'trees'); }, function (err) { res.treeError = err; }).then(function () { snapshotNames(tool, p2); });
+            return syncTrees(tool, p2).then(function (n) { if (n) landedNote(res.landed, tool, 'trees'); }, function (err) { res.treeError = err; }).then(function () { snapshotNames(tool, p2, res.landed[tool]); });
           });
         });
       });

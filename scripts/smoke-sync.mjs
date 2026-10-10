@@ -102,7 +102,7 @@
  *  D19. Two devices change the same setting: the account's value stays, and the merging device's own version is kept on
  *      that device, named on its status line and downloadable (no clocks decide it).
  *  D20. A hidden background tab another tab has written since does not replay its older copy when it hydrates in
- *      the background: the other tab's new location reaches the account.
+ *      the background: the other tab's new location reaches the account, and the hidden tab's page re-reads it.
  *  D21. A row deleted elsewhere between two listing pages (server capped at 3 rows a page): the short listing is
  *      refused and nothing leaves the device; the next complete listing applies the deletion.
  *  D22. The Dictionary's "use in generator" link (?wl=) opens Real Words from that list and leaves the remembered
@@ -134,6 +134,9 @@
  *  D35. A preset edited while a hydration that would remove it (deleted elsewhere) runs stays with the edit, out of
  *      the bin, and goes up again.
  *  D36. A font deleted while the DELETE could not be sent, then saved again with the same bytes: no DELETE is sent later.
+ *  D37. Two Torah Trainer tabs: B, on screen while A changed the Hebrew size, is hidden and shown again, then changes
+ *      a setting of its own: both changes reach the account and B shows A's size (its page re-read the newer copy
+ *      when its hidden-tab flush found the store already holding it).
  *
  * Every scenario asserts 0 pageerrors. Run from the repo root:
  *   node scripts/smoke-sync.mjs --sdk path/to/supabase.js [--port 8081]
@@ -1541,7 +1544,7 @@ try {
     await sleep(250);
     await B.page.evaluate(() => IvritSaves.hydrate(['Dashboard']).catch(() => null));
     const right = await B.page.evaluate(() => ({ inB: settings.location, store: JSON.parse(localStorage.getItem('hebrewDashboard_settings') || '{}').location }));
-    check("D20: right after the hidden tab B's background hydration the device still holds tab A's new location (B's in-memory copy is the older one and was not written)", right.store === 'Haifa' && right.inB !== 'Haifa', JSON.stringify(right));
+    check("D20: right after the hidden tab B's background hydration the device still holds tab A's new location, and B's page re-read it (its older in-memory copy was never written)", right.store === 'Haifa' && right.inB === 'Haifa', JSON.stringify(right));
     const okA = await settled(A.page, DASH_TOOLS, 10000);
     await sleep(800);
     const stored = (await lsJSON(A.page, 'hebrewDashboard_settings')) || {};
@@ -1963,6 +1966,29 @@ try {
     const memRec = ((((((await meta2(page)) || {}).users || {})[UID] || {}).Suite || {}).font || {})['Morah Handwriting'] || null;
     check('D36: the font saved again (same bytes) stays in the account: no DELETE is sent later, the memory holds no deletion', reqs(cloud, from, 'DELETE').length === 0 && !!cloud.find('font', 'Morah Handwriting') && !!memRec && !memRec.deleted && (await fontsIn(page)).includes('Morah Handwriting'), JSON.stringify({ calls: methods(cloud, from), mem: memRec, fonts: await fontsIn(page) }));
     check('D36: 0 pageerrors', errors.length === 0, errors.join(' | '));
+    await ctx.close();
+  }
+  // ---- D37. a stale Torah Trainer tab hidden and shown again never sends its older size over the other tab's ----
+  if (want('D37')) {
+    const cloud = new FakeCloud(CLOUD_ROWS().concat([{ tool: 'TorahTrainer', kind: 'settings', name: 'default', data: { hebFontSize: 2.4, showTranslit: true, layout: 'interlinear' } }]));
+    const row = cloud.find('settings', 'default', 'TorahTrainer');
+    const ctx = await openContext(browser, cloud, SEED({}));
+    const A = await openPage(ctx, 'torah_trainer.html', { tools: TORAH_TOOLS });
+    const B = await openPage(ctx, 'torah_trainer.html', { tools: TORAH_TOOLS });
+    await settled(A.page, TORAH_TOOLS); await settled(B.page, TORAH_TOOLS); await sleep(WRITE_MS);   // the first hydration's own write settles
+    await A.page.bringToFront();
+    const fromA = cloud.log.length;
+    await A.page.evaluate(() => setFontSize('heb', 2.9));   // B is on screen meanwhile: the storage event marks it stale
+    const okA = await waitLog(() => patchesSince(cloud, fromA, row.id).some(e => e.body.data.hebFontSize === 2.9), 10000);
+    const vis = (h) => B.page.evaluate((h) => { Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => h ? 'hidden' : 'visible' }); document.dispatchEvent(new Event('visibilitychange')); }, h);
+    await vis(true); await sleep(WRITE_MS); await vis(false); await B.page.bringToFront(); await sleep(WRITE_MS);   // hidden: its flush runs and finds the store holding A's copy
+    const from = cloud.log.length;
+    const nik0 = await B.page.evaluate(() => { const was = settings.showNikkud; settings.showNikkud = !was; saveSettings(); return was; });
+    const okB = await waitLog(() => patchesSince(cloud, from, row.id).length > 0, 10000) && await settled(B.page, TORAH_TOOLS, 10000);
+    const inB = await B.page.evaluate(() => settings.hebFontSize);
+    check("D37: tab B's own change reached the account beside tab A's size; B's older size never went up", okA && okB && row.data.hebFontSize === 2.9 && row.data.showNikkud === !nik0, JSON.stringify({ okA, okB, size: row.data.hebFontSize, nikkud: row.data.showNikkud, nik0, calls: methods(cloud, from) }));
+    check("D37: tab B shows tab A's size", inB === 2.9, JSON.stringify({ inB }));
+    check('D37: 0 pageerrors in both tabs', A.errors.length === 0 && B.errors.length === 0, A.errors.concat(B.errors).join(' | '));
     await ctx.close();
   }
 } finally {
