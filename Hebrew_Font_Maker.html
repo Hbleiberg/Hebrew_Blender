@@ -1190,6 +1190,14 @@ body.dark .hi-sun{display:inline-block;}
   summary.ft-h:hover { color: var(--text); }
   /* The Hebrew UI's footer heads: Hebrew has no capitals, and the Latin tracking only spaced its letters apart. */
   html[lang="he"] .ft-h { letter-spacing: normal; text-transform: none; }
+  /* The Hebrew UI's own labels carry the same English small caps: the side titles (Add letters, Grid), the panel
+     titles, the settings labels, the metric captions, the wizard's field heads, the punctuation bands, the node
+     selection count, the QA sections, the Load menu's heads, Bold's Before / After, the help's version history and the
+     fullscreen captions. !important outranks the inline styles. */
+  html[lang="he"] .ws-side-title, html[lang="he"] .panel-title, html[lang="he"] .ctl-label, html[lang="he"] .metric-sub,
+  html[lang="he"] .wiz-field-label, html[lang="he"] .punct-grp, html[lang="he"] .ns-sel, html[lang="he"] .qa-table td.qa-section-h,
+  html[lang="he"] .load-menu-head, html[lang="he"] [data-i18n="fontmaker.boldgen.before"], html[lang="he"] [data-i18n="fontmaker.boldgen.after"],
+  html[lang="he"] #helpBody summary[style*="letter-spacing:0.08em"], html[lang="he"] .fs-label { letter-spacing: normal !important; text-transform: none !important; }
   .ft-dt-body { max-width: 720px; padding: 4px 0 6px; }
   .ft-dt-body p { font-size: 0.78rem; line-height: 1.5; margin: 4px 0 6px; }
   .ft-faq { margin: 4px 0; }
