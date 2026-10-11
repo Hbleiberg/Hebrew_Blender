@@ -143,6 +143,8 @@ function doFetch(id) {
   const args = ['-f', 'bestaudio', '-x', '--audio-format', 'm4a', '--audio-quality', '0', '--write-info-json', '--no-playlist',
     '-o', join(CACHE_DIR, '%(id)s.%(ext)s'), `https://youtu.be/${id}`];
   if (process.env.HTTPS_PROXY) args.unshift('--proxy', process.env.HTTPS_PROXY);
+  // YouTube's player challenge needs a JavaScript runtime (yt-dlp's EJS); the node running this script is one.
+  args.unshift('--js-runtimes', `node:${process.execPath}`);
   console.log(`fetch: ${ytdlp} ${args.join(' ')}`);
   const r = spawnSync(ytdlp, args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
   process.stdout.write(r.stdout || '');
