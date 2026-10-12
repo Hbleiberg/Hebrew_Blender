@@ -33,6 +33,7 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync, statSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { VIDEOS, BOOK_CODE } from './totaltorah-videos.mjs';
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
 const argv = process.argv.slice(2);
@@ -54,10 +55,7 @@ const AUDIO_DIR = join(OUT_DIR, 'audio');
 const FLAC_DIR = join(CACHE_DIR, 'verses');
 const MANIFEST = join(OUT_DIR, 'manifest.json');
 
-/* ---------- the whitelist: every video the script may touch ---------- */
-const VIDEOS = {
-  bv1hX3WrRM4: { parsha: 'Bereshit', year: 1, aliyah: 1, ref: 'Genesis 1:1-1:5' },
-};
+/* ---------- the whitelist: every video the script may touch (scripts/totaltorah-videos.mjs, shared with the timings script) */
 const CREDIT = {
   reader: 'Cantor Arianne Brown',
   congregation: 'Adas Israel Congregation',
@@ -66,7 +64,6 @@ const CREDIT = {
   permission: 'Written permission (email), October 2026: free access, full credit with links back, no modification beyond cutting the audio into verses, Adas Israel retains the rights to the verse-cut files, every verse links to the complete video on YouTube.',
   license: 'All rights reserved. Not CC-licensed; do not redistribute.',
 };
-const BOOK_CODE = { Genesis: 'gen', Exodus: 'exo', Leviticus: 'lev', Numbers: 'num', Deuteronomy: 'deu' };
 const LICENSE_TEXT = `© Cantor Arianne Brown / Adas Israel Congregation. All rights reserved.
 
 The MP3 files in audio/ and the timing files in timings/ are cut, verse by verse, from the
@@ -282,6 +279,14 @@ function doSplit(id, row) {
   console.log(`split: ${id} "${info.title}" (${s.probe.toFixed(1)} s) → ${row.ref}: ${N} verses`);
 
   let segs, dur = s.probe;
+  if (flags.boundaries === 'auto') {   // the alignment-derived cut: build-totaltorah-timings.mjs --boundaries <id>
+    const bp = join(CACHE_DIR, `${id}.boundaries.json`);
+    if (!existsSync(bp)) fail(`--boundaries auto needs ${bp} — run: node scripts/build-totaltorah-timings.mjs --boundaries ${id}`, 2);
+    const bj = JSON.parse(readFileSync(bp, 'utf8'));
+    if (bj.ref !== row.ref || !Array.isArray(bj.boundaries)) fail(`${bp} is for "${bj.ref}", not this video's ${row.ref} — re-run the boundaries step`, 2);
+    flags.boundaries = bj.boundaries.join(',');
+    console.log(`split: boundaries from ${bp} (intro ends ${bj.introEnd} s): ${flags.boundaries}`);
+  }
   if (flags.boundaries) {
     const b = String(flags.boundaries).split(',').map((x) => parseFloat(x.trim()));
     if (b.length !== N + 1 || b.some((x) => !isFinite(x)) || b.some((x, i) => i && x <= b[i - 1])) fail(`--boundaries needs ${N + 1} increasing seconds (verse i spans b[i]..b[i+1]); got ${b.length}`, 2);

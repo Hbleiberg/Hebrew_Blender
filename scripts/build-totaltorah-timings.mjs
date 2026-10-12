@@ -26,12 +26,21 @@
  * --audit writes source-data/totaltorah-cache/audit.html (gitignored): the verse words with a play button each
  * that plays the verse file from that onset for 1.2 s. Plain <audio> + JS.
  *
+ * --boundaries <videoId> [--intro <s>] — the verse boundaries of a whole video, for build-totaltorah-audio.mjs
+ * split --boundaries auto. Every Total Torah video opens with a spoken intro, and the cantor's mid-verse pauses
+ * (etnachta, zakef) are quieter than her breaths between verses, so silence alone never finds the verses. This
+ * mode prints the silence table, takes the intro to end at the first silence after at least a second of sound
+ * (--intro <s> overrides it — confirm it by ear), aligns the rest of the file against the aliyah's whole text in
+ * one pass, cuts midway through each gap between a verse's last word and the next verse's first, and writes
+ * source-data/totaltorah-cache/<id>.boundaries.json. Needs the venv (--setup) and the source audio in the cache.
+ *
  * Zero npm dependencies; the Python side is the one isolated environment.
  */
 import { execFileSync, spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { VIDEOS, BOOK_CODE } from './totaltorah-videos.mjs';
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
 const CACHE_DIR = join(repoRoot, 'source-data', 'totaltorah-cache');
@@ -111,8 +120,96 @@ function checkEnv() {
   console.log(`env: torch/torchaudio/transformers ${r.stdout.trim()}`);
 }
 
+/* ---------- boundaries of a whole video (the cut split --boundaries auto takes) ---------- */
+function ffprobeDuration(file) {
+  return parseFloat(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'default=nw=1:nk=1', file], { encoding: 'utf8' }).trim());
+}
+function detectSegments(file, thresh, mindur) {
+  const r = spawnSync('ffmpeg', ['-hide_banner', '-nostats', '-i', file, '-af', `silencedetect=noise=${thresh}:d=${mindur}`, '-f', 'null', '-'], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+  const silences = [];
+  let open = null;
+  for (const line of (r.stderr || '').split('\n')) {
+    let m = /silence_start:\s*(-?[\d.]+)/.exec(line);
+    if (m) { open = parseFloat(m[1]); continue; }
+    m = /silence_end:\s*([\d.]+)/.exec(line);
+    if (m && open !== null) { silences.push({ s: Math.max(0, open), e: parseFloat(m[1]) }); open = null; }
+  }
+  const dur = ffprobeDuration(file);
+  if (open !== null) silences.push({ s: Math.max(0, open), e: dur });
+  const segs = [];
+  let prev = 0;
+  for (const sil of silences) { if (sil.s - prev > 0.05) segs.push({ start: prev, end: sil.s }); prev = sil.e; }
+  if (dur - prev > 0.05) segs.push({ start: prev, end: dur });
+  return { segs, dur };
+}
+function parseRef(ref) {
+  const m = /^([A-Z][a-z]+) (\d+):(\d+)-(\d+):(\d+)$/.exec(ref || '');
+  if (!m || !BOOK_CODE[m[1]]) fail(`bad ref "${ref}"`, 2);
+  return { book: m[1], sc: +m[2], sv: +m[3], ec: +m[4], ev: +m[5] };
+}
+async function boundariesMode(id) {
+  const row = VIDEOS[id];
+  if (!row) fail(`"${id}" is not in scripts/totaltorah-videos.mjs — add its row first (the permission record)`, 2);
+  let src = null;
+  for (const ext of ['m4a', 'mp3']) { const p = join(CACHE_DIR, `${id}.${ext}`); if (existsSync(p)) { src = p; break; } }
+  if (!src) fail(`no ${join(CACHE_DIR, id)}.m4a or .mp3 — run build-totaltorah-audio.mjs fetch, or drop the file there`, 2);
+  checkEnv();
+  const r = parseRef(row.ref);
+  const chapters = loadBookText(r.book);
+  const verses = [];
+  for (let c = r.sc; c <= r.ec; c++) {
+    const ch = chapters[c - 1]; if (!ch) fail(`${r.book} has no chapter ${c}`);
+    const from = c === r.sc ? r.sv : 1, to = c === r.ec ? r.ev : ch.length;
+    for (let v = from; v <= to; v++) verses.push({ key: `${r.book} ${c}:${v}`, words: tokenizeWords(cleanVerse(ch[v - 1])) });
+  }
+  const N = verses.length;
+  const { segs, dur } = detectSegments(src, '-50dB', '0.6');
+  console.log(`boundaries: ${id} "${row.parsha}" Y${row.year} A${row.aliyah} ${row.ref}: ${N} verses, ${dur.toFixed(2)} s\n  silence table (-50dB, 0.6 s):`);
+  segs.forEach((g, i) => console.log(`  ${String(i + 1).padStart(2)}  ${g.start.toFixed(2).padStart(7)} – ${g.end.toFixed(2).padStart(7)}  (${(g.end - g.start).toFixed(2)} s)`));
+  // the intro: every video opens with one; it ends at the first silence after at least a second of sound
+  let introEnd;
+  if (flags.intro !== undefined) introEnd = parseFloat(flags.intro);
+  else { const i = segs.findIndex((g) => g.end - g.start >= 1.0); introEnd = i >= 0 && segs[i + 1] ? segs[i + 1].start : 0; }
+  if (!isFinite(introEnd) || introEnd < 0 || introEnd >= dur) fail(`intro end ${introEnd} is outside the file`, 2);
+  console.log(`  intro: 0 – ${introEnd.toFixed(2)} s ${flags.intro !== undefined ? '(given)' : '(first silence after ≥1 s of sound — confirm by ear; --intro <s> overrides)'}`);
+  const flac = join(CACHE_DIR, `${id}.16k.flac`);
+  execFileSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-i', src, '-vn', '-ac', '1', '-ar', '16000', '-c:a', 'flac', flac]);
+  const words = [], display = [];
+  for (const v of verses) for (const w of v.words) { words.push(consonants(w)); display.push(w); }
+  if (words.some((w) => !w)) fail('a word stripped to nothing');
+  const wordsPath = join(CACHE_DIR, `${id}.full.words.json`), alignPath = join(CACHE_DIR, `${id}.full.align.json`);
+  writeFileSync(wordsPath, JSON.stringify({ key: row.ref, words, display, counts: verses.map((v) => v.words.length) }, null, 1));
+  const args = [ALIGNER, '--audio', flac, '--words', wordsPath, '--out', alignPath, '--model', MODEL, '--offset', String(introEnd)];
+  if (MODEL_REVISION) args.push('--revision', MODEL_REVISION);
+  console.log(`  aligning ${words.length} words from ${introEnd.toFixed(2)} s …`);
+  const ar = spawnSync(py, args, { encoding: 'utf8' });
+  if (ar.status !== 0) { process.stderr.write(ar.stderr || ''); fail('whole-file alignment failed'); }
+  const a = JSON.parse(readFileSync(alignPath, 'utf8'));
+  const b = [Math.round(introEnd * 100) / 100];
+  let i = 0;
+  const gaps = [];
+  verses.forEach((v, vi) => {
+    const n = v.words.length;
+    const first = a.onsets[i], lastEnd = a.ends[i + n - 1], minScore = Math.min(...a.scores.slice(i, i + n));
+    console.log(`  ${v.key.padEnd(14)} ${first.toFixed(2).padStart(7)} – ${lastEnd.toFixed(2).padStart(7)}  (${n} words, min score ${minScore.toFixed(2)})`);
+    if (vi > 0) {
+      const prevEnd = a.ends[i - 1];
+      const gap = first - prevEnd;
+      gaps.push(Math.round(gap * 100) / 100);
+      if (gap < 0.3) console.log(`  ⚠ only ${gap.toFixed(2)} s between ${verses[vi - 1].key} and ${v.key} — check this cut by ear`);
+      b.push(Math.round(((prevEnd + first) / 2) * 100) / 100);
+    }
+    i += n;
+  });
+  b.push(Math.round(Math.min(dur, a.ends[a.ends.length - 1] + 0.4) * 100) / 100);
+  const out = { id, ref: row.ref, introEnd: b[0], boundaries: b, gaps, wall: a.wall, model: a.model, revision: a.revision, built: new Date().toISOString().slice(0, 10) };
+  writeFileSync(join(CACHE_DIR, `${id}.boundaries.json`), JSON.stringify(out, null, 1) + '\n');
+  console.log(`\nboundaries: ${b.join(',')}  (gaps between verses: ${gaps.join(', ')} s; alignment ${a.wall} s)\nwrote ${join(CACHE_DIR, id + '.boundaries.json')}\nnext: node scripts/build-totaltorah-audio.mjs split --video ${id} --boundaries auto`);
+}
+
 /* ---------- main ---------- */
 if (flags.setup) setupEnv();
+if (flags.boundaries) { await boundariesMode(String(flags.boundaries)); process.exit(0); }
 if (!existsSync(MANIFEST)) fail(`${MANIFEST} is missing — run build-totaltorah-audio.mjs split first`);
 const manifest = JSON.parse(readFileSync(MANIFEST, 'utf8'));
 const only = flags.only ? new Set(String(flags.only).split(',').map((s) => s.trim())) : null;

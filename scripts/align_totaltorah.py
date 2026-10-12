@@ -32,6 +32,7 @@ def main():
     ap.add_argument('--out', required=True)
     ap.add_argument('--model', default='imvladikon/wav2vec2-xls-r-300m-hebrew')
     ap.add_argument('--revision', default=None, help='model commit sha to pin; printed on success so the caller can record it')
+    ap.add_argument('--offset', type=float, default=0.0, help='seconds of audio to skip before aligning (a spoken intro); onsets and ends are reported in the file\'s own time')
     args = ap.parse_args()
 
     t0 = time.time()
@@ -76,6 +77,9 @@ def main():
     if sr != 16000:
         wav = torchaudio.functional.resample(wav, sr, 16000)
         sr = 16000
+    offset = max(0.0, args.offset)
+    if offset:
+        wav = wav[:, int(offset * sr):]
     inputs = processor(wav.squeeze(0).numpy(), sampling_rate=sr, return_tensors='pt')
     with torch.inference_mode():
         logits = model(inputs.input_values).logits  # (1, frames, vocab)
@@ -126,10 +130,10 @@ def main():
             if cur is not None:
                 word_scores.append(sum(frames_scores) / len(frames_scores))
             cur, frames_scores = wi, []
-            onsets.append(round(span.start * frame_s, 3))
-            ends.append(round(span.end * frame_s, 3))
+            onsets.append(round(offset + span.start * frame_s, 3))
+            ends.append(round(offset + span.end * frame_s, 3))
         else:
-            ends[-1] = round(span.end * frame_s, 3)
+            ends[-1] = round(offset + span.end * frame_s, 3)
         frames_scores.append(float(span.score))
     if cur is not None:
         word_scores.append(sum(frames_scores) / len(frames_scores))

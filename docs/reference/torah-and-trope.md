@@ -952,12 +952,15 @@ never a practice link (`LINK_DISPLAY` says how a reading looks, never how it sou
 - **The data pipeline** (`scripts/build-totaltorah-audio.mjs`, `scripts/build-totaltorah-timings.mjs` with
   `scripts/align_totaltorah.py`): the audio script's `VIDEOS` table is the only list of ids it will fetch (yt-dlp into
   the gitignored `source-data/totaltorah-cache/`, sanity-checked by duration and loudness), `split` cuts by ffmpeg
-  `silencedetect` and refuses a segment count that differs from the ref's verse count (`--boundaries` by hand; never
-  a guess — on the first video the cantor's mid-verse pauses at the etnachta and zakef were quieter than her breaths
-  between verses, so the silences fell inside verses and the boundaries came from a whole-file alignment instead,
-  midway through each inter-verse gap, with the spoken intro left out; Phase 2 should make that the default cut),
-  writes the MP3s, a lossless FLAC per verse for Adas Israel, the manifest (`verified: false`) and the
-  license; the timings script aligns each verse FLAC against its consonantal text (the Trainer's tokenization,
+  `silencedetect` and refuses a segment count that differs from the ref's verse count — which it always does: every
+  video opens with a spoken intro, and the cantor's mid-verse pauses at the etnachta and zakef are quieter than her
+  breaths between verses, so the usual cut is `--boundaries auto`, the file `build-totaltorah-timings.mjs
+  --boundaries <id>` writes after one whole-file alignment (the intro taken to end at the first silence after a
+  second of sound, `--intro <s>` to override; a boundary midway through each inter-verse gap); `--boundaries
+  "t0,…,tN"` is the hand override, and a guess is never made. It writes the MP3s, a lossless FLAC per verse for
+  Adas Israel, the manifest (`verified: false`) and the license; the whitelist both scripts read is
+  `scripts/totaltorah-videos.mjs`, and `/addTOTT` (`.claude/skills/addTOTT/SKILL.md`) is the intake recipe for
+  the next video; the timings script aligns each verse FLAC against its consonantal text (the Trainer's tokenization,
   ported: split on whitespace and maqaf, a word iff it carries a Hebrew letter) with `torchaudio.functional.forced_align`
   over a Hebrew wav2vec2 model in an isolated venv, writes the timings file and the per-word scores, and stops — no
   heuristic aligner — when the model or torch cannot be had. `scripts/build-leyning-data.mjs`'s `triennial.json` is
