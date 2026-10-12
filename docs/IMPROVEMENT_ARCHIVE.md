@@ -92389,3 +92389,29 @@ _(prior — S494 pointer:)_ **BRANCH/PR: #320 merged → start from `origin/main
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 _(prior — S495 pointer:)_ **BRANCH/PR: draft PR #321 (`claude/brave-ride-02gvzs`) open → continue; merged → restart from `origin/main`.** `sw.js` **v976**, FM **5.59**. ⚑ Stalest: G (S479), D, I; O blocked. ⚑ Take first: privacy's HE badge. ⚑ Untaken: 13 CSS italics; trope's Phrases headings. ⚑ Seeds: 45. ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.
+
+## S496 (2026-10-12) — a Feature seed shipped (moved from the ledger's Feature seeds, verbatim, then the ship)
+
+- [x] S | hebrew_dictionary.html | **An English search lists exact-gloss matches first** ("dog": כֶּלֶב 8th of 15). | found S440 H **shipped S496 `8fda021d`** (gate 1: the maintainer's pick; exact meanings first, then a to/a/an/the form, each group in the chosen sort; receipts in loop-findings S496)
+
+
+<!-- archived by compact-ledger at the S497 boundary, 2026-10-12 -->
+## Compaction (S497, 2026-10-12) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-09 | (S491 close-out) | branch/deploy note | **S491 = K (clean) + 4 fixes, PR #320 continued.** No drift (main `fee5fe05`, keep-alive #27 green); sw v971→v972; no FM bump (labels, not a feature); no gate; sitemap + llms current; traps 217–221 (findings S491).
+
+- [x] 2026-10-09 | `83f73895` `12509ea1` `c1159d14` `adce6574` | 8 pages, check-i18n + i18n.md, flash | (S491) **Keyboard + test-phrase labels and every footer head untracked in Hebrew; the gate's header and blind-spot note match the gate; flash keeps "Vowel on letter" across a reload.** | findings S491.
+
+### from Per-session log (one line per session)
+
+- 2026-10-08 | **S476** | iters: 5 | tools: FM ×2, torah, generator | patterns fixed: install-banner ×1, tall-window ×1 | pass run: N | SW: v956→v957
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`root-var-per-input`** (NEW S496 D; dictionary `--heb-font-size` FIXED `c049ab67`; open: generator ×2, trope): ACTIVE, streak 0. Detection: an `input`/slider handler writing `document.documentElement.style.setProperty` (or `body`) per step — grep `style.setProperty(` in handlers, exempt one-shot clicks (font pickers); prove by a CDP RecalcStyleDuration A/B.
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+_(prior — S496 pointer:)_ **BRANCH/PR: S495's draft PR open → continue; merged → restart from `origin/main`.** `sw.js` **v980**, FM **5.59**. ⚑ Stalest: D (S480), I (S481), H (S482); O blocked. ⚑ Take first: `.bpe-*` print leak. ⚑ Untaken: `.fx-*` on paper; 13 CSS italics. ⚑ Seeds: 45. ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.

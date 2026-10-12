@@ -8,7 +8,9 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P4 (**NEW S495 G**) | classroom_dashboard.html | **Bulk preset edit prints over the board** (`.bpe-*`). | found S495
+- [ ] P4 (**NEW S496 D — root-var-per-input, verify first**) | generator, trope | **Three more sliders write a `:root` property per input** (generator ×2, trope). | found S496
+
+- [ ] P4 (**NEW S496 D**) | hebrew_dictionary.html | **`roveTileGrid` forces 14 layouts per load** (findings S496). | found S496
 
 - [ ] P4 (**NEW S495 G**) | classroom_dashboard.html | **Glow + Shadow print dark values from a dark board.** | found S495
 
@@ -210,8 +212,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] S | hebrew_dictionary.html | **Word Lists offers "Save the N selected words"** while a selection exists (it says "No word lists yet…"). | found S440 H
 
-- [ ] S | hebrew_dictionary.html | **An English search lists exact-gloss matches first** ("dog": כֶּלֶב 8th of 15). | found S440 H
-
 - [ ] S–M | flash_cards.html (reads the dashboard's class lists) | **Make student profiles from a class list.** A class already in the dashboard (`hebrewDashboard_settings.rosters`) is re-typed one `prompt()` at a time; a "From a class list…" choice is ~50 lines + 3 keys, a handshake pair. | found: S412 Pass H
 
 - [ ] S | flash_cards.html | **Speech speed reachable mid-drill.** `speakWord()` reads `#ttsRateSlider` live, but the slider sits in `#panelAdvanced` on the setup screen, so a slower 🔊 Hear costs End Practice Early → Advanced → drag → restart. A −/+ pair beside `#fcSpeakBtn` writing the same slider is the torah `#ttLoopPauseBar` mirror shape; ~35 lines, 2 CSV keys, no storage. | found: …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -302,6 +302,10 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-12 | (S496 close-out) | branch/deploy note | **S496 = D + 2 fixes + 1 micro (gate 1), PR #325.** No drift (main `f1ef1a98`, keep-alive #30); sw v980→v981; no FM bump.
+
+- [x] 2026-10-12 | `c049ab67` `8fda021d` `4c4dd3ae` | dictionary ×2, dashboard | (S496) **Size slider restyles only cards; English search: exact meanings first; bulk edit prints the board.** | findings S496.
+
 - [x] 2026-10-12 | (S495 close-out) | branch/deploy note | **S495 = G + 3 fixes + 1 reverted, draft PR.** Drift: main `f1ef1a98`, keep-alive #30 green; sw v979→v980; no FM bump; gate 1 skip.
 
 - [x] 2026-10-12 | `9d0f5fe` `756e140` `774df4f` | dashboard, torah, privacy | (S495) **.ivrit keeps Sync on; icons print navy; HE badge untracked.** | findings S495.
@@ -330,13 +334,11 @@ _(none)_
 
 - [x] 2026-10-10 | — (attempted, reverted) | hebrew_dictionary.html | (S492) **The tour after a rotation: a page-side re-place fixed 1 step of 7; the rest is engine work.** | findings S492.
 
-- [x] 2026-10-09 | (S491 close-out) | branch/deploy note | **S491 = K (clean) + 4 fixes, PR #320 continued.** No drift (main `fee5fe05`, keep-alive #27 green); sw v971→v972; no FM bump (labels, not a feature); no gate; sitemap + llms current; traps 217–221 (findings S491).
-
-- [x] 2026-10-09 | `83f73895` `12509ea1` `c1159d14` `adce6574` | 8 pages, check-i18n + i18n.md, flash | (S491) **Keyboard + test-phrase labels and every footer head untracked in Hebrew; the gate's header and blind-spot note match the gate; flash keeps "Vowel on letter" across a reload.** | findings S491.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-12 | **S496** | iters: 5 | tools: dictionary ×2 (fix + micro), dashboard | patterns fixed: root-var (NEW), fixed-surface | pass run: D | SW: v980→v981
 
 - 2026-10-12 | **S495** | iters: 5 | tools: dashboard ×2, torah, privacy, generator | patterns fixed: dark-palette (NEW), latin-tracking | pass run: G | SW: v979→v980
 
@@ -376,13 +378,13 @@ _(none)_
 
 - 2026-10-08 | **S477** | iters: 5 | tools: index ×2, resources, FM | patterns fixed: — | pass run: P | SW: v957→v958
 
-- 2026-10-08 | **S476** | iters: 5 | tools: FM ×2, torah, generator | patterns fixed: install-banner ×1, tall-window ×1 | pass run: N | SW: v956→v957
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S495 (2026-10-12):** dashboard, torah, privacy S495 · terms, dictionary, trope, generator, 404, scripts S494 · saves S493 · FM S492 · resources, flash S491 · contact S487 · index S483 · account, i18n.js S478 · pwa S472.
+- **Snapshot S496 (2026-10-12):** dictionary, dashboard S496 · torah, privacy S495 · terms, trope, generator, 404, scripts S494 · saves S493 · FM S492 · resources, flash S491 · contact S487 · index S483 · account, i18n.js S478 · pwa S472.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`root-var-per-input`** (NEW S496 D; dictionary FIXED `c049ab67`; open: generator ×2, trope): ACTIVE, streak 0. Detection: a slider handler's `style.setProperty(` on `<html>`/`body`; A/B style time.
 
 - **`dark-palette-on-the-element`** (NEW S495 G; `.hol-ico` FIXED; open `.fx-*`): ACTIVE, streak 0. Detection: findings S495.
 
@@ -518,7 +520,7 @@ _(none)_
 
 - **`save-over-an-existing-name-without-confirm`**: ACTIVE **S371 (Pass A): 3rd carrier FIXED `b85b579` — the dashboard's `saveWeekScheduleAs` (its comment even said "same-name save overwrites, like savePreset" — from before savePreset confirmed). Census: every other …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`fixed-surface-missing-from-the-print-hide-list`**: ACTIVE. **S495: `.bpe-*` open.** **S392 (Pass G, `hebrew_blend_generator.html`): swept CLEAN — first clean sweep since registration, clean …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`fixed-surface-missing-from-the-print-hide-list`**: ACTIVE. **S496: `.bpe-*` FIXED `4c4dd3ae`.** **S392 (Pass G, `hebrew_blend_generator.html`): swept CLEAN — first clean sweep since registration, clean …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`control-class-without-a-hover-state`**: ACTIVE. **S373: the S371 P4 FIXED (`c365786`, dashboard `.swm-swatch:hover` ring). Registered S313; hits S313 20, S314 2, S357 1, S371 1 — all fixed; clean streak 0; last swept S371.** Detection: a class with `cursor:pointer` or …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -724,7 +726,7 @@ _(none)_
 
 - G print & export fidelity (one tool): 2026-10-12 (**S495 — dashboard (S364 →): FOUND 4, FIXED 2. G-next: dictionary (S377).**)
 
-- D performance (one tool): 2026-10-08 (**S480 — trope's 5th D (S365 →, 86 commits): 10 cold + 4 interaction cells by real input; controls fired. CLEAN: 0 page-code tasks >200 ms (worst 127 @4×); only the browser's PDF. D-next: dictionary (S378).**)
+- D performance (one tool): 2026-10-12 (**S496 — dictionary (S378 →): 10 cold + 120 arms; controls fired. FOUND 2, FIXED 1 (+ micro). D-next: flash (S393).**)
 
 - I first-load & empty-state: 2026-10-08 (**S481 — 36th I: 136 cells clean, plants fired; label + side-word arms NEW; FIXED 4.**)
 
@@ -740,4 +742,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-09 (**S484 — 36th F, the toast contract on all 8 carriers (5th look, S111 →): 24 cells + reduce, width, bars; plants 4/4. FOUND 4, FIXED 3 (+ FM kerning). F-next: the tabs / segmented-control keyboard contract (never swept).**)
 
-**Next session (S496):** **BRANCH/PR: S495's draft PR open → continue; merged → restart from `origin/main`.** `sw.js` **v980**, FM **5.59**. ⚑ Stalest: D (S480), I (S481), H (S482); O blocked. ⚑ Take first: `.bpe-*` print leak. ⚑ Untaken: `.fx-*` on paper; 13 CSS italics. ⚑ Seeds: 45. ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.
+**Next session (S497):** **BRANCH/PR: #325 open → continue; merged → restart from `origin/main`.** `sw.js` **v981**, FM **5.59**. ⚑ Stalest: I (S481), H (S482), C (S483); O blocked. ⚑ Take first: Glow + Shadow on paper (`.fx-*`). ⚑ Untaken: root-var sliders; 13 CSS italics. ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.

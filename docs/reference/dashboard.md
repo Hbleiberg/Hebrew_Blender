@@ -609,7 +609,8 @@ uploaded was such a seed.
 `_trapTabWithin`, focus back to the opener) over the drawer: one card per preset, in the folder tree's reading
 order (`bpeOrderNames()` walks `hebrewDashboard_presetsFolders`, then appends any preset the tree lacks; the tree
 never decides what exists), each with its own toolbar and message editor and the common switches, under a sticky
-head holding the master row.
+head holding the master row. `.bpe-backdrop` and `.bpe-modal` are on the print block's list of hidden fixed
+surfaces, so Ctrl+P with the editor open prints the board underneath, as with the drawer.
 
 - **A draft, written only by Save.** `_bpeDraft` is a deep clone of `presets`; every card edit lands there and
   `bpeSave()` writes the drafts whose JSON differs (`bpeChangedNames()`) back into `presets` with one
