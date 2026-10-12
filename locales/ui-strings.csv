@@ -382,6 +382,34 @@ dashboard.preset.rename_title,Rename,שנה שם,preset row button title,
 dashboard.preset.rename_toast,"Renamed to ""{name}"" — Schedule Sync updated.","השם שונה ל״{name}״ — סנכרון מערכת השעות עודכן.",toast after a rename that rewrote schedule references,mixed UI+content — do not translate {…}
 dashboard.preset.save,Save,שמור,preset save button,
 dashboard.preset.save_empty,Please enter a preset name.,אנא הזינו שם תבנית.,alert,
+dashboard.preset.bulk_boardwide_caption,"Board-wide (Schedule Sync) — changes the board now, not a preset","לכל הלוח (סנכרון מערכת השעות) — משנה את הלוח עכשיו, לא תבנית",bulk preset edit: caption of the live Schedule Sync switches in the master row,
+dashboard.preset.bulk_boardwide_off,"Schedule Sync is off, so its countdown switches are not shown here.","סנכרון מערכת השעות כבוי, ולכן מתגי הספירה לאחור שלו אינם מוצגים כאן.",bulk preset edit: master row when Schedule Sync is disabled,
+dashboard.preset.bulk_button,Bulk preset edit…,עריכה קבוצתית של תבניות…,presets section button that opens the bulk editor,
+dashboard.preset.bulk_cancel,Cancel,ביטול,bulk preset edit footer button,
+dashboard.preset.bulk_changed.one,{count} preset changed,תבנית אחת שונתה,bulk preset edit footer status (count = 1),has {count}
+dashboard.preset.bulk_changed.other,{count} presets changed,{count} תבניות שונו,bulk preset edit footer status,has {count}
+dashboard.preset.bulk_close_aria,Close bulk preset edit,סגור את העריכה הקבוצתית של התבניות,bulk preset edit close button,aria-label only
+dashboard.preset.bulk_copy_text,Copy this text to all presets,העתקת הטקסט הזה לכל התבניות,bulk preset edit: per-card button,
+dashboard.preset.bulk_copy_text_confirm,"Replace the message of every other preset with the message of ""{name}""? Nothing is saved until you press Save.","להחליף את ההודעה של כל תבנית אחרת בהודעה של ""{name}""? דבר אינו נשמר עד ללחיצה על שמירה.",confirm before copying one card's text to every draft,has {name}
+dashboard.preset.bulk_desc,Edit the message and the common switches of every preset on one screen.,ערכו את ההודעה ואת המתגים הנפוצים של כל התבניות במסך אחד.,presets section note under the bulk edit button,
+dashboard.preset.bulk_discard_confirm,Discard your unsaved preset changes?,לבטל את השינויים שלא נשמרו בתבניות?,confirm on Cancel / Escape with unsaved bulk edits,
+dashboard.preset.bulk_empty,No presets yet. Save one in the Presets section first.,אין תבניות עדיין. שמרו תבנית קודם בחלק התבניות.,bulk preset edit with an empty preset list,
+dashboard.preset.bulk_folder,in {folder},בתיקייה {folder},bulk preset edit: folder caption beside a preset name,has {folder}
+dashboard.preset.bulk_group_cards,Board cards,כרטיסי הלוח,bulk preset edit toggle group,
+dashboard.preset.bulk_group_countdowns,Countdowns,ספירות לאחור,bulk preset edit toggle group,
+dashboard.preset.bulk_group_datetime,Date & time,תאריך ושעה,bulk preset edit toggle group,
+dashboard.preset.bulk_group_hebrew,Hebrew text,טקסט עברי,bulk preset edit toggle group,
+dashboard.preset.bulk_master_caption,All {count} presets at once,כל {count} התבניות בבת אחת,bulk preset edit master row caption,has {count}
+dashboard.preset.bulk_mixed,mixed,מעורב,bulk preset edit: placeholder of the all-presets text size when presets differ,
+dashboard.preset.bulk_save,Save all changes,שמירת כל השינויים,bulk preset edit footer button,
+dashboard.preset.bulk_save_confirm,Save the changes to {count} presets?,לשמור את השינויים ב-{count} תבניות?,confirm before writing bulk edits (signed out),has {count}
+dashboard.preset.bulk_save_confirm_cloud,"Save the changes to {count} presets? You are signed in, so they reach your account and every device.","לשמור את השינויים ב-{count} תבניות? אתם מחוברים, ולכן השינויים יגיעו לחשבון ולכל מכשיר.",confirm before writing bulk edits while a session is stored,has {count}
+dashboard.preset.bulk_saved.one,1 preset updated.,תבנית אחת עודכנה.,toast after a bulk save (count = 1),has {count}
+dashboard.preset.bulk_saved.other,{count} presets updated.,{count} תבניות עודכנו.,toast after a bulk save,has {count}
+dashboard.preset.bulk_skipped,"{count} removed on another device meanwhile, not written.",{count} הוסרו בינתיים במכשיר אחר ולא נכתבו.,toast suffix: presets deleted elsewhere while the bulk editor was open,has {count}
+dashboard.preset.bulk_sub,Every preset at once: edit each one's message below — the toolbar works on whichever message you are in — and flip its switches. The top row sets a switch on all presets. Nothing is saved until you press Save.,כל התבניות בבת אחת: ערכו למטה את ההודעה של כל תבנית — סרגל הכלים פועל על ההודעה שבה אתם נמצאים — והחליפו את המתגים שלה. השורה העליונה קובעת מתג בכל התבניות. דבר אינו נשמר עד שתלחצו על שמירה.,bulk preset edit dialog subtitle,
+dashboard.preset.bulk_text_size_all,Text size for all,גודל טקסט לכולן,bulk preset edit master row: one display size for every preset,
+dashboard.preset.bulk_title,Bulk preset edit,עריכה קבוצתית של תבניות,bulk preset edit dialog title,
 dashboard.schedule.add_period,+ Add period,+ הוסף שיעור,weekly editor toolbar button,leading-emoji
 dashboard.schedule.print_week,Print week,הדפסת השבוע,weekly editor toolbar button — prints the grid as a reference sheet,leading-emoji; REVIEW: HE draft
 dashboard.schedule.print_week_title,"Print the weekly grid as a reference sheet — class colors included","הדפסת רשת השבוע כדף עזר — כולל צבעי הכיתות",print button tooltip,REVIEW: HE draft

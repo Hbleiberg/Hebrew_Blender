@@ -1893,6 +1893,53 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
   .swm-saverow input { flex: 1; min-width: 150px; max-width: none; }
   .swm-footer { display: flex; justify-content: flex-end; margin-top: 14px; }
 
+  /* ── Bulk preset edit (modal stacked over the settings drawer, the week editor's shape) ──
+     z 565/566: above the week editor (560/561) — both open from the drawer, never together — and
+     below the first-run card (600) and the body-appended #tipFloat / .ft-move-menu (9999). Display-
+     toggle only, no transition, so nothing to neutralize for reduced motion. The head (toolbar +
+     master row) is sticky inside the modal's own scroller. */
+  .bpe-backdrop { position: fixed; inset: 0; background: rgba(13,18,32,0.6); z-index: 565; display: none; }
+  .bpe-backdrop.open { display: block; }
+  .bpe-modal { position: fixed; z-index: 566; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    width: min(1040px, 94vw); max-height: 90vh; max-height: 90dvh; overflow: auto; background: var(--white); color: var(--text);
+    border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow-md); padding: 22px 24px; display: none; }
+  .bpe-modal.open { display: block; }
+  body.dark .bpe-modal { background: var(--navy-deep); }
+  .bpe-head { position: sticky; inset-block-start: 0; z-index: 2; background: var(--white); margin-inline: -24px; padding: 6px 24px 10px; border-block-end: 1px solid var(--border); }
+  body.dark .bpe-head { background: var(--navy-deep); }
+  .bpe-head .editor-toolbar { margin-top: 0; border-radius: 6px; border-bottom: 1px solid var(--border); }
+  .bpe-master { display: flex; flex-wrap: wrap; gap: 8px 22px; align-items: flex-start; margin-block-start: 8px; }
+  .bpe-master-cap { flex-basis: 100%; font-size: 0.72rem; color: var(--muted); }
+  .bpe-mgroup { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; }
+  .bpe-mgroup-lbl { font-size: 0.66rem; color: var(--muted); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; flex-basis: 100%; }
+  .bpe-mchip { display: inline-flex; align-items: center; gap: 5px; font-size: 0.76rem; cursor: pointer; }
+  .bpe-mchip input { accent-color: var(--gold); width: 15px; height: 15px; margin: 0; cursor: pointer; flex-shrink: 0; }
+  .bpe-msize { flex-basis: 100%; }   /* its own row, not the tail of the last toggle group */
+  .bpe-msize input[type=number] { width: 64px; font-family: inherit; font-size: 0.78rem; padding: 2px 4px; }
+  .bpe-boardwide { padding: 6px 10px; border: 1px dashed var(--border); border-radius: 8px; }
+  .bpe-boardwide-off { font-size: 0.72rem; color: var(--muted); }
+  .bpe-cards { display: flex; flex-direction: column; gap: 12px; margin-block-start: 12px; }
+  .bpe-card { border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px 12px; background: var(--cream); }
+  body.dark .bpe-card { background: var(--navy); }
+  .bpe-card-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .bpe-name { font-family: 'Libre Baskerville', serif; font-size: 1rem; margin: 0; color: var(--text); }
+  .bpe-folder { font-size: 0.72rem; color: var(--muted); }
+  .bpe-editor { border-radius: 6px; min-height: 72px; margin-block-start: 8px; }
+  .bpe-row { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; margin-block: 8px; }
+  .bpe-size { display: inline-flex; align-items: center; gap: 8px; font-size: 0.76rem; flex: 1; min-width: 200px; }
+  .bpe-size input[type=range] { flex: 1; accent-color: var(--gold); cursor: pointer; }
+  .bpe-size .size-val { min-width: 44px; }
+  .bpe-chips { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 4px 14px; }
+  .bpe-chip { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 0.78rem; cursor: pointer; padding: 2px 0; }
+  .bpe-footer { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  .bpe-footer .bpe-note { margin-inline-end: auto; font-size: 0.74rem; color: var(--muted); }
+  .bpe-empty { font-size: 0.85rem; color: var(--muted); padding: 20px 0; }
+  @media (max-width: 560px) {
+    .bpe-chips { grid-template-columns: 1fr; }
+    .bpe-modal { padding: 18px 14px; }
+    .bpe-head { margin-inline: -14px; padding-inline: 14px; position: static; }   /* a phone's screen is the head's height; it scrolls with the cards there */
+  }
+
   /* ── In-place dashboard text editing ── */
   #dashTextWrap { position: relative; }
   .dash-edit-pencil { position: absolute; top: 4px; right: 4px; z-index: 5; width: 34px; height: 34px;
@@ -2552,6 +2599,24 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
   </div>
   <div class="swm-footer"><button class="btn" onclick="closeWeekEditor()" data-i18n="dashboard.schedule.editor_done">Done</button></div>
 </div>
+<!-- ───── Bulk preset edit (modal over the drawer, like the week editor; docs/reference/dashboard.md → Bulk preset edit) ───── -->
+<div class="bpe-backdrop" id="bpeBackdrop" onclick="bpeCancel()"></div>
+<div class="bpe-modal" id="bpeModal" role="dialog" aria-modal="true" aria-labelledby="bpeTitle">
+  <button class="fr-close" onclick="bpeCancel()" aria-label="Close bulk preset edit" data-i18n-aria-label="dashboard.preset.bulk_close_aria"><svg class="hi hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
+  <h2 class="fr-h" id="bpeTitle" data-i18n="dashboard.preset.bulk_title">Bulk preset edit</h2>
+  <p class="fr-sub" data-i18n="dashboard.preset.bulk_sub">Every preset at once: edit each one's message below — the toolbar works on whichever message you are in — and flip its switches. The top row sets a switch on all presets. Nothing is saved until you press Save.</p>
+  <div class="bpe-head">
+    <!-- The shared toolbar (EDITOR_COMMANDS); data-editor follows the focused card's editor (bpeFocusEditor) -->
+    <div class="editor-toolbar" id="bpeToolbar" data-editor=""></div>
+    <div class="bpe-master" id="bpeMaster"></div>
+  </div>
+  <div class="bpe-cards" id="bpeCards"></div>
+  <div class="bpe-footer">
+    <span class="bpe-note" id="bpeNote" role="status" aria-live="polite"></span>
+    <button type="button" class="btn btn-secondary" onclick="bpeCancel()" data-i18n="dashboard.preset.bulk_cancel">Cancel</button>
+    <button type="button" class="btn" id="bpeSaveBtn" onclick="bpeSave()" data-i18n="dashboard.preset.bulk_save">Save all changes</button>
+  </div>
+</div>
 <!-- ───── Guided tour coach-mark (non-modal spotlight) ───── -->
 <div class="tour-spot" id="tourSpot" hidden></div>
 <div class="tour-card" id="tourCard" role="dialog" aria-modal="false" aria-labelledby="tourCardTitle" aria-describedby="tourCardBody" hidden>
@@ -3155,6 +3220,9 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
         </div>
         <div id="presetNameNote" role="status" aria-live="polite" style="display:none;font-size:0.72rem;color:var(--gold-text);margin:-4px 0 8px;"></div>
         <div class="preset-list" id="presetList"></div>
+        <!-- Bulk preset edit: one screen over every preset (docs/reference/dashboard.md → Bulk preset edit) -->
+        <button class="btn btn-xs btn-secondary" id="bulkPresetBtn" onclick="openBulkPresetEdit()" style="width:100%;margin-top:10px;" data-i18n="dashboard.preset.bulk_button">Bulk preset edit…</button>
+        <p class="tt-set-note" style="margin:6px 0 0;" data-i18n="dashboard.preset.bulk_desc">Edit the message and the common switches of every preset on one screen.</p>
       </div>
       <div class="tt-set" data-set="schedule" id="schedulePanel">
         <h3 class="tt-set-title" tabindex="-1" data-i18n="dashboard.settings.panel_schedule">Schedule Sync</h3>
@@ -7547,6 +7615,282 @@ function mountSidebarResize(cfg) {
     renderPresets();
     if (refs + saved) showAppToast(I18n.t('dashboard.preset.rename_toast', { name: nn }));
   }
+
+  /* ── Bulk preset edit ──────────────────────────────────────────────────────────────────────────
+     One screen over every preset: a card per preset with its own message editor (the shared toolbar
+     follows the focused card through setDrawerEditor) and the common switches, plus a master row that
+     sets a switch or a text on all of them at once. Edits land in a DRAFT (a deep clone of `presets`)
+     and reach the store only through Save — one savePresetsStorage(), so the account hook uploads just
+     the rows that changed. A preset may be partial (the seeded Default has ~30 keys), so only keys the
+     teacher touched are written: an untouched absent key stays absent and the preset keeps merging over
+     the live settings as it always did. The three Schedule Sync countdown switches are NOT preset fields
+     (applySettings restores the live values), so the master row carries them once, as live board
+     settings. docs/reference/dashboard.md → Bulk preset edit. */
+  const BPE_GROUPS = [
+    { label: 'dashboard.preset.bulk_group_countdowns', items: [
+      { key: 'showHolidayCountdown', label: 'dashboard.datetime.show_holiday_countdown' } ] },
+    { label: 'dashboard.preset.bulk_group_cards', items: [
+      { key: 'enableDashText', label: 'dashboard.text.hide', invert: true },   // the drawer's switch is "Hide dashboard text"
+      { key: 'hideWeather', label: 'dashboard.weather.hide_panel' },
+      { key: 'hideDOW', label: 'dashboard.days.hide_panel' },
+      { key: 'showTimer', label: 'dashboard.timer.show_panel' },
+      { key: 'showStudentPicker', label: 'dashboard.picker.show_panel' },
+      { key: 'showVideoEmbed', label: 'dashboard.display.show_video_embed' } ] },
+    { label: 'dashboard.preset.bulk_group_datetime', items: [
+      { key: 'hideHebDate', label: 'dashboard.datetime.hide_heb_date' },
+      { key: 'hideEngDate', label: 'dashboard.datetime.hide_eng_date' },
+      { key: 'hideTime', label: 'dashboard.datetime.hide_time' },
+      { key: 'showShabbatTimes', label: 'dashboard.days.show_shabbat' },
+      { key: 'showOmerCounter', label: 'dashboard.days.omer_show_panel' },
+      { key: 'showParsha', label: 'dashboard.datetime.show_parsha' } ] },
+    { label: 'dashboard.preset.bulk_group_hebrew', items: [
+      { key: 'showNikkud', label: 'dashboard.color.show_nikkud' },
+      { key: 'colorCodeNikkud', label: 'dashboard.color.color_code_nikkud' } ] },
+  ];
+  const BPE_TOGGLES = BPE_GROUPS.flatMap(g => g.items);
+  // Live board settings, never preset fields — the drawer's own reads and setters.
+  const BPE_BOARDWIDE = [
+    { key: 'scheduleShowCountdown', label: 'dashboard.schedule.show_countdown', read: () => !!settings.scheduleShowCountdown, set: v => setScheduleCountdown(v) },
+    { key: 'countdownShowPresetName', label: 'dashboard.schedule.show_preset_name', read: () => settings.countdownShowPresetName !== false, set: v => { settings.countdownShowPresetName = v; updateCountdown(); saveSettingsToStorage(); } },
+    { key: 'scheduleShowPeriods', label: 'dashboard.schedule.show_nownext', read: () => settings.scheduleShowPeriods !== false, set: v => setScheduleShowPeriods(v) },
+  ];
+  let _bpeDraft = null, _bpeTouched = null, _bpeOrder = [], _bpeFolders = {}, _bpeOpener = null;
+  function bpeOpen() { const m = document.getElementById('bpeModal'); return !!(m && m.classList.contains('open')); }
+  // Presets in the folder tree's reading order (items inside folders, with the folder path for the caption),
+  // then any preset the tree does not list yet. Names only — the tree never decides what exists.
+  function bpeOrderNames() {
+    const tree = ftRead('hebrewDashboard_presetsFolders'), names = [], folderOf = {};
+    (function walk(nodes, path) {
+      (nodes || []).forEach(n => {
+        if (!n) return;
+        if (n.t === 'item') { if (presets[n.name] !== undefined && !names.includes(n.name)) { names.push(n.name); folderOf[n.name] = path; } }
+        else if (n.t === 'folder') walk(n.children, path ? path + ' / ' + n.name : String(n.name || ''));
+      });
+    })(tree.root, '');
+    Object.keys(presets).forEach(n => { if (!names.includes(n)) { names.push(n); folderOf[n] = ''; } });
+    return { names, folderOf };
+  }
+  function bpeIdOf(name) { return 'bpeEd_' + _bpeOrder.indexOf(name); }
+  function bpeNameOf(id) { return _bpeOrder[+String(id).slice(6)]; }
+  // What a toggle shows for a preset: its own value, else the pristine default (a partial preset has no opinion).
+  function bpeVal(name, key) { const d = _bpeDraft && _bpeDraft[name]; return (d && d[key] !== undefined) ? d[key] : PRISTINE_DEFAULTS[key]; }
+  function bpeSet(name, key, val) {
+    if (!_bpeDraft || !_bpeDraft[name]) return;
+    _bpeDraft[name][key] = val;
+    _bpeTouched[name].add(key);
+    bpeRefreshNote();
+  }
+  function bpeMirror(id) {   // a card's editor → its draft (the toolbar's syncActive and the editor's input both land here)
+    const name = bpeNameOf(id), ed = document.getElementById(id);
+    if (!ed || name === undefined) return;
+    bpeSet(name, 'dashTextHTML', _dashTextEmpty(ed.innerHTML) ? '' : ed.innerHTML);
+  }
+  function bpeFocusEditor(id) {
+    setDrawerEditor(id);
+    const tb = document.getElementById('bpeToolbar'); if (tb) tb.dataset.editor = id;   // a toolbar press keeps serving this card
+  }
+  function bpeChangedNames() {
+    if (!_bpeDraft) return [];
+    return _bpeOrder.filter(n => presets[n] !== undefined && JSON.stringify(_bpeDraft[n]) !== JSON.stringify(presets[n]));
+  }
+  function bpeRefreshNote() {
+    const el = document.getElementById('bpeNote'); if (!el || !_bpeDraft) return;
+    const n = bpeChangedNames().length;
+    el.textContent = I18n.t(n === 1 ? 'dashboard.preset.bulk_changed.one' : 'dashboard.preset.bulk_changed.other', { count: n });
+    const sb = document.getElementById('bpeSaveBtn'); if (sb) sb.setAttribute('aria-disabled', n ? 'false' : 'true');
+  }
+  function bpeChip(name, t) {
+    // One <label> around text + switch (a nested <label class="toggle"> would be invalid, so the switch is a <span>).
+    const lab = document.createElement('label'); lab.className = 'bpe-chip'; lab.dataset.key = t.key;
+    const txt = document.createElement('span'); txt.textContent = I18n.t(t.label); lab.appendChild(txt);
+    const tg = document.createElement('span'); tg.className = 'toggle';
+    const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = !!bpeVal(name, t.key) !== !!t.invert;
+    cb.addEventListener('change', () => { bpeSet(name, t.key, cb.checked !== !!t.invert); renderBpeMaster(); });
+    const sl = document.createElement('span'); sl.className = 'slider';
+    tg.appendChild(cb); tg.appendChild(sl); lab.appendChild(tg);
+    return lab;
+  }
+  function renderBpeCards() {
+    const host = document.getElementById('bpeCards'); if (!host || !_bpeDraft) return;
+    host.innerHTML = '';
+    if (!_bpeOrder.length) { const e = document.createElement('p'); e.className = 'bpe-empty'; e.textContent = I18n.t('dashboard.preset.bulk_empty'); host.appendChild(e); return; }
+    _bpeOrder.forEach((name, i) => {
+      const id = 'bpeEd_' + i;
+      const card = document.createElement('section'); card.className = 'bpe-card'; card.dataset.name = name;
+      const head = document.createElement('div'); head.className = 'bpe-card-head';
+      const h = document.createElement('h3'); h.className = 'bpe-name'; h.id = id + '_h'; h.textContent = name; head.appendChild(h);
+      if (_bpeFolders[name]) { const f = document.createElement('span'); f.className = 'bpe-folder'; f.textContent = I18n.t('dashboard.preset.bulk_folder', { folder: _bpeFolders[name] }); head.appendChild(f); }
+      card.appendChild(head);
+      const ed = document.createElement('div'); ed.className = 'editor bpe-editor'; ed.id = id; ed.contentEditable = 'true'; ed.setAttribute('dir', 'auto');
+      ed.setAttribute('role', 'textbox'); ed.setAttribute('aria-multiline', 'true'); ed.setAttribute('aria-labelledby', id + '_h');
+      ed.innerHTML = sanitizeDashHTML(_bpeDraft[name].dashTextHTML || '');   // a stored message is teacher data: through the sanitizer, as the drawer's editor does
+      ed.addEventListener('paste', _pasteSanitized);
+      ed.addEventListener('focusin', () => bpeFocusEditor(id));
+      ed.addEventListener('input', () => bpeMirror(id));
+      card.appendChild(ed);
+      const row = document.createElement('div'); row.className = 'bpe-row';
+      const copy = document.createElement('button'); copy.type = 'button'; copy.className = 'btn btn-xs btn-secondary';
+      copy.textContent = I18n.t('dashboard.preset.bulk_copy_text');
+      copy.addEventListener('click', () => bpeCopyTextToAll(name));
+      row.appendChild(copy);
+      const sz = document.createElement('label'); sz.className = 'bpe-size';
+      const szL = document.createElement('span'); szL.textContent = I18n.t('dashboard.text.display_size'); sz.appendChild(szL);
+      const szI = document.createElement('input'); szI.type = 'range'; szI.min = '0.8'; szI.max = '5'; szI.step = '0.1'; szI.className = 'bpe-size-in';
+      szI.value = String(bpeVal(name, 'dashTextSize') ?? 1.8);
+      const szV = document.createElement('span'); szV.className = 'size-val'; szV.textContent = (+szI.value).toFixed(1) + 'rem';
+      szI.addEventListener('input', () => { bpeSet(name, 'dashTextSize', +szI.value); szV.textContent = (+szI.value).toFixed(1) + 'rem'; bpeSyncMasterSize(); });
+      sz.appendChild(szI); sz.appendChild(szV); row.appendChild(sz);
+      card.appendChild(row);
+      const chips = document.createElement('div'); chips.className = 'bpe-chips';
+      BPE_TOGGLES.forEach(t => chips.appendChild(bpeChip(name, t)));
+      card.appendChild(chips);
+      host.appendChild(card);
+    });
+  }
+  function bpeSyncChips(key) {   // after a master switch: every card's chip for that key, in place
+    const t = BPE_TOGGLES.find(x => x.key === key); if (!t) return;
+    document.querySelectorAll('#bpeCards .bpe-card').forEach(card => {
+      const cb = card.querySelector('.bpe-chip[data-key="' + key + '"] input');
+      if (cb) cb.checked = !!bpeVal(card.dataset.name, key) !== !!t.invert;
+    });
+  }
+  function bpeSyncMasterSize() {
+    const inp = document.getElementById('bpeMasterSize'); if (!inp || !_bpeOrder.length) return;
+    const vals = _bpeOrder.map(n => +(bpeVal(n, 'dashTextSize') ?? 1.8));
+    const same = vals.every(v => v === vals[0]);
+    inp.value = same ? vals[0].toFixed(1) : '';
+    inp.placeholder = same ? '' : I18n.t('dashboard.preset.bulk_mixed');
+  }
+  function renderBpeMaster() {
+    const host = document.getElementById('bpeMaster'); if (!host || !_bpeDraft) return;
+    host.innerHTML = '';
+    if (!_bpeOrder.length) return;
+    const cap = document.createElement('div'); cap.className = 'bpe-master-cap';
+    cap.textContent = I18n.t('dashboard.preset.bulk_master_caption', { count: _bpeOrder.length }); host.appendChild(cap);
+    BPE_GROUPS.forEach(g => {
+      const grp = document.createElement('div'); grp.className = 'bpe-mgroup';
+      const gl = document.createElement('span'); gl.className = 'bpe-mgroup-lbl'; gl.textContent = I18n.t(g.label); grp.appendChild(gl);
+      g.items.forEach(t => {
+        const vals = _bpeOrder.map(n => !!bpeVal(n, t.key) !== !!t.invert);
+        const all = vals.every(Boolean), none = vals.every(v => !v);
+        const lab = document.createElement('label'); lab.className = 'bpe-mchip';
+        const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = all; cb.indeterminate = !all && !none;   // a native box shows "mixed"; the card chips are sliders
+        cb.addEventListener('change', () => {
+          const v = cb.checked !== !!t.invert;
+          _bpeOrder.forEach(n => bpeSet(n, t.key, v));
+          bpeSyncChips(t.key);
+          cb.indeterminate = false;
+        });
+        const s = document.createElement('span'); s.textContent = I18n.t(t.label);
+        lab.appendChild(cb); lab.appendChild(s); grp.appendChild(lab);
+      });
+      host.appendChild(grp);
+    });
+    // One text size for every preset
+    const sg = document.createElement('div'); sg.className = 'bpe-mgroup bpe-msize';
+    const sl = document.createElement('label'); sl.className = 'bpe-mchip';
+    const st = document.createElement('span'); st.textContent = I18n.t('dashboard.preset.bulk_text_size_all'); sl.appendChild(st);
+    const si = document.createElement('input'); si.type = 'number'; si.id = 'bpeMasterSize'; si.min = '0.8'; si.max = '5'; si.step = '0.1';
+    si.addEventListener('change', () => {
+      const v = Math.min(5, Math.max(0.8, parseFloat(si.value)));
+      if (!Number.isFinite(v)) { bpeSyncMasterSize(); return; }
+      _bpeOrder.forEach(n => bpeSet(n, 'dashTextSize', v));
+      document.querySelectorAll('#bpeCards .bpe-card').forEach(card => {
+        const r = card.querySelector('.bpe-size-in'), lbl = card.querySelector('.bpe-size .size-val');
+        if (r) r.value = String(v); if (lbl) lbl.textContent = v.toFixed(1) + 'rem';
+      });
+      bpeSyncMasterSize();
+    });
+    sl.appendChild(si); const su = document.createElement('span'); su.textContent = 'rem'; sl.appendChild(su); sg.appendChild(sl);   // i18n-ignore — a CSS unit, as the size sliders' "1.8rem" labels are
+    host.appendChild(sg);
+    bpeSyncMasterSize();
+    // Board-wide: the Schedule Sync countdown switches — live settings, changed now, no preset involved
+    const bw = document.createElement('div'); bw.className = 'bpe-mgroup bpe-boardwide';
+    const bl = document.createElement('span'); bl.className = 'bpe-mgroup-lbl'; bl.textContent = I18n.t('dashboard.preset.bulk_boardwide_caption'); bw.appendChild(bl);
+    if (!settings.scheduleEnabled) {
+      const off = document.createElement('span'); off.className = 'bpe-boardwide-off'; off.textContent = I18n.t('dashboard.preset.bulk_boardwide_off'); bw.appendChild(off);
+    } else {
+      BPE_BOARDWIDE.forEach(b => {
+        const lab = document.createElement('label'); lab.className = 'bpe-mchip';
+        const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = b.read();
+        cb.addEventListener('change', () => b.set(cb.checked));
+        const s = document.createElement('span'); s.textContent = I18n.t(b.label);
+        lab.appendChild(cb); lab.appendChild(s); bw.appendChild(lab);
+      });
+    }
+    host.appendChild(bw);
+  }
+  function bpeCopyTextToAll(from) {
+    if (!_bpeDraft || !_bpeDraft[from]) return;
+    if (!confirm(I18n.t('dashboard.preset.bulk_copy_text_confirm', { name: from }))) return;
+    const html = _bpeDraft[from].dashTextHTML || '';
+    _bpeOrder.forEach(n => {
+      if (n === from) return;
+      bpeSet(n, 'dashTextHTML', html);
+      const ed = document.getElementById(bpeIdOf(n)); if (ed) ed.innerHTML = sanitizeDashHTML(html);
+    });
+  }
+  function openBulkPresetEdit() {
+    if (_activeEditable) exitInPlaceEdit(true);   // one edit surface at a time (mirrors openWeekEditor)
+    _bpeOpener = document.activeElement;
+    _bpeDraft = JSON.parse(JSON.stringify(presets));
+    _bpeTouched = {}; Object.keys(_bpeDraft).forEach(n => { _bpeTouched[n] = new Set(); });
+    const o = bpeOrderNames(); _bpeOrder = o.names; _bpeFolders = o.folderOf;
+    buildToolbar(document.getElementById('bpeToolbar'));   // rebuilt per open: the font list may have grown (My Fonts)
+    renderBpeCards(); renderBpeMaster(); bpeRefreshNote();
+    document.getElementById('bpeBackdrop').classList.add('open');
+    document.getElementById('bpeModal').classList.add('open');
+    document.addEventListener('keydown', bpeKey, true);
+    const c = document.querySelector('#bpeModal .fr-close'); if (c) c.focus();
+  }
+  function bpeKey(e) {
+    if (e.key === 'Escape') { e.stopPropagation(); bpeCancel(); return; }
+    _trapTabWithin(document.getElementById('bpeModal'), e);
+  }
+  function bpeSave() {
+    if (!_bpeDraft) return;
+    const changed = bpeChangedNames();
+    const gone = _bpeOrder.filter(n => presets[n] === undefined && _bpeTouched[n] && _bpeTouched[n].size);   // removed on another device while this was open
+    if (!changed.length) { bpeClose(); return; }
+    const signedIn = !!(window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession());
+    if (!confirm(I18n.t(signedIn ? 'dashboard.preset.bulk_save_confirm_cloud' : 'dashboard.preset.bulk_save_confirm', { count: changed.length }))) return;
+    changed.forEach(n => {
+      const d = _bpeDraft[n];
+      if (_bpeTouched[n].has('dashTextHTML')) d.dashTextHTML = sanitizeDashHTML(d.dashTextHTML || '');
+      presets[n] = d;
+    });
+    savePresetsStorage();   // one write; the account hook uploads only the rows that changed
+    // Schedule Sync owns the board: if the period on it now is one of the changed presets, re-apply it now
+    // (the account download's pattern), not at the next period boundary. Otherwise the live board is left alone.
+    if (settings.scheduleEnabled) {
+      let cur = null;
+      try { const st = computeScheduleState(); cur = (st && st.status === 'active' && st.currentEntry) ? st.currentEntry.preset : null; } catch (e) {}
+      if (cur && changed.includes(cur)) { _lastScheduleKey = null; checkSchedule(); }
+    }
+    let msg = I18n.t(changed.length === 1 ? 'dashboard.preset.bulk_saved.one' : 'dashboard.preset.bulk_saved.other', { count: changed.length });
+    if (gone.length) msg += ' ' + I18n.t('dashboard.preset.bulk_skipped', { count: gone.length });
+    bpeClose();
+    showAppToast(msg);
+  }
+  function bpeCancel() {
+    if (bpeChangedNames().length && !confirm(I18n.t('dashboard.preset.bulk_discard_confirm'))) return;
+    bpeClose();
+  }
+  function bpeClose() {
+    document.getElementById('bpeBackdrop').classList.remove('open');
+    document.getElementById('bpeModal').classList.remove('open');
+    document.removeEventListener('keydown', bpeKey, true);
+    _bpeDraft = null; _bpeTouched = null; _bpeOrder = []; _bpeFolders = {};
+    document.getElementById('bpeCards').innerHTML = '';
+    document.getElementById('bpeMaster').innerHTML = '';
+    const tb = document.getElementById('bpeToolbar'); if (tb) tb.dataset.editor = '';
+    // The shared toolbar serves the drawer's editor again. Direct, not setDrawerEditor(): that would seed a
+    // range at the editor's end, while a null range is what a freshly opened drawer has.
+    _drawerEditorId = 'dashEditor'; _savedEditorRange = null;
+    syncFormToSettings();   // the master row's board-wide switches are the drawer's own; its checkboxes follow
+    const o = _bpeOpener; _bpeOpener = null;
+    if (o && o.focus) { try { o.focus(); } catch (e) {} }
+  }
 /* ═══ IvritSuite folder-tree component (shared, identical across pages) ═══ */
 /* Sidecar overlay: the preset/schedule/profile store stays a flat {name:...} object and is the
    source of truth for which items EXIST. This tree only organizes them (references items by name).
@@ -7997,7 +8341,7 @@ function mountFolderTree(cfg){
       finalFlush: () => { if (_activeEditable) exitInPlaceEdit(true); flushRosterIfTyping(); saveSettingsIfChanged(); },
       // a board, an Intermission screen or a class list being typed (the window may have lost the focus meanwhile):
       // another tab's download waits for the next save here instead of re-rendering over the typing
-      editing: () => { if (_activeEditable) return true; const ae = document.activeElement; return !!ae && (ae.id === 'pickerRoster' || ae.id === 'dashEditor' || ae.id === 'intermissionEditor'); },
+      editing: () => { if (_activeEditable) return true; const ae = document.activeElement; return !!ae && (ae.id === 'pickerRoster' || ae.id === 'dashEditor' || ae.id === 'intermissionEditor' || (bpeOpen() && document.getElementById('bpeModal').contains(ae))); },
       merges: {
         presetFolders: ftMergeTrees,
         scheduleFolders: ftMergeTrees,
@@ -10619,10 +10963,11 @@ else ivritInit();
     const heb = (allFonts().find(f => f.name === settings.hebFont) || HEB_FONTS[0]).family;
     if (inEditor && !r.collapsed) {
       fmt('fontName', font.family + ', ' + heb);
-    } else if (isIntermissionEditing() || activeEditor().id === 'intermissionEditor') {
+    } else if (isIntermissionEditing() || activeEditor().id === 'intermissionEditor' || /^bpeEd_\d+$/.test(activeEditor().id)) {
       // The Intermission screen has no base font of its own, and the page-wide one (settings.engFont)
       // belongs to the board's message — so with nothing selected the pick restyles this screen's
       // whole text instead (on the sheet or in the drawer's editor), and the caret goes back to the end.
+      // A Bulk-preset-edit card is another preset's message, so it takes this path too.
       const el = activeEditor(), all = document.createRange();
       all.selectNodeContents(el);
       _savedEditorRange = all;
@@ -10708,6 +11053,7 @@ else ivritInit();
     // settings copy current). Falling through would re-render the board's message under it.
     if (isIntermissionEditing()) return;
     if (!_activeEditable && _drawerEditorId === 'intermissionEditor') { intermissionEditorMirror(); return; }   // the drawer's Intermission editor mirrors into settings, the preview and the sheet
+    if (!_activeEditable && /^bpeEd_\d+$/.test(_drawerEditorId)) { bpeMirror(_drawerEditorId); return; }   // a Bulk-preset-edit card mirrors into its draft, never into the board
     const disp = document.getElementById('dashTextDisplay'), ed = document.getElementById('dashEditor');
     if (_activeEditable === disp) { ed.innerHTML = disp.innerHTML; settings.dashTextHTML = disp.innerHTML; }
     else { disp.innerHTML = ed.innerHTML; settings.dashTextHTML = ed.innerHTML; }
@@ -11708,6 +12054,7 @@ async function onUploadEngFontPick(input){
       try { buildToolbar(document.getElementById('drawerToolbar')); } catch (e) {}      // editor toolbar titles/labels build via t()
       try { buildToolbar(document.getElementById('intermissionToolbar')); } catch (e) {}
       try { buildToolbar(document.getElementById('inplaceToolbarCmds')); } catch (e) {}
+      try { if (bpeOpen()) { buildToolbar(document.getElementById('bpeToolbar')); renderBpeCards(); renderBpeMaster(); bpeRefreshNote(); } } catch (e) {}   // re-label the open bulk editor from its draft (strings only)
       try { if (_rosterKbd) _rosterKbd.applyI18n(); } catch (e) {}   // key names/tips are shared.kbd.* strings
       try { updateColTitles(); } catch (e) {}
       try { updateDateTimeDisplay(); } catch (e) {}
