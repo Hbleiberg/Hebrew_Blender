@@ -608,8 +608,8 @@ uploaded was such a seed.
 `#bpeModal`, a dialog in the week editor's shape (backdrop + modal toggled with `.open`, `bpeKey` = Escape +
 `_trapTabWithin`, focus back to the opener) over the drawer: one card per preset, in the folder tree's reading
 order (`bpeOrderNames()` walks `hebrewDashboard_presetsFolders`, then appends any preset the tree lacks; the tree
-never decides what exists), each with its own message editor and the common switches, under a sticky head
-holding the shared toolbar and the master row.
+never decides what exists), each with its own toolbar and message editor and the common switches, under a sticky
+head holding the master row.
 
 - **A draft, written only by Save.** `_bpeDraft` is a deep clone of `presets`; every card edit lands there and
   `bpeSave()` writes the drafts whose JSON differs (`bpeChangedNames()`) back into `presets` with one
@@ -622,10 +622,12 @@ holding the shared toolbar and the master row.
   touched it (`_bpeTouched`): an untouched absent key stays absent, and an untouched preset stays byte-identical.
   `BPE_GROUPS` is the census of switches (Countdowns / Board cards / Date & time / Hebrew text; "Hide dashboard
   text" is `enableDashText` inverted) — a new switch is one row there, with the drawer's own label key.
-- **The toolbar follows the focused card.** Each card's editor is `#bpeEd_<i>` (`contenteditable`, `dir="auto"`,
-  the stored HTML through `sanitizeDashHTML`, paste through `_pasteSanitized`); `focusin` calls
-  `bpeFocusEditor(id)` = `setDrawerEditor(id)` + the toolbar's `data-editor`, so every `EDITOR_COMMANDS` button
-  (Glow and Shadow included) works on that card. `syncActive()` has a branch for a `bpeEd_` target that mirrors
+- **Each card has its own toolbar**, above its editor as in the drawer: `bpeBuildToolbar(id)` builds it from
+  `EDITOR_COMMANDS` with `data-editor` naming the card's editor and wires the two listeners the page gives the
+  static toolbars at init (a press or a Tab into it points `setDrawerEditor` at its editor; a button press never
+  steals the selection). The editor is `#bpeEd_<i>` (`contenteditable`, `dir="auto"`, the stored HTML through
+  `sanitizeDashHTML`, paste through `_pasteSanitized`), and its `focusin` calls `setDrawerEditor(id)` too, so every
+  button (Glow and Shadow included) works on that card. `syncActive()` has a branch for a `bpeEd_` target that mirrors
   into the draft (`bpeMirror`) and never into the board; `pickEditorFont` with nothing selected restyles that
   card's whole text, as it does the Intermission editor's, never `settings.engFont`. Closing resets
   `_drawerEditorId` to `dashEditor` with a null range. The account module's `editing` reports true while focus
@@ -633,7 +635,9 @@ holding the shared toolbar and the master row.
 - **The master row** sets a switch on every draft at once (a native checkbox, `indeterminate` when the presets
   differ; the card chips are the page's sliders), one display size for all (`#bpeMasterSize`, blank + "mixed"
   while they differ), and each card has *Copy this text to all presets* (a `confirm`, then every other draft and
-  editor takes its HTML). **Board-wide:** the three Schedule Sync countdown switches are not preset fields
+  editor takes its HTML) and *Copy this text to chosen presets…*, an inline picker under the card
+  (`bpeTogglePicker`: a checkbox per other preset, Select all / none, an Apply naming the count, one picker open at
+  a time, Escape closes it before the dialog) — both through `bpeCopyTextTo(from, names)`, drafts only. **Board-wide:** the three Schedule Sync countdown switches are not preset fields
   (`applySettings` restores the live values), so the master row carries them once, under their own caption, as
   live settings through the drawer's own setters (`BPE_BOARDWIDE`); hidden behind a note while Schedule Sync is
   off, and `syncFormToSettings()` on close keeps the drawer's checkboxes in step.

@@ -391,6 +391,12 @@ dashboard.preset.bulk_changed.other,{count} presets changed,{count} תבניות
 dashboard.preset.bulk_close_aria,Close bulk preset edit,סגור את העריכה הקבוצתית של התבניות,bulk preset edit close button,aria-label only
 dashboard.preset.bulk_copy_text,Copy this text to all presets,העתקת הטקסט הזה לכל התבניות,bulk preset edit: per-card button,
 dashboard.preset.bulk_copy_text_confirm,"Replace the message of every other preset with the message of ""{name}""? Nothing is saved until you press Save.","להחליף את ההודעה של כל תבנית אחרת בהודעה של ""{name}""? דבר אינו נשמר עד ללחיצה על שמירה.",confirm before copying one card's text to every draft,has {name}
+dashboard.preset.bulk_copy_pick,Copy this text to chosen presets…,העתקת הטקסט הזה לתבניות נבחרות…,bulk preset edit: per-card button that opens the picker,
+dashboard.preset.bulk_pick_all,Select all,בחירת הכול,bulk preset edit picker link,
+dashboard.preset.bulk_pick_apply.one,Copy to {count} preset,העתקה לתבנית אחת,bulk preset edit picker apply button (count = 1),has {count}
+dashboard.preset.bulk_pick_apply.other,Copy to {count} presets,העתקה ל-{count} תבניות,bulk preset edit picker apply button,has {count}
+dashboard.preset.bulk_pick_caption,"Copy the text of ""{name}"" to:","להעתיק את הטקסט של ""{name}"" אל:",bulk preset edit picker caption,has {name}
+dashboard.preset.bulk_pick_none,Select none,ביטול הבחירה,bulk preset edit picker link,
 dashboard.preset.bulk_desc,Edit the message and the common switches of every preset on one screen.,ערכו את ההודעה ואת המתגים הנפוצים של כל התבניות במסך אחד.,presets section note under the bulk edit button,
 dashboard.preset.bulk_discard_confirm,Discard your unsaved preset changes?,לבטל את השינויים שלא נשמרו בתבניות?,confirm on Cancel / Escape with unsaved bulk edits,
 dashboard.preset.bulk_empty,No presets yet. Save one in the Presets section first.,אין תבניות עדיין. שמרו תבנית קודם בחלק התבניות.,bulk preset edit with an empty preset list,
@@ -407,7 +413,7 @@ dashboard.preset.bulk_save_confirm_cloud,"Save the changes to {count} presets? Y
 dashboard.preset.bulk_saved.one,1 preset updated.,תבנית אחת עודכנה.,toast after a bulk save (count = 1),has {count}
 dashboard.preset.bulk_saved.other,{count} presets updated.,{count} תבניות עודכנו.,toast after a bulk save,has {count}
 dashboard.preset.bulk_skipped,"{count} removed on another device meanwhile, not written.",{count} הוסרו בינתיים במכשיר אחר ולא נכתבו.,toast suffix: presets deleted elsewhere while the bulk editor was open,has {count}
-dashboard.preset.bulk_sub,Every preset at once: edit each one's message below — the toolbar works on whichever message you are in — and flip its switches. The top row sets a switch on all presets. Nothing is saved until you press Save.,כל התבניות בבת אחת: ערכו למטה את ההודעה של כל תבנית — סרגל הכלים פועל על ההודעה שבה אתם נמצאים — והחליפו את המתגים שלה. השורה העליונה קובעת מתג בכל התבניות. דבר אינו נשמר עד שתלחצו על שמירה.,bulk preset edit dialog subtitle,
+dashboard.preset.bulk_sub,"Every preset at once: edit each one's message below with its own toolbar, and flip its switches. The top row sets a switch on all presets. Nothing is saved until you press Save.","כל התבניות בבת אחת: ערכו למטה את ההודעה של כל תבנית בסרגל הכלים שלה, והחליפו את המתגים שלה. השורה העליונה קובעת מתג בכל התבניות. דבר אינו נשמר עד שתלחצו על שמירה.",bulk preset edit dialog subtitle,
 dashboard.preset.bulk_text_size_all,Text size for all,גודל טקסט לכולן,bulk preset edit master row: one display size for every preset,
 dashboard.preset.bulk_title,Bulk preset edit,עריכה קבוצתית של תבניות,bulk preset edit dialog title,
 dashboard.schedule.add_period,+ Add period,+ הוסף שיעור,weekly editor toolbar button,leading-emoji

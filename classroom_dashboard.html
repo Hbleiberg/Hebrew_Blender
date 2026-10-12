@@ -1907,7 +1907,6 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
   body.dark .bpe-modal { background: var(--navy-deep); }
   .bpe-head { position: sticky; inset-block-start: 0; z-index: 2; background: var(--white); margin-inline: -24px; padding: 6px 24px 10px; border-block-end: 1px solid var(--border); }
   body.dark .bpe-head { background: var(--navy-deep); }
-  .bpe-head .editor-toolbar { margin-top: 0; border-radius: 6px; border-bottom: 1px solid var(--border); }
   .bpe-master { display: flex; flex-wrap: wrap; gap: 8px 22px; align-items: flex-start; margin-block-start: 8px; }
   .bpe-master-cap { flex-basis: 100%; font-size: 0.72rem; color: var(--muted); }
   .bpe-mgroup { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; }
@@ -1924,11 +1923,15 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
   .bpe-card-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
   .bpe-name { font-family: 'Libre Baskerville', serif; font-size: 1rem; margin: 0; color: var(--text); }
   .bpe-folder { font-size: 0.72rem; color: var(--muted); }
-  .bpe-editor { border-radius: 6px; min-height: 72px; margin-block-start: 8px; }
+  .bpe-editor { min-height: 72px; }   /* under its own .editor-toolbar, the drawer's pairing (the toolbar's margin-top sets the gap) */
   .bpe-row { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; margin-block: 8px; }
   .bpe-size { display: inline-flex; align-items: center; gap: 8px; font-size: 0.76rem; flex: 1; min-width: 200px; }
   .bpe-size input[type=range] { flex: 1; accent-color: var(--gold); cursor: pointer; }
   .bpe-size .size-val { min-width: 44px; }
+  .bpe-pick { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; border: 1px dashed var(--border); border-radius: 8px; padding: 8px 10px; margin-block: 0 10px; }
+  .bpe-pick-cap { flex-basis: 100%; font-size: 0.76rem; font-weight: 600; }
+  .bpe-pick-foot { flex-basis: 100%; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-block-start: 4px; }
+  .bpe-pick-foot .bpe-link { background: none; border: none; padding: 0; font: inherit; font-size: 0.74rem; color: var(--gold-text); cursor: pointer; text-decoration: underline; }
   .bpe-chips { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 4px 14px; }
   .bpe-chip { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 0.78rem; cursor: pointer; padding: 2px 0; }
   .bpe-footer { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
@@ -2604,10 +2607,8 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
 <div class="bpe-modal" id="bpeModal" role="dialog" aria-modal="true" aria-labelledby="bpeTitle">
   <button class="fr-close" onclick="bpeCancel()" aria-label="Close bulk preset edit" data-i18n-aria-label="dashboard.preset.bulk_close_aria"><svg class="hi hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
   <h2 class="fr-h" id="bpeTitle" data-i18n="dashboard.preset.bulk_title">Bulk preset edit</h2>
-  <p class="fr-sub" data-i18n="dashboard.preset.bulk_sub">Every preset at once: edit each one's message below — the toolbar works on whichever message you are in — and flip its switches. The top row sets a switch on all presets. Nothing is saved until you press Save.</p>
+  <p class="fr-sub" data-i18n="dashboard.preset.bulk_sub">Every preset at once: edit each one's message below with its own toolbar, and flip its switches. The top row sets a switch on all presets. Nothing is saved until you press Save.</p>
   <div class="bpe-head">
-    <!-- The shared toolbar (EDITOR_COMMANDS); data-editor follows the focused card's editor (bpeFocusEditor) -->
-    <div class="editor-toolbar" id="bpeToolbar" data-editor=""></div>
     <div class="bpe-master" id="bpeMaster"></div>
   </div>
   <div class="bpe-cards" id="bpeCards"></div>
@@ -7685,9 +7686,18 @@ function mountSidebarResize(cfg) {
     if (!ed || name === undefined) return;
     bpeSet(name, 'dashTextHTML', _dashTextEmpty(ed.innerHTML) ? '' : ed.innerHTML);
   }
-  function bpeFocusEditor(id) {
-    setDrawerEditor(id);
-    const tb = document.getElementById('bpeToolbar'); if (tb) tb.dataset.editor = id;   // a toolbar press keeps serving this card
+  // Each card carries its own toolbar above its message, the drawer's pairing — built here, so the two listeners the
+  // page wires on the static toolbars at init (a press or a Tab into the toolbar points it at its editor; a button
+  // press never steals the editor's selection) are wired here too.
+  function bpeBuildToolbar(id) {
+    const tb = document.createElement('div'); tb.className = 'editor-toolbar bpe-toolbar'; tb.dataset.editor = id;
+    buildToolbar(tb);
+    tb.addEventListener('mousedown', e => {
+      if (!_activeEditable) setDrawerEditor(id);
+      if (e.target.tagName === 'BUTTON' || e.target.closest('button')) e.preventDefault();
+    });
+    tb.addEventListener('focusin', () => { if (!_activeEditable) setDrawerEditor(id); });
+    return tb;
   }
   function bpeChangedNames() {
     if (!_bpeDraft) return [];
@@ -7721,11 +7731,12 @@ function mountSidebarResize(cfg) {
       const h = document.createElement('h3'); h.className = 'bpe-name'; h.id = id + '_h'; h.textContent = name; head.appendChild(h);
       if (_bpeFolders[name]) { const f = document.createElement('span'); f.className = 'bpe-folder'; f.textContent = I18n.t('dashboard.preset.bulk_folder', { folder: _bpeFolders[name] }); head.appendChild(f); }
       card.appendChild(head);
+      card.appendChild(bpeBuildToolbar(id));
       const ed = document.createElement('div'); ed.className = 'editor bpe-editor'; ed.id = id; ed.contentEditable = 'true'; ed.setAttribute('dir', 'auto');
       ed.setAttribute('role', 'textbox'); ed.setAttribute('aria-multiline', 'true'); ed.setAttribute('aria-labelledby', id + '_h');
       ed.innerHTML = sanitizeDashHTML(_bpeDraft[name].dashTextHTML || '');   // a stored message is teacher data: through the sanitizer, as the drawer's editor does
       ed.addEventListener('paste', _pasteSanitized);
-      ed.addEventListener('focusin', () => bpeFocusEditor(id));
+      ed.addEventListener('focusin', () => setDrawerEditor(id));
       ed.addEventListener('input', () => bpeMirror(id));
       card.appendChild(ed);
       const row = document.createElement('div'); row.className = 'bpe-row';
@@ -7733,6 +7744,10 @@ function mountSidebarResize(cfg) {
       copy.textContent = I18n.t('dashboard.preset.bulk_copy_text');
       copy.addEventListener('click', () => bpeCopyTextToAll(name));
       row.appendChild(copy);
+      const pick = document.createElement('button'); pick.type = 'button'; pick.className = 'btn btn-xs btn-secondary';
+      pick.textContent = I18n.t('dashboard.preset.bulk_copy_pick'); pick.setAttribute('aria-expanded', 'false');
+      pick.addEventListener('click', () => bpeTogglePicker(name, card, pick));
+      row.appendChild(pick);
       const sz = document.createElement('label'); sz.className = 'bpe-size';
       const szL = document.createElement('span'); szL.textContent = I18n.t('dashboard.text.display_size'); sz.appendChild(szL);
       const szI = document.createElement('input'); szI.type = 'range'; szI.min = '0.8'; szI.max = '5'; szI.step = '0.1'; szI.className = 'bpe-size-in';
@@ -7820,15 +7835,69 @@ function mountSidebarResize(cfg) {
     }
     host.appendChild(bw);
   }
-  function bpeCopyTextToAll(from) {
+  // One card's message into other drafts (and their editors). "All" is one click behind a confirm; "chosen" is an
+  // inline picker under the card — a checkbox per other preset, Select all / none, Apply — so a teacher can push
+  // one announcement to the morning classes only. Both only touch the draft; Save still confirms.
+  function bpeCopyTextTo(from, names) {
     if (!_bpeDraft || !_bpeDraft[from]) return;
-    if (!confirm(I18n.t('dashboard.preset.bulk_copy_text_confirm', { name: from }))) return;
     const html = _bpeDraft[from].dashTextHTML || '';
-    _bpeOrder.forEach(n => {
-      if (n === from) return;
+    names.forEach(n => {
+      if (n === from || !_bpeDraft[n]) return;
       bpeSet(n, 'dashTextHTML', html);
       const ed = document.getElementById(bpeIdOf(n)); if (ed) ed.innerHTML = sanitizeDashHTML(html);
     });
+  }
+  function bpeCopyTextToAll(from) {
+    if (!_bpeDraft || !_bpeDraft[from]) return;
+    if (!confirm(I18n.t('dashboard.preset.bulk_copy_text_confirm', { name: from }))) return;
+    bpeCopyTextTo(from, _bpeOrder);
+  }
+  function bpeClosePicker() {
+    const open = document.querySelector('#bpeCards .bpe-pick'); if (!open) return;
+    const btn = open._bpeOpener; open.remove();
+    if (btn) { btn.setAttribute('aria-expanded', 'false'); try { btn.focus(); } catch (e) {} }
+  }
+  function bpeTogglePicker(from, card, btn) {
+    const open = document.querySelector('#bpeCards .bpe-pick');
+    if (open && open._bpeOpener === btn) { bpeClosePicker(); return; }
+    bpeClosePicker();   // one picker at a time
+    const others = _bpeOrder.filter(n => n !== from);
+    if (!others.length) return;
+    const pick = document.createElement('div'); pick.className = 'bpe-pick'; pick.setAttribute('role', 'group'); pick._bpeOpener = btn;
+    const cap = document.createElement('div'); cap.className = 'bpe-pick-cap'; cap.id = 'bpePickCap';
+    cap.textContent = I18n.t('dashboard.preset.bulk_pick_caption', { name: from }); pick.appendChild(cap);
+    pick.setAttribute('aria-labelledby', cap.id);
+    const boxes = [];
+    others.forEach(n => {
+      const lab = document.createElement('label'); lab.className = 'bpe-mchip';
+      const cb = document.createElement('input'); cb.type = 'checkbox'; cb.value = n;
+      const s = document.createElement('span'); s.textContent = n;
+      lab.appendChild(cb); lab.appendChild(s); pick.appendChild(lab); boxes.push(cb);
+    });
+    const foot = document.createElement('div'); foot.className = 'bpe-pick-foot';
+    const apply = document.createElement('button'); apply.type = 'button'; apply.className = 'btn btn-xs';
+    const refresh = () => {
+      const k = boxes.filter(b => b.checked).length;
+      apply.textContent = I18n.t(k === 1 ? 'dashboard.preset.bulk_pick_apply.one' : 'dashboard.preset.bulk_pick_apply.other', { count: k });
+      apply.setAttribute('aria-disabled', k ? 'false' : 'true');
+    };
+    boxes.forEach(b => b.addEventListener('change', refresh));
+    const link = (key, fn) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'bpe-link'; b.textContent = I18n.t(key); b.addEventListener('click', fn); return b; };
+    foot.appendChild(link('dashboard.preset.bulk_pick_all', () => { boxes.forEach(b => { b.checked = true; }); refresh(); }));
+    foot.appendChild(link('dashboard.preset.bulk_pick_none', () => { boxes.forEach(b => { b.checked = false; }); refresh(); }));
+    apply.addEventListener('click', () => {
+      const names = boxes.filter(b => b.checked).map(b => b.value);
+      if (!names.length) return;
+      bpeCopyTextTo(from, names);
+      bpeClosePicker();
+    });
+    const cancel = document.createElement('button'); cancel.type = 'button'; cancel.className = 'btn btn-xs btn-secondary';
+    cancel.textContent = I18n.t('dashboard.preset.bulk_cancel'); cancel.addEventListener('click', bpeClosePicker);
+    foot.appendChild(apply); foot.appendChild(cancel); pick.appendChild(foot);
+    refresh();
+    const row = card.querySelector('.bpe-row'); row.insertAdjacentElement('afterend', pick);
+    btn.setAttribute('aria-expanded', 'true');
+    if (boxes[0]) boxes[0].focus();
   }
   function openBulkPresetEdit() {
     if (_activeEditable) exitInPlaceEdit(true);   // one edit surface at a time (mirrors openWeekEditor)
@@ -7836,7 +7905,6 @@ function mountSidebarResize(cfg) {
     _bpeDraft = JSON.parse(JSON.stringify(presets));
     _bpeTouched = {}; Object.keys(_bpeDraft).forEach(n => { _bpeTouched[n] = new Set(); });
     const o = bpeOrderNames(); _bpeOrder = o.names; _bpeFolders = o.folderOf;
-    buildToolbar(document.getElementById('bpeToolbar'));   // rebuilt per open: the font list may have grown (My Fonts)
     renderBpeCards(); renderBpeMaster(); bpeRefreshNote();
     document.getElementById('bpeBackdrop').classList.add('open');
     document.getElementById('bpeModal').classList.add('open');
@@ -7844,7 +7912,11 @@ function mountSidebarResize(cfg) {
     const c = document.querySelector('#bpeModal .fr-close'); if (c) c.focus();
   }
   function bpeKey(e) {
-    if (e.key === 'Escape') { e.stopPropagation(); bpeCancel(); return; }
+    if (e.key === 'Escape') {
+      e.stopPropagation();
+      if (document.querySelector('#bpeCards .bpe-pick')) { bpeClosePicker(); return; }   // an open picker absorbs the first Escape
+      bpeCancel(); return;
+    }
     _trapTabWithin(document.getElementById('bpeModal'), e);
   }
   function bpeSave() {
@@ -7883,7 +7955,6 @@ function mountSidebarResize(cfg) {
     _bpeDraft = null; _bpeTouched = null; _bpeOrder = []; _bpeFolders = {};
     document.getElementById('bpeCards').innerHTML = '';
     document.getElementById('bpeMaster').innerHTML = '';
-    const tb = document.getElementById('bpeToolbar'); if (tb) tb.dataset.editor = '';
     // The shared toolbar serves the drawer's editor again. Direct, not setDrawerEditor(): that would seed a
     // range at the editor's end, while a null range is what a freshly opened drawer has.
     _drawerEditorId = 'dashEditor'; _savedEditorRange = null;
@@ -12054,7 +12125,7 @@ async function onUploadEngFontPick(input){
       try { buildToolbar(document.getElementById('drawerToolbar')); } catch (e) {}      // editor toolbar titles/labels build via t()
       try { buildToolbar(document.getElementById('intermissionToolbar')); } catch (e) {}
       try { buildToolbar(document.getElementById('inplaceToolbarCmds')); } catch (e) {}
-      try { if (bpeOpen()) { buildToolbar(document.getElementById('bpeToolbar')); renderBpeCards(); renderBpeMaster(); bpeRefreshNote(); } } catch (e) {}   // re-label the open bulk editor from its draft (strings only)
+      try { if (bpeOpen()) { renderBpeCards(); renderBpeMaster(); bpeRefreshNote(); } } catch (e) {}   // re-label the open bulk editor from its draft (strings only; the cards carry their toolbars)
       try { if (_rosterKbd) _rosterKbd.applyI18n(); } catch (e) {}   // key names/tips are shared.kbd.* strings
       try { updateColTitles(); } catch (e) {}
       try { updateDateTimeDisplay(); } catch (e) {}
