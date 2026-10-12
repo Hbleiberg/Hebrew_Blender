@@ -549,7 +549,9 @@ festival line). The weekly parasha icons reuse the CSS block's `.hol-ico` and pa
   `--hol-*` palette (line, gold, gold-lt, paper, navy, red, green, blue, flame, ground) and its size — `1.5em`
   square, a negative `vertical-align`, `margin-inline-end` so it leads in both UI directions, `flex: 0 0 auto`
   for a flex host — and `html.dark-early body .hol-ico, body.dark .hol-ico` redefines the palette (a cream outline
-  and paper in place of navy), so a dark toggle needs no re-render. `.hol-ico svg` sets the 2px round outline
+  and paper in place of navy), so a dark toggle needs no re-render; an `@media print` copy of the light palette under
+  the same dark selectors keeps paper ink navy from a dark page (both carriers' print blocks turn the page light, and
+  their token remaps cannot reach the palette on `.hol-ico` itself). `.hol-ico svg` sets the 2px round outline
   from `--hol-line`; every fill in the drawings is a `var(--hol-*)`, and `--hol-ground` is the surface colour,
   used for cut-outs (the mask's eye holes).
 - **`/* ═══ holiday-icons JS ═══ */`**: `HOLIDAY_ICONS` (`{ family: '<svg inner markup>' }`),
