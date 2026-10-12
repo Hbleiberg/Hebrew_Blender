@@ -2193,6 +2193,10 @@ button:focus-visible, a:focus-visible { outline:2px solid var(--focus-ring); out
       --wx-line: #1a2744; --wx-sun: #f6c343; --wx-cloud: #ffffff; --wx-cloud-2: #c8d2e1; --wx-cloud-dk: #9ea9bc;
       --wx-rain: #3b6fb6; --wx-fog: #8691a5;
     }
+    /* So do the message's Glow and Shadow: from a dark page they printed a halo in the text's own (now navy)
+       colour and a white shadow that vanishes on paper. The light theme's pair, as a light page prints them. */
+    body.dark .fx-glow { --fx-glow: 0 0 0.08em var(--gold), 0 0 0.3em var(--gold-light); }
+    body.dark .fx-shadow { --fx-shadow: 0.06em 0.08em 0.12em rgba(0, 0, 0, 0.45); }
     /* Literals the remap cannot reach — white text on the navy plates print drops, and the
        dark theme's literal dark slabs (these surface only when the teacher prints with
        background graphics ON). (.star keeps brand --gold: a mark, not text.) */
