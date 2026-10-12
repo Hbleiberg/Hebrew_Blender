@@ -405,11 +405,14 @@ dashboard.preset.bulk_group_cards,Board cards,כרטיסי הלוח,bulk preset 
 dashboard.preset.bulk_group_countdowns,Countdowns,ספירות לאחור,bulk preset edit toggle group,
 dashboard.preset.bulk_group_datetime,Date & time,תאריך ושעה,bulk preset edit toggle group,
 dashboard.preset.bulk_group_hebrew,Hebrew text,טקסט עברי,bulk preset edit toggle group,
-dashboard.preset.bulk_master_caption,All {count} presets at once,כל {count} התבניות בבת אחת,bulk preset edit master row caption,has {count}
+dashboard.preset.bulk_master_caption.one,Your only preset,התבנית היחידה שלכם,bulk preset edit master row caption (count = 1),plural
+dashboard.preset.bulk_master_caption.other,All {count} presets at once,כל {count} התבניות בבת אחת,bulk preset edit master row caption,"plural; has {count}"
 dashboard.preset.bulk_mixed,mixed,מעורב,bulk preset edit: placeholder of the all-presets text size when presets differ,
 dashboard.preset.bulk_save,Save all changes,שמירת כל השינויים,bulk preset edit footer button,
-dashboard.preset.bulk_save_confirm,Save the changes to {count} presets?,לשמור את השינויים ב-{count} תבניות?,confirm before writing bulk edits (signed out),has {count}
-dashboard.preset.bulk_save_confirm_cloud,"Save the changes to {count} presets? You are signed in, so they reach your account and every device.","לשמור את השינויים ב-{count} תבניות? אתם מחוברים, ולכן השינויים יגיעו לחשבון ולכל מכשיר.",confirm before writing bulk edits while a session is stored,has {count}
+dashboard.preset.bulk_save_confirm.one,Save the changes to 1 preset?,לשמור את השינויים בתבנית אחת?,confirm before writing bulk edits (signed out; count = 1),plural
+dashboard.preset.bulk_save_confirm.other,Save the changes to {count} presets?,לשמור את השינויים ב-{count} תבניות?,confirm before writing bulk edits (signed out),"plural; has {count}"
+dashboard.preset.bulk_save_confirm_cloud.one,"Save the changes to 1 preset? You are signed in, so they reach your account and every device.","לשמור את השינויים בתבנית אחת? אתם מחוברים, ולכן השינויים יגיעו לחשבון ולכל מכשיר.",confirm before writing bulk edits while a session is stored (count = 1),plural
+dashboard.preset.bulk_save_confirm_cloud.other,"Save the changes to {count} presets? You are signed in, so they reach your account and every device.","לשמור את השינויים ב-{count} תבניות? אתם מחוברים, ולכן השינויים יגיעו לחשבון ולכל מכשיר.",confirm before writing bulk edits while a session is stored,"plural; has {count}"
 dashboard.preset.bulk_saved.one,1 preset updated.,תבנית אחת עודכנה.,toast after a bulk save (count = 1),has {count}
 dashboard.preset.bulk_saved.other,{count} presets updated.,{count} תבניות עודכנו.,toast after a bulk save,has {count}
 dashboard.preset.bulk_skipped,"{count} removed on another device meanwhile, not written.",{count} הוסרו בינתיים במכשיר אחר ולא נכתבו.,toast suffix: presets deleted elsewhere while the bulk editor was open,has {count}

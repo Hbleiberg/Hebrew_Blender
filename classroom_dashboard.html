@@ -7795,7 +7795,7 @@ function mountSidebarResize(cfg) {
     host.innerHTML = '';
     if (!_bpeOrder.length) return;
     const cap = document.createElement('div'); cap.className = 'bpe-master-cap';
-    cap.textContent = I18n.t('dashboard.preset.bulk_master_caption', { count: _bpeOrder.length }); host.appendChild(cap);
+    cap.textContent = I18n.t(_bpeOrder.length === 1 ? 'dashboard.preset.bulk_master_caption.one' : 'dashboard.preset.bulk_master_caption.other', { count: _bpeOrder.length }); host.appendChild(cap);
     BPE_GROUPS.forEach(g => {
       const grp = document.createElement('div'); grp.className = 'bpe-mgroup';
       const gl = document.createElement('span'); gl.className = 'bpe-mgroup-lbl'; gl.textContent = I18n.t(g.label); grp.appendChild(gl);
@@ -7939,7 +7939,10 @@ function mountSidebarResize(cfg) {
     const gone = _bpeOrder.filter(n => presets[n] === undefined && _bpeTouched[n] && _bpeTouched[n].size);   // removed on another device while this was open
     if (!changed.length) { bpeClose(); return; }
     const signedIn = !!(window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession());
-    if (!confirm(I18n.t(signedIn ? 'dashboard.preset.bulk_save_confirm_cloud' : 'dashboard.preset.bulk_save_confirm', { count: changed.length }))) return;
+    const one = changed.length === 1;
+    const ask = signedIn ? (one ? 'dashboard.preset.bulk_save_confirm_cloud.one' : 'dashboard.preset.bulk_save_confirm_cloud.other')
+                         : (one ? 'dashboard.preset.bulk_save_confirm.one' : 'dashboard.preset.bulk_save_confirm.other');
+    if (!confirm(I18n.t(ask, { count: changed.length }))) return;
     changed.forEach(n => {
       const d = _bpeDraft[n];
       if (_bpeTouched[n].has('dashTextHTML')) d.dashTextHTML = sanitizeDashHTML(d.dashTextHTML || '');
