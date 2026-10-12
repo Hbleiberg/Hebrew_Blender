@@ -8342,11 +8342,18 @@ function mountFolderTree(cfg){
         else if (mode === 'replace') delete settings.scheduleWeek;
         const pc = normalizePresetColors(ls.presetColors);
         settings.presetColors = mode === 'replace' ? pc : Object.assign({}, settings.presetColors || {}, pc);
+        // …and Schedule Sync's own switches, which applySettings keeps for the same reason: without them a restored
+        // week came back with Sync off (the hub's restore and the account both bring them back).
+        ['scheduleEnabled', 'scheduleShowCountdown', 'scheduleShowPeriods', 'countdownShowPresetName'].forEach(k => {
+          if (typeof ls[k] === 'boolean') settings[k] = ls[k];
+        });
         _lastScheduleKey = null; _lastPreviewKey = null; _lastNowNextKey = null;
+        syncFormToSettings();   // the drawer's switches (applySettings synced them before these keys landed)
         renderWeekSummary();
         renderScheduleUI();
         if (weekEditorOpen()) renderWeekEditor();
         saveSettingsToStorage();
+        checkSchedule();   // the board takes the current period now, as after an account download
         applied = true;
       }
       // Class lists: the account backup's key (dashboardRosters) or a single row's file (roster), both

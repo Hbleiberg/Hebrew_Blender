@@ -790,3 +790,10 @@ key carries `cycleN`/`cycleIdx`), and the drawer summary draws one lettered stri
 (`.wk-strip-row.is-now`), with `summary_cycle` appended to its line. Presets, starters and `applySettings` already
 preserve `scheduleWeek` whole, so a cycle rides them untouched; `.ivrit` files, the AllTools export and the account's
 settings row carry it as part of that one field.
+
+**A `.ivrit` restore** runs the file's `liveState` through `applySettings`, which keeps the live schedule keys (a display
+preset must never clobber the schedule driving it), so `IVRIT_CFG.apply` re-applies them from the file by hand:
+`scheduleWeek` (through `normalizeScheduleWeek`), `presetColors`, and Schedule Sync's four switches (`scheduleEnabled`,
+`scheduleShowCountdown`, `scheduleShowPeriods`, `countdownShowPresetName`, booleans only) — then `syncFormToSettings()`
+for the drawer and `checkSchedule()` for the board, as an account download does. A new live schedule key joins
+`applySettings`' kept list and this re-apply together.
