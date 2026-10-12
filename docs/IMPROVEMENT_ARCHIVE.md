@@ -92415,3 +92415,27 @@ _(prior — S495 pointer:)_ **BRANCH/PR: draft PR #321 (`claude/brave-ride-02gvz
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 _(prior — S496 pointer:)_ **BRANCH/PR: S495's draft PR open → continue; merged → restart from `origin/main`.** `sw.js` **v980**, FM **5.59**. ⚑ Stalest: D (S480), I (S481), H (S482); O blocked. ⚑ Take first: `.bpe-*` print leak. ⚑ Untaken: `.fx-*` on paper; 13 CSS italics. ⚑ Seeds: 45. ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.
+
+
+<!-- archived by compact-ledger at the S498 boundary, 2026-10-12 -->
+## Compaction (S498, 2026-10-12) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-10 | (S492 close-out) | branch/deploy note | **S492 = N + 3 fixes + 1 reverted, PR #320.** No drift (main `fee5fe05`, keep-alive #27 green); sw v973; no FM bump; no gate; a P2 logged first; traps 222–227.
+
+- [x] 2026-10-10 | `07177214` `b4df90b9` `0079b0f2` | dictionary, generator, FM | (S492) **Dictionary fields 16px on touch; the generator's 26 and FM's 57 Hebrew labels untracked.** | findings S492.
+
+- [x] 2026-10-10 | — (attempted, reverted) | hebrew_dictionary.html | (S492) **The tour after a rotation: a page-side re-place fixed 1 step of 7; the rest is engine work.** | findings S492.
+
+### from Per-session log (one line per session)
+
+- 2026-10-08 | **S477** | iters: 5 | tools: index ×2, resources, FM | patterns fixed: — | pass run: P | SW: v957→v958
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`count-noun-without-a-one-form`** (NEW S497 I; dashboard bulk edit ×3 FIXED `d438f151`; open: FM fidelity): ACTIVE, streak 0. Detection: an en.json value `{count|n|total} <noun>s` in a key without `.one`/`.other`, read at its call site; exempt: guarded (`n > 1`), never 1 by construction, "of {total}".
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+_(prior — S497 pointer:)_ **BRANCH/PR: #325 open → continue; merged → restart from `origin/main`.** `sw.js` **v981**, FM **5.59**. ⚑ Stalest: I (S481), H (S482), C (S483); O blocked. ⚑ Take first: Glow + Shadow on paper (`.fx-*`). ⚑ Untaken: root-var sliders; 13 CSS italics. ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.

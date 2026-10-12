@@ -521,7 +521,9 @@ class-carrying span through `toggleWrapClass(cls)` — the spoiler's wrap/unwrap
 paste, presets, `.ivrit` and the cloud. Each sets its own custom property (`--fx-glow`, `--fx-shadow`) and
 both feed one `text-shadow`, so a run can wear both, nested either way. Light surfaces get a gold halo and
 a dark drop shadow; dark ones (`body.dark`, and always the black Intermission sheet) a neon glow in the
-text's own colour and a light offset. An unrevealed spoiler on a display surface gets `text-shadow: none`
+text's own colour and a light offset. The dark pair is set on the element, out of the print block's token
+remap, so the print block gives `body.dark .fx-glow` / `.fx-shadow` the light pair back: paper from a dark
+page wears the gold halo and the dark shadow, as from a light one. An unrevealed spoiler on a display surface gets `text-shadow: none`
 (it paints even when the text is transparent, so the effect would draw the hidden letters). The buttons'
 faces are sample letters, so `nameFromTitle` gives them their title as the accessible name.
 
@@ -616,7 +618,8 @@ surfaces, so Ctrl+P with the editor open prints the board underneath, as with th
   `bpeSave()` writes the drafts whose JSON differs (`bpeChangedNames()`) back into `presets` with one
   `savePresetsStorage()`, so the account hook uploads just the rows that changed. Cancel, Escape and the backdrop
   ask (`dashboard.preset.bulk_discard_confirm`) only while something differs; Save confirms with the count, naming
-  the account-wide effect while a session is stored. A preset deleted on another device while the editor was open
+  the account-wide effect while a session is stored. The two confirms and the master row's caption are `.one` /
+  `.other` pairs: a new board already holds one preset, Default, so the singular is the first thing a teacher sees. A preset deleted on another device while the editor was open
   is skipped and counted in the toast (`bulk_skipped`).
 - **Touched keys only.** A preset may be partial (the seeded Default has ~30 keys) and loading merges it over the
   live settings, so a chip shows `draft[key] ?? PRISTINE_DEFAULTS[key]` but a key is written only when the teacher

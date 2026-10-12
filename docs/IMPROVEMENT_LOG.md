@@ -8,11 +8,11 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P4 (**NEW S496 D — root-var-per-input, verify first**) | generator, trope | **Three more sliders write a `:root` property per input** (generator ×2, trope). | found S496
+- [ ] P4 (**NEW S497 I — count-noun**) | Hebrew_Font_Maker.html | **The fidelity report's counts have no singular** ("1 combos…", "1 fixes skipped"). | found S497
+
+- [ ] P4 (**NEW S497 I — gate 2**) | classroom_dashboard.html | **A Hebrew first visit's demo message is English** (`DEFAULT_PRESET`, a `smoke-sync` canon). | found S497
 
 - [ ] P4 (**NEW S496 D**) | hebrew_dictionary.html | **`roveTileGrid` forces 14 layouts per load** (findings S496). | found S496
-
-- [ ] P4 (**NEW S495 G**) | classroom_dashboard.html | **Glow + Shadow print dark values from a dark board.** | found S495
 
 - [ ] P4 (**NEW S494 M — hebrew-faux-italic**) | 6 pages + folder-tree block | **13 Hebrew hints slant by CSS italic**: upright in HE (findings S494). | found S494
 
@@ -76,7 +76,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW 2026-10-03, gate 2 copy**) | hebrew_dictionary.html | **"Any of these letters" requires every ticked letter** (`onFilter`); the Hebrew label (כל אחת מהאותיות האלה) says so, the English label and its "Any:" chip don't. | found 2026-10-03
 
-- [ ] P4 (**NEW S452 D — G's**) | hebrew_blend_generator.html | **"N pages to print" counts a caller sheet as one page**; an 8-card set's takes 3 (says 3, sends 5). | found S452
+- [ ] P4 (**NEW S452 D — G's**) | hebrew_blend_generator.html | **"N pages to print" counts a caller sheet as one page**; an 8-card set's takes 3 (says 3, sends 5). S497: not small (findings). | found S452
 
 - [ ] P4 (**NEW S452 D — gate 2**) | hebrew_blend_generator.html | **jsPDF re-decodes each PNG page in JS** (561–660 ms a bingo page, 1.85 s a caller sheet); JPEG skips it but is lossy. | found S452
 
@@ -126,7 +126,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S418 — the maintainer's dashboard**) | Supabase project | **Security advisor: leaked-password protection is off**; passwords are never used (e-mail code + Google), so enable the toggle or accept it as moot. | found S418
 
-- [ ] P4 (**NEW S412 Pass H — five small ones; (1) FIXED S446 `c6c509ed`, (3) FIXED S448 `c54897da`, (4) FIXED S491 `adce6574`**) | flash_cards.html | **(2)** a timed drill paints the previous value for 1 s; **(5)** gate 2: the printed card …[full text: IMPROVEMENT_ARCHIVE.md]
+- [ ] P4 (**NEW S412 Pass H — five small ones; (1) FIXED S446 `c6c509ed`, (3) FIXED S448 `c54897da`, (4) FIXED S491 `adce6574`, (2) FIXED S497 `591a11ef`**) | flash_cards.html | **(5)** gate 2: the printed card …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S413 Pass C — gate 3**) | 404.html | **The lost star wanders forever with no pause** (WCAG 2.2.2); only reduced motion stops it. | found S413
 
@@ -302,6 +302,10 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-12 | (S497 close-out) | branch/deploy note | **S497 = I + 3 fixes + 1 closed, PR #325.** No drift (main `f1ef1a98`, keep-alive #30); sw v981→v982; no FM bump; no gate.
+
+- [x] 2026-10-12 | `e5b3dc47` `d438f151` `591a11ef` | dashboard ×2, flash | (S497) **Glow/Shadow print; Bulk edit singulars; the timer's first paint. Root-var sliders closed: under 200 ms @4×.** | findings S497.
+
 - [x] 2026-10-12 | (S496 close-out) | branch/deploy note | **S496 = D + 2 fixes + 1 micro (gate 1), PR #325.** No drift (main `f1ef1a98`, keep-alive #30); sw v980→v981; no FM bump.
 
 - [x] 2026-10-12 | `c049ab67` `8fda021d` `4c4dd3ae` | dictionary ×2, dashboard | (S496) **Size slider restyles only cards; English search: exact meanings first; bulk edit prints the board.** | findings S496.
@@ -328,15 +332,11 @@ _(none)_
 
 - [x] 2026-10-10 | `c36f7a48` `c57f0b79` `dcfdcf16` `31ab260e` | dictionary ×2, js/ivrit-saves.js + smoke-sync + docs, trope | (S493) **A slow first visit loads the word list; a stale tab hidden and shown again never sends its older settings (torah, trope; smoke-sync D37); Shoresh fits a 320px phone; trope's Hebrew labels untracked.** | findings S493.
 
-- [x] 2026-10-10 | (S492 close-out) | branch/deploy note | **S492 = N + 3 fixes + 1 reverted, PR #320.** No drift (main `fee5fe05`, keep-alive #27 green); sw v973; no FM bump; no gate; a P2 logged first; traps 222–227.
-
-- [x] 2026-10-10 | `07177214` `b4df90b9` `0079b0f2` | dictionary, generator, FM | (S492) **Dictionary fields 16px on touch; the generator's 26 and FM's 57 Hebrew labels untracked.** | findings S492.
-
-- [x] 2026-10-10 | — (attempted, reverted) | hebrew_dictionary.html | (S492) **The tour after a rotation: a page-side re-place fixed 1 step of 7; the rest is engine work.** | findings S492.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-12 | **S497** | iters: 5 | tools: dashboard ×2, flash | patterns fixed: dark-palette, count-noun (NEW) | pass run: I | SW: v981→v982
 
 - 2026-10-12 | **S496** | iters: 5 | tools: dictionary ×2 (fix + micro), dashboard | patterns fixed: root-var (NEW), fixed-surface | pass run: D | SW: v980→v981
 
@@ -376,17 +376,17 @@ _(none)_
 
 - 2026-10-08 | **S478** | iters: 5 | tools: privacy ×2, contact ×2, i18n.js, +6 headers | patterns fixed: latin-tracking ×1, header-gate (NEW) ×8 | pass run: M | SW: v958→v959
 
-- 2026-10-08 | **S477** | iters: 5 | tools: index ×2, resources, FM | patterns fixed: — | pass run: P | SW: v957→v958
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S496 (2026-10-12):** dictionary, dashboard S496 · torah, privacy S495 · terms, trope, generator, 404, scripts S494 · saves S493 · FM S492 · resources, flash S491 · contact S487 · index S483 · account, i18n.js S478 · pwa S472.
+- **Snapshot S497 (2026-10-12):** dashboard, flash S497 · dictionary S496 · torah, privacy S495 · terms, trope, generator, 404, scripts S494 · saves S493 · FM S492 · resources S491 · contact S487 · index S483 · account, i18n.js S478 · pwa S472.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
-- **`root-var-per-input`** (NEW S496 D; dictionary FIXED `c049ab67`; open: generator ×2, trope): ACTIVE, streak 0. Detection: a slider handler's `style.setProperty(` on `<html>`/`body`; A/B style time.
+- **`root-var-per-input`** (NEW S496 D; dictionary FIXED `c049ab67`; S497: generator ×2 + trope under 200 ms @4×, closed): ACTIVE, streak 1. Detection: archive.
 
-- **`dark-palette-on-the-element`** (NEW S495 G; `.hol-ico` FIXED; open `.fx-*`): ACTIVE, streak 0. Detection: findings S495.
+- **`dark-palette-on-the-element`** (NEW S495 G; `.hol-ico` FIXED; `.fx-*` FIXED `e5b3dc47`; open: none): ACTIVE, streak 0. Detection: findings S495.
+
+- **`count-noun-without-a-one-form`** (NEW S497 I; bulk edit ×3 FIXED `d438f151`; open: FM fidelity): ACTIVE, streak 0. Detection: archive.
 
 - **`hebrew-faux-italic`** (NEW S494 M; gate 3: a `he` cell's `<em>` is `<strong>`, `c4e0b86c` ×4; open: 13 CSS italics): ACTIVE, streak 0. Detection: `m494/italcensus.mjs`.
 
@@ -728,7 +728,7 @@ _(none)_
 
 - D performance (one tool): 2026-10-12 (**S496 — dictionary (S378 →): 10 cold + 120 arms; controls fired. FOUND 2, FIXED 1 (+ micro). D-next: flash (S393).**)
 
-- I first-load & empty-state: 2026-10-08 (**S481 — 36th I: 136 cells clean, plants fired; label + side-word arms NEW; FIXED 4.**)
+- I first-load & empty-state: 2026-10-12 (**S497 — 37th I, 90 commits: 136 cells, census = S481 136/136, tours 14/14, delta arms; plants fired. FOUND 3, FIXED 1 (+2).**)
 
 - B console/error audit: 2026-10-09 (**S487 — 37th B on the S471 delta (73 commits): 68 load cells (8 controls fired) + the delta by real input on every page, the i18n retry, the install banner (findings S487). All 0; one P4 logged for K.**)
 
@@ -742,4 +742,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-09 (**S484 — 36th F, the toast contract on all 8 carriers (5th look, S111 →): 24 cells + reduce, width, bars; plants 4/4. FOUND 4, FIXED 3 (+ FM kerning). F-next: the tabs / segmented-control keyboard contract (never swept).**)
 
-**Next session (S497):** **BRANCH/PR: #325 open → continue; merged → restart from `origin/main`.** `sw.js` **v981**, FM **5.59**. ⚑ Stalest: I (S481), H (S482), C (S483); O blocked. ⚑ Take first: Glow + Shadow on paper (`.fx-*`). ⚑ Untaken: root-var sliders; 13 CSS italics. ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.
+**Next session (S498):** **BRANCH/PR: #325 open → continue; merged → restart from `origin/main`.** `sw.js` **v982**, FM **5.59**. ⚑ Stalest: H (S482), C (S483), F (S484); O blocked. ⚑ Take first: FM fidelity plurals. ⚑ Untaken: 13 CSS italics; HE demo message (gate 2). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.
