@@ -7659,16 +7659,17 @@ function stopTimer() {
 function startTimer() {
   stopTimer();
   if (timerMode === 'off') return;
+  // Reset before the first paint: painted first, a new drill showed the last one's time for a second.
+  if (timerMode === 'track') timerElapsed = 0;
+  else if (timerMode === 'limit') timerRemaining = timeLimitSeconds;
   const el = document.getElementById('timerDisplay');
   if (timerShowOnScreen && el) { el.style.display = ''; updateTimerDisplay(); }
   if (timerMode === 'track') {
-    timerElapsed = 0;
     timerInterval = setInterval(() => {
       timerElapsed++;
       if (timerShowOnScreen) updateTimerDisplay();
     }, 1000);
   } else if (timerMode === 'limit') {
-    timerRemaining = timeLimitSeconds;
     timerInterval = setInterval(() => {
       timerRemaining--;
       if (timerShowOnScreen) updateTimerDisplay();
