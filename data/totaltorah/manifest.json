@@ -1,0 +1,75 @@
+{
+ "credit": {
+  "reader": "Cantor Arianne Brown",
+  "congregation": "Adas Israel Congregation",
+  "series": "Tricks of the Trope – Total Torah",
+  "url": "https://www.adasisrael.org/trope",
+  "permission": "Written permission (email), October 2026: free access, full credit with links back, no modification beyond cutting the audio into verses, Adas Israel retains the rights to the verse-cut files, every verse links to the complete video on YouTube.",
+  "license": "All rights reserved. Not CC-licensed; do not redistribute.",
+  "videos": {
+   "bv1hX3WrRM4": {
+    "title": "B'reishit, Year 1 Aliyah 1",
+    "url": "https://youtu.be/bv1hX3WrRM4",
+    "upload_date": "20260911",
+    "duration": 86,
+    "channel": "Tricks of the Trope: Total Torah",
+    "fetched": "2026-10-12"
+   }
+  }
+ },
+ "Genesis 1:1": {
+  "file": "gen-001-001.mp3",
+  "dur": 11.21,
+  "video": "bv1hX3WrRM4",
+  "parsha": "Bereshit",
+  "year": 1,
+  "aliyah": 1,
+  "verified": false,
+  "timings": "gen-001-001.txt",
+  "timingsVerified": false
+ },
+ "Genesis 1:2": {
+  "file": "gen-001-002.mp3",
+  "dur": 23.59,
+  "video": "bv1hX3WrRM4",
+  "parsha": "Bereshit",
+  "year": 1,
+  "aliyah": 1,
+  "verified": false,
+  "timings": "gen-001-002.txt",
+  "timingsVerified": false
+ },
+ "Genesis 1:3": {
+  "file": "gen-001-003.mp3",
+  "dur": 8.52,
+  "video": "bv1hX3WrRM4",
+  "parsha": "Bereshit",
+  "year": 1,
+  "aliyah": 1,
+  "verified": false,
+  "timings": "gen-001-003.txt",
+  "timingsVerified": false
+ },
+ "Genesis 1:4": {
+  "file": "gen-001-004.mp3",
+  "dur": 18.05,
+  "video": "bv1hX3WrRM4",
+  "parsha": "Bereshit",
+  "year": 1,
+  "aliyah": 1,
+  "verified": false,
+  "timings": "gen-001-004.txt",
+  "timingsVerified": false
+ },
+ "Genesis 1:5": {
+  "file": "gen-001-005.mp3",
+  "dur": 19.58,
+  "video": "bv1hX3WrRM4",
+  "parsha": "Bereshit",
+  "year": 1,
+  "aliyah": 1,
+  "verified": false,
+  "timings": "gen-001-005.txt",
+  "timingsVerified": false
+ }
+}

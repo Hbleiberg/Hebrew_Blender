@@ -953,7 +953,10 @@ never a practice link (`LINK_DISPLAY` says how a reading looks, never how it sou
   `scripts/align_totaltorah.py`): the audio script's `VIDEOS` table is the only list of ids it will fetch (yt-dlp into
   the gitignored `source-data/totaltorah-cache/`, sanity-checked by duration and loudness), `split` cuts by ffmpeg
   `silencedetect` and refuses a segment count that differs from the ref's verse count (`--boundaries` by hand; never
-  a guess), writes the MP3s, a lossless FLAC per verse for Adas Israel, the manifest (`verified: false`) and the
+  a guess — on the first video the cantor's mid-verse pauses at the etnachta and zakef were quieter than her breaths
+  between verses, so the silences fell inside verses and the boundaries came from a whole-file alignment instead,
+  midway through each inter-verse gap, with the spoken intro left out; Phase 2 should make that the default cut),
+  writes the MP3s, a lossless FLAC per verse for Adas Israel, the manifest (`verified: false`) and the
   license; the timings script aligns each verse FLAC against its consonantal text (the Trainer's tokenization,
   ported: split on whitespace and maqaf, a word iff it carries a Hebrew letter) with `torchaudio.functional.forced_align`
   over a Hebrew wav2vec2 model in an isolated venv, writes the timings file and the per-word scores, and stops — no

@@ -1,0 +1,8 @@
+© Cantor Arianne Brown / Adas Israel Congregation. All rights reserved.
+
+The MP3 files in audio/ and the timing files in timings/ are cut, verse by verse, from the
+"Tricks of the Trope – Total Torah" recordings (https://www.adasisrael.org/trope), one YouTube
+video per triennial aliyah, by scripts/build-totaltorah-audio.mjs. Used in IvritSuite with
+written permission (Oct 2026). Not CC-licensed; do not redistribute. Adas Israel Congregation
+retains the rights to the verse-cut files; every verse links back to the complete video.
+manifest.json names each verse's source video and the credit.
