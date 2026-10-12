@@ -8,7 +8,9 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P4 (**NEW S494 M — take first**) | privacy.html | **The HE FERPA badge keeps Latin small caps.** | found S494
+- [ ] P4 (**NEW S495 G**) | classroom_dashboard.html | **Bulk preset edit prints over the board** (`.bpe-*`). | found S495
+
+- [ ] P4 (**NEW S495 G**) | classroom_dashboard.html | **Glow + Shadow print dark values from a dark board.** | found S495
 
 - [ ] P4 (**NEW S494 M — hebrew-faux-italic**) | 6 pages + folder-tree block | **13 Hebrew hints slant by CSS italic**: upright in HE (findings S494). | found S494
 
@@ -56,7 +58,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S464 M**) | resources.html | **The Links/Fonts toggle mixes a line icon with a colour 🔤** (`resources.view.fonts`). | found S464
 
-- [ ] P4 (**S464 M — gate 3 ANSWERED: drop it suite-wide; footers + shared blocks FIXED S491, generator + FM S492, trope S493**) | dictionary, badges | **Page-level Hebrew labels still track** (census `n492/gcensus.mjs`, `p493/tcensus.mjs`): dictionary panel titles + word badges, the suite's Beta badge (5 pages) and privacy badges. | found S464
+- [ ] P4 (**S464 M — gate 3 ANSWERED: drop it suite-wide; footers + shared blocks FIXED S491, generator + FM S492, trope S493, privacy S495**) | dictionary, badges | **Page-level Hebrew labels still track** (census `n492/gcensus.mjs`, `p493/tcensus.mjs`): dictionary panel titles + word badges, the suite's Beta badge (5 pages) and privacy badges. | found S464
 
 - [ ] P4 (**NEW S464 M**) | resources.html | **Below ~1020px wrapped chips flow back under their row label.** | found S464
 
@@ -88,7 +90,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW S436 M — layout, gate 3/4**) | hebrew_blend_generator.html | **The bingo preview is unreadable in a narrow window**: at 800px a 4-up card is ~120px and its blends overrun their cells (print/PDF fine since `141aa8f7`). | found S436
 
-- [ ] P4 (**NEW S436 M**) | hebrew_blend_generator.html | **Export PDF below 700px still carries the phone rules** (stacked header, Hebrew at 0.75×) (`141aa8f7` pins only the width). | found S436
+- [ ] P4 (**NEW S436 M**) | hebrew_blend_generator.html | **Export PDF below 700px still carries the phone rules** (stacked header, Hebrew at 0.75×) (`141aa8f7` pins only the width). S495: size from the clone (findings). | found S436
 
 - [ ] P4 (**NEW S448 N — gate 2, new copy**) | torah_trainer.html | **The one-time tip says "click any Hebrew word" on a touch phone** (the Hebrew "לחצו" covers both); a `tap` twin under `pointer:coarse` is new copy. | found S448
 
@@ -300,6 +302,12 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-12 | (S495 close-out) | branch/deploy note | **S495 = G + 3 fixes + 1 reverted, draft PR.** Drift: main `f1ef1a98`, keep-alive #30 green; sw v979→v980; no FM bump; gate 1 skip.
+
+- [x] 2026-10-12 | `9d0f5fe` `756e140` `774df4f` | dashboard, torah, privacy | (S495) **.ivrit keeps Sync on; icons print navy; HE badge untracked.** | findings S495.
+
+- [x] 2026-10-12 | — (attempted, reverted) | generator | (S495) **Export PDF under 700px.** | findings S495.
+
 - [x] 2026-10-10 | (S494 close-out) | branch/deploy note | **S494 = M on privacy + terms + 4 fixes, PR #321.** No drift (main `b33a359b`, keep-alive #28 green); sw v975→v976; no FM bump; gates 3 ×2, 1 skip.
 
 - [x] 2026-10-10 | `715f3cc8` `c4e0b86c` | privacy, terms, CSV, check-i18n | (S494) **The legal column 680px (print 820); four Hebrew <em> phrases bold.** | findings S494.
@@ -326,13 +334,11 @@ _(none)_
 
 - [x] 2026-10-09 | `83f73895` `12509ea1` `c1159d14` `adce6574` | 8 pages, check-i18n + i18n.md, flash | (S491) **Keyboard + test-phrase labels and every footer head untracked in Hebrew; the gate's header and blind-spot note match the gate; flash keeps "Vowel on letter" across a reload.** | findings S491.
 
-- [x] 2026-10-09 | (S490 close-out) | branch/deploy note | **S490 = L (clean) + 4 fixes, PR #320 continued.** No drift (main `fee5fe05`, keep-alive #27 green); sw v970→v971; no FM bump (no FM change); no gate; smoke-sync 207/207; compact-ledger now runs clean twice; traps 212–216 (findings S490).
-
-- [x] 2026-10-09 | `af9ed26f` `63489ddb` `df33e5e5` `89d1cf66` | resources, dashboard, scripts ×2 | (S490) **Resources' Hebrew labels untracked; the dashboard's projected titles + fullscreen captions untracked (Video through hebDisplay); compact-ledger stops re-cutting its own lines; smoke-sync runs outside its schedule's busy cells.** | findings S490.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-12 | **S495** | iters: 5 | tools: dashboard ×2, torah, privacy, generator | patterns fixed: dark-palette (NEW), latin-tracking | pass run: G | SW: v979→v980
 
 - 2026-10-10 | **S494** | iters: 1 pass (**M**) + 4 fixes = **5** | tools: privacy ×2, terms, dictionary, trope, CSV, scripts | patterns fixed: hebrew-faux-italic (NEW) ×4 | pass run: M | SW: v975→v976
 
@@ -372,13 +378,13 @@ _(none)_
 
 - 2026-10-08 | **S476** | iters: 5 | tools: FM ×2, torah, generator | patterns fixed: install-banner ×1, tall-window ×1 | pass run: N | SW: v956→v957
 
-- 2026-10-08 | **S475** | iters: 5 | tools: torah ×2, FM, trope, i18n.js | patterns fixed: english-literal ×2, stale ×1 | pass run: K | SW: v955→v956
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S494 (2026-10-10):** privacy, terms, dictionary, trope, dashboard, generator, 404, scripts S494 · torah, saves S493 · FM S492 · resources, flash S491 · contact S487 · index S483 · account, i18n.js S478 · pwa S472.
+- **Snapshot S495 (2026-10-12):** dashboard, torah, privacy S495 · terms, dictionary, trope, generator, 404, scripts S494 · saves S493 · FM S492 · resources, flash S491 · contact S487 · index S483 · account, i18n.js S478 · pwa S472.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`dark-palette-on-the-element`** (NEW S495 G; `.hol-ico` FIXED; open `.fx-*`): ACTIVE, streak 0. Detection: findings S495.
 
 - **`hebrew-faux-italic`** (NEW S494 M; gate 3: a `he` cell's `<em>` is `<strong>`, `c4e0b86c` ×4; open: 13 CSS italics): ACTIVE, streak 0. Detection: `m494/italcensus.mjs`.
 
@@ -400,7 +406,7 @@ _(none)_
 
 - **`header-wrap-gate-below-its-ceiling`** (NEW S478 M; FIXED ×8 `92a21164`; S489 dashboard `f620c768`): ACTIVE, streak 0. Detection: `m478/gates.mjs` / `e489/gates.mjs` (1px 320-1000, EN/HE × light/dark, per page; a gate removed by CSSOM gives its ceiling); HEAD the control.
 
-- **`latin-tracking-on-hebrew-labels`** (NEW S464 M; gate 3: drop suite-wide; fixed S478–S493: contact, dashboard ×3, resources, footers ×8, both shared blocks, generator, FM, trope `31ab260e`; open: dictionary, badges incl. privacy's FERPA one S494): ACTIVE, streak 0. …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`latin-tracking-on-hebrew-labels`** (NEW S464 M; gate 3: drop suite-wide; fixed S478–S493: contact, dashboard ×3, resources, footers ×8, both shared blocks, generator, FM, trope `31ab260e`; privacy's FERPA badge `774df4f` S495; open: dictionary, other badges): ACTIVE, streak …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`forward-arrow-points-back-in-rtl-copy`** (NEW S462 N; FIXED S464 `5f7f8a40` ×48; open 0): ACTIVE, streak 1 (S472: 47 delta rows, 0). Detection: the S462 CSV census; exempt "(→)", A→Z, Back labels, the orphan `flashcards.header.home`.
 
@@ -512,7 +518,7 @@ _(none)_
 
 - **`save-over-an-existing-name-without-confirm`**: ACTIVE **S371 (Pass A): 3rd carrier FIXED `b85b579` — the dashboard's `saveWeekScheduleAs` (its comment even said "same-name save overwrites, like savePreset" — from before savePreset confirmed). Census: every other …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`fixed-surface-missing-from-the-print-hide-list`**: ACTIVE. **S392 (Pass G, `hebrew_blend_generator.html`): swept CLEAN — first clean sweep since registration, clean streak 0 → 1.** 36 print-media cells (18 printable shapes × EN light / HE dark, at the 749px Letter content …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`fixed-surface-missing-from-the-print-hide-list`**: ACTIVE. **S495: `.bpe-*` open.** **S392 (Pass G, `hebrew_blend_generator.html`): swept CLEAN — first clean sweep since registration, clean …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`control-class-without-a-hover-state`**: ACTIVE. **S373: the S371 P4 FIXED (`c365786`, dashboard `.swm-swatch:hover` ring). Registered S313; hits S313 20, S314 2, S357 1, S371 1 — all fixed; clean streak 0; last swept S371.** Detection: a class with `cursor:pointer` or …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -716,7 +722,7 @@ _(none)_
 
 - A recurring-pattern sweep: 2026-10-09 (**S488 — 38th A on `eb806705..fee5fe0` (78 commits): 44 static arms, a 14-page battery, the new dashboard surfaces by real input; plants fired. FOUND 5, FIXED 2 (+ trope, FM).**)
 
-- G print & export fidelity (one tool): 2026-10-08 (**S479 — trope (S351 →): 96 PDFs, variants, every tab, the .ivrit; plants 4/4. FOUND 6, FIXED 2. G-next: dashboard (S364).**)
+- G print & export fidelity (one tool): 2026-10-12 (**S495 — dashboard (S364 →): FOUND 4, FIXED 2. G-next: dictionary (S377).**)
 
 - D performance (one tool): 2026-10-08 (**S480 — trope's 5th D (S365 →, 86 commits): 10 cold + 4 interaction cells by real input; controls fired. CLEAN: 0 page-code tasks >200 ms (worst 127 @4×); only the browser's PDF. D-next: dictionary (S378).**)
 
@@ -734,4 +740,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-09 (**S484 — 36th F, the toast contract on all 8 carriers (5th look, S111 →): 24 cells + reduce, width, bars; plants 4/4. FOUND 4, FIXED 3 (+ FM kerning). F-next: the tabs / segmented-control keyboard contract (never swept).**)
 
-**Next session (S495):** **BRANCH/PR: draft PR #321 (`claude/brave-ride-02gvzs`) open → continue; merged → restart from `origin/main`.** `sw.js` **v976**, FM **5.59**. ⚑ Stalest: G (S479), D, I; O blocked. ⚑ Take first: privacy's HE badge. ⚑ Untaken: 13 CSS italics; trope's Phrases headings. ⚑ Seeds: 45. ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.
+**Next session (S496):** **BRANCH/PR: S495's draft PR open → continue; merged → restart from `origin/main`.** `sw.js` **v980**, FM **5.59**. ⚑ Stalest: D (S480), I (S481), H (S482); O blocked. ⚑ Take first: `.bpe-*` print leak. ⚑ Untaken: `.fx-*` on paper; 13 CSS italics. ⚑ Seeds: 45. ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.

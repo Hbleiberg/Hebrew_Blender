@@ -92363,3 +92363,29 @@ Picked by the maintainer from the seed list and built directly (`b3e91897` Mafti
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 _(prior — S494 pointer:)_ **BRANCH/PR: #320 merged → start from `origin/main`. Draft PR #321 (`claude/brave-ride-02gvzs`, two seeds built on request) is the maintainer's: still open → bump `sw.js` past its v975.** `sw.js` **v975**, FM **5.59**. ⚑ Stalest: M (S478), G, D; O blocked. ⚑ Untaken: the dictionary's `#fsBtn` over the tour's Done (P4); the tour-after-rotation P3 waits on the tour-engine extraction. ⚑ Seeds: 45 (gate 1). ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.
+
+
+<!-- archived by compact-ledger at the S496 boundary, 2026-10-12 -->
+## Compaction (S496, 2026-10-12) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-09 | (S490 close-out) | branch/deploy note | **S490 = L (clean) + 4 fixes, PR #320 continued.** No drift (main `fee5fe05`, keep-alive #27 green); sw v970→v971; no FM bump (no FM change); no gate; smoke-sync 207/207; compact-ledger now runs clean twice; traps 212–216 (findings S490).
+
+- [x] 2026-10-09 | `af9ed26f` `63489ddb` `df33e5e5` `89d1cf66` | resources, dashboard, scripts ×2 | (S490) **Resources' Hebrew labels untracked; the dashboard's projected titles + fullscreen captions untracked (Video through hebDisplay); compact-ledger stops re-cutting its own lines; smoke-sync runs outside its schedule's busy cells.** | findings S490.
+
+### from Per-session log (one line per session)
+
+- 2026-10-08 | **S475** | iters: 5 | tools: torah ×2, FM, trope, i18n.js | patterns fixed: english-literal ×2, stale ×1 | pass run: K | SW: v955→v956
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`dark-palette-on-the-element`** (NEW S495 G; `.wx-ico` fixed before the loop, `.hol-ico` FIXED `756e140` in the shared block; open: dashboard `.fx-glow`/`.fx-shadow`): ACTIVE, streak 0. A dark theme's `--*` set on an element escapes the print block's remap. Detection: the S495 scan (a dark selector defining `--*`, not html/body/:root) + computed value under print from dark.
+
+- **`latin-tracking-on-hebrew-labels`** (NEW S464 M; gate 3: drop suite-wide; fixed S478–S493: contact, dashboard ×3, resources, footers ×8, both shared blocks, generator, FM, trope `31ab260e`; privacy's FERPA badge `774df4f` S495; open: dictionary, other badges): ACTIVE, streak 0. …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- **`fixed-surface-missing-from-the-print-hide-list`**: ACTIVE. **S495 (G, dashboard): 1 HIT OPEN — Bulk preset edit's `.bpe-*` (added outside the loop); streak → 0.** **S392 (Pass G, `hebrew_blend_generator.html`): swept CLEAN — first clean sweep since registration, clean streak 0 → 1.** 36 print-media cells (18 printable shapes × EN light / HE dark, at the 749px Letter content …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+_(prior — S495 pointer:)_ **BRANCH/PR: draft PR #321 (`claude/brave-ride-02gvzs`) open → continue; merged → restart from `origin/main`.** `sw.js` **v976**, FM **5.59**. ⚑ Stalest: G (S479), D, I; O blocked. ⚑ Take first: privacy's HE badge. ⚑ Untaken: 13 CSS italics; trope's Phrases headings. ⚑ Seeds: 45. ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.
