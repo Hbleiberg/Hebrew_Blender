@@ -63,7 +63,14 @@ def main():
     except Exception:
         revision = args.revision or 'unknown'
 
-    wav, sr = torchaudio.load(args.audio)
+    # soundfile decodes the FLAC (torchaudio 2.11 hands file decoding to torchcodec, which the venv does not carry)
+    try:
+        import soundfile as sf
+    except ImportError as e:
+        print(f'align: missing dependency: {e}', file=sys.stderr)
+        sys.exit(1)
+    data, sr = sf.read(args.audio, dtype='float32', always_2d=True)   # (frames, channels)
+    wav = torch.from_numpy(data.T.copy())                             # (channels, frames)
     if wav.shape[0] > 1:
         wav = wav.mean(dim=0, keepdim=True)
     if sr != 16000:
@@ -104,7 +111,7 @@ def main():
     except Exception as e:
         print(f'align: forced_align failed: {e}', file=sys.stderr)
         sys.exit(1)
-    spans = F.merge_tokens(alignment[0], scores[0].exp())  # one TokenSpan per emitted token, in order
+    spans = F.merge_tokens(alignment[0], scores[0].exp(), blank=blank)  # one TokenSpan per emitted token, in order (blank frames dropped)
 
     # merge_tokens drops blanks and repeats; the remaining spans line up with `targets` one to one
     if len(spans) != len(targets):
