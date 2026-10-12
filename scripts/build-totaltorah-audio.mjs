@@ -260,10 +260,15 @@ function triennialCheck(row, r) {
 }
 
 /* ---------- split ---------- */
+// The source audio: yt-dlp's m4a, or a file the maintainer extracted elsewhere and dropped in the cache (m4a or mp3).
+function sourceAudio(id) {
+  for (const ext of ['m4a', 'mp3']) { const p = join(CACHE_DIR, `${id}.${ext}`); if (existsSync(p)) return p; }
+  return null;
+}
 function doSplit(id, row) {
   needTool('ffmpeg'); needTool('ffprobe');
-  const m4a = join(CACHE_DIR, `${id}.m4a`), infoPath = join(CACHE_DIR, `${id}.info.json`);
-  if (!existsSync(m4a) || !existsSync(infoPath)) fail(`split needs ${m4a} and its info.json — run fetch first`);
+  const m4a = sourceAudio(id), infoPath = join(CACHE_DIR, `${id}.info.json`);
+  if (!m4a || !existsSync(infoPath)) fail(`split needs ${join(CACHE_DIR, id + '.m4a')} (or .mp3) and its info.json — run fetch first, or drop the file there`);
   const info = JSON.parse(readFileSync(infoPath, 'utf8'));
   const s = sanity(m4a, info);
   if (!s.ok) fail(`source file fails the sanity check: ${s.problems.join('; ')}`);
