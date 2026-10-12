@@ -2469,6 +2469,27 @@ function dictTextMatch(w, s) {
   return w.word.includes(s) || w.bare.includes(s) ||
          w.translitLower.includes(s) || w.translationLower.includes(s);
 }
+// An English search lists the words whose meaning IS the query first: "dog" matches 15 glosses and כֶּלֶב sorted 8th,
+// after "dachshund (… dog …)" and "dhole (an Asian wild dog …)". A sense is one part of the gloss between commas,
+// semicolons or slashes, parentheses and a closing period dropped. A sense equal to the query comes first, then one
+// equal once a leading "to"/"a"/"an"/"the" is set aside on both sides: "water" puts מַיִם before "to water", and
+// "write" still finds "To compose (a text), to write (a composition)."
+function glossKey(s) { return s.replace(/^(?:to|a|an|the) /, ''); }
+function glossSenses(w) {   // cached on the word ("|sense|sense|"): derived only from the raw translation, which never changes
+  if (w._senses) return w._senses;
+  let t = w.translationLower;
+  if (t.indexOf('(') >= 0) { let prev; do { prev = t; t = t.replace(/\([^()]*\)/g, ' '); } while (t !== prev); }
+  let raw = '|', key = '|';
+  for (let s of t.split(/[;,/]/)) {
+    s = s.replace(/\s+/g, ' ').trim().replace(/[.!?:]+$/, '').trim();
+    if (s) { raw += s + '|'; key += glossKey(s) + '|'; }
+  }
+  return (w._senses = { raw, key });
+}
+function glossTier(w, needle, keyNeedle) {   // the needles are '|' + query + '|', built once per search
+  const s = glossSenses(w);
+  return s.raw.includes(needle) ? 0 : s.key.includes(keyNeedle) ? 1 : 2;
+}
 let shown = 0;
 const PAGE = 100;
 let wlFilterOverride = null; // when set, results show a fixed Word List instead of ALL_WORDS; cleared by any real filter change
@@ -3164,7 +3185,15 @@ function onFilter() {
   }
 
   const sort = document.getElementById('sortSel').value;
+  const qn = q.replace(/\s+/g, ' '), qKey = glossKey(qn);
+  const tier = new Map();   // only the exact meanings (0 and 1); every other word is 2
+  if (qn && qn.indexOf('|') < 0) {   // '|' is the cache's own separator
+    const needle = '|' + qn + '|', keyNeedle = '|' + qKey + '|';
+    for (const w of filtered) { const t = glossTier(w, needle, keyNeedle); if (t < 2) tier.set(w, t); }
+  }
+  const tierOf = w => tier.has(w) ? tier.get(w) : 2;
   filtered.sort((a,b) => {
+    if (tier.size) { const d = tierOf(a) - tierOf(b); if (d) return d; }   // exact meanings first, each group in the chosen order
     if (sort === 'alpha')    return a.rank - b.rank;   // precomputed collator order (finishLoad)
     if (sort === 'len-asc')  return a.len - b.len || a.rank - b.rank;
     if (sort === 'len-desc') return b.len - a.len || a.rank - b.rank;
