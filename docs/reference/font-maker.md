@@ -651,7 +651,8 @@ once per cell, exactly as before.
 
 `setQaOnlyProblems(on)` redraws the grid without re-running `qaBuild()`; `qaSyncFilterUI` keeps the
 checkbox and its readout in step. The checkbox lives in its own `.qa-filter` row **below** `#qaTabs`,
-not inside it — `#qaTabs` is a `role="tablist"` whose `_tabKeydown` ring walks its children.
+not inside it — `#qaTabs` is a `role="tablist"` whose `_tabKeydown` ring walks its children (Left/Right by the
+strip's computed direction, so a mirrored Hebrew strip advances on ArrowLeft, as every other tool's tab strip).
 
 **Nothing traced yet.** A tab whose rows have no outline (`qaRowsInked` false: a new project, or the Hebrew
 tabs of a Samaritan-only or English-only font) renders `fontmaker.qa.none_traced` (`smr_none_traced` on the

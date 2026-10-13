@@ -161,6 +161,8 @@ shared component so any tool can adopt it.
   steals focus or collapses the caret (the standard on-screen-keyboard trick); keyboard activation
   (Tab + Enter) still works — every edit ends with `input.focus()`. Selection is read live with a
   remembered `{s,e}` fallback (tracked on `input/click/keyup/select/focus`), clamped to the value.
+- **A tab or the layout button rebuilds the panel:** a press that had focus (Enter / Space) hands it to the
+  rebuilt button for the same tab, or the layout button again — otherwise it would fall to `<body>`.
 - **Backspace deletes ONE UTF-16 code unit** (all Hebrew letters/marks are BMP) — so it peels a single
   nikkud/trop mark off a pointed letter, which is the desired teaching behavior; a surrogate-pair
   guard keeps emoji whole. With a selection, it deletes the selection.

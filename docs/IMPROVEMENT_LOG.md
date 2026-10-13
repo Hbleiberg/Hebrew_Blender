@@ -8,7 +8,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P4 (**NEW S499 C**) | classroom_dashboard.html | **Current Location disables itself: focus falls to the page.** | found S499
+- [ ] P4 (**NEW S500 F**) | dashboard, generator, flash, contact | **Week tabs: no tabpanel; 4 `aria-pressed` groups unnamed** (findings S500). | found S500
 
 - [ ] P4 (**NEW S499 C**) | dashboard, torah, trope | **The font picker's `[DEFAULT]` tag is 3.71:1 in the dark drawer.** | found S499
 
@@ -308,6 +308,10 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-13 | (S500 close-out) | branch/deploy note | **S500 = F + 4 fixes, PR #325.** No drift (main `f1ef1a98`, keep-alive #30 green); sw v984→v985; no FM bump (fixes only); no gate.
+
+- [x] 2026-10-13 | `1c701fc9` `f01125e2` `d0ae57e7` `82218419` | keyboard block ×4, FM, flash, dashboard | (S500) **Keyboard tabs keep focus; FM arrows mirror; weakness tabs a tablist; Current Location keeps focus.** | findings S500.
+
 - [x] 2026-10-13 | (S499 close-out) | branch/deploy note | **S499 = C + 4 fixes, PR #325.** No drift; sw v983→v984; no FM bump; no gate.
 
 - [x] 2026-10-13 | `55891185` `810acfae` `1ca449db` `80c0a440` | dashboard ×2, generator, torah | (S499) **Drawer options scroll in; bulk spoilers/links readable; PDF + Try again keep focus.** | findings S499.
@@ -324,15 +328,11 @@ _(none)_
 
 - [x] 2026-10-12 | `c049ab67` `8fda021d` `4c4dd3ae` | dictionary ×2, dashboard | (S496) **Size slider restyles only cards; English search: exact meanings first; bulk edit prints the board.** | findings S496.
 
-- [x] 2026-10-12 | (S495 close-out) | branch/deploy note | **S495 = G + 3 fixes + 1 reverted, draft PR.** Drift: main `f1ef1a98`, keep-alive #30 green; sw v979→v980; no FM bump; gate 1 skip.
-
-- [x] 2026-10-12 | `9d0f5fe` `756e140` `774df4f` | dashboard, torah, privacy | (S495) **.ivrit keeps Sync on; icons print navy; HE badge untracked.** | findings S495.
-
-- [x] 2026-10-12 | — (attempted, reverted) | generator | (S495) **Export PDF under 700px.** | findings S495.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-13 | **S500** | iters: 5 | tools: FM ×2, dashboard ×2, dictionary, resources, flash | patterns fixed: rebuild ×1 (block ×4), busy-disabled ×1 | pass run: F | SW: v984→v985
 
 - 2026-10-13 | **S499** | iters: 5 | tools: dashboard ×2, generator, torah | patterns fixed: hidden-input (NEW), busy-disabled, rebuild | pass run: C | SW: v983→v984
 
@@ -372,11 +372,9 @@ _(none)_
 
 - 2026-10-08 | **S481** | iters: 5 | tools: generator, index, FM ×2 | patterns fixed: rtl-copy-names-the-english-side ×2, copy-names-a-control-by-a-label-it-lacks ×2 | pass run: I | SW: v962
 
-- 2026-10-08 | **S480** | iters: 5 | tools: trope ×2, FM ×2 (1 reverted), dashboard | patterns fixed: screen-frame-prints-as-rails (NEW) ×1 | pass run: D | SW: v960→v961
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S499 (2026-10-13):** dashboard, generator, torah S499 · contact, resources, flash, dictionary, FM, trope S498 · privacy S495 · terms, 404, scripts S494 · saves S493 · index S483 · account, i18n.js S478 · pwa S472.
+- **Snapshot S500 (2026-10-13):** FM, dashboard, dictionary, resources, flash S500 · generator, torah S499 · contact, trope S498 · privacy S495 · terms, 404, scripts S494 · saves S493 · index S483 · account, i18n.js S478 · pwa S472.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -386,7 +384,7 @@ _(none)_
 
 - **`count-noun-without-a-one-form`** (NEW S497 I; bulk edit ×3 `d438f151`; S498 FM fidelity ×5 FIXED `fc56d212`; open: `{max} units`): ACTIVE, streak 0. Detection: archive; S498 widens it to any `{placeholder} <noun>s`.
 
-- **`busy-disabled-button-drops-focus`** (NEW S498 H; contact + resources FIXED `68adddee`; S499 generator PDF FIXED `1ca449db`; trope ×2 REFUTED (both hand focus back); open: dashboard Current Location, FM export (an error modal opens mid-export: hand back only if focus is on …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`busy-disabled-button-drops-focus`** (NEW S498 H; contact + resources FIXED `68adddee`; S499 generator PDF `1ca449db`; S500 dashboard Current Location `82218419`; trope ×2 REFUTED (both hand focus back); open: FM export (an error modal opens mid-export: hand back only if …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`hidden-input-anchored-outside-its-scroller`** (NEW S499 C; dashboard's 25 drawer radios FIXED `55891185`, torah fixed outside the loop; latent: `.vh-file` ×4, its label on screen on every path measured): ACTIVE, streak 0. Detection: a `position:absolute|fixed` focusable …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -450,7 +448,7 @@ _(none)_
 
 - **`copy-claims-success-on-a-refused-clipboard`** (NEW S428; FIXED `bbd5f65`, `0d2a941`; S444 index `90e1a057`, dashboard `18344f69`; **S445 generator `3dad5c11`, flash `58ee7a4f` — all 7 carriers fixed, 0 open**): ACTIVE, streak 0. Detection: every `execCommand('copy')` whose …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`button-focus-lost-to-its-own-rebuild`** (**S499 torah Try again ×2 `80c0a440`; S488 trope Try again ×2 `183605ba`; S483 hub `ab1a235e`; S474 flash Return to Options `3235f8eb`; S473 flash start `3e8e2f79`, torah tune radios `9fbcfce8`; S471 dashboard `c0c5856e`; S470 torah …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`button-focus-lost-to-its-own-rebuild`** (**S500 hebrew-keyboard tabs + layout, 4 carriers `1c701fc9`; S499 torah Try again ×2 `80c0a440`; S488 trope Try again ×2 `183605ba`; S483 hub `ab1a235e`; S474 flash Return to Options `3235f8eb`; S473 flash start `3e8e2f79`, torah …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`dark-literal-escapes-the-print-tokens`** (NEW S437 G; resources FIXED `5320a668`): ACTIVE, streak 1 (S479 trope clean; plant fired). Detection: PDFs dark vs light, ink per page (<200 at 40 dpi); a lighter dark sheet = a `body.dark` literal the print …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -742,6 +740,6 @@ _(none)_
 
 - E freshness/site-health: 2026-10-09 (**S489 — 38th E on `c5bfca3c..7663499a` (78 commits, 34 files): 15 static arms, docids, runtime CSP 34 cells, generators + smokes; plants 19/19 + 17/17 (findings S489). CLEAN: 0 findings.**)
 
-- F cross-tool consistency: 2026-10-09 (**S484 — 36th F, the toast contract on all 8 carriers (5th look, S111 →): 24 cells + reduce, width, bars; plants 4/4. FOUND 4, FIXED 3 (+ FM kerning). F-next: the tabs / segmented-control keyboard contract (never swept).**)
+- F cross-tool consistency: 2026-10-13 (**S500 — 37th F, the tabs / segmented-control keyboard contract (never swept): 9 strips + 6 toggle groups, real keys, EN/HE; plants 3/3. FOUND 4, FIXED 3 (+ Current Location). F-next: dialog Tab traps.**)
 
-**Next session (S500):** **BRANCH/PR: #325 open → continue; merged → restart from `origin/main`.** `sw.js` **v984**, FM **5.59**. ⚑ Stalest: F, B, A; O blocked. ⚑ First: Current Location. ⚑ Untaken: `{max} units`; CSS italics; HE demo (gate 2). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes.
+**Next session (S501):** **BRANCH/PR: #325 open → continue; merged → restart from `origin/main`.** `sw.js` **v985**, FM **5.59**. ⚑ Stalest: B, A, E; O blocked. ⚑ First: `[DEFAULT]` 3.71:1 dark. ⚑ Untaken: PDF icon; `{max} units`; CSS italics; HE demo (gate 2). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes.
