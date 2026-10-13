@@ -1271,7 +1271,7 @@ body.dark .ladder-strip-line { color: var(--gold-light); }
   }
   .app-header, footer, nav, .stats-bar, .progress, .fc-hint, .fc-back-q,
   #tourBtn, #fsBtn, #darkToggle, .i18n-select, #tipFloat, #appToast, #sheetMenu,
-  #prevBtn, #flipBtn, #nextBtn, #endEarlyBtn, #fcSpeakBtn, #markYes, #markNo,
+  #prevBtn, #flipBtn, #nextBtn, #endEarlyBtn, #fcSpeakBtn, #fcSpeakBtnFront, #markYes, #markNo,
   .tour-spot, .tour-card, .overlay, details { display:none !important; }
   /* The drill's keyboard hints and the results screen's actions are screen controls, inert ink on paper. */
   .fc-kh-set, .results-savedeck, .results-actions { display:none !important; }
@@ -2230,6 +2230,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <div class="fc-card" id="fcCard" tabindex="0" role="button" aria-label="Flash card. Tap or press space to flip." data-i18n-aria-label="flashcards.card.aria_flip">
       <div class="fc-face fc-front">
         <div class="fc-heb" id="fcFrontHeb"></div>
+        <button id="fcSpeakBtnFront" class="btn-xs hi-btn" style="display:none;margin:6px auto 0;font-size:0.8rem;" onclick="event.stopPropagation();"><svg class="hi hi-sm hi-sound" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.2L12 5.4v13.2L7.2 14.5H4z" fill="currentColor"/><path d="M15.6 9.4a3.6 3.6 0 0 1 0 5.2M18.2 6.6a7.5 7.5 0 0 1 0 10.8"/></svg><span class="hi-lbl" data-i18n="flashcards.card.hear">Hear</span></button>
         <div class="fc-hint" data-i18n="flashcards.card.tap_to_flip">Tap to flip</div>
         <div class="fc-badge hide" id="fcFrontBadge"></div>
       </div>
@@ -8011,14 +8012,16 @@ function renderCurrentCard() {
     if (d) el.setAttribute('dir', d); else el.removeAttribute('dir');
   });
 
-  // Audio speak button
-  const speakBtn = document.getElementById('fcSpeakBtn');
-  if (audioEnabled) {
-    speakBtn.style.display = 'block';
-    speakBtn.onclick = (e) => { e.stopPropagation(); speakWord(card.heb); };
-  } else {
-    speakBtn.style.display = 'none';
-  }
+  // Audio speak buttons: the back's whenever audio is on, the front's only when that face shows Hebrew script — on an
+  // English, number, emoji, colour or transliteration front the word it speaks is the answer, and so is a bare letter
+  // (speech reads its name). Shown, each takes .hi-btn's inline-flex back: a 'block' here lost the icon's 5px gap.
+  const frontHeb = !nameLetterMode && /[\u05D0-\u05EA]/.test(front.textContent);
+  [['fcSpeakBtnFront', frontHeb], ['fcSpeakBtn', true]].forEach(([id, ok]) => {
+    const b = document.getElementById(id);
+    b.style.display = audioEnabled && ok ? '' : 'none';
+    b.onclick = (e) => { e.stopPropagation(); speakWord(card.heb); };
+  });
+  syncSpeakFace();
 
   // Badges
   const fb = document.getElementById('fcFrontBadge');
@@ -8046,9 +8049,20 @@ function renderCurrentCard() {
   announce(faceText(isFlipped ? back : front, card));
 }
 
+// Only the face in view keeps its Hear button reachable: the turned-away face's is inert, so Tab never stops on a
+// button nobody can see, and a flip made from a Hear button hands focus to the other face's (or to the card).
+function syncSpeakFace() {
+  const front = document.getElementById('fcSpeakBtnFront'), back = document.getElementById('fcSpeakBtn');
+  const away = isFlipped ? front : back, shown = isFlipped ? back : front;
+  const hadFocus = document.activeElement === away;
+  away.inert = true; shown.inert = false;
+  if (hadFocus) (shown.style.display !== 'none' ? shown : document.getElementById('fcCard')).focus();
+}
+
 function flipCard() {
   isFlipped = !isFlipped;
   document.getElementById('fcCard').classList.toggle('flipped', isFlipped);
+  syncSpeakFace();
   hasFlipped[currentIndex] = true;
   document.querySelector('.fc-mark-row').classList.remove('hide');
   // Announce the newly-revealed face to screen-reader users.
