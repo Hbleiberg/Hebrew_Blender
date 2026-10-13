@@ -4637,7 +4637,13 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
     // Both copies of the control, for the same reason: the card covers the drawer, so busying only
     // the drawer's button leaves the one the teacher actually pressed looking like it did nothing.
     const btns = ['currentLocBtn', 'frCurrentLocBtn'].map(id => document.getElementById(id)).filter(Boolean);
-    const locBtnsIdle = () => btns.forEach(b => { b.textContent = I18n.t('dashboard.display.current_location'); b.disabled = false; });
+    // Disabling the focused button throws its focus to <body> (the ring gone, a screen reader's place lost): read it
+    // first, and hand it back when the answer lands unless the teacher has moved on meanwhile (the generator's Export PDF).
+    const pressed = btns.find(b => b === document.activeElement);
+    const locBtnsIdle = () => {
+      btns.forEach(b => { b.textContent = I18n.t('dashboard.display.current_location'); b.disabled = false; });
+      if (pressed && (!document.activeElement || document.activeElement === document.body)) pressed.focus();
+    };
     btns.forEach(b => { b.textContent = '…'; b.disabled = true; });
     navigator.geolocation.getCurrentPosition(async pos => {
       const { latitude, longitude } = pos.coords;
