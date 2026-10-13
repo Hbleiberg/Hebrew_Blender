@@ -6095,22 +6095,23 @@ function openWeaknessView(name) {
       <div style="font-weight:700;font-size:1rem;">${I18n.t('flashcards.weaknesses.view_title', { name: esc(name) })}</div>
       <button data-act="close" aria-label="${esc(I18n.t('flashcards.weaknesses.close_aria'))}" class="fc-dlg-x"><svg class="hi hi-sm hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
     </div>
-    <div class="weak-tabs" style="display:flex;border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:12px;">
-      <button class="weak-tab active" data-tab="vowels">${esc(I18n.t('flashcards.weaknesses.tab_vowels'))}</button>
-      <button class="weak-tab" data-tab="letters">${esc(I18n.t('flashcards.weaknesses.tab_letters'))}</button>
-      <button class="weak-tab" data-tab="combos">${esc(I18n.t('flashcards.weaknesses.tab_combos'))}</button>
-      <button class="weak-tab" data-tab="other">${esc(I18n.t('flashcards.weaknesses.tab_other'))}</button>
+    <div class="weak-tabs" role="tablist" style="display:flex;border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:12px;">
+      <button class="weak-tab active" data-tab="vowels" role="tab" id="weakTab-vowels" aria-controls="weakContent">${esc(I18n.t('flashcards.weaknesses.tab_vowels'))}</button>
+      <button class="weak-tab" data-tab="letters" role="tab" id="weakTab-letters" aria-controls="weakContent">${esc(I18n.t('flashcards.weaknesses.tab_letters'))}</button>
+      <button class="weak-tab" data-tab="combos" role="tab" id="weakTab-combos" aria-controls="weakContent">${esc(I18n.t('flashcards.weaknesses.tab_combos'))}</button>
+      <button class="weak-tab" data-tab="other" role="tab" id="weakTab-other" aria-controls="weakContent">${esc(I18n.t('flashcards.weaknesses.tab_other'))}</button>
     </div>
-    <div id="weakContent" style="overflow-y:auto;flex:1;"></div>`;
+    <div id="weakContent" role="tabpanel" tabindex="0" style="overflow-y:auto;flex:1;"></div>`;
   ov.appendChild(box); document.body.appendChild(ov);
   const content = box.querySelector('#weakContent');
   const tabs = [...box.querySelectorAll('.weak-tab')];
   function paintTabs() {
     tabs.forEach(t => {
       const on = t.classList.contains('active');   // .weak-tab.active paints the selected tab
-      // These are built and destroyed with the overlay, so initPillAria() never sees them —
-      // expose the selected state here, the one place that already re-runs on every switch.
-      t.setAttribute('aria-pressed', String(on));
+      // A tab strip as in every other tool (the APG tablist): the selected tab is the one Tab stop, the arrows move.
+      t.setAttribute('aria-selected', String(on));
+      t.tabIndex = on ? 0 : -1;
+      if (on) content.setAttribute('aria-labelledby', t.id);
     });
   }
   function selectTab(tab) {
@@ -6119,11 +6120,28 @@ function openWeaknessView(name) {
     renderWeaknessTab(stats, tab, content);
   }
   tabs.forEach(t => t.addEventListener('click', () => selectTab(t.dataset.tab)));
+  // Left/Right by VISUAL direction (the strip mirrors in RTL), Home/End, wrap; moving focus selects — the Trope Tutor's handler.
+  box.querySelector('.weak-tabs').addEventListener('keydown', e => {
+    const i = tabs.indexOf(document.activeElement);
+    if (i < 0) return;
+    const rtl = document.documentElement.dir === 'rtl';
+    let next;
+    if (e.key === (rtl ? 'ArrowLeft' : 'ArrowRight')) next = (i + 1) % tabs.length;
+    else if (e.key === (rtl ? 'ArrowRight' : 'ArrowLeft')) next = (i - 1 + tabs.length) % tabs.length;
+    else if (e.key === 'Home') next = 0;
+    else if (e.key === 'End') next = tabs.length - 1;
+    else return;
+    e.preventDefault();
+    tabs[next].focus();
+    selectTab(tabs[next].dataset.tab);
+  });
   selectTab('vowels');
   const close = () => { if (ov.parentNode) document.body.removeChild(ov); };
   box.querySelector('[data-act=close]').addEventListener('click', close);
   ov.addEventListener('click', e => { if (e.target === ov) close(); });
-  fcModalize(ov, box, close, box.querySelector('div[style*="font-weight:700"]'));
+  const title = box.querySelector('div[style*="font-weight:700"]');
+  fcModalize(ov, box, close, title);
+  box.querySelector('.weak-tabs').setAttribute('aria-labelledby', title.id);   // named by the dialog's title, as the Font Maker's Help tabs
 }
 
 /* ═══ Learner Ladder (guided decoding path) ═══
