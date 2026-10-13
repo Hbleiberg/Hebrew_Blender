@@ -2508,8 +2508,8 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 
         <!-- Practice Type selector -->
         <div id="blendTypeWrapper" style="margin-bottom:10px;">
-          <div style="font-size:0.72rem;color:var(--muted);margin-bottom:6px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;" data-i18n="worksheet.modes.practice_type_label">Practice Type</div>
-          <div class="blend-type-selector" id="blendTypeSelector" style="grid-template-columns:repeat(5,1fr);">
+          <div id="practiceTypeLbl" style="font-size:0.72rem;color:var(--muted);margin-bottom:6px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;" data-i18n="worksheet.modes.practice_type_label">Practice Type</div>
+          <div class="blend-type-selector" id="blendTypeSelector" role="group" aria-labelledby="practiceTypeLbl" style="grid-template-columns:repeat(5,1fr);">
             <button class="blend-type-btn" data-type="one"   onclick="setPracticeType('one')" data-i18n="worksheet.modes.practice.one">1-Letter</button>
             <button class="blend-type-btn active" data-type="two"   onclick="setPracticeType('two')" data-i18n="worksheet.modes.practice.two">2-Letter</button>
             <button class="blend-type-btn" data-type="three" onclick="setPracticeType('three')"><span data-i18n="worksheet.modes.practice.three">3-Letter</span> <span class="beta-tag" data-i18n="worksheet.common.beta">BETA</span></button>
@@ -2538,8 +2538,8 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 
         <!-- Worksheet Type selector -->
         <div id="worksheetTypeWrapper" style="margin-bottom:10px;">
-          <div style="font-size:0.72rem;color:var(--muted);margin-bottom:6px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;" data-i18n="worksheet.modes.worksheet_type_label">Worksheet Type</div>
-          <div class="blend-type-selector" id="worksheetTypeSelector" style="grid-template-columns:repeat(3,1fr);">
+          <div id="worksheetTypeLbl" style="font-size:0.72rem;color:var(--muted);margin-bottom:6px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;" data-i18n="worksheet.modes.worksheet_type_label">Worksheet Type</div>
+          <div class="blend-type-selector" id="worksheetTypeSelector" role="group" aria-labelledby="worksheetTypeLbl" style="grid-template-columns:repeat(3,1fr);">
             <button class="blend-type-btn active" data-worksheet="reading"       onclick="setWorksheetType('reading')" data-i18n="worksheet.modes.type.reading">Reading</button>
             <button class="blend-type-btn"        data-worksheet="inverse"       onclick="setWorksheetType('inverse')" data-i18n="worksheet.modes.type.inverse">Inverse</button>
             <button class="blend-type-btn"        data-worksheet="fillvowels"    onclick="setWorksheetType('fillvowels')" data-i18n="worksheet.modes.type.fillvowels">Fill Vowels</button>
