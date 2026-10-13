@@ -9392,7 +9392,12 @@ async function exportPDF() {
   // Disabling the focused button throws its focus to <body>: the ring vanished, a second Enter did nothing and a screen
   // reader lost its place. Read it first, and hand it back when the export lands unless the teacher has moved on meanwhile.
   const hadFocus = document.activeElement === pdfBtn;
-  pdfBtn.textContent = I18n.t('worksheet.actions.pdf_generating');
+  // The label span, not the button (as flash cards' copyShareCode): rewriting the button deleted its icon and the span's
+  // data-i18n, so after one export it read "Export PDF" bare, in the language of that export. The busy string carries
+  // its own ⏳, so the download icon steps aside meanwhile.
+  const pdfLbl = pdfBtn.querySelector('.hi-lbl') || pdfBtn, pdfIco = pdfBtn.querySelector('svg');
+  pdfLbl.textContent = I18n.t('worksheet.actions.pdf_generating');
+  if (pdfIco) pdfIco.style.display = 'none';
   pdfBtn.disabled = true;
   // The sheet is fluid on screen and the capture takes it as laid out, so a narrow window (a tablet,
   // a half-screen laptop) exported a narrow layout: at 800px the bingo cells ran into each other and a
@@ -9643,7 +9648,8 @@ async function exportPDF() {
   } finally {
     ws.style.width = wsPin.width;
     ws.style.maxWidth = wsPin.maxWidth;
-    pdfBtn.textContent = I18n.t('worksheet.actions.export_pdf');
+    pdfLbl.textContent = I18n.t('worksheet.actions.export_pdf');
+    if (pdfIco) pdfIco.style.display = '';
     pdfBtn.disabled = false;
     if (hadFocus && (!document.activeElement || document.activeElement === document.body)) pdfBtn.focus();
   }
