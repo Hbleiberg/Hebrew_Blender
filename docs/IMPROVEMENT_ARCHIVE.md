@@ -92563,3 +92563,27 @@ _(prior — S501 pointer:)_ **BRANCH/PR: #325 open → continue; merged → rest
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 _(prior — S502 pointer:)_ **BRANCH/PR: #325 open → continue; merged → restart from `origin/main`.** `sw.js` **v988**, FM **5.59**. ⚑ Stalest: A, E, L; O blocked. ⚑ First: week tabpanel + 2 unnamed groups (S500 F). ⚑ Untaken: CSS italics; toast `role=status`; HE demo (gate 2). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes.
+
+
+<!-- archived by compact-ledger at the S504 boundary, 2026-10-13 -->
+## Compaction (S504, 2026-10-13) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-13 | (S498 close-out) | branch/deploy note | **S498 = H (contact) + 4 fixes, PR #325.** No drift (main `f1ef1a98`, keep-alive #30 green); sw v982→v983; no FM bump (fixes only); gate 2 ×1 approved (footer link).
+
+- [x] 2026-10-13 | `68adddee` `89f85865` `94f18744` `fc56d212` | contact ×2, resources, 6 tool footers, FM | (S498) **Send keeps focus; the answer scrolls into view; a Contact link on every tool; fidelity singulars.** | findings S498.
+
+### from Per-session log (one line per session)
+
+- 2026-10-09 | **S483** | iters: 5 | tools: index, saves modules (shared), torah, FM | patterns fixed: button-focus-lost ×1, module-fallback-literal (NEW) ×2 | pass run: C | SW: v963→v964
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`data-edit-under-an-unchanged-buster`** (NEW S503 E; 2 FIXED `39265428`): ACTIVE, streak 0. Detection: `e503/e2b.py ROOT` — each literal `data/…?v=N` and each `*_V` constant with its `data/` base: any commit to a served file after the later of the value's commit and the file's creation is a hit (plant: an edit in a clone fires; a bump clears).
+
+- **`pinned-english-without-lang`** (NEW S415; 20 FIXED `f4bbfe8`; S422 resources ×43 `8c56a89`; S489 torah + trope `d92d1de1`; S503 torah audio credits `4a75e30d`, after a real Chant; no open carrier): ACTIVE, streak 0. Detection: HE UI, `closest('[lang]')` of each pinned-English text node (Latin, no Hebrew, outside `[data-i18n]`) = …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+_(prior — S503 pointer:)_ **BRANCH/PR: `claude/jolly-curie-4gtmai` draft PR open → continue; merged → restart from `origin/main`.** `sw.js` **v990**, FM **5.59**. ⚑ Stalest: E, L, K; O blocked. ⚑ First: S502 pressed rows + flash/torah font heads. ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes.

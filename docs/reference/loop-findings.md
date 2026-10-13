@@ -2179,3 +2179,49 @@
   - **(264)** With Google Fonts aborted, layout widths come from the container's fallback fonts (here Source Sans 3 → Inter): compare overflow against the pre tree in the same container, not against another session's numbers.
   - **(265)** A script-written `style.cssText = '…letter-spacing:0.04em…'` serializes as `letter-spacing: 0.04em;` (with a space), so an attribute selector copied from the source never matches; match the property name (`[style*="letter-spacing"]`).
   | found S502
+
+## S503 (2026-10-13) — pass E on the S489 → S502 delta (the 39th E)
+
+- [ ] P4 (**NEW S503 Pass E — receipts, so the next E extends rather than repeats them**) | repo-wide | **Delta `7663499a..4edc14b9`: 90 commits, 54 files.** The loop S490–S502 plus, outside it, Total Torah: `data/totaltorah/` (5 verse MP3s, their timings, a manifest, a licence), four scripts, the `/addTOTT` and `/ytdownload` skills, a CLAUDE.md rule, a THIRD_PARTY_LICENSES entry, and reference sections in torah-and-trope.md and ops.md. **No drift:** main `fc54901d` (PR #327 open on `4edc14b9`), sw v990, FM 5.59, migrations 0001–0003 live, `db/` and `js/supabase-config.js` unchanged since 2026-10-01, keep-alive run #31 green (2026-10-13), Pages run 1318 `success` on `fc54901d`. **Harness `e503/` (scratchpad; `e489/` was gone, rebuilt):**
+  - `arms.py ROOT` (S489's 15 arms; comments stripped before E5's tag order; E13 keyed by the one non-modifier `hi-*` class) → `plants.py` 16/16 fired: a precached file removed, a `?v=` mismatch, a dead link, og ≠ twitter, a tag before the CSP, an account origin dropped, an external script, a bad robots line, a workflow without jobs, a tool added to `TOOLS`, `ConfirmationURL` in the template, a starting font removed, a byte in a header-icons carrier, a diverged `hi-link`, an unlisted `js/` file, a CDN pin bumped.
+  - **`e2b.py ROOT [REV]`, new:** for each literal `data/…?v=N` and each `*_V` constant joined to a `data/` base by its fetch, the commit that set the value against later commits to a served file. A data edit committed in a clone fired; the bump cleared it.
+  - `docids.py ROOT` (a token set, ~1 s): a renamed function (every call site) and a removed script both fired.
+  - `cspr.mjs` (17 pages × light/dark): an init-script external image fired `img-src` 34/34.
+  - `tt.mjs` (Total Torah, Sefaria v3 stubbed) and `pin.mjs` (HE census of pinned English in the audio bar and the Audio tab, after a real Chant).
+
+  **Results:**
+  - `CORE_ASSETS` 37/37 on disk; 16 corpus URLs; 549 attribute links; og = twitter; CSP first on 17/17; account origins on exactly the 11 loaders; 96 load-shaped refs inside their CSP; 404 icons in 53 kinds; 16 multi-carrier blocks identical; robots, CNAME, 2 workflows parse; `TOOLS` = the CHECK; 132 starting fonts (264 files); 6 CDN pins licensed.
+  - E14: README lacked `data/totaltorah/` and its 4 scripts (base 0 hits; fixed).
+  - **E2b, 3 hits on 2 corpora (fixed):** `trope_phrases.json` was edited 4 times under `?v=3` on 10-07, before S489's E, whose agreement-only arm could not see it. Total Torah's manifest and 5 timings were edited twice under `TT_DATA_V` `?v=1`. `POCKET_TIMINGS_V` and the other 21 pairs are clean.
+  - Doc tokens: 838 paths and 4,778 identifiers. The 3 misses gained since `7663499a` are paths relative to `data/` and the gitignored `source-data/totaltorah-cache/`. Doc-named i18n keys all exist. The Total Torah sections' claims hold against the code: the `sw.js` Range/audio early return before `/data/`, `TT_DATA_V`, the manifest fields, `TOTALTORAH_PUBLIC = false`, `VIDEOS` imported from `totaltorah-videos.mjs`, `verify`, `--boundaries`, `--intro`, `forced_align`, smoke-sync's `D37`, and `frame-src 'none'`.
+  - Runtime CSP: 0 violations and 0 pageerrors.
+  - Total Torah: a plain visit fetches no manifest (0 requests), hides `#optRecSrcRow` and keeps the PocketTorah credit. `?reader=totaltorah` fetches the manifest and one timings file with `?v=`; a real Chant on 1:1 plays `/data/totaltorah/audio/gen-001-001.mp3`; the credit links the Adas Israel page and `https://youtu.be/bv1hX3WrRM4` (`_blank noopener`); 0 CSP violations. EN and HE alike.
+  - `update-sitemap` and `update-llms-txt` change nothing; `build-parasha-icons --check` reports 54 current; smoke-hebrew-calendar 6/6; smoke-trope-staff 19/19; check-i18n A–E and check-inline-js (73 + 37) clean.
+
+  | found S503
+- [ ] P4 (**NEW S503 — the four fixes' receipts**) | torah_trainer.html, trope_tutor.html, README.md, flash_cards.html |
+  - **`39265428`** (`swstale.mjs`): the real service worker in a persistent profile, with a `git archive HEAD` copy served from a directory whose data files are swapped on disk. The old files (`9f96896e`'s phrases, `bfb9dfc0`'s manifest + timings) were cached, then the current ones put on the server. The control keeps 0/0/0 Esther/Megillot/Eicha rows and 0/5 verified verses. The fixed pages fetch 41/40/38 rows and 5/5, and the data cache drops the `?v=3` / `?v=1` entries. Matrix: 0 pageerrors.
+  - **`47738a1f`:** E14 goes from 5 hits to 0, and the table keeps three pipes per row.
+  - **`4a75e30d`** (`pin.mjs`, `fix3.mjs`):
+    - HE pinned-English nodes without `lang="en"`: control 6 (plain) and 5–7 (Total Torah); fixed 0.
+    - EN crops pixel-identical, 16/16.
+    - The static credit still equals `pocketCreditHTML()`.
+    - A live HE→EN→HE switch keeps the marks.
+    - In HE crops, the Audio tab's full stop moves to the end of the line.
+  - **`008be8e9`** (`flashtrack.mjs`: setup with panels open, a drill and its flip, the Skipped header, the sheet menu, results; `flashlive.mjs`):
+    - HE Hebrew-bearing tracked/uppercase text goes from 47 to 1 (the beta badge), at light 1280 and dark 800.
+    - The EN census is identical to the control.
+    - A live EN→HE→EN switch flips the labels and comes back identical.
+
+  | found S503
+- [ ] P4 (**NEW S503 — would-be findings triaged, and traps 291–294**) | probes |
+  - **(a)** E5's first run flagged 14 pages: the CSP comment's prose "right after `<meta charset>`" parsed as a tag. This was an arm bug; comments are now stripped first.
+  - **(b)** E13 counted `hi-sm` as a kind (43 "drawings"); it is a size modifier, now excluded.
+  - **(c)** Flash's printed progress report keeps tracked uppercase `th` in Hebrew: this is G's (paper), noted on the S502 candidate.
+  - **(d)** With Total Torah on, the verse Chant's accessible name still says "(PocketTorah audio)". That needs a string (gate 2) and is filed.
+  - **(291)** A context-level `route` that rewrites a page is shadowed by the page's own `page.route('**/*')` (page routes match first), so the CSP plant was silent. An init-script `new Image()` with an external `src` is the plant that reaches every page.
+  - **(292)** A doc-token plant that renames only a function's definition stays silent: its call sites keep the token in the code corpus. Rename every occurrence.
+  - **(293)** `pkill -f <name>` matches the calling shell when its own command line contains the name, so the shell dies with exit 144. Kill by PID or by a pattern the command does not contain.
+  - **(294)** The data-cache agreement arm ("every fetch carries `?v=`, pages agree") is blind to an edit under an unchanged value; only the history arm (`e2b.py`) sees it. Run it on the whole history, not just the delta: one of S503's two hits predates the last E.
+
+  | found S503

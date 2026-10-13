@@ -8,7 +8,9 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P4 (**S502 A — latin-tracking**) | flash, torah | **Hebrew `.font-section-hdr` keeps Latin caps; flash's `.frac` tracks.** | found S502
+- [ ] P4 (**NEW S503 E, gate 2**) | torah_trainer.html | **Total Torah on: Chant says "(PocketTorah audio)"** (`verse_chant_aria`). | found S503
+
+- [ ] P4 (**S502 A — latin-tracking**) | torah, flash | **torah's Hebrew `.font-section-hdr` keeps Latin caps; flash's printed report `th` (G's).** | found S502
 
 - [ ] P4 (**S502 A — radio-set twin**) | flash, FM, dictionary, resources, generator | **Unnamed pressed rows**: flash count/letters/vowels, FM letters/mode, dictionary mode + resources view (gate 2), generator letters/language. | found S502
 
@@ -308,9 +310,13 @@ _(none)_
 
 ## Done
 
-- [x] 2026-10-13 | (S502 close-out) | branch/deploy note | **S502 = A + 4 fixes.** 3 flash commits outside the loop; keep-alive #31 green; sw v989→v990; no FM bump; no gate.
+- [x] 2026-10-13 | (S503 close-out) | branch/deploy note | **S503 = E + 4 fixes, PR #327.** No drift; sw v990→v991; no FM bump; no gate.
 
-- [x] 2026-10-13 | `c35aec8d` `1baaf705` `c134c65d` `ab27a7d1` | dashboard ×2, generator, dictionary | (S502) **Bulk edit past a `null` preset; Hebrew labels plain (dashboard, dictionary); two named groups.** | vs a `git archive HEAD` control; findings S502.
+- [x] 2026-10-13 | `39265428` `47738a1f` `4a75e30d` `008be8e9` | torah + trope, README, torah, flash | (S503) **Two data `?v=`; README rows; credits `lang="en"`; flash HE labels.** | findings S503.
+
+- [x] 2026-10-13 | (S502 close-out) | branch/deploy note | **S502 = A + 4 fixes.** 3 flash commits outside the loop; sw v989→v990; no FM bump; no gate.
+
+- [x] 2026-10-13 | `c35aec8d` `1baaf705` `c134c65d` `ab27a7d1` | dashboard ×2, generator, dictionary | (S502) **Bulk edit past `null`; HE labels plain ×2; two named groups.** | findings S502.
 
 - [x] 2026-10-13 | (S501 close-out) | branch/deploy note | **S501 = B + 4 fixes, PR #325.** No drift (main `f1ef1a98`, keep-alive #30 green, `db/` + config unchanged since 10-01); sw v985→v986; no FM bump (fixes only); no gate.
 
@@ -324,13 +330,11 @@ _(none)_
 
 - [x] 2026-10-13 | `55891185` `810acfae` `1ca449db` `80c0a440` | dashboard ×2, generator, torah | (S499) **Drawer options scroll in; bulk spoilers/links readable; PDF + Try again keep focus.** | findings S499.
 
-- [x] 2026-10-13 | (S498 close-out) | branch/deploy note | **S498 = H (contact) + 4 fixes, PR #325.** No drift (main `f1ef1a98`, keep-alive #30 green); sw v982→v983; no FM bump (fixes only); gate 2 ×1 approved (footer link).
-
-- [x] 2026-10-13 | `68adddee` `89f85865` `94f18744` `fc56d212` | contact ×2, resources, 6 tool footers, FM | (S498) **Send keeps focus; the answer scrolls into view; a Contact link on every tool; fidelity singulars.** | findings S498.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-13 | **S503** | iters: 5 | tools: torah ×2, trope, README, flash | patterns fixed: data-buster (NEW), pinned-english, latin-tracking | pass run: E | SW: v990→v991
 
 - 2026-10-13 | **S502** | iters: 5 | tools: dashboard ×2, generator, dictionary | patterns fixed: stored-json, latin-tracking ×2, radio-set | pass run: A | SW: v989→v990
 
@@ -370,13 +374,13 @@ _(none)_
 
 - 2026-10-09 | **S484** | iters: 5 | tools: 4 shared-block carriers ×2, torah, trope, resources, FM ×2 | patterns fixed: toast-duration (NEW) ×2, centred-fixed-box (NEW) ×7, translated-key-exists ×1 | pass run: F | SW: v964→v965
 
-- 2026-10-09 | **S483** | iters: 5 | tools: index, saves modules (shared), torah, FM | patterns fixed: button-focus-lost ×1, module-fallback-literal (NEW) ×2 | pass run: C | SW: v963→v964
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S502 (2026-10-13):** dashboard, generator, dictionary S502 · torah, FM, flash S501 · resources S500 · contact, trope S498 · privacy S495 · terms, 404, scripts S494 · saves S493 · index S483 · account, i18n.js S478 · pwa S472.
+- **Snapshot S503 (2026-10-13):** torah, trope, flash, README S503 · dashboard, generator, dictionary S502 · FM S501 · resources S500 · contact S498 · privacy S495 · terms, 404, scripts S494 · saves S493 · index S483 · account, i18n.js S478 · pwa S472.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`data-edit-under-an-unchanged-buster`** (NEW S503 E; 2 FIXED `39265428`): ACTIVE, streak 0. Detection: `e503/e2b.py` (findings S503).
 
 - **`root-var-per-input`** (NEW S496 D; dictionary FIXED `c049ab67`; S497: generator ×2 + trope under 200 ms @4×, closed): ACTIVE, streak 1. Detection: archive.
 
@@ -408,7 +412,7 @@ _(none)_
 
 - **`header-wrap-gate-below-its-ceiling`** (NEW S478 M; FIXED ×8 `92a21164`; S489 dashboard `f620c768`): ACTIVE, streak 0. Detection: `m478/gates.mjs` / `e489/gates.mjs` (1px 320-1000, EN/HE × light/dark, per page; a gate removed by CSSOM gives its ceiling); HEAD the control.
 
-- **`latin-tracking-on-hebrew-labels`** (gate 3: drop suite-wide; S502 dashboard + dictionary; open: beta badges, flash/torah font heads): ACTIVE, streak 0. Detection: `a502/dash-track.mjs`. …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`latin-tracking-on-hebrew-labels`** (gate 3: drop suite-wide; S502 dashboard + dictionary; S503 flash; open: beta badges, torah font heads): ACTIVE, streak 0. Detection: `a502/dash-track.mjs`. …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`forward-arrow-points-back-in-rtl-copy`** (NEW S462 N; FIXED S464 `5f7f8a40` ×48; open 0): ACTIVE, streak 1 (S472: 47 delta rows, 0). Detection: the S462 CSV census; exempt "(→)", A→Z, Back labels, the orphan `flashcards.header.home`.
 
@@ -464,7 +468,7 @@ _(none)_
 
 - **`designed-key-miss-probed-through-t`** (NEW S415; FM `gName()` FIXED `95d5f46`): ACTIVE, streak 1 (S416: 0 on the delta). Detection: `[i18n] missing key` in B's interaction arm; static: `=== k ?` fallbacks without `I18n.has`.
 
-- **`pinned-english-without-lang`** (NEW S415; 20 FIXED `f4bbfe8`; S422 resources ×43 `8c56a89`; S489 torah + trope `d92d1de1`; no open carrier): ACTIVE, streak 0. Detection: HE UI, `closest('[lang]')` of each pinned-English text node (Latin, no Hebrew, outside `[data-i18n]`) = …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`pinned-english-without-lang`** (NEW S415; 20 FIXED `f4bbfe8`; S422 resources ×43 `8c56a89`; S489 torah + trope `d92d1de1`; S503 torah bar; no open carrier): ACTIVE, streak 0. Detection: HE UI, `closest('[lang]')` of each …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`toggle-name-flips-with-its-pressed-state`** (NEW S414 `f9e67b2`; S416 trope tune `96275c2`; S430 found torah's Trope staff Tune all + every verse Tune; **S431 FIXED `aa97e2e`**): ACTIVE, streak 0 (last swept S430). Detection `f414/toggles2.mjs`: real click per …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -738,8 +742,8 @@ _(none)_
 
 - H teacher walkthrough / paper-cuts (one tool): 2026-10-13 (**S498 — contact (S350 →, 21 commits): 5 lessons by real clicks against stand-in Web3Forms + hCaptcha (a bug report from Flash Cards, keyboard + every failure path, donate, phones, live switch / back / reload). FOUND 3, FIXED 3 (+ resources, FM). H-next: generator (S363).**)
 
-- E freshness/site-health: 2026-10-09 (**S489 — 38th E on `c5bfca3c..7663499a` (78 commits, 34 files): 15 static arms, docids, runtime CSP 34 cells, generators + smokes; plants 19/19 + 17/17 (findings S489). CLEAN: 0 findings.**)
+- E freshness/site-health: 2026-10-13 (**S503 — 39th E, `7663499a..4edc14b9` (90 commits): 15 arms + a `?v=` history arm, doc tokens, CSP, Total Torah by real input. FOUND 4, FIXED 3 (+ flash).**)
 
 - F cross-tool consistency: 2026-10-13 (**S500 — 37th F, the tabs / segmented-control keyboard contract (never swept): 9 strips + 6 toggle groups, real keys, EN/HE; plants 3/3. FOUND 4, FIXED 3 (+ Current Location). F-next: dialog Tab traps.**)
 
-**Next session (S503):** **BRANCH/PR: `claude/jolly-curie-4gtmai` draft PR open → continue; merged → restart from `origin/main`.** `sw.js` **v990**, FM **5.59**. ⚑ Stalest: E, L, K; O blocked. ⚑ First: S502 pressed rows + flash/torah font heads. ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes.
+**Next session (S504):** **BRANCH/PR: #327 open → continue; merged → restart from `origin/main`.** `sw.js` **v991**, FM **5.59**. ⚑ Stalest: L, K, N; O blocked. ⚑ First: S502 pressed rows; torah font heads. ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; TT Chant label (gate 2).
