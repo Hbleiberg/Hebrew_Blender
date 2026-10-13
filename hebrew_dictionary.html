@@ -474,6 +474,12 @@ body.dark .panel-title:hover{background:#345090;}
 body.dark .vowel-chip-sub{color:#adb6c9;}
 .era-body{display:flex;gap:16px;}
 .panel-subhead{font-family:'Libre Baskerville',serif;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+/* Hebrew has no capitals, and tracking pulls its letters apart: in the Hebrew UI the page's small labels set it plain (the
+   suite's Hebrew-label rule) — panel titles and sub-heads, Advanced's sections, the font picker's heads, the word cards'
+   part-of-speech and era badges (not the Latin length badge), the emoji cards' gender, Shoresh's heads and pattern
+   names, the vowel groups' heads and two inline labels. Latin content (English words, tags) keeps its setting. */
+html[lang="he"] .panel-title,html[lang="he"] .panel-subhead,html[lang="he"] .adv-section-title,html[lang="he"] .font-section-hdr,html[lang="he"] .badge:not(.b-len),html[lang="he"] .ec-gender,html[lang="he"] .shoresh-group-hdr,html[lang="he"] .shoresh-patterns-title,html[lang="he"] .shoresh-pat .pat-sub{letter-spacing:normal;text-transform:none;}
+html[lang="he"] #ttsSpeedLabel,html[lang="he"] [data-i18n="dictionary.translit.style_label"],html[lang="he"] #vowelFilterGrid [style*="letter-spacing"]{letter-spacing:normal !important;text-transform:none !important;}
 /* Sized by padding alone, this shared class rendered 10 of its 12 buttons at 20-22px — under
    the suite's 30px floor AND under WCAG 2.5.8's 24px. Same declarations flash_cards' .btn-xs
    uses (S102): the inline-flex is what turns min-height into a taller BOX rather than taller text. */
