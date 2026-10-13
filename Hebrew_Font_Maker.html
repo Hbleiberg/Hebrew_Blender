@@ -4446,8 +4446,10 @@ function _tabKeydown(e, tab) {
   const tabs = [...list.querySelectorAll('[role=tab]')].filter(t => t.offsetParent !== null);   // visible tabs only
   const i = tabs.indexOf(tab); if (i < 0) return;
   let j = -1;
-  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') j = (i + 1) % tabs.length;
-  else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') j = (i - 1 + tabs.length) % tabs.length;
+  // Left/Right by VISUAL direction, as every other tool's tab strip: a mirrored (Hebrew) strip advances on ArrowLeft.
+  const rtl = getComputedStyle(list).direction === 'rtl';
+  if (e.key === 'ArrowDown' || e.key === (rtl ? 'ArrowLeft' : 'ArrowRight')) j = (i + 1) % tabs.length;
+  else if (e.key === 'ArrowUp' || e.key === (rtl ? 'ArrowRight' : 'ArrowLeft')) j = (i - 1 + tabs.length) % tabs.length;
   else if (e.key === 'Home') j = 0;
   else if (e.key === 'End') j = tabs.length - 1;
   else return;
