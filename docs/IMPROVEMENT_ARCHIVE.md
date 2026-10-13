@@ -92439,3 +92439,31 @@ _(prior — S496 pointer:)_ **BRANCH/PR: S495's draft PR open → continue; merg
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 _(prior — S497 pointer:)_ **BRANCH/PR: #325 open → continue; merged → restart from `origin/main`.** `sw.js` **v981**, FM **5.59**. ⚑ Stalest: I (S481), H (S482), C (S483); O blocked. ⚑ Take first: Glow + Shadow on paper (`.fx-*`). ⚑ Untaken: root-var sliders; 13 CSS italics. ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.
+
+
+<!-- archived by compact-ledger at the S499 boundary, 2026-10-13 -->
+## Compaction (S499, 2026-10-13) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-10 | (after S493: maintainer request) | branch/deploy note | **Two seeds built on request, draft PR #321.** sw v974→v975; no FM bump; sitemap; gates clean; no backend file.
+
+- [x] 2026-10-10 | `5a1c6f57` | torah_trainer.html | (after S493, maintainer request) **A haftarah-only special Shabbat (the 7 `ref:null` entries) no longer "replaces the maftir": chip tip + lookup line take `_haftarah` keys.** | headless, clock fixed: Machar Chodesh ×2 vs Chanukah 1, EN + HE.
+
+- [x] 2026-10-10 | `b3e91897` `8eee6d69` | torah_trainer.html | (after S493, maintainer request) **Maftir in the Reading picker; Translit / Translation toggles on the projector bar.** | headless: Chant seeks Bereshit-7 to 6:5; Triennial = triennial.json; fullscreen toggles in step, keyboard, reload.
+
+- [x] 2026-10-10 | (S493 close-out) | branch/deploy note | **S493 = P on the Torah Trainer + 4 fixes, PR #320 continued.** No drift (main `fee5fe05`, keep-alive #27 green, delete-account source = repo); sw v973→v974; no FM bump (no FM change); no gate; all seven smokes on the module fix; traps 228–231 (findings S493).
+
+- [x] 2026-10-10 | `c36f7a48` `c57f0b79` `dcfdcf16` `31ab260e` | dictionary ×2, js/ivrit-saves.js + smoke-sync + docs, trope | (S493) **A slow first visit loads the word list; a stale tab hidden and shown again never sends its older settings (torah, trope; smoke-sync D37); Shoresh fits a 320px phone; trope's Hebrew labels untracked.** | findings S493.
+
+### from Per-session log (one line per session)
+
+- 2026-10-08 | **S478** | iters: 5 | tools: privacy ×2, contact ×2, i18n.js, +6 headers | patterns fixed: latin-tracking ×1, header-gate (NEW) ×8 | pass run: M | SW: v958→v959
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`busy-disabled-button-drops-focus`** (NEW S498 H; contact + resources FIXED `68adddee`; 6 suspects unswept: FM, dashboard, generator PDF, torah retry, trope ×2): ACTIVE, streak 0. A handler sets `.disabled = true` on the pressed control before an `await`, so focus falls to `<body>`. Detection: `\.disabled *= *true` then `await` with no focus hand-back; runtime: Enter it, after it lands `activeElement` is the control; control: HEAD reads `<body>`.
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+_(prior — S498 pointer:)_ **BRANCH/PR: #325 open → continue; merged → restart from `origin/main`.** `sw.js` **v982**, FM **5.59**. ⚑ Stalest: H (S482), C (S483), F (S484); O blocked. ⚑ Take first: FM fidelity plurals. ⚑ Untaken: 13 CSS italics; HE demo message (gate 2). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.

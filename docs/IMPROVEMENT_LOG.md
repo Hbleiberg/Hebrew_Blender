@@ -8,7 +8,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P4 (**NEW S497 I — count-noun**) | Hebrew_Font_Maker.html | **The fidelity report's counts have no singular** ("1 combos…", "1 fixes skipped"). | found S497
+- [ ] P4 (**NEW S498 — count-noun, `{max}`**) | Hebrew_Font_Maker.html | **The fidelity report's `max {max} units` reads "1 units"** when a class's worst deviation is 1 (key line, summary, status). | found S498
 
 - [ ] P4 (**NEW S497 I — gate 2**) | classroom_dashboard.html | **A Hebrew first visit's demo message is English** (`DEFAULT_PRESET`, a `smoke-sync` canon). | found S497
 
@@ -302,6 +302,10 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-13 | (S498 close-out) | branch/deploy note | **S498 = H (contact) + 4 fixes, PR #325.** No drift (main `f1ef1a98`, keep-alive #30 green); sw v982→v983; no FM bump (fixes only); gate 2 ×1 approved (footer link).
+
+- [x] 2026-10-13 | `68adddee` `89f85865` `94f18744` `fc56d212` | contact ×2, resources, 6 tool footers, FM | (S498) **Send keeps focus; the answer scrolls into view; a Contact link on every tool; fidelity singulars.** | findings S498.
+
 - [x] 2026-10-12 | (S497 close-out) | branch/deploy note | **S497 = I + 3 fixes + 1 closed, PR #325.** No drift (main `f1ef1a98`, keep-alive #30); sw v981→v982; no FM bump; no gate.
 
 - [x] 2026-10-12 | `e5b3dc47` `d438f151` `591a11ef` | dashboard ×2, flash | (S497) **Glow/Shadow print; Bulk edit singulars; the timer's first paint. Root-var sliders closed: under 200 ms @4×.** | findings S497.
@@ -322,19 +326,11 @@ _(none)_
 
 - [x] 2026-10-10 | `2b21e89d` `1dddd25c` | dictionary, trope | (S494) **The tour's Done is tappable on a sideways phone; Learn cards are headings.** | findings S494.
 
-- [x] 2026-10-10 | (after S493: maintainer request) | branch/deploy note | **Two seeds built on request, draft PR #321.** sw v974→v975; no FM bump; sitemap; gates clean; no backend file.
-
-- [x] 2026-10-10 | `5a1c6f57` | torah_trainer.html | (after S493, maintainer request) **A haftarah-only special Shabbat (the 7 `ref:null` entries) no longer "replaces the maftir": chip tip + lookup line take `_haftarah` keys.** | headless, clock fixed: Machar Chodesh ×2 vs Chanukah 1, EN + HE.
-
-- [x] 2026-10-10 | `b3e91897` `8eee6d69` | torah_trainer.html | (after S493, maintainer request) **Maftir in the Reading picker; Translit / Translation toggles on the projector bar.** | headless: Chant seeks Bereshit-7 to 6:5; Triennial = triennial.json; fullscreen toggles in step, keyboard, reload.
-
-- [x] 2026-10-10 | (S493 close-out) | branch/deploy note | **S493 = P on the Torah Trainer + 4 fixes, PR #320 continued.** No drift (main `fee5fe05`, keep-alive #27 green, delete-account source = repo); sw v973→v974; no FM bump (no FM change); no gate; all seven smokes on the module fix; traps 228–231 (findings S493).
-
-- [x] 2026-10-10 | `c36f7a48` `c57f0b79` `dcfdcf16` `31ab260e` | dictionary ×2, js/ivrit-saves.js + smoke-sync + docs, trope | (S493) **A slow first visit loads the word list; a stale tab hidden and shown again never sends its older settings (torah, trope; smoke-sync D37); Shoresh fits a 320px phone; trope's Hebrew labels untracked.** | findings S493.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-13 | **S498** | iters: 5 | tools: contact ×2, resources, flash, generator, dictionary, FM ×2, torah, trope | patterns fixed: busy-disabled (NEW) ×2, count-noun ×5 | pass run: H | SW: v982→v983
 
 - 2026-10-12 | **S497** | iters: 5 | tools: dashboard ×2, flash | patterns fixed: dark-palette, count-noun (NEW) | pass run: I | SW: v981→v982
 
@@ -374,11 +370,9 @@ _(none)_
 
 - 2026-10-08 | **S479** | iters: 5 | tools: trope ×2, dictionary, torah | patterns fixed: — | pass run: G | SW: v959→v960
 
-- 2026-10-08 | **S478** | iters: 5 | tools: privacy ×2, contact ×2, i18n.js, +6 headers | patterns fixed: latin-tracking ×1, header-gate (NEW) ×8 | pass run: M | SW: v958→v959
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S497 (2026-10-12):** dashboard, flash S497 · dictionary S496 · torah, privacy S495 · terms, trope, generator, 404, scripts S494 · saves S493 · FM S492 · resources S491 · contact S487 · index S483 · account, i18n.js S478 · pwa S472.
+- **Snapshot S498 (2026-10-13):** contact, resources, flash, generator, dictionary, FM, torah, trope S498 · dashboard S497 · privacy S495 · terms, 404, scripts S494 · saves S493 · index S483 · account, i18n.js S478 · pwa S472.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -386,7 +380,9 @@ _(none)_
 
 - **`dark-palette-on-the-element`** (NEW S495 G; `.hol-ico` FIXED; `.fx-*` FIXED `e5b3dc47`; open: none): ACTIVE, streak 0. Detection: findings S495.
 
-- **`count-noun-without-a-one-form`** (NEW S497 I; bulk edit ×3 FIXED `d438f151`; open: FM fidelity): ACTIVE, streak 0. Detection: archive.
+- **`count-noun-without-a-one-form`** (NEW S497 I; bulk edit ×3 `d438f151`; S498 FM fidelity ×5 FIXED `fc56d212`; open: `{max} units`): ACTIVE, streak 0. Detection: archive; S498 widens it to any `{placeholder} <noun>s`.
+
+- **`busy-disabled-button-drops-focus`** (NEW S498 H; contact + resources FIXED `68adddee`; 6 suspects unswept: FM, dashboard, generator PDF, torah retry, trope ×2): ACTIVE, streak 0. A handler sets `.disabled = true` on the pressed control before an `await`, so focus falls to …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`hebrew-faux-italic`** (NEW S494 M; gate 3: a `he` cell's `<em>` is `<strong>`, `c4e0b86c` ×4; open: 13 CSS italics): ACTIVE, streak 0. Detection: `m494/italcensus.mjs`.
 
@@ -736,10 +732,10 @@ _(none)_
 
 - L SEO & discoverability audit: 2026-10-09 (**S490 — 26th L on `4326086a..5f9b27c0` (78 commits): `l490/` (20 arms), 21/21 plants fired, tree 0; crawler text moved on 3 pages, each a verified loop fix; FAQ twins 8/8; generators current. CLEAN: 0 findings.**)
 
-- H teacher walkthrough / paper-cuts (one tool): 2026-10-08 (**S482 — torah (S336 →): 4 lessons, EN + HE, phone. FOUND 4, FIXED 2 (+2 dictionary). H-next: contact (S350).**)
+- H teacher walkthrough / paper-cuts (one tool): 2026-10-13 (**S498 — contact (S350 →, 21 commits): 5 lessons by real clicks against stand-in Web3Forms + hCaptcha (a bug report from Flash Cards, keyboard + every failure path, donate, phones, live switch / back / reload). FOUND 3, FIXED 3 (+ resources, FM). H-next: generator (S363).**)
 
 - E freshness/site-health: 2026-10-09 (**S489 — 38th E on `c5bfca3c..7663499a` (78 commits, 34 files): 15 static arms, docids, runtime CSP 34 cells, generators + smokes; plants 19/19 + 17/17 (findings S489). CLEAN: 0 findings.**)
 
 - F cross-tool consistency: 2026-10-09 (**S484 — 36th F, the toast contract on all 8 carriers (5th look, S111 →): 24 cells + reduce, width, bars; plants 4/4. FOUND 4, FIXED 3 (+ FM kerning). F-next: the tabs / segmented-control keyboard contract (never swept).**)
 
-**Next session (S498):** **BRANCH/PR: #325 open → continue; merged → restart from `origin/main`.** `sw.js` **v982**, FM **5.59**. ⚑ Stalest: H (S482), C (S483), F (S484); O blocked. ⚑ Take first: FM fidelity plurals. ⚑ Untaken: 13 CSS italics; HE demo message (gate 2). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.
+**Next session (S499):** **BRANCH/PR: #325 open → continue; merged → restart from `origin/main`.** `sw.js` **v983**, FM **5.59**. ⚑ Stalest: C (S483), F (S484), B (S487); O blocked. ⚑ Take first: the 6 `busy-disabled` suspects (pattern row). ⚑ Untaken: `{max} units`; 13 CSS italics; HE demo message (gate 2). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.
