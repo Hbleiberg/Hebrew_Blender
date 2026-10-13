@@ -2643,6 +2643,11 @@ function buildPhraseCard(m, set, row, forPrint) {
   he.setAttribute('lang', 'he');
   he.dir = 'rtl';
   he.textContent = row.he;
+  if (!forPrint) {   // each card is a heading named "row number + its Hebrew", so a screen reader can jump card to card (as the Learn cards)
+    num.id = 'tuPhNum-' + m + '-' + row.n; he.id = 'tuPhHe-' + m + '-' + row.n;
+    he.setAttribute('role', 'heading'); he.setAttribute('aria-level', '2');
+    he.setAttribute('aria-labelledby', num.id + ' ' + he.id);
+  }
   head.appendChild(he);
   if (row.tags.includes('aliyah-end')) {   // a closing row: the tag names what it ends, as its group's title does
     const tag = document.createElement('span'), ck = closingTitleKey(m);
