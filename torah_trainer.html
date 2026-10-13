@@ -1592,6 +1592,10 @@ body.dark .font-opt.active { background:rgba(224,168,50,0.16); border-color:var(
    (S63); it resolves to var(--gold) in dark, where the body.dark rule below wins anyway. */
 .font-opt.active .font-opt-preview { color:var(--gold-text); }
 body.dark .font-opt.active .font-opt-preview { color:var(--gold-light); }
+/* The [DEFAULT] tag: --muted measured 3.71:1 on the dark active plate, under 4.5 for 9.9px text; the dark value is the
+   generator's and dictionary's. */
+.font-opt-default { font-size:0.62rem; color:var(--muted); font-weight:400; }
+body.dark .font-opt-default { color:#adb6c9; }
 .font-opt-info { display:flex; flex-direction:column; gap:0; width:100%; align-items:center; }
 /* Tile type pair converged across the four pickers (generator, dictionary, torah, trope): the name at the
    suite's 11.2px floor, the credit line one step under it at 0.62rem (was 8.64px). (S322 Pass M) */
@@ -8108,7 +8112,7 @@ function initFontSelector() {
       btn.innerHTML =
         `<span class="font-opt-preview" lang="he" style="font-family:${font.family};">אֶרֶץ</span>` +
         `<span class="font-opt-info">` +
-          `<span class="font-opt-name">${esc(font.name)}${isDefault ? ' <span style="font-size:0.62rem;color:var(--muted);font-weight:400;">' + esc(I18n.t('shared.fonts.default_marker')) + '</span>' : ''}</span>` +
+          `<span class="font-opt-name">${esc(font.name)}${isDefault ? ' <span class="font-opt-default">' + esc(I18n.t('shared.fonts.default_marker')) + '</span>' : ''}</span>` +
           attrHTML +
         `</span>`;
       btn.onclick = () => setHebFont(font.name);

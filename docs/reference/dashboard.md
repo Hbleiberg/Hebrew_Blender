@@ -76,9 +76,9 @@ Builds the font picker UI inside `#fontOptions`. Groups fonts under section head
 - A preview span styled with `font.family` displaying `אֶרֶץ`
 - The font name
 
-Frank Ruhl Libre is the default font (`settings.hebFont` default). Its button appends `[DEFAULT]` in small muted text after the name — same pattern as the generator:
+Frank Ruhl Libre is the default font (`settings.hebFont` default). Its button appends the `shared.fonts.default_marker` tag (`[DEFAULT]`) in small muted text after the name, as a `.font-opt-default` span — the generator's and dictionary's class, whose dark rule (`#adb6c9`) keeps it readable on the dark active plate, where `--muted` is not (the Torah Trainer's picker carries the same class):
 ```js
-`${font.name}${font.name === 'Frank Ruhl Libre' ? ' <span style="font-size:0.6rem;color:var(--muted);font-weight:400;">[DEFAULT]</span>' : ''}`
+`${font.name}${font.name === cfg.defaultName ? ' <span class="font-opt-default">' + ivEsc(I18n.t('shared.fonts.default_marker')) + '</span>' : ''}`
 ```
 
 ### `setHebFont(name)`

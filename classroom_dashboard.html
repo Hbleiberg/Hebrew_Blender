@@ -1656,6 +1656,10 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
   .font-opt.active .font-opt-preview { color: var(--gold-text); }
   body.dark .font-opt.active .font-opt-preview { color: var(--gold-light); }
   .font-opt-name { font-size: 0.78rem; font-weight: 600; color: var(--text); }
+  /* The [DEFAULT] tag: --muted measured 3.71:1 on the dark active plate, under 4.5 for 9.6px text; the dark value is
+     the generator's and dictionary's. */
+  .font-opt-default { font-size: 0.6rem; color: var(--muted); font-weight: 400; }
+  body.dark .font-opt-default { color: #adb6c9; }
 
   /* ───── Nikkud color pickers ───── */
   .color-pick-list { display: flex; flex-direction: column; gap: 3px; margin-top: 6px; }
@@ -11477,7 +11481,7 @@ async function onUploadEngFontPick(input){
         btn.dataset.fontName = font.name;
         btn.innerHTML =
           `<span class="font-opt-preview" lang="he" style="font-family:${font.family};">אֶרֶץ</span>` +
-          `<span class="font-opt-name">${ivEsc(font.name)}${font.name === cfg.defaultName ? ' <span style="font-size:0.6rem;color:var(--muted);font-weight:400;">' + ivEsc(I18n.t('shared.fonts.default_marker')) + '</span>' : ''}</span>`;
+          `<span class="font-opt-name">${ivEsc(font.name)}${font.name === cfg.defaultName ? ' <span class="font-opt-default">' + ivEsc(I18n.t('shared.fonts.default_marker')) + '</span>' : ''}</span>`;
         btn.onclick = () => applyFontChoice(cfg, font.name);
         loadHebFont(font);
         opts.appendChild(btn);
