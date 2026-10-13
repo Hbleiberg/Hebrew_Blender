@@ -1133,6 +1133,12 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
   .tt-set-title:focus-visible { outline:2px solid var(--focus-ring); outline-offset:2px; }
   .tt-set-title .beta-tag { font-size:0.58rem; padding:0 4px; }
   .tt-set-sub { font-size:0.66rem; color:var(--muted); font-weight:700; letter-spacing:0.06em; text-transform:uppercase; margin-block:12px 6px; padding-block-start:12px; border-block-start:1px solid var(--border); }
+  /* Hebrew has no capitals, and tracking pulls its letters apart: the drawer's and its windows' small labels set it plain
+     (the suite's Hebrew-label rule). Drawer sub-heads and title, Saved Schedules, the font picker's heads, the week
+     editor's day heads and day menu, Bulk preset edit's group labels, Edit layout's zone names. */
+  html[lang="he"] .tt-set-sub, html[lang="he"] .settings-header h2, html[lang="he"] .sub-section-hdr, html[lang="he"] .font-section-hdr,
+  html[lang="he"] .swm-headcell, html[lang="he"] .swm-menu-title, html[lang="he"] .bpe-mgroup-lbl,
+  html[lang="he"] body.layout-edit .zone-col::before, html[lang="he"] body.layout-edit #videoBelowSlot::before { letter-spacing: normal; text-transform: none; }
   .tt-set-note { font-size:0.72rem; color:var(--muted); line-height:1.4; }
   .tt-set details > summary:hover { text-decoration: underline; }   /* FAQ / How-To rows: the Font Maker footer's hover idiom — inline styles carry no hover */
 
