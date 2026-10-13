@@ -1856,7 +1856,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   <div class="panel" id="panelCount">
     <h3 class="panel-title" data-i18n="flashcards.count.panel_title">Card Count</h3>
     <div class="panel-body">
-      <div class="count-grid" id="countGrid"></div>
+      <div class="count-grid" id="countGrid" role="group" aria-label="Card Count" data-i18n-aria-label="flashcards.count.panel_title"></div>
     </div>
   </div>
 
@@ -1873,7 +1873,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         <label class="switch"><input type="checkbox" id="dageshTavToggle"><span class="slider"></span></label>
         <span class="label has-tip" data-tip="Add the Tav with dagesh ('Tav') versus without ('Sav')." data-i18n-tip="flashcards.letters.dagesh_tav_tip" data-i18n="flashcards.letters.dagesh_tav_label">Dagesh Tav / Sav</span>
       </div>
-      <div class="letter-grid" id="letterGrid"></div>
+      <div class="letter-grid" id="letterGrid" role="group" aria-label="Letter Select" data-i18n-aria-label="flashcards.letters.panel_title"></div>
     </div>
   </div>
 
@@ -1886,7 +1886,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         <button class="btn sm" id="vowelMain" data-i18n="flashcards.vowels.main">Main</button>
         <button class="btn sm" id="vowelNone" data-i18n="flashcards.vowels.none">None</button>
       </div>
-      <div id="vowelHost"></div>
+      <div id="vowelHost" role="group" aria-label="Vowel Select" data-i18n-aria-label="flashcards.vowels.panel_title"></div>
       <div class="row" id="vavRow" style="display:none">
         <label class="switch"><input type="checkbox" id="vavAsLetterToggle" checked><span class="slider"></span></label>
         <span class="label has-tip" data-tip="When using cholam-vav (וֹ) or shuruk (וּ), treat the vav as the letter itself rather than a separate consonant." data-i18n-tip="flashcards.vowels.count_vav_tip" data-i18n-html="flashcards.vowels.count_vav_label">Count <span style="font-family:var(--heb-font);direction:rtl;" lang="he" dir="rtl">וֹ/וּ</span> as a letter</span>
