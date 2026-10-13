@@ -4429,7 +4429,15 @@ function _a11yDecorateTile(tile) {
   // Synced here rather than at the seven build sites so the class and the ARIA cannot drift apart.
   tile.setAttribute('aria-pressed', tile.classList.contains('sel') ? 'true' : 'false');
 }
-function a11yTiles(grid) { if (grid) grid.querySelectorAll('.ltile').forEach(_a11yDecorateTile); }
+function a11yTiles(grid) {
+  if (!grid) return;
+  grid.querySelectorAll('.ltile').forEach(_a11yDecorateTile);
+  // The tiles are pressed buttons answering one question ("which glyph?"): name the grid as a group by its panel's
+  // title, read from the element carrying the title's data-i18n (applyI18n translates it before renderGrids runs; the
+  // title's ▾ is generated content, which textContent leaves out).
+  const pnl = grid.closest('.panel'), t = pnl && pnl.querySelector('.panel-title[data-i18n], .panel-title [data-i18n]');
+  if (t) { grid.setAttribute('role', 'group'); grid.setAttribute('aria-label', t.textContent.trim()); }
+}
 
 /* Roving tabindex + aria-selected for a tablist, derived from each tab's existing .active class. */
 function _syncTablist(listEl) {
@@ -17175,7 +17183,7 @@ function renderAnchorStageBelow(SB, l) {
 function inputModeBlock() {
   const svg = svgUploadOn();
   return `
-    <div class="mode-toggle mode-toggle-stack">
+    <div class="mode-toggle mode-toggle-stack" role="group" aria-label="${esc(I18n.t('fontmaker.panels.add_letters'))}">
       <button class="mode-btn ${project.inputMode==='single'?'active':''}" aria-pressed="${project.inputMode==='single'}" id="modeSingle" onclick="setInputMode('single')">${I18n.t('fontmaker.panels.input_single')}</button>
       <button class="mode-btn ${project.inputMode==='combined'?'active':''}" aria-pressed="${project.inputMode==='combined'}" id="modeCombined" onclick="setInputMode('combined')">${I18n.t('fontmaker.panels.input_combined')}</button>
       ${ svg ? '' : `<button class="mode-btn ${project.inputMode==='font'?'active':''}" aria-pressed="${project.inputMode==='font'}" id="modeFont" onclick="setInputMode('font')">${I18n.t('fontmaker.panels.input_font')}</button>` }
