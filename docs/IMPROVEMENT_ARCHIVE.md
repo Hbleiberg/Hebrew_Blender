@@ -92587,3 +92587,29 @@ _(prior — S502 pointer:)_ **BRANCH/PR: #325 open → continue; merged → rest
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 _(prior — S503 pointer:)_ **BRANCH/PR: `claude/jolly-curie-4gtmai` draft PR open → continue; merged → restart from `origin/main`.** `sw.js` **v990**, FM **5.59**. ⚑ Stalest: E, L, K; O blocked. ⚑ First: S502 pressed rows + flash/torah font heads. ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes.
+
+
+<!-- archived by compact-ledger at the S505 boundary, 2026-10-13 -->
+## Compaction (S505, 2026-10-13) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-13 | (S499 close-out) | branch/deploy note | **S499 = C + 4 fixes, PR #325.** No drift; sw v983→v984; no FM bump; no gate.
+
+- [x] 2026-10-13 | `55891185` `810acfae` `1ca449db` `80c0a440` | dashboard ×2, generator, torah | (S499) **Drawer options scroll in; bulk spoilers/links readable; PDF + Try again keep focus.** | findings S499.
+
+### from Per-session log (one line per session)
+
+- 2026-10-09 | **S484** | iters: 5 | tools: 4 shared-block carriers ×2, torah, trope, resources, FM ×2 | patterns fixed: toast-duration (NEW) ×2, centred-fixed-box (NEW) ×7, translated-key-exists ×1 | pass run: F | SW: v964→v965
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`count-noun-without-a-one-form`** (NEW S497 I; bulk edit ×3 `d438f151`; S498 FM fidelity ×5 FIXED `fc56d212`; S501 FM `{max} units` + status/banner counts FIXED `c6db7170` via a `{units}` phrase; S504 dashboard `bulk_skipped` FIXED `13c10bf3`; open: none known): ACTIVE, streak 0. Detection: archive; S498 widens it to any …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- **`latin-tracking-on-hebrew-labels`** (gate 3: drop suite-wide; S502 dashboard + dictionary; S503 flash; S504 torah `8e48daa5`, with a reading loaded; open: beta badges, flash report `th`): ACTIVE, streak 0. Detection: `a502/dash-track.mjs`; torah `l504/torahtrack2.mjs` (Sefaria stubbed, every layout + tab). …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- **`radio-set-without-a-question`** (S501 `8d667fb3`; S502 `c134c65d`; S504 flash `b38c1f68`, FM `7a663826`): ACTIVE, streak 0. Detection: static walk + runtime `unnamedGroups` (`a502/probes.js`); FM with every panel forced open (`l504/fmcensus.mjs`). Name by `data-i18n-aria-label` or the title element's text, never `aria-labelledby` a `.panel-title` (its ▾ joins the name). Open: S502 candidate, `videoLayout`, pills, `.ivrit` toggle. …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+_(prior — S504 pointer:)_ **BRANCH/PR: #327 open → continue; merged → restart from `origin/main`.** `sw.js` **v991**, FM **5.59**. ⚑ Stalest: L, K, N; O blocked. ⚑ First: S502 pressed rows; torah font heads. ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; TT Chant label (gate 2).
