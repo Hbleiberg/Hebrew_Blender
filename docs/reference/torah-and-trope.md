@@ -371,7 +371,7 @@ to Learn), and a caller that opens something inside the new tab (`openLearnFor`)
   39 Shir HaShirim / Ruth / Kohelet + the end-of-book 39a, 38 Eicha), for a staff of a whole reading. The Torah
   and High Holiday charts are the teacher's (Avery/Binder); the other four are *The Art of Cantillation, Vol. 2*
   (Portnoy and Wolff, UAHC Press, 2001), appendices D–G, transcribed in `docs/tropepatterns.md` sections H–K.
-  The Phrases tab fetches it (`?v=3`, in `docs/reference/ops.md`'s list — the Torah Trainer's Trope staff
+  The Phrases tab fetches it (`?v=4`, in `docs/reference/ops.md`'s list — the Torah Trainer's Trope staff
   fetches the same URL); bump that with every rebuild that changes it. The tutor draws the melody the bar
   chooses (`phraseSet()`, any of the six); `PHRASE_GROUPS` orders each chart's rows into its clause groups (a
   row the table does not name joins *More phrases*).
@@ -906,7 +906,7 @@ never a practice link (`LINK_DISPLAY` says how a reading looks, never how it sou
   index, one trailing end-of-last-word value), and `data/totaltorah/manifest.json`: a top-level `credit` block (names,
   URLs, the permission, each source video's title and upload date) beside one entry per verse, keyed `"Genesis 1:1"` —
   `{ file, dur, video, parsha, year, aliyah, verified, timings, timingsVerified }`. The manifest and the timings are
-  fetched with `TT_DATA_V` (`?v=1`; `/data/` is cache-first and exact-URL keyed); the audio is left to the network by
+  fetched with `TT_DATA_V` (`?v=2`; `/data/` is cache-first and exact-URL keyed); the audio is left to the network by
   `sw.js` (a Range request must never be answered from the cache).
 - **Verified or nothing.** `ttEntryFor(vk)` returns an entry only while it is `verified: true`, and its timings count
   only while `timingsVerified: true` — the maintainer flips both by listening (`build-totaltorah-audio.mjs verify`),

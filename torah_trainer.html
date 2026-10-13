@@ -3083,7 +3083,7 @@ const POCKET_TIMINGS_V = '?v=1';   // cache-buster for the timings corpus — bu
 // ?reader=totaltorah until TOTALTORAH_PUBLIC flips (docs/reference/torah-and-trope.md → Recording sources).
 const TOTALTORAH_PUBLIC = false;
 const TT_BASE = 'data/totaltorah/';
-const TT_DATA_V = '?v=1';   // cache-buster for the manifest and the timings files (the /data/ cache is exact-URL keyed)
+const TT_DATA_V = '?v=2';   // cache-buster for the manifest and the timings files (the /data/ cache is exact-URL keyed)
 const TT_CREDIT_URL = 'https://www.adasisrael.org/trope';
 const TT_VIDEO_RE = /^[\w-]{11}$/;   // a video id goes into an href — validated before it does
 const TORAH_BOOK_CHAPTERS = { Genesis:50, Exodus:40, Leviticus:27, Numbers:36, Deuteronomy:34 };
@@ -5507,7 +5507,7 @@ const STAFF_MINOR_SETS = new Set(['haftarah', 'eicha']);
 let STAFF_CTX = {};             // per melody: tropeContextsOf(set)
 let _staffLoad = null;          // the in-flight fetch, so two renders start one load
 let _staffFailed = false;       // the last load failed (the header chip offers Try again)
-const STAFF_PHRASES_URL = 'data/trope/trope_phrases.json?v=3';   // the ?v= the Trope Tutor fetches — bump both together (ops.md)
+const STAFF_PHRASES_URL = 'data/trope/trope_phrases.json?v=4';   // the ?v= the Trope Tutor fetches — bump both together (ops.md)
 // Verses printed with two sets of cantillation marks at once (the census leaves them out too): words only.
 const STAFF_DOUBLE_CANT = {
   Genesis: new Set(['35:22']),

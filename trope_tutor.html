@@ -1805,7 +1805,7 @@ async function loadData() {
       // matched by exact URL) — bump it whenever the committed index is rebuilt.
       fetch('data/trope/trope_index.json?v=2'),
       fetch('data/pockettorah/manifest.json?v=1'),
-      fetch('data/trope/trope_phrases.json?v=3').catch(() => null),   // the Phrases tab; ?v= bumps with the file
+      fetch('data/trope/trope_phrases.json?v=4').catch(() => null),   // the Phrases tab; ?v= bumps with the file
       fetch('data/trope/trope_phrase_examples.json?v=1').catch(() => null),
       // the six motif files (MELODY_INFO.file carries each one's ?v=; the bump rule applies to every one)
       ...MELODY_INFO.map((info) => fetch(info.file).catch(() => null)),
