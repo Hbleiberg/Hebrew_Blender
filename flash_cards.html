@@ -145,6 +145,10 @@ footer details > summary:hover { text-decoration: underline; }   /* FAQ / How-To
 /* The Hebrew UI's footer heads (FAQ, How To, About, Related Hebrew Tools): their inline 0.08em caps are English small
    caps; Hebrew has no capitals, and the tracking only spaced its letters apart. !important outranks the inline style. */
 html[lang="he"] footer [style*="letter-spacing:0.08em"] { letter-spacing: normal !important; text-transform: none !important; }
+/* The same for the tool's own small labels: the font picker's heads, the card screen's count, stat labels, tap hint,
+   back-side question and Skipped header, the card-sheet menu's title, and the results score. */
+html[lang="he"] .font-section-hdr, html[lang="he"] .card-meta, html[lang="he"] .stat-label, html[lang="he"] .fc-hint,
+html[lang="he"] .fc-back-q, html[lang="he"] .fc-skip-header, html[lang="he"] .sheet-menu-title, html[lang="he"] .results-hero .frac { letter-spacing: normal; text-transform: none; }
 /* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404 (docs/reference/shared-components.md → Header icons).
    The header controls and the in-page control buttons (play, pause, stop, reset, retry, loop, sound) carry inline
    SVGs from one shared set (.hi-*); ink is currentColor, so each button's own colour applies. .hi-sm is the 13px
