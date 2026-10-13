@@ -2239,6 +2239,9 @@ function openSubmitFont(pf) {
       }
       return;
     }
+    // Disabling the focused button throws its focus to <body>, behind the window: read it first, and hand it back
+    // when the send lands, unless the teacher has moved on or closed the window meanwhile (the fpNav rule above).
+    const hadFocus = document.activeElement === btn;
     btn.disabled = true;
     statusEl.style.color = 'var(--muted)';
     statusEl.textContent = I18n.t('resources.suggest.sending');
@@ -2274,6 +2277,7 @@ function openSubmitFont(pf) {
       statusEl.innerHTML = I18n.t('resources.suggest.error_network', {email: _mail});
     } finally {
       btn.disabled = false;
+      if (hadFocus && backdrop.classList.contains('open') && (!document.activeElement || document.activeElement === document.body)) btn.focus();
     }
   });
 })();

@@ -478,6 +478,9 @@ form.addEventListener('submit', async function(e){
     });
     return;
   }
+  // Disabling the focused button throws its focus to <body>, so a keyboard teacher's next Tab started over at the
+  // top of the page: read it first, and hand it back when the send lands unless they have moved on meanwhile.
+  const hadFocus = document.activeElement === btn;
   btn.disabled = true;
   statusEl.style.color = 'var(--muted)';
   showStatus(() => { statusEl.textContent = I18n.t('contact.form.sending'); });
@@ -509,6 +512,7 @@ form.addEventListener('submit', async function(e){
     showStatus(() => { statusEl.innerHTML = I18n.t('contact.form.error_network', { email: emailLink() }); });
   } finally {
     btn.disabled = false;
+    if (hadFocus && (!document.activeElement || document.activeElement === document.body)) btn.focus();
   }
 });
 
