@@ -736,4 +736,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-13 (**S500 — 37th F, the tabs / segmented-control keyboard contract (never swept): 9 strips + 6 toggle groups, real keys, EN/HE; plants 3/3. FOUND 4, FIXED 3 (+ Current Location). F-next: dialog Tab traps.**)
 
-**Next session (S502):** **BRANCH/PR: #325 open → continue; merged → restart from `origin/main`.** `sw.js` **v987**, FM **5.59**. ⚑ Stalest: A, E, L; O blocked. ⚑ First: week tabpanel + 2 unnamed groups (S500 F). ⚑ Untaken: CSS italics; toast `role=status`; HE demo (gate 2). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes.
+**Next session (S502):** **BRANCH/PR: #325 open → continue; merged → restart from `origin/main`.** `sw.js` **v988**, FM **5.59**. ⚑ Stalest: A, E, L; O blocked. ⚑ First: week tabpanel + 2 unnamed groups (S500 F). ⚑ Untaken: CSS italics; toast `role=status`; HE demo (gate 2). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes.

@@ -8012,13 +8012,11 @@ function renderCurrentCard() {
     if (d) el.setAttribute('dir', d); else el.removeAttribute('dir');
   });
 
-  // Audio speak buttons: the back's whenever audio is on, the front's only when that face shows Hebrew script — on an
-  // English, number, emoji, colour or transliteration front the word it speaks is the answer, and so is a bare letter
-  // (speech reads its name). Shown, each takes .hi-btn's inline-flex back: a 'block' here lost the icon's 5px gap.
-  const frontHeb = !nameLetterMode && /[\u05D0-\u05EA]/.test(front.textContent);
-  [['fcSpeakBtnFront', frontHeb], ['fcSpeakBtn', true]].forEach(([id, ok]) => {
+  // Audio speak buttons: one on each face whenever audio is on, whatever the face shows (the teacher's switch decides,
+  // not the mode). Shown, each takes .hi-btn's inline-flex back: a 'block' here lost the icon's 5px gap.
+  ['fcSpeakBtnFront', 'fcSpeakBtn'].forEach(id => {
     const b = document.getElementById(id);
-    b.style.display = audioEnabled && ok ? '' : 'none';
+    b.style.display = audioEnabled ? '' : 'none';
     b.onclick = (e) => { e.stopPropagation(); speakWord(card.heb); };
   });
   syncSpeakFace();
