@@ -1318,6 +1318,10 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
     background: var(--warm-gray);
     border-radius: 5px;
     padding: 3px;
+    /* Anchors the hidden radios below to their own group (the Torah Trainer's rule). Without it they anchored to the
+       fixed drawer and stayed put while its body scrolled, so a Tab that reached one scrolled nothing into view: a
+       Shift+Tab up a tab, or a Tab that wrapped back into a scrolled one, left the focused option off-screen. */
+    position: relative;
   }
   body.dark .radio-group { background: #2a3349; }
   /* Visually hidden but focusable (the Torah Trainer's and Trope Tutor's rule): display:none took every
