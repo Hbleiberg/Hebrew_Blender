@@ -1491,6 +1491,8 @@
   "flashcards.results.save_button": "Save Results",
   "flashcards.results.save_button_done": "✓ Saved to {name}",
   "flashcards.results.save_deck": "📌 Save This Card Set as a Preset",
+  "flashcards.results.share_link": "Share Link to This Card Set",
+  "flashcards.results.share_link_copied": "Link copied. Whoever opens it gets a new drill with these same settings.",
   "flashcards.results.summary.one": "Best streak: {streak} 🔥 · Accuracy {pct}% · {count} card answered",
   "flashcards.results.summary.other": "Best streak: {streak} 🔥 · Accuracy {pct}% · {count} cards answered",
   "flashcards.results.time": "Time: {time}",

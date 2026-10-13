@@ -1394,6 +1394,8 @@ flashcards.results.save_button,Save Results,שמור תוצאות,results action
 flashcards.results.save_deck,📌 Save This Card Set as a Preset,📌 שמרו את סדרת הכרטיסים כהגדרה שמורה,results-screen button that reveals the save-as-preset row,leading-emoji; REVIEW: HE draft
 flashcards.results.deck_saved,"Saved as ""{name}"". It's in your Presets list.","נשמר בשם ""{name}"". נמצא ברשימת ההגדרות השמורות.",inline note + toast after saving the card set as a preset,has {name}; REVIEW: HE draft
 flashcards.results.save_button_done,✓ Saved to {name},✓ נשמר אל {name},save-results confirmation label,leading-emoji
+flashcards.results.share_link,Share Link to This Card Set,שתפו קישור לסדרת הכרטיסים,results action button: copies a ?s= link that opens a fresh drill with the same settings (a new shuffle; not these exact cards),svg-icon-in-markup; REVIEW: HE draft
+flashcards.results.share_link_copied,Link copied. Whoever opens it gets a new drill with these same settings.,הקישור הועתק. מי שיפתח אותו יקבל תרגול חדש עם אותן הגדרות.,toast after copying the results-screen share link,REVIEW: HE draft
 flashcards.results.summary.one,Best streak: {streak} 🔥 · Accuracy {pct}% · {count} card answered,רצף שיא: {streak} 🔥 · דיוק {pct}% · כרטיס {count} נענה,results end-of-session summary,plural; leading-emoji
 flashcards.results.summary.other,Best streak: {streak} 🔥 · Accuracy {pct}% · {count} cards answered,רצף שיא: {streak} 🔥 · דיוק {pct}% · {count} כרטיסים נענו,results end-of-session summary,plural; leading-emoji
 flashcards.results.time,Time: {time},זמן: {time},results time (track mode),

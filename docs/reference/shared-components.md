@@ -664,7 +664,10 @@ Writing a link **never navigates**; loading a link **never clobbers** the user's
   `hebrew_blend_generator.html` (`shareB64Encode`, auto-restores on load) both write `?s=` **and** mirror
   it into the address bar with `history.replaceState`. `flash_cards.html` ships **both** mechanisms — the
   paste-in teacher share code (`shareCodeEncode`/`shareCodeDecode`) **and** a `?s=` URL twin
-  (`copyShareLink`) read back at init; it is NOT paste-code-only. Both carry the whole
+  (`copyShareLink`) read back at init; it is NOT paste-code-only. The same link is also offered on the
+  results screen (`#shareDeckBtn`, `copyDeckShareLink`): settings, not the shuffled cards, so it opens a
+  fresh drill on the same rules, and it hides under Save-as-Preset's rule (a ladder level, or a
+  Mistakes / Weak-cards deck, which no setting describes). Both carry the whole
   `getSettings()` except the sender's own **Include my settings** switch (`shareIncludeLook`, on by
   default), which never travels. With the switch off they also leave out `SHARE_LOOK_KEYS` (both
   fonts and the vowel color coding). Both receiving paths run `withOwnLook()`: a code that names

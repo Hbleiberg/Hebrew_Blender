@@ -1240,6 +1240,7 @@ body.dark .ladder-strip-line { color: var(--gold-light); }
 #saveDeckBtn { padding: 14px; font-size: 1rem; font-weight: 600; }   /* Save as preset is the first ghost of the same results stack (S450: it sat at 38px / 500 / 15.2px above four 49px / 600 / 16px) */
 .results-savedeck { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
 .results-savedeck[hidden] { display: none; } /* its own flex beats the UA hidden rule too: without this the ladder / Mistakes hide never showed */
+.results-actions .btn[hidden] { display: none; } /* the share button hides under Save-as-Preset's rule; .btn's own display beats the UA hidden rule */
 .results-savedeck .preset-row[hidden] { display: none; } /* .preset-row's flex beats the UA hidden rule */
 
 /* ============== GUIDED TOUR (ported from hebrew_blend_generator.html) ============== */
@@ -2321,6 +2322,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <button class="btn gold" id="mistakesBtn" data-i18n="flashcards.results.practice_mistakes">Practice This Drill's Mistakes</button>
     <button class="btn ghost hi-btn" id="saveResultsBtn"><svg class="hi hi-sm hi-save" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 6.2A2.2 2.2 0 0 1 6.7 4h9.4L20 7.9v9.9a2.2 2.2 0 0 1-2.2 2.2H6.7a2.2 2.2 0 0 1-2.2-2.2z"/><path d="M8 4v5.2h7V4"/><rect x="8" y="13.4" width="8" height="6.6" rx="1.2"/></svg><span class="hi-lbl" data-i18n="flashcards.results.save_button">Save Results</span></button>
     <button class="btn ghost hi-btn" id="printDeckBtn" type="button"><svg class="hi hi-sm hi-print" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9.2V3.6h10v5.6"/><path d="M7 9.2H5.6A2.1 2.1 0 0 0 3.5 11.3v3.6a2.1 2.1 0 0 0 2.1 2.1H7"/><path d="M17 9.2h1.4a2.1 2.1 0 0 1 2.1 2.1v3.6a2.1 2.1 0 0 1-2.1 2.1H17"/><rect x="7" y="14.2" width="10" height="6.2" rx="1.2"/><circle cx="17.6" cy="12" r="1" fill="currentColor" stroke="none"/></svg><span class="hi-lbl" data-i18n="flashcards.results.print_deck">Print This Card Set</span></button>
+    <button class="btn ghost hi-btn" id="shareDeckBtn" type="button"><svg class="hi hi-sm hi-link" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 13.7a4 4 0 0 0 5.7 0l3-3a4 4 0 1 0-5.7-5.7l-1.7 1.7"/><path d="M13.7 10.3a4 4 0 0 0-5.7 0l-3 3a4 4 0 1 0 5.7 5.7l1.7-1.7"/></svg><span class="hi-lbl" data-i18n="flashcards.results.share_link">Share Link to This Card Set</span></button>
     <button class="btn ghost" id="backToSetupBtn" data-i18n="flashcards.results.return_to_options">Return to Options</button>
   </div>
 </section>
@@ -5189,17 +5191,17 @@ function generateShareCode() {
   if (!shareIncludeLook) SHARE_LOOK_KEYS.forEach(k => { delete data[k]; });
   // A "My Word Lists" code is meaningless on a device without the store, so embed the
   // resolved words inline. "All Dictionary" needs no embedding (the student fetches it).
+  let capWarn = '';
   if (data.otherModeActive && data.otherSubMode === 'words' && data.wordsSource === 'mylists') {
     const pool = resolveWordsPool();
     data.wordsInline = pool.slice(0, WORDS_SHARE_CAP).map(w => ({ w: w.word, t: w.translit || '', e: w.translation || '' }));
-    shareErr(pool.length > WORDS_SHARE_CAP
-      ? I18n.t('flashcards.share.embed_cap', { count: WORDS_SHARE_CAP, total: pool.length }) : '');
-  } else {
-    shareErr('');
+    if (pool.length > WORDS_SHARE_CAP) capWarn = I18n.t('flashcards.share.embed_cap', { count: WORDS_SHARE_CAP, total: pool.length });
   }
+  shareErr(capWarn);
   const payload = { v: 1, tool: 'FlashCards', data };
   const out = document.getElementById('shareCodeOutput');
   if (out) out.value = shareCodeEncode(payload);
+  return capWarn;   // the results screen's link shows it as a toast: #shareCodeError sits on the setup screen
 }
 // Announce a transient message to screen readers via the hidden #a11yStatus live region.
 // Mark Hebrew content lang="he" (per the suite's lang="he" chokepoint rule) so a screen reader
@@ -5245,18 +5247,27 @@ function copyShareCode() {
 // The ?s= URL twin of the paste code (house share-link convention): same payload, carried in the
 // URL with the URL-safe base64 alphabet shareCodeDecode already accepts, so a student just taps
 // the link — the ?s= init hook decodes it and auto-starts, exactly like pasting + Load.
-function copyShareLink() {
-  generateShareCode();   // fresh payload from current settings + the words-cap warning, same as Copy Code
+function copyShareLink() { _copyShareLinkFrom('copyShareLinkBtn', 'flashcards.teachertools.copy_link'); }
+// The results screen's "Share Link to This Card Set": the same link, built from the settings the drill
+// just ran on, so whoever opens it gets a fresh shuffle of the same rules, not these exact cards. Hidden
+// when no setting describes the deck (showResults, Save-as-Preset's rule).
+function copyDeckShareLink() {
+  _copyShareLinkFrom('shareDeckBtn', 'flashcards.results.share_link',
+    capWarn => showAppToast(capWarn || I18n.t('flashcards.results.share_link_copied')));
+}
+function _copyShareLinkFrom(btnId, labelKey, onCopied) {
+  const capWarn = generateShareCode();   // fresh payload from current settings + the words-cap warning, same as Copy Code
   const out = document.getElementById('shareCodeOutput');
   if (!out || !out.value) return;
   const url = location.origin + location.pathname + '?s=' + out.value.replace(/\+/g, '-').replace(/\//g, '_');
   const done = () => {
-    announce(I18n.t('flashcards.share.copied'));
-    const btn = document.getElementById('copyShareLinkBtn');
+    if (onCopied) onCopied(capWarn);   // its toast is a status region of its own
+    else announce(I18n.t('flashcards.share.copied'));
+    const btn = document.getElementById(btnId);
     if (!btn) return;
     const lbl = btn.querySelector('.hi-lbl') || btn;   // as copyShareCode: the label span, back to its own key
     lbl.textContent = I18n.t('flashcards.share.copied');
-    setTimeout(() => lbl.textContent = I18n.t('flashcards.teachertools.copy_link'), 1500);
+    setTimeout(() => lbl.textContent = I18n.t(labelKey), 1500);
   };
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(url).then(done, () => copyViaTextarea(url, done));
@@ -8329,6 +8340,9 @@ function showResults() {
     document.getElementById('saveDeckName').value = '';
     _setSaveDeckNote('');
   }
+  // Share link to this card set: the same rule, since the link carries settings too (copyDeckShareLink).
+  const shareDeck = document.getElementById('shareDeckBtn');
+  if (shareDeck) shareDeck.hidden = !!_ladderActive || !savedCardsFromSetup;
   showScreen('screenResults');
   // Land the keyboard on the score, not on BODY: the control the learner arrived from
   // (End Early / the last mark button) just vanished with the card screen. Mirrors the
@@ -8695,6 +8709,7 @@ function wireResultsScreen() {
   document.getElementById('redoBtn').addEventListener('click', redoSameSet);
   document.getElementById('mistakesBtn').addEventListener('click', practiceMistakes);
   document.getElementById('printDeckBtn').addEventListener('click', () => printCardSheet(savedCards.slice()));
+  document.getElementById('shareDeckBtn').addEventListener('click', copyDeckShareLink);
   document.getElementById('backToSetupBtn').addEventListener('click', returnToSetup);
 }
 
