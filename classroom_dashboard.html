@@ -1551,11 +1551,14 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
   .spoiler:not(.revealed):hover { background: #333; }
   .spoiler.revealed { background: rgba(0,0,0,0.08); color: inherit; }
   body.dark .spoiler.revealed { background: rgba(255,255,255,0.08); }
-  /* In the editor, always show spoiler text so teacher can read/edit it */
-  #dashEditor .spoiler { background: #c0392b33; color: inherit; cursor: text; user-select: text; }
+  /* In the editor, always show spoiler text so teacher can read/edit it. The Bulk preset edit cards are editors of the
+     same message: unnamed here (an id, to outrank the hover rule above), a card showed a spoiler as a blank black bar
+     whose words the teacher could not read while editing them, and its links in the browser's blue, 1.99:1 on the
+     dark editor. */
+  #dashEditor .spoiler, #bpeCards .bpe-editor .spoiler { background: #c0392b33; color: inherit; cursor: text; user-select: text; }
   /* Links */
-  #dashEditor a, .dash-text-display a { color: #8a6216; text-decoration: underline; cursor: pointer; }   /* darker gold: AA text contrast on cream */
-  body.dark #dashEditor a, body.dark .dash-text-display a { color: var(--gold-light); }
+  #dashEditor a, #bpeCards .bpe-editor a, .dash-text-display a { color: #8a6216; text-decoration: underline; cursor: pointer; }   /* darker gold: AA text contrast on cream */
+  body.dark #dashEditor a, body.dark #bpeCards .bpe-editor a, body.dark .dash-text-display a { color: var(--gold-light); }
   /* ── Text effects (the toolbar's Glow and Shadow) — class-carrying spans, like the spoiler ──
      Each sets its own custom property and both feed one text-shadow, so a run can wear the two at
      once, nested either way (the inner span inherits the outer's variable). Light surfaces get a
