@@ -8,13 +8,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P4 (**NEW S500 F**) | dashboard, generator, flash, contact | **Week tabs: no tabpanel; 4 `aria-pressed` groups unnamed** (findings S500). | found S500
-
-- [ ] P4 (**NEW S499 C**) | dashboard, torah, trope | **The font picker's `[DEFAULT]` tag is 3.71:1 in the dark drawer.** | found S499
-
-- [ ] P4 (**NEW S499 C**) | hebrew_blend_generator.html | **Export PDF loses its icon after one export.** | found S499
-
-- [ ] P4 (**NEW S498 — count-noun, `{max}`**) | Hebrew_Font_Maker.html | **The fidelity report's `max {max} units` reads "1 units"** when a class's worst deviation is 1 (key line, summary, status). | found S498
+- [ ] P4 (**NEW S500 F**) | dashboard, contact, `.ivrit` carriers | **Week tabs: no tabpanel; Contact pay pills + `.ivrit` mode toggle unnamed** (pills need a string; the toggle is shared markup). | found S500
 
 - [ ] P4 (**NEW S497 I — gate 2**) | classroom_dashboard.html | **A Hebrew first visit's demo message is English** (`DEFAULT_PRESET`, a `smoke-sync` canon). | found S497
 
@@ -308,6 +302,10 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-13 | (S501 close-out) | branch/deploy note | **S501 = B + 4 fixes, PR #325.** No drift (main `f1ef1a98`, keep-alive #30 green, `db/` + config unchanged since 10-01); sw v985→v986; no FM bump (fixes only); no gate.
+
+- [x] 2026-10-13 | `0053db78` `d7355d03` `c6db7170` `8d667fb3` | dashboard + torah, generator ×2, FM, flash | (S501) **`[DEFAULT]` readable in dark; PDF keeps its icon + language; "1 unit / 1 combo"; two toggle rows named.** | findings S501.
+
 - [x] 2026-10-13 | (S500 close-out) | branch/deploy note | **S500 = F + 4 fixes, PR #325.** No drift (main `f1ef1a98`, keep-alive #30 green); sw v984→v985; no FM bump (fixes only); no gate.
 
 - [x] 2026-10-13 | `1c701fc9` `f01125e2` `d0ae57e7` `82218419` | keyboard block ×4, FM, flash, dashboard | (S500) **Keyboard tabs keep focus; FM arrows mirror; weakness tabs a tablist; Current Location keeps focus.** | findings S500.
@@ -324,13 +322,11 @@ _(none)_
 
 - [x] 2026-10-12 | `e5b3dc47` `d438f151` `591a11ef` | dashboard ×2, flash | (S497) **Glow/Shadow print; Bulk edit singulars; the timer's first paint. Root-var sliders closed: under 200 ms @4×.** | findings S497.
 
-- [x] 2026-10-12 | (S496 close-out) | branch/deploy note | **S496 = D + 2 fixes + 1 micro (gate 1), PR #325.** No drift (main `f1ef1a98`, keep-alive #30); sw v980→v981; no FM bump.
-
-- [x] 2026-10-12 | `c049ab67` `8fda021d` `4c4dd3ae` | dictionary ×2, dashboard | (S496) **Size slider restyles only cards; English search: exact meanings first; bulk edit prints the board.** | findings S496.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-13 | **S501** | iters: 5 | tools: dashboard, torah, generator ×2, FM, flash | patterns fixed: contrast-plate, icon-erase, count-noun, radio-set (toggle twin) | pass run: B | SW: v985→v986
 
 - 2026-10-13 | **S500** | iters: 5 | tools: FM ×2, dashboard ×2, dictionary, resources, flash | patterns fixed: rebuild ×1 (block ×4), busy-disabled ×1 | pass run: F | SW: v984→v985
 
@@ -370,11 +366,9 @@ _(none)_
 
 - 2026-10-08 | **S482** | iters: 5 | tools: torah ×2, dictionary ×2 | patterns fixed: radio-set-without-a-question ×1, settings-lost-across-a-load ×1 | pass run: H | SW: v962→v963
 
-- 2026-10-08 | **S481** | iters: 5 | tools: generator, index, FM ×2 | patterns fixed: rtl-copy-names-the-english-side ×2, copy-names-a-control-by-a-label-it-lacks ×2 | pass run: I | SW: v962
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S500 (2026-10-13):** FM, dashboard, dictionary, resources, flash S500 · generator, torah S499 · contact, trope S498 · privacy S495 · terms, 404, scripts S494 · saves S493 · index S483 · account, i18n.js S478 · pwa S472.
+- **Snapshot S501 (2026-10-13):** dashboard, torah, generator, FM, flash S501 · dictionary, resources S500 · contact, trope S498 · privacy S495 · terms, 404, scripts S494 · saves S493 · index S483 · account, i18n.js S478 · pwa S472.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -382,7 +376,7 @@ _(none)_
 
 - **`dark-palette-on-the-element`** (NEW S495 G; `.hol-ico` FIXED; `.fx-*` FIXED `e5b3dc47`; open: none): ACTIVE, streak 0. Detection: findings S495.
 
-- **`count-noun-without-a-one-form`** (NEW S497 I; bulk edit ×3 `d438f151`; S498 FM fidelity ×5 FIXED `fc56d212`; open: `{max} units`): ACTIVE, streak 0. Detection: archive; S498 widens it to any `{placeholder} <noun>s`.
+- **`count-noun-without-a-one-form`** (NEW S497 I; bulk edit ×3 `d438f151`; S498 FM fidelity ×5 FIXED `fc56d212`; S501 FM `{max} units` + status/banner counts FIXED `c6db7170` via a `{units}` phrase; open: none known): ACTIVE, streak 0. Detection: archive; S498 widens it to any …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`busy-disabled-button-drops-focus`** (NEW S498 H; contact + resources FIXED `68adddee`; S499 generator PDF `1ca449db`; S500 dashboard Current Location `82218419`; trope ×2 REFUTED (both hand focus back); open: FM export (an error modal opens mid-export: hand back only if …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -416,7 +410,7 @@ _(none)_
 
 - **`bulk-apply-skips-a-renderer-the-control-runs`** (NEW S461; FIXED ×3): ACTIVE, streak 1 (S472 clean). Detection: `x3/parity.mjs`, `p463/loc-fix.mjs`. Open: none known.
 
-- **`radio-set-without-a-question`** (NEW S460; dictionary FIXED S482 `9528698d`): ACTIVE, streak 0. Radios in no named radiogroup/group/fieldset. Detection: walk each static radio up to its group; a hit lacks one or its name. Open: dashboard `videoLayout`.
+- **`radio-set-without-a-question`** (NEW S460; dictionary FIXED S482 `9528698d`; S501 its toggle-button twin, generator page size + flash letters per card `8d667fb3`): ACTIVE, streak 0. Radios — or an `aria-pressed` row — in no named group. Detection: walk each static radio / …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`native-input-display-none-under-its-label`** (NEW S458, `ea43be7e`): ACTIVE, streak 0. Detection: `a458/radios.mjs`; control torah. …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -482,7 +476,7 @@ _(none)_
 
 - **`text-field-under-16px-zooms-on-ios-focus`** (NEW S406; FIXED ×2; S465 contact ×4 `5a7a8ed`; S488 +2 in the dashboard's gated drawer; S492 dictionary ×6 `07177214`): ACTIVE, streak 0. Detection: computed `font-size` < 16px under an iPhone descriptor; plant a 12px field.
 
-- **`textContent-rewrite-erases-a-control-icon`** (S405; S415; **S453 `ac796dba`**): ACTIVE, streak 0. Add (d): load-time icon count. Detection: (a) EN→HE→EN icon count; (b) key census …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`textContent-rewrite-erases-a-control-icon`** (S405; S415; S453 `ac796dba`; **S501 generator Export PDF `d7355d03`**): ACTIVE, streak 0. Add (d): load-time icon count. Detection: (a) EN→HE→EN icon count; (b) key census …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`english-literal-passed-to-a-message-helper`** (NEW S475): ACTIVE, streak 0. …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -594,7 +588,7 @@ _(none)_
 
 - **dark-override-outranks-hover**: ACTIVE. **Re-swept 2026-09-09 (S357 Pass A): static detector 0/14 pages; runtime 34 cells on the 8 fixed carriers, every one with real-hover feedback (light as the control) — hits 0, clean streak 1.** S354–S356: 8 carriers fixed. Detection: …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **contrast-below-AA-on-a-tinted-or-coloured-plate**: **S488 dashboard ribbon `5da9ecbe`.** **S422: torah's vowel Letter on the trope tint FIXED `e55b811` (1.85:1; streak 0).** …[full text: IMPROVEMENT_ARCHIVE.md]
+- **contrast-below-AA-on-a-tinted-or-coloured-plate**: **S501 `[DEFAULT]` on the dark active font tile, dashboard + torah `0053db78` (3.71→5.56:1).** **S488 dashboard ribbon `5da9ecbe`.** **S422: torah's vowel Letter on the trope tint FIXED `e55b811` (1.85:1; streak 0).** …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **async-store-backed-choice-clobbered-by-a-sync-fallback**: **swept 2026-08-19 (S226 Pass A, 2nd sweep) — CLEAN with receipts, extended past fonts as its own note directed. clean streak: 1 — ACTIVE, and consequence-critical (it destroys saved user data), so it does NOT retire …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -730,7 +724,7 @@ _(none)_
 
 - I first-load & empty-state: 2026-10-12 (**S497 — 37th I, 90 commits: 136 cells, census = S481 136/136, tours 14/14, delta arms; plants fired. FOUND 3, FIXED 1 (+2).**)
 
-- B console/error audit: 2026-10-09 (**S487 — 37th B on the S471 delta (73 commits): 68 load cells (8 controls fired) + the delta by real input on every page, the i18n retry, the install banner (findings S487). All 0; one P4 logged for K.**)
+- B console/error audit: 2026-10-13 (**S501 — 38th B, `fee5fe05..d5e7c3fa` (82 commits): 68 load cells (controls 8/8) + the delta by real input on every page. 0 new; 4 candidates fixed.**)
 
 - J metrics-informed: never run — SKIP in rotation until the impact-metrics dashboard/Worker is live (not live)
 
@@ -742,4 +736,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-13 (**S500 — 37th F, the tabs / segmented-control keyboard contract (never swept): 9 strips + 6 toggle groups, real keys, EN/HE; plants 3/3. FOUND 4, FIXED 3 (+ Current Location). F-next: dialog Tab traps.**)
 
-**Next session (S501):** **BRANCH/PR: #325 open → continue; merged → restart from `origin/main`.** `sw.js` **v985**, FM **5.59**. ⚑ Stalest: B, A, E; O blocked. ⚑ First: `[DEFAULT]` 3.71:1 dark. ⚑ Untaken: PDF icon; `{max} units`; CSS italics; HE demo (gate 2). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes.
+**Next session (S502):** **BRANCH/PR: #325 open → continue; merged → restart from `origin/main`.** `sw.js` **v986**, FM **5.59**. ⚑ Stalest: A, E, L; O blocked. ⚑ First: week tabpanel + 2 unnamed groups (S500 F). ⚑ Untaken: CSS italics; toast `role=status`; HE demo (gate 2). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes.

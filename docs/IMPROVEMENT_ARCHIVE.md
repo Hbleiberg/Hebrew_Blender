@@ -92521,3 +92521,27 @@ _(prior — S499 pointer:)_ **BRANCH/PR: #325 open → continue; merged → rest
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 _(prior — S500 pointer:)_ **BRANCH/PR: #325 open → continue; merged → restart from `origin/main`.** `sw.js` **v984**, FM **5.59**. ⚑ Stalest: F, B, A; O blocked. ⚑ First: Current Location. ⚑ Untaken: `{max} units`; CSS italics; HE demo (gate 2). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes.
+
+
+<!-- archived by compact-ledger at the S502 boundary, 2026-10-13 -->
+## Compaction (S502, 2026-10-13) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-12 | (S496 close-out) | branch/deploy note | **S496 = D + 2 fixes + 1 micro (gate 1), PR #325.** No drift (main `f1ef1a98`, keep-alive #30); sw v980→v981; no FM bump.
+
+- [x] 2026-10-12 | `c049ab67` `8fda021d` `4c4dd3ae` | dictionary ×2, dashboard | (S496) **Size slider restyles only cards; English search: exact meanings first; bulk edit prints the board.** | findings S496.
+
+### from Per-session log (one line per session)
+
+- 2026-10-08 | **S481** | iters: 5 | tools: generator, index, FM ×2 | patterns fixed: rtl-copy-names-the-english-side ×2, copy-names-a-control-by-a-label-it-lacks ×2 | pass run: I | SW: v962
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`count-noun-without-a-one-form`** (NEW S497 I; bulk edit ×3 `d438f151`; S498 FM fidelity ×5 FIXED `fc56d212`; S501 FM `{max} units` + status/banner counts FIXED `c6db7170` via a `{units}` phrase; open: none known): ACTIVE, streak 0. Detection: archive; S498 widens it to any `{placeholder} <noun>s`.
+
+- **`radio-set-without-a-question`** (NEW S460; dictionary FIXED S482 `9528698d`; S501 its toggle-button twin, generator page size + flash letters per card `8d667fb3`): ACTIVE, streak 0. Radios — or an `aria-pressed` row — in no named group. Detection: walk each static radio / pressed button up to its group; a hit lacks one or its name. Open: dashboard `videoLayout`, contact pay pills, the `.ivrit` mode toggle.
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+_(prior — S501 pointer:)_ **BRANCH/PR: #325 open → continue; merged → restart from `origin/main`.** `sw.js` **v985**, FM **5.59**. ⚑ Stalest: B, A, E; O blocked. ⚑ First: `[DEFAULT]` 3.71:1 dark. ⚑ Untaken: PDF icon; `{max} units`; CSS italics; HE demo (gate 2). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes.
