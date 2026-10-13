@@ -2909,8 +2909,8 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
             <button class="fs-reset" onclick="resetTraceSize()" title="Reset to default" aria-label="Reset to default" data-i18n-aria-label="worksheet.common.reset_default" data-i18n-title="worksheet.common.reset_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
           </div>
           <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
-            <span class="sub-label" style="font-size:0.78rem;min-width:96px;" data-i18n="worksheet.modes.tracing.line_style">Line style</span>
-            <div class="blend-type-selector" style="grid-template-columns:repeat(2,1fr);flex:1;">
+            <span class="sub-label" id="traceLineLbl" style="font-size:0.78rem;min-width:96px;" data-i18n="worksheet.modes.tracing.line_style">Line style</span>
+            <div class="blend-type-selector" role="group" aria-labelledby="traceLineLbl" style="grid-template-columns:repeat(2,1fr);flex:1;">
               <button class="blend-type-btn active" data-trace-lines="bottom" onclick="setTraceLineStyle('bottom')" data-i18n="worksheet.modes.tracing.line.bottom">Bottom line</button>
               <button class="blend-type-btn"        data-trace-lines="both"   onclick="setTraceLineStyle('both')" data-i18n="worksheet.modes.tracing.line.both">Top + bottom</button>
             </div>
@@ -2928,8 +2928,8 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
             <label class="toggle" style="transform:scale(0.75);transform-origin:right;"><input type="checkbox" id="traceSolidFirst" checked onchange="renderTracingIfActive()"><span class="slider"></span></label>
           </div>
           <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
-            <span class="sub-label" style="font-size:0.78rem;min-width:96px;" data-i18n="worksheet.modes.tracing.darkness">Trace darkness</span>
-            <div class="blend-type-selector" style="grid-template-columns:repeat(3,1fr);flex:1;">
+            <span class="sub-label" id="traceDarkLbl" style="font-size:0.78rem;min-width:96px;" data-i18n="worksheet.modes.tracing.darkness">Trace darkness</span>
+            <div class="blend-type-selector" role="group" aria-labelledby="traceDarkLbl" style="grid-template-columns:repeat(3,1fr);flex:1;">
               <button class="blend-type-btn"        data-trace-dark="light"  onclick="setTraceDarkness('light')" data-i18n="worksheet.modes.tracing.darkness.light">Light</button>
               <button class="blend-type-btn active" data-trace-dark="medium" onclick="setTraceDarkness('medium')" data-i18n="worksheet.modes.tracing.darkness.medium">Medium</button>
               <button class="blend-type-btn"        data-trace-dark="dark"   onclick="setTraceDarkness('dark')" data-i18n="worksheet.modes.tracing.darkness.dark">Dark</button>
@@ -3519,8 +3519,8 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           </div>
         </div>
         <div class="option-row">
-          <div class="option-label" data-i18n="worksheet.layout.header_labels">Header Labels</div>
-          <div style="display:flex;gap:0;border:1px solid var(--border);border-radius:5px;overflow:hidden;font-size:0.78rem;">
+          <div class="option-label" id="headerLangLbl" data-i18n="worksheet.layout.header_labels">Header Labels</div>
+          <div role="group" aria-labelledby="headerLangLbl" style="display:flex;gap:0;border:1px solid var(--border);border-radius:5px;overflow:hidden;font-size:0.78rem;">
             <button id="headerLangEn" class="color-mode-btn active" onclick="setHeaderLang('en')" data-i18n="worksheet.layout.header.en">English</button>
             <button id="headerLangHe" class="color-mode-btn" style="font-family:var(--heb-font);" onclick="setHeaderLang('he')" data-i18n="worksheet.layout.header.he">עברית</button>
           </div>
@@ -3545,7 +3545,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
             <span data-i18n="worksheet.common.dagesh_tav">Dagesh Tav / Sav</span>
           </label>
         </div>
-        <div class="letter-grid" id="letterGrid"></div>
+        <div class="letter-grid" id="letterGrid" role="group" aria-label="Letters Included" data-i18n-aria-label="worksheet.letters.panel_title"></div>
         <!-- Lock Letters -->
         <div style="margin-top:10px;border-top:1px solid var(--border);padding-top:8px;">
           <div style="display:flex;align-items:center;justify-content:space-between;">
@@ -3734,7 +3734,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
                 <span class="fs-val" id="hebFontSizeVal">2.00rem</span>
                 <button class="fs-reset" onclick="resetHebFontSize()" title="Reset to default" aria-label="Reset to default" data-i18n-title="worksheet.common.reset_default" data-i18n-aria-label="worksheet.common.reset_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
               </div>
-              <div class="font-selector-grid"></div>
+              <div class="font-selector-grid" role="group" aria-label="Hebrew Font" data-i18n-aria-label="worksheet.advanced.font_title"></div>
               <p id="hebFontMissing" class="font-missing-note" role="status" aria-live="polite" hidden></p>
               <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" data-i18n-title="shared.fonts.upload_title" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;"><svg class="hi hi-sm hi-upload" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.2V4"/><path d="M7.6 8.4 12 4l4.4 4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="shared.fonts.upload_label">Upload your own font?</span><input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPick(this)"></label>
             </div>
