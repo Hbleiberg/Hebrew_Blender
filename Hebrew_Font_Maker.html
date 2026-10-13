@@ -21554,6 +21554,9 @@ function fidelityPredictPair(l, kind, cp) {
   if (!a) return null;
   return { x: a.x - o.x, y: a.y - o.y + dy, key, o, dy, anc: a, pin: markPinFor(l, key, cp) };
 }
+// "1 unit" / "{max} units": every fidelity line names its worst deviation through this phrase (a deviation is a whole
+// number of font units, so exactly 1 is the singular).
+function fidelityUnits(max) { return I18n.t(max === 1 ? 'fontmaker.fidelity.units.one' : 'fontmaker.fidelity.units.other', { max }); }
 async function fidelityMeasure(ctx) {
   // The pure measurement core: shape every imported-mark × covered-letter pair against the ORIGINAL
   // bytes and compare with the app's prediction. ctx: { bytes, upm, importedMarks, markCoverage }.
@@ -21626,7 +21629,7 @@ async function runImportFidelityCheck(ctx) {
                       ctx: { bytes: ctx.bytes, upm: ctx.upm, importedMarks: ctx.importedMarks, markCoverage: ctx.markCoverage } });
     console.table(m.rows.map(r => ({ combo: String.fromCodePoint(parseInt(r.base, 16)) + String.fromCodePoint(parseInt(r.cp, 16)),
       base: r.baseName, mark: markName(r.cp), key: r.key, predX: r.pred.x, predY: r.pred.y, realX: r.real.x, realY: r.real.y, off: r.dev })));
-    status(I18n.t('fontmaker.fidelity.status', { letters: ctx.anchorHits, marks: ctx.attachCount, max: m.max, count: m.rows.length }));
+    status(I18n.t(m.rows.length === 1 ? 'fontmaker.fidelity.status.one' : 'fontmaker.fidelity.status.other', { letters: ctx.anchorHits, marks: ctx.attachCount, units: fidelityUnits(m.max), count: m.rows.length }));
     // ctx.autofix: apply every expressible fix NOW rather than parking it behind an Apply button, so a
     // deep-linked font opens with its marks already where the original font put them. Apply re-measures
     // and folds the fresh rows into _fidelityLast, so the decision below reads the POST-fix truth.
@@ -21663,14 +21666,14 @@ function openFidelityDetails() {
   const FIX_WORD = { form: T('fontmaker.fidelity.fix_form'), anchor: T('fontmaker.fidelity.fix_anchor'), pin: T('fontmaker.fidelity.fix_pin') };
   let body = '<div style="max-height:min(58vh, 520px);overflow:auto;">';
   if (R.rerun) body += '<p style="margin:0 0 8px;font-weight:600;color:' + (R.flagged.length ? 'var(--warn, #b45309)' : '#10b981') + ';">'
-    + esc(T('fontmaker.fidelity.recheck_banner', { max: R.max, mean: R.mean, flagged: R.flagged.length })) + '</p>';
+    + esc(T(R.flagged.length === 1 ? 'fontmaker.fidelity.recheck_banner.one' : 'fontmaker.fidelity.recheck_banner.other', { units: fidelityUnits(R.max), mean: R.mean, flagged: R.flagged.length })) + '</p>';
   if (R.skippedChanged) body += '<p style="margin:0 0 8px;color:var(--muted);font-size:.85rem;">'
     + esc(T(R.skippedChanged === 1 ? 'fontmaker.fidelity.skipped_changed.one' : 'fontmaker.fidelity.skipped_changed.other', { count: R.skippedChanged })) + '</p>';
   body += '<p style="margin:0 0 8px;">' + esc(T(R.rows.length === 1 ? 'fontmaker.fidelity.summary.one' : 'fontmaker.fidelity.summary.other',
-    { count: R.rows.length, name: R.fontName, max: R.max, mean: R.mean })) + '</p>';
+    { count: R.rows.length, name: R.fontName, units: fidelityUnits(R.max), mean: R.mean })) + '</p>';
   const perKey = ['below', 'above', 'center', 'tropAbove', 'tropBelow'].map(k => {
     const rs = R.rows.filter(r => r.key === k); if (!rs.length) return '';
-    return '<li>' + esc(T(rs.length === 1 ? 'fontmaker.fidelity.key_line.one' : 'fontmaker.fidelity.key_line.other', { key: anchorLabelT(k), count: rs.length, max: rs.reduce((t, r) => Math.max(t, r.dev), 0) })) + '</li>';
+    return '<li>' + esc(T(rs.length === 1 ? 'fontmaker.fidelity.key_line.one' : 'fontmaker.fidelity.key_line.other', { key: anchorLabelT(k), count: rs.length, units: fidelityUnits(rs.reduce((t, r) => Math.max(t, r.dev), 0)) })) + '</li>';
   }).join('');
   if (perKey) body += '<ul style="margin:0 0 8px;padding-inline-start:18px;font-size:.85rem;">' + perKey + '</ul>';
   const sk = R.skipped;
