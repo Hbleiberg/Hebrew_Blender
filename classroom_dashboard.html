@@ -7983,7 +7983,7 @@ function mountSidebarResize(cfg) {
       if (cur && changed.includes(cur)) { _lastScheduleKey = null; checkSchedule(); }
     }
     let msg = I18n.t(changed.length === 1 ? 'dashboard.preset.bulk_saved.one' : 'dashboard.preset.bulk_saved.other', { count: changed.length });
-    if (gone.length) msg += ' ' + I18n.t('dashboard.preset.bulk_skipped', { count: gone.length });
+    if (gone.length) msg += ' ' + I18n.t(gone.length === 1 ? 'dashboard.preset.bulk_skipped.one' : 'dashboard.preset.bulk_skipped.other', { count: gone.length });
     bpeClose();
     showAppToast(msg);
   }

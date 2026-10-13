@@ -415,7 +415,8 @@ dashboard.preset.bulk_save_confirm_cloud.one,"Save the changes to 1 preset? You 
 dashboard.preset.bulk_save_confirm_cloud.other,"Save the changes to {count} presets? You are signed in, so they reach your account and every device.","לשמור את השינויים ב-{count} תבניות? אתם מחוברים, ולכן השינויים יגיעו לחשבון ולכל מכשיר.",confirm before writing bulk edits while a session is stored,"plural; has {count}"
 dashboard.preset.bulk_saved.one,1 preset updated.,תבנית אחת עודכנה.,toast after a bulk save (count = 1),has {count}
 dashboard.preset.bulk_saved.other,{count} presets updated.,{count} תבניות עודכנו.,toast after a bulk save,has {count}
-dashboard.preset.bulk_skipped,"{count} removed on another device meanwhile, not written.",{count} הוסרו בינתיים במכשיר אחר ולא נכתבו.,toast suffix: presets deleted elsewhere while the bulk editor was open,has {count}
+dashboard.preset.bulk_skipped.one,"1 removed on another device meanwhile, not written.",תבנית אחת הוסרה בינתיים במכשיר אחר ולא נכתבה.,toast suffix: a preset deleted elsewhere while the bulk editor was open (count = 1),plural
+dashboard.preset.bulk_skipped.other,"{count} removed on another device meanwhile, not written.",{count} הוסרו בינתיים במכשיר אחר ולא נכתבו.,toast suffix: presets deleted elsewhere while the bulk editor was open,"plural; has {count}"
 dashboard.preset.bulk_sub,"Every preset at once: edit each one's message below with its own toolbar, and flip its switches. The top row sets a switch on all presets. Nothing is saved until you press Save.","כל התבניות בבת אחת: ערכו למטה את ההודעה של כל תבנית בסרגל הכלים שלה, והחליפו את המתגים שלה. השורה העליונה קובעת מתג בכל התבניות. דבר אינו נשמר עד שתלחצו על שמירה.",bulk preset edit dialog subtitle,
 dashboard.preset.bulk_text_size_all,Text size for all,גודל טקסט לכולן,bulk preset edit master row: one display size for every preset,
 dashboard.preset.bulk_title,Bulk preset edit,עריכה קבוצתית של תבניות,bulk preset edit dialog title,
