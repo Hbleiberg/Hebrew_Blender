@@ -610,7 +610,7 @@ uploaded was such a seed.
 `#bpeModal`, a dialog in the week editor's shape (backdrop + modal toggled with `.open`, `bpeKey` = Escape +
 `_trapTabWithin`, focus back to the opener) over the drawer: one card per preset, in the folder tree's reading
 order (`bpeOrderNames()` walks `hebrewDashboard_presetsFolders`, then appends any preset the tree lacks; the tree
-never decides what exists), each with its own toolbar and message editor and the common switches, under a sticky
+never decides what exists, and a stored value that is not an object — null, text, a list — gets no card), each with its own toolbar and message editor and the common switches, under a sticky
 head holding the master row. `.bpe-backdrop` and `.bpe-modal` are on the print block's list of hidden fixed
 surfaces, so Ctrl+P with the editor open prints the board underneath, as with the drawer.
 

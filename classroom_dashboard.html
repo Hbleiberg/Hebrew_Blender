@@ -7689,17 +7689,20 @@ function mountSidebarResize(cfg) {
   let _bpeDraft = null, _bpeTouched = null, _bpeOrder = [], _bpeFolders = {}, _bpeOpener = null;
   function bpeOpen() { const m = document.getElementById('bpeModal'); return !!(m && m.classList.contains('open')); }
   // Presets in the folder tree's reading order (items inside folders, with the folder path for the caption),
-  // then any preset the tree does not list yet. Names only — the tree never decides what exists.
+  // then any preset the tree does not list yet. Names only — the tree never decides what exists. A stored value that
+  // is not an object (null, text, a list: a hand-edited backup or a damaged row) has no fields to edit, so it gets
+  // no card: a null one threw on its message and the editor never opened.
   function bpeOrderNames() {
     const tree = ftRead('hebrewDashboard_presetsFolders'), names = [], folderOf = {};
+    const editable = n => { const p = presets[n]; return !!p && typeof p === 'object' && !Array.isArray(p); };
     (function walk(nodes, path) {
       (nodes || []).forEach(n => {
         if (!n) return;
-        if (n.t === 'item') { if (presets[n.name] !== undefined && !names.includes(n.name)) { names.push(n.name); folderOf[n.name] = path; } }
+        if (n.t === 'item') { if (editable(n.name) && !names.includes(n.name)) { names.push(n.name); folderOf[n.name] = path; } }
         else if (n.t === 'folder') walk(n.children, path ? path + ' / ' + n.name : String(n.name || ''));
       });
     })(tree.root, '');
-    Object.keys(presets).forEach(n => { if (!names.includes(n)) { names.push(n); folderOf[n] = ''; } });
+    Object.keys(presets).forEach(n => { if (editable(n) && !names.includes(n)) { names.push(n); folderOf[n] = ''; } });
     return { names, folderOf };
   }
   function bpeIdOf(name) { return 'bpeEd_' + _bpeOrder.indexOf(name); }
