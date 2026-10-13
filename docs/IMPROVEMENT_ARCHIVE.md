@@ -92467,3 +92467,31 @@ _(prior — S497 pointer:)_ **BRANCH/PR: #325 open → continue; merged → rest
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 _(prior — S498 pointer:)_ **BRANCH/PR: #325 open → continue; merged → restart from `origin/main`.** `sw.js` **v982**, FM **5.59**. ⚑ Stalest: H (S482), C (S483), F (S484); O blocked. ⚑ Take first: FM fidelity plurals. ⚑ Untaken: 13 CSS italics; HE demo message (gate 2). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.
+
+
+<!-- archived by compact-ledger at the S500 boundary, 2026-10-13 -->
+## Compaction (S500, 2026-10-13) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-10 | (S494 close-out) | branch/deploy note | **S494 = M on privacy + terms + 4 fixes, PR #321.** No drift (main `b33a359b`, keep-alive #28 green); sw v975→v976; no FM bump; gates 3 ×2, 1 skip.
+
+- [x] 2026-10-10 | `715f3cc8` `c4e0b86c` | privacy, terms, CSV, check-i18n | (S494) **The legal column 680px (print 820); four Hebrew <em> phrases bold.** | findings S494.
+
+- [x] 2026-10-10 | `2b21e89d` `1dddd25c` | dictionary, trope | (S494) **The tour's Done is tappable on a sideways phone; Learn cards are headings.** | findings S494.
+
+### from Per-session log (one line per session)
+
+- 2026-10-08 | **S479** | iters: 5 | tools: trope ×2, dictionary, torah | patterns fixed: — | pass run: G | SW: v959→v960
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`busy-disabled-button-drops-focus`** (NEW S498 H; contact + resources FIXED `68adddee`; S499 generator PDF FIXED `1ca449db`; trope ×2 REFUTED (both hand focus back); open: dashboard Current Location, FM export (an error modal opens mid-export: hand back only if focus is on `<body>`)): ACTIVE, streak 0. Detection: `.disabled = true` on the pressed control before an `await`, no hand-back; runtime: Enter it, after it lands `activeElement` is the control; control: HEAD reads `<body>`.
+
+- **`hidden-input-anchored-outside-its-scroller`** (NEW S499 C; dashboard's 25 drawer radios FIXED `55891185`, torah fixed outside the loop; latent: `.vh-file` ×4, its label on screen on every path measured): ACTIVE, streak 0. Detection: a `position:absolute|fixed` focusable input with a scroll container between it and its containing block (`c499/anchor.mjs`; plant: torah's `.radio-group{position:static}` → 53); runtime: Tab/Shift+Tab, the focused label inside the scroller.
+
+- **`button-focus-lost-to-its-own-rebuild`** (**S499 torah Try again ×2 `80c0a440`; S488 trope Try again ×2 `183605ba`; S483 hub `ab1a235e`; S474 flash Return to Options `3235f8eb`; S473 flash start `3e8e2f79`, torah tune radios `9fbcfce8`; S471 dashboard `c0c5856e`; S470 torah favorites `fc3ec234`; S469 generator …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+_(prior — S499 pointer:)_ **BRANCH/PR: #325 open → continue; merged → restart from `origin/main`.** `sw.js` **v983**, FM **5.59**. ⚑ Stalest: C (S483), F (S484), B (S487); O blocked. ⚑ Take first: the 6 `busy-disabled` suspects (pattern row). ⚑ Untaken: `{max} units`; 13 CSS italics; HE demo message (gate 2). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.

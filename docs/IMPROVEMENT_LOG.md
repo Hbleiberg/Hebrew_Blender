@@ -8,6 +8,12 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P4 (**NEW S499 C**) | classroom_dashboard.html | **Current Location disables itself: focus falls to the page.** | found S499
+
+- [ ] P4 (**NEW S499 C**) | dashboard, torah, trope | **The font picker's `[DEFAULT]` tag is 3.71:1 in the dark drawer.** | found S499
+
+- [ ] P4 (**NEW S499 C**) | hebrew_blend_generator.html | **Export PDF loses its icon after one export.** | found S499
+
 - [ ] P4 (**NEW S498 — count-noun, `{max}`**) | Hebrew_Font_Maker.html | **The fidelity report's `max {max} units` reads "1 units"** when a class's worst deviation is 1 (key line, summary, status). | found S498
 
 - [ ] P4 (**NEW S497 I — gate 2**) | classroom_dashboard.html | **A Hebrew first visit's demo message is English** (`DEFAULT_PRESET`, a `smoke-sync` canon). | found S497
@@ -302,6 +308,10 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-13 | (S499 close-out) | branch/deploy note | **S499 = C + 4 fixes, PR #325.** No drift; sw v983→v984; no FM bump; no gate.
+
+- [x] 2026-10-13 | `55891185` `810acfae` `1ca449db` `80c0a440` | dashboard ×2, generator, torah | (S499) **Drawer options scroll in; bulk spoilers/links readable; PDF + Try again keep focus.** | findings S499.
+
 - [x] 2026-10-13 | (S498 close-out) | branch/deploy note | **S498 = H (contact) + 4 fixes, PR #325.** No drift (main `f1ef1a98`, keep-alive #30 green); sw v982→v983; no FM bump (fixes only); gate 2 ×1 approved (footer link).
 
 - [x] 2026-10-13 | `68adddee` `89f85865` `94f18744` `fc56d212` | contact ×2, resources, 6 tool footers, FM | (S498) **Send keeps focus; the answer scrolls into view; a Contact link on every tool; fidelity singulars.** | findings S498.
@@ -320,15 +330,11 @@ _(none)_
 
 - [x] 2026-10-12 | — (attempted, reverted) | generator | (S495) **Export PDF under 700px.** | findings S495.
 
-- [x] 2026-10-10 | (S494 close-out) | branch/deploy note | **S494 = M on privacy + terms + 4 fixes, PR #321.** No drift (main `b33a359b`, keep-alive #28 green); sw v975→v976; no FM bump; gates 3 ×2, 1 skip.
-
-- [x] 2026-10-10 | `715f3cc8` `c4e0b86c` | privacy, terms, CSV, check-i18n | (S494) **The legal column 680px (print 820); four Hebrew <em> phrases bold.** | findings S494.
-
-- [x] 2026-10-10 | `2b21e89d` `1dddd25c` | dictionary, trope | (S494) **The tour's Done is tappable on a sideways phone; Learn cards are headings.** | findings S494.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-13 | **S499** | iters: 5 | tools: dashboard ×2, generator, torah | patterns fixed: hidden-input (NEW), busy-disabled, rebuild | pass run: C | SW: v983→v984
 
 - 2026-10-13 | **S498** | iters: 5 | tools: contact ×2, resources, flash, generator, dictionary, FM ×2, torah, trope | patterns fixed: busy-disabled (NEW) ×2, count-noun ×5 | pass run: H | SW: v982→v983
 
@@ -368,11 +374,9 @@ _(none)_
 
 - 2026-10-08 | **S480** | iters: 5 | tools: trope ×2, FM ×2 (1 reverted), dashboard | patterns fixed: screen-frame-prints-as-rails (NEW) ×1 | pass run: D | SW: v960→v961
 
-- 2026-10-08 | **S479** | iters: 5 | tools: trope ×2, dictionary, torah | patterns fixed: — | pass run: G | SW: v959→v960
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S498 (2026-10-13):** contact, resources, flash, generator, dictionary, FM, torah, trope S498 · dashboard S497 · privacy S495 · terms, 404, scripts S494 · saves S493 · index S483 · account, i18n.js S478 · pwa S472.
+- **Snapshot S499 (2026-10-13):** dashboard, generator, torah S499 · contact, resources, flash, dictionary, FM, trope S498 · privacy S495 · terms, 404, scripts S494 · saves S493 · index S483 · account, i18n.js S478 · pwa S472.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -382,7 +386,9 @@ _(none)_
 
 - **`count-noun-without-a-one-form`** (NEW S497 I; bulk edit ×3 `d438f151`; S498 FM fidelity ×5 FIXED `fc56d212`; open: `{max} units`): ACTIVE, streak 0. Detection: archive; S498 widens it to any `{placeholder} <noun>s`.
 
-- **`busy-disabled-button-drops-focus`** (NEW S498 H; contact + resources FIXED `68adddee`; 6 suspects unswept: FM, dashboard, generator PDF, torah retry, trope ×2): ACTIVE, streak 0. A handler sets `.disabled = true` on the pressed control before an `await`, so focus falls to …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`busy-disabled-button-drops-focus`** (NEW S498 H; contact + resources FIXED `68adddee`; S499 generator PDF FIXED `1ca449db`; trope ×2 REFUTED (both hand focus back); open: dashboard Current Location, FM export (an error modal opens mid-export: hand back only if focus is on …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- **`hidden-input-anchored-outside-its-scroller`** (NEW S499 C; dashboard's 25 drawer radios FIXED `55891185`, torah fixed outside the loop; latent: `.vh-file` ×4, its label on screen on every path measured): ACTIVE, streak 0. Detection: a `position:absolute|fixed` focusable …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`hebrew-faux-italic`** (NEW S494 M; gate 3: a `he` cell's `<em>` is `<strong>`, `c4e0b86c` ×4; open: 13 CSS italics): ACTIVE, streak 0. Detection: `m494/italcensus.mjs`.
 
@@ -444,7 +450,7 @@ _(none)_
 
 - **`copy-claims-success-on-a-refused-clipboard`** (NEW S428; FIXED `bbd5f65`, `0d2a941`; S444 index `90e1a057`, dashboard `18344f69`; **S445 generator `3dad5c11`, flash `58ee7a4f` — all 7 carriers fixed, 0 open**): ACTIVE, streak 0. Detection: every `execCommand('copy')` whose …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`button-focus-lost-to-its-own-rebuild`** (**S488 trope Try again ×2 `183605ba`; S483 hub `ab1a235e`; S474 flash Return to Options `3235f8eb`; S473 flash start `3e8e2f79`, torah tune radios `9fbcfce8`; S471 dashboard `c0c5856e`; S470 torah favorites `fc3ec234`; S469 generator …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`button-focus-lost-to-its-own-rebuild`** (**S499 torah Try again ×2 `80c0a440`; S488 trope Try again ×2 `183605ba`; S483 hub `ab1a235e`; S474 flash Return to Options `3235f8eb`; S473 flash start `3e8e2f79`, torah tune radios `9fbcfce8`; S471 dashboard `c0c5856e`; S470 torah …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`dark-literal-escapes-the-print-tokens`** (NEW S437 G; resources FIXED `5320a668`): ACTIVE, streak 1 (S479 trope clean; plant fired). Detection: PDFs dark vs light, ink per page (<200 at 40 dpi); a lighter dark sheet = a `body.dark` literal the print …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -716,7 +722,7 @@ _(none)_
 
 - K i18n / localization audit: 2026-10-09 (**S491 — 33rd K on `98340a10..2fee2f28` (76 commits): `k491/` static (plants 5/5), 84-state round trip + 28 retry loads, delta surfaces by real input, blind arms (plants 6/6). CLEAN: 0 findings.**)
 
-- C accessibility (one tool): 2026-10-09 (**S483 — hub (S340 →): 8 census cells + modal + chip menu, 4 Tab walks, 11 keyboard scenarios ×2, motion, hover, 1.4.12, 320, phone; plants fired. FOUND 2, FIXED 2 (+ torah, FM). C-next: dashboard (S354).**)
+- C accessibility (one tool): 2026-10-13 (**S499 — dashboard: census, walks, keys, contrast, motion. FOUND 8, FIXED 4. C-next: FM (S368).**)
 
 - A recurring-pattern sweep: 2026-10-09 (**S488 — 38th A on `eb806705..fee5fe0` (78 commits): 44 static arms, a 14-page battery, the new dashboard surfaces by real input; plants fired. FOUND 5, FIXED 2 (+ trope, FM).**)
 
@@ -738,4 +744,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-09 (**S484 — 36th F, the toast contract on all 8 carriers (5th look, S111 →): 24 cells + reduce, width, bars; plants 4/4. FOUND 4, FIXED 3 (+ FM kerning). F-next: the tabs / segmented-control keyboard contract (never swept).**)
 
-**Next session (S499):** **BRANCH/PR: #325 open → continue; merged → restart from `origin/main`.** `sw.js` **v983**, FM **5.59**. ⚑ Stalest: C (S483), F (S484), B (S487); O blocked. ⚑ Take first: the 6 `busy-disabled` suspects (pattern row). ⚑ Untaken: `{max} units`; 13 CSS italics; HE demo message (gate 2). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah on a screen reader; week cycles: an A/B school's eyes.
+**Next session (S500):** **BRANCH/PR: #325 open → continue; merged → restart from `origin/main`.** `sw.js` **v984**, FM **5.59**. ⚑ Stalest: F, B, A; O blocked. ⚑ First: Current Location. ⚑ Untaken: `{max} units`; CSS italics; HE demo (gate 2). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes.
