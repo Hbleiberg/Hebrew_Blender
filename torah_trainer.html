@@ -1043,6 +1043,7 @@ body.trope-underline-fallback .tt-trope-swatch { background:var(--tt-sw-line); }
    are the reading's own .tt-word spans, so the karaoke styles, the vowel and trope colours, hover and the
    rover apply as everywhere else. The SVG's classes are js/trope-staff.js's (tu-pstaff, tu-pn, tu-pbar). ── */
 .beta-tag { font-size:0.7rem; background:var(--gold); color:var(--navy); padding:1px 5px; border-radius:3px; font-weight:700; letter-spacing:0.05em; vertical-align:middle; }   /* the suite's Beta badge (flash_cards.html) */
+html[lang="he"] .beta-tag { letter-spacing: normal; text-transform: none; }   /* בטא: Hebrew has no capitals, and the tracking only spaced its letters apart */
 .radio-group label .beta-tag { font-size:0.58rem; padding:0 4px; }
 .tt-staff-rows { direction:ltr; inline-size:100%; }
 /* A system's box is its natural width on screen and the wrap width on paper (renderStaffView; --tt-sys-w is the
