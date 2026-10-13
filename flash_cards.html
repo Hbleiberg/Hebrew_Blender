@@ -1631,8 +1631,8 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <h3 class="panel-title" data-i18n="flashcards.mode.panel_title">Mode</h3>
     <div class="panel-body">
       <div class="row">
-        <span class="label" data-i18n="flashcards.mode.letters_per_card">Letters per card:</span>
-        <div class="pill-group" id="modePills">
+        <span class="label" id="modePillsLbl" data-i18n="flashcards.mode.letters_per_card">Letters per card:</span>
+        <div class="pill-group" id="modePills" role="group" aria-labelledby="modePillsLbl">
           <button class="pill" data-mode="1" data-i18n="flashcards.mode.pill_1letter">1 Letter</button>
           <button class="pill active" data-mode="2" data-i18n="flashcards.mode.pill_2letter">2 Letter</button>
           <button class="pill" data-mode="3" data-i18n="flashcards.mode.pill_3letter">3 Letter</button>

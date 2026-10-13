@@ -3512,8 +3512,8 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           <label class="toggle"><input type="checkbox" id="landscapeMode" onchange="toggleLandscape(this.checked)"><span class="slider"></span></label>
         </div>
         <div class="option-row">
-          <div class="option-label"><span data-i18n="worksheet.layout.page_size">Page Size</span> <span class="tooltip-wrap" style="font-size:0.65rem;">?<span class="tooltip-box" data-i18n="worksheet.layout.page_size_tooltip">Paper size for both Print and Export PDF. Letter (8.5×11in) is the US default; choose A4 (210×297mm) for most of the world.</span></span></div>
-          <div style="display:flex;border:1px solid var(--border);border-radius:5px;overflow:hidden;min-width:110px;">
+          <div class="option-label"><span id="pageSizeLbl" data-i18n="worksheet.layout.page_size">Page Size</span> <span class="tooltip-wrap" style="font-size:0.65rem;">?<span class="tooltip-box" data-i18n="worksheet.layout.page_size_tooltip">Paper size for both Print and Export PDF. Letter (8.5×11in) is the US default; choose A4 (210×297mm) for most of the world.</span></span></div>
+          <div role="group" aria-labelledby="pageSizeLbl" style="display:flex;border:1px solid var(--border);border-radius:5px;overflow:hidden;min-width:110px;">
             <button id="pageSizeLetter" class="color-mode-btn active" onclick="setPageSize('letter')" data-i18n="worksheet.layout.page.letter">Letter</button>
             <button id="pageSizeA4"     class="color-mode-btn"        onclick="setPageSize('a4')" data-i18n="worksheet.layout.page.a4">A4</button>
           </div>
