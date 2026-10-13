@@ -2413,7 +2413,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
     </span>
   </span>
   <span class="tt-audio-credit">
-    Cantillation © Russel Neiss &amp; Rabbi Charlie Schwartz, <a href="https://github.com/rneiss/PocketTorah" target="_blank" rel="noopener">PocketTorah</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC&nbsp;BY-SA&nbsp;4.0</a> · <span data-i18n="torah.audio.recording_melody">Spiro (Conservative) melody</span>
+    <span dir="ltr" lang="en">Cantillation © Russel Neiss &amp; Rabbi Charlie Schwartz, <a href="https://github.com/rneiss/PocketTorah" target="_blank" rel="noopener">PocketTorah</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC&nbsp;BY-SA&nbsp;4.0</a></span> · <span data-i18n="torah.audio.recording_melody">Spiro (Conservative) melody</span>
   </span>
 </div>
 
@@ -2651,11 +2651,11 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
         <div id="optKaraokeStatus" style="font-size:0.7rem;color:var(--muted);margin-top:4px;"></div>
         <div id="optRecCreditPocket">
         <div style="font-size:0.72rem;color:var(--muted);margin-top:10px;line-height:1.4;" data-i18n="torah.audio.recording_credit">Chant recordings: PocketTorah, Spiro (Conservative) melody.</div>
-        <div style="font-size:0.65rem;color:var(--muted);margin-top:6px;line-height:1.4;">
+        <div style="font-size:0.65rem;color:var(--muted);margin-top:6px;line-height:1.4;"><span dir="ltr" lang="en">
           Cantillation audio © Russel Neiss &amp; Rabbi Charlie Schwartz,
           <a href="https://github.com/rneiss/PocketTorah" target="_blank" rel="noopener" style="color:var(--gold-text);">PocketTorah</a>,
           <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener" style="color:var(--gold-text);">CC&nbsp;BY-SA&nbsp;4.0</a>.
-        </div>
+        </span></div>
         </div>
         <!-- The Total Torah credit + links (syncRecSrcControls builds it; shown instead of the PocketTorah block while that source is on). -->
         <div id="optRecCreditTT" class="tt-rec-credit" style="font-size:0.72rem;color:var(--muted);margin-top:10px;line-height:1.5;" hidden></div>
@@ -7283,11 +7283,11 @@ async function ttChantAllHandover(vk) {
 // static one (so an ordinary visit's bar is untouched); the Total Torah credit links the Adas Israel page and the
 // verse's complete video (target=_blank, never an embed: frame-src stays 'none').
 function pocketCreditHTML() {
-  return `Cantillation © Russel Neiss &amp; Rabbi Charlie Schwartz, <a href="https://github.com/rneiss/PocketTorah" target="_blank" rel="noopener">PocketTorah</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC&nbsp;BY-SA&nbsp;4.0</a> · <span data-i18n="torah.audio.recording_melody">${esc(I18n.t('torah.audio.recording_melody'))}</span>`;
+  return `<span dir="ltr" lang="en">Cantillation © Russel Neiss &amp; Rabbi Charlie Schwartz, <a href="https://github.com/rneiss/PocketTorah" target="_blank" rel="noopener">PocketTorah</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC&nbsp;BY-SA&nbsp;4.0</a></span> · <span data-i18n="torah.audio.recording_melody">${esc(I18n.t('torah.audio.recording_melody'))}</span>`;
 }
 function ttCreditHTML(entry, linkStyle) {
   const st = linkStyle ? ` style="${linkStyle}"` : '';
-  let h = `${esc(I18n.t('torah.recsrc.credit_prefix'))} <a href="${TT_CREDIT_URL}" target="_blank" rel="noopener"${st}>${esc(I18n.t('torah.recsrc.credit_name'))}</a>`;
+  let h = `${esc(I18n.t('torah.recsrc.credit_prefix'))} <a href="${TT_CREDIT_URL}" target="_blank" rel="noopener" dir="ltr" lang="en"${st}>${esc(I18n.t('torah.recsrc.credit_name'))}</a>`;
   if (entry && TT_VIDEO_RE.test(entry.video)) h += ` · <a href="https://youtu.be/${esc(entry.video)}" target="_blank" rel="noopener"${st}>${esc(I18n.t('torah.recsrc.watch_youtube'))}</a>`;
   return h;
 }
