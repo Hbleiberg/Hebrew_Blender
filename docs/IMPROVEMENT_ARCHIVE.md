@@ -92545,3 +92545,21 @@ _(prior — S500 pointer:)_ **BRANCH/PR: #325 open → continue; merged → rest
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 _(prior — S501 pointer:)_ **BRANCH/PR: #325 open → continue; merged → restart from `origin/main`.** `sw.js` **v985**, FM **5.59**. ⚑ Stalest: B, A, E; O blocked. ⚑ First: `[DEFAULT]` 3.71:1 dark. ⚑ Untaken: PDF icon; `{max} units`; CSS italics; HE demo (gate 2). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes.
+
+
+<!-- archived by compact-ledger at the S503 boundary, 2026-10-13 -->
+## Compaction (S503, 2026-10-13) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-12 | (S497 close-out) | branch/deploy note | **S497 = I + 3 fixes + 1 closed, PR #325.** No drift (main `f1ef1a98`, keep-alive #30); sw v981→v982; no FM bump; no gate.
+
+- [x] 2026-10-12 | `e5b3dc47` `d438f151` `591a11ef` | dashboard ×2, flash | (S497) **Glow/Shadow print; Bulk edit singulars; the timer's first paint. Root-var sliders closed: under 200 ms @4×.** | findings S497.
+
+### from Per-session log (one line per session)
+
+- 2026-10-08 | **S482** | iters: 5 | tools: torah ×2, dictionary ×2 | patterns fixed: radio-set-without-a-question ×1, settings-lost-across-a-load ×1 | pass run: H | SW: v962→v963
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+_(prior — S502 pointer:)_ **BRANCH/PR: #325 open → continue; merged → restart from `origin/main`.** `sw.js` **v988**, FM **5.59**. ⚑ Stalest: A, E, L; O blocked. ⚑ First: week tabpanel + 2 unnamed groups (S500 F). ⚑ Untaken: CSS italics; toast `role=status`; HE demo (gate 2). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes.
