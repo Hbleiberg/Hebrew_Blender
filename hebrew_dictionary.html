@@ -4758,8 +4758,13 @@ function mountHebrewKeyboard(cfg) {
     if (!btn || !panel.contains(btn)) return;
     const kind = btn.dataset.hk;
     if (kind === 'ins') hkEdit('ins', btn.dataset.ins);
-    else if (kind === 'tab') { tab = btn.dataset.tab; renderPanel(); }
-    else if (kind === 'layout') { layout = (layout === 'abc') ? 'qwerty' : 'abc'; hkSaveLayout(layout); renderPanel(); }
+    else if (kind === 'tab' || kind === 'layout') {
+      const hadFocus = document.activeElement === btn;   // a keyboard press: the rebuild below would drop it to the page
+      if (kind === 'tab') tab = btn.dataset.tab;
+      else { layout = (layout === 'abc') ? 'qwerty' : 'abc'; hkSaveLayout(layout); }
+      renderPanel();
+      if (hadFocus) { const again = panel.querySelector(kind === 'tab' ? '[data-hk="tab"][data-tab="' + tab + '"]' : '[data-hk="layout"]'); if (again) again.focus(); }
+    }
     else hkEdit(kind);                  // space | bksp | clear
   });
   toggle.addEventListener('click', () => setOpen(!open));
