@@ -5154,7 +5154,7 @@ function renderEmptyReading(failed) {   // friendly card shown in #ttReading whe
        <div class="tt-empty-star" aria-hidden="true">✡︎</div>
        <h2 data-i18n-key="${tKey}">${esc(I18n.t(tKey))}</h2>
        <p data-i18n-key="${bKey}">${esc(I18n.t(bKey))}</p>` +
-    (failed ? `<button type="button" class="btn" id="ttRetryBtn" onclick="fetchAndRender()">${ICON_RETRY}<span data-i18n-key="torah.reading.retry_button">${esc(I18n.t('torah.reading.retry_button'))}</span></button>` : '') +
+    (failed ? `<button type="button" class="btn" id="ttRetryBtn" onclick="retryReading()">${ICON_RETRY}<span data-i18n-key="torah.reading.retry_button">${esc(I18n.t('torah.reading.retry_button'))}</span></button>` : '') +
     pickerHtml + corpusRetryHtml +
     `</div>`;
   const cp = document.getElementById('ttCardParsha');
@@ -11081,12 +11081,30 @@ async function loadStaticData() {   // extracted from init so the empty card's �
 }
 async function retryStaticData() {   // in-card ↻ for a failed corpus load; on success, resume the normal flow
   const b = document.getElementById('ttCorpusRetryBtn');
+  const pressed = !!b && document.activeElement === b;
   if (b) b.disabled = true;   // one in-flight attempt; loadStaticData re-reports failure and the card re-renders
-  if (!(await loadStaticData())) { if (b) b.disabled = false; return; }
+  if (!(await loadStaticData())) { if (b) b.disabled = false; if (pressed) _ttFocusAfterRetry(); return; }
   populateParshaPicker();
   if (!settings.parshahKey && parshiyotData.length) { settings.parshahKey = parshiyotData[0].en; saveSettings(); }
   syncParshaSelect();
-  fetchAndRender();
+  await fetchAndRender();
+  if (pressed) _ttFocusAfterRetry();
+}
+async function retryReading() {   // the card's ↻ for a failed reading fetch
+  const pressed = !!document.activeElement && document.activeElement.id === 'ttRetryBtn';
+  await fetchAndRender();
+  if (pressed) _ttFocusAfterRetry();
+}
+// The Try again the keyboard pressed: the attempt disables it or rebuilds the card around it, so either way its focus fell
+// to the page (pattern button-focus-lost-to-its-own-rebuild; the Trope Tutor's _focusAfterRetry). A card still offering
+// one (it failed again) gives that button the focus; gone, the reading takes it (the skip link's target, so the next Tab
+// enters the verses) — unless the teacher has moved on meanwhile.
+function _ttFocusAfterRetry() {
+  const ae = document.activeElement;
+  if (ae && ae !== document.body) return;
+  const again = [document.getElementById('ttRetryBtn'), document.getElementById('ttCorpusRetryBtn')].find(x => x && x.getClientRects().length);
+  const t = again || document.getElementById('ttReading');
+  if (t) t.focus();
 }
 async function init() {
   initDark();
