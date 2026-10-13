@@ -186,7 +186,8 @@ body.dark .btn-primary:disabled:hover{background:#2a4070;}
    is direction-neutral; a logical inset would only mirror the same bug into English. */
 .honey{position:absolute!important;width:1px;height:1px;overflow:hidden;
   clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;}
-#formStatus{margin-top:12px;font-size:0.9rem;color:var(--muted);min-height:1.2em;}
+/* scroll-margin: showStatus brings the note into view with a little room under it, not flush with the window's edge */
+#formStatus{margin-top:12px;font-size:0.9rem;color:var(--muted);min-height:1.2em;scroll-margin-block-end:16px;}
 #formStatus a{color:var(--gold-text);}
 .email-line{margin-top:16px;font-size:0.92rem;color:var(--muted);}
 
@@ -461,7 +462,10 @@ const statusEl = document.getElementById('formStatus');
 // The shown status keeps its RENDERER, not its rendered text, so applyI18n can repaint it after a live
 // language switch (pattern validation-note-stores-rendered-text) — the note used to stay English.
 let _statusRender = null;
-function showStatus(render) { _statusRender = render; render(); }
+// The note sits under Send, which a Tab or a click leaves at the window's bottom edge, so "Sending…", a refusal and
+// its e-mail fallback appeared below the fold (every send at 800px): bring it into view. 'nearest' leaves a note
+// already on screen where it is. A language switch repaints through _statusRender directly and scrolls nothing.
+function showStatus(render) { _statusRender = render; render(); statusEl.scrollIntoView({ block: 'nearest' }); }
 form.addEventListener('submit', async function(e){
   e.preventDefault();
   const btn = form.querySelector('button[type="submit"]');
