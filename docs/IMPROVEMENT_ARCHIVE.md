@@ -92613,3 +92613,21 @@ _(prior — S503 pointer:)_ **BRANCH/PR: `claude/jolly-curie-4gtmai` draft PR op
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 _(prior — S504 pointer:)_ **BRANCH/PR: #327 open → continue; merged → restart from `origin/main`.** `sw.js` **v991**, FM **5.59**. ⚑ Stalest: L, K, N; O blocked. ⚑ First: S502 pressed rows; torah font heads. ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; TT Chant label (gate 2).
+
+
+<!-- archived by compact-ledger at the S506 boundary, 2026-10-13 -->
+## Compaction (S506, 2026-10-13) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-13 | (S500 close-out) | branch/deploy note | **S500 = F + 4 fixes, PR #325.** No drift (main `f1ef1a98`, keep-alive #30 green); sw v984→v985; no FM bump (fixes only); no gate.
+
+- [x] 2026-10-13 | `1c701fc9` `f01125e2` `d0ae57e7` `82218419` | keyboard block ×4, FM, flash, dashboard | (S500) **Keyboard tabs keep focus; FM arrows mirror; weakness tabs a tablist; Current Location keeps focus.** | findings S500.
+
+### from Per-session log (one line per session)
+
+- 2026-10-09 | **S485** | iters: 2 (micro-feature) | tools: dashboard | patterns fixed: — | pass run: — (skipped on direction; B stays stalest) | SW: v965→v966
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+_(prior — S505 pointer:)_ **BRANCH/PR: #327 open → continue; merged → restart from `origin/main`.** `sw.js` **v992**, FM **5.59**. ⚑ Stalest: K, N, P; O blocked. ⚑ First: generator letters/language rows; dashboard bulk targets. ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; TT Chant label (gate 2).
