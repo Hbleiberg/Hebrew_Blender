@@ -21658,12 +21658,12 @@ function openFidelityDetails() {
   if (R.rerun) body += '<p style="margin:0 0 8px;font-weight:600;color:' + (R.flagged.length ? 'var(--warn, #b45309)' : '#10b981') + ';">'
     + esc(T('fontmaker.fidelity.recheck_banner', { max: R.max, mean: R.mean, flagged: R.flagged.length })) + '</p>';
   if (R.skippedChanged) body += '<p style="margin:0 0 8px;color:var(--muted);font-size:.85rem;">'
-    + esc(T('fontmaker.fidelity.skipped_changed', { count: R.skippedChanged })) + '</p>';
-  body += '<p style="margin:0 0 8px;">' + esc(T('fontmaker.fidelity.summary',
+    + esc(T(R.skippedChanged === 1 ? 'fontmaker.fidelity.skipped_changed.one' : 'fontmaker.fidelity.skipped_changed.other', { count: R.skippedChanged })) + '</p>';
+  body += '<p style="margin:0 0 8px;">' + esc(T(R.rows.length === 1 ? 'fontmaker.fidelity.summary.one' : 'fontmaker.fidelity.summary.other',
     { count: R.rows.length, name: R.fontName, max: R.max, mean: R.mean })) + '</p>';
   const perKey = ['below', 'above', 'center', 'tropAbove', 'tropBelow'].map(k => {
     const rs = R.rows.filter(r => r.key === k); if (!rs.length) return '';
-    return '<li>' + esc(T('fontmaker.fidelity.key_line', { key: anchorLabelT(k), count: rs.length, max: rs.reduce((t, r) => Math.max(t, r.dev), 0) })) + '</li>';
+    return '<li>' + esc(T(rs.length === 1 ? 'fontmaker.fidelity.key_line.one' : 'fontmaker.fidelity.key_line.other', { key: anchorLabelT(k), count: rs.length, max: rs.reduce((t, r) => Math.max(t, r.dev), 0) })) + '</li>';
   }).join('');
   if (perKey) body += '<ul style="margin:0 0 8px;padding-inline-start:18px;font-size:.85rem;">' + perKey + '</ul>';
   const sk = R.skipped;
@@ -21672,7 +21672,7 @@ function openFidelityDetails() {
       { subst: sk.subst, edge: sk.edge, user: sk.user, odd: sk.odd })) + '</p>';
   const resNotes = R.rerun ? [] : R.notes.filter(nt => nt.type === 'classResidual');   // after fixes the pins ARE the answer to the residuals — the live table below is the truth
   if (resNotes.length) {   // compact, scrollable — Ezra SIL alone produces 17 of these
-    body += '<p class="warn" style="margin:0 0 4px;font-size:.85rem;">' + esc(T('fontmaker.fidelity.residual_intro', { count: resNotes.length })) + '</p>'
+    body += '<p class="warn" style="margin:0 0 4px;font-size:.85rem;">' + esc(T(resNotes.length === 1 ? 'fontmaker.fidelity.residual_intro.one' : 'fontmaker.fidelity.residual_intro.other', { count: resNotes.length })) + '</p>'
       + '<ul style="margin:0 0 8px;padding-inline-start:18px;font-size:.8rem;max-height:120px;overflow:auto;">';
     resNotes.forEach(nt => {
       const ls = (nt.letters || []).map(heb);
@@ -21682,7 +21682,7 @@ function openFidelityDetails() {
     body += '</ul>';
   }
   if (R.flagged.length) {
-    body += '<p style="margin:0 0 4px;">' + esc(T('fontmaker.fidelity.flagged_intro', { tol: FIDELITY_TOL, count: R.flagged.length })) + '</p>';
+    body += '<p style="margin:0 0 4px;">' + esc(T(R.flagged.length === 1 ? 'fontmaker.fidelity.flagged_intro.one' : 'fontmaker.fidelity.flagged_intro.other', { tol: FIDELITY_TOL, count: R.flagged.length })) + '</p>';
     body += '<div style="max-height:240px;overflow:auto;border:1px solid var(--border);border-radius:6px;">'
       + '<table style="width:100%;border-collapse:collapse;font-size:.85rem;">'
       + '<tr><th style="text-align:start;padding:4px 8px;">' + esc(T('fontmaker.fidelity.th_combo')) + '</th>'

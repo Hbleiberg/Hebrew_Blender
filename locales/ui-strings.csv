@@ -2239,12 +2239,16 @@ fontmaker.fidelity.status_checking,"Checking where the nikkud and trop land in t
 fontmaker.fidelity.status_nocheck,"Positioning imported: {letters} letter anchors, {marks} mark attach points.","מיקומים יובאו: {letters} עוגני אותיות, {marks} נקודות חיבור לסימנים.",toast after font import (no marks to measure),
 fontmaker.fidelity.status_unavailable,"Positioning imported: {letters} letter anchors, {marks} mark attach points. (Fidelity check unavailable.)","מיקומים יובאו: {letters} עוגני אותיות, {marks} נקודות חיבור לסימנים. (בדיקת הנאמנות אינה זמינה.)",toast when harfbuzz cannot load,
 fontmaker.fidelity.modal_title,Imported positioning — fidelity report,מיקומים שיובאו — דוח נאמנות,dialog title,
-fontmaker.fidelity.summary,"Measured {count} letter+mark combos against {name}: max deviation {max} units, mean {mean}.","נמדדו {count} צירופי אות+סימן מול {name}: סטייה מרבית {max} יחידות, ממוצע {mean}.",dialog body,
-fontmaker.fidelity.key_line,"{key}: {count} combos, max {max} units off","{key}: {count} צירופים, סטייה מרבית {max} יחידות",dialog body per-anchor-class line,
+fontmaker.fidelity.summary.one,"Measured 1 letter+mark combo against {name}: max deviation {max} units, mean {mean}.","נמדד צירוף אות+סימן אחד מול {name}: סטייה מרבית {max} יחידות, ממוצע {mean}.",dialog body,plural
+fontmaker.fidelity.summary.other,"Measured {count} letter+mark combos against {name}: max deviation {max} units, mean {mean}.","נמדדו {count} צירופי אות+סימן מול {name}: סטייה מרבית {max} יחידות, ממוצע {mean}.",dialog body,plural; has {count}
+fontmaker.fidelity.key_line.one,"{key}: 1 combo, max {max} units off","{key}: צירוף אחד, סטייה מרבית {max} יחידות",dialog body per-anchor-class line,plural
+fontmaker.fidelity.key_line.other,"{key}: {count} combos, max {max} units off","{key}: {count} צירופים, סטייה מרבית {max} יחידות",dialog body per-anchor-class line,plural; has {count}
 fontmaker.fidelity.skipped,"Not compared: {subst} composed into single glyphs by the original font, {edge} trop marks on the app's word-edge columns, {user} combos you pinned by hand, {odd} unexpected shaping results.","לא הושוו: {subst} שהורכבו לגליפים בודדים בגופן המקורי, {edge} טעמים בעמודות שולי-המילה של הכלי, {user} צירופים שמוקמו ידנית, {odd} תוצאות עיצוב לא צפויות.",dialog body,
-fontmaker.fidelity.residual_intro,"{count} marks have their own positioning rule in this font, varying per letter more than one shared anchor can express — their combos are flagged below:","ל-{count} סימנים יש כלל מיקום משלהם בגופן הזה, שמשתנה בין אותיות יותר משעוגן משותף אחד יכול לבטא — הצירופים שלהם מסומנים למטה:",dialog warning intro,
+fontmaker.fidelity.residual_intro.one,"1 mark has its own positioning rule in this font, varying per letter more than one shared anchor can express — its combos are flagged below:","לסימן אחד יש כלל מיקום משלו בגופן הזה, שמשתנה בין אותיות יותר משעוגן משותף אחד יכול לבטא — הצירופים שלו מסומנים למטה:",dialog warning intro,plural
+fontmaker.fidelity.residual_intro.other,"{count} marks have their own positioning rule in this font, varying per letter more than one shared anchor can express — their combos are flagged below:","ל-{count} סימנים יש כלל מיקום משלהם בגופן הזה, שמשתנה בין אותיות יותר משעוגן משותף אחד יכול לבטא — הצירופים שלהם מסומנים למטה:",dialog warning intro,plural; has {count}
 fontmaker.fidelity.residual,{mark} — spread {x}/{y} units on {letters},{mark} — פיזור {x}/{y} יחידות על {letters},dialog warning list item,
-fontmaker.fidelity.flagged_intro,{count} combos are more than {tol} units off:,{count} צירופים סוטים ביותר מ-{tol} יחידות:,dialog body,
+fontmaker.fidelity.flagged_intro.one,1 combo is more than {tol} units off:,צירוף אחד סוטה ביותר מ-{tol} יחידות:,dialog body,plural
+fontmaker.fidelity.flagged_intro.other,{count} combos are more than {tol} units off:,{count} צירופים סוטים ביותר מ-{tol} יחידות:,dialog body,plural; has {count}
 fontmaker.fidelity.th_combo,Combo,צירוף,table header,
 fontmaker.fidelity.th_off,Off by (x / y),סטייה (x / y),table header,
 fontmaker.fidelity.th_fix,Auto-fix,תיקון אוטומטי,table header,
@@ -2258,7 +2262,8 @@ fontmaker.fidelity.fix_form,form,צורה,Auto-fix column cell — combined-form
 fontmaker.fidelity.fix_anchor,anchor,עוגן,Auto-fix column cell — shared class-anchor move,
 fontmaker.fidelity.fix_pin,pin,נעץ,Auto-fix column cell — per-letter pin,
 fontmaker.fidelity.fix_legend,"Fixes: <b>form</b> pins the combined form's mark, <b>anchor</b> moves this letter's shared anchor, <b>pin</b> pins that one letter+mark pair to the original font's exact spot.","תיקונים: <b>צורה</b> נועצת את סימן הצורה המשולבת, <b>עוגן</b> מזיז את העוגן המשותף של האות, <b>נעץ</b> נועץ את צירוף האות+סימן הבודד במיקום המדויק של הגופן המקורי.",legend under the flagged table — trusted HTML from this CSV,
-fontmaker.fidelity.skipped_changed,{count} fixes skipped — you moved those anchors after the check.,{count} תיקונים דולגו — הזזתם את העוגנים האלה אחרי הבדיקה.,post-apply report line (user-truth guard),
+fontmaker.fidelity.skipped_changed.one,1 fix skipped — you moved that anchor after the check.,תיקון אחד דולג — הזזתם את העוגן הזה אחרי הבדיקה.,post-apply report line (user-truth guard),plural
+fontmaker.fidelity.skipped_changed.other,{count} fixes skipped — you moved those anchors after the check.,{count} תיקונים דולגו — הזזתם את העוגנים האלה אחרי הבדיקה.,post-apply report line (user-truth guard),plural; has {count}
 fontmaker.fidelity.reopen_btn,Fidelity report,דוח נאמנות,button in the Nikkud-step under-strip,
 fontmaker.fidelity.reopen_title,Reopen the imported-positioning fidelity report,פתיחה מחדש של דוח נאמנות המיקומים שיובאו,button tooltip,
 fontmaker.fidelity.pinned_hint,Pinned to the imported font's position — drag adjusts the pin.,ננעץ במיקום מהגופן שיובא — גרירה מכוונת את הנעץ.,hint under X/Y when the previewed mark is pinned; also the ✎ badge tooltip,
