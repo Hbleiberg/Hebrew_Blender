@@ -582,6 +582,9 @@ body.dark .tu-feedback .no { color:#ff6666; }
 }
 .tu-scope-row select:focus { outline:2px solid var(--focus-ring); outline-offset:0; }
 body.dark .tu-scope-row select { background:var(--navy-deep); color:var(--text); }
+/* Under a finger these selects compute 13.1px, and iOS Safari zooms the page into a focused field under 16px and leaves
+   it zoomed. 16px only where the pointer is coarse (the dictionary's and contact's rule); the desktop keeps its size. */
+@media (pointer:coarse) { .tu-key-sel, .tu-scope-row select { font-size:16px; } }
 .tu-pb-banner { font-size:0.95rem; font-weight:700; color:var(--gold-text); margin:4px 0 10px; }
 .tu-note { font-size:0.82rem; color:var(--muted); margin-top:10px; min-height:1.4em; }
 .tu-note.error { color:#cc3333; font-weight:600; }
