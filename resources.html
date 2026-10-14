@@ -327,6 +327,12 @@ body.dark .sg-modal-hdr{background:var(--navy-deep);}
 .sg-field input[type=text],.sg-field input[type=email],.sg-field input[type=url],.sg-field textarea{width:100%;border:1px solid var(--border);border-radius:8px;background:var(--white);color:var(--text);padding:9px 10px;font-family:inherit;font-size:0.9rem;}
 .sg-field input:focus,.sg-field textarea:focus{outline:2px solid var(--focus-ring);outline-offset:1px;}
 .sg-field textarea{min-height:80px;resize:vertical;}
+/* Under a finger these six Suggest fields compute 14.4px, and iOS Safari zooms the page into a focused field under 16px
+   and leaves it zoomed. 16px only where the pointer is coarse (the dictionary's and contact's rule); a desktop keeps the
+   0.9rem. The language switcher is i18n.js's. */
+@media (pointer: coarse) {
+  .sg-field input[type=text],.sg-field input[type=email],.sg-field input[type=url],.sg-field textarea{font-size:16px;}
+}
 .sg-hint{font-size:0.72rem;color:var(--muted);font-weight:400;}
 .sg-pillrow{display:flex;flex-wrap:wrap;gap:6px;}
 .sg-pill{font-size:0.76rem;padding:4px 13px;border:1.5px solid var(--border);border-radius:20px;background:transparent;color:var(--text);cursor:pointer;font-family:'Source Sans 3',sans-serif;transition:all 0.15s;white-space:nowrap;}
