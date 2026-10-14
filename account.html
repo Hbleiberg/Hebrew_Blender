@@ -158,6 +158,10 @@ main a:hover{color:var(--gold-text-hover);}
 .field{margin-block:10px 8px;}
 .field label{display:block;font-size:0.82rem;font-weight:600;margin-bottom:5px;}
 .field input{width:100%;max-width:420px;border:1px solid var(--border);border-radius:8px;background:var(--white);color:var(--text);padding:9px 10px;font-family:inherit;font-size:0.95rem;}
+/* Under a finger the name step's field and the deletion's e-mail field compute 15.2px, and iOS Safari zooms the page into
+   a focused field under 16px and leaves it zoomed. 16px only where the pointer is coarse (the dictionary's and contact's
+   rule); a desktop keeps the 0.95rem. The language switcher is i18n.js's. */
+@media (pointer: coarse) { .field input{font-size:16px;} }
 .field input:focus{outline:2px solid var(--focus-ring);outline-offset:1px;}
 .check{display:flex;align-items:flex-start;gap:8px;margin-block:10px;font-size:0.92rem;line-height:1.5;}
 .check input{margin-block-start:4px;flex-shrink:0;}
