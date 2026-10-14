@@ -1,0 +1,1596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!-- Content-Security-Policy (defense-in-depth). Placed right after <meta charset> so it applies before
+     any script/style loads. script-src keeps 'unsafe-inline' because all app JS is inline by design; the
+     value here is blocking REMOTE script injection, object/base-uri hijacks, and unexpected connect/frame
+     origins. cdn.jsdelivr.net in font-src is the Fonts tab's Shlomo Stam face (the other faces are Google
+     Fonts or self-hosted); the account origins are the sign-in chip and the synced options. The browser's
+     own speech synthesis and the inline SVG drawings need no origin. Update this when adding any external
+     script/font/fetch/iframe (see CLAUDE.md). -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://hhkmqwpjsyxdeuhvcyis.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=2">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=2">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=2">
+<link rel="manifest" href="manifest.webmanifest?v=3">
+<meta name="theme-color" content="#1a2744">
+<script src="/pwa.js" defer></script>
+<script src="/js/i18n.js" defer></script>
+<script src="/js/supabase-config.js" defer></script>
+<script src="/js/ivrit-account.js" defer></script>
+<script src="/js/ivrit-saves.js" defer></script>
+<!-- iOS standalone + launch (splash) screens — regenerate with splash/gen_splash.py -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="IvritSuite">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-750x1334.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1242x2208.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1125x2436.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-828x1792.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1242x2688.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1170x2532.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1284x2778.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1179x2556.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1290x2796.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1206x2622.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1320x2868.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 744px) and (device-height: 1133px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-1488x2266.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-1536x2048.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-1620x2160.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 820px) and (device-height: 1180px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-1640x2360.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-1668x2224.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-1668x2388.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-2048x2732.png">
+<title>Letter Learner — Learn the Hebrew Alef-Bet | IvritSuite</title>
+<meta name="description" content="Every Hebrew letter for beginning readers: a picture to remember it by, four illustrated words, the letter with every vowel read aloud, and how it looks in different fonts.">
+<link rel="canonical" href="https://ivritsuite.com/letter_learner.html">
+<!-- Not yet linked from the hub or the suite's navigation (content lands in batches): kept out of the index until it is. -->
+<meta name="robots" content="noindex, follow">
+<meta name="author" content="Harrison Bleiberg">
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-CMLC81Z0HC"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  // The sign-in return leg carries ?code= (and ?error…): the Supabase SDK still needs them in the URL,
+  // and js/ivrit-account.js strips them — but only once it has run, which is after this tag. Report the
+  // cleaned URL so no authorization code or error text ever reaches Analytics. The key list mirrors
+  // AUTH_QUERY_KEYS in js/ivrit-account.js; a deferred module cannot be read from here. An emailed
+  // sign-in link lands with its code in the hash (#ivsignin=, LINK_HASH_KEY there): that hash is dropped.
+  gtag('config', 'G-CMLC81Z0HC', { page_location: (function () {
+    try { var u = new URL(location.href); ['code', 'error', 'error_code', 'error_description'].forEach(function (k) { u.searchParams.delete(k); }); if (/(^#|&)ivsignin=/.test(u.hash)) u.hash = ''; return u.toString(); }
+    catch (e) { return location.href; }
+  })() });
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" media="print" onload="this.media='all'" rel="stylesheet">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet"></noscript>
+<style>@font-face{font-family:'Frank Ruhl Libre';src:url('/fonts/FrankRuhlLibre-Regular.ttf') format('truetype');font-weight:400;font-display:swap;}@font-face{font-family:'IvritSuite Taamim';src:url('/fonts/NotoSerifHebrew-Taamim.ttf') format('truetype');font-weight:400;font-display:swap;}/* Footer links are the page's smallest tap targets (12-15px line boxes ~19px apart —
+   under the WCAG 2.5.8 24px floor with no qualifying spacing). inline-block + block
+   padding grows each link's BOX to >=24px; prose flow and wrapping are unaffected. */
+footer a { display: inline-block; padding-block: 5px; }
+/* The Hebrew UI's footer head (Related Hebrew Tools): its inline 0.08em caps are English small caps; Hebrew has
+   no capitals, and the tracking only spaced its letters apart. !important outranks the inline style. */
+html[lang="he"] footer [style*="letter-spacing:0.08em"] { letter-spacing: normal !important; text-transform: none !important; }
+/* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner (docs/reference/shared-components.md → Header icons).
+   The header controls and the in-page control buttons (play, pause, stop, reset, retry, loop, sound) carry inline
+   SVGs from one shared set (.hi-*); ink is currentColor, so each button's own colour applies. .hi-sm is the 13px
+   size the tiny settings buttons take, .hi-btn lines an icon up with its label inside a button.
+   The dark toggle holds both the moon and the sun and body.dark picks one; scripts change only the .hi-lbl text beside it. */
+.hi{width:16px;height:16px;flex-shrink:0;display:inline-block;vertical-align:-0.2em;}
+.hi-sm{width:13px;height:13px;}
+.hi-btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;}
+.hi-sun{display:none;}
+body.dark .hi-moon{display:none;}
+body.dark .hi-sun{display:inline-block;}
+[dir="rtl"] .hi-arrow{transform:scaleX(-1);}
+/* ═══ end header-icons CSS ═══ */
+</style>
+<!-- Early dark mode (avoid flash) -->
+<script>(function(){try{var s=localStorage.getItem('hebrewBlender_darkMode');if(s==='1'||(s===null&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark-early');}}catch(e){}})()</script>
+<!-- Early language/dir (avoid LTR->RTL flash); authoritative set later in /js/i18n.js -->
+<script>(function(){try{var p=new URLSearchParams(location.search).get('lang');var l=(p==='en'||p==='he')?p:(localStorage.getItem('hebrewBlender_lang')||'en');if(l!=='en'&&l!=='he')l='en';document.documentElement.lang=l;document.documentElement.dir=(l==='he'?'rtl':'ltr');}catch(e){}})()</script>
+<style>
+/* ───── Design tokens (the Trope Tutor's family, lifted from classroom_dashboard.html) ───── */
+:root {
+  --navy:#1a2744; --navy-deep:#0d1220;
+  --gold:#c9922a; --focus-ring:#a0701c; --gold-light:#f0d080;
+  --gold-text:#7f5a13;   /* readable gold for small TEXT on light surfaces — brand --gold stays for borders/buttons/stars */
+  --cream:#fdf8ef; --warm-gray:#e8e0d0;
+  --text:#1a2744; --muted:#6b6050;
+  --border:#c8bfa8; --white:#ffffff;
+  --heb-font:'Frank Ruhl Libre', 'IvritSuite Taamim', serif;
+  --shadow-sm:0 2px 8px rgba(26,39,68,0.05);
+  --shadow-md:0 4px 16px rgba(26,39,68,0.08);
+  --shadow-lg:0 12px 32px rgba(26,39,68,0.12);
+  /* Illustration palette (the drawings in LETTER_DATA only ever name these, so dark mode re-tints every
+     picture at once). Outlines are --ll-line; the rest are fills; the -dk twins are the shaded side. */
+  --ll-line:#1a2744; --ll-accent:#c9922a;
+  --ll-gold:#c9922a; --ll-gold-lt:#f0d080; --ll-navy:#2a3b66; --ll-red:#c0392b; --ll-red-dk:#8e2a20;
+  --ll-green:#5aa865; --ll-green-dk:#3a7d44; --ll-blue:#3b6fb6; --ll-blue-dk:#2a5290; --ll-sky:#bfe0f7;
+  --ll-paper:#fffaf0; --ll-white:#ffffff; --ll-gray:#9aa3b5; --ll-gray-dk:#6b7488;
+  --ll-skin:#f1c9a5; --ll-skin-dk:#d9a177; --ll-wood:#b07a45; --ll-wood-dk:#7d5330;
+  --ll-grass:#7dc47a; --ll-grass-dk:#4f9a4c; --ll-yellow:#f5d97a; --ll-orange:#f0a030; --ll-orange-dk:#c97d1a;
+  --ll-pink:#e9a0b4; --ll-pink-dk:#c9728c; --ll-brown:#8b5e3c; --ll-brown-dk:#5e3d26; --ll-purple:#8e6bb8;
+}
+html.dark-early body, body.dark {
+  --navy:#1a2744; --gold:#e0a832; --focus-ring:var(--gold); --gold-light:#f5d97a;
+  --gold-text:var(--gold);
+  --cream:#161c2a; --warm-gray:#1e2535;
+  --text:#dde4f0; --muted:#8a94a8;
+  --border:#2a3349; --white:#1e2535;
+  --shadow-sm:0 2px 8px rgba(0,0,0,0.40);
+  --shadow-md:0 4px 16px rgba(0,0,0,0.45);
+  --shadow-lg:0 12px 32px rgba(0,0,0,0.55);
+  --ll-line:#e8e0d0; --ll-accent:#e0a832;
+  --ll-gold:#e0a832; --ll-gold-lt:#f5d97a; --ll-navy:#5a6d9c; --ll-red:#e0584a; --ll-red-dk:#a83a2e;
+  --ll-green:#6fbf79; --ll-green-dk:#468a4f; --ll-blue:#6a9ae0; --ll-blue-dk:#3f6cb0; --ll-sky:#2f4a6e;
+  --ll-paper:#2b3550; --ll-white:#f3efe6; --ll-gray:#aab3c4; --ll-gray-dk:#7f899c;
+  --ll-grass:#6fbf79; --ll-grass-dk:#468a4f; --ll-wood:#c08a55; --ll-wood-dk:#8a5d38;
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+input::placeholder, textarea::placeholder { color: var(--muted); }
+body {
+  font-family:'Source Sans 3', sans-serif;
+  background:var(--cream); color:var(--text);
+  min-height:100vh; display:flex; flex-direction:column;
+  line-height:1.4;
+}
+
+/* ───── Header (house pattern) ───── */
+.skip-link {
+  position:absolute; inset-inline-start:8px; top:-48px; z-index:200;
+  background:var(--navy); color:#fff; padding:8px 14px;
+  border-radius:0 0 6px 6px; font-size:0.8rem; font-weight:600;
+  text-decoration:none;
+}
+.skip-link:focus { top:0; outline:2px solid var(--focus-ring); outline-offset:2px; }
+header {
+  background:var(--navy); color:#fff;
+  padding:14px 28px;
+  display:flex; align-items:center; gap:16px;
+  border-bottom:4px solid var(--gold); flex-shrink:0;
+}
+body.dark header { background:var(--navy-deep); }
+.star { font-size:28px; color:var(--gold); flex-shrink:0; }
+.htitle { flex:1; min-width:0; }
+header h1 { font-family:'Libre Baskerville',serif; font-size:1.35rem; color:#fff; line-height:1.2; }
+header p { font-size:0.78rem; color:var(--gold-light); margin-top:2px; }
+.hright { display:flex; gap:6px; align-items:center; flex-shrink:0; }
+.dir-arrow { display:inline-block; }
+[dir="rtl"] .dir-arrow { transform:scaleX(-1); }
+.hbtn {
+  background:rgba(255,255,255,0.08); color:#fff;
+  border:1px solid rgba(255,255,255,0.18);
+  padding:7px 12px; border-radius:6px;
+  min-height:35px;
+  font-family:inherit; font-size:0.82rem; font-weight:600;
+  cursor:pointer; text-decoration:none;
+  display:inline-flex; align-items:center; gap:6px;
+  transition:all 0.15s;
+}
+.hbtn:hover { background:rgba(255,255,255,0.18); border-color:rgba(255,255,255,0.3); }
+.hbtn.icon-btn { padding:7px 10px; font-size:1rem; }
+/* Idle-hide (shared fullscreen idle-hide block): in fullscreen the button fades after 3s without pointer activity,
+   returns on the next move, never hides while keyboard-focused. */
+#fsBtn { transition: background 0.15s, opacity 0.25s; }
+body.fs-idle #fsBtn:not(:focus-visible) { opacity:0; pointer-events:none; }
+@media (prefers-reduced-motion: reduce) { #fsBtn { transition-duration: 0.001ms !important; } }
+:focus-visible { outline:2px solid var(--focus-ring); outline-offset:2px; }
+
+/* ───── Page ───── */
+.ll-page { flex:1; width:100%; max-width:1080px; margin:0 auto; padding:18px 20px 60px; }
+.ll-page h2 { font-family:'Libre Baskerville',serif; font-size:1.05rem; color:var(--text); }
+.ll-card-box {
+  background:var(--white); border:1.5px solid var(--border); border-radius:12px;
+  box-shadow:var(--shadow-sm); padding:14px 18px; margin-bottom:18px;
+}
+.ll-note { font-size:0.8rem; color:var(--muted); margin:4px 0 0; }
+.ll-btn {
+  background:var(--gold); color:#1a1a1a; border:none; border-radius:6px;
+  padding:7px 13px; cursor:pointer; font-size:0.82rem; font-weight:700;
+  font-family:'Source Sans 3', sans-serif; min-height:30px;
+}
+.ll-btn.ghost { background:transparent; color:var(--text); border:1.5px solid var(--border); }
+.ll-btn:hover { filter:brightness(1.06); }
+.ll-btn:disabled { opacity:0.4; cursor:default; filter:none; }
+
+/* ───── Options ───── */
+.ll-options-head { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:8px; }
+.ll-opt-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:10px 24px; align-items:start; }
+.ll-opt { display:flex; align-items:center; gap:8px; font-size:0.9rem; min-height:30px; }
+.ll-opt input[type="checkbox"] { width:18px; height:18px; accent-color:var(--gold); flex-shrink:0; }
+.ll-opt select { font:inherit; font-size:0.86rem; padding:5px 8px; border:1.5px solid var(--border); border-radius:6px; background:var(--white); color:var(--text); max-width:100%; }
+fieldset.ll-vowel-set { border:1.5px solid var(--border); border-radius:10px; padding:8px 12px 10px; }
+fieldset.ll-vowel-set legend { font-size:0.82rem; font-weight:700; color:var(--muted); padding:0 6px; }
+.ll-vowel-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:4px 12px; }
+.ll-vowel-grid .ll-opt { font-size:0.86rem; }
+.ll-vowel-sample { font-family:var(--heb-font); font-size:1.35rem; line-height:1; min-width:1.6em; text-align:center; color:var(--text); }
+.ll-cloud { border-top:1px solid var(--border); margin-top:12px; padding-top:10px; }
+.ll-cloud h3 { font-size:0.82rem; font-weight:700; color:var(--muted); margin-bottom:4px; }
+#llNoSpeech { display:none; }
+body.ll-no-speech #llNoSpeech { display:block; }
+body.ll-no-speech .ll-speak, body.ll-no-speech #llVoiceRow, body.ll-no-speech #optWordAudioRow { display:none !important; }
+
+/* ───── Letter grid ───── */
+.ll-grid {
+  list-style:none; display:grid; grid-template-columns:repeat(auto-fill, minmax(108px, 1fr)); gap:10px;
+}
+.ll-card {
+  width:100%; min-height:132px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
+  background:var(--white); border:1.5px solid var(--border); border-radius:12px; padding:10px 6px 8px;
+  cursor:pointer; font-family:'Source Sans 3', sans-serif; color:var(--text);
+  box-shadow:var(--shadow-sm); transition:transform 0.12s, border-color 0.12s, box-shadow 0.12s;
+}
+.ll-card:hover { border-color:var(--gold); transform:translateY(-2px); box-shadow:var(--shadow-md); }
+.ll-card.is-final { border-style:dashed; }
+.ll-card-glyph { font-family:var(--heb-font); font-size:2.7rem; line-height:1.15; color:var(--text); }
+.ll-card-name { font-size:0.86rem; font-weight:700; line-height:1.2; }
+.ll-card-sound { font-size:0.74rem; color:var(--muted); font-family:'Libre Baskerville', serif; }
+.ll-badge { font-size:0.64rem; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; color:var(--gold-text); margin-top:3px; }
+html[lang="he"] .ll-badge { letter-spacing:normal; text-transform:none; }
+.ll-card.is-soon .ll-card-glyph { opacity:0.72; }
+
+/* ───── Dialog (house modal contract: focus in, Tab trapped, Escape closes, focus back to the card) ───── */
+.ll-overlay {
+  position:fixed; inset:0; z-index:300; background:rgba(13,18,32,0.58);
+  display:flex; align-items:center; justify-content:center; padding:16px; overflow-y:auto;
+}
+.ll-overlay[hidden] { display:none; }
+.ll-dialog {
+  background:var(--white); color:var(--text); border:1px solid var(--border); border-radius:14px;
+  box-shadow:var(--shadow-lg); width:min(780px, 94vw); max-height:calc(100dvh - 32px);
+  overflow:auto; overscroll-behavior:contain; display:flex; flex-direction:column;
+}
+.ll-dlg-head {
+  position:sticky; top:0; z-index:2; background:var(--white);
+  display:flex; align-items:center; gap:8px; padding:10px 12px 8px; border-bottom:1px solid var(--border);
+}
+.ll-dlg-title { flex:1; min-width:0; display:flex; align-items:baseline; justify-content:center; gap:12px; font-family:'Libre Baskerville',serif; font-size:1.2rem; }
+.ll-dlg-glyph { font-family:var(--heb-font); font-size:2.2rem; line-height:1; }
+.ll-nav, .ll-x {
+  background:transparent; border:1.5px solid var(--border); border-radius:8px; color:var(--text);
+  width:36px; height:36px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0;
+}
+.ll-nav:hover, .ll-x:hover { background:var(--warm-gray); }
+.ll-nav:disabled { opacity:0.35; cursor:default; }
+.ll-next-arrow { transform:scaleX(-1); }
+[dir="rtl"] .ll-next-arrow { transform:none; }
+.ll-tabs { display:flex; gap:4px; padding:8px 12px 0; border-bottom:1px solid var(--border); overflow-x:auto; }
+.ll-tabs [role="tab"] {
+  background:transparent; border:none; border-bottom:3px solid transparent; color:var(--muted);
+  font:inherit; font-size:0.9rem; font-weight:700; padding:8px 12px; cursor:pointer; white-space:nowrap; min-height:36px;
+}
+.ll-tabs [role="tab"]:hover { color:var(--text); }
+.ll-tabs [role="tab"][aria-selected="true"] { color:var(--text); border-bottom-color:var(--gold); }
+.ll-panel { padding:16px 18px 22px; }
+.ll-panel h3 { font-size:0.82rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--muted); margin:0 0 8px; }
+html[lang="he"] .ll-panel h3 { letter-spacing:normal; text-transform:none; }
+.ll-soon { text-align:center; padding:22px 10px; color:var(--muted); }
+.ll-soon strong { display:block; font-family:'Libre Baskerville',serif; font-size:1.05rem; color:var(--text); margin-bottom:6px; }
+
+/* Letter tab */
+.ll-hint { display:flex; align-items:center; gap:18px; flex-wrap:wrap; justify-content:center; margin-bottom:18px; }
+.ll-hint svg, .ll-word-pic svg { display:block; width:100%; height:100%; }
+.ll-hint-pic { width:min(220px, 60vw); aspect-ratio:1; flex-shrink:0; }
+.ll-hint figcaption { font-family:'Libre Baskerville',serif; font-size:1.15rem; line-height:1.35; max-width:360px; text-align:center; }
+.ll-words { list-style:none; display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:12px; }
+.ll-word { display:flex; align-items:center; gap:12px; border:1.5px solid var(--border); border-radius:12px; padding:10px 12px; background:var(--cream); }
+.ll-word-pic { width:84px; height:84px; flex-shrink:0; }
+.ll-word-text { flex:1; min-width:0; }
+.ll-word-he { font-family:var(--heb-font); font-size:2rem; line-height:1.25; display:block; }
+.ll-hit { color:var(--ll-accent); }
+.ll-word-en { font-size:0.92rem; color:var(--text); display:block; }
+.ll-word-tr { font-size:0.78rem; color:var(--muted); font-style:italic; }
+.ll-speak {
+  background:transparent; border:1.5px solid var(--border); border-radius:8px; color:var(--text);
+  width:34px; height:34px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0;
+}
+.ll-speak:hover { background:var(--warm-gray); border-color:var(--gold); }
+.ll-final-note { font-size:0.92rem; margin-bottom:12px; }
+.ll-final-note .ll-inline-heb { font-family:var(--heb-font); font-size:1.4rem; line-height:1; }
+
+/* Vowels tab */
+.ll-bare { display:flex; flex-direction:column; align-items:center; gap:2px; margin-bottom:14px; }
+.ll-bare-glyph { font-family:var(--heb-font); font-size:4.6rem; line-height:1.05; }
+.ll-bare-sound { font-family:'Libre Baskerville', serif; font-size:1.1rem; color:var(--muted); }
+.ll-vrows { list-style:none; display:grid; grid-template-columns:repeat(auto-fill, minmax(190px, 1fr)); gap:8px 14px; }
+.ll-vrow { display:flex; align-items:center; gap:10px; border:1.5px solid var(--border); border-radius:10px; padding:4px 10px; background:var(--cream); }
+.ll-form { font-family:var(--heb-font); font-size:2.3rem; line-height:1.3; min-width:1.5em; text-align:center; }
+.ll-tr { flex:1; font-family:'Libre Baskerville', serif; font-size:1.15rem; }
+.ll-vname { display:block; font-size:0.7rem; color:var(--muted); font-family:'Source Sans 3', sans-serif; }
+
+/* Fonts tab */
+.ll-fonts { list-style:none; display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:10px; }
+.ll-font-tile { border:1.5px solid var(--border); border-radius:12px; background:var(--cream); padding:10px 8px 8px; text-align:center; }
+.ll-font-tile[hidden] { display:none; }
+.ll-font-glyph { font-size:3.4rem; line-height:1.2; display:block; min-height:1.2em; }
+.ll-font-name { font-size:0.74rem; color:var(--muted); }
+
+/* Special forms tab */
+.ll-special { list-style:none; display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:10px; margin-bottom:10px; }
+.ll-pair { display:flex; align-items:center; gap:14px; border:1.5px solid var(--border); border-radius:12px; padding:8px 12px; background:var(--cream); }
+.ll-pair .ll-form { font-size:3rem; }
+.ll-pair-name { font-weight:700; }
+.ll-pair-sound { font-family:'Libre Baskerville', serif; color:var(--muted); display:block; }
+
+/* Hint animation library: a drawing wraps a moving part in <g class="ll-anim ll-anim-<name>">. Every keyframe
+   returns to the rest pose and fill-mode stays `none`, so the reduced-motion block below (0.001ms, one run)
+   leaves the picture exactly as drawn. */
+.ll-anim { transform-box:fill-box; transform-origin:center; animation-duration:5s; animation-timing-function:ease-in-out; animation-iteration-count:infinite; animation-fill-mode:none; }
+.ll-anim-swing { animation-name:ll-swing; transform-origin:top right; }     /* the pivot is the group's top-right corner: draw the grip there */
+.ll-anim-swing-l { animation-name:ll-swing-l; transform-origin:top left; }
+.ll-anim-bob { animation-name:ll-bob; animation-duration:3s; }
+.ll-anim-sway { animation-name:ll-sway; transform-origin:bottom center; animation-duration:4s; }
+.ll-anim-open { animation-name:ll-open; transform-origin:left center; animation-duration:6s; }
+.ll-anim-open-r { animation-name:ll-open-r; transform-origin:right center; animation-duration:6s; }
+.ll-anim-blink { animation-name:ll-blink; animation-duration:4s; }
+.ll-anim-drift { animation-name:ll-drift; animation-duration:6s; }
+@keyframes ll-swing { 0%,100% { transform:rotate(0deg); } 35% { transform:rotate(-18deg); } 60% { transform:rotate(14deg); } 80% { transform:rotate(-3deg); } }
+@keyframes ll-swing-l { 0%,100% { transform:rotate(0deg); } 35% { transform:rotate(18deg); } 60% { transform:rotate(-14deg); } 80% { transform:rotate(3deg); } }
+@keyframes ll-bob { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-2.5px); } }
+@keyframes ll-sway { 0%,100% { transform:rotate(0deg); } 30% { transform:rotate(2.5deg); } 70% { transform:rotate(-2.5deg); } }
+@keyframes ll-open { 0%,100% { transform:perspective(200px) rotateY(0deg); } 45% { transform:perspective(200px) rotateY(-28deg); } 60% { transform:perspective(200px) rotateY(-28deg); } }
+@keyframes ll-open-r { 0%,100% { transform:perspective(200px) rotateY(0deg); } 45% { transform:perspective(200px) rotateY(28deg); } 60% { transform:perspective(200px) rotateY(28deg); } }
+@keyframes ll-blink { 0%,100% { opacity:1; } 92% { opacity:1; } 96% { opacity:0.15; } }
+@keyframes ll-drift { 0%,100% { transform:translateX(0); } 50% { transform:translateX(3px); } }
+
+/* ───── Footer ───── */
+footer { border-top:1px solid var(--border); padding:16px 20px 22px; text-align:center; font-size:0.78rem; color:var(--muted); }
+footer a { color:var(--gold-text); }
+
+/* ───── Tour (house engine) ───── */
+.tour-spot {
+  position:fixed; top:0; left:0; width:0; height:0;
+  border-radius:8px; pointer-events:none; z-index:400;
+  box-shadow:0 0 0 9999px rgba(13,18,32,0.62), 0 0 0 3px var(--gold);
+  transition:top 0.25s ease, left 0.25s ease, width 0.25s ease, height 0.25s ease;
+}
+.tour-card {
+  position:fixed; z-index:500; width:300px; max-width:92vw;
+  background:var(--white); color:var(--text);
+  border-radius:12px;
+  border: 1px solid var(--border); box-shadow: 0 6px 16px rgba(0,0,0,0.34); padding:16px 18px 14px;
+}
+.tour-card h4 { font-family:'Libre Baskerville', serif; margin:0 26px 8px 0; font-size:0.98rem; color:var(--text); }
+.tour-card p { font-size:0.84rem; line-height:1.5; margin:0 0 12px; color:var(--text); }
+.tour-x {
+  position:absolute; top:8px; inset-inline-end:8px; width:26px; height:26px;
+  background:transparent; border:none; border-radius:6px;
+  color:var(--muted); font-size:1rem; cursor:pointer; line-height:1;
+}
+.tour-x:hover { background:var(--warm-gray); color:var(--text); }
+.tour-meta { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.tour-meta > span:first-child { font-size:0.72rem; font-weight:700; color:var(--muted); }
+.tour-btns { display:flex; gap:8px; }
+@keyframes attnPulse {
+  0%, 100% { box-shadow:0 0 0 0 rgba(201,146,42,0.55); }
+  50%      { box-shadow:0 0 0 6px rgba(201,146,42,0); }
+}
+.pulse-attn { animation:attnPulse 1.4s ease-in-out infinite; }
+
+  /* ═══ shared: app-toast CSS ═══ (byte-identical across generator/dashboard/flash_cards/dictionary/letter_learner; self-contained incl. reduced-motion) ═══ */
+#appToast {
+  position: fixed;
+  left: 50%;
+  bottom: 84px;
+  transform: translateX(-50%) translateY(8px);
+  background: var(--navy);
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 500;
+  padding: 9px 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.28);
+  z-index: 2000;
+  max-width: 88vw;
+  width: max-content;   /* a fixed box at left:50% otherwise shrinks to half the viewport, and the 88vw cap never applies */
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+#appToast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+body.dark #appToast { background: #0a0f1c; }
+@media (prefers-reduced-motion: reduce) { #appToast { transition: none !important; } }
+/* ═══ end shared: app-toast CSS ═══ */
+
+.vh { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap; }
+
+/* ───── Phones: the dialog becomes a full-screen sheet ───── */
+@media (max-width: 800px) {
+  .ll-overlay { padding:0; align-items:stretch; }
+  .ll-dialog { width:100%; max-height:100dvh; border-radius:0; border:none; }
+  .ll-hint-pic { width:min(200px, 56vw); }
+  .ll-page { padding:14px 14px 40px; }
+}
+/* The header's wrap gate: the row of controls drops under the title only below this page's MEASURED overflow
+   ceiling (docs/reference/shared-components.md → "The header's wrap gate"). 530px is where the unwrapped row
+   (Home, the language switcher, the account chip, Tour, dark, fullscreen) stops fitting beside the star, in EN
+   and in HE alike (Playwright, 2px steps, 900→320px); below it the row takes a full line of its own, so the
+   star never pushes it past the edge. Re-measure when a control is added or relabelled. */
+@media (max-width: 530px) {
+  header { flex-wrap:wrap; padding:12px 16px; row-gap:8px; }
+  .hright { flex-basis:100%; max-width:100%; flex-wrap:wrap; justify-content:flex-end; }
+  .ll-grid { grid-template-columns:repeat(auto-fill, minmax(92px, 1fr)); gap:8px; }
+  .ll-card-glyph { font-size:2.3rem; }
+}
+@media print {
+  header .hright, .ll-options, footer, .ll-overlay, .tour-spot, .tour-card, #appToast { display:none !important; }
+}
+/* Reduced motion: the universal neutralizer (every animation and transition on the page, the hint drawings'
+   .ll-anim groups included; 0.001ms rather than 0 so animationend still fires). */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .pulse-attn { animation: none !important; box-shadow: 0 0 0 3px rgba(201,146,42,0.6) !important; }
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#llMain" data-i18n="letterlearner.a11y.skip_to_letters">Skip to the letters</a>
+<header>
+  <div class="star" aria-hidden="true">✡︎</div>
+  <div class="htitle">
+    <h1 data-i18n="letterlearner.header.title">Letter Learner</h1>
+    <p data-i18n="letterlearner.header.subtitle">Every Hebrew letter with a picture to remember it by, its vowels read aloud, and its look in different fonts.</p>
+  </div>
+  <div class="hright">
+    <a class="hbtn" href="/"><svg class="hi hi-arrow dir-arrow" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/></svg><span class="hi-lbl" data-i18n="letterlearner.header.home">Home</span></a>
+    <div data-i18n-switcher></div>
+    <button id="tourBtn" class="hbtn" onclick="tourStart()" title="Take a quick tour" data-i18n-title="letterlearner.header.tour_title"><svg class="hi hi-help" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.6a2.5 2.5 0 1 1 3.6 2.2c-.8.4-1.2 1-1.2 1.9"/><circle cx="12" cy="17" r=".7" fill="currentColor" stroke="none"/></svg><span class="hi-lbl" data-i18n="letterlearner.header.tour_button">Tour</span></button>
+    <button id="darkBtn" class="hbtn icon-btn" onclick="toggleDark()" title="Toggle dark mode" aria-label="Toggle dark mode" data-i18n-title="shared.darkmode.toggle_title" data-i18n-aria-label="shared.darkmode.toggle_title" aria-pressed="false"><svg class="hi hi-moon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15.5A7 7 0 0 1 8.5 6a7 7 0 1 0 9.5 9.5z"/><path d="M17.5 2.5l.9 2.4 2.4.9-2.4.9-.9 2.4-.9-2.4-2.4-.9 2.4-.9z" fill="currentColor" stroke="none"/></svg><svg class="hi hi-sun" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></svg></button>
+    <button id="fsBtn" class="hbtn icon-btn" onclick="toggleFullscreen()" title="Present fullscreen" aria-label="Toggle fullscreen" data-i18n-title="shared.fullscreen.enter_title" data-i18n-aria-label="shared.fullscreen.toggle_aria"><svg class="hi hi-fs-enter" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
+  </div>
+</header>
+
+<main class="ll-page" id="llMain" tabindex="-1">
+  <section class="ll-card-box ll-options" id="llOptions" aria-labelledby="llOptTitle">
+    <div class="ll-options-head">
+      <h2 id="llOptTitle" data-i18n="letterlearner.options.title">Options</h2>
+      <button type="button" class="ll-btn ghost" id="llReset" data-i18n="letterlearner.options.reset">Reset options</button>
+    </div>
+    <div class="ll-opt-grid">
+      <fieldset class="ll-vowel-set">
+        <legend data-i18n="letterlearner.options.vowels_legend">Vowels to show</legend>
+        <div class="ll-vowel-grid" id="llVowelGrid"></div>
+      </fieldset>
+      <div>
+        <label class="ll-opt"><input type="checkbox" id="optFontTab"><span data-i18n="letterlearner.options.font_tab">Show the Fonts tab</span></label>
+        <label class="ll-opt"><input type="checkbox" id="optSplit"><span data-i18n="letterlearner.options.split_pairs">Separate cards for Bet/Vet, Kaf/Chaf, Pe/Fe and Shin/Sin</span></label>
+        <p class="ll-note" data-i18n="letterlearner.options.split_pairs_note">Off: one card per letter, with the pair under Special forms.</p>
+        <label class="ll-opt" id="optWordAudioRow"><input type="checkbox" id="optWordAudio"><span data-i18n="letterlearner.options.word_audio">Read the words aloud (a speaker beside each word)</span></label>
+        <div class="ll-opt" id="llVoiceRow" hidden><label for="llVoice" data-i18n="letterlearner.options.voice">Hebrew voice</label><select id="llVoice"></select></div>
+        <p class="ll-note" id="llNoSpeech" data-i18n="letterlearner.options.no_speech_note">This browser has no speech, so the speaker buttons are hidden.</p>
+      </div>
+    </div>
+    <div class="ll-cloud">
+      <h3 data-i18n="letterlearner.options.panel_cloud">Your account</h3>
+      <div id="cloudSavesPanel"></div>
+    </div>
+  </section>
+
+  <ul class="ll-grid" id="llGrid" dir="rtl" aria-label="Letters" data-i18n-aria-label="letterlearner.grid.aria"></ul>
+</main>
+
+<!-- One static dialog for every card: filled by llFillDialog(id). Tabs that do not apply to a card are hidden. -->
+<div class="ll-overlay" id="llOverlay" hidden>
+  <div class="ll-dialog" role="dialog" aria-modal="true" aria-labelledby="llDlgTitle">
+    <div class="ll-dlg-head">
+      <button type="button" class="ll-nav" id="llPrev" title="Previous letter" aria-label="Previous letter" data-i18n-title="letterlearner.dialog.prev" data-i18n-aria-label="letterlearner.dialog.prev"><svg class="hi hi-arrow dir-arrow" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/></svg></button>
+      <h2 class="ll-dlg-title" id="llDlgTitle"><span class="ll-dlg-glyph" id="llDlgGlyph" lang="he" dir="rtl"></span><span class="ll-dlg-name" id="llDlgName"></span></h2>
+      <button type="button" class="ll-nav" id="llNext" title="Next letter" aria-label="Next letter" data-i18n-title="letterlearner.dialog.next" data-i18n-aria-label="letterlearner.dialog.next"><svg class="hi hi-arrow dir-arrow ll-next-arrow" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/></svg></button>
+      <button type="button" class="ll-x" id="llClose" title="Close" aria-label="Close" data-i18n-title="letterlearner.dialog.close" data-i18n-aria-label="letterlearner.dialog.close"><svg class="hi hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
+    </div>
+    <div class="ll-tabs" role="tablist" aria-labelledby="llDlgTitle">
+      <button type="button" role="tab" id="llTab-letter" aria-controls="llPanel-letter" aria-selected="true" data-i18n="letterlearner.tabs.letter">Letter</button>
+      <button type="button" role="tab" id="llTab-vowels" aria-controls="llPanel-vowels" aria-selected="false" tabindex="-1" data-i18n="letterlearner.tabs.vowels">Vowels</button>
+      <button type="button" role="tab" id="llTab-font" aria-controls="llPanel-font" aria-selected="false" tabindex="-1" data-i18n="letterlearner.tabs.font">Fonts</button>
+      <button type="button" role="tab" id="llTab-special" aria-controls="llPanel-special" aria-selected="false" tabindex="-1" data-i18n="letterlearner.tabs.special">Special forms</button>
+    </div>
+    <div class="ll-panel" role="tabpanel" id="llPanel-letter" aria-labelledby="llTab-letter" tabindex="0"></div>
+    <div class="ll-panel" role="tabpanel" id="llPanel-vowels" aria-labelledby="llTab-vowels" tabindex="0" hidden></div>
+    <div class="ll-panel" role="tabpanel" id="llPanel-font" aria-labelledby="llTab-font" tabindex="0" hidden></div>
+    <div class="ll-panel" role="tabpanel" id="llPanel-special" aria-labelledby="llTab-special" tabindex="0" hidden></div>
+  </div>
+</div>
+
+<footer>
+  <div><a href="contact.html" data-i18n="contact.page_title">Contact &amp; Support</a></div>
+  <nav aria-label="Related Hebrew Tools" data-i18n-aria-label="shared.nav.header" style="margin-top:10px;border-top:1px solid var(--border);padding-top:10px;">
+    <div style="font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;" data-i18n="shared.nav.header">Related Hebrew Tools</div>
+    <ul style="list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;justify-content:center;gap:2px 18px;">
+      <li><a href="flash_cards.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_flashcards">Hebrew alphabet flash cards →</a></li>
+      <li><a href="hebrew_blend_generator.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_worksheets">printable Hebrew worksheets →</a></li>
+      <li><a href="hebrew_dictionary.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_dictionary">Hebrew word lookup →</a></li>
+      <li><a href="classroom_dashboard.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_dashboard">Hebrew classroom display →</a></li>
+      <li><a href="torah_trainer.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_torah">Torah reading practice →</a></li>
+      <li><a href="trope_tutor.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_trope">learn Torah trope (cantillation) →</a></li>
+      <li><a href="Hebrew_Font_Maker.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_fontmaker">make your own Hebrew font →</a></li>
+      <li><a href="resources.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_resources">free Hebrew teaching resources →</a></li>
+    </ul>
+  </nav>
+</footer>
+
+<!-- Guided "Take a tour" coach-mark (non-modal spotlight; see tourStart) -->
+<div class="tour-spot" id="tourSpot" hidden></div>
+<div class="tour-card" id="tourCard" role="dialog" aria-modal="false" aria-labelledby="tourCardTitle" aria-describedby="tourCardBody" hidden>
+  <button class="tour-x" id="tourClose" aria-label="End tour" data-i18n-aria-label="shared.tour.end" onclick="tourEnd(false)"><svg class="hi hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
+  <h4 id="tourCardTitle"></h4>
+  <p id="tourCardBody"></p>
+  <div class="tour-meta">
+    <span id="tourStep"></span>
+    <span class="tour-btns">
+      <button class="ll-btn ghost" id="tourBack" onclick="tourPrev()" data-i18n="shared.tour.back">Back</button>
+      <button class="ll-btn" id="tourNext" onclick="tourNext()" data-i18n="shared.tour.next">Next</button>
+    </span>
+  </div>
+</div>
+<span id="a11yStatus" role="status" aria-live="polite" class="vh"></span>
+
+<script id="letter-data">
+/* ═══════════════════════════════════════════════════════════════════════════════════════════════
+   LETTER_DATA — the learner content. Batches 2–6 are pasted into this array (any order; the grid
+   orders itself by ALEFBET in the app script). A malformed entry never breaks the page: the
+   validator drops the bad field, warns in the console, and the card falls back to "coming soon".
+
+   One entry per CARD:
+     id         'alef' … 'tav', the pair halves 'vet' 'chaf' 'fe' 'sin', and the finals 'kaf_sofit'
+                'mem_sofit' 'nun_sofit' 'pe_sofit' 'tzadi_sofit' — the ?letter= value and the sheet label
+     glyph      the bare letter as typed, dagesh / shin dot included ('בּ', 'שׁ', 'שׂ', 'ך');
+                the Vowels tab appends each vowel sign to it at run time — never type a vowel here
+     name       the English name shown to the learner (content: it stays English in the Hebrew UI)
+     sound      the consonant sound label under the bare letter ('g'; 'silent' for alef and ayin)
+     consonant  the transliteration prefix: consonant + template → 'g' + 'ah' = 'gah' ('' for alef/ayin)
+     final      (finals only) the base card's id ('kaf'): the card gets Letter + Fonts, and Vowels only
+                when it also lists `vowels`
+     vowels     (optional) the vowel ids the Vowels tab is limited to, e.g. ['sheva', 'kamatz'] on ך
+     pairWith   (optional) the other half of a dagesh / shin-dot pair ('vet' on bet, 'bet' on vet…);
+                the "Separate cards" option folds the partner into the base card's Special forms tab
+     hint       (optional) { caption, show, variants: [{ label, svg }, …] } — the memory hint. `caption`
+                is shown verbatim. `variants[show]` (default 0) is the drawing on the page; the review
+                sheet renders every variant, so alternatives can stay here until one is chosen.
+     words      (optional) [{ he, tr, en, svg }, …] — Hebrew with nikkud (type vav-holam as ו then U+05B9),
+                transliteration, English gloss, drawing. The renderer highlights the card's letter.
+     special    (optional) [{ he, tr, vowel }, …] — vav's וֹ / וּ: the form, its sound, the vowel id whose
+                name labels it. A folded pair partner is added by the renderer, never listed here.
+
+   Every `svg` is the INNER markup of a 100×100 drawing (the page adds <svg viewBox="0 0 100 100"
+   role="img" aria-label="…"> around it): a template literal (backticks) that must contain NO backtick,
+   NO ${ and NO </script. Allowed: path circle ellipse rect line polyline polygon g, with fill/stroke
+   set only to none, currentColor or var(--ll-<token>) (the palette in :root above — dark mode re-tints
+   it). Not allowed: id, style, <text>, <defs>, url(), href, on*= attributes. A moving part sits in
+   <g class="ll-anim ll-anim-swing"> (also swing-l, bob, sway, open, open-r, blink, drift). An empty string
+   means "no drawing yet".
+   ═══════════════════════════════════════════════════════════════════════════════════════════════ */
+const LETTER_DATA = [
+  { id: 'alef', glyph: 'א', name: 'Alef', sound: 'silent', consonant: '',
+    hint: { caption: 'ALEF is quiet as an ANT — it has no sound of its own', show: 0, variants: [
+      { label: 'A', svg: `<ellipse cx="50" cy="90" rx="47" ry="7" fill="var(--ll-grass)"/><path d="M4 90Q50 83 96 90" fill="none" stroke="var(--ll-grass-dk)" stroke-width="1.3"/><g transform="translate(8 2) scale(0.86)"><path d="M73.9 94Q73.7 92.8 73 91Q72.3 89.2 69.8 86.4L21.7 31.8Q19.5 29.4 18.7 26.6Q17.9 23.9 17.9 21.5Q18 16.9 20 12.9Q22.1 9 23.5 6H26.3V7Q26.3 9.2 27.6 10.8Q28.9 12.4 30.3 14.2L75.8 65.7Q78.2 68.3 79.9 71.8Q81.7 75.2 81.7 79.6Q81.7 84 79.9 87.5Q78.2 91 76.3 94ZM15.9 92.4V87.6H18.9Q21 87.6 21.3 85.7Q21.5 83.8 20.4 78.6L18.9 71.1Q18 66.9 18.2 63.7Q18.3 60.6 19.9 57.2Q21.5 53.8 25 48.5L31.3 39.1L35.5 44.3L31.7 50.3Q29.8 53.3 29.5 56.2Q29.1 59.1 30.2 61.4L36.9 74.6Q39.7 80.2 40.1 84.3Q40.6 88.4 38.9 92.4ZM67.1 57.7 60.5 50.3Q60.5 48.2 61.9 45.7Q63.3 43.1 65.2 41L69.3 36.1L74.1 36.8L71.4 40.8Q69.3 44.1 68.2 46.9Q67.2 49.7 67 52.3Q66.9 54.8 67.1 57.7ZM79.8 40Q79.3 38.8 78.4 38.3Q77.4 37.7 74.6 37.3L66 36.1Q60.7 35.4 58.8 32.1Q57 28.7 57 24.4Q57 18.2 58.9 13.2Q60.9 8.2 61.8 6H64.6V8.2Q64.6 10.2 65.4 11.3Q66.3 12.5 68.9 12.8L76.5 13.8Q80.7 14.4 82.4 17.8Q84.1 21.2 84.1 26Q84.1 29.4 83.3 33Q82.5 36.6 81.2 40Z" fill="var(--ll-line)"/></g><circle cx="68" cy="11" r="8.5" fill="var(--ll-line)"/><circle cx="65.5" cy="9.5" r="2" fill="var(--ll-paper)"/><circle cx="71" cy="9.5" r="2" fill="var(--ll-paper)"/><circle cx="66" cy="9.8" r="0.9" fill="var(--ll-line)"/><circle cx="71.5" cy="9.8" r="0.9" fill="var(--ll-line)"/><path d="M66 15Q68.5 16.5 71 15" fill="none" stroke="var(--ll-paper)" stroke-width="1.2" stroke-linecap="round"/><path d="M63 4L59 1.5M73 4L77 1.5" fill="none" stroke="var(--ll-line)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="58.5" cy="1.5" r="1.4" fill="var(--ll-line)"/><circle cx="77.5" cy="1.5" r="1.4" fill="var(--ll-line)"/><path d="M40 35l-8 2l-3 5M46 42l-8 3l-2 6M52 49l-8 4l-1 6M48 36l8-4l3-5M54 43l8-4l2-6M60 50l8-3l2-6" fill="none" stroke="var(--ll-line)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><g transform="translate(4 6)"><circle cx="9" cy="9" r="9" fill="var(--ll-paper)" stroke="var(--ll-line)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.5 7h2.5L10.5 4.2v9.6L7 11H4.5z" fill="var(--ll-line)"/><path d="M12.5 6.5l4 5M16.5 6.5l-4 5" fill="none" stroke="var(--ll-line)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></g>` },
+      { label: 'B', svg: `<ellipse cx="50" cy="90" rx="47" ry="7" fill="var(--ll-grass)"/><path d="M4 90Q50 83 96 90" fill="none" stroke="var(--ll-grass-dk)" stroke-width="1.3"/><g transform="translate(6 0) scale(0.86)"><path d="M73.9 94Q73.7 92.8 73 91Q72.3 89.2 69.8 86.4L21.7 31.8Q19.5 29.4 18.7 26.6Q17.9 23.9 17.9 21.5Q18 16.9 20 12.9Q22.1 9 23.5 6H26.3V7Q26.3 9.2 27.6 10.8Q28.9 12.4 30.3 14.2L75.8 65.7Q78.2 68.3 79.9 71.8Q81.7 75.2 81.7 79.6Q81.7 84 79.9 87.5Q78.2 91 76.3 94ZM15.9 92.4V87.6H18.9Q21 87.6 21.3 85.7Q21.5 83.8 20.4 78.6L18.9 71.1Q18 66.9 18.2 63.7Q18.3 60.6 19.9 57.2Q21.5 53.8 25 48.5L31.3 39.1L35.5 44.3L31.7 50.3Q29.8 53.3 29.5 56.2Q29.1 59.1 30.2 61.4L36.9 74.6Q39.7 80.2 40.1 84.3Q40.6 88.4 38.9 92.4ZM67.1 57.7 60.5 50.3Q60.5 48.2 61.9 45.7Q63.3 43.1 65.2 41L69.3 36.1L74.1 36.8L71.4 40.8Q69.3 44.1 68.2 46.9Q67.2 49.7 67 52.3Q66.9 54.8 67.1 57.7ZM79.8 40Q79.3 38.8 78.4 38.3Q77.4 37.7 74.6 37.3L66 36.1Q60.7 35.4 58.8 32.1Q57 28.7 57 24.4Q57 18.2 58.9 13.2Q60.9 8.2 61.8 6H64.6V8.2Q64.6 10.2 65.4 11.3Q66.3 12.5 68.9 12.8L76.5 13.8Q80.7 14.4 82.4 17.8Q84.1 21.2 84.1 26Q84.1 29.4 83.3 33Q82.5 36.6 81.2 40Z" fill="var(--ll-line)"/></g><circle cx="69" cy="12" r="8.5" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="65.77" cy="10.3" r="1.105" fill="var(--ll-line)"/><circle cx="72.23" cy="10.3" r="1.105" fill="var(--ll-line)"/><path d="M66.45 15.57H71.55" fill="none" stroke="var(--ll-line)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="72.57" cy="20.075" r="2.89" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/><rect x="67.98" y="12.17" width="2.04" height="8.075" rx="1.02" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/><g transform="translate(12 72) scale(1.15)"><path d="M3 8l-3-4M3 8l-2 4M7 8l-1-5M7 8l0 5M11 8l2-5M11 8l2 5" fill="none" stroke="var(--ll-line)" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="3" cy="8" rx="3" ry="2.4" fill="var(--ll-line)"/><ellipse cx="7.5" cy="8" rx="2.4" ry="2" fill="var(--ll-line)"/><ellipse cx="12" cy="7.5" rx="2.8" ry="2.6" fill="var(--ll-line)"/><path d="M13.5 5.5l2-3.5M14.5 5.8l3-2" fill="none" stroke="var(--ll-line)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/><circle cx="13" cy="7" r="0.7" fill="var(--ll-white)"/></g><g transform="translate(34 78) scale(0.9)"><path d="M3 8l-3-4M3 8l-2 4M7 8l-1-5M7 8l0 5M11 8l2-5M11 8l2 5" fill="none" stroke="var(--ll-line)" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="3" cy="8" rx="3" ry="2.4" fill="var(--ll-line)"/><ellipse cx="7.5" cy="8" rx="2.4" ry="2" fill="var(--ll-line)"/><ellipse cx="12" cy="7.5" rx="2.8" ry="2.6" fill="var(--ll-line)"/><path d="M13.5 5.5l2-3.5M14.5 5.8l3-2" fill="none" stroke="var(--ll-line)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/><circle cx="13" cy="7" r="0.7" fill="var(--ll-white)"/></g><path d="M24 84q2 -1 4 0M46 86q2 -1 4 0" fill="none" stroke="var(--ll-gray-dk)" stroke-width="1" stroke-linecap="round"/><g transform="translate(78 56)"><circle cx="9" cy="9" r="9" fill="var(--ll-paper)" stroke="var(--ll-line)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.5 7h2.5L10.5 4.2v9.6L7 11H4.5z" fill="var(--ll-line)"/><path d="M12.5 6.5l4 5M16.5 6.5l-4 5" fill="none" stroke="var(--ll-line)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></g>` } ] },
+    words: [
+      { he: 'אַבָּא', tr: 'abba', en: 'dad', svg: `<path d="M22 100V78Q22 64 36 64H64Q78 64 78 78V100Z" fill="var(--ll-blue)" stroke="var(--ll-line)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M50 64L43 74L50 84L57 74Z" fill="var(--ll-white)" stroke="var(--ll-line)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="78" r="1.1" fill="var(--ll-line)"/><circle cx="50" cy="83" r="1.1" fill="var(--ll-line)"/><path d="M36 64L50 66L64 64" fill="none" stroke="var(--ll-line)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M78 80L90 60" fill="none" stroke="var(--ll-line)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><path d="M78 80L90 60" fill="none" stroke="var(--ll-blue)" stroke-width="4.5" stroke-linecap="round"/><circle cx="90" cy="54" r="6.5" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M86 49V43M89.5 48V41M93 49V43M96 51l2-5" fill="none" stroke="var(--ll-skin)" stroke-width="3" stroke-linecap="round"/><path d="M86 49V43M89.5 48V41M93 49V43M96 51l2-5" fill="none" stroke="var(--ll-line)" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 80L12 96" fill="none" stroke="var(--ll-line)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 80L12 96" fill="none" stroke="var(--ll-blue)" stroke-width="4.5" stroke-linecap="round"/><path d="M50 36Q37 36 36 50Q36 62 50 64Q64 62 64 50Q63 36 50 36Z" fill="var(--ll-brown-dk)" stroke="var(--ll-line)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="40" r="17" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M35 44Q36 56 50 58Q64 56 65 44Q60 50 50 50Q40 50 35 44Z" fill="var(--ll-brown-dk)"/><path d="M33 36Q36 20 50 22Q64 20 67 36Q58 30 50 31Q42 30 33 36Z" fill="var(--ll-brown-dk)"/><path d="M39 22Q50 12 61 22Q50 19 39 22Z" fill="var(--ll-blue)" stroke="var(--ll-line)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M44 20.5Q50 15.5 56 20.5" fill="none" stroke="var(--ll-white)" stroke-width="1" opacity="0.7"/><circle cx="33" cy="42" r="3" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="67" cy="42" r="3" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M41 36q3 -2 6 0M53 36q3 -2 6 0" fill="none" stroke="var(--ll-line)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="44" cy="40" r="2.2" fill="var(--ll-white)" stroke="var(--ll-line)" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/><circle cx="44.44" cy="40" r="1.1" fill="var(--ll-line)"/><circle cx="56" cy="40" r="2.2" fill="var(--ll-white)" stroke="var(--ll-line)" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/><circle cx="56.44" cy="40" r="1.1" fill="var(--ll-line)"/><path d="M50 42v5l2.5 1" fill="none" stroke="var(--ll-line)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M44 50Q50 54 56 50" fill="none" stroke="var(--ll-red)" stroke-width="1.8" stroke-linecap="round"/>` },
+      { he: 'אִמָּא', tr: 'ima', en: 'mom', svg: `<path d="M22 100V76Q22 62 36 62H64Q78 62 78 76V100Z" fill="var(--ll-pink)" stroke="var(--ll-line)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M36 62Q50 70 64 62" fill="none" stroke="var(--ll-line)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M42 68Q50 76 58 68" fill="none" stroke="var(--ll-gold)" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="0.1 3.4"/><path d="M78 80L90 58" fill="none" stroke="var(--ll-line)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><path d="M78 80L90 58" fill="none" stroke="var(--ll-pink)" stroke-width="4.5" stroke-linecap="round"/><circle cx="90" cy="52" r="6.5" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M86 47V41M89.5 46V39M93 47V41M96 49l2-5" fill="none" stroke="var(--ll-skin)" stroke-width="3" stroke-linecap="round"/><path d="M86 47V41M89.5 46V39M93 47V41M96 49l2-5" fill="none" stroke="var(--ll-line)" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 80L12 96" fill="none" stroke="var(--ll-line)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 80L12 96" fill="none" stroke="var(--ll-pink)" stroke-width="4.5" stroke-linecap="round"/><path d="M31 40Q31 20 50 20Q69 20 69 40L66 58H34Z" fill="var(--ll-brown)" stroke="var(--ll-line)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="18" r="8" fill="var(--ll-brown)" stroke="var(--ll-line)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M45 14Q50 11 55 14" fill="none" stroke="var(--ll-brown-dk)" stroke-width="1.3"/><circle cx="50" cy="42" r="16" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M34 38Q38 26 50 27Q62 26 66 38Q58 32 50 33Q42 32 34 38Z" fill="var(--ll-brown)"/><circle cx="34" cy="44" r="3" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="66" cy="44" r="3" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="34" cy="50" r="1.8" fill="var(--ll-gold)" stroke="var(--ll-line)" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="66" cy="50" r="1.8" fill="var(--ll-gold)" stroke="var(--ll-line)" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M41 38q3 -2 6 0M53 38q3 -2 6 0" fill="none" stroke="var(--ll-line)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="44" cy="42" r="2.2" fill="var(--ll-white)" stroke="var(--ll-line)" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/><circle cx="44.44" cy="42" r="1.1" fill="var(--ll-line)"/><circle cx="56" cy="42" r="2.2" fill="var(--ll-white)" stroke="var(--ll-line)" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/><circle cx="56.44" cy="42" r="1.1" fill="var(--ll-line)"/><path d="M41 40l-2 -1M59 40l2 -1" fill="none" stroke="var(--ll-line)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/><path d="M50 44v4l2 1" fill="none" stroke="var(--ll-line)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M44 51Q50 56 56 51" fill="none" stroke="var(--ll-red)" stroke-width="1.8" stroke-linecap="round"/><circle cx="39" cy="48" r="2.5" fill="var(--ll-pink)" opacity="0.6"/><circle cx="61" cy="48" r="2.5" fill="var(--ll-pink)" opacity="0.6"/>` },
+      { he: 'אַרְיֵה', tr: 'aryeh', en: 'lion', svg: `<path d="M26 92Q30 70 50 70Q70 70 74 92Z" fill="var(--ll-orange)" stroke="var(--ll-line)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M74 86Q90 84 88 70" fill="none" stroke="var(--ll-line)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M74 86Q90 84 88 70" fill="none" stroke="var(--ll-orange)" stroke-width="1.8" stroke-linecap="round"/><circle cx="88" cy="68" r="4" fill="var(--ll-brown)" stroke="var(--ll-line)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="34" cy="92" rx="7" ry="4" fill="var(--ll-orange)" stroke="var(--ll-line)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="66" cy="92" rx="7" ry="4" fill="var(--ll-orange)" stroke="var(--ll-line)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M30 92v2M34 92v2M38 92v2M62 92v2M66 92v2M70 92v2" fill="none" stroke="var(--ll-line)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/><path d="M72.0 44.0L84.0 50.0L84.0 38.0Z" fill="var(--ll-brown)" stroke="var(--ll-line)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M70.1 52.9L78.6 63.3L83.5 52.3Z" fill="var(--ll-brown)" stroke="var(--ll-line)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M64.7 60.3L68.3 73.3L77.2 65.3Z" fill="var(--ll-brown)" stroke="var(--ll-line)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M56.8 64.9L54.8 78.2L66.2 74.5Z" fill="var(--ll-brown)" stroke="var(--ll-line)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M47.7 65.9L40.5 77.2L52.4 78.4Z" fill="var(--ll-brown)" stroke="var(--ll-line)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M39.0 63.1L27.8 70.4L38.2 76.4Z" fill="var(--ll-brown)" stroke="var(--ll-line)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M32.2 56.9L19.0 59.1L26.0 68.8Z" fill="var(--ll-brown)" stroke="var(--ll-line)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M28.5 48.6L15.5 45.2L18.0 56.9Z" fill="var(--ll-brown)" stroke="var(--ll-line)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M28.5 39.4L18.0 31.1L15.5 42.8Z" fill="var(--ll-brown)" stroke="var(--ll-line)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M32.2 31.1L26.0 19.2L19.0 28.9Z" fill="var(--ll-brown)" stroke="var(--ll-line)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M39.0 24.9L38.2 11.6L27.8 17.6Z" fill="var(--ll-brown)" stroke="var(--ll-line)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M47.7 22.1L52.4 9.6L40.5 10.8Z" fill="var(--ll-brown)" stroke="var(--ll-line)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M56.8 23.1L66.2 13.5L54.8 9.8Z" fill="var(--ll-brown)" stroke="var(--ll-line)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M64.7 27.7L77.2 22.7L68.3 14.7Z" fill="var(--ll-brown)" stroke="var(--ll-line)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M70.1 35.1L83.5 35.7L78.6 24.7Z" fill="var(--ll-brown)" stroke="var(--ll-line)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="44" r="23" fill="var(--ll-orange)" stroke="var(--ll-line)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="31" cy="27" r="6" fill="var(--ll-orange)" stroke="var(--ll-line)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="31" cy="27" r="2.8" fill="var(--ll-skin)"/><circle cx="69" cy="27" r="6" fill="var(--ll-orange)" stroke="var(--ll-line)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="69" cy="27" r="2.8" fill="var(--ll-skin)"/><ellipse cx="50" cy="54" rx="11" ry="8" fill="var(--ll-skin)"/><circle cx="42" cy="40" r="2.6" fill="var(--ll-white)" stroke="var(--ll-line)" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/><circle cx="42.52" cy="40" r="1.3" fill="var(--ll-line)"/><circle cx="58" cy="40" r="2.6" fill="var(--ll-white)" stroke="var(--ll-line)" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/><circle cx="58.52" cy="40" r="1.3" fill="var(--ll-line)"/><path d="M38 35q4 -3 8 0M54 35q4 -3 8 0" fill="none" stroke="var(--ll-line)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M46 48L54 48L50 53Z" fill="var(--ll-brown-dk)" stroke="var(--ll-line)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M50 53V57M50 57Q46 60 43 57M50 57Q54 60 57 57" fill="none" stroke="var(--ll-line)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M38 52l-10 -2M38 55l-10 1M62 52l10 -2M62 55l10 1" fill="none" stroke="var(--ll-line)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/><circle cx="46" cy="51" r="0.8" fill="var(--ll-line)"/><circle cx="54" cy="51" r="0.8" fill="var(--ll-line)"/>` },
+      { he: 'אֲבַטִּיחַ', tr: 'avatiach', en: 'watermelon', svg: `<ellipse cx="36" cy="40" rx="30" ry="25" fill="var(--ll-green)" stroke="var(--ll-line)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 18Q12 40 22 62M36 15Q30 40 36 65M50 18Q58 40 50 62M10 30Q6 40 10 52M62 30Q66 40 62 52" fill="none" stroke="var(--ll-green-dk)" stroke-width="3.2" stroke-linecap="round"/><path d="M36 15Q38 9 44 8" fill="none" stroke="var(--ll-brown)" stroke-width="2.4" stroke-linecap="round"/><path d="M18 28Q20 22 26 20" fill="none" stroke="var(--ll-white)" stroke-width="1.8" opacity="0.6" stroke-linecap="round"/><path d="M24 60H96A36 36 0 0 1 24 60Z" fill="var(--ll-green-dk)" stroke="var(--ll-line)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M28 60H92A32 32 0 0 1 28 60Z" fill="var(--ll-white)"/><path d="M31 60H89A29 29 0 0 1 31 60Z" fill="var(--ll-red)"/><path d="M24 60H96" fill="none" stroke="var(--ll-line)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="42" cy="68" rx="1.6" ry="2.6" fill="var(--ll-line)"/><ellipse cx="54" cy="66" rx="1.6" ry="2.6" fill="var(--ll-line)"/><ellipse cx="66" cy="68" rx="1.6" ry="2.6" fill="var(--ll-line)"/><ellipse cx="78" cy="70" rx="1.6" ry="2.6" fill="var(--ll-line)"/><ellipse cx="48" cy="78" rx="1.6" ry="2.6" fill="var(--ll-line)"/><ellipse cx="60" cy="80" rx="1.6" ry="2.6" fill="var(--ll-line)"/><ellipse cx="72" cy="78" rx="1.6" ry="2.6" fill="var(--ll-line)"/><ellipse cx="60" cy="72" rx="1.6" ry="2.6" fill="var(--ll-line)"/><path d="M36 64Q44 72 52 76" fill="none" stroke="var(--ll-white)" stroke-width="1.6" opacity="0.5" stroke-linecap="round"/>` } ] },
+  { id: 'bet', glyph: 'בּ', name: 'Bet', sound: 'b', consonant: 'b', pairWith: 'vet',
+    hint: { caption: 'BET has a BELLY BUTTON', show: 0, variants: [
+      { label: 'A', svg: `<ellipse cx="54" cy="92" rx="36" ry="4" fill="var(--ll-gray)" opacity="0.35"/><g transform="translate(14 5) scale(0.9)"><path d="M18.8 94 23.2 70.2H64.4Q66.3 66.3 67.2 63.5Q68.2 60.7 68.6 58Q69 55.3 69 51.7Q69 45.9 68 42.9Q67 39.8 64.6 38.6Q62.1 37.4 57.6 37.4H32Q26.8 37.4 24.7 34.6Q22.5 31.7 22.5 26.3Q22.5 21.3 23.6 17.1Q24.6 12.8 25.7 9.8Q26.8 6.8 27.3 6H30.1V9.2Q30.1 11.1 31.1 12Q32.1 12.9 33.4 12.9H62Q66.2 12.9 69.4 14.6Q72.6 16.3 74.5 19.7Q76.3 23.2 76.3 28.7V49.8Q76.3 57 74.6 62.1Q72.9 67.2 71.4 70.2H81.2L76.8 94Z" fill="var(--ll-line)"/></g><ellipse cx="56" cy="55" rx="15" ry="13.5" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M46 50Q50 43 58 44" fill="none" stroke="var(--ll-white)" stroke-width="1.6" stroke-linecap="round" opacity="0.7"/><circle cx="56" cy="57" r="3.2" fill="var(--ll-line)"/><circle cx="57" cy="27" r="8" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="53.96" cy="25.4" r="1.04" fill="var(--ll-line)"/><circle cx="60.04" cy="25.4" r="1.04" fill="var(--ll-line)"/><path d="M53.4 29.4Q57 33 60.6 29.4" fill="none" stroke="var(--ll-line)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M44 33Q35 38 37 47" fill="none" stroke="var(--ll-line)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="37.5" cy="48" r="3" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M86 42Q96 40 93 50" fill="none" stroke="var(--ll-line)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="92.5" cy="51" r="3" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>` },
+      { label: 'B', svg: `<ellipse cx="54" cy="92" rx="36" ry="4" fill="var(--ll-gray)" opacity="0.35"/><g transform="translate(14 5) scale(0.9)"><path d="M18.8 94 23.2 70.2H64.4Q66.3 66.3 67.2 63.5Q68.2 60.7 68.6 58Q69 55.3 69 51.7Q69 45.9 68 42.9Q67 39.8 64.6 38.6Q62.1 37.4 57.6 37.4H32Q26.8 37.4 24.7 34.6Q22.5 31.7 22.5 26.3Q22.5 21.3 23.6 17.1Q24.6 12.8 25.7 9.8Q26.8 6.8 27.3 6H30.1V9.2Q30.1 11.1 31.1 12Q32.1 12.9 33.4 12.9H62Q66.2 12.9 69.4 14.6Q72.6 16.3 74.5 19.7Q76.3 23.2 76.3 28.7V49.8Q76.3 57 74.6 62.1Q72.9 67.2 71.4 70.2H81.2L76.8 94Z" fill="var(--ll-line)"/></g><ellipse cx="56" cy="55" rx="15" ry="13.5" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="56" cy="57" r="3.2" fill="var(--ll-line)"/><circle cx="56" cy="57" r="6" fill="none" stroke="var(--ll-accent)" stroke-width="1.4" stroke-dasharray="2 2"/><circle cx="57" cy="27" r="8" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="53.96" cy="25.4" r="1.04" fill="var(--ll-line)"/><circle cx="60.04" cy="25.4" r="1.04" fill="var(--ll-line)"/><path d="M60 17Q60 10 66 11" fill="none" stroke="var(--ll-line)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="57" cy="31.5" r="2.6" fill="var(--ll-pink)" stroke="var(--ll-line)" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/><circle cx="57" cy="31.5" r="4.6" fill="none" stroke="var(--ll-pink-dk)" stroke-width="1.4"/><path d="M44 33Q35 38 37 47" fill="none" stroke="var(--ll-line)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="37.5" cy="48" r="3" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M86 42Q96 40 93 50" fill="none" stroke="var(--ll-line)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="92.5" cy="51" r="3" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>` } ] },
+    words: [
+      { he: 'בַּיִת', tr: 'bayit', en: 'house', svg: `<path d="M4 94H96" fill="none" stroke="var(--ll-grass-dk)" stroke-width="2.4"/><rect x="22" y="50" width="56" height="44" fill="var(--ll-paper)" stroke="var(--ll-line)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><rect x="66" y="22" width="9" height="18" fill="var(--ll-red-dk)" stroke="var(--ll-line)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="64" y="20" width="13" height="4" fill="var(--ll-red-dk)" stroke="var(--ll-line)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="72" cy="15" r="3" fill="var(--ll-gray)" opacity="0.7"/><circle cx="76" cy="9" r="3.6" fill="var(--ll-gray)" opacity="0.6"/><circle cx="82" cy="4" r="3" fill="var(--ll-gray)" opacity="0.45"/><path d="M14 52L50 20L86 52Z" fill="var(--ll-red)" stroke="var(--ll-line)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 52L50 27L78 52" fill="none" stroke="var(--ll-red-dk)" stroke-width="1.4"/><rect x="42" y="66" width="16" height="28" rx="1" fill="var(--ll-wood)" stroke="var(--ll-line)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M45 70h10v9h-10zM45 82h10v8h-10z" fill="var(--ll-wood-dk)" opacity="0.5"/><circle cx="54.5" cy="80" r="1.6" fill="var(--ll-gold)"/><rect x="27" y="58" width="11" height="11" fill="var(--ll-sky)" stroke="var(--ll-line)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M32.5 58v11M27 63.5h11" fill="none" stroke="var(--ll-line)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="26" y="69" width="13" height="2" fill="var(--ll-wood)"/><rect x="62" y="58" width="11" height="11" fill="var(--ll-sky)" stroke="var(--ll-line)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M67.5 58v11M62 63.5h11" fill="none" stroke="var(--ll-line)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="61" y="69" width="13" height="2" fill="var(--ll-wood)"/><circle cx="14" cy="88" r="7" fill="var(--ll-green)" stroke="var(--ll-line)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="86" cy="88" r="7" fill="var(--ll-green)" stroke="var(--ll-line)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M42 94Q50 100 58 94" fill="none" stroke="var(--ll-gray)" stroke-width="2.6" stroke-linecap="round"/><circle cx="12" cy="14" r="6" fill="var(--ll-yellow)" stroke="var(--ll-orange)" stroke-width="1.4"/><path d="M20.5 14.0L24.0 14.0" stroke="var(--ll-orange)" stroke-width="1.6" stroke-linecap="round"/><path d="M18.0 20.0L20.5 22.5" stroke="var(--ll-orange)" stroke-width="1.6" stroke-linecap="round"/><path d="M12.0 22.5L12.0 26.0" stroke="var(--ll-orange)" stroke-width="1.6" stroke-linecap="round"/><path d="M6.0 20.0L3.5 22.5" stroke="var(--ll-orange)" stroke-width="1.6" stroke-linecap="round"/><path d="M3.5 14.0L0.0 14.0" stroke="var(--ll-orange)" stroke-width="1.6" stroke-linecap="round"/><path d="M6.0 8.0L3.5 5.5" stroke="var(--ll-orange)" stroke-width="1.6" stroke-linecap="round"/><path d="M12.0 5.5L12.0 2.0" stroke="var(--ll-orange)" stroke-width="1.6" stroke-linecap="round"/><path d="M18.0 8.0L20.5 5.5" stroke="var(--ll-orange)" stroke-width="1.6" stroke-linecap="round"/>` },
+      { he: 'בָּנָנָה', tr: 'banana', en: 'banana', svg: `<path d="M44 14L56 12L60 22L48 24Z" fill="var(--ll-brown)" stroke="var(--ll-line)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M48 22Q20 36 18 64Q18 82 36 86Q44 86 46 80Q30 78 30 62Q32 40 52 24Z" fill="var(--ll-yellow)" stroke="var(--ll-line)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M30 62Q32 40 52 24L48 22Q32 36 30 62Z" fill="var(--ll-gold)" opacity="0.5"/><path d="M36 86Q44 86 46 80" fill="none" stroke="var(--ll-brown-dk)" stroke-width="2.4" stroke-linecap="round"/><path d="M52 22Q32 48 40 74Q44 90 60 92Q68 92 68 86Q54 84 52 68Q50 46 60 24Z" fill="var(--ll-yellow)" stroke="var(--ll-line)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M52 68Q50 46 60 24L56 22Q48 46 52 68Z" fill="var(--ll-gold)" opacity="0.5"/><path d="M60 92Q68 92 68 86" fill="none" stroke="var(--ll-brown-dk)" stroke-width="2.4" stroke-linecap="round"/><path d="M58 22Q58 50 72 72Q80 84 92 84Q98 84 96 78Q84 76 78 64Q68 46 66 22Z" fill="var(--ll-yellow)" stroke="var(--ll-line)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M66 22Q68 46 78 64L74 66Q62 48 62 22Z" fill="var(--ll-gold)" opacity="0.5"/><path d="M92 84Q98 84 96 78" fill="none" stroke="var(--ll-brown-dk)" stroke-width="2.4" stroke-linecap="round"/><path d="M38 50l1 3M34 58l1 3M66 62l1 3M60 50l1 3" fill="none" stroke="var(--ll-brown)" stroke-width="1.2" stroke-linecap="round"/><path d="M44 30Q38 40 36 50M58 30Q56 42 58 54" fill="none" stroke="var(--ll-white)" stroke-width="1.4" opacity="0.7" stroke-linecap="round"/>` },
+      { he: 'בַּקְבּוּק', tr: 'bakbuk', en: 'bottle', svg: `<rect x="42" y="4" width="16" height="10" rx="2" fill="var(--ll-blue)" stroke="var(--ll-line)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M45 6v6M49 6v6M53 6v6" fill="none" stroke="var(--ll-blue-dk)" stroke-width="1"/><path d="M44 14H56V22Q66 26 66 36V88Q66 96 58 96H42Q34 96 34 88V36Q34 26 44 22Z" fill="var(--ll-sky)" stroke="var(--ll-line)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M36 44V88Q36 94 42 94H58Q64 94 64 88V44Z" fill="var(--ll-blue)" opacity="0.55"/><path d="M36 44Q43 40 50 44Q57 48 64 44" fill="none" stroke="var(--ll-blue-dk)" stroke-width="1.6"/><rect x="34" y="54" width="32" height="20" fill="var(--ll-paper)" stroke="var(--ll-line)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M38 62Q44 56 50 62Q56 68 62 62" fill="none" stroke="var(--ll-blue)" stroke-width="2.2" stroke-linecap="round"/><path d="M38 68h12M54 68h8" fill="none" stroke="var(--ll-gray)" stroke-width="1.6" stroke-linecap="round"/><path d="M38 30h24M38 36h24M38 80h24M38 86h24" fill="none" stroke="var(--ll-blue-dk)" stroke-width="1" opacity="0.5"/><path d="M40 26V90" fill="none" stroke="var(--ll-white)" stroke-width="2.2" opacity="0.6" stroke-linecap="round"/><circle cx="56" cy="80" r="1.4" fill="var(--ll-white)" opacity="0.8"/><circle cx="58" cy="86" r="1" fill="var(--ll-white)" opacity="0.8"/><circle cx="54" cy="90" r="1.2" fill="var(--ll-white)" opacity="0.8"/>` },
+      { he: 'בֶּגֶד', tr: 'beged', en: 'clothing', svg: `<path d="M50 4Q44 4 44 9Q44 13 50 14V20" fill="none" stroke="var(--ll-line)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M50 20L16 38H84Z" fill="none" stroke="var(--ll-line)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M34 34L20 42L8 60L22 66L26 60V92H74V60L78 66L92 60L80 42L66 34Z" fill="var(--ll-blue)" stroke="var(--ll-line)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M26 60L8 60M74 60L92 60" fill="none" stroke="var(--ll-line)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M34 34L42 30L50 44L58 30L66 34L50 48Z" fill="var(--ll-white)" stroke="var(--ll-line)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M50 44V92" fill="none" stroke="var(--ll-line)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M46 44V92M54 44V92" fill="none" stroke="var(--ll-blue-dk)" stroke-width="1" opacity="0.6"/><circle cx="50" cy="52" r="1.6" fill="var(--ll-white)"/><circle cx="50" cy="62" r="1.6" fill="var(--ll-white)"/><circle cx="50" cy="72" r="1.6" fill="var(--ll-white)"/><circle cx="50" cy="82" r="1.6" fill="var(--ll-white)"/><circle cx="50" cy="52" r="1.6" fill="none" stroke="var(--ll-line)" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="62" r="1.6" fill="none" stroke="var(--ll-line)" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="72" r="1.6" fill="none" stroke="var(--ll-line)" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="82" r="1.6" fill="none" stroke="var(--ll-line)" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="58" y="54" width="10" height="9" fill="none" stroke="var(--ll-line)" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/><path d="M28 92h44" fill="none" stroke="var(--ll-blue-dk)" stroke-width="1.2" stroke-dasharray="2 2"/>` } ] },
+  { id: 'vet', glyph: 'ב', name: 'Vet', sound: 'v', consonant: 'v', pairWith: 'bet',
+    hint: { caption: "VET is BET's quiet twin: no belly button, no /b/", show: 0, variants: [
+      { label: 'A', svg: `<ellipse cx="50" cy="92" rx="44" ry="4" fill="var(--ll-gray)" opacity="0.35"/><g opacity="0.38"><g transform="translate(62 30) scale(0.45)"><path d="M18.8 94 23.2 70.2H64.4Q66.3 66.3 67.2 63.5Q68.2 60.7 68.6 58Q69 55.3 69 51.7Q69 45.9 68 42.9Q67 39.8 64.6 38.6Q62.1 37.4 57.6 37.4H32Q26.8 37.4 24.7 34.6Q22.5 31.7 22.5 26.3Q22.5 21.3 23.6 17.1Q24.6 12.8 25.7 9.8Q26.8 6.8 27.3 6H30.1V9.2Q30.1 11.1 31.1 12Q32.1 12.9 33.4 12.9H62Q66.2 12.9 69.4 14.6Q72.6 16.3 74.5 19.7Q76.3 23.2 76.3 28.7V49.8Q76.3 57 74.6 62.1Q72.9 67.2 71.4 70.2H81.2L76.8 94Z" fill="var(--ll-line)"/></g><circle cx="83" cy="54.5" r="2" fill="var(--ll-line)"/></g><g transform="translate(-8 6) scale(0.9)"><path d="M18.8 94 23.2 70.2H64.4Q66.3 66.3 67.2 63.5Q68.2 60.7 68.6 58Q69 55.3 69 51.7Q69 45.9 68 42.9Q67 39.8 64.6 38.6Q62.1 37.4 57.6 37.4H32Q26.8 37.4 24.7 34.6Q22.5 31.7 22.5 26.3Q22.5 21.3 23.6 17.1Q24.6 12.8 25.7 9.8Q26.8 6.8 27.3 6H30.1V9.2Q30.1 11.1 31.1 12Q32.1 12.9 33.4 12.9H62Q66.2 12.9 69.4 14.6Q72.6 16.3 74.5 19.7Q76.3 23.2 76.3 28.7V49.8Q76.3 57 74.6 62.1Q72.9 67.2 71.4 70.2H81.2L76.8 94Z" fill="var(--ll-line)"/></g><circle cx="35" cy="29" r="8" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="31.96" cy="27.4" r="1.04" fill="var(--ll-line)"/><circle cx="38.04" cy="27.4" r="1.04" fill="var(--ll-line)"/><path d="M32.6 32.36H37.4" fill="none" stroke="var(--ll-line)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="38.36" cy="36.6" r="2.72" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/><rect x="34.04" y="29.16" width="1.92" height="7.6" rx="0.96" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/><circle cx="34" cy="55" r="5.5" fill="none" stroke="var(--ll-accent)" stroke-width="1.6" stroke-dasharray="2.2 2"/>` },
+      { label: 'B', svg: `<ellipse cx="50" cy="92" rx="40" ry="4" fill="var(--ll-gray)" opacity="0.35"/><g transform="translate(14 5) scale(0.9)"><path d="M18.8 94 23.2 70.2H64.4Q66.3 66.3 67.2 63.5Q68.2 60.7 68.6 58Q69 55.3 69 51.7Q69 45.9 68 42.9Q67 39.8 64.6 38.6Q62.1 37.4 57.6 37.4H32Q26.8 37.4 24.7 34.6Q22.5 31.7 22.5 26.3Q22.5 21.3 23.6 17.1Q24.6 12.8 25.7 9.8Q26.8 6.8 27.3 6H30.1V9.2Q30.1 11.1 31.1 12Q32.1 12.9 33.4 12.9H62Q66.2 12.9 69.4 14.6Q72.6 16.3 74.5 19.7Q76.3 23.2 76.3 28.7V49.8Q76.3 57 74.6 62.1Q72.9 67.2 71.4 70.2H81.2L76.8 94Z" fill="var(--ll-line)"/></g><ellipse cx="56" cy="55" rx="15" ry="13.5" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M46 50Q50 43 58 44" fill="none" stroke="var(--ll-white)" stroke-width="1.6" stroke-linecap="round" opacity="0.7"/><circle cx="57" cy="27" r="8" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="53.96" cy="25.4" r="1.04" fill="var(--ll-line)"/><circle cx="60.04" cy="25.4" r="1.04" fill="var(--ll-line)"/><path d="M54.6 30.36H59.4" fill="none" stroke="var(--ll-line)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="60.36" cy="34.6" r="2.72" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/><rect x="56.04" y="27.16" width="1.92" height="7.6" rx="0.96" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/><circle cx="56" cy="56" r="5" fill="none" stroke="var(--ll-accent)" stroke-width="1.5" stroke-dasharray="2.2 2"/><g transform="translate(6 8)"><circle cx="9" cy="9" r="9" fill="var(--ll-paper)" stroke="var(--ll-line)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.5 7h2.5L10.5 4.2v9.6L7 11H4.5z" fill="var(--ll-line)"/><path d="M12.5 6.5l4 5M16.5 6.5l-4 5" fill="none" stroke="var(--ll-line)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></g>` } ] },
+    words: [
+      { he: 'לֵב', tr: 'lev', en: 'heart', svg: `<g transform="translate(50 52) scale(3.2)"><path d="M0 10C-14 -2 -10 -14 0 -8C10 -14 14 -2 0 10Z" fill="var(--ll-red)" stroke="var(--ll-line)" stroke-width="0.625" stroke-linecap="round" stroke-linejoin="round"/><path d="M0 10C7 5 11 0 11.5 -4Q6 4 0 10Z" fill="var(--ll-red-dk)" opacity="0.6"/><ellipse cx="-5.5" cy="-6" rx="2" ry="1.3" transform="rotate(-30 -5.5 -6)" fill="var(--ll-white)" opacity="0.8"/></g><g transform="translate(16 22) scale(1)"><path d="M0 10C-14 -2 -10 -14 0 -8C10 -14 14 -2 0 10Z" fill="var(--ll-pink)" stroke="var(--ll-line)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M0 10C7 5 11 0 11.5 -4Q6 4 0 10Z" fill="var(--ll-pink-dk)" opacity="0.6"/><ellipse cx="-5.5" cy="-6" rx="2" ry="1.3" transform="rotate(-30 -5.5 -6)" fill="var(--ll-white)" opacity="0.8"/></g><g transform="translate(86 80) scale(1.2)"><path d="M0 10C-14 -2 -10 -14 0 -8C10 -14 14 -2 0 10Z" fill="var(--ll-pink)" stroke="var(--ll-line)" stroke-width="1.6666666666666667" stroke-linecap="round" stroke-linejoin="round"/><path d="M0 10C7 5 11 0 11.5 -4Q6 4 0 10Z" fill="var(--ll-pink-dk)" opacity="0.6"/><ellipse cx="-5.5" cy="-6" rx="2" ry="1.3" transform="rotate(-30 -5.5 -6)" fill="var(--ll-white)" opacity="0.8"/></g><path d="M18 50l-6 -2M20 44l-5 -5M26 40l-2 -6M82 50l6 -2M80 44l5 -5M74 40l2 -6" fill="none" stroke="var(--ll-gold)" stroke-width="1.6" stroke-linecap="round"/>` },
+      { he: 'אָבִיב', tr: 'aviv', en: 'spring', svg: `<circle cx="84" cy="16" r="8" fill="var(--ll-yellow)" stroke="var(--ll-orange)" stroke-width="1.4"/><path d="M94.5 16.0L98.0 16.0" stroke="var(--ll-orange)" stroke-width="1.6" stroke-linecap="round"/><path d="M91.4 23.4L93.9 25.9" stroke="var(--ll-orange)" stroke-width="1.6" stroke-linecap="round"/><path d="M84.0 26.5L84.0 30.0" stroke="var(--ll-orange)" stroke-width="1.6" stroke-linecap="round"/><path d="M76.6 23.4L74.1 25.9" stroke="var(--ll-orange)" stroke-width="1.6" stroke-linecap="round"/><path d="M73.5 16.0L70.0 16.0" stroke="var(--ll-orange)" stroke-width="1.6" stroke-linecap="round"/><path d="M76.6 8.6L74.1 6.1" stroke="var(--ll-orange)" stroke-width="1.6" stroke-linecap="round"/><path d="M84.0 5.5L84.0 2.0" stroke="var(--ll-orange)" stroke-width="1.6" stroke-linecap="round"/><path d="M91.4 8.6L93.9 6.1" stroke="var(--ll-orange)" stroke-width="1.6" stroke-linecap="round"/><path d="M4 90Q30 70 54 52Q70 40 84 44" fill="none" stroke="var(--ll-brown)" stroke-width="4" stroke-linecap="round"/><path d="M30 70Q34 56 28 46M54 52Q62 46 60 34M44 60Q50 66 62 64" fill="none" stroke="var(--ll-brown)" stroke-width="2.6" stroke-linecap="round"/><path d="M38 66Q46 60 50 68Q44 72 38 66Z" fill="var(--ll-green)" stroke="var(--ll-line)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M66 50Q72 42 78 50Q72 54 66 50Z" fill="var(--ll-green)" stroke="var(--ll-line)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 80Q28 74 30 82Q24 86 20 80Z" fill="var(--ll-green)" stroke="var(--ll-line)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="28.0" cy="39.7" r="3.2" fill="var(--ll-pink)" stroke="var(--ll-pink-dk)" stroke-width="0.9"/><circle cx="32.1" cy="42.7" r="3.2" fill="var(--ll-pink)" stroke="var(--ll-pink-dk)" stroke-width="0.9"/><circle cx="30.6" cy="47.5" r="3.2" fill="var(--ll-pink)" stroke="var(--ll-pink-dk)" stroke-width="0.9"/><circle cx="25.4" cy="47.5" r="3.2" fill="var(--ll-pink)" stroke="var(--ll-pink-dk)" stroke-width="0.9"/><circle cx="23.9" cy="42.7" r="3.2" fill="var(--ll-pink)" stroke="var(--ll-pink-dk)" stroke-width="0.9"/><circle cx="28" cy="44" r="2.1" fill="var(--ll-yellow)" stroke="var(--ll-orange)" stroke-width="0.8"/><circle cx="60.0" cy="27.4" r="3.5" fill="var(--ll-pink)" stroke="var(--ll-pink-dk)" stroke-width="0.9"/><circle cx="64.4" cy="30.6" r="3.5" fill="var(--ll-pink)" stroke="var(--ll-pink-dk)" stroke-width="0.9"/><circle cx="62.7" cy="35.8" r="3.5" fill="var(--ll-pink)" stroke="var(--ll-pink-dk)" stroke-width="0.9"/><circle cx="57.3" cy="35.8" r="3.5" fill="var(--ll-pink)" stroke="var(--ll-pink-dk)" stroke-width="0.9"/><circle cx="55.6" cy="30.6" r="3.5" fill="var(--ll-pink)" stroke="var(--ll-pink-dk)" stroke-width="0.9"/><circle cx="60" cy="32" r="2.3" fill="var(--ll-yellow)" stroke="var(--ll-orange)" stroke-width="0.8"/><circle cx="14.0" cy="82.3" r="2.8" fill="var(--ll-pink)" stroke="var(--ll-pink-dk)" stroke-width="0.9"/><circle cx="17.5" cy="84.9" r="2.8" fill="var(--ll-pink)" stroke="var(--ll-pink-dk)" stroke-width="0.9"/><circle cx="16.2" cy="89.0" r="2.8" fill="var(--ll-pink)" stroke="var(--ll-pink-dk)" stroke-width="0.9"/><circle cx="11.8" cy="89.0" r="2.8" fill="var(--ll-pink)" stroke="var(--ll-pink-dk)" stroke-width="0.9"/><circle cx="10.5" cy="84.9" r="2.8" fill="var(--ll-pink)" stroke="var(--ll-pink-dk)" stroke-width="0.9"/><circle cx="14" cy="86" r="1.8" fill="var(--ll-yellow)" stroke="var(--ll-orange)" stroke-width="0.8"/><circle cx="84.0" cy="40.0" r="3.0" fill="var(--ll-pink)" stroke="var(--ll-pink-dk)" stroke-width="0.9"/><circle cx="87.8" cy="42.8" r="3.0" fill="var(--ll-pink)" stroke="var(--ll-pink-dk)" stroke-width="0.9"/><circle cx="86.4" cy="47.3" r="3.0" fill="var(--ll-pink)" stroke="var(--ll-pink-dk)" stroke-width="0.9"/><circle cx="81.6" cy="47.3" r="3.0" fill="var(--ll-pink)" stroke="var(--ll-pink-dk)" stroke-width="0.9"/><circle cx="80.2" cy="42.8" r="3.0" fill="var(--ll-pink)" stroke="var(--ll-pink-dk)" stroke-width="0.9"/><circle cx="84" cy="44" r="1.9" fill="var(--ll-yellow)" stroke="var(--ll-orange)" stroke-width="0.8"/><circle cx="62.0" cy="61.3" r="2.8" fill="var(--ll-pink)" stroke="var(--ll-pink-dk)" stroke-width="0.9"/><circle cx="65.5" cy="63.9" r="2.8" fill="var(--ll-pink)" stroke="var(--ll-pink-dk)" stroke-width="0.9"/><circle cx="64.2" cy="68.0" r="2.8" fill="var(--ll-pink)" stroke="var(--ll-pink-dk)" stroke-width="0.9"/><circle cx="59.8" cy="68.0" r="2.8" fill="var(--ll-pink)" stroke="var(--ll-pink-dk)" stroke-width="0.9"/><circle cx="58.5" cy="63.9" r="2.8" fill="var(--ll-pink)" stroke="var(--ll-pink-dk)" stroke-width="0.9"/><circle cx="62" cy="65" r="1.8" fill="var(--ll-yellow)" stroke="var(--ll-orange)" stroke-width="0.8"/><circle cx="44.0" cy="52.6" r="2.5" fill="var(--ll-pink)" stroke="var(--ll-pink-dk)" stroke-width="0.9"/><circle cx="47.2" cy="54.9" r="2.5" fill="var(--ll-pink)" stroke="var(--ll-pink-dk)" stroke-width="0.9"/><circle cx="46.0" cy="58.8" r="2.5" fill="var(--ll-pink)" stroke="var(--ll-pink-dk)" stroke-width="0.9"/><circle cx="42.0" cy="58.8" r="2.5" fill="var(--ll-pink)" stroke="var(--ll-pink-dk)" stroke-width="0.9"/><circle cx="40.8" cy="54.9" r="2.5" fill="var(--ll-pink)" stroke="var(--ll-pink-dk)" stroke-width="0.9"/><circle cx="44" cy="56" r="1.6" fill="var(--ll-yellow)" stroke="var(--ll-orange)" stroke-width="0.8"/><path d="M2 94H98" fill="none" stroke="var(--ll-grass-dk)" stroke-width="2"/><path d="M8 94l-2 -5M8 94l1 -6M8 94l3 -4" fill="none" stroke="var(--ll-grass-dk)" stroke-width="1.3" stroke-linecap="round"/><path d="M20 94l-2 -5M20 94l1 -6M20 94l3 -4" fill="none" stroke="var(--ll-grass-dk)" stroke-width="1.3" stroke-linecap="round"/><path d="M33 94l-2 -5M33 94l1 -6M33 94l3 -4" fill="none" stroke="var(--ll-grass-dk)" stroke-width="1.3" stroke-linecap="round"/><path d="M47 94l-2 -5M47 94l1 -6M47 94l3 -4" fill="none" stroke="var(--ll-grass-dk)" stroke-width="1.3" stroke-linecap="round"/><path d="M60 94l-2 -5M60 94l1 -6M60 94l3 -4" fill="none" stroke="var(--ll-grass-dk)" stroke-width="1.3" stroke-linecap="round"/><path d="M74 94l-2 -5M74 94l1 -6M74 94l3 -4" fill="none" stroke="var(--ll-grass-dk)" stroke-width="1.3" stroke-linecap="round"/><path d="M88 94l-2 -5M88 94l1 -6M88 94l3 -4" fill="none" stroke="var(--ll-grass-dk)" stroke-width="1.3" stroke-linecap="round"/><g class="ll-anim ll-anim-bob"><path d="M36 22Q28 12 32 10Q38 10 40 20Q42 10 48 10Q52 12 44 22Z" fill="var(--ll-yellow)" stroke="var(--ll-orange)" stroke-width="1.3"/><path d="M40 16V24" fill="none" stroke="var(--ll-line)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M40 16l-2 -4M40 16l2 -4" fill="none" stroke="var(--ll-line)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/><circle cx="34" cy="14" r="1.2" fill="var(--ll-orange)"/><circle cx="46" cy="14" r="1.2" fill="var(--ll-orange)"/></g>` },
+      { he: 'זְאֵב', tr: "ze'ev", en: 'wolf', svg: `<path d="M70 10A14 14 0 1 0 86 28A11 11 0 1 1 70 10Z" fill="var(--ll-yellow)" stroke="var(--ll-orange)" stroke-width="1.3"/><path d="M4 94H96" fill="none" stroke="var(--ll-gray-dk)" stroke-width="2.4"/><path d="M18 92Q14 70 26 62Q36 56 48 58L56 48Q58 42 64 36L62 26L70 32L76 28L79 36L92 34Q84 42 80 48Q74 56 66 58L60 70Q64 80 60 92Z" fill="var(--ll-gray)" stroke="var(--ll-line)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M26 62Q36 56 48 58L46 68Q36 72 30 70Z" fill="var(--ll-gray-dk)" opacity="0.4"/><path d="M48 58L56 48Q58 42 64 36L68 40Q62 46 60 56Q56 64 48 58Z" fill="var(--ll-white)" opacity="0.65"/><path d="M46 66l-3 4M50 68l-3 5M54 70l-3 5" fill="none" stroke="var(--ll-white)" stroke-width="1.4" opacity="0.7" stroke-linecap="round"/><path d="M62 26L70 32L66 36Z" fill="var(--ll-skin)" opacity="0.8"/><path d="M18 92Q2 84 6 66Q8 60 14 62Q18 70 22 66Q24 76 20 86" fill="var(--ll-gray)" stroke="var(--ll-line)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M28 92V80M40 92V78M50 92V74M58 92V78" fill="none" stroke="var(--ll-line)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M24 92h8M36 92h8M46 92h8M54 92h8" fill="none" stroke="var(--ll-line)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="72" cy="40" r="1.8" fill="var(--ll-white)" stroke="var(--ll-line)" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/><circle cx="72.36" cy="40" r="0.9" fill="var(--ll-line)"/><circle cx="92" cy="34" r="1.7" fill="var(--ll-line)"/><path d="M86 40L80 46" fill="none" stroke="var(--ll-line)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M82 44l-4 1" fill="none" stroke="var(--ll-red)" stroke-width="1.4" stroke-linecap="round"/><path d="M94 24q4 -4 8 -2M96 30q5 -1 8 2" fill="none" stroke="var(--ll-gray-dk)" stroke-width="1.2" stroke-linecap="round" opacity="0.8"/>` },
+      { he: 'צָב', tr: 'tzav', en: 'turtle', svg: `<path d="M4 90H96" fill="none" stroke="var(--ll-grass-dk)" stroke-width="2.4"/><path d="M24 76Q22 50 50 42Q78 50 76 76Z" fill="var(--ll-green-dk)" stroke="var(--ll-line)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M18 76Q18 70 24 70H76Q82 70 82 76Q82 82 76 82H24Q18 82 18 76Z" fill="var(--ll-green)" stroke="var(--ll-line)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M34 66L42 54L58 54L66 66L58 70L42 70Z" fill="var(--ll-green)" stroke="var(--ll-line)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M28 74L34 66L42 70L40 74ZM72 74L66 66L58 70L60 74ZM42 54L34 66L30 58L36 50ZM58 54L66 66L70 58L64 50ZM42 54L50 44L58 54Z" fill="var(--ll-green)" stroke="var(--ll-line)" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/><path d="M24 76h52" fill="none" stroke="var(--ll-green-dk)" stroke-width="1" opacity="0.6"/><path d="M76 74Q92 70 92 60Q92 54 86 54Q80 54 80 60L82 68Z" fill="var(--ll-green)" stroke="var(--ll-line)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="86" cy="59" r="1.8" fill="var(--ll-white)" stroke="var(--ll-line)" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/><circle cx="86.36" cy="59" r="0.9" fill="var(--ll-line)"/><path d="M90 62q-2 2 -4 1" fill="none" stroke="var(--ll-line)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/><path d="M28 82L22 90H32L34 82ZM66 82L68 90H78L72 82Z" fill="var(--ll-green)" stroke="var(--ll-line)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M18 76Q10 76 12 82" fill="none" stroke="var(--ll-green)" stroke-width="3.2" stroke-linecap="round"/><path d="M24 90v-2M28 90v-2M70 90v-2M74 90v-2" fill="none" stroke="var(--ll-line)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>` } ] },
+  { id: 'gimel', glyph: 'ג', name: 'Gimel', sound: 'g', consonant: 'g',
+    hint: { caption: 'GIMEL is playing GOLF', show: 0, variants: [
+      { label: 'A', svg: `<g transform="translate(6 10) scale(0.9)"><path d="M2 14Q2 7 9 7Q12 0 20 3Q27 0 29 8Q35 8 34 14Q33 18 28 18H7Q2 18 2 14Z" fill="var(--ll-white)" stroke="var(--ll-line)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></g><ellipse cx="50" cy="85" rx="47" ry="7" fill="var(--ll-grass)"/><path d="M4 85Q50 78 96 85" fill="none" stroke="var(--ll-grass-dk)" stroke-width="1.3"/><ellipse cx="88" cy="81" rx="4.2" ry="1.6" fill="var(--ll-line)"/><path d="M88 81V52" fill="none" stroke="var(--ll-line)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M88 52L99 56L88 60Z" fill="var(--ll-red)" stroke="var(--ll-line)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><g transform="translate(23 5) scale(0.8)"><path d="M25.4 94 30.5 70.2H47.2Q50.2 70.2 52.1 67.9Q54 65.6 55 62.2Q56 58.9 56.1 55.7L56.7 45.5Q57 41.5 55.8 40.1Q54.6 38.7 51.9 38.3L40.9 36.7Q36.9 36 35.2 34.2Q33.5 32.3 33.5 27.6Q33.5 21.8 35.3 16.2Q37 10.6 38.7 6H41.5V8.4Q41.5 10.5 42.4 11.5Q43.2 12.5 46 12.9L57.5 14.5Q61.8 15.1 63.8 17.3Q65.8 19.4 65.5 25.1L64.2 45.9Q64 50.1 64.8 53.7Q65.6 57.3 67 60.5Q68.4 63.6 69.9 66.5Q71.4 69.4 72.5 72.2Q74.6 77.8 74.6 83.1Q74.7 88.5 73.8 94H71Q70.1 88.3 68.6 84.3Q67.2 80.4 64.7 77.1Q62.2 73.9 58.2 70.7L49.6 94Z" fill="var(--ll-line)"/></g><path d="M51 12Q64 -2 77 12Z" fill="var(--ll-red)" stroke="var(--ll-line)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M43 12.5H79" fill="none" stroke="var(--ll-line)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="64" cy="3.5" r="1.7" fill="var(--ll-gold)"/><circle cx="67" cy="17" r="6.5" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="64.53" cy="15.7" r="0.845" fill="var(--ll-line)"/><circle cx="69.47" cy="15.7" r="0.845" fill="var(--ll-line)"/><path d="M64.075 18.95Q67 21.875 69.925 18.95" fill="none" stroke="var(--ll-line)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M71 34L57 47M73 40L59 50" fill="none" stroke="var(--ll-line)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="57" cy="48.5" r="3.2" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><g class="ll-anim ll-anim-swing"><path d="M57 49L24 81" fill="none" stroke="var(--ll-gray-dk)" stroke-width="2.4" stroke-linecap="round"/><path d="M25 80L15 83Q12 85 15 88L28 85Z" fill="var(--ll-gray)" stroke="var(--ll-line)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></g><circle cx="11" cy="77.5" r="3.2" fill="var(--ll-white)" stroke="var(--ll-line)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>` },
+      { label: 'B', svg: `<circle cx="14" cy="14" r="7" fill="var(--ll-yellow)" stroke="var(--ll-orange)" stroke-width="1.4"/><path d="M23.5 14.0L27.0 14.0" stroke="var(--ll-orange)" stroke-width="1.6" stroke-linecap="round"/><path d="M20.7 20.7L23.2 23.2" stroke="var(--ll-orange)" stroke-width="1.6" stroke-linecap="round"/><path d="M14.0 23.5L14.0 27.0" stroke="var(--ll-orange)" stroke-width="1.6" stroke-linecap="round"/><path d="M7.3 20.7L4.8 23.2" stroke="var(--ll-orange)" stroke-width="1.6" stroke-linecap="round"/><path d="M4.5 14.0L1.0 14.0" stroke="var(--ll-orange)" stroke-width="1.6" stroke-linecap="round"/><path d="M7.3 7.3L4.8 4.8" stroke="var(--ll-orange)" stroke-width="1.6" stroke-linecap="round"/><path d="M14.0 4.5L14.0 1.0" stroke="var(--ll-orange)" stroke-width="1.6" stroke-linecap="round"/><path d="M20.7 7.3L23.2 4.8" stroke="var(--ll-orange)" stroke-width="1.6" stroke-linecap="round"/><g transform="translate(60 4) scale(0.8)"><path d="M2 14Q2 7 9 7Q12 0 20 3Q27 0 29 8Q35 8 34 14Q33 18 28 18H7Q2 18 2 14Z" fill="var(--ll-white)" stroke="var(--ll-line)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></g><ellipse cx="50" cy="85" rx="47" ry="7" fill="var(--ll-grass)"/><path d="M4 85Q50 78 96 85" fill="none" stroke="var(--ll-grass-dk)" stroke-width="1.3"/><ellipse cx="88" cy="81" rx="4.2" ry="1.6" fill="var(--ll-line)"/><path d="M88 81V52" fill="none" stroke="var(--ll-line)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M88 52L99 56L88 60Z" fill="var(--ll-red)" stroke="var(--ll-line)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><g transform="translate(23 5) scale(0.8)"><path d="M25.4 94 30.5 70.2H47.2Q50.2 70.2 52.1 67.9Q54 65.6 55 62.2Q56 58.9 56.1 55.7L56.7 45.5Q57 41.5 55.8 40.1Q54.6 38.7 51.9 38.3L40.9 36.7Q36.9 36 35.2 34.2Q33.5 32.3 33.5 27.6Q33.5 21.8 35.3 16.2Q37 10.6 38.7 6H41.5V8.4Q41.5 10.5 42.4 11.5Q43.2 12.5 46 12.9L57.5 14.5Q61.8 15.1 63.8 17.3Q65.8 19.4 65.5 25.1L64.2 45.9Q64 50.1 64.8 53.7Q65.6 57.3 67 60.5Q68.4 63.6 69.9 66.5Q71.4 69.4 72.5 72.2Q74.6 77.8 74.6 83.1Q74.7 88.5 73.8 94H71Q70.1 88.3 68.6 84.3Q67.2 80.4 64.7 77.1Q62.2 73.9 58.2 70.7L49.6 94Z" fill="var(--ll-line)"/></g><path d="M51 12Q64 -2 77 12Z" fill="var(--ll-blue)" stroke="var(--ll-line)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M43 12.5H79" fill="none" stroke="var(--ll-line)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="64" cy="3.5" r="1.7" fill="var(--ll-gold)"/><circle cx="67" cy="17" r="6.5" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="64.53" cy="15.7" r="0.845" fill="var(--ll-line)"/><circle cx="69.47" cy="15.7" r="0.845" fill="var(--ll-line)"/><path d="M64.075 18.95Q67 21.875 69.925 18.95" fill="none" stroke="var(--ll-line)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M71 34L60 28M73 40L62 33" fill="none" stroke="var(--ll-line)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="60.5" cy="29.5" r="3.2" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><g class="ll-anim ll-anim-swing"><path d="M60 30L34 12" fill="none" stroke="var(--ll-gray-dk)" stroke-width="2.4" stroke-linecap="round"/><path d="M35 12L26 7Q22 7 23 11L32 16Z" fill="var(--ll-gray)" stroke="var(--ll-line)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></g><path d="M11 78V84" fill="none" stroke="var(--ll-line)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 84H14" fill="none" stroke="var(--ll-line)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="11" cy="75" r="3.2" fill="var(--ll-white)" stroke="var(--ll-line)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>` } ] },
+    words: [
+      { he: 'גְּלִידָה', tr: 'glidah', en: 'ice cream', svg: `<path d="M30 48L50 96L70 48Z" fill="var(--ll-wood)" stroke="var(--ll-line)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M34 54L60 82M40 68L54 88M44 50L66 74M30 48L70 48M36 60H64M42 72H58M46 82H54" fill="none" stroke="var(--ll-wood-dk)" stroke-width="1.2"/><circle cx="50" cy="40" r="19" fill="var(--ll-white)" stroke="var(--ll-line)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M32 44Q34 54 44 54Q48 58 54 54Q64 54 66 44" fill="var(--ll-white)" stroke="var(--ll-line)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="26" r="17" fill="var(--ll-pink)" stroke="var(--ll-line)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M36 30Q38 40 46 40Q50 44 56 40Q62 40 64 30" fill="var(--ll-pink)" stroke="var(--ll-line)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M40 20Q44 14 52 14" fill="none" stroke="var(--ll-white)" stroke-width="1.8" opacity="0.7" stroke-linecap="round"/><circle cx="50" cy="9" r="4.5" fill="var(--ll-red)" stroke="var(--ll-line)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M50 5Q52 0 58 2" fill="none" stroke="var(--ll-line)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><rect x="42" y="24" width="3.4" height="1.4" rx="0.7" transform="rotate(3 42 24)" fill="var(--ll-orange)"/><rect x="56" y="22" width="3.4" height="1.4" rx="0.7" transform="rotate(9 56 22)" fill="var(--ll-orange)"/><rect x="48" y="32" width="3.4" height="1.4" rx="0.7" transform="rotate(-37 48 32)" fill="var(--ll-blue)"/><rect x="60" y="30" width="3.4" height="1.4" rx="0.7" transform="rotate(-45 60 30)" fill="var(--ll-orange)"/><rect x="38" y="36" width="3.4" height="1.4" rx="0.7" transform="rotate(-13 38 36)" fill="var(--ll-orange)"/><rect x="52" y="44" width="3.4" height="1.4" rx="0.7" transform="rotate(3 52 44)" fill="var(--ll-blue)"/><rect x="44" y="46" width="3.4" height="1.4" rx="0.7" transform="rotate(39 44 46)" fill="var(--ll-orange)"/><rect x="58" y="46" width="3.4" height="1.4" rx="0.7" transform="rotate(-43 58 46)" fill="var(--ll-blue)"/>` },
+      { he: 'גָּמָל', tr: 'gamal', en: 'camel', svg: `<circle cx="86" cy="14" r="7" fill="var(--ll-yellow)" stroke="var(--ll-orange)" stroke-width="1.4"/><path d="M95.5 14.0L99.0 14.0" stroke="var(--ll-orange)" stroke-width="1.6" stroke-linecap="round"/><path d="M92.7 20.7L95.2 23.2" stroke="var(--ll-orange)" stroke-width="1.6" stroke-linecap="round"/><path d="M86.0 23.5L86.0 27.0" stroke="var(--ll-orange)" stroke-width="1.6" stroke-linecap="round"/><path d="M79.3 20.7L76.8 23.2" stroke="var(--ll-orange)" stroke-width="1.6" stroke-linecap="round"/><path d="M76.5 14.0L73.0 14.0" stroke="var(--ll-orange)" stroke-width="1.6" stroke-linecap="round"/><path d="M79.3 7.3L76.8 4.8" stroke="var(--ll-orange)" stroke-width="1.6" stroke-linecap="round"/><path d="M86.0 4.5L86.0 1.0" stroke="var(--ll-orange)" stroke-width="1.6" stroke-linecap="round"/><path d="M92.7 7.3L95.2 4.8" stroke="var(--ll-orange)" stroke-width="1.6" stroke-linecap="round"/><path d="M0 88Q30 72 60 82Q80 88 100 80V100H0Z" fill="var(--ll-yellow)" opacity="0.8"/><path d="M0 88Q30 72 60 82Q80 88 100 80" fill="none" stroke="var(--ll-orange)" stroke-width="1.4"/><path d="M20 70Q22 46 34 44Q40 36 50 44Q58 34 66 44Q74 50 70 70Z" fill="var(--ll-gold-lt)" stroke="var(--ll-line)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M34 44Q40 36 50 44Q58 34 66 44" fill="none" stroke="var(--ll-gold)" stroke-width="1.6"/><path d="M64 58Q72 50 76 32Q78 22 86 24" fill="none" stroke="var(--ll-line)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><path d="M64 58Q72 50 76 32Q78 22 86 24" fill="none" stroke="var(--ll-gold-lt)" stroke-width="6" stroke-linecap="round"/><path d="M80 20Q80 14 88 14Q96 14 96 20L94 26L84 27Z" fill="var(--ll-gold-lt)" stroke="var(--ll-line)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M86 14L84 8L89 12Z" fill="var(--ll-gold-lt)" stroke="var(--ll-line)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="88" cy="19" r="1.8" fill="var(--ll-white)" stroke="var(--ll-line)" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/><circle cx="88.36" cy="19" r="0.9" fill="var(--ll-line)"/><circle cx="94" cy="24" r="1.1" fill="var(--ll-line)"/><path d="M92 26q-3 2 -6 1" fill="none" stroke="var(--ll-line)" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/><path d="M24 70L22 92M32 70L30 92M58 70L60 92M66 70L68 92" fill="none" stroke="var(--ll-line)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M24 70L22 92M32 70L30 92M58 70L60 92M66 70L68 92" fill="none" stroke="var(--ll-gold-lt)" stroke-width="3.6" stroke-linecap="round"/><path d="M20 92h6M28 92h6M58 92h6M66 92h6" fill="none" stroke="var(--ll-line)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 64Q10 68 12 78" fill="none" stroke="var(--ll-line)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="79" r="2.4" fill="var(--ll-brown)"/>` },
+      { he: 'גֶּשֶׁם', tr: 'geshem', en: 'rain', svg: `<path d="M14 42Q10 26 26 26Q30 8 50 12Q68 6 72 24Q90 22 90 38Q90 48 78 48H24Q14 48 14 42Z" fill="var(--ll-gray)" stroke="var(--ll-line)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M26 26Q30 8 50 12Q68 6 72 24" fill="none" stroke="var(--ll-white)" stroke-width="3" opacity="0.5" stroke-linecap="round"/><path d="M24 36Q30 32 36 36M56 36Q62 32 68 36" fill="none" stroke="var(--ll-gray-dk)" stroke-width="1.2" opacity="0.7" stroke-linecap="round"/><path d="M22 56Q19 62 22 64Q25 62 22 56Z" fill="var(--ll-blue)" stroke="var(--ll-blue-dk)" stroke-width="0.9"/><path d="M34 54Q31 60 34 62Q37 60 34 54Z" fill="var(--ll-blue)" stroke="var(--ll-blue-dk)" stroke-width="0.9"/><path d="M46 58Q43 64 46 66Q49 64 46 58Z" fill="var(--ll-blue)" stroke="var(--ll-blue-dk)" stroke-width="0.9"/><path d="M58 54Q55 60 58 62Q61 60 58 54Z" fill="var(--ll-blue)" stroke="var(--ll-blue-dk)" stroke-width="0.9"/><path d="M70 56Q67 62 70 64Q73 62 70 56Z" fill="var(--ll-blue)" stroke="var(--ll-blue-dk)" stroke-width="0.9"/><path d="M82 58Q79 64 82 66Q85 64 82 58Z" fill="var(--ll-blue)" stroke="var(--ll-blue-dk)" stroke-width="0.9"/><path d="M28 68Q25 74 28 76Q31 74 28 68Z" fill="var(--ll-blue)" stroke="var(--ll-blue-dk)" stroke-width="0.9"/><path d="M40 70Q37 76 40 78Q43 76 40 70Z" fill="var(--ll-blue)" stroke="var(--ll-blue-dk)" stroke-width="0.9"/><path d="M52 72Q49 78 52 80Q55 78 52 72Z" fill="var(--ll-blue)" stroke="var(--ll-blue-dk)" stroke-width="0.9"/><path d="M64 68Q61 74 64 76Q67 74 64 68Z" fill="var(--ll-blue)" stroke="var(--ll-blue-dk)" stroke-width="0.9"/><path d="M76 70Q73 76 76 78Q79 76 76 70Z" fill="var(--ll-blue)" stroke="var(--ll-blue-dk)" stroke-width="0.9"/><path d="M18 80Q15 86 18 88Q21 86 18 80Z" fill="var(--ll-blue)" stroke="var(--ll-blue-dk)" stroke-width="0.9"/><path d="M36 82Q33 88 36 90Q39 88 36 82Z" fill="var(--ll-blue)" stroke="var(--ll-blue-dk)" stroke-width="0.9"/><path d="M58 84Q55 90 58 92Q61 90 58 84Z" fill="var(--ll-blue)" stroke="var(--ll-blue-dk)" stroke-width="0.9"/><path d="M80 82Q77 88 80 90Q83 88 80 82Z" fill="var(--ll-blue)" stroke="var(--ll-blue-dk)" stroke-width="0.9"/><ellipse cx="50" cy="94" rx="30" ry="4.5" fill="var(--ll-sky)" stroke="var(--ll-line)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="42" cy="93" rx="6" ry="1.5" fill="none" stroke="var(--ll-blue)" stroke-width="1.1"/><ellipse cx="62" cy="95" rx="4" ry="1" fill="none" stroke="var(--ll-blue)" stroke-width="1.1"/>` },
+      { he: 'גִּיטָרָה', tr: 'gitarah', en: 'guitar', svg: `<path d="M44 96Q22 96 24 74Q26 62 36 58Q28 54 28 44Q28 30 44 28Q52 28 56 32Q60 28 68 28Q84 30 84 44Q84 54 76 58Q86 62 88 74Q90 96 68 96Z" fill="var(--ll-wood)" stroke="var(--ll-line)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" transform="rotate(-40 56 62)"/><circle cx="56" cy="62" r="8" fill="var(--ll-brown-dk)" stroke="var(--ll-line)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="56" cy="62" r="10.5" fill="none" stroke="var(--ll-gold)" stroke-width="1.6"/><path d="M40 76L46 70" fill="none" stroke="var(--ll-brown-dk)" stroke-width="4" stroke-linecap="round"/><path d="M42 42L8 8" fill="none" stroke="var(--ll-line)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><path d="M42 42L8 8" fill="none" stroke="var(--ll-brown)" stroke-width="5" stroke-linecap="round"/><path d="M36 36l-4 4M30 30l-4 4M24 24l-4 4M18 18l-4 4" fill="none" stroke="var(--ll-gold-lt)" stroke-width="1.1"/><path d="M10 10L2 2Q-2 6 2 10Z" fill="var(--ll-brown-dk)" stroke="var(--ll-line)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 2L8 6L4 10L0 6Z" fill="var(--ll-brown-dk)" stroke="var(--ll-line)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="2" cy="3" r="1.2" fill="var(--ll-gold)"/><circle cx="6" cy="7" r="1.2" fill="var(--ll-gold)"/><circle cx="1" cy="8" r="1.2" fill="var(--ll-gold)"/><path d="M6 8L44 74M8 6L46 72M4 10L42 76" fill="none" stroke="var(--ll-gray)" stroke-width="0.8"/><path d="M6 6L44 72" fill="none" stroke="var(--ll-white)" stroke-width="0.8"/>` } ] },
+  { id: 'dalet', glyph: 'ד', name: 'Dalet', sound: 'd', consonant: 'd',
+    hint: { caption: 'DALET is a DOOR (delet!)', show: 0, variants: [
+      { label: 'A', svg: `<rect x="24" y="34" width="56" height="58" rx="2" fill="var(--ll-wood-dk)"/><rect x="29" y="38" width="38" height="52" fill="var(--ll-wood)" stroke="var(--ll-line)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="33" y="42" width="30" height="18" rx="1.5" fill="var(--ll-wood-dk)" opacity="0.55"/><rect x="33" y="64" width="30" height="22" rx="1.5" fill="var(--ll-wood-dk)" opacity="0.55"/><path d="M36 45h24M36 67h24" fill="none" stroke="var(--ll-gold-lt)" stroke-width="1" opacity="0.7"/><circle cx="37" cy="66" r="2.8" fill="var(--ll-gold)" stroke="var(--ll-line)" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/><rect x="20" y="90" width="64" height="4" rx="1" fill="var(--ll-gray-dk)"/><g transform="translate(10 4) scale(0.92)"><path d="M30.8 37.2Q25.2 37.2 22.7 34.7Q20.3 32.2 20.3 25.8Q20.3 21 21.2 16.9Q22.2 12.7 23.3 9.8Q24.4 6.9 24.8 6H27.6V8.6Q27.6 10.4 28.5 11.6Q29.5 12.9 31.7 12.9H74.1Q77.4 12.9 78.6 14.4Q79.7 15.9 79.7 18.4V37.2ZM60.8 94Q60 94 59.1 93.9Q58.2 93.9 57.5 93.7V92.5Q58.2 91.5 58.6 89.8Q58.9 88 58.9 82.4V58.9Q58.9 51.5 60.8 47Q62.6 42.5 64.5 40.2Q66.4 37.9 66.8 37.5V32.6H73.6V37.2Q71.1 40.3 69.8 42.7Q68.6 45.1 68.3 48.1Q67.9 51.1 68.2 56.2L69.5 82.4Q69.8 88.7 67.3 91.4Q64.8 94 60.8 94Z" fill="var(--ll-line)"/></g><rect x="34" y="94" width="36" height="4" rx="2" fill="var(--ll-red)" stroke="var(--ll-line)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>` },
+      { label: 'B', svg: `<rect x="24" y="34" width="56" height="58" rx="2" fill="var(--ll-wood-dk)"/><rect x="29" y="38" width="37" height="52" fill="var(--ll-sky)"/><path d="M29 90L8 96H74V90Z" fill="var(--ll-yellow)" opacity="0.7"/><g class="ll-anim ll-anim-open-r"><path d="M66 38L38 46V84L66 90Z" fill="var(--ll-wood)" stroke="var(--ll-line)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M41 50L62 45V58L41 61ZM41 66L62 64V80L41 77Z" fill="var(--ll-wood-dk)" opacity="0.55"/><circle cx="44" cy="66" r="2.6" fill="var(--ll-gold)" stroke="var(--ll-line)" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></g><rect x="20" y="90" width="64" height="4" rx="1" fill="var(--ll-gray-dk)"/><g transform="translate(10 4) scale(0.92)"><path d="M30.8 37.2Q25.2 37.2 22.7 34.7Q20.3 32.2 20.3 25.8Q20.3 21 21.2 16.9Q22.2 12.7 23.3 9.8Q24.4 6.9 24.8 6H27.6V8.6Q27.6 10.4 28.5 11.6Q29.5 12.9 31.7 12.9H74.1Q77.4 12.9 78.6 14.4Q79.7 15.9 79.7 18.4V37.2ZM60.8 94Q60 94 59.1 93.9Q58.2 93.9 57.5 93.7V92.5Q58.2 91.5 58.6 89.8Q58.9 88 58.9 82.4V58.9Q58.9 51.5 60.8 47Q62.6 42.5 64.5 40.2Q66.4 37.9 66.8 37.5V32.6H73.6V37.2Q71.1 40.3 69.8 42.7Q68.6 45.1 68.3 48.1Q67.9 51.1 68.2 56.2L69.5 82.4Q69.8 88.7 67.3 91.4Q64.8 94 60.8 94Z" fill="var(--ll-line)"/></g><rect x="34" y="94" width="36" height="4" rx="2" fill="var(--ll-red)" stroke="var(--ll-line)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>` } ] },
+    words: [
+      { he: 'דֶּלֶת', tr: 'delet', en: 'door', svg: `<rect x="24" y="6" width="52" height="86" rx="2" fill="var(--ll-wood-dk)" stroke="var(--ll-line)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="30" y="12" width="40" height="80" fill="var(--ll-wood)" stroke="var(--ll-line)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="34" y="17" width="14" height="24" rx="1.5" fill="var(--ll-wood-dk)" opacity="0.5" stroke="var(--ll-line)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/><rect x="52" y="17" width="14" height="24" rx="1.5" fill="var(--ll-wood-dk)" opacity="0.5" stroke="var(--ll-line)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/><rect x="34" y="50" width="14" height="34" rx="1.5" fill="var(--ll-wood-dk)" opacity="0.5" stroke="var(--ll-line)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/><rect x="52" y="50" width="14" height="34" rx="1.5" fill="var(--ll-wood-dk)" opacity="0.5" stroke="var(--ll-line)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/><path d="M37 20h8M55 20h8M37 53h8M55 53h8" fill="none" stroke="var(--ll-gold-lt)" stroke-width="1" opacity="0.6"/><circle cx="63" cy="46" r="2.8" fill="var(--ll-gold)" stroke="var(--ll-line)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="63" cy="52" r="1" fill="var(--ll-line)"/><path d="M63 52v2.5" fill="none" stroke="var(--ll-line)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/><rect x="26" y="20" width="3" height="6" fill="var(--ll-gray-dk)"/><rect x="26" y="74" width="3" height="6" fill="var(--ll-gray-dk)"/><rect x="18" y="92" width="64" height="4" rx="1" fill="var(--ll-gray-dk)"/><rect x="32" y="96" width="36" height="3" rx="1.5" fill="var(--ll-red)" stroke="var(--ll-line)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>` },
+      { he: 'דָּג', tr: 'dag', en: 'fish', svg: `<path d="M2 86Q14 80 26 86Q38 92 50 86Q62 80 74 86Q86 92 98 86" fill="none" stroke="var(--ll-blue)" stroke-width="2" stroke-linecap="round"/><path d="M2 94Q14 88 26 94Q38 100 50 94Q62 88 74 94Q86 100 98 94" fill="none" stroke="var(--ll-blue)" stroke-width="2" stroke-linecap="round"/><path d="M70 50L92 32L90 50L92 68Z" fill="var(--ll-orange)" stroke="var(--ll-line)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M74 50L84 40M74 50L84 60" fill="none" stroke="var(--ll-orange-dk)" stroke-width="1.2"/><path d="M34 34Q46 20 60 30L54 36Z" fill="var(--ll-orange)" stroke="var(--ll-line)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="42" cy="50" rx="32" ry="20" fill="var(--ll-orange)" stroke="var(--ll-line)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M28 42Q34 54 28 62M40 40Q46 50 40 62M52 42Q58 50 52 60M62 46Q66 52 62 58" fill="none" stroke="var(--ll-orange-dk)" stroke-width="1.5" stroke-linecap="round"/><path d="M34 48Q40 40 46 48M46 48Q52 40 58 48M28 56Q34 48 40 56M40 56Q46 48 52 56M52 56Q58 48 64 56" fill="none" stroke="var(--ll-orange-dk)" stroke-width="1.2" stroke-linecap="round"/><path d="M38 60Q46 70 56 62L50 58Z" fill="var(--ll-orange)" stroke="var(--ll-line)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 44Q20 50 22 56" fill="none" stroke="var(--ll-orange-dk)" stroke-width="1.4" stroke-linecap="round"/><circle cx="22" cy="46" r="3" fill="var(--ll-white)" stroke="var(--ll-line)" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/><circle cx="22.6" cy="46" r="1.5" fill="var(--ll-line)"/><path d="M12 52q2 2 5 1" fill="none" stroke="var(--ll-line)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="28" r="3" fill="none" stroke="var(--ll-blue)" stroke-width="1.3"/><circle cx="16" cy="18" r="2" fill="none" stroke="var(--ll-blue)" stroke-width="1.3"/><circle cx="8" cy="12" r="1.5" fill="none" stroke="var(--ll-blue)" stroke-width="1.2"/>` },
+      { he: 'דֶּגֶל', tr: 'degel', en: 'flag', svg: `<path d="M4 96H40" fill="none" stroke="var(--ll-gray-dk)" stroke-width="2.2" stroke-linecap="round"/><path d="M14 96V8" fill="none" stroke="var(--ll-line)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="14" cy="6" r="3" fill="var(--ll-gold)" stroke="var(--ll-line)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><g class="ll-anim ll-anim-sway"><path d="M16 12Q40 4 60 12Q78 20 96 12V64Q78 72 60 64Q40 56 16 64Z" fill="var(--ll-white)" stroke="var(--ll-line)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 20Q40 12 60 20Q78 28 96 20V28Q78 36 60 28Q40 20 16 28ZM16 48Q40 40 60 48Q78 56 96 48V56Q78 64 60 56Q40 48 16 56Z" fill="var(--ll-blue)"/><path d="M56 29L63 42H49ZM56 47L63 34H49Z" fill="none" stroke="var(--ll-blue)" stroke-width="2.4" stroke-linejoin="round"/></g><path d="M80 80q6 -2 10 0M84 88q6 -2 10 0" fill="none" stroke="var(--ll-gray)" stroke-width="1.4" stroke-linecap="round"/>` },
+      { he: 'דְּבַשׁ', tr: 'dvash', en: 'honey', svg: `<rect x="26" y="40" width="48" height="52" rx="8" fill="var(--ll-gold)" stroke="var(--ll-line)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="30" y="44" width="40" height="44" rx="6" fill="var(--ll-orange)" opacity="0.6"/><rect x="24" y="30" width="52" height="12" rx="3" fill="var(--ll-brown)" stroke="var(--ll-line)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M30 30v12M38 30v12M46 30v12M54 30v12M62 30v12M70 30v12" fill="none" stroke="var(--ll-brown-dk)" stroke-width="1"/><rect x="32" y="56" width="36" height="22" rx="2" fill="var(--ll-paper)" stroke="var(--ll-line)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M44 61L50 58L56 61V67L50 70L44 67Z" fill="none" stroke="var(--ll-gold)" stroke-width="1.6"/><path d="M38 72h24" fill="none" stroke="var(--ll-gray)" stroke-width="1.4" stroke-linecap="round"/><path d="M34 48Q36 44 40 46" fill="none" stroke="var(--ll-white)" stroke-width="1.6" opacity="0.6" stroke-linecap="round"/><path d="M62 30L88 6" fill="none" stroke="var(--ll-wood)" stroke-width="3.2" stroke-linecap="round"/><path d="M62 30L88 6" fill="none" stroke="var(--ll-line)" stroke-width="0.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M60 36Q52 28 60 20Q68 24 64 32" fill="var(--ll-wood)" stroke="var(--ll-line)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M56 24h8M55 28h10M56 32h8" fill="none" stroke="var(--ll-wood-dk)" stroke-width="1"/><path d="M62 36Q62 46 60 48Q58 46 58 40" fill="var(--ll-gold)" stroke="var(--ll-orange)" stroke-width="1"/><g class="ll-anim ll-anim-drift"><ellipse cx="14" cy="22" rx="8" ry="5.5" fill="var(--ll-yellow)" stroke="var(--ll-line)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M11 17v10M15 17v10" fill="none" stroke="var(--ll-line)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="22" cy="21" r="3.5" fill="var(--ll-line)"/><path d="M23 18l2 -3M25 19l3 -2" fill="none" stroke="var(--ll-line)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="9" cy="14" rx="5" ry="3" transform="rotate(-25 9 14)" fill="var(--ll-sky)" stroke="var(--ll-line)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/><ellipse cx="16" cy="13" rx="5" ry="3" transform="rotate(10 16 13)" fill="var(--ll-sky)" stroke="var(--ll-line)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/><path d="M6 24l-3 1" fill="none" stroke="var(--ll-line)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></g><path d="M24 36q-4 6 -8 6" fill="none" stroke="var(--ll-gray)" stroke-width="1" stroke-dasharray="1.5 1.5"/>` } ] },
+  /* ── Batch 2+ (hint + words still to come; the cards already open with Vowels and Fonts) ── */
+  { id: 'he', glyph: 'ה', name: 'He', sound: 'h', consonant: 'h' },
+  { id: 'vav', glyph: 'ו', name: 'Vav', sound: 'v', consonant: 'v',
+    special: [ { he: 'וֹ', tr: 'oh', vowel: 'cholam' }, { he: 'וּ', tr: 'oo', vowel: 'shuruk' } ] },
+  { id: 'zayin', glyph: 'ז', name: 'Zayin', sound: 'z', consonant: 'z' },
+  { id: 'chet', glyph: 'ח', name: 'Chet', sound: 'ch', consonant: 'ch' },
+  { id: 'tet', glyph: 'ט', name: 'Tet', sound: 't', consonant: 't' },
+  { id: 'yod', glyph: 'י', name: 'Yod', sound: 'y', consonant: 'y' },
+  { id: 'kaf', glyph: 'כּ', name: 'Kaf', sound: 'k', consonant: 'k', pairWith: 'chaf' },
+  { id: 'chaf', glyph: 'כ', name: 'Chaf', sound: 'ch', consonant: 'ch', pairWith: 'kaf' },
+  { id: 'kaf_sofit', glyph: 'ך', name: 'Final Chaf', sound: 'ch', consonant: 'ch', final: 'kaf', vowels: ['sheva', 'kamatz'] },
+  { id: 'lamed', glyph: 'ל', name: 'Lamed', sound: 'l', consonant: 'l' },
+  { id: 'mem', glyph: 'מ', name: 'Mem', sound: 'm', consonant: 'm' },
+  { id: 'mem_sofit', glyph: 'ם', name: 'Final Mem', sound: 'm', consonant: 'm', final: 'mem' },
+  { id: 'nun', glyph: 'נ', name: 'Nun', sound: 'n', consonant: 'n' },
+  { id: 'nun_sofit', glyph: 'ן', name: 'Final Nun', sound: 'n', consonant: 'n', final: 'nun' },
+  { id: 'samech', glyph: 'ס', name: 'Samech', sound: 's', consonant: 's' },
+  { id: 'ayin', glyph: 'ע', name: 'Ayin', sound: 'silent', consonant: '' },
+  { id: 'pe', glyph: 'פּ', name: 'Pe', sound: 'p', consonant: 'p', pairWith: 'fe' },
+  { id: 'fe', glyph: 'פ', name: 'Fe', sound: 'f', consonant: 'f', pairWith: 'pe' },
+  { id: 'pe_sofit', glyph: 'ף', name: 'Final Fe', sound: 'f', consonant: 'f', final: 'pe' },
+  { id: 'tzadi', glyph: 'צ', name: 'Tzadi', sound: 'tz', consonant: 'tz' },
+  { id: 'tzadi_sofit', glyph: 'ץ', name: 'Final Tzadi', sound: 'tz', consonant: 'tz', final: 'tzadi' },
+  { id: 'kuf', glyph: 'ק', name: 'Kuf', sound: 'k', consonant: 'k' },
+  { id: 'resh', glyph: 'ר', name: 'Resh', sound: 'r', consonant: 'r' },
+  { id: 'shin', glyph: 'שׁ', name: 'Shin', sound: 'sh', consonant: 'sh', pairWith: 'sin' },
+  { id: 'sin', glyph: 'שׂ', name: 'Sin', sound: 's', consonant: 's', pairWith: 'shin' },
+  { id: 'tav', glyph: 'ת', name: 'Tav', sound: 't', consonant: 't' }
+];
+</script>
+<script>
+'use strict';
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Letter Learner — the alef-bet for beginning readers. Every card opens one
+   dialog with up to four tabs: the memory hint and words (LETTER_DATA above),
+   the letter with every vowel (built here from the Unicode marks, spoken by
+   the browser's own speech synthesis), the letter in five fonts, and the
+   special forms. Shell patterns (header, dark mode, tour, toast, accounts)
+   follow trope_tutor.html; the dialog and the speech helpers follow
+   flash_cards.html.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* ══════════════════════════════════════════════════════
+   CONSTANTS + STATE
+   ══════════════════════════════════════════════════════ */
+const LL_KEY = 'hebrewLetterLearner_settings';        // synced to the account (registry row in js/ivrit-saves.js)
+const LL_TOUR_KEY = 'hebrewLetterLearner_tourSeen';   // per-device, erase-only
+const DARK_KEY = 'hebrewBlender_darkMode';
+// Alef-bet order of the 22 base cards; pair partners and finals slot in after their base (llOrder).
+const ALEFBET = ['alef', 'bet', 'gimel', 'dalet', 'he', 'vav', 'zayin', 'chet', 'tet', 'yod', 'kaf', 'lamed', 'mem', 'nun', 'samech', 'ayin', 'pe', 'tzadi', 'kuf', 'resh', 'shin', 'tav'];
+// The Modern Israeli vowel set in teaching order. A form is glyph + mark (appended AFTER the stored glyph, whose
+// dagesh or shin dot is already in it — the suite's convention; never normalized). The transliteration is the
+// card's consonant + the template; `en` is the fallback name before the dictionary loads.
+const VOWELS = [
+  { id: 'kamatz',        mark: 'ָ',       tr: 'ah', en: 'Kamatz' },
+  { id: 'patach',        mark: 'ַ',       tr: 'ah', en: 'Patach' },
+  { id: 'tzere',         mark: 'ֵ',       tr: 'eh', en: 'Tzere' },
+  { id: 'segol',         mark: 'ֶ',       tr: 'eh', en: 'Segol' },
+  { id: 'chirik',        mark: 'ִ',       tr: 'ee', en: 'Chirik' },
+  { id: 'cholam',        mark: 'ֹ',       tr: 'oh', en: 'Cholam' },
+  { id: 'kubutz',        mark: 'ֻ',       tr: 'oo', en: 'Kubutz' },
+  { id: 'shuruk',        mark: 'וּ', tr: 'oo', en: 'Shuruk' },
+  { id: 'sheva',         mark: 'ְ',       tr: "'",  en: 'Sheva' },
+  { id: 'chataf_patach', mark: 'ֲ',       tr: 'ah', en: 'Chataf Patach' },
+  { id: 'chataf_segol',  mark: 'ֱ',       tr: 'eh', en: 'Chataf Segol' },
+  { id: 'chataf_kamatz', mark: 'ֳ',       tr: 'oh', en: 'Chataf Kamatz' }
+];
+const LL_DEFAULTS = {
+  v: 1,
+  vowels: Object.fromEntries(VOWELS.map(v => [v.id, true])),
+  fontTab: true,
+  splitPairs: true,
+  wordAudio: false,
+  voiceURI: ''          // this device's installed voice — omitted from the account (registry `omit`)
+};
+// The Fonts tab: five very different shapes. Each face is the suite's own entry (the pickers' HEB_FONTS on the
+// Torah Trainer, the self-hosted @font-face in this page's head) — nothing is duplicated here, only named.
+// `load` null = already declared on this page; gfonts = a Google Fonts stylesheet; face = one font file.
+const LL_FONTS = [
+  { family: 'Frank Ruhl Libre',    label: 'Frank Ruhl Libre',    load: null },
+  { family: 'Noto Sans Hebrew',    label: 'Noto Sans Hebrew',    load: { type: 'gfonts', url: 'https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@400;700&display=swap' } },
+  { family: 'Playpen Sans Hebrew', label: 'Playpen Sans Hebrew', load: { type: 'gfonts', url: 'https://fonts.googleapis.com/css2?family=Playpen+Sans+Hebrew&display=swap' } },
+  { family: 'Gveret Levin',        label: 'Gveret Levin',        load: { type: 'gfonts', url: 'https://fonts.googleapis.com/css2?family=Gveret+Levin&display=swap' } },
+  { family: 'ShlomoStam',          label: 'Shlomo Stam',         load: { type: 'face', url: 'https://cdn.jsdelivr.net/gh/aharonium/fonts@master/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/Shlomo%20Orbach%20(OFL)/ShlomoStam.ttf' } }
+];
+// Inline SVGs from the shared icon set (the header-icons CSS block) for the buttons this page builds in script.
+// Static markup from this file, never user data.
+const ICON_SOUND = '<svg class="hi hi-sm hi-sound" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.2L12 5.4v13.2L7.2 14.5H4z" fill="currentColor"/><path d="M15.6 9.4a3.6 3.6 0 0 1 0 5.2M18.2 6.6a7.5 7.5 0 0 1 0 10.8"/></svg>';
+const HEB_MARKS_RE = /[֑-ׇ]/g;
+const LETTERS = {};      // id → validated entry
+const FINAL_OF = {};     // base id → its final card's id
+let settings = JSON.parse(JSON.stringify(LL_DEFAULTS));
+let _llLastWritten = null;   // the settings text this tab last wrote or read (the two-tab rule: never overwrite a newer copy)
+let _llId = null;            // the open card
+let _llOpener = null;        // the element to refocus when the dialog closes
+let _llTab = 'letter';
+let _llFontToken = 0;        // a Fonts-tab render that an older letter started is ignored when it settles
+
+/* ══════════════════════════════════════════════════════
+   HELPERS
+   ══════════════════════════════════════════════════════ */
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+// Parse JSON from possibly-imported input, dropping keys that could pollute Object.prototype.
+function ivritSafeParse(str) {
+  return JSON.parse(str, (k, v) =>
+    (k === '__proto__' || k === 'constructor' || k === 'prototype') ? undefined : v);
+}
+function ivritSafeAssign(target, src) {
+  if (src && typeof src === 'object' && !Array.isArray(src))
+    for (const k in src) if (Object.prototype.hasOwnProperty.call(src, k) &&
+        k !== '__proto__' && k !== 'constructor' && k !== 'prototype') target[k] = src[k];
+  return target;
+}
+// t() with its English value for the stretch before I18n.ready, when t() still returns the key: strings built
+// at load use this, and applyI18n rebuilds them once the dictionary is in (the flash cards' _fbT).
+function _fbT(k, en, p) {
+  let v = window.I18n ? I18n.t(k, p) : k;
+  if (v === k) { v = en; if (p) for (const x in p) v = v.split('{' + x + '}').join(String(p[x])); }
+  return v;
+}
+function el(tag, cls, text) {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text != null) n.textContent = text;
+  return n;
+}
+// Announce a transient message to screen readers via the hidden #a11yStatus live region; Hebrew gets lang="he".
+function announce(msg) {
+  const s = document.getElementById('a11yStatus');
+  if (!s) return;
+  s.lang = /[֐-׿]/.test(msg) ? 'he' : '';
+  s.textContent = msg;
+}
+function llBase(glyph) { return String(glyph || '').replace(HEB_MARKS_RE, ''); }
+// Wrap validated inner markup in the drawing's frame. The inner markup is this file's own authored content
+// (LETTER_DATA passed llValidSvg); the label is escaped like any attribute value.
+function llSvg(inner, label) {
+  const wrap = el('div');
+  wrap.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="' + esc(label) + '" focusable="false">' + inner + '</svg>';
+  return wrap.firstChild;
+}
+
+/* ══════════════════════════════════════════════════════
+   DATA — index + validate LETTER_DATA (never throws; a bad field is dropped with a console warning)
+   ══════════════════════════════════════════════════════ */
+const SVG_TAGS = new Set(['path', 'circle', 'ellipse', 'rect', 'line', 'polyline', 'polygon', 'g']);
+const SVG_BAD_RE = /`|\$\{|<\s*\/?\s*(script|style|text|defs|use|image|foreignObject|a)\b|\son[a-z]+\s*=|url\s*\(|href|\sid\s*=|<!--|<\?/i;
+const SVG_COLOR_RE = /^(none|currentColor|var\(--ll-[a-z0-9-]+\))$/;
+function llValidSvg(s) {
+  if (typeof s !== 'string') return 'svg is not a string';
+  if (s === '') return null;
+  if (SVG_BAD_RE.test(s)) return 'svg uses something the drawings may not (script, id, href, url(), on*=, text, defs)';
+  let m; const tagRe = /<\s*\/?\s*([a-zA-Z]+)/g;
+  while ((m = tagRe.exec(s))) if (!SVG_TAGS.has(m[1])) return 'svg tag <' + m[1] + '> is not allowed';
+  const colRe = /\b(fill|stroke)\s*=\s*["']([^"']*)["']/g;
+  while ((m = colRe.exec(s))) if (!SVG_COLOR_RE.test(m[2].trim())) return 'svg colour "' + m[2] + '" is not none, currentColor or var(--ll-…)';
+  return null;
+}
+function llWarn(id, why) { try { console.warn('[letters] ' + id + ': ' + why); } catch (e) {} }
+function llIndexData() {
+  const src = (typeof LETTER_DATA !== 'undefined' && Array.isArray(LETTER_DATA)) ? LETTER_DATA : [];
+  src.forEach(raw => {
+    if (!raw || typeof raw !== 'object') return;
+    const id = raw.id;
+    if (typeof id !== 'string' || !/^[a-z_]{1,16}$/.test(id)) { llWarn(String(id), 'id must be a short lowercase word'); return; }
+    if (typeof raw.glyph !== 'string' || !/^[א-ת][ְ-ׇ]*$/.test(raw.glyph)) { llWarn(id, 'glyph must be one Hebrew letter with at most a dagesh / shin dot'); return; }
+    if (typeof raw.name !== 'string' || !raw.name.trim()) { llWarn(id, 'name is missing'); return; }
+    const L = { id, glyph: raw.glyph, name: raw.name.trim(), sound: typeof raw.sound === 'string' ? raw.sound : '', consonant: typeof raw.consonant === 'string' ? raw.consonant : '' };
+    if (typeof raw.final === 'string') L.final = raw.final;
+    if (typeof raw.pairWith === 'string') L.pairWith = raw.pairWith;
+    if (Array.isArray(raw.vowels)) L.vowels = raw.vowels.filter(v => VOWELS.some(x => x.id === v));
+    if (raw.hint && typeof raw.hint === 'object') {
+      const h = raw.hint;
+      if (typeof h.caption !== 'string' || !h.caption.trim()) llWarn(id, 'hint has no caption; dropped');
+      else {
+        const variants = (Array.isArray(h.variants) ? h.variants : []).map((v, i) => {
+          const why = llValidSvg(v && v.svg);
+          if (why) { llWarn(id, 'hint variant ' + i + ': ' + why); return { label: String((v && v.label) || i), svg: '' }; }
+          return { label: String((v && v.label) || i), svg: v.svg };
+        });
+        const show = (Number.isInteger(h.show) && h.show >= 0 && h.show < variants.length) ? h.show : 0;
+        L.hint = { caption: h.caption.trim(), show, variants };
+      }
+    }
+    if (Array.isArray(raw.words)) {
+      L.words = raw.words.map((w, i) => {
+        if (!w || typeof w.he !== 'string' || !w.he.trim() || typeof w.en !== 'string') { llWarn(id, 'word ' + i + ' needs he and en; dropped'); return null; }
+        const why = llValidSvg(w.svg === undefined ? '' : w.svg);
+        if (why) llWarn(id, 'word ' + i + ': ' + why);
+        return { he: w.he.trim(), tr: typeof w.tr === 'string' ? w.tr : '', en: w.en.trim(), svg: why ? '' : (w.svg || '') };
+      }).filter(Boolean);
+    }
+    if (Array.isArray(raw.special)) {
+      L.special = raw.special.filter(s => s && typeof s.he === 'string' && s.he).map(s => ({ he: s.he, tr: typeof s.tr === 'string' ? s.tr : '', vowel: typeof s.vowel === 'string' ? s.vowel : '' }));
+    }
+    LETTERS[id] = L;
+  });
+  Object.values(LETTERS).forEach(L => { if (L.final) { if (LETTERS[L.final]) FINAL_OF[L.final] = L.id; else llWarn(L.id, 'final of an unknown base'); } });
+}
+function llHasContent(L) { return !!((L.hint && L.hint.caption) || (L.words && L.words.length)); }
+// The grid, in alef-bet order: a base, then (while pairs are split) its partner, then its final form.
+function llOrder() {
+  const out = [];
+  ALEFBET.forEach(id => {
+    const L = LETTERS[id]; if (!L) return;
+    out.push(id);
+    if (settings.splitPairs && L.pairWith && LETTERS[L.pairWith]) out.push(L.pairWith);
+    if (FINAL_OF[id]) out.push(FINAL_OF[id]);
+  });
+  return out;
+}
+
+/* ══════════════════════════════════════════════════════
+   SETTINGS (one blob; written synchronously; the account module reads the key through the registry)
+   ══════════════════════════════════════════════════════ */
+function llLoadSettings() {
+  let raw = null, stored = null;
+  try { raw = localStorage.getItem(LL_KEY); if (raw) stored = ivritSafeParse(raw); } catch (e) { stored = null; }
+  _llLastWritten = raw;
+  settings = JSON.parse(JSON.stringify(LL_DEFAULTS));
+  if (!stored || typeof stored !== 'object' || Array.isArray(stored)) return;
+  ivritSafeAssign(settings, stored);   // an unknown field from a newer build rides along untouched
+  settings.v = 1;
+  const vow = Object.assign({}, LL_DEFAULTS.vowels);
+  if (stored.vowels && typeof stored.vowels === 'object' && !Array.isArray(stored.vowels))
+    for (const k in stored.vowels) if (Object.prototype.hasOwnProperty.call(stored.vowels, k) && k !== '__proto__' && k !== 'constructor' && k !== 'prototype') vow[k] = !!stored.vowels[k];
+  settings.vowels = vow;
+  settings.fontTab = typeof stored.fontTab === 'boolean' ? stored.fontTab : LL_DEFAULTS.fontTab;
+  settings.splitPairs = typeof stored.splitPairs === 'boolean' ? stored.splitPairs : LL_DEFAULTS.splitPairs;
+  settings.wordAudio = typeof stored.wordAudio === 'boolean' ? stored.wordAudio : LL_DEFAULTS.wordAudio;
+  settings.voiceURI = typeof stored.voiceURI === 'string' ? stored.voiceURI : '';
+}
+function llSaveSettings() {
+  const text = JSON.stringify(settings);
+  try { localStorage.setItem(LL_KEY, text); _llLastWritten = text; } catch (e) {}
+}
+// The account module's `flush`: write only what this tab changed. If the store moved under us (another tab, or
+// the module's own download) this tab takes the store instead — an older view never overwrites a newer copy.
+function llSaveSettingsIfChanged() {
+  let raw = null;
+  try { raw = localStorage.getItem(LL_KEY); } catch (e) {}
+  if (raw !== _llLastWritten) { llAdoptStore(); return; }
+  if (JSON.stringify(settings) !== _llLastWritten) llSaveSettings();
+}
+// Re-read the key onto a fresh defaults clone and re-render everything that shows a setting.
+function llAdoptStore() {
+  llLoadSettings();
+  renderOptions();
+  renderGrid();
+  if (!document.getElementById('llOverlay').hidden && _llId) llFillDialog(_llId, true);
+  llRenderVoicePicker();
+}
+function llSetSetting(key, value) {
+  settings[key] = value;
+  llSaveSettings();
+}
+
+/* ══════════════════════════════════════════════════════
+   OPTIONS
+   ══════════════════════════════════════════════════════ */
+function renderOptions() {
+  const grid = document.getElementById('llVowelGrid');
+  grid.textContent = '';
+  VOWELS.forEach(v => {
+    const lab = el('label', 'll-opt');
+    const cb = el('input'); cb.type = 'checkbox'; cb.checked = !!settings.vowels[v.id]; cb.dataset.vowel = v.id;
+    cb.addEventListener('change', () => {
+      settings.vowels[v.id] = cb.checked;
+      llSaveSettings();
+      if (!document.getElementById('llOverlay').hidden && _llId) llFillDialog(_llId, true);
+    });
+    const sample = el('span', 'll-vowel-sample', 'א' + v.mark); sample.lang = 'he'; sample.dir = 'rtl'; sample.setAttribute('aria-hidden', 'true');
+    const name = el('span', null, _fbT('letterlearner.glyphname.vowel_' + v.id, v.en));
+    lab.append(cb, sample, name);
+    grid.appendChild(lab);
+  });
+  document.getElementById('optFontTab').checked = !!settings.fontTab;
+  document.getElementById('optSplit').checked = !!settings.splitPairs;
+  document.getElementById('optWordAudio').checked = !!settings.wordAudio;
+}
+function wireOptions() {
+  document.getElementById('optFontTab').addEventListener('change', e => {
+    llSetSetting('fontTab', e.target.checked);
+    if (!document.getElementById('llOverlay').hidden && _llId) llFillDialog(_llId, true);
+  });
+  document.getElementById('optSplit').addEventListener('change', e => {
+    llSetSetting('splitPairs', e.target.checked);
+    renderGrid();
+    if (!document.getElementById('llOverlay').hidden && _llId) {
+      // A partner card that just folded away opens as its base.
+      if (!llOrder().includes(_llId)) _llId = LETTERS[_llId].pairWith || _llId;
+      llFillDialog(_llId, true);
+    }
+  });
+  document.getElementById('optWordAudio').addEventListener('change', e => {
+    llSetSetting('wordAudio', e.target.checked);
+    if (!document.getElementById('llOverlay').hidden && _llId) llFillDialog(_llId, true);
+  });
+  document.getElementById('llVoice').addEventListener('change', e => llSetSetting('voiceURI', e.target.value));
+  document.getElementById('llReset').addEventListener('click', () => {
+    // A reset on a syncing page writes through like any other edit: while a session is stored the confirm
+    // names the account-wide effect (CLAUDE.md accounts rule 7).
+    const signedIn = !!(window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession());
+    const msg = signedIn ? _fbT('letterlearner.options.reset_confirm_cloud', 'Reset the Letter Learner options? You are signed in, so the reset reaches your account and every device signed into it.')
+                         : _fbT('letterlearner.options.reset_confirm', 'Reset the Letter Learner options on this device?');
+    if (!confirm(msg)) return;
+    settings = JSON.parse(JSON.stringify(LL_DEFAULTS));
+    llSaveSettings();
+    renderOptions(); renderGrid(); llRenderVoicePicker();
+    if (!document.getElementById('llOverlay').hidden && _llId) llFillDialog(_llId, true);
+  });
+  try { window.addEventListener('storage', e => { if (e.key === LL_KEY) llAdoptStore(); }); } catch (e) {}
+}
+
+/* ══════════════════════════════════════════════════════
+   GRID
+   ══════════════════════════════════════════════════════ */
+function renderGrid() {
+  const grid = document.getElementById('llGrid');
+  grid.textContent = '';
+  llOrder().forEach(id => {
+    const L = LETTERS[id];
+    const li = el('li');
+    const btn = el('button', 'll-card' + (L.final ? ' is-final' : '') + (llHasContent(L) ? '' : ' is-soon'));
+    btn.type = 'button';
+    btn.dataset.id = id;
+    btn.setAttribute('aria-label', _fbT('letterlearner.grid.open_aria', 'Open {name}', { name: L.name }));
+    const g = el('span', 'll-card-glyph', L.glyph); g.lang = 'he'; g.dir = 'rtl'; g.setAttribute('aria-hidden', 'true');
+    const n = el('span', 'll-card-name', L.name); n.dir = 'ltr';     // i18n-ignore: learner content (the English letter name)
+    const s = el('span', 'll-card-sound', L.sound === 'silent' ? L.sound : '/' + L.sound + '/'); s.dir = 'ltr';   // i18n-ignore: learner content
+    btn.append(g, n, s);
+    if (L.final) btn.appendChild(el('span', 'll-badge', _fbT('letterlearner.grid.final_badge', 'final form')));
+    else if (!llHasContent(L)) btn.appendChild(el('span', 'll-badge', _fbT('letterlearner.grid.soon_badge', 'coming soon')));
+    btn.addEventListener('click', () => llOpen(id));
+    li.appendChild(btn);
+    grid.appendChild(li);
+  });
+}
+
+/* ══════════════════════════════════════════════════════
+   DIALOG (the house modal contract, after flash_cards.html's fcModalize: focus moves in, Tab wraps over the
+   dialog's visible controls, Escape closes, focus returns to the card; Prev/Next swap the content in place)
+   ══════════════════════════════════════════════════════ */
+const FOCUS_SEL = 'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+function llOpen(id) {
+  if (!LETTERS[id]) return;
+  const ov = document.getElementById('llOverlay');
+  if (ov.hidden) _llOpener = document.activeElement;
+  llFillDialog(id, false);
+  ov.hidden = false;
+  setTimeout(() => { try { document.querySelector('.ll-tabs [role="tab"][aria-selected="true"]').focus(); } catch (e) {} }, 0);
+}
+function llClose() {
+  const ov = document.getElementById('llOverlay');
+  if (ov.hidden) return;
+  ov.hidden = true;
+  try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e) {}
+  const card = _llId ? document.querySelector('.ll-card[data-id="' + _llId + '"]') : null;
+  const back = (_llOpener && document.contains(_llOpener) && _llOpener !== document.body) ? _llOpener : card;
+  _llOpener = null;
+  try { back && back.focus(); } catch (e) {}
+}
+function wireDialog() {
+  const ov = document.getElementById('llOverlay'), box = ov.querySelector('.ll-dialog');
+  ov.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { e.preventDefault(); llClose(); return; }
+    if (e.key !== 'Tab') return;
+    const f = [...box.querySelectorAll(FOCUS_SEL)].filter(x => x.offsetParent !== null);
+    if (!f.length) return;
+    const first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
+  ov.addEventListener('click', e => { if (e.target === ov) llClose(); });
+  document.getElementById('llClose').addEventListener('click', llClose);
+  document.getElementById('llPrev').addEventListener('click', () => llStep(-1));
+  document.getElementById('llNext').addEventListener('click', () => llStep(1));
+  ov.querySelectorAll('.ll-tabs [role="tab"]').forEach(tab => {
+    tab.addEventListener('click', () => llSelectTab(tab.id.replace('llTab-', '')));
+    tab.addEventListener('keydown', e => _tabKeydown(e, tab));
+  });
+}
+function llStep(dir) {
+  const order = llOrder(), i = order.indexOf(_llId);
+  const next = order[i + dir];
+  if (!next) return;
+  llFillDialog(next, true);
+  announce(LETTERS[next].name);
+  const prev = document.getElementById('llPrev'), nxt = document.getElementById('llNext');
+  const stay = dir < 0 ? prev : nxt;
+  try { (stay.disabled ? (dir < 0 ? nxt : prev) : stay).focus(); } catch (e) {}
+}
+// The Font Maker's tablist handler: Left/Right by VISUAL direction (a mirrored Hebrew strip advances on
+// ArrowLeft), Home/End, Enter/Space, over the visible tabs only; moving focus selects (automatic activation).
+function _tabKeydown(e, tab) {
+  const list = tab.closest('[role=tablist]'); if (!list) return;
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tab.click(); return; }
+  const tabs = [...list.querySelectorAll('[role=tab]')].filter(t => t.offsetParent !== null);
+  const i = tabs.indexOf(tab); if (i < 0) return;
+  let j = -1;
+  const rtl = getComputedStyle(list).direction === 'rtl';
+  if (e.key === 'ArrowDown' || e.key === (rtl ? 'ArrowLeft' : 'ArrowRight')) j = (i + 1) % tabs.length;
+  else if (e.key === 'ArrowUp' || e.key === (rtl ? 'ArrowRight' : 'ArrowLeft')) j = (i - 1 + tabs.length) % tabs.length;
+  else if (e.key === 'Home') j = 0;
+  else if (e.key === 'End') j = tabs.length - 1;
+  else return;
+  e.preventDefault(); tabs[j].focus(); tabs[j].click();
+}
+function llTabsFor(L) {
+  const tabs = ['letter'];
+  if (!L.final || (L.vowels && L.vowels.length)) tabs.push('vowels');
+  if (settings.fontTab) tabs.push('font');
+  if (llSpecialItems(L).length) tabs.push('special');
+  return tabs;
+}
+function llSelectTab(name) {
+  _llTab = name;
+  ['letter', 'vowels', 'font', 'special'].forEach(t => {
+    const tab = document.getElementById('llTab-' + t), panel = document.getElementById('llPanel-' + t);
+    const on = t === name;
+    tab.setAttribute('aria-selected', on ? 'true' : 'false');
+    tab.tabIndex = on ? 0 : -1;
+    panel.hidden = !on;
+  });
+  if (name === 'font') llRenderFontTab(LETTERS[_llId]);
+}
+function llFillDialog(id, keepTab) {
+  const L = LETTERS[id]; if (!L) return;
+  _llId = id;
+  document.getElementById('llDlgGlyph').textContent = L.glyph;
+  document.getElementById('llDlgName').textContent = L.name;
+  const order = llOrder(), i = order.indexOf(id);
+  document.getElementById('llPrev').disabled = i <= 0;
+  document.getElementById('llNext').disabled = i < 0 || i >= order.length - 1;
+  const tabs = llTabsFor(L);
+  ['letter', 'vowels', 'font', 'special'].forEach(t => { document.getElementById('llTab-' + t).hidden = !tabs.includes(t); });
+  llRenderLetterTab(L);
+  llRenderVowelsTab(L);
+  llRenderSpecialTab(L);
+  document.getElementById('llPanel-font').textContent = '';
+  _llFontToken++;
+  llSelectTab((keepTab && tabs.includes(_llTab)) ? _llTab : 'letter');
+}
+
+/* ══════════════════════════════════════════════════════
+   TAB RENDERERS
+   ══════════════════════════════════════════════════════ */
+function llSpeakButton(text, ariaKey, ariaEn, param) {
+  const b = el('button', 'll-speak');
+  b.type = 'button';
+  const label = _fbT(ariaKey, ariaEn, param);
+  b.setAttribute('aria-label', label);
+  b.title = label;
+  b.innerHTML = ICON_SOUND;
+  b.addEventListener('click', () => speakWord(text));
+  return b;
+}
+// The Hebrew word with the card's letter highlighted: the first cluster (letter + its marks) whose base
+// letter is the card's. Vet's words carry the letter inside them, so the first match may sit mid-word.
+function llWordSpan(he, base) {
+  const span = el('span', 'll-word-he'); span.lang = 'he'; span.dir = 'rtl';
+  const clusters = he.match(/[א-ת][֑-ׇ]*|[\s\S]/g) || [];
+  let hit = false;
+  clusters.forEach(c => {
+    if (!hit && base && llBase(c) === base) { span.appendChild(el('span', 'll-hit', c)); hit = true; }
+    else span.appendChild(document.createTextNode(c));
+  });
+  return span;
+}
+function llRenderLetterTab(L) {
+  const panel = document.getElementById('llPanel-letter');
+  panel.textContent = '';
+  if (L.final && LETTERS[L.final]) {
+    const p = el('p', 'll-final-note');
+    const B = LETTERS[L.final];
+    const text = _fbT('letterlearner.letter.final_note', 'This is how {base} looks at the end of a word.', { base: B.name });
+    p.appendChild(document.createTextNode(text + ' '));
+    const pair = el('span', 'll-inline-heb', B.glyph + ' → ' + L.glyph); pair.lang = 'he'; pair.dir = 'rtl';
+    p.appendChild(pair);
+    panel.appendChild(p);
+  }
+  const words = (L.words || []);
+  if (!(L.hint && L.hint.caption) && !words.length) {
+    const soon = el('div', 'll-soon');
+    soon.appendChild(el('strong', null, _fbT('letterlearner.letter.soon_title', 'Coming soon')));
+    soon.appendChild(el('span', null, _fbT('letterlearner.letter.soon_body', 'The picture and words for this letter are on their way. The Vowels and Fonts tabs already work.')));
+    panel.appendChild(soon);
+    return;
+  }
+  if (L.hint && L.hint.caption) {
+    panel.appendChild(el('h3', null, _fbT('letterlearner.letter.hint_heading', 'Remember it')));
+    const fig = el('figure', 'll-hint');
+    const v = L.hint.variants[L.hint.show];
+    if (v && v.svg) { const pic = el('div', 'll-hint-pic'); pic.appendChild(llSvg(v.svg, L.hint.caption)); fig.appendChild(pic); }
+    fig.appendChild(el('figcaption', null, L.hint.caption));   // i18n-ignore: learner content, shown verbatim
+    panel.appendChild(fig);
+  }
+  if (words.length) {
+    panel.appendChild(el('h3', null, _fbT('letterlearner.letter.words_heading', 'Words')));
+    const ul = el('ul', 'll-words');
+    const base = llBase(L.glyph);
+    words.forEach(w => {
+      const li = el('li', 'll-word');
+      if (w.svg) { const pic = el('div', 'll-word-pic'); pic.appendChild(llSvg(w.svg, w.en)); li.appendChild(pic); }
+      const t = el('div', 'll-word-text');
+      t.appendChild(llWordSpan(w.he, base));
+      const en = el('span', 'll-word-en', w.en); en.lang = 'en';   // i18n-ignore: learner content (the English gloss)
+      if (w.tr) { en.appendChild(document.createTextNode(' ')); en.appendChild(el('span', 'll-word-tr', '(' + w.tr + ')')); }
+      t.appendChild(en);
+      li.appendChild(t);
+      if (settings.wordAudio) li.appendChild(llSpeakButton(w.he, 'letterlearner.words.hear_aria', 'Hear {word}', { word: w.he }));
+      ul.appendChild(li);
+    });
+    panel.appendChild(ul);
+  }
+}
+function llRenderVowelsTab(L) {
+  const panel = document.getElementById('llPanel-vowels');
+  panel.textContent = '';
+  const bare = el('div', 'll-bare');
+  const g = el('div', 'll-bare-glyph', L.glyph); g.lang = 'he'; g.dir = 'rtl';
+  bare.appendChild(g);
+  bare.appendChild(el('div', 'll-bare-sound', L.sound === 'silent' ? L.sound : '/' + L.sound + '/'));   // i18n-ignore: learner content (the consonant sound)
+  panel.appendChild(bare);
+  const rows = VOWELS.filter(v => settings.vowels[v.id] && (!L.vowels || L.vowels.includes(v.id)) && !(v.id === 'sheva' && !L.consonant));
+  if (!rows.length) { panel.appendChild(el('p', 'll-note', _fbT('letterlearner.vowels.none_note', 'Every vowel is switched off in Options.'))); return; }
+  const ul = el('ul', 'll-vrows');
+  rows.forEach(v => {
+    const form = L.glyph + v.mark;
+    const tr = L.consonant + v.tr;
+    const li = el('li', 'll-vrow');
+    const f = el('span', 'll-form', form); f.lang = 'he'; f.dir = 'rtl';
+    const t = el('span', 'll-tr', '/' + tr + '/');
+    t.appendChild(el('span', 'll-vname', _fbT('letterlearner.glyphname.vowel_' + v.id, v.en)));
+    li.append(f, t, llSpeakButton(form, 'letterlearner.vowels.hear_aria', 'Hear {syllable}', { syllable: tr }));
+    ul.appendChild(li);
+  });
+  panel.appendChild(ul);
+}
+function llSpecialItems(L) {
+  const items = [];
+  (L.special || []).forEach(s => items.push({ kind: 'vowel', he: s.he, tr: s.tr, vowel: s.vowel }));
+  if (!settings.splitPairs && L.pairWith && LETTERS[L.pairWith]) items.push({ kind: 'pair', partner: LETTERS[L.pairWith] });
+  return items;
+}
+function llRenderSpecialTab(L) {
+  const panel = document.getElementById('llPanel-special');
+  panel.textContent = '';
+  const items = llSpecialItems(L);
+  if (!items.length) return;
+  const ul = el('ul', 'll-special');
+  let note = null;
+  items.forEach(it => {
+    if (it.kind === 'pair') {
+      [L, it.partner].forEach(P => {
+        const li = el('li', 'll-pair');
+        const f = el('span', 'll-form', P.glyph); f.lang = 'he'; f.dir = 'rtl';
+        const t = el('span');
+        t.appendChild(el('span', 'll-pair-name', P.name));   // i18n-ignore: learner content
+        t.appendChild(el('span', 'll-pair-sound', '/' + P.sound + '/'));   // i18n-ignore: learner content
+        li.append(f, t);
+        ul.appendChild(li);
+      });
+      note = (llBase(L.glyph) === 'ש') ? _fbT('letterlearner.special.shin_note', 'The dot on the right says sh; on the left, s.')
+                                            : _fbT('letterlearner.special.pair_note', 'One letter, two sounds: the dot inside makes the first sound; without it, the second.');
+    } else {
+      const li = el('li', 'll-vrow');
+      const f = el('span', 'll-form', it.he); f.lang = 'he'; f.dir = 'rtl';
+      const t = el('span', 'll-tr', '/' + it.tr + '/');
+      const v = VOWELS.find(x => x.id === it.vowel);
+      if (v) t.appendChild(el('span', 'll-vname', _fbT('letterlearner.glyphname.vowel_' + v.id, v.en)));
+      li.append(f, t, llSpeakButton(it.he, 'letterlearner.vowels.hear_aria', 'Hear {syllable}', { syllable: it.tr }));
+      ul.appendChild(li);
+      if (!note) note = _fbT('letterlearner.special.vav_note', 'Vav also makes two vowel sounds: with the dot on top it says oh, with the dot inside it says oo.');
+    }
+  });
+  panel.appendChild(ul);
+  if (note) panel.appendChild(el('p', 'll-note', note));
+}
+
+/* ══════════════════════════════════════════════════════
+   FONTS TAB — a tile appears only once its face has really loaded AND draws the letter (the Font Maker's
+   sentinel test: identical pixels with and without the face mean the browser fell back to another font).
+   ══════════════════════════════════════════════════════ */
+const _llFontLoads = {};
+function llLoadFont(f) {
+  if (_llFontLoads[f.family]) return _llFontLoads[f.family];
+  const timeout = new Promise(r => setTimeout(() => r(false), 6000));
+  const attempt = (async () => {
+    try {
+      if (f.load && f.load.type === 'face') {
+        const ff = new FontFace(f.family, "url('" + f.load.url + "')");
+        await ff.load();
+        document.fonts.add(ff);
+      } else if (f.load && f.load.type === 'gfonts') {
+        const id = 'font-' + f.family.replace(/\s+/g, '-');
+        if (!document.getElementById(id)) await new Promise((ok, no) => {
+          const l = document.createElement('link'); l.id = id; l.rel = 'stylesheet'; l.href = f.load.url;
+          l.onload = ok; l.onerror = () => no(new Error('stylesheet'));
+          document.head.appendChild(l);
+        });
+        await document.fonts.load('40px "' + f.family + '"', 'א');
+      } else {
+        await document.fonts.load('40px "' + f.family + '"', 'א');
+      }
+    } catch (e) { return false; }
+    return llFontDraws(f.family, 'א');
+  })();
+  return (_llFontLoads[f.family] = Promise.race([attempt, timeout]).catch(() => false));
+}
+function llFontDraws(family, ch) {
+  try {
+    const S = 64, cv = document.createElement('canvas'); cv.width = S; cv.height = S;
+    const ctx = cv.getContext('2d', { willReadFrequently: true });
+    if (!ctx) return false;
+    const ink = fam => { ctx.clearRect(0, 0, S, S); ctx.font = '48px ' + fam; ctx.fillStyle = '#000'; ctx.textBaseline = 'alphabetic'; ctx.fillText(ch, 8, 50); return ctx.getImageData(0, 0, S, S).data.join(','); };
+    return ink('"' + family + '", "ivrit-no-such-face"') !== ink('"ivrit-no-such-face"');
+  } catch (e) { return false; }
+}
+function llRenderFontTab(L) {
+  const panel = document.getElementById('llPanel-font');
+  if (!L || panel.dataset.for === L.id) return;
+  panel.dataset.for = L.id;
+  panel.textContent = '';
+  const token = ++_llFontToken;
+  const ul = el('ul', 'll-fonts');
+  const bare = llBase(L.glyph);
+  const tiles = LL_FONTS.map(f => {
+    const li = el('li', 'll-font-tile'); li.hidden = true;
+    const g = el('span', 'll-font-glyph', bare); g.lang = 'he'; g.dir = 'rtl'; g.style.fontFamily = '"' + f.family + '"';
+    li.appendChild(g);
+    li.appendChild(el('span', 'll-font-name', f.label));   // i18n-ignore: a font's name
+    li.setAttribute('aria-label', _fbT('letterlearner.font.tile_aria', '{name} in {font}', { name: L.name, font: f.label }));
+    ul.appendChild(li);
+    return li;
+  });
+  panel.appendChild(ul);
+  const note = el('p', 'll-note', _fbT('letterlearner.font.loading', 'Loading fonts…'));
+  panel.appendChild(note);
+  let settled = 0, shown = 0;
+  LL_FONTS.forEach((f, i) => {
+    llLoadFont(f).then(ok => {
+      if (token !== _llFontToken) return;   // a later letter took the tab over
+      if (ok && llFontDraws(f.family, bare)) { tiles[i].hidden = false; shown++; }
+      settled++;
+      if (settled === LL_FONTS.length) {
+        if (shown < 2) note.textContent = _fbT('letterlearner.font.offline_note', 'More fonts appear when you are online.');
+        else note.remove();
+      }
+    });
+  });
+}
+
+/* ══════════════════════════════════════════════════════
+   SPEECH — the browser's own synthesis with a Hebrew voice (the flash cards' helpers, plus a voice picker).
+   Fails soft: no speech → the speaker buttons are hidden; speech but no Hebrew voice → one notice per visit.
+   ══════════════════════════════════════════════════════ */
+let _llNoVoiceShown = false;
+function llVoices() {
+  try { return (speechSynthesis.getVoices() || []).filter(v => /^(he|iw)(-|_|$)/i.test(v.lang || '')); }
+  catch (e) { return []; }
+}
+function llPickVoice() {
+  const list = llVoices();
+  return list.find(v => v.voiceURI === settings.voiceURI) || list[0] || null;
+}
+function _noHebVoiceNotice() {
+  if (_llNoVoiceShown) return;
+  _llNoVoiceShown = true;
+  const m = _fbT('shared.audio.no_hebrew_voice', 'No Hebrew voice is installed in this browser, so it cannot read the letters aloud.');
+  if (typeof showAppToast === 'function') showAppToast(m, 6000);
+}
+function speakWord(text) {
+  if (!window.speechSynthesis) return;
+  let done = false;
+  const go = () => {
+    if (done) return; done = true;
+    const v = llPickVoice();
+    if (!v) { _noHebVoiceNotice(); return; }
+    const utt = new SpeechSynthesisUtterance(text);
+    utt.lang = 'he-IL';
+    utt.voice = v;
+    utt.rate = 0.75;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(utt);
+  };
+  if ((speechSynthesis.getVoices() || []).length) go();
+  else { speechSynthesis.addEventListener('voiceschanged', go, { once: true }); setTimeout(go, 400); }
+}
+function llRenderVoicePicker() {
+  const row = document.getElementById('llVoiceRow'), sel = document.getElementById('llVoice');
+  const list = llVoices();
+  row.hidden = list.length < 2;
+  sel.textContent = '';
+  const def = el('option', null, _fbT('letterlearner.options.voice_default', "Browser's choice")); def.value = '';
+  sel.appendChild(def);
+  list.forEach(v => { const o = el('option', null, v.name); o.value = v.voiceURI; sel.appendChild(o); });   // i18n-ignore: the voice's own name
+  sel.value = list.some(v => v.voiceURI === settings.voiceURI) ? settings.voiceURI : '';
+}
+function initSpeech() {
+  const has = !!window.speechSynthesis;
+  document.body.classList.toggle('ll-no-speech', !has);
+  if (!has) return;
+  try {
+    speechSynthesis.getVoices();   // prime iOS/Safari (the voice list populates lazily)
+    speechSynthesis.addEventListener('voiceschanged', llRenderVoicePicker);
+  } catch (e) {}
+  llRenderVoicePicker();
+}
+
+/* ══════════════════════════════════════════════════════
+   DARK MODE + FULLSCREEN (house pattern)
+   ══════════════════════════════════════════════════════ */
+function toggleDark() {
+  document.documentElement.classList.remove('dark-early');
+  document.body.classList.toggle('dark');
+  const isDark = document.body.classList.contains('dark');
+  localStorage.setItem(DARK_KEY, isDark ? '1' : '0');
+  document.getElementById('darkBtn').setAttribute('aria-pressed', isDark ? 'true' : 'false');
+}
+function initDark() {
+  const s = localStorage.getItem(DARK_KEY);
+  if (s === '1' || (s === null && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches)) {
+    document.body.classList.add('dark');
+    document.getElementById('darkBtn').setAttribute('aria-pressed', 'true');
+  }
+  document.documentElement.classList.remove('dark-early');
+}
+const FS_ENTER_ICON = '<svg class="hi hi-fs-enter" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg>';
+const FS_EXIT_ICON = '<svg class="hi hi-fs-exit" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4v5H4M20 9h-5V4M15 20v-5h5M4 15h5v5"/></svg>';
+// iPhone Safari has no element-fullscreen API, so this tap would reject silently — hide the
+// button wherever the unprefixed API this page calls is absent (no dead clicks, CLAUDE.md UX 5).
+(function () {
+  if (document.fullscreenEnabled) return;
+  const hide = () => { const b = document.getElementById('fsBtn'); if (b) b.style.display = 'none'; };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', hide);
+  else hide();
+})();
+/* ═══ shared: app-toast ═══ (byte-identical across generator/dashboard/flash_cards/dictionary/letter_learner — copy verbatim; called from the .ivrit engine restore path) ═══ */
+let _appToastTimer = null;
+function showAppToast(msg, ms) {
+  let t = document.getElementById('appToast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'appToast';
+    t.setAttribute('role', 'status');
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  // A longer message stays longer: 2.6 s for a short one, then 50 ms per character, 8 s at most (the Torah
+  // Trainer's hint toast) — a two-line "Merged your X with the one from your account" used to vanish in 2.6 s.
+  // An explicit ms (the 6 s no-Hebrew-voice notice) still wins.
+  if (ms == null) ms = Math.min(8000, Math.max(2600, 1000 + 50 * String(msg).length));
+  // Force reflow so the transition runs even on rapid repeats.
+  void t.offsetWidth;
+  t.classList.add('show');
+  if (_appToastTimer) clearTimeout(_appToastTimer);
+  _appToastTimer = setTimeout(() => t.classList.remove('show'), ms);
+}
+/* ═══ end shared: app-toast ═══ */
+/* ═══ shared: fullscreen idle-hide ═══ (byte-identical across Hebrew_Font_Maker / classroom_dashboard / flash_cards /
+   hebrew_blend_generator / hebrew_dictionary / torah_trainer / trope_tutor / letter_learner — paste verbatim, wire the CSS per page)
+   While the page is fullscreen, `body.fs-idle` is set after FS_IDLE_MS with no pointer, key, touch or wheel activity
+   and cleared by the next one; leaving fullscreen clears it. The per-page CSS decides what fades — the exit-fullscreen
+   control, always with a :focus-visible exception so a keyboard user is never timed out. Pure UI state, nothing saved. */
+(function () {
+  const FS_IDLE_MS = 3000;
+  let t = null;
+  const fs = () => !!(document.fullscreenElement || document.webkitFullscreenElement);
+  const idle = () => { t = null; if (fs()) document.body.classList.add('fs-idle'); };
+  const wake = () => {
+    document.body.classList.remove('fs-idle');
+    if (t) clearTimeout(t);
+    t = fs() ? setTimeout(idle, FS_IDLE_MS) : null;
+  };
+  ['pointermove', 'pointerdown', 'keydown', 'touchstart', 'wheel'].forEach(ev =>
+    document.addEventListener(ev, () => { if (t || fs()) wake(); }, { passive: true }));
+  ['fullscreenchange', 'webkitfullscreenchange'].forEach(ev => document.addEventListener(ev, wake));
+})();
+/* ═══ end shared: fullscreen idle-hide ═══ */
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(() => {});
+  } else {
+    document.exitFullscreen();
+  }
+}
+document.addEventListener('fullscreenchange', () => {
+  const on = !!document.fullscreenElement;
+  const btn = document.getElementById('fsBtn');
+  if (btn) {
+    btn.innerHTML = on ? FS_EXIT_ICON : FS_ENTER_ICON;
+    const fk = on ? 'shared.fullscreen.exit_title' : 'shared.fullscreen.enter_title';
+    btn.setAttribute('data-i18n-title', fk);   // keep localized so a later language switch re-resolves it
+    btn.title = window.I18n ? I18n.t(fk) : (on ? 'Exit full screen' : 'Full screen');
+  }
+});
+
+
+/* ══════════════════════════════════════════════════════
+   GUIDED TOUR (house engine, ported from trope_tutor.html) — non-modal
+   spotlight. Read-only: never changes settings or speech.
+   ══════════════════════════════════════════════════════ */
+function _tourVisible(el) { return !!(el && el.offsetParent !== null); }
+const TOUR_STEPS = [
+  { target: () => document.getElementById('llGrid'),
+    titleKey: 'letterlearner.tour.s1_title', bodyKey: 'letterlearner.tour.s1_body' },
+  { target: () => document.querySelector('#llGrid .ll-card'),
+    titleKey: 'letterlearner.tour.s2_title', bodyKey: 'letterlearner.tour.s2_body' },
+  { target: () => document.getElementById('llOptions'),
+    titleKey: 'letterlearner.tour.s3_title', bodyKey: 'letterlearner.tour.s3_body' },
+  { target: () => document.getElementById('cloudSavesPanel'),
+    titleKey: 'letterlearner.tour.s4_title', bodyKey: 'letterlearner.tour.s4_body' },
+];
+let _tourIdx = -1, _tourActive = false, _tourOpener = null, _tourRepoTimer = null;
+function tourStart() {
+  if (_tourActive) return;
+  try { localStorage.setItem(LL_TOUR_KEY, '1'); } catch (e) {}
+  document.getElementById('tourBtn')?.classList.remove('pulse-attn');
+  _tourActive = true; _tourIdx = -1;
+  _tourOpener = document.activeElement;
+  document.getElementById('tourSpot').hidden = false;
+  document.getElementById('tourCard').hidden = false;
+  document.addEventListener('keydown', _tourKey, true);
+  window.addEventListener('resize', _tourReposition);
+  window.addEventListener('scroll', _tourReposition, true);
+  tourNext();
+}
+function _resolveStep(idx) {
+  const step = TOUR_STEPS[idx];
+  if (!step) return null;
+  let el = null;
+  try { el = step.target(); } catch (e) {}
+  return _tourVisible(el) ? el : null;
+}
+function _tourShow(idx, dir) {
+  while (idx >= 0 && idx < TOUR_STEPS.length && !_resolveStep(idx)) idx += dir;
+  if (idx < 0 || idx >= TOUR_STEPS.length) { tourEnd(dir > 0); return; }
+  _tourIdx = idx;
+  const step = TOUR_STEPS[idx], el = step.target();
+  try { el.scrollIntoView({ block: 'center', inline: 'center' }); } catch (e) {}
+  document.getElementById('tourCardTitle').textContent = I18n.t(step.titleKey);
+  document.getElementById('tourCardBody').textContent = I18n.t(step.bodyKey);
+  document.getElementById('tourStep').textContent = I18n.t('shared.tour.step_counter', { count: idx + 1, total: TOUR_STEPS.length });
+  document.getElementById('tourBack').disabled = (idx === 0);
+  document.getElementById('tourNext').textContent = I18n.t((idx === TOUR_STEPS.length - 1) ? 'shared.tour.done' : 'shared.tour.next');
+  _tourReposition();
+  if (_tourRepoTimer) clearTimeout(_tourRepoTimer);
+  _tourRepoTimer = setTimeout(_tourReposition, 350);   // re-measure after scroll settles
+  setTimeout(() => { const n = document.getElementById('tourNext'); if (n && _tourActive) n.focus(); }, 0);
+}
+function tourNext() { _tourShow(_tourIdx + 1, 1); }
+function tourPrev() { _tourShow(_tourIdx - 1, -1); }
+function tourEnd(completed) {
+  if (!_tourActive) return;
+  _tourActive = false;
+  document.removeEventListener('keydown', _tourKey, true);
+  window.removeEventListener('resize', _tourReposition);
+  window.removeEventListener('scroll', _tourReposition, true);
+  if (_tourRepoTimer) { clearTimeout(_tourRepoTimer); _tourRepoTimer = null; }
+  document.getElementById('tourSpot').hidden = true;
+  document.getElementById('tourCard').hidden = true;
+  const opener = _tourOpener; _tourOpener = null;
+  if (opener && opener.focus) { try { opener.focus(); } catch (e) {} }
+}
+function _tourReposition() {
+  if (!_tourActive) return;
+  const step = TOUR_STEPS[_tourIdx];
+  if (!step) return;
+  let el = null; try { el = step.target(); } catch (e) {}
+  if (!_tourVisible(el)) return;
+  const r = el.getBoundingClientRect(), pad = 6;
+  const spot = document.getElementById('tourSpot');
+  spot.style.left = Math.max(0, r.left - pad) + 'px';
+  spot.style.top = Math.max(0, r.top - pad) + 'px';
+  spot.style.width = (r.width + pad * 2) + 'px';
+  spot.style.height = (r.height + pad * 2) + 'px';
+  const card = document.getElementById('tourCard');
+  const cw = card.offsetWidth, ch = card.offsetHeight, vw = window.innerWidth, vh = window.innerHeight;
+  let top = r.bottom + 12;
+  if (top + ch > vh - 8) { const above = r.top - ch - 12; top = (above >= 8) ? above : Math.max(8, vh - ch - 8); }
+  let left = r.left + r.width / 2 - cw / 2;
+  if (left < 8) left = 8;
+  if (left + cw > vw - 8) left = vw - cw - 8;
+  card.style.left = left + 'px';
+  card.style.top = top + 'px';
+}
+function _tourKey(e) {
+  if (!_tourActive) return;
+  if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); tourEnd(false); }
+  else if (e.key === 'ArrowRight') { e.preventDefault(); e.stopPropagation(); tourNext(); }
+  else if (e.key === 'ArrowLeft') { e.preventDefault(); e.stopPropagation(); tourPrev(); }
+}
+// First-visit nudge: gently pulse the Tour button until the tour is opened once.
+(function () {
+  function nudge() {
+    try { if (localStorage.getItem(LL_TOUR_KEY)) return; } catch (e) { return; }
+    document.getElementById('tourBtn')?.classList.add('pulse-attn');
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', nudge);
+  else nudge();
+})();
+
+/* ══════════════════════════════════════════════════════
+   INIT
+   ══════════════════════════════════════════════════════ */
+function llOpenFromUrl() {
+  try {
+    const want = new URLSearchParams(location.search).get('letter');
+    if (!want || !/^[a-z_]{1,16}$/.test(want) || !LETTERS[want]) return;
+    const id = llOrder().includes(want) ? want : (LETTERS[want].pairWith || null);   // a folded partner opens as its base
+    if (id && llOrder().includes(id)) llOpen(id);
+  } catch (e) {}
+}
+function init() {
+  llIndexData();
+  initDark();
+  llLoadSettings();
+  renderOptions();
+  wireOptions();
+  renderGrid();
+  wireDialog();
+  initSpeech();
+  initCloudSaves();
+  llOpenFromUrl();
+}
+document.addEventListener('DOMContentLoaded', init);
+
+/* ── Cloud saves (optional accounts). Everything that talks to Supabase lives in the shared js/ivrit-saves.js;
+   this page only names its one key (the module's registry row) and how to re-read it after the module writes
+   it — the live `settings` object would otherwise overwrite a download on the next save. ── */
+function initCloudSaves() {
+  if (!window.IvritSaves) return;
+  // A suite-wide preference from the account landed (the module's IvritSuite row): follow the theme now —
+  // the module switches the language itself; the rest is read at the next load.
+  window.addEventListener('ivritsuite:prefs', () => {
+    const want = localStorage.getItem(DARK_KEY);
+    if ((want === '1' || want === '0') && document.body.classList.contains('dark') !== (want === '1')) toggleDark();
+  });
+  IvritSaves.attach({
+    tool: 'LetterLearner',
+    status: '#cloudSavesPanel',
+    flush: llSaveSettingsIfChanged,   // writes only what this tab changed, before the module reads the key
+    onLocalChanged: function (kind) {
+      if (kind !== 'settings') return;
+      llAdoptStore();      // re-read the key onto a defaults clone and re-render
+      llSaveSettings();    // push the page's normalized form back up (never hidden behind "Same")
+    }
+  });
+}
+
+// ── Live i18n: re-translate static chrome + rebuild dynamic pieces on language switch ──
+// Registered on DOMContentLoaded so the deferred /js/i18n.js has already defined window.I18n. Read-only:
+// re-renders from state, never writes a setting or cancels speech.
+function applyI18n() {
+  if (!window.I18n) return;
+  I18n.applyStaticI18n();
+  renderOptions();
+  renderGrid();
+  llRenderVoicePicker();
+  if (!document.getElementById('llOverlay').hidden && _llId) {
+    document.getElementById('llPanel-font').dataset.for = '';   // the tiles carry translated labels
+    llFillDialog(_llId, true);
+  }
+}
+function _wireLlI18n() { if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); } }
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', _wireLlI18n);
+else _wireLlI18n();
+</script>
+</body>
+</html>
