@@ -78,7 +78,7 @@
   'use strict';
 
   /* ---------- constants ---------- */
-  var TOOLS = ['Suite', 'Worksheet', 'FlashCards', 'Dictionary', 'TorahTrainer', 'TropeTutor', 'Dashboard'];
+  var TOOLS = ['Suite', 'Worksheet', 'FlashCards', 'Dictionary', 'TorahTrainer', 'TropeTutor', 'Dashboard', 'LetterLearner'];
   var KIND_RE = /^[A-Za-z]{1,32}$/;
   var SHAPES = ['map', 'mapIn', 'single', 'tree', 'scalar'];
   var MERGES = ['item', 'assign', 'deepMax', 'max', 'page'];
@@ -339,6 +339,10 @@
     { tool: 'Dashboard', kind: 'settings', lsKey: 'hebrewDashboard_settings', shape: 'single', merge: 'assign',
       omit: ['rosters', 'activeRosterId', 'pickerSessions', '_geoCoords', '*Collapsed', 'panelLayout', 'videoLayout', 'zoomLevel', 'hideZoomBar', 'keepAwake', 'lockPanelWidths', 'showTextSizeOptions'],
       ivritKey: 'dashboardSettings', label: 'shared.cloud.kind_settings' },
+    // letter_learner.html — one settings blob: which vowels show, the Fonts tab, the dagesh-pair layout and
+    // word audio travel; the chosen voice stays on this device (a voiceURI names an installed voice, nothing
+    // another machine has)
+    { tool: 'LetterLearner', kind: 'settings', lsKey: 'hebrewLetterLearner_settings', shape: 'single', merge: 'assign', omit: ['voiceURI'], ivritKey: 'letterLearnerSettings', label: 'shared.cloud.kind_settings' },
     { tool: 'Dashboard', kind: 'roster', lsKey: 'hebrewDashboard_settings', shape: 'mapIn', path: 'rosters', nameField: 'name', merge: 'page', ivritKey: 'dashboardRosters', label: 'shared.cloud.kind_roster',
       skipUpload: function (name, value) { return isUntouchedDefaultClass(value); } }
   ];
@@ -377,7 +381,8 @@
   // The tool names the status line and the card show (the home page's card titles, present in every dictionary).
   var TOOL_NAMES = { Worksheet: ['home.card.generator.name', 'Hebrew Worksheet Generator'], FlashCards: ['home.card.flashcards.name', 'Hebrew Flash Cards'],
                      Dictionary: ['home.card.dictionary.name', 'Hebrew Word Lookup'], TorahTrainer: ['home.card.torah.name', 'Torah Trainer'],
-                     TropeTutor: ['home.card.trope.name', 'Trope Tutor'], Dashboard: ['home.card.dashboard.name', 'Hebrew Classroom Dashboard'], Suite: ['shared.cloud.tool_suite', 'IvritSuite'] };
+                     TropeTutor: ['home.card.trope.name', 'Trope Tutor'], Dashboard: ['home.card.dashboard.name', 'Hebrew Classroom Dashboard'],
+                     LetterLearner: ['shared.cloud.tool_letterlearner', 'Letter Learner'], Suite: ['shared.cloud.tool_suite', 'IvritSuite'] };
   // The dashboard mints one empty class named "My class" on every fresh device (the literal, in both
   // languages, plus the localized default); untouched, it is a seed, not a class list worth a row.
   function isUntouchedDefaultClass(value) {

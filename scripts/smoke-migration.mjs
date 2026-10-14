@@ -89,7 +89,7 @@ const UID = '11111111-1111-4111-8111-111111111111';
 const EMAIL = 'teacher@example.org';
 // The name step never opens: the session's user carries a display name.
 const SESSION = { access_token: 'x', refresh_token: 'y', expires_at: 4102444800, token_type: 'bearer', user: { id: UID, email: EMAIL, user_metadata: { full_name: 'Test Teacher' }, app_metadata: { provider: 'email' } } };
-const ALL_TOOLS = ['Suite', 'Worksheet', 'FlashCards', 'Dictionary', 'TorahTrainer', 'TropeTutor', 'Dashboard'];
+const ALL_TOOLS = ['Suite', 'Worksheet', 'FlashCards', 'Dictionary', 'TorahTrainer', 'TropeTutor', 'Dashboard', 'LetterLearner'];
 
 /* ---------- the fake cloud ---------- */
 // The account's rows, answered the way PostgREST would for the queries the module makes: GET (eq. and in.(…)
@@ -223,13 +223,14 @@ const PAGES = [
   { file: 'flash_cards.html', tool: 'FlashCards', writer: 'saveSettings();' },
   { file: 'hebrew_blend_generator.html', tool: 'Worksheet', writer: 'rememberSetup(true);' },
   { file: 'hebrew_dictionary.html', tool: 'Dictionary', writer: 'saveDictSessionFlush(); saveEmojiSettings();' },
-  { file: 'classroom_dashboard.html', tool: 'Dashboard', writer: 'saveSettingsToStorage();' }
+  { file: 'classroom_dashboard.html', tool: 'Dashboard', writer: 'saveSettingsToStorage();' },
+  { file: 'letter_learner.html', tool: 'LetterLearner', writer: 'llSaveSettings();' }
 ];
 // The tools each page hydrates (its own, Suite, and its alsoPull) — settled() is asked about exactly these.
 const TOOLS_OF = {
   'index.html': ALL_TOOLS, 'trope_tutor.html': ['TropeTutor', 'Suite'], 'torah_trainer.html': ['TorahTrainer', 'Suite'],
   'flash_cards.html': ['FlashCards', 'Suite', 'Dictionary'], 'hebrew_blend_generator.html': ['Worksheet', 'Suite', 'Dictionary'],
-  'hebrew_dictionary.html': ['Dictionary', 'Suite'], 'classroom_dashboard.html': ['Dashboard', 'Suite']
+  'hebrew_dictionary.html': ['Dictionary', 'Suite'], 'classroom_dashboard.html': ['Dashboard', 'Suite'], 'letter_learner.html': ['LetterLearner', 'Suite']
 };
 // Waits until the module reads settled for those tools — every hydration fired, nothing dirty, no queue busy,
 // no card pending — and stays so through a page writer's own debounce; opts.until (a predicate on the fake's
@@ -396,6 +397,10 @@ function buildDeviceA(D) {
     scheduleEnabled: true, scheduleWeek: WEEK, presetColors: { Morning: '#aabbcc' }, timeSize: 4.5,   // the other toggles are flipped with every boolean
     zoomLevel: 110, panelsCollapsed: { 'dashboard.settings.panel_weather': true },
     rosters: { a_0: { name: 'Kitah Alef', names: ['Noa', 'Eitan'] }, a_1: { name: 'Kitah Bet', names: ['Ari'] } }, activeRosterId: 'a_0', pickerSessions: {}, _geoCoords: { lat: 33.7, lon: -84.4 } }));
+  // The Letter Learner writes nothing on a fresh load, so its defaults are spelled out here in the page's own
+  // field order; the chosen voice is the row's omitted (per-device) field.
+  s.hebrewLetterLearner_settings = J(mutate('hebrewLetterLearner_settings', Object.assign({ v: 1, vowels: { kamatz: true, patach: true, tzere: true, segol: true, chirik: true, cholam: true, kubutz: true, shuruk: true, sheva: true, chataf_patach: true, chataf_segol: true, chataf_kamatz: true }, fontTab: true, splitPairs: true, wordAudio: false, voiceURI: '' }, base('hebrewLetterLearner_settings')),
+    { vowels: { kamatz: true, patach: true, tzere: false, segol: true, chirik: true, cholam: true, kubutz: false, shuruk: true, sheva: true, chataf_patach: false, chataf_segol: false, chataf_kamatz: false }, voiceURI: 'com.apple.voice.compact.he-IL.Carmit' }));
   s.hebrewDashboard_presets = J({ Morning: { headerLang: 'en', showTimer: true, activeRosterName: 'Kitah Alef' }, Tefillah: { headerLang: 'he', showTimer: false } });
   s.hebrewDashboard_presetsFolders = J({ v: 1, root: [{ t: 'folder', id: 'df', name: 'Weekdays', collapsed: false, children: [{ t: 'folder', id: 'df1', name: 'Early', collapsed: false, children: [{ t: 'item', name: 'Morning' }] }] }, { t: 'item', name: 'Tefillah' }] });
   s.hebrewDashboard_schedules = J({ '2026-2027': { v: 2, week: WEEK } });
@@ -413,7 +418,7 @@ function buildDeviceA(D) {
 const SESSION_KEYS = { [AUTH_KEY]: J(SESSION), ivritSuite_accountCache: J({ email: EMAIL, name: 'Test Teacher' }) };
 const withSession = (s) => Object.assign({}, s, SESSION_KEYS);
 const signInHere = (page) => page.evaluate((s) => { Object.keys(s).forEach(k => localStorage.setItem(k, s[k])); }, SESSION_KEYS);
-const EXPECTED_ROWS = { Suite: 2, TropeTutor: 2, TorahTrainer: 4, FlashCards: 8, Worksheet: 4, Dictionary: 2, Dashboard: 8 };   // 30 rows, six of them folder trees
+const EXPECTED_ROWS = { Suite: 2, TropeTutor: 2, TorahTrainer: 4, FlashCards: 8, Worksheet: 4, Dictionary: 2, Dashboard: 8, LetterLearner: 1 };   // 31 rows, six of them folder trees
 // A font the teacher made: it lives in IndexedDB, not localStorage, so the dump-and-classify pass below
 // cannot see it — it is seeded on A and looked for on B by name.
 const FONT_NAME = 'Morah Handwriting', FONT_B64 = 'AAEAAAALAIAAAwAwT1MvMg==';
@@ -486,7 +491,7 @@ try {
     const nameStep = await page.evaluate(() => IvritAccount._test.nameStepOutcome());
     check('2: the first signed-in load opened the device-extras card once, listing the device\'s items by tool and kind (no name step: the session has a name)', !!card && card.lines.length >= 8 && cards === 1 && nameStep === 'none', JSON.stringify({ card, cards, nameStep }));
     const countsMatch = Object.keys(EXPECTED_ROWS).every(t => byTool[t] === EXPECTED_ROWS[t]) && Object.keys(byTool).length === Object.keys(EXPECTED_ROWS).length;
-    check('2: after Add to my account the cloud holds exactly the expected rows per tool (30, six of them folder trees), all inserted, none refused', countsMatch && cloud.rows.length === 30 && writes.every(w => w.startsWith('POST ')) && writes.length === 30, JSON.stringify({ byTool, writes: writes.length, other: writes.filter(w => !w.startsWith('POST ')) }));
+    check('2: after Add to my account the cloud holds exactly the expected rows per tool (31, six of them folder trees), all inserted, none refused', countsMatch && cloud.rows.length === 31 && writes.every(w => w.startsWith('POST ')) && writes.length === 31, JSON.stringify({ byTool, writes: writes.length, other: writes.filter(w => !w.startsWith('POST ')) }));
     check('2: the status line reports nothing skipped, and the account is marked hydrated on this device', !!st && !st.error && !/Couldn|לא ניתן/.test(st.text) && !!(m2.hydrated || {})[UID] && !!(m2.users || {})[UID], JSON.stringify({ st, hydrated: (m2.hydrated || {})[UID] }));
     await page.screenshot({ path: path.join(SHOTS, '2-A-uploaded.png') });
     dumpA = await dump(page);

@@ -156,7 +156,7 @@
    under the WCAG 2.5.8 24px floor with no qualifying spacing). inline-block + block
    padding grows each link's BOX to >=24px; prose flow and wrapping are unaffected. */
 footer a { display: inline-block; padding-block: 5px; }
-/* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404 (docs/reference/shared-components.md → Header icons).
+/* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner (docs/reference/shared-components.md → Header icons).
    The header controls and the in-page control buttons (play, pause, stop, reset, retry, loop, sound) carry inline
    SVGs from one shared set (.hi-*); ink is currentColor, so each button's own colour applies. .hi-sm is the 13px
    size the tiny settings buttons take, .hi-btn lines an icon up with its label inside a button.
@@ -1267,6 +1267,7 @@ function exportAllSettings() {
     torahTrainerFavorites: lsJSON('hebrewTorahTrainer_favorites', {}),
     torahTrainerFavoriteFolders: ftRead('hebrewTorahTrainer_favoritesFolders'),
     tropeTutorSettings:  lsJSON('hebrewTropeTutor_settings', {}),
+    letterLearnerSettings: lsJSON('hebrewLetterLearner_settings', {}),
     tropeTutorProgress:  lsJSON('hebrewTropeTutor_progress', {}),
     inputMode:           localStorage.getItem('hebrewBlender_inputMode') || 'auto',
     hebFont:             localStorage.getItem('hebrewBlender_hebFont') || '',
@@ -1401,6 +1402,11 @@ async function importAllSettings() {
     }
     // Trope Tutor: settings = flat blob merge; progress = never-lose-mastery merge
     // (per-trope r/w and pbStreak as max, visited families as union). Empty = never set, skip.
+    // Letter Learner: one options blob, flat merge
+    if (parsed.letterLearnerSettings && Object.keys(parsed.letterLearnerSettings).length) {
+      const existing = ivritSafeParse(localStorage.getItem('hebrewLetterLearner_settings') || '{}');
+      localStorage.setItem('hebrewLetterLearner_settings', JSON.stringify(ivritSafeAssign(existing, parsed.letterLearnerSettings)));
+    }
     if (parsed.tropeTutorSettings && Object.keys(parsed.tropeTutorSettings).length) {
       const existing = ivritSafeParse(localStorage.getItem('hebrewTropeTutor_settings') || '{}');
       localStorage.setItem('hebrewTropeTutor_settings', JSON.stringify(ivritSafeAssign(existing, parsed.tropeTutorSettings)));
@@ -1578,6 +1584,7 @@ async function eraseAllSettings() {
     'hebrewTorahTrainer_tourSeen',
     'hebrewTorahTrainer_hintSeen',
     'hebrewTropeTutor_tourSeen',
+    'hebrewLetterLearner_tourSeen',
     'hebrewFontMaker_tourDone',
     'hebrewFontMaker_mobileWarnDismissed',
     'hebrewFontMaker_inputMode',
@@ -1592,6 +1599,7 @@ async function eraseAllSettings() {
     'hebrewTorahTrainer_favorites',
     'hebrewTorahTrainer_favoritesFolders',
     'hebrewTropeTutor_settings',
+    'hebrewLetterLearner_settings',
     'hebrewTropeTutor_progress',
     'hebrewBlender_inputMode',
     // per-device, export-exempt: when this device last saved an AllTools .ivrit (the line under the inventory)
@@ -1668,6 +1676,7 @@ const IVRIT_CFG = {
       torahTrainerFavorites: lsJSON('hebrewTorahTrainer_favorites', {}),
       torahTrainerFavoriteFolders: ftRead('hebrewTorahTrainer_favoritesFolders'),
       tropeTutorSettings:  lsJSON('hebrewTropeTutor_settings',      {}),
+      letterLearnerSettings: lsJSON('hebrewLetterLearner_settings', {}),
       tropeTutorProgress:  lsJSON('hebrewTropeTutor_progress',      {}),
       inputMode:           localStorage.getItem('hebrewBlender_inputMode') || 'auto',
       hebFont:             localStorage.getItem('hebrewBlender_hebFont') || '',
@@ -1732,6 +1741,7 @@ const IVRIT_CFG = {
     if (data.torahTrainerSettings){ mergeObj('hebrewTorahTrainer_settings',   data.torahTrainerSettings); touched = true; }
     if (data.torahTrainerFavorites){ mergeObj('hebrewTorahTrainer_favorites', data.torahTrainerFavorites); touched = true; }
     if (data.tropeTutorSettings && Object.keys(data.tropeTutorSettings).length) { mergeObj('hebrewTropeTutor_settings', data.tropeTutorSettings); touched = true; }
+    if (data.letterLearnerSettings && Object.keys(data.letterLearnerSettings).length) { mergeObj('hebrewLetterLearner_settings', data.letterLearnerSettings); touched = true; }
     if (data.tropeTutorProgress && Object.keys(data.tropeTutorProgress).length) { tropeProgressMerge(data.tropeTutorProgress, mode === 'replace'); touched = true; }
     if (data.wordLists)           { wlMergeIntoStorage(data.wordLists, mode === 'replace', mode === 'fill'); touched = true; }
     if (data.dictAudioEnabled  !== undefined) { setPref('hebrewDictionary_audioEnabled', data.dictAudioEnabled);  touched = true; }
@@ -2123,7 +2133,7 @@ function initCloudSaves() {
   IvritSaves.attach({
     tool: 'Suite',
     status: '#cloudStatus',
-    alsoPull: ['Worksheet', 'FlashCards', 'Dictionary', 'TorahTrainer', 'TropeTutor', 'Dashboard'],
+    alsoPull: ['Worksheet', 'FlashCards', 'Dictionary', 'TorahTrainer', 'TropeTutor', 'Dashboard', 'LetterLearner'],
     merges: { presetFolders: ftMergeTrees, profileFolders: ftMergeTrees, scheduleFolders: ftMergeTrees, favoriteFolders: ftMergeTrees },
     onLocalChanged: (kind) => { if (!ieWindowOpen()) return; renderIvritInventory(); if (kind === 'font') { try { refreshFontsBackupCache(); renderMyFontsManager(); } catch (e) {} } }
   });

@@ -92705,3 +92705,12 @@ _(prior — S507 pointer:)_ **Next session (S507):** **BRANCH/PR: #327 open → 
 - **`text-field-under-16px-zooms-on-ios-focus`** (NEW S406; FIXED ×2; S465 contact ×4 `5a7a8ed`; S492 dictionary ×6 `07177214`; S506 torah ×17, trope ×3; S507 dashboard ×23, flash ×10; S508 resources ×6 `f07cd8c`, account ×2 `43b24e2`; open: none known): ACTIVE, streak 0. Detection: computed …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`physical-property-that-never-mirrors`** (registered S388 K; S438 torah's jump bar `947b452d`; S508 M dashboard ×5 FIXED `323ad66` — the three centered modals' and the tour card's × + title margins, the edit pencil; open: `#ttsRateVal` inline `text-align:right`; deliberate, logged: the fullscreen exit plate + zoom-bar pair, `.wake-dot-fs`): ACTIVE, streak 0. A physical `margin-`/`padding-`/`border-left|right`, `left`/`right` inset, `text-align:left|right` or `float` on content that mirrors under `dir=rtl`. **Detection:** grep …[full text: IMPROVEMENT_ARCHIVE.md]
+
+<!-- archived by hand at the Letter Learner PR, 2026-10-14 (the live ledger sat 7 bytes under its cap and compact-ledger keeps five sessions; the oldest went here so the feature's Done line fits) -->
+## Compaction (Letter Learner PR, 2026-10-14) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-13 | (S504 close-out) | branch/deploy note | **S504 = L + 4 fixes, PR #327.** No drift (main `fc54901d`, keep-alive #31 ok); sw v991→v992; no FM bump; no gate.
+
+- [x] 2026-10-13 | `b38c1f68` `7a663826` `8e48daa5` `13c10bf3` | flash, FM, torah, dashboard | (S504) **Flash + FM grids named; torah HE labels plain; bulk toast one form.** | findings S504.

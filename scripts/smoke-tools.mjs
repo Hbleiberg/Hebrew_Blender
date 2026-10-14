@@ -60,6 +60,36 @@ const PAGES = [
     expand: `openSettings(); document.getElementById('setCloud').scrollIntoView();`
   },
   {
+    file: 'letter_learner.html', tool: 'LetterLearner', host: '#cloudSavesPanel',
+    // The seed is the page's own normalized shape (field order included): the page writes only on a change, so a
+    // load must leave the text byte-identical.
+    seed: {
+      hebrewLetterLearner_settings: JSON.stringify({ v: 1, vowels: { kamatz: true, patach: false, tzere: true, segol: true, chirik: true, cholam: true, kubutz: false, shuruk: true, sheva: true, chataf_patach: false, chataf_segol: false, chataf_kamatz: false }, fontTab: false, splitPairs: false, wordAudio: true, voiceURI: 'com.apple.voice.compact.he-IL.Carmit' })
+    },
+    rows: ['settings:default'],
+    expand: `document.getElementById('cloudSavesPanel').scrollIntoView();`,
+    urlKeep: 'letter=gimel',
+    // E. a browser without speech hides every speaker and shows the note; the ?letter= deep link opens its card and a
+    // garbage one opens nothing; the stored options stay byte-identical through a load and the module's flush
+    extra: async ({ browser, tag }) => {
+      const seedText = JSON.stringify({ v: 1, vowels: { kamatz: true, patach: true, tzere: true, segol: true, chirik: true, cholam: true, kubutz: true, shuruk: true, sheva: true, chataf_patach: true, chataf_segol: true, chataf_kamatz: true }, fontTab: true, splitPairs: true, wordAudio: true, voiceURI: '' });
+      {
+        const { ctx, page, errors } = await openPage(browser, 'letter_learner.html', { seed: { hebrewLetterLearner_settings: seedText }, query: '?letter=gimel', init: () => { Object.defineProperty(window, 'speechSynthesis', { value: undefined, configurable: true }); } });
+        const r = await page.evaluate(() => { llSaveSettingsIfChanged(); return { open: !document.getElementById('llOverlay').hidden, id: _llId, noSpeech: document.body.classList.contains('ll-no-speech'), speakers: [...document.querySelectorAll('.ll-speak')].filter(b => b.offsetParent !== null).length, note: document.getElementById('llNoSpeech').offsetParent !== null, same: localStorage.getItem('hebrewLetterLearner_settings') === JSON.stringify(settings) }; });
+        check(tag + ' E: ?letter=gimel opens Gimel; without speech every speaker is hidden and the note shows; the stored options survive a load + flush unchanged', r.open && r.id === 'gimel' && r.noSpeech && r.speakers === 0 && r.note && r.same, JSON.stringify(r));
+        check(tag + ' E: 0 pageerrors (no speech)', errors.length === 0, errors.join(' | '));
+        await ctx.close();
+      }
+      {
+        const { ctx, page, errors } = await openPage(browser, 'letter_learner.html', { query: '?letter=zzz%3Cb%3E' });
+        const r = await page.evaluate(() => ({ open: !document.getElementById('llOverlay').hidden, cards: document.querySelectorAll('.ll-card').length }));
+        check(tag + ' E: a garbage ?letter= opens nothing (31 cards, dialog closed)', !r.open && r.cards === 31, JSON.stringify(r));
+        check(tag + ' E: 0 pageerrors (garbage deep link)', errors.length === 0, errors.join(' | '));
+        await ctx.close();
+      }
+    }
+  },
+  {
     file: 'torah_trainer.html', tool: 'TorahTrainer', host: '#cloudSavesPanel',
     seed: {
       hebrewTorahTrainer_settings: JSON.stringify({ parshahKey: 'bereshit', scope: 'parsha-full', layout: 'stacked', showTranslit: true, hebFont: 'Frank Ruhl Libre', hebFontSize: 2.4, vowelColorScheme: 'default', lastPos: { readingKey: 'bereshit', verse: '1:3', ts: 1700000000000 }, panelsCollapsed: { 'torah.settings.panel_copy': true }, karaokeBarCollapsed: false }),

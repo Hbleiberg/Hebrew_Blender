@@ -310,6 +310,8 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-14 | (Letter Learner — outside the loop, branch `claude/magical-thompson-wgxfmp`) | letter_learner.html, js/ivrit-saves.js, index.html, locales, db/migrations/0004, docs | **Alef-bet learner for kindergarten: 31 cards, tabbed dialog, TTS, options synced as tool `LetterLearner`** — unlinked, noindex, batch 1 (30 drawings); 0004 applied; sw v996→v997.
+
 - [x] 2026-10-14 | (S508 close-out) | branch/deploy note | **S508 = M + 4 fixes, PR #328.** No drift; sw v995→v996; no FM bump; no gate.
 
 - [x] 2026-10-14 | `fd3d62c` `323ad66` `f07cd8c` `43b24e2` | dashboard ×2, resources, account | (S508) **Make Groups a real `.btn`; 4 dialogs' × at the inline end in HE; resources + account fields 16px.** | findings S508.
@@ -325,10 +327,6 @@ _(none)_
 - [x] 2026-10-13 | (S505 close-out) | branch/deploy note | **S505 = K + 4 fixes, PR #327.** No drift; sw v992→v993; no FM bump; no gate.
 
 - [x] 2026-10-13 | `f28e2389` `001bbd97` `0abb1f57` `7d858173` | generator, resources, 6 pages, trope | (S505) **Generator rows named; Fonts line icon; HE Beta plain; Phrases headings.** | findings S505.
-
-- [x] 2026-10-13 | (S504 close-out) | branch/deploy note | **S504 = L + 4 fixes, PR #327.** No drift (main `fc54901d`, keep-alive #31 ok); sw v991→v992; no FM bump; no gate.
-
-- [x] 2026-10-13 | `b38c1f68` `7a663826` `8e48daa5` `13c10bf3` | flash, FM, torah, dashboard | (S504) **Flash + FM grids named; torah HE labels plain; bulk toast one form.** | findings S504.
 
 ## Metrics
 

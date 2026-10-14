@@ -373,7 +373,7 @@ pointer, key, touch or wheel activity in fullscreen the block sets `body.fs-idle
 clears it, and leaving fullscreen clears it. Nothing is saved.
 - **Carriers (byte-identical JS, `/* ═══ shared: fullscreen idle-hide ═══ */`):** `Hebrew_Font_Maker.html`,
   `classroom_dashboard.html`, `flash_cards.html`, `hebrew_blend_generator.html`, `hebrew_dictionary.html`,
-  `torah_trainer.html`, `trope_tutor.html` (7). Pasted directly above each page's `toggleFullscreen()`;
+  `torah_trainer.html`, `trope_tutor.html`, `letter_learner.html` (8). Pasted directly above each page's `toggleFullscreen()`;
   sha-verify after touching it.
 - **Host contract (per-page CSS, deliberately not identical):** one rule
   `body.fs-idle <exit control>:not(:focus-visible) { opacity: 0; pointer-events: none; }` plus `opacity`
@@ -406,7 +406,7 @@ buttons was overlooked); its Holiday Torah Readings (calendar) and Share (link) 
 drawer, so the calendar glyph is the Calendar tab's and the link glyph the Share tab's (and its Copy link's).
 Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_dashboard`, `flash_cards`,
 `torah_trainer`, `trope_tutor`, `Hebrew_Font_Maker`, `resources`, `contact`, `privacy`, `terms`,
-`account`, `404`; the chip's glyph lives in `js/ivrit-account.js` (`ICON_USER`).
+`account`, `404`, `letter_learner`; the chip's glyph lives in `js/ivrit-account.js` (`ICON_USER`).
 
 ### The two byte-identical parts
 - **The `/* ═══ header-icons CSS ═══ */` block**, pasted before the main stylesheet's `</style>` on every
@@ -630,8 +630,8 @@ Escape to end, arrow keys to navigate, resize-safe, `scrollIntoView` the target 
 settings mutations**. It **never auto-launches** — entry is a header **Tour** button (the shared `hi-help` icon + the word) with a one-time
 first-visit pulse gated by a `hebrew<Tool>_tourSeen` flag (set once so the pulse never returns).
 - **Implemented on:** `hebrew_blend_generator.html`, `hebrew_dictionary.html`, `classroom_dashboard.html`,
-  `torah_trainer.html`, `Hebrew_Font_Maker.html`, `flash_cards.html`, and `trope_tutor.html`
-  — **all 7 tools**, but as **per-file engines**, not yet a single shared block. Flags are
+  `torah_trainer.html`, `Hebrew_Font_Maker.html`, `flash_cards.html`, `trope_tutor.html` and `letter_learner.html`
+  (a verbatim copy of the trope tutor's engine) — **all 8 tools**, but as **per-file engines**, not yet a single shared block. Flags are
   `hebrew<Tool>_tourSeen` except Font Maker's legacy `hebrewFontMaker_tourDone`. The generator's engine is
   a copy of Font Maker's; flash cards' and the trope tutor's are copies of the generator/torah lineage
   ("keep the engines in sync"). **Not** on `index.html` or `resources.html`.
@@ -723,7 +723,7 @@ anywhere — first-visit pulses, tour transitions, timer/omer pulsing, fades —
 - **Implemented on:** every page with any animation — `torah_trainer.html`,
   `hebrew_blend_generator.html`, `hebrew_dictionary.html`, `classroom_dashboard.html`,
   `Hebrew_Font_Maker.html`, `404.html`, `flash_cards.html`, `index.html`, `resources.html`,
-  `contact.html`, `trope_tutor.html` (**11 files**, complete; measured at runtime).
+  `contact.html`, `trope_tutor.html`, `letter_learner.html` (**12 files**, complete; measured at runtime).
   (`privacy.html` and `terms.html` declare zero animations/transitions, so a block on either would
   be a no-op — their reduced-motion result is *blind*, not clean, and proves nothing about coverage.)
 - **Two block shapes, and which to use.** Nine of the eleven open with the **universal neutralizer**
@@ -858,7 +858,7 @@ whose text is majority-English (e.g. mixed `<option>` labels). Verify: `document
 - **Implemented on:** `torah_trainer.html` (verse containers), `hebrew_dictionary.html`,
   `flash_cards.html`, `hebrew_blend_generator.html`, `classroom_dashboard.html`,
   `Hebrew_Font_Maker.html` (glyph tiles), `trope_tutor.html` (glyph tiles +
-  example/question words).
+  example/question words), `letter_learner.html` (the grid's glyphs, every vowel form, the words and the font tiles).
 - **Rule:** any new Hebrew-rendering surface marks its output `lang="he"` at the chokepoint.
 
 ### 9. Panel-collapse memory — a drawer that was tidied once stays tidy
@@ -905,7 +905,7 @@ const PANEL_MEM_CFG = {
 
 ### 10. Header skip link — the keyboard bypass, on every page
 An `<a class="skip-link">` as the **first child of `<body>`**, hidden off-screen until it takes keyboard
-focus, then dropping in at the top inline start. One rule, sha-identical on all 14 carriers modulo
+focus, then dropping in at the top inline start. One rule, sha-identical on all 15 carriers modulo
 indentation — paste it, do not re-author it:
 ```css
 .skip-link {
@@ -926,6 +926,6 @@ indentation — paste it, do not re-author it:
 - The **label names the destination** (maintainer's call, S397): one key per page under that page's own
   prefix — `home.a11y.skip_to_tools`, `worksheet.a11y.skip_to_worksheet`, `dashboard.a11y.skip_to_board`,
   and so on. Hebrew uses the `דילוג ל…` form and that page's own vocabulary. Never a single shared label.
-- **Implemented on:** all 14 root pages. The dictionary's separate `.skip-results` is a *mid-page* bypass
+- **Implemented on:** all 15 root pages. The dictionary's separate `.skip-results` is a *mid-page* bypass
   of the results grid — a different affordance, not a second header skip link.
 - **Rule:** a new page ships this block, an anchored target with `tabindex="-1"`, and its own label key.
