@@ -1772,10 +1772,12 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
     border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow-md); padding: 24px 26px; display: none; }
   .fr-modal.open { display: block; }
   body.dark .fr-modal { background: var(--navy-deep); }
-  .fr-close { position: absolute; top: 12px; right: 12px; width: 30px; height: 30px; border: none;
+  /* inset-inline-end + margin-inline-end, not right: the × and the title's reserved edge follow the inline end in the
+     Hebrew UI, as the drawer's close and the picker's .pick-close do (they sat at the inline start beside the title). */
+  .fr-close { position: absolute; top: 12px; inset-inline-end: 12px; width: 30px; height: 30px; border: none;
     background: transparent; color: var(--muted); font-size: 1.1rem; cursor: pointer; border-radius: 6px; line-height: 1; }
   .fr-close:hover { background: var(--warm-gray); color: var(--text); }
-  .fr-h { font-family: 'Libre Baskerville', serif; font-size: 1.25rem; margin: 0 24px 6px 0; color: var(--text); }
+  .fr-h { font-family: 'Libre Baskerville', serif; font-size: 1.25rem; margin: 0 0 6px; margin-inline-end: 24px; color: var(--text); }
   .fr-sub { font-size: 0.85rem; color: var(--muted); margin: 0 0 16px; line-height: 1.5; }
   .fr-loc-row { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
   .fr-loc-row input { flex: 1; min-width: 140px; }
@@ -1981,7 +1983,7 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
 
   /* ── In-place dashboard text editing ── */
   #dashTextWrap { position: relative; }
-  .dash-edit-pencil { position: absolute; top: 4px; right: 4px; z-index: 5; width: 34px; height: 34px;
+  .dash-edit-pencil { position: absolute; top: 4px; inset-inline-end: 4px; z-index: 5; width: 34px; height: 34px;
     display: inline-flex; align-items: center; justify-content: center;
     border-radius: 8px; border: 1px solid var(--border); background: var(--white); color: var(--muted);
     cursor: pointer; font-size: 1rem; line-height: 1; opacity: 0; transition: opacity 0.15s; }
@@ -2053,10 +2055,10 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
     border-radius: 12px;
     border: 1px solid var(--border); box-shadow: 0 6px 16px rgba(0,0,0,0.34); padding: 16px 18px 14px;
   }
-  .tour-card h2 { font-family: 'Libre Baskerville', serif; margin: 0 26px 8px 0; font-size: 0.98rem; color: var(--text); }
+  .tour-card h2 { font-family: 'Libre Baskerville', serif; margin: 0 0 8px; margin-inline-end: 26px; font-size: 0.98rem; color: var(--text); }
   .tour-card p { font-size: 0.84rem; line-height: 1.5; margin: 0 0 12px; color: var(--text); }
   .tour-x {
-    position: absolute; top: 8px; right: 8px; width: 26px; height: 26px;
+    position: absolute; top: 8px; inset-inline-end: 8px; width: 26px; height: 26px;
     background: transparent; border: none; border-radius: 6px;
     color: var(--muted); font-size: 1rem; cursor: pointer; line-height: 1;
   }
