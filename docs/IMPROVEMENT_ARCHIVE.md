@@ -92631,3 +92631,27 @@ _(prior — S504 pointer:)_ **BRANCH/PR: #327 open → continue; merged → rest
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 _(prior — S505 pointer:)_ **BRANCH/PR: #327 open → continue; merged → restart from `origin/main`.** `sw.js` **v992**, FM **5.59**. ⚑ Stalest: K, N, P; O blocked. ⚑ First: generator letters/language rows; dashboard bulk targets. ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; TT Chant label (gate 2).
+
+
+<!-- archived by compact-ledger at the S507 boundary, 2026-10-14 -->
+## Compaction (S507, 2026-10-14) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-13 | (S501 close-out) | branch/deploy note | **S501 = B + 4 fixes, PR #325.** No drift (main `f1ef1a98`, keep-alive #30 green, `db/` + config unchanged since 10-01); sw v985→v986; no FM bump (fixes only); no gate.
+
+- [x] 2026-10-13 | `0053db78` `d7355d03` `c6db7170` `8d667fb3` | dashboard + torah, generator ×2, FM, flash | (S501) **`[DEFAULT]` readable in dark; PDF keeps its icon + language; "1 unit / 1 combo"; two toggle rows named.** | findings S501.
+
+### from Per-session log (one line per session)
+
+- 2026-10-09 | **S486** | iters: 2 (L feature) | tools: dashboard | patterns fixed: — | pass run: — (skipped; B stays stalest) | SW: v966→v967
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`window-taller-than-a-phone-without-a-scroll`** (NEW S476 N; FM `fe808b64`; S506 variant, a sticky head covering its own scroller in landscape: dashboard bulk edit `232ea19e`): ACTIVE, streak 0. Detection: `n476` `modalFit` on an SE + 13 landscape, a tapped last button; plant 900px. …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- **`text-field-under-16px-zooms-on-ios-focus`** (NEW S406; FIXED ×2; S465 contact ×4 `5a7a8ed`; S492 dictionary ×6 `07177214`; S506 torah ×17 `11ee1d49`, trope ×3 `b6c218e4`; open: dashboard 23, flash 10, resources 6, account 2): ACTIVE, streak 0. Detection: computed `font-size` < 16px under an iPhone descriptor; plant a 12px field.
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+_(prior — S506 pointer:)_ **Next session (S506):** **BRANCH/PR: #327 open → continue; merged → restart from `origin/main`.** `sw.js` **v993**, FM **5.59**. ⚑ Stalest: N, P, M; O blocked. ⚑ First: dashboard bulk targets; app-toast role=status. ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; TT Chant label (gate 2).

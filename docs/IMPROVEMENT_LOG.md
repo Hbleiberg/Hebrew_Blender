@@ -8,11 +8,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P2 (**NEW S506 N**) | classroom_dashboard.html | **Student picker: the full-screen Close is navy on the always-dark overlay in the light theme** (1.31:1; dark 15:1), after Pick and Make Groups, at every width. | found S506
-
-- [ ] P3 (**NEW S506 N**) | classroom_dashboard.html | **Bulk preset edit on a phone turned sideways: the sticky head is 304 of the dialog's 308px**, so the cards and Save sit under it (the ≤560px rule unsticks it in portrait only). | found S506
-
-- [ ] P3 (**NEW S506 N — text-field-under-16px**) | classroom_dashboard.html | **23 of the page's own fields compute 10.9–13.6px under a finger** (iOS zooms the page on focus); the switcher is i18n.js's. | found S506
+- [ ] P3 (**NEW S506 N — text-field-under-16px**) | dashboard, flash, resources, account | **Own fields under 16px under a finger** (iOS zooms on focus): dashboard 23 (10.9–13.6px), flash 10, resources 6, account 2. | found S506
 
 - [ ] P4 (**NEW S506 N**) | classroom_dashboard.html | **Schedule Sync's empty-week hint spans the grid's 540px**, so at phone widths "…to build your bell schedule." needs a sideways pan. | found S506
 
@@ -312,6 +308,10 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-14 | (S506 close-out) | branch/deploy note | **S506 = N + 4 fixes, PR #327.** No drift; sw v993→v994; no FM bump; no gate.
+
+- [x] 2026-10-14 | `87745776` `232ea19e` `11ee1d49` `b6c218e4` | dashboard ×2, torah, trope | (S506) **Picker Close 1.31→19.4:1 (light); bulk edit Save reachable sideways (0→92/92); torah ×17 + trope ×3 fields 16px on touch.** | findings S506.
+
 - [x] 2026-10-13 | (S505 close-out) | branch/deploy note | **S505 = K + 4 fixes, PR #327.** No drift; sw v992→v993; no FM bump; no gate.
 
 - [x] 2026-10-13 | `f28e2389` `001bbd97` `0abb1f57` `7d858173` | generator, resources, 6 pages, trope | (S505) **Generator rows named; Fonts line icon; HE Beta plain; Phrases headings.** | findings S505.
@@ -328,13 +328,11 @@ _(none)_
 
 - [x] 2026-10-13 | `c35aec8d` `1baaf705` `c134c65d` `ab27a7d1` | dashboard ×2, generator, dictionary | (S502) **Bulk edit past `null`; HE labels plain ×2; two named groups.** | findings S502.
 
-- [x] 2026-10-13 | (S501 close-out) | branch/deploy note | **S501 = B + 4 fixes, PR #325.** No drift (main `f1ef1a98`, keep-alive #30 green, `db/` + config unchanged since 10-01); sw v985→v986; no FM bump (fixes only); no gate.
-
-- [x] 2026-10-13 | `0053db78` `d7355d03` `c6db7170` `8d667fb3` | dashboard + torah, generator ×2, FM, flash | (S501) **`[DEFAULT]` readable in dark; PDF keeps its icon + language; "1 unit / 1 combo"; two toggle rows named.** | findings S501.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-14 | **S506** | iters: 5 | tools: dashboard ×2, torah, trope | patterns fixed: theme-token (NEW), window-taller, text-field ×2 | pass run: N | SW: v993→v994
 
 - 2026-10-13 | **S505** | iters: 5 | tools: generator ×2, resources, trope, dash, flash, dict, index, torah | patterns fixed: radio-set, latin-track | pass run: K | SW: v992→v993
 
@@ -374,13 +372,13 @@ _(none)_
 
 - 2026-10-09 | **S487** | iters: 1 pass (**B**) + 4 fixes = **5** | tools: flash, resources ×2, contact, saves | patterns fixed: fixed-toast-duration ×1 | pass run: B | SW: v967→v968
 
-- 2026-10-09 | **S486** | iters: 2 (L feature) | tools: dashboard | patterns fixed: — | pass run: — (skipped; B stays stalest) | SW: v966→v967
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S505 (2026-10-13):** generator, resources, trope, dashboard, flash, dictionary, index, torah S505 · FM S504 · README S503 · contact S498 · privacy S495 · terms, 404, scripts S494 · saves S493 · account, i18n.js S478 · pwa S472.
+- **Snapshot S506 (2026-10-14):** dashboard, torah, trope S506 · generator, resources, flash, dictionary, index S505 · FM S504 · README S503 · contact S498 · privacy S495 · terms, 404, scripts S494 · saves S493 · account, i18n.js S478 · pwa S472.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`theme-token-on-an-always-dark-surface`** (NEW S506 N; dashboard picker Close `87745776`; suite unswept): ACTIVE, streak 0. A theme token (`--text`, `.btn-secondary`) on an overlay that is dark in both themes. Detection: `n506/pickcon.mjs`.
 
 - **`data-edit-under-an-unchanged-buster`** (NEW S503 E; 2 FIXED `39265428`): ACTIVE, streak 0. Detection: `e503/e2b.py` (findings S503).
 
@@ -460,7 +458,7 @@ _(none)_
 
 - **`editor-re-parse-caps-a-merged-list`** (**NEW S421 Pass P — 1 carrier, FIXED `288af4a`**): ACTIVE, consequence-critical (a sync carries the cut list to the account); never retires. A list the sync merges uncapped is re-parsed by its tool's editor or restore path through the …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`window-taller-than-a-phone-without-a-scroll`** (NEW S476 N; FM `fe808b64`): ACTIVE, streak 0. Detection: `n476` `modalFit` on an SE + 13 landscape, a tapped last button; plant 900px. …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`window-taller-than-a-phone-without-a-scroll`** (NEW S476 N; FM `fe808b64`; S506 variant, a sticky head covering its own scroller in landscape: dashboard bulk edit `232ea19e`): ACTIVE, streak 0. Detection: `n476` `modalFit` on an SE + 13 landscape, a tapped last button; …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`install-banner-over-a-sheet's-bottom-controls`** (NEW S420 N, hub `f44a17e`; **S472 generator bar `8081fc83` (pwa.js `--pwa-banner-space`), FM's 16 windows `56c7a179`; S476 torah gallery `30fcc886` — no open carrier**): ACTIVE, streak 0. Detection: `a472/banner2.mjs` (sheet …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -486,7 +484,7 @@ _(none)_
 
 - **`aria-disabled-lock-no-handler-checks`** (**NEW, registered 2026-09-23 (S407 Pass P) — 1 carrier, fixed `e5c4784`**): ACTIVE, clean streak 0. A control marked busy or invalid by `aria-disabled="true"` whose activation handler never reads that state: the look says locked, a …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`text-field-under-16px-zooms-on-ios-focus`** (NEW S406; FIXED ×2; S465 contact ×4 `5a7a8ed`; S488 +2 in the dashboard's gated drawer; S492 dictionary ×6 `07177214`): ACTIVE, streak 0. Detection: computed `font-size` < 16px under an iPhone descriptor; plant a 12px field.
+- **`text-field-under-16px-zooms-on-ios-focus`** (NEW S406; FIXED ×2; S465 contact ×4 `5a7a8ed`; S492 dictionary ×6 `07177214`; S506 torah ×17 `11ee1d49`, trope ×3 `b6c218e4`; open: dashboard 23, flash 10, resources 6, account 2): ACTIVE, streak 0. Detection: computed …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`textContent-rewrite-erases-a-control-icon`** (S405; S415; S453 `ac796dba`; **S501 generator Export PDF `d7355d03`**): ACTIVE, streak 0. Add (d): load-time icon count. Detection: (a) EN→HE→EN icon count; (b) key census …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -720,7 +718,7 @@ _(none)_
 
 - O deslop — AI-design-tell sweep (one surface): 2026-09-08 (**S346 — 6th O, `flash_cards.html`. ⚑ BLOCKED HERE TWICE (S399, S403) — NOT "needs an attended session". Clone + the 4 parsers install fine; EXECUTING the detector is refused by the sandbox's auto-mode classifier ("Code from External"), and the refusal names the remedy: the maintainer adds a Bash permission rule for the detector (or …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- N mobile & touch-device (one surface): 2026-10-10 (**S492 — 24th N, dictionary (S303 →, 114 commits): 4 phones × EN/HE × themes, 208 views by real taps, fields, touch, rotation, 4×; plants fired. FOUND 6, FIXED 1 (+ generator, FM). N-next: privacy/terms/404 (S348).**)
+- N mobile & touch-device (one surface): 2026-10-14 (**S506 — 25th N, dashboard (S321 →): 4 phones × EN/HE × themes, 19 views by real taps, rotation, touch, 4×; plants 16/16. FOUND 4, FIXED 2 (+ torah, trope 16px). N-next: privacy/terms/404 (S348).**)
 
 - M aesthetics & visual design (one surface): 2026-10-10 (**S494 — 24th M, privacy + terms (S304 →): 160 shots, census, plants. FOUND 3, FIXED 2 (gate 3) (+ dictionary, trope). M-next: dashboard (S322).**)
 
@@ -748,4 +746,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-13 (**S500 — 37th F, the tabs / segmented-control keyboard contract (never swept): 9 strips + 6 toggle groups, real keys, EN/HE; plants 3/3. FOUND 4, FIXED 3 (+ Current Location). F-next: dialog Tab traps.**)
 
-**Next session (S506):** **BRANCH/PR: #327 open → continue; merged → restart from `origin/main`.** `sw.js` **v993**, FM **5.59**. ⚑ Stalest: N, P, M; O blocked. ⚑ First: dashboard bulk targets; app-toast role=status. ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; TT Chant label (gate 2).
+**Next session (S507):** **BRANCH/PR: #327 open → continue; merged → restart from `origin/main`.** `sw.js` **v994**, FM **5.59**. ⚑ Stalest: P, M, G; O blocked. ⚑ First: dashboard 23 fields 16px; swm empty hint; app-toast role=status. ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; TT Chant label (gate 2).
