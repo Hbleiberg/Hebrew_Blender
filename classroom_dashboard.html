@@ -1534,6 +1534,14 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
      (a wider box pushes Size onto a line of its own); longer names ellipsize in the closed box the
      way a word processor's font box does, and the open list always shows them in full. */
   .ed-font-select { max-width: 112px; }
+  /* Under a finger these 23 fields compute 10.9–13.6px, and iOS Safari zooms the page into a focused field under 16px
+     and leaves it zoomed. 16px only where the pointer is coarse (the dictionary's and contact's rule); a desktop or a
+     projector's mouse keeps its sizes. The language switcher is i18n.js's; the backup box's 0.72rem is inline. */
+  @media (pointer: coarse) {
+    input[type="text"], input[type="url"], input[type="date"], select, input[type="number"], textarea,
+    .picker-class-switch, .fs-pop .picker-class-switch, .ed-select { font-size: 16px; }
+    #presetBackupBox { font-size: 16px !important; }
+  }
   .editor {
     border: 1px solid var(--border);
     background: var(--white);
