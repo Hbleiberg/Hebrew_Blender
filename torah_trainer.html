@@ -507,6 +507,7 @@ body.dark .tt-handout-shem-note { color:var(--gold-light); }
 /* Type-a-range picker: the refs field is Latin-numeric in both UI languages, so it stays LTR
    while the surrounding bar mirrors; the note is a live region under it. */
 #ttCopyRange { inline-size:13ch; direction:ltr; text-align:start; }
+.tt-ctrl:has(> #ttCopyRange) { flex-wrap:wrap; }   /* label + field + Go: at 16px on touch a 320px phone's Hebrew row ran 17px over; Go drops a line there instead */
 #ttCopyRangeNote { font-size:0.72rem; color:var(--muted); flex-basis:100%; white-space:normal; }
 /* An empty note leaves the flex row (no line, no 8px row gap) by position, not display:none: a hidden
    role=status leaves the accessibility tree, so its first message could go unannounced. */
@@ -1393,7 +1394,7 @@ body.dark .preset-item { background:var(--navy-deep); }
 [dir="rtl"] .tt-fav-dialog { transform:translate(50%,-50%); }
 body.dark .tt-fav-dialog { background:var(--navy-deep); }
 .tt-fav-backdrop[hidden], .tt-fav-dialog[hidden] { display:none; }
-.tt-fav-dialog .form-row input[type="text"], .tt-fav-dialog .form-row select { max-width:none; flex:1 1 60%; }
+.tt-fav-dialog .form-row input[type="text"], .tt-fav-dialog .form-row select { max-width:none; flex:1 1 60%; min-width:0; }   /* min-width:0: a text field's ~20ch intrinsic width (225px at 16px on touch) would push a 320px phone's dialog sideways */
 .tt-fav-dialog .form-row label:not(.toggle) { flex:0 0 auto; min-inline-size:56px; }
 .tt-fav-reading { font-size:0.8rem; margin:0 0 12px; line-height:1.4; }
 .tt-fav-check { display:flex; align-items:flex-start; gap:8px; font-size:0.82rem; font-weight:600; margin-block:12px 4px; cursor:pointer; }
@@ -1463,6 +1464,13 @@ body.dark .tt-emo-name { color:var(--gold-light); }
 }
 body.dark .form-row select, body.dark .form-row input[type="text"], body.dark .form-row input[type="number"], body.dark .form-row input[type="date"] {
   background:var(--navy-deep); color:var(--text);
+}
+/* Under a finger these four groups' fields compute 11.2–13.1px, and iOS Safari zooms the page into a focused field
+   under 16px and leaves it zoomed. 16px only where the pointer is coarse (the dictionary's and contact's rule); the
+   desktop fields keep their size. The language switcher is i18n.js's. */
+@media (pointer:coarse) {
+  .tt-ctrl select, .tt-ctrl input[type="number"], .tt-ctrl input[type="text"], .tt-empty select, .tt-audio-pause select,
+  .form-row select, .form-row input[type="text"], .form-row input[type="number"], .form-row input[type="date"] { font-size:16px; }
 }
 /* The two drawer selects whose options outgrow the 170px cap: the transliteration Style ("Modern Israeli [DEFAULT]"
    showed as "…[DEFAU") and the Trope staff's Melody ("Year Round [Binder-Reform]" as "…[Binder-Re"). Their short
