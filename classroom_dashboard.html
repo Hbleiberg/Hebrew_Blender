@@ -1964,6 +1964,9 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
     .bpe-modal { padding: 18px 14px; }
     .bpe-head { margin-inline: -14px; padding-inline: 14px; position: static; }   /* a phone's screen is the head's height; it scrolls with the cards there */
   }
+  /* A phone turned sideways is wider than 560px but ~340px tall: the sticky head (~300px there) would cover the
+     cards and Save as they scroll under it, so a short screen lets it scroll away too. */
+  @media (max-height: 500px) { .bpe-head { position: static; } }
 
   /* ── In-place dashboard text editing ── */
   #dashTextWrap { position: relative; }
