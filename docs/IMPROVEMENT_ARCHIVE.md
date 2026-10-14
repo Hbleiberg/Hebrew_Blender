@@ -92685,3 +92685,23 @@ _(prior — S507 pointer:)_ **Next session (S507):** **BRANCH/PR: #327 open → 
 ### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
 - **`page-drops-a-field-it-cannot-apply`** (NEW S507 P; trope progress `3b9915b9`; rest unswept): ACTIVE, streak 0. A page rebuilds a synced blob from its known fields, so its next save drops a newer build's field from the account. Detection: a row with an unknown top-level + nested field, one real write, the field still there (`p507/trope.mjs` T6).
+
+
+<!-- archived by compact-ledger at the S509 boundary, 2026-10-14 -->
+## Compaction (S509, 2026-10-14) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-13 | (S503 close-out) | branch/deploy note | **S503 = E + 4 fixes, PR #327.** No drift; sw v990→v991; no FM bump; no gate.
+
+- [x] 2026-10-13 | `39265428` `47738a1f` `4a75e30d` `008be8e9` | torah + trope, README, torah, flash | (S503) **Two data `?v=`; README rows; credits `lang="en"`; flash HE labels.** | findings S503.
+
+### from Per-session log (one line per session)
+
+- 2026-10-09 | **S488** | iters: 1 pass (**A**) + 4 fixes = **5** | tools: dashboard ×2, trope, FM | patterns fixed: contrast-plate, tip-name, button-focus | pass run: A | SW: v968→v969
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`text-field-under-16px-zooms-on-ios-focus`** (NEW S406; FIXED ×2; S465 contact ×4 `5a7a8ed`; S492 dictionary ×6 `07177214`; S506 torah ×17, trope ×3; S507 dashboard ×23, flash ×10; S508 resources ×6 `f07cd8c`, account ×2 `43b24e2`; open: none known): ACTIVE, streak 0. Detection: computed …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- **`physical-property-that-never-mirrors`** (registered S388 K; S438 torah's jump bar `947b452d`; S508 M dashboard ×5 FIXED `323ad66` — the three centered modals' and the tour card's × + title margins, the edit pencil; open: `#ttsRateVal` inline `text-align:right`; deliberate, logged: the fullscreen exit plate + zoom-bar pair, `.wake-dot-fs`): ACTIVE, streak 0. A physical `margin-`/`padding-`/`border-left|right`, `left`/`right` inset, `text-align:left|right` or `float` on content that mirrors under `dir=rtl`. **Detection:** grep …[full text: IMPROVEMENT_ARCHIVE.md]

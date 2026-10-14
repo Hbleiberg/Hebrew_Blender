@@ -8,7 +8,9 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P3 (**NEW S506 N — text-field-under-16px**) | resources, account | **Own fields under 16px under a finger** (iOS zooms on focus): resources 6 (14.4px), account 2 (15.2px). | found S506
+- [ ] P4 (**NEW S508 M**) | dashboard, torah | **Eyebrows at 0.66rem under the 11.2px floor**: `.tt-set-sub` ×2, `.bpe-mgroup-lbl`, `.pmv-hidden-note` (three idioms: findings). | found S508
+
+- [ ] P4 (**NEW S508 M — gate 2**) | dashboard | **"+ Add period" beside two icon buttons; "✨ Quick-start layouts…"** — the glyph belongs in the markup. | found S508
 
 - [ ] P4 (**NEW S506 N**) | classroom_dashboard.html | **Schedule Sync's empty-week hint spans the grid's 540px**, so at phone widths "…to build your bell schedule." needs a sideways pan. | found S506
 
@@ -308,6 +310,10 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-14 | (S508 close-out) | branch/deploy note | **S508 = M + 4 fixes, PR #328.** No drift; sw v995→v996; no FM bump; no gate.
+
+- [x] 2026-10-14 | `fd3d62c` `323ad66` `f07cd8c` `43b24e2` | dashboard ×2, resources, account | (S508) **Make Groups a real `.btn`; 4 dialogs' × at the inline end in HE; resources + account fields 16px.** | findings S508.
+
 - [x] 2026-10-14 | (S507 close-out) | branch/deploy note | **S507 = P + 4 fixes, PR #327.** No drift; sw v994→v995; no FM bump; no gate.
 
 - [x] 2026-10-14 | `3b9915b9` `2bf17174` `5a4d094a` `00241186` | trope, dash, saves, flash | (S507) **Trope progress keeps unknown fields; dashboard ×23 + flash ×10 fields 16px on touch; untouched Trope progress a seed (D38).** | findings S507.
@@ -324,13 +330,11 @@ _(none)_
 
 - [x] 2026-10-13 | `b38c1f68` `7a663826` `8e48daa5` `13c10bf3` | flash, FM, torah, dashboard | (S504) **Flash + FM grids named; torah HE labels plain; bulk toast one form.** | findings S504.
 
-- [x] 2026-10-13 | (S503 close-out) | branch/deploy note | **S503 = E + 4 fixes, PR #327.** No drift; sw v990→v991; no FM bump; no gate.
-
-- [x] 2026-10-13 | `39265428` `47738a1f` `4a75e30d` `008be8e9` | torah + trope, README, torah, flash | (S503) **Two data `?v=`; README rows; credits `lang="en"`; flash HE labels.** | findings S503.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-14 | **S508** | iters: 5 | tools: dashboard ×2, resources, account | patterns fixed: physical ×5, text-field ×2 | pass run: M | SW: v995→v996
 
 - 2026-10-14 | **S507** | iters: 5 | tools: trope, dashboard, saves, flash | patterns fixed: page-roundtrip (NEW), text-field ×2 | pass run: P | SW: v994→v995
 
@@ -370,11 +374,9 @@ _(none)_
 
 - 2026-10-09 | **S489** | iters: 1 pass (**E**) + 4 fixes = **5** | tools: dashboard ×2, FM, torah, trope | patterns fixed: header-gate ×1, latin-tracking ×1, pinned-english ×2 | pass run: E | SW: v969→v970
 
-- 2026-10-09 | **S488** | iters: 1 pass (**A**) + 4 fixes = **5** | tools: dashboard ×2, trope, FM | patterns fixed: contrast-plate, tip-name, button-focus | pass run: A | SW: v968→v969
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S507 (2026-10-14):** dashboard, trope, flash, saves, scripts S507 · torah S506 · generator, resources, dictionary, index S505 · FM S504 · README S503 · contact S498 · privacy S495 · terms, 404 S494 · account, i18n.js S478 · pwa S472.
+- **Snapshot S508 (2026-10-14):** dashboard, resources, account S508 · trope, flash, saves, scripts S507 · torah S506 · generator, dictionary, index S505 · FM S504 · README S503 · contact S498 · privacy S495 · terms, 404 S494 · i18n.js S478 · pwa S472.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -486,7 +488,7 @@ _(none)_
 
 - **`aria-disabled-lock-no-handler-checks`** (**NEW, registered 2026-09-23 (S407 Pass P) — 1 carrier, fixed `e5c4784`**): ACTIVE, clean streak 0. A control marked busy or invalid by `aria-disabled="true"` whose activation handler never reads that state: the look says locked, a …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`text-field-under-16px-zooms-on-ios-focus`** (NEW S406; FIXED ×2; S465 contact ×4 `5a7a8ed`; S492 dictionary ×6 `07177214`; S506 torah ×17, trope ×3; S507 dashboard ×23, flash ×10; open: resources 6, account 2): ACTIVE, streak 0. Detection: computed …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`text-field-under-16px-zooms-on-ios-focus`** (NEW S406; FIXED ×2; S465 contact ×4 `5a7a8ed`; S492 dictionary ×6 `07177214`; S506 torah ×17, trope ×3; S507 dashboard ×23, flash ×10; S508 resources ×6, account ×2; open: none): ACTIVE, streak 0. …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`textContent-rewrite-erases-a-control-icon`** (S405; S415; S453 `ac796dba`; **S501 generator Export PDF `d7355d03`**): ACTIVE, streak 0. Add (d): load-time icon count. Detection: (a) EN→HE→EN icon count; (b) key census …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -510,7 +512,7 @@ _(none)_
 
 - **`hover-feedback-survives-the-disabled-state`** (registered 2026-09-15, S383 Pass F): ACTIVE — consequence-adjacent (a locked destructive control that still lights up invites the click), so it never retires on a clean streak. **S394: the LAST open carrier CLOSED (`767064e`, …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`physical-property-that-never-mirrors`** (registered S388 K; S438 torah's jump bar `947b452d`): ACTIVE. A physical `margin-`/`padding-`/`border-left|right`, `left`/`right` inset, `text-align:left|right` or `float` on content that mirrors under `dir=rtl`. **Detection:** grep …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`physical-property-that-never-mirrors`** (registered S388 K; S438 torah `947b452d`; S508 dashboard ×5 `323ad66`; open: dashboard `#ttsRateVal`): ACTIVE, streak 0. Detection: grep …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`tile-grid-built-hidden-never-roved`** (registered 2026-09-15 (S382) — 11 carriers, all fixed): ACTIVE. A `roveTileGrid()` call placed in a builder that runs while the container is `display:none` silently does nothing: the helper's tile list filters `offsetParent !== null`, …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -722,7 +724,7 @@ _(none)_
 
 - N mobile & touch-device (one surface): 2026-10-14 (**S506 — 25th N, dashboard (S321 →): 4 phones × EN/HE × themes, 19 views by real taps, rotation, touch, 4×; plants 16/16. FOUND 4, FIXED 2 (+ torah, trope 16px). N-next: privacy/terms/404 (S348).**)
 
-- M aesthetics & visual design (one surface): 2026-10-10 (**S494 — 24th M, privacy + terms (S304 →): 160 shots, census, plants. FOUND 3, FIXED 2 (gate 3) (+ dictionary, trope). M-next: dashboard (S322).**)
+- M aesthetics & visual design (one surface): 2026-10-14 (**S508 — 25th M, dashboard (S322 →): 128 shots, census, plants 6/6. FOUND 5, FIXED 2. M-next: FM (S335).**)
 
 - K i18n / localization audit: 2026-10-13 (**S505 — 34th K on `2fee2f28..a4f94e88` (90 commits): `k505/` CSV delta, static census (plants 4/4), 84-state round trip (plants 420/420), retry 28/28 (control 0/4), blind arms (plants 6/6), delta surfaces by real input. CLEAN: 0 findings.**)
 
@@ -748,4 +750,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-13 (**S500 — 37th F, the tabs / segmented-control keyboard contract (never swept): 9 strips + 6 toggle groups, real keys, EN/HE; plants 3/3. FOUND 4, FIXED 3 (+ Current Location). F-next: dialog Tab traps.**)
 
-**Next session (S508):** **BRANCH/PR: #327 open → continue; merged → restart from `origin/main`.** `sw.js` **v995**, FM **5.59**. ⚑ Stalest: M, G, D; O blocked. ⚑ First: swm empty hint; resources + account 16px; app-toast role=status. ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; TT Chant label (gate 2).
+**Next session (S509):** **BRANCH/PR: #328 open → continue; merged → restart from `origin/main`.** `sw.js` **v996**, FM **5.59**. ⚑ Stalest: G, D, I; O blocked. ⚑ First: eyebrows; swm hint; app-toast. ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2: TT Chant, glyphs.
