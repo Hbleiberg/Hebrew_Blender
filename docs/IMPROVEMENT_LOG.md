@@ -8,6 +8,14 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P2 (**NEW S506 N**) | classroom_dashboard.html | **Student picker: the full-screen Close is navy on the always-dark overlay in the light theme** (1.31:1; dark 15:1), after Pick and Make Groups, at every width. | found S506
+
+- [ ] P3 (**NEW S506 N**) | classroom_dashboard.html | **Bulk preset edit on a phone turned sideways: the sticky head is 304 of the dialog's 308px**, so the cards and Save sit under it (the ≤560px rule unsticks it in portrait only). | found S506
+
+- [ ] P3 (**NEW S506 N — text-field-under-16px**) | classroom_dashboard.html | **23 of the page's own fields compute 10.9–13.6px under a finger** (iOS zooms the page on focus); the switcher is i18n.js's. | found S506
+
+- [ ] P4 (**NEW S506 N**) | classroom_dashboard.html | **Schedule Sync's empty-week hint spans the grid's 540px**, so at phone widths "…to build your bell schedule." needs a sideways pan. | found S506
+
 - [ ] P4 (**NEW S503 E, gate 2**) | torah_trainer.html | **Total Torah on: Chant says "(PocketTorah audio)"** (`verse_chant_aria`). | found S503
 
 - [ ] P4 (**S502 A — latin-tracking**) | flash_cards.html | **flash's printed report `th` (G's).** | found S502
