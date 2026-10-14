@@ -20,7 +20,7 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = path.join(ROOT, 'docs', 'letter_learner_review');
-const BATCHES = { 1: ['alef', 'bet', 'vet', 'gimel', 'dalet'], 2: ['he', 'vav', 'zayin', 'chet', 'tet'] };
+const BATCHES = { 1: ['alef', 'bet', 'vet', 'gimel', 'dalet'], 2: ['he', 'vav', 'zayin', 'chet', 'tet'], 3: ['yod', 'kaf', 'chaf', 'kaf_sofit', 'lamed'] };
 const args = process.argv.slice(2);
 const opt = (name, dflt) => { const i = args.indexOf(name); return i >= 0 ? args[i + 1] : dflt; };
 const batch = opt('--batch', '1');

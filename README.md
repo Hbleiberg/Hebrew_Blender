@@ -344,7 +344,7 @@ upgrade of an older device's sync memory (nothing deleted, nothing removed from 
 | `classroom_dashboard.html` | Live classroom projector / SmartBoard dashboard |
 | `torah_trainer.html` | Weekly parsha reader with translit, vowel coloring, cantillation, TTS, PocketTorah karaoke, and verse looping |
 | `trope_tutor.html` | Learn + drill the Torah cantillation marks with real chanted examples (PocketTorah clips via a pre-built index) |
-| `letter_learner.html` | Alef-bet learner for kindergarten / Mechina: every letter as a card that opens a picture hint, four illustrated words, the letter with every vowel read aloud and five fonts; options sync to the account. Not yet linked from the hub (content batches 1–2 of 6; the review sheets are in `docs/letter_learner_review/`) |
+| `letter_learner.html` | Alef-bet learner for kindergarten / Mechina: every letter as a card that opens a picture hint, four illustrated words, the letter with every vowel read aloud and five fonts; options sync to the account. Not yet linked from the hub (content batches 1–3 of 6; the review sheets are in `docs/letter_learner_review/`) |
 | `Hebrew_Font_Maker.html` | Make a real installable Hebrew font from your handwriting — trace, anchor nikkud/trop, export TTF/WOFF2/UFO — Beta |
 | `resources.html` | Curated directory of external Hebrew / Jewish-education resources |
 | `contact.html` | Contact / feedback form (web3forms + hCaptcha) |
