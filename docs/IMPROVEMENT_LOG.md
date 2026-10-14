@@ -8,7 +8,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P3 (**NEW S506 N — text-field-under-16px**) | dashboard, flash, resources, account | **Own fields under 16px under a finger** (iOS zooms on focus): dashboard 23 (10.9–13.6px), flash 10, resources 6, account 2. | found S506
+- [ ] P3 (**NEW S506 N — text-field-under-16px**) | resources, account | **Own fields under 16px under a finger** (iOS zooms on focus): resources 6 (14.4px), account 2 (15.2px). | found S506
 
 - [ ] P4 (**NEW S506 N**) | classroom_dashboard.html | **Schedule Sync's empty-week hint spans the grid's 540px**, so at phone widths "…to build your bell schedule." needs a sideways pan. | found S506
 
@@ -308,6 +308,10 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-14 | (S507 close-out) | branch/deploy note | **S507 = P + 4 fixes, PR #327.** No drift; sw v994→v995; no FM bump; no gate.
+
+- [x] 2026-10-14 | `3b9915b9` `2bf17174` `5a4d094a` `00241186` | trope, dash, saves, flash | (S507) **Trope progress keeps unknown fields; dashboard ×23 + flash ×10 fields 16px on touch; untouched Trope progress a seed (D38).** | findings S507.
+
 - [x] 2026-10-14 | (S506 close-out) | branch/deploy note | **S506 = N + 4 fixes, PR #327.** No drift; sw v993→v994; no FM bump; no gate.
 
 - [x] 2026-10-14 | `87745776` `232ea19e` `11ee1d49` `b6c218e4` | dashboard ×2, torah, trope | (S506) **Picker Close 1.31→19.4:1 (light); bulk edit Save reachable sideways (0→92/92); torah ×17 + trope ×3 fields 16px on touch.** | findings S506.
@@ -324,13 +328,11 @@ _(none)_
 
 - [x] 2026-10-13 | `39265428` `47738a1f` `4a75e30d` `008be8e9` | torah + trope, README, torah, flash | (S503) **Two data `?v=`; README rows; credits `lang="en"`; flash HE labels.** | findings S503.
 
-- [x] 2026-10-13 | (S502 close-out) | branch/deploy note | **S502 = A + 4 fixes.** 3 flash commits outside the loop; sw v989→v990; no FM bump; no gate.
-
-- [x] 2026-10-13 | `c35aec8d` `1baaf705` `c134c65d` `ab27a7d1` | dashboard ×2, generator, dictionary | (S502) **Bulk edit past `null`; HE labels plain ×2; two named groups.** | findings S502.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-14 | **S507** | iters: 5 | tools: trope, dashboard, saves, flash | patterns fixed: page-roundtrip (NEW), text-field ×2 | pass run: P | SW: v994→v995
 
 - 2026-10-14 | **S506** | iters: 5 | tools: dashboard ×2, torah, trope | patterns fixed: theme-token (NEW), window-taller, text-field ×2 | pass run: N | SW: v993→v994
 
@@ -370,13 +372,13 @@ _(none)_
 
 - 2026-10-09 | **S488** | iters: 1 pass (**A**) + 4 fixes = **5** | tools: dashboard ×2, trope, FM | patterns fixed: contrast-plate, tip-name, button-focus | pass run: A | SW: v968→v969
 
-- 2026-10-09 | **S487** | iters: 1 pass (**B**) + 4 fixes = **5** | tools: flash, resources ×2, contact, saves | patterns fixed: fixed-toast-duration ×1 | pass run: B | SW: v967→v968
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S506 (2026-10-14):** dashboard, torah, trope S506 · generator, resources, flash, dictionary, index S505 · FM S504 · README S503 · contact S498 · privacy S495 · terms, 404, scripts S494 · saves S493 · account, i18n.js S478 · pwa S472.
+- **Snapshot S507 (2026-10-14):** dashboard, trope, flash, saves, scripts S507 · torah S506 · generator, resources, dictionary, index S505 · FM S504 · README S503 · contact S498 · privacy S495 · terms, 404 S494 · account, i18n.js S478 · pwa S472.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`page-drops-a-field-it-cannot-apply`** (NEW S507 P; trope `3b9915b9`): ACTIVE, streak 0. A page rebuilds a synced blob from its known fields, dropping a newer build's field from the account. Detection: `p507/trope.mjs` T6.
 
 - **`theme-token-on-an-always-dark-surface`** (NEW S506 N; dashboard picker Close `87745776`; suite unswept): ACTIVE, streak 0. A theme token (`--text`, `.btn-secondary`) on an overlay that is dark in both themes. Detection: `n506/pickcon.mjs`.
 
@@ -484,7 +486,7 @@ _(none)_
 
 - **`aria-disabled-lock-no-handler-checks`** (**NEW, registered 2026-09-23 (S407 Pass P) — 1 carrier, fixed `e5c4784`**): ACTIVE, clean streak 0. A control marked busy or invalid by `aria-disabled="true"` whose activation handler never reads that state: the look says locked, a …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`text-field-under-16px-zooms-on-ios-focus`** (NEW S406; FIXED ×2; S465 contact ×4 `5a7a8ed`; S492 dictionary ×6 `07177214`; S506 torah ×17 `11ee1d49`, trope ×3 `b6c218e4`; open: dashboard 23, flash 10, resources 6, account 2): ACTIVE, streak 0. Detection: computed …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`text-field-under-16px-zooms-on-ios-focus`** (NEW S406; FIXED ×2; S465 contact ×4 `5a7a8ed`; S492 dictionary ×6 `07177214`; S506 torah ×17, trope ×3; S507 dashboard ×23, flash ×10; open: resources 6, account 2): ACTIVE, streak 0. Detection: computed …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`textContent-rewrite-erases-a-control-icon`** (S405; S415; S453 `ac796dba`; **S501 generator Export PDF `d7355d03`**): ACTIVE, streak 0. Add (d): load-time icon count. Detection: (a) EN→HE→EN icon count; (b) key census …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -714,7 +716,7 @@ _(none)_
 
 ### Discovery-pass rotation (run one per session, stalest first)
 
-- P accounts & cloud (one surface): 2026-10-10 (**S493 — 9th P, the Torah Trainer's own wiring (S477's P-next): smoke-tools 18/18 (plant 17/18), sync 207, migration 47; T1–T8 on a fake cloud by real clicks; static 42/42 (plants 7/7); live read-only. FOUND 1 (a stale tab's older settings, torah + trope), FIXED in the module. P-next: trope, then dictionary.**)
+- P accounts & cloud (one surface): 2026-10-14 (**S507 — 10th P, trope: tools 14/14, sync 210, migration 47; T1–T9 by real clicks; static 22/22 (plants 8/8); live clean. FOUND 2, FIXED 2 (+2). P-next: dictionary.**)
 
 - O deslop — AI-design-tell sweep (one surface): 2026-09-08 (**S346 — 6th O, `flash_cards.html`. ⚑ BLOCKED HERE TWICE (S399, S403) — NOT "needs an attended session". Clone + the 4 parsers install fine; EXECUTING the detector is refused by the sandbox's auto-mode classifier ("Code from External"), and the refusal names the remedy: the maintainer adds a Bash permission rule for the detector (or …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -746,4 +748,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-13 (**S500 — 37th F, the tabs / segmented-control keyboard contract (never swept): 9 strips + 6 toggle groups, real keys, EN/HE; plants 3/3. FOUND 4, FIXED 3 (+ Current Location). F-next: dialog Tab traps.**)
 
-**Next session (S507):** **BRANCH/PR: #327 open → continue; merged → restart from `origin/main`.** `sw.js` **v994**, FM **5.59**. ⚑ Stalest: P, M, G; O blocked. ⚑ First: dashboard 23 fields 16px; swm empty hint; app-toast role=status. ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; TT Chant label (gate 2).
+**Next session (S508):** **BRANCH/PR: #327 open → continue; merged → restart from `origin/main`.** `sw.js` **v995**, FM **5.59**. ⚑ Stalest: M, G, D; O blocked. ⚑ First: swm empty hint; resources + account 16px; app-toast role=status. ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; TT Chant label (gate 2).

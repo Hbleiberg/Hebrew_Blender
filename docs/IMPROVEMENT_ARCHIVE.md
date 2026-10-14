@@ -92655,3 +92655,33 @@ _(prior — S505 pointer:)_ **BRANCH/PR: #327 open → continue; merged → rest
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 _(prior — S506 pointer:)_ **Next session (S506):** **BRANCH/PR: #327 open → continue; merged → restart from `origin/main`.** `sw.js` **v993**, FM **5.59**. ⚑ Stalest: N, P, M; O blocked. ⚑ First: dashboard bulk targets; app-toast role=status. ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; TT Chant label (gate 2).
+
+
+<!-- archived by compact-ledger at the S508 boundary, 2026-10-14 -->
+## Compaction (S508, 2026-10-14) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-13 | (S502 close-out) | branch/deploy note | **S502 = A + 4 fixes.** 3 flash commits outside the loop; sw v989→v990; no FM bump; no gate.
+
+- [x] 2026-10-13 | `c35aec8d` `1baaf705` `c134c65d` `ab27a7d1` | dashboard ×2, generator, dictionary | (S502) **Bulk edit past `null`; HE labels plain ×2; two named groups.** | findings S502.
+
+### from Per-session log (one line per session)
+
+- 2026-10-09 | **S487** | iters: 1 pass (**B**) + 4 fixes = **5** | tools: flash, resources ×2, contact, saves | patterns fixed: fixed-toast-duration ×1 | pass run: B | SW: v967→v968
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`page-drops-a-field-it-cannot-apply`** (NEW S507 P; trope progress `3b9915b9`; suite unswept beyond settings blobs, which round-trip by `ivritSafeAssign`, and Flash Cards' D-case): ACTIVE, streak 0. A page rebuilds a synced blob from the fields it knows, so its next save takes a newer build's field out of the account (CLAUDE.md accounts rule 7). Detection: an account row carrying an unknown top-level and nested field, one page write by a real control, the field still in the row (`p507/trope.mjs` T6).
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+_(prior — S507 pointer:)_ **Next session (S507):** **BRANCH/PR: #327 open → continue; merged → restart from `origin/main`.** `sw.js` **v994**, FM **5.59**. ⚑ Stalest: P, M, G; O blocked. ⚑ First: dashboard 23 fields 16px; swm empty hint; app-toast role=status. ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; TT Chant label (gate 2).
+
+
+<!-- archived by compact-ledger at the S508 boundary, 2026-10-14 -->
+## Compaction (S508, 2026-10-14) — moved verbatim from the live ledger
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`page-drops-a-field-it-cannot-apply`** (NEW S507 P; trope progress `3b9915b9`; rest unswept): ACTIVE, streak 0. A page rebuilds a synced blob from its known fields, so its next save drops a newer build's field from the account. Detection: a row with an unknown top-level + nested field, one real write, the field still there (`p507/trope.mjs` T6).
