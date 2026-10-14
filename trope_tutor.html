@@ -1646,6 +1646,9 @@ function loadProgress() {
   try {
     const p = ivritSafeParse(localStorage.getItem(PROGRESS_KEY));
     if (p && typeof p === 'object') {
+      // A field this build does not know (a newer build wrote it, here or on another device) rides along to the next
+      // save untouched: a round trip through this page never takes it out of the account.
+      for (const k of Object.keys(p)) if (!['v', 'tropes', 'families', 'pbStreak', 'resetAt'].includes(k)) progress[k] = p[k];
       progress.v = 1;
       if (p.tropes && typeof p.tropes === 'object') ivritSafeAssign(progress.tropes, p.tropes);
       if (p.families && typeof p.families === 'object') ivritSafeAssign(progress.families, p.families);
@@ -2882,7 +2885,8 @@ let sessionStreak = 0;
 function recordAnswer(key, ok) {
   const s = statsOf(key);
   if (ok) s.r++; else s.w++;
-  progress.tropes[key] = s;
+  const prev = progress.tropes[key];   // a mark's other fields (a newer build's) stay beside the counts
+  progress.tropes[key] = (prev && typeof prev === 'object' && !Array.isArray(prev)) ? Object.assign(prev, s) : s;
   if (ok) {
     sessionStreak++;
     if (sessionStreak > progress.pbStreak) progress.pbStreak = sessionStreak;
