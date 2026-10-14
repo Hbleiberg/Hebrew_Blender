@@ -851,6 +851,7 @@ body.dark .count-custom.active { background: var(--navy-deep); border-color: var
 .preset-item .drag { color: var(--muted); cursor: grab; user-select: none; padding: 0 4px; }
 .preset-input {
   flex: 1;
+  min-width: 0;   /* a text field's ~20ch intrinsic width kept a 320px phone's Save and Apply past the panel's edge */
   padding: 8px 10px;
   border: 1px solid var(--border-strong);
   border-radius: 8px;
@@ -908,6 +909,13 @@ body.dark .count-custom.active { background: var(--navy-deep); border-color: var
   font-family: ui-monospace, 'SF Mono', monospace;
   font-size: 0.78rem;
   resize: vertical;
+}
+/* Under a finger these ten fields compute 12.5–15.2px, and iOS Safari zooms the page into a focused field under 16px
+   and leaves it zoomed. 16px only where the pointer is coarse (the dictionary's and contact's rule); the desktop keeps
+   its sizes. Five set theirs inline, so their line needs !important. The language switcher is i18n.js's. */
+@media (pointer: coarse) {
+  .count-custom, .preset-input, .tx-area { font-size: 16px; }
+  #numMinInput, #numMaxInput, #wordsMinInput, #wordsMaxInput, #translitStyleSelect { font-size: 16px !important; }
 }
 
 /* ============== CARD SCREEN ============== */
