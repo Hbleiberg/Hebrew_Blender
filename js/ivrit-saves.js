@@ -128,7 +128,8 @@
   //   label      an i18n key for the kind (falls back to the raw kind)
   //   virtual    instead of lsKey: a store assembled from several keys ({ read, write, remove, applied }) —
   //              the suite-wide preferences row below is the one such store
-  //   skipUpload (name, value) → true for a local item that is only a seed (an untouched empty default class):
+  //   skipUpload (name, value) → true for a local item that is only a seed (an untouched empty default class, a
+  //              Trope progress the page minted by itself):
   //              never uploaded, and its name is left out of the folder tree that follows the kind (project())
   //              it is listed as "Empty default — not uploaded" and never sent by itself
   // The suite-wide preferences (`Suite` / `prefs`): the small site-wide keys every page reads — one row,
@@ -292,7 +293,10 @@
     // deletion — a font row leaves the account only through fontDeleted() (the hub's and the Font Maker's delete).
     { tool: 'Suite', kind: 'font', virtual: USER_FONTS, shape: 'map', merge: 'item', ivritKey: 'userFonts', label: 'shared.cloud.kind_font', noDeleteByAbsence: true },
     // trope_tutor.html — mastery counts merge losslessly (max / union) above a reset watermark; the drawer layout never travels
-    { tool: 'TropeTutor', kind: 'progress', lsKey: 'hebrewTropeTutor_progress', shape: 'single', merge: 'deepMax', watermark: 'resetAt', ivritKey: 'tropeTutorProgress', label: 'shared.cloud.kind_progress' },
+    // skipUpload: the Learn tab's first render marks the family on screen seen, so a device that has only opened the
+    // page holds a progress blob nobody made — never offered on the first sign-in's card, never sent by itself.
+    { tool: 'TropeTutor', kind: 'progress', lsKey: 'hebrewTropeTutor_progress', shape: 'single', merge: 'deepMax', watermark: 'resetAt', ivritKey: 'tropeTutorProgress', label: 'shared.cloud.kind_progress',
+      skipUpload: function (name, value) { return isUntouchedTropeProgress(value); } },
     { tool: 'TropeTutor', kind: 'settings', lsKey: 'hebrewTropeTutor_settings', shape: 'single', merge: 'assign', omit: ['panelsCollapsed'], ivritKey: 'tropeTutorSettings', label: 'shared.cloud.kind_settings' },
     // torah_trainer.html — one settings blob; the drawer/karaoke-bar layout and the reading position
     // (lastPos carries a timestamp on every scroll, which would keep the row "newer" forever) stay per device
@@ -380,6 +384,15 @@
     if (!isPlainObject(value) || (Array.isArray(value.names) && value.names.length)) return false;
     var name = typeof value.name === 'string' ? value.name.trim() : '';
     return name === '' || name === 'My class' || name === t('dashboard.picker.default_class_name', 'My class');
+  }
+  // No answer, no streak, no reset, at most one family seen, and no field this build does not know (a newer
+  // build's may be real progress): what the Trope Tutor's first render writes on its own.
+  function isUntouchedTropeProgress(value) {
+    if (!isPlainObject(value) || Object.keys(value).some(function (k) { return ['v', 'tropes', 'families', 'pbStreak'].indexOf(k) < 0; })) return false;
+    if ((parseInt(value.pbStreak, 10) || 0) > 0) return false;
+    var tr = isPlainObject(value.tropes) ? value.tropes : {}, fam = isPlainObject(value.families) ? value.families : {};
+    if (Object.keys(tr).some(function (k) { return isPlainObject(tr[k]) && ((parseInt(tr[k].r, 10) || 0) + (parseInt(tr[k].w, 10) || 0)) > 0; })) return false;
+    return Object.keys(fam).filter(function (k) { return fam[k]; }).length <= 1;
   }
 
   /* ---------- tiny helpers ---------- */

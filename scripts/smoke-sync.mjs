@@ -137,6 +137,8 @@
  *  D37. Two Torah Trainer tabs: B, on screen while A changed the Hebrew size, is hidden and shown again, then changes
  *      a setting of its own: both changes reach the account and B shows A's size (its page re-read the newer copy
  *      when its hidden-tab flush found the store already holding it).
+ *  D38. A first sign-in on a device that has only opened the Trope Tutor (its first render marked one family seen): no
+ *      card asks about that progress and nothing of it is sent; the first answer sends it.
  *
  * Every scenario asserts 0 pageerrors. Run from the repo root:
  *   node scripts/smoke-sync.mjs --sdk path/to/supabase.js [--port 8081]
@@ -1989,6 +1991,24 @@ try {
     check("D37: tab B's own change reached the account beside tab A's size; B's older size never went up", okA && okB && row.data.hebFontSize === 2.9 && row.data.showNikkud === !nik0, JSON.stringify({ okA, okB, size: row.data.hebFontSize, nikkud: row.data.showNikkud, nik0, calls: methods(cloud, from) }));
     check("D37: tab B shows tab A's size", inB === 2.9, JSON.stringify({ inB }));
     check('D37: 0 pageerrors in both tabs', A.errors.length === 0 && B.errors.length === 0, A.errors.concat(B.errors).join(' | '));
+    await ctx.close();
+  }
+  // ---- D38. an untouched Trope progress (the page's own first render) is a seed: no card, nothing sent until an answer ----
+  if (want('D38')) {
+    const TT = ['TropeTutor', 'Suite'];
+    const cloud = new FakeCloud([]);
+    const ctx = await openContext(browser, cloud, SEED({ meta2: false }));
+    const { page, errors } = await openPage(ctx, 'trope_tutor.html', { tools: TT });
+    await sleep(WRITE_MS);
+    const minted = await lsJSON(page, 'hebrewTropeTutor_progress');
+    const sent0 = reqs(cloud, 0).filter(e => e.m !== 'GET' && e.body && e.body.kind === 'progress').length;
+    check('D38: the page minted its progress (one family seen) and no card asked about it, nothing of it sent', !!minted && Object.keys(minted.families || {}).length === 1 && (await overlays(page)) === 0 && sent0 === 0 && !cloud.find('progress', 'default', 'TropeTutor'), JSON.stringify({ minted, sent0, calls: methods(cloud, 0) }));
+    const from = cloud.log.length;
+    await page.evaluate(() => recordAnswer('etnachta', true));
+    const ok = await waitLog(() => reqs(cloud, from, 'POST', 'progress').length === 1, 10000) && await settled(page, TT, 10000);
+    const row = cloud.find('progress', 'default', 'TropeTutor'), local = await lsJSON(page, 'hebrewTropeTutor_progress');
+    check('D38: the first answer sends it (one POST), the account = the device', ok && !!row && canonJson(row.data) === canonJson(local) && row.data.tropes.etnachta.r === 1, JSON.stringify({ ok, calls: methods(cloud, from) }));
+    check('D38: 0 pageerrors', errors.length === 0, errors.join(' | '));
     await ctx.close();
   }
 } finally {
