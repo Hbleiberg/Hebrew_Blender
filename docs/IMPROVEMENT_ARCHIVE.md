@@ -92775,3 +92775,36 @@ _(prior — S509 pointer:)_ **Next session (S509):** **BRANCH/PR: #328 open → 
 ### from Done
 
 - [x] 2026-10-15 | `be4a13f` `466f600` `9c13534` | letter_learner ×3 | (S509) **Print establishes its own ink (both themes print the light palette; the title shows); the alef-bet is one sheet on Letter and A4, no split card; an open letter prints as that letter's page** | PDFs light/dark × Letter/A4: dark = light after (1429 vs 1690 before), no straddle, Bet open → one sheet (4375 vs the grid's 1552), HE mirrored
+
+
+## S510 close-out (2026-10-15) — the oldest Done sessions (S508, S509), moved verbatim from the live ledger (the ledger sits at its cap)
+
+### from Done (S508, moved by the S510 close-out)
+
+- [x] 2026-10-14 | (S508 close-out) | branch/deploy note | **S508 = M + 4 fixes, PR #328.** No drift; sw v995→v996; no FM bump; no gate.
+- [x] 2026-10-14 | `fd3d62c` `323ad66` `f07cd8c` `43b24e2` | dashboard ×2, resources, account | (S508) **Make Groups a real `.btn`; 4 dialogs' × at the inline end in HE; resources + account fields 16px.** | findings S508.
+
+### from Done (S509, moved by the S510 close-out)
+
+- [x] 2026-10-15 | (S509 close-out) | branch/deploy note | **S509 = G on letter_learner (the maintainer's focus) + 3 fixes, PR #332** (the assigned branch). Drift: main v996→v999 via the Letter Learner PRs; 0004 live; function v3 unchanged; keep-alive green. sw v999→v1000 (the PR's one bump); no FM bump; no gate. Governor: 3 iterations on one tool by direction.
+- [x] 2026-10-15 | `be4a13f` `466f600` `9c13534` | letter_learner ×3 | (S509) **Print establishes its own ink (both themes print the light palette; the title shows); the alef-bet is one sheet on Letter and A4, no split card; an open letter prints as that letter's page** | PDFs light/dark × Letter/A4: dark = light after (1429 vs 1690 before), no straddle, Bet open → one sheet (4375 vs the grid's …[full text: IMPROVEMENT_ARCHIVE.md]
+
+## S510 close-out (2026-10-15) — the previous handoff, moved verbatim from the live ledger
+
+_(prior — S510 pointer:)_ **Next session (S510):** **BRANCH/PR: #332 open → continue (carries the mobile pass + S509); merged → restart from `origin/main`.** `sw.js` **v1000**, FM **5.59**. ⚑ Stalest: D, I (G ran S509); O blocked. ⚑ First: eyebrows; swm hint; app-toast. ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2: TT Chant, glyphs.
+
+
+<!-- archived by compact-ledger at the S511 boundary, 2026-10-15 -->
+## Compaction (S511, 2026-10-15) — moved verbatim from the live ledger
+
+### from Per-session log (one line per session)
+
+- 2026-10-09 | **S490** | iters: 1 pass (**L**) + 4 fixes = **5** | tools: resources, dashboard, scripts ×2 | patterns fixed: latin-tracking ×2 | pass run: L | SW: v970→v971
+
+## S510 close-out (2026-10-15) — the three oldest per-session rows, moved verbatim from the live ledger (the ledger sits at its cap)
+
+### from Per-session log
+
+- 2026-10-10 | **S493** | iters: 1 pass (**P**) + 4 fixes = **5** | tools: dictionary ×2, js/ivrit-saves.js (the session's one shared script), trope | patterns fixed: stale-tab ×1, flex-range ×1, latin-tracking ×1 | pass run: P | SW: v973→v974
+- 2026-10-10 | **S492** | iters: 1 pass (**N**) + 3 fixes + 1 reverted = **5** | tools: dictionary ×2, generator, FM | patterns fixed: text-field-under-16px ×1, latin-tracking ×2 | pass run: N | SW: v972→v973
+- 2026-10-09 | **S491** | iters: 1 pass (**K**) + 4 fixes = **5** | tools: FM ×2, dashboard ×2, dictionary ×2, resources ×2, flash ×2, generator, torah, trope, scripts, docs | patterns fixed: latin-tracking ×2, settings-lost-across-a-load ×1 | pass run: K | SW: v971→v972

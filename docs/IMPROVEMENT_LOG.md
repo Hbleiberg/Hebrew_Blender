@@ -8,6 +8,10 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P3 (**NEW S510 D — pattern `infinite-box-shadow-pulse…`; the paste is letter_learner `fd6cfdc`**) | dashboard, flash, generator, dictionary, torah, trope | **The Tour button's first-visit pulse animates box-shadow, so the viewport repaints twice a frame while it runs** (12.6% / 35.6% of the main thread at 1× / 4× before the fix). | found S510
+
+- [ ] P3 (**NEW S510 D; shared sw.js — the maintainer's call**) | sw.js | **Pages, scripts and /locales/ are fetched with cache:'no-store', so a returning visitor re-downloads ~370 KB per page view although GitHub Pages answers 304**; `'no-cache'` keeps always-revalidate and made the same reload 0 B (findings S510). | found S510
+
 - [ ] P4 (**NEW S509 — N's; shared js/i18n.js**) | js/i18n.js | **The header language select is 12.5px under a finger on every page, so iOS zooms into the picker**; the 16px rule stops at page-owned fields. | found S509
 
 - [ ] P4 (**NEW S508 M**) | dashboard, torah | **Eyebrows at 0.66rem under the 11.2px floor**: `.tt-set-sub` ×2, `.bpe-mgroup-lbl`, `.pmv-hidden-note` (three idioms: findings). | found S508
@@ -312,17 +316,15 @@ _(none)_
 
 ## Done
 
-- [x] 2026-10-15 | (S509 close-out) | branch/deploy note | **S509 = G on letter_learner (the maintainer's focus) + 3 fixes, PR #332** (the assigned branch). Drift: main v996→v999 via the Letter Learner PRs; 0004 live; function v3 unchanged; keep-alive green. sw v999→v1000 (the PR's one bump); no FM bump; no gate. Governor: 3 iterations on one tool by direction.
+- [x] 2026-10-15 | (S510 close-out) | branch/deploy note | **S510 = D on letter_learner (the maintainer's focus) + 3 fixes, PR #332.** No drift; sw v1000 (already on the PR); no FM bump; no gate. 3 on one tool by direction; S508–S509 Done and 3 per-session rows → archive (cap).
 
-- [x] 2026-10-15 | `be4a13f` `466f600` `9c13534` | letter_learner ×3 | (S509) **Print establishes its own ink (both themes print the light palette; the title shows); the alef-bet is one sheet on Letter and A4, no split card; an open letter prints as that letter's page** | PDFs light/dark × Letter/A4: dark = light after (1429 vs 1690 before), no straddle, Bet open → one sheet (4375 vs the grid's …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-10-14 | (S508 close-out) | branch/deploy note | **S508 = M + 4 fixes, PR #328.** No drift; sw v995→v996; no FM bump; no gate.
-
-- [x] 2026-10-14 | `fd3d62c` `323ad66` `f07cd8c` `43b24e2` | dashboard ×2, resources, account | (S508) **Make Groups a real `.btn`; 4 dialogs' × at the inline end in HE; resources + account fields 16px.** | findings S508.
+- [x] 2026-10-15 | `fd6cfdc` `e6755ba` `17b0fdc` | letter_learner ×3 | (S510) **The Tour pulse no longer repaints the viewport every frame (362 → 0 paints/3 s; 35.6 → 22% busy at 4×); the Fonts tab's face check compares pixels in place (click 65 → 44 ms at 4×); a letter's drawings are checked when first shown, not all 188 at boot (27–46 → 6–7 ms at 4×).** | findings S510.
 
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-15 | **S510** | iters: 4 | tools: letter_learner ×3 | patterns fixed: box-shadow-pulse (NEW) | pass run: D | SW: v1000→v1000 (bumped on this PR by the mobile pass)
 
 - 2026-10-15 | **S509** | iters: 4 | tools: letter_learner ×3 | patterns fixed: new-page-print-ink (NEW) | pass run: G | SW: v999→v1000
 
@@ -356,19 +358,13 @@ _(none)_
 
 - 2026-10-10 | **S494** | iters: 1 pass (**M**) + 4 fixes = **5** | tools: privacy ×2, terms, dictionary, trope, CSV, scripts | patterns fixed: hebrew-faux-italic (NEW) ×4 | pass run: M | SW: v975→v976
 
-- 2026-10-10 | **S493** | iters: 1 pass (**P**) + 4 fixes = **5** | tools: dictionary ×2, js/ivrit-saves.js (the session's one shared script), trope | patterns fixed: stale-tab ×1, flex-range ×1, latin-tracking ×1 | pass run: P | SW: v973→v974
-
-- 2026-10-10 | **S492** | iters: 1 pass (**N**) + 3 fixes + 1 reverted = **5** | tools: dictionary ×2, generator, FM | patterns fixed: text-field-under-16px ×1, latin-tracking ×2 | pass run: N | SW: v972→v973
-
-- 2026-10-09 | **S491** | iters: 1 pass (**K**) + 4 fixes = **5** | tools: FM ×2, dashboard ×2, dictionary ×2, resources ×2, flash ×2, generator, torah, trope, scripts, docs | patterns fixed: latin-tracking ×2, settings-lost-across-a-load ×1 | pass run: K | SW: v971→v972
-
-- 2026-10-09 | **S490** | iters: 1 pass (**L**) + 4 fixes = **5** | tools: resources, dashboard, scripts ×2 | patterns fixed: latin-tracking ×2 | pass run: L | SW: v970→v971
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S509 (2026-10-15):** letter_learner S509 · dashboard, resources, account S508 · trope, flash, saves, scripts S507 · torah S506 · generator, dictionary, index S505 · FM S504 · README S503 · contact S498 · privacy S495 · terms, 404 S494 · i18n.js S478 · pwa S472.
+- **Snapshot S510 (2026-10-15):** letter_learner S510 · dashboard, resources, account S508 · trope, flash, saves, scripts S507 · torah S506 · generator, dictionary, index S505 · FM S504 · README S503 · contact S498 · privacy S495 · terms, 404 S494 · i18n.js S478 · pwa S472.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`infinite-box-shadow-pulse-repaints-every-frame`** (NEW S510 D; letter_learner FIXED `fd6cfdc`; 6 carriers OPEN): ACTIVE, streak 0. Detection: `grep -n attnPulse *.html` → keyframes on `box-shadow`; `d510/pulse.mjs` paints per 3 s (0 = fixed).
 
 - **`new-page-print-block-without-the-ink-remap`** (NEW S509 G; letter_learner FIXED `be4a13f`; 14 others clean): ACTIVE, streak 0. Detection: `--text:` inside the print block of every page with dark tokens; `g509/g509.mjs` ink dark vs light.
 
@@ -726,7 +722,7 @@ _(none)_
 
 - G print & export fidelity (one tool): 2026-10-15 (**S509 — letter_learner (the maintainer's focus; its first G): PDFs Letter + A4 × light/dark × EN/HE, ink per page, straddles, the open-dialog case; the ink gap fired as the control. FOUND 4, FIXED 3. G-next: dictionary (S377).**)
 
-- D performance (one tool): 2026-10-12 (**S496 — dictionary (S378 →): 10 cold + 120 arms; controls fired. FOUND 2, FIXED 1 (+ micro). D-next: flash (S393).**)
+- D performance (one tool): 2026-10-15 (**S510 — letter_learner (the maintainer's focus; its first D): cold + HE at 1×/4× (profile + trace), open/next/fonts/toggles by real clicks, steady windows, 3G, the worker's repeat-visit bytes; controls fired. FOUND 7, FIXED 3 (+ sw.js, 6 pulse carriers logged). D-next: flash (S393).**)
 
 - I first-load & empty-state: 2026-10-12 (**S497 — 37th I, 90 commits: 136 cells, census = S481 136/136, tours 14/14, delta arms; plants fired. FOUND 3, FIXED 1 (+2).**)
 
@@ -742,4 +738,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-13 (**S500 — 37th F, the tabs / segmented-control keyboard contract (never swept): 9 strips + 6 toggle groups, real keys, EN/HE; plants 3/3. FOUND 4, FIXED 3 (+ Current Location). F-next: dialog Tab traps.**)
 
-**Next session (S510):** **BRANCH/PR: #332 open → continue (carries the mobile pass + S509); merged → restart from `origin/main`.** `sw.js` **v1000**, FM **5.59**. ⚑ Stalest: D, I (G ran S509); O blocked. ⚑ First: eyebrows; swm hint; app-toast. ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2: TT Chant, glyphs.
+**Next session (S511):** **BRANCH/PR: #332 open → continue (mobile pass + S509 + S510); merged → restart from `origin/main`.** `sw.js` **v1000**, FM **5.59**. ⚑ Stalest: I (S497), then B, C. ⚑ First: sw.js no-store (maintainer's call); the 6 pulse carriers (a paste); eyebrows. ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2: TT Chant, glyphs.
