@@ -1593,8 +1593,12 @@ function llFontDraws(family, ch) {
     const S = 64, cv = document.createElement('canvas'); cv.width = S; cv.height = S;
     const ctx = cv.getContext('2d', { willReadFrequently: true });
     if (!ctx) return false;
-    const ink = fam => { ctx.clearRect(0, 0, S, S); ctx.font = '48px ' + fam; ctx.fillStyle = '#000'; ctx.textBaseline = 'alphabetic'; ctx.fillText(ch, 8, 50); return ctx.getImageData(0, 0, S, S).data.join(','); };
-    return ink('"' + family + '", "ivrit-no-such-face"') !== ink('"ivrit-no-such-face"');
+    const ink = fam => { ctx.clearRect(0, 0, S, S); ctx.font = '48px ' + fam; ctx.fillStyle = '#000'; ctx.textBaseline = 'alphabetic'; ctx.fillText(ch, 8, 50); return ctx.getImageData(0, 0, S, S).data; };
+    // Compare the two buffers in place: joining 16,384 values into a string, twice per face, cost 40 ms per Fonts tab at a
+    // phone's 4× CPU (loop S510); the loop is well under a millisecond.
+    const a = ink('"' + family + '", "ivrit-no-such-face"'), b = ink('"ivrit-no-such-face"');
+    for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return true;
+    return false;
   } catch (e) { return false; }
 }
 function llRenderFontTab(L) {
