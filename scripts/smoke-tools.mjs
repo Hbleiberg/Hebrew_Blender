@@ -64,7 +64,7 @@ const PAGES = [
     // The seed is the page's own normalized shape (field order included): the page writes only on a change, so a
     // load must leave the text byte-identical.
     seed: {
-      hebrewLetterLearner_settings: JSON.stringify({ v: 1, vowels: { kamatz: true, patach: false, tzere: true, segol: true, chirik: true, cholam: true, kubutz: false, shuruk: true, sheva: true, chataf_patach: false, chataf_segol: false, chataf_kamatz: false }, fontTab: false, splitPairs: false, wordAudio: true, voiceURI: 'com.apple.voice.compact.he-IL.Carmit' })
+      hebrewLetterLearner_settings: JSON.stringify({ v: 1, vowels: { kamatz: true, patach: false, tzere: true, segol: true, chirik: true, cholam: true, vav_cholam: true, kubutz: false, shuruk: true, sheva: true, chataf_patach: false, chataf_segol: false, chataf_kamatz: false }, fontTab: false, splitPairs: false, wordAudio: true, voiceURI: 'com.apple.voice.compact.he-IL.Carmit' })
     },
     rows: ['settings:default'],
     expand: `document.getElementById('cloudSavesPanel').scrollIntoView();`,
@@ -72,7 +72,7 @@ const PAGES = [
     // E. a browser without speech hides every speaker and shows the note; the ?letter= deep link opens its card and a
     // garbage one opens nothing; the stored options stay byte-identical through a load and the module's flush
     extra: async ({ browser, tag }) => {
-      const seedText = JSON.stringify({ v: 1, vowels: { kamatz: true, patach: true, tzere: true, segol: true, chirik: true, cholam: true, kubutz: true, shuruk: true, sheva: true, chataf_patach: true, chataf_segol: true, chataf_kamatz: true }, fontTab: true, splitPairs: true, wordAudio: true, voiceURI: '' });
+      const seedText = JSON.stringify({ v: 1, vowels: { kamatz: true, patach: true, tzere: true, segol: true, chirik: true, cholam: true, vav_cholam: true, kubutz: true, shuruk: true, sheva: true, chataf_patach: true, chataf_segol: true, chataf_kamatz: true }, fontTab: true, splitPairs: true, wordAudio: true, voiceURI: '' });
       {
         const { ctx, page, errors } = await openPage(browser, 'letter_learner.html', { seed: { hebrewLetterLearner_settings: seedText }, query: '?letter=gimel', init: () => { Object.defineProperty(window, 'speechSynthesis', { value: undefined, configurable: true }); } });
         const r = await page.evaluate(() => { llSaveSettingsIfChanged(); return { open: !document.getElementById('llOverlay').hidden, id: _llId, noSpeech: document.body.classList.contains('ll-no-speech'), speakers: [...document.querySelectorAll('.ll-speak')].filter(b => b.offsetParent !== null).length, note: document.getElementById('llNoSpeech').offsetParent !== null, same: localStorage.getItem('hebrewLetterLearner_settings') === JSON.stringify(settings) }; });
