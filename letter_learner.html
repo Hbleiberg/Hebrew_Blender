@@ -189,8 +189,11 @@ body.fs-idle #fsBtn:not(:focus-visible) { opacity:0; pointer-events:none; }
 /* The sidebar's width lives in one custom property, registered non-inherited and written on the sidebar itself (its
    only consumer), so a drag frame restyles one element rather than the page (the dictionary's measurement). */
 @property --ll-sidebar-w { syntax: '<length>'; inherits: false; initial-value: 300px; }
-.ll-app { display:flex; flex:1; align-items:stretch; }
-.ll-sidebar { width:var(--ll-sidebar-w, 300px); flex-shrink:0; background:var(--white); border-inline-end:1px solid var(--border); padding:14px; display:flex; flex-direction:column; gap:12px; }
+/* The sidebar sits at the inline-end (the right in English, the left in Hebrew), where the dashboard keeps its settings
+   drawer; the markup stays options-first like the other carriers, so the stacked layout below keeps the options above
+   the letters and the seam stays the sidebar's neighbour. */
+.ll-app { display:flex; flex-direction:row-reverse; flex:1; align-items:stretch; }
+.ll-sidebar { width:var(--ll-sidebar-w, 300px); flex-shrink:0; background:var(--white); border-inline-start:1px solid var(--border); padding:14px; display:flex; flex-direction:column; gap:12px; }
 .ll-page { flex:1; min-width:0; padding:18px 20px 60px; }
 .ll-note { font-size:0.8rem; color:var(--muted); margin:4px 0 0; }
 .ll-btn {
@@ -433,7 +436,7 @@ body.dark #appToast { background: #0a0f1c; }
   /* Stacked: the sidebar sits above the letters at its natural height, and the resize seam goes with the layout
      (a full-height touch-action:none strip would be dead scroll under a finger). */
   .ll-app { flex-direction:column; }
-  .ll-sidebar { width:auto; border-inline-end:none; border-bottom:1px solid var(--border); }
+  .ll-sidebar { width:auto; border-inline-start:none; border-bottom:1px solid var(--border); }
   .sbr-split { display:none; }
 }
 /* The header's wrap gate: the row of controls drops under the title only below this page's MEASURED overflow
@@ -1912,14 +1915,15 @@ function mountSidebarResize(cfg) {
 /* ═══ end shared: sidebar-resize ═════════════════════════════════════════════ */
 
 /* ── Options sidebar width (wiring for the shared sidebar-resize block above): the in-flow sidebar recipe of the
-   dictionary and the generator. The key is per device (it tracks the monitor), so it is erase-only in the hub. ── */
+   dictionary and the generator, anchored at the inline-end like the dashboard's drawer (so a drag toward the letters
+   widens it in both UIs). The key is per device (it tracks the monitor), so it is erase-only in the hub. ── */
 function initSidebarResize() {
   mountSidebarResize({
     handle: document.getElementById('llSidebarSplit'),
     cssVar: '--ll-sidebar-w',
     scope: document.getElementById('llSidebar'),   // the var's only consumer (registered inherits:false in the CSS)
     storageKey: 'hebrewLetterLearner_sidebarW',
-    anchor: 'start',
+    anchor: 'end',
     min: 240, dflt: 300,
     max: () => Math.min(520, window.innerWidth - 360)   // the letter grid keeps room for three cards beside it
   });

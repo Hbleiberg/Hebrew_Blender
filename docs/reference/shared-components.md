@@ -311,7 +311,7 @@ fallbacks beside their `data-i18n-*` siblings (standard pattern).
 Every carrier keeps per-page: the `:root { --…-w: Npx; }` seed, the panel's
 `width: var(--…-w, Npx)`, the handle's placement rule, and the kill rules (stacked media query,
 print list, collapse interplay, ak-view-style overrides).
-1. **In-flow sidebar** (dictionary, generator, Letter Learner): handle class `sbr-split sbr-flex`, inserted as
+1. **In-flow sidebar** (dictionary, generator; the Letter Learner's sits at the inline-end like the dashboard's drawer — `flex-direction:row-reverse` on the row and `anchor:'end'`, the markup still options-first): handle class `sbr-split sbr-flex`, inserted as
    the aside's **immediate next sibling** — the collapse rule
    `#appSidebar.hidden + .sbr-split { display:none; }` depends on that adjacency. `anchor:'start'`.
    Dynamic max keeps the main column usable: `() => Math.min(HARD_MAX, window.innerWidth - MAIN_MIN)`.
