@@ -6275,6 +6275,8 @@ letterlearner.header.tour_button,Tour,סיור,Letter Learner header tour launch
 letterlearner.header.tour_title,Take a quick tour,סיור קצר,Letter Learner header tour button title,
 letterlearner.header.options_btn,Show or hide the options,הצגה או הסתרה של האפשרויות,Letter Learner header gear button (title + aria-label) that shows or hides the options sidebar,
 letterlearner.a11y.skip_to_letters,Skip to the letters,דלגו אל האותיות,Letter Learner skip link,
+letterlearner.sidebar.hide,Hide the options,הסתרת האפשרויות,Letter Learner: the edge tab at the options sidebar's seam that collapses it (title + aria-label),aria-label only
+letterlearner.sidebar.show,Show the options,הצגת האפשרויות,Letter Learner: the tab at the screen's edge that brings the collapsed options back (title + aria-label),aria-label only
 letterlearner.options.title,Options,אפשרויות,Letter Learner options card heading,
 letterlearner.options.reset,Reset options,איפוס האפשרויות,Letter Learner options reset button,
 letterlearner.options.reset_confirm,Reset the Letter Learner options on this device?,לאפס את האפשרויות של לומדים אותיות במכשיר הזה?,confirm() before the options reset while signed out,

@@ -195,8 +195,26 @@ body.fs-idle #fsBtn:not(:focus-visible) { opacity:0; pointer-events:none; }
 .ll-app { display:flex; flex-direction:row-reverse; flex:1; align-items:stretch; }
 .ll-sidebar { width:var(--ll-sidebar-w, 300px); flex-shrink:0; background:var(--white); border-inline-start:1px solid var(--border); padding:14px; display:flex; flex-direction:column; gap:12px; }
 .ll-page { flex:1; min-width:0; padding:18px 20px 60px; }
-/* The header gear hides the sidebar and its seam together (per visit, never stored — the suite's rule for a whole sidebar). */
+/* The header gear and the edge tabs hide the sidebar and its seam together (per visit, never stored — the suite's rule for
+   a whole sidebar). */
 .ll-app.sidebar-hidden .ll-sidebar, .ll-app.sidebar-hidden .sbr-split { display:none; }
+/* The sidebar's edge tabs — the generator's collapse tab with its geometry mirrored, the sidebar being at the inline-end:
+   rounded and shadowed toward the inline-start (away from the sidebar); the hide tab pinned just beyond the seam's box by
+   llPositionSidebarTab (the grab zone stays clear — the CSS inset is only the pre-script default for the 300px width),
+   the show tab at the screen's inline-end edge. The 16px sliver is the generator's look; a transparent ::after
+   carries the pointer target 8px inward, so the operable box is 24px and stays on-screen. z-index: above the seam's 5,
+   under the dialog (300), the tour (400/500) and the toast. */
+.ll-sb-tab { position:fixed; top:50vh; transform:translateY(-50%); width:16px; height:52px; border:none; background:var(--navy); color:var(--gold-light); font-size:0.8rem; line-height:1; padding:0; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background 0.15s; border-start-start-radius:6px; border-end-start-radius:6px; box-shadow:-2px 0 6px rgba(0,0,0,0.15); }
+.ll-sb-tab::after { content:''; position:absolute; inset-block:0; inset-inline-start:-8px; inset-inline-end:0; }
+.ll-sb-hide { inset-inline-end:308px; z-index:50; }
+.ll-sb-show { inset-inline-end:0; z-index:100; display:none; }
+.ll-app.sidebar-hidden .ll-sb-hide { display:none; }
+.ll-app.sidebar-hidden .ll-sb-show { display:flex; }
+.ll-sb-tab:hover { background:#0f1a33; }
+/* Dark --navy sits 1.15:1 on the dark page, where the tabs would read as a bare chevron: the generator's dark pair. */
+body.dark .ll-sb-tab { background:#2a4070; }
+body.dark .ll-sb-tab:hover { background:#345090; }
+[dir="rtl"] .ll-sb-tab { box-shadow:2px 0 6px rgba(0,0,0,0.15); }   /* the shadow falls toward the inline-start: left in English, right in Hebrew */
 .ll-note { font-size:0.8rem; color:var(--muted); margin:4px 0 0; }
 .ll-btn {
   background:var(--gold); color:#1a1a1a; border:none; border-radius:6px;
@@ -458,6 +476,7 @@ body.dark #appToast { background: #0a0f1c; }
   .ll-page { order:1; }
   .ll-sidebar { order:2; width:auto; border-inline-start:none; border-top:1px solid var(--border); padding:12px 14px 18px; }
   .sbr-split { display:none; }
+  .ll-sb-tab { display:none !important; }   /* an edge chevron would float over the grid; the gear shows and hides the stacked options */
 }
 /* Touch: the page's own controls grow to a finger's size, and a focused select is 16px so iOS does not zoom into it
    (the suite's text-field pattern). The header buttons and the account module's button keep their shared sizes. */
@@ -490,7 +509,7 @@ body.dark #appToast { background: #0a0f1c; }
   .ll-tabs [role="tab"] { padding:8px 9px; font-size:0.86rem; }
 }
 @media print {
-  header .hright, .ll-sidebar, .sbr-split, footer, .ll-overlay, .tour-spot, .tour-card, #appToast { display:none !important; }
+  header .hright, .ll-sidebar, .sbr-split, .ll-sb-tab, footer, .ll-overlay, .tour-spot, .tour-card, #appToast { display:none !important; }
   /* Print establishes its own ink (the trope / dictionary / flash-cards treatment). The print dialog drops background
      plates by default, so both themes converge on the light palette on white paper: without this a dark-mode print set
      every letter and name in --text #dde4f0 on white — card frames with nothing readable inside — and the drawings'
@@ -564,6 +583,11 @@ body.dark #appToast { background: #0a0f1c; }
 </header>
 
 <div class="ll-app">
+  <!-- The sidebar's edge tabs (the generator's collapse tab, mirrored for a sidebar at the inline-end): the hide tab sits at
+       the seam, pinned there by llPositionSidebarTab; the show tab waits at the screen's edge while the options are hidden.
+       Both are position:fixed, so they take no room in the row; the state class on .ll-app shows one or the other. -->
+  <button type="button" class="ll-sb-tab ll-sb-show" id="llSidebarShow" title="Show the options" aria-label="Show the options" data-i18n-title="letterlearner.sidebar.show" data-i18n-aria-label="letterlearner.sidebar.show"><span class="dir-arrow" aria-hidden="true">&lsaquo;</span></button>
+  <button type="button" class="ll-sb-tab ll-sb-hide" id="llSidebarHide" title="Hide the options" aria-label="Hide the options" data-i18n-title="letterlearner.sidebar.hide" data-i18n-aria-label="letterlearner.sidebar.hide"><span class="dir-arrow" aria-hidden="true">&rsaquo;</span></button>
   <!-- Options sidebar: collapsible panels (state remembered per device by the shared panel-collapse block), then the
        drag seam of the shared sidebar-resize block (its width is per device too), then the letters. -->
   <aside class="ll-sidebar" id="llSidebar" aria-labelledby="llOptTitle">
@@ -2041,30 +2065,62 @@ function initSidebarResize() {
     storageKey: 'hebrewLetterLearner_sidebarW',
     anchor: 'end',
     min: 240, dflt: 300,
-    max: () => Math.min(520, window.innerWidth - 360)   // the letter grid keeps room for three cards beside it
+    max: () => Math.min(520, window.innerWidth - 360),  // the letter grid keeps room for three cards beside it
+    onChange: llPositionSidebarTab                       // the hide tab follows the seam, drag frames included
   });
 }
 
-/* ── The header gear shows and hides the options sidebar, seam included. The state lives for the visit only, like the
-   dictionary's and the generator's hide tabs (docs/reference/shared-components.md: whole-sidebar collapse stays
-   deliberately unpersisted — a sidebar that stayed hidden would be a "where did my options go" trap on a shared
-   classroom machine). The tour's sidebar steps skip themselves while it is hidden (their targets are not visible). ── */
+/* ── The header gear and the sidebar's edge tabs show and hide the options sidebar, seam included. The state lives for
+   the visit only, like the dictionary's and the generator's hide tabs (docs/reference/shared-components.md: whole-sidebar
+   collapse stays deliberately unpersisted — a sidebar that stayed hidden would be a "where did my options go" trap on a
+   shared classroom machine). The tour's sidebar steps skip themselves while it is hidden (their targets are not visible). ── */
 function llSidebarShown() { return !document.querySelector('.ll-app').classList.contains('sidebar-hidden'); }
 function llToggleSidebar(force) {
   const app = document.querySelector('.ll-app'), btn = document.getElementById('llSidebarBtn'), aside = document.getElementById('llSidebar');
+  const hideTab = document.getElementById('llSidebarHide'), showTab = document.getElementById('llSidebarShow');
   const show = (force === undefined) ? !llSidebarShown() : !!force;
+  const hadFocus = document.activeElement;
   app.classList.toggle('sidebar-hidden', !show);
   if (btn) btn.setAttribute('aria-expanded', String(show));
-  // Focus never vanishes: hiding the sidebar while it holds focus hands focus to the gear.
-  if (!show && btn && aside && aside.contains(document.activeElement)) btn.focus();
+  // Focus never vanishes: hiding the sidebar while it holds focus hands focus to the gear, and the edge tab that was just
+  // pressed (display:none now) hands focus to its visible twin — guarded on activeElement, so a programmatic call never
+  // steals focus (the generator's rule).
+  if (!show && btn && aside && aside.contains(hadFocus)) btn.focus();
+  else if (!show && hideTab && showTab && hadFocus === hideTab) showTab.focus();
+  else if (show && hideTab && showTab && hadFocus === showTab) hideTab.focus();
+  if (show) llPositionSidebarTab();   // a resize while hidden left the tab's last measured inset stale
   // Stacked (a phone), the options sit below the letters: showing them from the header brings them into view.
   if (show && force === undefined && aside && window.matchMedia && matchMedia('(max-width: 800px)').matches) {
     try { aside.scrollIntoView({ block: 'start', behavior: 'smooth' }); } catch (e) { aside.scrollIntoView(); }
   }
 }
+// The hide tab is pinned beside the seam by measurement (the generator's and the dictionary's shape, for a sidebar at the
+// inline-end): the seam's 7px box hugs the sidebar's inner edge on the letters' side, so the tab's inline-end edge sits
+// 1px beyond the seam's far edge — the grab zone stays clear, and a hand reaching for the seam at 50vh never lands on the
+// tab. Without the seam in the layout the tab sits 4px off the sidebar itself. The width var is registered non-inherited
+// on the sidebar, so a fixed cousin cannot read it. The clamp keeps the whole 24px operable box on-screen should the
+// sidebar's edge ever reach the viewport's.
+function llPositionSidebarTab() {
+  const aside = document.getElementById('llSidebar'), seam = document.getElementById('llSidebarSplit'), tab = document.getElementById('llSidebarHide');
+  if (!aside || !tab || !llSidebarShown()) return;
+  const a = aside.getBoundingClientRect(), s = (seam && getComputedStyle(seam).display !== 'none') ? seam.getBoundingClientRect() : null;
+  const maxInset = Math.max(0, window.innerWidth - 24);
+  if (document.documentElement.dir === 'rtl') {
+    const x = s ? Math.max(a.right, s.right) + 1 : a.right + 4;   // the tab's inline-end edge (its left side in Hebrew)
+    tab.style.right = 'auto';
+    tab.style.left = Math.min(x, maxInset) + 'px';
+  } else {
+    const x = s ? Math.min(a.left, s.left) - 1 : a.left - 4;      // the tab's inline-end edge (its right side in English)
+    tab.style.left = 'auto';
+    tab.style.right = Math.min(window.innerWidth - x, maxInset) + 'px';
+  }
+}
 function initSidebarToggle() {
   const btn = document.getElementById('llSidebarBtn');
   if (btn) btn.addEventListener('click', () => llToggleSidebar());
+  ['llSidebarHide', 'llSidebarShow'].forEach(id => { const tab = document.getElementById(id); if (tab) tab.addEventListener('click', () => llToggleSidebar()); });
+  window.addEventListener('resize', llPositionSidebarTab);
+  llPositionSidebarTab();   // initSidebarResize has applied the stored width by now
 }
 
 /* ── Panel-collapse memory (per-page cfg for the shared block below): which panels the teacher left open. The map
@@ -2178,6 +2234,7 @@ function applyI18n() {
   renderOptions();
   renderGrid();
   llRenderVoicePicker();
+  llPositionSidebarTab();   // the live language switch flips dir without a resize event
   if (!document.getElementById('llOverlay').hidden && _llId) {
     document.getElementById('llPanel-font').dataset.for = '';   // the tiles carry translated labels
     llFillDialog(_llId, true);

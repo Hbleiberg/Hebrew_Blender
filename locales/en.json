@@ -4187,6 +4187,8 @@
   "letterlearner.options.voice_default": "Browser's choice",
   "letterlearner.options.vowels_legend": "Vowels to show",
   "letterlearner.options.word_audio": "Read the words aloud (a speaker beside each word)",
+  "letterlearner.sidebar.hide": "Hide the options",
+  "letterlearner.sidebar.show": "Show the options",
   "letterlearner.special.pair_note": "One letter, two sounds: the dot inside makes the first sound; without it, the second.",
   "letterlearner.special.shin_note": "The dot on the right says sh; on the left, s.",
   "letterlearner.special.vav_note": "Vav also makes two vowel sounds: with the dot on top it says oh, with the dot inside it says oo.",

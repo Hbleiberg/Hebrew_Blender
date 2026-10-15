@@ -4187,6 +4187,8 @@
   "letterlearner.options.voice_default": "בחירת הדפדפן",
   "letterlearner.options.vowels_legend": "סימני ניקוד להצגה",
   "letterlearner.options.word_audio": "הקראת המילים (רמקול ליד כל מילה)",
+  "letterlearner.sidebar.hide": "הסתרת האפשרויות",
+  "letterlearner.sidebar.show": "הצגת האפשרויות",
   "letterlearner.special.pair_note": "אות אחת, שני צלילים: הנקודה שבפנים נותנת את הצליל הראשון; בלעדיה – השני.",
   "letterlearner.special.shin_note": "נקודה מימין – שׁ (sh); נקודה משמאל – שׂ (s).",
   "letterlearner.special.vav_note": "ו׳ משמיעה גם שני צלילי תנועה: עם נקודה מעליה – o, עם נקודה בתוכה – u.",
