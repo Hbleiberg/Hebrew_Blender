@@ -345,7 +345,8 @@ Resize never touches the collapse machinery — `toggleSidebar()`, `openSettings
 stays deliberately unpersisted. The obligation runs the other way: a collapsed or hidden panel
 must hide its handle (the `+` adjacency rule, the in-zone containment, the ak-view/print lists),
 and the engine's pointerdown guard (`getComputedStyle(handle).display === 'none'`) makes a hidden
-handle inert regardless.
+handle inert regardless. The Letter Learner hides its sidebar and seam together from a header gear
+(`.ll-app.sidebar-hidden`, `aria-expanded` on the gear), per visit like the others.
 
 ### Per-device width keys — erase-only registration
 Every width key is `hebrew<Tool>_<thing>W`, a bare scalar holding the px number. It **tracks the

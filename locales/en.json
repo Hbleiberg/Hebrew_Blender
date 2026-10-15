@@ -4163,6 +4163,7 @@
   "letterlearner.grid.open_aria": "Open {name}",
   "letterlearner.grid.soon_badge": "coming soon",
   "letterlearner.header.home": "Home",
+  "letterlearner.header.options_btn": "Show or hide the options",
   "letterlearner.header.subtitle": "Every Hebrew letter with a picture to remember it by, its vowels read aloud, and its look in different fonts.",
   "letterlearner.header.title": "Letter Learner",
   "letterlearner.header.tour_button": "Tour",

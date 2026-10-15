@@ -6273,6 +6273,7 @@ letterlearner.header.subtitle,"Every Hebrew letter with a picture to remember it
 letterlearner.header.home,Home,דף הבית,Letter Learner header Home link label,svg-icon-in-markup
 letterlearner.header.tour_button,Tour,סיור,Letter Learner header tour launcher button,svg-icon-in-markup
 letterlearner.header.tour_title,Take a quick tour,סיור קצר,Letter Learner header tour button title,
+letterlearner.header.options_btn,Show or hide the options,הצגה או הסתרה של האפשרויות,Letter Learner header gear button (title + aria-label) that shows or hides the options sidebar,
 letterlearner.a11y.skip_to_letters,Skip to the letters,דלגו אל האותיות,Letter Learner skip link,
 letterlearner.options.title,Options,אפשרויות,Letter Learner options card heading,
 letterlearner.options.reset,Reset options,איפוס האפשרויות,Letter Learner options reset button,
