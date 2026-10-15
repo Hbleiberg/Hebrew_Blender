@@ -92714,3 +92714,64 @@ _(prior — S507 pointer:)_ **Next session (S507):** **BRANCH/PR: #327 open → 
 - [x] 2026-10-13 | (S504 close-out) | branch/deploy note | **S504 = L + 4 fixes, PR #327.** No drift (main `fc54901d`, keep-alive #31 ok); sw v991→v992; no FM bump; no gate.
 
 - [x] 2026-10-13 | `b38c1f68` `7a663826` `8e48daa5` `13c10bf3` | flash, FM, torah, dashboard | (S504) **Flash + FM grids named; torah HE labels plain; bulk toast one form.** | findings S504.
+
+## S509 close-out (2026-10-15) — the previous handoff, moved verbatim from the live ledger
+
+_(prior — S509 pointer:)_ **Next session (S509):** **BRANCH/PR: #328 open → continue; merged → restart from `origin/main`.** `sw.js` **v996**, FM **5.59**. ⚑ Stalest: G, D, I; O blocked. ⚑ First: eyebrows; swm hint; app-toast. ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2: TT Chant, glyphs.
+
+
+<!-- archived by compact-ledger at the S510 boundary, 2026-10-15 -->
+## Compaction (S510, 2026-10-15) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-15 | (S509 close-out) | branch/deploy note | **S509 = G on letter_learner (the maintainer's "focused on this page") + 3 fixes, PR #332** (the session's assigned branch, which also carries the page's mobile pass; #328 merged). Drift: main v996→v999 through the Letter Learner PRs #329–#331 (outside the loop), migration 0004 recorded live, function v3 unchanged, keep-alive run 33 green; sw v999→v1000 (the PR's one bump); no FM bump; no gate asked (nothing dramatic). Governor: 3 iterations on one tool by the maintainer's direction.
+
+- [x] 2026-10-15 | 9c13534 | letter_learner.html | **With a letter open, paper gets that letter's page, not the grid behind it** (body.ll-dlg-open from llOpen/llClose; the overlay flows at paper width, screen controls gone, words 2×2, picture 260px, nothing splits) | Playwright PDFs: Bet open → one sheet, 4 words, ink 4375 vs the grid's 1552, dark identical, HE mirrored, Vowels tab 13 rows, after Close the grid sheet (1552) again; screen layout unchanged; check-inline-js clean
+
+- [x] 2026-10-15 | 466f600 | letter_learner.html | **The printed alef-bet is one sheet on Letter and A4, and a card never splits across a break** (six fixed print columns, break-inside:avoid) | PDFs at 0.4in margins: A4 2 sheets with tav cut through the break → 1 sheet, no straddle; Letter 1 sheet before and after; both themes identical
+
+- [x] 2026-10-15 | be4a13f | letter_learner.html | **Print establishes its own ink: both themes print the light palette on white, and the header keeps its title** (theme, --ll-* and shadow tokens remapped in @media print — the trope / dictionary / flash treatment) | PDFs light vs dark: ink 1429 vs 1690 before (text vs borders: dark printed #dde4f0 text, the title white-on-white in both themes) → 1532 = 1532 Letter, 1542 = 1542 A4 after; h1 navy, header white; 0 page errors
+
+- [x] 2026-10-14 | (Letter Learner — outside the loop, branch `claude/magical-thompson-wgxfmp`) | letter_learner.html, js/ivrit-saves.js, index.html, locales, db/migrations/0004, docs | **Alef-bet learner for kindergarten: 31 cards, tabbed dialog, TTS, options synced as tool `LetterLearner`** — unlinked, noindex, batches 1–6 (188 drawings); 0004 applied; sw v997.
+
+### from Per-session log (one line per session)
+
+- 2026-10-09 | **S489** | iters: 1 pass (**E**) + 4 fixes = **5** | tools: dashboard ×2, FM, torah, trope | patterns fixed: header-gate ×1, latin-tracking ×1, pinned-english ×2 | pass run: E | SW: v969→v970
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`new-page-print-block-without-the-ink-remap`** (NEW S509 G; letter_learner FIXED `be4a13f`; the 14 other print blocks clean): ACTIVE, streak 0. Detection: every root page with `body.dark` tokens carries `--text:` inside its print block; `g509/g509.mjs` ink per page dark vs light. The shape: a page added after the print-ink convention hides its chrome in @media print but keeps the dark palette — #dde4f0 text, and a white title on white in both themes.
+
+## S509 close-out (2026-10-15) — the oldest Done session (S505), moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-13 | (S505 close-out) | branch/deploy note | **S505 = K + 4 fixes, PR #327.** No drift; sw v992→v993; no FM bump; no gate.
+- [x] 2026-10-13 | `f28e2389` `001bbd97` `0abb1f57` `7d858173` | generator, resources, 6 pages, trope | (S505) **Generator rows named; Fonts line icon; HE Beta plain; Phrases headings.** | findings S505.
+
+
+<!-- archived by compact-ledger at the S510 boundary, 2026-10-15 -->
+## Compaction (S510, 2026-10-15) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-15 | `be4a13f` `466f600` `9c13534` | letter_learner ×3 | (S509) **Print establishes its own ink (both themes print the light palette; the title shows); the alef-bet is one sheet on Letter and A4 with no split card; an open letter prints as that letter's page** | Playwright PDFs light/dark × Letter/A4: ink dark = light after (1429 vs 1690 before), tav's straddle gone, Bet open → one sheet (4375 vs the grid's 1552), HE mirrored, the grid back after Close
+
+### from Done (S506, moved by the S509 close-out)
+
+- [x] 2026-10-14 | (S506 close-out) | branch/deploy note | **S506 = N + 4 fixes, PR #327.** No drift; sw v993→v994; no FM bump; no gate.
+- [x] 2026-10-14 | `87745776` `232ea19e` `11ee1d49` `b6c218e4` | dashboard ×2, torah, trope | (S506) **Picker Close 1.31→19.4:1 (light); bulk edit Save reachable sideways (0→92/92); torah ×17 + trope ×3 fields 16px on touch.** | findings S506.
+
+### from Done (S507, moved by the S509 close-out)
+
+- [x] 2026-10-14 | (S507 close-out) | branch/deploy note | **S507 = P + 4 fixes, PR #327.** No drift; sw v994→v995; no FM bump; no gate.
+- [x] 2026-10-14 | `3b9915b9` `2bf17174` `5a4d094a` `00241186` | trope, dash, saves, flash | (S507) **Trope progress keeps unknown fields; dashboard ×23 + flash ×10 fields 16px on touch; untouched Trope progress a seed (D38).** | findings S507.
+
+
+<!-- archived by compact-ledger at the S510 boundary, 2026-10-15 -->
+## Compaction (S510, 2026-10-15) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-15 | `be4a13f` `466f600` `9c13534` | letter_learner ×3 | (S509) **Print establishes its own ink (both themes print the light palette; the title shows); the alef-bet is one sheet on Letter and A4, no split card; an open letter prints as that letter's page** | PDFs light/dark × Letter/A4: dark = light after (1429 vs 1690 before), no straddle, Bet open → one sheet (4375 vs the grid's 1552), HE mirrored

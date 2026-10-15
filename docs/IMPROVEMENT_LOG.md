@@ -8,6 +8,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P4 (**NEW S509 — N's; shared js/i18n.js**) | js/i18n.js | **The header language select is 12.5px under a finger on every page, so iOS zooms into the picker**; the 16px rule stops at page-owned fields. | found S509
+
 - [ ] P4 (**NEW S508 M**) | dashboard, torah | **Eyebrows at 0.66rem under the 11.2px floor**: `.tt-set-sub` ×2, `.bpe-mgroup-lbl`, `.pmv-hidden-note` (three idioms: findings). | found S508
 
 - [ ] P4 (**NEW S508 M — gate 2**) | dashboard | **"+ Add period" beside two icon buttons; "✨ Quick-start layouts…"** — the glyph belongs in the markup. | found S508
@@ -310,27 +312,19 @@ _(none)_
 
 ## Done
 
-- [x] 2026-10-14 | (Letter Learner — outside the loop, branch `claude/magical-thompson-wgxfmp`) | letter_learner.html, js/ivrit-saves.js, index.html, locales, db/migrations/0004, docs | **Alef-bet learner for kindergarten: 31 cards, tabbed dialog, TTS, options synced as tool `LetterLearner`** — unlinked, noindex, batches 1–6 (188 drawings); 0004 applied; sw v997.
+- [x] 2026-10-15 | (S509 close-out) | branch/deploy note | **S509 = G on letter_learner (the maintainer's focus) + 3 fixes, PR #332** (the assigned branch). Drift: main v996→v999 via the Letter Learner PRs; 0004 live; function v3 unchanged; keep-alive green. sw v999→v1000 (the PR's one bump); no FM bump; no gate. Governor: 3 iterations on one tool by direction.
+
+- [x] 2026-10-15 | `be4a13f` `466f600` `9c13534` | letter_learner ×3 | (S509) **Print establishes its own ink (both themes print the light palette; the title shows); the alef-bet is one sheet on Letter and A4, no split card; an open letter prints as that letter's page** | PDFs light/dark × Letter/A4: dark = light after (1429 vs 1690 before), no straddle, Bet open → one sheet (4375 vs the grid's …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-10-14 | (S508 close-out) | branch/deploy note | **S508 = M + 4 fixes, PR #328.** No drift; sw v995→v996; no FM bump; no gate.
 
 - [x] 2026-10-14 | `fd3d62c` `323ad66` `f07cd8c` `43b24e2` | dashboard ×2, resources, account | (S508) **Make Groups a real `.btn`; 4 dialogs' × at the inline end in HE; resources + account fields 16px.** | findings S508.
 
-- [x] 2026-10-14 | (S507 close-out) | branch/deploy note | **S507 = P + 4 fixes, PR #327.** No drift; sw v994→v995; no FM bump; no gate.
-
-- [x] 2026-10-14 | `3b9915b9` `2bf17174` `5a4d094a` `00241186` | trope, dash, saves, flash | (S507) **Trope progress keeps unknown fields; dashboard ×23 + flash ×10 fields 16px on touch; untouched Trope progress a seed (D38).** | findings S507.
-
-- [x] 2026-10-14 | (S506 close-out) | branch/deploy note | **S506 = N + 4 fixes, PR #327.** No drift; sw v993→v994; no FM bump; no gate.
-
-- [x] 2026-10-14 | `87745776` `232ea19e` `11ee1d49` `b6c218e4` | dashboard ×2, torah, trope | (S506) **Picker Close 1.31→19.4:1 (light); bulk edit Save reachable sideways (0→92/92); torah ×17 + trope ×3 fields 16px on touch.** | findings S506.
-
-- [x] 2026-10-13 | (S505 close-out) | branch/deploy note | **S505 = K + 4 fixes, PR #327.** No drift; sw v992→v993; no FM bump; no gate.
-
-- [x] 2026-10-13 | `f28e2389` `001bbd97` `0abb1f57` `7d858173` | generator, resources, 6 pages, trope | (S505) **Generator rows named; Fonts line icon; HE Beta plain; Phrases headings.** | findings S505.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-15 | **S509** | iters: 4 | tools: letter_learner ×3 | patterns fixed: new-page-print-ink (NEW) | pass run: G | SW: v999→v1000
 
 - 2026-10-14 | **S508** | iters: 5 | tools: dashboard ×2, resources, account | patterns fixed: physical ×5, text-field ×2 | pass run: M | SW: v995→v996
 
@@ -370,13 +364,13 @@ _(none)_
 
 - 2026-10-09 | **S490** | iters: 1 pass (**L**) + 4 fixes = **5** | tools: resources, dashboard, scripts ×2 | patterns fixed: latin-tracking ×2 | pass run: L | SW: v970→v971
 
-- 2026-10-09 | **S489** | iters: 1 pass (**E**) + 4 fixes = **5** | tools: dashboard ×2, FM, torah, trope | patterns fixed: header-gate ×1, latin-tracking ×1, pinned-english ×2 | pass run: E | SW: v969→v970
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S508 (2026-10-14):** dashboard, resources, account S508 · trope, flash, saves, scripts S507 · torah S506 · generator, dictionary, index S505 · FM S504 · README S503 · contact S498 · privacy S495 · terms, 404 S494 · i18n.js S478 · pwa S472.
+- **Snapshot S509 (2026-10-15):** letter_learner S509 · dashboard, resources, account S508 · trope, flash, saves, scripts S507 · torah S506 · generator, dictionary, index S505 · FM S504 · README S503 · contact S498 · privacy S495 · terms, 404 S494 · i18n.js S478 · pwa S472.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`new-page-print-block-without-the-ink-remap`** (NEW S509 G; letter_learner FIXED `be4a13f`; 14 others clean): ACTIVE, streak 0. Detection: `--text:` inside the print block of every page with dark tokens; `g509/g509.mjs` ink dark vs light.
 
 - **`page-drops-a-field-it-cannot-apply`** (NEW S507 P; trope `3b9915b9`): ACTIVE, streak 0. A page rebuilds a synced blob from its known fields, dropping a newer build's field from the account. Detection: `p507/trope.mjs` T6.
 
@@ -730,7 +724,7 @@ _(none)_
 
 - A recurring-pattern sweep: 2026-10-13 (**S502 — 39th A, `fee5fe05..fc54901d` (90 commits): 72 static arms, 14-page battery + 1 px sweep vs pre-delta, real input; plants fired. FOUND 8, FIXED 4.**)
 
-- G print & export fidelity (one tool): 2026-10-12 (**S495 — dashboard (S364 →): FOUND 4, FIXED 2. G-next: dictionary (S377).**)
+- G print & export fidelity (one tool): 2026-10-15 (**S509 — letter_learner (the maintainer's focus; its first G): PDFs Letter + A4 × light/dark × EN/HE, ink per page, straddles, the open-dialog case; the ink gap fired as the control. FOUND 4, FIXED 3. G-next: dictionary (S377).**)
 
 - D performance (one tool): 2026-10-12 (**S496 — dictionary (S378 →): 10 cold + 120 arms; controls fired. FOUND 2, FIXED 1 (+ micro). D-next: flash (S393).**)
 
@@ -748,4 +742,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-13 (**S500 — 37th F, the tabs / segmented-control keyboard contract (never swept): 9 strips + 6 toggle groups, real keys, EN/HE; plants 3/3. FOUND 4, FIXED 3 (+ Current Location). F-next: dialog Tab traps.**)
 
-**Next session (S509):** **BRANCH/PR: #328 open → continue; merged → restart from `origin/main`.** `sw.js` **v996**, FM **5.59**. ⚑ Stalest: G, D, I; O blocked. ⚑ First: eyebrows; swm hint; app-toast. ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2: TT Chant, glyphs.
+**Next session (S510):** **BRANCH/PR: #332 open → continue (carries the mobile pass + S509); merged → restart from `origin/main`.** `sw.js` **v1000**, FM **5.59**. ⚑ Stalest: D, I (G ran S509); O blocked. ⚑ First: eyebrows; swm hint; app-toast. ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2: TT Chant, glyphs.
