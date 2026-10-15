@@ -509,6 +509,19 @@ body.dark #appToast { background: #0a0f1c; }
      all 31 cards on one sheet of either size, and a card never splits across a page break. */
   .ll-grid { grid-template-columns:repeat(6, 1fr); gap:8px; }
   .ll-card { break-inside:avoid; }
+  /* With a letter open, paper gets THAT letter — its picture and words, or whichever tab is showing — not the grid
+     behind it (the overlay was print-hidden, so a teacher printing the Bet page got the alef-bet). body.ll-dlg-open
+     is set by llOpen() / llClose(). The overlay flows as a plain block at paper width; Prev / Next / Close, the tab
+     strip and the speakers are screen controls and go; the header still names the tool. */
+  body.ll-dlg-open .ll-app { display:none !important; }
+  body.ll-dlg-open .ll-overlay { display:block !important; position:static; background:none; padding:0; overflow:visible; }
+  body.ll-dlg-open .ll-dialog { display:block; width:auto; max-height:none; overflow:visible; border:none; border-radius:0; box-shadow:none; }
+  body.ll-dlg-open .ll-dlg-head { position:static; border-bottom:none; padding:16px 0 4px; justify-content:center; }
+  body.ll-dlg-open .ll-nav, body.ll-dlg-open .ll-x, body.ll-dlg-open .ll-tabs, body.ll-dlg-open .ll-speak { display:none !important; }
+  body.ll-dlg-open .ll-panel { padding:8px 0 0; }
+  body.ll-dlg-open .ll-words { grid-template-columns:repeat(2, 1fr); }
+  body.ll-dlg-open .ll-hint-pic { width:260px; }   /* paper is narrower than 800px, so the phone size (200px) would apply */
+  .ll-hint, .ll-word, .ll-vrow, .ll-font-tile { break-inside:avoid; }
 }
 /* Reduced motion: the universal neutralizer (every animation and transition on the page, the hint drawings'
    .ll-anim groups included; 0.001ms rather than 0 so animationend still fires). */
@@ -1296,12 +1309,14 @@ function llOpen(id) {
   if (ov.hidden) _llOpener = document.activeElement;
   llFillDialog(id, false);
   ov.hidden = false;
+  document.body.classList.add('ll-dlg-open');   // print keys on it: paper gets the open letter, not the grid behind it
   setTimeout(() => { try { document.querySelector('.ll-tabs [role="tab"][aria-selected="true"]').focus(); } catch (e) {} }, 0);
 }
 function llClose() {
   const ov = document.getElementById('llOverlay');
   if (ov.hidden) return;
   ov.hidden = true;
+  document.body.classList.remove('ll-dlg-open');
   try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e) {}
   const card = _llId ? document.querySelector('.ll-card[data-id="' + _llId + '"]') : null;
   const back = (_llOpener && document.contains(_llOpener) && _llOpener !== document.body) ? _llOpener : card;
