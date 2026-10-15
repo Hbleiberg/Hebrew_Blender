@@ -185,13 +185,13 @@ body.fs-idle #fsBtn:not(:focus-visible) { opacity:0; pointer-events:none; }
 @media (prefers-reduced-motion: reduce) { #fsBtn { transition-duration: 0.001ms !important; } }
 :focus-visible { outline:2px solid var(--focus-ring); outline-offset:2px; }
 
-/* ───── Page ───── */
-.ll-page { flex:1; width:100%; max-width:1080px; margin:0 auto; padding:18px 20px 60px; }
-.ll-page h2 { font-family:'Libre Baskerville',serif; font-size:1.05rem; color:var(--text); }
-.ll-card-box {
-  background:var(--white); border:1.5px solid var(--border); border-radius:12px;
-  box-shadow:var(--shadow-sm); padding:14px 18px; margin-bottom:18px;
-}
+/* ───── Layout: the options sidebar, its drag seam, then the letters (the generator / dictionary shape) ───── */
+/* The sidebar's width lives in one custom property, registered non-inherited and written on the sidebar itself (its
+   only consumer), so a drag frame restyles one element rather than the page (the dictionary's measurement). */
+@property --ll-sidebar-w { syntax: '<length>'; inherits: false; initial-value: 300px; }
+.ll-app { display:flex; flex:1; align-items:stretch; }
+.ll-sidebar { width:var(--ll-sidebar-w, 300px); flex-shrink:0; background:var(--white); border-inline-end:1px solid var(--border); padding:14px; display:flex; flex-direction:column; gap:12px; }
+.ll-page { flex:1; min-width:0; padding:18px 20px 60px; }
 .ll-note { font-size:0.8rem; color:var(--muted); margin:4px 0 0; }
 .ll-btn {
   background:var(--gold); color:#1a1a1a; border:none; border-radius:6px;
@@ -202,19 +202,39 @@ body.fs-idle #fsBtn:not(:focus-visible) { opacity:0; pointer-events:none; }
 .ll-btn:hover { filter:brightness(1.06); }
 .ll-btn:disabled { opacity:0.4; cursor:default; filter:none; }
 
+/* ───── Sidebar panels (the dictionary / generator look: a navy title bar with a gold chevron, collapsible, remembered) ───── */
+.panel { background:var(--cream); border:1px solid var(--border); border-radius:8px; }
+.panel-title {
+  background:var(--navy); color:#fff; font-family:'Libre Baskerville',serif; font-size:0.8rem; letter-spacing:0.08em; text-transform:uppercase;
+  padding:8px 14px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:8px; border-radius:7px 7px 0 0; user-select:none;
+}
+.panel-title::after { content:'▾'; font-size:1rem; color:var(--gold-light); transition:transform 0.2s; }
+.panel-title:hover { background:#24345c; }   /* the suite's navy-control hover pair */
+.panel.collapsed .panel-title { border-radius:7px; }
+.panel.collapsed .panel-title::after { transform:rotate(-90deg); }
+.panel.collapsed .panel-body { display:none !important; }
+.panel-body { padding:12px; }
+html[lang="he"] .panel-title { letter-spacing:normal; text-transform:none; }
+.panel-body .ll-btn { margin-top:10px; }
+/* ═══ shared: sidebar-resize CSS ═══ (byte-identical across hebrew_dictionary/hebrew_blend_generator/classroom_dashboard/torah_trainer/letter_learner — copy verbatim; pairs with the `shared: sidebar-resize` JS block; self-contained incl. reduced-motion) ═══ */
+.sbr-split{cursor:col-resize;touch-action:none;-webkit-user-select:none;user-select:none;background:none;border:none;padding:0;z-index:5;}
+.sbr-split::before{content:"";position:absolute;top:0;bottom:0;inset-inline:0;margin-inline:auto;width:2px;background:transparent;border-radius:2px;transition:background 0.12s,width 0.12s;}
+.sbr-split:hover::before,.sbr-split:focus-visible::before,.sbr-split.dragging::before{width:4px;background:var(--gold,#c9922a);}
+.sbr-split:focus-visible{outline:2px solid var(--focus-ring,var(--gold,#c9922a));outline-offset:-1px;}
+/* placement variants — the block styles the handle, the page positions it: */
+.sbr-flex{flex:0 0 7px;align-self:stretch;position:relative;margin-inline-start:-3px;}   /* in-flow seam between a sidebar and its main column */
+.sbr-abs{position:absolute;top:0;bottom:0;width:9px;}                                    /* edge handle (drawers, rails); page CSS sets the inset */
+@media (prefers-reduced-motion: reduce){ .sbr-split::before{transition:none !important;} }
+/* ═══ end shared: sidebar-resize CSS ═══ */
+
 /* ───── Options ───── */
-.ll-options-head { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:8px; }
-.ll-opt-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:10px 24px; align-items:start; }
 .ll-opt { display:flex; align-items:center; gap:8px; font-size:0.9rem; min-height:30px; }
 .ll-opt input[type="checkbox"] { width:18px; height:18px; accent-color:var(--gold); flex-shrink:0; }
 .ll-opt select { font:inherit; font-size:0.86rem; padding:5px 8px; border:1.5px solid var(--border); border-radius:6px; background:var(--white); color:var(--text); max-width:100%; }
-fieldset.ll-vowel-set { border:1.5px solid var(--border); border-radius:10px; padding:8px 12px 10px; }
-fieldset.ll-vowel-set legend { font-size:0.82rem; font-weight:700; color:var(--muted); padding:0 6px; }
-.ll-vowel-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:4px 12px; }
-.ll-vowel-grid .ll-opt { font-size:0.86rem; }
+fieldset.ll-vowel-set { border:none; padding:0; margin:0; min-width:0; }
+.ll-vowel-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(118px, 1fr)); gap:2px 10px; }
+.ll-vowel-grid .ll-opt { font-size:0.86rem; min-height:26px; }   /* twelve rows: tight enough for the whole sidebar to fit a laptop screen */
 .ll-vowel-sample { font-family:var(--heb-font); font-size:1.35rem; line-height:1; min-width:1.6em; text-align:center; color:var(--text); }
-.ll-cloud { border-top:1px solid var(--border); margin-top:12px; padding-top:10px; }
-.ll-cloud h3 { font-size:0.82rem; font-weight:700; color:var(--muted); margin-bottom:4px; }
 #llNoSpeech { display:none; }
 body.ll-no-speech #llNoSpeech { display:block; }
 body.ll-no-speech .ll-speak, body.ll-no-speech #llVoiceRow, body.ll-no-speech #optWordAudioRow { display:none !important; }
@@ -410,6 +430,11 @@ body.dark #appToast { background: #0a0f1c; }
   .ll-dialog { width:100%; max-height:100dvh; border-radius:0; border:none; }
   .ll-hint-pic { width:min(200px, 56vw); }
   .ll-page { padding:14px 14px 40px; }
+  /* Stacked: the sidebar sits above the letters at its natural height, and the resize seam goes with the layout
+     (a full-height touch-action:none strip would be dead scroll under a finger). */
+  .ll-app { flex-direction:column; }
+  .ll-sidebar { width:auto; border-inline-end:none; border-bottom:1px solid var(--border); }
+  .sbr-split { display:none; }
 }
 /* The header's wrap gate: the row of controls drops under the title only below this page's MEASURED overflow
    ceiling (docs/reference/shared-components.md → "The header's wrap gate"). 530px is where the unwrapped row
@@ -423,7 +448,7 @@ body.dark #appToast { background: #0a0f1c; }
   .ll-card-glyph { font-size:2.3rem; }
 }
 @media print {
-  header .hright, .ll-options, footer, .ll-overlay, .tour-spot, .tour-card, #appToast { display:none !important; }
+  header .hright, .ll-sidebar, .sbr-split, footer, .ll-overlay, .tour-spot, .tour-card, #appToast { display:none !important; }
 }
 /* Reduced motion: the universal neutralizer (every animation and transition on the page, the hint drawings'
    .ll-anim groups included; 0.001ms rather than 0 so animationend still fires). */
@@ -455,34 +480,46 @@ body.dark #appToast { background: #0a0f1c; }
   </div>
 </header>
 
-<main class="ll-page" id="llMain" tabindex="-1">
-  <section class="ll-card-box ll-options" id="llOptions" aria-labelledby="llOptTitle">
-    <div class="ll-options-head">
-      <h2 id="llOptTitle" data-i18n="letterlearner.options.title">Options</h2>
-      <button type="button" class="ll-btn ghost" id="llReset" data-i18n="letterlearner.options.reset">Reset options</button>
-    </div>
-    <div class="ll-opt-grid">
-      <fieldset class="ll-vowel-set">
-        <legend data-i18n="letterlearner.options.vowels_legend">Vowels to show</legend>
-        <div class="ll-vowel-grid" id="llVowelGrid"></div>
-      </fieldset>
-      <div>
+<div class="ll-app">
+  <!-- Options sidebar: collapsible panels (state remembered per device by the shared panel-collapse block), then the
+       drag seam of the shared sidebar-resize block (its width is per device too), then the letters. -->
+  <aside class="ll-sidebar" id="llSidebar" aria-labelledby="llOptTitle">
+    <div class="panel" id="panelOptions">
+      <div class="panel-title" id="llOptTitle" data-i18n="letterlearner.options.title">Options</div>
+      <div class="panel-body">
         <label class="ll-opt"><input type="checkbox" id="optFontTab"><span data-i18n="letterlearner.options.font_tab">Show the Fonts tab</span></label>
         <label class="ll-opt"><input type="checkbox" id="optSplit"><span data-i18n="letterlearner.options.split_pairs">Separate cards for Bet/Vet, Kaf/Chaf, Pe/Fe and Shin/Sin</span></label>
         <p class="ll-note" data-i18n="letterlearner.options.split_pairs_note">Off: one card per letter, with the pair under Special forms.</p>
         <label class="ll-opt" id="optWordAudioRow"><input type="checkbox" id="optWordAudio"><span data-i18n="letterlearner.options.word_audio">Read the words aloud (a speaker beside each word)</span></label>
         <div class="ll-opt" id="llVoiceRow" hidden><label for="llVoice" data-i18n="letterlearner.options.voice">Hebrew voice</label><select id="llVoice"></select></div>
         <p class="ll-note" id="llNoSpeech" data-i18n="letterlearner.options.no_speech_note">This browser has no speech, so the speaker buttons are hidden.</p>
+        <button type="button" class="ll-btn ghost" id="llReset" data-i18n="letterlearner.options.reset">Reset options</button>
       </div>
     </div>
-    <div class="ll-cloud">
-      <h3 data-i18n="letterlearner.options.panel_cloud">Your account</h3>
-      <div id="cloudSavesPanel"></div>
+    <div class="panel" id="panelVowels">
+      <div class="panel-title" data-i18n="letterlearner.options.vowels_legend">Vowels to show</div>
+      <div class="panel-body">
+        <fieldset class="ll-vowel-set">
+          <legend class="vh" data-i18n="letterlearner.options.vowels_legend">Vowels to show</legend>
+          <div class="ll-vowel-grid" id="llVowelGrid"></div>
+        </fieldset>
+      </div>
     </div>
-  </section>
-
-  <ul class="ll-grid" id="llGrid" dir="rtl" aria-label="Letters" data-i18n-aria-label="letterlearner.grid.aria"></ul>
-</main>
+    <div class="panel" id="panelCloud">
+      <div class="panel-title" data-i18n="letterlearner.options.panel_cloud">Your account</div>
+      <div class="panel-body"><div id="cloudSavesPanel"></div></div>
+    </div>
+  </aside>
+  <div class="sbr-split sbr-flex" id="llSidebarSplit" role="separator" aria-orientation="vertical"
+       tabindex="0" aria-valuemin="240" aria-valuemax="520" aria-valuenow="300"
+       title="Drag to resize the sidebar (double-click to reset)"
+       aria-label="Drag to resize the sidebar (double-click to reset)"
+       data-i18n-title="shared.resize.sidebar_title"
+       data-i18n-aria-label="shared.resize.sidebar_title"></div>
+  <main class="ll-page" id="llMain" tabindex="-1">
+    <ul class="ll-grid" id="llGrid" dir="rtl" aria-label="Letters" data-i18n-aria-label="letterlearner.grid.aria"></ul>
+  </main>
+</div>
 
 <!-- One static dialog for every card: filled by llFillDialog(id). Tabs that do not apply to a card are hidden. -->
 <div class="ll-overlay" id="llOverlay" hidden>
@@ -1645,7 +1682,7 @@ const TOUR_STEPS = [
     titleKey: 'letterlearner.tour.s1_title', bodyKey: 'letterlearner.tour.s1_body' },
   { target: () => document.querySelector('#llGrid .ll-card'),
     titleKey: 'letterlearner.tour.s2_title', bodyKey: 'letterlearner.tour.s2_body' },
-  { target: () => document.getElementById('llOptions'),
+  { target: () => document.getElementById('llSidebar'),
     titleKey: 'letterlearner.tour.s3_title', bodyKey: 'letterlearner.tour.s3_body' },
   { target: () => document.getElementById('cloudSavesPanel'),
     titleKey: 'letterlearner.tour.s4_title', bodyKey: 'letterlearner.tour.s4_body' },
@@ -1750,6 +1787,205 @@ function llOpenFromUrl() {
     if (id && llOrder().includes(id)) llOpen(id);
   } catch (e) {}
 }
+/* ═══ shared: sidebar-resize ═════════════════════════════════════════════════
+   Drag/keyboard-resizable panel widths — in-flow sidebars, settings drawers,
+   dashboard rails. Copy this block verbatim, together with the matching
+   `shared: sidebar-resize CSS` block (keep both byte-identical across
+   carriers; carriers: hebrew_dictionary.html, hebrew_blend_generator.html,
+   classroom_dashboard.html, torah_trainer.html, letter_learner.html), then mount per handle
+   from the page's own init (below the end marker):
+
+     mountSidebarResize({
+       handle: el,                   // .sbr-split element (role="separator",
+                                     //   aria-orientation="vertical", tabindex="0")
+       cssVar: '--tool-sidebar-w',   // width var, written on `scope` (default: documentElement)
+       scope: el,                    // optional: the element that receives the var. Name the
+                                     //   consumers' nearest common ancestor: a custom-property
+                                     //   write restyles that element's whole subtree, so a root
+                                     //   write recalcs the entire document on every drag frame
+       storageKey: 'hebrewTool_sidebarW',   // bare per-device key (erase-only registration)
+       anchor: 'start',              // inline edge the PANEL is anchored to:
+                                     //   'start' (sidebar, left rail) | 'end' (drawer, right rail)
+       min: 240, dflt: 300,          // px floor + the dblclick / Enter-Space reset width
+       max: () => px,                // px ceiling — a number, or a function for dynamic bounds
+       onChange: (w) => {}           // optional: runs after every applied width, drag frames too
+     }) → { set(px, persist), refresh() } | null   (null when the handle is absent)
+
+   The width is a PER-DEVICE pref (it tracks the monitor, not the teacher), so
+   like hebrewBlender_zoom its key is export/import-exempt but IS cleared by
+   Erase All Settings — see CLAUDE.md "Resizable panels". One storage write per
+   drag (on pointerup), never per frame. Pointer deltas are divided by the
+   handle's visual/layout scale, so a zoomed ancestor (the dashboard's
+   style.zoom) still tracks the pointer 1:1. */
+function mountSidebarResize(cfg) {
+  const handle = cfg.handle;
+  if (!handle) return null;
+  const scope = cfg.scope || document.documentElement;
+  /* Upper bound may be dynamic (a function): never returns less than cfg.min. */
+  const hiNow = () => {
+    const m = (typeof cfg.max === 'function') ? cfg.max() : cfg.max;
+    return Math.max(cfg.min, Math.round(m));
+  };
+  const cur = () => {
+    const v = parseFloat(getComputedStyle(scope).getPropertyValue(cfg.cssVar));
+    return Number.isFinite(v) && v > 0 ? v : cfg.dflt;
+  };
+  /* 'end'-anchored panels (drawers, a right rail) grow toward inline-start, so the
+     physical delta flips — and flips AGAIN under RTL, where the whole row mirrors
+     (same rule as the Font Maker's .ws-split; see CLAUDE.md i18n rule 5). */
+  const sign = () =>
+    (cfg.anchor === 'end' ? -1 : 1) * (document.documentElement.dir === 'rtl' ? -1 : 1);
+  let desired = cfg.dflt;   // the user's chosen width, pre-clamp — see the resize handler
+  let resizeT = null;
+  const set = (px, persist) => {
+    const hi = hiNow();
+    const w = Math.round(Math.max(cfg.min, Math.min(hi, px)));
+    scope.style.setProperty(cfg.cssVar, w + 'px');
+    handle.setAttribute('aria-valuenow', String(w));
+    handle.setAttribute('aria-valuemax', String(hi));
+    if (persist) {
+      desired = w;
+      try { localStorage.setItem(cfg.storageKey, String(w)); } catch (e) { /* private mode / quota */ }
+    }
+    if (cfg.onChange) cfg.onChange(w);
+    return w;
+  };
+  let saved = NaN;
+  try { saved = parseFloat(localStorage.getItem(cfg.storageKey)); } catch (e) { /* private mode */ }
+  // Seed the aria-value* trio even with no stored pref, so the splitter reports live numbers.
+  handle.setAttribute('aria-valuemin', String(cfg.min));
+  desired = Number.isFinite(saved) ? saved : cfg.dflt;
+  set(desired, false);
+
+  let startX = 0, startW = 0, scale = 1, active = false;
+  const onMove = (e) => {
+    if (!active) return;
+    set(startW + ((e.clientX - startX) / scale) * sign(), false);
+    if (e.cancelable) e.preventDefault();
+  };
+  const onUp = () => {
+    if (!active) return;
+    active = false;
+    handle.classList.remove('dragging');
+    window.removeEventListener('pointermove', onMove);
+    window.removeEventListener('pointerup', onUp);
+    window.removeEventListener('pointercancel', onUp);
+    set(cur(), true);          // one write to storage per drag, not per frame
+  };
+  handle.addEventListener('pointerdown', (e) => {
+    if (e.button != null && e.button !== 0) return;
+    if (getComputedStyle(handle).display === 'none') return;   // stacked-layout guard
+    active = true; startX = e.clientX; startW = cur();
+    /* Visual px → layout px: inside a zoomed ancestor the rect is scaled while offsetWidth
+       is not. The 0.05 dead zone absorbs offsetWidth's integer rounding at scale 1. */
+    const r = handle.getBoundingClientRect().width / (handle.offsetWidth || 1);
+    scale = (Number.isFinite(r) && r > 0 && Math.abs(r - 1) >= 0.05) ? r : 1;
+    handle.classList.add('dragging');
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    window.addEventListener('pointercancel', onUp);
+    if (e.cancelable) e.preventDefault();
+  });
+  handle.addEventListener('dblclick', () => set(cfg.dflt, true));
+  // Keyboard parity (CLAUDE.md shared-UX rule 7): a focusable separator is an APG window
+  // splitter, so arrows resize, Home/End jump to the bounds, Enter/Space restores the default.
+  handle.addEventListener('keydown', (e) => {
+    const step = (e.shiftKey ? 48 : 16) * sign();
+    let w;
+    if      (e.key === 'ArrowLeft')  w = cur() - step;
+    else if (e.key === 'ArrowRight') w = cur() + step;
+    else if (e.key === 'Home')       w = cfg.min;
+    else if (e.key === 'End')        w = hiNow();
+    else if (e.key === 'Enter' || e.key === ' ') w = cfg.dflt;
+    else return;
+    e.preventDefault();
+    set(w, true);
+  });
+  // A shrinking window tightens the max. Re-clamp from `desired` rather than the live
+  // width, so a squeeze is temporary: widen the window again and the chosen width returns.
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeT);
+    resizeT = setTimeout(() => set(desired, false), 150);
+  });
+  return { set: set, refresh: () => set(desired, false) };
+}
+/* ═══ end shared: sidebar-resize ═════════════════════════════════════════════ */
+
+/* ── Options sidebar width (wiring for the shared sidebar-resize block above): the in-flow sidebar recipe of the
+   dictionary and the generator. The key is per device (it tracks the monitor), so it is erase-only in the hub. ── */
+function initSidebarResize() {
+  mountSidebarResize({
+    handle: document.getElementById('llSidebarSplit'),
+    cssVar: '--ll-sidebar-w',
+    scope: document.getElementById('llSidebar'),   // the var's only consumer (registered inherits:false in the CSS)
+    storageKey: 'hebrewLetterLearner_sidebarW',
+    anchor: 'start',
+    min: 240, dflt: 300,
+    max: () => Math.min(520, window.innerWidth - 360)   // the letter grid keeps room for three cards beside it
+  });
+}
+
+/* ── Panel-collapse memory (per-page cfg for the shared block below): which panels the teacher left open. The map
+   rides the AllTools export/import like the other carriers' and stays per device (never a cloud row). ── */
+const PANEL_MEM_KEY = 'hebrewLetterLearner_panels';
+const PANEL_MEM_CFG = {
+  scope: '.panel-title',
+  read() { try { return ivritSafeParse(localStorage.getItem(PANEL_MEM_KEY) || 'null'); } catch (e) { return null; } },
+  write(map) { try { localStorage.setItem(PANEL_MEM_KEY, JSON.stringify(map)); } catch (e) {} },
+  afterApply() { document.querySelectorAll('.panel').forEach(p => _syncPanelAria(p)); }
+};
+/* ═══════════ IvritSuite panel-collapse memory (shared, identical across pages) ═══════════
+   Remembers which panels the teacher left open, so a drawer that was tidied once stays tidy on
+   the next visit. A panel is keyed by the data-i18n key on its title: language-independent,
+   unique per panel, and already present on every collapsible title in the suite — so there are
+   no ids to invent or keep in sync. WHERE the map is stored is per-page and lives in
+   PANEL_MEM_CFG (a dedicated hebrew<Tool>_panels key on every carrier); this
+   engine never touches localStorage itself. A panel whose key is absent from the stored map
+   keeps its markup default, so a panel added in a later release opens or closes per its own
+   markup instead of inheriting whatever a neighbour happened to be doing. */
+const PANEL_MEM_DEFAULTS = {};   // markup defaults, captured once before the first restore
+function panelMemTitles() { return document.querySelectorAll(PANEL_MEM_CFG.scope); }
+function panelMemSave() {
+  const map = {};
+  panelMemTitles().forEach(t => {
+    const p = t.closest('.panel'), k = t.dataset.i18n;
+    if (p && k) map[k] = p.classList.contains('collapsed');
+  });
+  PANEL_MEM_CFG.write(map);
+}
+function panelMemApply() {
+  panelMemTitles().forEach(t => {
+    const p = t.closest('.panel'), k = t.dataset.i18n;
+    if (p && k && !(k in PANEL_MEM_DEFAULTS)) PANEL_MEM_DEFAULTS[k] = p.classList.contains('collapsed');
+  });
+  const map = PANEL_MEM_CFG.read();
+  panelMemTitles().forEach(t => {
+    const p = t.closest('.panel'), k = t.dataset.i18n;
+    if (!p || !k) return;
+    let collapsed = PANEL_MEM_DEFAULTS[k];
+    if (map && typeof map === 'object' && Object.prototype.hasOwnProperty.call(map, k)) collapsed = !!map[k];
+    if (collapsed !== undefined) p.classList.toggle('collapsed', collapsed);
+  });
+  if (PANEL_MEM_CFG.afterApply) PANEL_MEM_CFG.afterApply();
+}
+/* ═══════════ end shared: panel-collapse memory ═══════════ */
+
+function _syncPanelAria(p) {
+  const t = p.querySelector('.panel-title');
+  if (t) t.setAttribute('aria-expanded', String(!p.classList.contains('collapsed')));
+}
+function initPanelCollapse() {
+  document.querySelectorAll('.panel-title').forEach(t => {
+    t.setAttribute('tabindex', '0');
+    t.setAttribute('role', 'button');
+    t.setAttribute('aria-expanded', String(!t.parentElement.classList.contains('collapsed')));
+    t.addEventListener('click', () => { t.parentElement.classList.toggle('collapsed'); _syncPanelAria(t.parentElement); panelMemSave(); });
+    t.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); t.click(); }
+    });
+  });
+}
+
 function init() {
   llIndexData();
   initDark();
@@ -1758,6 +1994,9 @@ function init() {
   wireOptions();
   renderGrid();
   wireDialog();
+  initPanelCollapse();
+  panelMemApply();      // restore the teacher's saved open/closed panels (right after initPanelCollapse, the shared rule)
+  initSidebarResize();
   initSpeech();
   initCloudSaves();
   llOpenFromUrl();

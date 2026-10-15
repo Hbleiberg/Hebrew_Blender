@@ -135,7 +135,7 @@
   // The suite-wide preferences (`Suite` / `prefs`): the small site-wide keys every page reads — one row,
   // assembled from those keys. What travels: the UI language, the theme, the on-screen keyboard layout,
   // the backup input mode, the shared Hebrew font and size, live preview, the Font Maker author name, and
-  // the Dictionary's romanization style, TTS rate and emoji settings. What stays per device: the three
+  // the Dictionary's romanization style, TTS rate and emoji settings. What stays per device: the four
   // `*_panels` maps (which panels are open), the Dictionary's audio switch and its last search. A field
   // this build cannot apply (an unknown language, an out-of-range value) is held in the sync memory and
   // reported as the row's value until the key is changed here, so a newer device's choice round-trips

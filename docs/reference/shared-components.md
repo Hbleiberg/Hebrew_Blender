@@ -246,7 +246,7 @@ tp = mountTestPhrases({ container, getInput, onChange });   // container: an emp
 
 Every fixed-width side panel is drag-resizable through one shared engine: grab the seam (or focus
 it and use arrow keys) to scale the panel; double-click or Enter restores the default. Current
-surfaces: the **Dictionary + Generator options sidebars**, the **settings drawers** on the
+surfaces: the **Dictionary, Generator and Letter Learner options sidebars**, the **settings drawers** on the
 Dashboard / Torah Trainer, and the **Dashboard's two widget rails**. (The Trope Tutor's settings are
 a tab, like the Font Maker's, so it carries no resize handle.) The Font
 Maker's `.ws-split` workspace rails predate this block and deliberately stay on their own engine
@@ -256,7 +256,7 @@ Maker's `.ws-split` workspace rails predate this block and deliberately stay on 
 `/* ═══ shared: sidebar-resize ═══ … */` (JS — `mountSidebarResize(cfg)`) and
 `/* ═══ shared: sidebar-resize CSS ═══ … */` (the `.sbr-*` rules). **Copy both verbatim; never
 rewrite.** Carriers: `hebrew_dictionary.html`, `hebrew_blend_generator.html`,
-`classroom_dashboard.html`, `torah_trainer.html`. When a page adopts or drops them,
+`classroom_dashboard.html`, `torah_trainer.html`, `letter_learner.html`. When a page adopts or drops them,
 re-true the carrier list in the marker comments of **all** carriers and re-verify byte-identity
 by sha (same rule as the keyboard/app-toast blocks). Per-page wiring — the cfg object inside a
 small `init…Resize()` mount call — lives **below** the end marker. The CSS block is
@@ -311,7 +311,7 @@ fallbacks beside their `data-i18n-*` siblings (standard pattern).
 Every carrier keeps per-page: the `:root { --…-w: Npx; }` seed, the panel's
 `width: var(--…-w, Npx)`, the handle's placement rule, and the kill rules (stacked media query,
 print list, collapse interplay, ak-view-style overrides).
-1. **In-flow sidebar** (dictionary, generator): handle class `sbr-split sbr-flex`, inserted as
+1. **In-flow sidebar** (dictionary, generator, Letter Learner): handle class `sbr-split sbr-flex`, inserted as
    the aside's **immediate next sibling** — the collapse rule
    `#appSidebar.hidden + .sbr-split { display:none; }` depends on that adjacency. `anchor:'start'`.
    Dynamic max keeps the main column usable: `() => Math.min(HARD_MAX, window.innerWidth - MAIN_MIN)`.
@@ -353,8 +353,8 @@ monitor, not the teacher**, so register it ONLY in `index.html` `eraseAllSetting
 existing per-device comment) — never in `exportAllSettings`/`importAllSettings`/`IVRIT_CFG`, and
 never inside a tool's settings blob or `getSettings()`. Current keys:
 `hebrewDictionary_sidebarW`, `hebrewBlender_sidebarW`, `hebrewDashboard_drawerW`,
-`hebrewDashboard_railLeftW`, `hebrewDashboard_railRightW`, `hebrewTorahTrainer_drawerW`.
-`hebrewTropeTutor_drawerW` is legacy: the Trope Tutor's drawer became a tab and nothing writes the
+`hebrewDashboard_railLeftW`, `hebrewDashboard_railRightW`, `hebrewTorahTrainer_drawerW`,
+`hebrewLetterLearner_sidebarW`. `hebrewTropeTutor_drawerW` is legacy: the Trope Tutor's drawer became a tab and nothing writes the
 key any more, but `eraseAllSettings()` keeps it so Erase still clears it from devices that resized
 the old drawer.
 
@@ -865,7 +865,7 @@ whose text is majority-English (e.g. mixed `<option>` labels). Verify: `document
 A teacher who collapses the panels they don't use should not have to do it again next lesson. Every
 collapsible `.panel` remembers its open/closed state across visits, via one `═══`-marked shared block
 (`/* ═══ IvritSuite panel-collapse memory ═══ */ … /* ═══ end shared: panel-collapse memory ═══ */`),
-byte-identical across its three carriers (sha-verify when you touch it) — copy it, don't
+byte-identical across its four carriers (sha-verify when you touch it) — copy it, don't
 rewrite it. It exposes `panelMemSave()` / `panelMemApply()` and depends only on a per-page
 **`PANEL_MEM_CFG`** (the `IVRIT_CFG` pattern):
 ```js
@@ -885,8 +885,8 @@ const PANEL_MEM_CFG = {
 - **Where the map lives is per-page, and the engine never touches localStorage itself.** Every carrier keeps
   it in a dedicated `hebrew<Tool>_panels` key, read via `ivritSafeParse` and registered in all five AllTools
   sites (the dashboard, the one carrier that kept the map inside its settings blob, left the list — below).
-- **Implemented on:** the three collapse carriers — `hebrew_blend_generator.html`, `flash_cards.html`,
-  `hebrew_dictionary.html`. (The Trope Tutor, the Torah Trainer and the Classroom Dashboard left the list when
+- **Implemented on:** the four collapse carriers — `hebrew_blend_generator.html`, `flash_cards.html`,
+  `hebrew_dictionary.html`, `letter_learner.html` (its options sidebar's three panels). (The Trope Tutor, the Torah Trainer and the Classroom Dashboard left the list when
   their settings became flat tabs — the Tutor's in the Font Maker's layout, the Trainer's and the dashboard's
   inside their drawers, though the Trainer was the block's origin; an old `panelsCollapsed` in any of the three
   settings blobs is simply carried along unread, and the Trainer's and the dashboard's cloud rows still omit

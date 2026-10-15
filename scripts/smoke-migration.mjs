@@ -408,7 +408,7 @@ function buildDeviceA(D) {
   // the suite-wide preferences (all eleven), and what stays per device
   Object.assign(s, { hebrewBlender_lang: 'he', hebrewBlender_darkMode: '1', hebrewBlender_kbdLayout: 'qwerty', hebrewBlender_inputMode: 'manual', hebrewBlender_hebFont: 'David Libre', hebrewBlender_hebFontSize: '62', hebrewBlender_livePreview: '0',
     hebrewFontMaker_lastAuthor: 'Morah Rivka', hebrewDictionary_translitStyle: 'sbl', hebrewDictionary_ttsRate: '1.2', hebrewDictionary_emojiSettings: J({ mode: true, gender: 'all', excludedSubs: ['Animal|Mammal'] }),
-    hebrewBlender_panels: J({ 'worksheet.advanced.title': true }), hebrewFlashCards_panels: J({ 'flashcards.advanced.title': true }), hebrewDictionary_panels: J({ 'dictionary.filters.title': true }),
+    hebrewBlender_panels: J({ 'worksheet.advanced.title': true }), hebrewFlashCards_panels: J({ 'flashcards.advanced.title': true }), hebrewDictionary_panels: J({ 'dictionary.filters.title': true }), hebrewLetterLearner_panels: J({ 'letterlearner.options.vowels_legend': true }),
     hebrewBlender_zoom: '120', hebrewTropeTutor_tourSeen: '1', hebrewDictionary_audioEnabled: '0' });
   ['hebrewBlender_lang', 'hebrewBlender_darkMode', 'hebrewBlender_kbdLayout', 'hebrewBlender_inputMode', 'hebrewBlender_hebFont', 'hebrewBlender_hebFontSize', 'hebrewBlender_livePreview', 'hebrewFontMaker_lastAuthor', 'hebrewDictionary_translitStyle', 'hebrewDictionary_ttsRate', 'hebrewDictionary_emojiSettings']
     .forEach(k => MUTATED.push([k, '', D[k] === undefined ? null : D[k], s[k]]));
