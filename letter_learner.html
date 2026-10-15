@@ -504,6 +504,11 @@ body.dark #appToast { background: #0a0f1c; }
   header, body.dark header { background:#fff !important; }
   header h1 { color:var(--navy); }
   header p { color:var(--muted); }
+  /* One sheet on Letter and A4 alike: the screen grid's auto-fill gave A4's 717px of paper five columns, a seventh
+     row and a second sheet with that row cut through its middle (tav printed half on each). Six fixed columns hold
+     all 31 cards on one sheet of either size, and a card never splits across a page break. */
+  .ll-grid { grid-template-columns:repeat(6, 1fr); gap:8px; }
+  .ll-card { break-inside:avoid; }
 }
 /* Reduced motion: the universal neutralizer (every animation and transition on the page, the hint drawings'
    .ll-anim groups included; 0.001ms rather than 0 so animationend still fires). */
