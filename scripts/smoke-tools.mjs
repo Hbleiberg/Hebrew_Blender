@@ -87,6 +87,20 @@ const PAGES = [
         check(tag + ' E: 0 pageerrors (garbage deep link)', errors.length === 0, errors.join(' | '));
         await ctx.close();
       }
+      {
+        // On a phone the dialog is a full-screen sheet whose Letter tab overflows it; the tab strip is a scroll container
+        // (overflow-x:auto), so without flex-shrink:0 it was the flex item that gave way — 9px tall, its labels under the
+        // sticky head (seen on an iPhone).
+        const { ctx, page, errors } = await openPage(browser, 'letter_learner.html', { viewport: { width: 390, height: 844 }, query: '?letter=vet' });
+        const r = await page.evaluate(() => {
+          const head = document.querySelector('.ll-dlg-head').getBoundingClientRect(), strip = document.querySelector('.ll-tabs');
+          const tab = document.querySelector('.ll-tabs [role="tab"][aria-selected="true"]').getBoundingClientRect();
+          return { open: !document.getElementById('llOverlay').hidden, headBottom: Math.round(head.bottom), tabTop: Math.round(tab.top), tabH: Math.round(tab.height), stripClient: strip.clientHeight, stripScroll: strip.scrollHeight, sheetW: Math.round(document.querySelector('.ll-dialog').getBoundingClientRect().width) };
+        });
+        check(tag + ' E: on a 390px phone the sheet is full-width and the tab strip keeps its height — the selected tab sits below the sticky head, nothing clipped', r.open && r.sheetW === 390 && r.tabTop >= r.headBottom && r.tabH >= 36 && r.stripScroll <= r.stripClient + 1, JSON.stringify(r));
+        check(tag + ' E: 0 pageerrors (phone sheet)', errors.length === 0, errors.join(' | '));
+        await ctx.close();
+      }
     }
   },
   {

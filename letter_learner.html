@@ -254,12 +254,12 @@ body.ll-no-speech .ll-speak, body.ll-no-speech #llVoiceRow, body.ll-no-speech #o
   cursor:pointer; font-family:'Source Sans 3', sans-serif; color:var(--text);
   box-shadow:var(--shadow-sm); transition:transform 0.12s, border-color 0.12s, box-shadow 0.12s;
 }
-.ll-card:hover { border-color:var(--gold); transform:translateY(-2px); box-shadow:var(--shadow-md); }
+@media (hover: hover) { .ll-card:hover { border-color:var(--gold); transform:translateY(-2px); box-shadow:var(--shadow-md); } }   /* a tapped card would otherwise stay lifted (sticky hover) */
 .ll-card.is-final { border-style:dashed; }
 .ll-card-glyph { font-family:var(--heb-font); font-size:2.7rem; line-height:1.15; color:var(--text); }
 .ll-card-name { font-size:0.86rem; font-weight:700; line-height:1.2; }
 .ll-card-sound { font-size:0.74rem; color:var(--muted); font-family:'Libre Baskerville', serif; }
-.ll-badge { font-size:0.64rem; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; color:var(--gold-text); margin-top:3px; }
+.ll-badge { font-size:0.7rem; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; color:var(--gold-text); margin-top:3px; }
 html[lang="he"] .ll-badge { letter-spacing:normal; text-transform:none; }
 .ll-card.is-soon .ll-card-glyph { opacity:0.72; }
 
@@ -275,7 +275,7 @@ html[lang="he"] .ll-badge { letter-spacing:normal; text-transform:none; }
   overflow:auto; overscroll-behavior:contain; display:flex; flex-direction:column;
 }
 .ll-dlg-head {
-  position:sticky; top:0; z-index:2; background:var(--white);
+  position:sticky; top:0; z-index:2; background:var(--white); flex-shrink:0;
   display:flex; align-items:center; gap:8px; padding:10px 12px 8px; border-bottom:1px solid var(--border);
 }
 .ll-dlg-title { flex:1; min-width:0; display:flex; align-items:baseline; justify-content:center; gap:12px; font-family:'Libre Baskerville',serif; font-size:1.2rem; }
@@ -288,7 +288,10 @@ html[lang="he"] .ll-badge { letter-spacing:normal; text-transform:none; }
 .ll-nav:disabled { opacity:0.35; cursor:default; }
 .ll-next-arrow { transform:scaleX(-1); }
 [dir="rtl"] .ll-next-arrow { transform:none; }
-.ll-tabs { display:flex; gap:4px; padding:8px 12px 0; border-bottom:1px solid var(--border); overflow-x:auto; }
+/* flex-shrink:0 on the head and the strip: the dialog is a flex column capped at the viewport, and the strip is a scroll
+   container (overflow-x:auto), so its flex minimum is 0 — on a phone, where the Letter tab overflows the sheet, the strip
+   took the whole squeeze (9px tall) and the tab labels disappeared under the sticky head. */
+.ll-tabs { display:flex; gap:4px; padding:8px 12px 0; border-bottom:1px solid var(--border); overflow-x:auto; flex-shrink:0; }
 .ll-tabs [role="tab"] {
   background:transparent; border:none; border-bottom:3px solid transparent; color:var(--muted);
   font:inherit; font-size:0.9rem; font-weight:700; padding:8px 12px; cursor:pointer; white-space:nowrap; min-height:36px;
@@ -441,8 +444,24 @@ body.dark #appToast { background: #0a0f1c; }
   /* Stacked: the sidebar sits above the letters at its natural height, and the resize seam goes with the layout
      (a full-height touch-action:none strip would be dead scroll under a finger). */
   .ll-app { flex-direction:column; }
-  .ll-sidebar { width:auto; border-inline-start:none; border-bottom:1px solid var(--border); }
+  /* Letters first, the options below them (the dictionary's phone order); the header gear still hides and shows
+     the options and, when it shows them here, scrolls to them. */
+  .ll-page { order:1; }
+  .ll-sidebar { order:2; width:auto; border-inline-start:none; border-top:1px solid var(--border); padding:12px 14px 18px; }
   .sbr-split { display:none; }
+}
+/* Touch: the page's own controls grow to a finger's size, and a focused select is 16px so iOS does not zoom into it
+   (the suite's text-field pattern). The header buttons and the account module's button keep their shared sizes. */
+@media (pointer: coarse) {
+  .ll-opt select { font-size:16px; min-height:40px; }
+  .ll-opt { min-height:44px; }
+  .ll-vowel-grid .ll-opt { min-height:40px; }
+  .ll-opt input[type="checkbox"] { width:22px; height:22px; }
+  .panel-title { min-height:44px; }
+  .ll-btn { min-height:40px; padding:9px 14px; }
+  .ll-nav, .ll-x { width:44px; height:44px; }
+  .ll-speak { width:44px; height:44px; }
+  .ll-tabs [role="tab"] { min-height:44px; }
 }
 /* The header's wrap gate: the row of controls drops under the title only below this page's MEASURED overflow
    ceiling (docs/reference/shared-components.md → "The header's wrap gate"). 576px is where the unwrapped row
@@ -450,10 +469,16 @@ body.dark #appToast { background: #0a0f1c; }
    the star — 574px in EN, 576px in HE (Playwright, 2px steps, 900→320px); below it the row takes a full line of
    its own, so the star never pushes it past the edge. Re-measure when a control is added or relabelled. */
 @media (max-width: 576px) {
-  header { flex-wrap:wrap; padding:12px 16px; row-gap:8px; }
+  header { flex-wrap:wrap; padding:10px 12px; gap:10px; row-gap:8px; }
+  header h1 { font-size:1.1rem; }
+  header p { display:none; }   /* the suite's phone header: the other tool pages drop the subtitle below their wrap gate */
   .hright { flex-basis:100%; max-width:100%; flex-wrap:wrap; justify-content:flex-end; }
-  .ll-grid { grid-template-columns:repeat(auto-fill, minmax(92px, 1fr)); gap:8px; }
+  .ll-grid { grid-template-columns:repeat(auto-fill, minmax(84px, 1fr)); gap:8px; }   /* four columns on a 390px phone, three on 360 */
+  .ll-card { min-height:120px; padding:8px 4px 6px; }
   .ll-card-glyph { font-size:2.3rem; }
+  .ll-card-name { font-size:0.8rem; }
+  .ll-tabs { padding:8px 8px 0; gap:2px; }
+  .ll-tabs [role="tab"] { padding:8px 9px; font-size:0.86rem; }
 }
 @media print {
   header .hright, .ll-sidebar, .sbr-split, footer, .ll-overlay, .tour-spot, .tour-card, #appToast { display:none !important; }
@@ -1967,6 +1992,10 @@ function llToggleSidebar(force) {
   if (btn) btn.setAttribute('aria-expanded', String(show));
   // Focus never vanishes: hiding the sidebar while it holds focus hands focus to the gear.
   if (!show && btn && aside && aside.contains(document.activeElement)) btn.focus();
+  // Stacked (a phone), the options sit below the letters: showing them from the header brings them into view.
+  if (show && force === undefined && aside && window.matchMedia && matchMedia('(max-width: 800px)').matches) {
+    try { aside.scrollIntoView({ block: 'start', behavior: 'smooth' }); } catch (e) { aside.scrollIntoView(); }
+  }
 }
 function initSidebarToggle() {
   const btn = document.getElementById('llSidebarBtn');
