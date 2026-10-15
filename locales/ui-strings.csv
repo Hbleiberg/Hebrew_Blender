@@ -6306,6 +6306,12 @@ letterlearner.letter.soon_title,Coming soon,בקרוב,Letter tab placeholder ti
 letterlearner.letter.soon_body,The picture and words for this letter are on their way. The Vowels and Fonts tabs already work.,הציור והמילים של האות הזאת בדרך. לשוניות הניקוד והגופנים כבר עובדות.,Letter tab placeholder body,
 letterlearner.vowels.hear_aria,Hear {syllable},השמעת {syllable},speaker aria-label on a vowel row ({syllable} = the transliteration),aria-label only; template
 letterlearner.vowels.none_note,Every vowel is switched off in Options.,כל סימני הניקוד כבויים באפשרויות.,Vowels tab note when no vowel is enabled,
+letterlearner.vowels.group_ah,“ah” sounds,תנועת A,Vowels tab group heading (the signs that make this sound),
+letterlearner.vowels.group_eh,“eh” sounds,תנועת E,Vowels tab group heading (the signs that make this sound),
+letterlearner.vowels.group_ee,“ee” sounds,תנועת I,Vowels tab group heading (the signs that make this sound),
+letterlearner.vowels.group_oh,“oh” sounds,תנועת O,Vowels tab group heading (the signs that make this sound),
+letterlearner.vowels.group_oo,“oo” sounds,תנועת U,Vowels tab group heading (the signs that make this sound),
+letterlearner.vowels.group_sheva,Sheva,שווא,Vowels tab group heading (the signs that make this sound),
 letterlearner.words.hear_aria,Hear {word},השמעת {word},speaker aria-label beside a word ({word} = the Hebrew word),aria-label only; template
 letterlearner.font.tile_aria,{name} in {font},{name} בגופן {font},aria-label of a font tile ({name} = the letter name; {font} = the font name),aria-label only; template
 letterlearner.font.loading,Loading fonts…,טוען גופנים…,Fonts tab note while the faces load,

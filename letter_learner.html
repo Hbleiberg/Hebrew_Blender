@@ -326,6 +326,9 @@ html[lang="he"] .ll-panel h3 { letter-spacing:normal; text-transform:none; }
 .ll-bare { display:flex; flex-direction:column; align-items:center; gap:2px; margin-bottom:14px; }
 .ll-bare-glyph { font-family:var(--heb-font); font-size:4.6rem; line-height:1.05; }
 .ll-bare-sound { font-family:'Libre Baskerville', serif; font-size:1.1rem; color:var(--muted); }
+.ll-vgroup { font-family:'Source Sans 3', sans-serif; font-size:0.78rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--muted); margin:0 0 6px; }
+html[lang="he"] .ll-vgroup { letter-spacing:normal; text-transform:none; }
+.ll-vrows + .ll-vgroup { margin-top:14px; }
 .ll-vrows { list-style:none; display:grid; grid-template-columns:repeat(auto-fill, minmax(190px, 1fr)); gap:8px 14px; }
 .ll-vrow { display:flex; align-items:center; gap:10px; border:1.5px solid var(--border); border-radius:10px; padding:4px 10px; background:var(--cream); }
 .ll-form { font-family:var(--heb-font); font-size:2.3rem; line-height:1.3; min-width:1.5em; text-align:center; }
@@ -942,6 +945,18 @@ const VOWELS = [
   { id: 'chataf_segol',  mark: 'ֱ',       tr: 'eh', en: 'Chataf Segol' },
   { id: 'chataf_kamatz', mark: 'ֳ',       tr: 'oh', en: 'Chataf Kamatz' }
 ];
+// The Vowels tab groups the signs by the sound they make, as the classroom does (all the "ah"s together, then the
+// "eh"s…), each group in its teaching order: the full vowel first, its chataf partner last. The Options list keeps
+// the table's own order above.
+const VOWEL_GROUPS = [
+  { id: 'ah',    ids: ['kamatz', 'patach', 'chataf_patach'] },
+  { id: 'eh',    ids: ['tzere', 'segol', 'chataf_segol'] },
+  { id: 'ee',    ids: ['chirik'] },
+  { id: 'oh',    ids: ['cholam', 'chataf_kamatz'] },
+  { id: 'oo',    ids: ['kubutz', 'shuruk'] },
+  { id: 'sheva', ids: ['sheva'] }
+];
+const VOWEL_GROUP_FALLBACK = { ah: '“ah” sounds', eh: '“eh” sounds', ee: '“ee” sounds', oh: '“oh” sounds', oo: '“oo” sounds', sheva: 'Sheva' };
 const LL_DEFAULTS = {
   v: 1,
   vowels: Object.fromEntries(VOWELS.map(v => [v.id, true])),
@@ -1405,18 +1420,25 @@ function llRenderVowelsTab(L) {
   panel.appendChild(bare);
   const rows = VOWELS.filter(v => settings.vowels[v.id] && (!L.vowels || L.vowels.includes(v.id)) && !(v.id === 'sheva' && !L.consonant));
   if (!rows.length) { panel.appendChild(el('p', 'll-note', _fbT('letterlearner.vowels.none_note', 'Every vowel is switched off in Options.'))); return; }
-  const ul = el('ul', 'll-vrows');
-  rows.forEach(v => {
-    const form = L.glyph + v.mark;
-    const tr = L.consonant + v.tr;
-    const li = el('li', 'll-vrow');
-    const f = el('span', 'll-form', form); f.lang = 'he'; f.dir = 'rtl';
-    const t = el('span', 'll-tr', '/' + tr + '/');
-    t.appendChild(el('span', 'll-vname', _fbT('letterlearner.glyphname.vowel_' + v.id, v.en)));
-    li.append(f, t, llSpeakButton(form, 'letterlearner.vowels.hear_aria', 'Hear {syllable}', { syllable: tr }));
-    ul.appendChild(li);
+  // One heading and one row grid per sound group; a group whose every sign is switched off (or not offered on this
+  // card) leaves no heading behind.
+  VOWEL_GROUPS.forEach(grp => {
+    const vs = grp.ids.map(id => rows.find(v => v.id === id)).filter(Boolean);
+    if (!vs.length) return;
+    panel.appendChild(el('h3', 'll-vgroup', _fbT('letterlearner.vowels.group_' + grp.id, VOWEL_GROUP_FALLBACK[grp.id])));
+    const ul = el('ul', 'll-vrows');
+    vs.forEach(v => {
+      const form = L.glyph + v.mark;
+      const tr = L.consonant + v.tr;
+      const li = el('li', 'll-vrow');
+      const f = el('span', 'll-form', form); f.lang = 'he'; f.dir = 'rtl';
+      const t = el('span', 'll-tr', '/' + tr + '/');
+      t.appendChild(el('span', 'll-vname', _fbT('letterlearner.glyphname.vowel_' + v.id, v.en)));
+      li.append(f, t, llSpeakButton(form, 'letterlearner.vowels.hear_aria', 'Hear {syllable}', { syllable: tr }));
+      ul.appendChild(li);
+    });
+    panel.appendChild(ul);
   });
-  panel.appendChild(ul);
 }
 function llSpecialItems(L) {
   const items = [];
