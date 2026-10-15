@@ -1019,16 +1019,17 @@ const VOWELS = [
   { id: 'sheva',         mark: 'ְ',       tr: "'",  en: 'Sheva' },
   { id: 'chataf_patach', mark: 'ֲ',       tr: 'ah', en: 'Chataf Patach' },
   { id: 'chataf_segol',  mark: 'ֱ',       tr: 'eh', en: 'Chataf Segol' },
-  { id: 'chataf_kamatz', mark: 'ֳ',       tr: 'oh', en: 'Chataf Kamatz' }
+  { id: 'chataf_kamatz', mark: 'ֳ',       tr: 'ah', en: 'Chataf Kamatz' }
 ];
 // The Vowels tab groups the signs by the sound they make, as the classroom does (all the "ah"s together, then the
 // "eh"s…), each group in its teaching order: the full vowel first, its chataf partner last. The Options list keeps
-// the table's own order above.
+// the table's own order above. Chataf kamatz reads "ah" here, the label the suite's other pages give it ("short AH" on
+// the generator, the dictionary and the flash cards).
 const VOWEL_GROUPS = [
-  { id: 'ah',    ids: ['kamatz', 'patach', 'chataf_patach'] },
+  { id: 'ah',    ids: ['kamatz', 'patach', 'chataf_patach', 'chataf_kamatz'] },
   { id: 'eh',    ids: ['tzere', 'segol', 'chataf_segol'] },
   { id: 'ee',    ids: ['chirik'] },
-  { id: 'oh',    ids: ['cholam', 'vav_cholam', 'chataf_kamatz'] },
+  { id: 'oh',    ids: ['cholam', 'vav_cholam'] },
   { id: 'oo',    ids: ['kubutz', 'shuruk'] },
   { id: 'sheva', ids: ['sheva'] }
 ];
