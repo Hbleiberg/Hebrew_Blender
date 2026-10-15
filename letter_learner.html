@@ -482,6 +482,28 @@ body.dark #appToast { background: #0a0f1c; }
 }
 @media print {
   header .hright, .ll-sidebar, .sbr-split, footer, .ll-overlay, .tour-spot, .tour-card, #appToast { display:none !important; }
+  /* Print establishes its own ink (the trope / dictionary / flash-cards treatment). The print dialog drops background
+     plates by default, so both themes converge on the light palette on white paper: without this a dark-mode print set
+     every letter and name in --text #dde4f0 on white — card frames with nothing readable inside — and the drawings'
+     --ll-line (cream in dark mode) would vanish the same way. Shadows are drawings, not backgrounds, so they go too,
+     or dark mode prints a grey halo round every card. */
+  html, html.dark-early, body, body.dark, html.dark-early body {
+    --navy:#1a2744; --navy-deep:#0d1220; --gold:#c9922a; --gold-light:#f0d080; --gold-text:#7f5a13;
+    --cream:#fdf8ef; --warm-gray:#e8e0d0; --text:#1a2744; --muted:#6b6050; --border:#c8bfa8; --white:#ffffff;
+    --shadow-sm:none; --shadow-md:none; --shadow-lg:none;
+    --ll-line:#1a2744; --ll-accent:#c9922a;
+    --ll-gold:#c9922a; --ll-gold-lt:#f0d080; --ll-navy:#2a3b66; --ll-red:#c0392b; --ll-red-dk:#8e2a20;
+    --ll-green:#5aa865; --ll-green-dk:#3a7d44; --ll-blue:#3b6fb6; --ll-blue-dk:#2a5290; --ll-sky:#bfe0f7;
+    --ll-paper:#fffaf0; --ll-white:#ffffff; --ll-gray:#9aa3b5; --ll-gray-dk:#6b7488;
+    --ll-grass:#7dc47a; --ll-grass-dk:#4f9a4c; --ll-wood:#b07a45; --ll-wood-dk:#7d5330;
+    background:#fff !important; color:#1a2744 !important;
+  }
+  /* The header sits on a navy plate that print drops, so its white title and gold-light subtitle printed white-on-white
+     in BOTH themes — the sheet lost its own name (the trope's header note). With background graphics switched on the
+     plate would come back under that navy ink, so paper gets a white header either way. */
+  header, body.dark header { background:#fff !important; }
+  header h1 { color:var(--navy); }
+  header p { color:var(--muted); }
 }
 /* Reduced motion: the universal neutralizer (every animation and transition on the page, the hint drawings'
    .ll-anim groups included; 0.001ms rather than 0 so animationend still fires). */
