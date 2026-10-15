@@ -401,11 +401,20 @@ footer a { color:var(--gold-text); }
 .tour-meta { display:flex; align-items:center; justify-content:space-between; gap:10px; }
 .tour-meta > span:first-child { font-size:0.72rem; font-weight:700; color:var(--muted); }
 .tour-btns { display:flex; gap:8px; }
-@keyframes attnPulse {
-  0%, 100% { box-shadow:0 0 0 0 rgba(201,146,42,0.55); }
-  50%      { box-shadow:0 0 0 6px rgba(201,146,42,0); }
+/* The first-visit nudge on the Tour button: a gold ring on a pseudo-element, animated in transform and opacity only, so the
+   compositor runs it by itself. The earlier box-shadow pulse made the main thread repaint the whole viewport twice a frame
+   for as long as the button pulsed (13% of the main thread at 1× CPU, 36% at 4× — measured in loop S510). Same look: a
+   ring at the button's edge that swells about 6px and fades. */
+.pulse-attn { position:relative; }
+.pulse-attn::after {
+  content:""; position:absolute; inset:-3px; border-radius:9px; pointer-events:none;
+  border:3px solid rgba(201,146,42,0.6);
+  animation:attnPulse 1.4s ease-in-out infinite;
 }
-.pulse-attn { animation:attnPulse 1.4s ease-in-out infinite; }
+@keyframes attnPulse {
+  0%, 100% { transform:scale(1); opacity:0.75; }
+  50%      { transform:scale(1.18); opacity:0; }
+}
 
   /* ═══ shared: app-toast CSS ═══ (byte-identical across generator/dashboard/flash_cards/dictionary/letter_learner; self-contained incl. reduced-motion) ═══ */
 #appToast {
@@ -532,7 +541,7 @@ body.dark #appToast { background: #0a0f1c; }
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
-  .pulse-attn { animation: none !important; box-shadow: 0 0 0 3px rgba(201,146,42,0.6) !important; }
+  .pulse-attn::after { animation: none !important; }   /* the ring stays, still: its base style is the static 3px ring */
 }
 </style>
 </head>
