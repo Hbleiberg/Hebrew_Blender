@@ -46,6 +46,7 @@ try {
   page.on('console', m => { if (m.type() === 'warning' && m.text().startsWith('[letters]')) warnings.push(m.text()); });
   await page.route('**/*', r => { const u = r.request().url(); (u.startsWith(BASE) || u.startsWith('data:') || u.startsWith('blob:')) ? r.continue() : r.abort(); });
   await page.goto(BASE + '/letter_learner.html', { waitUntil: 'load' });
+  await page.evaluate(() => { if (typeof llCheckDrawings === 'function') Object.values(LETTERS).forEach(llCheckDrawings); });   // the page checks a letter's drawings when it is first shown; the sheet checks them all
   await page.waitForTimeout(500);
   if (errors.length) { console.error('pageerror: ' + errors.join(' | ')); failed = true; }
   if (warnings.length) { console.error('the page\'s validator rejected a drawing:\n  ' + warnings.join('\n  ')); failed = true; }

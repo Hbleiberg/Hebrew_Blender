@@ -663,7 +663,8 @@ body.dark #appToast { background: #0a0f1c; }
 /* ═══════════════════════════════════════════════════════════════════════════════════════════════
    LETTER_DATA — the learner content. Batches 2–6 are pasted into this array (any order; the grid
    orders itself by ALEFBET in the app script). A malformed entry never breaks the page: the
-   validator drops the bad field, warns in the console, and the card falls back to "coming soon".
+   validator drops the bad field, warns in the console (a bad drawing when its letter is first
+   shown — the review sheet checks them all), and the card falls back to "coming soon".
 
    One entry per CARD:
      id         'alef' … 'tav', the pair halves 'vet' 'chaf' 'fe' 'sin', and the finals 'kaf_sofit'
@@ -1143,10 +1144,8 @@ function llIndexData() {
       if (typeof h.caption !== 'string' || !h.caption.trim()) llWarn(id, 'hint has no caption; dropped');
       else {
         const variants = (Array.isArray(h.variants) ? h.variants : []).map((v, i) => {
-          const why = llValidSvg(v && v.svg);
           const cap = (v && typeof v.caption === 'string' && v.caption.trim()) ? v.caption.trim() : '';
-          if (why) { llWarn(id, 'hint variant ' + i + ': ' + why); return { label: String((v && v.label) || i), svg: '', caption: cap }; }
-          return { label: String((v && v.label) || i), svg: v.svg, caption: cap };
+          return { label: String((v && v.label) || i), svg: v && v.svg, caption: cap };   // checked by llCheckDrawings before it is drawn
         });
         const show = (Number.isInteger(h.show) && h.show >= 0 && h.show < variants.length) ? h.show : 0;
         L.hint = { caption: h.caption.trim(), show, variants };
@@ -1155,9 +1154,7 @@ function llIndexData() {
     if (Array.isArray(raw.words)) {
       L.words = raw.words.map((w, i) => {
         if (!w || typeof w.he !== 'string' || !w.he.trim() || typeof w.en !== 'string') { llWarn(id, 'word ' + i + ' needs he and en; dropped'); return null; }
-        const why = llValidSvg(w.svg === undefined ? '' : w.svg);
-        if (why) llWarn(id, 'word ' + i + ': ' + why);
-        return { he: w.he.trim(), tr: typeof w.tr === 'string' ? w.tr : '', en: w.en.trim(), svg: why ? '' : (w.svg || '') };
+        return { he: w.he.trim(), tr: typeof w.tr === 'string' ? w.tr : '', en: w.en.trim(), svg: w.svg === undefined ? '' : w.svg };   // checked by llCheckDrawings
       }).filter(Boolean);
     }
     if (Array.isArray(raw.special)) {
@@ -1166,6 +1163,17 @@ function llIndexData() {
     LETTERS[id] = L;
   });
   Object.values(LETTERS).forEach(L => { if (L.final) { if (LETTERS[L.final]) FINAL_OF[L.final] = L.id; else llWarn(L.id, 'final of an unknown base'); } });
+}
+// The drawings' allowlist check is the costly part of indexing (188 drawings: 20–46 ms at a phone's 4× CPU inside the
+// DOMContentLoaded task, measured in loop S510) and the grid never needs it — a card's "coming soon" state follows its
+// caption and words, not its pictures. So an entry's drawings are checked the first time that letter is shown: a bad one
+// is dropped with the same console warning, before anything reaches innerHTML. The review sheet checks every entry.
+function llCheckDrawings(L) {
+  if (!L || L.checked) return L;
+  L.checked = true;
+  if (L.hint) L.hint.variants.forEach((v, i) => { const why = llValidSvg(v.svg); if (why) { llWarn(L.id, 'hint variant ' + i + ': ' + why); v.svg = ''; } });
+  if (L.words) L.words.forEach((w, i) => { const why = llValidSvg(w.svg); if (why) { llWarn(L.id, 'word ' + i + ': ' + why); w.svg = ''; } });
+  return L;
 }
 function llHasContent(L) { return !!((L.hint && L.hint.caption) || (L.words && L.words.length)); }
 // The grid, in alef-bet order: a base, then (while pairs are split) its partner, then its final form.
@@ -1440,6 +1448,7 @@ function llWordSpan(he, base) {
   return span;
 }
 function llRenderLetterTab(L) {
+  llCheckDrawings(L);
   const panel = document.getElementById('llPanel-letter');
   panel.textContent = '';
   if (L.final && LETTERS[L.final]) {
