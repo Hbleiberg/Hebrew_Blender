@@ -20,7 +20,7 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = path.join(ROOT, 'docs', 'letter_learner_review');
-const BATCHES = { 1: ['alef', 'bet', 'vet', 'gimel', 'dalet'], 2: ['he', 'vav', 'zayin', 'chet', 'tet'], 3: ['yod', 'kaf', 'chaf', 'kaf_sofit', 'lamed'], 4: ['mem', 'mem_sofit', 'nun', 'nun_sofit', 'samech'], 5: ['ayin', 'pe', 'fe', 'pe_sofit', 'tzadi', 'tzadi_sofit'] };
+const BATCHES = { 1: ['alef', 'bet', 'vet', 'gimel', 'dalet'], 2: ['he', 'vav', 'zayin', 'chet', 'tet'], 3: ['yod', 'kaf', 'chaf', 'kaf_sofit', 'lamed'], 4: ['mem', 'mem_sofit', 'nun', 'nun_sofit', 'samech'], 5: ['ayin', 'pe', 'fe', 'pe_sofit', 'tzadi', 'tzadi_sofit'], 6: ['kuf', 'resh', 'shin', 'sin', 'tav', 'tzadi', 'tzadi_sofit'] };
 const args = process.argv.slice(2);
 const opt = (name, dflt) => { const i = args.indexOf(name); return i >= 0 ? args[i + 1] : dflt; };
 const batch = opt('--batch', '1');
@@ -83,7 +83,9 @@ try {
               return c;
             };
             const variants = (L.hint && L.hint.variants) || [];
-            for (let i = 0; i < 2; i++) row.appendChild(cell(variants[i] && variants[i].svg, 'hint ' + ((variants[i] && variants[i].label) || String.fromCharCode(65 + i)) + ((L.hint && L.hint.show === i) ? ' (shown)' : '')));
+            // Every variant gets a cell (two by default; a letter with three concepts shows three); a variant's own
+            // caption is printed under it on the large sheet, since the concepts differ there.
+            for (let i = 0; i < Math.max(2, variants.length); i++) row.appendChild(cell(variants[i] && variants[i].svg, 'hint ' + ((variants[i] && variants[i].label) || String.fromCharCode(65 + i)) + ((L.hint && L.hint.show === i) ? ' (shown)' : '') + ((size > 200 && variants[i] && variants[i].caption) ? ' — ' + variants[i].caption : '')));
             (L.words || []).forEach(w => row.appendChild(cell(w.svg, w.en, w.he)));
             sheet.appendChild(row);
           });
