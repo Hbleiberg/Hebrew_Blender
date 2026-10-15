@@ -310,7 +310,7 @@ _(none)_
 
 ## Done
 
-- [x] 2026-10-14 | (Letter Learner — outside the loop, branch `claude/magical-thompson-wgxfmp`) | letter_learner.html, js/ivrit-saves.js, index.html, locales, db/migrations/0004, docs | **Alef-bet learner for kindergarten: 31 cards, tabbed dialog, TTS, options synced as tool `LetterLearner`** — unlinked, noindex, batches 1–4 (120 drawings); 0004 applied; sw v997.
+- [x] 2026-10-14 | (Letter Learner — outside the loop, branch `claude/magical-thompson-wgxfmp`) | letter_learner.html, js/ivrit-saves.js, index.html, locales, db/migrations/0004, docs | **Alef-bet learner for kindergarten: 31 cards, tabbed dialog, TTS, options synced as tool `LetterLearner`** — unlinked, noindex, batches 1–5 (156 drawings); 0004 applied; sw v997.
 
 - [x] 2026-10-14 | (S508 close-out) | branch/deploy note | **S508 = M + 4 fixes, PR #328.** No drift; sw v995→v996; no FM bump; no gate.
 
