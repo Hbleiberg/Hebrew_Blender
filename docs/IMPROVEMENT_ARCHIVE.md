@@ -92852,3 +92852,63 @@ _(prior — S511 pointer:)_ **Next session (S511):** **BRANCH/PR: #332 open → 
 - 2026-10-13 | **S499** | iters: 5 | tools: dashboard ×2, generator, torah | patterns fixed: hidden-input (NEW), busy-disabled, rebuild | pass run: C | SW: v983→v984
 
 - 2026-10-13 | **S498** | iters: 5 | tools: contact ×2, resources, flash, generator, dictionary, FM ×2, torah, trope | patterns fixed: busy-disabled (NEW) ×2, count-noun ×5 | pass run: H | SW: v982→v983
+
+
+<!-- archived by compact-ledger at the S513 boundary, 2026-10-16 -->
+## Compaction (S513, 2026-10-16) — moved verbatim from the live ledger
+
+### from Candidates (prioritized, top = next)
+
+- [ ] P3 (**NEW S512 H — gate 2, new copy**) | hebrew_blend_generator.html | **Nothing says that a preset, the remembered setup or an `.ivrit` file made under "Imported List" keeps no words** (the pasted list is memory-only; *Save as Word List* exists for this): the next visit reopens to an empty pool and the "No words match your current filters" note (findings S512). A share link does carry the words. | found S512
+
+### from Done
+
+- [x] 2026-10-16 | (S512 close-out) | branch/deploy note | **S512 = H on the generator (its 4th) + 4 fixes, draft PR #335 continued (open, unmerged).** Drift: none (`origin/main` `c8b9dc7` unmoved, FM 5.59, migration 0004 live, backend files unchanged since S507, keep-alive run 34 green). sw v1003 → v1004 (generator, dashboard, js/i18n.js). No FM bump (no FM change). Scripts: check-i18n, check-inline-js, compact-ledger, check-ledger. O not run (unattended; blocked). Decisions deferred: gate 2 ×6 (the imported-list note, the Matching title, the per-type default titles, the NTL count, the quick-start reset, the title face is small and ungated).
+
+- [x] 2026-10-16 | `ff980a7` | hebrew_blend_generator.html | (S512 H) **The Word Source, number gender/display and match-target rows kept no highlight after any drill click or restore** (`setRealWordDrill` toggled `.active` on every `.rw-drill-btn`; scoped to `[data-drill]`). | verified: `h512/srcreset.mjs` + `restoresrc.mjs` HEAD none-active in 9 + 5 states → the right button in all; 8 first-load cells; check-inline-js.
+
+- [x] 2026-10-16 | `59714ef` | hebrew_blend_generator.html | (S512 H; blocking-alert-for-a-routine-path) **Real Words' three "no words" alerts (empty import, no list, bingo too small — also during the corpus download) became the inline Generate note**, with params and an immediate retire when words arrive. | verified: `h512/nowords.mjs` EN/HE: 3 dialogs → 0, note + aria-disabled, retires after Import and after the corpus lands; 8 cells; check-inline-js.
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`group-toggle-wipes-a-sibling-group`** (NEW S512 H; generator FIXED `ff980a7`; the Matching-target re-sync was an earlier work-around of the same cause): ACTIVE, streak 0. A class-wide `.active` toggle on a button class another row shares (Word Source, gender, display and match target were all `.rw-drill-btn`). Detection: `grep -n "querySelectorAll('\\.[a-z-]*btn')" *.html` → each class-wide toggle vs the rows sharing that class (the generator's `.sc-cols-btn` is one group: clean); a `[data-x]` re-sync right after a toggle is the tell.
+
+- **`latin-tracking-on-hebrew-labels`** (gate 3: drop suite-wide; S502 dashboard + dictionary; S503 flash; S504 torah `8e48daa5`; S505 Beta badges `0abb1f57`; S511 flash report `th` `90e592b`; open: generator `.ws-version-label` — Hebrew by headerLang, outside `html[lang=he]` (S512 H)): ACTIVE, streak 0. Detection: `a502/dash-track.mjs`; torah …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- **blocking-alert-for-a-routine-path**: ACTIVE, streak 0. **S512 (H): the generator's three Real Words "no words" alerts → the inline Generate note, FIXED `59714ef`; its 11 other `alert(` sites are catch / import-error / capability branches.** **Re-swept 2026-09-09 (S357 Pass A, delta-only): 0 new `alert(` sites (the hub's erase gate is a dialog; its final `confirm()` is a destructive guard) — hits 0, clean streak 2.** S343: dashboard 77-control click census, 0 alerts. …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- H teacher walkthrough / paper-cuts (one tool): 2026-10-16 (**S512 — generator, its 4th H (S130 → S251 → S363 → S512): a 1st-grade letter-of-the-week lesson by real clicks — Tracing, Name the Letter by quick start, a 3-version Class Set (Hebrew header, Exclude Repeats measured 24 → 0 doubled), a pasted Noach list → Matching / Fill Vowels → Save as Word List, Numbers, a preset, the link, a reopen, the colleague's HE/dark/800 open; 63 clicks × 3 cells, 0 errors. FOUND 9, FIXED 2 (+ dashboard, i18n.js); 1 seed re-confirmed (bare-letter tracing = the S–M 1-Letter seed). H-next: letter_learner (never), privacy/terms/404 (never), trope (S367).**)
+
+## S512 close-out (2026-10-16) — moved verbatim from the live ledger (the ledger's 100 KB cap)
+
+- [x] 2026-10-16 | (S511 close-out) | branch/deploy note | **S511 = I on the whole suite (the Letter Learner's first) + 4 fixes, draft PR #335 off `origin/main` (#332 merged).** Drift: sw.js v1000 → v1002 outside the loop (14 Letter Learner commits, audited by I); FM 5.59; migration 0004 live; keep-alive run 33 green. sw v1002 → v1003 (letter_learner, dashboard, flash, generator, dictionary, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-16 | `d4c5e02` | letter_learner.html | (S511 I) **The "Hebrew voice" picker showed on a browser with speech but under two Hebrew voices (the flex row beat `[hidden]`; 245×30 holding "Browser's choice" alone).** | 8 cells display:none; two stubbed voices show it (control); findings S511.
+
+- [x] 2026-10-16 | `f1cfd83` | dashboard, flash, generator, dictionary, torah, trope | (S511) **The Tour pulse ring on the 6 remaining carriers: 360 → 0 paints/3 s each (the dashboard's 6 = its clock); the Generate button + FAB too, the flash pill at 25px, the trope card flash kept as a shadow (it clips its overflow).** | getAnimations on ::after, reduced-motion static ring, 2-phase shots both …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-16 | `90e592b` | flash_cards.html | (S511) **The printed progress report's Hebrew column heads lose the Latin tracking** (0.4267px/uppercase → normal/none under print media; EN unchanged). | a seeded profile's report via `_reportEnter`; findings S511.
+
+- [x] 2026-10-16 | `cb7b7a4` | dashboard, torah | (S511) **Four eyebrows 10.56 → 11.2px** (`.tt-set-sub` ×2, `.bpe-mgroup-lbl`, `.pmv-hidden-note`). | computed sizes EN 1280 + HE 800; 24 gate cells clean.
+
+- 2026-10-14 | **S506** | iters: 5 | tools: dashboard ×2, torah, trope | patterns fixed: theme-token (NEW), window-taller, text-field ×2 | pass run: N | SW: v993→v994
+
+- 2026-10-13 | **S505** | iters: 5 | tools: generator ×2, resources, trope, dash, flash, dict, index, torah | patterns fixed: radio-set, latin-track | pass run: K | SW: v992→v993
+
+- 2026-10-13 | **S504** | iters: 5 | tools: flash, FM, torah, dashboard | patterns fixed: radio-set ×2, latin-track, count-noun | pass run: L | SW: v991→v992
+
+- 2026-10-13 | **S503** | iters: 5 | tools: torah ×2, trope, README, flash | patterns fixed: data-buster (NEW), pinned-english, latin-tracking | pass run: E | SW: v990→v991
+
+- 2026-10-13 | **S502** | iters: 5 | tools: dashboard ×2, generator, dictionary | patterns fixed: stored-json, latin-tracking ×2, radio-set | pass run: A | SW: v989→v990
+
+- 2026-10-13 | **S501** | iters: 5 | tools: dashboard, torah, generator ×2, FM, flash | patterns fixed: contrast-plate, icon-erase, count-noun, radio-set (toggle twin) | pass run: B | SW: v985→v986
+
+- 2026-10-13 | **S500** | iters: 5 | tools: FM ×2, dashboard ×2, dictionary, resources, flash | patterns fixed: rebuild ×1 (block ×4), busy-disabled ×1 | pass run: F | SW: v984→v985
+
+- 2026-10-14 | **S508** | iters: 5 | tools: dashboard ×2, resources, account | patterns fixed: physical ×5, text-field ×2 | pass run: M | SW: v995→v996
+
+- 2026-10-14 | **S507** | iters: 5 | tools: trope, dashboard, saves, flash | patterns fixed: page-roundtrip (NEW), text-field ×2 | pass run: P | SW: v994→v995
+
+- 2026-10-15 | **S509** | iters: 4 | tools: letter_learner ×3 | patterns fixed: new-page-print-ink (NEW) | pass run: G | SW: v999→v1000
