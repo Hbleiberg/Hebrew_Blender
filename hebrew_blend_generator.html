@@ -900,11 +900,11 @@ body.dark .hi-sun{display:inline-block;}
     border-bottom: 2px solid var(--navy);
   }
   .ws-title {
-    font-family: 'Libre Baskerville', serif;
+    font-family: 'Libre Baskerville', var(--heb-font);   /* a Hebrew title falls through to the worksheet's Hebrew face, not the system serif */
     font-size: 1.4rem;
     color: var(--navy);
   }
-  .ws-subtitle { font-size: 0.82rem; color: var(--muted); margin-top: 3px; }
+  .ws-subtitle { font-size: 0.82rem; color: var(--muted); margin-top: 3px; font-family: 'Source Sans 3', var(--heb-font); }
   .ws-meta {
     display: flex;
     flex-direction: column;
@@ -1522,6 +1522,7 @@ body.dark .hi-sun{display:inline-block;}
 
   /* Class Set version label */
   .ws-version-label { font-size: 0.85rem; font-weight: 700; color: var(--gold); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 2px; }
+  .ws-version-label[lang="he"] { letter-spacing: normal; text-transform: none; font-family: var(--heb-font); }   /* גרסה א under עברית header labels: no Latin tracking, the Hebrew face */
 
   /* Crossword */
   .cw-table { border-collapse: collapse; margin: 0 auto; background: var(--white); }
@@ -10423,7 +10424,7 @@ function versionLabelText(i) {
 function appendStandardBlendSheets(ws, arr, ctx, versionLabel) {
   const { isInverse, fillVowels, showAnswers, title, subtitle } = ctx;
   const cols = autoCols(arr.length);
-  const verHtml = versionLabel ? `<div class="ws-version-label">${versionLabel}</div>` : '';
+  const verHtml = versionLabel ? `<div class="ws-version-label"${headerLang === 'he' ? ' lang="he"' : ''}>${versionLabel}</div>` : '';
 
   const studentSheet = document.createElement('div');
   // Every sheet after the first starts a new printed page (the matching/trace multi-sheet
@@ -12348,7 +12349,7 @@ function renderMatchingSheets(ws, versionsItems, opts) {
   versionsItems.forEach((items, v) => {
     const perm = derange(items.length);          // target row r shows items[perm[r]]
     const verLabel = multi ? versionLabelText(v) : null;
-    const verHtml = verLabel ? '<div class="ws-version-label">' + verLabel + '</div>' : '';
+    const verHtml = verLabel ? '<div class="ws-version-label"' + (headerLang === 'he' ? ' lang="he"' : '') + '>' + verLabel + '</div>' : '';
 
     // ── Student sheet ──
     const sheet = document.createElement('div');
