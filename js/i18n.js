@@ -238,6 +238,9 @@
       // whose slot is not a flex item, since align-self is simply ignored there.
       '.i18n-switch{align-self:stretch;}' +
       '[data-i18n-switcher]{align-self:stretch;display:flex;}' +
+      // Under a finger the select reads at the 16px floor, so iOS does not zoom into the page when it opens
+      // (the pages' own fields carry the same (pointer:coarse) rule; a mouse keeps the 0.78rem header size).
+      '@media (pointer:coarse){.i18n-switch select.i18n-select{font-size:16px;}}' +
       '.i18n-switch select.i18n-select{height:100%;}' +
       '.i18n-switch select.i18n-select:hover{background:var(--warm-gray,#e8e0d0);}' +
       // Dark --warm-gray equals dark --white (#1e2535) on every host page, so the token hover resolved to the
