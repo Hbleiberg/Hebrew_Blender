@@ -8,21 +8,15 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P3 (**NEW S510 D — pattern `infinite-box-shadow-pulse…`; the paste is letter_learner `fd6cfdc`**) | dashboard, flash, generator, dictionary, torah, trope | **The Tour button's first-visit pulse animates box-shadow, so the viewport repaints twice a frame while it runs** (12.6% / 35.6% of the main thread at 1× / 4× before the fix). | found S510
-
 - [ ] P3 (**NEW S510 D; shared sw.js — the maintainer's call**) | sw.js | **Pages, scripts and /locales/ are fetched with cache:'no-store', so a returning visitor re-downloads ~370 KB per page view although GitHub Pages answers 304**; `'no-cache'` keeps always-revalidate and made the same reload 0 B (findings S510). | found S510
 
 - [ ] P4 (**NEW S509 — N's; shared js/i18n.js**) | js/i18n.js | **The header language select is 12.5px under a finger on every page, so iOS zooms into the picker**; the 16px rule stops at page-owned fields. | found S509
-
-- [ ] P4 (**NEW S508 M**) | dashboard, torah | **Eyebrows at 0.66rem under the 11.2px floor**: `.tt-set-sub` ×2, `.bpe-mgroup-lbl`, `.pmv-hidden-note` (three idioms: findings). | found S508
 
 - [ ] P4 (**NEW S508 M — gate 2**) | dashboard | **"+ Add period" beside two icon buttons; "✨ Quick-start layouts…"** — the glyph belongs in the markup. | found S508
 
 - [ ] P4 (**NEW S506 N**) | classroom_dashboard.html | **Schedule Sync's empty-week hint spans the grid's 540px**, so at phone widths "…to build your bell schedule." needs a sideways pan. | found S506
 
 - [ ] P4 (**NEW S503 E, gate 2**) | torah_trainer.html | **Total Torah on: Chant says "(PocketTorah audio)"** (`verse_chant_aria`). | found S503
-
-- [ ] P4 (**S502 A — latin-tracking**) | flash_cards.html | **flash's printed report `th` (G's).** | found S502
 
 - [ ] P4 (**S502 A — radio-set twin**) | FM, dictionary, resources | **Unnamed pressed rows**: FM's 5 mode toggles (no visible label: need a string), dictionary mode + resources view (gate 2). | found S502
 
@@ -316,13 +310,21 @@ _(none)_
 
 ## Done
 
-- [x] 2026-10-15 | (S510 close-out) | branch/deploy note | **S510 = D on letter_learner (the maintainer's focus) + 3 fixes, PR #332.** No drift; sw v1000 (already on the PR); no FM bump; no gate. 3 on one tool by direction; S508–S509 Done and 3 per-session rows → archive (cap).
+- [x] 2026-10-16 | (S511 close-out) | branch/deploy note | **S511 = I on the whole suite (the Letter Learner's first) + 4 fixes, a new draft PR off `origin/main` (#332 merged).** Drift: sw.js v1000 → v1002 outside the loop (14 Letter Learner commits, audited by I); FM 5.59; migration 0004 live; keep-alive run 33 green. sw v1002 → v1003 (letter_learner, dashboard, flash, generator, dictionary, …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-10-15 | `fd6cfdc` `e6755ba` `17b0fdc` | letter_learner ×3 | (S510) **The Tour pulse no longer repaints the viewport every frame (362 → 0 paints/3 s; 35.6 → 22% busy at 4×); the Fonts tab's face check compares pixels in place (click 65 → 44 ms at 4×); a letter's drawings are checked when first shown, not all 188 at boot (27–46 → 6–7 ms at 4×).** | findings S510.
+- [x] 2026-10-16 | `d4c5e02` | letter_learner.html | (S511 I) **The "Hebrew voice" picker showed on a browser with speech but under two Hebrew voices (the flex row beat `[hidden]`; 245×30 holding "Browser's choice" alone).** | 8 cells display:none; two stubbed voices show it (control); findings S511.
+
+- [x] 2026-10-16 | `f1cfd83` | dashboard, flash, generator, dictionary, torah, trope | (S511) **The Tour pulse ring on the 6 remaining carriers: 360 → 0 paints/3 s each (the dashboard's 6 = its clock); the Generate button + FAB too, the flash pill at 25px, the trope card flash kept as a shadow (it clips its overflow).** | getAnimations on ::after, reduced-motion static ring, 2-phase shots both …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-16 | `90e592b` | flash_cards.html | (S511) **The printed progress report's Hebrew column heads lose the Latin tracking** (0.4267px/uppercase → normal/none under print media; EN unchanged). | a seeded profile's report via `_reportEnter`; findings S511.
+
+- [x] 2026-10-16 | `cb7b7a4` | dashboard, torah | (S511) **Four eyebrows 10.56 → 11.2px** (`.tt-set-sub` ×2, `.bpe-mgroup-lbl`, `.pmv-hidden-note`). | computed sizes EN 1280 + HE 800; 24 gate cells clean.
 
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-16 | **S511** | iters: 5 | tools: letter_learner, dashboard ×2, torah ×2, flash ×2, generator, dictionary, trope | patterns fixed: box-shadow-pulse ×6 (class closed), hidden-attribute ×1, latin-tracking ×1 | pass run: I | SW: v1002→v1003
 
 - 2026-10-15 | **S510** | iters: 4 | tools: letter_learner ×3 | patterns fixed: box-shadow-pulse (NEW) | pass run: D | SW: v1000→v1000 (bumped on this PR by the mobile pass)
 
@@ -346,25 +348,13 @@ _(none)_
 
 - 2026-10-13 | **S500** | iters: 5 | tools: FM ×2, dashboard ×2, dictionary, resources, flash | patterns fixed: rebuild ×1 (block ×4), busy-disabled ×1 | pass run: F | SW: v984→v985
 
-- 2026-10-13 | **S499** | iters: 5 | tools: dashboard ×2, generator, torah | patterns fixed: hidden-input (NEW), busy-disabled, rebuild | pass run: C | SW: v983→v984
-
-- 2026-10-13 | **S498** | iters: 5 | tools: contact ×2, resources, flash, generator, dictionary, FM ×2, torah, trope | patterns fixed: busy-disabled (NEW) ×2, count-noun ×5 | pass run: H | SW: v982→v983
-
-- 2026-10-12 | **S497** | iters: 5 | tools: dashboard ×2, flash | patterns fixed: dark-palette, count-noun (NEW) | pass run: I | SW: v981→v982
-
-- 2026-10-12 | **S496** | iters: 5 | tools: dictionary ×2 (fix + micro), dashboard | patterns fixed: root-var (NEW), fixed-surface | pass run: D | SW: v980→v981
-
-- 2026-10-12 | **S495** | iters: 5 | tools: dashboard ×2, torah, privacy, generator | patterns fixed: dark-palette (NEW), latin-tracking | pass run: G | SW: v979→v980
-
-- 2026-10-10 | **S494** | iters: 1 pass (**M**) + 4 fixes = **5** | tools: privacy ×2, terms, dictionary, trope, CSV, scripts | patterns fixed: hebrew-faux-italic (NEW) ×4 | pass run: M | SW: v975→v976
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S510 (2026-10-15):** letter_learner S510 · dashboard, resources, account S508 · trope, flash, saves, scripts S507 · torah S506 · generator, dictionary, index S505 · FM S504 · README S503 · contact S498 · privacy S495 · terms, 404 S494 · i18n.js S478 · pwa S472.
+- **Snapshot S511 (2026-10-16):** letter_learner, dashboard, flash, generator, dictionary, torah, trope S511 · resources, account S508 · saves, scripts S507 · index S505 · FM S504 · README S503 · contact S498 · privacy S495 · terms, 404 S494 · i18n.js S478 · pwa S472.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
-- **`infinite-box-shadow-pulse-repaints-every-frame`** (NEW S510 D; letter_learner FIXED `fd6cfdc`; 6 carriers OPEN): ACTIVE, streak 0. Detection: `grep -n attnPulse *.html` → keyframes on `box-shadow`; `d510/pulse.mjs` paints per 3 s (0 = fixed).
+- **`infinite-box-shadow-pulse-repaints-every-frame`** (NEW S510 D; letter_learner FIXED `fd6cfdc`; S511 the 6 carriers FIXED `f1cfd83` — open 0): ACTIVE, streak 0. Detection: `grep -n attnPulse *.html` → keyframes on `box-shadow`; `i511/pulse.mjs` paints per 3 s (0 = fixed; the …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`new-page-print-block-without-the-ink-remap`** (NEW S509 G; letter_learner FIXED `be4a13f`; 14 others clean): ACTIVE, streak 0. Detection: `--text:` inside the print block of every page with dark tokens; `g509/g509.mjs` ink dark vs light.
 
@@ -404,7 +394,7 @@ _(none)_
 
 - **`header-wrap-gate-below-its-ceiling`** (NEW S478 M; FIXED ×8 `92a21164`; S489 dashboard `f620c768`): ACTIVE, streak 0. Detection: `m478/gates.mjs` / `e489/gates.mjs` (1px 320-1000, EN/HE × light/dark, per page; a gate removed by CSSOM gives its ceiling); HEAD the control.
 
-- **`latin-tracking-on-hebrew-labels`** (gate 3: drop suite-wide; S502 dashboard + dictionary; S503 flash; S504 torah `8e48daa5`; S505 Beta badges `0abb1f57`; open: flash report `th`): ACTIVE, streak 0. Detection: `a502/dash-track.mjs`; torah `l504/torahtrack2.mjs` …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`latin-tracking-on-hebrew-labels`** (gate 3: drop suite-wide; S502 dashboard + dictionary; S503 flash; S504 torah `8e48daa5`; S505 Beta badges `0abb1f57`; S511 flash report `th` `90e592b`; open: none known): ACTIVE, streak 0. Detection: `a502/dash-track.mjs`; torah …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`forward-arrow-points-back-in-rtl-copy`** (NEW S462 N; FIXED S464 `5f7f8a40` ×48; open 0): ACTIVE, streak 1 (S472: 47 delta rows, 0). Detection: the S462 CSV census; exempt "(→)", A→Z, Back labels, the orphan `flashcards.header.home`.
 
@@ -464,7 +454,7 @@ _(none)_
 
 - **`toggle-name-flips-with-its-pressed-state`** (NEW S414 `f9e67b2`; S416 trope tune `96275c2`; S430 found torah's Trope staff Tune all + every verse Tune; **S431 FIXED `aa97e2e`**): ACTIVE, streak 0 (last swept S430). Detection `f414/toggles2.mjs`: real click per …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`author-display-defeats-the-hidden-attribute`** (S414 `391114b`; S416 FM `3bf0112`; S425 trope ×2; S430 torah ×2; **S472 torah lookup `306003c3`**; S472 detection `a472/hidrec.mjs`): ACTIVE, streak 0. Detection: rendered `[hidden]` with display ≠ none (S430 …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`author-display-defeats-the-hidden-attribute`** (S414 `391114b`; **S511 letter_learner `#llVoiceRow` `d4c5e02`**; S416 FM `3bf0112`; S425 trope ×2; S430 torah ×2; **S472 torah lookup `306003c3`**; S472 detection `a472/hidrec.mjs`): ACTIVE, streak 0. Detection: rendered …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`button-group-label-not-programmatic`** (**NEW S413 Pass C — resources ×8 rows FIXED `945b397`; generator, dictionary, hub unmeasured (no `role="group"` at all)**): ACTIVE, streak 0. A row of `aria-pressed` buttons sits under a visible label (a `<span>`, or a `<label>` with …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -724,7 +714,7 @@ _(none)_
 
 - D performance (one tool): 2026-10-15 (**S510 — letter_learner (the maintainer's focus; its first D): cold + HE at 1×/4× (profile + trace), open/next/fonts/toggles by real clicks, steady windows, 3G, the worker's repeat-visit bytes; controls fired. FOUND 7, FIXED 3 (+ sw.js, 6 pulse carriers logged). D-next: flash (S393).**)
 
-- I first-load & empty-state: 2026-10-12 (**S497 — 37th I, 90 commits: 136 cells, census = S481 136/136, tours 14/14, delta arms; plants fired. FOUND 3, FIXED 1 (+2).**)
+- I first-load & empty-state: 2026-10-16 (**S511 — 38th I, S497 → S511 (~110 commits + letter_learner's first I): plants 286/288 (2 explained), 144 virgin cells × HEAD + the S510 tree (139/144 equal; 5 timing), tours 8/8 (plants 8/8), 259 drawer/tab clicks, LL: collapse tab, 7 letters × 4 tabs, all-off note, deep links, no-speech, 19 wrong-shape keys. FOUND 1, FIXED 1 (+3 candidates).**)
 
 - B console/error audit: 2026-10-13 (**S501 — 38th B, `fee5fe05..d5e7c3fa` (82 commits): 68 load cells (controls 8/8) + the delta by real input on every page. 0 new; 4 candidates fixed.**)
 
@@ -738,4 +728,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-13 (**S500 — 37th F, the tabs / segmented-control keyboard contract (never swept): 9 strips + 6 toggle groups, real keys, EN/HE; plants 3/3. FOUND 4, FIXED 3 (+ Current Location). F-next: dialog Tab traps.**)
 
-**Next session (S511):** **BRANCH/PR: #332 open → continue (mobile pass + S509 + S510); merged → restart from `origin/main`.** `sw.js` **v1000**, FM **5.59**. ⚑ Stalest: I (S497), then B, C. ⚑ First: sw.js no-store (maintainer's call); the 6 pulse carriers (a paste); eyebrows. ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2: TT Chant, glyphs.
+**Next session (S512):** **BRANCH/PR: the S511 draft PR (opened at close-out) open → continue; merged → restart from `origin/main`.** `sw.js` **v1003**, FM **5.59**. ⚑ Stalest: H (S498; H-next generator), then C (S499; C-next FM), F (S500), B (S501). ⚑ First: sw.js no-store (maintainer's call); the header language select 12.5px (js/i18n.js, shared); Schedule Sync's empty-week hint; Bulk edit's Select all/none hover + 14px. ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2: TT Chant, glyphs; O needs a Bash permission rule for the detector.

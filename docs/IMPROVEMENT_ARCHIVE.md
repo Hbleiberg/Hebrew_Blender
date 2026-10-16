@@ -92808,3 +92808,47 @@ _(prior — S510 pointer:)_ **Next session (S510):** **BRANCH/PR: #332 open → 
 - 2026-10-10 | **S493** | iters: 1 pass (**P**) + 4 fixes = **5** | tools: dictionary ×2, js/ivrit-saves.js (the session's one shared script), trope | patterns fixed: stale-tab ×1, flex-range ×1, latin-tracking ×1 | pass run: P | SW: v973→v974
 - 2026-10-10 | **S492** | iters: 1 pass (**N**) + 3 fixes + 1 reverted = **5** | tools: dictionary ×2, generator, FM | patterns fixed: text-field-under-16px ×1, latin-tracking ×2 | pass run: N | SW: v972→v973
 - 2026-10-09 | **S491** | iters: 1 pass (**K**) + 4 fixes = **5** | tools: FM ×2, dashboard ×2, dictionary ×2, resources ×2, flash ×2, generator, torah, trope, scripts, docs | patterns fixed: latin-tracking ×2, settings-lost-across-a-load ×1 | pass run: K | SW: v971→v972
+
+
+<!-- archived by compact-ledger at the S512 boundary, 2026-10-16 -->
+## Compaction (S512, 2026-10-16) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-16 | (S511 close-out) | branch/deploy note | **S511 = I on the whole suite (the Letter Learner's first) + 4 fixes, a new draft PR off `origin/main` (#332 merged).** Drift: sw.js v1000 → v1002 outside the loop (14 Letter Learner commits, audited by I); FM 5.59; migration 0004 live; keep-alive run 33 green. sw v1002 → v1003 (letter_learner, dashboard, flash, generator, dictionary, torah, trope); no FM bump; no gate (unattended: O stays blocked, no seed built). S510 Done + 1 per-session row → archive (cap).
+
+- [x] 2026-10-16 | `f1cfd83` | dashboard, flash, generator, dictionary, torah, trope | (S511) **The Tour pulse ring on the 6 remaining carriers: 360 → 0 paints/3 s each (the dashboard's 6 = its clock); the Generate button + FAB too, the flash pill at 25px, the trope card flash kept as a shadow (it clips its overflow).** | getAnimations on ::after, reduced-motion static ring, 2-phase shots both themes; findings S511.
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`infinite-box-shadow-pulse-repaints-every-frame`** (NEW S510 D; letter_learner FIXED `fd6cfdc`; S511 the 6 carriers FIXED `f1cfd83` — open 0): ACTIVE, streak 0. Detection: `grep -n attnPulse *.html` → keyframes on `box-shadow`; `i511/pulse.mjs` paints per 3 s (0 = fixed; the dashboard's clock counts 6). Exempt: a once-only flash on an overflow-clipped card (trope `attnPulseShadow`).
+
+- **`latin-tracking-on-hebrew-labels`** (gate 3: drop suite-wide; S502 dashboard + dictionary; S503 flash; S504 torah `8e48daa5`; S505 Beta badges `0abb1f57`; S511 flash report `th` `90e592b`; open: none known): ACTIVE, streak 0. Detection: `a502/dash-track.mjs`; torah `l504/torahtrack2.mjs` …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- **`author-display-defeats-the-hidden-attribute`** (S414 `391114b`; **S511 letter_learner `#llVoiceRow` `d4c5e02`**; S416 FM `3bf0112`; S425 trope ×2; S430 torah ×2; **S472 torah lookup `306003c3`**; S472 detection `a472/hidrec.mjs`): ACTIVE, streak 0. Detection: rendered `[hidden]` with display ≠ none (S430 …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+_(prior — S511 pointer:)_ **Next session (S511):** **BRANCH/PR: #332 open → continue (mobile pass + S509 + S510); merged → restart from `origin/main`.** `sw.js` **v1000**, FM **5.59**. ⚑ Stalest: I (S497), then B, C. ⚑ First: sw.js no-store (maintainer's call); the 6 pulse carriers (a paste); eyebrows. ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2: TT Chant, glyphs.
+
+## S511 close-out (2026-10-16) — moved verbatim from the live ledger (the ledger's 100 KB cap)
+
+### from Done
+
+- [x] 2026-10-15 | (S510 close-out) | branch/deploy note | **S510 = D on letter_learner (the maintainer's focus) + 3 fixes, PR #332.** No drift; sw v1000 (already on the PR); no FM bump; no gate. 3 on one tool by direction; S508–S509 Done and 3 per-session rows → archive (cap).
+
+- [x] 2026-10-15 | `fd6cfdc` `e6755ba` `17b0fdc` | letter_learner ×3 | (S510) **The Tour pulse no longer repaints the viewport every frame (362 → 0 paints/3 s; 35.6 → 22% busy at 4×); the Fonts tab's face check compares pixels in place (click 65 → 44 ms at 4×); a letter's drawings are checked when first shown, not all 188 at boot (27–46 → 6–7 ms at 4×).** | findings S510.
+
+### from Per-session log
+
+- 2026-10-12 | **S497** | iters: 5 | tools: dashboard ×2, flash | patterns fixed: dark-palette, count-noun (NEW) | pass run: I | SW: v981→v982
+
+- 2026-10-12 | **S496** | iters: 5 | tools: dictionary ×2 (fix + micro), dashboard | patterns fixed: root-var (NEW), fixed-surface | pass run: D | SW: v980→v981
+
+- 2026-10-12 | **S495** | iters: 5 | tools: dashboard ×2, torah, privacy, generator | patterns fixed: dark-palette (NEW), latin-tracking | pass run: G | SW: v979→v980
+
+- 2026-10-10 | **S494** | iters: 1 pass (**M**) + 4 fixes = **5** | tools: privacy ×2, terms, dictionary, trope, CSV, scripts | patterns fixed: hebrew-faux-italic (NEW) ×4 | pass run: M | SW: v975→v976
+
+- 2026-10-13 | **S499** | iters: 5 | tools: dashboard ×2, generator, torah | patterns fixed: hidden-input (NEW), busy-disabled, rebuild | pass run: C | SW: v983→v984
+
+- 2026-10-13 | **S498** | iters: 5 | tools: contact ×2, resources, flash, generator, dictionary, FM ×2, torah, trope | patterns fixed: busy-disabled (NEW) ×2, count-noun ×5 | pass run: H | SW: v982→v983
