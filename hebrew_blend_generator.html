@@ -2180,13 +2180,22 @@ body.dark #appToast { background: #0a0f1c; }
 @media (prefers-reduced-motion: reduce) { #appToast { transition: none !important; } }
 /* ═══ end shared: app-toast CSS ═══ */
 
-  /* Attention pulse (Generate button when settings drift; Tour button first-visit nudge) */
+  /* Attention pulse (Generate button when settings drift; Tour button first-visit nudge).
+     A gold ring on a pseudo-element, animated in transform and opacity only, so the compositor runs it by itself. The
+     earlier box-shadow pulse made the main thread repaint the whole viewport twice a frame for as long as the button
+     pulsed (13% of the main thread at 1x CPU, 36% at 4x — measured in loop S510 on the Letter Learner, whose CSS this
+     is). Same look: a ring at the button's edge that swells about 6px and fades. */
   @keyframes attnPulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(201,146,42,0.55); }
-    50%      { box-shadow: 0 0 0 6px rgba(201,146,42,0); }
+    0%, 100% { transform:scale(1); opacity:0.75; }
+    50%      { transform:scale(1.18); opacity:0; }
   }
-  .pulse-attn { animation: attnPulse 1.4s ease-in-out infinite; }
-  body.dark .pulse-attn { animation-name: attnPulse; }
+  .pulse-attn { position:relative; }
+  .pulse-attn::after {
+    content:""; position:absolute; inset:-3px; border-radius:9px; pointer-events:none;
+    border:3px solid rgba(201,146,42,0.6);
+    animation:attnPulse 1.4s ease-in-out infinite;
+  }
+  body.dark .pulse-attn::after { animation-name: attnPulse; }
   /* Keyboard-operable font upload (suite-wide S54): `hidden` (display:none) removed the file
    input from the tab order, making the uploader mouse-only. The input is now visually hidden
    but FOCUSABLE — Enter/Space opens the picker — and the wrapping label shows the ring. */
@@ -2206,7 +2215,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
       scroll-behavior: auto !important;
     }
     /* No motion: fall back to a steady ring so the cue is still visible. */
-    .pulse-attn { animation: none !important; box-shadow: 0 0 0 3px rgba(201,146,42,0.6) !important; }
+    .pulse-attn::after { animation: none !important; }   /* the ring stays, still: its base style is the static 3px ring */
     .preview-notice { transition: none !important; }
     .tour-spot { transition: none !important; }
     /* Drill card flip, the infinite "urgent" timer blink, and the section chevron all honor reduced motion. */

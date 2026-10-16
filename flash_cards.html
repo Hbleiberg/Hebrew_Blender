@@ -1256,14 +1256,23 @@ body.dark .ladder-strip-line { color: var(--gold-light); }
 .results-savedeck .preset-row[hidden] { display: none; } /* .preset-row's flex beats the UA hidden rule */
 
 /* ============== GUIDED TOUR (ported from hebrew_blend_generator.html) ============== */
+/* The first-visit nudge on the Tour button: a gold ring on a pseudo-element, animated in transform and opacity only, so the
+   compositor runs it by itself. The earlier box-shadow pulse made the main thread repaint the whole viewport twice a frame
+   for as long as the button pulsed (13% of the main thread at 1x CPU, 36% at 4x — measured in loop S510 on the Letter
+   Learner, whose CSS this is). Same look: a ring at the button's edge that swells about 6px and fades. */
 @keyframes attnPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(201,146,42,0.55); }
-  50%      { box-shadow: 0 0 0 6px rgba(201,146,42,0); }
+  0%, 100% { transform:scale(1); opacity:0.75; }
+  50%      { transform:scale(1.18); opacity:0; }
 }
-.pulse-attn { animation: attnPulse 1.4s ease-in-out infinite; }
+.pulse-attn { position:relative; }
+.pulse-attn::after {
+  content:""; position:absolute; inset:-3px; border-radius:25px; pointer-events:none;   /* the .h-btn pill's 22px + the 3px ring */
+  border:3px solid rgba(201,146,42,0.6);
+  animation:attnPulse 1.4s ease-in-out infinite;
+}
 @media (prefers-reduced-motion: reduce) {
   /* No motion: fall back to a steady ring so the cue is still visible. */
-  .pulse-attn { animation: none !important; box-shadow: 0 0 0 3px rgba(201,146,42,0.6) !important; }
+  .pulse-attn::after { animation: none !important; }   /* the ring stays, still: its base style is the static 3px ring */
   .tour-spot { transition: none !important; }
 }
 

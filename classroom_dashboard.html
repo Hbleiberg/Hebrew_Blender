@@ -2072,12 +2072,21 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
   .tbtn:hover { filter: brightness(1.06); }
   .tbtn:disabled { opacity: 0.4; cursor: default; filter: none; }
   .tip-wrap .tip-icon { cursor: pointer; }
-  /* Attention pulse (Tour button first-visit nudge) — shared .pulse-attn, matching the other tools */
+  /* Attention pulse (Tour button first-visit nudge) — shared .pulse-attn, matching the other tools.
+     The first-visit nudge on the Tour button: a gold ring on a pseudo-element, animated in transform and opacity only, so the
+     compositor runs it by itself. The earlier box-shadow pulse made the main thread repaint the whole viewport twice a frame
+     for as long as the button pulsed (13% of the main thread at 1x CPU, 36% at 4x — measured in loop S510 on the Letter
+     Learner, whose CSS this is). Same look: a ring at the button's edge that swells about 6px and fades. */
   @keyframes attnPulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(201,146,42,0.55); }
-    50%      { box-shadow: 0 0 0 6px rgba(201,146,42,0); }
+    0%, 100% { transform:scale(1); opacity:0.75; }
+    50%      { transform:scale(1.18); opacity:0; }
   }
-  .pulse-attn { animation: attnPulse 1.4s ease-in-out infinite; }
+  .pulse-attn { position:relative; }
+  .pulse-attn::after {
+    content:""; position:absolute; inset:-3px; border-radius:9px; pointer-events:none;
+    border:3px solid rgba(201,146,42,0.6);
+    animation:attnPulse 1.4s ease-in-out infinite;
+  }
   /* ═══ shared: app-toast CSS ═══ (byte-identical across generator/dashboard/flash_cards/dictionary/letter_learner; self-contained incl. reduced-motion) ═══ */
 #appToast {
   position: fixed;
@@ -2131,7 +2140,7 @@ button:focus-visible, a:focus-visible { outline:2px solid var(--focus-ring); out
     /* .day-item.day-today scales to 1.02 — the "today" cue animated in over 0.2s. The scale
        still applies; only the movement into it is dropped. */
     .fr-modal, .settings-modal, .settings-backdrop, .day-item { transition: none !important; }
-    .pulse-attn { animation: none !important; box-shadow: 0 0 0 3px rgba(201,146,42,0.6) !important; }
+    .pulse-attn::after { animation: none !important; }   /* the ring stays, still: its base style is the static 3px ring */
     .timer-display.done, #timerCol.running, #timerCol.running.urgent { animation: none !important; }
     .pick-name.flicker, .pick-name.landed { animation: none !important; }
     /* Toggle-switch knob: snap the slide (its transition is now transform-only). */

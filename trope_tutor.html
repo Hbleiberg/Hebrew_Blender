@@ -844,11 +844,28 @@ body.dark #tipFloat { background:#0a0f1c; }
 .tour-meta { display:flex; align-items:center; justify-content:space-between; gap:10px; }
 .tour-meta > span:first-child { font-size:0.72rem; font-weight:700; color:var(--muted); }
 .tour-btns { display:flex; gap:8px; }
+/* The first-visit nudge on the Tour button: a gold ring on a pseudo-element, animated in transform and opacity only, so the
+   compositor runs it by itself. The earlier box-shadow pulse made the main thread repaint the whole viewport twice a frame
+   for as long as the button pulsed (13% of the main thread at 1x CPU, 36% at 4x — measured in loop S510 on the Letter
+   Learner, whose CSS this is). Same look: a ring at the button's edge that swells about 6px and fades. */
 @keyframes attnPulse {
+  0%, 100% { transform:scale(1); opacity:0.75; }
+  50%      { transform:scale(1.18); opacity:0; }
+}
+.pulse-attn { position:relative; }
+.pulse-attn::after {
+  content:""; position:absolute; inset:-3px; border-radius:9px; pointer-events:none;
+  border:3px solid rgba(201,146,42,0.6);
+  animation:attnPulse 1.4s ease-in-out infinite;
+}
+/* The Learn card's 1.6 s flash (openLearnFor) keeps the box-shadow form: the card clips its overflow, so a ring outside its
+   box would never show, and a once-only flash is not the steady cost the ring above removes. */
+.tu-card.pulse-attn::after { content:none; }
+.tu-card.pulse-attn { animation:attnPulseShadow 1.4s ease-in-out infinite; }
+@keyframes attnPulseShadow {
   0%, 100% { box-shadow:0 0 0 0 rgba(201,146,42,0.55); }
   50%      { box-shadow:0 0 0 6px rgba(201,146,42,0); }
 }
-.pulse-attn { animation:attnPulse 1.4s ease-in-out infinite; }
 
 /* ───── Toast (house pattern) ───── */
 .tu-toast {
@@ -1021,7 +1038,8 @@ footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-co
 label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline-offset:2px; }
 
 @media (prefers-reduced-motion: reduce) {
-  .pulse-attn { animation: none !important; box-shadow: 0 0 0 3px rgba(201,146,42,0.6) !important; }
+  .pulse-attn::after { animation: none !important; }   /* the ring stays, still: its base style is the static 3px ring */
+  .tu-card.pulse-attn { animation: none !important; box-shadow: 0 0 0 3px rgba(201,146,42,0.6) !important; }
   .tour-spot { transition: none !important; }
   .tu-toast { transition: none !important; }
   .tu-tab, .tu-chip, .tu-pchip, .tu-choice, .font-opt, .hbtn, .btn, .tu-ex-play, .radio-group label { transition: none !important; }

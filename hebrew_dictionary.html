@@ -811,8 +811,12 @@ body.dark .tour-card{background:var(--cream);}
 .tour-meta > span:first-child{font-size:0.72rem;font-weight:700;color:var(--muted);}
 .tour-btns{display:flex;gap:8px;}
 /* Section 5: first-visit nudge + reduced-motion */
-@keyframes attnPulse{0%,100%{box-shadow:0 0 0 0 rgba(201,146,42,0.55);}50%{box-shadow:0 0 0 6px rgba(201,146,42,0);}}
-.pulse-attn{animation:attnPulse 1.4s ease-in-out infinite;}
+/* A gold ring on a pseudo-element, animated in transform and opacity only, so the compositor runs it by itself: the earlier
+   box-shadow pulse made the main thread repaint the whole viewport twice a frame for as long as the button pulsed (13% of
+   the main thread at 1x CPU, 36% at 4x — measured in loop S510 on the Letter Learner, whose CSS this is). Same look. */
+@keyframes attnPulse{0%,100%{transform:scale(1);opacity:0.75;}50%{transform:scale(1.18);opacity:0;}}
+.pulse-attn{position:relative;}
+.pulse-attn::after{content:"";position:absolute;inset:-3px;border-radius:9px;pointer-events:none;border:3px solid rgba(201,146,42,0.6);animation:attnPulse 1.4s ease-in-out infinite;}
 /* Keyboard-operable font upload (suite-wide S54): `hidden` (display:none) removed the file
    input from the tab order, making the uploader mouse-only. The input is now visually hidden
    but FOCUSABLE — Enter/Space opens the picker — and the wrapping label shows the ring. */
@@ -838,7 +842,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
      contact.html, resources.html and flash_cards.html already carry. 0.001ms rather than 0 so
      animationend listeners still fire; the rules below out-specify it and keep their static cues. */
   *,*::before,*::after{animation-duration:0.001ms !important;animation-iteration-count:1 !important;transition-duration:0.001ms !important;scroll-behavior:auto !important;}
-  .pulse-attn{animation:none !important;box-shadow:0 0 0 3px rgba(201,146,42,0.6) !important;}
+  .pulse-attn::after{animation:none !important;}   /* the ring stays, still: its base style is the static 3px ring */
   .tour-spot{transition:none !important;}
   .load-bar.indeterminate .load-bar-fill{animation:none !important;}
   .load-bar-fill{transition:none !important;}
