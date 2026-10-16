@@ -11495,7 +11495,7 @@ function _relocateStarRealRow(forIdentify) {
 
 function setRealWordDrill(type) {
   rwDrillType = type;
-  document.querySelectorAll('.rw-drill-btn').forEach(b => b.classList.toggle('active', b.dataset.drill === type));
+  document.querySelectorAll('.rw-drill-btn[data-drill]').forEach(b => b.classList.toggle('active', b.dataset.drill === type));   // [data-drill] only: the Word Source, number gender/display and match-target rows share the class and keep their own pick
 
   // Show only the matching drill description below the buttons.
   document.querySelectorAll('.rw-help').forEach(el => el.style.display = 'none');
