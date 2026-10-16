@@ -310,7 +310,7 @@ _(none)_
 
 ## Done
 
-- [x] 2026-10-16 | (S511 close-out) | branch/deploy note | **S511 = I on the whole suite (the Letter Learner's first) + 4 fixes, a new draft PR off `origin/main` (#332 merged).** Drift: sw.js v1000 → v1002 outside the loop (14 Letter Learner commits, audited by I); FM 5.59; migration 0004 live; keep-alive run 33 green. sw v1002 → v1003 (letter_learner, dashboard, flash, generator, dictionary, …[full text: IMPROVEMENT_ARCHIVE.md]
+- [x] 2026-10-16 | (S511 close-out) | branch/deploy note | **S511 = I on the whole suite (the Letter Learner's first) + 4 fixes, draft PR #335 off `origin/main` (#332 merged).** Drift: sw.js v1000 → v1002 outside the loop (14 Letter Learner commits, audited by I); FM 5.59; migration 0004 live; keep-alive run 33 green. sw v1002 → v1003 (letter_learner, dashboard, flash, generator, dictionary, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-10-16 | `d4c5e02` | letter_learner.html | (S511 I) **The "Hebrew voice" picker showed on a browser with speech but under two Hebrew voices (the flex row beat `[hidden]`; 245×30 holding "Browser's choice" alone).** | 8 cells display:none; two stubbed voices show it (control); findings S511.
 
@@ -728,4 +728,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-13 (**S500 — 37th F, the tabs / segmented-control keyboard contract (never swept): 9 strips + 6 toggle groups, real keys, EN/HE; plants 3/3. FOUND 4, FIXED 3 (+ Current Location). F-next: dialog Tab traps.**)
 
-**Next session (S512):** **BRANCH/PR: the S511 draft PR (opened at close-out) open → continue; merged → restart from `origin/main`.** `sw.js` **v1003**, FM **5.59**. ⚑ Stalest: H (S498; H-next generator), then C (S499; C-next FM), F (S500), B (S501). ⚑ First: sw.js no-store (maintainer's call); the header language select 12.5px (js/i18n.js, shared); Schedule Sync's empty-week hint; Bulk edit's Select all/none hover + 14px. ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2: TT Chant, glyphs; O needs a Bash permission rule for the detector.
+**Next session (S512):** **BRANCH/PR: #335 open → continue; merged → restart from `origin/main`.** `sw.js` **v1003**, FM **5.59**. ⚑ Stalest: H (S498; H-next generator), then C (S499; C-next FM), F (S500), B (S501). ⚑ First: sw.js no-store (maintainer's call); the header language select 12.5px (js/i18n.js, shared); Schedule Sync's empty-week hint; Bulk edit's Select all/none hover + 14px. ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2: TT Chant, glyphs; O needs a Bash permission rule for the detector.
