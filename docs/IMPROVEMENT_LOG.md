@@ -8,11 +8,19 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P3 (**NEW S513 C**) | Hebrew_Font_Maker.html | **Load Project ▾ / Save Project ▾ are mouse-only menus** (focus stays on the button, Tab skips the items, Escape never closes). Precedent: `npnlDelKey`. | found S513
+
+- [ ] P3 (**NEW S513 C**) | Hebrew_Font_Maker.html | **QA Check's flagged cells are mouse-only** (`td.qa-cell`: no `tabindex`/role; 17 flagged, 0 focusable). | found S513
+
+- [ ] P4 (**NEW S513 C — `sub-floor touch target` ×4**) | Hebrew_Font_Maker.html | **`.wiz-tile-link` 14px tall, the Waterfall `summary` 14px, `.anc-xy input` 23px, `.qa-filter label` 19px.** | found S513
+
+- [ ] P4 (**NEW S513 C**) | Hebrew_Font_Maker.html | **`#spacingPreviewSvg` / `#kernPreviewSvg` carry no role or name.** | found S513
+
+- [ ] P4 (**NEW S513 C**) | Hebrew_Font_Maker.html | **Closing the starting-font picker lands focus in the wizard's name field, not on its opener.** | found S513
+
 - [ ] P3 (**NEW S510 D; shared sw.js — the maintainer's call**) | sw.js | **Pages, scripts and /locales/ are fetched with cache:'no-store', so a returning visitor re-downloads ~370 KB per page view although GitHub Pages answers 304**; `'no-cache'` keeps always-revalidate and made the same reload 0 B (findings S510). | found S510
 
 - [ ] P3 (**NEW S512 H — gate 2**) | hebrew_blend_generator.html | **Nothing says a preset, the remembered setup or an `.ivrit` file made under "Imported List" keeps no words** (memory-only; *Save as Word List* exists for this): the reopen shows an empty pool + the "No words match" note. A share link does carry them. | found S512
-
-- [ ] P4 (**NEW S512 H — paper; two small CSS/markup lines**) | hebrew_blend_generator.html | **A Hebrew title/subtitle prints in the system fallback face, and `גרסה א` under Hebrew header labels keeps Latin tracking**: `.ws-title` lacks `var(--heb-font)`; `.ws-version-label` needs `lang="he"` at its render site. | found S512
 
 - [ ] P4 (**NEW S512 H — gate 2**) | hebrew_blend_generator.html | **Real Words Matching prints "Hebrew Word Matching", ignoring the Title field** the other sheets honour. | found S512
 
@@ -29,8 +37,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S503 E, gate 2**) | torah_trainer.html | **Total Torah on: Chant says "(PocketTorah audio)"** (`verse_chant_aria`). | found S503
 
 - [ ] P4 (**S502 A — radio-set twin**) | FM, dictionary, resources | **Unnamed pressed rows**: FM's 5 mode toggles (no visible label: need a string), dictionary mode + resources view (gate 2). | found S502
-
-- [ ] P4 (**S502 A**) | classroom_dashboard.html | **Bulk edit: Select all/none no hover, 14px; checkbox rows 15px.** | found S502
 
 - [ ] P4 (**NEW S500 F**) | dashboard, contact, `.ivrit` carriers | **Week tabs: no tabpanel; Contact pay pills + `.ivrit` mode toggle unnamed** (pills need a string; the toggle is shared markup). | found S500
 
@@ -320,31 +326,29 @@ _(none)_
 
 ## Done
 
-- [x] 2026-10-16 | (S512 close-out) | branch/deploy note | **S512 = H on the generator (its 4th) + 4 fixes, draft PR #335 continued.** Drift: none (`origin/main` `c8b9dc7`, FM 5.59, 0004 live, backend files unchanged since S507, keep-alive run 34 green). sw v1003 → v1004 (generator, dashboard, i18n.js). No FM bump. check-i18n, check-inline-js, compact-ledger, check-ledger clean. O not run (blocked). Deferred: the five gate-2 Candidates marked S512.
+- [x] 2026-10-16 | (S513 close-out) | branch/deploy note | **S513 = C on the Font Maker (its 5th) + 4 fixes, draft PR #335 continued.** Drift: none (`origin/main` `c8b9dc7`, FM 5.59, 0004 live, keep-alive 34 green). sw v1004 → v1005 (FM, generator, dashboard). No FM bump. The four gates clean. O blocked. Nothing gated.
 
-- [x] 2026-10-16 | `ff980a7` | hebrew_blend_generator.html | (S512 H; group-toggle NEW) **The Word Source, gender/display and match-target rows lost their highlight on every drill click and restore** (`setRealWordDrill` toggled every `.rw-drill-btn`; now `[data-drill]`). | verified: 14 states (findings S512); 8 cells; check-inline-js.
+- [x] 2026-10-16 | `a54e6d2` | Hebrew_Font_Maker.html | (S513 C; button-focus-lost-to-its-own-rebuild) **A glyph tile picked by Enter/Space keeps the focus** (`_selectItem` re-focuses the rebuilt tile; before `<body>`). | 2 cells × 3 paths; matrix 8/8 (findings S513).
 
-- [x] 2026-10-16 | `59714ef` | hebrew_blend_generator.html | (S512 H; blocking-alert-for-a-routine-path) **Real Words' three "no words" alerts → the inline Generate note** (params; retires when words arrive). | verified: EN/HE 3 dialogs → 0 (findings S512); 8 cells; check-inline-js.
+- [x] 2026-10-16 | `1544ec9` | Hebrew_Font_Maker.html | (S513 C; contrast ×4) **Place Nikkud class buttons 2.15 / 3.68 / 2.54 → 4.76 / 7.31 / 5.47 (a 65 % `color-mix` fill); wizard link-button 2.75 → 6.22; Unconfirmed pill 4.03 → 5.1; dark tile text 4.39 → 6.12.** | 4 cells; full scan 3,223 → 0 (findings S513).
 
-- [x] 2026-10-16 | `517a043` | classroom_dashboard.html | (S512; S506 N) **Schedule Sync's empty-week hint fits a phone** (an empty grid lays out one column). | verified: 2 phones × EN/HE × themes 0/8 → 8/8 inside, desktop identical (findings); 8 cells; check-inline-js.
+- [x] 2026-10-16 | `c6fe147` | hebrew_blend_generator.html | (S513; S512 H; latin-tracking-on-hebrew-labels) **A Hebrew title/subtitle prints in the Hebrew face and `גרסה א` carries `lang="he"`, no tracking or uppercase.** | 4 cells + the English-header control (findings S513).
 
-- [x] 2026-10-16 | `78a973e` | js/i18n.js (shared) | (S512; S509 N) **The header language select reads 16px under a coarse pointer.** | verified: 2 phones × EN/HE × 6 pages 12.48 → 16px, overflow 0; desktop unchanged (findings).
+- [x] 2026-10-16 | `787c434` | classroom_dashboard.html | (S513; S502 A; sub-floor touch target) **Bulk preset editor: Select all / none 14 → 24px + a hover/focus state; checkbox rows 15 → 24px.** | 4 cells, hover 0/4 → 4/4 (findings S513).
 
 ## Metrics
 
 ### Per-session log (one line per session)
 
-- 2026-10-16 | **S512** | iters: 5 | tools: generator ×2, dashboard, js/i18n.js (shared) | patterns fixed: blocking-alert-for-a-routine-path ×1 (3 sites), group-toggle-wipes-a-sibling-group (NEW) ×1 | pass run: H | SW: v1003→v1004
-
-- 2026-10-16 | **S511** | iters: 5 | tools: letter_learner, dashboard ×2, torah ×2, flash ×2, generator, dictionary, trope | patterns fixed: box-shadow-pulse ×6 (class closed), hidden-attribute ×1, latin-tracking ×1 | pass run: I | SW: v1002→v1003
+- 2026-10-16 | **S513** | iters: 5 | tools: FM ×2, generator, dashboard | patterns fixed: button-focus-lost-to-its-own-rebuild ×1, latin-tracking-on-hebrew-labels ×1, sub-floor touch target ×2 | pass run: C | SW: v1004→v1005
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S512 (2026-10-16):** generator, dashboard, i18n.js S512 · letter_learner, flash, dictionary, torah, trope S511 · resources, account S508 · saves, scripts S507 · index S505 · FM S504 · README S503 · contact S498 · privacy S495 · terms, 404 S494 · pwa S472.
+- **Snapshot S513 (2026-10-16):** FM, generator, dashboard S513 · i18n.js S512 · letter_learner, flash, dictionary, torah, trope S511 · resources, account S508 · saves, scripts S507 · index S505 · README S503 · contact S498 · privacy S495 · terms, 404 S494 · pwa S472.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
-- **`group-toggle-wipes-a-sibling-group`** (NEW S512 H; generator FIXED `ff980a7`; the match-target re-sync was an earlier work-around): ACTIVE, streak 0. A class-wide `.active` toggle on a button class another row shares. Detection: `grep -n "querySelectorAll('\\.[a-z-]*btn')" *.html`, each toggle vs the rows sharing the class (`.sc-cols-btn`: one group, clean).
+- **`group-toggle-wipes-a-sibling-group`** (NEW S512 H; generator FIXED `ff980a7`; the match-target re-sync was an earlier work-around): ACTIVE, streak 0. A class-wide `.active` toggle on a button class another row shares. Detection: `grep -n "querySelectorAll('\\.[a-z-]*btn')" …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`infinite-box-shadow-pulse-repaints-every-frame`** (NEW S510 D; letter_learner FIXED `fd6cfdc`; S511 the 6 carriers FIXED `f1cfd83` — open 0): ACTIVE, streak 0. Detection: `grep -n attnPulse *.html` → keyframes on `box-shadow`; `i511/pulse.mjs` paints per 3 s (0 = fixed; the …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -386,7 +390,7 @@ _(none)_
 
 - **`header-wrap-gate-below-its-ceiling`** (NEW S478 M; FIXED ×8 `92a21164`; S489 dashboard `f620c768`): ACTIVE, streak 0. Detection: `m478/gates.mjs` / `e489/gates.mjs` (1px 320-1000, EN/HE × light/dark, per page; a gate removed by CSSOM gives its ceiling); HEAD the control.
 
-- **`latin-tracking-on-hebrew-labels`** (gate 3: drop suite-wide; S502 dashboard + dictionary; S503 flash; S504 torah `8e48daa5`; S505 Beta badges `0abb1f57`; S511 flash report `th` `90e592b`; open: generator `.ws-version-label` — Hebrew by headerLang, outside `html[lang=he]` …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`latin-tracking-on-hebrew-labels`** (gate 3: drop suite-wide; S502 dashboard + dictionary; S503 flash; S504 torah `8e48daa5`; S505 Beta badges `0abb1f57`; S511 flash report `th` `90e592b`; **S513 generator `.ws-version-label` `c6fe147` — open: none known** …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`forward-arrow-points-back-in-rtl-copy`** (NEW S462 N; FIXED S464 `5f7f8a40` ×48; open 0): ACTIVE, streak 1 (S472: 47 delta rows, 0). Detection: the S462 CSV census; exempt "(→)", A→Z, Back labels, the orphan `flashcards.header.home`.
 
@@ -426,7 +430,7 @@ _(none)_
 
 - **`copy-claims-success-on-a-refused-clipboard`** (NEW S428; FIXED `bbd5f65`, `0d2a941`; S444 index `90e1a057`, dashboard `18344f69`; **S445 generator `3dad5c11`, flash `58ee7a4f` — all 7 carriers fixed, 0 open**): ACTIVE, streak 0. Detection: every `execCommand('copy')` whose …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`button-focus-lost-to-its-own-rebuild`** (**S500 hebrew-keyboard tabs + layout, 4 carriers `1c701fc9`; S499 torah Try again ×2 `80c0a440`; S488 trope Try again ×2 `183605ba`; S483 hub `ab1a235e`; S474 flash Return to Options `3235f8eb`; S473 flash start `3e8e2f79`, torah …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`button-focus-lost-to-its-own-rebuild`** (**S513 FM glyph tiles `a54e6d2`; S500 hebrew-keyboard tabs + layout, 4 carriers `1c701fc9`; S499 torah Try again ×2 `80c0a440`; S488 trope Try again ×2 `183605ba`; S483 hub `ab1a235e`; S474 flash Return to Options `3235f8eb`; S473 …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`dark-literal-escapes-the-print-tokens`** (NEW S437 G; resources FIXED `5320a668`): ACTIVE, streak 1 (S479 trope clean; plant fired). Detection: PDFs dark vs light, ink per page (<200 at 40 dpi); a lighter dark sheet = a `body.dark` literal the print …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -508,7 +512,7 @@ _(none)_
 
 - **`light-literal-text-on-the-gold-token`** (registered 2026-09-17 (S396)): ACTIVE — **S399 (Pass A), FIRST real sweep: 7 NEW carriers, all on `hebrew_dictionary.html`, all fixed `273f449`; clean streak stays 0.** `color:#fff` (or another light literal) painted on `var(--gold)` …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`sub-floor touch target`**: ACTIVE. **S483 hub clean.** **S456: `85e294b2`, `924c9407`.** **S449: the emoji ▾ + rows FIXED `1ae29189` (the S427 carrier closed). S429: `.wm-mini` FIXED `359e0e2`.** …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`sub-floor touch target`**: ACTIVE. **S513 dashboard bulk picker ×2 `787c434`; FM ×4 open.** **S483 hub clean.** **S456: `85e294b2`, `924c9407`.** **S449: the emoji ▾ + rows FIXED `1ae29189` (the S427 carrier closed). S429: `.wm-mini` FIXED …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`vh-capped-sheet-without-dvh-twin`**: ACTIVE (registered S375). **S385 (Pass A), first re-sweep since the S377 fixes: 20 raw → 0 real, clean streak 1 of the 3 that retire it.** Every raw hit is an exemption the row names — 11 inner scrollers with their own `overflow:auto`, …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -698,7 +702,7 @@ _(none)_
 
 - K i18n / localization audit: 2026-10-13 (**S505 — 34th K on `2fee2f28..a4f94e88` (90 commits): `k505/` CSV delta, static census (plants 4/4), 84-state round trip (plants 420/420), retry 28/28 (control 0/4), blind arms (plants 6/6), delta surfaces by real input. CLEAN: 0 findings.**)
 
-- C accessibility (one tool): 2026-10-13 (**S499 — dashboard: census, walks, keys, contrast, motion. FOUND 8, FIXED 4. C-next: FM (S368).**)
+- C accessibility (one tool): 2026-10-16 (**S513 — FM, its 5th C (S368 →): 7 arms by real input, EN light 1280 + HE dark 800 (+ Draw, iPad Mini), 16 surfaces, plants 11/11. CLEAN: names, the Tab walk (80 stops, all painted), 12 dialogs, reduced motion. FOUND 7, FIXED 2 (+ generator, dashboard). C per tool: letter_learner never, torah S298, trope S312, generator S327, index S340, flash S381, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - A recurring-pattern sweep: 2026-10-13 (**S502 — 39th A, `fee5fe05..fc54901d` (90 commits): 72 static arms, 14-page battery + 1 px sweep vs pre-delta, real input; plants fired. FOUND 8, FIXED 4.**)
 
@@ -714,10 +718,10 @@ _(none)_
 
 - L SEO & discoverability audit: 2026-10-13 (**S504 — 27th L on `5f9b27c0..fc54901d` (90 commits): `l504/` (20 arms), 22/22 plants, tree + base 0; crawler text identical 17/17 (control fired); claims by real clicks. CLEAN.**)
 
-- H teacher walkthrough / paper-cuts (one tool): 2026-10-16 (**S512 — generator, its 4th H (S130 → S251 → S363 → S512): a 1st-grade letter-of-the-week lesson by real clicks (tracing, Name the Letter, a Class Set with a Hebrew header, a pasted Noach list → Word List, Numbers, preset, link, reopen, the colleague's HE/dark/800 open), 63 clicks × 3 cells, 0 errors. FOUND 9, FIXED 2 (+ dashboard, i18n.js); full text in the archive. H-next: letter_learner (never), privacy/terms/404 (never), trope (S367).**)
+- H teacher walkthrough / paper-cuts (one tool): 2026-10-16 (**S512 — generator, its 4th H (S130 → S251 → S363 → S512): a 1st-grade letter-of-the-week lesson by real clicks (tracing, Name the Letter, a Class Set with a Hebrew header, a pasted Noach list → Word List, Numbers, preset, link, reopen, the colleague's HE/dark/800 open), 63 clicks × 3 cells, 0 errors. FOUND 9, FIXED 2 (+ dashboard, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - E freshness/site-health: 2026-10-13 (**S503 — 39th E, `7663499a..4edc14b9` (90 commits): 15 arms + a `?v=` history arm, doc tokens, CSP, Total Torah by real input. FOUND 4, FIXED 3 (+ flash).**)
 
 - F cross-tool consistency: 2026-10-13 (**S500 — 37th F, the tabs / segmented-control keyboard contract (never swept): 9 strips + 6 toggle groups, real keys, EN/HE; plants 3/3. FOUND 4, FIXED 3 (+ Current Location). F-next: dialog Tab traps.**)
 
-**Next session (S513):** **BRANCH/PR: #335 open → continue; merged → restart from `origin/main`.** `sw.js` **v1004**, FM **5.59**. ⚑ Stalest: C (S499; C-next FM), then F (S500; F-next dialog Tab traps), B (S501), A (S502). ⚑ First: sw.js no-store (maintainer's call); the worksheet title's Hebrew face (generator, one CSS line); the Hebrew version label's tracking (generator); Bulk edit's Select all/none hover + 14px (dashboard). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2: TT Chant, glyphs, the five S512 copy items; O needs a Bash permission rule for the detector.
+**Next session (S514):** **BRANCH/PR: #335 open → continue; merged → restart from `origin/main`.** `sw.js` **v1005**, FM **5.59**. ⚑ Stalest: F (S500; F-next dialog Tab traps), then B (S501), A (S502), E (S503). ⚑ First: the FM's mouse-only Load/Save menus (P3); QA's flagged cells by keyboard (P3); sw.js no-store (maintainer's call). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2 (TT Chant, glyphs, five S512 copy items); O needs a Bash rule for the detector.

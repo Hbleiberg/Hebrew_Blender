@@ -92914,3 +92914,49 @@ _(prior — S511 pointer:)_ **Next session (S511):** **BRANCH/PR: #332 open → 
 - 2026-10-15 | **S509** | iters: 4 | tools: letter_learner ×3 | patterns fixed: new-page-print-ink (NEW) | pass run: G | SW: v999→v1000
 
 - 2026-10-15 | **S510** | iters: 4 | tools: letter_learner ×3 | patterns fixed: box-shadow-pulse (NEW) | pass run: D | SW: v1000→v1000 (bumped on this PR by the mobile pass)
+
+## S513 close-out (2026-10-16) — moved verbatim from the live ledger (the S513→S514 handoff, the S499 C rotation row, the four candidates struck as fixed)
+
+- [ ] P3 (**NEW S513 C — pattern `button-focus-lost-to-its-own-rebuild`**) | Hebrew_Font_Maker.html | **A glyph tile picked by keyboard drops focus to `<body>`** (`_selectItem` → `renderGrids()` rebuilds every tile; Enter/Space select, then ~60 Tabs back to the grid). | found S513
+
+- [ ] P3 (**NEW S513 C — text contrast, 4 sites**) | Hebrew_Font_Maker.html | **The active Place Nikkud class button paints white on its class colour: Below 2.15:1, Above 3.68, Center 2.54** (trop/Samaritan 2.9–4.4); the wizard's "Print a template sheet" link-button is gold on white 2.75; the Unconfirmed pill 4.03; dark-mode tile descriptions 4.39. | found S513
+
+- [ ] P4 (**NEW S512 H — paper; two small CSS/markup lines**) | hebrew_blend_generator.html | **A Hebrew title/subtitle prints in the system fallback face, and `גרסה א` under Hebrew header labels keeps Latin tracking**: `.ws-title` lacks `var(--heb-font)`; `.ws-version-label` needs `lang="he"` at its render site. | found S512
+
+- [ ] P4 (**S502 A**) | classroom_dashboard.html | **Bulk edit: Select all/none no hover, 14px; checkbox rows 15px.** | found S502
+
+- C accessibility (one tool): 2026-10-13 (**S499 — dashboard: census, walks, keys, contrast, motion. FOUND 8, FIXED 4. C-next: FM (S368).**)
+
+**Next session (S513):** **BRANCH/PR: #335 open → continue; merged → restart from `origin/main`.** `sw.js` **v1004**, FM **5.59**. ⚑ Stalest: C (S499; C-next FM), then F (S500; F-next dialog Tab traps), B (S501), A (S502). ⚑ First: sw.js no-store (maintainer's call); the worksheet title's Hebrew face (generator, one CSS line); the Hebrew version label's tracking (generator); Bulk edit's Select all/none hover + 14px (dashboard). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2: TT Chant, glyphs, the five S512 copy items; O needs a Bash permission rule for the detector.
+
+- [x] 2026-10-16 | `ff980a7` | hebrew_blend_generator.html | (S512 H; group-toggle NEW) **The Word Source, gender/display and match-target rows lost their highlight on every drill click and restore** (`setRealWordDrill` toggled every `.rw-drill-btn`; now `[data-drill]`). | verified: 14 states (findings S512); 8 cells; check-inline-js.
+
+- [x] 2026-10-16 | `59714ef` | hebrew_blend_generator.html | (S512 H; blocking-alert-for-a-routine-path) **Real Words' three "no words" alerts → the inline Generate note** (params; retires when words arrive). | verified: EN/HE 3 dialogs → 0 (findings S512); 8 cells; check-inline-js.
+
+- [x] 2026-10-16 | `517a043` | classroom_dashboard.html | (S512; S506 N) **Schedule Sync's empty-week hint fits a phone** (an empty grid lays out one column). | verified: 2 phones × EN/HE × themes 0/8 → 8/8 inside, desktop identical (findings); 8 cells; check-inline-js.
+
+- [x] 2026-10-16 | `78a973e` | js/i18n.js (shared) | (S512; S509 N) **The header language select reads 16px under a coarse pointer.** | verified: 2 phones × EN/HE × 6 pages 12.48 → 16px, overflow 0; desktop unchanged (findings).
+
+- 2026-10-16 | **S511** | iters: 5 | tools: letter_learner, dashboard ×2, torah ×2, flash ×2, generator, dictionary, trope | patterns fixed: box-shadow-pulse ×6 (class closed), hidden-attribute ×1, latin-tracking ×1 | pass run: I | SW: v1002→v1003
+
+- [x] 2026-10-16 | (S512 close-out) | branch/deploy note | **S512 = H on the generator (its 4th) + 4 fixes, draft PR #335 continued.** Drift: none (`origin/main` `c8b9dc7`, FM 5.59, 0004 live, backend files unchanged since S507, keep-alive run 34 green). sw v1003 → v1004 (generator, dashboard, i18n.js). No FM bump. check-i18n, check-inline-js, compact-ledger, check-ledger clean. O not run (blocked). Deferred: the five gate-2 Candidates marked S512.
+
+- 2026-10-16 | **S512** | iters: 5 | tools: generator ×2, dashboard, js/i18n.js (shared) | patterns fixed: blocking-alert-for-a-routine-path ×1 (3 sites), group-toggle-wipes-a-sibling-group (NEW) ×1 | pass run: H | SW: v1003→v1004
+
+
+<!-- archived by compact-ledger at the S514 boundary, 2026-10-16 -->
+## Compaction (S514, 2026-10-16) — moved verbatim from the live ledger
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`group-toggle-wipes-a-sibling-group`** (NEW S512 H; generator FIXED `ff980a7`; the match-target re-sync was an earlier work-around): ACTIVE, streak 0. A class-wide `.active` toggle on a button class another row shares. Detection: `grep -n "querySelectorAll('\\.[a-z-]*btn')" *.html`, each toggle vs the rows sharing the class (`.sc-cols-btn`: one group, clean).
+
+- **`button-focus-lost-to-its-own-rebuild`** (**S513 FM glyph tiles `a54e6d2`; S500 hebrew-keyboard tabs + layout, 4 carriers `1c701fc9`; S499 torah Try again ×2 `80c0a440`; S488 trope Try again ×2 `183605ba`; S483 hub `ab1a235e`; S474 flash Return to Options `3235f8eb`; S473 flash start `3e8e2f79`, torah …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- **`sub-floor touch target`**: ACTIVE. **S513: the dashboard bulk picker ×2 FIXED `787c434`; FM ×4 logged (candidate).** **S483 hub clean.** **S456: `85e294b2`, `924c9407`.** **S449: the emoji ▾ + rows FIXED `1ae29189` (the S427 carrier closed). S429: `.wm-mini` FIXED `359e0e2`.** …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- C accessibility (one tool): 2026-10-16 (**S513 — FM, its 5th C (S368 →): 7 arms by real input, EN light 1280 + HE dark 800 (+ Draw, iPad Mini), 16 surfaces, plants 11/11. CLEAN: names, the Tab walk (80 stops, all painted), 12 dialogs, reduced motion. FOUND 7, FIXED 2 (+ generator, dashboard). C per tool: letter_learner never, torah S298, trope S312, generator S327, index S340, flash S381, account S396, dictionary S427, dashboard S499, FM S513 — C-next: letter_learner.**)
+
+- H teacher walkthrough / paper-cuts (one tool): 2026-10-16 (**S512 — generator, its 4th H (S130 → S251 → S363 → S512): a 1st-grade letter-of-the-week lesson by real clicks (tracing, Name the Letter, a Class Set with a Hebrew header, a pasted Noach list → Word List, Numbers, preset, link, reopen, the colleague's HE/dark/800 open), 63 clicks × 3 cells, 0 errors. FOUND 9, FIXED 2 (+ dashboard, i18n.js); full text in the archive. H-next: letter_learner (never), privacy/terms/404 (never), trope (S367).**)
