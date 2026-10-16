@@ -12,9 +12,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW S512 H — gate 2**) | hebrew_blend_generator.html | **Nothing says a preset, the remembered setup or an `.ivrit` file made under "Imported List" keeps no words** (memory-only; *Save as Word List* exists for this): the reopen shows an empty pool + the "No words match" note. A share link does carry them. | found S512
 
-- [ ] P4 (**NEW S512 H — paper; one CSS line**) | hebrew_blend_generator.html | **A Hebrew worksheet title/subtitle prints in the system fallback face** (`.ws-title` is Libre Baskerville only; the subtitle inherits Source Sans 3): append `var(--heb-font)`. | found S512
-
-- [ ] P4 (**NEW S512 H — latin-tracking twin**) | hebrew_blend_generator.html | **`גרסה א` under Hebrew header labels keeps `.ws-version-label`'s 0.05em tracking** (Hebrew by `headerLang`, outside `html[lang=he]`): mark it `lang="he"`. | found S512
+- [ ] P4 (**NEW S512 H — paper; two small CSS/markup lines**) | hebrew_blend_generator.html | **A Hebrew title/subtitle prints in the system fallback face, and `גרסה א` under Hebrew header labels keeps Latin tracking**: `.ws-title` lacks `var(--heb-font)`; `.ws-version-label` needs `lang="he"` at its render site. | found S512
 
 - [ ] P4 (**NEW S512 H — gate 2**) | hebrew_blend_generator.html | **Real Words Matching prints "Hebrew Word Matching", ignoring the Title field** the other sheets honour. | found S512
 
@@ -22,7 +20,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S512 H — gate 2**) | hebrew_blend_generator.html | **Name the Letter counts letters × vowels ("36 possible combinations" for 4 bare letters)**; Vowels Only blanks it. | found S512
 
-- [ ] P4 (**NEW S512 H — design, gate 2**) | hebrew_blend_generator.html | **A quick start replays the full defaults: "Numbers 0–20" drops the chosen word list and source.** | found S512
+- [ ] P4 (**NEW S512 H — design, gate 2**) | hebrew_blend_generator.html | **A quick start replays the full defaults, dropping the chosen word list and source.** | found S512
 
 - [ ] P4 (**NEW S512 — K housekeeping**) | locales/ui-strings.csv | **Three `worksheet.validation.*` context cells say "alert"** for notes inline since `59714ef`. | found S512
 
@@ -339,8 +337,6 @@ _(none)_
 - 2026-10-16 | **S512** | iters: 5 | tools: generator ×2, dashboard, js/i18n.js (shared) | patterns fixed: blocking-alert-for-a-routine-path ×1 (3 sites), group-toggle-wipes-a-sibling-group (NEW) ×1 | pass run: H | SW: v1003→v1004
 
 - 2026-10-16 | **S511** | iters: 5 | tools: letter_learner, dashboard ×2, torah ×2, flash ×2, generator, dictionary, trope | patterns fixed: box-shadow-pulse ×6 (class closed), hidden-attribute ×1, latin-tracking ×1 | pass run: I | SW: v1002→v1003
-
-- 2026-10-15 | **S510** | iters: 4 | tools: letter_learner ×3 | patterns fixed: box-shadow-pulse (NEW) | pass run: D | SW: v1000→v1000 (bumped on this PR by the mobile pass)
 
 ### Tool coverage (last-touched date per tool)
 

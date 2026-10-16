@@ -92912,3 +92912,5 @@ _(prior — S511 pointer:)_ **Next session (S511):** **BRANCH/PR: #332 open → 
 - 2026-10-14 | **S507** | iters: 5 | tools: trope, dashboard, saves, flash | patterns fixed: page-roundtrip (NEW), text-field ×2 | pass run: P | SW: v994→v995
 
 - 2026-10-15 | **S509** | iters: 4 | tools: letter_learner ×3 | patterns fixed: new-page-print-ink (NEW) | pass run: G | SW: v999→v1000
+
+- 2026-10-15 | **S510** | iters: 4 | tools: letter_learner ×3 | patterns fixed: box-shadow-pulse (NEW) | pass run: D | SW: v1000→v1000 (bumped on this PR by the mobile pass)
