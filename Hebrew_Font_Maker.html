@@ -431,7 +431,7 @@ body.dark .hi-sun{display:inline-block;}
   .lt-dot.unconfirmed { background: #d08c2a; color: #fff; width: 13px; height: 13px; top: 2px; inset-inline-start: 2px; font-size: 10px; }
   /* "Unconfirmed" / "carried over — review" pill shown next to the Confirm button on the placement step */
   .placement-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 0.68rem; font-weight: 700; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
-  .placement-pill.unconfirmed { background: rgba(208,140,42,0.16); color: #9a6612; border: 1px solid #d08c2a; }
+  .placement-pill.unconfirmed { background: rgba(208,140,42,0.16); color: #7f5a13; border: 1px solid #d08c2a; }   /* #9a6612 read 4.03:1 on the tint; this is the --gold-text value, 5.1:1 */
   .placement-pill.inherited { background: rgba(208,140,42,0.10); color: #9a6612; border: 1px dashed #d08c2a; }
   body.dark .placement-pill.unconfirmed, body.dark .placement-pill.inherited { color: #f0c060; }
   /* Composed-tab tiles whose source base letter(s) aren't traced yet (display-only gating) */
@@ -942,7 +942,8 @@ body.dark .hi-sun{display:inline-block;}
   .wiz-tile input:checked + label { border-color: var(--gold); background: rgba(201,146,42,0.09); }
   .wiz-tile input:focus-visible + label { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
   .wiz-tile-desc { font-size: 0.71rem; color: var(--muted); line-height: 1.4; }
-  .wiz-tile-link { background: none; border: none; padding: 0; margin: 6px 12px 0; align-self: start; font: inherit; font-size: 0.71rem; color: var(--gold); font-weight: 700; cursor: pointer; text-decoration: underline; }
+  body.dark .wiz-tile-desc { color: #9aa4ba; }   /* the dark --muted read 4.39:1 on the tile's lighter plate; 5.3:1 here */
+  .wiz-tile-link { background: none; border: none; padding: 0; margin: 6px 12px 0; align-self: start; font: inherit; font-size: 0.71rem; color: var(--gold-text); font-weight: 700; cursor: pointer; text-decoration: underline; }
   .wiz-tile-link:hover { filter: brightness(1.1); }
   .wiz-tile-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; border-radius: 3px; }
   .wiz-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
@@ -16902,7 +16903,7 @@ function _placementNavRowHTML() {
 function renderSmrAnchorLeft(l) {
   const { visCls, cls, a } = _anchorCtx(l);
   const classBtns = visCls.map(k =>
-    `<button class="ctl-btn ${cls===k?'primary':''}" style="${cls===k?`background:${ANCHOR_COL[k]};color:#fff;border-color:${ANCHOR_COL[k]};`:''}" onclick="setAnchorClass('${k}')">${anchorLabelT(k)}</button>`).join('');
+    `<button class="ctl-btn ${cls===k?'primary':''}" style="${cls===k?`background:${ANCHOR_COL[k]};background:color-mix(in srgb, ${ANCHOR_COL[k]} 65%, black);color:#fff;border-color:${ANCHOR_COL[k]};`:''}" onclick="setAnchorClass('${k}')">${anchorLabelT(k)}</button>`).join('');   // white on the bright class colour read 2.15–3.7:1 (below/center/above); the 65 % mix keeps the hue and reads ≥4.7:1, the rim stays the stage dot's colour
   const acp = activeVowelCp(), aName = (SMR_MARK_BY_CP[acp] || {}).short || acp, ndy = markNudgeDy(acp);
   const tiles = SAMARITAN_MARKS.filter(m => SMR_COL_KEY[m.col] === cls).map(m => squareMarkBtn('smrmarks', m.cp, esc(m.short), acp, 'setSmrMark', l)).join('');
   const editBtn = `<button class="ctl-btn hi-btn" title="${esc(I18n.t('fontmaker.tip.edit_smr_mark_shape'))}" onclick="openMarkEdit('smrmarks','${acp}',{global:true})">${ICON_PENCIL_SM}${esc(I18n.t('fontmaker.panels.edit_shape'))}</button>`;   // font-wide scope: a family has no per-letter shape (markContoursFor)
@@ -16936,7 +16937,7 @@ function renderAnchorLeft(L, l) {
   if (smrMarkBase(l)) { L.innerHTML = renderSmrAnchorLeft(l); return; }   // Samaritan letters: place the Samaritan marks (their own family)
   const { visCls, cls, isTrop, want, a } = _anchorCtx(l);
   const classBtns = visCls.map(k =>
-    `<button class="ctl-btn ${cls===k?'primary':''}" style="${cls===k?`background:${ANCHOR_COL[k]};color:#fff;border-color:${ANCHOR_COL[k]};`:''}" onclick="setAnchorClass('${k}')">${anchorLabelT(k)}</button>`).join('');
+    `<button class="ctl-btn ${cls===k?'primary':''}" style="${cls===k?`background:${ANCHOR_COL[k]};background:color-mix(in srgb, ${ANCHOR_COL[k]} 65%, black);color:#fff;border-color:${ANCHOR_COL[k]};`:''}" onclick="setAnchorClass('${k}')">${anchorLabelT(k)}</button>`).join('');   // white on the bright class colour read 2.15–3.7:1 (below/center/above); the 65 % mix keeps the hue and reads ≥4.7:1, the rim stays the stage dot's colour
   let grid = '';
   const editBtn = cp => `<button class="ctl-btn hi-btn" title="${esc(window.I18n ? I18n.t('fontmaker.tip.edit_mark_shape') : "Redesign this mark's shape from dots & bars (or an image), then apply it to this letter or all letters")}" onclick="openMarkEdit('nikkud','${cp}')">${ICON_PENCIL_SM}${esc(I18n.t('fontmaker.panels.edit_shape'))}</button>`;
   if (cls === 'below') {
