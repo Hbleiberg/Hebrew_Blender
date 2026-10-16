@@ -1393,6 +1393,7 @@ body.dark .ladder-strip-line { color: var(--gold-light); }
   .fcr-table { width:100%; border-collapse:collapse; font-size:9pt; }
   .fcr-table th { text-align:start; font-size:8pt; text-transform:uppercase; letter-spacing:0.04em;
     color:#3d4a63; border-block-end:1pt solid #8d8570; padding:2pt 4pt; }
+  html[lang="he"] .fcr-table th { letter-spacing:normal; text-transform:none; }   /* Hebrew has no capitals, and the tracking only spaced its letters apart */
   .fcr-table td { padding:1.8pt 4pt; border-block-end:0.5pt solid #c8bfa8; }
   .fcr-table tr { break-inside:avoid; page-break-inside:avoid; }
   /* line-height:1 — at the sheet's 1.3 the 11pt mark, not the 9pt text, set every drill row's height. */
