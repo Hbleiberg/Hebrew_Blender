@@ -5401,10 +5401,11 @@ function applySettings(s) {
 // the note is rendered next to EACH — a note beside the off-screen sidebar button would still be a
 // dead click for someone who pressed the footer. Stores the KEY, not the rendered string, so
 // applyI18n can re-render a note that is still on screen. Mirrors _setPresetNameNote below.
-let _genNoteKey = null;
-function _setGenerateNote(key) {
+let _genNoteKey = null, _genNoteParams = null;
+function _setGenerateNote(key, params) {
   _genNoteKey = key || null;
-  const msg = _genNoteKey && window.I18n ? I18n.t(_genNoteKey) : '';
+  _genNoteParams = (_genNoteKey && params) ? params : null;   // the bingo note carries its counts; kept for the language-switch re-render
+  const msg = _genNoteKey && window.I18n ? I18n.t(_genNoteKey, _genNoteParams || undefined) : '';
   document.querySelectorAll('.gen-note').forEach(n => {
     n.textContent = msg;
     n.style.display = msg ? '' : 'none';
@@ -11833,6 +11834,9 @@ function updateRwPoolInfo() {
   }
   syncRwRetryBtn(false);
   const pool = getRwPool();
+  // Words arrived (an import, a list, the corpus landing, a source switch): retire a "no words" note at once,
+  // as a vowel pick does in updateCombosCount, rather than making the teacher press Generate to find out.
+  if (pool.length && (_genNoteKey === 'worksheet.validation.no_words_filters' || _genNoteKey === 'worksheet.validation.no_words_available')) _setGenerateNote(null);
   if (el) el.textContent = I18n.t('worksheet.realwords.pool_matching', { count: pool.length });
   const le = document.getElementById('rwListPoolInfo');
   if (le) {
@@ -11940,7 +11944,7 @@ function generateRealWords(reuse) {
   const showTranslInline   = showTranslation && (!flavorReading || rwTranslPage   === 'same' || rwTranslPage   === 'both');
 
   if (pool.length === 0) {
-    alert(I18n.t('worksheet.validation.no_words_filters'));
+    _setGenerateNote('worksheet.validation.no_words_filters');   // inline under the Generate buttons, never a dialog: an empty pool is a routine state (a list not pasted yet, the corpus still loading)
     return;
   }
 
@@ -13073,7 +13077,7 @@ function generateIdentifyDrill(pool, count, trOnSheet, tnOnSheet, trOnKey, tnOnK
     rwRenderCache = { drill: 'identify', items };
   }
 
-  if (items.length === 0) { alert(I18n.t('worksheet.validation.no_words_available')); return; }
+  if (items.length === 0) { _setGenerateNote('worksheet.validation.no_words_available'); return; }
 
   const ws = document.getElementById('worksheet');
   ws.innerHTML = '';
@@ -13174,7 +13178,7 @@ function generateRealWordsBingo(pool) {
   const headers = BINGO_HEADERS[gridSize];
 
   if (pool.length < cellsNeeded) {
-    alert(I18n.t('worksheet.validation.bingo_need_words', { count: cellsNeeded, gridSize: gridSize, available: pool.length }));
+    _setGenerateNote('worksheet.validation.bingo_need_words', { count: cellsNeeded, gridSize: gridSize, available: pool.length });
     return;
   }
 
@@ -14097,7 +14101,7 @@ function applyI18n() {
   // Dynamic pieces that cache translated text at render time:
   try { renderPresets(); } catch (e) {}
   try { renderQuickStarts(); } catch (e) {}
-  try { if (_genNoteKey) _setGenerateNote(_genNoteKey); } catch (e) {}   // re-render a Generate note still on screen
+  try { if (_genNoteKey) _setGenerateNote(_genNoteKey, _genNoteParams); } catch (e) {}   // re-render a Generate note still on screen
   try { if (_presetNameNoteKey) _setPresetNameNote(_presetNameNoteKey); } catch (e) {}   // ditto for a preset-name note
   try { rerenderPreviewNotice(); } catch (e) {}   // and a live-preview notice ("Settings changed", "waiting for selection"…)
   try { updateCombosCount(); } catch (e) {}
