@@ -252,6 +252,7 @@ html[lang="he"] .panel-title { letter-spacing:normal; text-transform:none; }
 
 /* ───── Options ───── */
 .ll-opt { display:flex; align-items:center; gap:8px; font-size:0.9rem; min-height:30px; }
+.ll-opt[hidden] { display:none; }   /* [hidden] must beat the flex row (the torah / flash-cards trap): the voice picker hides under two Hebrew voices */
 .ll-opt input[type="checkbox"] { width:18px; height:18px; accent-color:var(--gold); flex-shrink:0; }
 .ll-opt select { font:inherit; font-size:0.86rem; padding:5px 8px; border:1.5px solid var(--border); border-radius:6px; background:var(--white); color:var(--text); max-width:100%; }
 fieldset.ll-vowel-set { border:none; padding:0; margin:0; min-width:0; }
