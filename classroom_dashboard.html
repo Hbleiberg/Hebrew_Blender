@@ -1917,6 +1917,7 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
   body.dark .swm-cell-missing { background: repeating-linear-gradient(45deg, var(--warm-gray), var(--warm-gray) 6px, transparent 6px, transparent 12px) var(--navy-deep); }
   .swm-rowdel { align-self: center; }
   .swm-grid-empty { grid-column: 1 / -1; font-size: 0.78rem; color: var(--muted); font-style: italic; padding: 10px 4px; }
+  .swm-grid.swm-grid-isempty { min-width: 0; grid-template-columns: 1fr; }   /* an empty week has no day columns to pan to: the hint wraps inside the wrap instead of spanning the 540px five-day grid */
   .swm-import { border: 1.5px solid var(--gold); border-radius: 10px; padding: 14px 16px; margin: 6px 0 10px; background: rgba(201,146,42,0.07); }
   .swm-import-title { font-family: 'Libre Baskerville', serif; font-size: 1rem; margin: 0 0 6px; color: var(--text); }
   .swm-import-body { font-size: 0.82rem; color: var(--muted); line-height: 1.5; margin: 0 0 10px; }
@@ -9363,6 +9364,7 @@ else ivritInit();
       if (weekEmpty) printBtn.setAttribute('aria-disabled', 'true'); else printBtn.removeAttribute('aria-disabled');
       printBtn.title = I18n.t(weekEmpty ? 'dashboard.schedule.print_week_empty_title' : 'dashboard.schedule.print_week_title');
     }
+    grid.classList.toggle('swm-grid-isempty', weekEmpty);   // drops the five-day min-width while there is nothing to pan to (CSS above)
     if (weekEmpty) {
       const hint = document.createElement('div');
       hint.className = 'swm-grid-empty';
