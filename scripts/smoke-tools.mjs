@@ -70,7 +70,8 @@ const PAGES = [
     expand: `document.getElementById('cloudSavesPanel').scrollIntoView();`,
     urlKeep: 'letter=gimel',
     // E. a browser without speech hides every speaker and shows the note; the ?letter= deep link opens its card and a
-    // garbage one opens nothing; the stored options stay byte-identical through a load and the module's flush
+    // garbage one opens nothing; the stored options stay byte-identical through a load and the module's flush; F–I cover the
+    // Vowels mode (the mode bar, ?mode= / ?vowel=, the Options card's limit, the phone sheet)
     extra: async ({ browser, tag }) => {
       const seedText = JSON.stringify({ v: 1, vowels: { kamatz: true, patach: true, tzere: true, segol: true, chirik: true, cholam: true, vav_cholam: true, kubutz: true, shuruk: true, sheva: true, chataf_patach: true, chataf_segol: true, chataf_kamatz: true }, fontTab: true, splitPairs: true, wordAudio: true, voiceURI: '' });
       {
@@ -99,6 +100,56 @@ const PAGES = [
         });
         check(tag + ' E: on a 390px phone the sheet is full-width and the tab strip keeps its height — the selected tab sits below the sticky head, nothing clipped', r.open && r.sheetW === 390 && r.tabTop >= r.headBottom && r.tabH >= 36 && r.stripScroll <= r.stripClient + 1, JSON.stringify(r));
         check(tag + ' E: 0 pageerrors (phone sheet)', errors.length === 0, errors.join(' | '));
+        await ctx.close();
+      }
+      // F. Vowels mode from the URL: 13 vowel cards (every vowel on, the default), the Vowels button pressed, the tips
+      // block shown and no dialog (a stale ?letter= is ignored); the buttons swap the grid and mirror only the mode into
+      // the address bar.
+      {
+        const { ctx, page, errors } = await openPage(browser, 'letter_learner.html', { query: '?mode=vowels&letter=bet' });
+        const r = await page.evaluate(() => ({ mode: _llMode, cards: document.querySelectorAll('.ll-card').length, vcards: document.querySelectorAll('.ll-card.ll-vcard').length, pressed: document.getElementById('llModeVowels').getAttribute('aria-pressed'), tips: !document.getElementById('llTips').hidden, open: !document.getElementById('llOverlay').hidden, gridKey: document.getElementById('llGrid').getAttribute('data-i18n-aria-label') }));
+        check(tag + ' F: ?mode=vowels shows the 13 vowel cards, presses Vowels, shows the tips and opens nothing', r.mode === 'vowels' && r.cards === 13 && r.vcards === 13 && r.pressed === 'true' && r.tips && !r.open && r.gridKey === 'letterlearner.grid.vowels_aria', JSON.stringify(r));
+        await page.click('#llModeLetters');
+        const r2 = await page.evaluate(() => ({ mode: _llMode, cards: document.querySelectorAll('.ll-card').length, search: location.search, tips: !document.getElementById('llTips').hidden }));
+        await page.click('#llModeVowels');
+        const r3 = await page.evaluate(() => ({ mode: _llMode, cards: document.querySelectorAll('.ll-card').length, search: location.search }));
+        check(tag + ' F: the buttons swap the grid (31 / 13 cards) and mirror only the mode into the address bar', r2.mode === 'letters' && r2.cards === 31 && !r2.tips && !/mode=|letter=|vowel=/.test(r2.search) && r3.mode === 'vowels' && r3.cards === 13 && r3.search === '?mode=vowels', JSON.stringify([r2, r3]));
+        check(tag + ' F: 0 pageerrors (mode switch)', errors.length === 0, errors.join(' | '));
+        await ctx.close();
+      }
+      // G. ?vowel=patach opens its card on the Story tab with the aqua glyph, the letter tabs hidden and the Fonts tab
+      // offered; the mode writes nothing, so the stored options stay byte-identical through a load + flush.
+      {
+        const { ctx, page, errors } = await openPage(browser, 'letter_learner.html', { seed: { hebrewLetterLearner_settings: seedText }, query: '?vowel=patach' });
+        const r = await page.evaluate(() => { llSaveSettingsIfChanged(); return { mode: _llMode, open: !document.getElementById('llOverlay').hidden, id: _llId, tab: document.querySelector('.ll-tabs [role="tab"][aria-selected="true"]').id, story: !document.getElementById('llPanel-story').hidden, glyph: document.getElementById('llDlgGlyph').textContent, fam: document.getElementById('llDlgGlyph').dataset.fam, pic: !!document.querySelector('#llPanel-story .ll-hint-pic svg'), rows: document.querySelectorAll('#llPanel-story .ll-vrow').length, fontTab: !document.getElementById('llTab-font').hidden, letterTab: document.getElementById('llTab-letter').hidden, same: localStorage.getItem('hebrewLetterLearner_settings') === JSON.stringify(settings), stored: localStorage.getItem('hebrewLetterLearner_settings') }; });
+        check(tag + ' G: ?vowel=patach opens Patach on the Story tab (drawing, four syllables, aqua), letter tabs hidden, Fonts offered; the stored options survive unchanged', r.mode === 'vowels' && r.open && r.id === 'patach' && r.tab === 'llTab-story' && r.story && r.glyph === 'אַ' && r.fam === 'ah' && r.pic && r.rows === 4 && r.fontTab && r.letterTab && r.same && r.stored === seedText, JSON.stringify(r));
+        check(tag + ' G: 0 pageerrors (vowel deep link)', errors.length === 0, errors.join(' | '));
+        await ctx.close();
+      }
+      // H. a garbage ?vowel= stays on the letters (31 cards, nothing open); the Options card's "Vowels to show" limits
+      // the vowel grid like the Vowels tab, and a switched-off ?vowel= switches the mode but opens nothing.
+      {
+        const { ctx, page, errors } = await openPage(browser, 'letter_learner.html', { query: '?vowel=zzz%3Cb%3E' });
+        const r = await page.evaluate(() => ({ mode: _llMode, open: !document.getElementById('llOverlay').hidden, cards: document.querySelectorAll('.ll-card').length }));
+        check(tag + ' H: a garbage ?vowel= opens nothing and stays on the letters (31 cards)', r.mode === 'letters' && !r.open && r.cards === 31, JSON.stringify(r));
+        await ctx.close();
+        const eight = JSON.stringify({ v: 1, vowels: { kamatz: true, patach: false, tzere: true, segol: true, chirik: true, cholam: true, vav_cholam: true, kubutz: false, shuruk: true, sheva: true, chataf_patach: false, chataf_segol: false, chataf_kamatz: false }, fontTab: false, splitPairs: false, wordAudio: true, voiceURI: '' });
+        const p2 = await openPage(browser, 'letter_learner.html', { seed: { hebrewLetterLearner_settings: eight }, query: '?vowel=patach' });
+        const r2 = await p2.page.evaluate(() => ({ mode: _llMode, cards: document.querySelectorAll('.ll-card.ll-vcard').length, open: !document.getElementById('llOverlay').hidden }));
+        check(tag + ' H: with eight vowels on, Vowels mode shows eight cards and a switched-off ?vowel= opens nothing', r2.mode === 'vowels' && r2.cards === 8 && !r2.open, JSON.stringify(r2));
+        check(tag + ' H: 0 pageerrors (garbage vowel, limited grid)', errors.length === 0 && p2.errors.length === 0, errors.concat(p2.errors).join(' | '));
+        await p2.ctx.close();
+      }
+      // I. the phone sheet with a vowel open: the Story tab sits below the sticky head, as the letter tabs do.
+      {
+        const { ctx, page, errors } = await openPage(browser, 'letter_learner.html', { viewport: { width: 390, height: 844 }, query: '?vowel=shuruk' });
+        const r = await page.evaluate(() => {
+          const head = document.querySelector('.ll-dlg-head').getBoundingClientRect(), strip = document.querySelector('.ll-tabs');
+          const tab = document.querySelector('.ll-tabs [role="tab"][aria-selected="true"]'), tr = tab.getBoundingClientRect();
+          return { open: !document.getElementById('llOverlay').hidden, tab: tab.id, headBottom: Math.round(head.bottom), tabTop: Math.round(tr.top), tabH: Math.round(tr.height), stripClient: strip.clientHeight, stripScroll: strip.scrollHeight, sheetW: Math.round(document.querySelector('.ll-dialog').getBoundingClientRect().width), fits: document.documentElement.scrollWidth <= window.innerWidth };
+        });
+        check(tag + ' I: on a 390px phone a vowel sheet is full-width, its Story tab below the sticky head, nothing clipped or overflowing', r.open && r.tab === 'llTab-story' && r.sheetW === 390 && r.tabTop >= r.headBottom && r.tabH >= 36 && r.stripScroll <= r.stripClient + 1 && r.fits, JSON.stringify(r));
+        check(tag + ' I: 0 pageerrors (phone vowel sheet)', errors.length === 0, errors.join(' | '));
         await ctx.close();
       }
     }

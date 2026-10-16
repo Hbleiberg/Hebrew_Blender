@@ -6342,4 +6342,25 @@ letterlearner.tour.s3_title,Options,אפשרויות,tour step 3 title,
 letterlearner.tour.s3_body,"Choose which vowels to show, whether pairs like Bet and Vet get their own cards, and whether the words are read aloud.","בוחרים אילו סימני ניקוד להציג, אם לזוגות כמו בּ ו־ב יהיו כרטיסים משלהם, ואם המילים יוקראו.",tour step 3 body,
 letterlearner.tour.s4_title,Your account,החשבון שלך,tour step 4 title,
 letterlearner.tour.s4_body,"Signed in, these options follow you to every device.","כשמחוברים לחשבון, האפשרויות האלה עוברות איתכם לכל מכשיר.",tour step 4 body,
+letterlearner.mode.aria,Letters or vowels,אותיות או ניקוד,aria-label of the Letters / Vowels mode bar under the header (role=group),aria-label only
+letterlearner.mode.letters,Letters,אותיות,mode bar button: show the letter cards,
+letterlearner.mode.vowels,Vowels,ניקוד,mode bar button: show the vowel cards,
+letterlearner.grid.vowels_aria,Vowels,סימני ניקוד,aria-label of the card grid in Vowels mode,aria-label only
+letterlearner.dialog.prev_vowel,Previous vowel,סימן הניקוד הקודם,vowel dialog previous-vowel button,aria-label only; svg-icon-in-markup
+letterlearner.dialog.next_vowel,Next vowel,סימן הניקוד הבא,vowel dialog next-vowel button,aria-label only; svg-icon-in-markup
+letterlearner.tabs.story,Story,הסיפור,vowel dialog tab (the family's gesture story),
+letterlearner.story.family_label,Family,משפחה,Story tab row label (the vowel's family: its gesture name and colour),
+letterlearner.story.shape_label,Shape,צורה,Story tab row label (what the sign looks like),
+letterlearner.story.do_label,Do,עושים,Story tab row label (the gesture),
+letterlearner.story.hear_heading,Hear it,להקשיב,Story tab heading over the sample syllables with speakers,
+letterlearner.story.script_label,In class,בכיתה,Story tab label before the vav classroom script,
+letterlearner.story.note_label,Good to know,כדאי לדעת,Story tab label before the family's exception note,
+letterlearner.tips.summary,Teaching tips,טיפים להוראה,summary (the toggle) of the teaching-tips block under the vowel cards,
+letterlearner.tips.intro,"Every vowel family gets three cues that point to the same sound: a name tied to the vowel's shape, a gesture kids do while saying it, and a color that rhymes with the sound.","לכל משפחת ניקוד שלושה רמזים שמובילים לאותו צליל: שם שקשור לצורת הסימן, תנועת גוף שהילדים עושים כשאומרים אותו, וצבע שמתחרז עם הצליל (באנגלית).",intro line of the teaching-tips block,
+letterlearner.tour.mode_title,Letters or vowels,אותיות או ניקוד,tour step 1 title (the mode bar),
+letterlearner.tour.mode_body,"Switch between the alef-bet and the vowel signs here. The address bar remembers which one is open, so a bookmark or a shared link keeps it.","כאן עוברים בין האלף-בית לסימני הניקוד. שורת הכתובת זוכרת מה פתוח, ולכן סימנייה או קישור משותף שומרים על הבחירה.",tour step 1 body,
+letterlearner.tour.v1_title,Every vowel,כל סימני הניקוד,tour grid step title in Vowels mode,
+letterlearner.tour.v1_body,"Tap any vowel to open it. Each card wears its family's color; the Options card chooses which vowels show.","לוחצים על סימן ניקוד כדי לפתוח אותו. כל כרטיס צבוע בצבע המשפחה שלו; בכרטיס האפשרויות בוחרים אילו סימנים יוצגו.",tour grid step body in Vowels mode,
+letterlearner.tour.v2_title,A vowel card,כרטיס ניקוד,tour card step title in Vowels mode,
+letterlearner.tour.v2_body,"Each card opens the family's story: the gesture to make, the shape to look for, and the vowel on a few letters, read aloud.","כל כרטיס פותח את סיפור המשפחה: התנועה שעושים, הצורה שמחפשים, והניקוד על כמה אותיות בהקראה.",tour card step body in Vowels mode,
 shared.cloud.tool_letterlearner,Letter Learner,לומדים אותיות,Account screen / status line: the Letter Learner's name,shared; cloud panel

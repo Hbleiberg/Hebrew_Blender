@@ -47,7 +47,7 @@
 <link rel="apple-touch-startup-image" media="screen and (device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-1668x2388.png">
 <link rel="apple-touch-startup-image" media="screen and (device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-2048x2732.png">
 <title>Letter Learner — Learn the Hebrew Alef-Bet | IvritSuite</title>
-<meta name="description" content="Every Hebrew letter for beginning readers: a picture to remember it by, four illustrated words, the letter with every vowel read aloud, and how it looks in different fonts.">
+<meta name="description" content="Every Hebrew letter for beginning readers: a picture to remember it by, four illustrated words, the letter with every vowel read aloud, and how it looks in different fonts — plus a Vowels mode: every vowel sign as a card with its sound family's shape, gesture, color and story.">
 <link rel="canonical" href="https://ivritsuite.com/letter_learner.html">
 <!-- Not yet linked from the hub or the suite's navigation (content lands in batches): kept out of the index until it is. -->
 <meta name="robots" content="noindex, follow">
@@ -119,6 +119,11 @@ body.dark .hi-sun{display:inline-block;}
   --ll-skin:#f1c9a5; --ll-skin-dk:#d9a177; --ll-wood:#b07a45; --ll-wood-dk:#7d5330;
   --ll-grass:#7dc47a; --ll-grass-dk:#4f9a4c; --ll-yellow:#f5d97a; --ll-orange:#f0a030; --ll-orange-dk:#c97d1a;
   --ll-pink:#e9a0b4; --ll-pink-dk:#c9728c; --ll-brown:#8b5e3c; --ll-brown-dk:#5e3d26; --ll-purple:#8e6bb8;
+  /* Vowel-family colours (the Vowels mode: card glyphs, the dialog glyph, the swatch dots and the gesture drawings).
+     The suite's Default vowel-scheme hexes, so a Generator worksheet or a flash card on that scheme shows the same
+     aqua / red / green / gold / blue; the write-up puts tzere with red and the sheva in grey. Large text and fills
+     only — aqua, gold and grey sit near 3.2:1 on white. */
+  --ll-fam-ah:#0099bb; --ll-fam-eh:#cc3333; --ll-fam-ee:#228833; --ll-fam-oh:#bb8800; --ll-fam-oo:#3355cc; --ll-fam-quiet:#888898;
 }
 html.dark-early body, body.dark {
   --navy:#1a2744; --gold:#e0a832; --focus-ring:var(--gold); --gold-light:#f5d97a;
@@ -134,6 +139,7 @@ html.dark-early body, body.dark {
   --ll-green:#6fbf79; --ll-green-dk:#468a4f; --ll-blue:#6a9ae0; --ll-blue-dk:#3f6cb0; --ll-sky:#2f4a6e;
   --ll-paper:#2b3550; --ll-white:#f3efe6; --ll-gray:#aab3c4; --ll-gray-dk:#7f899c;
   --ll-grass:#6fbf79; --ll-grass-dk:#468a4f; --ll-wood:#c08a55; --ll-wood-dk:#8a5d38;
+  --ll-fam-ah:#33ccee; --ll-fam-eh:#ee5555; --ll-fam-ee:#44cc66; --ll-fam-oh:#ddaa00; --ll-fam-oo:#6688ff; --ll-fam-quiet:#aaaabc;
 }
 * { box-sizing:border-box; margin:0; padding:0; }
 input::placeholder, textarea::placeholder { color: var(--muted); }
@@ -282,6 +288,38 @@ body.ll-no-speech .ll-speak, body.ll-no-speech #llVoiceRow, body.ll-no-speech #o
 html[lang="he"] .ll-badge { letter-spacing:normal; text-transform:none; }
 .ll-card.is-soon .ll-card-glyph { opacity:0.72; }
 
+/* ───── Mode bar: Letters / Vowels — two pressed-state buttons under the header (native Tab / Enter / Space; one group).
+   The choice rides the URL as ?mode=vowels (llSetMode), never a stored key. ───── */
+.ll-mode { display:flex; justify-content:center; gap:8px; padding:14px 20px 0; }
+.ll-mode-btn {
+  display:inline-flex; align-items:center; gap:8px; min-height:40px; padding:6px 18px;
+  border:1.5px solid var(--border); border-radius:999px; background:var(--white); color:var(--text);
+  font-family:'Source Sans 3', sans-serif; font-size:0.95rem; font-weight:700; cursor:pointer; box-shadow:var(--shadow-sm);
+  transition:background 0.15s, border-color 0.15s, color 0.15s;
+}
+.ll-mode-btn:hover { border-color:var(--gold); }
+.ll-mode-btn[aria-pressed="true"] { background:var(--navy); color:#fff; border-color:var(--navy); }
+body.dark .ll-mode-btn[aria-pressed="true"] { background:#2a4070; border-color:#2a4070; }   /* the page's dark navy pair (the sidebar's edge tabs) */
+.ll-mode-sample { font-family:var(--heb-font); font-size:1.3rem; line-height:1; }
+
+/* ───── Vowel cards (Vowels mode): the family colour rides one custom property set from data-fam — on the glyph (letter
+   and mark together, the Generator's colour-the-syllable rule), the card's top edge and the badge's swatch dot; never
+   on small text. ───── */
+[data-fam="ah"] { --ll-fam:var(--ll-fam-ah); } [data-fam="eh"] { --ll-fam:var(--ll-fam-eh); } [data-fam="ee"] { --ll-fam:var(--ll-fam-ee); }
+[data-fam="oh"] { --ll-fam:var(--ll-fam-oh); } [data-fam="oo"] { --ll-fam:var(--ll-fam-oo); } [data-fam="quiet"] { --ll-fam:var(--ll-fam-quiet); }
+.ll-vcard { border-block-start:5px solid var(--ll-fam); }
+.ll-vcard.is-quick { border-style:dashed; border-block-start-style:solid; }   /* a chataf: dashed like a final form */
+.ll-vcard .ll-card-glyph, .ll-dlg-glyph[data-fam], .ll-form[data-fam] { color:var(--ll-fam, currentColor); }
+.ll-vcard .ll-badge { white-space:normal; text-align:center; text-transform:none; letter-spacing:normal; }
+.ll-swatch { display:inline-block; width:0.6em; height:0.6em; border-radius:50%; background:var(--ll-fam); margin-inline-end:4px; vertical-align:middle; }
+.ll-grid-note { margin-top:10px; }
+/* The teaching tips under the vowel grid (Vowels mode only; the summary is its one control). */
+.ll-tips { margin-block-start:18px; border:1px solid var(--border); border-radius:10px; background:var(--white); padding:10px 14px; }
+.ll-tips[hidden] { display:none; }
+.ll-tips summary { cursor:pointer; font-weight:700; min-height:24px; }
+.ll-tips ul { margin:8px 0 0; padding-inline-start:20px; font-size:0.92rem; }
+.ll-tips li { margin-block:4px; }
+
 /* ───── Dialog (house modal contract: focus in, Tab trapped, Escape closes, focus back to the card) ───── */
 .ll-overlay {
   position:fixed; inset:0; z-index:300; background:rgba(13,18,32,0.58);
@@ -356,6 +394,15 @@ html[lang="he"] .ll-vgroup { letter-spacing:normal; text-transform:none; }
 .ll-form { font-family:var(--heb-font); font-size:2.3rem; line-height:1.3; min-width:1.5em; text-align:center; }
 .ll-tr { flex:1; font-family:'Libre Baskerville', serif; font-size:1.15rem; }
 .ll-vname { display:block; font-size:0.7rem; color:var(--muted); font-family:'Source Sans 3', sans-serif; }
+
+/* Story tab (Vowels mode): the gesture drawing with the "Say" line as its caption, then the family / shape / do rows,
+   the sample syllables, and the classroom script / note. */
+.ll-story { display:grid; grid-template-columns:max-content 1fr; gap:6px 14px; margin:0 0 18px; font-size:0.98rem; }
+.ll-story dt { font-weight:700; color:var(--muted); }
+.ll-story dd { margin:0; }
+[dir="rtl"] .ll-story dd { text-align:end; }   /* English rows read left-to-right but sit against their Hebrew labels */
+.ll-story-script { background:var(--cream); border:1.5px solid var(--border); border-radius:10px; padding:8px 12px; font-size:0.92rem; margin:14px 0 0; }
+.ll-story-note { margin-top:12px; }
 
 /* Fonts tab */
 .ll-fonts { list-style:none; display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:10px; }
@@ -468,6 +515,8 @@ body.dark #appToast { background: #0a0f1c; }
   .ll-overlay { padding:0; align-items:stretch; }
   .ll-dialog { width:100%; max-height:100dvh; border-radius:0; border:none; }
   .ll-hint-pic { width:min(200px, 56vw); }
+  .ll-story { grid-template-columns:1fr; gap:2px 0; }
+  .ll-story dd { margin-block-end:6px; }
   .ll-page { padding:14px 14px 40px; }
   /* Stacked: the sidebar sits above the letters at its natural height, and the resize seam goes with the layout
      (a full-height touch-action:none strip would be dead scroll under a finger). */
@@ -491,6 +540,8 @@ body.dark #appToast { background: #0a0f1c; }
   .ll-nav, .ll-x { width:44px; height:44px; }
   .ll-speak { width:44px; height:44px; }
   .ll-tabs [role="tab"] { min-height:44px; }
+  .ll-mode-btn { min-height:44px; }
+  .ll-tips summary { min-height:44px; display:flex; align-items:center; }
 }
 /* The header's wrap gate: the row of controls drops under the title only below this page's MEASURED overflow
    ceiling (docs/reference/shared-components.md → "The header's wrap gate"). 576px is where the unwrapped row
@@ -508,9 +559,11 @@ body.dark #appToast { background: #0a0f1c; }
   .ll-card-name { font-size:0.8rem; }
   .ll-tabs { padding:8px 8px 0; gap:2px; }
   .ll-tabs [role="tab"] { padding:8px 9px; font-size:0.86rem; }
+  .ll-mode { padding:10px 12px 0; }
+  .ll-mode-btn { flex:1; justify-content:center; padding-inline:10px; }
 }
 @media print {
-  header .hright, .ll-sidebar, .sbr-split, .ll-sb-tab, footer, .ll-overlay, .tour-spot, .tour-card, #appToast { display:none !important; }
+  header .hright, .ll-mode, .ll-tips, .ll-sidebar, .sbr-split, .ll-sb-tab, footer, .ll-overlay, .tour-spot, .tour-card, #appToast { display:none !important; }
   /* Print establishes its own ink (the trope / dictionary / flash-cards treatment). The print dialog drops background
      plates by default, so both themes converge on the light palette on white paper: without this a dark-mode print set
      every letter and name in --text #dde4f0 on white — card frames with nothing readable inside — and the drawings'
@@ -525,6 +578,7 @@ body.dark #appToast { background: #0a0f1c; }
     --ll-green:#5aa865; --ll-green-dk:#3a7d44; --ll-blue:#3b6fb6; --ll-blue-dk:#2a5290; --ll-sky:#bfe0f7;
     --ll-paper:#fffaf0; --ll-white:#ffffff; --ll-gray:#9aa3b5; --ll-gray-dk:#6b7488;
     --ll-grass:#7dc47a; --ll-grass-dk:#4f9a4c; --ll-wood:#b07a45; --ll-wood-dk:#7d5330;
+    --ll-fam-ah:#0099bb; --ll-fam-eh:#cc3333; --ll-fam-ee:#228833; --ll-fam-oh:#bb8800; --ll-fam-oo:#3355cc; --ll-fam-quiet:#888898;
     background:#fff !important; color:#1a2744 !important;
   }
   /* The header sits on a navy plate that print drops, so its white title and gold-light subtitle printed white-on-white
@@ -550,7 +604,7 @@ body.dark #appToast { background: #0a0f1c; }
   body.ll-dlg-open .ll-panel { padding:8px 0 0; }
   body.ll-dlg-open .ll-words { grid-template-columns:repeat(2, 1fr); }
   body.ll-dlg-open .ll-hint-pic { width:260px; }   /* paper is narrower than 800px, so the phone size (200px) would apply */
-  .ll-hint, .ll-word, .ll-vrow, .ll-font-tile { break-inside:avoid; }
+  .ll-hint, .ll-word, .ll-vrow, .ll-font-tile, .ll-story, .ll-story-script { break-inside:avoid; }
 }
 /* Reduced motion: the universal neutralizer (every animation and transition on the page, the hint drawings'
    .ll-anim groups included; 0.001ms rather than 0 so animationend still fires). */
@@ -582,6 +636,13 @@ body.dark #appToast { background: #0a0f1c; }
     <button id="fsBtn" class="hbtn icon-btn" onclick="toggleFullscreen()" title="Present fullscreen" aria-label="Toggle fullscreen" data-i18n-title="shared.fullscreen.enter_title" data-i18n-aria-label="shared.fullscreen.toggle_aria"><svg class="hi hi-fs-enter" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
   </div>
 </header>
+
+<!-- Letters / Vowels: two pressed-state buttons in one group. The mode is read from ?mode= / ?vowel= before the first
+     render (llInitMode) and mirrored into the address bar on a click (llSetMode) — nothing is stored or synced. -->
+<div class="ll-mode" role="group" aria-label="Letters or vowels" data-i18n-aria-label="letterlearner.mode.aria">
+  <button type="button" class="ll-mode-btn" id="llModeLetters" data-mode="letters" aria-pressed="true"><span class="ll-mode-sample" lang="he" dir="rtl" aria-hidden="true">א</span><span data-i18n="letterlearner.mode.letters">Letters</span></button>
+  <button type="button" class="ll-mode-btn" id="llModeVowels" data-mode="vowels" aria-pressed="false"><span class="ll-mode-sample" lang="he" dir="rtl" aria-hidden="true">אַ</span><span data-i18n="letterlearner.mode.vowels">Vowels</span></button>
+</div>
 
 <div class="ll-app">
   <!-- The sidebar's edge tabs (the generator's collapse tab, mirrored for a sidebar at the inline-end): the hide tab sits at
@@ -626,10 +687,17 @@ body.dark #appToast { background: #0a0f1c; }
        data-i18n-aria-label="shared.resize.sidebar_title"></div>
   <main class="ll-page" id="llMain" tabindex="-1">
     <ul class="ll-grid" id="llGrid" dir="rtl" aria-label="Letters" data-i18n-aria-label="letterlearner.grid.aria"></ul>
+    <p class="ll-note ll-grid-note" id="llGridNote" hidden></p>
+    <!-- Vowels mode only: the teaching tips of the vowel-families write-up (VOWEL_TIPS, learner content; filled by llRenderTips). -->
+    <details class="ll-tips" id="llTips" hidden>
+      <summary data-i18n="letterlearner.tips.summary">Teaching tips</summary>
+      <p class="ll-note" data-i18n="letterlearner.tips.intro">Every vowel family gets three cues that point to the same sound: a name tied to the vowel's shape, a gesture kids do while saying it, and a color that rhymes with the sound.</p>
+      <ul id="llTipsList" dir="ltr" lang="en"></ul>
+    </details>
   </main>
 </div>
 
-<!-- One static dialog for every card: filled by llFillDialog(id). Tabs that do not apply to a card are hidden. -->
+<!-- One static dialog for every card, letter or vowel: filled by llFillDialog(id). Tabs that do not apply to a card are hidden. -->
 <div class="ll-overlay" id="llOverlay" hidden>
   <div class="ll-dialog" role="dialog" aria-modal="true" aria-labelledby="llDlgTitle">
     <div class="ll-dlg-head">
@@ -639,6 +707,7 @@ body.dark #appToast { background: #0a0f1c; }
       <button type="button" class="ll-x" id="llClose" title="Close" aria-label="Close" data-i18n-title="letterlearner.dialog.close" data-i18n-aria-label="letterlearner.dialog.close"><svg class="hi hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
     </div>
     <div class="ll-tabs" role="tablist" aria-labelledby="llDlgTitle">
+      <button type="button" role="tab" id="llTab-story" aria-controls="llPanel-story" aria-selected="false" tabindex="-1" hidden data-i18n="letterlearner.tabs.story">Story</button>
       <button type="button" role="tab" id="llTab-letter" aria-controls="llPanel-letter" aria-selected="true" data-i18n="letterlearner.tabs.letter">Letter</button>
       <button type="button" role="tab" id="llTab-vowels" aria-controls="llPanel-vowels" aria-selected="false" tabindex="-1" data-i18n="letterlearner.tabs.vowels">Vowels</button>
       <button type="button" role="tab" id="llTab-font" aria-controls="llPanel-font" aria-selected="false" tabindex="-1" data-i18n="letterlearner.tabs.font">Fonts</button>
@@ -648,6 +717,7 @@ body.dark #appToast { background: #0a0f1c; }
     <div class="ll-panel" role="tabpanel" id="llPanel-vowels" aria-labelledby="llTab-vowels" tabindex="0" hidden></div>
     <div class="ll-panel" role="tabpanel" id="llPanel-font" aria-labelledby="llTab-font" tabindex="0" hidden></div>
     <div class="ll-panel" role="tabpanel" id="llPanel-special" aria-labelledby="llTab-special" tabindex="0" hidden></div>
+    <div class="ll-panel" role="tabpanel" id="llPanel-story" aria-labelledby="llTab-story" tabindex="0" hidden></div>
   </div>
 </div>
 
@@ -721,6 +791,19 @@ body.dark #appToast { background: #0a0f1c; }
    it). Not allowed: id, style, <text>, <defs>, url(), href, on*= attributes. A moving part sits in
    <g class="ll-anim ll-anim-swing"> (also swing-l, bob, sway, open, open-r, blink, drift). An empty string
    means "no drawing yet".
+
+   The Vowels mode's content sits below LETTER_DATA, under the same rules (learner content; the validator
+   llIndexVowelData drops a bad entry with a warning; a drawing is checked when its story is first shown):
+     VOWEL_STORIES  one entry per gesture story: { id, family, name, short?, color, say, do, script?, svg } — `family` is
+                    'ah' 'eh' 'ee' 'oh' 'oo' or 'quiet' (the colour the card wears), `short` the card badge when the
+                    name is long, `color` the colour's name,
+                    `say` the catch line, `do` the gesture, `script` the vav classroom script; `svg` as above,
+                    and it may also use var(--ll-fam-<family>)
+     VOWEL_CARDS    one entry per card, in teaching order: { id, story, shape, note?, quick?, hear? } — `id` is a
+                    VOWELS id (the app script), `story` a VOWEL_STORIES id, `shape` what the sign looks like,
+                    `note` the family's exception, `quick` marks a chataf (dashed card), `hear` the letter ids
+                    whose glyph carries the sign in "Hear it" (default: bet, lamed, mem, shin)
+     VOWEL_TIPS     the teaching tips, one string each
    ═══════════════════════════════════════════════════════════════════════════════════════════════ */
 const LETTER_DATA = [
   { id: 'alef', glyph: 'א', name: 'Alef', sound: 'silent', consonant: '',
@@ -1006,6 +1089,68 @@ const LETTER_DATA = [
       { he: 'תֻּכִּי', tr: 'tuki', en: 'parrot', svg: `<path d="M2 84Q50 74 98 84" fill="none" stroke="var(--ll-line)" stroke-width="9.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 84Q50 74 98 84" fill="none" stroke="var(--ll-brown)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M86 80Q94 70 100 74Q94 82 86 80Z" fill="var(--ll-green)" stroke="var(--ll-line)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M60 70L78 94" fill="none" stroke="var(--ll-line)" stroke-width="11.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M60 70L78 94" fill="none" stroke="var(--ll-blue)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><path d="M58 72L66 96" fill="none" stroke="var(--ll-line)" stroke-width="10.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M58 72L66 96" fill="none" stroke="var(--ll-yellow)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M62 68L88 86" fill="none" stroke="var(--ll-line)" stroke-width="10.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M62 68L88 86" fill="none" stroke="var(--ll-green)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M46 78L42 86M50 78L48 87M54 78L56 87" fill="none" stroke="var(--ll-line)" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M46 78L42 86M50 78L48 87M54 78L56 87" fill="none" stroke="var(--ll-gray-dk)" stroke-width="2.2" stroke-linecap="round"/><ellipse cx="52" cy="56" rx="16" ry="22" fill="var(--ll-red)" stroke="var(--ll-line)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="46" cy="60" rx="8" ry="14" fill="var(--ll-orange)" opacity="0.5"/><path d="M58 38Q78 46 72 78Q60 72 54 48Z" fill="var(--ll-blue)" stroke="var(--ll-line)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M62 52Q73 58 70.5 72Q64 68 60 54Z" fill="var(--ll-yellow)" opacity="0.9"/><path d="M66 66Q72 70 71.5 78Q66 76 64 70Z" fill="var(--ll-green)"/><path d="M60 44Q70 50 70 62" fill="none" stroke="var(--ll-blue-dk)" stroke-width="1.2" opacity="0.8"/><circle cx="42" cy="30" r="14" fill="var(--ll-red)" stroke="var(--ll-line)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="37" cy="32" rx="7.5" ry="6.5" fill="var(--ll-white)" stroke="var(--ll-line)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M32 29.5h6M31.5 34.5h5" fill="none" stroke="var(--ll-red)" stroke-width="0.9"/><circle cx="37.5" cy="31" r="2.6" fill="var(--ll-white)" stroke="var(--ll-line)" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/><circle cx="38.02" cy="31" r="1.3" fill="var(--ll-line)"/><path d="M33 23Q17 22 17 34Q17 44 26 46Q25 39 30 35Z" fill="var(--ll-gray-dk)" stroke="var(--ll-line)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M30 36Q26 44 33 45L35 40Z" fill="var(--ll-gray)" stroke="var(--ll-line)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M36 20q4 -3 9 -2" fill="none" stroke="var(--ll-white)" stroke-width="1.6" opacity="0.5" stroke-linecap="round"/>` },
       { he: 'תּוֹרָה', tr: 'torah', en: 'Torah', svg: `<rect x="22" y="20" width="56" height="60" fill="var(--ll-white)" stroke="var(--ll-line)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><rect x="24" y="21" width="5" height="58" fill="var(--ll-gold-lt)" opacity="0.6"/><rect x="71" y="21" width="5" height="58" fill="var(--ll-gold-lt)" opacity="0.6"/><path d="M34 31H46M34 37H46M34 43H46M34 49H46M34 55H46M34 61H46M38 67H46M54 31H66M54 37H66M54 43H66M54 49H66M54 55H66M54 61H66M58 67H66" fill="none" stroke="var(--ll-gray-dk)" stroke-width="1.6" stroke-linecap="round"/><rect x="14" y="16" width="10" height="68" rx="3" fill="var(--ll-wood)" stroke="var(--ll-line)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="76" y="16" width="10" height="68" rx="3" fill="var(--ll-wood)" stroke="var(--ll-line)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 20V80M79 20V80" fill="none" stroke="var(--ll-wood-dk)" stroke-width="1.2" opacity="0.6"/><rect x="15.5" y="5" width="7" height="12" rx="3" fill="var(--ll-wood-dk)" stroke="var(--ll-line)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="15.5" y="83" width="7" height="12" rx="3" fill="var(--ll-wood-dk)" stroke="var(--ll-line)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="77.5" y="5" width="7" height="12" rx="3" fill="var(--ll-wood-dk)" stroke="var(--ll-line)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="77.5" y="83" width="7" height="12" rx="3" fill="var(--ll-wood-dk)" stroke="var(--ll-line)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="15" y="15" width="8" height="2.6" fill="var(--ll-gold)"/><rect x="77" y="15" width="8" height="2.6" fill="var(--ll-gold)"/><rect x="15" y="82.4" width="8" height="2.6" fill="var(--ll-gold)"/><rect x="77" y="82.4" width="8" height="2.6" fill="var(--ll-gold)"/>` } ] }
 ];
+
+/* ═══ Vowels mode — the vowel families' shapes, gestures and colours (the write-up "Hebrew Vowel Families: Shapes, Colors
+   & Stories"). Schema in the comment above; the drawings follow LETTER_DATA's rules and wear the family colour. ═══ */
+const VOWEL_STORIES = [
+  { id: 'chop', family: 'ah', name: 'Karate chop', color: 'aqua',
+    say: 'Straight line under the letter? Karate chop! Ah!', do: 'Chop the air with a flat hand on each "ah."',
+    svg: `<ellipse cx="50" cy="94" rx="38" ry="4" fill="var(--ll-gray)" opacity="0.35"/><rect x="12" y="76" width="13" height="16" rx="2" fill="var(--ll-wood)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><rect x="75" y="76" width="13" height="16" rx="2" fill="var(--ll-wood)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><path d="M36 50Q38 42 50 42Q62 42 64 50L66 76H34Z" fill="var(--ll-white)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"/><path d="M44 43L50 58L56 43" fill="none" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.3"/><rect x="35" y="64" width="30" height="5" fill="var(--ll-fam-ah)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"/><path d="M37 52L29 68" fill="none" stroke="var(--ll-line)" stroke-width="8.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M37 52L29 68" fill="none" stroke="var(--ll-skin)" stroke-width="5.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="28" cy="70" r="3.6" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.3"/><circle cx="50" cy="30" r="11" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"/><path d="M39 28Q40 17 50 17Q60 17 61 28Q56 22 50 23Q44 22 39 28Z" fill="var(--ll-brown)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.3"/><circle cx="46" cy="30" r="1.3" fill="var(--ll-line)"/><circle cx="54" cy="30" r="1.3" fill="var(--ll-line)"/><ellipse cx="50" cy="35.5" rx="2.6" ry="2" fill="var(--ll-line)"/><rect x="10" y="72" width="80" height="6" rx="1.5" fill="var(--ll-wood-dk)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><g class="ll-anim ll-anim-swing-l"><path d="M63 50L80 64" fill="none" stroke="var(--ll-line)" stroke-width="8.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M63 50L80 64" fill="none" stroke="var(--ll-skin)" stroke-width="5.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="77" y="60" width="16" height="7.5" rx="3.6" transform="rotate(40 85 64)" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4"/><path d="M88 54l3-4M93 60l4-2M94 68l4 1" fill="none" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4"/></g>` },
+  { id: 'shrug', family: 'eh', name: 'Shrug', color: 'red',
+    say: 'Dots under the letter? Shrug! Eh?', do: "Lift both shoulders and palms up, like you're not sure.",
+    svg: `<ellipse cx="50" cy="94" rx="38" ry="4" fill="var(--ll-gray)" opacity="0.35"/><rect x="41" y="70" width="8" height="19" fill="var(--ll-navy)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4"/><rect x="51" y="70" width="8" height="19" fill="var(--ll-navy)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4"/><ellipse cx="43" cy="91" rx="6" ry="2.6" fill="var(--ll-line)"/><ellipse cx="57" cy="91" rx="6" ry="2.6" fill="var(--ll-line)"/><g class="ll-anim ll-anim-bob"><path d="M36 46Q38 40 50 40Q62 40 64 46L65 72H35Z" fill="var(--ll-fam-eh)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"/><path d="M37 47L27 58L25 46" fill="none" stroke="var(--ll-line)" stroke-width="8.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M37 47L27 58L25 46" fill="none" stroke="var(--ll-skin)" stroke-width="5.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M63 47L73 58L75 46" fill="none" stroke="var(--ll-line)" stroke-width="8.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M63 47L73 58L75 46" fill="none" stroke="var(--ll-skin)" stroke-width="5.6" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="24" cy="42" rx="5" ry="3.6" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.3"/><ellipse cx="76" cy="42" rx="5" ry="3.6" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.3"/><circle cx="50" cy="27" r="11" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"/><path d="M39 25Q40 14 50 14Q60 14 61 25Q56 19 50 20Q44 19 39 25Z" fill="var(--ll-brown)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.3"/><circle cx="46" cy="27" r="1.3" fill="var(--ll-line)"/><circle cx="54" cy="27" r="1.3" fill="var(--ll-line)"/><path d="M46 33q4 1.5 8 0" fill="none" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.3"/><path d="M43 21q3-2 6 0M51 21q3-2 6 0" fill="none" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"/></g><path d="M70 15q0-7 7-7q7 0 7 6q0 4-5 6v4" fill="none" stroke="var(--ll-fam-eh)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="79" cy="29" r="1.7" fill="var(--ll-fam-eh)"/>` },
+  { id: 'mouse', family: 'ee', name: 'Mouse', color: 'green',
+    say: "One tiny dot? It's a mouse! Eeee!", do: 'Point down at the floor and squeal.',
+    svg: `<ellipse cx="50" cy="94" rx="38" ry="4" fill="var(--ll-gray)" opacity="0.35"/><rect x="30" y="56" width="5" height="34" fill="var(--ll-wood)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4"/><rect x="66" y="56" width="5" height="34" fill="var(--ll-wood)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4"/><rect x="54" y="12" width="5" height="44" fill="var(--ll-wood)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4"/><rect x="68" y="12" width="5" height="44" fill="var(--ll-wood)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4"/><rect x="58" y="20" width="11" height="4" fill="var(--ll-wood-dk)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"/><rect x="58" y="32" width="11" height="4" fill="var(--ll-wood-dk)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"/><rect x="26" y="50" width="50" height="7" rx="1.5" fill="var(--ll-wood-dk)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><g class="ll-anim ll-anim-drift"><path d="M62 82Q70 72 74 80" fill="none" stroke="var(--ll-green-dk)" stroke-width="2" stroke-linecap="round"/><ellipse cx="53" cy="81" rx="10" ry="7" fill="var(--ll-fam-ee)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><circle cx="42" cy="79" r="5.5" fill="var(--ll-fam-ee)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><circle cx="44" cy="72.8" r="3.2" fill="var(--ll-green-dk)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"/><circle cx="44" cy="72.8" r="1.5" fill="var(--ll-pink)"/><circle cx="39.5" cy="78" r="1.1" fill="var(--ll-line)"/><circle cx="36.8" cy="80.4" r="1.4" fill="var(--ll-pink-dk)"/><path d="M37 81.5l-5-1M37 82.5l-5 1.5" fill="none" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.8"/><ellipse cx="48" cy="88.5" rx="3" ry="1.5" fill="var(--ll-green-dk)"/><ellipse cx="57" cy="88.5" rx="3" ry="1.5" fill="var(--ll-green-dk)"/></g>` },
+  { id: 'bulb', family: 'oh', name: 'Light bulb', color: 'gold',
+    say: 'Dot on top? Light bulb! Oh, I have an idea!', do: 'Tap the top of your head.',
+    svg: `<ellipse cx="46" cy="94" rx="36" ry="4" fill="var(--ll-gray)" opacity="0.35"/><rect x="37" y="72" width="8" height="18" fill="var(--ll-navy)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4"/><rect x="47" y="72" width="8" height="18" fill="var(--ll-navy)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4"/><ellipse cx="39" cy="92" rx="6" ry="2.6" fill="var(--ll-line)"/><ellipse cx="53" cy="92" rx="6" ry="2.6" fill="var(--ll-line)"/><path d="M32 50Q34 43 46 43Q58 43 60 50L61 74H31Z" fill="var(--ll-fam-oh)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"/><path d="M33 51L25 70" fill="none" stroke="var(--ll-line)" stroke-width="8.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M33 51L25 70" fill="none" stroke="var(--ll-skin)" stroke-width="5.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="24" cy="72" r="3.8" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.3"/><path d="M59 51L70 40L54 19" fill="none" stroke="var(--ll-line)" stroke-width="8.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M59 51L70 40L54 19" fill="none" stroke="var(--ll-skin)" stroke-width="5.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="46" cy="31" r="11" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"/><path d="M35 29Q36 18 46 18Q56 18 57 29Q52 23 46 24Q40 23 35 29Z" fill="var(--ll-brown)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.3"/><circle cx="42" cy="31" r="1.3" fill="var(--ll-line)"/><circle cx="50" cy="31" r="1.3" fill="var(--ll-line)"/><ellipse cx="46" cy="37" rx="2.4" ry="3" fill="var(--ll-line)"/><ellipse cx="51" cy="18.5" rx="5.2" ry="3.4" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.3"/><g class="ll-anim ll-anim-blink"><path d="M78 4v5M66 9l3 3M90 9l-3 3M63 21h5M93 21h-5" fill="none" stroke="var(--ll-fam-oh)" stroke-width="2.2" stroke-linecap="round"/></g><circle cx="78" cy="21" r="8" fill="var(--ll-gold-lt)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><path d="M75 27h6l-1 4h-4z" fill="var(--ll-gray)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"/><path d="M76 20l2 3l2-3" fill="none" stroke="var(--ll-orange)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>` },
+  { id: 'kickhigh', family: 'oh', name: 'Soccer: the ball goes high', short: 'Ball goes high', color: 'gold',
+    say: 'Ball goes high? Everyone looks up: Oh!', do: 'Kick and look up: "Oh!"',
+    script: 'Vav is playing soccer! Watch the ball. Did it fly up high? Look up, oh! Did it hit vav in the belly? Pat your belly, oo! Hold up vav cards and have kids react before reading the sound aloud.',
+    svg: `<ellipse cx="56" cy="94" rx="36" ry="4" fill="var(--ll-gray)" opacity="0.35"/><path d="M40 58Q28 36 34 22" fill="none" stroke="var(--ll-gray)" stroke-width="1.6" stroke-dasharray="3 3" stroke-linecap="round"/><g transform="translate(18 20) scale(0.72)"><path d="M58.8 94Q57.9 94 57 93.9Q56.2 93.9 55.4 93.7V92.5Q56.2 91.5 56.4 89.8Q56.7 88 56.7 82.4V48.6Q56.7 42.3 55.6 40.4Q54.5 38.5 50.4 37.9L38.7 36.2Q35.3 35.6 34.2 33.2Q33 30.8 33 27.2Q33 22.9 34 18.5Q35.1 14.1 36.4 10.7Q37.6 7.3 38.2 6H40.9V7.8Q40.9 10.1 41.7 11.3Q42.4 12.4 44.6 12.7L54.5 14.2Q60.7 15.1 62.2 18.4Q63.7 21.8 64 28.6L67 80.4Q67.3 87.2 65.4 90.6Q63.5 94 58.8 94Z" fill="var(--ll-line)"/></g><circle cx="51" cy="36" r="2.4" fill="var(--ll-white)" stroke="var(--ll-navy)" stroke-width="0.8"/><circle cx="58" cy="36" r="2.4" fill="var(--ll-white)" stroke="var(--ll-navy)" stroke-width="0.8"/><circle cx="51" cy="35" r="1.1" fill="var(--ll-navy)"/><circle cx="58" cy="35" r="1.1" fill="var(--ll-navy)"/><ellipse cx="55" cy="43.5" rx="2.2" ry="2.8" fill="var(--ll-red)" stroke="var(--ll-white)" stroke-width="0.8"/><ellipse cx="63" cy="91" rx="6" ry="2.6" fill="var(--ll-line)"/><path d="M61 84L44 66" fill="none" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="5"/><ellipse cx="42" cy="63" rx="5" ry="2.6" transform="rotate(45 42 63)" fill="var(--ll-red)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"/><g class="ll-anim ll-anim-bob"><circle cx="34" cy="12" r="8" fill="var(--ll-fam-oh)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><path d="M34 8l3.8 2.8-1.5 4.4h-4.6l-1.5-4.4z" fill="var(--ll-line)"/><path d="M37.8 10.8l3-2M30.2 10.8l-3-2M36.3 15.2l2 2.5M31.7 15.2l-2 2.5" fill="none" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/></g>` },
+  { id: 'slide', family: 'oo', name: 'Slide', color: 'blue',
+    say: 'Slanted dots? Down the slide! Ooooo!', do: 'Swoop a hand down diagonally, top left to bottom right.',
+    svg: `<ellipse cx="54" cy="94" rx="42" ry="4" fill="var(--ll-gray)" opacity="0.35"/><path d="M18 90V30M28 90V30" fill="none" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/><path d="M18 40h10M18 50h10M18 60h10M18 70h10M18 80h10" fill="none" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"/><path d="M84 90V82M92 90V78" fill="none" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/><path d="M30 18H46L94 68V78L86 82L42 32H30Z" fill="var(--ll-fam-oo)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"/><path d="M46 18L94 68" fill="none" stroke="var(--ll-blue-dk)" stroke-width="2.4" stroke-linecap="round"/><g class="ll-anim ll-anim-drift"><circle cx="58" cy="36" r="4.2" fill="var(--ll-white)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><circle cx="68" cy="46.5" r="4.2" fill="var(--ll-white)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><circle cx="78" cy="57" r="4.2" fill="var(--ll-white)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/></g><path d="M31 19L24 10M43 19L50 10" fill="none" stroke="var(--ll-line)" stroke-width="4.6" stroke-linecap="round"/><path d="M31 19L24 10M43 19L50 10" fill="none" stroke="var(--ll-skin)" stroke-width="2.6" stroke-linecap="round"/><path d="M31 12h12l1 7H30Z" fill="var(--ll-white)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.3"/><circle cx="37" cy="8" r="5.5" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.3"/><circle cx="35" cy="8" r="0.9" fill="var(--ll-line)"/><circle cx="39" cy="8" r="0.9" fill="var(--ll-line)"/><path d="M35 10.5q2 1.5 4 0" fill="none" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.9"/>` },
+  { id: 'belly', family: 'oo', name: 'Soccer: the ball hits the belly', short: 'Ball hits the belly', color: 'blue',
+    say: 'Ball hits the belly? Vav goes: Oo!', do: 'Pat your belly: "Oo!"',
+    script: 'Vav is playing soccer! Watch the ball. Did it fly up high? Look up, oh! Did it hit vav in the belly? Pat your belly, oo! Hold up vav cards and have kids react before reading the sound aloud.',
+    svg: `<ellipse cx="56" cy="94" rx="36" ry="4" fill="var(--ll-gray)" opacity="0.35"/><g transform="translate(18 20) scale(0.72)"><path d="M58.8 94Q57.9 94 57 93.9Q56.2 93.9 55.4 93.7V92.5Q56.2 91.5 56.4 89.8Q56.7 88 56.7 82.4V48.6Q56.7 42.3 55.6 40.4Q54.5 38.5 50.4 37.9L38.7 36.2Q35.3 35.6 34.2 33.2Q33 30.8 33 27.2Q33 22.9 34 18.5Q35.1 14.1 36.4 10.7Q37.6 7.3 38.2 6H40.9V7.8Q40.9 10.1 41.7 11.3Q42.4 12.4 44.6 12.7L54.5 14.2Q60.7 15.1 62.2 18.4Q63.7 21.8 64 28.6L67 80.4Q67.3 87.2 65.4 90.6Q63.5 94 58.8 94Z" fill="var(--ll-line)"/></g><circle cx="51" cy="36" r="2.6" fill="var(--ll-white)" stroke="var(--ll-navy)" stroke-width="0.8"/><circle cx="58" cy="36" r="2.6" fill="var(--ll-white)" stroke="var(--ll-navy)" stroke-width="0.8"/><circle cx="51" cy="36" r="1.2" fill="var(--ll-navy)"/><circle cx="58" cy="36" r="1.2" fill="var(--ll-navy)"/><circle cx="55" cy="43.5" r="2" fill="var(--ll-red)" stroke="var(--ll-white)" stroke-width="0.8"/><ellipse cx="59" cy="91" rx="5.5" ry="2.6" fill="var(--ll-line)"/><ellipse cx="68" cy="91" rx="5.5" ry="2.6" fill="var(--ll-line)"/><path d="M51 49l-4-4M51 71l-4 4M75 49l4-4M75 71l4 4M47 60h-5M79 60h5" fill="none" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"/><g class="ll-anim ll-anim-bob"><circle cx="63" cy="60" r="8" fill="var(--ll-fam-oo)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><path d="M63 56l3.8 2.8-1.5 4.4h-4.6l-1.5-4.4z" fill="var(--ll-line)"/><path d="M66.8 58.8l3-2M59.2 58.8l-3-2M65.3 63.2l2 2.5M60.7 63.2l-2 2.5" fill="none" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/></g>` },
+  { id: 'shh', family: 'quiet', name: 'Shh', color: 'gray',
+    say: 'Two dots stacked? Shh, quiet!', do: 'Finger to lips.',
+    svg: `<ellipse cx="50" cy="94" rx="30" ry="3.5" fill="var(--ll-gray)" opacity="0.35"/><path d="M30 52Q30 25 50 25Q70 25 70 52L68 66Q60 76 50 76Q40 76 32 66Z" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"/><path d="M29 46Q28 20 50 18Q72 20 71 46Q66 34 50 34Q34 34 29 46Z" fill="var(--ll-brown)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4"/><circle cx="41" cy="48" r="2" fill="var(--ll-line)"/><circle cx="59" cy="48" r="2" fill="var(--ll-line)"/><path d="M36 42q5-3 10 0M54 42q5-3 10 0" fill="none" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.3"/><path d="M50 49q-3.5 4 0 6.5" fill="none" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.3"/><path d="M45 62h10" fill="none" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.3"/><ellipse cx="50" cy="85" rx="11" ry="8" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"/><rect x="46.5" y="57" width="7" height="25" rx="3.5" fill="var(--ll-skin)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"/><circle cx="84" cy="42" r="4.2" fill="var(--ll-fam-quiet)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.3"/><circle cx="84" cy="56" r="4.2" fill="var(--ll-fam-quiet)" stroke="var(--ll-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.3"/>` }
+];
+// The cards in the write-up's quick-reference order; a chataf keeps its family and is marked `quick`.
+const VOWEL_CARDS = [
+  { id: 'patach', story: 'chop', shape: 'A straight line under the letter, like a karate chop.' },
+  { id: 'kamatz', story: 'chop', shape: 'Straight lines under the letter — a bar with a little leg — still a karate chop.',
+    note: 'Kamatz katan is a "sneaky" karate chop: it looks like "ah" but says "oh" in some words. Introduce it later, once the families are solid.' },
+  { id: 'segol', story: 'shrug', shape: 'Three dots in a little pile under the letter.' },
+  { id: 'tzere', story: 'shrug', shape: 'Two dots side by side under the letter, like two eyes.',
+    note: 'Tzere vs. segol: in Israeli Hebrew both say "eh," so they share a family. If your community says "ei" for tzere, give it its own gesture.' },
+  { id: 'chirik', story: 'mouse', shape: 'One tiny dot hiding under the letter, like a mouse under a chair.' },
+  { id: 'cholam', story: 'bulb', shape: 'A dot up high, like a light bulb over your head when you get an idea.' },
+  { id: 'vav_cholam', story: 'kickhigh', shape: 'Vav kicks the ball way up over its head: the dot is the soccer ball.',
+    note: 'Vav standing still is just a letter: when vav has its own vowel under it, the dot inside is not a soccer ball. Vav is playing goalie and says "v." Save this for older students.' },
+  { id: 'kubutz', story: 'slide', shape: 'Three dots in a slanted line under the letter, like a slide.' },
+  { id: 'shuruk', story: 'belly', shape: 'The ball smacks vav right in the middle: the dot inside is the soccer ball.',
+    note: 'Vav standing still is just a letter: when vav has its own vowel under it, the dot inside is not a soccer ball. Vav is playing goalie and says "v." Save this for older students.' },
+  { id: 'sheva', story: 'shh', shape: 'Two dots stacked up under the letter.' },
+  { id: 'chataf_patach', story: 'chop', quick: true, hear: ['alef', 'he', 'chet', 'ayin'], shape: 'A sheva hugging a patach: a karate chop said quickly.',
+    note: 'A sheva hugging a vowel is that vowel said quickly. This is still a karate chop.' },
+  { id: 'chataf_segol', story: 'shrug', quick: true, hear: ['alef', 'he', 'chet', 'ayin'], shape: 'A sheva hugging a segol: a shrug said quickly.',
+    note: 'A sheva hugging a vowel is that vowel said quickly. This is still a shrug.' },
+  { id: 'chataf_kamatz', story: 'chop', quick: true, hear: ['alef', 'he', 'chet', 'ayin'], shape: 'A sheva hugging a kamatz: a karate chop said quickly.',
+    note: 'A sheva hugging a vowel is that vowel said quickly. This is still a karate chop.' }
+];
+const VOWEL_TIPS = [
+  "Lead with shape, not color. Colors are scaffolding. By year's end, kids should read every vowel in plain black text.",
+  'Keep the colors identical everywhere. Flashcards, wall charts, worksheets, and digital tools should all use the same five colors.',
+  'Chataf vowels keep their family. A shva hugging a vowel (אֲ אֱ אֳ) is that vowel said quickly. אֲ is still a karate chop.',
+  'Vav standing still is just a letter. When vav has its own vowel under it, the dot inside is not a soccer ball. Vav is playing goalie and says "v." Save this for older students.',
+  'Kamatz katan is a "sneaky" karate chop. It looks like "ah" but says "oh" in some words. Introduce it later, once the families are solid.',
+  'Tzere vs. segol. In Israeli Hebrew both say "eh," so they share a family. If your community says "ei" for tzere, give it its own gesture.'
+];
 </script>
 <script>
 'use strict';
@@ -1015,9 +1160,12 @@ const LETTER_DATA = [
    dialog with up to four tabs: the memory hint and words (LETTER_DATA above),
    the letter with every vowel (built here from the Unicode marks, spoken by
    the browser's own speech synthesis), the letter in five fonts, and the
-   special forms. Shell patterns (header, dark mode, tour, toast, accounts)
-   follow trope_tutor.html; the dialog and the speech helpers follow
-   flash_cards.html.
+   special forms. A second mode, Vowels (the two buttons under the header),
+   shows every vowel sign as a card that opens its family's story: shape,
+   gesture, colour, drawing and the sign on a few letters (VOWEL_STORIES /
+   VOWEL_CARDS above) in the same dialog. Shell patterns (header, dark mode,
+   tour, toast, accounts) follow trope_tutor.html; the dialog and the speech
+   helpers follow flash_cards.html.
    ───────────────────────────────────────────────────────────────────────────── */
 
 /* ══════════════════════════════════════════════════════
@@ -1059,6 +1207,16 @@ const VOWEL_GROUPS = [
   { id: 'sheva', ids: ['sheva'] }
 ];
 const VOWEL_GROUP_FALLBACK = { ah: '“ah” sounds', eh: '“eh” sounds', ee: '“ee” sounds', oh: '“oh” sounds', oo: '“oo” sounds', sheva: 'Sheva' };
+// Vowels mode: lookups over the table above and the learner content of the data script (VOWEL_STORIES / VOWEL_CARDS /
+// VOWEL_TIPS), validated into these indexes by llIndexVowelData.
+const VOWEL_BY_ID = Object.fromEntries(VOWELS.map(v => [v.id, v]));
+const LL_FAMILIES = ['ah', 'eh', 'ee', 'oh', 'oo', 'quiet'];
+const LL_TABS = ['letter', 'vowels', 'font', 'special', 'story'];      // every tab in the dialog's strip (markup order)
+const LL_HEAR_DEFAULT = ['bet', 'lamed', 'mem', 'shin'];   // the Story tab's sample letters: בַּ לַ מַ שַׁ
+const VOWEL_STORY = {};         // story id → validated story
+const VOWEL_CARD = {};          // vowel id → validated card
+const VOWEL_CARD_ORDER = [];    // card ids in teaching order (the write-up's quick reference)
+let VOWEL_TIP_LIST = [];
 const LL_DEFAULTS = {
   v: 1,
   vowels: Object.fromEntries(VOWELS.map(v => [v.id, true])),
@@ -1089,6 +1247,7 @@ let _llId = null;            // the open card
 let _llOpener = null;        // the element to refocus when the dialog closes
 let _llTab = 'letter';
 let _llFontToken = 0;        // a Fonts-tab render that an older letter started is ignored when it settles
+let _llMode = 'letters';     // 'letters' | 'vowels' — read from the URL before the first render, mirrored into it on a click, never stored
 
 /* ══════════════════════════════════════════════════════
    HELPERS
@@ -1202,6 +1361,41 @@ function llCheckDrawings(L) {
   return L;
 }
 function llHasContent(L) { return !!((L.hint && L.hint.caption) || (L.words && L.words.length)); }
+// The Vowels mode's content, indexed and validated like LETTER_DATA (after it: a card's sample letters are looked up
+// in LETTERS): a bad story or card is dropped with a console warning and the page goes on without it.
+function llIndexVowelData() {
+  const stories = (typeof VOWEL_STORIES !== 'undefined' && Array.isArray(VOWEL_STORIES)) ? VOWEL_STORIES : [];
+  stories.forEach(raw => {
+    if (!raw || typeof raw !== 'object') return;
+    const id = raw.id;
+    if (typeof id !== 'string' || !/^[a-z_]{1,16}$/.test(id)) { llWarn('story ' + String(id), 'id must be a short lowercase word'); return; }
+    if (!LL_FAMILIES.includes(raw.family)) { llWarn('story ' + id, 'family must be one of ' + LL_FAMILIES.join(' ')); return; }
+    if (['name', 'color', 'say', 'do'].some(k => typeof raw[k] !== 'string' || !raw[k].trim())) { llWarn('story ' + id, 'name, color, say and do are required'); return; }
+    VOWEL_STORY[id] = { id, family: raw.family, name: raw.name.trim(), short: typeof raw.short === 'string' ? raw.short.trim() : '', color: raw.color.trim(), say: raw.say.trim(), do: raw.do.trim(),
+      script: typeof raw.script === 'string' ? raw.script.trim() : '', svg: raw.svg === undefined ? '' : raw.svg };   // svg checked by llCheckStory before it is drawn
+  });
+  const cards = (typeof VOWEL_CARDS !== 'undefined' && Array.isArray(VOWEL_CARDS)) ? VOWEL_CARDS : [];
+  cards.forEach(raw => {
+    if (!raw || typeof raw !== 'object') return;
+    const id = raw.id;
+    if (typeof id !== 'string' || !VOWEL_BY_ID[id]) { llWarn('card ' + String(id), 'id must be a vowel id'); return; }
+    if (VOWEL_CARD[id]) { llWarn('card ' + id, 'listed twice; the second copy is dropped'); return; }
+    if (!VOWEL_STORY[raw.story]) { llWarn('card ' + id, 'story "' + String(raw.story) + '" is unknown'); return; }
+    const hear = (Array.isArray(raw.hear) ? raw.hear : []).filter(x => typeof x === 'string' && LETTERS[x]);
+    VOWEL_CARD[id] = { id, story: raw.story, shape: typeof raw.shape === 'string' ? raw.shape.trim() : '',
+      note: typeof raw.note === 'string' ? raw.note.trim() : '', quick: !!raw.quick, hear: hear.length ? hear : LL_HEAR_DEFAULT.filter(x => LETTERS[x]) };
+    VOWEL_CARD_ORDER.push(id);
+  });
+  const tips = (typeof VOWEL_TIPS !== 'undefined' && Array.isArray(VOWEL_TIPS)) ? VOWEL_TIPS : [];
+  VOWEL_TIP_LIST = tips.filter(t => typeof t === 'string' && t.trim()).map(t => t.trim());
+}
+function llCheckStory(S) {
+  if (!S || S.checked) return S;
+  S.checked = true;
+  const why = llValidSvg(S.svg);
+  if (why) { llWarn('story ' + S.id, why); S.svg = ''; }
+  return S;
+}
 // The grid, in alef-bet order: a base, then (while pairs are split) its partner, then its final form.
 function llOrder() {
   const out = [];
@@ -1212,6 +1406,24 @@ function llOrder() {
     if (FINAL_OF[id]) out.push(FINAL_OF[id]);
   });
   return out;
+}
+// Vowels mode — the sample form on a card and in the dialog: alef carries the sign (silent, so the sound is the
+// vowel's own); the vav forms stand alone, as the write-up shows them.
+function llVowelGlyph(v) { return /^ו/.test(v.mark) ? v.mark : 'א' + v.mark; }
+// The vowel cards in teaching order, limited by the Options card's "Vowels to show" — the same switch that limits the
+// letter dialog's Vowels tab.
+function llVowelOrder() { return VOWEL_CARD_ORDER.filter(id => settings.vowels[id]); }
+function llCards() { return _llMode === 'vowels' ? llVowelOrder() : llOrder(); }
+// One view of whichever card the dialog shows. The dialog code reads the card, never LETTERS or VOWEL_CARD directly,
+// so a cloud download, a storage event or a language switch refills a vowel dialog the way it refills a letter's.
+function llCard(id) {
+  if (_llMode === 'vowels') {
+    const C = VOWEL_CARD[id], V = VOWEL_BY_ID[id], S = C && VOWEL_STORY[C.story];
+    if (!C || !V || !S) return null;
+    return { kind: 'vowel', id, glyph: llVowelGlyph(V), name: _fbT('letterlearner.glyphname.vowel_' + id, V.en), fam: S.family, V, C, S };
+  }
+  const L = LETTERS[id];
+  return L ? { kind: 'letter', id, glyph: L.glyph, name: L.name, L } : null;
 }
 
 /* ══════════════════════════════════════════════════════
@@ -1251,7 +1463,7 @@ function llAdoptStore() {
   llLoadSettings();
   renderOptions();
   renderGrid();
-  if (!document.getElementById('llOverlay').hidden && _llId) llFillDialog(_llId, true);
+  llRefillOrClose();
   llRenderVoicePicker();
 }
 function llSetSetting(key, value) {
@@ -1271,7 +1483,8 @@ function renderOptions() {
     cb.addEventListener('change', () => {
       settings.vowels[v.id] = cb.checked;
       llSaveSettings();
-      if (!document.getElementById('llOverlay').hidden && _llId) llFillDialog(_llId, true);
+      if (_llMode === 'vowels') renderGrid();   // the vowel cards follow the same switch
+      llRefillOrClose();
     });
     const sample = el('span', 'll-vowel-sample', 'א' + v.mark); sample.lang = 'he'; sample.dir = 'rtl'; sample.setAttribute('aria-hidden', 'true');
     const name = el('span', null, _fbT('letterlearner.glyphname.vowel_' + v.id, v.en));
@@ -1285,12 +1498,12 @@ function renderOptions() {
 function wireOptions() {
   document.getElementById('optFontTab').addEventListener('change', e => {
     llSetSetting('fontTab', e.target.checked);
-    if (!document.getElementById('llOverlay').hidden && _llId) llFillDialog(_llId, true);
+    llRefillOrClose();
   });
   document.getElementById('optSplit').addEventListener('change', e => {
     llSetSetting('splitPairs', e.target.checked);
     renderGrid();
-    if (!document.getElementById('llOverlay').hidden && _llId) {
+    if (!document.getElementById('llOverlay').hidden && _llId && _llMode === 'letters') {
       // A partner card that just folded away opens as its base.
       if (!llOrder().includes(_llId)) _llId = LETTERS[_llId].pairWith || _llId;
       llFillDialog(_llId, true);
@@ -1298,7 +1511,7 @@ function wireOptions() {
   });
   document.getElementById('optWordAudio').addEventListener('change', e => {
     llSetSetting('wordAudio', e.target.checked);
-    if (!document.getElementById('llOverlay').hidden && _llId) llFillDialog(_llId, true);
+    llRefillOrClose();
   });
   document.getElementById('llVoice').addEventListener('change', e => llSetSetting('voiceURI', e.target.value));
   document.getElementById('llReset').addEventListener('click', () => {
@@ -1311,9 +1524,68 @@ function wireOptions() {
     settings = JSON.parse(JSON.stringify(LL_DEFAULTS));
     llSaveSettings();
     renderOptions(); renderGrid(); llRenderVoicePicker();
-    if (!document.getElementById('llOverlay').hidden && _llId) llFillDialog(_llId, true);
+    llRefillOrClose();
   });
   try { window.addEventListener('storage', e => { if (e.key === LL_KEY) llAdoptStore(); }); } catch (e) {}
+}
+
+/* ══════════════════════════════════════════════════════
+   MODE — Letters / Vowels. The mode is page state, not a setting: llInitMode reads ?vowel= / ?mode= before the
+   first render, and a click mirrors the choice into the address bar (?mode=vowels), so a reload, a bookmark or a
+   shared link keeps it while nothing is stored or synced.
+   ══════════════════════════════════════════════════════ */
+function llSetMode(mode, opts) {
+  if (mode !== 'letters' && mode !== 'vowels') return;
+  const changed = mode !== _llMode;
+  _llMode = mode;
+  llClose();
+  _llId = null;
+  document.querySelectorAll('.ll-mode-btn').forEach(b => b.setAttribute('aria-pressed', b.dataset.mode === mode ? 'true' : 'false'));
+  const vowels = mode === 'vowels';
+  // Mode-dependent chrome swaps its key AND sets the live value (the fullscreen button's pattern), so a language
+  // switch re-resolves it through applyStaticI18n.
+  _llSwapKey(document.getElementById('llGrid'), 'aria-label', vowels ? 'letterlearner.grid.vowels_aria' : 'letterlearner.grid.aria', vowels ? 'Vowels' : 'Letters');
+  const prevKey = vowels ? 'letterlearner.dialog.prev_vowel' : 'letterlearner.dialog.prev';
+  const nextKey = vowels ? 'letterlearner.dialog.next_vowel' : 'letterlearner.dialog.next';
+  ['title', 'aria-label'].forEach(a => {
+    _llSwapKey(document.getElementById('llPrev'), a, prevKey, vowels ? 'Previous vowel' : 'Previous letter');
+    _llSwapKey(document.getElementById('llNext'), a, nextKey, vowels ? 'Next vowel' : 'Next letter');
+  });
+  document.getElementById('llTips').hidden = !vowels;
+  renderGrid();
+  if (opts && opts.url && changed) {
+    // Only on a click and only when the mode changed. The edit touches mode / letter / vowel and nothing else (the
+    // auth params stay for the SDK, every other URL contract survives) and keeps history.state.
+    try {
+      const u = new URL(location.href);
+      if (vowels) u.searchParams.set('mode', 'vowels'); else u.searchParams.delete('mode');
+      u.searchParams.delete('letter'); u.searchParams.delete('vowel');
+      history.replaceState(history.state, '', u.toString());
+    } catch (e) {}
+  }
+}
+function _llSwapKey(node, attr, key, en) {
+  if (!node) return;
+  node.setAttribute('data-i18n-' + attr, key);
+  node.setAttribute(attr, _fbT(key, en));
+}
+function llModeFromUrl() {
+  try {
+    const q = new URLSearchParams(location.search);
+    const vowel = q.get('vowel');
+    if (vowel && /^[a-z_]{1,16}$/.test(vowel) && VOWEL_CARD[vowel]) return 'vowels';
+    return q.get('mode') === 'vowels' ? 'vowels' : 'letters';
+  } catch (e) { return 'letters'; }
+}
+function llInitMode() {
+  document.querySelectorAll('.ll-mode-btn').forEach(b => b.addEventListener('click', () => llSetMode(b.dataset.mode, { url: true })));
+  llRenderTips();
+  llSetMode(llModeFromUrl(), { url: false });   // the first render of the grid
+}
+function llRenderTips() {
+  const ul = document.getElementById('llTipsList');
+  ul.textContent = '';
+  VOWEL_TIP_LIST.forEach(t => ul.appendChild(el('li', null, t)));   // i18n-ignore: learner content (the teaching tips)
 }
 
 /* ══════════════════════════════════════════════════════
@@ -1322,6 +1594,9 @@ function wireOptions() {
 function renderGrid() {
   const grid = document.getElementById('llGrid');
   grid.textContent = '';
+  const note = document.getElementById('llGridNote');
+  if (note) note.hidden = true;
+  if (_llMode === 'vowels') { renderVowelGrid(grid, note); return; }
   llOrder().forEach(id => {
     const L = LETTERS[id];
     const li = el('li');
@@ -1340,6 +1615,33 @@ function renderGrid() {
     grid.appendChild(li);
   });
 }
+// Vowels mode: one card per sign in teaching order, wearing its family's colour (data-fam → the --ll-fam property).
+function renderVowelGrid(grid, note) {
+  const order = llVowelOrder();
+  if (!order.length) {
+    if (note) { note.textContent = _fbT('letterlearner.vowels.none_note', 'Every vowel is switched off in Options.'); note.hidden = false; }
+    return;
+  }
+  order.forEach(id => {
+    const card = llCard(id); if (!card) return;
+    const li = el('li');
+    const btn = el('button', 'll-card ll-vcard' + (card.C.quick ? ' is-quick' : ''));
+    btn.type = 'button';
+    btn.dataset.id = id;
+    btn.dataset.fam = card.fam;
+    btn.setAttribute('aria-label', _fbT('letterlearner.grid.open_aria', 'Open {name}', { name: card.name }));
+    const g = el('span', 'll-card-glyph', card.glyph); g.lang = 'he'; g.dir = 'rtl'; g.setAttribute('aria-hidden', 'true');
+    const n = el('span', 'll-card-name', card.name);
+    const s = el('span', 'll-card-sound', card.V.id === 'sheva' ? 'quiet' : '/' + card.V.tr + '/'); s.dir = 'ltr';   // i18n-ignore: learner content (the sound, like the letters' "silent")
+    const b = el('span', 'll-badge'); b.dir = 'ltr';
+    b.appendChild(el('span', 'll-swatch'));
+    b.appendChild(document.createTextNode(card.S.short || card.S.name));   // i18n-ignore: learner content (the family's name)
+    btn.append(g, n, s, b);
+    btn.addEventListener('click', () => llOpen(id));
+    li.appendChild(btn);
+    grid.appendChild(li);
+  });
+}
 
 /* ══════════════════════════════════════════════════════
    DIALOG (the house modal contract, after flash_cards.html's fcModalize: focus moves in, Tab wraps over the
@@ -1347,7 +1649,7 @@ function renderGrid() {
    ══════════════════════════════════════════════════════ */
 const FOCUS_SEL = 'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
 function llOpen(id) {
-  if (!LETTERS[id]) return;
+  if (!llCard(id)) return;
   const ov = document.getElementById('llOverlay');
   if (ov.hidden) _llOpener = document.activeElement;
   llFillDialog(id, false);
@@ -1386,12 +1688,18 @@ function wireDialog() {
     tab.addEventListener('keydown', e => _tabKeydown(e, tab));
   });
 }
+// After a settings change: refill the open dialog, or close it when its card just left the grid (a vowel switched off).
+function llRefillOrClose() {
+  if (document.getElementById('llOverlay').hidden || !_llId) return;
+  if (llCards().includes(_llId)) llFillDialog(_llId, true); else llClose();
+}
 function llStep(dir) {
-  const order = llOrder(), i = order.indexOf(_llId);
+  const order = llCards(), i = order.indexOf(_llId);
   const next = order[i + dir];
-  if (!next) return;
+  const card = next && llCard(next);
+  if (!card) return;
   llFillDialog(next, true);
-  announce(LETTERS[next].name);
+  announce(card.name);
   const prev = document.getElementById('llPrev'), nxt = document.getElementById('llNext');
   const stay = dir < 0 ? prev : nxt;
   try { (stay.disabled ? (dir < 0 ? nxt : prev) : stay).focus(); } catch (e) {}
@@ -1412,8 +1720,9 @@ function _tabKeydown(e, tab) {
   else return;
   e.preventDefault(); tabs[j].focus(); tabs[j].click();
 }
-function llTabsFor(L) {
-  const tabs = ['letter'];
+function llTabsFor(card) {
+  if (card.kind === 'vowel') return settings.fontTab ? ['story', 'font'] : ['story'];
+  const L = card.L, tabs = ['letter'];
   if (!L.final || (L.vowels && L.vowels.length)) tabs.push('vowels');
   if (settings.fontTab) tabs.push('font');
   if (llSpecialItems(L).length) tabs.push('special');
@@ -1421,31 +1730,39 @@ function llTabsFor(L) {
 }
 function llSelectTab(name) {
   _llTab = name;
-  ['letter', 'vowels', 'font', 'special'].forEach(t => {
+  LL_TABS.forEach(t => {
     const tab = document.getElementById('llTab-' + t), panel = document.getElementById('llPanel-' + t);
     const on = t === name;
     tab.setAttribute('aria-selected', on ? 'true' : 'false');
     tab.tabIndex = on ? 0 : -1;
     panel.hidden = !on;
   });
-  if (name === 'font') llRenderFontTab(LETTERS[_llId]);
+  if (name === 'font') llRenderFontTab(llCard(_llId));
 }
 function llFillDialog(id, keepTab) {
-  const L = LETTERS[id]; if (!L) return;
+  const card = llCard(id); if (!card) return;
   _llId = id;
-  document.getElementById('llDlgGlyph').textContent = L.glyph;
-  document.getElementById('llDlgName').textContent = L.name;
-  const order = llOrder(), i = order.indexOf(id);
+  const glyph = document.getElementById('llDlgGlyph');
+  glyph.textContent = card.glyph;
+  if (card.kind === 'vowel') glyph.dataset.fam = card.fam; else delete glyph.dataset.fam;
+  document.getElementById('llDlgName').textContent = card.name;
+  const order = llCards(), i = order.indexOf(id);
   document.getElementById('llPrev').disabled = i <= 0;
   document.getElementById('llNext').disabled = i < 0 || i >= order.length - 1;
-  const tabs = llTabsFor(L);
-  ['letter', 'vowels', 'font', 'special'].forEach(t => { document.getElementById('llTab-' + t).hidden = !tabs.includes(t); });
-  llRenderLetterTab(L);
-  llRenderVowelsTab(L);
-  llRenderSpecialTab(L);
-  document.getElementById('llPanel-font').textContent = '';
+  const tabs = llTabsFor(card);
+  LL_TABS.forEach(t => { document.getElementById('llTab-' + t).hidden = !tabs.includes(t); });
+  if (card.kind === 'vowel') {
+    llRenderStoryTab(card);
+  } else {
+    llRenderLetterTab(card.L);
+    llRenderVowelsTab(card.L);
+    llRenderSpecialTab(card.L);
+  }
+  const fontPanel = document.getElementById('llPanel-font');
+  fontPanel.textContent = '';
+  fontPanel.dataset.for = '';   // a card closed and reopened renders its Fonts tab again (llRenderFontTab keys on this)
   _llFontToken++;
-  llSelectTab((keepTab && tabs.includes(_llTab)) ? _llTab : 'letter');
+  llSelectTab((keepTab && tabs.includes(_llTab)) ? _llTab : tabs[0]);
 }
 
 /* ══════════════════════════════════════════════════════
@@ -1592,6 +1909,60 @@ function llRenderSpecialTab(L) {
   panel.appendChild(ul);
   if (note) panel.appendChild(el('p', 'll-note', note));
 }
+// Vowels mode — the Story tab: the gesture drawing with the "Say" line as its caption, the family / shape / do rows,
+// the sign on a few letters with speakers, then the classroom script (the vav cards) and the family's note. The text
+// is learner content (English, like the letter captions); the row labels are chrome.
+function llRenderStoryTab(card) {
+  const panel = document.getElementById('llPanel-story');
+  panel.textContent = '';
+  const S = llCheckStory(card.S), C = card.C, V = card.V;
+  panel.appendChild(el('h3', null, _fbT('letterlearner.letter.hint_heading', 'Remember it')));
+  const fig = el('figure', 'll-hint');
+  if (S.svg) { const pic = el('div', 'll-hint-pic'); pic.appendChild(llSvg(S.svg, S.name)); fig.appendChild(pic); }
+  const cap = el('figcaption', null, S.say); cap.dir = 'ltr'; cap.lang = 'en';   // i18n-ignore: learner content (the "Say" line)
+  fig.appendChild(cap);
+  panel.appendChild(fig);
+  const dl = el('dl', 'll-story');
+  const row = (key, en, text, fam) => {
+    dl.appendChild(el('dt', null, _fbT(key, en)));
+    const dd = el('dd'); dd.dir = 'ltr'; dd.lang = 'en';
+    if (fam) { dd.dataset.fam = fam; dd.appendChild(el('span', 'll-swatch')); }
+    dd.appendChild(document.createTextNode(text));   // i18n-ignore: learner content
+    dl.appendChild(dd);
+  };
+  row('letterlearner.story.family_label', 'Family', S.name + ' (' + S.color + ')', S.family);
+  if (C.shape) row('letterlearner.story.shape_label', 'Shape', C.shape);
+  row('letterlearner.story.do_label', 'Do', S.do);
+  panel.appendChild(dl);
+  panel.appendChild(el('h3', null, _fbT('letterlearner.story.hear_heading', 'Hear it')));
+  const ul = el('ul', 'll-vrows');
+  C.hear.forEach(lid => {
+    const L = LETTERS[lid]; if (!L) return;
+    if (V.id === 'sheva' && !L.consonant) return;   // the Vowels tab's rule: no sheva on a silent letter
+    const form = L.glyph + V.mark, tr = L.consonant + V.tr;
+    const li = el('li', 'll-vrow');
+    const f = el('span', 'll-form', form); f.lang = 'he'; f.dir = 'rtl'; f.dataset.fam = S.family;
+    const t = el('span', 'll-tr', '/' + tr + '/');
+    t.appendChild(el('span', 'll-vname', L.name));   // i18n-ignore: learner content (the English letter name)
+    li.append(f, t, llSpeakButton(form, 'letterlearner.vowels.hear_aria', 'Hear {syllable}', { syllable: tr }));
+    ul.appendChild(li);
+  });
+  panel.appendChild(ul);
+  if (S.script) {
+    const p = el('p', 'll-story-script');
+    p.appendChild(el('strong', null, _fbT('letterlearner.story.script_label', 'In class') + ': '));
+    const t = el('span', null, S.script); t.dir = 'ltr'; t.lang = 'en';   // i18n-ignore: learner content (the classroom script)
+    p.appendChild(t);
+    panel.appendChild(p);
+  }
+  if (C.note) {
+    const p = el('p', 'll-note ll-story-note');
+    p.appendChild(el('strong', null, _fbT('letterlearner.story.note_label', 'Good to know') + ': '));
+    const t = el('span', null, C.note); t.dir = 'ltr'; t.lang = 'en';   // i18n-ignore: learner content (the family's exception)
+    p.appendChild(t);
+    panel.appendChild(p);
+  }
+}
 
 /* ══════════════════════════════════════════════════════
    FONTS TAB — a tile appears only once its face has really loaded AND draws the letter (the Font Maker's
@@ -1636,20 +2007,24 @@ function llFontDraws(family, ch) {
     return false;
   } catch (e) { return false; }
 }
-function llRenderFontTab(L) {
+function llRenderFontTab(card) {
   const panel = document.getElementById('llPanel-font');
-  if (!L || panel.dataset.for === L.id) return;
-  panel.dataset.for = L.id;
+  if (!card || panel.dataset.for === card.kind + ':' + card.id) return;
+  panel.dataset.for = card.kind + ':' + card.id;
   panel.textContent = '';
   const token = ++_llFontToken;
   const ul = el('ul', 'll-fonts');
-  const bare = llBase(L.glyph);
+  const bare = llBase(card.glyph);
+  // A vowel tile shows the sign on its letter (the sentinel below still tests the bare letter); the Taamim fallback
+  // behind the face keeps the mark drawn by a face without nikkud (the browser falls back per cluster).
+  const shownForm = card.kind === 'vowel' ? card.glyph : bare;
   const tiles = LL_FONTS.map(f => {
     const li = el('li', 'll-font-tile'); li.hidden = true;
-    const g = el('span', 'll-font-glyph', bare); g.lang = 'he'; g.dir = 'rtl'; g.style.fontFamily = '"' + f.family + '"';
+    const g = el('span', 'll-font-glyph', shownForm); g.lang = 'he'; g.dir = 'rtl';
+    g.style.fontFamily = '"' + f.family + '"' + (card.kind === 'vowel' ? ", 'IvritSuite Taamim'" : '');
     li.appendChild(g);
     li.appendChild(el('span', 'll-font-name', f.label));   // i18n-ignore: a font's name
-    li.setAttribute('aria-label', _fbT('letterlearner.font.tile_aria', '{name} in {font}', { name: L.name, font: f.label }));
+    li.setAttribute('aria-label', _fbT('letterlearner.font.tile_aria', '{name} in {font}', { name: card.name, font: f.label }));
     ul.appendChild(li);
     return li;
   });
@@ -1821,11 +2196,17 @@ document.addEventListener('fullscreenchange', () => {
    spotlight. Read-only: never changes settings or speech.
    ══════════════════════════════════════════════════════ */
 function _tourVisible(el) { return !!(el && el.offsetParent !== null); }
+// The grid and card steps name their keys by mode through getters (the engine below reads step.titleKey and stays
+// the trope tutor's verbatim copy).
 const TOUR_STEPS = [
+  { target: () => document.querySelector('.ll-mode'),
+    titleKey: 'letterlearner.tour.mode_title', bodyKey: 'letterlearner.tour.mode_body' },
   { target: () => document.getElementById('llGrid'),
-    titleKey: 'letterlearner.tour.s1_title', bodyKey: 'letterlearner.tour.s1_body' },
+    get titleKey() { return _llMode === 'vowels' ? 'letterlearner.tour.v1_title' : 'letterlearner.tour.s1_title'; },
+    get bodyKey() { return _llMode === 'vowels' ? 'letterlearner.tour.v1_body' : 'letterlearner.tour.s1_body'; } },
   { target: () => document.querySelector('#llGrid .ll-card'),
-    titleKey: 'letterlearner.tour.s2_title', bodyKey: 'letterlearner.tour.s2_body' },
+    get titleKey() { return _llMode === 'vowels' ? 'letterlearner.tour.v2_title' : 'letterlearner.tour.s2_title'; },
+    get bodyKey() { return _llMode === 'vowels' ? 'letterlearner.tour.v2_body' : 'letterlearner.tour.s2_body'; } },
   { target: () => document.getElementById('llSidebar'),
     titleKey: 'letterlearner.tour.s3_title', bodyKey: 'letterlearner.tour.s3_body' },
   { target: () => document.getElementById('cloudSavesPanel'),
@@ -1925,7 +2306,14 @@ function _tourKey(e) {
    ══════════════════════════════════════════════════════ */
 function llOpenFromUrl() {
   try {
-    const want = new URLSearchParams(location.search).get('letter');
+    const q = new URLSearchParams(location.search);
+    if (_llMode === 'vowels') {
+      // ?vowel=<id>: a vowel the Options card has switched off switches the mode (llModeFromUrl) but opens nothing.
+      const v = q.get('vowel');
+      if (v && /^[a-z_]{1,16}$/.test(v) && llVowelOrder().includes(v)) llOpen(v);
+      return;
+    }
+    const want = q.get('letter');
     if (!want || !/^[a-z_]{1,16}$/.test(want) || !LETTERS[want]) return;
     const id = llOrder().includes(want) ? want : (LETTERS[want].pairWith || null);   // a folded partner opens as its base
     if (id && llOrder().includes(id)) llOpen(id);
@@ -2187,11 +2575,12 @@ function initPanelCollapse() {
 
 function init() {
   llIndexData();
+  llIndexVowelData();
   initDark();
   llLoadSettings();
   renderOptions();
   wireOptions();
-  renderGrid();
+  llInitMode();         // the mode comes from the URL (?mode= / ?vowel=) and makes the first render of the grid
   wireDialog();
   initPanelCollapse();
   panelMemApply();      // restore the teacher's saved open/closed panels (right after initPanelCollapse, the shared rule)
