@@ -1947,7 +1947,7 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
   .bpe-master-cap { flex-basis: 100%; font-size: 0.72rem; color: var(--muted); }
   .bpe-mgroup { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; }
   .bpe-mgroup-lbl { font-size: 0.7rem; color: var(--muted); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; flex-basis: 100%; }
-  .bpe-mchip { display: inline-flex; align-items: center; gap: 5px; font-size: 0.76rem; cursor: pointer; }
+  .bpe-mchip { display: inline-flex; align-items: center; gap: 5px; font-size: 0.76rem; cursor: pointer; min-height: 24px; }   /* a 24px row to tap (WCAG 2.5.8); the box itself stays 15px */
   .bpe-mchip input { accent-color: var(--gold); width: 15px; height: 15px; margin: 0; cursor: pointer; flex-shrink: 0; }
   .bpe-msize { flex-basis: 100%; }   /* its own row, not the tail of the last toggle group */
   .bpe-msize input[type=number] { width: 64px; font-family: inherit; font-size: 0.78rem; padding: 2px 4px; }
@@ -1967,7 +1967,8 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
   .bpe-pick { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; border: 1px dashed var(--border); border-radius: 8px; padding: 8px 10px; margin-block: 0 10px; }
   .bpe-pick-cap { flex-basis: 100%; font-size: 0.76rem; font-weight: 600; }
   .bpe-pick-foot { flex-basis: 100%; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-block-start: 4px; }
-  .bpe-pick-foot .bpe-link { background: none; border: none; padding: 0; font: inherit; font-size: 0.74rem; color: var(--gold-text); cursor: pointer; text-decoration: underline; }
+  .bpe-pick-foot .bpe-link { background: none; border: none; padding: 0; font: inherit; font-size: 0.74rem; color: var(--gold-text); cursor: pointer; text-decoration: underline; min-height: 24px; }
+  .bpe-pick-foot .bpe-link:hover, .bpe-pick-foot .bpe-link:focus-visible { color: var(--text); text-decoration-thickness: 2px; }   /* the links had no hover state at all */
   .bpe-chips { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 4px 14px; }
   .bpe-chip { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 0.78rem; cursor: pointer; padding: 2px 0; }
   .bpe-footer { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
