@@ -3962,6 +3962,9 @@ function selectItem(kind, cp) {
 }
 function _selectItem(kind, cp) {
   udFlushPending();          // commit any open slider burst / pending nudge before navigating away (while identity is still the OUTGOING item)
+  // A tile picked by keyboard: renderGrids() rebuilds every tile, which dropped the focus to <body> (then ~60 Tabs
+  // back to the grid). Remember that a tile had it and hand it to the rebuilt tile of the picked item at the end.
+  const _ae = document.activeElement, refocusTile = !!(_ae && _ae.classList && _ae.classList.contains('ltile'));
   curKind = kind; curCp = cp;
   catTab = catTabFor(kind, cp);   // keep the picker on the edited item's category (English → English tab; custom → Custom glyphs; punct → Punctuation)
   // The English grid shows ONE case at a time, so the tab alone is not enough: landing on a lowercase
@@ -3976,6 +3979,7 @@ function _selectItem(kind, cp) {
   // re-renders the stage + controls, so the view refreshes in a single click.
   if (workMode === 'anchors') { precompTarget = null; _setWorkMode('anchors'); }
   else _setWorkMode(_defaultStepForCur());   // traced letters open on Edit points; untraced/marks fall back to Align
+  if (refocusTile) { const t = [...document.querySelectorAll('.ltile.sel')].find(x => x.offsetParent !== null); if (t) { try { t.focus({ preventScroll: true }); } catch (e) {} } }
 }
 function renderGrids() {
   renderLetterGrid();
