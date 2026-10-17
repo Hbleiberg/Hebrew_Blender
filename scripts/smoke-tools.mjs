@@ -71,7 +71,8 @@ const PAGES = [
     urlKeep: 'letter=gimel',
     // E. a browser without speech hides every speaker and shows the note; the ?letter= deep link opens its card and a
     // garbage one opens nothing; the stored options stay byte-identical through a load and the module's flush; F–I cover the
-    // Vowels mode (the mode bar, ?mode= / ?vowel=, the Options card's limit, the phone sheet)
+    // Vowels mode (the mode bar, ?mode= / ?vowel=, the Options card's limit, the phone sheet); J–N the Cursive mode (the
+    // three-way mode bar and its URL mirror, a cursive card's Letter tab, the dot-pair fold and a final card, garbage, the phone)
     extra: async ({ browser, tag }) => {
       const seedText = JSON.stringify({ v: 1, vowels: { kamatz: true, patach: true, tzere: true, segol: true, chirik: true, cholam: true, vav_cholam: true, kubutz: true, shuruk: true, sheva: true, chataf_patach: true, chataf_segol: true, chataf_kamatz: true }, fontTab: true, splitPairs: true, wordAudio: true, voiceURI: '' });
       {
@@ -150,6 +151,72 @@ const PAGES = [
         });
         check(tag + ' I: on a 390px phone a vowel sheet is full-width, its Story tab below the sticky head, nothing clipped or overflowing', r.open && r.tab === 'llTab-story' && r.sheetW === 390 && r.tabTop >= r.headBottom && r.tabH >= 36 && r.stripScroll <= r.stripClient + 1 && r.fits, JSON.stringify(r));
         check(tag + ' I: 0 pageerrors (phone vowel sheet)', errors.length === 0, errors.join(' | '));
+        await ctx.close();
+      }
+      // J. Cursive mode from the URL: the same 31 cards as Block (none "coming soon" — every letter has a trick entry) in the
+      // handwriting face, the Cursive button pressed, the tips block showing the six look-alike pairs + the finals rule under
+      // its own summary key, no dialog; the three buttons cycle the grid and mirror only the mode into the address bar.
+      {
+        const { ctx, page, errors } = await openPage(browser, 'letter_learner.html', { query: '?mode=cursive' });
+        const r = await page.evaluate(() => ({ mode: _llMode, cards: document.querySelectorAll('.ll-card').length, ccards: document.querySelectorAll('.ll-card.ll-ccard').length, soon: document.querySelectorAll('.ll-card.is-soon').length, pressed: document.getElementById('llModeCursive').getAttribute('aria-pressed'), tips: !document.getElementById('llTips').hidden, tipRows: document.querySelectorAll('#llTipsList li').length, summaryKey: document.getElementById('llTipsSummary').getAttribute('data-i18n'), gridKey: document.getElementById('llGrid').getAttribute('data-i18n-aria-label'), open: !document.getElementById('llOverlay').hidden, script: document.querySelector('.ll-dialog').dataset.script || '', font: getComputedStyle(document.querySelector('.ll-ccard .ll-card-glyph')).fontFamily }));
+        check(tag + ' J: ?mode=cursive shows the 31 cursive cards (none "soon"), presses Cursive, shows the look-alike tips (6 pairs + the rule) and opens nothing', r.mode === 'cursive' && r.cards === 31 && r.ccards === 31 && r.soon === 0 && r.pressed === 'true' && r.tips && r.tipRows === 7 && r.summaryKey === 'letterlearner.tips.cursive_summary' && r.gridKey === 'letterlearner.grid.cursive_aria' && !r.open && r.script === '' && /IvritSuite Ktav/.test(r.font), JSON.stringify(r));
+        await page.click('#llModeLetters');
+        const r2 = await page.evaluate(() => ({ mode: _llMode, cards: document.querySelectorAll('.ll-card').length, ccards: document.querySelectorAll('.ll-ccard').length, tips: !document.getElementById('llTips').hidden, search: location.search }));
+        await page.click('#llModeCursive');
+        const r3 = await page.evaluate(() => ({ mode: _llMode, ccards: document.querySelectorAll('.ll-ccard').length, search: location.search }));
+        await page.click('#llModeVowels');
+        const r4 = await page.evaluate(() => ({ mode: _llMode, cards: document.querySelectorAll('.ll-card').length, search: location.search, tipRows: document.querySelectorAll('#llTipsList li').length, summaryKey: document.getElementById('llTipsSummary').getAttribute('data-i18n') }));
+        check(tag + ' J: the three buttons cycle the grid (31 / 31 cursive / 13) and mirror only the mode into the address bar; the tips follow the mode', r2.mode === 'letters' && r2.cards === 31 && r2.ccards === 0 && !r2.tips && !/mode=|letter=|vowel=/.test(r2.search) && r3.mode === 'cursive' && r3.ccards === 31 && r3.search === '?mode=cursive' && r4.mode === 'vowels' && r4.cards === 13 && r4.search === '?mode=vowels' && r4.tipRows === 6 && r4.summaryKey === 'letterlearner.tips.summary', JSON.stringify([r2, r3, r4]));
+        check(tag + ' J: 0 pageerrors (cursive mode)', errors.length === 0, errors.join(' | '));
+        await ctx.close();
+      }
+      // K. ?mode=cursive&letter=dalet opens Dalet on the Letter tab in the cursive face: the "Print and cursive" line (the
+      // print glyph in its own face), the trick figure with the write-up's Picture as its lead, the two look-alike rows
+      // (He, Tzadi), the four words, the Vowels and Fonts tabs offered; the mode writes nothing, so the stored options stay
+      // byte-identical through a load + flush.
+      {
+        const { ctx, page, errors } = await openPage(browser, 'letter_learner.html', { seed: { hebrewLetterLearner_settings: seedText }, query: '?mode=cursive&letter=dalet' });
+        const r = await page.evaluate(() => { llSaveSettingsIfChanged(); return { mode: _llMode, open: !document.getElementById('llOverlay').hidden, id: _llId, tab: document.querySelector('.ll-tabs [role="tab"][aria-selected="true"]').id, script: document.querySelector('.ll-dialog').dataset.script, forms: !!document.querySelector('#llPanel-letter .ll-forms-line'), lead: (document.querySelector('#llPanel-letter figcaption .ll-trick-lead') || {}).textContent, look: [...document.querySelectorAll('#llPanel-letter .ll-lookalike strong')].map(s => s.textContent.trim()).join(','), words: document.querySelectorAll('#llPanel-letter .ll-word').length, wordFont: getComputedStyle(document.querySelector('#llPanel-letter .ll-word-he')).fontFamily, blockFont: getComputedStyle(document.querySelector('#llPanel-letter .ll-glyph-block')).fontFamily, dlgFont: getComputedStyle(document.getElementById('llDlgGlyph')).fontFamily, vowelsTab: !document.getElementById('llTab-vowels').hidden, fontTab: !document.getElementById('llTab-font').hidden, specialTab: !document.getElementById('llTab-special').hidden, same: localStorage.getItem('hebrewLetterLearner_settings') === JSON.stringify(settings), stored: localStorage.getItem('hebrewLetterLearner_settings') }; });
+        check(tag + ' K: ?mode=cursive&letter=dalet opens Dalet in the cursive face — forms line, "The number 3" lead, look-alikes He + Tzadi, 4 words; the stored options survive unchanged', r.mode === 'cursive' && r.open && r.id === 'dalet' && r.tab === 'llTab-letter' && r.script === 'cursive' && r.forms && r.lead === 'The number 3' && r.look === 'He:,Tzadi:' && r.words === 4 && /IvritSuite Ktav/.test(r.wordFont) && /Frank Ruhl Libre/.test(r.blockFont) && /IvritSuite Ktav/.test(r.dlgFont) && r.vowelsTab && r.fontTab && !r.specialTab && r.same && r.stored === seedText, JSON.stringify(r));
+        check(tag + ' K: 0 pageerrors (cursive deep link)', errors.length === 0, errors.join(' | '));
+        await ctx.close();
+      }
+      // L. With the pairs folded, ?mode=cursive&letter=vet opens Bet (27 cards, the Special tab carrying the pair); a final
+      // card carries the final note and the finals rule and offers no Vowels tab.
+      {
+        const folded = JSON.stringify({ v: 1, vowels: { kamatz: true, patach: false, tzere: true, segol: true, chirik: true, cholam: true, vav_cholam: true, kubutz: false, shuruk: true, sheva: true, chataf_patach: false, chataf_segol: false, chataf_kamatz: false }, fontTab: false, splitPairs: false, wordAudio: true, voiceURI: '' });
+        const { ctx, page, errors } = await openPage(browser, 'letter_learner.html', { seed: { hebrewLetterLearner_settings: folded }, query: '?mode=cursive&letter=vet' });
+        const r = await page.evaluate(() => ({ id: _llId, cards: document.querySelectorAll('.ll-ccard').length, open: !document.getElementById('llOverlay').hidden, special: !document.getElementById('llTab-special').hidden }));
+        check(tag + ' L: with the pairs folded, a cursive ?letter=vet opens Bet (27 cards, Special tab offered)', r.id === 'bet' && r.cards === 27 && r.open && r.special, JSON.stringify(r));
+        await ctx.close();
+        const p2 = await openPage(browser, 'letter_learner.html', { query: '?mode=cursive&letter=nun_sofit' });
+        const r2 = await p2.page.evaluate(() => ({ id: _llId, rule: !!document.querySelector('#llPanel-letter .ll-finals-rule'), note: !!document.querySelector('#llPanel-letter .ll-final-note'), vowels: !document.getElementById('llTab-vowels').hidden, look: document.querySelectorAll('#llPanel-letter .ll-lookalike').length }));
+        check(tag + ' L: a cursive final card carries the final note and the finals rule, one look-alike (vav) and no Vowels tab', r2.id === 'nun_sofit' && r2.rule && r2.note && !r2.vowels && r2.look === 1, JSON.stringify(r2));
+        check(tag + ' L: 0 pageerrors (fold + final)', errors.length === 0 && p2.errors.length === 0, errors.concat(p2.errors).join(' | '));
+        await p2.ctx.close();
+      }
+      // M. Garbage: a bad ?letter= in cursive mode keeps the cursive grid and opens nothing; an unknown ?mode= is Block.
+      {
+        const a = await openPage(browser, 'letter_learner.html', { query: '?mode=cursive&letter=zzz%3Cb%3E' });
+        const ra = await a.page.evaluate(() => ({ mode: _llMode, cards: document.querySelectorAll('.ll-ccard').length, open: !document.getElementById('llOverlay').hidden }));
+        const b = await openPage(browser, 'letter_learner.html', { query: '?mode=zzz' });
+        const rb = await b.page.evaluate(() => ({ mode: _llMode, cards: document.querySelectorAll('.ll-card').length, ccards: document.querySelectorAll('.ll-ccard').length }));
+        check(tag + ' M: a garbage cursive ?letter= opens nothing (31 cursive cards); ?mode=zzz is the block grid', ra.mode === 'cursive' && ra.cards === 31 && !ra.open && rb.mode === 'letters' && rb.cards === 31 && rb.ccards === 0, JSON.stringify([ra, rb]));
+        check(tag + ' M: 0 pageerrors (garbage)', a.errors.length === 0 && b.errors.length === 0, a.errors.concat(b.errors).join(' | '));
+        await a.ctx.close(); await b.ctx.close();
+      }
+      // N. On a 390px phone, EN and HE: the three mode buttons share one row at 44px+ with nothing overflowing, and a cursive
+      // sheet's Letter tab sits below the sticky head (the E assertions).
+      for (const lang of ['', '&lang=he']) {
+        const { ctx, page, errors } = await openPage(browser, 'letter_learner.html', { viewport: { width: 390, height: 844 }, query: '?mode=cursive&letter=alef' + lang });
+        const r = await page.evaluate(() => {
+          const btns = [...document.querySelectorAll('.ll-mode-btn')].map(b => b.getBoundingClientRect());
+          const head = document.querySelector('.ll-dlg-head').getBoundingClientRect(), strip = document.querySelector('.ll-tabs');
+          const tab = document.querySelector('.ll-tabs [role="tab"][aria-selected="true"]').getBoundingClientRect();
+          return { lang: document.documentElement.lang, fits: document.documentElement.scrollWidth <= window.innerWidth, btnH: btns.map(b => Math.round(b.height)), oneRow: Math.max(...btns.map(b => b.top)) - Math.min(...btns.map(b => b.top)) < 4, open: !document.getElementById('llOverlay').hidden, tabTop: Math.round(tab.top), headBottom: Math.round(head.bottom), strip: strip.scrollHeight <= strip.clientHeight + 1, sheetW: Math.round(document.querySelector('.ll-dialog').getBoundingClientRect().width) };
+        });
+        check(tag + ' N: on a 390px phone (' + (lang ? 'HE' : 'EN') + ') the three mode buttons share one row at 44px+, nothing overflows, and the cursive sheet\'s Letter tab sits below the sticky head', r.lang === (lang ? 'he' : 'en') && r.fits && r.btnH.every(h => h >= 44) && r.oneRow && r.open && r.tabTop >= r.headBottom && r.strip && r.sheetW === 390, JSON.stringify(r));
+        check(tag + ' N: 0 pageerrors (phone cursive ' + (lang ? 'HE' : 'EN') + ')', errors.length === 0, errors.join(' | '));
         await ctx.close();
       }
     }

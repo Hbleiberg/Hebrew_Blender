@@ -288,9 +288,11 @@ body.ll-no-speech .ll-speak, body.ll-no-speech #llVoiceRow, body.ll-no-speech #o
 .ll-badge { font-size:0.7rem; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; color:var(--gold-text); margin-top:3px; }
 html[lang="he"] .ll-badge { letter-spacing:normal; text-transform:none; }
 .ll-card.is-soon .ll-card-glyph { opacity:0.72; }
+/* Cursive mode: the same cards in the handwriting face (its body is larger than Frank Ruhl's, so a size down keeps the rows). */
+.ll-ccard .ll-card-glyph { font-family:var(--heb-cursive-font); font-size:2.5rem; }
 
-/* ───── Mode bar: Letters / Vowels — two pressed-state buttons under the header (native Tab / Enter / Space; one group).
-   The choice rides the URL as ?mode=vowels (llSetMode), never a stored key. ───── */
+/* ───── Mode bar: Letters (Block) / Letters (Cursive) / Vowels — three pressed-state buttons under the header (native
+   Tab / Enter / Space; one group). The choice rides the URL as ?mode=cursive / ?mode=vowels (llSetMode), never a stored key. ───── */
 .ll-mode { display:flex; justify-content:center; gap:8px; padding:14px 20px 0; }
 .ll-mode-btn {
   display:inline-flex; align-items:center; gap:8px; min-height:40px; padding:6px 18px;
@@ -302,6 +304,7 @@ html[lang="he"] .ll-badge { letter-spacing:normal; text-transform:none; }
 .ll-mode-btn[aria-pressed="true"] { background:var(--navy); color:#fff; border-color:var(--navy); }
 body.dark .ll-mode-btn[aria-pressed="true"] { background:#2a4070; border-color:#2a4070; }   /* the page's dark navy pair (the sidebar's edge tabs) */
 .ll-mode-sample { font-family:var(--heb-font); font-size:1.3rem; line-height:1; }
+.ll-mode-sample-cursive { font-family:var(--heb-cursive-font); }
 
 /* ───── Vowel cards (Vowels mode): the family colour rides one custom property set from data-fam — on the glyph (letter
    and mark together, the Generator's colour-the-syllable rule), the card's top edge and the badge's swatch dot; never
@@ -314,12 +317,14 @@ body.dark .ll-mode-btn[aria-pressed="true"] { background:#2a4070; border-color:#
 .ll-vcard .ll-badge { white-space:normal; text-align:center; text-transform:none; letter-spacing:normal; }
 .ll-swatch { display:inline-block; width:0.6em; height:0.6em; border-radius:50%; background:var(--ll-fam); margin-inline-end:4px; vertical-align:middle; }
 .ll-grid-note { margin-top:10px; }
-/* The teaching tips under the vowel grid (Vowels mode only; the summary is its one control). */
+/* The teaching tips under the grid (Vowels and Cursive modes; the summary is its one control). In Cursive mode each
+   look-alike row leads with the two letters in the handwriting face. */
 .ll-tips { margin-block-start:18px; border:1px solid var(--border); border-radius:10px; background:var(--white); padding:10px 14px; }
 .ll-tips[hidden] { display:none; }
 .ll-tips summary { cursor:pointer; font-weight:700; min-height:24px; }
 .ll-tips ul { margin:8px 0 0; padding-inline-start:20px; font-size:0.92rem; }
 .ll-tips li { margin-block:4px; }
+.ll-tip-pair { font-family:var(--heb-cursive-font); font-size:1.3rem; line-height:1; margin-inline:2px; }
 
 /* ───── Dialog (house modal contract: focus in, Tab trapped, Escape closes, focus back to the card) ───── */
 .ll-overlay {
@@ -404,6 +409,21 @@ html[lang="he"] .ll-vgroup { letter-spacing:normal; text-transform:none; }
 [dir="rtl"] .ll-story dd { text-align:end; }   /* English rows read left-to-right but sit against their Hebrew labels */
 .ll-story-script { background:var(--cream); border:1.5px solid var(--border); border-radius:10px; padding:8px 12px; font-size:0.92rem; margin:14px 0 0; }
 .ll-story-note { margin-top:12px; }
+
+/* Cursive mode: the dialog carries data-script="cursive", which puts every Hebrew form inside it in the handwriting
+   face — the head glyph, the vowel and special forms, the words — except the print glyph of the "Print and cursive"
+   line (.ll-glyph-block, same specificity, later rule wins). The Fonts tiles set their own faces inline. */
+.ll-dialog[data-script="cursive"] :is(.ll-dlg-glyph, .ll-form, .ll-bare-glyph, .ll-word-he, .ll-inline-heb) { font-family:var(--heb-cursive-font); }
+.ll-dialog[data-script="cursive"] .ll-glyph-block { font-family:var(--heb-font); }
+.ll-forms-line { display:flex; align-items:center; justify-content:center; gap:12px; margin:0 0 14px; font-size:0.95rem; color:var(--muted); }
+.ll-forms-line .ll-inline-heb { font-family:var(--heb-font); font-size:2rem; line-height:1.2; color:var(--text); }
+.ll-forms-line .ll-forms-arrow { color:var(--muted); font-size:1.2rem; }
+.ll-trick-lead { display:block; font-weight:700; color:var(--text); }
+.ll-lookalikes { list-style:none; display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:12px; margin:0 0 18px; }
+.ll-lookalike { display:flex; align-items:center; gap:12px; border:1.5px solid var(--border); border-radius:12px; padding:8px 12px; background:var(--cream); }
+.ll-lookalike .ll-form { font-size:2.4rem; min-width:1.2em; }
+.ll-lookalike-tell { flex:1; font-size:0.92rem; }
+.ll-finals-rule { background:var(--cream); border:1.5px solid var(--border); border-radius:10px; padding:8px 12px; font-size:0.92rem; margin:0 0 16px; }
 
 /* Fonts tab */
 .ll-fonts { list-style:none; display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:10px; }
@@ -561,7 +581,8 @@ body.dark #appToast { background: #0a0f1c; }
   .ll-tabs { padding:8px 8px 0; gap:2px; }
   .ll-tabs [role="tab"] { padding:8px 9px; font-size:0.86rem; }
   .ll-mode { padding:10px 12px 0; }
-  .ll-mode-btn { flex:1; justify-content:center; padding-inline:10px; }
+  .ll-mode-btn { flex:1; justify-content:center; padding-inline:8px; gap:6px; min-width:0; }
+  .ll-mode-btn > span:last-child { white-space:normal; line-height:1.15; text-align:center; }   /* "Letters (Cursive)" wraps inside 390px */
 }
 @media print {
   header .hright, .ll-mode, .ll-tips, .ll-sidebar, .sbr-split, .ll-sb-tab, footer, .ll-overlay, .tour-spot, .tour-card, #appToast { display:none !important; }
@@ -603,9 +624,9 @@ body.dark #appToast { background: #0a0f1c; }
   body.ll-dlg-open .ll-dlg-head { position:static; border-bottom:none; padding:16px 0 4px; justify-content:center; }
   body.ll-dlg-open .ll-nav, body.ll-dlg-open .ll-x, body.ll-dlg-open .ll-tabs, body.ll-dlg-open .ll-speak { display:none !important; }
   body.ll-dlg-open .ll-panel { padding:8px 0 0; }
-  body.ll-dlg-open .ll-words { grid-template-columns:repeat(2, 1fr); }
+  body.ll-dlg-open .ll-words, body.ll-dlg-open .ll-lookalikes { grid-template-columns:repeat(2, 1fr); }
   body.ll-dlg-open .ll-hint-pic { width:260px; }   /* paper is narrower than 800px, so the phone size (200px) would apply */
-  .ll-hint, .ll-word, .ll-vrow, .ll-font-tile, .ll-story, .ll-story-script { break-inside:avoid; }
+  .ll-hint, .ll-word, .ll-vrow, .ll-font-tile, .ll-story, .ll-story-script, .ll-forms-line, .ll-lookalike, .ll-finals-rule { break-inside:avoid; }
 }
 /* Reduced motion: the universal neutralizer (every animation and transition on the page, the hint drawings'
    .ll-anim groups included; 0.001ms rather than 0 so animationend still fires). */
@@ -638,10 +659,12 @@ body.dark #appToast { background: #0a0f1c; }
   </div>
 </header>
 
-<!-- Letters / Vowels: two pressed-state buttons in one group. The mode is read from ?mode= / ?vowel= before the first
-     render (llInitMode) and mirrored into the address bar on a click (llSetMode) — nothing is stored or synced. -->
-<div class="ll-mode" role="group" aria-label="Letters or vowels" data-i18n-aria-label="letterlearner.mode.aria">
-  <button type="button" class="ll-mode-btn" id="llModeLetters" data-mode="letters" aria-pressed="true"><span class="ll-mode-sample" lang="he" dir="rtl" aria-hidden="true">א</span><span data-i18n="letterlearner.mode.letters">Letters</span></button>
+<!-- Letters (Block) / Letters (Cursive) / Vowels: three pressed-state buttons in one group. The mode is read from
+     ?mode= / ?vowel= before the first render (llInitMode) and mirrored into the address bar on a click (llSetMode) —
+     nothing is stored or synced. -->
+<div class="ll-mode" role="group" aria-label="Block letters, cursive letters or vowels" data-i18n-aria-label="letterlearner.mode.aria">
+  <button type="button" class="ll-mode-btn" id="llModeLetters" data-mode="letters" aria-pressed="true"><span class="ll-mode-sample" lang="he" dir="rtl" aria-hidden="true">א</span><span data-i18n="letterlearner.mode.letters">Letters (Block)</span></button>
+  <button type="button" class="ll-mode-btn" id="llModeCursive" data-mode="cursive" aria-pressed="false"><span class="ll-mode-sample ll-mode-sample-cursive" lang="he" dir="rtl" aria-hidden="true">א</span><span data-i18n="letterlearner.mode.cursive">Letters (Cursive)</span></button>
   <button type="button" class="ll-mode-btn" id="llModeVowels" data-mode="vowels" aria-pressed="false"><span class="ll-mode-sample" lang="he" dir="rtl" aria-hidden="true">אַ</span><span data-i18n="letterlearner.mode.vowels">Vowels</span></button>
 </div>
 
@@ -689,16 +712,19 @@ body.dark #appToast { background: #0a0f1c; }
   <main class="ll-page" id="llMain" tabindex="-1">
     <ul class="ll-grid" id="llGrid" dir="rtl" aria-label="Letters" data-i18n-aria-label="letterlearner.grid.aria"></ul>
     <p class="ll-note ll-grid-note" id="llGridNote" hidden></p>
-    <!-- Vowels mode only: the teaching tips of the vowel-families write-up (VOWEL_TIPS, learner content; filled by llRenderTips). -->
+    <!-- Vowels and Cursive modes: the teaching tips of the vowel-families write-up (VOWEL_TIPS) or the cursive look-alike
+         pairs and the finals rule (CURSIVE_PAIRS / CURSIVE_TIPS) — learner content, filled by llRenderTips; the summary
+         and intro keys are swapped per mode by llSetMode. -->
     <details class="ll-tips" id="llTips" hidden>
-      <summary data-i18n="letterlearner.tips.summary">Teaching tips</summary>
-      <p class="ll-note" data-i18n="letterlearner.tips.intro">Every vowel family gets three cues that point to the same sound: a name tied to the vowel's shape, a gesture kids do while saying it, and a color that rhymes with the sound.</p>
+      <summary id="llTipsSummary" data-i18n="letterlearner.tips.summary">Teaching tips</summary>
+      <p class="ll-note" id="llTipsIntro" data-i18n="letterlearner.tips.intro">Every vowel family gets three cues that point to the same sound: a name tied to the vowel's shape, a gesture kids do while saying it, and a color that rhymes with the sound.</p>
       <ul id="llTipsList" dir="ltr" lang="en"></ul>
     </details>
   </main>
 </div>
 
-<!-- One static dialog for every card, letter or vowel: filled by llFillDialog(id). Tabs that do not apply to a card are hidden. -->
+<!-- One static dialog for every card — letter, cursive letter or vowel: filled by llFillDialog(id). Tabs that do not apply to a
+     card are hidden; a cursive card sets data-script="cursive" on the dialog, which puts its Hebrew in the cursive face. -->
 <div class="ll-overlay" id="llOverlay" hidden>
   <div class="ll-dialog" role="dialog" aria-modal="true" aria-labelledby="llDlgTitle">
     <div class="ll-dlg-head">
@@ -805,6 +831,17 @@ body.dark #appToast { background: #0a0f1c; }
                     `note` the family's exception, `quick` marks a chataf (dashed card), `hear` the letter ids
                     whose glyph carries the sign in "Hear it" (default: bet, lamed, mem, shin)
      VOWEL_TIPS     the teaching tips, one string each
+
+   The Cursive mode's content (the write-up "Hebrew Cursive Letter Tricks") sits below those, under the same rules
+   (the validator llIndexCursiveData drops a bad entry with a warning; a drawing is checked when its card is first shown):
+     CURSIVE_TRICKS one entry per handwritten form: { id, picture, hint } — `id` a LETTER_DATA id (the 22 letters and
+                    the five finals; a dot-pair half — vet, chaf, fe, sin — has no entry and shows its base's),
+                    `picture` the write-up's Picture phrase (the bold lead of the caption), `hint` exactly LETTER_DATA's
+                    hint shape ({ caption, show, variants: [{ label, svg, caption? }] }) with the Trick sentence as the
+                    caption. A drawing is built ON the handwritten letterform (traced from the classroom chart, placed
+                    with its baseline at y=70 of the 100 box) and draws the writing line where the trick speaks of it.
+     CURSIVE_PAIRS  the look-alike pairs: { ids: [a, b], tip } — two LETTER_DATA ids and the tell
+     CURSIVE_TIPS   the rule(s) shown under the cursive grid and on every final-form card, one string each
    ═══════════════════════════════════════════════════════════════════════════════════════════════ */
 const LETTER_DATA = [
   { id: 'alef', glyph: 'א', name: 'Alef', sound: 'silent', consonant: '',
@@ -1152,6 +1189,51 @@ const VOWEL_TIPS = [
   'Kamatz katan is a "sneaky" karate chop. It looks like "ah" but says "oh" in some words. Introduce it later, once the families are solid.',
   'Tzere vs. segol. In Israeli Hebrew both say "eh," so they share a family. If your community says "ei" for tzere, give it its own gesture.'
 ];
+
+/* ═══ Cursive mode — the handwritten (ktav) forms, their pictures and tricks (the write-up "Hebrew Cursive Letter
+   Tricks"). Schema in the comment above; the drawings follow LETTER_DATA's rules. The Picture and Trick texts are the
+   write-up's own words. ═══ */
+const CURSIVE_TRICKS = [
+  { id: 'alef', picture: 'A teacup with a spoon', hint: { caption: 'A little curve with a stick standing next to it, like a spoon beside its cup.', show: 0, variants: [{ label: 'A', svg: `` }] } },
+  { id: 'bet', picture: 'A house', hint: { caption: 'Bayit means house: a round back wall with a floor that sticks out the front door.', show: 0, variants: [{ label: 'A', svg: `` }] } },
+  { id: 'gimel', picture: 'A big gut', hint: { caption: 'Gimel has a gut: the round belly pokes out in front.', show: 0, variants: [{ label: 'A', svg: `` }] } },
+  { id: 'dalet', picture: 'The number 3', hint: { caption: 'Dalet looks like a 3. Delet means door: knock 3 times.', show: 0, variants: [{ label: 'A', svg: `` }] } },
+  { id: 'he', picture: 'Dalet with a leg', hint: { caption: "Dalet's 3 with a little leg that doesn't touch: \"Hey, don't touch me!\"", show: 0, variants: [{ label: 'A', svg: `` }] } },
+  { id: 'vav', picture: 'A stick', hint: { caption: 'One straight line, like a stick or a hook hanging down.', show: 0, variants: [{ label: 'A', svg: `` }] } },
+  { id: 'zayin', picture: 'A butt', hint: { caption: 'Zayin has a butt: it sticks out in back.', show: 0, variants: [{ label: 'A', svg: `` }] } },
+  { id: 'chet', picture: 'A gate', hint: { caption: 'Looks like a lowercase n: a gate you walk under.', show: 0, variants: [{ label: 'A', svg: `` }] } },
+  { id: 'tet', picture: 'A snail shell', hint: { caption: 'A curl that winds around itself, like a snail.', show: 0, variants: [{ label: 'A', svg: `` }] } },
+  { id: 'yod', picture: 'A raindrop', hint: { caption: 'The smallest letter, a tiny drop floating at the top of the line.', show: 0, variants: [{ label: 'A', svg: `` }] } },
+  { id: 'kaf', picture: 'A cupped hand', hint: { caption: 'Kaf means palm: a curve like a hand cupped to catch a ball.', show: 0, variants: [{ label: 'A', svg: `` }] } },
+  { id: 'kaf_sofit', picture: 'A long arm', hint: { caption: 'At the end of a word, the hand reaches way down below the line.', show: 0, variants: [{ label: 'A', svg: `` }] } },
+  { id: 'lamed', picture: 'A tall flagpole', hint: { caption: 'The tallest letter: it reaches up above the line to grab something.', show: 0, variants: [{ label: 'A', svg: `` }] } },
+  { id: 'mem', picture: 'A wave', hint: { caption: 'Mayim means water: mem rolls like a wave.', show: 0, variants: [{ label: 'A', svg: `` }] } },
+  { id: 'mem_sofit', picture: 'A pond', hint: { caption: 'At the end, the water is closed in, like a round pond.', show: 0, variants: [{ label: 'A', svg: `` }] } },
+  { id: 'nun', picture: 'A fish hook', hint: { caption: 'Nun means fish: a small curved hook.', show: 0, variants: [{ label: 'A', svg: `` }] } },
+  { id: 'nun_sofit', picture: 'A fishing line', hint: { caption: 'At the end, the line drops straight down below the line to the bottom of the lake.', show: 0, variants: [{ label: 'A', svg: `` }] } },
+  { id: 'samech', picture: 'A donut', hint: { caption: 'Perfectly round, like a donut or a wheel.', show: 0, variants: [{ label: 'A', svg: `` }] } },
+  { id: 'ayin', picture: 'An eye', hint: { caption: 'Ayin means eye: kids draw a pupil and eyelashes when they practice.', show: 0, variants: [{ label: 'A', svg: `` }] } },
+  { id: 'pe', picture: 'A mouth', hint: { caption: 'Peh means mouth: a curve with a tongue curled inside.', show: 0, variants: [{ label: 'A', svg: `` }] } },
+  { id: 'pe_sofit', picture: 'A tongue sticking out', hint: { caption: 'At the end, the tongue sticks way out below the line.', show: 0, variants: [{ label: 'A', svg: `` }] } },
+  { id: 'tzadi', picture: 'A 3 with a feather', hint: { caption: "Like dalet's 3 with an extra little mark on top, like a feather in a hat.", show: 0, variants: [{ label: 'A', svg: `` }] } },
+  { id: 'tzadi_sofit', picture: 'A feather falling', hint: { caption: 'At the end, the bottom drops down below the line.', show: 0, variants: [{ label: 'A', svg: `` }] } },
+  { id: 'kuf', picture: 'A monkey', hint: { caption: 'Kof means monkey: the tail hangs down below the line.', show: 0, variants: [{ label: 'A', svg: `` }] } },
+  { id: 'resh', picture: 'A bowed head', hint: { caption: 'Rosh means head: a head bending forward to say hello.', show: 0, variants: [{ label: 'A', svg: `` }] } },
+  { id: 'shin', picture: 'A smile with teeth', hint: { caption: 'Shen means tooth: a big toothy grin.', show: 0, variants: [{ label: 'A', svg: `` }] } },
+  { id: 'tav', picture: 'A tent with a stake', hint: { caption: "Like chet's gate with a foot kicked out at the bottom, like a tent stake.", show: 0, variants: [{ label: 'A', svg: `` }] } }
+];
+// The look-alike pairs, in the write-up's order; each tell names the difference kids can see.
+const CURSIVE_PAIRS = [
+  { ids: ['dalet', 'he'], tip: 'Hey is dalet plus a separate little leg.' },
+  { ids: ['dalet', 'tzadi'], tip: "Tzadi has the feather on top; dalet's hat is bare." },
+  { ids: ['chet', 'tav'], tip: "Tav's tent has a stake kicked out at the bottom; chet's gate stands straight." },
+  { ids: ['vav', 'nun_sofit'], tip: "Vav stays on the line; final nun's fishing line drops below it." },
+  { ids: ['yod', 'vav'], tip: 'Yud is a tiny raindrop at the top; vav is a full stick.' },
+  { ids: ['samech', 'mem_sofit'], tip: 'Both are round. Final mem only shows up at the end of a word.' }
+];
+const CURSIVE_TIPS = [
+  'A rule for all five final letters: they come at the end of a word, and most drop a tail below the line, like the letter is sitting down to rest.'
+];
 </script>
 <script>
 'use strict';
@@ -1161,10 +1243,13 @@ const VOWEL_TIPS = [
    dialog with up to four tabs: the memory hint and words (LETTER_DATA above),
    the letter with every vowel (built here from the Unicode marks, spoken by
    the browser's own speech synthesis), the letter in five fonts, and the
-   special forms. A second mode, Vowels (the two buttons under the header),
-   shows every vowel sign as a card that opens its family's story: shape,
-   gesture, colour, drawing and the sign on a few letters (VOWEL_STORIES /
-   VOWEL_CARDS above) in the same dialog. Shell patterns (header, dark mode,
+   special forms. Two more modes (the three buttons under the header): Cursive
+   shows the same cards in Israeli handwriting, each opening a picture that
+   turns the handwritten shape into something to remember, the look-alike
+   letters and the same words set in the cursive face (CURSIVE_TRICKS /
+   CURSIVE_PAIRS above); Vowels shows every vowel sign as a card that opens
+   its family's story: shape, gesture, colour, drawing and the sign on a few
+   letters (VOWEL_STORIES / VOWEL_CARDS above). Shell patterns (header, dark mode,
    tour, toast, accounts) follow trope_tutor.html; the dialog and the speech
    helpers follow flash_cards.html.
    ───────────────────────────────────────────────────────────────────────────── */
@@ -1218,6 +1303,13 @@ const VOWEL_STORY = {};         // story id → validated story
 const VOWEL_CARD = {};          // vowel id → validated card
 const VOWEL_CARD_ORDER = [];    // card ids in teaching order (the write-up's quick reference)
 let VOWEL_TIP_LIST = [];
+// Cursive mode: the write-up's tricks, look-alike pairs and finals rule (CURSIVE_TRICKS / CURSIVE_PAIRS / CURSIVE_TIPS in
+// the data script), validated into these by llIndexCursiveData. A dot-pair half (vet, chaf, fe, sin) has no entry of
+// its own and shows its base's (llTrickFor).
+const CURSIVE = {};             // letter id → validated trick { id, picture, hint }
+let CURSIVE_PAIR_LIST = [];     // [{ ids: [a, b], tip }]
+let CURSIVE_TIP_LIST = [];
+const LL_MODES = ['letters', 'cursive', 'vowels'];
 const LL_DEFAULTS = {
   v: 1,
   vowels: Object.fromEntries(VOWELS.map(v => [v.id, true])),
@@ -1248,7 +1340,7 @@ let _llId = null;            // the open card
 let _llOpener = null;        // the element to refocus when the dialog closes
 let _llTab = 'letter';
 let _llFontToken = 0;        // a Fonts-tab render that an older letter started is ignored when it settles
-let _llMode = 'letters';     // 'letters' | 'vowels' — read from the URL before the first render, mirrored into it on a click, never stored
+let _llMode = 'letters';     // 'letters' | 'cursive' | 'vowels' — read from the URL before the first render, mirrored into it on a click, never stored
 
 /* ══════════════════════════════════════════════════════
    HELPERS
@@ -1397,6 +1489,46 @@ function llCheckStory(S) {
   if (why) { llWarn('story ' + S.id, why); S.svg = ''; }
   return S;
 }
+// The Cursive mode's content, indexed and validated after LETTER_DATA (an entry names a letter id): a bad entry is
+// dropped with a console warning. A trick's hint keeps LETTER_DATA's hint shape, normalised the same way, so the
+// figure renderer and the review sheet read both alike.
+function llIndexCursiveData() {
+  const src = (typeof CURSIVE_TRICKS !== 'undefined' && Array.isArray(CURSIVE_TRICKS)) ? CURSIVE_TRICKS : [];
+  src.forEach(raw => {
+    if (!raw || typeof raw !== 'object') return;
+    const id = raw.id;
+    if (typeof id !== 'string' || !LETTERS[id]) { llWarn('cursive ' + String(id), 'id must be a letter id'); return; }
+    if (CURSIVE[id]) { llWarn('cursive ' + id, 'listed twice; the second copy is dropped'); return; }
+    const h = raw.hint;
+    if (!h || typeof h !== 'object' || typeof h.caption !== 'string' || !h.caption.trim()) { llWarn('cursive ' + id, 'hint.caption is required'); return; }
+    const variants = (Array.isArray(h.variants) ? h.variants : []).map((v, i) => {
+      const cap = (v && typeof v.caption === 'string' && v.caption.trim()) ? v.caption.trim() : '';
+      return { label: String((v && v.label) || i), svg: v && v.svg, caption: cap };   // checked by llCheckCursive before it is drawn
+    });
+    const show = (Number.isInteger(h.show) && h.show >= 0 && h.show < variants.length) ? h.show : 0;
+    CURSIVE[id] = { id, picture: typeof raw.picture === 'string' ? raw.picture.trim() : '', hint: { caption: h.caption.trim(), show, variants } };
+  });
+  const pairs = (typeof CURSIVE_PAIRS !== 'undefined' && Array.isArray(CURSIVE_PAIRS)) ? CURSIVE_PAIRS : [];
+  CURSIVE_PAIR_LIST = pairs
+    .filter(p => p && Array.isArray(p.ids) && p.ids.length === 2 && p.ids.every(x => typeof x === 'string' && LETTERS[x]) && typeof p.tip === 'string' && p.tip.trim())
+    .map(p => ({ ids: [p.ids[0], p.ids[1]], tip: p.tip.trim() }));
+  if (CURSIVE_PAIR_LIST.length !== pairs.length) llWarn('cursive pairs', (pairs.length - CURSIVE_PAIR_LIST.length) + ' malformed pair(s) dropped');
+  const tips = (typeof CURSIVE_TIPS !== 'undefined' && Array.isArray(CURSIVE_TIPS)) ? CURSIVE_TIPS : [];
+  CURSIVE_TIP_LIST = tips.filter(t => typeof t === 'string' && t.trim()).map(t => t.trim());
+}
+function llCheckCursive(T) {
+  if (!T || T.checked) return T;
+  T.checked = true;
+  T.hint.variants.forEach((v, i) => { const why = llValidSvg(v.svg); if (why) { llWarn('cursive ' + T.id + ' variant ' + i, why); v.svg = ''; } });
+  return T;
+}
+// A card's cursive trick: its own entry, else its dot-pair partner's (the handwritten shape is the same with or without the dot).
+function llTrickFor(L) { return CURSIVE[L.id] || (L.pairWith && CURSIVE[L.pairWith]) || null; }
+// The look-alike pairs a card belongs to, as { other, tip } rows; a dot-pair half asks with the id its trick came from.
+function llPairsFor(L) {
+  const id = (CURSIVE[L.id] || !L.pairWith) ? L.id : L.pairWith;
+  return CURSIVE_PAIR_LIST.filter(p => p.ids.includes(id)).map(p => ({ other: LETTERS[p.ids[0] === id ? p.ids[1] : p.ids[0]], tip: p.tip })).filter(x => x.other);
+}
 // The grid, in alef-bet order: a base, then (while pairs are split) its partner, then its final form.
 function llOrder() {
   const out = [];
@@ -1414,7 +1546,7 @@ function llVowelGlyph(v) { return /^ו/.test(v.mark) ? v.mark : 'א' + v.mark; }
 // The vowel cards in teaching order, limited by the Options card's "Vowels to show" — the same switch that limits the
 // letter dialog's Vowels tab.
 function llVowelOrder() { return VOWEL_CARD_ORDER.filter(id => settings.vowels[id]); }
-function llCards() { return _llMode === 'vowels' ? llVowelOrder() : llOrder(); }
+function llCards() { return _llMode === 'vowels' ? llVowelOrder() : llOrder(); }   // both letter modes share the alef-bet order
 // One view of whichever card the dialog shows. The dialog code reads the card, never LETTERS or VOWEL_CARD directly,
 // so a cloud download, a storage event or a language switch refills a vowel dialog the way it refills a letter's.
 function llCard(id) {
@@ -1424,7 +1556,9 @@ function llCard(id) {
     return { kind: 'vowel', id, glyph: llVowelGlyph(V), name: _fbT('letterlearner.glyphname.vowel_' + id, V.en), fam: S.family, V, C, S };
   }
   const L = LETTERS[id];
-  return L ? { kind: 'letter', id, glyph: L.glyph, name: L.name, L } : null;
+  if (!L) return null;
+  if (_llMode === 'cursive') return { kind: 'cursive', id, glyph: L.glyph, name: L.name, L, T: llTrickFor(L) };
+  return { kind: 'letter', id, glyph: L.glyph, name: L.name, L };
 }
 
 /* ══════════════════════════════════════════════════════
@@ -1504,8 +1638,8 @@ function wireOptions() {
   document.getElementById('optSplit').addEventListener('change', e => {
     llSetSetting('splitPairs', e.target.checked);
     renderGrid();
-    if (!document.getElementById('llOverlay').hidden && _llId && _llMode === 'letters') {
-      // A partner card that just folded away opens as its base.
+    if (!document.getElementById('llOverlay').hidden && _llId && _llMode !== 'vowels') {
+      // A partner card that just folded away opens as its base (both letter modes).
       if (!llOrder().includes(_llId)) _llId = LETTERS[_llId].pairWith || _llId;
       llFillDialog(_llId, true);
     }
@@ -1531,35 +1665,45 @@ function wireOptions() {
 }
 
 /* ══════════════════════════════════════════════════════
-   MODE — Letters / Vowels. The mode is page state, not a setting: llInitMode reads ?vowel= / ?mode= before the
-   first render, and a click mirrors the choice into the address bar (?mode=vowels), so a reload, a bookmark or a
-   shared link keeps it while nothing is stored or synced.
+   MODE — Letters (Block) / Letters (Cursive) / Vowels. The mode is page state, not a setting: llInitMode reads
+   ?vowel= / ?mode= before the first render, and a click mirrors the choice into the address bar (?mode=cursive,
+   ?mode=vowels; no param for the block letters), so a reload, a bookmark or a shared link keeps it while nothing is
+   stored or synced. ?letter=<id> serves both letter modes.
    ══════════════════════════════════════════════════════ */
 function llSetMode(mode, opts) {
-  if (mode !== 'letters' && mode !== 'vowels') return;
+  if (!LL_MODES.includes(mode)) return;
   const changed = mode !== _llMode;
   _llMode = mode;
   llClose();
   _llId = null;
   document.querySelectorAll('.ll-mode-btn').forEach(b => b.setAttribute('aria-pressed', b.dataset.mode === mode ? 'true' : 'false'));
-  const vowels = mode === 'vowels';
+  const vowels = mode === 'vowels', cursive = mode === 'cursive';
   // Mode-dependent chrome swaps its key AND sets the live value (the fullscreen button's pattern), so a language
   // switch re-resolves it through applyStaticI18n.
-  _llSwapKey(document.getElementById('llGrid'), 'aria-label', vowels ? 'letterlearner.grid.vowels_aria' : 'letterlearner.grid.aria', vowels ? 'Vowels' : 'Letters');
-  const prevKey = vowels ? 'letterlearner.dialog.prev_vowel' : 'letterlearner.dialog.prev';
+  _llSwapKey(document.getElementById('llGrid'), 'aria-label',
+    vowels ? 'letterlearner.grid.vowels_aria' : cursive ? 'letterlearner.grid.cursive_aria' : 'letterlearner.grid.aria',
+    vowels ? 'Vowels' : cursive ? 'Cursive letters' : 'Letters');
+  const prevKey = vowels ? 'letterlearner.dialog.prev_vowel' : 'letterlearner.dialog.prev';   // "Previous letter" serves both letter modes
   const nextKey = vowels ? 'letterlearner.dialog.next_vowel' : 'letterlearner.dialog.next';
   ['title', 'aria-label'].forEach(a => {
     _llSwapKey(document.getElementById('llPrev'), a, prevKey, vowels ? 'Previous vowel' : 'Previous letter');
     _llSwapKey(document.getElementById('llNext'), a, nextKey, vowels ? 'Next vowel' : 'Next letter');
   });
-  document.getElementById('llTips').hidden = !vowels;
+  // The tips block serves both non-block modes: its summary and intro are chrome (keys swapped), its rows learner content.
+  document.getElementById('llTips').hidden = mode === 'letters';
+  _llSwapText(document.getElementById('llTipsSummary'), cursive ? 'letterlearner.tips.cursive_summary' : 'letterlearner.tips.summary',
+    cursive ? 'Look-alikes and final letters' : 'Teaching tips');
+  _llSwapText(document.getElementById('llTipsIntro'), cursive ? 'letterlearner.tips.cursive_intro' : 'letterlearner.tips.intro',
+    cursive ? 'In handwriting a few letters look alike; each pair has one tell.'
+            : "Every vowel family gets three cues that point to the same sound: a name tied to the vowel's shape, a gesture kids do while saying it, and a color that rhymes with the sound.");
+  llRenderTips();
   renderGrid();
   if (opts && opts.url && changed) {
     // Only on a click and only when the mode changed. The edit touches mode / letter / vowel and nothing else (the
     // auth params stay for the SDK, every other URL contract survives) and keeps history.state.
     try {
       const u = new URL(location.href);
-      if (vowels) u.searchParams.set('mode', 'vowels'); else u.searchParams.delete('mode');
+      if (mode === 'letters') u.searchParams.delete('mode'); else u.searchParams.set('mode', mode);
       u.searchParams.delete('letter'); u.searchParams.delete('vowel');
       history.replaceState(history.state, '', u.toString());
     } catch (e) {}
@@ -1570,22 +1714,41 @@ function _llSwapKey(node, attr, key, en) {
   node.setAttribute('data-i18n-' + attr, key);
   node.setAttribute(attr, _fbT(key, en));
 }
+// The same for an element whose text is its key (data-i18n): the summary and intro of the tips block.
+function _llSwapText(node, key, en) {
+  if (!node) return;
+  node.setAttribute('data-i18n', key);
+  node.textContent = _fbT(key, en);
+}
 function llModeFromUrl() {
   try {
     const q = new URLSearchParams(location.search);
     const vowel = q.get('vowel');
     if (vowel && /^[a-z_]{1,16}$/.test(vowel) && VOWEL_CARD[vowel]) return 'vowels';
-    return q.get('mode') === 'vowels' ? 'vowels' : 'letters';
+    const m = q.get('mode');
+    return (m === 'vowels' || m === 'cursive') ? m : 'letters';
   } catch (e) { return 'letters'; }
 }
 function llInitMode() {
   document.querySelectorAll('.ll-mode-btn').forEach(b => b.addEventListener('click', () => llSetMode(b.dataset.mode, { url: true })));
-  llRenderTips();
-  llSetMode(llModeFromUrl(), { url: false });   // the first render of the grid
+  llSetMode(llModeFromUrl(), { url: false });   // the first render of the grid (and of the tips block)
 }
 function llRenderTips() {
   const ul = document.getElementById('llTipsList');
   ul.textContent = '';
+  if (_llMode === 'cursive') {
+    // One row per look-alike pair — the two letters in the handwriting face, then the names and the tell — and the
+    // finals rule last.
+    CURSIVE_PAIR_LIST.forEach(p => {
+      const li = el('li');
+      const pair = el('span', 'll-tip-pair', p.ids.map(x => LETTERS[x].glyph).join(' ')); pair.lang = 'he'; pair.dir = 'rtl';
+      li.appendChild(pair);
+      li.appendChild(document.createTextNode(' ' + p.ids.map(x => LETTERS[x].name).join(' vs. ') + ': ' + p.tip));   // i18n-ignore: learner content (the names and the tell)
+      ul.appendChild(li);
+    });
+    CURSIVE_TIP_LIST.forEach(t => ul.appendChild(el('li', null, t)));   // i18n-ignore: learner content (the finals rule)
+    return;
+  }
   VOWEL_TIP_LIST.forEach(t => ul.appendChild(el('li', null, t)));   // i18n-ignore: learner content (the teaching tips)
 }
 
@@ -1598,10 +1761,14 @@ function renderGrid() {
   const note = document.getElementById('llGridNote');
   if (note) note.hidden = true;
   if (_llMode === 'vowels') { renderVowelGrid(grid, note); return; }
+  const cursive = _llMode === 'cursive';
   llOrder().forEach(id => {
     const L = LETTERS[id];
     const li = el('li');
-    const btn = el('button', 'll-card' + (L.final ? ' is-final' : '') + (llHasContent(L) ? '' : ' is-soon'));
+    // In Cursive mode a card is "coming soon" only while the letter has no trick entry at all: an entry whose drawing
+    // has not landed still renders its caption and the words (the block rule too — the pictures never decide the state).
+    const soon = cursive ? !llTrickFor(L) : !llHasContent(L);
+    const btn = el('button', 'll-card' + (cursive ? ' ll-ccard' : '') + (L.final ? ' is-final' : '') + (soon ? ' is-soon' : ''));
     btn.type = 'button';
     btn.dataset.id = id;
     btn.setAttribute('aria-label', _fbT('letterlearner.grid.open_aria', 'Open {name}', { name: L.name }));
@@ -1610,7 +1777,7 @@ function renderGrid() {
     const s = el('span', 'll-card-sound', L.sound === 'silent' ? L.sound : '/' + L.sound + '/'); s.dir = 'ltr';   // i18n-ignore: learner content
     btn.append(g, n, s);
     if (L.final) btn.appendChild(el('span', 'll-badge', _fbT('letterlearner.grid.final_badge', 'final form')));
-    else if (!llHasContent(L)) btn.appendChild(el('span', 'll-badge', _fbT('letterlearner.grid.soon_badge', 'coming soon')));
+    else if (soon) btn.appendChild(el('span', 'll-badge', _fbT('letterlearner.grid.soon_badge', 'coming soon')));
     btn.addEventListener('click', () => llOpen(id));
     li.appendChild(btn);
     grid.appendChild(li);
@@ -1746,6 +1913,8 @@ function llFillDialog(id, keepTab) {
   const glyph = document.getElementById('llDlgGlyph');
   glyph.textContent = card.glyph;
   if (card.kind === 'vowel') glyph.dataset.fam = card.fam; else delete glyph.dataset.fam;
+  const box = document.querySelector('.ll-dialog');
+  if (card.kind === 'cursive') box.dataset.script = 'cursive'; else delete box.dataset.script;   // the cursive face for every Hebrew form inside
   document.getElementById('llDlgName').textContent = card.name;
   const order = llCards(), i = order.indexOf(id);
   document.getElementById('llPrev').disabled = i <= 0;
@@ -1755,7 +1924,7 @@ function llFillDialog(id, keepTab) {
   if (card.kind === 'vowel') {
     llRenderStoryTab(card);
   } else {
-    llRenderLetterTab(card.L);
+    if (card.kind === 'cursive') llRenderCursiveTab(card); else llRenderLetterTab(card.L);
     llRenderVowelsTab(card.L);
     llRenderSpecialTab(card.L);
   }
@@ -1791,19 +1960,40 @@ function llWordSpan(he, base) {
   });
   return span;
 }
+// The note on a final-form card — "This is how Kaf looks at the end of a word. כ → ך" (both letter tabs).
+function llFinalNote(L) {
+  const p = el('p', 'll-final-note');
+  const B = LETTERS[L.final];
+  const text = _fbT('letterlearner.letter.final_note', 'This is how {base} looks at the end of a word.', { base: B.name });
+  p.appendChild(document.createTextNode(text + ' '));
+  const pair = el('span', 'll-inline-heb', B.glyph + ' → ' + L.glyph); pair.lang = 'he'; pair.dir = 'rtl';
+  p.appendChild(pair);
+  return p;
+}
+// The words with their pictures and the card's letter highlighted (both letter tabs; a cursive dialog sets the
+// handwriting face on .ll-word-he by CSS, so one markup serves both).
+function llWordsList(L, words) {
+  const ul = el('ul', 'll-words');
+  const base = llBase(L.glyph);
+  words.forEach(w => {
+    const li = el('li', 'll-word');
+    if (w.svg) { const pic = el('div', 'll-word-pic'); pic.appendChild(llSvg(w.svg, w.en)); li.appendChild(pic); }
+    const t = el('div', 'll-word-text');
+    t.appendChild(llWordSpan(w.he, base));
+    const en = el('span', 'll-word-en', w.en); en.lang = 'en';   // i18n-ignore: learner content (the English gloss)
+    if (w.tr) { en.appendChild(document.createTextNode(' ')); en.appendChild(el('span', 'll-word-tr', '(' + w.tr + ')')); }
+    t.appendChild(en);
+    li.appendChild(t);
+    if (settings.wordAudio) li.appendChild(llSpeakButton(w.he, 'letterlearner.words.hear_aria', 'Hear {word}', { word: w.he }));
+    ul.appendChild(li);
+  });
+  return ul;
+}
 function llRenderLetterTab(L) {
   llCheckDrawings(L);
   const panel = document.getElementById('llPanel-letter');
   panel.textContent = '';
-  if (L.final && LETTERS[L.final]) {
-    const p = el('p', 'll-final-note');
-    const B = LETTERS[L.final];
-    const text = _fbT('letterlearner.letter.final_note', 'This is how {base} looks at the end of a word.', { base: B.name });
-    p.appendChild(document.createTextNode(text + ' '));
-    const pair = el('span', 'll-inline-heb', B.glyph + ' → ' + L.glyph); pair.lang = 'he'; pair.dir = 'rtl';
-    p.appendChild(pair);
-    panel.appendChild(p);
-  }
+  if (L.final && LETTERS[L.final]) panel.appendChild(llFinalNote(L));
   const words = (L.words || []);
   if (!(L.hint && L.hint.caption) && !words.length) {
     const soon = el('div', 'll-soon');
@@ -1823,21 +2013,72 @@ function llRenderLetterTab(L) {
   }
   if (words.length) {
     panel.appendChild(el('h3', null, _fbT('letterlearner.letter.words_heading', 'Words')));
-    const ul = el('ul', 'll-words');
-    const base = llBase(L.glyph);
-    words.forEach(w => {
-      const li = el('li', 'll-word');
-      if (w.svg) { const pic = el('div', 'll-word-pic'); pic.appendChild(llSvg(w.svg, w.en)); li.appendChild(pic); }
-      const t = el('div', 'll-word-text');
-      t.appendChild(llWordSpan(w.he, base));
-      const en = el('span', 'll-word-en', w.en); en.lang = 'en';   // i18n-ignore: learner content (the English gloss)
-      if (w.tr) { en.appendChild(document.createTextNode(' ')); en.appendChild(el('span', 'll-word-tr', '(' + w.tr + ')')); }
-      t.appendChild(en);
-      li.appendChild(t);
-      if (settings.wordAudio) li.appendChild(llSpeakButton(w.he, 'letterlearner.words.hear_aria', 'Hear {word}', { word: w.he }));
+    panel.appendChild(llWordsList(L, words));
+  }
+}
+// Cursive mode — the Letter tab of a cursive card: the final note and the finals rule on a final card, the printed and
+// handwritten forms side by side, the write-up's picture and trick for the handwritten shape (CURSIVE_TRICKS; a
+// dot-pair half shows its base's), the look-alike pairs the letter belongs to, and the same words as the block card,
+// set in the cursive face by the dialog's data-script. The texts are learner content (English, like the captions).
+function llRenderCursiveTab(card) {
+  const L = card.L, T = card.T ? llCheckCursive(card.T) : null;
+  llCheckDrawings(L);
+  const panel = document.getElementById('llPanel-letter');
+  panel.textContent = '';
+  if (L.final && LETTERS[L.final]) {
+    panel.appendChild(llFinalNote(L));
+    if (CURSIVE_TIP_LIST.length) {
+      const rule = el('p', 'll-finals-rule'); rule.dir = 'ltr'; rule.lang = 'en';
+      rule.appendChild(el('strong', null, _fbT('letterlearner.cursive.finals_rule_label', 'Final letters') + ': '));
+      rule.appendChild(document.createTextNode(CURSIVE_TIP_LIST.join(' ')));   // i18n-ignore: learner content (the finals rule)
+      panel.appendChild(rule);
+    }
+  }
+  // Print and cursive: the block glyph keeps its own face (.ll-glyph-block); the second glyph takes the dialog's cursive face.
+  const forms = el('p', 'll-forms-line');
+  forms.appendChild(el('span', null, _fbT('letterlearner.cursive.forms_label', 'Print and cursive')));
+  const pair = el('span', 'll-inline-heb'); pair.lang = 'he'; pair.dir = 'rtl';
+  pair.appendChild(el('span', 'll-glyph-block', L.glyph));
+  pair.appendChild(document.createTextNode(' '));
+  const arrow = el('span', 'll-forms-arrow dir-arrow', '→'); arrow.setAttribute('aria-hidden', 'true');
+  pair.appendChild(arrow);
+  pair.appendChild(document.createTextNode(' '));
+  pair.appendChild(el('span', null, L.glyph));
+  forms.appendChild(pair);
+  panel.appendChild(forms);
+  panel.appendChild(el('h3', null, _fbT('letterlearner.letter.hint_heading', 'Remember it')));
+  if (T) {
+    const fig = el('figure', 'll-hint');
+    const v = T.hint.variants[T.hint.show];
+    const cap = (v && v.caption) || T.hint.caption;   // a variant's own caption wins while it is the one shown
+    if (v && v.svg) { const pic = el('div', 'll-hint-pic'); pic.appendChild(llSvg(v.svg, T.picture || cap)); fig.appendChild(pic); }
+    const fc = el('figcaption'); fc.dir = 'ltr'; fc.lang = 'en';
+    if (T.picture) { fc.appendChild(el('strong', 'll-trick-lead', T.picture)); fc.appendChild(document.createTextNode(' ')); }   // i18n-ignore: learner content (the write-up's Picture; the space keeps the two apart when read aloud)
+    fc.appendChild(document.createTextNode(cap));   // i18n-ignore: learner content (the trick, shown verbatim)
+    fig.appendChild(fc);
+    panel.appendChild(fig);
+  } else {
+    panel.appendChild(el('p', 'll-note', _fbT('letterlearner.cursive.soon_body', 'The handwriting picture for this letter is on its way. The words, vowels and fonts already work.')));
+  }
+  const pairs = llPairsFor(L);
+  if (pairs.length) {
+    panel.appendChild(el('h3', null, _fbT('letterlearner.cursive.lookalike_heading', "Don't mix it up with")));
+    const ul = el('ul', 'll-lookalikes');
+    pairs.forEach(p => {
+      const li = el('li', 'll-lookalike');
+      const f = el('span', 'll-form', p.other.glyph); f.lang = 'he'; f.dir = 'rtl'; f.setAttribute('aria-hidden', 'true');   // the tell names the letter
+      const t = el('span', 'll-lookalike-tell'); t.dir = 'ltr'; t.lang = 'en';
+      t.appendChild(el('strong', null, p.other.name + ': '));   // i18n-ignore: learner content (the English letter name)
+      t.appendChild(document.createTextNode(p.tip));   // i18n-ignore: learner content (the tell)
+      li.append(f, t);
       ul.appendChild(li);
     });
     panel.appendChild(ul);
+  }
+  const words = (L.words || []);
+  if (words.length) {
+    panel.appendChild(el('h3', null, _fbT('letterlearner.letter.words_heading', 'Words')));
+    panel.appendChild(llWordsList(L, words));
   }
 }
 function llRenderVowelsTab(L) {
@@ -2203,11 +2444,11 @@ const TOUR_STEPS = [
   { target: () => document.querySelector('.ll-mode'),
     titleKey: 'letterlearner.tour.mode_title', bodyKey: 'letterlearner.tour.mode_body' },
   { target: () => document.getElementById('llGrid'),
-    get titleKey() { return _llMode === 'vowels' ? 'letterlearner.tour.v1_title' : 'letterlearner.tour.s1_title'; },
-    get bodyKey() { return _llMode === 'vowels' ? 'letterlearner.tour.v1_body' : 'letterlearner.tour.s1_body'; } },
+    get titleKey() { return _llMode === 'vowels' ? 'letterlearner.tour.v1_title' : _llMode === 'cursive' ? 'letterlearner.tour.c1_title' : 'letterlearner.tour.s1_title'; },
+    get bodyKey() { return _llMode === 'vowels' ? 'letterlearner.tour.v1_body' : _llMode === 'cursive' ? 'letterlearner.tour.c1_body' : 'letterlearner.tour.s1_body'; } },
   { target: () => document.querySelector('#llGrid .ll-card'),
-    get titleKey() { return _llMode === 'vowels' ? 'letterlearner.tour.v2_title' : 'letterlearner.tour.s2_title'; },
-    get bodyKey() { return _llMode === 'vowels' ? 'letterlearner.tour.v2_body' : 'letterlearner.tour.s2_body'; } },
+    get titleKey() { return _llMode === 'vowels' ? 'letterlearner.tour.v2_title' : _llMode === 'cursive' ? 'letterlearner.tour.c2_title' : 'letterlearner.tour.s2_title'; },
+    get bodyKey() { return _llMode === 'vowels' ? 'letterlearner.tour.v2_body' : _llMode === 'cursive' ? 'letterlearner.tour.c2_body' : 'letterlearner.tour.s2_body'; } },
   { target: () => document.getElementById('llSidebar'),
     titleKey: 'letterlearner.tour.s3_title', bodyKey: 'letterlearner.tour.s3_body' },
   { target: () => document.getElementById('cloudSavesPanel'),
@@ -2314,9 +2555,10 @@ function llOpenFromUrl() {
       if (v && /^[a-z_]{1,16}$/.test(v) && llVowelOrder().includes(v)) llOpen(v);
       return;
     }
+    // ?letter=<id> serves both letter modes (Block and Cursive share llOrder): a folded partner opens as its base.
     const want = q.get('letter');
     if (!want || !/^[a-z_]{1,16}$/.test(want) || !LETTERS[want]) return;
-    const id = llOrder().includes(want) ? want : (LETTERS[want].pairWith || null);   // a folded partner opens as its base
+    const id = llOrder().includes(want) ? want : (LETTERS[want].pairWith || null);
     if (id && llOrder().includes(id)) llOpen(id);
   } catch (e) {}
 }
@@ -2577,6 +2819,7 @@ function initPanelCollapse() {
 function init() {
   llIndexData();
   llIndexVowelData();
+  llIndexCursiveData();   // after llIndexData: a trick names a letter id
   initDark();
   llLoadSettings();
   renderOptions();

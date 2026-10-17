@@ -6269,7 +6269,7 @@ torah.recsrc.this_reading,"This reading: Total Torah video — {parsha}, Year {y
 torah.recsrc.karaoke_note,"Word-by-word follow isn't available for this Total Torah recording yet, so the whole verse highlights while it plays.","מעקב מילה-מילה עדיין לא זמין להקלטת Total Torah הזו, ולכן כל הפסוק מודגש בזמן הנגינה.",Karaoke section note while a Total Torah verse on screen has no verified word timings,do-not-translate Total Torah
 torah.recsrc.bar_label,{verse} · Total Torah,{verse} · Total Torah,"audio bar label while a Total Torah verse file is loaded ({verse} is ""1:3"")",template; do-not-translate Total Torah
 letterlearner.header.title,Letter Learner,לומדים אותיות,Letter Learner page header title,
-letterlearner.header.subtitle,"Every Hebrew letter with a picture to remember it by, its vowels read aloud, and its look in different fonts.","כל אות עברית עם ציור שעוזר לזכור אותה, הניקוד שלה בהקראה, והמראה שלה בגופנים שונים.",Letter Learner page header subtitle,
+letterlearner.header.subtitle,"Every Hebrew letter with a picture to remember it by, its vowels read aloud, its look in different fonts — and how it is written by hand.","כל אות עברית עם ציור שעוזר לזכור אותה, הניקוד שלה בהקראה, המראה שלה בגופנים שונים – ואיך כותבים אותה בכתב.",Letter Learner page header subtitle,
 letterlearner.header.home,Home,דף הבית,Letter Learner header Home link label,svg-icon-in-markup
 letterlearner.header.tour_button,Tour,סיור,Letter Learner header tour launcher button,svg-icon-in-markup
 letterlearner.header.tour_title,Take a quick tour,סיור קצר,Letter Learner header tour button title,
@@ -6342,10 +6342,12 @@ letterlearner.tour.s3_title,Options,אפשרויות,tour step 3 title,
 letterlearner.tour.s3_body,"Choose which vowels to show, whether pairs like Bet and Vet get their own cards, and whether the words are read aloud.","בוחרים אילו סימני ניקוד להציג, אם לזוגות כמו בּ ו־ב יהיו כרטיסים משלהם, ואם המילים יוקראו.",tour step 3 body,
 letterlearner.tour.s4_title,Your account,החשבון שלך,tour step 4 title,
 letterlearner.tour.s4_body,"Signed in, these options follow you to every device.","כשמחוברים לחשבון, האפשרויות האלה עוברות איתכם לכל מכשיר.",tour step 4 body,
-letterlearner.mode.aria,Letters or vowels,אותיות או ניקוד,aria-label of the Letters / Vowels mode bar under the header (role=group),aria-label only
-letterlearner.mode.letters,Letters,אותיות,mode bar button: show the letter cards,
+letterlearner.mode.aria,"Block letters, cursive letters or vowels","אותיות דפוס, אותיות כתב או ניקוד",aria-label of the Letters (Block) / Letters (Cursive) / Vowels mode bar under the header (role=group),aria-label only
+letterlearner.mode.letters,Letters (Block),אותיות דפוס,mode bar button: show the printed (block) letter cards,
+letterlearner.mode.cursive,Letters (Cursive),אותיות כתב,mode bar button: show the same letters in Israeli handwriting (cursive / ktav),
 letterlearner.mode.vowels,Vowels,ניקוד,mode bar button: show the vowel cards,
 letterlearner.grid.vowels_aria,Vowels,סימני ניקוד,aria-label of the card grid in Vowels mode,aria-label only
+letterlearner.grid.cursive_aria,Cursive letters,אותיות כתב,aria-label of the card grid in Cursive mode,aria-label only
 letterlearner.dialog.prev_vowel,Previous vowel,סימן הניקוד הקודם,vowel dialog previous-vowel button,aria-label only; svg-icon-in-markup
 letterlearner.dialog.next_vowel,Next vowel,סימן הניקוד הבא,vowel dialog next-vowel button,aria-label only; svg-icon-in-markup
 letterlearner.tabs.story,Story,הסיפור,vowel dialog tab (the family's gesture story),
@@ -6355,12 +6357,22 @@ letterlearner.story.do_label,Do,עושים,Story tab row label (the gesture),
 letterlearner.story.hear_heading,Hear it,להקשיב,Story tab heading over the sample syllables with speakers,
 letterlearner.story.script_label,In class,בכיתה,Story tab label before the vav classroom script,
 letterlearner.story.note_label,Good to know,כדאי לדעת,Story tab label before the family's exception note,
-letterlearner.tips.summary,Teaching tips,טיפים להוראה,summary (the toggle) of the teaching-tips block under the vowel cards,
-letterlearner.tips.intro,"Every vowel family gets three cues that point to the same sound: a name tied to the vowel's shape, a gesture kids do while saying it, and a color that rhymes with the sound.","לכל משפחת ניקוד שלושה רמזים שמובילים לאותו צליל: שם שקשור לצורת הסימן, תנועת גוף שהילדים עושים כשאומרים אותו, וצבע שמתחרז עם הצליל (באנגלית).",intro line of the teaching-tips block,
-letterlearner.tour.mode_title,Letters or vowels,אותיות או ניקוד,tour step 1 title (the mode bar),
-letterlearner.tour.mode_body,"Switch between the alef-bet and the vowel signs here. The address bar remembers which one is open, so a bookmark or a shared link keeps it.","כאן עוברים בין האלף-בית לסימני הניקוד. שורת הכתובת זוכרת מה פתוח, ולכן סימנייה או קישור משותף שומרים על הבחירה.",tour step 1 body,
+letterlearner.tips.summary,Teaching tips,טיפים להוראה,summary (the toggle) of the teaching-tips block under the vowel cards (Vowels mode; Cursive mode swaps in tips.cursive_summary),
+letterlearner.tips.intro,"Every vowel family gets three cues that point to the same sound: a name tied to the vowel's shape, a gesture kids do while saying it, and a color that rhymes with the sound.","לכל משפחת ניקוד שלושה רמזים שמובילים לאותו צליל: שם שקשור לצורת הסימן, תנועת גוף שהילדים עושים כשאומרים אותו, וצבע שמתחרז עם הצליל (באנגלית).",intro line of the teaching-tips block (Vowels mode; Cursive mode swaps in tips.cursive_intro),
+letterlearner.tips.cursive_summary,Look-alikes and final letters,אותיות דומות ואותיות סופיות,summary (the toggle) of the tips block under the cursive cards: the look-alike pairs and the finals rule,
+letterlearner.tips.cursive_intro,In handwriting a few letters look alike; each pair has one tell.,"בכתב כמה אותיות דומות זו לזו, ולכל זוג יש סימן היכר אחד.",intro line of the tips block in Cursive mode (the rows that follow are learner content),
+letterlearner.cursive.forms_label,Print and cursive,דפוס וכתב,Letter tab of a cursive card: label before the printed and handwritten forms of the letter,
+letterlearner.cursive.lookalike_heading,Don't mix it up with,לא להתבלבל עם,Letter tab of a cursive card: heading over the look-alike letters,
+letterlearner.cursive.finals_rule_label,Final letters,אותיות סופיות,Letter tab of a cursive final-form card: bold label before the finals rule (learner content),
+letterlearner.cursive.soon_body,"The handwriting picture for this letter is on its way. The words, vowels and fonts already work.","הציור של האות בכתב בדרך. המילים, הניקוד והגופנים כבר עובדים.",Letter tab of a cursive card whose trick has not landed yet,
+letterlearner.tour.mode_title,"Block, cursive or vowels","דפוס, כתב או ניקוד",tour step 1 title (the mode bar),
+letterlearner.tour.mode_body,"Switch between the printed alef-bet, the handwritten (cursive) letters and the vowel signs here. The address bar remembers which one is open, so a bookmark or a shared link keeps it.","כאן עוברים בין אותיות הדפוס, אותיות הכתב וסימני הניקוד. שורת הכתובת זוכרת מה פתוח, ולכן סימנייה או קישור משותף שומרים על הבחירה.",tour step 1 body,
 letterlearner.tour.v1_title,Every vowel,כל סימני הניקוד,tour grid step title in Vowels mode,
 letterlearner.tour.v1_body,"Tap any vowel to open it. Each card wears its family's color; the Options card chooses which vowels show.","לוחצים על סימן ניקוד כדי לפתוח אותו. כל כרטיס צבוע בצבע המשפחה שלו; בכרטיס האפשרויות בוחרים אילו סימנים יוצגו.",tour grid step body in Vowels mode,
 letterlearner.tour.v2_title,A vowel card,כרטיס ניקוד,tour card step title in Vowels mode,
 letterlearner.tour.v2_body,"Each card opens the family's story: the gesture to make, the shape to look for, and the vowel on a few letters, read aloud.","כל כרטיס פותח את סיפור המשפחה: התנועה שעושים, הצורה שמחפשים, והניקוד על כמה אותיות בהקראה.",tour card step body in Vowels mode,
+letterlearner.tour.c1_title,Every letter in cursive,כל האותיות בכתב,tour grid step title in Cursive mode,
+letterlearner.tour.c1_body,"Tap any letter to open it in handwriting. The final forms sit next to their letters, as in print.","לוחצים על אות כדי לפתוח אותה בכתב. האותיות הסופיות יושבות ליד האותיות שלהן, כמו בדפוס.",tour grid step body in Cursive mode,
+letterlearner.tour.c2_title,A cursive card,כרטיס אות בכתב,tour card step title in Cursive mode,
+letterlearner.tour.c2_body,"Each card shows the printed letter beside its handwritten form, a picture to remember the shape, the letters it is easy to mix up with, and the same words written by hand.","כל כרטיס מציג את אות הדפוס ליד אות הכתב, ציור שעוזר לזכור את הצורה, האותיות שקל להתבלבל ביניהן, ואותן מילים בכתב.",tour card step body in Cursive mode,
 shared.cloud.tool_letterlearner,Letter Learner,לומדים אותיות,Account screen / status line: the Letter Learner's name,shared; cloud panel
