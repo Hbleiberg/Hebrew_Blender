@@ -9,7 +9,9 @@ scale and baseline (x-height 35 px → 44 units, baseline at y = 70, centred at 
 crosses the writing line and the 27 letters sit alike. The chart itself is not shipped (only the redrawn letter
 shapes are); this is a dev tool, like the glyph tracer, and needs only Pillow + numpy.
 
-Pipeline per cell: the ink mask (R, G, B < 120 — the red marks and the pale rule drop out) → crop → ×8 upscale +
+Pipeline per cell: the ink mask (R, G, B < 120 — the red marks and the pale rule drop out — plus the red start
+dots put back: each sits ON its stroke's first pixels, so dropping it would bite a notch out of the letter; the red
+arrows are thin and light and never count) → crop → ×8 upscale +
 blur + threshold + a small dilation (the chart's stroke is thinner than a drawing wants) → pixel-edge contour loops
 (shared edges cancel; holes come out with the opposite winding, so the path is drawn with fill-rule="evenodd") →
 a moving average along each loop (the photo's pixel wobble goes, the stroke's shape stays) → Douglas–Peucker →
@@ -33,6 +35,34 @@ NAMES = [
     ['yod', 'kaf', 'kaf_sofit', 'lamed', 'mem', 'mem_sofit', 'nun', 'nun_sofit', 'samech'],
     ['ayin', 'pe', 'pe_sofit', 'tzadi', 'tzadi_sofit', 'kuf', 'resh', 'shin', 'tav'],
 ]
+
+
+def start_dots(R, G, B, dark, dot_max):
+    """The chart's red start dots as a mask: every small, compact red blob that touches the ink (the arrows are too
+    thin and light to register; a dot sits on the first pixels of its stroke)."""
+    import numpy as np
+    from collections import deque
+    if dot_max <= 0: return np.zeros_like(dark)
+    red = (R > 140) & (G < 120) & (B < 120) & ((R - G) > 60)
+    near = dark.copy()
+    near[1:, :] |= dark[:-1, :]; near[:-1, :] |= dark[1:, :]; near[:, 1:] |= dark[:, :-1]; near[:, :-1] |= dark[:, 1:]
+    H, W = red.shape; seen = np.zeros_like(red); out = np.zeros_like(red)
+    ys, xs = np.nonzero(red)
+    for y0, x0 in zip(ys, xs):
+        if seen[y0, x0]: continue
+        q = deque([(y0, x0)]); seen[y0, x0] = True; pts = []
+        while q:
+            y, x = q.popleft(); pts.append((y, x))
+            for dy in (-1, 0, 1):
+                for dx in (-1, 0, 1):
+                    yy, xx = y + dy, x + dx
+                    if 0 <= yy < H and 0 <= xx < W and red[yy, xx] and not seen[yy, xx]: seen[yy, xx] = True; q.append((yy, xx))
+        if len(pts) < 10 or len(pts) > dot_max: continue
+        py = [p[0] for p in pts]; px = [p[1] for p in pts]
+        if max(py) - min(py) > 9 or max(px) - min(px) > 9: continue   # a dot, not an arrow
+        if not any(near[p] for p in pts): continue
+        for p in pts: out[p] = True
+    return out
 
 
 def contours(mask):
@@ -123,6 +153,7 @@ def main():
     ap.add_argument('--dilate', type=int, default=5, help='MaxFilter size at ×8 (0 = none)')
     ap.add_argument('--smooth', type=int, default=12, help='moving-average half-window along a loop, in upscaled px (0 = none)')
     ap.add_argument('--blur', type=float, default=0.9, help='Gaussian blur before the threshold, as a fraction of the ×8 scale')
+    ap.add_argument('--dot-max', dest='dot_max', type=int, default=60, help='largest red blob (px) treated as a start dot and kept as ink; 0 = keep none')
     args = ap.parse_args()
     try:
         from PIL import Image, ImageFilter
@@ -132,6 +163,7 @@ def main():
     im = Image.open(args.image).convert('RGB')
     a = np.asarray(im).astype(int); R, G, B = a[..., 0], a[..., 1], a[..., 2]
     dark = (R < 120) & (G < 120) & (B < 120)
+    dark |= start_dots(R, G, B, dark, args.dot_max)
     rows = []
     for r in args.rows.split(','):
         span, base = r.split(':'); y0, y1 = span.split('-'); rows.append((int(y0), int(y1), int(base)))
