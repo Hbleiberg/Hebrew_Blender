@@ -411,7 +411,7 @@ upgrade of an older device's sync memory (nothing deleted, nothing removed from 
 | `partners/` | Partner marks shown inside a tool — currently the Open Siddur Project's logo beside the Font Maker's starting-font picker, vendored unmodified with its provenance and license terms in `NOTICE.md` (not precached) |
 | `icons/`, `apple-touch-icon.png`, `icon-192.png`, `icon-512.png`, `og-card.png`, `og-fontmaker.png`, `og-trope.png` | PWA / home-screen icons and the social cards (the suite's, the Font Maker's own, and the Trope Tutor + Torah Trainer's shared one) |
 | `zelle-qr.jpg` | Donation QR code shown on the contact page |
-| `fonts/` | Bundled Hebrew fonts + their license files: the display faces (Frank Ruhl Libre, Lakhish Bold, Reuben, TzviScript, TzviScript Stroke Guide) and `NotoSerifHebrew-Taamim.ttf`, the Hebrew-block subset of Noto Serif Hebrew declared as `'IvritSuite Taamim'` — the te'amim fallback every Hebrew font stack ends with, because Frank Ruhl Libre has no cantillation glyphs |
+| `fonts/` | Bundled Hebrew fonts + their license files: the display faces (Frank Ruhl Libre, Lakhish Bold, Reuben, TzviScript, TzviScript Stroke Guide), `NotoSerifHebrew-Taamim.ttf`, the Hebrew-block subset of Noto Serif Hebrew declared as `'IvritSuite Taamim'` — the te'amim fallback every Hebrew font stack ends with, because Frank Ruhl Libre has no cantillation glyphs — and `PlaypenSansHebrew-Ktav.ttf`, the Hebrew-block subset of Playpen Sans Hebrew (weight 500) declared as `'IvritSuite Ktav'`, the Letter Learner's cursive face (it joins the service worker's `CORE_ASSETS` together with that page) |
 | `LICENSE` | CC BY-NC-SA 4.0 |
 | `CLAUDE.md` | Instructions for the AI coding assistant used during development |
 

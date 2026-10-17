@@ -47,7 +47,7 @@
 <link rel="apple-touch-startup-image" media="screen and (device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-1668x2388.png">
 <link rel="apple-touch-startup-image" media="screen and (device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-2048x2732.png">
 <title>Letter Learner — Learn the Hebrew Alef-Bet | IvritSuite</title>
-<meta name="description" content="Every Hebrew letter for beginning readers: a picture to remember it by, four illustrated words, the letter with every vowel read aloud, and how it looks in different fonts — plus a Vowels mode: every vowel sign as a card with its sound family's shape, gesture, color and story.">
+<meta name="description" content="Every Hebrew letter for beginning readers: a picture to remember it by, four illustrated words, the letter with every vowel read aloud, and how it looks in different fonts — plus a Cursive mode with every letter in Israeli handwriting and a picture to remember its shape by, and a Vowels mode: every vowel sign as a card with its sound family's shape, gesture, color and story.">
 <link rel="canonical" href="https://ivritsuite.com/letter_learner.html">
 <!-- Not yet linked from the hub or the suite's navigation (content lands in batches): kept out of the index until it is. -->
 <meta name="robots" content="noindex, follow">
@@ -72,7 +72,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" media="print" onload="this.media='all'" rel="stylesheet">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet"></noscript>
-<style>@font-face{font-family:'Frank Ruhl Libre';src:url('/fonts/FrankRuhlLibre-Regular.ttf') format('truetype');font-weight:400;font-display:swap;}@font-face{font-family:'IvritSuite Taamim';src:url('/fonts/NotoSerifHebrew-Taamim.ttf') format('truetype');font-weight:400;font-display:swap;}/* Footer links are the page's smallest tap targets (12-15px line boxes ~19px apart —
+<style>@font-face{font-family:'Frank Ruhl Libre';src:url('/fonts/FrankRuhlLibre-Regular.ttf') format('truetype');font-weight:400;font-display:swap;}@font-face{font-family:'IvritSuite Taamim';src:url('/fonts/NotoSerifHebrew-Taamim.ttf') format('truetype');font-weight:400;font-display:swap;}@font-face{font-family:'IvritSuite Ktav';src:url('/fonts/PlaypenSansHebrew-Ktav.ttf') format('truetype');font-weight:400;font-display:swap;}/* Footer links are the page's smallest tap targets (12-15px line boxes ~19px apart —
    under the WCAG 2.5.8 24px floor with no qualifying spacing). inline-block + block
    padding grows each link's BOX to >=24px; prose flow and wrapping are unaffected. */
 footer a { display: inline-block; padding-block: 5px; }
@@ -107,6 +107,7 @@ body.dark .hi-sun{display:inline-block;}
   --text:#1a2744; --muted:#6b6050;
   --border:#c8bfa8; --white:#ffffff;
   --heb-font:'Frank Ruhl Libre', 'IvritSuite Taamim', serif;
+  --heb-cursive-font:'IvritSuite Ktav', 'IvritSuite Taamim', cursive;   /* the Cursive mode's face: a self-hosted Hebrew subset of Playpen Sans Hebrew (fonts/PlaypenSansHebrew-Ktav-LICENSE.txt) */
   --shadow-sm:0 2px 8px rgba(26,39,68,0.05);
   --shadow-md:0 4px 16px rgba(26,39,68,0.08);
   --shadow-lg:0 12px 32px rgba(26,39,68,0.12);
@@ -1231,7 +1232,7 @@ const LL_DEFAULTS = {
 const LL_FONTS = [
   { family: 'Frank Ruhl Libre',    label: 'Frank Ruhl Libre',    load: null },
   { family: 'Noto Sans Hebrew',    label: 'Noto Sans Hebrew',    load: { type: 'gfonts', url: 'https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@400;700&display=swap' } },
-  { family: 'Playpen Sans Hebrew', label: 'Playpen Sans Hebrew', load: { type: 'gfonts', url: 'https://fonts.googleapis.com/css2?family=Playpen+Sans+Hebrew&display=swap' } },
+  { family: 'IvritSuite Ktav',       label: 'Playpen Sans Hebrew', load: null },   // the Cursive mode's self-hosted subset (declared in the head), so this tile also draws offline
   { family: 'Gveret Levin',        label: 'Gveret Levin',        load: { type: 'gfonts', url: 'https://fonts.googleapis.com/css2?family=Gveret+Levin&display=swap' } },
   { family: 'ShlomoStam',          label: 'Shlomo Stam',         load: { type: 'face', url: 'https://cdn.jsdelivr.net/gh/aharonium/fonts@master/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/Shlomo%20Orbach%20(OFL)/ShlomoStam.ttf' } }
 ];

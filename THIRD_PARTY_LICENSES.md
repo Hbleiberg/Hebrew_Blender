@@ -240,6 +240,7 @@ IvritSuite displays Hebrew and Latin text in a number of openly-licensed typefac
 - `fonts/NotoSerifHebrew-Taamim.ttf` — **Noto Serif Hebrew** (OFL 1.1; license text at `fonts/NotoSerifHebrew-Taamim-LICENSE.txt`), a Hebrew-block subset (letters, nikkud, the cantillation range U+0591–05AF and the U+25CC dotted circle) self-hosted and precached as the `'IvritSuite Taamim'` fallback family that every Hebrew font stack ends with, because Frank Ruhl Libre itself has no te'amim glyphs.
 - `fonts/Reuben.ttf` — **Reuben** by Baruch Sienna (CC0), made with the IvritSuite Hebrew Font Maker and offered for download in the Resources gallery; its CC0 dedication is declared in the gallery entry and in the notice generated with each download.
 - `fonts/LakhishBold.ttf` — **Lakhish Bold** by Baruch Sienna (OFL 1.1; full text at `fonts/LakhishBold-LICENSE.txt`), made with the IvritSuite Hebrew Font Maker and offered for download in the Resources gallery.
+- `fonts/PlaypenSansHebrew-Ktav.ttf` — **Playpen Sans Hebrew** by TypeTogether (OFL 1.1; license text at `fonts/PlaypenSansHebrew-Ktav-LICENSE.txt`), a static Hebrew-block subset (letters, nikkud, the presentation forms; instanced at weight 500) self-hosted and declared as the `'IvritSuite Ktav'` family — the Letter Learner's cursive face for its Cursive mode and its Fonts tab. Not precached: it joins the service worker's `CORE_ASSETS` together with `letter_learner.html` when that page is linked from the hub.
 - `fonts/TzviScript.ttf` and `fonts/TzviScriptStrokeGuide.ttf` — **TzviScript** / **TzviScript Stroke Guide** by Harrison Bleiberg (OFL 1.1; full texts at `fonts/TzviScript-LICENSE.txt` and `fonts/TzviScriptStrokeGuide-LICENSE.txt`), made with the Hebrew Font Maker and offered in the Resources gallery.
 
 Other fonts a user creates with the Hebrew Font Maker are that user's own work and are not covered here.
@@ -260,7 +261,7 @@ Every typeface the site requests is listed below, grouped by license. The two li
 | Alef | HaGilda & Mushon Zer-Aviv | Google Fonts | https://alef.hagilda.com/ |
 | Solitreo | Nathan Gross & Bryan Kirschen | Google Fonts | https://fonts.google.com/specimen/Solitreo |
 | Gveret Levin | Gili Levin | Google Fonts | https://fonts.google.com/specimen/Gveret+Levin |
-| Playpen Sans Hebrew | TypeTogether | Google Fonts | https://fonts.google.com/specimen/Playpen+Sans+Hebrew |
+| Playpen Sans Hebrew | TypeTogether | Google Fonts (a Hebrew-block subset is also bundled in `fonts/`) | https://fonts.google.com/specimen/Playpen+Sans+Hebrew |
 | Heebo | Oded Ezer | Google Fonts | https://fonts.google.com/specimen/Heebo |
 | Assistant | Ben Nathan | Google Fonts | https://fonts.google.com/specimen/Assistant |
 | Ezra SIL | SIL International | self-hosted (jsDelivr · `aharonium/fonts`) | https://software.sil.org/ezra/ |
