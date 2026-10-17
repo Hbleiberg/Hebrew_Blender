@@ -24,7 +24,16 @@ Usage:
                                                 [--xheight 35] [--eps 2.0] [--dilate 5] [--smooth 12] [--blur 0.9]
 
 The defaults are the measured geometry of the chart the drawings were made from (an 800×800 photo); another chart
-needs its own rows (y0-y1:baseline per row), cell edges (x, left to right) and x-height, measured once.
+needs its own rows (y0-y1:baseline per row), cell edges (x, left to right) and x-height, measured once. A chart
+that is not a grid (the TaL AM alef-bet frieze: stars in a strip, the finals hanging under their letters) passes
+--cells <json> instead: a list of {"id", "x0", "y0", "x1", "y1", "baseline"} boxes in image pixels (the baseline
+in image pixels too), found by whatever detection suits that chart; --xheight still sets the scale. A cell drawn
+at another size adds its own "xheight" (image px): it is normalized to --xheight before the blur, dilation and
+smoothing, so every form gets the same stroke treatment. "erase": [[x0, y0, x1, y1], ...] blanks boxes inside the
+cell (a dagesh dot the drawing must not carry), and nothing outside a cell's box is read (a neighbouring star's
+outline), so a box is the tight bounds of the ink plus a pixel or two. The shipped cursive forms come from that
+frieze (the manual's page scanned at 150 ppi, upscaled 2x before tracing): the boxes are
+docs/letter_learner_review/cursive-talam-cells.json, run with --xheight 37 --dot-max 0 --dilate 5 --min-loop 8.
 """
 import argparse
 import json
@@ -141,11 +150,21 @@ def smooth_path(pts, fx, fy):
     return s + 'Z'
 
 
+def inside(pt, loop):
+    """Ray casting: is the point inside the polygon?"""
+    x, y = pt; hit = False
+    for i in range(len(loop)):
+        (x0, y0), (x1, y1) = loop[i - 1], loop[i]
+        if (y0 > y) != (y1 > y) and x < x0 + (y - y0) * (x1 - x0) / (y1 - y0): hit = not hit
+    return hit
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split('\n\n')[0])
     ap.add_argument('--image', required=True, help='the chart photo (not shipped)')
     ap.add_argument('--json', help='write one object per form: {id, d, top, bottom, width}')
     ap.add_argument('--html', help='write a preview page of the 27 outlines on their writing line')
+    ap.add_argument('--cells', help='JSON list of {id, x0, y0, x1, y1, baseline[, xheight, erase]} boxes (image px); replaces --rows/--edges')
     ap.add_argument('--rows', default='157-304:281,312-468:442,476-633:609', help='per row: y0-y1:baseline')
     ap.add_argument('--edges', default='65,141,218,295,371,447,524,601,677,754', help='cell edges, x, left to right')
     ap.add_argument('--xheight', type=float, default=35.0, help='the chart x-height in px (→ 44 units)')
@@ -154,6 +173,7 @@ def main():
     ap.add_argument('--smooth', type=int, default=12, help='moving-average half-window along a loop, in upscaled px (0 = none)')
     ap.add_argument('--blur', type=float, default=0.9, help='Gaussian blur before the threshold, as a fraction of the ×8 scale')
     ap.add_argument('--dot-max', dest='dot_max', type=int, default=60, help='largest red blob (px) treated as a start dot and kept as ink; 0 = keep none')
+    ap.add_argument('--min-loop', dest='min_loop', type=float, default=0, help='drop a contour loop narrower AND shorter than this many units unless it lies inside another loop (a speck of a neighbouring outline stays out; a tiny counter stays in); 0 = keep every loop')
     args = ap.parse_args()
     try:
         from PIL import Image, ImageFilter
@@ -164,31 +184,53 @@ def main():
     a = np.asarray(im).astype(int); R, G, B = a[..., 0], a[..., 1], a[..., 2]
     dark = (R < 120) & (G < 120) & (B < 120)
     dark |= start_dots(R, G, B, dark, args.dot_max)
-    rows = []
-    for r in args.rows.split(','):
-        span, base = r.split(':'); y0, y1 = span.split('-'); rows.append((int(y0), int(y1), int(base)))
-    edges = [int(x) for x in args.edges.split(',')]
-    S = 8; UNIT = 44.0 / args.xheight
+    cells = []   # (name, x-left, x-right, y-top, y-bottom, baseline, x-height, erase boxes, clip to the box) in image px
+    if args.cells:
+        for c in json.load(open(args.cells, encoding='utf-8')):
+            erase = [tuple(int(v) for v in b) for b in c.get('erase', [])]
+            cells.append((c['id'], int(c['x0']), int(c['x1']), int(c['y0']), int(c['y1']), float(c['baseline']), float(c.get('xheight') or args.xheight), erase, True))
+    else:
+        rows = []
+        for r in args.rows.split(','):
+            span, base = r.split(':'); y0, y1 = span.split('-'); rows.append((int(y0), int(y1), int(base)))
+        edges = [int(x) for x in args.edges.split(',')]
+        for ri, (y0, y1, base) in enumerate(rows):
+            for ci in range(len(edges) - 1):
+                xl, xr = edges[len(edges) - 2 - ci], edges[len(edges) - 1 - ci]   # right-to-left: the first cell is the rightmost
+                nm = NAMES[ri][ci] if ri < len(NAMES) and ci < len(NAMES[ri]) else 'r%dc%d' % (ri, ci)
+                cells.append((nm, xl + 3, xr - 2, y0, y1, base, args.xheight, [], False))
+    S = 8
     glyphs = []
-    for ri, (y0, y1, base) in enumerate(rows):
-        for ci in range(len(edges) - 1):
-            xl, xr = edges[len(edges) - 2 - ci], edges[len(edges) - 1 - ci]   # right-to-left: the first cell is the rightmost
-            nm = NAMES[ri][ci] if ri < len(NAMES) and ci < len(NAMES[ri]) else 'r%dc%d' % (ri, ci)
-            sub = dark[y0:y1 + 1, xl + 3:xr - 2]
+    for nm, xl, xr, y0, y1, base, xh, erase, clip in cells:
+        if True:
+            UNIT = 44.0 / xh
+            sub = dark[y0:y1 + 1, xl:xr + 1].copy()
+            for ex0, ey0, ex1, ey1 in erase: sub[max(0, ey0 - y0):ey1 - y0 + 1, max(0, ex0 - xl):ex1 - xl + 1] = False
             yy = np.where(sub.any(axis=1))[0]; xs = np.where(sub.any(axis=0))[0]
             if not len(yy): continue
-            bx0, by0, bx1, by1 = xl + 3 + xs.min(), y0 + yy.min(), xl + 3 + xs.max(), y0 + yy.max()
+            bx0, by0, bx1, by1 = xl + xs.min(), y0 + yy.min(), xl + xs.max(), y0 + yy.max()
             pad = 4
-            crop = Image.fromarray((dark[by0 - pad:by1 + pad + 1, bx0 - pad:bx1 + pad + 1] * 255).astype('uint8'))
-            big = crop.resize((crop.width * S, crop.height * S), Image.LANCZOS).filter(ImageFilter.GaussianBlur(S * args.blur))
+            if clip:   # a cells-mode box is read alone: the pad ring stays blank
+                core = sub[yy.min():yy.max() + 1, xs.min():xs.max() + 1]
+                arr = np.zeros((core.shape[0] + 2 * pad, core.shape[1] + 2 * pad), bool); arr[pad:-pad, pad:-pad] = core
+            else:
+                arr = dark[by0 - pad:by1 + pad + 1, bx0 - pad:bx1 + pad + 1]
+            crop = Image.fromarray((arr * 255).astype('uint8'))
+            sc = S * args.xheight / xh   # a cell at another size is brought to the chart's scale first
+            big = crop.resize((round(crop.width * sc), round(crop.height * sc)), Image.LANCZOS).filter(ImageFilter.GaussianBlur(S * args.blur))
             mask = np.asarray(big) > 128
             if args.dilate:
                 mask = np.asarray(Image.fromarray(mask.astype('uint8') * 255).filter(ImageFilter.MaxFilter(args.dilate))) > 128
             loops = [rdp(average(l, args.smooth), args.eps) for l in contours(mask) if len(l) > 24]
             loops = [l for l in loops if len(l) >= 3]
+            if args.min_loop:   # a speck: both extents under the limit and not inside another loop (a dagesh dot too — erase it instead if it must stay)
+                lim = args.min_loop * sc / UNIT
+                def small(l): return max(q[0] for q in l) - min(q[0] for q in l) < lim and max(q[1] for q in l) - min(q[1] for q in l) < lim
+                def centre(l): return (sum(q[0] for q in l) / len(l), sum(q[1] for q in l) / len(l))
+                loops = [l for l in loops if not small(l) or any(o is not l and inside(centre(l), o) for o in loops)]
             cx = (bx0 + bx1) / 2
-            fx = lambda u: 50 + ((bx0 - pad + u / S) - cx) * UNIT
-            fy = lambda v: 70 + ((by0 - pad + v / S) - base) * UNIT
+            fx = lambda u: 50 + ((bx0 - pad + u / sc) - cx) * UNIT
+            fy = lambda v: 70 + ((by0 - pad + v / sc) - base) * UNIT
             d = ''.join(smooth_path(l, fx, fy) for l in loops)
             g = {'id': nm, 'd': d, 'top': round(70 + (by0 - base) * UNIT, 1), 'bottom': round(70 + (by1 - base) * UNIT, 1), 'width': round((bx1 - bx0) * UNIT, 1)}
             glyphs.append(g)
