@@ -33,7 +33,9 @@ smoothing, so every form gets the same stroke treatment. "erase": [[x0, y0, x1, 
 cell (a dagesh dot the drawing must not carry), and nothing outside a cell's box is read (a neighbouring star's
 outline), so a box is the tight bounds of the ink plus a pixel or two. The shipped cursive forms come from that
 frieze (the manual's page scanned at 150 ppi, upscaled 2x before tracing): the boxes are
-docs/letter_learner_review/cursive-talam-cells.json, run with --xheight 37 --dot-max 0 --dilate 5 --min-loop 8.
+docs/letter_learner_review/cursive-talam-cells.json, run with --xheight 37 --dot-max 0 --dilate 5 --min-loop 8
+--blur 1.3 --eps 3 --smooth 56 --kernel gauss (the raster's edge wobble is several working pixels, so the
+window is long and Gaussian; potrace on the same mask was tried and follows that wobble just as faithfully).
 """
 import argparse
 import json
@@ -122,15 +124,18 @@ def rdp(pts, eps):
     return p1[:-1] + p2[:-1]
 
 
-def average(pts, k):
-    """A moving average over ±k neighbours along a closed loop — the pixel wobble of a photographed stroke goes."""
+def average(pts, k, kernel='box'):
+    """A moving average over ±k neighbours along a closed loop — the pixel wobble of a photographed stroke goes.
+    'box' weighs every neighbour alike; 'gauss' weighs them by a Gaussian of sigma k/2, which has no step at the
+    window's edge, so a long window smooths a lumpy stroke without printing a new wave onto it."""
     if k <= 0 or len(pts) < 2 * k + 3: return pts
     n = len(pts); out = []
+    w = [math.exp(-0.5 * (j / (k / 2.0)) ** 2) if kernel == 'gauss' else 1.0 for j in range(-k, k + 1)]; tot = sum(w)
     for i in range(n):
         xs = ys = 0.0
         for j in range(-k, k + 1):
-            p = pts[(i + j) % n]; xs += p[0]; ys += p[1]
-        out.append((xs / (2 * k + 1), ys / (2 * k + 1)))
+            p = pts[(i + j) % n]; xs += p[0] * w[j + k]; ys += p[1] * w[j + k]
+        out.append((xs / tot, ys / tot))
     return out
 
 
@@ -171,6 +176,7 @@ def main():
     ap.add_argument('--eps', type=float, default=2.0, help='Douglas–Peucker tolerance in upscaled px')
     ap.add_argument('--dilate', type=int, default=5, help='MaxFilter size at ×8 (0 = none)')
     ap.add_argument('--smooth', type=int, default=12, help='moving-average half-window along a loop, in upscaled px (0 = none)')
+    ap.add_argument('--kernel', choices=('box', 'gauss'), default='box', help="the moving average's weights: 'box' (alike) or 'gauss' (sigma = half the window; the choice for a long window)")
     ap.add_argument('--blur', type=float, default=0.9, help='Gaussian blur before the threshold, as a fraction of the ×8 scale')
     ap.add_argument('--dot-max', dest='dot_max', type=int, default=60, help='largest red blob (px) treated as a start dot and kept as ink; 0 = keep none')
     ap.add_argument('--min-loop', dest='min_loop', type=float, default=0, help='drop a contour loop narrower AND shorter than this many units unless it lies inside another loop (a speck of a neighbouring outline stays out; a tiny counter stays in); 0 = keep every loop')
@@ -221,7 +227,7 @@ def main():
             mask = np.asarray(big) > 128
             if args.dilate:
                 mask = np.asarray(Image.fromarray(mask.astype('uint8') * 255).filter(ImageFilter.MaxFilter(args.dilate))) > 128
-            loops = [rdp(average(l, args.smooth), args.eps) for l in contours(mask) if len(l) > 24]
+            loops = [rdp(average(l, args.smooth, args.kernel), args.eps) for l in contours(mask) if len(l) > 24]
             loops = [l for l in loops if len(l) >= 3]
             if args.min_loop:   # a speck: both extents under the limit and not inside another loop (a dagesh dot too — erase it instead if it must stay)
                 lim = args.min_loop * sc / UNIT
