@@ -5592,18 +5592,31 @@ function fcModalize(ov, box, closeFn, titleEl, initialEl) {
     box.setAttribute('aria-labelledby', titleEl.id);
   }
   const SEL = 'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
-  ov.addEventListener('keydown', e => {
+  // On the document, not the overlay: a click on the dialog's own text leaves the focus on <body>, where an overlay
+  // listener never hears Escape or Tab (Shift+Tab walked to the page behind). Only the topmost of stacked dialogs
+  // answers, a dialog of another kind above keeps its own keys, and focus outside the box wraps back in.
+  const stack = fcModalize._stack || (fcModalize._stack = []);
+  stack.push(ov);
+  const onKey = e => {
+    const a = document.activeElement;
+    if (stack[stack.length - 1] !== ov) return;
+    if (a && a !== document.body && !box.contains(a) && a.closest('[aria-modal="true"]')) return;
     if (e.key === 'Escape') { e.preventDefault(); closeFn(); return; }
     if (e.key !== 'Tab') return;
     const f = [...box.querySelectorAll(SEL)].filter(el => el.offsetParent !== null);
     if (!f.length) return;
-    const first = f[0], last = f[f.length - 1];
-    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-  });
+    const first = f[0], last = f[f.length - 1], out = !box.contains(a);
+    if (e.shiftKey && (a === first || out)) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && (a === last || out)) { e.preventDefault(); first.focus(); }
+  };
+  document.addEventListener('keydown', onKey);
   // Restore focus to the opener once the overlay is torn down (its teardown removes ov).
   const mo = new MutationObserver(() => {
-    if (!ov.parentNode) { mo.disconnect(); try { opener && opener.focus && opener.focus(); } catch (e) {} }
+    if (!ov.parentNode) {
+      mo.disconnect(); document.removeEventListener('keydown', onKey);
+      const i = stack.indexOf(ov); if (i >= 0) stack.splice(i, 1);
+      try { opener && opener.focus && opener.focus(); } catch (e) {}
+    }
   });
   mo.observe(document.body, { childList: true });
   setTimeout(() => { try { (initialEl || box.querySelector(SEL))?.focus(); } catch (e) {} }, 0);
