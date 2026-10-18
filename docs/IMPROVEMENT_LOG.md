@@ -322,7 +322,7 @@ _(none)_
 
 - [x] 2026-10-18 | (S516 close-out) | branch/deploy note | **S516 = A (39 → 40th) + 4 fixes on draft PR #338 (S514–S516).** Drift: none (main `4db5a627`, FM 5.59, 0004 live, backend files unchanged since `ba33c5bd` 2026-10-15 — on main before S514, keep-alive #36 green). sw v1014→v1015; build-locales (+3 keys); no FM bump (fixes). Nothing gated.
 
-- [x] 2026-10-18 | `973eb309` `e7d72c6e` `4c9b89d2` `36e804ac` | index, letter_learner, FM ×2 | (S516) **Hub I/E + Erase keys on the document; LL English content `lang="en"`; QA reasons translated; FM 4 targets ≥24px.** | fix1–4: HEAD 20, 754, 72, 16 BAD → 0; controls fired; 76 shots identical (findings S516).
+- [x] 2026-10-18 | `973eb309` `e7d72c6e` `4c9b89d2` `36e804ac` | index, letter_learner, FM ×2 | (S516) **Hub I/E + Erase keys on the document; LL English content `lang="en"`; QA reasons translated; FM 4 targets ≥24px.** | fix1–4: HEAD 20, 754/cell, 72, 16 BAD → 0; controls fired; 76 shots identical (findings S516).
 
 ## Metrics
 
