@@ -943,7 +943,7 @@ body.dark .hi-sun{display:inline-block;}
   .wiz-tile input:focus-visible + label { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
   .wiz-tile-desc { font-size: 0.71rem; color: var(--muted); line-height: 1.4; }
   body.dark .wiz-tile-desc { color: #9aa4ba; }   /* the dark --muted read 4.39:1 on the tile's lighter plate; 5.3:1 here */
-  .wiz-tile-link { background: none; border: none; padding: 0; margin: 6px 12px 0; align-self: start; font: inherit; font-size: 0.71rem; color: var(--gold-text); font-weight: 700; cursor: pointer; text-decoration: underline; }
+  .wiz-tile-link { background: none; border: none; padding: 0; min-height: 24px; margin: 6px 12px 0; align-self: start; font: inherit; font-size: 0.71rem; color: var(--gold-text); font-weight: 700; cursor: pointer; text-decoration: underline; }
   .wiz-tile-link:hover { filter: brightness(1.1); }
   .wiz-tile-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; border-radius: 3px; }
   .wiz-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
@@ -1102,7 +1102,7 @@ body.dark .hi-sun{display:inline-block;}
   .qa-modal { max-width: 96vw; width: 96vw; max-height: 92vh; max-height: 92dvh; }
   #qaGrid { overflow: auto; }
   .qa-filter { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 0.8rem; margin: 0 0 10px; flex: 0 0 auto; }
-  .qa-filter label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-weight: 700; color: var(--text); }
+  .qa-filter label { display: inline-flex; align-items: center; gap: 6px; min-height: 24px; cursor: pointer; font-weight: 700; color: var(--text); }
   .qa-filter input { cursor: pointer; }
   .qa-filter-note { color: var(--muted); }
   .qa-clear-note { color: var(--muted); font-size: 0.85rem; margin: 0; }
@@ -1285,7 +1285,7 @@ body.dark .hi-sun{display:inline-block;}
   /* editable X/Y anchor fields — read like a chip, become editable on click/focus */
   .anc-xy { display: flex; gap: 12px; justify-content: center; align-items: center; margin-bottom: 4px; }
   .anc-xy label { font-size: 0.74rem; font-weight: 700; color: var(--muted); display: flex; align-items: center; gap: 5px; }
-  .anc-xy input { width: 62px; padding: 3px 6px; border: 1px solid transparent; border-radius: 5px; background: var(--warm-gray);
+  .anc-xy input { width: 62px; min-height: 24px; padding: 3px 6px; border: 1px solid transparent; border-radius: 5px; background: var(--warm-gray);
     color: var(--text); font-family: ui-monospace, Menlo, monospace; font-size: 0.8rem; text-align: center; }
   .anc-xy input:hover { border-color: var(--border); }
   .anc-xy input:focus { border-color: var(--gold); background: var(--white); outline: 2px solid var(--focus-ring); outline-offset: 1px; }
@@ -15618,7 +15618,7 @@ function renderSpacingPanel() {
     <div class="hint">${I18n.t('fontmaker.panels.spacing_hint')}</div>
     <svg id="spacingPreviewSvg" style="width:100%;height:auto;max-height:170px;margin-top:4px;"></svg>
     <details id="waterfallWrap" ${waterfallOpenPref() ? 'open' : ''} ontoggle="onWaterfallToggle(this)" style="margin-top:6px;">
-      <summary style="cursor:pointer;font-size:0.74rem;font-weight:600;">${I18n.t('fontmaker.panels.waterfall_summary')}</summary>
+      <summary style="cursor:pointer;font-size:0.74rem;font-weight:600;padding-block:5px;">${I18n.t('fontmaker.panels.waterfall_summary')}</summary>
       <div id="waterfallBody" style="overflow-x:auto;display:flex;flex-direction:column;gap:3px;padding:4px 0;"></div>
     </details>
     <div class="ctl-row" style="margin-top:4px;"><button class="ctl-btn" onclick="resetSpacing()">${I18n.t('fontmaker.panels.reset_spacing')}</button></div>
