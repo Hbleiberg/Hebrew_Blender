@@ -23581,7 +23581,7 @@ function dismissMobileWarn(goBack){
    New — Esc / backdrop / Cancel return to the current project completely untouched; the old
    project is only discarded when "Create font" runs. Wizard fields are wizard-local until then. */
 let _wizardMode = null, _wizardStep = 1, _wizardOpener = null;
-function wizardOpen(mode){
+function wizardOpen(mode, focusEl){
   if (mode === 'osfont' && !_osStartCtx) mode = 'gate';   // deep-link context missing → normal gate
   _wizardMode = mode; _wizardOpener = document.activeElement;
   if (mode === 'osfont') {
@@ -23607,7 +23607,7 @@ function wizardOpen(mode){
   _wizSwapChrome(mode === 'osfont');
   // gate mode: Escape is inert; osfont: Escape falls back to the gate wizard
   aOpenModal('wizardOverlay', mode === 'new' ? wizardCancel : mode === 'osfont' ? wizardOsCancel : () => {});
-  wizardShowStep(1);
+  wizardShowStep(1, focusEl);
 }
 // Title + finish-button labels differ in osfont mode. Swap the data-i18n attribute itself (the
 // mobileWarnTitle precedent) so applyStaticI18n keeps retranslating the right key on language switch.
@@ -23617,7 +23617,7 @@ function _wizSwapChrome(isOs){
   c.setAttribute('data-i18n', isOs ? 'fontmaker.oswizard.start_editing' : 'fontmaker.wizard.create');
   if (window.I18n) { t.textContent = I18n.t(t.getAttribute('data-i18n')); c.textContent = I18n.t(c.getAttribute('data-i18n')); }
 }
-function wizardShowStep(n){
+function wizardShowStep(n, focusEl){
   _wizardStep = n;
   const os = (_wizardMode === 'osfont');   // which 3-section family is live; the other stays hidden
   for (let i = 1; i <= 3; i++) {
@@ -23636,7 +23636,7 @@ function wizardShowStep(n){
   // aOpenModal's own setTimeout(0) focus pass — the openShortcuts precedent.
   setTimeout(() => { try {
     const sec = document.getElementById((os ? 'wizStepOs' : 'wizStep') + n);
-    (sec.querySelector('input:checked') || sec.querySelector('input, select')).focus();
+    (focusEl || sec.querySelector('input:checked') || sec.querySelector('input, select')).focus();
   } catch (e) {} }, 30);
 }
 function wizardValidateStep1(){
@@ -24083,7 +24083,12 @@ function osPickLoadFace(card) {
 function osPickClose() {
   aCloseModal('osPickOverlay');
   if (_osPickIO) { _osPickIO.disconnect(); _osPickIO = null; }
-  wizardOpen(_osPickOrigin);   // back to the wizard this picker was opened from (gate, or toolbar New with the project untouched)
+  // Back to the wizard this picker was opened from (gate, or toolbar New with the project untouched), on the button that
+  // opened it. wizardOpen re-reads the focus as the wizard's opener, which the closing picker has just dropped: keep
+  // the one it had, so the wizard's own Cancel still returns to toolbar New.
+  const wizOpener = _wizardOpener;
+  wizardOpen(_osPickOrigin, document.getElementById('wizStartFromFont'));
+  _wizardOpener = wizOpener; if (_activeModal && _activeModal.id === 'wizardOverlay') _activeModal.opener = wizOpener;
 }
 // "← Choose a different font" on partner step 1 (picker arrivals only): drop the pending context and
 // re-show the picker as it was left — same search, filters, preview text and already-loaded faces.
