@@ -1838,14 +1838,19 @@ function llClose() {
 }
 function wireDialog() {
   const ov = document.getElementById('llOverlay'), box = ov.querySelector('.ll-dialog');
-  ov.addEventListener('keydown', e => {
+  // On the document, not the overlay: a click on the dialog's own text leaves the focus on <body>, where an overlay
+  // listener never hears Escape or Tab (Shift+Tab walked to the grid behind). Focus outside the box wraps back in.
+  document.addEventListener('keydown', e => {
+    if (ov.hidden) return;
+    const a = document.activeElement;
+    if (a && a !== document.body && !box.contains(a) && a.closest('[aria-modal="true"]')) return;   // a dialog above keeps its keys
     if (e.key === 'Escape') { e.preventDefault(); llClose(); return; }
     if (e.key !== 'Tab') return;
     const f = [...box.querySelectorAll(FOCUS_SEL)].filter(x => x.offsetParent !== null);
     if (!f.length) return;
-    const first = f[0], last = f[f.length - 1];
-    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    const first = f[0], last = f[f.length - 1], out = !box.contains(a);
+    if (e.shiftKey && (a === first || out)) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && (a === last || out)) { e.preventDefault(); first.focus(); }
   });
   ov.addEventListener('click', e => { if (e.target === ov) llClose(); });
   document.getElementById('llClose').addEventListener('click', llClose);
