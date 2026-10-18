@@ -12240,9 +12240,10 @@ async function onUploadEngFontPick(input){
     initCloudSaves();
   });
 
-  // ESC closes settings / the first-run card
+  // ESC closes settings / the first-run card — unless a layer above already took it (the .ivrit restore question,
+  // opened from the drawer, prevents the default but does not stop the key): topmost layer wins.
   document.addEventListener('keydown', e => {
-    if (e.key !== 'Escape') return;
+    if (e.key !== 'Escape' || e.defaultPrevented) return;
     if (document.getElementById('frModal').classList.contains('open')) { frSkip(); return; }
     if (document.getElementById('settingsModal').classList.contains('open')) closeSettings();
   });
