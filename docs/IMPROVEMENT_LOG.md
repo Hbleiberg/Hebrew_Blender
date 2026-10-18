@@ -8,9 +8,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P4 (**NEW S513 C**) | Hebrew_Font_Maker.html | **`#spacingPreviewSvg` / `#kernPreviewSvg` carry no role or name.** | found S513
-
-- [ ] P4 (**NEW S513 C**) | Hebrew_Font_Maker.html | **Closing the starting-font picker lands focus in the wizard's name field, not on its opener.** | found S513
+- [ ] P4 (**NEW S517 E**) | Hebrew_Font_Maker.html | **The starting-font picker's load-failure "← Back" lands on the wizard's name field, not "Start from a font"** (its `askModal` calls `wizardOpen(origin)`; findings S517). | found S517
 
 - [ ] P3 (**NEW S510 D; shared sw.js — the maintainer's call**) | sw.js | **Pages, scripts and /locales/ are fetched with cache:'no-store', so a returning visitor re-downloads ~370 KB per page view although GitHub Pages answers 304**; `'no-cache'` keeps always-revalidate and made the same reload 0 B (findings S510). | found S510
 
@@ -320,13 +318,15 @@ _(none)_
 
 ## Done
 
-- [x] 2026-10-18 | (S516 close-out) | branch/deploy note | **S516 = A (39 → 40th) + 4 fixes on draft PR #338 (S514–S516).** Drift: none (main `4db5a627`, FM 5.59, 0004 live, backend files unchanged since `ba33c5bd` 2026-10-15 — on main before S514, keep-alive #36 green). sw v1014→v1015; build-locales (+3 keys); no FM bump (fixes). Nothing gated.
+- [x] 2026-10-18 | (S517 close-out) | branch/deploy note | **S517 = E (39 → 40th) + 4 fixes on draft PR #338 (S514–S517).** Drift: none (main `4db5a627`, FM 5.59, 0004 live, backend files unchanged since `ba33c5bd`, keep-alive #36 green, Pages 1334 `success` on main). sw v1015→v1016; build-locales (+2 keys); no FM bump (fixes). Nothing gated.
 
-- [x] 2026-10-18 | `973eb309` `e7d72c6e` `4c9b89d2` `36e804ac` | index, letter_learner, FM ×2 | (S516) **Hub I/E + Erase keys on the document; LL English content `lang="en"`; QA reasons translated; FM 4 targets ≥24px.** | fix1–4: HEAD 20, 754/cell, 72, 16 BAD → 0; controls fired; 76 shots identical (findings S516).
+- [x] 2026-10-18 | `a3800769` `7bccf657` `ed985f21` `5850fcfd` | README, i18n.md + ops.md, FM ×2 | (S517) **README's LL row names its 3 dev scripts + the frieze; the page counts include account + the harnesses; FM spacing/kern previews named; the picker's close returns to "Start from a font".** | 2 → 0 undocumented scripts; counts = the files; HEAD 0/2 → 2/2 named, shots identical; 5 BAD/cell → 0 …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-18 | **S517** | iters: 5 | tools: README, docs (i18n, ops), FM ×2, sw.js | patterns fixed: — | pass run: E | SW: v1015→v1016
 
 - 2026-10-18 | **S516** | iters: 5 | tools: index, letter_learner, FM ×2, sw.js | patterns fixed: overlay-scoped-dialog-keys ×2, pinned-english-without-lang ×7, sub-floor touch target ×4 | pass run: A | SW: v1014→v1015
 
@@ -338,7 +338,7 @@ _(none)_
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S516 (2026-10-18):** index, letter_learner, FM, sw.js S516 · dashboard, flash, generator, torah S515 · i18n.js S512 · dictionary, trope S511 · resources, account S508 · saves, scripts S507 · README S503 · contact S498 · privacy S495 · terms, 404 S494 · pwa S472.
+- **Snapshot S517 (2026-10-18):** FM, README, sw.js S517 · index, letter_learner S516 · dashboard, flash, generator, torah S515 · i18n.js S512 · dictionary, trope S511 · resources, account S508 · saves, scripts S507 · contact S498 · privacy S495 · terms, 404 S494 · pwa S472.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -716,8 +716,8 @@ _(none)_
 
 - H teacher walkthrough / paper-cuts (one tool): 2026-10-16 (**S512 — generator, its 4th H (S130 → S251 → S363 → S512): a 1st-grade letter-of-the-week lesson by real clicks (tracing, Name the Letter, a Class Set with a Hebrew header, a pasted Noach list → Word List, Numbers, preset, link, reopen, the colleague's HE/dark/800 open), 63 clicks × 3 cells, 0 errors. FOUND 9, FIXED 2 (+ dashboard, …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- E freshness/site-health: 2026-10-13 (**S503 — 39th E, `7663499a..4edc14b9` (90 commits): 15 arms + a `?v=` history arm, doc tokens, CSP, Total Torah by real input. FOUND 4, FIXED 3 (+ flash).**)
+- E freshness/site-health: 2026-10-18 (**S517 — 40th E, `4edc14b9..d7c58446` (119 commits; LL's first E): 16 static arms + the `?v=` history arm + doc tokens (plants 17/17, 4/4, 1/1), runtime CSP 36 cells (plant 36/36), keep-alive + Pages read. FOUND 2 (docs), FIXED 4 (+ FM ×2).**)
 
 - F cross-tool consistency: 2026-10-18 (**S514 — 38th F, dialog Tab traps: 22 dialogs × 2 cells by real keys + a click-on-text arm; plants 4/4. CLEAN 13. FOUND 9, FIXED 3 (+ FM menus). F-next: empty states.**)
 
-**Next session (S517):** **BRANCH/PR: draft PR #338 (S514–S516) open → continue; merged → restart from `origin/main`.** `sw.js` **v1015**, FM **5.59**. ⚑ Stalest: E (S503), L (S504), K (S505). ⚑ First: FM `#spacingPreviewSvg` / `#kernPreviewSvg` names; FM picker focus back to its opener; the K housekeeping (`worksheet.validation.*` "alert"). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2 (TT Chant, glyphs, five S512 copy items); O needs a Bash rule.
+**Next session (S518):** **BRANCH/PR: draft PR #338 (S514–S517, 4 sessions — a merge soon keeps it reviewable) open → continue; merged → restart from `origin/main`.** `sw.js` **v1016**, FM **5.59**. ⚑ Stalest: L (S504), K (S505), N (S506). ⚑ First: the K housekeeping (`worksheet.validation.*` "alert"); the picker's load-failure "← Back" (the name field again, measured S517); sw.js `no-store` (the maintainer's call). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2 (TT Chant, glyphs, five S512 copy items); O needs a Bash rule.

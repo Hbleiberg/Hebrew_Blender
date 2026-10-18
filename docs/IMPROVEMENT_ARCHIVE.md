@@ -93053,3 +93053,23 @@ _(prior — S516 pointer:)_ **BRANCH/PR: draft PR #338 (S514 + S515) open → co
 - [x] 2026-10-18 | (S515 close-out) | branch/deploy note | **S515 = B (clean) + 4 fixes on S514's open draft PR #338.** Drift: none (main `4db5a627` as at S514, FM 5.59, 0004 live, backend files unchanged since 2026-10-14, keep-alive #36 green). sw v1013→v1014; build-locales (+1 key); no FM bump (a fix). Nothing gated.
 
 - [x] 2026-10-18 | `d4cf1cc5` `e2dfd457` `d0e81f18` `5fef8eb2` | dashboard+flash+generator+index, torah, sw.js, FM | (S515) **`.ivrit` ask + Torah favorite keys on the document (capture); LL + Ktav precached; QA flagged cells are buttons.** | fix1–4: HEAD 16, 4, 4, 4 BAD → 0; controls fired (findings S515).
+
+## Size move (S517 close-out, 2026-10-18) — S516's Done entries, moved by hand verbatim (the ledger sat over its 100 KB limit)
+
+### from Done
+
+- [x] 2026-10-18 | (S516 close-out) | branch/deploy note | **S516 = A (39 → 40th) + 4 fixes on draft PR #338 (S514–S516).** Drift: none (main `4db5a627`, FM 5.59, 0004 live, backend files unchanged since `ba33c5bd` 2026-10-15 — on main before S514, keep-alive #36 green). sw v1014→v1015; build-locales (+3 keys); no FM bump (fixes). Nothing gated.
+
+- [x] 2026-10-18 | `973eb309` `e7d72c6e` `4c9b89d2` `36e804ac` | index, letter_learner, FM ×2 | (S516) **Hub I/E + Erase keys on the document; LL English content `lang="en"`; QA reasons translated; FM 4 targets ≥24px.** | fix1–4: HEAD 20, 754/cell, 72, 16 BAD → 0; controls fired; 76 shots identical (findings S516).
+
+
+<!-- archived by compact-ledger at the S518 boundary, 2026-10-18 -->
+## Compaction (S518, 2026-10-18) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-18 | `a3800769` `7bccf657` `ed985f21` `5850fcfd` | README, i18n.md + ops.md, FM ×2 | (S517) **README's LL row names its 3 dev scripts + the frieze; the page counts include account + the harnesses; FM spacing/kern previews named; the picker's close returns to "Start from a font".** | 2 → 0 undocumented scripts; counts = the files; HEAD 0/2 → 2/2 named, shots identical; 5 BAD/cell → 0 (findings S517).
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+_(prior — S517 pointer:)_ **BRANCH/PR: draft PR #338 (S514–S516) open → continue; merged → restart from `origin/main`.** `sw.js` **v1015**, FM **5.59**. ⚑ Stalest: E (S503), L (S504), K (S505). ⚑ First: FM `#spacingPreviewSvg` / `#kernPreviewSvg` names; FM picker focus back to its opener; the K housekeeping (`worksheet.validation.*` "alert"). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2 (TT Chant, glyphs, five S512 copy items); O needs a Bash rule.

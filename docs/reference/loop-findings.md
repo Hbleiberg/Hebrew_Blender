@@ -2389,3 +2389,55 @@
   - **(5)** A descender fixture whose only vertices below the baseline are its bottom edge never trips the tail reason: the tail box is built from the vertices with `y < 0`, so add vertices just under it.
   - **(6)** A backgrounded `node … | tail` shows nothing until it exits: write to a file and wait on it.
   | found S516
+
+## S517 (2026-10-18) — pass E on the S503 → S516 delta (the 40th E; the Letter Learner's first)
+
+- [ ] P4 (**NEW S517 Pass E — receipts, so the next E extends rather than repeats them**) | repo-wide | **Delta `4edc14b9..d7c58446`: 119 commits, 80 files** — the Letter Learner page, its Ktav font + licence, 36 review sheets and the cursive cell boxes, three dev scripts, migration 0004, and the loop S503–S516. **No drift:** main `4db5a627` (PR #338 open on `d7c58446`), sw v1015, FM 5.59, 0001–0004 live, backend files unchanged since `ba33c5bd`, keep-alive run #36 green (2026-10-18), Pages run 1334 `success` on `4db5a627`. **Harness `e517/` (scratchpad; rebuilt, `e503/` was gone):**
+  - `arms.py ROOT`, 16 arms: E1 precache both ways + each `@font-face` file; E2 `?v=` agreement; E3 local links (pages, og images, the binding docs' md links); E4 og:image = twitter:image; E5 CSP first; E6 account origins; E7 load-shaped external refs inside the CSP; E8 robots/CNAME/manifest; E9 workflows; E10 `TOOLS` = the CHECK; E11 starting fonts; E12 `═══` blocks identical; E14 doc path tokens; E15 CDN pins + bundled fonts in THIRD_PARTY_LICENSES; E16 sitemap = the indexable set + canonicals; E17 the smoke-tools list + gtag `page_location` keys. A `git archive` copy with 17 plants fired 17/17 (the Ktav font removed, a `?v=` mismatch, a dead link, a dead md link, og ≠ twitter image, a tag before the CSP, an account origin dropped, an external script, a bad robots line, a workflow without jobs, a tool added to `TOOLS`, a starting-font licence removed, a byte in a header-icons carrier, a doc path to nothing, an unlicensed CDN pin, a sitemap URL swapped, a `page_location` key changed).
+  - `e2b.py REPO` (the whole history): 25 fetch/value pairs; a clone with two data edits committed fired 4 (3 pages × the emojis + `TT_DATA_V`), and a bump cleared them.
+  - `docids.py ROOT BASE`: 2,693 identifier-shaped doc tokens against the code; a function renamed at every code site fired its 4 doc tokens.
+  - `cspr.mjs` (18 pages × EN light 1280 + HE dark 800): an init-script external image fired `img-src` 36/36.
+
+  **Results:**
+  - Clean: `CORE_ASSETS` 39/39 on disk, holding every production page, `js/` module and the Ktav font, and no harness; 23 corpus fetches agree; 562 local links; 13 og pairs; CSP first 18/18; the account origins on exactly the loaders; 104 external refs inside their CSP; 132 starting fonts; 18 multi-carrier blocks identical; 14 pins + bundled fonts licensed; the sitemap = 13 indexable pages; 24 smoke/gtag carriers; E2b 0.
+  - Runtime: 0 violations, 0 page errors; every foreign request sits in its page's documented allowlist (no account page fetched the SDK anonymously).
+  - The sitemap and llms generators change nothing; `build-parasha-icons --check` reports 54 current; the icons' and manifest's `?v=` agree on 15 pages.
+  - **Found 2 (docs, fixed):**
+    - README's LL row named no review-sheet renderer or glyph tracer, and still said "a classroom chart", although since `0cd8aa06` the source is the TaL AM frieze.
+    - i18n.md / ops.md page counts left out `account.html` and the harnesses.
+
+  | found S517
+- [ ] P4 (**NEW S517 — would-be findings triaged**) | probes |
+  - **(a)** `letter_learner.html` is `noindex, follow` and absent from the sitemap and llms: by design (its own comment says it stays unlinked until launch). E16 must drop it from the indexable set until then.
+  - **(b)** og/twitter titles and descriptions differ on 9 pages: by design (the twitter ones are shorter). This is L's, gate 2; E4 compares images only.
+  - **(c)** The FM is in no smoke-tools list: `smoke-fontmaker.mjs` covers it.
+  - **(d)** E7's `TT_CREDIT_URL` (adasisrael.org) is an `<a href>`, not a load.
+  - **(e)** 19 doc tokens are absent from the code, none on a delta line: removal notes (`#ttHandoutBar`, `escapeHtml()`…), upstream names (`USER_UPDATED`, `ulCodePageRange`, `forced_align`), a key family (`torah.reading.staff_chant` = `_chip`/`_tip`), placeholders.
+  - **(f)** README's "all seven tools ship a Tour" names seven tools (the LL is unlaunched); left as is.
+
+  | found S517
+- [ ] P4 (**NEW S517 — the four fixes' receipts**) | README.md, docs/reference/i18n.md + ops.md, Hebrew_Font_Maker.html |
+  - **`a3800769`:** `scripts/*` named in no doc went from 2 to 0; the row keeps two cells.
+  - **`7bccf657`:** the counts now equal the files: 15 production pages, all loading `js/i18n.js`; 18 `hebrewBlender_lang` carriers; 14 startup-image pages, exactly ops.md's list. Nothing writes `document.title`.
+  - **`ed985f21`** (`fix3.mjs`, 4 cells, the Spacing tab by a real click):
+    - names HEAD 0/2 → 2/2 (`getByRole`, `ariaSnapshot`);
+    - the control: the Waterfall's 5 named images on both trees;
+    - typing re-renders the preview and keeps the name;
+    - a live EN→HE→EN switch renames both;
+    - pixels identical; 0 errors.
+  - **`5850fcfd`** (`fix4.mjs`, 4 cells, real keys/clicks):
+    - Escape / "← Back" land on "Start from a font" (HEAD: `#wizName`);
+    - Enter there reopens the picker;
+    - Tab and Shift+Tab stay in the wizard;
+    - New → picker → back → Escape returns to New (HEAD: `<body>`), project untouched: HEAD 5 BAD per cell → 0;
+    - the control (New → Escape → New) passes on both trees;
+    - `fix4b.mjs`: load, Back and toolbar New still focus the name field.
+  - **`failback.mjs`** (the manifest aborted): the load-failure "← Back" lands on the name field (logged as a candidate); its Cancel returns to New.
+
+  | found S517
+- [ ] P4 (**S517 — probe traps 1–3**) | probes |
+  - **(1)** A doc-token lookup by substring (`tok in corpus`) is blind to a renamed function whose new name contains the old one (`ftImportTreePlant` contains `ftImportTree`): match whole words. A token written with arguments (`ftImportTree(key, …)`) needs that call shape in the token pattern.
+  - **(2)** A regex per token over the joined code corpus (2,700 tokens × the suite) runs past the 2-minute Bash limit: build the word set once.
+  - **(3)** In the FM, `wizardOpen` captures `document.activeElement` as the wizard's opener. A return path that calls it after a modal closed captures `<body>`, so a later Cancel cannot return to toolbar New: probe the round trip's Cancel, not just the first landing.
+
+  | found S517
