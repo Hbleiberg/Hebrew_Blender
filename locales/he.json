@@ -3526,6 +3526,7 @@
   "fontmaker.qa.buildcheck_needs": "⚠ חסר {chars}",
   "fontmaker.qa.buildcheck_ready": "✓ מוכן",
   "fontmaker.qa.buildcheck_title": "צורות מורכבות ביידיש / לדינו — בדיקת בנייה",
+  "fontmaker.qa.cell_label": "{letter} + {mark}: {problems}",
   "fontmaker.qa.filter_clear": "אין מה לתקן בלשונית הזו — כל השילובים כאן תקינים. בטלו את הסימון כדי לראות את כל הטבלה.",
   "fontmaker.qa.filter_note": "מוצגות {rows} מתוך {rowTotal} אותיות ו-{cols} מתוך {colTotal} סימנים.",
   "fontmaker.qa.no_marks": "לא הופעלו סימני {kind} עבור גופן זה.",

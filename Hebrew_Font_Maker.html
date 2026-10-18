@@ -1121,6 +1121,8 @@ body.dark .hi-sun{display:inline-block;}
   .qa-cell.flag { border-color: #c0392b; box-shadow: inset 0 0 0 2px #c0392b; }
   .qa-cell.empty { opacity: 0.4; cursor: default; }
   .qa-cell svg { width: 54px; height: 62px; display: block; }
+  .qa-cell-btn { display: block; width: 100%; height: 100%; padding: 0; border: 0; background: none; color: inherit; cursor: pointer; border-radius: 5px; }   /* a flagged cell's keyboard handle; the cell keeps its box */
+  .qa-cell-btn:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
   /* QA add-on sections: Specialized section header (in-table) + Yiddish/Ladino build-check block */
   .qa-table td.qa-section-h { text-align: start; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.03em; text-transform: uppercase; color: var(--muted); padding: 12px 4px 4px; border: none; }
   .qa-bc { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border); }
@@ -18242,7 +18244,11 @@ function qaRenderGrid() {
       const col = cols[ci], { layers, reasons } = cells[ri][ci];
       const flagged = reasons.length > 0;
       const mcp = (col.kind === 'smrpair' && layers[0]) ? layers[0].cp : col.cp;   // a Samaritan pair cell jumps to the mark it actually shows
-      html += `<td class="qa-cell${flagged ? ' flag' : ''}" data-cp="${row.cp}" data-kind="${col.kind}" data-mark="${mcp}" data-side="${col.side}"${col.trop ? ` data-trop="${col.trop}"` : ''}${flagged ? ` title="${esc(reasons.join(' · '))}"` : ''}>${qaCellSvg(L, layers, frame)}</td>`;
+      // A flagged cell is the one worth a jump, so its drawing sits in a button (Tab, Enter, Space) named by its letter, mark
+      // and reasons; a clear cell stays a plain cell a mouse can still click. qaGridClick hears both through the <td>.
+      const svg = qaCellSvg(L, layers, frame);
+      const inner = flagged ? `<button type="button" class="qa-cell-btn" aria-label="${esc(I18n.t('fontmaker.qa.cell_label', { letter: nm, mark: col.name, problems: reasons.join(' · ') }))}">${svg}</button>` : svg;
+      html += `<td class="qa-cell${flagged ? ' flag' : ''}" data-cp="${row.cp}" data-kind="${col.kind}" data-mark="${mcp}" data-side="${col.side}"${col.trop ? ` data-trop="${col.trop}"` : ''}${flagged ? ` title="${esc(reasons.join(' · '))}"` : ''}>${inner}</td>`;
     });
     html += '</tr>';
   });

@@ -3079,6 +3079,7 @@ fontmaker.panels.yiddish_intro,"Yiddish forms, composed from your traced letters
 fontmaker.qa.buildcheck_needs,⚠ needs {chars},⚠ חסר {chars},QA build-check status,leading-emoji
 fontmaker.qa.buildcheck_ready,✓ ready,✓ מוכן,QA build-check status,leading-emoji
 fontmaker.qa.buildcheck_title,Yiddish / Ladino composed forms — build check,צורות מורכבות ביידיש / לדינו — בדיקת בנייה,QA build-check title,
+fontmaker.qa.cell_label,{letter} + {mark}: {problems},{letter} + {mark}: {problems},"QA Check — a flagged cell's button name: the row's letter, the column's mark, then the reasons (the cell's tooltip)",do not translate {…}
 fontmaker.qa.no_marks,No {kind} marks are enabled for this font.,לא הופעלו סימני {kind} עבור גופן זה.,QA empty state,
 fontmaker.qa.notready.one,{count} composed form not yet ready — see the build check below.,{count} צורה מורכבת עדיין אינה מוכנה — ראו את בדיקת הבנייה למטה.,QA summary,plural
 fontmaker.qa.notready.other,{count} composed forms not yet ready — see the build check below.,{count} צורות מורכבות עדיין אינן מוכנות — ראו את בדיקת הבנייה למטה.,QA summary,plural

@@ -3526,6 +3526,7 @@
   "fontmaker.qa.buildcheck_needs": "⚠ needs {chars}",
   "fontmaker.qa.buildcheck_ready": "✓ ready",
   "fontmaker.qa.buildcheck_title": "Yiddish / Ladino composed forms — build check",
+  "fontmaker.qa.cell_label": "{letter} + {mark}: {problems}",
   "fontmaker.qa.filter_clear": "Nothing to fix on this tab — every combination here is clear. Untick to see the whole grid.",
   "fontmaker.qa.filter_note": "Showing {rows} of {rowTotal} letters and {cols} of {colTotal} marks.",
   "fontmaker.qa.no_marks": "No {kind} marks are enabled for this font.",
