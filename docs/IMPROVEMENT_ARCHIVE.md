@@ -93017,3 +93017,39 @@ _(prior — S515 pointer:)_ **BRANCH/PR: S514's draft PR open → continue; merg
 - [x] 2026-10-18 | (S514 close-out) | branch/deploy note | **S514 = F + 4 fixes, new draft PR (#335 merged).** Drift: main `4db5a62` (12 LL commits: Vowels, Cursive, Ktav), sw v1005→v1012 outside, FM 5.59, 0004 live, keep-alive #36 green. sw v1012→v1013; sitemap lastmod re-derived (outside-loop LL drift). No FM bump. Nothing gated.
 
 - [x] 2026-10-18 | `6e24ed4e` `9b8498e9` `3d63a1e6` `43ec73ba` | LL, flash, FM, dashboard | (S514) **LL dialog + `fcModalize` keys on the document; FM Load/Save ▾ by keyboard; dashboard Escape skips a handled key.** | fix1–4: HEAD 12, 16, 12, 4 BAD → 0; controls fired (findings S514).
+
+
+<!-- archived by compact-ledger at the S517 boundary, 2026-10-18 -->
+## Compaction (S517, 2026-10-18) — moved verbatim from the live ledger
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`overlay-scoped-dialog-keys`** (NEW S514 F; LL `6e24ed4e`, flash `9b8498e9`; S515 `.ivrit` ask ×4 `d4cf1cc5`, Torah favorite `e2dfd457`; **S516 hub Erase + I/E `973eb309` — open: none**): ACTIVE, streak 0. Escape/Tab on the overlay (or a trap comparing first/last only): a click on the dialog's text → focus on `<body>`, Shift+Tab walks behind, Escape dies or closes the layer behind. Detection: per dialog, click its title text, then Tab / Shift+Tab / Escape by real keys (`f514/`, `a516/fix1.mjs`); fix: a document capture listener while open, `out = !box.contains(a)` wraps in.
+
+- **`pinned-english-without-lang`** (NEW S415; 20 FIXED `f4bbfe8`; S422 resources ×43 `8c56a89`; S489 torah + trope `d92d1de1`; S503 torah bar; **S516 letter_learner ×7 sites `e7d72c6e`**; no open carrier): ACTIVE, streak 0. Detection: HE UI, `closest('[lang]')` of each visible Latin-only text node outside `[data-i18n*]`/aria-hidden/svg ≠ "en", across modes, cards and tabs by real clicks (`a516/fix2.mjs`); a planted span must fire; exempt proper names (font names), a translated name must stay "he".
+
+- **`sub-floor touch target`**: ACTIVE. **S516 FM ×4 `36e804ac` (wizard link, Waterfall summary, anchor X/Y, QA filter label) — open: none known.** **S513 dashboard bulk picker ×2 `787c434`.** **S483 hub clean.** **S456: `85e294b2`, `924c9407`.** Detection: visible controls under 24×24 (inline text links exempt; a `::after` hit area counts — LL `.ll-sb-tab`), each handle reached by real input (`a516/fix4.mjs`). …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+_(prior — S516 pointer:)_ **BRANCH/PR: draft PR #338 (S514 + S515) open → continue; merged → restart from `origin/main`.** `sw.js` **v1014**, FM **5.59**. ⚑ Stalest: A (S502), E (S503), L (S504). ⚑ First: hub Erase / I-E (the last `overlay-scoped` carrier); QA reasons in Hebrew (K); FM touch targets ×4. ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2 (TT Chant, glyphs, five S512 copy items); O needs a Bash rule.
+
+
+<!-- archived by compact-ledger at the S517 boundary, 2026-10-18 -->
+## Compaction (S517, 2026-10-18) — moved verbatim from the live ledger
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`overlay-scoped-dialog-keys`** (NEW S514 F; LL, flash; S515 `.ivrit` ask ×4, Torah favorite; **S516 hub Erase + I/E `973eb309`; open: none**): ACTIVE, streak 0. A click on a dialog's text puts focus on `<body>`: an overlay listener (or a first/last-only trap) lets Shift+Tab walk behind and Escape die. Detection: click the title, then real Tab / Shift+Tab / Escape (`a516/fix1.mjs`).
+
+- **`pinned-english-without-lang`** (NEW S415; `f4bbfe8` ×20; resources ×43; torah + trope; **S516 LL ×7 `e7d72c6e`**; open: none): ACTIVE, streak 0. Detection: HE UI, visible Latin-only text outside `[data-i18n*]` whose `closest('[lang]')` ≠ en, by real clicks (`a516/fix2.mjs`); a plant fires; font names exempt.
+
+- **`sub-floor touch target`**: ACTIVE. **S516 FM ×4 `36e804ac`; open: none known.** **S513 dashboard ×2 `787c434`.** **S483 hub clean.** **S456: `85e294b2`, `924c9407`.** Detection: visible controls < 24×24 reached by real input (inline links exempt; an `::after` hit area counts). …[full text: IMPROVEMENT_ARCHIVE.md]
+
+## Size move (S516 close-out, 2026-10-18) — S515's Done entries, moved by hand verbatim (the ledger sat over its 100 KB limit)
+
+### from Done
+
+- [x] 2026-10-18 | (S515 close-out) | branch/deploy note | **S515 = B (clean) + 4 fixes on S514's open draft PR #338.** Drift: none (main `4db5a627` as at S514, FM 5.59, 0004 live, backend files unchanged since 2026-10-14, keep-alive #36 green). sw v1013→v1014; build-locales (+1 key); no FM bump (a fix). Nothing gated.
+
+- [x] 2026-10-18 | `d4cf1cc5` `e2dfd457` `d0e81f18` `5fef8eb2` | dashboard+flash+generator+index, torah, sw.js, FM | (S515) **`.ivrit` ask + Torah favorite keys on the document (capture); LL + Ktav precached; QA flagged cells are buttons.** | fix1–4: HEAD 16, 4, 4, 4 BAD → 0; controls fired (findings S515).

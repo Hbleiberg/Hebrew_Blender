@@ -8,12 +8,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P3 (**S514 F `overlay-scoped-dialog-keys`**) | index.html | **Still overlay-scoped: the hub's Erase (Escape dies) and Import/Export (its document trap compares first/last only) — click the text, Shift+Tab leaves.** | found S514
-
-- [ ] P3 (**NEW S515 — for K**) | Hebrew_Font_Maker.html | **QA Check's reasons are English literals in the Hebrew UI** (`reasons.push('Mark overlaps the letter ink')` …): tooltips + the S515 button names; Check A misses the shape. | found S515
-
-- [ ] P4 (**NEW S513 C — `sub-floor touch target` ×4**) | Hebrew_Font_Maker.html | **`.wiz-tile-link` 14px tall, the Waterfall `summary` 14px, `.anc-xy input` 23px, `.qa-filter label` 19px.** | found S513
-
 - [ ] P4 (**NEW S513 C**) | Hebrew_Font_Maker.html | **`#spacingPreviewSvg` / `#kernPreviewSvg` carry no role or name.** | found S513
 
 - [ ] P4 (**NEW S513 C**) | Hebrew_Font_Maker.html | **Closing the starting-font picker lands focus in the wizard's name field, not on its opener.** | found S513
@@ -326,13 +320,15 @@ _(none)_
 
 ## Done
 
-- [x] 2026-10-18 | (S515 close-out) | branch/deploy note | **S515 = B (clean) + 4 fixes on S514's open draft PR #338.** Drift: none (main `4db5a627` as at S514, FM 5.59, 0004 live, backend files unchanged since 2026-10-14, keep-alive #36 green). sw v1013→v1014; build-locales (+1 key); no FM bump (a fix). Nothing gated.
+- [x] 2026-10-18 | (S516 close-out) | branch/deploy note | **S516 = A (39 → 40th) + 4 fixes on draft PR #338 (S514–S516).** Drift: none (main `4db5a627`, FM 5.59, 0004 live, backend files unchanged since `ba33c5bd` 2026-10-15 — on main before S514, keep-alive #36 green). sw v1014→v1015; build-locales (+3 keys); no FM bump (fixes). Nothing gated.
 
-- [x] 2026-10-18 | `d4cf1cc5` `e2dfd457` `d0e81f18` `5fef8eb2` | dashboard+flash+generator+index, torah, sw.js, FM | (S515) **`.ivrit` ask + Torah favorite keys on the document (capture); LL + Ktav precached; QA flagged cells are buttons.** | fix1–4: HEAD 16, 4, 4, 4 BAD → 0; controls fired (findings S515).
+- [x] 2026-10-18 | `973eb309` `e7d72c6e` `4c9b89d2` `36e804ac` | index, letter_learner, FM ×2 | (S516) **Hub I/E + Erase keys on the document; LL English content `lang="en"`; QA reasons translated; FM 4 targets ≥24px.** | fix1–4: HEAD 20, 754, 72, 16 BAD → 0; controls fired; 76 shots identical (findings S516).
 
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-18 | **S516** | iters: 5 | tools: index, letter_learner, FM ×2, sw.js | patterns fixed: overlay-scoped-dialog-keys ×2, pinned-english-without-lang ×7, sub-floor touch target ×4 | pass run: A | SW: v1014→v1015
 
 - 2026-10-18 | **S515** | iters: 5 | tools: dashboard, flash, generator, index, torah, FM, sw.js | patterns fixed: overlay-scoped-dialog-keys ×2 | pass run: B | SW: v1013→v1014
 
@@ -342,11 +338,11 @@ _(none)_
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S515 (2026-10-18):** dashboard, flash, generator, index, torah, FM, sw.js S515 · letter_learner S514 · i18n.js S512 · dictionary, trope S511 · resources, account S508 · saves, scripts S507 · README S503 · contact S498 · privacy S495 · terms, 404 S494 · pwa S472.
+- **Snapshot S516 (2026-10-18):** index, letter_learner, FM, sw.js S516 · dashboard, flash, generator, torah S515 · i18n.js S512 · dictionary, trope S511 · resources, account S508 · saves, scripts S507 · README S503 · contact S498 · privacy S495 · terms, 404 S494 · pwa S472.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
-- **`overlay-scoped-dialog-keys`** (NEW S514 F; LL `6e24ed4e`, flash `9b8498e9`; S515 `.ivrit` ask ×4 `d4cf1cc5`, Torah favorite `e2dfd457`; open: hub Erase + I/E): ACTIVE, streak 0. Escape/Tab on the overlay: a click on the dialog's text → Shift+Tab walks behind, Escape dies. …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`overlay-scoped-dialog-keys`** (NEW S514 F; LL, flash; S515 `.ivrit` ask ×4, Torah favorite; **S516 hub Erase + I/E `973eb309`; open: none**): ACTIVE, streak 0. A click on a dialog's text puts focus on `<body>`: an overlay listener (or a first/last-only trap) lets Shift+Tab …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`group-toggle-wipes-a-sibling-group`** (NEW S512 H; generator FIXED `ff980a7`; the match-target re-sync was an earlier work-around): ACTIVE, streak 0. A class-wide `.active` toggle on a button class another row shares. Detection: `grep -n "querySelectorAll('\\.[a-z-]*btn')" …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -446,7 +442,7 @@ _(none)_
 
 - **`designed-key-miss-probed-through-t`** (NEW S415; FM `gName()` FIXED `95d5f46`): ACTIVE, streak 1 (S416: 0 on the delta). Detection: `[i18n] missing key` in B's interaction arm; static: `=== k ?` fallbacks without `I18n.has`.
 
-- **`pinned-english-without-lang`** (NEW S415; 20 FIXED `f4bbfe8`; S422 resources ×43 `8c56a89`; S489 torah + trope `d92d1de1`; S503 torah bar; no open carrier): ACTIVE, streak 0. Detection: HE UI, `closest('[lang]')` of each …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`pinned-english-without-lang`** (NEW S415; `f4bbfe8` ×20; resources ×43; torah + trope; **S516 LL ×7 `e7d72c6e`**; open: none): ACTIVE, streak 0. Detection: HE UI, visible Latin-only text outside `[data-i18n*]` whose `closest('[lang]')` ≠ en, by real clicks …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`toggle-name-flips-with-its-pressed-state`** (NEW S414 `f9e67b2`; S416 trope tune `96275c2`; S430 found torah's Trope staff Tune all + every verse Tune; **S431 FIXED `aa97e2e`**): ACTIVE, streak 0 (last swept S430). Detection `f414/toggles2.mjs`: real click per …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -512,7 +508,7 @@ _(none)_
 
 - **`light-literal-text-on-the-gold-token`** (registered 2026-09-17 (S396)): ACTIVE — **S399 (Pass A), FIRST real sweep: 7 NEW carriers, all on `hebrew_dictionary.html`, all fixed `273f449`; clean streak stays 0.** `color:#fff` (or another light literal) painted on `var(--gold)` …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`sub-floor touch target`**: ACTIVE. **S513 dashboard bulk picker ×2 `787c434`; FM ×4 open.** **S483 hub clean.** **S456: `85e294b2`, `924c9407`.** **S449: the emoji ▾ + rows FIXED `1ae29189` (the S427 carrier closed). S429: `.wm-mini` FIXED …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`sub-floor touch target`**: ACTIVE. **S516 FM ×4 `36e804ac`; open: none known.** **S513 dashboard ×2 `787c434`.** **S483 hub clean.** **S456: `85e294b2`, `924c9407`.** Detection: visible controls < 24×24 reached by real input (inline links exempt; an `::after` hit area …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`vh-capped-sheet-without-dvh-twin`**: ACTIVE (registered S375). **S385 (Pass A), first re-sweep since the S377 fixes: 20 raw → 0 real, clean streak 1 of the 3 that retire it.** Every raw hit is an exemption the row names — 11 inner scrollers with their own `overflow:auto`, …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -704,7 +700,7 @@ _(none)_
 
 - C accessibility (one tool): 2026-10-16 (**S513 — FM, its 5th C (S368 →): 7 arms by real input, EN light 1280 + HE dark 800 (+ Draw, iPad Mini), 16 surfaces, plants 11/11. CLEAN: names, the Tab walk (80 stops, all painted), 12 dialogs, reduced motion. FOUND 7, FIXED 2 (+ generator, dashboard). C per tool: letter_learner never, torah S298, trope S312, generator S327, index S340, flash S381, …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- A recurring-pattern sweep: 2026-10-13 (**S502 — 39th A, `fee5fe05..fc54901d` (90 commits): 72 static arms, 14-page battery + 1 px sweep vs pre-delta, real input; plants fired. FOUND 8, FIXED 4.**)
+- A recurring-pattern sweep: 2026-10-18 (**S516 — 40th A, `fc54901d..d77484c5` (118 commits; LL's first A): 42 static arms; 18 shared blocks sha-checked; 11 runtime arms × 15 pages × 2 cells vs pre-delta (plants 11/11); 1 px sweep 30/30 clean; LL by real input. FOUND 1, FIXED 4.**)
 
 - G print & export fidelity (one tool): 2026-10-15 (**S509 — letter_learner (the maintainer's focus; its first G): PDFs Letter + A4 × light/dark × EN/HE, ink per page, straddles, the open-dialog case; the ink gap fired as the control. FOUND 4, FIXED 3. G-next: dictionary (S377).**)
 
@@ -724,4 +720,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-18 (**S514 — 38th F, dialog Tab traps: 22 dialogs × 2 cells by real keys + a click-on-text arm; plants 4/4. CLEAN 13. FOUND 9, FIXED 3 (+ FM menus). F-next: empty states.**)
 
-**Next session (S516):** **BRANCH/PR: draft PR #338 (S514 + S515) open → continue; merged → restart from `origin/main`.** `sw.js` **v1014**, FM **5.59**. ⚑ Stalest: A (S502), E (S503), L (S504). ⚑ First: hub Erase / I-E (the last `overlay-scoped` carrier); QA reasons in Hebrew (K); FM touch targets ×4. ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2 (TT Chant, glyphs, five S512 copy items); O needs a Bash rule.
+**Next session (S517):** **BRANCH/PR: draft PR #338 (S514–S516) open → continue; merged → restart from `origin/main`.** `sw.js` **v1015**, FM **5.59**. ⚑ Stalest: E (S503), L (S504), K (S505). ⚑ First: FM `#spacingPreviewSvg` / `#kernPreviewSvg` names; FM picker focus back to its opener; the K housekeeping (`worksheet.validation.*` "alert"). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2 (TT Chant, glyphs, five S512 copy items); O needs a Bash rule.
