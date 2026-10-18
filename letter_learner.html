@@ -1773,8 +1773,8 @@ function renderGrid() {
     btn.dataset.id = id;
     btn.setAttribute('aria-label', _fbT('letterlearner.grid.open_aria', 'Open {name}', { name: L.name }));
     const g = el('span', 'll-card-glyph', L.glyph); g.lang = 'he'; g.dir = 'rtl'; g.setAttribute('aria-hidden', 'true');
-    const n = el('span', 'll-card-name', L.name); n.dir = 'ltr';     // i18n-ignore: learner content (the English letter name)
-    const s = el('span', 'll-card-sound', L.sound === 'silent' ? L.sound : '/' + L.sound + '/'); s.dir = 'ltr';   // i18n-ignore: learner content
+    const n = el('span', 'll-card-name', L.name); n.dir = 'ltr'; n.lang = 'en';     // i18n-ignore: learner content (the English letter name)
+    const s = el('span', 'll-card-sound', L.sound === 'silent' ? L.sound : '/' + L.sound + '/'); s.dir = 'ltr'; s.lang = 'en';   // i18n-ignore: learner content
     btn.append(g, n, s);
     if (L.final) btn.appendChild(el('span', 'll-badge', _fbT('letterlearner.grid.final_badge', 'final form')));
     else if (soon) btn.appendChild(el('span', 'll-badge', _fbT('letterlearner.grid.soon_badge', 'coming soon')));
@@ -1800,8 +1800,8 @@ function renderVowelGrid(grid, note) {
     btn.setAttribute('aria-label', _fbT('letterlearner.grid.open_aria', 'Open {name}', { name: card.name }));
     const g = el('span', 'll-card-glyph', card.glyph); g.lang = 'he'; g.dir = 'rtl'; g.setAttribute('aria-hidden', 'true');
     const n = el('span', 'll-card-name', card.name);
-    const s = el('span', 'll-card-sound', card.V.id === 'sheva' ? 'quiet' : '/' + card.V.tr + '/'); s.dir = 'ltr';   // i18n-ignore: learner content (the sound, like the letters' "silent")
-    const b = el('span', 'll-badge'); b.dir = 'ltr';
+    const s = el('span', 'll-card-sound', card.V.id === 'sheva' ? 'quiet' : '/' + card.V.tr + '/'); s.dir = 'ltr'; s.lang = 'en';   // i18n-ignore: learner content (the sound, like the letters' "silent")
+    const b = el('span', 'll-badge'); b.dir = 'ltr'; b.lang = 'en';
     b.appendChild(el('span', 'll-swatch'));
     b.appendChild(document.createTextNode(card.S.short || card.S.name));   // i18n-ignore: learner content (the family's name)
     btn.append(g, n, s, b);
@@ -1920,7 +1920,9 @@ function llFillDialog(id, keepTab) {
   if (card.kind === 'vowel') glyph.dataset.fam = card.fam; else delete glyph.dataset.fam;
   const box = document.querySelector('.ll-dialog');
   if (card.kind === 'cursive') box.dataset.script = 'cursive'; else delete box.dataset.script;   // the cursive face for every Hebrew form inside
-  document.getElementById('llDlgName').textContent = card.name;
+  const nm = document.getElementById('llDlgName');
+  nm.textContent = card.name;
+  if (card.kind === 'vowel') nm.removeAttribute('lang'); else nm.lang = 'en';   // a letter's name is English learner content; a vowel's is translated
   const order = llCards(), i = order.indexOf(id);
   document.getElementById('llPrev').disabled = i <= 0;
   document.getElementById('llNext').disabled = i < 0 || i >= order.length - 1;
@@ -2009,7 +2011,7 @@ function llRenderLetterTab(L) {
   }
   if (L.hint && L.hint.caption) {
     panel.appendChild(el('h3', null, _fbT('letterlearner.letter.hint_heading', 'Remember it')));
-    const fig = el('figure', 'll-hint');
+    const fig = el('figure', 'll-hint'); fig.lang = 'en';   // the caption and the picture's name: English learner content
     const v = L.hint.variants[L.hint.show];
     const cap = (v && v.caption) || L.hint.caption;   // a variant's own caption wins while it is the one shown
     if (v && v.svg) { const pic = el('div', 'll-hint-pic'); pic.appendChild(llSvg(v.svg, cap)); fig.appendChild(pic); }
@@ -2108,7 +2110,8 @@ function llRenderVowelsTab(L) {
       const tr = L.consonant + v.tr;
       const li = el('li', 'll-vrow');
       const f = el('span', 'll-form', form); f.lang = 'he'; f.dir = 'rtl';
-      const t = el('span', 'll-tr', '/' + tr + '/');
+      const t = el('span', 'll-tr');
+      t.appendChild(el('span', null, '/' + tr + '/')).lang = 'en';   // the sound is English; the vowel's name below is translated
       t.appendChild(el('span', 'll-vname', _fbT('letterlearner.glyphname.vowel_' + v.id, v.en)));
       li.append(f, t, llSpeakButton(form, 'letterlearner.vowels.hear_aria', 'Hear {syllable}', { syllable: tr }));
       ul.appendChild(li);
@@ -2145,7 +2148,8 @@ function llRenderSpecialTab(L) {
     } else {
       const li = el('li', 'll-vrow');
       const f = el('span', 'll-form', it.he); f.lang = 'he'; f.dir = 'rtl';
-      const t = el('span', 'll-tr', '/' + it.tr + '/');
+      const t = el('span', 'll-tr');
+      t.appendChild(el('span', null, '/' + it.tr + '/')).lang = 'en';
       const v = VOWELS.find(x => x.id === it.vowel);
       if (v) t.appendChild(el('span', 'll-vname', _fbT('letterlearner.glyphname.vowel_' + v.id, v.en)));
       li.append(f, t, llSpeakButton(it.he, 'letterlearner.vowels.hear_aria', 'Hear {syllable}', { syllable: it.tr }));
@@ -2189,7 +2193,8 @@ function llRenderStoryTab(card) {
     const form = L.glyph + V.mark, tr = L.consonant + V.tr;
     const li = el('li', 'll-vrow');
     const f = el('span', 'll-form', form); f.lang = 'he'; f.dir = 'rtl'; f.dataset.fam = S.family;
-    const t = el('span', 'll-tr', '/' + tr + '/');
+    const t = el('span', 'll-tr'); t.lang = 'en';   // the sound and the letter's English name
+    t.appendChild(document.createTextNode('/' + tr + '/'));
     t.appendChild(el('span', 'll-vname', L.name));   // i18n-ignore: learner content (the English letter name)
     li.append(f, t, llSpeakButton(form, 'letterlearner.vowels.hear_aria', 'Hear {syllable}', { syllable: tr }));
     ul.appendChild(li);
