@@ -8,7 +8,9 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P3 (**NEW S513 C**) | Hebrew_Font_Maker.html | **Load Project ▾ / Save Project ▾ are mouse-only menus** (focus stays on the button, Tab skips the items, Escape never closes). Precedent: `npnlDelKey`. | found S513
+- [ ] P3 (**S514 F `overlay-scoped-dialog-keys`**) | dashboard, flash, generator, index, torah | **Still overlay-scoped: the `.ivrit` ask (engine ×3 + index), hub Erase + Import/Export, Torah favorite — click the text, Shift+Tab leaves, Escape dies.** | found S514
+
+- [ ] P3 (**S514, for E**) | sw.js | **`letter_learner.html` + the Ktav TTF are not in `CORE_ASSETS`** (offline, the page needs a first visit). | found S514
 
 - [ ] P3 (**NEW S513 C**) | Hebrew_Font_Maker.html | **QA Check's flagged cells are mouse-only** (`td.qa-cell`: no `tabindex`/role; 17 flagged, 0 focusable). | found S513
 
@@ -326,27 +328,25 @@ _(none)_
 
 ## Done
 
-- [x] 2026-10-16 | (S513 close-out) | branch/deploy note | **S513 = C on the Font Maker (its 5th) + 4 fixes, draft PR #335 continued.** Drift: none (`origin/main` `c8b9dc7`, FM 5.59, 0004 live, keep-alive 34 green). sw v1004 → v1005 (FM, generator, dashboard). No FM bump. The four gates clean. O blocked. Nothing gated.
+- [x] 2026-10-18 | (S514 close-out) | branch/deploy note | **S514 = F + 4 fixes, new draft PR (#335 merged).** Drift: main `4db5a62` (12 LL commits: Vowels, Cursive, Ktav), sw v1005→v1012 outside, FM 5.59, 0004 live, keep-alive #36 green. sw v1012→v1013; sitemap lastmod re-derived (outside-loop LL drift). No FM bump. Nothing gated.
 
-- [x] 2026-10-16 | `a54e6d2` | Hebrew_Font_Maker.html | (S513 C; button-focus-lost-to-its-own-rebuild) **A glyph tile picked by Enter/Space keeps the focus** (`_selectItem` re-focuses the rebuilt tile; before `<body>`). | 2 cells × 3 paths; matrix 8/8 (findings S513).
-
-- [x] 2026-10-16 | `1544ec9` | Hebrew_Font_Maker.html | (S513 C; contrast ×4) **Place Nikkud class buttons 2.15 / 3.68 / 2.54 → 4.76 / 7.31 / 5.47 (a 65 % `color-mix` fill); wizard link-button 2.75 → 6.22; Unconfirmed pill 4.03 → 5.1; dark tile text 4.39 → 6.12.** | 4 cells; full scan 3,223 → 0 (findings S513).
-
-- [x] 2026-10-16 | `c6fe147` | hebrew_blend_generator.html | (S513; S512 H; latin-tracking-on-hebrew-labels) **A Hebrew title/subtitle prints in the Hebrew face and `גרסה א` carries `lang="he"`, no tracking or uppercase.** | 4 cells + the English-header control (findings S513).
-
-- [x] 2026-10-16 | `787c434` | classroom_dashboard.html | (S513; S502 A; sub-floor touch target) **Bulk preset editor: Select all / none 14 → 24px + a hover/focus state; checkbox rows 15 → 24px.** | 4 cells, hover 0/4 → 4/4 (findings S513).
+- [x] 2026-10-18 | `6e24ed4e` `9b8498e9` `3d63a1e6` `43ec73ba` | LL, flash, FM, dashboard | (S514) **LL dialog + `fcModalize` keys on the document; FM Load/Save ▾ by keyboard; dashboard Escape skips a handled key.** | fix1–4: HEAD 12, 16, 12, 4 BAD → 0; controls fired (findings S514).
 
 ## Metrics
 
 ### Per-session log (one line per session)
 
+- 2026-10-18 | **S514** | iters: 5 | tools: LL, flash, FM, dashboard | patterns fixed: overlay-scoped-dialog-keys ×2 | pass run: F | SW: v1012→v1013
+
 - 2026-10-16 | **S513** | iters: 5 | tools: FM ×2, generator, dashboard | patterns fixed: button-focus-lost-to-its-own-rebuild ×1, latin-tracking-on-hebrew-labels ×1, sub-floor touch target ×2 | pass run: C | SW: v1004→v1005
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S513 (2026-10-16):** FM, generator, dashboard S513 · i18n.js S512 · letter_learner, flash, dictionary, torah, trope S511 · resources, account S508 · saves, scripts S507 · index S505 · README S503 · contact S498 · privacy S495 · terms, 404 S494 · pwa S472.
+- **Snapshot S514 (2026-10-18):** letter_learner, flash, FM, dashboard S514 · generator S513 · i18n.js S512 · dictionary, torah, trope S511 · resources, account S508 · saves, scripts S507 · index S505 · README S503 · contact S498 · privacy S495 · terms, 404 S494 · pwa S472.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`overlay-scoped-dialog-keys`** (NEW S514 F; LL `6e24ed4e`, flash `9b8498e9`; 5 carriers open): ACTIVE, streak 0. Escape/Tab on the overlay: a click on the dialog's text → Shift+Tab walks behind, Escape dies. Detection: `f514/census.mjs` click arm (plants `plant2.mjs`).
 
 - **`group-toggle-wipes-a-sibling-group`** (NEW S512 H; generator FIXED `ff980a7`; the match-target re-sync was an earlier work-around): ACTIVE, streak 0. A class-wide `.active` toggle on a button class another row shares. Detection: `grep -n "querySelectorAll('\\.[a-z-]*btn')" …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -722,6 +722,6 @@ _(none)_
 
 - E freshness/site-health: 2026-10-13 (**S503 — 39th E, `7663499a..4edc14b9` (90 commits): 15 arms + a `?v=` history arm, doc tokens, CSP, Total Torah by real input. FOUND 4, FIXED 3 (+ flash).**)
 
-- F cross-tool consistency: 2026-10-13 (**S500 — 37th F, the tabs / segmented-control keyboard contract (never swept): 9 strips + 6 toggle groups, real keys, EN/HE; plants 3/3. FOUND 4, FIXED 3 (+ Current Location). F-next: dialog Tab traps.**)
+- F cross-tool consistency: 2026-10-18 (**S514 — 38th F, dialog Tab traps: 22 dialogs × 2 cells by real keys + a click-on-text arm; plants 4/4. CLEAN 13. FOUND 9, FIXED 3 (+ FM menus). F-next: empty states.**)
 
-**Next session (S514):** **BRANCH/PR: #335 open → continue; merged → restart from `origin/main`.** `sw.js` **v1005**, FM **5.59**. ⚑ Stalest: F (S500; F-next dialog Tab traps), then B (S501), A (S502), E (S503). ⚑ First: the FM's mouse-only Load/Save menus (P3); QA's flagged cells by keyboard (P3); sw.js no-store (maintainer's call). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2 (TT Chant, glyphs, five S512 copy items); O needs a Bash rule for the detector.
+**Next session (S515):** **BRANCH/PR: S514's draft PR open → continue; merged → restart from `origin/main`.** `sw.js` **v1013**, FM **5.59**. ⚑ Stalest: B (S501), A (S502), E (S503). ⚑ First: the `.ivrit` ask's overlay keys (one shared-block iteration), hub Erase / I-E, Torah favorite; LL precache (E); QA cells (FM). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2 (TT Chant, glyphs, five S512 copy items); O needs a Bash rule.

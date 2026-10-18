@@ -92960,3 +92960,35 @@ _(prior — S511 pointer:)_ **Next session (S511):** **BRANCH/PR: #332 open → 
 - C accessibility (one tool): 2026-10-16 (**S513 — FM, its 5th C (S368 →): 7 arms by real input, EN light 1280 + HE dark 800 (+ Draw, iPad Mini), 16 surfaces, plants 11/11. CLEAN: names, the Tab walk (80 stops, all painted), 12 dialogs, reduced motion. FOUND 7, FIXED 2 (+ generator, dashboard). C per tool: letter_learner never, torah S298, trope S312, generator S327, index S340, flash S381, account S396, dictionary S427, dashboard S499, FM S513 — C-next: letter_learner.**)
 
 - H teacher walkthrough / paper-cuts (one tool): 2026-10-16 (**S512 — generator, its 4th H (S130 → S251 → S363 → S512): a 1st-grade letter-of-the-week lesson by real clicks (tracing, Name the Letter, a Class Set with a Hebrew header, a pasted Noach list → Word List, Numbers, preset, link, reopen, the colleague's HE/dark/800 open), 63 clicks × 3 cells, 0 errors. FOUND 9, FIXED 2 (+ dashboard, i18n.js); full text in the archive. H-next: letter_learner (never), privacy/terms/404 (never), trope (S367).**)
+
+
+<!-- archived by compact-ledger at the S515 boundary, 2026-10-18 -->
+## Compaction (S515, 2026-10-18) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-18 | (S514 close-out) | branch/deploy note | **S514 = F (dialog Tab traps) + 4 fixes, branch `claude/youthful-meitner-udddh9`, new draft PR (#335 merged).** Drift: `origin/main` `4db5a62` (12 Letter Learner commits outside the loop: Vowels + Cursive modes, the Ktav face), sw v1005 → v1012 outside, FM 5.59, 0004 live, no backend file changed, keep-alive #36 green. sw v1012 → v1013 (LL, flash, FM, dashboard). No FM bump (a fix). Nothing gated; O still blocked.
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`overlay-scoped-dialog-keys`** (NEW S514 F; letter_learner `6e24ed4e`, flash `fcModalize` `9b8498e9`; open: the `.ivrit` `ivritAskMode` ×3 + index, hub Erase + Import/Export, Torah favorite): ACTIVE, streak 0. A modal's Escape/Tab handler on the overlay (or a first/last-only trap): a click on its own text leaves focus on `<body>`, Shift+Tab walks behind, Escape dies. Detection: `f514/census.mjs` click arm; plants `plant2.mjs` (overlay BAD, document OK).
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+_(prior — S514 pointer:)_ **BRANCH/PR: #335 open → continue; merged → restart from `origin/main`.** `sw.js` **v1005**, FM **5.59**. ⚑ Stalest: F (S500; F-next dialog Tab traps), then B (S501), A (S502), E (S503). ⚑ First: the FM's mouse-only Load/Save menus (P3); QA's flagged cells by keyboard (P3); sw.js no-store (maintainer's call). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2 (TT Chant, glyphs, five S512 copy items); O needs a Bash rule for the detector.
+
+
+<!-- moved by hand at the S514 close-out, 2026-10-18: the ledger sat at its 100 KB limit, so the previous session's Done entries leave early (verbatim) -->
+## Compaction (S514 close-out, 2026-10-18) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-16 | (S513 close-out) | branch/deploy note | **S513 = C on the Font Maker (its 5th) + 4 fixes, draft PR #335 continued.** Drift: none (`origin/main` `c8b9dc7`, FM 5.59, 0004 live, keep-alive 34 green). sw v1004 → v1005 (FM, generator, dashboard). No FM bump. The four gates clean. O blocked. Nothing gated.
+
+- [x] 2026-10-16 | `a54e6d2` | Hebrew_Font_Maker.html | (S513 C; button-focus-lost-to-its-own-rebuild) **A glyph tile picked by Enter/Space keeps the focus** (`_selectItem` re-focuses the rebuilt tile; before `<body>`). | 2 cells × 3 paths; matrix 8/8 (findings S513).
+
+- [x] 2026-10-16 | `1544ec9` | Hebrew_Font_Maker.html | (S513 C; contrast ×4) **Place Nikkud class buttons 2.15 / 3.68 / 2.54 → 4.76 / 7.31 / 5.47 (a 65 % `color-mix` fill); wizard link-button 2.75 → 6.22; Unconfirmed pill 4.03 → 5.1; dark tile text 4.39 → 6.12.** | 4 cells; full scan 3,223 → 0 (findings S513).
+
+- [x] 2026-10-16 | `c6fe147` | hebrew_blend_generator.html | (S513; S512 H; latin-tracking-on-hebrew-labels) **A Hebrew title/subtitle prints in the Hebrew face and `גרסה א` carries `lang="he"`, no tracking or uppercase.** | 4 cells + the English-header control (findings S513).
+
+- [x] 2026-10-16 | `787c434` | classroom_dashboard.html | (S513; S502 A; sub-floor touch target) **Bulk preset editor: Select all / none 14 → 24px + a hover/focus state; checkbox rows 15 → 24px.** | 4 cells, hover 0/4 → 4/4 (findings S513).
