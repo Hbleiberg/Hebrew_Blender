@@ -8967,26 +8967,29 @@ function openFavoriteDialog() {
   dismissHintToast();   // as the gallery: a toast about the page would sit on the dialog
   _favOpener = document.activeElement;
   bd.hidden = false; dlg.hidden = false;
-  dlg.addEventListener('keydown', _favDialogKey);
+  document.addEventListener('keydown', _favDialogKey, true);
   nameEl.focus(); nameEl.select();
 }
+// On the document (capture) while open, not on the dialog: a click on its own text leaves the focus on <body>, which a
+// dialog listener never hears (Shift+Tab walked into the drawer behind, Escape closed the drawer instead). Focus outside
+// the dialog wraps back in; Enter saves only from a field inside it.
 function _favDialogKey(e) {
-  if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); closeFavoriteDialog(); return; }   // stopped: the drawer's Escape is on document
-  if (e.key === 'Enter' && e.target && e.target.tagName !== 'BUTTON' && e.target.tagName !== 'SELECT') { e.preventDefault(); saveFavoriteFromDialog(); return; }
-  if (e.key !== 'Tab') return;
   const dlg = document.getElementById('ttFavDialog');
+  if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); closeFavoriteDialog(); return; }   // stopped: the drawer's Escape is on document
+  if (e.key === 'Enter' && e.target && dlg.contains(e.target) && e.target.tagName !== 'BUTTON' && e.target.tagName !== 'SELECT') { e.preventDefault(); saveFavoriteFromDialog(); return; }
+  if (e.key !== 'Tab') return;
   const focusables = [...dlg.querySelectorAll('button, input, select, textarea, a[href], [tabindex]:not([tabindex="-1"])')]
     .filter(el => el.offsetParent !== null && !el.disabled && el.tabIndex !== -1);
   if (!focusables.length) return;
-  const first = focusables[0], last = focusables[focusables.length - 1];
-  if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  const a = document.activeElement, first = focusables[0], last = focusables[focusables.length - 1], out = !dlg.contains(a);
+  if (e.shiftKey && (a === first || out)) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && (a === last || out)) { e.preventDefault(); first.focus(); }
 }
 function closeFavoriteDialog() {
   const dlg = document.getElementById('ttFavDialog'), bd = document.getElementById('ttFavBackdrop');
   if (!dlg || dlg.hidden) return;
   dlg.hidden = true; bd.hidden = true;
-  dlg.removeEventListener('keydown', _favDialogKey);
+  document.removeEventListener('keydown', _favDialogKey, true);
   const o = _favOpener; _favOpener = null;
   const back = (o && o.focus && o.isConnected && o !== document.body) ? o : document.getElementById('ttFavAddBtn');
   try { back.focus(); } catch (e) {}
