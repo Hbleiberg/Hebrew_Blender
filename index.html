@@ -1968,23 +1968,26 @@ function ivritAskMode() {
     // Accessible dialog (the shared engine's clause): label, modal role, Escape, Tab focus-trap across
     // the 3 buttons, focus save/restore. The handled keys stop here — the hub's document-level handler
     // for the AllTools modal would otherwise close THAT modal behind this dialog on the same Escape.
+    // They are heard on the document (capture), not the overlay: a click on the dialog's own text leaves the focus
+    // on <body>, where an overlay listener never hears them; focus outside wraps back in.
     const opener = document.activeElement;
     box.setAttribute('role', 'dialog');
     box.setAttribute('aria-modal', 'true');
     box.setAttribute('aria-labelledby', 'ivritAskTitle');
     ov.appendChild(box); document.body.appendChild(ov);
-    const done = v => { if (ov.parentNode) document.body.removeChild(ov); try { opener && opener.focus && opener.focus(); } catch (e) {} resolve(v); };
+    const done = v => { document.removeEventListener('keydown', onKey, true); if (ov.parentNode) document.body.removeChild(ov); try { opener && opener.focus && opener.focus(); } catch (e) {} resolve(v); };
     const btns = [...box.querySelectorAll('button')];
     btns.forEach(b => b.addEventListener('click', () => { const act = b.dataset.act; done(act === 'cancel' ? null : act); }));
     ov.addEventListener('click', e => { if (e.target === ov) done(null); });
-    ov.addEventListener('keydown', e => {
+    const onKey = e => {
       if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); done(null); return; }
       if (e.key !== 'Tab' || !btns.length) return;
       e.stopPropagation();
-      const first = btns[0], last = btns[btns.length - 1];
-      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-    });
+      const a = document.activeElement, first = btns[0], last = btns[btns.length - 1], out = !box.contains(a);
+      if (e.shiftKey && (a === first || out)) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && (a === last || out)) { e.preventDefault(); first.focus(); }
+    };
+    document.addEventListener('keydown', onKey, true);
     box.querySelector('[data-act=merge]').focus();
   });
 }

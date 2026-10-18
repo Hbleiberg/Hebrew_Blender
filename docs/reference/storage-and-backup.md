@@ -188,7 +188,7 @@ Implemented on: `hebrew_blend_generator.html` (tool `Worksheet`), `classroom_das
   dictTranslitStyle, dictTtsRate, dictEmojiSettings }`), which the hub's two import paths unfold into the flat
   keys of the table above before their validated branches run. The hub's textarea import accepts the whole
   `.ivrit` envelope too (it reads `data`).
-- The prompt is an accessible dialog on every carrier, the hub's adapted copy included: `role="dialog"` + `aria-modal` + `aria-labelledby=ivritAskTitle`, focus lands on Merge, Tab is trapped across the three buttons, Escape cancels, and focus returns to the opener. The hub's copy additionally stops the handled Escape/Tab so its document-level AllTools-modal handler does not close that modal behind the prompt — keep that when re-syncing it from the engine.
+- The prompt is an accessible dialog on every carrier, the hub's adapted copy included: `role="dialog"` + `aria-modal` + `aria-labelledby=ivritAskTitle`, focus lands on Merge, Tab is trapped across the three buttons, Escape cancels, and focus returns to the opener. Its keys are heard on the document in the capture phase while it is open (removed when it closes), not on its overlay: a click on its own text leaves the focus on `<body>`, which an overlay listener never hears, so focus outside the box wraps back in, and capture keeps the handled Escape ahead of the page's own Escape handlers (the dashboard's skips a key already handled). The hub's copy additionally stops the handled Escape/Tab so its document-level AllTools-modal handler does not close that modal behind the prompt — keep that when re-syncing it from the engine.
 
 ### Pattern: per-file `IVRIT_CFG` + shared engine
 
