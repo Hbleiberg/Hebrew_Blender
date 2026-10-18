@@ -17851,7 +17851,7 @@ function markPolysOverlap(A, B, tol) {
 /* Reason(s) for a multi-layer cell: any two layers whose placed ink overlaps (mark-vs-mark clash). */
 function qaLayerClash(layers) {
   for (let i = 0; i < layers.length; i++) for (let j = i + 1; j < layers.length; j++)
-    if (markPolysOverlap(layers[i].polys, layers[j].polys, QA_OVERLAP_TOL)) return ['Marks overlap each other'];
+    if (markPolysOverlap(layers[i].polys, layers[j].polys, QA_OVERLAP_TOL)) return [I18n.t('fontmaker.qa.reason_marks')];
   return [];
 }
 /* The collision checks for one cell's placed mark ink (union of all layers). A red cell means the
@@ -17875,7 +17875,7 @@ function qaReasons(L, meta, markPolys, side, positional) {
     for (const poly of markPolys) {
       const inset = qaInsetToward(poly, qaCentroid(poly), QA_OVERLAP_TOL), pb = polysBounds([poly]);
       if (inset.some(p => pointInInk(p, L.contours, ctBoxes)) || L.contours.some(ct => ct.points.some(p => !qaOutside(p, pb) && pointInPoly(p, poly)))) {
-        reasons.push('Mark overlaps the letter ink'); break;
+        reasons.push(I18n.t('fontmaker.qa.reason_ink')); break;
       }
     }
   }
@@ -17884,7 +17884,7 @@ function qaReasons(L, meta, markPolys, side, positional) {
     let tminX=1e9, tmaxX=-1e9, tminY=1e9, tmaxY=-1e9;
     L.contours.forEach(ct => ct.points.forEach(([x,y]) => { if (y < 0) { if (x<tminX)tminX=x; if (x>tmaxX)tmaxX=x; if (y<tminY)tminY=y; if (y>tmaxY)tmaxY=y; } }));
     if (tmaxX > -1e9 && !(mb.maxX < tminX || mb.minX > tmaxX || mb.maxY < tminY || mb.minY > tmaxY))
-      reasons.push('Below-mark collides with the descender tail');
+      reasons.push(I18n.t('fontmaker.qa.reason_tail'));
   }
   return reasons;
 }

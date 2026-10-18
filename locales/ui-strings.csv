@@ -3088,6 +3088,9 @@ fontmaker.qa.outline_warn.other,⚠ {count} glyphs with self-intersecting or ove
 fontmaker.qa.pair_hint,"Red = the two marks' ink overlaps. Same-class pairs (e.g. two below-vowels) share one anchor, so they always overlap — that's expected. Cross-class clashes (e.g. a raised dagesh meeting an above-vowel) are real and fixable by moving an anchor.","אדום = הדיו של שני הסימנים חופף. זוגות מאותה מחלקה (למשל שתי תנועות תחתונות) חולקים עוגן אחד, ולכן הם תמיד חופפים — זה צפוי. התנגשויות בין מחלקות (למשל דגש מורם הפוגש תנועה עליונה) הן אמיתיות וניתנות לתיקון על ידי הזזת עוגן.",QA pair control,
 fontmaker.qa.pair_stack,Stack,שילוב,QA pair control label,REVIEW: 'Stack' -> 'שילוב' — confirm
 fontmaker.qa.pair_with,"with every other mark, on each letter.","עם כל סימן אחר, על כל אות.",QA pair control,
+fontmaker.qa.reason_ink,Mark overlaps the letter ink,הסימן חופף לדיו של האות,"QA Check — a red cell's reason: the mark sits on the letter's ink (the cell's tooltip and button name, joined by ' · ')",
+fontmaker.qa.reason_marks,Marks overlap each other,הסימנים חופפים זה לזה,"QA Check — a red cell's reason: two of its stacked marks overlap (Stacked / Two marks tabs)",
+fontmaker.qa.reason_tail,Below-mark collides with the descender tail,הסימן התחתון נתקל בזנב היורד,"QA Check — a red cell's reason: a below-mark runs into a letter's descender tail (ך, ק)",
 fontmaker.qa.section_custom,Custom glyphs,גליפים מותאמים,QA section header,
 fontmaker.qa.section_special,Specialized (wide letters),מיוחדות (אותיות רחבות),QA section header,
 fontmaker.qa.section_wide,Wide letterforms,אותיות רחבות,QA section header,
