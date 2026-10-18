@@ -37,7 +37,7 @@ VERSION = "1.2"   # shown as "v{VERSION}" on the splash — bump whatever value 
 2. Run `python3 splash/gen_splash.py` — re-renders every `splash/splash-*.png`
    and rewrites `splash/apple-startup-links.html`.
 3. Only if `DEVICES` changed (NOT for a plain version bump): re-sync the
-   `apple-touch-startup-image` block in **all 14 HTML pages** (every root `*.html`: 404,
+   `apple-touch-startup-image` block in **14 HTML pages** (every root page but `account.html` and the three test harnesses: 404,
    Hebrew_Font_Maker, classroom_dashboard, contact, flash_cards, hebrew_blend_generator,
    hebrew_dictionary, index, letter_learner, privacy, resources, terms, torah_trainer, trope_tutor) from
    `splash/apple-startup-links.html` (the block is identical in each). A version
