@@ -1493,18 +1493,22 @@ function ivritAskErase() {
     box.setAttribute('aria-modal', 'true');
     box.setAttribute('aria-labelledby', 'ivritEraseTitle');
     ov.appendChild(box); document.body.appendChild(ov);
-    const done = v => { if (ov.parentNode) document.body.removeChild(ov); try { opener && opener.focus && opener.focus(); } catch (e) {} resolve(v); };
+    const done = v => { document.removeEventListener('keydown', onKey, true); if (ov.parentNode) document.body.removeChild(ov); try { opener && opener.focus && opener.focus(); } catch (e) {} resolve(v); };
     const btns = [...row.querySelectorAll('button')];
     btns.forEach(b => b.addEventListener('click', () => { const act = b.dataset.act; done(act === 'cancel' ? null : act); }));
     ov.addEventListener('click', e => { if (e.target === ov) done(null); });
-    ov.addEventListener('keydown', e => {
+    // On the document (capture), not the overlay: a click on the prompt's own text leaves the focus on <body>, where an
+    // overlay listener never hears Escape or Tab (Escape closed the Import/Export window behind instead). Stopped, so
+    // that window's own keys skip it; focus outside the box wraps back in.
+    const onKey = e => {
       if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); done(null); return; }
       if (e.key !== 'Tab' || !btns.length) return;
       e.stopPropagation();
-      const first = btns[0], last = btns[btns.length - 1];
-      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-    });
+      const a = document.activeElement, first = btns[0], last = btns[btns.length - 1], out = !box.contains(a);
+      if (e.shiftKey && (a === first || out)) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && (a === last || out)) { e.preventDefault(); first.focus(); }
+    };
+    document.addEventListener('keydown', onKey, true);
     btns[0].focus();   // the safe route is the default
   });
 }
@@ -2155,9 +2159,11 @@ document.addEventListener('keydown', e => {
     const f = [...bd.querySelectorAll('.ie-modal button, .ie-modal [href], .ie-modal input, .ie-modal textarea, .ie-modal select, .ie-modal [tabindex]:not([tabindex="-1"])')]
       .filter(el => !el.disabled && el.offsetParent !== null);
     if (!f.length) return;
-    const first = f[0], last = f[f.length - 1];
-    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    // A click on the window's own text leaves the focus on <body>: Tab from there wraps back in rather than walking
+    // to the page behind.
+    const a = document.activeElement, first = f[0], last = f[f.length - 1], out = !bd.querySelector('.ie-modal').contains(a);
+    if (e.shiftKey && (a === first || out)) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && (a === last || out)) { e.preventDefault(); first.focus(); }
   }
 });
 </script>
