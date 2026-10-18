@@ -1539,8 +1539,8 @@ html[lang="he"] .tp-label{letter-spacing:normal;text-transform:none;}
 <div class="toolbar">
   <div class="tb-group">
     <button class="tbtn ghost" onclick="newProjectFresh()" data-i18n="fontmaker.toolbar.new">New</button>
-    <button class="tbtn ghost" onclick="toggleLoadMenu(event)" data-i18n="fontmaker.toolbar.load_project">Load Project ▾</button>
-    <button class="tbtn ghost" onclick="toggleSaveMenu(event)" data-i18n="fontmaker.toolbar.save_project_menu">Save Project ▾</button>
+    <button class="tbtn ghost" onclick="toggleLoadMenu(event)" aria-expanded="false" data-i18n="fontmaker.toolbar.load_project">Load Project ▾</button>
+    <button class="tbtn ghost" onclick="toggleSaveMenu(event)" aria-expanded="false" data-i18n="fontmaker.toolbar.save_project_menu">Save Project ▾</button>
     <button id="cloudPip" class="engine-badge cloud-pip" type="button" hidden onclick="fmCloudPipClick()"><span class="engine-dot" aria-hidden="true"></span><svg class="hi hi-sm hi-cloud" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.2 18.4h9.9a3.9 3.9 0 0 0 .5-7.77 5.6 5.6 0 0 0-10.72-1.2A4.5 4.5 0 0 0 7.2 18.4Z"/></svg><span class="cloud-pip-text"></span></button>
     <input type="file" id="projFile" accept=".hebrewfont,.json,application/json,application/gzip" style="display:none;">
   </div>
@@ -2148,7 +2148,7 @@ html[lang="he"] .tp-label{letter-spacing:normal;text-transform:none;}
     <div class="wiz-head">
       <h3 id="wizTitle" data-i18n="fontmaker.wizard.title">✍️ Create a new font</h3>
       <div class="wiz-head-btns">
-        <button class="tbtn ghost" id="wizOpenProject" onclick="toggleLoadMenu(event)" data-i18n="fontmaker.wizard.open_project">Open a project ▾</button>
+        <button class="tbtn ghost" id="wizOpenProject" onclick="toggleLoadMenu(event)" aria-expanded="false" data-i18n="fontmaker.wizard.open_project">Open a project ▾</button>
         <button class="tbtn ghost hi-btn" id="wizStartFromFont" onclick="osPickOpen(_wizardMode)"><svg class="hi hi-sm hi-book" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7.2v12.4"/><path d="M12 7.2S10 5.4 6 5.4a18 18 0 0 0-2.4.2v12.6A18 18 0 0 1 6 18c4 0 6 1.6 6 1.6s2-1.6 6-1.6a18 18 0 0 1 2.4.2V5.6A18 18 0 0 0 18 5.4c-4 0-6 1.8-6 1.8Z"/></svg><span class="hi-lbl" data-i18n="fontmaker.wizard.start_from_font">Start from an existing font</span></button>
         <button class="tbtn ghost" id="wizCancelBtn" onclick="wizardCancel()" data-i18n="fontmaker.wizard.cancel" hidden>Cancel</button>
       </div>
@@ -22854,7 +22854,24 @@ function removeRecentProjectUI(name, savedAt, idx) {
 }
 /* "Load Project ▾" split menu: From computer… + the recent list */
 function recentDate(iso) { try { return new Date(iso).toLocaleDateString((window.I18n && I18n.lang) || undefined, { month:'short', day:'numeric' }); } catch (e) { return ''; } }   // UI language, not browser locale
-function closeLoadMenu() { const m = document.getElementById('loadMenu'); if (m) m.remove(); document.removeEventListener('click', closeLoadMenu); }
+function closeLoadMenu() { const m = document.getElementById('loadMenu'); if (m) m.remove(); if (_loadMenuAnchor) _loadMenuAnchor.setAttribute('aria-expanded', 'false'); document.removeEventListener('click', closeLoadMenu); }
+// The two toolbar menus' keyboard contract (flash cards' print menu, the delete-points menu): focus moves to the first
+// item, Up/Down move between items and Tab wraps (the menu sits at the end of <body>), Escape closes and hands focus back
+// to the toggle — all stopped, so neither the editor's shortcuts nor a modal underneath (the wizard's "Open a project ▾")
+// also take the key.
+function fmMenuKeys(menu, anchor, close) {
+  if (anchor) anchor.setAttribute('aria-expanded', 'true');
+  menu.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(); if (anchor && anchor.isConnected) anchor.focus(); return; }
+    if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp' && e.key !== 'Tab') return;
+    const f = [...menu.querySelectorAll('button:not([disabled]),a[href]')].filter(x => x.offsetParent !== null);
+    if (!f.length) return;
+    e.preventDefault(); e.stopPropagation();
+    const back = e.key === 'ArrowUp' || (e.key === 'Tab' && e.shiftKey), i = f.indexOf(document.activeElement), n = f.length;
+    f[i < 0 ? (back ? n - 1 : 0) : (i + (back ? n - 1 : 1)) % n].focus();
+  });
+  const first = menu.querySelector('button:not([disabled]),a[href]'); if (first) first.focus();
+}
 let _loadMenuAnchor = null;   // the button the menu hangs off — remembered so a remove-confirm can put the menu back
 function toggleLoadMenu(ev) {
   ev.stopPropagation();
@@ -22876,6 +22893,7 @@ function openLoadMenu(anchor) {
   menu.style.left = Math.max(6, Math.min(rect.left, window.innerWidth - menu.offsetWidth - 8)) + 'px';
   menu.style.top = (rect.bottom + 4) + 'px';
   setTimeout(() => document.addEventListener('click', closeLoadMenu), 0);
+  fmMenuKeys(menu, anchor, closeLoadMenu);
   menu._recentFilled = fmRecentFillLoadMenu(menu);   // Recent and "In your account" both arrive asynchronously
   fmCloudFillLoadMenu(menu);
   return menu;
@@ -22921,7 +22939,8 @@ function reopenLoadMenu(focusIdx) {
   });
 }
 /* "Save Project ▾" split menu: Save Project… + Save as a copy… (reuses the .load-menu styling) */
-function closeSaveMenu() { const m = document.getElementById('saveMenu'); if (m) m.remove(); document.removeEventListener('click', closeSaveMenu); }
+let _saveMenuAnchor = null;
+function closeSaveMenu() { const m = document.getElementById('saveMenu'); if (m) m.remove(); if (_saveMenuAnchor) _saveMenuAnchor.setAttribute('aria-expanded', 'false'); document.removeEventListener('click', closeSaveMenu); }
 function toggleSaveMenu(ev) {
   ev.stopPropagation();
   if (document.getElementById('saveMenu')) { closeSaveMenu(); return; }
@@ -22938,6 +22957,8 @@ function toggleSaveMenu(ev) {
   menu.style.left = Math.max(6, Math.min(rect.left, window.innerWidth - menu.offsetWidth - 8)) + 'px';
   menu.style.top = (rect.bottom + 4) + 'px';
   setTimeout(() => document.addEventListener('click', closeSaveMenu), 0);
+  _saveMenuAnchor = ev.currentTarget;
+  fmMenuKeys(menu, _saveMenuAnchor, closeSaveMenu);
 }
 /* ── Autosave: a single-slot safety net kept in its OWN IndexedDB database. Deliberately NOT the
    shared 'ivritsuite-fonts' DB — bumping that DB's version here would make every other tool's
