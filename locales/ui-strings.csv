@@ -5539,6 +5539,8 @@ fontmaker.tip.trace_needs,Trace {names},שרטטו את {names},FM needs chip; {
 fontmaker.tip.place_mark_for,Place the {mark} for {composed},מקמו את {mark} עבור {composed},FM precomp target; {mark}{composed},title
 fontmaker.tip.add_glyph_sample,Add {name} to the sample text (it can't be typed on a keyboard),הוסיפו את {name} לטקסט הדוגמה (לא ניתן להקלידה במקלדת),FM sample text; {name},title
 fontmaker.aria.sample_text_px,Sample text at {px} pixels,טקסט לדוגמה בגודל {px} פיקסלים,FM spacing preview; {px},aria-label
+fontmaker.aria.spacing_preview,Spacing preview: the sample text in your letters,תצוגה מקדימה של הריווח: טקסט הדוגמה באותיות שלך,FM spacing panel preview image,aria-label
+fontmaker.aria.kern_preview,Kerning preview: the pair in your letters,תצוגה מקדימה של הקרנינג: הזוג באותיות שלך,FM kerning section preview image,aria-label
 fontmaker.adpick.box_title,Box {id} — assign a letter,תיבה {id} — שייכו אות,FM auto-detect box picker; {id},text
 fontmaker.aria.assign_box,Assign box {id},שיוך תיבה {id},FM auto-detect box picker; {id},aria-label
 fontmaker.hint.trace_first_composed,Trace {needs} first — this form is auto-composed from {bases}.,שרטטו קודם את {needs} — צורה זו מורכבת אוטומטית מ־{bases}.,FM precomp hint; {needs}{bases},

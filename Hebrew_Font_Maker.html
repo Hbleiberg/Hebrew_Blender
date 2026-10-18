@@ -15616,7 +15616,7 @@ function renderSpacingPanel() {
     <button type="button" class="hk-toggle hi-btn" id="fmKbdToggle" aria-expanded="false" aria-controls="fmKbdPanel"><svg class="hi hi-sm hi-keyboard" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.6" y="6.4" width="18.8" height="11.2" rx="2"/><path d="M6 9.6h.01M9.2 9.6h.01M12.4 9.6h.01M15.6 9.6h.01M18 9.6h.01M6 12.6h.01M9.2 12.6h.01M12.4 12.6h.01M15.6 12.6h.01M18 12.6h.01M8 15.4h8"/></svg>Show Hebrew Keyboard</button>
     <div class="hk-panel" id="fmKbdPanel" hidden></div>
     <div class="hint">${I18n.t('fontmaker.panels.spacing_hint')}</div>
-    <svg id="spacingPreviewSvg" style="width:100%;height:auto;max-height:170px;margin-top:4px;"></svg>
+    <svg id="spacingPreviewSvg" role="img" aria-label="${esc(I18n.t('fontmaker.aria.spacing_preview'))}" style="width:100%;height:auto;max-height:170px;margin-top:4px;"></svg>
     <details id="waterfallWrap" ${waterfallOpenPref() ? 'open' : ''} ontoggle="onWaterfallToggle(this)" style="margin-top:6px;">
       <summary style="cursor:pointer;font-size:0.74rem;font-weight:600;padding-block:5px;">${I18n.t('fontmaker.panels.waterfall_summary')}</summary>
       <div id="waterfallBody" style="overflow-x:auto;display:flex;flex-direction:column;gap:3px;padding:4px 0;"></div>
@@ -16006,7 +16006,7 @@ function renderKerningSection() {
     <div class="ctl-label" style="margin-bottom:6px;">${I18n.t('fontmaker.panels.kerning')}</div>
     <div class="row2" style="gap:10px;align-items:flex-start;">${sideUI('left', e.left)}${sideUI('right', e.right)}</div>
     <div class="hint" style="margin-top:3px;">${I18n.t('fontmaker.panels.kern_reading_hint')}</div>
-    <svg id="kernPreviewSvg" style="width:100%;height:auto;max-height:120px;margin-top:8px;"></svg>
+    <svg id="kernPreviewSvg" role="img" aria-label="${esc(I18n.t('fontmaker.aria.kern_preview'))}" style="width:100%;height:auto;max-height:120px;margin-top:8px;"></svg>
     ${(e.left.cls||e.right.cls) ? `<div class="hint" style="margin-top:-2px;font-size:0.7rem;">${I18n.t('fontmaker.panels.kern_preview_note')}</div>` : ''}
     <div class="inline" style="margin-top:2px;">${I18n.t('fontmaker.panels.kern_gap')} <input type="range" min="-200" max="200" step="5" value="${e.value}" oninput="setKernValue(this.value)" aria-label="${esc(I18n.t('fontmaker.panels.kern_gap'))}"> <span id="kernV" class="readout">${e.value>0?'+':''}${e.value|0}</span></div>
     <div class="ctl-row" style="margin-top:6px;">
