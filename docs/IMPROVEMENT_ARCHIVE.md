@@ -92992,3 +92992,28 @@ _(prior — S514 pointer:)_ **BRANCH/PR: #335 open → continue; merged → rest
 - [x] 2026-10-16 | `c6fe147` | hebrew_blend_generator.html | (S513; S512 H; latin-tracking-on-hebrew-labels) **A Hebrew title/subtitle prints in the Hebrew face and `גרסה א` carries `lang="he"`, no tracking or uppercase.** | 4 cells + the English-header control (findings S513).
 
 - [x] 2026-10-16 | `787c434` | classroom_dashboard.html | (S513; S502 A; sub-floor touch target) **Bulk preset editor: Select all / none 14 → 24px + a hover/focus state; checkbox rows 15 → 24px.** | 4 cells, hover 0/4 → 4/4 (findings S513).
+
+
+<!-- archived by compact-ledger at the S516 boundary, 2026-10-18 -->
+## Compaction (S516, 2026-10-18) — moved verbatim from the live ledger
+
+### from Candidates (prioritized, top = next)
+
+- [ ] P3 (**NEW S515 — for K**) | Hebrew_Font_Maker.html | **QA Check's reasons are English literals in the Hebrew UI** (`reasons.push('Mark overlaps the letter ink')`, `'Below-mark collides with the descender tail'`): the cell tooltips and the S515 button names; `check-i18n` Check A misses the `push('…')` shape. Mark column names come from `markName` (check for a glyphname key before translating). | found S515
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`overlay-scoped-dialog-keys`** (NEW S514 F; LL `6e24ed4e`, flash `9b8498e9`; S515 `.ivrit` ask ×4 `d4cf1cc5`, Torah favorite `e2dfd457`; open: hub Erase + I/E): ACTIVE, streak 0. Escape/Tab on the overlay: a click on the dialog's text → Shift+Tab walks behind, Escape dies. Detection: `f514/census.mjs` click arm (plants `plant2.mjs`).
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+_(prior — S515 pointer:)_ **BRANCH/PR: S514's draft PR open → continue; merged → restart from `origin/main`.** `sw.js` **v1013**, FM **5.59**. ⚑ Stalest: B (S501), A (S502), E (S503). ⚑ First: the `.ivrit` ask's overlay keys (one shared-block iteration), hub Erase / I-E, Torah favorite; LL precache (E); QA cells (FM). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2 (TT Chant, glyphs, five S512 copy items); O needs a Bash rule.
+
+
+## Size move (S515 close-out, 2026-10-18) — S514's Done entries, moved by hand verbatim (the ledger sat over its 100 KB limit)
+
+### from Done
+
+- [x] 2026-10-18 | (S514 close-out) | branch/deploy note | **S514 = F + 4 fixes, new draft PR (#335 merged).** Drift: main `4db5a62` (12 LL commits: Vowels, Cursive, Ktav), sw v1005→v1012 outside, FM 5.59, 0004 live, keep-alive #36 green. sw v1012→v1013; sitemap lastmod re-derived (outside-loop LL drift). No FM bump. Nothing gated.
+
+- [x] 2026-10-18 | `6e24ed4e` `9b8498e9` `3d63a1e6` `43ec73ba` | LL, flash, FM, dashboard | (S514) **LL dialog + `fcModalize` keys on the document; FM Load/Save ▾ by keyboard; dashboard Escape skips a handled key.** | fix1–4: HEAD 12, 16, 12, 4 BAD → 0; controls fired (findings S514).

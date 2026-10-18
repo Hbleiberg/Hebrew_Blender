@@ -8,11 +8,9 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P3 (**S514 F `overlay-scoped-dialog-keys`**) | dashboard, flash, generator, index, torah | **Still overlay-scoped: the `.ivrit` ask (engine ×3 + index), hub Erase + Import/Export, Torah favorite — click the text, Shift+Tab leaves, Escape dies.** | found S514
+- [ ] P3 (**S514 F `overlay-scoped-dialog-keys`**) | index.html | **Still overlay-scoped: the hub's Erase (Escape dies) and Import/Export (its document trap compares first/last only) — click the text, Shift+Tab leaves.** | found S514
 
-- [ ] P3 (**S514, for E**) | sw.js | **`letter_learner.html` + the Ktav TTF are not in `CORE_ASSETS`** (offline, the page needs a first visit). | found S514
-
-- [ ] P3 (**NEW S513 C**) | Hebrew_Font_Maker.html | **QA Check's flagged cells are mouse-only** (`td.qa-cell`: no `tabindex`/role; 17 flagged, 0 focusable). | found S513
+- [ ] P3 (**NEW S515 — for K**) | Hebrew_Font_Maker.html | **QA Check's reasons are English literals in the Hebrew UI** (`reasons.push('Mark overlaps the letter ink')` …): tooltips + the S515 button names; Check A misses the shape. | found S515
 
 - [ ] P4 (**NEW S513 C — `sub-floor touch target` ×4**) | Hebrew_Font_Maker.html | **`.wiz-tile-link` 14px tall, the Waterfall `summary` 14px, `.anc-xy input` 23px, `.qa-filter label` 19px.** | found S513
 
@@ -328,13 +326,15 @@ _(none)_
 
 ## Done
 
-- [x] 2026-10-18 | (S514 close-out) | branch/deploy note | **S514 = F + 4 fixes, new draft PR (#335 merged).** Drift: main `4db5a62` (12 LL commits: Vowels, Cursive, Ktav), sw v1005→v1012 outside, FM 5.59, 0004 live, keep-alive #36 green. sw v1012→v1013; sitemap lastmod re-derived (outside-loop LL drift). No FM bump. Nothing gated.
+- [x] 2026-10-18 | (S515 close-out) | branch/deploy note | **S515 = B (clean) + 4 fixes on S514's open draft PR #338.** Drift: none (main `4db5a627` as at S514, FM 5.59, 0004 live, backend files unchanged since 2026-10-14, keep-alive #36 green). sw v1013→v1014; build-locales (+1 key); no FM bump (a fix). Nothing gated.
 
-- [x] 2026-10-18 | `6e24ed4e` `9b8498e9` `3d63a1e6` `43ec73ba` | LL, flash, FM, dashboard | (S514) **LL dialog + `fcModalize` keys on the document; FM Load/Save ▾ by keyboard; dashboard Escape skips a handled key.** | fix1–4: HEAD 12, 16, 12, 4 BAD → 0; controls fired (findings S514).
+- [x] 2026-10-18 | `d4cf1cc5` `e2dfd457` `d0e81f18` `5fef8eb2` | dashboard+flash+generator+index, torah, sw.js, FM | (S515) **`.ivrit` ask + Torah favorite keys on the document (capture); LL + Ktav precached; QA flagged cells are buttons.** | fix1–4: HEAD 16, 4, 4, 4 BAD → 0; controls fired (findings S515).
 
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-18 | **S515** | iters: 5 | tools: dashboard, flash, generator, index, torah, FM, sw.js | patterns fixed: overlay-scoped-dialog-keys ×2 | pass run: B | SW: v1013→v1014
 
 - 2026-10-18 | **S514** | iters: 5 | tools: LL, flash, FM, dashboard | patterns fixed: overlay-scoped-dialog-keys ×2 | pass run: F | SW: v1012→v1013
 
@@ -342,11 +342,11 @@ _(none)_
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S514 (2026-10-18):** letter_learner, flash, FM, dashboard S514 · generator S513 · i18n.js S512 · dictionary, torah, trope S511 · resources, account S508 · saves, scripts S507 · index S505 · README S503 · contact S498 · privacy S495 · terms, 404 S494 · pwa S472.
+- **Snapshot S515 (2026-10-18):** dashboard, flash, generator, index, torah, FM, sw.js S515 · letter_learner S514 · i18n.js S512 · dictionary, trope S511 · resources, account S508 · saves, scripts S507 · README S503 · contact S498 · privacy S495 · terms, 404 S494 · pwa S472.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
-- **`overlay-scoped-dialog-keys`** (NEW S514 F; LL `6e24ed4e`, flash `9b8498e9`; 5 carriers open): ACTIVE, streak 0. Escape/Tab on the overlay: a click on the dialog's text → Shift+Tab walks behind, Escape dies. Detection: `f514/census.mjs` click arm (plants `plant2.mjs`).
+- **`overlay-scoped-dialog-keys`** (NEW S514 F; LL `6e24ed4e`, flash `9b8498e9`; S515 `.ivrit` ask ×4 `d4cf1cc5`, Torah favorite `e2dfd457`; open: hub Erase + I/E): ACTIVE, streak 0. Escape/Tab on the overlay: a click on the dialog's text → Shift+Tab walks behind, Escape dies. …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`group-toggle-wipes-a-sibling-group`** (NEW S512 H; generator FIXED `ff980a7`; the match-target re-sync was an earlier work-around): ACTIVE, streak 0. A class-wide `.active` toggle on a button class another row shares. Detection: `grep -n "querySelectorAll('\\.[a-z-]*btn')" …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -712,7 +712,7 @@ _(none)_
 
 - I first-load & empty-state: 2026-10-16 (**S511 — 38th I, S497 → S511 (~110 commits + letter_learner's first I): plants 286/288 (2 explained), 144 virgin cells × HEAD + the S510 tree (139/144 equal; 5 timing), tours 8/8 (plants 8/8), 259 drawer/tab clicks, LL: collapse tab, 7 letters × 4 tabs, all-off note, deep links, no-speech, 19 wrong-shape keys. FOUND 1, FIXED 1 (+3 candidates).**)
 
-- B console/error audit: 2026-10-13 (**S501 — 38th B, `fee5fe05..d5e7c3fa` (82 commits): 68 load cells (controls 8/8) + the delta by real input on every page. 0 new; 4 candidates fixed.**)
+- B console/error audit: 2026-10-18 (**S515 — 39th B, `d5e7c3fa..1a3ab8af` (121 commits): controls 12/12; 72 load cells; LL's first B by real input; the other tools' delta; iPhone 13 × 18 pages. CLEAN.**)
 
 - J metrics-informed: never run — SKIP in rotation until the impact-metrics dashboard/Worker is live (not live)
 
@@ -724,4 +724,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-18 (**S514 — 38th F, dialog Tab traps: 22 dialogs × 2 cells by real keys + a click-on-text arm; plants 4/4. CLEAN 13. FOUND 9, FIXED 3 (+ FM menus). F-next: empty states.**)
 
-**Next session (S515):** **BRANCH/PR: S514's draft PR open → continue; merged → restart from `origin/main`.** `sw.js` **v1013**, FM **5.59**. ⚑ Stalest: B (S501), A (S502), E (S503). ⚑ First: the `.ivrit` ask's overlay keys (one shared-block iteration), hub Erase / I-E, Torah favorite; LL precache (E); QA cells (FM). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2 (TT Chant, glyphs, five S512 copy items); O needs a Bash rule.
+**Next session (S516):** **BRANCH/PR: draft PR #338 (S514 + S515) open → continue; merged → restart from `origin/main`.** `sw.js` **v1014**, FM **5.59**. ⚑ Stalest: A (S502), E (S503), L (S504). ⚑ First: hub Erase / I-E (the last `overlay-scoped` carrier); QA reasons in Hebrew (K); FM touch targets ×4. ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2 (TT Chant, glyphs, five S512 copy items); O needs a Bash rule.
