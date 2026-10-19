@@ -24431,6 +24431,9 @@ function applyI18n() {
     const qo = document.getElementById('qaOverlay');
     if (qo && qo.classList.contains('open') && qaResult) { qaRenderTabs(); qaRenderSummary(); qaRenderGrid(); }
   } catch (e) {}
+  // An open tour card: its texts in the new language, the spotlight back on its mirrored target (the generator's
+  // call). The step's reveal re-selects the tab it already shows (setCatTab, view-only).
+  try { if (_tourActive && _tourIdx >= 0) _tourShow(_tourIdx, 1); } catch (e) {}
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 </script>

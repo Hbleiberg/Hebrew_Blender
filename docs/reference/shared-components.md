@@ -681,9 +681,10 @@ first-visit pulse gated by a `hebrew<Tool>_tourSeen` flag (set once so the pulse
   spotlight back on its target after the page mirrors. Without it, `applyStaticI18n` flips only the Next button
   (it carries `data-i18n`, so the last step's "Done" also turns back into "Next") and the spotlight stays where the
   target used to be. **Implemented on:** the generator, the trope tutor, the Letter Learner, the dashboard, the
-  dictionary and the Torah Trainer. The Torah Trainer's call never advances the tour: a reading step parked while
+  dictionary, the Torah Trainer and the Font Maker (both its tours; the step's reveal re-selects the tab it already
+  shows). The Torah Trainer's call never advances the tour: a reading step parked while
   Sefaria answers re-parks (`_tourHoldForReading`), and a step is re-shown only when `_resolveStep` finds its
-  target. Flash cards re-label the card in place but don't move the spotlight. The Font Maker does neither yet.
+  target. Flash cards re-label the card in place but don't move the spotlight.
 - **Rule:** when you next touch a tour engine, extract it into a `═══`-marked shared block (house
   convention, byte-identical across files) so the six copies stop drifting. Any **new** tool ships a tour.
   A tour must touch none of the undo/dirty/state machinery — read-only overlay only.
