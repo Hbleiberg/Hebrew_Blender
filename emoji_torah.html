@@ -154,6 +154,14 @@ body.dark .et-view[aria-pressed="true"]{background:var(--gold);border-color:var(
   .et-views{flex:1 1 auto;min-width:0;}
   .et-print{flex:none;}
 }
+/* View All's book headings stick under the pinned bar, as the Trainer gallery's do under its dialog head, so a reader
+   deep in the list still sees which book; a single book's view leaves them be (its pressed button names the book).
+   --et-bar-h is the bar's live height (one to three rows), kept by etTrackBar. Screen only: paper keeps them in flow. */
+@media screen and (min-width:601px){
+  .et-many .et-book{position:sticky;top:var(--et-bar-h,55px);z-index:4;background:var(--cream);margin-block-start:14px;padding-block-start:8px;}
+  /* Keyboard focus scrolled to the top edge (Shift+Tab) lands below the pinned bar and a stuck heading, never under them. */
+  html{scroll-padding-block-start:calc(var(--et-bar-h,55px) + 48px);}
+}
 .et-view:focus-visible,.et-print:focus-visible,.et-go:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;}
 .et-note{margin:14px 0 0;font-size:0.95rem;color:var(--text);}
 .et-note[hidden]{display:none;}
@@ -429,7 +437,7 @@ function etRender() {
   if (!window.I18n) return;
   document.querySelectorAll('#etViews .et-view').forEach(b => b.setAttribute('aria-pressed', b.dataset.view === etView ? 'true' : 'false'));
   const box = document.getElementById('etCards'), note = document.getElementById('etNote');
-  note.hidden = true; note.textContent = '';
+  note.hidden = true; note.textContent = ''; box.classList.remove('et-many');
   if (etFailed) { box.innerHTML = ''; note.textContent = I18n.t('emojitorah.load_failed'); note.hidden = false; return; }
   if (!etData) return;   // still loading
   const week = etThisWeek();
@@ -437,10 +445,12 @@ function etRender() {
     if (week) { box.innerHTML = etTodayHTML(week); return; }
     note.textContent = I18n.t('emojitorah.today.unavailable'); note.hidden = false;   // no calendar: every card instead
     box.innerHTML = ET_BOOKS.map(b => etBookSection(b, null)).join('');
+    box.classList.add('et-many');
     return;
   }
   const one = ET_BOOKS.find(b => etBookKey(b) === etView);
   box.innerHTML = (one ? [one] : ET_BOOKS).map(b => etBookSection(b, week)).join('');
+  box.classList.toggle('et-many', !one);
 }
 function etLoad() {
   fetch('data/parshiyot.json?v=1')   // the Torah Trainer's ?v=: one cached copy serves both pages
@@ -451,6 +461,13 @@ function etLoad() {
     })
     .catch(() => { etFailed = true; })
     .then(() => { if (window.I18n) I18n.ready.then(etRender); });
+}
+// The pinned bar's height, for View All's sticky book headings (the bar wraps to more rows as the window narrows).
+function etTrackBar() {
+  const bar = document.querySelector('.et-bar');
+  const set = () => document.documentElement.style.setProperty('--et-bar-h', bar.offsetHeight + 'px');
+  set();
+  if (window.ResizeObserver) new ResizeObserver(set).observe(bar); else window.addEventListener('resize', set);
 }
 // A view change from below the bar's resting place brings the new view's top up under it, so a reader who had
 // scrolled far into View All is not left in the middle of a short book.
@@ -496,6 +513,7 @@ document.addEventListener('DOMContentLoaded', () => {
     etShowTop();
   });
   document.getElementById('etPrint').addEventListener('click', () => window.print());
+  etTrackBar();
   etLoad();
   if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); }
 });
