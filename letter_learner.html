@@ -2353,7 +2353,7 @@ function llPickVoice() {
 function _noHebVoiceNotice() {
   if (_llNoVoiceShown) return;
   _llNoVoiceShown = true;
-  const m = _fbT('shared.audio.no_hebrew_voice', 'No Hebrew voice is installed in this browser, so it cannot read the letters aloud.');
+  const m = _fbT('shared.audio.no_hebrew_voice', "No Hebrew voice is installed in this browser, so it can't read the word aloud. Chrome or Edge usually work, or add a Hebrew voice in your device's language settings.");
   if (typeof showAppToast === 'function') showAppToast(m, 6000);
 }
 function speakWord(text) {
