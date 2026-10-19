@@ -544,10 +544,11 @@ try {
     const listings = gets.filter(e => /^in\./.test(param(e, 'tool') || '')), loads = gets.filter(e => /^eq\./.test(param(e, 'id') || ''));
     const firstTools = listings.length ? (param(listings[0], 'tool') || '').slice(4, -1).split(',') : [];
     check('1: the listing is one GET with tool=in.(…) over every tool and select=tool,… (a first hydration is device-wide)', listings.length >= 1 && /^tool,/.test(param(listings[0], 'select') || '') && ['Suite', 'Worksheet', 'FlashCards', 'Dictionary', 'TorahTrainer', 'TropeTutor', 'Dashboard'].every(t => firstTools.includes(t)) && /^tool\.asc,kind\.asc,name\.asc,id\.asc/.test(param(listings[0], 'order') || ''), JSON.stringify({ listings: listings.map(e => e.search) }));
-    // Every fetched row is one that landed (2 presets, the tree, 2 word lists); a word list with no local copy is read
-    // once more for its label (the row name is an id; the listing carries no data), so 5 rows cost 7 loads, none of them twice for data.
+    // Every fetched row is one that landed (2 presets, the tree, 2 word lists), each read once: a word list with no local copy
+    // is read while the plan is made, for its label (the row name is an id; the listing carries no data), and its download
+    // takes that same read — so 5 rows cost 5 loads.
     const landedIds = initialIds, loadedIds = [...new Set(loads.map(e => (param(e, 'id') || '').slice(3)))].sort();
-    check('1: only the rows that landed were fetched (2 presets, 1 tree, 2 word lists — the two word lists once more for their label)', JSON.stringify(loadedIds) === JSON.stringify(landedIds) && loads.length === 7, JSON.stringify({ loads: loads.length, landed: landedIds.length, loaded: loadedIds.length, gets: gets.map(e => e.search) }));
+    check('1: only the rows that landed were fetched, each once (2 presets, 1 tree, 2 word lists — a list\'s label read is its download)', JSON.stringify(loadedIds) === JSON.stringify(landedIds) && loads.length === 5, JSON.stringify({ loads: loads.length, landed: landedIds.length, loaded: loadedIds.length, gets: gets.map(e => e.search) }));
     const before = cloud.log.length;
     await page.reload({ waitUntil: 'domcontentloaded' });
     await page.waitForFunction(() => window.IvritAccount && window.IvritSaves && IvritAccount.status() === 'signed-in', null, { timeout: HYDRATE_MS });

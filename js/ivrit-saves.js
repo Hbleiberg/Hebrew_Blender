@@ -1402,10 +1402,10 @@
     cloudLabels[row.id] = { u: row.updated_at, label: label };
     return label;
   }
-  function cloudLabelFor(entry, row) {
+  function cloudLabelFor(entry, row, got) {
     var c = cloudLabels[row.id];
     if (c && c.u === row.updated_at) return Promise.resolve(c.label);
-    return cloudLoad(row.id).then(function (full) { return noteCloudLabel(entry, row, full); }, function () { return null; });
+    return cloudLoad(row.id).then(function (full) { if (got) got(full); return noteCloudLabel(entry, row, full); }, function () { return null; });
   }
   function cloudHashFor(entry, row, mem) {
     if (mem && mem.id === row.id && mem.u === row.updated_at) return Promise.resolve(mem.h);
@@ -1450,7 +1450,10 @@
               order.push(k);
             }
             rows[k].cloud = { id: r.id, hash: h, bytes: r.bytes, updatedAt: r.updated_at };
-            if (!rows[k].local && e.shape === 'mapIn' && e.nameField) return cloudLabelFor(e, r).then(function (label) { if (label) rows[k].label = label; });
+            // a row read here for its name is the very read its download would make next: kept for it (actDownload takes
+            // row.loading once), so a list or class only the account holds is fetched once, not twice
+            if (!rows[k].local && e.shape === 'mapIn' && e.nameField) return cloudLabelFor(e, r, function (full) { if (full.updated_at === r.updated_at) rows[k].loading = Promise.resolve(full); })
+              .then(function (label) { if (label) rows[k].label = label; });
           });
         }).then(function () { return finishPlan(tool, uid, rows, order, cloudRows); });
       });
