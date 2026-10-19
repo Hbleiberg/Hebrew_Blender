@@ -2733,44 +2733,129 @@ function llCsAttr(n, name, svg) {
   for (let x = n; x && x !== svg; x = x.parentNode) if (x.hasAttribute && x.hasAttribute(name)) return x.getAttribute(name);
   return svg.getAttribute(name);
 }
-// Turn a drawing into line art (the maintainer's call): see-through shading, shadows and white shine go; every coloured
-// fill becomes paper, and a shape that had no outline gets a thin one so its area still has an edge to colour inside;
-// every line turns black; a large solid-ink shape (the traced letter in a hint picture) goes hollow, while small ink
-// details (eyes, the belly-button dot) stay solid. "Large" is measured on screen, so this runs on a drawing that is
-// already in the visible sheet (the tab renders when it shows); unmeasurable, a long path counts as large.
+// Turn a drawing into line art (the maintainer's calls). Most drawings outline a part with an INK TWIN: the same
+// geometry drawn in ink as well as in colour — a wide ink line under a narrower coloured one (an arm, a leg, a finger),
+// an ink silhouette under the coloured body (the wolf), or an ink outline over a coloured fill (the heart). The twin
+// already draws the edge, so the coloured copy simply becomes paper. Everything else:
+// - see-through shading, shadows and white shine go;
+// - a coloured stroke on a filled shape is its outline: black;
+// - a coloured line (no fill) is a band when it is wide (a rainbow, a paint smear: outlined so it can be coloured),
+//   black when bold (zebra stripes), light grey when it is a thin shade of the part it sits in (a dark-red line on a
+//   red roof, a fold on a blue shirt), else black (a red mouth on a face, sun rays, grass);
+// - a coloured fill with no twin becomes paper with a thin outline, except a tiny dark one (an eye, a nose, a hoof),
+//   which stays solid black;
+// - a large ink fill (the traced letter in a hint picture, a cursive trick's even-odd letter) goes hollow, small ink
+//   details stay solid.
+// Sizes and "inside" are measured on screen, so this runs on a drawing already in the visible sheet (the tab renders
+// when it shows); unmeasurable, a long path counts as large and nothing counts as inside.
+const LL_CS_DETAIL = '#9a9a9a';
+const LL_CS_GEOM = ['d', 'points', 'x', 'y', 'width', 'height', 'rx', 'ry', 'cx', 'cy', 'r', 'x1', 'y1', 'x2', 'y2', 'transform'];
+const _llCsLum = {};
+function llCsInk(v) { return v === 'var(--ll-line)' || v === 'currentColor'; }
+function llCsColour(v) { return !!v && v !== 'none' && !llCsInk(v); }
+// A palette token is dark when its light-palette value (the :root one; dark mode re-tints only under body) is.
+function llCsDark(v) {
+  const m = /^var\((--ll-[a-z-]+)\)$/.exec(v || '');
+  if (!m) return false;
+  if (!(m[1] in _llCsLum)) {
+    const h = /^#([0-9a-f]{6})$/i.exec(getComputedStyle(document.documentElement).getPropertyValue(m[1]).trim());
+    let lum = 1;
+    if (h) {
+      const c = [0, 2, 4].map(i => { const x = parseInt(h[1].substr(i, 2), 16) / 255; return x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4); });
+      lum = 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+    }
+    _llCsLum[m[1]] = lum;
+  }
+  return _llCsLum[m[1]] < 0.11;
+}
+// A token's colour family: red and red-dk are one, gray and gray-dk, white and paper.
+function llCsFamily(v) {
+  const m = /^var\(--ll-([a-z]+)(?:-dk|-lt)?\)$/.exec(v || '');
+  return m ? (m[1] === 'paper' ? 'white' : m[1]) : '';
+}
+// The fill token of the topmost filled part (of `filled`, drawn before it) under a line's midpoint, or ''. Points
+// are mapped through the screen CTMs, so parts in different groups compare correctly.
+function llCsUnder(n, filled) {
+  try {
+    const len = n.getTotalLength(), m = n.getScreenCTM();
+    if (!len || !m) return '';
+    const mid = n.getPointAtLength(len / 2), sp = new DOMPoint(mid.x, mid.y).matrixTransform(m);
+    for (let i = filled.length - 1; i >= 0; i--) {
+      const fm = filled[i].n.getScreenCTM();
+      if (fm && filled[i].n.isPointInFill(sp.matrixTransform(fm.inverse()))) return filled[i].fill;
+    }
+  } catch (e) {}
+  return '';
+}
 function llColoringify(svg) {
   svg.querySelectorAll('.ll-anim').forEach(g => g.removeAttribute('class'));   // paper is still: no swinging parts
   const box = svg.getBoundingClientRect(), area = box.width * box.height;
-  svg.querySelectorAll('path, circle, ellipse, rect, line, polyline, polygon').forEach(n => {
-    const num = a => { const v = parseFloat(n.getAttribute(a)); return isNaN(v) ? 1 : v; };
-    if (num('opacity') < 1 || num('fill-opacity') < 1 || num('stroke-opacity') < 1) { n.remove(); return; }
+  const frac = n => { const r = n.getBoundingClientRect(); return area ? (r.width * r.height) / area : ((n.getAttribute('d') || '').length > 200 ? 1 : 0); };
+  const shapes = [...svg.querySelectorAll('path, circle, ellipse, rect, line, polyline, polygon')];
+  const num = (n, a) => { const v = parseFloat(n.getAttribute(a)); return isNaN(v) ? 1 : v; };
+  const seeThrough = n => num(n, 'opacity') < 1 || num(n, 'fill-opacity') < 1 || num(n, 'stroke-opacity') < 1;
+  // Pass 1: every ink shape's geometry key (its group + tag + geometry attributes) and its widest ink line.
+  const groups = new Map(), key = n => {
+    if (!groups.has(n.parentNode)) groups.set(n.parentNode, groups.size);
+    return groups.get(n.parentNode) + '|' + n.tagName + '|' + LL_CS_GEOM.map(a => n.getAttribute(a) || '').join('|');
+  };
+  const ink = new Map();   // key → widest ink stroke (0 for an ink fill)
+  shapes.forEach(n => {
+    if (seeThrough(n)) return;
+    const f = llCsAttr(n, 'fill', svg), st = llCsAttr(n, 'stroke', svg);
+    if (!llCsInk(f) && !llCsInk(st)) return;
+    const w = llCsInk(st) ? parseFloat(llCsAttr(n, 'stroke-width', svg)) || 1 : 0;
+    const k = key(n);
+    ink.set(k, Math.max(ink.get(k) || 0, w));
+  });
+  // Pass 2: convert, in drawing order (a detail line looks for the filled parts drawn before it).
+  const filled = [], lined0 = v => !!v && v !== 'none';
+  shapes.forEach(n => {
+    if (seeThrough(n)) { n.remove(); return; }
     const fill = llCsAttr(n, 'fill', svg), stroke = llCsAttr(n, 'stroke', svg);
+    const w = parseFloat(llCsAttr(n, 'stroke-width', svg)) || 1;
+    const hasFill = !!fill && fill !== 'none';
+    const twin = ink.has(key(n)) ? ink.get(key(n)) : null;
+    // What a thin line is drawn on: a shade of the coloured part under it is a fold or a shading line, and a white line
+    // on ink is a feature drawn light-on-dark (the eyes and smile on a letter), which paper turns black.
+    const under = !hasFill && lined0(stroke) && w < 3 ? llCsUnder(n, filled) : '';
+    const shade = llCsColour(stroke) && llCsFamily(stroke) !== '' && llCsFamily(stroke) === llCsFamily(under);
+    if (hasFill && frac(n) < 0.6) filled.push({ n, fill });   // a backdrop (a sky) would put every line on it
     let lined = !!stroke && stroke !== 'none';
-    if (stroke === 'var(--ll-white)') {   // a white line is shine
-      if (!fill || fill === 'none') { n.remove(); return; }
+    if ((stroke === 'var(--ll-white)' || stroke === 'var(--ll-paper)') && twin !== null && w < twin) {
+      n.setAttribute('stroke', LL_CS_PAPER);   // a white part (the zebra's legs) over its ink twin: paper, not shine
+    } else if ((stroke === 'var(--ll-white)' || stroke === 'var(--ll-paper)') && llCsInk(under)) {
+      n.setAttribute('stroke', LL_CS_INK);     // light-on-dark: a feature drawn on ink
+    } else if (stroke === 'var(--ll-white)' || stroke === 'var(--ll-paper)') {   // any other white line is shine
+      if (!hasFill) { n.remove(); return; }
       n.setAttribute('stroke', 'none');
       lined = false;
-    } else if (lined) {
-      n.setAttribute('stroke', LL_CS_INK);
-      // A thick coloured line is an area drawn with a pen (a rainbow's band, a paint smear, a finger): it becomes an
-      // outlined band, a paper-white copy on top leaving two edges, so it can be coloured rather than printing solid.
-      const w = parseFloat(llCsAttr(n, 'stroke-width', svg));
-      if (stroke !== 'var(--ll-line)' && stroke !== 'currentColor' && w >= 3.5) {
-        const band = n.cloneNode(false);
-        band.setAttribute('stroke', LL_CS_PAPER);
-        band.setAttribute('stroke-width', String(w - 2));
-        band.setAttribute('fill', 'none');
-        n.after(band);
-      }
-    }
-    if (!fill || fill === 'none') return;   // no fill named: the drawing relies on none here, as on screen
+    } else if (llCsColour(stroke)) {
+      if (twin !== null && (llCsColour(fill) || w < twin)) {
+        n.setAttribute('stroke', LL_CS_PAPER);   // the coloured copy of an ink-outlined line: the twin is its edge
+      } else if (hasFill || w >= 3) {
+        n.setAttribute('stroke', LL_CS_INK);     // a shape's outline, or a bold mark
+        if (!hasFill && w >= 5) {                // a wide pen stroke: an outlined band to colour in
+          const band = n.cloneNode(false);
+          band.setAttribute('stroke', LL_CS_PAPER);
+          band.setAttribute('stroke-width', String(w - 2));
+          band.setAttribute('fill', 'none');
+          n.after(band);
+        }
+      } else n.setAttribute('stroke', shade ? LL_CS_DETAIL : LL_CS_INK);
+    } else if (lined) n.setAttribute('stroke', LL_CS_INK);
+    if (!hasFill) return;   // no fill named: the drawing relies on none here, as on screen
     let width = 1.3;
-    if (fill === 'var(--ll-line)' || fill === 'currentColor') {
-      const r = n.getBoundingClientRect();
-      const frac = area ? (r.width * r.height) / area : ((n.getAttribute('d') || '').length > 200 ? 1 : 0);
+    if (llCsInk(fill)) {
       // A cursive trick's handwritten letter is its one even-odd ink path: hollow at any size (yod is a raindrop).
-      if (frac < 0.05 && n.getAttribute('fill-rule') !== 'evenodd') { n.setAttribute('fill', LL_CS_INK); return; }
+      if (frac(n) < 0.05 && n.getAttribute('fill-rule') !== 'evenodd') { n.setAttribute('fill', LL_CS_INK); return; }
       width = 2.6;   // the letter's own edge: the line a child colours up to
+    } else if (twin !== null) {
+      n.setAttribute('fill', LL_CS_PAPER);   // its ink twin draws the edge
+      return;
+    } else if (!lined && frac(n) < 0.005 && llCsDark(fill)) {
+      n.setAttribute('fill', LL_CS_INK);     // an eye, a nose, a hoof: a small dark detail stays solid
+      return;
     }
     n.setAttribute('fill', LL_CS_PAPER);
     if (!lined) {
