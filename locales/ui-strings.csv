@@ -4266,6 +4266,8 @@ torah.display.restore_default,Restore default,שחזור ברירת מחדל,Sli
 torah.emojis.close,Close,סגירה,parasha emoji gallery: the close button (aria-label and title),
 torah.emojis.current,Current reading,הקריאה הנוכחית,parasha emoji gallery: badge on the card of the reading on screen (both cards for a doubled Triennial week),
 torah.emojis.open,Show all the parsha emojis,הצגת כל אימוג׳י הפרשות,reading header: the parasha emoji (one button holding the week's icon or icons) opens the gallery of all 54 — its aria-label and title,
+torah.emojis.open_reading,Open this reading,פתיחת הקריאה הזאת,parasha emoji gallery: link at the foot of every card but the reading on screen — loads that parasha in place and closes the gallery,
+torah.emojis.open_reading_aria,Open {name},פתיחת פרשת {name},parasha emoji gallery: aria-label of a card's Open this reading link; {name} is the parasha's name in the UI's language,
 torah.emojis.title,The parsha emojis,אימוג׳י הפרשות,parasha emoji gallery: dialog heading,
 torah.emojis.why_label,Why this emoji:,למה האימוג׳י הזה:,parasha emoji gallery: bold lead-in before each card's why-sentence (ParashaEmojis.md labels its Hebrew paragraph the same way),
 torah.footer.cantillation_credit,Cantillation audio: PocketTorah · CC BY-SA 4.0,שמע הטעמים: PocketTorah · CC BY-SA 4.0,footer data-source credit,html
@@ -6390,3 +6392,22 @@ letterlearner.tour.c1_body,"Tap any letter to open it in handwriting. The final 
 letterlearner.tour.c2_title,A cursive card,כרטיס אות בכתב,tour card step title in Cursive mode,
 letterlearner.tour.c2_body,"Each card shows the printed letter beside its handwritten form, a picture to remember the shape, the letters it is easy to mix up with, and the same words written by hand.","כל כרטיס מציג את אות הדפוס ליד אות הכתב, ציור שעוזר לזכור את הצורה, האותיות שקל להתבלבל ביניהן, ואותן מילים בכתב.",tour card step body in Cursive mode,
 shared.cloud.tool_letterlearner,Letter Learner,לומדים אותיות,Account screen / status line: the Letter Learner's name,shared; cloud panel
+emojitorah.a11y.skip_to_cards,Skip to the parsha emojis,דילוג לאימוג׳י הפרשות,Skip-link (a11y),aria/skip-link
+emojitorah.header.title,IvritSuite — Parsha Emojis,IvritSuite — אימוג׳י הפרשות,Parsha Emojis page header title,
+emojitorah.header.tagline,A picture for every parasha,ציור לכל פרשה,Parsha Emojis page header subtitle,
+emojitorah.header.home,Home,דף הבית,Parsha Emojis header Home link label,svg-icon-in-markup
+emojitorah.page_title,The Parsha Emojis,אימוג׳י הפרשות,Parsha Emojis page h1,
+emojitorah.views.label,Choose which parshiyot to show,בחירת הפרשות להצגה,view bar: aria-label of the button group (Today's parasha / the five books / View All),
+emojitorah.views.today,Today's parasha,פרשת השבוע,view bar button: only this week's parasha (both cards in a doubled week),
+emojitorah.views.all,View All,הצגת הכול,view bar button: all 54 cards grouped by book,
+emojitorah.print.label,Print,הדפסה,view bar Print button label,svg-icon-in-markup
+emojitorah.print.title,Print the cards on screen,הדפסת הכרטיסים שעל המסך,view bar Print button title,
+emojitorah.today.heading,"Shabbat, {date}","שבת, {date}",Today's parasha view: heading over the week's card; {date} is the Shabbat's date formatted in the UI's language,
+emojitorah.today.holiday_note,"This Shabbat has a holiday reading, so here is the next parasha.","בשבת הזאת קוראים קריאה של חג, ולכן מוצגת כאן הפרשה הבאה.",Today's parasha view: note when this week's Shabbat reads a festival portion instead of a parasha,
+emojitorah.today.doubled_note,Two parshiyot are read together this Shabbat.,בשבת הזאת קוראים שתי פרשות יחד.,Today's parasha view: note on a doubled week (two cards),
+emojitorah.today.unavailable,"This week's parasha could not be worked out here, so here are all of them.","לא ניתן היה לחשב כאן את פרשת השבוע, ולכן מוצגות כל הפרשות.",Today's parasha view without the calendar module: note above every card,
+emojitorah.badge.this_week,This week's parasha,פרשת השבוע,badge on this week's card (both cards of a doubled week) in every view,
+emojitorah.badge.next,Next parasha,הפרשה הבאה,badge on the card(s) shown in a holiday week: the parasha read on the next Shabbat that has one,
+emojitorah.card.trainer_link,View in Torah Trainer ↗,צפייה במאמן התורה ↗,link at the foot of every card: opens that parasha in the Torah Trainer in a new tab,
+emojitorah.card.trainer_link_aria,View {name} in the Torah Trainer (opens in a new tab),צפייה בפרשת {name} במאמן התורה (נפתח בכרטיסייה חדשה),aria-label of a card's Torah Trainer link; {name} is the parasha's name in the UI's language,
+emojitorah.load_failed,The parsha emojis could not load. Check your connection and reload the page.,לא ניתן היה לטעון את אימוג׳י הפרשות. בדקו את החיבור וטענו את הדף מחדש.,status line when data/parshiyot.json fails to load,

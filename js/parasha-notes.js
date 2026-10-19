@@ -4,8 +4,9 @@
    **Why this emoji:** sentences and their Hebrew twins (**תקציר:**, **למה האימוג׳י הזה:**), wrapped lines joined
    with one space. Edit the catalog and re-run the script, never this file (a changed file needs a VERSION bump in
    sw.js — it is precached).
-   Loaded by torah_trainer.html only, as a deferred classic script (window.ParashaNotes), for the parasha emoji
-   gallery its reading header opens; nothing reads it before that click. It reads no settings, no I18n and no DOM.
+   Loaded by torah_trainer.html, as a deferred classic script (window.ParashaNotes), for the parasha emoji gallery
+   its reading header opens (nothing there reads it before that click), and by emoji_torah.html, as a classic
+   script before its inline <script>, for its cards. It reads no settings, no I18n and no DOM.
    ParashaNotes.get(i) — for parasha index i (0 = Bereshit … 53 = V'Zot HaBerachah, as ParashaIcons.html) returns
    a frozen { summary: { en, he }, why: { en, he } } of plain-text sentences (the build refuses markup, entities and
    ASCII quotes; a page still escapes them), or null for anything else. ParashaNotes.count is 54.

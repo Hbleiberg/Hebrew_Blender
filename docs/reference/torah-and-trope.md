@@ -1324,8 +1324,14 @@ aliyah on their own cycle: other verses).
   the localized book with its range isolated left to right, the summary and the why-sentence in `I18n.lang` (English
   as a marked fallback). Each index in `currentRangeIcons` is marked with `aria-current`, a gold border and a
   *Current reading* badge; on open the first one is placed at the top of the list under its heading by `scrollTop`
-  (never `scrollIntoView`, which would move the page behind) and takes focus. `applyI18n` re-renders an open
-  gallery. Without `ParashaNotes` the cards show icon, names and range only; without the data nothing opens.
+  (never `scrollIntoView`, which would move the page behind) and takes focus. Every other card ends with *Open this
+  reading* (`a.tt-emo-go`, its `href` the `?parsha=` deep link, `data-parsha` the `parshiyot.json` `en`): one
+  listener on `#ttEmoBody` takes a plain click, closes the gallery and loads that parasha in place by setting
+  `#parshaSelect` and dispatching its `change` (the picker's own handler, so every save, sync and fetch path is the
+  picker's), while a modified or middle click keeps the link's new tab. `applyI18n` re-renders an open
+  gallery. Without `ParashaNotes` the cards show icon, names and range only; without the data nothing opens. The
+  same cards are a page of their own, `emoji_torah.html` (`docs/reference/shared-components.md` → The parsha emojis
+  page), whose cards link here through `?parsha=`.
 
 ---
 

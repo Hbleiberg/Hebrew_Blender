@@ -411,7 +411,7 @@ buttons was overlooked); its Holiday Torah Readings (calendar) and Share (link) 
 drawer, so the calendar glyph is the Calendar tab's and the link glyph the Share tab's (and its Copy link's).
 Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_dashboard`, `flash_cards`,
 `torah_trainer`, `trope_tutor`, `Hebrew_Font_Maker`, `resources`, `contact`, `privacy`, `terms`,
-`account`, `404`, `letter_learner`; the chip's glyph lives in `js/ivrit-account.js` (`ICON_USER`).
+`account`, `404`, `letter_learner`, `emoji_torah`; the chip's glyph lives in `js/ivrit-account.js` (`ICON_USER`).
 
 ### The two byte-identical parts
 - **The `/* ═══ header-icons CSS ═══ */` block**, pasted before the main stylesheet's `</style>` on every
@@ -553,7 +553,8 @@ Simchat Torah (open Torah), Chanukah (chanukiah), Purim (mask), Pesach (matzah),
 Tish'a B'Av (Kotel) and `generic` (a calendar page, for any title the matcher does not know). Carriers:
 `classroom_dashboard` (the holiday countdown line, and the parsha line on a festival Shabbat) and `torah_trainer`
 (the Calendar tab's seventeen `HOLIDAY_READINGS` buttons, the loaded reading's `.tt-ref-hdr` and the date lookup's
-festival line). The weekly parasha icons reuse the CSS block's `.hol-ico` and palette (*Parasha icons* below).
+festival line); `emoji_torah` carries the CSS block only, for its parasha cards. The weekly parasha icons reuse the
+CSS block's `.hol-ico` and palette (*Parasha icons* below).
 
 ### The two byte-identical blocks
 - **`/* ═══ holiday-icons CSS ═══ */`**, pasted right after the header-icons CSS block: `.hol-ico` carries the
@@ -583,7 +584,7 @@ festival line). The weekly parasha icons reuse the CSS block's `.hol-ico` and pa
 - Swapping a drawing means replacing that family's entry in `HOLIDAY_ICONS` on **both** carriers, re-truing the
   carrier list in both markers if a page joins, then sha-verifying the two blocks across carriers.
 
-## Parasha icons and notes — generated modules (the dashboard's parsha line, the Torah Trainer's header, lookup and emoji gallery)
+## Parasha icons and notes — generated modules (the dashboard's parsha line, the Torah Trainer's header, lookup and emoji gallery, the parsha emojis page)
 
 One flat 48×48 SVG per weekly parasha, all 54 chosen by the maintainer from three drafts each, drawn in the holiday
 icons' style and palette. The source is the catalog `ParashaEmojis.md` (repo root): each parasha's reading, a
@@ -603,11 +604,12 @@ copy without writing. Both modules are precached, so a rebuilt one needs the `sw
 
 ### Module and host contract
 - `js/parasha-icons.js` is a classic script (`window.ParashaIcons`) loaded right after `js/hebrew-calendar.js` on
-  `classroom_dashboard` and `torah_trainer`; it reads no settings, `I18n` or DOM. `ParashaIcons.html(i)` returns
+  `classroom_dashboard`, `torah_trainer` and `emoji_torah`; it reads no settings, `I18n` or DOM. `ParashaIcons.html(i)` returns
   `<span class="hol-ico" aria-hidden="true"><svg viewBox="0 0 48 48" focusable="false">…</svg></span>` for parasha
   index `i` (HebCal's: 0 = Bereshit … 53 = V'Zot HaBerachah, `parshiyot.json`'s `n − 1`) and `''` for anything
   else; an array returns one icon per index, in its order.
-- `js/parasha-notes.js` (`window.ParashaNotes`) is loaded by `torah_trainer` only, deferred, for its emoji gallery;
+- `js/parasha-notes.js` (`window.ParashaNotes`) is loaded by `torah_trainer`, deferred, for its emoji gallery, and by
+  `emoji_torah`, as a classic script before its inline one, for its cards;
   `ParashaNotes.get(i)` returns a frozen `{ summary: { en, he }, why: { en, he } }` of plain-text sentences for the
   same index (`null` for anything else), and `count` is 54. The sentences are catalog content with their own English
   and Hebrew, picked by `I18n.lang` — never CSV keys; a page still escapes them.
@@ -617,13 +619,41 @@ copy without writing. Both modules are precached, so a rebuilt one needs the `sw
   `aria-hidden`), never a glyph in a string, and a `<select>` keeps plain labels. A doubled week shows both halves'
   icons in DOM order, so the first half leads in either direction; the line holding them needs its own `dir` (an
   inline span without one takes the surrounding direction, and the icons would trail Hebrew text).
-- Where they show: the dashboard's parsha line (`docs/reference/dashboard.md` → This week's parsha) and the
-  Trainer's reading header and date lookup (`docs/reference/torah-and-trope.md` → Torah portion lookup). A festival
-  week leads with its `holidayIconFor` family instead, and a custom or holiday range in the Trainer shows no parasha icon.
+- Where they show: the dashboard's parsha line (`docs/reference/dashboard.md` → This week's parsha), the Trainer's
+  reading header, date lookup and emoji gallery (`docs/reference/torah-and-trope.md` → Torah portion lookup), and the
+  parsha emojis page (*The parsha emojis page* below). A festival week leads with its `holidayIconFor` family
+  instead, and a custom or holiday range in the Trainer shows no parasha icon.
 - Each host page has its own on/off switch, *Show parsha emojis* (`showParshaIcons` in that page's settings blob,
   default on): the dashboard's Date & Time section and the Trainer's Display section. Off, the page shows no
   parasha icon and no festival icon standing in for one; the holiday icons that predate the parasha icons (the
-  dashboard's countdown line, the Trainer's holiday buttons and holiday-reading header) stay.
+  dashboard's countdown line, the Trainer's holiday buttons and holiday-reading header) stay. The parsha emojis page
+  has no switch: the icons are what it shows.
+
+### The parsha emojis page (`emoji_torah.html`)
+The Trainer's emoji gallery as a page of its own, view only and storing nothing. **Not yet linked from the hub**:
+`noindex`, out of `sitemap.xml` (so out of `llms.txt`), no JSON-LD, in `sw.js` `CORE_ASSETS`, as `letter_learner`
+was before its launch. It draws the gallery's cards (`etCard`, the markup of `renderParashaGallery` with an `et-`
+prefix) from `data/parshiyot.json?v=1` (the Trainer's `?v=`), `ParashaIcons` and `ParashaNotes`, and carries the
+header-icons and holiday-icons CSS blocks.
+- **The view bar** is a group of `aria-pressed` toggle buttons, one pressed at a time: *Today's parasha* (the
+  default on every load; the page remembers no choice), the five books (`torah.custom.book_*` labels) and *View All*,
+  with a Print button at its end. It is sticky above 600px and scrolls with the page below (its buttons wrap to
+  three rows on a phone); a view change from below its resting place brings the new view's top up under it.
+- **This week** is `HebCal.parshaForDate(today)` on the Torah Trainer's own Diaspora/Israel choice
+  (`hebrewTorahTrainer_settings.schedule`, read through `ivritSafeParse` and never written; Diaspora when absent).
+  A Shabbat that reads a festival portion steps on a week at a time (up to four) to the next parasha, with a note and
+  a *Next parasha* badge instead of *This week's parasha*; a doubled week shows both cards with a note. *Today's
+  parasha* shows the week's card(s) larger under "Shabbat, {date}" (`Intl.DateTimeFormat` in `I18n.lang`); the
+  other views mark them in place with the gallery's gold border and the badge. Without `HebCal`, *Today's parasha*
+  says so and shows every card.
+- **Each card's foot** is "View in Torah Trainer ↗", `torah_trainer.html?parsha=<en>` in a new tab
+  (`target="_blank" rel="noopener"`; the deep link sets that device's saved reading, as the dashboard's parsha link
+  does), its `aria-label` naming the parasha and the new tab. The text column stretches to the card's height so the
+  links sit on the cards' bottom edges.
+- **Print** keeps the chosen view's cards on white paper, two across, none split between sheets; the header, view
+  bar, footer and card links are hidden.
+- A failed `parshiyot.json` fetch puts a note in the `role="status"` line; without `ParashaNotes` the cards show the
+  icon, names and range only. `applyI18n` re-renders the cards, read-only.
 
 ## Shared UX components — the conventions all tools are converging on
 
@@ -922,7 +952,7 @@ const PANEL_MEM_CFG = {
 
 ### 10. Header skip link — the keyboard bypass, on every page
 An `<a class="skip-link">` as the **first child of `<body>`**, hidden off-screen until it takes keyboard
-focus, then dropping in at the top inline start. One rule, sha-identical on all 15 carriers modulo
+focus, then dropping in at the top inline start. One rule, sha-identical on all 16 carriers modulo
 indentation — paste it, do not re-author it:
 ```css
 .skip-link {
@@ -943,6 +973,6 @@ indentation — paste it, do not re-author it:
 - The **label names the destination** (maintainer's call, S397): one key per page under that page's own
   prefix — `home.a11y.skip_to_tools`, `worksheet.a11y.skip_to_worksheet`, `dashboard.a11y.skip_to_board`,
   and so on. Hebrew uses the `דילוג ל…` form and that page's own vocabulary. Never a single shared label.
-- **Implemented on:** all 15 root pages. The dictionary's separate `.skip-results` is a *mid-page* bypass
+- **Implemented on:** all 16 root pages. The dictionary's separate `.skip-results` is a *mid-page* bypass
   of the results grid — a different affordance, not a second header skip link.
 - **Rule:** a new page ships this block, an anchored target with `tabindex="-1"`, and its own label key.

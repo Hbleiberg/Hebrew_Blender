@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!-- Content-Security-Policy (defense-in-depth). Placed right after <meta charset> so it applies before
+     any script/style loads. script-src keeps 'unsafe-inline' because all app JS is inline by design; the
+     value here is blocking REMOTE script injection, object/base-uri hijacks, and unexpected connect/frame
+     origins. Everything this page shows is same-origin (data/parshiyot.json and the js/ modules), so it adds
+     nothing to the chrome pages' policy. Note: meta CSP can't express frame-ancestors or report-uri and does
+     not cover content parsed before this tag. Update this when adding any external script/font/fetch/iframe
+     (see CLAUDE.md). -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=2">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=2">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=2">
+<link rel="manifest" href="manifest.webmanifest?v=3">
+<meta name="theme-color" content="#1a2744">
+<script src="/pwa.js" defer></script>
+<script src="/js/i18n.js" defer></script>
+<!-- iOS standalone + launch (splash) screens — regenerate with splash/gen_splash.py -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="IvritSuite">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-750x1334.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1242x2208.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1125x2436.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-828x1792.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1242x2688.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1170x2532.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1284x2778.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1179x2556.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1290x2796.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1206x2622.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1320x2868.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 744px) and (device-height: 1133px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-1488x2266.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-1536x2048.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-1620x2160.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 820px) and (device-height: 1180px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-1640x2360.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-1668x2224.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-1668x2388.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-2048x2732.png">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-CMLC81Z0HC"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  // The sign-in return leg carries ?code= (and ?error…): the Supabase SDK still needs them in the URL,
+  // and js/ivrit-account.js strips them — but only once it has run, which is after this tag. Report the
+  // cleaned URL so no authorization code or error text ever reaches Analytics. The key list mirrors
+  // AUTH_QUERY_KEYS in js/ivrit-account.js; a deferred module cannot be read from here. An emailed
+  // sign-in link lands with its code in the hash (#ivsignin=, LINK_HASH_KEY there): that hash is dropped.
+  gtag('config', 'G-CMLC81Z0HC', { page_location: (function () {
+    try { var u = new URL(location.href); ['code', 'error', 'error_code', 'error_description'].forEach(function (k) { u.searchParams.delete(k); }); if (/(^#|&)ivsignin=/.test(u.hash)) u.hash = ''; return u.toString(); }
+    catch (e) { return location.href; }
+  })() });
+</script>
+<title>Parsha Emojis — A Picture for Every Torah Portion | IvritSuite</title>
+<meta name="description" content="All 54 weekly Torah portions, each with its own emoji drawing, a one-sentence summary and why that picture was chosen, in English and Hebrew — with this week's parsha first and a link to practice each one in the Torah Trainer.">
+<link rel="canonical" href="https://ivritsuite.com/emoji_torah.html">
+<!-- Not yet linked from the hub or the suite's navigation: kept out of the index (and so out of sitemap.xml and llms.txt) until it is. -->
+<meta name="robots" content="noindex, follow">
+<meta name="author" content="Harrison Bleiberg">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="IvritSuite">
+<meta property="og:title" content="Parsha Emojis — A Picture for Every Torah Portion | IvritSuite">
+<meta property="og:description" content="All 54 weekly Torah portions, each with its own emoji drawing, a one-sentence summary and why that picture was chosen, in English and Hebrew.">
+<meta property="og:url" content="https://ivritsuite.com/emoji_torah.html">
+<meta property="og:image" content="https://ivritsuite.com/og-card.png?v=4">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="IvritSuite — free tools for Jewish schools: worksheets, flash cards, dictionary, Torah and trope practice, and a font maker">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Parsha Emojis — A Picture for Every Torah Portion | IvritSuite">
+<meta name="twitter:description" content="All 54 weekly Torah portions, each with its own emoji drawing, a one-sentence summary and why that picture was chosen, in English and Hebrew.">
+<meta name="twitter:image" content="https://ivritsuite.com/og-card.png?v=4">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" media="print" onload="this.media='all'" rel="stylesheet">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet"></noscript>
+<script>(function(){try{var s=localStorage.getItem('hebrewBlender_darkMode');if(s==='1'||(s===null&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark-early');}}catch(e){}})()</script>
+<script>
+  /* No-flash UI-language IIFE — mirrors the dark-mode one; sets dir/lang before paint so Hebrew
+     never flashes LTR->RTL. Authoritative set happens later in /js/i18n.js. */
+  (function () {
+    try {
+      var p = new URLSearchParams(location.search).get('lang');
+      var l = (p === 'en' || p === 'he') ? p : (localStorage.getItem('hebrewBlender_lang') || 'en');
+      if (l !== 'en' && l !== 'he') l = 'en';
+      document.documentElement.lang = l;
+      document.documentElement.dir = (l === 'he' ? 'rtl' : 'ltr');
+    } catch (e) {}
+  })();
+</script>
+<style>
+@font-face{font-family:'Frank Ruhl Libre';src:url('/fonts/FrankRuhlLibre-Regular.ttf') format('truetype');font-weight:400;font-display:swap;}
+@font-face{font-family:'IvritSuite Taamim';src:url('/fonts/NotoSerifHebrew-Taamim.ttf') format('truetype');font-weight:400;font-display:swap;}
+:root {
+  --navy:#1a2744;--navy-deep:#0d1220;--gold:#c9922a;--focus-ring:#a0701c;--gold-light:#f0d080;--cream:#fdf8ef;
+  --warm-gray:#e8e0d0;--text:#1a2744;--muted:#6b6050;--border:#c8bfa8;--white:#ffffff;
+  --gold-text:#7f5a13;   /* readable gold for small text on light surfaces (WCAG ≥4.5:1) */
+  --gold-text-hover:#5c4010;
+  --heb-font:'Frank Ruhl Libre', 'IvritSuite Taamim', serif;
+}
+html.dark-early body,body.dark {
+  --navy:#1a2744;--gold:#e0a832;--focus-ring:var(--gold);--gold-light:#f5d97a;--cream:#161c2a;
+  --warm-gray:#1e2535;--text:#dde4f0;--muted:#8a94a8;--border:#2a3349;--white:#1e2535;--gold-text:var(--gold);--gold-text-hover:var(--gold-light);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+/* ───── Skip link (house pattern; the same rule on every page) ───── */
+/* Visually hidden until keyboard focus reaches it, then it drops in at the top inline start. */
+.skip-link {
+  position:absolute; inset-inline-start:8px; top:-48px; z-index:200;
+  background:var(--navy); color:#fff; padding:8px 14px;
+  border-radius:0 0 6px 6px; font-size:0.8rem; font-weight:600;
+  text-decoration:none;
+}
+.skip-link:focus { top:0; outline:2px solid var(--focus-ring); outline-offset:2px; }
+header{background:var(--navy);color:#fff;padding:22px 40px;display:flex;align-items:center;gap:16px;border-bottom:4px solid var(--gold);}
+body.dark header{background:var(--navy-deep);}
+header .star{font-size:32px;color:var(--gold);}
+header .brand-title{font-family:'Libre Baskerville',serif;font-size:1.5rem;letter-spacing:0.01em;}
+header p{font-size:0.85rem;color:var(--gold-light);margin-top:3px;}
+header .hright{margin-inline-start:auto;display:flex;gap:10px;align-items:center;}
+.hbtn{background:none;border:1px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:5px 14px;font-size:0.8rem;cursor:pointer;font-family:'Source Sans 3',sans-serif;text-decoration:none;min-height:30px;display:inline-flex;align-items:center;gap:6px;justify-content:center;}
+.hbtn:hover{background:rgba(255,255,255,0.1);}
+.dark-btn{background:none;border:1px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:5px 14px;font-size:0.8rem;cursor:pointer;font-family:'Source Sans 3',sans-serif;min-height:30px;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
+.dark-btn:hover{background:rgba(255,255,255,0.1);}
+
+main{flex:1;width:100%;max-width:1100px;margin:0 auto;padding:32px 24px 56px;}
+main:focus{outline:none;}
+.et-title{font-family:'Libre Baskerville',serif;font-size:1.9rem;color:var(--text);margin-bottom:14px;}
+
+/* ───── The view bar: Today's parasha, the five books, View All — toggle buttons (aria-pressed), one pressed at a
+   time — and Print at the end. Sticky, so View All can jump between books without scrolling back; on a phone the
+   buttons wrap to three rows, too tall to pin, so it scrolls with the page there. ───── */
+.et-bar{position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 0;background:var(--cream);border-block-end:1px solid var(--border);}
+.et-views{display:flex;flex-wrap:wrap;gap:6px;}
+.et-view,.et-print{font-family:inherit;font-size:0.88rem;font-weight:600;padding:6px 14px;min-height:34px;border-radius:999px;border:1px solid var(--border);background:var(--white);color:var(--text);cursor:pointer;}
+.et-view:hover,.et-print:hover{border-color:var(--gold);}
+.et-view[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:#fff;}
+body.dark .et-view[aria-pressed="true"]{background:var(--gold);border-color:var(--gold);color:#1a2744;}
+.et-print{margin-inline-start:auto;}
+.et-view:focus-visible,.et-print:focus-visible,.et-go:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;}
+.et-note{margin:14px 0 0;font-size:0.95rem;color:var(--text);}
+.et-note[hidden]{display:none;}
+
+/* ───── The cards: the Torah Trainer's emoji gallery cards (its .tt-emo-* rules) on the page's own surface — white
+   cards on the cream page, where the gallery has cream cards on a white dialog. The text column stretches to the
+   card's height so every card's Torah Trainer link sits on its bottom edge. ───── */
+.et-sec{margin:0;}
+.et-book,.et-week{font-family:'Libre Baskerville',serif;font-size:1.15rem;color:var(--navy);margin:22px 0 0;padding-block-end:6px;border-block-end:1px solid var(--border);}
+body.dark .et-book,body.dark .et-week{color:var(--gold-light);}
+.et-sub{margin:10px 0 0;font-size:0.95rem;color:var(--muted);}
+.et-list{list-style:none;margin:0;padding:12px 0 6px;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:12px;}
+.et-card{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:start;padding:12px 14px;background:var(--white);border:1px solid var(--border);border-radius:8px;}
+.et-card .hol-ico{width:56px;height:56px;margin:0;vertical-align:top;}   /* page-scoped: the shared block sizes it 1.5em */
+.et-card[aria-current="true"]{border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold),0 0 0 3px rgba(201,146,42,0.25);}
+.et-text{align-self:stretch;display:flex;flex-direction:column;min-width:0;}
+.et-badge{align-self:flex-start;margin-block-end:4px;padding:2px 8px;border-radius:999px;background:var(--gold);color:#1a2744;font-size:0.68rem;font-weight:700;}
+.et-name{margin:0;font-size:1rem;font-weight:700;color:var(--navy);line-height:1.3;overflow-wrap:anywhere;}
+body.dark .et-name{color:var(--gold-light);}
+.et-name [lang="he"]{font-family:var(--heb-font);font-size:1.12em;font-weight:400;}
+.et-alt{font-weight:400;color:var(--muted);}
+.et-ref{margin:2px 0 6px;font-size:0.78rem;color:var(--muted);}
+.et-sum,.et-why{margin:0 0 6px;font-size:0.88rem;line-height:1.5;}
+.et-why{margin-block-end:0;}
+.et-go-row{margin:auto 0 0;padding-block-start:8px;font-size:0.82rem;}
+/* inline-block + block padding: a >=24px tap target (WCAG 2.5.8) without moving the text. */
+.et-go{display:inline-block;padding-block:4px;color:var(--gold-text);font-weight:600;text-decoration:none;}
+.et-go:hover{color:var(--gold-text-hover);text-decoration:underline;}
+/* Today's parasha: the week's card (both of a doubled week) larger, in one column up to a reading width. */
+.et-list.et-featured{grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));max-width:840px;}
+.et-featured .et-card{padding:16px 18px;gap:16px;}
+.et-featured .et-card .hol-ico{width:88px;height:88px;}
+.et-featured .et-name{font-size:1.25rem;}
+.et-featured .et-sum,.et-featured .et-why{font-size:0.98rem;}
+
+footer{text-align:center;padding:16px;font-size:0.75rem;color:var(--muted);border-top:1px solid var(--border);background:var(--white);}
+footer a{color:var(--gold-text);text-decoration:none;}
+footer a:hover{text-decoration:underline;}
+/* Footer links are the page's smallest tap targets (12-15px line boxes ~19px apart —
+   under the WCAG 2.5.8 24px floor with no qualifying spacing). inline-block + block
+   padding grows each link's BOX to >=24px; prose flow and wrapping are unaffected. */
+footer a { display: inline-block; padding-block: 5px; }
+
+@media (max-width:640px){
+  header{padding:16px 20px;}
+  header .brand-title{font-size:1.2rem;}
+  main{padding:22px 14px 44px;}
+  .et-title{font-size:1.45rem;}
+}
+@media (max-width:600px){
+  .et-bar{position:static;}
+  .et-card .hol-ico{width:44px;height:44px;}
+  .et-featured .et-card .hol-ico{width:64px;height:64px;}
+}
+/* Phone widths: let the header button row wrap onto a second line instead of pushing the
+   page sideways (WCAG 1.4.10 reflow). max-width is the operative half — nothing makes the row
+   wrap until something caps its width, and the header has to wrap too or the title block and
+   the button row keep competing for one line.
+   451px is this page's MEASURED overflow ceiling in the real UI fonts (docs/reference/shared-components.md → The
+   header's wrap gate): the one-row header spills from 451px down and fits above it (English, dark — the "Light"
+   label is the widest; Hebrew stops at 445px). Under a finger the language select is 10px wider and the ceiling is
+   461px; the second query holds that band without moving a mouse layout. Re-measure whenever a header control
+   changes width. */
+@media (max-width:451px), (pointer:coarse) and (max-width:461px){
+  header{flex-wrap:wrap;}
+  header .hright{flex-wrap:wrap;max-width:100%;justify-content:flex-end;}
+}
+/* Print: the cards of the chosen view, light on white paper — no header, view bar, footer or Torah Trainer links
+   (nothing on paper can be clicked), two cards across, none split between sheets. */
+@media print {
+  body, body.dark, html.dark-early body {
+    --navy:#1a2744;--gold:#c9922a;--gold-light:#f0d080;--cream:#fff;
+    --warm-gray:#e8e0d0;--text:#1a2744;--muted:#6b6050;--border:#c8bfa8;--white:#fff;--gold-text:#7f5a13;--gold-text-hover:#5c4010;
+    background:#fff !important; color:#1a2744 !important;
+  }
+  header, footer, .skip-link, .et-bar, .et-go-row, #pwaInstallBanner { display: none !important; }
+  main { max-width: none; padding: 0; }
+  .et-title { font-size: 1.5rem; margin-bottom: 4px; }
+  .et-book, .et-week { margin-top: 12px; break-after: avoid; page-break-after: avoid; }
+  .et-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; padding-top: 8px; }
+  .et-list.et-featured { grid-template-columns: 1fr; max-width: none; }
+  .et-card { break-inside: avoid; page-break-inside: avoid; box-shadow: none; }
+  .et-card[aria-current="true"] { box-shadow: none; border-width: 2px; }
+  /* The dark theme's gold names and headings would print pale gold on white; the badge's gold fill is a background,
+     which the print dialog drops by default, so an outline keeps it a badge. */
+  .et-name, .et-book, .et-week, body.dark .et-name, body.dark .et-book, body.dark .et-week { color: #1a2744; }
+  .et-badge { border: 1px solid #c9922a; }
+}
+/* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner, emoji_torah (docs/reference/shared-components.md → Header icons).
+   The header controls and the in-page control buttons (play, pause, stop, reset, retry, loop, sound) carry inline
+   SVGs from one shared set (.hi-*); ink is currentColor, so each button's own colour applies. .hi-sm is the 13px
+   size the tiny settings buttons take, .hi-btn lines an icon up with its label inside a button.
+   The dark toggle holds both the moon and the sun and body.dark picks one; scripts change only the .hi-lbl text beside it. */
+.hi{width:16px;height:16px;flex-shrink:0;display:inline-block;vertical-align:-0.2em;}
+.hi-sm{width:13px;height:13px;}
+.hi-btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;}
+.hi-sun{display:none;}
+body.dark .hi-moon{display:none;}
+body.dark .hi-sun{display:inline-block;}
+[dir="rtl"] .hi-arrow{transform:scaleX(-1);}
+/* ═══ end header-icons CSS ═══ */
+
+/* ═══ holiday-icons CSS ═══ shared block, byte-identical on: classroom_dashboard, emoji_torah, torah_trainer (docs/reference/shared-components.md → Holiday icons).
+   One flat 48×48 SVG per holiday family, drawn by holidayIconFor() (the holiday-icons JS block). The --hol-* tokens are
+   the icon palette; the dark block swaps the outline and paper fills (a navy outline vanishes on the dark surface), so a
+   dark toggle needs no re-render. .hol-ico is sized in em, so it scales with the text it leads. */
+.hol-ico {
+  --hol-line: #1a2744; --hol-gold: #c9922a; --hol-gold-lt: #f0d080; --hol-paper: #fffaf0; --hol-navy: #2a3b66;
+  --hol-red: #c0392b; --hol-green: #3a7d44; --hol-blue: #3b6fb6; --hol-flame: #f0a030; --hol-ground: #fdf8ef;
+  display: inline-block; width: 1.5em; height: 1.5em; vertical-align: -0.42em; margin-inline-end: 0.3em; flex: 0 0 auto;
+}
+html.dark-early body .hol-ico, body.dark .hol-ico {
+  --hol-line: #e8e0d0; --hol-gold: #e0a832; --hol-gold-lt: #f5d97a; --hol-paper: #e8e0d0; --hol-navy: #5a6d9c;
+  --hol-red: #e0584a; --hol-green: #5aa865; --hol-blue: #6a9ae0; --hol-flame: #f6b84a; --hol-ground: #161c2a;
+}
+/* Paper is white whatever the theme (both carriers' print blocks turn a dark page light), so print keeps the light
+   palette: from a dark page the cream outline printed at 1.31:1 and the chanukiah all but vanished. */
+@media print {
+  html.dark-early body .hol-ico, body.dark .hol-ico {
+    --hol-line: #1a2744; --hol-gold: #c9922a; --hol-gold-lt: #f0d080; --hol-paper: #fffaf0; --hol-navy: #2a3b66;
+    --hol-red: #c0392b; --hol-green: #3a7d44; --hol-blue: #3b6fb6; --hol-flame: #f0a030; --hol-ground: #fdf8ef;
+  }
+}
+.hol-ico svg { display: block; width: 100%; height: 100%; stroke: var(--hol-line); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+/* ═══ end holiday-icons CSS ═══ */
+</style>
+</head>
+<body><a class="skip-link" href="#mainContent" data-i18n="emojitorah.a11y.skip_to_cards">Skip to the parsha emojis</a>
+<header>
+  <span class="star">✡︎</span>
+  <div>
+    <div class="brand-title" data-i18n="emojitorah.header.title">IvritSuite — Parsha Emojis</div>
+    <p data-i18n="emojitorah.header.tagline">A picture for every parasha</p>
+  </div>
+  <div class="hright">
+    <a class="hbtn" href="/"><svg class="hi hi-arrow dir-arrow" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/></svg><span class="hi-lbl" data-i18n="emojitorah.header.home">Home</span></a>
+    <div data-i18n-switcher></div>
+    <button class="dark-btn" id="darkBtn" onclick="toggleDark()" aria-pressed="false" aria-label="Toggle dark mode" data-i18n-aria-label="shared.darkmode.toggle_title" data-i18n-title="shared.darkmode.toggle_title"><svg class="hi hi-moon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15.5A7 7 0 0 1 8.5 6a7 7 0 1 0 9.5 9.5z"/><path d="M17.5 2.5l.9 2.4 2.4.9-2.4.9-.9 2.4-.9-2.4-2.4-.9 2.4-.9z" fill="currentColor" stroke="none"/></svg><svg class="hi hi-sun" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></svg><span class="hi-lbl" data-i18n="shared.darkmode.label_dark">Dark</span></button>
+  </div>
+</header>
+
+<main id="mainContent" tabindex="-1">
+  <h1 class="et-title" data-i18n="emojitorah.page_title">The Parsha Emojis</h1>
+  <div class="et-bar">
+    <div class="et-views" id="etViews" role="group" aria-label="Choose which parshiyot to show" data-i18n-aria-label="emojitorah.views.label">
+      <button type="button" class="et-view" data-view="today" aria-pressed="true" data-i18n="emojitorah.views.today">Today's parasha</button>
+      <button type="button" class="et-view" data-view="genesis" aria-pressed="false" data-i18n="torah.custom.book_genesis">Genesis</button>
+      <button type="button" class="et-view" data-view="exodus" aria-pressed="false" data-i18n="torah.custom.book_exodus">Exodus</button>
+      <button type="button" class="et-view" data-view="leviticus" aria-pressed="false" data-i18n="torah.custom.book_leviticus">Leviticus</button>
+      <button type="button" class="et-view" data-view="numbers" aria-pressed="false" data-i18n="torah.custom.book_numbers">Numbers</button>
+      <button type="button" class="et-view" data-view="deuteronomy" aria-pressed="false" data-i18n="torah.custom.book_deuteronomy">Deuteronomy</button>
+      <button type="button" class="et-view" data-view="all" aria-pressed="false" data-i18n="emojitorah.views.all">View All</button>
+    </div>
+    <button type="button" class="et-print hi-btn" id="etPrint" title="Print the cards on screen" data-i18n-title="emojitorah.print.title"><svg class="hi hi-sm hi-print" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9.2V3.6h10v5.6"/><path d="M7 9.2H5.6A2.1 2.1 0 0 0 3.5 11.3v3.6a2.1 2.1 0 0 0 2.1 2.1H7"/><path d="M17 9.2h1.4a2.1 2.1 0 0 1 2.1 2.1v3.6a2.1 2.1 0 0 1-2.1 2.1H17"/><rect x="7" y="14.2" width="10" height="6.2" rx="1.2"/><circle cx="17.6" cy="12" r="1" fill="currentColor" stroke="none"/></svg><span class="hi-lbl" data-i18n="emojitorah.print.label">Print</span></button>
+  </div>
+  <p class="et-note" id="etNote" role="status" aria-live="polite" hidden></p>
+  <div id="etCards"></div>
+</main>
+
+<footer>
+  <!-- pinned-English credits (never translated): dir="ltr" keeps each phrase in English order in the RTL UI, and lang="en" has a screen reader voice it in English -->
+  <span dir="ltr" lang="en">Created by <a href="https://harrisonbleiberg.wpcomstaging.com/" target="_blank" style="font-weight:600;">Harrison Bleiberg</a></span><br>
+  <span data-i18n="shared.footer.license_note">Free to use and adapt for non-commercial educational purposes with attribution</span> &nbsp;·&nbsp;
+  <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> &nbsp;·&nbsp;
+  <a href="https://github.com/hbleiberg/Hebrew_Blender" target="_blank">GitHub</a> &nbsp;·&nbsp;
+  <a href="privacy.html" data-i18n="shared.footer.privacy_link">Privacy Policy</a> &nbsp;·&nbsp;
+  <a href="terms.html" data-i18n="shared.footer.terms_link">Terms of Use</a>
+</footer>
+
+<!-- The parasha calendar, icons and notes (each a classic script: window.HebCal, window.ParashaIcons,
+     window.ParashaNotes), before the inline script that draws the cards with them. -->
+<script src="/js/hebrew-calendar.js"></script>
+<script src="/js/parasha-icons.js"></script>
+<script src="/js/parasha-notes.js"></script>
+<script>
+/* ───── The parsha emojis: every weekly parasha's icon, names, range, summary and why its emoji was chosen — the
+   Torah Trainer's emoji gallery (renderParashaGallery there) as a page of its own, view only. The data is
+   data/parshiyot.json (the Trainer's ?v=, so one cached copy serves both), js/parasha-icons.js and
+   js/parasha-notes.js (both built from ParashaEmojis.md); this week's reading comes from js/hebrew-calendar.js on
+   the Torah Trainer's own Diaspora/Israel choice, read and never written. Each card links to its parasha in the
+   Torah Trainer (?parsha=, a new tab). The page stores nothing. ───── */
+const ET_BOOKS = ['Genesis', 'Exodus', 'Leviticus', 'Numbers', 'Deuteronomy'];
+let etData = null, etFailed = false, etView = 'today';
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+// Parse JSON from possibly-imported input, dropping keys that could pollute Object.prototype.
+function ivritSafeParse(str) {
+  return JSON.parse(str, (k, v) =>
+    (k === '__proto__' || k === 'constructor' || k === 'prototype') ? undefined : v);
+}
+// "Genesis 12:1-17:27" → "Genesis 12:1–17:27", as the Trainer prints a range.
+function prettyRef(ref) { return String(ref || '').replace(/\s*[-–—]\s*/g, '–'); }
+const etBookKey = book => String(book).toLowerCase().replace(/[^a-z]/g, '');
+const etLang = () => (window.I18n && I18n.lang) || 'en';
+// A note in the UI's language, else English: { text, lang }, or null.
+function etPick(pair) {
+  const lang = etLang();
+  if (pair && pair[lang]) return { text: pair[lang], lang };
+  return pair && pair.en ? { text: pair.en, lang: 'en' } : null;
+}
+// Hebrew always carries its lang and dir (UX rule 8); other text only where it is not the UI's language.
+function etLangAttr(lang) {
+  if (lang === 'he') return ' lang="he" dir="rtl"';
+  return lang !== etLang() ? ` lang="${esc(lang)}" dir="ltr"` : '';
+}
+
+// The Torah Trainer's Diaspora/Israel choice on this device (hebrewTorahTrainer_settings.schedule), Diaspora when it
+// has none. Read only: this page has no setting of its own.
+function etIsrael() {
+  try {
+    const s = ivritSafeParse(localStorage.getItem('hebrewTorahTrainer_settings') || 'null');
+    return !!(s && typeof s === 'object' && s.schedule === 'israel');
+  } catch (e) { return false; }
+}
+// This week's reading: the parasha (or doubled pair) of the Shabbat on or after today, { idx: [i] | [i, i+1], date,
+// holiday }. A Shabbat that reads a festival's portion instead steps on a week at a time to the next parasha
+// (holiday: true); null without the calendar module.
+function etThisWeek() {
+  if (!window.HebCal) return null;
+  try {
+    const israel = etIsrael();
+    let r = HebCal.parshaForDate(new Date(), { israel }), holiday = false;
+    for (let k = 0; r && r.kind !== 'parsha' && k < 4; k++) {
+      holiday = true;
+      const next = new Date(r.date.getTime()); next.setDate(next.getDate() + 1);
+      r = HebCal.parshaForDate(next, { israel });
+    }
+    if (!r || r.kind !== 'parsha' || !Array.isArray(r.idx) || !r.idx.length) return null;
+    return { idx: r.idx.slice(), date: r.date, holiday };
+  } catch (e) { return null; }
+}
+
+// One card: the gallery's markup (icon, names in the UI's order, the book and its range isolated left to right, the
+// summary and the why-sentence), this week's badge, and the Torah Trainer link at its foot.
+function etCard(p, week, featured) {
+  const ui = etLang(), i = p.n - 1, notes = window.ParashaNotes || null, nt = notes ? notes.get(i) : null;
+  const on = !!(week && week.idx.includes(i));
+  const sum = nt && etPick(nt.summary), wy = nt && etPick(nt.why);
+  const en = `<span${etLangAttr('en')}>${esc(p.en)}</span>`, he = `<span${etLangAttr('he')}>${esc(p.he)}</span>`;
+  const ref = String(p.ref || ''), range = ref.startsWith(p.book + ' ') ? ref.slice(String(p.book).length + 1) : ref;
+  const bookName = esc(I18n.t('torah.custom.book_' + etBookKey(p.book)));
+  const id = (featured ? 'etWeekName' : 'etName') + p.n;
+  const href = 'torah_trainer.html?parsha=' + encodeURIComponent(p.en);
+  const goAria = I18n.t('emojitorah.card.trainer_link_aria', { name: ui === 'he' ? p.he : p.en });
+  return `<li class="et-card" data-n="${p.n}" aria-labelledby="${id}"${on ? ' aria-current="true"' : ''}>`
+    + (window.ParashaIcons ? ParashaIcons.html(i) : '') + '<div class="et-text">'
+    + (on ? `<span class="et-badge">${esc(I18n.t(week.holiday ? 'emojitorah.badge.next' : 'emojitorah.badge.this_week'))}</span>` : '')
+    + `<h3 class="et-name" id="${id}">${ui === 'he' ? he : en} <span class="et-alt">· ${ui === 'he' ? en : he}</span></h3>`
+    + `<p class="et-ref">${bookName} <bdi dir="ltr">${esc(prettyRef(range))}</bdi></p>`
+    + (sum ? `<p class="et-sum"${etLangAttr(sum.lang)}>${esc(sum.text)}</p>` : '')
+    + (wy ? `<p class="et-why"><strong>${esc(I18n.t('torah.emojis.why_label'))}</strong> <span${etLangAttr(wy.lang)}>${esc(wy.text)}</span></p>` : '')
+    + `<p class="et-go-row"><a class="et-go" href="${esc(href)}" target="_blank" rel="noopener" aria-label="${esc(goAria)}">${esc(I18n.t('emojitorah.card.trainer_link'))}</a></p>`
+    + '</div></li>';
+}
+function etBookSection(book, week) {
+  const bk = etBookKey(book), items = etData.filter(p => p.book === book);
+  return `<section class="et-sec" aria-labelledby="etBook-${bk}"><h2 class="et-book" id="etBook-${bk}">${esc(I18n.t('torah.custom.book_' + bk))}</h2>`
+    + `<ul class="et-list">${items.map(p => etCard(p, week, false)).join('')}</ul></section>`;
+}
+function etTodayHTML(week) {
+  const cards = week.idx.map(i => etData.find(p => p.n === i + 1)).filter(Boolean);
+  let date = '';
+  try { date = new Intl.DateTimeFormat(etLang(), { day: 'numeric', month: 'long', year: 'numeric' }).format(week.date); }
+  catch (e) { date = week.date.toDateString(); }
+  return `<section class="et-sec" aria-labelledby="etWeekHead"><h2 class="et-week" id="etWeekHead">${esc(I18n.t('emojitorah.today.heading', { date }))}</h2>`
+    + (week.holiday ? `<p class="et-sub">${esc(I18n.t('emojitorah.today.holiday_note'))}</p>` : '')
+    + (cards.length > 1 ? `<p class="et-sub">${esc(I18n.t('emojitorah.today.doubled_note'))}</p>` : '')
+    + `<ul class="et-list et-featured">${cards.map(p => etCard(p, week, true)).join('')}</ul></section>`;
+}
+function etRender() {
+  if (!window.I18n) return;
+  document.querySelectorAll('#etViews .et-view').forEach(b => b.setAttribute('aria-pressed', b.dataset.view === etView ? 'true' : 'false'));
+  const box = document.getElementById('etCards'), note = document.getElementById('etNote');
+  note.hidden = true; note.textContent = '';
+  if (etFailed) { box.innerHTML = ''; note.textContent = I18n.t('emojitorah.load_failed'); note.hidden = false; return; }
+  if (!etData) return;   // still loading
+  const week = etThisWeek();
+  if (etView === 'today') {
+    if (week) { box.innerHTML = etTodayHTML(week); return; }
+    note.textContent = I18n.t('emojitorah.today.unavailable'); note.hidden = false;   // no calendar: every card instead
+    box.innerHTML = ET_BOOKS.map(b => etBookSection(b, null)).join('');
+    return;
+  }
+  const one = ET_BOOKS.find(b => etBookKey(b) === etView);
+  box.innerHTML = (one ? [one] : ET_BOOKS).map(b => etBookSection(b, week)).join('');
+}
+function etLoad() {
+  fetch('data/parshiyot.json?v=1')   // the Torah Trainer's ?v=: one cached copy serves both pages
+    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(d => {
+      if (!Array.isArray(d) || !d.length) throw new Error('empty');
+      etData = d.filter(p => p && Number.isInteger(p.n) && p.en && p.book).sort((a, b) => a.n - b.n);
+    })
+    .catch(() => { etFailed = true; })
+    .then(() => { if (window.I18n) I18n.ready.then(etRender); });
+}
+// A view change from below the bar's resting place brings the new view's top up under it, so a reader who had
+// scrolled far into View All is not left in the middle of a short book.
+function etShowTop() {
+  const bar = document.querySelector('.et-bar'), box = document.getElementById('etCards');
+  if (getComputedStyle(bar).position !== 'sticky') return;
+  const y = box.getBoundingClientRect().top + window.scrollY - bar.offsetHeight - 8;
+  if (window.scrollY > y) window.scrollTo(0, Math.max(0, y));
+}
+
+function toggleDark() {
+  const dark = document.body.classList.toggle('dark');
+  document.documentElement.classList.remove('dark-early');
+  try { localStorage.setItem('hebrewBlender_darkMode', dark ? '1' : '0'); } catch(e) {}
+  const _db = document.getElementById('darkBtn');
+  (_db.querySelector('.hi-lbl') || _db).textContent = dark ? (window.I18n ? I18n.t('shared.darkmode.label_light') : 'Light') : (window.I18n ? I18n.t('shared.darkmode.label_dark') : 'Dark');
+  _db.setAttribute('aria-pressed', dark ? 'true' : 'false');
+}
+
+/* ── i18n: fill static chrome + re-sync dark label + re-render the cards, on load + on live language switch.
+   Wired inside DOMContentLoaded because /js/i18n.js is deferred. ── */
+function applyI18n() {
+  if (!window.I18n) return;
+  I18n.applyStaticI18n();
+  try { const _db = document.getElementById('darkBtn'); if (_db) (_db.querySelector('.hi-lbl') || _db).textContent = document.body.classList.contains('dark') ? I18n.t('shared.darkmode.label_light') : I18n.t('shared.darkmode.label_dark'); } catch (e) {}
+  etRender();
+}
+document.addEventListener('DOMContentLoaded', () => {
+  try {
+    const s = localStorage.getItem('hebrewBlender_darkMode');
+    if (s === '1' || (s === null && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.body.classList.add('dark');
+      const _db = document.getElementById('darkBtn');
+      (_db.querySelector('.hi-lbl') || _db).textContent = (window.I18n ? I18n.t('shared.darkmode.label_light') : 'Light');
+      _db.setAttribute('aria-pressed', 'true');
+    }
+  } catch(e) {}
+  document.getElementById('etViews').addEventListener('click', e => {
+    const b = e.target.closest('.et-view');
+    if (!b || b.dataset.view === etView) return;
+    etView = b.dataset.view;
+    etRender();
+    etShowTop();
+  });
+  document.getElementById('etPrint').addEventListener('click', () => window.print());
+  etLoad();
+  if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); }
+});
+</script>
+</body>
+</html>

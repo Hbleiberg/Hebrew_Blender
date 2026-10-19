@@ -157,7 +157,7 @@ html[lang="he"] footer [style*="letter-spacing:0.08em"] { letter-spacing: normal
    column heads, and the settings drawer's title, Font sizes subhead and font-picker section heads. */
 html[lang="he"] .tt-jump-label, html[lang="he"] .tt-aliyah-divider, html[lang="he"] .tt-rowlabel, html[lang="he"] .tt-grid-col h3,
 html[lang="he"] .settings-header h2, html[lang="he"] .tt-set-sub, html[lang="he"] .font-section-hdr { letter-spacing: normal; text-transform: none; }
-/* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner (docs/reference/shared-components.md → Header icons).
+/* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner, emoji_torah (docs/reference/shared-components.md → Header icons).
    The header controls and the in-page control buttons (play, pause, stop, reset, retry, loop, sound) carry inline
    SVGs from one shared set (.hi-*); ink is currentColor, so each button's own colour applies. .hi-sm is the 13px
    size the tiny settings buttons take, .hi-btn lines an icon up with its label inside a button.
@@ -171,7 +171,7 @@ body.dark .hi-sun{display:inline-block;}
 [dir="rtl"] .hi-arrow{transform:scaleX(-1);}
 /* ═══ end header-icons CSS ═══ */
 
-/* ═══ holiday-icons CSS ═══ shared block, byte-identical on: classroom_dashboard, torah_trainer (docs/reference/shared-components.md → Holiday icons).
+/* ═══ holiday-icons CSS ═══ shared block, byte-identical on: classroom_dashboard, emoji_torah, torah_trainer (docs/reference/shared-components.md → Holiday icons).
    One flat 48×48 SVG per holiday family, drawn by holidayIconFor() (the holiday-icons JS block). The --hol-* tokens are
    the icon palette; the dark block swaps the outline and paper fills (a navy outline vanishes on the dark surface), so a
    dark toggle needs no re-render. .hol-ico is sized in em, so it scales with the text it leads. */
@@ -1454,6 +1454,14 @@ body.dark .tt-emo-name { color:var(--gold-light); }
 .tt-emo-ref { margin:2px 0 6px; font-size:0.76rem; color:var(--muted); }
 .tt-emo-sum, .tt-emo-why { margin:0 0 6px; font-size:0.84rem; line-height:1.45; }
 .tt-emo-why { margin-block-end:0; }
+/* "Open this reading": the text column stretches to the card's height so the link sits on its bottom edge;
+   inline-block + block padding make a >=24px tap target (WCAG 2.5.8). */
+.tt-emo-text { align-self:stretch; display:flex; flex-direction:column; min-width:0; }
+.tt-emo-text .tt-emo-badge { align-self:flex-start; }
+.tt-emo-go-row { margin:auto 0 0; padding-block-start:6px; font-size:0.8rem; }
+.tt-emo-go { display:inline-block; padding-block:4px; color:var(--gold-text); font-weight:600; text-decoration:none; }
+.tt-emo-go:hover { text-decoration:underline; }
+.tt-emo-go:focus-visible { outline:2px solid var(--focus-ring); outline-offset:2px; }
 @media (max-width:600px) {
   .tt-emo-dialog { width:100%; height:100%; height:100dvh; border:none; border-radius:0; }
   .tt-emo-card .hol-ico { width:44px; height:44px; }
@@ -9201,7 +9209,7 @@ function _emoLangAttr(lang) {
 function renderParashaGallery() {
   const body = document.getElementById('ttEmoBody');
   const ui = (window.I18n && I18n.lang) || 'en', notes = window.ParashaNotes || null, cur = new Set(_emoCurrent);
-  const why = esc(I18n.t('torah.emojis.why_label')), badge = esc(I18n.t('torah.emojis.current'));
+  const why = esc(I18n.t('torah.emojis.why_label')), badge = esc(I18n.t('torah.emojis.current')), openLbl = esc(I18n.t('torah.emojis.open_reading'));
   const groups = [];
   for (const p of parshiyotData.slice().sort((a, b) => a.n - b.n)) {
     const g = groups[groups.length - 1];
@@ -9222,6 +9230,7 @@ function renderParashaGallery() {
           + `<p class="tt-emo-ref">${bookName} <bdi dir="ltr">${esc(prettyRef(range))}</bdi></p>`
           + (sum ? `<p class="tt-emo-sum"${_emoLangAttr(sum.lang)}>${esc(sum.text)}</p>` : '')
           + (wy ? `<p class="tt-emo-why"><strong>${why}</strong> <span${_emoLangAttr(wy.lang)}>${esc(wy.text)}</span></p>` : '')
+          + (on ? '' : `<p class="tt-emo-go-row"><a class="tt-emo-go" href="torah_trainer.html?parsha=${esc(encodeURIComponent(p.en))}" data-parsha="${esc(String(p.en))}" aria-label="${esc(I18n.t('torah.emojis.open_reading_aria', { name: ui === 'he' ? p.he : p.en }))}">${openLbl}</a></p>`)
           + '</div></li>';
       }).join('') + '</ul></section>';
   }).join('');
@@ -9258,6 +9267,19 @@ function closeParashaGallery() {
     : document.querySelector('#ttReading .tt-emo-open') || document.querySelector('#ttReading .tt-word[tabindex="0"]');
   if (back) { try { back.focus(); } catch (e) {} }
 }
+// A card's "Open this reading" (every card but the reading on screen): a plain click closes the gallery and loads
+// that parasha here through the picker's own change handler, so every save/sync/fetch path is the picker's; a
+// modified or middle click keeps the link's own behaviour, the parasha in a new tab through ?parsha=.
+document.getElementById('ttEmoBody').addEventListener('click', e => {
+  const a = e.target.closest('a.tt-emo-go');
+  if (!a || e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+  const sel = document.getElementById('parshaSelect'), key = a.dataset.parsha;
+  if (!sel || ![...sel.options].some(o => o.value === key)) return;   // not in the picker: let the link navigate
+  e.preventDefault();
+  closeParashaGallery();
+  sel.value = key;
+  sel.dispatchEvent(new Event('change'));
+});
 function _emoDialogKey(e) {
   if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); closeParashaGallery(); return; }   // stopped: the drawer's Escape is a document listener
   if (e.key !== 'Tab') return;
