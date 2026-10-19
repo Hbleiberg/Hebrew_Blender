@@ -11246,8 +11246,9 @@ function clearCustomWordlist() {
 // preset, remembered setup, .ivrit file or share link carries it by id. Mirrors the Dictionary's
 // wlAddList: the same id shape, the same 50-list / 200-word caps, words deduped by their `word`
 // string (first wins), never an edit or a removal of an existing list. The store is the Dictionary's
-// wordList cloud row, so the new list reads "Only on this device" at the next listing — an upload
-// the teacher chooses, never a deletion or a silent overwrite. Validation is inline (the status
+// wordList cloud row, which this page attaches beside its own: signed in, the new list goes up at once
+// like any edit there (one insert — never a deletion or a silent overwrite); signed out it stays on this
+// device, and a later first sign-in offers it on the device card. Validation is inline (the status
 // line + aria-disabled on the button), the preset-name flow's shape.
 const CW_SAVE_MAX_LISTS = 50;    // = the Dictionary's WL_MAX_LISTS
 const CW_SAVE_MAX_WORDS = 200;   // = the Dictionary's WL_MAX_WORDS
