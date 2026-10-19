@@ -5522,18 +5522,11 @@ function applyI18n() {
       onFilter();
     }
   } catch (e) {}
-  // Live-update the tour card if a tour is in progress. _tourActive is `let`-declared in a
-  // LATER <script> block, so an applyI18n() that runs before that block has executed hits the
-  // temporal dead zone — typeof is the only safe read from here.
+  // Live-update the tour card if a tour is in progress: its texts in the new language, the spotlight back on its
+  // mirrored target (the generator's call). _tourActive is `let`-declared in a LATER <script> block, so an
+  // applyI18n() that runs before that block has executed hits the temporal dead zone — typeof is the only safe read from here.
   if (typeof _tourActive !== 'undefined' && _tourActive && _tourIdx >= 0) {
-    const step = TOUR_STEPS[_tourIdx];
-    if (step) {
-      document.getElementById('tourCardTitle').textContent = I18n.t(step.titleKey);
-      document.getElementById('tourCardBody').textContent = I18n.t(step.bodyKey);
-      const _tc = _tourCounter(_tourIdx);
-      document.getElementById('tourStep').textContent = I18n.t('shared.tour.step_counter', { count: _tc.count, total: _tc.total });
-      document.getElementById('tourNext').textContent = I18n.t((_tourIdx === TOUR_STEPS.length - 1) ? 'shared.tour.done' : 'shared.tour.next');
-    }
+    try { _tourShow(_tourIdx, 1); } catch (e) {}
   }
 }
 </script>
