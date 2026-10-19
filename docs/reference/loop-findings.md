@@ -2441,3 +2441,45 @@
   - **(3)** In the FM, `wizardOpen` captures `document.activeElement` as the wizard's opener. A return path that calls it after a modal closed captures `<body>`, so a later Cancel cannot return to toolbar New: probe the round trip's Cancel, not just the first landing.
 
   | found S517
+
+## S518 (2026-10-19) — pass L on the S504 → S517 delta (the 28th L; the Letter Learner's first)
+
+- [ ] P4 (**NEW S518 Pass L — receipts over `fc54901d..18a7e6a3` (S504's endpoint → S517's close-out; 129 commits), so the next L extends rather than repeats them**) | suite-wide |
+  - **Delta:** 16 crawler files (every root page but the three harnesses, plus `sitemap.xml`); pages +3,350/−206, 2,892 of it the new `letter_learner.html`. The other commits are the loop's a11y, i18n and phone fixes.
+  - **Harness `l518/` (scratchpad; `l504/` was gone, rebuilt to S460's list):** `audit.py ROOT` (the 20 arms; markup arms read the page with inline non-JSON-LD `<script>` bodies removed), `plants.py` (24 plants, each in a fresh copy: S504's 22 + a stray second robots meta + the CNAME), `seohash.py A B` (the SEO-bearing head + every ld+json block + the `h1`, and the crawler text), `claims.mjs`, `claims2.mjs`.
+  - **Controls:** 24/24 plants fired their arm (the account-inbound plant first read silent: trap 1); the unplanted copy reads 0. `seohash.py` against a copy with a planted og:title, FAQ answer and footer line reported all three.
+  - **Results:** the tree reads 0 on all 20 arms. The two harness-shaped exemptions are by design: the three harnesses carry no description, and account/contact/privacy/terms carry only a BreadcrumbList (no own node). Census = S504's: 18 pages, 13 indexable, all 13 reachable from the hub; titles 25–61, descriptions 136–164; 37 JSON-LD blocks, 53 FAQ / 42 HowTo. Inbound static links: account 2 (index, privacy), the Letter Learner 0.
+  - **Over the delta:** the SEO tags and JSON-LD are identical on 17/17 pages that existed at S504. The crawler text moved on one page: resources' "🔤 Fonts" → "Fonts" (`001bbd97`). `update-llms-txt` and `update-sitemap` wrote nothing.
+  - **FAQ twins:** visible questions = JSON-LD questions on 8/8 pages (Trope's keys are `trope.footer.faq_qN`, trap 2). The wording differs by design (S404's measurement).
+  - **Claims on the surfaces the delta touched, by real clicks (EN light 1280, HE dark 800, 0 page errors):**
+    - Torah: Favorites is the drawer's first tab and is selected; Text holds the nikkud and cantillation toggles and the four layouts the HowTo names; Calendar → Reading schedule → Diaspora by default, Israel by a click; Share offers "Select verses to copy…". A control claim "Bookmarks" reads 0.
+    - Resources: the Fonts view shows its 4 fonts, each with preview, download and add-to-My-Fonts; the preview renders typed Hebrew.
+    - Dashboard: Display Options and Schedule Sync exist.
+  - **Triaged, not defects:** **(a)** `letter_learner.html` is staged: `noindex, follow`, unlinked, out of the sitemap and `llms.txt`, no og/twitter tags or JSON-LD (its own comment; S517's (a)). Its title (55) and canonical are ready; its description (377 characters) is the one gate-2 item for the launch (Candidate). **(b)** The S425 candidate "22 Hebrew strings end in →" was fixed by `5f7f8a40` and left open; struck.
+
+  | found S518
+- [ ] P4 (**NEW S518 — the four fixes' receipts**) | Hebrew_Font_Maker.html, classroom_dashboard.html, locales/ui-strings.csv |
+  - **`dcee26d3`** (`fix1.mjs`; a `git archive HEAD` copy on :8082; 4 cells; the manifest request aborted, counted 6 per cell; real keys and clicks):
+    - "← Back" by click, by Tab+Enter, and after a failing Retry, from the gate and from toolbar New: HEAD lands on `#wizName` 4/4 per cell, the tree on `#wizStartFromFont` 4/4;
+    - the Tab trap holds; Cancel from New still ends on New;
+    - the control (the picker's own close) lands on Start from a font on both trees.
+  - **`38524fec`** (`fix2.mjs`; the row reached by Settings → Display → Show video embed):
+    - `getByRole('radiogroup', { name })` 0 → 1 per cell, both radios inside; the radios' own names unchanged;
+    - the Column headers group (control) found on both trees;
+    - a click on "In sidebar" and an arrow key still move the video;
+    - a live switch renames the group both ways;
+    - the row's geometry is identical; EN pixels identical (HE: trap 3).
+  - **`f91e55ff`:** each of the 7 rows round-trips through the csv module unchanged except its context cell; each surface read from the page (`.gen-note` after the Generate buttons, `#previewNotice` above `#worksheet`); `en.json` / `he.json` byte-identical (contexts are not built); `check-i18n` clean.
+  - **`d1e633dd`** (`fix4.mjs`; HEAD = the tree after `dcee26d3`):
+    - Escape on the load-failure dialog, at the gate and after a failing Retry: HEAD leaves no wizard (focus `#mainContent`) 2/2 per cell, the tree reopens it on Start from a font 2/2;
+    - from New the wizard returns (HEAD: closed), and a second Escape ends on New on both trees;
+    - the gate wizard's own Escape keeps it open (control, both trees); "← Back" unchanged.
+  - **Not taken:** the dictionary's `roveTileGrid` build-time layouts (S496): its own A/B ranges overlap, and the function is shared by 3 carriers byte for byte.
+
+  | found S518
+- [ ] P4 (**S518 — probe traps 1–3**) | probes |
+  - **(1)** A plant that cuts one link per file (`re.subn(count=1)`) leaves a page that links twice still linking: cut every occurrence before reading a silent crawl arm.
+  - **(2)** A visible-FAQ key census written as `page.(about.)?faq_qN` misses the Trope Tutor's `trope.footer.faq_qN` and reads 0 there: match any segment before `faq_q`.
+  - **(3)** A crop of the dashboard's video row in the Hebrew UI renders in one of two pixel states run to run on both trees (the same geometry): compare boxes, and rerun before reading a pixel difference.
+
+  | found S518

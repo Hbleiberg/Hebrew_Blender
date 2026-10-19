@@ -980,7 +980,11 @@ opens that font pre-imported into a fresh, **license-locked** project via a 3-st
   `_osStartCtx` → `wizardOpen('osfont')`, recording `_osStartOrigin` (`'link' | 'gate' | 'new'`): the
   partner wizard's Cancel returns to that origin wizard and step 1 shows `#wizOsChangeFont` (hidden for
   `'link'`) → `osPickReopen()`. `aCloseModal` hands the focus trap back to the picker the way it does for
-  the wizard; `udShortcutBlocked()` includes `osPickOverlay`; `applyI18n` re-renders the cards.
+  the wizard; `udShortcutBlocked()` includes `osPickOverlay`; `applyI18n` re-renders the cards. A manifest
+  that cannot load raises an `askModal` (Retry / "← Back") whose Escape answers "← Back": the gate wizard
+  cannot be dismissed, so a dismissed failure must never leave the page without it. Every return to the
+  wizard (the picker's close, that "← Back") goes through `osPickBackToWizard()`, which lands on
+  `#wizStartFromFont` and keeps the wizard's own opener, so its Cancel still returns to toolbar New.
 - **Lock invariants** (`project.osFont` presence = partner-locked; belt-and-braces): `licenseText()`
   dispatches to `osPassthroughText()` **before** reading `font.license`; `buildFontSpec` AND
   `buildUfoFontInfo` carry independent partner branches (combined copyright, "designer; modified

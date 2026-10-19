@@ -8,7 +8,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P4 (**NEW S517 E**) | Hebrew_Font_Maker.html | **The starting-font picker's load-failure "← Back" lands on the wizard's name field, not "Start from a font"** (its `askModal` calls `wizardOpen(origin)`; findings S517). | found S517
+- [ ] P4 (**NEW S518 L — gate 2, at launch**) | letter_learner.html | **Its meta description is 377 characters (the indexable pages: 136–164); no og/twitter tags or JSON-LD**: fine while `noindex`; the launch needs a ~155-character one (gate 2) and the tags (findings S518). | found S518
 
 - [ ] P3 (**NEW S510 D; shared sw.js — the maintainer's call**) | sw.js | **Pages, scripts and /locales/ are fetched with cache:'no-store', so a returning visitor re-downloads ~370 KB per page view although GitHub Pages answers 304**; `'no-cache'` keeps always-revalidate and made the same reload 0 B (findings S510). | found S510
 
@@ -21,8 +21,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S512 H — gate 2**) | hebrew_blend_generator.html | **Name the Letter counts letters × vowels ("36 possible combinations" for 4 bare letters)**; Vowels Only blanks it. | found S512
 
 - [ ] P4 (**NEW S512 H — design, gate 2**) | hebrew_blend_generator.html | **A quick start replays the full defaults, dropping the chosen word list and source.** | found S512
-
-- [ ] P4 (**NEW S512 — K housekeeping**) | locales/ui-strings.csv | **Three `worksheet.validation.*` context cells say "alert"** for notes inline since `59714ef`. | found S512
 
 - [ ] P4 (**NEW S508 M — gate 2**) | dashboard | **"+ Add period" beside two icon buttons; "✨ Quick-start layouts…"** — the glyph belongs in the markup. | found S508
 
@@ -84,8 +82,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S463 P**) | hebrew_blend_generator.html | **The comment above `saveImportedAsWordList` says a saved list waits for an upload the teacher chooses**; signed in it goes up at once (W5). | found S463
 
-- [ ] P4 (**NEW S460 — pattern radio-set-without-a-question**) | classroom_dashboard.html | **The video position radios have no group or question**; a name needs a new string. | found S460
-
 - [ ] P4 (**NEW S460 — ANSWERED S462: drop it**) | Hebrew_Font_Maker.html | **The About footer says "(the font engine loads on first export)"** (`fontmaker.about.footer_about_body`). | found S460
 
 - [ ] P4 (**NEW S454 H — gate 2**) | resources.html | **"Jewish Interactive" is listed twice** (one URL; "All" counts 43 for 42). | found S454
@@ -137,8 +133,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S422 Pass M — gate 3 / gate 2**) | torah_trainer.html | **(1)** dark Chant all is 1.1:1 on the page; **(2)** Hebrew-only side by side keeps an empty half; **(3)** "עִבְרִית" in Libre Baskerville; **(4)** gate 2: the Audio help's 🔊 / 🎵, not the icons. | found S422
 
 - [ ] P4 (**NEW S425 Pass I — extract the tour engine first, UX rule 1**) | trope_tutor.html | **With `trope_motifs.json` missing the tour counts "Step 3 of 8 → Step 5 of 8"**; torah/dictionary use `_tourCounter`. | found S425
-
-- [ ] P4 (**NEW S425 Pass I — for F**) | CSV, 8 pages | **22 Hebrew strings end in "→", pointing back in RTL** (home CTAs, trope nav, torah links); 25 use "←". | found S425
 
 - [ ] P4 (**NEW S418 — the maintainer's dashboard**) | Supabase project | **Security advisor: leaked-password protection is off**; passwords are never used (e-mail code + Google), so enable the toggle or accept it as moot. | found S418
 
@@ -318,13 +312,17 @@ _(none)_
 
 ## Done
 
-- [x] 2026-10-18 | (S517 close-out) | branch/deploy note | **S517 = E (39 → 40th) + 4 fixes on draft PR #338 (S514–S517).** Drift: none (main `4db5a627`, FM 5.59, 0004 live, backend files unchanged since `ba33c5bd`, keep-alive #36 green, Pages 1334 `success` on main). sw v1015→v1016; build-locales (+2 keys); no FM bump (fixes). Nothing gated.
+- [x] 2026-10-19 | (S518 close-out) | branch/deploy note | **S518 = L (27 → 28th) + 4 fixes on draft PR #338 (S514–S518).** Drift: none (main `4db5a627`, FM 5.59, 0004 live, backend files unchanged since `ba33c5bd`, keep-alive #36 green). sw v1016→v1017; build-locales (+1 key); no FM bump (fixes). Nothing asked; LL description logged (gate 2).
 
-- [x] 2026-10-18 | `a3800769` `7bccf657` `ed985f21` `5850fcfd` | README, i18n.md + ops.md, FM ×2 | (S517) **README's LL row names its 3 dev scripts + the frieze; the page counts include account + the harnesses; FM spacing/kern previews named; the picker's close returns to "Start from a font".** | 2 → 0 undocumented scripts; counts = the files; HEAD 0/2 → 2/2 named, shots identical; 5 BAD/cell → 0 …[full text: IMPROVEMENT_ARCHIVE.md]
+- [x] 2026-10-19 | `dcee26d3` `38524fec` `f91e55ff` `d1e633dd` | FM ×2, dashboard, CSV | (S518) **The picker's load-failure "← Back" and its Escape return to the wizard on "Start from a font"; the dashboard's video position radios are a named group; seven `worksheet.validation.*` context cells name the inline notes.** | HEAD 4/4 per cell on the name field → 0; Escape left no wizard 2/2 → 0; …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-19 | (struck S518) | CSV, 8 pages | **S425's "22 Hebrew strings end in →"**: fixed by `5f7f8a40`, the candidate left open; 0 now (the 9 "→" are right). | CSV + page grep
 
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-19 | **S518** | iters: 5 | tools: FM ×2, dashboard, locales CSV, sw.js | patterns fixed: radio-set-without-a-question ×1 | pass run: L | SW: v1016→v1017
 
 - 2026-10-18 | **S517** | iters: 5 | tools: README, docs (i18n, ops), FM ×2, sw.js | patterns fixed: — | pass run: E | SW: v1015→v1016
 
@@ -338,7 +336,7 @@ _(none)_
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S517 (2026-10-18):** FM, README, sw.js S517 · index, letter_learner S516 · dashboard, flash, generator, torah S515 · i18n.js S512 · dictionary, trope S511 · resources, account S508 · saves, scripts S507 · contact S498 · privacy S495 · terms, 404 S494 · pwa S472.
+- **Snapshot S518 (2026-10-19):** FM, dashboard, locales CSV, sw.js S518 · README S517 · index, letter_learner S516 · flash, generator, torah S515 · i18n.js S512 · dictionary, trope S511 · resources, account S508 · saves, scripts S507 · contact S498 · privacy S495 · terms, 404 S494 · pwa S472.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -394,7 +392,7 @@ _(none)_
 
 - **`bulk-apply-skips-a-renderer-the-control-runs`** (NEW S461; FIXED ×3): ACTIVE, streak 1 (S472 clean). Detection: `x3/parity.mjs`, `p463/loc-fix.mjs`. Open: none known.
 
-- **`radio-set-without-a-question`** (S501 `8d667fb3`; S502 `c134c65d`; S504 flash `b38c1f68`, FM `7a663826`; S505 generator `f28e2389`): ACTIVE, streak 0. Detection: static walk + runtime `unnamedGroups` (`a502/probes.js`); FM all panels open (`l504/fmcensus.mjs`). …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`radio-set-without-a-question`** (S501 `8d667fb3`; S502 `c134c65d`; S504 flash `b38c1f68`, FM `7a663826`; S505 generator `f28e2389`; S518 dashboard video `38524fec`, open 0 — the dictionary's `copyMode` was already named): ACTIVE, streak 0. Detection: static walk + runtime …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`native-input-display-none-under-its-label`** (NEW S458, `ea43be7e`): ACTIVE, streak 0. Detection: `a458/radios.mjs`; control torah. …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -712,7 +710,7 @@ _(none)_
 
 - J metrics-informed: never run — SKIP in rotation until the impact-metrics dashboard/Worker is live (not live)
 
-- L SEO & discoverability audit: 2026-10-13 (**S504 — 27th L on `5f9b27c0..fc54901d` (90 commits): `l504/` (20 arms), 22/22 plants, tree + base 0; crawler text identical 17/17 (control fired); claims by real clicks. CLEAN.**)
+- L SEO & discoverability audit: 2026-10-19 (**S518 — 28th L, `fc54901d..18a7e6a3` (129 commits; LL's first L): 20 arms on 18 pages (plants 24/24); SEO + JSON-LD identical 17/17 (control 3/3); generators current; FAQ twins 8/8; claims by real clicks. CLEAN; LL staged (noindex, no og, 377-char description → gate 2). FIXED 4 (FM ×2, dashboard, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - H teacher walkthrough / paper-cuts (one tool): 2026-10-16 (**S512 — generator, its 4th H (S130 → S251 → S363 → S512): a 1st-grade letter-of-the-week lesson by real clicks (tracing, Name the Letter, a Class Set with a Hebrew header, a pasted Noach list → Word List, Numbers, preset, link, reopen, the colleague's HE/dark/800 open), 63 clicks × 3 cells, 0 errors. FOUND 9, FIXED 2 (+ dashboard, …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -720,4 +718,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-18 (**S514 — 38th F, dialog Tab traps: 22 dialogs × 2 cells by real keys + a click-on-text arm; plants 4/4. CLEAN 13. FOUND 9, FIXED 3 (+ FM menus). F-next: empty states.**)
 
-**Next session (S518):** **BRANCH/PR: draft PR #338 (S514–S517, 4 sessions — a merge soon keeps it reviewable) open → continue; merged → restart from `origin/main`.** `sw.js` **v1016**, FM **5.59**. ⚑ Stalest: L (S504), K (S505), N (S506). ⚑ First: the K housekeeping (`worksheet.validation.*` "alert"); the picker's load-failure "← Back" (the name field again, measured S517); sw.js `no-store` (the maintainer's call). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2 (TT Chant, glyphs, five S512 copy items); O needs a Bash rule.
+**Next session (S519):** **BRANCH/PR: draft PR #338 (S514–S518, 5 sessions — a merge soon keeps it reviewable) open → continue; merged → restart from `origin/main`.** `sw.js` **v1017**, FM **5.59**. ⚑ Stalest: K (S505), N (S506), P (S507). ⚑ First: FM's 5 unnamed mode toggles (an aria string each); sw.js `no-store` (the maintainer's call). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2 (TT Chant, glyphs, five S512 copy items, the LL description); O needs a Bash rule.

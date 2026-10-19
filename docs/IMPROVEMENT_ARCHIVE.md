@@ -93073,3 +93073,29 @@ _(prior — S516 pointer:)_ **BRANCH/PR: draft PR #338 (S514 + S515) open → co
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 _(prior — S517 pointer:)_ **BRANCH/PR: draft PR #338 (S514–S516) open → continue; merged → restart from `origin/main`.** `sw.js` **v1015**, FM **5.59**. ⚑ Stalest: E (S503), L (S504), K (S505). ⚑ First: FM `#spacingPreviewSvg` / `#kernPreviewSvg` names; FM picker focus back to its opener; the K housekeeping (`worksheet.validation.*` "alert"). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2 (TT Chant, glyphs, five S512 copy items); O needs a Bash rule.
+
+## Size move (S518 close-out, 2026-10-19) — S517's Done entries, moved by hand verbatim (the ledger sat at its 100 KB limit)
+
+### from Done
+
+- [x] 2026-10-18 | (S517 close-out) | branch/deploy note | **S517 = E (39 → 40th) + 4 fixes on draft PR #338 (S514–S517).** Drift: none (main `4db5a627`, FM 5.59, 0004 live, backend files unchanged since `ba33c5bd`, keep-alive #36 green, Pages 1334 `success` on main). sw v1015→v1016; build-locales (+2 keys); no FM bump (fixes). Nothing gated.
+
+- [x] 2026-10-18 | `a3800769` `7bccf657` `ed985f21` `5850fcfd` | README, i18n.md + ops.md, FM ×2 | (S517) **README's LL row names its 3 dev scripts + the frieze; the page counts include account + the harnesses; FM spacing/kern previews named; the picker's close returns to "Start from a font".** | 2 → 0 undocumented scripts; counts = the files; HEAD 0/2 → 2/2 named, shots identical; 5 BAD/cell → 0 …[full text: IMPROVEMENT_ARCHIVE.md]
+
+
+<!-- archived by compact-ledger at the S519 boundary, 2026-10-19 -->
+## Compaction (S519, 2026-10-19) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-19 | `dcee26d3` `38524fec` `f91e55ff` `d1e633dd` | FM ×2, dashboard, CSV | (S518) **The picker's load-failure "← Back" and its Escape return to the wizard on "Start from a font"; the dashboard's video position radios are a named group; seven `worksheet.validation.*` context cells name the inline notes.** | HEAD 4/4 per cell on the name field → 0; Escape left no wizard 2/2 → 0; radiogroup 0 → 1 per cell (control 1); CSV round-trip, locales identical (findings S518).
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`radio-set-without-a-question`** (S501 `8d667fb3`; S502 `c134c65d`; S504 flash `b38c1f68`, FM `7a663826`; S505 generator `f28e2389`; S518 dashboard video `38524fec`, open 0 — the dictionary's `copyMode` was already named): ACTIVE, streak 0. Detection: static walk + runtime `unnamedGroups` (`a502/probes.js`); FM all panels open (`l504/fmcensus.mjs`). …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- L SEO & discoverability audit: 2026-10-19 (**S518 — 28th L, `fc54901d..18a7e6a3` (129 commits; LL's first L): 20 arms on 18 pages (plants 24/24); SEO tags + JSON-LD identical 17/17 (control 3/3), crawler text moved only resources' "Fonts"; generators current; FAQ twins 8/8; delta claims by real clicks. CLEAN; LL staged (noindex, no og, 377-char description → gate 2). FIXED 4 (FM ×2, dashboard, CSV).**)
+
+_(prior — S518 pointer:)_ **BRANCH/PR: draft PR #338 (S514–S517, 4 sessions — a merge soon keeps it reviewable) open → continue; merged → restart from `origin/main`.** `sw.js` **v1016**, FM **5.59**. ⚑ Stalest: L (S504), K (S505), N (S506). ⚑ First: the K housekeeping (`worksheet.validation.*` "alert"); the picker's load-failure "← Back" (the name field again, measured S517); sw.js `no-store` (the maintainer's call). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2 (TT Chant, glyphs, five S512 copy items); O needs a Bash rule.
