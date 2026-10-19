@@ -638,7 +638,9 @@ header-icons and holiday-icons CSS blocks.
 - **The view bar** is a group of `aria-pressed` toggle buttons, one pressed at a time: *Today's parasha* (the
   default on every load; the page remembers no choice), the five books (`torah.custom.book_*` labels) and *View All*,
   with a Print button at its end. It is sticky above 600px and scrolls with the page below (its buttons wrap to
-  three rows on a phone); a view change from below its resting place brings the new view's top up under it.
+  three rows on a phone); while it is sticky, Print keeps to the end of the first row and the views wrap beside it
+  (a row of its own would pin more of the window); a view change from below its resting place brings the new view's
+  top up under it.
 - **This week** is `HebCal.parshaForDate(today)` on the Torah Trainer's own Diaspora/Israel choice
   (`hebrewTorahTrainer_settings.schedule`, read through `ivritSafeParse` and never written; Diaspora when absent).
   A Shabbat that reads a festival portion steps on a week at a time (up to four) to the next parasha, with a note and
