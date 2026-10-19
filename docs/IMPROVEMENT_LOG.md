@@ -8,9 +8,11 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P4 (**NEW S519 K — tour-not-following-a-live-switch**) | Hebrew_Font_Maker.html | **A mid-tour switch leaves the card and spotlight behind**: `_tourShow(_tourIdx, 1)` in `applyI18n` (dictionary, torah fixed S521). | found S519
+- [ ] P4 (**NEW S522 M — gate 4**) | emoji_torah.html | **On a phone (≤600px) Print still takes a row of its own** (EN 390: four rows). | found S522
 
-- [ ] P4 (**NEW S519 K**) | letter_learner.html | **The `no_hebrew_voice` `_fbT` fallback differs from the key's English** (pre-locale only). | found S519
+- [ ] P4 (**NEW S522 M**) | emoji_torah.html, torah_trainer.html | **This week's badge drops its card's name 23px below its row-mates'.** | found S522
+
+- [ ] P4 (**NEW S522 M — gate 3**) | emoji_torah.html | **Today's lone card stops at 840px under a 1052px heading rule.** | found S522
 
 - [ ] P4 (**NEW S518 L — gate 2, at launch**) | letter_learner.html | **Its meta description is 377 characters (the indexable pages: 136–164); no og/twitter tags or JSON-LD**: fine while `noindex`; the launch needs a ~155-character one (gate 2) and the tags (findings S518). | found S518
 
@@ -314,13 +316,15 @@ _(none)_
 
 ## Done
 
-- [x] 2026-10-19 | (S521 close-out) | branch/deploy note | **S521 = P + 4 fixes, draft PR #339.** No drift. sw v1019→v1020; no FM bump; 7 smokes green.
+- [x] 2026-10-19 | (S522 close-out) | branch/deploy note | **S522 = M + 4 fixes; #339 merged → fresh branch, new draft PR.** Drift: sw v1020→v1036 outside the loop (LL pictures, `emoji_torah.html`); no backend change. sw v1036→v1037; no FM bump.
 
-- [x] 2026-10-19 | `397eb73a` `33c7c0ed` `35b9a249` `83f44a9f` | dictionary, torah, ivrit-saves, generator | (S521) **Tour switch ×2; a cloud-only list read once; a comment.** | 60/112, 40/136 → all; GETs 5 → 3
+- [x] 2026-10-19 | `293a8b7` `26f57c5` `ee41947` `297ea36` | emoji_torah ×2, FM, LL | (S522) **Bar's lone Print row; FM tour switch; LL voice fallback; sticky book headings.** | findings S522
 
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-19 | **S522** | iters: 5 | tools: emoji_torah ×2, FM, LL, sw.js | patterns fixed: tour-not-following-a-live-switch ×1 | pass run: M | SW: v1036→v1037
 
 - 2026-10-19 | **S521** | iters: 5 | tools: dictionary, torah, saves, generator, sw.js | patterns fixed: tour-switch ×2 | pass run: P | SW: v1019→v1020
 
@@ -336,17 +340,13 @@ _(none)_
 
 - 2026-10-18 | **S515** | iters: 5 | tools: dashboard, flash, generator, index, torah, FM, sw.js | patterns fixed: overlay-scoped-dialog-keys ×2 | pass run: B | SW: v1013→v1014
 
-- 2026-10-18 | **S514** | iters: 5 | tools: LL, flash, FM, dashboard | patterns fixed: overlay-scoped-dialog-keys ×2 | pass run: F | SW: v1012→v1013
-
-- 2026-10-16 | **S513** | iters: 5 | tools: FM ×2, generator, dashboard | patterns fixed: button-focus-lost-to-its-own-rebuild ×1, latin-tracking-on-hebrew-labels ×1, sub-floor touch target ×2 | pass run: C | SW: v1004→v1005
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S521 (2026-10-19):** dictionary, torah, generator, saves, scripts, sw.js S521 · 404, privacy, terms, contact, resources, index, account, LL, dashboard S520 · trope, FM, CSV S519 · README S517 · flash S515 · i18n.js S512 · pwa S472.
+- **Snapshot S522 (2026-10-19):** emoji_torah, FM, LL, sw.js S522 · dictionary, torah, generator, saves, scripts S521 · 404, privacy, terms, contact, resources, index, account, dashboard S520 · trope, CSV S519 · README S517 · flash S515 · i18n.js S512 · pwa S472.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
-- **`tour-not-following-a-live-switch`** (NEW S519 K; fixed LL, trope S519, dashboard S520, dictionary `397eb73a`, torah `33c7c0ed` S521; open: FM): ACTIVE, streak 0. Detection: `tourswitch.mjs`; torah `torahtour.mjs` (Sefaria gated).
+- **`tour-not-following-a-live-switch`** (NEW S519 K; fixed LL, trope, dashboard, dictionary, torah, FM S519–S522; open 0): ACTIVE, streak 0. Detection: `tourswitch.mjs`; torah `torahtour.mjs` (Sefaria gated).
 
 - **`overlay-scoped-dialog-keys`** (NEW S514 F; LL, flash; S515 `.ivrit` ask ×4, Torah favorite; **S516 hub Erase + I/E `973eb309`; open: none**): ACTIVE, streak 0. A click on a dialog's text puts focus on `<body>`: an overlay listener (or a first/last-only trap) lets Shift+Tab …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -700,7 +700,7 @@ _(none)_
 
 - N mobile & touch-device (one surface): 2026-10-19 (**S520 — 26th N, privacy/terms/404: 72 phone cells, taps, rotation, 4×, nested 404s, a real-font header sweep × 15 pages. FOUND 3, FIXED 4. N-next: LL (never), contact (S276).**)
 
-- M aesthetics & visual design (one surface): 2026-10-14 (**S508 — 25th M, dashboard (S322 →): 128 shots, census, plants 6/6. FOUND 5, FIXED 2. M-next: FM (S335).**)
+- M aesthetics & visual design (one surface): 2026-10-19 (**S522 — 26th M, `emoji_torah.html` (its first audit): 64 shots in real fonts, census, bar bands, the Trainer gallery beside it; plants fired. FOUND 4, FIXED 2. M-next: LL (never), FM (S335).**)
 
 - K i18n / localization audit: 2026-10-19 (**S519 — 35th K, `a4f94e88..db80feb4` (LL's first K): census, 90-state round trip (plants 450/450), retry 30/30, blind 7/7. FOUND 2, FIXED 4.**)
 
@@ -726,4 +726,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-18 (**S514 — 38th F, dialog Tab traps: 22 dialogs × 2 cells by real keys + a click-on-text arm; plants 4/4. CLEAN 13. FOUND 9, FIXED 3 (+ FM menus). F-next: empty states.**)
 
-**Next session (S522):** **BRANCH/PR: draft PR #339 (S520–S521) open → continue; merged → restart from `origin/main`.** `sw.js` **v1020**, FM **5.59**. ⚑ Stalest: M (S508), G (S509), D (S510). ⚑ First: FM's tour switch; sw.js `no-store` (maintainer). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2 (TT Chant, glyphs, five S512 copy items, LL description, colour-reset `_cloud` ×5); O needs a Bash rule.
+**Next session (S523):** **BRANCH/PR: the S522 draft PR open → continue; merged → restart from `origin/main`.** `sw.js` **v1037**, FM **5.59**. ⚑ Stalest: G (S509; dictionary), D, I. ⚑ `emoji_torah.html` has had only M. ⚑ Seeds: 44. ⚑ Maintainer: sw.js `no-store`; re-stage 14 fonts; torah screen reader; A/B week eyes; gates 2–4 (Candidates); O needs a Bash rule.

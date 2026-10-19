@@ -93201,3 +93201,33 @@ _(prior — S521 pointer:)_ **BRANCH/PR: draft PR #339 (S520) open → continue;
 - [x] 2026-10-19 | (S520 close-out) | branch/deploy note | **S520 = N + 4 fixes, draft PR #339.** No drift. sw v1018→v1019; no FM bump; smoke-account-page 65/65.
 
 - [x] 2026-10-19 | `825216f6` `0683a9de` `186ea5f4` `31f3625e` | 404 ×2, 8 headers, dashboard | (S520) **Nested-404 links; HE quip upright; 8 touch header gates; dashboard tour switch.** | 0/7 → 28/28; 6 → 0; 26/64 → 0/128; 18/128 → 128/128
+
+
+<!-- archived by compact-ledger at the S523 boundary, 2026-10-19 -->
+## Compaction (S523, 2026-10-19) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-19 | (S522 close-out) | branch/deploy note | **S522 = M + 4 fixes; PR #339 was merged, so a fresh branch off `origin/main` and a new draft PR.** Drift: sw v1020→v1036 outside the loop (the Letter Learner's pictures, `emoji_torah.html` new in `f83805e5`); FM 5.59; migrations 0001–0004 live; no backend change; keep-alive #37 green. sw v1036→v1037; no FM bump (a fix, not a feature); check-i18n, check-inline-js, sitemap.
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`tour-not-following-a-live-switch`** (NEW S519 K; fixed LL, trope S519, dashboard S520, dictionary `397eb73a`, torah `33c7c0ed` S521, FM `26f57c5` S522; open: 0 — flash re-labels without the spot, by design so far): ACTIVE, streak 0. Detection: `tourswitch.mjs`; torah `torahtour.mjs` (Sefaria gated).
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+_(prior — S522 pointer:)_ **Next session (S522):** **BRANCH/PR: draft PR #339 (S520–S521) open → continue; merged → restart from `origin/main`.** `sw.js` **v1020**, FM **5.59**. ⚑ Stalest: M (S508), G (S509), D (S510). ⚑ First: FM's tour switch; sw.js `no-store` (maintainer). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2 (TT Chant, glyphs, five S512 copy items, LL description, colour-reset `_cloud` ×5); O needs a Bash rule.
+
+
+<!-- moved at the S522 close-out, 2026-10-19 -->
+## Done (S521) — moved verbatim from the live ledger at the S522 close-out
+
+- [x] 2026-10-19 | (S521 close-out) | branch/deploy note | **S521 = P + 4 fixes, draft PR #339.** No drift. sw v1019→v1020; no FM bump; 7 smokes green.
+
+- [x] 2026-10-19 | `397eb73a` `33c7c0ed` `35b9a249` `83f44a9f` | dictionary, torah, ivrit-saves, generator | (S521) **Tour switch ×2; a cloud-only list read once; a comment.** | 60/112, 40/136 → all; GETs 5 → 3
+
+## Per-session log (S513, S514) — moved verbatim from the live ledger at the S522 close-out
+
+- 2026-10-16 | **S513** | iters: 5 | tools: FM ×2, generator, dashboard | patterns fixed: button-focus-lost-to-its-own-rebuild ×1, latin-tracking-on-hebrew-labels ×1, sub-floor touch target ×2 | pass run: C | SW: v1004→v1005
+
+- 2026-10-18 | **S514** | iters: 5 | tools: LL, flash, FM, dashboard | patterns fixed: overlay-scoped-dialog-keys ×2 | pass run: F | SW: v1012→v1013
