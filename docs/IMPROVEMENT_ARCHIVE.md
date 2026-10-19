@@ -93167,3 +93167,37 @@ _(prior — S520 pointer:)_ **BRANCH/PR: draft PR #338 (S514–S519) open → co
 ### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
 - **`header-wrap-gate-below-its-ceiling`** (NEW S478 M; ×8 `92a21164`; S489 `f620c768`; S520 touch ×8 `186ea5f4`): ACTIVE, streak 0. Detection: `n520/gates2.mjs` (1px 320-1000, EN/HE × themes × mouse AND touch, real fonts; a CSSOM-removed gate gives its ceiling); HEAD the control.
+
+
+<!-- archived by compact-ledger at the S522 boundary, 2026-10-19 -->
+## Compaction (S522, 2026-10-19) — moved verbatim from the live ledger
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`tour-not-following-a-live-switch`** (NEW S519 K; LL `05292d73`, trope `e6e7ba79`; S520 dashboard `31f3625e`; S521 dictionary `397eb73a`, torah `33c7c0ed`; open: FM): ACTIVE, streak 0. Detection: `tourswitch.mjs`; torah `torahtour.mjs` (Sefaria gated: a parked step must re-park).
+
+
+<!-- moved by hand at the S521 close-out, 2026-10-19 -->
+## S521 close-out (2026-10-19) — replaced or struck rows, moved verbatim
+
+### from Candidates (struck: fixed `83f44a9f`)
+
+- [ ] P4 (**NEW S463 P**) | hebrew_blend_generator.html | **The comment above `saveImportedAsWordList` says a saved list waits for an upload the teacher chooses**; signed in it goes up at once (W5). | found S463
+
+### from Pattern health
+
+- **`tour-not-following-a-live-switch`** (NEW S519 K; LL `05292d73`, trope `e6e7ba79`; S520 dashboard `31f3625e`; open: torah, FM, dictionary spot): ACTIVE, streak 0. Detection: `tourswitch.mjs`.
+
+### from Discovery-pass rotation
+
+- P accounts & cloud (one surface): 2026-10-14 (**S507 — 10th P, trope: tools 14/14, sync 210, migration 47; T1–T9 by real clicks; static 22/22 (plants 8/8); live clean. FOUND 2, FIXED 2 (+2). P-next: dictionary.**)
+
+### from handoff
+
+_(prior — S521 pointer:)_ **BRANCH/PR: draft PR #339 (S520) open → continue; merged → restart from `origin/main`.** `sw.js` **v1019**, FM **5.59**. ⚑ Stalest: P (S507), M (S508), G (S509). ⚑ First: the tour switch (torah, FM, dictionary); sw.js `no-store` (maintainer). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2 (TT Chant, glyphs, five S512 copy items, LL description); O needs a Bash rule.
+
+### from Done (S520, moved by the S521 close-out)
+
+- [x] 2026-10-19 | (S520 close-out) | branch/deploy note | **S520 = N + 4 fixes, draft PR #339.** No drift. sw v1018→v1019; no FM bump; smoke-account-page 65/65.
+
+- [x] 2026-10-19 | `825216f6` `0683a9de` `186ea5f4` `31f3625e` | 404 ×2, 8 headers, dashboard | (S520) **Nested-404 links; HE quip upright; 8 touch header gates; dashboard tour switch.** | 0/7 → 28/28; 6 → 0; 26/64 → 0/128; 18/128 → 128/128

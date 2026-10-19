@@ -2553,3 +2553,36 @@
   - `smoke-account-page --sdk` (2.116.0, SRI matched) 65/65 for the `account.html` gate. check-i18n and check-inline-js clean.
 
   | found S520
+
+## S521 (2026-10-19) — pass P's 11th run (`hebrew_dictionary.html`'s cloud wiring, its first P alone — S507's P-next)
+
+- [ ] P4 (**S521 Pass P — the Dictionary's receipts, arm by arm, each zero behind a control that fired, so the next P starts here**) | hebrew_dictionary.html, js/ivrit-saves.js, index.html |
+  - **Harness `p521/` (scratchpad):** `lib.mjs` = smoke-sync lines 148–517 cut verbatim (`P_ROOT` / `P_PORT` / `P_SDK` env), the SDK from `npm pack @supabase/supabase-js@2.116.0` (sha384 = `sdkIntegrity`); `dict.mjs` W1–W9 + W1c/W9c, `static.mjs`, `dup.mjs`, `gen5.mjs`.
+  - **Arm 1:** `smoke-tools --only hebrew_dictionary.html --sdk` 22/22; control: a `localStorage.setItem` planted before `IvritSaves.attach` in a `git archive` copy → 21/22, the key named.
+  - **Arm 2:** smoke-sync 213/213, smoke-migration 47/47 as found. `dict.mjs` on the fake cloud, by real clicks (34/34):
+    - **W1** a set-up device: both lists in the manager, the panel mounted, 0 writes (control **W1c**: a list changed here → one PATCH).
+    - **W2** Advanced → Copy Options → Bulk Copy, two cards, Save to Word List, Save as new list → one POST, account = device. **W3** rename (Enter) → one PATCH with the name. **W5** ↓ → one PATCH (order followed); ✕ → one PATCH.
+    - **W4** delete → `delete_confirm_cloud` ("signed in… every device"); Cancel 0 writes; OK one DELETE.
+    - **W6** `xFuture` on a list and `xWord` on a word survive a rename and the word window's *Add to Word List…*.
+    - **W7** both sides changed one list → union, mine first; account = device; `updated` the later stamp.
+    - **W8** romanization style + colour coding by real clicks → the Suite prefs row carries both; no audio switch, `lastState` or panel map; no wordList write.
+    - **W9** an anonymous browse (it writes only `hebrewDictionary_lastState`), then a first sign-in: the lists land, no card, 0 writes. Control **W9c**: a list saved anonymously → the card asks ("Word lists: 1").
+  - **Arms 3–7** (`static.mjs`, 38/38; 8 plants in one copy → 12 checks red): the wordList key and the four Dictionary preference fields at the hub's export / import / erase / `IVRIT_CFG.gather` / `apply`; `privacy.legal.collect` names word lists (EN + HE); the delete asks the `_cloud` key under `hasStoredSession()`, built in en + he; no `removeItem` of a registry key; `forgetRow` 0; the project origin in `connect-src` exactly on the 12 account carriers, jsdelivr beside it; the 15 gtag pages' keys = `AUTH_QUERY_KEYS`; `CORE_ASSETS`; `TOOLS` = 0004's CHECK.
+  - **Arm 8 (read-only):** 4 recorded migrations (0001–0004), `Live?` yes ×4; performance advisor empty; security only the moot leaked-password WARN; delete-account v3 ACTIVE, `verify_jwt` true, its deployed source === `db/functions/delete-account/index.ts` (one planted char → unequal); keep-alive #37 green.
+  - **FOUND + FIXED (`35b9a249`):** a list or class only the account holds was read twice — once while the plan was made, for its label (`cloudLabelFor`), then again by its download. `dup.mjs` (GETs at a first hydration, two lists): dictionary 5 → 3, generator and flash cards 6 → 4, fresh device and a device without the hydrated mark alike. smoke-sync scenario 1 had pinned the double read ("5 rows cost 7 loads") and now pins 5.
+  - Known and not re-filed: the vowel-colour Reset's confirm ×5 has no `_cloud` wording (S435, gate 2); it reaches the account on all five (the Dictionary's through the Suite prefs row).
+  | found S521
+
+- [ ] P4 (**S521 — the fixes' receipts**) | hebrew_dictionary.html, torah_trainer.html, js/ivrit-saves.js, hebrew_blend_generator.html |
+  - **`397eb73a`** (`n520/tourswitch2.mjs`: S520's probe counting by `_tourCounter`, waiting for the corpus): the Dictionary re-labelled already but left the spot (up to 981px off). HEAD 60/112, tree 112/112.
+  - **`33c7c0ed`** (`n520/torahtour.mjs`, Sefaria `/api/v3/texts/` stubbed behind a gate, 5 verses): arm H parks the tour on the reading step while the fetch is held, switches both ways (the hold must stay, the card read the step title + `torah.tour.reading_loading`, the spot on `#ttReading`), then opens the gate (the step shows its target); arm S takes all 6 steps both ways. HEAD 40/136, tree 136/136. The fix re-parks a held step (`_tourHoldForReading`) and re-shows a step only when `_resolveStep` finds its target, so a switch never advances the tour.
+  - **`35b9a249`**: all seven smokes — tools 182, account 112, account-page 65, fontmaker 59, migration 47, saves 15, sync 213 (in a run beside six other suites scenario 1 failed on its old pin and D31 missed; both pass alone; the full sync re-run alone 213/213); `dict.mjs` 34/34 on the changed module.
+  - **`83f44a9f`** (`gen5.mjs`, real clicks: Real Words → Imported List → paste → Import → name → Save as Word List): one Dictionary `wordList` POST, nothing deleted. Comment only.
+  - The recipe on the three pages (light/dark × 1280/800, a switch to HE and back with no tour open): 12/12, 0 page errors, no raw keys.
+  | found S521
+
+- [ ] P4 (**NEW S521 — traps**) | probes |
+  - **(311)** The Dictionary's Bulk Copy checkbox sits in Advanced → Copy Options, both collapsed at load: click the panel title, then the section title. `check()` on the hidden box waits out its timeout.
+  - **(312)** The hub exports the Dictionary's three scalars (romanization, TTS rate, audio) through `...dictScalarsIfSet()` in `exportAllSettings` and `IVRIT_CFG.gather`, not as literal keys. A static probe that does not follow it reports two missing keys that are present.
+  - **(313)** smoke-sync **D31** (Trope practice done signed out, merged at the next sign-in) can miss when six other suites run beside it: the progress stays the signed-out one and the row unchanged. Alone it passes. Re-run it alone before reading a change into it.
+  | found S521
