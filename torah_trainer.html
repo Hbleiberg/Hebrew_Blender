@@ -11470,6 +11470,13 @@ function applyI18n() {
   if (!playing && typeof currentVerses !== 'undefined' && currentVerses && currentVerses.length > 0) {
     try { renderText(); } catch (e) {}
   }
+  // An open tour card: its texts in the new language, the spotlight back on its mirrored target (the generator's
+  // call, after the reading re-render above). Never an advance: a parked reading step re-parks, and a step whose
+  // target cannot show right now keeps its place.
+  try {
+    if (_tourActive && _tourPendingIdx != null) _tourHoldForReading(_tourPendingIdx);
+    else if (_tourActive && _tourIdx >= 0 && _resolveStep(_tourIdx)) _tourShow(_tourIdx, 1);
+  } catch (e) {}
 }
 function _wireTorahI18n() { if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); } }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', _wireTorahI18n);
