@@ -2879,6 +2879,8 @@ function applyI18n() {
   renderGrid();
   llRenderVoicePicker();
   llPositionSidebarTab();   // the live language switch flips dir without a resize event
+  // An open tour card: its texts in the new language, the spotlight back on its mirrored target (the generator's call).
+  if (_tourActive && _tourIdx >= 0) _tourShow(_tourIdx, 1);
   if (!document.getElementById('llOverlay').hidden && _llId) {
     document.getElementById('llPanel-font').dataset.for = '';   // the tiles carry translated labels
     llFillDialog(_llId, true);
