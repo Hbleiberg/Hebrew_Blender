@@ -93099,3 +93099,35 @@ _(prior — S517 pointer:)_ **BRANCH/PR: draft PR #338 (S514–S516) open → co
 - L SEO & discoverability audit: 2026-10-19 (**S518 — 28th L, `fc54901d..18a7e6a3` (129 commits; LL's first L): 20 arms on 18 pages (plants 24/24); SEO tags + JSON-LD identical 17/17 (control 3/3), crawler text moved only resources' "Fonts"; generators current; FAQ twins 8/8; delta claims by real clicks. CLEAN; LL staged (noindex, no og, 377-char description → gate 2). FIXED 4 (FM ×2, dashboard, CSV).**)
 
 _(prior — S518 pointer:)_ **BRANCH/PR: draft PR #338 (S514–S517, 4 sessions — a merge soon keeps it reviewable) open → continue; merged → restart from `origin/main`.** `sw.js` **v1016**, FM **5.59**. ⚑ Stalest: L (S504), K (S505), N (S506). ⚑ First: the K housekeeping (`worksheet.validation.*` "alert"); the picker's load-failure "← Back" (the name field again, measured S517); sw.js `no-store` (the maintainer's call). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2 (TT Chant, glyphs, five S512 copy items); O needs a Bash rule.
+
+## Size move (S519 close-out, 2026-10-19) — S518's Done entries, moved by hand verbatim (the ledger sat at its 100 KB limit)
+
+- [x] 2026-10-19 | (S518 close-out) | branch/deploy note | **S518 = L (27 → 28th) + 4 fixes on draft PR #338 (S514–S518).** Drift: none (main `4db5a627`, FM 5.59, 0004 live, backend files unchanged since `ba33c5bd`, keep-alive #36 green). sw v1016→v1017; build-locales (+1 key); no FM bump (fixes). Nothing asked; LL description logged (gate 2).
+
+- [x] 2026-10-19 | `dcee26d3` `38524fec` `f91e55ff` `d1e633dd` | FM ×2, dashboard, CSV | (S518) **The picker's load-failure "← Back" and its Escape return to the wizard on "Start from a font"; the dashboard's video position radios are a named group; seven `worksheet.validation.*` context cells name the inline notes.** | HEAD 4/4 per cell on the name field → 0; Escape left no wizard 2/2 → 0; …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-19 | (struck S518) | CSV, 8 pages | **S425's "22 Hebrew strings end in →"**: fixed by `5f7f8a40`, the candidate left open; 0 now (the 9 "→" are right). | CSV + page grep
+
+
+<!-- archived by compact-ledger at the S520 boundary, 2026-10-19 -->
+## Compaction (S520, 2026-10-19) — moved verbatim from the live ledger
+
+### from Candidates (prioritized, top = next)
+
+- [ ] P4 (**NEW S519 K — tour-not-following-a-live-switch**) | dashboard, torah, FM, dictionary | **A language switch during a tour leaves the card in the old language (Next flips; the last step's "Done" turns "Next") and the spotlight off its target (up to 934px)**: the generator's `_tourShow(_tourIdx, 1)` in `applyI18n` (LL, trope S519); the dictionary re-labels, keeps the spot; torah's `applyI18n` must never advance a tour (findings S519). | found S519
+
+### from Done
+
+- [x] 2026-10-19 | `05292d73` `e6e7ba79` `75637fef` `929089d4` | LL, trope, FM, contact, CSV | (S519) **An open tour follows a live switch on the Letter Learner and the Trope Tutor; FM's 14 pressed-button rows and Contact's payment row are named groups.** | tours every step × both directions: HEAD 8/40 + 5/72 → 40/40 + 72/72 (text + spot ≤1px); FM 0/14 → 14/14 per cell (control 1/1), contact 0 → 1 (pixels identical); 4 cells, 0 pageerrors
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`tour-not-following-a-live-switch`** (NEW S519 K; LL `05292d73`, trope `e6e7ba79`; **open: dashboard, torah, FM; the dictionary's spot**): ACTIVE, streak 0. `applyI18n` leaves an open tour card in the old language and its spotlight where the target stood before the page mirrored. Detection: `tourswitch.mjs` — Tour by a real click, the real switcher, card text vs `I18n.t` of the step's keys and spot vs target rect; control: flash/dictionary/generator text follows.
+
+- **`radio-set-without-a-question`** (S501 `8d667fb3`; S502 `c134c65d`; S504 flash `b38c1f68`, FM `7a663826`; S505 generator `f28e2389`; S518 dashboard video `38524fec`; S519 FM ×14 `75637fef`, contact `929089d4`; open: dictionary mode + resources view (gate 2), the `.ivrit` toggle): ACTIVE, streak 0. Detection: static walk + runtime …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- K i18n / localization audit: 2026-10-19 (**S519 — 35th K on `a4f94e88..db80feb4` (119 commits; LL's first K): CSV +115 (19 prefix-built, all resolve), 2 changed, 0 removed; census 5,271 refs (misses = base's 2 plural builds; 1 new stale fallback); 90-state round trip (plants 450/450), twins = base 84/84; retry 30/30 (control 4/4); blind arms (plants 7/7); HE attrs (plant 15/15); LL 158 scans × 288 clicks. FOUND 2 (tours ×6 pages, LL fallback), FIXED 4.**)
+
+_(prior — S519 pointer:)_ **BRANCH/PR: draft PR #338 (S514–S518, 5 sessions — a merge soon keeps it reviewable) open → continue; merged → restart from `origin/main`.** `sw.js` **v1017**, FM **5.59**. ⚑ Stalest: K (S505), N (S506), P (S507). ⚑ First: FM's 5 unnamed mode toggles (an aria string each); sw.js `no-store` (the maintainer's call). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2 (TT Chant, glyphs, five S512 copy items, the LL description); O needs a Bash rule.

@@ -8,6 +8,10 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P4 (**NEW S519 K — tour-not-following-a-live-switch**) | dashboard, torah, FM, dictionary | **A switch mid-tour leaves the card in the old language, the spotlight off target**: `_tourShow(_tourIdx, 1)` in `applyI18n` (torah: never advance; findings S519). | found S519
+
+- [ ] P4 (**NEW S519 K**) | letter_learner.html | **The `no_hebrew_voice` `_fbT` fallback differs from the key's English** (pre-locale only). | found S519
+
 - [ ] P4 (**NEW S518 L — gate 2, at launch**) | letter_learner.html | **Its meta description is 377 characters (the indexable pages: 136–164); no og/twitter tags or JSON-LD**: fine while `noindex`; the launch needs a ~155-character one (gate 2) and the tags (findings S518). | found S518
 
 - [ ] P3 (**NEW S510 D; shared sw.js — the maintainer's call**) | sw.js | **Pages, scripts and /locales/ are fetched with cache:'no-store', so a returning visitor re-downloads ~370 KB per page view although GitHub Pages answers 304**; `'no-cache'` keeps always-revalidate and made the same reload 0 B (findings S510). | found S510
@@ -26,9 +30,9 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S503 E, gate 2**) | torah_trainer.html | **Total Torah on: Chant says "(PocketTorah audio)"** (`verse_chant_aria`). | found S503
 
-- [ ] P4 (**S502 A — radio-set twin**) | FM, dictionary, resources | **Unnamed pressed rows**: FM's 5 mode toggles (no visible label: need a string), dictionary mode + resources view (gate 2). | found S502
+- [ ] P4 (**S502 A — radio-set twin**) | dictionary, resources | **Unnamed pressed rows**: dictionary mode, resources view (gate 2). | found S502
 
-- [ ] P4 (**NEW S500 F**) | dashboard, contact, `.ivrit` carriers | **Week tabs: no tabpanel; Contact pay pills + `.ivrit` mode toggle unnamed** (pills need a string; the toggle is shared markup). | found S500
+- [ ] P4 (**NEW S500 F**) | dashboard, `.ivrit` carriers | **Week tabs: no tabpanel; the `.ivrit` mode toggle unnamed** (shared markup). | found S500
 
 - [ ] P4 (**NEW S497 I — gate 2**) | classroom_dashboard.html | **A Hebrew first visit's demo message is English** (`DEFAULT_PRESET`, a `smoke-sync` canon). | found S497
 
@@ -312,15 +316,15 @@ _(none)_
 
 ## Done
 
-- [x] 2026-10-19 | (S518 close-out) | branch/deploy note | **S518 = L (27 → 28th) + 4 fixes on draft PR #338 (S514–S518).** Drift: none (main `4db5a627`, FM 5.59, 0004 live, backend files unchanged since `ba33c5bd`, keep-alive #36 green). sw v1016→v1017; build-locales (+1 key); no FM bump (fixes). Nothing asked; LL description logged (gate 2).
+- [x] 2026-10-19 | (S519 close-out) | branch/deploy note | **S519 = K (35th) + 4 fixes on draft PR #338 (S514–S519).** Drift: none (main `4db5a627`, keep-alive #36 green). sw v1017→v1018; +7 keys; no FM bump. Nothing asked.
 
-- [x] 2026-10-19 | `dcee26d3` `38524fec` `f91e55ff` `d1e633dd` | FM ×2, dashboard, CSV | (S518) **The picker's load-failure "← Back" and its Escape return to the wizard on "Start from a font"; the dashboard's video position radios are a named group; seven `worksheet.validation.*` context cells name the inline notes.** | HEAD 4/4 per cell on the name field → 0; Escape left no wizard 2/2 → 0; …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-10-19 | (struck S518) | CSV, 8 pages | **S425's "22 Hebrew strings end in →"**: fixed by `5f7f8a40`, the candidate left open; 0 now (the 9 "→" are right). | CSV + page grep
+- [x] 2026-10-19 | `05292d73` `e6e7ba79` `75637fef` `929089d4` | LL, trope, FM, contact | (S519) **Tours follow a live switch (LL, trope); FM's 14 pressed rows and Contact's pay row are named.** | HEAD 8/40, 5/72 → 40/40, 72/72; FM 0 → 14/14; contact 0 → 1; 4 cells, 0 errors
 
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-19 | **S519** | iters: 5 | tools: LL, trope, FM, contact, locales CSV, sw.js | patterns fixed: tour-not-following-a-live-switch ×2, radio-set-without-a-question ×2 | pass run: K | SW: v1017→v1018
 
 - 2026-10-19 | **S518** | iters: 5 | tools: FM ×2, dashboard, locales CSV, sw.js | patterns fixed: radio-set-without-a-question ×1 | pass run: L | SW: v1016→v1017
 
@@ -336,9 +340,11 @@ _(none)_
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S518 (2026-10-19):** FM, dashboard, locales CSV, sw.js S518 · README S517 · index, letter_learner S516 · flash, generator, torah S515 · i18n.js S512 · dictionary, trope S511 · resources, account S508 · saves, scripts S507 · contact S498 · privacy S495 · terms, 404 S494 · pwa S472.
+- **Snapshot S519 (2026-10-19):** LL, trope, FM, contact, locales CSV, sw.js S519 · dashboard S518 · README S517 · index S516 · flash, generator, torah S515 · i18n.js S512 · dictionary S511 · resources, account S508 · saves, scripts S507 · privacy S495 · terms, 404 S494 · pwa S472.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`tour-not-following-a-live-switch`** (NEW S519 K; LL `05292d73`, trope `e6e7ba79`; open: dashboard, torah, FM, the dictionary's spot): ACTIVE, streak 0. Detection: `tourswitch.mjs`.
 
 - **`overlay-scoped-dialog-keys`** (NEW S514 F; LL, flash; S515 `.ivrit` ask ×4, Torah favorite; **S516 hub Erase + I/E `973eb309`; open: none**): ACTIVE, streak 0. A click on a dialog's text puts focus on `<body>`: an overlay listener (or a first/last-only trap) lets Shift+Tab …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -392,7 +398,7 @@ _(none)_
 
 - **`bulk-apply-skips-a-renderer-the-control-runs`** (NEW S461; FIXED ×3): ACTIVE, streak 1 (S472 clean). Detection: `x3/parity.mjs`, `p463/loc-fix.mjs`. Open: none known.
 
-- **`radio-set-without-a-question`** (S501 `8d667fb3`; S502 `c134c65d`; S504 flash `b38c1f68`, FM `7a663826`; S505 generator `f28e2389`; S518 dashboard video `38524fec`, open 0 — the dictionary's `copyMode` was already named): ACTIVE, streak 0. Detection: static walk + runtime …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`radio-set-without-a-question`** (S501–S518: 7 fixes; S519 FM ×14 `75637fef`, contact `929089d4`; open: dictionary, resources (gate 2), `.ivrit` toggle): ACTIVE, streak 0. Detection: static walk + runtime `unnamedGroups` …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`native-input-display-none-under-its-label`** (NEW S458, `ea43be7e`): ACTIVE, streak 0. Detection: `a458/radios.mjs`; control torah. …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -694,7 +700,7 @@ _(none)_
 
 - M aesthetics & visual design (one surface): 2026-10-14 (**S508 — 25th M, dashboard (S322 →): 128 shots, census, plants 6/6. FOUND 5, FIXED 2. M-next: FM (S335).**)
 
-- K i18n / localization audit: 2026-10-13 (**S505 — 34th K on `2fee2f28..a4f94e88` (90 commits): `k505/` CSV delta, static census (plants 4/4), 84-state round trip (plants 420/420), retry 28/28 (control 0/4), blind arms (plants 6/6), delta surfaces by real input. CLEAN: 0 findings.**)
+- K i18n / localization audit: 2026-10-19 (**S519 — 35th K, `a4f94e88..db80feb4` (LL's first K): census, 90-state round trip (plants 450/450), retry 30/30, blind 7/7. FOUND 2, FIXED 4.**)
 
 - C accessibility (one tool): 2026-10-16 (**S513 — FM, its 5th C (S368 →): 7 arms by real input, EN light 1280 + HE dark 800 (+ Draw, iPad Mini), 16 surfaces, plants 11/11. CLEAN: names, the Tab walk (80 stops, all painted), 12 dialogs, reduced motion. FOUND 7, FIXED 2 (+ generator, dashboard). C per tool: letter_learner never, torah S298, trope S312, generator S327, index S340, flash S381, …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -718,4 +724,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-18 (**S514 — 38th F, dialog Tab traps: 22 dialogs × 2 cells by real keys + a click-on-text arm; plants 4/4. CLEAN 13. FOUND 9, FIXED 3 (+ FM menus). F-next: empty states.**)
 
-**Next session (S519):** **BRANCH/PR: draft PR #338 (S514–S518, 5 sessions — a merge soon keeps it reviewable) open → continue; merged → restart from `origin/main`.** `sw.js` **v1017**, FM **5.59**. ⚑ Stalest: K (S505), N (S506), P (S507). ⚑ First: FM's 5 unnamed mode toggles (an aria string each); sw.js `no-store` (the maintainer's call). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2 (TT Chant, glyphs, five S512 copy items, the LL description); O needs a Bash rule.
+**Next session (S520):** **BRANCH/PR: draft PR #338 (S514–S519) open → continue; merged → restart from `origin/main`.** `sw.js` **v1018**, FM **5.59**. ⚑ Stalest: N (S506), P (S507), M (S508). ⚑ First: the tour switch (dashboard, torah, FM); sw.js `no-store` (the maintainer's call). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2 (TT Chant, glyphs, five S512 copy items, the LL description); O needs a Bash rule.

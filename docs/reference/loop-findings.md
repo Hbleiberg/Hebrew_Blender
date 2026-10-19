@@ -2483,3 +2483,52 @@
   - **(3)** A crop of the dashboard's video row in the Hebrew UI renders in one of two pixel states run to run on both trees (the same geometry): compare boxes, and rerun before reading a pixel difference.
 
   | found S518
+
+## S519 (2026-10-19) — pass K on the S505 → S518 delta (the 35th K; the Letter Learner's first)
+
+- [ ] P4 (**S519 Pass K — receipts over `a4f94e88..db80feb4` (S505's endpoint → S518's close-out; 119 commits), so the next K extends rather than repeats them**) | suite-wide |
+  - **Delta:** the i18n surface 18 files +3,442/−187 (`letter_learner.html` 2,892 of it). CSV +115 keys, 2 changed (`privacy.legal.collect`, `resources.view.fonts`), 0 removed, 7 context-only.
+    - 19 of the 115 are prefix-built (`letterlearner.vowels.group_` + id, `letterlearner.glyphname.vowel_` + id): every id in `VOWELS` / `VOWEL_GROUPS` resolves.
+  - **Gates A–E clean.** Harness `k519/` (scratchpad):
+    - `csvdelta.py A B` (the delta above).
+    - `static.py ROOT`: 5,271 literal key refs. The 2 misses are plural prefix builds, identical at the base. Stale `_fbT` / `_pT` / ternary fallbacks: 23 = the base's 22 + 1 new (the LL's `shared.audio.no_hebrew_voice`, logged).
+    - `rt.mjs`: 15 pages × (EN light 1280 → HE → EN; HE dark 800 → EN → HE) = 90 states by the real switcher.
+      - Raw 0, missing 0, lang/dir 90/90, 0 page errors.
+      - Plants 450/450: a `data-i18n` miss, an `I18n.t` miss, a CSV twin, a filled template, and a hidden key that must not count.
+      - The twin sets equal the base's (:8083) 84/84 state for state. The rest are known: the generator's "Letter" paper size, a trope name, resources' "All Ages", and the LL's 23 English letter names (learner content by design).
+    - `retry.mjs`: every page EN + HE with the locale's first fetch aborted retried and ended translated, 30/30 (control: every fetch aborted, 4/4 stay untranslated).
+    - `ctlraw.mjs` (every locale fetch aborted): raw-key counts identical to the base on all 14 old pages (the S481 candidate). The LL shows 0 (it uses `_fbT` throughout).
+    - `blind.py` over the 3,318 added lines: template `${}` + English 0, helper("English") 0, setAttribute ternary/literal 0, `.prop = 'English'` 0, dialog('English') 0 (plants 7/7).
+      - Physical CSS 3, all legitimate: the tour spot's JS-placed box, the shared toast's `left:50%` centring, and a comment.
+    - `latin.mjs`: English-only `alt` / `title` / `aria-label` / `placeholder` in the HE UI outside `lang="en"`, 0 on 15 pages (plant 15/15).
+    - `dyn.mjs`: the LL, both orders. Each mode's grid and tips, two cards per mode × every visible tab + Next, the Fonts tab, split pairs, every vowel off (the grid note), Reset; a live switch with Vowels, tips open and two vowels unticked kept them all.
+      - 158 scans, 288 clicks: raw 0, missing 0, 0 page errors.
+  - **FOUND 2:**
+    - **(a)** `tourswitch.mjs`: a live switch during a tour (Tour by a real click; the switcher stays reachable, `elementFromPoint`).
+      - On the dashboard, Torah, the trope tutor, FM and the LL, the card keeps the old language. Only Next flips (it carries `data-i18n`), and the last step's "Done" becomes "Next".
+      - On those pages and the dictionary, the spotlight stays where the target stood before the page mirrored (up to 981px).
+      - Control: flash, the dictionary and the generator re-label 6/6; the generator's `_tourShow(_tourIdx, 1)` also re-places the spot (0px).
+    - **(b)** the LL fallback above.
+  - **Triaged, not defects:**
+    - The LL's `#a11yStatus` keeps the last announcement's language after a switch (a hidden live region, already read).
+    - The LL Reset kept the vowels unticked because the probe dismissed its `confirm()`.
+
+  | found S519
+- [ ] P4 (**S519 — the four fixes' receipts**) | letter_learner.html, trope_tutor.html, Hebrew_Font_Maker.html, contact.html |
+  - **`05292d73` / `e6e7ba79`** (`fixT.mjs`: HEAD :8082 vs tree; EN/HE × light/dark × 1280/800). Each step the tour shows (the engine skips hidden targets), by Tour + Next × k, then a switch there and back.
+    - Card title, body, counter and Next/Done equal `I18n.t` of the step's keys, the spot within 1px of its target, still on step k.
+    - LL: HEAD 8/40 (the 8 matched by returning to the first language), tree 40/40. Trope: HEAD 5/72, tree 72/72.
+    - `done.mjs`: the last step's Done after a switch, HEAD "הבא", tree "סיום".
+    - The round trip on both pages is unchanged (24/24 states equal).
+  - **`75637fef`** (`fix3.mjs`). The tabs, the Advanced checkboxes and the panels by real clicks; a mark tile opens Edit mark shape, whose "+ Add dot" / "+ Add bar" were clicked. The stage's mark controls were entered with `selectItem`, then real clicks on Simple editor, + Dot and + Bar; then Draw and the Erase tool.
+    - Named groups HEAD 0/14 → tree 14/14 per cell, each holding its pressed buttons (control: Add Letters 1/1 on both).
+    - The modal's row renamed after a live switch, 1/1 → 1/1.
+  - **`929089d4`** (`fix4.mjs`): "Payment method" group HEAD 0 → tree 1 with 3 buttons. A real click on Venmo presses it and shows its panel on both trees; renamed after a live switch 4/4; `.pill-wrap` pixel-identical 4/4.
+  - 0 page errors throughout; check-i18n and check-inline-js clean.
+
+  | found S519
+- [ ] P4 (**S519 — probe traps 1–2**) | probes |
+  - **(1)** `tourNext` is both a function and an element id on every tour page, so a probe that reads `tourNext.textContent` gets `undefined` and every "card text matches" reads false: use `getElementById`.
+  - **(2)** The FM's English, Cyrillic and Custom glyphs panels exist only as tabs once their Advanced checkbox is ticked (tabbed layout), so a click on the panel title times out: tick the box, then click `#catTabs .ctab[data-cat=…]`.
+
+  | found S519

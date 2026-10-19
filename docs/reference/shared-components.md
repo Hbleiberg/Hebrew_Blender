@@ -638,6 +638,13 @@ first-visit pulse gated by a `hebrew<Tool>_tourSeen` flag (set once so the pulse
   `hebrew<Tool>_tourSeen` except Font Maker's legacy `hebrewFontMaker_tourDone`. The generator's engine is
   a copy of Font Maker's; flash cards' and the trope tutor's are copies of the generator/torah lineage
   ("keep the engines in sync"). **Not** on `index.html` or `resources.html`.
+- **A live language switch during a tour:** the page's `applyI18n` re-shows the open step
+  (`if (_tourActive && _tourIdx >= 0) _tourShow(_tourIdx, 1)`), which puts the card in the new language and the
+  spotlight back on its target after the page mirrors. Without it, `applyStaticI18n` flips only the Next button
+  (it carries `data-i18n`, so the last step's "Done" also turns back into "Next") and the spotlight stays where the
+  target used to be. **Implemented on:** the generator, the trope tutor and the Letter Learner. Flash cards and the
+  dictionary re-label the card in place but don't move the spotlight. The dashboard, Torah Trainer and Font Maker
+  do neither yet.
 - **Rule:** when you next touch a tour engine, extract it into a `═══`-marked shared block (house
   convention, byte-identical across files) so the six copies stop drifting. Any **new** tool ships a tour.
   A tour must touch none of the undo/dirty/state machinery — read-only overlay only.
