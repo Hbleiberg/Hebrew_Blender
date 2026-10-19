@@ -1656,7 +1656,7 @@ html[lang="he"] .tp-label{letter-spacing:normal;text-transform:none;}
     <div class="panel collapsed cat-panel" data-cat="english">
       <div class="panel-title"><span data-i18n="fontmaker.panels.english">English</span> <span id="englishProgress" style="font-size:0.7rem;color:var(--gold-light);"></span></div>
       <div class="panel-body">
-        <div class="mode-toggle" style="margin-bottom:10px;">
+        <div class="mode-toggle" style="margin-bottom:10px;" role="group" aria-label="Letters shown" data-i18n-aria-label="fontmaker.panels.case_aria">
           <button class="mode-btn" id="engCaseUpper" onclick="setEnglishCase('upper')" aria-pressed="true" data-i18n="fontmaker.panels.eng_case_upper">Uppercase A–Z</button>
           <button class="mode-btn" id="engCaseLower" onclick="setEnglishCase('lower')" aria-pressed="false" data-i18n="fontmaker.panels.eng_case_lower">Lowercase a–z</button>
           <button class="mode-btn" id="engCaseAccent" onclick="setEnglishCase('accent')" aria-pressed="false" style="display:none;" data-i18n="fontmaker.panels.eng_case_accent">Accented &amp; extra</button>
@@ -1669,7 +1669,7 @@ html[lang="he"] .tp-label{letter-spacing:normal;text-transform:none;}
     <div class="panel collapsed cat-panel" data-cat="cyrillic">
       <div class="panel-title"><span data-i18n="fontmaker.panels.cyrillic">Cyrillic</span> <span id="cyrillicProgress" style="font-size:0.7rem;color:var(--gold-light);"></span></div>
       <div class="panel-body">
-        <div class="mode-toggle" style="margin-bottom:10px;">
+        <div class="mode-toggle" style="margin-bottom:10px;" role="group" aria-label="Letters shown" data-i18n-aria-label="fontmaker.panels.case_aria">
           <button class="mode-btn" id="cyrCaseUpper" onclick="setCyrillicCase('upper')" aria-pressed="true" data-i18n="fontmaker.panels.cyr_case_upper">Uppercase А–Я</button>
           <button class="mode-btn" id="cyrCaseLower" onclick="setCyrillicCase('lower')" aria-pressed="false" data-i18n="fontmaker.panels.cyr_case_lower">Lowercase а–я</button>
         </div>
@@ -1945,7 +1945,7 @@ html[lang="he"] .tp-label{letter-spacing:normal;text-transform:none;}
 <div class="overlay" id="markEditOverlay" onclick="if(event.target===this)closeMarkEdit()">
   <div class="modal me-modal" role="dialog" aria-modal="true" aria-labelledby="meTitle">
     <h3 id="meTitle" data-i18n="fontmaker.modals.markedit_title">Edit mark shape</h3>
-    <div class="mode-toggle" style="margin-bottom:10px;">
+    <div class="mode-toggle" style="margin-bottom:10px;" role="group" aria-label="How to make the mark" data-i18n-aria-label="fontmaker.me.mode_aria">
       <button class="mode-btn active" id="meModeEditor" onclick="meSetMode('editor')" aria-pressed="true" data-i18n="fontmaker.modals.markedit_mode_editor">Simple editor</button>
       <button class="mode-btn" id="meModeUpload" onclick="meSetMode('upload')" aria-pressed="false" data-i18n="fontmaker.modals.markedit_mode_upload">Upload image</button>
     </div>
@@ -6320,13 +6320,13 @@ function renderMarkPanel(cat) {
     const um = f.uploadMode || 'perSymbol';
     // "Mark shapes" + "Upload mode" groups sit side by side (compact) to save vertical space
     let opts = fam ? '' : `<div class="mark-opt"><div class="hint">${_pT('mark_shapes', "Mark shapes")}</div>
-      <div class="mode-toggle">
+      <div class="mode-toggle" role="group" aria-label="${esc(_pT('mark_shapes', "Mark shapes"))}">
         <button class="mode-btn ${f.mode==='default'?'active':''}" aria-pressed="${f.mode==='default'}" onclick="setMarkMode('${cat}','default')">${_pT('mark_mode_default', "Default")}</button>
         <button class="mode-btn ${f.mode==='custom'?'active':''}" aria-pressed="${f.mode==='custom'}" onclick="setMarkMode('${cat}','custom')">${_pT('mark_mode_custom', "Custom")}</button>
       </div></div>`;
     if (customWithMarks) {
       opts += `<div class="mark-opt"><div class="hint">${_pT('mark_upload_mode', "Upload mode")}</div>
-        <div class="mode-toggle">
+        <div class="mode-toggle" role="group" aria-label="${esc(_pT('mark_upload_mode', "Upload mode"))}">
           <button class="mode-btn ${um==='perSymbol'?'active':''}" aria-pressed="${um==='perSymbol'}" onclick="setMarkUploadMode('${cat}','perSymbol')">${_pT('mark_per_symbol', "Per Symbol")}</button>
           <button class="mode-btn ${um==='combined'?'active':''}" aria-pressed="${um==='combined'}" onclick="setMarkUploadMode('${cat}','combined')">${_pT('mark_combined', "Combined")}</button>
         </div></div>`;
@@ -6836,7 +6836,7 @@ function renderCustomGlyphsPanel() {
         <label class="fld">${_cgT('codepoint', "Code point")} <input type="text" id="cgCp" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="${esc(_cgT('codepoint_ph', "E000 or U+05D0"))}"></label>
         <label class="fld">${_cgT('name', "Name")} <input type="text" id="cgName" autocapitalize="words" autocorrect="off" spellcheck="false" placeholder="${esc(_cgT('name_ph', "My glyph"))}"></label>
       </div>
-      <div class="mode-toggle" style="margin-top:6px;">
+      <div class="mode-toggle" style="margin-top:6px;" role="group" aria-label="${esc(_cgT('type_aria', "Glyph type"))}">
         <button class="mode-btn active" id="cgTypeBase" onclick="cgSetType('base')" aria-pressed="true">${_cgT('type_main', "Main glyph")}</button>
         <button class="mode-btn" id="cgTypeMark" onclick="cgSetType('mark')" aria-pressed="false">${_cgT('type_mark', "Nikkud mark")}</button>
       </div>
@@ -6848,7 +6848,7 @@ function renderCustomGlyphsPanel() {
       </div>
       <div id="cgShapeRow" style="margin-top:6px;">
         <div class="hint">${_cgT('shape', "Shape")}</div>
-        <div class="mode-toggle">
+        <div class="mode-toggle" role="group" aria-label="${esc(_cgT('shape', "Shape"))}">
           <button class="mode-btn active" id="cgShapeTrace" onclick="cgSetShape('trace')" aria-pressed="true">${_cgT('shape_trace', "Trace new image")}</button>
           <button class="mode-btn" id="cgShapeDup" onclick="cgSetShape('dup')" aria-pressed="false">${_cgT('shape_dup', "Duplicate a letter")}</button>
         </div>
@@ -9582,7 +9582,7 @@ function renderMarkControls(c, it) {
       <div class="ctl-label">${I18n.t('fontmaker.panels.markctl_label', {label, name: esc(gName(it.name))})} <span style="font-size:1.15rem;">${heb}</span></div>
       <button class="ctl-btn" onclick="selectItem('letter', LETTER_ORDER[0])">${I18n.t('fontmaker.panels.markctl_letters')}</button>
     </div>`;
-  if (!combined) h += `<div class="mode-toggle" style="margin:6px 0;">
+  if (!combined) h += `<div class="mode-toggle" style="margin:6px 0;" role="group" aria-label="${esc(I18n.t('fontmaker.me.mode_aria'))}">
       <button class="mode-btn ${it.designMode==='editor'?'active':''}" aria-pressed="${it.designMode==='editor'}" onclick="setMarkDesignMode('editor')">${I18n.t('fontmaker.me.simple_editor')}</button>
       <button class="mode-btn ${it.designMode==='upload'?'active':''}" aria-pressed="${it.designMode==='upload'}" onclick="setMarkDesignMode('upload')">${I18n.t('fontmaker.me.upload_image')}</button>
     </div>`;
@@ -9598,14 +9598,14 @@ function renderMarkControls(c, it) {
       const sh = selP.shape === 'square' ? 'square' : 'circle';
       h += `<div class="ctl-row" style="margin-top:6px;">
         <div class="inline" style="flex:1;min-width:0;">${I18n.t('fontmaker.panels.markctl_dot_size')} <input type="range" min="8" max="200" step="1" value="${selP.r}" oninput="setDotSize(this.value)" onchange="udBurstCommit()" style="flex:1;min-width:0;" aria-label="${esc(I18n.t('fontmaker.panels.markctl_dot_size'))}"> <span id="dotSizeV" class="readout">${selP.r}</span></div>
-        <div class="mode-toggle" style="flex:1;min-width:0;">
+        <div class="mode-toggle" style="flex:1;min-width:0;" role="group" aria-label="${esc(I18n.t('fontmaker.panels.markctl_dot_shape'))}">
           <button class="mode-btn ${sh==='circle'?'active':''}" aria-pressed="${sh==='circle'}" onclick="setDotShape('circle')">${I18n.t('fontmaker.panels.markctl_circle')}</button>
           <button class="mode-btn ${sh==='square'?'active':''}" aria-pressed="${sh==='square'}" onclick="setDotShape('square')">${I18n.t('fontmaker.panels.markctl_square')}</button>
         </div>
       </div>`;
     } else if (selP && selP.type === 'bar') {
       h += `<div class="ctl-row" style="margin-top:6px;">
-        <div class="mode-toggle" style="flex:1;min-width:0;">
+        <div class="mode-toggle" style="flex:1;min-width:0;" role="group" aria-label="${esc(I18n.t('fontmaker.panels.markctl_bar_ends'))}">
           <button class="mode-btn ${!selP.rounded?'active':''}" aria-pressed="${!selP.rounded}" onclick="setBarRounded(false)">${I18n.t('fontmaker.panels.markctl_bar_square')}</button>
           <button class="mode-btn ${selP.rounded?'active':''}" aria-pressed="${selP.rounded}" onclick="setBarRounded(true)">${I18n.t('fontmaker.panels.markctl_bar_rounded')}</button>
         </div>
@@ -15139,13 +15139,13 @@ function meRenderControls() {
     const sh = p.shape === 'square' ? 'square' : 'circle';
     wrap.innerHTML = `<div class="ctl-row" style="margin-top:6px;">
       <div class="inline" style="flex:1;min-width:0;">${I18n.t('fontmaker.panels.markctl_dot_size')} <input type="range" min="8" max="200" step="1" value="${p.r}" oninput="meSetDotSize(this.value)" onchange="meCommitEdit()" style="flex:1;min-width:0;" aria-label="${esc(I18n.t('fontmaker.panels.markctl_dot_size'))}"> <span id="meDotSizeV" class="readout">${p.r}</span></div>
-      <div class="mode-toggle" style="flex:1;min-width:0;">
+      <div class="mode-toggle" style="flex:1;min-width:0;" role="group" aria-label="${esc(I18n.t('fontmaker.panels.markctl_dot_shape'))}">
         <button class="mode-btn ${sh==='circle'?'active':''}" aria-pressed="${sh==='circle'}" onclick="meSetDotShape('circle')">${I18n.t('fontmaker.panels.markctl_circle')}</button>
         <button class="mode-btn ${sh==='square'?'active':''}" aria-pressed="${sh==='square'}" onclick="meSetDotShape('square')">${I18n.t('fontmaker.panels.markctl_square')}</button>
       </div></div>`;
   } else if (p && p.type === 'bar') {
     wrap.innerHTML = `<div class="ctl-row" style="margin-top:6px;">
-      <div class="mode-toggle" style="flex:1;min-width:0;">
+      <div class="mode-toggle" style="flex:1;min-width:0;" role="group" aria-label="${esc(I18n.t('fontmaker.panels.markctl_bar_ends'))}">
         <button class="mode-btn ${!p.rounded?'active':''}" aria-pressed="${!p.rounded}" onclick="meSetBarRounded(false)">${I18n.t('fontmaker.panels.markctl_bar_square_ends')}</button>
         <button class="mode-btn ${p.rounded?'active':''}" aria-pressed="${p.rounded}" onclick="meSetBarRounded(true)">${I18n.t('fontmaker.panels.markctl_bar_rounded_ends')}</button>
       </div></div>`;
@@ -16762,7 +16762,7 @@ function renderDrawLeft(L, l) {
     <div class="side-slider-label">${_drawT('erase_size', 'Eraser size')} <span id="drawEraserVal" class="readout">${_drawEraser}</span></div>
     <input type="range" class="side-slider" min="${DRAW_W_MIN}" max="300" step="1" value="${_drawEraser}" oninput="drawSetEraser(this.value)" onchange="drawSavePrefs()" aria-label="${esc(_drawT('erase_size', 'Eraser size'))}" title="[ / ]">` + pvBox + `
     <div class="side-slider-label" style="margin-top:6px;">${_drawT('erase_mode', 'Eraser mode')}</div>
-    <div class="mode-toggle">
+    <div class="mode-toggle" role="group" aria-label="${esc(_drawT('erase_mode', 'Eraser mode'))}">
       ${eraseBtn('sculpt',  'drawEraseModeSculpt',  'erase_sculpt',  'Sculpt')}
       ${eraseBtn('partial', 'drawEraseModePartial', 'erase_partial', 'Partial')}
       ${eraseBtn('whole',   'drawEraseModeWhole',   'erase_whole',   'Whole stroke')}
@@ -16772,7 +16772,7 @@ function renderDrawLeft(L, l) {
   L.innerHTML = `<div class="ws-side-title">${I18n.t('fontmaker.panels.add_letters')}</div>` + inputModeBlock() + `
     <hr class="ctl-divider">
     <div class="ws-side-title">${_drawT('panel_title', 'Draw — {name}', { name: esc(gName(l.name)) })}</div>
-    <div class="mode-toggle draw-tools">
+    <div class="mode-toggle draw-tools" role="group" aria-label="${esc(_drawT('tools_aria', 'Drawing tool'))}">
       ${toolBtn('draw', 'drawToolDraw', _drawT('tool_draw', 'Draw'), 'D')}
       ${toolBtn('line', 'drawToolLine', _drawT('tool_line', 'Line'), 'L')}
       ${toolBtn('move', 'drawToolMove', _drawT('tool_move', 'Move'), 'V')}

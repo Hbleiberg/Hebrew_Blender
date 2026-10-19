@@ -2102,6 +2102,7 @@ fontmaker.me.circle,● Circle,● עיגול,toggle button,
 fontmaker.me.delete_piece_title,Delete this piece,מחק חלק זה,button title,
 fontmaker.me.dot_label,Dot {n},נקודה {n},piece list label,
 fontmaker.me.no_pieces,No pieces yet — add a dot or bar above.,אין עדיין חלקים — הוסיפו נקודה או מוט למעלה.,empty state,
+fontmaker.me.mode_aria,How to make the mark,איך ליצור את הסימן,accessible name of the Simple editor / Upload image toggle row (mark panel and Edit mark shape),aria-label
 fontmaker.me.simple_editor,Simple editor,עורך פשוט,mark editor toggle,
 fontmaker.me.square,■ Square,■ ריבוע,toggle button,
 fontmaker.me.upload_image,Upload image,העלה תמונה,mark editor toggle,
@@ -2665,6 +2666,7 @@ fontmaker.panels.custom_name_ph,My glyph,הגליף שלי,placeholder,
 fontmaker.panels.custom_shape,Shape,צורה,control label,
 fontmaker.panels.custom_shape_dup,Duplicate a letter,שכפל אות,toggle button,
 fontmaker.panels.custom_shape_trace,Trace new image,עקוב אחר תמונה חדשה,toggle button,
+fontmaker.panels.custom_type_aria,Glyph type,סוג הגליף,accessible name of the custom-glyph dialog's Main glyph / Nikkud mark toggle row,aria-label
 fontmaker.panels.custom_type_main,Main glyph,גליף ראשי,toggle button,
 fontmaker.panels.custom_type_mark,Nikkud mark,סימן ניקוד,toggle button,
 fontmaker.panels.customglyphs,Custom glyphs,גליפים מותאמים,panel title,
@@ -2720,6 +2722,7 @@ fontmaker.panels.cyr_group_srmk,Serbian & Macedonian,סרבית ומקדונית
 fontmaker.panels.cyr_group_ukbe,Ukrainian & Belarusian,אוקראינית ובלארוסית,Cyrillic picker band label,
 fontmaker.panels.cyr_progress,({done}/{total}),({done}/{total}),progress readout,
 fontmaker.panels.cyrillic,Cyrillic,קירילית,panel title,
+fontmaker.panels.case_aria,Letters shown,האותיות המוצגות,"accessible name of the English and Cyrillic panels' Uppercase / Lowercase (/ Accented) toggle row",aria-label
 fontmaker.panels.eng_case_accent,Accented & extra,מוטעמות ונוספות,third case button in the English panel,
 fontmaker.panels.eng_case_lower,Lowercase a–z,אותיות קטנות a–z,toggle button,
 fontmaker.panels.eng_case_upper,Uppercase A–Z,אותיות רישיות A–Z,toggle button,
@@ -2880,6 +2883,7 @@ fontmaker.panels.mark_trop_hint,"Trop attaches to the typed letter (and stacks a
 fontmaker.panels.mark_upload_mode,Upload mode,מצב העלאה,control group hint,
 fontmaker.panels.markctl_add_bar,+ Bar,+ מוט,button,
 fontmaker.panels.markctl_add_dot,+ Dot,+ נקודה,button,
+fontmaker.panels.markctl_bar_ends,Bar ends,קצות המוט,accessible name of the Square / Rounded toggle row for a selected bar (mark panel and Edit mark shape),aria-label
 fontmaker.panels.markctl_bar_rounded,▢ Rounded,▢ מעוגל,toggle button,
 fontmaker.panels.markctl_bar_rounded_ends,▢ Rounded ends,▢ קצוות מעוגלים,toggle button,
 fontmaker.panels.markctl_bar_square,▭ Square,▭ מרובע,toggle button,
@@ -2888,6 +2892,7 @@ fontmaker.panels.markctl_box_hint,"Drag a box around {name} on the sheet above t
 fontmaker.panels.markctl_circle,● Circle,● עיגול,toggle button,
 fontmaker.panels.markctl_combined_hint,"Combined mode: upload a sheet of {label} symbols in the sidebar first, then drag a box around {name}.","מצב משולב: העלו קודם דף של סמלי {label} בסרגל הצד, ואז גררו תיבה סביב {name}.",panel hint,
 fontmaker.panels.markctl_delete_sel,Delete selected,מחק נבחר,button,
+fontmaker.panels.markctl_dot_shape,Dot shape,צורת הנקודה,accessible name of the Circle / Square toggle row for a selected dot (mark panel and Edit mark shape),aria-label
 fontmaker.panels.markctl_dot_size,Dot size,גודל נקודה,slider label,
 fontmaker.panels.markctl_drop,"Drop {kind} of {name}, or {browse}.","שחררו {kind} של {name}, או {browse}.",drop zone,
 fontmaker.panels.drop_kind_svg,an <b>SVG</b>,קובץ <b>SVG</b>,drop-zone file-kind fragment,
@@ -5704,6 +5709,7 @@ fontmaker.draw.tidy,Tidy strokes,סדר משיכות,Draw panel button — clean
 fontmaker.draw.tidy_title,"Straighten strokes that are nearly straight and snap loose ends onto a guide — one press, one undo","יישור משיכות שכמעט ישרות והצמדת קצוות רופפים לקו עזר — לחיצה אחת, ביטול אחד",Tidy strokes button title,title
 fontmaker.draw.tidy_none,Nothing to tidy — no stroke was close enough to straight or to a guide.,אין מה לסדר — אף משיכה לא הייתה קרובה מספיק לקו ישר או לקו עזר.,Toast when Tidy strokes changes nothing,status
 fontmaker.draw.tidy_done,"Tidied: {straight} straightened, {snap} snapped to a guide.","סודר: {straight} יושרו, {snap} הוצמדו לקו עזר.",Toast after Tidy strokes,status | interpolation
+fontmaker.draw.tools_aria,Drawing tool,כלי הציור,"accessible name of the Draw step's Draw / Line / Move / Stamp / Erase toggle row",aria-label
 fontmaker.draw.tool_draw,Draw,ציור,tool button,
 fontmaker.draw.tool_erase,Erase,מחיקה,tool button,
 fontmaker.draw.brush,Brush size,גודל מכחול,slider label,
