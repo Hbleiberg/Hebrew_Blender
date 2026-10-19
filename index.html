@@ -325,8 +325,10 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
    carried the ceiling past the old 430px (a 440pt iPhone 16 Pro Max clipped the dark toggle
    right off the screen), and the controls' icons then carried it from 464px to 519px.
    Ungating the rules is not the shortcut it looks like: forced on at every width they move
-   377 layouts that currently fit (measured, all 14 pages). */
-@media (max-width:519px){
+   377 layouts that currently fit (measured, all 14 pages). Under a finger the language select reads
+   at 16px (js/i18n.js, so iOS does not zoom into it) and is 10px wider, which carries the ceiling to
+   529px there; the second query holds that band without moving a mouse layout. */
+@media (max-width:519px), (pointer:coarse) and (max-width:529px){
   header{flex-wrap:wrap;}
   header .hright{flex-wrap:wrap;max-width:100%;justify-content:flex-end;}
 }

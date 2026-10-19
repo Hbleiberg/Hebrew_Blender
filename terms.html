@@ -171,8 +171,10 @@ footer a:hover{text-decoration:underline;}   /* the only hover feedback the foot
    445px is this page's MEASURED overflow ceiling, not a device width: since the header controls
    took their icons the row overflows from 431px up to 445px (the dark theme's "Light" label is the widest) and fits above it, so the
    gate ends where the break does — the old 430px left a 440px iPhone Pro Max scrolling sideways.
-   Re-measure whenever a header control changes width; ungating moves layouts that already fit. */
-@media (max-width:445px){
+   Re-measure whenever a header control changes width; ungating moves layouts that already fit.
+   Under a finger the language select reads at 16px (js/i18n.js, so iOS does not zoom into it) and is 10px
+   wider, which carries the ceiling to 455px there; the second query holds that band without moving a mouse layout. */
+@media (max-width:445px), (pointer:coarse) and (max-width:455px){
   header{flex-wrap:wrap;}
   header .hright{flex-wrap:wrap;max-width:100%;justify-content:flex-end;}
 }

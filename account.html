@@ -233,8 +233,10 @@ footer a:hover{text-decoration:underline;}
    sideways (WCAG 1.4.10 reflow). 535px is this page's MEASURED overflow ceiling, not a device
    width: since the header controls took their icons the row overflows from 432px up to 535px
    (English, the dark theme's "Light" label the widest) and fits above it, so the gate ends where
-   the break does. Re-measure when a header control changes width; ungating moves layouts that fit. */
-@media (max-width:535px){
+   the break does. Re-measure when a header control changes width; ungating moves layouts that fit.
+   Under a finger the language select reads at 16px (js/i18n.js, so iOS does not zoom into it) and is 10px
+   wider, which carries the ceiling to 545px there; the second query holds that band without moving a mouse layout. */
+@media (max-width:535px), (pointer:coarse) and (max-width:545px){
   header{flex-wrap:wrap;}
   header .hright{flex-wrap:wrap;max-width:100%;justify-content:flex-end;}
 }

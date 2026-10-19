@@ -568,8 +568,10 @@ body.dark #appToast { background: #0a0f1c; }
    ceiling (docs/reference/shared-components.md → "The header's wrap gate"). 576px is where the unwrapped row
    (Home, the language switcher, the account chip, Tour, dark, the options gear, fullscreen) stops fitting beside
    the star — 574px in EN, 576px in HE (Playwright, 2px steps, 900→320px); below it the row takes a full line of
-   its own, so the star never pushes it past the edge. Re-measure when a control is added or relabelled. */
-@media (max-width: 576px) {
+   its own, so the star never pushes it past the edge. Re-measure when a control is added or relabelled.
+   Under a finger the language select reads at 16px (js/i18n.js, so iOS does not zoom into it) and is 10px wider,
+   which carries the Hebrew ceiling to 585px there; the second query holds that band without moving a mouse layout. */
+@media (max-width: 576px), (pointer: coarse) and (max-width: 585px) {
   header { flex-wrap:wrap; padding:10px 12px; gap:10px; row-gap:8px; }
   header h1 { font-size:1.1rem; }
   header p { display:none; }   /* the suite's phone header: the other tool pages drop the subtitle below their wrap gate */

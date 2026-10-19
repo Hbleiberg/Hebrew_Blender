@@ -2082,8 +2082,11 @@ body.dark .hi-sun{display:inline-block;}
      702px up to 749px (measured, English in the dark theme) while the rest of the page is still
      correctly in its desktop layout there. So the header's wrap lever gets its own gate at that
      measured ceiling, and the MOBILE block — which stacks the sidebar and rebuilds the whole
-     layout — keeps its 700px scope. Re-measure when a header control changes width. */
-  @media (max-width: 749px) {
+     layout — keeps its 700px scope. Re-measure when a header control changes width. Under a
+     finger the language select reads at 16px (js/i18n.js, so iOS does not zoom into it) and is
+     10px wider, which carries the ceiling to 759px there — an iPhone held sideways is 750px — so
+     the second query holds that band without moving a mouse layout. */
+  @media (max-width: 749px), (pointer: coarse) and (max-width: 759px) {
     header { flex-wrap: wrap; row-gap: 8px; }
   }
 
