@@ -700,6 +700,7 @@
   "dashboard.tour.step_layout_body": "Tap Move panels to rearrange the dashboard — put any panel in either side column, or in the row below. Changes save automatically.",
   "dashboard.tour.step_layout_title": "Rearrange the panels",
   "dashboard.video.header": "Video",
+  "dashboard.video.layout_aria": "Video position",
   "dashboard.video.layout_below": "Under dashboard",
   "dashboard.video.layout_sidebar": "In sidebar",
   "dashboard.video.update_button": "Update Video",

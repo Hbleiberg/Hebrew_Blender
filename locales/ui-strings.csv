@@ -683,6 +683,7 @@ dashboard.tour.step_layout_title,Rearrange the panels,סידור הפאנלים 
 dashboard.video.header,Video,וידאו,video panel header + collapse header,RTL / hebDisplay; Hebrew fork וִידֵאוֹ
 dashboard.video.layout_below,Under dashboard,מתחת ללוח,radio option,
 dashboard.video.layout_sidebar,In sidebar,בסרגל הצד,radio option,
+dashboard.video.layout_aria,Video position,מיקום הווידאו,video layout radio group accessible name (Under dashboard / In sidebar),aria-label
 dashboard.video.update_button,Update Video,עדכן וידאו,settings button,
 dashboard.video.url_placeholder,Paste YouTube URL…,הדביקו כתובת YouTube…,video url input placeholder,
 dashboard.weather.city_current,Current Location,מיקום נוכחי,geolocation fallback city name,

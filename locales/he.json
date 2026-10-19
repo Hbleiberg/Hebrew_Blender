@@ -700,6 +700,7 @@
   "dashboard.tour.step_layout_body": "הקישו על הזזת פאנלים כדי לסדר מחדש את הלוח — אפשר למקם כל פאנל בכל עמודה צדדית, או בשורה שמתחת. השינויים נשמרים אוטומטית.",
   "dashboard.tour.step_layout_title": "סידור הפאנלים מחדש",
   "dashboard.video.header": "וידאו",
+  "dashboard.video.layout_aria": "מיקום הווידאו",
   "dashboard.video.layout_below": "מתחת ללוח",
   "dashboard.video.layout_sidebar": "בסרגל הצד",
   "dashboard.video.update_button": "עדכן וידאו",
