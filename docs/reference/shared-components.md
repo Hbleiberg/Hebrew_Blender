@@ -318,9 +318,11 @@ print list, collapse interplay, ak-view-style overrides).
    Add `.sbr-split` to the stacked-breakpoint kill and to any print / `body.ak-view` hide list.
    (Generator and Letter Learner extra: the fixed hide-tab is pinned by measurement — `positionSidebarTab`
    / `llPositionSidebarTab` is the `onChange` — just clear of the seam's grab zone, so it never swallows
-   drags: the generator's at the seam's inline-end **+4px**, the Letter Learner's (an end-anchored sidebar,
-   whose seam box lies on the letters' side) 1px beyond the seam's own box; the dictionary's collapse tab
-   keeps the same 4px.)
+   drags: the generator's at the seam's inline-end **+4px**; the Letter Learner's (an end-anchored sidebar)
+   flush against the sidebar's own edge, its seam moved inside that edge by a page rule
+   (`#llSidebarSplit { margin-inline-start:0; margin-inline-end:-7px; }`, over the sidebar's border and
+   padding), so no strip of page shows between tab and sidebar; the dictionary's collapse tab keeps the
+   generator's 4px.)
 2. **Settings drawer** (dashboard, torah): handle class `sbr-split sbr-abs`, **first child**
    of `#settingsModal`, page rule `#settingsResize { inset-inline-start:-4px; }` (straddles the
    border seam; the handle intercepts its own pointerdowns, so a drag start never reaches the
