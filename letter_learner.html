@@ -205,15 +205,19 @@ body.fs-idle #fsBtn:not(:focus-visible) { opacity:0; pointer-events:none; }
 /* The header gear and the edge tabs hide the sidebar and its seam together (per visit, never stored — the suite's rule for
    a whole sidebar). */
 .ll-app.sidebar-hidden .ll-sidebar, .ll-app.sidebar-hidden .sbr-split { display:none; }
+/* The seam's 7px grab zone lies over the sidebar's own edge (its border and padding), not out over the letters, so the
+   hide tab can sit flush against the sidebar with no strip of page between them and still never cover the seam. */
+#llSidebarSplit { margin-inline-start:0; margin-inline-end:-7px; }
 /* The sidebar's edge tabs — the generator's collapse tab with its geometry mirrored, the sidebar being at the inline-end:
-   rounded and shadowed toward the inline-start (away from the sidebar); the hide tab pinned just beyond the seam's box by
-   llPositionSidebarTab (the grab zone stays clear — the CSS inset is only the pre-script default for the 300px width),
+   rounded and shadowed toward the inline-start (away from the sidebar); the hide tab pinned flush against the sidebar's
+   edge by llPositionSidebarTab (the seam lies inside that edge, so its grab zone stays clear — the CSS inset is only the
+   pre-script default for the 300px width),
    the show tab at the screen's inline-end edge. The 16px sliver is the generator's look; a transparent ::after
    carries the pointer target 8px inward, so the operable box is 24px and stays on-screen. z-index: above the seam's 5,
    under the dialog (300), the tour (400/500) and the toast. */
 .ll-sb-tab { position:fixed; top:50vh; transform:translateY(-50%); width:16px; height:52px; border:none; background:var(--navy); color:var(--gold-light); font-size:0.8rem; line-height:1; padding:0; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background 0.15s; border-start-start-radius:6px; border-end-start-radius:6px; box-shadow:-2px 0 6px rgba(0,0,0,0.15); }
 .ll-sb-tab::after { content:''; position:absolute; inset-block:0; inset-inline-start:-8px; inset-inline-end:0; }
-.ll-sb-hide { inset-inline-end:308px; z-index:50; }
+.ll-sb-hide { inset-inline-end:300px; z-index:50; }
 .ll-sb-show { inset-inline-end:0; z-index:100; display:none; }
 .ll-app.sidebar-hidden .ll-sb-hide { display:none; }
 .ll-app.sidebar-hidden .ll-sb-show { display:flex; }
@@ -293,7 +297,7 @@ html[lang="he"] .ll-badge { letter-spacing:normal; text-transform:none; }
 
 /* ───── Mode bar: Letters (Block) / Letters (Cursive) / Vowels — three pressed-state buttons under the header (native
    Tab / Enter / Space; one group). The choice rides the URL as ?mode=cursive / ?mode=vowels (llSetMode), never a stored key. ───── */
-.ll-mode { display:flex; justify-content:center; gap:8px; padding:14px 20px 0; }
+.ll-mode { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-block-end:14px; }   /* heads the letters' column (wraps when a wide sidebar leaves it narrow) */
 .ll-mode-btn {
   display:inline-flex; align-items:center; gap:8px; min-height:40px; padding:6px 18px;
   border:1.5px solid var(--border); border-radius:999px; background:var(--white); color:var(--text);
@@ -582,7 +586,7 @@ body.dark #appToast { background: #0a0f1c; }
   .ll-card-name { font-size:0.8rem; }
   .ll-tabs { padding:8px 8px 0; gap:2px; }
   .ll-tabs [role="tab"] { padding:8px 9px; font-size:0.86rem; }
-  .ll-mode { padding:10px 12px 0; }
+  .ll-mode { flex-wrap:nowrap; }
   .ll-mode-btn { flex:1; justify-content:center; padding-inline:8px; gap:6px; min-width:0; }
   .ll-mode-btn > span:last-child { white-space:normal; line-height:1.15; text-align:center; }   /* "Letters (Cursive)" wraps inside 390px */
 }
@@ -661,15 +665,6 @@ body.dark #appToast { background: #0a0f1c; }
   </div>
 </header>
 
-<!-- Letters (Block) / Letters (Cursive) / Vowels: three pressed-state buttons in one group. The mode is read from
-     ?mode= / ?vowel= before the first render (llInitMode) and mirrored into the address bar on a click (llSetMode) —
-     nothing is stored or synced. -->
-<div class="ll-mode" role="group" aria-label="Block letters, cursive letters or vowels" data-i18n-aria-label="letterlearner.mode.aria">
-  <button type="button" class="ll-mode-btn" id="llModeLetters" data-mode="letters" aria-pressed="true"><span class="ll-mode-sample" lang="he" dir="rtl" aria-hidden="true">א</span><span data-i18n="letterlearner.mode.letters">Letters (Block)</span></button>
-  <button type="button" class="ll-mode-btn" id="llModeCursive" data-mode="cursive" aria-pressed="false"><span class="ll-mode-sample ll-mode-sample-cursive" lang="he" dir="rtl" aria-hidden="true">א</span><span data-i18n="letterlearner.mode.cursive">Letters (Cursive)</span></button>
-  <button type="button" class="ll-mode-btn" id="llModeVowels" data-mode="vowels" aria-pressed="false"><span class="ll-mode-sample" lang="he" dir="rtl" aria-hidden="true">אַ</span><span data-i18n="letterlearner.mode.vowels">Vowels</span></button>
-</div>
-
 <div class="ll-app">
   <!-- The sidebar's edge tabs (the generator's collapse tab, mirrored for a sidebar at the inline-end): the hide tab sits at
        the seam, pinned there by llPositionSidebarTab; the show tab waits at the screen's edge while the options are hidden.
@@ -712,6 +707,14 @@ body.dark #appToast { background: #0a0f1c; }
        data-i18n-title="shared.resize.sidebar_title"
        data-i18n-aria-label="shared.resize.sidebar_title"></div>
   <main class="ll-page" id="llMain" tabindex="-1">
+    <!-- Letters (Block) / Letters (Cursive) / Vowels: three pressed-state buttons in one group. The mode is read from
+         ?mode= / ?vowel= before the first render (llInitMode) and mirrored into the address bar on a click (llSetMode) —
+         nothing is stored or synced. It heads the letters' column, so the options sidebar runs from the header down. -->
+    <div class="ll-mode" role="group" aria-label="Block letters, cursive letters or vowels" data-i18n-aria-label="letterlearner.mode.aria">
+      <button type="button" class="ll-mode-btn" id="llModeLetters" data-mode="letters" aria-pressed="true"><span class="ll-mode-sample" lang="he" dir="rtl" aria-hidden="true">א</span><span data-i18n="letterlearner.mode.letters">Letters (Block)</span></button>
+      <button type="button" class="ll-mode-btn" id="llModeCursive" data-mode="cursive" aria-pressed="false"><span class="ll-mode-sample ll-mode-sample-cursive" lang="he" dir="rtl" aria-hidden="true">א</span><span data-i18n="letterlearner.mode.cursive">Letters (Cursive)</span></button>
+      <button type="button" class="ll-mode-btn" id="llModeVowels" data-mode="vowels" aria-pressed="false"><span class="ll-mode-sample" lang="he" dir="rtl" aria-hidden="true">אַ</span><span data-i18n="letterlearner.mode.vowels">Vowels</span></button>
+    </div>
     <ul class="ll-grid" id="llGrid" dir="rtl" aria-label="Letters" data-i18n-aria-label="letterlearner.grid.aria"></ul>
     <p class="ll-note ll-grid-note" id="llGridNote" hidden></p>
     <!-- Vowels and Cursive modes: the teaching tips of the vowel-families write-up (VOWEL_TIPS) or the cursive look-alike
@@ -2738,23 +2741,22 @@ function llToggleSidebar(force) {
     try { aside.scrollIntoView({ block: 'start', behavior: 'smooth' }); } catch (e) { aside.scrollIntoView(); }
   }
 }
-// The hide tab is pinned beside the seam by measurement (the generator's and the dictionary's shape, for a sidebar at the
-// inline-end): the seam's 7px box hugs the sidebar's inner edge on the letters' side, so the tab's inline-end edge sits
-// 1px beyond the seam's far edge — the grab zone stays clear, and a hand reaching for the seam at 50vh never lands on the
-// tab. Without the seam in the layout the tab sits 4px off the sidebar itself. The width var is registered non-inherited
-// on the sidebar, so a fixed cousin cannot read it. The clamp keeps the whole 24px operable box on-screen should the
-// sidebar's edge ever reach the viewport's.
+// The hide tab is pinned to the sidebar's outer edge by measurement (the generator's and the dictionary's shape, for a
+// sidebar at the inline-end): flush against its border, with no strip of page between them. The seam's 7px box lies
+// inside that edge (#llSidebarSplit's negative inline-end margin), so the grab zone stays clear and a hand reaching for
+// the seam at 50vh never lands on the tab. The width var is registered non-inherited on the sidebar, so a fixed cousin
+// cannot read it. The clamp keeps the whole 24px operable box on-screen should the sidebar's edge ever reach the viewport's.
 function llPositionSidebarTab() {
-  const aside = document.getElementById('llSidebar'), seam = document.getElementById('llSidebarSplit'), tab = document.getElementById('llSidebarHide');
+  const aside = document.getElementById('llSidebar'), tab = document.getElementById('llSidebarHide');
   if (!aside || !tab || !llSidebarShown()) return;
-  const a = aside.getBoundingClientRect(), s = (seam && getComputedStyle(seam).display !== 'none') ? seam.getBoundingClientRect() : null;
+  const a = aside.getBoundingClientRect();
   const maxInset = Math.max(0, window.innerWidth - 24);
   if (document.documentElement.dir === 'rtl') {
-    const x = s ? Math.max(a.right, s.right) + 1 : a.right + 4;   // the tab's inline-end edge (its left side in Hebrew)
+    const x = a.right;   // the tab's inline-end edge (its left side in Hebrew)
     tab.style.right = 'auto';
     tab.style.left = Math.min(x, maxInset) + 'px';
   } else {
-    const x = s ? Math.min(a.left, s.left) - 1 : a.left - 4;      // the tab's inline-end edge (its right side in English)
+    const x = a.left;    // the tab's inline-end edge (its right side in English)
     tab.style.left = 'auto';
     tab.style.right = Math.min(window.innerWidth - x, maxInset) + 'px';
   }
