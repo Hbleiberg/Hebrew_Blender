@@ -12235,6 +12235,7 @@ async function onUploadEngFontPick(input){
       try { refreshLayoutEditChrome(); } catch (e) {}   // move-panels strips/badges re-label (read-only, focus-restoring)
       try { fetchShabbat(false); } catch (e) {}   // re-render Shabbat widget (status strings via t())
       try { fetchHolidays(); } catch (e) {}       // re-render holiday countdown (framing via t(); cache-first, no refetch)
+      try { if (_tourActive && _tourIdx >= 0) _tourShow(_tourIdx, 1); } catch (e) {}   // an open tour card: its texts in the new language, the spotlight back on its mirrored target (the generator's call)
       try { if (document.getElementById('frModal').classList.contains('open'))
         document.getElementById('frStarters').innerHTML = STARTERS.map(st =>
           `<button class="fr-starter" onclick="frApplyStarter('${esc(st.key)}')"><b>${esc(I18n.t('dashboard.setup.starter_' + st.key + '_label'))}</b><span>${esc(I18n.t('dashboard.setup.starter_' + st.key + '_desc'))}</span></button>`).join(''); } catch (e) {}
