@@ -824,6 +824,10 @@ body.dark #appToast { background: #0a0f1c; }
    <g class="ll-anim ll-anim-swing"> (also swing-l, bob, sway, open, open-r, blink, drift). An empty string
    means "no drawing yet".
 
+   LETTER_PAIRS, right below LETTER_DATA: Block mode's look-alike pairs, { ids: [a, b], tip } — two LETTER_DATA ids and
+   the tell (learner content). A card's Letter tab lists its pairs under "Don't mix it up with"; a dot-pair half with
+   no pair of its own (vet, chaf, fe) shows its partner's. A malformed pair is dropped with a console warning.
+
    The Vowels mode's content sits below LETTER_DATA, under the same rules (learner content; the validator
    llIndexVowelData drops a bad entry with a warning; a drawing is checked when its story is first shown):
      VOWEL_STORIES  one entry per gesture story: { id, family, name, short?, color, say, do, script?, svg } — `family` is
@@ -1132,6 +1136,24 @@ const LETTER_DATA = [
       { he: 'תֻּכִּי', tr: 'tuki', en: 'parrot', svg: `<path d="M2 84Q50 74 98 84" fill="none" stroke="var(--ll-line)" stroke-width="9.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 84Q50 74 98 84" fill="none" stroke="var(--ll-brown)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M86 80Q94 70 100 74Q94 82 86 80Z" fill="var(--ll-green)" stroke="var(--ll-line)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M60 70L78 94" fill="none" stroke="var(--ll-line)" stroke-width="11.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M60 70L78 94" fill="none" stroke="var(--ll-blue)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><path d="M58 72L66 96" fill="none" stroke="var(--ll-line)" stroke-width="10.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M58 72L66 96" fill="none" stroke="var(--ll-yellow)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M62 68L88 86" fill="none" stroke="var(--ll-line)" stroke-width="10.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M62 68L88 86" fill="none" stroke="var(--ll-green)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M46 78L42 86M50 78L48 87M54 78L56 87" fill="none" stroke="var(--ll-line)" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M46 78L42 86M50 78L48 87M54 78L56 87" fill="none" stroke="var(--ll-gray-dk)" stroke-width="2.2" stroke-linecap="round"/><ellipse cx="52" cy="56" rx="16" ry="22" fill="var(--ll-red)" stroke="var(--ll-line)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="46" cy="60" rx="8" ry="14" fill="var(--ll-orange)" opacity="0.5"/><path d="M58 38Q78 46 72 78Q60 72 54 48Z" fill="var(--ll-blue)" stroke="var(--ll-line)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M62 52Q73 58 70.5 72Q64 68 60 54Z" fill="var(--ll-yellow)" opacity="0.9"/><path d="M66 66Q72 70 71.5 78Q66 76 64 70Z" fill="var(--ll-green)"/><path d="M60 44Q70 50 70 62" fill="none" stroke="var(--ll-blue-dk)" stroke-width="1.2" opacity="0.8"/><circle cx="42" cy="30" r="14" fill="var(--ll-red)" stroke="var(--ll-line)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="37" cy="32" rx="7.5" ry="6.5" fill="var(--ll-white)" stroke="var(--ll-line)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M32 29.5h6M31.5 34.5h5" fill="none" stroke="var(--ll-red)" stroke-width="0.9"/><circle cx="37.5" cy="31" r="2.6" fill="var(--ll-white)" stroke="var(--ll-line)" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/><circle cx="38.02" cy="31" r="1.3" fill="var(--ll-line)"/><path d="M33 23Q17 22 17 34Q17 44 26 46Q25 39 30 35Z" fill="var(--ll-gray-dk)" stroke="var(--ll-line)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M30 36Q26 44 33 45L35 40Z" fill="var(--ll-gray)" stroke="var(--ll-line)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M36 20q4 -3 9 -2" fill="none" stroke="var(--ll-white)" stroke-width="1.6" opacity="0.5" stroke-linecap="round"/>` },
       { he: 'תּוֹרָה', tr: 'torah', en: 'Torah', svg: `<rect x="22" y="20" width="56" height="60" fill="var(--ll-white)" stroke="var(--ll-line)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><rect x="24" y="21" width="5" height="58" fill="var(--ll-gold-lt)" opacity="0.6"/><rect x="71" y="21" width="5" height="58" fill="var(--ll-gold-lt)" opacity="0.6"/><path d="M34 31H46M34 37H46M34 43H46M34 49H46M34 55H46M34 61H46M38 67H46M54 31H66M54 37H66M54 43H66M54 49H66M54 55H66M54 61H66M58 67H66" fill="none" stroke="var(--ll-gray-dk)" stroke-width="1.6" stroke-linecap="round"/><rect x="14" y="16" width="10" height="68" rx="3" fill="var(--ll-wood)" stroke="var(--ll-line)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="76" y="16" width="10" height="68" rx="3" fill="var(--ll-wood)" stroke="var(--ll-line)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 20V80M79 20V80" fill="none" stroke="var(--ll-wood-dk)" stroke-width="1.2" opacity="0.6"/><rect x="15.5" y="5" width="7" height="12" rx="3" fill="var(--ll-wood-dk)" stroke="var(--ll-line)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="15.5" y="83" width="7" height="12" rx="3" fill="var(--ll-wood-dk)" stroke="var(--ll-line)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="77.5" y="5" width="7" height="12" rx="3" fill="var(--ll-wood-dk)" stroke="var(--ll-line)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="77.5" y="83" width="7" height="12" rx="3" fill="var(--ll-wood-dk)" stroke="var(--ll-line)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="15" y="15" width="8" height="2.6" fill="var(--ll-gold)"/><rect x="77" y="15" width="8" height="2.6" fill="var(--ll-gold)"/><rect x="15" y="82.4" width="8" height="2.6" fill="var(--ll-gold)"/><rect x="77" y="82.4" width="8" height="2.6" fill="var(--ll-gold)"/>` } ] }
 ];
+// Block mode's look-alike pairs (the Letter tab's "Don't mix it up with"); each tell names the difference a beginning
+// reader can see, in the cards' own pictures where one fits.
+const LETTER_PAIRS = [
+  { ids: ['bet', 'kaf'], tip: 'Bet has square corners and a little heel sticking out at the bottom; kaf is round all the way, like a cupped hand.' },
+  { ids: ['gimel', 'nun'], tip: "Gimel kicks a little foot out at the bottom; nun's base lies flat along the line." },
+  { ids: ['dalet', 'resh'], tip: "Dalet's roof pokes out past its leg, with a sharp corner; resh is round on top, like a rainbow." },
+  { ids: ['he', 'chet'], tip: "He's little leg floats free of the roof; chet's two poles both hold the roof up." },
+  { ids: ['he', 'kuf'], tip: "Kuf's leg drops below the line, like a monkey's tail; he's leg stays above it." },
+  { ids: ['chet', 'tav'], tip: "Tav kicks a toe out at the bottom; chet's two poles stand straight." },
+  { ids: ['vav', 'zayin'], tip: "Zayin's head sticks out on both sides; vav's head bends one way, like a hook." },
+  { ids: ['vav', 'yod'], tip: 'Yod is tiny and floats at the top; vav is a full stick that reaches the line.' },
+  { ids: ['vav', 'nun_sofit'], tip: "Vav stops at the line; final nun's long line drops below it." },
+  { ids: ['kaf', 'pe'], tip: 'Pe has a tongue curled down inside its mouth; kaf has no tongue, just its cough drop.' },
+  { ids: ['resh', 'kaf_sofit'], tip: "Final kaf's long leg drops way below the line; resh stops at the line." },
+  { ids: ['kaf_sofit', 'pe_sofit'], tip: "Final pe has a tongue curled inside, like pe; final kaf's hook is empty." },
+  { ids: ['samech', 'mem_sofit'], tip: 'Samech is round, like a curled-up snake; final mem is a square box, and it only comes at the end of a word.' },
+  { ids: ['ayin', 'tzadi'], tip: "Tzadi stands on a flat base along the line; ayin's long arm sweeps down to the left." }
+];
 
 /* ═══ Vowels mode — the vowel families' shapes, gestures and colours (the write-up "Hebrew Vowel Families: Shapes, Colors
    & Stories"). Schema in the comment above; the drawings follow LETTER_DATA's rules and wear the family colour. ═══ */
@@ -1339,6 +1361,7 @@ const ICON_SOUND = '<svg class="hi hi-sm hi-sound" viewBox="0 0 24 24" width="16
 const HEB_MARKS_RE = /[֑-ׇ]/g;
 const LETTERS = {};      // id → validated entry
 const FINAL_OF = {};     // base id → its final card's id
+let LETTER_PAIR_LIST = [];   // Block mode's look-alike pairs (LETTER_PAIRS), validated: [{ ids: [a, b], tip }]
 let settings = JSON.parse(JSON.stringify(LL_DEFAULTS));
 let _llLastWritten = null;   // the settings text this tab last wrote or read (the two-tab rule: never overwrite a newer copy)
 let _llId = null;            // the open card
@@ -1446,6 +1469,15 @@ function llIndexData() {
     LETTERS[id] = L;
   });
   Object.values(LETTERS).forEach(L => { if (L.final) { if (LETTERS[L.final]) FINAL_OF[L.final] = L.id; else llWarn(L.id, 'final of an unknown base'); } });
+  LETTER_PAIR_LIST = llPairList((typeof LETTER_PAIRS !== 'undefined' && Array.isArray(LETTER_PAIRS)) ? LETTER_PAIRS : [], 'letter pairs');
+}
+// A look-alike pairs array, validated: two known letter ids and a tell each; a malformed pair is dropped with one warning.
+function llPairList(src, label) {
+  const ok = src
+    .filter(p => p && Array.isArray(p.ids) && p.ids.length === 2 && p.ids.every(x => typeof x === 'string' && LETTERS[x]) && typeof p.tip === 'string' && p.tip.trim())
+    .map(p => ({ ids: [p.ids[0], p.ids[1]], tip: p.tip.trim() }));
+  if (ok.length !== src.length) llWarn(label, (src.length - ok.length) + ' malformed pair(s) dropped');
+  return ok;
 }
 // The drawings' allowlist check is the costly part of indexing (188 drawings: 20–46 ms at a phone's 4× CPU inside the
 // DOMContentLoaded task, measured in loop S510) and the grid never needs it — a card's "coming soon" state follows its
@@ -1514,10 +1546,7 @@ function llIndexCursiveData() {
     CURSIVE[id] = { id, picture: typeof raw.picture === 'string' ? raw.picture.trim() : '', hint: { caption: h.caption.trim(), show, variants } };
   });
   const pairs = (typeof CURSIVE_PAIRS !== 'undefined' && Array.isArray(CURSIVE_PAIRS)) ? CURSIVE_PAIRS : [];
-  CURSIVE_PAIR_LIST = pairs
-    .filter(p => p && Array.isArray(p.ids) && p.ids.length === 2 && p.ids.every(x => typeof x === 'string' && LETTERS[x]) && typeof p.tip === 'string' && p.tip.trim())
-    .map(p => ({ ids: [p.ids[0], p.ids[1]], tip: p.tip.trim() }));
-  if (CURSIVE_PAIR_LIST.length !== pairs.length) llWarn('cursive pairs', (pairs.length - CURSIVE_PAIR_LIST.length) + ' malformed pair(s) dropped');
+  CURSIVE_PAIR_LIST = llPairList(pairs, 'cursive pairs');
   const tips = (typeof CURSIVE_TIPS !== 'undefined' && Array.isArray(CURSIVE_TIPS)) ? CURSIVE_TIPS : [];
   CURSIVE_TIP_LIST = tips.filter(t => typeof t === 'string' && t.trim()).map(t => t.trim());
 }
@@ -1529,10 +1558,13 @@ function llCheckCursive(T) {
 }
 // A card's cursive trick: its own entry, else its dot-pair partner's (the handwritten shape is the same with or without the dot).
 function llTrickFor(L) { return CURSIVE[L.id] || (L.pairWith && CURSIVE[L.pairWith]) || null; }
-// The look-alike pairs a card belongs to, as { other, tip } rows; a dot-pair half asks with the id its trick came from.
-function llPairsFor(L) {
-  const id = (CURSIVE[L.id] || !L.pairWith) ? L.id : L.pairWith;
-  return CURSIVE_PAIR_LIST.filter(p => p.ids.includes(id)).map(p => ({ other: LETTERS[p.ids[0] === id ? p.ids[1] : p.ids[0]], tip: p.tip })).filter(x => x.other);
+// The look-alike pairs a card belongs to in `list` (CURSIVE_PAIR_LIST or LETTER_PAIR_LIST), as { other, tip } rows. A
+// dot-pair half asks with its partner's id: in Cursive whenever it has no trick of its own (the id its trick came from),
+// in Block whenever no pair names it.
+function llPairsFor(L, list) {
+  const own = list === CURSIVE_PAIR_LIST ? !!CURSIVE[L.id] : list.some(p => p.ids.includes(L.id));
+  const id = (own || !L.pairWith) ? L.id : L.pairWith;
+  return list.filter(p => p.ids.includes(id)).map(p => ({ other: LETTERS[p.ids[0] === id ? p.ids[1] : p.ids[0]], tip: p.tip })).filter(x => x.other);
 }
 // The grid, in alef-bet order: a base, then (while pairs are split) its partner, then its final form.
 function llOrder() {
@@ -2023,10 +2055,28 @@ function llRenderLetterTab(L) {
     fig.appendChild(el('figcaption', null, cap));   // i18n-ignore: learner content, shown verbatim
     panel.appendChild(fig);
   }
+  llAppendLookalikes(panel, llPairsFor(L, LETTER_PAIR_LIST));
   if (words.length) {
     panel.appendChild(el('h3', null, _fbT('letterlearner.letter.words_heading', 'Words')));
     panel.appendChild(llWordsList(L, words));
   }
+}
+// "Don't mix it up with" (both letter modes): one row per look-alike — the other letter, in the dialog's face, and the
+// tell. The heading key keeps its Cursive-era name.
+function llAppendLookalikes(panel, pairs) {
+  if (!pairs.length) return;
+  panel.appendChild(el('h3', null, _fbT('letterlearner.cursive.lookalike_heading', "Don't mix it up with")));
+  const ul = el('ul', 'll-lookalikes');
+  pairs.forEach(p => {
+    const li = el('li', 'll-lookalike');
+    const f = el('span', 'll-form', p.other.glyph); f.lang = 'he'; f.dir = 'rtl'; f.setAttribute('aria-hidden', 'true');   // the tell names the letter
+    const t = el('span', 'll-lookalike-tell'); t.dir = 'ltr'; t.lang = 'en';
+    t.appendChild(el('strong', null, p.other.name + ': '));   // i18n-ignore: learner content (the English letter name)
+    t.appendChild(document.createTextNode(p.tip));   // i18n-ignore: learner content (the tell)
+    li.append(f, t);
+    ul.appendChild(li);
+  });
+  panel.appendChild(ul);
 }
 // Cursive mode — the Letter tab of a cursive card: the final note and the finals rule on a final card, the printed and
 // handwritten forms side by side, the write-up's picture and trick for the handwritten shape (CURSIVE_TRICKS; a
@@ -2072,21 +2122,7 @@ function llRenderCursiveTab(card) {
   } else {
     panel.appendChild(el('p', 'll-note', _fbT('letterlearner.cursive.soon_body', 'The handwriting picture for this letter is on its way. The words, vowels and fonts already work.')));
   }
-  const pairs = llPairsFor(L);
-  if (pairs.length) {
-    panel.appendChild(el('h3', null, _fbT('letterlearner.cursive.lookalike_heading', "Don't mix it up with")));
-    const ul = el('ul', 'll-lookalikes');
-    pairs.forEach(p => {
-      const li = el('li', 'll-lookalike');
-      const f = el('span', 'll-form', p.other.glyph); f.lang = 'he'; f.dir = 'rtl'; f.setAttribute('aria-hidden', 'true');   // the tell names the letter
-      const t = el('span', 'll-lookalike-tell'); t.dir = 'ltr'; t.lang = 'en';
-      t.appendChild(el('strong', null, p.other.name + ': '));   // i18n-ignore: learner content (the English letter name)
-      t.appendChild(document.createTextNode(p.tip));   // i18n-ignore: learner content (the tell)
-      li.append(f, t);
-      ul.appendChild(li);
-    });
-    panel.appendChild(ul);
-  }
+  llAppendLookalikes(panel, llPairsFor(L, CURSIVE_PAIR_LIST));
   const words = (L.words || []);
   if (words.length) {
     panel.appendChild(el('h3', null, _fbT('letterlearner.letter.words_heading', 'Words')));
