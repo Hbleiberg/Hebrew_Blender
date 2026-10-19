@@ -23936,6 +23936,8 @@ async function osPickOpen(origin) {
     askModal(osPickT('fontmaker.ospick.load_fail_title'), esc(osPickT('fontmaker.ospick.load_fail_body')),
       [ { label: osPickT('fontmaker.osfont.boot_retry'), onClick: () => osPickOpen(_osPickOrigin) },
         { label: osPickT('fontmaker.ospick.back'), cls: 'ghost', onClick: osPickBackToWizard } ]);
+    // Escape answers "← Back": the gate wizard cannot be dismissed, so a dismissed failure must not leave the page without it.
+    if (_activeModal && _activeModal.id === 'askOverlay') _activeModal.close = () => { closeModal(); osPickBackToWizard(); };
     return;
   }
   status('');
