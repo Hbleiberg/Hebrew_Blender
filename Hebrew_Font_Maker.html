@@ -23935,7 +23935,7 @@ async function osPickOpen(origin) {
     status('');
     askModal(osPickT('fontmaker.ospick.load_fail_title'), esc(osPickT('fontmaker.ospick.load_fail_body')),
       [ { label: osPickT('fontmaker.osfont.boot_retry'), onClick: () => osPickOpen(_osPickOrigin) },
-        { label: osPickT('fontmaker.ospick.back'), cls: 'ghost', onClick: () => wizardOpen(_osPickOrigin) } ]);
+        { label: osPickT('fontmaker.ospick.back'), cls: 'ghost', onClick: osPickBackToWizard } ]);
     return;
   }
   status('');
@@ -24083,9 +24083,13 @@ function osPickLoadFace(card) {
 function osPickClose() {
   aCloseModal('osPickOverlay');
   if (_osPickIO) { _osPickIO.disconnect(); _osPickIO = null; }
-  // Back to the wizard this picker was opened from (gate, or toolbar New with the project untouched), on the button that
-  // opened it. wizardOpen re-reads the focus as the wizard's opener, which the closing picker has just dropped: keep
-  // the one it had, so the wizard's own Cancel still returns to toolbar New.
+  osPickBackToWizard();
+}
+// Back to the wizard this picker was opened from (gate, or toolbar New with the project untouched), on the button that
+// opened it — from the picker's close and from the load-failure dialog's "← Back". wizardOpen re-reads the focus as the
+// wizard's opener, which the closing picker or dialog has just dropped: keep the one it had, so the wizard's own Cancel
+// still returns to toolbar New.
+function osPickBackToWizard() {
   const wizOpener = _wizardOpener;
   wizardOpen(_osPickOrigin, document.getElementById('wizStartFromFont'));
   _wizardOpener = wizOpener; if (_activeModal && _activeModal.id === 'wizardOverlay') _activeModal.opener = wizOpener;
