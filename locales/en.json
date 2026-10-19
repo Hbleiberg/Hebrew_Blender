@@ -80,6 +80,7 @@
   "account.who.since": "Account created {date}",
   "account.zip.readme": "IvritSuite account download — {date}\n\nEverything that was in the account {email} when this file was made.\n\n{ivrit}\n  Every saved item: presets, decks, settings, word lists, student profiles, class lists, and so on. To restore it, open https://ivritsuite.com, click Import / Export All Settings on the home page, and choose this file: it is merged into what is on that device, never replacing anything, and per-device settings such as zoom and panel layout are not in it.\n\nfont-projects/\n  Each Hebrew Font Maker project as a .hebrewfont file with its photos inside (open it in the Font Maker from Load Project ▾), next to its exported font when one was kept.\n\nNothing here is needed to use the tools; it is your copy to keep.",
   "contact.a11y.skip_to_form": "Skip to the form",
+  "contact.donate.method_aria": "Payment method",
   "contact.donate.open_paypal": "Open PayPal →",
   "contact.donate.open_venmo": "Open Venmo →",
   "contact.donate.tab_paypal": "PayPal",

@@ -82,6 +82,7 @@ account.gone.home,Back to the home page,חזרה לעמוד הבית,Account pag
 contact.a11y.skip_to_form,Skip to the form,דילוג לטופס,Skip-link (a11y),aria/skip-link
 contact.donate.open_paypal,Open PayPal →,פתחו את PayPal ←,donation button,
 contact.donate.open_venmo,Open Venmo →,פתחו את Venmo ←,donation button,
+contact.donate.method_aria,Payment method,אמצעי תשלום,accessible name of the PayPal / Venmo / Zelle toggle row,aria-label
 contact.donate.tab_paypal,PayPal,PayPal,donation tab,
 contact.donate.tab_venmo,Venmo,Venmo,donation tab,
 contact.donate.tab_zelle,Zelle,Zelle,donation tab,
