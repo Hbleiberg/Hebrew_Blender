@@ -8,7 +8,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P4 (**NEW S519 K — tour-not-following-a-live-switch**) | dashboard, torah, FM, dictionary | **A switch mid-tour leaves the card in the old language, the spotlight off target**: `_tourShow(_tourIdx, 1)` in `applyI18n` (torah: never advance; findings S519). | found S519
+- [ ] P4 (**NEW S519 K — tour-not-following-a-live-switch**) | torah, FM, dictionary | **A mid-tour switch leaves the card and spotlight behind**: `_tourShow(_tourIdx, 1)` in `applyI18n` (torah: never advance; findings S519). | found S519
 
 - [ ] P4 (**NEW S519 K**) | letter_learner.html | **The `no_hebrew_voice` `_fbT` fallback differs from the key's English** (pre-locale only). | found S519
 
@@ -38,7 +38,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S496 D**) | hebrew_dictionary.html | **`roveTileGrid` forces 14 layouts per load** (findings S496). | found S496
 
-- [ ] P4 (**NEW S494 M — hebrew-faux-italic**) | 6 pages + folder-tree block | **13 Hebrew hints slant by CSS italic**: upright in HE (findings S494). | found S494
+- [ ] P4 (**NEW S494 M — hebrew-faux-italic**) | 5 pages + folder-tree block | **12 Hebrew hints slant by CSS italic**: upright in HE (findings S494). | found S494
 
 - [ ] P3 (**NEW S492 N — needs the tour-engine extraction, UX rule 1**) | 7 tools' tour engines | **A tour does not follow a rotation**: `resize` re-places the card but never scrolls its target back; 4 of 7 dictionary steps strand it off-screen (findings S492). | found S492
 
@@ -58,7 +58,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S479 G — gate 2**) | trope_tutor.html | **Only the Haftarah note says the Phrases tab has no examples** (Esther, Megillot, Eicha lack them too). | found S479
 
-- [ ] P4 (**NEW S478 M**) | 6 chrome headers | **A phone header leaves the star alone on a row** (EN contact ≤396, account ≤474). S489: a title beside the star stacks 3 lines at 320 (taller) — gate 3. | found S478
+- [ ] P4 (**NEW S478 M**) | 6 chrome headers | **A phone header leaves the star alone on a row** (EN contact ≤396, account ≤474). S489: a title beside the star stacks 3 lines at 320 (taller) — gate 3. S520: privacy/terms' dark toggle alone on a 3rd row at 320. | found S478
 
 - [ ] P4 (**NEW S478 M**) | 6 chrome footers | **A "·" ends a footer line below ~700px.** S489: no CSS-only fix; a bound dot starts the line instead — gate 3. | found S478
 
@@ -144,7 +144,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S413 Pass C — gate 3**) | 404.html | **The lost star wanders forever with no pause** (WCAG 2.2.2); only reduced motion stops it. | found S413
 
-- [ ] P4 (**NEW S414 Pass F — gates 2/3 + K**) | chrome pages, the 7 tools, 404, CSV | gate 2: **(1)** dark mode's visible "Light", and FM's fullscreen "Show/Hide Panels" (S415), are not in their fixed toggle names (2.5.3); **(2)** "Back" goes to the home page (tools say "Home"); **(3)** 404 lists 4 of 7 tools. Gate 3: **(4)** Tour / Dark / Full Screen / Settings order differs per tool. K: …[full text: IMPROVEMENT_ARCHIVE.md]
+- [ ] P4 (**NEW S414 Pass F — gates 2/3 + K**) | chrome pages, the 7 tools, 404, CSV | gate 2: **(1)** dark mode's visible "Light", and FM's fullscreen "Show/Hide Panels" (S415), are not in their fixed toggle names (2.5.3); **(2)** "Back" goes to the home page (tools say "Home"); **(3)** 404 lists 4 of 8 tools. Gate 3: **(4)** Tour / Dark / Full Screen / Settings order differs per tool. K: …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S411 Pass I — K's**) | Hebrew_Font_Maker.html | **QA Check's outline warning names a glyph by its JS-built English `name` in the Hebrew UI** ("A (uppercase)"; the English, Cyrillic, Phoenician and Aramaic tables build `name` with no key, e.g. "Д (Cyrillic de, uppercase)"). | found S411
 
@@ -316,13 +316,15 @@ _(none)_
 
 ## Done
 
-- [x] 2026-10-19 | (S519 close-out) | branch/deploy note | **S519 = K (35th) + 4 fixes on draft PR #338 (S514–S519).** Drift: none (main `4db5a627`, keep-alive #36 green). sw v1017→v1018; +7 keys; no FM bump. Nothing asked.
+- [x] 2026-10-19 | (S520 close-out) | branch/deploy note | **S520 = N + 4 fixes, draft PR #339.** No drift. sw v1018→v1019; no FM bump; smoke-account-page 65/65.
 
-- [x] 2026-10-19 | `05292d73` `e6e7ba79` `75637fef` `929089d4` | LL, trope, FM, contact | (S519) **Tours follow a live switch (LL, trope); FM's 14 pressed rows and Contact's pay row are named.** | HEAD 8/40, 5/72 → 40/40, 72/72; FM 0 → 14/14; contact 0 → 1; 4 cells, 0 errors
+- [x] 2026-10-19 | `825216f6` `0683a9de` `186ea5f4` `31f3625e` | 404 ×2, 8 headers, dashboard | (S520) **Nested-404 links; HE quip upright; 8 touch header gates; dashboard tour switch.** | 0/7 → 28/28; 6 → 0; 26/64 → 0/128; 18/128 → 128/128
 
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-19 | **S520** | iters: 5 | tools: 404 ×2, 8 headers, dashboard, sw.js | patterns fixed: header-wrap ×8, faux-italic, tour-switch | pass run: N | SW: v1018→v1019
 
 - 2026-10-19 | **S519** | iters: 5 | tools: LL, trope, FM, contact, locales CSV, sw.js | patterns fixed: tour-not-following-a-live-switch ×2, radio-set-without-a-question ×2 | pass run: K | SW: v1017→v1018
 
@@ -340,11 +342,11 @@ _(none)_
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S519 (2026-10-19):** LL, trope, FM, contact, locales CSV, sw.js S519 · dashboard S518 · README S517 · index S516 · flash, generator, torah S515 · i18n.js S512 · dictionary S511 · resources, account S508 · saves, scripts S507 · privacy S495 · terms, 404 S494 · pwa S472.
+- **Snapshot S520 (2026-10-19):** 404, privacy, terms, contact, resources, index, account, LL, generator, dashboard, sw.js S520 · trope, FM, CSV S519 · README S517 · flash, torah S515 · i18n.js S512 · dictionary S511 · saves, scripts S507 · pwa S472.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
-- **`tour-not-following-a-live-switch`** (NEW S519 K; LL `05292d73`, trope `e6e7ba79`; open: dashboard, torah, FM, the dictionary's spot): ACTIVE, streak 0. Detection: `tourswitch.mjs`.
+- **`tour-not-following-a-live-switch`** (NEW S519 K; LL `05292d73`, trope `e6e7ba79`; S520 dashboard `31f3625e`; open: torah, FM, dictionary spot): ACTIVE, streak 0. Detection: `tourswitch.mjs`.
 
 - **`overlay-scoped-dialog-keys`** (NEW S514 F; LL, flash; S515 `.ivrit` ask ×4, Torah favorite; **S516 hub Erase + I/E `973eb309`; open: none**): ACTIVE, streak 0. A click on a dialog's text puts focus on `<body>`: an overlay listener (or a first/last-only trap) lets Shift+Tab …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -370,7 +372,7 @@ _(none)_
 
 - **`hidden-input-anchored-outside-its-scroller`** (NEW S499 C; dashboard's 25 drawer radios FIXED `55891185`, torah fixed outside the loop; latent: `.vh-file` ×4, its label on screen on every path measured): ACTIVE, streak 0. Detection: a `position:absolute|fixed` focusable …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`hebrew-faux-italic`** (NEW S494 M; gate 3: a `he` cell's `<em>` is `<strong>`, `c4e0b86c` ×4; open: 13 CSS italics): ACTIVE, streak 0. Detection: `m494/italcensus.mjs`.
+- **`hebrew-faux-italic`** (NEW S494 M; gate 3: a `he` `<em>` is `<strong>`, `c4e0b86c` ×4; S520 404 `0683a9de`; open: 12): ACTIVE, streak 0. Detection: `m494/italcensus.mjs`.
 
 - **`fixed-toast-duration-shorter-than-its-text`** (NEW S484 F; FIXED `8037c22d` ×4, `5ffa32ba`; resources `3c539498` S487; open 0): ACTIVE, streak 0. A fixed toast timer under 1000 + 50 ms/char of its longest message. Detection: `f484/durations.mjs`; exempt sticky/explicit-ms …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -388,7 +390,7 @@ _(none)_
 
 - **`placeholder-keeps-the-browser-gray`** (NEW S470 `45a3073e`): ACTIVE, streak 0. Detection: `f470/ph.mjs` < 4.5:1 (plant 1.3:1).
 
-- **`header-wrap-gate-below-its-ceiling`** (NEW S478 M; FIXED ×8 `92a21164`; S489 dashboard `f620c768`): ACTIVE, streak 0. Detection: `m478/gates.mjs` / `e489/gates.mjs` (1px 320-1000, EN/HE × light/dark, per page; a gate removed by CSSOM gives its ceiling); HEAD the control.
+- **`header-wrap-gate-below-its-ceiling`** (NEW S478 M; ×8 `92a21164`; S489 `f620c768`; S520 touch ×8 `186ea5f4`): ACTIVE, streak 0. Detection: `n520/gates2.mjs` (1px 320-1000, EN/HE × themes, mouse+touch, real fonts); HEAD the control.
 
 - **`latin-tracking-on-hebrew-labels`** (gate 3: drop suite-wide; S502 dashboard + dictionary; S503 flash; S504 torah `8e48daa5`; S505 Beta badges `0abb1f57`; S511 flash report `th` `90e592b`; **S513 generator `.ws-version-label` `c6fe147` — open: none known** …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -696,7 +698,7 @@ _(none)_
 
 - O deslop — AI-design-tell sweep (one surface): 2026-09-08 (**S346 — 6th O, `flash_cards.html`. ⚑ BLOCKED HERE TWICE (S399, S403) — NOT "needs an attended session". Clone + the 4 parsers install fine; EXECUTING the detector is refused by the sandbox's auto-mode classifier ("Code from External"), and the refusal names the remedy: the maintainer adds a Bash permission rule for the detector (or …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- N mobile & touch-device (one surface): 2026-10-14 (**S506 — 25th N, dashboard (S321 →): 4 phones × EN/HE × themes, 19 views by real taps, rotation, touch, 4×; plants 16/16. FOUND 4, FIXED 2 (+ torah, trope 16px). N-next: privacy/terms/404 (S348).**)
+- N mobile & touch-device (one surface): 2026-10-19 (**S520 — 26th N, privacy/terms/404: 72 phone cells, taps, rotation, 4×, nested 404s, a real-font header sweep × 15 pages. FOUND 3, FIXED 4. N-next: LL (never), contact (S276).**)
 
 - M aesthetics & visual design (one surface): 2026-10-14 (**S508 — 25th M, dashboard (S322 →): 128 shots, census, plants 6/6. FOUND 5, FIXED 2. M-next: FM (S335).**)
 
@@ -724,4 +726,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-18 (**S514 — 38th F, dialog Tab traps: 22 dialogs × 2 cells by real keys + a click-on-text arm; plants 4/4. CLEAN 13. FOUND 9, FIXED 3 (+ FM menus). F-next: empty states.**)
 
-**Next session (S520):** **BRANCH/PR: draft PR #338 (S514–S519) open → continue; merged → restart from `origin/main`.** `sw.js` **v1018**, FM **5.59**. ⚑ Stalest: N (S506), P (S507), M (S508). ⚑ First: the tour switch (dashboard, torah, FM); sw.js `no-store` (the maintainer's call). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2 (TT Chant, glyphs, five S512 copy items, the LL description); O needs a Bash rule.
+**Next session (S521):** **BRANCH/PR: draft PR #339 (S520) open → continue; merged → restart from `origin/main`.** `sw.js` **v1019**, FM **5.59**. ⚑ Stalest: P (S507), M (S508), G (S509). ⚑ First: the tour switch (torah, FM, dictionary); sw.js `no-store` (maintainer). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2 (TT Chant, glyphs, five S512 copy items, LL description); O needs a Bash rule.

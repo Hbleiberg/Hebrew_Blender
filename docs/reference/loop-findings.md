@@ -2532,3 +2532,24 @@
   - **(2)** The FM's English, Cyrillic and Custom glyphs panels exist only as tabs once their Advanced checkbox is ticked (tabbed layout), so a click on the panel title times out: tick the box, then click `#catTabs .ctab[data-cat=…]`.
 
   | found S519
+
+## S520 (2026-10-19) — pass N's 26th run (`privacy.html` + `terms.html` + `404.html`, their 2nd: S348 → S520)
+
+- [ ] P4 (**S520 Pass N — receipts, so the next N on the chrome trio starts here**) | privacy.html, terms.html, 404.html |
+  - **Harness `n520/` (scratchpad):** `lib.mjs` (`openPage` on a real descriptor, SW blocked, dark seeded, **real Google Fonts** by `routeAll`: curl the css2 URL and each gstatic file with a Chrome UA into `fontcache/`, fulfil from disk), `arm1.mjs`, `gates2.mjs` (`PTR=fine,coarse`), `ceil.mjs`, `ghp-server.mjs` (a GitHub Pages stand-in: a file, a folder's index.html, else 404.html at the SAME URL), `nested.mjs`, `arm4.mjs`, `arm7.mjs`, `ital.mjs`, `tourswitch.mjs`.
+  - **Arm 1:** 72 cells (iPhone SE, iPhone 13 + landscape 750, Pixel 7, Galaxy S8, iPad Mini × EN/HE × light/dark): 0 overflow, 0 page errors, one `h1` each, `dir=rtl` in HE. A planted 600px box fired 3/3.
+  - **Arms 2–3:** one viewport shape on all three (no `viewport-fit`, no safe-area: consistent "neither"); the single `100vh` is the body's `min-height` (footer push), as S348 found.
+  - **Arm 4:** real taps flip the dark toggle both ways (`aria-pressed`, the key); the language select changes by touch (HE, `rtl`); a rotation there and back leaves 0 overflow; no hover-only control; header targets 79×30 / 106×31 / 75×30 (the ratified chrome floor). The select is 16px under a finger.
+  - **Arm 6:** the Back link is `href="/"` on privacy/terms — no standalone dead end there; the 404's was the defect below.
+  - **Arm 7** (iPhone 13, 4× CPU, 1.6 Mb/s + 150 ms): load 541–560 ms, FCP ~300 ms, 0 long tasks; a planted 300 ms block counted.
+  - **FOUND + FIXED (`825216f6`):** GitHub Pages serves `404.html` at the missing URL, so at `/flash_cards/`, `/tools/generator` or `/a/b/c.html` every relative link resolved inside the missing folder. `nested.mjs` by real taps: HEAD 0/7 links reach a page and 0/4 icons/manifest load at each nested URL (top level 7/7); fix 28/28 and 16/16, top level unchanged.
+  - **FOUND + FIXED (`0683a9de`):** the 404's Hebrew quip slanted (one of S494's 13). `ital.mjs`: Hebrew own-text with a non-normal style, HEAD 6/6 HE cells → 0/6; EN keeps italic 6/6.
+  - **FOUND + FIXED (`186ea5f4`) — the touch variant of `header-wrap-gate-below-its-ceiling`:** `78a973ed` made the select 16px (96 → 106px) under `pointer:coarse` and no gate was re-measured. `gates2.mjs`, 1px 320–1000 × EN/HE × light/dark × mouse/touch, 15 pages, real fonts. Touch overflow on HEAD: privacy/terms/contact 446–455, resources 467–476 (EN), index 520–529, account 536–545, LL 577–585 (HE), generator 750–759 (EN — an iPhone 13 held sideways is 750: Full Screen clipped 8–10px). Mouse: 0 on every page. Fix: each gate gains `(pointer:coarse) and (max-width:<touch ceiling>)`; 0/128 after. Dashboard, flash, dictionary, torah, trope, FM and 404 are clean both ways.
+  - **FIXED (`31f3625e`) from the S519 candidate:** the dashboard tour after a live switch, `tourswitch.mjs` (each step k by Tour + Next × k, a switch there and back, EN/HE × light/dark × 1280/800): HEAD 18/128 (title/body/counter stale; the spot up to 1057px off), tree 128/128.
+  - **Refuted / not defects:**
+    - **Fallback fonts invent header bands.** The same sweep with Google Fonts aborted reported dashboard touch overflow at 565–574 and 658–667 (iPhone SE and iPhone 8 landscape widths) and LL in EN; in the real faces both are clean. Never file a header band from a fallback-font run (trap 199 again, at the gate scale).
+    - **The Hebrew FERPA citation** ("FERPA, 20 U.S.C.) … / .(§ 1232g; 34 CFR Part 99" on a 390px line) is the bidi algorithm's correct RTL display of an English parenthetical split across two lines: both parentheses resolve RTL (N0, the context before the opener is Hebrew), so each shows mirrored on its RTL side. Leave it.
+    - The 404's Hebrew `(lo nimtza)` keeps its italic — Latin transliteration.
+  - `smoke-account-page --sdk` (2.116.0, SRI matched) 65/65 for the `account.html` gate. check-i18n and check-inline-js clean.
+
+  | found S520

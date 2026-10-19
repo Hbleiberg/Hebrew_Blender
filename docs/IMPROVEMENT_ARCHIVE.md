@@ -93131,3 +93131,39 @@ _(prior — S518 pointer:)_ **BRANCH/PR: draft PR #338 (S514–S517, 4 sessions 
 - K i18n / localization audit: 2026-10-19 (**S519 — 35th K on `a4f94e88..db80feb4` (119 commits; LL's first K): CSV +115 (19 prefix-built, all resolve), 2 changed, 0 removed; census 5,271 refs (misses = base's 2 plural builds; 1 new stale fallback); 90-state round trip (plants 450/450), twins = base 84/84; retry 30/30 (control 4/4); blind arms (plants 7/7); HE attrs (plant 15/15); LL 158 scans × 288 clicks. FOUND 2 (tours ×6 pages, LL fallback), FIXED 4.**)
 
 _(prior — S519 pointer:)_ **BRANCH/PR: draft PR #338 (S514–S518, 5 sessions — a merge soon keeps it reviewable) open → continue; merged → restart from `origin/main`.** `sw.js` **v1017**, FM **5.59**. ⚑ Stalest: K (S505), N (S506), P (S507). ⚑ First: FM's 5 unnamed mode toggles (an aria string each); sw.js `no-store` (the maintainer's call). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2 (TT Chant, glyphs, five S512 copy items, the LL description); O needs a Bash rule.
+
+
+<!-- archived by compact-ledger at the S521 boundary, 2026-10-19 -->
+## Compaction (S521, 2026-10-19) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-19 | `825216f6` `0683a9de` `186ea5f4` `31f3625e` | 404 ×2, 8 headers, dashboard | (S520) **The 404's links reach a page from a nested missing URL; its Hebrew quip is upright; 8 header gates hold under a finger; the dashboard tour follows a live switch.** | GH-Pages-like server, real taps 0/7 → 28/28; HE italic 6 → 0; real-font 1px sweep, touch 26/64 → 0/128, mouse 0 → 0; tour HEAD 18/128 → 128/128
+
+### from Per-session log (one line per session)
+
+- 2026-10-19 | **S520** | iters: 5 | tools: 404 ×2, privacy, terms, contact, resources, index, account, LL, generator, dashboard, shared-components.md, sw.js | patterns fixed: header-wrap-gate-below-its-ceiling ×8, hebrew-faux-italic ×1, tour-not-following-a-live-switch ×1 | pass run: N | SW: v1018→v1019
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`header-wrap-gate-below-its-ceiling`** (NEW S478 M; FIXED ×8 `92a21164`; S489 dashboard `f620c768`; **S520 the touch variant ×8 `186ea5f4`**): ACTIVE, streak 0. Detection: `n520/gates2.mjs` (1px 320-1000, EN/HE × light/dark, per page, **mouse AND touch** (`hasTouch`+`isMobile`), **real Google Fonts** via `routeAll` — the fallback faces invent bands; a gate removed by CSSOM gives its ceiling); HEAD the control.
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- N mobile & touch-device (one surface): 2026-10-14 (**S506 — 25th N, dashboard (S321 →): 4 phones × EN/HE × themes, 19 views by real taps, rotation, touch, 4×; plants 16/16. FOUND 4, FIXED 2 (+ torah, trope 16px). N-next: privacy/terms/404 (S348).**)
+
+_(prior — S520 pointer:)_ **BRANCH/PR: draft PR #338 (S514–S519) open → continue; merged → restart from `origin/main`.** `sw.js` **v1018**, FM **5.59**. ⚑ Stalest: N (S506), P (S507), M (S508). ⚑ First: the tour switch (dashboard, torah, FM); sw.js `no-store` (the maintainer's call). ⚑ Seeds: 44. ⚑ Maintainer: re-stage 14 fonts; torah screen reader; A/B week eyes; gate 2 (TT Chant, glyphs, five S512 copy items, the LL description); O needs a Bash rule.
+
+### from Done (S519, moved by the S520 close-out)
+
+- [x] 2026-10-19 | (S519 close-out) | branch/deploy note | **S519 = K (35th) + 4 fixes on draft PR #338 (S514–S519).** Drift: none (main `4db5a627`, keep-alive #36 green). sw v1017→v1018; +7 keys; no FM bump. Nothing asked.
+
+- [x] 2026-10-19 | `05292d73` `e6e7ba79` `75637fef` `929089d4` | LL, trope, FM, contact | (S519) **Tours follow a live switch (LL, trope); FM's 14 pressed rows and Contact's pay row are named.** | HEAD 8/40, 5/72 → 40/40, 72/72; FM 0 → 14/14; contact 0 → 1; 4 cells, 0 errors
+
+
+<!-- archived by compact-ledger at the S521 boundary, 2026-10-19 -->
+## Compaction (S521, 2026-10-19) — moved verbatim from the live ledger
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`header-wrap-gate-below-its-ceiling`** (NEW S478 M; ×8 `92a21164`; S489 `f620c768`; S520 touch ×8 `186ea5f4`): ACTIVE, streak 0. Detection: `n520/gates2.mjs` (1px 320-1000, EN/HE × themes × mouse AND touch, real fonts; a CSSOM-removed gate gives its ceiling); HEAD the control.
