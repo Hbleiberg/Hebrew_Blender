@@ -443,6 +443,64 @@ html[lang="he"] .ll-vgroup { letter-spacing:normal; text-transform:none; }
 .ll-pair-name { font-weight:700; }
 .ll-pair-sound { font-family:'Libre Baskerville', serif; color:var(--muted); display:block; }
 
+/* Coloring sheet tab: a paper preview, then its options. The sheet is the page that prints, so it keeps literal white
+   paper and black ink in both themes (--white is a dark surface in dark mode). Every size inside it is in cqmin (the
+   sheet is a size container), so the preview and the printed page scale alike on Letter and A4. It reads left to right
+   like the maintainer's sketch in both UIs: words in the four corners, the letter or its hint picture in the middle. */
+.ll-cs-preview { display:flex; justify-content:center; margin:0 0 10px; }
+.ll-cs-sheet {
+  /* The five size sliders (llCsApplySizes) set these factors; the bases are the 100% look per orientation. Sizes trade
+     space on a fixed page: a part that runs out of room stops growing (flex-shrink) rather than spilling off the sheet. */
+  --cs-main:1; --cs-pic:1; --cs-he:1; --cs-tr:1; --cs-en:1; --cs-main-base:66cqmin; --cs-pic-base:24cqmin;
+  container-type:size; box-sizing:border-box; background:#fff; color:#000;
+  border:1px solid var(--border); box-shadow:var(--shadow-md);
+  aspect-ratio:11 / 8.5; width:min(100%, calc(54vh * 11 / 8.5));   /* short enough that the options and Print fit under it on a laptop */
+  display:flex; flex-direction:column; padding:3.5cqmin 4cqmin 2.2cqmin;
+  font-family:'Source Sans 3', sans-serif;
+}
+.ll-cs-sheet[data-orient="portrait"] { aspect-ratio:8.5 / 11; width:min(100%, calc(64vh * 8.5 / 11)); --cs-main-base:40cqmin; --cs-pic-base:17cqmin; }
+.ll-cs-name { font-family:'Libre Baskerville', serif; font-size:3.4cqmin; display:flex; align-items:flex-end; gap:1.2cqmin; margin:0 0 1.5cqmin; }
+.ll-cs-blank { display:inline-block; width:45cqmin; border-bottom:0.3cqmin solid #000; }
+.ll-cs-body {
+  flex:1; min-height:0; display:grid; gap:2cqmin 3cqmin;
+  grid-template-columns:auto minmax(0, 1fr) auto; grid-template-rows:minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-areas:"w0 c w1" "w2 c w3";
+}
+.ll-cs-sheet[data-orient="portrait"] .ll-cs-body {
+  grid-template-columns:minmax(0, 1fr) minmax(0, 1fr); grid-template-rows:minmax(0, auto) minmax(0, 1fr) minmax(0, auto);
+  grid-template-areas:"w0 w1" "c c" "w2 w3";
+}
+.ll-cs-w0 { grid-area:w0; } .ll-cs-w1 { grid-area:w1; } .ll-cs-w2 { grid-area:w2; } .ll-cs-w3 { grid-area:w3; }
+.ll-cs-word { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:0; min-width:0; text-align:center; }
+.ll-cs-pic { flex:0 1 auto; min-height:0; max-width:100%; width:calc(var(--cs-pic-base) * var(--cs-pic)); height:calc(var(--cs-pic-base) * var(--cs-pic)); }
+.ll-cs-art { flex:0 1 auto; min-height:0; width:100%; height:calc(var(--cs-main-base) * var(--cs-main)); }
+.ll-cs-pic svg, .ll-cs-art svg { display:block; width:100%; height:100%; overflow:visible; }
+.ll-cs-he { font-size:calc(7cqmin * var(--cs-he)); line-height:1.2; white-space:nowrap; }
+.ll-cs-tr { font-size:calc(3.3cqmin * var(--cs-tr)); font-style:italic; line-height:1.25; }
+.ll-cs-en { font-size:calc(3.3cqmin * var(--cs-en)); line-height:1.25; }
+.ll-cs-center { grid-area:c; margin:0; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:0; min-width:0; }
+.ll-cs-center figcaption { font-family:'Libre Baskerville', serif; font-size:3.6cqmin; line-height:1.3; text-align:center; margin-top:1.2cqmin; max-width:100%; }
+.ll-cs-center figcaption strong { display:block; }
+.ll-cs-credit { font-size:2cqmin; color:#555; text-align:end; margin-top:1cqmin; }   /* the sheet is dir=ltr: the bottom-right corner */
+.ll-cs-note:empty { display:none; }
+.ll-cs-opts { display:flex; flex-wrap:wrap; gap:12px 26px; align-items:flex-start; margin-top:6px; }
+.ll-cs-set { border:none; margin:0; padding:0; min-width:0; display:flex; flex-direction:column; gap:2px; }
+.ll-cs-set legend { font-size:0.78rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--muted); padding:0; margin-bottom:4px; }
+html[lang="he"] .ll-cs-set legend { letter-spacing:normal; text-transform:none; }
+.ll-opt input[type="radio"] { width:18px; height:18px; accent-color:var(--gold); flex-shrink:0; margin:0; }
+.ll-cs-font { flex-wrap:wrap; }
+.ll-cs-upload {
+  position:relative; display:inline-flex; align-items:center; gap:6px; margin-top:6px; font-size:0.78rem; color:var(--gold-text);
+  cursor:pointer; border:1px dashed var(--border); border-radius:6px; padding:6px 11px; width:fit-content;
+}
+.vh-file { position:absolute; width:1px; height:1px; opacity:0; }
+label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline-offset:2px; }
+.ll-cs-print { align-self:center; font-size:0.95rem; padding:9px 18px; }
+.ll-cs-size { display:grid; grid-template-columns:minmax(7.5em, max-content) 130px 3.2em; align-items:center; gap:2px 8px; font-size:0.9rem; min-height:30px; }
+.ll-cs-size input[type="range"] { width:100%; accent-color:var(--gold); margin:0; }
+.ll-cs-size input[type="range"]:disabled { opacity:0.4; }
+.ll-cs-size output { font-variant-numeric:tabular-nums; color:var(--muted); font-size:0.82rem; }
+
 /* Hint animation library: a drawing wraps a moving part in <g class="ll-anim ll-anim-<name>">. Every keyframe
    returns to the rest pose and fill-mode stays `none`, so the reduced-motion block below (0.001ms, one run)
    leaves the picture exactly as drawn. */
@@ -559,7 +617,7 @@ body.dark #appToast { background: #0a0f1c; }
   .ll-opt select { font-size:16px; min-height:40px; }
   .ll-opt { min-height:44px; }
   .ll-vowel-grid .ll-opt { min-height:40px; }
-  .ll-opt input[type="checkbox"] { width:22px; height:22px; }
+  .ll-opt input[type="checkbox"], .ll-opt input[type="radio"] { width:22px; height:22px; }
   .panel-title { min-height:44px; }
   .ll-btn { min-height:40px; padding:9px 14px; }
   .ll-nav, .ll-x { width:44px; height:44px; }
@@ -633,6 +691,16 @@ body.dark #appToast { background: #0a0f1c; }
   body.ll-dlg-open .ll-words, body.ll-dlg-open .ll-lookalikes { grid-template-columns:repeat(2, 1fr); }
   body.ll-dlg-open .ll-hint-pic { width:260px; }   /* paper is narrower than 800px, so the phone size (200px) would apply */
   .ll-hint, .ll-word, .ll-vrow, .ll-font-tile, .ll-story, .ll-story-script, .ll-forms-line, .ll-lookalike, .ll-finals-rule { break-inside:avoid; }
+  /* The Coloring sheet tab prints the sheet alone, filling one page: no tool header, no dialog head, no options.
+     The page's orientation comes from #llPageSize, written by llCsPageStyle while the tab shows (body[data-ll-tab]). */
+  body.ll-dlg-open[data-ll-tab="coloring"] header,
+  body.ll-dlg-open[data-ll-tab="coloring"] .ll-dlg-head,
+  body.ll-dlg-open[data-ll-tab="coloring"] .ll-cs-opts,
+  body.ll-dlg-open[data-ll-tab="coloring"] .ll-cs-note { display:none !important; }
+  body.ll-dlg-open[data-ll-tab="coloring"] .ll-panel { padding:0; }
+  body.ll-dlg-open[data-ll-tab="coloring"] .ll-cs-preview { display:block; margin:0; }
+  body.ll-dlg-open[data-ll-tab="coloring"] .ll-cs-sheet,
+  body.ll-dlg-open[data-ll-tab="coloring"] .ll-cs-sheet[data-orient="portrait"] { width:100%; height:100vh; aspect-ratio:auto; border:none; box-shadow:none; break-inside:avoid; }
 }
 /* Reduced motion: the universal neutralizer (every animation and transition on the page, the hint drawings'
    .ll-anim groups included; 0.001ms rather than 0 so animationend still fires). */
@@ -646,6 +714,8 @@ body.dark #appToast { background: #0a0f1c; }
   .pulse-attn::after { animation: none !important; }   /* the ring stays, still: its base style is the static 3px ring */
 }
 </style>
+<!-- @page size for the Coloring sheet tab only (llCsPageStyle fills it while that tab shows, empties it otherwise). -->
+<style id="llPageSize"></style>
 </head>
 <body>
 <a class="skip-link" href="#llMain" data-i18n="letterlearner.a11y.skip_to_letters">Skip to the letters</a>
@@ -744,12 +814,51 @@ body.dark #appToast { background: #0a0f1c; }
       <button type="button" role="tab" id="llTab-vowels" aria-controls="llPanel-vowels" aria-selected="false" tabindex="-1" data-i18n="letterlearner.tabs.vowels">Vowels</button>
       <button type="button" role="tab" id="llTab-font" aria-controls="llPanel-font" aria-selected="false" tabindex="-1" data-i18n="letterlearner.tabs.font">Fonts</button>
       <button type="button" role="tab" id="llTab-special" aria-controls="llPanel-special" aria-selected="false" tabindex="-1" data-i18n="letterlearner.tabs.special">Special forms</button>
+      <button type="button" role="tab" id="llTab-coloring" aria-controls="llPanel-coloring" aria-selected="false" tabindex="-1" data-i18n="letterlearner.tabs.coloring">Coloring sheet</button>
     </div>
     <div class="ll-panel" role="tabpanel" id="llPanel-letter" aria-labelledby="llTab-letter" tabindex="0"></div>
     <div class="ll-panel" role="tabpanel" id="llPanel-vowels" aria-labelledby="llTab-vowels" tabindex="0" hidden></div>
     <div class="ll-panel" role="tabpanel" id="llPanel-font" aria-labelledby="llTab-font" tabindex="0" hidden></div>
     <div class="ll-panel" role="tabpanel" id="llPanel-special" aria-labelledby="llTab-special" tabindex="0" hidden></div>
     <div class="ll-panel" role="tabpanel" id="llPanel-story" aria-labelledby="llTab-story" tabindex="0" hidden></div>
+    <!-- Coloring sheet (Block and Cursive cards): the sheet preview is rebuilt by llRenderColoringTab; the options under it
+         are static and read/written through the settings blob (the color* fields). Paper prints only the sheet. -->
+    <div class="ll-panel" role="tabpanel" id="llPanel-coloring" aria-labelledby="llTab-coloring" tabindex="0" hidden>
+      <div class="ll-cs-preview" id="llCsPreview"></div>
+      <p class="ll-note ll-cs-note" id="llCsNote" role="status" aria-live="polite"></p>
+      <div class="ll-cs-opts">
+        <fieldset class="ll-cs-set">
+          <legend data-i18n="letterlearner.coloring.page_legend">Page</legend>
+          <label class="ll-opt"><input type="radio" name="llCsOrient" value="landscape"><span data-i18n="letterlearner.coloring.landscape">Landscape</span></label>
+          <label class="ll-opt"><input type="radio" name="llCsOrient" value="portrait"><span data-i18n="letterlearner.coloring.portrait">Portrait</span></label>
+        </fieldset>
+        <fieldset class="ll-cs-set">
+          <legend data-i18n="letterlearner.coloring.show_legend">Show</legend>
+          <label class="ll-opt"><input type="radio" name="llCsView" value="letter"><span data-i18n="letterlearner.coloring.view_letter">Letter</span></label>
+          <label class="ll-opt"><input type="radio" name="llCsView" value="hint"><span data-i18n="letterlearner.coloring.view_hint">Letter hint</span></label>
+        </fieldset>
+        <fieldset class="ll-cs-set">
+          <legend data-i18n="letterlearner.coloring.include_legend">Include</legend>
+          <label class="ll-opt"><input type="checkbox" id="optCsTranslit"><span data-i18n="letterlearner.coloring.translit">Transliteration</span></label>
+          <label class="ll-opt"><input type="checkbox" id="optCsGloss"><span data-i18n="letterlearner.coloring.gloss">Translation</span></label>
+          <label class="ll-opt"><input type="checkbox" id="optCsName"><span data-i18n="letterlearner.coloring.name_line">Name line</span></label>
+          <label class="ll-opt"><input type="checkbox" id="optCsHint"><span data-i18n="letterlearner.coloring.hint_line">Hint sentence</span></label>
+        </fieldset>
+        <fieldset class="ll-cs-set">
+          <legend data-i18n="letterlearner.coloring.sizes_legend">Sizes</legend>
+          <div class="ll-cs-size"><label for="llCsSizeMain" data-i18n="letterlearner.coloring.size_main">Main picture</label><input type="range" id="llCsSizeMain" data-size="colorSizeMain" min="50" max="150" step="5"><output for="llCsSizeMain"></output></div>
+          <div class="ll-cs-size"><label for="llCsSizePic" data-i18n="letterlearner.coloring.size_pic">Vocab pictures</label><input type="range" id="llCsSizePic" data-size="colorSizePic" min="50" max="150" step="5"><output for="llCsSizePic"></output></div>
+          <div class="ll-cs-size"><label for="llCsSizeHe" data-i18n="letterlearner.coloring.size_he">Hebrew words</label><input type="range" id="llCsSizeHe" data-size="colorSizeHe" min="50" max="150" step="5"><output for="llCsSizeHe"></output></div>
+          <div class="ll-cs-size"><label for="llCsSizeTr" data-i18n="letterlearner.coloring.size_tr">Transliteration</label><input type="range" id="llCsSizeTr" data-size="colorSizeTr" min="50" max="150" step="5"><output for="llCsSizeTr"></output></div>
+          <div class="ll-cs-size"><label for="llCsSizeEn" data-i18n="letterlearner.coloring.size_en">Translation</label><input type="range" id="llCsSizeEn" data-size="colorSizeEn" min="50" max="150" step="5"><output for="llCsSizeEn"></output></div>
+        </fieldset>
+        <div class="ll-cs-set">
+          <div class="ll-opt ll-cs-font"><label for="llCsFont" data-i18n="letterlearner.coloring.font_label">Hebrew font (words)</label><select id="llCsFont"></select></div>
+          <label class="ll-cs-upload" title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" data-i18n-title="shared.fonts.upload_title"><svg class="hi hi-sm hi-upload" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.2V4"/><path d="M7.6 8.4 12 4l4.4 4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="shared.fonts.upload_label">Upload your own font?</span><input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" id="llCsUpload"></label>
+        </div>
+        <button type="button" class="ll-btn ll-cs-print hi-btn" id="llCsPrint" title="Print this coloring sheet" data-i18n-title="letterlearner.coloring.print_title"><svg class="hi hi-sm hi-print" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9.2V3.6h10v5.6"/><path d="M7 9.2H5.6A2.1 2.1 0 0 0 3.5 11.3v3.6a2.1 2.1 0 0 0 2.1 2.1H7"/><path d="M17 9.2h1.4a2.1 2.1 0 0 1 2.1 2.1v3.6a2.1 2.1 0 0 1-2.1 2.1H17"/><rect x="7" y="14.2" width="10" height="6.2" rx="1.2"/><circle cx="17.6" cy="12" r="1" fill="currentColor" stroke="none"/></svg><span class="hi-lbl" data-i18n="letterlearner.coloring.print">Print</span></button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1323,7 +1432,7 @@ const VOWEL_GROUP_FALLBACK = { ah: '“ah” sounds', eh: '“eh” sounds', ee:
 // VOWEL_TIPS), validated into these indexes by llIndexVowelData.
 const VOWEL_BY_ID = Object.fromEntries(VOWELS.map(v => [v.id, v]));
 const LL_FAMILIES = ['ah', 'eh', 'ee', 'oh', 'oo', 'quiet'];
-const LL_TABS = ['letter', 'vowels', 'font', 'special', 'story'];      // every tab in the dialog's strip (markup order)
+const LL_TABS = ['letter', 'vowels', 'font', 'special', 'story', 'coloring'];      // every tab in the dialog's strip (markup order)
 const LL_HEAR_DEFAULT = ['bet', 'lamed', 'mem', 'shin'];   // the Story tab's sample letters: בַּ לַ מַ שַׁ
 const VOWEL_STORY = {};         // story id → validated story
 const VOWEL_CARD = {};          // vowel id → validated card
@@ -1342,7 +1451,23 @@ const LL_DEFAULTS = {
   fontTab: true,
   splitPairs: true,
   wordAudio: false,
-  voiceURI: ''          // this device's installed voice — omitted from the account (registry `omit`)
+  voiceURI: '',         // this device's installed voice — omitted from the account (registry `omit`)
+  // The Coloring sheet tab. Flat fields, so the account merges them one by one; all of them are the teacher's choices
+  // and travel. colorFont '' = the card's own face; a My Fonts name this device lacks stays stored (only the sheet
+  // falls back to the card's face).
+  colorOrient: 'landscape',   // 'landscape' | 'portrait'
+  colorView: 'letter',        // 'letter' | 'hint'
+  colorTranslit: true,
+  colorGloss: true,
+  colorName: true,
+  colorHint: true,
+  colorFont: '',
+  // The size sliders, in percent of the 100% look (50–150, steps of 5).
+  colorSizeMain: 100,
+  colorSizePic: 100,
+  colorSizeHe: 100,
+  colorSizeTr: 100,
+  colorSizeEn: 100
 };
 // The Fonts tab: five very different shapes. Each face is the suite's own entry (the pickers' HEB_FONTS on the
 // Torah Trainer, the self-hosted @font-face in this page's head) — nothing is duplicated here, only named.
@@ -1616,6 +1741,11 @@ function llLoadSettings() {
   settings.splitPairs = typeof stored.splitPairs === 'boolean' ? stored.splitPairs : LL_DEFAULTS.splitPairs;
   settings.wordAudio = typeof stored.wordAudio === 'boolean' ? stored.wordAudio : LL_DEFAULTS.wordAudio;
   settings.voiceURI = typeof stored.voiceURI === 'string' ? stored.voiceURI : '';
+  settings.colorOrient = stored.colorOrient === 'portrait' ? 'portrait' : 'landscape';
+  settings.colorView = stored.colorView === 'hint' ? 'hint' : 'letter';
+  ['colorTranslit', 'colorGloss', 'colorName', 'colorHint'].forEach(k => { settings[k] = typeof stored[k] === 'boolean' ? stored[k] : LL_DEFAULTS[k]; });
+  settings.colorFont = typeof stored.colorFont === 'string' ? stored.colorFont.slice(0, 120) : '';
+  LL_CS_SIZES.forEach(k => { settings[k] = llCsSizeVal(stored[k]); });
 }
 function llSaveSettings() {
   const text = JSON.stringify(settings);
@@ -1665,6 +1795,7 @@ function renderOptions() {
   document.getElementById('optFontTab').checked = !!settings.fontTab;
   document.getElementById('optSplit').checked = !!settings.splitPairs;
   document.getElementById('optWordAudio').checked = !!settings.wordAudio;
+  llCsSyncControls();
 }
 function wireOptions() {
   document.getElementById('optFontTab').addEventListener('change', e => {
@@ -1866,6 +1997,7 @@ function llClose() {
   if (ov.hidden) return;
   ov.hidden = true;
   document.body.classList.remove('ll-dlg-open');
+  llCsPageStyle();   // the grid prints on the browser's own page again
   try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e) {}
   const card = _llId ? document.querySelector('.ll-card[data-id="' + _llId + '"]') : null;
   const back = (_llOpener && document.contains(_llOpener) && _llOpener !== document.body) ? _llOpener : card;
@@ -1935,6 +2067,7 @@ function llTabsFor(card) {
   if (!L.final || (L.vowels && L.vowels.length)) tabs.push('vowels');
   if (settings.fontTab) tabs.push('font');
   if (llSpecialItems(L).length) tabs.push('special');
+  if ((L.words || []).length) tabs.push('coloring');
   return tabs;
 }
 function llSelectTab(name) {
@@ -1946,7 +2079,10 @@ function llSelectTab(name) {
     tab.tabIndex = on ? 0 : -1;
     panel.hidden = !on;
   });
+  document.body.dataset.llTab = name;   // the print CSS prints a Coloring sheet alone
+  llCsPageStyle();
   if (name === 'font') llRenderFontTab(llCard(_llId));
+  if (name === 'coloring') llRenderColoringTab(llCard(_llId));
 }
 function llFillDialog(id, keepTab) {
   const card = llCard(id); if (!card) return;
@@ -1975,6 +2111,7 @@ function llFillDialog(id, keepTab) {
   fontPanel.textContent = '';
   fontPanel.dataset.for = '';   // a card closed and reopened renders its Fonts tab again (llRenderFontTab keys on this)
   _llFontToken++;
+  document.getElementById('llCsPreview').textContent = '';   // the Coloring sheet renders when its tab shows (it measures the drawings)
   llSelectTab((keepTab && tabs.includes(_llTab)) ? _llTab : tabs[0]);
 }
 
@@ -2335,6 +2472,500 @@ function llRenderFontTab(card) {
       }
     });
   });
+}
+
+/* ══════════════════════════════════════════════════════
+   MY FONTS + THE HEBREW FONT MENU (the Coloring sheet's words). The suite's picker contract
+   (docs/reference/shared-components.md → "Rule for any new tool with a Hebrew font selector"): the shared store
+   block and the uploader block pasted verbatim, a "My Fonts" group filled by refreshMyFonts() at init, and the
+   "Upload your own font?" control under the menu. HEB_FONTS is the Dictionary's list.
+   ══════════════════════════════════════════════════════ */
+const HEB_FONTS = [
+  // ── Block Fonts ──────────────────────────────
+  {
+    section: 'Block',
+    name: 'Frank Ruhl Libre',
+    stack: "'Frank Ruhl Libre', serif",
+    attr: 'Yanek Iontef — OFL',
+    link: 'https://github.com/fontef/frankruhllibre',
+    load: null
+  },
+  {
+    section: 'Block',
+    name: 'Noto Serif Hebrew',
+    stack: "'Noto Serif Hebrew', serif",
+    attr: 'Google / Noto Team — OFL',
+    link: 'https://fonts.google.com/noto/specimen/Noto+Serif+Hebrew',
+    load: { type: 'gfonts', url: 'https://fonts.googleapis.com/css2?family=Noto+Serif+Hebrew:wght@400;700&display=swap' }
+  },
+  {
+    section: 'Block',
+    name: 'Noto Sans Hebrew',
+    stack: "'Noto Sans Hebrew', sans-serif",
+    attr: 'Google / Noto Team — OFL',
+    link: 'https://fonts.google.com/noto/specimen/Noto+Sans+Hebrew',
+    load: { type: 'gfonts', url: 'https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@400;700&display=swap' }
+  },
+  {
+    section: 'Block',
+    name: 'Alef',
+    stack: "'Alef', sans-serif",
+    attr: 'HaGilda & Mushon Zer-Aviv — OFL',
+    link: 'https://alef.hagilda.com/',
+    load: { type: 'gfonts', url: 'https://fonts.googleapis.com/css2?family=Alef:wght@400;700&display=swap' }
+  },
+  {
+    section: 'Block',
+    name: 'Ezra SIL',
+    stack: "'Ezra SIL', serif",
+    attr: 'SIL International — OFL',
+    link: 'https://software.sil.org/ezra/',
+    load: { type: 'face', css: "@font-face{font-family:'Ezra SIL';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/SIL%20(OFL)/Ezra%20SIL/SILEOT.ttf') format('truetype');font-weight:normal;font-style:normal;}" }
+  },
+  {
+    section: 'Block',
+    name: 'Shlomo',
+    stack: "'Shlomo', serif",
+    attr: 'Shlomo Orbach — OFL',
+    link: 'https://github.com/aharonium/fonts',
+    load: { type: 'face', css: "@font-face{font-family:'Shlomo';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/Shlomo%20Orbach%20(OFL)/Shlomo/Shlomo.ttf') format('truetype');font-weight:normal;font-style:normal;}" }
+  },
+  {
+    section: 'Block',
+    name: 'Dyslexia Hebrew',
+    stack: "'DyslexiaHebrew', sans-serif",
+    attr: 'Jake Shoag — OFL',
+    link: 'https://github.com/aharonium/fonts',
+    load: { type: 'face', css: "@font-face{font-family:'DyslexiaHebrew';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts@master/Fonts/Hebrew%20Letters%20with%20Vowels%20(no%20cantillation)/Shoag%2C%20Jake%20(OFL)/DyslexiaHebrew-Regular.otf') format('opentype');font-weight:normal;font-style:normal;}" }
+  },
+  // ── Cursive / Script Fonts ───────────────────
+  {
+    section: 'Cursive',
+    name: 'Solitreo',
+    stack: "'Solitreo', cursive",
+    attr: 'Nathan Gross & Bryan Kirschen — OFL',
+    link: 'https://fonts.google.com/specimen/Solitreo',
+    load: { type: 'gfonts', url: 'https://fonts.googleapis.com/css2?family=Solitreo&display=swap' }
+  },
+  {
+    section: 'Cursive',
+    name: 'Gveret Levin',
+    stack: "'Gveret Levin', cursive",
+    attr: 'Gili Levin / Google Fonts — OFL',
+    link: 'https://fonts.google.com/specimen/Gveret+Levin',
+    load: { type: 'gfonts', url: 'https://fonts.googleapis.com/css2?family=Gveret+Levin&display=swap' }
+  },
+  {
+    section: 'Cursive',
+    name: 'Noto Rashi Hebrew',
+    stack: "'Noto Rashi Hebrew', serif",
+    attr: 'Google / Noto Team — OFL',
+    link: 'https://fonts.google.com/noto/specimen/Noto+Rashi+Hebrew',
+    load: { type: 'gfonts', url: 'https://fonts.googleapis.com/css2?family=Noto+Rashi+Hebrew:wght@400;700&display=swap' }
+  },
+  {
+    section: 'Cursive',
+    name: 'Playpen Sans Hebrew',
+    stack: "'Playpen Sans Hebrew', cursive",
+    attr: 'TypeTogether — OFL',
+    link: 'https://fonts.google.com/specimen/Playpen+Sans+Hebrew',
+    load: { type: 'gfonts', url: 'https://fonts.googleapis.com/css2?family=Playpen+Sans+Hebrew&display=swap' }
+  },
+  {
+    section: 'Cursive',
+    name: 'Shmulik CLM',
+    stack: "'Shmulik CLM', cursive",
+    attr: 'Yoram Gnat / Culmus Project — GPL+FE',
+    link: 'https://culmus.sourceforge.io/',
+    load: { type: 'face', css: "@font-face{font-family:'Shmulik CLM';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts/Fonts/Hebrew%20Letters%20with%20Vowels%20(no%20cantillation)/Culmus%20Project%20(GPL%20and%20GPL%2BFE)/Yoram%20Gnat%20(GPL%2BFE)/Shmulik%20CLM/ShmulikCLM.ttf') format('truetype');font-weight:normal;font-style:normal;}" }
+  },
+];
+/* ═══ shared: ivritsuite-fonts ═══════════════════════════════════════════════
+   User-made fonts: saved here by Hebrew_Font_Maker, consumed by Torah Trainer
+   (and, later, other IvritSuite tools). TTFs are too big for localStorage, so
+   they live in IndexedDB. This works ACROSS tools because every IvritSuite page
+   is served from the same origin (ivritsuite.com) and IndexedDB is partitioned
+   per-origin — so one DB ("ivritsuite-fonts") is automatically shared by all of
+   them. Keep this block byte-identical in every consuming page. No library is
+   needed (indexedDB + FontFace are built in), so it loads nothing at page load. */
+const IV_FONTS_DB = 'ivritsuite-fonts', IV_FONTS_STORE = 'fonts', IV_FONTS_CAP = 10;
+function _ivOpenFontsDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(IV_FONTS_DB, 1);
+    req.onupgradeneeded = () => { const db = req.result;
+      if (!db.objectStoreNames.contains(IV_FONTS_STORE)) db.createObjectStore(IV_FONTS_STORE, { keyPath: 'name' }); };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+function _ivTx(mode, fn) {
+  return _ivOpenFontsDB().then(db => new Promise((resolve, reject) => {
+    const tx = db.transaction(IV_FONTS_STORE, mode), req = fn(tx.objectStore(IV_FONTS_STORE));
+    tx.oncomplete = () => resolve(req && req.result);
+    tx.onerror = () => reject(tx.error); tx.onabort = () => reject(tx.error);
+  }));
+}
+function listUserFonts() {   // → [{name, family, created, size}] newest-first; no bytes
+  return _ivTx('readonly', os => os.getAll()).then(rows => (rows || [])
+    .map(r => ({ name: r.name, family: r.family, created: r.created || 0, size: (r.bytes && r.bytes.byteLength) || 0 }))
+    .sort((a, b) => b.created - a.created));
+}
+function getUserFont(name) { return _ivTx('readonly', os => os.get(name)); }
+function deleteUserFont(name) { return _ivTx('readwrite', os => os.delete(name)); }
+function saveUserFont(name, bytes, family) {   // bytes: Uint8Array | ArrayBuffer
+  const buf = bytes.buffer ? bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) : bytes;
+  return listUserFonts().then(list => {
+    const stale = list.filter(f => f.name !== name).slice(IV_FONTS_CAP - 1);   // keep newest CAP-1 others + this one
+    return Promise.all(stale.map(f => deleteUserFont(f.name)))
+      .then(() => _ivTx('readwrite', os => os.put({ name: name, family: family || name, bytes: buf, created: Date.now() })));
+  });
+}
+function loadUserFont(name) {   // register the stored TTF as a CSS-usable FontFace named `name`
+  return getUserFont(name).then(rec => {
+    if (!rec) throw new Error('Font not found: ' + name);
+    return new FontFace(name, rec.bytes).load().then(f => { document.fonts.add(f); return f; });
+  });
+}
+/* ═══ end shared: ivritsuite-fonts ═══════════════════════════════════════════ */
+/* ═══ My Fonts uploader (shared, identical across pages) ═══ */
+async function ivUploadFontFromFile(file){
+  if (!file) return null;
+  if (!window.indexedDB || !window.FontFace){ alert(I18n.t('shared.fonts.err_no_store')); return null; }
+  let base = (file.name || 'My Font').replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').trim() || 'My Font';
+  try {
+    const buf = await file.arrayBuffer();
+    try { await new FontFace(base, buf).load(); }
+    catch (e) { alert(I18n.t('shared.fonts.err_bad_font')); return null; }
+    const existing = (await listUserFonts()).map(f => f.name);
+    let name = base, i = 2; while (existing.includes(name)) name = base + ' ' + (i++);
+    await saveUserFont(name, new Uint8Array(buf), name);
+    return name;
+  } catch (e) { console.error(e); alert(I18n.t('shared.fonts.err_unreadable')); return null; }
+}
+/* ═══ end My Fonts uploader ═══ */
+/* Per-page wiring below the shared blocks: the font list, the My Fonts consumer and the pick handler. */
+let MY_FONTS = []; const _loadedUserFonts = new Set();
+function allFonts() { return MY_FONTS.concat(HEB_FONTS); }
+async function refreshMyFonts() {
+  try {
+    MY_FONTS = (await listUserFonts()).map(f => ({
+      section: 'My Fonts', name: f.name,
+      stack: "'" + String(f.name).replace(/['"\\<>]/g, '') + "', serif",
+      attr: 'made with IvritSuite Font Maker', link: null, load: { type: 'userfont' } }));
+  } catch (e) { MY_FONTS = []; }
+  llCsFillFonts();
+  // A My Fonts face the sheet had chosen by name but could not show until now (it just landed from the account).
+  if (settings.colorFont && MY_FONTS.some(f => f.name === settings.colorFont)) llCsRefresh();
+}
+async function onUploadFontPick(input) {
+  const name = await ivUploadFontFromFile(input.files && input.files[0]);
+  input.value = '';
+  if (name) { await refreshMyFonts(); llCsSet('colorFont', name); llCsFillFonts(); }
+}
+function loadHebFont(font) {
+  if (!font.load) return;
+  const id = 'font-' + font.name.replace(/\s+/g, '-');
+  if (document.getElementById(id)) return;
+  if (font.load.type === 'gfonts') {
+    const link = document.createElement('link');
+    link.id = id; link.rel = 'stylesheet'; link.href = font.load.url;
+    document.head.appendChild(link);
+  } else if (font.load.type === 'face') {
+    const style = document.createElement('style');
+    style.id = id; style.textContent = font.load.css;
+    document.head.appendChild(style);
+  } else if (font.load.type === 'userfont') {
+    if (_loadedUserFonts.has(font.name)) return;
+    _loadedUserFonts.add(font.name);
+    loadUserFont(font.name).catch(e => { _loadedUserFonts.delete(font.name); console.warn('user font load failed', font.name, e); });
+  }
+}
+// Most picker faces carry no te'amim: the self-hosted fallback goes in BEFORE the generic family (CLAUDE.md, Hebrew fonts).
+function llTaamimStack(stack) {
+  const m = /^(.*?),\s*(serif|sans-serif|cursive|fantasy|monospace|system-ui)\s*$/.exec(stack);
+  return m ? m[1] + ", 'IvritSuite Taamim', " + m[2] : stack + ", 'IvritSuite Taamim'";
+}
+function llFontSectionLabel(sec) {
+  const KEYS = { 'My Fonts': ['shared.fonts.section_my_fonts', 'My Fonts'], 'Cursive': ['shared.fonts.section_cursive', 'Cursive / Script'],
+                 'Block': ['shared.fonts.section_block', 'Block Fonts'] };
+  return Object.prototype.hasOwnProperty.call(KEYS, sec) ? _fbT(KEYS[sec][0], KEYS[sec][1]) : _fbT('shared.fonts.section_generic', '{section} Fonts', { section: sec });
+}
+// The menu: "Same as the card" first (the block face on a Block card, the handwriting face on a Cursive one), then
+// My Fonts, then the suite's list by section. A stored name this device lacks shows as the first entry until it lands.
+function llCsFillFonts() {
+  const sel = document.getElementById('llCsFont');
+  if (!sel) return;
+  sel.textContent = '';
+  const first = el('option', null, _fbT('letterlearner.coloring.font_match', 'Same as the card'));
+  first.value = '';
+  sel.appendChild(first);
+  const groups = {};
+  allFonts().forEach(f => {
+    if (!groups[f.section]) { groups[f.section] = el('optgroup'); groups[f.section].label = llFontSectionLabel(f.section); sel.appendChild(groups[f.section]); }
+    const o = el('option', null, f.name);   // i18n-ignore: a font's name
+    o.value = f.name;
+    groups[f.section].appendChild(o);
+  });
+  sel.value = allFonts().some(f => f.name === settings.colorFont) ? settings.colorFont : '';
+}
+
+/* ══════════════════════════════════════════════════════
+   COLORING SHEET TAB — a printable page per letter (the maintainer's sketch): the card's four word pictures in the
+   corners, the letter or its hint picture in the middle with the hint sentence under it, all as black line art on
+   white paper. The drawings are the Letter tab's own, turned into line art on the fly (llColoringify); the letter is
+   drawn hollow in the card's own face (llCsLetter). Block and Cursive cards; the options live in the settings blob.
+   ══════════════════════════════════════════════════════ */
+const LL_CS_INK = '#000', LL_CS_PAPER = '#fff';
+let _llCsToken = 0;   // a letter fit that an older render started is ignored when its font settles
+// The five size sliders: a settings field each (percent, 50–150 in steps of 5) and the sheet's CSS factor it drives.
+const LL_CS_SIZES = ['colorSizeMain', 'colorSizePic', 'colorSizeHe', 'colorSizeTr', 'colorSizeEn'];
+const LL_CS_SIZE_VAR = { colorSizeMain: '--cs-main', colorSizePic: '--cs-pic', colorSizeHe: '--cs-he', colorSizeTr: '--cs-tr', colorSizeEn: '--cs-en' };
+function llCsSizeVal(v) {
+  const n = Math.round(Number(v) / 5) * 5;
+  return (typeof v === 'number' && Number.isFinite(n)) ? Math.min(150, Math.max(50, n)) : 100;
+}
+function llCsApplySizes(sheet) {
+  if (sheet) LL_CS_SIZES.forEach(k => sheet.style.setProperty(LL_CS_SIZE_VAR[k], String(settings[k] / 100)));
+}
+
+// The value of a paint attribute as the drawing sets it: on the shape itself or the nearest group that names it.
+function llCsAttr(n, name, svg) {
+  for (let x = n; x && x !== svg; x = x.parentNode) if (x.hasAttribute && x.hasAttribute(name)) return x.getAttribute(name);
+  return svg.getAttribute(name);
+}
+// Turn a drawing into line art (the maintainer's call): see-through shading, shadows and white shine go; every coloured
+// fill becomes paper, and a shape that had no outline gets a thin one so its area still has an edge to colour inside;
+// every line turns black; a large solid-ink shape (the traced letter in a hint picture) goes hollow, while small ink
+// details (eyes, the belly-button dot) stay solid. "Large" is measured on screen, so this runs on a drawing that is
+// already in the visible sheet (the tab renders when it shows); unmeasurable, a long path counts as large.
+function llColoringify(svg) {
+  svg.querySelectorAll('.ll-anim').forEach(g => g.removeAttribute('class'));   // paper is still: no swinging parts
+  const box = svg.getBoundingClientRect(), area = box.width * box.height;
+  svg.querySelectorAll('path, circle, ellipse, rect, line, polyline, polygon').forEach(n => {
+    const num = a => { const v = parseFloat(n.getAttribute(a)); return isNaN(v) ? 1 : v; };
+    if (num('opacity') < 1 || num('fill-opacity') < 1 || num('stroke-opacity') < 1) { n.remove(); return; }
+    const fill = llCsAttr(n, 'fill', svg), stroke = llCsAttr(n, 'stroke', svg);
+    let lined = !!stroke && stroke !== 'none';
+    if (stroke === 'var(--ll-white)') {   // a white line is shine
+      if (!fill || fill === 'none') { n.remove(); return; }
+      n.setAttribute('stroke', 'none');
+      lined = false;
+    } else if (lined) {
+      n.setAttribute('stroke', LL_CS_INK);
+      // A thick coloured line is an area drawn with a pen (a rainbow's band, a paint smear, a finger): it becomes an
+      // outlined band, a paper-white copy on top leaving two edges, so it can be coloured rather than printing solid.
+      const w = parseFloat(llCsAttr(n, 'stroke-width', svg));
+      if (stroke !== 'var(--ll-line)' && stroke !== 'currentColor' && w >= 3.5) {
+        const band = n.cloneNode(false);
+        band.setAttribute('stroke', LL_CS_PAPER);
+        band.setAttribute('stroke-width', String(w - 2));
+        band.setAttribute('fill', 'none');
+        n.after(band);
+      }
+    }
+    if (!fill || fill === 'none') return;   // no fill named: the drawing relies on none here, as on screen
+    let width = 1.3;
+    if (fill === 'var(--ll-line)' || fill === 'currentColor') {
+      const r = n.getBoundingClientRect();
+      const frac = area ? (r.width * r.height) / area : ((n.getAttribute('d') || '').length > 200 ? 1 : 0);
+      // A cursive trick's handwritten letter is its one even-odd ink path: hollow at any size (yod is a raindrop).
+      if (frac < 0.05 && n.getAttribute('fill-rule') !== 'evenodd') { n.setAttribute('fill', LL_CS_INK); return; }
+      width = 2.6;   // the letter's own edge: the line a child colours up to
+    }
+    n.setAttribute('fill', LL_CS_PAPER);
+    if (!lined) {
+      n.setAttribute('stroke', LL_CS_INK);
+      n.setAttribute('stroke-width', String(width));
+      n.setAttribute('stroke-linejoin', 'round');
+      n.setAttribute('vector-effect', 'non-scaling-stroke');   // one weight inside scaled groups
+    }
+  });
+}
+// The hint this card shows: a Block card's memory picture and caption, a Cursive card's handwriting trick.
+function llCsHint(card) {
+  const h = card.kind === 'cursive' ? (card.T && card.T.hint) : card.L.hint;
+  if (!h) return null;
+  const v = h.variants[h.show];
+  return { svg: (v && v.svg) || '', caption: (v && v.caption) || h.caption || '', lead: card.kind === 'cursive' ? card.T.picture : '' };
+}
+// A Hebrew stack as CSS text: the chosen menu font, else the card's own face (read from the page's custom properties,
+// so a canvas measure and an SVG <text> name exactly the faces the dialog shows).
+function llCsCardStack(card) {
+  const v = getComputedStyle(document.body).getPropertyValue(card.kind === 'cursive' ? '--heb-cursive-font' : '--heb-font').trim();
+  return v || "'Frank Ruhl Libre', 'IvritSuite Taamim', serif";
+}
+function llCsWordStack(card) {
+  const f = settings.colorFont ? allFonts().find(x => x.name === settings.colorFont) : null;
+  if (!f) return llCsCardStack(card);
+  loadHebFont(f);
+  return llTaamimStack(f.stack);
+}
+// The letter alone, hollow: an SVG <text> in the card's own face (both are self-hosted, so the sheet works offline),
+// painted stroke-first so the white fill covers the outline's inner half and any overlap inside the glyph. The viewBox
+// is the glyph's ink box, measured on a canvas in the same face at the same size, so every letter fills the middle;
+// it is measured again once the face has loaded.
+function llCsLetter(art, card, token) {
+  const NS = 'http://www.w3.org/2000/svg', stack = llCsCardStack(card);
+  const svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('role', 'img');
+  svg.setAttribute('aria-label', card.name);
+  svg.setAttribute('focusable', 'false');
+  const t = document.createElementNS(NS, 'text');
+  t.setAttribute('x', '0'); t.setAttribute('y', '0');
+  t.setAttribute('text-anchor', 'middle');
+  t.setAttribute('font-size', '100');
+  t.setAttribute('fill', LL_CS_PAPER); t.setAttribute('stroke', LL_CS_INK);
+  t.setAttribute('stroke-linejoin', 'round'); t.setAttribute('paint-order', 'stroke');
+  t.style.fontFamily = stack;
+  t.textContent = card.glyph;
+  svg.appendChild(t);
+  art.appendChild(svg);
+  const fit = () => {
+    if (token !== _llCsToken) return;
+    let L = 30, R = 30, A = 70, D = 0;
+    try {
+      const ctx = document.createElement('canvas').getContext('2d');
+      ctx.font = '100px ' + stack; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic'; ctx.direction = 'ltr';
+      const m = ctx.measureText(card.glyph);
+      if (m.actualBoundingBoxLeft + m.actualBoundingBoxRight > 0 && m.actualBoundingBoxAscent + m.actualBoundingBoxDescent > 0) {
+        L = m.actualBoundingBoxLeft; R = m.actualBoundingBoxRight; A = m.actualBoundingBoxAscent; D = m.actualBoundingBoxDescent;
+      }
+    } catch (e) {}
+    const w = L + R, h = A + D, big = Math.max(w, h), sw = big * 0.03, pad = big * 0.04 + sw;
+    t.setAttribute('stroke-width', sw.toFixed(2));
+    svg.setAttribute('viewBox', [-L - pad, -A - pad, w + 2 * pad, h + 2 * pad].map(x => x.toFixed(2)).join(' '));
+  };
+  fit();
+  try { document.fonts.load('100px ' + stack, card.glyph).then(fit, () => {}); } catch (e) {}
+}
+function llRenderColoringTab(card) {
+  const host = document.getElementById('llCsPreview'), note = document.getElementById('llCsNote');
+  host.textContent = '';
+  note.textContent = '';
+  const token = ++_llCsToken;
+  if (!card || card.kind === 'vowel') return;
+  const L = llCheckDrawings(card.L);
+  if (card.kind === 'cursive') llCheckCursive(card.T);
+  const sheet = el('div', 'll-cs-sheet');
+  sheet.dir = 'ltr'; sheet.lang = 'en';   // printed learner content: English, laid out like the sketch in both UIs
+  sheet.dataset.orient = settings.colorOrient;
+  llCsApplySizes(sheet);
+  if (settings.colorName) {
+    const nm = el('div', 'll-cs-name');
+    nm.appendChild(el('span', null, 'Name:'));   // i18n-ignore: printed learner content (English, like the captions)
+    nm.appendChild(el('span', 'll-cs-blank'));
+    sheet.appendChild(nm);
+  }
+  const body = el('div', 'll-cs-body');
+  const hint = llCsHint(card);
+  let useHint = settings.colorView === 'hint';
+  if (useHint && !(hint && hint.svg)) {
+    useHint = false;
+    note.textContent = _fbT('letterlearner.coloring.no_hint_note', 'This letter has no hint picture yet, so the sheet shows the letter.');
+  }
+  const fig = el('figure', 'll-cs-center');
+  const art = el('div', 'll-cs-art');
+  fig.appendChild(art);
+  if (settings.colorHint && hint && hint.caption) {
+    const cap = el('figcaption');
+    if (hint.lead) cap.appendChild(el('strong', null, hint.lead));   // i18n-ignore: learner content (the trick's Picture)
+    cap.appendChild(document.createTextNode(hint.caption));   // i18n-ignore: learner content, shown verbatim
+    fig.appendChild(cap);
+  }
+  body.appendChild(fig);
+  const stack = llCsWordStack(card), pics = [];
+  (L.words || []).slice(0, 4).forEach((w, i) => {
+    const cell = el('div', 'll-cs-word ll-cs-w' + i);
+    const pic = el('div', 'll-cs-pic');
+    cell.appendChild(pic);
+    if (w.svg) pics.push([pic, w]);
+    const he = el('span', 'll-cs-he', w.he);
+    he.lang = 'he'; he.dir = 'rtl'; he.style.fontFamily = stack;
+    cell.appendChild(he);
+    if (settings.colorTranslit && w.tr) cell.appendChild(el('span', 'll-cs-tr', w.tr));   // i18n-ignore: learner content
+    if (settings.colorGloss && w.en) cell.appendChild(el('span', 'll-cs-en', w.en));      // i18n-ignore: learner content
+    body.appendChild(cell);
+  });
+  sheet.appendChild(body);
+  sheet.appendChild(el('div', 'll-cs-credit', 'ivritsuite.com'));   // i18n-ignore: brand credit
+  host.appendChild(sheet);
+  // In the sheet now (and visible): draw, then measure and convert.
+  if (useHint) { const svg = llSvg(hint.svg, hint.caption || card.name); art.appendChild(svg); llColoringify(svg); }
+  else llCsLetter(art, card, token);
+  pics.forEach(([pic, w]) => { const svg = llSvg(w.svg, w.en); pic.appendChild(svg); llColoringify(svg); });
+  if (settings.colorFont && !allFonts().some(f => f.name === settings.colorFont) && !note.textContent)
+    note.textContent = _fbT('shared.fonts.missing_note', '"{name}" is chosen but is not on this device. Upload it under My Fonts to use it here.', { name: settings.colorFont });
+}
+function llCsShowing() { return _llTab === 'coloring' && !document.getElementById('llOverlay').hidden; }
+function llCsRefresh() { if (llCsShowing()) llRenderColoringTab(llCard(_llId)); }
+// @page for paper, only while the Coloring tab shows in an open dialog: every other tab and the grid print as before.
+// (Safari ignores @page size; there the print dialog's own orientation applies.)
+function llCsPageStyle() {
+  const st = document.getElementById('llPageSize');
+  if (st) st.textContent = llCsShowing() ? '@page { size: ' + settings.colorOrient + '; margin: 0.35in; }' : '';   // i18n-ignore: CSS, not text
+}
+function llCsSet(key, value) {
+  llSetSetting(key, value);
+  llCsPageStyle();
+  llCsRefresh();
+}
+// The options' controls from `settings` (renderOptions calls this, so a reset, a storage event or a download shows).
+function llCsSyncControls() {
+  document.querySelectorAll('input[name="llCsOrient"]').forEach(r => { r.checked = r.value === settings.colorOrient; });
+  document.querySelectorAll('input[name="llCsView"]').forEach(r => { r.checked = r.value === settings.colorView; });
+  document.getElementById('optCsTranslit').checked = !!settings.colorTranslit;
+  document.getElementById('optCsGloss').checked = !!settings.colorGloss;
+  document.getElementById('optCsName').checked = !!settings.colorName;
+  document.getElementById('optCsHint').checked = !!settings.colorHint;
+  LL_CS_SIZES.forEach(k => {
+    const r = document.querySelector('.ll-cs-size input[data-size="' + k + '"]');
+    r.value = String(settings[k]);
+    llCsSizeLabel(r);
+  });
+  llCsSizeState();
+  llCsFillFonts();
+}
+function llCsSizeLabel(r) {
+  const txt = r.value + '%';   // i18n-ignore: a number and a percent sign
+  r.setAttribute('aria-valuetext', txt);
+  r.nextElementSibling.textContent = txt;
+}
+// A size slider whose part is switched off under Include is disabled (nothing on the sheet to resize).
+function llCsSizeState() {
+  document.getElementById('llCsSizeTr').disabled = !settings.colorTranslit;
+  document.getElementById('llCsSizeEn').disabled = !settings.colorGloss;
+}
+// Print waits (briefly) for the words' face, so a font picked a moment ago is on paper rather than its fallback.
+async function llCsPrint() {
+  llCsPageStyle();
+  const card = llCard(_llId);
+  if (card && card.kind !== 'vowel') {
+    try {
+      const wait = Promise.all([document.fonts.load('40px ' + llCsWordStack(card), 'אב'), document.fonts.load('100px ' + llCsCardStack(card), card.glyph)]).then(() => document.fonts.ready);
+      await Promise.race([wait, new Promise(r => setTimeout(r, 4000))]);
+    } catch (e) {}
+  }
+  window.print();
+}
+function llCsWire() {
+  document.querySelectorAll('input[name="llCsOrient"]').forEach(r => r.addEventListener('change', () => { if (r.checked) llCsSet('colorOrient', r.value); }));
+  document.querySelectorAll('input[name="llCsView"]').forEach(r => r.addEventListener('change', () => { if (r.checked) llCsSet('colorView', r.value); }));
+  [['optCsTranslit', 'colorTranslit'], ['optCsGloss', 'colorGloss'], ['optCsName', 'colorName'], ['optCsHint', 'colorHint']]
+    .forEach(([id, key]) => document.getElementById(id).addEventListener('change', e => { llCsSet(key, e.target.checked); llCsSizeState(); }));
+  // A size drag resizes the sheet live (CSS factors, no re-render); the value is saved once, when the drag ends.
+  document.querySelectorAll('.ll-cs-size input[type="range"]').forEach(r => {
+    const key = r.dataset.size;
+    r.addEventListener('input', () => {
+      settings[key] = llCsSizeVal(Number(r.value));
+      llCsApplySizes(document.querySelector('#llCsPreview .ll-cs-sheet'));
+      llCsSizeLabel(r);
+    });
+    r.addEventListener('change', () => llSetSetting(key, llCsSizeVal(Number(r.value))));
+  });
+  document.getElementById('llCsFont').addEventListener('change', e => llCsSet('colorFont', e.target.value));
+  document.getElementById('llCsUpload').addEventListener('change', e => onUploadFontPick(e.target));
+  document.getElementById('llCsPrint').addEventListener('click', llCsPrint);
+  window.addEventListener('beforeprint', llCsPageStyle);   // Ctrl+P / the browser menu prints the right orientation too
 }
 
 /* ══════════════════════════════════════════════════════
@@ -2873,6 +3504,8 @@ function init() {
   llLoadSettings();
   renderOptions();
   wireOptions();
+  llCsWire();
+  refreshMyFonts();     // the Coloring sheet's font menu: My Fonts from the shared store (the picker contract)
   llInitMode();         // the mode comes from the URL (?mode= / ?vowel=) and makes the first render of the grid
   wireDialog();
   initPanelCollapse();
@@ -2896,6 +3529,9 @@ function initCloudSaves() {
     const want = localStorage.getItem(DARK_KEY);
     if ((want === '1' || want === '0') && document.body.classList.contains('dark') !== (want === '1')) toggleDark();
   });
+  // A font from the account landed in the shared store: re-list My Fonts, which also re-draws a sheet whose
+  // chosen face could not show until now.
+  window.addEventListener('ivritsuite:fonts', () => { try { refreshMyFonts(); } catch (e) {} });
   IvritSaves.attach({
     tool: 'LetterLearner',
     status: '#cloudSavesPanel',

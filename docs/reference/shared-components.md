@@ -17,8 +17,8 @@ The store + helpers are delivered as one copy-identical block (like the `.ivrit`
   `saveUserFont(name, bytes, family)` (upsert; auto-prunes to the newest 10); `deleteUserFont(name)`;
   `loadUserFont(name)` → registers the stored bytes as a CSS-usable `FontFace` named exactly `name`.
 
-Present (verbatim — sha-verify when you touch it) in **9 files**: `index.html`, `Hebrew_Font_Maker.html`, the six
-font-selector tools (generator, flash cards, dashboard, dictionary, torah trainer, trope tutor), and
+Present (verbatim — sha-verify when you touch it) in **10 files**: `index.html`, `Hebrew_Font_Maker.html`, the seven
+font-selector tools (generator, flash cards, dashboard, dictionary, torah trainer, trope tutor, letter learner), and
 `resources.html` (a store *consumer* — its font gallery reads `listUserFonts` but has no picker/uploader; its
 "Use in IvritSuite" writes through `saveUserFont`, and when that would evict, it first asks with the fonts it would
 remove, the same slice the block takes — `resources.fonts.full_confirm`, or `_many` past the cap).
@@ -35,12 +35,15 @@ at init. (Use `family` or `stack` to match whatever property that tool's `setHeb
 ### "Upload your own font?" — byte-identical block + per-page pick handler
 A second shared block `/* ═══ My Fonts uploader (shared, identical across pages) ═══ */` defines
 `ivUploadFontFromFile(file)` (validates via `new FontFace(name, bytes).load()`, de-dupes the name,
-`saveUserFont`s it). The block contains ONLY that function (identical across all 7 carriers); the thin **pick handler lives BELOW the end marker and is per-page**: the six tool pickers
-use `onUploadFontPick(input)` (`refreshMyFonts()` + `setHebFont(name)`), the dashboard and flash cards add an extra
+`saveUserFont`s it). The block contains ONLY that function (identical across all 8 carriers); the thin **pick handler lives BELOW the end marker and is per-page**: the six grid pickers
+use `onUploadFontPick(input)` (`refreshMyFonts()` + `setHebFont(name)`), the Letter Learner's routes the new font into
+its Coloring sheet's word font (`llCsSet('colorFont', name)`), the dashboard and flash cards add an extra
 `onUploadEngFontPick` (routes to `setEngFont`), and `index.html`'s gear-modal manager uses
 `onUploadFontPickIndex` (`renderMyFontsManager()` + `refreshFontsBackupCache()`). Each picker has a small
 **"Upload your own font?"** `<label>` (the shared `hi-upload` icon before a `.hi-lbl` span that carries the `data-i18n`; hidden `<input type="file" accept=".ttf,.otf,.woff,.woff2">`)
-directly **below the font grid**.
+directly **below the font grid**. The Letter Learner's picker is a `<select>` rather than a grid (the Coloring sheet
+tab's "Hebrew font (words)": *Same as the card* first, then a "My Fonts" `<optgroup>`, then the Dictionary's
+`HEB_FONTS` by section), with the same label under it.
 
 ### Backup (no extra wiring)
 User fonts ride along in the `index.html` AllTools export as `userFonts` (base64 via
