@@ -149,6 +149,7 @@ header .hright{margin-inline-start:auto;display:flex;gap:10px;align-items:center
    the Hebrew UI (paragraph already rtl) is unchanged. */
 .hero-sub .heb-inline{font-family:'Frank Ruhl Libre',serif;unicode-bidi:isolate;}
 .hero-quip{font-size:0.88rem;color:var(--muted);max-width:520px;line-height:1.5;font-style:italic;margin-bottom:36px;}
+html[lang="he"] .hero-quip{font-style:normal;}   /* Hebrew has no italic: the browser only slants the letters (pattern hebrew-faux-italic) */
 
 .home-btn{display:inline-flex;align-items:center;gap:8px;background:var(--navy);color:var(--gold-light);border:none;border-radius:8px;padding:13px 34px;font-size:1rem;font-family:'Source Sans 3',sans-serif;font-weight:600;letter-spacing:0.02em;text-decoration:none;cursor:pointer;transition:background 0.15s,color 0.15s,transform 0.15s;}
 .home-btn:hover{background:var(--gold);color:var(--navy);transform:translateY(-2px);}
