@@ -4569,6 +4569,8 @@ function applyI18n() {
   // The missed-marks list is JS-built from _lastMissed; re-render it only while the results
   // view is actually showing, so a language change never repopulates a hidden panel.
   try { if (!document.getElementById('drillResults').hidden) buildMissedReview(); } catch (e) {}
+  // An open tour card: its texts in the new language, the spotlight back on its mirrored target (the generator's call).
+  if (_tourActive && _tourIdx >= 0) _tourShow(_tourIdx, 1);
   // An in-flight drill question is NOT re-rendered — that would restart its audio clip; it
   // translates on the next question. The dark-toggle label is emoji-only, so no relabel needed.
 }
