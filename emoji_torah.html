@@ -245,6 +245,8 @@ html[lang="he"] .et-cs-set legend,html[lang="he"] .et-cs-legend{letter-spacing:n
 .et-cs-row{display:flex;flex-wrap:wrap;gap:16px 26px;}
 .et-cs-opt{display:flex;align-items:center;gap:8px;font-size:0.9rem;min-height:30px;}
 .et-cs-opt input[type="checkbox"],.et-cs-opt input[type="radio"]{width:18px;height:18px;accent-color:var(--gold);flex-shrink:0;margin:0;}
+.et-cs-per-ico{display:inline-flex;width:24px;height:24px;flex:none;color:var(--muted);}
+.et-cs-per-ico svg{width:100%;height:100%;}
 .et-cs-opt:has(input:disabled){opacity:0.5;}
 .et-cs-btns{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px;}
 .et-cs-btn{font-family:inherit;font-size:0.8rem;font-weight:700;padding:4px 10px;min-height:30px;border-radius:6px;border:1.5px solid var(--border);background:transparent;color:var(--text);cursor:pointer;}
@@ -279,10 +281,17 @@ html[lang="he"] .et-cs-set legend,html[lang="he"] .et-cs-legend{letter-spacing:n
 .et-cs-print[aria-disabled="true"]{opacity:0.45;cursor:default;}
 .et-cs-x:focus-visible,.et-cs-btn:focus-visible,.et-cs-print:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;}
 #etCsPrintArea{display:none;}   /* every copy prints from here (etCsFill); never shown on screen */
+/* A sheet of paper in the print run: its pages in a grid (etCsPaper sets the columns and rows), a dashed cut line down
+   the middle of each gutter. */
+.et-cs-paper{display:grid;gap:0.3in;position:relative;}
+.et-cs-cut{position:absolute;border:0 dashed #999;}
+.et-cs-cut-v{inset-block:0;inset-inline-start:50%;border-inline-start-width:1px;}
+.et-cs-cut-h{inset-inline:0;inset-block-start:50%;border-block-start-width:1px;}
 
 /* The sheet is the page that prints: literal white paper and black ink in both themes, laid out left to right, every
    size in cqmin (the sheet is a size container), so the preview and the printed page scale alike. Its proportions are
-   the PRINTED box's — the paper less the 0.35in @page margins: Letter 7.8 × 10.3in, A4 7.57 × 10.99in. The seven size
+   its place on paper's (etCsLayout sets --cs-aw / --cs-ah): the printed box — the paper less the 0.35in @page margins,
+   Letter 7.8 × 10.3in, A4 7.57 × 10.99in — or, two or four to a sheet, one cell of it. The seven size
    sliders set the --s-* factors; --k is the text's fit factor (under 1 when etCsFitAll had to shrink the text). The
    picture takes what the text leaves (flex-shrink, never under its minimum), so a long text shrinks the picture first. */
 .et-cs-sheet{
@@ -294,9 +303,6 @@ html[lang="he"] .et-cs-set legend,html[lang="he"] .et-cs-legend{letter-spacing:n
 }
 /* The page's layout sits one level in: a container's own padding and gap would resolve cqmin against the viewport. */
 .et-cs-page{position:absolute;inset:0;box-sizing:border-box;display:flex;flex-direction:column;gap:1.2cqmin;padding:4cqmin 5cqmin 2.4cqmin;overflow:hidden;}
-.et-cs-sheet[data-orient="landscape"]{--cs-aw:10.3;--cs-ah:7.8;}
-.et-cs-sheet[data-paper="a4"]{--cs-aw:7.57;--cs-ah:10.99;}
-.et-cs-sheet[data-paper="a4"][data-orient="landscape"]{--cs-aw:10.99;--cs-ah:7.57;}
 .et-cs-name{flex:none;display:flex;align-items:flex-end;gap:1.2cqmin;font-family:'Libre Baskerville',serif;font-size:calc(3.2cqmin * var(--s-name) * var(--k));}
 .et-cs-name[lang="he"]{font-family:var(--heb-font);}
 .et-cs-blank{display:inline-block;width:45cqmin;border-block-end:0.3cqmin solid #000;}
@@ -366,15 +372,17 @@ html[lang="he"] .et-cs-set legend,html[lang="he"] .et-cs-legend{letter-spacing:n
      which the print dialog drops by default, so an outline keeps it a badge. */
   .et-name, .et-book, .et-week, body.dark .et-name, body.dark .et-book, body.dark .et-week { color: #1a2744; }
   .et-badge { border: 1px solid #c9922a; }
-  /* The coloring-sheet popup prints its run alone: #etCsPrintArea holds every copy in order (etCsFill), one sheet per
-     page, and everything else goes. 100vh is the page area, so a sheet follows the real paper and the dialog's scale;
-     the break sits BEFORE each sheet after the first, so no blank page trails the run. body is a flex column on screen,
-     and a forced break inside a flex item is ignored by some engines: paper gets a plain block. */
+  /* The coloring-sheet popup prints its run alone: #etCsPrintArea holds every copy in order (etCsFill), grouped into
+     sheets of paper (one, two or four pages each), and everything else goes. 100vh is the page area, so a paper follows
+     the real paper and the dialog's scale; the break sits BEFORE each paper after the first, so no blank page trails
+     the run. body is a flex column on screen, and a forced break inside a flex item is ignored by some engines: paper
+     gets a plain block. */
   body.et-cs-open { display: block; min-height: 0; }
   body.et-cs-open > :not(#etCsPrintArea) { display: none !important; }
   body.et-cs-open #etCsPrintArea { display: block !important; }
-  #etCsPrintArea .et-cs-sheet { width: 100%; height: 100vh; aspect-ratio: auto; border: none; box-shadow: none; break-inside: avoid; }
-  #etCsPrintArea .et-cs-sheet + .et-cs-sheet { break-before: page; }
+  #etCsPrintArea .et-cs-paper { width: 100%; height: 100vh; break-inside: avoid; }
+  #etCsPrintArea .et-cs-paper + .et-cs-paper { break-before: page; }
+  #etCsPrintArea .et-cs-sheet { width: 100%; height: 100%; min-height: 0; aspect-ratio: auto; border: none; box-shadow: none; }
 }
 /* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner, emoji_torah (docs/reference/shared-components.md → Header icons).
    The header controls and the in-page control buttons (play, pause, stop, reset, retry, loop, sound) carry inline
@@ -503,6 +511,12 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
             <legend data-i18n="emojitorah.coloring.paper_legend">Paper size</legend>
             <label class="et-cs-opt"><input type="radio" name="etCsPaper" value="letter"><span data-i18n="emojitorah.coloring.paper_letter">Letter (8.5 × 11 in)</span></label>
             <label class="et-cs-opt"><input type="radio" name="etCsPaper" value="a4"><span data-i18n="emojitorah.coloring.paper_a4">A4 (210 × 297 mm)</span></label>
+          </fieldset>
+          <fieldset class="et-cs-set">
+            <legend data-i18n="emojitorah.coloring.per_legend">Pages per sheet</legend>
+            <label class="et-cs-opt"><input type="radio" name="etCsPer" value="1"><span class="et-cs-per-ico" aria-hidden="true"></span><span>1</span></label>
+            <label class="et-cs-opt"><input type="radio" name="etCsPer" value="2"><span class="et-cs-per-ico" aria-hidden="true"></span><span>2</span></label>
+            <label class="et-cs-opt"><input type="radio" name="etCsPer" value="4"><span class="et-cs-per-ico" aria-hidden="true"></span><span>4</span></label>
           </fieldset>
           <fieldset class="et-cs-set">
             <legend data-i18n="emojitorah.coloring.lang_legend">Text language</legend>
@@ -709,7 +723,7 @@ function etShowTop() {
    ══════════════════════════════════════════════════════ */
 const ET_CS_KEY = 'hebrewEmojiTorah_settings';
 // textLang is absent on purpose: missing means "the site's language"; only a real choice (en / he / both) is written.
-const ET_CS_DEFAULTS = { v: 1, colored: false, paper: 'letter', orient: 'portrait', showHe: true, showEn: true, showRef: true, showSummary: true, showWhy: true, showName: true,
+const ET_CS_DEFAULTS = { v: 1, colored: false, paper: 'letter', orient: 'portrait', perSheet: 1, showHe: true, showEn: true, showRef: true, showSummary: true, showWhy: true, showName: true,
   sizePic: 100, sizeEn: 100, sizeHe: 100, sizeRef: 100, sizeSummary: 100, sizeWhy: 100, sizeName: 100, copies: 1, collate: 'sets' };
 const ET_CS_BOOL = ['colored', 'showHe', 'showEn', 'showRef', 'showSummary', 'showWhy', 'showName'];
 const ET_CS_SIZES = ['sizePic', 'sizeEn', 'sizeHe', 'sizeRef', 'sizeSummary', 'sizeWhy', 'sizeName'];
@@ -740,6 +754,7 @@ function etCsNormalize(s) {
   ET_CS_BOOL.forEach(k => { if (typeof s[k] === 'boolean') o[k] = s[k]; });
   if (s.paper === 'a4' || s.paper === 'letter') o.paper = s.paper;
   if (s.orient === 'landscape' || s.orient === 'portrait') o.orient = s.orient;
+  if (s.perSheet === 1 || s.perSheet === 2 || s.perSheet === 4) o.perSheet = s.perSheet;
   if (s.textLang === 'en' || s.textLang === 'he' || s.textLang === 'both') o.textLang = s.textLang;
   ET_CS_SIZES.forEach(k => { o[k] = etCsSizeVal(s[k]); });
   o.copies = etCsCopiesVal(s.copies);
@@ -976,7 +991,9 @@ function etCsBuildSheet(p) {
   const sheet = document.createElement('div');
   sheet.className = 'et-cs-sheet';
   sheet.dataset.orient = etCs.orient;
-  sheet.dataset.paper = etCs.paper;
+  const L = etCsLayout();
+  sheet.style.setProperty('--cs-aw', L.w.toFixed(3));
+  sheet.style.setProperty('--cs-ah', L.h.toFixed(3));
   sheet.dir = 'ltr';
   sheet.lang = lang === 'he' ? 'he' : 'en';
   etCsApplySizes(sheet);
@@ -1031,8 +1048,37 @@ function etCsBuildSheet(p) {
 let _etCsChosen = new Set();   // parasha indices (n − 1) for this run: the current view's at each open, never stored
 let _etCsOpener = null, _etCsSig = '', _etCsFilled = false, _etCsPrinting = false, _etCsFitToken = 0, _etCsFitTimer = 0;
 const _etCsSheets = new Map();   // index → { li, sheet, k, over }
-// The printed box at 96 px to the inch, portrait (the paper less the 0.35in margins): where a sheet's fit is measured.
-const ET_CS_PX = { letter: [748.8, 988.8], a4: [726.7, 1055] };
+// The printed box in inches, portrait (the paper less the 0.35in @page margins), and the gutter between pages that share
+// a sheet of paper.
+const ET_CS_BOX = { letter: [7.8, 10.3], a4: [7.57, 10.99] }, ET_CS_GUTTER = 0.3;
+// Where each page goes on paper: one page fills the printed box; two to a sheet turn the paper (two portrait pages side
+// by side on landscape paper, two landscape pages one above the other on portrait paper); four make a 2 × 2 grid on
+// paper turned like the pages. w × h is one page's place, in inches (its preview proportions, and its fit at 96 px/in).
+function etCsLayout(per) {
+  per = per || etCs.perSheet;
+  const paperOrient = per === 2 ? (etCs.orient === 'portrait' ? 'landscape' : 'portrait') : etCs.orient;
+  let [W, H] = ET_CS_BOX[etCs.paper] || ET_CS_BOX.letter;
+  if (paperOrient === 'landscape') [W, H] = [H, W];
+  const cols = per === 1 ? 1 : per === 4 ? 2 : (paperOrient === 'landscape' ? 2 : 1), rows = per / cols;
+  return { per, paperOrient, cols, rows, W, H, w: (W - (cols - 1) * ET_CS_GUTTER) / cols, h: (H - (rows - 1) * ET_CS_GUTTER) / rows };
+}
+// The Pages per sheet radios' pictures: the paper, turned as it prints, and its pages.
+function etCsPerIcons() {
+  const NS = 'http://www.w3.org/2000/svg';
+  document.querySelectorAll('input[name="etCsPer"]').forEach(r => {
+    const ico = r.parentNode.querySelector('.et-cs-per-ico'), L = etCsLayout(Number(r.value));
+    if (!ico) return;
+    const land = L.paperOrient === 'landscape', pw = land ? 20 : 15, ph = land ? 15 : 20, px = (24 - pw) / 2, py = (24 - ph) / 2;
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('viewBox', '0 0 24 24'); svg.setAttribute('fill', 'none'); svg.setAttribute('stroke', 'currentColor'); svg.setAttribute('focusable', 'false');
+    const rect = (x, y, w, h, sw) => { const n = document.createElementNS(NS, 'rect'); [['x', x], ['y', y], ['width', w], ['height', h], ['rx', 0.8], ['stroke-width', sw]].forEach(([a, v]) => n.setAttribute(a, +(+v).toFixed(2))); svg.appendChild(n); };
+    rect(px, py, pw, ph, 1.4);
+    const pad = 2, gap = 1.5, cw = (pw - 2 * pad - (L.cols - 1) * gap) / L.cols, chh = (ph - 2 * pad - (L.rows - 1) * gap) / L.rows;
+    for (let c = 0; c < L.cols; c++) for (let rr = 0; rr < L.rows; rr++) rect(px + pad + c * (cw + gap), py + pad + rr * (chh + gap), cw, chh, 1);
+    ico.textContent = '';
+    ico.appendChild(svg);
+  });
+}
 function etCsIsOpen() { const ov = document.getElementById('etCsOverlay'); return !!ov && !ov.hidden; }
 // The parshiyot the current view shows: Today = this week's (both halves of a doubled week; every card without the
 // calendar), a book = its parshiyot, View All = all 54 — what the popup opens with.
@@ -1044,10 +1090,10 @@ function etVisibleIdx() {
 }
 function etCsChosenList() { return (etData || []).filter(p => _etCsChosen.has(p.n - 1)); }
 // What a sheet's build depends on (the sizes are CSS factors and never need one).
-function etCsSigNow() { return JSON.stringify([etCsLangNow(), etCs.colored, etCs.paper, etCs.orient, ET_CS_BOOL.map(k => etCs[k])]); }
+function etCsSigNow() { return JSON.stringify([etCsLangNow(), etCs.colored, etCs.paper, etCs.orient, etCs.perSheet, ET_CS_BOOL.map(k => etCs[k])]); }
 function etCsPageStyle() {
   const st = document.getElementById('etPageSize');
-  if (st) st.textContent = etCsIsOpen() ? '@page { size: ' + (etCs.paper === 'a4' ? 'A4' : 'letter') + ' ' + etCs.orient + '; margin: 0.35in; }' : '';   // i18n-ignore: CSS, not text
+  if (st) st.textContent = etCsIsOpen() ? '@page { size: ' + (etCs.paper === 'a4' ? 'A4' : 'letter') + ' ' + etCsLayout().paperOrient + '; margin: 0.35in; }' : '';   // i18n-ignore: CSS, not text
 }
 function etCsOpen() {
   if (etCsIsOpen() || !etData) return;
@@ -1081,6 +1127,8 @@ function etCsSyncControls() {
   const lang = etCsLangNow();
   document.querySelectorAll('input[name="etCsOrient"]').forEach(r => { r.checked = r.value === etCs.orient; });
   document.querySelectorAll('input[name="etCsPaper"]').forEach(r => { r.checked = r.value === etCs.paper; });
+  document.querySelectorAll('input[name="etCsPer"]').forEach(r => { r.checked = Number(r.value) === etCs.perSheet; });
+  etCsPerIcons();
   document.querySelectorAll('input[name="etCsLang"]').forEach(r => { r.checked = r.value === lang; });
   document.querySelectorAll('input[name="etCsCollate"]').forEach(r => { r.checked = r.value === etCs.collate; });
   document.querySelectorAll('#etCsOverlay input[data-field]').forEach(cb => { cb.checked = !!etCs[cb.dataset.field]; });
@@ -1133,7 +1181,8 @@ function etCsRenderChips() {
 function etCsSync() {
   if (!etCsIsOpen()) return;
   const ul = document.getElementById('etCsPages'), list = etCsChosenList(), keep = new Set(list.map(p => p.n - 1));
-  ul.dataset.orient = etCs.orient;
+  const L = etCsLayout();
+  ul.dataset.orient = L.w > L.h ? 'landscape' : 'portrait';
   [..._etCsSheets.keys()].forEach(i => { if (!keep.has(i)) { _etCsSheets.get(i).li.remove(); _etCsSheets.delete(i); } });
   const he = etLang() === 'he';
   list.forEach(p => {
@@ -1164,6 +1213,7 @@ function etCsSync() {
 // rebuilt; a size change only re-applies the factors (and refits).
 function etCsRefresh() {
   if (!etCsIsOpen()) return;
+  etCsPerIcons();   // they turn with the page
   document.querySelectorAll('#etCsPages .et-cs-sheet').forEach(etCsApplySizes);
   const sig = etCsSigNow();
   if (sig !== _etCsSig) {
@@ -1191,8 +1241,7 @@ async function etCsFitAll(waitMs) {
   if (token !== _etCsFitToken || !etCsIsOpen()) return;
   const entries = [..._etCsSheets.values()];
   if (entries.length) {
-    let [w, h] = ET_CS_PX[etCs.paper] || ET_CS_PX.letter;
-    if (etCs.orient === 'landscape') [w, h] = [h, w];
+    const L = etCsLayout(), w = L.w * 96, h = L.h * 96;
     const host = document.createElement('div');
     host.style.cssText = 'position:fixed;left:-30000px;top:0;visibility:hidden;pointer-events:none;';
     document.body.appendChild(host);
@@ -1220,8 +1269,10 @@ function etCsOverflows(c) {
 function etCsUpdateChrome() {
   if (!etCsIsOpen()) return;
   const list = etCsChosenList(), copies = etCs.copies, pages = list.length * copies, he = etLang() === 'he';
-  document.getElementById('etCsCount').textContent = list.length
-    ? I18n.t(pages === 1 ? 'emojitorah.coloring.count.one' : 'emojitorah.coloring.count.other', { count: pages }) : '';
+  const per = etCs.perSheet, papers = Math.ceil(pages / per);
+  document.getElementById('etCsCount').textContent = !list.length ? ''
+    : (per > 1 && pages > 1) ? I18n.t(papers === 1 ? 'emojitorah.coloring.count_paper.one' : 'emojitorah.coloring.count_paper.other', { pages, count: papers })
+    : I18n.t(pages === 1 ? 'emojitorah.coloring.count.one' : 'emojitorah.coloring.count.other', { count: pages });
   document.getElementById('etCsEmpty').hidden = list.length > 0;
   const btn = document.getElementById('etCsPrint');
   if (list.length) { btn.removeAttribute('aria-disabled'); btn.removeAttribute('aria-describedby'); }
@@ -1248,9 +1299,19 @@ function etCsFill() {
   const n = etCs.copies, order = [];
   if (etCs.collate === 'grouped') sheets.forEach(sh => { for (let c = 0; c < n; c++) order.push(sh); });
   else for (let c = 0; c < n; c++) sheets.forEach(sh => order.push(sh));
-  const frag = document.createDocumentFragment();
-  order.forEach(sh => frag.appendChild(sh.cloneNode(true)));
+  const L = etCsLayout(), frag = document.createDocumentFragment();
+  for (let i = 0; i < order.length; i += L.per) frag.appendChild(etCsPaper(order.slice(i, i + L.per), L));
   area.appendChild(frag);
+}
+// One sheet of paper: its pages (copies of the preview sheets) in the layout's grid, and a cut line in each gutter.
+function etCsPaper(sheets, L) {
+  const paper = document.createElement('div');
+  paper.className = 'et-cs-paper';
+  paper.style.gridTemplateColumns = 'repeat(' + L.cols + ', minmax(0, 1fr))';
+  paper.style.gridTemplateRows = 'repeat(' + L.rows + ', minmax(0, 1fr))';
+  sheets.forEach(sh => paper.appendChild(sh.cloneNode(true)));
+  [['v', L.cols], ['h', L.rows]].forEach(([d, n]) => { if (n > 1) { const c = document.createElement('div'); c.className = 'et-cs-cut et-cs-cut-' + d; paper.appendChild(c); } });
+  return paper;
 }
 async function etCsPrint() {
   if (_etCsPrinting) return;
@@ -1312,6 +1373,7 @@ function etCsWire() {
     document.querySelectorAll('#etCsChips input').forEach(cb => { cb.checked = false; });
     etCsSync();
   });
+  document.querySelectorAll('input[name="etCsPer"]').forEach(r => r.addEventListener('change', () => { if (r.checked) { etCsSet('perSheet', Number(r.value)); etCsRefresh(); } }));
   [['etCsOrient', 'orient'], ['etCsPaper', 'paper'], ['etCsCollate', 'collate']].forEach(([name, key]) =>
     document.querySelectorAll('input[name="' + name + '"]').forEach(r => r.addEventListener('change', () => { if (r.checked) { etCsSet(key, r.value); etCsRefresh(); } })));
   document.querySelectorAll('input[name="etCsLang"]').forEach(r => r.addEventListener('change', () => { if (r.checked) { etCsSet('textLang', r.value); etCsRefresh(); } }));

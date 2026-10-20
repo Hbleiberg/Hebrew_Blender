@@ -74,7 +74,7 @@ const PAGES = [
     // Vowels mode (the mode bar, ?mode= / ?vowel=, the Options card's limit, the phone sheet); J–N the Cursive mode (the
     // three-way mode bar and its URL mirror, a cursive card's Letter tab, the dot-pair fold and a final card, garbage, the phone)
     extra: async ({ browser, tag }) => {
-      const seedText = JSON.stringify({ v: 1, vowels: { kamatz: true, patach: true, tzere: true, segol: true, chirik: true, cholam: true, vav_cholam: true, kubutz: true, shuruk: true, sheva: true, chataf_patach: true, chataf_segol: true, chataf_kamatz: true }, fontTab: true, splitPairs: true, wordAudio: true, voiceURI: '', colorOrient: 'landscape', colorPaper: 'a4', colorView: 'letter', colorFilled: false, colorTranslit: true, colorGloss: true, colorName: true, colorHint: true, colorFont: '', colorSizeMain: 100, colorSizePic: 100, colorSizeHe: 100, colorSizeTr: 100, colorSizeEn: 100, bulkLetters: ['alef', 'gimel'], bulkCopies: 3, bulkCollate: 'grouped' });
+      const seedText = JSON.stringify({ v: 1, vowels: { kamatz: true, patach: true, tzere: true, segol: true, chirik: true, cholam: true, vav_cholam: true, kubutz: true, shuruk: true, sheva: true, chataf_patach: true, chataf_segol: true, chataf_kamatz: true }, fontTab: true, splitPairs: true, wordAudio: true, voiceURI: '', colorOrient: 'landscape', colorPaper: 'a4', colorPerSheet: 1, colorView: 'letter', colorFilled: false, colorTranslit: true, colorGloss: true, colorName: true, colorHint: true, colorFont: '', colorSizeMain: 100, colorSizePic: 100, colorSizeHe: 100, colorSizeTr: 100, colorSizeEn: 100, bulkLetters: ['alef', 'gimel'], bulkCopies: 3, bulkCollate: 'grouped' });
       {
         const { ctx, page, errors } = await openPage(browser, 'letter_learner.html', { seed: { hebrewLetterLearner_settings: seedText }, query: '?letter=gimel', init: () => { Object.defineProperty(window, 'speechSynthesis', { value: undefined, configurable: true }); } });
         const r = await page.evaluate(() => { llSaveSettingsIfChanged(); return { open: !document.getElementById('llOverlay').hidden, id: _llId, noSpeech: document.body.classList.contains('ll-no-speech'), speakers: [...document.querySelectorAll('.ll-speak')].filter(b => b.offsetParent !== null).length, note: document.getElementById('llNoSpeech').offsetParent !== null, same: localStorage.getItem('hebrewLetterLearner_settings') === JSON.stringify(settings), look: [...document.querySelectorAll('#llPanel-letter .ll-lookalike strong')].map(s => s.textContent.trim()).join(',') }; });
@@ -402,7 +402,7 @@ const PAGES = [
     // The seed is the page's own shape (field order included: the defaults' order, a chosen textLang last): the page
     // writes only on a change, so a load must leave the text byte-identical.
     seed: {
-      hebrewEmojiTorah_settings: JSON.stringify({ v: 1, colored: true, paper: 'a4', orient: 'landscape', showHe: true, showEn: false, showRef: true, showSummary: true, showWhy: false, showName: true, sizePic: 120, sizeEn: 100, sizeHe: 110, sizeRef: 100, sizeSummary: 90, sizeWhy: 100, sizeName: 100, copies: 2, collate: 'grouped', textLang: 'both' })
+      hebrewEmojiTorah_settings: JSON.stringify({ v: 1, colored: true, paper: 'a4', orient: 'landscape', perSheet: 2, showHe: true, showEn: false, showRef: true, showSummary: true, showWhy: false, showName: true, sizePic: 120, sizeEn: 100, sizeHe: 110, sizeRef: 100, sizeSummary: 90, sizeWhy: 100, sizeName: 100, copies: 2, collate: 'grouped', textLang: 'both' })
     },
     rows: ['settings:default'],
     expand: `etCsOpen(); document.getElementById('cloudSavesPanel').scrollIntoView();`,
@@ -410,7 +410,7 @@ const PAGES = [
     // is written onto the stored object, so a field this build does not know (a newer build's) survives it, and a value
     // it cannot apply falls back on screen while staying stored
     extra: async ({ browser, tag }) => {
-      const seedText = JSON.stringify({ v: 1, colored: false, paper: 'letter', orient: 'portrait', showHe: true, showEn: true, showRef: true, showSummary: true, showWhy: true, showName: true, sizePic: 999, sizeEn: 100, sizeHe: 100, sizeRef: 100, sizeSummary: 100, sizeWhy: 100, sizeName: 100, copies: 1, collate: 'sets', future: { x: 1 } });
+      const seedText = JSON.stringify({ v: 1, colored: false, paper: 'letter', orient: 'portrait', perSheet: 1, showHe: true, showEn: true, showRef: true, showSummary: true, showWhy: true, showName: true, sizePic: 999, sizeEn: 100, sizeHe: 100, sizeRef: 100, sizeSummary: 100, sizeWhy: 100, sizeName: 100, copies: 1, collate: 'sets', future: { x: 1 } });
       const { ctx, page, errors } = await openPage(browser, 'emoji_torah.html', { seed: { hebrewEmojiTorah_settings: seedText } });
       const r = await page.evaluate(() => {
         etCsFlush();

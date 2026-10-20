@@ -453,19 +453,19 @@ html[lang="he"] .ll-vgroup { letter-spacing:normal; text-transform:none; }
   /* The five size sliders (llCsApplySizes) set these factors; the bases are the 100% look per orientation. Sizes trade
      space on a fixed page: a part that runs out of room stops growing (flex-shrink) rather than spilling off the sheet. */
   --cs-main:1; --cs-pic:1; --cs-he:1; --cs-tr:1; --cs-en:1; --cs-main-base:66cqmin; --cs-pic-base:24cqmin;
-  /* The proportions of the PRINTED box — the paper (data-paper) less the 0.35in @page margins on every side, so the
-     preview is the page as it prints: Letter 10.3 × 7.8in, A4 10.99 × 7.57in, turned for portrait. --cs-h caps the
+  /* The proportions of the page's place on paper, set inline by llCsShape: the PRINTED box — the paper less the 0.35in
+     @page margins on every side, Letter 10.3 × 7.8in, A4 10.99 × 7.57in, turned for portrait — or, two or four to a
+     sheet, one cell of it, so the preview is the page as it prints. --cs-h caps the
      height: short enough that the options and Print fit under the sheet on a laptop. */
   --cs-aw:10.3; --cs-ah:7.8; --cs-h:54vh;
-  container-type:size; box-sizing:border-box; background:#fff; color:#000;
+  container-type:size; position:relative; box-sizing:border-box; background:#fff; color:#000;
   border:1px solid var(--border); box-shadow:var(--shadow-md);
   aspect-ratio:var(--cs-aw) / var(--cs-ah); width:min(100%, calc(var(--cs-h) * var(--cs-aw) / var(--cs-ah)));
-  display:flex; flex-direction:column; padding:3.5cqmin 4cqmin 2.2cqmin;
   font-family:'Source Sans 3', sans-serif;
 }
-.ll-cs-sheet[data-orient="portrait"] { --cs-aw:7.8; --cs-ah:10.3; --cs-h:64vh; --cs-main-base:40cqmin; --cs-pic-base:17cqmin; }
-.ll-cs-sheet[data-paper="a4"] { --cs-aw:10.99; --cs-ah:7.57; }
-.ll-cs-sheet[data-paper="a4"][data-orient="portrait"] { --cs-aw:7.57; --cs-ah:10.99; }
+/* The page's layout sits one level in: a container's own padding would resolve cqmin against the viewport, not the page. */
+.ll-cs-page { position:absolute; inset:0; box-sizing:border-box; display:flex; flex-direction:column; padding:3.5cqmin 4cqmin 2.2cqmin; }
+.ll-cs-sheet[data-orient="portrait"] { --cs-h:64vh; --cs-main-base:40cqmin; --cs-pic-base:17cqmin; }
 .ll-cs-name { font-family:'Libre Baskerville', serif; font-size:3.4cqmin; display:flex; align-items:flex-end; gap:1.2cqmin; margin:0 0 1.5cqmin; }
 .ll-cs-blank { display:inline-block; width:45cqmin; border-bottom:0.3cqmin solid #000; }
 .ll-cs-body {
@@ -553,7 +553,15 @@ body.dark .ll-bp-main { background:var(--cream); }   /* dark --warm-gray is the 
 .ll-bp-foot { flex-shrink:0; display:flex; flex-wrap:wrap; align-items:center; justify-content:flex-end; gap:8px 14px; padding:10px 16px; border-top:1px solid var(--border); background:var(--white); }
 .ll-bp-count { margin-inline-end:auto; font-weight:700; font-variant-numeric:tabular-nums; }
 .ll-bp-foot .ll-cs-print[aria-disabled="true"] { opacity:0.45; cursor:default; filter:none; }
-#llBpPrintArea { display:none; }   /* the copies print from here (llBpFill); never shown on screen */
+#llBpPrintArea, #llCsPrintArea { display:none; }   /* the copies print from here (llBpFill, llCsFillTab); never shown on screen */
+/* A sheet of paper in a print run: its pages in a grid (llCsPaper sets the columns and rows), a dashed cut line down the
+   middle of each gutter. */
+.ll-cs-paper { display:grid; gap:0.3in; position:relative; }
+.ll-cs-cut { position:absolute; border:0 dashed #999; }
+.ll-cs-cut-v { inset-block:0; inset-inline-start:50%; border-inline-start-width:1px; }
+.ll-cs-cut-h { inset-inline:0; inset-block-start:50%; border-block-start-width:1px; }
+.ll-cs-per-ico { display:inline-flex; width:24px; height:24px; flex:none; color:var(--muted); }
+.ll-cs-per-ico svg { width:100%; height:100%; }
 
 /* Hint animation library: a drawing wraps a moving part in <g class="ll-anim ll-anim-<name>">. Every keyframe
    returns to the rest pose and fill-mode stays `none`, so the reduced-motion block below (0.001ms, one run)
@@ -761,18 +769,19 @@ body.dark #appToast { background: #0a0f1c; }
   body.ll-dlg-open[data-ll-tab="coloring"] .ll-cs-actions,
   body.ll-dlg-open[data-ll-tab="coloring"] .ll-cs-note { display:none !important; }
   body.ll-dlg-open[data-ll-tab="coloring"] .ll-panel { padding:0; }
-  body.ll-dlg-open[data-ll-tab="coloring"] .ll-cs-preview { display:block; margin:0; }
-  body.ll-dlg-open[data-ll-tab="coloring"] .ll-cs-sheet,
-  body.ll-dlg-open[data-ll-tab="coloring"] .ll-cs-sheet[data-orient="portrait"] { width:100%; height:100vh; aspect-ratio:auto; border:none; box-shadow:none; break-inside:avoid; }
-  /* The bulk popup prints its run alone: #llBpPrintArea holds every copy in order (llBpFill), one sheet per page, and
-     everything else on the page goes. 100vh is the page area, so a sheet follows the real paper and the dialog's scale;
-     the break sits BEFORE each sheet after the first, so no blank page trails the run. body is a flex column on screen,
+  body.ll-dlg-open[data-ll-tab="coloring"] .ll-cs-preview { display:none !important; }
+  body.ll-dlg-open[data-ll-tab="coloring"] #llCsPrintArea { display:block; }   /* the sheet's copies, one to four on the paper (llCsFillTab) */
+  /* The bulk popup prints its run alone: #llBpPrintArea holds every copy in order (llBpFill), grouped into sheets of
+     paper (one, two or four pages each), and everything else on the page goes. 100vh is the page area, so a paper
+     follows the real paper and the dialog's scale; the break sits BEFORE each paper after the first, so no blank page
+     trails the run. body is a flex column on screen,
      and a forced break inside a flex item is ignored by some engines: paper gets a plain block. */
   body.ll-bp-open { display:block; min-height:0; }
   body.ll-bp-open > :not(#llBpPrintArea) { display:none !important; }
   body.ll-bp-open #llBpPrintArea { display:block !important; }
-  #llBpPrintArea .ll-cs-sheet { width:100%; height:100vh; aspect-ratio:auto; overflow:hidden; border:none; box-shadow:none; break-inside:avoid; }
-  #llBpPrintArea .ll-cs-sheet + .ll-cs-sheet { break-before:page; }
+  .ll-cs-paper { width:100%; height:100vh; break-inside:avoid; }
+  .ll-cs-paper + .ll-cs-paper { break-before:page; }
+  .ll-cs-paper .ll-cs-sheet, .ll-cs-paper .ll-cs-sheet[data-orient="portrait"] { width:100%; height:100%; min-height:0; aspect-ratio:auto; overflow:hidden; border:none; box-shadow:none; }
 }
 /* Reduced motion: the universal neutralizer (every animation and transition on the page, the hint drawings'
    .ll-anim groups included; 0.001ms rather than 0 so animationend still fires). */
@@ -905,6 +914,7 @@ body.dark #appToast { background: #0a0f1c; }
          Paper prints only the sheet. -->
     <div class="ll-panel" role="tabpanel" id="llPanel-coloring" aria-labelledby="llTab-coloring" tabindex="0" hidden>
       <div class="ll-cs-preview" id="llCsPreview"></div>
+      <div id="llCsPrintArea" aria-hidden="true"></div>
       <p class="ll-note ll-cs-note" id="llCsNote" role="status" aria-live="polite"></p>
       <div id="llCsOptsHome">
       <div class="ll-cs-opts" id="llCsOpts">
@@ -917,6 +927,12 @@ body.dark #appToast { background: #0a0f1c; }
           <legend data-i18n="letterlearner.coloring.paper_legend">Paper size</legend>
           <label class="ll-opt"><input type="radio" name="llCsPaper" value="letter"><span data-i18n="letterlearner.coloring.paper_letter">Letter (8.5 × 11 in)</span></label>
           <label class="ll-opt"><input type="radio" name="llCsPaper" value="a4"><span data-i18n="letterlearner.coloring.paper_a4">A4 (210 × 297 mm)</span></label>
+        </fieldset>
+        <fieldset class="ll-cs-set">
+          <legend data-i18n="letterlearner.coloring.per_legend">Pages per sheet</legend>
+          <label class="ll-opt"><input type="radio" name="llCsPer" value="1"><span class="ll-cs-per-ico" aria-hidden="true"></span><span>1</span></label>
+          <label class="ll-opt"><input type="radio" name="llCsPer" value="2"><span class="ll-cs-per-ico" aria-hidden="true"></span><span>2</span></label>
+          <label class="ll-opt"><input type="radio" name="llCsPer" value="4"><span class="ll-cs-per-ico" aria-hidden="true"></span><span>4</span></label>
         </fieldset>
         <fieldset class="ll-cs-set">
           <legend data-i18n="letterlearner.coloring.show_legend">Show</legend>
@@ -1600,6 +1616,7 @@ const LL_DEFAULTS = {
   // falls back to the card's face).
   colorOrient: 'landscape',   // 'landscape' | 'portrait'
   colorPaper: 'letter',       // 'letter' | 'a4' — the paper both print dialogs size the sheet and the @page for
+  colorPerSheet: 1,           // 1 | 2 | 4 — pages on one sheet of paper (the tab fills its sheet with copies of its page)
   colorView: 'letter',        // 'letter' | 'hint'
   colorFilled: false,         // true: the pictures and the letter print in their colours (Colored in), not as line art
   colorTranslit: true,
@@ -1898,6 +1915,7 @@ function llLoadSettings() {
   settings.voiceURI = typeof stored.voiceURI === 'string' ? stored.voiceURI : '';
   settings.colorOrient = stored.colorOrient === 'portrait' ? 'portrait' : 'landscape';
   settings.colorPaper = stored.colorPaper === 'a4' ? 'a4' : 'letter';
+  settings.colorPerSheet = [1, 2, 4].includes(stored.colorPerSheet) ? stored.colorPerSheet : 1;
   settings.colorView = stored.colorView === 'hint' ? 'hint' : 'letter';
   ['colorFilled', 'colorTranslit', 'colorGloss', 'colorName', 'colorHint'].forEach(k => { settings[k] = typeof stored[k] === 'boolean' ? stored[k] : LL_DEFAULTS[k]; });
   settings.colorFont = typeof stored.colorFont === 'string' ? stored.colorFont.slice(0, 120) : '';
@@ -2894,6 +2912,7 @@ function llCsFillFonts() {
    ══════════════════════════════════════════════════════ */
 const LL_CS_INK = '#000', LL_CS_PAPER = '#fff';
 let _llCsToken = 0;   // a letter fit that an older render started is ignored when its font settles
+let _llCsBuilt = null;   // the tab's sheet as built (llCsBuildSheet's result): its print copies are made from it
 // The five size sliders: a settings field each (percent, 50–150 in steps of 5) and the sheet's CSS factor it drives.
 const LL_CS_SIZES = ['colorSizeMain', 'colorSizePic', 'colorSizeHe', 'colorSizeTr', 'colorSizeEn'];
 const LL_CS_SIZE_VAR = { colorSizeMain: '--cs-main', colorSizePic: '--cs-pic', colorSizeHe: '--cs-he', colorSizeTr: '--cs-tr', colorSizeEn: '--cs-en' };
@@ -2903,6 +2922,52 @@ function llCsSizeVal(v) {
 }
 function llCsApplySizes(sheet) {
   if (sheet) LL_CS_SIZES.forEach(k => sheet.style.setProperty(LL_CS_SIZE_VAR[k], String(settings[k] / 100)));
+}
+// The printed box in inches, portrait (the paper less the 0.35in @page margins), and the gutter between pages that share
+// a sheet of paper.
+const LL_CS_BOX = { letter: [7.8, 10.3], a4: [7.57, 10.99] }, LL_CS_GUTTER = 0.3;
+// Where each page goes on paper: one page fills the printed box; two to a sheet turn the paper (two portrait pages side
+// by side on landscape paper, two landscape pages one above the other on portrait paper); four make a 2 × 2 grid on
+// paper turned like the pages. w × h is one page's place, in inches — the sheet's proportions (llCsShape).
+function llCsLayout(per) {
+  per = per || settings.colorPerSheet;
+  const paperOrient = per === 2 ? (settings.colorOrient === 'portrait' ? 'landscape' : 'portrait') : settings.colorOrient;
+  let [W, H] = LL_CS_BOX[settings.colorPaper] || LL_CS_BOX.letter;
+  if (paperOrient === 'landscape') [W, H] = [H, W];
+  const cols = per === 1 ? 1 : per === 4 ? 2 : (paperOrient === 'landscape' ? 2 : 1), rows = per / cols;
+  return { per, paperOrient, cols, rows, w: (W - (cols - 1) * LL_CS_GUTTER) / cols, h: (H - (rows - 1) * LL_CS_GUTTER) / rows };
+}
+function llCsShape(sheet) {
+  const L = llCsLayout();
+  sheet.dataset.orient = settings.colorOrient;
+  sheet.style.setProperty('--cs-aw', L.w.toFixed(3));
+  sheet.style.setProperty('--cs-ah', L.h.toFixed(3));
+}
+// One sheet of paper: copies of `sheets` in the layout's grid, and a dashed cut line in each gutter.
+function llCsPaper(sheets, L) {
+  const paper = el('div', 'll-cs-paper');
+  paper.style.gridTemplateColumns = 'repeat(' + L.cols + ', minmax(0, 1fr))';
+  paper.style.gridTemplateRows = 'repeat(' + L.rows + ', minmax(0, 1fr))';
+  sheets.forEach(sh => paper.appendChild(sh.cloneNode(true)));
+  [['v', L.cols], ['h', L.rows]].forEach(([d, n]) => { if (n > 1) paper.appendChild(el('div', 'll-cs-cut ll-cs-cut-' + d)); });
+  return paper;
+}
+// The Pages per sheet radios' pictures: the paper, turned as it prints, and its pages.
+function llCsPerIcons() {
+  const NS = 'http://www.w3.org/2000/svg';
+  document.querySelectorAll('input[name="llCsPer"]').forEach(r => {
+    const ico = r.parentNode.querySelector('.ll-cs-per-ico'), L = llCsLayout(Number(r.value));
+    if (!ico) return;
+    const land = L.paperOrient === 'landscape', pw = land ? 20 : 15, ph = land ? 15 : 20, px = (24 - pw) / 2, py = (24 - ph) / 2;
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('viewBox', '0 0 24 24'); svg.setAttribute('fill', 'none'); svg.setAttribute('stroke', 'currentColor'); svg.setAttribute('focusable', 'false');
+    const rect = (x, y, w, h, sw) => { const n = document.createElementNS(NS, 'rect'); [['x', x], ['y', y], ['width', w], ['height', h], ['rx', 0.8], ['stroke-width', sw]].forEach(([a, v]) => n.setAttribute(a, +(+v).toFixed(2))); svg.appendChild(n); };
+    rect(px, py, pw, ph, 1.4);
+    const pad = 2, gap = 1.5, cw = (pw - 2 * pad - (L.cols - 1) * gap) / L.cols, chh = (ph - 2 * pad - (L.rows - 1) * gap) / L.rows;
+    for (let c = 0; c < L.cols; c++) for (let rr = 0; rr < L.rows; rr++) rect(px + pad + c * (cw + gap), py + pad + rr * (chh + gap), cw, chh, 1);
+    ico.textContent = '';
+    ico.appendChild(svg);
+  });
 }
 
 // The value of a paint attribute as the drawing sets it: on the shape itself or the nearest group that names it.
@@ -3154,14 +3219,15 @@ function llCsBuildSheet(host, card, alive) {
   if (card.kind === 'cursive') llCheckCursive(card.T);
   const sheet = el('div', 'll-cs-sheet');
   sheet.dir = 'ltr'; sheet.lang = 'en';   // printed learner content: English, laid out like the sketch in both UIs
-  sheet.dataset.orient = settings.colorOrient;
-  sheet.dataset.paper = settings.colorPaper;
+  llCsShape(sheet);
   llCsApplySizes(sheet);
+  const page = el('div', 'll-cs-page');
+  sheet.appendChild(page);
   if (settings.colorName) {
     const nm = el('div', 'll-cs-name');
     nm.appendChild(el('span', null, 'Name:'));   // i18n-ignore: printed learner content (English, like the captions)
     nm.appendChild(el('span', 'll-cs-blank'));
-    sheet.appendChild(nm);
+    page.appendChild(nm);
   }
   const body = el('div', 'll-cs-body');
   const hint = llCsHint(card);
@@ -3191,8 +3257,8 @@ function llCsBuildSheet(host, card, alive) {
     if (settings.colorGloss && w.en) cell.appendChild(el('span', 'll-cs-en', w.en));      // i18n-ignore: learner content
     body.appendChild(cell);
   });
-  sheet.appendChild(body);
-  sheet.appendChild(el('div', 'll-cs-credit', 'IvritSuite.com'));   // i18n-ignore: brand credit
+  page.appendChild(body);
+  page.appendChild(el('div', 'll-cs-credit', 'IvritSuite.com'));   // i18n-ignore: brand credit
   host.appendChild(sheet);
   if (!art.getBoundingClientRect().width) { sheet.remove(); return null; }
   // In the sheet now (and visible): draw, then measure and convert.
@@ -3211,12 +3277,26 @@ function llRenderColoringTab(card) {
   const host = document.getElementById('llCsPreview'), note = document.getElementById('llCsNote');
   host.textContent = '';
   note.textContent = '';
+  document.getElementById('llCsPrintArea').textContent = '';
+  _llCsBuilt = null;
   const token = ++_llCsToken;
   if (!card || card.kind === 'vowel') return;
   llCsMountOpts(document.getElementById('llCsOptsHome'));
   const r = llCsBuildSheet(host, card, () => token === _llCsToken);
-  if (r && r.noHint) note.textContent = _fbT('letterlearner.coloring.no_hint_note', 'This letter has no hint picture yet, so the sheet shows the letter.');
-  if (!note.textContent) note.textContent = llCsFontMissingNote();
+  _llCsBuilt = r;
+  const notes = [];
+  if (r && r.noHint) notes.push(_fbT('letterlearner.coloring.no_hint_note', 'This letter has no hint picture yet, so the sheet shows the letter.'));
+  else if (llCsFontMissingNote()) notes.push(llCsFontMissingNote());
+  if (settings.colorPerSheet > 1) notes.push(_fbT('letterlearner.coloring.per_note', 'Prints {count} copies of this page on one sheet of paper.', { count: settings.colorPerSheet }));
+  note.textContent = notes.join(' ');
+}
+// The tab's paper: its sheet, as many times as the paper holds (copied after the letter's last measure).
+function llCsFillTab() {
+  const area = document.getElementById('llCsPrintArea');
+  area.textContent = '';
+  if (!_llCsBuilt || !_llCsBuilt.sheet || !llCsShowing()) return;
+  const L = llCsLayout();
+  area.appendChild(llCsPaper(Array.from({ length: L.per }, () => _llCsBuilt.sheet), L));
 }
 // The options block lives in the Coloring sheet tab and moves into the bulk print popup while that is open (the two are
 // never open together), so its controls, their wiring and the font menu exist once.
@@ -3226,6 +3306,7 @@ function llCsMountOpts(host) {
 }
 function llCsShowing() { return _llTab === 'coloring' && !document.getElementById('llOverlay').hidden; }
 function llCsRefresh() {
+  llCsPerIcons();   // they turn with the page
   if (llCsShowing()) llRenderColoringTab(llCard(_llId));
   llBpRefresh();
 }
@@ -3234,7 +3315,7 @@ function llCsRefresh() {
 // and orientation apply.)
 function llCsPageStyle() {
   const st = document.getElementById('llPageSize');
-  if (st) st.textContent = (llCsShowing() || llBpIsOpen()) ? '@page { size: ' + (settings.colorPaper === 'a4' ? 'A4' : 'letter') + ' ' + settings.colorOrient + '; margin: 0.35in; }' : '';   // i18n-ignore: CSS, not text
+  if (st) st.textContent = (llCsShowing() || llBpIsOpen()) ? '@page { size: ' + (settings.colorPaper === 'a4' ? 'A4' : 'letter') + ' ' + llCsLayout().paperOrient + '; margin: 0.35in; }' : '';   // i18n-ignore: CSS, not text
 }
 function llCsSet(key, value) {
   llSetSetting(key, value);
@@ -3245,6 +3326,8 @@ function llCsSet(key, value) {
 function llCsSyncControls() {
   document.querySelectorAll('input[name="llCsOrient"]').forEach(r => { r.checked = r.value === settings.colorOrient; });
   document.querySelectorAll('input[name="llCsPaper"]').forEach(r => { r.checked = r.value === settings.colorPaper; });
+  document.querySelectorAll('input[name="llCsPer"]').forEach(r => { r.checked = Number(r.value) === settings.colorPerSheet; });
+  llCsPerIcons();
   document.querySelectorAll('input[name="llCsView"]').forEach(r => { r.checked = r.value === settings.colorView; });
   document.getElementById('optCsColored').checked = !!settings.colorFilled;
   document.getElementById('optCsTranslit').checked = !!settings.colorTranslit;
@@ -3286,11 +3369,14 @@ async function llCsPrint() {
   llCsPageStyle();
   const card = llCard(_llId);
   if (card && card.kind !== 'vowel') await llCsFontsReady(card, card.glyph);
+  if (_llCsBuilt && _llCsBuilt.fit) _llCsBuilt.fit();   // the face is in: measure the letter once more before copying
+  llCsFillTab();
   window.print();
 }
 function llCsWire() {
   document.querySelectorAll('input[name="llCsOrient"]').forEach(r => r.addEventListener('change', () => { if (r.checked) llCsSet('colorOrient', r.value); }));
   document.querySelectorAll('input[name="llCsPaper"]').forEach(r => r.addEventListener('change', () => { if (r.checked) llCsSet('colorPaper', r.value); }));
+  document.querySelectorAll('input[name="llCsPer"]').forEach(r => r.addEventListener('change', () => { if (r.checked) llCsSet('colorPerSheet', Number(r.value)); }));
   document.querySelectorAll('input[name="llCsView"]').forEach(r => r.addEventListener('change', () => { if (r.checked) llCsSet('colorView', r.value); }));
   [['optCsColored', 'colorFilled'], ['optCsTranslit', 'colorTranslit'], ['optCsGloss', 'colorGloss'], ['optCsName', 'colorName'], ['optCsHint', 'colorHint']]
     .forEach(([id, key]) => document.getElementById(id).addEventListener('change', e => { llCsSet(key, e.target.checked); llCsSizeState(); }));
@@ -3315,7 +3401,7 @@ function llCsWire() {
     llBpOpen(id);
   });
   // Ctrl+P / the browser menu: the right page size, and with the popup open the whole run on paper.
-  window.addEventListener('beforeprint', () => { llCsPageStyle(); llBpBeforePrint(); });
+  window.addEventListener('beforeprint', () => { llCsPageStyle(); llCsFillTab(); llBpBeforePrint(); });
 }
 
 /* ══════════════════════════════════════════════════════
@@ -3355,7 +3441,7 @@ function llBpChosen() { const set = new Set(settings.bulkLetters); return llBpOf
 function llBpKind() { return _llBpStyle === 'cursive' ? 'cursive' : 'letter'; }
 // What a sheet's build depends on (the sizes are CSS factors and never need one).
 function llBpSigNow() {
-  return JSON.stringify([_llBpStyle, settings.colorOrient, settings.colorPaper, settings.colorView, settings.colorFilled, settings.colorTranslit, settings.colorGloss,
+  return JSON.stringify([_llBpStyle, settings.colorOrient, settings.colorPaper, settings.colorPerSheet, settings.colorView, settings.colorFilled, settings.colorTranslit, settings.colorGloss,
     settings.colorName, settings.colorHint, settings.colorFont, allFonts().some(f => f.name === settings.colorFont)]);
 }
 function llBpOpen(addId) {
@@ -3421,8 +3507,8 @@ function llBpSetChosen(ids) {
 // goes — then the count, the notes and the Print button.
 function llBpSync() {
   if (!llBpIsOpen()) return;
-  const ul = document.getElementById('llBpPages'), ids = llBpChosen();
-  ul.dataset.orient = settings.colorOrient;
+  const ul = document.getElementById('llBpPages'), ids = llBpChosen(), L = llCsLayout();
+  ul.dataset.orient = L.w > L.h ? 'landscape' : 'portrait';
   const keep = new Set(ids);
   [..._llBpSheets.keys()].forEach(id => { if (!keep.has(id)) { _llBpSheets.get(id).li.remove(); _llBpSheets.delete(id); } });
   _llBpQueue = _llBpQueue.filter(id => keep.has(id));
@@ -3450,8 +3536,7 @@ function llBpSync() {
 function llBpPlaceholder(entry) {
   entry.host.textContent = '';
   const ph = el('div', 'll-cs-sheet');
-  ph.dataset.orient = settings.colorOrient;
-  ph.dataset.paper = settings.colorPaper;
+  llCsShape(ph);
   entry.host.appendChild(ph);
 }
 // Options changed (llCsSet, a download, a font that landed, the Block / Cursive switch): every sheet whose build depends on
@@ -3502,9 +3587,10 @@ function llBpFlush() {
 // The count, the notes and Print — read-only over the current state (applyI18n calls it too).
 function llBpUpdateChrome() {
   if (!llBpIsOpen()) return;
-  const ids = llBpChosen(), copies = settings.bulkCopies, pages = ids.length * copies;
-  document.getElementById('llBpCount').textContent = ids.length
-    ? _fbT(pages === 1 ? 'letterlearner.bulk.count.one' : 'letterlearner.bulk.count.other', pages === 1 ? '{count} page' : '{count} pages', { count: pages }) : '';
+  const ids = llBpChosen(), copies = settings.bulkCopies, pages = ids.length * copies, per = settings.colorPerSheet, papers = Math.ceil(pages / per);
+  document.getElementById('llBpCount').textContent = !ids.length ? ''
+    : (per > 1 && pages > 1) ? _fbT(papers === 1 ? 'letterlearner.bulk.count_paper.one' : 'letterlearner.bulk.count_paper.other', papers === 1 ? '{pages} pages on 1 sheet of paper' : '{pages} pages on {count} sheets of paper', { pages, count: papers })
+    : _fbT(pages === 1 ? 'letterlearner.bulk.count.one' : 'letterlearner.bulk.count.other', pages === 1 ? '{count} page' : '{count} pages', { count: pages });
   document.getElementById('llBpEmpty').hidden = ids.length > 0;
   const btn = document.getElementById('llBpPrint');
   if (ids.length) { btn.removeAttribute('aria-disabled'); btn.removeAttribute('aria-describedby'); }
@@ -3539,8 +3625,8 @@ function llBpFill() {
   const order = [];
   if (settings.bulkCollate === 'grouped') sheets.forEach(sh => { for (let c = 0; c < n; c++) order.push(sh); });
   else for (let c = 0; c < n; c++) sheets.forEach(sh => order.push(sh));
-  const frag = document.createDocumentFragment();
-  order.forEach(sh => frag.appendChild(sh.cloneNode(true)));
+  const L = llCsLayout(), frag = document.createDocumentFragment();
+  for (let i = 0; i < order.length; i += L.per) frag.appendChild(llCsPaper(order.slice(i, i + L.per), L));
   area.appendChild(frag);
 }
 async function llBpPrint() {

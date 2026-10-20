@@ -406,7 +406,7 @@ function buildDeviceA(D) {
   // The coloring sheets' options: every switch flipped by mutate, every other field moved; textLang is absent by default
   // (the site's language) and becomes a real choice here.
   s.hebrewEmojiTorah_settings = J(mutate('hebrewEmojiTorah_settings', base('hebrewEmojiTorah_settings'),
-    { paper: 'a4', orient: 'landscape', textLang: 'both', sizePic: 120, sizeEn: 90, sizeHe: 110, sizeRef: 80, sizeSummary: 95, sizeWhy: 105, sizeName: 130, copies: 3, collate: 'grouped' }));
+    { paper: 'a4', orient: 'landscape', perSheet: 4, textLang: 'both', sizePic: 120, sizeEn: 90, sizeHe: 110, sizeRef: 80, sizeSummary: 95, sizeWhy: 105, sizeName: 130, copies: 3, collate: 'grouped' }));
   s.hebrewDashboard_presets = J({ Morning: { headerLang: 'en', showTimer: true, activeRosterName: 'Kitah Alef' }, Tefillah: { headerLang: 'he', showTimer: false } });
   s.hebrewDashboard_presetsFolders = J({ v: 1, root: [{ t: 'folder', id: 'df', name: 'Weekdays', collapsed: false, children: [{ t: 'folder', id: 'df1', name: 'Early', collapsed: false, children: [{ t: 'item', name: 'Morning' }] }] }, { t: 'item', name: 'Tefillah' }] });
   s.hebrewDashboard_schedules = J({ '2026-2027': { v: 2, week: WEEK } });

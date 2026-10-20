@@ -665,21 +665,24 @@ header-icons and holiday-icons CSS blocks.
 - **Print coloring sheets** (disabled until `parshiyot.json` loads) opens a popup modelled on the Letter Learner's
   bulk print: parasha chips under the five book headings (opened with the current view's parshiyot ticked, through
   `etVisibleIdx()`, which `etRender` shares; the selection is never stored), copies 1–40 with collated sets or
-  grouped by parasha, *Colored in* (off), portrait / landscape, Letter / A4, the printed text's language (English /
+  grouped by parasha, *Colored in* (off), portrait / landscape, Letter / A4, pages per sheet (1 / 2 / 4, each radio
+  drawn as its paper), the printed text's language (English /
   Hebrew / Both; until chosen it follows the site), six Include switches (Hebrew title, English title, verse numbers,
   synopsis, picture explanation, name line) and seven 50–150% size sliders (a slider is disabled while its part is
   off), the account status line at the foot of the options, and a preview grid with one thumbnail per parasha and a
   `× N` badge. Focus is trapped while it is open; Escape and the close button return focus to the opener.
-- **The sheet** (`etCsBuildSheet`) is a size container at the printed box's proportions (the paper less the 0.35in
-  margins), everything inside in `cqmin` — its layout sits in the inner `.et-cs-page`, since a container's own
+- **The sheet** (`etCsBuildSheet`) is a size container at its place's proportions on paper (`etCsLayout`: the printed
+  box, the paper less the 0.35in margins; two to a sheet turn the paper and sit side by side or one above the other, four
+  make a 2 × 2 grid, 0.3in apart), everything inside in `cqmin` — its layout sits in the inner `.et-cs-page`, since a container's own
   padding would resolve `cqmin` against the viewport. Portrait runs name line, titles, verse line, picture,
   synopsis, explanation, the `IvritSuite.com` credit; landscape puts the picture left of the text column. The printed
   labels and the books' Hebrew names are in-page `i18n-ignore` constants (printed content follows the sheet's
   language); Hebrew text is `lang="he" dir="rtl"`, and the verse range sits in a `<bdi dir="ltr">`. The picture
   shrinks first; `etCsFitAll` then measures offscreen clones at the exact print size and steps the text factor `--k`
   down by 0.05 to 0.7, and the popup's `aria-live` note names a sheet that was shrunk or still overflows. Printing
-  sets `@page` in `<style id="etPageSize">` while the popup is open, fills `#etCsPrintArea` (a child of `<body>`)
-  with one clone per page in the chosen order, and the print CSS under `body.et-cs-open` hides everything else;
+  sets `@page` in `<style id="etPageSize">` (the paper turned as the layout says) while the popup is open, fills
+  `#etCsPrintArea` (a child of `<body>`) with the clones in the chosen order, grouped into `.et-cs-paper` grids of one,
+  two or four with a dashed cut line in each gutter, and the print CSS under `body.et-cs-open` hides everything else;
   `beforeprint` fills it for Ctrl+P.
 - **The line art** (`etCsDrawing` → `etCsConvert`) is derived from the drawings at run time, never stored: every
   token is a `var(--hol-*)`, so the conversion reads paint by walking up to the root, measures the geometry once on a

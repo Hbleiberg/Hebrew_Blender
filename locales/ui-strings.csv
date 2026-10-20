@@ -6332,6 +6332,8 @@ letterlearner.coloring.no_hint_note,"This letter has no hint picture yet, so the
 letterlearner.coloring.paper_legend,Paper size,גודל הנייר,Coloring sheet tab and bulk print popup: legend over the Letter / A4 radios,
 letterlearner.coloring.paper_letter,Letter (8.5 × 11 in),Letter — 8.5 × 11 אינץ׳,Coloring sheet options: paper size radio (US Letter),Hebrew keeps the Latin paper name first and avoids parentheses (bidi)
 letterlearner.coloring.paper_a4,A4 (210 × 297 mm),A4 — 210 × 297 מ״מ,Coloring sheet options: paper size radio (A4),Hebrew keeps the Latin paper name first and avoids parentheses (bidi)
+letterlearner.coloring.per_legend,Pages per sheet,עמודים בכל דף,Coloring sheet tab: legend over the 1 / 2 / 4 radios (how many coloring pages print on one sheet of paper),
+letterlearner.coloring.per_note,Prints {count} copies of this page on one sheet of paper.,מדפיס {count} עותקים של העמוד הזה על דף נייר אחד.,Coloring sheet tab: note when 2 or 4 pages share a sheet — the tab's Print fills the sheet with copies of this letter's page,{count} is 2 or 4
 letterlearner.coloring.bulk_link,Print several letters…,הדפסת כמה אותיות…,Coloring sheet tab: button that opens the bulk print popup with this letter chosen,
 letterlearner.coloring.bulk_link_title,Choose more letters and print their coloring sheets together,בחירת אותיות נוספות והדפסת דפי הצביעה שלהן יחד,Coloring sheet tab: title of the Print several letters button,
 letterlearner.bulk.title,Print coloring sheets,הדפסת דפי צביעה,Bulk print: the button above the letter grid and the popup's heading,svg-icon-in-markup
@@ -6348,6 +6350,8 @@ letterlearner.bulk.collate_sets,"Collated sets (1 2 3, 1 2 3)","סטים שלמ�
 letterlearner.bulk.collate_grouped,"Grouped by letter (1 1, 2 2, 3 3)","מקובצים לפי אות (1 1, 2 2, 3 3)","Bulk print: order radio — all the copies of one letter together, then the next letter",
 letterlearner.bulk.count.one,1 page,עמוד אחד,Bulk print footer: how many pages the run prints,plural
 letterlearner.bulk.count.other,{count} pages,{count} עמודים,Bulk print footer: how many pages the run prints,plural
+letterlearner.bulk.count_paper.one,{pages} pages on 1 sheet of paper,{pages} עמודים על דף נייר אחד,"Bulk print popup: footer, when two or four pages share a sheet: the pages and the sheets of paper they print on",plural (on the sheets of paper; {pages} is always 2 or more)
+letterlearner.bulk.count_paper.other,{pages} pages on {count} sheets of paper,{pages} עמודים על {count} דפי נייר,"Bulk print popup: footer, when two or four pages share a sheet: the pages and the sheets of paper they print on",plural (on the sheets of paper; {pages} is always 2 or more)
 letterlearner.bulk.copies_badge,× {count},× {count},Bulk print preview: badge under each page when every sheet prints more than once,
 letterlearner.bulk.empty,Choose the letters to print.,בחרו את האותיות להדפסה.,"Bulk print: the empty preview, and why Print is unavailable",
 letterlearner.bulk.no_hint_note,"No hint picture yet for {names}, so those sheets show the letter.","עדיין אין ציור רמז עבור {names}, ולכן הדפים שלהן מציגים את האות.",Bulk print: note when Letter hint is chosen and some letters have no picture ({names} = English letter names),
@@ -6474,6 +6478,7 @@ emojitorah.coloring.landscape,Landscape,לרוחב,Parsha Emojis coloring sheets
 emojitorah.coloring.paper_legend,Paper size,גודל הנייר,Parsha Emojis coloring sheets popup: legend over the Letter / A4 radios,
 emojitorah.coloring.paper_letter,Letter (8.5 × 11 in),Letter — 8.5 × 11 אינץ׳,Parsha Emojis coloring sheets popup: paper size radio (US Letter),Hebrew keeps the Latin paper name first and avoids parentheses (bidi)
 emojitorah.coloring.paper_a4,A4 (210 × 297 mm),A4 — 210 × 297 מ״מ,Parsha Emojis coloring sheets popup: paper size radio (A4),Hebrew keeps the Latin paper name first and avoids parentheses (bidi)
+emojitorah.coloring.per_legend,Pages per sheet,עמודים בכל דף,Parsha Emojis coloring sheets popup: legend over the 1 / 2 / 4 radios (how many coloring pages print on one sheet of paper),
 emojitorah.coloring.lang_legend,Text language,שפת הטקסט,Parsha Emojis coloring sheets popup: legend over the language of the printed synopsis and explanation,
 emojitorah.coloring.lang_en,English,אנגלית,Parsha Emojis coloring sheets popup: text language radio,
 emojitorah.coloring.lang_he,Hebrew,עברית,Parsha Emojis coloring sheets popup: text language radio,
@@ -6499,6 +6504,8 @@ emojitorah.coloring.preview_aria,Print preview,תצוגה מקדימה להדפ�
 emojitorah.coloring.print_title,Print every sheet in the preview,הדפסת כל הדפים שבתצוגה המקדימה,Parsha Emojis coloring sheets popup: title of the Print button,
 emojitorah.coloring.count.one,1 page,עמוד אחד,Parsha Emojis coloring sheets popup: footer: how many pages the run prints,plural
 emojitorah.coloring.count.other,{count} pages,{count} עמודים,Parsha Emojis coloring sheets popup: footer: how many pages the run prints,plural
+emojitorah.coloring.count_paper.one,{pages} pages on 1 sheet of paper,{pages} עמודים על דף נייר אחד,"Parsha Emojis coloring sheets popup: footer, when two or four pages share a sheet: the pages and the sheets of paper they print on",plural (on the sheets of paper; {pages} is always 2 or more)
+emojitorah.coloring.count_paper.other,{pages} pages on {count} sheets of paper,{pages} עמודים על {count} דפי נייר,"Parsha Emojis coloring sheets popup: footer, when two or four pages share a sheet: the pages and the sheets of paper they print on",plural (on the sheets of paper; {pages} is always 2 or more)
 emojitorah.coloring.copies_badge,× {count},× {count},Parsha Emojis coloring sheets popup: badge under each preview page when every sheet prints more than once,
 emojitorah.coloring.fit_note,The text was made smaller to fit on: {names}.,הטקסט הוקטן כדי שייכנס לדף: {names}.,Parsha Emojis coloring sheets popup: note naming the sheets whose text was shrunk to fit the page ({names} = parasha names),
 emojitorah.coloring.over_note,Some text still doesn't fit on: {names} — turn a part off or make it smaller.,חלק מהטקסט עדיין לא נכנס לדף: {names} — כבו חלק או הקטינו אותו.,Parsha Emojis coloring sheets popup: note naming the sheets that overflow even at the smallest fit,
