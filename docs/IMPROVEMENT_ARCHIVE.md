@@ -93291,3 +93291,23 @@ _(prior — S524 pointer:)_ **Next session (S524):** **BRANCH/PR: the S523 draft
 - 2026-10-19 | **S518** | iters: 5 | tools: FM ×2, dashboard, locales CSV, sw.js | patterns fixed: radio-set-without-a-question ×1 | pass run: L | SW: v1016→v1017
 
 - 2026-10-18 | **S517** | iters: 5 | tools: README, docs (i18n, ops), FM ×2, sw.js | patterns fixed: — | pass run: E | SW: v1015→v1016
+
+
+<!-- archived by compact-ledger at the S526 boundary, 2026-10-20 -->
+## Compaction (S526, 2026-10-20) — moved verbatim from the live ledger
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+_(prior — S525 pointer:)_ **Next session (S525):** **BRANCH/PR: #345 (S523+S524) open → continue; merged → restart from `origin/main`.** `sw.js` **v1042**, FM **5.59**, corpus ?v=7. ⚑ Stalest: I (S511), H (S512), C (S513; LL never). ⚑ Seeds: 44. ⚑ Maintainer: sw.js `no-store`; re-stage 14 fonts; torah screen reader; A/B week eyes; gates 2–4 (Candidates); O needs a Bash rule.
+
+## Size move (S525 close-out, 2026-10-20) — S524's Done entries, moved by hand verbatim (the ledger sat over its 100 KB limit)
+
+- [x] 2026-10-20 | (S524 close-out) | branch/deploy note | **S524 = D + 4 fixes on the S523 PR (#345).** No drift (main `0d77615b`); keep-alive #37 green. sw v1041→v1042; no FM bump (copy); corpus ?v=7; gate 2 asked (CSV) → reword.
+
+- [x] 2026-10-20 | `aa14beba` `5698e226` `e743081e` `e27d9ec5` | flash, dictionary, generator, FM, corpus, dashboard | (S524) **Grid build forced layouts ×3 (closes S496 D); FM footer (S460); corpus 7 definitions (S523 G); week tabpanel (S500 F).** | findings S524
+
+## Per-session log (S519, S520) — moved verbatim from the live ledger at the S525 close-out
+
+- 2026-10-19 | **S520** | iters: 5 | tools: 404 ×2, 8 headers, dashboard, sw.js | patterns fixed: header-wrap ×8, faux-italic, tour-switch | pass run: N | SW: v1018→v1019
+
+- 2026-10-19 | **S519** | iters: 5 | tools: LL, trope, FM, contact, locales CSV, sw.js | patterns fixed: tour-not-following-a-live-switch ×2, radio-set-without-a-question ×2 | pass run: K | SW: v1017→v1018
