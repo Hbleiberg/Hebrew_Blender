@@ -974,8 +974,9 @@ footer details > summary:hover{text-decoration:underline;}   /* FAQ / How-To row
   .shoresh-group-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
   .shoresh-empty-note { text-align: center; color: var(--muted); font-style: italic; padding: 22px; }
   /* Hebrew has no italic: the browser only slants the letters, so the Hebrew UI's loading line and Shoresh notes stand
-     upright (pattern hebrew-faux-italic). The transliteration lines are Latin and keep theirs. */
-  html[lang="he"] .loading, html[lang="he"] .shoresh-empty-note { font-style: normal; }
+     upright, and so does the Hebrew example inside the English note (pattern hebrew-faux-italic). The transliteration
+     lines are Latin and keep theirs. */
+  html[lang="he"] .loading, html[lang="he"] .shoresh-empty-note, .shoresh-empty-note [lang="he"] { font-style: normal; }
   .shoresh-patterns-wrap { margin-top: 22px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
   .shoresh-patterns-title { background: var(--navy); color: #fff; font-family: 'Libre Baskerville', serif;
     font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 9px 14px; cursor: pointer;
@@ -3707,7 +3708,10 @@ function runShoreshLookup(raw) {
   const root = normHebLetters(raw);
   if (root.length < 2) {
     document.getElementById('shoreshHeader').style.display = 'none';
-    document.getElementById('shoreshResults').innerHTML = `<div class="shoresh-empty-note">${esc(I18n.t('dictionary.shoresh.type_min_letters'))}</div>`;
+    // The English note's example root is Hebrew: marked so (UX rule 8), which also stands it upright. The Hebrew UI's
+    // note is Hebrew throughout and upright already.
+    const minNote = esc(I18n.t('dictionary.shoresh.type_min_letters'));
+    document.getElementById('shoreshResults').innerHTML = `<div class="shoresh-empty-note">${I18n.lang === 'he' ? minNote : minNote.replace(/[\u05D0-\u05EA]+/g, m => '<span lang="he">' + m + '</span>')}</div>`;
     document.getElementById('shoreshPatterns').style.display = 'none';
     document.getElementById('resultCount').textContent = '';
     return;
