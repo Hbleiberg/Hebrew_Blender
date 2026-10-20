@@ -93333,3 +93333,29 @@ _(prior — S525 pointer:)_ **Next session (S525):** **BRANCH/PR: #345 (S523+S52
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 _(prior — S526 pointer:)_ **Next session (S526):** **BRANCH/PR: #345 (S523–S525) open → continue; merged → restart from `origin/main`.** `sw.js` **v1043**, FM **5.59**, corpus ?v=7. ⚑ Stalest: H (S512), C (S513; LL never), F (S514). ⚑ Seeds: 44. ⚑ Maintainer: sw.js `no-store`; re-stage 14 fonts; torah screen reader; A/B week eyes; gates 2–4 (Candidates); O needs a Bash rule.
+
+
+<!-- archived by compact-ledger at the S528 boundary, 2026-10-20 -->
+## Compaction (S528, 2026-10-20) — moved verbatim from the live ledger
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`unseen-hit-box-over-controls`** (NEW S527 C; LL `82a3f0b2`): ACTIVE, streak 0, never swept suite-wide. An unpainted box (an SVG `<text>`'s em box past an `overflow:visible` svg) over a control eats its clicks. Detection: `c527/cover3.mjs` (`elementFromPoint` at 5 points per visible control; a hit that is neither the control nor its label), then a real `mouse.click` (`swallow.mjs`; a sheet plant fires).
+
+- **`radio-set-without-a-question`** (S501–S518: 7 fixes; S519 FM ×14 `75637fef`, contact `929089d4`; S527 the `.ivrit` toggles ×5 `1ecaad0c`; open: dictionary, resources (gate 2), pills — flash 18 rows, generator 14, dashboard 3 (S527 walk)): ACTIVE, streak 0. Detection: static walk + runtime `unnamedGroups` …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- **`sub-floor touch target`**: ACTIVE. **S527 C: LL's 5 size sliders 16px (candidate).** **S516 FM ×4 `36e804ac`.** **S513 dashboard ×2 `787c434`.** **S483 hub clean.** **S456: `85e294b2`, `924c9407`.** Detection: visible controls < 24×24 reached by real input (inline links exempt; an `::after` hit area …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- C accessibility (one tool): 2026-10-20 (**S527 — LL's first C: 7 arms by real input, EN/HE × light/dark × 1280/800, 22 surfaces, plants 11/11. CLEAN: names, Tab walk (79–81 stops, all painted), 5 dialog paths + tour, keys, reduced motion. FOUND 3, FIXED 2 (+ dictionary, `.ivrit` ×4). C per tool: torah S298, trope S312, generator S327, index S340, flash S381, account S396, dictionary S427, dashboard S499, FM S513, LL S527 — C-next: parsha_emojis (never), torah.**)
+
+_(prior — S527 pointer:)_ **Next session (S527):** **PR: `claude/improveloop-s526` open → continue; merged → fresh branch.** `sw.js` **v1051**, FM **5.59**, corpus ?v=7. ⚑ Stalest: C (S513; LL never), F (S514), B (S515). ⚑ Ready: LL Reset confirm (gate 2). ⚑ Seeds: 47. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4; O's Bash rule.
+
+## Size move (S527 close-out, 2026-10-20) — S526's Done entries, moved by hand verbatim (the ledger sat over its 100 KB limit)
+
+- [x] 2026-10-20 | (S526 close-out) | branch/deploy note | **S526 = H + 4 fixes; draft PR.** Drift: 14 outside-loop commits (sw v1043→v1050, `parsha_emojis.html`, 0005 live, the LL launch). sw v1050→v1051; no FM bump; gates 1 + 2 ×2 answered.
+
+- [x] 2026-10-20 | `198ccfac` `5a562994` | letter_learner.html | (S526) **Alef-bet on one sheet in EN; a card's bulk run starts with its letter.** | findings
+
+- [x] 2026-10-20 | `9515b0dc` `dd291fd5` | folder tree ×4, dictionary | (S526) **Hebrew hints upright: S494's census 6 → 0.** | findings
