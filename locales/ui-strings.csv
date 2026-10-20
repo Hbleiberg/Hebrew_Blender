@@ -6376,7 +6376,7 @@ letterlearner.glyphname.vowel_chataf_kamatz,Chataf Kamatz,חֲטַף קָמָץ,
 letterlearner.tour.s1_title,Every letter,כל האותיות,tour step 1 title,
 letterlearner.tour.s1_body,Tap any letter to open it. The final forms sit next to their letters.,לוחצים על אות כדי לפתוח אותה. האותיות הסופיות יושבות ליד האותיות שלהן.,tour step 1 body,
 letterlearner.tour.s2_title,A letter card,כרטיס אות,tour step 2 title,
-letterlearner.tour.s2_body,"Each card opens tabs: a picture to remember the letter, its words, every vowel with a speaker, and the letter in different fonts.","כל כרטיס פותח לשוניות: ציור שעוזר לזכור את האות, מילים, כל סימני הניקוד עם רמקול, והאות בגופנים שונים.",tour step 2 body,
+letterlearner.tour.s2_body,"Each card opens tabs: a picture to remember the letter, its words, every vowel with a speaker, the letter in different fonts, and a coloring sheet to print.","כל כרטיס פותח לשוניות: ציור שעוזר לזכור את האות, מילים, כל סימני הניקוד עם רמקול, האות בגופנים שונים, ודף צביעה להדפסה.",tour step 2 body,
 letterlearner.tour.s3_title,Options,אפשרויות,tour step 3 title,
 letterlearner.tour.s3_body,"Choose which vowels to show, whether pairs like Bet and Vet get their own cards, and whether the words are read aloud.","בוחרים אילו סימני ניקוד להציג, אם לזוגות כמו בּ ו־ב יהיו כרטיסים משלהם, ואם המילים יוקראו.",tour step 3 body,
 letterlearner.tour.s4_title,Your account,החשבון שלך,tour step 4 title,
@@ -6413,7 +6413,7 @@ letterlearner.tour.v2_body,"Each card opens the family's story: the gesture to m
 letterlearner.tour.c1_title,Every letter in cursive,כל האותיות בכתב,tour grid step title in Cursive mode,
 letterlearner.tour.c1_body,"Tap any letter to open it in handwriting. The final forms sit next to their letters, as in print.","לוחצים על אות כדי לפתוח אותה בכתב. האותיות הסופיות יושבות ליד האותיות שלהן, כמו בדפוס.",tour grid step body in Cursive mode,
 letterlearner.tour.c2_title,A cursive card,כרטיס אות בכתב,tour card step title in Cursive mode,
-letterlearner.tour.c2_body,"Each card shows the printed letter beside its handwritten form, a picture to remember the shape, the letters it is easy to mix up with, and the same words written by hand.","כל כרטיס מציג את אות הדפוס ליד אות הכתב, ציור שעוזר לזכור את הצורה, האותיות שקל להתבלבל ביניהן, ואותן מילים בכתב.",tour card step body in Cursive mode,
+letterlearner.tour.c2_body,"Each card shows the printed letter beside its handwritten form, a picture to remember the shape, the letters it is easy to mix up with, the same words written by hand, and a coloring sheet to print.","כל כרטיס מציג את אות הדפוס ליד אות הכתב, ציור שעוזר לזכור את הצורה, האותיות שקל להתבלבל ביניהן, אותן מילים בכתב, ודף צביעה להדפסה.",tour card step body in Cursive mode,
 shared.cloud.tool_letterlearner,Letter Learner,לומדים אותיות,Account screen / status line: the Letter Learner's name,shared; cloud panel
 emojitorah.a11y.skip_to_cards,Skip to the parsha emojis,דילוג לאימוג׳י הפרשות,Skip-link (a11y),aria/skip-link
 emojitorah.header.title,IvritSuite — Parsha Emojis,IvritSuite — אימוג׳י הפרשות,Parsha Emojis page header title,
