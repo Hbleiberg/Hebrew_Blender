@@ -321,14 +321,15 @@ body.dark .ll-mode-btn[aria-pressed="true"] { background:#2a4070; border-color:#
 .ll-vcard .ll-badge { white-space:normal; text-align:center; text-transform:none; letter-spacing:normal; }
 .ll-swatch { display:inline-block; width:0.6em; height:0.6em; border-radius:50%; background:var(--ll-fam); margin-inline-end:4px; vertical-align:middle; }
 .ll-grid-note { margin-top:10px; }
-/* The teaching tips under the grid (Vowels and Cursive modes; the summary is its one control). In Cursive mode each
-   look-alike row leads with the two letters in the handwriting face. */
+/* The tips under the grid (every mode; the summary is its one control). In both letter modes each look-alike row leads
+   with the two letters, in the block face or (data-script="cursive") the handwriting face. */
 .ll-tips { margin-block-start:18px; border:1px solid var(--border); border-radius:10px; background:var(--white); padding:10px 14px; }
 .ll-tips[hidden] { display:none; }
 .ll-tips summary { cursor:pointer; font-weight:700; min-height:24px; }
 .ll-tips ul { margin:8px 0 0; padding-inline-start:20px; font-size:0.92rem; }
 .ll-tips li { margin-block:4px; }
-.ll-tip-pair { font-family:var(--heb-cursive-font); font-size:1.3rem; line-height:1; margin-inline:2px; }
+.ll-tip-pair { font-family:var(--heb-font); font-size:1.3rem; line-height:1; margin-inline:2px; }
+.ll-tips[data-script="cursive"] .ll-tip-pair { font-family:var(--heb-cursive-font); }
 
 /* ───── Dialog (house modal contract: focus in, Tab trapped, Escape closes, focus back to the card) ───── */
 .ll-overlay, .ll-bp-overlay {
@@ -864,9 +865,9 @@ body.dark #appToast { background: #0a0f1c; }
     </div>
     <ul class="ll-grid" id="llGrid" dir="rtl" aria-label="Letters" data-i18n-aria-label="letterlearner.grid.aria"></ul>
     <p class="ll-note ll-grid-note" id="llGridNote" hidden></p>
-    <!-- Vowels and Cursive modes: the teaching tips of the vowel-families write-up (VOWEL_TIPS) or the cursive look-alike
-         pairs and the finals rule (CURSIVE_PAIRS / CURSIVE_TIPS) — learner content, filled by llRenderTips; the summary
-         and intro keys are swapped per mode by llSetMode. -->
+    <!-- Every mode: the teaching tips of the vowel-families write-up (VOWEL_TIPS), or the look-alike pairs of the mode's
+         letters (LETTER_PAIRS in Block, CURSIVE_PAIRS in Cursive) and the finals rule (CURSIVE_TIPS) — learner content,
+         filled by llRenderTips; the summary and intro keys are swapped per mode by llSetMode. -->
     <details class="ll-tips" id="llTips" hidden>
       <summary id="llTipsSummary" data-i18n="letterlearner.tips.summary">Teaching tips</summary>
       <p class="ll-note" id="llTipsIntro" data-i18n="letterlearner.tips.intro">Every vowel family gets three cues that point to the same sound: a name tied to the vowel's shape, a gesture kids do while saying it, and a color that rhymes with the sound.</p>
@@ -1096,7 +1097,8 @@ body.dark #appToast { background: #0a0f1c; }
                     caption. A drawing is built ON the handwritten letterform (traced from the TaL AM alef-bet frieze, placed
                     with its baseline at y=70 of the 100 box) and draws the writing line where the trick speaks of it.
      CURSIVE_PAIRS  the look-alike pairs: { ids: [a, b], tip } — two LETTER_DATA ids and the tell
-     CURSIVE_TIPS   the rule(s) shown under the cursive grid and on every final-form card, one string each
+     CURSIVE_TIPS   the rule(s) shown under both letter grids (Block and Cursive) and on every cursive final-form card,
+                    one string each
    ═══════════════════════════════════════════════════════════════════════════════════════════════ */
 const LETTER_DATA = [
   { id: 'alef', glyph: 'א', name: 'Alef', sound: 'silent', consonant: '',
@@ -2010,14 +2012,16 @@ function llSetMode(mode, opts) {
     _llSwapKey(document.getElementById('llPrev'), a, prevKey, vowels ? 'Previous vowel' : 'Previous letter');
     _llSwapKey(document.getElementById('llNext'), a, nextKey, vowels ? 'Next vowel' : 'Next letter');
   });
-  // The tips block serves both non-block modes: its summary and intro are chrome (keys swapped), its rows learner content.
-  document.getElementById('llTips').hidden = mode === 'letters';
+  // The tips block serves every mode: its summary and intro are chrome (keys swapped), its rows learner content. Both
+  // letter modes show "Look-alikes and final letters" (the summary key keeps its Cursive-era name), each with its own pairs.
   document.getElementById('llBpOpen').hidden = vowels;   // coloring sheets are letters' (Block and Cursive) only
-  _llSwapText(document.getElementById('llTipsSummary'), cursive ? 'letterlearner.tips.cursive_summary' : 'letterlearner.tips.summary',
-    cursive ? 'Look-alikes and final letters' : 'Teaching tips');
-  _llSwapText(document.getElementById('llTipsIntro'), cursive ? 'letterlearner.tips.cursive_intro' : 'letterlearner.tips.intro',
-    cursive ? 'In handwriting a few letters look alike; each pair has one tell.'
-            : "Every vowel family gets three cues that point to the same sound: a name tied to the vowel's shape, a gesture kids do while saying it, and a color that rhymes with the sound.");
+  const tips = document.getElementById('llTips');
+  if (cursive) tips.dataset.script = 'cursive'; else delete tips.dataset.script;   // the look-alike glyphs in the mode's face
+  _llSwapText(document.getElementById('llTipsSummary'), vowels ? 'letterlearner.tips.summary' : 'letterlearner.tips.cursive_summary',
+    vowels ? 'Teaching tips' : 'Look-alikes and final letters');
+  _llSwapText(document.getElementById('llTipsIntro'), vowels ? 'letterlearner.tips.intro' : cursive ? 'letterlearner.tips.cursive_intro' : 'letterlearner.tips.block_intro',
+    vowels ? "Every vowel family gets three cues that point to the same sound: a name tied to the vowel's shape, a gesture kids do while saying it, and a color that rhymes with the sound."
+           : cursive ? 'In handwriting a few letters look alike; each pair has one tell.' : 'A few printed letters look alike; each pair has one tell.');
   llRenderTips();
   renderGrid();
   if (opts && opts.url && changed) {
@@ -2058,10 +2062,11 @@ function llInitMode() {
 function llRenderTips() {
   const ul = document.getElementById('llTipsList');
   ul.textContent = '';
-  if (_llMode === 'cursive') {
-    // One row per look-alike pair — the two letters in the handwriting face, then the names and the tell — and the
-    // finals rule last.
-    CURSIVE_PAIR_LIST.forEach(p => {
+  if (_llMode !== 'vowels') {
+    // Both letter modes: one row per look-alike pair of the mode (the Block cards' LETTER_PAIRS or the handwriting's
+    // CURSIVE_PAIRS) — the two letters in the mode's face, then the names and the tell — and the finals rule last (it holds
+    // for print and handwriting alike: four of the five finals drop below the line).
+    (_llMode === 'cursive' ? CURSIVE_PAIR_LIST : LETTER_PAIR_LIST).forEach(p => {
       const li = el('li');
       const pair = el('span', 'll-tip-pair', p.ids.map(x => LETTERS[x].glyph).join(' ')); pair.lang = 'he'; pair.dir = 'rtl';
       li.appendChild(pair);
@@ -2069,9 +2074,8 @@ function llRenderTips() {
       ul.appendChild(li);
     });
     CURSIVE_TIP_LIST.forEach(t => ul.appendChild(el('li', null, t)));   // i18n-ignore: learner content (the finals rule)
-    return;
-  }
-  VOWEL_TIP_LIST.forEach(t => ul.appendChild(el('li', null, t)));   // i18n-ignore: learner content (the teaching tips)
+  } else VOWEL_TIP_LIST.forEach(t => ul.appendChild(el('li', null, t)));   // i18n-ignore: learner content (the teaching tips)
+  document.getElementById('llTips').hidden = !ul.children.length;   // nothing to show (content not yet written): no empty toggle
 }
 
 /* ══════════════════════════════════════════════════════
