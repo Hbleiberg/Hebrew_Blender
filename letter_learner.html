@@ -924,6 +924,10 @@ body.dark #appToast { background: #0a0f1c; }
           <label class="ll-opt"><input type="radio" name="llCsView" value="hint"><span data-i18n="letterlearner.coloring.view_hint">Letter hint</span></label>
         </fieldset>
         <fieldset class="ll-cs-set">
+          <legend data-i18n="letterlearner.coloring.pictures_legend">Pictures</legend>
+          <label class="ll-opt"><input type="checkbox" id="optCsColored"><span data-i18n="letterlearner.coloring.colored">Colored in</span></label>
+        </fieldset>
+        <fieldset class="ll-cs-set">
           <legend data-i18n="letterlearner.coloring.include_legend">Include</legend>
           <label class="ll-opt"><input type="checkbox" id="optCsTranslit"><span data-i18n="letterlearner.coloring.translit">Transliteration</span></label>
           <label class="ll-opt"><input type="checkbox" id="optCsGloss"><span data-i18n="letterlearner.coloring.gloss">Translation</span></label>
@@ -1597,6 +1601,7 @@ const LL_DEFAULTS = {
   colorOrient: 'landscape',   // 'landscape' | 'portrait'
   colorPaper: 'letter',       // 'letter' | 'a4' — the paper both print dialogs size the sheet and the @page for
   colorView: 'letter',        // 'letter' | 'hint'
+  colorFilled: false,         // true: the pictures and the letter print in their colours (Colored in), not as line art
   colorTranslit: true,
   colorGloss: true,
   colorName: true,
@@ -1894,7 +1899,7 @@ function llLoadSettings() {
   settings.colorOrient = stored.colorOrient === 'portrait' ? 'portrait' : 'landscape';
   settings.colorPaper = stored.colorPaper === 'a4' ? 'a4' : 'letter';
   settings.colorView = stored.colorView === 'hint' ? 'hint' : 'letter';
-  ['colorTranslit', 'colorGloss', 'colorName', 'colorHint'].forEach(k => { settings[k] = typeof stored[k] === 'boolean' ? stored[k] : LL_DEFAULTS[k]; });
+  ['colorFilled', 'colorTranslit', 'colorGloss', 'colorName', 'colorHint'].forEach(k => { settings[k] = typeof stored[k] === 'boolean' ? stored[k] : LL_DEFAULTS[k]; });
   settings.colorFont = typeof stored.colorFont === 'string' ? stored.colorFont.slice(0, 120) : '';
   LL_CS_SIZES.forEach(k => { settings[k] = llCsSizeVal(stored[k]); });
   settings.bulkLetters = llBpCanon(stored.bulkLetters);
@@ -3058,6 +3063,27 @@ function llColoringify(svg) {
     }
   });
 }
+// A token's light-palette value (the :root one; dark mode re-tints only under body): paper takes the light palette
+// whatever the screen theme, and a literal colour also outranks the print block's palette reset.
+function llCsLight(token) {
+  return getComputedStyle(document.documentElement).getPropertyValue(token).trim() || LL_CS_INK;
+}
+// Colored in: the drawing as the card shows it, in the light palette, and still (no swinging parts). The drawings name
+// only none, currentColor (the ink) or var(--ll-…) (llValidSvg), so every paint becomes a literal.
+function llCsColorIn(svg) {
+  svg.querySelectorAll('.ll-anim').forEach(g => g.removeAttribute('class'));
+  const memo = {};
+  const lit = v => {
+    const m = /^var\((--ll-[a-z0-9-]+)\)$/.exec(v === 'currentColor' ? 'var(--ll-line)' : v);
+    if (!m) return v;
+    if (!(m[1] in memo)) memo[m[1]] = llCsLight(m[1]);
+    return memo[m[1]];
+  };
+  [svg, ...svg.querySelectorAll('*')].forEach(n => ['fill', 'stroke'].forEach(a => { if (n.hasAttribute(a)) n.setAttribute(a, lit(n.getAttribute(a))); }));
+}
+function llCsPaint(svg) {
+  if (settings.colorFilled) llCsColorIn(svg); else llColoringify(svg);
+}
 // The hint this card shows: a Block card's memory picture and caption, a Cursive card's handwriting trick.
 function llCsHint(card) {
   const h = card.kind === 'cursive' ? (card.T && card.T.hint) : card.L.hint;
@@ -3077,7 +3103,7 @@ function llCsWordStack(card) {
   loadHebFont(f);
   return llTaamimStack(f.stack);
 }
-// The letter alone, hollow: an SVG <text> in the card's own face (both are self-hosted, so the sheet works offline),
+// The letter alone, hollow (solid in the ink colour when Colored in): an SVG <text> in the card's own face (both are self-hosted, so the sheet works offline),
 // painted stroke-first so the white fill covers the outline's inner half and any overlap inside the glyph. The viewBox
 // is the glyph's ink box, measured on a canvas in the same face at the same size, so every letter fills the middle;
 // it is measured again once the face has loaded (while `alive()` still holds — a newer render owns the sheet otherwise).
@@ -3092,7 +3118,8 @@ function llCsLetter(art, card, alive) {
   t.setAttribute('x', '0'); t.setAttribute('y', '0');
   t.setAttribute('text-anchor', 'middle');
   t.setAttribute('font-size', '100');
-  t.setAttribute('fill', LL_CS_PAPER); t.setAttribute('stroke', LL_CS_INK);
+  const ink = settings.colorFilled ? llCsLight('--ll-line') : LL_CS_INK;   // Colored in: solid, as the card shows it
+  t.setAttribute('fill', settings.colorFilled ? ink : LL_CS_PAPER); t.setAttribute('stroke', ink);
   t.setAttribute('stroke-linejoin', 'round'); t.setAttribute('paint-order', 'stroke');
   t.style.fontFamily = stack;
   t.textContent = card.glyph;
@@ -3170,9 +3197,9 @@ function llCsBuildSheet(host, card, alive) {
   if (!art.getBoundingClientRect().width) { sheet.remove(); return null; }
   // In the sheet now (and visible): draw, then measure and convert.
   let fit = null;
-  if (useHint) { const svg = llSvg(hint.svg, hint.caption || card.name); art.appendChild(svg); llColoringify(svg); }
+  if (useHint) { const svg = llSvg(hint.svg, hint.caption || card.name); art.appendChild(svg); llCsPaint(svg); }
   else fit = llCsLetter(art, card, alive);
-  pics.forEach(([pic, w]) => { const svg = llSvg(w.svg, w.en); pic.appendChild(svg); llColoringify(svg); });
+  pics.forEach(([pic, w]) => { const svg = llSvg(w.svg, w.en); pic.appendChild(svg); llCsPaint(svg); });
   return { sheet, noHint, fit };
 }
 // "{name}" is chosen as the words' font but is not on this device: the note both views show.
@@ -3219,6 +3246,7 @@ function llCsSyncControls() {
   document.querySelectorAll('input[name="llCsOrient"]').forEach(r => { r.checked = r.value === settings.colorOrient; });
   document.querySelectorAll('input[name="llCsPaper"]').forEach(r => { r.checked = r.value === settings.colorPaper; });
   document.querySelectorAll('input[name="llCsView"]').forEach(r => { r.checked = r.value === settings.colorView; });
+  document.getElementById('optCsColored').checked = !!settings.colorFilled;
   document.getElementById('optCsTranslit').checked = !!settings.colorTranslit;
   document.getElementById('optCsGloss').checked = !!settings.colorGloss;
   document.getElementById('optCsName').checked = !!settings.colorName;
@@ -3264,7 +3292,7 @@ function llCsWire() {
   document.querySelectorAll('input[name="llCsOrient"]').forEach(r => r.addEventListener('change', () => { if (r.checked) llCsSet('colorOrient', r.value); }));
   document.querySelectorAll('input[name="llCsPaper"]').forEach(r => r.addEventListener('change', () => { if (r.checked) llCsSet('colorPaper', r.value); }));
   document.querySelectorAll('input[name="llCsView"]').forEach(r => r.addEventListener('change', () => { if (r.checked) llCsSet('colorView', r.value); }));
-  [['optCsTranslit', 'colorTranslit'], ['optCsGloss', 'colorGloss'], ['optCsName', 'colorName'], ['optCsHint', 'colorHint']]
+  [['optCsColored', 'colorFilled'], ['optCsTranslit', 'colorTranslit'], ['optCsGloss', 'colorGloss'], ['optCsName', 'colorName'], ['optCsHint', 'colorHint']]
     .forEach(([id, key]) => document.getElementById(id).addEventListener('change', e => { llCsSet(key, e.target.checked); llCsSizeState(); }));
   // A size drag resizes the sheets live (CSS factors, no re-render); the value is saved once, when the drag ends.
   document.querySelectorAll('.ll-cs-size input[type="range"]').forEach(r => {
@@ -3327,7 +3355,7 @@ function llBpChosen() { const set = new Set(settings.bulkLetters); return llBpOf
 function llBpKind() { return _llBpStyle === 'cursive' ? 'cursive' : 'letter'; }
 // What a sheet's build depends on (the sizes are CSS factors and never need one).
 function llBpSigNow() {
-  return JSON.stringify([_llBpStyle, settings.colorOrient, settings.colorPaper, settings.colorView, settings.colorTranslit, settings.colorGloss,
+  return JSON.stringify([_llBpStyle, settings.colorOrient, settings.colorPaper, settings.colorView, settings.colorFilled, settings.colorTranslit, settings.colorGloss,
     settings.colorName, settings.colorHint, settings.colorFont, allFonts().some(f => f.name === settings.colorFont)]);
 }
 function llBpOpen(addId) {

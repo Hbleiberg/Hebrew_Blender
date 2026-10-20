@@ -6311,6 +6311,8 @@ letterlearner.coloring.portrait,Portrait,לאורך,Coloring sheet tab: page ori
 letterlearner.coloring.show_legend,Show,להציג במרכז,Coloring sheet tab: legend over what the middle of the sheet shows,
 letterlearner.coloring.view_letter,Letter,את האות,Coloring sheet tab: radio — the hollow letter in the middle,
 letterlearner.coloring.view_hint,Letter hint,את ציור הרמז,Coloring sheet tab: radio — the letter's memory picture in the middle,
+letterlearner.coloring.pictures_legend,Pictures,תמונות,Coloring sheet tab: legend over the Colored in checkbox,
+letterlearner.coloring.colored,Colored in,צבועות,Coloring sheet tab: checkbox — print the letter and the pictures in their colours instead of as line art to colour in,
 letterlearner.coloring.include_legend,Include,לכלול,Coloring sheet tab: legend over the checkboxes of what prints,
 letterlearner.coloring.translit,Transliteration,תעתיק,Coloring sheet tab: checkbox — each word's transliteration,
 letterlearner.coloring.gloss,Translation,תרגום,Coloring sheet tab: checkbox — each word's English meaning,
