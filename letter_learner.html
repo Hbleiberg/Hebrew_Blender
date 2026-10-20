@@ -3636,7 +3636,7 @@ function llCsWire() {
   document.getElementById('llCsPrint').addEventListener('click', llCsPrint);
   document.getElementById('llCsBulk').addEventListener('click', () => {
     // From a letter's sheet to the bulk popup: the letter dialog closes first (focus is back on the card when the
-    // popup records its opener), and the popup opens with this letter among the chosen ones.
+    // popup records its opener), and the popup opens with this letter alone chosen.
     const id = _llId;
     llClose();
     llBpOpen(id);
@@ -3685,13 +3685,19 @@ function llBpSigNow() {
   return JSON.stringify([_llBpStyle, settings.colorOrient, settings.colorPaper, settings.colorPerSheet, settings.colorView, settings.colorFilled, settings.colorTranslit, settings.colorGloss,
     settings.colorName, settings.colorHint, settings.colorFont, allFonts().some(f => f.name === settings.colorFont)]);
 }
-function llBpOpen(addId) {
+function llBpOpen(onlyId) {
   if (llBpIsOpen()) return;
   const opener = document.activeElement;
   if (_tourActive) tourEnd(false);   // its capture-phase keys would swallow the arrows the popup's controls use
   _llBpOpener = opener;
   _llBpStyle = _llMode === 'cursive' ? 'cursive' : 'letters';
-  if (addId && LETTERS[addId] && !settings.bulkLetters.includes(addId)) llSetSetting('bulkLetters', llBpCanon(settings.bulkLetters.concat(addId)));
+  // From a card the run starts with that letter alone (Clear, then its chip): added to the remembered choice, last
+  // week's letter printed again with this week's. Copies, order and the sheet options stay; the button above the grid
+  // opens the remembered choice as it is.
+  if (onlyId && LETTERS[onlyId]) {
+    const offered = new Set(llBpOffered());
+    llSetSetting('bulkLetters', llBpCanon(settings.bulkLetters.filter(id => !offered.has(id)).concat(onlyId)));
+  }
   llCsMountOpts(document.getElementById('llBpOptsHost'));
   document.getElementById('llBpOverlay').hidden = false;
   document.body.classList.add('ll-bp-open');   // print keys on it: paper gets the run alone
