@@ -2448,7 +2448,11 @@ function wlShowActiveBanner(name, n) {
   b.innerHTML = '';
   const label = document.createElement('span');
   label.className = 'wl-active-label';
-  label.textContent = I18n.t(n === 1 ? 'dictionary.wordlist.active_banner.one' : 'dictionary.wordlist.active_banner.other', { name, count: n.toLocaleString() });
+  // The name is bidi-isolated (U+2068 … U+2069, the text form of the file's .bidi-isolate): the template puts
+  // the count right after it, so in the Hebrew UI a Latin name ran into it ("Animals · 3" read as one
+  // left-to-right run, the number away from its noun), a Hebrew one did the same in English, and a mixed
+  // name split around its quotes. The banner prints under the print header.
+  label.textContent = I18n.t(n === 1 ? 'dictionary.wordlist.active_banner.one' : 'dictionary.wordlist.active_banner.other', { name: '⁨' + name + '⁩', count: n.toLocaleString() });
   b.appendChild(label);
   const exit = document.createElement('button');
   exit.type = 'button';
