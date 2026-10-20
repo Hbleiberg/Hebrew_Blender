@@ -9267,7 +9267,9 @@ else ivritInit();
     const weeks = document.getElementById('swmWeeks');
     if (!weeks) return;
     weeks.style.display = n > 1 ? '' : 'none';
-    if (n < 2) { _swmWeekIdx = 0; return; }
+    // With a cycle on, the grid is the week tabs' panel, named by the week it shows; without one it is the plain named group.
+    const grid = document.getElementById('swmGrid');
+    if (n < 2) { _swmWeekIdx = 0; if (grid) { grid.setAttribute('role', 'group'); grid.removeAttribute('aria-labelledby'); } return; }
     if (_swmWeekIdx >= n) _swmWeekIdx = n - 1;
     const nowWi = cycleIndexAt(week, new Date());
     const tabs = document.getElementById('swmWeekTabs');
@@ -9277,6 +9279,8 @@ else ivritInit();
       b.type = 'button';
       b.className = 'swm-weektab' + (wi === nowWi ? ' is-now' : '');
       b.setAttribute('role', 'tab');
+      b.id = 'swmWeekTab' + wi;
+      b.setAttribute('aria-controls', 'swmGrid');
       b.setAttribute('aria-selected', wi === _swmWeekIdx ? 'true' : 'false');
       b.tabIndex = wi === _swmWeekIdx ? 0 : -1;
       b.dataset.week = wi;
@@ -9285,6 +9289,7 @@ else ivritInit();
       b.addEventListener('click', () => showCycleWeek(wi, document.activeElement === b));   // the tabs rebuild: a focused tab (keyboard Enter/Space, or the click that focused it) keeps its focus
       tabs.appendChild(b);
     }
+    if (grid) { grid.setAttribute('role', 'tabpanel'); grid.setAttribute('aria-labelledby', 'swmWeekTab' + _swmWeekIdx); }
     const sel = document.getElementById('swmNowWeek');
     sel.textContent = '';
     for (let wi = 0; wi < n; wi++) { const o = document.createElement('option'); o.value = wi; o.textContent = weekName(wi); sel.appendChild(o); }
