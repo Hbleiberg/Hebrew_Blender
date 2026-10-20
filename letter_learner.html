@@ -552,7 +552,10 @@ html[lang="he"] .ll-panel h3 { letter-spacing:normal; text-transform:none; }
 .ll-word-pic { width:84px; height:84px; flex-shrink:0; }
 .ll-word-text { flex:1; min-width:0; }
 .ll-word-he { font-family:var(--heb-font); font-size:2rem; line-height:1.25; display:block; }
-.ll-hit { color:var(--ll-accent); }
+/* The card's letter in its words: the accent a quarter of the way to the ink, so it reads on the light card (3.9:1 at
+   2rem, the large-text floor 3:1; the plain accent was 2.6) and still more on the dark one (8:1); paper, on the light
+   palette, prints the light mix in both themes. */
+.ll-hit { color:color-mix(in srgb, var(--ll-accent) 75%, var(--ll-line)); }
 .ll-word-en { font-size:0.92rem; color:var(--text); display:block; }
 .ll-word-tr { font-size:0.78rem; color:var(--muted); font-style:italic; }
 .ll-speak {
