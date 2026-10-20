@@ -2191,7 +2191,7 @@ html[lang="he"] .beta-tag { letter-spacing: normal; text-transform: none; }   /*
         .adv-subbody.collapsed{display:none;}
       </style>
       <div class="adv-subbody">
-      <div class="ivrit-mode-toggle">
+      <div class="ivrit-mode-toggle" role="group" aria-label="Backup Presets" data-i18n-aria-label="flashcards.advanced.backup_head">
         <button type="button" id="ivritModeAuto" class="ivrit-mode-btn active" aria-pressed="true" onclick="setIvritMode('auto')" data-i18n="shared.ivrit.mode_auto">Automatic Input</button>
         <button type="button" id="ivritModeManual" class="ivrit-mode-btn" aria-pressed="false" onclick="setIvritMode('manual')" data-i18n="shared.ivrit.mode_manual">Manual Input</button>
       </div>
@@ -2215,8 +2215,8 @@ html[lang="he"] .beta-tag { letter-spacing: normal; text-transform: none; }   /*
         </div>
       </div>
       <!-- What to include in the .ivrit backup -->
-      <div class="sub" style="margin:12px 0 4px;font-weight:600;" data-i18n="flashcards.advanced.backup_include_label">Include in backup:</div>
-      <div class="ivrit-mode-toggle" style="margin-bottom:0;">
+      <div class="sub" id="backupScopeLbl" style="margin:12px 0 4px;font-weight:600;" data-i18n="flashcards.advanced.backup_include_label">Include in backup:</div>
+      <div class="ivrit-mode-toggle" role="group" aria-labelledby="backupScopeLbl" style="margin-bottom:0;">
         <button type="button" id="backupScopePresets" class="ivrit-mode-btn" aria-pressed="false" onclick="setBackupScope('presets')" data-i18n="flashcards.advanced.backup_scope_presets">Presets</button>
         <button type="button" id="backupScopeProfiles" class="ivrit-mode-btn" aria-pressed="false" onclick="setBackupScope('profiles')" data-i18n="flashcards.advanced.backup_scope_profiles">Profiles</button>
         <button type="button" id="backupScopeBoth" class="ivrit-mode-btn active" aria-pressed="true" onclick="setBackupScope('both')" data-i18n="flashcards.advanced.backup_scope_both">Both</button>

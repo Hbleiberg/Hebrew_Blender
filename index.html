@@ -693,7 +693,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
         .ivrit-lastbackup{margin:-6px 0 10px;text-align:center;font-size:0.78rem;line-height:1.4;color:var(--muted);}
         .ivrit-lastbackup.stale{color:var(--gold-text);}
       </style>
-      <div class="ivrit-mode-toggle">
+      <div class="ivrit-mode-toggle" role="group" aria-label="Import / Export All Settings" data-i18n-aria-label="home.alltools.modal_title">
         <button type="button" id="ivritModeAuto" class="ivrit-mode-btn active" aria-pressed="true" onclick="setIvritMode('auto')" data-i18n="shared.ivrit.mode_auto">Automatic Input</button>
         <button type="button" id="ivritModeManual" class="ivrit-mode-btn" aria-pressed="false" onclick="setIvritMode('manual')" data-i18n="shared.ivrit.mode_manual">Manual Input</button>
       </div>

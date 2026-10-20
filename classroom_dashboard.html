@@ -3379,7 +3379,7 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
           .ivrit-ask-btn[data-act="cancel"]{background:transparent;color:inherit;border-color:var(--border,#ccc);}
           .ivrit-ask-btn[data-act="cancel"]:hover{border-color:var(--gold,#c9922a);background:rgba(201,146,42,0.12);}
         </style>
-        <div class="ivrit-mode-toggle">
+        <div class="ivrit-mode-toggle" role="group" aria-label="Backup" data-i18n-aria-label="dashboard.settings.panel_backup">
           <button type="button" id="ivritModeAuto" class="ivrit-mode-btn active" aria-pressed="true" onclick="setIvritMode('auto')" data-i18n="shared.ivrit.mode_auto">Automatic Input</button>
           <button type="button" id="ivritModeManual" class="ivrit-mode-btn" aria-pressed="false" onclick="setIvritMode('manual')" data-i18n="shared.ivrit.mode_manual">Manual Input</button>
         </div>
