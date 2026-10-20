@@ -2739,9 +2739,11 @@ function llCsAttr(n, name, svg) {
 // already draws the edge, so the coloured copy simply becomes paper. Everything else:
 // - see-through shading, shadows and white shine go;
 // - a coloured stroke on a filled shape is its outline: black;
-// - a coloured line (no fill) is a band when it is wide (a rainbow, a paint smear: outlined so it can be coloured),
-//   black when bold (zebra stripes), light grey when it is a thin shade of the part it sits in (a dark-red line on a
-//   red roof, a fold on a blue shirt), else black (a red mouth on a face, sun rays, grass);
+// - a coloured line (no fill) is an outlined band when it is bold or wide (zebra stripes, a rainbow, a paint smear: so
+//   it can be coloured), light grey when it is a thin shade of the part it sits in (a dark-red line on a red roof, a
+//   fold on a blue shirt), else black (a red mouth on a face, sun rays, grass);
+// - a see-through part with an ink outline (a fly's wings) is a part, not shading, and a coloured line drawn inside a
+//   slightly wider ink line (a thumb whose colour stops short of its ink) is that line's paper copy;
 // - a coloured fill with no twin becomes paper with a thin outline, except a tiny dark one (an eye, a nose, a hoof),
 //   which stays solid black;
 // - a large ink fill (the traced letter in a hint picture, a cursive trick's even-odd letter) goes hollow, small ink
@@ -2794,12 +2796,15 @@ function llColoringify(svg) {
   const shapes = [...svg.querySelectorAll('path, circle, ellipse, rect, line, polyline, polygon')];
   const num = (n, a) => { const v = parseFloat(n.getAttribute(a)); return isNaN(v) ? 1 : v; };
   const seeThrough = n => num(n, 'opacity') < 1 || num(n, 'fill-opacity') < 1 || num(n, 'stroke-opacity') < 1;
-  // Pass 1: every ink shape's geometry key (its group + tag + geometry attributes) and its widest ink line.
+  // A see-through part with an ink outline is a real part (a fly's wings, a glass), not shading: it prints solid.
+  shapes.forEach(n => { if (seeThrough(n) && llCsInk(llCsAttr(n, 'stroke', svg))) ['opacity', 'fill-opacity', 'stroke-opacity'].forEach(a => n.removeAttribute(a)); });
+  // Pass 1: every ink shape's geometry key (its group + tag + geometry attributes; a closing Z is ignored, so a filled
+  // palm matches its open outline) and its widest ink line; and every ink line, for overlays that are not exact twins.
   const groups = new Map(), key = n => {
     if (!groups.has(n.parentNode)) groups.set(n.parentNode, groups.size);
-    return groups.get(n.parentNode) + '|' + n.tagName + '|' + LL_CS_GEOM.map(a => n.getAttribute(a) || '').join('|');
+    return groups.get(n.parentNode) + '|' + n.tagName + '|' + LL_CS_GEOM.map(a => a === 'd' ? (n.getAttribute(a) || '').replace(/\s*[Zz]\s*$/, '') : (n.getAttribute(a) || '')).join('|');
   };
-  const ink = new Map();   // key → widest ink stroke (0 for an ink fill)
+  const ink = new Map(), inkLines = [];   // key → widest ink stroke (0 for an ink fill)
   shapes.forEach(n => {
     if (seeThrough(n)) return;
     const f = llCsAttr(n, 'fill', svg), st = llCsAttr(n, 'stroke', svg);
@@ -2807,7 +2812,21 @@ function llColoringify(svg) {
     const w = llCsInk(st) ? parseFloat(llCsAttr(n, 'stroke-width', svg)) || 1 : 0;
     const k = key(n);
     ink.set(k, Math.max(ink.get(k) || 0, w));
+    if (w) inkLines.push({ n, w });
   });
+  // Does a coloured line run wholly inside an ink line a little wider than itself (a thumb's colour drawn a little
+  // shorter than its ink)?
+  const onInk = (n, w) => {
+    try {
+      const len = n.getTotalLength(), m = n.getScreenCTM();
+      if (!len || !m) return false;
+      const wider = inkLines.filter(o => o.w > w && w >= o.w / 2);   // a stripe painted across a wide ink line is no overlay
+      return wider.length > 0 && [0, 0.25, 0.5, 0.75, 1].every(t => {
+        const p = n.getPointAtLength(len * t), sp = new DOMPoint(p.x, p.y).matrixTransform(m);
+        return wider.some(o => { const om = o.n.getScreenCTM(); return om && o.n.isPointInStroke(sp.matrixTransform(om.inverse())); });
+      });
+    } catch (e) { return false; }
+  };
   // Pass 2: convert, in drawing order (a detail line looks for the filled parts drawn before it).
   const filled = [], lined0 = v => !!v && v !== 'none';
   shapes.forEach(n => {
@@ -2831,14 +2850,15 @@ function llColoringify(svg) {
       n.setAttribute('stroke', 'none');
       lined = false;
     } else if (llCsColour(stroke)) {
-      if (twin !== null && (llCsColour(fill) || w < twin)) {
-        n.setAttribute('stroke', LL_CS_PAPER);   // the coloured copy of an ink-outlined line: the twin is its edge
+      if ((twin !== null && (llCsColour(fill) || w < twin)) || (!hasFill && w >= 3 && onInk(n, w))) {
+        n.setAttribute('stroke', LL_CS_PAPER);   // the coloured copy of an ink-outlined line: the ink is its edge
       } else if (hasFill || w >= 3) {
         n.setAttribute('stroke', LL_CS_INK);     // a shape's outline, or a bold mark
-        if (!hasFill && w >= 5) {                // a wide pen stroke: an outlined band to colour in
+        if (!hasFill) {                          // a bold mark or a wide pen stroke: an outlined band to colour in
+          const edge = Math.min(1, Math.max(0.6, w * 0.2));   // thin marks (zebra stripes) keep a visible inside
           const band = n.cloneNode(false);
           band.setAttribute('stroke', LL_CS_PAPER);
-          band.setAttribute('stroke-width', String(w - 2));
+          band.setAttribute('stroke-width', String(w - 2 * edge));
           band.setAttribute('fill', 'none');
           n.after(band);
         }
