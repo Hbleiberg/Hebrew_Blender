@@ -1675,7 +1675,7 @@
   "fontmaker.about.faq_q_marks": "האם הגופנים כוללים ניקוד (תנועות) וטעמי המקרא (טעמים)?",
   "fontmaker.about.faq_q_nikkudtrop": "האם אפשר ליצור גופנים עבריים חינמיים עם ניקוד וטעמים?",
   "fontmaker.about.faq_q_software": "האם אני צריך להתקין תוכנה כלשהי?",
-  "fontmaker.about.footer_about_body": "כלי חינמי וניסיוני של IvritSuite. בונה גופנים אמיתיים כולו בצד הלקוח (מנוע הגופן נטען בייצוא הראשון), עם מיקום סימני GPOS לניקוד (mark-to-base) ולטעמי המקרא (mark-to-mark). מייצא TrueType (TTF), WOFF2 ומקור UFO הניתן לעריכה.",
+  "fontmaker.about.footer_about_body": "כלי חינמי וניסיוני של IvritSuite. בונה גופנים אמיתיים כולו בצד הלקוח, עם מיקום סימני GPOS לניקוד (mark-to-base) ולטעמי המקרא (mark-to-mark). מייצא TrueType (TTF), WOFF2 ומקור UFO הניתן לעריכה.",
   "fontmaker.about.footer_about_heading": "אודות",
   "fontmaker.about.footer_desktop_note": "מומלץ להשתמש בדפדפן שולחני.",
   "fontmaker.about.special_thanks": "תודות מיוחדות. תודה לעמיתיי ב-Davis Academy על התמיכה בפיתוח התוכנית הזו; ל-JEDLAB על היותה קהילה תומכת של מחנכים יהודים שתמיד מוכנים לשתף פעולה ולחלוק משאבים; ל-Logan Mendelsohn על העזרה הטכנית, העידוד והחברות; ול-Baruch Sienna על בדיקות הבטא הנרחבות, ההצעות והעידוד. 💛 ותודה מיוחדת במיוחד לאשתי, Emily, על שנתנה לי לקטר בלי סוף על קרנינג, עקומות בזייה ורישיונות תוכנה.",

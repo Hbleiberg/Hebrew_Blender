@@ -1675,7 +1675,7 @@
   "fontmaker.about.faq_q_marks": "Do the fonts include nikkud (vowels) and cantillation (trop)?",
   "fontmaker.about.faq_q_nikkudtrop": "Can I make free Hebrew fonts with nikkud and trop?",
   "fontmaker.about.faq_q_software": "Do I need to install any software?",
-  "fontmaker.about.footer_about_body": "A free, experimental IvritSuite tool. Builds real fonts entirely client-side (the font engine loads on first export), with GPOS mark positioning for nikkud (mark-to-base) and cantillation/trop (mark-to-mark). Exports TrueType (TTF), WOFF2 and editable UFO source.",
+  "fontmaker.about.footer_about_body": "A free, experimental IvritSuite tool. Builds real fonts entirely client-side, with GPOS mark positioning for nikkud (mark-to-base) and cantillation/trop (mark-to-mark). Exports TrueType (TTF), WOFF2 and editable UFO source.",
   "fontmaker.about.footer_about_heading": "About",
   "fontmaker.about.footer_desktop_note": "Desktop browser recommended.",
   "fontmaker.about.special_thanks": "Special Thanks. Thank you to my colleagues at the Davis Academy for supporting the development of this program; to JEDLAB for being a supportive community of Jewish educators who are always willing to collaborate and share resources; to Logan Mendelsohn for his technical help, encouragement, and friendship; and to Baruch Sienna for his extensive beta testing, suggestions, and encouragement. 💛 And a very special thank you to my wife, Emily, for letting me endlessly rant about kerning, Bézier curves, and software licenses.",
