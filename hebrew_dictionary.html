@@ -1045,6 +1045,15 @@ footer details > summary:hover{text-decoration:underline;}   /* FAQ / How-To row
   .shoresh-patterns-title::after { color:var(--navy); }
   .ec-gender.masc { color:#3a78c0 !important; }
   .ec-gender.fem  { color:#bb3f86 !important; }
+  /* Colour-coded nikkud on paper (pattern dark-palette-baked-into-paper): colorizeHebrew bakes the screen
+     theme's palette into each syllable's inline style, so a dark session printed its pale cyan / yellow /
+     lavender underlines at ~2:1 on white. Every coloured syllable also carries --nik-paper (the light
+     palette, or the teacher's override), and paper takes that. Highlight is a background tint the print
+     dialog's background-graphics-off default drops, so the colour coding vanished from the sheet: it prints
+     as the Underline mode's line instead (the Torah Trainer's print shape). */
+  .nik-lt { color:var(--nik-paper) !important; }
+  .nik-ul { text-decoration-color:var(--nik-paper) !important; }
+  .nik-hl { background:none !important; text-decoration:underline solid var(--nik-paper) !important; text-decoration-thickness:2px !important; text-underline-offset:0.4em !important; }
 }
 .beta-tag { font-size: 0.7rem; background: var(--gold); color: var(--navy); padding: 1px 5px; border-radius: 3px; font-weight: 700; letter-spacing: 0.05em; vertical-align: middle; }   /* the suite's Beta badge — one idiom at the 11px floor (text-size floor) */
 html[lang="he"] .beta-tag { letter-spacing: normal; text-transform: none; }   /* בטא: Hebrew has no capitals, and the tracking only spaced its letters apart */
@@ -4215,9 +4224,11 @@ function dictColorsApply() {
   refreshColorExPreviews();
 }
 
-function getNikudColor(key) {
+// `paper`: the colour this vowel takes on a printed sheet — always the light palette, since paper is white
+// whichever theme is on screen (an override wins in both, as on screen).
+function getNikudColor(key, paper) {
   if (nikudColorOverrides[key] !== undefined) return nikudColorOverrides[key];
-  return (document.body.classList.contains('dark') ? NIKUD_DEFAULTS_DARK : NIKUD_DEFAULTS_LIGHT)[key] || '#888';
+  return (!paper && document.body.classList.contains('dark') ? NIKUD_DEFAULTS_DARK : NIKUD_DEFAULTS_LIGHT)[key] || '#888';
 }
 
 function colorizeHebrew(text) {
@@ -4251,12 +4262,14 @@ function colorizeHebrew(text) {
     if (!primaryKey) { out.push(esc(ch + nikudStr)); i = j; continue; }
     const color = getNikudColor(primaryKey);
     const syllable = ch + nikudStr;
+    // --nik-paper and the nik-* class are read only by the print block (pattern dark-palette-baked-into-paper)
+    const paper = `--nik-paper:${getNikudColor(primaryKey, true)};`;
     if (colorCodingMode === 'highlight') {
-      out.push(`<span style="background-color:${color}50;border-radius:2px;">${esc(syllable)}</span>`);
+      out.push(`<span class="nik-hl" style="${paper}background-color:${color}50;border-radius:2px;">${esc(syllable)}</span>`);
     } else if (colorCodingMode === 'underline') {
-      out.push(`<span style="text-decoration:underline solid ${color};text-decoration-thickness:2px;text-underline-offset:0.4em;">${esc(syllable)}</span>`);
+      out.push(`<span class="nik-ul" style="${paper}text-decoration:underline solid ${color};text-decoration-thickness:2px;text-underline-offset:0.4em;">${esc(syllable)}</span>`);
     } else {
-      out.push(`<span style="color:${color}">${esc(syllable)}</span>`);
+      out.push(`<span class="nik-lt" style="${paper}color:${color}">${esc(syllable)}</span>`);
     }
     i = j;
   }
