@@ -674,9 +674,16 @@
   }
   .parsha-line .parsha-he { font-family: var(--heb-font); direction: rtl; }
   .parsha-line .parsha-en { font-family: 'Libre Baskerville', serif; }
-  .parsha-line div.parsha-en { font-size: 0.8em; opacity: 0.8; }   /* "Both": the English under the Hebrew, as the date does */
+  /* "Both": the English under the Hebrew, as the date does. Block spans, not divs: a parasha week's line is a
+     <button>, which holds phrasing content only. */
+  .parsha-line .parsha-row { display: block; }
+  .parsha-line .parsha-row.parsha-en { font-size: 0.8em; opacity: 0.8; }
   .parsha-link { color: inherit; text-decoration: none; }
   .parsha-link:hover, .parsha-link:focus-visible { text-decoration: underline; text-underline-offset: 0.15em; }
+  /* A parasha week's line opens the parsha popup (openParshaPopup); a festival week's stays a link to the Trainer. */
+  .parsha-btn { background: none; border: 0; padding: 0; margin: 0; font: inherit; color: inherit; text-align: inherit;
+    line-height: inherit; cursor: pointer; border-radius: 6px; vertical-align: top; }   /* top: an inline-block on the baseline grew the "Both" line by its descent */
+  .parsha-btn:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 4px; }
   .current-time {
     font-family: 'Libre Baskerville', serif;
     font-size: var(--time-size);
@@ -1978,6 +1985,30 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
   .bpe-chip { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 0.78rem; cursor: pointer; padding: 2px 0; }
   .bpe-footer { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
   .bpe-footer .bpe-note { margin-inline-end: auto; font-size: 0.74rem; color: var(--muted); }
+  /* ── Parsha popup (openParshaPopup): the week's parsha emojis, each with its summary and why that picture, opened
+     from the parsha line. A teacher-opened card, so it follows the UI language (I18n.lang), unlike the projected line
+     it comes from; the text is sized to be read from the back of the room. ── */
+  .pp-backdrop { position: fixed; inset: 0; background: rgba(13,18,32,0.6); z-index: 570; display: none; }
+  .pp-backdrop.open { display: block; }
+  .pp-modal { position: fixed; z-index: 571; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    width: min(620px, 92vw); max-height: 88vh; max-height: 88dvh; /* dvh: the visible viewport while a phone URL bar is expanded */ overflow: auto; background: var(--white); color: var(--text);
+    border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow-md); padding: 24px 26px; display: none; }
+  .pp-modal.open { display: block; }
+  body.dark .pp-modal { background: var(--navy-deep); }
+  .pp-card { display: flex; gap: 18px; align-items: flex-start; padding: 14px 0; }
+  .pp-card + .pp-card { border-top: 1px solid var(--border); }
+  .pp-ico { font-size: 3.6rem; line-height: 1; flex: 0 0 auto; }
+  .pp-ico .hol-ico { margin-inline-end: 0; vertical-align: top; }
+  .pp-text { min-width: 0; }
+  .pp-name { font-family: 'Libre Baskerville', serif; font-size: 1.3rem; margin: 2px 0 8px; }
+  .pp-name [lang="he"] { font-family: var(--heb-font); }
+  .pp-alt { color: var(--muted); font-size: 0.82em; font-weight: 400; }
+  .pp-sum { font-size: 1.05rem; line-height: 1.55; margin: 0 0 8px; }
+  .pp-why { font-size: 0.95rem; line-height: 1.5; color: var(--muted); margin: 0; }
+  .pp-why strong { color: var(--text); }
+  .pp-footer { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; margin-top: 14px; }
+  .pp-footer .btn { text-decoration: none; display: inline-flex; align-items: center; min-height: 36px; }
+  @media (max-width: 520px) { .pp-card { flex-direction: column; gap: 6px; } }
   .bpe-empty { font-size: 0.85rem; color: var(--muted); padding: 20px 0; }
   @media (max-width: 560px) {
     .bpe-chips { grid-template-columns: 1fr; }
@@ -2214,7 +2245,7 @@ button:focus-visible, a:focus-visible { outline:2px solid var(--focus-ring); out
     header .hright, #zoomBar, #fsExitBtn, #fsStrip, .wake-dot, #layoutEditBar,
     .settings-backdrop, .settings-modal, #pickOverlay, #tipFloat, #appToast,
     .tour-spot, .tour-card, .dash-edit-pencil, #videoPanel, #timerCol, #pickerActions,
-    .fr-backdrop, .fr-modal, .swm-backdrop, .swm-modal,
+    .fr-backdrop, .fr-modal, .swm-backdrop, .swm-modal, .pp-backdrop, .pp-modal,
     /* Two fixed surfaces that arrived after this list: the presenter blackout (a full-viewport
        #000 sheet — with background graphics on, paper came out black) and the in-place text
        editor's floating toolbar; the dashed editing outline is the same edit affordance. */
@@ -2684,6 +2715,17 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
     <span class="bpe-note" id="bpeNote" role="status" aria-live="polite"></span>
     <button type="button" class="btn btn-secondary" onclick="bpeCancel()" data-i18n="dashboard.preset.bulk_cancel">Cancel</button>
     <button type="button" class="btn" id="bpeSaveBtn" onclick="bpeSave()" data-i18n="dashboard.preset.bulk_save">Save all changes</button>
+  </div>
+</div>
+<!-- ───── Parsha popup: the week's parsha emojis with their notes (openParshaPopup; docs/reference/dashboard.md → This week's parsha) ───── -->
+<div class="pp-backdrop" id="ppBackdrop" onclick="closeParshaPopup()"></div>
+<div class="pp-modal" id="ppModal" role="dialog" aria-modal="true" aria-labelledby="ppTitle">
+  <button class="fr-close" onclick="closeParshaPopup()" aria-label="Close" data-i18n-aria-label="dashboard.parsha.popup_close_aria"><svg class="hi hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
+  <h2 class="fr-h" id="ppTitle" data-i18n="dashboard.parsha.popup_title">This week's parsha</h2>
+  <div id="ppCards"></div>
+  <div class="pp-footer">
+    <a class="btn btn-secondary" id="ppTrainer" href="torah_trainer.html" target="_blank" rel="noopener" data-i18n="dashboard.parsha.popup_trainer">View in Torah Trainer ↗</a>
+    <a class="btn" id="ppEmojis" href="parsha_emojis.html" target="_blank" rel="noopener" data-i18n="dashboard.parsha.popup_emojis">Open Parsha Emojis ↗</a>
   </div>
 </div>
 <!-- ───── Guided tour coach-mark (non-modal spotlight) ───── -->
@@ -3410,7 +3452,7 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
       </div>
     </div>
   </div>
-</div><script src="/js/hebrew-calendar.js"></script><script src="/js/parasha-icons.js"></script><script>
+</div><script src="/js/hebrew-calendar.js"></script><script src="/js/parasha-icons.js"></script><script src="/js/parasha-notes.js"></script><script>
   /*
    * Classroom Dashboard — UX upgrades (2026-07):
    *   1. Screen Wake Lock — keep the projected display awake in fullscreen or via a
@@ -4502,17 +4544,82 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
       const heHtml = hebDisplay(he), enHtml = esc(en);
       let inner;
       // dir on each line, not only CSS direction: an inline span takes the board's direction otherwise, and the icon would trail the Hebrew
-      if (settings.hebDateScript === 'both') inner = `<div class="parsha-he" dir="rtl">${ico}${heHtml}</div><div class="parsha-en" dir="ltr">${enHtml}</div>`;
+      if (settings.hebDateScript === 'both') inner = `<span class="parsha-he parsha-row" dir="rtl">${ico}${heHtml}</span><span class="parsha-en parsha-row" dir="ltr">${enHtml}</span>`;
       else if (settings.hebDateScript === 'he') inner = `<span class="parsha-he" dir="rtl">${ico}${heHtml}</span>`;
       else inner = `<span class="parsha-en" dir="ltr">${ico}${enHtml}</span>`;
       // '' until the strings load (t() returns the bare key before then); applyI18n re-renders this line
-      const title = window.I18n && I18n.has('dashboard.datetime.parsha_open_title') ? I18n.t('dashboard.datetime.parsha_open_title') : '';
-      el.innerHTML = href
-        ? `<a class="parsha-link" href="${esc(href)}" target="_blank" rel="noopener" title="${esc(title)}">${inner}</a>`
+      const tt = k => window.I18n && I18n.has(k) ? I18n.t(k) : '';
+      // A parasha week with its emojis opens the parsha popup (the Trainer is one more tap, from inside it); a festival
+      // week, and a board with the emojis off, keep the direct link — a holiday has no notes, and no picture to explain.
+      if (r.kind === 'parsha' && icons) {
+        el.innerHTML = `<button type="button" class="parsha-link parsha-btn" aria-haspopup="dialog" data-idx="${r.idx.join(',')}" data-href="${esc(href)}" title="${esc(tt('dashboard.datetime.parsha_popup_title'))}">${inner}</button>`;
+      } else el.innerHTML = href
+        ? `<a class="parsha-link" href="${esc(href)}" target="_blank" rel="noopener" title="${esc(tt('dashboard.datetime.parsha_open_title'))}">${inner}</a>`
         : inner;
       el.style.display = '';
     } catch (e) { hide(); }
   }
+
+  /* ────────── PARSHA POPUP ──────────
+     The parsha line's button opens one card per parasha of the week (both halves of a doubled week, in reading
+     order): its emoji, its names, its summary and why that picture was chosen (js/parasha-notes.js), then the Torah
+     Trainer (the line's own link: a doubled week opens its first half) and the Parsha Emojis page, each in a new tab.
+     A teacher-opened card, so it follows the UI language (I18n.lang, the Parsha Emojis page's rule), not the board's
+     script; the Hebrew still renders through hebDisplay. A missing note leaves its text out, never the card. */
+  let _ppOpener = null;
+  function _ppLang() { return window.I18n && I18n.lang === 'he' ? 'he' : 'en'; }
+  function _ppPick(pair) {   // the UI language's sentence, else the other one: { text, lang } or null
+    const ui = _ppLang(), other = ui === 'he' ? 'en' : 'he';
+    if (pair && pair[ui]) return { text: pair[ui], lang: ui };
+    return pair && pair[other] ? { text: pair[other], lang: other } : null;
+  }
+  function _ppText(t) {   // Hebrew through hebDisplay (lang + dir, nikkud as the board shows it); English carries its own lang off the UI's
+    if (t.lang === 'he') return hebDisplay(esc(t.text));
+    return t.lang === _ppLang() ? esc(t.text) : `<span lang="en" dir="ltr">${esc(t.text)}</span>`;
+  }
+  function _ppCard(i) {
+    const p = _parshiyot && _parshiyot.find(x => x.n === i + 1);
+    if (!p) return '';
+    const nt = window.ParashaNotes ? ParashaNotes.get(i) : null;
+    const he = hebDisplay(esc(p.he)), en = `<span lang="en" dir="ltr">${esc(p.en)}</span>`;
+    const name = _ppLang() === 'he' ? `${he} <span class="pp-alt">· ${en}</span>` : `${en} <span class="pp-alt">· ${he}</span>`;
+    const sum = nt && _ppPick(nt.summary), why = nt && _ppPick(nt.why);
+    return `<div class="pp-card"><div class="pp-ico">${window.ParashaIcons ? ParashaIcons.html(i) : ''}</div><div class="pp-text">`
+      + `<h3 class="pp-name">${name}</h3>`
+      + (sum ? `<p class="pp-sum">${_ppText(sum)}</p>` : '')
+      + (why ? `<p class="pp-why"><strong>${esc(I18n.t('torah.emojis.why_label'))}</strong> ${_ppText(why)}</p>` : '')
+      + '</div></div>';
+  }
+  function _ppKey(e) {
+    if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); closeParshaPopup(); return; }
+    _trapTabWithin(document.getElementById('ppModal'), e);
+  }
+  function openParshaPopup(idx, href) {
+    if (_activeEditable) exitInPlaceEdit(true);   // one edit surface at a time (mirrors openWeekEditor)
+    const cards = idx.map(_ppCard).join('');
+    if (!cards) return;
+    _ppOpener = document.activeElement;
+    document.getElementById('ppCards').innerHTML = cards;
+    document.getElementById('ppTrainer').setAttribute('href', href || 'torah_trainer.html');
+    document.getElementById('ppBackdrop').classList.add('open');
+    document.getElementById('ppModal').classList.add('open');
+    document.addEventListener('keydown', _ppKey, true);
+    const c = document.querySelector('#ppModal .fr-close'); if (c) c.focus();
+  }
+  function closeParshaPopup() {
+    document.getElementById('ppBackdrop').classList.remove('open');
+    document.getElementById('ppModal').classList.remove('open');
+    document.removeEventListener('keydown', _ppKey, true);
+    const o = _ppOpener; _ppOpener = null;
+    if (o && o.focus && document.contains(o)) { try { o.focus(); } catch (e) {} }
+    else { const b = document.querySelector('#parshaLine .parsha-btn'); if (b) b.focus(); }   // the line repainted meanwhile
+  }
+  // One listener for every repaint of the line (renderParshaLine rewrites its markup); not in layout-edit mode.
+  document.getElementById('parshaLine').addEventListener('click', e => {
+    const b = e.target.closest('.parsha-btn');
+    if (!b || _layoutEditActive) return;
+    openParshaPopup(b.dataset.idx.split(',').map(Number), b.dataset.href);
+  });
 
   /* ────────── DAYS LIST ────────── */
   function renderDaysList() {

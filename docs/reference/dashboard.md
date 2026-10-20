@@ -691,11 +691,25 @@ later render tries again (a festival week needs no file).
   for a parasha's, so the same switch hides it; the holiday countdown line keeps its own icon). Each line
   carries its own `dir`: the Hebrew-only line is an inline span, and without `dir="rtl"` it takes the board's
   direction, so the icons would trail the Hebrew.
-- **The link** opens the reading in the Torah Trainer in a new tab through that page's own deep links: `?parsha=<en>`
+- **The parsha popup.** A parasha week's line, while `showParshaIcons` is on, is a `<button class="parsha-btn">`
+  (its `data-idx` the week's indexes, its `data-href` the Trainer link below), and the whole line opens
+  `openParshaPopup(idx, href)`: one card per parasha, both halves of a doubled week in reading order. A card has the
+  emoji (`ParashaIcons.html(i)`), the names in UI order, the summary, and *Why this emoji:* (`torah.emojis.why_label`)
+  with its sentence (`ParashaNotes.get(i)`, `js/parasha-notes.js`, a classic script beside the icons). The footer
+  holds *View in Torah Trainer ↗* (the line's link) and *Open Parsha Emojis ↗* (`parsha_emojis.html`), each in a new
+  tab. A teacher-opened card, so it follows `I18n.lang`, with each sentence's other language as the fallback (the
+  Parsha Emojis page's rule), not `hebDateScript` like the projected line; the Hebrew still goes through `hebDisplay`.
+  It is the week editor's kind of modal: backdrop, `aria-modal`, focus on the ×, `_trapTabWithin`, a capture-phase
+  Escape, focus back to the line, and an in-place edit committed first; layout-edit mode ignores the button. A note
+  that is missing leaves its text out, never the card. The "Both" rows are `span.parsha-row` (block), since a button
+  holds phrasing content only.
+- **The link** (a festival week, or a board with *Show parsha emojis* off) opens the reading in the Torah Trainer in a
+  new tab through that page's own deep links: `?parsha=<en>`
   (a doubled week its first half, as the Trainer's date lookup does) or `?holiday=<key>`. `PARSHA_TRAINER_HOLIDAY`
   mirrors the Trainer's `HOLIDAY_KEY_BY_CAL` — change both. A Shabbat Chol HaMoed, and the Diaspora's Pesach 8 and
   Shavuot 2, have no reading there, so that week's line is plain text. The link's title is UI chrome
-  (`dashboard.datetime.parsha_open_title`, empty until the strings load).
+  (`dashboard.datetime.parsha_open_title`, empty until the strings load; the button's is
+  `dashboard.datetime.parsha_popup_title`).
 
 ---
 

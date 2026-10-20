@@ -612,8 +612,9 @@ copy without writing. Both modules are precached, so a rebuilt one needs the `sw
   `<span class="hol-ico" aria-hidden="true"><svg viewBox="0 0 48 48" focusable="false">…</svg></span>` for parasha
   index `i` (HebCal's: 0 = Bereshit … 53 = V'Zot HaBerachah, `parshiyot.json`'s `n − 1`) and `''` for anything
   else; an array returns one icon per index, in its order.
-- `js/parasha-notes.js` (`window.ParashaNotes`) is loaded by `torah_trainer`, deferred, for its emoji gallery, and by
-  `parsha_emojis`, as a classic script before its inline one, for its cards;
+- `js/parasha-notes.js` (`window.ParashaNotes`) is loaded by `torah_trainer`, deferred, for its emoji gallery, by
+  `parsha_emojis`, as a classic script before its inline one, for its cards, and by `classroom_dashboard`, the same
+  way, for the parsha popup its parsha line opens;
   `ParashaNotes.get(i)` returns a frozen `{ summary: { en, he }, why: { en, he } }` of plain-text sentences for the
   same index (`null` for anything else), and `count` is 54. The sentences are catalog content with their own English
   and Hebrew, picked by `I18n.lang` — never CSV keys; a page still escapes them.
