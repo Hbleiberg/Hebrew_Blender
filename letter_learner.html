@@ -929,6 +929,10 @@ body.dark #appToast { background: #0a0f1c; }
      all 31 cards on one sheet of either size, and a card never splits across a page break. */
   .ll-grid { grid-template-columns:repeat(6, 1fr); gap:8px; }
   .ll-card { break-inside:avoid; }
+  /* The letters column's bottom padding paginates like content: on Letter in the English UI (its subtitle wraps to two
+     lines) those 40px did not fit under the grid, and the whole grid moved to a second sheet, leaving the first with
+     the header alone. The print dialog's page margin already holds the grid off the paper edge. */
+  .ll-page { padding-block-end:0; }
   /* With a letter open, paper gets THAT letter — its picture and words, or whichever tab is showing — not the grid
      behind it (the overlay was print-hidden, so a teacher printing the Bet page got the alef-bet). body.ll-dlg-open
      is set by llOpen() / llClose(). The overlay flows as a plain block at paper width; Prev / Next / Close, the tab
