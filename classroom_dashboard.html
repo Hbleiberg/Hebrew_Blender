@@ -1147,6 +1147,11 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
   html[lang="he"] .tt-set-sub, html[lang="he"] .settings-header h2, html[lang="he"] .sub-section-hdr, html[lang="he"] .font-section-hdr,
   html[lang="he"] .swm-headcell, html[lang="he"] .swm-menu-title, html[lang="he"] .bpe-mgroup-lbl,
   html[lang="he"] body.layout-edit .zone-col::before, html[lang="he"] body.layout-edit #videoBelowSlot::before { letter-spacing: normal; text-transform: none; }
+  /* Hebrew has no italic either: the browser only slants the letters, so the Hebrew UI's hints and empty states stand
+     upright (pattern hebrew-faux-italic). The drawer's three hints carry their italic inline, which !important outranks. */
+  html[lang="he"] .weather-loading, html[lang="he"] .picker-empty, html[lang="he"] .sched-preview-hint { font-style: normal; }
+  html[lang="he"] [data-i18n="dashboard.layout.lock_widths_hint"], html[lang="he"] [data-i18n="dashboard.days.shabbat_location_hint"],
+  html[lang="he"] [data-i18n="dashboard.picker.roster_hint"] { font-style: normal !important; }
   .tt-set-note { font-size:0.72rem; color:var(--muted); line-height:1.4; }
   .tt-set details > summary:hover { text-decoration: underline; }   /* FAQ / How-To rows: the Font Maker footer's hover idiom — inline styles carry no hover */
 
