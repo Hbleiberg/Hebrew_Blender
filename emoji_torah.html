@@ -271,6 +271,7 @@ html[lang="he"] .et-cs-set legend,html[lang="he"] .et-cs-legend{letter-spacing:n
 .et-cs-empty[hidden]{display:none;}
 .et-cs-pages{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:20px 16px;align-items:start;}
 .et-cs-pages[data-orient="landscape"]{grid-template-columns:repeat(auto-fill,minmax(290px,1fr));}
+.et-cs-pages[data-per="2"],.et-cs-pages[data-per="4"]{grid-template-columns:repeat(auto-fill,minmax(320px,1fr));}   /* sheets of paper, several pages each */
 .et-cs-thumb{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0;}
 .et-cs-cap{display:flex;align-items:baseline;justify-content:center;gap:8px;font-size:0.85rem;font-weight:700;}
 .et-cs-cap [lang="he"]{font-family:var(--heb-font);font-weight:400;font-size:1rem;}
@@ -287,6 +288,11 @@ html[lang="he"] .et-cs-set legend,html[lang="he"] .et-cs-legend{letter-spacing:n
 .et-cs-cut{position:absolute;border:0 dashed #999;}
 .et-cs-cut-v{inset-block:0;inset-inline-start:50%;border-inline-start-width:1px;}
 .et-cs-cut-h{inset-inline:0;inset-block-start:50%;border-block-start-width:1px;}
+/* Two or four to a sheet, the preview shows the sheets of paper themselves (etCsRenderPapers): the whole paper, margins
+   included, as a size container, so the paper's margin and gutter (inline, in cqw) scale with the thumbnail. */
+.et-cs-sheetbox{container-type:size;position:relative;box-sizing:border-box;width:100%;background:#fff;border:1px solid var(--border);box-shadow:0 4px 16px rgba(26,39,68,0.08);}
+.et-cs-sheetbox .et-cs-paper{position:absolute;inset:0;box-sizing:border-box;}
+.et-cs-sheetbox .et-cs-sheet{width:100%;height:100%;min-height:0;aspect-ratio:auto;border:none;box-shadow:none;}
 
 /* The sheet is the page that prints: literal white paper and black ink in both themes, laid out left to right, every
    size in cqmin (the sheet is a size container), so the preview and the printed page scale alike. Its proportions are
@@ -1182,7 +1188,8 @@ function etCsSync() {
   if (!etCsIsOpen()) return;
   const ul = document.getElementById('etCsPages'), list = etCsChosenList(), keep = new Set(list.map(p => p.n - 1));
   const L = etCsLayout();
-  ul.dataset.orient = L.w > L.h ? 'landscape' : 'portrait';
+  ul.dataset.orient = L.per > 1 ? L.paperOrient : (L.w > L.h ? 'landscape' : 'portrait');
+  ul.dataset.per = String(L.per);
   [..._etCsSheets.keys()].forEach(i => { if (!keep.has(i)) { _etCsSheets.get(i).li.remove(); _etCsSheets.delete(i); } });
   const he = etLang() === 'he';
   list.forEach(p => {
@@ -1204,8 +1211,9 @@ function etCsSync() {
       entry = { li, sheet, k: 1, over: false };
       _etCsSheets.set(i, entry);
     }
-    ul.appendChild(entry.li);   // appending in order puts every page in its place
+    if (L.per === 1) ul.appendChild(entry.li);   // appending in order puts every page in its place
   });
+  etCsRenderPapers();
   etCsUpdateChrome();
   etCsScheduleFit();
 }
@@ -1259,6 +1267,7 @@ async function etCsFitAll(waitMs) {
     }
     host.remove();
     entries.forEach((en, j) => { en.k = k[j]; en.over = over[j]; en.sheet.style.setProperty('--k', String(k[j])); });
+    if (etCs.perSheet > 1) etCsRenderPapers();
   }
   etCsUpdateChrome();
 }
@@ -1288,17 +1297,24 @@ function etCsUpdateChrome() {
   if (shrunk.length) notes.push(I18n.t('emojitorah.coloring.fit_note', { names: shrunk.join(', ') }));
   if (over.length) notes.push(I18n.t('emojitorah.coloring.over_note', { names: over.join(', ') }));
   if (pages > 500) notes.push(I18n.t('emojitorah.coloring.big_note', { count: pages }));
+  if (per > 1 && papers > ET_CS_PREVIEW_PAPERS) notes.push(I18n.t('emojitorah.coloring.preview_capped', { shown: ET_CS_PREVIEW_PAPERS, count: papers }));
   const note = document.getElementById('etCsNote'), text = notes.join(' ');
   if (note.textContent !== text) note.textContent = text;
 }
-// The run on paper: every copy in the chosen order — collated sets (1 2 3, 1 2 3) or grouped by parasha (1 1, 2 2, 3 3).
+// The run: every copy in the chosen order — collated sets (1 2 3, 1 2 3) or grouped by parasha (1 1, 2 2, 3 3) — as
+// { p, sheet } (the parasha and its preview sheet).
+function etCsOrder() {
+  const items = etCsChosenList().map(p => ({ p, sheet: (_etCsSheets.get(p.n - 1) || {}).sheet })).filter(x => x.sheet);
+  const n = etCs.copies, order = [];
+  if (etCs.collate === 'grouped') items.forEach(x => { for (let c = 0; c < n; c++) order.push(x); });
+  else for (let c = 0; c < n; c++) items.forEach(x => order.push(x));
+  return order;
+}
+// The run on paper, for printing.
 function etCsFill() {
   const area = document.getElementById('etCsPrintArea');
   area.textContent = '';
-  const sheets = etCsChosenList().map(p => _etCsSheets.get(p.n - 1)).filter(Boolean).map(en => en.sheet);
-  const n = etCs.copies, order = [];
-  if (etCs.collate === 'grouped') sheets.forEach(sh => { for (let c = 0; c < n; c++) order.push(sh); });
-  else for (let c = 0; c < n; c++) sheets.forEach(sh => order.push(sh));
+  const order = etCsOrder().map(x => x.sheet);
   const L = etCsLayout(), frag = document.createDocumentFragment();
   for (let i = 0; i < order.length; i += L.per) frag.appendChild(etCsPaper(order.slice(i, i + L.per), L));
   area.appendChild(frag);
@@ -1312,6 +1328,38 @@ function etCsPaper(sheets, L) {
   sheets.forEach(sh => paper.appendChild(sh.cloneNode(true)));
   [['v', L.cols], ['h', L.rows]].forEach(([d, n]) => { if (n > 1) { const c = document.createElement('div'); c.className = 'et-cs-cut et-cs-cut-' + d; paper.appendChild(c); } });
   return paper;
+}
+// Two or four to a sheet: the preview is the run's sheets of paper, as they print (copies and order included), up to
+// ET_CS_PREVIEW_PAPERS of them; each is drawn again after a fit pass, so the copies carry the fitted text.
+const ET_CS_PREVIEW_PAPERS = 60;
+function etCsRenderPapers() {
+  const ul = document.getElementById('etCsPages'), L = etCsLayout(), he = etLang() === 'he';
+  ul.querySelectorAll('.et-cs-sheetthumb').forEach(n => n.remove());
+  if (L.per === 1) return;
+  _etCsSheets.forEach(entry => entry.li.remove());   // a page is never shown alone here
+  const order = etCsOrder(), PW = L.W + 0.7, PH = L.H + 0.7, frag = document.createDocumentFragment();   // the paper, margins included
+  for (let k = 0; k * L.per < order.length && k < ET_CS_PREVIEW_PAPERS; k++) {
+    const slice = order.slice(k * L.per, (k + 1) * L.per);
+    const paper = etCsPaper(slice.map(x => x.sheet), L);
+    paper.style.padding = (0.35 / PW * 100).toFixed(3) + 'cqw';
+    paper.style.gap = (ET_CS_GUTTER / PW * 100).toFixed(3) + 'cqw';
+    const box = document.createElement('div');
+    box.className = 'et-cs-sheetbox';
+    box.style.aspectRatio = PW + ' / ' + PH;
+    box.appendChild(paper);
+    const li = document.createElement('li');
+    li.className = 'et-cs-thumb et-cs-sheetthumb';
+    const cap = document.createElement('div');
+    cap.className = 'et-cs-cap';
+    cap.dir = he ? 'rtl' : 'ltr';
+    const nm = document.createElement('span');
+    nm.textContent = slice.map(x => he ? x.p.he : x.p.en).join(' · ');
+    if (he) nm.lang = 'he';
+    cap.appendChild(nm);
+    li.append(box, cap);
+    frag.appendChild(li);
+  }
+  ul.appendChild(frag);
 }
 async function etCsPrint() {
   if (_etCsPrinting) return;
@@ -1392,6 +1440,7 @@ function etCsWire() {
     const n = etCsCopiesVal(Number(copies.value));
     copies.value = String(n);
     etCsSet('copies', n);
+    etCsRenderPapers();
     etCsUpdateChrome();
   });
   // A size drag resizes the sheets live (CSS factors, no rebuild); the value is saved once, when the drag ends.
@@ -1400,6 +1449,7 @@ function etCsWire() {
     r.addEventListener('input', () => {
       etCs[key] = etCsSizeVal(Number(r.value));
       document.querySelectorAll('#etCsPages .et-cs-sheet').forEach(etCsApplySizes);
+      _etCsSheets.forEach(entry => etCsApplySizes(entry.sheet));   // two or four to a sheet, the pages themselves are off screen
       etCsSizeLabel(r);
     });
     r.addEventListener('change', () => { etCsSet(key, etCsSizeVal(Number(r.value))); etCsScheduleFit(); });

@@ -545,6 +545,7 @@ body.dark .ll-bp-main { background:var(--cream); }   /* dark --warm-gray is the 
 .ll-bp-empty[hidden] { display:none; }
 .ll-bp-pages { list-style:none; display:grid; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr)); gap:20px 16px; align-items:start; }
 .ll-bp-pages[data-orient="portrait"] { grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); }
+.ll-bp-pages[data-per="2"], .ll-bp-pages[data-per="4"] { grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); }   /* sheets of paper, several pages each */
 .ll-bp-thumb { display:flex; flex-direction:column; align-items:center; gap:6px; min-width:0; }
 .ll-bp-host { width:100%; }
 .ll-bp-thumb .ll-cs-sheet { width:100%; align-self:start; }   /* size-contained: the height comes from aspect-ratio alone */
@@ -561,6 +562,14 @@ body.dark .ll-bp-main { background:var(--cream); }   /* dark --warm-gray is the 
 .ll-cs-cut-v { inset-block:0; inset-inline-start:50%; border-inline-start-width:1px; }
 .ll-cs-cut-h { inset-inline:0; inset-block-start:50%; border-block-start-width:1px; }
 .ll-cs-per-ico { display:inline-flex; width:24px; height:24px; flex:none; color:var(--muted); }
+/* Two or four to a sheet, the previews show the sheet of paper itself (llCsPaperBox): the whole paper, margins included,
+   as a size container, so its margin and gutter (inline, in cqw) scale with the preview. */
+.ll-cs-sheetbox { container-type:size; position:relative; box-sizing:border-box; background:#fff; border:1px solid var(--border); box-shadow:var(--shadow-md); }
+.ll-cs-sheetbox .ll-cs-paper { position:absolute; inset:0; box-sizing:border-box; }
+.ll-cs-sheetbox .ll-cs-sheet { width:100%; height:100%; min-height:0; aspect-ratio:auto; border:none; box-shadow:none; }
+.ll-bp-thumb .ll-cs-sheetbox { width:100%; align-self:start; }
+/* The bulk popup's pages while sheets of paper are shown: built and measured out of sight, copied into the papers. */
+.ll-bp-hold { position:fixed; inset-block-start:0; inset-inline-start:-30000px; width:320px; visibility:hidden; pointer-events:none; }
 .ll-cs-per-ico svg { width:100%; height:100%; }
 
 /* Hint animation library: a drawing wraps a moving part in <g class="ll-anim ll-anim-<name>">. Every keyframe
@@ -1019,6 +1028,7 @@ body.dark #appToast { background: #0a0f1c; }
   </div>
 </div>
 <div id="llBpPrintArea" aria-hidden="true"></div>
+<div class="ll-bp-hold" id="llBpHold" aria-hidden="true"></div>
 
 <footer>
   <div><a href="contact.html" data-i18n="contact.page_title">Contact &amp; Support</a></div>
@@ -2935,7 +2945,18 @@ function llCsLayout(per) {
   let [W, H] = LL_CS_BOX[settings.colorPaper] || LL_CS_BOX.letter;
   if (paperOrient === 'landscape') [W, H] = [H, W];
   const cols = per === 1 ? 1 : per === 4 ? 2 : (paperOrient === 'landscape' ? 2 : 1), rows = per / cols;
-  return { per, paperOrient, cols, rows, w: (W - (cols - 1) * LL_CS_GUTTER) / cols, h: (H - (rows - 1) * LL_CS_GUTTER) / rows };
+  return { per, paperOrient, cols, rows, W, H, w: (W - (cols - 1) * LL_CS_GUTTER) / cols, h: (H - (rows - 1) * LL_CS_GUTTER) / rows };
+}
+// A paper (llCsPaper) as a preview: the whole sheet, margins included, at its proportions; `maxH` caps its height.
+function llCsPaperBox(paper, L, maxH) {
+  const PW = L.W + 0.7, PH = L.H + 0.7;   // the paper, margins included
+  paper.style.padding = (0.35 / PW * 100).toFixed(3) + 'cqw';
+  paper.style.gap = (LL_CS_GUTTER / PW * 100).toFixed(3) + 'cqw';
+  const box = el('div', 'll-cs-sheetbox');
+  box.style.aspectRatio = PW + ' / ' + PH;
+  if (maxH) box.style.width = 'min(100%, calc(' + maxH + ' * ' + (PW / PH).toFixed(4) + '))';
+  box.appendChild(paper);
+  return box;
 }
 function llCsShape(sheet) {
   const L = llCsLayout();
@@ -2943,9 +2964,11 @@ function llCsShape(sheet) {
   sheet.style.setProperty('--cs-aw', L.w.toFixed(3));
   sheet.style.setProperty('--cs-ah', L.h.toFixed(3));
 }
-// One sheet of paper: copies of `sheets` in the layout's grid, and a dashed cut line in each gutter.
+// One sheet of paper: copies of `sheets` in the layout's grid, and a dashed cut line in each gutter. The pages run in
+// alef-bet order, right to left, as the preview list does — on paper and in the preview alike, whatever the UI's direction.
 function llCsPaper(sheets, L) {
   const paper = el('div', 'll-cs-paper');
+  paper.dir = 'rtl';
   paper.style.gridTemplateColumns = 'repeat(' + L.cols + ', minmax(0, 1fr))';
   paper.style.gridTemplateRows = 'repeat(' + L.rows + ', minmax(0, 1fr))';
   sheets.forEach(sh => paper.appendChild(sh.cloneNode(true)));
@@ -3282,8 +3305,22 @@ function llRenderColoringTab(card) {
   const token = ++_llCsToken;
   if (!card || card.kind === 'vowel') return;
   llCsMountOpts(document.getElementById('llCsOptsHome'));
-  const r = llCsBuildSheet(host, card, () => token === _llCsToken);
+  const L = llCsLayout();
+  let paper = null;
+  if (L.per > 1) {   // the sheet is built in the paper's first place (it is measured as it converts), the copies follow it
+    paper = llCsPaper([], L);
+    host.appendChild(llCsPaperBox(paper, L, '60vh'));
+  }
+  const r = llCsBuildSheet(paper || host, card, () => token === _llCsToken);
   _llCsBuilt = r;
+  if (r && paper) {
+    const copies = () => {
+      paper.querySelectorAll(':scope > .ll-cs-sheet').forEach(n => { if (n !== r.sheet) n.remove(); });
+      for (let c = 1; c < L.per; c++) paper.appendChild(r.sheet.cloneNode(true));
+    };
+    copies();
+    try { document.fonts.ready.then(() => { if (token === _llCsToken) { if (r.fit) r.fit(); copies(); } }); } catch (e) {}   // the letter, measured in its face
+  }
   const notes = [];
   if (r && r.noHint) notes.push(_fbT('letterlearner.coloring.no_hint_note', 'This letter has no hint picture yet, so the sheet shows the letter.'));
   else if (llCsFontMissingNote()) notes.push(llCsFontMissingNote());
@@ -3355,7 +3392,7 @@ function llCsSizeState() {
 // Every sheet on screen takes the size sliders' factors (the tab's and the popup's previews; the print copies are made
 // from these just before printing).
 function llCsApplySizesAll() {
-  document.querySelectorAll('#llCsPreview .ll-cs-sheet, #llBpPages .ll-cs-sheet').forEach(llCsApplySizes);
+  document.querySelectorAll('#llCsPreview .ll-cs-sheet, #llBpPages .ll-cs-sheet, #llBpHold .ll-cs-sheet').forEach(llCsApplySizes);
 }
 // Print waits (briefly) for the faces on paper — the words' face and the letters' own — so a font picked a moment ago
 // prints rather than its fallback. `glyphs` names every letter the faces must cover (the cursive face is a subset).
@@ -3469,6 +3506,7 @@ function llBpClose() {
   document.body.classList.remove('ll-bp-open');
   llCsMountOpts(document.getElementById('llCsOptsHome'));
   document.getElementById('llBpPages').textContent = '';
+  document.getElementById('llBpHold').textContent = '';
   document.getElementById('llBpPrintArea').textContent = '';
   _llBpSheets.clear();
   llCsPageStyle();
@@ -3508,7 +3546,9 @@ function llBpSetChosen(ids) {
 function llBpSync() {
   if (!llBpIsOpen()) return;
   const ul = document.getElementById('llBpPages'), ids = llBpChosen(), L = llCsLayout();
-  ul.dataset.orient = L.w > L.h ? 'landscape' : 'portrait';
+  const home = L.per > 1 ? document.getElementById('llBpHold') : ul;   // two or four to a sheet, the papers are what shows
+  ul.dataset.orient = L.per > 1 ? L.paperOrient : (L.w > L.h ? 'landscape' : 'portrait');
+  ul.dataset.per = String(L.per);
   const keep = new Set(ids);
   [..._llBpSheets.keys()].forEach(id => { if (!keep.has(id)) { _llBpSheets.get(id).li.remove(); _llBpSheets.delete(id); } });
   _llBpQueue = _llBpQueue.filter(id => keep.has(id));
@@ -3526,9 +3566,10 @@ function llBpSync() {
       llBpPlaceholder(entry);
       _llBpQueue.push(id);
     }
-    ul.appendChild(entry.li);   // appending in order puts every page in its place
+    home.appendChild(entry.li);   // appending in order puts every page in its place
   });
   _llBpQueue.sort((a, b) => ids.indexOf(a) - ids.indexOf(b));
+  llBpRenderPapers();
   llBpUpdateChrome();
   llBpSchedule();
 }
@@ -3575,6 +3616,7 @@ function llBpBuildOne(id) {
   if (!r) return false;
   if (ph && ph !== r.sheet) ph.remove();
   entry.built = r;
+  llBpFillSlots(id);
   return true;
 }
 // Everything still queued, now (Print and Ctrl+P need every sheet).
@@ -3613,21 +3655,53 @@ function llBpUpdateChrome() {
   }
   const font = llCsFontMissingNote();
   if (font) notes.push(font);
+  if (per > 1 && papers > LL_BP_PREVIEW_PAPERS) notes.push(_fbT('letterlearner.bulk.preview_capped', 'The preview shows the first {shown} of {count} sheets of paper; every sheet prints.', { shown: LL_BP_PREVIEW_PAPERS, count: papers }));
   const note = document.getElementById('llBpNote'), text = notes.join(' ');
   if (note.textContent !== text) note.textContent = text;
 }
-// The run on paper: every copy in the chosen order — collated sets (1 2 3, 1 2 3) or grouped by letter (1 1, 2 2, 3 3).
+// The run: every copy's letter in the chosen order — collated sets (1 2 3, 1 2 3) or grouped by letter (1 1, 2 2, 3 3).
+function llBpOrder() {
+  const ids = llBpChosen(), n = settings.bulkCopies, order = [];
+  if (settings.bulkCollate === 'grouped') ids.forEach(id => { for (let c = 0; c < n; c++) order.push(id); });
+  else for (let c = 0; c < n; c++) ids.forEach(id => order.push(id));
+  return order;
+}
+// The run on paper, for printing.
 function llBpFill() {
   const area = document.getElementById('llBpPrintArea');
   area.textContent = '';
-  const sheets = llBpChosen().map(id => _llBpSheets.get(id)).filter(e => e && e.built).map(e => e.built.sheet);
-  const n = settings.bulkCopies;
-  const order = [];
-  if (settings.bulkCollate === 'grouped') sheets.forEach(sh => { for (let c = 0; c < n; c++) order.push(sh); });
-  else for (let c = 0; c < n; c++) sheets.forEach(sh => order.push(sh));
+  const order = llBpOrder().map(id => _llBpSheets.get(id)).filter(e => e && e.built).map(e => e.built.sheet);
   const L = llCsLayout(), frag = document.createDocumentFragment();
   for (let i = 0; i < order.length; i += L.per) frag.appendChild(llCsPaper(order.slice(i, i + L.per), L));
   area.appendChild(frag);
+}
+// Two or four to a sheet: the preview is the run's sheets of paper, as they print (copies and order included), up to
+// LL_BP_PREVIEW_PAPERS of them. A page not built yet holds a blank of its shape (data-slot = its letter) until
+// llBpFillSlots copies the built sheet in.
+const LL_BP_PREVIEW_PAPERS = 60;
+function llBpRenderPapers() {
+  const ul = document.getElementById('llBpPages'), L = llCsLayout();
+  ul.querySelectorAll('.ll-bp-sheetthumb').forEach(n => n.remove());
+  if (!llBpIsOpen() || L.per === 1) return;
+  const order = llBpOrder(), frag = document.createDocumentFragment();
+  for (let k = 0; k * L.per < order.length && k < LL_BP_PREVIEW_PAPERS; k++) {
+    const slice = order.slice(k * L.per, (k + 1) * L.per);
+    const paper = llCsPaper(slice.map(id => { const e = _llBpSheets.get(id); if (e && e.built) return e.built.sheet; const ph = el('div', 'll-cs-sheet'); llCsShape(ph); return ph; }), L);
+    paper.querySelectorAll(':scope > .ll-cs-sheet').forEach((n, j) => { n.dataset.slot = slice[j]; });
+    const li = el('li', 'll-bp-thumb ll-bp-sheetthumb');
+    const cap = el('div', 'll-bp-cap');
+    cap.dir = document.documentElement.dir === 'rtl' ? 'rtl' : 'ltr';
+    const nm = el('span', null, slice.map(id => LETTERS[id].name).join(' · ')); nm.lang = 'en'; nm.dir = 'ltr';   // i18n-ignore: learner content (the English letter names)
+    cap.appendChild(nm);
+    li.append(llCsPaperBox(paper, L), cap);
+    frag.appendChild(li);
+  }
+  ul.appendChild(frag);
+}
+function llBpFillSlots(id) {
+  const e = _llBpSheets.get(id);
+  if (!e || !e.built) return;
+  document.querySelectorAll('#llBpPages .ll-cs-sheet[data-slot="' + id + '"]').forEach(n => { const c = e.built.sheet.cloneNode(true); c.dataset.slot = id; n.replaceWith(c); });
 }
 async function llBpPrint() {
   if (_llBpPrinting) return;
@@ -3703,9 +3777,10 @@ function llBpWire() {
     const n = llBpCopiesVal(Number(copies.value));
     copies.value = String(n);
     llSetSetting('bulkCopies', n);
+    llBpRenderPapers();
     llBpUpdateChrome();
   });
-  document.querySelectorAll('input[name="llBpCollate"]').forEach(r => r.addEventListener('change', () => { if (r.checked) llSetSetting('bulkCollate', r.value); }));
+  document.querySelectorAll('input[name="llBpCollate"]').forEach(r => r.addEventListener('change', () => { if (r.checked) { llSetSetting('bulkCollate', r.value); llBpRenderPapers(); } }));
 }
 // A download, a storage event or a reset changed the stored options while the popup is open: its own controls follow, and
 // the preview rebuilds only what the change touched.

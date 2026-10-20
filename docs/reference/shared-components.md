@@ -670,7 +670,9 @@ header-icons and holiday-icons CSS blocks.
   Hebrew / Both; until chosen it follows the site), six Include switches (Hebrew title, English title, verse numbers,
   synopsis, picture explanation, name line) and seven 50–150% size sliders (a slider is disabled while its part is
   off), the account status line at the foot of the options, and a preview grid with one thumbnail per parasha and a
-  `× N` badge. Focus is trapped while it is open; Escape and the close button return focus to the opener.
+  `× N` badge — or, two or four to a sheet, the run's sheets of paper themselves (`etCsRenderPapers`: copies and order
+  as they print, margins and cut lines included, at most 60 drawn, the rest named in the note), redrawn after each fit
+  pass so the copies carry the fitted text; the pages are then kept off screen in `_etCsSheets`. Focus is trapped while it is open; Escape and the close button return focus to the opener.
 - **The sheet** (`etCsBuildSheet`) is a size container at its place's proportions on paper (`etCsLayout`: the printed
   box, the paper less the 0.35in margins; two to a sheet turn the paper and sit side by side or one above the other, four
   make a 2 × 2 grid, 0.3in apart), everything inside in `cqmin` — its layout sits in the inner `.et-cs-page`, since a container's own
