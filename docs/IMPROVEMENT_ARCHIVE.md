@@ -93231,3 +93231,43 @@ _(prior — S522 pointer:)_ **Next session (S522):** **BRANCH/PR: draft PR #339 
 - 2026-10-16 | **S513** | iters: 5 | tools: FM ×2, generator, dashboard | patterns fixed: button-focus-lost-to-its-own-rebuild ×1, latin-tracking-on-hebrew-labels ×1, sub-floor touch target ×2 | pass run: C | SW: v1004→v1005
 
 - 2026-10-18 | **S514** | iters: 5 | tools: LL, flash, FM, dashboard | patterns fixed: overlay-scoped-dialog-keys ×2 | pass run: F | SW: v1012→v1013
+
+
+<!-- archived by compact-ledger at the S524 boundary, 2026-10-20 -->
+## Compaction (S524, 2026-10-20) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-20 | (S523 close-out) | branch/deploy note | **S523 = G + 4 fixes; the S522 PR merged → fresh branch `claude/improveloop-s523`, new draft PR.** Drift: sw v1037→v1040 outside the loop (the Letter Learner's Coloring sheet, 3 commits); FM 5.59; migrations 0001–0004 live; no backend change; keep-alive #37 green. sw v1040→v1041; no FM bump (fixes); check-i18n, check-inline-js, smoke-account-page --sdk 65/65, sitemap.
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`dark-palette-baked-into-paper`** (NEW S523 G; carriers on paper: torah (`_printForceLight`, S89), dictionary `70531135` and generator `22f9cacc` (`--nik-paper`); open 0): ACTIVE, streak 0. Detection: every page that writes a theme palette into inline styles (`grep -n "function getNikudColor\|function getTropeColor"`) and sends that output to paper (`@media print`, `window.print`, an html2canvas `onclone`) resolves the light palette there; a real-PDF colour inventory from dark equals light's (Highlight prints as an underline). Not carriers: the flash-card sheet and the dashboard's week sheet draw no colour-coded Hebrew.
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- G print & export fidelity (one tool): 2026-10-20 (**S523 — dictionary, its 6th G (S377 →, 92 commits): real PDFs EN/HE × light/dark × Letter/A4, margins 0–1in, Emoji/Shoresh/saved list, size 50–100, colour coding × 3 modes ± backgrounds, exports from Bulk and the Word Lists window; controls fired. FOUND 5 (+ generator), FIXED 4 (+ account S409's). G-next: emoji_torah (never; it prints), dashboard (S364).**)
+
+_(prior — S523 pointer:)_ **Next session (S523):** **BRANCH/PR: the S522 draft PR open → continue; merged → restart from `origin/main`.** `sw.js` **v1037**, FM **5.59**. ⚑ Stalest: G (S509; dictionary), D, I. ⚑ `emoji_torah.html` has had only M. ⚑ Seeds: 44. ⚑ Maintainer: sw.js `no-store`; re-stage 14 fonts; torah screen reader; A/B week eyes; gates 2–4 (Candidates); O needs a Bash rule.
+
+
+<!-- archived by compact-ledger at the S524 boundary, 2026-10-20 -->
+## Compaction (S524, 2026-10-20) — moved verbatim from the live ledger
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`dark-palette-baked-into-paper`** (NEW S523 G; torah S89, dictionary + generator S523; open 0): ACTIVE, streak 0. Detection: a `getNikudColor`/`getTropeColor` page whose output reaches paper (print, `onclone`) resolves the light palette there; a real-PDF inventory from dark = light's.
+
+
+<!-- moved at the S523 close-out, 2026-10-20 -->
+## Done (S522) — moved verbatim from the live ledger at the S523 close-out
+
+- [x] 2026-10-19 | (S522 close-out) | branch/deploy note | **S522 = M + 4 fixes; #339 merged → fresh branch, new draft PR.** Drift: sw v1020→v1036 outside the loop (LL pictures, `emoji_torah.html`); no backend change. sw v1036→v1037; no FM bump.
+
+- [x] 2026-10-19 | `293a8b7` `26f57c5` `ee41947` `297ea36` | emoji_torah ×2, FM, LL | (S522) **Bar's lone Print row; FM tour switch; LL voice fallback; sticky book headings.** | findings S522
+
+## Per-session log (S515, S516) — moved verbatim from the live ledger at the S523 close-out
+
+- 2026-10-18 | **S515** | iters: 5 | tools: dashboard, flash, generator, index, torah, FM, sw.js | patterns fixed: overlay-scoped-dialog-keys ×2 | pass run: B | SW: v1013→v1014
+
+- 2026-10-18 | **S516** | iters: 5 | tools: index, letter_learner, FM ×2, sw.js | patterns fixed: overlay-scoped-dialog-keys ×2, pinned-english-without-lang ×7, sub-floor touch target ×4 | pass run: A | SW: v1014→v1015

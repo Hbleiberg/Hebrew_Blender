@@ -331,3 +331,8 @@ For the capture `#worksheet` is pinned at its own computed `max-width` (inline `
 restored in `finally`): the sheet is fluid on screen and the capture takes it as laid out, so without the pin
 a narrow window exported a narrow layout. Below 700px the phone rules still restyle the sheet's contents
 (header stacked, Hebrew at 0.75×); only the width is pinned.
+Colour-coded nikkud is painted in the screen theme's palette inline, and the clone's dropped `.dark` cannot
+outrank an inline colour: each syllable `colorizeHebrew` builds also carries `--nik-paper` (the scheme's
+light palette, or the teacher's override) and a `nik-lt` / `nik-ul` / `nik-hl` class, and the `onclone`
+writes that colour into the clone (Highlight keeps its tint there; the print block draws it as an underline,
+since the dialog's background-graphics-off default drops the tint).

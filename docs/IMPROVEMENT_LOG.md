@@ -8,6 +8,10 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P4 (**NEW S523 G**) | hebrew_dictionary.html | **Quizlet CSV: 7 definitions open with `=`/`-`/`@` ("-teen"); Excel reads them as formulas.** | found S523
+
+- [ ] P4 (**NEW S523 G — gate 3**) | hebrew_dictionary.html | **A long one-word headword overflows its card** (paper and phone). | found S523
+
 - [ ] P4 (**NEW S522 M — gate 4**) | emoji_torah.html | **On a phone (≤600px) Print still takes a row of its own** (EN 390: four rows). | found S522
 
 - [ ] P4 (**NEW S522 M**) | emoji_torah.html, torah_trainer.html | **This week's badge drops its card's name 23px below its row-mates'.** | found S522
@@ -153,8 +157,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S410 Pass D**) | Hebrew_Font_Maker.html | **Continue runs a synchronous `autosaveNow()` inside the click's task** (88–114ms of 575–616ms @4×), re-saving the snapshot it just restored. | found S410
 
 - [ ] P4 (**NEW S410 Pass D**) | Hebrew_Font_Maker.html | **The partner wizard's Create re-renders every grid once per setter** (`setMarkEnabled` ×2, `setAddEnglishLetters`, `setInputMode`…): 3 tasks of 465–678ms @4×, top 146–201ms @1× (engine blocked; with it, Pyodide's own blocks dominate). | found S410
-
-- [ ] P4 (**NEW S409 Pass G**) | account.html | **Printing splits cards across sheets, spends an A4 sheet on the footer and prints 6 inert controls.** | found S409
 
 - [ ] P4 (**NEW S405 — found beside `f78ad1b`**) | Hebrew_Font_Maker.html | **The Upload help tab's link to Download Templates exists only in the English authored HTML** (`openHelp('templates')`); the translated Upload body is CSV prose, so a Hebrew reader gets no link. A `data-fmact` action (the dispatcher's CSV-safe route) would carry it. | found S405
 
@@ -316,13 +318,15 @@ _(none)_
 
 ## Done
 
-- [x] 2026-10-19 | (S522 close-out) | branch/deploy note | **S522 = M + 4 fixes; #339 merged → fresh branch, new draft PR.** Drift: sw v1020→v1036 outside the loop (LL pictures, `emoji_torah.html`); no backend change. sw v1036→v1037; no FM bump.
+- [x] 2026-10-20 | (S523 close-out) | branch/deploy note | **S523 = G + 4 fixes; new branch + draft PR.** Drift: sw v1037→v1040 (LL Coloring sheet); no backend change; keep-alive #37 green. sw v1040→v1041; no FM bump; account smoke 65/65.
 
-- [x] 2026-10-19 | `293a8b7` `26f57c5` `ee41947` `297ea36` | emoji_torah ×2, FM, LL | (S522) **Bar's lone Print row; FM tour switch; LL voice fallback; sticky book headings.** | findings S522
+- [x] 2026-10-20 | `70531135` `22f9cacc` `5c90247e` `14c13761` | dictionary ×2, generator, account | (S523) **Nikkud paper palette ×2; list-name isolate; account print.** | findings S523
 
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-20 | **S523** | iters: 5 | tools: dictionary ×2, generator, account, sw.js | patterns fixed: dark-palette-baked-into-paper ×2 | pass run: G | SW: v1040→v1041
 
 - 2026-10-19 | **S522** | iters: 5 | tools: emoji_torah ×2, FM, LL, sw.js | patterns fixed: tour-not-following-a-live-switch ×1 | pass run: M | SW: v1036→v1037
 
@@ -336,15 +340,13 @@ _(none)_
 
 - 2026-10-18 | **S517** | iters: 5 | tools: README, docs (i18n, ops), FM ×2, sw.js | patterns fixed: — | pass run: E | SW: v1015→v1016
 
-- 2026-10-18 | **S516** | iters: 5 | tools: index, letter_learner, FM ×2, sw.js | patterns fixed: overlay-scoped-dialog-keys ×2, pinned-english-without-lang ×7, sub-floor touch target ×4 | pass run: A | SW: v1014→v1015
-
-- 2026-10-18 | **S515** | iters: 5 | tools: dashboard, flash, generator, index, torah, FM, sw.js | patterns fixed: overlay-scoped-dialog-keys ×2 | pass run: B | SW: v1013→v1014
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S522 (2026-10-19):** emoji_torah, FM, LL, sw.js S522 · dictionary, torah, generator, saves, scripts S521 · 404, privacy, terms, contact, resources, index, account, dashboard S520 · trope, CSV S519 · README S517 · flash S515 · i18n.js S512 · pwa S472.
+- **Snapshot S523 (2026-10-20):** dictionary, generator, account, sw.js S523 · emoji_torah, FM, LL S522 · torah, saves, scripts S521 · 404, privacy, terms, contact, resources, index, dashboard S520 · trope, CSV S519 · README S517 · flash S515 · i18n.js S512 · pwa S472.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`dark-palette-baked-into-paper`** (NEW S523 G; torah, dictionary, generator fixed; open 0): ACTIVE, streak 0. Detection: `getNikudColor` output that reaches paper (print, `onclone`) resolves the light palette; a PDF from dark = light's.
 
 - **`tour-not-following-a-live-switch`** (NEW S519 K; fixed LL, trope, dashboard, dictionary, torah, FM S519–S522; open 0): ACTIVE, streak 0. Detection: `tourswitch.mjs`; torah `torahtour.mjs` (Sefaria gated).
 
@@ -708,7 +710,7 @@ _(none)_
 
 - A recurring-pattern sweep: 2026-10-18 (**S516 — 40th A, `fc54901d..d77484c5` (118 commits; LL's first A): 42 static arms; 18 shared blocks sha-checked; 11 runtime arms × 15 pages × 2 cells vs pre-delta (plants 11/11); 1 px sweep 30/30 clean; LL by real input. FOUND 1, FIXED 4.**)
 
-- G print & export fidelity (one tool): 2026-10-15 (**S509 — letter_learner (the maintainer's focus; its first G): PDFs Letter + A4 × light/dark × EN/HE, ink per page, straddles, the open-dialog case; the ink gap fired as the control. FOUND 4, FIXED 3. G-next: dictionary (S377).**)
+- G print & export fidelity (one tool): 2026-10-20 (**S523 — dictionary's 6th G: real PDFs EN/HE × themes × Letter/A4, margins, views, colour modes, exports; controls fired. FOUND 5, FIXED 4 (+ generator, account). G-next: emoji_torah (never), dashboard (S364).**)
 
 - D performance (one tool): 2026-10-15 (**S510 — letter_learner (the maintainer's focus; its first D): cold + HE at 1×/4× (profile + trace), open/next/fonts/toggles by real clicks, steady windows, 3G, the worker's repeat-visit bytes; controls fired. FOUND 7, FIXED 3 (+ sw.js, 6 pulse carriers logged). D-next: flash (S393).**)
 
@@ -726,4 +728,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-18 (**S514 — 38th F, dialog Tab traps: 22 dialogs × 2 cells by real keys + a click-on-text arm; plants 4/4. CLEAN 13. FOUND 9, FIXED 3 (+ FM menus). F-next: empty states.**)
 
-**Next session (S523):** **BRANCH/PR: the S522 draft PR open → continue; merged → restart from `origin/main`.** `sw.js` **v1037**, FM **5.59**. ⚑ Stalest: G (S509; dictionary), D, I. ⚑ `emoji_torah.html` has had only M. ⚑ Seeds: 44. ⚑ Maintainer: sw.js `no-store`; re-stage 14 fonts; torah screen reader; A/B week eyes; gates 2–4 (Candidates); O needs a Bash rule.
+**Next session (S524):** **BRANCH/PR: the S523 draft PR open → continue; merged → restart from `origin/main`.** `sw.js` **v1041**, FM **5.59**. ⚑ Stalest: D (S510; flash), I, H. ⚑ Seeds: 44. ⚑ Maintainer: sw.js `no-store`; re-stage 14 fonts; torah screen reader; A/B week eyes; gates 2–4 (Candidates); O needs a Bash rule.

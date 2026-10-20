@@ -125,6 +125,7 @@ Cross-page code ships as `/* ═══ … ═══ */`-marked blocks that are 
 ## Color coding (nikkud / trope)
 - Two vowel schemes (`vowelColorScheme: 'default' | 'talam'`) on the dashboard, generator, flash cards and Torah Trainer. **A new vowel key or color control goes into both schemes:** both default maps, both ordered picker-def arrays, both group arrays (generator + flash cards), then `getSettings()`/`applySettings()`; Torah Trainer also needs its `.nik-<key>` CSS var line. Keys stay identical across schemes.
 - `resetNikudColors()` must `confirm()` first (overrides are shared across schemes).
+- Paper takes the light palette: printed or exported colour-coded nikkud uses each syllable's light-palette colour (`--nik-paper` on the dictionary and generator, `_printForceLight` on the Torah Trainer), whatever the screen theme (an inline dark-palette colour outranks every print reset).
 - Dark mode: `--white` is a dark surface in dark mode — use literal `#fff` for text on navy; the no-flash IIFE and the on-load init use the same OS-aware condition; every dark toggle syncs `aria-pressed`.
 - Trope coloring is class-based (`trope-<fam>` + body CSS vars, `:where()`-wrapped), reads the original verse text, and bails to uncolored on any desync — no color, never wrong color. Details: `docs/reference/torah-and-trope.md`.
 

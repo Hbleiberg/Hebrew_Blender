@@ -2608,3 +2608,39 @@
   - **(314)** The Trainer's emoji gallery opener (`.tt-emo-open`) appears only once a reading has loaded; with Sefaria aborted it never does — open the gallery with `openParashaGallery()` for a comparison shot.
   - **(315)** `git stash` around a before-run also stashes the ledger's uncommitted lines: commit or stash only the page (`git stash push <file>`), or pop before editing the ledger again.
   | found S522
+
+## S523 (2026-10-20) — pass G's run on the dictionary (its 6th: S65 → S94 → S127 → S252 → S377 → S523)
+
+- [ ] P4 (**NEW S523 Pass G — its receipts, so the next G on the dictionary starts here**) | hebrew_dictionary.html | **Delta since S377: 92 commits on the file** (the print header `78cc7e87`, Print checks the mode on screen, list exports from the Word Lists window `1a4b669e`, the size slider's class rule `c049ab67`, exact-match-first English search, Copy Mode kept across loads). Harness `g523/` (scratchpad): local HTTP :8080 + a `git archive` HEAD copy on :8091, `serviceWorkers:'block'`, foreign origins aborted, Chromium launched with `LANG=C.UTF-8` (trap 98), PDFs by `page.pdf` under `emulateMedia('print')` with `beforeprint`/`afterprint` dispatched, read with pdfplumber + pdftotext + pdftoppm (PyMuPDF would not install through the proxy).
+  - **Matrix (`p1`):** "water" (41 words) × EN/HE × light/dark × Letter/A4 at 0.4in: 3 sheets each, the print header (title, date, "41 words" / "41 מילים", `Filters: Search: "water"`), 0 off-page glyphs, 0 dark fills, 0 page errors.
+  - **Views (`p3`):** Emojis "dog" 1 sheet (header count "5 emojis"); Shoresh כתב 3 sheets ("20 related words"); a saved list loaded by real clicks prints its banner under a header with the date only (by design); size 100 (52.8px) 4 sheets.
+  - **Margins and breaks (`p7`):** "book" (80 words) × Letter/A4 × 0/0.39/0.5/0.75/1in, EN light and HE dark: 5–9 sheets, the sidebar on none, every continuation sheet opens on a 24pt headword (the flagged וּ / שׁ are presentation forms, trap 318).
+  - **Colour coding (`p2`, `v1`, `v2`):** see the measurements below; after the fix dark prints light's inventory in all 3 modes with backgrounds off and on, an override prints as itself, Shoresh 59 and Emojis 35 syllables in HE dark by real clicks.
+  - **Exports (`p5`):** list exports from the Word Lists window and Bulk exports from Emojis, EN and HE: filenames keep the Hebrew list name and emoji (`ivrit-anki-Noach-מַיִם-💧-week-2-…txt`), Anki 3 header lines + 6 tab fields per row with `[\t\r\n]` folded, Quizlet BOM + `Term,Definition` + RFC quoting (an inner tab and newline stay inside quotes), Emoji export expands masc/fem (2 cards → 4 rows).
+  | found S523
+
+- [ ] P4 (**NEW S523 — measurements and refutations, recorded so no pass re-derives them**) | hebrew_dictionary.html, hebrew_blend_generator.html, flash_cards.html, classroom_dashboard.html |
+  - **(1) Blink's print economy darkens light TEXT, not decorations or tints.** With background graphics off, dark-palette Letter mode printed `#33ccee` as `#21849a`, `#bb66ee` as `#79429a`, `#aaaadd` as `#696989`; the light palette's `#8833bb` → `#4b1c67`, `#7777aa` → `#3c3c56`, `#0099bb` unchanged. Underlines kept the dark palette (`#33cced` 1.91:1, `#deab00` 2.12:1), and the generator's dark `#ddaa00` text printed undarkened (2.14:1). So a dark-from-print fix changes Letter mode least and Underline most.
+  - **(2) Highlight printed NO colour on HEAD even with background graphics on** (0 tinted fills on sheet 1 in both themes, both settings); after the fix it prints 45 underlines.
+  - **(3) The generator's Export PDF from dark** (html2canvas 1.4.1 + jsPDF 2.5.1 from npm at their cdnjs URLs): HEAD's page images differ from light's; after `22f9cacc` they are byte-identical to light's in all 3 modes.
+  - **(4) Not carriers of the pattern:** `flash_cards.html`'s card sheet (`fcsCell`) and the dashboard's week sheet draw no colour-coded Hebrew; the Torah Trainer's `_printForceLight` (S89) already holds.
+  - **(5) The "Saved …" status reads right on HEAD for every name tried** (Animals, Unit 4, Lesson 3, a mixed Latin/Hebrew/emoji name, כיתה ב 2 x): its quotes and "with"/"עם" keep the count apart, so it was left as is; only the banner's template puts the count right after the name.
+  - **(6) Headword overflow census** (all 13,081 cards, print layout 739 / 651px): default size 4 / 9, size 75 42.4px 44 / 113, size 100 52.8px 185 / 408; screen at default 1280 4, 800 4, 390 44 (the candidate). The overflow spills toward the inline end (left), into the next card or the margin.
+  - **(7) The Quizlet CSV:** 7 of 13,081 definitions start with `=` (5, Wiktionary "same as" notes), `-` (עָשָׂר "-teen") or `@`; 0 contain a tab or newline.
+  - **(8) The account page's print** (fixed `14c13761`): the 8 controls rendered under print media with every names list open were the name field (kept) and 7 buttons; the third sheet held the footer (A4) or Delete + the footer (Letter).
+  | found S523
+
+- [ ] P4 (**S523 — the fixes' receipts**) | hebrew_dictionary.html, hebrew_blend_generator.html, account.html |
+  - **`70531135`** (`v1.mjs`, `v2.mjs`): computed colour, background and decoration of 2,472 coloured syllables equal to HEAD in 30 screen cells (3 modes × light/dark × 1280/800, Words + Emojis, and after a print); PDFs as above.
+  - **`22f9cacc`** (`vg.mjs`, a seeded `Math.random`, the switch and mode by real clicks, Talam in dark): 1,320 syllables equal to HEAD in 33 screen cells (incl. after Print and after Export); Print from dark carries the light inventory in both schemes; Export page images from dark byte-identical to light's.
+  - **`5c90247e`** (`bidi.mjs`, `bidi2.mjs`: characters read in line order, right to left in Hebrew; the name one run, the count after it): HEAD 2/6 HE and 4/6 EN at 1280 light, 3/6 and 4/6 at 390 dark; tree 6/6 in all four; printed HE sheets carry the name whole.
+  - **`14c13761`** (`acctprint.mjs`: `smoke-account-page`'s fake cloud and the pinned SDK 2.116.0 from npm, sha384 = `sdkIntegrity`): controls under print media 8 → 1, sheets 3 → 2 in EN/HE × light/dark × Letter/A4; `smoke-account-page --sdk` 65/65.
+  | found S523
+
+- [ ] P4 (**NEW S523 — traps**) | probes |
+  - **(316)** `page.pdf()` prints with whatever media is emulated: an `emulateMedia({ media: 'screen' })` left before it prints the screen layout (header controls and all). Emulate `print` (or `null`) first.
+  - **(317)** pdfplumber reports a bordered rounded box (a banner, a tile) as a rect whose fill colour is its border colour: a "dark fill" count includes them. Compare against a control or skip rects whose fill equals the stroke.
+  - **(318)** Hebrew presentation forms (U+FB1D–FB4F: וּ, שׁ) lie outside U+0590–05FF, so a "first glyph is Hebrew" check flags them.
+  - **(319)** The dictionary's Word Lists window lists the newest first: a probe that clicks the n-th "Load as filter" by seed order loads another list. Read the loaded name back from the banner.
+  - **(98, re-hit)** Without `LANG=C.UTF-8` every non-ASCII export name downloads as `download`.
+  | found S523
