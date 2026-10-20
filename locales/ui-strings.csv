@@ -3504,7 +3504,7 @@ home.alltools.myfonts.use_alert,“{name}” will be used in every IvritSuite to
 home.alltools.myfonts.use_button,Use in all tools,שימוש בכל הכלים,button,
 home.alltools.myfonts.use_status,“{name}” is now the font in every tool — reload any open tool to see it.,“{name}” הוא כעת הגופן בכל כלי — טענו מחדש כל כלי פתוח כדי לראותו.,status text,template
 home.alltools.no_data_alert,This file has no all-tools data. Try importing it on its own tool's page instead.,בקובץ זה אין נתוני כל-הכלים. נסו לייבא אותו בעמוד הכלי הייעודי שלו במקום זאת.,alert (AllTools .ivrit apply),
-home.alltools.note,"Back up <b>all</b> presets, saved schedules, settings, and saved fonts from the Generator, Dashboard, Flash Cards, Dictionary, Torah Trainer, Trope Tutor, and Font Maker together. <b>Automatic Input</b> saves and restores a single <b>.ivrit</b> file; <b>Manual Input</b> uses a copy-and-paste text block.","גבו <b>את כל</b> התבניות, מערכות השעות השמורות, ההגדרות והגופנים השמורים מהמחולל, לוח המחוונים, כרטיסי הזיכרון, המילון, מאמן התורה, מאמן הטעמים ויוצר הגופנים — יחד. <b>קלט אוטומטי</b> שומר ומשחזר קובץ <b>.ivrit</b> יחיד; <b>קלט ידני</b> משתמש בבלוק טקסט להעתקה והדבקה.",modal intro note,html; mixed UI+content — do not translate tool names
+home.alltools.note,"Back up <b>all</b> presets, saved schedules, settings, and saved fonts from the Generator, Dashboard, Flash Cards, Dictionary, Torah Trainer, Trope Tutor, Letter Learner, Parsha Emojis, and Font Maker together. <b>Automatic Input</b> saves and restores a single <b>.ivrit</b> file; <b>Manual Input</b> uses a copy-and-paste text block.","גבו <b>את כל</b> התבניות, מערכות השעות השמורות, ההגדרות והגופנים השמורים מהמחולל, לוח המחוונים, כרטיסי הזיכרון, המילון, מאמן התורה, מאמן הטעמים, לומדים אותיות, אימוג׳י הפרשות ויוצר הגופנים — יחד. <b>קלט אוטומטי</b> שומר ומשחזר קובץ <b>.ivrit</b> יחיד; <b>קלט ידני</b> משתמש בבלוק טקסט להעתקה והדבקה.",modal intro note,html; mixed UI+content — do not translate tool names
 home.alltools.note_signed_in,"You are signed in, so every tool's presets, settings and saved items live in your account and follow you to any device. This file is for sharing them or keeping an offline copy: <b>Automatic Input</b> saves and restores a single <b>.ivrit</b> file; <b>Manual Input</b> uses a copy-and-paste text block. Restoring a file merges its items into your account.","אתם מחוברים, ולכן התבניות, ההגדרות והפריטים השמורים של כל הכלים חיים בחשבון שלכם ועוקבים אחריכם לכל מכשיר. הקובץ הזה נועד לשיתוף או לעותק לא מקוון: <b>קלט אוטומטי</b> שומר ומשחזר קובץ <b>.ivrit</b> יחיד; <b>קלט ידני</b> משתמש בבלוק טקסט להעתקה והדבקה. שחזור קובץ ממזג את הפריטים שבו לחשבון שלכם.",AllTools modal note while signed in (swapped in by initCloudSaves),html
 home.alltools.open_button,Import / Export All Settings,ייבוא / ייצוא כל ההגדרות,button opening settings modal,svg-icon-in-markup
 home.alltools.save_button,Save All Settings to .ivrit file,שמירת כל ההגדרות לקובץ .ivrit,button (auto mode),leading-emoji
@@ -3516,6 +3516,10 @@ home.bookmark.tip_mobile,"Tap the share/menu button in your browser and choose "
 home.card.dashboard.cta,Open the Hebrew classroom display →,פתחו את תצוגת כיתת העברית ←,tool card button,
 home.card.dashboard.desc,"Live Hebrew date, time, weather, and days of the week for the Hebrew classroom — SmartBoard and projector ready, free for teachers.","תאריך עברי, שעה, מזג אוויר וימות השבוע בזמן אמת עבור כיתת העברית — מוכן ללוח חכם ולמקרן, חינם למורים.",tool card description,scope-ambiguous (card desc)
 home.card.dashboard.name,Hebrew Classroom Dashboard,לוח מחוונים לכיתת עברית,tool card title,
+home.card.discover.cta_letterlearner,Letter Learner →,לומדים אותיות ←,Discover card button (the Letter Learner),
+home.card.discover.cta_parshaemojis,Parsha Emojis →,אימוג׳י הפרשות ←,Discover card button (the Parsha Emojis),
+home.card.discover.desc,"Meet the alef-bet and the weekly parsha: a picture, words and sounds for every Hebrew letter, and an emoji drawing for every Torah portion.","הכירו את האלף־בית ואת פרשת השבוע: ציור, מילים וצלילים לכל אות עברית, וציור אימוג׳י לכל פרשה.",Discover card description (the card holds two tools),
+home.card.discover.name,Discover,גלו,Discover card title (the card that links the Letter Learner and the Parsha Emojis),
 home.card.dictionary.cta,Look up Hebrew words →,חפשו מילים בעברית ←,tool card button,
 home.card.dictionary.desc,"Free Hebrew dictionary to browse and filter Hebrew vocabulary by theme, length, part of speech, era, and letter position — useful for Hebrew learning at every level.","מילון עברי חינמי לעיון וסינון אוצר מילים עברי לפי נושא, אורך, חלק דיבר, תקופה ומיקום האות — שימושי ללימוד עברית בכל רמה.",tool card description,scope-ambiguous (card desc)
 home.card.dictionary.name,Hebrew Word Lookup,חיפוש מילים בעברית,tool card title,
@@ -3935,8 +3939,10 @@ shared.phrases.mixed_tip,Hebrew beside digits and Latin letters.,עברית לצ
 shared.nav.header,Related Hebrew Tools,כלים עבריים נוספים,Related-tools nav header + aria-label,shared
 shared.nav.link_dashboard,Hebrew classroom display →,תצוגת כיתה בעברית ←,Related-tools nav link,shared
 shared.nav.link_flashcards,Hebrew alphabet flash cards →,כרטיסיות אלפבית עברי ←,Related-tools nav link,shared
+shared.nav.link_letterlearner,learn the Hebrew alef-bet →,לימוד האלף־בית ←,Related-tools nav link,shared
 shared.nav.link_dictionary,Hebrew word lookup →,חיפוש מילים בעברית ←,Related-tools nav link,shared
 shared.nav.link_fontmaker,make your own Hebrew font →,צרו גופן עברי משלכם ←,Related-tools nav link,shared
+shared.nav.link_parshaemojis,parsha emojis and coloring pages →,אימוג׳י ודפי צביעה לפרשות ←,Related-tools nav link,shared
 shared.nav.link_resources,free Hebrew teaching resources →,משאבים חינמיים להוראת עברית ←,Related-tools nav link,shared
 shared.nav.link_torah,Torah reading practice →,תרגול קריאה בתורה ←,Related-tools nav link,shared
 shared.nav.link_trope,learn Torah trope (cantillation) →,למדו טעמי המקרא ←,Related-tools nav link,shared
