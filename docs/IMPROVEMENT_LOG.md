@@ -8,13 +8,13 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P4 (**NEW S523 G**) | hebrew_dictionary.html | **Quizlet CSV: 7 definitions open with `=`/`-`/`@` ("-teen"); Excel reads them as formulas.** | found S523
+- [ ] P4 (**NEW S524 D**) | flash_cards.html | **Its two font pickers fetch 17 Google Fonts stylesheets on every load, for previews in a collapsed panel**; other picker pages unmeasured. | found S524
 
 - [ ] P4 (**NEW S523 G — gate 3**) | hebrew_dictionary.html | **A long one-word headword overflows its card** (paper and phone). | found S523
 
 - [ ] P4 (**NEW S522 M — gate 4**) | emoji_torah.html | **On a phone (≤600px) Print still takes a row of its own** (EN 390: four rows). | found S522
 
-- [ ] P4 (**NEW S522 M**) | emoji_torah.html, torah_trainer.html | **This week's badge drops its card's name 23px below its row-mates'.** | found S522
+- [ ] P4 (**NEW S522 M — gate 3 since S524**) | emoji_torah.html, torah_trainer.html | **This week's badge drops its card's name 23px below its row-mates'**: on the border it needs ~9.5px of a 12/10px row gap (findings S524). | found S522
 
 - [ ] P4 (**NEW S522 M — gate 3**) | emoji_torah.html | **Today's lone card stops at 840px under a 1052px heading rule.** | found S522
 
@@ -38,11 +38,9 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**S502 A — radio-set twin**) | dictionary, resources | **Unnamed pressed rows**: dictionary mode, resources view (gate 2). | found S502
 
-- [ ] P4 (**NEW S500 F**) | dashboard, `.ivrit` carriers | **Week tabs: no tabpanel; the `.ivrit` mode toggle unnamed** (shared markup). | found S500
+- [ ] P4 (**NEW S500 F; week tabs FIXED S524**) | `.ivrit` carriers | **The `.ivrit` mode toggle is unnamed** (shared markup). | found S500
 
 - [ ] P4 (**NEW S497 I — gate 2**) | classroom_dashboard.html | **A Hebrew first visit's demo message is English** (`DEFAULT_PRESET`, a `smoke-sync` canon). | found S497
-
-- [ ] P4 (**NEW S496 D**) | hebrew_dictionary.html | **`roveTileGrid` forces 14 layouts per load** (findings S496). | found S496
 
 - [ ] P4 (**NEW S494 M — hebrew-faux-italic**) | 5 pages + folder-tree block | **12 Hebrew hints slant by CSS italic**: upright in HE (findings S494). | found S494
 
@@ -89,8 +87,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW PR #313**) | classroom_dashboard.html | **The dashboard's parsha line never names a special Shabbat** (Zachor, Parah, Shekalim…) though `HebCal.specialShabbat` now answers by date. | found PR #313
 
 - [ ] P4 (**NEW S464 M**) | resources.html | **Below ~1020px wrapped chips flow back under their row label.** | found S464
-
-- [ ] P4 (**NEW S460 — ANSWERED S462: drop it**) | Hebrew_Font_Maker.html | **The About footer says "(the font engine loads on first export)"** (`fontmaker.about.footer_about_body`). | found S460
 
 - [ ] P4 (**NEW S454 H — gate 2**) | resources.html | **"Jewish Interactive" is listed twice** (one URL; "All" counts 43 for 42). | found S454
 
@@ -318,13 +314,15 @@ _(none)_
 
 ## Done
 
-- [x] 2026-10-20 | (S523 close-out) | branch/deploy note | **S523 = G + 4 fixes; new branch + draft PR.** Drift: sw v1037→v1040 (LL Coloring sheet); no backend change; keep-alive #37 green. sw v1040→v1041; no FM bump; account smoke 65/65.
+- [x] 2026-10-20 | (S524 close-out) | branch/deploy note | **S524 = D + 4 fixes on the S523 PR (#345).** No drift (main `0d77615b`); keep-alive #37 green. sw v1041→v1042; no FM bump (copy); corpus ?v=7; gate 2 asked (CSV) → reword.
 
-- [x] 2026-10-20 | `70531135` `22f9cacc` `5c90247e` `14c13761` | dictionary ×2, generator, account | (S523) **Nikkud paper palette ×2; list-name isolate; account print.** | findings S523
+- [x] 2026-10-20 | `aa14beba` `5698e226` `e743081e` `e27d9ec5` | flash, dictionary, generator, FM, corpus, dashboard | (S524) **Grid build forced layouts ×3 (closes S496 D); FM footer (S460); corpus 7 definitions (S523 G); week tabpanel (S500 F).** | findings S524
 
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-20 | **S524** | iters: 5 | tools: flash ×2, dictionary ×2, generator ×2, FM, dashboard, corpus, sw.js | patterns fixed: layout-read-per-grid-at-build ×1 | pass run: D | SW: v1041→v1042
 
 - 2026-10-20 | **S523** | iters: 5 | tools: dictionary ×2, generator, account, sw.js | patterns fixed: dark-palette-baked-into-paper ×2 | pass run: G | SW: v1040→v1041
 
@@ -336,15 +334,13 @@ _(none)_
 
 - 2026-10-19 | **S519** | iters: 5 | tools: LL, trope, FM, contact, locales CSV, sw.js | patterns fixed: tour-not-following-a-live-switch ×2, radio-set-without-a-question ×2 | pass run: K | SW: v1017→v1018
 
-- 2026-10-19 | **S518** | iters: 5 | tools: FM ×2, dashboard, locales CSV, sw.js | patterns fixed: radio-set-without-a-question ×1 | pass run: L | SW: v1016→v1017
-
-- 2026-10-18 | **S517** | iters: 5 | tools: README, docs (i18n, ops), FM ×2, sw.js | patterns fixed: — | pass run: E | SW: v1015→v1016
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S523 (2026-10-20):** dictionary, generator, account, sw.js S523 · emoji_torah, FM, LL S522 · torah, saves, scripts S521 · 404, privacy, terms, contact, resources, index, dashboard S520 · trope, CSV S519 · README S517 · flash S515 · i18n.js S512 · pwa S472.
+- **Snapshot S524 (2026-10-20):** flash, dictionary, generator, FM, dashboard, corpus, CSV, README, sw.js S524 · account S523 · emoji_torah, LL S522 · torah, saves, scripts S521 · 404, privacy, terms, contact, resources, index S520 · trope S519 · i18n.js S512 · pwa S472.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`layout-read-per-grid-at-build`** (NEW S524 D; `roveTileGrid` ×3 FIXED `aa14beba`; open 0): ACTIVE, streak 0. A builder's layout read (`offsetParent`, a rect) per grid while the page still builds. Detection: `d524/trace.mjs` (forced Layout by stack line).
 
 - **`dark-palette-baked-into-paper`** (NEW S523 G; torah, dictionary, generator fixed; open 0): ACTIVE, streak 0. Detection: `getNikudColor` output that reaches paper (print, `onclone`) resolves the light palette; a PDF from dark = light's.
 
@@ -712,7 +708,7 @@ _(none)_
 
 - G print & export fidelity (one tool): 2026-10-20 (**S523 — dictionary's 6th G: real PDFs EN/HE × themes × Letter/A4, margins, views, colour modes, exports; controls fired. FOUND 5, FIXED 4 (+ generator, account). G-next: emoji_torah (never), dashboard (S364).**)
 
-- D performance (one tool): 2026-10-15 (**S510 — letter_learner (the maintainer's focus; its first D): cold + HE at 1×/4× (profile + trace), open/next/fonts/toggles by real clicks, steady windows, 3G, the worker's repeat-visit bytes; controls fired. FOUND 7, FIXED 3 (+ sw.js, 6 pulse carriers logged). D-next: flash (S393).**)
+- D performance (one tool): 2026-10-20 (**S524 — flash's 5th D (S393 →, 79 commits): cold 8 cells + trace, 200-card heavy paths by real clicks at 1×/4×, idle (timer control), 20-cycle leak, bytes; controls fired. FOUND 2, FIXED 1 (×3 carriers). D-next: trope (S365).**)
 
 - I first-load & empty-state: 2026-10-16 (**S511 — 38th I, S497 → S511 (~110 commits + letter_learner's first I): plants 286/288 (2 explained), 144 virgin cells × HEAD + the S510 tree (139/144 equal; 5 timing), tours 8/8 (plants 8/8), 259 drawer/tab clicks, LL: collapse tab, 7 letters × 4 tabs, all-off note, deep links, no-speech, 19 wrong-shape keys. FOUND 1, FIXED 1 (+3 candidates).**)
 
@@ -728,4 +724,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-18 (**S514 — 38th F, dialog Tab traps: 22 dialogs × 2 cells by real keys + a click-on-text arm; plants 4/4. CLEAN 13. FOUND 9, FIXED 3 (+ FM menus). F-next: empty states.**)
 
-**Next session (S524):** **BRANCH/PR: the S523 draft PR open → continue; merged → restart from `origin/main`.** `sw.js` **v1041**, FM **5.59**. ⚑ Stalest: D (S510; flash), I, H. ⚑ Seeds: 44. ⚑ Maintainer: sw.js `no-store`; re-stage 14 fonts; torah screen reader; A/B week eyes; gates 2–4 (Candidates); O needs a Bash rule.
+**Next session (S525):** **BRANCH/PR: #345 (S523+S524) open → continue; merged → restart from `origin/main`.** `sw.js` **v1042**, FM **5.59**, corpus ?v=7. ⚑ Stalest: I (S511), H (S512), C (S513; LL never). ⚑ Seeds: 44. ⚑ Maintainer: sw.js `no-store`; re-stage 14 fonts; torah screen reader; A/B week eyes; gates 2–4 (Candidates); O needs a Bash rule.

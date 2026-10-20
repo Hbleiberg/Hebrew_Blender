@@ -93271,3 +93271,23 @@ _(prior — S523 pointer:)_ **Next session (S523):** **BRANCH/PR: the S522 draft
 - 2026-10-18 | **S515** | iters: 5 | tools: dashboard, flash, generator, index, torah, FM, sw.js | patterns fixed: overlay-scoped-dialog-keys ×2 | pass run: B | SW: v1013→v1014
 
 - 2026-10-18 | **S516** | iters: 5 | tools: index, letter_learner, FM ×2, sw.js | patterns fixed: overlay-scoped-dialog-keys ×2, pinned-english-without-lang ×7, sub-floor touch target ×4 | pass run: A | SW: v1014→v1015
+
+
+<!-- archived by compact-ledger at the S525 boundary, 2026-10-20 -->
+## Compaction (S525, 2026-10-20) — moved verbatim from the live ledger
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+_(prior — S524 pointer:)_ **Next session (S524):** **BRANCH/PR: the S523 draft PR open → continue; merged → restart from `origin/main`.** `sw.js` **v1041**, FM **5.59**. ⚑ Stalest: D (S510; flash), I, H. ⚑ Seeds: 44. ⚑ Maintainer: sw.js `no-store`; re-stage 14 fonts; torah screen reader; A/B week eyes; gates 2–4 (Candidates); O needs a Bash rule.
+
+## Size move (S524 close-out, 2026-10-20) — S523's Done entries, moved by hand verbatim (the ledger sat over its 100 KB limit)
+
+- [x] 2026-10-20 | (S523 close-out) | branch/deploy note | **S523 = G + 4 fixes; new branch + draft PR.** Drift: sw v1037→v1040 (LL Coloring sheet); no backend change; keep-alive #37 green. sw v1040→v1041; no FM bump; account smoke 65/65.
+
+- [x] 2026-10-20 | `70531135` `22f9cacc` `5c90247e` `14c13761` | dictionary ×2, generator, account | (S523) **Nikkud paper palette ×2; list-name isolate; account print.** | findings S523
+
+## Per-session log (S517, S518) — moved verbatim from the live ledger at the S524 close-out
+
+- 2026-10-19 | **S518** | iters: 5 | tools: FM ×2, dashboard, locales CSV, sw.js | patterns fixed: radio-set-without-a-question ×1 | pass run: L | SW: v1016→v1017
+
+- 2026-10-18 | **S517** | iters: 5 | tools: README, docs (i18n, ops), FM ×2, sw.js | patterns fixed: — | pass run: E | SW: v1015→v1016
