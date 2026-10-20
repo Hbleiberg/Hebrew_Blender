@@ -634,14 +634,15 @@ copy without writing. Both modules are precached, so a rebuilt one needs the `sw
   has no switch: the icons are what it shows.
 
 ### The parsha emojis page (`emoji_torah.html`)
-The Trainer's emoji gallery as a page of its own, view only and storing nothing. **Not yet linked from the hub**:
+The Trainer's emoji gallery as a page of its own, with a coloring-sheet printer; it stores only that printer's
+options (one synced `settings` row, tool `EmojiTorah`). **Not yet linked from the hub**:
 `noindex`, out of `sitemap.xml` (so out of `llms.txt`), no JSON-LD, in `sw.js` `CORE_ASSETS`, as `letter_learner`
 was before its launch. It draws the gallery's cards (`etCard`, the markup of `renderParashaGallery` with an `et-`
 prefix) from `data/parshiyot.json?v=1` (the Trainer's `?v=`), `ParashaIcons` and `ParashaNotes`, and carries the
 header-icons and holiday-icons CSS blocks.
 - **The view bar** is a group of `aria-pressed` toggle buttons, one pressed at a time: *Today's parasha* (the
   default on every load; the page remembers no choice), the five books (`torah.custom.book_*` labels) and *View All*,
-  with a Print button at its end. It is sticky above 600px and scrolls with the page below (its buttons wrap to
+  with an end group of *Print coloring sheets* and *Print*. It is sticky above 600px and scrolls with the page below (its buttons wrap to
   three rows on a phone); while it is sticky, Print keeps to the end of the first row and the views wrap beside it
   (a row of its own would pin more of the window); a view change from below its resting place brings the new view's
   top up under it. In View All (and the every-card fallback) the book headings stick under the pinned bar, as the
@@ -661,6 +662,36 @@ header-icons and holiday-icons CSS blocks.
   links sit on the cards' bottom edges.
 - **Print** keeps the chosen view's cards on white paper, two across, none split between sheets; the header, view
   bar, footer and card links are hidden.
+- **Print coloring sheets** (disabled until `parshiyot.json` loads) opens a popup modelled on the Letter Learner's
+  bulk print: parasha chips under the five book headings (opened with the current view's parshiyot ticked, through
+  `etVisibleIdx()`, which `etRender` shares; the selection is never stored), copies 1–40 with collated sets or
+  grouped by parasha, *Colored in* (off), portrait / landscape, Letter / A4, the printed text's language (English /
+  Hebrew / Both; until chosen it follows the site), six Include switches (Hebrew title, English title, verse numbers,
+  synopsis, picture explanation, name line) and seven 50–150% size sliders (a slider is disabled while its part is
+  off), the account status line at the foot of the options, and a preview grid with one thumbnail per parasha and a
+  `× N` badge. Focus is trapped while it is open; Escape and the close button return focus to the opener.
+- **The sheet** (`etCsBuildSheet`) is a size container at the printed box's proportions (the paper less the 0.35in
+  margins), everything inside in `cqmin` — its layout sits in the inner `.et-cs-page`, since a container's own
+  padding would resolve `cqmin` against the viewport. Portrait runs name line, titles, verse line, picture,
+  synopsis, explanation, the `IvritSuite.com` credit; landscape puts the picture left of the text column. The printed
+  labels and the books' Hebrew names are in-page `i18n-ignore` constants (printed content follows the sheet's
+  language); Hebrew text is `lang="he" dir="rtl"`, and the verse range sits in a `<bdi dir="ltr">`. The picture
+  shrinks first; `etCsFitAll` then measures offscreen clones at the exact print size and steps the text factor `--k`
+  down by 0.05 to 0.7, and the popup's `aria-live` note names a sheet that was shrunk or still overflows. Printing
+  sets `@page` in `<style id="etPageSize">` while the popup is open, fills `#etCsPrintArea` (a child of `<body>`)
+  with one clone per page in the chosen order, and the print CSS under `body.et-cs-open` hides everything else;
+  `beforeprint` fills it for Ctrl+P.
+- **The line art** (`etCsDrawing` → `etCsConvert`) is derived from the drawings at run time, never stored: every
+  token is a `var(--hol-*)`, so the conversion reads paint by walking up to the root, measures the geometry once on a
+  hidden attached copy (box area, the largest separately drawn piece, the topmost earlier fill under each shape), and
+  repaints. Lines print at 0.45 of the site's weight; an ink line followed by a coloured copy of the same shape keeps
+  its full width and the copy becomes its inside (a band for a line, a silhouette for a fill) — the drawing's order is
+  never changed, because a later fill covers what came between. A fill with no line of its own gets a thin outline,
+  except shine (a light patch on a warm fill, or in pieces too small to colour) and a small navy detail (solid
+  black); thin light lines on paint print grey. *Colored in* writes the light palette's literal colours. A conversion
+  that leaves a token behind logs `[coloring]` and fails `node scripts/parasha-coloring-review.mjs`, which renders
+  all 54 as site / line art / coloured in into `docs/parasha-coloring-review/` — re-run it and look at every row
+  whenever `ParashaEmojis.md` changes a drawing.
 - A failed `parshiyot.json` fetch puts a note in the `role="status"` line; without `ParashaNotes` the cards show the
   icon, names and range only. `applyI18n` re-renders the cards, read-only.
 

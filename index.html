@@ -1270,6 +1270,7 @@ function exportAllSettings() {
     torahTrainerFavoriteFolders: ftRead('hebrewTorahTrainer_favoritesFolders'),
     tropeTutorSettings:  lsJSON('hebrewTropeTutor_settings', {}),
     letterLearnerSettings: lsJSON('hebrewLetterLearner_settings', {}),
+    emojiTorahSettings: lsJSON('hebrewEmojiTorah_settings', {}),
     tropeTutorProgress:  lsJSON('hebrewTropeTutor_progress', {}),
     inputMode:           localStorage.getItem('hebrewBlender_inputMode') || 'auto',
     hebFont:             localStorage.getItem('hebrewBlender_hebFont') || '',
@@ -1409,6 +1410,11 @@ async function importAllSettings() {
     if (parsed.letterLearnerSettings && Object.keys(parsed.letterLearnerSettings).length) {
       const existing = ivritSafeParse(localStorage.getItem('hebrewLetterLearner_settings') || '{}');
       localStorage.setItem('hebrewLetterLearner_settings', JSON.stringify(ivritSafeAssign(existing, parsed.letterLearnerSettings)));
+    }
+    // Parsha Emojis: the coloring sheets' print options, one blob, flat merge
+    if (parsed.emojiTorahSettings && Object.keys(parsed.emojiTorahSettings).length) {
+      const existing = ivritSafeParse(localStorage.getItem('hebrewEmojiTorah_settings') || '{}');
+      localStorage.setItem('hebrewEmojiTorah_settings', JSON.stringify(ivritSafeAssign(existing, parsed.emojiTorahSettings)));
     }
     if (parsed.tropeTutorSettings && Object.keys(parsed.tropeTutorSettings).length) {
       const existing = ivritSafeParse(localStorage.getItem('hebrewTropeTutor_settings') || '{}');
@@ -1608,6 +1614,7 @@ async function eraseAllSettings() {
     'hebrewTorahTrainer_favoritesFolders',
     'hebrewTropeTutor_settings',
     'hebrewLetterLearner_settings',
+    'hebrewEmojiTorah_settings',
     'hebrewTropeTutor_progress',
     'hebrewBlender_inputMode',
     // per-device, export-exempt: when this device last saved an AllTools .ivrit (the line under the inventory)
@@ -1686,6 +1693,7 @@ const IVRIT_CFG = {
       torahTrainerFavoriteFolders: ftRead('hebrewTorahTrainer_favoritesFolders'),
       tropeTutorSettings:  lsJSON('hebrewTropeTutor_settings',      {}),
       letterLearnerSettings: lsJSON('hebrewLetterLearner_settings', {}),
+      emojiTorahSettings: lsJSON('hebrewEmojiTorah_settings', {}),
       tropeTutorProgress:  lsJSON('hebrewTropeTutor_progress',      {}),
       inputMode:           localStorage.getItem('hebrewBlender_inputMode') || 'auto',
       hebFont:             localStorage.getItem('hebrewBlender_hebFont') || '',
@@ -1752,6 +1760,7 @@ const IVRIT_CFG = {
     if (data.torahTrainerFavorites){ mergeObj('hebrewTorahTrainer_favorites', data.torahTrainerFavorites); touched = true; }
     if (data.tropeTutorSettings && Object.keys(data.tropeTutorSettings).length) { mergeObj('hebrewTropeTutor_settings', data.tropeTutorSettings); touched = true; }
     if (data.letterLearnerSettings && Object.keys(data.letterLearnerSettings).length) { mergeObj('hebrewLetterLearner_settings', data.letterLearnerSettings); touched = true; }
+    if (data.emojiTorahSettings && Object.keys(data.emojiTorahSettings).length) { mergeObj('hebrewEmojiTorah_settings', data.emojiTorahSettings); touched = true; }
     if (data.tropeTutorProgress && Object.keys(data.tropeTutorProgress).length) { tropeProgressMerge(data.tropeTutorProgress, mode === 'replace'); touched = true; }
     if (data.wordLists)           { wlMergeIntoStorage(data.wordLists, mode === 'replace', mode === 'fill'); touched = true; }
     if (data.dictAudioEnabled  !== undefined) { setPref('hebrewDictionary_audioEnabled', data.dictAudioEnabled);  touched = true; }
@@ -2147,7 +2156,7 @@ function initCloudSaves() {
   IvritSaves.attach({
     tool: 'Suite',
     status: '#cloudStatus',
-    alsoPull: ['Worksheet', 'FlashCards', 'Dictionary', 'TorahTrainer', 'TropeTutor', 'Dashboard', 'LetterLearner'],
+    alsoPull: ['Worksheet', 'FlashCards', 'Dictionary', 'TorahTrainer', 'TropeTutor', 'Dashboard', 'LetterLearner', 'EmojiTorah'],
     merges: { presetFolders: ftMergeTrees, profileFolders: ftMergeTrees, scheduleFolders: ftMergeTrees, favoriteFolders: ftMergeTrees },
     onLocalChanged: (kind) => { if (!ieWindowOpen()) return; renderIvritInventory(); if (kind === 'font') { try { refreshFontsBackupCache(); renderMyFontsManager(); } catch (e) {} } }
   });

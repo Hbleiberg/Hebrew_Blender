@@ -13,6 +13,7 @@ the tables are used from the browser: `docs/reference/accounts-and-cloud.md`.
 | `migrations/0002_font_sources_originals.sql` | yes — a photo over 2 MiB uploads | raises the `font-sources` bucket's per-file cap from 2 MiB to 15 MiB and adds WebP to its accepted types, so a Font Maker project's photos are kept at their original size (Phase 5); nothing else changes |
 | `migrations/0003_keepalive.sql` | yes — a green keep-alive run | `public.keepalive()`, a function that returns `'ok'` and reads nothing, callable with the publishable key: the daily GitHub Actions workflow `.github/workflows/supabase-keepalive.yml` calls it so the free project counts as active and is never paused (Phase 8); no table, no policy changes |
 | `migrations/0004_saves_tool_letter_learner.sql` | yes — applied through the connector; `saves_tool_check` read back with eight ids and the migrations list records it (before it, every upload from the Letter Learner was refused with `23514`, which the status line could only call "limit of saved items") | widens `saves.tool`'s CHECK to eight ids (adds `LetterLearner`, mirroring `var TOOLS`): the one constraint dropped and re-created inside a single transaction — the only way Postgres offers to change a CHECK; no table, row, policy or function is dropped |
+| `migrations/0005_saves_tool_emoji_torah.sql` | no | widens `saves.tool`'s CHECK to nine ids (adds `EmojiTorah`, the Parsha Emojis page's coloring-sheet options, mirroring `var TOOLS`): the same one-constraint swap as 0004, inside a single transaction; no table, row, policy or function is dropped |
 
 Each file starts with a comment that explains every block in plain language.
 
@@ -47,9 +48,9 @@ Two consequences the SQL states only implicitly:
   `char_length(data_hash) <= 64`. All of them surface as the same `23514`, so the error code alone will not
   tell you which one you hit.
 
-Two more shapes worth knowing before you change them: `saves.tool` is a **CHECK listing the eight tool
-names** (0001 wrote seven; 0004 added the Letter Learner), mirroring `var TOOLS` in `js/ivrit-saves.js` — a
-ninth tool needs a migration widening it the way 0004 does (that one constraint dropped and re-created in a
+Two more shapes worth knowing before you change them: `saves.tool` is a **CHECK listing the nine tool
+names** (0001 wrote seven; 0004 added the Letter Learner, 0005 the Parsha Emojis page), mirroring `var TOOLS` in
+`js/ivrit-saves.js` — a tenth tool needs a migration widening it the way 0004 and 0005 do (that one constraint dropped and re-created in a
 single transaction, the only way Postgres offers), or every upload from that tool fails with an unexplained
 `23514`. And the four `storage.objects` policies are
 **per command, spanning all three buckets** (`bucket_id in (…)`), not one policy per bucket — so a fourth
@@ -167,8 +168,8 @@ either way.
 A migration runs once. Running it again stops at the first `already exists` and changes nothing, so
 a second run is harmless. **Never edit an applied file** — write the next change as
 `migrations/<next number>_<short_name>.sql`, keeping the same style: RLS on for every table, policies
-`to authenticated` with `(select auth.uid())`, functions with `set search_path = ''`, no `drop` (0004's
-constraint swap is the one reading of that rule: a CHECK can only be changed by dropping and re-creating
+`to authenticated` with `(select auth.uid())`, functions with `set search_path = ''`, no `drop` (0004's and
+0005's constraint swaps are the one reading of that rule: a CHECK can only be changed by dropping and re-creating
 it, and it removes nothing that holds data), and nothing that deletes rows.
 
 ## Checking the live project

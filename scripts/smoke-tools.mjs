@@ -396,6 +396,40 @@ const PAGES = [
     rows: ['preset:Morning', 'preset:Tefillah', 'schedule:Week A', 'schedule:Old day', 'settings:default', 'roster:m1r_0', 'roster:m1r_1'],
     expand: `openSettingsAtPanel('cloud');`,
     urlKeep: 'lang=en'
+  },
+  {
+    file: 'emoji_torah.html', tool: 'EmojiTorah', host: '#cloudSavesPanel',
+    // The seed is the page's own shape (field order included: the defaults' order, a chosen textLang last): the page
+    // writes only on a change, so a load must leave the text byte-identical.
+    seed: {
+      hebrewEmojiTorah_settings: JSON.stringify({ v: 1, colored: true, paper: 'a4', orient: 'landscape', showHe: true, showEn: false, showRef: true, showSummary: true, showWhy: false, showName: true, sizePic: 120, sizeEn: 100, sizeHe: 110, sizeRef: 100, sizeSummary: 90, sizeWhy: 100, sizeName: 100, copies: 2, collate: 'grouped', textLang: 'both' })
+    },
+    rows: ['settings:default'],
+    expand: `etCsOpen(); document.getElementById('cloudSavesPanel').scrollIntoView();`,
+    // E. the coloring popup opens on the stored options and the module's flush leaves the text byte-identical; a change
+    // is written onto the stored object, so a field this build does not know (a newer build's) survives it, and a value
+    // it cannot apply falls back on screen while staying stored
+    extra: async ({ browser, tag }) => {
+      const seedText = JSON.stringify({ v: 1, colored: false, paper: 'letter', orient: 'portrait', showHe: true, showEn: true, showRef: true, showSummary: true, showWhy: true, showName: true, sizePic: 999, sizeEn: 100, sizeHe: 100, sizeRef: 100, sizeSummary: 100, sizeWhy: 100, sizeName: 100, copies: 1, collate: 'sets', future: { x: 1 } });
+      const { ctx, page, errors } = await openPage(browser, 'emoji_torah.html', { seed: { hebrewEmojiTorah_settings: seedText } });
+      const r = await page.evaluate(() => {
+        etCsFlush();
+        const same = localStorage.getItem('hebrewEmojiTorah_settings');
+        etCsOpen();
+        const pic = document.querySelector('.et-cs-size input[data-size="sizePic"]').value;
+        const sheets = document.querySelectorAll('#etCsPages .et-cs-sheet').length;
+        const cb = document.getElementById('etCsColored');
+        cb.checked = true; cb.dispatchEvent(new Event('change', { bubbles: true }));
+        const after = JSON.parse(localStorage.getItem('hebrewEmojiTorah_settings'));
+        const lineArt = !document.querySelector('#etCsPages .et-cs-sheet svg [fill^="var("], #etCsPages .et-cs-sheet svg [stroke^="var("]');
+        etCsClose();
+        return { same, pic, sheets, colored: after.colored, future: JSON.stringify(after.future), size: after.sizePic, lineArt, open: etCsIsOpen() };
+      });
+      check(tag + ' E: the popup opens on the stored options (an unusable size shows 150) and the flush leaves the text byte-identical', r.same === seedText && r.pic === '150' && r.sheets > 0, JSON.stringify(r));
+      check(tag + ' E: a change is written onto the stored object (the unknown field and the unusable value survive)', r.colored === true && r.future === '{"x":1}' && r.size === 999 && r.lineArt && !r.open, JSON.stringify(r));
+      check(tag + ' E: 0 pageerrors', errors.length === 0, errors.join(' | '));
+      await ctx.close();
+    }
   }
 ];
 // The hub carries one panel per tool: its seed is every tool's seed, its rows every tool's rows.

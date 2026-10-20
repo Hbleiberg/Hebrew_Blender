@@ -5,11 +5,12 @@
 <!-- Content-Security-Policy (defense-in-depth). Placed right after <meta charset> so it applies before
      any script/style loads. script-src keeps 'unsafe-inline' because all app JS is inline by design; the
      value here is blocking REMOTE script injection, object/base-uri hijacks, and unexpected connect/frame
-     origins. Everything this page shows is same-origin (data/parshiyot.json and the js/ modules), so it adds
-     nothing to the chrome pages' policy. Note: meta CSP can't express frame-ancestors or report-uri and does
+     origins. Everything this page shows is same-origin (data/parshiyot.json and the js/ modules); the account
+     origins (cdn.jsdelivr.net for the lazily loaded sign-in SDK, the project's supabase.co) are the sign-in chip and
+     the synced print options. Note: meta CSP can't express frame-ancestors or report-uri and does
      not cover content parsed before this tag. Update this when adding any external script/font/fetch/iframe
      (see CLAUDE.md). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://hhkmqwpjsyxdeuhvcyis.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
@@ -20,6 +21,9 @@
 <meta name="theme-color" content="#1a2744">
 <script src="/pwa.js" defer></script>
 <script src="/js/i18n.js" defer></script>
+<script src="/js/supabase-config.js" defer></script>
+<script src="/js/ivrit-account.js" defer></script>
+<script src="/js/ivrit-saves.js" defer></script>
 <!-- iOS standalone + launch (splash) screens — regenerate with splash/gen_splash.py -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -144,15 +148,18 @@ main:focus{outline:none;}
 .et-views{display:flex;flex-wrap:wrap;gap:6px;}
 .et-view,.et-print{font-family:inherit;font-size:0.88rem;font-weight:600;padding:6px 14px;min-height:34px;border-radius:999px;border:1px solid var(--border);background:var(--white);color:var(--text);cursor:pointer;}
 .et-view:hover,.et-print:hover{border-color:var(--gold);}
+.et-print:disabled{opacity:0.5;cursor:default;border-color:var(--border);}
 .et-view[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:#fff;}
 body.dark .et-view[aria-pressed="true"]{background:var(--gold);border-color:var(--gold);color:#1a2744;}
-.et-print{margin-inline-start:auto;}
-/* Where the bar is pinned, Print keeps to the end of the first row and the views wrap beside it: a row of its own
-   would pin 42px more of the window. */
+/* The bar's two print buttons (Print coloring sheets, Print) are one group at its end: one margin pushes the group,
+   so the space is never split between them. */
+.et-acts{margin-inline-start:auto;display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end;}
+/* Where the bar is pinned, the print buttons keep to the end of the first row and the views wrap beside them: a row of
+   their own would pin 42px more of the window. */
 @media (min-width:601px){
   .et-bar{flex-wrap:nowrap;align-items:flex-start;}
   .et-views{flex:1 1 auto;min-width:0;}
-  .et-print{flex:none;}
+  .et-acts{flex:none;}
 }
 /* View All's book headings stick under the pinned bar, as the Trainer gallery's do under its dialog head, so a reader
    deep in the list still sees which book; a single book's view leaves them be (its pressed button names the book).
@@ -163,6 +170,7 @@ body.dark .et-view[aria-pressed="true"]{background:var(--gold);border-color:var(
   html{scroll-padding-block-start:calc(var(--et-bar-h,55px) + 48px);}
 }
 .et-view:focus-visible,.et-print:focus-visible,.et-go:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;}
 .et-note{margin:14px 0 0;font-size:0.95rem;color:var(--text);}
 .et-note[hidden]{display:none;}
 
@@ -216,16 +224,125 @@ footer a { display: inline-block; padding-block: 5px; }
   .et-card .hol-ico{width:44px;height:44px;}
   .et-featured .et-card .hol-ico{width:64px;height:64px;}
 }
+/* ───── Coloring sheets (Print coloring sheets): a popup in the Letter Learner's bulk-print shape — the options in a
+   column at the inline-start, a preview of one page per chosen parasha beside it, the page count and Print in a footer.
+   Its own overlay above the pinned view bar (z-index 5). ───── */
+.et-cs-overlay{position:fixed;inset:0;z-index:300;background:rgba(13,18,32,0.58);display:flex;align-items:center;justify-content:center;padding:16px;}
+.et-cs-overlay[hidden]{display:none;}
+.et-cs-dialog{background:var(--white);color:var(--text);border:1px solid var(--border);border-radius:14px;box-shadow:0 12px 32px rgba(26,39,68,0.12);width:min(1180px,96vw);height:calc(100dvh - 32px);display:flex;flex-direction:column;overflow:hidden;}
+body.dark .et-cs-dialog{box-shadow:0 12px 32px rgba(0,0,0,0.55);}
+.et-cs-head{flex-shrink:0;display:flex;align-items:center;gap:8px;padding-block:10px 8px;padding-inline:16px 12px;border-block-end:1px solid var(--border);}
+.et-cs-title{flex:1;min-width:0;font-family:'Libre Baskerville',serif;font-size:1.15rem;font-weight:400;color:var(--text);margin:0;}
+.et-cs-x{background:transparent;border:1.5px solid var(--border);border-radius:8px;color:var(--text);width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+.et-cs-x:hover{background:var(--warm-gray);}
+.et-cs-panes{flex:1;min-height:0;display:grid;grid-template-columns:minmax(300px,370px) minmax(0,1fr);}
+.et-cs-side{overflow-y:auto;overscroll-behavior:contain;padding:14px 16px 20px;border-inline-end:1px solid var(--border);display:flex;flex-direction:column;gap:16px;}
+.et-cs-main{overflow-y:auto;overscroll-behavior:contain;background:var(--warm-gray);padding:16px;}
+body.dark .et-cs-main{background:var(--cream);}   /* dark --warm-gray is the dialog's own surface */
+.et-cs-set{border:none;margin:0;padding:0;min-width:0;display:flex;flex-direction:column;gap:2px;}
+.et-cs-set legend,.et-cs-legend{font-size:0.78rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);padding:0;margin-bottom:4px;}
+html[lang="he"] .et-cs-set legend,html[lang="he"] .et-cs-legend{letter-spacing:normal;text-transform:none;}
+.et-cs-row{display:flex;flex-wrap:wrap;gap:16px 26px;}
+.et-cs-opt{display:flex;align-items:center;gap:8px;font-size:0.9rem;min-height:30px;}
+.et-cs-opt input[type="checkbox"],.et-cs-opt input[type="radio"]{width:18px;height:18px;accent-color:var(--gold);flex-shrink:0;margin:0;}
+.et-cs-opt:has(input:disabled){opacity:0.5;}
+.et-cs-btns{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px;}
+.et-cs-btn{font-family:inherit;font-size:0.8rem;font-weight:700;padding:4px 10px;min-height:30px;border-radius:6px;border:1.5px solid var(--border);background:transparent;color:var(--text);cursor:pointer;}
+.et-cs-btn:hover{border-color:var(--gold);}
+.et-cs-book{font-size:0.8rem;font-weight:700;color:var(--muted);margin:8px 0 4px;}
+.et-cs-chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(94px,1fr));gap:6px;}
+.et-cs-chip{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 4px 5px;border:1.5px solid var(--border);border-radius:8px;background:var(--cream);color:var(--text);cursor:pointer;text-align:center;}
+.et-cs-chip input{position:absolute;inset-block-start:4px;inset-inline-start:4px;width:14px;height:14px;margin:0;accent-color:var(--gold);}
+.et-cs-chip:has(input:checked){border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold);}
+.et-cs-chip:has(input:focus-visible){outline:2px solid var(--focus-ring);outline-offset:2px;}
+.et-cs-chip .hol-ico{width:30px;height:30px;margin:0;}
+.et-cs-chip-name{font-size:0.74rem;line-height:1.2;overflow-wrap:anywhere;}
+.et-cs-chip-name[lang="he"]{font-family:var(--heb-font);font-size:0.86rem;}
+.et-cs-copies input{width:4.5em;font:inherit;font-size:0.9rem;padding:4px 6px;border:1.5px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);}
+.et-cs-size{display:grid;grid-template-columns:minmax(7.5em,max-content) 130px 3.2em;align-items:center;gap:2px 8px;font-size:0.9rem;min-height:30px;}
+.et-cs-size input[type="range"]{width:100%;accent-color:var(--gold);margin:0;}
+.et-cs-size input[type="range"]:disabled{opacity:0.4;}
+.et-cs-size output{font-variant-numeric:tabular-nums;color:var(--muted);font-size:0.82rem;}
+.et-cs-note{margin:0 0 10px;font-size:0.85rem;color:var(--text);}
+.et-cs-note:empty{display:none;}
+.et-cs-empty{color:var(--muted);font-size:0.95rem;text-align:center;padding:40px 12px;}
+.et-cs-empty[hidden]{display:none;}
+.et-cs-pages{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:20px 16px;align-items:start;}
+.et-cs-pages[data-orient="landscape"]{grid-template-columns:repeat(auto-fill,minmax(290px,1fr));}
+.et-cs-thumb{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0;}
+.et-cs-cap{display:flex;align-items:baseline;justify-content:center;gap:8px;font-size:0.85rem;font-weight:700;}
+.et-cs-cap [lang="he"]{font-family:var(--heb-font);font-weight:400;font-size:1rem;}
+.et-cs-badge{font-size:0.75rem;color:var(--gold-text);font-variant-numeric:tabular-nums;}
+.et-cs-foot{flex-shrink:0;display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:8px 14px;padding:10px 16px;border-block-start:1px solid var(--border);background:var(--white);}
+.et-cs-count{margin-inline-end:auto;font-weight:700;font-variant-numeric:tabular-nums;}
+.et-cs-print{font-family:inherit;font-size:0.95rem;font-weight:700;padding:9px 18px;min-height:40px;border:none;border-radius:6px;background:var(--gold);color:#1a1a1a;cursor:pointer;}
+.et-cs-print[aria-disabled="true"]{opacity:0.45;cursor:default;}
+.et-cs-x:focus-visible,.et-cs-btn:focus-visible,.et-cs-print:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;}
+#etCsPrintArea{display:none;}   /* every copy prints from here (etCsFill); never shown on screen */
+
+/* The sheet is the page that prints: literal white paper and black ink in both themes, laid out left to right, every
+   size in cqmin (the sheet is a size container), so the preview and the printed page scale alike. Its proportions are
+   the PRINTED box's — the paper less the 0.35in @page margins: Letter 7.8 × 10.3in, A4 7.57 × 10.99in. The seven size
+   sliders set the --s-* factors; --k is the text's fit factor (under 1 when etCsFitAll had to shrink the text). The
+   picture takes what the text leaves (flex-shrink, never under its minimum), so a long text shrinks the picture first. */
+.et-cs-sheet{
+  --cs-aw:7.8; --cs-ah:10.3;
+  --s-pic:1; --s-en:1; --s-he:1; --s-ref:1; --s-sum:1; --s-why:1; --s-name:1; --k:1;
+  container-type:size; position:relative; box-sizing:border-box; width:100%; aspect-ratio:var(--cs-aw) / var(--cs-ah);
+  background:#fff; color:#000; border:1px solid var(--border); box-shadow:0 4px 16px rgba(26,39,68,0.08);
+  overflow:hidden; font-family:'Source Sans 3', sans-serif;
+}
+/* The page's layout sits one level in: a container's own padding and gap would resolve cqmin against the viewport. */
+.et-cs-page{position:absolute;inset:0;box-sizing:border-box;display:flex;flex-direction:column;gap:1.2cqmin;padding:4cqmin 5cqmin 2.4cqmin;overflow:hidden;}
+.et-cs-sheet[data-orient="landscape"]{--cs-aw:10.3;--cs-ah:7.8;}
+.et-cs-sheet[data-paper="a4"]{--cs-aw:7.57;--cs-ah:10.99;}
+.et-cs-sheet[data-paper="a4"][data-orient="landscape"]{--cs-aw:10.99;--cs-ah:7.57;}
+.et-cs-name{flex:none;display:flex;align-items:flex-end;gap:1.2cqmin;font-family:'Libre Baskerville',serif;font-size:calc(3.2cqmin * var(--s-name) * var(--k));}
+.et-cs-name[lang="he"]{font-family:var(--heb-font);}
+.et-cs-blank{display:inline-block;width:45cqmin;border-block-end:0.3cqmin solid #000;}
+.et-cs-heads{flex:none;text-align:center;display:flex;flex-direction:column;align-items:center;gap:0.4cqmin;}
+.et-cs-en{font-family:'Libre Baskerville',serif;font-weight:700;font-size:calc(6.4cqmin * var(--s-en) * var(--k));line-height:1.2;}
+.et-cs-he{font-family:var(--heb-font);font-size:calc(7.6cqmin * var(--s-he) * var(--k));line-height:1.4;}
+.et-cs-ref{font-size:calc(3cqmin * var(--s-ref) * var(--k));color:#333;line-height:1.35;}
+.et-cs-ref[lang="he"]{font-family:var(--heb-font);}
+.et-cs-body{flex:1;min-height:0;display:flex;flex-direction:column;gap:2cqmin;}
+.et-cs-pic{flex:1 1 0;min-height:18cqmin;max-height:calc(78cqmin * var(--s-pic));position:relative;}
+.et-cs-pic svg{position:absolute;inset:0;width:100%;height:100%;display:block;overflow:visible;}
+.et-cs-text{flex:none;display:flex;flex-direction:column;gap:1.4cqmin;}
+.et-cs-sum{margin:0;font-size:calc(3.3cqmin * var(--s-sum) * var(--k));line-height:1.4;}
+.et-cs-why{margin:0;font-size:calc(3cqmin * var(--s-why) * var(--k));line-height:1.4;}
+.et-cs-text [lang="he"]{font-family:var(--heb-font);text-align:start;line-height:1.45;}
+.et-cs-credit{flex:none;font-size:1.8cqmin;color:#555;text-align:end;}
+/* Landscape: the name line and titles across the top, the picture at the left, the text column at the right. */
+.et-cs-sheet[data-orient="landscape"] .et-cs-body{flex-direction:row;gap:3cqmin;}
+.et-cs-sheet[data-orient="landscape"] .et-cs-pic{min-height:0;min-width:30cqmin;max-height:none;max-width:calc(100cqmin * var(--s-pic));}
+.et-cs-sheet[data-orient="landscape"] .et-cs-text{flex:1 1 0;min-width:0;justify-content:center;overflow:hidden;}
+@media (max-width:800px){
+  .et-cs-overlay{padding:0;align-items:stretch;}
+  .et-cs-dialog{width:100%;height:100dvh;border-radius:0;border:none;}
+  /* One scrolling column on a phone — the options, then the preview — under a pinned head and footer. */
+  .et-cs-panes{display:block;overflow-y:auto;overscroll-behavior:contain;}
+  .et-cs-side{overflow:visible;border-inline-end:none;border-block-end:1px solid var(--border);}
+  .et-cs-main{overflow:visible;}
+}
+@media (pointer:coarse){
+  .et-cs-opt{min-height:44px;}
+  .et-cs-btn{min-height:40px;}
+  .et-cs-x{width:44px;height:44px;}
+  .et-cs-copies input{font-size:16px;min-height:40px;}
+  .et-cs-chip{min-height:52px;}
+}
+
 /* Phone widths: let the header button row wrap onto a second line instead of pushing the
    page sideways (WCAG 1.4.10 reflow). max-width is the operative half — nothing makes the row
    wrap until something caps its width, and the header has to wrap too or the title block and
    the button row keep competing for one line.
-   451px is this page's MEASURED overflow ceiling in the real UI fonts (docs/reference/shared-components.md → The
-   header's wrap gate): the one-row header spills from 451px down and fits above it (English, dark — the "Light"
-   label is the widest; Hebrew stops at 445px). Under a finger the language select is 10px wider and the ceiling is
-   461px; the second query holds that band without moving a mouse layout. Re-measure whenever a header control
-   changes width. */
-@media (max-width:451px), (pointer:coarse) and (max-width:461px){
+   541px is this page's MEASURED overflow ceiling in the real UI fonts, with the account chip mounted
+   (docs/reference/shared-components.md → The header's wrap gate): the one-row header spills from 541px down and fits
+   above it (English, dark — the "Light" label is the widest; Hebrew stops at 532px). Under a finger the language
+   select is 10px wider and the ceiling is 551px; the second query holds that band without moving a mouse layout.
+   Re-measure whenever a header control changes width. */
+@media (max-width:541px), (pointer:coarse) and (max-width:551px){
   header{flex-wrap:wrap;}
   header .hright{flex-wrap:wrap;max-width:100%;justify-content:flex-end;}
 }
@@ -249,6 +366,15 @@ footer a { display: inline-block; padding-block: 5px; }
      which the print dialog drops by default, so an outline keeps it a badge. */
   .et-name, .et-book, .et-week, body.dark .et-name, body.dark .et-book, body.dark .et-week { color: #1a2744; }
   .et-badge { border: 1px solid #c9922a; }
+  /* The coloring-sheet popup prints its run alone: #etCsPrintArea holds every copy in order (etCsFill), one sheet per
+     page, and everything else goes. 100vh is the page area, so a sheet follows the real paper and the dialog's scale;
+     the break sits BEFORE each sheet after the first, so no blank page trails the run. body is a flex column on screen,
+     and a forced break inside a flex item is ignored by some engines: paper gets a plain block. */
+  body.et-cs-open { display: block; min-height: 0; }
+  body.et-cs-open > :not(#etCsPrintArea) { display: none !important; }
+  body.et-cs-open #etCsPrintArea { display: block !important; }
+  #etCsPrintArea .et-cs-sheet { width: 100%; height: 100vh; aspect-ratio: auto; border: none; box-shadow: none; break-inside: avoid; }
+  #etCsPrintArea .et-cs-sheet + .et-cs-sheet { break-before: page; }
 }
 /* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner, emoji_torah (docs/reference/shared-components.md → Header icons).
    The header controls and the in-page control buttons (play, pause, stop, reset, retry, loop, sound) carry inline
@@ -288,6 +414,9 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
 .hol-ico svg { display: block; width: 100%; height: 100%; stroke: var(--hol-line); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
 /* ═══ end holiday-icons CSS ═══ */
 </style>
+<!-- @page size for the coloring sheets only (etCsPageStyle fills it while the Print coloring sheets popup is open and
+     empties it otherwise, so the cards print on the browser's own page as before). -->
+<style id="etPageSize"></style>
 </head>
 <body><a class="skip-link" href="#mainContent" data-i18n="emojitorah.a11y.skip_to_cards">Skip to the parsha emojis</a>
 <header>
@@ -315,7 +444,10 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
       <button type="button" class="et-view" data-view="deuteronomy" aria-pressed="false" data-i18n="torah.custom.book_deuteronomy">Deuteronomy</button>
       <button type="button" class="et-view" data-view="all" aria-pressed="false" data-i18n="emojitorah.views.all">View All</button>
     </div>
-    <button type="button" class="et-print hi-btn" id="etPrint" title="Print the cards on screen" data-i18n-title="emojitorah.print.title"><svg class="hi hi-sm hi-print" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9.2V3.6h10v5.6"/><path d="M7 9.2H5.6A2.1 2.1 0 0 0 3.5 11.3v3.6a2.1 2.1 0 0 0 2.1 2.1H7"/><path d="M17 9.2h1.4a2.1 2.1 0 0 1 2.1 2.1v3.6a2.1 2.1 0 0 1-2.1 2.1H17"/><rect x="7" y="14.2" width="10" height="6.2" rx="1.2"/><circle cx="17.6" cy="12" r="1" fill="currentColor" stroke="none"/></svg><span class="hi-lbl" data-i18n="emojitorah.print.label">Print</span></button>
+    <div class="et-acts">
+      <button type="button" class="et-print hi-btn" id="etCsOpen" disabled title="Choose parshiyot and print coloring sheets of their emojis" data-i18n-title="emojitorah.coloring.open_title"><svg class="hi hi-sm hi-print" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9.2V3.6h10v5.6"/><path d="M7 9.2H5.6A2.1 2.1 0 0 0 3.5 11.3v3.6a2.1 2.1 0 0 0 2.1 2.1H7"/><path d="M17 9.2h1.4a2.1 2.1 0 0 1 2.1 2.1v3.6a2.1 2.1 0 0 1-2.1 2.1H17"/><rect x="7" y="14.2" width="10" height="6.2" rx="1.2"/><circle cx="17.6" cy="12" r="1" fill="currentColor" stroke="none"/></svg><span class="hi-lbl" data-i18n="emojitorah.coloring.open">Print coloring sheets</span></button>
+      <button type="button" class="et-print hi-btn" id="etPrint" title="Print the cards on screen" data-i18n-title="emojitorah.print.title"><svg class="hi hi-sm hi-print" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9.2V3.6h10v5.6"/><path d="M7 9.2H5.6A2.1 2.1 0 0 0 3.5 11.3v3.6a2.1 2.1 0 0 0 2.1 2.1H7"/><path d="M17 9.2h1.4a2.1 2.1 0 0 1 2.1 2.1v3.6a2.1 2.1 0 0 1-2.1 2.1H17"/><rect x="7" y="14.2" width="10" height="6.2" rx="1.2"/><circle cx="17.6" cy="12" r="1" fill="currentColor" stroke="none"/></svg><span class="hi-lbl" data-i18n="emojitorah.print.label">Print</span></button>
+    </div>
   </div>
   <p class="et-note" id="etNote" role="status" aria-live="polite" hidden></p>
   <div id="etCards"></div>
@@ -331,6 +463,93 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
   <a href="terms.html" data-i18n="shared.footer.terms_link">Terms of Use</a>
 </footer>
 
+<!-- Print coloring sheets: the parshiyot, copies and order, then the sheet options (the teacher's, remembered in
+     hebrewEmojiTorah_settings and synced to the account); the preview shows each chosen parasha's sheet once
+     (etCsSync), the footer the page count and Print. #etCsPrintArea, outside the popup, is filled with every copy in
+     order just before printing (etCsFill) and is the only thing on paper while the popup is open. -->
+<div class="et-cs-overlay" id="etCsOverlay" hidden>
+  <div class="et-cs-dialog" role="dialog" aria-modal="true" aria-labelledby="etCsTitle">
+    <div class="et-cs-head">
+      <h2 class="et-cs-title" id="etCsTitle" data-i18n="emojitorah.coloring.open">Print coloring sheets</h2>
+      <button type="button" class="et-cs-x" id="etCsClose" title="Close" aria-label="Close" data-i18n-title="emojitorah.coloring.close" data-i18n-aria-label="emojitorah.coloring.close"><svg class="hi hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
+    </div>
+    <div class="et-cs-panes">
+      <div class="et-cs-side">
+        <fieldset class="et-cs-set">
+          <legend data-i18n="emojitorah.coloring.parshiyot_legend">Parshiyot</legend>
+          <div class="et-cs-btns">
+            <button type="button" class="et-cs-btn" id="etCsAll" data-i18n="emojitorah.coloring.all">Select all</button>
+            <button type="button" class="et-cs-btn" id="etCsNone" data-i18n="emojitorah.coloring.none">Clear</button>
+          </div>
+          <div id="etCsChips"></div>
+        </fieldset>
+        <fieldset class="et-cs-set et-cs-copies">
+          <legend data-i18n="emojitorah.coloring.copies_legend">Copies</legend>
+          <div class="et-cs-opt"><label for="etCsCopies" data-i18n="emojitorah.coloring.copies_label">Copies of each sheet</label><input type="number" id="etCsCopies" min="1" max="40" step="1" inputmode="numeric"></div>
+          <label class="et-cs-opt"><input type="radio" name="etCsCollate" value="sets"><span data-i18n="emojitorah.coloring.collate_sets">Collated sets (1 2 3, 1 2 3)</span></label>
+          <label class="et-cs-opt"><input type="radio" name="etCsCollate" value="grouped"><span data-i18n="emojitorah.coloring.collate_grouped">Grouped by parasha (1 1, 2 2, 3 3)</span></label>
+        </fieldset>
+        <div class="et-cs-row">
+          <fieldset class="et-cs-set">
+            <legend data-i18n="emojitorah.coloring.picture_legend">Picture</legend>
+            <label class="et-cs-opt"><input type="checkbox" id="etCsColored" data-field="colored"><span data-i18n="emojitorah.coloring.colored">Colored in</span></label>
+          </fieldset>
+          <fieldset class="et-cs-set">
+            <legend data-i18n="emojitorah.coloring.page_legend">Page</legend>
+            <label class="et-cs-opt"><input type="radio" name="etCsOrient" value="portrait"><span data-i18n="emojitorah.coloring.portrait">Portrait</span></label>
+            <label class="et-cs-opt"><input type="radio" name="etCsOrient" value="landscape"><span data-i18n="emojitorah.coloring.landscape">Landscape</span></label>
+          </fieldset>
+          <fieldset class="et-cs-set">
+            <legend data-i18n="emojitorah.coloring.paper_legend">Paper size</legend>
+            <label class="et-cs-opt"><input type="radio" name="etCsPaper" value="letter"><span data-i18n="emojitorah.coloring.paper_letter">Letter (8.5 × 11 in)</span></label>
+            <label class="et-cs-opt"><input type="radio" name="etCsPaper" value="a4"><span data-i18n="emojitorah.coloring.paper_a4">A4 (210 × 297 mm)</span></label>
+          </fieldset>
+          <fieldset class="et-cs-set">
+            <legend data-i18n="emojitorah.coloring.lang_legend">Text language</legend>
+            <label class="et-cs-opt"><input type="radio" name="etCsLang" value="en"><span data-i18n="emojitorah.coloring.lang_en">English</span></label>
+            <label class="et-cs-opt"><input type="radio" name="etCsLang" value="he"><span data-i18n="emojitorah.coloring.lang_he">Hebrew</span></label>
+            <label class="et-cs-opt"><input type="radio" name="etCsLang" value="both"><span data-i18n="emojitorah.coloring.lang_both">Both</span></label>
+          </fieldset>
+          <fieldset class="et-cs-set">
+            <legend data-i18n="emojitorah.coloring.include_legend">Include</legend>
+            <label class="et-cs-opt"><input type="checkbox" data-field="showHe"><span data-i18n="emojitorah.coloring.inc_he">Hebrew title</span></label>
+            <label class="et-cs-opt"><input type="checkbox" data-field="showEn"><span data-i18n="emojitorah.coloring.inc_en">English title</span></label>
+            <label class="et-cs-opt"><input type="checkbox" data-field="showRef"><span data-i18n="emojitorah.coloring.inc_ref">Verse numbers</span></label>
+            <label class="et-cs-opt"><input type="checkbox" data-field="showSummary"><span data-i18n="emojitorah.coloring.inc_summary">Parasha synopsis</span></label>
+            <label class="et-cs-opt"><input type="checkbox" data-field="showWhy"><span data-i18n="emojitorah.coloring.inc_why">Picture explanation</span></label>
+            <label class="et-cs-opt"><input type="checkbox" data-field="showName"><span data-i18n="emojitorah.coloring.inc_name">Name line</span></label>
+          </fieldset>
+        </div>
+        <fieldset class="et-cs-set">
+          <legend data-i18n="emojitorah.coloring.sizes_legend">Sizes</legend>
+          <div class="et-cs-size"><label for="etCsSizePic" data-i18n="emojitorah.coloring.size_pic">Picture</label><input type="range" id="etCsSizePic" data-size="sizePic" min="50" max="150" step="5"><output for="etCsSizePic"></output></div>
+          <div class="et-cs-size"><label for="etCsSizeEn" data-i18n="emojitorah.coloring.size_en">English title</label><input type="range" id="etCsSizeEn" data-size="sizeEn" min="50" max="150" step="5"><output for="etCsSizeEn"></output></div>
+          <div class="et-cs-size"><label for="etCsSizeHe" data-i18n="emojitorah.coloring.size_he">Hebrew title</label><input type="range" id="etCsSizeHe" data-size="sizeHe" min="50" max="150" step="5"><output for="etCsSizeHe"></output></div>
+          <div class="et-cs-size"><label for="etCsSizeRef" data-i18n="emojitorah.coloring.size_ref">Verse numbers</label><input type="range" id="etCsSizeRef" data-size="sizeRef" min="50" max="150" step="5"><output for="etCsSizeRef"></output></div>
+          <div class="et-cs-size"><label for="etCsSizeSummary" data-i18n="emojitorah.coloring.size_summary">Synopsis</label><input type="range" id="etCsSizeSummary" data-size="sizeSummary" min="50" max="150" step="5"><output for="etCsSizeSummary"></output></div>
+          <div class="et-cs-size"><label for="etCsSizeWhy" data-i18n="emojitorah.coloring.size_why">Explanation</label><input type="range" id="etCsSizeWhy" data-size="sizeWhy" min="50" max="150" step="5"><output for="etCsSizeWhy"></output></div>
+          <div class="et-cs-size"><label for="etCsSizeName" data-i18n="emojitorah.coloring.size_name">Name line</label><input type="range" id="etCsSizeName" data-size="sizeName" min="50" max="150" step="5"><output for="etCsSizeName"></output></div>
+        </fieldset>
+        <div class="et-cs-set">
+          <div class="et-cs-legend" data-i18n="emojitorah.coloring.panel_cloud">Your account</div>
+          <div id="cloudSavesPanel"></div>
+        </div>
+      </div>
+      <div class="et-cs-main">
+        <p class="et-cs-note" id="etCsNote" role="status" aria-live="polite"></p>
+        <p class="et-cs-empty" id="etCsEmpty" data-i18n="emojitorah.coloring.empty">Choose the parshiyot to print.</p>
+        <ul class="et-cs-pages" id="etCsPages" aria-label="Print preview" data-i18n-aria-label="emojitorah.coloring.preview_aria"></ul>
+      </div>
+    </div>
+    <div class="et-cs-foot">
+      <span class="et-cs-count" id="etCsCount" aria-live="polite"></span>
+      <button type="button" class="et-cs-print hi-btn" id="etCsPrint" title="Print every sheet in the preview" data-i18n-title="emojitorah.coloring.print_title"><svg class="hi hi-sm hi-print" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9.2V3.6h10v5.6"/><path d="M7 9.2H5.6A2.1 2.1 0 0 0 3.5 11.3v3.6a2.1 2.1 0 0 0 2.1 2.1H7"/><path d="M17 9.2h1.4a2.1 2.1 0 0 1 2.1 2.1v3.6a2.1 2.1 0 0 1-2.1 2.1H17"/><rect x="7" y="14.2" width="10" height="6.2" rx="1.2"/><circle cx="17.6" cy="12" r="1" fill="currentColor" stroke="none"/></svg><span class="hi-lbl" data-i18n="emojitorah.print.label">Print</span></button>
+    </div>
+  </div>
+</div>
+<div id="etCsPrintArea" aria-hidden="true"></div>
+<span id="a11yStatus" role="status" aria-live="polite" class="vh"></span>
+
 <!-- The parasha calendar, icons and notes (each a classic script: window.HebCal, window.ParashaIcons,
      window.ParashaNotes), before the inline script that draws the cards with them. -->
 <script src="/js/hebrew-calendar.js"></script>
@@ -342,7 +561,8 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
    data/parshiyot.json (the Trainer's ?v=, so one cached copy serves both), js/parasha-icons.js and
    js/parasha-notes.js (both built from ParashaEmojis.md); this week's reading comes from js/hebrew-calendar.js on
    the Torah Trainer's own Diaspora/Israel choice, read and never written. Each card links to its parasha in the
-   Torah Trainer (?parsha=, a new tab). The page stores nothing. ───── */
+   Torah Trainer (?parsha=, a new tab). The page stores one thing, its coloring sheets' print options
+   (hebrewEmojiTorah_settings, synced to the account; see COLORING SHEETS below). ───── */
 const ET_BOOKS = ['Genesis', 'Exodus', 'Leviticus', 'Numbers', 'Deuteronomy'];
 let etData = null, etFailed = false, etView = 'today';
 
@@ -371,7 +591,7 @@ function etLangAttr(lang) {
 }
 
 // The Torah Trainer's Diaspora/Israel choice on this device (hebrewTorahTrainer_settings.schedule), Diaspora when it
-// has none. Read only: this page has no setting of its own.
+// has none. Read only: the page's own setting is its print options, never this.
 function etIsrael() {
   try {
     const s = ivritSafeParse(localStorage.getItem('hebrewTorahTrainer_settings') || 'null');
@@ -460,7 +680,10 @@ function etLoad() {
       etData = d.filter(p => p && Number.isInteger(p.n) && p.en && p.book).sort((a, b) => a.n - b.n);
     })
     .catch(() => { etFailed = true; })
-    .then(() => { if (window.I18n) I18n.ready.then(etRender); });
+    .then(() => {
+      document.getElementById('etCsOpen').disabled = !etData;   // the coloring sheets are built from the same data
+      if (window.I18n) I18n.ready.then(etRender);
+    });
 }
 // The pinned bar's height, for View All's sticky book headings (the bar wraps to more rows as the window narrows).
 function etTrackBar() {
@@ -476,6 +699,686 @@ function etShowTop() {
   if (getComputedStyle(bar).position !== 'sticky') return;
   const y = box.getBoundingClientRect().top + window.scrollY - bar.offsetHeight - 8;
   if (window.scrollY > y) window.scrollTo(0, Math.max(0, y));
+}
+
+/* ══════════════════════════════════════════════════════
+   COLORING SHEETS — Print coloring sheets: a printable page per parasha (its emoji drawn as line art, or coloured in,
+   with the titles, the reading, the synopsis and why the picture was chosen), chosen and printed in bulk from a popup
+   in the Letter Learner's bulk-print shape. The options are the teacher's: one blob, hebrewEmojiTorah_settings,
+   remembered on the device, in the hub's backup file and in the account (registry row in js/ivrit-saves.js).
+   ══════════════════════════════════════════════════════ */
+const ET_CS_KEY = 'hebrewEmojiTorah_settings';
+// textLang is absent on purpose: missing means "the site's language"; only a real choice (en / he / both) is written.
+const ET_CS_DEFAULTS = { v: 1, colored: false, paper: 'letter', orient: 'portrait', showHe: true, showEn: true, showRef: true, showSummary: true, showWhy: true, showName: true,
+  sizePic: 100, sizeEn: 100, sizeHe: 100, sizeRef: 100, sizeSummary: 100, sizeWhy: 100, sizeName: 100, copies: 1, collate: 'sets' };
+const ET_CS_BOOL = ['colored', 'showHe', 'showEn', 'showRef', 'showSummary', 'showWhy', 'showName'];
+const ET_CS_SIZES = ['sizePic', 'sizeEn', 'sizeHe', 'sizeRef', 'sizeSummary', 'sizeWhy', 'sizeName'];
+const ET_CS_SIZE_VAR = { sizePic: '--s-pic', sizeEn: '--s-en', sizeHe: '--s-he', sizeRef: '--s-ref', sizeSummary: '--s-sum', sizeWhy: '--s-why', sizeName: '--s-name' };
+const ET_CS_SIZE_PART = { sizeEn: 'showEn', sizeHe: 'showHe', sizeRef: 'showRef', sizeSummary: 'showSummary', sizeWhy: 'showWhy', sizeName: 'showName' };
+const ET_CS_MAX_COPIES = 40;
+const FOCUS_SEL = 'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+let etCs = JSON.parse(JSON.stringify(ET_CS_DEFAULTS));   // the options as the page applies them
+let etCsRaw = null;            // the stored object as read (null: none); a change is written onto it, so a newer build's fields survive
+let _etCsLastWritten = null;   // the text this tab last wrote or read (the two-tab rule: never overwrite a newer copy)
+
+function ivritSafeAssign(target, src) {
+  if (src && typeof src === 'object' && !Array.isArray(src))
+    for (const k in src) if (Object.prototype.hasOwnProperty.call(src, k) &&
+        k !== '__proto__' && k !== 'constructor' && k !== 'prototype') target[k] = src[k];
+  return target;
+}
+// Announce a transient message to screen readers via the hidden #a11yStatus live region.
+function announce(msg) {
+  const s = document.getElementById('a11yStatus');
+  if (s) s.textContent = msg;
+}
+function etCsSizeVal(v) { const n = Math.round(Number(v) / 5) * 5; return (typeof v === 'number' && Number.isFinite(n)) ? Math.min(150, Math.max(50, n)) : 100; }
+function etCsCopiesVal(v) { const n = Math.round(Number(v)); return (typeof v === 'number' && Number.isFinite(n)) ? Math.min(ET_CS_MAX_COPIES, Math.max(1, n)) : 1; }
+// The stored object read onto a defaults clone; a value this build cannot apply falls back here but stays in etCsRaw.
+function etCsNormalize(s) {
+  const o = JSON.parse(JSON.stringify(ET_CS_DEFAULTS));
+  ET_CS_BOOL.forEach(k => { if (typeof s[k] === 'boolean') o[k] = s[k]; });
+  if (s.paper === 'a4' || s.paper === 'letter') o.paper = s.paper;
+  if (s.orient === 'landscape' || s.orient === 'portrait') o.orient = s.orient;
+  if (s.textLang === 'en' || s.textLang === 'he' || s.textLang === 'both') o.textLang = s.textLang;
+  ET_CS_SIZES.forEach(k => { o[k] = etCsSizeVal(s[k]); });
+  o.copies = etCsCopiesVal(s.copies);
+  if (s.collate === 'grouped' || s.collate === 'sets') o.collate = s.collate;
+  return o;
+}
+function etCsLoad() {
+  let raw = null, stored = null;
+  try { raw = localStorage.getItem(ET_CS_KEY); if (raw) stored = ivritSafeParse(raw); } catch (e) { stored = null; }
+  _etCsLastWritten = raw;
+  etCsRaw = (stored && typeof stored === 'object' && !Array.isArray(stored)) ? stored : null;
+  etCs = etCsNormalize(etCsRaw || {});
+}
+// The blob as stored (a fresh defaults copy when there is none), synchronously. Nothing calls it on a load.
+function etCsWrite() {
+  if (!etCsRaw) etCsRaw = JSON.parse(JSON.stringify(ET_CS_DEFAULTS));
+  const text = JSON.stringify(etCsRaw);
+  try { localStorage.setItem(ET_CS_KEY, text); _etCsLastWritten = text; } catch (e) {}
+}
+// One option changed: written onto the stored object, never replacing it.
+function etCsSet(key, value) {
+  etCs[key] = value;
+  if (!etCsRaw) etCsRaw = JSON.parse(JSON.stringify(ET_CS_DEFAULTS));
+  etCsRaw[key] = value;
+  etCsWrite();
+}
+// The account module's `flush` and the storage event: every change is already written, so all that is left is the
+// two-tab rule — if the store moved under this tab (another tab, the module's own download), this tab takes it.
+function etCsFlush() {
+  let raw = null;
+  try { raw = localStorage.getItem(ET_CS_KEY); } catch (e) {}
+  if (raw !== _etCsLastWritten) etCsAdopt();
+}
+function etCsAdopt() {
+  etCsLoad();
+  etCsSyncControls();
+  etCsRefresh();
+}
+// The sheet's text language: the teacher's choice, else the site's.
+function etCsLangNow() { return etCs.textLang || (etLang() === 'he' ? 'he' : 'en'); }
+
+/* ── The drawings as line art. The 54 drawings (js/parasha-icons.js, built from ParashaEmojis.md) use only
+   path/circle/ellipse/rect/g; every fill and stroke is none or a var(--hol-*) token, and the outline comes from
+   .hol-ico svg (--hol-line, width 2). A drawing is redrawn for paper with literal colours — black ink and white paper
+   for colouring in, or the light palette when "Colored in" is on — and lighter lines (f), so a page-sized picture keeps
+   colouring-book lines. The rules, tuned drawing by drawing on scripts/parasha-coloring-review.mjs's sheets: ── */
+const ET_CS_WEIGHT = 0.45;   // f: the outline weight on paper, as a share of the site's
+const ET_CS_INK = '#000', ET_CS_PAPER = '#fff', ET_CS_DETAIL = '#9a9a9a';
+const ET_CS_LIGHT = { line: '#1a2744', gold: '#c9922a', 'gold-lt': '#f0d080', paper: '#fffaf0', navy: '#2a3b66', red: '#c0392b', green: '#3a7d44', blue: '#3b6fb6', flame: '#f0a030', ground: '#ffffff' };
+const ET_CS_GEOM = ['d', 'points', 'x', 'y', 'width', 'height', 'rx', 'ry', 'cx', 'cy', 'r', 'x1', 'y1', 'x2', 'y2', 'transform'];
+const ET_CS_SHAPES = 'path, circle, ellipse, rect, line, polyline, polygon';
+const _etCsArt = new Map();   // 'index:l|c' → the converted drawing (the measuring is the costly part), cloned per use
+function etCsArt(i, colored) {
+  const k = i + ':' + (colored ? 'c' : 'l');
+  if (!_etCsArt.has(k)) _etCsArt.set(k, etCsDrawing(i, colored));
+  const svg = _etCsArt.get(k);
+  return svg ? svg.cloneNode(true) : null;
+}
+// Parasha index i's drawing for paper: the <svg> out of its .hol-ico span (that span's CSS would outrank the
+// attributes set here), the outline written as attributes, then redrawn. null when there is no drawing.
+function etCsDrawing(i, colored) {
+  if (!window.ParashaIcons) return null;
+  const t = document.createElement('template');
+  t.innerHTML = ParashaIcons.html(i);   // generated from the catalog and checked by scripts/build-parasha-icons.mjs
+  const svg = t.content.querySelector('svg');
+  if (!svg) return null;
+  [['fill', 'none'], ['stroke', 'var(--hol-line)'], ['stroke-width', '2'], ['stroke-linecap', 'round'], ['stroke-linejoin', 'round']]
+    .forEach(([a, v]) => { if (!svg.hasAttribute(a)) svg.setAttribute(a, v); });
+  try { etCsConvert(svg, colored); } catch (e) { try { console.warn('[coloring] parasha ' + (i + 1) + ': ' + e.message); } catch (x) {} }
+  return svg;
+}
+// Geometry the paint rules need, measured once on a hidden copy of the drawing (shape i ↔ the i-th shape): each shape's
+// box area, the largest of its pieces (a path drawn as several, each starting with an absolute M: a bunch of grape
+// glints, the three dots of a shin), and the fill token of the topmost earlier filled shape under its box centre (a
+// fill) or its midpoint (a line). Nothing is measurable without layout, so the copy sits in the document, out of sight.
+function etCsMeasure(svg) {
+  const NS = 'http://www.w3.org/2000/svg';
+  const host = document.createElement('div');
+  host.style.cssText = 'position:fixed;left:-10000px;top:0;width:480px;height:480px;visibility:hidden;pointer-events:none;';
+  const copy = svg.cloneNode(true);
+  copy.setAttribute('width', '480'); copy.setAttribute('height', '480');
+  host.appendChild(copy);
+  document.body.appendChild(host);
+  const shapes = [...copy.querySelectorAll(ET_CS_SHAPES)];
+  const fillOf = n => { for (let x = n; x; x = x.parentElement) { if (x.hasAttribute('fill')) return x.getAttribute('fill'); if (x === copy) break; } return 'none'; };
+  const out = shapes.map(() => ({ area: 0, piece: 0, under: '' }));
+  try {
+    const filled = [];
+    shapes.forEach((n, i) => {
+      let b = null; try { b = n.getBBox(); } catch (e) {}
+      out[i].area = b ? b.width * b.height : 0;
+      out[i].piece = out[i].area;
+      const d = n.tagName === 'path' ? (n.getAttribute('d') || '') : '';
+      const parts = d.trim().split(/(?=M)/).filter(x => x.trim());
+      if (parts.length > 1 && parts.every(x => /^M/.test(x.trim()))) {
+        let big = 0;
+        parts.forEach(x => {
+          const p = document.createElementNS(NS, 'path');
+          p.setAttribute('d', x);
+          n.parentNode.insertBefore(p, n);
+          try { const bb = p.getBBox(); big = Math.max(big, bb.width * bb.height); } catch (e) {}
+          p.remove();
+        });
+        out[i].piece = big;
+      }
+      let pt = null;
+      try {
+        if (n.getAttribute('fill') && fillOf(n) !== 'none' && b) pt = new DOMPoint(b.x + b.width / 2, b.y + b.height / 2);
+        else if (typeof n.getTotalLength === 'function') { const L = n.getTotalLength(); if (L) { const q = n.getPointAtLength(L / 2); pt = new DOMPoint(q.x, q.y); } }
+      } catch (e) {}
+      const m = n.getScreenCTM && n.getScreenCTM();
+      if (pt && m) {
+        const sp = pt.matrixTransform(m);
+        for (let j = filled.length - 1; j >= 0; j--) {
+          const fm = filled[j].n.getScreenCTM();
+          try { if (fm && filled[j].n.isPointInFill(sp.matrixTransform(fm.inverse()))) { out[i].under = filled[j].fill; break; } } catch (e) {}
+        }
+      }
+      const fv = fillOf(n);
+      if (fv && fv !== 'none') filled.push({ n, fill: fv });
+    });
+  } finally { host.remove(); }
+  return out;
+}
+function etCsConvert(svg, colored) {
+  const geo = etCsMeasure(svg);
+  const f = ET_CS_WEIGHT, e = 2 * f;
+  const tok = v => { const m = /^var\(--hol-([a-z-]+)\)$/.exec(v || ''); return m ? m[1] : (v === 'none' || !v ? '' : '?'); };
+  const isInk = v => tok(v) === 'line';
+  const isCol = v => { const t = tok(v); return !!t && t !== 'line'; };
+  const get = (n, a) => { for (let x = n; x; x = x.parentElement) { if (x.hasAttribute(a)) return x.getAttribute(a); if (x === svg) break; } return null; };
+  const groups = new Map();
+  const key = n => {
+    if (!groups.has(n.parentNode)) groups.set(n.parentNode, groups.size);
+    return groups.get(n.parentNode) + '|' + n.tagName + '|' + ET_CS_GEOM.map(a => {
+      const v = (n.getAttribute(a) || '').replace(/\s+/g, ' ').trim();
+      return a === 'd' ? v.replace(/\s*[Zz]$/, '') : v;
+    }).join('|');
+  };
+  const S = [...svg.querySelectorAll(ET_CS_SHAPES)].map((n, i) => ({ n, i, fill: get(n, 'fill') || 'none', stroke: get(n, 'stroke') || 'none', w: parseFloat(get(n, 'stroke-width')) || 2, k: key(n), area: geo[i].area, piece: geo[i].piece, under: tok(geo[i].under) }));
+  const WARM = new Set(['gold', 'gold-lt', 'flame', 'red']);
+  const fam = t => (t === 'gold-lt' ? 'gold' : t);
+  const byKey = new Map();
+  S.forEach(s => { s.inkLine = isInk(s.stroke); if (!byKey.has(s.k)) byKey.set(s.k, []); byKey.get(s.k).push(s); });
+  // Same-shape pairs: the catalog draws many parts twice, an ink copy and a coloured copy of one geometry. The drawing's
+  // own order is never changed (a fill painted later also covers what came between, like the roots of Vayechi's and
+  // Nasso's fingers under the palm):
+  //  - a coloured LINE after an ink line of the same path is a band: the ink keeps its width (it is the band's), and
+  //    the coloured copy becomes the band's inside, 2e narrower;
+  //  - a coloured FILL after an ink line of the same shape is a silhouette: the ink keeps its width and the fill gets
+  //    an edge of its own, 2e narrower than the ink, so e of the ink shows round it;
+  //  - otherwise the ink line is an ordinary outline (scaled), and a same-shape coloured copy needs no line of its own.
+  S.forEach(s => {
+    const mates = byKey.get(s.k).filter(o => o !== s);
+    s.twin = mates.filter(o => o.inkLine).sort((a, b) => b.w - a.w)[0] || null;
+    if (!s.inkLine) return;
+    const later = mates.filter(o => o.i > s.i && !o.inkLine);
+    const lineMate = later.find(o => isCol(o.stroke));
+    const fillMate = later.find(o => isCol(o.fill));
+    s.band = !!lineMate && s.w - 2 * e >= 0.95;
+    s.silhouette = !!fillMate;
+    if (s.band) lineMate.inside = s;
+    if (fillMate) fillMate.inside = s;
+  });
+  const paint = (s, a, v) => s.n.setAttribute(a, v);
+  const col = t => colored ? ET_CS_LIGHT[t] : null;
+  S.forEach(s => {
+    const n = s.n, ft = tok(s.fill), st = tok(s.stroke);
+    const twin = !s.inkLine ? s.twin : null;
+    // ── stroke ──
+    if (s.inkLine) {
+      paint(s, 'stroke', colored ? ET_CS_LIGHT.line : ET_CS_INK);
+      paint(s, 'stroke-width', String(+((s.band || s.silhouette) ? s.w : s.w * f).toFixed(2)));
+    } else if (s.inside) {
+      // The inside of a band or a silhouette: 2e narrower than its ink, in paper (or its own colour).
+      const inner = s.inside.w - 2 * e;
+      const c = colored ? col(isCol(s.stroke) ? st : ft) : ET_CS_PAPER;
+      if (inner > 0.05) { paint(s, 'stroke', c); paint(s, 'stroke-width', String(+inner.toFixed(2))); }
+      else paint(s, 'stroke', 'none');
+    } else if (twin) {
+      // A same-shape ink line draws this one's edge (an outline on top, or a wider line under a thin coloured one).
+      if (isCol(s.stroke) && !colored) { n.remove(); return; }
+      paint(s, 'stroke', isCol(s.stroke) ? col(st) : 'none');
+      paint(s, 'stroke-width', String(+(s.w * f).toFixed(2)));
+    } else if (isCol(s.stroke)) {
+      if (s.fill === 'none' && s.w - 2 * e >= 0.95) {
+        // A bold coloured mark (Behar's 7, Bo's doorposts): an outlined band on paper, its own colour when coloured in.
+        if (colored) { paint(s, 'stroke', col(st)); paint(s, 'stroke-width', String(s.w)); }
+        else {
+          paint(s, 'stroke', ET_CS_INK); paint(s, 'stroke-width', String(s.w));
+          const c = n.cloneNode(false);
+          c.setAttribute('stroke', ET_CS_PAPER); c.setAttribute('stroke-width', String(+(s.w - 2 * e).toFixed(2))); c.setAttribute('fill', 'none');
+          n.after(c);
+        }
+      } else {
+        // A thin line: black detail, or light grey where it is shine (a paper line; a light-gold line on gold).
+        const detail = st === 'paper' || (st === 'gold-lt' && fam(s.under) === 'gold');
+        paint(s, 'stroke', colored ? col(st) : (detail ? ET_CS_DETAIL : ET_CS_INK));
+        paint(s, 'stroke-width', String(+(s.w * f).toFixed(2)));
+      }
+    } else if (s.stroke === 'none') {
+      // A fill with no line of its own gets one on paper, so every colour region is a region to colour (the rainbow's
+      // bands, Joseph's coat) — except shine and dark details. A light patch on an earlier fill is shine: on a warm part
+      // (a lighter tint of it: Shemini's drops), or in pieces too small to colour (the grapes' glints); a larger light
+      // piece on a cool part is a feature (the shin's dots on the mezuzah). A small navy patch (eyes, tent doors) is solid.
+      s.shine = (ft === 'paper' || ft === 'gold-lt') && !!s.under && s.under !== 'paper' && (WARM.has(s.under) || s.piece < 4.5);
+      s.dark = ft === 'navy' && s.area < 60;
+      const outline = !colored && isCol(s.fill) && !s.shine && !s.dark;
+      paint(s, 'stroke', outline ? ET_CS_INK : 'none');
+      if (outline) paint(s, 'stroke-width', String(+e.toFixed(2)));
+    }
+    // ── fill ──
+    if (s.fill === 'none') paint(s, 'fill', 'none');
+    else if (isInk(s.fill)) paint(s, 'fill', colored ? ET_CS_LIGHT.line : ET_CS_INK);
+    else if (colored) paint(s, 'fill', col(ft) || ET_CS_PAPER);
+    else if (s.dark && !twin) paint(s, 'fill', ET_CS_INK);
+    else paint(s, 'fill', ET_CS_PAPER);
+  });
+  svg.querySelectorAll('g').forEach(g => ['fill', 'stroke', 'stroke-width'].forEach(a => g.removeAttribute(a)));
+  svg.setAttribute('stroke', colored ? ET_CS_LIGHT.line : ET_CS_INK);
+  svg.setAttribute('stroke-width', String(e));
+  if (/var\(/.test(svg.innerHTML)) throw new Error('a palette token survived the conversion');
+}
+
+/* ── The sheet ── */
+// Printed content follows the sheet's own language, not the site's (CLAUDE.md i18n rule 4).
+const ET_CS_PRINTED = { en: { name: 'Name:', why: 'Why this picture:' }, he: { name: 'שם:', why: 'למה התמונה הזאת:' } };   // i18n-ignore: printed content
+const ET_CS_HE_BOOKS = { Genesis: 'בראשית', Exodus: 'שמות', Leviticus: 'ויקרא', Numbers: 'במדבר', Deuteronomy: 'דברים' };   // i18n-ignore: printed content (the books' Hebrew names)
+function etCsApplySizes(sheet) {
+  if (sheet) ET_CS_SIZES.forEach(k => sheet.style.setProperty(ET_CS_SIZE_VAR[k], String(etCs[k] / 100)));
+}
+function etCsBuildSheet(p) {
+  const i = p.n - 1, lang = etCsLangNow(), nt = window.ParashaNotes ? ParashaNotes.get(i) : null;
+  const sheet = document.createElement('div');
+  sheet.className = 'et-cs-sheet';
+  sheet.dataset.orient = etCs.orient;
+  sheet.dataset.paper = etCs.paper;
+  sheet.dir = 'ltr';
+  sheet.lang = lang === 'he' ? 'he' : 'en';
+  etCsApplySizes(sheet);
+  const add = (parent, tag, cls, text, l) => {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    if (l === 'he') { n.lang = 'he'; n.dir = 'rtl'; } else if (l === 'en' && sheet.lang !== 'en') { n.lang = 'en'; n.dir = 'ltr'; }
+    parent.appendChild(n);
+    return n;
+  };
+  const pl = lang === 'he' ? 'he' : 'en';
+  const pg = add(sheet, 'div', 'et-cs-page');
+  if (etCs.showName) {
+    const row = add(pg, 'div', 'et-cs-name', null, pl);
+    add(row, 'span', null, ET_CS_PRINTED[pl].name);
+    add(row, 'span', 'et-cs-blank');
+  }
+  const heads = add(pg, 'div', 'et-cs-heads');
+  (lang === 'he' ? ['he', 'en'] : ['en', 'he']).forEach(t => {
+    if (t === 'en' && etCs.showEn) add(heads, 'div', 'et-cs-en', p.en, 'en');
+    if (t === 'he' && etCs.showHe) add(heads, 'div', 'et-cs-he', p.he, 'he');
+  });
+  if (etCs.showRef) {
+    const ref = String(p.ref || ''), range = ref.startsWith(p.book + ' ') ? ref.slice(String(p.book).length + 1) : ref;
+    if (lang === 'he' && ET_CS_HE_BOOKS[p.book]) {
+      const r = add(heads, 'div', 'et-cs-ref', ET_CS_HE_BOOKS[p.book] + ' ', 'he');
+      const b = document.createElement('bdi'); b.dir = 'ltr'; b.textContent = prettyRef(range);   // the verse numbers read left to right
+      r.appendChild(b);
+    } else add(heads, 'div', 'et-cs-ref', prettyRef(ref), 'en');
+  }
+  if (!heads.childNodes.length) heads.remove();
+  const body = add(pg, 'div', 'et-cs-body');
+  const pic = add(body, 'div', 'et-cs-pic');
+  const svg = etCsArt(i, etCs.colored);
+  if (svg) { svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', p.en); pic.appendChild(svg); }
+  const text = add(body, 'div', 'et-cs-text');
+  if (nt) (lang === 'both' ? ['en', 'he'] : [lang]).forEach(l => {   // "Both": the English paragraphs, then the Hebrew
+    if (etCs.showSummary && nt.summary && nt.summary[l]) add(text, 'p', 'et-cs-sum', nt.summary[l], l);   // catalog content, in its own language
+    if (etCs.showWhy && nt.why && nt.why[l]) {
+      const w = add(text, 'p', 'et-cs-why', null, l);
+      const b = document.createElement('strong'); b.textContent = ET_CS_PRINTED[l].why + ' ';
+      w.append(b, nt.why[l]);
+    }
+  });
+  if (!text.childNodes.length) text.remove();
+  add(pg, 'div', 'et-cs-credit', 'IvritSuite.com');   // i18n-ignore: brand credit
+  return sheet;
+}
+
+/* ── The popup ── */
+let _etCsChosen = new Set();   // parasha indices (n − 1) for this run: the current view's at each open, never stored
+let _etCsOpener = null, _etCsSig = '', _etCsFilled = false, _etCsPrinting = false, _etCsFitToken = 0, _etCsFitTimer = 0;
+const _etCsSheets = new Map();   // index → { li, sheet, k, over }
+// The printed box at 96 px to the inch, portrait (the paper less the 0.35in margins): where a sheet's fit is measured.
+const ET_CS_PX = { letter: [748.8, 988.8], a4: [726.7, 1055] };
+function etCsIsOpen() { const ov = document.getElementById('etCsOverlay'); return !!ov && !ov.hidden; }
+// The parshiyot the current view shows: Today = this week's (both halves of a doubled week; every card without the
+// calendar), a book = its parshiyot, View All = all 54 — what the popup opens with.
+function etVisibleIdx() {
+  if (!etData) return [];
+  if (etView === 'today') { const w = etThisWeek(); return w ? w.idx.slice() : etData.map(p => p.n - 1); }
+  const one = ET_BOOKS.find(b => etBookKey(b) === etView);
+  return etData.filter(p => !one || p.book === one).map(p => p.n - 1);
+}
+function etCsChosenList() { return (etData || []).filter(p => _etCsChosen.has(p.n - 1)); }
+// What a sheet's build depends on (the sizes are CSS factors and never need one).
+function etCsSigNow() { return JSON.stringify([etCsLangNow(), etCs.colored, etCs.paper, etCs.orient, ET_CS_BOOL.map(k => etCs[k])]); }
+function etCsPageStyle() {
+  const st = document.getElementById('etPageSize');
+  if (st) st.textContent = etCsIsOpen() ? '@page { size: ' + (etCs.paper === 'a4' ? 'A4' : 'letter') + ' ' + etCs.orient + '; margin: 0.35in; }' : '';   // i18n-ignore: CSS, not text
+}
+function etCsOpen() {
+  if (etCsIsOpen() || !etData) return;
+  _etCsOpener = document.activeElement;
+  _etCsChosen = new Set(etVisibleIdx());
+  document.getElementById('etCsOverlay').hidden = false;
+  document.body.classList.add('et-cs-open');   // print keys on it: paper gets the run alone
+  etCsSyncControls();
+  etCsRenderChips();
+  etCsPageStyle();
+  _etCsSig = etCsSigNow();
+  etCsSync();
+  setTimeout(() => { try { document.getElementById('etCsClose').focus(); } catch (e) {} }, 0);
+}
+function etCsClose() {
+  if (!etCsIsOpen()) return;
+  _etCsFitToken++;
+  clearTimeout(_etCsFitTimer);
+  document.getElementById('etCsOverlay').hidden = true;
+  document.body.classList.remove('et-cs-open');
+  document.getElementById('etCsPages').textContent = '';
+  document.getElementById('etCsPrintArea').textContent = '';
+  _etCsSheets.clear();
+  etCsPageStyle();
+  const back = (_etCsOpener && document.contains(_etCsOpener) && _etCsOpener !== document.body) ? _etCsOpener : document.getElementById('etCsOpen');
+  _etCsOpener = null;
+  try { back && back.focus(); } catch (e) {}
+}
+// The option controls from etCs (a download, another tab or a language switch shows at once).
+function etCsSyncControls() {
+  const lang = etCsLangNow();
+  document.querySelectorAll('input[name="etCsOrient"]').forEach(r => { r.checked = r.value === etCs.orient; });
+  document.querySelectorAll('input[name="etCsPaper"]').forEach(r => { r.checked = r.value === etCs.paper; });
+  document.querySelectorAll('input[name="etCsLang"]').forEach(r => { r.checked = r.value === lang; });
+  document.querySelectorAll('input[name="etCsCollate"]').forEach(r => { r.checked = r.value === etCs.collate; });
+  document.querySelectorAll('#etCsOverlay input[data-field]').forEach(cb => { cb.checked = !!etCs[cb.dataset.field]; });
+  document.getElementById('etCsCopies').value = String(etCs.copies);
+  ET_CS_SIZES.forEach(k => {
+    const r = document.querySelector('.et-cs-size input[data-size="' + k + '"]');
+    r.value = String(etCs[k]);
+    r.disabled = !!ET_CS_SIZE_PART[k] && !etCs[ET_CS_SIZE_PART[k]];
+    etCsSizeLabel(r);
+  });
+}
+function etCsSizeLabel(r) {
+  const txt = r.value + '%';   // i18n-ignore: a number and a percent sign
+  r.setAttribute('aria-valuetext', txt);
+  r.nextElementSibling.textContent = txt;
+}
+// The parasha chips under their books, each with its colour icon and its name in the site's language.
+function etCsRenderChips() {
+  const box = document.getElementById('etCsChips');
+  box.textContent = '';
+  const he = etLang() === 'he';
+  ET_BOOKS.forEach(book => {
+    const items = (etData || []).filter(p => p.book === book);
+    if (!items.length) return;
+    const head = document.createElement('div');
+    head.className = 'et-cs-book';
+    head.textContent = I18n.t('torah.custom.book_' + etBookKey(book));
+    box.appendChild(head);
+    const grid = document.createElement('div');
+    grid.className = 'et-cs-chips';
+    items.forEach(p => {
+      const lab = document.createElement('label');
+      lab.className = 'et-cs-chip';
+      const cb = document.createElement('input');
+      cb.type = 'checkbox'; cb.value = String(p.n - 1); cb.checked = _etCsChosen.has(p.n - 1);
+      lab.appendChild(cb);
+      if (window.ParashaIcons) lab.insertAdjacentHTML('beforeend', ParashaIcons.html(p.n - 1));   // generated markup, decorative (aria-hidden)
+      const nm = document.createElement('span');
+      nm.className = 'et-cs-chip-name';
+      nm.textContent = he ? p.he : p.en;
+      if (he) { nm.lang = 'he'; nm.dir = 'rtl'; }
+      lab.appendChild(nm);
+      grid.appendChild(lab);
+    });
+    box.appendChild(grid);
+  });
+}
+// The preview in line with the chosen parshiyot: a page per parasha in Torah order — a new one builds its sheet, a
+// dropped one goes — then a fit pass and the footer.
+function etCsSync() {
+  if (!etCsIsOpen()) return;
+  const ul = document.getElementById('etCsPages'), list = etCsChosenList(), keep = new Set(list.map(p => p.n - 1));
+  ul.dataset.orient = etCs.orient;
+  [..._etCsSheets.keys()].forEach(i => { if (!keep.has(i)) { _etCsSheets.get(i).li.remove(); _etCsSheets.delete(i); } });
+  const he = etLang() === 'he';
+  list.forEach(p => {
+    const i = p.n - 1;
+    let entry = _etCsSheets.get(i);
+    if (!entry) {
+      const li = document.createElement('li');
+      li.className = 'et-cs-thumb';
+      const cap = document.createElement('div');
+      cap.className = 'et-cs-cap';
+      const nm = document.createElement('span');
+      nm.textContent = he ? p.he : p.en;
+      if (he) { nm.lang = 'he'; nm.dir = 'rtl'; }
+      const badge = document.createElement('span');
+      badge.className = 'et-cs-badge'; badge.dir = 'ltr';
+      cap.append(nm, badge);
+      const sheet = etCsBuildSheet(p);
+      li.append(sheet, cap);
+      entry = { li, sheet, k: 1, over: false };
+      _etCsSheets.set(i, entry);
+    }
+    ul.appendChild(entry.li);   // appending in order puts every page in its place
+  });
+  etCsUpdateChrome();
+  etCsScheduleFit();
+}
+// Options changed (a control, a download, another tab, the site's language): sheets whose build depends on them are
+// rebuilt; a size change only re-applies the factors (and refits).
+function etCsRefresh() {
+  if (!etCsIsOpen()) return;
+  document.querySelectorAll('#etCsPages .et-cs-sheet').forEach(etCsApplySizes);
+  const sig = etCsSigNow();
+  if (sig !== _etCsSig) {
+    _etCsSig = sig;
+    _etCsSheets.forEach(entry => entry.li.remove());
+    _etCsSheets.clear();
+  }
+  etCsPageStyle();
+  etCsSync();
+}
+function etCsScheduleFit() {
+  clearTimeout(_etCsFitTimer);
+  _etCsFitTimer = setTimeout(() => { etCsFitAll(); }, 60);
+}
+// Fit: every sheet is measured once at the printed box's exact size, offscreen, after the faces have loaded (a thumbnail
+// rounds and wraps text differently). A sheet whose content overflows has its text stepped down (--k, to 0.7); the
+// picture has already given up its room by then (it shrinks first, to its minimum). All the writes of a round come
+// before all its reads. The factor rides the preview sheet, and so every printed copy.
+async function etCsFitAll(waitMs) {
+  const token = ++_etCsFitToken;
+  try {
+    const wait = Promise.all([document.fonts.load('40px ' + getComputedStyle(document.documentElement).getPropertyValue('--heb-font'), 'אב'), document.fonts.ready]);
+    await Promise.race([wait, new Promise(r => setTimeout(r, waitMs || 1500))]);
+  } catch (e) {}
+  if (token !== _etCsFitToken || !etCsIsOpen()) return;
+  const entries = [..._etCsSheets.values()];
+  if (entries.length) {
+    let [w, h] = ET_CS_PX[etCs.paper] || ET_CS_PX.letter;
+    if (etCs.orient === 'landscape') [w, h] = [h, w];
+    const host = document.createElement('div');
+    host.style.cssText = 'position:fixed;left:-30000px;top:0;visibility:hidden;pointer-events:none;';
+    document.body.appendChild(host);
+    const clones = entries.map(en => {
+      const c = en.sheet.cloneNode(true);
+      c.style.width = w + 'px'; c.style.height = h + 'px'; c.style.aspectRatio = 'auto'; c.style.setProperty('--k', '1');
+      host.appendChild(c);
+      return c;
+    });
+    const k = clones.map(() => 1);
+    let over = clones.map(etCsOverflows);
+    for (let round = 0; round < 6 && over.some(Boolean); round++) {
+      over.forEach((o, j) => { if (o && k[j] > 0.7) { k[j] = Math.max(0.7, +(k[j] - 0.05).toFixed(2)); clones[j].style.setProperty('--k', String(k[j])); } });
+      over = clones.map(etCsOverflows);
+    }
+    host.remove();
+    entries.forEach((en, j) => { en.k = k[j]; en.over = over[j]; en.sheet.style.setProperty('--k', String(k[j])); });
+  }
+  etCsUpdateChrome();
+}
+function etCsOverflows(c) {
+  return [c.querySelector('.et-cs-page'), c.querySelector('.et-cs-body'), c.querySelector('.et-cs-text')].some(n => n && n.scrollHeight > n.clientHeight + 1);
+}
+// The count, the notes and Print — read-only over the current state (applyI18n calls it too).
+function etCsUpdateChrome() {
+  if (!etCsIsOpen()) return;
+  const list = etCsChosenList(), copies = etCs.copies, pages = list.length * copies, he = etLang() === 'he';
+  document.getElementById('etCsCount').textContent = list.length
+    ? I18n.t(pages === 1 ? 'emojitorah.coloring.count.one' : 'emojitorah.coloring.count.other', { count: pages }) : '';
+  document.getElementById('etCsEmpty').hidden = list.length > 0;
+  const btn = document.getElementById('etCsPrint');
+  if (list.length) { btn.removeAttribute('aria-disabled'); btn.removeAttribute('aria-describedby'); }
+  else { btn.setAttribute('aria-disabled', 'true'); btn.setAttribute('aria-describedby', 'etCsEmpty'); }
+  document.querySelectorAll('input[name="etCsCollate"]').forEach(r => { r.disabled = copies < 2; });
+  const badge = copies > 1 ? I18n.t('emojitorah.coloring.copies_badge', { count: copies }) : '';
+  const dir = he ? 'rtl' : 'ltr';   // the pages run in Torah order; a caption reads like the UI
+  _etCsSheets.forEach(entry => { entry.li.querySelector('.et-cs-badge').textContent = badge; entry.li.querySelector('.et-cs-cap').dir = dir; });
+  const name = i => { const p = etData.find(x => x.n === i + 1); return p ? (he ? p.he : p.en) : ''; };
+  const shrunk = [], over = [];
+  _etCsSheets.forEach((entry, i) => { if (entry.over) over.push(name(i)); else if (entry.k < 1) shrunk.push(name(i)); });
+  const notes = [];
+  if (shrunk.length) notes.push(I18n.t('emojitorah.coloring.fit_note', { names: shrunk.join(', ') }));
+  if (over.length) notes.push(I18n.t('emojitorah.coloring.over_note', { names: over.join(', ') }));
+  if (pages > 500) notes.push(I18n.t('emojitorah.coloring.big_note', { count: pages }));
+  const note = document.getElementById('etCsNote'), text = notes.join(' ');
+  if (note.textContent !== text) note.textContent = text;
+}
+// The run on paper: every copy in the chosen order — collated sets (1 2 3, 1 2 3) or grouped by parasha (1 1, 2 2, 3 3).
+function etCsFill() {
+  const area = document.getElementById('etCsPrintArea');
+  area.textContent = '';
+  const sheets = etCsChosenList().map(p => _etCsSheets.get(p.n - 1)).filter(Boolean).map(en => en.sheet);
+  const n = etCs.copies, order = [];
+  if (etCs.collate === 'grouped') sheets.forEach(sh => { for (let c = 0; c < n; c++) order.push(sh); });
+  else for (let c = 0; c < n; c++) sheets.forEach(sh => order.push(sh));
+  const frag = document.createDocumentFragment();
+  order.forEach(sh => frag.appendChild(sh.cloneNode(true)));
+  area.appendChild(frag);
+}
+async function etCsPrint() {
+  if (_etCsPrinting) return;
+  if (!_etCsChosen.size) {
+    // Nothing chosen: Print is aria-disabled and the note beside the preview says why; the press takes the teacher to the parshiyot.
+    const first = document.querySelector('#etCsChips input');
+    if (first) first.focus();
+    announce(I18n.t('emojitorah.coloring.empty'));
+    return;
+  }
+  _etCsPrinting = true;
+  try {
+    etCsPageStyle();
+    await etCsFitAll(4000);   // the faces are in (or 4 s have passed): the last fit before paper
+    if (!etCsIsOpen()) return;
+    etCsFill();
+    _etCsFilled = true;
+    window.print();
+  } finally {
+    _etCsFilled = false;
+    _etCsPrinting = false;
+  }
+}
+// The house modal keys: Escape closes, Tab wraps over the dialog's visible controls. On the document, so a click on the
+// dialog's own text (focus on <body>) still hears them.
+function etCsWireKeys(ov, box) {
+  document.addEventListener('keydown', e => {
+    if (ov.hidden) return;
+    const a = document.activeElement;
+    if (e.key === 'Escape') { e.preventDefault(); etCsClose(); return; }
+    if (e.key !== 'Tab') return;
+    const f = [...box.querySelectorAll(FOCUS_SEL)].filter(x => x.offsetParent !== null);
+    if (!f.length) return;
+    const first = f[0], last = f[f.length - 1], out = !box.contains(a);
+    if (e.shiftKey && (a === first || out)) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && (a === last || out)) { e.preventDefault(); first.focus(); }
+  });
+}
+function etCsWire() {
+  const ov = document.getElementById('etCsOverlay');
+  etCsWireKeys(ov, ov.querySelector('.et-cs-dialog'));
+  ov.addEventListener('click', e => { if (e.target === ov) etCsClose(); });
+  document.getElementById('etCsOpen').addEventListener('click', etCsOpen);
+  document.getElementById('etCsClose').addEventListener('click', etCsClose);
+  document.getElementById('etCsPrint').addEventListener('click', etCsPrint);
+  document.getElementById('etCsChips').addEventListener('change', e => {
+    const cb = e.target;
+    if (!cb || cb.type !== 'checkbox') return;
+    if (cb.checked) _etCsChosen.add(Number(cb.value)); else _etCsChosen.delete(Number(cb.value));
+    etCsSync();
+  });
+  document.getElementById('etCsAll').addEventListener('click', () => {
+    _etCsChosen = new Set((etData || []).map(p => p.n - 1));
+    document.querySelectorAll('#etCsChips input').forEach(cb => { cb.checked = true; });
+    etCsSync();
+  });
+  document.getElementById('etCsNone').addEventListener('click', () => {
+    _etCsChosen = new Set();
+    document.querySelectorAll('#etCsChips input').forEach(cb => { cb.checked = false; });
+    etCsSync();
+  });
+  [['etCsOrient', 'orient'], ['etCsPaper', 'paper'], ['etCsCollate', 'collate']].forEach(([name, key]) =>
+    document.querySelectorAll('input[name="' + name + '"]').forEach(r => r.addEventListener('change', () => { if (r.checked) { etCsSet(key, r.value); etCsRefresh(); } })));
+  document.querySelectorAll('input[name="etCsLang"]').forEach(r => r.addEventListener('change', () => { if (r.checked) { etCsSet('textLang', r.value); etCsRefresh(); } }));
+  document.querySelectorAll('#etCsOverlay input[data-field]').forEach(cb => cb.addEventListener('change', () => {
+    etCsSet(cb.dataset.field, cb.checked);
+    etCsSyncControls();   // a part switched off disables its size slider
+    etCsRefresh();
+  }));
+  // Copies: the count follows the field as it is typed (in memory, like a size drag); clamped and saved on change.
+  const copies = document.getElementById('etCsCopies');
+  copies.addEventListener('input', () => {
+    const n = Number(copies.value);
+    if (Number.isInteger(n) && n >= 1 && n <= ET_CS_MAX_COPIES) { etCs.copies = n; etCsUpdateChrome(); }
+  });
+  copies.addEventListener('change', () => {
+    const n = etCsCopiesVal(Number(copies.value));
+    copies.value = String(n);
+    etCsSet('copies', n);
+    etCsUpdateChrome();
+  });
+  // A size drag resizes the sheets live (CSS factors, no rebuild); the value is saved once, when the drag ends.
+  document.querySelectorAll('.et-cs-size input[type="range"]').forEach(r => {
+    const key = r.dataset.size;
+    r.addEventListener('input', () => {
+      etCs[key] = etCsSizeVal(Number(r.value));
+      document.querySelectorAll('#etCsPages .et-cs-sheet').forEach(etCsApplySizes);
+      etCsSizeLabel(r);
+    });
+    r.addEventListener('change', () => { etCsSet(key, etCsSizeVal(Number(r.value))); etCsScheduleFit(); });
+  });
+  // Ctrl+P / the browser menu with the popup open: the right paper, and the run (no font wait is possible here).
+  window.addEventListener('beforeprint', () => {
+    etCsPageStyle();
+    if (etCsIsOpen() && !_etCsFilled) etCsFill();
+  });
+  try { window.addEventListener('storage', e => { if (e.key === ET_CS_KEY) etCsAdopt(); }); } catch (e) {}
+}
+// A language switch: the chips and captions in the new language; sheets rebuild only where their text follows the site.
+function etCsI18n() {
+  if (!etCsIsOpen()) return;
+  etCsSyncControls();
+  etCsRenderChips();
+  _etCsSheets.forEach(entry => entry.li.remove());   // the captions carry the parasha's name in the site's language
+  _etCsSheets.clear();
+  _etCsSig = etCsSigNow();
+  etCsSync();
+}
+
+/* ── Cloud saves (optional accounts). Everything that talks to Supabase lives in the shared js/ivrit-saves.js; this
+   page names its one key (the module's registry row) and how to re-read it after the module writes it. ── */
+function initCloudSaves() {
+  if (!window.IvritSaves) return;
+  // A suite-wide preference from the account landed: follow the theme now (the module switches the language itself).
+  window.addEventListener('ivritsuite:prefs', () => {
+    const want = localStorage.getItem('hebrewBlender_darkMode');
+    if ((want === '1' || want === '0') && document.body.classList.contains('dark') !== (want === '1')) toggleDark();
+  });
+  IvritSaves.attach({
+    tool: 'EmojiTorah',
+    status: '#cloudSavesPanel',
+    flush: etCsFlush,   // every change is written at once; the flush only takes a newer store
+    onLocalChanged: function (kind) {
+      if (kind !== 'settings') return;
+      etCsAdopt();   // re-read the key and re-render
+      etCsWrite();   // push the page's form back up (never hidden behind "Same")
+    }
+  });
 }
 
 function toggleDark() {
@@ -494,6 +1397,7 @@ function applyI18n() {
   I18n.applyStaticI18n();
   try { const _db = document.getElementById('darkBtn'); if (_db) (_db.querySelector('.hi-lbl') || _db).textContent = document.body.classList.contains('dark') ? I18n.t('shared.darkmode.label_light') : I18n.t('shared.darkmode.label_dark'); } catch (e) {}
   etRender();
+  etCsI18n();   // the coloring-sheet popup, when open (read-only: it writes no option)
 }
 document.addEventListener('DOMContentLoaded', () => {
   try {
@@ -513,8 +1417,11 @@ document.addEventListener('DOMContentLoaded', () => {
     etShowTop();
   });
   document.getElementById('etPrint').addEventListener('click', () => window.print());
+  etCsLoad();
+  etCsWire();
   etTrackBar();
   etLoad();
+  initCloudSaves();
   if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); }
 });
 </script>
