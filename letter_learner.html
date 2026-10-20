@@ -331,12 +331,12 @@ body.dark .ll-mode-btn[aria-pressed="true"] { background:#2a4070; border-color:#
 .ll-tip-pair { font-family:var(--heb-cursive-font); font-size:1.3rem; line-height:1; margin-inline:2px; }
 
 /* ───── Dialog (house modal contract: focus in, Tab trapped, Escape closes, focus back to the card) ───── */
-.ll-overlay {
+.ll-overlay, .ll-bp-overlay {
   position:fixed; inset:0; z-index:300; background:rgba(13,18,32,0.58);
   display:flex; align-items:center; justify-content:center; padding:16px; overflow-y:auto;
 }
-.ll-overlay[hidden] { display:none; }
-.ll-dialog {
+.ll-overlay[hidden], .ll-bp-overlay[hidden] { display:none; }
+.ll-dialog, .ll-bp-dialog {
   background:var(--white); color:var(--text); border:1px solid var(--border); border-radius:14px;
   box-shadow:var(--shadow-lg); width:min(780px, 94vw); max-height:calc(100dvh - 32px);
   overflow:auto; overscroll-behavior:contain; display:flex; flex-direction:column;
@@ -452,13 +452,19 @@ html[lang="he"] .ll-vgroup { letter-spacing:normal; text-transform:none; }
   /* The five size sliders (llCsApplySizes) set these factors; the bases are the 100% look per orientation. Sizes trade
      space on a fixed page: a part that runs out of room stops growing (flex-shrink) rather than spilling off the sheet. */
   --cs-main:1; --cs-pic:1; --cs-he:1; --cs-tr:1; --cs-en:1; --cs-main-base:66cqmin; --cs-pic-base:24cqmin;
+  /* The proportions of the PRINTED box — the paper (data-paper) less the 0.35in @page margins on every side, so the
+     preview is the page as it prints: Letter 10.3 × 7.8in, A4 10.99 × 7.57in, turned for portrait. --cs-h caps the
+     height: short enough that the options and Print fit under the sheet on a laptop. */
+  --cs-aw:10.3; --cs-ah:7.8; --cs-h:54vh;
   container-type:size; box-sizing:border-box; background:#fff; color:#000;
   border:1px solid var(--border); box-shadow:var(--shadow-md);
-  aspect-ratio:11 / 8.5; width:min(100%, calc(54vh * 11 / 8.5));   /* short enough that the options and Print fit under it on a laptop */
+  aspect-ratio:var(--cs-aw) / var(--cs-ah); width:min(100%, calc(var(--cs-h) * var(--cs-aw) / var(--cs-ah)));
   display:flex; flex-direction:column; padding:3.5cqmin 4cqmin 2.2cqmin;
   font-family:'Source Sans 3', sans-serif;
 }
-.ll-cs-sheet[data-orient="portrait"] { aspect-ratio:8.5 / 11; width:min(100%, calc(64vh * 8.5 / 11)); --cs-main-base:40cqmin; --cs-pic-base:17cqmin; }
+.ll-cs-sheet[data-orient="portrait"] { --cs-aw:7.8; --cs-ah:10.3; --cs-h:64vh; --cs-main-base:40cqmin; --cs-pic-base:17cqmin; }
+.ll-cs-sheet[data-paper="a4"] { --cs-aw:10.99; --cs-ah:7.57; }
+.ll-cs-sheet[data-paper="a4"][data-orient="portrait"] { --cs-aw:7.57; --cs-ah:10.99; }
 .ll-cs-name { font-family:'Libre Baskerville', serif; font-size:3.4cqmin; display:flex; align-items:flex-end; gap:1.2cqmin; margin:0 0 1.5cqmin; }
 .ll-cs-blank { display:inline-block; width:45cqmin; border-bottom:0.3cqmin solid #000; }
 .ll-cs-body {
@@ -500,6 +506,53 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
 .ll-cs-size input[type="range"] { width:100%; accent-color:var(--gold); margin:0; }
 .ll-cs-size input[type="range"]:disabled { opacity:0.4; }
 .ll-cs-size output { font-variant-numeric:tabular-nums; color:var(--muted); font-size:0.82rem; }
+/* The tab's own buttons, under the options (the options block moves into the bulk popup and back; these stay). */
+.ll-cs-actions { display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:10px 14px; margin-top:14px; }
+
+/* ───── Bulk print popup (Print coloring sheets): the house modal look in a larger box — the options in a column at the
+   inline-start, the print preview beside it (one page per chosen letter), the page count and Print in a footer. Its own
+   overlay class, so the letter dialog's print and phone rules (keyed on .ll-overlay) never reach it. ───── */
+.ll-bp-launch { min-height:40px; border-radius:999px; padding:6px 16px; font-size:0.9rem; }
+.ll-bp-launch[hidden] { display:none; }   /* .hi-btn's inline-flex would outrank the UA's [hidden] */
+.ll-topbar { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px 12px; margin-block-end:14px; }
+.ll-topbar .ll-mode { margin-block-end:0; }
+.ll-bp-dialog { width:min(1180px, 96vw); height:calc(100dvh - 32px); max-height:none; overflow:hidden; }
+.ll-bp-dialog .ll-dlg-title { justify-content:flex-start; padding-inline-start:4px; }
+.ll-bp-body { flex:1; min-height:0; display:grid; grid-template-columns:minmax(300px, 370px) minmax(0, 1fr); }
+.ll-bp-side { overflow-y:auto; overscroll-behavior:contain; padding:14px 16px 20px; border-inline-end:1px solid var(--border); display:flex; flex-direction:column; gap:16px; }
+.ll-bp-side .ll-cs-opts { margin-top:0; gap:16px 26px; }
+.ll-bp-main { overflow-y:auto; overscroll-behavior:contain; background:var(--warm-gray); padding:16px; }
+body.dark .ll-bp-main { background:var(--cream); }   /* dark --warm-gray is the dialog's own surface */
+.ll-bp-letter-btns { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; }
+.ll-bp-letter-btns .ll-btn { padding:4px 10px; font-size:0.8rem; }
+.ll-bp-letters { display:grid; grid-template-columns:repeat(auto-fill, minmax(62px, 1fr)); gap:6px; }
+.ll-bp-chip {
+  position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:58px;
+  padding:4px 2px 3px; border:1.5px solid var(--border); border-radius:8px; background:var(--cream); color:var(--text); cursor:pointer;
+}
+.ll-bp-chip input { position:absolute; inset-block-start:4px; inset-inline-start:4px; width:14px; height:14px; margin:0; accent-color:var(--gold); }
+.ll-bp-chip:has(input:checked) { border-color:var(--gold); box-shadow:inset 0 0 0 1px var(--gold); }
+.ll-bp-chip:has(input:focus-visible) { outline:2px solid var(--focus-ring); outline-offset:2px; }
+.ll-bp-chip-glyph { font-family:var(--heb-font); font-size:1.6rem; line-height:1.15; }
+.ll-bp-letters[data-style="cursive"] .ll-bp-chip-glyph { font-family:var(--heb-cursive-font); font-size:1.45rem; }
+.ll-bp-chip-name { font-size:0.7rem; line-height:1.15; text-align:center; }
+.ll-bp-copies input[type="number"] { width:4.5em; font:inherit; font-size:0.9rem; padding:4px 6px; border:1.5px solid var(--border); border-radius:6px; background:var(--white); color:var(--text); }
+.ll-bp-copies .ll-opt:has(input[type="radio"]:disabled) { opacity:0.5; }   /* the order radios, at one copy */
+.ll-bp-note { margin:0 0 10px; }
+.ll-bp-note:empty { display:none; }
+.ll-bp-empty { color:var(--muted); font-size:0.95rem; text-align:center; padding:40px 12px; }
+.ll-bp-empty[hidden] { display:none; }
+.ll-bp-pages { list-style:none; display:grid; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr)); gap:20px 16px; align-items:start; }
+.ll-bp-pages[data-orient="portrait"] { grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); }
+.ll-bp-thumb { display:flex; flex-direction:column; align-items:center; gap:6px; min-width:0; }
+.ll-bp-host { width:100%; }
+.ll-bp-thumb .ll-cs-sheet { width:100%; align-self:start; }   /* size-contained: the height comes from aspect-ratio alone */
+.ll-bp-cap { display:flex; align-items:baseline; justify-content:center; gap:8px; font-size:0.85rem; font-weight:700; }
+.ll-bp-badge { font-size:0.75rem; color:var(--gold-text); font-variant-numeric:tabular-nums; }
+.ll-bp-foot { flex-shrink:0; display:flex; flex-wrap:wrap; align-items:center; justify-content:flex-end; gap:8px 14px; padding:10px 16px; border-top:1px solid var(--border); background:var(--white); }
+.ll-bp-count { margin-inline-end:auto; font-weight:700; font-variant-numeric:tabular-nums; }
+.ll-bp-foot .ll-cs-print[aria-disabled="true"] { opacity:0.45; cursor:default; filter:none; }
+#llBpPrintArea { display:none; }   /* the copies print from here (llBpFill); never shown on screen */
 
 /* Hint animation library: a drawing wraps a moving part in <g class="ll-anim ll-anim-<name>">. Every keyframe
    returns to the rest pose and fill-mode stays `none`, so the reduced-motion block below (0.001ms, one run)
@@ -595,8 +648,13 @@ body.dark #appToast { background: #0a0f1c; }
 
 /* ───── Phones: the dialog becomes a full-screen sheet ───── */
 @media (max-width: 800px) {
-  .ll-overlay { padding:0; align-items:stretch; }
+  .ll-overlay, .ll-bp-overlay { padding:0; align-items:stretch; }
   .ll-dialog { width:100%; max-height:100dvh; border-radius:0; border:none; }
+  /* The bulk popup: one scrolling column on a phone — the options, then the preview — under a pinned head and footer. */
+  .ll-bp-dialog { width:100%; height:100dvh; border-radius:0; border:none; }
+  .ll-bp-body { display:block; overflow-y:auto; overscroll-behavior:contain; }
+  .ll-bp-side { overflow:visible; border-inline-end:none; border-bottom:1px solid var(--border); }
+  .ll-bp-main { overflow:visible; }
   .ll-hint-pic { width:min(200px, 56vw); }
   .ll-story { grid-template-columns:1fr; gap:2px 0; }
   .ll-story dd { margin-block-end:6px; }
@@ -625,6 +683,8 @@ body.dark #appToast { background: #0a0f1c; }
   .ll-tabs [role="tab"] { min-height:44px; }
   .ll-mode-btn { min-height:44px; }
   .ll-tips summary { min-height:44px; display:flex; align-items:center; }
+  .ll-bp-copies input[type="number"] { font-size:16px; min-height:40px; }
+  .ll-bp-letter-btns .ll-btn { min-height:40px; }
 }
 /* The header's wrap gate: the row of controls drops under the title only below this page's MEASURED overflow
    ceiling (docs/reference/shared-components.md → "The header's wrap gate"). 576px is where the unwrapped row
@@ -645,11 +705,12 @@ body.dark #appToast { background: #0a0f1c; }
   .ll-tabs { padding:8px 8px 0; gap:2px; }
   .ll-tabs [role="tab"] { padding:8px 9px; font-size:0.86rem; }
   .ll-mode { flex-wrap:nowrap; }
+  .ll-topbar > .ll-mode { flex-basis:100%; }   /* the mode buttons keep their full row; Print coloring sheets wraps under them */
   .ll-mode-btn { flex:1; justify-content:center; padding-inline:8px; gap:6px; min-width:0; }
   .ll-mode-btn > span:last-child { white-space:normal; line-height:1.15; text-align:center; }   /* "Letters (Cursive)" wraps inside 390px */
 }
 @media print {
-  header .hright, .ll-mode, .ll-tips, .ll-sidebar, .sbr-split, .ll-sb-tab, footer, .ll-overlay, .tour-spot, .tour-card, #appToast { display:none !important; }
+  header .hright, .ll-mode, .ll-bp-launch, .ll-tips, .ll-sidebar, .sbr-split, .ll-sb-tab, footer, .ll-overlay, .ll-bp-overlay, .tour-spot, .tour-card, #appToast { display:none !important; }
   /* Print establishes its own ink (the trope / dictionary / flash-cards treatment). The print dialog drops background
      plates by default, so both themes converge on the light palette on white paper: without this a dark-mode print set
      every letter and name in --text #dde4f0 on white — card frames with nothing readable inside — and the drawings'
@@ -692,15 +753,25 @@ body.dark #appToast { background: #0a0f1c; }
   body.ll-dlg-open .ll-hint-pic { width:260px; }   /* paper is narrower than 800px, so the phone size (200px) would apply */
   .ll-hint, .ll-word, .ll-vrow, .ll-font-tile, .ll-story, .ll-story-script, .ll-forms-line, .ll-lookalike, .ll-finals-rule { break-inside:avoid; }
   /* The Coloring sheet tab prints the sheet alone, filling one page: no tool header, no dialog head, no options.
-     The page's orientation comes from #llPageSize, written by llCsPageStyle while the tab shows (body[data-ll-tab]). */
+     The page's size and orientation come from #llPageSize, written by llCsPageStyle while the tab shows (body[data-ll-tab]). */
   body.ll-dlg-open[data-ll-tab="coloring"] header,
   body.ll-dlg-open[data-ll-tab="coloring"] .ll-dlg-head,
   body.ll-dlg-open[data-ll-tab="coloring"] .ll-cs-opts,
+  body.ll-dlg-open[data-ll-tab="coloring"] .ll-cs-actions,
   body.ll-dlg-open[data-ll-tab="coloring"] .ll-cs-note { display:none !important; }
   body.ll-dlg-open[data-ll-tab="coloring"] .ll-panel { padding:0; }
   body.ll-dlg-open[data-ll-tab="coloring"] .ll-cs-preview { display:block; margin:0; }
   body.ll-dlg-open[data-ll-tab="coloring"] .ll-cs-sheet,
   body.ll-dlg-open[data-ll-tab="coloring"] .ll-cs-sheet[data-orient="portrait"] { width:100%; height:100vh; aspect-ratio:auto; border:none; box-shadow:none; break-inside:avoid; }
+  /* The bulk popup prints its run alone: #llBpPrintArea holds every copy in order (llBpFill), one sheet per page, and
+     everything else on the page goes. 100vh is the page area, so a sheet follows the real paper and the dialog's scale;
+     the break sits BEFORE each sheet after the first, so no blank page trails the run. body is a flex column on screen,
+     and a forced break inside a flex item is ignored by some engines: paper gets a plain block. */
+  body.ll-bp-open { display:block; min-height:0; }
+  body.ll-bp-open > :not(#llBpPrintArea) { display:none !important; }
+  body.ll-bp-open #llBpPrintArea { display:block !important; }
+  #llBpPrintArea .ll-cs-sheet { width:100%; height:100vh; aspect-ratio:auto; overflow:hidden; border:none; box-shadow:none; break-inside:avoid; }
+  #llBpPrintArea .ll-cs-sheet + .ll-cs-sheet { break-before:page; }
 }
 /* Reduced motion: the universal neutralizer (every animation and transition on the page, the hint drawings'
    .ll-anim groups included; 0.001ms rather than 0 so animationend still fires). */
@@ -714,7 +785,8 @@ body.dark #appToast { background: #0a0f1c; }
   .pulse-attn::after { animation: none !important; }   /* the ring stays, still: its base style is the static 3px ring */
 }
 </style>
-<!-- @page size for the Coloring sheet tab only (llCsPageStyle fills it while that tab shows, empties it otherwise). -->
+<!-- @page size for the coloring sheets only (llCsPageStyle fills it while the Coloring sheet tab shows or the bulk print
+     popup is open, empties it otherwise). -->
 <style id="llPageSize"></style>
 </head>
 <body>
@@ -780,10 +852,15 @@ body.dark #appToast { background: #0a0f1c; }
     <!-- Letters (Block) / Letters (Cursive) / Vowels: three pressed-state buttons in one group. The mode is read from
          ?mode= / ?vowel= before the first render (llInitMode) and mirrored into the address bar on a click (llSetMode) —
          nothing is stored or synced. It heads the letters' column, so the options sidebar runs from the header down. -->
+    <!-- The mode group and, beside it, the bulk print button (Block and Cursive modes; llSetMode hides it for the vowels):
+         one wrapping row heading the letters' column. -->
+    <div class="ll-topbar">
     <div class="ll-mode" role="group" aria-label="Block letters, cursive letters or vowels" data-i18n-aria-label="letterlearner.mode.aria">
       <button type="button" class="ll-mode-btn" id="llModeLetters" data-mode="letters" aria-pressed="true"><span class="ll-mode-sample" lang="he" dir="rtl" aria-hidden="true">א</span><span data-i18n="letterlearner.mode.letters">Letters (Block)</span></button>
       <button type="button" class="ll-mode-btn" id="llModeCursive" data-mode="cursive" aria-pressed="false"><span class="ll-mode-sample ll-mode-sample-cursive" lang="he" dir="rtl" aria-hidden="true">א</span><span data-i18n="letterlearner.mode.cursive">Letters (Cursive)</span></button>
       <button type="button" class="ll-mode-btn" id="llModeVowels" data-mode="vowels" aria-pressed="false"><span class="ll-mode-sample" lang="he" dir="rtl" aria-hidden="true">אַ</span><span data-i18n="letterlearner.mode.vowels">Vowels</span></button>
+    </div>
+    <button type="button" class="ll-btn ghost hi-btn ll-bp-launch" id="llBpOpen" title="Choose letters and print their coloring sheets together" data-i18n-title="letterlearner.bulk.open_title"><svg class="hi hi-sm hi-print" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9.2V3.6h10v5.6"/><path d="M7 9.2H5.6A2.1 2.1 0 0 0 3.5 11.3v3.6a2.1 2.1 0 0 0 2.1 2.1H7"/><path d="M17 9.2h1.4a2.1 2.1 0 0 1 2.1 2.1v3.6a2.1 2.1 0 0 1-2.1 2.1H17"/><rect x="7" y="14.2" width="10" height="6.2" rx="1.2"/><circle cx="17.6" cy="12" r="1" fill="currentColor" stroke="none"/></svg><span class="hi-lbl" data-i18n="letterlearner.bulk.title">Print coloring sheets</span></button>
     </div>
     <ul class="ll-grid" id="llGrid" dir="rtl" aria-label="Letters" data-i18n-aria-label="letterlearner.grid.aria"></ul>
     <p class="ll-note ll-grid-note" id="llGridNote" hidden></p>
@@ -822,15 +899,23 @@ body.dark #appToast { background: #0a0f1c; }
     <div class="ll-panel" role="tabpanel" id="llPanel-special" aria-labelledby="llTab-special" tabindex="0" hidden></div>
     <div class="ll-panel" role="tabpanel" id="llPanel-story" aria-labelledby="llTab-story" tabindex="0" hidden></div>
     <!-- Coloring sheet (Block and Cursive cards): the sheet preview is rebuilt by llRenderColoringTab; the options under it
-         are static and read/written through the settings blob (the color* fields). Paper prints only the sheet. -->
+         are static and read/written through the settings blob (the color* fields). The options block is shared with the
+         bulk print popup: llCsMountOpts moves it there while the popup is open and back into #llCsOptsHome after.
+         Paper prints only the sheet. -->
     <div class="ll-panel" role="tabpanel" id="llPanel-coloring" aria-labelledby="llTab-coloring" tabindex="0" hidden>
       <div class="ll-cs-preview" id="llCsPreview"></div>
       <p class="ll-note ll-cs-note" id="llCsNote" role="status" aria-live="polite"></p>
-      <div class="ll-cs-opts">
+      <div id="llCsOptsHome">
+      <div class="ll-cs-opts" id="llCsOpts">
         <fieldset class="ll-cs-set">
           <legend data-i18n="letterlearner.coloring.page_legend">Page</legend>
           <label class="ll-opt"><input type="radio" name="llCsOrient" value="landscape"><span data-i18n="letterlearner.coloring.landscape">Landscape</span></label>
           <label class="ll-opt"><input type="radio" name="llCsOrient" value="portrait"><span data-i18n="letterlearner.coloring.portrait">Portrait</span></label>
+        </fieldset>
+        <fieldset class="ll-cs-set">
+          <legend data-i18n="letterlearner.coloring.paper_legend">Paper size</legend>
+          <label class="ll-opt"><input type="radio" name="llCsPaper" value="letter"><span data-i18n="letterlearner.coloring.paper_letter">Letter (8.5 × 11 in)</span></label>
+          <label class="ll-opt"><input type="radio" name="llCsPaper" value="a4"><span data-i18n="letterlearner.coloring.paper_a4">A4 (210 × 297 mm)</span></label>
         </fieldset>
         <fieldset class="ll-cs-set">
           <legend data-i18n="letterlearner.coloring.show_legend">Show</legend>
@@ -856,11 +941,63 @@ body.dark #appToast { background: #0a0f1c; }
           <div class="ll-opt ll-cs-font"><label for="llCsFont" data-i18n="letterlearner.coloring.font_label">Hebrew font (words)</label><select id="llCsFont"></select></div>
           <label class="ll-cs-upload" title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" data-i18n-title="shared.fonts.upload_title"><svg class="hi hi-sm hi-upload" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.2V4"/><path d="M7.6 8.4 12 4l4.4 4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="shared.fonts.upload_label">Upload your own font?</span><input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" id="llCsUpload"></label>
         </div>
+      </div>
+      </div>
+      <div class="ll-cs-actions">
+        <button type="button" class="ll-btn ghost" id="llCsBulk" title="Choose more letters and print their coloring sheets together" data-i18n-title="letterlearner.coloring.bulk_link_title"><span data-i18n="letterlearner.coloring.bulk_link">Print several letters…</span></button>
         <button type="button" class="ll-btn ll-cs-print hi-btn" id="llCsPrint" title="Print this coloring sheet" data-i18n-title="letterlearner.coloring.print_title"><svg class="hi hi-sm hi-print" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9.2V3.6h10v5.6"/><path d="M7 9.2H5.6A2.1 2.1 0 0 0 3.5 11.3v3.6a2.1 2.1 0 0 0 2.1 2.1H7"/><path d="M17 9.2h1.4a2.1 2.1 0 0 1 2.1 2.1v3.6a2.1 2.1 0 0 1-2.1 2.1H17"/><rect x="7" y="14.2" width="10" height="6.2" rx="1.2"/><circle cx="17.6" cy="12" r="1" fill="currentColor" stroke="none"/></svg><span class="hi-lbl" data-i18n="letterlearner.coloring.print">Print</span></button>
       </div>
     </div>
   </div>
 </div>
+
+<!-- Bulk print (Print coloring sheets, Block and Cursive modes): the letters, copies and order on top, then the shared
+     options block (moved in from the Coloring sheet tab by llCsMountOpts while this is open); the preview shows each chosen
+     letter's sheet once (llBpSync / llBpPump), the footer the page count and Print. #llBpPrintArea, outside the popup,
+     is filled with every copy in order just before printing (llBpFill) and is the only thing on paper. -->
+<div class="ll-bp-overlay" id="llBpOverlay" hidden>
+  <div class="ll-bp-dialog" role="dialog" aria-modal="true" aria-labelledby="llBpTitle">
+    <div class="ll-dlg-head">
+      <h2 class="ll-dlg-title" id="llBpTitle" data-i18n="letterlearner.bulk.title">Print coloring sheets</h2>
+      <button type="button" class="ll-x" id="llBpClose" title="Close" aria-label="Close" data-i18n-title="letterlearner.dialog.close" data-i18n-aria-label="letterlearner.dialog.close"><svg class="hi hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
+    </div>
+    <div class="ll-bp-body">
+      <div class="ll-bp-side">
+        <fieldset class="ll-cs-set">
+          <legend data-i18n="letterlearner.bulk.style_legend">Letter style</legend>
+          <label class="ll-opt"><input type="radio" name="llBpStyle" value="letters"><span data-i18n="letterlearner.bulk.style_block">Block</span></label>
+          <label class="ll-opt"><input type="radio" name="llBpStyle" value="cursive"><span data-i18n="letterlearner.bulk.style_cursive">Cursive</span></label>
+        </fieldset>
+        <fieldset class="ll-cs-set">
+          <legend data-i18n="letterlearner.bulk.letters_legend">Letters</legend>
+          <div class="ll-bp-letter-btns">
+            <button type="button" class="ll-btn ghost" id="llBpAll" data-i18n="letterlearner.bulk.all">Select all</button>
+            <button type="button" class="ll-btn ghost" id="llBpNone" data-i18n="letterlearner.bulk.none">Clear</button>
+          </div>
+          <div class="ll-bp-letters" id="llBpLetters" dir="rtl"></div>
+        </fieldset>
+        <fieldset class="ll-cs-set ll-bp-copies">
+          <legend data-i18n="letterlearner.bulk.copies_legend">Copies</legend>
+          <div class="ll-opt"><label for="llBpCopies" data-i18n="letterlearner.bulk.copies_label">Copies of each sheet</label><input type="number" id="llBpCopies" min="1" max="40" step="1" inputmode="numeric"></div>
+          <label class="ll-opt"><input type="radio" name="llBpCollate" value="sets"><span data-i18n="letterlearner.bulk.collate_sets">Collated sets (1 2 3, 1 2 3)</span></label>
+          <label class="ll-opt"><input type="radio" name="llBpCollate" value="grouped"><span data-i18n="letterlearner.bulk.collate_grouped">Grouped by letter (1 1, 2 2, 3 3)</span></label>
+        </fieldset>
+        <p class="ll-note" data-i18n="letterlearner.bulk.shared_note">The sheet options below are shared with each letter's Coloring sheet tab.</p>
+        <div id="llBpOptsHost"></div>
+      </div>
+      <div class="ll-bp-main">
+        <p class="ll-note ll-bp-note" id="llBpNote" role="status" aria-live="polite"></p>
+        <p class="ll-bp-empty" id="llBpEmpty" data-i18n="letterlearner.bulk.empty">Choose the letters to print.</p>
+        <ul class="ll-bp-pages" id="llBpPages" dir="rtl" aria-label="Print preview" data-i18n-aria-label="letterlearner.bulk.preview_aria"></ul>
+      </div>
+    </div>
+    <div class="ll-bp-foot">
+      <span class="ll-bp-count" id="llBpCount" aria-live="polite"></span>
+      <button type="button" class="ll-btn ll-cs-print hi-btn" id="llBpPrint" title="Print every sheet in the preview" data-i18n-title="letterlearner.bulk.print_title"><svg class="hi hi-sm hi-print" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9.2V3.6h10v5.6"/><path d="M7 9.2H5.6A2.1 2.1 0 0 0 3.5 11.3v3.6a2.1 2.1 0 0 0 2.1 2.1H7"/><path d="M17 9.2h1.4a2.1 2.1 0 0 1 2.1 2.1v3.6a2.1 2.1 0 0 1-2.1 2.1H17"/><rect x="7" y="14.2" width="10" height="6.2" rx="1.2"/><circle cx="17.6" cy="12" r="1" fill="currentColor" stroke="none"/></svg><span class="hi-lbl" data-i18n="letterlearner.coloring.print">Print</span></button>
+    </div>
+  </div>
+</div>
+<div id="llBpPrintArea" aria-hidden="true"></div>
 
 <footer>
   <div><a href="contact.html" data-i18n="contact.page_title">Contact &amp; Support</a></div>
@@ -1456,6 +1593,7 @@ const LL_DEFAULTS = {
   // and travel. colorFont '' = the card's own face; a My Fonts name this device lacks stays stored (only the sheet
   // falls back to the card's face).
   colorOrient: 'landscape',   // 'landscape' | 'portrait'
+  colorPaper: 'letter',       // 'letter' | 'a4' — the paper both print dialogs size the sheet and the @page for
   colorView: 'letter',        // 'letter' | 'hint'
   colorTranslit: true,
   colorGloss: true,
@@ -1467,7 +1605,13 @@ const LL_DEFAULTS = {
   colorSizePic: 100,
   colorSizeHe: 100,
   colorSizeTr: 100,
-  colorSizeEn: 100
+  colorSizeEn: 100,
+  // The bulk print popup (Print coloring sheets): the letters it prints (ids, kept in alef-bet order by llBpCanon), the
+  // copies of each sheet and their order on paper. Its Block / Cursive switch is not stored: it follows the page's mode
+  // at each open.
+  bulkLetters: [],
+  bulkCopies: 1,              // 1–40
+  bulkCollate: 'sets'         // 'sets' (1 2 3, 1 2 3) | 'grouped' (1 1, 2 2, 3 3)
 };
 // The Fonts tab: five very different shapes. Each face is the suite's own entry (the pickers' HEB_FONTS on the
 // Torah Trainer, the self-hosted @font-face in this page's head) — nothing is duplicated here, only named.
@@ -1690,13 +1834,13 @@ function llPairsFor(L, list) {
   const id = (own || !L.pairWith) ? L.id : L.pairWith;
   return list.filter(p => p.ids.includes(id)).map(p => ({ other: LETTERS[p.ids[0] === id ? p.ids[1] : p.ids[0]], tip: p.tip })).filter(x => x.other);
 }
-// The grid, in alef-bet order: a base, then (while pairs are split) its partner, then its final form.
-function llOrder() {
+// The grid, in alef-bet order: a base, then (while pairs are split, or always with `all`) its partner, then its final form.
+function llOrder(all) {
   const out = [];
   ALEFBET.forEach(id => {
     const L = LETTERS[id]; if (!L) return;
     out.push(id);
-    if (settings.splitPairs && L.pairWith && LETTERS[L.pairWith]) out.push(L.pairWith);
+    if ((all || settings.splitPairs) && L.pairWith && LETTERS[L.pairWith]) out.push(L.pairWith);
     if (FINAL_OF[id]) out.push(FINAL_OF[id]);
   });
   return out;
@@ -1716,9 +1860,13 @@ function llCard(id) {
     if (!C || !V || !S) return null;
     return { kind: 'vowel', id, glyph: llVowelGlyph(V), name: _fbT('letterlearner.glyphname.vowel_' + id, V.en), fam: S.family, V, C, S };
   }
+  return llLetterCard(id, _llMode === 'cursive' ? 'cursive' : 'letter');
+}
+// A letter's card in either script, whatever the page's mode (the bulk print popup has its own Block / Cursive switch).
+function llLetterCard(id, kind) {
   const L = LETTERS[id];
   if (!L) return null;
-  if (_llMode === 'cursive') return { kind: 'cursive', id, glyph: L.glyph, name: L.name, L, T: llTrickFor(L) };
+  if (kind === 'cursive') return { kind: 'cursive', id, glyph: L.glyph, name: L.name, L, T: llTrickFor(L) };
   return { kind: 'letter', id, glyph: L.glyph, name: L.name, L };
 }
 
@@ -1742,10 +1890,14 @@ function llLoadSettings() {
   settings.wordAudio = typeof stored.wordAudio === 'boolean' ? stored.wordAudio : LL_DEFAULTS.wordAudio;
   settings.voiceURI = typeof stored.voiceURI === 'string' ? stored.voiceURI : '';
   settings.colorOrient = stored.colorOrient === 'portrait' ? 'portrait' : 'landscape';
+  settings.colorPaper = stored.colorPaper === 'a4' ? 'a4' : 'letter';
   settings.colorView = stored.colorView === 'hint' ? 'hint' : 'letter';
   ['colorTranslit', 'colorGloss', 'colorName', 'colorHint'].forEach(k => { settings[k] = typeof stored[k] === 'boolean' ? stored[k] : LL_DEFAULTS[k]; });
   settings.colorFont = typeof stored.colorFont === 'string' ? stored.colorFont.slice(0, 120) : '';
   LL_CS_SIZES.forEach(k => { settings[k] = llCsSizeVal(stored[k]); });
+  settings.bulkLetters = llBpCanon(stored.bulkLetters);
+  settings.bulkCopies = llBpCopiesVal(stored.bulkCopies);
+  settings.bulkCollate = stored.bulkCollate === 'grouped' ? 'grouped' : 'sets';
 }
 function llSaveSettings() {
   const text = JSON.stringify(settings);
@@ -1766,6 +1918,7 @@ function llAdoptStore() {
   renderGrid();
   llRefillOrClose();
   llRenderVoicePicker();
+  llBpAdopt();
 }
 function llSetSetting(key, value) {
   settings[key] = value;
@@ -1827,6 +1980,7 @@ function wireOptions() {
     llSaveSettings();
     renderOptions(); renderGrid(); llRenderVoicePicker();
     llRefillOrClose();
+    llBpAdopt();
   });
   try { window.addEventListener('storage', e => { if (e.key === LL_KEY) llAdoptStore(); }); } catch (e) {}
 }
@@ -1858,6 +2012,7 @@ function llSetMode(mode, opts) {
   });
   // The tips block serves both non-block modes: its summary and intro are chrome (keys swapped), its rows learner content.
   document.getElementById('llTips').hidden = mode === 'letters';
+  document.getElementById('llBpOpen').hidden = vowels;   // coloring sheets are letters' (Block and Cursive) only
   _llSwapText(document.getElementById('llTipsSummary'), cursive ? 'letterlearner.tips.cursive_summary' : 'letterlearner.tips.summary',
     cursive ? 'Look-alikes and final letters' : 'Teaching tips');
   _llSwapText(document.getElementById('llTipsIntro'), cursive ? 'letterlearner.tips.cursive_intro' : 'letterlearner.tips.intro',
@@ -2004,15 +2159,15 @@ function llClose() {
   _llOpener = null;
   try { back && back.focus(); } catch (e) {}
 }
-function wireDialog() {
-  const ov = document.getElementById('llOverlay'), box = ov.querySelector('.ll-dialog');
-  // On the document, not the overlay: a click on the dialog's own text leaves the focus on <body>, where an overlay
-  // listener never hears Escape or Tab (Shift+Tab walked to the grid behind). Focus outside the box wraps back in.
+// The house modal keys for one dialog (the letter dialog, the bulk print popup): Escape closes, Tab wraps over the box's
+// visible controls. On the document, not the overlay: a click on the dialog's own text leaves the focus on <body>, where
+// an overlay listener never hears Escape or Tab (Shift+Tab walked to the grid behind). Focus outside the box wraps back in.
+function llTrapKeys(ov, box, close) {
   document.addEventListener('keydown', e => {
     if (ov.hidden) return;
     const a = document.activeElement;
     if (a && a !== document.body && !box.contains(a) && a.closest('[aria-modal="true"]')) return;   // a dialog above keeps its keys
-    if (e.key === 'Escape') { e.preventDefault(); llClose(); return; }
+    if (e.key === 'Escape') { e.preventDefault(); close(); return; }
     if (e.key !== 'Tab') return;
     const f = [...box.querySelectorAll(FOCUS_SEL)].filter(x => x.offsetParent !== null);
     if (!f.length) return;
@@ -2020,6 +2175,10 @@ function wireDialog() {
     if (e.shiftKey && (a === first || out)) { e.preventDefault(); last.focus(); }
     else if (!e.shiftKey && (a === last || out)) { e.preventDefault(); first.focus(); }
   });
+}
+function wireDialog() {
+  const ov = document.getElementById('llOverlay'), box = ov.querySelector('.ll-dialog');
+  llTrapKeys(ov, box, llClose);
   ov.addEventListener('click', e => { if (e.target === ov) llClose(); });
   document.getElementById('llClose').addEventListener('click', llClose);
   document.getElementById('llPrev').addEventListener('click', () => llStep(-1));
@@ -2908,8 +3067,9 @@ function llCsWordStack(card) {
 // The letter alone, hollow: an SVG <text> in the card's own face (both are self-hosted, so the sheet works offline),
 // painted stroke-first so the white fill covers the outline's inner half and any overlap inside the glyph. The viewBox
 // is the glyph's ink box, measured on a canvas in the same face at the same size, so every letter fills the middle;
-// it is measured again once the face has loaded.
-function llCsLetter(art, card, token) {
+// it is measured again once the face has loaded (while `alive()` still holds — a newer render owns the sheet otherwise).
+// Returns the fit, so a caller can measure once more before copying the sheet (a copy keeps the viewBox it was made with).
+function llCsLetter(art, card, alive) {
   const NS = 'http://www.w3.org/2000/svg', stack = llCsCardStack(card);
   const svg = document.createElementNS(NS, 'svg');
   svg.setAttribute('role', 'img');
@@ -2926,7 +3086,7 @@ function llCsLetter(art, card, token) {
   svg.appendChild(t);
   art.appendChild(svg);
   const fit = () => {
-    if (token !== _llCsToken) return;
+    if (!alive()) return;
     let L = 30, R = 30, A = 70, D = 0;
     try {
       const ctx = document.createElement('canvas').getContext('2d');
@@ -2942,18 +3102,20 @@ function llCsLetter(art, card, token) {
   };
   fit();
   try { document.fonts.load('100px ' + stack, card.glyph).then(fit, () => {}); } catch (e) {}
+  return fit;
 }
-function llRenderColoringTab(card) {
-  const host = document.getElementById('llCsPreview'), note = document.getElementById('llCsNote');
-  host.textContent = '';
-  note.textContent = '';
-  const token = ++_llCsToken;
-  if (!card || card.kind === 'vowel') return;
+// One coloring sheet for `card`, built into `host` with the options in `settings` (the Coloring sheet tab and the bulk
+// print popup both build through here). The host must be on screen: the drawings are measured as they are converted, and
+// an unmeasured drawing converts wrongly without any error — so a host that is not laid out gets nothing (null).
+// Otherwise { sheet, noHint, fit }: noHint = "Letter hint" was chosen but the card has no picture (the sheet shows the
+// letter), fit = the hollow letter's re-measure (null when the middle is a picture).
+function llCsBuildSheet(host, card, alive) {
   const L = llCheckDrawings(card.L);
   if (card.kind === 'cursive') llCheckCursive(card.T);
   const sheet = el('div', 'll-cs-sheet');
   sheet.dir = 'ltr'; sheet.lang = 'en';   // printed learner content: English, laid out like the sketch in both UIs
   sheet.dataset.orient = settings.colorOrient;
+  sheet.dataset.paper = settings.colorPaper;
   llCsApplySizes(sheet);
   if (settings.colorName) {
     const nm = el('div', 'll-cs-name');
@@ -2964,10 +3126,8 @@ function llRenderColoringTab(card) {
   const body = el('div', 'll-cs-body');
   const hint = llCsHint(card);
   let useHint = settings.colorView === 'hint';
-  if (useHint && !(hint && hint.svg)) {
-    useHint = false;
-    note.textContent = _fbT('letterlearner.coloring.no_hint_note', 'This letter has no hint picture yet, so the sheet shows the letter.');
-  }
+  const noHint = useHint && !(hint && hint.svg);
+  if (noHint) useHint = false;
   const fig = el('figure', 'll-cs-center');
   const art = el('div', 'll-cs-art');
   fig.appendChild(art);
@@ -2994,20 +3154,47 @@ function llRenderColoringTab(card) {
   sheet.appendChild(body);
   sheet.appendChild(el('div', 'll-cs-credit', 'ivritsuite.com'));   // i18n-ignore: brand credit
   host.appendChild(sheet);
+  if (!art.getBoundingClientRect().width) { sheet.remove(); return null; }
   // In the sheet now (and visible): draw, then measure and convert.
+  let fit = null;
   if (useHint) { const svg = llSvg(hint.svg, hint.caption || card.name); art.appendChild(svg); llColoringify(svg); }
-  else llCsLetter(art, card, token);
+  else fit = llCsLetter(art, card, alive);
   pics.forEach(([pic, w]) => { const svg = llSvg(w.svg, w.en); pic.appendChild(svg); llColoringify(svg); });
-  if (settings.colorFont && !allFonts().some(f => f.name === settings.colorFont) && !note.textContent)
-    note.textContent = _fbT('shared.fonts.missing_note', '"{name}" is chosen but is not on this device. Upload it under My Fonts to use it here.', { name: settings.colorFont });
+  return { sheet, noHint, fit };
+}
+// "{name}" is chosen as the words' font but is not on this device: the note both views show.
+function llCsFontMissingNote() {
+  return (settings.colorFont && !allFonts().some(f => f.name === settings.colorFont))
+    ? _fbT('shared.fonts.missing_note', '"{name}" is chosen but is not on this device. Upload it under My Fonts to use it here.', { name: settings.colorFont }) : '';
+}
+function llRenderColoringTab(card) {
+  const host = document.getElementById('llCsPreview'), note = document.getElementById('llCsNote');
+  host.textContent = '';
+  note.textContent = '';
+  const token = ++_llCsToken;
+  if (!card || card.kind === 'vowel') return;
+  llCsMountOpts(document.getElementById('llCsOptsHome'));
+  const r = llCsBuildSheet(host, card, () => token === _llCsToken);
+  if (r && r.noHint) note.textContent = _fbT('letterlearner.coloring.no_hint_note', 'This letter has no hint picture yet, so the sheet shows the letter.');
+  if (!note.textContent) note.textContent = llCsFontMissingNote();
+}
+// The options block lives in the Coloring sheet tab and moves into the bulk print popup while that is open (the two are
+// never open together), so its controls, their wiring and the font menu exist once.
+function llCsMountOpts(host) {
+  const opts = document.getElementById('llCsOpts');
+  if (host && opts && opts.parentNode !== host) host.appendChild(opts);
 }
 function llCsShowing() { return _llTab === 'coloring' && !document.getElementById('llOverlay').hidden; }
-function llCsRefresh() { if (llCsShowing()) llRenderColoringTab(llCard(_llId)); }
-// @page for paper, only while the Coloring tab shows in an open dialog: every other tab and the grid print as before.
-// (Safari ignores @page size; there the print dialog's own orientation applies.)
+function llCsRefresh() {
+  if (llCsShowing()) llRenderColoringTab(llCard(_llId));
+  llBpRefresh();
+}
+// @page for paper, only while a coloring sheet is what prints — the Coloring tab in an open dialog, or the bulk print
+// popup: every other tab and the grid print as before. (Safari ignores @page size; there the print dialog's own paper
+// and orientation apply.)
 function llCsPageStyle() {
   const st = document.getElementById('llPageSize');
-  if (st) st.textContent = llCsShowing() ? '@page { size: ' + settings.colorOrient + '; margin: 0.35in; }' : '';   // i18n-ignore: CSS, not text
+  if (st) st.textContent = (llCsShowing() || llBpIsOpen()) ? '@page { size: ' + (settings.colorPaper === 'a4' ? 'A4' : 'letter') + ' ' + settings.colorOrient + '; margin: 0.35in; }' : '';   // i18n-ignore: CSS, not text
 }
 function llCsSet(key, value) {
   llSetSetting(key, value);
@@ -3017,6 +3204,7 @@ function llCsSet(key, value) {
 // The options' controls from `settings` (renderOptions calls this, so a reset, a storage event or a download shows).
 function llCsSyncControls() {
   document.querySelectorAll('input[name="llCsOrient"]').forEach(r => { r.checked = r.value === settings.colorOrient; });
+  document.querySelectorAll('input[name="llCsPaper"]').forEach(r => { r.checked = r.value === settings.colorPaper; });
   document.querySelectorAll('input[name="llCsView"]').forEach(r => { r.checked = r.value === settings.colorView; });
   document.getElementById('optCsTranslit').checked = !!settings.colorTranslit;
   document.getElementById('optCsGloss').checked = !!settings.colorGloss;
@@ -3040,29 +3228,37 @@ function llCsSizeState() {
   document.getElementById('llCsSizeTr').disabled = !settings.colorTranslit;
   document.getElementById('llCsSizeEn').disabled = !settings.colorGloss;
 }
-// Print waits (briefly) for the words' face, so a font picked a moment ago is on paper rather than its fallback.
+// Every sheet on screen takes the size sliders' factors (the tab's and the popup's previews; the print copies are made
+// from these just before printing).
+function llCsApplySizesAll() {
+  document.querySelectorAll('#llCsPreview .ll-cs-sheet, #llBpPages .ll-cs-sheet').forEach(llCsApplySizes);
+}
+// Print waits (briefly) for the faces on paper — the words' face and the letters' own — so a font picked a moment ago
+// prints rather than its fallback. `glyphs` names every letter the faces must cover (the cursive face is a subset).
+async function llCsFontsReady(card, glyphs) {
+  try {
+    const wait = Promise.all([document.fonts.load('40px ' + llCsWordStack(card), 'אב'), document.fonts.load('100px ' + llCsCardStack(card), glyphs)]).then(() => document.fonts.ready);
+    await Promise.race([wait, new Promise(r => setTimeout(r, 4000))]);
+  } catch (e) {}
+}
 async function llCsPrint() {
   llCsPageStyle();
   const card = llCard(_llId);
-  if (card && card.kind !== 'vowel') {
-    try {
-      const wait = Promise.all([document.fonts.load('40px ' + llCsWordStack(card), 'אב'), document.fonts.load('100px ' + llCsCardStack(card), card.glyph)]).then(() => document.fonts.ready);
-      await Promise.race([wait, new Promise(r => setTimeout(r, 4000))]);
-    } catch (e) {}
-  }
+  if (card && card.kind !== 'vowel') await llCsFontsReady(card, card.glyph);
   window.print();
 }
 function llCsWire() {
   document.querySelectorAll('input[name="llCsOrient"]').forEach(r => r.addEventListener('change', () => { if (r.checked) llCsSet('colorOrient', r.value); }));
+  document.querySelectorAll('input[name="llCsPaper"]').forEach(r => r.addEventListener('change', () => { if (r.checked) llCsSet('colorPaper', r.value); }));
   document.querySelectorAll('input[name="llCsView"]').forEach(r => r.addEventListener('change', () => { if (r.checked) llCsSet('colorView', r.value); }));
   [['optCsTranslit', 'colorTranslit'], ['optCsGloss', 'colorGloss'], ['optCsName', 'colorName'], ['optCsHint', 'colorHint']]
     .forEach(([id, key]) => document.getElementById(id).addEventListener('change', e => { llCsSet(key, e.target.checked); llCsSizeState(); }));
-  // A size drag resizes the sheet live (CSS factors, no re-render); the value is saved once, when the drag ends.
+  // A size drag resizes the sheets live (CSS factors, no re-render); the value is saved once, when the drag ends.
   document.querySelectorAll('.ll-cs-size input[type="range"]').forEach(r => {
     const key = r.dataset.size;
     r.addEventListener('input', () => {
       settings[key] = llCsSizeVal(Number(r.value));
-      llCsApplySizes(document.querySelector('#llCsPreview .ll-cs-sheet'));
+      llCsApplySizesAll();
       llCsSizeLabel(r);
     });
     r.addEventListener('change', () => llSetSetting(key, llCsSizeVal(Number(r.value))));
@@ -3070,7 +3266,326 @@ function llCsWire() {
   document.getElementById('llCsFont').addEventListener('change', e => llCsSet('colorFont', e.target.value));
   document.getElementById('llCsUpload').addEventListener('change', e => onUploadFontPick(e.target));
   document.getElementById('llCsPrint').addEventListener('click', llCsPrint);
-  window.addEventListener('beforeprint', llCsPageStyle);   // Ctrl+P / the browser menu prints the right orientation too
+  document.getElementById('llCsBulk').addEventListener('click', () => {
+    // From a letter's sheet to the bulk popup: the letter dialog closes first (focus is back on the card when the
+    // popup records its opener), and the popup opens with this letter among the chosen ones.
+    const id = _llId;
+    llClose();
+    llBpOpen(id);
+  });
+  // Ctrl+P / the browser menu: the right page size, and with the popup open the whole run on paper.
+  window.addEventListener('beforeprint', () => { llCsPageStyle(); llBpBeforePrint(); });
+}
+
+/* ══════════════════════════════════════════════════════
+   BULK PRINT — the Print coloring sheets popup (Block and Cursive modes): choose letters, copies and their order, and
+   print every sheet in one run. The sheet options are the Coloring sheet tab's own (one options block, moved in by
+   llCsMountOpts). The preview shows each chosen letter's sheet once, built one sheet per task (the drawings are
+   measured as they convert, so a sheet builds only once the popup is on screen); printing copies those sheets into
+   #llBpPrintArea in the chosen order (llBpFill) — the only thing on paper while the popup is open.
+   ══════════════════════════════════════════════════════ */
+let _llBpStyle = 'letters';   // 'letters' | 'cursive' — the popup's Block / Cursive switch (page state, from the mode at each open)
+let _llBpOpener = null;       // the element to refocus when the popup closes
+let _llBpToken = 0;           // bumped by a rebuild or a close: a sheet build or a letter fit an older one started stops
+let _llBpSig = '';            // the options the preview's sheets were built with (llBpSigNow)
+let _llBpQueue = [];          // ids waiting for their sheet, in order
+let _llBpTimer = 0;
+let _llBpFilled = false;      // llBpPrint has just filled the print area (the beforeprint that follows leaves it be)
+let _llBpPrinting = false;
+const _llBpSheets = new Map();   // id → { li, host, built: { sheet, noHint, fit } | null }
+const LL_BP_MAX_COPIES = 40;
+function llBpIsOpen() { const ov = document.getElementById('llBpOverlay'); return !!ov && !ov.hidden; }
+// The stored choice, kept in alef-bet order (every card, pair halves included) so two devices with the same letters store
+// the same text; an id this build does not know (a newer one's) rides along at the end.
+function llBpCanon(list) {
+  if (!Array.isArray(list)) return [];
+  const set = new Set(list.filter(x => typeof x === 'string' && /^[a-z_]{1,16}$/.test(x)));
+  const known = llOrder(true).filter(id => set.has(id));
+  return known.concat([...set].filter(id => !known.includes(id))).slice(0, 64);
+}
+function llBpCopiesVal(v) {
+  const n = Math.round(Number(v));
+  return (typeof v === 'number' && Number.isFinite(n)) ? Math.min(LL_BP_MAX_COPIES, Math.max(1, n)) : 1;
+}
+// The cards the popup offers: the grid's letters (pair halves while they are split) that have words — the ones whose
+// card has a Coloring sheet tab.
+function llBpOffered() { return llOrder().filter(id => (LETTERS[id].words || []).length); }
+function llBpChosen() { const set = new Set(settings.bulkLetters); return llBpOffered().filter(id => set.has(id)); }
+function llBpKind() { return _llBpStyle === 'cursive' ? 'cursive' : 'letter'; }
+// What a sheet's build depends on (the sizes are CSS factors and never need one).
+function llBpSigNow() {
+  return JSON.stringify([_llBpStyle, settings.colorOrient, settings.colorPaper, settings.colorView, settings.colorTranslit, settings.colorGloss,
+    settings.colorName, settings.colorHint, settings.colorFont, allFonts().some(f => f.name === settings.colorFont)]);
+}
+function llBpOpen(addId) {
+  if (llBpIsOpen()) return;
+  const opener = document.activeElement;
+  if (_tourActive) tourEnd(false);   // its capture-phase keys would swallow the arrows the popup's controls use
+  _llBpOpener = opener;
+  _llBpStyle = _llMode === 'cursive' ? 'cursive' : 'letters';
+  if (addId && LETTERS[addId] && !settings.bulkLetters.includes(addId)) llSetSetting('bulkLetters', llBpCanon(settings.bulkLetters.concat(addId)));
+  llCsMountOpts(document.getElementById('llBpOptsHost'));
+  document.getElementById('llBpOverlay').hidden = false;
+  document.body.classList.add('ll-bp-open');   // print keys on it: paper gets the run alone
+  llBpSyncControls();
+  llCsPageStyle();
+  _llBpSig = llBpSigNow();
+  llBpSync();
+  setTimeout(() => { try { document.querySelector('#llBpOverlay input[name="llBpStyle"]:checked').focus(); } catch (e) {} }, 0);
+}
+function llBpClose() {
+  if (!llBpIsOpen()) return;
+  _llBpToken++;
+  clearTimeout(_llBpTimer);
+  _llBpQueue = [];
+  document.getElementById('llBpOverlay').hidden = true;
+  document.body.classList.remove('ll-bp-open');
+  llCsMountOpts(document.getElementById('llCsOptsHome'));
+  document.getElementById('llBpPages').textContent = '';
+  document.getElementById('llBpPrintArea').textContent = '';
+  _llBpSheets.clear();
+  llCsPageStyle();
+  const back = (_llBpOpener && document.contains(_llBpOpener) && _llBpOpener !== document.body) ? _llBpOpener : document.getElementById('llBpOpen');
+  _llBpOpener = null;
+  try { back && back.focus(); } catch (e) {}
+}
+// The popup's own controls from settings and page state (the shared options block syncs itself in renderOptions).
+function llBpSyncControls() {
+  document.querySelectorAll('input[name="llBpStyle"]').forEach(r => { r.checked = r.value === _llBpStyle; });
+  document.querySelectorAll('input[name="llBpCollate"]').forEach(r => { r.checked = r.value === settings.bulkCollate; });
+  document.getElementById('llBpCopies').value = String(settings.bulkCopies);
+  llBpRenderChips();
+}
+function llBpRenderChips() {
+  const box = document.getElementById('llBpLetters');
+  box.textContent = '';
+  box.dataset.style = _llBpStyle;
+  const chosen = new Set(settings.bulkLetters);
+  llBpOffered().forEach(id => {
+    const L = LETTERS[id];
+    const lab = el('label', 'll-bp-chip');
+    const cb = el('input'); cb.type = 'checkbox'; cb.value = id; cb.checked = chosen.has(id);
+    const g = el('span', 'll-bp-chip-glyph', L.glyph); g.lang = 'he'; g.dir = 'rtl'; g.setAttribute('aria-hidden', 'true');
+    const n = el('span', 'll-bp-chip-name', L.name); n.lang = 'en'; n.dir = 'ltr';   // i18n-ignore: learner content (the English letter name)
+    lab.append(cb, g, n);
+    box.appendChild(lab);
+  });
+}
+// Write the chosen letters (a chip, Select all, Clear) and bring the preview in line.
+function llBpSetChosen(ids) {
+  llSetSetting('bulkLetters', llBpCanon(ids));
+  llBpSync();
+}
+// The preview in line with the chosen letters: a page per letter in order — a new letter queues its sheet, a dropped one
+// goes — then the count, the notes and the Print button.
+function llBpSync() {
+  if (!llBpIsOpen()) return;
+  const ul = document.getElementById('llBpPages'), ids = llBpChosen();
+  ul.dataset.orient = settings.colorOrient;
+  const keep = new Set(ids);
+  [..._llBpSheets.keys()].forEach(id => { if (!keep.has(id)) { _llBpSheets.get(id).li.remove(); _llBpSheets.delete(id); } });
+  _llBpQueue = _llBpQueue.filter(id => keep.has(id));
+  ids.forEach(id => {
+    let entry = _llBpSheets.get(id);
+    if (!entry) {
+      const li = el('li', 'll-bp-thumb'), host = el('div', 'll-bp-host');
+      const cap = el('div', 'll-bp-cap');
+      const nm = el('span', null, LETTERS[id].name); nm.lang = 'en'; nm.dir = 'ltr';   // i18n-ignore: learner content (the English letter name)
+      const badge = el('span', 'll-bp-badge'); badge.dir = 'ltr';
+      cap.append(nm, badge);
+      li.append(host, cap);
+      entry = { li, host, built: null };
+      _llBpSheets.set(id, entry);
+      llBpPlaceholder(entry);
+      _llBpQueue.push(id);
+    }
+    ul.appendChild(entry.li);   // appending in order puts every page in its place
+  });
+  _llBpQueue.sort((a, b) => ids.indexOf(a) - ids.indexOf(b));
+  llBpUpdateChrome();
+  llBpSchedule();
+}
+// A blank page of the right shape while its sheet waits for its turn.
+function llBpPlaceholder(entry) {
+  entry.host.textContent = '';
+  const ph = el('div', 'll-cs-sheet');
+  ph.dataset.orient = settings.colorOrient;
+  ph.dataset.paper = settings.colorPaper;
+  entry.host.appendChild(ph);
+}
+// Options changed (llCsSet, a download, a font that landed, the Block / Cursive switch): every sheet whose build depends on
+// them is rebuilt in place, one per task; a size change only re-applies the factors.
+function llBpRefresh() {
+  if (!llBpIsOpen()) return;
+  llCsApplySizesAll();
+  const sig = llBpSigNow();
+  if (sig !== _llBpSig) {
+    _llBpSig = sig;
+    _llBpToken++;
+    _llBpSheets.forEach(entry => { entry.built = null; llBpPlaceholder(entry); });
+    _llBpQueue = [];
+    _llBpSheets.forEach((entry, id) => _llBpQueue.push(id));
+  }
+  llBpSync();
+}
+function llBpSchedule() {
+  clearTimeout(_llBpTimer);
+  if (_llBpQueue.length) _llBpTimer = setTimeout(llBpPump, 0);
+}
+// Build one sheet, then yield (a 31-letter run never holds the page for its whole length).
+function llBpPump() {
+  if (!llBpIsOpen() || !_llBpQueue.length) return;
+  if (llBpBuildOne(_llBpQueue[0])) _llBpQueue.shift();
+  else { _llBpTimer = setTimeout(llBpPump, 60); return; }   // not laid out yet (the popup just opened): try again shortly
+  llBpUpdateChrome();
+  llBpSchedule();
+}
+function llBpBuildOne(id) {
+  const entry = _llBpSheets.get(id), card = llLetterCard(id, llBpKind());
+  if (!entry || !card) return true;
+  const token = _llBpToken;
+  const ph = entry.host.firstChild;
+  const r = llCsBuildSheet(entry.host, card, () => token === _llBpToken);
+  if (!r) return false;
+  if (ph && ph !== r.sheet) ph.remove();
+  entry.built = r;
+  return true;
+}
+// Everything still queued, now (Print and Ctrl+P need every sheet).
+function llBpFlush() {
+  clearTimeout(_llBpTimer);
+  let guard = 0;
+  while (_llBpQueue.length && guard++ < 200) { if (llBpBuildOne(_llBpQueue[0])) _llBpQueue.shift(); else break; }
+  llBpUpdateChrome();
+}
+// The count, the notes and Print — read-only over the current state (applyI18n calls it too).
+function llBpUpdateChrome() {
+  if (!llBpIsOpen()) return;
+  const ids = llBpChosen(), copies = settings.bulkCopies, pages = ids.length * copies;
+  document.getElementById('llBpCount').textContent = ids.length
+    ? _fbT(pages === 1 ? 'letterlearner.bulk.count.one' : 'letterlearner.bulk.count.other', pages === 1 ? '{count} page' : '{count} pages', { count: pages }) : '';
+  document.getElementById('llBpEmpty').hidden = ids.length > 0;
+  const btn = document.getElementById('llBpPrint');
+  if (ids.length) { btn.removeAttribute('aria-disabled'); btn.removeAttribute('aria-describedby'); }
+  else { btn.setAttribute('aria-disabled', 'true'); btn.setAttribute('aria-describedby', 'llBpEmpty'); }
+  document.querySelectorAll('input[name="llBpCollate"]').forEach(r => { r.disabled = copies < 2; });
+  const badge = copies > 1 ? _fbT('letterlearner.bulk.copies_badge', '× {count}', { count: copies }) : '';
+  const dir = document.documentElement.dir === 'rtl' ? 'rtl' : 'ltr';   // the pages run in alef-bet order (rtl); a caption reads like the UI
+  _llBpSheets.forEach(entry => { entry.li.querySelector('.ll-bp-badge').textContent = badge; entry.li.querySelector('.ll-bp-cap').dir = dir; });
+  // Letters whose sheet shows the letter although "Letter hint" is chosen (no picture yet), and a missing words' font.
+  const notes = [];
+  if (settings.colorView === 'hint') {
+    const kind = llBpKind();
+    const bare = ids.filter(id => {
+      const card = llLetterCard(id, kind);
+      llCheckDrawings(card.L); if (card.kind === 'cursive') llCheckCursive(card.T);
+      const h = llCsHint(card);
+      return !(h && h.svg);
+    }).map(id => LETTERS[id].name);
+    if (bare.length) notes.push(_fbT('letterlearner.bulk.no_hint_note', 'No hint picture yet for {names}, so those sheets show the letter.', { names: bare.join(', ') }));
+  }
+  const font = llCsFontMissingNote();
+  if (font) notes.push(font);
+  const note = document.getElementById('llBpNote'), text = notes.join(' ');
+  if (note.textContent !== text) note.textContent = text;
+}
+// The run on paper: every copy in the chosen order — collated sets (1 2 3, 1 2 3) or grouped by letter (1 1, 2 2, 3 3).
+function llBpFill() {
+  const area = document.getElementById('llBpPrintArea');
+  area.textContent = '';
+  const sheets = llBpChosen().map(id => _llBpSheets.get(id)).filter(e => e && e.built).map(e => e.built.sheet);
+  const n = settings.bulkCopies;
+  const order = [];
+  if (settings.bulkCollate === 'grouped') sheets.forEach(sh => { for (let c = 0; c < n; c++) order.push(sh); });
+  else for (let c = 0; c < n; c++) sheets.forEach(sh => order.push(sh));
+  const frag = document.createDocumentFragment();
+  order.forEach(sh => frag.appendChild(sh.cloneNode(true)));
+  area.appendChild(frag);
+}
+async function llBpPrint() {
+  if (_llBpPrinting) return;
+  const ids = llBpChosen();
+  if (!ids.length) {
+    // Nothing chosen: Print is aria-disabled and the note beside the preview says why; the press takes the teacher to the letters.
+    const first = document.querySelector('#llBpLetters input');
+    if (first) first.focus();
+    announce(_fbT('letterlearner.bulk.empty', 'Choose the letters to print.'));
+    return;
+  }
+  _llBpPrinting = true;
+  try {
+    llBpFlush();
+    llCsPageStyle();
+    const card = llLetterCard(ids[0], llBpKind());
+    await llCsFontsReady(card, ids.map(id => LETTERS[id].glyph).join(''));
+    if (!llBpIsOpen()) return;   // closed during the wait
+    llBpFlush();                 // an option changed during the wait
+    ids.forEach(id => { const e = _llBpSheets.get(id); if (e && e.built && e.built.fit) e.built.fit(); });   // the faces are in: measure the letters once more before copying
+    llBpFill();
+    _llBpFilled = true;
+    window.print();
+  } finally {
+    _llBpFilled = false;
+    _llBpPrinting = false;
+  }
+}
+// Ctrl+P / the browser menu with the popup open: the run, built and copied now (no font wait is possible here).
+function llBpBeforePrint() {
+  if (!llBpIsOpen() || _llBpFilled) return;
+  llBpFlush();
+  llBpFill();
+}
+function llBpWire() {
+  const ov = document.getElementById('llBpOverlay');
+  llTrapKeys(ov, ov.querySelector('.ll-bp-dialog'), llBpClose);
+  ov.addEventListener('click', e => { if (e.target === ov) llBpClose(); });
+  document.getElementById('llBpOpen').addEventListener('click', () => llBpOpen());
+  document.getElementById('llBpClose').addEventListener('click', llBpClose);
+  document.getElementById('llBpPrint').addEventListener('click', llBpPrint);
+  document.querySelectorAll('input[name="llBpStyle"]').forEach(r => r.addEventListener('change', () => {
+    if (!r.checked) return;
+    _llBpStyle = r.value === 'cursive' ? 'cursive' : 'letters';
+    document.getElementById('llBpLetters').dataset.style = _llBpStyle;
+    llBpRefresh();
+  }));
+  document.getElementById('llBpLetters').addEventListener('change', e => {
+    const cb = e.target;
+    if (!cb || cb.type !== 'checkbox') return;
+    const set = new Set(settings.bulkLetters);
+    if (cb.checked) set.add(cb.value); else set.delete(cb.value);
+    llBpSetChosen([...set]);
+  });
+  document.getElementById('llBpAll').addEventListener('click', () => {
+    llBpSetChosen(settings.bulkLetters.concat(llBpOffered()));
+    document.querySelectorAll('#llBpLetters input').forEach(cb => { cb.checked = true; });
+  });
+  document.getElementById('llBpNone').addEventListener('click', () => {
+    // Clears the letters this popup offers; a pair half folded away while pairs are joined keeps its stored choice.
+    const offered = new Set(llBpOffered());
+    llBpSetChosen(settings.bulkLetters.filter(id => !offered.has(id)));
+    document.querySelectorAll('#llBpLetters input').forEach(cb => { cb.checked = false; });
+  });
+  // Copies: the count follows the field as it is typed (in memory, like a size drag); the value is clamped and saved
+  // once, on change.
+  const copies = document.getElementById('llBpCopies');
+  copies.addEventListener('input', () => {
+    const n = Number(copies.value);
+    if (Number.isInteger(n) && n >= 1 && n <= LL_BP_MAX_COPIES) { settings.bulkCopies = n; llBpUpdateChrome(); }
+  });
+  copies.addEventListener('change', () => {
+    const n = llBpCopiesVal(Number(copies.value));
+    copies.value = String(n);
+    llSetSetting('bulkCopies', n);
+    llBpUpdateChrome();
+  });
+  document.querySelectorAll('input[name="llBpCollate"]').forEach(r => r.addEventListener('change', () => { if (r.checked) llSetSetting('bulkCollate', r.value); }));
+}
+// A download, a storage event or a reset changed the stored options while the popup is open: its own controls follow, and
+// the preview rebuilds only what the change touched.
+function llBpAdopt() {
+  if (!llBpIsOpen()) return;
+  llBpSyncControls();
+  llBpRefresh();
 }
 
 /* ══════════════════════════════════════════════════════
@@ -3235,6 +3750,8 @@ const TOUR_STEPS = [
   { target: () => document.querySelector('#llGrid .ll-card'),
     get titleKey() { return _llMode === 'vowels' ? 'letterlearner.tour.v2_title' : _llMode === 'cursive' ? 'letterlearner.tour.c2_title' : 'letterlearner.tour.s2_title'; },
     get bodyKey() { return _llMode === 'vowels' ? 'letterlearner.tour.v2_body' : _llMode === 'cursive' ? 'letterlearner.tour.c2_body' : 'letterlearner.tour.s2_body'; } },
+  { target: () => document.getElementById('llBpOpen'),   // hidden in Vowels mode, where the engine skips it
+    titleKey: 'letterlearner.tour.bulk_title', bodyKey: 'letterlearner.tour.bulk_body' },
   { target: () => document.getElementById('llSidebar'),
     titleKey: 'letterlearner.tour.s3_title', bodyKey: 'letterlearner.tour.s3_body' },
   { target: () => document.getElementById('cloudSavesPanel'),
@@ -3610,6 +4127,7 @@ function init() {
   renderOptions();
   wireOptions();
   llCsWire();
+  llBpWire();
   refreshMyFonts();     // the Coloring sheet's font menu: My Fonts from the shared store (the picker contract)
   llInitMode();         // the mode comes from the URL (?mode= / ?vowel=) and makes the first render of the grid
   wireDialog();
@@ -3665,6 +4183,7 @@ function applyI18n() {
     document.getElementById('llPanel-font').dataset.for = '';   // the tiles carry translated labels
     llFillDialog(_llId, true);
   }
+  llBpUpdateChrome();   // the bulk popup's count and notes (its sheets are English printed content: no rebuild)
 }
 function _wireLlI18n() { if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); } }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', _wireLlI18n);

@@ -43,7 +43,8 @@ its Coloring sheet's word font (`llCsSet('colorFont', name)`), the dashboard and
 **"Upload your own font?"** `<label>` (the shared `hi-upload` icon before a `.hi-lbl` span that carries the `data-i18n`; hidden `<input type="file" accept=".ttf,.otf,.woff,.woff2">`)
 directly **below the font grid**. The Letter Learner's picker is a `<select>` rather than a grid (the Coloring sheet
 tab's "Hebrew font (words)": *Same as the card* first, then a "My Fonts" `<optgroup>`, then the Dictionary's
-`HEB_FONTS` by section), with the same label under it.
+`HEB_FONTS` by section), with the same label under it. It exists once: the tab's options block, select and upload
+label included, moves into the bulk print popup while that is open (`llCsMountOpts`) and back after.
 
 ### Backup (no extra wiring)
 User fonts ride along in the `index.html` AllTools export as `userFonts` (base64 via

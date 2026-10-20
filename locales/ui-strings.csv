@@ -6327,6 +6327,31 @@ letterlearner.coloring.font_match,Same as the card,כמו בכרטיס,Coloring 
 letterlearner.coloring.print,Print,הדפסה,Coloring sheet tab: Print button label,svg-icon-in-markup
 letterlearner.coloring.print_title,Print this coloring sheet,הדפסת דף הצביעה הזה,Coloring sheet tab: Print button title,
 letterlearner.coloring.no_hint_note,"This letter has no hint picture yet, so the sheet shows the letter.","לאות הזאת עדיין אין ציור רמז, ולכן הדף מציג את האות.",Coloring sheet tab: note when Letter hint is chosen on a card without a picture,
+letterlearner.coloring.paper_legend,Paper size,גודל הנייר,Coloring sheet tab and bulk print popup: legend over the Letter / A4 radios,
+letterlearner.coloring.paper_letter,Letter (8.5 × 11 in),Letter — 8.5 × 11 אינץ׳,Coloring sheet options: paper size radio (US Letter),Hebrew keeps the Latin paper name first and avoids parentheses (bidi)
+letterlearner.coloring.paper_a4,A4 (210 × 297 mm),A4 — 210 × 297 מ״מ,Coloring sheet options: paper size radio (A4),Hebrew keeps the Latin paper name first and avoids parentheses (bidi)
+letterlearner.coloring.bulk_link,Print several letters…,הדפסת כמה אותיות…,Coloring sheet tab: button that opens the bulk print popup with this letter chosen,
+letterlearner.coloring.bulk_link_title,Choose more letters and print their coloring sheets together,בחירת אותיות נוספות והדפסת דפי הצביעה שלהן יחד,Coloring sheet tab: title of the Print several letters button,
+letterlearner.bulk.title,Print coloring sheets,הדפסת דפי צביעה,Bulk print: the button above the letter grid and the popup's heading,svg-icon-in-markup
+letterlearner.bulk.open_title,Choose letters and print their coloring sheets together,בחירת אותיות והדפסת דפי הצביעה שלהן יחד,Bulk print: title of the button above the letter grid,
+letterlearner.bulk.style_legend,Letter style,סגנון האותיות,Bulk print: legend over the Block / Cursive radios,
+letterlearner.bulk.style_block,Block,אותיות דפוס,Bulk print: radio — the block (printed) letters' sheets,
+letterlearner.bulk.style_cursive,Cursive,אותיות כתב,Bulk print: radio — the cursive (handwriting) letters' sheets,
+letterlearner.bulk.letters_legend,Letters,אותיות,Bulk print: legend over the letter checkboxes,
+letterlearner.bulk.all,Select all,בחירת הכול,Bulk print: button that checks every letter,
+letterlearner.bulk.none,Clear,ניקוי,Bulk print: button that unchecks every letter,
+letterlearner.bulk.copies_legend,Copies,עותקים,Bulk print: legend over the copies field and the order radios,
+letterlearner.bulk.copies_label,Copies of each sheet,עותקים מכל דף,Bulk print: label of the copies number field (1–40),
+letterlearner.bulk.collate_sets,"Collated sets (1 2 3, 1 2 3)","סטים שלמים (1 2 3, 1 2 3)","Bulk print: order radio — every chosen letter once, then the whole set again",
+letterlearner.bulk.collate_grouped,"Grouped by letter (1 1, 2 2, 3 3)","מקובצים לפי אות (1 1, 2 2, 3 3)","Bulk print: order radio — all the copies of one letter together, then the next letter",
+letterlearner.bulk.count.one,1 page,עמוד אחד,Bulk print footer: how many pages the run prints,plural
+letterlearner.bulk.count.other,{count} pages,{count} עמודים,Bulk print footer: how many pages the run prints,plural
+letterlearner.bulk.copies_badge,× {count},× {count},Bulk print preview: badge under each page when every sheet prints more than once,
+letterlearner.bulk.empty,Choose the letters to print.,בחרו את האותיות להדפסה.,"Bulk print: the empty preview, and why Print is unavailable",
+letterlearner.bulk.no_hint_note,"No hint picture yet for {names}, so those sheets show the letter.","עדיין אין ציור רמז עבור {names}, ולכן הדפים שלהן מציגים את האות.",Bulk print: note when Letter hint is chosen and some letters have no picture ({names} = English letter names),
+letterlearner.bulk.shared_note,The sheet options below are shared with each letter's Coloring sheet tab.,אפשרויות הדף שלמטה משותפות ללשונית ״דף צביעה״ של כל אות.,Bulk print: note above the shared sheet options,
+letterlearner.bulk.preview_aria,Print preview,תצוגה מקדימה להדפסה,Bulk print: aria-label of the list of preview pages,aria-label only
+letterlearner.bulk.print_title,Print every sheet in the preview,הדפסת כל הדפים שבתצוגה המקדימה,Bulk print: title of the Print button,
 letterlearner.options.panel_cloud,Your account,החשבון שלך,heading over the cloud-saves status line,cloud panel
 letterlearner.grid.aria,Letters,אותיות,aria-label of the letter grid,aria-label only
 letterlearner.grid.open_aria,Open {name},פתיחת {name},aria-label of a letter card ({name} = the English letter name),aria-label only; template
@@ -6377,6 +6402,8 @@ letterlearner.tour.s1_title,Every letter,כל האותיות,tour step 1 title,
 letterlearner.tour.s1_body,Tap any letter to open it. The final forms sit next to their letters.,לוחצים על אות כדי לפתוח אותה. האותיות הסופיות יושבות ליד האותיות שלהן.,tour step 1 body,
 letterlearner.tour.s2_title,A letter card,כרטיס אות,tour step 2 title,
 letterlearner.tour.s2_body,"Each card opens tabs: a picture to remember the letter, its words, every vowel with a speaker, the letter in different fonts, and a coloring sheet to print.","כל כרטיס פותח לשוניות: ציור שעוזר לזכור את האות, מילים, כל סימני הניקוד עם רמקול, האות בגופנים שונים, ודף צביעה להדפסה.",tour step 2 body,
+letterlearner.tour.bulk_title,Print many sheets at once,הדפסת דפים רבים בבת אחת,tour step: the Print coloring sheets button,
+letterlearner.tour.bulk_body,"Choose letters, how many copies of each and their order, then print all their coloring sheets in one go — in block or cursive letters.","בחרו אותיות, כמה עותקים מכל אחת ובאיזה סדר, והדפיסו את כל דפי הצביעה שלהן בבת אחת — באותיות דפוס או באותיות כתב.",tour step: the Print coloring sheets button,
 letterlearner.tour.s3_title,Options,אפשרויות,tour step 3 title,
 letterlearner.tour.s3_body,"Choose which vowels to show, whether pairs like Bet and Vet get their own cards, and whether the words are read aloud.","בוחרים אילו סימני ניקוד להציג, אם לזוגות כמו בּ ו־ב יהיו כרטיסים משלהם, ואם המילים יוקראו.",tour step 3 body,
 letterlearner.tour.s4_title,Your account,החשבון שלך,tour step 4 title,
