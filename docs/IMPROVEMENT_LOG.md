@@ -8,15 +8,19 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P4 (**NEW S526 H — gate 2 ANSWERED: say so**) | letter_learner.html | **Reset options' confirm doesn't say it resets the Coloring sheet settings and the print selection** (EN, HE, `_cloud`). | found S526
+
+- [ ] P4 (**NEW S526 H**) | letter_learner.html | **Closing a card's bulk popup returns to the grid, not the card.** | found S526
+
+- [ ] P4 (**NEW S526 — faux-italic EN**) | hebrew_dictionary.html | **The EN Shoresh note's "(e.g. כתב)" slants.** | found S526
+
 - [ ] P4 (**NEW S523 G — gate 3**) | hebrew_dictionary.html | **A long one-word headword overflows its card** (paper and phone). | found S523
 
-- [ ] P4 (**NEW S522 M — gate 4**) | emoji_torah.html | **On a phone (≤600px) Print still takes a row of its own** (EN 390: four rows). | found S522
+- [ ] P4 (**NEW S522 M — gate 4**) | parsha_emojis.html | **On a phone (≤600px) Print still takes a row of its own** (EN 390: four rows). | found S522
 
-- [ ] P4 (**NEW S522 M — gate 3 since S524**) | emoji_torah.html, torah_trainer.html | **This week's badge drops its card's name 23px below its row-mates'**: on the border it needs ~9.5px of a 12/10px row gap (findings S524). | found S522
+- [ ] P4 (**NEW S522 M — gate 3 since S524**) | parsha_emojis.html, torah_trainer.html | **This week's badge drops its card's name 23px below its row-mates'**: on the border it needs ~9.5px of a 12/10px row gap (findings S524). | found S522
 
-- [ ] P4 (**NEW S522 M — gate 3**) | emoji_torah.html | **Today's lone card stops at 840px under a 1052px heading rule.** | found S522
-
-- [ ] P4 (**NEW S518 L — gate 2, at launch**) | letter_learner.html | **Its meta description is 377 characters (the indexable pages: 136–164); no og/twitter tags or JSON-LD**: fine while `noindex`; the launch needs a ~155-character one (gate 2) and the tags (findings S518). | found S518
+- [ ] P4 (**NEW S522 M — gate 3**) | parsha_emojis.html | **Today's lone card stops at 840px under a 1052px heading rule.** | found S522
 
 - [ ] P3 (**NEW S510 D; shared sw.js — the maintainer's call**) | sw.js | **Pages, scripts and /locales/ are fetched with cache:'no-store', so a returning visitor re-downloads ~370 KB per page view although GitHub Pages answers 304**; `'no-cache'` keeps always-revalidate and made the same reload 0 B (findings S510). | found S510
 
@@ -39,8 +43,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S500 F; week tabs FIXED S524**) | `.ivrit` carriers | **The `.ivrit` mode toggle is unnamed** (shared markup). | found S500
 
 - [ ] P4 (**NEW S497 I — gate 2**) | classroom_dashboard.html | **A Hebrew first visit's demo message is English** (`DEFAULT_PRESET`, a `smoke-sync` canon). | found S497
-
-- [ ] P4 (**NEW S494 M — hebrew-faux-italic; dashboard ×6 FIXED S525**) | folder-tree block, flash, dictionary | **6 Hebrew hints still slant by CSS italic**: the folder tree's empty state (shared block), flash's no-saved-profiles, the dictionary's `#loadingText`; upright in HE (findings S494, S525). | found S494
 
 - [ ] P3 (**NEW S492 N — needs the tour-engine extraction, UX rule 1**) | 7 tools' tour engines | **A tour does not follow a rotation**: `resize` re-places the card but never scrolls its target back; 4 of 7 dictionary steps strand it off-screen (findings S492). | found S492
 
@@ -216,6 +218,12 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Feature seeds (micro-features only; see the Micro-feature track in the session prompt)
 
+- [ ] S | letter_learner.html | **←/→ and PageUp/PageDown step an open card** (`<kbd>` hints). **Picked S526.** | found S526 H
+
+- [ ] S | letter_learner.html | **An open card puts `?letter=` in the URL.** **Picked S526.** | found S526 H
+
+- [ ] S | letter_learner.html | **"Vowels to show": Select all / Clear.** **Picked S526.** | found S526 H
+
 - [ ] S | resources.html | **The Links filters live in the address** (`?cat=&age=`): bookmarkable, kept on reload. | found S454 H
 
 - [ ] S | hebrew_dictionary.html | **Word Lists offers "Save the N selected words"** while a selection exists (it says "No word lists yet…"). | found S440 H
@@ -310,15 +318,17 @@ _(none)_
 
 ## Done
 
-- [x] 2026-10-20 | (S525 close-out) | branch/deploy note | **S525 = I + 3 fixes + 1 attempted, on the S523 PR (#345).** No drift (main `0d77615b`); keep-alive #38 green. sw v1042→v1043; no FM bump (no FM change); gate 2 asked ×2 (LL tour, vav tip) → both yes.
+- [x] 2026-10-20 | (S526 close-out) | branch/deploy note | **S526 = H + 4 fixes; draft PR.** Drift: 14 outside-loop commits (sw v1043→v1050, `parsha_emojis.html`, 0005 live, the LL launch). sw v1050→v1051; no FM bump; gates 1 + 2 ×2 answered.
 
-- [x] 2026-10-20 | `2a5ff3ea` `72e2bbc9` `7f7e6d6f` | LL, generator, dashboard, CSV | (S525) **LL tour names the Coloring sheet (pass I); vav tip's default (S440); dashboard Hebrew upright ×6 (S494).** | findings S525
+- [x] 2026-10-20 | `198ccfac` `5a562994` | letter_learner.html | (S526) **Alef-bet on one sheet in EN; a card's bulk run starts with its letter.** | findings
 
-- [x] 2026-10-20 | — (attempted, reverted) | flash_cards.html | (S525) **Lazy picker previews (S524 D): −17 sheets (~11 KB gz) per load, but late faces pull each Hebrew face's Latin subset (+5 files, ~172 KB) on the panel's first open.** | findings S525
+- [x] 2026-10-20 | `9515b0dc` `dd291fd5` | folder tree ×4, dictionary | (S526) **Hebrew hints upright: S494's census 6 → 0.** | findings
 
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-20 | **S526** | iters: 5 | tools: LL ×2, folder tree ×4, dictionary, sw.js | patterns fixed: print-trailing-padding ×1, faux-italic ×2 | pass run: H | SW: v1050→v1051
 
 - 2026-10-20 | **S525** | iters: 5 | tools: LL, generator, dashboard, flash (reverted), locales CSV, sw.js | patterns fixed: hebrew-faux-italic ×1 | pass run: I | SW: v1042→v1043
 
@@ -332,9 +342,11 @@ _(none)_
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S525 (2026-10-20):** LL, generator, dashboard, CSV, sw.js S525 · flash, dictionary, FM, corpus, README S524 · account S523 · emoji_torah S522 · torah, saves, scripts S521 · 404, privacy, terms, contact, resources, index S520 · trope S519 · i18n.js S512 · pwa S472.
+- **Snapshot S526 (2026-10-20):** LL, generator, dashboard, flash, torah, dictionary, sw.js S526 · CSV S525 · FM, corpus, README S524 · account S523 · parsha_emojis S522 · saves, scripts S521 · 404, privacy, terms, contact, resources, index S520 · trope S519 · i18n.js S512 · pwa S472.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`print-trailing-padding-adds-a-sheet`** (NEW S526 H; account S523, LL `198ccfac`): ACTIVE, streak 0. Detection: `h526/fix1.mjs` (a header-only or empty PDF sheet).
 
 - **`layout-read-per-grid-at-build`** (NEW S524 D; `roveTileGrid` ×3 FIXED `aa14beba`; open 0): ACTIVE, streak 0. A builder's layout read (`offsetParent`, a rect) per grid while the page still builds. Detection: `d524/trace.mjs` (forced Layout by stack line).
 
@@ -366,7 +378,7 @@ _(none)_
 
 - **`hidden-input-anchored-outside-its-scroller`** (NEW S499 C; dashboard's 25 drawer radios FIXED `55891185`, torah fixed outside the loop; latent: `.vh-file` ×4, its label on screen on every path measured): ACTIVE, streak 0. Detection: a `position:absolute|fixed` focusable …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`hebrew-faux-italic`** (NEW S494 M; gate 3: a `he` `<em>` is `<strong>`, `c4e0b86c` ×4; S520 404 `0683a9de`; S525 dashboard ×6 `7f7e6d6f`; open: 6): ACTIVE, streak 0. Detection: `m494/italcensus.mjs` (rebuilt S525: `i525/ital.mjs`, a hidden plant fires).
+- **`hebrew-faux-italic`** (NEW S494 M; S526 closed the HE census: folder tree `9515b0dc`, dictionary `dd291fd5`; EN arm open 1): ACTIVE, streak 0. Detection: `h526/ital.mjs` (`L=en` = EN arm; a hidden plant fires).
 
 - **`fixed-toast-duration-shorter-than-its-text`** (NEW S484 F; FIXED `8037c22d` ×4, `5ffa32ba`; resources `3c539498` S487; open 0): ACTIVE, streak 0. A fixed toast timer under 1000 + 50 ms/char of its longest message. Detection: `f484/durations.mjs`; exempt sticky/explicit-ms …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -714,10 +726,10 @@ _(none)_
 
 - L SEO & discoverability audit: 2026-10-19 (**S518 — 28th L, `fc54901d..18a7e6a3` (129 commits; LL's first L): 20 arms on 18 pages (plants 24/24); SEO + JSON-LD identical 17/17 (control 3/3); generators current; FAQ twins 8/8; claims by real clicks. CLEAN; LL staged (noindex, no og, 377-char description → gate 2). FIXED 4 (FM ×2, dashboard, …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- H teacher walkthrough / paper-cuts (one tool): 2026-10-16 (**S512 — generator, its 4th H (S130 → S251 → S363 → S512): a 1st-grade letter-of-the-week lesson by real clicks (tracing, Name the Letter, a Class Set with a Hebrew header, a pasted Noach list → Word List, Numbers, preset, link, reopen, the colleague's HE/dark/800 open), 63 clicks × 3 cells, 0 errors. FOUND 9, FIXED 2 (+ dashboard, …[full text: IMPROVEMENT_ARCHIVE.md]
+- H teacher walkthrough / paper-cuts (one tool): 2026-10-20 (**S526 — `letter_learner.html`: 6 lessons, ~75 clicks × 4 cells. FOUND 8+1, FIXED 2 (+3). H-next: parsha_emojis, privacy/terms/404 (never), trope (S367).**)
 
 - E freshness/site-health: 2026-10-18 (**S517 — 40th E, `4edc14b9..d7c58446` (119 commits; LL's first E): 16 static arms + the `?v=` history arm + doc tokens (plants 17/17, 4/4, 1/1), runtime CSP 36 cells (plant 36/36), keep-alive + Pages read. FOUND 2 (docs), FIXED 4 (+ FM ×2).**)
 
 - F cross-tool consistency: 2026-10-18 (**S514 — 38th F, dialog Tab traps: 22 dialogs × 2 cells by real keys + a click-on-text arm; plants 4/4. CLEAN 13. FOUND 9, FIXED 3 (+ FM menus). F-next: empty states.**)
 
-**Next session (S526):** **BRANCH/PR: #345 (S523–S525) open → continue; merged → restart from `origin/main`.** `sw.js` **v1043**, FM **5.59**, corpus ?v=7. ⚑ Stalest: H (S512), C (S513; LL never), F (S514). ⚑ Seeds: 44. ⚑ Maintainer: sw.js `no-store`; re-stage 14 fonts; torah screen reader; A/B week eyes; gates 2–4 (Candidates); O needs a Bash rule.
+**Next session (S527):** **PR: `claude/improveloop-s526` open → continue; merged → fresh branch.** `sw.js` **v1051**, FM **5.59**, corpus ?v=7. ⚑ Stalest: C (S513; LL never), F (S514), B (S515). ⚑ Ready: LL Reset confirm (gate 2). ⚑ Seeds: 47. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4; O's Bash rule.

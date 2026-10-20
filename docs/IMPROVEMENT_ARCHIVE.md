@@ -93311,3 +93311,25 @@ _(prior — S525 pointer:)_ **Next session (S525):** **BRANCH/PR: #345 (S523+S52
 - 2026-10-19 | **S520** | iters: 5 | tools: 404 ×2, 8 headers, dashboard, sw.js | patterns fixed: header-wrap ×8, faux-italic, tour-switch | pass run: N | SW: v1018→v1019
 
 - 2026-10-19 | **S519** | iters: 5 | tools: LL, trope, FM, contact, locales CSV, sw.js | patterns fixed: tour-not-following-a-live-switch ×2, radio-set-without-a-question ×2 | pass run: K | SW: v1017→v1018
+
+## Size move (S526 close-out, 2026-10-20) — S525's Done entries, moved by hand verbatim (the ledger sat over its 100 KB limit)
+
+- [x] 2026-10-20 | (S525 close-out) | branch/deploy note | **S525 = I + 3 fixes + 1 attempted, on the S523 PR (#345).** No drift (main `0d77615b`); keep-alive #38 green. sw v1042→v1043; no FM bump (no FM change); gate 2 asked ×2 (LL tour, vav tip) → both yes.
+
+- [x] 2026-10-20 | `2a5ff3ea` `72e2bbc9` `7f7e6d6f` | LL, generator, dashboard, CSV | (S525) **LL tour names the Coloring sheet (pass I); vav tip's default (S440); dashboard Hebrew upright ×6 (S494).** | findings S525
+
+- [x] 2026-10-20 | — (attempted, reverted) | flash_cards.html | (S525) **Lazy picker previews (S524 D): −17 sheets (~11 KB gz) per load, but late faces pull each Hebrew face's Latin subset (+5 files, ~172 KB) on the panel's first open.** | findings S525
+
+## S526 close-out (2026-10-20) — moved by hand verbatim (size): a seed offered at gate 1 and not picked, and a Done note folded into the close-out line
+
+- [ ] S | letter_learner.html | **A Hebrew "שם:" Name line on the Coloring sheet** (offered S526, not picked). | found S526 H
+
+- [x] 2026-10-20 | `dec5bacc` (outside the loop) | letter_learner.html | (S526) **S518's launch candidate landed with the launch.** | source read
+
+
+<!-- archived by compact-ledger at the S527 boundary, 2026-10-20 -->
+## Compaction (S527, 2026-10-20) — moved verbatim from the live ledger
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+_(prior — S526 pointer:)_ **Next session (S526):** **BRANCH/PR: #345 (S523–S525) open → continue; merged → restart from `origin/main`.** `sw.js` **v1043**, FM **5.59**, corpus ?v=7. ⚑ Stalest: H (S512), C (S513; LL never), F (S514). ⚑ Seeds: 44. ⚑ Maintainer: sw.js `no-store`; re-stage 14 fonts; torah screen reader; A/B week eyes; gates 2–4 (Candidates); O needs a Bash rule.
