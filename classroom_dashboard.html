@@ -2381,6 +2381,7 @@ button:focus-visible, a:focus-visible { outline:2px solid var(--focus-ring); out
 .ft-mini:hover { color:var(--gold,#c9922a); }
 .ft-folder-body { padding-block:3px 5px; padding-inline:16px 5px; display:flex; flex-direction:column; gap:4px; }
 .ft-empty-folder { font-size:.72rem; color:var(--muted,#6b6050); font-style:italic; padding:3px 4px; }
+html[lang="he"] .ft-empty-folder { font-style:normal; }   /* Hebrew has no italic: the browser only slants the letters (pattern hebrew-faux-italic) */
 .ft-folder.ft-drop > .ft-folder-head { outline:2px dashed var(--gold,#c9922a); outline-offset:-2px; border-radius:4px; }
 .ft-row-drop { box-shadow:inset 0 2px 0 0 var(--gold,#c9922a); }
 .ft-root-drop { min-height:8px; border-radius:4px; }
