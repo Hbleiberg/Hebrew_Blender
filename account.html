@@ -262,6 +262,13 @@ html.ivframed #framedOut p { color: var(--muted); margin-block-end: 20px; }
     background:#fff !important; color:#1a2744 !important;
   }
   header .hright { display: none !important; }
+  /* The page's buttons do nothing on paper: Save name, Refresh, Download everything, Delete my account…
+     (and the delete steps' own) and each list's Show / Hide names printed as dead controls, and Delete
+     alone pushed onto a sheet of its own on Letter. The names a toggle opened stay printed. */
+  .btn, #holdsList .link-btn { display: none !important; }
+  /* main's 64px bottom padding paginates like content: on Letter it pushed the footer's last line onto a
+     third sheet of its own. The print dialog's page margin already holds the footer off the paper edge. */
+  main { padding-block-end: 0; }
 }
 /* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner, emoji_torah (docs/reference/shared-components.md → Header icons).
    The header controls and the in-page control buttons (play, pause, stop, reset, retry, loop, sound) carry inline
