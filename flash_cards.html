@@ -3457,10 +3457,13 @@ function roveTileGrid(container, tileSel) {
   // build time either way; once the grid is on screen the visible set is what the arrow keys walk.
   const tiles = () => { const all = [...container.querySelectorAll(tileSel)];
                         const vis = all.filter(t => t.offsetParent !== null); return vis.length ? vis : all; };
-  const setCurrent = cur => tiles().forEach(t => t.setAttribute('tabindex', t === cur ? '0' : '-1'));
-  const all = tiles();
+  const setCurrent = (cur, list = tiles()) => list.forEach(t => t.setAttribute('tabindex', t === cur ? '0' : '-1'));
+  // The build-time seed reads the DOM, not the layout: no tile is ever hidden on its own, so the visible
+  // set is every tile or (grid off screen) the fallback to every tile, and an offsetParent read here forced
+  // a full layout per grid while the page was still building them.
+  const all = [...container.querySelectorAll(tileSel)];
   if (!all.length) return;
-  setCurrent(all.find(t => t.classList.contains('selected')) || all[0]);
+  setCurrent(all.find(t => t.classList.contains('selected')) || all[0], all);
   if (container._roved) return;
   container._roved = true;
   container.addEventListener('focusin', e => { const t = e.target.closest(tileSel); if (t) setCurrent(t); });
