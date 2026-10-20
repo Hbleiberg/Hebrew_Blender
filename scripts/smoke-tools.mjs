@@ -192,8 +192,12 @@ const PAGES = [
         const p2 = await openPage(browser, 'letter_learner.html', { query: '?mode=cursive&letter=nun_sofit' });
         const r2 = await p2.page.evaluate(() => ({ id: _llId, rule: !!document.querySelector('#llPanel-letter .ll-finals-rule'), note: !!document.querySelector('#llPanel-letter .ll-final-note'), vowels: !document.getElementById('llTab-vowels').hidden, look: document.querySelectorAll('#llPanel-letter .ll-lookalike').length }));
         check(tag + ' L: a cursive final card carries the final note and the finals rule, one look-alike (vav) and no Vowels tab', r2.id === 'nun_sofit' && r2.rule && r2.note && !r2.vowels && r2.look === 1, JSON.stringify(r2));
-        check(tag + ' L: 0 pageerrors (fold + final)', errors.length === 0 && p2.errors.length === 0, errors.concat(p2.errors).join(' | '));
+        const p3 = await openPage(browser, 'letter_learner.html', { query: '?letter=nun_sofit' });
+        const r3 = await p3.page.evaluate(() => { const n = document.querySelector('#llPanel-letter .ll-final-note'), rule = document.querySelector('#llPanel-letter .ll-finals-rule'); return { id: _llId, mode: _llMode, rule: !!rule, note: !!n, after: !!(n && rule && n.nextElementSibling === rule) }; });
+        check(tag + ' L: a Block final card carries the final note and the finals rule right under it', r3.id === 'nun_sofit' && r3.mode === 'letters' && r3.rule && r3.note && r3.after, JSON.stringify(r3));
+        check(tag + ' L: 0 pageerrors (fold + final)', errors.length === 0 && p2.errors.length === 0 && p3.errors.length === 0, errors.concat(p2.errors, p3.errors).join(' | '));
         await p2.ctx.close();
+        await p3.ctx.close();
       }
       // M. Garbage: a bad ?letter= in cursive mode keeps the cursive grid and opens nothing; an unknown ?mode= is Block.
       {

@@ -1097,8 +1097,8 @@ body.dark #appToast { background: #0a0f1c; }
                     caption. A drawing is built ON the handwritten letterform (traced from the TaL AM alef-bet frieze, placed
                     with its baseline at y=70 of the 100 box) and draws the writing line where the trick speaks of it.
      CURSIVE_PAIRS  the look-alike pairs: { ids: [a, b], tip } — two LETTER_DATA ids and the tell
-     CURSIVE_TIPS   the rule(s) shown under both letter grids (Block and Cursive) and on every cursive final-form card,
-                    one string each
+     CURSIVE_TIPS   the rule(s) shown under both letter grids (Block and Cursive) and on every final-form card's Letter
+                    tab in both modes, one string each
    ═══════════════════════════════════════════════════════════════════════════════════════════════ */
 const LETTER_DATA = [
   { id: 'alef', glyph: 'א', name: 'Alef', sound: 'silent', consonant: '',
@@ -2303,6 +2303,15 @@ function llWordSpan(he, base) {
   });
   return span;
 }
+// The finals rule (CURSIVE_TIPS) under that note on a final-form card, in both letter modes — it holds for print as for
+// handwriting (four of the five finals drop below the line). null when the data has no rule.
+function llFinalsRule() {
+  if (!CURSIVE_TIP_LIST.length) return null;
+  const rule = el('p', 'll-finals-rule'); rule.dir = 'ltr'; rule.lang = 'en';
+  rule.appendChild(el('strong', null, _fbT('letterlearner.cursive.finals_rule_label', 'Final letters') + ': '));
+  rule.appendChild(document.createTextNode(CURSIVE_TIP_LIST.join(' ')));   // i18n-ignore: learner content (the finals rule)
+  return rule;
+}
 // The note on a final-form card — "This is how Kaf looks at the end of a word. כ → ך" (both letter tabs).
 function llFinalNote(L) {
   const p = el('p', 'll-final-note');
@@ -2336,7 +2345,11 @@ function llRenderLetterTab(L) {
   llCheckDrawings(L);
   const panel = document.getElementById('llPanel-letter');
   panel.textContent = '';
-  if (L.final && LETTERS[L.final]) panel.appendChild(llFinalNote(L));
+  if (L.final && LETTERS[L.final]) {
+    panel.appendChild(llFinalNote(L));
+    const rule = llFinalsRule();
+    if (rule) panel.appendChild(rule);
+  }
   const words = (L.words || []);
   if (!(L.hint && L.hint.caption) && !words.length) {
     const soon = el('div', 'll-soon');
@@ -2388,12 +2401,8 @@ function llRenderCursiveTab(card) {
   panel.textContent = '';
   if (L.final && LETTERS[L.final]) {
     panel.appendChild(llFinalNote(L));
-    if (CURSIVE_TIP_LIST.length) {
-      const rule = el('p', 'll-finals-rule'); rule.dir = 'ltr'; rule.lang = 'en';
-      rule.appendChild(el('strong', null, _fbT('letterlearner.cursive.finals_rule_label', 'Final letters') + ': '));
-      rule.appendChild(document.createTextNode(CURSIVE_TIP_LIST.join(' ')));   // i18n-ignore: learner content (the finals rule)
-      panel.appendChild(rule);
-    }
+    const rule = llFinalsRule();
+    if (rule) panel.appendChild(rule);
   }
   // Print and cursive: the block glyph keeps its own face (.ll-glyph-block); the second glyph takes the dialog's cursive face.
   const forms = el('p', 'll-forms-line');

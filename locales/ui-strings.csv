@@ -6430,7 +6430,7 @@ letterlearner.tips.cursive_intro,In handwriting a few letters look alike; each p
 letterlearner.tips.block_intro,A few printed letters look alike; each pair has one tell.,"כמה אותיות דפוס דומות זו לזו, ולכל זוג יש סימן היכר אחד.",intro line of the tips block in Block mode (the rows that follow are learner content),
 letterlearner.cursive.forms_label,Print and cursive,דפוס וכתב,Letter tab of a cursive card: label before the printed and handwritten forms of the letter,
 letterlearner.cursive.lookalike_heading,Don't mix it up with,לא להתבלבל עם,Letter tab of a cursive card: heading over the look-alike letters,
-letterlearner.cursive.finals_rule_label,Final letters,אותיות סופיות,Letter tab of a cursive final-form card: bold label before the finals rule (learner content),
+letterlearner.cursive.finals_rule_label,Final letters,אותיות סופיות,Letter tab of a final-form card (Block and Cursive): bold label before the finals rule (learner content),
 letterlearner.cursive.soon_body,"The handwriting picture for this letter is on its way. The words, vowels and fonts already work.","הציור של האות בכתב בדרך. המילים, הניקוד והגופנים כבר עובדים.",Letter tab of a cursive card whose trick has not landed yet,
 letterlearner.tour.mode_title,"Block, cursive or vowels","דפוס, כתב או ניקוד",tour step 1 title (the mode bar),
 letterlearner.tour.mode_body,"Switch between the printed alef-bet, the handwritten (cursive) letters and the vowel signs here. The address bar remembers which one is open, so a bookmark or a shared link keeps it.","כאן עוברים בין אותיות הדפוס, אותיות הכתב וסימני הניקוד. שורת הכתובת זוכרת מה פתוח, ולכן סימנייה או קישור משותף שומרים על הבחירה.",tour step 1 body,
