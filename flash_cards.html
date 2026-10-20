@@ -3844,7 +3844,7 @@ function wlLiveSelectedCount() {
 
 function fetchAllWordsData() {
   _wordsLoadFailed = false;
-  return fetch('data/hebrew_words.json?v=6')
+  return fetch('data/hebrew_words.json?v=7')
     .then(r => r.json())
     .then(data => { ALL_WORDS_DATA = data; updateWordsCount(); })
     .catch(() => {

@@ -2590,7 +2590,7 @@ function updateDictLoadProgress(pct, received) {
 }
 
 function loadWordCorpus() {   // callable (not a bare top-level chain) so the failure card's ↻ Try again can re-run it
-  return fetchJsonWithProgress('data/hebrew_words.json?v=6', updateDictLoadProgress)
+  return fetchJsonWithProgress('data/hebrew_words.json?v=7', updateDictLoadProgress)
   .then(data => {
     // Flatten in batches so slow devices don't block the main thread for the whole
     // ~13k-word pass (per-word calcGematria is the main cost). The loading UI stays up
