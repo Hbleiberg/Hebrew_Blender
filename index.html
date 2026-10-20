@@ -177,6 +177,10 @@ body.dark .hi-sun{display:inline-block;}
 /* ═══ end header-icons CSS ═══ */
 </style>
 <script>(function(){try{var s=localStorage.getItem('hebrewBlender_darkMode');if(s==='1'||(s===null&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark-early');}}catch(e){}})()</script>
+<!-- The What's-new card (whatsNewInit) asks whether this browser was here before this load. Read here, before the page's
+     own scripts write anything (the .ivrit engine stores hebrewBlender_inputMode on every first visit): any suite key —
+     a tool's settings, a preference, a sign-in — means a returning visitor. -->
+<script>(function(){try{window.__ivReturning=Object.keys(localStorage).some(function(k){return /^(hebrew|ivritSuite_|sb-)/.test(k);});}catch(e){window.__ivReturning=false;}})()</script>
 <script>
   /* No-flash UI-language IIFE — mirrors the dark-mode one; sets dir/lang before paint so Hebrew
      never flashes LTR->RTL. Authoritative set happens later in /js/i18n.js. */
@@ -347,6 +351,30 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
   header .hright{flex-wrap:wrap;max-width:100%;justify-content:flex-end;}
 }
 
+/* What's new (whatsNewInit): a non-modal card for a returning visitor, shown once per announcement. Bottom inline-end
+   on a wide screen; at the top on a phone, where the bottom belongs to pwa.js's install banner. Under every modal. */
+.wn-pop{position:fixed;inset-inline-end:20px;bottom:20px;z-index:180;width:min(360px,calc(100vw - 32px));background:var(--white);color:var(--text);border:2px solid var(--gold);border-radius:14px;box-shadow:0 10px 32px rgba(0,0,0,0.22);padding:18px 20px 16px;animation:wnUp 0.25s ease-out;}
+.wn-pop[hidden]{display:none;}
+@keyframes wnUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:none;}}
+@keyframes wnDown{from{opacity:0;transform:translateY(-12px);}to{opacity:1;transform:none;}}
+.wn-title{font-family:'Libre Baskerville',serif;font-size:1.05rem;margin:0 0 6px;margin-inline-end:30px;}
+.wn-lede{font-size:0.85rem;color:var(--muted);margin:0 0 8px;}
+.wn-list{list-style:none;margin:0 0 14px;padding:0;display:flex;flex-direction:column;gap:8px;font-size:0.85rem;line-height:1.45;}
+.wn-list a{color:var(--gold-text);font-weight:700;}
+.wn-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;}
+.wn-show,.wn-ok{font-family:'Source Sans 3',sans-serif;font-size:0.85rem;font-weight:600;border-radius:7px;padding:7px 16px;min-height:32px;cursor:pointer;}
+.wn-show{background:var(--navy);color:var(--gold-light);border:1px solid var(--navy);}
+.wn-show:hover{background:var(--gold);border-color:var(--gold);color:var(--navy);}
+.wn-ok{background:none;color:var(--text);border:1px solid var(--border);}
+.wn-ok:hover{background:var(--warm-gray);}
+.wn-x{position:absolute;top:8px;inset-inline-end:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border:none;border-radius:6px;background:none;color:var(--muted);cursor:pointer;}
+.wn-x:hover{background:var(--warm-gray);color:var(--text);}
+.wn-pop :focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;}
+@media (max-width:767px){.wn-pop{top:calc(12px + env(safe-area-inset-top, 0px));bottom:auto;inset-inline:16px;width:auto;animation-name:wnDown;}}
+/* "Show me" brings the Discover card into view and rings it once. */
+.page-card-group.wn-flash{animation:wnFlash 1.6s ease-out;}
+@keyframes wnFlash{0%,40%{box-shadow:0 0 0 4px var(--gold);border-color:var(--gold);}100%{box-shadow:0 0 0 0 transparent;}}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.001ms !important;
@@ -377,6 +405,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
      Suite-wide across all six chrome pages (privacy + terms took it first at 44bd07c) -- the
      rule is the same on every one, so a future page copies one line, not a judgement call. */
   header .hright { display: none !important; }
+  .wn-pop { display: none !important; }   /* a position:fixed box repeats on every printed sheet */
 }
 </style>
 </head>
@@ -392,6 +421,21 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
     <button class="dark-btn" id="darkBtn" onclick="toggleDark()" aria-pressed="false" aria-label="Toggle dark mode" data-i18n-aria-label="shared.darkmode.toggle_title" data-i18n-title="shared.darkmode.toggle_title"><svg class="hi hi-moon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15.5A7 7 0 0 1 8.5 6a7 7 0 1 0 9.5 9.5z"/><path d="M17.5 2.5l.9 2.4 2.4.9-2.4.9-.9 2.4-.9-2.4-2.4-.9 2.4-.9z" fill="currentColor" stroke="none"/></svg><svg class="hi hi-sun" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></svg><span class="hi-lbl" data-i18n="shared.darkmode.label_dark">Dark</span></button>
   </div>
 </header>
+
+<!-- What's new: a one-time, non-modal card for a returning visitor (whatsNewInit). It takes no focus and blocks nothing. -->
+<div class="wn-pop" id="wnPop" role="dialog" aria-modal="false" aria-labelledby="wnTitle" hidden>
+  <button type="button" class="wn-x" id="wnClose" aria-label="Close" data-i18n-aria-label="home.whatsnew.close_aria"><svg class="hi hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
+  <h2 class="wn-title" id="wnTitle" data-i18n="home.whatsnew.title">New on IvritSuite</h2>
+  <p class="wn-lede" data-i18n="home.whatsnew.lede">Two new tools, in the new Discover card:</p>
+  <ul class="wn-list">
+    <li data-i18n-html="home.whatsnew.item_letterlearner"><a href="letter_learner.html">Letter Learner</a>: every Hebrew letter with a picture, words, its vowels read aloud, cursive and coloring sheets.</li>
+    <li data-i18n-html="home.whatsnew.item_parshaemojis"><a href="parsha_emojis.html">Parsha Emojis</a>: an emoji drawing for every weekly parasha, with a summary and coloring sheets.</li>
+  </ul>
+  <div class="wn-actions">
+    <button type="button" class="wn-ok" id="wnOk" data-i18n="home.whatsnew.ok">Got it</button>
+    <button type="button" class="wn-show" id="wnShow" data-i18n="home.whatsnew.show">Show me</button>
+  </div>
+</div>
 
 <div class="hero" id="mainContent" role="main" tabindex="-1">
   <h2 class="hero-sub" style="font-family:'Libre Baskerville',serif;font-size:1.05rem;font-weight:400;color:var(--muted);margin:0 0 18px;" data-i18n="home.hero.subtitle">Free Hebrew Learning Tools for Teachers and Students</h2>
@@ -1664,6 +1708,8 @@ async function eraseAllSettings() {
     // pwa.js's install-banner dismissal: a one-time UI flag, so export-exempt — but "erase" means a
     // fresh start, and without this the Add-to-Home-Screen prompt stays suppressed forever.
     'hebrewBlender_pwaDismissed',
+    // the What's-new card's flag (the id of the last announcement this device showed or skipped): one-time, export-exempt
+    'hebrewBlender_whatsNewSeen',
     // legacy cleanup: purge orphaned data from the removed community-impact feature
     'ivritsuite-impact-v1',
     'ivritsuite-impact-optout',
@@ -2137,6 +2183,47 @@ function applyI18n() {
   try { if (typeof renderMyFontsManager === 'function' && document.getElementById('myFontsList')) renderMyFontsManager(); } catch (e) {}
   try { renderIvritInventory(); } catch (e) {}
 }
+/* ── What's new: a one-time card for a returning visitor (shared UX rule 6: its own flag, shown once, never a modal
+   wall). WN_ID names the announcement: the next one changes it and the card's home.whatsnew.* strings, and everyone
+   who saw this one sees that one once. A first visit (no suite key in this browser before this load — read in <head>,
+   before the page's own writes) marks the current id seen and shows nothing: the hub it just met already has the
+   tools. The flag is set when the card shows, so a tab closed before a click does not bring it back. ── */
+const WN_ID = '2026-10-discover', WN_KEY = 'hebrewBlender_whatsNewSeen';
+function whatsNewInit() {
+  let seen;
+  try { seen = localStorage.getItem(WN_KEY); } catch (e) { return; }
+  if (seen === WN_ID) return;
+  if (!window.__ivReturning) { try { localStorage.setItem(WN_KEY, WN_ID); } catch (e) {} return; }
+  // Never over a window: the AllTools window (?alltools=open opens it for a restore) or the account's one-time name
+  // step / device-extras card. The card then waits for the next visit.
+  if (ieWindowOpen() || document.querySelector('.ivsav-overlay, .ivacct-modal')) return;
+  try { localStorage.setItem(WN_KEY, WN_ID); } catch (e) { return; }
+  const pop = document.getElementById('wnPop');
+  const close = () => {
+    const had = pop.contains(document.activeElement);
+    pop.hidden = true;
+    document.removeEventListener('keydown', onKey);
+    if (had) document.getElementById('mainContent').focus({ preventScroll: true });
+  };
+  const onKey = e => { if (e.key === 'Escape' && !ieWindowOpen()) close(); };
+  document.addEventListener('keydown', onKey);
+  document.getElementById('wnClose').addEventListener('click', close);
+  document.getElementById('wnOk').addEventListener('click', close);
+  pop.querySelectorAll('.wn-list a').forEach(a => a.addEventListener('click', () => { pop.hidden = true; }));
+  document.getElementById('wnShow').addEventListener('click', () => {
+    pop.hidden = true;
+    document.removeEventListener('keydown', onKey);
+    const card = document.querySelector('.page-card-group');
+    if (!card) return;
+    const still = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+    card.scrollIntoView({ behavior: still ? 'auto' : 'smooth', block: 'center' });
+    card.classList.remove('wn-flash'); void card.offsetWidth; card.classList.add('wn-flash');
+    card.addEventListener('animationend', () => card.classList.remove('wn-flash'), { once: true });
+    const b = card.querySelector('.go-btn');
+    if (b) b.focus({ preventScroll: true });
+  });
+  pop.hidden = false;
+}
 document.addEventListener('DOMContentLoaded', () => {
   try {
     const s = localStorage.getItem('hebrewBlender_darkMode');
@@ -2148,6 +2235,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   } catch(e) {}
   if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); }
+  // The card shows in the page's language: after the strings land (applyI18n is registered first), or at once without I18n.
+  if (window.I18n) I18n.ready.then(whatsNewInit); else whatsNewInit();
   // The account page's zip-restore path and the tools' backup notes send people here to import a file.
   if (new URLSearchParams(location.search).get('alltools') === 'open') openIEModal();
   initCloudSaves();

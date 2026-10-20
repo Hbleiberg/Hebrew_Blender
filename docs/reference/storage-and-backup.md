@@ -95,7 +95,8 @@ Not every key belongs in the three AllTools functions. Split them:
   `*_welcomeSeen`, `*_hintSeen`, `*_mobileWarnDismissed`, and similar dismissals. Backing these up would
   just re-suppress first-run help on a fresh machine, so they stay out of export/import — but **erase
   means fresh start**, so add them to `eraseAllSettings`. Also in this erase-only set today:
-  `hebrewDashboard_purgeDismissed`, `hebrewBlender_pwaDismissed`, `hebrewFontMaker_inputMode`,
+  `hebrewDashboard_purgeDismissed`, `hebrewBlender_pwaDismissed`, `hebrewBlender_whatsNewSeen` (the hub's
+  What's-new card — see below), `hebrewFontMaker_inputMode`,
   `hebrewBlender_lastBackupAt` (the ISO time this device last saved an AllTools `.ivrit`; drives the
   "Last backup from this device" line under the hub's inventory, gold-tinted past 30 days), and the
   Font Maker's `hebrewFontMaker_uiPrefs` workspace-prefs blob. (Per-device UI prefs like `hebrewBlender_zoom`,
@@ -107,6 +108,13 @@ Reconcile whenever you touch storage: every key a tool writes should be *either*
 functions *or* consciously in the exempt set above. Treat a key that is real data yet missing from
 export/import as a bug to fix, not a pattern to copy.
 
+- **The hub's What's-new card** (`index.html`, `whatsNewInit`) is a non-modal card shown once per announcement to a
+  *returning* visitor: one whose browser held any `hebrew*`, `ivritSuite_*` or `sb-*` key before this load (read in
+  `<head>` into `window.__ivReturning`, before the page's own first-visit writes such as `hebrewBlender_inputMode`).
+  `hebrewBlender_whatsNewSeen` holds the id (`WN_ID`) of the last announcement this device showed or skipped: a first
+  visit stores the current id without showing anything, and the card stores it when it shows. It never opens over
+  the AllTools window or the account's name step / device-extras card (it waits for the next visit). The next
+  announcement changes `WN_ID` and the `home.whatsnew.*` strings, and every device that saw this one sees that one once.
 - **Account session keys are not settings.** `sb-hhkmqwpjsyxdeuhvcyis-auth-token` (+ its transient
   `-code-verifier`) is written by the Supabase SDK, `ivritSuite_accountCache` and `ivritSuite_signInRequest` (the
   address a sign-in code was last asked for here, which an emailed link fills in) by `js/ivrit-account.js`,

@@ -3548,6 +3548,13 @@ home.contact_link,✉️ Contact & Support,✉️ יצירת קשר ותמיכה
 home.header.brand,IvritSuite,IvritSuite,header wordmark,brand name
 home.header.tagline,Tools for Hebrew literacy instruction,כלים להוראת אוריינות עברית,header subtitle,
 home.hero.subtitle,Free Hebrew Learning Tools for Teachers and Students,כלים חינמיים ללימוד עברית למורים ולתלמידים,hero subheading,
+home.whatsnew.close_aria,Close,סגירה,What's-new card close button (aria-label),aria/title
+home.whatsnew.item_letterlearner,"<a href=""letter_learner.html"">Letter Learner</a>: every Hebrew letter with a picture, words, its vowels read aloud, cursive and coloring sheets.","<a href=""letter_learner.html"">לומדים אותיות</a>: כל אות עברית עם ציור, מילים, הניקוד שלה בהקראה, אותיות כתב ודפי צביעה.",What's-new card item (links the Letter Learner),html
+home.whatsnew.item_parshaemojis,"<a href=""parsha_emojis.html"">Parsha Emojis</a>: an emoji drawing for every weekly parasha, with a summary and coloring sheets.","<a href=""parsha_emojis.html"">אימוג׳י הפרשות</a>: ציור אימוג׳י לכל פרשת שבוע, עם תקציר ודפי צביעה.",What's-new card item (links the Parsha Emojis),html
+home.whatsnew.lede,"Two new tools, in the new Discover card:","שני כלים חדשים, בכרטיס החדש “גלו”:",What's-new card intro line,
+home.whatsnew.ok,Got it,הבנתי,What's-new card dismiss button,
+home.whatsnew.show,Show me,הראו לי,What's-new card button: scrolls to the Discover card,
+home.whatsnew.title,New on IvritSuite,חדש ב־IvritSuite,What's-new card title (shown once to a returning visitor),
 notfound.a11y.skip_to_links,Skip to the links,דילוג לקישורים,Skip-link (a11y),aria/skip-link
 notfound.header.brand,IvritSuite,IvritSuite,header wordmark,brand name
 notfound.header.tagline,Tools for Hebrew literacy instruction,כלים להוראת אוריינות עברית,header subtitle,
