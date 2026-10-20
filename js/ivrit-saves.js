@@ -343,7 +343,7 @@
     // word audio travel; the chosen voice stays on this device (a voiceURI names an installed voice, nothing
     // another machine has)
     { tool: 'LetterLearner', kind: 'settings', lsKey: 'hebrewLetterLearner_settings', shape: 'single', merge: 'assign', omit: ['voiceURI'], ivritKey: 'letterLearnerSettings', label: 'shared.cloud.kind_settings' },
-    // emoji_torah.html — one blob, the coloring sheets' print options (colour, paper, orientation, text language,
+    // parsha_emojis.html — one blob, the coloring sheets' print options (colour, paper, orientation, text language,
     // the Include switches, the size sliders, copies and order); every field is the teacher's choice and travels
     { tool: 'EmojiTorah', kind: 'settings', lsKey: 'hebrewEmojiTorah_settings', shape: 'single', merge: 'assign', ivritKey: 'emojiTorahSettings', label: 'shared.cloud.kind_settings' },
     { tool: 'Dashboard', kind: 'roster', lsKey: 'hebrewDashboard_settings', shape: 'mapIn', path: 'rosters', nameField: 'name', merge: 'page', ivritKey: 'dashboardRosters', label: 'shared.cloud.kind_roster',

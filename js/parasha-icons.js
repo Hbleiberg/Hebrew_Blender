@@ -4,7 +4,7 @@
    parasha summary and why it was chosen: edit a drawing there and re-run the script, never this file (a changed
    file needs a VERSION bump in sw.js — it is precached).
    Loaded by classroom_dashboard.html (its parsha line), torah_trainer.html (the reading's header, the date
-   lookup and the emoji gallery) and emoji_torah.html (its cards), each as a classic script placed before the
+   lookup and the emoji gallery) and parsha_emojis.html (its cards), each as a classic script placed before the
    page's inline <script> (window.ParashaIcons). It reads no settings, no I18n and no DOM.
    One flat 48×48 drawing per parasha, in the holiday icons' style: the outline and every fill come from the
    .hol-ico wrapper and the --hol-* tokens of the holiday-icons CSS block all three pages carry, so the dark palette

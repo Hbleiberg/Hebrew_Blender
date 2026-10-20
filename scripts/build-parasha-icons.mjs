@@ -168,7 +168,7 @@ const js = `/* ═════════════════════�
    parasha summary and why it was chosen: edit a drawing there and re-run the script, never this file (a changed
    file needs a VERSION bump in sw.js — it is precached).
    Loaded by classroom_dashboard.html (its parsha line), torah_trainer.html (the reading's header, the date
-   lookup and the emoji gallery) and emoji_torah.html (its cards), each as a classic script placed before the
+   lookup and the emoji gallery) and parsha_emojis.html (its cards), each as a classic script placed before the
    page's inline <script> (window.ParashaIcons). It reads no settings, no I18n and no DOM.
    One flat 48×48 drawing per parasha, in the holiday icons' style: the outline and every fill come from the
    .hol-ico wrapper and the --hol-* tokens of the holiday-icons CSS block all three pages carry, so the dark palette
@@ -197,7 +197,7 @@ const notesJs = `/* ════════════════════
    with one space. Edit the catalog and re-run the script, never this file (a changed file needs a VERSION bump in
    sw.js — it is precached).
    Loaded by torah_trainer.html, as a deferred classic script (window.ParashaNotes), for the parasha emoji gallery
-   its reading header opens (nothing there reads it before that click), and by emoji_torah.html, as a classic
+   its reading header opens (nothing there reads it before that click), and by parsha_emojis.html, as a classic
    script before its inline <script>, for its cards. It reads no settings, no I18n and no DOM.
    ParashaNotes.get(i) — for parasha index i (0 = Bereshit … 53 = V'Zot HaBerachah, as ParashaIcons.html) returns
    a frozen { summary: { en, he }, why: { en, he } } of plain-text sentences (the build refuses markup, entities and

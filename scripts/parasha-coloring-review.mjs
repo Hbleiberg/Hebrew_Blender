@@ -4,7 +4,7 @@
  * docs/parasha-coloring-review/batch-<N>.png — nine parshiyot a sheet, one row each: the drawing as the site shows it,
  * the line art a coloring sheet prints, and the coloured-in print (the light palette on white paper).
  *
- * The conversion is the page's own (emoji_torah.html → etCsDrawing / etCsConvert), run inside the live page so its
+ * The conversion is the page's own (parsha_emojis.html → etCsDrawing / etCsConvert), run inside the live page so its
  * measuring and tokens apply exactly as in production. A conversion warning or a page error fails the run: a drawing
  * whose palette token survives never reaches a sheet unnoticed. Re-run it whenever ParashaEmojis.md changes a drawing,
  * and look at every row: the rules are general (docs/reference/shared-components.md → The parsha emojis page), and a
@@ -50,7 +50,7 @@ try {
   await page.route('**/*', r => { const u = r.request().url(); (u.startsWith(BASE) || u.startsWith('data:') || u.startsWith('blob:')) ? r.continue() : r.abort(); });
   for (const b of batches) {
     // Each batch starts from the real page so nothing leaks between batches.
-    await page.goto(BASE + '/emoji_torah.html', { waitUntil: 'load' });
+    await page.goto(BASE + '/parsha_emojis.html', { waitUntil: 'load' });
     await page.waitForFunction(() => typeof etData !== 'undefined' && etData && window.ParashaIcons, null, { timeout: 15000 }).catch(() => {});   // etData is the page's own top-level let
     const ok = await page.evaluate(() => typeof etCsDrawing === 'function' && typeof etData !== 'undefined' && Array.isArray(etData) && etData.length > 0);
     if (!ok) { console.error('parasha-coloring-review: the page did not load its data or its converter'); failed = true; break; }

@@ -37,9 +37,9 @@ VERSION = "1.2"   # shown as "v{VERSION}" on the splash — bump whatever value 
 2. Run `python3 splash/gen_splash.py` — re-renders every `splash/splash-*.png`
    and rewrites `splash/apple-startup-links.html`.
 3. Only if `DEVICES` changed (NOT for a plain version bump): re-sync the
-   `apple-touch-startup-image` block in **15 HTML pages** (every root page but `account.html` and the three test harnesses: 404,
-   Hebrew_Font_Maker, classroom_dashboard, contact, emoji_torah, flash_cards, hebrew_blend_generator,
-   hebrew_dictionary, index, letter_learner, privacy, resources, terms, torah_trainer, trope_tutor) from
+   `apple-touch-startup-image` block in **15 HTML pages** (every root page but `account.html`, the `emoji_torah.html` forwarding stub and the three test harnesses: 404,
+   Hebrew_Font_Maker, classroom_dashboard, contact, flash_cards, hebrew_blend_generator,
+   hebrew_dictionary, index, letter_learner, parsha_emojis, privacy, resources, terms, torah_trainer, trope_tutor) from
    `splash/apple-startup-links.html` (the block is identical in each). A version
    bump alone keeps the same filenames, so the pages need no change.
 4. Commit & push.
@@ -328,6 +328,8 @@ pages, not the other way round — `grep -o 'Content-Security-Policy[^>]*' *.htm
   `data:` nor `blob:` (its zip is an `<a download>`, not an image load). It is the tighter page, so never loosen it to match the others. The harnesses
   (`i18n-test.html`, `account-test.html`, `saves-test.html`) carry no gtag and no Google Fonts and allow only
   `data:` images.
+- **The `emoji_torah.html` forwarding stub** (the Parsha Emojis page's address before its launch) allows only
+  `'self'`: no gtag (the hop would count twice), no Google Fonts, no `data:`/`blob:`; it loads `/js/i18n.js` and the favicon.
 - **Pages that offer accounts** (Home, Generator, Flash Cards, Dictionary, Torah Trainer, Trope Tutor, Dashboard, Letter Learner, Parsha Emojis, Font Maker, the account page `account.html`, `account-test.html`, `saves-test.html`): `cdn.jsdelivr.net` in `script-src` (the
   pinned Supabase SDK) and `hhkmqwpjsyxdeuhvcyis.supabase.co` in `connect-src` — exactly those two origins, nothing else
   (avatars are initials, Realtime is not used). The two harnesses carry no gtag.

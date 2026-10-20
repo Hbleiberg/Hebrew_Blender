@@ -225,14 +225,14 @@ const PAGES = [
   { file: 'hebrew_dictionary.html', tool: 'Dictionary', writer: 'saveDictSessionFlush(); saveEmojiSettings();' },
   { file: 'classroom_dashboard.html', tool: 'Dashboard', writer: 'saveSettingsToStorage();' },
   { file: 'letter_learner.html', tool: 'LetterLearner', writer: 'llSaveSettings();' },
-  { file: 'emoji_torah.html', tool: 'EmojiTorah', writer: 'etCsWrite();' }   // a fresh load writes nothing; the writer stores the defaults
+  { file: 'parsha_emojis.html', tool: 'EmojiTorah', writer: 'etCsWrite();' }   // a fresh load writes nothing; the writer stores the defaults
 ];
 // The tools each page hydrates (its own, Suite, and its alsoPull) — settled() is asked about exactly these.
 const TOOLS_OF = {
   'index.html': ALL_TOOLS, 'trope_tutor.html': ['TropeTutor', 'Suite'], 'torah_trainer.html': ['TorahTrainer', 'Suite'],
   'flash_cards.html': ['FlashCards', 'Suite', 'Dictionary'], 'hebrew_blend_generator.html': ['Worksheet', 'Suite', 'Dictionary'],
   'hebrew_dictionary.html': ['Dictionary', 'Suite'], 'classroom_dashboard.html': ['Dashboard', 'Suite'], 'letter_learner.html': ['LetterLearner', 'Suite'],
-  'emoji_torah.html': ['EmojiTorah', 'Suite']
+  'parsha_emojis.html': ['EmojiTorah', 'Suite']
 };
 // Waits until the module reads settled for those tools — every hydration fired, nothing dirty, no queue busy,
 // no card pending — and stays so through a page writer's own debounce; opts.until (a predicate on the fake's

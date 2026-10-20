@@ -6455,6 +6455,7 @@ emojitorah.a11y.skip_to_cards,Skip to the parsha emojis,דילוג לאימוג�
 emojitorah.header.title,IvritSuite — Parsha Emojis,IvritSuite — אימוג׳י הפרשות,Parsha Emojis page header title,
 emojitorah.header.tagline,A picture for every parasha,ציור לכל פרשה,Parsha Emojis page header subtitle,
 emojitorah.header.home,Home,דף הבית,Parsha Emojis header Home link label,svg-icon-in-markup
+emojitorah.moved.link,The Parsha Emojis have moved — open them here,אימוג׳י הפרשות עברו לכתובת חדשה — פתחו אותם כאן,the one link on emoji_torah.html (the old address that forwards to parsha_emojis.html); seen only without JavaScript,
 emojitorah.page_title,The Parsha Emojis,אימוג׳י הפרשות,Parsha Emojis page h1,
 emojitorah.views.label,Choose which parshiyot to show,בחירת הפרשות להצגה,view bar: aria-label of the button group (Today's parasha / the five books / View All),
 emojitorah.views.today,Today's parasha,פרשת השבוע,view bar button: only this week's parasha (both cards in a doubled week),

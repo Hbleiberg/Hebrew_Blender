@@ -23,7 +23,7 @@ index below) — read the file for the area you are touching before you touch it
 |---|---|
 | localStorage keys, AllTools export/import/erase, `.ivrit` files, presets, folder trees | `docs/reference/storage-and-backup.md` |
 | Any UI string, CSV/locale build, `check-i18n` details, adding a language | `docs/reference/i18n.md` |
-| A `═══`-marked shared block (fonts store, keyboard, test phrases, resize, toast, panel memory), the parasha icons and notes (`js/parasha-icons.js`, `js/parasha-notes.js`, `ParashaEmojis.md`) and their page `emoji_torah.html`, tours, tooltips, share links, reduced motion, `<kbd>` hints | `docs/reference/shared-components.md` |
+| A `═══`-marked shared block (fonts store, keyboard, test phrases, resize, toast, panel memory), the parasha icons and notes (`js/parasha-icons.js`, `js/parasha-notes.js`, `ParashaEmojis.md`) and their page `parsha_emojis.html`, tours, tooltips, share links, reduced motion, `<kbd>` hints | `docs/reference/shared-components.md` |
 | `Hebrew_Font_Maker.html` (undo/autosave, modals, fidelity, Starting Fonts) | `docs/reference/font-maker.md` |
 | Adding a glyph set to the Font Maker (a new alphabet tab, LTR or RTL, or a tab of composed forms) — its census, direction rules and the Save-letter-&-next contract | `docs/reference/newglyphset.md` |
 | `classroom_dashboard.html` (dark mode, font picker, nikkud colors, drawer, tooltips) | `docs/reference/dashboard.md` |

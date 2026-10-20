@@ -415,7 +415,7 @@ buttons was overlooked); its Holiday Torah Readings (calendar) and Share (link) 
 drawer, so the calendar glyph is the Calendar tab's and the link glyph the Share tab's (and its Copy link's).
 Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_dashboard`, `flash_cards`,
 `torah_trainer`, `trope_tutor`, `Hebrew_Font_Maker`, `resources`, `contact`, `privacy`, `terms`,
-`account`, `404`, `letter_learner`, `emoji_torah`; the chip's glyph lives in `js/ivrit-account.js` (`ICON_USER`).
+`account`, `404`, `letter_learner`, `parsha_emojis`; the chip's glyph lives in `js/ivrit-account.js` (`ICON_USER`).
 
 ### The two byte-identical parts
 - **The `/* ═══ header-icons CSS ═══ */` block**, pasted before the main stylesheet's `</style>` on every
@@ -557,7 +557,7 @@ Simchat Torah (open Torah), Chanukah (chanukiah), Purim (mask), Pesach (matzah),
 Tish'a B'Av (Kotel) and `generic` (a calendar page, for any title the matcher does not know). Carriers:
 `classroom_dashboard` (the holiday countdown line, and the parsha line on a festival Shabbat) and `torah_trainer`
 (the Calendar tab's seventeen `HOLIDAY_READINGS` buttons, the loaded reading's `.tt-ref-hdr` and the date lookup's
-festival line); `emoji_torah` carries the CSS block only, for its parasha cards. The weekly parasha icons reuse the
+festival line); `parsha_emojis` carries the CSS block only, for its parasha cards. The weekly parasha icons reuse the
 CSS block's `.hol-ico` and palette (*Parasha icons* below).
 
 ### The two byte-identical blocks
@@ -608,12 +608,12 @@ copy without writing. Both modules are precached, so a rebuilt one needs the `sw
 
 ### Module and host contract
 - `js/parasha-icons.js` is a classic script (`window.ParashaIcons`) loaded right after `js/hebrew-calendar.js` on
-  `classroom_dashboard`, `torah_trainer` and `emoji_torah`; it reads no settings, `I18n` or DOM. `ParashaIcons.html(i)` returns
+  `classroom_dashboard`, `torah_trainer` and `parsha_emojis`; it reads no settings, `I18n` or DOM. `ParashaIcons.html(i)` returns
   `<span class="hol-ico" aria-hidden="true"><svg viewBox="0 0 48 48" focusable="false">…</svg></span>` for parasha
   index `i` (HebCal's: 0 = Bereshit … 53 = V'Zot HaBerachah, `parshiyot.json`'s `n − 1`) and `''` for anything
   else; an array returns one icon per index, in its order.
 - `js/parasha-notes.js` (`window.ParashaNotes`) is loaded by `torah_trainer`, deferred, for its emoji gallery, and by
-  `emoji_torah`, as a classic script before its inline one, for its cards;
+  `parsha_emojis`, as a classic script before its inline one, for its cards;
   `ParashaNotes.get(i)` returns a frozen `{ summary: { en, he }, why: { en, he } }` of plain-text sentences for the
   same index (`null` for anything else), and `count` is 54. The sentences are catalog content with their own English
   and Hebrew, picked by `I18n.lang` — never CSV keys; a page still escapes them.
@@ -633,11 +633,15 @@ copy without writing. Both modules are precached, so a rebuilt one needs the `sw
   dashboard's countdown line, the Trainer's holiday buttons and holiday-reading header) stay. The parsha emojis page
   has no switch: the icons are what it shows.
 
-### The parsha emojis page (`emoji_torah.html`)
+### The parsha emojis page (`parsha_emojis.html`)
 The Trainer's emoji gallery as a page of its own, with a coloring-sheet printer; it stores only that printer's
-options (one synced `settings` row, tool `EmojiTorah`). **Not yet linked from the hub**:
-`noindex`, out of `sitemap.xml` (so out of `llms.txt`), no JSON-LD, in `sw.js` `CORE_ASSETS`, as `letter_learner`
-was before its launch. It draws the gallery's cards (`etCard`, the markup of `renderParashaGallery` with an `et-`
+options (one synced `settings` row, tool `EmojiTorah` — the page was `emoji_torah.html` before its launch, and its
+tool id, `hebrewEmojiTorah_*` keys, `emojitorah.*` i18n keys and `et-` code keep that name). It is linked from the
+hub's *Discover* card (beside `letter_learner`) and every *Related Hebrew Tools* footer, indexed, in `sitemap.xml`,
+the hub's `ItemList` (so in `llms.txt`'s Tools) and `sw.js` `CORE_ASSETS`. **`emoji_torah.html` is a forwarding
+stub**: `noindex`, a canonical to the new page, a 0-second `meta refresh` and a `location.replace` that keeps the
+query and hash (a sign-in return's `?code=` or `#ivsignin=` still lands); no gtag (a hop would count twice), no
+splash block, not precached, not in the sitemap. It draws the gallery's cards (`etCard`, the markup of `renderParashaGallery` with an `et-`
 prefix) from `data/parshiyot.json?v=1` (the Trainer's `?v=`), `ParashaIcons` and `ParashaNotes`, and carries the
 header-icons and holiday-icons CSS blocks.
 - **The view bar** is a group of `aria-pressed` toggle buttons, one pressed at a time: *Today's parasha* (the

@@ -398,7 +398,7 @@ const PAGES = [
     urlKeep: 'lang=en'
   },
   {
-    file: 'emoji_torah.html', tool: 'EmojiTorah', host: '#cloudSavesPanel',
+    file: 'parsha_emojis.html', tool: 'EmojiTorah', host: '#cloudSavesPanel',
     // The seed is the page's own shape (field order included: the defaults' order, a chosen textLang last): the page
     // writes only on a change, so a load must leave the text byte-identical.
     seed: {
@@ -411,7 +411,7 @@ const PAGES = [
     // it cannot apply falls back on screen while staying stored
     extra: async ({ browser, tag }) => {
       const seedText = JSON.stringify({ v: 1, colored: false, paper: 'letter', orient: 'portrait', perSheet: 1, showHe: true, showEn: true, showRef: true, showSummary: true, showWhy: true, showName: true, sizePic: 999, sizeEn: 100, sizeHe: 100, sizeRef: 100, sizeSummary: 100, sizeWhy: 100, sizeName: 100, copies: 1, collate: 'sets', future: { x: 1 } });
-      const { ctx, page, errors } = await openPage(browser, 'emoji_torah.html', { seed: { hebrewEmojiTorah_settings: seedText } });
+      const { ctx, page, errors } = await openPage(browser, 'parsha_emojis.html', { seed: { hebrewEmojiTorah_settings: seedText } });
       const r = await page.evaluate(() => {
         etCsFlush();
         const same = localStorage.getItem('hebrewEmojiTorah_settings');

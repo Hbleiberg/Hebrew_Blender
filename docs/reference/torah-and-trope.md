@@ -1330,7 +1330,7 @@ aliyah on their own cycle: other verses).
   `#parshaSelect` and dispatching its `change` (the picker's own handler, so every save, sync and fetch path is the
   picker's), while a modified or middle click keeps the link's new tab. `applyI18n` re-renders an open
   gallery. Without `ParashaNotes` the cards show icon, names and range only; without the data nothing opens. The
-  same cards are a page of their own, `emoji_torah.html` (`docs/reference/shared-components.md` → The parsha emojis
+  same cards are a page of their own, `parsha_emojis.html` (`docs/reference/shared-components.md` → The parsha emojis
   page), whose cards link here through `?parsha=`.
 
 ---
