@@ -8,6 +8,12 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P2 (**NEW S527 C**) | letter_learner.html | **The Coloring sheet preview's hollow letter (an SVG `<text>`, `overflow:visible`) hit-tests by its whole em box and swallows real clicks on the controls under it**: the tab, the per-sheet and Show radios on 22/31 Block and 24/31 Cursive cards; Print and "Print several letters…" on cursive Yod. | found S527
+
+- [ ] P3 (**NEW S527 C**) | letter_learner.html | **The card's letter inside its words (`.ll-hit`) is 2.6:1 on the light card** (32px, floor 3:1; dark 7.16). | found S527
+
+- [ ] P4 (**NEW S527 C — `sub-floor touch target`**) | letter_learner.html | **The five Coloring sheet size sliders are 16px tall** (the dashboard's `.size-row` slider is 24px). | found S527
+
 - [ ] P4 (**NEW S526 H — gate 2 ANSWERED: say so**) | letter_learner.html | **Reset options' confirm doesn't say it resets the Coloring sheet settings and the print selection** (EN, HE, `_cloud`). | found S526
 
 - [ ] P4 (**NEW S526 H**) | letter_learner.html | **Closing a card's bulk popup returns to the grid, not the card.** | found S526

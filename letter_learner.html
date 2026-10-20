@@ -632,6 +632,10 @@ html[lang="he"] .ll-vgroup { letter-spacing:normal; text-transform:none; }
   border:1px solid var(--border); box-shadow:var(--shadow-md);
   aspect-ratio:var(--cs-aw) / var(--cs-ah); width:min(100%, calc(var(--cs-h) * var(--cs-aw) / var(--cs-ah)));
   font-family:'Source Sans 3', sans-serif;
+  /* A picture of the paper: nothing on it takes a click. The hollow letter is an SVG <text>, hit-tested by the font's
+     whole em box, and its svg's overflow:visible let that unseen box reach past the sheet, over the tab strip, the options
+     and on some cards Print itself, which then ignored the click. */
+  pointer-events:none;
 }
 /* The page's layout sits one level in: a container's own padding would resolve cqmin against the viewport, not the page. */
 .ll-cs-page { position:absolute; inset:0; box-sizing:border-box; display:flex; flex-direction:column; padding:3.5cqmin 4cqmin 2.2cqmin; }
