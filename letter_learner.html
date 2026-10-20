@@ -3165,7 +3165,7 @@ function llCsBuildSheet(host, card, alive) {
     body.appendChild(cell);
   });
   sheet.appendChild(body);
-  sheet.appendChild(el('div', 'll-cs-credit', 'ivritsuite.com'));   // i18n-ignore: brand credit
+  sheet.appendChild(el('div', 'll-cs-credit', 'IvritSuite.com'));   // i18n-ignore: brand credit
   host.appendChild(sheet);
   if (!art.getBoundingClientRect().width) { sheet.remove(); return null; }
   // In the sheet now (and visible): draw, then measure and convert.
