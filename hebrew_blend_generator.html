@@ -2396,6 +2396,16 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
     /* border-color, not border-left-color: only the left edge carries a width, so this
        recolours exactly that divider without introducing a physical property of its own. */
     .bingo-card-header span { border-color:#1a2744; }
+    /* Colour-coded nikkud on paper (pattern dark-palette-baked-into-paper): colorizeHebrew bakes the
+       screen theme's palette into each syllable's inline style, so a dark session printed the dark
+       palette's pale cyan / yellow / lavender on white. Every coloured syllable also carries
+       --nik-paper (the scheme's light palette, or the teacher's override), and paper takes that.
+       Highlight is a background tint the dialog's background-graphics-off default drops, so it prints
+       as the Underline mode's line (the dictionary's and the Torah Trainer's print shape). exportPDF
+       applies the same colours in its onclone, keeping Highlight's tint (html2canvas paints it). */
+    .nik-lt { color:var(--nik-paper) !important; }
+    .nik-ul { text-decoration-color:var(--nik-paper) !important; }
+    .nik-hl { background:none !important; text-decoration:underline solid var(--nik-paper) !important; text-decoration-thickness:2px !important; text-underline-offset:0.4em !important; }
   }
 
   /* Font selector */
@@ -6198,13 +6208,15 @@ function refreshVowelGroupColors() {
   });
 }
 
-function getNikudColor(key) {
+// `paper`: the colour this vowel takes on a printed or exported sheet — always the scheme's light palette,
+// since paper is white whichever theme is on screen (an override wins in both, as on screen).
+function getNikudColor(key, paper) {
   // Only accept a valid hex color (what the <input type=color> picker produces). An imported
   // .ivrit / AllTools backup could carry a crafted override string that would break out of the
   // style="color:…" attribute this feeds — validate before trusting it (fall back to the default).
   const ov = nikudColorOverrides[key];
   if (typeof ov === 'string' && /^#[0-9a-fA-F]{3,8}$/.test(ov)) return ov;
-  return activeNikudDefaults(document.body.classList.contains('dark'))[key] || '#888';
+  return activeNikudDefaults(!paper && document.body.classList.contains('dark'))[key] || '#888';
 }
 
 // Maps each nikud Unicode char to its vowel key (dagesh U+05BC excluded — it's not a vowel)
@@ -6252,12 +6264,15 @@ function colorizeHebrew(text, mode) {
     if (!key) { out.push(esc(ch + marks)); i = j; continue; } // only dagesh, no vowel — no color
     const color = getNikudColor(key);
     const syllable = ch + marks;
+    // --nik-paper and the nik-* class are read only by the print block and exportPDF's onclone
+    // (pattern dark-palette-baked-into-paper)
+    const paper = `--nik-paper:${getNikudColor(key, true)};`;
     if (mode === 'highlight') {
-      out.push(`<span style="background-color:${color}50;border-radius:2px;">${esc(syllable)}</span>`);
+      out.push(`<span class="nik-hl" style="${paper}background-color:${color}50;border-radius:2px;">${esc(syllable)}</span>`);
     } else if (mode === 'underline') {
-      out.push(`<span style="text-decoration:underline solid ${color};text-decoration-thickness:2px;text-underline-offset:0.4em;">${esc(syllable)}</span>`);
+      out.push(`<span class="nik-ul" style="${paper}text-decoration:underline solid ${color};text-decoration-thickness:2px;text-underline-offset:0.4em;">${esc(syllable)}</span>`);
     } else {
-      out.push(`<span style="color:${color}">${esc(syllable)}</span>`);
+      out.push(`<span class="nik-lt" style="${paper}color:${color}">${esc(syllable)}</span>`);
     }
     i = j;
   }
@@ -9515,6 +9530,15 @@ async function exportPDF() {
         onclone: (clonedDoc, el) => {
           clonedDoc.body.classList.remove('dark');
           clonedDoc.documentElement.classList.remove('dark-early');
+          // Colour-coded nikkud keeps the screen theme's palette inline; the capture is screen media, so
+          // the print block's nik-* rules never reach it — give each syllable its paper colour here.
+          el.querySelectorAll('.nik-lt, .nik-ul, .nik-hl').forEach(s => {
+            const p = s.style.getPropertyValue('--nik-paper').trim();
+            if (!p) return;
+            if (s.classList.contains('nik-lt')) s.style.color = p;
+            else if (s.classList.contains('nik-ul')) s.style.textDecorationColor = p;
+            else s.style.backgroundColor = p + '50';
+          });
           // Strip the screen-only page-break decoration (dashed top border,
           // extra padding-top, margin-top). Without this, page 1 is captured
           // shorter than pages 2+ and the cards don't line up in the PDF.
