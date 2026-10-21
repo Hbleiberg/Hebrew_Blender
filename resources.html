@@ -551,10 +551,10 @@ body.dark #fontToast{background:#2a4070;}
     <button class="suggest-btn hi-btn" onclick="openSuggestModal()"><svg class="hi hi-sm hi-plus" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.8v8.4M7.8 12h8.4"/></svg><span class="hi-lbl" data-i18n="resources.filters.suggest_button">Suggest a Resource</span></button>
   </div>
 
-  <p class="results-count" id="resultsCount"></p>
+  <p class="results-count" id="resultsCount" role="status" aria-live="polite" aria-atomic="true"></p>
   <div class="resource-grid" id="resourceGrid"></div>
   <div class="empty-state" id="emptyState" style="display:none;">
-    <div class="emoji">🔍</div>
+    <div class="emoji" aria-hidden="true">🔍</div>
     <p data-i18n="resources.empty.links">No resources match the selected filters.</p>
   </div>
   </div>
@@ -586,10 +586,10 @@ body.dark #fontToast{background:#2a4070;}
     <button class="suggest-btn hi-btn" onclick="openSubmitFont()"><svg class="hi hi-sm hi-plus" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.8v8.4M7.8 12h8.4"/></svg><span class="hi-lbl" data-i18n="resources.filters.submit_font_button">Submit a font</span></button>
   </div>
 
-  <p class="results-count" id="fontCount"></p>
+  <p class="results-count" id="fontCount" role="status" aria-live="polite" aria-atomic="true"></p>
   <div class="resource-grid" id="fontGrid"></div>
   <div class="empty-state" id="fontEmpty" style="display:none;">
-    <div class="emoji">🔤</div>
+    <div class="emoji" aria-hidden="true">🔤</div>
     <p data-i18n="resources.empty.fonts">No fonts match the selected filters.</p>
   </div>
   </div>
@@ -1059,15 +1059,16 @@ function render() {
   const empty  = document.getElementById('emptyState');
   const count  = document.getElementById('resultsCount');
 
+  // The count line is the page's live region (the dictionary's and the Font Maker picker's shape): it keeps its
+  // "0 of 43" when nothing matches, so a filter that empties the grid is heard, not only seen.
+  count.textContent = I18n.t('resources.results_count', {count: filtered.length, total: RESOURCES.length});
   if (filtered.length === 0) {
     grid.innerHTML = '';
     empty.style.display = '';
-    count.textContent = '';
     return;
   }
 
   empty.style.display = 'none';
-  count.textContent = I18n.t('resources.results_count', {count: filtered.length, total: RESOURCES.length});
 
   grid.innerHTML = filtered.map(r => {
     const cat = CAT_META[r.cat] || { label: r.cat, icon: '📌' };
@@ -1680,12 +1681,12 @@ function renderFonts() {
   refreshFontCounts();
   const grid = document.getElementById('fontGrid'), empty = document.getElementById('fontEmpty'), count = document.getElementById('fontCount');
   const filtered = filteredFonts();
+  count.textContent = I18n.t('resources.fonts_count', {count: filtered.length, total: FONTS.length});   // live, and kept at 0 (see render())
   if (!filtered.length) {
-    grid.innerHTML = ''; empty.style.display = ''; count.textContent = '';
+    grid.innerHTML = ''; empty.style.display = '';
     return;
   }
   empty.style.display = 'none';
-  count.textContent = I18n.t('resources.fonts_count', {count: filtered.length, total: FONTS.length});
   grid.innerHTML = filtered.map(f => {
     const i = FONTS.indexOf(f);
     ensureGalleryFont(f);
