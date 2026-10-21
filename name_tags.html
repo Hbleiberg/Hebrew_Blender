@@ -3124,7 +3124,7 @@ function initListCollapse() {
 const TOUR_SEEN_KEY = 'hebrewNameTags_tourSeen';   // per-device, erase-only
 const TOUR_STEPS = [
   { target: () => document.getElementById('ntListBar'), titleKey: 'nametags.tour.lists_title', bodyKey: 'nametags.tour.lists_body' },
-  { target: () => document.getElementById('ntTable'), titleKey: 'nametags.tour.table_title', bodyKey: 'nametags.tour.table_body' },
+  { target: () => { const t = document.getElementById('ntTable'); return (t && t.closest('.nt-table-wrap')) || t; }, titleKey: 'nametags.tour.table_title', bodyKey: 'nametags.tour.table_body' },   // the scroller: on a phone the table is wider than the screen
   { target: () => document.getElementById('ntIoBar'), titleKey: 'nametags.tour.csv_title', bodyKey: 'nametags.tour.csv_body' },
   { target: () => document.getElementById('panelText'), titleKey: 'nametags.tour.text_title', bodyKey: 'nametags.tour.text_body' },
   { target: () => document.getElementById('panelLook'), titleKey: 'nametags.tour.look_title', bodyKey: 'nametags.tour.look_body' },
