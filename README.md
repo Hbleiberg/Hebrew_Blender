@@ -462,7 +462,7 @@ Top-level keys are consonant counts. There are **13,081 entries** across keys ra
 - `translation` — English gloss
 - `pos` — part of speech (`noun`, `proper noun`, `verb`, `adjective`, `adverb`, `pronoun`, etc.)
 - `translit` — romanized transliteration
-- `era` — `"Biblical"`, `"Modern"`, or `"Both"`
+- `era` — `"Biblical"`, `"Modern"`, or `"Both"` (and one entry each of `"Mishnaic"` and `"Aramaic"`)
 - `themes` — optional; thematic tags (`animals`, `food`, `body`, `colors`, …) on about 1,400 nouns, used by the dictionary's theme filter (see `docs/theme_tagging_report.md`)
 
 ---
