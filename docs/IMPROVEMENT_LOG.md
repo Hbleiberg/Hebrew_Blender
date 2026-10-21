@@ -8,6 +8,14 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P4 (**NEW S534 N**) | name_tags.html | **Tour step 2 rings the 508px `#ntTable` on a phone, off-screen** (target the wrap). | found S534
+
+- [ ] P4 (**NEW S534 N — gate 4**) | name_tags.html | **On a phone Remove sits 120–270px off-screen** until the table scrolls. | found S534
+
+- [ ] P4 (**NEW S534 N — D's**) | name_tags.html | **At 200 students each keystroke rebuilds 25 sheets: 480–660ms @4×.** | found S534
+
+- [ ] P4 (**NEW S534 — G's**) | hebrew_blend_generator.html | **The `?ak=` view's answers print light gold** (inline, no class). | found S534
+
 - [ ] P4 (**NEW S530 A — glyph census, rule first**) | dictionary, resources, flash, torah, FM, index | **Category and option emoji are still heard** (findings S530): content or decoration is unruled. | found S530
 
 - [ ] P4 (**NEW S523 G — gate 3**) | hebrew_dictionary.html | **A long one-word headword overflows its card** (paper and phone). | found S523
@@ -302,15 +310,17 @@ _(none)_
 
 ## Done
 
-- [x] 2026-10-21 | (S533 close-out) | branch/deploy note | **S533 = K (FOUND 4, FIXED 4) on the fresh `claude/serene-galileo-0h997e` (PR #354; #353 merged).** Drift: sw v1057→v1058 outside the loop (the gallery link); keep-alive #39 green, #40 due 10-22. sw v1058→v1059; no FM bump; no gates (unattended).
+- [x] 2026-10-21 | (S534 close-out) | branch/deploy note | **S534 = N on `name_tags.html`, fresh `claude/confident-shannon-k7zmyp`.** Drift: Name Tags, `0007` live, sw v1060. sw v1060→v1061; no FM bump; no gates.
 
-- [x] 2026-10-21 | `2c82a0b9` `b05b759e` | LL, parsha_emojis | (S533) **The LL subtitle's fallback reads the CSV's sentence; a coloring sheet's picture is named in the sheet's language.** | no-JS load = en.json (base differs); 54/54 Hebrew-named (HEAD 0/54); 18 cells, 0 errors
+- [x] 2026-10-21 | `f7c4981` `c156628` | name_tags | (S534) **The table no longer widens a phone page; 7 name fields hinted.** | 12/20 → 0/20 cells; hints 0/7 → 7/7
 
-- [x] 2026-10-21 | `e39359ea` `e83db20c` | torah, dashboard, CSV | (S533) **The gallery's "Open this reading" links are named by their visible words first; the dashboard's parsha popup follows a live switch.** | 53/53 links × 8 cells (HEAD 0); popup cards re-rendered 8/8 (HEAD 0); 0 errors
+- [x] 2026-10-21 | `a153826` `c9ab327` | generator, dashboard | (S534) **The `?ak=` subtitle prints dark; the TTS readout mirrors.** | PDF gold → #6b4e12; HE 0/7 → 7/0
 
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-21 | **S534** | iters: 5 | tools: name_tags ×2, generator, dashboard, sw.js | patterns fixed: abs-child ×1 (NEW), input-hints ×7, physical ×1 | pass run: N | SW: v1060→v1061
 
 - 2026-10-21 | **S533** | iters: 5 | tools: LL, parsha_emojis, torah, dashboard, CSV, sw.js | patterns fixed: stale-html-fallback ×1, never-re-rendered ×1, pinned-english ×1 | pass run: K | SW: v1058→v1059
 
@@ -318,17 +328,13 @@ _(none)_
 
 - 2026-10-21 | **S531** | iters: 5 | tools: README, parsha ×2, FM, CSV, sitemap, sw.js | patterns fixed: visible-label ×1, sub-floor ×1 | pass run: E | SW: v1055→v1056
 
-- 2026-10-21 | **S530** | iters: 5 | tools: LL ×2, parsha ×2, generator ×2, 11 headers, CSV, sw.js | patterns fixed: live-region ×1, decorative-glyph ×2 | pass run: A | SW: v1054→v1055
-
-- 2026-10-21 | **S529** | iters: 5 | tools: dictionary, generator, resources, LL, CSV, sw.js | patterns fixed: empty-result ×1, decorative-glyph ×1, sub-floor ×1 | pass run: B | SW: v1053→v1054
-
-- 2026-10-21 | **S528** | iters: 5 | tools: resources, LL ×2 (1 micro-feature), CSV, sw.js | patterns fixed: empty-result-not-announced ×1, decorative-glyph ×1 | pass run: F | SW: v1052→v1053
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S533 (2026-10-21):** LL, parsha_emojis, torah, dashboard, CSV, sw.js S533 · index, resources, README, sitemap S532 · FM S531 · generator, dictionary, account, contact, privacy, terms, 404 S530 · flash S527 · corpus S524 · saves, scripts S521 · trope S519 · i18n.js S512 · pwa S472.
+- **Snapshot S534 (2026-10-21):** name_tags, generator, dashboard, sw.js S534 · LL, parsha_emojis, torah, CSV S533 · index, resources, README, sitemap S532 · FM S531 · dictionary, account, contact, privacy, terms, 404 S530 · flash S527 · corpus S524 · saves, scripts S521 · trope S519 · i18n.js S512 · pwa S472.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`abs-child-escapes-its-scroller`** (NEW S534 N; `f7c4981`): ACTIVE, streak 0. An absolute `.vh` escaping its `overflow` box widens the page. Detection: `n534/escape.mjs`.
 
 - **`empty-result-not-announced`** (NEW S528 F; resources ×2 `34ae261b`; S529 dictionary roots `28a52123`; open 0): ACTIVE, streak 1 (S530: no new no-match surface). A no-match landing no live region speaks. Detection: `f528/empty.mjs`; `b529/fix1.mjs` (real typing, live text …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -482,7 +488,7 @@ _(none)_
 
 - **`hover-feedback-survives-the-disabled-state`** (registered 2026-09-15, S383 Pass F): ACTIVE — consequence-adjacent (a locked destructive control that still lights up invites the click), so it never retires on a clean streak. **S394: the LAST open carrier CLOSED (`767064e`, …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`physical-property-that-never-mirrors`** (registered S388 K; S438 torah `947b452d`; S508 dashboard ×5 `323ad66`; open: dashboard `#ttsRateVal`): ACTIVE, streak 0. Detection: grep …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`physical-property-that-never-mirrors`** (registered S388 K; S438 torah `947b452d`; S508 dashboard ×5 `323ad66`; S534 dashboard `#ttsRateVal` `c9ab327`; open 0): ACTIVE, streak 0. Detection: grep …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`tile-grid-built-hidden-never-roved`** (registered 2026-09-15 (S382) — 11 carriers, all fixed): ACTIVE. A `roveTileGrid()` call placed in a builder that runs while the container is `display:none` silently does nothing: the helper's tile list filters `offsetParent !== null`, …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -514,7 +520,7 @@ _(none)_
 
 - **`ledger-section-loss`** (**NEW, registered 2026-08-30 (S296) — 1 carrier found and fixed, and a DETECTOR shipped with it**): a close-out edit that **deletes** ledger content instead of **moving** it to `docs/IMPROVEMENT_ARCHIVE.md`. The carrier: the S295 close-out …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`dark-mode-token-as-text-on-a-light-ground`** (**REOPENED S413 Pass C — a 3rd carrier the CSS grep could not see: contact's script-written success line, `var(--gold)` 2.75:1 on light, FIXED `f40d142`; open: the generator's `sub.style.color` (A's)**): ACTIVE, streak 0. …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`dark-mode-token-as-text-on-a-light-ground`** (**REOPENED S413 Pass C — contact's script-written success line FIXED `f40d142`; S534 the generator's `sub.style.color` print half `a153826`; screen gold = S141's keep, C's call**): ACTIVE, streak 0. …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`non-finite-number-from-a-loaded-file`**: ACTIVE (consequence-critical). **S458 FM `fitScale` `2bb2ead0`; S374 torah, trope.** Open 0, streak 0. …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -560,7 +566,7 @@ _(none)_
 
 - **translated-sibling stray** **S336: +1 carrier FIXED `c1e4427` — the Font Maker's nine raw `.name` display sites (header, drop zone, mark-editor modal, 4 toasts) now go through `gName()`, the sibling the tiles already used.**  (a display site rendering a raw English …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **mobile-input-hints** (a text field for Hebrew, names, numbers or codes shipping without `inputmode`/`autocapitalize`/`autocorrect`/`spellcheck` fitting its content) | **ACTIVE — UN-RETIRED S411** (retired S343; the S267 row is in the archive): account.html's `#nameInput` …[full text: IMPROVEMENT_ARCHIVE.md]
+- **mobile-input-hints** (a text field for Hebrew, names, numbers or codes shipping without `inputmode`/`autocapitalize`/`autocorrect`/`spellcheck` fitting its content) | **ACTIVE — UN-RETIRED S411; S534 Name Tags ×7 FIXED `c156628`** (retired S343; the S267 row is in the …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **i18n cross-column parity (placeholders, plurals, inline markup)**: **S533 (K): 41 raw `{placeholder}` mismatches over 6,593 keys, all the `.one` shape — hits 0, streak 2.** **re-swept 2026-09-03 (S320 Pass K, detector 1 only): `{placeholder}` sets en vs he over 5,128 keys, …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -692,7 +698,7 @@ _(none)_
 
 - O deslop — AI-design-tell sweep (one surface): 2026-09-08 (**S346 — 6th O, `flash_cards.html`. ⚑ BLOCKED HERE TWICE (S399, S403) — NOT "needs an attended session". Clone + the 4 parsers install fine; EXECUTING the detector is refused by the sandbox's auto-mode classifier ("Code from External"), and the refusal names the remedy: the maintainer adds a Bash permission rule for the detector (or …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- N mobile & touch-device (one surface): 2026-10-19 (**S520 — 26th N, privacy/terms/404: 72 phone cells, taps, rotation, 4×, nested 404s, a real-font header sweep × 15 pages. FOUND 3, FIXED 4. N-next: LL (never), contact (S276).**)
+- N mobile & touch-device (one surface): 2026-10-21 (**S534 — 27th N, `name_tags.html` (first audit): 20 cells, rows, tour by taps, 1px header sweep, fingers, rotation, 4×; plants 5/5. FOUND 6, FIXED 4. N-next: LL (never), contact (S276).**)
 
 - M aesthetics & visual design (one surface): 2026-10-19 (**S522 — 26th M, `emoji_torah.html` (its first audit): 64 shots in real fonts, census, bar bands, the Trainer gallery beside it; plants fired. FOUND 4, FIXED 2. M-next: LL (never), FM (S335).**)
 
@@ -720,4 +726,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-21 (**S528 — 39th F, empty states: 6 no-match surfaces × 4 cells by real input (plants 72/72), 12-page census. FOUND 4, FIXED 1 (+ LL ×2). F-next: loading states.**)
 
-**Next session (S534):** **PR: `claude/serene-galileo-0h997e` (#354) open → continue; merged → fresh branch.** `sw.js` **v1059**, FM **5.59**, corpus ?v=7. ⚑ Stalest: N (S520), P (S521), M (S522). ⚑ Keep-alive #40 (first after `0006`, 10-22): confirm green. ⚑ K: run the html stale-fallback arm (S519 skipped it). ⚑ Seeds: 46. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4; O's Bash rule.
+**Next session (S535):** **PR: `claude/confident-shannon-k7zmyp` open → continue; merged → fresh branch.** `sw.js` **v1061**, FM **5.59**, corpus ?v=7. ⚑ Stalest: P (S521; Name Tags' wiring unaudited), M (S522), G (S523). ⚑ Keep-alive #40 (10-22): confirm green. ⚑ Seeds: 46. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4; O's Bash rule.

@@ -93521,3 +93521,48 @@ _(prior — S533 pointer:)_ **Next session (S533):** **PR: `claude/improveloop-s
 - [x] 2026-10-21 | `66ecdc9f` `eee7080d` | LL, parsha, 13 headers | (S530) **Four empty status notes stay in the a11y tree; the header ✡︎ hidden ×13.** | findings
 
 - [x] 2026-10-21 | `05b75eee` `b298abb2` | LL, generator | (S530) **A card's bulk popup returns to its Coloring sheet; ⚡/🔍 hidden.** | findings
+
+<!-- archived by hand at the S534 close-out, 2026-10-21 (the rows were rewritten in place) -->
+## Compaction (S534 close-out, 2026-10-21) — moved verbatim from the live ledger
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- N mobile & touch-device (one surface): 2026-10-19 (**S520 — 26th N, privacy/terms/404: 72 phone cells, taps, rotation, 4×, nested 404s, a real-font header sweep × 15 pages. FOUND 3, FIXED 4. N-next: LL (never), contact (S276).**)
+
+_(prior — S534 pointer:)_ **Next session (S534):** **PR: `claude/serene-galileo-0h997e` (#354) open → continue; merged → fresh branch.** `sw.js` **v1059**, FM **5.59**, corpus ?v=7. ⚑ Stalest: N (S520), P (S521), M (S522). ⚑ Keep-alive #40 (first after `0006`, 10-22): confirm green. ⚑ K: run the html stale-fallback arm (S519 skipped it). ⚑ Seeds: 46. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4; O's Bash rule.
+
+
+<!-- archived by compact-ledger at the S535 boundary, 2026-10-21 -->
+## Compaction (S535, 2026-10-21) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-21 | (S534 close-out) | branch/deploy note | **S534 = N on `name_tags.html` (its first audit of any kind; FOUND 6, FIXED 4) on the fresh `claude/confident-shannon-k7zmyp`** (PR #354 closed with its work on `main`). Drift: Name Tags + migration `0007` (live) + the shared tour engine landed outside the loop; sw v1059→v1060 there; keep-alive #39 green, #40 due 10-22. sw v1060→v1061 (generator, dashboard); no FM bump; no gates (unattended); sitemap not run (no content change; shallow clone).
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`abs-child-escapes-its-scroller`** (NEW S534 N; Name Tags `f7c4981`; open 0): ACTIVE, streak 0. An absolutely positioned descendant (a `.vh` span) whose containing block lies outside an `overflow` box escapes its clip and widens the page. Detection: `n534/escape.mjs` (iPhone 13, every page, a planted span fires); load-state only — a scroller built later needs its state.
+
+- **`dark-mode-token-as-text-on-a-light-ground`** (**REOPENED S413 Pass C — a 3rd carrier the CSS grep could not see: contact's script-written success line, `var(--gold)` 2.75:1 on light, FIXED `f40d142`; open: the generator's `sub.style.color` (A's) — **S534: its print half converged `a153826` (the `ws-ak-subtitle` hook); its screen gold is all 12 teacher-copy subtitles' (S141's keep, 2.75:1 light) — C's call**)**: ACTIVE, streak 0. …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- **mobile-input-hints** (a text field for Hebrew, names, numbers or codes shipping without `inputmode`/`autocapitalize`/`autocorrect`/`spellcheck` fitting its content) | **ACTIVE — UN-RETIRED S411; S534 Name Tags ×7 FIXED `c156628`** (retired S343; the S267 row is in the archive): account.html's `#nameInput` …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- N mobile & touch-device (one surface): 2026-10-21 (**S534 — 27th N, `name_tags.html` (its first audit of any kind): 7 arms; 16 phone cells × inline rows, backup, 8 tour steps by real taps; 20-cell overflow; 1px header sweep 320–1000 × mouse/touch × EN/HE (real fonts); finger sliders, rotation; 4× typing at 18 and 200 students; plants 5/5. FOUND 6, FIXED 4 (+ generator, dashboard). N-next: LL (never), contact (S276).**)
+
+## Size move (S534 close-out, 2026-10-21) — S533's Done entries, moved by hand verbatim (the ledger sat at its 100 KB limit)
+
+- [x] 2026-10-21 | (S533 close-out) | branch/deploy note | **S533 = K (FOUND 4, FIXED 4) on the fresh `claude/serene-galileo-0h997e` (PR #354; #353 merged).** Drift: sw v1057→v1058 outside the loop (the gallery link); keep-alive #39 green, #40 due 10-22. sw v1058→v1059; no FM bump; no gates (unattended).
+
+- [x] 2026-10-21 | `2c82a0b9` `b05b759e` | LL, parsha_emojis | (S533) **The LL subtitle's fallback reads the CSV's sentence; a coloring sheet's picture is named in the sheet's language.** | no-JS load = en.json (base differs); 54/54 Hebrew-named (HEAD 0/54); 18 cells, 0 errors
+
+- [x] 2026-10-21 | `e39359ea` `e83db20c` | torah, dashboard, CSV | (S533) **The gallery's "Open this reading" links are named by their visible words first; the dashboard's parsha popup follows a live switch.** | 53/53 links × 8 cells (HEAD 0); popup cards re-rendered 8/8 (HEAD 0); 0 errors
+
+## Per-session log (S528–S530) — moved verbatim from the live ledger at the S534 close-out (size)
+
+- 2026-10-21 | **S530** | iters: 5 | tools: LL ×2, parsha ×2, generator ×2, 11 headers, CSV, sw.js | patterns fixed: live-region ×1, decorative-glyph ×2 | pass run: A | SW: v1054→v1055
+
+- 2026-10-21 | **S529** | iters: 5 | tools: dictionary, generator, resources, LL, CSV, sw.js | patterns fixed: empty-result ×1, decorative-glyph ×1, sub-floor ×1 | pass run: B | SW: v1053→v1054
+
+- 2026-10-21 | **S528** | iters: 5 | tools: resources, LL ×2 (1 micro-feature), CSV, sw.js | patterns fixed: empty-result-not-announced ×1, decorative-glyph ×1 | pass run: F | SW: v1052→v1053
