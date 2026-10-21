@@ -367,7 +367,7 @@ Yes. Letters (Cursive) shows every letter in handwriting beside its printed form
 
 **How are the vowels taught?**
 
-In Vowels, every vowel family has its own card and three cues that point to the same sound: a name tied to the vowel's shape, a gesture to make while saying it, and a color. Each card also reads the vowel aloud on a few letters.
+In Vowels, every vowel has its own card, and each vowel family has three cues that point to the same sound: a name tied to the vowel's shape, a gesture to make while saying it, and a color. Each card also reads the vowel aloud on a few letters.
 
 **How does it read the letters aloud?**
 
