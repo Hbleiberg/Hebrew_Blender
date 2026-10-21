@@ -1274,6 +1274,11 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
   /* The two bare .btn-xs (Reset, ↺ Refresh) carried background:var(--white) inline, which no :hover can beat; the
      background lives here now and the hover is the drawer's own .timer-preset-btn idiom. Pattern control-class-without-a-hover-state. */
   .btn-xs:not(.btn) { background: var(--white); color: var(--text); border: 1px solid var(--border); }
+  /* A class from a Name Tags list: .form-row's display:flex would otherwise outrank the [hidden] attribute. */
+  #pickerFromNtRow[hidden], #pickerFromNt[hidden] { display: none !important; }
+  #pickerFromNt { display: flex; flex-direction: column; gap: 6px; }
+  .pick-ntuse { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; font-size: 0.8rem; }
+  .form-row .pick-ntuse label { flex: none; font-weight: 500; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 4px; }
   /* The eleven size-row ↺ buttons are bare .btn-xs, so they inherited the UA button's black text and
      2px outset black border: in dark mode that measured 1.37:1 (near-invisible) and in light the black
      outset border was the drawer's only non-`--border` control. Converged on the drawer's own idiom
@@ -3205,6 +3210,26 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
             <button type="button" class="btn-xs" title="Delete class" aria-label="Delete class" data-i18n-aria-label="dashboard.picker.delete_class_title" data-i18n-title="dashboard.picker.delete_class_title" onclick="deleteClass()"><svg class="hi hi-sm hi-trash" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h15"/><path d="M9.5 7V5.2a1.2 1.2 0 0 1 1.2-1.2h2.6a1.2 1.2 0 0 1 1.2 1.2V7"/><path d="M6.5 7l.9 12.1a1.6 1.6 0 0 0 1.6 1.5h6a1.6 1.6 0 0 0 1.6-1.5L17.5 7"/><path d="M10.4 10.6v6.4M13.6 10.6v6.4"/></svg></button>
           </div>
           <span id="pickerClassNote" style="font-size:0.72rem;color:var(--gold-text);display:none;"></span>
+        </div>
+        <!-- A class from a Name Tags list (name_tags.html): a one-time copy of the list's names. The row shows only on a
+             device that holds Name Tags lists (renderFromNameTags), since that page is not linked from the hub. -->
+        <div class="form-row" id="pickerFromNtRow" style="flex-direction:column;align-items:stretch;gap:6px;" hidden>
+          <button type="button" class="btn-xs hi-btn" id="pickerFromNtBtn" aria-expanded="false" aria-controls="pickerFromNt" onclick="toggleFromNameTags()" style="align-self:flex-start;"><svg class="hi hi-sm hi-group" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7.5" r="3.4"/><path d="M2.5 20.5v-1.6a4.2 4.2 0 0 1 4.2-4.2h4.6a4.2 4.2 0 0 1 4.2 4.2v1.6"/><path d="M15.6 4.3a3.2 3.2 0 0 1 0 6.4"/><path d="M21.5 20.5v-1.6a4.2 4.2 0 0 0-3.2-4.1"/></svg><span class="hi-lbl" data-i18n="dashboard.picker.from_nt_open">Make a class from a Name Tags list</span></button>
+          <div id="pickerFromNt" hidden>
+            <label for="pickerFromNtSel" data-i18n="dashboard.picker.from_nt_list">Name Tags list</label>
+            <select id="pickerFromNtSel" style="max-width:none;"></select>
+            <div class="pick-ntuse" role="radiogroup" aria-labelledby="pickerFromNtUseLbl">
+              <span id="pickerFromNtUseLbl" data-i18n="dashboard.picker.from_nt_use">Names to use:</span>
+              <label><input type="radio" name="pickerFromNtUse" value="en" checked><span data-i18n="dashboard.picker.from_nt_en">English</span></label>
+              <label><input type="radio" name="pickerFromNtUse" value="he"><span data-i18n="dashboard.picker.from_nt_he">Hebrew</span></label>
+              <label><input type="radio" name="pickerFromNtUse" value="both"><span data-i18n="dashboard.picker.from_nt_both">Both</span></label>
+            </div>
+            <div style="display:flex;gap:5px;flex-wrap:wrap;">
+              <button type="button" class="btn-xs" onclick="classFromNameTags()" data-i18n="dashboard.picker.from_nt_go">Make the class</button>
+              <button type="button" class="btn-xs" onclick="toggleFromNameTags(false)" data-i18n="dashboard.picker.from_nt_cancel">Cancel</button>
+            </div>
+            <span style="font-size:0.72rem;color:var(--muted);" data-i18n="dashboard.picker.from_nt_note">A one-time copy: later changes to either list stay separate.</span>
+          </div>
         </div>
         <div class="form-row" style="flex-direction:column;align-items:stretch;gap:4px;">
           <label for="pickerRoster" id="pickerRosterLabel" data-i18n="dashboard.picker.roster_label">Roster — one name per line</label>
@@ -7284,6 +7309,7 @@ function mountSidebarResize(cfg) {
     const ta = document.getElementById('pickerRoster');
     if (ta) ta.value = (curClass().names || []).join('\n');
     updatePickerRosterCount();
+    renderFromNameTags();
   }
   // Central class-switch used by the drawer, card-header and fullscreen selects.
   function switchClass(id) {
@@ -7370,6 +7396,60 @@ function mountSidebarResize(cfg) {
     ensureActiveClass();   // recreates an empty "My class" if that was the last one
     switchClass(settings.activeRosterId);
   }
+
+  // ── A class from a Name Tags list (name_tags.html → hebrewNameTags_lists, read as this device holds it): a one-time
+  // copy — the class is a new class, and later edits to either list stay separate. Each student becomes one roster
+  // line: the English name, the Hebrew name, or both ("David / דָּוִד"); a student with only one of them keeps it. ──
+  function nameTagLists() {
+    let o = null;
+    try { o = ivritSafeParse(localStorage.getItem('hebrewNameTags_lists') || 'null'); } catch (e) { o = null; }
+    if (!o || typeof o !== 'object' || Array.isArray(o)) return [];
+    const str = v => (typeof v === 'string' ? v.trim() : '');
+    return Object.keys(o).filter(k => o[k] && typeof o[k] === 'object' && Array.isArray(o[k].rows))
+      .map(k => ({ name: k, rows: o[k].rows.filter(r => r && typeof r === 'object' && (str(r.he) || str(r.en))).map(r => ({ he: str(r.he), en: str(r.en) })) }))
+      .filter(l => l.rows.length)
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }
+  function renderFromNameTags() {
+    const row = document.getElementById('pickerFromNtRow');
+    if (row) row.hidden = !nameTagLists().length;
+  }
+  function toggleFromNameTags(force) {
+    const box = document.getElementById('pickerFromNt'), btn = document.getElementById('pickerFromNtBtn');
+    if (!box || !btn) return;
+    const open = force === undefined ? box.hidden : !!force;
+    box.hidden = !open;
+    btn.setAttribute('aria-expanded', String(open));
+    if (!open) return;
+    const sel = document.getElementById('pickerFromNtSel');
+    sel.textContent = '';
+    nameTagLists().forEach(l => {
+      const o = document.createElement('option');
+      o.value = l.name;
+      o.textContent = l.name + ' (' + l.rows.length + ')';
+      sel.appendChild(o);
+    });
+    sel.focus();
+  }
+  function classFromNameTags() {
+    const sel = document.getElementById('pickerFromNtSel');
+    const list = nameTagLists().find(l => sel && l.name === sel.value);
+    if (!list) return;
+    if (Object.keys(settings.rosters).length >= ROSTER_MAX_CLASSES) {
+      pickerClassNote('dashboard.picker.class_limit', { max: ROSTER_MAX_CLASSES });
+      return;
+    }
+    const use = (document.querySelector('input[name="pickerFromNtUse"]:checked') || {}).value || 'en';
+    const lines = list.rows.map(r => use === 'he' ? (r.he || r.en) : use === 'both' ? (r.en && r.he ? r.en + ' / ' + r.he : (r.en || r.he)) : (r.en || r.he));
+    const names = parseRoster(lines.join('\n'));   // trimmed, de-duplicated, at most PICKER_MAX
+    const id = newRosterId();
+    settings.rosters[id] = { name: uniqueClassName(list.name), names };
+    toggleFromNameTags(false);
+    switchClass(id);   // saves, and repaints the switchers, the roster box and the chips
+    const params = { name: settings.rosters[id].name, count: names.length, max: PICKER_MAX };
+    pickerClassNote(lines.length > names.length && names.length >= PICKER_MAX ? 'dashboard.picker.from_nt_done_capped' : 'dashboard.picker.from_nt_done' + (names.length === 1 ? '.one' : '.other'), params);
+  }
+  window.addEventListener('storage', e => { if (e.key === 'hebrewNameTags_lists' || e.key === null) renderFromNameTags(); });
 
   function applyStudentPickerVisibility() {
     const col = document.getElementById('pickerCol');

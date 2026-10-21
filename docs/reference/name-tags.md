@@ -66,6 +66,20 @@ transliterations still print.
   render. The sheet is laid out in physical coordinates (pinned `direction: ltr`, like the keyboard's qwerty rows),
   and its ink and paper are literal light colours in either theme.
 
+## From the Classroom Dashboard, and back
+
+Both are **one-time copies**; nothing links a list to its source afterwards.
+- **Dashboard → Name Tags:** *From the Classroom Dashboard* lists the dashboard's classes that have names
+  (`hebrewDashboard_settings.rosters`, as this device holds them — signed in, the note says the account's classes
+  arrive when the dashboard opens on this device; the page does not `alsoPull` the Dashboard, whose `settings` kind
+  would reach this page's `onLocalChanged`). A roster line is one student typed any way: `ntSplitName` puts its
+  words with Hebrew letters in the Hebrew name and the rest in the English name, dropping the separators between
+  them (`/`, `|`, `·`, brackets, a free-standing dash), so "David / דָּוִד", "דוד כהן David Cohen" and
+  "בַּת־שֶׁבַע - Batsheva" each fill both; a hyphenated or maqaf name stays whole. The rows then take the CSV import's
+  path (Add / New list, named after the class / Replace).
+- **Name Tags → Dashboard:** the dashboard's *Make a class from a Name Tags list* (`docs/reference/dashboard.md` →
+  Student Picker), shown only on a device that holds Name Tags lists.
+
 ## CSV
 
 `ntParseDelimited` is `scripts/build-locales.js`'s RFC-4180 parser with the delimiter sniffed (tab, semicolon,

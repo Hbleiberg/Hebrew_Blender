@@ -845,6 +845,7 @@ body.dark #appToast { background: #0a0f1c; }
       <div class="nt-iobar" id="ntIoBar">
         <label class="nt-btn ghost hi-btn" title="Import a CSV or spreadsheet file (Hebrew, English, Transliteration and Extra columns)" data-i18n-title="nametags.csv.import_title"><svg class="hi hi-sm hi-upload" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.2V4"/><path d="M7.6 8.4 12 4l4.4 4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="nametags.csv.import">Import a CSV</span><input type="file" id="ntCsvFile" accept=".csv,.tsv,.txt,text/csv,text/plain" class="vh-file"></label>
         <button type="button" class="nt-btn ghost hi-btn" id="ntPasteOpen" aria-expanded="false" aria-controls="ntPasteRow"><svg class="hi hi-sm hi-page" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3H7a2.2 2.2 0 0 0-2.2 2.2v13.6A2.2 2.2 0 0 0 7 21h10a2.2 2.2 0 0 0 2.2-2.2V8.7z"/><path d="M13.5 3v5.7h5.7"/><path d="M8.6 13h6.8M8.6 16.6h4.6"/></svg><span class="hi-lbl" data-i18n="nametags.csv.paste">Paste a list</span></button>
+        <button type="button" class="nt-btn ghost hi-btn" id="ntDashOpen" aria-expanded="false" aria-controls="ntDashRow"><svg class="hi hi-sm hi-group" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7.5" r="3.4"/><path d="M2.5 20.5v-1.6a4.2 4.2 0 0 1 4.2-4.2h4.6a4.2 4.2 0 0 1 4.2 4.2v1.6"/><path d="M15.6 4.3a3.2 3.2 0 0 1 0 6.4"/><path d="M21.5 20.5v-1.6a4.2 4.2 0 0 0-3.2-4.1"/></svg><span class="hi-lbl" data-i18n="nametags.dash.open">From the Classroom Dashboard</span></button>
         <button type="button" class="nt-btn ghost hi-btn" id="ntCsvExport"><svg class="hi hi-sm hi-download" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.4v11.2"/><path d="M7.6 10.4 12 14.8l4.4-4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="nametags.csv.export">Export this list</span></button>
         <button type="button" class="nt-btn ghost hi-btn" id="ntCsvTemplate"><svg class="hi hi-sm hi-download" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.4v11.2"/><path d="M7.6 10.4 12 14.8l4.4-4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="nametags.csv.template">CSV template</span></button>
       </div>
@@ -853,6 +854,13 @@ body.dark #appToast { background: #0a0f1c; }
         <textarea id="ntPasteText" dir="auto" spellcheck="false"></textarea>
         <button type="button" class="nt-btn" id="ntPasteAdd" data-i18n="nametags.csv.paste_add">Add these students</button>
         <button type="button" class="nt-btn ghost" id="ntPasteCancel" data-i18n="nametags.list.rename_cancel">Cancel</button>
+      </div>
+      <div class="nt-inline" id="ntDashRow" hidden>
+        <label for="ntDashSel" data-i18n="nametags.dash.pick_label">Classroom Dashboard class</label>
+        <select class="nt-field" id="ntDashSel"></select>
+        <button type="button" class="nt-btn" id="ntDashAdd" data-i18n="nametags.dash.bring">Bring in these students</button>
+        <button type="button" class="nt-btn ghost" id="ntDashCancel" data-i18n="nametags.list.rename_cancel">Cancel</button>
+        <p class="nt-note" id="ntDashNote"></p>
       </div>
       <div class="nt-inline" id="ntImportChoice" role="group" aria-labelledby="ntImportMsg" hidden>
         <p id="ntImportMsg"></p>
@@ -1187,9 +1195,8 @@ function ntRenderListPicker() {
   if (ex && document.activeElement !== ex) ex.value = ntStr(ntCur.val && ntCur.val.extra);
 }
 function ntCloseInline() {
-  ['ntRenameRow', 'ntPasteRow', 'ntImportChoice'].forEach(id => { const n = document.getElementById(id); if (n) n.hidden = true; });
-  const p = document.getElementById('ntPasteOpen');
-  if (p) p.setAttribute('aria-expanded', 'false');
+  ['ntRenameRow', 'ntPasteRow', 'ntDashRow', 'ntImportChoice'].forEach(id => { const n = document.getElementById(id); if (n) n.hidden = true; });
+  ['ntPasteOpen', 'ntDashOpen'].forEach(id => { const b = document.getElementById(id); if (b) b.setAttribute('aria-expanded', 'false'); });
   _ntPendingImport = null;
 }
 let _ntRenameMode = 'rename';
@@ -1555,13 +1562,14 @@ function ntImportRows(table) {
   });
   return out;
 }
-let _ntPendingImport = null;   // { rows, source } waiting for Add / New list / Replace
-function ntOfferImport(rows, source) {
+let _ntPendingImport = null;   // { rows, source, listName? } waiting for Add / New list / Replace
+// opts.listName: the name a new list takes (else the file's name without its extension); opts.msg: the line to show.
+function ntOfferImport(rows, source, opts) {
   ntCloseInline();
   if (!rows.length) { ntListNote(_fbT('nametags.csv.none_found', 'No names were found in {source}. The first row can name the columns: Hebrew, English, Transliteration, Extra.', { source }), true); return; }
-  _ntPendingImport = { rows, source };
+  _ntPendingImport = { rows, source, listName: opts && opts.listName };
   const box = document.getElementById('ntImportChoice');
-  document.getElementById('ntImportMsg').textContent = _fbN('nametags.csv.found', rows.length, '{count} student found in {source}.', '{count} students found in {source}.', { source });
+  document.getElementById('ntImportMsg').textContent = (opts && opts.msg) || _fbN('nametags.csv.found', rows.length, '{count} student found in {source}.', '{count} students found in {source}.', { source });
   box.hidden = false;
   document.getElementById('ntImportReplace').hidden = !ntRows().some(r => !ntRowEmpty(r));
   document.getElementById('ntImportAdd').focus();
@@ -1574,7 +1582,7 @@ function ntApplyImport(how) {
   if (how === 'new') {
     const { obj } = ntReadLists();
     if (ntListNames(obj).length >= NT_MAX_LISTS) { ntListNote(_fbT('nametags.list.err_max_lists', 'You have {max} class lists, the most this page keeps. Delete one to start another.', { max: NT_MAX_LISTS }), true); return; }
-    const base = String(pend.source || '').replace(/\.[^.]+$/, '').trim().slice(0, 100) || _fbT('nametags.list.new_name', 'New list');
+    const base = (pend.listName != null ? String(pend.listName) : String(pend.source || '').replace(/\.[^.]+$/, '')).trim().slice(0, 100) || _fbT('nametags.list.new_name', 'New list');
     const name = ntUniqueName(NT_RESERVED.includes(base) ? _fbT('nametags.list.new_name', 'New list') : base, ntNameExists(obj));
     obj[name] = ntNewListValue();
     if (!ntWriteLists(obj)) return;
@@ -1611,6 +1619,56 @@ function ntReadCsvFile(file) {
   };
   r.onerror = () => ntListNote(_fbT('nametags.csv.err_read', 'That file could not be read.'), true);
   r.readAsArrayBuffer(file);
+}
+/* ── From the Classroom Dashboard: a one-time copy of one of its class lists (hebrewDashboard_settings.rosters, as this
+   device holds them — the account's arrive when the dashboard opens here). A roster line is one student, typed any
+   way: its Hebrew words are the Hebrew name and the rest the English name ("David / דָּוִד", "דוד כהן David Cohen"),
+   the separators between them dropped. ── */
+function ntDashClasses() {
+  let st = null;
+  try { st = ivritSafeParse(localStorage.getItem('hebrewDashboard_settings') || 'null'); } catch (e) { st = null; }
+  const r = (st && typeof st === 'object' && st.rosters && typeof st.rosters === 'object' && !Array.isArray(st.rosters)) ? st.rosters : {};
+  const c = ntCollator();
+  return Object.keys(r).map(id => r[id])
+    .filter(x => x && typeof x === 'object' && !Array.isArray(x) && Array.isArray(x.names))
+    .map(x => ({ name: (typeof x.name === 'string' && x.name.trim()) || _fbT('nametags.list.default_name', 'My class'), names: x.names.filter(n => typeof n === 'string' && n.trim()) }))
+    .filter(x => x.names.length)
+    .sort((a, b) => c ? c.compare(a.name, b.name) : 0);
+}
+function ntSplitName(line) {
+  const he = [], en = [];
+  String(line || '').split(/[\s\/|·•()[\]{}]+/).forEach(tok => {
+    const t = tok.replace(/^[-–—,.;:]+|[-–—,.;:]+$/g, '');
+    if (t) (NT_HEB_RE.test(t) ? he : en).push(t);
+  });
+  return { he: he.join(' ').slice(0, NT_MAX_FIELD), en: en.join(' ').slice(0, NT_MAX_FIELD) };
+}
+function ntOpenDash() {
+  const row = document.getElementById('ntDashRow'), btn = document.getElementById('ntDashOpen');
+  const open = row.hidden;
+  ntCloseInline();
+  if (!open) return;
+  const classes = ntDashClasses(), sel = document.getElementById('ntDashSel');
+  sel.textContent = '';
+  classes.forEach((c, i) => {
+    const o = el('option', null, _fbN('nametags.list.option', c.names.length, '{name} ({count} student)', '{name} ({count} students)', { name: c.name }));
+    o.value = String(i);
+    sel.appendChild(o);
+  });
+  sel.disabled = !classes.length;
+  document.getElementById('ntDashAdd').disabled = !classes.length;
+  let note = classes.length ? '' : _fbT('nametags.dash.none', 'There are no class lists in the Classroom Dashboard on this device yet.');
+  if (ntSignedIn()) note = (note ? note + ' ' : '') + _fbT('nametags.dash.signed_in', 'These are the classes on this device: to bring in the ones in your account, open the Classroom Dashboard here once.');
+  document.getElementById('ntDashNote').textContent = note;
+  row.hidden = false;
+  btn.setAttribute('aria-expanded', 'true');
+  (classes.length ? sel : document.getElementById('ntDashCancel')).focus();
+}
+function ntBringDash() {
+  const c = ntDashClasses()[Number(document.getElementById('ntDashSel').value)];
+  if (!c) return;
+  const rows = c.names.map(ntSplitName).filter(r => r.he || r.en).slice(0, NT_MAX_ROWS);
+  ntOfferImport(rows, c.name, { listName: c.name, msg: _fbN('nametags.dash.found', rows.length, '{count} student in the Classroom Dashboard class "{name}".', '{count} students in the Classroom Dashboard class "{name}".', { name: c.name }) });
 }
 function ntCsvCell(s) {
   s = String(s == null ? '' : s);
@@ -2256,6 +2314,9 @@ function ntWireLists() {
     ntApplyImport('add');
     ta.value = '';
   });
+  document.getElementById('ntDashOpen').addEventListener('click', ntOpenDash);
+  document.getElementById('ntDashAdd').addEventListener('click', ntBringDash);
+  document.getElementById('ntDashCancel').addEventListener('click', () => { ntCloseInline(); document.getElementById('ntDashOpen').focus(); });
   document.getElementById('ntImportAdd').addEventListener('click', () => ntApplyImport('add'));
   document.getElementById('ntImportNew').addEventListener('click', () => ntApplyImport('new'));
   document.getElementById('ntImportReplace').addEventListener('click', () => ntApplyImport('replace'));

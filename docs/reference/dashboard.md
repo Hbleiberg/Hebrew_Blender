@@ -400,6 +400,14 @@ body.dark #tipFloat { background: #0a0f1c; }
   persist across days on purpose. `resetPickerCycle()` empties `picked` ("🔄 New round");
   `clearAbsences()` empties `absent` ("✅ Everyone's here", rendered in `#pickerProgress` only while someone
   is marked absent, whether or not the fair cycle is on). Both act on the active class only.
+- **A class from a Name Tags list:** `classFromNameTags()` copies one of `name_tags.html`'s lists
+  (`hebrewNameTags_lists`, read as this device holds it) into a **new** class — one roster line per student: the
+  English name, the Hebrew name, or both (`"David / דָּוִד"`), a student with only one keeping it — through
+  `parseRoster` (de-duplicated, at most `PICKER_MAX`; the class note says when names were left out), under
+  `ROSTER_MAX_CLASSES`, named `uniqueClassName(list name)`. A one-time copy: nothing links the two afterwards.
+  `#pickerFromNtRow` shows only on a device that holds Name Tags lists (`renderFromNameTags()`, from
+  `renderClassManager()` and a `storage` listener), since that page is not linked from the hub. The reverse copy
+  lives on the Name Tags page (`docs/reference/name-tags.md` → *From the Classroom Dashboard*).
 - **Column titles:** the four card titles (and the video panel's label) are projected content, so they follow
   `headerLang` (`'none'` hides them), never `I18n.lang`. `updateColTitles()` writes them — and rebuilds the picker
   title's class switcher — at init, on the `headerLang` radios, in `applyI18n` and in `applySettings`, so a

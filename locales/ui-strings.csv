@@ -328,6 +328,18 @@ dashboard.picker.chip_absent,Absent today — tap to include,נעדר היום �
 dashboard.picker.chip_present,Tap to mark absent for this session,הקישו כדי לסמן כנעדר לשיעור זה,chip tooltip (present),
 dashboard.picker.class_label,Class,כיתה,settings label,
 dashboard.picker.class_limit,You can have up to {max} classes. Delete one to add another.,הגעתם למגבלה של {max} כיתות. מחקו אחת כדי להוסיף נוספת.,student picker class-limit note (was a hardcoded template literal),do not translate {…}
+dashboard.picker.from_nt_open,Make a class from a Name Tags list,יצירת כיתה מרשימה של תגי השם,Student picker settings: button (shown only on a device that has Name Tags lists),svg-icon-in-markup
+dashboard.picker.from_nt_list,Name Tags list,רשימת תגי שם,Label of the Name Tags list menu,
+dashboard.picker.from_nt_use,Names to use:,השמות שישמשו:,Label of the English / Hebrew / Both radios,
+dashboard.picker.from_nt_en,English,אנגלית,Radio,
+dashboard.picker.from_nt_he,Hebrew,עברית,Radio,
+dashboard.picker.from_nt_both,Both,שניהם,"Radio: ""David / דָּוִד""",
+dashboard.picker.from_nt_go,Make the class,יצירת הכיתה,Button,
+dashboard.picker.from_nt_cancel,Cancel,ביטול,Button,
+dashboard.picker.from_nt_note,A one-time copy: later changes to either list stay separate.,העתקה חד־פעמית: שינויים מאוחרים יותר באחת הרשימות לא יעברו לשנייה.,Note under the buttons,
+dashboard.picker.from_nt_done.one,"Made the class ""{name}"" with {count} name.","נוצרה הכיתה ""{name}"" עם שם אחד.",Class note after making a class from a Name Tags list,plural; has {name}
+dashboard.picker.from_nt_done.other,"Made the class ""{name}"" with {count} names.","נוצרה הכיתה ""{name}"" עם {count} שמות.",Class note after making a class from a Name Tags list,plural; has {name}
+dashboard.picker.from_nt_done_capped,"Made the class ""{name}"" with the first {max} names (a class holds up to {max}).","נוצרה הכיתה ""{name}"" עם {max} השמות הראשונים (כיתה יכולה להכיל עד {max}).",Class note when the list had more names than a class holds,has {name}
 dashboard.picker.class_option,{name} ({count}),{name} ({count}),class-switcher option,mixed UI+content — do not translate {…}
 dashboard.picker.close,Close,סגור,pick overlay close button,
 dashboard.picker.close_aria,Close,סגור,projector overlay close aria,aria-label only
@@ -6728,6 +6740,13 @@ nametags.csv.replace_confirm_cloud,"Replace every student in ""{name}"" with the
 nametags.csv.err_big,That file is too big for a class list (1 MB at most).,הקובץ גדול מדי לרשימת כיתה (עד 1MB).,Inline note,
 nametags.csv.err_read,That file could not be read.,לא ניתן היה לקרוא את הקובץ.,Inline note,
 nametags.csv.err_empty,This list has no students to export yet.,אין עדיין תלמידים לייצוא ברשימה הזו.,Inline note,
+nametags.dash.open,From the Classroom Dashboard,מלוח המחוונים לכיתה,Button: copy a Classroom Dashboard class list into Name Tags,svg-icon-in-markup
+nametags.dash.pick_label,Classroom Dashboard class,כיתה מלוח המחוונים,Label of the Dashboard class menu,
+nametags.dash.bring,Bring in these students,הוספת התלמידים האלה,Button,
+nametags.dash.none,There are no class lists in the Classroom Dashboard on this device yet.,עדיין אין רשימות כיתה בלוח המחוונים לכיתה במכשיר הזה.,Inline note,
+nametags.dash.signed_in,"These are the classes on this device: to bring in the ones in your account, open the Classroom Dashboard here once.","אלה הכיתות שבמכשיר הזה: כדי להביא את אלה שבחשבון שלכם, פתחו פעם אחת את לוח המחוונים לכיתה במכשיר הזה.",Inline note while signed in,
+nametags.dash.found.one,"{count} student in the Classroom Dashboard class ""{name}"".","תלמיד אחד בכיתה ""{name}"" שבלוח המחוונים.",Inline message before Add / New list / Replace,plural; has {name}
+nametags.dash.found.other,"{count} students in the Classroom Dashboard class ""{name}"".","{count} תלמידים בכיתה ""{name}"" שבלוח המחוונים.",Inline message before Add / New list / Replace,plural; has {name}
 nametags.translit.failed,"The automatic transliteration could not load (are you offline?). Type the transliterations, or try again when you are online.","התעתיק האוטומטי לא נטען (אולי אין חיבור לאינטרנט?). הקלידו את התעתיקים, או נסו שוב כשתהיו מחוברים.",Note under the table,
 nametags.translit.no_nikkud.one,"{count} Hebrew name has no nikkud, so it has no automatic transliteration. Add the vowels (the keyboard's Nikkud tab) or type one.","לשם עברי אחד אין ניקוד, ולכן אין לו תעתיק אוטומטי. הוסיפו ניקוד (בלשונית הניקוד של המקלדת) או הקלידו תעתיק.",Note under the table,plural
 nametags.translit.no_nikkud.other,"{count} Hebrew names have no nikkud, so they have no automatic transliteration. Add the vowels (the keyboard's Nikkud tab) or type one.","ל־{count} שמות עבריים אין ניקוד, ולכן אין להם תעתיק אוטומטי. הוסיפו ניקוד (בלשונית הניקוד של המקלדת) או הקלידו תעתיק.",Note under the table,plural
@@ -6743,8 +6762,8 @@ nametags.tour.lists_title,Your class lists,רשימות הכיתה שלכם,Tour
 nametags.tour.lists_body,"Keep a list for each class. New list, Rename, Duplicate and Delete work on the list chosen here.","שמרו רשימה לכל כיתה. רשימה חדשה, שינוי שם, שכפול ומחיקה פועלים על הרשימה שנבחרה כאן.",Tour step body,
 nametags.tour.table_title,Type the names,הקלידו את השמות,Tour step title,
 nametags.tour.table_body,"One student per row: the Hebrew name (with nikkud for an automatic transliteration), the English name, and a transliteration of your own if you want one. The keyboard below types Hebrew and nikkud.","תלמיד אחד בכל שורה: השם העברי (עם ניקוד, לתעתיק אוטומטי), השם באנגלית, ותעתיק משלכם אם תרצו. המקלדת שמתחת מקלידה עברית וניקוד.",Tour step body,
-nametags.tour.csv_title,Bring in a spreadsheet,ייבוא מגיליון,Tour step title,
-nametags.tour.csv_body,"Import a CSV file or paste rows from a spreadsheet. Columns named Hebrew, English, Transliteration and Extra are found by themselves; the CSV template shows the layout.","ייבאו קובץ CSV או הדביקו שורות מגיליון. עמודות בשם Hebrew,‏ English,‏ Transliteration ו־Extra מזוהות מעצמן; תבנית ה־CSV מראה את המבנה.",Tour step body; the English column names are what the file can use (keep them),
+nametags.tour.csv_title,Bring in your students,הבאת התלמידים,Tour step title,
+nametags.tour.csv_body,"Import a CSV file, paste rows from a spreadsheet, or bring in a class from the Classroom Dashboard. Columns named Hebrew, English, Transliteration and Extra are found by themselves; the CSV template shows the layout.","ייבאו קובץ CSV, הדביקו שורות מגיליון או הביאו כיתה מלוח המחוונים לכיתה. עמודות בשם Hebrew,‏ English,‏ Transliteration ו־Extra מזוהות מעצמן; תבנית ה־CSV מראה את המבנה.",Tour step body; the English column names are what the file can use (keep them),
 nametags.tour.text_title,What each tag says,מה כתוב על כל תג,Tour step title,
 nametags.tour.text_body,"Choose an automatic or typed transliteration (Modern or Ashkenazi), and whether the English name, an extra line and the nikkud appear.","בחרו תעתיק אוטומטי או מוקלד (הגייה ישראלית או אשכנזית), והאם יופיעו השם באנגלית, שורה נוספת והניקוד.",Tour step body,
 nametags.tour.look_title,"Font, bubble letters and sizes","גופן, אותיות בועה וגדלים",Tour step title,
