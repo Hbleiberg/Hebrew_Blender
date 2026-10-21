@@ -3685,6 +3685,7 @@ function llCsWire() {
     const id = _llId;
     llClose();
     llBpOpen(id);
+    _llBpFromCard = id;
   });
   // Ctrl+P / the browser menu: the right page size, and with the popup open the whole run on paper.
   window.addEventListener('beforeprint', () => { llCsPageStyle(); llCsFillTab(); llBpBeforePrint(); });
@@ -3699,6 +3700,7 @@ function llCsWire() {
    ══════════════════════════════════════════════════════ */
 let _llBpStyle = 'letters';   // 'letters' | 'cursive' — the popup's Block / Cursive switch (page state, from the mode at each open)
 let _llBpOpener = null;       // the element to refocus when the popup closes
+let _llBpFromCard = null;     // the letter whose Coloring sheet opened the popup: closing it goes back there
 let _llBpToken = 0;           // bumped by a rebuild or a close: a sheet build or a letter fit an older one started stops
 let _llBpSig = '';            // the options the preview's sheets were built with (llBpSigNow)
 let _llBpQueue = [];          // ids waiting for their sheet, in order
@@ -3768,6 +3770,17 @@ function llBpClose() {
   const back = (_llBpOpener && document.contains(_llBpOpener) && _llBpOpener !== document.body) ? _llBpOpener : document.getElementById('llBpOpen');
   _llBpOpener = null;
   try { back && back.focus(); } catch (e) {}
+  // Opened from a letter's Coloring sheet: back to that sheet, on its "Print several letters…" (the card, focused just
+  // above, stays the dialog's opener, so closing the dialog still lands on the grid).
+  const fromCard = _llBpFromCard;
+  _llBpFromCard = null;
+  if (fromCard && llCard(fromCard) && llTabsFor(llCard(fromCard)).includes('coloring')) {
+    setTimeout(() => {   // once this key or click is done: the letter dialog's own Escape listener would close it again
+      llOpen(fromCard);
+      llSelectTab('coloring');
+      setTimeout(() => { try { document.getElementById('llCsBulk').focus(); } catch (e) {} }, 0);   // after llOpen's own focus
+    }, 0);
+  }
 }
 // The popup's own controls from settings and page state (the shared options block syncs itself in renderOptions).
 function llBpSyncControls() {
