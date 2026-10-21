@@ -2219,8 +2219,8 @@ function wireOptions() {
     // A reset on a syncing page writes through like any other edit: while a session is stored the confirm
     // names the account-wide effect (CLAUDE.md accounts rule 7).
     const signedIn = !!(window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession());
-    const msg = signedIn ? _fbT('letterlearner.options.reset_confirm_cloud', 'Reset the Letter Learner options? You are signed in, so the reset reaches your account and every device signed into it.')
-                         : _fbT('letterlearner.options.reset_confirm', 'Reset the Letter Learner options on this device?');
+    const msg = signedIn ? _fbT('letterlearner.options.reset_confirm_cloud', 'Reset the Letter Learner options, the Coloring sheet settings and the letters chosen to print? You are signed in, so the reset reaches your account and every device signed into it.')
+                         : _fbT('letterlearner.options.reset_confirm', 'Reset the Letter Learner options, the Coloring sheet settings and the letters chosen to print on this device?');
     if (!confirm(msg)) return;
     settings = JSON.parse(JSON.stringify(LL_DEFAULTS));
     llSaveSettings();
