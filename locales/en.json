@@ -5238,7 +5238,7 @@
   "torah.emojis.full_page_aria": "Full page and coloring sheets (opens in a new tab)",
   "torah.emojis.open": "Show all the parsha emojis",
   "torah.emojis.open_reading": "Open this reading",
-  "torah.emojis.open_reading_aria": "Open {name}",
+  "torah.emojis.open_reading_aria": "Open this reading: {name}",
   "torah.emojis.title": "The parsha emojis",
   "torah.emojis.why_label": "Why this emoji:",
   "torah.fav.add": "Save current selection as favorite",

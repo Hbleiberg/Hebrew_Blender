@@ -4288,7 +4288,7 @@ torah.emojis.full_page_aria,Full page and coloring sheets (opens in a new tab),�
 torah.emojis.current,Current reading,הקריאה הנוכחית,parasha emoji gallery: badge on the card of the reading on screen (both cards for a doubled Triennial week),
 torah.emojis.open,Show all the parsha emojis,הצגת כל אימוג׳י הפרשות,reading header: the parasha emoji (one button holding the week's icon or icons) opens the gallery of all 54 — its aria-label and title,
 torah.emojis.open_reading,Open this reading,פתיחת הקריאה הזאת,parasha emoji gallery: link at the foot of every card but the reading on screen — loads that parasha in place and closes the gallery,
-torah.emojis.open_reading_aria,Open {name},פתיחת פרשת {name},parasha emoji gallery: aria-label of a card's Open this reading link; {name} is the parasha's name in the UI's language,
+torah.emojis.open_reading_aria,Open this reading: {name},פתיחת הקריאה הזאת: פרשת {name},parasha emoji gallery: aria-label of a card's Open this reading link — starts with the link's visible words (WCAG 2.5.3); {name} is the parasha's name in the UI's language,
 torah.emojis.title,The parsha emojis,אימוג׳י הפרשות,parasha emoji gallery: dialog heading,
 torah.emojis.why_label,Why this emoji:,למה האימוג׳י הזה:,parasha emoji gallery: bold lead-in before each card's why-sentence (ParashaEmojis.md labels its Hebrew paragraph the same way),
 torah.footer.cantillation_credit,Cantillation audio: PocketTorah · CC BY-SA 4.0,שמע הטעמים: PocketTorah · CC BY-SA 4.0,footer data-source credit,html
