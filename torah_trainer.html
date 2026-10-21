@@ -12072,7 +12072,9 @@ function linkViewRevert() {
   showHintToast(I18n.t('torah.share.view_reverted'));
 }
 
-function showHintToast(msg) {
+// The status region is made, empty, when the page loads rather than with its first message: a screen reader announces
+// a change to a live region it already knows, and one created holding its text may go unheard.
+function hintToastEl() {
   let el = document.getElementById('ttHintToast');
   if (!el) {
     el = document.createElement('div');
@@ -12081,6 +12083,11 @@ function showHintToast(msg) {
     el.addEventListener('click', dismissHintToast);
     document.body.appendChild(el);
   }
+  return el;
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', hintToastEl); else hintToastEl();
+function showHintToast(msg) {
+  const el = hintToastEl();
   el.textContent = msg;
   el.dataset.lang = window.I18n ? I18n.lang : '';   // the language it was written in: applyI18n drops it after a switch
   requestAnimationFrame(() => el.classList.add('show'));

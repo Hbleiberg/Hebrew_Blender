@@ -8755,7 +8755,9 @@ function mountFolderTree(cfg){
 
 /* ═══ shared: app-toast ═══ (byte-identical across generator/dashboard/flash_cards/dictionary/letter_learner/name_tags — copy verbatim; called from the .ivrit engine restore path) ═══ */
 let _appToastTimer = null;
-function showAppToast(msg, ms) {
+// The status region is made, empty, when the page loads rather than with its first message: a screen reader announces
+// a change to a live region it already knows, and one created holding its text may go unheard.
+function appToastEl() {
   let t = document.getElementById('appToast');
   if (!t) {
     t = document.createElement('div');
@@ -8763,6 +8765,11 @@ function showAppToast(msg, ms) {
     t.setAttribute('role', 'status');
     document.body.appendChild(t);
   }
+  return t;
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', appToastEl); else appToastEl();
+function showAppToast(msg, ms) {
+  const t = appToastEl();
   t.textContent = msg;
   // A longer message stays longer: 2.6 s for a short one, then 50 ms per character, 8 s at most (the Torah
   // Trainer's hint toast) — a two-line "Merged your X with the one from your account" used to vanish in 2.6 s.

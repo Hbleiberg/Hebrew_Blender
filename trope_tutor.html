@@ -4253,7 +4253,9 @@ function setHebFont(name) {
    TOAST (house pattern)
    ══════════════════════════════════════════════════════ */
 let _toastTimer = null;
-function showToast(msg) {
+// The status region is made, empty, when the page loads rather than with its first message: a screen reader announces
+// a change to a live region it already knows, and one created holding its text may go unheard.
+function toastEl() {
   let el = document.getElementById('tuToast');
   if (!el) {
     el = document.createElement('div');
@@ -4262,6 +4264,11 @@ function showToast(msg) {
     el.addEventListener('click', dismissToast);
     document.body.appendChild(el);
   }
+  return el;
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', toastEl); else toastEl();
+function showToast(msg) {
+  const el = toastEl();
   el.textContent = msg;
   requestAnimationFrame(() => el.classList.add('show'));
   if (_toastTimer) clearTimeout(_toastTimer);
