@@ -13870,7 +13870,7 @@ function renderAnswerKeyView(akStr) {
   t.className = 'ws-title';
   t.textContent = title || 'Answer Key';
   const sub = document.createElement('div');
-  sub.className = 'ws-subtitle';
+  sub.className = 'ws-subtitle ws-ak-subtitle';   // the teacher-copy hook: gold on screen, dark ink on paper (print block)
   sub.style.color = 'var(--gold)';
   sub.textContent = 'Scan-to-check answer key' + (shape === 'grid' ? '' : ' · ' + count + ' item' + (count === 1 ? '' : 's'));
   hdrInner.appendChild(t); hdrInner.appendChild(sub);
