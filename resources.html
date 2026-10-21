@@ -207,6 +207,7 @@ main{flex:1;padding:32px 24px;max-width:1160px;margin:0 auto;width:100%;}
 .filter-bar{display:flex;flex-direction:column;gap:10px;margin-bottom:24px;padding:16px 18px;background:var(--white);border:1px solid var(--border);border-radius:10px;}
 .filter-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .filter-label{font-size:0.7rem;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:var(--muted);min-width:88px;flex-shrink:0;}
+@media(min-width:641px){.filter-row{padding-inline-start:96px;}.filter-label{margin-inline-start:-96px;}}   /* a wrapped chip hangs under the row's first chip, not under its label (the 88px label column + the 8px gap) */
 .filter-btn{font-size:0.76rem;padding:4px 13px;border:1.5px solid var(--border);border-radius:20px;background:transparent;color:var(--text);cursor:pointer;font-family:'Source Sans 3',sans-serif;transition:all 0.15s;white-space:nowrap;}
 .filter-btn:hover{border-color:var(--gold);color:var(--gold-text);}
 .filter-btn.active{background:var(--navy);border-color:var(--navy);color:#fff;}
