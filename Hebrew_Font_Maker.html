@@ -1201,6 +1201,7 @@ body.dark .hi-sun{display:inline-block;}
   html[lang="he"] .wiz-field-label, html[lang="he"] .punct-grp, html[lang="he"] .ns-sel, html[lang="he"] .qa-table td.qa-section-h,
   html[lang="he"] .load-menu-head, html[lang="he"] [data-i18n="fontmaker.boldgen.before"], html[lang="he"] [data-i18n="fontmaker.boldgen.after"],
   html[lang="he"] #helpBody summary[style*="letter-spacing:0.08em"], html[lang="he"] .fs-label { letter-spacing: normal !important; text-transform: none !important; }
+  #helpBody a[data-fmact] { color: var(--gold); font-weight: 700; }   /* a help body's in-text link to another tab: one rule for the English body and the translated ones (CSV cells carry no style) */
   .ft-dt-body { max-width: 720px; padding: 4px 0 6px; }
   .ft-dt-body p { font-size: 0.78rem; line-height: 1.5; margin: 4px 0 6px; }
   .ft-faq { margin: 4px 0; }
@@ -4602,7 +4603,7 @@ const HELP_CONTENT = {
     <div class="help-tip">✒️ <strong>Have vector artwork?</strong> Turn on <span class="ui">Enable SVG uploading</span> under <span class="ui">Settings → Input mode</span> to drop in <strong>SVG</strong> files — their vector paths become the glyph outlines <strong>directly, with no tracing</strong>. See the <span class="ui">SVG Upload Guide</span> there for naming one sheet so its letters auto-split.</div>
     <p><strong>Tracing guide:</strong> a faint reference letter shows behind yours so you can line things up. On the <strong>right</strong> of the canvas, dial the <span class="ui">Reference letter opacity</span> slider (or untick <span class="ui">Show reference glyph behind</span> to hide it), and use <span class="ui">Imported image opacity</span> to fade your own photo in or out.</p>
     <p><strong>Position it</strong> (the <span class="ui">1 · Align</span> step): click a letter in the grid on the left, then use the adjustment buttons on the <strong>left</strong> of the canvas — Wider, Taller, Rotate, Skew — to sit your letter neatly on the guide lines. The little dot on that letter turns <strong style="color:#d08c2a;">orange</strong> once it has an image.</p>
-    <div class="help-tip">🖨️ Don't have letters to scan yet? The <a href="#" onclick="openHelp('templates');return false;" style="color:var(--gold);font-weight:700;">Download Templates</a> tab gives you printable sheets — handwrite each letter in the boxes, scan or photograph the page, then bring it in here with <span class="ui">One image with all letters</span>.</div>
+    <div class="help-tip">🖨️ Don't have letters to scan yet? The <a href="#" data-fmact="help-templates">Download Templates</a> tab gives you printable sheets — handwrite each letter in the boxes, scan or photograph the page, then bring it in here with <span class="ui">One image with all letters</span>.</div>
   `,
   trace: `
     <h4>Tracing</h4>
@@ -6807,6 +6808,7 @@ document.addEventListener('click', e => {
   else if (act === 'tpl-samaritanmarks-pdf') downloadTemplate('samaritanmarks', 'pdf');
   else if (act === 'tpl-samaritanmarks-png') downloadTemplate('samaritanmarks', 'png');
   else if (act === 'svg-guide')        openSvgGuide();
+  else if (act === 'help-templates')   openHelp('templates');   // the Upload help body's link (authored and translated alike)
 });
 function cgSetType(t) {
   cgType = t;
