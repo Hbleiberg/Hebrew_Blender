@@ -93419,3 +93419,35 @@ Moved verbatim from the ledger to keep it under 100 KB (the S528 precedent): S52
 - [x] 2026-10-21 | `d1293a70` `2265053f` | letter_learner.html | (S528) **Reset names all it resets; ←/→ and PgUp/PgDn step a card.** | findings
 
 - 2026-10-20 | **S525** | iters: 5 | tools: LL, generator, dashboard, flash (reverted), locales CSV, sw.js | patterns fixed: hebrew-faux-italic ×1 | pass run: I | SW: v1042→v1043
+
+
+<!-- archived by compact-ledger at the S531 boundary, 2026-10-21 -->
+## Compaction (S531, 2026-10-21) — moved verbatim from the live ledger
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`empty-result-not-announced`** (NEW S528 F; resources ×2 `34ae261b`; S529 dictionary roots `28a52123`; open 0): ACTIVE, streak 1 (S530: no new no-match surface). A no-match landing no live region speaks. Detection: `f528/empty.mjs`; `b529/fix1.mjs` (real typing, live text read).
+
+- **`overlay-scoped-dialog-keys`** (NEW S514 F; LL, flash; S515 `.ivrit` ask ×4, Torah favorite; **S516 hub Erase + I/E `973eb309`; open: none**): ACTIVE, streak 1 (S530: 3 new dialogs, `a530/dialogs.mjs`). A click on a dialog's text puts focus on `<body>`: an overlay listener (or a first/last-only trap) lets Shift+Tab …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- **`live-region-display-none-while-empty`** (S408; **all 4 FIXED `efbc98a` S409**; **S530 4 more FIXED `66ecdc9f`, `a530/fix1.mjs`**): ACTIVE, streak 0. Detection: `:empty{display:none}` on a `role=status`/`aria-live` line, then CDP AX on it empty (`notRendered` = hit); flex-wrap rows need `position:absolute`, not height.
+
+- **`sub-floor touch target`**: ACTIVE. **S529: LL sliders FIXED `84154c76`; open: parsha_emojis' 7 popup sliders (`b529/fix4.mjs`) + its card link (23px HE, S530).** **S516 FM ×4 `36e804ac`.** **S513 dashboard ×2 `787c434`.** **S483 hub clean.** **S456: `85e294b2`, `924c9407`.** Detection: visible controls < …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- **decorative-glyph-carrier-exposed-to-assistive-tech** (**S530: header ✡︎ ×13 `eee7080d`, generator ⚡/🔍 `b298abb2` FIXED (`a530/fix2.mjs`, `fix4.mjs`); category emoji unruled (candidate).** **S529: generator start screen + chips `19ece1f1`.** **S528: resources' icons FIXED `34ae261b`.** **2nd instance fixed 2026-08-15, S219, c2399f1 — …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+_(prior — S530 pointer:)_ **Next session (S530):** **PR: `claude/improveloop-s526` (#353) open → continue; merged → fresh branch.** `sw.js` **v1054**, FM **5.59**, corpus ?v=7. ⚑ Stalest: A (S516: sweep hit-box, empty-result, sub-floor), E (S517). ⚑ Ready: parsha_emojis sliders, header ✡︎ ×13 (A), LL bulk-popup return. ⚑ Seeds: 46 (2 LL picked). ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4; O's Bash rule.
+
+## Size move (S530 close-out, 2026-10-21) — S529's Done entries and the S526–S527 per-session rows, moved by hand verbatim (the ledger sat over its 100 KB limit)
+
+- [x] 2026-10-21 | (S529 close-out) | branch/deploy note | **S529 = B (clean) + 4 fixes on PR #353.** Drift: none (main `0ba274dd`, keep-alive #38 green). sw v1053→v1054; no FM bump; S528's gate 2 shipped; nothing deferred.
+
+- [x] 2026-10-21 | `28a52123` `19ece1f1` | dictionary, generator | (S529) **Root no-match announced; start-screen ✡︎ + chip emoji hidden.** | findings
+
+- [x] 2026-10-21 | `b0be4201` `84154c76` | resources, LL | (S529) **"Reset all filters" in both empty states; Coloring sliders 24px.** | findings
+
+- 2026-10-20 | **S527** | iters: 5 | tools: LL ×2, dictionary, generator, dashboard, flash, index, sw.js | patterns fixed: hit-box, faux-italic, radio-set ×1 each | pass run: C | SW: v1051→v1052
+
+- 2026-10-20 | **S526** | iters: 5 | tools: LL ×2, folder tree ×4, dictionary, sw.js | patterns fixed: print-trailing-padding ×1, faux-italic ×2 | pass run: H | SW: v1050→v1051

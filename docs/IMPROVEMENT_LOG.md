@@ -8,11 +8,11 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P4 (**NEW S529 — sub-floor target**) | parsha_emojis.html | **The Print coloring sheets popup's 7 size sliders are 16px tall** (the LL twin fixed S529). | found S529
+- [ ] P4 (**NEW S530 A — glyph census, rule first**) | dictionary, resources, flash, torah, FM, index | **Category and option emoji are still heard** (findings S530): content or decoration is unruled. | found S530
 
-- [ ] P4 (**NEW S529 — decorative glyph**) | 13 pages' headers | **The header ✡︎ brand star is read aloud** (LL and trope hide theirs). | found S529
+- [ ] P4 (**NEW S530 A — label in name**) | parsha_emojis.html | **Each card's "View in Torah Trainer ↗" is named "View {name} in the Torah Trainer"**: the visible words are not in the name (2.5.3). | found S530
 
-- [ ] P4 (**NEW S526 H**) | letter_learner.html | **Closing a card's bulk popup returns to the grid, not the card.** | found S526
+- [ ] P4 (**NEW S529 — sub-floor target; S530: + the card link**) | parsha_emojis.html | **The Print coloring sheets popup's 7 size sliders are 16px tall** (the LL twin fixed S529); **each card's Torah Trainer link is 23px tall in the Hebrew UI.** | found S529
 
 - [ ] P4 (**NEW S523 G — gate 3**) | hebrew_dictionary.html | **A long one-word headword overflows its card** (paper and phone). | found S523
 
@@ -314,35 +314,33 @@ _(none)_
 
 ## Done
 
-- [x] 2026-10-21 | (S529 close-out) | branch/deploy note | **S529 = B (clean) + 4 fixes on PR #353.** Drift: none (main `0ba274dd`, keep-alive #38 green). sw v1053→v1054; no FM bump; S528's gate 2 shipped; nothing deferred.
+- [x] 2026-10-21 | (S530 close-out) | branch/deploy note | **S530 = A (FOUND 4, FIXED 4) on PR #353.** Drift: none (main `0ba274dd`, keep-alive #38 green). sw v1054→v1055; no FM bump; no gates; nothing deferred.
 
-- [x] 2026-10-21 | `28a52123` `19ece1f1` | dictionary, generator | (S529) **Root no-match announced; start-screen ✡︎ + chip emoji hidden.** | findings
+- [x] 2026-10-21 | `66ecdc9f` `eee7080d` | LL, parsha, 13 headers | (S530) **Four empty status notes stay in the a11y tree; the header ✡︎ hidden ×13.** | findings
 
-- [x] 2026-10-21 | `b0be4201` `84154c76` | resources, LL | (S529) **"Reset all filters" in both empty states; Coloring sliders 24px.** | findings
+- [x] 2026-10-21 | `05b75eee` `b298abb2` | LL, generator | (S530) **A card's bulk popup returns to its Coloring sheet; ⚡/🔍 hidden.** | findings
 
 ## Metrics
 
 ### Per-session log (one line per session)
 
+- 2026-10-21 | **S530** | iters: 5 | tools: LL ×2, parsha ×2, generator ×2, 11 headers, CSV, sw.js | patterns fixed: live-region ×1, decorative-glyph ×2 | pass run: A | SW: v1054→v1055
+
 - 2026-10-21 | **S529** | iters: 5 | tools: dictionary, generator, resources, LL, CSV, sw.js | patterns fixed: empty-result ×1, decorative-glyph ×1, sub-floor ×1 | pass run: B | SW: v1053→v1054
 
 - 2026-10-21 | **S528** | iters: 5 | tools: resources, LL ×2 (1 micro-feature), CSV, sw.js | patterns fixed: empty-result-not-announced ×1, decorative-glyph ×1 | pass run: F | SW: v1052→v1053
 
-- 2026-10-20 | **S527** | iters: 5 | tools: LL ×2, dictionary, generator, dashboard, flash, index, sw.js | patterns fixed: hit-box, faux-italic, radio-set ×1 each | pass run: C | SW: v1051→v1052
-
-- 2026-10-20 | **S526** | iters: 5 | tools: LL ×2, folder tree ×4, dictionary, sw.js | patterns fixed: print-trailing-padding ×1, faux-italic ×2 | pass run: H | SW: v1050→v1051
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S529 (2026-10-21):** dictionary, generator, resources, LL, CSV, sw.js S529 · dashboard, flash, index S527 · torah S526 · FM, corpus, README S524 · account S523 · parsha_emojis S522 · saves, scripts S521 · 404, privacy, terms, contact S520 · trope S519 · i18n.js S512 · pwa S472.
+- **Snapshot S530 (2026-10-21):** LL, parsha_emojis, generator, index, dictionary, dashboard, torah, FM, account, resources, contact, privacy, terms, 404, CSV, sw.js S530 · flash S527 · corpus, README S524 · saves, scripts S521 · trope S519 · i18n.js S512 · pwa S472.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
-- **`empty-result-not-announced`** (NEW S528 F; resources ×2 `34ae261b`; S529 dictionary roots `28a52123`; open 0): ACTIVE, unswept. A no-match landing no live region speaks. Detection: `f528/empty.mjs`; `b529/fix1.mjs` (real typing, live text read).
+- **`empty-result-not-announced`** (NEW S528 F; resources ×2 `34ae261b`; S529 dictionary roots `28a52123`; open 0): ACTIVE, streak 1 (S530: no new no-match surface). A no-match landing no live region speaks. Detection: `f528/empty.mjs`; `b529/fix1.mjs` (real typing, live text …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`print-trailing-padding-adds-a-sheet`** (NEW S526 H; account S523, LL `198ccfac`): ACTIVE, streak 0. Detection: `h526/fix1.mjs` (a header-only or empty PDF sheet).
+- **`print-trailing-padding-adds-a-sheet`** (NEW S526 H; account S523, LL `198ccfac`): ACTIVE, streak 1 (S530 `a530/pcs.mjs`). Detection: `h526/fix1.mjs` (a header-only or empty PDF sheet).
 
-- **`unseen-hit-box-over-controls`** (NEW S527 C; LL `82a3f0b2`): ACTIVE, unswept. An unpainted box over a control eats its clicks. Detection: `c527/cover3.mjs` + a real click (`swallow.mjs`).
+- **`unseen-hit-box-over-controls`** (NEW S527 C; LL `82a3f0b2`): ACTIVE, streak 1 (S530 `a530/rt.mjs`). An unpainted box over a control eats its clicks. Detection: `c527/cover3.mjs` + a real click (`swallow.mjs`).
 
 - **`layout-read-per-grid-at-build`** (NEW S524 D; `roveTileGrid` ×3 FIXED `aa14beba`; open 0): ACTIVE, streak 0. A builder's layout read (`offsetParent`, a rect) per grid while the page still builds. Detection: `d524/trace.mjs` (forced Layout by stack line).
 
@@ -350,7 +348,7 @@ _(none)_
 
 - **`tour-not-following-a-live-switch`** (NEW S519 K; fixed LL, trope, dashboard, dictionary, torah, FM S519–S522; open 0): ACTIVE, streak 0. Detection: `tourswitch.mjs`; torah `torahtour.mjs` (Sefaria gated).
 
-- **`overlay-scoped-dialog-keys`** (NEW S514 F; LL, flash; S515 `.ivrit` ask ×4, Torah favorite; **S516 hub Erase + I/E `973eb309`; open: none**): ACTIVE, streak 0. A click on a dialog's text puts focus on `<body>`: an overlay listener (or a first/last-only trap) lets Shift+Tab …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`overlay-scoped-dialog-keys`** (NEW S514 F; LL, flash; S515 `.ivrit` ask ×4, Torah favorite; **S516 hub Erase + I/E `973eb309`; open: none**): ACTIVE, streak 1 (S530: 3 new dialogs, `a530/dialogs.mjs`). A click on a dialog's text puts focus on `<body>`: an overlay listener …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`group-toggle-wipes-a-sibling-group`** (NEW S512 H; generator FIXED `ff980a7`; the match-target re-sync was an earlier work-around): ACTIVE, streak 0. A class-wide `.active` toggle on a button class another row shares. Detection: `grep -n "querySelectorAll('\\.[a-z-]*btn')" …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -446,7 +444,7 @@ _(none)_
 
 - **`flash-restores-captured-text-not-its-key`** (NEW S417 — 2 FIXED `1f7f869`; S415 `38e5b62`): ACTIVE, streak 0. A "Copied!" flash restoring the text captured at click time, so a 2nd click captures the flash. Detection: `orig = (btn|lbl)\.(textContent|innerHTML)` + …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`visible-label-missing-from-the-accessible-name`** (S415–S425: 4 fixes; **S427 the dictionary's Word Lists windows `ee5f6f2`**): ACTIVE, streak 0. Detection `a416/labelname.mjs` + `fieldnames.mjs`; S427 `c427/probe-dlgname.mjs`. …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`visible-label-missing-from-the-accessible-name`** (S415–S425: 4 fixes; **S427 the dictionary's Word Lists windows `ee5f6f2`**; **S530 open: parsha's card link**): ACTIVE, streak 0. Detection `a416/labelname.mjs` + `fieldnames.mjs`; S427 `c427/probe-dlgname.mjs`. …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`designed-key-miss-probed-through-t`** (NEW S415; FM `gName()` FIXED `95d5f46`): ACTIVE, streak 1 (S416: 0 on the delta). Detection: `[i18n] missing key` in B's interaction arm; static: `=== k ?` fallbacks without `I18n.has`.
 
@@ -460,7 +458,7 @@ _(none)_
 
 - **`settings-lost-across-a-load`** (NEW S412; dictionary ×4 FIXED S482 `8d99ad93`, flash FIXED S491 `adce6574`; 0 open): ACTIVE, streak 0. A setting comes back changed after a reload. Detection (`h482/dictsave.mjs`): change each control by a real click, wait out the save, …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`live-region-display-none-while-empty`** (S408; **all 4 FIXED `efbc98a` S409**): ACTIVE, streak 0. Detection: `:empty{display:none}` on a `role=status`/`aria-live` line, then CDP AX on it empty (`notRendered` = hit); flex-wrap rows need `position:absolute`, not height.
+- **`live-region-display-none-while-empty`** (S408; **all 4 FIXED `efbc98a` S409**; **S530 4 more FIXED `66ecdc9f`, `a530/fix1.mjs`**): ACTIVE, streak 0. Detection: `:empty{display:none}` on a `role=status`/`aria-live` line, then CDP AX on it empty (`notRendered` = hit); …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`dark-base-rule-outranks-variant`** (S408; FIXED `4a5d353`, `b26f7d6`; EXEMPT the dead `.preset-item.drag-over` ×2): ACTIVE, streak 0. Detection: `m408/darkvariant.py` (comments stripped), then drive the state by a real click in both themes.
 
@@ -516,7 +514,7 @@ _(none)_
 
 - **`light-literal-text-on-the-gold-token`** (registered 2026-09-17 (S396)): ACTIVE — **S399 (Pass A), FIRST real sweep: 7 NEW carriers, all on `hebrew_dictionary.html`, all fixed `273f449`; clean streak stays 0.** `color:#fff` (or another light literal) painted on `var(--gold)` …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`sub-floor touch target`**: ACTIVE. **S529: LL sliders FIXED `84154c76`; open: parsha_emojis' 7 popup sliders (`b529/fix4.mjs`).** **S516 FM ×4 `36e804ac`.** **S513 dashboard ×2 `787c434`.** **S483 hub clean.** **S456: `85e294b2`, `924c9407`.** Detection: visible controls < …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`sub-floor touch target`**: ACTIVE. **S529: LL sliders FIXED `84154c76`; open: parsha_emojis' 7 popup sliders (`b529/fix4.mjs`) + its card link (23px HE, S530).** **S516 FM ×4 `36e804ac`.** **S513 dashboard ×2 `787c434`.** **S483 hub clean.** **S456: `85e294b2`, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`vh-capped-sheet-without-dvh-twin`**: ACTIVE (registered S375). **S385 (Pass A), first re-sweep since the S377 fixes: 20 raw → 0 real, clean streak 1 of the 3 that retire it.** Every raw hit is an exemption the row names — 11 inner scrollers with their own `overflow:auto`, …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -586,7 +584,7 @@ _(none)_
 
 - **rebuild-where-a-class-swap-would-do**: **REGISTERED 2026-08-16 (S220)** — not yet swept suite-wide, hits: 1 (`26b9e7e`), clean streak: 0 — ACTIVE. **Definition:** a settings toggle whose visual effect is ALREADY gated in CSS on a body/root class, yet whose handler calls the …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **decorative-glyph-carrier-exposed-to-assistive-tech** (**S529: generator start screen + chips FIXED `19ece1f1` (`b529/fix2.mjs`, ariaSnapshot); open: the header ✡︎ on 13 pages.** **S528: resources' icons FIXED `34ae261b`.** **2nd instance fixed 2026-08-15, S219, c2399f1 — …[full text: IMPROVEMENT_ARCHIVE.md]
+- **decorative-glyph-carrier-exposed-to-assistive-tech** (**S530: header ✡︎ ×13 `eee7080d`, generator ⚡/🔍 `b298abb2` FIXED (`a530/fix2.mjs`, `fix4.mjs`); category emoji unruled (candidate).** **S529: generator start screen + chips `19ece1f1`.** **S528: resources' icons FIXED …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **error-status-clobbered-by-a-later-routine-write** (**NEW, registered S199**; **S411: +1 carrier FIXED `25d2277`** — FM `fmCloudOpen`'s missing-photo notice, replaced by "Opened from your account" in ~40 ms): a status/live-region line that correctly reports a FAILURE is then …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -708,7 +706,7 @@ _(none)_
 
 - C accessibility (one tool): 2026-10-20 (**S527 — LL's first C: 7 arms by real input, 4 cells, 22 surfaces, plants 11/11. FOUND 3, FIXED 2 (+2). C-next: parsha_emojis (never), torah (S298), trope (S312).**)
 
-- A recurring-pattern sweep: 2026-10-18 (**S516 — 40th A, `fc54901d..d77484c5` (118 commits; LL's first A): 42 static arms; 18 shared blocks sha-checked; 11 runtime arms × 15 pages × 2 cells vs pre-delta (plants 11/11); 1 px sweep 30/30 clean; LL by real input. FOUND 1, FIXED 4.**)
+- A recurring-pattern sweep: 2026-10-21 (**S530 — 41st A, `d77484c5..6f9a5992` (109 commits; parsha_emojis' first): 53 static + 16 runtime arms × 16 pages vs pre-delta (plants fired), 18 blocks, dialogs, print, 1px sweep. FOUND 4, FIXED 4.**)
 
 - G print & export fidelity (one tool): 2026-10-20 (**S523 — dictionary's 6th G: real PDFs EN/HE × themes × Letter/A4, margins, views, colour modes, exports; controls fired. FOUND 5, FIXED 4 (+ generator, account). G-next: emoji_torah (never), dashboard (S364).**)
 
@@ -728,4 +726,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-21 (**S528 — 39th F, empty states: 6 no-match surfaces × 4 cells by real input (plants 72/72), 12-page census. FOUND 4, FIXED 1 (+ LL ×2). F-next: loading states.**)
 
-**Next session (S530):** **PR: `claude/improveloop-s526` (#353) open → continue; merged → fresh branch.** `sw.js` **v1054**, FM **5.59**, corpus ?v=7. ⚑ Stalest: A (S516: sweep hit-box, empty-result, sub-floor), E (S517). ⚑ Ready: parsha_emojis sliders, header ✡︎ ×13 (A), LL bulk-popup return. ⚑ Seeds: 46 (2 LL picked). ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4; O's Bash rule.
+**Next session (S531):** **PR: `claude/improveloop-s526` (#353) open → continue; merged → fresh branch.** `sw.js` **v1055**, FM **5.59**, corpus ?v=7. ⚑ Stalest: E (S517), L (S518). ⚑ Ready: parsha_emojis card link (name + 24px) and sliders. ⚑ Seeds: 46. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4; O's Bash rule.
