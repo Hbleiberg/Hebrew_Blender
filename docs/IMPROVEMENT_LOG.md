@@ -310,13 +310,15 @@ _(none)_
 
 ## Done
 
-- [x] 2026-10-21 | (S531 close-out) | branch/deploy note | **S531 = E (FOUND 2, FIXED 4) on PR #353.** Drift: none (main `0ba274dd`, keep-alive #38 green). sw v1055→v1056; no FM bump; sitemap stamped; no gates.
+- [x] 2026-10-21 | `b7cd608a` | db, CLAUDE.md | (outside loop) **0006 live: no default grants; rule 10.** | findings
+
+- [x] 2026-10-21 | (S531 close-out) | branch/deploy note | **S531 = E (FOUND 2, FIXED 4) on PR #353.** Drift: none. sw v1055→v1056; no FM bump; sitemap stamped; no gates.
 
 - [x] 2026-10-21 | `aa71fc00` `f77dc505` | README, FM, CSV | (S531) **README: the two launched pages; FM: the Upload help's Templates link in Hebrew.** | findings
 
 - [x] 2026-10-21 | `6e8b6848` `0c8a2bba` | parsha_emojis, CSV | (S531) **The card link named by its words; sliders + link at 24px.** | findings
 
-- [x] 2026-10-21 | (S530 close-out) | branch/deploy note | **S530 = A (FOUND 4, FIXED 4) on PR #353.** Drift: none (main `0ba274dd`, keep-alive #38 green). sw v1054→v1055; no FM bump; no gates; nothing deferred.
+- [x] 2026-10-21 | (S530 close-out) | branch/deploy note | **S530 = A (FOUND 4, FIXED 4) on PR #353.** Drift: none. sw v1054→v1055; no FM bump; no gates.
 
 - [x] 2026-10-21 | `66ecdc9f` `eee7080d` | LL, parsha, 13 headers | (S530) **Four empty status notes stay in the a11y tree; the header ✡︎ hidden ×13.** | findings
 
@@ -730,4 +732,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-21 (**S528 — 39th F, empty states: 6 no-match surfaces × 4 cells by real input (plants 72/72), 12-page census. FOUND 4, FIXED 1 (+ LL ×2). F-next: loading states.**)
 
-**Next session (S532):** **PR: `claude/improveloop-s526` (#353) open → continue; merged → fresh branch.** `sw.js` **v1056**, FM **5.59**, corpus ?v=7. ⚑ Stalest: L (S518), K (S519), N (S520). ⚑ Ready: the README era note. ⚑ Seeds: 46. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4; O's Bash rule.
+**Next session (S532):** **PR: `claude/improveloop-s526` (#353) open → continue; merged → fresh branch.** `sw.js` **v1056**, FM **5.59**, corpus ?v=7. ⚑ Stalest: L (S518), K (S519), N (S520). ⚑ Ready: the README era note. ⚑ Seeds: 46. ⚑ Outside-loop: `0006` live. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4; O's Bash rule.
