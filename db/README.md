@@ -14,6 +14,7 @@ the tables are used from the browser: `docs/reference/accounts-and-cloud.md`.
 | `migrations/0003_keepalive.sql` | yes — a green keep-alive run | `public.keepalive()`, a function that returns `'ok'` and reads nothing, callable with the publishable key: the daily GitHub Actions workflow `.github/workflows/supabase-keepalive.yml` calls it so the free project counts as active and is never paused (Phase 8); no table, no policy changes |
 | `migrations/0004_saves_tool_letter_learner.sql` | yes — applied through the connector; `saves_tool_check` read back with eight ids and the migrations list records it (before it, every upload from the Letter Learner was refused with `23514`, which the status line could only call "limit of saved items") | widens `saves.tool`'s CHECK to eight ids (adds `LetterLearner`, mirroring `var TOOLS`): the one constraint dropped and re-created inside a single transaction — the only way Postgres offers to change a CHECK; no table, row, policy or function is dropped |
 | `migrations/0005_saves_tool_emoji_torah.sql` | yes — applied through the connector before the page reached `main`; `saves_tool_check` read back with nine ids and the migrations list records it; the security advisors show nothing new | widens `saves.tool`'s CHECK to nine ids (adds `EmojiTorah`, the Parsha Emojis page's coloring-sheet options, mirroring `var TOOLS`): the same one-constraint swap as 0004, inside a single transaction; no table, row, policy or function is dropped |
+| `migrations/0006_no_default_grants.sql` | yes — applied through the connector; the default privileges read back with no `anon`, `authenticated` or `service_role` entry under `postgres` for tables, sequences or functions, the three tables' and six functions' privileges read back identical to before, the migrations list records it, and the security advisors show only the Auth leaked-password setting, which no migration touches | stops the project granting new `public` tables, sequences and functions to `anon`, `authenticated` and `service_role` automatically (its default privileges), so a table is reachable only through the grants its own migration writes — a function still needs its own `revoke … from public`, because Postgres's built-in grant of execute to every role is global and outlives a schema-level revoke; no existing table, sequence, function, policy or grant changes — `profiles`, `saves` and `font_projects` keep what 0001 gave them, `keepalive()` what 0003 gave it |
 
 Each file starts with a comment that explains every block in plain language.
 
@@ -170,7 +171,14 @@ a second run is harmless. **Never edit an applied file** — write the next chan
 `migrations/<next number>_<short_name>.sql`, keeping the same style: RLS on for every table, policies
 `to authenticated` with `(select auth.uid())`, functions with `set search_path = ''`, no `drop` (0004's and
 0005's constraint swaps are the one reading of that rule: a CHECK can only be changed by dropping and re-creating
-it, and it removes nothing that holds data), and nothing that deletes rows.
+it, and it removes nothing that holds data), and nothing that deletes rows. **A new table also writes its own
+grants, in the file that creates it** — since 0006 the project grants a new table to nobody, so without them every
+request answers `42501`: `select, insert, update, delete` to `authenticated` and `service_role` (narrower where the
+table needs less, as `profiles` does), `usage, select` on any sequence it uses (an identity or `serial` column) to
+the same two roles, and nothing to `anon` unless the maintainer asks for it. A new function likewise needs
+`revoke all on function … from public` and a `grant execute` naming only the roles that call it, as 0003 does for
+`keepalive()` — 0006 cannot do that part, since Postgres grants execute on a new function to every role by a global
+default that a schema-level revoke does not reach. After applying, read the grants back with the `has_table_privilege` query below.
 
 ## Checking the live project
 
@@ -183,6 +191,20 @@ select tablename, rowsecurity from pg_tables where schemaname = 'public' order b
 -- every policy, with its role
 select tablename, policyname, roles, cmd from pg_policies where schemaname in ('public', 'storage') order by 1, 2;
 
+-- the project's default privileges in public (since 0006, under owner postgres: no anon, authenticated or
+-- service_role entry for r = tables, S = sequences or f = functions)
+select pg_get_userbyid(defaclrole) as owner, defaclobjtype, defaclacl
+  from pg_default_acl where defaclnamespace = 'public'::regnamespace order by 1, 2;
+
+-- what each API role may do on each table (replace the table list with the new table's name after a migration)
+select t.tbl, r.role,
+       has_table_privilege(r.role, 'public.' || t.tbl, 'select') as sel,
+       has_table_privilege(r.role, 'public.' || t.tbl, 'insert') as ins,
+       has_table_privilege(r.role, 'public.' || t.tbl, 'update') as upd,
+       has_table_privilege(r.role, 'public.' || t.tbl, 'delete') as del
+  from (values ('font_projects'), ('profiles'), ('saves')) t(tbl)
+ cross join (values ('anon'), ('authenticated'), ('service_role')) r(role) order by 1, 2;
+
 -- the buckets and their limits
 select id, public, file_size_limit, allowed_mime_types from storage.buckets order by 1;
 
@@ -193,7 +215,9 @@ select user_id, count(*) as items, pg_size_pretty(sum(bytes)::bigint) as size fr
 ## If something goes wrong
 
 - *"permission denied"* from a tool page → almost always a missing policy or a query that names a
-  column the policy does not allow; check `pg_policies` first.
+  column the policy does not allow; check `pg_policies` first. *"permission denied for table …"* with a hint
+  naming a `GRANT` → the table's migration wrote no grant for that role (since 0006 nothing is granted by
+  default); add it in a new migration, never in the dashboard.
 - *"new row violates row-level security policy"* on a Storage upload → the object path does not start
   with the signed-in user's id, or the bucket is not one of the three above.
 - *"mime type … is not supported"* → the bucket's allow-list; extend it in a new migration

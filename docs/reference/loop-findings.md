@@ -2831,3 +2831,16 @@
   - **(3)** `a530/lib.mjs` reads `BASE` at import and aborts every other origin, so a probe that hardcodes a second tree's port gets `ERR_FAILED`: run once per tree with `BASE=`.
 
   | found S531
+
+## Outside the loop (2026-10-21) — migration 0006: the project's default privileges stop granting new `public` objects
+Maintainer-requested and maintainer-approved, applied through the connector (not a loop session).
+- **Live, before:** under owner `postgres` in `public` the default ACLs were `r` `arwdDxtm`, `S` `rwU` and `f` `X` for `anon`, `authenticated` and `service_role`; there was no global (`defaclnamespace = 0`) entry, and `acldefault('f', postgres)` = `{=X/postgres,postgres=X/postgres}`. The `supabase_admin` owner carries the same three per-schema grants, and `postgres` cannot alter them.
+- **Why `revoke all`:** Supabase's opt-in lines revoke only `select, insert, update, delete` on tables and `usage, select` on sequences. That would have left `Dxtm` and sequence `w` in the defaults, and `D` (truncate) does not consult RLS.
+- **Refuted: "the function lines make new functions opt-in."** This was measured on a scratch PG16 cluster set up with the live per-schema grants:
+  - after 0006, a new table and its identity sequence grant nothing to the three roles;
+  - a new function stays executable by all three, through `public`'s built-in default (`proacl` null);
+  - the per-schema `revoke execute on functions from public` is a no-op, because a per-schema revoke cannot remove a global default;
+  - the global form (no `in schema`) did close it (0/3), but it reaches every schema the `postgres` role creates functions in, so it was not applied.
+- **What closes the function gap:** each function's own `revoke all … from public` plus a narrow `grant execute`. On the scratch cluster this gave `anon` f, `authenticated` t, `service_role` f.
+- **Rule 10's table recipe on the same cluster:** `anon` gets nothing; `authenticated` and `service_role` get select and delete but not truncate, plus the sequence.
+- **Live, after:** only `postgres`'s own entries remain under owner `postgres`. The privileges of `font_projects`, `profiles`, `saves` and the six `public` functions are byte-identical to the before-snapshot, and `keepalive()` is still executable by `anon`.
