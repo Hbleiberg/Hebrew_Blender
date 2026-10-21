@@ -93566,3 +93566,29 @@ _(prior — S534 pointer:)_ **Next session (S534):** **PR: `claude/serene-galile
 - 2026-10-21 | **S529** | iters: 5 | tools: dictionary, generator, resources, LL, CSV, sw.js | patterns fixed: empty-result ×1, decorative-glyph ×1, sub-floor ×1 | pass run: B | SW: v1053→v1054
 
 - 2026-10-21 | **S528** | iters: 5 | tools: resources, LL ×2 (1 micro-feature), CSV, sw.js | patterns fixed: empty-result-not-announced ×1, decorative-glyph ×1 | pass run: F | SW: v1052→v1053
+
+
+<!-- archived by hand at the S535 close-out, 2026-10-21 (the rows were rewritten in place) -->
+## Compaction (S535 close-out, 2026-10-21) — moved verbatim from the live ledger
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- P accounts & cloud (one surface): 2026-10-19 (**S521 — 11th P, dictionary: tools 22/22, sync 213, migration 47; W1–W9 32/32 (controls 2/2); static 38/38 (plants 8/8); live clean. FOUND 1, FIXED 1 (+3). P-next: LL (never), dashboard (S421).**)
+
+_(prior — S535 pointer:)_ **Next session (S535):** **PR: `claude/confident-shannon-k7zmyp` open → continue; merged → fresh branch.** `sw.js` **v1063**, FM **5.59**, corpus ?v=7. ⚑ Stalest: P (S521; Name Tags' wiring unaudited), M (S522), G (S523). ⚑ Keep-alive #40 (10-22): confirm green. ⚑ Seeds: 46. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4; O's Bash rule.
+
+
+<!-- archived by compact-ledger at the S536 boundary, 2026-10-21 -->
+## Compaction (S536, 2026-10-21) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-21 | (S535 close-out) | branch/deploy note | **S535 = P on `name_tags.html` (its first P): the page CLEAN; FOUND 1 suite-wide (FIXED) + 1 gate-2, on the fresh `claude/improveloop-s535`** (#356 merged). Drift: Name Tags reorder/fold/sidebar-hide + the ‹ › arrows outside the loop, sw v1061→v1063 there; `0007` live; delete-account unchanged; keep-alive #39 green. sw v1063→v1064; no FM bump (no FM change); gates deferred (the dashboard `_cloud` confirms).
+
+## Per-session log (S531–S533) — moved verbatim from the live ledger at the S535 close-out (size)
+
+- 2026-10-21 | **S533** | iters: 5 | tools: LL, parsha_emojis, torah, dashboard, CSV, sw.js | patterns fixed: stale-html-fallback ×1, never-re-rendered ×1, pinned-english ×1 | pass run: K | SW: v1058→v1059
+
+- 2026-10-21 | **S532** | iters: 5 | tools: LL, index, torah, resources, README, CSV, sw.js | patterns fixed: — | pass run: L | SW: v1056→v1057
+
+- 2026-10-21 | **S531** | iters: 5 | tools: README, parsha ×2, FM, CSV, sitemap, sw.js | patterns fixed: visible-label ×1, sub-floor ×1 | pass run: E | SW: v1055→v1056

@@ -8,13 +8,9 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P4 (**NEW S534 N**) | name_tags.html | **Tour step 2 rings the 508px `#ntTable` on a phone, off-screen** (target the wrap). | found S534
-
 - [ ] P4 (**NEW S534 N — gate 4**) | name_tags.html | **On a phone Remove sits 120–270px off-screen** until the table scrolls. | found S534
 
-- [ ] P4 (**NEW S534 N — D's**) | name_tags.html | **At 200 students each keystroke rebuilds 25 sheets: 480–660ms @4×.** | found S534
-
-- [ ] P4 (**NEW S534 — G's**) | hebrew_blend_generator.html | **The `?ak=` view's answers print light gold** (inline, no class). | found S534
+- [ ] P4 (**NEW S535 P — gate 2**) | classroom_dashboard.html | **Four confirms on synced data lack the `_cloud` wording** (text sizes, intermission, a day, a period). | found S535
 
 - [ ] P4 (**NEW S530 A — glyph census, rule first**) | dictionary, resources, flash, torah, FM, index | **Category and option emoji are still heard** (findings S530): content or decoration is unruled. | found S530
 
@@ -310,6 +306,14 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-21 | (S535 close-out) | branch/deploy note | **S535 = P on name_tags (first P): page clean; 1 suite-wide FIXED, 1 gate-2.** Fresh `claude/improveloop-s535` (#356 merged); drift: Name Tags, the arrows. sw v1063→v1064; no FM bump.
+
+- [x] 2026-10-21 | `7ac2ccc` | ivrit-saves, smoke-sync | (S535) **A first sign-in keeps the device's settings only when the account's change a field.** | false hub notes 3 → 0; 1c; 7 smokes
+
+- [x] 2026-10-21 | `7b0e2ac` `0f509a2` | name_tags | (S535) **Tour step 2 rings the scroller; a long list redraws after a typing pause.** | 8/16 → 16/16; 4×: 2183 → 972ms
+
+- [x] 2026-10-21 | `15464a2` | generator | (S535) **The `?ak=` answers print dark.** | light-gold px 1171 → 0
+
 - [x] 2026-10-21 | (S534 close-out) | branch/deploy note | **S534 = N on `name_tags.html`, fresh `claude/confident-shannon-k7zmyp`.** Drift: Name Tags, `0007` live, sw v1060. sw v1060→v1061; no FM bump; no gates.
 
 - [x] 2026-10-21 | `f7c4981` `c156628` | name_tags | (S534) **The table no longer widens a phone page; 7 name fields hinted.** | 12/20 → 0/20 cells; hints 0/7 → 7/7
@@ -320,17 +324,13 @@ _(none)_
 
 ### Per-session log (one line per session)
 
+- 2026-10-21 | **S535** | iters: 5 | tools: saves (shared), name_tags ×2, generator, sw.js | patterns fixed: — | pass run: P | SW: v1063→v1064
+
 - 2026-10-21 | **S534** | iters: 5 | tools: name_tags ×2, generator, dashboard, sw.js | patterns fixed: abs-child ×1 (NEW), input-hints ×7, physical ×1 | pass run: N | SW: v1060→v1061
-
-- 2026-10-21 | **S533** | iters: 5 | tools: LL, parsha_emojis, torah, dashboard, CSV, sw.js | patterns fixed: stale-html-fallback ×1, never-re-rendered ×1, pinned-english ×1 | pass run: K | SW: v1058→v1059
-
-- 2026-10-21 | **S532** | iters: 5 | tools: LL, index, torah, resources, README, CSV, sw.js | patterns fixed: — | pass run: L | SW: v1056→v1057
-
-- 2026-10-21 | **S531** | iters: 5 | tools: README, parsha ×2, FM, CSV, sitemap, sw.js | patterns fixed: visible-label ×1, sub-floor ×1 | pass run: E | SW: v1055→v1056
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S534 (2026-10-21):** name_tags, generator, dashboard, sw.js S534 · LL, parsha_emojis, torah, CSV S533 · index, resources, README, sitemap S532 · FM S531 · dictionary, account, contact, privacy, terms, 404 S530 · flash S527 · corpus S524 · saves, scripts S521 · trope S519 · i18n.js S512 · pwa S472.
+- **Snapshot S535 (2026-10-21):** name_tags, generator, saves, scripts, sw.js S535 · dashboard S534 · LL, parsha_emojis, torah, CSV S533 · index, resources, README, sitemap S532 · FM S531 · dictionary, account, contact, privacy, terms, 404 S530 · flash S527 · corpus S524 · trope S519 · i18n.js S512 · pwa S472.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -694,7 +694,7 @@ _(none)_
 
 ### Discovery-pass rotation (run one per session, stalest first)
 
-- P accounts & cloud (one surface): 2026-10-19 (**S521 — 11th P, dictionary: tools 22/22, sync 213, migration 47; W1–W9 32/32 (controls 2/2); static 38/38 (plants 8/8); live clean. FOUND 1, FIXED 1 (+3). P-next: LL (never), dashboard (S421).**)
+- P accounts & cloud (one surface): 2026-10-21 (**S535 — 12th P, name_tags (first): W1–W8 29/29, static 26/26, plants 13/13; live clean. Page clean; 1 suite-wide FIXED, 1 gate-2. P-next: LL (never), dashboard (S421).**)
 
 - O deslop — AI-design-tell sweep (one surface): 2026-09-08 (**S346 — 6th O, `flash_cards.html`. ⚑ BLOCKED HERE TWICE (S399, S403) — NOT "needs an attended session". Clone + the 4 parsers install fine; EXECUTING the detector is refused by the sandbox's auto-mode classifier ("Code from External"), and the refusal names the remedy: the maintainer adds a Bash permission rule for the detector (or …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -726,4 +726,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-21 (**S528 — 39th F, empty states: 6 no-match surfaces × 4 cells by real input (plants 72/72), 12-page census. FOUND 4, FIXED 1 (+ LL ×2). F-next: loading states.**)
 
-**Next session (S535):** **PR: `claude/confident-shannon-k7zmyp` open → continue; merged → fresh branch.** `sw.js` **v1063**, FM **5.59**, corpus ?v=7. ⚑ Stalest: P (S521; Name Tags' wiring unaudited), M (S522), G (S523). ⚑ Keep-alive #40 (10-22): confirm green. ⚑ Seeds: 46. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4; O's Bash rule.
+**Next session (S536):** **PR: `claude/improveloop-s535` open → continue; merged → fresh branch.** `sw.js` **v1064**, FM **5.59**, corpus ?v=7. ⚑ Stalest: M (S522), G (S523), D (S524). ⚑ Keep-alive #40 (10-22): confirm green. ⚑ Seeds: 46. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4; O's Bash rule.
