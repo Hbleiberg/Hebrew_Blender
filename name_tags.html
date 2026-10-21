@@ -837,7 +837,7 @@ body.dark #appToast { background: #0a0f1c; }
       </div>
       <div class="nt-inline" id="ntRenameRow" hidden>
         <label for="ntRenameInput" data-i18n="nametags.list.name_label">List name</label>
-        <input type="text" class="nt-field" id="ntRenameInput" maxlength="120" aria-describedby="ntRenameNote">
+        <input type="text" class="nt-field" id="ntRenameInput" maxlength="120" autocapitalize="words" autocorrect="off" spellcheck="false" aria-describedby="ntRenameNote">
         <button type="button" class="nt-btn" id="ntRenameSave" data-i18n="nametags.list.rename_save">Save</button>
         <button type="button" class="nt-btn ghost" id="ntRenameCancel" data-i18n="nametags.list.rename_cancel">Cancel</button>
         <p class="nt-note warn" id="ntRenameNote" role="status" aria-live="polite"></p>
@@ -851,7 +851,7 @@ body.dark #appToast { background: #0a0f1c; }
       </div>
       <div class="nt-inline" id="ntPasteRow" hidden>
         <label for="ntPasteText" data-i18n="nametags.csv.paste_label">Paste rows from a spreadsheet: one student per line — the Hebrew name, the English name and, if you like, a transliteration, separated by tabs or commas.</label>
-        <textarea id="ntPasteText" dir="auto" spellcheck="false"></textarea>
+        <textarea id="ntPasteText" dir="auto" autocapitalize="words" autocorrect="off" spellcheck="false"></textarea>
         <button type="button" class="nt-btn" id="ntPasteAdd" data-i18n="nametags.csv.paste_add">Add these students</button>
         <button type="button" class="nt-btn ghost" id="ntPasteCancel" data-i18n="nametags.list.rename_cancel">Cancel</button>
       </div>
@@ -872,7 +872,7 @@ body.dark #appToast { background: #0a0f1c; }
       <p class="nt-note" id="ntListNote" role="status" aria-live="polite"></p>
       <div class="nt-extra-row" id="ntExtraRow" hidden>
         <label for="ntExtraText" data-i18n="nametags.list.extra_label">Extra line on every tag in this list</label>
-        <input type="text" class="nt-field" id="ntExtraText" maxlength="120" dir="auto" placeholder="e.g. Room 4 · Morah Rivka" data-i18n-placeholder="nametags.list.extra_placeholder">
+        <input type="text" class="nt-field" id="ntExtraText" maxlength="120" dir="auto" autocapitalize="words" autocorrect="off" spellcheck="false" placeholder="e.g. Room 4 · Morah Rivka" data-i18n-placeholder="nametags.list.extra_placeholder">
       </div>
       <div class="nt-table-wrap">
         <table class="nt-table" id="ntTable">
@@ -1282,6 +1282,8 @@ function ntRowEl(row, i, isNew) {
     inp.maxLength = NT_MAX_FIELD;
     inp.value = ntRowField(row, f);
     inp.spellcheck = false;
+    inp.setAttribute('autocorrect', 'off');   // names: a phone keyboard must not "correct" one onto the tag
+    if (f !== 'he') inp.setAttribute('autocapitalize', 'words');
     Object.keys(attrs).forEach(k => inp.setAttribute(k, attrs[k]));
     return inp;
   };
