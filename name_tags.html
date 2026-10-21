@@ -1563,6 +1563,46 @@ function ntImportRows(table) {
   return out;
 }
 let _ntPendingImport = null;   // { rows, source, listName? } waiting for Add / New list / Replace
+// A name as matching sees it: capitals, spacing and nikkud ignored, a maqaf read as a hyphen, a geresh as an apostrophe.
+function ntMatchKey(s) {
+  return ntStr(s).normalize('NFC').replace(NT_MARKS_RE, '').replace(/[\u05BE\u2010-\u2015]/g, '-').replace(/[\u05F3\u2018\u2019`]/g, "'")
+    .replace(/\s+/g, ' ').trim().toLowerCase();
+}
+// Sort incoming rows into students already on the list and new ones. A row names a student when every name both
+// have agrees and they share at least one; a pair agreeing on both names is matched first, and each student on the
+// list is matched at most once, so two students who share a name stay two. A match only fills in what the list
+// lacks (a blank field, or the nikkud of an unpointed Hebrew name with the same letters) — nothing typed is replaced.
+function ntMergeRows(target, rows) {
+  const keys = r => ({ he: ntMatchKey(ntRowField(r, 'he')), en: ntMatchKey(ntRowField(r, 'en')) });
+  const have = target.map(keys), want = rows.map(keys);
+  const score = (a, b) => {
+    let agree = 0;
+    for (const f of ['he', 'en']) if (a[f] && b[f]) { if (a[f] !== b[f]) return 0; agree++; }
+    return agree;
+  };
+  const used = new Set(), pair = new Map();
+  for (const need of [2, 1]) want.forEach((w, j) => {
+    if (pair.has(j)) return;
+    const i = have.findIndex((h, k) => !used.has(k) && score(h, w) === need);
+    if (i >= 0) { used.add(i); pair.set(j, i); }
+  });
+  const out = { fresh: [], filled: 0, same: 0, ex: false };
+  rows.forEach((r, j) => {
+    if (!pair.has(j)) { out.fresh.push(r); return; }
+    const t = target[pair.get(j)];
+    let changed = false;
+    ['he', 'en', 'tr', 'ex'].forEach(f => {
+      const old = ntRowField(t, f).trim(), got = ntRowField(r, f).trim();
+      if (!got || got === old) return;
+      if (old && !(f === 'he' && !NT_VOWEL_RE.test(old) && NT_VOWEL_RE.test(got) && ntMatchKey(old) === ntMatchKey(got))) return;
+      t[f] = got;
+      changed = true;
+      if (f === 'ex') out.ex = true;
+    });
+    if (changed) out.filled++; else out.same++;
+  });
+  return out;
+}
 // opts.listName: the name a new list takes (else the file's name without its extension); opts.msg: the line to show.
 function ntOfferImport(rows, source, opts) {
   ntCloseInline();
@@ -1590,15 +1630,23 @@ function ntApplyImport(how) {
   }
   const target = ntEnsureRows();
   if (how === 'replace') target.length = 0;
-  const room = NT_MAX_ROWS - target.length, added = rows.slice(0, Math.max(0, room));
+  const m = ntMergeRows(target, rows), matched = m.filled + m.same;
+  const room = NT_MAX_ROWS - target.length, added = m.fresh.slice(0, Math.max(0, room)), refused = m.fresh.length - added.length;
   added.forEach(r => target.push(r));
   _ntUndo = null;
   ntCloseInline();
   if (!ntSaveList()) return;
-  if (!ntSet.extra && added.some(r => r.ex)) { ntSetSet('extra', true); ntSyncControls(); }   // the file brought an extra line: show it
-  let msg = _fbN('nametags.csv.added', added.length, 'Added {count} student to "{name}".', 'Added {count} students to "{name}".', { name: ntCur.name });
-  if (added.length < rows.length) msg += ' ' + _fbT('nametags.list.err_max_rows', 'A list holds up to {max} students.', { max: NT_MAX_ROWS });
-  ntListNote(msg, added.length < rows.length);
+  if (!ntSet.extra && (m.ex || added.some(r => r.ex))) { ntSetSet('extra', true); ntSyncControls(); }   // the file brought an extra line: show it
+  const msgs = [];
+  if (!added.length && !refused && matched) msgs.push(_fbT('nametags.csv.all_there', 'Every student is already on "{name}".', { name: ntCur.name }));
+  else {
+    msgs.push(_fbN('nametags.csv.added', added.length, 'Added {count} student to "{name}".', 'Added {count} students to "{name}".', { name: ntCur.name }));
+    if (matched) msgs.push(_fbN('nametags.csv.already', matched, '{count} student was already on the list.', '{count} students were already on the list.'));
+  }
+  if (m.filled) msgs.push(_fbN('nametags.csv.filled', m.filled, 'Filled in what was missing for one of them.', 'Filled in what was missing for {count} of them.'));
+  if (refused) msgs.push(_fbT('nametags.list.err_max_rows', 'A list holds up to {max} students.', { max: NT_MAX_ROWS }));
+  const msg = msgs.join(' ');
+  ntListNote(msg, refused > 0);
   announce(msg);
   ntRenderListPicker();
   ntRenderTable();
@@ -1772,17 +1820,23 @@ function ntDisplayHe(he) {
 function ntLinesFor(row) {
   const out = [], he = ntDisplayHe(ntRowField(row, 'he'));
   const heStack = ntHeStack();
-  if (he) out.push({ text: he, pct: ntSet.sizeHe, color: ntSet.colorHe, family: heStack, weight: '400', rtl: true, lang: 'he', ref: 'לאקְ', bubble: ntSet.bubble });
+  if (he) out.push({ kind: 'he', text: he, pct: ntSet.sizeHe, color: ntSet.colorHe, family: heStack, weight: '400', rtl: true, lang: 'he', ref: 'לאקְ', bubble: ntSet.bubble });
   const tr = ntTrFor(row);
-  if (tr) out.push({ text: tr, pct: ntSet.sizeTr, color: ntSet.colorTr, family: NT_LATIN, weight: '400', rtl: false, lang: 'en', ref: 'Ag' });
+  if (tr) out.push({ kind: 'tr', text: tr, pct: ntSet.sizeTr, color: ntSet.colorTr, family: NT_LATIN, weight: '400', rtl: false, lang: 'en', ref: 'Ag' });
   const en = ntRowField(row, 'en').trim();
-  if (ntSet.english && en) out.push({ text: en, pct: ntSet.sizeEn, color: ntSet.colorEn, family: NT_LATIN, weight: '700', rtl: NT_HEB_RE.test(en) && !/[A-Za-z]/.test(en), lang: NT_HEB_RE.test(en) && !/[A-Za-z]/.test(en) ? 'he' : 'en', ref: 'Ag' });
+  if (ntSet.english && en) out.push({ kind: 'en', text: en, pct: ntSet.sizeEn, color: ntSet.colorEn, family: NT_LATIN, weight: '700', rtl: NT_HEB_RE.test(en) && !/[A-Za-z]/.test(en), lang: NT_HEB_RE.test(en) && !/[A-Za-z]/.test(en) ? 'he' : 'en', ref: 'Ag' });
   const ex = (ntRowField(row, 'ex').trim() || ntStr(ntCur.val && ntCur.val.extra).trim());
   if (ntSet.extra && ex) {
     const rtl = NT_HEB_RE.test(ex) && !/[A-Za-z]/.test(ex);
-    out.push({ text: ex, pct: ntSet.sizeEx, color: ntSet.colorEx, family: rtl ? heStack : NT_LATIN, weight: '600', rtl, lang: rtl ? 'he' : '', ref: rtl ? 'לאק' : 'Ag' });
+    out.push({ kind: 'ex', text: ex, pct: ntSet.sizeEx, color: ntSet.colorEx, family: rtl ? heStack : NT_LATIN, weight: '600', rtl, lang: rtl ? 'he' : '', ref: rtl ? 'לאק' : 'Ag' });
   }
   return out;
+}
+// The size (% of the tag) of each kind of line any tag in the list carries.
+function ntFullLines(list) {
+  const pct = {};
+  list.forEach(r => ntLinesFor(r).forEach(l => { pct[l.kind] = l.pct; }));
+  return Object.values(pct);
 }
 function ntLineSvg(line, slotH, maxW) {
   const font = line.weight + ' 100px ' + line.family;
@@ -1821,7 +1875,7 @@ function ntLineSvg(line, slotH, maxW) {
 }
 const NT_BORDER_CSS = { none: '', thin: '1.5px solid', thick: '4px solid', double: '6px double', dashed: '2px dashed', rounded: '2.5px solid' };
 // One face of a tag, w × h inches, for the student in `row` (idx: the tag's place in the run, for the pastels).
-function ntTagEl(row, idx, w, h, L, cls) {
+function ntTagEl(row, idx, w, h, L, cls, full) {
   const tag = el('div', 'nt-tag' + (cls ? ' ' + cls : ''));
   const inset = L.avery ? Math.max(0.04, L.safe * 0.5) : 0;
   if (L.avery && !cls) tag.style.inset = inset.toFixed(3) + 'in';
@@ -1839,6 +1893,13 @@ function ntTagEl(row, idx, w, h, L, cls) {
   if (!lines.length) return tag;
   const gap = ih * 0.03;
   let slots = lines.map(l => l.pct / 100 * ih);
+  // A tag missing a line other tags have (a student with one name, a Hebrew name without nikkud for the transliteration)
+  // lets its own lines grow into the room the full tags use, up to 2½ times their size.
+  if (full && full.length > lines.length) {
+    const room = Math.min(ih, full.reduce((a, p) => a + p / 100 * ih, 0) + gap * (full.length - 1)) - gap * (lines.length - 1);
+    const f = Math.min(2.5, room / slots.reduce((a, b) => a + b, 0));
+    if (f > 1) slots = slots.map(v => v * f);
+  }
   const total = slots.reduce((a, b) => a + b, 0) + gap * (lines.length - 1);
   if (total > ih) { const f = (ih - gap * (lines.length - 1)) / slots.reduce((a, b) => a + b, 0); slots = slots.map(s => s * f); }
   tag.style.gap = gap.toFixed(4) + 'in';
@@ -1858,7 +1919,7 @@ function ntRenderPreview() {
   const L = ntLayout();
   ntPageStyle(L);
   const rows = ntPrintableRows(), sample = !rows.length, list = sample ? NT_SAMPLE : rows;
-  const tent = ntTentOn(), per = L.cells.length;
+  const tent = ntTentOn(), per = L.cells.length, full = ntFullLines(list);
   const sheets = Math.max(1, Math.ceil(list.length / per));
   const frag = document.createDocumentFragment();
   for (let s = 0; s < sheets; s++) {
@@ -1885,11 +1946,11 @@ function ntRenderPreview() {
       }
       if (row) {
         if (tent) {
-          cell.appendChild(ntTagEl(row, idx, c.w, c.h / 2, L, 'nt-back'));
-          cell.appendChild(ntTagEl(row, idx, c.w, c.h / 2, L, 'nt-front'));
+          cell.appendChild(ntTagEl(row, idx, c.w, c.h / 2, L, 'nt-back', full));
+          cell.appendChild(ntTagEl(row, idx, c.w, c.h / 2, L, 'nt-front', full));
           cell.appendChild(el('div', 'nt-fold'));
-        } else if (L.rotate) cell.appendChild(ntTagEl(row, idx, c.w, c.h, L, 'nt-rot'));
-        else cell.appendChild(ntTagEl(row, idx, c.w, c.h, L, ''));
+        } else if (L.rotate) cell.appendChild(ntTagEl(row, idx, c.w, c.h, L, 'nt-rot', full));
+        else cell.appendChild(ntTagEl(row, idx, c.w, c.h, L, '', full));
       }
       area.appendChild(cell);
     });

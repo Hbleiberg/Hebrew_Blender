@@ -98,18 +98,18 @@ A picture for every weekly Torah portion.
 - **All 54 parshiyot** — each card has its emoji drawing, English and Hebrew names, the verses, a one-sentence summary and why that emoji was chosen, with a link to the parasha in the Torah Trainer
 - **This week, one book or all five** — the page opens on this week's parasha (both halves of a doubled week; the Torah Trainer's Diaspora or Israel choice)
 - **Print coloring sheets** — choose parshiyot and print their drawings to colour in, with the same paper, page and copies choices as the Letter Learner; the options sync to your account when signed in
+- Prints the cards on screen as well; dark mode. The old address `emoji_torah.html` forwards here
 
 ### Name Tags (`name_tags.html`) — unlisted
 Printable name tags for a class. Not linked from the hub, kept out of `sitemap.xml` and `llms.txt`, `noindex`, and not precached — reached by its address only.
 
 - **Class lists** — one list per class (new, rename, duplicate, delete): each student's Hebrew name (with the on-screen keyboard and its nikkud), English name, an optional transliteration and an optional extra line (class, grade or school, for the whole list or one student)
 - **Transliteration** — automatic from the Hebrew's nikkud (the dictionary's `hebrew-transliteration` loader with two name-tuned schemes, Modern or Ashkenazi), typed by hand, or off; a typed one always wins
-- **From the Classroom Dashboard** — bring in one of the dashboard's class lists (a line's Hebrew words become the Hebrew name, the rest the English name); the dashboard can likewise make a class from a Name Tags list (English, Hebrew or both). One-time copies
-- **CSV import and export** — a file or rows pasted from a spreadsheet, columns found by their English or Hebrew header (or by content), UTF-8 or the Windows Hebrew code page; added to the open list, made into a new list, or replacing it; a downloadable template
+- **From the Classroom Dashboard** — bring in one of the dashboard's class lists (a line's Hebrew words become the Hebrew name, the rest the English name); the dashboard can likewise make a class from a Name Tags list (English, Hebrew or both). One-time copies; bringing a class into a list that already has it adds only the students not yet on it and fills in a missing name for the rest
+- **CSV import and export** — a file or rows pasted from a spreadsheet, columns found by their English or Hebrew header (or by content), UTF-8 or the Windows Hebrew code page; added to the open list (students already on it, matched by name, only get their blanks filled in), made into a new list, or replacing it; a downloadable template
 - **The look** — the Hebrew font picker (with My Fonts), bubble letters (two outlined layers of the same text, white to colour in or a colour), a size and colour per line, a border, and a plain, tinted or rainbow background
-- **Printing** — 1, 2, 4, 6, 8 or 10 tags per page on plain Letter or A4 paper with cut lines, on the matching Avery label sheet (5165, 5126, 5168, 5164, 5395, 5163 — Letter, placed from the paper's edge, with an outlines-only test page), or as desk tent cards folded in half (1 or 2 to a page); a long name shrinks to its own tag
+- **Printing** — 1, 2, 4, 6, 8 or 10 tags per page on plain Letter or A4 paper with cut lines, on the matching Avery label sheet (5165, 5126, 5168, 5164, 5395, 5163 — Letter, placed from the paper's edge, with an outlines-only test page), or as desk tent cards folded in half (1 or 2 to a page); a long name shrinks to its own tag, and a tag missing a line the others have (a student with only one name) lets its other lines grow into the space
 - Class lists and the design sync to your account when signed in, and travel in `.ivrit` files; guided tour, dark mode
-- Prints the cards on screen as well; dark mode. The old address `emoji_torah.html` forwards here
 
 ### Hebrew Font Maker (`Hebrew_Font_Maker.html`) — Beta
 Turn your own handwritten Hebrew letters into a real, installable font — entirely in the browser. (The current version is shown in the tool's About tab.)

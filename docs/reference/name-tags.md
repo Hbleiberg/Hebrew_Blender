@@ -50,6 +50,11 @@ transliterations still print.
   `viewBox` the text's canvas-measured box (`ntMeasure`, in the same face at 100 px, the vertical extent widened to a
   reference string so every tag's letters share one size); a line wider than its tag keeps its slot and scales down
   (`preserveAspectRatio` meet). The memo is cleared and the preview re-rendered when a face finishes loading.
+- **A tag missing a line lets its own lines grow.** `ntFullLines(list)` collects the kinds of line (`he`, `tr`, `en`,
+  `ex` — each line object's `kind`) that any tag in the rendered list carries; a tag with fewer scales its slots up
+  together into the height the full set would take (capped at the inner height), at most 2½ times their slider size,
+  so a one-name student's tag (a Dashboard roster line, a Hebrew name without nikkud for the transliteration) is not
+  half empty. A list whose tags all carry the same lines prints at the slider sizes.
 - **Bubble letters** are two layers of the same text: a round-joined stroke of `2 × (puff + edge)` in the ink colour,
   then a stroke and fill of `2 × puff` in the inside colour (white to colour in, or a chosen colour). Puff is in font
   units (`2 + slider × 0.05`); past about 7 the letters' counters fill in. The nikkud is left out in bubble mode.
@@ -76,7 +81,8 @@ Both are **one-time copies**; nothing links a list to its source afterwards.
   words with Hebrew letters in the Hebrew name and the rest in the English name, dropping the separators between
   them (`/`, `|`, `·`, brackets, a free-standing dash), so "David / דָּוִד", "דוד כהן David Cohen" and
   "בַּת־שֶׁבַע - Batsheva" each fill both; a hyphenated or maqaf name stays whole. The rows then take the CSV import's
-  path (Add / New list, named after the class / Replace).
+  path (Add / New list, named after the class / Replace), so copying a class into a list that already has it adds
+  only its new students (*Add matches by name*, below).
 - **Name Tags → Dashboard:** the dashboard's *Make a class from a Name Tags list* (`docs/reference/dashboard.md` →
   Student Picker), shown only on a device that holds Name Tags lists.
 
@@ -87,5 +93,15 @@ comma). `ntImportRows` finds columns by an English or Hebrew header (`NT_HEADERS
 plus Last, Transliteration/Pronunciation/תעתיק, Extra/Class/Grade/כיתה) or, headerless, by content (the column of
 Hebrew letters, then the first and second Latin columns). A file is decoded as UTF-8, falling back to windows-1255.
 The import offers Add / New list (named from the file) / Replace (a `confirm()` naming the account-wide effect when
-signed in); an import that brings extra-line values turns the extra line on. Export and the template write a UTF-8
+signed in); an import that brings extra-line values turns the extra line on.
+
+**Add matches by name** (`ntMergeRows`, every Add: a file, a paste, a Dashboard class). Names are compared by
+`ntMatchKey` — capitals, spacing and nikkud ignored, a maqaf read as a hyphen and a geresh as an apostrophe. An
+incoming row names a student already on the list when every name both have agrees and they share at least one
+(so "David" matches "דָּוִד / David", and "רבקה" never matches "Rivka" — they share no name); pairs agreeing on both
+names are matched first, and each student on the list is matched at most once, so two students who share a name stay
+two. A match only fills what the list lacks: a blank Hebrew name, English name, transliteration or extra line, and the
+nikkud of an unpointed Hebrew name with the same letters; nothing typed is replaced. The note counts the students
+added, those already on the list and those filled in (`nametags.csv.added` / `.already` / `.filled`, or
+`.all_there` when nobody was new). New list and Replace start empty, so they match nothing. Export and the template write a UTF-8
 BOM (Excel) and prefix a cell that starts like a formula with `'`.
