@@ -10,8 +10,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S530 A — glyph census, rule first**) | dictionary, resources, flash, torah, FM, index | **Category and option emoji are still heard** (findings S530): content or decoration is unruled. | found S530
 
-- [ ] P4 (**NEW S531 E — docs**) | README.md | **The word-data section lists three `era` values; the corpus has two more** (`Mishnaic`, `Aramaic`, one each). | found S531
-
 - [ ] P4 (**NEW S523 G — gate 3**) | hebrew_dictionary.html | **A long one-word headword overflows its card** (paper and phone). | found S523
 
 - [ ] P4 (**NEW S522 M — gate 4**) | parsha_emojis.html | **On a phone (≤600px) Print still takes a row of its own** (EN 390: four rows). | found S522
@@ -66,8 +64,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (S476 N — gate 4) | hebrew_blend_generator.html | **On desktop the Generate bar covers 1–3 footer FAQ rows at the page end** (phones fixed `dbf2d7a0`). | found S476
 
-- [ ] P4 (**NEW S474 L — gate 2**) | index.html, torah_trainer.html | **The hub's ItemList one-liner and Torah's WebApplication + HowTo descriptions name the weekly parsha only** (not the holidays or Megillot). | found S474
-
 - [ ] P2 (**NEW S465 G — maintainer**) | starting-fonts/manifest.json | **14 fonts' `copyright` is empty**: re-stage with `/addOSFont --force` (detector fixed `3609c19`; ids: findings S465). | found S465
 
 - [ ] P4 (**NEW S466 D**) | js/ivrit-saves.js | **A fresh device's first signed-in load rewrites the whole sync memory once per row** (tasks 50→340 ms, settled in 47 s @4×, 410 rows) and fetches each row by its own GET (457). | found S466
@@ -83,8 +79,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW PR #313**) | classroom_dashboard.html | **The dashboard's parsha line never names a special Shabbat** (Zachor, Parah, Shekalim…) though `HebCal.specialShabbat` now answers by date. | found PR #313
 
 - [ ] P4 (**NEW S464 M**) | resources.html | **Below ~1020px wrapped chips flow back under their row label.** | found S464
-
-- [ ] P4 (**NEW S454 H — gate 2**) | resources.html | **"Jewish Interactive" is listed twice** (one URL; "All" counts 43 for 42). | found S454
 
 - [ ] P4 (**NEW 2026-10-03, gate 2 copy**) | hebrew_dictionary.html | **"Any of these letters" requires every ticked letter** (`onFilter`); the Hebrew label (כל אחת מהאותיות האלה) says so, the English label and its "Any:" chip don't. | found 2026-10-03
 
@@ -109,8 +103,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S447 K — the corpus's shva slips, the doubled-yod half FIXED `a86b5a16`**) | data/hebrew_emojis.json | **Some transliterations read a silent shva as a vowel or drop a voiced one** ("seport", "michnsey gi'yns", "mistovvim"); a corpus edit with a `?v=3` bump, best done as a reviewed list. | found S447
 
 - [ ] P4 (**NEW S435 P — gate 2, new copy ×5**) | dashboard, generator, torah, dictionary, flash | **The vowel-colour reset confirm names no account-wide effect while signed in**, though all five reset overrides that travel. | found S435
-
-- [ ] P4 (**NEW S432 L — gate 2**) | index.html | **The hub's og:/twitter:description name every tool but the Font Maker.** | found S432
 
 - [ ] P4 (**S430 A — the maintainer's call**) | torah_trainer.html | **The reading header keeps "Aliyah {n}" English in the Hebrew UI** beside a translated cycle label (also the copy heading, the handout). | found S430
 
@@ -310,6 +302,12 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-21 | (S532 close-out) | branch/deploy note | **S532 = L (FOUND 1, FIXED 4) on PR #353.** Drift: none but `0006` (outside loop). Gates 2 ×3 → all approved. sw v1056→v1057; no FM bump; sitemap + llms regenerated.
+
+- [x] 2026-10-21 | `5b58a709` `8e91ce3b` | LL, index, torah, CSV | (S532) **Vowel FAQ: one card per vowel; Torah's hub card + JSON-LD name the holidays and Megillot (S474).** | findings
+
+- [x] 2026-10-21 | `1818f37a` `2f20ee57` | resources, README | (S532) **Jewish Interactive listed once (S454); the README's era list (S531).** S432 struck: the delta fixed it. | findings
+
 - [x] 2026-10-21 | `b7cd608a` | db, CLAUDE.md | (outside loop) **0006 live: no default grants; rule 10.** | findings
 
 - [x] 2026-10-21 | (S531 close-out) | branch/deploy note | **S531 = E (FOUND 2, FIXED 4) on PR #353.** Drift: none. sw v1055→v1056; no FM bump; sitemap stamped; no gates.
@@ -328,6 +326,8 @@ _(none)_
 
 ### Per-session log (one line per session)
 
+- 2026-10-21 | **S532** | iters: 5 | tools: LL, index, torah, resources, README, CSV, sw.js | patterns fixed: — | pass run: L | SW: v1056→v1057
+
 - 2026-10-21 | **S531** | iters: 5 | tools: README, parsha ×2, FM, CSV, sitemap, sw.js | patterns fixed: visible-label ×1, sub-floor ×1 | pass run: E | SW: v1055→v1056
 
 - 2026-10-21 | **S530** | iters: 5 | tools: LL ×2, parsha ×2, generator ×2, 11 headers, CSV, sw.js | patterns fixed: live-region ×1, decorative-glyph ×2 | pass run: A | SW: v1054→v1055
@@ -338,7 +338,7 @@ _(none)_
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S531 (2026-10-21):** parsha_emojis, FM, README, CSV, sitemap, sw.js S531 · LL, generator, index, dictionary, dashboard, torah, account, resources, contact, privacy, terms, 404 S530 · flash S527 · corpus S524 · saves, scripts S521 · trope S519 · i18n.js S512 · pwa S472.
+- **Snapshot S532 (2026-10-21):** LL, index, torah, resources, README, CSV, sitemap, sw.js S532 · parsha_emojis, FM S531 · generator, dictionary, dashboard, account, contact, privacy, terms, 404 S530 · flash S527 · corpus S524 · saves, scripts S521 · trope S519 · i18n.js S512 · pwa S472.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -724,7 +724,7 @@ _(none)_
 
 - J metrics-informed: never run — SKIP in rotation until the impact-metrics dashboard/Worker is live (not live)
 
-- L SEO & discoverability audit: 2026-10-19 (**S518 — 28th L, `fc54901d..18a7e6a3` (129 commits; LL's first L): 20 arms on 18 pages (plants 24/24); SEO + JSON-LD identical 17/17 (control 3/3); generators current; FAQ twins 8/8; claims by real clicks. CLEAN; LL staged (noindex, no og, 377-char description → gate 2). FIXED 4 (FM ×2, dashboard, …[full text: IMPROVEMENT_ARCHIVE.md]
+- L SEO & discoverability audit: 2026-10-21 (**S532 — 29th L, `18a7e6a3..ca9b9618` (110 commits; LL's launch, parsha_emojis' first L): 20 arms + 3 on 20 pages (plants 29/29); SEO surface unchanged 16/18; LL + parsha JSON-LD claims by real clicks; FAQ twins 10/10. FOUND 1 (gate 2), FIXED 4; S432 struck.**)
 
 - H teacher walkthrough / paper-cuts (one tool): 2026-10-20 (**S526 — `letter_learner.html`: 6 lessons, ~75 clicks × 4 cells. FOUND 8+1, FIXED 2 (+3). H-next: parsha_emojis, privacy/terms/404 (never), trope (S367).**)
 
@@ -732,4 +732,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-21 (**S528 — 39th F, empty states: 6 no-match surfaces × 4 cells by real input (plants 72/72), 12-page census. FOUND 4, FIXED 1 (+ LL ×2). F-next: loading states.**)
 
-**Next session (S532):** **PR: `claude/improveloop-s526` (#353) open → continue; merged → fresh branch.** `sw.js` **v1056**, FM **5.59**, corpus ?v=7. ⚑ Stalest: L (S518), K (S519), N (S520). ⚑ Ready: the README era note. ⚑ Seeds: 46. ⚑ Outside-loop: `0006` live. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4; O's Bash rule.
+**Next session (S533):** **PR: `claude/improveloop-s526` (#353) open → continue; merged → fresh branch.** `sw.js` **v1057**, FM **5.59**, corpus ?v=7. ⚑ Stalest: K (S519), N (S520), P (S521). ⚑ Keep-alive #40 is the first run after `0006`: confirm it green. ⚑ Seeds: 46. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4; O's Bash rule.

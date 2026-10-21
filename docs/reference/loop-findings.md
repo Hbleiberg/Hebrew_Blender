@@ -2844,3 +2844,56 @@ Maintainer-requested and maintainer-approved, applied through the connector (not
 - **What closes the function gap:** each function's own `revoke all … from public` plus a narrow `grant execute`. On the scratch cluster this gave `anon` f, `authenticated` t, `service_role` f.
 - **Rule 10's table recipe on the same cluster:** `anon` gets nothing; `authenticated` and `service_role` get select and delete but not truncate, plus the sequence.
 - **Live, after:** only `postgres`'s own entries remain under owner `postgres`. The privileges of `font_projects`, `profiles`, `saves` and the six `public` functions are byte-identical to the before-snapshot, and `keepalive()` is still executable by `anon`.
+
+## S532 (2026-10-21) — pass L on the S518 → S531 delta (the 29th L; the Letter Learner's launch, parsha_emojis' first L)
+- [ ] P4 (**NEW S532 Pass L — receipts over `18a7e6a3..ca9b9618` (110 commits), so the next L extends rather than repeats them**) | suite-wide |
+  - **Delta:** 20 crawler files. `parsha_emojis.html` (+1,733) and the `emoji_torah.html` redirect stub are new; the Letter Learner launched (+2,192); hub +155.
+  - **Harness `l532/` (scratchpad; `l518/` was gone, so it was rebuilt to S460's list):**
+    - `audit.py ROOT`: the 20 arms, plus a stray second robots meta and account-inbound; `STUB` exempts the noindex redirect from the description and `h1` arms;
+    - `plants.py`: 29 plants, each in a hardlinked copy that is unlinked before it is rewritten;
+    - `seohash.py A B [--show]`;
+    - the browser probes `llx*.mjs` and `pex.mjs`.
+  - **Controls:** 29/29 plants fired their arm, and the clean HEAD copy reads 0.
+  - **Census:** 20 pages, 15 indexable, all reachable from the hub. Titles are 25–62 characters (parsha_emojis 62) and descriptions 136–164. There are 45 JSON-LD blocks, with 68 FAQ questions and 10 HowTos. `account.html` has 2 inbound links (index, privacy); LL has 10 and parsha_emojis 11.
+  - **Over the delta:** the SEO surface is identical on 16 of the 18 pages S518 had.
+    - The hub's descriptions now name LL, Parsha Emojis and the Font Maker; its ItemList and SiteNavigationElement list 10 tools in the visible cards' order (8 `a.page-card` plus the Discover group's two `a.go-btn`).
+    - LL went from staged to launched: all 14 tags and 4 blocks.
+    - The generators wrote nothing.
+  - **Claims, by real clicks (EN light 1280; spot checks in HE dark 800; 0 page errors):**
+    - **LL:**
+      - 3 modes; the mode stays in the address; `?letter=gimel` and `?mode=cursive&letter=gimel` open Gimel in the right mode;
+      - a card has four pictured words, 12 vowels with Hear buttons and 5 font tiles;
+      - cursive words render in IvritSuite Ktav, and 10 of 31 letters carry "Don't mix it up with";
+      - Vowels: 13 cards in 8 families, each card speaking 4 letters, and a press really speaks (a counted side effect);
+      - Options: split pairs, word audio, a voice select and 13 vowel boxes;
+      - the bulk popup: 31 letters, copies, sets/grouped, block/cursive, Letter/A4, 1/2/4 per sheet, colored.
+    - **Parsha Emojis, with the clock fixed:**
+      - on 2026-10-21 it opens on Lech-Lecha; 2026-03-11 gives Vayakhel + Pekudei, and 2026-04-01 gives Shemini (the holiday's next);
+      - View All: 54 cards, each with its SVG, names, verses and summary, and 54 Torah Trainer links reading "View in Torah Trainer";
+      - in the HE UI, 54/54 summaries and whys are Hebrew;
+      - Print sends the 12 Genesis cards on white;
+      - the coloring popup has 54 chips, copies, collate, orientation, paper, 1/2/4 per sheet, EN/HE/both text, colored, and 6 `data-field` include boxes.
+    - Both pages' "keeps your options on every device" has a registry row (LL omits `voiceURI` by design).
+  - **FAQ twins:** visible questions match JSON-LD questions in count on 10/10 pages; LL, parsha, FM and trope also match word for word.
+  - **Found:** LL's FAQ claimed a card per vowel *family*: gate 2, fixed `5b58a709`.
+  - **Struck:** S432's hub og/twitter descriptions that "name every tool but the Font Maker" (both now name it).
+  - **Triaged, not defects:**
+    - **(a)** The dashboard's parsha popup (`0ba274dd`) is in none of its FAQs or HowTos: a discoverability gap, not a false claim.
+    - **(b)** The Torah Trainer's chanted audio covers the 54 parshiyot and their haftarot, so the approved holiday/Megillot wording went after the feature list, not inside it (`8e91ce3b`).
+    - **(c)** `404.html` links four tools plus privacy and terms: a curated list, outside the crawl set.
+
+  | found S532
+- [ ] P4 (**NEW S532 — the four fixes' receipts**) | letter_learner.html, index.html, torah_trainer.html, resources.html, README.md |
+  - **`5b58a709`** (`fix1.mjs`; a `git archive HEAD` copy on :8084): the answer is read after a real click on its question, EN/HE × light/dark × 1280/800. HEAD shows the old text in 4/4 cells, the tree the new one in 4/4, and the English equals its JSON-LD text.
+  - **`8e91ce3b`** (`fix2.mjs`): the hub Torah card's text is correct in all 4 cells. Only its row grows, by 19–20px, and its row-mates stretch equally; JSON-LD parses; llms regenerated.
+  - **`1818f37a`** (`fix3.mjs`): real clicks on All, Printables and Hebrew. The tree shows 42/1, 5/0 and 7/1 (cards / Jewish Interactive); HEAD shows 43/2, 6/1 and 7/1. Nothing is stored by position.
+  - **`2f20ee57`**: all 13,081 entries counted: Both 11,582, Biblical 1,458, Modern 39, Mishnaic 1, Aramaic 1.
+
+  | found S532
+- [ ] P4 (**S532 — probe traps 1–4**) | probes |
+  - **(1)** `urlparse('/x.html')` has no netloc and keeps the slash: a dead-link arm that joins it to ROOT unstripped reports every root-relative link as dead (8 false hits), and a crawl arm misses those edges.
+  - **(2)** The visible-FAQ keys take a third shape, `letterlearner.faq.q1` (S518's trap 2 was `trope.footer.faq_qN`): match `faq[._]q`, or read the rendered summaries.
+  - **(3)** `hebrew_words.json` is a dict of buckets: a counter over the first list it finds reads 41 of 13,081 entries. Iterate every bucket.
+  - **(4)** The hub's tools are `a.page-card` plus the Discover group's `a.go-btn` (LL, Parsha Emojis): a selector on `class*=tool` resolves nothing.
+
+  | found S532

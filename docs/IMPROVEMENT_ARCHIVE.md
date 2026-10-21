@@ -93459,3 +93459,11 @@ _(prior — S530 pointer:)_ **Next session (S530):** **PR: `claude/improveloop-s
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 _(prior — S531 pointer:)_ **Next session (S531):** **PR: `claude/improveloop-s526` (#353) open → continue; merged → fresh branch.** `sw.js` **v1055**, FM **5.59**, corpus ?v=7. ⚑ Stalest: E (S517), L (S518). ⚑ Ready: parsha_emojis card link (name + 24px) and sliders. ⚑ Seeds: 46. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4; O's Bash rule.
+
+
+<!-- archived by compact-ledger at the S533 boundary, 2026-10-21 -->
+## Compaction (S533, 2026-10-21) — moved verbatim from the live ledger
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+_(prior — S532 pointer:)_ **Next session (S532):** **PR: `claude/improveloop-s526` (#353) open → continue; merged → fresh branch.** `sw.js` **v1056**, FM **5.59**, corpus ?v=7. ⚑ Stalest: L (S518), K (S519), N (S520). ⚑ Ready: the README era note. ⚑ Seeds: 46. ⚑ Outside-loop: `0006` live. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4; O's Bash rule.
