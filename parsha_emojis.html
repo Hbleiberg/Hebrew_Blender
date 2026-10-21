@@ -320,7 +320,7 @@ body.dark .et-view[aria-pressed="true"]{background:var(--gold);border-color:var(
 .et-view:focus-visible,.et-print:focus-visible,.et-go:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;}
 .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;}
 .et-note{margin:14px 0 0;font-size:0.95rem;color:var(--text);}
-.et-note[hidden]{display:none;}
+.et-note:empty{margin:0;}   /* the coloring note's rule: never hidden, so a load failure is heard */
 
 /* ───── The cards: the Torah Trainer's emoji gallery cards (its .tt-emo-* rules) on the page's own surface — white
    cards on the cream page, where the gallery has cream cards on a white dialog. The text column stretches to the
@@ -418,7 +418,7 @@ html[lang="he"] .et-cs-set legend,html[lang="he"] .et-cs-legend{letter-spacing:n
 .et-cs-size input[type="range"]:disabled{opacity:0.4;}
 .et-cs-size output{font-variant-numeric:tabular-nums;color:var(--muted);font-size:0.82rem;}
 .et-cs-note{margin:0 0 10px;font-size:0.85rem;color:var(--text);}
-.et-cs-note:empty{display:none;}
+.et-cs-note:empty{margin:0;}   /* empty, it collapses by margin, not display:none: a hidden role=status leaves the accessibility tree, so its first message could go unheard */
 .et-cs-empty{color:var(--muted);font-size:0.95rem;text-align:center;padding:40px 12px;}
 .et-cs-empty[hidden]{display:none;}
 .et-cs-pages{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:20px 16px;align-items:start;}
@@ -615,7 +615,7 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
       <button type="button" class="et-print hi-btn" id="etPrint" title="Print the cards on screen" data-i18n-title="emojitorah.print.title"><svg class="hi hi-sm hi-print" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9.2V3.6h10v5.6"/><path d="M7 9.2H5.6A2.1 2.1 0 0 0 3.5 11.3v3.6a2.1 2.1 0 0 0 2.1 2.1H7"/><path d="M17 9.2h1.4a2.1 2.1 0 0 1 2.1 2.1v3.6a2.1 2.1 0 0 1-2.1 2.1H17"/><rect x="7" y="14.2" width="10" height="6.2" rx="1.2"/><circle cx="17.6" cy="12" r="1" fill="currentColor" stroke="none"/></svg><span class="hi-lbl" data-i18n="emojitorah.print.label">Print</span></button>
     </div>
   </div>
-  <p class="et-note" id="etNote" role="status" aria-live="polite" hidden></p>
+  <p class="et-note" id="etNote" role="status" aria-live="polite"></p>
   <div id="etCards"></div>
 </main>
 
@@ -869,13 +869,13 @@ function etRender() {
   if (!window.I18n) return;
   document.querySelectorAll('#etViews .et-view').forEach(b => b.setAttribute('aria-pressed', b.dataset.view === etView ? 'true' : 'false'));
   const box = document.getElementById('etCards'), note = document.getElementById('etNote');
-  note.hidden = true; note.textContent = ''; box.classList.remove('et-many');
-  if (etFailed) { box.innerHTML = ''; note.textContent = I18n.t('emojitorah.load_failed'); note.hidden = false; return; }
+  note.textContent = ''; box.classList.remove('et-many');
+  if (etFailed) { box.innerHTML = ''; note.textContent = I18n.t('emojitorah.load_failed'); return; }
   if (!etData) return;   // still loading
   const week = etThisWeek();
   if (etView === 'today') {
     if (week) { box.innerHTML = etTodayHTML(week); return; }
-    note.textContent = I18n.t('emojitorah.today.unavailable'); note.hidden = false;   // no calendar: every card instead
+    note.textContent = I18n.t('emojitorah.today.unavailable');   // no calendar: every card instead
     box.innerHTML = ET_BOOKS.map(b => etBookSection(b, null)).join('');
     box.classList.add('et-many');
     return;

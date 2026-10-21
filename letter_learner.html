@@ -678,7 +678,7 @@ html[lang="he"] .ll-vgroup { letter-spacing:normal; text-transform:none; }
 .ll-cs-center figcaption { font-family:'Libre Baskerville', serif; font-size:3.6cqmin; line-height:1.3; text-align:center; margin-top:1.2cqmin; max-width:100%; }
 .ll-cs-center figcaption strong { display:block; }
 .ll-cs-credit { font-size:2cqmin; color:#555; text-align:end; margin-top:1cqmin; }   /* the sheet is dir=ltr: the bottom-right corner */
-.ll-cs-note:empty { display:none; }
+.ll-cs-note:empty { margin:0; }   /* empty, it collapses by margin, not display:none: a hidden role=status leaves the accessibility tree, so its first message could go unheard */
 .ll-cs-opts { display:flex; flex-wrap:wrap; gap:12px 26px; align-items:flex-start; margin-top:6px; }
 .ll-cs-set { border:none; margin:0; padding:0; min-width:0; display:flex; flex-direction:column; gap:2px; }
 .ll-cs-set legend { font-size:0.78rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--muted); padding:0; margin-bottom:4px; }
@@ -729,7 +729,7 @@ body.dark .ll-bp-main { background:var(--cream); }   /* dark --warm-gray is the 
 .ll-bp-copies input[type="number"] { width:4.5em; font:inherit; font-size:0.9rem; padding:4px 6px; border:1.5px solid var(--border); border-radius:6px; background:var(--white); color:var(--text); }
 .ll-bp-copies .ll-opt:has(input[type="radio"]:disabled) { opacity:0.5; }   /* the order radios, at one copy */
 .ll-bp-note { margin:0 0 10px; }
-.ll-bp-note:empty { display:none; }
+.ll-bp-note:empty { margin:0; }   /* the Coloring note's rule, for the same reason */
 .ll-bp-empty { color:var(--muted); font-size:0.95rem; text-align:center; padding:40px 12px; }
 .ll-bp-empty[hidden] { display:none; }
 .ll-bp-pages { list-style:none; display:grid; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr)); gap:20px 16px; align-items:start; }
