@@ -879,6 +879,7 @@ body.dark .count-custom.active { background: var(--navy-deep); border-color: var
 /* ============== FONT SELECTOR ============== */
 .font-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 6px; margin-top: 8px; }
 .font-missing-note { margin: 4px 0 0; font-size: 0.78rem; color: var(--muted, #6b6050); }
+.font-missing-note:empty { margin: 0; }   /* empty, it collapses by margin, never [hidden]: a hidden role=status leaves the accessibility tree, so its first message could go unheard */
 .font-opt {
   padding: 8px;
   border: 1px solid var(--border-strong);
@@ -2132,7 +2133,7 @@ html[lang="he"] .beta-tag { letter-spacing: normal; text-transform: none; }   /*
       <div class="label adv-subhead" data-i18n="flashcards.advanced.hebrew_font_head">Hebrew Font</div>
       <div class="adv-subbody">
         <div class="font-grid" id="fontGrid"></div>
-        <p id="hebFontMissing" class="font-missing-note" role="status" aria-live="polite" hidden></p>
+        <p id="hebFontMissing" class="font-missing-note" role="status" aria-live="polite"></p>
         <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" data-i18n-title="shared.fonts.upload_title" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;"><svg class="hi hi-sm hi-upload" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.2V4"/><path d="M7.6 8.4 12 4l4.4 4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="shared.fonts.upload_label">Upload your own font?</span><input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPick(this)"></label>
       </div>
 
@@ -2140,7 +2141,7 @@ html[lang="he"] .beta-tag { letter-spacing: normal; text-transform: none; }   /*
       <div class="label adv-subhead" data-i18n="flashcards.advanced.english_font_head">English / Latin Font</div>
       <div class="adv-subbody">
         <div class="font-grid" id="engFontGrid"></div>
-        <p id="engFontMissing" class="font-missing-note" role="status" aria-live="polite" hidden></p>
+        <p id="engFontMissing" class="font-missing-note" role="status" aria-live="polite"></p>
         <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" data-i18n-title="shared.fonts.upload_title" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;"><svg class="hi hi-sm hi-upload" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.2V4"/><path d="M7.6 8.4 12 4l4.4 4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="shared.fonts.upload_label">Upload your own font?</span><input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadEngFontPick(this)"></label>
       </div>
 
@@ -3197,9 +3198,9 @@ function taamimStack(stack) {
 // choice itself is untouched, so it travels through a sync unchanged.
 function _markMissingFont(gridSel, noteId, name) {
   const note = document.getElementById(noteId);
-  if (!name) { if (note) { note.textContent = ''; note.hidden = true; } return; }
+  if (!name) { if (note) note.textContent = ''; return; }
   document.querySelectorAll(gridSel + ' .font-opt').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); });
-  if (note && _myFontsLoaded) { note.textContent = I18n.t('shared.fonts.missing_note', { name }); note.hidden = false; }
+  if (note && _myFontsLoaded) note.textContent = I18n.t('shared.fonts.missing_note', { name });
 }
 function setHebFont(name) {
   // An unknown name bails instead of falling back: at init it is a My Font the async store

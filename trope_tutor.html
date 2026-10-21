@@ -747,6 +747,7 @@ body.dark .settings-note.error { color:#ff6666; }
 /* ───── Font selector (house pattern) ───── */
 .font-options { display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:4px; }   /* the picker spans the Settings tab (it was two columns in the old 380px drawer): ~6 across on a desktop, 4 at 800px, 2 on a phone */
 .font-missing-note { margin: 4px 0 0; font-size: 0.78rem; color: var(--muted, #6b6050); }
+.font-missing-note:empty { margin: 0; }   /* empty, it collapses by margin, never [hidden]: a hidden role=status leaves the accessibility tree, so its first message could go unheard */
 .font-section-hdr {
   font-size:0.7rem; color:var(--muted); font-weight:700;
   letter-spacing:0.08em; text-transform:uppercase;
@@ -4225,10 +4226,10 @@ let _myFontsLoaded = false;
 function _markMissingFont(name) {
   const opts = document.getElementById('fontOptions');
   let note = document.getElementById('hebFontMissing');
-  if (!note && opts) { note = document.createElement('p'); note.id = 'hebFontMissing'; note.className = 'font-missing-note'; note.setAttribute('role', 'status'); note.setAttribute('aria-live', 'polite'); note.hidden = true; opts.insertAdjacentElement('afterend', note); }
-  if (!name) { if (note) { note.textContent = ''; note.hidden = true; } return; }
+  if (!note && opts) { note = document.createElement('p'); note.id = 'hebFontMissing'; note.className = 'font-missing-note'; note.setAttribute('role', 'status'); note.setAttribute('aria-live', 'polite'); opts.insertAdjacentElement('afterend', note); }
+  if (!name) { if (note) note.textContent = ''; return; }
   document.querySelectorAll('.font-opt').forEach(el => { el.classList.remove('active'); el.setAttribute('aria-pressed', 'false'); });
-  if (note && _myFontsLoaded && window.I18n) { note.textContent = I18n.t('shared.fonts.missing_note', { name }); note.hidden = false; }
+  if (note && _myFontsLoaded && window.I18n) { note.textContent = I18n.t('shared.fonts.missing_note', { name }); }
 }
 function setHebFont(name) {
   // Unknown name (e.g. a persisted My Font before the async refreshMyFonts() has
