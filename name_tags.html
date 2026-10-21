@@ -313,6 +313,24 @@ header p { font-size:0.78rem; color:var(--gold-light); margin-top:2px; }
 .nt-app { display:flex; flex:1; align-items:stretch; }
 .nt-sidebar { width:var(--nt-sidebar-w, 320px); flex-shrink:0; background:var(--white); border-inline-end:1px solid var(--border); padding:14px; display:flex; flex-direction:column; gap:12px; }
 .nt-page { flex:1; min-width:0; padding:18px 22px 60px; display:flex; flex-direction:column; gap:26px; }
+/* The options sidebar hides and comes back from two edge tabs (the generator's pair): the hide tab on the sidebar's edge,
+   just clear of the resize seam, the show tab at the screen's edge. Per visit only, the suite's rule for whole-sidebar
+   collapse (a sidebar that stayed hidden would be a "where did my options go" trap on a shared classroom machine). */
+.nt-app.sidebar-hidden .nt-sidebar, .nt-app.sidebar-hidden .sbr-split { display:none; }
+.nt-sb-tab {
+  position:fixed; top:50vh; transform:translateY(-50%); width:16px; height:52px; padding:0;
+  display:flex; align-items:center; justify-content:center; border:none; border-start-end-radius:6px; border-end-end-radius:6px;
+  background:var(--navy); color:var(--gold-light); box-shadow:0 1px 6px rgba(0,0,0,0.18);
+  font-size:0.8rem; line-height:1; cursor:pointer; transition:background 0.15s;
+}
+/* 24px operable width without moving the visual: a transparent ::after carries the target 8px inward. */
+.nt-sb-tab::after { content:''; position:absolute; inset-block:0; inset-inline-start:0; inset-inline-end:-8px; }
+.nt-sb-tab:hover { background:#0f1a33; }
+.nt-sb-hide { z-index:50; }
+.nt-sb-show { inset-inline-start:0; z-index:100; display:none; }
+.nt-app.sidebar-hidden .nt-sb-hide { display:none; }
+.nt-app.sidebar-hidden .nt-sb-show { display:flex; }
+body.dark .nt-sb-tab { background:#2a4070; }
 .nt-note { font-size:0.8rem; color:var(--muted); margin:4px 0 0; }
 .nt-note:empty { display:none; }
 .nt-note.warn { color:var(--danger-text); }
@@ -599,6 +617,9 @@ body.dark #appToast { background: #0a0f1c; }
   .nt-page { order:1; padding:14px 14px 30px; }
   .nt-sidebar { order:2; width:auto; border-inline-end:none; border-top:1px solid var(--border); padding:12px 14px 18px; }
   .sbr-split { display:none; }
+  /* Stacked, the options sit under the preview: no edge tabs, and a sidebar hidden at a wider width comes back. */
+  .nt-sb-tab { display:none !important; }
+  .nt-app.sidebar-hidden .nt-sidebar { display:flex; }
 }
 /* Touch: the page's own controls grow to a finger's size, and a focused field is 16px so iOS does not zoom into it. */
 @media (pointer: coarse) {
@@ -625,7 +646,7 @@ body.dark #appToast { background: #0a0f1c; }
    0.35in on plain paper, none on a label sheet, whose labels are placed from the paper's edge). Each sheet is the
    page's printable area; a hair under its height so rounding never spills a blank page. */
 @media print {
-  header, footer, .skip-link, .nt-sidebar, .sbr-split, .nt-lists, .nt-prev-head, .tour-spot, .tour-card, #appToast, #a11yStatus { display:none !important; }
+  header, footer, .skip-link, .nt-sidebar, .sbr-split, .nt-sb-tab, .nt-lists, .nt-prev-head, .tour-spot, .tour-card, #appToast, #a11yStatus { display:none !important; }
   html, body, body.dark { background:#fff !important; }
   body { display:block !important; min-height:0 !important; }
   .nt-app, .nt-page, .nt-preview { display:block !important; padding:0 !important; margin:0 !important; border:none !important; }
@@ -662,7 +683,7 @@ body.dark #appToast { background: #0a0f1c; }
   <div class="hright">
     <a class="hbtn" href="/"><svg class="hi hi-arrow dir-arrow" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/></svg><span class="hi-lbl" data-i18n="nametags.header.home">Home</span></a>
     <div data-i18n-switcher></div>
-    <button id="tourBtn" class="hbtn" onclick="tourStart()" title="Take a quick tour" data-i18n-title="nametags.header.tour_title"><svg class="hi hi-help" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.6a2.5 2.5 0 1 1 3.6 2.2c-.8.4-1.2 1-1.2 1.9"/><circle cx="12" cy="17" r=".7" fill="currentColor" stroke="none"/></svg><span class="hi-lbl" data-i18n="nametags.header.tour_button">Tour</span></button>
+    <button id="tourBtn" class="hbtn" onclick="ntTourStart()" title="Take a quick tour" data-i18n-title="nametags.header.tour_title"><svg class="hi hi-help" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.6a2.5 2.5 0 1 1 3.6 2.2c-.8.4-1.2 1-1.2 1.9"/><circle cx="12" cy="17" r=".7" fill="currentColor" stroke="none"/></svg><span class="hi-lbl" data-i18n="nametags.header.tour_button">Tour</span></button>
     <button id="darkBtn" class="hbtn icon-btn" onclick="toggleDark()" title="Toggle dark mode" aria-label="Toggle dark mode" data-i18n-title="shared.darkmode.toggle_title" data-i18n-aria-label="shared.darkmode.toggle_title" aria-pressed="false"><svg class="hi hi-moon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15.5A7 7 0 0 1 8.5 6a7 7 0 1 0 9.5 9.5z"/><path d="M17.5 2.5l.9 2.4 2.4.9-2.4.9-.9 2.4-.9-2.4-2.4-.9 2.4-.9z" fill="currentColor" stroke="none"/></svg><svg class="hi hi-sun" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></svg></button>
   </div>
 </header>
@@ -837,6 +858,10 @@ body.dark #appToast { background: #0a0f1c; }
        aria-label="Drag to resize the sidebar (double-click to reset)"
        data-i18n-title="shared.resize.sidebar_title"
        data-i18n-aria-label="shared.resize.sidebar_title"></div>
+  <!-- ‹ and › are bidi-mirrored characters, so in the Hebrew UI each turns to face its sidebar by itself (a .dir-arrow
+       flip on top would turn it back: measured) -->
+  <button type="button" class="nt-sb-tab nt-sb-hide" id="ntSidebarHide" aria-controls="ntSidebar" title="Hide the options" aria-label="Hide the options" data-i18n-title="nametags.sidebar.hide" data-i18n-aria-label="nametags.sidebar.hide"><span aria-hidden="true">‹</span></button>
+  <button type="button" class="nt-sb-tab nt-sb-show" id="ntSidebarShow" aria-controls="ntSidebar" title="Show the options" aria-label="Show the options" data-i18n-title="nametags.sidebar.show" data-i18n-aria-label="nametags.sidebar.show"><span aria-hidden="true">›</span></button>
 
   <main class="nt-page" id="ntMain" tabindex="-1">
     <section class="nt-section nt-lists panel" id="ntListSection" aria-labelledby="ntListHead">
@@ -2984,8 +3009,39 @@ function initSidebarResize() {
     anchor: 'start',
     min: 260, dflt: 320,
     max: () => Math.min(520, window.innerWidth - 420),   // the list and the preview keep room beside it
-    onChange: ntFitPreview
+    onChange: () => { ntFitPreview(); ntPositionSidebarTab(); }
   });
+}
+/* ── Hide/show the options sidebar from its edge tabs (the generator's pair, the Letter Learner's state class). Per visit
+   only, like every whole-sidebar collapse in the suite (docs/reference/shared-components.md → Collapse / close
+   interplay); the preview re-fits through its own ResizeObserver. ── */
+function ntSidebarShown() { return !document.querySelector('.nt-app').classList.contains('sidebar-hidden'); }
+function ntToggleSidebar(force) {
+  const app = document.querySelector('.nt-app'), aside = document.getElementById('ntSidebar');
+  const hideTab = document.getElementById('ntSidebarHide'), showTab = document.getElementById('ntSidebarShow');
+  const show = (force === undefined) ? !ntSidebarShown() : !!force;
+  const hadFocus = document.activeElement;
+  app.classList.toggle('sidebar-hidden', !show);
+  // Focus never vanishes: the pressed tab (display:none now), or focus inside the hidden sidebar, hands over to the
+  // visible twin — guarded on activeElement, so a programmatic call (the tour) never steals focus.
+  if (!show && showTab && (hadFocus === hideTab || (aside && aside.contains(hadFocus)))) showTab.focus();
+  else if (show && hideTab && hadFocus === showTab) hideTab.focus();
+  if (show) ntPositionSidebarTab();   // a resize while hidden left the tab's last measured inset stale
+}
+// The hide tab is pinned by measurement to the sidebar's inline-end edge, 4px clear of the resize seam's grab zone (the
+// generator's offset; the width var is registered non-inherited on the sidebar, so a fixed cousin cannot read it). A
+// logical inset mirrors by itself in Hebrew; the clamp keeps the whole 24px operable box on-screen.
+function ntPositionSidebarTab() {
+  const aside = document.getElementById('ntSidebar'), tab = document.getElementById('ntSidebarHide');
+  if (!aside || !tab || !ntSidebarShown()) return;
+  const a = aside.getBoundingClientRect();
+  const edge = document.documentElement.dir === 'rtl' ? window.innerWidth - a.left : a.right;
+  tab.style.insetInlineStart = Math.min(edge + 4, Math.max(0, window.innerWidth - 24)) + 'px';
+}
+function initSidebarToggle() {
+  ['ntSidebarHide', 'ntSidebarShow'].forEach(id => { const t = document.getElementById(id); if (t) t.addEventListener('click', () => ntToggleSidebar()); });
+  window.addEventListener('resize', ntPositionSidebarTab);
+  ntPositionSidebarTab();   // initSidebarResize has applied the stored width by now
 }
 
 /* ── Panel-collapse memory (per-page cfg for the shared block below): which panels the teacher left open. The map
@@ -3076,6 +3132,14 @@ const TOUR_STEPS = [
   { target: () => document.getElementById('ntPrintBtn'), titleKey: 'nametags.tour.print_title', bodyKey: 'nametags.tour.print_body' },
   { target: () => document.getElementById('panelCloud'), titleKey: 'nametags.tour.cloud_title', bodyKey: 'nametags.tour.cloud_body' },
 ];
+// The Tour button. The engine skips a step whose target is hidden, so a hidden sidebar comes back and a folded class list
+// opens on screen first (without a panel-memory save: only the teacher's own clicks are saved), then the tour starts.
+function ntTourStart() {
+  if (!ntSidebarShown()) ntToggleSidebar(true);
+  const sec = document.getElementById('ntListSection');
+  if (sec && sec.classList.contains('collapsed')) { sec.classList.remove('collapsed'); ntSyncListToggle(); }
+  tourStart();
+}
 /* ═══ shared: tour engine ═══ byte-identical across trope_tutor.html, letter_learner.html, name_tags.html.
    The page defines TOUR_SEEN_KEY (its per-device, erase-only hebrew<Tool>_tourSeen key) and TOUR_STEPS
    ({ target(), titleKey, bodyKey }) above this block, plus the #tourBtn / #tourSpot / #tourCard markup and CSS.
@@ -3380,6 +3444,7 @@ function applyI18n() {
   ntRenderTable();
   ntRenderPreview();
   if (_hk) _hk.applyI18n();
+  ntPositionSidebarTab();   // the direction may have flipped, and with it the sidebar's edge
   // An open tour card: its texts in the new language, the spotlight back on its mirrored target.
   if (_tourActive && _tourIdx >= 0) _tourShow(_tourIdx, 1);
 }
@@ -3399,6 +3464,7 @@ function init() {
   initListCollapse();
   panelMemApply();      // restore the teacher's open/closed panels (right after initPanelCollapse, the shared rule)
   initSidebarResize();
+  initSidebarToggle();
   initHebrewKeyboard();
   ntApplyFont();
   ntRenderPreview();

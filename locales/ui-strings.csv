@@ -6611,6 +6611,8 @@ nametags.header.subtitle,"Printable name tags for your class — each student's 
 nametags.header.home,Home,דף הבית,Name Tags header Home link label,svg-icon-in-markup
 nametags.header.tour_button,Tour,סיור,Name Tags header tour launcher button,svg-icon-in-markup
 nametags.header.tour_title,Take a quick tour,סיור קצר,Name Tags header tour button title,
+nametags.sidebar.hide,Hide the options,הסתרת האפשרויות,Name Tags: the edge tab at the options sidebar's seam that hides it (title + aria-label),aria-label only
+nametags.sidebar.show,Show the options,הצגת האפשרויות,Name Tags: the tab at the screen's edge that brings the hidden options back (title + aria-label),aria-label only
 nametags.sidebar.label,Name tag options,אפשרויות תגי השם,aria-label of the options sidebar,aria
 nametags.panel.text,On each tag,על כל תג,Sidebar panel title: what each tag shows,
 nametags.panel.look,Look,מראה,"Sidebar panel title: font, bubble letters, sizes, colors, border, background",
