@@ -1227,7 +1227,7 @@ function etCsBuildSheet(p) {
   const body = add(pg, 'div', 'et-cs-body');
   const pic = add(body, 'div', 'et-cs-pic');
   const svg = etCsArt(i, etCs.colored);
-  if (svg) { svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', p.en); pic.appendChild(svg); }
+  if (svg) { svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', lang === 'he' ? p.he : p.en); pic.appendChild(svg); }   // named in the sheet's language, like its Name: line
   const text = add(body, 'div', 'et-cs-text');
   if (nt) (lang === 'both' ? ['en', 'he'] : [lang]).forEach(l => {   // "Both": the English paragraphs, then the Hebrew
     if (etCs.showSummary && nt.summary && nt.summary[l]) add(text, 'p', 'et-cs-sum', nt.summary[l], l);   // catalog content, in its own language
