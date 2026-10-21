@@ -93359,3 +93359,37 @@ _(prior — S527 pointer:)_ **Next session (S527):** **PR: `claude/improveloop-s
 - [x] 2026-10-20 | `198ccfac` `5a562994` | letter_learner.html | (S526) **Alef-bet on one sheet in EN; a card's bulk run starts with its letter.** | findings
 
 - [x] 2026-10-20 | `9515b0dc` `dd291fd5` | folder tree ×4, dictionary | (S526) **Hebrew hints upright: S494's census 6 → 0.** | findings
+
+## S528 (2026-10-21) — a Feature seed shipped (moved from the ledger's Feature seeds, verbatim, then the ship)
+
+- [x] S | letter_learner.html | **←/→ and PageUp/PageDown step an open card** (`<kbd>` hints). **Picked S526.** | found S526 H **shipped S528 `2265053f`** (gate 1: the maintainer's pick of the three; arrows by visual direction as on Flash Cards, the card now opens on Next so the tab strip keeps its own arrows; receipts in loop-findings S528)
+
+
+<!-- archived by compact-ledger at the S529 boundary, 2026-10-21 -->
+## Compaction (S529, 2026-10-21) — moved verbatim from the live ledger
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`empty-result-not-announced`** (NEW S528 F; resources ×2 `34ae261b`; open: the dictionary's root filter): ACTIVE, unswept. A search or filter that leaves nothing says so only on screen: no live region changes. Detection: `f528/empty.mjs` (the live-region diff around a real input; a planted live region fires).
+
+- **decorative-glyph-carrier-exposed-to-assistive-tech** (**S528: resources' two empty-state icons FIXED `34ae261b`; open: the generator's start-screen ✡︎ + quick-start chips (`f528/census.mjs`).** **2nd instance fixed 2026-08-15, S219, c2399f1 — Font Maker QA column heads**. That instance sharpened the pattern in a way every future sweep needs: **`aria-label` on the element is NOT a fix for this class.** The FM …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+_(prior — S528 pointer:)_ **Next session (S528):** **PR: `claude/improveloop-s526` (#353) open → continue; merged → fresh branch.** `sw.js` **v1052**, FM **5.59**, corpus ?v=7. ⚑ Stalest: F (S514), B (S515), A (S516: sweep hit-box). ⚑ Ready: LL Reset confirm (gate 2), LL sliders. ⚑ Seeds: 47. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4; O's Bash rule.
+
+## Size move (S528 close-out, 2026-10-21) — S527's Done entries and the S521–S522 per-session rows, moved by hand verbatim (the ledger sat over its 100 KB limit)
+
+- [x] 2026-10-20 | (S527 close-out) | branch/deploy note | **S527 = C + 4 fixes on PR #353.** Drift: none. sw v1051→v1052; no FM bump; no gates.
+
+- [x] 2026-10-20 | `82a3f0b2` `32eb9966` | letter_learner.html | (S527) **Coloring sheet controls take their clicks; `.ll-hit` 2.6 → 3.9:1.** | findings
+
+- [x] 2026-10-20 | `237f8547` `1ecaad0c` | dictionary, generator, dashboard, flash, index | (S527) **EN Shoresh Hebrew upright; `.ivrit` toggles named.** | findings
+
+- 2026-10-19 | **S522** | iters: 5 | tools: emoji_torah ×2, FM, LL, sw.js | patterns fixed: tour-not-following-a-live-switch ×1 | pass run: M | SW: v1036→v1037
+
+- 2026-10-19 | **S521** | iters: 5 | tools: dictionary, torah, saves, generator, sw.js | patterns fixed: tour-switch ×2 | pass run: P | SW: v1019→v1020
+
+- 2026-10-20 | **S523** | iters: 5 | tools: dictionary ×2, generator, account, sw.js | patterns fixed: dark-palette-baked-into-paper ×2 | pass run: G | SW: v1040→v1041
+
+- 2026-10-20 | **S524** | iters: 5 | tools: flash ×2, dictionary ×2, generator ×2, FM, dashboard, corpus, sw.js | patterns fixed: layout-read-per-grid-at-build ×1 | pass run: D | SW: v1041→v1042

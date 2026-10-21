@@ -8,9 +8,13 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P4 (**NEW S527 C — sub-floor target**) | letter_learner.html | **The Coloring sheet's 5 size sliders are 16px tall.** | found S527
+- [ ] P4 (**NEW S528 F**) | hebrew_dictionary.html | **The root filter's "No matching roots." is never announced.** | found S528
 
-- [ ] P4 (**NEW S526 H — gate 2 ANSWERED: say so**) | letter_learner.html | **Reset options' confirm doesn't say it resets the Coloring sheet settings and the print selection** (EN, HE, `_cloud`). | found S526
+- [ ] P4 (**NEW S528 F — decorative glyph**) | hebrew_blend_generator.html | **The start screen's ✡︎ and the quick-start chips' emoji are read aloud.** | found S528
+
+- [ ] P4 (**NEW S528 F — gate 2 ANSWERED: add it**) | resources.html | **The two empty states offer no way back**: add "Reset all filters" (the dictionary's wording). | found S528
+
+- [ ] P4 (**NEW S527 C — sub-floor target**) | letter_learner.html | **The Coloring sheet's 5 size sliders are 16px tall.** | found S527
 
 - [ ] P4 (**NEW S526 H**) | letter_learner.html | **Closing a card's bulk popup returns to the grid, not the card.** | found S526
 
@@ -216,8 +220,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Feature seeds (micro-features only; see the Micro-feature track in the session prompt)
 
-- [ ] S | letter_learner.html | **←/→ and PageUp/PageDown step an open card** (`<kbd>` hints). **Picked S526.** | found S526 H
-
 - [ ] S | letter_learner.html | **An open card puts `?letter=` in the URL.** **Picked S526.** | found S526 H
 
 - [ ] S | letter_learner.html | **"Vowels to show": Select all / Clear.** **Picked S526.** | found S526 H
@@ -316,15 +318,17 @@ _(none)_
 
 ## Done
 
-- [x] 2026-10-20 | (S527 close-out) | branch/deploy note | **S527 = C + 4 fixes on PR #353.** Drift: none. sw v1051→v1052; no FM bump; no gates.
+- [x] 2026-10-21 | (S528 close-out) | branch/deploy note | **S528 = F + 2 fixes + 1 micro-feature on PR #353.** Drift: none. sw v1052→v1053; no FM bump; gates 1 + 2 answered.
 
-- [x] 2026-10-20 | `82a3f0b2` `32eb9966` | letter_learner.html | (S527) **Coloring sheet controls take their clicks; `.ll-hit` 2.6 → 3.9:1.** | findings
+- [x] 2026-10-21 | `34ae261b` | resources.html | (S528) **A filter that empties the grid is heard: live counts kept at 0, icons hidden.** | findings
 
-- [x] 2026-10-20 | `237f8547` `1ecaad0c` | dictionary, generator, dashboard, flash, index | (S527) **EN Shoresh Hebrew upright; `.ivrit` toggles named.** | findings
+- [x] 2026-10-21 | `d1293a70` `2265053f` | letter_learner.html | (S528) **Reset names all it resets; ←/→ and PgUp/PgDn step a card.** | findings
 
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-21 | **S528** | iters: 5 | tools: resources, LL ×2 (1 micro-feature), CSV, sw.js | patterns fixed: empty-result-not-announced ×1, decorative-glyph ×1 | pass run: F | SW: v1052→v1053
 
 - 2026-10-20 | **S527** | iters: 5 | tools: LL ×2, dictionary, generator, dashboard, flash, index, sw.js | patterns fixed: hit-box, faux-italic, radio-set ×1 each | pass run: C | SW: v1051→v1052
 
@@ -332,19 +336,13 @@ _(none)_
 
 - 2026-10-20 | **S525** | iters: 5 | tools: LL, generator, dashboard, flash (reverted), locales CSV, sw.js | patterns fixed: hebrew-faux-italic ×1 | pass run: I | SW: v1042→v1043
 
-- 2026-10-20 | **S524** | iters: 5 | tools: flash ×2, dictionary ×2, generator ×2, FM, dashboard, corpus, sw.js | patterns fixed: layout-read-per-grid-at-build ×1 | pass run: D | SW: v1041→v1042
-
-- 2026-10-20 | **S523** | iters: 5 | tools: dictionary ×2, generator, account, sw.js | patterns fixed: dark-palette-baked-into-paper ×2 | pass run: G | SW: v1040→v1041
-
-- 2026-10-19 | **S522** | iters: 5 | tools: emoji_torah ×2, FM, LL, sw.js | patterns fixed: tour-not-following-a-live-switch ×1 | pass run: M | SW: v1036→v1037
-
-- 2026-10-19 | **S521** | iters: 5 | tools: dictionary, torah, saves, generator, sw.js | patterns fixed: tour-switch ×2 | pass run: P | SW: v1019→v1020
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S527 (2026-10-20):** LL, dictionary, generator, dashboard, flash, index, sw.js S527 · torah S526 · CSV S525 · FM, corpus, README S524 · account S523 · parsha_emojis S522 · saves, scripts S521 · 404, privacy, terms, contact, resources S520 · trope S519 · i18n.js S512 · pwa S472.
+- **Snapshot S528 (2026-10-21):** resources, LL, CSV, sw.js S528 · dictionary, generator, dashboard, flash, index S527 · torah S526 · FM, corpus, README S524 · account S523 · parsha_emojis S522 · saves, scripts S521 · 404, privacy, terms, contact S520 · trope S519 · i18n.js S512 · pwa S472.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`empty-result-not-announced`** (NEW S528 F; resources ×2 `34ae261b`; open: the dictionary's root filter): ACTIVE, unswept. A no-match landing no live region speaks. Detection: `f528/empty.mjs`.
 
 - **`print-trailing-padding-adds-a-sheet`** (NEW S526 H; account S523, LL `198ccfac`): ACTIVE, streak 0. Detection: `h526/fix1.mjs` (a header-only or empty PDF sheet).
 
@@ -592,7 +590,7 @@ _(none)_
 
 - **rebuild-where-a-class-swap-would-do**: **REGISTERED 2026-08-16 (S220)** — not yet swept suite-wide, hits: 1 (`26b9e7e`), clean streak: 0 — ACTIVE. **Definition:** a settings toggle whose visual effect is ALREADY gated in CSS on a body/root class, yet whose handler calls the …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **decorative-glyph-carrier-exposed-to-assistive-tech** (**2nd instance fixed 2026-08-15, S219, c2399f1 — Font Maker QA column heads**. That instance sharpened the pattern in a way every future sweep needs: **`aria-label` on the element is NOT a fix for this class.** The FM …[full text: IMPROVEMENT_ARCHIVE.md]
+- **decorative-glyph-carrier-exposed-to-assistive-tech** (**S528: resources' two empty-state icons FIXED `34ae261b`; open: the generator's start-screen ✡︎ + quick-start chips (`f528/census.mjs`).** **2nd instance fixed 2026-08-15, S219, c2399f1 — Font Maker QA column heads**. …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **error-status-clobbered-by-a-later-routine-write** (**NEW, registered S199**; **S411: +1 carrier FIXED `25d2277`** — FM `fmCloudOpen`'s missing-photo notice, replaced by "Opened from your account" in ~40 ms): a status/live-region line that correctly reports a FAILURE is then …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -732,6 +730,6 @@ _(none)_
 
 - E freshness/site-health: 2026-10-18 (**S517 — 40th E, `4edc14b9..d7c58446` (119 commits; LL's first E): 16 static arms + the `?v=` history arm + doc tokens (plants 17/17, 4/4, 1/1), runtime CSP 36 cells (plant 36/36), keep-alive + Pages read. FOUND 2 (docs), FIXED 4 (+ FM ×2).**)
 
-- F cross-tool consistency: 2026-10-18 (**S514 — 38th F, dialog Tab traps: 22 dialogs × 2 cells by real keys + a click-on-text arm; plants 4/4. CLEAN 13. FOUND 9, FIXED 3 (+ FM menus). F-next: empty states.**)
+- F cross-tool consistency: 2026-10-21 (**S528 — 39th F, empty states: 6 no-match surfaces × 4 cells by real input (plants 72/72), 12-page census. FOUND 4, FIXED 1 (+ LL ×2). F-next: loading states.**)
 
-**Next session (S528):** **PR: `claude/improveloop-s526` (#353) open → continue; merged → fresh branch.** `sw.js` **v1052**, FM **5.59**, corpus ?v=7. ⚑ Stalest: F (S514), B (S515), A (S516: sweep hit-box). ⚑ Ready: LL Reset confirm (gate 2), LL sliders. ⚑ Seeds: 47. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4; O's Bash rule.
+**Next session (S529):** **PR: `claude/improveloop-s526` (#353) open → continue; merged → fresh branch.** `sw.js` **v1053**, FM **5.59**, corpus ?v=7. ⚑ Stalest: B (S515), A (S516: sweep hit-box, empty-result). ⚑ Ready: resources Reset filters (gate 2 yes), LL sliders, dictionary roots note, generator ✡︎. ⚑ Seeds: 46 (2 LL picked). ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4; O's Bash rule.
