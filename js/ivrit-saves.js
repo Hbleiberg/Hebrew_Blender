@@ -1770,11 +1770,12 @@
         var merged = safeAssign(isPlainObject(local) ? clone(local) : {}, restoreOmitted(row.entry, full.data, local));
         // A sign-in on a device with its own settings for this tool (its first, or the first since a button sign-out):
         // the account's copy wins (the device's could be untouched defaults or days of signed-out work — the module cannot
-        // tell), and the device's copy is kept for download first; when it cannot be kept, nothing is replaced.
+        // tell), and the device's copy is kept for download first when the account's changes one of its fields (a field
+        // only the device has stays in the merge); when it cannot be kept, nothing is replaced.
         var kept = true;
         if (!row.memory && isPlainObject(local) && (!row.entry.virtual || row.kind === 'prefs')) {
           var mine = project(row.entry, local);
-          if (canonJson(mine) !== canonJson(project(row.entry, full.data))) kept = replacedKeep(uid, row.entry, row.name, mine, 'signin');
+          if (lostFields(null, mine, project(row.entry, merged))) kept = replacedKeep(uid, row.entry, row.name, mine, 'signin');
           if (!kept) throw makeError('kept_full', 'IvritSaves: no room to keep this device\'s settings');
         }
         return writeKept(tool, uid, row, merged, full, kept);

@@ -19,6 +19,8 @@
  *  1b. A device with its own preferences opens the generator first, the account holding its preferences and the
  *      generator's remembered setup (whose re-apply writes two preference keys): the account's preferences land
  *      on that load (the device's own kept for download first), the setup too, "Saved in your account", no insert.
+ *  1c. A fresh device whose only preference is the Automatic backup mode its page wrote: the account's preferences land
+ *      and nothing is kept as a "replaced" copy (the account's copy changes none of the device's fields).
  *   2. A tool opened later on a hydrated device (memory for the generator, none for the dashboard): the
  *      account's dashboard settings win over the page's freshly written defaults, the weekly grid arrives,
  *      the row reads synced in lastPlan, the live page shows Schedule Sync on, the picker adopts the class
@@ -585,6 +587,16 @@ try {
     const prefsPosts = cloud.log.filter(e => e.m === 'POST' && e.table === 'saves' && e.body && e.body.kind === 'prefs');
     check('1b: the preferences were never inserted as a second row (no POST, no 409)', prefsPosts.length === 0, JSON.stringify(prefsPosts.map(e => e.status)));
     check('1b: 0 pageerrors', errors.length === 0, errors.join(' | '));
+    await ctx.close();
+  }
+  // ---- 1c. a fresh device whose only preference is the one its page wrote (the backup panel's Automatic mode) ----
+  if (want('1C')) {
+    const cloud = new FakeCloud([{ tool: 'Suite', kind: 'prefs', name: 'default', data: { lang: 'en', darkMode: '1', kbdLayout: 'qwerty', inputMode: 'auto' } }]);
+    const ctx = await openContext(browser, cloud, SEED({ meta2: false }));
+    const { page, errors } = await openPage(ctx, 'hebrew_blend_generator.html', { tools: GEN_TOOLS });
+    const r = await page.evaluate(() => ({ dark: localStorage.getItem('hebrewBlender_darkMode'), mode: localStorage.getItem('hebrewBlender_inputMode'), kept: localStorage.getItem('ivritSuite_replaced'), unsynced: IvritSaves.pendingSignOut().unsynced }));
+    check('1c: the account\'s preferences land and no "replaced" copy is kept, since they change none of the device\'s fields', r.dark === '1' && r.mode === 'auto' && !/Suite\/prefs\/default#/.test(r.kept || '') && r.unsynced === 0, JSON.stringify(r));
+    check('1c: 0 pageerrors', errors.length === 0, errors.join(' | '));
     await ctx.close();
   }
   // ---- 2. a tool opened later on a hydrated device: the account's settings win over the page's fresh defaults ----

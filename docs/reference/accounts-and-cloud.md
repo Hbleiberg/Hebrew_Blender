@@ -472,8 +472,9 @@ shows `shared.cloud.both_note` with **Download the other version (.ivrit)**
 
 **The replaced copy.** `useCloud` lands the account's settings over a device that holds its own copy of the row
 but no memory of it (a first sign-in here, or a tool first synced since). The module cannot tell untouched
-defaults from years of work, so when the device's projected copy differs from the account's it is kept in
-`ivritSuite_replaced` first (the preferences row included; also at the first sign-in after a button sign-out, whose
+defaults from years of work, so when the account's copy changes a field of the device's projected copy (`lostFields`
+against the merge: a field only the device holds stays, so a device holding nothing but the Automatic backup mode its
+page wrote keeps nothing) the device's copy is kept in `ivritSuite_replaced` first (the preferences row included; also at the first sign-in after a button sign-out, whose
 page has written its defaults or a teacher's signed-out work since — a copy the teacher dismissed is fingerprinted in
 `ivritSuite_syncMeta2.dismissed` and not kept again, so untouched defaults do not bring the note back at every
 sign-in); a copy that cannot be stored refuses the replacement (`kept_full`). That tool's status line — every tool's on the
