@@ -93620,3 +93620,10 @@ _(prior — S536 pointer:)_ **Next session (S536):** **PR: `claude/improveloop-s
 - [x] 2026-10-21 | `a153826` `c9ab327` | generator, dashboard | (S534) **The `?ak=` subtitle prints dark; the TTS readout mirrors.** | PDF gold → #6b4e12; HE 0/7 → 7/0
 
 - 2026-10-21 | **S534** | iters: 5 | tools: name_tags ×2, generator, dashboard, sw.js | patterns fixed: abs-child ×1 (NEW), input-hints ×7, physical ×1 | pass run: N | SW: v1060→v1061
+
+- (S537 archived handoff) **Next session (S537):** **PR: `claude/improveloop-s535` open → continue; merged → fresh branch.** `sw.js` **v1065**, FM **5.59**, corpus ?v=7. ⚑ Stalest: G (S523), D (S524), I (S525). ⚑ Keep-alive #40 (10-22): confirm green. ⚑ Seeds: 46. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4; O's Bash rule.
+- (moved for size at S537) - [x] 2026-10-21 | (S535 close-out) | branch/deploy note | **S535 = P on name_tags (first): clean; 1 suite-wide FIXED, 1 gate-2.** Fresh branch (#356 merged). sw v1063→v1064.
+- (moved for size at S537) - [x] 2026-10-21 | `7ac2ccc` | ivrit-saves, smoke-sync | (S535) **A first sign-in keeps the device's settings only when the account's change a field.** | false hub notes 3 → 0; 1c; 7 smokes
+- (moved for size at S537) - [x] 2026-10-21 | `7b0e2ac` `0f509a2` | name_tags | (S535) **Tour step 2 rings the scroller; a long list redraws after a typing pause.** | 8/16 → 16/16; 4×: 2183 → 972ms
+- (moved for size at S537) - [x] 2026-10-21 | `15464a2` | generator | (S535) **The `?ak=` answers print dark.** | light-gold px 1171 → 0
+- (moved for size at S537) - 2026-10-21 | **S535** | iters: 5 | tools: saves (shared), name_tags ×2, generator, sw.js | patterns fixed: — | pass run: P | SW: v1063→v1064
