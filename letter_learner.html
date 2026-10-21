@@ -448,6 +448,7 @@ body.ll-no-speech .ll-speak, body.ll-no-speech #llVoiceRow, body.ll-no-speech #o
 .ll-grid {
   list-style:none; display:grid; grid-template-columns:repeat(auto-fill, minmax(108px, 1fr)); gap:10px;
 }
+.ll-grid > li { display:flex; }   /* each card fills its row: a vowel whose name or family wraps no longer stands taller than its row-mates */
 .ll-card {
   width:100%; min-height:132px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
   background:var(--white); border:1.5px solid var(--border); border-radius:12px; padding:10px 6px 8px;
@@ -485,7 +486,7 @@ body.dark .ll-mode-btn[aria-pressed="true"] { background:#2a4070; border-color:#
    on small text. ───── */
 [data-fam="ah"] { --ll-fam:var(--ll-fam-ah); } [data-fam="eh"] { --ll-fam:var(--ll-fam-eh); } [data-fam="ee"] { --ll-fam:var(--ll-fam-ee); }
 [data-fam="oh"] { --ll-fam:var(--ll-fam-oh); } [data-fam="oo"] { --ll-fam:var(--ll-fam-oo); } [data-fam="quiet"] { --ll-fam:var(--ll-fam-quiet); }
-.ll-vcard { border-block-start:5px solid var(--ll-fam); }
+.ll-vcard { border-block-start:5px solid var(--ll-fam); justify-content:flex-start; }   /* top-aligned: the glyphs and names of a row line up when one card is taller */
 .ll-vcard.is-quick { border-style:dashed; border-block-start-style:solid; }   /* a chataf: dashed like a final form */
 .ll-vcard .ll-card-glyph, .ll-dlg-glyph[data-fam], .ll-form[data-fam] { color:var(--ll-fam, currentColor); }
 .ll-vcard .ll-badge { white-space:normal; text-align:center; text-transform:none; letter-spacing:normal; }
