@@ -304,9 +304,9 @@ _(none)_
 
 - [x] 2026-10-21 | (S533 close-out) | branch/deploy note | **S533 = K (FOUND 4, FIXED 4) on the fresh `claude/serene-galileo-0h997e` (PR #354; #353 merged).** Drift: sw v1057→v1058 outside the loop (the gallery link); keep-alive #39 green, #40 due 10-22. sw v1058→v1059; no FM bump; no gates (unattended).
 
-- [x] 2026-10-21 | `2c82a0b9` `b05b759e` | LL, parsha_emojis | (S533) **The LL subtitle's fallback reads the CSV's sentence; a coloring sheet's picture is named in the sheet's language.** | no-JS load = en.json (the base differs); 54/54 Hebrew-named on a Hebrew sheet (HEAD 0/54); 18 cells, 0 errors
+- [x] 2026-10-21 | `2c82a0b9` `b05b759e` | LL, parsha_emojis | (S533) **The LL subtitle's fallback reads the CSV's sentence; a coloring sheet's picture is named in the sheet's language.** | no-JS load = en.json (base differs); 54/54 Hebrew-named (HEAD 0/54); 18 cells, 0 errors
 
-- [x] 2026-10-21 | `e39359ea` `e83db20c` | torah, dashboard, CSV | (S533) **The gallery's "Open this reading" links are named by their visible words first; the dashboard's parsha popup follows a live switch.** | 53/53 links × 8 cells (HEAD 0); popup cards in the new language 8/8 (HEAD 0), settings untouched; 0 errors
+- [x] 2026-10-21 | `e39359ea` `e83db20c` | torah, dashboard, CSV | (S533) **The gallery's "Open this reading" links are named by their visible words first; the dashboard's parsha popup follows a live switch.** | 53/53 links × 8 cells (HEAD 0); popup cards re-rendered 8/8 (HEAD 0); 0 errors
 
 ## Metrics
 
@@ -696,7 +696,7 @@ _(none)_
 
 - M aesthetics & visual design (one surface): 2026-10-19 (**S522 — 26th M, `emoji_torah.html` (its first audit): 64 shots in real fonts, census, bar bands, the Trainer gallery beside it; plants fired. FOUND 4, FIXED 2. M-next: LL (never), FM (S335).**)
 
-- K i18n / localization audit: 2026-10-21 (**S533 — 36th K, `db80feb4..843984b3` (111 commits; parsha_emojis' first): CSV +209 (all resolve), 12 reworded, 0 removed; static 5,502 refs + 2,974 fallback sites (the html arm, lapsed since S475); blind 0/4,328 lines; 102 states by the real switcher (twins 240 = base 235 + 5 known); retry 4/4; 10 surfaces by real input + a switch mid-state. FOUND 4, FIXED 4.**)
+- K i18n / localization audit: 2026-10-21 (**S533 — 36th K, `db80feb4..843984b3` (111 commits; parsha_emojis' first): CSV +209 (all resolve), 12 reworded, 0 removed; static 5,502 refs + 2,974 fallback sites (the html arm, lapsed since S475); blind 0/4,328 lines; 102 states by the real switcher (twins = base + 5 known); retry 4/4; 10 surfaces by real input + a switch mid-state. FOUND 4, FIXED 4.**)
 
 - C accessibility (one tool): 2026-10-20 (**S527 — LL's first C: 7 arms by real input, 4 cells, 22 surfaces, plants 11/11. FOUND 3, FIXED 2 (+2). C-next: parsha_emojis (never), torah (S298), trope (S312).**)
 
