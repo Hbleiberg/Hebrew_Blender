@@ -1178,7 +1178,7 @@
   "emojitorah.badge.next": "Next parasha",
   "emojitorah.badge.this_week": "This week's parasha",
   "emojitorah.card.trainer_link": "View in Torah Trainer ↗",
-  "emojitorah.card.trainer_link_aria": "View {name} in the Torah Trainer (opens in a new tab)",
+  "emojitorah.card.trainer_link_aria": "View in Torah Trainer: {name} (opens in a new tab)",
   "emojitorah.coloring.all": "Select all",
   "emojitorah.coloring.big_note": "{count} pages — the print preview may take a while to open.",
   "emojitorah.coloring.close": "Close",

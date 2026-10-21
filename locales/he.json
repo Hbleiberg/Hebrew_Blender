@@ -1178,7 +1178,7 @@
   "emojitorah.badge.next": "הפרשה הבאה",
   "emojitorah.badge.this_week": "פרשת השבוע",
   "emojitorah.card.trainer_link": "צפייה במאמן התורה ↗",
-  "emojitorah.card.trainer_link_aria": "צפייה בפרשת {name} במאמן התורה (נפתח בכרטיסייה חדשה)",
+  "emojitorah.card.trainer_link_aria": "צפייה במאמן התורה: פרשת {name} (נפתח בכרטיסייה חדשה)",
   "emojitorah.coloring.all": "בחירת הכול",
   "emojitorah.coloring.big_note": "{count} עמודים — ייתכן שהתצוגה המקדימה של ההדפסה תיפתח לאט.",
   "emojitorah.coloring.close": "סגירה",
