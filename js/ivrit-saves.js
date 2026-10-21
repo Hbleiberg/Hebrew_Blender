@@ -2704,6 +2704,9 @@
       '.ivsav-btn.ivsav-primary{border-color:var(--gold,#c9922a);font-weight:600;}' +
       '.ivsav-status{margin:4px 0 8px;font-size:0.82rem;color:var(--muted,#6b6050);min-block-size:1.2em;overflow-wrap:anywhere;}' +
       '.ivsav-status.is-error{color:var(--danger-text,#b3261e);}' +
+      // Signed out the panel's line stays empty (the note speaks), so its reserved height only opened the panel on a blank
+      // strip; it keeps its place as a live region and takes its height back once it has text.
+      '.ivsav-statusline>.ivsav-status:empty{min-block-size:0;margin:0;}' +
       // Pages without a --danger-text token left the fallback red on the dark surface at 2.34:1 (the hub, 2.6:1 on the
       // generator); account.html's dark value of that token is the fallback there. A page's own token still wins.
       'body.dark .ivsav-status.is-error{color:var(--danger-text,#ff9c94);}' +
