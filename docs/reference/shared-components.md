@@ -888,7 +888,7 @@ touch-primary tools get gesture equivalents; every new interactive element must 
   `?` cheat sheet via `shortcutGroups()`/`openShortcuts()` + `<kbd>` hints + 5 `aria-keyshortcuts`
   (the three node-panel mode buttons — `Escape`/`M`/`P` — plus undo `Control+Z` and redo
   `Control+Shift+Z Control+Y`). The right shape for a tool with dozens of shortcuts, and the only one.
-  **Four light surfaces, all `<kbd>` hints without a cheat sheet.** `flash_cards.html`:
+  **Five light surfaces, all `<kbd>` hints without a cheat sheet.** `flash_cards.html`:
   two `.fc-kh-set` rows under the card nav that swap with `setListenChrome()`, because a listening round
   takes different keys (no flip, no Y/N), plus numbered `.lc-key` badges on the listening tiles — the
   first home the 1–9 tile keys ever had. `torah_trainer.html`: one `.tt-key-hints`
@@ -899,9 +899,13 @@ touch-primary tools get gesture equivalents; every new interactive element must 
   `classroom_dashboard.html`: its two bare-letter presenter keys, **B** (Blank) and **I** (Intermission),
   as `.fss-key` corner badges on those two buttons of the fullscreen strip (Flash Cards' `.lc-key` idiom),
   each button carrying `aria-keyshortcuts` and the key in its `title`.
+  `letter_learner.html`: an open card steps with ←/→ (by visual direction, Flash Cards' rule) and PageUp/PageDown
+  (what a presentation clicker sends) — one `aria-hidden` `.ll-kh` line under the card's head, the keys in Prev / Next's
+  `title` and in their `aria-keyshortcuts` (`llNavKeys()`, re-stated on a language switch); a focused field, slider, radio
+  set or tab keeps its own keys, so the card opens with the focus on Next rather than on its tab strip.
   All are gated `@media (pointer: fine)` — a touch device has no keys to press.
-  **⚑ The arrow caps do NOT mirror the same way in the two carriers that have them, and that is
-  deliberate.** Flash cards' caps carry `.dir-arrow` because its nav follows *visual* direction via
+  **⚑ The arrow caps do NOT mirror the same way in the carriers that have them, and that is
+  deliberate.** Flash cards' caps (and the Letter Learner's) carry `.dir-arrow` because its nav follows *visual* direction via
   `_rtlNav()`, so RTL shows the RIGHT arrow as "previous". Torah Trainer's caps deliberately do **not**:
   its rover follows the *Hebrew*, which is always RTL, so `onReadingKeydown` hardcodes ArrowLeft = next
   word — measured identical in the EN and HE UIs. Mirroring those caps would make the hint state the

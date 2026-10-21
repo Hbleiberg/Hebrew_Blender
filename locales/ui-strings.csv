@@ -6408,6 +6408,9 @@ letterlearner.grid.soon_badge,coming soon,בקרוב,badge on a card whose pictu
 letterlearner.dialog.close,Close,סגירה,letter dialog close button,aria-label only; svg-icon-in-markup
 letterlearner.dialog.prev,Previous letter,האות הקודמת,letter dialog previous-letter button,aria-label only; svg-icon-in-markup
 letterlearner.dialog.next,Next letter,האות הבאה,letter dialog next-letter button,aria-label only; svg-icon-in-markup
+letterlearner.dialog.prev_key_title,Previous letter (← or Page Up),האות הקודמת (→ או Page Up),letter dialog previous-letter button tooltip naming its keys,"ARROW IS MIRRORED BY DESIGN: the card steps by visual direction, so in RTL the RIGHT arrow goes back (Flash Cards' prev_key_title rule)"
+letterlearner.dialog.next_key_title,Next letter (→ or Page Down),האות הבאה (← או Page Down),letter dialog next-letter button tooltip naming its keys,ARROW IS MIRRORED BY DESIGN: see prev_key_title
+letterlearner.dialog.kbd_nav,Previous / Next,הקודם / הבא,letter dialog keyboard hint line: the label after the arrow and PgUp/PgDn keys,"ARROWS MIRROR BY DESIGN: the glyphs carry .dir-arrow, so the RTL UI shows the RIGHT arrow as previous"
 letterlearner.tabs.letter,Letter,האות,letter dialog tab,
 letterlearner.tabs.vowels,Vowels,ניקוד,letter dialog tab,
 letterlearner.tabs.font,Fonts,גופנים,letter dialog tab,
@@ -6464,6 +6467,8 @@ letterlearner.grid.vowels_aria,Vowels,סימני ניקוד,aria-label of the ca
 letterlearner.grid.cursive_aria,Cursive letters,אותיות כתב,aria-label of the card grid in Cursive mode,aria-label only
 letterlearner.dialog.prev_vowel,Previous vowel,סימן הניקוד הקודם,vowel dialog previous-vowel button,aria-label only; svg-icon-in-markup
 letterlearner.dialog.next_vowel,Next vowel,סימן הניקוד הבא,vowel dialog next-vowel button,aria-label only; svg-icon-in-markup
+letterlearner.dialog.prev_vowel_key_title,Previous vowel (← or Page Up),סימן הניקוד הקודם (→ או Page Up),vowel dialog previous-vowel button tooltip naming its keys,ARROW IS MIRRORED BY DESIGN: see letterlearner.dialog.prev_key_title
+letterlearner.dialog.next_vowel_key_title,Next vowel (→ or Page Down),סימן הניקוד הבא (← או Page Down),vowel dialog next-vowel button tooltip naming its keys,ARROW IS MIRRORED BY DESIGN: see letterlearner.dialog.prev_key_title
 letterlearner.tabs.story,Story,הסיפור,vowel dialog tab (the family's gesture story),
 letterlearner.story.family_label,Family,משפחה,Story tab row label (the vowel's family: its gesture name and colour),
 letterlearner.story.shape_label,Shape,צורה,Story tab row label (what the sign looks like),

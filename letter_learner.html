@@ -514,8 +514,20 @@ body.dark .ll-mode-btn[aria-pressed="true"] { background:#2a4070; border-color:#
 }
 .ll-dlg-head {
   position:sticky; top:0; z-index:2; background:var(--white); flex-shrink:0;
-  display:flex; align-items:center; gap:8px; padding:10px 12px 8px; border-bottom:1px solid var(--border);
+  display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:10px 12px 8px; border-bottom:1px solid var(--border);
 }
+/* The card's step keys (←/→ by visual direction, PgUp/PgDn for a presentation clicker): a line under the head's controls,
+   shown only where there is a keyboard to press (Flash Cards' .fc-kh-set idiom). The line is aria-hidden; Prev / Next carry
+   the keys in their title and aria-keyshortcuts (llNavKeys), which follow the UI's direction. */
+.ll-kh { display:none; flex-basis:100%; justify-content:center; align-items:center; gap:4px; margin:-2px 0 0; font-size:0.72rem; color:var(--muted); }
+.ll-kh kbd {
+  direction:ltr; unicode-bidi:isolate; font-family:ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-size:0.68rem; line-height:1; padding:3px 6px; min-width:1.1em; text-align:center; white-space:nowrap; color:var(--text);
+  background:var(--white); border:1px solid var(--border); border-bottom-width:2px; border-radius:4px;
+}
+.ll-kh-gap { margin-inline-start:6px; }
+.ll-kh-lbl { margin-inline-start:4px; }
+@media (pointer: fine) { .ll-kh { display:flex; } }
 .ll-dlg-title { flex:1; min-width:0; display:flex; align-items:baseline; justify-content:center; gap:12px; font-family:'Libre Baskerville',serif; font-size:1.2rem; }
 .ll-dlg-glyph { font-family:var(--heb-font); font-size:2.2rem; line-height:1; }
 .ll-nav, .ll-x {
@@ -948,7 +960,7 @@ body.dark #appToast { background: #0a0f1c; }
   body.ll-dlg-open .ll-overlay { display:block !important; position:static; background:none; padding:0; overflow:visible; }
   body.ll-dlg-open .ll-dialog { display:block; width:auto; max-height:none; overflow:visible; border:none; border-radius:0; box-shadow:none; }
   body.ll-dlg-open .ll-dlg-head { position:static; border-bottom:none; padding:16px 0 4px; justify-content:center; }
-  body.ll-dlg-open .ll-nav, body.ll-dlg-open .ll-x, body.ll-dlg-open .ll-tabs, body.ll-dlg-open .ll-speak { display:none !important; }
+  body.ll-dlg-open .ll-nav, body.ll-dlg-open .ll-x, body.ll-dlg-open .ll-tabs, body.ll-dlg-open .ll-speak, body.ll-dlg-open .ll-kh { display:none !important; }
   body.ll-dlg-open .ll-panel { padding:8px 0 0; }
   body.ll-dlg-open .ll-words, body.ll-dlg-open .ll-lookalikes { grid-template-columns:repeat(2, 1fr); }
   body.ll-dlg-open .ll-hint-pic { width:260px; }   /* paper is narrower than 800px, so the phone size (200px) would apply */
@@ -1082,10 +1094,12 @@ body.dark #appToast { background: #0a0f1c; }
 <div class="ll-overlay" id="llOverlay" hidden>
   <div class="ll-dialog" role="dialog" aria-modal="true" aria-labelledby="llDlgTitle">
     <div class="ll-dlg-head">
-      <button type="button" class="ll-nav" id="llPrev" title="Previous letter" aria-label="Previous letter" data-i18n-title="letterlearner.dialog.prev" data-i18n-aria-label="letterlearner.dialog.prev"><svg class="hi hi-arrow dir-arrow" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/></svg></button>
+      <button type="button" class="ll-nav" id="llPrev" title="Previous letter (← or Page Up)" aria-label="Previous letter" aria-keyshortcuts="ArrowLeft PageUp" data-i18n-title="letterlearner.dialog.prev_key_title" data-i18n-aria-label="letterlearner.dialog.prev"><svg class="hi hi-arrow dir-arrow" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/></svg></button>
       <h2 class="ll-dlg-title" id="llDlgTitle"><span class="ll-dlg-glyph" id="llDlgGlyph" lang="he" dir="rtl"></span><span class="ll-dlg-name" id="llDlgName"></span></h2>
-      <button type="button" class="ll-nav" id="llNext" title="Next letter" aria-label="Next letter" data-i18n-title="letterlearner.dialog.next" data-i18n-aria-label="letterlearner.dialog.next"><svg class="hi hi-arrow dir-arrow ll-next-arrow" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/></svg></button>
+      <button type="button" class="ll-nav" id="llNext" title="Next letter (→ or Page Down)" aria-label="Next letter" aria-keyshortcuts="ArrowRight PageDown" data-i18n-title="letterlearner.dialog.next_key_title" data-i18n-aria-label="letterlearner.dialog.next"><svg class="hi hi-arrow dir-arrow ll-next-arrow" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/></svg></button>
       <button type="button" class="ll-x" id="llClose" title="Close" aria-label="Close" data-i18n-title="letterlearner.dialog.close" data-i18n-aria-label="letterlearner.dialog.close"><svg class="hi hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
+      <!-- i18n-ignore: PgUp / PgDn are the keys' printed names -->
+      <p class="ll-kh" aria-hidden="true"><kbd class="dir-arrow">←</kbd><kbd class="dir-arrow">→</kbd><kbd class="ll-kh-gap">PgUp</kbd><kbd>PgDn</kbd><span class="ll-kh-lbl" data-i18n="letterlearner.dialog.kbd_nav">Previous / Next</span></p>
     </div>
     <div class="ll-tabs" role="tablist" aria-labelledby="llDlgTitle">
       <button type="button" role="tab" id="llTab-story" aria-controls="llPanel-story" aria-selected="false" tabindex="-1" hidden data-i18n="letterlearner.tabs.story">Story</button>
@@ -2252,10 +2266,11 @@ function llSetMode(mode, opts) {
     vowels ? 'Vowels' : cursive ? 'Cursive letters' : 'Letters');
   const prevKey = vowels ? 'letterlearner.dialog.prev_vowel' : 'letterlearner.dialog.prev';   // "Previous letter" serves both letter modes
   const nextKey = vowels ? 'letterlearner.dialog.next_vowel' : 'letterlearner.dialog.next';
-  ['title', 'aria-label'].forEach(a => {
-    _llSwapKey(document.getElementById('llPrev'), a, prevKey, vowels ? 'Previous vowel' : 'Previous letter');
-    _llSwapKey(document.getElementById('llNext'), a, nextKey, vowels ? 'Next vowel' : 'Next letter');
-  });
+  _llSwapKey(document.getElementById('llPrev'), 'aria-label', prevKey, vowels ? 'Previous vowel' : 'Previous letter');
+  _llSwapKey(document.getElementById('llNext'), 'aria-label', nextKey, vowels ? 'Next vowel' : 'Next letter');
+  // The title names the step keys (the key titles carry the arrow each UI's direction uses, as Flash Cards' do).
+  _llSwapKey(document.getElementById('llPrev'), 'title', prevKey + '_key_title', vowels ? 'Previous vowel (← or Page Up)' : 'Previous letter (← or Page Up)');
+  _llSwapKey(document.getElementById('llNext'), 'title', nextKey + '_key_title', vowels ? 'Next vowel (→ or Page Down)' : 'Next letter (→ or Page Down)');
   // The tips block serves every mode: its summary and intro are chrome (keys swapped), its rows learner content. Both
   // letter modes show "Look-alikes and final letters" (the summary key keeps its Cursive-era name), each with its own pairs.
   document.getElementById('llBpOpen').hidden = vowels;   // coloring sheets are letters' (Block and Cursive) only
@@ -2393,7 +2408,9 @@ function llOpen(id) {
   llFillDialog(id, false);
   ov.hidden = false;
   document.body.classList.add('ll-dlg-open');   // print keys on it: paper gets the open letter, not the grid behind it
-  setTimeout(() => { try { document.querySelector('.ll-tabs [role="tab"][aria-selected="true"]').focus(); } catch (e) {} }, 0);
+  // Focus lands on the step control (Next; Prev on the last card; Close when there is one card), so ←/→ and a clicker step
+  // at once — on a tab those arrows move along the tab strip, its own keys.
+  setTimeout(() => { try { ['llNext', 'llPrev', 'llClose'].map(i => document.getElementById(i)).find(b => !b.disabled).focus(); } catch (e) {} }, 0);
 }
 function llClose() {
   const ov = document.getElementById('llOverlay');
@@ -2431,6 +2448,20 @@ function wireDialog() {
   document.getElementById('llClose').addEventListener('click', llClose);
   document.getElementById('llPrev').addEventListener('click', () => llStep(-1));
   document.getElementById('llNext').addEventListener('click', () => llStep(1));
+  // ←/→ by visual direction (Prev sits at the start, so the Hebrew UI steps forward on ArrowLeft, as on Flash Cards) and
+  // PageUp/PageDown, what a presentation clicker sends, step the open card. A key the focused control already uses stays
+  // with it: the tab strip's arrows (its handler runs first and prevents the default), a field, a slider, a radio set.
+  document.addEventListener('keydown', e => {
+    if (ov.hidden || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+    const fwd = e.key === 'PageDown' || e.key === 'ArrowRight' ? 1 : e.key === 'PageUp' || e.key === 'ArrowLeft' ? -1 : 0;
+    if (!fwd) return;
+    const a = document.activeElement;
+    if (a && a !== document.body && !box.contains(a)) return;   // a dialog above, or anything outside this one, keeps its keys
+    if (a && a.closest('input, select, textarea, [contenteditable="true"]')) return;
+    e.preventDefault();
+    llStep(e.key.startsWith('Arrow') && document.documentElement.dir === 'rtl' ? -fwd : fwd);
+  });
+  llNavKeys();
   ov.querySelectorAll('.ll-tabs [role="tab"]').forEach(tab => {
     tab.addEventListener('click', () => llSelectTab(tab.id.replace('llTab-', '')));
     tab.addEventListener('keydown', e => _tabKeydown(e, tab));
@@ -2440,6 +2471,13 @@ function wireDialog() {
 function llRefillOrClose() {
   if (document.getElementById('llOverlay').hidden || !_llId) return;
   if (llCards().includes(_llId)) llFillDialog(_llId, true); else llClose();
+}
+// Prev / Next state their keys for assistive tech (the visible hint line is aria-hidden): the arrows follow the UI's
+// direction, so a live language switch re-states them (applyI18n).
+function llNavKeys() {
+  const rtl = document.documentElement.dir === 'rtl';
+  document.getElementById('llPrev').setAttribute('aria-keyshortcuts', (rtl ? 'ArrowRight' : 'ArrowLeft') + ' PageUp');
+  document.getElementById('llNext').setAttribute('aria-keyshortcuts', (rtl ? 'ArrowLeft' : 'ArrowRight') + ' PageDown');
 }
 function llStep(dir) {
   const order = llCards(), i = order.indexOf(_llId);
@@ -4596,6 +4634,7 @@ function applyI18n() {
   renderGrid();
   llRenderVoicePicker();
   llPositionSidebarTab();   // the live language switch flips dir without a resize event
+  llNavKeys();
   // An open tour card: its texts in the new language, the spotlight back on its mirrored target (the generator's call).
   if (_tourActive && _tourIdx >= 0) _tourShow(_tourIdx, 1);
   if (!document.getElementById('llOverlay').hidden && _llId) {
