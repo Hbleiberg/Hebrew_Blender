@@ -3543,7 +3543,7 @@ home.card.resources.fonts_link,🔤 Hebrew Fonts →,🔤 גופנים עברי�
 home.card.resources.fonts_link_title,Browse & share Hebrew fonts,עיון ושיתוף של גופנים עבריים,link tooltip,aria/title
 home.card.resources.name,Hebrew Teaching Resources,משאבים להוראת עברית,tool card title,
 home.card.torah.cta,Practice Torah reading →,תרגלו קריאה בתורה ←,tool card button,
-home.card.torah.desc,"Read the weekly parsha with vowel coloring, transliteration, English translations, cantillation toggle, and chanted-audio karaoke (PocketTorah).","קראו את פרשת השבוע עם צביעת תנועות, תעתיק, תרגומים לאנגלית, מתג טעמים, וקריוקי אודיו של הקראה בטעמים (PocketTorah).",tool card description,scope-ambiguous (card desc)
+home.card.torah.desc,"Read the weekly parsha with vowel coloring, transliteration, English translations, cantillation toggle, and chanted-audio karaoke (PocketTorah) — plus the holiday readings and the five Megillot.","קראו את פרשת השבוע עם צביעת תנועות, תעתיק, תרגומים לאנגלית, מתג טעמים, וקריוקי אודיו של הקראה בטעמים (PocketTorah) — וגם את קריאות החגים ואת חמש המגילות.",tool card description,scope-ambiguous (card desc)
 home.card.torah.name,Torah Trainer,מאמן התורה,tool card title,
 home.card.torah.sefaria_title,Texts from Sefaria,טקסטים מ-Sefaria,Sefaria attribution link tooltip,aria/title
 home.card.trope.cta,Practice trope →,תרגלו טעמים ←,tool card button,

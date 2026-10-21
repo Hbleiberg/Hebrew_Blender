@@ -182,7 +182,7 @@ Yes. You can pick any subset of Hebrew letters and vowels and choose 1, 2, or 3 
 
 https://ivritsuite.com/torah_trainer.html
 
-Read the weekly Torah portion in Hebrew with toggleable transliteration, translations, vowel color-coding, trope-family clause coloring, a Trope staff layout that draws the reading on a music staff, cantillation marks, chanted-audio karaoke, and TTS. Copy the color-coded passage out as formatted text, or print classroom sheets that repeat the reference and clause-color key on every page.
+Read the weekly Torah portion in Hebrew with toggleable transliteration, translations, vowel color-coding, trope-family clause coloring, a Trope staff layout that draws the reading on a music staff, cantillation marks, chanted-audio karaoke, and TTS — plus the holiday readings and the five Megillot. Copy the color-coded passage out as formatted text, or print classroom sheets that repeat the reference and clause-color key on every page.
 
 ### How to read the weekly Torah portion with Torah Trainer (about 3 minutes)
 

@@ -15,7 +15,7 @@ incorporating PocketTorah audio is CC BY-SA 4.0).
 - [Hebrew Word Lookup](https://ivritsuite.com/hebrew_dictionary.html): Browse and filter Hebrew vocabulary by theme, length, part of speech, era, and letter position.
 - [Hebrew Classroom Dashboard](https://ivritsuite.com/classroom_dashboard.html): Live Hebrew date, time, weather, and days of the week for SmartBoard or projector display.
 - [Hebrew Flash Cards](https://ivritsuite.com/flash_cards.html): Decode one, two, or three Hebrew letters at a time with full nikkud support.
-- [Torah Trainer](https://ivritsuite.com/torah_trainer.html): Read the weekly parsha with vowel coloring, transliteration, translation, and chanted-audio karaoke.
+- [Torah Trainer](https://ivritsuite.com/torah_trainer.html): Read the weekly parsha with vowel coloring, transliteration, translation, and chanted-audio karaoke — plus the holiday readings and the five Megillot.
 - [Trope Tutor](https://ivritsuite.com/trope_tutor.html): Learn the Torah cantillation marks — symbols, Ashkenazi and Sephardi names, and melodies — with real chanted examples and three drill modes.
 - [Hebrew Font Maker](https://ivritsuite.com/Hebrew_Font_Maker.html): Turn handwritten Hebrew letters into a real, installable font with nikkud and cantillation; export TTF, WOFF2, or UFO.
 - [Letter Learner](https://ivritsuite.com/letter_learner.html): Every Hebrew letter with a picture to remember it by, illustrated words, its vowels read aloud, cursive handwriting and printable coloring sheets.
