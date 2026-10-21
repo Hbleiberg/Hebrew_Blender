@@ -302,29 +302,17 @@ _(none)_
 
 ## Done
 
-- [x] 2026-10-21 | (S532 close-out) | branch/deploy note | **S532 = L (FOUND 1, FIXED 4) on PR #353.** Drift: none but `0006` (outside loop). Gates 2 ×3 → all approved. sw v1056→v1057; no FM bump; sitemap + llms regenerated.
+- [x] 2026-10-21 | (S533 close-out) | branch/deploy note | **S533 = K (FOUND 4, FIXED 4) on the fresh `claude/serene-galileo-0h997e` (PR #354; #353 merged).** Drift: sw v1057→v1058 outside the loop (the gallery link); keep-alive #39 green, #40 due 10-22. sw v1058→v1059; no FM bump; no gates (unattended).
 
-- [x] 2026-10-21 | `5b58a709` `8e91ce3b` | LL, index, torah, CSV | (S532) **Vowel FAQ: one card per vowel; Torah's hub card + JSON-LD name the holidays and Megillot (S474).** | findings
+- [x] 2026-10-21 | `2c82a0b9` `b05b759e` | LL, parsha_emojis | (S533) **The LL subtitle's fallback reads the CSV's sentence; a coloring sheet's picture is named in the sheet's language.** | no-JS load = en.json (the base differs); 54/54 Hebrew-named on a Hebrew sheet (HEAD 0/54); 18 cells, 0 errors
 
-- [x] 2026-10-21 | `1818f37a` `2f20ee57` | resources, README | (S532) **Jewish Interactive listed once (S454); the README's era list (S531).** S432 struck: the delta fixed it. | findings
-
-- [x] 2026-10-21 | `b7cd608a` | db, CLAUDE.md | (outside loop) **0006 live: no default grants; rule 10.** | findings
-
-- [x] 2026-10-21 | (S531 close-out) | branch/deploy note | **S531 = E (FOUND 2, FIXED 4) on PR #353.** Drift: none. sw v1055→v1056; no FM bump; sitemap stamped; no gates.
-
-- [x] 2026-10-21 | `aa71fc00` `f77dc505` | README, FM, CSV | (S531) **README: the two launched pages; FM: the Upload help's Templates link in Hebrew.** | findings
-
-- [x] 2026-10-21 | `6e8b6848` `0c8a2bba` | parsha_emojis, CSV | (S531) **The card link named by its words; sliders + link at 24px.** | findings
-
-- [x] 2026-10-21 | (S530 close-out) | branch/deploy note | **S530 = A (FOUND 4, FIXED 4) on PR #353.** Drift: none. sw v1054→v1055; no FM bump; no gates.
-
-- [x] 2026-10-21 | `66ecdc9f` `eee7080d` | LL, parsha, 13 headers | (S530) **Four empty status notes stay in the a11y tree; the header ✡︎ hidden ×13.** | findings
-
-- [x] 2026-10-21 | `05b75eee` `b298abb2` | LL, generator | (S530) **A card's bulk popup returns to its Coloring sheet; ⚡/🔍 hidden.** | findings
+- [x] 2026-10-21 | `e39359ea` `e83db20c` | torah, dashboard, CSV | (S533) **The gallery's "Open this reading" links are named by their visible words first; the dashboard's parsha popup follows a live switch.** | 53/53 links × 8 cells (HEAD 0); popup cards in the new language 8/8 (HEAD 0), settings untouched; 0 errors
 
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-21 | **S533** | iters: 5 | tools: LL, parsha_emojis, torah, dashboard, CSV, sw.js | patterns fixed: stale-html-fallback ×1, never-re-rendered ×1, pinned-english ×1 | pass run: K | SW: v1058→v1059
 
 - 2026-10-21 | **S532** | iters: 5 | tools: LL, index, torah, resources, README, CSV, sw.js | patterns fixed: — | pass run: L | SW: v1056→v1057
 
@@ -338,7 +326,7 @@ _(none)_
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S532 (2026-10-21):** LL, index, torah, resources, README, CSV, sitemap, sw.js S532 · parsha_emojis, FM S531 · generator, dictionary, dashboard, account, contact, privacy, terms, 404 S530 · flash S527 · corpus S524 · saves, scripts S521 · trope S519 · i18n.js S512 · pwa S472.
+- **Snapshot S533 (2026-10-21):** LL, parsha_emojis, torah, dashboard, CSV, sw.js S533 · index, resources, README, sitemap S532 · FM S531 · generator, dictionary, account, contact, privacy, terms, 404 S530 · flash S527 · corpus S524 · saves, scripts S521 · trope S519 · i18n.js S512 · pwa S472.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -372,7 +360,7 @@ _(none)_
 
 - **`dark-palette-on-the-element`** (NEW S495 G; `.hol-ico` FIXED; `.fx-*` FIXED `e5b3dc47`; open: none): ACTIVE, streak 0. Detection: findings S495.
 
-- **`count-noun-without-a-one-form`** (NEW S497 I; bulk edit ×3 `d438f151`; S498 FM fidelity ×5 FIXED `fc56d212`; S501 FM `{max} units` + status/banner counts FIXED `c6db7170` via a `{units}` phrase; S504 dashboard `bulk_skipped` FIXED `13c10bf3`; open: none known): ACTIVE, …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`count-noun-without-a-one-form`** (NEW S497 I; bulk edit ×3 `d438f151`; S498 FM fidelity ×5 FIXED `fc56d212`; S501 FM `{max} units` + status/banner counts FIXED `c6db7170` via a `{units}` phrase; S504 dashboard `bulk_skipped` FIXED `13c10bf3`; S533 K: 6 delta `{count}` keys, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`busy-disabled-button-drops-focus`** (NEW S498 H; contact + resources FIXED `68adddee`; S499 generator PDF `1ca449db`; S500 dashboard Current Location `82218419`; trope ×2 REFUTED (both hand focus back); open: FM export (an error modal opens mid-export: hand back only if …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -400,7 +388,7 @@ _(none)_
 
 - **`latin-tracking-on-hebrew-labels`** (gate 3: drop suite-wide; S502 dashboard + dictionary; S503 flash; S504 torah `8e48daa5`; S505 Beta badges `0abb1f57`; S511 flash report `th` `90e592b`; **S513 generator `.ws-version-label` `c6fe147` — open: none known** …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`forward-arrow-points-back-in-rtl-copy`** (NEW S462 N; FIXED S464 `5f7f8a40` ×48; open 0): ACTIVE, streak 1 (S472: 47 delta rows, 0). Detection: the S462 CSV census; exempt "(→)", A→Z, Back labels, the orphan `flashcards.header.home`.
+- **`forward-arrow-points-back-in-rtl-copy`** (NEW S462 N; FIXED S464 `5f7f8a40` ×48; open 0): ACTIVE, streak 2 (S533: 9 delta rows with arrows, 0 — the LL key titles mirror the handler; S472: 47, 0). Detection: the S462 CSV census; exempt "(→)", A→Z, Back labels, the orphan …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`share-link-writes-the-teachers-saved-preferences`** (NEW S463 P, `1eeaacb8`): ACTIVE, streak 1 (S472 dictionary clean). Detection: `p463/link-fix.mjs`, `a472/dshare.mjs`.
 
@@ -452,9 +440,9 @@ _(none)_
 
 - **`visible-label-missing-from-the-accessible-name`** (S415–S425: 4 fixes; **S427 the dictionary's Word Lists windows `ee5f6f2`**; **S531 parsha's card link FIXED `6e8b6848`**): ACTIVE, streak 0. Detection `a416/labelname.mjs` + `fieldnames.mjs`; S427 `c427/probe-dlgname.mjs`. …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`designed-key-miss-probed-through-t`** (NEW S415; FM `gName()` FIXED `95d5f46`): ACTIVE, streak 1 (S416: 0 on the delta). Detection: `[i18n] missing key` in B's interaction arm; static: `=== k ?` fallbacks without `I18n.has`.
+- **`designed-key-miss-probed-through-t`** (NEW S415; FM `gName()` FIXED `95d5f46`): ACTIVE, streak 2 (S533: 0 over 102 states + 10 surfaces; S416: 0 on the delta). Detection: `[i18n] missing key` in B's interaction arm; static: `=== k ?` fallbacks without `I18n.has`.
 
-- **`pinned-english-without-lang`** (NEW S415; `f4bbfe8` ×20; resources ×43; torah + trope; **S516 LL ×7 `e7d72c6e`**; open: none): ACTIVE, streak 0. Detection: HE UI, visible Latin-only text outside `[data-i18n*]` whose `closest('[lang]')` ≠ en, by real clicks …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`pinned-english-without-lang`** (NEW S415; `f4bbfe8` ×20; resources ×43; torah + trope; **S516 LL ×7 `e7d72c6e`**; **S533 an attribute twin: the parsha coloring sheets' picture `aria-label` English under `lang=he` ×54 `b05b759e`**; open: none): ACTIVE, streak 0. Detection: …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`toggle-name-flips-with-its-pressed-state`** (NEW S414 `f9e67b2`; S416 trope tune `96275c2`; S430 found torah's Trope staff Tune all + every verse Tune; **S431 FIXED `aa97e2e`**): ACTIVE, streak 0 (last swept S430). Detection `f414/toggles2.mjs`: real click per …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -474,9 +462,9 @@ _(none)_
 
 - **`textContent-rewrite-erases-a-control-icon`** (S405; S415; S453 `ac796dba`; **S501 generator Export PDF `d7355d03`**): ACTIVE, streak 0. Add (d): load-time icon count. Detection: (a) EN→HE→EN icon count; (b) key census …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`english-literal-passed-to-a-message-helper`** (NEW S475): ACTIVE, streak 0. …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`english-literal-passed-to-a-message-helper`** (NEW S475): ACTIVE, streak 1 (S533: 0 over 4,328 added lines, plants 7/7). …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`translated-key-exists-page-hardcodes-english`** (S461 K: 1 FIXED `74b2ee0c`, dictionary Bulk Copy count; streak 0. S433 K: 0 new — the orphan census 121 raw, 86 with a live English twin, all S405/S419 classes; the delta's surfaces by a runtime EN-in-HE detector, 3 …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`translated-key-exists-page-hardcodes-english`** (**S533 K: 0 new** — runtime EN-in-HE over 102 states + 10 surfaces, the 2 CSV twins content by design; streak 1. S461 K: 1 FIXED `74b2ee0c`, dictionary Bulk Copy count; streak 0. S433 K: 0 new — the orphan census 121 raw, 86 …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`per-page-code-inside-a-shared-block`** (**NEW, registered 2026-09-22 (S403 Pass E) — 2 carriers, both fixed `6e28af3`**): ACTIVE, clean streak 1 (S416). Page code pasted INSIDE a `═══` block instead of below its end …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -546,7 +534,7 @@ _(none)_
 
 - **fixed-width-third-party-embed-inflates-phone-layout**: **REGISTERED + first swept suite-wide 2026-08-28 (S276 Pass N) — hits: 2 carriers, BOTH fixed in-session (`23b2387` contact inline auto-render → data-size=compact ≤388 + ≤430 containment belt; `e4aaa44` resources …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **stale-html-fallback-behind-its-csv-value**: ACTIVE, clean streak 0. **S475: 2 FIXED `ca67ec0d`.** **S447 (K, `k447/stale.py` html.parser census, plants 2/2): 4 hits = S432's …[full text: IMPROVEMENT_ARCHIVE.md]
+- **stale-html-fallback-behind-its-csv-value**: ACTIVE, clean streak 0. **S533 (K, `k533/stale.py`, html.parser with exact offsets, 2,974 sites, plant 1/1): 1 FIXED `2c82a0b9` — the LL subtitle, stale since 10-17 (S519's K ran no html arm: run it every K); the generator's 4 …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **undocumented-global-keyboard-shortcut**: ACTIVE. **Re-swept 2026-09-09 (S357 Pass A, delta-only): 0 new `document`-level `keydown` handlers (the erase gate's is scoped to its overlay: Escape + Tab trap, exempt shapes) — hits 0, clean streak 2.** S264 1 hit fixed (`f65ce58`); …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -574,7 +562,7 @@ _(none)_
 
 - **mobile-input-hints** (a text field for Hebrew, names, numbers or codes shipping without `inputmode`/`autocapitalize`/`autocorrect`/`spellcheck` fitting its content) | **ACTIVE — UN-RETIRED S411** (retired S343; the S267 row is in the archive): account.html's `#nameInput` …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **i18n cross-column parity (placeholders, plurals, inline markup)**: **re-swept 2026-09-03 (S320 Pass K, detector 1 only): `{placeholder}` sets en vs he over 5,128 keys, raw 30 → hits: 0 — all thirty are the S261-refuted `.one` plural shape (Hebrew spells the singular number; …[full text: IMPROVEMENT_ARCHIVE.md]
+- **i18n cross-column parity (placeholders, plurals, inline markup)**: **S533 (K): 41 raw `{placeholder}` mismatches over 6,593 keys, all the `.one` shape — hits 0, streak 2.** **re-swept 2026-09-03 (S320 Pass K, detector 1 only): `{placeholder}` sets en vs he over 5,128 keys, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **horizontal-overflow-at-narrow-widths**: **re-swept 2026-09-03 (S334 Pass N, `torah_trainer.html`, 12 real-descriptor loads × 10 views incl. the S324 presentation toolbar) — hits: 1, the clipped-not-scrolled variant (`.tt-fs-plate` 340px in a 320px viewport, −10..330, A− and …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -634,7 +622,7 @@ _(none)_
 
 - **authored-but-unreferenced i18n key family** (a translated CSV key referenced nowhere): **S365: 1 hit FIXED (`772068b`, `trope.learn.no_example` + `trope.learn.examples_unavailable` — `renderLearn` passed the raw English; Geresh Muqdam has no chanted example, so the Hebrew UI …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`browser-locale-date-in-a-localized-sentence`** **S371 (Pass A): 0 `toLocale(Date|Time)String(undefined` in the corpus — hits 0, clean streak 1.** (`toLocaleDateString(undefined, …)` inside a translated sentence or row): **all 3 carriers FIXED — hub `f8b716b`, flash …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`browser-locale-date-in-a-localized-sentence`** **S533 (K): 0 on the delta (`etLang()`, `I18n.lang`; the dashboard's `en-US` dates are projected content), streak 2.** **S371 (Pass A): 0 `toLocale(Date|Time)String(undefined` in the corpus — hits 0, clean streak 1.** …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **sub-floor touch target on a shared small-button class** (registered S193; **S410 FIXED the hub's inline-styled My Fonts row `ee38b98`, 6 buttons 24 → 30px — S236's class-less sub-shape**): a small-control class — `.btn-xs` and its kin — whose size comes from `padding` …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -656,7 +644,7 @@ _(none)_
 
 - **modal-focus-trap** (**S426: HIT — the account screen (gone since the account cleanup; the layer's dialogs are now the name step and the device-extras card), js/ivrit-saves.js, which the S179 sweep predates; FIXED `91c45d6`; streak 0**) …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- pre-ready-i18n / never-re-rendered — **4th instance fixed 2026-08-06 (S185)**: torah_trainer's TTS voice readout, which `applyI18n` had never re-run (30fe852). **Fix-shape note for the next instance: adding the function to `applyI18n` is only half the fix.** If the pre-ready …[full text: IMPROVEMENT_ARCHIVE.md]
+- pre-ready-i18n / never-re-rendered — **5th instance FIXED S533 `e83db20c`: the dashboard's parsha popup cards (`applyI18n` rebuilds the open popup from `_ppIdx`).** **4th instance fixed 2026-08-06 (S185)**: torah_trainer's TTS voice readout, which `applyI18n` had never re-run …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - _**Retirement rule (as applied):** a pattern retires after 3 consecutive clean sweeps **UNLESS it is consequence-critical** (security or data-loss). The three that hit 3-clean at S64 — unescaped-input/unsafe-parse (XSS), localStorage-vs-AllTools (backup), destructive-bulk …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -708,7 +696,7 @@ _(none)_
 
 - M aesthetics & visual design (one surface): 2026-10-19 (**S522 — 26th M, `emoji_torah.html` (its first audit): 64 shots in real fonts, census, bar bands, the Trainer gallery beside it; plants fired. FOUND 4, FIXED 2. M-next: LL (never), FM (S335).**)
 
-- K i18n / localization audit: 2026-10-19 (**S519 — 35th K, `a4f94e88..db80feb4` (LL's first K): census, 90-state round trip (plants 450/450), retry 30/30, blind 7/7. FOUND 2, FIXED 4.**)
+- K i18n / localization audit: 2026-10-21 (**S533 — 36th K, `db80feb4..843984b3` (111 commits; parsha_emojis' first): CSV +209 (all resolve), 12 reworded, 0 removed; static 5,502 refs + 2,974 fallback sites (the html arm, lapsed since S475); blind 0/4,328 lines; 102 states by the real switcher (twins 240 = base 235 + 5 known); retry 4/4; 10 surfaces by real input + a switch mid-state. FOUND 4, FIXED 4.**)
 
 - C accessibility (one tool): 2026-10-20 (**S527 — LL's first C: 7 arms by real input, 4 cells, 22 surfaces, plants 11/11. FOUND 3, FIXED 2 (+2). C-next: parsha_emojis (never), torah (S298), trope (S312).**)
 
@@ -732,4 +720,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-21 (**S528 — 39th F, empty states: 6 no-match surfaces × 4 cells by real input (plants 72/72), 12-page census. FOUND 4, FIXED 1 (+ LL ×2). F-next: loading states.**)
 
-**Next session (S533):** **PR: `claude/improveloop-s526` (#353) open → continue; merged → fresh branch.** `sw.js` **v1057**, FM **5.59**, corpus ?v=7. ⚑ Stalest: K (S519), N (S520), P (S521). ⚑ Keep-alive #40 is the first run after `0006`: confirm it green. ⚑ Seeds: 46. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4; O's Bash rule.
+**Next session (S534):** **PR: `claude/serene-galileo-0h997e` (#354) open → continue; merged → fresh branch.** `sw.js` **v1059**, FM **5.59**, corpus ?v=7. ⚑ Stalest: N (S520), P (S521), M (S522). ⚑ Keep-alive #40 (first after `0006`, 10-22): confirm green. ⚑ K: run the html stale-fallback arm (S519 skipped it). ⚑ Seeds: 46. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4; O's Bash rule.

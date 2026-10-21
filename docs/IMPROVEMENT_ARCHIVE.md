@@ -93467,3 +93467,57 @@ _(prior — S531 pointer:)_ **Next session (S531):** **PR: `claude/improveloop-s
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 _(prior — S532 pointer:)_ **Next session (S532):** **PR: `claude/improveloop-s526` (#353) open → continue; merged → fresh branch.** `sw.js` **v1056**, FM **5.59**, corpus ?v=7. ⚑ Stalest: L (S518), K (S519), N (S520). ⚑ Ready: the README era note. ⚑ Seeds: 46. ⚑ Outside-loop: `0006` live. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4; O's Bash rule.
+
+
+<!-- archived by compact-ledger at the S534 boundary, 2026-10-21 -->
+## Compaction (S534, 2026-10-21) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-21 | (S533 close-out) | branch/deploy note | **S533 = K (36th; FOUND 4, FIXED 4) on the fresh branch `claude/serene-galileo-0h997e` (PR #354; #353 merged).** Drift: sw v1057→v1058 outside the loop (the Trainer gallery link); keep-alive #39 green, #40 (the first after `0006`) due 10-22. sw v1058→v1059; no FM bump; 1 CSV row reworded, 0 keys added; sitemap current; no gates (unattended).
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`count-noun-without-a-one-form`** (NEW S497 I; bulk edit ×3 `d438f151`; S498 FM fidelity ×5 FIXED `fc56d212`; S501 FM `{max} units` + status/banner counts FIXED `c6db7170` via a `{units}` phrase; S504 dashboard `bulk_skipped` FIXED `13c10bf3`; S533 K: 6 delta `{count}` keys, all shown only above 1 — 0; open: none known): ACTIVE, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- **`forward-arrow-points-back-in-rtl-copy`** (NEW S462 N; FIXED S464 `5f7f8a40` ×48; open 0): ACTIVE, streak 2 (S533: 9 delta rows with arrows, 0 — the LL key titles mirror the handler; S472: 47, 0). Detection: the S462 CSV census; exempt "(→)", A→Z, Back labels, the orphan `flashcards.header.home`.
+
+- **`pinned-english-without-lang`** (NEW S415; `f4bbfe8` ×20; resources ×43; torah + trope; **S516 LL ×7 `e7d72c6e`**; **S533 an attribute twin: the parsha coloring sheets' picture `aria-label` English under `lang=he` ×54 `b05b759e`**; open: none): ACTIVE, streak 0. Detection: HE UI, visible Latin-only text outside `[data-i18n*]` whose `closest('[lang]')` ≠ en, by real clicks …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- **`translated-key-exists-page-hardcodes-english`** (**S533 K: 0 new** — runtime EN-in-HE over 102 states + 10 surfaces, the 2 CSV twins content by design; streak 1. S461 K: 1 FIXED `74b2ee0c`, dictionary Bulk Copy count; streak 0. S433 K: 0 new — the orphan census 121 raw, 86 with a live English twin, all S405/S419 classes; the delta's surfaces by a runtime EN-in-HE detector, 3 …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- **stale-html-fallback-behind-its-csv-value**: ACTIVE, clean streak 0. **S533 (K, `k533/stale.py`, html.parser with exact offsets, 2,974 sites, plant 1/1): 1 FIXED `2c82a0b9` — the LL subtitle, stale since 10-17 (S519's K ran no html arm: run it every K); the generator's 4 `<br>` tooltips and the dashboard's `&#10;` placeholder are normalisation.** **S475: 2 FIXED `ca67ec0d`.** **S447 (K, `k447/stale.py` html.parser census, plants 2/2): 4 hits = S432's …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- **i18n cross-column parity (placeholders, plurals, inline markup)**: **S533 (K): 41 raw `{placeholder}` mismatches over 6,593 keys, all the `.one` shape — hits 0, streak 2.** **re-swept 2026-09-03 (S320 Pass K, detector 1 only): `{placeholder}` sets en vs he over 5,128 keys, raw 30 → hits: 0 — all thirty are the S261-refuted `.one` plural shape (Hebrew spells the singular number; …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- **`browser-locale-date-in-a-localized-sentence`** **S533 (K): 0 on the delta (`etLang()`, `I18n.lang`; the dashboard's `en-US` dates are projected content), streak 2.** **S371 (Pass A): 0 `toLocale(Date|Time)String(undefined` in the corpus — hits 0, clean streak 1.** (`toLocaleDateString(undefined, …)` inside a translated sentence or row): **all 3 carriers FIXED — hub `f8b716b`, flash …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- pre-ready-i18n / never-re-rendered — **5th instance FIXED S533 `e83db20c`: the dashboard's parsha popup cards (`applyI18n` rebuilds the open popup from `_ppIdx`).** **4th instance fixed 2026-08-06 (S185)**: torah_trainer's TTS voice readout, which `applyI18n` had never re-run (30fe852). **Fix-shape note for the next instance: adding the function to `applyI18n` is only half the fix.** If the pre-ready …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- K i18n / localization audit: 2026-10-21 (**S533 — 36th K, `db80feb4..843984b3` (111 commits; parsha_emojis' first K): CSV +209 (4 prefix-built, all resolve), 12 reworded, 0 removed, he complete; static 5,502 refs + 2,974 fallback sites (the html arm, lapsed since S475, plant 1/1); blind 0 over 4,328 lines (plants 7/7); 102 states by the real switcher (plants 5/5; twins 240 = base 235 + 5 known); retry 4/4 (controls 2/2); 10 surfaces by real input + a switch mid-state. FOUND 4, FIXED 4.**)
+
+_(prior — S533 pointer:)_ **Next session (S533):** **PR: `claude/improveloop-s526` (#353) open → continue; merged → fresh branch.** `sw.js` **v1057**, FM **5.59**, corpus ?v=7. ⚑ Stalest: K (S519), N (S520), P (S521). ⚑ Keep-alive #40 is the first run after `0006`: confirm it green. ⚑ Seeds: 46. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4; O's Bash rule.
+
+## Size move (S533 close-out, 2026-10-21) — S530's, S531's and S532's Done entries, moved by hand verbatim (the ledger sat at its 100 KB limit)
+
+- [x] 2026-10-21 | (S532 close-out) | branch/deploy note | **S532 = L (FOUND 1, FIXED 4) on PR #353.** Drift: none but `0006` (outside loop). Gates 2 ×3 → all approved. sw v1056→v1057; no FM bump; sitemap + llms regenerated.
+
+- [x] 2026-10-21 | `5b58a709` `8e91ce3b` | LL, index, torah, CSV | (S532) **Vowel FAQ: one card per vowel; Torah's hub card + JSON-LD name the holidays and Megillot (S474).** | findings
+
+- [x] 2026-10-21 | `1818f37a` `2f20ee57` | resources, README | (S532) **Jewish Interactive listed once (S454); the README's era list (S531).** S432 struck: the delta fixed it. | findings
+
+- [x] 2026-10-21 | `b7cd608a` | db, CLAUDE.md | (outside loop) **0006 live: no default grants; rule 10.** | findings
+
+- [x] 2026-10-21 | (S531 close-out) | branch/deploy note | **S531 = E (FOUND 2, FIXED 4) on PR #353.** Drift: none. sw v1055→v1056; no FM bump; sitemap stamped; no gates.
+
+- [x] 2026-10-21 | `aa71fc00` `f77dc505` | README, FM, CSV | (S531) **README: the two launched pages; FM: the Upload help's Templates link in Hebrew.** | findings
+
+- [x] 2026-10-21 | `6e8b6848` `0c8a2bba` | parsha_emojis, CSV | (S531) **The card link named by its words; sliders + link at 24px.** | findings
+
+- [x] 2026-10-21 | (S530 close-out) | branch/deploy note | **S530 = A (FOUND 4, FIXED 4) on PR #353.** Drift: none. sw v1054→v1055; no FM bump; no gates.
+
+- [x] 2026-10-21 | `66ecdc9f` `eee7080d` | LL, parsha, 13 headers | (S530) **Four empty status notes stay in the a11y tree; the header ✡︎ hidden ×13.** | findings
+
+- [x] 2026-10-21 | `05b75eee` `b298abb2` | LL, generator | (S530) **A card's bulk popup returns to its Coloring sheet; ⚡/🔍 hidden.** | findings
