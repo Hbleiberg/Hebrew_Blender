@@ -638,7 +638,8 @@ copy without writing. Both modules are precached, so a rebuilt one needs the `sw
 The Trainer's emoji gallery as a page of its own, with a coloring-sheet printer; it stores only that printer's
 options (one synced `settings` row, tool `EmojiTorah` — the page was `emoji_torah.html` before its launch, and its
 tool id, `hebrewEmojiTorah_*` keys, `emojitorah.*` i18n keys and `et-` code keep that name). It is linked from the
-hub's *Discover* card (beside `letter_learner`) and every *Related Hebrew Tools* footer, indexed, in `sitemap.xml`,
+hub's *Discover* card (beside `letter_learner`), every *Related Hebrew Tools* footer and the Torah Trainer gallery's
+heading row, indexed, in `sitemap.xml`,
 the hub's `ItemList` (so in `llms.txt`'s Tools) and `sw.js` `CORE_ASSETS`. **`emoji_torah.html` is a forwarding
 stub**: `noindex`, a canonical to the new page, a 0-second `meta refresh` and a `location.replace` that keeps the
 query and hash (a sign-in return's `?code=` or `#ivsignin=` still lands); no gtag (a hop would count twice), no

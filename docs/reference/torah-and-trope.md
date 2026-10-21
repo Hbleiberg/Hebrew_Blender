@@ -1331,7 +1331,8 @@ aliyah on their own cycle: other verses).
   picker's), while a modified or middle click keeps the link's new tab. `applyI18n` re-renders an open
   gallery. Without `ParashaNotes` the cards show icon, names and range only; without the data nothing opens. The
   same cards are a page of their own, `parsha_emojis.html` (`docs/reference/shared-components.md` → The parsha emojis
-  page), whose cards link here through `?parsha=`.
+  page), whose cards link here through `?parsha=`; the gallery's heading row links there (`a.tt-emo-page`, *Full page
+  and coloring sheets ↗*, in a new tab so the reading stays open), between the title and the ✕.
 
 ---
 

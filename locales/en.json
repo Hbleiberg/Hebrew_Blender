@@ -5234,6 +5234,8 @@
   "torah.display.style_under": "Under",
   "torah.emojis.close": "Close",
   "torah.emojis.current": "Current reading",
+  "torah.emojis.full_page": "Full page and coloring sheets ↗",
+  "torah.emojis.full_page_aria": "Full page and coloring sheets (opens in a new tab)",
   "torah.emojis.open": "Show all the parsha emojis",
   "torah.emojis.open_reading": "Open this reading",
   "torah.emojis.open_reading_aria": "Open {name}",

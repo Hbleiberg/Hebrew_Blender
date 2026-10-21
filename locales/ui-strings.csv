@@ -4283,6 +4283,8 @@ torah.display.style_outline,Outline,מיתאר,radio label,
 torah.display.style_under,Under,קו תחתון,radio label,
 torah.display.restore_default,Restore default,שחזור ברירת מחדל,Slider reset (↺) button title,title
 torah.emojis.close,Close,סגירה,parasha emoji gallery: the close button (aria-label and title),
+torah.emojis.full_page,Full page and coloring sheets ↗,העמוד המלא ודפי צביעה ↗,parasha emoji gallery: link beside the dialog heading to parsha_emojis.html (new tab),
+torah.emojis.full_page_aria,Full page and coloring sheets (opens in a new tab),העמוד המלא ודפי צביעה (נפתח בכרטיסייה חדשה),"aria-label of the gallery's full-page link: its visible words (torah.emojis.full_page without the ↗), then the new tab",
 torah.emojis.current,Current reading,הקריאה הנוכחית,parasha emoji gallery: badge on the card of the reading on screen (both cards for a doubled Triennial week),
 torah.emojis.open,Show all the parsha emojis,הצגת כל אימוג׳י הפרשות,reading header: the parasha emoji (one button holding the week's icon or icons) opens the gallery of all 54 — its aria-label and title,
 torah.emojis.open_reading,Open this reading,פתיחת הקריאה הזאת,parasha emoji gallery: link at the foot of every card but the reading on screen — loads that parasha in place and closes the gallery,

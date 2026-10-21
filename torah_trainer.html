@@ -1433,6 +1433,11 @@ body:has(#ttEmoDialog:not([hidden])) #pwaInstallBanner { visibility:hidden; }
 .tt-emo-head { flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 16px; border-block-end:2px solid var(--gold); }
 .tt-emo-title { margin:0; font-family:'Libre Baskerville',serif; font-size:1.05rem; color:var(--navy); }
 body.dark .tt-emo-title { color:var(--gold-light); }
+/* The full page (parsha_emojis.html, in a new tab so the reading stays): beside the title, the ✕ kept at the end;
+   inline-block + block padding make a >=24px tap target (WCAG 2.5.8). */
+.tt-emo-page { margin-inline-end:auto; display:inline-block; padding-block:4px; font-size:0.84rem; color:var(--gold-text); font-weight:600; text-decoration:none; }
+.tt-emo-page:hover { text-decoration:underline; }
+.tt-emo-page:focus-visible { outline:2px solid var(--focus-ring); outline-offset:2px; }
 .tt-emo-close { min-width:36px; min-height:36px; display:inline-flex; align-items:center; justify-content:center; }
 .tt-emo-close:focus-visible, .tt-emo-body:focus-visible { outline:2px solid var(--focus-ring); outline-offset:-2px; }
 .tt-emo-body { --tt-emo-book-h:2.4rem; flex:1 1 auto; min-height:0; overflow-y:auto; overscroll-behavior:contain; padding:0 16px 16px; }
@@ -3050,6 +3055,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
 <div class="tt-emo-dialog" id="ttEmoDialog" role="dialog" aria-modal="true" aria-labelledby="ttEmoTitle" tabindex="-1" hidden>
   <div class="tt-emo-head">
     <h2 class="tt-emo-title" id="ttEmoTitle" data-i18n="torah.emojis.title">The parsha emojis</h2>
+    <a class="tt-emo-page" href="parsha_emojis.html" target="_blank" rel="noopener" aria-label="Full page and coloring sheets (opens in a new tab)" data-i18n="torah.emojis.full_page" data-i18n-aria-label="torah.emojis.full_page_aria">Full page and coloring sheets ↗</a>
     <button type="button" class="btn btn-xs btn-secondary tt-emo-close" id="ttEmoClose" onclick="closeParashaGallery()" title="Close" aria-label="Close" data-i18n-title="torah.emojis.close" data-i18n-aria-label="torah.emojis.close"><svg class="hi hi-sm hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
   </div>
   <div class="tt-emo-body" id="ttEmoBody" tabindex="0" role="region" aria-labelledby="ttEmoTitle"></div>
@@ -9287,7 +9293,7 @@ function _emoDialogKey(e) {
   if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); closeParashaGallery(); return; }   // stopped: the drawer's Escape is a document listener
   if (e.key !== 'Tab') return;
   const f = [...document.getElementById('ttEmoDialog').querySelectorAll('button, [href], [tabindex]:not([tabindex="-1"])')]
-    .filter(el => !el.disabled && el.offsetParent !== null);       // the ✕ and the scrolling list
+    .filter(el => !el.disabled && el.offsetParent !== null);       // the full-page link, the ✕, the scrolling list and its links
   if (!f.length) return;
   e.preventDefault();                                             // a full loop: focus may sit on the dialog or the current card
   const i = f.indexOf(document.activeElement), n = f.length;

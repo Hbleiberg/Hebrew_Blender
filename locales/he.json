@@ -5234,6 +5234,8 @@
   "torah.display.style_under": "קו תחתון",
   "torah.emojis.close": "סגירה",
   "torah.emojis.current": "הקריאה הנוכחית",
+  "torah.emojis.full_page": "העמוד המלא ודפי צביעה ↗",
+  "torah.emojis.full_page_aria": "העמוד המלא ודפי צביעה (נפתח בכרטיסייה חדשה)",
   "torah.emojis.open": "הצגת כל אימוג׳י הפרשות",
   "torah.emojis.open_reading": "פתיחת הקריאה הזאת",
   "torah.emojis.open_reading_aria": "פתיחת פרשת {name}",
