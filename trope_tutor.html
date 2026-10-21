@@ -155,7 +155,7 @@ html[lang="he"] footer [style*="letter-spacing:0.08em"] { letter-spacing: normal
    hold) and the font picker's group heads. The print is left as it is. */
 html[lang="he"] .tu-key-lbl, html[lang="he"] .tu-rare-tag, html[lang="he"] .tu-pex-title, html[lang="he"] .tu-mfam-label,
 html[lang="he"] .tu-set-label, html[lang="he"] .font-section-hdr { letter-spacing: normal; text-transform: none; }
-/* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner, parsha_emojis (docs/reference/shared-components.md → Header icons).
+/* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner, parsha_emojis, name_tags (docs/reference/shared-components.md → Header icons).
    The header controls and the in-page control buttons (play, pause, stop, reset, retry, loop, sound) carry inline
    SVGs from one shared set (.hi-*); ink is currentColor, so each button's own colour applies. .hi-sm is the 13px
    size the tiny settings buttons take, .hi-btn lines an icon up with its label inside a button.
@@ -4362,7 +4362,7 @@ function dismissToast() {
    GUIDED TOUR (house engine, ported from torah_trainer.html) — non-modal
    spotlight. Read-only: never changes settings, progress, or playback.
    ══════════════════════════════════════════════════════ */
-function _tourVisible(el) { return !!(el && el.offsetParent !== null); }
+const TOUR_SEEN_KEY = 'hebrewTropeTutor_tourSeen';   // per-device, erase-only
 const TOUR_STEPS = [
   { target: () => document.getElementById('tabLearn'),
     titleKey: 'trope.tour.s1_title', bodyKey: 'trope.tour.s1_body' },
@@ -4383,10 +4383,15 @@ const TOUR_STEPS = [
   { target: () => document.getElementById('tabSettings'),
     titleKey: 'trope.tour.s6_title', bodyKey: 'trope.tour.s6_body' },
 ];
+/* ═══ shared: tour engine ═══ byte-identical across trope_tutor.html, letter_learner.html, name_tags.html.
+   The page defines TOUR_SEEN_KEY (its per-device, erase-only hebrew<Tool>_tourSeen key) and TOUR_STEPS
+   ({ target(), titleKey, bodyKey }) above this block, plus the #tourBtn / #tourSpot / #tourCard markup and CSS.
+   Read-only overlay: it never touches settings, progress or playback. */
+function _tourVisible(el) { return !!(el && el.offsetParent !== null); }
 let _tourIdx = -1, _tourActive = false, _tourOpener = null, _tourRepoTimer = null;
 function tourStart() {
   if (_tourActive) return;
-  try { localStorage.setItem('hebrewTropeTutor_tourSeen', '1'); } catch (e) {}
+  try { localStorage.setItem(TOUR_SEEN_KEY, '1'); } catch (e) {}
   document.getElementById('tourBtn')?.classList.remove('pulse-attn');
   _tourActive = true; _tourIdx = -1;
   _tourOpener = document.activeElement;
@@ -4465,12 +4470,13 @@ function _tourKey(e) {
 // First-visit nudge: gently pulse the Tour button until the tour is opened once.
 (function () {
   function nudge() {
-    try { if (localStorage.getItem('hebrewTropeTutor_tourSeen')) return; } catch (e) { return; }
+    try { if (localStorage.getItem(TOUR_SEEN_KEY)) return; } catch (e) { return; }
     document.getElementById('tourBtn')?.classList.add('pulse-attn');
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', nudge);
   else nudge();
 })();
+/* ═══ end shared: tour engine ═══ */
 
 /* ══════════════════════════════════════════════════════
    INIT

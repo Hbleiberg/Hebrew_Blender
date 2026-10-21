@@ -249,7 +249,7 @@ footer a { display: inline-block; padding-block: 5px; }
 /* The Hebrew UI's footer heads (FAQ, How To, Related Hebrew Tools): their inline 0.08em caps are English small caps;
    Hebrew has no capitals, and the tracking only spaced its letters apart. !important outranks the inline style. */
 html[lang="he"] footer [style*="letter-spacing:0.08em"] { letter-spacing: normal !important; text-transform: none !important; }
-/* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner, parsha_emojis (docs/reference/shared-components.md → Header icons).
+/* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner, parsha_emojis, name_tags (docs/reference/shared-components.md → Header icons).
    The header controls and the in-page control buttons (play, pause, stop, reset, retry, loop, sound) carry inline
    SVGs from one shared set (.hi-*); ink is currentColor, so each button's own colour applies. .hi-sm is the 13px
    size the tiny settings buttons take, .hi-btn lines an icon up with its label inside a button.
@@ -420,7 +420,7 @@ body.dark .ll-sb-tab:hover { background:#345090; }
 .panel-body { padding:12px; }
 html[lang="he"] .panel-title { letter-spacing:normal; text-transform:none; }
 .panel-body .ll-btn { margin-top:10px; }
-/* ═══ shared: sidebar-resize CSS ═══ (byte-identical across hebrew_dictionary/hebrew_blend_generator/classroom_dashboard/torah_trainer/letter_learner — copy verbatim; pairs with the `shared: sidebar-resize` JS block; self-contained incl. reduced-motion) ═══ */
+/* ═══ shared: sidebar-resize CSS ═══ (byte-identical across hebrew_dictionary/hebrew_blend_generator/classroom_dashboard/torah_trainer/letter_learner/name_tags — copy verbatim; pairs with the `shared: sidebar-resize` JS block; self-contained incl. reduced-motion) ═══ */
 .sbr-split{cursor:col-resize;touch-action:none;-webkit-user-select:none;user-select:none;background:none;border:none;padding:0;z-index:5;}
 .sbr-split::before{content:"";position:absolute;top:0;bottom:0;inset-inline:0;margin-inline:auto;width:2px;background:transparent;border-radius:2px;transition:background 0.12s,width 0.12s;}
 .sbr-split:hover::before,.sbr-split:focus-visible::before,.sbr-split.dragging::before{width:4px;background:var(--gold,#c9922a);}
@@ -827,7 +827,7 @@ footer bdi { white-space: nowrap; }   /* the FAQ's example addresses (?letter=, 
   50%      { transform:scale(1.18); opacity:0; }
 }
 
-  /* ═══ shared: app-toast CSS ═══ (byte-identical across generator/dashboard/flash_cards/dictionary/letter_learner; self-contained incl. reduced-motion) ═══ */
+  /* ═══ shared: app-toast CSS ═══ (byte-identical across generator/dashboard/flash_cards/dictionary/letter_learner/name_tags; self-contained incl. reduced-motion) ═══ */
 #appToast {
   position: fixed;
   left: 50%;
@@ -4143,7 +4143,7 @@ const FS_EXIT_ICON = '<svg class="hi hi-fs-exit" viewBox="0 0 24 24" width="16" 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', hide);
   else hide();
 })();
-/* ═══ shared: app-toast ═══ (byte-identical across generator/dashboard/flash_cards/dictionary/letter_learner — copy verbatim; called from the .ivrit engine restore path) ═══ */
+/* ═══ shared: app-toast ═══ (byte-identical across generator/dashboard/flash_cards/dictionary/letter_learner/name_tags — copy verbatim; called from the .ivrit engine restore path) ═══ */
 let _appToastTimer = null;
 function showAppToast(msg, ms) {
   let t = document.getElementById('appToast');
@@ -4208,9 +4208,8 @@ document.addEventListener('fullscreenchange', () => {
    GUIDED TOUR (house engine, ported from trope_tutor.html) — non-modal
    spotlight. Read-only: never changes settings or speech.
    ══════════════════════════════════════════════════════ */
-function _tourVisible(el) { return !!(el && el.offsetParent !== null); }
-// The grid and card steps name their keys by mode through getters (the engine below reads step.titleKey and stays
-// the trope tutor's verbatim copy).
+// The grid and card steps name their keys by mode through getters (the shared engine below reads step.titleKey).
+const TOUR_SEEN_KEY = LL_TOUR_KEY;
 const TOUR_STEPS = [
   { target: () => document.querySelector('.ll-mode'),
     titleKey: 'letterlearner.tour.mode_title', bodyKey: 'letterlearner.tour.mode_body' },
@@ -4227,10 +4226,15 @@ const TOUR_STEPS = [
   { target: () => document.getElementById('cloudSavesPanel'),
     titleKey: 'letterlearner.tour.s4_title', bodyKey: 'letterlearner.tour.s4_body' },
 ];
+/* ═══ shared: tour engine ═══ byte-identical across trope_tutor.html, letter_learner.html, name_tags.html.
+   The page defines TOUR_SEEN_KEY (its per-device, erase-only hebrew<Tool>_tourSeen key) and TOUR_STEPS
+   ({ target(), titleKey, bodyKey }) above this block, plus the #tourBtn / #tourSpot / #tourCard markup and CSS.
+   Read-only overlay: it never touches settings, progress or playback. */
+function _tourVisible(el) { return !!(el && el.offsetParent !== null); }
 let _tourIdx = -1, _tourActive = false, _tourOpener = null, _tourRepoTimer = null;
 function tourStart() {
   if (_tourActive) return;
-  try { localStorage.setItem(LL_TOUR_KEY, '1'); } catch (e) {}
+  try { localStorage.setItem(TOUR_SEEN_KEY, '1'); } catch (e) {}
   document.getElementById('tourBtn')?.classList.remove('pulse-attn');
   _tourActive = true; _tourIdx = -1;
   _tourOpener = document.activeElement;
@@ -4309,12 +4313,13 @@ function _tourKey(e) {
 // First-visit nudge: gently pulse the Tour button until the tour is opened once.
 (function () {
   function nudge() {
-    try { if (localStorage.getItem(LL_TOUR_KEY)) return; } catch (e) { return; }
+    try { if (localStorage.getItem(TOUR_SEEN_KEY)) return; } catch (e) { return; }
     document.getElementById('tourBtn')?.classList.add('pulse-attn');
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', nudge);
   else nudge();
 })();
+/* ═══ end shared: tour engine ═══ */
 
 /* ══════════════════════════════════════════════════════
    INIT
@@ -4340,7 +4345,8 @@ function llOpenFromUrl() {
    dashboard rails. Copy this block verbatim, together with the matching
    `shared: sidebar-resize CSS` block (keep both byte-identical across
    carriers; carriers: hebrew_dictionary.html, hebrew_blend_generator.html,
-   classroom_dashboard.html, torah_trainer.html, letter_learner.html), then mount per handle
+   classroom_dashboard.html, torah_trainer.html, letter_learner.html,
+   name_tags.html), then mount per handle
    from the page's own init (below the end marker):
 
      mountSidebarResize({
