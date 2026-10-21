@@ -6717,6 +6717,9 @@ nametags.table.tr_aria,"Transliteration, student {n}","תעתיק, תלמיד {n
 nametags.table.en_aria,"English name, student {n}","שם באנגלית, תלמיד {n}",aria-label of a table cell,aria
 nametags.table.ex_aria,"Extra line, student {n}","שורה נוספת, תלמיד {n}",aria-label of a table cell,aria
 nametags.table.remove_aria,Remove student {n},הסרת תלמיד {n},title + aria-label of a row remove button,aria
+nametags.table.move_head,Order,סדר,Visually hidden header of the reorder (drag handle) column,
+nametags.table.move_aria,"Move student {n}: drag, or press the up or down arrow key","הזזת תלמיד {n}: גררו, או הקישו על החץ למעלה או למטה",title + aria-label of a row's drag handle (a focused handle also moves its row with the arrow keys),aria
+nametags.table.moved,{name} — now in place {pos} of {count}.,{name} — עכשיו במקום {pos} מתוך {count}.,Screen-reader announcement after a student is moved in the class list,aria
 nametags.table.tr_auto,Back to the automatic transliteration,חזרה לתעתיק האוטומטי,title + aria-label of the reset button in a transliteration cell,aria
 nametags.table.tr_type,Type it here,הקלידו כאן,Placeholder of a transliteration cell in Typed-only mode,
 nametags.csv.import,Import a CSV,ייבוא קובץ CSV,Button (file picker),svg-icon-in-markup

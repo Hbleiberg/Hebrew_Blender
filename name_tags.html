@@ -427,8 +427,13 @@ html[lang="he"] .nt-table th { letter-spacing:normal; text-transform:none; }
 .nt-icon-btn:hover { border-color:var(--border); color:var(--text); }
 .nt-icon-btn[hidden] { display:none; }
 .nt-del:hover { color:var(--danger-text); border-color:var(--danger-text); }
-.nt-table tr.nt-new .nt-del { visibility:hidden; }
+.nt-table tr.nt-new .nt-del, .nt-table tr.nt-new .nt-grip { visibility:hidden; }
 .nt-table tr.nt-new td { background:rgba(201,146,42,0.05); }
+/* The reorder handle: pointer events, not HTML5 drag-and-drop (which never fires on touch), so touch-action keeps a
+   finger on the grip from panning the page; the row being carried takes a gold tint. */
+.nt-grip { cursor:grab; touch-action:none; -webkit-user-select:none; user-select:none; }
+.nt-table tr.nt-dragging td { background:rgba(201,146,42,0.16); }
+body.nt-carrying, body.nt-carrying * { cursor:grabbing !important; }
 .nt-table.nt-no-extra .nt-col-ex { display:none; }
 .nt-undo { margin-inline-start:8px; }
 
@@ -884,6 +889,7 @@ body.dark #appToast { background: #0a0f1c; }
               <th scope="col" data-i18n="nametags.table.en">English name</th>
               <th scope="col" class="nt-col-ex" data-i18n="nametags.table.ex">Extra line</th>
               <th scope="col"><span class="vh" data-i18n="nametags.table.remove_head">Remove</span></th>
+              <th scope="col"><span class="vh" data-i18n="nametags.table.move_head">Order</span></th>
             </tr>
           </thead>
           <tbody id="ntRows"></tbody>
@@ -1271,6 +1277,7 @@ function ntDeleteList() {
 /* ── The table: one row per student, plus a blank row at the end to type the next one into ── */
 const NT_ICON_RESET = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg>';
 const NT_ICON_TRASH = '<svg class="hi hi-sm hi-trash" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h15"/><path d="M9.5 7V5.2a1.2 1.2 0 0 1 1.2-1.2h2.6a1.2 1.2 0 0 1 1.2 1.2V7"/><path d="M6.5 7l.9 12.1a1.6 1.6 0 0 0 1.6 1.5h6a1.6 1.6 0 0 0 1.6-1.5L17.5 7"/><path d="M10.4 10.6v6.4M13.6 10.6v6.4"/></svg>';
+const NT_ICON_GRIP = '<svg class="hi hi-sm hi-grip" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="currentColor" stroke="none"><circle cx="9" cy="6" r="1.9"/><circle cx="15" cy="6" r="1.9"/><circle cx="9" cy="12" r="1.9"/><circle cx="15" cy="12" r="1.9"/><circle cx="9" cy="18" r="1.9"/><circle cx="15" cy="18" r="1.9"/></svg>';
 function ntRowEl(row, i, isNew) {
   const tr = el('tr', isNew ? 'nt-new' : null);
   const n = i + 1;
@@ -1318,6 +1325,17 @@ function ntRowEl(row, i, isNew) {
   if (isNew) del.tabIndex = -1;
   tdDel.appendChild(del);
   tr.appendChild(tdDel);
+  const tdMove = el('td');
+  const grip = el('button', 'nt-icon-btn nt-grip');
+  grip.type = 'button';
+  grip.dataset.move = String(i);
+  grip.innerHTML = NT_ICON_GRIP;
+  grip.title = _fbT('nametags.table.move_aria', 'Move student {n}: drag, or press the up or down arrow key', { n });
+  grip.setAttribute('aria-label', grip.title);
+  grip.setAttribute('aria-keyshortcuts', 'ArrowUp ArrowDown');
+  if (isNew) grip.tabIndex = -1;
+  tdMove.appendChild(grip);
+  tr.appendChild(tdMove);
   ntDecorateTr(tr, row, i);
   return tr;
 }
@@ -1339,7 +1357,7 @@ function ntRenderTable() {
   if (!tb) return;
   const a = document.activeElement;
   let keep = null;
-  if (a && tb.contains(a)) keep = { r: a.dataset.r || a.dataset.del || a.dataset.auto, f: a.dataset.f || (a.dataset.del != null ? 'del' : 'auto'), s: a.selectionStart, e: a.selectionEnd };
+  if (a && tb.contains(a)) keep = { r: a.dataset.r || a.dataset.del || a.dataset.auto || a.dataset.move, f: a.dataset.f || (a.dataset.del != null ? 'del' : a.dataset.move != null ? 'move' : 'auto'), s: a.selectionStart, e: a.selectionEnd };
   tb.textContent = '';
   const rows = ntRows();
   rows.forEach((row, i) => tb.appendChild(ntRowEl(row, i, false)));
@@ -1347,7 +1365,7 @@ function ntRenderTable() {
   document.getElementById('ntTable').classList.toggle('nt-no-extra', !ntSet.extra);
   document.getElementById('ntExtraRow').hidden = !ntSet.extra;
   if (keep) {
-    const sel = keep.f === 'del' ? '[data-del="' + keep.r + '"]' : keep.f === 'auto' ? 'input[data-f="tr"][data-r="' + keep.r + '"]' : 'input[data-f="' + keep.f + '"][data-r="' + keep.r + '"]';
+    const sel = keep.f === 'del' ? '[data-del="' + keep.r + '"]' : keep.f === 'move' ? '[data-move="' + keep.r + '"]' : keep.f === 'auto' ? 'input[data-f="tr"][data-r="' + keep.r + '"]' : 'input[data-f="' + keep.f + '"][data-r="' + keep.r + '"]';
     const t = tb.querySelector(sel) || tb.querySelector('input[data-f="he"][data-r="' + Math.max(0, Math.min(Number(keep.r) || 0, rows.length)) + '"]');
     if (t) { t.focus(); if (typeof keep.s === 'number' && t.setSelectionRange) { try { t.setSelectionRange(keep.s, keep.e); } catch (e) {} } }
   }
@@ -1403,6 +1421,31 @@ function ntRemoveRow(i) {
   });
   const next = document.querySelector('#ntRows [data-del="' + i + '"]') || document.querySelector('#ntRows input[data-f="he"][data-r="' + i + '"]');
   if (next) next.focus();
+}
+// Reorder: one student carried from place `from` to place `to` (a drag handle's drop, or its ↑/↓ keys). The order is the
+// list's rows array itself, so the save, the sync, the CSV, the .ivrit file and the printed sheets all follow it.
+function ntMoveRow(from, to) {
+  const rows = ntEnsureRows();
+  const ok = from >= 0 && from < rows.length && to >= 0 && to < rows.length && from !== to;
+  let row = null;
+  if (ok) {
+    row = rows.splice(from, 1)[0];
+    rows.splice(to, 0, row);
+    // The on-screen keyboard keeps typing into the same student; a pending remove-Undo belongs to the old order.
+    if (_ntKbdRow === from) _ntKbdRow = to;
+    else if (from < _ntKbdRow && _ntKbdRow <= to) _ntKbdRow--;
+    else if (to <= _ntKbdRow && _ntKbdRow < from) _ntKbdRow++;
+    if (_ntUndo) { _ntUndo = null; ntListNote(''); }
+    ntSaveList();
+  }
+  ntRenderTable();   // also puts back a drag that ended where it started (or was cancelled)
+  const at = ok ? to : from;
+  const g = document.querySelector('#ntRows [data-move="' + at + '"]');
+  if (g) g.focus();
+  if (!ok) return;
+  ntQueuePreview();
+  const who = ntRowField(row, 'en') || ntRowField(row, 'he') || String(to + 1);
+  announce(_fbT('nametags.table.moved', '{name} — now in place {pos} of {count}.', { name: who, pos: to + 1, count: rows.length }));
 }
 
 /* ══════════════════════════════════════════════════════
@@ -2408,8 +2451,74 @@ function ntWireTable() {
     const t = e.target;
     if (t.dataset && t.dataset.f) ntEditCell(Number(t.dataset.r), t.dataset.f, t.value);
   });
+  // Reorder by dragging a row's grip, with a mouse, a finger or a pen alike. The pointer is captured on the tbody, which
+  // never moves, so the capture survives the rows being shuffled under it: the carried <tr> moves live to the slot whose
+  // midpoint the pointer has passed (the blank row stays last), the page scrolls near the window's top or bottom edge,
+  // and the drop commits through ntMoveRow. Escape, a cancelled pointer or a re-render mid-drag puts the order back.
+  let drag = null;
+  const realRows = () => Array.from(tb.children).filter(tr => !tr.classList.contains('nt-new'));
+  const place = y => {
+    let before = null;
+    for (const tr of realRows()) {
+      if (tr === drag.tr) continue;
+      const b = tr.getBoundingClientRect();
+      if (y < b.top + b.height / 2) { before = tr; break; }
+    }
+    const ref = before || tb.querySelector('tr.nt-new');
+    if (ref !== drag.tr && ref !== drag.tr.nextSibling) tb.insertBefore(drag.tr, ref);
+  };
+  const finish = commit => {
+    if (!drag) return;
+    const d = drag;
+    drag = null;
+    cancelAnimationFrame(d.raf);
+    document.removeEventListener('keydown', onEsc, true);
+    document.body.classList.remove('nt-carrying');
+    d.tr.classList.remove('nt-dragging');
+    try { tb.releasePointerCapture(d.id); } catch (e) {}
+    const to = commit && d.tr.parentNode === tb ? realRows().indexOf(d.tr) : d.from;
+    ntMoveRow(d.from, to);
+  };
+  const onEsc = e => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); finish(false); } };
+  const tick = () => {
+    if (!drag) return;
+    if (drag.tr.parentNode !== tb) { finish(false); return; }
+    const edge = 48, h = window.innerHeight, y = drag.y, t = tb.getBoundingClientRect();   // never past the table's own ends
+    const dy = y < edge && t.top < 0 ? -Math.ceil((edge - y) / 3) : y > h - edge && t.bottom > h ? Math.ceil((y - (h - edge)) / 3) : 0;
+    if (dy) { window.scrollBy(0, dy); place(y); }
+    drag.raf = requestAnimationFrame(tick);
+  };
+  tb.addEventListener('pointerdown', e => {
+    const g = e.target.closest('[data-move]');
+    if (!g || !tb.contains(g) || drag || e.button !== 0 || g.closest('tr.nt-new')) return;
+    e.preventDefault();   // no text selection; the grip takes focus itself, so its ↑/↓ keys work straight after
+    g.focus({ preventScroll: true });
+    drag = { tr: g.closest('tr'), from: Number(g.dataset.move), id: e.pointerId, y: e.clientY, raf: 0 };
+    try { tb.setPointerCapture(e.pointerId); } catch (err) {}
+    drag.tr.classList.add('nt-dragging');
+    document.body.classList.add('nt-carrying');
+    document.addEventListener('keydown', onEsc, true);
+    drag.raf = requestAnimationFrame(tick);
+  });
+  tb.addEventListener('pointermove', e => {
+    if (!drag || e.pointerId !== drag.id) return;
+    if (drag.tr.parentNode !== tb) { finish(false); return; }
+    drag.y = e.clientY;
+    place(e.clientY);
+  });
+  tb.addEventListener('pointerup', e => { if (drag && e.pointerId === drag.id) finish(true); });
+  tb.addEventListener('pointercancel', e => { if (drag && e.pointerId === drag.id) finish(false); });
+  tb.addEventListener('lostpointercapture', e => { if (drag && e.pointerId === drag.id) finish(false); });
   tb.addEventListener('keydown', e => {
     const t = e.target;
+    // A focused grip: ↑ and ↓ carry its student one place (nothing at either end).
+    if (t.dataset && t.dataset.move != null && (e.key === 'ArrowUp' || e.key === 'ArrowDown') && !e.altKey && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
+      e.preventDefault();
+      if (drag || t.closest('tr.nt-new')) return;
+      const i = Number(t.dataset.move), j = i + (e.key === 'ArrowUp' ? -1 : 1);
+      if (j >= 0 && j < ntRows().length) ntMoveRow(i, j);
+      return;
+    }
     if (e.key !== 'Enter' || e.isComposing || !t.dataset || !t.dataset.f) return;
     e.preventDefault();
     const next = tb.querySelector('input[data-f="' + t.dataset.f + '"][data-r="' + (Number(t.dataset.r) + 1) + '"]');
