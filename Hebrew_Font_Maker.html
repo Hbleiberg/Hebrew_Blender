@@ -22221,7 +22221,7 @@ async function saveToComputer() {
   onMetaChange();
   const json = JSON.stringify(project);
   const d = new Date(), mon = d.toLocaleString('en-US',{month:'long'});
-  const stamp = `${mon}_${d.getDate()}_${d.getFullYear()}_FontMaker`;
+  const stamp = `${fontFileStem()}_${mon}_${d.getDate()}_${d.getFullYear()}`;   // the font's name (its .ttf's stem), then the day
   if (typeof CompressionStream !== 'undefined') {
     downloadBlob(await gzipBlob(json), `${stamp}.hebrewfont`);   // single compressed self-contained file
     status(I18n.t('fontmaker.status.project_saved_computer'));
