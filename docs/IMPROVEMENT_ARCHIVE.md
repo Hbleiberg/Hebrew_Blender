@@ -93393,3 +93393,29 @@ _(prior — S528 pointer:)_ **Next session (S528):** **PR: `claude/improveloop-s
 - 2026-10-20 | **S523** | iters: 5 | tools: dictionary ×2, generator, account, sw.js | patterns fixed: dark-palette-baked-into-paper ×2 | pass run: G | SW: v1040→v1041
 
 - 2026-10-20 | **S524** | iters: 5 | tools: flash ×2, dictionary ×2, generator ×2, FM, dashboard, corpus, sw.js | patterns fixed: layout-read-per-grid-at-build ×1 | pass run: D | SW: v1041→v1042
+
+
+<!-- archived by compact-ledger at the S530 boundary, 2026-10-21 -->
+## Compaction (S530, 2026-10-21) — moved verbatim from the live ledger
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`sub-floor touch target`**: ACTIVE. **S529: LL sliders FIXED `84154c76`; open: parsha_emojis' 7 popup sliders (`b529/fix4.mjs`).** **S516 FM ×4 `36e804ac`.** **S513 dashboard ×2 `787c434`.** **S483 hub clean.** **S456: `85e294b2`, `924c9407`.** Detection: visible controls < 24×24 reached by real input (inline links …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- **decorative-glyph-carrier-exposed-to-assistive-tech** (**S529: generator start screen + chips FIXED `19ece1f1` (`b529/fix2.mjs`, ariaSnapshot); open: the header ✡︎ on 13 pages.** **S528: resources' icons FIXED `34ae261b`.** **2nd instance fixed 2026-08-15, S219, c2399f1 — Font Maker QA column heads**. …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+_(prior — S529 pointer:)_ **Next session (S529):** **PR: `claude/improveloop-s526` (#353) open → continue; merged → fresh branch.** `sw.js` **v1053**, FM **5.59**, corpus ?v=7. ⚑ Stalest: B (S515), A (S516: sweep hit-box, empty-result). ⚑ Ready: resources Reset filters (gate 2 yes), LL sliders, dictionary roots note, generator ✡︎. ⚑ Seeds: 46 (2 LL picked). ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4; O's Bash rule.
+
+## Size move (S529 close-out, 2026-10-21)
+
+Moved verbatim from the ledger to keep it under 100 KB (the S528 precedent): S528's Done entries and the S525 per-session row.
+
+- [x] 2026-10-21 | (S528 close-out) | branch/deploy note | **S528 = F + 2 fixes + 1 micro-feature on PR #353.** Drift: none. sw v1052→v1053; no FM bump; gates 1 + 2 answered.
+
+- [x] 2026-10-21 | `34ae261b` | resources.html | (S528) **A filter that empties the grid is heard: live counts kept at 0, icons hidden.** | findings
+
+- [x] 2026-10-21 | `d1293a70` `2265053f` | letter_learner.html | (S528) **Reset names all it resets; ←/→ and PgUp/PgDn step a card.** | findings
+
+- 2026-10-20 | **S525** | iters: 5 | tools: LL, generator, dashboard, flash (reverted), locales CSV, sw.js | patterns fixed: hebrew-faux-italic ×1 | pass run: I | SW: v1042→v1043
