@@ -12,7 +12,7 @@ the AllTools registration of its keys, a tour, and the backend smokes.
 | `hebrewNameTags_lists` | `NameTags` / `list`, map/item — one row per list, named by the list | `{ "<list name>": { v: 1, rows: [{ he, en, tr?, ex? }], extra } }`. `tr` is stored only when typed (the automatic transliteration is computed at render and never stored, so it cannot differ between devices); `ex` overrides the list's `extra` for one student |
 | `hebrewNameTags_settings` | `NameTags` / `settings`, single/assign, no `omit` | The design and print options (`NT_DEFAULTS` is the field list and order) |
 | `hebrewNameTags_activeList` | never (per device, erase-only) | Which list this device last had open |
-| `hebrewNameTags_panels` | never (AllTools only) | The shared panel-collapse map |
+| `hebrewNameTags_panels` | never (AllTools only) | The shared panel-collapse map: the sidebar panels and the class list's fold (`nametags.list.heading`) |
 | `hebrewNameTags_sidebarW`, `hebrewNameTags_tourSeen` | never (erase-only) | The sidebar width and the tour's pulse flag |
 
 - **Nothing is written on load.** A first visit shows an unsaved list named by `nametags.list.default_name`; it is
@@ -29,6 +29,27 @@ the AllTools registration of its keys, a tour, and the backend smokes.
   keeping the focused cell and caret, and never writes back.
 - **Limits:** 30 lists, 200 students a list, 120 characters a field or list name, a CSV of 1 MB; each refusal is an
   inline note, never an `alert()`.
+- **Row order is the `rows` array**, so the save, the sync, the CSV, the `.ivrit` file and the printed sheets all follow
+  it (a tag's pastel follows its place). Each row ends in a grip (`[data-move]`): a drag uses pointer events, never
+  HTML5 drag-and-drop (which does not fire on touch), with the pointer captured on the `<tbody>` (it never moves, so
+  the capture survives the rows being reordered under it) and `touch-action:none` on the grip; the carried `<tr>`
+  moves live, the page scrolls near the window's edge but never past the table's ends, and the drop commits through
+  `ntMoveRow` (which also keeps the on-screen keyboard on the same student and drops a remove-Undo from the old
+  order). A focused grip moves its row with ↑/↓; Escape, a cancelled pointer or a re-render mid-drag (a sync's
+  `onLocalChanged('list')`) puts the order back.
+
+## Layout: the class list's fold and the hidden sidebar
+- **The class list folds** from its heading (`#ntListToggle`, a real button) so the preview rises beside the options;
+  folded, the heading shows the open list's menu text. It rides the shared panel-collapse memory unchanged: the
+  section is a `.panel` to that engine only (an override drops the sidebar panels' look) and `PANEL_MEM_CFG.scope`
+  names the toggle.
+- **The options sidebar hides** from the generator's pair of edge tabs on `.nt-app.sidebar-hidden`, per visit only
+  (`docs/reference/shared-components.md` → *Collapse / close interplay*). The hide tab is placed by
+  `ntPositionSidebarTab` (the seam's `onChange`, window resize, `applyI18n`); at ≤800px there are no tabs and the
+  sidebar always shows. The tab glyphs are plain `‹ ›` with no `.dir-arrow` flip: they are bidi-mirrored characters,
+  so the Hebrew UI already turns them.
+- **The Tour button runs `ntTourStart`**, which shows the sidebar and opens a folded class list on screen (no memory
+  save) before the shared engine, which skips any step whose target is hidden.
 
 ## Transliteration
 
