@@ -4520,6 +4520,7 @@
   "resources.cat_badge.tanakh": "Tanakh",
   "resources.empty.fonts": "No fonts match the selected filters.",
   "resources.empty.links": "No resources match the selected filters.",
+  "resources.empty.reset_all": "Reset all filters",
   "resources.faq.a1": "A curated set of websites, printables, lesson-planning tools, Tanakh references, Hebrew language sites, and Jewish culture resources.",
   "resources.faq.a2": "Most are free; some link to paid services, so check a site's own terms before you register or pay.",
   "resources.faq.a3": "Hebrew and Jewish-studies teachers, day-school faculty, supplementary-school teachers, parents, and adult learners.",

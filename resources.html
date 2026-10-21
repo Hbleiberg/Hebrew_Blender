@@ -258,6 +258,10 @@ body.dark .card-link{color:#aab8d8;}
 .empty-state{text-align:center;padding:60px 24px;color:var(--muted);}
 .empty-state .emoji{font-size:2.5rem;margin-bottom:12px;}
 .empty-state p{font-size:0.9rem;}
+/* Its way back (the dictionary's empty-state button): every filter row of that view to All. */
+.empty-state .empty-btn{margin-top:14px;padding:6px 14px;border:1px solid var(--gold);border-radius:6px;background:var(--white);color:var(--text);font-size:0.82rem;font-family:inherit;cursor:pointer;transition:background 0.15s;}
+.empty-state .empty-btn:hover{background:var(--gold);color:var(--navy);}
+.empty-state .empty-btn:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;}
 
 /* ── Footer ── */
 footer{text-align:center;padding:16px;font-size:0.75rem;color:var(--muted);border-top:1px solid var(--border);background:var(--white);}
@@ -556,6 +560,7 @@ body.dark #fontToast{background:#2a4070;}
   <div class="empty-state" id="emptyState" style="display:none;">
     <div class="emoji" aria-hidden="true">🔍</div>
     <p data-i18n="resources.empty.links">No resources match the selected filters.</p>
+    <button type="button" class="empty-btn" onclick="resetFilters('linksRegion')" data-i18n="resources.empty.reset_all">Reset all filters</button>
   </div>
   </div>
 
@@ -591,6 +596,7 @@ body.dark #fontToast{background:#2a4070;}
   <div class="empty-state" id="fontEmpty" style="display:none;">
     <div class="emoji" aria-hidden="true">🔤</div>
     <p data-i18n="resources.empty.fonts">No fonts match the selected filters.</p>
+    <button type="button" class="empty-btn" onclick="resetFilters('fontsRegion')" data-i18n="resources.empty.reset_all">Reset all filters</button>
   </div>
   </div>
 
@@ -1666,6 +1672,14 @@ document.querySelectorAll('#fontsRegion .filter-btn').forEach(btn => {
     renderFonts();
   });
 });
+/* An empty state's "Reset all filters": every row of that view back to its All chip, through the chips' own click
+   path (state, pressed, counts, render). The button leaves with the empty state, so the focus goes to the first
+   row's All, which is where the view now stands. */
+function resetFilters(regionId) {
+  const alls = [...document.querySelectorAll(`#${regionId} .filter-btn[data-value="all"]`)];
+  alls.forEach(b => b.click());
+  if (alls[0]) alls[0].focus();
+}
 
 /* The one definition of "which fonts are on screen right now". The gallery grid and the
    preview's stepper both read it, so the modal can never step to a font the filters have

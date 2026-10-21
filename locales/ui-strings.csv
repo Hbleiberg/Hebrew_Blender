@@ -3626,6 +3626,7 @@ resources.cat_badge.printable,Printables,חומרים להדפסה,resource card
 resources.cat_badge.tanakh,Tanakh,תנ״ך,resource card category badge,
 resources.empty.fonts,No fonts match the selected filters.,אין גופנים התואמים למסננים שנבחרו.,empty state,
 resources.empty.links,No resources match the selected filters.,אין משאבים התואמים למסננים שנבחרו.,empty state,
+resources.empty.reset_all,Reset all filters,איפוס כל המסננים,"empty-state button (Links and Fonts): every filter row back to All, the dictionary's wording",
 resources.faq.a1,"A curated set of websites, printables, lesson-planning tools, Tanakh references, Hebrew language sites, and Jewish culture resources.","אוסף אוצר של אתרים, חומרים להדפסה, כלים לתכנון שיעורים, מקורות תנ״ך, אתרי שפה עברית ומשאבי תרבות יהודית.",FAQ answer,
 resources.faq.a2,"Most are free; some link to paid services, so check a site's own terms before you register or pay.","רובם חינמיים; חלקם מקשרים לשירותים בתשלום, לכן כדאי לבדוק את תנאי האתר לפני הרשמה או תשלום.",FAQ answer,
 resources.faq.a3,"Hebrew and Jewish-studies teachers, day-school faculty, supplementary-school teachers, parents, and adult learners.","מורים לעברית וללימודי יהדות, סגל בתי ספר יומיים, מורים בבתי ספר משלימים, הורים ולומדים מבוגרים.",FAQ answer,
