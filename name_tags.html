@@ -411,7 +411,7 @@ html[lang="he"] fieldset.nt-set legend, html[lang="he"] .nt-head { letter-spacin
 .nt-extra-row { display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; margin-top:12px; font-size:0.88rem; }
 .nt-extra-row[hidden] { display:none; }
 .nt-extra-row .nt-field { flex:1 1 16em; }
-.nt-table-wrap { margin-top:12px; overflow-x:auto; border:1px solid var(--border); border-radius:8px; background:var(--white); }
+.nt-table-wrap { position:relative; margin-top:12px; overflow-x:auto; border:1px solid var(--border); border-radius:8px; background:var(--white); }   /* relative: the Remove header's .vh span is clipped here, not by the page (a phone scrolled sideways otherwise) */
 .nt-table { width:100%; border-collapse:collapse; font-size:0.9rem; }
 .nt-table th { text-align:start; font-size:0.72rem; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; color:var(--muted); padding:8px 6px; border-bottom:1px solid var(--border); white-space:nowrap; }
 html[lang="he"] .nt-table th { letter-spacing:normal; text-transform:none; }
