@@ -5285,7 +5285,7 @@ worksheet.preview.settings_changed,Settings changed — Generate to apply.,הה�
 worksheet.preview.waiting_selection,Waiting for a valid selection…,ממתין לבחירה תקינה…,preview notice,
 worksheet.preview.word_list_failed,"Couldn't load the word list. Check your internet connection, or ask your school's IT to allow ivritsuite.com — then try again.","לא ניתן לטעון את רשימת המילים. בדקו את חיבור האינטרנט, או בקשו מצוות המחשוב של בית הספר לאפשר גישה ל-ivritsuite.com — ואז נסו שוב.",preview notice,REVIEW: HE recombines the reviewed dictionary.loading.failed sentence — confirm
 worksheet.quickstart.class_bingo,Class Bingo (30 cards),בינגו כיתתי (30 כרטיסים),quick-start chip,
-worksheet.quickstart.drawer_summary,⚡ Quick start — ready-made worksheets,⚡ התחלה מהירה — דפי עבודה מוכנים,sidebar drawer summary,leading-emoji
+worksheet.quickstart.drawer_summary,Quick start — ready-made worksheets,התחלה מהירה — דפי עבודה מוכנים,sidebar drawer summary (its ⚡ is decoration in the markup),
 worksheet.quickstart.empty_label,Or start with a ready-made worksheet,או התחילו עם דף עבודה מוכן,empty-state label,
 worksheet.quickstart.fill_vowels,Fill-in-the-Vowels quiz,מבחן מילוי תנועות,quick-start chip,
 worksheet.quickstart.kamatz_patach,Kamatz & Patach drill,תרגול קמץ ופתח,quick-start chip,
