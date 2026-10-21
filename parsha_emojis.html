@@ -343,8 +343,8 @@ body.dark .et-name{color:var(--gold-light);}
 .et-sum,.et-why{margin:0 0 6px;font-size:0.88rem;line-height:1.5;}
 .et-why{margin-block-end:0;}
 .et-go-row{margin:auto 0 0;padding-block-start:8px;font-size:0.82rem;}
-/* inline-block + block padding: a >=24px tap target (WCAG 2.5.8) without moving the text. */
-.et-go{display:inline-block;padding-block:4px;color:var(--gold-text);font-weight:600;text-decoration:none;}
+/* inline-block + block padding: a >=24px tap target (WCAG 2.5.8) without moving the text; min-height holds it in Hebrew, whose line box is 1px shorter. */
+.et-go{display:inline-block;padding-block:4px;min-height:24px;color:var(--gold-text);font-weight:600;text-decoration:none;}
 .et-go:hover{color:var(--gold-text-hover);text-decoration:underline;}
 /* Today's parasha: the week's card (both of a doubled week) larger, in one column up to a reading width. */
 .et-list.et-featured{grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));max-width:840px;}
@@ -414,7 +414,7 @@ html[lang="he"] .et-cs-set legend,html[lang="he"] .et-cs-legend{letter-spacing:n
 .et-cs-chip-name[lang="he"]{font-family:var(--heb-font);font-size:0.86rem;}
 .et-cs-copies input{width:4.5em;font:inherit;font-size:0.9rem;padding:4px 6px;border:1.5px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);}
 .et-cs-size{display:grid;grid-template-columns:minmax(7.5em,max-content) 130px 3.2em;align-items:center;gap:2px 8px;font-size:0.9rem;min-height:30px;}
-.et-cs-size input[type="range"]{width:100%;accent-color:var(--gold);margin:0;}
+.et-cs-size input[type="range"]{width:100%;height:24px;/* the slider floor (the Letter Learner twin's) — native default is ~16px */accent-color:var(--gold);margin:0;}
 .et-cs-size input[type="range"]:disabled{opacity:0.4;}
 .et-cs-size output{font-variant-numeric:tabular-nums;color:var(--muted);font-size:0.82rem;}
 .et-cs-note{margin:0 0 10px;font-size:0.85rem;color:var(--text);}
