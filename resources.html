@@ -720,14 +720,6 @@ const RESOURCES = [
     gradeLabel: 'K–2, 3–5',
   },
   {
-    title: 'Jewish Interactive',
-    desc:  'Downloadable games, worksheets, and interactive activities.',
-    url:   'https://jewishinteractive.org/',
-    cat:   'printable',
-    ages:  ['early', 'elementary', 'middle'],
-    gradeLabel: 'K–2, 3–5 (some 6–8)',
-  },
-  {
     title: 'BimBam',
     desc:  'Video-based content with printable extensions.',
     url:   'https://www.bimbam.com/',
@@ -1066,7 +1058,7 @@ function render() {
   const count  = document.getElementById('resultsCount');
 
   // The count line is the page's live region (the dictionary's and the Font Maker picker's shape): it keeps its
-  // "0 of 43" when nothing matches, so a filter that empties the grid is heard, not only seen.
+  // "0 of 42" when nothing matches, so a filter that empties the grid is heard, not only seen.
   count.textContent = I18n.t('resources.results_count', {count: filtered.length, total: RESOURCES.length});
   if (filtered.length === 0) {
     grid.innerHTML = '';
