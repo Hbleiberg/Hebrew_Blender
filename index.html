@@ -162,7 +162,7 @@
    under the WCAG 2.5.8 24px floor with no qualifying spacing). inline-block + block
    padding grows each link's BOX to >=24px; prose flow and wrapping are unaffected. */
 footer a { display: inline-block; padding-block: 5px; }
-/* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner, parsha_emojis (docs/reference/shared-components.md → Header icons).
+/* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner, parsha_emojis, name_tags (docs/reference/shared-components.md → Header icons).
    The header controls and the in-page control buttons (play, pause, stop, reset, retry, loop, sound) carry inline
    SVGs from one shared set (.hi-*); ink is currentColor, so each button's own colour applies. .hi-sm is the 13px
    size the tiny settings buttons take, .hi-btn lines an icon up with its label inside a button.
@@ -1346,6 +1346,8 @@ function exportAllSettings() {
     tropeTutorSettings:  lsJSON('hebrewTropeTutor_settings', {}),
     letterLearnerSettings: lsJSON('hebrewLetterLearner_settings', {}),
     emojiTorahSettings: lsJSON('hebrewEmojiTorah_settings', {}),
+    nameTagSettings:    lsJSON('hebrewNameTags_settings', {}),
+    nameTagLists:       lsJSON('hebrewNameTags_lists', {}),
     tropeTutorProgress:  lsJSON('hebrewTropeTutor_progress', {}),
     inputMode:           localStorage.getItem('hebrewBlender_inputMode') || 'auto',
     hebFont:             localStorage.getItem('hebrewBlender_hebFont') || '',
@@ -1364,6 +1366,7 @@ function exportAllSettings() {
     flashCardPanels:     lsJSON('hebrewFlashCards_panels', {}),
     dictPanels:          lsJSON('hebrewDictionary_panels', {}),
     letterLearnerPanels: lsJSON('hebrewLetterLearner_panels', {}),
+    nameTagPanels:       lsJSON('hebrewNameTags_panels', {}),
     wordLists:           lsJSON('ivritSuite_wordLists', { v: 1, lists: {} }),
     userFonts:           _fontsBackupCache || [],
   };
@@ -1491,6 +1494,15 @@ async function importAllSettings() {
       const existing = ivritSafeParse(localStorage.getItem('hebrewEmojiTorah_settings') || '{}');
       localStorage.setItem('hebrewEmojiTorah_settings', JSON.stringify(ivritSafeAssign(existing, parsed.emojiTorahSettings)));
     }
+    // Name Tags: the design blob, flat merge; the class lists by name (a list with the same name takes the file's copy)
+    if (parsed.nameTagSettings && Object.keys(parsed.nameTagSettings).length) {
+      const existing = ivritSafeParse(localStorage.getItem('hebrewNameTags_settings') || '{}');
+      localStorage.setItem('hebrewNameTags_settings', JSON.stringify(ivritSafeAssign(existing, parsed.nameTagSettings)));
+    }
+    if (parsed.nameTagLists && typeof parsed.nameTagLists === 'object' && !Array.isArray(parsed.nameTagLists) && Object.keys(parsed.nameTagLists).length) {
+      const existing = ivritSafeParse(localStorage.getItem('hebrewNameTags_lists') || '{}');
+      localStorage.setItem('hebrewNameTags_lists', JSON.stringify(ivritSafeAssign(existing, parsed.nameTagLists)));
+    }
     if (parsed.tropeTutorSettings && Object.keys(parsed.tropeTutorSettings).length) {
       const existing = ivritSafeParse(localStorage.getItem('hebrewTropeTutor_settings') || '{}');
       localStorage.setItem('hebrewTropeTutor_settings', JSON.stringify(ivritSafeAssign(existing, parsed.tropeTutorSettings)));
@@ -1519,7 +1531,8 @@ async function importAllSettings() {
     if (parsed.uiLang && _ivLangOk(parsed.uiLang) && window.I18n && I18n.lang !== parsed.uiLang) await _ivSetLang(parsed.uiLang);
     // Panel memory: flat {data-i18n key: bool} maps. Empty = never set, skip.
     [['generatorPanels', 'hebrewBlender_panels'], ['flashCardPanels', 'hebrewFlashCards_panels'],
-     ['dictPanels', 'hebrewDictionary_panels'], ['letterLearnerPanels', 'hebrewLetterLearner_panels']].forEach(([blobKey, lsKey]) => {
+     ['dictPanels', 'hebrewDictionary_panels'], ['letterLearnerPanels', 'hebrewLetterLearner_panels'],
+     ['nameTagPanels', 'hebrewNameTags_panels']].forEach(([blobKey, lsKey]) => {
       if (!parsed[blobKey] || !Object.keys(parsed[blobKey]).length) return;
       const existing = ivritSafeParse(localStorage.getItem(lsKey) || '{}');
       localStorage.setItem(lsKey, JSON.stringify(ivritSafeAssign(existing, parsed[blobKey])));
@@ -1664,6 +1677,7 @@ async function eraseAllSettings() {
     'hebrewTorahTrainer_drawerW',
     'hebrewTropeTutor_drawerW',
     'hebrewLetterLearner_sidebarW',
+    'hebrewNameTags_sidebarW',
     'hebrewFlashCards_tourSeen',
     // one-time UI flags: export-exempt, but "erase means fresh start" clears them all
     'hebrewBlender_tourSeen',
@@ -1674,6 +1688,9 @@ async function eraseAllSettings() {
     'hebrewTorahTrainer_hintSeen',
     'hebrewTropeTutor_tourSeen',
     'hebrewLetterLearner_tourSeen',
+    'hebrewNameTags_tourSeen',
+    // per-device, export-exempt: which class list the Name Tags page last had open on this device
+    'hebrewNameTags_activeList',
     'hebrewFontMaker_tourDone',
     'hebrewFontMaker_mobileWarnDismissed',
     'hebrewFontMaker_inputMode',
@@ -1690,6 +1707,8 @@ async function eraseAllSettings() {
     'hebrewTropeTutor_settings',
     'hebrewLetterLearner_settings',
     'hebrewEmojiTorah_settings',
+    'hebrewNameTags_settings',
+    'hebrewNameTags_lists',
     'hebrewTropeTutor_progress',
     'hebrewBlender_inputMode',
     // per-device, export-exempt: when this device last saved an AllTools .ivrit (the line under the inventory)
@@ -1704,6 +1723,7 @@ async function eraseAllSettings() {
     'hebrewFlashCards_panels',
     'hebrewDictionary_panels',
     'hebrewLetterLearner_panels',
+    'hebrewNameTags_panels',
     'ivritSuite_wordLists',
     // pwa.js's install-banner dismissal: a one-time UI flag, so export-exempt — but "erase" means a
     // fresh start, and without this the Add-to-Home-Screen prompt stays suppressed forever.
@@ -1771,6 +1791,8 @@ const IVRIT_CFG = {
       tropeTutorSettings:  lsJSON('hebrewTropeTutor_settings',      {}),
       letterLearnerSettings: lsJSON('hebrewLetterLearner_settings', {}),
       emojiTorahSettings: lsJSON('hebrewEmojiTorah_settings', {}),
+      nameTagSettings:    lsJSON('hebrewNameTags_settings', {}),
+      nameTagLists:       lsJSON('hebrewNameTags_lists', {}),
       tropeTutorProgress:  lsJSON('hebrewTropeTutor_progress',      {}),
       inputMode:           localStorage.getItem('hebrewBlender_inputMode') || 'auto',
       hebFont:             localStorage.getItem('hebrewBlender_hebFont') || '',
@@ -1786,6 +1808,7 @@ const IVRIT_CFG = {
       flashCardPanels:     lsJSON('hebrewFlashCards_panels', {}),
       dictPanels:          lsJSON('hebrewDictionary_panels', {}),
       letterLearnerPanels: lsJSON('hebrewLetterLearner_panels', {}),
+      nameTagPanels:       lsJSON('hebrewNameTags_panels', {}),
       wordLists:           lsJSON('ivritSuite_wordLists', { v: 1, lists: {} }),
       userFonts:           _fontsBackupCache || [],
       // The three Dictionary scalars only when this device ever set them (a restore skips an absent key, so
@@ -1838,6 +1861,8 @@ const IVRIT_CFG = {
     if (data.tropeTutorSettings && Object.keys(data.tropeTutorSettings).length) { mergeObj('hebrewTropeTutor_settings', data.tropeTutorSettings); touched = true; }
     if (data.letterLearnerSettings && Object.keys(data.letterLearnerSettings).length) { mergeObj('hebrewLetterLearner_settings', data.letterLearnerSettings); touched = true; }
     if (data.emojiTorahSettings && Object.keys(data.emojiTorahSettings).length) { mergeObj('hebrewEmojiTorah_settings', data.emojiTorahSettings); touched = true; }
+    if (data.nameTagSettings && Object.keys(data.nameTagSettings).length) { mergeObj('hebrewNameTags_settings', data.nameTagSettings); touched = true; }
+    if (data.nameTagLists && Object.keys(data.nameTagLists).length) { mergeObj('hebrewNameTags_lists', data.nameTagLists); touched = true; }   // by list name, like presets
     if (data.tropeTutorProgress && Object.keys(data.tropeTutorProgress).length) { tropeProgressMerge(data.tropeTutorProgress, mode === 'replace'); touched = true; }
     if (data.wordLists)           { wlMergeIntoStorage(data.wordLists, mode === 'replace', mode === 'fill'); touched = true; }
     if (data.dictAudioEnabled  !== undefined) { setPref('hebrewDictionary_audioEnabled', data.dictAudioEnabled);  touched = true; }
@@ -1862,6 +1887,7 @@ const IVRIT_CFG = {
     if (data.flashCardPanels && Object.keys(data.flashCardPanels).length) { mergeObj('hebrewFlashCards_panels',   data.flashCardPanels); touched = true; }
     if (data.dictPanels      && Object.keys(data.dictPanels).length)      { mergeObj('hebrewDictionary_panels',   data.dictPanels);      touched = true; }
     if (data.letterLearnerPanels && Object.keys(data.letterLearnerPanels).length) { mergeObj('hebrewLetterLearner_panels', data.letterLearnerPanels); touched = true; }
+    if (data.nameTagPanels && Object.keys(data.nameTagPanels).length) { mergeObj('hebrewNameTags_panels', data.nameTagPanels); touched = true; }
     let _dFonts = ivritFontList(data.userFonts);
     if (mode === 'fill' && _dFonts.length && window.indexedDB) { const have = new Set(((await Promise.resolve(listUserFonts()).catch(() => [])) || []).map(f => f.name)); _dFonts = _dFonts.filter(uf => !have.has(uf.name)); }   // a font held here keeps its bytes
     if (_dFonts.length && window.indexedDB) {
@@ -1982,6 +2008,8 @@ function ivritClassCount(d) {
       if (!untouched) ids.add(id);
     });
   });
+  const nt = d.nameTagLists;   // the Name Tags page's class lists, one per name
+  if (nt && typeof nt === 'object' && !Array.isArray(nt)) Object.keys(nt).forEach(n => { if (nt[n] && typeof nt[n] === 'object') ids.add('nametags:' + n); });
   return ids.size;
 }
 const IVRIT_INV_PARTS = [
@@ -2276,7 +2304,7 @@ function initCloudSaves() {
   IvritSaves.attach({
     tool: 'Suite',
     status: '#cloudStatus',
-    alsoPull: ['Worksheet', 'FlashCards', 'Dictionary', 'TorahTrainer', 'TropeTutor', 'Dashboard', 'LetterLearner', 'EmojiTorah'],
+    alsoPull: ['Worksheet', 'FlashCards', 'Dictionary', 'TorahTrainer', 'TropeTutor', 'Dashboard', 'LetterLearner', 'EmojiTorah', 'NameTags'],
     merges: { presetFolders: ftMergeTrees, profileFolders: ftMergeTrees, scheduleFolders: ftMergeTrees, favoriteFolders: ftMergeTrees },
     onLocalChanged: (kind) => { if (!ieWindowOpen()) return; renderIvritInventory(); if (kind === 'font') { try { refreshFontsBackupCache(); renderMyFontsManager(); } catch (e) {} } }
   });

@@ -37,9 +37,9 @@ VERSION = "1.2"   # shown as "v{VERSION}" on the splash — bump whatever value 
 2. Run `python3 splash/gen_splash.py` — re-renders every `splash/splash-*.png`
    and rewrites `splash/apple-startup-links.html`.
 3. Only if `DEVICES` changed (NOT for a plain version bump): re-sync the
-   `apple-touch-startup-image` block in **15 HTML pages** (every root page but `account.html`, the `emoji_torah.html` forwarding stub and the three test harnesses: 404,
+   `apple-touch-startup-image` block in **16 HTML pages** (every root page but `account.html`, the `emoji_torah.html` forwarding stub and the three test harnesses: 404,
    Hebrew_Font_Maker, classroom_dashboard, contact, flash_cards, hebrew_blend_generator,
-   hebrew_dictionary, index, letter_learner, parsha_emojis, privacy, resources, terms, torah_trainer, trope_tutor) from
+   hebrew_dictionary, index, letter_learner, name_tags, parsha_emojis, privacy, resources, terms, torah_trainer, trope_tutor) from
    `splash/apple-startup-links.html` (the block is identical in each). A version
    bump alone keeps the same filenames, so the pages need no change.
 4. Commit & push.
@@ -279,6 +279,13 @@ push, is what updates the live site.
   that session's commit. It's idempotent (re-running with no new commits is a no-op) and produces
   per-file dates. When you add a new page, add its `<url>` block to `sitemap.xml` first, then run
   the script. Sits alongside the `sw.js VERSION` bump in the end-of-session checklist above.
+- **An unlisted page** (today: `name_tags.html`, while it is new) is a production page reached by its address
+  only: `<meta name="robots" content="noindex, follow">`, no `<url>` block in `sitemap.xml` (so neither generator
+  ever lists it — both read their page set from the sitemap), no card, link or `ItemList` entry on `index.html`, and
+  not in `sw.js` `CORE_ASSETS` (an unannounced page costs no visitor's install; it is still cached network-first on
+  its first visit). Everything else holds as for any page — CSP, i18n, the smokes, the AllTools registration of its
+  keys (code in the hub, not a link). Launching it is the reverse: the sitemap block, the hub's card and `ItemList`
+  entry, `CORE_ASSETS`, `robots` back to `index, follow`, then both generators.
   **It refuses to run on a shallow clone** (exit 1, nothing written): `git log -1` returns the
   shallow boundary commit for any file not touched inside the window, so on a `--depth 1` clone
   every `<lastmod>` collapses to one inflated date while the script reports success. Run
@@ -330,14 +337,14 @@ pages, not the other way round — `grep -o 'Content-Security-Policy[^>]*' *.htm
   `data:` images.
 - **The `emoji_torah.html` forwarding stub** (the Parsha Emojis page's address before its launch) allows only
   `'self'`: no gtag (the hop would count twice), no Google Fonts, no `data:`/`blob:`; it loads `/js/i18n.js` and the favicon.
-- **Pages that offer accounts** (Home, Generator, Flash Cards, Dictionary, Torah Trainer, Trope Tutor, Dashboard, Letter Learner, Parsha Emojis, Font Maker, the account page `account.html`, `account-test.html`, `saves-test.html`): `cdn.jsdelivr.net` in `script-src` (the
+- **Pages that offer accounts** (Home, Generator, Flash Cards, Dictionary, Torah Trainer, Trope Tutor, Dashboard, Letter Learner, Parsha Emojis, Name Tags, Font Maker, the account page `account.html`, `account-test.html`, `saves-test.html`): `cdn.jsdelivr.net` in `script-src` (the
   pinned Supabase SDK) and `hhkmqwpjsyxdeuhvcyis.supabase.co` in `connect-src` — exactly those two origins, nothing else
   (avatars are initials, Realtime is not used). The two harnesses carry no gtag.
-- **All eight tools:** `cdn.jsdelivr.net` in `font-src` — the self-hosted `aharonium/fonts` faces (Ezra SIL, Shlomo,
-  Dyslexia Hebrew, the Culmus faces) every Hebrew font picker offers; the Letter Learner's Fonts tab takes Shlomo Stam
+- **All nine tools:** `cdn.jsdelivr.net` in `font-src` — the self-hosted `aharonium/fonts` faces (Ezra SIL, Shlomo,
+  Dyslexia Hebrew, the Culmus faces) every Hebrew font picker offers (Name Tags included); the Letter Learner's Fonts tab takes Shlomo Stam
   from the same origin.
-- **Generator, Flash Cards, Dictionary, Torah Trainer:** `esm.sh` + `cdn.jsdelivr.net` in `script-src` and
-  `connect-src` (the transliteration ESM).
+- **Generator, Flash Cards, Dictionary, Torah Trainer, Name Tags:** `esm.sh` + `cdn.jsdelivr.net` in `script-src` and
+  `connect-src` (the transliteration ESM). Name Tags' CSP is the Dictionary's, character for character.
 - **Generator, Font Maker:** `cdnjs.cloudflare.com` in `script-src` (html2canvas / jspdf, injected on the first PDF export or template download — never a parser-blocking `<head>` script).
 - **Font Maker:** `'wasm-unsafe-eval'` + `cdn.jsdelivr.net` in `script-src` and `connect-src` (HarfBuzz WASM,
   pyodide, opentype.js).

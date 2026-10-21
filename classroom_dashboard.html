@@ -1011,7 +1011,7 @@
   body.widths-locked .sbr-split { cursor: default; }
   body.widths-locked .sbr-split::before { width: 2px !important; background: transparent !important; }
 
-/* ═══ shared: sidebar-resize CSS ═══ (byte-identical across hebrew_dictionary/hebrew_blend_generator/classroom_dashboard/torah_trainer/letter_learner — copy verbatim; pairs with the `shared: sidebar-resize` JS block; self-contained incl. reduced-motion) ═══ */
+/* ═══ shared: sidebar-resize CSS ═══ (byte-identical across hebrew_dictionary/hebrew_blend_generator/classroom_dashboard/torah_trainer/letter_learner/name_tags — copy verbatim; pairs with the `shared: sidebar-resize` JS block; self-contained incl. reduced-motion) ═══ */
 .sbr-split{cursor:col-resize;touch-action:none;-webkit-user-select:none;user-select:none;background:none;border:none;padding:0;z-index:5;}
 .sbr-split::before{content:"";position:absolute;top:0;bottom:0;inset-inline:0;margin-inline:auto;width:2px;background:transparent;border-radius:2px;transition:background 0.12s,width 0.12s;}
 .sbr-split:hover::before,.sbr-split:focus-visible::before,.sbr-split.dragging::before{width:4px;background:var(--gold,#c9922a);}
@@ -1026,7 +1026,7 @@
    On-screen Hebrew keyboard styles. Copy this block verbatim alongside the
    matching JS block (keep byte-identical across carriers; carriers:
    resources.html, hebrew_dictionary.html, Hebrew_Font_Maker.html,
-   classroom_dashboard.html). Colors
+   classroom_dashboard.html, name_tags.html). Colors
    ride the suite tokens (with fallbacks), plus one dark rule for the selected states;
    the reduced-motion tail is self-contained so the block stays portable to
    pages without a universal neutralizer. ═══════════════════════════════════ */
@@ -2125,7 +2125,7 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
     border:3px solid rgba(201,146,42,0.6);
     animation:attnPulse 1.4s ease-in-out infinite;
   }
-  /* ═══ shared: app-toast CSS ═══ (byte-identical across generator/dashboard/flash_cards/dictionary/letter_learner; self-contained incl. reduced-motion) ═══ */
+  /* ═══ shared: app-toast CSS ═══ (byte-identical across generator/dashboard/flash_cards/dictionary/letter_learner/name_tags; self-contained incl. reduced-motion) ═══ */
 #appToast {
   position: fixed;
   left: 50%;
@@ -2399,7 +2399,7 @@ body.dark .ft-move-menu button { color:#dde4f0; }
 body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .ft-newfolder:hover { background:#2a3349; }
 /* ═══ end folder-tree component CSS ═══ */
 
-/* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner, parsha_emojis (docs/reference/shared-components.md → Header icons).
+/* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner, parsha_emojis, name_tags (docs/reference/shared-components.md → Header icons).
    The header controls and the in-page control buttons (play, pause, stop, reset, retry, loop, sound) carry inline
    SVGs from one shared set (.hi-*); ink is currentColor, so each button's own colour applies. .hi-sm is the 13px
    size the tiny settings buttons take, .hi-btn lines an icon up with its label inside a button.
@@ -6054,7 +6054,8 @@ function holidayIconFor(title) {
    dashboard rails. Copy this block verbatim, together with the matching
    `shared: sidebar-resize CSS` block (keep both byte-identical across
    carriers; carriers: hebrew_dictionary.html, hebrew_blend_generator.html,
-   classroom_dashboard.html, torah_trainer.html, letter_learner.html), then mount per handle
+   classroom_dashboard.html, torah_trainer.html, letter_learner.html,
+   name_tags.html), then mount per handle
    from the page's own init (below the end marker):
 
      mountSidebarResize({
@@ -8672,7 +8673,7 @@ function mountFolderTree(cfg){
     }
   }
 
-/* ═══ shared: app-toast ═══ (byte-identical across generator/dashboard/flash_cards/dictionary/letter_learner — copy verbatim; called from the .ivrit engine restore path) ═══ */
+/* ═══ shared: app-toast ═══ (byte-identical across generator/dashboard/flash_cards/dictionary/letter_learner/name_tags — copy verbatim; called from the .ivrit engine restore path) ═══ */
 let _appToastTimer = null;
 function showAppToast(msg, ms) {
   let t = document.getElementById('appToast');
@@ -8700,7 +8701,7 @@ function showAppToast(msg, ms) {
    text input. Copy this block verbatim, together with the matching
    `shared: hebrew-keyboard CSS` block (keep both byte-identical across
    carriers; carriers: resources.html, hebrew_dictionary.html,
-   Hebrew_Font_Maker.html, classroom_dashboard.html), then mount per page:
+   Hebrew_Font_Maker.html, classroom_dashboard.html, name_tags.html), then mount per page:
 
      kbd = mountHebrewKeyboard({ container, toggleBtn, getInput, onChange, getFontFlags });
 

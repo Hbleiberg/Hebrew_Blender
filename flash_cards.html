@@ -149,7 +149,7 @@ html[lang="he"] footer [style*="letter-spacing:0.08em"] { letter-spacing: normal
    back-side question and Skipped header, the card-sheet menu's title, and the results score. */
 html[lang="he"] .font-section-hdr, html[lang="he"] .card-meta, html[lang="he"] .stat-label, html[lang="he"] .fc-hint,
 html[lang="he"] .fc-back-q, html[lang="he"] .fc-skip-header, html[lang="he"] .sheet-menu-title, html[lang="he"] .results-hero .frac { letter-spacing: normal; text-transform: none; }
-/* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner, parsha_emojis (docs/reference/shared-components.md → Header icons).
+/* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner, parsha_emojis, name_tags (docs/reference/shared-components.md → Header icons).
    The header controls and the in-page control buttons (play, pause, stop, reset, retry, loop, sound) carry inline
    SVGs from one shared set (.hi-*); ink is currentColor, so each button's own colour applies. .hi-sm is the 13px
    size the tiny settings buttons take, .hi-btn lines an icon up with its label inside a button.
@@ -189,7 +189,7 @@ body.dark .hi-sun{display:inline-block;}
 })();
 </script>
 <!-- Hebrew transliteration library loader (lazy via esm.sh).
-     Keep in sync across hebrew_blend_generator.html, hebrew_dictionary.html, flash_cards.html. -->
+     Keep in sync across hebrew_blend_generator.html, hebrew_dictionary.html, flash_cards.html, name_tags.html. -->
 <script type="module">
   const CDN_URLS = [
     'https://esm.sh/hebrew-transliteration@2.9.1',
@@ -1076,7 +1076,7 @@ body.dark .lc-replay { color: var(--gold-light); }
 .lc-heb { font-family: var(--heb-font); direction: rtl; font-size: clamp(1.8rem, 8vw, 3rem); line-height: 1.15; }
 .lc-num { font-family: var(--eng-font); direction: ltr; font-size: clamp(2rem, 9vw, 3.2rem); font-weight: 700; }
 
-  /* ═══ shared: app-toast CSS ═══ (byte-identical across generator/dashboard/flash_cards/dictionary/letter_learner; self-contained incl. reduced-motion) ═══ */
+  /* ═══ shared: app-toast CSS ═══ (byte-identical across generator/dashboard/flash_cards/dictionary/letter_learner/name_tags; self-contained incl. reduced-motion) ═══ */
 #appToast {
   position: fixed;
   left: 50%;
@@ -6986,7 +6986,7 @@ const IVRIT_CFG = {
   }
 };
 
-/* ═══ shared: app-toast ═══ (byte-identical across generator/dashboard/flash_cards/dictionary/letter_learner — copy verbatim; called from the .ivrit engine restore path) ═══ */
+/* ═══ shared: app-toast ═══ (byte-identical across generator/dashboard/flash_cards/dictionary/letter_learner/name_tags — copy verbatim; called from the .ivrit engine restore path) ═══ */
 let _appToastTimer = null;
 function showAppToast(msg, ms) {
   let t = document.getElementById('appToast');

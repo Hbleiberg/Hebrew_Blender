@@ -154,7 +154,7 @@ html[lang="he"] .lock-pos-header .pos-label, html[lang="he"] .vowel-group-header
 html[lang="he"] #ctrllbl_vowelLockToggle, html[lang="he"] #ttsSpeedLbl,
 html[lang="he"] [data-i18n="worksheet.modes.practice_type_label"], html[lang="he"] [data-i18n="worksheet.modes.worksheet_type_label"],
 html[lang="he"] [data-i18n="worksheet.advanced.translit_style"] { letter-spacing: normal !important; text-transform: none !important; }
-/* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner, parsha_emojis (docs/reference/shared-components.md → Header icons).
+/* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner, parsha_emojis, name_tags (docs/reference/shared-components.md → Header icons).
    The header controls and the in-page control buttons (play, pause, stop, reset, retry, loop, sound) carry inline
    SVGs from one shared set (.hi-*); ink is currentColor, so each button's own colour applies. .hi-sm is the 13px
    size the tiny settings buttons take, .hi-btn lines an icon up with its label inside a button.
@@ -169,7 +169,7 @@ body.dark .hi-sun{display:inline-block;}
 /* ═══ end header-icons CSS ═══ */
 </style>
 <!-- Hebrew transliteration library loader (lazy via esm.sh).
-     Keep in sync across hebrew_blend_generator.html, hebrew_dictionary.html, flash_cards.html. -->
+     Keep in sync across hebrew_blend_generator.html, hebrew_dictionary.html, flash_cards.html, name_tags.html. -->
 <script type="module">
   const CDN_URLS = [
     'https://esm.sh/hebrew-transliteration@2.9.1',
@@ -1207,7 +1207,7 @@ body.dark .hi-sun{display:inline-block;}
    in LANDSCAPE is 750px, above it. Killed at 760px instead — under a landscape phone, over an iPad
    (810px), which keeps drag-resize deliberately. Width, not (pointer:coarse), is the chosen lever. */
   @media (max-width: 760px) { .sbr-split { display: none; } }
-/* ═══ shared: sidebar-resize CSS ═══ (byte-identical across hebrew_dictionary/hebrew_blend_generator/classroom_dashboard/torah_trainer/letter_learner — copy verbatim; pairs with the `shared: sidebar-resize` JS block; self-contained incl. reduced-motion) ═══ */
+/* ═══ shared: sidebar-resize CSS ═══ (byte-identical across hebrew_dictionary/hebrew_blend_generator/classroom_dashboard/torah_trainer/letter_learner/name_tags — copy verbatim; pairs with the `shared: sidebar-resize` JS block; self-contained incl. reduced-motion) ═══ */
 .sbr-split{cursor:col-resize;touch-action:none;-webkit-user-select:none;user-select:none;background:none;border:none;padding:0;z-index:5;}
 .sbr-split::before{content:"";position:absolute;top:0;bottom:0;inset-inline:0;margin-inline:auto;width:2px;background:transparent;border-radius:2px;transition:background 0.12s,width 0.12s;}
 .sbr-split:hover::before,.sbr-split:focus-visible::before,.sbr-split.dragging::before{width:4px;background:var(--gold,#c9922a);}
@@ -2158,7 +2158,7 @@ body.dark .hi-sun{display:inline-block;}
     .desktop-buttons { display: block; }
   }
 
-  /* ═══ shared: app-toast CSS ═══ (byte-identical across generator/dashboard/flash_cards/dictionary/letter_learner; self-contained incl. reduced-motion) ═══ */
+  /* ═══ shared: app-toast CSS ═══ (byte-identical across generator/dashboard/flash_cards/dictionary/letter_learner/name_tags; self-contained incl. reduced-motion) ═══ */
 #appToast {
   position: fixed;
   left: 50%;
@@ -5887,7 +5887,7 @@ const IVRIT_CFG = {
   }
 };
 
-/* ═══ shared: app-toast ═══ (byte-identical across generator/dashboard/flash_cards/dictionary/letter_learner — copy verbatim; called from the .ivrit engine restore path) ═══ */
+/* ═══ shared: app-toast ═══ (byte-identical across generator/dashboard/flash_cards/dictionary/letter_learner/name_tags — copy verbatim; called from the .ivrit engine restore path) ═══ */
 let _appToastTimer = null;
 function showAppToast(msg, ms) {
   let t = document.getElementById('appToast');
@@ -6464,7 +6464,8 @@ function initDarkMode() {
    dashboard rails. Copy this block verbatim, together with the matching
    `shared: sidebar-resize CSS` block (keep both byte-identical across
    carriers; carriers: hebrew_dictionary.html, hebrew_blend_generator.html,
-   classroom_dashboard.html, torah_trainer.html, letter_learner.html), then mount per handle
+   classroom_dashboard.html, torah_trainer.html, letter_learner.html,
+   name_tags.html), then mount per handle
    from the page's own init (below the end marker):
 
      mountSidebarResize({

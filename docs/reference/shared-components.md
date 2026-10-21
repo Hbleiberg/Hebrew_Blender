@@ -17,8 +17,8 @@ The store + helpers are delivered as one copy-identical block (like the `.ivrit`
   `saveUserFont(name, bytes, family)` (upsert; auto-prunes to the newest 10); `deleteUserFont(name)`;
   `loadUserFont(name)` → registers the stored bytes as a CSS-usable `FontFace` named exactly `name`.
 
-Present (verbatim — sha-verify when you touch it) in **10 files**: `index.html`, `Hebrew_Font_Maker.html`, the seven
-font-selector tools (generator, flash cards, dashboard, dictionary, torah trainer, trope tutor, letter learner), and
+Present (verbatim — sha-verify when you touch it) in **11 files**: `index.html`, `Hebrew_Font_Maker.html`, the eight
+font-selector tools (generator, flash cards, dashboard, dictionary, torah trainer, trope tutor, letter learner, name tags), and
 `resources.html` (a store *consumer* — its font gallery reads `listUserFonts` but has no picker/uploader; its
 "Use in IvritSuite" writes through `saveUserFont`, and when that would evict, it first asks with the fonts it would
 remove, the same slice the block takes — `resources.fonts.full_confirm`, or `_many` past the cap).
@@ -35,9 +35,9 @@ at init. (Use `family` or `stack` to match whatever property that tool's `setHeb
 ### "Upload your own font?" — byte-identical block + per-page pick handler
 A second shared block `/* ═══ My Fonts uploader (shared, identical across pages) ═══ */` defines
 `ivUploadFontFromFile(file)` (validates via `new FontFace(name, bytes).load()`, de-dupes the name,
-`saveUserFont`s it). The block contains ONLY that function (identical across all 8 carriers); the thin **pick handler lives BELOW the end marker and is per-page**: the six grid pickers
+`saveUserFont`s it). The block contains ONLY that function (identical across all 9 carriers); the thin **pick handler lives BELOW the end marker and is per-page**: the six grid pickers
 use `onUploadFontPick(input)` (`refreshMyFonts()` + `setHebFont(name)`), the Letter Learner's routes the new font into
-its Coloring sheet's word font (`llCsSet('colorFont', name)`), the dashboard and flash cards add an extra
+its Coloring sheet's word font (`llCsSet('colorFont', name)`), the Name Tags page's makes it the tags' Hebrew font, the dashboard and flash cards add an extra
 `onUploadEngFontPick` (routes to `setEngFont`), and `index.html`'s gear-modal manager uses
 `onUploadFontPickIndex` (`renderMyFontsManager()` + `refreshFontsBackupCache()`). Each picker has a small
 **"Upload your own font?"** `<label>` (the shared `hi-upload` icon before a `.hi-lbl` span that carries the `data-i18n`; hidden `<input type="file" accept=".ttf,.otf,.woff,.woff2">`)
@@ -91,9 +91,10 @@ shared component so any tool can adopt it.
   rules — and `/* ═══ shared: hebrew-keyboard ═══ … ═══ end shared: hebrew-keyboard ═══ */` — data
   tables + `mountHebrewKeyboard(cfg)`. **Copy both verbatim; never rewrite.** Current carriers:
   `resources.html` (font-preview modal), `hebrew_dictionary.html` (search box),
-  `Hebrew_Font_Maker.html` (the Spacing tab's sample-text field), and
+  `Hebrew_Font_Maker.html` (the Spacing tab's sample-text field),
   `classroom_dashboard.html` (the student-picker roster textarea — the field whose
-  own placeholder is already Hebrew names). When a page adopts
+  own placeholder is already Hebrew names), and `name_tags.html` (the class list's Hebrew-name
+  cells: `getInput` resolves the cell last focused, afresh on every key). When a page adopts
   the keyboard, re-true the carrier list in the marker comments of **all** carriers (same rule as
   the app-toast block) — and re-verify byte-identity by sha, don't eyeball it.
   **⚑ Use a multi-line anchor when you re-true it.** `resources.html` and `Hebrew_Font_Maker.html`
@@ -260,7 +261,7 @@ Maker's `.ws-split` workspace rails predate this block and deliberately stay on 
 `/* ═══ shared: sidebar-resize ═══ … */` (JS — `mountSidebarResize(cfg)`) and
 `/* ═══ shared: sidebar-resize CSS ═══ … */` (the `.sbr-*` rules). **Copy both verbatim; never
 rewrite.** Carriers: `hebrew_dictionary.html`, `hebrew_blend_generator.html`,
-`classroom_dashboard.html`, `torah_trainer.html`, `letter_learner.html`. When a page adopts or drops them,
+`classroom_dashboard.html`, `torah_trainer.html`, `letter_learner.html`, `name_tags.html`. When a page adopts or drops them,
 re-true the carrier list in the marker comments of **all** carriers and re-verify byte-identity
 by sha (same rule as the keyboard/app-toast blocks). Per-page wiring — the cfg object inside a
 small `init…Resize()` mount call — lives **below** the end marker. The CSS block is
@@ -415,7 +416,7 @@ buttons was overlooked); its Holiday Torah Readings (calendar) and Share (link) 
 drawer, so the calendar glyph is the Calendar tab's and the link glyph the Share tab's (and its Copy link's).
 Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_dashboard`, `flash_cards`,
 `torah_trainer`, `trope_tutor`, `Hebrew_Font_Maker`, `resources`, `contact`, `privacy`, `terms`,
-`account`, `404`, `letter_learner`, `parsha_emojis`; the chip's glyph lives in `js/ivrit-account.js` (`ICON_USER`).
+`account`, `404`, `letter_learner`, `parsha_emojis`, `name_tags`; the chip's glyph lives in `js/ivrit-account.js` (`ICON_USER`).
 
 ### The two byte-identical parts
 - **The `/* ═══ header-icons CSS ═══ */` block**, pasted before the main stylesheet's `</style>` on every
@@ -720,8 +721,12 @@ Escape to end, arrow keys to navigate, resize-safe, `scrollIntoView` the target 
 settings mutations**. It **never auto-launches** — entry is a header **Tour** button (the shared `hi-help` icon + the word) with a one-time
 first-visit pulse gated by a `hebrew<Tool>_tourSeen` flag (set once so the pulse never returns).
 - **Implemented on:** `hebrew_blend_generator.html`, `hebrew_dictionary.html`, `classroom_dashboard.html`,
-  `torah_trainer.html`, `Hebrew_Font_Maker.html`, `flash_cards.html`, `trope_tutor.html` and `letter_learner.html`
-  (a verbatim copy of the trope tutor's engine) — **all 8 tools**, but as **per-file engines**, not yet a single shared block. Flags are
+  `torah_trainer.html`, `Hebrew_Font_Maker.html`, `flash_cards.html`, `trope_tutor.html`, `letter_learner.html` and
+  `name_tags.html` — **all 9 tools**. The last three share one engine as a `═══`-marked block,
+  `/* ═══ shared: tour engine ═══ … ═══ end shared: tour engine ═══ */` (JS only, byte-identical — sha-verify it):
+  each page declares `TOUR_SEEN_KEY` (its `hebrew<Tool>_tourSeen` key) and `TOUR_STEPS` (`{ target(), titleKey,
+  bodyKey }`) **above** the block, and keeps its own markup (`#tourBtn`, `#tourSpot`, `#tourCard`) and CSS. The
+  other six are still **per-file engines**. Flags are
   `hebrew<Tool>_tourSeen` except Font Maker's legacy `hebrewFontMaker_tourDone`. The generator's engine is
   a copy of Font Maker's; flash cards' and the trope tutor's are copies of the generator/torah lineage
   ("keep the engines in sync"). **Not** on `index.html` or `resources.html`.
@@ -734,8 +739,9 @@ first-visit pulse gated by a `hebrew<Tool>_tourSeen` flag (set once so the pulse
   shows). The Torah Trainer's call never advances the tour: a reading step parked while
   Sefaria answers re-parks (`_tourHoldForReading`), and a step is re-shown only when `_resolveStep` finds its
   target. Flash cards re-label the card in place but don't move the spotlight.
-- **Rule:** when you next touch a tour engine, extract it into a `═══`-marked shared block (house
-  convention, byte-identical across files) so the six copies stop drifting. Any **new** tool ships a tour.
+- **Rule:** a new tool's tour pastes the shared tour-engine block and re-trues its marker's carrier list; when you
+  next touch one of the six per-file engines, move that page onto the shared block (house convention,
+  byte-identical across files) so the copies stop drifting. Any **new** tool ships a tour.
   A tour must touch none of the undo/dirty/state machinery — read-only overlay only.
 
 ### 2. Accessible tooltips (tap + keyboard, not hover-only)
@@ -968,7 +974,7 @@ whose text is majority-English (e.g. mixed `<option>` labels). Verify: `document
 A teacher who collapses the panels they don't use should not have to do it again next lesson. Every
 collapsible `.panel` remembers its open/closed state across visits, via one `═══`-marked shared block
 (`/* ═══ IvritSuite panel-collapse memory ═══ */ … /* ═══ end shared: panel-collapse memory ═══ */`),
-byte-identical across its four carriers (sha-verify when you touch it) — copy it, don't
+byte-identical across its five carriers (sha-verify when you touch it) — copy it, don't
 rewrite it. It exposes `panelMemSave()` / `panelMemApply()` and depends only on a per-page
 **`PANEL_MEM_CFG`** (the `IVRIT_CFG` pattern):
 ```js
@@ -988,8 +994,8 @@ const PANEL_MEM_CFG = {
 - **Where the map lives is per-page, and the engine never touches localStorage itself.** Every carrier keeps
   it in a dedicated `hebrew<Tool>_panels` key, read via `ivritSafeParse` and registered in all five AllTools
   sites (the dashboard, the one carrier that kept the map inside its settings blob, left the list — below).
-- **Implemented on:** the four collapse carriers — `hebrew_blend_generator.html`, `flash_cards.html`,
-  `hebrew_dictionary.html`, `letter_learner.html` (its options sidebar's three panels). (The Trope Tutor, the Torah Trainer and the Classroom Dashboard left the list when
+- **Implemented on:** the five collapse carriers — `hebrew_blend_generator.html`, `flash_cards.html`,
+  `hebrew_dictionary.html`, `letter_learner.html` (its options sidebar's three panels), `name_tags.html` (its five). (The Trope Tutor, the Torah Trainer and the Classroom Dashboard left the list when
   their settings became flat tabs — the Tutor's in the Font Maker's layout, the Trainer's and the dashboard's
   inside their drawers, though the Trainer was the block's origin; an old `panelsCollapsed` in any of the three
   settings blobs is simply carried along unread, and the Trainer's and the dashboard's cloud rows still omit
@@ -1008,7 +1014,7 @@ const PANEL_MEM_CFG = {
 
 ### 10. Header skip link — the keyboard bypass, on every page
 An `<a class="skip-link">` as the **first child of `<body>`**, hidden off-screen until it takes keyboard
-focus, then dropping in at the top inline start. One rule, sha-identical on all 16 carriers modulo
+focus, then dropping in at the top inline start. One rule, sha-identical on all 17 carriers modulo
 indentation — paste it, do not re-author it:
 ```css
 .skip-link {
@@ -1029,6 +1035,6 @@ indentation — paste it, do not re-author it:
 - The **label names the destination** (maintainer's call, S397): one key per page under that page's own
   prefix — `home.a11y.skip_to_tools`, `worksheet.a11y.skip_to_worksheet`, `dashboard.a11y.skip_to_board`,
   and so on. Hebrew uses the `דילוג ל…` form and that page's own vocabulary. Never a single shared label.
-- **Implemented on:** all 16 root pages. The dictionary's separate `.skip-results` is a *mid-page* bypass
+- **Implemented on:** all 17 root pages. The dictionary's separate `.skip-results` is a *mid-page* bypass
   of the results grid — a different affordance, not a second header skip link.
 - **Rule:** a new page ships this block, an anchored target with `tabindex="-1"`, and its own label key.

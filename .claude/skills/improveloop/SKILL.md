@@ -150,7 +150,8 @@ run. A pass defined here but absent from the table (no ledgered removal or SKIP)
 - **D. Performance snapshot (one tool)** — cold load + one heavy interaction; log main-thread blocks
   >200 ms with profile evidence.
 - **E. Freshness & site health** — sitemap `lastmod` vs git, broken internal links, SW precache list vs
-  files (both directions — the four backend `js/` modules and `account.html` belong in it), each page's CSP
+  files (both directions — the four backend `js/` modules and `account.html` belong in it; the unlisted
+  `name_tags.html` deliberately does not), each page's CSP
   allowlist against what that page actually loads (`docs/reference/ops.md`; the two account origins must be
   present exactly where the account scripts are), THIRD_PARTY_LICENSES vs deps, robots/CNAME present and
   parsing, README / CLAUDE.md / `docs/reference/*` accuracy. Indexability *semantics* are L's.
@@ -176,7 +177,7 @@ run. A pass defined here but absent from the table (no ledgered removal or SKIP)
   plain arguments. Respect the translate-vs-content boundary in CLAUDE.md.
 - **L. SEO & discoverability** — audit the static HTML source, offline: unique `<title>` (~50–60) and
   description (~150–160) per page; `rel=canonical` = `https://ivritsuite.com/<page>.html` (homepage:
-  bare root); `404.html`, `i18n-test.html`, `account-test.html` and `saves-test.html` stay out of the indexable set (the last two are `noindex` harnesses, absent from the sitemap, `llms.txt` and the precache by design); `account.html` is **in** it; OG/Twitter parity and
+  bare root); `404.html`, `i18n-test.html`, `account-test.html` and `saves-test.html` stay out of the indexable set (the last two are `noindex` harnesses, absent from the sitemap, `llms.txt` and the precache by design), and so does `name_tags.html` — an **unlisted** production page (`noindex`, no link or card on the hub, absent from the sitemap, `llms.txt` and `CORE_ASSETS` by the maintainer's decision; never "fix" it by linking or listing it — `docs/reference/ops.md` → *An unlisted page*); `account.html` is **in** it; OG/Twitter parity and
   `og:image` resolving (strip `?v=`); every JSON-LD block parses and its claims match the visible UI;
   sitemap = indexable set, sitemap↔canonical agreement; crawl-graph from the homepage via static
   `<a href>`; one `h1`, alt text on content images. Titles and descriptions stay English; never propose

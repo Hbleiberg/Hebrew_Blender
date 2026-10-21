@@ -147,7 +147,7 @@
    under the WCAG 2.5.8 24px floor with no qualifying spacing). inline-block + block
    padding grows each link's BOX to >=24px; prose flow and wrapping are unaffected. */
 footer a { display: inline-block; padding-block: 5px; }
-/* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner, parsha_emojis (docs/reference/shared-components.md → Header icons).
+/* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner, parsha_emojis, name_tags (docs/reference/shared-components.md → Header icons).
    The header controls and the in-page control buttons (play, pause, stop, reset, retry, loop, sound) carry inline
    SVGs from one shared set (.hi-*); ink is currentColor, so each button's own colour applies. .hi-sm is the 13px
    size the tiny settings buttons take, .hi-btn lines an icon up with its label inside a button.
@@ -1445,7 +1445,7 @@ body.dark .hi-sun{display:inline-block;}
    On-screen Hebrew keyboard styles. Copy this block verbatim alongside the
    matching JS block (keep byte-identical across carriers; carriers:
    resources.html, hebrew_dictionary.html, Hebrew_Font_Maker.html,
-   classroom_dashboard.html). Colors
+   classroom_dashboard.html, name_tags.html). Colors
    ride the suite tokens (with fallbacks), plus one dark rule for the selected states;
    the reduced-motion tail is self-contained so the block stays portable to
    pages without a universal neutralizer. ═══════════════════════════════════ */
@@ -20559,7 +20559,7 @@ function loadUserFont(name) {   // register the stored TTF as a CSS-usable FontF
    text input. Copy this block verbatim, together with the matching
    `shared: hebrew-keyboard CSS` block (keep both byte-identical across
    carriers; carriers: resources.html, hebrew_dictionary.html,
-   Hebrew_Font_Maker.html, classroom_dashboard.html), then mount per page:
+   Hebrew_Font_Maker.html, classroom_dashboard.html, name_tags.html), then mount per page:
 
      kbd = mountHebrewKeyboard({ container, toggleBtn, getInput, onChange, getFontFlags });
 

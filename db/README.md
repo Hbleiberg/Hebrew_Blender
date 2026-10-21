@@ -15,6 +15,7 @@ the tables are used from the browser: `docs/reference/accounts-and-cloud.md`.
 | `migrations/0004_saves_tool_letter_learner.sql` | yes — applied through the connector; `saves_tool_check` read back with eight ids and the migrations list records it (before it, every upload from the Letter Learner was refused with `23514`, which the status line could only call "limit of saved items") | widens `saves.tool`'s CHECK to eight ids (adds `LetterLearner`, mirroring `var TOOLS`): the one constraint dropped and re-created inside a single transaction — the only way Postgres offers to change a CHECK; no table, row, policy or function is dropped |
 | `migrations/0005_saves_tool_emoji_torah.sql` | yes — applied through the connector before the page reached `main`; `saves_tool_check` read back with nine ids and the migrations list records it; the security advisors show nothing new | widens `saves.tool`'s CHECK to nine ids (adds `EmojiTorah`, the Parsha Emojis page's coloring-sheet options, mirroring `var TOOLS`): the same one-constraint swap as 0004, inside a single transaction; no table, row, policy or function is dropped |
 | `migrations/0006_no_default_grants.sql` | yes — applied through the connector; the default privileges read back with no `anon`, `authenticated` or `service_role` entry under `postgres` for tables, sequences or functions, the three tables' and six functions' privileges read back identical to before, the migrations list records it, and the security advisors show only the Auth leaked-password setting, which no migration touches | stops the project granting new `public` tables, sequences and functions to `anon`, `authenticated` and `service_role` automatically (its default privileges), so a table is reachable only through the grants its own migration writes — a function still needs its own `revoke … from public`, because Postgres's built-in grant of execute to every role is global and outlives a schema-level revoke; no existing table, sequence, function, policy or grant changes — `profiles`, `saves` and `font_projects` keep what 0001 gave them, `keepalive()` what 0003 gave it |
+| `migrations/0007_saves_tool_name_tags.sql` | no — not yet applied (until it is, every upload from the Name Tags page is refused with `23514`) | widens `saves.tool`'s CHECK to ten ids (adds `NameTags`, the Name Tags page's class lists and design options, mirroring `var TOOLS`): the same one-constraint swap as 0004 and 0005, inside a single transaction; no table, row, policy or function is dropped |
 
 Each file starts with a comment that explains every block in plain language.
 
@@ -49,9 +50,9 @@ Two consequences the SQL states only implicitly:
   `char_length(data_hash) <= 64`. All of them surface as the same `23514`, so the error code alone will not
   tell you which one you hit.
 
-Two more shapes worth knowing before you change them: `saves.tool` is a **CHECK listing the nine tool
-names** (0001 wrote seven; 0004 added the Letter Learner, 0005 the Parsha Emojis page), mirroring `var TOOLS` in
-`js/ivrit-saves.js` — a tenth tool needs a migration widening it the way 0004 and 0005 do (that one constraint dropped and re-created in a
+Two more shapes worth knowing before you change them: `saves.tool` is a **CHECK listing the ten tool
+names** (0001 wrote seven; 0004 added the Letter Learner, 0005 the Parsha Emojis page, 0007 the Name Tags page), mirroring `var TOOLS` in
+`js/ivrit-saves.js` — an eleventh tool needs a migration widening it the way 0004, 0005 and 0007 do (that one constraint dropped and re-created in a
 single transaction, the only way Postgres offers), or every upload from that tool fails with an unexplained
 `23514`. And the four `storage.objects` policies are
 **per command, spanning all three buckets** (`bucket_id in (…)`), not one policy per bucket — so a fourth
@@ -169,8 +170,8 @@ either way.
 A migration runs once. Running it again stops at the first `already exists` and changes nothing, so
 a second run is harmless. **Never edit an applied file** — write the next change as
 `migrations/<next number>_<short_name>.sql`, keeping the same style: RLS on for every table, policies
-`to authenticated` with `(select auth.uid())`, functions with `set search_path = ''`, no `drop` (0004's and
-0005's constraint swaps are the one reading of that rule: a CHECK can only be changed by dropping and re-creating
+`to authenticated` with `(select auth.uid())`, functions with `set search_path = ''`, no `drop` (0004's, 0005's and
+0007's constraint swaps are the one reading of that rule: a CHECK can only be changed by dropping and re-creating
 it, and it removes nothing that holds data), and nothing that deletes rows. **A new table also writes its own
 grants, in the file that creates it** — since 0006 the project grants a new table to nobody, so without them every
 request answers `42501`: `select, insert, update, delete` to `authenticated` and `service_role` (narrower where the

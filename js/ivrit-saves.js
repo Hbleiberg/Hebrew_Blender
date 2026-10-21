@@ -78,7 +78,7 @@
   'use strict';
 
   /* ---------- constants ---------- */
-  var TOOLS = ['Suite', 'Worksheet', 'FlashCards', 'Dictionary', 'TorahTrainer', 'TropeTutor', 'Dashboard', 'LetterLearner', 'EmojiTorah'];
+  var TOOLS = ['Suite', 'Worksheet', 'FlashCards', 'Dictionary', 'TorahTrainer', 'TropeTutor', 'Dashboard', 'LetterLearner', 'EmojiTorah', 'NameTags'];
   var KIND_RE = /^[A-Za-z]{1,32}$/;
   var SHAPES = ['map', 'mapIn', 'single', 'tree', 'scalar'];
   var MERGES = ['item', 'assign', 'deepMax', 'max', 'page'];
@@ -346,6 +346,13 @@
     // parsha_emojis.html — one blob, the coloring sheets' print options (colour, paper, orientation, text language,
     // the Include switches, the size sliders, copies and order); every field is the teacher's choice and travels
     { tool: 'EmojiTorah', kind: 'settings', lsKey: 'hebrewEmojiTorah_settings', shape: 'single', merge: 'assign', ivritKey: 'emojiTorahSettings', label: 'shared.cloud.kind_settings' },
+    // name_tags.html — one settings blob (the tag design, layout and print options; every field is the teacher's
+    // choice and travels — which list is open lives in its own per-device key), and one row per class list
+    // (privacy.legal.* says student names reach the account while a teacher is signed in): each row holds the
+    // students' Hebrew and English names, any transliteration typed by hand (an automatic one is computed at render,
+    // never stored) and the extra line. The page writes nothing until the teacher types, so there is no seed to skip.
+    { tool: 'NameTags', kind: 'settings', lsKey: 'hebrewNameTags_settings', shape: 'single', merge: 'assign', ivritKey: 'nameTagSettings', label: 'shared.cloud.kind_settings' },
+    { tool: 'NameTags', kind: 'list', lsKey: 'hebrewNameTags_lists', shape: 'map', merge: 'item', ivritKey: 'nameTagLists', label: 'shared.cloud.kind_roster' },
     { tool: 'Dashboard', kind: 'roster', lsKey: 'hebrewDashboard_settings', shape: 'mapIn', path: 'rosters', nameField: 'name', merge: 'page', ivritKey: 'dashboardRosters', label: 'shared.cloud.kind_roster',
       skipUpload: function (name, value) { return isUntouchedDefaultClass(value); } }
   ];
@@ -386,6 +393,7 @@
                      Dictionary: ['home.card.dictionary.name', 'Hebrew Word Lookup'], TorahTrainer: ['home.card.torah.name', 'Torah Trainer'],
                      TropeTutor: ['home.card.trope.name', 'Trope Tutor'], Dashboard: ['home.card.dashboard.name', 'Hebrew Classroom Dashboard'],
                      LetterLearner: ['shared.cloud.tool_letterlearner', 'Letter Learner'], EmojiTorah: ['shared.cloud.tool_emojitorah', 'Parsha Emojis'],
+                     NameTags: ['shared.cloud.tool_nametags', 'Name Tags'],
                      Suite: ['shared.cloud.tool_suite', 'IvritSuite'] };
   // The dashboard mints one empty class named "My class" on every fresh device (the literal, in both
   // languages, plus the localized default); untouched, it is a seed, not a class list worth a row.

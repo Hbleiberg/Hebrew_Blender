@@ -430,6 +430,43 @@ const PAGES = [
       check(tag + ' E: 0 pageerrors', errors.length === 0, errors.join(' | '));
       await ctx.close();
     }
+  },
+  {
+    file: 'name_tags.html', tool: 'NameTags', host: '#cloudSavesPanel',
+    // The seed is the page's own shape (the defaults' field order): the page writes only on a change, so a load must
+    // leave both texts byte-identical. Which list is open is a per-device key outside the registry.
+    seed: {
+      hebrewNameTags_settings: JSON.stringify({ v: 1, font: 'Alef', nikkud: true, bubble: true, bubblePuff: 70, bubbleFill: 'white', bubbleColor: '#fff3b0', translit: 'auto', translitStyle: 'ashkenazi', english: true, extra: true, sizeHe: 45, sizeTr: 14, sizeEn: 20, sizeEx: 10, colorHe: '#1a1a1a', colorTr: '#555555', colorEn: '#1a1a1a', colorEx: '#555555', border: 'double', borderColor: '#1a2744', bg: 'rainbow', bgColor: '#fdf3d8', paperMode: 'avery', perPage: 10, paper: 'letter', tent: false, averyOutline: true }),
+      hebrewNameTags_lists: JSON.stringify({ 'Kitah Alef': { v: 1, rows: [{ he: 'דָּוִד', en: 'David' }, { he: 'שִׁירָה', en: 'Shira', tr: 'Shira' }], extra: 'Room 4' }, Gan: { v: 1, rows: [{ he: 'נוֹעָה', en: 'Noa', ex: 'Gan Aleph' }], extra: '' } }),
+      hebrewNameTags_activeList: 'Kitah Alef'
+    },
+    rows: ['settings:default', 'list:Kitah Alef', 'list:Gan'],
+    expand: `document.getElementById('cloudSavesPanel').scrollIntoView();`,
+    // E. the module's flush leaves both texts byte-identical; a design change is written onto the stored object (a field
+    // this build does not know survives, and a value it cannot apply falls back on screen while staying stored); a typed
+    // name is written into its own list only, keeping that list's and that row's unknown fields
+    extra: async ({ browser, tag }) => {
+      const setText = JSON.stringify({ v: 1, font: 'Frank Ruhl Libre', english: true, perPage: 7, paperMode: 'plain', future: { x: 1 } });
+      const listText = JSON.stringify({ 'Kitah Alef': { v: 1, rows: [{ he: 'דָּוִד', en: 'David', note: 'keep' }], extra: '', future: { y: 2 } }, Gan: { v: 1, rows: [{ he: 'נוֹעָה', en: 'Noa' }], extra: '' } });
+      const { ctx, page, errors } = await openPage(browser, 'name_tags.html', { seed: { hebrewNameTags_settings: setText, hebrewNameTags_lists: listText, hebrewNameTags_activeList: 'Kitah Alef' } });
+      const r = await page.evaluate(() => {
+        ntFlush();
+        const sameSet = localStorage.getItem('hebrewNameTags_settings'), sameLists = localStorage.getItem('hebrewNameTags_lists');
+        const per = (document.querySelector('input[name="ntPer"]:checked') || {}).value;
+        const open = document.getElementById('ntListSel').value;
+        const cb = document.getElementById('ntOptEnglish');
+        cb.checked = false; cb.dispatchEvent(new Event('change', { bubbles: true }));
+        const inp = document.querySelector('#ntRows input[data-f="en"][data-r="0"]');
+        inp.value = 'Dovid'; inp.dispatchEvent(new Event('input', { bubbles: true }));
+        const set = JSON.parse(localStorage.getItem('hebrewNameTags_settings')), lists = JSON.parse(localStorage.getItem('hebrewNameTags_lists'));
+        return { sameSet, sameLists, per, open, english: set.english, future: JSON.stringify(set.future), perStored: set.perPage, row: JSON.stringify(lists['Kitah Alef'].rows[0]), listFuture: JSON.stringify(lists['Kitah Alef'].future), gan: JSON.stringify(lists.Gan), tags: document.querySelectorAll('#ntPreview .nt-tag').length };
+      });
+      check(tag + ' E: the flush leaves both texts byte-identical and the stored list opens (an unusable count shows 8)', r.sameSet === setText && r.sameLists === listText && r.per === '8' && r.open === 'Kitah Alef', JSON.stringify(r));
+      check(tag + ' E: a design change is written onto the stored object (the unknown field and the unusable value survive)', r.english === false && r.future === '{"x":1}' && r.perStored === 7, JSON.stringify(r));
+      check(tag + ' E: a typed name lands in its own list, keeping the unknown fields; the other list is untouched', r.row === '{"he":"דָּוִד","en":"Dovid","note":"keep"}' && r.listFuture === '{"y":2}' && r.gan === '{"v":1,"rows":[{"he":"נוֹעָה","en":"Noa"}],"extra":""}' && r.tags === 1, JSON.stringify(r));
+      check(tag + ' E: 0 pageerrors', errors.length === 0, errors.join(' | '));
+      await ctx.close();
+    }
   }
 ];
 // The hub carries one panel per tool: its seed is every tool's seed, its rows every tool's rows.

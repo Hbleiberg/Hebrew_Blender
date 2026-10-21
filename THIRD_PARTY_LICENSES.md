@@ -37,7 +37,7 @@ The tools load these at runtime from public CDNs (jsDelivr, cdnjs, esm.sh) — a
 | fontTools | Font Maker (builds the TTF / UFO / WOFF2 via Pyodide) | © Just van Rossum & the fontTools Authors | MIT | https://github.com/fonttools/fonttools |
 | Brotli | Font Maker (WOFF2 compression via Pyodide) | © the Brotli Authors (Google) | MIT | https://github.com/google/brotli |
 | HarfBuzz / harfbuzzjs 0.4.6 | Font Maker (QA shaping check) | © the HarfBuzz Project authors | "Old MIT" (permissive) | https://github.com/harfbuzz/harfbuzzjs |
-| hebrew-transliteration 2.9.1 | Worksheet, Dictionary, Flash Cards, Torah Trainer | © 2022 Charles Loder | MIT | https://github.com/charlesLoder/hebrew-transliteration |
+| hebrew-transliteration 2.9.1 | Worksheet, Dictionary, Flash Cards, Torah Trainer, Name Tags | © 2022 Charles Loder | MIT | https://github.com/charlesLoder/hebrew-transliteration |
 | @supabase/supabase-js 2.116.0 | Accounts / cloud saves — every tool page plus `account.html`; loaded lazily from the pinned UMD build, so a visitor who never signs in never downloads it | © 2020 Supabase | MIT | https://github.com/supabase/supabase-js |
 | qrcode-generator 2.0.4 | Worksheet (the answer-key QR code in a worksheet's footer) — vendored inline (minified), not loaded from a CDN | © 2009 Kazuhiko Arase | MIT | https://github.com/kazuhikoarase/qrcode-generator |
 
