@@ -2370,11 +2370,11 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
        wins in both light and dark print by source order; non-!important so
        intentional inline nikkud color-coding still overrides. */
     .gematria-value, .blend-answer, .rw-translation, .ws-wordbank-tn, .cw-clue-num, .ntl-ak-name, .match-ak-row .match-ak-let { color:#6b4e12; }
-    /* The "…Answer Key — Teacher Copy" subtitles wear an inline gold on screen
+    /* The "…Answer Key — Teacher Copy" subtitles (and the ?ak= view's answers) wear an inline gold on screen
        (both themes). An inline color beats any class selector, so darkening it
        for B/W print needs !important — scoped to this teacher-copy-only class,
        so it never touches nikkud color-coding (which this class never carries). */
-    .ws-ak-subtitle { color:#6b4e12 !important; }
+    .ws-ak-subtitle, .ws-ak-answer { color:#6b4e12 !important; }
     /* The gematria write-on blank is a 1px tan background fill — stripped by the print
        dialog's default background-graphics:off, and faint on B/W even when kept. Print
        it as a real border in the same ink as the name/date .ws-field-line. */
@@ -13899,6 +13899,7 @@ function renderAnswerKeyView(akStr) {
         (isBlock ? 'background:var(--border);border:1px solid var(--border);'
                  : 'border:1px solid var(--border);color:var(--text);') +
         (isMark ? 'background:rgba(201,146,42,0.28);font-weight:700;color:var(--gold);' : '');
+      if (isMark) d.className = 'ws-ak-answer';             // the teacher-copy hook: dark ink on paper (print block)
       d.textContent = isBlock ? '' : ch;                    // textContent — never innerHTML
       gridEl.appendChild(d);
     }));
@@ -13923,6 +13924,7 @@ function renderAnswerKeyView(akStr) {
       cell.appendChild(heb);
       if (pairType) {
         const ans = document.createElement('div');
+        ans.className = 'ws-ak-answer';
         ans.style.cssText = 'font-size:0.95rem;font-weight:700;direction:ltr;text-align:center;color:var(--gold);margin-top:4px;';
         ans.textContent = it[1];
         cell.appendChild(ans);
