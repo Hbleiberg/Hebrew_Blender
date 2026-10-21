@@ -2503,8 +2503,10 @@ html[lang="he"] .beta-tag { letter-spacing: normal; text-transform: none; }   /*
   <button id="fsBtn" onclick="toggleFullscreen()" title="Present fullscreen" data-i18n-title="shared.fullscreen.enter_title" style="border:1.5px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:2px 6px;cursor:pointer;font-family:'Source Sans 3',sans-serif;flex-shrink:0;display:inline-flex;flex-direction:column;align-items:center;gap:1px;line-height:1;"><span class="fs-ico" style="display:inline-flex;line-height:0;"><svg class="hi hi-fs-enter" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></span><span style="font-size:0.7rem;font-weight:600;" data-i18n="shared.fullscreen.label">Full Screen</span></button>
 </header>
 
-<button class="sidebar-show-btn" id="sidebarShowBtn" onclick="toggleSidebar()" title="Show sidebar" aria-label="Show sidebar" data-i18n-title="worksheet.sidebar.show" data-i18n-aria-label="worksheet.sidebar.show"><span class="dir-arrow" aria-hidden="true">›</span></button>
-<button class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="toggleSidebar()" title="Hide sidebar" aria-label="Hide sidebar" data-i18n-title="worksheet.sidebar.hide" data-i18n-aria-label="worksheet.sidebar.hide"><span class="dir-arrow" aria-hidden="true">‹</span></button>
+<!-- The ‹ › glyphs take no .dir-arrow: they are bidi-mirrored characters, so the Hebrew UI already turns them, and a
+     flip on top turned them back to the English way (measured; CLAUDE.md i18n rule 5). -->
+<button class="sidebar-show-btn" id="sidebarShowBtn" onclick="toggleSidebar()" title="Show sidebar" aria-label="Show sidebar" data-i18n-title="worksheet.sidebar.show" data-i18n-aria-label="worksheet.sidebar.show"><span aria-hidden="true">›</span></button>
+<button class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="toggleSidebar()" title="Hide sidebar" aria-label="Hide sidebar" data-i18n-title="worksheet.sidebar.hide" data-i18n-aria-label="worksheet.sidebar.hide"><span aria-hidden="true">‹</span></button>
 
 <div class="app" id="appContainer">
 

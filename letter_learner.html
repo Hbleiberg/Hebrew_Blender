@@ -1025,8 +1025,10 @@ body.dark #appToast { background: #0a0f1c; }
   <!-- The sidebar's edge tabs (the generator's collapse tab, mirrored for a sidebar at the inline-end): the hide tab sits at
        the seam, pinned there by llPositionSidebarTab; the show tab waits at the screen's edge while the options are hidden.
        Both are position:fixed, so they take no room in the row; the state class on .ll-app shows one or the other. -->
-  <button type="button" class="ll-sb-tab ll-sb-show" id="llSidebarShow" title="Show the options" aria-label="Show the options" data-i18n-title="letterlearner.sidebar.show" data-i18n-aria-label="letterlearner.sidebar.show"><span class="dir-arrow" aria-hidden="true">&lsaquo;</span></button>
-  <button type="button" class="ll-sb-tab ll-sb-hide" id="llSidebarHide" title="Hide the options" aria-label="Hide the options" data-i18n-title="letterlearner.sidebar.hide" data-i18n-aria-label="letterlearner.sidebar.hide"><span class="dir-arrow" aria-hidden="true">&rsaquo;</span></button>
+  <!-- The ‹ › glyphs take no .dir-arrow: they are bidi-mirrored characters, so the Hebrew UI already turns them, and a
+       flip on top turned them back to the English way (measured; CLAUDE.md i18n rule 5). -->
+  <button type="button" class="ll-sb-tab ll-sb-show" id="llSidebarShow" title="Show the options" aria-label="Show the options" data-i18n-title="letterlearner.sidebar.show" data-i18n-aria-label="letterlearner.sidebar.show"><span aria-hidden="true">&lsaquo;</span></button>
+  <button type="button" class="ll-sb-tab ll-sb-hide" id="llSidebarHide" title="Hide the options" aria-label="Hide the options" data-i18n-title="letterlearner.sidebar.hide" data-i18n-aria-label="letterlearner.sidebar.hide"><span aria-hidden="true">&rsaquo;</span></button>
   <!-- Options sidebar: collapsible panels (state remembered per device by the shared panel-collapse block), then the
        drag seam of the shared sidebar-resize block (its width is per device too), then the letters. -->
   <aside class="ll-sidebar" id="llSidebar" aria-labelledby="llOptTitle">

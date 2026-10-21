@@ -356,8 +356,9 @@ must hide its handle (the `+` adjacency rule, the in-zone containment, the ak-vi
 and the engine's pointerdown guard (`getComputedStyle(handle).display === 'none'`) makes a hidden
 handle inert regardless. The Letter Learner hides its sidebar and seam together from a header gear
 (`.ll-app.sidebar-hidden`, `aria-expanded` on the gear), per visit like the others; Name Tags does the same from the
-generator's pair of edge tabs (`.nt-app.sidebar-hidden`), whose `‹ ›` glyphs carry no `.dir-arrow` flip — they are
-bidi-mirrored characters, so the Hebrew UI already turns them (a flip on top turns them back).
+generator's pair of edge tabs (`.nt-app.sidebar-hidden`). Every page's `‹ ›` tab glyphs carry no `.dir-arrow` flip —
+they are bidi-mirrored characters, so the Hebrew UI already turns them (a flip on top turns them back;
+`docs/reference/i18n.md` §5).
 
 ### Per-device width keys — erase-only registration
 Every width key is `hebrew<Tool>_<thing>W`, a bare scalar holding the px number. It **tracks the

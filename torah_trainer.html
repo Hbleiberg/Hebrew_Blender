@@ -2187,14 +2187,16 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
             title="Larger Hebrew text" aria-label="Larger Hebrew text"
             data-i18n-title="torah.fspresent.size_up" data-i18n-aria-label="torah.fspresent.size_up"><span dir="ltr">A+</span></button>
     <span class="tt-fs-sep" aria-hidden="true"></span>
+    <!-- The aliyah steppers' ‹ › take no .dir-arrow: they are bidi-mirrored characters, so the Hebrew UI already turns
+         them, and a flip on top turned them back (measured; CLAUDE.md i18n rule 5). -->
     <button type="button" class="tt-fs-btn" id="ttFsAliyahPrev" onclick="stepFsAliyah(-1)"
             title="Previous aliyah" aria-label="Previous aliyah"
             data-i18n-title="torah.fspresent.aliyah_prev" data-i18n-aria-label="torah.fspresent.aliyah_prev"
-            aria-disabled="true"><span class="dir-arrow" aria-hidden="true">&#8249;</span></button>
+            aria-disabled="true"><span aria-hidden="true">&#8249;</span></button>
     <button type="button" class="tt-fs-btn" id="ttFsAliyahNext" onclick="stepFsAliyah(1)"
             title="Next aliyah" aria-label="Next aliyah"
             data-i18n-title="torah.fspresent.aliyah_next" data-i18n-aria-label="torah.fspresent.aliyah_next"
-            aria-disabled="true"><span class="dir-arrow" aria-hidden="true">&#8250;</span></button>
+            aria-disabled="true"><span aria-hidden="true">&#8250;</span></button>
     <span class="tt-fs-sep" aria-hidden="true"></span>
     <!-- The reveal pair: projector mode hides .tt-controls and its Translit / Translation switches, so the bar
          carries them as toggle buttons. The visible word is the name (no aria-label to override it);
@@ -2235,13 +2237,14 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
 <div class="tt-controls">
   <span class="tt-ctrl">
     <label for="parshaSelect" data-i18n="torah.controls.parsha_label">Parsha:</label>
+    <!-- ‹ › with no .dir-arrow: bidi-mirrored characters turn by themselves in the Hebrew UI (CLAUDE.md i18n rule 5). -->
     <button class="btn btn-xs btn-secondary" id="ttWeekPrev" type="button" onclick="stepParsha(-1)"
             title="Previous reading" data-i18n-title="torah.controls.week_prev"
-            aria-label="Previous reading" data-i18n-aria-label="torah.controls.week_prev"><span class="dir-arrow" aria-hidden="true">‹</span></button>
+            aria-label="Previous reading" data-i18n-aria-label="torah.controls.week_prev"><span aria-hidden="true">‹</span></button>
     <select id="parshaSelect"></select>
     <button class="btn btn-xs btn-secondary" id="ttWeekNext" type="button" onclick="stepParsha(1)"
             title="Next reading" data-i18n-title="torah.controls.week_next"
-            aria-label="Next reading" data-i18n-aria-label="torah.controls.week_next"><span class="dir-arrow" aria-hidden="true">›</span></button>
+            aria-label="Next reading" data-i18n-aria-label="torah.controls.week_next"><span aria-hidden="true">›</span></button>
   </span>
   <span class="tt-ctrl">
     <!-- Icon-only (host contract: the translated name on title + aria-label, the same key on both); the full

@@ -1082,8 +1082,10 @@ html[lang="he"] .beta-tag { letter-spacing: normal; text-transform: none; }   /*
 <!-- Floating presenter controls live after the header, like the two sidebar buttons below: this one
      is position:fixed at the bottom corner, so its place in the source is purely its Tab position. -->
 <button id="fsBtn" onclick="toggleFullscreen()" title="Present fullscreen" aria-label="Toggle fullscreen" data-i18n-title="shared.fullscreen.enter_title" data-i18n-aria-label="shared.fullscreen.toggle_aria"><svg class="hi hi-fs-enter" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
-<button class="sidebar-show-btn" id="sidebarShowBtn" onclick="toggleSidebar()" title="Show sidebar" aria-label="Show sidebar" data-i18n-title="dictionary.sidebar.show_title" data-i18n-aria-label="dictionary.sidebar.show_title"><span class="dir-arrow" aria-hidden="true">›</span></button>
-<button class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="toggleSidebar()" title="Hide sidebar" aria-label="Hide sidebar" data-i18n-title="dictionary.sidebar.hide_title" data-i18n-aria-label="dictionary.sidebar.hide_title"><span class="dir-arrow" aria-hidden="true">‹</span></button>
+<!-- The ‹ › glyphs take no .dir-arrow: they are bidi-mirrored characters, so the Hebrew UI already turns them, and a
+     flip on top turned them back to the English way (measured; CLAUDE.md i18n rule 5). -->
+<button class="sidebar-show-btn" id="sidebarShowBtn" onclick="toggleSidebar()" title="Show sidebar" aria-label="Show sidebar" data-i18n-title="dictionary.sidebar.show_title" data-i18n-aria-label="dictionary.sidebar.show_title"><span aria-hidden="true">›</span></button>
+<button class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="toggleSidebar()" title="Hide sidebar" aria-label="Hide sidebar" data-i18n-title="dictionary.sidebar.hide_title" data-i18n-aria-label="dictionary.sidebar.hide_title"><span aria-hidden="true">‹</span></button>
 
 <div class="app" id="appContainer" role="main" tabindex="-1">
   <aside class="sidebar" id="appSidebar">
