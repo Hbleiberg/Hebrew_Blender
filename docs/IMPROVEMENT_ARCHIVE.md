@@ -93451,3 +93451,11 @@ _(prior — S530 pointer:)_ **Next session (S530):** **PR: `claude/improveloop-s
 - 2026-10-20 | **S527** | iters: 5 | tools: LL ×2, dictionary, generator, dashboard, flash, index, sw.js | patterns fixed: hit-box, faux-italic, radio-set ×1 each | pass run: C | SW: v1051→v1052
 
 - 2026-10-20 | **S526** | iters: 5 | tools: LL ×2, folder tree ×4, dictionary, sw.js | patterns fixed: print-trailing-padding ×1, faux-italic ×2 | pass run: H | SW: v1050→v1051
+
+
+<!-- archived by compact-ledger at the S532 boundary, 2026-10-21 -->
+## Compaction (S532, 2026-10-21) — moved verbatim from the live ledger
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+_(prior — S531 pointer:)_ **Next session (S531):** **PR: `claude/improveloop-s526` (#353) open → continue; merged → fresh branch.** `sw.js` **v1055**, FM **5.59**, corpus ?v=7. ⚑ Stalest: E (S517), L (S518). ⚑ Ready: parsha_emojis card link (name + 24px) and sliders. ⚑ Seeds: 46. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4; O's Bash rule.

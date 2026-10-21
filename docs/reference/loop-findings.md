@@ -2792,3 +2792,42 @@
   - **(6)** Two document-level Escape listeners hear one key: a close that reopens another dialog synchronously is closed again by that dialog's listener; defer the reopen.
   - **(7)** The :8080 server has a 2-hour background limit: a stalled probe may be a stopped server (`curl` it first); background a run with an explicit script path, not a `cd` inside the group.
   | found S530
+
+## S531 (2026-10-21) — pass E on the S517 → S530 delta (the 41st E; parsha_emojis' and the `emoji_torah.html` stub's first)
+
+- [ ] P4 (**NEW S531 Pass E — receipts, so the next E extends rather than repeats them**) | repo-wide | **Delta `d7c58446..48286048`: 108 commits, 92 files** — parsha_emojis + the stub, migration 0005, the Letter Learner's and Parsha Emojis' launch (`dec5bacc`), the dashboard's parsha popup (`0ba274dd`), the corpus `?v=7`, the coloring printers, loop S518–S530. **No drift:** main `0ba274dd` (PR #353 open on `48286048`), sw v1055, FM 5.59, 0001–0005 live, backend files unchanged since `96f39596`, keep-alive run #38 green (2026-10-20), Pages run 1349 `success` on `0ba274dd`. **Harness `e531/` (scratchpad; `e517/` was gone, rebuilt):**
+  - `arms.py ROOT [-v]`, S517's 16 arms rebuilt (E1 precache both ways + each `@font-face` file; E2 `?v=` agreement; E3 local links + og images + the binding docs' md links; E4 og = twitter image; E5 CSP first; E6 account origins exactly on the `<script src=…ivrit-account.js>` loaders; E7 load-shaped external refs inside the CSP; E8 robots/CNAME/manifest; E9 workflows; E10 `TOOLS` = the latest CHECK; E11 starting fonts; E12 `═══` blocks stack-paired and hashed; E14 doc path tokens; E15 CDN pins + bundled fonts licensed; E16 sitemap = the indexable set + canonicals + llms; E17 smoke-tools + gtag `page_location` keys), plus a **carrier-list arm** (each block's start marker's "byte-identical on: / carriers:" list against the real carriers, 56 claims, 11 blocks). A `git archive` copy with 17 plants fired 17/17 (+ the carrier plant 1/1).
+  - `docids.py ROOT BASE [--all]`: identifier-shaped tokens on added doc lines vs the code as whole words; a planted function, id and key plus a renamed `flushWorksheetBuild` fired 5/5.
+  - `cspr.mjs` (20 pages × EN light 1280 + HE dark 800): `securitypolicyviolation` events; `PLANT=1` adds an external image after DOMContentLoaded, fired 40/40.
+  - `stub.mjs` / `stub2.mjs`: the stub's hop by its navigation requests, with JS and without.
+
+  **Results:**
+  - Clean: `CORE_ASSETS` 40/40 on disk with all 16 production pages; 3 corpus fetchers on `?v=7` (`e743081e` bumped all three + README); 642 local links; og = twitter 20/20; CSP first 20/20; the account origins on exactly the 13 loaders; 62 external refs inside their CSP; 132 starting fonts; 19 multi-carrier blocks identical (the hub's engine by design); 56 carrier claims true; pins + fonts licensed; the sitemap = 15 indexable pages (LL and Parsha Emojis now in, the stub out); 189 doc tokens on added lines (3 absent, all false); every script named in a doc.
+  - The CSP allowlist in ops.md re-trued from the pages: it matches, origin by origin.
+  - Runtime: 0 violations, 0 page errors in 40 cells; no SDK or project request on an anonymous load.
+  - The stub forwards query and hash exactly (`?lang=he&code=abc&s=1` reaches parsha_emojis; `#card-3` survives); the page itself then strips `code` and `#ivsignin=`, as a direct load does.
+  - Generators: llms current; `build-parasha-icons --check` 54 current; **the sitemap stamped 13 pages' lastmod a day behind** (S529/S530 edits) → regenerated at close-out.
+  - **Found 2:** the sitemap's dates; the README's Tools section without the two launched pages, "all seven tools" with a "❓ Tour", and the dashboard's parsha line as a plain Torah Trainer link (`aa71fc00`). Logged: the README's era list (two more values in the corpus).
+
+  | found S531
+- [ ] P4 (**NEW S531 — would-be findings triaged**) | probes |
+  - **(a)** The stub "dropped" `?code=` and `#ivsignin=`: the final URL is parsha_emojis' own strip. Read the navigation requests, not the final address.
+  - **(b)** E6 at first counted five chrome pages as account loaders: their gtag comment names `js/ivrit-account.js`. Match the `<script src>`, not the filename.
+  - **(c)** E14's 14 absent paths are upstream or placeholder names (`package/dist/umd/supabase.js`, `locales/X.json`, `foo/index.html`, `holiday-readings.json` in `@hebcal/leyning`); `README.txt` is the account zip's.
+  - **(d)** docids' 82 absent tokens over all docs: removal notes (`#ttHandoutBar`, `syncPanelTitleAria`, `makeSortable`), suffixes (`_cloud`, `_hebFontSize`), upstream names, placeholders; none on a delta line.
+  - **(e)** parsha_emojis has no tour: README's eight tour tools are right without it.
+
+  | found S531
+- [ ] P4 (**NEW S531 — the four fixes' receipts**) | README.md, parsha_emojis.html, Hebrew_Font_Maker.html, CSV |
+  - **`aa71fc00`** (README): the arms' E14/E3 unchanged by the new sections; every fact taken from the pages' strings (the views, the coloring options, the cursive card, the dashboard popup's festival fallback).
+  - **`6e8b6848`** (`fix2.mjs`, 4 cells, View All by a real click): names lacking the visible words (↗ aside) 54/54 → 0/54; 54 unique names kept; a planted mismatched link counted 1/1 per cell; a live EN → HE → EN switch renames them; 0 errors.
+  - **`0c8a2bba`** (`fix3.mjs`, 4 cells): sliders 16 → 24px 7/7, a click 10px above the centre moved 0/7 → 7/7, a control 20px above stays out; links (HE) 23 → 24px 54/54, a click 23.5px below the top opened 0/6 → 6/6 (EN 6/6 on both), a control 30px below misses; pixels: EN View All and the popup's Sizes identical, HE each card row 1px taller, the bottom 300px identical.
+  - **`f77dc505`** (`fix4.mjs`, 4 cells, real clicks): the Upload body's Templates link HE 0 → 1, opening the Templates tab 4/4, and again after a live switch (HEAD: 0 links after EN → HE); colour and weight unchanged, the English link's pixels identical; no `#` left in the address.
+
+  | found S531
+- [ ] P4 (**S531 — probe traps 1–3**) | probes |
+  - **(1)** The old E5 (`(?:<!--.*?-->\s*)*` under `re.S`) and E12 (a back-referenced `END \1` across the file) regexes ran past 2 minutes on the suite: find the two indices and strip comments from the slice; pair `═══` markers on a stack.
+  - **(2)** A start marker names its block loosely (`IvritSuite .ivrit save-file engine` / `end .ivrit engine`; FM's `═══` section dividers are not blocks): a start counts only when every word of an end name in that file is in it.
+  - **(3)** `a530/lib.mjs` reads `BASE` at import and aborts every other origin, so a probe that hardcodes a second tree's port gets `ERR_FAILED`: run once per tree with `BASE=`.
+
+  | found S531

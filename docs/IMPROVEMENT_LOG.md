@@ -10,9 +10,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S530 A — glyph census, rule first**) | dictionary, resources, flash, torah, FM, index | **Category and option emoji are still heard** (findings S530): content or decoration is unruled. | found S530
 
-- [ ] P4 (**NEW S530 A — label in name**) | parsha_emojis.html | **Each card's "View in Torah Trainer ↗" is named "View {name} in the Torah Trainer"**: the visible words are not in the name (2.5.3). | found S530
-
-- [ ] P4 (**NEW S529 — sub-floor target; S530: + the card link**) | parsha_emojis.html | **The Print coloring sheets popup's 7 size sliders are 16px tall** (the LL twin fixed S529); **each card's Torah Trainer link is 23px tall in the Hebrew UI.** | found S529
+- [ ] P4 (**NEW S531 E — docs**) | README.md | **The word-data section lists three `era` values; the corpus has two more** (`Mishnaic`, `Aramaic`, one each). | found S531
 
 - [ ] P4 (**NEW S523 G — gate 3**) | hebrew_dictionary.html | **A long one-word headword overflows its card** (paper and phone). | found S523
 
@@ -149,8 +147,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S410 Pass D**) | Hebrew_Font_Maker.html | **Continue runs a synchronous `autosaveNow()` inside the click's task** (88–114ms of 575–616ms @4×), re-saving the snapshot it just restored. | found S410
 
 - [ ] P4 (**NEW S410 Pass D**) | Hebrew_Font_Maker.html | **The partner wizard's Create re-renders every grid once per setter** (`setMarkEnabled` ×2, `setAddEnglishLetters`, `setInputMode`…): 3 tasks of 465–678ms @4×, top 146–201ms @1× (engine blocked; with it, Pyodide's own blocks dominate). | found S410
-
-- [ ] P4 (**NEW S405 — found beside `f78ad1b`**) | Hebrew_Font_Maker.html | **The Upload help tab's link to Download Templates exists only in the English authored HTML** (`openHelp('templates')`); the translated Upload body is CSV prose, so a Hebrew reader gets no link. A `data-fmact` action (the dispatcher's CSV-safe route) would carry it. | found S405
 
 - [ ] P4 (**S394 census, retuned S395 — `04892f3` took the three SHADOWED ones that were accidents; what is left here is judgement, not dead code**) | hebrew_blend_generator.html | **The `.bingo-card-num` / `.bingo-grid` IDENTICAL twins and the `.bingo-card` SHADOWED one sit inside a deliberate later layer that re-declares the bingo shapes in print-safe literals, and `body.dark …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -314,6 +310,12 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-21 | (S531 close-out) | branch/deploy note | **S531 = E (FOUND 2, FIXED 4) on PR #353.** Drift: none (main `0ba274dd`, keep-alive #38 green). sw v1055→v1056; no FM bump; sitemap stamped; no gates.
+
+- [x] 2026-10-21 | `aa71fc00` `f77dc505` | README, FM, CSV | (S531) **README: the two launched pages; FM: the Upload help's Templates link in Hebrew.** | findings
+
+- [x] 2026-10-21 | `6e8b6848` `0c8a2bba` | parsha_emojis, CSV | (S531) **The card link named by its words; sliders + link at 24px.** | findings
+
 - [x] 2026-10-21 | (S530 close-out) | branch/deploy note | **S530 = A (FOUND 4, FIXED 4) on PR #353.** Drift: none (main `0ba274dd`, keep-alive #38 green). sw v1054→v1055; no FM bump; no gates; nothing deferred.
 
 - [x] 2026-10-21 | `66ecdc9f` `eee7080d` | LL, parsha, 13 headers | (S530) **Four empty status notes stay in the a11y tree; the header ✡︎ hidden ×13.** | findings
@@ -324,6 +326,8 @@ _(none)_
 
 ### Per-session log (one line per session)
 
+- 2026-10-21 | **S531** | iters: 5 | tools: README, parsha ×2, FM, CSV, sitemap, sw.js | patterns fixed: visible-label ×1, sub-floor ×1 | pass run: E | SW: v1055→v1056
+
 - 2026-10-21 | **S530** | iters: 5 | tools: LL ×2, parsha ×2, generator ×2, 11 headers, CSV, sw.js | patterns fixed: live-region ×1, decorative-glyph ×2 | pass run: A | SW: v1054→v1055
 
 - 2026-10-21 | **S529** | iters: 5 | tools: dictionary, generator, resources, LL, CSV, sw.js | patterns fixed: empty-result ×1, decorative-glyph ×1, sub-floor ×1 | pass run: B | SW: v1053→v1054
@@ -332,7 +336,7 @@ _(none)_
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S530 (2026-10-21):** LL, parsha_emojis, generator, index, dictionary, dashboard, torah, FM, account, resources, contact, privacy, terms, 404, CSV, sw.js S530 · flash S527 · corpus, README S524 · saves, scripts S521 · trope S519 · i18n.js S512 · pwa S472.
+- **Snapshot S531 (2026-10-21):** parsha_emojis, FM, README, CSV, sitemap, sw.js S531 · LL, generator, index, dictionary, dashboard, torah, account, resources, contact, privacy, terms, 404 S530 · flash S527 · corpus S524 · saves, scripts S521 · trope S519 · i18n.js S512 · pwa S472.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -444,7 +448,7 @@ _(none)_
 
 - **`flash-restores-captured-text-not-its-key`** (NEW S417 — 2 FIXED `1f7f869`; S415 `38e5b62`): ACTIVE, streak 0. A "Copied!" flash restoring the text captured at click time, so a 2nd click captures the flash. Detection: `orig = (btn|lbl)\.(textContent|innerHTML)` + …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`visible-label-missing-from-the-accessible-name`** (S415–S425: 4 fixes; **S427 the dictionary's Word Lists windows `ee5f6f2`**; **S530 open: parsha's card link**): ACTIVE, streak 0. Detection `a416/labelname.mjs` + `fieldnames.mjs`; S427 `c427/probe-dlgname.mjs`. …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`visible-label-missing-from-the-accessible-name`** (S415–S425: 4 fixes; **S427 the dictionary's Word Lists windows `ee5f6f2`**; **S531 parsha's card link FIXED `6e8b6848`**): ACTIVE, streak 0. Detection `a416/labelname.mjs` + `fieldnames.mjs`; S427 `c427/probe-dlgname.mjs`. …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`designed-key-miss-probed-through-t`** (NEW S415; FM `gName()` FIXED `95d5f46`): ACTIVE, streak 1 (S416: 0 on the delta). Detection: `[i18n] missing key` in B's interaction arm; static: `=== k ?` fallbacks without `I18n.has`.
 
@@ -514,7 +518,7 @@ _(none)_
 
 - **`light-literal-text-on-the-gold-token`** (registered 2026-09-17 (S396)): ACTIVE — **S399 (Pass A), FIRST real sweep: 7 NEW carriers, all on `hebrew_dictionary.html`, all fixed `273f449`; clean streak stays 0.** `color:#fff` (or another light literal) painted on `var(--gold)` …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`sub-floor touch target`**: ACTIVE. **S529: LL sliders FIXED `84154c76`; open: parsha_emojis' 7 popup sliders (`b529/fix4.mjs`) + its card link (23px HE, S530).** **S516 FM ×4 `36e804ac`.** **S513 dashboard ×2 `787c434`.** **S483 hub clean.** **S456: `85e294b2`, …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`sub-floor touch target`**: ACTIVE. **S531: parsha_emojis' 7 popup sliders + its card link (23px HE) FIXED `0c8a2bba`.** **S529: LL sliders FIXED `84154c76`.** **S516 FM ×4 `36e804ac`.** **S513 dashboard ×2 `787c434`.** **S483 hub clean.** **S456: `85e294b2`, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`vh-capped-sheet-without-dvh-twin`**: ACTIVE (registered S375). **S385 (Pass A), first re-sweep since the S377 fixes: 20 raw → 0 real, clean streak 1 of the 3 that retire it.** Every raw hit is an exemption the row names — 11 inner scrollers with their own `overflow:auto`, …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -722,8 +726,8 @@ _(none)_
 
 - H teacher walkthrough / paper-cuts (one tool): 2026-10-20 (**S526 — `letter_learner.html`: 6 lessons, ~75 clicks × 4 cells. FOUND 8+1, FIXED 2 (+3). H-next: parsha_emojis, privacy/terms/404 (never), trope (S367).**)
 
-- E freshness/site-health: 2026-10-18 (**S517 — 40th E, `4edc14b9..d7c58446` (119 commits; LL's first E): 16 static arms + the `?v=` history arm + doc tokens (plants 17/17, 4/4, 1/1), runtime CSP 36 cells (plant 36/36), keep-alive + Pages read. FOUND 2 (docs), FIXED 4 (+ FM ×2).**)
+- E freshness/site-health: 2026-10-21 (**S531 — 41st E, `d7c58446..48286048` (108 commits; parsha_emojis' first): 16 arms + carrier lists (plants 18/18), docs, CSP 40 cells (plant 40/40), the stub. FOUND 2, FIXED 4.**)
 
 - F cross-tool consistency: 2026-10-21 (**S528 — 39th F, empty states: 6 no-match surfaces × 4 cells by real input (plants 72/72), 12-page census. FOUND 4, FIXED 1 (+ LL ×2). F-next: loading states.**)
 
-**Next session (S531):** **PR: `claude/improveloop-s526` (#353) open → continue; merged → fresh branch.** `sw.js` **v1055**, FM **5.59**, corpus ?v=7. ⚑ Stalest: E (S517), L (S518). ⚑ Ready: parsha_emojis card link (name + 24px) and sliders. ⚑ Seeds: 46. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4; O's Bash rule.
+**Next session (S532):** **PR: `claude/improveloop-s526` (#353) open → continue; merged → fresh branch.** `sw.js` **v1056**, FM **5.59**, corpus ?v=7. ⚑ Stalest: L (S518), K (S519), N (S520). ⚑ Ready: the README era note. ⚑ Seeds: 46. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4; O's Bash rule.
