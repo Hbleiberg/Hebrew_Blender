@@ -93592,3 +93592,31 @@ _(prior — S535 pointer:)_ **Next session (S535):** **PR: `claude/confident-sha
 - 2026-10-21 | **S532** | iters: 5 | tools: LL, index, torah, resources, README, CSV, sw.js | patterns fixed: — | pass run: L | SW: v1056→v1057
 
 - 2026-10-21 | **S531** | iters: 5 | tools: README, parsha ×2, FM, CSV, sitemap, sw.js | patterns fixed: visible-label ×1, sub-floor ×1 | pass run: E | SW: v1055→v1056
+
+
+<!-- archived by hand at the S536 close-out, 2026-10-21 (the rows were rewritten in place) -->
+## Compaction (S536 close-out, 2026-10-21) — moved verbatim from the live ledger
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- M aesthetics & visual design (one surface): 2026-10-19 (**S522 — 26th M, `emoji_torah.html` (its first audit): 64 shots in real fonts, census, bar bands, the Trainer gallery beside it; plants fired. FOUND 4, FIXED 2. M-next: LL (never), FM (S335).**)
+
+_(prior — S536 pointer:)_ **Next session (S536):** **PR: `claude/improveloop-s535` open → continue; merged → fresh branch.** `sw.js` **v1064**, FM **5.59**, corpus ?v=7. ⚑ Stalest: M (S522), G (S523), D (S524). ⚑ Keep-alive #40 (10-22): confirm green. ⚑ Seeds: 46. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4; O's Bash rule.
+
+
+<!-- archived by compact-ledger at the S537 boundary, 2026-10-21 -->
+## Compaction (S537, 2026-10-21) — moved verbatim from the live ledger
+
+### from Candidates (prioritized, top = next)
+
+- [ ] P4 (**NEW S536 M — F's, suite-wide**) | every page with a native checkbox or radio | **In dark mode an unticked box is a bright white square** (no `color-scheme` anywhere; S291 refuted only the focus ring). | found S536
+
+### from Done and Per-session log (S534) — moved at the S536 close-out (size)
+
+- [x] 2026-10-21 | (S534 close-out) | branch/deploy note | **S534 = N on `name_tags.html`, fresh `claude/confident-shannon-k7zmyp`.** Drift: Name Tags, `0007` live, sw v1060. sw v1060→v1061; no FM bump; no gates.
+
+- [x] 2026-10-21 | `f7c4981` `c156628` | name_tags | (S534) **The table no longer widens a phone page; 7 name fields hinted.** | 12/20 → 0/20 cells; hints 0/7 → 7/7
+
+- [x] 2026-10-21 | `a153826` `c9ab327` | generator, dashboard | (S534) **The `?ak=` subtitle prints dark; the TTS readout mirrors.** | PDF gold → #6b4e12; HE 0/7 → 7/0
+
+- 2026-10-21 | **S534** | iters: 5 | tools: name_tags ×2, generator, dashboard, sw.js | patterns fixed: abs-child ×1 (NEW), input-hints ×7, physical ×1 | pass run: N | SW: v1060→v1061

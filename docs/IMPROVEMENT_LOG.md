@@ -8,6 +8,10 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P4 (**NEW S536 M — gate 3**) | letter_learner.html | **A final-form card's glyph and name sit 10px above its row-mates'.** | found S536
+
+- [ ] P4 (**NEW S536 M — F's**) | suite-wide | **In dark mode an unticked checkbox or radio is a white square.** | found S536
+
 - [ ] P4 (**NEW S534 N — gate 4**) | name_tags.html | **On a phone Remove sits 120–270px off-screen** until the table scrolls. | found S534
 
 - [ ] P4 (**NEW S535 P — gate 2**) | classroom_dashboard.html | **Four confirms on synced data lack the `_cloud` wording** (text sizes, intermission, a day, a period). | found S535
@@ -81,8 +85,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW PR #313**) | torah_trainer.html | **Shabbat Chazon's haftarah (Isaiah 1) is drawn in the Haftarah chart throughout**; the verses customarily chanted to Eicha's tune need a per-verse tune. | found PR #313
 
 - [ ] P4 (**NEW PR #313**) | classroom_dashboard.html | **The dashboard's parsha line never names a special Shabbat** (Zachor, Parah, Shekalim…) though `HebCal.specialShabbat` now answers by date. | found PR #313
-
-- [ ] P4 (**NEW S464 M**) | resources.html | **Below ~1020px wrapped chips flow back under their row label.** | found S464
 
 - [ ] P4 (**NEW 2026-10-03, gate 2 copy**) | hebrew_dictionary.html | **"Any of these letters" requires every ticked letter** (`onFilter`); the Hebrew label (כל אחת מהאותיות האלה) says so, the English label and its "Any:" chip don't. | found 2026-10-03
 
@@ -306,7 +308,15 @@ _(none)_
 
 ## Done
 
-- [x] 2026-10-21 | (S535 close-out) | branch/deploy note | **S535 = P on name_tags (first P): page clean; 1 suite-wide FIXED, 1 gate-2.** Fresh `claude/improveloop-s535` (#356 merged); drift: Name Tags, the arrows. sw v1063→v1064; no FM bump.
+- [x] 2026-10-21 | (S536 close-out) | branch/deploy note | **S536 = M on LL (first): FOUND 5, FIXED 3 + S464.** On #357; no drift. sw v1064→v1065. Deferred: gate 3.
+
+- [x] 2026-10-21 | `b3c02ee` `f1b71e7` | LL | (S536) **The dialog holds still; vowel rows share a height.** | moves 48/72 → 0; ragged 12 → 0
+
+- [x] 2026-10-21 | `230ba45` | ivrit-saves | (S536) **No blank strip atop the signed-out panel.** | 24px → 0; 7 smokes
+
+- [x] 2026-10-21 | `7666632` | resources | (S536) **Wrapped chips hang under the first chip** (S464). | 1/row → 0
+
+- [x] 2026-10-21 | (S535 close-out) | branch/deploy note | **S535 = P on name_tags (first): clean; 1 suite-wide FIXED, 1 gate-2.** Fresh branch (#356 merged). sw v1063→v1064.
 
 - [x] 2026-10-21 | `7ac2ccc` | ivrit-saves, smoke-sync | (S535) **A first sign-in keeps the device's settings only when the account's change a field.** | false hub notes 3 → 0; 1c; 7 smokes
 
@@ -314,23 +324,17 @@ _(none)_
 
 - [x] 2026-10-21 | `15464a2` | generator | (S535) **The `?ak=` answers print dark.** | light-gold px 1171 → 0
 
-- [x] 2026-10-21 | (S534 close-out) | branch/deploy note | **S534 = N on `name_tags.html`, fresh `claude/confident-shannon-k7zmyp`.** Drift: Name Tags, `0007` live, sw v1060. sw v1060→v1061; no FM bump; no gates.
-
-- [x] 2026-10-21 | `f7c4981` `c156628` | name_tags | (S534) **The table no longer widens a phone page; 7 name fields hinted.** | 12/20 → 0/20 cells; hints 0/7 → 7/7
-
-- [x] 2026-10-21 | `a153826` `c9ab327` | generator, dashboard | (S534) **The `?ak=` subtitle prints dark; the TTS readout mirrors.** | PDF gold → #6b4e12; HE 0/7 → 7/0
-
 ## Metrics
 
 ### Per-session log (one line per session)
 
-- 2026-10-21 | **S535** | iters: 5 | tools: saves (shared), name_tags ×2, generator, sw.js | patterns fixed: — | pass run: P | SW: v1063→v1064
+- 2026-10-21 | **S536** | iters: 5 | tools: LL ×2, saves (shared), resources, sw.js | patterns fixed: — | pass run: M | SW: v1064→v1065
 
-- 2026-10-21 | **S534** | iters: 5 | tools: name_tags ×2, generator, dashboard, sw.js | patterns fixed: abs-child ×1 (NEW), input-hints ×7, physical ×1 | pass run: N | SW: v1060→v1061
+- 2026-10-21 | **S535** | iters: 5 | tools: saves (shared), name_tags ×2, generator, sw.js | patterns fixed: — | pass run: P | SW: v1063→v1064
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S535 (2026-10-21):** name_tags, generator, saves, scripts, sw.js S535 · dashboard S534 · LL, parsha_emojis, torah, CSV S533 · index, resources, README, sitemap S532 · FM S531 · dictionary, account, contact, privacy, terms, 404 S530 · flash S527 · corpus S524 · trope S519 · i18n.js S512 · pwa S472.
+- **Snapshot S536 (2026-10-21):** LL, saves, resources, sw.js S536 · name_tags, generator, scripts S535 · dashboard S534 · parsha_emojis, torah, CSV S533 · index, README, sitemap S532 · FM S531 · dictionary, account, contact, privacy, terms, 404 S530 · flash S527 · corpus S524 · trope S519 · i18n.js S512 · pwa S472.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -700,7 +704,7 @@ _(none)_
 
 - N mobile & touch-device (one surface): 2026-10-21 (**S534 — 27th N, `name_tags.html` (first audit): 20 cells, rows, tour by taps, 1px header sweep, fingers, rotation, 4×; plants 5/5. FOUND 6, FIXED 4. N-next: LL (never), contact (S276).**)
 
-- M aesthetics & visual design (one surface): 2026-10-19 (**S522 — 26th M, `emoji_torah.html` (its first audit): 64 shots in real fonts, census, bar bands, the Trainer gallery beside it; plants fired. FOUND 4, FIXED 2. M-next: LL (never), FM (S335).**)
+- M aesthetics & visual design (one surface): 2026-10-21 (**S536 — 27th M, LL (first): 120 shots × 12 cells, real fonts, row census, real Next clicks; plants fired. FOUND 5, FIXED 3 + S464. M-next: FM (S335).**)
 
 - K i18n / localization audit: 2026-10-21 (**S533 — 36th K, `db80feb4..843984b3` (111 commits; parsha_emojis' first): CSV +209 (all resolve), 12 reworded, 0 removed; static 5,502 refs + 2,974 fallback sites (the html arm, lapsed since S475); blind 0/4,328 lines; 102 states by the real switcher (twins = base + 5 known); retry 4/4; 10 surfaces by real input + a switch mid-state. FOUND 4, FIXED 4.**)
 
@@ -726,4 +730,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-21 (**S528 — 39th F, empty states: 6 no-match surfaces × 4 cells by real input (plants 72/72), 12-page census. FOUND 4, FIXED 1 (+ LL ×2). F-next: loading states.**)
 
-**Next session (S536):** **PR: `claude/improveloop-s535` open → continue; merged → fresh branch.** `sw.js` **v1064**, FM **5.59**, corpus ?v=7. ⚑ Stalest: M (S522), G (S523), D (S524). ⚑ Keep-alive #40 (10-22): confirm green. ⚑ Seeds: 46. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4; O's Bash rule.
+**Next session (S537):** **PR: `claude/improveloop-s535` open → continue; merged → fresh branch.** `sw.js` **v1065**, FM **5.59**, corpus ?v=7. ⚑ Stalest: G (S523), D (S524), I (S525). ⚑ Keep-alive #40 (10-22): confirm green. ⚑ Seeds: 46. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4; O's Bash rule.
