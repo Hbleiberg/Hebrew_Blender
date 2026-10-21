@@ -4568,6 +4568,7 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
      A teacher-opened card, so it follows the UI language (I18n.lang, the Parsha Emojis page's rule), not the board's
      script; the Hebrew still renders through hebDisplay. A missing note leaves its text out, never the card. */
   let _ppOpener = null;
+  let _ppIdx = null;   // the open popup's parasha indices, so applyI18n can rebuild its cards in the new language
   function _ppLang() { return window.I18n && I18n.lang === 'he' ? 'he' : 'en'; }
   function _ppPick(pair) {   // the UI language's sentence, else the other one: { text, lang } or null
     const ui = _ppLang(), other = ui === 'he' ? 'en' : 'he';
@@ -4599,6 +4600,7 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
     if (_activeEditable) exitInPlaceEdit(true);   // one edit surface at a time (mirrors openWeekEditor)
     const cards = idx.map(_ppCard).join('');
     if (!cards) return;
+    _ppIdx = idx;
     _ppOpener = document.activeElement;
     document.getElementById('ppCards').innerHTML = cards;
     document.getElementById('ppTrainer').setAttribute('href', href || 'torah_trainer.html');
@@ -4611,6 +4613,7 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
     document.getElementById('ppBackdrop').classList.remove('open');
     document.getElementById('ppModal').classList.remove('open');
     document.removeEventListener('keydown', _ppKey, true);
+    _ppIdx = null;
     const o = _ppOpener; _ppOpener = null;
     if (o && o.focus && document.contains(o)) { try { o.focus(); } catch (e) {} }
     else { const b = document.querySelector('#parshaLine .parsha-btn'); if (b) b.focus(); }   // the line repainted meanwhile
@@ -12350,6 +12353,7 @@ async function onUploadEngFontPick(input){
       try { updatePickerRosterCount(); } catch (e) {}   // roster count is built via t() at init (pre-ready), so it needs a re-render here
       try { renderWeekSummary(); } catch (e) {}
       try { if (weekEditorOpen()) renderWeekEditor(); } catch (e) {}   // re-label the open weekly editor in place
+      try { if (_ppIdx && document.getElementById('ppModal').classList.contains('open')) document.getElementById('ppCards').innerHTML = _ppIdx.map(_ppCard).join(''); } catch (e) {}   // the open parsha popup's cards: names, summaries and the why line in the new language (read-only)
       try { renderSavedSchedules(); } catch (e) {}
       try { renderPresets(); } catch (e) {}
       try { renderScheduleUI(); } catch (e) {}
