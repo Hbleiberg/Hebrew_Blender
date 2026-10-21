@@ -1435,7 +1435,7 @@ function ntEditCell(r, f, value) {
     if (f === 'he') ntUpdateTrNote();
   }
   if (f === 'he') ntMaybeLoadTranslit();
-  ntQueuePreview();
+  ntQueuePreviewTyping();
 }
 function ntRemoveRow(i) {
   const rows = ntEnsureRows();
@@ -1998,7 +1998,16 @@ function ntQueuePreview() {
   _ntPreviewQueued = true;
   requestAnimationFrame(() => { _ntPreviewQueued = false; ntRenderPreview(); });
 }
+// Typing into a long list: the preview rebuilds every sheet, so it waits for a pause in the typing (each keystroke on a
+// phone stays cheap); Print and a browser print draw it at once.
+let _ntTypingTimer = 0;
+function ntQueuePreviewTyping() {
+  clearTimeout(_ntTypingTimer);
+  if (ntRows().length <= 40) { _ntTypingTimer = 0; ntQueuePreview(); return; }
+  _ntTypingTimer = setTimeout(() => { _ntTypingTimer = 0; ntQueuePreview(); }, 250);
+}
 function ntRenderPreview() {
+  if (_ntTypingTimer) { clearTimeout(_ntTypingTimer); _ntTypingTimer = 0; }
   const host = document.getElementById('ntPreview');
   if (!host) return;
   const L = ntLayout();
@@ -3472,6 +3481,7 @@ function init() {
   try { document.fonts.addEventListener('loadingdone', () => { _ntMeasureMemo.clear(); ntQueuePreview(); }); } catch (e) {}
   if (window.ResizeObserver) new ResizeObserver(() => ntFitPreview()).observe(document.getElementById('ntPreview'));
   else window.addEventListener('resize', ntFitPreview);
+  window.addEventListener('beforeprint', () => { if (_ntTypingTimer) ntRenderPreview(); });   // a print mid-typing gets the typed names
   window.addEventListener('translitlibloaded', ntOnTranslitLoaded);
   window.addEventListener('translitlibfailed', ntOnTranslitLoaded);
   ntMaybeLoadTranslit();

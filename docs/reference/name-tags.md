@@ -91,6 +91,10 @@ transliterations still print.
   the scale and everything around the sheets, and `#ntPageSize` holds the `@page` rule `ntPageStyle` writes on every
   render. The sheet is laid out in physical coordinates (pinned `direction: ltr`, like the keyboard's qwerty rows),
   and its ink and paper are literal light colours in either theme.
+- **One render a frame, and a pause while typing into a long list.** Every change queues one rebuild of all the
+  sheets on the next frame (`ntQueuePreview`); a keystroke in a list of more than 40 students waits for a 250 ms pause
+  in the typing instead (`ntQueuePreviewTyping`), so each keystroke on a phone stays cheap. Print and a browser print
+  (`beforeprint`) draw a pending render at once.
 
 ## From the Classroom Dashboard, and back
 
