@@ -3688,6 +3688,7 @@ function renderRootChips(filter) {
   const list = f ? ROOT_INDEX.filter(r => r.includes(f)) : ROOT_INDEX;
   box.innerHTML = list.map(r => `<button type="button" class="shoresh-chip" lang="he" dir="rtl" onclick="shoreshChipClick('${r}')">${[...r].join('־')}</button>`).join('') ||
     `<span style="font-size:0.75rem;color:var(--muted);padding:4px;">${esc(I18n.t('dictionary.shoresh.no_matching_roots'))}</span>`;
+  return list.length;
 }
 
 function shoreshChipClick(r) {
@@ -3696,7 +3697,10 @@ function shoreshChipClick(r) {
 }
 
 function onShoreshInput() {
-  renderRootChips(document.getElementById('shoreshInput').value);
+  // A filter that leaves no root is heard as well as seen, through the page's live line (announce → #a11yStatus).
+  const none = I18n.t('dictionary.shoresh.no_matching_roots'), st = document.getElementById('a11yStatus');
+  if (renderRootChips(document.getElementById('shoreshInput').value) === 0) announce(none);
+  else if (st && st.textContent === none) announce('');
 }
 function onShoreshKey(e) {
   if (e.key === 'Enter') runShoreshLookup(document.getElementById('shoreshInput').value);
