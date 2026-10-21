@@ -1431,7 +1431,10 @@ function etCsScheduleFit() {
 // Fit: every sheet is measured once at the printed box's exact size, offscreen, after the faces have loaded (a thumbnail
 // rounds and wraps text differently). A sheet whose content overflows has its text stepped down (--k, to 0.7); the
 // picture has already given up its room by then (it shrinks first, to its minimum). All the writes of a round come
-// before all its reads. The factor rides the preview sheet, and so every printed copy.
+// before all its reads. The factor rides the preview sheet, and so every printed copy. Paper sets the same text a hair
+// differently from the screen and can wrap a line the screen kept (a Hebrew sheet at 150% lost its last line that way),
+// so each sheet is measured borderless, as it prints, with its text ET_CS_FIT_SPARE larger than it will be.
+const ET_CS_FIT_SPARE = 1.02;
 async function etCsFitAll(waitMs) {
   const token = ++_etCsFitToken;
   try {
@@ -1447,14 +1450,14 @@ async function etCsFitAll(waitMs) {
     document.body.appendChild(host);
     const clones = entries.map(en => {
       const c = en.sheet.cloneNode(true);
-      c.style.width = w + 'px'; c.style.height = h + 'px'; c.style.aspectRatio = 'auto'; c.style.setProperty('--k', '1');
+      c.style.width = w + 'px'; c.style.height = h + 'px'; c.style.aspectRatio = 'auto'; c.style.border = 'none'; c.style.setProperty('--k', String(ET_CS_FIT_SPARE));
       host.appendChild(c);
       return c;
     });
     const k = clones.map(() => 1);
     let over = clones.map(etCsOverflows);
     for (let round = 0; round < 6 && over.some(Boolean); round++) {
-      over.forEach((o, j) => { if (o && k[j] > 0.7) { k[j] = Math.max(0.7, +(k[j] - 0.05).toFixed(2)); clones[j].style.setProperty('--k', String(k[j])); } });
+      over.forEach((o, j) => { if (o && k[j] > 0.7) { k[j] = Math.max(0.7, +(k[j] - 0.05).toFixed(2)); clones[j].style.setProperty('--k', String(k[j] * ET_CS_FIT_SPARE)); } });
       over = clones.map(etCsOverflows);
     }
     host.remove();

@@ -690,7 +690,8 @@ header-icons and holiday-icons CSS blocks.
   synopsis, explanation, the `IvritSuite.com` credit; landscape puts the picture left of the text column. The printed
   labels and the books' Hebrew names are in-page `i18n-ignore` constants (printed content follows the sheet's
   language); Hebrew text is `lang="he" dir="rtl"`, and the verse range sits in a `<bdi dir="ltr">`. The picture
-  shrinks first; `etCsFitAll` then measures offscreen clones at the exact print size and steps the text factor `--k`
+  shrinks first; `etCsFitAll` then measures offscreen clones at the exact print size (borderless, as they print, with
+  their text `ET_CS_FIT_SPARE` = 2% larger, because paper can wrap a line the screen kept) and steps the text factor `--k`
   down by 0.05 to 0.7, and the popup's `aria-live` note names a sheet that was shrunk or still overflows. Printing
   sets `@page` in `<style id="etPageSize">` (the paper turned as the layout says) while the popup is open, fills
   `#etCsPrintArea` (a child of `<body>`) with the clones in the chosen order, grouped into `.et-cs-paper` grids of one,
