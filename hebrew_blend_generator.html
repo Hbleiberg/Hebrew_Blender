@@ -3948,7 +3948,7 @@ html[lang="he"] .beta-tag { letter-spacing: normal; text-transform: none; }   /*
     <div class="worksheet-scaler" id="worksheetScaler">
       <div class="worksheet" id="worksheet">
         <div class="empty-state">
-          <div class="star">✡︎</div>
+          <div class="star" aria-hidden="true">✡︎</div>
           <h2 data-i18n="worksheet.empty.ready_title">Ready to Generate</h2>
           <p data-i18n-html="worksheet.empty.ready_body">Select your letters and vowels, then click <strong>Generate Worksheet</strong>.</p>
           <div class="quick-starts" id="emptyQuickStarts">
@@ -6898,6 +6898,7 @@ function renderQuickStarts() {
       b.dataset.recipe = r.id;
       const em = document.createElement('span');
       em.className = 'qs-emoji';
+      em.setAttribute('aria-hidden', 'true');   // decoration: the label alone names the chip
       em.textContent = r.emoji;
       const tx = document.createElement('span');
       tx.textContent = quickStartLabel(r);
