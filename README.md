@@ -50,7 +50,7 @@ A live display board designed for classroom projectors and SmartBoards.
 
 - **Live Hebrew date + clock** (Reingold-Dershowitz calendar, 12/24-hr, Hebrew/English formats) and **Hebrew days of the week** with today / yesterday / tomorrow markers
 - **Live weather** — Open-Meteo geocoded weather (no API key), 30-minute refresh, °F/°C, Hebrew or English labels
-- **Jewish-calendar widgets** — Shabbat candle-lighting times, an **Omer counter** (Hebrew/English + progress bar), a holiday countdown line, and **this week's parsha** under the Hebrew date (Diaspora or Israel; a click opens it in the Torah Trainer)
+- **Jewish-calendar widgets** — Shabbat candle-lighting times, an **Omer counter** (Hebrew/English + progress bar), a holiday countdown line, and **this week's parsha** under the Hebrew date (Diaspora or Israel; a click opens the week's parsha emojis with their summaries, linking on to the Torah Trainer and the Parsha Emojis page — on a festival week, or with the emojis off, it opens the Torah Trainer directly)
 - **Schedule Sync** — assign a preset + end time per period; the board auto-switches configurations with a live Now/Next display and countdown
 - **Classroom timer** with warn / urgent / done states, and a **video embed** sidebar card
 - **Rich-text board message** — bold, italic, RTL/LTR, color, size — edited in place
@@ -82,6 +82,23 @@ An interactive tutor for the Torah cantillation marks (trope / te'amim) — the 
 - **Per-trope mastery + personal-best streak** — misses resurface more often, and distractors lean into same-shape confusables (pashta vs. kadma) as you improve
 - **Real audio, zero live dependencies** — every example is clipped from [PocketTorah](https://pockettorah.com)'s recordings using their word-level timings, via a pre-built static index (`data/trope/trope_index.json`, generated offline by `scripts/build-trope-index.mjs` from Sefaria's Hebrew text)
 - Hebrew font picker (incl. My Fonts), dark mode, guided tour, playback-speed control
+
+### Letter Learner (`letter_learner.html`)
+An alef-bet learner for kindergarten and Mechina: every letter as a card to open, hear and print.
+
+- **Three ways in** — Letters (Block), Letters (Cursive) in Israeli handwriting, and Vowels, switched by the buttons under the header
+- **Letter cards** — a picture hint drawn on the letter's own shape, four illustrated words, the letter with every vowel read aloud, its special forms and five fonts; a cursive card adds the printed and handwritten forms, the trick for remembering it and its look-alikes; ←/→ step through the cards
+- **Vowel cards** — every vowel sign with its sound family's shape, gesture, colour and story
+- **Coloring sheets** — print a letter's picture or the letter itself to colour in (Letter or A4, portrait or landscape, 1, 2 or 4 pages per sheet, with the name line, words and translation you choose); **Print several letters…** prints a whole set at once, with copies grouped or collated
+- Options sync to your account when signed in; guided tour, dark mode
+
+### Parsha Emojis (`parsha_emojis.html`)
+A picture for every weekly Torah portion.
+
+- **All 54 parshiyot** — each card has its emoji drawing, English and Hebrew names, the verses, a one-sentence summary and why that emoji was chosen, with a link to the parasha in the Torah Trainer
+- **This week, one book or all five** — the page opens on this week's parasha (both halves of a doubled week; the Torah Trainer's Diaspora or Israel choice)
+- **Print coloring sheets** — choose parshiyot and print their drawings to colour in, with the same paper, page and copies choices as the Letter Learner; the options sync to your account when signed in
+- Prints the cards on screen as well; dark mode. The old address `emoji_torah.html` forwards here
 
 ### Hebrew Font Maker (`Hebrew_Font_Maker.html`) — Beta
 Turn your own handwritten Hebrew letters into a real, installable font — entirely in the browser. (The current version is shown in the tool's About tab.)
@@ -121,7 +138,7 @@ These work the same across the tools (all pages are served from one origin, so s
 - **AllTools backup** — the gear modal on the landing page bundles every tool's settings into one export/import/erase, either as an `.ivrit` file or a JSON blob.
 - **My Fonts** — custom fonts made (or uploaded) in the Hebrew Font Maker are stored in the browser and appear in **every** tool's font picker automatically; you can upload your own `.ttf`/`.otf`/`.woff`/`.woff2` from any picker.
 - **Nikkud color-coding** — vowel-by-color rendering with two selectable schemes, **Default** and **TaL AM** (matching the TaL AM curriculum poster), in three styles (color / highlight / underline).
-- **Guided tours** — all seven tools (Generator, Dictionary, Dashboard, Flash Cards, Torah Trainer, Trope Tutor, Font Maker) ship a first-visit "❓ Tour" walk-through that never changes your data.
+- **Guided tours** — eight tools (Generator, Dictionary, Dashboard, Flash Cards, Torah Trainer, Trope Tutor, Letter Learner, Font Maker) have a **Tour** button (it pulses once on a first visit; a tour never starts by itself) whose walk-through never changes your data.
 - **Share links** — the Generator and Dictionary produce shareable `?s=` URLs; Flash Cards uses a paste-in teacher share code.
 - **Installable PWA + offline shell** — `manifest.webmanifest` + `sw.js` let the suite install to a home screen and run its app shell offline; iOS launch/splash screens live in `splash/`. (Remote resources — Google Fonts, Sefaria, PocketTorah audio — are not available offline.)
 
