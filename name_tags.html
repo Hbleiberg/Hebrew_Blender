@@ -399,6 +399,17 @@ html[lang="he"] fieldset.nt-set legend, html[lang="he"] .nt-head { letter-spacin
 .nt-section h2 { font-family:'Libre Baskerville', serif; font-size:1.05rem; color:var(--text); }
 .nt-section-head { display:flex; flex-wrap:wrap; align-items:center; gap:8px 14px; margin-bottom:10px; }
 .nt-section-head h2 { margin-inline-end:auto; }
+/* The class list folds away (its heading is the toggle), so the preview rises beside the options while the teacher
+   designs. It is a .panel only to the shared panel-collapse memory, which finds panels that way: none of the sidebar
+   panels' look. Folded, the heading keeps the open list's name and count in view. */
+.nt-lists.panel { background:none; border:none; border-radius:0; }
+.nt-lists .nt-section-head h2 { margin-inline-end:0; }
+.nt-list-toggle { display:inline-flex; align-items:center; gap:8px; font:inherit; color:inherit; background:none; border:none; padding:0; cursor:pointer; text-align:start; }
+.nt-list-toggle::after { content:'▾'; font-size:1rem; color:var(--gold-text); transition:transform 0.2s; }
+.nt-lists.collapsed .nt-list-toggle::after { transform:rotate(-90deg); }
+.nt-lists.collapsed .nt-list-body { display:none; }
+.nt-list-sum { font-size:0.86rem; color:var(--muted); }
+.nt-lists:not(.collapsed) .nt-list-sum { display:none; }
 .nt-listbar, .nt-iobar, .nt-inline { display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
 .nt-listbar select { font:inherit; font-size:0.95rem; font-weight:600; padding:6px 10px; border:1.5px solid var(--border); border-radius:6px; background:var(--white); color:var(--text); min-width:12em; max-width:100%; }
 .nt-iobar { margin-top:10px; }
@@ -594,7 +605,7 @@ body.dark #appToast { background: #0a0f1c; }
   .nt-opt select, .nt-field, .nt-listbar select, .nt-table input { font-size:16px; min-height:40px; }
   .nt-opt { min-height:44px; }
   .nt-opt input[type="checkbox"], .nt-opt input[type="radio"] { width:22px; height:22px; }
-  .panel-title { min-height:44px; }
+  .panel-title, .nt-list-toggle { min-height:44px; }
   .nt-btn { min-height:40px; padding:8px 14px; }
   .nt-icon-btn { min-width:40px; min-height:40px; }
   .nt-per label { min-height:48px; justify-content:center; }
@@ -828,10 +839,12 @@ body.dark #appToast { background: #0a0f1c; }
        data-i18n-aria-label="shared.resize.sidebar_title"></div>
 
   <main class="nt-page" id="ntMain" tabindex="-1">
-    <section class="nt-section nt-lists" aria-labelledby="ntListHead">
+    <section class="nt-section nt-lists panel" id="ntListSection" aria-labelledby="ntListHead">
       <div class="nt-section-head">
-        <h2 id="ntListHead" data-i18n="nametags.list.heading">Class list</h2>
+        <h2 id="ntListHead"><button type="button" class="nt-list-toggle" id="ntListToggle" aria-expanded="true" aria-controls="ntListBody" data-i18n="nametags.list.heading">Class list</button></h2>
+        <span class="nt-list-sum" id="ntListSum"></span>
       </div>
+      <div class="nt-list-body" id="ntListBody">
       <div class="nt-listbar" id="ntListBar">
         <label class="vh" for="ntListSel" data-i18n="nametags.list.pick_label">Choose a class list</label>
         <select id="ntListSel"></select>
@@ -898,6 +911,7 @@ body.dark #appToast { background: #0a0f1c; }
       <p class="nt-note" id="ntTrNote" role="status" aria-live="polite"></p>
       <button type="button" class="hk-toggle hi-btn" id="ntKbdToggle" aria-expanded="false" aria-controls="ntKbdPanel"><svg class="hi hi-sm hi-keyboard" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.6" y="6.4" width="18.8" height="11.2" rx="2"/><path d="M6 9.6h.01M9.2 9.6h.01M12.4 9.6h.01M15.6 9.6h.01M18 9.6h.01M6 12.6h.01M9.2 12.6h.01M12.4 12.6h.01M15.6 12.6h.01M18 12.6h.01M8 15.4h8"/></svg>Show Hebrew Keyboard</button>
       <div class="hk-panel" id="ntKbdPanel" hidden></div>
+      </div>
     </section>
 
     <section class="nt-section nt-preview" aria-labelledby="ntPrevHead">
@@ -1199,6 +1213,7 @@ function ntRenderListPicker() {
   document.getElementById('ntListDel').disabled = !ntCur.stored;
   const ex = document.getElementById('ntExtraText');
   if (ex && document.activeElement !== ex) ex.value = ntStr(ntCur.val && ntCur.val.extra);
+  ntSyncListToggle();
 }
 function ntCloseInline() {
   ['ntRenameRow', 'ntPasteRow', 'ntDashRow', 'ntImportChoice'].forEach(id => { const n = document.getElementById(id); if (n) n.hidden = true; });
@@ -2977,10 +2992,10 @@ function initSidebarResize() {
    rides the AllTools export/import like the other carriers' and stays per device (never a cloud row). ── */
 const PANEL_MEM_KEY = 'hebrewNameTags_panels';
 const PANEL_MEM_CFG = {
-  scope: '.panel-title',
+  scope: '.panel-title, #ntListToggle',   // the class list's heading toggle rides the same map (its section is the .panel)
   read() { try { return ivritSafeParse(localStorage.getItem(PANEL_MEM_KEY) || 'null'); } catch (e) { return null; } },
   write(map) { try { localStorage.setItem(PANEL_MEM_KEY, JSON.stringify(map)); } catch (e) {} },
-  afterApply() { document.querySelectorAll('.panel').forEach(p => _syncPanelAria(p)); }
+  afterApply() { document.querySelectorAll('.panel').forEach(p => _syncPanelAria(p)); ntSyncListToggle(); }
 };
 /* ═══════════ IvritSuite panel-collapse memory (shared, identical across pages) ═══════════
    Remembers which panels the teacher left open, so a drawer that was tidied once stays tidy on
@@ -3031,6 +3046,20 @@ function initPanelCollapse() {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); t.click(); }
     });
   });
+}
+// The class list's fold (a real <button> in its heading): aria-expanded, plus the folded heading's "My class (13
+// students)" summary, read from the list menu's current option so it says what the preview is drawing.
+function ntSyncListToggle() {
+  const sec = document.getElementById('ntListSection'), btn = document.getElementById('ntListToggle');
+  if (!sec || !btn) return;
+  btn.setAttribute('aria-expanded', String(!sec.classList.contains('collapsed')));
+  const sum = document.getElementById('ntListSum'), sel = document.getElementById('ntListSel');
+  if (sum) sum.textContent = sel && sel.selectedOptions[0] ? sel.selectedOptions[0].textContent : '';
+}
+function initListCollapse() {
+  const btn = document.getElementById('ntListToggle');
+  if (!btn) return;
+  btn.addEventListener('click', () => { document.getElementById('ntListSection').classList.toggle('collapsed'); ntSyncListToggle(); panelMemSave(); });
 }
 
 /* ══════════════════════════════════════════════════════
@@ -3367,6 +3396,7 @@ function init() {
   ntRenderListPicker();
   ntRenderTable();
   initPanelCollapse();
+  initListCollapse();
   panelMemApply();      // restore the teacher's open/closed panels (right after initPanelCollapse, the shared rule)
   initSidebarResize();
   initHebrewKeyboard();
