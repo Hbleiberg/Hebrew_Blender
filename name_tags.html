@@ -678,11 +678,14 @@ body.dark #appToast { background: #0a0f1c; }
    Backup panel's pressed Automatic / Manual and the keyboard's open tab read exactly like their neighbours — the gold border,
    the navy fill and the tint are all replaced by system colours (pattern selected-state-lost-in-forced-colors, S548). System
    colours are kept in that mode, so the selected ones take the theme's selection pair; both theme rules are named, by
-   specificity. The block ends the page's own CSS so it outranks every rule above it in source order. */
+   specificity. forced-color-adjust:none on the selected rule: Chromium paints a Canvas backplate behind every text run it
+   adjusts, and on a Highlight fill that backplate hides HighlightText glyphs (a blank block where the label was); opted out,
+   the explicit system colours still follow the theme and the label stays legible. The block ends the page's own CSS so it
+   outranks every rule above it in source order. */
 @media (forced-colors:active) {
   .nt-per label:has(input:checked),
   .ivrit-mode-btn.active, body.dark .ivrit-mode-btn.active,
-  .hk-tab.active, body.dark .hk-tab.active { background: Highlight; border-color: Highlight; color: HighlightText; }
+  .hk-tab.active, body.dark .hk-tab.active { background: Highlight; border-color: Highlight; color: HighlightText; forced-color-adjust: none; }
   .nt-per label:has(input:checked) small { color: HighlightText; }
 }
 </style>

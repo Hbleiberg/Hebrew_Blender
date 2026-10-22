@@ -2446,7 +2446,10 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
    gold borders, tinted and navy fills are all replaced by system colours (pattern selected-state-lost-in-forced-colors, S548).
    System colours are kept in that mode, so the selected ones take the theme's selection pair; both theme rules are named, by
    specificity; the drawer tabs' transparent underline (CanvasText in that mode, so every tab looked underlined) goes Canvas
-   except under the open one. The block ends the page's own CSS so it outranks every rule above it in source order. */
+   except under the open one. forced-color-adjust:none on the selected rule: Chromium paints a Canvas backplate behind every
+   text run it adjusts, and on a Highlight fill that backplate hides HighlightText glyphs (a blank block where the label was);
+   opted out, the explicit system colours still follow the theme and the label stays legible. The block ends the page's own
+   CSS so it outranks every rule above it in source order. */
 @media (forced-colors:active) {
   .settings-modal .tt-tab { border-block-end-color: Canvas; }
   .settings-modal .tt-tab[aria-selected="true"], body.dark .settings-modal .tt-tab[aria-selected="true"],
@@ -2454,8 +2457,8 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
   .vowel-scheme-btn.active, body.dark .vowel-scheme-btn.active,
   .emoji-set-btn.active, body.dark .emoji-set-btn.active,
   .ivrit-mode-toggle .ivrit-mode-btn.active, body.dark .ivrit-mode-btn.active,   /* (0,3,0): the Backup panel's own <style> sits later in the body */
-  .hk-tab.active, body.dark .hk-tab.active { background: Highlight; border-color: Highlight; color: HighlightText; }
-  .font-opt.active .font-opt-preview, .font-opt.active .font-opt-name, body.dark .font-opt.active .font-opt-preview,
+  .hk-tab.active, body.dark .hk-tab.active { background: Highlight; border-color: Highlight; color: HighlightText; forced-color-adjust: none; }
+  .font-opt.active .font-opt-preview, .font-opt.active .font-opt-name, .font-opt.active .font-opt-default, body.dark .font-opt.active .font-opt-preview,
   .emoji-set-btn.active[data-set="none"], body.dark .emoji-set-btn.active[data-set="none"] { color: HighlightText; }
 }
 </style></head>
