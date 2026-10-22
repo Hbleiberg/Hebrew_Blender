@@ -5108,6 +5108,7 @@ function fetchEmojiData() {
       if (tree) tree.innerHTML =
         `<div style="color:var(--muted);font-size:0.78rem;">${esc(I18n.t('dictionary.loading.emoji_failed'))}</div>` +
         `<button type="button" class="corpus-retry-btn" style="margin-top:6px;" onclick="retryEmojiData()" data-i18n="shared.corpus.retry_button">${esc(I18n.t('shared.corpus.retry_button'))}</button>`;
+      announce(I18n.t('dictionary.loading.emoji_failed'));   // the tree is not a live region and the count goes blank: say it
     });
 }
 
@@ -5116,6 +5117,7 @@ function retryEmojiData() {   // the emoji register's ↻ — re-runs the same l
   const tree = document.getElementById('emojiCatTree');
   const pressed = corpusRetryPressed(tree && tree.querySelector('.corpus-retry-btn'));
   if (tree) tree.innerHTML = '';
+  announce('');   // a second failure is then a change the region speaks again
   fetchEmojiData().then(() => {
     renderEmojiCatTree(); onFilter();
     if (pressed) focusAfterCorpusRetry(tree && tree.querySelector('.corpus-retry-btn'));
