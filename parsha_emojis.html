@@ -394,6 +394,12 @@ footer a { display: inline-block; padding-block: 5px; }
    Its own overlay above the pinned view bar (z-index 5). ───── */
 .et-cs-overlay{position:fixed;inset:0;z-index:300;background:rgba(13,18,32,0.58);display:flex;align-items:center;justify-content:center;padding:16px;}
 .et-cs-overlay[hidden]{display:none;}
+/* pwa.js's install hint (#pwaInstallBanner: position:fixed at the bottom, z-index above everything) sat over the popup's
+   pinned footer — on an iPhone 13 and SE a tap on Print or the page count landed on the banner. The hub's, the Font Maker's
+   and the Letter Learner's rule: the banner steps aside while the popup is open (keyed on the body class etCsOpen sets, as
+   the print rules are — a CSS state, so a banner built after the popup opened is covered too) and is back the moment it
+   closes; only the teacher's ✕ dismisses it for good. (S547 Pass N) */
+body.et-cs-open #pwaInstallBanner{visibility:hidden;}
 .et-cs-dialog{background:var(--white);color:var(--text);border:1px solid var(--border);border-radius:14px;box-shadow:0 12px 32px rgba(26,39,68,0.12);width:min(1180px,96vw);height:calc(100dvh - 32px);display:flex;flex-direction:column;overflow:hidden;}
 body.dark .et-cs-dialog{box-shadow:0 12px 32px rgba(0,0,0,0.55);}
 .et-cs-head{flex-shrink:0;display:flex;align-items:center;gap:8px;padding-block:10px 8px;padding-inline:16px 12px;border-block-end:1px solid var(--border);}
