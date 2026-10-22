@@ -94164,3 +94164,11 @@ _(prior)_ **Next session (S543):** **PR `claude/improveloop-s535`: open → cont
 ### from Done
 
 - [x] 2026-10-22 | (S544 close-out) | branch/deploy note | **S544 = the protocol audit, no pass.** Branch `claude/sleepy-lamport-howch1`, draft PR; no drift (sw v1072, FM 5.59, migration 0007 live). Pattern health → one-line rows + `loop-patterns.md` (28 DRAFT); Candidates sorted, 18 → Awaiting, 18 aged P4 archived; passes → `loop-passes.md` (+V, R, E's shape arm, H's student cell); `scripts/loop/` drift/coverage/closeout; four stale X-next notes fixed. Deferred: O's permission rule, a CI workflow (maintainer).
+
+
+<!-- archived by compact-ledger at the S545 boundary, 2026-10-22 -->
+## Compaction (S545, 2026-10-22) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-22 | (S544 close-out) | branch/deploy note | **S544 = the protocol audit, no pass.** Branch `claude/sleepy-lamport-howch1`, draft PR; drift: PR 357 (S535–S543) merged to `main` mid-session, nothing else (sw v1072, FM 5.59, migration 0007 live). Pattern health → one-line rows + `loop-patterns.md` (28 DRAFT); Candidates sorted, 18 → Awaiting, 18 aged P4 archived; passes → `loop-passes.md` (+V, R, E's shape arm, H's student cell); …[full text: IMPROVEMENT_ARCHIVE.md]
