@@ -2493,6 +2493,20 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 
 .beta-tag { font-size: 0.7rem; background: var(--gold); color: var(--navy); padding: 1px 5px; border-radius: 3px; font-weight: 700; letter-spacing: 0.05em; vertical-align: middle; }   /* the suite's Beta badge — one idiom at the 11px floor (text-size floor) */
 html[lang="he"] .beta-tag { letter-spacing: normal; text-transform: none; }   /* בטא: Hebrew has no capitals, and the tracking only spaced its letters apart */
+  /* High Contrast (forced colours) paints every pressed button and tile Canvas on CanvasText, so the chosen blend type,
+     colour mode, letters and columns looked exactly like their neighbours (pattern forced-colors-pressed-state, S545).
+     System colours are kept in that mode, so the selected ones take the theme's selection pair; both theme rules are
+     named, by specificity, and the block ends the page's own CSS so it outranks every rule above it in source order. */
+  @media (forced-colors:active) {
+    .blend-type-btn.active, body.dark .blend-type-btn.active,
+    .color-mode-btn.active, body.dark .color-mode-btn.active,
+    .letter-tile.selected, body.dark .letter-tile.selected,
+    .rw-letter-tile.selected, body.dark .rw-letter-tile.selected,
+    .lock-letter-tile.selected, body.dark .lock-letter-tile.selected,
+    .rw-drill-btn.active, body.dark .rw-drill-btn.active,
+    .sc-cols-btn.active, body.dark .sc-cols-btn.active,
+    .font-opt.active, body.dark .font-opt.active { background: Highlight; color: HighlightText; }
+  }
 </style>
 </head>
 <body><a class="skip-link" href="#mainContent" data-i18n="worksheet.a11y.skip_to_worksheet">Skip to the worksheet</a>
