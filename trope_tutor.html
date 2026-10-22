@@ -1057,6 +1057,11 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
   .font-opt.active, body.dark .font-opt.active,
   .tu-slow-btn[aria-pressed="true"], .tu-slow-btn[aria-pressed="true"]:hover, body.dark .tu-slow-btn[aria-pressed="true"], body.dark .tu-slow-btn[aria-pressed="true"]:hover { background: Highlight; color: HighlightText; }
   .tu-chip.active .visited, .font-opt.active .font-opt-preview, body.dark .font-opt.active .font-opt-preview, .font-opt.active .font-opt-name, .font-opt.active .font-opt-attr { color: HighlightText; }
+  /* The drill's three answer states lose their tints too: an armed choice (pressed, tap again to confirm) and the right answer
+     take the selection pair, a wrong pick a dashed ring inside its edge — told apart with no colour of their own (S547). */
+  .tu-choice.armed, body.dark .tu-choice.armed, .tu-choice.good, body.dark .tu-choice.good { background: Highlight; border-color: Highlight; color: HighlightText; }
+  .tu-choice.armed .c-glyph, .tu-choice.armed .c-sub, .tu-choice.good .c-glyph, .tu-choice.good .c-sub { color: HighlightText; }
+  .tu-choice.bad, body.dark .tu-choice.bad { outline: 3px dashed CanvasText; outline-offset: -4px; }
 }
 </style>
 </head>
