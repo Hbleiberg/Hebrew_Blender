@@ -6030,6 +6030,7 @@
   "trope.key.tip": "Moves every staff and its tune up or down in half steps so it sits in your voice. The staffs are redrawn in the new key, and a printed chart follows. The recordings keep the reader's own pitch.",
   "trope.key.up_aria": "Raise the staffs a half step",
   "trope.key.valuetext": "{key}, {rel}",
+  "trope.learn.examples_loading": "Loading examples…",
   "trope.learn.examples_unavailable": "Examples unavailable (index not loaded).",
   "trope.learn.families_aria": "Trope clause families",
   "trope.learn.family_note_etnachta": "The verse's deep mid-point rest. Etnachta splits the verse in two, and munach leads into it, often after the same mercha and tipcha that close the verse.",

@@ -2462,7 +2462,7 @@ let PHRASES = null;          // the six melodies (_phraseSetsFrom): each {key, r
 // recording's end), {ref, he} for the High Holiday one (no recordings). A row whose marks no longer match
 // the chart shows no examples: a stale file never pairs a phrase with the wrong words.
 let PHRASE_EXAMPLES = null;
-let _phrasesTried = false;   // a load has finished (the tab then says "unavailable", not "loading")
+let _phrasesTried = false;   // a load has finished (the tab, the Learn cards and Drill then say "unavailable", not "loading")
 let currentPhraseGroup = null;
 // The charts' own order, which is a teaching order (docs/tropepatterns.md → D); `key` names the
 // group's title (trope.phrases.group_<key>) and, through PHRASE_GROUP_FAMILY, its chip's colour.
@@ -3133,7 +3133,8 @@ function renderLearn() {
     if (!pool.length) {
       const li = document.createElement('li');
       li.className = 'tu-ex-none';
-      li.textContent = I18n.t(INDEX ? 'trope.learn.no_example' : 'trope.learn.examples_unavailable');
+      // Three states, as the Phrases tab's: the index loading (painted by applyI18n before loadData ends) is not a failure.
+      li.textContent = I18n.t(INDEX ? 'trope.learn.no_example' : _phrasesTried ? 'trope.learn.examples_unavailable' : 'trope.learn.examples_loading');
       list.appendChild(li);
     } else {
       for (const ex of spreadPick(pool, 4)) {
@@ -3370,8 +3371,8 @@ function updateDrillStart() {
   const scopedEmpty = !scopedDrillPool().length;
   if (!INDEX || pool.length < 4 || scopedEmpty) {
     btn.setAttribute('aria-disabled', 'true');
-    note.classList.add('error');
-    note.textContent = !INDEX ? I18n.t('trope.drill.index_not_loaded')
+    note.classList.toggle('error', !!INDEX || _phrasesTried);   // still loading: a wait, not an error
+    note.textContent = !INDEX ? I18n.t(_phrasesTried ? 'trope.drill.index_not_loaded' : 'trope.status.loading_index')
       : pool.length < 4 ? I18n.t('trope.drill.not_enough')
       : I18n.t('trope.drill.scope_not_enough');
   } else {

@@ -4760,6 +4760,7 @@ trope.key.tip,"Moves every staff and its tune up or down in half steps so it sit
 trope.key.up_aria,Raise the staffs a half step,הגבהת החמשות בחצי טון,Learn key bar up button aria-label + title,aria-label only
 trope.key.valuetext,"{key}, {rel}","{key}, {rel}",Settings key slider aria-valuetext + the key bar's screen-reader announcement,do-not-translate {key} {rel}
 trope.learn.examples_unavailable,Examples unavailable (index not loaded).,הדוגמאות אינן זמינות (המפתח לא נטען).,card empty state,
+trope.learn.examples_loading,Loading examples…,טוען דוגמאות…,card empty state while the trope index is still loading,
 trope.learn.families_aria,Trope clause families,משפחות הטעמים,family chip group aria,aria-label only
 trope.learn.family_note_etnachta,"The verse's deep mid-point rest. Etnachta splits the verse in two, and munach leads into it, often after the same mercha and tipcha that close the verse.","נקודת המנוחה העמוקה שבאמצע הפסוק. האתנחתא חוצה את הפסוק לשניים, ומונח מוביל אליה, לרוב אחרי אותם מרכא וטפחא שחותמים את הפסוק.",family teaching note (Learn),pedagogical prose; scope-ambiguous
 trope.learn.family_note_geresh,"Ornamental short phrases: kadma-v'azla (geresh), double gershayim, the telisha twins at the word's edges, and the whirling pazer.","משפטים קצרים ומקושטים: קדמא-ואזלא (גרש), גרשיים כפולים, תאומי התלישא בקצות המילה, והפזר המסתחרר.",family teaching note (Learn),pedagogical prose; scope-ambiguous
