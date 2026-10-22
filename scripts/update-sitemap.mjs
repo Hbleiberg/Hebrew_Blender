@@ -4,7 +4,8 @@
  * each page's most recent git commit (YYYY-MM-DD, committer date).
  *
  * Plain Node, zero dependencies. Run from anywhere:
- *   node scripts/update-sitemap.mjs
+ *   node scripts/update-sitemap.mjs           # rewrite stale <lastmod> values
+ *   node scripts/update-sitemap.mjs --check   # read-only: exit 1 if any <lastmod> is stale
  *
  * Behaviour:
  *   - Maps each <loc> to a file: "https://ivritsuite.com/" -> index.html,
@@ -72,6 +73,8 @@ if (isShallowClone()) {
   process.exit(1);
 }
 
+const checkOnly = process.argv.includes('--check');
+
 const original = readFileSync(sitemapPath, 'utf8');
 const report = [];
 const skipped = [];
@@ -90,6 +93,14 @@ const updated = original.replace(/<url>[\s\S]*?<\/url>/g, (block) => {
 });
 
 if (updated !== original) {
+  if (checkOnly) {
+    const stale = [];
+    const before = original.match(/<url>[\s\S]*?<\/url>/g) || [];
+    const after = updated.match(/<url>[\s\S]*?<\/url>/g) || [];
+    before.forEach((b, i) => { if (b !== after[i]) stale.push((b.match(/<loc>([^<]+)<\/loc>/) || [])[1]); });
+    console.error(`update-sitemap: ${stale.length} <lastmod> value(s) are stale — run without --check to rewrite:\n  ` + stale.join('\n  '));
+    process.exit(1);
+  }
   writeFileSync(sitemapPath, updated);
   console.log('sitemap.xml updated.');
 } else {

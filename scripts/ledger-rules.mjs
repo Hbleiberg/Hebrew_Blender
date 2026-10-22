@@ -9,6 +9,10 @@ export const LEDGER = 'docs/IMPROVEMENT_LOG.md';
 export const ARCHIVE = 'docs/IMPROVEMENT_ARCHIVE.md';
 export const FINDINGS = 'docs/reference/loop-findings.md';
 
+// A session number as the ledger writes it (S543). Two to five digits: the loop passed S500 in its
+// third month, so a 2–3 digit match would stop counting Done sessions at S1000.
+export const SESSION_RE = /\bS(\d{2,5})\b/;
+
 export const LIMITS = {
   totalBytes: 100_000,       // whole live ledger
   lineChars: 600,            // any line outside the current "Next session" handoff

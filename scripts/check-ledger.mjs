@@ -29,7 +29,7 @@ import { readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { LEDGER, ARCHIVE, LIMITS, REQUIRED, parseSections, blocksOf, isPointer, isPrior, handoffRange } from './ledger-rules.mjs';
+import { LEDGER, ARCHIVE, LIMITS, REQUIRED, SESSION_RE, parseSections, blocksOf, isPointer, isPrior, handoffRange } from './ledger-rules.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -123,7 +123,7 @@ if (tooLong.length) {
 
 const done = section('## Done');
 if (done) {
-  const ids = new Set(blocksOf(done.lines).map(b => (b[0].match(/\bS(\d{2,3})\b/) || [])[1]).filter(Boolean));
+  const ids = new Set(blocksOf(done.lines).map(b => (b[0].match(SESSION_RE) || [])[1]).filter(Boolean));
   if (ids.size > LIMITS.doneSessions) fail(`## Done holds ${ids.size} sessions (limit ${LIMITS.doneSessions}); archive the overflow (compact-ledger does it).`);
 }
 const log = section('### Per-session log');

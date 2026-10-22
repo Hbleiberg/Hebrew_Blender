@@ -22,7 +22,7 @@ import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
-  LEDGER, ARCHIVE, FINDINGS, LIMITS, TRUNC, NON_ACTIONABLE,
+  LEDGER, ARCHIVE, FINDINGS, LIMITS, TRUNC, NON_ACTIONABLE, SESSION_RE,
   parseSections, blocksOf, isPointer, isPrior, handoffRange,
 } from './ledger-rules.mjs';
 
@@ -63,7 +63,7 @@ function truncate(block, width) {
   return { block: [head + TAIL], archive: true };
 }
 
-const sessionOf = l => { const m = l.match(/\bS(\d{2,3})\b/); return m ? Number(m[1]) : -1; };
+const sessionOf = l => { const m = l.match(SESSION_RE); return m ? Number(m[1]) : -1; };
 
 function compactSection(sec) {
   const h = sec.heading;
