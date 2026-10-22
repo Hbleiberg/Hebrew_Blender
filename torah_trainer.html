@@ -5596,7 +5596,22 @@ function ensureStaffData() {
     });
   return _staffLoad;
 }
-function retryStaffData() { if (!STAFF_SETS) ensureStaffData(); }
+// The staff's Try again the keyboard pressed: renderText rebuilds the header around it, so its focus fell to the page
+// (pattern button-focus-lost-to-its-own-rebuild; the card's retryReading / _ttFocusAfterRetry). Once the attempt settles,
+// the new Try again takes the focus (it failed again), else the Tune button that stands where the chip stood — unless the
+// teacher has moved on meanwhile.
+function retryStaffData() {
+  if (STAFF_SETS) return;
+  const b = document.activeElement;
+  const pressed = !!b && b !== document.body && /retryStaffData/.test(b.getAttribute('onclick') || '');
+  ensureStaffData().then(() => {
+    if (!pressed) return;
+    const ae = document.activeElement;
+    if (ae && ae !== document.body) return;
+    const t = document.querySelector('button.tt-readall[onclick="retryStaffData()"]') || document.getElementById('ttTuneAllBtn');
+    if (t && t.getClientRects().length) t.focus();
+  });
+}
 // The melody a reading is drawn in: the four High Holiday readings take the High Holiday chart, a haftarah the
 // Haftarah rows (the Tisha B'Av haftarah the Eicha rows by default), everything else the year-round chart
 // (readingTutorMelody: the same melody its tutor links carry).
