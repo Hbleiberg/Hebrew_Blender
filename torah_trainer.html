@@ -11426,6 +11426,7 @@ function applyI18n() {
   I18n.applyStaticI18n();
   try { syncRecSrcControls(); syncAudioCredit(); } catch (e) {}   // the Total Torah credit and notes are I18n.t'd (after applyStaticI18n, which rewrites the bar's label)
   try { initFontSelector(); } catch (e) {}          // My Fonts section headers + [DEFAULT] marker
+  try { if (_myFontsLoaded && !allFonts().some(f => f.name === settings.hebFont)) _markMissingFont(settings.hebFont); } catch (e) {}   // the missing-font note (a store that answered before the locale wrote its raw key)
   try { renderFavorites(); } catch (e) {}           // the Favorites list: first paint on I18n.ready, then every language switch (its buttons are I18n.t'd)
   // Both picker lists set their input aria-label via I18n.t() while building. They build at init,
   // which is BEFORE I18n.ready resolves, so without a rebuild here the aria-label stays the raw

@@ -9035,6 +9035,10 @@ function applyI18n() {
   // Dynamic pieces that build their own strings via t():
   initFontSelector();
   initEngFontSelector();
+  if (_myFontsLoaded) {       // the missing-font notes (a store that answered before the locale wrote their raw key)
+    if (!allFonts().some(f => f.name === hebFontId)) _markMissingFont('#fontGrid', 'hebFontMissing', hebFontId);
+    if (!allEngFonts().some(f => f.name === engFontId)) _markMissingFont('#engFontGrid', 'engFontMissing', engFontId);
+  }
   initCountGrid();
   initVowels();               // re-localize the vowel-group "Sound" headers
   if (anyVowelLock) initVowelLockPositionRows();   // translated labels; the letter-lock rows rebuild inside initLetters()
