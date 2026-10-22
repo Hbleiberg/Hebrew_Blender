@@ -8,6 +8,7 @@
 export const LEDGER = 'docs/IMPROVEMENT_LOG.md';
 export const ARCHIVE = 'docs/IMPROVEMENT_ARCHIVE.md';
 export const FINDINGS = 'docs/reference/loop-findings.md';
+export const CATALOG = 'docs/reference/loop-patterns.md';   // one entry per pattern: shape, owner, detection, record
 
 // A session number as the ledger writes it (S543). Two to five digits: the loop passed S500 in its
 // third month, so a 2–3 digit match would stop counting Done sessions at S1000.
@@ -28,7 +29,12 @@ export const LIMITS = {
   toolCoverageRows: 1,       // ### Tool coverage is one snapshot, not a history
   candidateAgeSessions: 90,  // a P4 candidate found more than this many sessions ago leaves for the archive
                              // (a pass that re-finds the defect re-files it; 90 sessions ≈ six rotations)
+  patternRowChars: 160,      // a ### Pattern health row is one status line; everything else is in CATALOG
 };
+
+// A Pattern health row. `det:` is a committed detector path, `recipe` (the catalog's Detection line is the
+// method) or `none` (then the status must be DRAFT and the streak 0 — nothing can be earned without a method).
+export const PATTERN_ROW_RE = /^- `([^`|]+)` \| (ACTIVE|DRAFT|GUARD|retired) \| owner ([A-P]) \| det: (\S+) \| last S(\d{1,5}) \| streak (\d+)( \| hits \d+)?$/;
 
 // Truncation widths compact-ledger applies per section (first line kept, rest archived).
 export const TRUNC = {
@@ -38,9 +44,6 @@ export const TRUNC = {
   done: 400,
   sessionLog: 300,
   toolCoverage: 550,
-  patternHealth: 280,
-  retired: 550,
-  sweepStatus: 240,
   rotation: 400,
 };
 
@@ -72,8 +75,6 @@ export const REQUIRED = [
   '### Per-session log',
   '### Tool coverage',
   '### Pattern health',
-  '### Retired patterns',
-  '## Recurring-pattern sweep status',
   '### Discovery-pass rotation',
 ];
 

@@ -14,6 +14,8 @@
  *   - a candidate that waits on the maintainer (MAINTAINER_ACTION) moves to ## Awaiting the
  *     maintainer (created after ## Feature seeds if the ledger lacks it), and a P4 found more than
  *     LIMITS.candidateAgeSessions sessions ago goes to the archive under its own sub-heading;
+ *   - a ### Pattern health row is never cut (it is one status line by rule; check-ledger enforces the
+ *     format) — a duplicate id or a `retired` row leaves for the archive (the catalog keeps the entry);
  *   - surviving blocks keep their first line, cut at the per-section width, with a
  *     " …[full text: IMPROVEMENT_ARCHIVE.md]" tail when anything was cut (the full block is then
  *     also in the archive).
@@ -27,7 +29,7 @@ import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
-  LEDGER, ARCHIVE, FINDINGS, LIMITS, TRUNC, NON_ACTIONABLE, SESSION_RE, priorityOf, foundSession,
+  LEDGER, ARCHIVE, FINDINGS, CATALOG, LIMITS, TRUNC, NON_ACTIONABLE, SESSION_RE, PATTERN_ROW_RE, priorityOf, foundSession,
   MAINTAINER_ACTION, AWAITING_HEADING,
   parseSections, blocksOf, isPointer, isPrior, handoffRange,
 } from './ledger-rules.mjs';
@@ -53,6 +55,7 @@ const today = new Date().toISOString().slice(0, 10);
 const archived = [];   // { section, blocks }
 const findings = [];   // blocks (candidate records)
 const awaiting = [];   // candidate blocks routed to ## Awaiting the maintainer
+const retiredRows = [];   // pattern ids whose `retired` row left the ledger this run
 const stats = [];
 
 const TAIL = ' …[full text: IMPROVEMENT_ARCHIVE.md]';
@@ -130,14 +133,12 @@ function compactSection(sec) {
   } else if (h.startsWith('### Pattern health')) {
     const seen = new Set();
     for (const b of blocks) {
-      const m = b[0].match(/^- \*\*`?([^`*]+?)`?\*\*/);
-      if (m) { if (seen.has(m[1])) { toArchive.push(b); continue; } seen.add(m[1]); }
-      bump(b, TRUNC.patternHealth);
+      const m = b[0].match(PATTERN_ROW_RE);
+      if (m && seen.has(m[1])) { toArchive.push(b); continue; }
+      if (m) seen.add(m[1]);
+      if (m && m[2] === 'retired') { toArchive.push(b); retiredRows.push(m[1]); continue; }
+      keep.push(b);
     }
-  } else if (h.startsWith('### Retired patterns')) {
-    for (const b of blocks) bump(b, TRUNC.retired);
-  } else if (h.startsWith('## Recurring-pattern sweep status')) {
-    for (const b of blocks) bump(b, TRUNC.sweepStatus);
   } else if (h.startsWith('### Discovery-pass rotation')) {
     const seen = new Set();
     const range = handoffRange(blocks);
@@ -215,6 +216,8 @@ if (bytesOf(newLedger) > LIMITS.totalBytes) {
 }
 const longest = newLedger.split('\n').reduce((m, l) => Math.max(m, l.length), 0);
 console.log(`longest live line: ${longest} chars (limit ${LIMITS.lineChars}, handoff ${LIMITS.handoffLineChars})`);
+
+if (retiredRows.length) console.log(`retired this run (set Status: retired on their catalog entries in ${CATALOG}): ${retiredRows.join(', ')}`);
 
 if (apply) {
   writeFileSync(join(root, LEDGER), newLedger);

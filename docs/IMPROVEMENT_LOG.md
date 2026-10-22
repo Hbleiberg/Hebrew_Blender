@@ -312,369 +312,329 @@ _(none)_
 
 - **Snapshot S543 (2026-10-22):** generator, dictionary, flash, torah, name_tags, resources, contact, sw.js S543 · trope, parsha_emojis, CSV S542 · LL, i18n.js S541 · FM S538 · 5 toast pages S537 · saves S536 · scripts S535 · index, README, sitemap S532 · account, privacy, terms, 404 S530 · corpus S524 · pwa S472.
 
-### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
-- **`selected-state-lost-in-forced-colors`** (NEW S541 C; ×4 fixed (S543: resources, contact); open: 5 pages): ACTIVE, streak 0. A state drawn only by colour flattens in forced colours. Detection: `c541/fcensus.mjs`, then computed styles.
+- `selected-state-lost-in-forced-colors` | ACTIVE | owner C | det: recipe | last S543 | streak 0
 
-- **`live-region-shown-with-its-text`** (NEW S537; `61762cf` ×8, `6d095c0` ×3): ACTIVE, streak 0. A status region made or un-hidden with its first message. Detection: findings S537 (grep + CDP).
+- `live-region-shown-with-its-text` | ACTIVE | owner G | det: recipe | last S537 | streak 0
 
-- **`abs-child-escapes-its-scroller`** (NEW S534 N; `f7c4981`): ACTIVE, streak 0. An absolute `.vh` escaping its `overflow` box widens the page. Detection: `n534/escape.mjs`.
+- `abs-child-escapes-its-scroller` | ACTIVE | owner N | det: recipe | last S534 | streak 0
 
-- **`empty-result-not-announced`** (NEW S528 F; resources ×2 `34ae261b`; S529 dictionary roots `28a52123`; open 0): ACTIVE, streak 1 (S530: no new no-match surface). A no-match landing no live region speaks. Detection: `f528/empty.mjs`; `b529/fix1.mjs` (real typing, live text …[full text: IMPROVEMENT_ARCHIVE.md]
+- `empty-result-not-announced` | ACTIVE | owner F | det: recipe | last S530 | streak 1
 
-- **`print-trailing-padding-adds-a-sheet`** (NEW S526 H; account S523, LL `198ccfac`): ACTIVE, streak 1 (S530 `a530/pcs.mjs`). Detection: `h526/fix1.mjs` (a header-only or empty PDF sheet).
+- `print-trailing-padding-adds-a-sheet` | ACTIVE | owner H | det: recipe | last S530 | streak 1
 
-- **`unseen-hit-box-over-controls`** (NEW S527 C; LL `82a3f0b2`): ACTIVE, streak 1 (S530 `a530/rt.mjs`). An unpainted box over a control eats its clicks. Detection: `c527/cover3.mjs` + a real click (`swallow.mjs`).
+- `unseen-hit-box-over-controls` | ACTIVE | owner C | det: recipe | last S530 | streak 1
 
-- **`layout-read-per-grid-at-build`** (NEW S524 D; `roveTileGrid` ×3 FIXED `aa14beba`; open 0): ACTIVE, streak 0. A builder's layout read (`offsetParent`, a rect) per grid while the page still builds. Detection: `d524/trace.mjs` (forced Layout by stack line).
+- `layout-read-per-grid-at-build` | ACTIVE | owner D | det: recipe | last S524 | streak 0
 
-- **`dark-palette-baked-into-paper`** (NEW S523 G; torah, dictionary, generator fixed; open 0): ACTIVE, streak 0. Detection: `getNikudColor` output that reaches paper (print, `onclone`) resolves the light palette; a PDF from dark = light's.
+- `dark-palette-baked-into-paper` | ACTIVE | owner G | det: recipe | last S523 | streak 0
 
-- **`tour-not-following-a-live-switch`** (NEW S519 K; fixed LL, trope, dashboard, dictionary, torah, FM S519–S522; open 0): ACTIVE, streak 0. Detection: `tourswitch.mjs`; torah `torahtour.mjs` (Sefaria gated).
+- `tour-not-following-a-live-switch` | ACTIVE | owner K | det: recipe | last S522 | streak 0
 
-- **`overlay-scoped-dialog-keys`** (NEW S514 F; LL, flash; S515 `.ivrit` ask ×4, Torah favorite; **S516 hub Erase + I/E `973eb309`; open: none**): ACTIVE, streak 1 (S530: 3 new dialogs, `a530/dialogs.mjs`). A click on a dialog's text puts focus on `<body>`: an overlay listener …[full text: IMPROVEMENT_ARCHIVE.md]
+- `overlay-scoped-dialog-keys` | ACTIVE | owner F | det: recipe | last S530 | streak 1
 
-- **`group-toggle-wipes-a-sibling-group`** (NEW S512 H; generator FIXED `ff980a7`; the match-target re-sync was an earlier work-around): ACTIVE, streak 0. A class-wide `.active` toggle on a button class another row shares. Detection: `grep -n "querySelectorAll('\\.[a-z-]*btn')" …[full text: IMPROVEMENT_ARCHIVE.md]
+- `group-toggle-wipes-a-sibling-group` | ACTIVE | owner H | det: recipe | last S512 | streak 0
 
-- **`infinite-box-shadow-pulse-repaints-every-frame`** (NEW S510 D; letter_learner FIXED `fd6cfdc`; S511 the 6 carriers FIXED `f1cfd83` — open 0): ACTIVE, streak 0. Detection: `grep -n attnPulse *.html` → keyframes on `box-shadow`; `i511/pulse.mjs` paints per 3 s (0 = fixed; the …[full text: IMPROVEMENT_ARCHIVE.md]
+- `infinite-box-shadow-pulse-repaints-every-frame` | ACTIVE | owner D | det: recipe | last S511 | streak 0
 
-- **`new-page-print-block-without-the-ink-remap`** (NEW S509 G; letter_learner FIXED `be4a13f`; 14 others clean): ACTIVE, streak 0. Detection: `--text:` inside the print block of every page with dark tokens; `g509/g509.mjs` ink dark vs light.
+- `new-page-print-block-without-the-ink-remap` | ACTIVE | owner G | det: recipe | last S509 | streak 0
 
-- **`page-drops-a-field-it-cannot-apply`** (NEW S507 P; trope `3b9915b9`): ACTIVE, streak 0. A page rebuilds a synced blob from its known fields, dropping a newer build's field from the account. Detection: `p507/trope.mjs` T6.
+- `page-drops-a-field-it-cannot-apply` | ACTIVE | owner P | det: recipe | last S507 | streak 0
 
-- **`theme-token-on-an-always-dark-surface`** (NEW S506 N; dashboard picker Close `87745776`; suite unswept): ACTIVE, streak 0. A theme token (`--text`, `.btn-secondary`) on an overlay that is dark in both themes. Detection: `n506/pickcon.mjs`.
+- `theme-token-on-an-always-dark-surface` | ACTIVE | owner N | det: recipe | last S506 | streak 0
 
-- **`data-edit-under-an-unchanged-buster`** (NEW S503 E; 2 FIXED `39265428`): ACTIVE, streak 0. Detection: `e503/e2b.py` (findings S503).
+- `data-edit-under-an-unchanged-buster` | ACTIVE | owner E | det: recipe | last S503 | streak 0
 
-- **`root-var-per-input`** (NEW S496 D; dictionary FIXED `c049ab67`; S497: generator ×2 + trope under 200 ms @4×, closed): ACTIVE, streak 1. Detection: archive.
+- `root-var-per-input` | ACTIVE | owner D | det: recipe | last S497 | streak 1
 
-- **`dark-palette-on-the-element`** (NEW S495 G; `.hol-ico` FIXED; `.fx-*` FIXED `e5b3dc47`; open: none): ACTIVE, streak 0. Detection: findings S495.
+- `dark-palette-on-the-element` | ACTIVE | owner G | det: recipe | last S495 | streak 0
 
-- **`count-noun-without-a-one-form`** (NEW S497 I; bulk edit ×3 `d438f151`; S498 FM fidelity ×5 FIXED `fc56d212`; S501 FM `{max} units` + status/banner counts FIXED `c6db7170` via a `{units}` phrase; S504 dashboard `bulk_skipped` FIXED `13c10bf3`; S533 K: 6 delta `{count}` keys, …[full text: IMPROVEMENT_ARCHIVE.md]
+- `count-noun-without-a-one-form` | DRAFT | owner I | det: none | last S533 | streak 0
 
-- **`busy-disabled-button-drops-focus`** (NEW S498 H; contact + resources FIXED `68adddee`; S499 generator PDF `1ca449db`; S500 dashboard Current Location `82218419`; trope ×2 REFUTED (both hand focus back); open: FM export (an error modal opens mid-export: hand back only if …[full text: IMPROVEMENT_ARCHIVE.md]
+- `busy-disabled-button-drops-focus` | ACTIVE | owner H | det: recipe | last S500 | streak 0
 
-- **`hidden-input-anchored-outside-its-scroller`** (NEW S499 C; dashboard's 25 drawer radios FIXED `55891185`, torah fixed outside the loop; latent: `.vh-file` ×4, its label on screen on every path measured): ACTIVE, streak 0. Detection: a `position:absolute|fixed` focusable …[full text: IMPROVEMENT_ARCHIVE.md]
+- `hidden-input-anchored-outside-its-scroller` | ACTIVE | owner C | det: recipe | last S499 | streak 0
 
-- **`hebrew-faux-italic`** (NEW S494 M; S526 closed the HE census: folder tree `9515b0dc`, dictionary `dd291fd5`; S527 the EN arm's one, dictionary `237f8547`; open 0): ACTIVE, streak 0. Detection: `h526/ital.mjs` (`L=en` = EN arm; a hidden plant fires).
+- `hebrew-faux-italic` | ACTIVE | owner M | det: recipe | last S527 | streak 0
 
-- **`fixed-toast-duration-shorter-than-its-text`** (NEW S484 F; FIXED `8037c22d` ×4, `5ffa32ba`; resources `3c539498` S487; open 0): ACTIVE, streak 0. A fixed toast timer under 1000 + 50 ms/char of its longest message. Detection: `f484/durations.mjs`; exempt sticky/explicit-ms …[full text: IMPROVEMENT_ARCHIVE.md]
+- `fixed-toast-duration-shorter-than-its-text` | ACTIVE | owner F | det: recipe | last S487 | streak 0
 
-- **`centred-fixed-box-shrinks-to-half-the-viewport`** (NEW S484 F; FIXED `78738db4` ×7): ACTIVE, streak 0. A fixed `left:50%; translateX(-50%)` box with no width is capped at vw/2. Detection: `f484/width.mjs` (width = vw/2 at 390); fix `width:max-content`.
+- `centred-fixed-box-shrinks-to-half-the-viewport` | ACTIVE | owner F | det: recipe | last S484 | streak 0
 
-- **`shared-module-fallback-literal-without-a-dark-twin`** (NEW S483; FIXED `cb226a04` ×2): ACTIVE, streak 0. A module's `var(--token, #light-literal)` on a page lacking the token. Detection: findings S483 (3); 7 tokens, 1 hit, 0 open.
+- `shared-module-fallback-literal-without-a-dark-twin` | ACTIVE | owner C | det: recipe | last S483 | streak 0
 
-- **`rtl-copy-names-the-english-side`** (NEW S481 ×2): ACTIVE, streak 0. Detection: findings S481 (b).
+- `rtl-copy-names-the-english-side` | ACTIVE | owner I | det: recipe | last S481 | streak 0
 
-- **`copy-names-a-control-by-a-label-it-lacks`** (NEW S481 ×2): ACTIVE, streak 0. Detection: findings S481 (a).
+- `copy-names-a-control-by-a-label-it-lacks` | ACTIVE | owner I | det: recipe | last S481 | streak 0
 
-- **`screen-frame-prints-as-rails`** (NEW S480; trope `8de41993`): ACTIVE, streak 0. A plate's border around multi-sheet content prints its sides down every middle page. Detection: `d480/rails.py` (prove on HEAD). Fix: print `border-color:transparent`.
+- `screen-frame-prints-as-rails` | ACTIVE | owner D | det: recipe | last S480 | streak 0
 
-- **`enter-ignored-beside-its-own-button`** (NEW S471; dashboard ×5, generator ×2; S472 torah range ×3 `60229f0f`): ACTIVE, streak 0. Detection: `a472/enter.py`, then typed Enter vs the button.
+- `enter-ignored-beside-its-own-button` | ACTIVE | owner B | det: recipe | last S472 | streak 0
 
-- **`placeholder-keeps-the-browser-gray`** (NEW S470 `45a3073e`): ACTIVE, streak 0. Detection: `f470/ph.mjs` < 4.5:1 (plant 1.3:1).
+- `placeholder-keeps-the-browser-gray` | ACTIVE | owner F | det: recipe | last S470 | streak 0
 
-- **`header-wrap-gate-below-its-ceiling`** (NEW S478 M; ×8 `92a21164`; S489 `f620c768`; S520 touch ×8 `186ea5f4`): ACTIVE, streak 0. Detection: `n520/gates2.mjs` (1px 320-1000, EN/HE × themes, mouse+touch, real fonts); HEAD the control.
+- `header-wrap-gate-below-its-ceiling` | ACTIVE | owner M | det: recipe | last S520 | streak 0
 
-- **`latin-tracking-on-hebrew-labels`** (gate 3: drop suite-wide; S502 dashboard + dictionary; S503 flash; S504 torah `8e48daa5`; S505 Beta badges `0abb1f57`; S511 flash report `th` `90e592b`; **S513 generator `.ws-version-label` `c6fe147` — open: none known** …[full text: IMPROVEMENT_ARCHIVE.md]
+- `latin-tracking-on-hebrew-labels` | ACTIVE | owner H | det: recipe | last S513 | streak 0
 
-- **`forward-arrow-points-back-in-rtl-copy`** (NEW S462 N; FIXED S464 `5f7f8a40` ×48; open 0): ACTIVE, streak 2 (S533: 9 delta rows with arrows, 0 — the LL key titles mirror the handler; S472: 47, 0). Detection: the S462 CSV census; exempt "(→)", A→Z, Back labels, the orphan …[full text: IMPROVEMENT_ARCHIVE.md]
+- `forward-arrow-points-back-in-rtl-copy` | ACTIVE | owner N | det: recipe | last S533 | streak 2
 
-- **`share-link-writes-the-teachers-saved-preferences`** (NEW S463 P, `1eeaacb8`): ACTIVE, streak 1 (S472 dictionary clean). Detection: `p463/link-fix.mjs`, `a472/dshare.mjs`.
+- `share-link-writes-the-teachers-saved-preferences` | ACTIVE | owner P | det: recipe | last S472 | streak 1
 
-- **`bulk-apply-skips-a-renderer-the-control-runs`** (NEW S461; FIXED ×3): ACTIVE, streak 1 (S472 clean). Detection: `x3/parity.mjs`, `p463/loc-fix.mjs`. Open: none known.
+- `bulk-apply-skips-a-renderer-the-control-runs` | ACTIVE | owner K | det: recipe | last S472 | streak 1
 
-- **`radio-set-without-a-question`** (S501–S518: 7 fixes; S519 FM ×14 `75637fef`, contact `929089d4`; S527 the `.ivrit` toggles ×5 `1ecaad0c`; open: dictionary, resources (gate 2), pills): ACTIVE, streak 0. Detection: static …[full text: IMPROVEMENT_ARCHIVE.md]
+- `radio-set-without-a-question` | ACTIVE | owner B | det: recipe | last S527 | streak 0
 
-- **`native-input-display-none-under-its-label`** (NEW S458, `ea43be7e`): ACTIVE, streak 0. Detection: `a458/radios.mjs`; control torah. …[full text: IMPROVEMENT_ARCHIVE.md]
+- `native-input-display-none-under-its-label` | ACTIVE | owner A | det: recipe | last S458 | streak 0
 
-- **`stale-tab-flush-writes-its-old-copy`** (NEW S458; `c1714e2f`, `027fc597`, flash `070582d8`; S493 the hidden-flush variant, module `c57f0b79`): ACTIVE, streak 0. Detection: `a458/twotabsigned.mjs`, smoke-sync D37, `p493/t7v.mjs` (4 tab orders); control `027fc597^`. …[full text: IMPROVEMENT_ARCHIVE.md]
+- `stale-tab-flush-writes-its-old-copy` | ACTIVE | owner A | det: recipe | last S493 | streak 0
 
-- **`flex-range-keeps-its-min-content-width`** (NEW S457; `ddcb4237`; a text input too: dictionary `#shoreshInput` `dcfdcf16` S493): ACTIVE, streak 0. A `flex:1` range without `min-width:0` keeps its 129px and pushes the row's last item out of a …[full text: IMPROVEMENT_ARCHIVE.md]
+- `flex-range-keeps-its-min-content-width` | ACTIVE | owner B | det: recipe | last S493 | streak 0
 
-- **`slider-value-announced-as-its-position`** (NEW S456; `0ca1e29b`): ACTIVE, streak 0. Detection: `f456/census.mjs` (readout numbers lack the value, no `aria-valuetext`).
+- `slider-value-announced-as-its-position` | ACTIVE | owner F | det: recipe | last S456 | streak 0
 
-- **`ltr-machine-text-field-typed-rtl`** (NEW S454; `b1eb9659`, 4 carriers): ACTIVE, streak 0. Detection: `type="email|url"` (or JS `.type`) without `dir="ltr"`; a translated placeholder adds `:placeholder-shown { direction: inherit }`.
+- `ltr-machine-text-field-typed-rtl` | ACTIVE | owner H | det: recipe | last S454 | streak 0
 
-- **`pre-ready-interpolated-write-never-healed`** (NEW S453; `728e4075`; **S454 `ab9a133e`**): ACTIVE, streak 0. Detection: `i453/gates.mjs` `LDELAY=700`; `h454/ttver.mjs`.
+- `pre-ready-interpolated-write-never-healed` | ACTIVE | owner I | det: recipe | last S454 | streak 0
 
-- **`cdn-library-parser-blocking-for-one-action`** (NEW S452 D; generator `82bbe313`, FM `d01a33cd`): ACTIVE, streak 0. A parser-blocking CDN `<script src>` in `<head>` for one action. Detection: `grep -n '<script[^>]*src="https\?://' *.html | grep -v ' async\| …[full text: IMPROVEMENT_ARCHIVE.md]
+- `cdn-library-parser-blocking-for-one-action` | ACTIVE | owner D | det: recipe | last S452 | streak 0
 
-- **`dark-navy-fill-matches-its-ground`** (NEW S450 M; flash ×2 `c9e2bc2b`, `68055510`; S451 census: dictionary `5deb5472`, generator `f9ca0909`; S464 keyboard block ×4 `f98367f8`): ACTIVE, streak 0. Detection (`g451/navy.mjs`): every visible …[full text: IMPROVEMENT_ARCHIVE.md]
+- `dark-navy-fill-matches-its-ground` | ACTIVE | owner M | det: recipe | last S464 | streak 0
 
-- **`ring-below-3-on-light`** (NEW S442; FIXED on 14 pages `91fede71` + 3 modules `a46342c1`; S443 the last two non-outline rings, FM `e05b25d1` + torah's fav dot `1c320ae8`): ACTIVE, streak 0. A focus outline drawn in `--gold` (2.1–2.75:1 on the light surfaces). Detection: …[full text: IMPROVEMENT_ARCHIVE.md]
+- `ring-below-3-on-light` | ACTIVE | owner F | det: recipe | last S443 | streak 0
 
-- **`tip-escape-drops-focus`** (NEW S441; all 5 carriers FIXED `97c54dfb`): ACTIVE, streak 0. A keyboard tooltip whose Escape calls `blur()` drops the focus to the body, and an unstopped Escape closes the drawer under it. Detection (scratchpad `c441/v2.mjs`): Tab onto a visible …[full text: IMPROVEMENT_ARCHIVE.md]
+- `tip-escape-drops-focus` | ACTIVE | owner C | det: recipe | last S441 | streak 0
 
-- **`account-wide-delete-confirm-without-signed-in-wording`** (NEW S435 P; flash's result delete FIXED `e56d95be`; the colour reset ×5 OPEN, gate 2): ACTIVE, consequence-adjacent (a teacher reads a deletion as local), streak 0. A `confirm()` before a delete/reset of a synced …[full text: IMPROVEMENT_ARCHIVE.md]
+- `account-wide-delete-confirm-without-signed-in-wording` | DRAFT | owner P | det: none | last S435 | streak 0
 
-- **`logical-inset-mirrors-onto-pinned-content`** (NEW S440; FIXED `23b7bb0f`): ACTIVE, streak 0. A logical inset over physically pinned content lands on it in Hebrew. Detection: HE, text Range rects ∩ the control's box.
+- `logical-inset-mirrors-onto-pinned-content` | ACTIVE | owner H | det: recipe | last S440 | streak 0
 
-- **`tip-name-joins-its-field's-name`** (NEW S430; generator `10a0c18f`; torah ×3 `d477e15c`; S488 dashboard `f722eeba`): ACTIVE, streak 0 (no open carrier). A `<label>` holding a `.tip-wrap` names its field "… More information". …[full text: IMPROVEMENT_ARCHIVE.md]
+- `tip-name-joins-its-field's-name` | ACTIVE | owner A | det: recipe | last S488 | streak 0
 
-- **`panel-title-keyed-on-an-inner-span`** (NEW S429; S439 generator FIXED `1ce9eabd`, torah stale — no collapsing panels left): ACTIVE, streak 0. Detection: a `.panel-title` with no own `data-i18n`, then toggle + reload.
+- `panel-title-keyed-on-an-inner-span` | ACTIVE | owner B | det: recipe | last S439 | streak 0
 
-- **`copy-claims-success-on-a-refused-clipboard`** (NEW S428; FIXED `bbd5f65`, `0d2a941`; S444 index `90e1a057`, dashboard `18344f69`; **S445 generator `3dad5c11`, flash `58ee7a4f` — all 7 carriers fixed, 0 open**): ACTIVE, streak 0. Detection: every `execCommand('copy')` whose …[full text: IMPROVEMENT_ARCHIVE.md]
+- `copy-claims-success-on-a-refused-clipboard` | ACTIVE | owner F | det: recipe | last S445 | streak 0
 
-- **`button-focus-lost-to-its-own-rebuild`** (**S542 dictionary Try again ×2 `72b005c1`; S513 FM glyph tiles `a54e6d2`; S500 hebrew-keyboard tabs + layout, 4 carriers `1c701fc9`; S499 torah Try again ×2 `80c0a440`; S488 …[full text: IMPROVEMENT_ARCHIVE.md]
+- `button-focus-lost-to-its-own-rebuild` | DRAFT | owner F | det: none | last S542 | streak 0
 
-- **`dark-literal-escapes-the-print-tokens`** (NEW S437 G; resources FIXED `5320a668`): ACTIVE, streak 1 (S479 trope clean; plant fired). Detection: PDFs dark vs light, ink per page (<200 at 40 dpi); a lighter dark sheet = a `body.dark` literal the print …[full text: IMPROVEMENT_ARCHIVE.md]
+- `dark-literal-escapes-the-print-tokens` | ACTIVE | owner G | det: recipe | last S479 | streak 1
 
-- **`editor-re-parse-caps-a-merged-list`** (**NEW S421 Pass P — 1 carrier, FIXED `288af4a`**): ACTIVE, consequence-critical (a sync carries the cut list to the account); never retires. A list the sync merges uncapped is re-parsed by its tool's editor or restore path through the …[full text: IMPROVEMENT_ARCHIVE.md]
+- `editor-re-parse-caps-a-merged-list` | ACTIVE | owner P | det: recipe | last S421 | streak 0
 
-- **`window-taller-than-a-phone-without-a-scroll`** (NEW S476 N; FM `fe808b64`; S506 variant, a sticky head covering its own scroller in landscape: dashboard bulk edit `232ea19e`): ACTIVE, streak 0. Detection: `n476` `modalFit` on an SE + 13 landscape, a tapped last button; …[full text: IMPROVEMENT_ARCHIVE.md]
+- `window-taller-than-a-phone-without-a-scroll` | ACTIVE | owner N | det: recipe | last S506 | streak 0
 
-- **`install-banner-over-a-sheet's-bottom-controls`** (NEW S420 N, hub `f44a17e`; **S472 generator bar `8081fc83` (pwa.js `--pwa-banner-space`), FM's 16 windows `56c7a179`; S476 torah gallery `30fcc886` — no open carrier**): ACTIVE, streak 0. Detection: `a472/banner2.mjs` (sheet …[full text: IMPROVEMENT_ARCHIVE.md]
+- `install-banner-over-a-sheet's-bottom-controls` | ACTIVE | owner N | det: recipe | last S476 | streak 0
 
-- **`flash-restores-captured-text-not-its-key`** (NEW S417 — 2 FIXED `1f7f869`; S415 `38e5b62`): ACTIVE, streak 0. A "Copied!" flash restoring the text captured at click time, so a 2nd click captures the flash. Detection: `orig = (btn|lbl)\.(textContent|innerHTML)` + …[full text: IMPROVEMENT_ARCHIVE.md]
+- `flash-restores-captured-text-not-its-key` | ACTIVE | owner E | det: recipe | last S417 | streak 0
 
-- **`visible-label-missing-from-the-accessible-name`** (S415–S425: 4 fixes; **S427 the dictionary's Word Lists windows `ee5f6f2`**; **S531 parsha's card link FIXED `6e8b6848`**): ACTIVE, streak 0. Detection `a416/labelname.mjs` + `fieldnames.mjs`; S427 `c427/probe-dlgname.mjs`. …[full text: IMPROVEMENT_ARCHIVE.md]
+- `visible-label-missing-from-the-accessible-name` | ACTIVE | owner B | det: recipe | last S531 | streak 0
 
-- **`designed-key-miss-probed-through-t`** (NEW S415; FM `gName()` FIXED `95d5f46`): ACTIVE, streak 2 (S533: 0 over 102 states + 10 surfaces; S416: 0 on the delta). Detection: `[i18n] missing key` in B's interaction arm; static: `=== k ?` fallbacks without `I18n.has`.
+- `designed-key-miss-probed-through-t` | ACTIVE | owner B | det: recipe | last S533 | streak 2
 
-- **`pinned-english-without-lang`** (NEW S415; `f4bbfe8` ×20; resources ×43; torah + trope; **S516 LL ×7 `e7d72c6e`**; **S533 an attribute twin: the parsha coloring sheets' picture `aria-label` English under `lang=he` ×54 `b05b759e`**; open: none): ACTIVE, streak 0. Detection: …[full text: IMPROVEMENT_ARCHIVE.md]
+- `pinned-english-without-lang` | ACTIVE | owner B | det: recipe | last S533 | streak 0
 
-- **`toggle-name-flips-with-its-pressed-state`** (NEW S414 `f9e67b2`; S416 trope tune `96275c2`; S430 found torah's Trope staff Tune all + every verse Tune; **S431 FIXED `aa97e2e`**): ACTIVE, streak 0 (last swept S430). Detection `f414/toggles2.mjs`: real click per …[full text: IMPROVEMENT_ARCHIVE.md]
+- `toggle-name-flips-with-its-pressed-state` | ACTIVE | owner F | det: recipe | last S431 | streak 0
 
-- **`author-display-defeats-the-hidden-attribute`** (S414 `391114b`; **S511 letter_learner `#llVoiceRow` `d4c5e02`**; S416 FM `3bf0112`; S425 trope ×2; S430 torah ×2; **S472 torah lookup `306003c3`**; S472 detection `a472/hidrec.mjs`): ACTIVE, streak 0. Detection: rendered …[full text: IMPROVEMENT_ARCHIVE.md]
+- `author-display-defeats-the-hidden-attribute` | ACTIVE | owner F | det: recipe | last S511 | streak 0
 
-- **`button-group-label-not-programmatic`** (**NEW S413 Pass C — resources ×8 rows FIXED `945b397`; generator, dictionary, hub unmeasured (no `role="group"` at all)**): ACTIVE, streak 0. A row of `aria-pressed` buttons sits under a visible label (a `<span>`, or a `<label>` with …[full text: IMPROVEMENT_ARCHIVE.md]
+- `button-group-label-not-programmatic` | ACTIVE | owner C | det: recipe | last S413 | streak 0
 
-- **`settings-lost-across-a-load`** (NEW S412; dictionary ×4 FIXED S482 `8d99ad93`, flash FIXED S491 `adce6574`; 0 open): ACTIVE, streak 0. A setting comes back changed after a reload. Detection (`h482/dictsave.mjs`): change each control by a real click, wait out the save, …[full text: IMPROVEMENT_ARCHIVE.md]
+- `settings-lost-across-a-load` | ACTIVE | owner H | det: recipe | last S491 | streak 0
 
-- **`live-region-display-none-while-empty`** (S408; **all 4 FIXED `efbc98a` S409**; **S530 4 more FIXED `66ecdc9f`, `a530/fix1.mjs`**): ACTIVE, streak 0. Detection: `:empty{display:none}` on a `role=status`/`aria-live` line, then CDP AX on it empty (`notRendered` = hit); …[full text: IMPROVEMENT_ARCHIVE.md]
+- `live-region-display-none-while-empty` | ACTIVE | owner M | det: recipe | last S530 | streak 0
 
-- **`dark-base-rule-outranks-variant`** (S408; FIXED `4a5d353`, `b26f7d6`; EXEMPT the dead `.preset-item.drag-over` ×2): ACTIVE, streak 0. Detection: `m408/darkvariant.py` (comments stripped), then drive the state by a real click in both themes.
+- `dark-base-rule-outranks-variant` | ACTIVE | owner M | det: recipe | last S408 | streak 0
 
-- **`aria-disabled-lock-no-handler-checks`** (**NEW, registered 2026-09-23 (S407 Pass P) — 1 carrier, fixed `e5c4784`**): ACTIVE, clean streak 0. A control marked busy or invalid by `aria-disabled="true"` whose activation handler never reads that state: the look says locked, a …[full text: IMPROVEMENT_ARCHIVE.md]
+- `aria-disabled-lock-no-handler-checks` | ACTIVE | owner P | det: recipe | last S407 | streak 0
 
-- **`text-field-under-16px-zooms-on-ios-focus`** (NEW S406; FIXED ×2; S465 contact ×4 `5a7a8ed`; S492 dictionary ×6 `07177214`; S506 torah ×17, trope ×3; S507 dashboard ×23, flash ×10; S508 resources ×6, account ×2; open: none): ACTIVE, streak 0. …[full text: IMPROVEMENT_ARCHIVE.md]
+- `text-field-under-16px-zooms-on-ios-focus` | ACTIVE | owner N | det: recipe | last S508 | streak 0
 
-- **`textContent-rewrite-erases-a-control-icon`** (S405; S415; S453 `ac796dba`; **S501 generator Export PDF `d7355d03`**): ACTIVE, streak 0. Add (d): load-time icon count. Detection: (a) EN→HE→EN icon count; (b) key census …[full text: IMPROVEMENT_ARCHIVE.md]
+- `textContent-rewrite-erases-a-control-icon` | ACTIVE | owner K | det: recipe | last S501 | streak 0
 
-- **`english-literal-passed-to-a-message-helper`** (NEW S475): ACTIVE, streak 1 (S533: 0 over 4,328 added lines, plants 7/7). …[full text: IMPROVEMENT_ARCHIVE.md]
+- `english-literal-passed-to-a-message-helper` | ACTIVE | owner K | det: recipe | last S533 | streak 1
 
-- **`translated-key-exists-page-hardcodes-english`** (**S533 K: 0 new** — runtime EN-in-HE over 102 states + 10 surfaces, the 2 CSV twins content by design; streak 1. S461 K: 1 FIXED `74b2ee0c`, dictionary Bulk Copy count; streak 0. S433 K: 0 new — the orphan census 121 raw, 86 …[full text: IMPROVEMENT_ARCHIVE.md]
+- `translated-key-exists-page-hardcodes-english` | ACTIVE | owner K | det: recipe | last S533 | streak 1
 
-- **`per-page-code-inside-a-shared-block`** (**NEW, registered 2026-09-22 (S403 Pass E) — 2 carriers, both fixed `6e28af3`**): ACTIVE, clean streak 1 (S416). Page code pasted INSIDE a `═══` block instead of below its end …[full text: IMPROVEMENT_ARCHIVE.md]
+- `per-page-code-inside-a-shared-block` | DRAFT | owner E | det: none | last S416 | streak 0
 
-- **`icon-markup-into-a-textContent-writer`** (**NEW, registered 2026-09-22 (S403 Pass E) — 1 carrier (2 buttons), fixed `7552ba0`**): ACTIVE, clean streak 0. An `ICON_*`/`FT_ICON_*`/`HK_ICON` SVG const reaches a helper that writes `textContent`, so the button prints its SVG …[full text: IMPROVEMENT_ARCHIVE.md]
+- `icon-markup-into-a-textContent-writer` | DRAFT | owner E | det: none | last S403 | streak 0
 
-- **`cached-rejected-loader-promise-blocks-every-retry`** (**NEW, registered 2026-09-17 (S399 Pass A)**): ACTIVE — **1 carrier found and fixed (`05341a7`); 6 censused, 5 already correct.** A module memoises its in-flight loader promise to de-duplicate concurrent callers, but …[full text: IMPROVEMENT_ARCHIVE.md]
+- `cached-rejected-loader-promise-blocks-every-retry` | ACTIVE | owner A | det: recipe | last S399 | streak 0
 
-- **`cdn-dependency-absent-and-unguarded`** (registered 2026-09-17 (S398 Pass B)): ACTIVE — **S399 (Pass A), FIRST re-sweep: 0 hits, clean streak 0→1.** A global a third-party `<script src>` defines, or a retry waiting for one, reached where nothing handles its absence — the …[full text: IMPROVEMENT_ARCHIVE.md]
+- `cdn-dependency-absent-and-unguarded` | ACTIVE | owner B | det: recipe | last S399 | streak 0
 
-- **`selector-declared-twice-in-one-stylesheet`** (registered 2026-09-16 (S394); swept S395 — 3 fixed `04892f3`): ACTIVE. **S399 (Pass A): 13 overlapping pairs, 0 NEW across a 1,172-insertion / 18-file delta — clean streak 0→1.** One file declares the same selector twice in the …[full text: IMPROVEMENT_ARCHIVE.md]
+- `selector-declared-twice-in-one-stylesheet` | ACTIVE | owner A | det: recipe | last S399 | streak 0
 
-- **`untrusted-card-field-interpolated-unescaped`** (**NEW, registered 2026-09-16 (S393 Pass D)**): ACTIVE — **consequence-critical (security), so it never retires on clean streaks alone.** A field of a *generated item* (a flash card, a worksheet cell, a word row) is …[full text: IMPROVEMENT_ARCHIVE.md]
+- `untrusted-card-field-interpolated-unescaped` | ACTIVE | owner D | det: recipe | last S393 | streak 0
 
-- **`auth-param-read-before-its-cleanup-runs`** (**NEW, registered 2026-09-16 (S390 Pass P)**): ACTIVE — **consequence-critical (security), so it never retires on clean streaks alone.** An inline `<script>` in a root HTML page reads `location.href`/`.search`/`document.referrer` …[full text: IMPROVEMENT_ARCHIVE.md]
+- `auth-param-read-before-its-cleanup-runs` | ACTIVE | owner P | det: recipe | last S390 | streak 0
 
-- **`hover-feedback-survives-the-disabled-state`** (registered 2026-09-15, S383 Pass F): ACTIVE — consequence-adjacent (a locked destructive control that still lights up invites the click), so it never retires on a clean streak. **S394: the LAST open carrier CLOSED (`767064e`, …[full text: IMPROVEMENT_ARCHIVE.md]
+- `hover-feedback-survives-the-disabled-state` | ACTIVE | owner F | det: recipe | last S394 | streak 0
 
-- **`physical-property-that-never-mirrors`** (registered S388 K; S438 torah `947b452d`; S508 dashboard ×5 `323ad66`; S534 dashboard `#ttsRateVal` `c9ab327`; open 0): ACTIVE, streak 0. Detection: grep …[full text: IMPROVEMENT_ARCHIVE.md]
+- `physical-property-that-never-mirrors` | ACTIVE | owner K | det: recipe | last S534 | streak 0
 
-- **`tile-grid-built-hidden-never-roved`** (registered 2026-09-15 (S382) — 11 carriers, all fixed): ACTIVE. A `roveTileGrid()` call placed in a builder that runs while the container is `display:none` silently does nothing: the helper's tile list filters `offsetParent !== null`, …[full text: IMPROVEMENT_ARCHIVE.md]
+- `tile-grid-built-hidden-never-roved` | DRAFT | owner P | det: none | last S382 | streak 0
 
-- **`stored-json-of-the-wrong-shape-trusted`**: ACTIVE. **S502: Bulk edit `c35aec8d`; streak 0.** Detection: `a502/dash-shape.mjs`. …[full text: IMPROVEMENT_ARCHIVE.md]
+- `stored-json-of-the-wrong-shape-trusted` | ACTIVE | owner A | det: recipe | last S502 | streak 0
 
-- **`validation-note-stores-rendered-text`**: ACTIVE. **S371 (Pass A, delta): the dashboard's `#swmPrintBtn` empty-week title re-reads in Hebrew after `setLang('he')`, the FM export label held from S370 — hits 0, clean streak 1.** **S364: 1 FIXED (`cabd6ca` the generator's …[full text: IMPROVEMENT_ARCHIVE.md]
+- `validation-note-stores-rendered-text` | DRAFT | owner A | det: none | last S371 | streak 0 | hits 0
 
-- **`popup-without-a-keyboard-contract`**: ACTIVE. **S371 (Pass A, delta `b418cf9..1d4c9cf`): 0 new openers (no added `role=dialog`/`aria-modal`; the flash dialogs only gained classes) — hits 0, clean streak 2.** **Re-swept 2026-09-09 (S357 Pass A, delta `e0a94d9..HEAD`): 1 new …[full text: IMPROVEMENT_ARCHIVE.md]
+- `popup-without-a-keyboard-contract` | ACTIVE | owner A | det: recipe | last S371 | streak 2 | hits 0
 
-- **`stale-validation-note-after-its-input-changes`**: ACTIVE. **S371 (Pass A, delta): 1 new `aria-disabled` writer, the dashboard's Print-week gate — retires on a real `+ Add period` click (disabled=false, attribute removed, title re-labelled) — hits 0, clean streak 2.** …[full text: IMPROVEMENT_ARCHIVE.md]
+- `stale-validation-note-after-its-input-changes` | DRAFT | owner A | det: none | last S371 | streak 0 | hits 0
 
-- **`apply-settings-trusts-collection-members`**: ACTIVE (consequence-critical: garbage is applied AND SAVED, so every later load rethrows — never retires). **S387: the axis swept to completion across ALL FOUR `.ivrit` engine carriers — 254 cells through the real restore path …[full text: IMPROVEMENT_ARCHIVE.md]
+- `apply-settings-trusts-collection-members` | ACTIVE | owner L | det: recipe | last S387 | streak 0
 
-- **`save-over-an-existing-name-without-confirm`**: ACTIVE **S371 (Pass A): 3rd carrier FIXED `b85b579` — the dashboard's `saveWeekScheduleAs` (its comment even said "same-name save overwrites, like savePreset" — from before savePreset confirmed). Census: every other …[full text: IMPROVEMENT_ARCHIVE.md]
+- `save-over-an-existing-name-without-confirm` | ACTIVE | owner A | det: recipe | last S371 | streak 0
 
-- **`fixed-surface-missing-from-the-print-hide-list`**: ACTIVE. **S496: `.bpe-*` FIXED `4c4dd3ae`.** **S392 (Pass G, `hebrew_blend_generator.html`): swept CLEAN — first clean sweep since registration, clean …[full text: IMPROVEMENT_ARCHIVE.md]
+- `fixed-surface-missing-from-the-print-hide-list` | ACTIVE | owner G | det: recipe | last S496 | streak 0
 
-- **`control-class-without-a-hover-state`**: ACTIVE. **S373: the S371 P4 FIXED (`c365786`, dashboard `.swm-swatch:hover` ring). Registered S313; hits S313 20, S314 2, S357 1, S371 1 — all fixed; clean streak 0; last swept S371.** Detection: a class with `cursor:pointer` or …[full text: IMPROVEMENT_ARCHIVE.md]
+- `control-class-without-a-hover-state` | ACTIVE | owner L | det: recipe | last S373 | streak 0
 
-- **`false-clean-from-a-literal-only-pattern-match`** (**NEW, registered 2026-09-01 (S309 Pass O) — 1 carrier, and it had ALREADY been reported to the maintainer as a completed clean sweep before it was caught. ACTIVE — consequence-critical (it manufactures false assurance), so …[full text: IMPROVEMENT_ARCHIVE.md]
+- `false-clean-from-a-literal-only-pattern-match` | ACTIVE | owner O | det: recipe | last S309 | streak 0
 
-- **`false-clean-from-an-unverified-probe-handle`**: ACTIVE (never retires). **S502 +1: `BASE` read at import; assert `page.url()`.** …[full text: IMPROVEMENT_ARCHIVE.md]
+- `false-clean-from-an-unverified-probe-handle` | ACTIVE | owner A | det: recipe | last S502 | streak 0
 
-- **`light-literal-text-on-the-gold-token`** (registered 2026-09-17 (S396)): ACTIVE — **S399 (Pass A), FIRST real sweep: 7 NEW carriers, all on `hebrew_dictionary.html`, all fixed `273f449`; clean streak stays 0.** `color:#fff` (or another light literal) painted on `var(--gold)` …[full text: IMPROVEMENT_ARCHIVE.md]
+- `light-literal-text-on-the-gold-token` | ACTIVE | owner A | det: recipe | last S399 | streak 0
 
-- **`sub-floor touch target`**: ACTIVE. **S531: parsha_emojis' 7 popup sliders + its card link (23px HE) FIXED `0c8a2bba`.** **S529: LL sliders FIXED `84154c76`.** **S516 FM ×4 `36e804ac`.** **S513 dashboard ×2 `787c434`.** **S483 hub clean.** **S456: `85e294b2`, …[full text: IMPROVEMENT_ARCHIVE.md]
+- `sub-floor touch target` | ACTIVE | owner E | det: recipe | last S531 | streak 0
 
-- **`vh-capped-sheet-without-dvh-twin`**: ACTIVE (registered S375). **S385 (Pass A), first re-sweep since the S377 fixes: 20 raw → 0 real, clean streak 1 of the 3 that retire it.** Every raw hit is an exemption the row names — 11 inner scrollers with their own `overflow:auto`, …[full text: IMPROVEMENT_ARCHIVE.md]
+- `vh-capped-sheet-without-dvh-twin` | ACTIVE | owner A | det: recipe | last S385 | streak 1
 
-- **`ledger-section-loss`** (**NEW, registered 2026-08-30 (S296) — 1 carrier found and fixed, and a DETECTOR shipped with it**): a close-out edit that **deletes** ledger content instead of **moving** it to `docs/IMPROVEMENT_ARCHIVE.md`. The carrier: the S295 close-out …[full text: IMPROVEMENT_ARCHIVE.md]
+- `ledger-section-loss` | ACTIVE | owner F | det: recipe | last S296 | streak 0
 
-- **`dark-mode-token-as-text-on-a-light-ground`** (**REOPENED S413 Pass C — contact's script-written success line FIXED `f40d142`; S534 the generator's `sub.style.color` print half `a153826`; screen gold = S141's keep, C's call**): ACTIVE, streak 0. …[full text: IMPROVEMENT_ARCHIVE.md]
+- `dark-mode-token-as-text-on-a-light-ground` | ACTIVE | owner C | det: recipe | last S534 | streak 0
 
-- **`non-finite-number-from-a-loaded-file`**: ACTIVE (consequence-critical). **S458 FM `fitScale` `2bb2ead0`; S374 torah, trope.** Open 0, streak 0. …[full text: IMPROVEMENT_ARCHIVE.md]
+- `non-finite-number-from-a-loaded-file` | ACTIVE | owner A | det: recipe | last S458 | streak 0
 
-- **slider-focus-lost-to-its-own-rebuild**: **CLASS CLOSED 2026-08-29 (S286 iter 2) — the last 6 known carriers fixed (`9a01f3b`); hits: 6, clean streak: 0 — ACTIVE.** Registered S284 (3 fixed, 6 logged unreachable). All six routed through the shared re-focus helper …[full text: IMPROVEMENT_ARCHIVE.md]
+- `slider-focus-lost-to-its-own-rebuild` | DRAFT | owner A | det: none | last S286 | streak 0 | hits 6
 
-- **class-only-selected-state**: ACTIVE. **Re-swept 2026-09-09 (S357 Pass A, runtime, 11 delta pages incl. the torah handout bar and trope Drill tab): 0 visible `.active/.selected/.current/.on` controls with siblings and no `aria-pressed/-selected/-current/-checked` — hits 0, …[full text: IMPROVEMENT_ARCHIVE.md]
+- `class-only-selected-state` | ACTIVE | owner A | det: recipe | last S357 | streak 0 | hits 0
 
-- **animation-outside-its-reduced-motion-block**: ACTIVE. **Re-swept 2026-09-09 (S357 Pass A, runtime, 11 delta pages): under `reducedMotion:'reduce'` 0 elements keep an animation or transition (the `no-preference` control counts 1–684 per page) — hits 0, clean streak 2.** S286 …[full text: IMPROVEMENT_ARCHIVE.md]
+- `animation-outside-its-reduced-motion-block` | ACTIVE | owner A | det: recipe | last S357 | streak 2 | hits 0
 
-- **help-affordance-inside-a-label-forwards-its-tap** (**NEW, registered 2026-08-29 (S284 iter 5) — 6 carriers in one file, all fixed**): a tooltip/help trigger placed INSIDE a `<label>` that wraps a form control inherits the label's activation forwarding, so one tap produces a …[full text: IMPROVEMENT_ARCHIVE.md]
+- `help-affordance-inside-a-label-forwards-its-tap` | ACTIVE | owner A | det: recipe | last S284 | streak 0
 
-- **csv-cell-quoting-integrity** (**NEW, registered 2026-08-28 (S281 iters 3–4) — 4 carriers found in one sweep, all fixed**): both `parseCSV` copies (`check-i18n.js`, `build-locales.js`, byte-identical) flip `inQuotes` on a `"` met outside quote mode **without appending it**, …[full text: IMPROVEMENT_ARCHIVE.md]
+- `csv-cell-quoting-integrity` | ACTIVE | owner I | det: recipe | last S281 | streak 0
 
-- **dark-print-shadow-slab**: ACTIVE (registered S279: dictionary `#appToast`, flash `.panel`). **S385 (Pass A): 2 MORE FIXED — trope `.tu-view` (`7be7591`, `var(--shadow-sm)` = rgba(0,0,0,.4) in dark over 4,466,776 px², the largest slab this pattern has produced; the print …[full text: IMPROVEMENT_ARCHIVE.md]
+- `dark-print-shadow-slab` | DRAFT | owner A | det: none | last S385 | streak 0
 
-- **pinned-english-prose-in-rtl-paragraph** (NEW S277; FIXED ×3; contact's server note open): ACTIVE, streak 0. Detection: Range x-order of the phrase and its period in the HE UI; exempt lists, single runs, print.
+- `pinned-english-prose-in-rtl-paragraph` | ACTIVE | owner M | det: recipe | last S277 | streak 0
 
-- **fixed-width-third-party-embed-inflates-phone-layout**: **REGISTERED + first swept suite-wide 2026-08-28 (S276 Pass N) — hits: 2 carriers, BOTH fixed in-session (`23b2387` contact inline auto-render → data-size=compact ≤388 + ≤430 containment belt; `e4aaa44` resources …[full text: IMPROVEMENT_ARCHIVE.md]
+- `fixed-width-third-party-embed-inflates-phone-layout` | ACTIVE | owner N | det: recipe | last S276 | streak 0 | hits 2
 
-- **stale-html-fallback-behind-its-csv-value**: ACTIVE, clean streak 0. **S533 (K, `k533/stale.py`, html.parser with exact offsets, 2,974 sites, plant 1/1): 1 FIXED `2c82a0b9` — the LL subtitle, stale since 10-17 (S519's K ran no html arm: run it every K); the generator's 4 …[full text: IMPROVEMENT_ARCHIVE.md]
+- `stale-html-fallback-behind-its-csv-value` | ACTIVE | owner K | det: recipe | last S533 | streak 0
 
-- **undocumented-global-keyboard-shortcut**: ACTIVE. **Re-swept 2026-09-09 (S357 Pass A, delta-only): 0 new `document`-level `keydown` handlers (the erase gate's is scoped to its overlay: Escape + Tab trap, exempt shapes) — hits 0, clean streak 2.** S264 1 hit fixed (`f65ce58`); …[full text: IMPROVEMENT_ARCHIVE.md]
+- `undocumented-global-keyboard-shortcut` | ACTIVE | owner A | det: recipe | last S357 | streak 2 | hits 0
 
-- **fixed-size-control-holding-translatable-text**: **re-swept 2026-08-27 (S264 iter 3), WIDENED PAST ITS REGISTERED BLIND SPOT for the first time -- hits: 0 real. Clean streak: 1 -- ACTIVE.** Sweep 2 measured the shape sweep 1 could not see: leaf elements carrying NO …[full text: IMPROVEMENT_ARCHIVE.md]
+- `fixed-size-control-holding-translatable-text` | ACTIVE | owner A | det: recipe | last S264 | streak 1 | hits 0
 
-- **legibility-destroyed-by-a-second-dimming-layer**: **re-swept 2026-08-27 (S263, all 3 `#fsExitBtn` carriers) -- hits: 1 (`hebrew_blend_generator.html`, the LAST unfixed carrier), fixed in-pass (`eb0eab3`); clean streak: 0 -- ACTIVE, consequence-critical (legibility), never …[full text: IMPROVEMENT_ARCHIVE.md]
+- `legibility-destroyed-by-a-second-dimming-layer` | ACTIVE | owner A | det: recipe | last S263 | streak 0 | hits 1
 
-- **fixed-control-positioned-outside-the-viewport**: **REGISTERED + first swept suite-wide 2026-08-26 (S262 Pass N) -- hits: 1 carrier (`hebrew_blend_generator.html` `#sidebarToggleBtn`), fixed in-pass (`5f6a0a0`); census 78 cells (13 pages x 3 phone descriptors x EN/HE) …[full text: IMPROVEMENT_ARCHIVE.md]
+- `fixed-control-positioned-outside-the-viewport` | ACTIVE | owner N | det: recipe | last S262 | streak 0 | hits 1
 
-- **executable-javascript-in-a-localization-cell**: ACTIVE (consequence-critical: security-shaped, never retires). **Re-swept 2026-09-09 (S357 Pass A): the delta's 8 new CSV rows carry no handler or URL; Check C1 clean over 5140 keys × 2 columns — hits 0, clean streak 1.** …[full text: IMPROVEMENT_ARCHIVE.md]
+- `executable-javascript-in-a-localization-cell` | ACTIVE | owner A | det: recipe | last S357 | streak 1 | hits 0
 
-- **i18n-html-markup-only-in-fallback**: ACTIVE. **Re-swept 2026-09-09 (S357 Pass A): the delta's 8 new CSV rows and their sites carry no markup (plain `data-i18n` / `I18n.t()`) — hits 0, clean streak 1.** Registered S260 (21 fixed), S261 re-swept (2 fixed `ae95aba`). …[full text: IMPROVEMENT_ARCHIVE.md]
+- `i18n-html-markup-only-in-fallback` | ACTIVE | owner A | det: recipe | last S357 | streak 1 | hits 0
 
-- **global-keydown-preventDefault-without-target-guard** (**NEW, registered 2026-08-28 (S272 Pass A) from S271’s `38ab28f`**): a document/window-level `keydown` handler that calls `preventDefault()` on Enter/Space (or another activation/printable key) with no interactive-target …[full text: IMPROVEMENT_ARCHIVE.md]
+- `global-keydown-preventDefault-without-target-guard` | DRAFT | owner A | det: none | last S272 | streak 0
 
-- **row-siblings-with-mismatched-heights**: ACTIVE. **S385 (Pass A): 1 hit FIXED — `hebrew_blend_generator.html`'s account chip (`0a46f67`) stood 41px at top 14 beside five 35px controls at top 17, because `.ivacct` carries `align-self:stretch` and that header's flex line is its …[full text: IMPROVEMENT_ARCHIVE.md]
+- `row-siblings-with-mismatched-heights` | ACTIVE | owner A | det: recipe | last S385 | streak 0
 
-- **debounced-persistence-with-no-page-hide-flush**: **re-swept 2026-08-26 (S258 Pass A) - hits: 1 NEW carrier (`classroom_dashboard.html`), fixed in-pass (`cf244df`); clean streak: 0 - ACTIVE, consequence-critical (data loss), never retires on streak.** **The hit widens the …[full text: IMPROVEMENT_ARCHIVE.md]
+- `debounced-persistence-with-no-page-hide-flush` | ACTIVE | owner A | det: recipe | last S258 | streak 0 | hits 1
 
-- **state-mutation-that-never-arms-its-persistence**: **re-swept 2026-08-26 (S257) - hits: 1, the knowingly-deferred `setInputMode`, now fixed (`57abf9c`); clean streak: 0 - ACTIVE (consequence-critical: data loss, so it never retires on streak).** **The fix shape is the finding …[full text: IMPROVEMENT_ARCHIVE.md]
+- `state-mutation-that-never-arms-its-persistence` | ACTIVE | owner A | det: recipe | last S257 | streak 0 | hits 1
 
-- **flex-column-crushing-its-own-rows** (**NEW, registered 2026-08-23 (S249 Pass N arm 4)**): a `display:flex; flex-direction:column` container that is ALSO height-constrained and scrollable (`max-height`/`flex:1` + `overflow-y:auto`) silently **compresses its children instead …[full text: IMPROVEMENT_ARCHIVE.md]
+- `flex-column-crushing-its-own-rows` | ACTIVE | owner N | det: recipe | last S249 | streak 0
 
-- **translated-sibling stray** **S336: +1 carrier FIXED `c1e4427` — the Font Maker's nine raw `.name` display sites (header, drop zone, mark-editor modal, 4 toasts) now go through `gName()`, the sibling the tiles already used.**  (a display site rendering a raw English …[full text: IMPROVEMENT_ARCHIVE.md]
+- `translated-sibling stray` | DRAFT | owner H | det: none | last S336 | streak 0
 
-- **mobile-input-hints** (a text field for Hebrew, names, numbers or codes shipping without `inputmode`/`autocapitalize`/`autocorrect`/`spellcheck` fitting its content) | **ACTIVE — UN-RETIRED S411; S534 Name Tags ×7 FIXED `c156628`** (retired S343; the S267 row is in the …[full text: IMPROVEMENT_ARCHIVE.md]
+- `mobile-input-hints` | DRAFT | owner I | det: none | last S534 | streak 0
 
-- **i18n cross-column parity (placeholders, plurals, inline markup)**: **S533 (K): 41 raw `{placeholder}` mismatches over 6,593 keys, all the `.one` shape — hits 0, streak 2.** **re-swept 2026-09-03 (S320 Pass K, detector 1 only): `{placeholder}` sets en vs he over 5,128 keys, …[full text: IMPROVEMENT_ARCHIVE.md]
+- `i18n cross-column parity (placeholders, plurals, inline markup)` | ACTIVE | owner K | det: recipe | last S533 | streak 2 | hits 0
 
-- **horizontal-overflow-at-narrow-widths**: **re-swept 2026-09-03 (S334 Pass N, `torah_trainer.html`, 12 real-descriptor loads × 10 views incl. the S324 presentation toolbar) — hits: 1, the clipped-not-scrolled variant (`.tt-fs-plate` 340px in a 320px viewport, −10..330, A− and …[full text: IMPROVEMENT_ARCHIVE.md]
+- `horizontal-overflow-at-narrow-widths` | ACTIVE | owner N | det: recipe | last S334 | streak 0 | hits 1
 
-- **hover-only-affordance-under-a-synthetic-mouse-event**: **re-swept 2026-08-23 (S249 Pass N arm 4) — hits: 1, the THIRD and FINAL carrier (`hebrew_dictionary.html`), fixed `383aa2a`; clean streak: 0 — ACTIVE.** **The class is now fully swept: all three `bindTip` carriers are …[full text: IMPROVEMENT_ARCHIVE.md]
+- `hover-only-affordance-under-a-synthetic-mouse-event` | ACTIVE | owner N | det: recipe | last S249 | streak 0 | hits 1
 
-- **contrast-inverted-by-a-hover-or-active-state**: **S368 (Pass C, Font Maker at RUNTIME, 26/23 controls × 2 themes, real mouse + 420 ms): 1 hit FIXED (`6549b60` `.fld-help` hover 2.75 / 2.14 → 6.22 / 6.92:1); the disabled undo/redo pair (opacity 0.45) is exempt — inactive …[full text: IMPROVEMENT_ARCHIVE.md]
+- `contrast-inverted-by-a-hover-or-active-state` | ACTIVE | owner C | det: recipe | last S368 | streak 0
 
-- **dark-override-outranks-hover**: ACTIVE. **Re-swept 2026-09-09 (S357 Pass A): static detector 0/14 pages; runtime 34 cells on the 8 fixed carriers, every one with real-hover feedback (light as the control) — hits 0, clean streak 1.** S354–S356: 8 carriers fixed. Detection: …[full text: IMPROVEMENT_ARCHIVE.md]
+- `dark-override-outranks-hover` | ACTIVE | owner A | det: recipe | last S357 | streak 1 | hits 0
 
-- **contrast-below-AA-on-a-tinted-or-coloured-plate**: **S501 `[DEFAULT]` on the dark active font tile, dashboard + torah `0053db78` (3.71→5.56:1).** **S488 dashboard ribbon `5da9ecbe`.** **S422: torah's vowel Letter on the trope tint FIXED `e55b811` (1.85:1; streak 0).** …[full text: IMPROVEMENT_ARCHIVE.md]
+- `contrast-below-AA-on-a-tinted-or-coloured-plate` | ACTIVE | owner M | det: recipe | last S501 | streak 0
 
-- **async-store-backed-choice-clobbered-by-a-sync-fallback**: **swept 2026-08-19 (S226 Pass A, 2nd sweep) — CLEAN with receipts, extended past fonts as its own note directed. clean streak: 1 — ACTIVE, and consequence-critical (it destroys saved user data), so it does NOT retire …[full text: IMPROVEMENT_ARCHIVE.md]
+- `async-store-backed-choice-clobbered-by-a-sync-fallback` | ACTIVE | owner A | det: recipe | last S226 | streak 1
 
-- **rebuild-where-a-class-swap-would-do**: **REGISTERED 2026-08-16 (S220)** — not yet swept suite-wide, hits: 1 (`26b9e7e`), clean streak: 0 — ACTIVE. **Definition:** a settings toggle whose visual effect is ALREADY gated in CSS on a body/root class, yet whose handler calls the …[full text: IMPROVEMENT_ARCHIVE.md]
+- `rebuild-where-a-class-swap-would-do` | ACTIVE | owner A | det: recipe | last S220 | streak 0 | hits 1
 
-- **decorative-glyph-carrier-exposed-to-assistive-tech** (**S530: header ✡︎ ×13 `eee7080d`, generator ⚡/🔍 `b298abb2` FIXED (`a530/fix2.mjs`, `fix4.mjs`); category emoji unruled (candidate).** **S529: generator start screen + chips `19ece1f1`.** **S528: resources' icons FIXED …[full text: IMPROVEMENT_ARCHIVE.md]
+- `decorative-glyph-carrier-exposed-to-assistive-tech` | ACTIVE | owner A | det: recipe | last S530 | streak 0
 
-- **error-status-clobbered-by-a-later-routine-write** (**NEW, registered S199**; **S411: +1 carrier FIXED `25d2277`** — FM `fmCloudOpen`'s missing-photo notice, replaced by "Opened from your account" in ~40 ms): a status/live-region line that correctly reports a FAILURE is then …[full text: IMPROVEMENT_ARCHIVE.md]
+- `error-status-clobbered-by-a-later-routine-write` | DRAFT | owner A | det: none | last S411 | streak 0
 
-- **content-dependent-tour-step-miscounts-the-tour** (**NEW, registered S197**): a guided-tour step whose `target()` only exists once remote/corpus content has rendered. The engines all skip an unresolvable step **silently by design** ("skip gracefully when hidden"), but the …[full text: IMPROVEMENT_ARCHIVE.md]
+- `content-dependent-tour-step-miscounts-the-tour` | DRAFT | owner A | det: none | last S197 | streak 0
 
-- **per-sample-repaint-of-an-O(n)-live-preview** (**NEW, registered S196**): a continuous gesture — `pointermove`, a slider drag — that rebuilds an **O(n) preview from its whole accumulated buffer once per input SAMPLE** rather than once per animation frame, so the gesture is …[full text: IMPROVEMENT_ARCHIVE.md]
+- `per-sample-repaint-of-an-O(n)-live-preview` | DRAFT | owner A | det: none | last S196 | streak 0
 
-- **false-positive-validator-on-the-app's-own-content** (**NEW, registered S194**): a QA/lint/warning rule whose **detector is broader than the failure it warns about**, so it fires on artwork or data the app itself ships — the user cannot act on it, cannot clear it, and it is …[full text: IMPROVEMENT_ARCHIVE.md]
+- `false-positive-validator-on-the-app's-own-content` | ACTIVE | owner A | det: recipe | last S194 | streak 0
 
-- **JSON-LD ↔ visible-content parity** (UN-RETIRED S190; owned by L): ACTIVE, streak 0. **S432: 1 hit, shape (b) — torah FAQ a6 and its visible twin (EN + HE) said the week comes from Sefaria's calendar; FIXED `3cdc95e` (gate 2), byte parity. Arm: `l432/claims.py` (control …[full text: IMPROVEMENT_ARCHIVE.md]
+- `JSON-LD ↔ visible-content parity` | ACTIVE | owner L | det: recipe | last S432 | streak 0
 
-- **wired-then-clobbered label** **S371 (Pass A): +1 carrier FIXED `e4c8d75` — the generator's `#headerSub` (`data-i18n` page subtitle) overwritten by `setBlendType`'s four English literals on every practice-type click; now four CSV keys. Static census: 6 `data-i18n` ids written …[full text: IMPROVEMENT_ARCHIVE.md]
+- `wired-then-clobbered label` | ACTIVE | owner A | det: recipe | last S371 | streak 0
 
-- **theme-flipping-token-on-a-fixed-colour-plate** (NEW, registered S191): a control or text node styled with a colour token that **inverts with the theme** — `var(--text)`, `var(--white)`, `var(--muted)` — placed inside a container painted a **fixed** colour that does not …[full text: IMPROVEMENT_ARCHIVE.md]
+- `theme-flipping-token-on-a-fixed-colour-plate` | ACTIVE | owner A | det: recipe | last S191 | streak 0
 
-- **two-state-ready-flag-for-a-three-state-load** (S542 trope `97de5370`) (NEW, registered S189): a lazily-fetched corpus or module whose UI decides what to render from a single truthiness check — …[full text: IMPROVEMENT_ARCHIVE.md]
+- `two-state-ready-flag-for-a-three-state-load` | DRAFT | owner F | det: none | last S542 | streak 0
 
-- **invalid-SVG-geometry-from-an-unclamped-difference** (NEW, registered S187): an SVG `width`/`height` computed as the difference of two mapped coordinates (`fx(b) - fx(a)`, `x1 - x0`) where one side comes from a **derived** value that can legitimately go negative — so the …[full text: IMPROVEMENT_ARCHIVE.md]
+- `invalid-SVG-geometry-from-an-unclamped-difference` | DRAFT | owner A | det: none | last S187 | streak 0
 
-- **RTL-inheritance-on-a-Latin-script-container**: **re-swept 2026-08-29 (S290 iter 4, `hebrew_dictionary.html` word cards) — hits: 1 carrier (`.wc-transl` + `.wc-translit`), fixed `21538fc`; clean streak: 0 — ACTIVE.** **4th carrier of the shape registered at S185, and the …[full text: IMPROVEMENT_ARCHIVE.md]
+- `RTL-inheritance-on-a-Latin-script-container` | ACTIVE | owner A | det: recipe | last S290 | streak 0 | hits 1
 
-- **silent-external-media-failure** (an `<audio>`/`<video>`/media element pointed at a third-party host with play/pause/ended handlers wired but **no `error` handler**, so a blocked or dead origin produces silence while the controls still show a live playing state. Detection: …[full text: IMPROVEMENT_ARCHIVE.md]
+- `silent-external-media-failure` | ACTIVE | owner A | det: recipe | last S0 | streak 0
 
-- **print-trailing-dead-space** (padding/margin BELOW the last line of a print flow — page-container bottom padding, a scroll wrapper's, the last block's own margin — which paginates exactly like content, so a document ending near a page boundary pushes empty box onto a sheet of …[full text: IMPROVEMENT_ARCHIVE.md]
+- `print-trailing-dead-space` | DRAFT | owner A | det: none | last S0 | streak 0
 
-- **lazily-loaded-dependency-renders-an-empty-shell** (S416: +1 open, trope HH) (a feature whose data comes from a lazily-loaded external module keeps rendering its full chrome — column, header, row label, legend — when the module never arrives, so …[full text: IMPROVEMENT_ARCHIVE.md]
+- `lazily-loaded-dependency-renders-an-empty-shell` | DRAFT | owner A | det: none | last S416 | streak 0
 
-- **print-media-leak / var-chain-overridden-by-a-literal** (a screen-only `@media (max-width:N)` block whose declarations also apply to PAPER — print media has a width too — or, more generally, a literal `font-size`/colour declaration that out-specifies a `var(--x)` chain the …[full text: IMPROVEMENT_ARCHIVE.md]
+- `print-media-leak / var-chain-overridden-by-a-literal` | DRAFT | owner A | det: none | last S0 | streak 0
 
-- **incomplete-print-token-reset** (a `@media print` dark-token re-statement that restates SOME of the theme tokens the dark block overrides but not all — the missing ones keep their dark values on paper. Detection: diff the token list inside the print block's `html.dark-early …[full text: IMPROVEMENT_ARCHIVE.md]
+- `incomplete-print-token-reset` | ACTIVE | owner A | det: recipe | last S0 | streak 0
 
-- **referenced-but-unauthored i18n key** (a key the code LOOKS UP that does not exist in the CSV — the exact inverse of `authored-but-unreferenced`. The user sees the English fallback, so nothing looks broken, but every render logs an `[i18n] missing key` warning, and those …[full text: IMPROVEMENT_ARCHIVE.md]
+- `referenced-but-unauthored i18n key` | DRAFT | owner A | det: none | last S0 | streak 0
 
-- **untrusted-shape-on-read** (a store that arrives from an imported `.ivrit` / AllTools file — hand-editable text — is read back with its SHAPE assumed: `results.map`, `(r.cards||[]).forEach`, `results.slice().reverse()`. A `null` entry, a non-array `results`, or a non-array …[full text: IMPROVEMENT_ARCHIVE.md]
+- `untrusted-shape-on-read` | DRAFT | owner A | det: none | last S0 | streak 0
 
-- **blocking-alert-for-a-routine-path**: ACTIVE, streak 0. **S512 (H): the generator's three Real Words "no words" alerts → the inline Generate note, FIXED `59714ef`; its 11 other `alert(` sites are catch / import-error / capability branches.** **Re-swept 2026-09-09 (S357 Pass …[full text: IMPROVEMENT_ARCHIVE.md]
+- `blocking-alert-for-a-routine-path` | ACTIVE | owner A | det: recipe | last S512 | streak 0
 
-- **double-localization** (an already-localized string passed BACK through the localizer, so the lookup key is derived from output rather than from source data. Silent on screen — the fallback that makes these helpers idempotent returns the string unchanged — but it emits a …[full text: IMPROVEMENT_ARCHIVE.md]
+- `double-localization` | DRAFT | owner A | det: none | last S0 | streak 0
 
-- **parse-per-call on a growing store** (a helper re-parsing a whole localStorage blob on every call, called once per item, so the cost grows with the teacher's saved work): ACTIVE, consequence-critical (a freeze that scales with use reads as data loss). Hits: flash …[full text: IMPROVEMENT_ARCHIVE.md]
+- `parse-per-call on a growing store` | ACTIVE | owner A | det: recipe | last S0 | streak 0
 
-- **authored-but-unreferenced i18n key family** (a translated CSV key referenced nowhere): **S365: 1 hit FIXED (`772068b`, `trope.learn.no_example` + `trope.learn.examples_unavailable` — `renderLearn` passed the raw English; Geresh Muqdam has no chanted example, so the Hebrew UI …[full text: IMPROVEMENT_ARCHIVE.md]
+- `authored-but-unreferenced i18n key family` | DRAFT | owner D | det: none | last S365 | streak 0
 
-- **`browser-locale-date-in-a-localized-sentence`** **S533 (K): 0 on the delta (`etLang()`, `I18n.lang`; the dashboard's `en-US` dates are projected content), streak 2.** **S371 (Pass A): 0 `toLocale(Date|Time)String(undefined` in the corpus — hits 0, clean streak 1.** …[full text: IMPROVEMENT_ARCHIVE.md]
+- `browser-locale-date-in-a-localized-sentence` | DRAFT | owner A | det: none | last S533 | streak 0 | hits 0
 
-- **sub-floor touch target on a shared small-button class** (registered S193; **S410 FIXED the hub's inline-styled My Fonts row `ee38b98`, 6 buttons 24 → 30px — S236's class-less sub-shape**): a small-control class — `.btn-xs` and its kin — whose size comes from `padding` …[full text: IMPROVEMENT_ARCHIVE.md]
+- `sub-floor touch target on a shared small-button class` | ACTIVE | owner A | det: recipe | last S410 | streak 0
 
-- falsy-zero: swept 2026-07-17 (S93), hits: 0 (the dashboard movable-panels feature 639fcf8/53e50fc uses array-order `panelLayout` with no numeric restores; zone reorder is array-index splicing; its guards use `=== undefined`, not `||`), clean streak: **3 → RETIRED S93** (3 …[full text: IMPROVEMENT_ARCHIVE.md]
+- `localStorage-vs-AllTools` | ACTIVE | owner A | det: recipe | last S357 | streak 0
 
-- localStorage-vs-AllTools: ACTIVE (consequence-critical: backup completeness, never retires). **Re-swept 2026-09-09 (S357 Pass A, delta-only): 1 new key, `hebrewBlender_lastBackupAt` (S347) — in `eraseAllSettings` with a written per-device reason, export-exempt by design — hits …[full text: IMPROVEMENT_ARCHIVE.md]
+- `unescaped-input / unsafe-parse` | ACTIVE | owner A | det: recipe | last S158 | streak 0 | hits 0
 
-- unescaped-input / unsafe-parse: **re-swept 2026-07-25 (S158), hits: 0** (`0dc1e50..HEAD` — **0 new `innerHTML`/`insertAdjacentHTML`/`outerHTML`, 0 new `JSON.parse`/`Object.assign`, 0 new `fetch`/`setAttribute('href'|'src'|'on*')`**. Tightened beyond added-sink-lines to catch …[full text: IMPROVEMENT_ARCHIVE.md]
+- `destructive-bulk` | ACTIVE | owner A | det: recipe | last S272 | streak 0 | hits 0
 
-- destructive-bulk: **re-swept 2026-08-28 (S272 Pass A, delta `b2f455b..HEAD`), hits: 0** (zero new loops write stored per-item data; the S268 calendar import writes cells only through its preview+confirm flow, the S269 purge is confirm-guarded and deletes only the legacy rows …[full text: IMPROVEMENT_ARCHIVE.md]
+- `ivrit-gather-gap` | DRAFT | owner A | det: none | last S185 | streak 0
 
-- **ivrit-gather-gap** — **3rd fix landed 2026-08-06 (S185)**: flash_cards' `hebrewFlashCards_pbStreak`, absent from BOTH of the tool's save paths and from `apply()`, now round-trips with AllTools' max rule (94d1222). The class's remaining known surface is clean. Original …[full text: IMPROVEMENT_ARCHIVE.md]
+- `symbol-only accessible name` | ACTIVE | owner A | det: recipe | last S0 | streak 0
 
-- **symbol-only accessible name** (an icon-only control whose ENTIRE accessible name is a glyph with no letter or digit — "×", "↺", "✕", "⬛", an emoji run — because for `button`/`a`/`role=button` the ACCNAME chain takes **name-from-content BEFORE `title`**, so a correct …[full text: IMPROVEMENT_ARCHIVE.md]
+- `nameless-adjacent-text-labeled control` | ACTIVE | owner A | det: recipe | last S0 | streak 0
 
-- nameless-adjacent-text-labeled control (a visible interactive control — toggle switch, slider, number field, select, colour well — whose only label is **adjacent text** that is never programmatically associated, so it has NO accessible name; the wrapping `<label …[full text: IMPROVEMENT_ARCHIVE.md]
+- `dead-feature-guard` | ACTIVE | owner A | det: recipe | last S158 | streak 0
 
-- dead-feature-guard (a `typeof X === 'function'` / feature-detection guard whose **preferred** implementation does not exist on that page, so the guarded branch can never run and control silently falls through to a worse path — or to nothing): **re-swept 2026-07-25 (S158, Pass …[full text: IMPROVEMENT_ARCHIVE.md]
+- `modal-focus-trap` | ACTIVE | owner H | det: recipe | last S426 | streak 0
 
-- **modal-focus-trap** (**S426: HIT — the account screen (gone since the account cleanup; the layer's dialogs are now the name step and the device-extras card), js/ivrit-saves.js, which the S179 sweep predates; FIXED `91c45d6`; streak 0**) …[full text: IMPROVEMENT_ARCHIVE.md]
+- `pre-ready-i18n / never-re-rendered` | ACTIVE | owner D | det: recipe | last S538 | streak 0
 
-- pre-ready-i18n / never-re-rendered — **6th instance FIXED S538 `f0905fb6`: the missing-font note on flash ×2, torah, trope ; LL, Name Tags, generator heal.** ACTIVE, …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- _**Retirement rule (as applied):** a pattern retires after 3 consecutive clean sweeps **UNLESS it is consequence-critical** (security or data-loss). The three that hit 3-clean at S64 — unescaped-input/unsafe-parse (XSS), localStorage-vs-AllTools (backup), destructive-bulk …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- **placeholder-as-only-accessible-name** (a text input/textarea whose ONLY name source is its `placeholder` — no `aria-label`, `aria-labelledby`, `label[for]`, wrapping `<label>` or `title`. Under ACCNAME `placeholder` is the last-resort source, so the name is announced on an …[full text: IMPROVEMENT_ARCHIVE.md]
-
-### Retired patterns
-
-- **`synced-key-wiped-without-forgetRow`**: RETIRED 2026-09-30 (the account cleanup, outside the loop — not a clean streak). Shape: a reset wiping a synced key without `forgetRow`, so the wiped copy read "newer here" and offered an account-wide reset. `forgetRow` and the panels are gone: signed in, resets and deletes write through by design, and the guard is the confirm (the `*_cloud` keys while `hasStoredSession()`), which pass P arm 4 now checks. Un-retires only if a memory-forgetting path returns.
-
-- **`uncompressed-jspdf-raster`**: RETIRED 2026-09-10 (S371 Pass A, clean streak 3: S343, S357, S371 — 0 new `addImage(` sites, 3/3 carry `'FAST'`). Shape: a jsPDF `addImage(...)` with no `compression` argument stores the raster raw (~11 MB per Letter page); S337 fixed 2 (`e0caf12`), S338 the 3rd (`5b55d19`). Detection: `grep -n "addImage(" *.html` and read the argument list; verify by the PDF's `FlateDecode` streams. Un-retires on any new `addImage(` without `'FAST'` (A2 spot-check).
-
-- **`custom-property-written-on-documentElement-per-frame`**: RETIRED 2026-09-09 (S357 Pass A, clean streak 3: S330, S343, S357 — the delta's 5 new `setProperty('--heb-font'` writers are one-shot). Shape: a per-frame writer sets a root custom property. Detection: `grep -n 'documentElement.style.setProperty' *.html`, keep writers on a drag/slider/rAF path. Fix: write on the consumers' nearest ancestor. An A2 hit un-retires.
-
-- **`dark-hover-resolves-to-the-rest-colour`**: RETIRED 2026-09-09 (S357 Pass A, clean streak 3: S330, S343, S357 — the delta's 17 new `:hover` rules all measured with feedback). Shape: a `:hover` that resolves to the rest background in the OTHER theme (dark `--warm-gray` = dark `--white`). Detection: `warm-gray` hover rules minus those with a `body.dark X:hover` twin, confirmed by a real dark hover. Fix shape: `body.dark X:hover{background:#2a3349;}`. An A2 hit un-retires.
-
-- elevation-cue-doubled-or-dead (a box-shadow that doubles a border cue, or resolves invisible in the theme it is used in) | retired 2026-09-08 (S343) | 3 consecutive clean sweeps: last hits S311 (14 in the FM help popup, `0c86195`/`88f4940`), then clean S317, S330, S343 (the delta's one new shadow, dictionary `.sidebar-toggle-btn`, is `border:none` + the generator twin's ratified shape). Detector caveat stands: the Impeccable rule id is unreliable as a counter and its threshold is exactly 16px. Re-checked only in Pass A2 / O.
-
-- sibling-page-missing-a-shared-declaration (a chrome/tool page lacking a rule or meta its siblings all carry) | retired 2026-09-08 (S343) | 3 consecutive clean sweeps: 3 hits S304 (`e093389`), then clean S317, S330, S343 (`og:locale` on 12/12 indexable pages, the `summary:hover` idiom on all 8 `<details>` pages; `resources.html` remains a deliberate compact chrome). Detection: census the declaration across every sibling, then diff. Re-checked only in Pass A2 / E.
-
-- panel-collapse-writer-mismatch (a `.collapsed` writer that skips `panelMemSave()`, or a panel title without the `data-i18n` key the memory is keyed by) | retired 2026-09-08 (S343) | 3 consecutive clean sweeps: first swept S303 (Pass N), then clean S317, S330, S343 (0 `.collapsed` writers added since S303). Detection: `grep -n "classList.add('collapsed')"` (and `.toggle`/`.remove`) over the six carriers, read each writer for the save call. Re-checked only in Pass A2.
-
-- invisible-rebuild-on-a-hot-render-path (a render entry point rebuilding a container that is hidden by default under the DEFAULT view, with cost that scales with data) | retired 2026-09-03 (S330) | 3 consecutive clean sweeps: carrier fixed FM `renderSpacingPanel`/`renderKerningSection` (`fa1f88f`), then clean S299, S317, S330 (the S317→S330 delta adds no `innerHTML` writer; …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- var()-on-an-undefined-custom-property (a `var(--x)` with no fallback whose token is declared nowhere on that page) | retired 2026-09-03 (S330) | 3 consecutive clean sweeps: last hit `hebrew_dictionary` `--navy-deep` (`5e9a6d2`, S285), then clean S299, S317, S330 (the 14 `var()` references added since S317 — `--gold-text`, `--navy`, `--text`, `--white`, `--border` — all …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- falsy-zero (`s.field || default` silently discarding a stored `0`/`''`/`false` in a numeric/boolean restore) | retired 2026-07-17 (S93) | 3 consecutive clean sweeps: 1 hit S64 (FM `spec.version||1.0`, b9c1aa3), then clean S73, S83 (FM v4.18→v4.26 slider/geometry guards), S93 (dashboard movable-panels — array-order `panelLayout`, no numeric restores). Correctness-scoped (a …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- shadowed-global helper (a top-level helper — `esc`/`status`/`applyI18n`/`t`/… — shadowed by an inner decl so a global-expecting call site gets the wrong one) | retired 2026-07-13 (S73) | 3 consecutive clean sweeps: registered S40 (2 torah `esc`-shadow hits fixed, d88fa99), clean S64, clean S73 over the site-wide i18n rollout (one `esc`/`applyI18n` per file; FM's local `t()` …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- listener/interval accumulation (a `setInterval`/`setTimeout`/`addEventListener` attached repeatedly without clear/remove) | retired 2026-07-10 (S64) | 3 consecutive clean sweeps (S52, and S64 over the S53–S63 surface — generator chunked-build timer single/self-chaining + `cancelWorksheetBuild` clears on re-entry, `beforeprint` attached once, torah color fns add no listeners, `_appToastTimer` clear-guarded). Structural/perf-scoped → auto-retired. Re-checked only in Pass A2.
-
-- workMode/step reachability (controls reachable in only one workMode/step while the workflow steers users past it) | retired 2026-07-10 (S52) | 3 consecutive clean sweeps (S36, S41-scoped, S52 — trope_tutor's drawer/tabs/tour-skip/mid-drill-return all reachable-by-design). Re-checked only in Pass A2.
-
-- undo-wiring (Font Maker: `markDirty()` without `udDo`/`udBurstBegin`/`udNudgeTick`) | retired 2026-07-08 (S36) | 3 consecutive clean sweeps; the S25–26 keyboard additions (node-insert, crop) verified as routing through `udDo` or deliberately non-undoable. Re-checked only in Pass A2. **Re-verified CLEAN 2026-07-09 (S41)** over the un-swept FM v3.9–v4.2 additions (auto-detect Apply via `udDo(...withSource)`, pen contour, node delete/paste/transform/specks/fillet all `udDo`; `_hiddenContours`/opacity/snapGuides are documented view-only).
-
-- slider-commit (Font Maker: `oninput` range sliders lacking `onchange="udBurstCommit()"`) | retired 2026-07-08 (S36) | 3 consecutive clean sweeps; every project-data slider commits, and no new range slider has been added. Re-checked only in Pass A2. **Re-verified CLEAN 2026-07-09 (S41)** over the FM v3.9–v4.2 sliders (fillet `filletLiveInput`/`filletCommit` burst; size setters commit; mark-editor `meSetDotSize` uses its own `meBeginEdit`/`meCommitEdit` stack; `adSep`/`adTh` are detection-only until Apply).
-
-## Recurring-pattern sweep status
-
-- _(history)_ **The per-sweep result rows (S141–S357, 83 rows) moved verbatim to `docs/IMPROVEMENT_ARCHIVE.md` in S361 ("Sweep-status rows moved out of the ledger"); the current state of every pattern lives in Pattern health above.** Grep …[full text: IMPROVEMENT_ARCHIVE.md]
+- `placeholder-as-only-accessible-name` | DRAFT | owner A | det: none | last S0 | streak 0
 
 ### Discovery-pass rotation (run one per session, stalest first)
 

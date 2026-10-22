@@ -18,6 +18,9 @@
  *   3. SIZE (always): the limits in scripts/ledger-rules.mjs — total bytes, line width (outside
  *      the current handoff), Done ≤ N sessions, per-session log ≤ N rows, one tool-coverage
  *      snapshot, one row per pattern, one row per pass, no _(prior)_ history rows.
+ *   5. PATTERNS (always): every ### Pattern health row is one status line in PATTERN_ROW_RE form,
+ *      its det: path exists when it is a path, det: none means DRAFT with streak 0, and its id has
+ *      an entry in docs/reference/loop-patterns.md (the catalog). Retired rows live only there.
  *   4. ORDER (always): ## Candidates is in priority order (P1 first), because the session-start
  *      read is bounded to the top of the list and "top = next" is otherwise false.
  *
@@ -27,11 +30,11 @@
  *   node scripts/check-ledger.mjs                 # structure + size
  *   node scripts/check-ledger.mjs --vs origin/main # + conservation vs a ref
  */
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { LEDGER, ARCHIVE, LIMITS, REQUIRED, SESSION_RE, priorityOf, parseSections, blocksOf, isPointer, isPrior, handoffRange } from './ledger-rules.mjs';
+import { LEDGER, ARCHIVE, CATALOG, LIMITS, REQUIRED, SESSION_RE, PATTERN_ROW_RE, priorityOf, parseSections, blocksOf, isPointer, isPrior, handoffRange } from './ledger-rules.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -146,10 +149,30 @@ if (cov) {
 }
 const health = section('### Pattern health');
 if (health) {
-  const names = blocksOf(health.lines).map(b => (b[0].match(/^- \*\*`?([^`*]+?)`?\*\*/) || [])[1]).filter(Boolean);
+  const catalog = existsSync(join(root, CATALOG)) ? read(CATALOG) : '';
+  if (!catalog) fail(`${CATALOG} is missing — the pattern catalog is the loop's file; recover it from git.`);
+  const names = [];
+  let bad = 0;
+  for (const b of blocksOf(health.lines)) {
+    const l = b[0];
+    const m = l.match(PATTERN_ROW_RE);
+    if (b.length > 1 || !m) {
+      if (++bad <= 3) fail(`### Pattern health row is not one status line in the row format (see ${CATALOG}): ${l.slice(0, 90)}…`);
+      continue;
+    }
+    const [, id, status, , det, , streak] = m;
+    names.push(id);
+    if (l.length > LIMITS.patternRowChars) fail(`pattern ${id}: row is ${l.length} chars (limit ${LIMITS.patternRowChars}); detail goes in the catalog entry.`);
+    if (det === 'none' && status !== 'DRAFT') fail(`pattern ${id}: det: none must be DRAFT — no method, no streak.`);
+    if (status === 'DRAFT' && Number(streak) !== 0) fail(`pattern ${id}: a DRAFT row cannot carry a streak.`);
+    if (det !== 'none' && det !== 'recipe' && !existsSync(join(root, det))) fail(`pattern ${id}: det: ${det} is not in the tree (a detector is committed under scripts/, never a scratchpad path).`);
+    if (catalog && !catalog.includes('## `' + id + '`')) fail(`pattern ${id}: no entry in ${CATALOG} (a new row ships its catalog entry in the same commit).`);
+  }
+  if (bad > 3) fail(`… and ${bad - 3} more ### Pattern health rows off the format.`);
   const dup = names.filter((n, i) => names.indexOf(n) !== i);
   if (dup.length) fail(`### Pattern health has duplicate rows for: ${[...new Set(dup)].join(', ')} — one row per pattern, updated in place.`);
 }
+if (section('### Retired patterns')) fail('### Retired patterns is no longer a ledger section: a retired pattern keeps its catalog entry (Status: retired) and leaves the ledger.');
 if (rotation) {
   const letters = rotBlocks.map(b => (b[0].match(/^- ([A-Z])\d? /) || [])[1]).filter(Boolean);
   const dup = letters.filter((n, i) => letters.indexOf(n) !== i);
