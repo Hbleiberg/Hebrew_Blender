@@ -8,7 +8,11 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P3 (**NEW S537 G — K's**) | trope_tutor.html | **In Hebrew a missing My Font's note shows its raw key on 3 of 8 loads** (HEAD alike). | found S537
+- [ ] P4 (**NEW S538 D**) | parsha_emojis.html | **A size drag relays out all 54 preview sheets per value** (≤753 ms @4×). | found S538
+
+- [ ] P4 (**NEW S538 D**) | parsha_emojis.html | **40 copies × 4 per sheet clone 240 sheets into the preview** (1.3 s @4×). | found S538
+
+- [ ] P4 (**NEW S538 D**) | parsha_emojis.html | **The first open still measures every drawing** (~950 ms @4×); build the geometry with the icons. | found S538
 
 - [ ] P4 (**NEW S537 G — gate 2**) | parsha_emojis.html | **With every sheet shrunk (landscape, Both) the popup's note names all 54 parshiyot** (539 chars). | found S537
 
@@ -78,8 +82,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S466 D**) | js/ivrit-saves.js | **A fresh device's first signed-in load rewrites the whole sync memory once per row** (tasks 50→340 ms, settled in 47 s @4×, 410 rows) and fetches each row by its own GET (457). | found S466
 
-- [ ] P4 (**NEW S465 G**) | Hebrew_Font_Maker.html | **3 starting fonts fail Chrome's sanitizer**; the picker says so only on hover. | found S465
-
 - [ ] P4 (**NEW PR #313**) | torah_trainer.html | **Sephardi haftarot and the holidays' maftirim are not offered**: `holiday-readings.json` carries `seph` and `fullkriyah.M` for every entry the table keys (the leyning builder's check could carry them). | found PR #313
 
 - [ ] P4 (**NEW PR #313**) | torah_trainer.html | **Shabbat Chazon's haftarah (Isaiah 1) is drawn in the Haftarah chart throughout**; the verses customarily chanted to Eicha's tune need a per-verse tune. | found PR #313
@@ -127,8 +129,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S422 Pass M — five small ones; (1) FIXED S446 `0daed724`, (4) FIXED S448 `0f9ddbe1`**) | torah_trainer.html | **(2)** drawer segments break mid-label at 380px; **(3)** Audio tracks start ragged; **(5)** "Custom range…" has no icon. | found S422
 
 - [ ] P4 (**NEW S422 Pass M — gate 3 / gate 2**) | torah_trainer.html | **(1)** dark Chant all is 1.1:1 on the page; **(2)** Hebrew-only side by side keeps an empty half; **(3)** "עִבְרִית" in Libre Baskerville; **(4)** gate 2: the Audio help's 🔊 / 🎵, not the icons. | found S422
-
-- [ ] P4 (**NEW S425 Pass I — extract the tour engine first, UX rule 1**) | trope_tutor.html | **With `trope_motifs.json` missing the tour counts "Step 3 of 8 → Step 5 of 8"**; torah/dictionary use `_tourCounter`. | found S425
 
 - [ ] P4 (**NEW S418 — the maintainer's dashboard**) | Supabase project | **Security advisor: leaked-password protection is off**; passwords are never used (e-mail code + Google), so enable the toggle or accept it as moot. | found S418
 
@@ -308,6 +308,16 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-22 | (S538 close-out) | branch/deploy note | **S538 = D on parsha_emojis (first): FOUND 4, FIXED 1 + 3.** On #357; no drift. sw v1066→v1067; no FM bump (a fix). Deferred: none.
+
+- [x] 2026-10-22 | `8fbf0ab8` | parsha_emojis | (S538) **The line art is measured without a layout per piece.** | forced 780 → 0; open 197 → 130 ms (1×)
+
+- [x] 2026-10-22 | `f0905fb6` | flash, torah, trope | (S538) **The missing-font note follows the language** (S537 K's). | raw key 4/4 → 0 (race forced)
+
+- [x] 2026-10-22 | `1c8de3ec` | tour block ×3 | (S538) **The tour counts the steps it shows** (S425). | gaps 3 cases → 0; sha ×3
+
+- [x] 2026-10-22 | `5e843de9` | FM | (S538) **A failed preview says so on its card** (S465). | 3/3 shown; 129 same
+
 - [x] 2026-10-21 | (S537 close-out) | branch/deploy note | **S537 = G on parsha_emojis (first): FOUND 2, FIXED 1 + 3.** On #357; no drift. sw v1065→v1066; no FM bump. Deferred: gate 2.
 
 - [x] 2026-10-21 | `660e2f4` | parsha_emojis | (S537) **The sheet fit leaves room for paper's wraps.** | silent clips 1 → 0 of 72
@@ -316,25 +326,17 @@ _(none)_
 
 - [x] 2026-10-21 | `dcfeae3` | FM | (S537) **A saved project is named font + day** (S465 gate 2). | 4/4 names, 4/4 reload
 
-- [x] 2026-10-21 | (S536 close-out) | branch/deploy note | **S536 = M on LL (first): FOUND 5, FIXED 3 + S464.** On #357; no drift. sw v1064→v1065. Deferred: gate 3.
-
-- [x] 2026-10-21 | `b3c02ee` `f1b71e7` | LL | (S536) **The dialog holds still; vowel rows share a height.** | moves 48/72 → 0; ragged 12 → 0
-
-- [x] 2026-10-21 | `230ba45` | ivrit-saves | (S536) **No blank strip atop the signed-out panel.** | 24px → 0; 7 smokes
-
-- [x] 2026-10-21 | `7666632` | resources | (S536) **Wrapped chips hang under the first chip** (S464). | 1/row → 0
-
 ## Metrics
 
 ### Per-session log (one line per session)
 
-- 2026-10-21 | **S537** | iters: 5 | tools: parsha, FM, flash/torah/trope ×2, 5 toast pages, sw.js | patterns fixed: live-region-shown-with-its-text ×2 | pass run: G | SW: v1065→v1066
+- 2026-10-22 | **S538** | iters: 5 | tools: parsha, flash, torah, trope ×2, LL, name_tags, FM, sw.js | patterns fixed: pre-ready-i18n ×1 | pass run: D | SW: v1066→v1067
 
-- 2026-10-21 | **S536** | iters: 5 | tools: LL ×2, saves (shared), resources, sw.js | patterns fixed: — | pass run: M | SW: v1064→v1065
+- 2026-10-21 | **S537** | iters: 5 | tools: parsha, FM, flash/torah/trope ×2, 5 toast pages, sw.js | patterns fixed: live-region-shown-with-its-text ×2 | pass run: G | SW: v1065→v1066
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S537 (2026-10-21):** parsha_emojis, FM, flash, torah, trope, sw.js + 5 toast pages S537 · saves, resources S536 · scripts S535 · CSV S533 · index, README, sitemap S532 · account, contact, privacy, terms, 404 S530 · corpus S524 · i18n.js S512 · pwa S472.
+- **Snapshot S538 (2026-10-22):** parsha_emojis, flash, torah, trope, LL, name_tags, FM, CSV, sw.js S538 · 5 toast pages S537 · saves, resources S536 · scripts S535 · index, README, sitemap S532 · account, contact, privacy, terms, 404 S530 · corpus S524 · i18n.js S512 · pwa S472.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -656,7 +658,7 @@ _(none)_
 
 - **modal-focus-trap** (**S426: HIT — the account screen (gone since the account cleanup; the layer's dialogs are now the name step and the device-extras card), js/ivrit-saves.js, which the S179 sweep predates; FIXED `91c45d6`; streak 0**) …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- pre-ready-i18n / never-re-rendered — **5th instance FIXED S533 `e83db20c`: the dashboard's parsha popup cards (`applyI18n` rebuilds the open popup from `_ppIdx`).** **4th instance fixed 2026-08-06 (S185)**: torah_trainer's TTS voice readout, which `applyI18n` had never re-run …[full text: IMPROVEMENT_ARCHIVE.md]
+- pre-ready-i18n / never-re-rendered — **6th instance FIXED S538 `f0905fb6`: the missing-font note on flash ×2, torah, trope ; LL, Name Tags, generator heal.** ACTIVE, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - _**Retirement rule (as applied):** a pattern retires after 3 consecutive clean sweeps **UNLESS it is consequence-critical** (security or data-loss). The three that hit 3-clean at S64 — unescaped-input/unsafe-parse (XSS), localStorage-vs-AllTools (backup), destructive-bulk …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -716,7 +718,7 @@ _(none)_
 
 - G print & export fidelity (one tool): 2026-10-21 (**S537 — parsha_emojis' first G: 56 card PDFs, 108 sheet combos; plants fired. FOUND 2, FIXED 1. G-next: dashboard (S364).**)
 
-- D performance (one tool): 2026-10-20 (**S524 — flash's 5th D (S393 →, 79 commits): cold 8 cells + trace, 200-card heavy paths by real clicks at 1×/4×, idle (timer control), 20-cycle leak, bytes; controls fired. FOUND 2, FIXED 1 (×3 carriers). D-next: trope (S365).**)
+- D performance (one tool): 2026-10-22 (**S538 — parsha_emojis' first D (trope was S480, not S365): cold, 33 real-click arms × 1×/4×, traces, idle, leak; controls fired. FOUND 4, FIXED 1. D-next: name_tags (never), FM (S410).**)
 
 - I first-load & empty-state: 2026-10-20 (**S525 — 39th I, S511 → S525 (105 commits; emoji_torah's first I, LL's Coloring sheet): plants 340/342 (2 = account's `[hidden]`); 152 virgin cells clean; emoji_torah 7 views × 3 cells, 4 failure paths, 10 seeds; LL Coloring 62 cards × 2 views × 3 cells + 3 seeds; tours 8/8 (controls 16/16); ~250 drawer clicks. FOUND 1 (gate 2), FIXED 1 (+2).**)
 
@@ -732,4 +734,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-21 (**S528 — 39th F, empty states: 6 no-match surfaces × 4 cells by real input (plants 72/72), 12-page census. FOUND 4, FIXED 1 (+ LL ×2). F-next: loading states.**)
 
-**Next session (S538):** **PR: `claude/improveloop-s535` open → continue; merged → fresh branch.** `sw.js` **v1066**, FM **5.59**, corpus ?v=7. ⚑ Stalest: D (S524), I (S525), H (S526). ⚑ Keep-alive #40 (10-22): confirm green. ⚑ Seeds: 46. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4; O's Bash rule.
+**Next session (S539):** **PR: `claude/improveloop-s535` open → continue; merged → fresh branch.** `sw.js` **v1067**, FM **5.59**, corpus ?v=7. ⚑ Stalest: I (S525), H (S526), C (S527). ⚑ Keep-alive #40 (10-22): confirm green. ⚑ Seeds: 46. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4; O's Bash rule.

@@ -93627,3 +93627,23 @@ _(prior — S536 pointer:)_ **Next session (S536):** **PR: `claude/improveloop-s
 - (moved for size at S537) - [x] 2026-10-21 | `7b0e2ac` `0f509a2` | name_tags | (S535) **Tour step 2 rings the scroller; a long list redraws after a typing pause.** | 8/16 → 16/16; 4×: 2183 → 972ms
 - (moved for size at S537) - [x] 2026-10-21 | `15464a2` | generator | (S535) **The `?ak=` answers print dark.** | light-gold px 1171 → 0
 - (moved for size at S537) - 2026-10-21 | **S535** | iters: 5 | tools: saves (shared), name_tags ×2, generator, sw.js | patterns fixed: — | pass run: P | SW: v1063→v1064
+
+<!-- archived by hand at the S538 close-out, 2026-10-22 -->
+- (struck at S538: fixed) - [ ] P3 (**NEW S537 G — K's**) | trope_tutor.html | **In Hebrew a missing My Font's note shows its raw key on 3 of 8 loads** (HEAD alike). | found S537
+- (struck at S538: fixed) - [ ] P4 (**NEW S425 Pass I — extract the tour engine first, UX rule 1**) | trope_tutor.html | **With `trope_motifs.json` missing the tour counts "Step 3 of 8 → Step 5 of 8"**; torah/dictionary use `_tourCounter`. | found S425
+- (struck at S538: fixed) - [ ] P4 (**NEW S465 G**) | Hebrew_Font_Maker.html | **3 starting fonts fail Chrome's sanitizer**; the picker says so only on hover. | found S465
+- (moved for size at S538) - [x] 2026-10-21 | (S536 close-out) | branch/deploy note | **S536 = M on LL (first): FOUND 5, FIXED 3 + S464.** On #357; no drift. sw v1064→v1065. Deferred: gate 3.
+- (moved for size at S538) - [x] 2026-10-21 | `b3c02ee` `f1b71e7` | LL | (S536) **The dialog holds still; vowel rows share a height.** | moves 48/72 → 0; ragged 12 → 0
+- (moved for size at S538) - [x] 2026-10-21 | `230ba45` | ivrit-saves | (S536) **No blank strip atop the signed-out panel.** | 24px → 0; 7 smokes
+- (moved for size at S538) - [x] 2026-10-21 | `7666632` | resources | (S536) **Wrapped chips hang under the first chip** (S464). | 1/row → 0
+- (moved for size at S538) - 2026-10-21 | **S536** | iters: 5 | tools: LL ×2, saves (shared), resources, sw.js | patterns fixed: — | pass run: M | SW: v1064→v1065
+- (S538 pattern row, previous text) - pre-ready-i18n / never-re-rendered — **5th instance FIXED S533 `e83db20c`: the dashboard's parsha popup cards (`applyI18n` rebuilds the open popup from `_ppIdx`).** **4th instance fixed 2026-08-06 (S185)**: torah_trainer's TTS voice readout, which `applyI18n` had never re-run …[full text: IMPROVEMENT_ARCHIVE.md]
+- (S538 archived handoff) **Next session (S538):** **PR: `claude/improveloop-s535` open → continue; merged → fresh branch.** `sw.js` **v1066**, FM **5.59**, corpus ?v=7. ⚑ Stalest: D (S524), I (S525), H (S526). ⚑ Keep-alive #40 (10-22): confirm green. ⚑ Seeds: 46. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4; O's Bash rule.
+
+
+<!-- archived by compact-ledger at the S539 boundary, 2026-10-22 -->
+## Compaction (S539, 2026-10-22) — moved verbatim from the live ledger
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- pre-ready-i18n / never-re-rendered — **6th instance FIXED S538 `f0905fb6`: the missing-font note on flash ×2, torah, trope (a store answering before the locale wrote the raw key; a switch left it); generator, LL, Name Tags already heal.** 5th S533 `e83db20c`. ACTIVE, consequence-critical; sweep both languages. …[full text: IMPROVEMENT_ARCHIVE.md]
