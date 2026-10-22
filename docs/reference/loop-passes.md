@@ -41,7 +41,11 @@ privacy + terms, 404, account, audited together as one surface; for the variety 
 chrome page is still its own tool). A surface pass picks the least-recently-audited surface as
 `node scripts/loop/coverage.mjs` reports it (a never-audited surface outranks everything) and records its
 next targets in the rotation row's `X-next:` note; `coverage.mjs --check` rejects a note that contradicts
-the record.
+the record. A second surface taken in the same session (a clean surface buys a second) is joined to the
+first with a literal ` + ` in the rotation row and the findings heading — `parsha_emojis (first) +
+letter_learner (…)`, `on \`a.html\` + \`b.html\`` — before the row's first colon and outside every
+parenthesis; `coverage.mjs` credits one surface per row or heading otherwise, so a second named any other
+way stays "never audited".
 
 ## A — Recurring-pattern sweep (suite)
 

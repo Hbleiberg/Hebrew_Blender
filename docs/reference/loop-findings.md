@@ -3247,7 +3247,7 @@ rule, the surviving passes) is in the S544 draft PR; the protocol lives in `.cla
 
   | found S545
 
-## S546 (2026-10-22) — pass P's 13th run (`parsha_emojis.html`'s and `letter_learner.html`'s cloud wiring, both their first P; the clean first surface bought the second)
+## S546 (2026-10-22) — pass P's 13th run on `parsha_emojis.html` + `letter_learner.html` (both pages' cloud wiring, their first P; the clean first surface bought the second)
 
 - [ ] P4 (**S546 Pass P — both pages' receipts, arm by arm, each zero behind a control that fired, so the next P starts here**) | parsha_emojis.html, letter_learner.html, js/ivrit-saves.js |
   - **Harness `p546/` (scratchpad):** `lib.part` = smoke-sync's import line through its `statusLine` helper cut verbatim (`P_ROOT` env for the served root, `--port`, `--sdk`), the SDK from `npm pack @supabase/supabase-js@2.116.0` (sha384 = `sdkIntegrity`); `pe.mjs` (W1–W8 on the coloring popup by real clicks), `ll.mjs` (W1–W9 on the Options card), `static.mjs <root>` (arms 3–7), `fresh.mjs` / `anon.mjs` / `note.mjs` (the suite arm), `w6dbg.mjs`; `head/` (two plants) and `headS/` (five plants) from `git archive`.

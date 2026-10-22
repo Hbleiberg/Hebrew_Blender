@@ -42,10 +42,22 @@ const surfaceOf = text => { let best = null; for (const [s, re] of ALIASES) { co
 const headOf = text => text.split(/[A-P]-next:|-next:|\bnext:/)[0];   // the note's own surface, never its "next" list
 
 const last = Object.fromEntries(SURFACE_PASSES.map(p => [p, {}]));   // pass → surface → { s, date, src }
+// A second surface audited in the same session ("a clean surface buys a second") is joined to the first with a literal
+// " + " — "parsha_emojis (first) + letter_learner (…)" in the rotation row, "on `a.html` + `b.html`" in the findings
+// heading — and is credited too. The join must sit before the row's first colon (its arms follow it) and outside every
+// parenthesis: "FIXED 2 (+ dashboard, i18n.js)" and "(trope was S480, not S365)" name no audited surface.
+const surfacesOf = head => {
+  const out = []; const first = surfaceOf(head); if (first) out.push(first);
+  let core = head.replace(/^[\s\S]*?\*\*S\d+/, '').split(':')[0];
+  for (let i = 0; i < 3; i++) core = core.replace(/\([^()]*\)/g, ' ');
+  for (const m of core.matchAll(/\+\s*`?([A-Za-z_]+(?:\.html)?)`?/g)) { const s = surfaceOf(m[1]); if (s && !out.includes(s)) out.push(s); }
+  return out;
+};
 const note = (pass, text, s, date, src) => {
   if (!last[pass]) return;
-  const surf = surfaceOf(headOf(text)); if (!surf) return;
-  const cur = last[pass][surf]; if (!cur || cur.s < s) last[pass][surf] = { s, date, src };
+  for (const surf of surfacesOf(headOf(text))) {
+    const cur = last[pass][surf]; if (!cur || cur.s < s) last[pass][surf] = { s, date, src };
+  }
 };
 const rot = /^- ([A-P]) [^:\n]+: (\d{4}-\d\d-\d\d) \(\*\*S(\d+)[^\n]*/gm;
 for (const src of [LEDGER, ARCHIVE]) for (const m of read(src).matchAll(rot)) note(m[1], m[0], Number(m[3]), m[2], src);
