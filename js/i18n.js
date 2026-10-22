@@ -314,6 +314,7 @@
       var opt = document.createElement('option');
       opt.value = o.code;
       opt.textContent = o.label;
+      opt.lang = o.code;   // each label is in its own language: a screen reader voices "עברית" in Hebrew in the English UI
       if (o.code === lang) opt.selected = true;
       sel.appendChild(opt);
     });
