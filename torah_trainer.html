@@ -246,9 +246,15 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
       VOCAL_SHEVA:'',FURTIVE_PATAH:'a',longVowels:false,SYLLABLE_SEPARATOR:'-'
     });
   }
-  async function tryImport(urls) {
+  // A copy that loads but answers wrongly counts as a failed load: jsDelivr's +esm build carries havarotjs's word
+  // classes twice, so every word fails the library's instanceof test and comes back as "[object Object]".
+  function translitWorks(m) {
+    try { const r = m.transliterate('\u05E9\u05C1\u05B8\u05DC\u05D5\u05B9\u05DD'); return typeof r === 'string' && /^[a-z]+$/i.test(r.normalize('NFD').replace(/[\u0300-\u036f]/g, '')); }
+    catch (e) { return false; }
+  }
+  async function tryImport(urls, check) {
     for (const url of urls) {
-      try { return await import(url); }
+      try { const m = await import(url); if (!check || check(m)) return m; console.warn('[hebrew-translit] Failed its self-test', url); }
       catch (e) { console.warn('[hebrew-translit] Failed to load', url, e); }
     }
     return null;
@@ -276,7 +282,7 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
     ensureLoaded() {
       if (this.loadPromise) return this.loadPromise;
       this.loadPromise = (async () => {
-        const main = await tryImport(CDN_URLS);
+        const main = await tryImport(CDN_URLS, translitWorks);
         if (!main || !main.transliterate || !main.SBL) {
           this.failed = true;
           window.dispatchEvent(new Event('translitlibfailed'));

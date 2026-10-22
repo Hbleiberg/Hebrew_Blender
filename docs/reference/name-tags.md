@@ -54,7 +54,10 @@ the AllTools registration of its keys, a tour, and the backend smokes.
 ## Transliteration
 
 The Dictionary's lazy loader (`window.HebrewTransliterator`, `hebrew-transliteration@2.9.1` from esm.sh, jsDelivr as
-the fallback; the "Keep in sync" copies) supplies the library; the page builds its own two schemes from
+the fallback; the "Keep in sync" copies, and the Torah Trainer's compact variant) supplies the library. Each copy must
+pass `translitWorks` (a known word comes back as plain Latin letters) before it is used: jsDelivr's `+esm` build carries
+havarotjs's word classes twice and answers every word with `[object Object]`, so today that fallback always counts as a
+failed load and each page's offline path takes over. The page builds its own two schemes from
 `HebrewTransliterator.lib.SBL` in `ntSchemas()` (`NT_TR_BASE`): **ch** for ח and כ, **tz** for צ, a final kamatz-he
 as a plain *a* (Shira, Rivka), no doubled letters (`DAGESH_CHAZAQ: false`), tzere-yod as *ei* (Eitan), vocal sheva
 *e*. **Modern** reads kamatz as *a* and ת as *t*; **Ashkenazi** reads kamatz as *o* and a ת without a dagesh as *s*
