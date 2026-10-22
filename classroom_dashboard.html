@@ -2441,6 +2441,23 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
 }
 .hol-ico svg { display: block; width: 100%; height: 100%; stroke: var(--hol-line); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
 /* ═══ end holiday-icons CSS ═══ */
+/* Windows High Contrast (forced colours): in the settings drawer the open tab, the chosen font, vowel scheme and day-emoji
+   set, the Backup panel's pressed Automatic / Manual and the roster keyboard's open tab read exactly like their neighbours —
+   gold borders, tinted and navy fills are all replaced by system colours (pattern selected-state-lost-in-forced-colors, S548).
+   System colours are kept in that mode, so the selected ones take the theme's selection pair; both theme rules are named, by
+   specificity; the drawer tabs' transparent underline (CanvasText in that mode, so every tab looked underlined) goes Canvas
+   except under the open one. The block ends the page's own CSS so it outranks every rule above it in source order. */
+@media (forced-colors:active) {
+  .settings-modal .tt-tab { border-block-end-color: Canvas; }
+  .settings-modal .tt-tab[aria-selected="true"], body.dark .settings-modal .tt-tab[aria-selected="true"],
+  .font-opt.active, body.dark .font-opt.active,
+  .vowel-scheme-btn.active, body.dark .vowel-scheme-btn.active,
+  .emoji-set-btn.active, body.dark .emoji-set-btn.active,
+  .ivrit-mode-toggle .ivrit-mode-btn.active, body.dark .ivrit-mode-btn.active,   /* (0,3,0): the Backup panel's own <style> sits later in the body */
+  .hk-tab.active, body.dark .hk-tab.active { background: Highlight; border-color: Highlight; color: HighlightText; }
+  .font-opt.active .font-opt-preview, .font-opt.active .font-opt-name, body.dark .font-opt.active .font-opt-preview,
+  .emoji-set-btn.active[data-set="none"], body.dark .emoji-set-btn.active[data-set="none"] { color: HighlightText; }
+}
 </style></head>
 <body>
 <a class="skip-link" href="#mainContent" data-i18n="dashboard.a11y.skip_to_board">Skip to the board</a>
