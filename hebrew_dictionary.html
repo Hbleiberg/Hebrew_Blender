@@ -2719,14 +2719,28 @@ loadWordCorpus();
 
 function retryWordCorpus() {   // restore the loading card, then re-run the same corpus load
   _wordsFailed = false;
-  const btn = document.getElementById('dictRetryBtn'); if (btn) btn.remove();
+  const btn = document.getElementById('dictRetryBtn');
+  const pressed = corpusRetryPressed(btn);
+  if (btn) btn.remove();
   const bar = document.getElementById('loadBar'); if (bar) bar.style.display = '';
   const el = document.getElementById('loadingText');
   if (el) {
     el.setAttribute('data-i18n', 'dictionary.loading.dictionary');
     el.textContent = window.I18n ? I18n.t('dictionary.loading.dictionary') : 'Loading dictionary…';
   }
-  loadWordCorpus();
+  loadWordCorpus().then(() => { if (pressed) focusAfterCorpusRetry(document.getElementById('dictRetryBtn')); });
+}
+// Each corpus Try again is removed the moment its attempt starts, so the keyboard that pressed it fell to the page
+// (pattern button-focus-lost-to-its-own-rebuild; the Torah Trainer's _ttFocusAfterRetry). Once the attempt settles, a
+// load that failed again gives its new Try again the focus, one that worked the mode's search field — unless the
+// focus found a home meanwhile. Keyboard presses only: a tap that focused the button must not raise a phone's keyboard.
+function corpusRetryPressed(btn) { return !!btn && document.activeElement === btn && btn.matches(':focus-visible'); }
+function focusAfterCorpusRetry(again) {
+  const a = document.activeElement;
+  if (a && a !== document.body && a.isConnected) return;
+  const field = ['searchInput', 'shoreshInput'].map(id => document.getElementById(id)).find(el => el && el.getClientRects().length);
+  const t = again && again.getClientRects().length ? again : field;
+  if (t) t.focus();
 }
 
 function setAllVowels(checked) {
@@ -5094,8 +5108,12 @@ function fetchEmojiData() {
 function retryEmojiData() {   // the emoji register's ↻ — re-runs the same load path the mode toggle uses
   _dictEmojiFailed = false;
   const tree = document.getElementById('emojiCatTree');
+  const pressed = corpusRetryPressed(tree && tree.querySelector('.corpus-retry-btn'));
   if (tree) tree.innerHTML = '';
-  fetchEmojiData().then(() => { renderEmojiCatTree(); onFilter(); });
+  fetchEmojiData().then(() => {
+    renderEmojiCatTree(); onFilter();
+    if (pressed) focusAfterCorpusRetry(tree && tree.querySelector('.corpus-retry-btn'));
+  });
 }
 
 function setEmojiGender(g) {
