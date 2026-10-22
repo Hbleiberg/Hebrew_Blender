@@ -93725,3 +93725,17 @@ _(prior)_ **Next session (S542):** **PR: `claude/improveloop-s535` open → cont
 - [x] 2026-10-22 | `94c605ee` | parsha_emojis | (S541) **The pressed view shows in High Contrast.** | 0/7 → 7/7
 
 - 2026-10-22 | **S541** | iters: 5 | tools: parsha_emojis ×2, LL, i18n.js, sw.js | patterns fixed: selected-state-lost-in-forced-colors ×2 | pass run: C | SW: v1069→v1070
+
+_(prior)_ **Next session (S543):** **PR `claude/improveloop-s535`: open → continue; merged → fresh.** `sw.js` **v1071**, FM **5.59**, corpus ?v=7. ⚑ Stalest: B (S529), A (S530), E (S531). ⚑ Keep-alive #41 (10-23): confirm green. ⚑ Seeds: 48. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4 (+ field borders, retry copy); O's Bash rule.
+
+- [x] 2026-10-22 | (S542 close-out) | branch/deploy note | **S542 = F, loading: FOUND 7, FIXED 4.** #357; no drift. sw v1070→v1071; no FM bump. Deferred: gate 2.
+
+- [x] 2026-10-22 | `20823f85` | parsha_emojis | (S542) **Loading said; Try again.** | 0/4 → 4/4
+
+- [x] 2026-10-22 | `72b005c1` | dictionary | (S542) **Try again keeps focus** ×2. | 16 → 0
+
+- [x] 2026-10-22 | `97de5370` | trope | (S542) **Mid-load says loading.** | 4 → 0
+
+- [x] 2026-10-22 | `24859b7c` | torah | (S542) **No raw key while loading.** | 4 → 0
+
+- 2026-10-22 | **S542** | iters: 5 | tools: torah, trope, dict, parsha, sw | patterns fixed: two-state ×1, focus-lost ×2 | pass run: F | SW: v1070→v1071

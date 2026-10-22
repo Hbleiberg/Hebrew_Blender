@@ -8,13 +8,13 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P4 (**NEW S542 F**) | hebrew_dictionary.html | **The emoji failure is silent** (no live region; the count goes blank). | found S542
+- [ ] P4 (**NEW S543 B — maintainer**) | the 5 loader carriers | **The translit library has no working second source** (jsDelivr needs an import map, or self-host it). | found S543
 
 - [ ] P4 (**NEW S542 F — verify**) | torah_trainer.html | **The staff's Try again is rebuilt by `renderText`:** focus may fall. | found S542
 
 - [ ] P4 (**NEW S542 F — gate 2**) | FM, js/ivrit-saves.js, torah, parsha_emojis | **Retry copy diverges from "Try again / נסו שוב"** (FM, cloud status, the staff's HE; Parsha Emojis' "reload the page"). | found S542
 
-- [ ] P4 (**NEW S541 C — pattern**) | 7 pages | **A pressed or selected state vanishes in High Contrast** (findings S541). | found S541
+- [ ] P4 (**NEW S541 C — pattern; S543 ×2**) | 5 pages | **A pressed or selected state vanishes in High Contrast** (findings S541). | found S541
 
 - [ ] P4 (**NEW S541 C — gate 3**) | 14 pages | **Field edges are `--border`: 1.83:1 light, 1.22:1 dark** (1.4.11: 3:1). | found S541
 
@@ -326,29 +326,29 @@ _(none)_
 
 ## Done
 
-- [x] 2026-10-22 | (S542 close-out) | branch/deploy note | **S542 = F, loading: FOUND 7, FIXED 4.** #357; no drift. sw v1070→v1071; no FM bump. Deferred: gate 2.
+- [x] 2026-10-22 | (S543 close-out) | branch/deploy note | **S543 = B: FOUND 2, FIXED 1 (+3).** #357; no drift. sw v1071→v1072; no FM bump. Deferred: translit source.
 
-- [x] 2026-10-22 | `20823f85` | parsha_emojis | (S542) **Loading said; Try again.** | 0/4 → 4/4
+- [x] 2026-10-22 | `277c7d58` | dictionary | (S543) **Emoji failure said.** | 0/4 → 4/4
 
-- [x] 2026-10-22 | `72b005c1` | dictionary | (S542) **Try again keeps focus** ×2. | 16 → 0
+- [x] 2026-10-22 | `61577b70` | contact | (S543) **Chosen pill shows in HC.** | 0/3 → 3/3
 
-- [x] 2026-10-22 | `97de5370` | trope | (S542) **Mid-load says loading.** | 4 → 0
+- [x] 2026-10-22 | `ff0eb611` | resources | (S543) **Pressed toggles show in HC.** | 0/8 → 8/8
 
-- [x] 2026-10-22 | `24859b7c` | torah | (S542) **No raw key while loading.** | 4 → 0
+- [x] 2026-10-22 | `7383dfb9` | 5 loader pages | (S543) **jsDelivr's wrong answers = a failed load.** | 10 → 0
 
 ## Metrics
 
 ### Per-session log (one line per session)
 
-- 2026-10-22 | **S542** | iters: 5 | tools: torah, trope, dict, parsha, sw | patterns fixed: two-state ×1, focus-lost ×2 | pass run: F | SW: v1070→v1071
+- 2026-10-22 | **S543** | iters: 5 | tools: gen, dict ×2, flash, torah, name_tags, resources, contact, sw | patterns fixed: forced-colors ×2 | pass run: B | SW: v1071→v1072
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S542 (2026-10-22):** torah, trope, dictionary, parsha_emojis, CSV, sw.js S542 · LL, i18n.js S541 · name_tags S539 · flash, FM S538 · 5 toast pages S537 · saves, resources S536 · scripts S535 · index, README, sitemap S532 · account, contact, privacy, terms, 404 S530 · corpus S524 · pwa S472.
+- **Snapshot S543 (2026-10-22):** generator, dictionary, flash, torah, name_tags, resources, contact, sw.js S543 · trope, parsha_emojis, CSV S542 · LL, i18n.js S541 · FM S538 · 5 toast pages S537 · saves S536 · scripts S535 · index, README, sitemap S532 · account, privacy, terms, 404 S530 · corpus S524 · pwa S472.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
-- **`selected-state-lost-in-forced-colors`** (NEW S541 C; ×2 fixed; open: 7 pages): ACTIVE, streak 0. A state drawn only by colour flattens in forced colours. Detection: `c541/fcensus.mjs`, then computed styles.
+- **`selected-state-lost-in-forced-colors`** (NEW S541 C; ×4 fixed (S543: resources, contact); open: 5 pages): ACTIVE, streak 0. A state drawn only by colour flattens in forced colours. Detection: `c541/fcensus.mjs`, then computed styles.
 
 - **`live-region-shown-with-its-text`** (NEW S537; `61762cf` ×8, `6d095c0` ×3): ACTIVE, streak 0. A status region made or un-hidden with its first message. Detection: findings S537 (grep + CDP).
 
@@ -732,7 +732,7 @@ _(none)_
 
 - I first-load & empty-state: 2026-10-22 (**S539 — 40th I, S525 → S538 (93 commits; name_tags' first I, parsha_emojis' under its name): 63 virgin cells (plants 334/336); 69 seeds; 27 tours; ~250 openers; 280 bad URLs; failure paths 20. FOUND 2, FIXED 1.**)
 
-- B console/error audit: 2026-10-21 (**S529 — 40th B, `1a3ab8af..5dfff187` (109 commits; parsha_emojis' first B): controls 12/12; 80 load cells × 20 pages; parsha_emojis, LL Coloring + bulk, hub What's-new, dashboard parsha popup, Trainer gallery, 4 tours mid-switch, by real input; 32 wrong-shape stores; iPhone 13 × 20 pages. CLEAN.**)
+- B console/error audit: 2026-10-22 (**S543 — 41st B, 78 commits (name_tags' first): 84 cells; name_tags, 9 tours, PE, LL, 8 retries by real input; iPhone ×42. FOUND 2, FIXED 1.**)
 
 - J metrics-informed: never run — SKIP in rotation until the impact-metrics dashboard/Worker is live (not live)
 
@@ -744,4 +744,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-22 (**S542 — 40th F, loading states (first since S189): 14 surfaces held, then aborted. FOUND 7, FIXED 4. F-next: long-build progress.**)
 
-**Next session (S543):** **PR `claude/improveloop-s535`: open → continue; merged → fresh.** `sw.js` **v1071**, FM **5.59**, corpus ?v=7. ⚑ Stalest: B (S529), A (S530), E (S531). ⚑ Keep-alive #41 (10-23): confirm green. ⚑ Seeds: 48. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4 (+ field borders, retry copy); O's Bash rule.
+**Next session (S544):** **PR `claude/improveloop-s535`: open → continue; merged → fresh.** `sw.js` **v1072**, FM **5.59**, corpus ?v=7. ⚑ Stalest: A (S530), E (S531), L (S532). ⚑ Keep-alive #41 (10-23): confirm green. ⚑ Seeds: 48. ⚑ Maintainer: translit second source; sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4 (+ field borders, retry copy); O's Bash rule.
