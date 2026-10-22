@@ -3182,6 +3182,17 @@ function _resolveStep(idx) {
   try { el = step.target(); } catch (e) {}
   return _tourVisible(el) ? el : null;
 }
+// Where the shown step stands among the steps the tour shows now: one whose target is hidden is skipped, so counting
+// the raw index made "Step 3 of 9" jump to "Step 5 of 9", and the last shown step said Next before a step never shown.
+function _tourCounter(idx) {
+  let total = 0, count = 0;
+  for (let i = 0; i < TOUR_STEPS.length; i++) {
+    if (i !== idx && !_resolveStep(i)) continue;
+    total++;
+    if (i <= idx) count++;
+  }
+  return { count, total };
+}
 function _tourShow(idx, dir) {
   while (idx >= 0 && idx < TOUR_STEPS.length && !_resolveStep(idx)) idx += dir;
   if (idx < 0 || idx >= TOUR_STEPS.length) { tourEnd(dir > 0); return; }
@@ -3190,9 +3201,10 @@ function _tourShow(idx, dir) {
   try { el.scrollIntoView({ block: 'center', inline: 'center' }); } catch (e) {}
   document.getElementById('tourCardTitle').textContent = I18n.t(step.titleKey);
   document.getElementById('tourCardBody').textContent = I18n.t(step.bodyKey);
-  document.getElementById('tourStep').textContent = I18n.t('shared.tour.step_counter', { count: idx + 1, total: TOUR_STEPS.length });
-  document.getElementById('tourBack').disabled = (idx === 0);
-  document.getElementById('tourNext').textContent = I18n.t((idx === TOUR_STEPS.length - 1) ? 'shared.tour.done' : 'shared.tour.next');
+  const tc = _tourCounter(idx);
+  document.getElementById('tourStep').textContent = I18n.t('shared.tour.step_counter', { count: tc.count, total: tc.total });
+  document.getElementById('tourBack').disabled = (tc.count === 1);
+  document.getElementById('tourNext').textContent = I18n.t((tc.count === tc.total) ? 'shared.tour.done' : 'shared.tour.next');
   _tourReposition();
   if (_tourRepoTimer) clearTimeout(_tourRepoTimer);
   _tourRepoTimer = setTimeout(_tourReposition, 350);   // re-measure after scroll settles
