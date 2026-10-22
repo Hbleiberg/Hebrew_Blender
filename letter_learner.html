@@ -2192,7 +2192,13 @@ function llSaveSettingsIfChanged() {
   let raw = null;
   try { raw = localStorage.getItem(LL_KEY); } catch (e) {}
   if (raw !== _llLastWritten) { llAdoptStore(); return; }
-  if (JSON.stringify(settings) !== _llLastWritten) llSaveSettings();
+  const text = JSON.stringify(settings);
+  if (text === _llLastWritten) return;
+  // A device that never stored these options and still shows the defaults has nothing of its own to write. Written here,
+  // before the module's first read, the defaults counted as "the settings this device had before you signed in" — every new
+  // device's first sign-in filed them, with the note and a download of nothing but defaults. The first change still writes.
+  if (raw === null && text === JSON.stringify(LL_DEFAULTS)) return;
+  llSaveSettings();
 }
 // Re-read the key onto a fresh defaults clone and re-render everything that shows a setting.
 function llAdoptStore() {
