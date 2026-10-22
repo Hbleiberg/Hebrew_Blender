@@ -198,6 +198,11 @@ body.dark .btn-primary:disabled:hover{background:#2a4070;}
 .pill-group .pill:hover{color:var(--text);}
 .pill-group .pill.active{background:var(--navy);color:var(--gold-light);}
 body.dark .pill-group .pill.active{background:#2a4070;color:var(--gold-light);}
+/* High Contrast (forced colours) paints every pill Canvas on CanvasText, so the chosen payment method looked like the
+   others; system colours are kept there, so it takes the theme's selection colours (both theme rules, by specificity). */
+@media (forced-colors:active){
+  .pill-group .pill.active,body.dark .pill-group .pill.active{background:Highlight;color:HighlightText;}
+}
 /* min-height is the anti-jump floor for the three payment panels — without it the card
    resized on every tab click. 250px covered PayPal and Venmo (121px of natural content
    each) but sat 29px UNDER the Zelle panel, which the QR image makes 279px — so the one
