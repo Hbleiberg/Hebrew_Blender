@@ -94149,3 +94149,18 @@ _(prior)_ **Next session (S543):** **PR `claude/improveloop-s535`: open → cont
 ### from Recurring-pattern sweep status
 
 - _(history)_ **The per-sweep result rows (S141–S357, 83 rows) moved verbatim to `docs/IMPROVEMENT_ARCHIVE.md` in S361 ("Sweep-status rows moved out of the ledger"); the current state of every pattern lives in Pattern health above.** Grep …[full text: IMPROVEMENT_ARCHIVE.md]
+
+<!-- moved by the S544 protocol change, 2026-10-22 -->
+## Compaction (S544, 2026-10-22) — the S544 handoff, replaced by the S545 handoff
+
+### from Discovery-pass rotation
+
+**Next session (S544):** **PR `claude/improveloop-s535`: open → continue; merged → fresh.** `sw.js` **v1072**, FM **5.59**, corpus ?v=7. ⚑ Stalest: A (S530), E (S531), L (S532). ⚑ Keep-alive #41 (10-23): confirm green. ⚑ Seeds: 48. ⚑ Maintainer: translit second source; sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4 (+ field borders, retry copy); O's Bash rule.
+
+
+<!-- archived by compact-ledger at the S545 boundary, 2026-10-22 -->
+## Compaction (S545, 2026-10-22) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-22 | (S544 close-out) | branch/deploy note | **S544 = the protocol audit, no pass.** Branch `claude/sleepy-lamport-howch1`, draft PR; no drift (sw v1072, FM 5.59, migration 0007 live). Pattern health → one-line rows + `loop-patterns.md` (28 DRAFT); Candidates sorted, 18 → Awaiting, 18 aged P4 archived; passes → `loop-passes.md` (+V, R, E's shape arm, H's student cell); `scripts/loop/` drift/coverage/closeout; four stale X-next notes fixed. Deferred: O's permission rule, a CI workflow (maintainer).

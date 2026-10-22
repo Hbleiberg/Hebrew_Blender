@@ -17,7 +17,13 @@
 >
 > _(history)_ **The per-sweep result rows (S141–S357, 83 rows) moved verbatim to `docs/IMPROVEMENT_ARCHIVE.md` in S361 ("Sweep-status rows moved out of the ledger"); the current state of every pattern lives in Pattern health above.** Grep …[full text: IMPROVEMENT_ARCHIVE.md]
 
-## Active, draft and guard patterns (161; newest first, as the ledger lists them)
+## Active, draft and guard patterns (162; newest first, as the ledger lists them)
+
+## `dated-surface-walk`
+- **Status:** DRAFT · **Owner:** A · **Consequence:** normal · **Last:** S544 · **Streak:** 0 · **Detector:** none
+- **Shape:** A date-driven surface (the dashboard's inline Hebrew-date and Omer copy, its countdown, the Trainer's parasha-by-date, Parsha Emojis' week) shows the wrong parasha, holiday or count on some date of the Hebrew year — a double parasha, an Israel/Diaspora split week, Adar II in a leap year, the Omer's day boundary.
+- **Planned detection (not yet run, hence DRAFT):** the clock pinned per Shabbat and holiday of one Hebrew year (`page.clock.setFixedTime` or an `addInitScript` Date shim) with the vm-loaded `js/hebrew-calendar.js` as oracle (Hebcal-proven over 5660–5900 by `scripts/smoke-hebrew-calendar.mjs --hebcal`; `@hebcal/core` is GPL and never fetched), the dashboard countdown behind a `route.fulfill` fixture; controls: a planted one-day offset and a flipped `israel`. Registered by the S544 protocol audit after the year-walk pass proposal was refuted (loop-findings S544): the module and the Trainer's festival Shabbatot were covered; the dashboard's inline copy (`docs/reference/dashboard.md`: the two copies "are meant to stay identical … not yet done"), the countdown and a leap-year pin were not.
+- **Record (ledger row at S544):** - `dated-surface-walk` | DRAFT | owner A | det: none | last S544 | streak 0
 
 ## `selected-state-lost-in-forced-colors`
 - **Status:** ACTIVE · **Owner:** C · **Consequence:** normal · **Last:** S543 · **Streak:** 0 · **Detector:** recipe

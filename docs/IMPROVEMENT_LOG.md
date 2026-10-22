@@ -26,6 +26,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
 
+- [ ] P4 (**NEW S544 audit — gate 2, content**) | data/hebrew_words.json | **One entry stacks tsere and patah (`טִיֵַּח`)** — the one real defect in 14,919 corpus strings (loop-findings S544, with the ~36 legitimate look-alikes); a corpus edit bumps `?v=` on every fetcher. | found S544
+
 - [ ] P4 (**NEW S542 F — verify**) | torah_trainer.html | **The staff's Try again is rebuilt by `renderText`:** focus may fall. | found S542
 
 - [ ] P4 (**NEW S542 F — gate 2**) | FM, js/ivrit-saves.js, torah, parsha_emojis | **Retry copy diverges from "Try again / נסו שוב"** (FM, cloud status, the staff's HE; Parsha Emojis' "reload the page"). | found S542
@@ -292,6 +294,8 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-22 | (S544 close-out) | branch/deploy note | **S544 = the protocol audit, no pass.** Branch `claude/sleepy-lamport-howch1`, draft PR; no drift (sw v1072, FM 5.59, migration 0007 live). Pattern health → one-line rows + `loop-patterns.md` (28 DRAFT); Candidates sorted, 18 → Awaiting, 18 aged P4 archived; passes → `loop-passes.md` (+V, R, E's shape arm, H's student cell); …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [x] 2026-10-22 | (S543 close-out) | branch/deploy note | **S543 = B: FOUND 2, FIXED 1 (+3).** #357; no drift. sw v1071→v1072; no FM bump. Deferred: translit source.
 
 - [x] 2026-10-22 | `277c7d58` | dictionary | (S543) **Emoji failure said.** | 0/4 → 4/4
@@ -306,13 +310,17 @@ _(none)_
 
 ### Per-session log (one line per session)
 
+- 2026-10-22 | **S544** | iters: 0 | tools: skill, ledger scripts, scripts/loop, docs/reference | patterns fixed: — | pass run: — (protocol audit, no discovery pass) | SW: v1072→v1072
+
 - 2026-10-22 | **S543** | iters: 5 | tools: gen, dict ×2, flash, torah, name_tags, resources, contact, sw | patterns fixed: forced-colors ×2 | pass run: B | SW: v1071→v1072
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S543 (2026-10-22):** generator, dictionary, flash, torah, name_tags, resources, contact, sw.js S543 · trope, parsha_emojis, CSV S542 · LL, i18n.js S541 · FM S538 · 5 toast pages S537 · saves S536 · scripts S535 · index, README, sitemap S532 · account, privacy, terms, 404 S530 · corpus S524 · pwa S472.
+- **Snapshot S544 (2026-10-22):** skill, ledger scripts, scripts/loop, loop-passes, loop-patterns S544 · generator, dictionary, flash, torah, name_tags, resources, contact, sw.js S543 · trope, parsha_emojis, CSV S542 · LL, i18n.js S541 · FM S538 · 5 toast pages S537 · saves S536 · scripts S535 · index, README, sitemap S532 · account, privacy, terms, 404 S530 · corpus S524 · pwa S472.
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
+
+- `dated-surface-walk` | DRAFT | owner A | det: none | last S544 | streak 0
 
 - `selected-state-lost-in-forced-colors` | ACTIVE | owner C | det: recipe | last S543 | streak 0
 
@@ -640,19 +648,19 @@ _(none)_
 
 - P accounts & cloud (one surface): 2026-10-21 (**S535 — 12th P, name_tags (first): W1–W8 29/29, static 26/26, plants 13/13; live clean. Page clean; 1 suite-wide FIXED, 1 gate-2. P-next: LL (never), dashboard (S421).**)
 
-- O deslop — AI-design-tell sweep (one surface): 2026-09-08 (**S346 — 6th O, `flash_cards.html`. ⚑ BLOCKED HERE TWICE (S399, S403) — NOT "needs an attended session". Clone + the 4 parsers install fine; EXECUTING the detector is refused by the sandbox's auto-mode classifier ("Code from External"), and the refusal names the remedy: the maintainer adds a Bash permission rule for the detector (or …[full text: IMPROVEMENT_ARCHIVE.md]
+- O deslop — AI-design-tell sweep (one surface): SKIP since S403 — the sandbox refuses to execute the third-party detector ("Code from External"); runs again once the maintainer commits a `.claude/settings.json` permission rule for it (`docs/reference/deslop-detector.md`). Last run 2026-09-08 (S346, `flash_cards.html`, 6th O; the S399/S403 refusals are in the archive).
 
-- N mobile & touch-device (one surface): 2026-10-21 (**S534 — 27th N, `name_tags.html` (first audit): 20 cells, rows, tour by taps, 1px header sweep, fingers, rotation, 4×; plants 5/5. FOUND 6, FIXED 4. N-next: LL (never), contact (S276).**)
+- N mobile & touch-device (one surface): 2026-10-21 (**S534 — 27th N, `name_tags.html` (first audit): 20 cells, rows, tour by taps, 1px header sweep, fingers, rotation, 4×; plants 5/5. FOUND 6, FIXED 4. N-next: LL, parsha_emojis (never), flash (S361).**)
 
 - M aesthetics & visual design (one surface): 2026-10-21 (**S536 — 27th M, LL (first): 120 shots × 12 cells, real fonts, row census, real Next clicks; plants fired. FOUND 5, FIXED 3 + S464. M-next: FM (S335).**)
 
 - K i18n / localization audit: 2026-10-21 (**S533 — 36th K, `db80feb4..843984b3` (111 commits; parsha_emojis' first): CSV +209 (all resolve), 12 reworded, 0 removed; static 5,502 refs + 2,974 fallback sites (the html arm, lapsed since S475); blind 0/4,328 lines; 102 states by the real switcher (twins = base + 5 known); retry 4/4; 10 surfaces by real input + a switch mid-state. FOUND 4, FIXED 4.**)
 
-- C accessibility (one tool): 2026-10-22 (**S541 — parsha_emojis' first C: 9 surfaces × 6 cells, Tab, dialog 140/140, motion, spacing (all plants fired); forced colours, field borders, zoom. FOUND 6, FIXED 4. C-next: name_tags (never), torah (S298).**)
+- C accessibility (one tool): 2026-10-22 (**S541 — parsha_emojis' first C: 9 surfaces × 6 cells, Tab, dialog 140/140, motion, spacing (all plants fired); forced colours, field borders, zoom. FOUND 6, FIXED 4. C-next: name_tags (never), flash (S381).**)
 
 - A recurring-pattern sweep: 2026-10-21 (**S530 — 41st A, `d77484c5..6f9a5992` (109 commits; parsha_emojis' first): 53 static + 16 runtime arms × 16 pages vs pre-delta (plants fired), 18 blocks, dialogs, print, 1px sweep. FOUND 4, FIXED 4.**)
 
-- G print & export fidelity (one tool): 2026-10-21 (**S537 — parsha_emojis' first G: 56 card PDFs, 108 sheet combos; plants fired. FOUND 2, FIXED 1. G-next: dashboard (S364).**)
+- G print & export fidelity (one tool): 2026-10-21 (**S537 — parsha_emojis' first G: 56 card PDFs, 108 sheet combos; plants fired. FOUND 2, FIXED 1. G-next: name_tags (never), generator (S392).**)
 
 - D performance (one tool): 2026-10-22 (**S538 — parsha_emojis' first D (trope was S480, not S365): cold, 33 real-click arms × 1×/4×, traces, idle, leak; controls fired. FOUND 4, FIXED 1. D-next: name_tags (never), FM (S410).**)
 
@@ -662,12 +670,14 @@ _(none)_
 
 - J metrics-informed: never run — SKIP in rotation until the impact-metrics dashboard/Worker is live (not live)
 
+- V offline & service-worker runtime (suite): never run — registered 2026-10-22 (S544; `docs/reference/loop-passes.md` → V: the installed worker serving the shell with the server stopped, the data cache, the VERSION+1 activate path)
+
 - L SEO & discoverability audit: 2026-10-21 (**S532 — 29th L, `18a7e6a3..ca9b9618` (110 commits; LL's launch, parsha_emojis' first L): 20 arms + 3 on 20 pages (plants 29/29); SEO surface unchanged 16/18; LL + parsha JSON-LD claims by real clicks; FAQ twins 10/10. FOUND 1 (gate 2), FIXED 4; S432 struck.**)
 
-- H teacher walkthrough / paper-cuts (one tool): 2026-10-22 (**S540 — parsha_emojis' first H: 11 lessons by real clicks × 2 cells (+ 6 widths, 1920, 5 dated weeks). FOUND 4, FIXED 1. H-next: name_tags, privacy/terms/404 (never), trope (S367).**)
+- H teacher walkthrough / paper-cuts (one tool): 2026-10-22 (**S540 — parsha_emojis' first H: 11 lessons by real clicks × 2 cells (+ 6 widths, 1920, 5 dated weeks). FOUND 4, FIXED 1. H-next: name_tags (never), trope (S367), FM (S380); the chrome bundle S498 (privacy/terms/404 never as pages).**)
 
 - E freshness/site-health: 2026-10-21 (**S531 — 41st E, `d7c58446..48286048` (108 commits; parsha_emojis' first): 16 arms + carrier lists (plants 18/18), docs, CSP 40 cells (plant 40/40), the stub. FOUND 2, FIXED 4.**)
 
 - F cross-tool consistency: 2026-10-22 (**S542 — 40th F, loading states (first since S189): 14 surfaces held, then aborted. FOUND 7, FIXED 4. F-next: long-build progress.**)
 
-**Next session (S544):** **PR `claude/improveloop-s535`: open → continue; merged → fresh.** `sw.js` **v1072**, FM **5.59**, corpus ?v=7. ⚑ Stalest: A (S530), E (S531), L (S532). ⚑ Keep-alive #41 (10-23): confirm green. ⚑ Seeds: 48. ⚑ Maintainer: translit second source; sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4 (+ field borders, retry copy); O's Bash rule.
+**Next session (S545):** **PR `claude/sleepy-lamport-howch1` (the S544 protocol change): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1072**, FM **5.59**, corpus ?v=7. ⚑ drift: main=843984b sw=v1072 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ The protocol changed in S544 — re-read SKILL.md: passes in `docs/reference/loop-passes.md`, patterns in `docs/reference/loop-patterns.md` (28 DRAFT rows need a recipe or retirement at the next A), `node scripts/loop/coverage.mjs` names a surface pass's target, `node scripts/loop/closeout.mjs` at close-out. ⚑ Stalest: suite A (S530), E (S531), L (S532), V (never); surface: name_tags never had C/D/G/H/M, LL and parsha_emojis never had N/P. ⚑ Keep-alive #41 (10-23): confirm green. ⚑ Seeds: 48. ⚑ Maintainer: O's Bash permission rule (`.claude/settings.json`); a CI workflow running `closeout.mjs --static`; translit second source; sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4 (+ field borders, retry copy).

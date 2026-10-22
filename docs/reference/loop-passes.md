@@ -250,3 +250,18 @@ backend smokes' D-scenarios cover sync fixes). A fix commits its probe as
 pattern row covers it**; `node scripts/loop/regress.mjs --last 2` runs in session-start step 4 on HEAD
 beside its `git archive <fix>^` control; a probe needing the `--sdk` build, web fonts or Pyodide skips
 loudly; a failure is a P2 ahead of the rotation pass.
+
+## Micro-feature track (an iteration type, not a pass)
+- **Source:** only the ledger's Feature seeds (from pass H or explicit human request). Never invent one.
+- **Micro:** one tool (a declared cross-tool handshake pair is the sole exception), ≤ ~150 lines of
+  diff, no dependencies, no build step, no `data/` edits, storage keys reconciled per CLAUDE.md in the
+  same commit, both themes, single-file conventions. Never across the backend boundary — no migration,
+  no deploy, no new `saves.tool` value; a seed that adds a synced key ships its registry row, its
+  `omit` list and its `privacy.legal.*` / `terms.legal.*` text and passes `smoke-sync` +
+  `smoke-migration` in the same commit, or it is not micro.
+- **Budget:** max 1 per session, costs 2 iterations (1 per touched tool against the caps). Skip when a
+  P1 exists. Selection is gate 1; unattended default is skip and log.
+- **Verification:** the full step 4 plus a fresh-profile check and a `.ivrit` round-trip if state was
+  added. Prefer dual-audience seeds (Hebrew and secular use) at equal size.
+- **Abort:** diff trending past ~150 lines or outside the declared scope → revert, split the seed in
+  the ledger, log "attempted, split."

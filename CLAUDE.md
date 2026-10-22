@@ -14,7 +14,8 @@ index below) — read the file for the area you are touching before you touch it
   matching `docs/reference/<topic>.md`.
 - **History, session ids, dates, digests, line numbers** → the improvement loop's files only
   (`docs/IMPROVEMENT_LOG.md` for current state, `docs/IMPROVEMENT_ARCHIVE.md` for history,
-  `docs/reference/loop-findings.md` for measurements and refutations). Never in this file or in
+  `docs/reference/loop-findings.md` for measurements and refutations, `docs/reference/loop-patterns.md` for
+  the pattern catalog). Never in this file or in
   the other `docs/reference/` files.
 - Reference docs are plain pointers, never `@`-imports (an import is inlined into every session).
 
@@ -32,7 +33,7 @@ index below) — read the file for the area you are touching before you touch it
 | `torah_trainer.html` / `trope_tutor.html`, `js/trope-staff.js`, vowel color schemes, trope coloring, the Trope staff layout | `docs/reference/torah-and-trope.md` |
 | `sw.js`, `splash/`, deploy, sitemap/`llms.txt`, the Playwright recipe | `docs/reference/ops.md` |
 | Accounts, sign-in, the header account chip, `js/supabase-config.js`, `js/ivrit-account.js`, cloud saves and `js/ivrit-saves.js`, Font Maker cloud projects and `js/ivrit-projects.js`, the account page `account.html`, the harnesses `account-test.html` / `saves-test.html`, `db/migrations/`, `db/functions/`, `db/email-templates/`, `.github/workflows/supabase-keepalive.yml`, `scripts/smoke-*.mjs` | `docs/reference/accounts-and-cloud.md`, `db/README.md`; the plain-language map of what talks to what: `docs/backend-architecture.md`; the operations the repo cannot carry (key rotation, SDK upgrade, dashboard settings, restoring a person's zip): `README.md` → *Accounts (optional, Supabase)* → *Keeping it running* |
-| The improvement loop (`/improveloop`), its ledger, its size rules | `.claude/skills/improveloop/SKILL.md`, `scripts/ledger-rules.mjs` |
+| The improvement loop (`/improveloop`): its protocol, passes, pattern catalog, ledger size rules and `scripts/loop/` | `.claude/skills/improveloop/SKILL.md`, `docs/reference/loop-passes.md`, `docs/reference/loop-patterns.md`, `scripts/ledger-rules.mjs`, `scripts/loop/README.md` |
 
 ## Accounts & cloud saves (Supabase) — REQUIRED patterns
 Accounts are optional; signed in, the account is where saves live; how the layer works: `docs/reference/accounts-and-cloud.md`.
