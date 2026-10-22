@@ -478,6 +478,11 @@ html[lang="he"] .ll-badge { letter-spacing:normal; text-transform:none; }
 .ll-mode-btn:hover { border-color:var(--gold); }
 .ll-mode-btn[aria-pressed="true"] { background:var(--navy); color:#fff; border-color:var(--navy); }
 body.dark .ll-mode-btn[aria-pressed="true"] { background:#2a4070; border-color:#2a4070; }   /* the page's dark navy pair (the sidebar's edge tabs) */
+/* High Contrast (forced colours) paints every mode button Canvas on CanvasText, so the pressed one looked like the rest;
+   system colours are kept there, so it takes the theme's selection colours (both theme rules, by specificity). */
+@media (forced-colors:active) {
+  .ll-mode-btn[aria-pressed="true"], body.dark .ll-mode-btn[aria-pressed="true"] { background:Highlight; border-color:Highlight; color:HighlightText; }
+}
 .ll-mode-sample { font-family:var(--heb-font); font-size:1.3rem; line-height:1; }
 .ll-mode-sample-cursive { font-family:var(--heb-cursive-font); }
 
@@ -550,6 +555,12 @@ body.dark .ll-mode-btn[aria-pressed="true"] { background:#2a4070; border-color:#
 }
 .ll-tabs [role="tab"]:hover { color:var(--text); }
 .ll-tabs [role="tab"][aria-selected="true"] { color:var(--text); border-bottom-color:var(--gold); }
+/* Forced colours turn the unselected tabs' transparent underline CanvasText, so every tab was underlined: the
+   unselected ones keep a Canvas line (unseen), the selected one the theme's selection colour. */
+@media (forced-colors:active) {
+  .ll-tabs [role="tab"] { border-bottom-color:Canvas; }
+  .ll-tabs [role="tab"][aria-selected="true"] { border-bottom-color:Highlight; }
+}
 .ll-panel { padding:16px 18px 22px; }
 .ll-panel h3 { font-size:0.82rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--muted); margin:0 0 8px; }
 html[lang="he"] .ll-panel h3 { letter-spacing:normal; text-transform:none; }
