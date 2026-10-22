@@ -93693,3 +93693,35 @@ _(prior — S536 pointer:)_ **Next session (S536):** **PR: `claude/improveloop-s
 - var()-on-an-undefined-custom-property (a `var(--x)` with no fallback whose token is declared nowhere on that page) | retired 2026-09-03 (S330) | 3 consecutive clean sweeps: last hit `hebrew_dictionary` `--navy-deep` (`5e9a6d2`, S285), then clean S299, S317, S330 (the 14 `var()` references added since S317 — `--gold-text`, `--navy`, `--text`, `--white`, `--border` — all declared on their pages). Detection kept for A2: per file, diff `--token:` declarations + `setProperty('--token'` literals against fallback-less `var(--token)` references, …[full text: IMPROVEMENT_ARCHIVE.md]
 - shadowed-global helper (a top-level helper — `esc`/`status`/`applyI18n`/`t`/… — shadowed by an inner decl so a global-expecting call site gets the wrong one) | retired 2026-07-13 (S73) | 3 consecutive clean sweeps: registered S40 (2 torah `esc`-shadow hits fixed, d88fa99), clean S64, clean S73 over the site-wide i18n rollout (one `esc`/`applyI18n` per file; FM's local `t()` in `shortcutGroups()` and `pwa.js`'s self-contained `t(key,fallback)` are intentional in-scope locals, never reach a global-`t` call site). Correctness-scoped, not …[full text: IMPROVEMENT_ARCHIVE.md]
 - falsy-zero (`s.field || default` silently discarding a stored `0`/`''`/`false` in a numeric/boolean restore) | retired 2026-07-17 (S93) | 3 consecutive clean sweeps: 1 hit S64 (FM `spec.version||1.0`, b9c1aa3), then clean S73, S83 (FM v4.18→v4.26 slider/geometry guards), S93 (dashboard movable-panels — array-order `panelLayout`, no numeric restores). Correctness-scoped (a wrong restored value, not data-loss) → not a consequence-critical carve-out → auto-retired. Re-checked only in Pass A2. **Watch:** any new tool with numeric/boolean …[full text: IMPROVEMENT_ARCHIVE.md]
+
+
+## S542 (2026-10-22) — rotation row and handoff replaced at close-out
+
+_(prior)_ - F cross-tool consistency: 2026-10-21 (**S528 — 39th F, empty states: 6 no-match surfaces × 4 cells by real input (plants 72/72), 12-page census. FOUND 4, FIXED 1 (+ LL ×2). F-next: loading states.**)
+
+_(prior)_ **Next session (S542):** **PR: `claude/improveloop-s535` open → continue; merged → fresh branch.** `sw.js` **v1070**, FM **5.59**, corpus ?v=7. ⚑ Stalest: F (S528), B (S529), A (S530). ⚑ Keep-alive #40 (10-22): confirm green. ⚑ Seeds: 48. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4 (+ field borders); O's Bash rule.
+
+
+<!-- archived by compact-ledger at the S543 boundary, 2026-10-22 -->
+## Compaction (S543, 2026-10-22) — moved verbatim from the live ledger
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`button-focus-lost-to-its-own-rebuild`** (**S542 dictionary corpus Try again ×2 `72b005c1`, parsha_emojis' new Try again built to it `20823f85`; S513 FM glyph tiles `a54e6d2`; S500 hebrew-keyboard tabs + layout, 4 carriers `1c701fc9`; S499 torah Try again ×2 `80c0a440`; S488 trope Try again ×2 `183605ba`; S483 hub `ab1a235e`; S474 flash Return to Options `3235f8eb`; S473 …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- **two-state-ready-flag-for-a-three-state-load** (S542 F: trope's Learn cards + Drill note claimed "unavailable" mid-load, FIXED `97de5370`; streak 0) (NEW, registered S189): a lazily-fetched corpus or module whose UI decides what to render from a single truthiness check — `REAL_WORDS.length`, `EMOJI_DATA`, `_wordsReady`. **That flag has two states; the fetch has three** (never …[full text: IMPROVEMENT_ARCHIVE.md]
+
+
+## S542 — S541 Done and per-session rows, archived by hand for the 100 KB cap
+
+- [x] 2026-10-22 | (S541 close-out) | branch/deploy note | **S541 = C on parsha_emojis: FOUND 6, FIXED 4.** On #357; no drift. sw v1069→v1070; no FM bump. Deferred: gate 3.
+
+- [x] 2026-10-22 | `063cbec5` | parsha_emojis | (S541) **A short window unpins the view bar.** | 200% zoom 0.48 → 0
+
+- [x] 2026-10-22 | `76049ae7` | LL | (S541) **Mode and tab show in High Contrast.** | 0/3 → 3/3; 0/4 → 4/4
+
+- [x] 2026-10-22 | `2ad22355` | js/i18n.js | (S541) **Switcher options carry `lang`.** | 0/40 → 40/40
+
+- [x] 2026-10-22 | `94c605ee` | parsha_emojis | (S541) **The pressed view shows in High Contrast.** | 0/7 → 7/7
+
+- 2026-10-22 | **S541** | iters: 5 | tools: parsha_emojis ×2, LL, i18n.js, sw.js | patterns fixed: selected-state-lost-in-forced-colors ×2 | pass run: C | SW: v1069→v1070

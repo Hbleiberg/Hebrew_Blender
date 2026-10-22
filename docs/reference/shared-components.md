@@ -709,8 +709,11 @@ header-icons and holiday-icons CSS blocks.
   that leaves a token behind logs `[coloring]` and fails `node scripts/parasha-coloring-review.mjs`, which renders
   all 54 as site / line art / coloured in into `docs/parasha-coloring-review/` — re-run it and look at every row
   whenever `ParashaEmojis.md` changes a drawing.
-- A failed `parshiyot.json` fetch puts a note in the `role="status"` line; without `ParashaNotes` the cards show the
-  icon, names and range only. `applyI18n` re-renders the cards, read-only.
+- While `parshiyot.json` loads, the `role="status"` line says so (`emojitorah.loading`); a failed fetch puts its note
+  there with the suite's in-place *Try again* under it (`#etRetry`, `shared.corpus.retry_button`: kept across
+  re-renders, it re-runs `etLoad()` and, after a keyboard press, hands the focus to the new button or the chosen
+  view). Without `ParashaNotes` the cards show the icon, names and range only. `applyI18n` re-renders the cards,
+  read-only.
 
 ## Shared UX components — the conventions all tools are converging on
 

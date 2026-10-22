@@ -8,6 +8,12 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P4 (**NEW S542 F**) | hebrew_dictionary.html | **The emoji failure is silent** (no live region; the count goes blank). | found S542
+
+- [ ] P4 (**NEW S542 F — verify**) | torah_trainer.html | **The staff's Try again is rebuilt by `renderText`:** focus may fall. | found S542
+
+- [ ] P4 (**NEW S542 F — gate 2**) | FM, js/ivrit-saves.js, torah, parsha_emojis | **Retry copy diverges from "Try again / נסו שוב"** (FM, cloud status, the staff's HE; Parsha Emojis' "reload the page"). | found S542
+
 - [ ] P4 (**NEW S541 C — pattern**) | 7 pages | **A pressed or selected state vanishes in High Contrast** (findings S541). | found S541
 
 - [ ] P4 (**NEW S541 C — gate 3**) | 14 pages | **Field edges are `--border`: 1.83:1 light, 1.22:1 dark** (1.4.11: 3:1). | found S541
@@ -320,25 +326,25 @@ _(none)_
 
 ## Done
 
-- [x] 2026-10-22 | (S541 close-out) | branch/deploy note | **S541 = C on parsha_emojis: FOUND 6, FIXED 4.** On #357; no drift. sw v1069→v1070; no FM bump. Deferred: gate 3.
+- [x] 2026-10-22 | (S542 close-out) | branch/deploy note | **S542 = F, loading: FOUND 7, FIXED 4.** #357; no drift. sw v1070→v1071; no FM bump. Deferred: gate 2.
 
-- [x] 2026-10-22 | `063cbec5` | parsha_emojis | (S541) **A short window unpins the view bar.** | 200% zoom 0.48 → 0
+- [x] 2026-10-22 | `20823f85` | parsha_emojis | (S542) **Loading said; Try again.** | 0/4 → 4/4
 
-- [x] 2026-10-22 | `76049ae7` | LL | (S541) **Mode and tab show in High Contrast.** | 0/3 → 3/3; 0/4 → 4/4
+- [x] 2026-10-22 | `72b005c1` | dictionary | (S542) **Try again keeps focus** ×2. | 16 → 0
 
-- [x] 2026-10-22 | `2ad22355` | js/i18n.js | (S541) **Switcher options carry `lang`.** | 0/40 → 40/40
+- [x] 2026-10-22 | `97de5370` | trope | (S542) **Mid-load says loading.** | 4 → 0
 
-- [x] 2026-10-22 | `94c605ee` | parsha_emojis | (S541) **The pressed view shows in High Contrast.** | 0/7 → 7/7
+- [x] 2026-10-22 | `24859b7c` | torah | (S542) **No raw key while loading.** | 4 → 0
 
 ## Metrics
 
 ### Per-session log (one line per session)
 
-- 2026-10-22 | **S541** | iters: 5 | tools: parsha_emojis ×2, LL, i18n.js, sw.js | patterns fixed: selected-state-lost-in-forced-colors ×2 | pass run: C | SW: v1069→v1070
+- 2026-10-22 | **S542** | iters: 5 | tools: torah, trope, dict, parsha, sw | patterns fixed: two-state ×1, focus-lost ×2 | pass run: F | SW: v1070→v1071
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S541 (2026-10-22):** parsha_emojis, LL, i18n.js, sw.js S541 · CSV S540 · name_tags S539 · flash, torah, trope, FM S538 · 5 toast pages S537 · saves, resources S536 · scripts S535 · index, README, sitemap S532 · account, contact, privacy, terms, 404 S530 · corpus S524 · pwa S472.
+- **Snapshot S542 (2026-10-22):** torah, trope, dictionary, parsha_emojis, CSV, sw.js S542 · LL, i18n.js S541 · name_tags S539 · flash, FM S538 · 5 toast pages S537 · saves, resources S536 · scripts S535 · index, README, sitemap S532 · account, contact, privacy, terms, 404 S530 · corpus S524 · pwa S472.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -444,7 +450,7 @@ _(none)_
 
 - **`copy-claims-success-on-a-refused-clipboard`** (NEW S428; FIXED `bbd5f65`, `0d2a941`; S444 index `90e1a057`, dashboard `18344f69`; **S445 generator `3dad5c11`, flash `58ee7a4f` — all 7 carriers fixed, 0 open**): ACTIVE, streak 0. Detection: every `execCommand('copy')` whose …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`button-focus-lost-to-its-own-rebuild`** (**S513 FM glyph tiles `a54e6d2`; S500 hebrew-keyboard tabs + layout, 4 carriers `1c701fc9`; S499 torah Try again ×2 `80c0a440`; S488 trope Try again ×2 `183605ba`; S483 hub `ab1a235e`; S474 flash Return to Options `3235f8eb`; S473 …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`button-focus-lost-to-its-own-rebuild`** (**S542 dictionary Try again ×2 `72b005c1`; S513 FM glyph tiles `a54e6d2`; S500 hebrew-keyboard tabs + layout, 4 carriers `1c701fc9`; S499 torah Try again ×2 `80c0a440`; S488 …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`dark-literal-escapes-the-print-tokens`** (NEW S437 G; resources FIXED `5320a668`): ACTIVE, streak 1 (S479 trope clean; plant fired). Detection: PDFs dark vs light, ink per page (<200 at 40 dpi); a lighter dark sheet = a `body.dark` literal the print …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -612,7 +618,7 @@ _(none)_
 
 - **theme-flipping-token-on-a-fixed-colour-plate** (NEW, registered S191): a control or text node styled with a colour token that **inverts with the theme** — `var(--text)`, `var(--white)`, `var(--muted)` — placed inside a container painted a **fixed** colour that does not …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **two-state-ready-flag-for-a-three-state-load** (NEW, registered S189): a lazily-fetched corpus or module whose UI decides what to render from a single truthiness check — `REAL_WORDS.length`, `EMOJI_DATA`, `_wordsReady`. **That flag has two states; the fetch has three** (never …[full text: IMPROVEMENT_ARCHIVE.md]
+- **two-state-ready-flag-for-a-three-state-load** (S542 trope `97de5370`) (NEW, registered S189): a lazily-fetched corpus or module whose UI decides what to render from a single truthiness check — …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **invalid-SVG-geometry-from-an-unclamped-difference** (NEW, registered S187): an SVG `width`/`height` computed as the difference of two mapped coordinates (`fx(b) - fx(a)`, `x1 - x0`) where one side comes from a **derived** value that can legitimately go negative — so the …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -736,6 +742,6 @@ _(none)_
 
 - E freshness/site-health: 2026-10-21 (**S531 — 41st E, `d7c58446..48286048` (108 commits; parsha_emojis' first): 16 arms + carrier lists (plants 18/18), docs, CSP 40 cells (plant 40/40), the stub. FOUND 2, FIXED 4.**)
 
-- F cross-tool consistency: 2026-10-21 (**S528 — 39th F, empty states: 6 no-match surfaces × 4 cells by real input (plants 72/72), 12-page census. FOUND 4, FIXED 1 (+ LL ×2). F-next: loading states.**)
+- F cross-tool consistency: 2026-10-22 (**S542 — 40th F, loading states (first since S189): 14 surfaces held, then aborted. FOUND 7, FIXED 4. F-next: long-build progress.**)
 
-**Next session (S542):** **PR: `claude/improveloop-s535` open → continue; merged → fresh branch.** `sw.js` **v1070**, FM **5.59**, corpus ?v=7. ⚑ Stalest: F (S528), B (S529), A (S530). ⚑ Keep-alive #40 (10-22): confirm green. ⚑ Seeds: 48. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4 (+ field borders); O's Bash rule.
+**Next session (S543):** **PR `claude/improveloop-s535`: open → continue; merged → fresh.** `sw.js` **v1071**, FM **5.59**, corpus ?v=7. ⚑ Stalest: B (S529), A (S530), E (S531). ⚑ Keep-alive #41 (10-23): confirm green. ⚑ Seeds: 48. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4 (+ field borders, retry copy); O's Bash rule.
