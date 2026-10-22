@@ -1006,6 +1006,8 @@ body.dark .hi-sun{display:inline-block;}
   .os-pick-card[aria-busy="true"] { opacity: 0.6; cursor: progress; }
   .os-pick-sample { font-family: 'Frank Ruhl Libre', 'IvritSuite Taamim', serif; font-size: 1.7rem; line-height: 1.6; min-block-size: 2.8em; display: flex; align-items: center; justify-content: center; overflow-wrap: anywhere; text-align: center; }
   .os-pick-card.is-loading .os-pick-sample { color: var(--muted); }   /* fallback face until the real one lands */
+  .os-pick-card.no-preview .os-pick-sample { color: var(--muted); }   /* the fallback face, never this font's */
+  .os-pick-nopreview { font-size: 0.72rem; color: var(--muted); }
   .os-pick-name { font-weight: 700; font-size: 0.86rem; }
   .os-pick-meta { font-size: 0.72rem; color: var(--muted); }
   .os-pick-badges { display: flex; flex-wrap: wrap; gap: 4px; margin-block-start: 2px; }
@@ -24083,7 +24085,17 @@ function osPickLoadFace(card) {
     const sample = card.querySelector('.os-pick-sample');
     if (ff && sample) sample.style.fontFamily = "'" + family + "', 'IvritSuite Taamim', serif";
     card.classList.remove('is-loading');
-    if (!ff) card.title = osPickT('fontmaker.ospick.preview_failed');
+    // Chrome refused the face (its sanitizer rejects a few starting fonts that still open fine): the sample would show
+    // the default face as if it were this one, so the card says so in words — a hover title reached no keyboard,
+    // touch or screen-reader user (the card's aria-label replaces it).
+    if (!ff && sample && !card.querySelector('.os-pick-nopreview')) {
+      card.classList.add('no-preview');
+      const note = document.createElement('div');
+      note.className = 'os-pick-nopreview'; note.id = 'osPickNoPreview-' + id;
+      note.textContent = osPickT('fontmaker.ospick.preview_failed');
+      sample.after(note);
+      card.setAttribute('aria-describedby', note.id);
+    }
   });
 }
 function osPickClose() {
