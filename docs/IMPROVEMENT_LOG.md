@@ -26,13 +26,13 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
 
-- [ ] P4 (**NEW S546 — C's**) | trope_tutor.html | **The drill's armed / right / wrong answer states are colour-only** (`.tu-choice.armed` / `.good` / `.bad` tints; in High Contrast all three paint alike). | found S546
+- [ ] P4 (**NEW S547 N — the pattern's last carriers**) | hebrew_dictionary.html, resources.html, classroom_dashboard.html, name_tags.html | **The keyboard's open tab vanishes in High Contrast** (`.hk-tab.active`, the shared block's rule; the Font Maker names it in its own forced-colours block `d6be009`, the dashboard and Name Tags have no such block yet). | found S547
+
+- [ ] P4 (**NEW S547 N**) | trope_tutor.html | **"choose again to answer" stays under the picked choice after the answer** (`answer()` disables the choices and drops `armed` but never re-hides the `.c-sub` line; the same DOM outside High Contrast). | found S547
 
 - [ ] P4 (**NEW S544 audit — gate 2, content**) | data/hebrew_words.json | **One entry stacks tsere and patah (`טִיֵַּח`)** — the one real defect in 14,919 corpus strings (loop-findings S544, with the ~36 legitimate look-alikes); a corpus edit bumps `?v=` on every fetcher. | found S544
 
 - [ ] P4 (**NEW S542 F — gate 2**) | FM, js/ivrit-saves.js, torah, parsha_emojis | **Retry copy diverges from "Try again / נסו שוב"** (FM, cloud status, the staff's HE; Parsha Emojis' "reload the page"). | found S542
-
-- [ ] P4 (**NEW S541 C — pattern; S543 ×2, S545 ×2, S546 ×2**) | Hebrew_Font_Maker.html | **A pressed or selected state vanishes in High Contrast** (FM's letter tiles, modes and two tab sets; findings S541, S545, S546). | found S541
 
 - [ ] P4 (**NEW S541 C — gate 3**) | 14 pages | **Field edges are `--border`: 1.83:1 light, 1.22:1 dark** (1.4.11: 3:1). | found S541
 
@@ -296,6 +296,16 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-22 | (S547 close-out) | branch/deploy note | **S547 = N on parsha_emojis (first): FOUND 1, FIXED 1 (+2 P4 candidates); then the S541 census's last two HC pages and a loop-tooling fix.** Branch `claude/friendly-newton-nq3mkj` (PR #359 continued), draft PR; drift: none. sw v1074→v1075; no FM bump. Unattended: no gate asked.
+
+- [x] 2026-10-22 | `e117877` | scripts/loop/coverage.mjs | (S547) **A second surface joined to the first with " + " is credited** (S546's Letter Learner P read "never"; loop-passes + README state the convention). | the matrix differs in that one cell; `--check` passes
+
+- [x] 2026-10-22 | `4fa1538` | trope_tutor.html | (S547) **The drill's armed choice, right answer and wrong pick show in HC** (`selected-state-lost-in-forced-colors`; a dashed ring for the wrong pick). | 1.5–5.8 → 19–170 (4 pairs × 2 themes) by real clicks on a melody question; identical to HEAD 4/4
+
+- [x] 2026-10-22 | `d6be009` | Hebrew_Font_Maker.html | (S547) **The selected letter, open tabs, pressed modes and help tab show in HC** (`selected-state-lost-in-forced-colors`: the S541 census's last page). | 0.0–9.3 → 30–132 (5 states × 2 themes); identical to HEAD 4/4 (≤ 1 level on an anti-aliased edge)
+
+- [x] 2026-10-22 | `37bb922` | parsha_emojis.html | (S547) **The install hint steps aside while the coloring-sheets popup is open** (`install-banner-over-a-sheet's-bottom-controls`). | Print + count covered 4/4 → 0/4 (iPhone 13 / SE × EN / HE), the banner back after each close; identical to HEAD 4/4, the open popup 2/2
+
 - [x] 2026-10-22 | (S546 close-out) | branch/deploy note | **S546 = P on parsha_emojis (first) + letter_learner (first, the clean surface's second): PE clean; LL FOUND 1, FIXED 1 (+1 suite P3, +1 C's P4); then 2 HC carriers.** Branch `claude/friendly-newton-nq3mkj` (PR #359 continued), draft PR; drift: none. sw v1073→v1074; no FM bump. Unattended: no gate asked.
 
 - [x] 2026-10-22 | `e9759f0` | hebrew_dictionary.html | (S546) **Chosen Words / Emoji mode shows in HC** (`selected-state-lost-in-forced-colors`). | 2.8/2.7 → 127/86
@@ -330,6 +340,8 @@ _(none)_
 
 ### Per-session log (one line per session)
 
+- 2026-10-22 | **S547** | iters: 5 | tools: parsha_emojis, fontmaker, trope, scripts/loop, sw | patterns fixed: install-banner ×1, forced-colors ×2 | pass run: N (parsha_emojis, first) | SW: v1074→v1075
+
 - 2026-10-22 | **S546** | iters: 4 | tools: letter_learner, trope, dictionary, sw | patterns fixed: defaults-filed ×1, forced-colors ×2 | pass run: P (parsha_emojis + letter_learner, both first) | SW: v1073→v1074
 
 - 2026-10-22 | **S545** | iters: 5 | tools: letter_learner, flash, generator, torah, sw | patterns fixed: install-banner ×1, forced-colors ×2, button-focus ×1 | pass run: N (letter_learner, first) | SW: v1072→v1073
@@ -340,7 +352,7 @@ _(none)_
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S546 (2026-10-22):** letter_learner, trope, dictionary, sw.js, loop-findings, loop-patterns S546 · flash, generator, torah S545 · skill, ledger scripts, scripts/loop, loop-passes S544 · name_tags, resources, contact S543 · parsha_emojis, CSV S542 · i18n.js S541 · FM S538 · 5 toast pages S537 · saves S536 · scripts S535 · index, README, sitemap S532 · account, privacy, terms, 404 S530 · corpus S524 · pwa S472.
+- **Snapshot S547 (2026-10-22):** parsha_emojis, FM, trope, sw.js, scripts/loop, loop-passes, loop-findings, loop-patterns S547 · letter_learner, dictionary S546 · flash, generator, torah S545 · skill, ledger scripts S544 · name_tags, resources, contact S543 · CSV S542 · i18n.js S541 · 5 toast pages S537 · saves S536 · scripts S535 · index, README, sitemap S532 · account, privacy, terms, 404 S530 · corpus S524 · pwa S472.
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -348,7 +360,7 @@ _(none)_
 
 - `defaults-filed-as-the-device's-own-at-first-sign-in` | ACTIVE | owner P | det: recipe | last S546 | streak 0 | hits 6
 
-- `selected-state-lost-in-forced-colors` | ACTIVE | owner C | det: recipe | last S546 | streak 0
+- `selected-state-lost-in-forced-colors` | ACTIVE | owner C | det: recipe | last S547 | streak 0
 
 - `live-region-shown-with-its-text` | ACTIVE | owner G | det: recipe | last S537 | streak 0
 
@@ -458,7 +470,7 @@ _(none)_
 
 - `window-taller-than-a-phone-without-a-scroll` | ACTIVE | owner N | det: recipe | last S506 | streak 0
 
-- `install-banner-over-a-sheet's-bottom-controls` | ACTIVE | owner N | det: recipe | last S545 | streak 0
+- `install-banner-over-a-sheet's-bottom-controls` | ACTIVE | owner N | det: recipe | last S547 | streak 0
 
 - `flash-restores-captured-text-not-its-key` | ACTIVE | owner E | det: recipe | last S417 | streak 0
 
@@ -676,7 +688,7 @@ _(none)_
 
 - O deslop — AI-design-tell sweep (one surface): SKIP since S403 — the sandbox refuses to execute the third-party detector ("Code from External"); runs again once the maintainer commits a `.claude/settings.json` permission rule for it (`docs/reference/deslop-detector.md`). Last run 2026-09-08 (S346, `flash_cards.html`, 6th O; the S399/S403 refusals are in the archive).
 
-- N mobile & touch-device (one surface): 2026-10-22 (**S545 — 28th N, `letter_learner.html` (first audit): 16 cells × 23 views by real taps, rotation, finger drags, 4×, the forced iOS hint; plants 7/7. FOUND 1, FIXED 1. N-next: parsha_emojis (never), flash (S361).**)
+- N mobile & touch-device (one surface): 2026-10-22 (**S547 — 29th N, `parsha_emojis.html` (first audit): 16 cells × 14 views by real taps, rotation, finger drags, 4×, the forced iOS hint, three tablets; plants 6/6. FOUND 1, FIXED 1. N-next: flash (S361), trope (S389).**)
 
 - M aesthetics & visual design (one surface): 2026-10-21 (**S536 — 27th M, LL (first): 120 shots × 12 cells, real fonts, row census, real Next clicks; plants fired. FOUND 5, FIXED 3 + S464. M-next: FM (S335).**)
 
@@ -706,4 +718,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-22 (**S542 — 40th F, loading states (first since S189): 14 surfaces held, then aborted. FOUND 7, FIXED 4. F-next: long-build progress.**)
 
-**Next session (S547):** **PR `claude/friendly-newton-nq3mkj` (S545–S546, #359): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1074**, FM **5.59**, corpus ?v=7. ⚑ drift: main=44fc930 sw=v1074 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest: suite A (S530), E (S531), L (S532), V (never — its first run, `loop-passes.md` → V); surface: name_tags never had C/D/G/H/M, parsha_emojis never had N (the new-page rule: overdue). ⚑ Keep-alive #40 (10-22) green; #41 (10-23): confirm. ⚑ Seeds: 48. ⚑ 27 DRAFT pattern rows still need a recipe or retirement at the next A. ⚑ The S546 P3 (the false "replaced" note on five pages) is a shared-module rule — the maintainer's call before a loop fix; `defaults-filed-as-the-device's-own-at-first-sign-in` is its row. ⚑ Maintainer: O's Bash permission rule (`.claude/settings.json`); a CI workflow running `closeout.mjs --static`; translit second source; sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4 (+ field borders, retry copy).
+**Next session (S548):** **PR `claude/friendly-newton-nq3mkj` (S545–S547, #359): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1075**, FM **5.59**, corpus ?v=7. ⚑ drift: main=44fc930 sw=v1075 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest: surface name_tags never had C/D/G/H/M (five never-audited cells outrank every suite pass; the pointer picks C first, then D, G, H, M); suite A (S530), E (S531), L (S532), V (never — its first run, `loop-passes.md` → V). ⚑ Keep-alive #41 (10-23): confirm. ⚑ Seeds: 48. ⚑ 27 DRAFT pattern rows still need a recipe or retirement at the next A. ⚑ `selected-state-lost-in-forced-colors`: the S541 census's pages are all fixed; open: the keyboard's open tab on four carriers (candidate). ⚑ The S546 P3 (the false "replaced" note on five pages) is still the maintainer's call. ⚑ Maintainer: O's Bash permission rule (`.claude/settings.json`); a CI workflow running `closeout.mjs --static`; translit second source; sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4 (+ field borders, retry copy).
