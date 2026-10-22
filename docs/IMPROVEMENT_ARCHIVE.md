@@ -94220,3 +94220,11 @@ _(prior)_ **Next session (S547):** **PR `claude/friendly-newton-nq3mkj` (S545–
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 _(prior)_ **Next session (S548):** **PR `claude/friendly-newton-nq3mkj` (S545–S547, #359): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1075**, FM **5.59**, corpus ?v=7. ⚑ drift: main=44fc930 sw=v1075 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest: surface name_tags never had C/D/G/H/M (five never-audited cells outrank every suite pass; the pointer picks C first, then D, G, H, M); suite A (S530), E (S531), L (S532), V (never — its first run, `loop-passes.md` → V). ⚑ Keep-alive #41 (10-23): confirm. ⚑ Seeds: 48. ⚑ 27 DRAFT pattern rows still need a recipe or retirement at the next A. ⚑ `selected-state-lost-in-forced-colors`: the S541 census's pages are all fixed; open: the keyboard's open tab on four carriers (candidate). ⚑ The S546 P3 (the false "replaced" note on five pages) is still the maintainer's call. ⚑ Maintainer: O's Bash permission rule (`.claude/settings.json`); a CI workflow running `closeout.mjs --static`; translit second source; sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4 (+ field borders, retry copy).
+
+
+<!-- archived by compact-ledger at the S549 boundary, 2026-10-22 -->
+## Compaction (S549, 2026-10-22) — moved verbatim from the live ledger
+
+### from Candidates (prioritized, top = next)
+
+- [ ] P3 (**NEW S548 C — the pattern's fix shape on its earlier carriers**) | parsha_emojis.html, letter_learner.html, resources.html, contact.html, flash_cards.html, hebrew_blend_generator.html, trope_tutor.html, hebrew_dictionary.html, Hebrew_Font_Maker.html | **A selected label is a blank block in High Contrast**: Chromium paints a Canvas backplate behind every text run it adjusts, so HighlightText on a Highlight fill vanishes (Windows' default themes pair HighlightText with Canvas); each S541–S547 forced-colours block's filled selected rule needs `forced-color-adjust:none`, as `b9dc803` did (underline-only rules are fine). | found S548
