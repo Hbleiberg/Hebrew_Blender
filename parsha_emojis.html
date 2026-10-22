@@ -691,7 +691,8 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
         </fieldset>
         <fieldset class="et-cs-set et-cs-copies">
           <legend data-i18n="emojitorah.coloring.copies_legend">Copies</legend>
-          <div class="et-cs-opt"><label for="etCsCopies" data-i18n="emojitorah.coloring.copies_label">Copies of each sheet</label><input type="number" id="etCsCopies" min="1" max="40" step="1" inputmode="numeric"></div>
+          <div class="et-cs-opt"><label for="etCsCopies" data-i18n="emojitorah.coloring.copies_label">Copies of each sheet</label><input type="number" id="etCsCopies" min="1" max="40" step="1" inputmode="numeric" aria-describedby="etCsCopiesNote"></div>
+          <p class="et-cs-note" id="etCsCopiesNote" role="status" aria-live="polite"></p>
           <label class="et-cs-opt"><input type="radio" name="etCsCollate" value="sets"><span data-i18n="emojitorah.coloring.collate_sets">Collated sets (1 2 3, 1 2 3)</span></label>
           <label class="et-cs-opt"><input type="radio" name="etCsCollate" value="grouped"><span data-i18n="emojitorah.coloring.collate_grouped">Grouped by parasha (1 1, 2 2, 3 3)</span></label>
         </fieldset>
@@ -1292,6 +1293,8 @@ function etVisibleIdx() {
   return etData.filter(p => !one || p.book === one).map(p => p.n - 1);
 }
 function etCsChosenList() { return (etData || []).filter(p => _etCsChosen.has(p.n - 1)); }
+// The copies field holds a whole number from 1 to 40 (otherwise its note says so and Print waits; it is never changed for the teacher).
+function etCsCopiesOk() { const n = Number(document.getElementById('etCsCopies').value); return Number.isInteger(n) && n >= 1 && n <= ET_CS_MAX_COPIES; }
 // What a sheet's build depends on (the sizes are CSS factors and never need one).
 function etCsSigNow() { return JSON.stringify([etCsLangNow(), etCs.colored, etCs.paper, etCs.orient, etCs.perSheet, ET_CS_BOOL.map(k => etCs[k])]); }
 function etCsPageStyle() {
@@ -1485,9 +1488,12 @@ function etCsUpdateChrome() {
     : (per > 1 && pages > 1) ? I18n.t(papers === 1 ? 'emojitorah.coloring.count_paper.one' : 'emojitorah.coloring.count_paper.other', { pages, count: papers })
     : I18n.t(pages === 1 ? 'emojitorah.coloring.count.one' : 'emojitorah.coloring.count.other', { count: pages });
   document.getElementById('etCsEmpty').hidden = list.length > 0;
+  const copiesOk = etCsCopiesOk(), cNote = document.getElementById('etCsCopiesNote'), cText = copiesOk ? '' : I18n.t('emojitorah.coloring.copies_range', { max: ET_CS_MAX_COPIES });
+  if (cNote.textContent !== cText) cNote.textContent = cText;
+  document.getElementById('etCsCopies').toggleAttribute('aria-invalid', !copiesOk);
   const btn = document.getElementById('etCsPrint');
-  if (list.length) { btn.removeAttribute('aria-disabled'); btn.removeAttribute('aria-describedby'); }
-  else { btn.setAttribute('aria-disabled', 'true'); btn.setAttribute('aria-describedby', 'etCsEmpty'); }
+  if (list.length && copiesOk) { btn.removeAttribute('aria-disabled'); btn.removeAttribute('aria-describedby'); }
+  else { btn.setAttribute('aria-disabled', 'true'); btn.setAttribute('aria-describedby', list.length ? 'etCsCopiesNote' : 'etCsEmpty'); }
   document.querySelectorAll('input[name="etCsCollate"]').forEach(r => { r.disabled = copies < 2; });
   const badge = copies > 1 ? I18n.t('emojitorah.coloring.copies_badge', { count: copies }) : '';
   const dir = he ? 'rtl' : 'ltr';   // the pages run in Torah order; a caption reads like the UI
@@ -1572,6 +1578,7 @@ async function etCsPrint() {
     announce(I18n.t('emojitorah.coloring.empty'));
     return;
   }
+  if (!etCsCopiesOk()) { document.getElementById('etCsCopies').focus(); announce(I18n.t('emojitorah.coloring.copies_range', { max: ET_CS_MAX_COPIES })); return; }
   _etCsPrinting = true;
   try {
     etCsPageStyle();
@@ -1632,14 +1639,16 @@ function etCsWire() {
     etCsSyncControls();   // a part switched off disables its size slider
     etCsRefresh();
   }));
-  // Copies: the count follows the field as it is typed (in memory, like a size drag); clamped and saved on change.
+  // Copies: the count follows the field as it is typed (in memory, like a size drag) and is saved on change; a number
+  // outside 1–40 stays as typed with its note (a click after the "1" then "22" would otherwise print 40).
   const copies = document.getElementById('etCsCopies');
   copies.addEventListener('input', () => {
-    const n = Number(copies.value);
-    if (Number.isInteger(n) && n >= 1 && n <= ET_CS_MAX_COPIES) { etCs.copies = n; etCsUpdateChrome(); }
+    etCs.copies = etCsCopiesOk() ? Number(copies.value) : etCsCopiesVal((etCsRaw || {}).copies);   // the "4" typed on the way to "45" never stays
+    etCsUpdateChrome();
   });
   copies.addEventListener('change', () => {
-    const n = etCsCopiesVal(Number(copies.value));
+    if (!etCsCopiesOk()) { etCsUpdateChrome(); return; }
+    const n = Number(copies.value);
     copies.value = String(n);
     etCsSet('copies', n);
     etCsRenderPapers();

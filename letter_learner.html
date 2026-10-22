@@ -732,6 +732,7 @@ body.dark .ll-bp-main { background:var(--cream); }   /* dark --warm-gray is the 
 .ll-bp-copies .ll-opt:has(input[type="radio"]:disabled) { opacity:0.5; }   /* the order radios, at one copy */
 .ll-bp-note { margin:0 0 10px; }
 .ll-bp-note:empty { margin:0; }   /* the Coloring note's rule, for the same reason */
+.ll-bp-copies-note:empty { margin:0; }
 .ll-bp-empty { color:var(--muted); font-size:0.95rem; text-align:center; padding:40px 12px; }
 .ll-bp-empty[hidden] { display:none; }
 .ll-bp-pages { list-style:none; display:grid; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr)); gap:20px 16px; align-items:start; }
@@ -1209,7 +1210,8 @@ body.dark #appToast { background: #0a0f1c; }
         </fieldset>
         <fieldset class="ll-cs-set ll-bp-copies">
           <legend data-i18n="letterlearner.bulk.copies_legend">Copies</legend>
-          <div class="ll-opt"><label for="llBpCopies" data-i18n="letterlearner.bulk.copies_label">Copies of each sheet</label><input type="number" id="llBpCopies" min="1" max="40" step="1" inputmode="numeric"></div>
+          <div class="ll-opt"><label for="llBpCopies" data-i18n="letterlearner.bulk.copies_label">Copies of each sheet</label><input type="number" id="llBpCopies" min="1" max="40" step="1" inputmode="numeric" aria-describedby="llBpCopiesNote"></div>
+          <p class="ll-note ll-bp-copies-note" id="llBpCopiesNote" role="status" aria-live="polite"></p>
           <label class="ll-opt"><input type="radio" name="llBpCollate" value="sets"><span data-i18n="letterlearner.bulk.collate_sets">Collated sets (1 2 3, 1 2 3)</span></label>
           <label class="ll-opt"><input type="radio" name="llBpCollate" value="grouped"><span data-i18n="letterlearner.bulk.collate_grouped">Grouped by letter (1 1, 2 2, 3 3)</span></label>
         </fieldset>
@@ -3730,6 +3732,10 @@ function llBpCopiesVal(v) {
 // card has a Coloring sheet tab.
 function llBpOffered() { return llOrder().filter(id => (LETTERS[id].words || []).length); }
 function llBpChosen() { const set = new Set(settings.bulkLetters); return llBpOffered().filter(id => set.has(id)); }
+// The copies field holds a whole number from 1 to 40 (otherwise its note says so and Print waits; it is never changed for the teacher).
+function llBpCopiesOk() { const n = Number(document.getElementById('llBpCopies').value); return Number.isInteger(n) && n >= 1 && n <= LL_BP_MAX_COPIES; }
+// The copies as last saved: what the run keeps while the field holds anything else.
+function llBpSavedCopies() { let s = null; try { s = ivritSafeParse(_llLastWritten || 'null'); } catch (e) {} return llBpCopiesVal(s && s.bulkCopies); }
 function llBpKind() { return _llBpStyle === 'cursive' ? 'cursive' : 'letter'; }
 // What a sheet's build depends on (the sizes are CSS factors and never need one).
 function llBpSigNow() {
@@ -3906,9 +3912,12 @@ function llBpUpdateChrome() {
     : (per > 1 && pages > 1) ? _fbT(papers === 1 ? 'letterlearner.bulk.count_paper.one' : 'letterlearner.bulk.count_paper.other', papers === 1 ? '{pages} pages on 1 sheet of paper' : '{pages} pages on {count} sheets of paper', { pages, count: papers })
     : _fbT(pages === 1 ? 'letterlearner.bulk.count.one' : 'letterlearner.bulk.count.other', pages === 1 ? '{count} page' : '{count} pages', { count: pages });
   document.getElementById('llBpEmpty').hidden = ids.length > 0;
+  const copiesOk = llBpCopiesOk(), cNote = document.getElementById('llBpCopiesNote'), cText = copiesOk ? '' : _fbT('letterlearner.bulk.copies_range', 'Type a number of copies from 1 to {max}.', { max: LL_BP_MAX_COPIES });
+  if (cNote.textContent !== cText) cNote.textContent = cText;
+  document.getElementById('llBpCopies').toggleAttribute('aria-invalid', !copiesOk);
   const btn = document.getElementById('llBpPrint');
-  if (ids.length) { btn.removeAttribute('aria-disabled'); btn.removeAttribute('aria-describedby'); }
-  else { btn.setAttribute('aria-disabled', 'true'); btn.setAttribute('aria-describedby', 'llBpEmpty'); }
+  if (ids.length && copiesOk) { btn.removeAttribute('aria-disabled'); btn.removeAttribute('aria-describedby'); }
+  else { btn.setAttribute('aria-disabled', 'true'); btn.setAttribute('aria-describedby', ids.length ? 'llBpCopiesNote' : 'llBpEmpty'); }
   document.querySelectorAll('input[name="llBpCollate"]').forEach(r => { r.disabled = copies < 2; });
   const badge = copies > 1 ? _fbT('letterlearner.bulk.copies_badge', '× {count}', { count: copies }) : '';
   const dir = document.documentElement.dir === 'rtl' ? 'rtl' : 'ltr';   // the pages run in alef-bet order (rtl); a caption reads like the UI
@@ -3985,6 +3994,7 @@ async function llBpPrint() {
     announce(_fbT('letterlearner.bulk.empty', 'Choose the letters to print.'));
     return;
   }
+  if (!llBpCopiesOk()) { document.getElementById('llBpCopies').focus(); announce(_fbT('letterlearner.bulk.copies_range', 'Type a number of copies from 1 to {max}.', { max: LL_BP_MAX_COPIES })); return; }
   _llBpPrinting = true;
   try {
     llBpFlush();
@@ -4038,15 +4048,16 @@ function llBpWire() {
     llBpSetChosen(settings.bulkLetters.filter(id => !offered.has(id)));
     document.querySelectorAll('#llBpLetters input').forEach(cb => { cb.checked = false; });
   });
-  // Copies: the count follows the field as it is typed (in memory, like a size drag); the value is clamped and saved
-  // once, on change.
+  // Copies: the count follows the field as it is typed (in memory, like a size drag) and is saved once, on change; a
+  // number outside 1–40 stays as typed with its note (a click after the "1" then "22" would otherwise print 40).
   const copies = document.getElementById('llBpCopies');
   copies.addEventListener('input', () => {
-    const n = Number(copies.value);
-    if (Number.isInteger(n) && n >= 1 && n <= LL_BP_MAX_COPIES) { settings.bulkCopies = n; llBpUpdateChrome(); }
+    settings.bulkCopies = llBpCopiesOk() ? Number(copies.value) : llBpSavedCopies();   // the "4" typed on the way to "45" never stays
+    llBpUpdateChrome();
   });
   copies.addEventListener('change', () => {
-    const n = llBpCopiesVal(Number(copies.value));
+    if (!llBpCopiesOk()) { llBpUpdateChrome(); return; }
+    const n = Number(copies.value);
     copies.value = String(n);
     llSetSetting('bulkCopies', n);
     llBpRenderPapers();

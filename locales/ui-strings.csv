@@ -6402,6 +6402,7 @@ letterlearner.bulk.all,Select all,בחירת הכול,Bulk print: button that ch
 letterlearner.bulk.none,Clear,ניקוי,Bulk print: button that unchecks every letter,
 letterlearner.bulk.copies_legend,Copies,עותקים,Bulk print: legend over the copies field and the order radios,
 letterlearner.bulk.copies_label,Copies of each sheet,עותקים מכל דף,Bulk print: label of the copies number field (1–40),
+letterlearner.bulk.copies_range,Type a number of copies from 1 to {max}.,כתבו מספר עותקים מ-1 עד {max}.,"Bulk print: inline note under the copies field while it holds anything but a whole number from 1 to {max} (Print waits until it is fixed; the field is never changed for the teacher), also announced when Print is pressed",
 letterlearner.bulk.collate_sets,"Collated sets (1 2 3, 1 2 3)","סטים שלמים (1 2 3, 1 2 3)","Bulk print: order radio — every chosen letter once, then the whole set again",
 letterlearner.bulk.collate_grouped,"Grouped by letter (1 1, 2 2, 3 3)","מקובצים לפי אות (1 1, 2 2, 3 3)","Bulk print: order radio — all the copies of one letter together, then the next letter",
 letterlearner.bulk.count.one,1 page,עמוד אחד,Bulk print footer: how many pages the run prints,plural
@@ -6553,6 +6554,7 @@ emojitorah.coloring.all,Select all,בחירת הכול,Parsha Emojis coloring sh
 emojitorah.coloring.none,Clear,ניקוי,Parsha Emojis coloring sheets popup: button that unchecks every parasha,
 emojitorah.coloring.copies_legend,Copies,עותקים,Parsha Emojis coloring sheets popup: legend over the copies field and the order radios,
 emojitorah.coloring.copies_label,Copies of each sheet,עותקים מכל דף,Parsha Emojis coloring sheets popup: label of the copies number field (1–40),
+emojitorah.coloring.copies_range,Type a number of copies from 1 to {max}.,כתבו מספר עותקים מ-1 עד {max}.,"Parsha Emojis coloring sheets popup: inline note under the copies field while it holds anything but a whole number from 1 to {max} (Print waits until it is fixed; the field is never changed for the teacher), also announced when Print is pressed",
 emojitorah.coloring.collate_sets,"Collated sets (1 2 3, 1 2 3)","סטים שלמים (1 2 3, 1 2 3)","Parsha Emojis coloring sheets popup: order radio — every chosen parasha once, then the whole set again",
 emojitorah.coloring.collate_grouped,"Grouped by parasha (1 1, 2 2, 3 3)","מקובצים לפי פרשה (1 1, 2 2, 3 3)",Parsha Emojis coloring sheets popup: order radio — all the copies of one parasha together,
 emojitorah.coloring.picture_legend,Picture,תמונה,Parsha Emojis coloring sheets popup: legend over the Colored in checkbox,
