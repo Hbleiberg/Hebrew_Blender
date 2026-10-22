@@ -3717,6 +3717,7 @@ function answer(q, pickedKey, btn) {
     b.disabled = true;
     b.classList.remove('armed');
     if (b.hasAttribute('aria-pressed')) b.setAttribute('aria-pressed', 'false');
+    const s = b.querySelector('.c-sub'); if (s) s.hidden = true;   // the armed choice's "choose again to answer" is stale once answered (S548)
     if (b.dataset.key === q.key) b.classList.add('good');
   });
   if (!ok && btn) btn.classList.add('bad');
