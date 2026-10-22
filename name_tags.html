@@ -1819,10 +1819,18 @@ const NT_CSV_HEAD = ['Hebrew', 'English', 'Transliteration', 'Extra'];   // i18n
 function ntExportCsv() {
   const rows = ntRows().filter(r => !ntRowEmpty(r));
   if (!rows.length) { ntListNote(_fbT('nametags.csv.err_empty', 'This list has no students to export yet.'), true); return; }
+  ntClearListWarn();
   const lines = [NT_CSV_HEAD.join(',')].concat(rows.map(r => ['he', 'en', 'tr', 'ex'].map(f => ntCsvCell(ntRowField(r, f))).join(',')));
   ntDownload((ntCur.name.replace(/[\\/:*?"<>|]+/g, ' ').trim() || 'class') + '.csv', lines.join('\r\n') + '\r\n');
 }
+// A download that worked takes away a warning an earlier try left ("no students to export yet" stayed under the
+// template it had just saved); a confirmation or a remove-Undo stays.
+function ntClearListWarn() {
+  const n = document.getElementById('ntListNote');
+  if (n && n.classList.contains('warn')) ntListNote('');
+}
 function ntCsvTemplate() {
+  ntClearListWarn();
   const lines = [NT_CSV_HEAD.join(','), 'דָּוִד,David,,', 'שִׁירָה,Shira,,'];   // i18n-ignore: sample file content
   ntDownload('name-tags-template.csv', lines.join('\r\n') + '\r\n');   // i18n-ignore: file name
 }
