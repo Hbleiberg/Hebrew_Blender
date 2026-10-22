@@ -3148,3 +3148,76 @@ Maintainer-requested and maintainer-approved, applied through the connector (not
   - **`277c7d58`** (`emofail.mjs`, the corpus aborted, route hits 3): the sentence in no live region on HEAD 0/4, in `#a11yStatus` on the tree 4/4; a failed retry speaks again ('' then the sentence) 4/4; nothing stale after a retry that loads, count 1,581, screen identical to HEAD 4/4.
   | found S543
 - [ ] P4 (**NEW S543 — probe traps and designed lines**) | probes | **(1)** The container's `LANG` is empty, so headless Chromium names every download whose name is not ASCII `download` (Name Tags' Hebrew "הכיתה שלי.csv" read as a defect at first); launch with `env: { LANG: 'C.UTF-8' }` and the name comes through. **(2)** esm.sh and jsDelivr now answer through the proxy (S422's trap 154 no longer holds): serve the library by route from a curl cache, the nested `/npm/…` and `/havarotjs@…` imports included, to reach the working path — every earlier pass saw only the offline one. **(3)** A tour probe that presses Back at step 2 then Next records step 2 twice; count unique steps. **(4)** A dictionary emoji full-page shot at 0.9 s differs HEAD to HEAD (the page is still filling); settle 2.5 s. **(5)** Resources' Suggest button lives in the Links view. **(6)** Designed console lines: `[hebrew-translit] Failed its self-test <url>` when esm.sh is blocked and jsDelivr answers (S543), with the S316/S384 lines; Name Tags' garbage-`.ivrit` alert is the shared engine's existing one. |
+
+## S544 (2026-10-22) — protocol audit: the measurements behind the restructure, and the pass proposals refuted
+
+Recorded so no session re-derives a number or re-proposes a pass. The audit itself (ranked changes, the rotation
+rule, the surviving passes) is in the S544 draft PR; the protocol lives in `.claude/skills/improveloop/SKILL.md` and
+`docs/reference/loop-passes.md`.
+
+### Measurements (at S543's close-out)
+- **Session-start read:** `SKILL.md` 28.9 KB; `CLAUDE.md` 42 KB; `### Pattern health` 46.8 KB (163 rows, 130 cut to
+  the archive, "Detection" tails only 5 KB of it) read whole by step 2 — ~25K tokens before any work.
+- **Ledger:** 99,991 B against the 100,000 B cap (99,739–99,999 over the last five close-outs); Candidates 28.8 KB
+  (107 open: P1 0, P2 1 at line 95, P3 12, P4 94 — not priority-sorted); seeds 10.9 KB (48); per-session log 1 row
+  (limit 20) and Done one session (limit 5) because the fixed TRUNC widths could not get Pattern health under ~43 KB.
+- **Pattern health:** 116 ACTIVE / 16 retired; 24 rows cite a scratchpad detector right after "Detection:" (38
+  somewhere, 47 via the archive), 6 say "findings/archive", 17 carry no Detection sentence, 8 cite committed scripts;
+  none of the scratch scripts exists in the tree, git history or any code fence. 1 row of 163 named an owner; 46 had
+  no status word. Retirement (3 clean A sweeps) fired for 16 patterns in 543 sessions.
+- **Rotation:** 14 runnable passes, each every 14.2 sessions (min 14, max 16, 353 per-session lines since S403).
+  Per-surface re-audit gaps from the findings headings: D ~117, G ~133, C ~143, H ~148, N ~172, M ~188 sessions. The
+  C row's "torah (S298)" was stale — torah's C ran at S441 (also trope S455, generator S469, index S483, dashboard
+  S499, FM S513 missing from the "C per tool" lists), because rotation rows are overwritten in place. Yield does not
+  split by pass class (last cycle: surface 28 found, G 2, D 4; suite 22, F 7). Suite passes are the only ones that
+  reach a new outside-loop page within a cycle (the Letter Learner got I/B/A/E/L/K at S511–S519; its N and P were
+  still "never" at S543), so a 2:1 surface:suite split would shorten per-surface gaps ~25%, not half, at that cost
+  — hence the chrome bundle + yield deferral instead.
+- **Harnesses:** every pass rebuilt its Playwright harness in the scratchpad and discarded it ("84 cells", "120
+  shots × 12 cells", "53 static + 16 runtime arms × 16 pages"); fix probes died with it (S395's roster-flush
+  regressions survived until the S391–S396 adversarial review).
+- **CI:** no workflow runs check-i18n, check-inline-js, check-ledger, a `--check` builder or a smoke; no script
+  exists for CSP vs loaded origins, `sw.js` VERSION vs changed precached files, `data/` `?v=` agreement, `═══`
+  block byte-identity (the S341 "sha-verified … b58130835987" stamp at loop-findings:1482 could not be reproduced),
+  AllTools key registration, reduced motion, a11y.
+- **Scripts:** both ledger scripts matched sessions with `\bS(\d{2,3})\b` (S1000 ≈ 90 days away); compact-ledger's
+  findings merge inserted mid-file (this file had three layouts: S466→S399 newest-first, 20 per-file groups,
+  S467→S543 oldest-first); `update-sitemap.mjs` had no `--check`.
+
+### Pass proposals refuted (do not re-propose as letters)
+- **S — Security & untrusted data:** A's `unescaped-input / unsafe-parse` row (and `untrusted-card-field-interpolated-unescaped`,
+  `apply-settings-trusts-collection-members`, `untrusted-shape-on-read`, `executable-javascript-in-a-localization-cell`)
+  owns CLAUDE.md Security rules 1–2 — the bare-`JSON.parse`/`innerHTML` census ran each A on the delta (S530: "bare
+  JSON.parse 1, innerHTML interpolation 3"); the `__proto__` + `<img onerror>` drives ran through `?s=` (B S316: 111
+  loads, 0 pollution, 0 XSS; F S282), share codes (D S393), the editor (A S444) and import blobs (A S168/S91); E owns
+  rule 3 (CSP vs what loads, `cspr.mjs` 17 pages). Kept: A2's whole-tree provenance classification (last S168/S193)
+  and the control trap (a parse-only control never fires — `JSON.parse` defines `__proto__` as an own property).
+- **W — Saved-work round-trip:** owned by A's `localStorage-vs-AllTools` (68 A sessions, planted control S444),
+  `ivrit-gather-gap`, `settings-lost-across-a-load` (each control by real click → reload), `apply-settings-trusts-collection-members`
+  (254 cells), by G's fresh-profile `.ivrit` restore (S306 55 keys, S437 by real clicks), I S221's
+  `Storage.prototype.setItem` census and P arms 1/3 + `smoke-migration` step 4. `getSettings` exists on only four
+  pages (dashboard, flash, generator, name_tags): a probe guards the handle. G's `.ivrit` arm now names the byte-diff.
+- **Y — Dated Hebrew-calendar year walk:** the module smoke already walks every Shabbat 5660–5900 on both schedules
+  (`--hebcal` 20,976 agree); the Trainer's festival Shabbatot (A S430, "Hebcal as the reading oracle"), its special
+  chip (S493, clock-fixed), parsha_emojis' Sukkot step / Chukat-Balak / the 2027-06-26 Israel–Diaspora split (H S540)
+  and the dashboard festival line (I S453) were all run. Unowned and now an A pattern (`dated-surface-walk`, DRAFT
+  until its detector lands): the dashboard's inline Hebrew-date + Omer copy (dashboard.md: "two copies are meant to
+  stay identical … not yet done"), the countdown (a live hebcal.com feed → `route.fulfill` fixture), a leap-year
+  Adar II pin. `@hebcal/core` is GPL and `build-leyning-data.mjs` never fetches it: the oracle is the vm-loaded
+  `js/hebrew-calendar.js`.
+- **T — Hebrew content correctness:** generated corpora are gated by their builders (`build-parasha-icons`
+  `--check`, `build-trope-*`, `smoke-hebrew-calendar`). Measured over the hand-kept files: `hebrew_words.json`
+  13,081 strings (medial final-form 1, non-final at end 29, NFC drift 0, stacked vowels 1), `hebrew_emojis.json` 1,784
+  (Latin 11, NFC 0), `parshiyot.json` 54 clean — **1 real defect, `טִיֵַּח` (tsere + patah) in `hebrew_words.json`**
+  (filed as a gate-2 content candidate) against ~36 legitimate hits (gershayim acronyms, `אםם`, loanwords ending in
+  non-final פ, Latin product labels). A one-shot `scripts/loop/check-corpus.mjs` on the DoD `data/` line, run as an E
+  arm when the delta touched `data/`, not a rotation member.
+- **H-student — Student-seat walkthrough:** C holds projected-surface legibility by explicit handoff (S309 O →
+  C, "PROJECTED for young students"); H already walks drill flows by clicks and runs 1024 and 1920 cells (S540 saw
+  15.7 px text at 1920 and did not file); N arm 6 and C's modal arm own escapability; M measured fullscreen boards at
+  1366×768/720p/1080p. Kept as one student cell per H run; raising the 11 px floor to 18 px on projected surfaces is
+  C's gate-2 question.
+- **Survived:** V (offline & service-worker runtime: nothing had ever run the installed worker offline or the
+  VERSION+1 path as a rotation arm — B S515 `fix3.mjs` and E S503 `swstale.mjs` were one-off fix verifications; the
+  `setOffline` trap is at loop-findings:2371), R (regression re-run: no step re-ran a page-layer probe), and E's
+  shape-drift arm (only "answers with a different shape" was unowned; hit once, S543's jsDelivr `[object Object]`).
