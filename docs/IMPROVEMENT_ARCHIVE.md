@@ -94200,3 +94200,23 @@ _(prior)_ **Next session (S546):** **PR `claude/friendly-newton-nq3mkj` (S545): 
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 _(prior)_ **Next session (S547):** **PR `claude/friendly-newton-nq3mkj` (S545–S546, #359): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1074**, FM **5.59**, corpus ?v=7. ⚑ drift: main=44fc930 sw=v1074 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest: suite A (S530), E (S531), L (S532), V (never — its first run, `loop-passes.md` → V); surface: name_tags never had C/D/G/H/M, parsha_emojis never had N (the new-page rule: overdue). ⚑ Keep-alive #40 (10-22) green; #41 (10-23): confirm. ⚑ Seeds: 48. ⚑ 27 DRAFT pattern rows still need a recipe or retirement at the next A. ⚑ The S546 P3 (the false "replaced" note on five pages) is a shared-module rule — the maintainer's call before a loop fix; `defaults-filed-as-the-device's-own-at-first-sign-in` is its row. ⚑ Maintainer: O's Bash permission rule (`.claude/settings.json`); a CI workflow running `closeout.mjs --static`; translit second source; sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4 (+ field borders, retry copy).
+
+
+<!-- archived by compact-ledger at the S549 boundary, 2026-10-22 -->
+## Compaction (S549, 2026-10-22) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-22 | (S543 close-out) | branch/deploy note | **S543 = B: FOUND 2, FIXED 1 (+3).** #357; no drift. sw v1071→v1072; no FM bump. Deferred: translit source.
+
+- [x] 2026-10-22 | `277c7d58` | dictionary | (S543) **Emoji failure said.** | 0/4 → 4/4
+
+- [x] 2026-10-22 | `61577b70` | contact | (S543) **Chosen pill shows in HC.** | 0/3 → 3/3
+
+- [x] 2026-10-22 | `ff0eb611` | resources | (S543) **Pressed toggles show in HC.** | 0/8 → 8/8
+
+- [x] 2026-10-22 | `7383dfb9` | 5 loader pages | (S543) **jsDelivr's wrong answers = a failed load.** | 10 → 0
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+_(prior)_ **Next session (S548):** **PR `claude/friendly-newton-nq3mkj` (S545–S547, #359): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1075**, FM **5.59**, corpus ?v=7. ⚑ drift: main=44fc930 sw=v1075 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest: surface name_tags never had C/D/G/H/M (five never-audited cells outrank every suite pass; the pointer picks C first, then D, G, H, M); suite A (S530), E (S531), L (S532), V (never — its first run, `loop-passes.md` → V). ⚑ Keep-alive #41 (10-23): confirm. ⚑ Seeds: 48. ⚑ 27 DRAFT pattern rows still need a recipe or retirement at the next A. ⚑ `selected-state-lost-in-forced-colors`: the S541 census's pages are all fixed; open: the keyboard's open tab on four carriers (candidate). ⚑ The S546 P3 (the false "replaced" note on five pages) is still the maintainer's call. ⚑ Maintainer: O's Bash permission rule (`.claude/settings.json`); a CI workflow running `closeout.mjs --static`; translit second source; sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4 (+ field borders, retry copy).
