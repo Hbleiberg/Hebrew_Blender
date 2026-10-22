@@ -26,11 +26,13 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
 
+- [ ] P4 (**NEW S546 — C's**) | trope_tutor.html | **The drill's armed / right / wrong answer states are colour-only** (`.tu-choice.armed` / `.good` / `.bad` tints; in High Contrast all three paint alike). | found S546
+
 - [ ] P4 (**NEW S544 audit — gate 2, content**) | data/hebrew_words.json | **One entry stacks tsere and patah (`טִיֵַּח`)** — the one real defect in 14,919 corpus strings (loop-findings S544, with the ~36 legitimate look-alikes); a corpus edit bumps `?v=` on every fetcher. | found S544
 
 - [ ] P4 (**NEW S542 F — gate 2**) | FM, js/ivrit-saves.js, torah, parsha_emojis | **Retry copy diverges from "Try again / נסו שוב"** (FM, cloud status, the staff's HE; Parsha Emojis' "reload the page"). | found S542
 
-- [ ] P4 (**NEW S541 C — pattern; S543 ×2, S545 ×2**) | trope, FM, dictionary | **A pressed or selected state vanishes in High Contrast** (trope's tabs and chips 3–10 px-mean from a sibling; findings S541, S545). | found S541
+- [ ] P4 (**NEW S541 C — pattern; S543 ×2, S545 ×2, S546 ×2**) | Hebrew_Font_Maker.html | **A pressed or selected state vanishes in High Contrast** (FM's letter tiles, modes and two tab sets; findings S541, S545, S546). | found S541
 
 - [ ] P4 (**NEW S541 C — gate 3**) | 14 pages | **Field edges are `--border`: 1.83:1 light, 1.22:1 dark** (1.4.11: 3:1). | found S541
 
@@ -286,11 +288,21 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S319 Pass L — the inverse arm's whole-corpus hit; GATE 2 (copy), deferred unattended**) | index.html (+ every tool page) | **The Hebrew-language interface is claimed NOWHERE a crawler can see.** `js/i18n.js` landed 2026-07-11 and every page ships a visible EN/HE switcher, yet 0 of 14 pages carry interface/bilingual/"in Hebrew or English" vocabulary in `<title>`, description, OG, …[full text: IMPROVEMENT_ARCHIVE.md]
 
+- [ ] P3 (**NEW S546 P — a shared-module rule, the maintainer's call before a loop fix**) | js/ivrit-saves.js (flash_cards, torah_trainer, trope_tutor, classroom_dashboard, index) | **A brand-new device's first sign-in says "Your account's … settings replaced the ones this device had before you signed in" and offers a download of nothing but the page's defaults** on those five pages (each writes …[full text: IMPROVEMENT_ARCHIVE.md]
+
 ## In progress
 
 _(none)_
 
 ## Done
+
+- [x] 2026-10-22 | (S546 close-out) | branch/deploy note | **S546 = P on parsha_emojis (first) + letter_learner (first, the clean surface's second): PE clean; LL FOUND 1, FIXED 1 (+1 suite P3, +1 C's P4); then 2 HC carriers.** Branch `claude/friendly-newton-nq3mkj` (PR #359 continued), draft PR; drift: none. sw v1073→v1074; no FM bump. Unattended: no gate asked.
+
+- [x] 2026-10-22 | `e9759f0` | hebrew_dictionary.html | (S546) **Chosen Words / Emoji mode shows in HC** (`selected-state-lost-in-forced-colors`). | 2.8/2.7 → 127/86
+
+- [x] 2026-10-22 | `ce31c96` | trope_tutor.html | (S546) **Open tab, chosen family, chosen font and pressed Slow show in HC** (`selected-state-lost-in-forced-colors`; the pressed control's `:hover` twin named). | 1.4–3.7 → 38–126; Slow 217 → 122
+
+- [x] 2026-10-22 | `b577692` | letter_learner.html | (S546) **A new device's first sign-in no longer files the defaults as its own settings** (`defaults-filed-as-the-device's-own-at-first-sign-in`). | note + download 1/1 → 0/1; W1–W9 27/27; sync 215, migration 47, tools 47
 
 - [x] 2026-10-22 | (S545 close-out) | branch/deploy note | **S545 = N on letter_learner (first): FOUND 1, FIXED 1 (+3 candidates).** Branch `claude/friendly-newton-nq3mkj`, draft PR; drift: only the S544 merge. sw v1072→v1073; no FM bump. Unattended: no gate asked; LL's gated rows stand.
 
@@ -318,6 +330,8 @@ _(none)_
 
 ### Per-session log (one line per session)
 
+- 2026-10-22 | **S546** | iters: 4 | tools: letter_learner, trope, dictionary, sw | patterns fixed: defaults-filed ×1, forced-colors ×2 | pass run: P (parsha_emojis + letter_learner, both first) | SW: v1073→v1074
+
 - 2026-10-22 | **S545** | iters: 5 | tools: letter_learner, flash, generator, torah, sw | patterns fixed: install-banner ×1, forced-colors ×2, button-focus ×1 | pass run: N (letter_learner, first) | SW: v1072→v1073
 
 - 2026-10-22 | **S544** | iters: 0 | tools: skill, ledger scripts, scripts/loop, docs/reference | patterns fixed: — | pass run: — (protocol audit, no discovery pass) | SW: v1072→v1072
@@ -326,13 +340,15 @@ _(none)_
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S545 (2026-10-22):** letter_learner, flash, generator, torah, sw.js, loop-findings, loop-patterns S545 · skill, ledger scripts, scripts/loop, loop-passes S544 · dictionary, name_tags, resources, contact S543 · trope, parsha_emojis, CSV S542 · i18n.js S541 · FM S538 · 5 toast pages S537 · saves S536 · scripts S535 · index, README, sitemap S532 · account, privacy, terms, 404 S530 · corpus S524 · pwa S472.
+- **Snapshot S546 (2026-10-22):** letter_learner, trope, dictionary, sw.js, loop-findings, loop-patterns S546 · flash, generator, torah S545 · skill, ledger scripts, scripts/loop, loop-passes S544 · name_tags, resources, contact S543 · parsha_emojis, CSV S542 · i18n.js S541 · FM S538 · 5 toast pages S537 · saves S536 · scripts S535 · index, README, sitemap S532 · account, privacy, terms, 404 S530 · corpus S524 · pwa S472.
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
 - `dated-surface-walk` | DRAFT | owner A | det: none | last S544 | streak 0
 
-- `selected-state-lost-in-forced-colors` | ACTIVE | owner C | det: recipe | last S545 | streak 0
+- `defaults-filed-as-the-device's-own-at-first-sign-in` | ACTIVE | owner P | det: recipe | last S546 | streak 0 | hits 6
+
+- `selected-state-lost-in-forced-colors` | ACTIVE | owner C | det: recipe | last S546 | streak 0
 
 - `live-region-shown-with-its-text` | ACTIVE | owner G | det: recipe | last S537 | streak 0
 
@@ -656,7 +672,7 @@ _(none)_
 
 ### Discovery-pass rotation (run one per session, stalest first)
 
-- P accounts & cloud (one surface): 2026-10-21 (**S535 — 12th P, name_tags (first): W1–W8 29/29, static 26/26, plants 13/13; live clean. Page clean; 1 suite-wide FIXED, 1 gate-2. P-next: LL (never), dashboard (S421).**)
+- P accounts & cloud (one surface): 2026-10-22 (**S546 — 13th P, parsha_emojis (first) + letter_learner (first, the clean surface's second): PE W1–W8 21/21, static 17/17 (plants 5/5), harness plants 9 red; LL W1–W9 27/27 after the fix; a fresh-device arm on 10 pages; live clean. PE clean; LL FOUND 1, FIXED 1; suite 1 candidate. P-next: fontmaker (S382), dashboard (S421).**)
 
 - O deslop — AI-design-tell sweep (one surface): SKIP since S403 — the sandbox refuses to execute the third-party detector ("Code from External"); runs again once the maintainer commits a `.claude/settings.json` permission rule for it (`docs/reference/deslop-detector.md`). Last run 2026-09-08 (S346, `flash_cards.html`, 6th O; the S399/S403 refusals are in the archive).
 
@@ -690,4 +706,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-22 (**S542 — 40th F, loading states (first since S189): 14 surfaces held, then aborted. FOUND 7, FIXED 4. F-next: long-build progress.**)
 
-**Next session (S546):** **PR `claude/friendly-newton-nq3mkj` (S545): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1073**, FM **5.59**, corpus ?v=7. ⚑ drift: main=44fc930 sw=v1073 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest: suite A (S530), E (S531), L (S532), V (never — its first run, `loop-passes.md` → V); surface: name_tags never had C/D/G/H/M, parsha_emojis never had N/P, LL never had P (the new-page rule: both overdue). ⚑ Keep-alive #41 (10-23): confirm green. ⚑ Seeds: 48. ⚑ 27 DRAFT pattern rows still need a recipe or retirement at the next A (`button-focus-lost-to-its-own-rebuild` went ACTIVE in S545). ⚑ Maintainer: O's Bash permission rule (`.claude/settings.json`); a CI workflow running `closeout.mjs --static`; translit second source; sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4 (+ field borders, retry copy).
+**Next session (S547):** **PR `claude/friendly-newton-nq3mkj` (S545–S546, #359): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1074**, FM **5.59**, corpus ?v=7. ⚑ drift: main=44fc930 sw=v1074 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest: suite A (S530), E (S531), L (S532), V (never — its first run, `loop-passes.md` → V); surface: name_tags never had C/D/G/H/M, parsha_emojis never had N (the new-page rule: overdue). ⚑ Keep-alive #40 (10-22) green; #41 (10-23): confirm. ⚑ Seeds: 48. ⚑ 27 DRAFT pattern rows still need a recipe or retirement at the next A. ⚑ The S546 P3 (the false "replaced" note on five pages) is a shared-module rule — the maintainer's call before a loop fix; `defaults-filed-as-the-device's-own-at-first-sign-in` is its row. ⚑ Maintainer: O's Bash permission rule (`.claude/settings.json`); a CI workflow running `closeout.mjs --static`; translit second source; sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4 (+ field borders, retry copy).
