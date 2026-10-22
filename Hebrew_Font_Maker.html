@@ -1510,6 +1510,26 @@ html[lang="he"] .tp-label{letter-spacing:normal;text-transform:none;}
 .tp-chip:hover{border-color:var(--gold,#c9922a);color:var(--gold,#c9922a);}
 @media (prefers-reduced-motion: reduce){.tp-chip{transition-duration:0.001ms!important;}}
 /* ═══ end shared: test-phrases CSS ═══════════════════════════════════════ */
+/* High Contrast (forced colours) paints every tile, tab, segment and toggle Canvas on CanvasText, so the selected letter, the
+   open step and category tabs, the pressed English case, brush, stamp, node-panel mode and node toggles, the open help tab,
+   the wizard's current step, the chosen piece and the keyboard's open tab read exactly like their neighbours (pattern
+   selected-state-lost-in-forced-colors, S547). System colours are kept in that mode, so the selected ones take the theme's
+   selection pair; both theme rules are named, by specificity, and so is every :hover twin of a pressed state (a mouse still
+   rests on what it just clicked); a mark tile previews a glyph, so it takes a ring instead of a fill. The block ends the page's
+   own CSS so it outranks every rule above it in source order. */
+@media (forced-colors:active) {
+  .ltile.sel, body.dark .ltile.sel,
+  .mode-btn.active, body.dark .mode-btn.active,
+  .wtab.active, body.dark .wtab.active, .ctab.active, body.dark .ctab.active,
+  .brush-tile.active, body.dark .brush-tile.active,
+  .draw-chips .ctl-btn[aria-pressed="true"], body.dark .draw-chips .ctl-btn[aria-pressed="true"],
+  .npnl-mode-btn.active, .npnl-mode-btn.active:hover, body.dark .npnl-mode-btn.active, body.dark .npnl-mode-btn.active:hover,
+  .nb-toggle[aria-pressed="true"], .nb-toggle[aria-pressed="true"]:hover, body.dark .nb-toggle[aria-pressed="true"], body.dark .nb-toggle[aria-pressed="true"]:hover,
+  .help-tab.active, body.dark .help-tab.active,
+  .wiz-dot.active, .me-piece-row.active, .hk-tab.active, body.dark .hk-tab.active { background: Highlight; border-color: Highlight; color: HighlightText; }
+  .ltile.sel .lt-heb, .ltile.sel .lt-name, .ltile.sel .mark-prev, .wtab.active::after { color: HighlightText; }
+  .mark-sq.active { outline: 3px solid Highlight; outline-offset: -3px; }
+}
 </style>
 </head>
 <body><a class="skip-link" href="#mainContent" data-i18n="fontmaker.a11y.skip_to_workspace">Skip to the workspace</a>
