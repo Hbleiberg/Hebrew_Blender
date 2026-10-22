@@ -94172,3 +94172,11 @@ _(prior)_ **Next session (S543):** **PR `claude/improveloop-s535`: open → cont
 ### from Done
 
 - [x] 2026-10-22 | (S544 close-out) | branch/deploy note | **S544 = the protocol audit, no pass.** Branch `claude/sleepy-lamport-howch1`, draft PR; drift: PR 357 (S535–S543) merged to `main` mid-session, nothing else (sw v1072, FM 5.59, migration 0007 live). Pattern health → one-line rows + `loop-patterns.md` (28 DRAFT); Candidates sorted, 18 → Awaiting, 18 aged P4 archived; passes → `loop-passes.md` (+V, R, E's shape arm, H's student cell); …[full text: IMPROVEMENT_ARCHIVE.md]
+
+
+<!-- archived by compact-ledger at the S546 boundary, 2026-10-22 -->
+## Compaction (S546, 2026-10-22) — moved verbatim from the live ledger
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+_(prior)_ **Next session (S545):** **PR `claude/sleepy-lamport-howch1` (the S544 protocol change): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1072**, FM **5.59**, corpus ?v=7. ⚑ drift: main=3b7f09e sw=v1072 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ The protocol changed in S544 — re-read SKILL.md: passes in `docs/reference/loop-passes.md`, patterns in `docs/reference/loop-patterns.md` (28 DRAFT rows need a recipe or retirement at the next A), `node scripts/loop/coverage.mjs` names a surface pass's target, `node scripts/loop/closeout.mjs` at close-out. ⚑ Stalest: suite A (S530), E (S531), L (S532), V (never); surface: name_tags never had C/D/G/H/M, LL and parsha_emojis never had N/P. ⚑ Keep-alive #41 (10-23): confirm green. ⚑ Seeds: 48. ⚑ Maintainer: O's Bash permission rule (`.claude/settings.json`); a CI workflow running `closeout.mjs --static`; translit second source; sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4 (+ field borders, retry copy).

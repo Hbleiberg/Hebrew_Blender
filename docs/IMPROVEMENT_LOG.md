@@ -28,11 +28,9 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S544 audit — gate 2, content**) | data/hebrew_words.json | **One entry stacks tsere and patah (`טִיֵַּח`)** — the one real defect in 14,919 corpus strings (loop-findings S544, with the ~36 legitimate look-alikes); a corpus edit bumps `?v=` on every fetcher. | found S544
 
-- [ ] P4 (**NEW S542 F — verify**) | torah_trainer.html | **The staff's Try again is rebuilt by `renderText`:** focus may fall. | found S542
-
 - [ ] P4 (**NEW S542 F — gate 2**) | FM, js/ivrit-saves.js, torah, parsha_emojis | **Retry copy diverges from "Try again / נסו שוב"** (FM, cloud status, the staff's HE; Parsha Emojis' "reload the page"). | found S542
 
-- [ ] P4 (**NEW S541 C — pattern; S543 ×2**) | 5 pages | **A pressed or selected state vanishes in High Contrast** (findings S541). | found S541
+- [ ] P4 (**NEW S541 C — pattern; S543 ×2, S545 ×2**) | trope, FM, dictionary | **A pressed or selected state vanishes in High Contrast** (trope's tabs and chips 3–10 px-mean from a sibling; findings S541, S545). | found S541
 
 - [ ] P4 (**NEW S541 C — gate 3**) | 14 pages | **Field edges are `--border`: 1.83:1 light, 1.22:1 dark** (1.4.11: 3:1). | found S541
 
@@ -294,6 +292,16 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-22 | (S545 close-out) | branch/deploy note | **S545 = N on letter_learner (first): FOUND 1, FIXED 1 (+3 candidates).** Branch `claude/friendly-newton-nq3mkj`, draft PR; drift: only the S544 merge. sw v1072→v1073; no FM bump. Unattended: no gate asked; LL's gated rows stand.
+
+- [x] 2026-10-22 | `09ff400` | torah_trainer.html | (S545) **The staff's Try again keeps the keyboard's focus** (`button-focus-lost-to-its-own-rebuild`). | body 2/2 → new Try again / Tune 2/2
+
+- [x] 2026-10-22 | `6f51774` | hebrew_blend_generator.html | (S545) **Pressed blend type, colour mode and letter tiles show in HC** (`selected-state-lost-in-forced-colors`). | 0.1–5 → 78–138
+
+- [x] 2026-10-22 | `bbf201c` | flash_cards.html | (S545) **Chosen deck, count, letters and vowels show in HC** (`selected-state-lost-in-forced-colors`). | 1–7 → 54–158
+
+- [x] 2026-10-22 | `1c24c5f` | letter_learner.html | (S545) **The install hint steps aside while a card, the popup or the tour is open** (`install-banner-over-a-sheet's-bottom-controls`). | 4/4 covered → 0/4
+
 - [x] 2026-10-22 | (S544 close-out) | branch/deploy note | **S544 = the protocol audit, no pass.** Branch `claude/sleepy-lamport-howch1`, draft PR; drift: PR 357 (S535–S543) merged to `main` mid-session, nothing else (sw v1072, FM 5.59, migration 0007 live). Pattern health → one-line rows + `loop-patterns.md` (28 DRAFT); Candidates sorted, 18 → Awaiting, 18 aged P4 archived; passes → …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-10-22 | (S543 close-out) | branch/deploy note | **S543 = B: FOUND 2, FIXED 1 (+3).** #357; no drift. sw v1071→v1072; no FM bump. Deferred: translit source.
@@ -310,19 +318,21 @@ _(none)_
 
 ### Per-session log (one line per session)
 
+- 2026-10-22 | **S545** | iters: 5 | tools: letter_learner, flash, generator, torah, sw | patterns fixed: install-banner ×1, forced-colors ×2, button-focus ×1 | pass run: N (letter_learner, first) | SW: v1072→v1073
+
 - 2026-10-22 | **S544** | iters: 0 | tools: skill, ledger scripts, scripts/loop, docs/reference | patterns fixed: — | pass run: — (protocol audit, no discovery pass) | SW: v1072→v1072
 
 - 2026-10-22 | **S543** | iters: 5 | tools: gen, dict ×2, flash, torah, name_tags, resources, contact, sw | patterns fixed: forced-colors ×2 | pass run: B | SW: v1071→v1072
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S544 (2026-10-22):** skill, ledger scripts, scripts/loop, loop-passes, loop-patterns S544 · generator, dictionary, flash, torah, name_tags, resources, contact, sw.js S543 · trope, parsha_emojis, CSV S542 · LL, i18n.js S541 · FM S538 · 5 toast pages S537 · saves S536 · scripts S535 · index, README, sitemap S532 · account, privacy, terms, 404 S530 · corpus S524 · pwa S472.
+- **Snapshot S545 (2026-10-22):** letter_learner, flash, generator, torah, sw.js, loop-findings, loop-patterns S545 · skill, ledger scripts, scripts/loop, loop-passes S544 · dictionary, name_tags, resources, contact S543 · trope, parsha_emojis, CSV S542 · i18n.js S541 · FM S538 · 5 toast pages S537 · saves S536 · scripts S535 · index, README, sitemap S532 · account, privacy, terms, 404 S530 · corpus S524 · pwa S472.
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
 - `dated-surface-walk` | DRAFT | owner A | det: none | last S544 | streak 0
 
-- `selected-state-lost-in-forced-colors` | ACTIVE | owner C | det: recipe | last S543 | streak 0
+- `selected-state-lost-in-forced-colors` | ACTIVE | owner C | det: recipe | last S545 | streak 0
 
 - `live-region-shown-with-its-text` | ACTIVE | owner G | det: recipe | last S537 | streak 0
 
@@ -424,7 +434,7 @@ _(none)_
 
 - `copy-claims-success-on-a-refused-clipboard` | ACTIVE | owner F | det: recipe | last S445 | streak 0
 
-- `button-focus-lost-to-its-own-rebuild` | DRAFT | owner F | det: none | last S542 | streak 0
+- `button-focus-lost-to-its-own-rebuild` | ACTIVE | owner F | det: recipe | last S545 | streak 0
 
 - `dark-literal-escapes-the-print-tokens` | ACTIVE | owner G | det: recipe | last S479 | streak 1
 
@@ -432,7 +442,7 @@ _(none)_
 
 - `window-taller-than-a-phone-without-a-scroll` | ACTIVE | owner N | det: recipe | last S506 | streak 0
 
-- `install-banner-over-a-sheet's-bottom-controls` | ACTIVE | owner N | det: recipe | last S476 | streak 0
+- `install-banner-over-a-sheet's-bottom-controls` | ACTIVE | owner N | det: recipe | last S545 | streak 0
 
 - `flash-restores-captured-text-not-its-key` | ACTIVE | owner E | det: recipe | last S417 | streak 0
 
@@ -650,7 +660,7 @@ _(none)_
 
 - O deslop — AI-design-tell sweep (one surface): SKIP since S403 — the sandbox refuses to execute the third-party detector ("Code from External"); runs again once the maintainer commits a `.claude/settings.json` permission rule for it (`docs/reference/deslop-detector.md`). Last run 2026-09-08 (S346, `flash_cards.html`, 6th O; the S399/S403 refusals are in the archive).
 
-- N mobile & touch-device (one surface): 2026-10-21 (**S534 — 27th N, `name_tags.html` (first audit): 20 cells, rows, tour by taps, 1px header sweep, fingers, rotation, 4×; plants 5/5. FOUND 6, FIXED 4. N-next: LL, parsha_emojis (never), flash (S361).**)
+- N mobile & touch-device (one surface): 2026-10-22 (**S545 — 28th N, `letter_learner.html` (first audit): 16 cells × 23 views by real taps, rotation, finger drags, 4×, the forced iOS hint; plants 7/7. FOUND 1, FIXED 1. N-next: parsha_emojis (never), flash (S361).**)
 
 - M aesthetics & visual design (one surface): 2026-10-21 (**S536 — 27th M, LL (first): 120 shots × 12 cells, real fonts, row census, real Next clicks; plants fired. FOUND 5, FIXED 3 + S464. M-next: FM (S335).**)
 
@@ -680,4 +690,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-22 (**S542 — 40th F, loading states (first since S189): 14 surfaces held, then aborted. FOUND 7, FIXED 4. F-next: long-build progress.**)
 
-**Next session (S545):** **PR `claude/sleepy-lamport-howch1` (the S544 protocol change): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1072**, FM **5.59**, corpus ?v=7. ⚑ drift: main=3b7f09e sw=v1072 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ The protocol changed in S544 — re-read SKILL.md: passes in `docs/reference/loop-passes.md`, patterns in `docs/reference/loop-patterns.md` (28 DRAFT rows need a recipe or retirement at the next A), `node scripts/loop/coverage.mjs` names a surface pass's target, `node scripts/loop/closeout.mjs` at close-out. ⚑ Stalest: suite A (S530), E (S531), L (S532), V (never); surface: name_tags never had C/D/G/H/M, LL and parsha_emojis never had N/P. ⚑ Keep-alive #41 (10-23): confirm green. ⚑ Seeds: 48. ⚑ Maintainer: O's Bash permission rule (`.claude/settings.json`); a CI workflow running `closeout.mjs --static`; translit second source; sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4 (+ field borders, retry copy).
+**Next session (S546):** **PR `claude/friendly-newton-nq3mkj` (S545): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1073**, FM **5.59**, corpus ?v=7. ⚑ drift: main=44fc930 sw=v1073 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest: suite A (S530), E (S531), L (S532), V (never — its first run, `loop-passes.md` → V); surface: name_tags never had C/D/G/H/M, parsha_emojis never had N/P, LL never had P (the new-page rule: both overdue). ⚑ Keep-alive #41 (10-23): confirm green. ⚑ Seeds: 48. ⚑ 27 DRAFT pattern rows still need a recipe or retirement at the next A (`button-focus-lost-to-its-own-rebuild` went ACTIVE in S545). ⚑ Maintainer: O's Bash permission rule (`.claude/settings.json`); a CI workflow running `closeout.mjs --static`; translit second source; sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4 (+ field borders, retry copy).

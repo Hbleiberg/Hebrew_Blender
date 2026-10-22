@@ -26,10 +26,10 @@
 - **Record (ledger row at S544):** - `dated-surface-walk` | DRAFT | owner A | det: none | last S544 | streak 0
 
 ## `selected-state-lost-in-forced-colors`
-- **Status:** ACTIVE · **Owner:** C · **Consequence:** normal · **Last:** S543 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** C · **Consequence:** normal · **Last:** S545 · **Streak:** 0 · **Detector:** recipe
 - **Shape:** A state drawn only by colour flattens in forced colours.
-- **Detection:** `c541/fcensus.mjs`, then computed styles. — `c541/fcensus.mjs` is a scratchpad path that was never committed: port it to `scripts/loop/detect-<id>.mjs` (with `--plant`) at the next A, or the row goes DRAFT.
-- **Record (ledger row at S544):** - **`selected-state-lost-in-forced-colors`** (NEW S541 C; ×4 fixed (S543: resources, contact); open: 5 pages): ACTIVE, streak 0. A state drawn only by colour flattens in forced colours. Detection: `c541/fcensus.mjs`, then computed styles.
+- **Detection:** `c541/fcensus.mjs`, then computed styles; a fix is measured by `page.screenshot({clip})` of the pressed element centred in the viewport against a sibling under `forcedColors:'active'` (`n545/hc.mjs`: an element screenshot there is not the page's paint, and a clip in the viewport's bottom band shows the sticky bar over it). — `c541/fcensus.mjs` is a scratchpad path that was never committed: port it to `scripts/loop/detect-<id>.mjs` (with `--plant`) at the next A, or the row goes DRAFT.
+- **Record (ledger row at S545):** - **`selected-state-lost-in-forced-colors`** (NEW S541 C; ×6 fixed (S543: resources, contact; S545: flash `bbf201c`, generator `6f51774` — the block ends the page's own CSS so source order cannot outrank it); open: trope's tabs and chips (measured 3–10), FM's tiles / modes / tab sets, the dictionary's emoji gender): ACTIVE, streak 0. A state drawn only by colour flattens in forced colours. Detection: `c541/fcensus.mjs`, then computed styles.
 
 ## `live-region-shown-with-its-text`
 - **Status:** ACTIVE · **Owner:** G · **Consequence:** normal · **Last:** S537 · **Streak:** 0 · **Detector:** recipe
@@ -340,9 +340,10 @@
 - **Archived full text (latest compaction copy):** - **`copy-claims-success-on-a-refused-clipboard`** (NEW S428; FIXED `bbd5f65`, `0d2a941`; S444 index `90e1a057`, dashboard `18344f69`; **S445 generator `3dad5c11`, flash `58ee7a4f` — all 7 carriers fixed, 0 open**): ACTIVE, streak 0. Detection: every `execCommand('copy')` whose …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `button-focus-lost-to-its-own-rebuild`
-- **Status:** DRAFT · **Owner:** F · **Consequence:** normal · **Last:** S542 · **Streak:** 0 · **Detector:** none
-- **Detection:** none recorded — DRAFT until a recipe or a committed detector lands (the next A writes one or retires the row).
-- **Record (ledger row at S544):** - **`button-focus-lost-to-its-own-rebuild`** (**S542 dictionary Try again ×2 `72b005c1`; S513 FM glyph tiles `a54e6d2`; S500 hebrew-keyboard tabs + layout, 4 carriers `1c701fc9`; S499 torah Try again ×2 `80c0a440`; S488
+- **Status:** ACTIVE · **Owner:** F · **Consequence:** normal · **Last:** S545 · **Streak:** 0 · **Detector:** recipe
+- **Shape:** A control whose own press rebuilds or disables it (Try again, a tab strip, a tile grid) drops the keyboard's focus to the page.
+- **Detection:** reach the control by Tab (so `:focus-visible` holds), press Enter, let the attempt settle, then read `document.activeElement`: `body` is a hit; the fix lands it on the rebuilt control or the one that stands in its place unless focus moved meanwhile (`n545/staffretry.mjs` is the shape, with the network path behind it stubbed). S545 torah staff Try again `09ff400`.
+- **Record (ledger row at S545):** - **`button-focus-lost-to-its-own-rebuild`** (**S542 dictionary Try again ×2 `72b005c1`; S513 FM glyph tiles `a54e6d2`; S500 hebrew-keyboard tabs + layout, 4 carriers `1c701fc9`; S499 torah Try again ×2 `80c0a440`; S488
 - **Archived full text (latest compaction copy):** - **`button-focus-lost-to-its-own-rebuild`** (**S542 dictionary corpus Try again ×2 `72b005c1`, parsha_emojis' new Try again built to it `20823f85`; S513 FM glyph tiles `a54e6d2`; S500 hebrew-keyboard tabs + layout, 4 carriers `1c701fc9`; S499 torah Try again ×2 `80c0a440`; S488 trope Try again ×2 `183605ba`; S483 hub `ab1a235e`; S474 flash Return to Options `3235f8eb`; S473 …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `dark-literal-escapes-the-print-tokens`
@@ -365,9 +366,9 @@
 - **Archived full text (latest compaction copy):** - **`window-taller-than-a-phone-without-a-scroll`** (NEW S476 N; FM `fe808b64`; S506 variant, a sticky head covering its own scroller in landscape: dashboard bulk edit `232ea19e`): ACTIVE, streak 0. Detection: `n476` `modalFit` on an SE + 13 landscape, a tapped last button; plant 900px. …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `install-banner-over-a-sheet's-bottom-controls`
-- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S476 · **Streak:** 0 · **Detector:** recipe
-- **Shape:** Detection: `a472/banner2.
-- **Detection:** `a472/banner2.mjs` (sheet — `a472/banner2.mjs` is a scratchpad path that was never committed: port it to `scripts/loop/detect-<id>.mjs` (with `--plant`) at the next A, or the row goes DRAFT.
+- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S545 · **Streak:** 0 · **Detector:** recipe
+- **Shape:** pwa.js's install hint (fixed at the bottom, above every z-index) sits over a sheet's, a modal's or the tour's bottom controls on a phone; the carrier hides it while that state is open (`body:has(…) #pwaInstallBanner { visibility:hidden }`) or lifts its bar by `--pwa-banner-space`.
+- **Detection:** force the iOS hint (`Object.defineProperty(navigator,'standalone',{get:()=>false})` on an iPhone descriptor, the dismiss key cleared), open each modal and the tour, and read `elementFromPoint` at each bottom control's centre (`n545/banner2.mjs`); S545 letter_learner `1c24c5f` (two modals + the tour). Earlier: `a472/banner2.mjs` (sheet — `a472/banner2.mjs` is a scratchpad path that was never committed: port it to `scripts/loop/detect-<id>.mjs` (with `--plant`) at the next A, or the row goes DRAFT.
 - **Record (ledger row at S544):** - **`install-banner-over-a-sheet's-bottom-controls`** (NEW S420 N, hub `f44a17e`; **S472 generator bar `8081fc83` (pwa.js `--pwa-banner-space`), FM's 16 windows `56c7a179`; S476 torah gallery `30fcc886` — no open carrier**): ACTIVE, streak 0. Detection: `a472/banner2.mjs` (sheet
 - **Archived full text (latest compaction copy):** - **`install-banner-over-a-sheet's-bottom-controls`** (NEW S420 N, hub `f44a17e`; **S472 generator bar `8081fc83` (pwa.js `--pwa-banner-space`), FM's 16 windows `56c7a179`; S476 torah gallery `30fcc886` — no open carrier**): ACTIVE, streak 0. Detection: `a472/banner2.mjs` (sheet …[full text: IMPROVEMENT_ARCHIVE.md]
 
