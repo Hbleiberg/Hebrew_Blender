@@ -19,6 +19,10 @@ source-data/leyning-cache/
 # printed cantillation chart scans and their crops (copyrighted pages; read locally by the transcriber, never committed)
 source-data/charts/
 
-# build-totaltorah-audio.mjs / build-totaltorah-timings.mjs cache (the source video audio and info JSON, the lossless
-# verse FLACs handed back to Adas Israel, the alignment venv and its model, the audit page) — never committed
+# build-totaltorah-audio.mjs / build-totaltorah-timings.mjs / build-totaltorah-bulk.mjs cache (the source video audio and
+# info JSON, the lossless verse FLACs handed back to Adas Israel, the alignment venv and its model, the audit page, the bulk
+# ledger and logs) — never committed
 source-data/totaltorah-cache/
+# the bulk run's output for the whole series (build-totaltorah-bulk.mjs run --out source-data/totaltorah-out): ~735 MB of
+# verse MP3s plus their manifest and timings — hosted outside the repo (Phase 2), never committed
+source-data/totaltorah-out/

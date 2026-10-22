@@ -20,17 +20,22 @@
  *          both sides and written as a lossless FLAC (source-data/totaltorah-cache/verses/, the set handed back
  *          to Adas Israel and the alignment input) and a mono MP3 (data/totaltorah/audio/, -q:a 5).
  * verify — flips `verified` (or, with --timings, `timingsVerified`) to true for the named verses: the
- *          maintainer runs it after listening. The page uses nothing that is not verified.
+ *          maintainer runs it after listening. The page uses nothing that is not verified. The verses are named
+ *          by --verses "Genesis 1:1,…", or all of one video's by --video <id>, or all of one parasha's by
+ *          --parsha <name> (as data/parshiyot.json spells it).
  *
  * Both writers merge data/totaltorah/manifest.json (a top-level `credit` block beside one entry per verse,
  * keyed "Genesis 1:1") and keep every existing verified flag; split also writes data/totaltorah/LICENSE.txt.
- * The only ids the script will touch are in VIDEOS below — Phase 2 grows that table from the Adas page.
+ * The only ids the script will touch are in VIDEOS (scripts/totaltorah-videos.mjs) — grown from the Adas page
+ * by build-totaltorah-bulk.mjs adas, or one row at a time by /addTOTT.
  *
  * Options: --thresh <dB> (-50dB)  --mindur <s> (0.6)  --pad <s> (0.15)  --boundaries "<s,s,…>"  --yt-dlp <path>
+ *          --keep-existing  (split: a verse another video already cut keeps that file and entry — the series
+ *                            repeats some readings, e.g. Yitro's Decalogue in years 2 and 3, and the first cut wins)
  *          --cache <dir> --out <dir>  (a self-test's folders; never point --out inside data/ for a test)
  */
 import { execFileSync, spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, readFileSync, writeFileSync, statSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync, statSync, unlinkSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { VIDEOS, BOOK_CODE } from './totaltorah-videos.mjs';
@@ -242,24 +247,37 @@ function writeManifest(m) {
 }
 
 /* ---------- triennial cross-check (reported, never fixed) ---------- */
+// A row's parsha is one parasha as data/parshiyot.json spells it, or a doubled pair joined by '-' ("Vayakhel-Pekudei"),
+// whose division is the pair's combined table; aliyah is 1–7 or 'M'; year null (Ha'azinu) reads the first year's table.
 function triennialCheck(row, r) {
   try {
     const parshiyot = JSON.parse(readFileSync(join(repoRoot, 'data', 'parshiyot.json'), 'utf8'));
-    const p = parshiyot.find((x) => x.en === row.parsha);
     const tri = JSON.parse(readFileSync(join(repoRoot, 'data', 'leyning', 'triennial.json'), 'utf8'));
-    const entry = p && tri.parshiyot && tri.parshiyot[String(p.n)];
-    const div = entry && entry.variations && entry.variations[`Y.${row.year}`] && entry.variations[`Y.${row.year}`][String(row.aliyah)];
+    const year = row.year || 1, key = String(row.aliyah);
+    const p = parshiyot.find((x) => x.en === row.parsha);
+    let div = null, where = '';
+    if (p) {
+      const entry = tri.parshiyot && tri.parshiyot[String(p.n)];
+      div = entry && entry.variations && entry.variations[`Y.${year}`] && entry.variations[`Y.${year}`][key];
+      where = `Y.${year}[${key}] of parasha #${p.n}`;
+    } else {
+      const parts = String(row.parsha).split('-').map((name) => parshiyot.find((x) => x.en === name)).filter(Boolean);
+      const pair = parts.length === 2 && tri.combined && tri.combined[`${parts[0].n}-${parts[1].n}`];
+      div = pair && pair.years && pair.years[`Y.${year}`] && pair.years[`Y.${year}`][key];
+      where = `combined ${parts.map((x) => x.n).join('-')} Y.${year}[${key}]`;
+    }
     const ours = [`${r.sc}:${r.sv}`, `${r.ec}:${r.ev}`];
-    if (!div) { console.log(`triennial cross-check: no hebcal division for ${row.parsha} Y.${row.year} aliyah ${row.aliyah} (parasha #${p && p.n})`); return; }
+    if (!div) { console.log(`triennial cross-check: no hebcal division for ${row.parsha} Y.${year} aliyah ${key}`); return; }
     const same = div[0] === ours[0] && div[1] === ours[1];
-    console.log(`triennial cross-check: Adas "${row.parsha} Year ${row.year} Aliyah ${row.aliyah}" = ${ours.join('–')}; hebcal triennial.json Y.${row.year}[${row.aliyah}] = ${div.join('–')} → ${same ? 'MATCH' : 'MISMATCH (reported, data left as is)'}`);
+    console.log(`triennial cross-check: Adas "${row.parsha} Year ${row.year ?? 'all'} Aliyah ${key}" = ${ours.join('–')}; hebcal triennial.json ${where} = ${div.join('–')} → ${same ? 'MATCH' : 'MISMATCH (reported, data left as is)'}`);
   } catch (e) { console.log(`triennial cross-check skipped: ${e.message}`); }
 }
 
 /* ---------- split ---------- */
-// The source audio: yt-dlp's m4a, or a file the maintainer extracted elsewhere and dropped in the cache (m4a or mp3).
+// The source audio: yt-dlp's m4a, or a file the maintainer extracted elsewhere and dropped (or the bulk script staged) in the cache.
+const SOURCE_EXTS = ['m4a', 'mp3', 'webm', 'opus', 'ogg', 'wav', 'flac', 'aac'];
 function sourceAudio(id) {
-  for (const ext of ['m4a', 'mp3']) { const p = join(CACHE_DIR, `${id}.${ext}`); if (existsSync(p)) return p; }
+  for (const ext of SOURCE_EXTS) { const p = join(CACHE_DIR, `${id}.${ext}`); if (existsSync(p)) return p; }
   return null;
 }
 function doSplit(id, row) {
@@ -308,20 +326,30 @@ function doSplit(id, row) {
   }
   mkdirSync(AUDIO_DIR, { recursive: true });
   mkdirSync(FLAC_DIR, { recursive: true });
+  // decode the source once (mono PCM); every cut then seeks that file — exact for PCM, and instant — instead of
+  // decoding the video's audio from its start for each verse (hours over the whole series)
+  const pcm = join(CACHE_DIR, `${id}.pcm.wav`);
+  execFileSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-i', m4a, '-vn', '-ac', '1', '-c:a', 'pcm_s16le', pcm]);
   const manifest = readManifest();
   manifest.credit.videos[id] = {
     title: info.title || '', url: `https://youtu.be/${id}`, upload_date: info.upload_date || '', duration: info.duration || null,
     channel: info.channel || info.uploader || '', fetched: new Date().toISOString().slice(0, 10),
   };
-  let totalBytes = 0;
+  let totalBytes = 0, kept = 0;
   console.log('\n  verse          cut (s)            mp3 dur   bytes');
   verses.forEach((vs, i) => {
     const seg = segs[i];
     const start = Math.max(0, seg.start - pad), end = Math.min(dur, seg.end + pad);
     const flac = join(FLAC_DIR, `${vs.file}.flac`), mp3 = join(AUDIO_DIR, `${vs.file}.mp3`);
-    // -ss after -i: sample-accurate cuts (the file is short, speed is irrelevant); -ac 1 mono (speech)
-    execFileSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-i', m4a, '-ss', String(start), '-to', String(end), '-vn', '-ac', '1', '-c:a', 'flac', flac]);
-    execFileSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-i', m4a, '-ss', String(start), '-to', String(end), '-vn', '-ac', '1', '-codec:a', 'libmp3lame', '-q:a', '5', mp3]);
+    const have = manifest[vs.key];
+    if (flags['keep-existing'] && have && have.video && have.video !== id && have.file === `${vs.file}.mp3` && existsSync(mp3)) {
+      kept++;
+      console.log(`  ${vs.key.padEnd(14)} kept — already cut from ${have.video}`);
+      return;
+    }
+    // -ss/-t before -i on the PCM copy: sample-accurate and instant; the copy is already mono (speech)
+    execFileSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-ss', String(start), '-t', String(end - start), '-i', pcm, '-c:a', 'flac', flac]);
+    execFileSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-ss', String(start), '-t', String(end - start), '-i', pcm, '-codec:a', 'libmp3lame', '-q:a', '5', mp3]);
     const mdur = Math.round(ffprobeDuration(mp3) * 100) / 100;
     const bytes = statSync(mp3).size;
     totalBytes += bytes;
@@ -336,8 +364,10 @@ function doSplit(id, row) {
   });
   writeManifest(manifest);
   writeFileSync(join(OUT_DIR, 'LICENSE.txt'), LICENSE_TEXT);
-  const perVerse = totalBytes / N;
-  console.log(`\nsplit: ${N} MP3s, ${totalBytes} bytes total, ${Math.round(perVerse)} bytes/verse (mean ${(perVerse / 1024).toFixed(1)} KB)`);
+  try { unlinkSync(pcm); } catch { /* already gone */ }
+  const cut = N - kept;
+  const perVerse = cut ? totalBytes / cut : 0;
+  console.log(`\nsplit: ${cut} MP3s${kept ? ` (${kept} kept from earlier cuts)` : ''}, ${totalBytes} bytes total, ${Math.round(perVerse)} bytes/verse (mean ${(perVerse / 1024).toFixed(1)} KB)`);
   console.log(`Phase 2 estimate: 5,845 verses × ${(perVerse / 1024).toFixed(1)} KB ≈ ${(5845 * perVerse / 1024 / 1024).toFixed(0)} MB of MP3 at this setting.`);
   console.log(`FLAC hand-back set: ${FLAC_DIR}/`);
   triennialCheck(row, r);
@@ -348,9 +378,16 @@ function doSplit(id, row) {
 
 /* ---------- verify ---------- */
 function doVerify() {
-  const list = String(flags.verses || '').split(',').map((s) => s.trim()).filter(Boolean);
-  if (!list.length) fail('verify needs --verses "Genesis 1:1,Genesis 1:2,…"', 2);
   const manifest = readManifest();
+  let list = String(flags.verses || '').split(',').map((s) => s.trim()).filter(Boolean);
+  const keys = Object.keys(manifest).filter((k) => k !== 'credit');
+  if (flags.video) {
+    if (!VIDEOS[String(flags.video)]) fail(`"${flags.video}" is not in the VIDEOS table`, 2);
+    list = list.concat(keys.filter((k) => manifest[k].video === flags.video));
+  }
+  if (flags.parsha) list = list.concat(keys.filter((k) => manifest[k].parsha === flags.parsha));
+  list = [...new Set(list)];
+  if (!list.length) fail('verify needs --verses "Genesis 1:1,Genesis 1:2,…", --video <id> or --parsha <name> (and the manifest must hold those verses)', 2);
   const field = flags.timings ? 'timingsVerified' : 'verified';
   for (const k of list) {
     const e = manifest[k];

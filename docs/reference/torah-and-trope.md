@@ -965,6 +965,25 @@ never a practice link (`LINK_DISPLAY` says how a reading looks, never how it sou
   over a Hebrew wav2vec2 model in an isolated venv, writes the timings file and the per-word scores, and stops — no
   heuristic aligner — when the model or torch cannot be had. `scripts/build-leyning-data.mjs`'s `triennial.json` is
   the cross-check for each video's "Year n Aliyah m" range (reported, never fixed).
+- **The whole series at once** (`scripts/build-totaltorah-bulk.mjs`; `scripts/totaltorah-lib.mjs` holds what it
+  shares with the timings script). `adas` generates the whitelist from the Adas pages' listings, kept as
+  `source-data/totaltorah-adas/<book>.tsv` (one row per video link: parasha heading, label, year column, id,
+  range as printed): the page's own division wins over hebcal's when it chains with its neighbours, a range that
+  breaks the chain or leaves its parasha falls back to hebcal, and the row's `note` says which; a doubled pair is
+  one unit on the page and follows its combined table; Ha'azinu and V'Zot HaBerachah carry `year: null` (one set
+  for all three years). `meta` checks every id's title through YouTube's oEmbed endpoint (the bot gate refuses
+  yt-dlp from a cloud address) and records `check`. `inventory` / `stage` match a dump of the maintainer's downloads
+  — by the id in a file name or yt-dlp sidecar, else by the parasha, year and aliyah in the file and folder names,
+  English in any spelling or Hebrew — and hard-link the matched files into the cache with an `<id>.info.json` each.
+  `run` drives boundaries → `split --boundaries auto --keep-existing` → timings per video with one aligner process
+  (`align_totaltorah.py --serve`; the network runs in 40 s windows, so a long aliyah needs no more memory than a
+  short one; the intro end is the best-scoring of the silence-end candidates, the first-silence rule the tiebreak;
+  `--timings derive` reads each verse's timings off the whole-file alignment — the boundaries file carries every
+  word — and `realign` is the per-verse second pass), cuts each verse once (the series repeats some readings; the
+  first video in Torah order wins, later ones are `duplicate`), skips maftir and Chazak videos unless asked, and
+  logs every failure and goes on; `status` is the ledger. The corpus (≈ 735 MB) never enters the repo: `run`
+  refuses more than a parasha into `data/totaltorah/` without `--into-repo`, and the series goes `--out
+  source-data/totaltorah-out` (gitignored) until Phase 2 hosts it (R2 + one `media-src` origin).
 
 ---
 

@@ -15,7 +15,9 @@ description: >-
 Read first: `docs/reference/torah-and-trope.md` → *Recording sources* (how the page uses the files), and the
 header comments of `scripts/build-totaltorah-audio.mjs` and `scripts/build-totaltorah-timings.mjs`. The
 permission terms (`THIRD_PARTY_LICENSES.md` → Total Torah) bound everything here: verse cuts only, full credit,
-every verse links to its complete video, nothing redistributed.
+every verse links to its complete video, nothing redistributed. One video at a time is the recipe below; the whole
+series (a dump of the maintainer's own downloads) is *Bulk intake* at the end — same scripts, driven by
+`scripts/build-totaltorah-bulk.mjs`.
 
 ## Facts that hold for every video (learned on the first one)
 
@@ -80,7 +82,64 @@ every verse links to its complete video, nothing redistributed.
 
 ## Never
 
-- Fetch a video not named in the whitelist, or a playlist. Never commit anything under `source-data/`.
+- Fetch a video not named in the whitelist, or a playlist. Never commit anything under `source-data/*-cache/` or
+  `source-data/totaltorah-out/` (the Adas listings in `source-data/totaltorah-adas/` are committed inputs).
 - Cut by the silence table alone, merge or split a segment to make the count fit, or ship a verse whose word count
   disagrees with the page's (the timings script refuses; so does the trope index builder — same rule).
 - Flip `verified` / `timingsVerified` yourself, embed YouTube, or add a `frame-src`.
+- Commit the corpus: more than a parasha's MP3s under `data/totaltorah/` (the series is ≈ 735 MB; Phase 2 hosts it).
+
+## Bulk intake — the whole series (`scripts/build-totaltorah-bulk.mjs`)
+
+Six resumable steps, each safe to re-run: `adas`, `meta`, `inventory`, `stage`, `run`, `status` (the header comment
+has every flag). Facts learned preparing the first pass (Oct 2026):
+
+- **The Adas page lists every video with its verse range.** Five book pages (`/trope-breishit` … `/trope-dvarim`):
+  under each "Parshat X" heading, Year 1 / 2 / 3 columns, rows Aliyah 1–7 (one link per year) and Maftir entries,
+  each followed by a chapter:verse range — 1,031 links. The site answers 406 to a cloud address (curl and headless
+  Chromium alike), so the pages were read through the WebFetch tool and kept as `source-data/totaltorah-adas/<book>.tsv`,
+  the committed input of `adas --accept`, which writes `scripts/totaltorah-videos.mjs` with every range cross-checked
+  against hebcal's triennial tables. The page's own division wins when it chains with its neighbours (Adas cuts a few
+  readings differently: Achrei Mot-Kedoshim Y2 A6/A7, Matot-Masei Y2 A5/A6); a range that breaks the chain or lies
+  outside its parasha is a typo and hebcal's stands; the row's `note` says which. Doubled parshiyot are listed
+  combined and follow the pair's combined table; Ha'azinu and V'Zot HaBerachah have one set for all three years
+  (`year: null`). One entry has no link (Bereshit Y2 A4, Genesis 3:1–3:21): it gets a row once its id is known.
+- **The series repeats readings.** Yitro's Decalogue (years 2 and 3), Va'etchanan's, Beshalach's Song, Shemini's
+  chapter 11, the end of Ki Tavo — 30 ranges have two or three videos. `run` cuts each verse once (`split
+  --keep-existing`; the first video in Torah order wins) and marks the rest `duplicate`. Maftir and "w/Chazak"
+  videos repeat verses an aliyah already holds, so `run` skips them unless `--maftir` / `--chazak` is given.
+- **YouTube's bot gate also refuses metadata from a cloud address after a call or two.** `meta` reads each title
+  through the oEmbed endpoint instead (no gate, ~0.4 s each; title and channel only) and records `check` on the row:
+  the title ("B'reishit, Year 1 Aliyah 1") must name the row's parasha, year and aliyah. `meta --ytdlp` fetches the
+  fuller info JSON (duration, upload date) where the gate allows; without it, `stage` synthesizes `<id>.info.json`
+  from the row and ffprobe (a dump's own yt-dlp sidecars are used as they are).
+- **A long aliyah does not fit one attention pass.** 360 s of audio took 8.7 GB in one pass on this machine; the
+  aligner runs the network in 40 s windows (4 s overlap, half dropped on each side) and force-aligns the stitched
+  emission once — 2.6 GB and 77 s for the same file, ≈ 0.2 s of CPU per second of audio. The model loads once per
+  run (`align_totaltorah.py --serve`, pinned to its commit in `totaltorah-lib.mjs`).
+- **The intro end is chosen by alignment:** the first verse's words are aligned from the file's start and from every
+  silence end in the first 30 s on one emission pass; the best-scoring start wins (scores within 0.02 fall back to
+  the first-silence rule), and the log prints the candidates and flags a choice that differs from the old rule.
+- **Timings come from the whole-file alignment by default** (`--timings derive`; `realign` is the per-verse second
+  pass of the recipe above), so each video is aligned once: the series' ≈ 34 h of audio is about 7–8 h of CPU here,
+  plus ffmpeg (the source is decoded once per video since the same pass).
+- **The corpus never goes into the repo.** ≈ 735 MB of MP3 for the whole Torah (the Phase 2 plan: R2 + one
+  `media-src` origin). `run` refuses more than ~400 verses into `data/totaltorah/` without `--into-repo`; the
+  series goes `--out source-data/totaltorah-out` (gitignored), and only the manifest + timings (≈ 2 MB) move into
+  the repo once the audio has a home. A parasha (`--parsha Bereshit`, ~146 verses, ~19 MB) is the pilot that fits.
+
+Steps:
+1. `node scripts/build-totaltorah-bulk.mjs adas --accept` — only when the TSVs change; the whitelist is committed.
+2. `node scripts/build-totaltorah-bulk.mjs meta` — once; resumable; commit the rows it fills in.
+3. `node scripts/build-totaltorah-bulk.mjs inventory --from <dump>` — any layout (book / parasha / year folders or
+   flat; English in any spelling or Hebrew; ids in `[brackets]` or yt-dlp sidecars). Read the unmatched list, fix
+   names, repeat until it is empty.
+4. `node scripts/build-totaltorah-bulk.mjs stage --from <dump> --apply` (hard links; `--copy` across filesystems).
+5. `node scripts/build-totaltorah-timings.mjs --setup` once per container, then
+   `node scripts/build-totaltorah-bulk.mjs run --parsha Bereshit` (the pilot, into the repo) or
+   `run --out source-data/totaltorah-out` (the series). `status` is the ledger; `--redo` recomputes; a failed video
+   is listed and retried on the next run.
+6. The listening pass: `status` prints the `verify --parsha` pair for every parasha with cut, unheard verses;
+   `verify --video <id>` flips one aliyah. Nothing plays until flipped.
+7. Commit the whitelist, the manifest and timings of what was accepted, and only a pilot's MP3s; bump `TT_DATA_V`
+   and `VERSION` as in step 6 above.
