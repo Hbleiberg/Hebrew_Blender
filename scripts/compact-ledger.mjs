@@ -11,6 +11,9 @@
  *     appended as one dated section grouped by file, AND to the archive;
  *   - the surviving candidates are sorted P1 → P4, newest first within a priority, so the
  *     bounded session-start read ("top = next") sees the most urgent work;
+ *   - a candidate that waits on the maintainer (MAINTAINER_ACTION) moves to ## Awaiting the
+ *     maintainer (created after ## Feature seeds if the ledger lacks it), and a P4 found more than
+ *     LIMITS.candidateAgeSessions sessions ago goes to the archive under its own sub-heading;
  *   - surviving blocks keep their first line, cut at the per-section width, with a
  *     " …[full text: IMPROVEMENT_ARCHIVE.md]" tail when anything was cut (the full block is then
  *     also in the archive).
@@ -25,6 +28,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
   LEDGER, ARCHIVE, FINDINGS, LIMITS, TRUNC, NON_ACTIONABLE, SESSION_RE, priorityOf, foundSession,
+  MAINTAINER_ACTION, AWAITING_HEADING,
   parseSections, blocksOf, isPointer, isPrior, handoffRange,
 } from './ledger-rules.mjs';
 
@@ -37,10 +41,18 @@ const { preamble, sections } = parseSections(ledgerText);
 
 const pointerLine = ledgerText.split('\n').find(isPointer) || '';
 const sessionTag = (pointerLine.match(/\(S(\d+)\)/) || [])[1] || '?';
+const currentSession = /^\d+$/.test(sessionTag) ? Number(sessionTag) : null;   // null: never age anything
+
+// The ledger gains ## Awaiting the maintainer on first run, right after ## Feature seeds.
+if (!sections.some(s => s.heading.startsWith('## Awaiting the maintainer'))) {
+  const at = sections.findIndex(s => s.heading.startsWith('## Feature seeds'));
+  sections.splice(at === -1 ? sections.length : at + 1, 0, { heading: AWAITING_HEADING, lines: ['', '_(none)_', ''] });
+}
 const today = new Date().toISOString().slice(0, 10);
 
 const archived = [];   // { section, blocks }
 const findings = [];   // blocks (candidate records)
+const awaiting = [];   // candidate blocks routed to ## Awaiting the maintainer
 const stats = [];
 
 const TAIL = ' …[full text: IMPROVEMENT_ARCHIVE.md]';
@@ -72,7 +84,8 @@ function compactSection(sec) {
   const blocks = blocksOf(sec.lines);
   const keep = [];
   const toArchive = [];
-  let toFindings = 0;
+  const aged = [];
+  let toFindings = 0, toAwaiting = 0, toAged = 0;
   const bump = (b, width) => { const r = truncate(b, width); if (r.archive) toArchive.push(b); keep.push(r.block); };
 
   if (h.startsWith('## Candidates')) {
@@ -80,12 +93,23 @@ function compactSection(sec) {
     for (const b of blocks) {
       const f = b[0];
       if (f.startsWith('- [ ]')) {
-        if (NON_ACTIONABLE.test(b.join(' '))) { findings.push(b); toArchive.push(b); toFindings++; }
-        else cands.push({ b, pri: priorityOf(f), found: foundSession(b.join(' ')) });
+        const text = b.join(' ');
+        if (NON_ACTIONABLE.test(text)) { findings.push(b); toArchive.push(b); toFindings++; continue; }
+        if (MAINTAINER_ACTION.test(text)) { awaiting.push(b); toAwaiting++; continue; }
+        const pri = priorityOf(f), found = foundSession(text);
+        if (currentSession !== null && pri === 4 && found !== -1 && found < currentSession - LIMITS.candidateAgeSessions) { aged.push(b); toAged++; }
+        else cands.push({ b, pri, found });
       } else toArchive.push(b);
     }
     cands.sort((x, y) => x.pri - y.pri || y.found - x.found);
     for (const c of cands) bump(c.b, TRUNC.candidates);
+    if (aged.length) archived.push({ section: `## Candidates — aged P4 (found more than ${LIMITS.candidateAgeSessions} sessions before S${sessionTag})`, blocks: aged });
+  } else if (h.startsWith('## Awaiting the maintainer')) {
+    const own = blocks.filter(b => b[0].startsWith('- [ ]'));
+    for (const b of blocks) if (!b[0].startsWith('- [ ]') && !/^_\(none\)_$/.test(b[0].trim())) toArchive.push(b);
+    const all = [...own, ...awaiting];
+    if (all.length) for (const b of all) bump(b, TRUNC.awaiting); else keep.push(['_(none)_']);
+    awaiting.length = 0;
   } else if (h.startsWith('## Feature seeds')) {
     for (const b of blocks) (b[0].startsWith('- [ ]') ? bump(b, TRUNC.seeds) : toArchive.push(b));
   } else if (h.startsWith('## Done')) {
@@ -131,7 +155,7 @@ function compactSection(sec) {
   const out = keep.map(b => b.join('\n')).join('\n\n');
   const after = out.length;
   if (toArchive.length) archived.push({ section: h, blocks: toArchive });
-  stats.push({ section: h.replace(/\s*\(.*$/, ''), blocks: blocks.length, kept: keep.length, archived: toArchive.length, findings: toFindings, before, after });
+  stats.push({ section: h.replace(/\s*\(.*$/, ''), blocks: blocks.length, kept: keep.length, archived: toArchive.length + toAged, findings: toFindings, awaiting: toAwaiting, before, after });
   return { heading: h, body: out };
 }
 
@@ -178,8 +202,8 @@ function appendFindings(existing, blocks) {
 /* ── report ───────────────────────────────────────────────────────────────────────────── */
 const pad = (s, n) => String(s).padEnd(n);
 console.log(`compact-ledger (${apply ? 'APPLY' : 'dry run'}) — S${sessionTag}, ${today}`);
-console.log(pad('section', 36) + pad('blocks', 8) + pad('kept', 6) + pad('archived', 10) + pad('findings', 10) + pad('bytes before', 14) + 'after');
-for (const s of stats) console.log(pad(s.section, 36) + pad(s.blocks, 8) + pad(s.kept, 6) + pad(s.archived, 10) + pad(s.findings, 10) + pad(s.before, 14) + s.after);
+console.log(pad('section', 36) + pad('blocks', 8) + pad('kept', 6) + pad('archived', 10) + pad('findings', 10) + pad('awaiting', 10) + pad('bytes before', 14) + 'after');
+for (const s of stats) console.log(pad(s.section, 36) + pad(s.blocks, 8) + pad(s.kept, 6) + pad(s.archived, 10) + pad(s.findings, 10) + pad(s.awaiting, 10) + pad(s.before, 14) + s.after);
 const bytesOf = (t) => Buffer.byteLength(t);   // LIMITS.totalBytes is BYTES, and check-ledger
 // measures Buffer.byteLength — reporting string .length here counted UTF-16 units instead, so a
 // ledger carrying Hebrew and em-dashes read ~1.5 KB smaller than it is and looked compacted while

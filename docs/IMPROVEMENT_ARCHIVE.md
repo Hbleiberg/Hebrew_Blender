@@ -93739,3 +93739,45 @@ _(prior)_ **Next session (S543):** **PR `claude/improveloop-s535`: open → cont
 - [x] 2026-10-22 | `24859b7c` | torah | (S542) **No raw key while loading.** | 4 → 0
 
 - 2026-10-22 | **S542** | iters: 5 | tools: torah, trope, dict, parsha, sw | patterns fixed: two-state ×1, focus-lost ×2 | pass run: F | SW: v1070→v1071
+
+
+<!-- archived by compact-ledger at the S544 boundary, 2026-10-22 -->
+## Compaction (S544, 2026-10-22) — moved verbatim from the live ledger
+
+### from Candidates — aged P4 (found more than 90 sessions before S544)
+
+- [ ] P4 (**NEW S452 D — G's**) | hebrew_blend_generator.html | **"N pages to print" counts a caller sheet as one page**; an 8-card set's takes 3 (says 3, sends 5). S497: not small (findings). | found S452
+
+- [ ] P4 (**NEW S452 D — gate 2**) | hebrew_blend_generator.html | **jsPDF re-decodes each PNG page in JS** (561–660 ms a bingo page, 1.85 s a caller sheet); JPEG skips it but is lossy. | found S452
+
+- [ ] P4 (**NEW S448 N — gate 2, new copy**) | torah_trainer.html | **The one-time tip says "click any Hebrew word" on a touch phone** (the Hebrew "לחצו" covers both); a `tap` twin under `pointer:coarse` is new copy. | found S448
+
+- [ ] P4 (**NEW S447 K — the corpus's shva slips, the doubled-yod half FIXED `a86b5a16`**) | data/hebrew_emojis.json | **Some transliterations read a silent shva as a vowel or drop a voiced one** ("seport", "michnsey gi'yns", "mistovvim"); a corpus edit with a `?v=3` bump, best done as a reviewed list. | found S447
+
+- [ ] P4 (**NEW S437 G — gate 2, copy**) | index.html | **Import All Settings' confirm still says it "will overwrite your current dashboard settings and merge … presets and schedules"**; it merges every tool's data. | found S437
+
+- [ ] P4 (**NEW S436 M**) | hebrew_blend_generator.html | **Export PDF below 700px still carries the phone rules** (stacked header, Hebrew at 0.75×) (`141aa8f7` pins only the width). S495: size from the clone (findings). | found S436
+
+- [ ] P4 (**NEW S435 P — gate 2, new copy ×5**) | dashboard, generator, torah, dictionary, flash | **The vowel-colour reset confirm names no account-wide effect while signed in**, though all five reset overrides that travel. | found S435
+
+- [ ] P4 (**NEW S424 Pass D**) | torah_trainer.html | **The first transliteration of a reading is still one long task**: ~600 ms @1× / 3.3–4.1 s @4× on a full parsha, the library ~93% (profiled); fill the rows in idle chunks or a worker. `40c5154` fixed every re-render after it. | found S424
+
+- [ ] P4 (**NEW S424 Pass D**) | torah_trainer.html | **Side by side with a translation is layout-bound at 4×**: re-renders 450–930 ms (≤280 @1×), ~80% style/layout; long-standing (the S307-era page 461–676 on the same stub); interlinear ≤195. | found S424
+
+- [ ] P4 (**NEW S422 Pass M — five small ones; (1) FIXED S446 `0daed724`, (4) FIXED S448 `0f9ddbe1`**) | torah_trainer.html | **(2)** drawer segments break mid-label at 380px; **(3)** Audio tracks start ragged; **(5)** "Custom range…" has no icon. | found S422
+
+- [ ] P4 (**NEW S422 Pass M — gate 3 / gate 2**) | torah_trainer.html | **(1)** dark Chant all is 1.1:1 on the page; **(2)** Hebrew-only side by side keeps an empty half; **(3)** "עִבְרִית" in Libre Baskerville; **(4)** gate 2: the Audio help's 🔊 / 🎵, not the icons. | found S422
+
+- [ ] P4 (**NEW S421 Pass P**) | classroom_dashboard.html | **The "Now showing {name} — the classes from your account are in the class list" switch runs on every signed-in load and credits the account even when it holds nothing** (**S450 attempt reverted**: needs the landed ids; findings S450) | found S421
+
+- [ ] P4 (**NEW S421 Pass P — for H**) | classroom_dashboard.html | **A class list beyond the picker's cap keeps its names now (`288af4a`) but the picker draws only the first 60 chips** (`rosterNames()` slices), so students 61+ of a merged class are stored and counted ("65 names (max 60)") yet never picked; say so in the drawer or raise the chip cap. | found S421
+
+- [ ] P4 (**NEW S413 Pass C — gate 3**) | 404.html | **The lost star wanders forever with no pause** (WCAG 2.2.2); only reduced motion stops it. | found S413
+
+- [ ] P4 (**NEW S411 Pass I — K's**) | Hebrew_Font_Maker.html | **QA Check's outline warning names a glyph by its JS-built English `name` in the Hebrew UI** ("A (uppercase)"; the English, Cyrillic, Phoenician and Aramaic tables build `name` with no key, e.g. "Д (Cyrillic de, uppercase)"). | found S411
+
+- [ ] P4 (**NEW S410 Pass D**) | Hebrew_Font_Maker.html | **Continue runs a synchronous `autosaveNow()` inside the click's task** (88–114ms of 575–616ms @4×), re-saving the snapshot it just restored. | found S410
+
+- [ ] P4 (**NEW S410 Pass D**) | Hebrew_Font_Maker.html | **The partner wizard's Create re-renders every grid once per setter** (`setMarkEnabled` ×2, `setAddEnglishLetters`, `setInputMode`…): 3 tasks of 465–678ms @4×, top 146–201ms @1× (engine blocked; with it, Pyodide's own blocks dominate). | found S410
+
+- [ ] P4 (**NEW S364 — pattern `sub-floor touch target`, an M call like the `.toggle` switches**) | hebrew_blend_generator.html | **The bingo card stepper's ▲/▼ buttons are 18.7×10.5 / 18.7×9.5px at 8.8px type (Bingo mode, `.bingo-step`).** A 24px pair doubles the 90px control's height — a visible size change, not a hit-box trick (the two stack inside a 1px-bordered box). | found S364

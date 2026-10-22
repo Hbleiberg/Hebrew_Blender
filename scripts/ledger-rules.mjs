@@ -26,12 +26,15 @@ export const LIMITS = {
   doneSessions: 5,           // distinct sessions held in ## Done
   sessionLogRows: 20,        // rows in ### Per-session log
   toolCoverageRows: 1,       // ### Tool coverage is one snapshot, not a history
+  candidateAgeSessions: 90,  // a P4 candidate found more than this many sessions ago leaves for the archive
+                             // (a pass that re-finds the defect re-files it; 90 sessions ≈ six rotations)
 };
 
 // Truncation widths compact-ledger applies per section (first line kept, rest archived).
 export const TRUNC = {
   candidates: 400,
   seeds: 400,
+  awaiting: 400,
   done: 400,
   sessionLog: 300,
   toolCoverage: 550,
@@ -40,6 +43,12 @@ export const TRUNC = {
   sweepStatus: 240,
   rotation: 400,
 };
+
+// An open candidate that waits on an action or an answer only the maintainer can give (a redeploy, a
+// dashboard setting, a design choice deferred from an unattended gate, a second source to procure) moves
+// to ## Awaiting the maintainer, so the bounded session-start read of Candidates sees fixable work.
+export const MAINTAINER_ACTION = /\bmaintainer\b|deferred unattended|attended session|BACKEND BOUNDARY/i;
+export const AWAITING_HEADING = '## Awaiting the maintainer (an action or an answer only the maintainer can give; a session that resolves one moves it to Done)';
 
 // An open candidate whose text matches one of these is a measurement/refutation/method record,
 // not a fixable defect: it moves to docs/reference/loop-findings.md (grep before re-deriving).
@@ -56,6 +65,7 @@ export const NON_ACTIONABLE = new RegExp([
 export const REQUIRED = [
   '## Candidates',
   '## Feature seeds',
+  '## Awaiting the maintainer',
   '## In progress',
   '## Done',
   '## Metrics',
