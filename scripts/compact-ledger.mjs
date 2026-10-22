@@ -8,7 +8,9 @@
  *     dated compaction heading, one sub-heading per source section;
  *   - open candidates that are measurement records / refutations / method notes (not fixable
  *     defects — see NON_ACTIONABLE in ledger-rules.mjs) go to docs/reference/loop-findings.md,
- *     grouped by file, AND to the archive;
+ *     appended as one dated section grouped by file, AND to the archive;
+ *   - the surviving candidates are sorted P1 → P4, newest first within a priority, so the
+ *     bounded session-start read ("top = next") sees the most urgent work;
  *   - surviving blocks keep their first line, cut at the per-section width, with a
  *     " …[full text: IMPROVEMENT_ARCHIVE.md]" tail when anything was cut (the full block is then
  *     also in the archive).
@@ -22,7 +24,7 @@ import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
-  LEDGER, ARCHIVE, FINDINGS, LIMITS, TRUNC, NON_ACTIONABLE, SESSION_RE,
+  LEDGER, ARCHIVE, FINDINGS, LIMITS, TRUNC, NON_ACTIONABLE, SESSION_RE, priorityOf, foundSession,
   parseSections, blocksOf, isPointer, isPrior, handoffRange,
 } from './ledger-rules.mjs';
 
@@ -74,13 +76,16 @@ function compactSection(sec) {
   const bump = (b, width) => { const r = truncate(b, width); if (r.archive) toArchive.push(b); keep.push(r.block); };
 
   if (h.startsWith('## Candidates')) {
+    const cands = [];   // kept blocks, sorted below: P1 first, then newest first (a stable sort keeps ties as written)
     for (const b of blocks) {
       const f = b[0];
       if (f.startsWith('- [ ]')) {
         if (NON_ACTIONABLE.test(b.join(' '))) { findings.push(b); toArchive.push(b); toFindings++; }
-        else bump(b, TRUNC.candidates);
+        else cands.push({ b, pri: priorityOf(f), found: foundSession(b.join(' ')) });
       } else toArchive.push(b);
     }
+    cands.sort((x, y) => x.pri - y.pri || y.found - x.found);
+    for (const c of cands) bump(c.b, TRUNC.candidates);
   } else if (h.startsWith('## Feature seeds')) {
     for (const b of blocks) (b[0].startsWith('- [ ]') ? bump(b, TRUNC.seeds) : toArchive.push(b));
   } else if (h.startsWith('## Done')) {
@@ -150,7 +155,7 @@ function fileKey(block) {
   const m = src.match(/[\w.-]+\.(?:html|js|mjs|py|json|csv)/);
   return m ? m[0] : 'suite-wide';
 }
-function mergeFindings(existing, blocks) {
+function appendFindings(existing, blocks) {
   const groups = new Map();
   for (const b of blocks) { const k = fileKey(b); if (!groups.has(k)) groups.set(k, []); groups.get(k).push(b); }
   let text = existing;
@@ -160,14 +165,14 @@ function mergeFindings(existing, blocks) {
       `> previous session already refuted. Never read it whole. Entries are moved here verbatim from the ledger's Candidates\n` +
       `> by \`scripts/compact-ledger.mjs\`; they are records, not open work. Full history: \`docs/IMPROVEMENT_ARCHIVE.md\`.\n`;
   }
+  // One dated section per run, appended at the end and grouped by file inside it. The file is grep-only, so
+  // newest-last keeps every earlier line number stable; an earlier version inserted into per-file sections
+  // mid-file, which left the file with three layouts and moved existing entries on every run.
+  let out = `\n\n## Moved from the ledger's Candidates at the S${sessionTag} boundary (${today})\n`;
   for (const [k, bs] of [...groups.entries()].sort((a, b) => a[0].localeCompare(b[0]))) {
-    const heading = `## ${k}`;
-    const body = bs.map(b => b.join('\n')).join('\n\n');
-    const idx = text.indexOf(`\n${heading}\n`);
-    if (idx === -1) text = text.replace(/\n*$/, '') + `\n\n${heading}\n\n${body}\n`;
-    else { const at = idx + heading.length + 2; text = text.slice(0, at) + `\n${body}\n` + text.slice(at); }
+    out += `\n### ${k}\n\n` + bs.map(b => b.join('\n')).join('\n\n') + '\n';
   }
-  return text;
+  return text.replace(/\n*$/, '') + out;
 }
 
 /* ── report ───────────────────────────────────────────────────────────────────────────── */
@@ -192,7 +197,7 @@ if (apply) {
   if (archiveAppend) writeFileSync(join(root, ARCHIVE), read(ARCHIVE).replace(/\n*$/, '\n') + archiveAppend);
   if (findings.length) {
     const existing = existsSync(join(root, FINDINGS)) ? read(FINDINGS) : '';
-    writeFileSync(join(root, FINDINGS), mergeFindings(existing, findings));
+    writeFileSync(join(root, FINDINGS), appendFindings(existing, findings));
   }
   console.log('written. Now run: node scripts/check-ledger.mjs --vs origin/main');
 } else if (archived.length || findings.length) {

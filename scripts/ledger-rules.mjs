@@ -13,6 +13,12 @@ export const FINDINGS = 'docs/reference/loop-findings.md';
 // third month, so a 2–3 digit match would stop counting Done sessions at S1000.
 export const SESSION_RE = /\bS(\d{2,5})\b/;
 
+// An open candidate's priority (`- [ ] P2 …`) and the session that found it (`… | found S543`).
+// Unknown priority sorts last (9); an unknown found-session sorts last within its priority (-1).
+export const PRIORITY_RE = /^- \[ \] P([1-4])\b/;
+export const priorityOf = l => { const m = l.match(PRIORITY_RE); return m ? Number(m[1]) : 9; };
+export const foundSession = t => { const m = t.match(/found S(\d{2,5})\b/); return m ? Number(m[1]) : -1; };
+
 export const LIMITS = {
   totalBytes: 100_000,       // whole live ledger
   lineChars: 600,            // any line outside the current "Next session" handoff

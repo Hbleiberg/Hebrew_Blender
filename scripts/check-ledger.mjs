@@ -18,6 +18,8 @@
  *   3. SIZE (always): the limits in scripts/ledger-rules.mjs — total bytes, line width (outside
  *      the current handoff), Done ≤ N sessions, per-session log ≤ N rows, one tool-coverage
  *      snapshot, one row per pattern, one row per pass, no _(prior)_ history rows.
+ *   4. ORDER (always): ## Candidates is in priority order (P1 first), because the session-start
+ *      read is bounded to the top of the list and "top = next" is otherwise false.
  *
  * Plain Node, no deps. Exit 1 on any failure. Read-only — it never edits either file.
  *
@@ -29,7 +31,7 @@ import { readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { LEDGER, ARCHIVE, LIMITS, REQUIRED, SESSION_RE, parseSections, blocksOf, isPointer, isPrior, handoffRange } from './ledger-rules.mjs';
+import { LEDGER, ARCHIVE, LIMITS, REQUIRED, SESSION_RE, priorityOf, parseSections, blocksOf, isPointer, isPrior, handoffRange } from './ledger-rules.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -125,6 +127,12 @@ const done = section('## Done');
 if (done) {
   const ids = new Set(blocksOf(done.lines).map(b => (b[0].match(SESSION_RE) || [])[1]).filter(Boolean));
   if (ids.size > LIMITS.doneSessions) fail(`## Done holds ${ids.size} sessions (limit ${LIMITS.doneSessions}); archive the overflow (compact-ledger does it).`);
+}
+const cands = section('## Candidates');
+if (cands) {
+  const pris = blocksOf(cands.lines).filter(b => b[0].startsWith('- [ ]')).map(b => priorityOf(b[0]));
+  const inv = pris.findIndex((p, i) => i > 0 && p < pris[i - 1]);
+  if (inv !== -1) fail(`## Candidates is not in priority order: open item ${inv + 1} is P${pris[inv]} below a P${pris[inv - 1]}. The session-start read stops at the top ~15, so P1 must come first; compact-ledger sorts it.`);
 }
 const log = section('### Per-session log');
 if (log) {
