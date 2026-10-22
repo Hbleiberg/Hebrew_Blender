@@ -526,7 +526,8 @@ absolute keywords that would all come out smaller than a projected word.
 Two toolbar buttons after Strikethrough (both toolbars are built from `EDITOR_COMMANDS`), each toggling a
 class-carrying span through `toggleWrapClass(cls)` — the spoiler's wrap/unwrap algorithm, which
 `insertSpoiler()` now calls too. The sanitizer keeps `class`, so `fx-glow` / `fx-shadow` survive save,
-paste, presets, `.ivrit` and the cloud. Each sets its own custom property (`--fx-glow`, `--fx-shadow`) and
+paste, presets, `.ivrit` and the cloud — all but `revealed`, a spoiler's display state, which it drops so a
+spoiler open when an in-place edit is committed never saves (or loads) open. Each sets its own custom property (`--fx-glow`, `--fx-shadow`) and
 both feed one `text-shadow`, so a run can wear both, nested either way. Light surfaces get a gold halo and
 a dark drop shadow; dark ones (`body.dark`, and always the black Intermission sheet) a neon glow in the
 text's own colour and a light offset. The dark pair is set on the element, out of the print block's token

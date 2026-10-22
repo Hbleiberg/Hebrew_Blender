@@ -11103,6 +11103,9 @@ else ivritInit();
           if (name === 'href' || name === 'src') { if (/^\s*(javascript|vbscript|data):/i.test(a.value)) el.removeAttribute(a.name); continue; }
           if (!keepAttr.has(name)) el.removeAttribute(a.name);
         }
+        // A spoiler's reveal is display state: an edit committed from the board while one was open would
+        // otherwise save it open, and it would load revealed every time.
+        if (el.classList.contains('revealed')) { el.classList.remove('revealed'); if (!el.classList.length) el.removeAttribute('class'); }
         if (tag === 'A' && el.hasAttribute('href')) { el.setAttribute('target', '_blank'); el.setAttribute('rel', 'noopener noreferrer'); }
       }
     })(tpl.content);
