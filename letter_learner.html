@@ -514,6 +514,12 @@ body.dark .ll-mode-btn[aria-pressed="true"] { background:#2a4070; border-color:#
 }
 .ll-overlay { align-items:flex-start; }   /* the card's height changes with its tab and letter: a centred dialog moved Next and the tabs under the pointer */
 .ll-overlay[hidden], .ll-bp-overlay[hidden] { display:none; }
+/* pwa.js's install hint (#pwaInstallBanner: position:fixed at the bottom, z-index above everything) sat over the bulk
+   popup's footer (the page count and Print), the Coloring tab's Print at the end of a card, and the tour's Next on the steps
+   that place the card low — on an iPhone 13 and SE a tap on any of them landed on the banner. The hub's and the Font Maker's
+   rule: the banner steps aside while a modal or the tour is open (the CSS state, so a banner built after the dialog opened is
+   covered too) and is back the moment it closes; only the teacher's ✕ dismisses it for good. (S545 Pass N) */
+body:has(#llOverlay:not([hidden]), #llBpOverlay:not([hidden]), #tourCard:not([hidden])) #pwaInstallBanner { visibility:hidden; }
 .ll-dialog, .ll-bp-dialog {
   background:var(--white); color:var(--text); border:1px solid var(--border); border-radius:14px;
   box-shadow:var(--shadow-lg); width:min(780px, 94vw); max-height:calc(100dvh - 32px);
