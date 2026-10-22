@@ -8,6 +8,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P4 (**NEW S540 H — gate 4**) | parsha_emojis.html, letter_learner.html | **At ≤800px the bulk-print popup's preview sits under every option** (PE 1.6k px down at 800, 2.7k on a phone; LL 1.0k / 1.8k). | found S540
+
 - [ ] P4 (**NEW S539 I — gate 2**) | letter_learner.html | **The cursive tour's card step names neither the Vowels nor the Fonts tab** every cursive card shows. | found S539
 
 - [ ] P4 (**NEW S538 D; S539 re-measured**) | parsha_emojis.html | **A size drag relays out all 54 preview sheets per value** (≤57 ms @1×, ≤232 @4×); the refit after it ≤674 @4×. | found S538
@@ -212,6 +214,10 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Feature seeds (micro-features only; see the Micro-feature track in the session prompt)
 
+- [ ] S | parsha_emojis.html | **Each card prints its own coloring sheet** (the popup with that parasha alone, as a Letter Learner card does): next week's sheet is 4 clicks and no chip marks this week's. | found S540 H
+
+- [ ] S | parsha_emojis.html | **A split week names the other schedule's parasha** ("In Israel: Sh'lach"): an Israeli teacher sees the Diaspora card unless the Torah Trainer says Israel. | found S540 H
+
 - [ ] S | letter_learner.html | **An open card puts `?letter=` in the URL.** **Picked S526.** | found S526 H
 
 - [ ] S | letter_learner.html | **"Vowels to show": Select all / Clear.** **Picked S526.** | found S526 H
@@ -310,31 +316,25 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-22 | (S540 close-out) | branch/deploy note | **S540 = H on parsha_emojis (first): FOUND 4, FIXED 1.** On #357; no drift. sw v1068→v1069; no FM bump. Deferred: gate 4, 2 seeds.
+
+- [x] 2026-10-22 | `21b3376b` | parsha_emojis, LL | (S540) **A copies number outside 1–40 is never changed for the teacher** (note, Print waits). | "122"+Print: 40 printed 8/8 → 0
+
 - [x] 2026-10-22 | (S539 close-out) | branch/deploy note | **S539 = I (suite; NT's first): FOUND 2, FIXED 1.** On #357; no drift. sw v1067→v1068; no FM bump. Deferred: gate 2.
 
 - [x] 2026-10-22 | `f2e89231` | name_tags | (S539) **A CSV download that worked clears an earlier warning.** | stale 8/8 → 0; Undo kept
-
-- [x] 2026-10-22 | (S538 close-out) | branch/deploy note | **S538 = D on parsha_emojis (first): FOUND 4, FIXED 1 + 3.** On #357; no drift. sw v1066→v1067; no FM bump (a fix). Deferred: none.
-
-- [x] 2026-10-22 | `8fbf0ab8` | parsha_emojis | (S538) **The line art is measured without a layout per piece.** | forced 780 → 0; open 197 → 130 ms (1×)
-
-- [x] 2026-10-22 | `f0905fb6` | flash, torah, trope | (S538) **The missing-font note follows the language** (S537 K's). | raw key 4/4 → 0 (race forced)
-
-- [x] 2026-10-22 | `1c8de3ec` | tour block ×3 | (S538) **The tour counts the steps it shows** (S425). | gaps 3 cases → 0; sha ×3
-
-- [x] 2026-10-22 | `5e843de9` | FM | (S538) **A failed preview says so on its card** (S465). | 3/3 shown; 129 same
 
 ## Metrics
 
 ### Per-session log (one line per session)
 
-- 2026-10-22 | **S539** | iters: 2 | tools: name_tags, sw.js | patterns fixed: — | pass run: I | SW: v1067→v1068
+- 2026-10-22 | **S540** | iters: 2 | tools: parsha_emojis, LL, CSV, sw.js | patterns fixed: — | pass run: H | SW: v1068→v1069
 
-- 2026-10-22 | **S538** | iters: 5 | tools: parsha, flash, torah, trope ×2, LL, name_tags, FM, sw.js | patterns fixed: pre-ready-i18n ×1 | pass run: D | SW: v1066→v1067
+- 2026-10-22 | **S539** | iters: 2 | tools: name_tags, sw.js | patterns fixed: — | pass run: I | SW: v1067→v1068
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S539 (2026-10-22):** name_tags, sw.js S539 · parsha_emojis, flash, torah, trope, LL, FM, CSV S538 · 5 toast pages S537 · saves, resources S536 · scripts S535 · index, README, sitemap S532 · account, contact, privacy, terms, 404 S530 · corpus S524 · i18n.js S512 · pwa S472.
+- **Snapshot S540 (2026-10-22):** parsha_emojis, LL, CSV, sw.js S540 · name_tags S539 · flash, torah, trope, FM S538 · 5 toast pages S537 · saves, resources S536 · scripts S535 · index, README, sitemap S532 · account, contact, privacy, terms, 404 S530 · corpus S524 · i18n.js S512 · pwa S472.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -726,10 +726,10 @@ _(none)_
 
 - L SEO & discoverability audit: 2026-10-21 (**S532 — 29th L, `18a7e6a3..ca9b9618` (110 commits; LL's launch, parsha_emojis' first L): 20 arms + 3 on 20 pages (plants 29/29); SEO surface unchanged 16/18; LL + parsha JSON-LD claims by real clicks; FAQ twins 10/10. FOUND 1 (gate 2), FIXED 4; S432 struck.**)
 
-- H teacher walkthrough / paper-cuts (one tool): 2026-10-20 (**S526 — `letter_learner.html`: 6 lessons, ~75 clicks × 4 cells. FOUND 8+1, FIXED 2 (+3). H-next: parsha_emojis, privacy/terms/404 (never), trope (S367).**)
+- H teacher walkthrough / paper-cuts (one tool): 2026-10-22 (**S540 — parsha_emojis' first H: 11 lessons by real clicks × 2 cells (+ 6 widths, 1920, 5 dated weeks). FOUND 4, FIXED 1. H-next: name_tags, privacy/terms/404 (never), trope (S367).**)
 
 - E freshness/site-health: 2026-10-21 (**S531 — 41st E, `d7c58446..48286048` (108 commits; parsha_emojis' first): 16 arms + carrier lists (plants 18/18), docs, CSP 40 cells (plant 40/40), the stub. FOUND 2, FIXED 4.**)
 
 - F cross-tool consistency: 2026-10-21 (**S528 — 39th F, empty states: 6 no-match surfaces × 4 cells by real input (plants 72/72), 12-page census. FOUND 4, FIXED 1 (+ LL ×2). F-next: loading states.**)
 
-**Next session (S540):** **PR: `claude/improveloop-s535` open → continue; merged → fresh branch.** `sw.js` **v1068**, FM **5.59**, corpus ?v=7. ⚑ Stalest: H (S526), C (S527), F (S528). ⚑ Keep-alive #40 (10-22): confirm green. ⚑ Seeds: 46. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4; O's Bash rule.
+**Next session (S541):** **PR: `claude/improveloop-s535` open → continue; merged → fresh branch.** `sw.js` **v1069**, FM **5.59**, corpus ?v=7. ⚑ Stalest: C (S527), F (S528), B (S529). ⚑ Keep-alive #40 (10-22): confirm green. ⚑ Seeds: 48. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4; O's Bash rule.
