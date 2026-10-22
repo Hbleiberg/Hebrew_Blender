@@ -322,6 +322,13 @@ body.dark .et-view[aria-pressed="true"]{background:var(--gold);border-color:var(
   /* Keyboard focus scrolled to the top edge (Shift+Tab) lands below the pinned bar and a stuck heading, never under them. */
   html{scroll-padding-block-start:calc(var(--et-bar-h,55px) + 48px);}
 }
+/* A short window — a laptop zoomed to 200% (1280 × 720 is 640 × 360), a phone turned sideways — would keep up to half
+   of itself under the pinned bar and a stuck heading, so there both scroll with the cards (the dashboard's short-screen
+   rule for its week editor's head). */
+@media screen and (max-height:500px){
+  .et-bar,.et-many .et-book{position:static;}
+  html{scroll-padding-block-start:0;}
+}
 .et-view:focus-visible,.et-print:focus-visible,.et-go:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;}
 .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;}
 .et-note{margin:14px 0 0;font-size:0.95rem;color:var(--text);}
