@@ -1028,6 +1028,8 @@ function etCsDrawing(i, colored) {
 // box area, the largest of its pieces (a path drawn as several, each starting with an absolute M: a bunch of grape
 // glints, the three dots of a shin), and the fill token of the topmost earlier filled shape under its box centre (a
 // fill) or its midpoint (a line). Nothing is measurable without layout, so the copy sits in the document, out of sight.
+// Each piece is a path of its own beside its shape, all of them added before the first read: the copy is laid out once,
+// not once per piece (a read after each insertion forced ~600 layouts over the 54 drawings).
 function etCsMeasure(svg) {
   const NS = 'http://www.w3.org/2000/svg';
   const host = document.createElement('div');
@@ -1035,8 +1037,19 @@ function etCsMeasure(svg) {
   const copy = svg.cloneNode(true);
   copy.setAttribute('width', '480'); copy.setAttribute('height', '480');
   host.appendChild(copy);
-  document.body.appendChild(host);
   const shapes = [...copy.querySelectorAll(ET_CS_SHAPES)];
+  const pieces = shapes.map(n => {
+    const d = n.tagName === 'path' ? (n.getAttribute('d') || '') : '';
+    const parts = d.trim().split(/(?=M)/).filter(x => x.trim());
+    if (!(parts.length > 1 && parts.every(x => /^M/.test(x.trim())))) return null;
+    return parts.map(x => {
+      const p = document.createElementNS(NS, 'path');
+      p.setAttribute('d', x);
+      n.parentNode.insertBefore(p, n);
+      return p;
+    });
+  });
+  document.body.appendChild(host);
   const fillOf = n => { for (let x = n; x; x = x.parentElement) { if (x.hasAttribute('fill')) return x.getAttribute('fill'); if (x === copy) break; } return 'none'; };
   const out = shapes.map(() => ({ area: 0, piece: 0, under: '' }));
   try {
@@ -1045,17 +1058,9 @@ function etCsMeasure(svg) {
       let b = null; try { b = n.getBBox(); } catch (e) {}
       out[i].area = b ? b.width * b.height : 0;
       out[i].piece = out[i].area;
-      const d = n.tagName === 'path' ? (n.getAttribute('d') || '') : '';
-      const parts = d.trim().split(/(?=M)/).filter(x => x.trim());
-      if (parts.length > 1 && parts.every(x => /^M/.test(x.trim()))) {
+      if (pieces[i]) {
         let big = 0;
-        parts.forEach(x => {
-          const p = document.createElementNS(NS, 'path');
-          p.setAttribute('d', x);
-          n.parentNode.insertBefore(p, n);
-          try { const bb = p.getBBox(); big = Math.max(big, bb.width * bb.height); } catch (e) {}
-          p.remove();
-        });
+        pieces[i].forEach(p => { try { const bb = p.getBBox(); big = Math.max(big, bb.width * bb.height); } catch (e) {} });
         out[i].piece = big;
       }
       let pt = null;
@@ -1403,8 +1408,10 @@ function etCsSync() {
       entry = { li, sheet, k: 1, over: false };
       _etCsSheets.set(i, entry);
     }
-    if (L.per === 1) ul.appendChild(entry.li);   // appending in order puts every page in its place
   });
+  // Appending in order puts every page in its place; after the builds, so a drawing's measuring (it reads layout) never
+  // lays out the sheets built before it one at a time.
+  if (L.per === 1) list.forEach(p => ul.appendChild(_etCsSheets.get(p.n - 1).li));
   etCsRenderPapers();
   etCsUpdateChrome();
   etCsScheduleFit();

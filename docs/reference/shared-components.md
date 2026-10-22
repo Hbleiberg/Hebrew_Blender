@@ -699,8 +699,9 @@ header-icons and holiday-icons CSS blocks.
   `beforeprint` fills it for Ctrl+P.
 - **The line art** (`etCsDrawing` → `etCsConvert`) is derived from the drawings at run time, never stored: every
   token is a `var(--hol-*)`, so the conversion reads paint by walking up to the root, measures the geometry once on a
-  hidden attached copy (box area, the largest separately drawn piece, the topmost earlier fill under each shape), and
-  repaints. Lines print at 0.45 of the site's weight; an ink line followed by a coloured copy of the same shape keeps
+  hidden attached copy (box area, the largest separately drawn piece, the topmost earlier fill under each shape; every
+  piece is added before the first read, and `etCsSync` appends the sheets only after building them all, so no read lays
+  out more than its own copy), and repaints. Lines print at 0.45 of the site's weight; an ink line followed by a coloured copy of the same shape keeps
   its full width and the copy becomes its inside (a band for a line, a silhouette for a fill) — the drawing's order is
   never changed, because a later fill covers what came between. A fill with no line of its own gets a thin outline,
   except shine (a light patch on a warm fill, or in pieces too small to colour) and a small navy detail (solid
