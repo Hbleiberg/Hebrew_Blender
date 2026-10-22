@@ -1067,6 +1067,13 @@ footer details > summary:hover{text-decoration:underline;}   /* FAQ / How-To row
 }
 .beta-tag { font-size: 0.7rem; background: var(--gold); color: var(--navy); padding: 1px 5px; border-radius: 3px; font-weight: 700; letter-spacing: 0.05em; vertical-align: middle; }   /* the suite's Beta badge — one idiom at the 11px floor (text-size floor) */
 html[lang="he"] .beta-tag { letter-spacing: normal; text-transform: none; }   /* בטא: Hebrew has no capitals, and the tracking only spaced its letters apart */
+/* High Contrast (forced colours) paints both mode buttons Canvas on CanvasText, so the chosen one (Words / Emoji) read exactly
+   like its neighbour (pattern selected-state-lost-in-forced-colors, S546). System colours are kept in that mode, so the chosen
+   one takes the theme's selection pair; both theme rules are named, and the block ends the page's own CSS so it outranks the
+   hover rule above it in source order. */
+@media (forced-colors:active) {
+  .emoji-gender-btn.active, .emoji-gender-btn.active:hover, body.dark .emoji-gender-btn.active, body.dark .emoji-gender-btn.active:hover { background: Highlight; color: HighlightText; }
+}
 </style>
 </head>
 <body><a class="skip-link" href="#appContainer" data-i18n="dictionary.a11y.skip_to_dictionary">Skip to the dictionary</a>
