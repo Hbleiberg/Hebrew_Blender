@@ -333,6 +333,7 @@ body.dark .et-view[aria-pressed="true"]{background:var(--gold);border-color:var(
 .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;}
 .et-note{margin:14px 0 0;font-size:0.95rem;color:var(--text);}
 .et-note:empty{margin:0;}   /* the coloring note's rule: never hidden, so a load failure is heard */
+.et-retry{margin-top:10px;}
 
 /* ───── The cards: the Torah Trainer's emoji gallery cards (its .tt-emo-* rules) on the page's own surface — white
    cards on the cream page, where the gallery has cream cards on a white dialog. The text column stretches to the
@@ -530,7 +531,7 @@ html[lang="he"] .et-cs-set legend,html[lang="he"] .et-cs-legend{letter-spacing:n
     --warm-gray:#e8e0d0;--text:#1a2744;--muted:#6b6050;--border:#c8bfa8;--white:#fff;--gold-text:#7f5a13;--gold-text-hover:#5c4010;
     background:#fff !important; color:#1a2744 !important;
   }
-  header, footer, .skip-link, .et-bar, .et-go-row, #pwaInstallBanner { display: none !important; }
+  header, footer, .skip-link, .et-bar, .et-go-row, .et-retry, #pwaInstallBanner { display: none !important; }
   main { max-width: none; padding: 0; }
   .et-title { font-size: 1.5rem; margin-bottom: 4px; }
   .et-book, .et-week { margin-top: 12px; break-after: avoid; page-break-after: avoid; }
@@ -790,6 +791,8 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
    (hebrewEmojiTorah_settings, synced to the account; see COLORING SHEETS below). ───── */
 const ET_BOOKS = ['Genesis', 'Exodus', 'Leviticus', 'Numbers', 'Deuteronomy'];
 let etData = null, etFailed = false, etView = 'today';
+// The header-icons retry glyph, for the failed load's in-place Try again (the icon lives in the markup, never the string).
+const ICON_RETRY = '<svg class="hi hi-sm hi-retry" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.2 18.58 A7.6 7.6 0 1 1 15.8 18.58 M15.8 18.58 L16.96 15.39 M15.8 18.58 L19.15 19.17"/></svg>';
 
 function esc(s) {
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -883,8 +886,9 @@ function etRender() {
   document.querySelectorAll('#etViews .et-view').forEach(b => b.setAttribute('aria-pressed', b.dataset.view === etView ? 'true' : 'false'));
   const box = document.getElementById('etCards'), note = document.getElementById('etNote');
   note.textContent = ''; box.classList.remove('et-many');
+  etRetryBtn(etFailed);
   if (etFailed) { box.innerHTML = ''; note.textContent = I18n.t('emojitorah.load_failed'); return; }
-  if (!etData) return;   // still loading
+  if (!etData) { note.textContent = I18n.t('emojitorah.loading'); return; }   // still loading: said, not a blank page
   const week = etThisWeek();
   if (etView === 'today') {
     if (week) { box.innerHTML = etTodayHTML(week); return; }
@@ -898,7 +902,7 @@ function etRender() {
   box.classList.toggle('et-many', !one);
 }
 function etLoad() {
-  fetch('data/parshiyot.json?v=1')   // the Torah Trainer's ?v=: one cached copy serves both pages
+  return fetch('data/parshiyot.json?v=1')   // the Torah Trainer's ?v=: one cached copy serves both pages
     .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
     .then(d => {
       if (!Array.isArray(d) || !d.length) throw new Error('empty');
@@ -907,8 +911,35 @@ function etLoad() {
     .catch(() => { etFailed = true; })
     .then(() => {
       document.getElementById('etCsOpen').disabled = !etData;   // the coloring sheets are built from the same data
-      if (window.I18n) I18n.ready.then(etRender);
+      if (window.I18n) return I18n.ready.then(etRender);
     });
+}
+// A failed load offers the suite's in-place Try again beside its message (the corpus model the Dictionary, the Torah
+// Trainer and the Trope Tutor share), kept across re-renders so a language switch never drops its focus.
+function etRetryBtn(show) {
+  let b = document.getElementById('etRetry');
+  if (!show) { if (b) b.remove(); return; }
+  if (!b) {
+    b = document.createElement('button');
+    b.type = 'button'; b.id = 'etRetry'; b.className = 'et-print hi-btn et-retry';
+    b.addEventListener('click', etRetry);
+    document.getElementById('etNote').after(b);
+  }
+  b.innerHTML = ICON_RETRY + '<span class="hi-lbl">' + esc(I18n.t('shared.corpus.retry_button')) + '</span>';
+}
+// The button goes as the attempt starts (pattern button-focus-lost-to-its-own-rebuild): once it settles, a keyboard press
+// lands on the new Try again (it failed again) or the chosen view, unless the focus has moved meanwhile.
+function etRetry() {
+  const b = document.getElementById('etRetry');
+  const pressed = !!b && document.activeElement === b && b.matches(':focus-visible');
+  etFailed = false;
+  etRender();
+  etLoad().then(() => {
+    const a = document.activeElement;
+    if (!pressed || (a && a !== document.body && a.isConnected)) return;
+    const t = document.getElementById('etRetry') || document.querySelector('#etViews .et-view[aria-pressed="true"]');
+    if (t) t.focus();
+  });
 }
 // The pinned bar's height, for View All's sticky book headings (the bar wraps to more rows as the window narrows).
 function etTrackBar() {
