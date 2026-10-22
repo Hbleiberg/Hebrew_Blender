@@ -6197,7 +6197,9 @@ async function fetchAndRender() {
     return;
   }
   _readingLoading = true;
-  setStatus(I18n.t('torah.status.loading_label', { label: r.label }), false);
+  // A builder, as the failure line below: the first reading can start before the UI strings land, and a plain
+  // string would keep the raw key (and the old language after a switch) for the whole download.
+  setStatus(() => I18n.t('torah.status.loading_label', { label: r.label }), false);
   let netDone = false;   // true once every Sefaria fetch has resolved → a later throw is a render/code bug, not an outage
   try {
     // The English is fetched only when something asks for it. The copy bar's "Include
