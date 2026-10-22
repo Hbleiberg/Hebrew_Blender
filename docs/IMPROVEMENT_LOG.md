@@ -8,7 +8,9 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P4 (**NEW S538 D**) | parsha_emojis.html | **A size drag relays out all 54 preview sheets per value** (≤753 ms @4×). | found S538
+- [ ] P4 (**NEW S539 I — gate 2**) | letter_learner.html | **The cursive tour's card step names neither the Vowels nor the Fonts tab** every cursive card shows. | found S539
+
+- [ ] P4 (**NEW S538 D; S539 re-measured**) | parsha_emojis.html | **A size drag relays out all 54 preview sheets per value** (≤57 ms @1×, ≤232 @4×); the refit after it ≤674 @4×. | found S538
 
 - [ ] P4 (**NEW S538 D**) | parsha_emojis.html | **40 copies × 4 per sheet clone 240 sheets into the preview** (1.3 s @4×). | found S538
 
@@ -308,6 +310,10 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-22 | (S539 close-out) | branch/deploy note | **S539 = I (suite; NT's first): FOUND 2, FIXED 1.** On #357; no drift. sw v1067→v1068; no FM bump. Deferred: gate 2.
+
+- [x] 2026-10-22 | `f2e89231` | name_tags | (S539) **A CSV download that worked clears an earlier warning.** | stale 8/8 → 0; Undo kept
+
 - [x] 2026-10-22 | (S538 close-out) | branch/deploy note | **S538 = D on parsha_emojis (first): FOUND 4, FIXED 1 + 3.** On #357; no drift. sw v1066→v1067; no FM bump (a fix). Deferred: none.
 
 - [x] 2026-10-22 | `8fbf0ab8` | parsha_emojis | (S538) **The line art is measured without a layout per piece.** | forced 780 → 0; open 197 → 130 ms (1×)
@@ -318,25 +324,17 @@ _(none)_
 
 - [x] 2026-10-22 | `5e843de9` | FM | (S538) **A failed preview says so on its card** (S465). | 3/3 shown; 129 same
 
-- [x] 2026-10-21 | (S537 close-out) | branch/deploy note | **S537 = G on parsha_emojis (first): FOUND 2, FIXED 1 + 3.** On #357; no drift. sw v1065→v1066; no FM bump. Deferred: gate 2.
-
-- [x] 2026-10-21 | `660e2f4` | parsha_emojis | (S537) **The sheet fit leaves room for paper's wraps.** | silent clips 1 → 0 of 72
-
-- [x] 2026-10-21 | `61762cf` `6d095c0` | 8 toasts, 3 font notes | (S537) **Status regions in place before their first message** (S484). | AX ignored → status
-
-- [x] 2026-10-21 | `dcfeae3` | FM | (S537) **A saved project is named font + day** (S465 gate 2). | 4/4 names, 4/4 reload
-
 ## Metrics
 
 ### Per-session log (one line per session)
 
-- 2026-10-22 | **S538** | iters: 5 | tools: parsha, flash, torah, trope ×2, LL, name_tags, FM, sw.js | patterns fixed: pre-ready-i18n ×1 | pass run: D | SW: v1066→v1067
+- 2026-10-22 | **S539** | iters: 2 | tools: name_tags, sw.js | patterns fixed: — | pass run: I | SW: v1067→v1068
 
-- 2026-10-21 | **S537** | iters: 5 | tools: parsha, FM, flash/torah/trope ×2, 5 toast pages, sw.js | patterns fixed: live-region-shown-with-its-text ×2 | pass run: G | SW: v1065→v1066
+- 2026-10-22 | **S538** | iters: 5 | tools: parsha, flash, torah, trope ×2, LL, name_tags, FM, sw.js | patterns fixed: pre-ready-i18n ×1 | pass run: D | SW: v1066→v1067
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S538 (2026-10-22):** parsha_emojis, flash, torah, trope, LL, name_tags, FM, CSV, sw.js S538 · 5 toast pages S537 · saves, resources S536 · scripts S535 · index, README, sitemap S532 · account, contact, privacy, terms, 404 S530 · corpus S524 · i18n.js S512 · pwa S472.
+- **Snapshot S539 (2026-10-22):** name_tags, sw.js S539 · parsha_emojis, flash, torah, trope, LL, FM, CSV S538 · 5 toast pages S537 · saves, resources S536 · scripts S535 · index, README, sitemap S532 · account, contact, privacy, terms, 404 S530 · corpus S524 · i18n.js S512 · pwa S472.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -720,7 +718,7 @@ _(none)_
 
 - D performance (one tool): 2026-10-22 (**S538 — parsha_emojis' first D (trope was S480, not S365): cold, 33 real-click arms × 1×/4×, traces, idle, leak; controls fired. FOUND 4, FIXED 1. D-next: name_tags (never), FM (S410).**)
 
-- I first-load & empty-state: 2026-10-20 (**S525 — 39th I, S511 → S525 (105 commits; emoji_torah's first I, LL's Coloring sheet): plants 340/342 (2 = account's `[hidden]`); 152 virgin cells clean; emoji_torah 7 views × 3 cells, 4 failure paths, 10 seeds; LL Coloring 62 cards × 2 views × 3 cells + 3 seeds; tours 8/8 (controls 16/16); ~250 drawer clicks. FOUND 1 (gate 2), FIXED 1 (+2).**)
+- I first-load & empty-state: 2026-10-22 (**S539 — 40th I, S525 → S538 (93 commits; name_tags' first I, parsha_emojis' under its name): 63 virgin cells (plants 334/336); 69 seeds; 27 tours; ~250 openers; 280 bad URLs; failure paths 20. FOUND 2, FIXED 1.**)
 
 - B console/error audit: 2026-10-21 (**S529 — 40th B, `1a3ab8af..5dfff187` (109 commits; parsha_emojis' first B): controls 12/12; 80 load cells × 20 pages; parsha_emojis, LL Coloring + bulk, hub What's-new, dashboard parsha popup, Trainer gallery, 4 tours mid-switch, by real input; 32 wrong-shape stores; iPhone 13 × 20 pages. CLEAN.**)
 
@@ -734,4 +732,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-21 (**S528 — 39th F, empty states: 6 no-match surfaces × 4 cells by real input (plants 72/72), 12-page census. FOUND 4, FIXED 1 (+ LL ×2). F-next: loading states.**)
 
-**Next session (S539):** **PR: `claude/improveloop-s535` open → continue; merged → fresh branch.** `sw.js` **v1067**, FM **5.59**, corpus ?v=7. ⚑ Stalest: I (S525), H (S526), C (S527). ⚑ Keep-alive #40 (10-22): confirm green. ⚑ Seeds: 46. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4; O's Bash rule.
+**Next session (S540):** **PR: `claude/improveloop-s535` open → continue; merged → fresh branch.** `sw.js` **v1068**, FM **5.59**, corpus ?v=7. ⚑ Stalest: H (S526), C (S527), F (S528). ⚑ Keep-alive #40 (10-22): confirm green. ⚑ Seeds: 46. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4; O's Bash rule.

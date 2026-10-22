@@ -93647,3 +93647,15 @@ _(prior — S536 pointer:)_ **Next session (S536):** **PR: `claude/improveloop-s
 ### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
 - pre-ready-i18n / never-re-rendered — **6th instance FIXED S538 `f0905fb6`: the missing-font note on flash ×2, torah, trope (a store answering before the locale wrote the raw key; a switch left it); generator, LL, Name Tags already heal.** 5th S533 `e83db20c`. ACTIVE, consequence-critical; sweep both languages. …[full text: IMPROVEMENT_ARCHIVE.md]
+
+<!-- archived by hand at the S539 close-out, 2026-10-22 -->
+## S539 close-out (2026-10-22) — moved from the live ledger
+
+- [x] 2026-10-21 | (S537 close-out) | branch/deploy note | **S537 = G on parsha_emojis (first): FOUND 2, FIXED 1 + 3.** On #357; no drift. sw v1065→v1066; no FM bump. Deferred: gate 2.
+- [x] 2026-10-21 | `660e2f4` | parsha_emojis | (S537) **The sheet fit leaves room for paper's wraps.** | silent clips 1 → 0 of 72
+- [x] 2026-10-21 | `61762cf` `6d095c0` | 8 toasts, 3 font notes | (S537) **Status regions in place before their first message** (S484). | AX ignored → status
+- [x] 2026-10-21 | `dcfeae3` | FM | (S537) **A saved project is named font + day** (S465 gate 2). | 4/4 names, 4/4 reload
+- 2026-10-21 | **S537** | iters: 5 | tools: parsha, FM, flash/torah/trope ×2, 5 toast pages, sw.js | patterns fixed: live-region-shown-with-its-text ×2 | pass run: G | SW: v1065→v1066
+- (S538 D candidate as it stood) - [ ] P4 (**NEW S538 D**) | parsha_emojis.html | **A size drag relays out all 54 preview sheets per value** (≤753 ms @4×). | found S538
+- (rotation row as it stood) - I first-load & empty-state: 2026-10-20 (**S525 — 39th I, S511 → S525 (105 commits; emoji_torah's first I, LL's Coloring sheet): plants 340/342 (2 = account's `[hidden]`); 152 virgin cells clean; emoji_torah 7 views × 3 cells, 4 failure paths, 10 seeds; LL Coloring 62 cards × 2 views × 3 cells + 3 seeds; tours 8/8 (controls 16/16); ~250 drawer clicks. FOUND 1 (gate 2), FIXED 1 (+2).**)
+- (handoff as it stood) **Next session (S539):** **PR: `claude/improveloop-s535` open → continue; merged → fresh branch.** `sw.js` **v1067**, FM **5.59**, corpus ?v=7. ⚑ Stalest: I (S525), H (S526), C (S527). ⚑ Keep-alive #40 (10-22): confirm green. ⚑ Seeds: 46. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4; O's Bash rule.
