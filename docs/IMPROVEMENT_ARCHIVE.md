@@ -93668,3 +93668,28 @@ _(prior — S536 pointer:)_ **Next session (S536):** **PR: `claude/improveloop-s
 - [x] 2026-10-22 | `1c8de3ec` | tour block ×3 | (S538) **The tour counts the steps it shows** (S425). | gaps 3 cases → 0; sha ×3
 - [x] 2026-10-22 | `5e843de9` | FM | (S538) **A failed preview says so on its card** (S465). | 3/3 shown; 129 same
 - 2026-10-22 | **S538** | iters: 5 | tools: parsha, flash, torah, trope ×2, LL, name_tags, FM, sw.js | patterns fixed: pre-ready-i18n ×1 | pass run: D | SW: v1066→v1067
+
+- (S541 close-out — the rotation row and handoff it replaced)
+- C accessibility (one tool): 2026-10-20 (**S527 — LL's first C: 7 arms by real input, 4 cells, 22 surfaces, plants 11/11. FOUND 3, FIXED 2 (+2). C-next: parsha_emojis (never), torah (S298), trope (S312).**)
+**Next session (S541):** **PR: `claude/improveloop-s535` open → continue; merged → fresh branch.** `sw.js` **v1069**, FM **5.59**, corpus ?v=7. ⚑ Stalest: C (S527), F (S528), B (S529). ⚑ Keep-alive #40 (10-22): confirm green. ⚑ Seeds: 48. ⚑ Maintainer: sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4; O's Bash rule.
+
+
+<!-- archived by compact-ledger at the S542 boundary, 2026-10-22 -->
+## Compaction (S542, 2026-10-22) — moved verbatim from the live ledger
+
+### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`selected-state-lost-in-forced-colors`** (NEW S541 C; parsha_emojis `94c605ee`, LL `76049ae7`; open: 7 pages, the candidate): ACTIVE, streak 0. A pressed/selected state drawn only by colour (or a transparent border) that forced colours flatten. Detection: `c541/fcensus.mjs`, then computed styles; fix with system colours (`Highlight`), no `forced-color-adjust`.
+- (archived by hand at the S541 close-out: S539's Done entries and per-session row, for the size cap)
+- [x] 2026-10-22 | (S539 close-out) | branch/deploy note | **S539 = I (suite; NT's first): FOUND 2, FIXED 1.** On #357; no drift. sw v1067→v1068; no FM bump. Deferred: gate 2.
+- [x] 2026-10-22 | `f2e89231` | name_tags | (S539) **A CSV download that worked clears an earlier warning.** | stale 8/8 → 0; Undo kept
+- 2026-10-22 | **S539** | iters: 2 | tools: name_tags, sw.js | patterns fixed: — | pass run: I | SW: v1067→v1068
+- (archived by hand at the S541 close-out: S540's Done entries and per-session row, for the size cap)
+- [x] 2026-10-22 | (S540 close-out) | branch/deploy note | **S540 = H on parsha_emojis (first): FOUND 4, FIXED 1.** On #357; no drift. sw v1068→v1069; no FM bump. Deferred: gate 4, 2 seeds.
+- [x] 2026-10-22 | `21b3376b` | parsha_emojis, LL | (S540) **A copies number outside 1–40 is never changed for the teacher** (note, Print waits). | "122"+Print: 40 printed 8/8 → 0
+- 2026-10-22 | **S540** | iters: 2 | tools: parsha_emojis, LL, CSV, sw.js | patterns fixed: — | pass run: H | SW: v1068→v1069
+- (S541 close-out: four retired-pattern rows cut to their headline in the ledger for the size cap; full text)
+- invisible-rebuild-on-a-hot-render-path (a render entry point rebuilding a container that is hidden by default under the DEFAULT view, with cost that scales with data) | retired 2026-09-03 (S330) | 3 consecutive clean sweeps: carrier fixed FM `renderSpacingPanel`/`renderKerningSection` (`fa1f88f`), then clean S299, S317, S330 (the S317→S330 delta adds no `innerHTML` writer; torah `buildPrintBand` is bounded by `TROPE_COLOR_DEFS`). Detection kept for A2: list the containers the hot renderer writes, check each at runtime with `offsetParent !== …[full text: IMPROVEMENT_ARCHIVE.md]
+- var()-on-an-undefined-custom-property (a `var(--x)` with no fallback whose token is declared nowhere on that page) | retired 2026-09-03 (S330) | 3 consecutive clean sweeps: last hit `hebrew_dictionary` `--navy-deep` (`5e9a6d2`, S285), then clean S299, S317, S330 (the 14 `var()` references added since S317 — `--gold-text`, `--navy`, `--text`, `--white`, `--border` — all declared on their pages). Detection kept for A2: per file, diff `--token:` declarations + `setProperty('--token'` literals against fallback-less `var(--token)` references, …[full text: IMPROVEMENT_ARCHIVE.md]
+- shadowed-global helper (a top-level helper — `esc`/`status`/`applyI18n`/`t`/… — shadowed by an inner decl so a global-expecting call site gets the wrong one) | retired 2026-07-13 (S73) | 3 consecutive clean sweeps: registered S40 (2 torah `esc`-shadow hits fixed, d88fa99), clean S64, clean S73 over the site-wide i18n rollout (one `esc`/`applyI18n` per file; FM's local `t()` in `shortcutGroups()` and `pwa.js`'s self-contained `t(key,fallback)` are intentional in-scope locals, never reach a global-`t` call site). Correctness-scoped, not …[full text: IMPROVEMENT_ARCHIVE.md]
+- falsy-zero (`s.field || default` silently discarding a stored `0`/`''`/`false` in a numeric/boolean restore) | retired 2026-07-17 (S93) | 3 consecutive clean sweeps: 1 hit S64 (FM `spec.version||1.0`, b9c1aa3), then clean S73, S83 (FM v4.18→v4.26 slider/geometry guards), S93 (dashboard movable-panels — array-order `panelLayout`, no numeric restores). Correctness-scoped (a wrong restored value, not data-loss) → not a consequence-critical carve-out → auto-retired. Re-checked only in Pass A2. **Watch:** any new tool with numeric/boolean …[full text: IMPROVEMENT_ARCHIVE.md]
