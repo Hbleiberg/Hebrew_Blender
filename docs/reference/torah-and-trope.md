@@ -985,7 +985,10 @@ never a practice link (`LINK_DISPLAY` says how a reading looks, never how it sou
   `--timings derive` reads each verse's timings off the whole-file alignment — the boundaries file carries every
   word — and `realign` is the per-verse second pass), cuts each verse once (the series repeats some readings; the
   first video in Torah order wins, later ones are `duplicate`), skips maftir and Chazak videos unless asked, and
-  logs every failure and goes on; `status` is the ledger. The corpus (≈ 735 MB) never enters the repo: `run`
+  logs every failure and goes on; `run --ledger <name>` keeps a run's own ledger so two runs can go at once on
+  different books and `--out` folders (two aligners at default threads starve each other — `OMP_NUM_THREADS=2`
+  each), `run --only <id> --redo --intro <s>` cuts one video's announcement by hand, and `status` reads every
+  ledger (the later run's entry wins) and lists the flagged intros. The corpus (≈ 735 MB) never enters the repo: `run`
   refuses more than a parasha into `data/totaltorah/` without `--into-repo`, and the series goes `--out
   source-data/totaltorah-out` (gitignored) until Phase 2 hosts it (R2 + one `media-src` origin).
 

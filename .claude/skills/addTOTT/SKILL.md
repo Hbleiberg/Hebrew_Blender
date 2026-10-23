@@ -130,6 +130,20 @@ has every flag). Facts learned preparing the first pass (Oct 2026):
   Nasso Y1 A7 404) and Bereshit Y2 A4 has none; the channel's working uploads are hand rows in the whitelist, each
   with a `note` naming the page's id. The rest of the dump (the lessons, Esther, the off-page uploads) stays
   unmatched on purpose.
+- **Some announcements go on past the aliyah number**, and the transcript walk follows them: "… Aliyah 7 and
+  maftir for the parsha" (a Y3 A7 that doubles as the maftir), "… Year 2 Aliyah 1 and Year 3 Aliyah 1" (one video for
+  a reading two years share — the whole of Yitro's year 2, Beshalach's Song, Ki Tavo's end). Two videos open with a
+  spoken lesson no word list can follow ("within this aliyah you will hear the special journeys melody…": Matot-Masei
+  Y2 A6 `trWHG-GpADQ`, the Tochechah of Behar-Bechukotai Y2 A7 `iPtBgpnYK-k`); they were cut with `run --only <id>
+  --redo --intro <s>` after reading the English transcript word by word. One video opens on the chant with no
+  announcement at all (Beshalach Y2 A3 `jIqnsc45oOQ`, cut at 0 s). One recording does not hold its range: Toldot Y3
+  A7 `-CmdgOZKR14` (page and hebcal say Genesis 28:5–28:9) chants from 28:7 — every verse scores near zero and the
+  words come twice as fast as anywhere else; the alignment-plausibility scan (mean word score, words per second,
+  zero-score verses) is how such a video shows itself, and the maintainer decides its range.
+- **Never two aligners at default threads on one machine.** Two torch processes spinning on four cores slowed a
+  video from 35 s to 290 s; two chains run with `OMP_NUM_THREADS=2` each (together about 1.5× one chain's pace),
+  on different books, each with its own `--out` and `--ledger`, as detached processes (a harness background
+  command is cut off after two hours). `status` reads every ledger, the later run's entry winning.
 - **A long aliyah does not fit one attention pass.** 360 s of audio took 8.7 GB in one pass on this machine; the
   aligner runs the network in 40 s windows (4 s overlap, half dropped on each side) and force-aligns the stitched
   emission once — 2.6 GB and 77 s for the same file, ≈ 0.2 s of CPU per second of audio. The model loads once per
