@@ -654,7 +654,9 @@ body.dark #appToast { background: #0a0f1c; }
 }
 /* Print: the sheets alone, at their real size. #ntPageSize holds the @page rule (the paper, its turn and the margin:
    0.35in on plain paper, none on a label sheet, whose labels are placed from the paper's edge). Each sheet is the
-   page's printable area; a hair under its height so rounding never spills a blank page. */
+   page's printable area; a hair under its height so rounding never spills a blank page — and its clip reaches that
+   hair back (overflow-clip-margin), or the last row's bottom border printed a sliver of itself (a thin one not at
+   all) while the preview showed it whole. The box stays short, so the page count is untouched. */
 @media print {
   header, footer, .skip-link, .nt-sidebar, .sbr-split, .nt-sb-tab, .nt-lists, .nt-prev-head, .tour-spot, .tour-card, #appToast, #a11yStatus { display:none !important; }
   html, body, body.dark { background:#fff !important; }
@@ -664,7 +666,7 @@ body.dark #appToast { background: #0a0f1c; }
   .nt-frame { width:auto !important; height:auto !important; border:none !important; box-shadow:none !important; overflow:visible !important; opacity:1 !important; content-visibility:visible !important; }
   .nt-frame.nt-sample { display:none !important; }
   .nt-frame + .nt-frame { break-before:page; }
-  .nt-sheet { position:relative !important; transform:none !important; width:var(--aw) !important; height:calc(var(--ah) - 0.02in) !important; }
+  .nt-sheet { position:relative !important; transform:none !important; width:var(--aw) !important; height:calc(var(--ah) - 0.02in) !important; overflow:clip !important; overflow-clip-margin:0.02in; }
   .nt-area { left:0 !important; top:0 !important; }
   .nt-sheet:not(.nt-print-outlines) .nt-label-outline { display:none !important; }
 }
