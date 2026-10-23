@@ -366,11 +366,12 @@ body.dark .sg-btn-primary:disabled:hover{background:#2a4070;}
 .view-toggle button.active{background:var(--navy);border-color:var(--navy);color:#fff;}
 body.dark .view-toggle button.active{background:#2a3f6a;border-color:#4a6aaa;}
 /* High Contrast (forced colours) paints every toggle Canvas on CanvasText, so the pressed filter, view or Suggest
-   category looked like the rest; system colours are kept there, so it takes the theme's selection colours. forced-color-adjust:none on the filled rule: Chromium paints a Canvas backplate behind every text run it adjusts, and
+   category, and the keyboard's open tab (S547), looked like the rest; system colours are kept there, so it takes the theme's selection colours. forced-color-adjust:none on the filled rule: Chromium paints a Canvas backplate behind every text run it adjusts, and
    on a Highlight fill it hides the HighlightText glyphs (a blank block where the label was); opted out, the explicit system
    colours still follow the theme (S548). */
 @media (forced-colors:active){
   .filter-btn.active,body.dark .filter-btn.active,.sg-pill.active,body.dark .sg-pill.active,.view-toggle button.active,body.dark .view-toggle button.active{background:Highlight;border-color:Highlight;color:HighlightText;forced-color-adjust:none;}
+  .hk-tab.active,body.dark .hk-tab.active{background:Highlight;border-color:Highlight;color:HighlightText;forced-color-adjust:none;}
 }
 /* The Hebrew UI's filter labels, category badges, view toggle and Suggest title: Hebrew has no capitals, and the Latin
    tracking only spaced its letters apart (latin-tracking-on-hebrew-labels). English keeps the small-caps look. The

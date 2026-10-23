@@ -407,6 +407,13 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
   header .hright { display: none !important; }
   .wn-pop { display: none !important; }   /* a position:fixed box repeats on every printed sheet */
 }
+/* High Contrast (forced colours) paints both Backup mode buttons Canvas on CanvasText, so the pressed Automatic / Manual
+   read exactly like each other (pattern selected-state-lost-in-forced-colors, S548). System colours are kept in that mode,
+   so the pressed one takes the theme's selection pair at (0,3,0) — the AllTools panel's own <style> sits later in the
+   body — and forced-color-adjust:none keeps its label off Chromium's text backplate. */
+@media (forced-colors:active) {
+  .ivrit-mode-toggle .ivrit-mode-btn.active, body.dark .ivrit-mode-btn.active { background: Highlight; color: HighlightText; forced-color-adjust: none; }
+}
 </style>
 </head>
 <body><a class="skip-link" href="#mainContent" data-i18n="home.a11y.skip_to_tools">Skip to the tools</a>
