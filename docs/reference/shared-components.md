@@ -686,7 +686,9 @@ header-icons and holiday-icons CSS blocks.
 - **The sheet** (`etCsBuildSheet`) is a size container at its place's proportions on paper (`etCsLayout`: the printed
   box, the paper less the 0.35in margins; two to a sheet turn the paper and sit side by side or one above the other, four
   make a 2 × 2 grid, 0.3in apart), everything inside in `cqmin` — its layout sits in the inner `.et-cs-page`, since a container's own
-  padding would resolve `cqmin` against the viewport. Portrait runs name line, titles, verse line, picture,
+  padding would resolve `cqmin` against the viewport; in the preview a page or paper carries `content-visibility:auto` (its
+  size is explicit, so the grid never moves; the fit's off-screen clones and the print run are never skipped), so a size
+  drag lays out only the sheets in view. Portrait runs name line, titles, verse line, picture,
   synopsis, explanation, the `IvritSuite.com` credit; landscape puts the picture left of the text column. The printed
   labels and the books' Hebrew names are in-page `i18n-ignore` constants (printed content follows the sheet's
   language); Hebrew text is `lang="he" dir="rtl"`, and the verse range sits in a `<bdi dir="ltr">`. The picture

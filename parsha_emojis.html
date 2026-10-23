@@ -480,6 +480,11 @@ html[lang="he"] .et-cs-set legend,html[lang="he"] .et-cs-legend{letter-spacing:n
   background:#fff; color:#000; border:1px solid var(--border); box-shadow:0 4px 16px rgba(26,39,68,0.08);
   overflow:hidden; font-family:'Source Sans 3', sans-serif;
 }
+/* A sheet off-screen in the preview skips its style, layout and paint: a size drag otherwise lays out all 54 on every value
+   (pattern offscreen-sheets-laid-out-on-every-rebuild, the Name Tags shape). Only the preview's own pages and papers — never
+   the fit's clones, measured off-screen by design, nor the print run. Their size is explicit (width and aspect ratio), so the
+   grid never moves. */
+#etCsPages > .et-cs-thumb > .et-cs-sheet, #etCsPages .et-cs-sheetbox { content-visibility:auto; }
 /* The page's layout sits one level in: a container's own padding and gap would resolve cqmin against the viewport. */
 .et-cs-page{position:absolute;inset:0;box-sizing:border-box;display:flex;flex-direction:column;gap:1.2cqmin;padding:4cqmin 5cqmin 2.4cqmin;overflow:hidden;}
 .et-cs-name{flex:none;display:flex;align-items:flex-end;gap:1.2cqmin;font-family:'Libre Baskerville',serif;font-size:calc(3.2cqmin * var(--s-name) * var(--k));}
