@@ -95,9 +95,15 @@ transliterations still print.
   render. The sheet is laid out in physical coordinates (pinned `direction: ltr`, like the keyboard's qwerty rows),
   and its ink and paper are literal light colours in either theme.
 - **One render a frame, and a pause while typing into a long list.** Every change queues one rebuild of all the
-  sheets on the next frame (`ntQueuePreview`); a keystroke in a list of more than 40 students waits for a 250 ms pause
-  in the typing instead (`ntQueuePreviewTyping`), so each keystroke on a phone stays cheap. Print and a browser print
-  (`beforeprint`) draw a pending render at once.
+  sheets on the next frame (`ntQueuePreview`); a keystroke in a list of more than 40 students — in a cell or in the
+  extra line, which sits on every tag — waits for a 250 ms pause in the typing instead (`ntQueuePreviewTyping`), so each
+  keystroke on a phone stays cheap. Print and a browser print (`beforeprint`) draw a pending render at once.
+- **A sheet off-screen costs nothing to rebuild.** `.nt-frame` carries `content-visibility:auto`, so only the sheets near
+  the viewport are styled, laid out and painted after a rebuild (a slider drag on a long list otherwise laid out every
+  tag on every frame); the frame's own size is explicit, so the column's height and scroll never change, and the print
+  block pins `content-visibility:visible` so every sheet prints. The frame's contents are paint-contained, so their
+  screen pixels sit on the frame's own raster alignment (glyph edges differ from an uncontained sheet by a sub-pixel
+  phase; the markup, the print and the geometry do not).
 
 ## From the Classroom Dashboard, and back
 

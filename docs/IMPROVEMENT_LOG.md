@@ -8,8 +8,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P3 (**NEW S548 C — the pattern's fix shape on its earlier carriers**) | parsha_emojis.html, letter_learner.html, resources.html, contact.html, flash_cards.html, hebrew_blend_generator.html, trope_tutor.html, hebrew_dictionary.html, Hebrew_Font_Maker.html | **A selected label is a blank block in High Contrast**: Chromium paints a Canvas backplate behind every text run it adjusts, so …[full text: IMPROVEMENT_ARCHIVE.md]
-
 - [ ] P3 (**NEW S548 C — `sub-floor touch target`**) | name_tags.html | **The five size sliders are 16 px tall and the class-list fold button 23.5 px** (native range height; the Letter Learner, Parsha Emojis, Torah and Trope sliders carry `height:24px`; the fold's `min-height:44px` applies only ≤800px). The governor's two Name Tags touches went to High Contrast and the cells' focus. | found S548
 
 - [ ] P3 (**NEW S512 H — gate 2**) | hebrew_blend_generator.html | **Nothing says a preset, the remembered setup or an `.ivrit` file made under "Imported List" keeps no words** (memory-only; *Save as Word List* exists for this): the reopen shows an empty pool + the "No words match" note. A share link does carry them. | found S512
@@ -30,13 +28,15 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
 
-- [ ] P4 (**NEW S548 C — the pattern's shared-block carriers**) | flash_cards.html, hebrew_blend_generator.html, index.html | **The Backup panel's pressed Automatic / Manual is lost in High Contrast** (`.ivrit-mode-btn.active`, the `.ivrit-*` convention CSS; Name Tags and the dashboard name it in their forced-colours blocks). | found S548
+- [ ] P4 (**NEW S549 D**) | name_tags.html | **A load renders the preview five times and the table twice** (the list, the font, the library's arrival or failure, the locale): 200 students → 5 renders of ~60 ms at 1× behind the 451 ms of load-time long tasks left after `2499371`; coalesce them behind one frame. | found S549
+
+- [ ] P4 (**NEW S549 D**) | name_tags.html | **A keyboard move (↑/↓) rebuilds the whole table and every sheet per press** (three presses on 200 students: 3 table rebuilds + 3 renders, 425 ms at 1× before `2499371`, 227 after) — swap the two rows and renumber instead. | found S549
+
+- [ ] P4 (**NEW S549 D**) | name_tags.html | **A structural edit rebuilds the 200-row table** (30 ms of script + the layout, ~55–75 ms at 1×, ~300 at 4×: the first key in the new row, Remove, Undo, a translit mode, the extra toggle, a list switch, a paste) — its three icon buttons are parsed from `innerHTML` 600 times; a template clone or an in-place row would do. | found S549
 
 - [ ] P4 (**NEW S548 C**) | name_tags.html | **Escape closes the Rename row but not the Paste or Dashboard rows** (only `#ntRenameInput` has the keydown; each row's Cancel works). | found S548
 
 - [ ] P4 (**NEW S548 C**) | name_tags.html | **After a keyboard Remove, the Undo sits behind the focus**: the note is before the table, so from the 12th row Undo is 64 Shift+Tabs back (the live region does announce it). | found S548
-
-- [ ] P4 (**NEW S547 N — the pattern's last carriers; S548 fixed name_tags + dashboard**) | hebrew_dictionary.html, resources.html | **The keyboard's open tab vanishes in High Contrast** (`.hk-tab.active`, the shared block's rule; the Font Maker, Name Tags and the dashboard name it in their forced-colours blocks). | found S547
 
 - [ ] P4 (**NEW S544 audit — gate 2, content**) | data/hebrew_words.json | **One entry stacks tsere and patah (`טִיֵַּח`)** — the one real defect in 14,919 corpus strings (loop-findings S544, with the ~36 legitimate look-alikes); a corpus edit bumps `?v=` on every fetcher. | found S544
 
@@ -48,7 +48,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S539 I — gate 2**) | letter_learner.html | **The cursive tour's card step names neither the Vowels nor the Fonts tab** every cursive card shows. | found S539
 
-- [ ] P4 (**NEW S538 D; S539 re-measured**) | parsha_emojis.html | **A size drag relays out all 54 preview sheets per value** (≤57 ms @1×, ≤232 @4×); the refit after it ≤674 @4×. | found S538
+- [ ] P4 (**NEW S538 D; S539 re-measured; S549: pattern `offscreen-sheets-laid-out-on-every-rebuild` — measure `content-visibility:auto` on the sheets, the Name Tags fix shape**) | parsha_emojis.html | **A size drag relays out all 54 preview sheets per value** (≤57 ms @1×, ≤232 @4×); the refit after it ≤674 @4×. | found S538
 
 - [ ] P4 (**NEW S538 D**) | parsha_emojis.html | **40 copies × 4 per sheet clone 240 sheets into the preview** (1.3 s @4×). | found S538
 
@@ -260,6 +260,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Awaiting the maintainer (an action or an answer only the maintainer can give; a session that resolves one moves it to Done)
 
+- [ ] P4 (**NEW S549 D — an architecture choice, the maintainer's call**) | js/i18n.js, locales/*.json | **Every page downloads the whole suite's locale**: `en.json` 610 KB raw / 166 KB gzip, `he.json` 769 / 184, for a page's own tenth of the 6,789 keys (a first visit's largest file; the SW caches it once). A per-page split or a lazily fetched second half changes the build (`build-locales.js`) …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [ ] P2 (**NEW S465 G — maintainer**) | starting-fonts/manifest.json | **14 fonts' `copyright` is empty**: re-stage with `/addOSFont --force` (detector fixed `3609c19`; ids: findings S465). | found S465
 
 - [ ] P3 (**NEW S510 D; shared sw.js — the maintainer's call**) | sw.js | **Pages, scripts and /locales/ are fetched with cache:'no-store', so a returning visitor re-downloads ~370 KB per page view although GitHub Pages answers 304**; `'no-cache'` keeps always-revalidate and made the same reload 0 B (findings S510). | found S510
@@ -304,6 +306,16 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-23 | (S549 close-out) | branch/deploy note | **S549 = D on name_tags (first): FOUND 4, FIXED 2 (+3 P4, 1 Awaiting); then the HC backplate correction on nine pages and the pattern's last five carriers.** Branch `claude/loop-s549-nametags-d`, draft PR #362; drift at start: `main` 44fc930 → ac6b96b (two commits outside the loop), sw v1076 → v1077. sw v1077 → v1078; no FM bump. …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-23 | `9140333` | hebrew_dictionary.html, resources.html, flash_cards.html, hebrew_blend_generator.html, index.html | (S549) **The keyboard's open tab and the Backup panel's pressed mode show in HC** (`selected-state-lost-in-forced-colors`: the last open carriers; the hub's first block, (0,3,0) past the AllTools panel's body-level style). | 4× clips under forced colours × light/dark: …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-23 | `37966be` | parsha_emojis, letter_learner, resources, contact, flash, generator, trope, dictionary, FM | (S549) **A selected label stays legible in HC on the nine earlier carriers** (`forced-color-adjust:none` on every filled selected rule — the S548 backplate correction). | 15 states × light/dark: the backplate's white share 20–48 % → 1.5–11 % (the planted pair 52 → 12); 36 …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-23 | `6ace493` | name_tags.html | (S549) **Typing into the Extra line waits for the typing pause on a long list** (`ntQueuePreviewTyping`, the cells' rule). | 200 students, "Grade 4": 7 → 1 renders, long tasks 510 → 0 ms at 1×, 3,808 → 730 at 4×; placeholders ×7, the stored line and the preview equal; 24 students per key as before
+
+- [x] 2026-10-23 | `2499371` | name_tags.html | (S549) **A sheet off-screen in the preview skips its layout and paint** (`content-visibility:auto` on `.nt-frame`, `visible` in print; pattern `offscreen-sheets-laid-out-on-every-rebuild`). | medians of 3 alternated fresh loads, 200 students: a 20-move drag 646 → 0 ms of long tasks at 1×, 7,000 → 3,035 at 4× (max 683 → 212); per page 1 569 → 211; …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [x] 2026-10-22 | (S548 close-out) | branch/deploy note | **S548 = C on name_tags (first): FOUND 3, FIXED 2 (+1 P3, 3 P4 candidates); then the dashboard's HC states and S547's trope sub-line; `b9dc803` corrects both HC blocks (the text backplate).** Branch `claude/friendly-newton-nq3mkj` (PR #359 continued), drift: none. sw v1075→v1076; no FM bump. Unattended: no gate asked, nothing new deferred.
 
 - [x] 2026-10-22 | `b9dc803` | name_tags.html, classroom_dashboard.html | (S548) **The selected label stays legible in HC** (`forced-color-adjust:none` on the selected rule — Chromium's Canvas text backplate hid HighlightText on the Highlight fill; a correction of this session's two blocks). | a 4× clip of the tile 4 → 123 grey levels; same-element distances 69–159; identical outside HC (12 cells)
@@ -344,11 +356,11 @@ _(none)_
 
 - [x] 2026-10-22 | `1c24c5f` | letter_learner.html | (S545) **The install hint steps aside while a card, the popup or the tour is open** (`install-banner-over-a-sheet's-bottom-controls`). | 4/4 covered → 0/4
 
-- [x] 2026-10-22 | (S544 close-out) | branch/deploy note | **S544 = the protocol audit, no pass.** Branch `claude/sleepy-lamport-howch1`, draft PR; drift: PR 357 (S535–S543) merged to `main` mid-session, nothing else (sw v1072, FM 5.59, migration 0007 live). Pattern health → one-line rows + `loop-patterns.md` (28 DRAFT); Candidates sorted, 18 → Awaiting, 18 aged P4 archived; passes → …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-23 | **S549** | iters: 5 | tools: name_tags ×2, parsha_emojis, letter_learner, resources ×2, contact, flash ×2, generator ×2, trope, dictionary ×2, FM, index, sw | patterns fixed: forced-colors ×2 (+ offscreen-sheets NEW ×1) | pass run: D (name_tags, first) | SW: v1077→v1078
 
 - 2026-10-22 | **S548** | iters: 5 (+1 correction) | tools: name_tags ×3, dashboard ×2, trope, sw | patterns fixed: forced-colors ×2 | pass run: C (name_tags, first) | SW: v1075→v1076
 
@@ -364,15 +376,17 @@ _(none)_
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S548 (2026-10-22):** name_tags, dashboard, trope, sw.js, loop-findings, loop-patterns S548 · parsha_emojis, FM, scripts/loop, loop-passes S547 · letter_learner, dictionary S546 · flash, generator, torah S545 · skill, ledger scripts S544 · resources, contact S543 · CSV S542 · i18n.js S541 · 5 toast pages S537 · saves S536 · scripts S535 · index, README, sitemap S532 · account, privacy, terms, 404 S530 · corpus S524 · pwa S472.
+- **Snapshot S549 (2026-10-23):** name_tags, parsha_emojis, letter_learner, resources, contact, flash, generator, trope, dictionary, FM, index, sw.js, name-tags.md, loop-findings, loop-patterns S549 · dashboard S548 · scripts/loop, loop-passes S547 · torah S545 · skill, ledger scripts S544 · CSV S542 · i18n.js S541 · 5 toast pages S537 · saves S536 · scripts S535 · README, sitemap S532 · account, privacy, terms, 404 S530 · corpus S524 · pwa S472.
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
+
+- `offscreen-sheets-laid-out-on-every-rebuild` | ACTIVE | owner D | det: recipe | last S549 | streak 0
 
 - `dated-surface-walk` | DRAFT | owner A | det: none | last S544 | streak 0
 
 - `defaults-filed-as-the-device's-own-at-first-sign-in` | ACTIVE | owner P | det: recipe | last S546 | streak 0 | hits 6
 
-- `selected-state-lost-in-forced-colors` | ACTIVE | owner C | det: recipe | last S548 | streak 0
+- `selected-state-lost-in-forced-colors` | ACTIVE | owner C | det: recipe | last S549 | streak 0
 
 - `live-region-shown-with-its-text` | ACTIVE | owner G | det: recipe | last S537 | streak 0
 
@@ -712,7 +726,7 @@ _(none)_
 
 - G print & export fidelity (one tool): 2026-10-21 (**S537 — parsha_emojis' first G: 56 card PDFs, 108 sheet combos; plants fired. FOUND 2, FIXED 1. G-next: name_tags (never), generator (S392).**)
 
-- D performance (one tool): 2026-10-22 (**S538 — parsha_emojis' first D (trope was S480, not S365): cold, 33 real-click arms × 1×/4×, traces, idle, leak; controls fired. FOUND 4, FIXED 1. D-next: name_tags (never), FM (S410).**)
+- D performance (one tool): 2026-10-23 (**S549 — name_tags' first D: cold 12 cells (virgin / 24 / 200 students × 1×/4× × EN light / HE dark), 56 arms by real input × 1×/4× on 200 students with the library served from npm, profile + trace attribution, idle, leak, bytes; a planted busy loop fired in every cell. FOUND 4, FIXED 2 (+3 P4, 1 Awaiting). D-next: fontmaker (S410), torah (S424).**)
 
 - I first-load & empty-state: 2026-10-22 (**S539 — 40th I, S525 → S538 (93 commits; name_tags' first I, parsha_emojis' under its name): 63 virgin cells (plants 334/336); 69 seeds; 27 tours; ~250 openers; 280 bad URLs; failure paths 20. FOUND 2, FIXED 1.**)
 
@@ -730,4 +744,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-22 (**S542 — 40th F, loading states (first since S189): 14 surfaces held, then aborted. FOUND 7, FIXED 4. F-next: long-build progress.**)
 
-**Next session (S549):** **PR `claude/friendly-newton-nq3mkj` (S545–S548, #359): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1076**, FM **5.59**, corpus ?v=7. ⚑ drift: main=44fc930 sw=v1076 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest: surface name_tags never had D/G/H/M (four never-audited cells outrank every suite pass; the pointer picks D first, then G, H, M); suite A (S530), E (S531), L (S532), V (never — its first run, `loop-passes.md` → V). ⚑ Keep-alive #41 (10-23): confirm. ⚑ Seeds: 48. ⚑ 27 DRAFT pattern rows still need a recipe or retirement at the next A. ⚑ `selected-state-lost-in-forced-colors` open carriers: `.hk-tab.active` on dictionary + resources, `.ivrit-mode-btn.active` on flash, generator, index (candidates). ⚑ HC text backplate: the pattern's nine earlier pages need `forced-color-adjust:none` on their filled selected rules (P3 candidate; `c548/bp.mjs` is the receipt) — the next A or C. ⚑ name_tags' sliders and fold button (P3 `sub-floor touch target`) wait on the governor — one touch next time. ⚑ The S546 P3 (the false "replaced" note on five pages) is still the maintainer's call. ⚑ Maintainer: O's Bash permission rule (`.claude/settings.json`); a CI workflow running `closeout.mjs --static`; translit second source; sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4 (+ field borders, retry copy).
+**Next session (S550):** **PR `claude/loop-s549-nametags-d` (S549, #362): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1078**, FM **5.59**, corpus ?v=7. ⚑ drift: main=ac6b96b sw=v1078 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest: surface name_tags never had G/H/M (the pointer picks G first, then H, M); suite A (S530), E (S531), L (S532), V (never — its first run). ⚑ Keep-alive #41 (10-23, ~09:38 UTC): confirm (#40 green at S549's start). ⚑ Seeds: 48. ⚑ 27 DRAFT pattern rows still need a recipe or retirement at the next A. ⚑ `selected-state-lost-in-forced-colors`: census complete — the next C spot-checks one page with `d549/hc.mjs`'s method (findings S549), no re-sweep. ⚑ `offscreen-sheets-laid-out-on-every-rebuild` (NEW S549 D): Parsha Emojis' popup (54 sheets; the S538 P4) is the next carrier to measure, then the generator's chunked worksheet. ⚑ name_tags' sliders + fold button (P3) and its three new P4s wait on the governor — one touch next time. ⚑ The S546 P3 (the false "replaced" note) is still the maintainer's call. ⚑ Maintainer: O's Bash permission rule; a CI workflow running `closeout.mjs --static`; translit second source; sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; the suite locale's size (S549, Awaiting); gates 2–4 (+ field borders, retry copy).
