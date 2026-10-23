@@ -901,10 +901,12 @@ never a practice link (`LINK_DISPLAY` says how a reading looks, never how it sou
 - **Total Torah** is Cantor Arianne Brown's *Tricks of the Trope – Total Torah* (Adas Israel Congregation): the whole
   Torah chanted verse by verse, one YouTube video per triennial aliyah, used with her written permission
   (`THIRD_PARTY_LICENSES.md`; `data/totaltorah/LICENSE.txt`). **Per-verse files**, not aliyah files:
-  `gen-001-001.mp3` (book code, chapter, verse, zero-padded) in the audio's own repository,
-  `Hbleiberg/TotalTorahAudio` (`audio/`, 5,846 files for the whole Torah, ≈ 1 GB — never in this one), played
-  from `TT_AUDIO_BASE` (`https://raw.githubusercontent.com/Hbleiberg/TotalTorahAudio/main/audio/`, the origin the
-  CSP's `media-src` already carries for PocketTorah); per-verse timings `data/totaltorah/timings/gen-001-001.txt`
+  `gen-001-001.mp3` (book code, chapter, verse, zero-padded) served from the Cloudflare R2 bucket
+  `totaltorah-audio` (`audio/`, 5,846 files for the whole Torah, ≈ 1 GB — never in this repository) at
+  `TT_AUDIO_BASE`, the bucket's public hostname, which the CSP's `media-src` carries; the bucket's CORS policy
+  allows GET/HEAD from `ivritsuite.com`, `www.ivritsuite.com`, `hbleiberg.github.io` and `localhost:8080` and
+  exposes `Content-Length`, `Content-Range`, `Accept-Ranges` (the audio element is `crossorigin` for the pitch
+  shifter); the private repository `Hbleiberg/TotalTorahAudio` is the files' master copy; per-verse timings `data/totaltorah/timings/gen-001-001.txt`
   in the PocketTorah label format (comma-separated word onsets, index = word index, one trailing end-of-last-word
   value), and `data/totaltorah/manifest.json`: a top-level `credit` block (names, URLs, the permission, each source
   video's title and upload date) beside one entry per verse, keyed `"Genesis 1:1"` — `{ file, dur, video, parsha,
@@ -993,8 +995,10 @@ never a practice link (`LINK_DISPLAY` says how a reading looks, never how it sou
   each), `run --only <id> --redo --intro <s>` cuts one video's announcement by hand, and `status` reads every
   ledger (the later run's entry wins) and lists the flagged intros. The corpus (≈ 1 GB) never enters this repo: `run`
   refuses more than a parasha into `data/totaltorah/` without `--into-repo`, the series goes `--out
-  source-data/totaltorah-out` (gitignored), its manifest and timings move into `data/totaltorah/` and its MP3s are
-  pushed to `Hbleiberg/TotalTorahAudio`, the repository the Trainer plays them from.
+  source-data/totaltorah-out` (gitignored), its manifest and timings move into `data/totaltorah/`, and its MP3s go
+  to the private `Hbleiberg/TotalTorahAudio` repository (the master copy) and to the R2 bucket `totaltorah-audio`
+  (the serving copy: one `PUT …/r2/buckets/totaltorah-audio/objects/audio/<file>` per file through the Cloudflare
+  API, with an account token that is never kept in a file).
 
 ---
 

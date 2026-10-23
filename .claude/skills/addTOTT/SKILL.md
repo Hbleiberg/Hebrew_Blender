@@ -54,10 +54,13 @@ series (a dump of the maintainer's own downloads) is *Bulk intake* at the end �
 - **The venv and model are not in the repo** (`source-data/totaltorah-cache/align-env/`, ~1.2 GB, gitignored). In
   a fresh container run `--setup` once; it needs `huggingface.co` and `download.pytorch.org` reachable (the two
   models, ≈ 1.6 GB together, download on first use into the Hugging Face cache).
-- The MP3s are **not** sized for this repo: ~165 KB per verse, ≈ 1 GB for the whole Torah. They live in
-  `Hbleiberg/TotalTorahAudio` (`audio/<file>.mp3`, the same `LICENSE.txt`, a README), which the Trainer plays from
-  `TT_AUDIO_BASE` on `raw.githubusercontent.com`; a new or re-cut verse file is pushed there, and only the manifest
-  entry and the timings file go into `data/totaltorah/` here.
+- The MP3s are **not** sized for this repo: ~165 KB per verse, ≈ 1 GB for the whole Torah. The Trainer plays them
+  from the Cloudflare R2 bucket `totaltorah-audio` (`TT_AUDIO_BASE`, the bucket's public hostname; CORS for the
+  site's origins set on the bucket), and the private `Hbleiberg/TotalTorahAudio` repository (`audio/<file>.mp3`,
+  the same `LICENSE.txt`, a README) is their master copy. A new or re-cut verse file goes to both — a push to the
+  repository, and one `PUT https://api.cloudflare.com/client/v4/accounts/<account>/r2/buckets/totaltorah-audio/objects/audio/<file>`
+  with a Workers R2 Storage: Edit token the maintainer holds (never in a file, never in the chat) — and only the
+  manifest entry and the timings file go into `data/totaltorah/` here.
 
 ## Steps
 
@@ -99,8 +102,8 @@ series (a dump of the maintainer's own downloads) is *Bulk intake* at the end �
 - Cut by the silence table alone, merge or split a segment to make the count fit, or ship a verse whose word count
   disagrees with the page's (the timings script refuses; so does the trope index builder — same rule).
 - Flip `verified` / `timingsVerified` yourself, embed YouTube, or add a `frame-src`.
-- Commit an MP3 here: the verse files live in `Hbleiberg/TotalTorahAudio` (≈ 1 GB for the series); this repo
-  holds the manifest and the timings.
+- Commit an MP3 here: the verse files are served from the R2 bucket and kept in `Hbleiberg/TotalTorahAudio`
+  (≈ 1 GB for the series); this repo holds the manifest and the timings.
 
 ## Bulk intake — the whole series (`scripts/build-totaltorah-bulk.mjs`)
 
@@ -163,7 +166,8 @@ has every flag). Facts learned preparing the first pass (Oct 2026):
   into `data/totaltorah/` without `--into-repo`; the series goes `--out source-data/totaltorah-out` (gitignored,
   one folder per book when two chains run), the folders are merged, the manifest + timings (≈ 4 MB) move into
   `data/totaltorah/`, and the MP3s are pushed to `Hbleiberg/TotalTorahAudio` one book per commit (a push of the
-  whole gigabyte at once is refused by the proxy).
+  whole gigabyte at once is refused by the proxy) and uploaded to the R2 bucket through the Cloudflare API, six
+  at a time (about four files a second; the API allows ~1,200 requests per five minutes).
 
 Steps:
 1. `node scripts/build-totaltorah-bulk.mjs adas --accept` — only when the TSVs change; the whitelist is committed.
