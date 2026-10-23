@@ -78,7 +78,10 @@ transliterations still print.
   `ex` — each line object's `kind`) that any tag in the rendered list carries; a tag with fewer scales its slots up
   together into the height the full set would take (capped at the inner height), at most 2½ times their slider size,
   so a one-name student's tag (a Dashboard roster line, a Hebrew name without nikkud for the transliteration) is not
-  half empty. A list whose tags all carry the same lines prints at the slider sizes.
+  half empty. A list whose tags all carry the same lines prints at the slider sizes. **A transliteration that spells the
+  English name** (David / David — most of a class; letters only, case and accents ignored, so Dovid / David both print) **is
+  left off the tag** (`omit` on its line in `ntLinesFor`): the line still counts as present, so that tag keeps the slider
+  sizes rather than growing, and the set stays uniform.
 - **Bubble letters** are two layers of the same text: a round-joined stroke of `2 × (puff + edge)` in the ink colour,
   then a stroke and fill of `2 × puff` in the inside colour (white to colour in, or a chosen colour). Puff is in font
   units (`2 + slider × 0.05`); past about 7 the letters' counters fill in. The nikkud is left out in bubble mode.

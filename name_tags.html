@@ -1941,9 +1941,10 @@ function ntLinesFor(row) {
   const out = [], he = ntDisplayHe(ntRowField(row, 'he'));
   const heStack = ntHeStack();
   if (he) out.push({ kind: 'he', text: he, pct: ntSet.sizeHe, color: ntSet.colorHe, family: heStack, weight: '400', rtl: true, lang: 'he', ref: 'לאקְ', bubble: ntSet.bubble });
-  const tr = ntTrFor(row);
-  if (tr) out.push({ kind: 'tr', text: tr, pct: ntSet.sizeTr, color: ntSet.colorTr, family: NT_LATIN, weight: '400', rtl: false, lang: 'en', ref: 'Ag' });
-  const en = ntRowField(row, 'en').trim();
+  const tr = ntTrFor(row), en = ntRowField(row, 'en').trim();
+  // A transliteration that spells the English name (David / David, most of a class) is not printed twice: the line stays
+  // in the list as omitted, so the tag keeps the slider sizes (it is not a tag missing a line) and the class set stays uniform.
+  if (tr) out.push({ kind: 'tr', text: tr, pct: ntSet.sizeTr, color: ntSet.colorTr, family: NT_LATIN, weight: '400', rtl: false, lang: 'en', ref: 'Ag', omit: !!(ntSet.english && en && ntSameLatin(tr, en)) });
   if (ntSet.english && en) out.push({ kind: 'en', text: en, pct: ntSet.sizeEn, color: ntSet.colorEn, family: NT_LATIN, weight: '700', rtl: NT_HEB_RE.test(en) && !/[A-Za-z]/.test(en), lang: NT_HEB_RE.test(en) && !/[A-Za-z]/.test(en) ? 'he' : 'en', ref: 'Ag' });
   const ex = (ntRowField(row, 'ex').trim() || ntStr(ntCur.val && ntCur.val.extra).trim());
   if (ntSet.extra && ex) {
@@ -1952,7 +1953,12 @@ function ntLinesFor(row) {
   }
   return out;
 }
-// The size (% of the tag) of each kind of line any tag in the list carries.
+// The same word in Latin letters, whatever its case, accents or punctuation ("David" / "DAVID" / "Davíd"; not "Dovid").
+function ntSameLatin(a, b) {
+  const k = s => String(s || '').normalize('NFD').replace(/[^A-Za-z]/g, '').toLowerCase();
+  return k(a) === k(b);
+}
+// The size (% of the tag) of each kind of line any tag in the list carries (an omitted line counts: the tag has the kind).
 function ntFullLines(list) {
   const pct = {};
   list.forEach(r => ntLinesFor(r).forEach(l => { pct[l.kind] = l.pct; }));
@@ -2012,13 +2018,14 @@ function ntTagEl(row, idx, w, h, L, cls, full) {
   }
   const pad = Math.max(0.08, Math.min(fw, fh) * 0.06) + bw + (L.avery ? Math.max(0, L.safe - inset) : 0);
   const iw = Math.max(0.2, fw - 2 * inset - 2 * pad), ih = Math.max(0.2, fh - 2 * inset - 2 * pad);
-  const lines = ntLinesFor(row);
+  const all = ntLinesFor(row), lines = all.filter(l => !l.omit);
   if (!lines.length) return tag;
   const gap = ih * 0.03;
   let slots = lines.map(l => l.pct / 100 * ih);
   // A tag missing a line other tags have (a student with one name, a Hebrew name without nikkud for the transliteration)
-  // lets its own lines grow into the room the full tags use, up to 2½ times their size.
-  if (full && full.length > lines.length) {
+  // lets its own lines grow into the room the full tags use, up to 2½ times their size. A line omitted on purpose (the
+  // transliteration that spells the English name) is not missing: that tag keeps the slider sizes.
+  if (full && full.length > all.length) {
     const room = Math.min(ih, full.reduce((a, p) => a + p / 100 * ih, 0) + gap * (full.length - 1)) - gap * (lines.length - 1);
     const f = Math.min(2.5, room / slots.reduce((a, b) => a + b, 0));
     if (f > 1) slots = slots.map(v => v * f);
