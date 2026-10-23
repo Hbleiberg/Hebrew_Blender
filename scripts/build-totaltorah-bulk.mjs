@@ -681,14 +681,14 @@ async function cmdInventory(apply) {
 function readStatus() { try { return JSON.parse(readFileSync(STATUS_PATH, 'utf8')); } catch { return {}; } }
 // every ledger in the bulk folder, the main one first and each named one over it (status, and a run's "already done" check)
 function readAllStatus() {
-  const all = readStatus();
+  const all = {};
   if (!existsSync(BULK_DIR)) return all;
-  for (const f of readdirSync(BULK_DIR).filter((x) => /^status-[\w-]+\.json$/.test(x)).sort()) {
+  for (const f of ['status.json', ...readdirSync(BULK_DIR).filter((x) => /^status-[\w-]+\.json$/.test(x)).sort()]) {
     const p = join(BULK_DIR, f);
-    if (p === STATUS_PATH) continue;
+    if (p === STATUS_PATH || !existsSync(p)) continue;
     try { Object.assign(all, JSON.parse(readFileSync(p, 'utf8'))); } catch { /* a half-written ledger: skipped */ }
   }
-  return all;
+  return Object.assign(all, readStatus());   // this run's own ledger last
 }
 function writeStatus(s) { mkdirSync(BULK_DIR, { recursive: true }); writeFileSync(STATUS_PATH, JSON.stringify(s, null, 1) + '\n'); }
 function readManifest() { try { return JSON.parse(readFileSync(MANIFEST, 'utf8')); } catch { return null; } }
