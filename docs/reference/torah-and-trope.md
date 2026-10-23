@@ -901,13 +901,16 @@ never a practice link (`LINK_DISPLAY` says how a reading looks, never how it sou
 - **Total Torah** is Cantor Arianne Brown's *Tricks of the Trope – Total Torah* (Adas Israel Congregation): the whole
   Torah chanted verse by verse, one YouTube video per triennial aliyah, used with her written permission
   (`THIRD_PARTY_LICENSES.md`; `data/totaltorah/LICENSE.txt`). **Per-verse files**, not aliyah files:
-  `data/totaltorah/audio/gen-001-001.mp3` (book code, chapter, verse, zero-padded), optional per-verse timings
-  `data/totaltorah/timings/gen-001-001.txt` in the PocketTorah label format (comma-separated word onsets, index = word
-  index, one trailing end-of-last-word value), and `data/totaltorah/manifest.json`: a top-level `credit` block (names,
-  URLs, the permission, each source video's title and upload date) beside one entry per verse, keyed `"Genesis 1:1"` —
-  `{ file, dur, video, parsha, year, aliyah, verified, timings, timingsVerified }`. The manifest and the timings are
-  fetched with `TT_DATA_V` (`?v=3`; `/data/` is cache-first and exact-URL keyed); the audio is left to the network by
-  `sw.js` (a Range request must never be answered from the cache).
+  `gen-001-001.mp3` (book code, chapter, verse, zero-padded) in the audio's own repository,
+  `Hbleiberg/TotalTorahAudio` (`audio/`, 5,846 files for the whole Torah, ≈ 1 GB — never in this one), played
+  from `TT_AUDIO_BASE` (`https://raw.githubusercontent.com/Hbleiberg/TotalTorahAudio/main/audio/`, the origin the
+  CSP's `media-src` already carries for PocketTorah); per-verse timings `data/totaltorah/timings/gen-001-001.txt`
+  in the PocketTorah label format (comma-separated word onsets, index = word index, one trailing end-of-last-word
+  value), and `data/totaltorah/manifest.json`: a top-level `credit` block (names, URLs, the permission, each source
+  video's title and upload date) beside one entry per verse, keyed `"Genesis 1:1"` — `{ file, dur, video, parsha,
+  year, aliyah, verified, timings, timingsVerified }`. The manifest and the timings are fetched with `TT_DATA_V`
+  (`?v=4`; `/data/` is cache-first and exact-URL keyed); the audio is left to the network by `sw.js` (a Range
+  request must never be answered from the cache).
 - **Verified or nothing.** `ttEntryFor(vk)` returns an entry only while it is `verified: true`, and its timings count
   only while `timingsVerified: true` — the maintainer flips both by listening (`build-totaltorah-audio.mjs verify`),
   the trope motifs' discipline. An unverified verse is a verse with no recording (PocketTorah plays it); verified
@@ -988,9 +991,10 @@ never a practice link (`LINK_DISPLAY` says how a reading looks, never how it sou
   logs every failure and goes on; `run --ledger <name>` keeps a run's own ledger so two runs can go at once on
   different books and `--out` folders (two aligners at default threads starve each other — `OMP_NUM_THREADS=2`
   each), `run --only <id> --redo --intro <s>` cuts one video's announcement by hand, and `status` reads every
-  ledger (the later run's entry wins) and lists the flagged intros. The corpus (≈ 735 MB) never enters the repo: `run`
-  refuses more than a parasha into `data/totaltorah/` without `--into-repo`, and the series goes `--out
-  source-data/totaltorah-out` (gitignored) until Phase 2 hosts it (R2 + one `media-src` origin).
+  ledger (the later run's entry wins) and lists the flagged intros. The corpus (≈ 1 GB) never enters this repo: `run`
+  refuses more than a parasha into `data/totaltorah/` without `--into-repo`, the series goes `--out
+  source-data/totaltorah-out` (gitignored), its manifest and timings move into `data/totaltorah/` and its MP3s are
+  pushed to `Hbleiberg/TotalTorahAudio`, the repository the Trainer plays them from.
 
 ---
 

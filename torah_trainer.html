@@ -3132,7 +3132,11 @@ const POCKET_TIMINGS_V = '?v=1';   // cache-buster for the timings corpus — bu
 // ?reader=totaltorah until TOTALTORAH_PUBLIC flips (docs/reference/torah-and-trope.md → Recording sources).
 const TOTALTORAH_PUBLIC = false;
 const TT_BASE = 'data/totaltorah/';
-const TT_DATA_V = '?v=3';   // cache-buster for the manifest and the timings files (the /data/ cache is exact-URL keyed)
+// The verse MP3s live in their own repository (Hbleiberg/TotalTorahAudio: 5,846 files, ~1 GB — never in this one),
+// served through raw.githubusercontent.com, an origin the CSP's media-src already carries for PocketTorah; the
+// manifest and the timings stay same-origin under TT_BASE, behind TT_DATA_V.
+const TT_AUDIO_BASE = 'https://raw.githubusercontent.com/Hbleiberg/TotalTorahAudio/main/audio/';
+const TT_DATA_V = '?v=4';   // cache-buster for the manifest and the timings files (the /data/ cache is exact-URL keyed)
 const TT_CREDIT_URL = 'https://www.adasisrael.org/trope';
 const TT_VIDEO_RE = /^[\w-]{11}$/;   // a video id goes into an href — validated before it does
 const TORAH_BOOK_CHAPTERS = { Genesis:50, Exodus:40, Leviticus:27, Numbers:36, Deuteronomy:34 };
@@ -7285,7 +7289,7 @@ async function loadTotalTorahVerse(vk, entry, opts) {
   _ttLoaded = { vk, entry, wordTimed };
   _holidayKaraoke = { map: { [vk]: 0 } };
   _loadedChantKey = 'tt|' + vk;
-  attachKaraokeSource({ audioUrl: TT_BASE + 'audio/' + entry.file, timings, label: I18n.t('torah.recsrc.bar_label', { verse: vk }) });
+  attachKaraokeSource({ audioUrl: TT_AUDIO_BASE + entry.file, timings, label: I18n.t('torah.recsrc.bar_label', { verse: vk }) });
 }
 // Drop a loaded verse file so the PocketTorah paths see "nothing loaded" and reload (chantVerse's
 // _navigateToVerseAliyahAndQueue, chantHolidayWord's key check, playNextChant's !src branch).

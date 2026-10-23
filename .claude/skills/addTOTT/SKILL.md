@@ -54,8 +54,10 @@ series (a dump of the maintainer's own downloads) is *Bulk intake* at the end �
 - **The venv and model are not in the repo** (`source-data/totaltorah-cache/align-env/`, ~1.2 GB, gitignored). In
   a fresh container run `--setup` once; it needs `huggingface.co` and `download.pytorch.org` reachable (the two
   models, ≈ 1.6 GB together, download on first use into the Hugging Face cache).
-- The data is **not** sized for the repo beyond the mockup: ~130 KB per verse at today's setting, ~35 h of audio
-  for the whole Torah. The PR body's *Phase 2 hosting* section is the plan (R2 + one `media-src` origin).
+- The MP3s are **not** sized for this repo: ~165 KB per verse, ≈ 1 GB for the whole Torah. They live in
+  `Hbleiberg/TotalTorahAudio` (`audio/<file>.mp3`, the same `LICENSE.txt`, a README), which the Trainer plays from
+  `TT_AUDIO_BASE` on `raw.githubusercontent.com`; a new or re-cut verse file is pushed there, and only the manifest
+  entry and the timings file go into `data/totaltorah/` here.
 
 ## Steps
 
@@ -71,7 +73,8 @@ series (a dump of the maintainer's own downloads) is *Bulk intake* at the end �
    a container). Read the silence table, the intro end and the per-verse ranges it prints; a gap under 0.3 s
    between verses is flagged — listen there. Re-run with `--intro <s>` if the intro end is wrong.
 4. **Cut.** `node scripts/build-totaltorah-audio.mjs split --video <id> --boundaries auto` → `data/totaltorah/audio/`
-   MP3s, `source-data/totaltorah-cache/verses/` FLACs (the hand-back set for Adas), the manifest entries, the
+   MP3s (moved to the audio repository before the commit — they are never committed here),
+   `source-data/totaltorah-cache/verses/` FLACs (the hand-back set for Adas), the manifest entries, the
    triennial cross-check and the per-verse sizes.
 5. **Timings.** `node scripts/build-totaltorah-timings.mjs --audit [--only "<Book> C:V,…"]` → the timings files,
    the per-word table with scores, the wall-clock, and `source-data/totaltorah-cache/audit.html`.
@@ -96,7 +99,8 @@ series (a dump of the maintainer's own downloads) is *Bulk intake* at the end �
 - Cut by the silence table alone, merge or split a segment to make the count fit, or ship a verse whose word count
   disagrees with the page's (the timings script refuses; so does the trope index builder — same rule).
 - Flip `verified` / `timingsVerified` yourself, embed YouTube, or add a `frame-src`.
-- Commit the corpus: more than a parasha's MP3s under `data/totaltorah/` (the series is ≈ 735 MB; Phase 2 hosts it).
+- Commit an MP3 here: the verse files live in `Hbleiberg/TotalTorahAudio` (≈ 1 GB for the series); this repo
+  holds the manifest and the timings.
 
 ## Bulk intake — the whole series (`scripts/build-totaltorah-bulk.mjs`)
 
@@ -155,10 +159,11 @@ has every flag). Facts learned preparing the first pass (Oct 2026):
 - **Timings come from the whole-file alignment by default** (`--timings derive`; `realign` is the per-verse second
   pass of the recipe above), so each video is aligned once: the series' ≈ 34 h of audio is about 7–8 h of CPU here,
   plus ffmpeg (the source is decoded once per video since the same pass).
-- **The corpus never goes into the repo.** ≈ 735 MB of MP3 for the whole Torah (the Phase 2 plan: R2 + one
-  `media-src` origin). `run` refuses more than ~400 verses into `data/totaltorah/` without `--into-repo`; the
-  series goes `--out source-data/totaltorah-out` (gitignored), and only the manifest + timings (≈ 2 MB) move into
-  the repo once the audio has a home. A parasha (`--parsha Bereshit`, ~146 verses, ~19 MB) is the pilot that fits.
+- **The corpus never goes into this repo.** ≈ 1 GB of MP3 for the whole Torah. `run` refuses more than ~400 verses
+  into `data/totaltorah/` without `--into-repo`; the series goes `--out source-data/totaltorah-out` (gitignored,
+  one folder per book when two chains run), the folders are merged, the manifest + timings (≈ 4 MB) move into
+  `data/totaltorah/`, and the MP3s are pushed to `Hbleiberg/TotalTorahAudio` one book per commit (a push of the
+  whole gigabyte at once is refused by the proxy).
 
 Steps:
 1. `node scripts/build-totaltorah-bulk.mjs adas --accept` — only when the TSVs change; the whitelist is committed.
@@ -168,8 +173,9 @@ Steps:
    Read the unmatched list, fix names, repeat until it is empty.
 4. `node scripts/build-totaltorah-bulk.mjs stage --from <dump> --apply` (hard links; `--copy` across filesystems).
 5. `node scripts/build-totaltorah-timings.mjs --setup` once per container, then
-   `node scripts/build-totaltorah-bulk.mjs run --parsha Bereshit` (the pilot, into the repo) or
-   `run --out source-data/totaltorah-out` (the series). `status` is the ledger; `--redo` recomputes; a failed video
+   `node scripts/build-totaltorah-bulk.mjs run --parsha Bereshit` (a pilot) or
+   `run --book <Book> --out source-data/totaltorah-out/<book> --ledger <name>` (the series, two chains on
+   different books at once, `OMP_NUM_THREADS=2` each). `status` is the ledger; `--redo` recomputes; a failed video
    is listed and retried on the next run.
 6. The listening pass: `status` prints the `verify --parsha` pair for every parasha with cut, unheard verses;
    `verify --video <id>` flips one aliyah. Nothing plays until flipped.

@@ -359,9 +359,10 @@ pages, not the other way round — `grep -o 'Content-Security-Policy[^>]*' *.htm
 - **Torah Trainer:** `www.sefaria.org` in `connect-src`; `raw.githubusercontent.com` + `blob:` in `media-src`
   (PocketTorah audio). The chant pitch shifter adds nothing: its AudioWorklet module is same-origin
   (`script-src 'self'` covers a worklet fetch) and the `<audio crossorigin>` load is the same media host. The Total
-  Torah verse files are same-origin (`data/totaltorah/audio/`, covered by `media-src 'self'`) and the YouTube
-  link-back is a plain `<a target=_blank>` — `frame-src 'none'` stays; moving the corpus to a CDN (Phase 2) adds
-  that host to `media-src` and nothing else.
+  Torah verse files come from the same `raw.githubusercontent.com` origin (the `Hbleiberg/TotalTorahAudio`
+  repository, `TT_AUDIO_BASE`), so they add nothing either, and the YouTube link-back is a plain
+  `<a target=_blank>` — `frame-src 'none'` stays; moving the corpus to another host would add that one origin to
+  `media-src` and nothing else.
 - **Trope Tutor:** `raw.githubusercontent.com` + `blob:` in `media-src` only — deliberately neither `sefaria.org`
   nor `esm.sh` (its index and clips are pre-built).
 - **Home, Torah Trainer:** `files.readme.io` in `img-src` — the host of Sefaria's attribution wordmark (hot-linked,
