@@ -491,7 +491,8 @@ body.nt-carrying, body.nt-carrying * { cursor:grabbing !important; }
 .nt-tag svg { display:block; flex-shrink:0; overflow:visible; }
 .nt-tag.nt-back { inset:0 0 50% 0; transform:rotate(180deg); }
 .nt-tag.nt-front { inset:50% 0 0 0; }
-.nt-tag.nt-rot { inset:auto; left:50%; top:50%; transform:translate(-50%, -50%) rotate(-90deg); }
+.nt-tag.nt-rot { inset:auto; transform:rotate(-90deg); }   /* placed by ntTagEl at the cell's centre in inches: a percent translate on this
+                                                             bordered, turned box made Chrome's print draw a phantom border side down to the paper's edge */
 .nt-cut { position:absolute; border:0 dashed #a8a8a8; }
 .nt-cut.v { border-left-width:1px; }
 .nt-cut.h { border-top-width:1px; }
@@ -2005,7 +2006,10 @@ function ntTagEl(row, idx, w, h, L, cls, full) {
   if (ntSet.bg === 'tint') tag.style.background = ntSet.bgColor;
   else if (ntSet.bg === 'rainbow') tag.style.background = NT_PASTELS[idx % NT_PASTELS.length];
   const fw = cls === 'nt-rot' ? h : w, fh = cls === 'nt-rot' ? w : h;   // a turned tag lays out on its own axes
-  if (cls === 'nt-rot') { tag.style.width = (fw - 2 * inset).toFixed(3) + 'in'; tag.style.height = (fh - 2 * inset).toFixed(3) + 'in'; }
+  if (cls === 'nt-rot') {   // the box is laid out on its own axes, centred in the cell by its offsets (never a percent translate: see .nt-rot)
+    tag.style.width = (fw - 2 * inset).toFixed(3) + 'in'; tag.style.height = (fh - 2 * inset).toFixed(3) + 'in';
+    tag.style.left = ((w - (fw - 2 * inset)) / 2).toFixed(3) + 'in'; tag.style.top = ((h - (fh - 2 * inset)) / 2).toFixed(3) + 'in';
+  }
   const pad = Math.max(0.08, Math.min(fw, fh) * 0.06) + bw + (L.avery ? Math.max(0, L.safe - inset) : 0);
   const iw = Math.max(0.2, fw - 2 * inset - 2 * pad), ih = Math.max(0.2, fh - 2 * inset - 2 * pad);
   const lines = ntLinesFor(row);
