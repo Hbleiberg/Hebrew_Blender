@@ -8,6 +8,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P3 (**NEW S551 H — the governor's third Name Tags touch**) | name_tags.html | **Excel's "Unicode Text" roster (UTF-16LE with a BOM) imports as garbage students** (`ntReadCsvFile` tries UTF-8, then windows-1255; a FF FE / FE FF file needs `utf-16le` / `utf-16be`): "4 students found" with NUL-laced names. | found S551
+
 - [ ] P3 (**NEW S548 C — `sub-floor touch target`**) | name_tags.html | **The five size sliders are 16 px tall and the class-list fold button 23.5 px** (native range height; the Letter Learner, Parsha Emojis, Torah and Trope sliders carry `height:24px`; the fold's `min-height:44px` applies only ≤800px). The governor's two Name Tags touches went to High Contrast and the cells' focus. | found S548
 
 - [ ] P3 (**NEW S512 H — gate 2**) | hebrew_blend_generator.html | **Nothing says a preset, the remembered setup or an `.ivrit` file made under "Imported List" keeps no words** (memory-only; *Save as Word List* exists for this): the reopen shows an empty pool + the "No words match" note. A share link does carry them. | found S512
@@ -28,9 +30,11 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
 
-- [ ] P4 (**NEW S550 G — the governor's third touch; the generator's twin fixed `2b86472`**) | name_tags.html | **`#ntFontMissing` is un-hidden in the same call that writes its first message** (`hidden` at load; `ntFillFonts`): drop `hidden`, collapse by `:empty` (pattern `live-region-shown-with-its-text`). | found S550
+- [ ] P4 (**NEW S551 H — gate 2, copy**) | name_tags.html | **The Avery note never names a product's twins** (8395, 5895, 15395, 25395, 45395 and 48395 share 5395's layout): a teacher holding an 8395 pack cannot tell that the "Avery 5395" tile fits it. | found S551
 
-- [ ] P4 (**NEW S550 G — a shared-block change: the `.ivrit` engine's six carriers + the hub; pattern `fixed-surface-missing-from-the-print-hide-list`**) | the `.ivrit` engine, js/ivrit-account.js, js/ivrit-saves.js | **The Merge/Replace ask overlay (an inline-styled fixed div with no id) and the account and saves modals have no print rule**: Ctrl+P with one open prints it over every sheet …[full text: IMPROVEMENT_ARCHIVE.md]
+- [ ] P4 (**NEW S551 H**) | name_tags.html | **A Hebrew-headed roster with an English column loses that column** ("שם פרטי,שם משפחה,English": the first header to match `en` wins, so "English" is never read; `86d41b0` sorts the Hebrew names right, the English name stays blank). | found S551
+
+- [ ] P4 (**NEW S550 G — the governor's third touch; the generator's twin fixed `2b86472`**) | name_tags.html | **`#ntFontMissing` is un-hidden in the same call that writes its first message** (`hidden` at load; `ntFillFonts`): drop `hidden`, collapse by `:empty` (pattern `live-region-shown-with-its-text`). | found S550
 
 - [ ] P4 (**NEW S550 G — gate 2 on the first half**) | name_tags.html | **The CSV carries only a per-student extra line, never the list's** (a list moved by file loses "Grade 4" on every tag), and a `/` in the list name becomes three spaces in the file's name (`Kitah Dalet   2026.csv`). | found S550
 
@@ -116,6 +120,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S466 D**) | js/ivrit-saves.js | **A fresh device's first signed-in load rewrites the whole sync memory once per row** (tasks 50→340 ms, settled in 47 s @4×, 410 rows) and fetches each row by its own GET (457). | found S466
 
+- [ ] P4 (**NEW S550 G — a shared-block change: the `.ivrit` engine's six carriers + the hub; pattern `fixed-surface-missing-from-the-print-hide-list`**) | the `.ivrit` engine, js/ivrit-account.js, js/ivrit-saves.js | **The Merge/Replace ask overlay (an inline-styled fixed div with no id) and the account and saves modals have no print rule**: Ctrl+P with one open prints it over every sheet …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [ ] P4 (**NEW PR #313**) | torah_trainer.html | **Sephardi haftarot and the holidays' maftirim are not offered**: `holiday-readings.json` carries `seph` and `fullkriyah.M` for every entry the table keys (the leyning builder's check could carry them). | found PR #313
 
 - [ ] P4 (**NEW PR #313**) | torah_trainer.html | **Shabbat Chazon's haftarah (Isaiah 1) is drawn in the Haftarah chart throughout**; the verses customarily chanted to Eicha's tune need a per-verse tune. | found PR #313
@@ -165,6 +171,10 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S283**) | Hebrew_Font_Maker.html | **The Yerushalam lamed-patah-hiriq rule and `jalt` wide-letter justification alternates** — `AddHebrewContextualGPOS.py` / `WideLetters.fea`. The jalt half overlaps the shipped ss02 wide forms (v5.33): the glyphs exist, only the `jalt` feature registration is missing. | found: 2026-08-29, S283
 
 ## Feature seeds (micro-features only; see the Micro-feature track in the session prompt)
+
+- [ ] S | name_tags.html | **Print only the students chosen** (a checkbox per row, or "this page only"): a new student mid-year prints the whole class again (25 students = 4 pages for one tag). | found S551 H
+
+- [ ] S | name_tags.html | **The "no Classroom Dashboard classes" note links to the dashboard**, and the dashboard's class picker links back: the bridge is 3 clicks each way once a class exists, a dead end before. | found S551 H
 
 - [ ] S | parsha_emojis.html | **Each card prints its own coloring sheet** (the popup with that parasha alone, as a Letter Learner card does): next week's sheet is 4 clicks and no chip marks this week's. | found S540 H
 
@@ -310,6 +320,12 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-23 | (S551 close-out) | branch/deploy note | **S551 = H on name_tags (first): FOUND 5, FIXED 2 (+1 P3, 2 P4, 2 seeds).** Branch `claude/loop-s549-nametags-d` (PR #362 continued), drift: none. No sw bump (name_tags is unlisted and not precached); no FM bump. Unattended: no gate asked; the omitted-line rule (`08b8611`) is a small output fix, named for the maintainer in the summary.
+
+- [x] 2026-10-23 | `86d41b0` | name_tags.html | (S551) **A spreadsheet's names are found by their script when its headers do not name them** (the content search on the unnamed columns; a name in the other script's column sorted by `ntSplitName`; a class column alone is not a student). | 21 files + the paste box, HEAD vs tree: 9 import as intended (Hebrew headers, Full Name / שם מלא / תלמיד + …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-23 | `08b8611` | name_tags.html | (S551) **A transliteration that spells the English name is left off the tag** (`omit` on the line; it still counts for the sizing rule, so the tag keeps the slider sizes). | 39/50 common names printed "David / David"; HEAD vs tree on 7 lists × EN light 1280 / HE dark 800: 96 lines omitted, every kept line's slot and tag box identical, pages …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [x] 2026-10-23 | (S550 close-out) | branch/deploy note | **S550 = G on name_tags (first): FOUND 4, FIXED 2 (+2 P4, 1 suite P4); then the generator's font note (live-region pattern) and the Parsha Emojis popup's off-screen sheets (offscreen-sheets' second carrier).** Branch `claude/loop-s549-nametags-d` (PR #362 continued), drift: none. sw v1078→v1079; no FM bump. Unattended: no gate asked.
 
 - [x] 2026-10-23 | `887e8c5` | parsha_emojis.html | (S550) **A coloring sheet off-screen in the preview skips its layout and paint** (`content-visibility:auto` on the preview's pages and papers; pattern `offscreen-sheets-laid-out-on-every-rebuild`). | 54 chosen, medians of 3 alternated loads @4×: the open 2,089 → 1,739 ms of long tasks, a 20-move synopsis drag + refit 1,374 → 826; HE dark 800 and …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -352,17 +368,11 @@ _(none)_
 
 - [x] 2026-10-22 | `37bb922` | parsha_emojis.html | (S547) **The install hint steps aside while the coloring-sheets popup is open** (`install-banner-over-a-sheet's-bottom-controls`). | Print + count covered 4/4 → 0/4 (iPhone 13 / SE × EN / HE), the banner back after each close; identical to HEAD 4/4, the open popup 2/2
 
-- [x] 2026-10-22 | (S546 close-out) | branch/deploy note | **S546 = P on parsha_emojis (first) + letter_learner (first, the clean surface's second): PE clean; LL FOUND 1, FIXED 1 (+1 suite P3, +1 C's P4); then 2 HC carriers.** Branch `claude/friendly-newton-nq3mkj` (PR #359 continued), draft PR; drift: none. sw v1073→v1074; no FM bump. Unattended: no gate asked.
-
-- [x] 2026-10-22 | `e9759f0` | hebrew_dictionary.html | (S546) **Chosen Words / Emoji mode shows in HC** (`selected-state-lost-in-forced-colors`). | 2.8/2.7 → 127/86
-
-- [x] 2026-10-22 | `ce31c96` | trope_tutor.html | (S546) **Open tab, chosen family, chosen font and pressed Slow show in HC** (`selected-state-lost-in-forced-colors`; the pressed control's `:hover` twin named). | 1.4–3.7 → 38–126; Slow 217 → 122
-
-- [x] 2026-10-22 | `b577692` | letter_learner.html | (S546) **A new device's first sign-in no longer files the defaults as its own settings** (`defaults-filed-as-the-device's-own-at-first-sign-in`). | note + download 1/1 → 0/1; W1–W9 27/27; sync 215, migration 47, tools 47
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-23 | **S551** | iters: 3 | tools: name_tags ×2 | patterns fixed: — | pass run: H (name_tags, first) | SW: v1079→v1079
 
 - 2026-10-23 | **S550** | iters: 5 | tools: name_tags ×2, generator, parsha_emojis, sw | patterns fixed: live-region ×1, offscreen-sheets ×1 | pass run: G (name_tags, first) | SW: v1078→v1079
 
@@ -382,7 +392,7 @@ _(none)_
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S550 (2026-10-23):** name_tags, generator, parsha_emojis, sw.js, name-tags.md, shared-components.md, loop-findings, loop-patterns S550 · letter_learner, resources, contact, flash, trope, dictionary, FM, index S549 · dashboard S548 · scripts/loop, loop-passes S547 · torah S545 · skill, ledger scripts S544 · CSV S542 · i18n.js S541 · 5 toast pages S537 · saves S536 · scripts S535 · README, sitemap S532 · account, privacy, terms, 404 S530 · corpus S524 · pwa S472.
+- **Snapshot S551 (2026-10-23):** name_tags, name-tags.md, loop-findings, loop-patterns S551 · generator, parsha_emojis, sw.js, shared-components.md S550 · letter_learner, resources, contact, flash, trope, dictionary, FM, index S549 · dashboard S548 · scripts/loop, loop-passes S547 · torah S545 · skill, ledger scripts S544 · CSV S542 · i18n.js S541 · 5 toast pages S537 · saves S536 · scripts S535 · README, sitemap S532 · account, privacy, terms, 404 S530 · corpus S524 · pwa S472.
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -412,7 +422,7 @@ _(none)_
 
 - `overlay-scoped-dialog-keys` | ACTIVE | owner F | det: recipe | last S530 | streak 1
 
-- `group-toggle-wipes-a-sibling-group` | ACTIVE | owner H | det: recipe | last S512 | streak 0
+- `group-toggle-wipes-a-sibling-group` | ACTIVE | owner H | det: recipe | last S551 | streak 1
 
 - `infinite-box-shadow-pulse-repaints-every-frame` | ACTIVE | owner D | det: recipe | last S511 | streak 0
 
@@ -430,7 +440,7 @@ _(none)_
 
 - `count-noun-without-a-one-form` | DRAFT | owner I | det: none | last S533 | streak 0
 
-- `busy-disabled-button-drops-focus` | ACTIVE | owner H | det: recipe | last S500 | streak 0
+- `busy-disabled-button-drops-focus` | ACTIVE | owner H | det: recipe | last S551 | streak 1
 
 - `hidden-input-anchored-outside-its-scroller` | ACTIVE | owner C | det: recipe | last S499 | streak 0
 
@@ -454,7 +464,7 @@ _(none)_
 
 - `header-wrap-gate-below-its-ceiling` | ACTIVE | owner M | det: recipe | last S520 | streak 0
 
-- `latin-tracking-on-hebrew-labels` | ACTIVE | owner H | det: recipe | last S513 | streak 0
+- `latin-tracking-on-hebrew-labels` | ACTIVE | owner H | det: recipe | last S551 | streak 1
 
 - `forward-arrow-points-back-in-rtl-copy` | ACTIVE | owner N | det: recipe | last S533 | streak 2
 
@@ -472,7 +482,7 @@ _(none)_
 
 - `slider-value-announced-as-its-position` | ACTIVE | owner F | det: recipe | last S456 | streak 0
 
-- `ltr-machine-text-field-typed-rtl` | ACTIVE | owner H | det: recipe | last S454 | streak 0
+- `ltr-machine-text-field-typed-rtl` | ACTIVE | owner H | det: recipe | last S551 | streak 1
 
 - `pre-ready-interpolated-write-never-healed` | ACTIVE | owner I | det: recipe | last S454 | streak 0
 
@@ -518,7 +528,7 @@ _(none)_
 
 - `button-group-label-not-programmatic` | ACTIVE | owner C | det: recipe | last S413 | streak 0
 
-- `settings-lost-across-a-load` | ACTIVE | owner H | det: recipe | last S491 | streak 0
+- `settings-lost-across-a-load` | ACTIVE | owner H | det: recipe | last S551 | streak 1
 
 - `live-region-display-none-while-empty` | ACTIVE | owner M | det: recipe | last S530 | streak 0
 
@@ -744,10 +754,10 @@ _(none)_
 
 - L SEO & discoverability audit: 2026-10-21 (**S532 — 29th L, `18a7e6a3..ca9b9618` (110 commits; LL's launch, parsha_emojis' first L): 20 arms + 3 on 20 pages (plants 29/29); SEO surface unchanged 16/18; LL + parsha JSON-LD claims by real clicks; FAQ twins 10/10. FOUND 1 (gate 2), FIXED 4; S432 struck.**)
 
-- H teacher walkthrough / paper-cuts (one tool): 2026-10-22 (**S540 — parsha_emojis' first H: 11 lessons by real clicks × 2 cells (+ 6 widths, 1920, 5 dated weeks). FOUND 4, FIXED 1. H-next: name_tags (never), trope (S367), FM (S380); the chrome bundle S498 (privacy/terms/404 never as pages).**)
+- H teacher walkthrough / paper-cuts (one tool): 2026-10-23 (**S551 — name_tags' first H: 12 lessons by real input × EN light 1280 / HE dark 800 (21 roster files, the Dashboard bridge both ways, Avery, tent, bubble, every design choice across a reload, .ivrit to a second device, the keyboard's nikkud, offline) + the recipe in 4 cells. FOUND 5, FIXED 2 (+1 P3, 2 P4, 2 seeds). H-next: trope (S367), …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - E freshness/site-health: 2026-10-21 (**S531 — 41st E, `d7c58446..48286048` (108 commits; parsha_emojis' first): 16 arms + carrier lists (plants 18/18), docs, CSP 40 cells (plant 40/40), the stub. FOUND 2, FIXED 4.**)
 
 - F cross-tool consistency: 2026-10-22 (**S542 — 40th F, loading states (first since S189): 14 surfaces held, then aborted. FOUND 7, FIXED 4. F-next: long-build progress.**)
 
-**Next session (S551):** **PR `claude/loop-s549-nametags-d` (S549–S550, #362): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1079**, FM **5.59**, corpus ?v=7. ⚑ drift: main=ac6b96b sw=v1079 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest: surface name_tags never had H/M (the pointer picks H first, then M); suite A (S530), E (S531), L (S532), V (never — its first run; registered S544). ⚑ Keep-alive #41 (10-23, ~09:38 UTC): confirm (#40 green at S549's start). ⚑ Seeds: 48. ⚑ 27 DRAFT pattern rows still need a recipe or retirement at the next A. ⚑ `offscreen-sheets-laid-out-on-every-rebuild`: two carriers fixed (name_tags S549, the Parsha Emojis popup S550); the generator's chunked worksheet is next to measure. ⚑ `live-region-shown-with-its-text`: the generator fixed; name_tags' `#ntFontMissing` (P4) waits on the governor with its P3 sliders and four P4s — two touches next time. ⚑ The `.ivrit` ask overlay and the account/saves modals have no print rule (suite P4, a shared-block change). ⚑ The S546 P3 (the false "replaced" note) is still the maintainer's call. ⚑ Maintainer: O's Bash permission rule; a CI workflow running `closeout.mjs --static`; translit second source; sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; the suite locale's size (S549, Awaiting); gates 2–4 (+ field borders, retry copy).
+**Next session (S552):** **PR `claude/loop-s549-nametags-d` (S549–S551, #362): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1079**, FM **5.59**, corpus ?v=7. ⚑ drift: main=ac6b96b sw=v1079 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest: surface name_tags never had M (the pointer picks M — its first; gate 3 with screenshots); suite A (S530), E (S531), L (S532), V (never — its first run; registered S544). ⚑ Keep-alive #41 (10-23): confirm. ⚑ Seeds: 50. ⚑ 27 DRAFT pattern rows still need a recipe or retirement at the next A. ⚑ name_tags' governor queue (two touches a session): the UTF-16 roster (P3), the sliders (P3), `#ntFontMissing`, the Hebrew-headed file's English column, the load / keyboard-move / table P4s. ⚑ `offscreen-sheets-laid-out-on-every-rebuild`: the generator's chunked worksheet is next to measure. ⚑ The `.ivrit` ask overlay and the account/saves modals have no print rule (suite P4, a shared-block change). ⚑ The S546 P3 (the false "replaced" note) is still the maintainer's call. ⚑ Maintainer: `08b8611` leaves a transliteration that spells the English name off the tag — say if a class should keep both lines; O's Bash permission rule; a CI workflow running `closeout.mjs --static`; translit second source; sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; the suite locale's size (S549, Awaiting); gates 2–4 (+ field borders, retry copy).

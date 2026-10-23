@@ -103,7 +103,8 @@
 - **Archived full text (latest compaction copy):** - **`overlay-scoped-dialog-keys`** (NEW S514 F; LL, flash; S515 `.ivrit` ask ×4, Torah favorite; **S516 hub Erase + I/E `973eb309`; open: none**): ACTIVE, streak 1 (S530: 3 new dialogs, `a530/dialogs.mjs`). A click on a dialog's text puts focus on `<body>`: an overlay listener (or a first/last-only trap) lets Shift+Tab …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `group-toggle-wipes-a-sibling-group`
-- **Status:** ACTIVE · **Owner:** H · **Consequence:** normal · **Last:** S512 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** H · **Consequence:** normal · **Last:** S551 · **Streak:** 1 · **Detector:** recipe
+- **Record (S551):** name_tags clean: no `querySelectorAll('.…btn')` class-wide toggle on the page (its radios, tiles and tabs each set their own state).
 - **Shape:** A class-wide `.
 - **Detection:** `grep -n "querySelectorAll('\\.[a-z-]*btn')"
 - **Record (ledger row at S544):** - **`group-toggle-wipes-a-sibling-group`** (NEW S512 H; generator FIXED `ff980a7`; the match-target re-sync was an earlier work-around): ACTIVE, streak 0. A class-wide `.active` toggle on a button class another row shares. Detection: `grep -n "querySelectorAll('\\.[a-z-]*btn')"
@@ -160,7 +161,8 @@
 - **Archived full text (latest compaction copy):** - **`count-noun-without-a-one-form`** (NEW S497 I; bulk edit ×3 `d438f151`; S498 FM fidelity ×5 FIXED `fc56d212`; S501 FM `{max} units` + status/banner counts FIXED `c6db7170` via a `{units}` phrase; S504 dashboard `bulk_skipped` FIXED `13c10bf3`; S533 K: 6 delta `{count}` keys, all shown only above 1 — 0; open: none known): ACTIVE, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `busy-disabled-button-drops-focus`
-- **Status:** ACTIVE · **Owner:** H · **Consequence:** normal · **Last:** S500 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** H · **Consequence:** normal · **Last:** S551 · **Streak:** 1 · **Detector:** recipe
+- **Record (S551):** name_tags clean: no `.disabled = true` on a pressed control before an `await` (the CSV reader, the library load and the Dashboard bring-in leave the button enabled).
 - **Detection:** `.disabled = true` on the pressed control before an `await`, no hand-back; runtime: Enter it, after it lands `activeElement` is the control; control: HEAD reads `<body>`.
 - **Record (ledger row at S544):** - **`busy-disabled-button-drops-focus`** (NEW S498 H; contact + resources FIXED `68adddee`; S499 generator PDF `1ca449db`; S500 dashboard Current Location `82218419`; trope ×2 REFUTED (both hand focus back); open: FM export (an error modal opens mid-export: hand back only if
 - **Archived full text (latest compaction copy):** - **`busy-disabled-button-drops-focus`** (NEW S498 H; contact + resources FIXED `68adddee`; S499 generator PDF `1ca449db`; S500 dashboard Current Location `82218419`; trope ×2 REFUTED (both hand focus back); open: FM export (an error modal opens mid-export: hand back only if focus is on `<body>`)): ACTIVE, streak 0. Detection: `.disabled = true` on the pressed control before an `await`, no hand-back; runtime: Enter it, after it lands `activeElement` is the control; control: HEAD reads `<body>`.
@@ -233,7 +235,8 @@
 - **Record (ledger row at S544):** - **`header-wrap-gate-below-its-ceiling`** (NEW S478 M; ×8 `92a21164`; S489 `f620c768`; S520 touch ×8 `186ea5f4`): ACTIVE, streak 0. Detection: `n520/gates2.mjs` (1px 320-1000, EN/HE × themes, mouse+touch, real fonts); HEAD the control.
 
 ## `latin-tracking-on-hebrew-labels`
-- **Status:** ACTIVE · **Owner:** H · **Consequence:** normal · **Last:** S513 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** H · **Consequence:** normal · **Last:** S551 · **Streak:** 1 · **Detector:** recipe
+- **Record (S551):** name_tags clean: the four tracked rules (panel titles, legends, table heads, keyboard subheads) each carry the `html[lang=he]` reset.
 - **Detection:** `a502/dash-track.mjs`; torah …[full text: IMPROVEMENT_ARCHIVE.md] — `a502/dash-track.mjs` is a scratchpad path that was never committed: port it to `scripts/loop/detect-<id>.mjs` (with `--plant`) at the next A, or the row goes DRAFT.
 - **Record (ledger row at S544):** - **`latin-tracking-on-hebrew-labels`** (gate 3: drop suite-wide; S502 dashboard + dictionary; S503 flash; S504 torah `8e48daa5`; S505 Beta badges `0abb1f57`; S511 flash report `th` `90e592b`; **S513 generator `.ws-version-label` `c6fe147` — open: none known**
 - **Archived full text (latest compaction copy):** - **`latin-tracking-on-hebrew-labels`** (gate 3: drop suite-wide; S502 dashboard + dictionary; S503 flash; S504 torah `8e48daa5`; S505 Beta badges `0abb1f57`; S511 flash report `th` `90e592b`; open: generator `.ws-version-label` — Hebrew by headerLang, outside `html[lang=he]` (S512 H)): ACTIVE, streak 0. Detection: `a502/dash-track.mjs`; torah …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -289,7 +292,8 @@
 - **Record (ledger row at S544):** - **`slider-value-announced-as-its-position`** (NEW S456; `0ca1e29b`): ACTIVE, streak 0. Detection: `f456/census.mjs` (readout numbers lack the value, no `aria-valuetext`).
 
 ## `ltr-machine-text-field-typed-rtl`
-- **Status:** ACTIVE · **Owner:** H · **Consequence:** normal · **Last:** S454 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** H · **Consequence:** normal · **Last:** S551 · **Streak:** 1 · **Detector:** recipe
+- **Record (S551):** name_tags clean: no `type="email"` / `type="url"` field on the page.
 - **Shape:** Detection: `type="email|url"` (or JS `.
 - **Detection:** `type="email|url"` (or JS `.type`) without `dir="ltr"`; a translated placeholder adds `:placeholder-shown { direction: inherit }`.
 - **Record (ledger row at S544):** - **`ltr-machine-text-field-typed-rtl`** (NEW S454; `b1eb9659`, 4 carriers): ACTIVE, streak 0. Detection: `type="email|url"` (or JS `.type`) without `dir="ltr"`; a translated placeholder adds `:placeholder-shown { direction: inherit }`.
@@ -438,7 +442,8 @@
 - **Archived full text (latest compaction copy):** - **`button-group-label-not-programmatic`** (**NEW S413 Pass C — resources ×8 rows FIXED `945b397`; generator, dictionary, hub unmeasured (no `role="group"` at all)**): ACTIVE, streak 0. A row of `aria-pressed` buttons sits under a visible label (a `<span>`, or a `<label>` with …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `settings-lost-across-a-load`
-- **Status:** ACTIVE · **Owner:** H · **Consequence:** normal · **Last:** S491 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** H · **Consequence:** normal · **Last:** S551 · **Streak:** 1 · **Detector:** recipe
+- **Record (S551):** name_tags clean (`h551/lessons.mjs` L7): font, nikkud, pronunciation style, transliteration mode, English, extra line + its text, four sizes, two colours, border, background, paper, per page, Avery, outlines set by real input, a reload, every one back (trap 353: set the style radios while they are enabled).
 - **Shape:** A setting comes back changed after a reload.
 - **Detection:** change each control by a real click, wait out the save, — `h482/dictsave.mjs` is a scratchpad path that was never committed: port it to `scripts/loop/detect-<id>.mjs` (with `--plant`) at the next A, or the row goes DRAFT.
 - **Record (ledger row at S544):** - **`settings-lost-across-a-load`** (NEW S412; dictionary ×4 FIXED S482 `8d99ad93`, flash FIXED S491 `adce6574`; 0 open): ACTIVE, streak 0. A setting comes back changed after a reload. Detection (`h482/dictsave.mjs`): change each control by a real click, wait out the save,
