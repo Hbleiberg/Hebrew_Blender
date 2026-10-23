@@ -274,8 +274,10 @@ export function levenshtein(a, b) {
   }
   return prev[n];
 }
-// the best fuzzy occurrence of one of `targets` in `s` (no spaces): { start, end, dist, target }, earliest on ties;
-// a target tolerates a third of its length in edits (AYAONE 2, ALIATHREE 3), so a short target cannot match loosely
+// the best fuzzy occurrence of one of `targets` in `s` (no spaces): { start, end, dist, target }; a target tolerates
+// a third of its length in edits (AYAONE 2, ALIATHREE 3), so a short target cannot match loosely. Ties go to the
+// LATEST occurrence (within `limit`): an announcement names its aliyah last ("Year 3, Aliyah 4", "Year 2 Aliyah 1
+// and Year 3 Aliyah 1"), and a loose early match ("SA YOURE" for "aliyah four") must not win over the real one.
 export function fuzzyFind(s, targets, limit = s.length) {
   let best = null;
   for (const t of targets) {
@@ -283,7 +285,7 @@ export function fuzzyFind(s, targets, limit = s.length) {
     for (let i = 0; i < Math.min(limit, s.length); i++) {
       for (let len = Math.max(1, t.length - 2); len <= t.length + 2 && i + len <= s.length; len++) {
         const d = levenshtein(s.slice(i, i + len), t);
-        if (d <= maxDist && (!best || d < best.dist || (d === best.dist && i < best.start))) best = { start: i, end: i + len, dist: d, target: t };
+        if (d <= maxDist && (!best || d < best.dist || (d === best.dist && i > best.start))) best = { start: i, end: i + len, dist: d, target: t };
       }
     }
   }

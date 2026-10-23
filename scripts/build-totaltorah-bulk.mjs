@@ -25,7 +25,7 @@
  *                                         an <id>.info.json each (the sidecar, else synthesized from the row and ffprobe).
  *                                         Without --apply it only reports (same as inventory).
  *   run       [--book B] [--parsha P] [--only ids] [--limit N] [--timings derive|realign|none]
- *             [--maftir] [--chazak] [--redo] [--dry-run] [--pad s]
+ *             [--maftir] [--chazak] [--redo] [--dry-run] [--pad s] [--intro s|silence  (one video: --only <id> --redo)]
  *                                         for each staged video, in Torah order: the boundaries pass (the intro's end
  *                                         read off the English transcript, one whole-file alignment), split --boundaries auto --keep-existing
  *                                         (the series repeats some readings — the first cut of a verse wins), and the
@@ -727,7 +727,15 @@ async function cmdRun() {
     plan.push({ id, r, src });
   }
   const todo = plan.slice(0, limit);
-  console.log(`run: ${ids.length} videos selected; ${noRef} without a ref, ${notStaged} not staged, ${doneBefore} already done → ${todo.length} to process${plan.length > todo.length ? ` (${plan.length - todo.length} more after --limit)` : ''}; timings: ${timingsMode}; pad ${pad} s`);
+  // --intro <s> | silence: the announcement's end by hand (one video, with --only and --redo), for the few videos whose
+  // announcement goes on into a spoken lesson the transcript walk cannot follow
+  let introFlag = 'auto';
+  if (flags.intro !== undefined) {
+    if (todo.length !== 1) fail(`--intro is for one video at a time (use --only <id> --redo); ${todo.length} selected`, 2);
+    introFlag = flags.intro === 'silence' ? 'silence' : parseFloat(String(flags.intro));
+    if (typeof introFlag === 'number' && !isFinite(introFlag)) fail('--intro takes seconds, or "silence"', 2);
+  }
+  console.log(`run: ${ids.length} videos selected; ${noRef} without a ref, ${notStaged} not staged, ${doneBefore} already done → ${todo.length} to process${plan.length > todo.length ? ` (${plan.length - todo.length} more after --limit)` : ''}; timings: ${timingsMode}; pad ${pad} s${introFlag !== 'auto' ? `; intro ${introFlag}` : ''}`);
   if (!todo.length) { console.log('nothing to do'); return; }
   // the repo holds a mockup's worth of audio, never the corpus (≈ 735 MB for the whole Torah — Phase 2 hosts it on R2):
   // more than a parasha or so into data/totaltorah/ needs saying so
@@ -783,7 +791,7 @@ async function cmdRun() {
           if (bj.ref !== r.ref || !Array.isArray(bj.verses)) bj = null;
         }
         if (!bj) {
-          bj = await computeBoundaries({ id, row: r, src, client, intro: 'auto', pad, keep16k: false, log, cacheDir: CACHE });
+          bj = await computeBoundaries({ id, row: r, src, client, intro: introFlag, pad, keep16k: false, log, cacheDir: CACHE });
           st.boundaries = { ok: true, at: today(), introEnd: bj.introEnd, introBy: bj.introBy, legacyIntro: bj.legacyIntro, introUnconfirmed: !!bj.introUnconfirmed, introWarning: bj.introWarning || null, introTranscript: bj.introTranscript || null, minGap: bj.gaps.length ? Math.min(...bj.gaps) : null, wall: bj.wall, windows: bj.windows };
         }
         // 3. split (the audio script owns the manifest, the license and the triennial cross-check)
