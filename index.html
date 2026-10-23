@@ -688,11 +688,14 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
         .ivrit-mode-toggle{display:flex;border:1px solid var(--border,#ccc);border-radius:6px;overflow:hidden;margin-bottom:12px;}
         .ivrit-mode-btn{flex:1;padding:8px 4px;border:none;background:var(--white,#fff);color:var(--text,#222);font-family:inherit;font-size:0.85rem;cursor:pointer;}
         .ivrit-mode-btn.active{background:var(--navy,#1a2744);color:#fff;}
+        body.dark .ivrit-mode-btn.active{background:#2a4070;}   /* the suite's dark navy-control fill: in dark the navy pressed button is 1.03:1 from the unpressed one beside it (pattern dark-navy-fill-matches-its-ground) */
         .ivrit-drop{border:2px dashed var(--border,#ccc);border-radius:8px;padding:20px 12px;text-align:center;transition:all 0.15s;}
         .ivrit-drop.ivrit-drag{border-color:var(--gold,#c9922a);background:rgba(201,146,42,0.12);}
         .ivrit-ask-btn{flex:1;min-width:96px;padding:9px;border:1px solid transparent;border-radius:6px;cursor:pointer;font-family:inherit;font-size:0.85rem;}
         .ivrit-ask-btn[data-act="merge"]{background:var(--navy,#1a2744);color:#fff;}
         .ivrit-ask-btn[data-act="merge"]:hover{background:var(--gold,#c9922a);color:var(--navy,#1a2744);}
+        body.dark .ivrit-ask-btn[data-act="merge"]{background:#2a4070;}   /* the suite's dark navy-control fill (the Backup toggle's): navy on the dark card is 1.03:1, no button to see (pattern dark-navy-fill-matches-its-ground) */
+        body.dark .ivrit-ask-btn[data-act="merge"]:hover{background:var(--gold,#c9922a);color:var(--navy,#1a2744);}   /* the dark base rule outranks the hover above by a class (pattern dark-base-rule-outranks-variant) */
         .ivrit-ask-btn[data-act="replace"]{background:#a83232;color:#fff;}
         .ivrit-ask-btn[data-act="replace"]:hover{background:#8a2828;}
         .ivrit-ask-btn[data-act="cancel"]{background:transparent;color:inherit;border-color:var(--border,#ccc);}
