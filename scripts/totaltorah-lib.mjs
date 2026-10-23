@@ -28,6 +28,9 @@ export const PY = join(ENV_DIR, 'bin', 'python3');
 
 export const MODEL = 'imvladikon/wav2vec2-xls-r-300m-hebrew';
 export const MODEL_REVISION = 'b2e683004903f1b11bee2c6092a7c323ed858d82';   // the commit the first runs aligned with; null = main
+// the English model that reads each video's spoken intro (the boundaries pass; loaded by the aligner on first use)
+export const MODEL_EN = 'facebook/wav2vec2-base-960h';
+export const MODEL_EN_REVISION = '22aad52d435eb6dbaf354bdad9b0da84ce7d6156';
 export const PIP_REQUIREMENTS = ['torch', 'torchaudio', 'transformers', 'soundfile', 'huggingface_hub'];
 export const TORCH_CPU_INDEX = 'https://download.pytorch.org/whl/cpu';
 // the source audio a video may be staged as: yt-dlp's m4a, or whatever the maintainer's extractor produced
@@ -121,8 +124,8 @@ export function meanVolume(file) {
   if (!m) throw new Error(`volumedetect gave no mean_volume for ${file}`);
   return parseFloat(m[1]);
 }
-export function detectSegments(file, thresh = '-50dB', mindur = '0.6') {
-  const r = spawnSync('ffmpeg', ['-hide_banner', '-nostats', '-i', file, '-af', `silencedetect=noise=${thresh}:d=${mindur}`, '-f', 'null', '-'], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+export function detectSegments(file, thresh = '-50dB', mindur = '0.6', maxS = null) {
+  const r = spawnSync('ffmpeg', ['-hide_banner', '-nostats', ...(maxS ? ['-t', String(maxS)] : []), '-i', file, '-af', `silencedetect=noise=${thresh}:d=${mindur}`, '-f', 'null', '-'], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
   const silences = [];
   let open = null;
   for (const line of (r.stderr || '').split('\n')) {
@@ -178,13 +181,16 @@ export class AlignerClient {
     this.python = opts.python || PY;
     this.model = opts.model || MODEL;
     this.revision = opts.revision === undefined ? MODEL_REVISION : opts.revision;
+    this.englishModel = opts.englishModel || MODEL_EN;
+    this.englishRevision = opts.englishRevision === undefined ? MODEL_EN_REVISION : opts.englishRevision;
     this.window = opts.window; this.overlap = opts.overlap;
     this.proc = null; this.pending = new Map(); this.seq = 0; this.exited = false; this.stderr = ''; this.info = null;
   }
   start() {
     if (this.ready) return this.ready;
-    const args = [ALIGNER, '--serve', '--model', this.model];
+    const args = [ALIGNER, '--serve', '--model', this.model, '--english-model', this.englishModel];
     if (this.revision) args.push('--revision', this.revision);
+    if (this.englishRevision) args.push('--english-revision', this.englishRevision);
     if (this.window) args.push('--window', String(this.window));
     if (this.overlap) args.push('--overlap', String(this.overlap));
     this.proc = spawn(this.python, args, { stdio: ['pipe', 'pipe', 'pipe'] });
@@ -224,15 +230,117 @@ export class AlignerClient {
 }
 
 /* ---------- the boundaries pass of one video ---------- */
-// The intro: every Total Torah video opens with a spoken intro that must never reach a verse file. The candidates
-// for its end are the file's start and every sound segment start (a silence end) in the first `introMax` seconds;
-// the first verse's words are force-aligned from each candidate on ONE emission pass, and the candidate whose
-// alignment scores best wins — the intro's English speech scores badly against Hebrew text, and a start inside
-// the verse loses words. `intro` may also be a number (confirmed by ear) or 'silence' (the old rule: the first
-// silence after at least a second of sound), and the chosen value is printed beside the old rule's either way.
+// The intro: every Total Torah video opens with a spoken English announcement — "Parashat B'reishit, Year 1,
+// Aliyah 4" (a maftir: "…, Maftir"; Ha'azinu and V'Zot HaBerachah name no year) — that must never reach a verse
+// file. Its end is read off the English model's transcript of the first `introMax` seconds: the aliyah number
+// the row expects, found by fuzzy match after an "aliyah"-like token (the model spells it ALIA, ALYA, A YA…),
+// gives the time of the announcement's last word; the cut snaps to the first pause of 0.15 s or more that
+// follows within 1.5 s (else the word's end plus a tenth). Neither silence nor a Hebrew alignment can do this
+// alone: the cantor sometimes runs straight from the announcement into the first words (no pause the silence
+// table sees), sometimes pauses inside the announcement, and a forced alignment of the Hebrew parks the first
+// words on the English and scores the rest no worse. When the transcript shows no match the first-silence rule
+// decides (`legacyIntroEnd`: the first silence of 0.6 s after at least a second of sound) and the result is
+// flagged `introUnconfirmed` — listen before anything is verified. `intro` may also be a number (confirmed by
+// ear) or 'silence' (that rule alone); the transcript and both rules' values are printed either way.
 export function legacyIntroEnd(segs) {
   const i = segs.findIndex((g) => g.end - g.start >= 1.0);
   return i >= 0 && segs[i + 1] ? segs[i + 1].start : 0;
+}
+const NUMBER_WORDS = { 1: 'ONE', 2: 'TWO', 3: 'THREE', 4: 'FOUR', 5: 'FIVE', 6: 'SIX', 7: 'SEVEN' };
+// how the English model has spelled each number after "aliyah" (ALIAJAN, ALIAWAN, ALIATO, ALIATHRI, ALIASEX…)
+const NUMBER_SPELLINGS = { 1: ['ONE', 'WAN', 'JAN', 'AN', 'WON'], 2: ['TWO', 'TO', 'TOO'], 3: ['THREE', 'THRI', 'THRE', 'TREE'], 4: ['FOUR', 'FOR', 'FOR'], 5: ['FIVE', 'FIF'], 6: ['SIX', 'SEX'], 7: ['SEVEN', 'SEVN'] };
+const ALIYAH_SPELLINGS = ['ALIYA', 'ALIA', 'ALYA', 'AYA', 'ARIA'];
+const MAFTIR_SPELLINGS = ['MAFTIR', 'MAFTEER', 'MAFTIER', 'MAFTHIER', 'MOFTIR'];
+const INTRO_TAIL_RE = /\b(YEAR|CHAPTER|VERSE|VERSES|GENESIS|EXODUS|LEVITICUS|NUMBERS|DEUTERONOMY|CHAZAK|HAZAK|WITH|MAFTIR|ALIYA|ALIA|ALYA)\b/;
+// a word the announcement may go on with after the aliyah number ("and maftir for the parsha", "with chazak")
+const INTRO_TAIL_WORD_RE = /^(AND|AN|MAFTIR|MAFTEER|MAFTIER|FOR|THE|PARSHA|PARSHAT|PARASHA|PARASHAT|WITH|CHAZAK|HAZAK|YEAR|ONE|TWO|THREE|FOUR|FIVE|SIX|SEVEN|CHAPTER|VERSE|VERSES|TO|THROUGH|OF|GENESIS|EXODUS|LEVITICUS|NUMBERS|DEUTERONOMY|ALSO|PLUS)$/;
+export function levenshtein(a, b) {
+  const m = a.length, n = b.length;
+  let prev = Array.from({ length: n + 1 }, (_, j) => j);
+  for (let i = 1; i <= m; i++) {
+    const cur = [i];
+    for (let j = 1; j <= n; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    prev = cur;
+  }
+  return prev[n];
+}
+// the best fuzzy occurrence of one of `targets` in `s` (no spaces): { start, end, dist, target }, earliest on ties;
+// a target tolerates a third of its length in edits (AYAONE 2, ALIATHREE 3), so a short target cannot match loosely
+export function fuzzyFind(s, targets, limit = s.length) {
+  let best = null;
+  for (const t of targets) {
+    const maxDist = Math.floor(t.length / 3);
+    for (let i = 0; i < Math.min(limit, s.length); i++) {
+      for (let len = Math.max(1, t.length - 2); len <= t.length + 2 && i + len <= s.length; len++) {
+        const d = levenshtein(s.slice(i, i + len), t);
+        if (d <= maxDist && (!best || d < best.dist || (d === best.dist && i < best.start))) best = { start: i, end: i + len, dist: d, target: t };
+      }
+    }
+  }
+  return best;
+}
+// the first pause after `t` (within 1.5 s, or starting up to 0.25 s before it), looking for ever shorter and
+// louder gaps: a quiet recording shows one at -50 dB, a noisier one only at -40 or -30 dB
+export function pauseAfter(src, t, maxS) {
+  for (const [thresh, mindur] of [['-50dB', '0.15'], ['-40dB', '0.12'], ['-30dB', '0.08']]) {
+    const p = detectSegments(src, thresh, mindur, maxS).silences.find((x) => x.s >= t - 0.25 && x.s <= t + 1.5);
+    if (p) return { ...p, thresh, mindur };
+  }
+  return null;
+}
+// The announcement's end from the English transcript (see above). Returns { introEnd, by, transcript, match, tEnd,
+// snapped, unconfirmed, warning }; `by` is 'english' or 'silence (unconfirmed)'.
+export async function englishIntroEnd({ src, flac, row, dur, client, legacy, maxS = 30, log = console.log }) {
+  const out = { introEnd: legacy, by: 'silence (unconfirmed)', transcript: '', match: null, tEnd: null, snapped: null, unconfirmed: true, warning: null };
+  const end = Math.min(dur, maxS);
+  if (end < 0.5) { out.warning = 'the file is shorter than half a second'; return out; }
+  let r;
+  try { r = await client.align({ english: true, audio: flac, offset: 0, end }); }
+  catch (e) { out.warning = `the English transcript failed: ${e.message}`; log(`  intro: ${out.warning}`); return out; }
+  out.transcript = r.text;
+  const chars = (r.chars || []).filter((c) => c[0] !== ' ');
+  const s = chars.map((c) => c[0]).join('');
+  const targets = row.aliyah === 'M' ? MAFTIR_SPELLINGS : ALIYAH_SPELLINGS.flatMap((a) => NUMBER_SPELLINGS[row.aliyah].map((n) => a + n));
+  // the announcement is over within a few seconds: a match that starts later is the chant mis-heard
+  const limit = chars.findIndex((c) => c[1] > 9);
+  const m = fuzzyFind(s, targets, limit < 0 ? s.length : limit);
+  log(`  intro: the English model hears "${r.text}"`);
+  if (!m) {
+    // "Parashat …" at the start means an announcement the model did not read to the end; nothing of the kind
+    // at the start means a video that opens on the chant itself (a few do)
+    const opening = fuzzyFind(s.slice(0, 14), ['PARSHAT', 'PARSHOT', 'PARCHAT', 'HARSHAT', 'PARASHAT']);
+    if (opening) { out.warning = `"Parashat…" heard but no "aliyah ${row.aliyah === 'M' ? 'maftir' : NUMBER_WORDS[row.aliyah]}" after it — the first-silence rule decides (${legacy.toFixed(2)} s); listen`; }
+    else { out.introEnd = 0; out.by = 'none heard (unconfirmed)'; out.warning = `no announcement heard at the start — the chant may begin at once; cut at 0 s; listen`; }
+    log(`  intro: ${out.warning}`);
+    return out;
+  }
+  let tEnd = chars[m.end - 1][2];
+  out.match = { text: s.slice(m.start, m.end), target: m.target, dist: m.dist };
+  out.unconfirmed = false; out.by = 'english';
+  // the announcement sometimes goes on past the aliyah number ("… and maftir for the parsha", "with Chazak"):
+  // walk the following words while they are announcement words, and cut after the last of them — flagged, since
+  // the walk is a vocabulary guess
+  const words = [];
+  for (const c of r.chars || []) { if (c[0] === ' ') { if (words.length && words[words.length - 1].text) words.push({ text: '', s: null, e: null }); continue; } const w = words[words.length - 1]; if (w && w.s !== null) { w.text += c[0]; w.e = c[2]; } else { if (w) words.pop(); words.push({ text: c[0], s: c[1], e: c[2] }); } }
+  const tail = [];
+  let wi = words.findIndex((w) => w.s !== null && w.e >= tEnd - 0.01 && w.s <= tEnd);
+  for (let k = wi + 1; k < words.length && words[k].s !== null; k++) {
+    const w = words[k];
+    if (w.s - tEnd > 1.0 || !INTRO_TAIL_WORD_RE.test(w.text)) break;
+    tail.push(w.text); tEnd = w.e;
+  }
+  if (tail.length) { out.unconfirmed = true; out.by = 'english (unconfirmed)'; out.warning = `the announcement goes on after "${out.match.text}" ("${tail.join(' ')}") — cut after it; listen`; }
+  out.tEnd = r2(tEnd);
+  // the first pause right after the word: a clean cut; none at any threshold → a little after the word
+  const pause = pauseAfter(src, tEnd, maxS + 2);
+  out.snapped = pause ? r2(pause.e) : null;
+  out.introEnd = pause ? r2(pause.e) : r2(tEnd + 0.15);
+  if (!pause) { out.unconfirmed = true; out.by = 'english (unconfirmed)'; out.warning = `no pause after "${tail.length ? tail[tail.length - 1] : out.match.text}" at any threshold — cut ${out.introEnd} s, a little after the word; listen`; }
+  // still more announcement right after the cut (a verse range the walk did not know)? say so
+  const after = (r.chars || []).filter((c) => c[1] >= out.introEnd && c[1] <= out.introEnd + 2.5).map((c) => c[0]).join('').trim();
+  if (INTRO_TAIL_RE.test(after)) { out.unconfirmed = true; out.by = 'english (unconfirmed)'; out.warning = `the announcement seems to go on after the cut ("${after}") — listen`; }
+  log(`  intro: "${out.match.text}" ≈ ${m.target} (distance ${m.dist})${tail.length ? ` + "${tail.join(' ')}"` : ''} ends at ${tEnd.toFixed(2)} s → cut at ${out.introEnd.toFixed(2)} s (${pause ? `the pause ${pause.s.toFixed(2)}–${pause.e.toFixed(2)} s at ${pause.thresh}` : 'no pause within 1.5 s'})${out.warning ? `\n  ⚠ ${out.warning}` : ''}`);
+  return out;
 }
 export async function computeBoundaries({ id, row, src, client, intro = 'auto', pad = DEFAULT_PAD, introMax = 30, keep16k = true, log = console.log, cacheDir = CACHE_DIR }) {
   if (!row || !row.ref) throw new Error(`${id} has no ref — the whitelist row needs one before anything is cut`);
@@ -242,32 +350,15 @@ export async function computeBoundaries({ id, row, src, client, intro = 'auto', 
   log(`boundaries: ${id} "${row.parsha}" Y${row.year} A${row.aliyah} ${row.ref}: ${N} verses, ${dur.toFixed(2)} s\n  silence table (-50dB, 0.6 s):\n${segTable(segs)}`);
   const flac = to16k(src, join(cacheDir, `${id}.16k.flac`));
   const legacy = legacyIntroEnd(segs);
-  let introEnd, introBy, candidates = [];
+  let introEnd, introBy, english = null;
   if (typeof intro === 'number') { introEnd = intro; introBy = 'given'; }
   else if (intro === 'silence') { introEnd = legacy; introBy = 'silence'; }
   else {
-    const cands = [0];
-    for (const g of segs) if (g.start > 0.05 && g.start <= introMax && cands.every((c) => Math.abs(c - g.start) > 0.05)) cands.push(r2(g.start));
-    if (cands.length === 1) { introEnd = legacy; introBy = 'silence'; }
-    else {
-      const w1 = verses[0].cons;
-      const end = Math.min(dur, Math.max(...cands) + 1.5 * w1.length + 4);
-      const res = await client.align({ audio: flac, words: w1, offsets: cands, end });
-      candidates = res.results.map((x) => ({ t: x.offset, score: x.error ? -1 : r3(mean(x.scores)), first: x.error ? null : x.onsets[0], error: x.error || null }));
-      let best = candidates[0];
-      for (const c of candidates) if (c.score >= best.score) best = c;   // ties go to the later candidate (less intro can leak)
-      introEnd = best.t; introBy = 'scored';
-      // no clear winner (every candidate within 0.02 of the best): the scores carry no signal, so the old rule decides
-      const legacyCand = candidates.find((c) => Math.abs(c.t - legacy) < 0.06);
-      if (legacyCand && legacyCand.t !== best.t && best.score - legacyCand.score < 0.02) { introEnd = legacyCand.t; introBy = 'silence (scores tied)'; }
-    }
+    english = await englishIntroEnd({ src, flac, row, dur, client, legacy, maxS: introMax, log });
+    introEnd = english.introEnd; introBy = english.by;
   }
   if (!isFinite(introEnd) || introEnd < 0 || introEnd >= dur) throw new Error(`intro end ${introEnd} is outside the file`);
-  if (candidates.length) {
-    log('  intro candidates (first verse aligned from each; mean score, first onset):');
-    for (const c of candidates) log(`    ${c.t.toFixed(2).padStart(6)} s  ${c.error ? 'error: ' + c.error : `score ${c.score.toFixed(2)}  first word at ${c.first.toFixed(2)} s`}${c.t === introEnd ? '  ← chosen' : ''}`);
-  }
-  log(`  intro: 0 – ${introEnd.toFixed(2)} s (${introBy}; the first-silence rule says ${legacy.toFixed(2)} s${Math.abs(legacy - introEnd) > 0.3 ? ' — DIFFERS, listen' : ''})`);
+  log(`  intro: 0 – ${introEnd.toFixed(2)} s (${introBy}; the first-silence rule says ${legacy.toFixed(2)} s${Math.abs(legacy - introEnd) > 0.3 ? ' — differs' : ''})`);
   const words = [], display = [];
   for (const v of verses) for (let i = 0; i < v.cons.length; i++) { words.push(v.cons[i]); display.push(v.words[i]); }
   log(`  aligning ${words.length} words from ${introEnd.toFixed(2)} s …`);
@@ -292,7 +383,10 @@ export async function computeBoundaries({ id, row, src, client, intro = 'auto', 
     i += n;
   });
   b.push(r2(Math.min(dur, a.ends[a.ends.length - 1] + 0.4)));
-  const result = { id, ref: row.ref, introEnd: b[0], introBy, legacyIntro: r2(legacy), candidates, boundaries: b, gaps, pad, dur: r2(dur),
+  const firstGap = r2(a.onsets[0] - introEnd);
+  if (firstGap > 3) log(`  ⚠ the first word is aligned ${firstGap} s after the intro end — something (more announcement? a long pause?) sits between them; listen`);
+  const result = { id, ref: row.ref, introEnd: b[0], introBy, legacyIntro: r2(legacy), boundaries: b, gaps, pad, dur: r2(dur),
+    introTranscript: english ? english.transcript : null, introMatch: english ? english.match : null, introUnconfirmed: english ? english.unconfirmed || firstGap > 3 : false, introWarning: english ? english.warning : null,
     verses: out, wall: a.wall, windows: a.windows, model: a.model, revision: a.revision, built: new Date().toISOString().slice(0, 10) };
   writeFileSync(join(cacheDir, `${id}.boundaries.json`), JSON.stringify(result, null, 1) + '\n');
   if (!keep16k) { try { unlinkSync(flac); } catch { /* already gone */ } }

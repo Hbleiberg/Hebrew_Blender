@@ -906,7 +906,7 @@ never a practice link (`LINK_DISPLAY` says how a reading looks, never how it sou
   index, one trailing end-of-last-word value), and `data/totaltorah/manifest.json`: a top-level `credit` block (names,
   URLs, the permission, each source video's title and upload date) beside one entry per verse, keyed `"Genesis 1:1"` —
   `{ file, dur, video, parsha, year, aliyah, verified, timings, timingsVerified }`. The manifest and the timings are
-  fetched with `TT_DATA_V` (`?v=2`; `/data/` is cache-first and exact-URL keyed); the audio is left to the network by
+  fetched with `TT_DATA_V` (`?v=3`; `/data/` is cache-first and exact-URL keyed); the audio is left to the network by
   `sw.js` (a Range request must never be answered from the cache).
 - **Verified or nothing.** `ttEntryFor(vk)` returns an entry only while it is `verified: true`, and its timings count
   only while `timingsVerified: true` — the maintainer flips both by listening (`build-totaltorah-audio.mjs verify`),
@@ -955,9 +955,10 @@ never a practice link (`LINK_DISPLAY` says how a reading looks, never how it sou
   `silencedetect` and refuses a segment count that differs from the ref's verse count — which it always does: every
   video opens with a spoken intro, and the cantor's mid-verse pauses at the etnachta and zakef are quieter than her
   breaths between verses, so the usual cut is `--boundaries auto`, the file `build-totaltorah-timings.mjs
-  --boundaries <id>` writes after one whole-file alignment (the intro taken to end at the first silence after a
-  second of sound, `--intro <s>` to override; a boundary midway through each inter-verse gap); `--boundaries
-  "t0,…,tN"` is the hand override, and a guess is never made. It writes the MP3s, a lossless FLAC per verse for
+  --boundaries <id>` writes after one whole-file alignment (the spoken announcement's end read off an English
+  speech model's transcript of the opening — the aliyah number's timestamp, then the first pause after it — with
+  the first-silence rule as the flagged fallback, `--intro <s>` to override; a boundary midway through each
+  inter-verse gap); `--boundaries "t0,…,tN"` is the hand override, and a guess is never made. It writes the MP3s, a lossless FLAC per verse for
   Adas Israel, the manifest (`verified: false`) and the license; the whitelist both scripts read is
   `scripts/totaltorah-videos.mjs`, and `/addTOTT` (`.claude/skills/addTOTT/SKILL.md`) is the intake recipe for
   the next video; the timings script aligns each verse FLAC against its consonantal text (the Trainer's tokenization,
@@ -973,11 +974,14 @@ never a practice link (`LINK_DISPLAY` says how a reading looks, never how it sou
   one unit on the page and follows its combined table; Ha'azinu and V'Zot HaBerachah carry `year: null` (one set
   for all three years). `meta` checks every id's title through YouTube's oEmbed endpoint (the bot gate refuses
   yt-dlp from a cloud address) and records `check`. `inventory` / `stage` match a dump of the maintainer's downloads
-  — by the id in a file name or yt-dlp sidecar, else by the parasha, year and aliyah in the file and folder names,
-  English in any spelling or Hebrew — and hard-link the matched files into the cache with an `<id>.info.json` each.
+  — by the id in a file name or yt-dlp sidecar, or by the dump's own video list (a `.txt` of "title - YouTube URL"
+  lines: the files are named by title, and where two uploads share a title the one on the Adas page wins), else by
+  the parasha, year and aliyah in the file and folder names, English in any spelling or Hebrew — and hard-link the
+  matched files into the cache with an `<id>.info.json` each.
   `run` drives boundaries → `split --boundaries auto --keep-existing` → timings per video with one aligner process
   (`align_totaltorah.py --serve`; the network runs in 40 s windows, so a long aliyah needs no more memory than a
-  short one; the intro end is the best-scoring of the silence-end candidates, the first-silence rule the tiebreak;
+  short one; the intro end comes from the English transcript as above, and a video it cannot settle is flagged
+  `introUnconfirmed` in the ledger for the listening pass;
   `--timings derive` reads each verse's timings off the whole-file alignment — the boundaries file carries every
   word — and `realign` is the per-verse second pass), cuts each verse once (the series repeats some readings; the
   first video in Torah order wins, later ones are `duplicate`), skips maftir and Chazak videos unless asked, and

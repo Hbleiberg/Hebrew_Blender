@@ -21,9 +21,17 @@ series (a dump of the maintainer's own downloads) is *Bulk intake* at the end �
 
 ## Facts that hold for every video (learned on the first one)
 
-- **There is ALWAYS a spoken intro before the chanting** (the aliyah's name). It must never reach a verse file.
-  The boundaries step detects it as the first silence after at least a second of sound and prints it; confirm by
-  ear and override with `--intro <s>` when it is wrong.
+- **Nearly every video opens with a spoken English announcement** ("Parashat B'reishit, Year 1, Aliyah 4"; a
+  maftir says "Maftir"; a few videos open on the chant itself) that must never reach a verse file. The boundaries
+  step reads it with an English speech model (`facebook/wav2vec2-base-960h`, pinned in `totaltorah-lib.mjs`),
+  finds the aliyah number's timestamp and cuts at the first pause after it; it prints the transcript, the match
+  and both rules' values. Silence alone cannot do it: in two of seven Bereshit videos the cantor runs straight
+  from the announcement into the first words, in one she pauses inside the announcement, and a fifth of the
+  series has no 0.6 s silence anywhere (the first-silence rule then says 0). A Hebrew forced alignment cannot
+  either — it parks the first words on the English and scores the rest no worse. A video the transcript cannot
+  settle (no "aliyah N" heard, an announcement that goes on — "and maftir for the parsha" — or no pause after it)
+  is cut by the fallback and flagged `introUnconfirmed` in the ledger (`status` lists them): listen to its first
+  verse before verifying. `--intro <s>` overrides by ear, `--intro silence` is the old rule alone.
 - **Silence alone never finds the verses.** The cantor's mid-verse pauses (etnachta, zakef) are quieter than her
   breaths between verses, so `silencedetect` cuts inside verses and misses the verse ends. The cut comes from one
   whole-file forced alignment (`--boundaries <id>`), midway through each inter-verse gap. Never hand-guess from
@@ -44,7 +52,8 @@ series (a dump of the maintainer's own downloads) is *Bulk intake* at the end �
   `torah_trainer.html` (the manifest and every timings file share it) and `VERSION` in `sw.js`. New MP3s and
   timings files are new URLs and need no bump of their own.
 - **The venv and model are not in the repo** (`source-data/totaltorah-cache/align-env/`, ~1.2 GB, gitignored). In
-  a fresh container run `--setup` once; it needs `huggingface.co` and `download.pytorch.org` reachable.
+  a fresh container run `--setup` once; it needs `huggingface.co` and `download.pytorch.org` reachable (the two
+  models, ≈ 1.6 GB together, download on first use into the Hugging Face cache).
 - The data is **not** sized for the repo beyond the mockup: ~130 KB per verse at today's setting, ~35 h of audio
   for the whole Torah. The PR body's *Phase 2 hosting* section is the plan (R2 + one `media-src` origin).
 
@@ -113,13 +122,22 @@ has every flag). Facts learned preparing the first pass (Oct 2026):
   the title ("B'reishit, Year 1 Aliyah 1") must name the row's parasha, year and aliyah. `meta --ytdlp` fetches the
   fuller info JSON (duration, upload date) where the gate allows; without it, `stage` synthesizes `<id>.info.json`
   from the row and ffprobe (a dump's own yt-dlp sidecars are used as they are).
+- **The maintainer's dump names each file by its YouTube title and ships a video list** (`Tricks of the Trope -
+  Video List.txt`: one "<title> - https://www.youtube.com/watch?v=<id>" line per video, lessons and Megillat Esther
+  included). `inventory` reads any such `.txt` and matches by id, because names alone go wrong: the channel
+  re-uploaded five aliyot under titles that differ by a comma (Bereshit Y2 A3; Noach Y1 A1, A5, A6; Noach Y2 A2) and
+  the Adas page links one of each pair. Three page links are dead (Behar-Bechukotai Y3 A7 and its Chazak answer 403,
+  Nasso Y1 A7 404) and Bereshit Y2 A4 has none; the channel's working uploads are hand rows in the whitelist, each
+  with a `note` naming the page's id. The rest of the dump (the lessons, Esther, the off-page uploads) stays
+  unmatched on purpose.
 - **A long aliyah does not fit one attention pass.** 360 s of audio took 8.7 GB in one pass on this machine; the
   aligner runs the network in 40 s windows (4 s overlap, half dropped on each side) and force-aligns the stitched
   emission once — 2.6 GB and 77 s for the same file, ≈ 0.2 s of CPU per second of audio. The model loads once per
   run (`align_totaltorah.py --serve`, pinned to its commit in `totaltorah-lib.mjs`).
-- **The intro end is chosen by alignment:** the first verse's words are aligned from the file's start and from every
-  silence end in the first 30 s on one emission pass; the best-scoring start wins (scores within 0.02 fall back to
-  the first-silence rule), and the log prints the candidates and flags a choice that differs from the old rule.
+- **The intro end is read off the English transcript** (the fact above); the scored-candidates rule that preceded
+  it chose the file's start in four of eight Bereshit videos (a forced alignment of the Hebrew from 0 s parks the
+  first two words on the English and scores higher), so it is gone. The alignment itself is sound: re-aligning the
+  verified pilot video reproduced the maintainer-approved cuts within 0.1 s on every verse but the intro one.
 - **Timings come from the whole-file alignment by default** (`--timings derive`; `realign` is the per-verse second
   pass of the recipe above), so each video is aligned once: the series' ≈ 34 h of audio is about 7–8 h of CPU here,
   plus ffmpeg (the source is decoded once per video since the same pass).
@@ -132,8 +150,8 @@ Steps:
 1. `node scripts/build-totaltorah-bulk.mjs adas --accept` — only when the TSVs change; the whitelist is committed.
 2. `node scripts/build-totaltorah-bulk.mjs meta` — once; resumable; commit the rows it fills in.
 3. `node scripts/build-totaltorah-bulk.mjs inventory --from <dump>` — any layout (book / parasha / year folders or
-   flat; English in any spelling or Hebrew; ids in `[brackets]` or yt-dlp sidecars). Read the unmatched list, fix
-   names, repeat until it is empty.
+   flat; English in any spelling or Hebrew; ids in `[brackets]`, yt-dlp sidecars, or a video list `.txt` in the dump).
+   Read the unmatched list, fix names, repeat until it is empty.
 4. `node scripts/build-totaltorah-bulk.mjs stage --from <dump> --apply` (hard links; `--copy` across filesystems).
 5. `node scripts/build-totaltorah-timings.mjs --setup` once per container, then
    `node scripts/build-totaltorah-bulk.mjs run --parsha Bereshit` (the pilot, into the repo) or
