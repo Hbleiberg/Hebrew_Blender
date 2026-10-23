@@ -1516,7 +1516,9 @@ html[lang="he"] .tp-label{letter-spacing:normal;text-transform:none;}
    selected-state-lost-in-forced-colors, S547). System colours are kept in that mode, so the selected ones take the theme's
    selection pair; both theme rules are named, by specificity, and so is every :hover twin of a pressed state (a mouse still
    rests on what it just clicked); a mark tile previews a glyph, so it takes a ring instead of a fill. The block ends the page's
-   own CSS so it outranks every rule above it in source order. */
+   own CSS so it outranks every rule above it in source order. forced-color-adjust:none on the filled rule: Chromium paints a Canvas backplate behind every text run it adjusts, and
+   on a Highlight fill it hides the HighlightText glyphs (a blank block where the label was); opted out, the explicit system
+   colours still follow the theme (S548). */
 @media (forced-colors:active) {
   .ltile.sel, body.dark .ltile.sel,
   .mode-btn.active, body.dark .mode-btn.active,
@@ -1526,7 +1528,7 @@ html[lang="he"] .tp-label{letter-spacing:normal;text-transform:none;}
   .npnl-mode-btn.active, .npnl-mode-btn.active:hover, body.dark .npnl-mode-btn.active, body.dark .npnl-mode-btn.active:hover,
   .nb-toggle[aria-pressed="true"], .nb-toggle[aria-pressed="true"]:hover, body.dark .nb-toggle[aria-pressed="true"], body.dark .nb-toggle[aria-pressed="true"]:hover,
   .help-tab.active, body.dark .help-tab.active,
-  .wiz-dot.active, .me-piece-row.active, .hk-tab.active, body.dark .hk-tab.active { background: Highlight; border-color: Highlight; color: HighlightText; }
+  .wiz-dot.active, .me-piece-row.active, .hk-tab.active, body.dark .hk-tab.active { background: Highlight; border-color: Highlight; color: HighlightText; forced-color-adjust: none; }
   .ltile.sel .lt-heb, .ltile.sel .lt-name, .ltile.sel .mark-prev, .wtab.active::after { color: HighlightText; }
   .mark-sq.active { outline: 3px solid Highlight; outline-offset: -3px; }
 }

@@ -479,9 +479,11 @@ html[lang="he"] .ll-badge { letter-spacing:normal; text-transform:none; }
 .ll-mode-btn[aria-pressed="true"] { background:var(--navy); color:#fff; border-color:var(--navy); }
 body.dark .ll-mode-btn[aria-pressed="true"] { background:#2a4070; border-color:#2a4070; }   /* the page's dark navy pair (the sidebar's edge tabs) */
 /* High Contrast (forced colours) paints every mode button Canvas on CanvasText, so the pressed one looked like the rest;
-   system colours are kept there, so it takes the theme's selection colours (both theme rules, by specificity). */
+   system colours are kept there, so it takes the theme's selection colours (both theme rules, by specificity). forced-color-adjust:none on the filled rule: Chromium paints a Canvas backplate behind every text run it adjusts, and
+   on a Highlight fill it hides the HighlightText glyphs (a blank block where the label was); opted out, the explicit system
+   colours still follow the theme (S548). */
 @media (forced-colors:active) {
-  .ll-mode-btn[aria-pressed="true"], body.dark .ll-mode-btn[aria-pressed="true"] { background:Highlight; border-color:Highlight; color:HighlightText; }
+  .ll-mode-btn[aria-pressed="true"], body.dark .ll-mode-btn[aria-pressed="true"] { background:Highlight; border-color:Highlight; color:HighlightText; forced-color-adjust:none; }
 }
 .ll-mode-sample { font-family:var(--heb-font); font-size:1.3rem; line-height:1; }
 .ll-mode-sample-cursive { font-family:var(--heb-cursive-font); }

@@ -199,9 +199,11 @@ body.dark .btn-primary:disabled:hover{background:#2a4070;}
 .pill-group .pill.active{background:var(--navy);color:var(--gold-light);}
 body.dark .pill-group .pill.active{background:#2a4070;color:var(--gold-light);}
 /* High Contrast (forced colours) paints every pill Canvas on CanvasText, so the chosen payment method looked like the
-   others; system colours are kept there, so it takes the theme's selection colours (both theme rules, by specificity). */
+   others; system colours are kept there, so it takes the theme's selection colours (both theme rules, by specificity). forced-color-adjust:none on the filled rule: Chromium paints a Canvas backplate behind every text run it adjusts, and
+   on a Highlight fill it hides the HighlightText glyphs (a blank block where the label was); opted out, the explicit system
+   colours still follow the theme (S548). */
 @media (forced-colors:active){
-  .pill-group .pill.active,body.dark .pill-group .pill.active{background:Highlight;color:HighlightText;}
+  .pill-group .pill.active,body.dark .pill-group .pill.active{background:Highlight;color:HighlightText;forced-color-adjust:none;}
 }
 /* min-height is the anti-jump floor for the three payment panels — without it the card
    resized on every tab click. 250px covered PayPal and Venmo (121px of natural content

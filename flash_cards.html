@@ -1624,12 +1624,14 @@ html[lang="he"] .beta-tag { letter-spacing: normal; text-transform: none; }   /*
 /* High Contrast (forced colours) paints every pill and tile Canvas on CanvasText, so the chosen deck, count, letters,
    vowels and emoji gender looked exactly like their neighbours (pattern forced-colors-pressed-state, S545). System colours
    are kept in that mode, so the selected ones take the theme's selection pair; both theme rules are named, by specificity,
-   and the block ends the page's own CSS so it outranks every rule above it in source order. */
+   and the block ends the page's own CSS so it outranks every rule above it in source order. forced-color-adjust:none on the filled rule: Chromium paints a Canvas backplate behind every text run it adjusts, and
+   on a Highlight fill it hides the HighlightText glyphs (a blank block where the label was); opted out, the explicit system
+   colours still follow the theme (S548). */
 @media (forced-colors:active) {
   .pill-group .pill.active, body.dark .pill-group .pill.active,
   .count-btn.active, .count-custom.active, body.dark .count-btn.active, body.dark .count-custom.active,
   .letter-tile.selected, .vtile.selected, .vlk-tile.selected,
-  .emoji-gender-btn.active, body.dark .emoji-gender-btn.active { background: Highlight; color: HighlightText; }
+  .emoji-gender-btn.active, body.dark .emoji-gender-btn.active { background: Highlight; color: HighlightText; forced-color-adjust: none; }
   .letter-tile.selected small, .vtile.selected .vname, .count-custom.active::placeholder { color: HighlightText; }
 }
 </style>

@@ -1050,16 +1050,18 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
    clause family, the chosen font and a pressed Slow read exactly like their neighbours (pattern selected-state-lost-in-forced-colors,
    S546). System colours are kept in that mode, so the selected ones take the theme's selection pair; both theme rules are named,
    by specificity — Slow's :hover twin too, since a mouse still rests on the toggle it just pressed — and the block ends the page's
-   own CSS so it outranks every rule above it in source order. */
+   own CSS so it outranks every rule above it in source order. forced-color-adjust:none on the filled rule: Chromium paints a Canvas backplate behind every text run it adjusts, and
+   on a Highlight fill it hides the HighlightText glyphs (a blank block where the label was); opted out, the explicit system
+   colours still follow the theme (S548). */
 @media (forced-colors:active) {
   .tu-tab[aria-selected="true"], body.dark .tu-tab[aria-selected="true"],
   .tu-chip.active,
   .font-opt.active, body.dark .font-opt.active,
-  .tu-slow-btn[aria-pressed="true"], .tu-slow-btn[aria-pressed="true"]:hover, body.dark .tu-slow-btn[aria-pressed="true"], body.dark .tu-slow-btn[aria-pressed="true"]:hover { background: Highlight; color: HighlightText; }
+  .tu-slow-btn[aria-pressed="true"], .tu-slow-btn[aria-pressed="true"]:hover, body.dark .tu-slow-btn[aria-pressed="true"], body.dark .tu-slow-btn[aria-pressed="true"]:hover { background: Highlight; color: HighlightText; forced-color-adjust: none; }
   .tu-chip.active .visited, .font-opt.active .font-opt-preview, body.dark .font-opt.active .font-opt-preview, .font-opt.active .font-opt-name, .font-opt.active .font-opt-attr { color: HighlightText; }
   /* The drill's three answer states lose their tints too: an armed choice (pressed, tap again to confirm) and the right answer
      take the selection pair, a wrong pick a dashed ring inside its edge — told apart with no colour of their own (S547). */
-  .tu-choice.armed, body.dark .tu-choice.armed, .tu-choice.good, body.dark .tu-choice.good { background: Highlight; border-color: Highlight; color: HighlightText; }
+  .tu-choice.armed, body.dark .tu-choice.armed, .tu-choice.good, body.dark .tu-choice.good { background: Highlight; border-color: Highlight; color: HighlightText; forced-color-adjust: none; }
   .tu-choice.armed .c-glyph, .tu-choice.armed .c-sub, .tu-choice.good .c-glyph, .tu-choice.good .c-sub { color: HighlightText; }
   .tu-choice.bad, body.dark .tu-choice.bad { outline: 3px dashed CanvasText; outline-offset: -4px; }
 }

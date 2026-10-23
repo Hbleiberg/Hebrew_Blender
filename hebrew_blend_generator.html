@@ -2496,7 +2496,9 @@ html[lang="he"] .beta-tag { letter-spacing: normal; text-transform: none; }   /*
   /* High Contrast (forced colours) paints every pressed button and tile Canvas on CanvasText, so the chosen blend type,
      colour mode, letters and columns looked exactly like their neighbours (pattern forced-colors-pressed-state, S545).
      System colours are kept in that mode, so the selected ones take the theme's selection pair; both theme rules are
-     named, by specificity, and the block ends the page's own CSS so it outranks every rule above it in source order. */
+     named, by specificity, and the block ends the page's own CSS so it outranks every rule above it in source order. forced-color-adjust:none on the filled rule: Chromium paints a Canvas backplate behind every text run it adjusts, and
+     on a Highlight fill it hides the HighlightText glyphs (a blank block where the label was); opted out, the explicit system
+     colours still follow the theme (S548). */
   @media (forced-colors:active) {
     .blend-type-btn.active, body.dark .blend-type-btn.active,
     .color-mode-btn.active, body.dark .color-mode-btn.active,
@@ -2505,7 +2507,7 @@ html[lang="he"] .beta-tag { letter-spacing: normal; text-transform: none; }   /*
     .lock-letter-tile.selected, body.dark .lock-letter-tile.selected,
     .rw-drill-btn.active, body.dark .rw-drill-btn.active,
     .sc-cols-btn.active, body.dark .sc-cols-btn.active,
-    .font-opt.active, body.dark .font-opt.active { background: Highlight; color: HighlightText; }
+    .font-opt.active, body.dark .font-opt.active { background: Highlight; color: HighlightText; forced-color-adjust: none; }
   }
 </style>
 </head>
