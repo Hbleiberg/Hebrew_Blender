@@ -2479,7 +2479,7 @@ function ntWireLists() {
     ntCur.val.extra = ex.value.slice(0, NT_MAX_FIELD);
     if (ntCur.stored || ex.value.trim()) ntSaveList();
     document.querySelectorAll('#ntRows input[data-f="ex"]').forEach(i => { i.placeholder = ntCur.val.extra; });
-    ntQueuePreview();
+    ntQueuePreviewTyping();   // the line sits on every tag, so a long list waits for the typing pause (as a cell does)
   });
   // CSV and paste
   const file = document.getElementById('ntCsvFile');
