@@ -61,6 +61,12 @@ Notes:
   always gets the fresh file, so a deploy is never hidden behind a stale cached
   page. The cache is only the offline fallback for these.
 - **Static media (icons, splash images, manifest) is cache-first** for speed.
+- **The install asks for every precached asset with `cache: 'no-cache'`** (`cache.add(new Request(url, …))`):
+  GitHub Pages sends `cache-control: max-age=600` on every file, so a plain `cache.add(url)` run by a `VERSION`
+  bump deployed within ten minutes of a visit is answered by the browser's HTTP cache and the new shell cache
+  holds the previous deploy's copies — the network-first files heal on their next online visit, the cache-first
+  ones keep the old bytes until the next bump. `no-cache` revalidates each (a 304 when unchanged). The probe:
+  `node scripts/loop/probes/S553-sw-precache-revalidates.mjs` (`--control` restores the plain `cache.add`).
 - **`js/tt-pitch-worklet.js` (the Torah Trainer's chant pitch shifter) is precached but is NOT in the
   network-first branch:** `audioWorklet.addModule()` fetches with destination `audioworklet`, not
   `script`, so it takes the cache-first catch-all — an edit to it reaches users only through a `VERSION`

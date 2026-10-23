@@ -55,7 +55,9 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE)
       // add() per-asset so a single 404 can't abort the whole install
-      .then((cache) => Promise.all(CORE_ASSETS.map((url) => cache.add(url).catch(() => {}))))
+      // each asked with cache:'no-cache', so the HTTP cache (GitHub Pages: max-age=600 on every file) is revalidated rather
+      // than believed — a bump deployed within those ten minutes of a visit otherwise precaches the previous deploy's files
+      .then((cache) => Promise.all(CORE_ASSETS.map((url) => cache.add(new Request(url, { cache: 'no-cache' })).catch(() => {}))))
       .then(() => self.skipWaiting())
   );
 });
