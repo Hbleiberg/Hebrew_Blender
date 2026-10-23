@@ -23,7 +23,8 @@ the AllTools registration of its keys, a tour, and the backend smokes.
   delete and an add, one account row per name) and refuses a taken name; Duplicate uses `ftDuplicateName`'s
   "X" → "X 1" rule; the list menu is sorted by name (the account does not keep key order).
 - **Settings:** the Parsha Emojis pattern — the stored object (`ntSetRaw`) is edited in place and `ntSet` is its
-  normalized view; sliders and colour wells update the look on `input` and write on `change`.
+  normalized view; sliders and colour wells update the look on `input` and write on `change` (the sliders are 24px
+  tall, the suite's slider floor — a native range is ~16px).
 - **`ntFlush`** (the module's `flush`) only applies the two-tab rule to both keys: a store that moved under this tab
   is adopted. `onLocalChanged('settings')` adopts and writes back; `onLocalChanged('list')` re-reads and re-renders,
   keeping the focused cell and caret, and never writes back.
@@ -48,6 +49,10 @@ the AllTools registration of its keys, a tour, and the backend smokes.
   `ntPositionSidebarTab` (the seam's `onChange`, window resize, `applyI18n`); at ≤800px there are no tabs and the
   sidebar always shows. The tab glyphs are plain `‹ ›` with no `.dir-arrow` flip: they are bidi-mirrored characters,
   so the Hebrew UI already turns them.
+- **The status lines are live regions before their first message** (`.nt-note` and `#ntFontMissing`, `role=status`):
+  empty, one leaves the flow (`position:absolute`, `margin:0` — in flow it would still take its panel's gap) but never
+  the accessibility tree; `display:none` or `hidden` on an empty one drops it from the tree, and its first message can
+  go unheard. A writer sets `textContent` only.
 - **The Tour button runs `ntTourStart`**, which shows the sidebar and opens a folded class list on screen (no memory
   save) before the shared engine, which skips any step whose target is hidden.
 

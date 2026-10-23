@@ -338,7 +338,7 @@ header p { font-size:0.78rem; color:var(--gold-light); margin-top:2px; }
 .nt-app.sidebar-hidden .nt-sb-show { display:flex; }
 body.dark .nt-sb-tab { background:#2a4070; }
 .nt-note { font-size:0.8rem; color:var(--muted); margin:4px 0 0; }
-.nt-note:empty { display:none; }
+.nt-note:empty, .font-missing-note:empty { position:absolute; margin:0; }   /* empty, a status line leaves the flow (in flow it would still take its panel's gap) but never the accessibility tree: display:none on a role=status drops it from the tree, so its first message can go unheard */
 .nt-note.warn { color:var(--danger-text); }
 .nt-btn {
   background:var(--gold); color:#1a1a1a; border:1.5px solid transparent; border-radius:6px;
@@ -753,7 +753,7 @@ body.dark #appToast { background: #0a0f1c; }
       <div class="panel-title" data-i18n="nametags.panel.look">Look</div>
       <div class="panel-body">
         <div class="nt-opt"><label for="ntFont" data-i18n="nametags.look.font">Hebrew font</label><select id="ntFont"></select></div>
-        <p id="ntFontMissing" class="font-missing-note" role="status" aria-live="polite" hidden></p>
+        <p id="ntFontMissing" class="font-missing-note" role="status" aria-live="polite"></p>
         <label class="nt-upload" title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" data-i18n-title="shared.fonts.upload_title"><svg class="hi hi-sm hi-upload" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.2V4"/><path d="M7.6 8.4 12 4l4.4 4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="shared.fonts.upload_label">Upload your own font?</span><input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPick(this)"></label>
         <label class="nt-opt"><input type="checkbox" id="ntOptBubble"><span data-i18n="nametags.look.bubble">Bubble letters (Hebrew)</span></label>
         <div class="nt-sub" id="ntBubbleSub" hidden>
@@ -2391,7 +2391,6 @@ function ntFillFonts() {
   });
   sel.value = ntSet.font;
   const note = document.getElementById('ntFontMissing');
-  note.hidden = !missing;
   note.textContent = missing ? _fbT('shared.fonts.missing_note', '"{name}" is chosen but is not on this device. Upload it under My Fonts to use it here.', { name: ntSet.font }) : '';
 }
 function ntApplyFont() {
