@@ -450,6 +450,11 @@ html[lang="he"] fieldset.nt-set legend, html[lang="he"] .nt-head { letter-spacin
 .nt-table { width:100%; border-collapse:collapse; font-size:0.9rem; }
 .nt-table th { text-align:start; font-size:0.72rem; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; color:var(--muted); padding:8px 6px; border-bottom:1px solid var(--border); white-space:nowrap; }
 html[lang="he"] .nt-table th { letter-spacing:normal; text-transform:none; }
+/* A column's heading sits where its names sit. Each cell's own dir places its text — a Hebrew name at the cell's right edge, a
+   transliteration or English name at its left — in both UIs, so those headings take the same physical side (the one place the
+   page aligns by script rather than by the UI's direction; the extra line is dir="auto", so its heading keeps start). */
+.nt-table th.nt-col-he { text-align:right; }
+.nt-table th.nt-col-tr, .nt-table th.nt-col-en { text-align:left; }
 .nt-table td { padding:3px 4px; border-bottom:1px solid var(--warm-gray); vertical-align:middle; }
 .nt-table tr:last-child td { border-bottom:none; }
 .nt-table .nt-num { width:2.4em; text-align:center; color:var(--muted); font-size:0.78rem; font-variant-numeric:tabular-nums; }
@@ -949,9 +954,9 @@ body.dark #appToast { background: #0a0f1c; }
           <thead>
             <tr>
               <th scope="col" class="nt-num">#</th>
-              <th scope="col" data-i18n="nametags.table.he">Hebrew name</th>
-              <th scope="col" data-i18n="nametags.table.tr">Transliteration</th>
-              <th scope="col" data-i18n="nametags.table.en">English name</th>
+              <th scope="col" class="nt-col-he" data-i18n="nametags.table.he">Hebrew name</th>
+              <th scope="col" class="nt-col-tr" data-i18n="nametags.table.tr">Transliteration</th>
+              <th scope="col" class="nt-col-en" data-i18n="nametags.table.en">English name</th>
               <th scope="col" class="nt-col-ex" data-i18n="nametags.table.ex">Extra line</th>
               <th scope="col"><span class="vh" data-i18n="nametags.table.remove_head">Remove</span></th>
               <th scope="col"><span class="vh" data-i18n="nametags.table.move_head">Order</span></th>
