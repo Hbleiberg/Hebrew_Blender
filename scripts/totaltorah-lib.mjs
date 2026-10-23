@@ -252,8 +252,18 @@ const NUMBER_SPELLINGS = { 1: ['ONE', 'WAN', 'JAN', 'AN', 'WON'], 2: ['TWO', 'TO
 const ALIYAH_SPELLINGS = ['ALIYA', 'ALIA', 'ALYA', 'AYA', 'ARIA'];
 const MAFTIR_SPELLINGS = ['MAFTIR', 'MAFTEER', 'MAFTIER', 'MAFTHIER', 'MOFTIR'];
 const INTRO_TAIL_RE = /\b(YEAR|CHAPTER|VERSE|VERSES|GENESIS|EXODUS|LEVITICUS|NUMBERS|DEUTERONOMY|CHAZAK|HAZAK|WITH|MAFTIR|ALIYA|ALIA|ALYA)\b/;
-// a word the announcement may go on with after the aliyah number ("and maftir for the parsha", "with chazak")
-const INTRO_TAIL_WORD_RE = /^(AND|AN|MAFTIR|MAFTEER|MAFTIER|FOR|THE|PARSHA|PARSHAT|PARASHA|PARASHAT|WITH|CHAZAK|HAZAK|YEAR|ONE|TWO|THREE|FOUR|FIVE|SIX|SEVEN|CHAPTER|VERSE|VERSES|TO|THROUGH|OF|GENESIS|EXODUS|LEVITICUS|NUMBERS|DEUTERONOMY|ALSO|PLUS)$/;
+// The words an announcement goes on with after the aliyah number, as the English model spells them: "… Aliyah 7
+// and Maftir for the parsha", "… Year 2 Aliyah 1 and Year 3 Aliyah 1" (one video for a reading two years share).
+// A strong word names a part of the announcement; a weak one only joins (the walk may pass over weak words, but
+// ends at the last strong one, so a chant word the model happens to hear as "the" never extends the cut).
+const STRONG_TAIL_WORDS = new Set(['MAFTIR', 'MAFTEER', 'MAFTIER', 'MAFTHIER', 'MOFTIR', 'MOFTIER', 'MAFTER', 'PARSHA', 'PARSHAT', 'PARASHA', 'PARASHAT', 'PARCIA', 'PARSHAH', 'PARCHA',
+  'YEAR', 'YEARS', 'HERE', 'HER', 'ERE', 'YER', 'YERE', 'YR', 'YEAH', 'HEAR', 'EAR', 'YEU',
+  'ALIYAH', 'ALIYA', 'ALIA', 'ALYA', 'ALA', 'AYA', 'ALIAH', 'ARIA', 'ALIAS', 'YA',
+  'ONE', 'WAN', 'JAN', 'WON', 'TWO', 'TOO', 'TU', 'THREE', 'THRI', 'THRE', 'TREE', 'FOUR', 'FOR', 'FIVE', 'FIF', 'SIX', 'SEX', 'SEVEN', 'SEVN', 'SEVENH',
+  'CHAZAK', 'HAZAK', 'CHAPTER', 'VERSE', 'VERSES', 'GENESIS', 'EXODUS', 'LEVITICUS', 'NUMBERS', 'DEUTERONOMY']);
+const WEAK_TAIL_WORDS = new Set(['AND', 'AN', 'THIS', 'IS', 'BOTH', 'ALSO', 'PLUS', 'THE', 'OF', 'TO', 'WITH', 'THROUGH', 'A', 'IT', 'ITS']);
+const STRONG_LONG = [...STRONG_TAIL_WORDS].filter((a) => a.length >= 5);
+const tailWordKind = (w) => (STRONG_TAIL_WORDS.has(w) ? 'strong' : WEAK_TAIL_WORDS.has(w) ? 'weak' : w.length >= 5 && STRONG_LONG.some((a) => levenshtein(w, a) <= 1) ? 'strong' : null);
 export function levenshtein(a, b) {
   const m = a.length, n = b.length;
   let prev = Array.from({ length: n + 1 }, (_, j) => j);
@@ -324,10 +334,14 @@ export async function englishIntroEnd({ src, flac, row, dur, client, legacy, max
   for (const c of r.chars || []) { if (c[0] === ' ') { if (words.length && words[words.length - 1].text) words.push({ text: '', s: null, e: null }); continue; } const w = words[words.length - 1]; if (w && w.s !== null) { w.text += c[0]; w.e = c[2]; } else { if (w) words.pop(); words.push({ text: c[0], s: c[1], e: c[2] }); } }
   const tail = [];
   let wi = words.findIndex((w) => w.s !== null && w.e >= tEnd - 0.01 && w.s <= tEnd);
+  let prevEnd = tEnd, pending = [];
   for (let k = wi + 1; k < words.length && words[k].s !== null; k++) {
     const w = words[k];
-    if (w.s - tEnd > 1.0 || !INTRO_TAIL_WORD_RE.test(w.text)) break;
-    tail.push(w.text); tEnd = w.e;
+    const kind = tailWordKind(w.text);
+    if (w.s - prevEnd > 1.0 || !kind) break;
+    prevEnd = w.e;
+    if (kind === 'weak') { pending.push(w.text); continue; }
+    tail.push(...pending, w.text); pending = []; tEnd = w.e;   // the walk ends at the last strong word
   }
   if (tail.length) { out.unconfirmed = true; out.by = 'english (unconfirmed)'; out.warning = `the announcement goes on after "${out.match.text}" ("${tail.join(' ')}") — cut after it; listen`; }
   out.tEnd = r2(tEnd);
