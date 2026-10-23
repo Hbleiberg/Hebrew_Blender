@@ -242,9 +242,16 @@ controlling). Arms: **1** a context *without* `serviceWorkers: 'block'`, load `i
 server** (not `setOffline` — see *Probe rules*) and navigate every `CORE_ASSETS` page plus one `data/`
 fetcher: 0 `pageerror`, content rendered, an unknown path as the control; **2** serve a `git archive`
 copy with `sw.js` bumped, call `reg.update()`, await `controllerchange`, read `caches.keys()`; **3**
-plant a dropped `CORE_ASSETS` entry and confirm arm 1 reports it. Boundaries: E keeps the static
-`CORE_ASSETS` and `?v=` history census, B/I keep load gates with the worker blocked, D keeps `sw.js`'s
-fetch cost, N arm 6 keeps standalone navigation dead ends.
+plant a dropped `CORE_ASSETS` entry and confirm arm 1 reports it (a 404 entry is swallowed by the install's
+`.catch`, so the cache-keys census against the list is what reports it); **4** the install through a warm
+HTTP cache: serve with `cache-control: max-age=600` (the live site's header on every file), install, swap the
+deploy in on the same port (`sw.js` bumped, a marker in a page, an icon and the worklet), `reg.update()`, read
+the new cache's bytes — `scripts/loop/probes/S553-sw-precache-revalidates.mjs` runs it (`--control`). Harness:
+an in-process server stopped by `close()` + `closeAllConnections()` is the outage; every cell in the one context
+the worker controls (a new context has no worker and reads as an outage); foreign origins fail at DNS by
+`--proxy-server=direct://` + `--host-resolver-rules` (a route cannot abort a worker's fetches). Boundaries: E
+keeps the static `CORE_ASSETS` and `?v=` history census, B/I keep load gates with the worker blocked, D keeps
+`sw.js`'s fetch cost, N arm 6 keeps standalone navigation dead ends.
 
 ## Standing arm R — Regression re-run (session start)
 
