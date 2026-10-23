@@ -679,16 +679,19 @@ async function cmdInventory(apply) {
 
 /* ================================================================== run ================================================================== */
 function readStatus() { try { return JSON.parse(readFileSync(STATUS_PATH, 'utf8')); } catch { return {}; } }
-// every ledger in the bulk folder, the main one first and each named one over it (status, and a run's "already done" check)
+// every ledger in the bulk folder (status, and a run's "already done" check): where two ledgers hold the same video,
+// the entry whose run started later wins (a --redo in a ledger of its own supersedes the book run's entry)
 function readAllStatus() {
   const all = {};
   if (!existsSync(BULK_DIR)) return all;
+  const overlay = (s) => { for (const [id, e] of Object.entries(s)) if (!all[id] || String(e.started || '') >= String(all[id].started || '')) all[id] = e; };
   for (const f of ['status.json', ...readdirSync(BULK_DIR).filter((x) => /^status-[\w-]+\.json$/.test(x)).sort()]) {
     const p = join(BULK_DIR, f);
     if (p === STATUS_PATH || !existsSync(p)) continue;
-    try { Object.assign(all, JSON.parse(readFileSync(p, 'utf8'))); } catch { /* a half-written ledger: skipped */ }
+    try { overlay(JSON.parse(readFileSync(p, 'utf8'))); } catch { /* a half-written ledger: skipped */ }
   }
-  return Object.assign(all, readStatus());   // this run's own ledger last
+  overlay(readStatus());
+  return all;
 }
 function writeStatus(s) { mkdirSync(BULK_DIR, { recursive: true }); writeFileSync(STATUS_PATH, JSON.stringify(s, null, 1) + '\n'); }
 function readManifest() { try { return JSON.parse(readFileSync(MANIFEST, 'utf8')); } catch { return null; } }
