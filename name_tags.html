@@ -477,6 +477,10 @@ body.nt-carrying, body.nt-carrying * { cursor:grabbing !important; }
 .nt-prev-meta span:empty { display:none; }
 #ntPreview { --nt-k:0.5; display:flex; flex-direction:column; align-items:center; gap:18px; }
 .nt-frame { position:relative; direction:ltr; overflow:hidden; flex-shrink:0; width:calc(var(--sw) * var(--nt-k)); height:calc(var(--sh) * var(--nt-k)); background:#fff; border:1px solid var(--border); box-shadow:var(--shadow-md); }
+/* A sheet off-screen skips its style, layout and paint: every change rebuilds all the sheets, so a long list's slider
+   drag otherwise lays out every tag on every frame. The frame's own size is explicit, so nothing moves; print draws
+   every sheet (the print block below). */
+.nt-frame { content-visibility:auto; }
 .nt-frame.nt-sample { opacity:0.55; }
 /* The paper itself: physical coordinates (a sheet of labels is a coordinate system, pinned LTR in both UIs like the
    keyboard's qwerty rows), ink in literal light-palette colours whatever the screen theme. */
@@ -657,7 +661,7 @@ body.dark #appToast { background: #0a0f1c; }
   body { display:block !important; min-height:0 !important; }
   .nt-app, .nt-page, .nt-preview { display:block !important; padding:0 !important; margin:0 !important; border:none !important; }
   #ntPreview { display:block !important; }
-  .nt-frame { width:auto !important; height:auto !important; border:none !important; box-shadow:none !important; overflow:visible !important; opacity:1 !important; }
+  .nt-frame { width:auto !important; height:auto !important; border:none !important; box-shadow:none !important; overflow:visible !important; opacity:1 !important; content-visibility:visible !important; }
   .nt-frame.nt-sample { display:none !important; }
   .nt-frame + .nt-frame { break-before:page; }
   .nt-sheet { position:relative !important; transform:none !important; width:var(--aw) !important; height:calc(var(--ah) - 0.02in) !important; }
