@@ -1652,25 +1652,32 @@ function ntImportRows(table) {
     for (const f in NT_HEADERS) if (!(f in map) && NT_HEADERS[f].test(h)) { map[f] = i; break; }
   });
   if (Object.keys(map).length) body = table.slice(1);
-  else {
-    const cols = Math.max(0, ...table.map(r => r.length)), latin = [];
+  if (!('he' in map) && !('en' in map)) {   // no column is named for a name (no header row, or a header row naming "Full Name" / "שם מלא" / "תלמיד" with the class): find them by what they hold
+    const taken = new Set(Object.values(map));
+    const cols = Math.max(0, ...body.map(r => r.length)), latin = [];
     for (let i = 0; i < cols; i++) {
-      const vals = table.map(r => (r[i] || '').trim()).filter(Boolean);
+      if (taken.has(i)) continue;
+      const vals = body.map(r => (r[i] || '').trim()).filter(Boolean);
       if (!vals.length) continue;
       if (vals.filter(v => NT_HEB_RE.test(v)).length * 2 >= vals.length) { if (!('he' in map)) map.he = i; }
       else if (vals.some(v => /[A-Za-z]/.test(v))) latin.push(i);
     }
     if (latin[0] != null) map.en = latin[0];
-    if (latin[1] != null) map.tr = latin[1];
+    if (latin[1] != null && !('tr' in map)) map.tr = latin[1];
   }
   const get = (r, f) => (map[f] != null ? String(r[map[f]] || '') : '').replace(/\s+/g, ' ').trim().slice(0, NT_MAX_FIELD);
   const out = [];
   body.forEach(r => {
-    const row = { he: get(r, 'he'), en: [get(r, 'en'), get(r, 'last')].filter(Boolean).join(' ').slice(0, NT_MAX_FIELD) };
+    let he = get(r, 'he'), en = [get(r, 'en'), get(r, 'last')].filter(Boolean).join(' ').slice(0, NT_MAX_FIELD);
+    // A name in the other script's column — a Hebrew first and last name under "שם פרטי / שם משפחה" (a first name is a
+    // name, whatever its letters), "דָּוִד David" in one Name column, the two columns swapped — is sorted by script, as a
+    // Dashboard roster line is.
+    if ((NT_HEB_RE.test(en) && !NT_HEB_RE.test(he)) || (!en && /[A-Za-z]/.test(he))) { const split = ntSplitName(he + ' ' + en); he = split.he; en = split.en; }
+    const row = { he, en };
     const tr = get(r, 'tr'), ex = get(r, 'ex');
     if (tr) row.tr = tr;
     if (ex) row.ex = ex;
-    if (!ntRowEmpty(row)) out.push(row);
+    if (row.he || row.en || row.tr) out.push(row);   // a row with only a class or room is not a student
   });
   return out;
 }

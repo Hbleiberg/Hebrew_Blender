@@ -131,8 +131,12 @@ Both are **one-time copies**; nothing links a list to its source afterwards.
 
 `ntParseDelimited` is `scripts/build-locales.js`'s RFC-4180 parser with the delimiter sniffed (tab, semicolon,
 comma). `ntImportRows` finds columns by an English or Hebrew header (`NT_HEADERS`: Hebrew/עברית, English/Name/First
-plus Last, Transliteration/Pronunciation/תעתיק, Extra/Class/Grade/כיתה) or, headerless, by content (the column of
-Hebrew letters, then the first and second Latin columns). A file is decoded as UTF-8, falling back to windows-1255.
+plus Last, Transliteration/Pronunciation/תעתיק, Extra/Class/Grade/כיתה) and, when no header names a name column
+(no header row, or "Full Name" / "שם מלא" / "תלמיד" beside a class), by content among the columns left (the column of
+Hebrew letters, then the first and second Latin columns). A name in the other script's column — Hebrew first and last
+names under שם פרטי / שם משפחה, "דָּוִד David" in one Name column, the two columns swapped — is sorted by script with
+`ntSplitName`, as a Dashboard roster line is; a row with no name and no transliteration (a class column alone) is not a
+student. A file is decoded as UTF-8, falling back to windows-1255.
 The import offers Add / New list (named from the file) / Replace (a `confirm()` naming the account-wide effect when
 signed in); an import that brings extra-line values turns the extra line on.
 
