@@ -174,7 +174,8 @@
 - **Archived full text (latest compaction copy):** - **`hidden-input-anchored-outside-its-scroller`** (NEW S499 C; dashboard's 25 drawer radios FIXED `55891185`, torah fixed outside the loop; latent: `.vh-file` ×4, its label on screen on every path measured): ACTIVE, streak 0. Detection: a `position:absolute|fixed` focusable input with a scroll container between it and its containing block (`c499/anchor.mjs`; plant: torah's `.radio-group{position:static}` → 53); runtime: Tab/Shift+Tab, the focused label inside the scroller.
 
 ## `hebrew-faux-italic`
-- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S527 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S552 · **Streak:** 1 · **Detector:** recipe
+- **Record (S552):** name_tags clean: 0 of 1,253 / 1,240 visible elements with Hebrew in a synthesized italic (EN light 1280, HE dark 800; a planted `<i>` fired).
 - **Shape:** Detection: `h526/ital.
 - **Detection:** `h526/ital.mjs` (`L=en` = EN arm; a hidden plant fires). — `h526/ital.mjs` is a scratchpad path that was never committed: port it to `scripts/loop/detect-<id>.mjs` (with `--plant`) at the next A, or the row goes DRAFT.
 - **Record (ledger row at S544):** - **`hebrew-faux-italic`** (NEW S494 M; S526 closed the HE census: folder tree `9515b0dc`, dictionary `dd291fd5`; S527 the EN arm's one, dictionary `237f8547`; open 0): ACTIVE, streak 0. Detection: `h526/ital.mjs` (`L=en` = EN arm; a hidden plant fires).
@@ -229,7 +230,8 @@
 - **Record (ledger row at S544):** - **`placeholder-keeps-the-browser-gray`** (NEW S470 `45a3073e`): ACTIVE, streak 0. Detection: `f470/ph.mjs` < 4.5:1 (plant 1.3:1).
 
 ## `header-wrap-gate-below-its-ceiling`
-- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S520 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S552 · **Streak:** 1 · **Detector:** recipe
+- **Record (S552):** name_tags clean: 1 px 720 → 540 × EN/HE × fine/coarse in the real faces — no overflow above the gate, the first wrap at exactly 576 / 585; a nowrap plant fired in each. Read the wrap against `.htitle`'s bottom, not the `h1`'s (the centred controls dip below a two-line title from 696 down).
 - **Shape:** Detection: `n520/gates2.
 - **Detection:** `n520/gates2.mjs` (1px 320-1000, EN/HE × themes, mouse+touch, real fonts); HEAD the control. — `n520/gates2.mjs` is a scratchpad path that was never committed: port it to `scripts/loop/detect-<id>.mjs` (with `--plant`) at the next A, or the row goes DRAFT.
 - **Record (ledger row at S544):** - **`header-wrap-gate-below-its-ceiling`** (NEW S478 M; ×8 `92a21164`; S489 `f620c768`; S520 touch ×8 `186ea5f4`): ACTIVE, streak 0. Detection: `n520/gates2.mjs` (1px 320-1000, EN/HE × themes, mouse+touch, real fonts); HEAD the control.
@@ -312,7 +314,8 @@
 - **Archived full text (latest compaction copy):** - **`cdn-library-parser-blocking-for-one-action`** (NEW S452 D; generator `82bbe313`, FM `d01a33cd`): ACTIVE, streak 0. A parser-blocking CDN `<script src>` in `<head>` for one action. Detection: `grep -n '<script[^>]*src="https\?://' *.html | grep -v ' async\| …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `dark-navy-fill-matches-its-ground`
-- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S464 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S552 · **Streak:** 0 · **Detector:** recipe
+- **Record (S552):** name_tags: the restore dialog's Merge button 1.03:1 on its dark card — the rule's five carriers; the hub, generator, dashboard and flash cards FIXED `c1f42ae` with their pressed Backup toggle (1.03–1.14:1 beside the unpressed one), name_tags' Merge button a candidate (the governor). Clean otherwise over 72–112 controls × 6 states × 2 dark cells (the panel titles' 1.15:1 are the suite's dark look; a ground-coloured plant fired).
 - **Shape:** Detection (`g451/navy.
 - **Detection:** every visible — `g451/navy.mjs` is a scratchpad path that was never committed: port it to `scripts/loop/detect-<id>.mjs` (with `--plant`) at the next A, or the row goes DRAFT.
 - **Record (ledger row at S544):** - **`dark-navy-fill-matches-its-ground`** (NEW S450 M; flash ×2 `c9e2bc2b`, `68055510`; S451 census: dictionary `5deb5472`, generator `f9ca0909`; S464 keyboard block ×4 `f98367f8`): ACTIVE, streak 0. Detection (`g451/navy.mjs`): every visible
@@ -450,13 +453,15 @@
 - **Archived full text (latest compaction copy):** - **`settings-lost-across-a-load`** (NEW S412; dictionary ×4 FIXED S482 `8d99ad93`, flash FIXED S491 `adce6574`; 0 open): ACTIVE, streak 0. A setting comes back changed after a reload. Detection (`h482/dictsave.mjs`): change each control by a real click, wait out the save, reload, require it …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `live-region-display-none-while-empty`
-- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S530 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S552 · **Streak:** 0 · **Detector:** recipe
+- **Record (S552):** name_tags: 4 hits — `.nt-note:empty{display:none}` on `#ntListNote`, `#ntRenameNote`, `#ntPrintNote`, `#ntTrNote` (`#ntTentNote` the same rule, text at load), CDP `notRendered` on each while empty; a planted hidden `role=status` fired. Candidate (the governor), one concern with `#ntFontMissing`.
 - **Detection:** `:empty{display:none}` on a `role=status`/`aria-live` line, then CDP AX on it empty (`notRendered` = hit); — `a530/fix1.mjs` is a scratchpad path that was never committed: port it to `scripts/loop/detect-<id>.mjs` (with `--plant`) at the next A, or the row goes DRAFT.
 - **Record (ledger row at S544):** - **`live-region-display-none-while-empty`** (S408; **all 4 FIXED `efbc98a` S409**; **S530 4 more FIXED `66ecdc9f`, `a530/fix1.mjs`**): ACTIVE, streak 0. Detection: `:empty{display:none}` on a `role=status`/`aria-live` line, then CDP AX on it empty (`notRendered` = hit);
 - **Archived full text (latest compaction copy):** - **`live-region-display-none-while-empty`** (S408; **all 4 FIXED `efbc98a` S409**; **S530 4 more FIXED `66ecdc9f`, `a530/fix1.mjs`**): ACTIVE, streak 0. Detection: `:empty{display:none}` on a `role=status`/`aria-live` line, then CDP AX on it empty (`notRendered` = hit); flex-wrap rows need `position:absolute`, not height.
 
 ## `dark-base-rule-outranks-variant`
-- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S408 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S552 · **Streak:** 0 · **Detector:** recipe
+- **Record (S552):** name_tags: 1 hit — the edge tab (`body.dark .nt-sb-tab` outranks `.nt-sb-tab:hover`; 28 controls hovered in both themes, the plant fired) — candidate (the governor); the same shape pre-empted on the four carriers' new dark Merge rule by its hover twin (`c1f42ae`).
 - **Shape:** Detection: `m408/darkvariant.
 - **Detection:** `m408/darkvariant.py` (comments stripped), then drive the state by a real click in both themes. — `m408/darkvariant.py` is a scratchpad path that was never committed: port it to `scripts/loop/detect-<id>.mjs` (with `--plant`) at the next A, or the row goes DRAFT.
 - **Record (ledger row at S544):** - **`dark-base-rule-outranks-variant`** (S408; FIXED `4a5d353`, `b26f7d6`; EXEMPT the dead `.preset-item.drag-over` ×2): ACTIVE, streak 0. Detection: `m408/darkvariant.py` (comments stripped), then drive the state by a real click in both themes.
@@ -666,7 +671,8 @@
 - **Archived full text (latest compaction copy):** - **dark-print-shadow-slab**: ACTIVE (registered S279: dictionary `#appToast`, flash `.panel`). **S385 (Pass A): 2 MORE FIXED — trope `.tu-view` (`7be7591`, `var(--shadow-sm)` = rgba(0,0,0,.4) in dark over 4,466,776 px², the largest slab this pattern has produced; the print …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `pinned-english-prose-in-rtl-paragraph`
-- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S277 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S552 · **Streak:** 1 · **Detector:** recipe
+- **Record (S552):** name_tags clean: the HE UI's one sentence mixing Hebrew and Latin ("… ב־roster.csv.") ends with its period at the left; a pinned `<span dir=ltr>Avery 5395.</span>` plant fired.
 - **Shape:** Detection: Range x-order of the phrase and its period in the HE UI; exempt lists, single runs, print.
 - **Detection:** Range x-order of the phrase and its period in the HE UI; exempt lists, single runs, print.
 - **Record (ledger row at S544):** - **pinned-english-prose-in-rtl-paragraph** (NEW S277; FIXED ×3; contact's server note open): ACTIVE, streak 0. Detection: Range x-order of the phrase and its period in the HE UI; exempt lists, single runs, print.
@@ -776,7 +782,8 @@
 - **Archived full text (latest compaction copy):** - **dark-override-outranks-hover**: ACTIVE. **Re-swept 2026-09-09 (S357 Pass A): static detector 0/14 pages; runtime 34 cells on the 8 fixed carriers, every one with real-hover feedback (light as the control) — hits 0, clean streak 1.** S354–S356: 8 carriers fixed. Detection: …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `contrast-below-AA-on-a-tinted-or-coloured-plate`
-- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S501 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S552 · **Streak:** 0 · **Detector:** recipe
+- **Record (S552):** name_tags: 1 hit — the carried row's number 3.91:1 on the gold drag tint in dark (light 5.32); every other text node ≥ 5.02 dark / 5.38 light across 13 states × 4 cells, the tags' text on the six pastels ≥ 3; plants 1.39 / 1.64 fired. Candidate (the governor).
 - **Record (ledger row at S544):** - **contrast-below-AA-on-a-tinted-or-coloured-plate**: **S501 `[DEFAULT]` on the dark active font tile, dashboard + torah `0053db78` (3.71→5.56:1).** **S488 dashboard ribbon `5da9ecbe`.** **S422: torah's vowel Letter on the trope tint FIXED `e55b811` (1.85:1; streak 0).**
 - **Archived full text (latest compaction copy):** - **contrast-below-AA-on-a-tinted-or-coloured-plate**: **S488: the dashboard's cycle ribbon 4.13:1 dark FIXED `5da9ecbe`.** **S422: torah's vowel Letter on the trope tint FIXED `e55b811` (1.85:1; streak 0).** **re-swept 2026-08-23 (S249 Pass M, `flash_cards.html` — card front AND back, results screen, and setup screen with every …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
 

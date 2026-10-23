@@ -51,6 +51,11 @@ the AllTools registration of its keys, a tour, and the backend smokes.
 - **The Tour button runs `ntTourStart`**, which shows the sidebar and opens a folded class list on screen (no memory
   save) before the shared engine, which skips any step whose target is hidden.
 
+- **The class list's headings follow their columns' script.** Each cell's own `dir` places its text — a Hebrew name at the
+  cell's right edge, a transliteration or English name at the left — in both UIs, so the headings take the same physical
+  side (`th.nt-col-he` right, `th.nt-col-tr` / `th.nt-col-en` left): the page's one alignment by script rather than by the
+  UI's direction, like the sheets' pinned LTR. The extra line is `dir="auto"`, so its heading keeps `start`.
+
 ## Transliteration
 
 The Dictionary's lazy loader (`window.HebrewTransliterator`, `hebrew-transliteration@2.9.1` from esm.sh, jsDelivr as
@@ -136,7 +141,8 @@ plus Last, Transliteration/Pronunciation/תעתיק, Extra/Class/Grade/כיתה)
 Hebrew letters, then the first and second Latin columns). A name in the other script's column — Hebrew first and last
 names under שם פרטי / שם משפחה, "דָּוִד David" in one Name column, the two columns swapped — is sorted by script with
 `ntSplitName`, as a Dashboard roster line is; a row with no name and no transliteration (a class column alone) is not a
-student. A file is decoded as UTF-8, falling back to windows-1255.
+student. A file is decoded as UTF-16 when it carries a byte-order mark or its NULs sit on one side of every byte pair (Excel's
+"Unicode Text"), else as UTF-8, falling back to windows-1255.
 The import offers Add / New list (named from the file) / Replace (a `confirm()` naming the account-wide effect when
 signed in); an import that brings extra-line values turns the extra line on.
 
