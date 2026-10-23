@@ -86,13 +86,17 @@ transliterations still print.
   1 and 4 a page turn the paper (`NT_PLAIN`). **Desk tent cards** (plain paper, 1 or 2 a page) split each cell at a
   dashed fold line and turn the top face 180°.
 - **Avery labels** (`NT_AVERY`, Letter, `@page` margin 0, labels placed from the paper's edge): 5165 (1), 5126 (2),
-  5168 (4 — its labels are taller than wide, so the tag is laid out turned 90°), 5164 (6), 5395 (8, name badges),
+  5168 (4 — its labels are taller than wide, so the tag is laid out turned 90°, placed at the label's centre by its own offsets
+  in inches: a percent translate on that bordered, turned box made Chrome's print draw a phantom border side down to the
+  paper's edge and shift the lower labels), 5164 (6), 5395 (8, name badges),
   5163 (10). Sizes, first-label offsets and pitches are the gLabels template database's; measured from a printed PDF
   the label corners land within the pixel and corner-radius tolerance. *Print the label outlines too* adds the
   label shapes to the print (a test page on plain paper).
 - **The preview is the print.** Each sheet is drawn at its real size in a frame scaled by `--nt-k`; print CSS drops
   the scale and everything around the sheets, and `#ntPageSize` holds the `@page` rule `ntPageStyle` writes on every
-  render. The sheet is laid out in physical coordinates (pinned `direction: ltr`, like the keyboard's qwerty rows),
+  render. On paper each sheet's box is a hair (0.02in) shorter than the printable area so rounding never adds a blank
+  page, and its clip reaches that hair back (`overflow:clip` with `overflow-clip-margin`), so the last row's bottom
+  border prints as whole as the first row's top; a browser without the clip margin keeps the sliver. The sheet is laid out in physical coordinates (pinned `direction: ltr`, like the keyboard's qwerty rows),
   and its ink and paper are literal light colours in either theme.
 - **One render a frame, and a pause while typing into a long list.** Every change queues one rebuild of all the
   sheets on the next frame (`ntQueuePreview`); a keystroke in a list of more than 40 students — in a cell or in the

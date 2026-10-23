@@ -94252,3 +94252,33 @@ _(prior)_ **Next session (S548):** **PR `claude/friendly-newton-nq3mkj` (S545–
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 _(prior)_ **Next session (S549):** **PR `claude/friendly-newton-nq3mkj` (S545–S548, #359): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1076**, FM **5.59**, corpus ?v=7. ⚑ drift: main=44fc930 sw=v1076 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest: surface name_tags never had D/G/H/M (four never-audited cells outrank every suite pass; the pointer picks D first, then G, H, M); suite A (S530), E (S531), L (S532), V (never — its first run, `loop-passes.md` → V). ⚑ Keep-alive #41 (10-23): confirm. ⚑ Seeds: 48. ⚑ 27 DRAFT pattern rows still need a recipe or retirement at the next A. ⚑ `selected-state-lost-in-forced-colors` open carriers: `.hk-tab.active` on dictionary + resources, `.ivrit-mode-btn.active` on flash, generator, index (candidates). ⚑ HC text backplate: the pattern's nine earlier pages need `forced-color-adjust:none` on their filled selected rules (P3 candidate; `c548/bp.mjs` is the receipt) — the next A or C. ⚑ name_tags' sliders and fold button (P3 `sub-floor touch target`) wait on the governor — one touch next time. ⚑ The S546 P3 (the false "replaced" note on five pages) is still the maintainer's call. ⚑ Maintainer: O's Bash permission rule (`.claude/settings.json`); a CI workflow running `closeout.mjs --static`; translit second source; sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; gates 2–4 (+ field borders, retry copy).
+
+
+<!-- archived by compact-ledger at the S551 boundary, 2026-10-23 -->
+## Compaction (S551, 2026-10-23) — moved verbatim from the live ledger
+
+### from Candidates (prioritized, top = next)
+
+- [ ] P4 (**NEW S550 G — a shared-block change: the `.ivrit` engine's six carriers + the hub; pattern `fixed-surface-missing-from-the-print-hide-list`**) | the `.ivrit` engine, js/ivrit-account.js, js/ivrit-saves.js | **The Merge/Replace ask overlay (an inline-styled fixed div with no id) and the account and saves modals have no print rule**: Ctrl+P with one open prints it over every sheet (name_tags: 96k px and its text on paper). | found S550
+
+### from Done
+
+- [x] 2026-10-23 | `887e8c5` | parsha_emojis.html | (S550) **A coloring sheet off-screen in the preview skips its layout and paint** (`content-visibility:auto` on the preview's pages and papers; pattern `offscreen-sheets-laid-out-on-every-rebuild`). | 54 chosen, medians of 3 alternated loads @4×: the open 2,089 → 1,739 ms of long tasks, a 20-move synopsis drag + refit 1,374 → 826; HE dark 800 and 2-a-sheet alike; verdicts, markup, note, stored options and the 54-page run identical; a scroll to the end +153–247 ms @4× (0 @1×); 36/54 skipped
+
+- [x] 2026-10-23 | `970d7db` | name_tags.html | (S550) **The turned Avery 5168 labels print without a phantom border strip** (the tag centred by its own offsets in inches, not a percent translate). | HEAD's PDF: a navy strip from the two lower labels to the sheet's edge on pages 1–5 of 6, those tags' box at 0.75–3.75in where the preview (and page 6) had 0.56–3.94; tree: every page 0.56–3.94, ink bottom 10.45in; screen rects within 0.02px; 0 errors
+
+- [x] 2026-10-22 | (S545 close-out) | branch/deploy note | **S545 = N on letter_learner (first): FOUND 1, FIXED 1 (+3 candidates).** Branch `claude/friendly-newton-nq3mkj`, draft PR; drift: only the S544 merge. sw v1072→v1073; no FM bump. Unattended: no gate asked; LL's gated rows stand.
+
+- [x] 2026-10-22 | `09ff400` | torah_trainer.html | (S545) **The staff's Try again keeps the keyboard's focus** (`button-focus-lost-to-its-own-rebuild`). | body 2/2 → new Try again / Tune 2/2
+
+- [x] 2026-10-22 | `6f51774` | hebrew_blend_generator.html | (S545) **Pressed blend type, colour mode and letter tiles show in HC** (`selected-state-lost-in-forced-colors`). | 0.1–5 → 78–138
+
+- [x] 2026-10-22 | `bbf201c` | flash_cards.html | (S545) **Chosen deck, count, letters and vowels show in HC** (`selected-state-lost-in-forced-colors`). | 1–7 → 54–158
+
+- [x] 2026-10-22 | `1c24c5f` | letter_learner.html | (S545) **The install hint steps aside while a card, the popup or the tour is open** (`install-banner-over-a-sheet's-bottom-controls`). | 4/4 covered → 0/4
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- G print & export fidelity (one tool): 2026-10-23 (**S550 — name_tags' first G: 28 layouts × EN light / HE dark = 56 PDFs (pages, paper, margins, junk, dark = light; plants 3/3), the last row's border at 300 dpi, 9 clipping cells by A/B rasters (plant fired), 12 fixed-surface states, the CSV, .ivrit and AllTools round trips byte-equal, the font note's AX tree. FOUND 4, FIXED 2 (+2 P4, 1 suite P4). G-next: generator (S392), flash (S423).**)
+
+_(prior)_ **Next session (S550):** **PR `claude/loop-s549-nametags-d` (S549, #362): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1078**, FM **5.59**, corpus ?v=7. ⚑ drift: main=ac6b96b sw=v1078 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest: surface name_tags never had G/H/M (the pointer picks G first, then H, M); suite A (S530), E (S531), L (S532), V (never — its first run). ⚑ Keep-alive #41 (10-23, ~09:38 UTC): confirm (#40 green at S549's start). ⚑ Seeds: 48. ⚑ 27 DRAFT pattern rows still need a recipe or retirement at the next A. ⚑ `selected-state-lost-in-forced-colors`: census complete — the next C spot-checks one page with `d549/hc.mjs`'s method (findings S549), no re-sweep. ⚑ `offscreen-sheets-laid-out-on-every-rebuild` (NEW S549 D): Parsha Emojis' popup (54 sheets; the S538 P4) is the next carrier to measure, then the generator's chunked worksheet. ⚑ name_tags' sliders + fold button (P3) and its three new P4s wait on the governor — one touch next time. ⚑ The S546 P3 (the false "replaced" note) is still the maintainer's call. ⚑ Maintainer: O's Bash permission rule; a CI workflow running `closeout.mjs --static`; translit second source; sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; the suite locale's size (S549, Awaiting); gates 2–4 (+ field borders, retry copy).

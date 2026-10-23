@@ -20,11 +20,12 @@
 ## Active, draft and guard patterns (164; newest first, as the ledger lists them)
 
 ## `offscreen-sheets-laid-out-on-every-rebuild`
-- **Status:** ACTIVE · **Owner:** D · **Consequence:** normal · **Last:** S549 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** D · **Consequence:** normal · **Last:** S550 · **Streak:** 0 · **Detector:** recipe
 - **Shape:** A multi-sheet preview rebuilds every sheet on every change (a slider's `input`, a tile, a keystroke) and the browser then styles, lays out and paints the sheets off-screen too, so the cost of one gesture grows with the whole document rather than the part in view: a 25-sheet Name Tags list spent ~80 ms a frame at 1× (650 ms a frame at 4×) on a size-slider drag with 0 of 25 frames in the viewport.
 - **Detection:** `d549/prof.mjs` + `ab.mjs` — a `devtools.timeline` trace of one real slider move (`UpdateLayoutTree` + `Layout` against the count of frames intersecting the viewport, read by `getBoundingClientRect`) and the long tasks per gesture on alternated fresh loads of HEAD and the tree, medians of 3, at 1× and 4×; a planted 300 ms busy loop pressed by a real click is the control. A carrier is a container of N sheet-sized frames where the trace's layout time scales with N while the frames in view stay ≤ 2.
 - **Fix shape:** `content-visibility:auto` on the per-sheet frame whose own size is explicit (the column's height and scroll never change), with `content-visibility:visible !important` in the page's print block so every sheet prints; verify the markup, the print PDF (pages + text), the geometry and the layer count equal HEAD's — the screen pixels shift by a sub-pixel phase under paint containment (trap 343), so a pixel-identical screenshot is the wrong identity test.
-- **Carriers:** name_tags `.nt-frame` FIXED S549 `2499371` (the drag 646 → 0 ms of long tasks at 1×, 7,000 → 3,035 at 4×). Next to measure: Parsha Emojis' coloring-sheets popup (54 sheets; the S538 P4 "a size drag relays out all 54 preview sheets per value"), then the generator's chunked worksheet (`flushWorksheetBuild`).
+- **Carriers:** name_tags `.nt-frame` FIXED S549 `2499371` (the drag 646 → 0 ms of long tasks at 1×, 7,000 → 3,035 at 4×); Parsha Emojis' coloring-sheets popup FIXED S550 `887e8c5`. Next to measure: the generator's chunked worksheet (`flushWorksheetBuild`).
+- **Record (S550):** second carrier FIXED — Parsha Emojis' coloring-sheets popup `887e8c5` (`content-visibility:auto` on the preview's pages and papers only: the fit measures off-screen clones of the same class, so the selector is scoped to `#etCsPages`; the print run is a separate area, so no print pin). 54 chosen @4×, medians of 3: the open 2,089 → 1,739 ms, a 20-move drag + refit 1,374 → 826; 36/54 skipped; identical verdicts, markup, note, print run; a scroll to the end now costs 153–247 ms @4× (0 @1×), the sheets rendering as they come into view. Next: the generator's chunked worksheet. Trap 346: a carrier's `checkVisibility` is asked of a descendant.
 - **Record (ledger row at S549):** - `offscreen-sheets-laid-out-on-every-rebuild` | ACTIVE | owner D | det: recipe | last S549 | streak 0
 
 ## `dated-surface-walk`
@@ -49,9 +50,10 @@
 - **Record (ledger row at S548):** - **`selected-state-lost-in-forced-colors`** (NEW S541 C; ×12 fixed (S543: resources, contact; S545: flash `bbf201c`, generator `6f51774` — the block ends the page's own CSS so source order cannot outrank it; S546: trope `ce31c96` tabs, family chips, font cards, Slow (its `:hover` twin named), dictionary `e9759f0` mode buttons; S547: FM `d6be009` letter tiles, step and category tabs, English case, brushes, node modes and toggles, help tabs, wizard dots, piece rows, mark tiles (a ring), trope drill `4fa1538` armed / right / wrong (a dashed ring for the wrong pick); S548: name_tags `ebf8dd1` per-page tile, Backup mode, keyboard tab, dashboard `c89eedf` drawer tab, font, vowel scheme, emoji set, Backup mode, keyboard tab); the S541 census's pages all fixed; open: `.hk-tab.active` on dictionary + resources, `.ivrit-mode-btn.active` on flash, generator, index): ACTIVE, streak 0. A state drawn only by colour flattens in forced colours. Detection: `c541/fcensus.mjs`, then computed styles.
 
 ## `live-region-shown-with-its-text`
-- **Status:** ACTIVE · **Owner:** G · **Consequence:** normal · **Last:** S537 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** G · **Consequence:** normal · **Last:** S550 · **Streak:** 0 · **Detector:** recipe
 - **Shape:** A status region made or un-hidden with its first message.
 - **Detection:** findings S537 (grep + CDP).
+- **Record (S550):** 2 hits by the recipe on the two font-note carriers the S537 fix left (both toggled `hidden` with the sentence): the generator FIXED `2b86472` (`genfont.mjs`: AX ignored → `status` at load, the panel's layout identical); name_tags' `#ntFontMissing` open (Candidate, the governor's third touch). The recipe's probe stays `Accessibility.getPartialAXTree` on the node before any text, with the panel that holds it opened first (a collapsed panel reads ignored for every note).
 - **Record (ledger row at S544):** - **`live-region-shown-with-its-text`** (NEW S537; `61762cf` ×8, `6d095c0` ×3): ACTIVE, streak 0. A status region made or un-hidden with its first message. Detection: findings S537 (grep + CDP).
 
 ## `abs-child-escapes-its-scroller`
@@ -115,9 +117,10 @@
 - **Archived full text (latest compaction copy):** - **`infinite-box-shadow-pulse-repaints-every-frame`** (NEW S510 D; letter_learner FIXED `fd6cfdc`; S511 the 6 carriers FIXED `f1cfd83` — open 0): ACTIVE, streak 0. Detection: `grep -n attnPulse *.html` → keyframes on `box-shadow`; `i511/pulse.mjs` paints per 3 s (0 = fixed; the dashboard's clock counts 6). Exempt: a once-only flash on an overflow-clipped card (trope `attnPulseShadow`).
 
 ## `new-page-print-block-without-the-ink-remap`
-- **Status:** ACTIVE · **Owner:** G · **Consequence:** normal · **Last:** S509 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** G · **Consequence:** normal · **Last:** S550 · **Streak:** 1 · **Detector:** recipe
 - **Shape:** Detection: `--text:` inside the print block of every page with dark tokens; `g509/g509.
 - **Detection:** `--text:` inside the print block of every page with dark tokens; `g509/g509.mjs` ink dark vs light. — `g509/g509.mjs` is a scratchpad path that was never committed: port it to `scripts/loop/detect-<id>.mjs` (with `--plant`) at the next A, or the row goes DRAFT.
+- **Record (S550, G name_tags):** clean — the print block has no `--text:` remap and needs none: everything themed is hidden on paper and the sheets' ink is literal (dark = light 56/56).
 - **Record (ledger row at S544):** - **`new-page-print-block-without-the-ink-remap`** (NEW S509 G; letter_learner FIXED `be4a13f`; 14 others clean): ACTIVE, streak 0. Detection: `--text:` inside the print block of every page with dark tokens; `g509/g509.mjs` ink dark vs light.
 
 ## `page-drops-a-field-it-cannot-apply`
@@ -364,9 +367,10 @@
 - **Archived full text (latest compaction copy):** - **`button-focus-lost-to-its-own-rebuild`** (**S542 dictionary corpus Try again ×2 `72b005c1`, parsha_emojis' new Try again built to it `20823f85`; S513 FM glyph tiles `a54e6d2`; S500 hebrew-keyboard tabs + layout, 4 carriers `1c701fc9`; S499 torah Try again ×2 `80c0a440`; S488 trope Try again ×2 `183605ba`; S483 hub `ab1a235e`; S474 flash Return to Options `3235f8eb`; S473 …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `dark-literal-escapes-the-print-tokens`
-- **Status:** ACTIVE · **Owner:** G · **Consequence:** normal · **Last:** S479 · **Streak:** 1 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** G · **Consequence:** normal · **Last:** S550 · **Streak:** 2 · **Detector:** recipe
 - **Shape:** Detection: PDFs dark vs light, ink per page (<200 at 40 dpi); a lighter dark sheet = a `body.
 - **Detection:** PDFs dark vs light, ink per page (<200 at 40 dpi); a lighter dark sheet = a `body.dark` literal the print
+- **Record (S550, G name_tags):** clean — 28 layouts' PDFs from HE dark equal EN light's at the pixel (56 cells, a 1 px-tolerant diff; the inverted-sheet plant read 1,201 px); the sheet's ink, paper and cut lines are literal colours.
 - **Record (ledger row at S544):** - **`dark-literal-escapes-the-print-tokens`** (NEW S437 G; resources FIXED `5320a668`): ACTIVE, streak 1 (S479 trope clean; plant fired). Detection: PDFs dark vs light, ink per page (<200 at 40 dpi); a lighter dark sheet = a `body.dark` literal the print
 - **Archived full text (latest compaction copy):** - **`dark-literal-escapes-the-print-tokens`** (NEW S437 G; resources FIXED `5320a668`): ACTIVE, streak 1 (S479 trope clean; plant fired). Detection: PDFs dark vs light, ink per page (<200 at 40 dpi); a lighter dark sheet = a `body.dark` literal the print …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -571,7 +575,8 @@
 - **Archived full text (latest compaction copy):** - **`save-over-an-existing-name-without-confirm`**: ACTIVE **S371 (Pass A): 3rd carrier FIXED `b85b579` — the dashboard's `saveWeekScheduleAs` (its comment even said "same-name save overwrites, like savePreset" — from before savePreset confirmed). Census: every other …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `fixed-surface-missing-from-the-print-hide-list`
-- **Status:** ACTIVE · **Owner:** G · **Consequence:** normal · **Last:** S496 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** G · **Consequence:** normal · **Last:** S550 · **Streak:** 0 · **Detector:** recipe
+- **Record (S550, G name_tags):** the page's own surfaces clean — 12 states by real clicks (toast, tour, keyboard, edge tab, paste, import choice, rename, install banner with pwa.js's own rule) print nothing outside the sheets (plant: a fixed box → on paper). 1 HIT, suite-wide: the `.ivrit` engine's Merge/Replace ask overlay is an inline-styled fixed div with no id or class (`ivritAskMode`), and `js/ivrit-account.js`' `.ivacct-modal` and `js/ivrit-saves.js`' `.ivsav-overlay` carry no print rule either — open during Ctrl+P, each prints over every sheet (Candidate: a shared-block change across the six carriers and the hub).
 - **Record (ledger row at S544):** - **`fixed-surface-missing-from-the-print-hide-list`**: ACTIVE. **S496: `.bpe-*` FIXED `4c4dd3ae`.** **S392 (Pass G, `hebrew_blend_generator.html`): swept CLEAN — first clean sweep since registration, clean
 - **Archived full text (latest compaction copy):** - **`fixed-surface-missing-from-the-print-hide-list`**: ACTIVE. **S495 (G, dashboard): 1 HIT OPEN — Bulk preset edit's `.bpe-*` (added outside the loop); streak → 0.** **S392 (Pass G, `hebrew_blend_generator.html`): swept CLEAN — first clean sweep since registration, clean streak 0 → 1.** 36 print-media cells (18 printable shapes × EN light / HE dark, at the 749px Letter content …[full text: IMPROVEMENT_ARCHIVE.md]
 
