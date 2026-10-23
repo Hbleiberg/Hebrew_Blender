@@ -1777,10 +1777,16 @@ function ntReadCsvFile(file) {
   if (file.size > NT_CSV_MAX_BYTES) { ntListNote(_fbT('nametags.csv.err_big', 'That file is too big for a class list (1 MB at most).'), true); return; }
   const r = new FileReader();
   r.onload = () => {
-    const buf = r.result;
+    const buf = r.result, head = new Uint8Array(buf, 0, Math.min(512, buf.byteLength));
     let text = '';
-    // UTF-8 first; a file Excel saved in the Windows Hebrew code page falls back to windows-1255.
-    try { text = new TextDecoder('utf-8', { fatal: true }).decode(buf); }
+    // Excel's "Unicode Text" is UTF-16 (little-endian behind a FF FE byte-order mark; FE FF big-endian), read as such — as UTF-8
+    // its NUL bytes decode without complaint, into NUL-laced "students". A file with no mark is still UTF-16 when the NULs sit
+    // on one side of every pair (a text file in UTF-8 or windows-1255 holds none). Then UTF-8; a file Excel saved in the
+    // Windows Hebrew code page falls back to windows-1255.
+    const nuls = parity => head.reduce((n, b, i) => n + (b === 0 && i % 2 === parity ? 1 : 0), 0);
+    const utf16 = head[0] === 0xFF && head[1] === 0xFE ? 'utf-16le' : head[0] === 0xFE && head[1] === 0xFF ? 'utf-16be'
+      : nuls(1) >= 4 && !nuls(0) ? 'utf-16le' : nuls(0) >= 4 && !nuls(1) ? 'utf-16be' : '';
+    try { text = new TextDecoder(utf16 || 'utf-8', { fatal: true }).decode(buf); }
     catch (e) { try { text = new TextDecoder('windows-1255').decode(buf); } catch (e2) { text = ''; } }
     ntOfferImport(ntImportRows(ntParseDelimited(text)), file.name);
   };
