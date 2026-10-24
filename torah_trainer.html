@@ -9,7 +9,7 @@
      before this tag. Update this when adding any external script/font/fetch/iframe (see CLAUDE.md).
      The chant pitch shifter's AudioWorklet module (js/tt-pitch-worklet.js) is same-origin — covered by
      script-src 'self' — and its media host is already in media-src, so no origin was added for it. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://esm.sh https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com https://files.readme.io; media-src 'self' blob: https://raw.githubusercontent.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://esm.sh https://cdn.jsdelivr.net https://www.sefaria.org https://hhkmqwpjsyxdeuhvcyis.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://esm.sh https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com https://files.readme.io; media-src 'self' blob: https://raw.githubusercontent.com https://audio.ivritsuite.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://esm.sh https://cdn.jsdelivr.net https://www.sefaria.org https://hhkmqwpjsyxdeuhvcyis.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
@@ -413,7 +413,8 @@ body.dark .tt-ctrl select, body.dark .tt-ctrl input[type="number"], body.dark .t
 }
 .tt-ctrl select { min-width:110px; max-width:100%; }
 .tt-custom { flex-wrap:wrap; }        /* on a phone the verse boxes and Go drop to a second line instead of crushing the select */
-.tt-custom[hidden] { display:none; }  /* [hidden] must beat the inline-flex rule (the #triYearRow trap) */
+.tt-custom[hidden] { display:none; }
+#ttRecSrcCtrl[hidden] { display:none; }   /* the Chanting picker: hidden until the Total Torah source is offered */  /* [hidden] must beat the inline-flex rule (the #triYearRow trap) */
 .tt-custom select { min-width:96px; }  /* "Deuteronomy" fits; the 110px floor is the parsha picker's */
 .tt-custom input[type="number"] { padding-inline:6px; }
 .tt-ctrl select:focus, .tt-ctrl input:focus { outline:2px solid var(--focus-ring); outline-offset:0; }
@@ -2308,6 +2309,15 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
       <label class="toggle"><input type="checkbox" id="ttShowTranslationBar"><span class="slider"></span></label>
     </span>
   </span>
+  <!-- Chanting: the Audio tab's Recording radios as a picker (one setting, two controls; setRecordingSource writes,
+       syncRecSrcControls mirrors). Hidden with them until the Total Torah source is offered (ttOffered()). -->
+  <span class="tt-ctrl" id="ttRecSrcCtrl" hidden>
+    <label for="ttRecSrcBar" data-i18n="torah.controls.chanting_label">Chanting:</label>
+    <select id="ttRecSrcBar">
+      <option value="pockettorah" data-i18n="torah.recsrc.opt_pockettorah">PocketTorah (Reform)</option>
+      <option value="totaltorah" data-i18n="torah.recsrc.opt_totaltorah">Total Torah (Conservative)</option>
+    </select>
+  </span>
   <!-- Settings: the drawer's one entry, in the row a teacher already looks at (a gear among the header's
        icon buttons was easy to overlook). Primary-styled and labelled, pushed to the inline end. -->
   <span class="tt-ctrl" style="margin-inline-start:auto;">
@@ -3076,7 +3086,10 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
     <!-- pinned-English credits (never translated): dir="ltr" keeps each phrase in English order in the RTL UI, and lang="en" has a screen reader voice it in English -->
     <span dir="ltr" lang="en">Hebrew text via <a href="https://www.sefaria.org" target="_blank" rel="noopener" class="sefaria-attr"><img src="https://files.readme.io/87c5652-image.png" alt="Sefaria" class="sefaria-light" loading="lazy"><img src="https://files.readme.io/dcee0a8-image.png" alt="Sefaria" class="sefaria-dark" loading="lazy"></a> · public domain</span>
     <span id="ttFooterTrans" data-i18n="torah.footer.translation_static">Translation: (none selected)</span>
-    <span dir="ltr" lang="en">Cantillation audio: <a href="https://github.com/rneiss/PocketTorah" target="_blank" rel="noopener">PocketTorah</a> · CC BY-SA 4.0</span>
+    <!-- The audio credit follows the Chanting choice (syncRecSrcControls): PocketTorah's, Cantor Brown's, or both while
+         the reading on screen mixes them (a verse with no Total Torah recording plays PocketTorah). -->
+    <span id="ttFooterAudioPocket" dir="ltr" lang="en">Cantillation audio: <a href="https://github.com/rneiss/PocketTorah" target="_blank" rel="noopener">PocketTorah</a> · CC BY-SA 4.0</span>
+    <span id="ttFooterAudioTT" dir="ltr" lang="en" hidden>Cantillation audio: <a href="https://www.adasisrael.org/trope" target="_blank" rel="noopener">Cantor Arianne Brown, Adas Israel Congregation</a> · Tricks of the Trope: Total Torah · used by permission</span>
     <span data-i18n="torah.footer.license_note">Only translations whose license permits redistribution are offered (Public Domain, CC0, CC BY, CC BY-SA, CC BY-NC, CC BY-NC-SA).</span>
     <span><a href="contact.html" data-i18n="contact.page_title">Contact &amp; Support</a></span>
   </div>
@@ -3128,11 +3141,18 @@ const POCKET_AUDIO_BASE = 'https://raw.githubusercontent.com/rneiss/PocketTorah/
 const POCKET_TIMINGS_BASE = 'data/pockettorah/timings/';
 const POCKET_TIMINGS_V = '?v=1';   // cache-buster for the timings corpus — bump when a timings file changes
 // Total Torah (Cantor Arianne Brown, Adas Israel Congregation): a second recording source — per-VERSE MP3s and timings
-// under data/totaltorah/, used only for a verse whose manifest entry is verified, and offered only behind
-// ?reader=totaltorah until TOTALTORAH_PUBLIC flips (docs/reference/torah-and-trope.md → Recording sources).
-const TOTALTORAH_PUBLIC = false;
+// under data/totaltorah/, used only for a verse whose manifest entry is verified. TOTALTORAH_PUBLIC offers it to every
+// visitor (PocketTorah stays the default; ?reader=totaltorah preselects it for one visit); false hides it again behind
+// that link alone (docs/reference/torah-and-trope.md → Recording sources).
+const TOTALTORAH_PUBLIC = true;
 const TT_BASE = 'data/totaltorah/';
-const TT_DATA_V = '?v=2';   // cache-buster for the manifest and the timings files (the /data/ cache is exact-URL keyed)
+// The verse MP3s (5,846 files, ~1 GB — never in this repository) are served from the Cloudflare R2 bucket
+// totaltorah-audio through its custom domain, Cloudflare-cached (the origin is in the CSP's media-src; the bucket's
+// r2.dev development URL is rate-limited and for testing only, never TT_AUDIO_BASE); their master copy is the
+// private repository Hbleiberg/TotalTorahAudio. The manifest and the timings stay same-origin under TT_BASE,
+// behind TT_DATA_V.
+const TT_AUDIO_BASE = 'https://audio.ivritsuite.com/audio/';
+const TT_DATA_V = '?v=9';   // cache-buster for the manifest and the timings files (the /data/ cache is exact-URL keyed)
 const TT_CREDIT_URL = 'https://www.adasisrael.org/trope';
 const TT_VIDEO_RE = /^[\w-]{11}$/;   // a video id goes into an href — validated before it does
 const TORAH_BOOK_CHAPTERS = { Genesis:50, Exodus:40, Leviticus:27, Numbers:36, Deuteronomy:34 };
@@ -7285,7 +7305,7 @@ async function loadTotalTorahVerse(vk, entry, opts) {
   _ttLoaded = { vk, entry, wordTimed };
   _holidayKaraoke = { map: { [vk]: 0 } };
   _loadedChantKey = 'tt|' + vk;
-  attachKaraokeSource({ audioUrl: TT_BASE + 'audio/' + entry.file, timings, label: I18n.t('torah.recsrc.bar_label', { verse: vk }) });
+  attachKaraokeSource({ audioUrl: TT_AUDIO_BASE + entry.file, timings, label: I18n.t('torah.recsrc.bar_label', { verse: vk }) });
 }
 // Drop a loaded verse file so the PocketTorah paths see "nothing loaded" and reload (chantVerse's
 // _navigateToVerseAliyahAndQueue, chantHolidayWord's key check, playNextChant's !src branch).
@@ -7369,8 +7389,11 @@ function syncRecSrcControls() {
   if (!row) return;
   const offered = ttOffered();
   row.hidden = !offered;
+  const ctrl = document.getElementById('ttRecSrcCtrl'), sel = document.getElementById('ttRecSrcBar');
+  if (ctrl) ctrl.hidden = !offered;
   const note = document.getElementById('optRecSrcNote'), ttDiv = document.getElementById('optRecCreditTT'), pocketDiv = document.getElementById('optRecCreditPocket'), karNote = document.getElementById('kfTTNote');
-  if (!offered) { if (note) note.hidden = true; if (ttDiv) ttDiv.hidden = true; if (pocketDiv) pocketDiv.hidden = false; if (karNote) karNote.hidden = true; return; }
+  const footPocket = document.getElementById('ttFooterAudioPocket'), footTT = document.getElementById('ttFooterAudioTT');
+  if (!offered) { if (note) note.hidden = true; if (ttDiv) ttDiv.hidden = true; if (pocketDiv) pocketDiv.hidden = false; if (karNote) karNote.hidden = true; if (footPocket) footPocket.hidden = false; if (footTT) footTT.hidden = true; return; }
   const ents = ttReadingEntries(true);
   const none = ents.count === 0;
   const total = document.getElementById('rsTotal'), pocket = document.getElementById('rsPocket');
@@ -7379,6 +7402,11 @@ function syncRecSrcControls() {
   total.setAttribute('aria-disabled', none ? 'true' : 'false');
   total.checked = active;
   pocket.checked = !active;
+  if (sel) {   // the Chanting picker mirrors the radios: the same value, the same disabled option, the note as its title
+    sel.value = active ? 'totaltorah' : 'pockettorah';
+    sel.querySelector('option[value="totaltorah"]').disabled = none;
+    sel.title = I18n.t(none ? 'torah.recsrc.none_note' : 'torah.recsrc.picker_title');
+  }
   if (note) note.hidden = !none;
   if (ttDiv) {
     ttDiv.hidden = !active;
@@ -7390,8 +7418,13 @@ function syncRecSrcControls() {
   }
   if (pocketDiv) pocketDiv.hidden = active;
   if (karNote) karNote.hidden = !(active && ents.unTimed > 0);
+  // the footer credits whoever the reading on screen will play: Cantor Brown while Total Torah is chosen and recorded
+  // here, PocketTorah otherwise — and both while some verse on screen has no Total Torah recording (it plays PocketTorah)
+  const mixed = active && !!currentVerses && ents.count < currentVerses.length;
+  if (footTT) footTT.hidden = !active;
+  if (footPocket) footPocket.hidden = active && !mixed;
 }
-function setRecordingSource(v) {   // the radios' one writer
+function setRecordingSource(v) {   // the one writer, for the drawer's radios and the controls bar's Chanting picker
   v = v === 'totaltorah' ? 'totaltorah' : 'pockettorah';
   _recSrcOverride = null;
   if (settings.recordingSource !== v) { settings.recordingSource = v; saveSettings(); }
@@ -9574,6 +9607,8 @@ function wireSettingsForm() {
   document.querySelectorAll('input[name="optRecSrc"]').forEach(r => {
     r.addEventListener('change', e => { if (e.target.checked) setRecordingSource(e.target.value); });
   });
+  const recSrcBar = document.getElementById('ttRecSrcBar');
+  if (recSrcBar) recSrcBar.addEventListener('change', () => setRecordingSource(recSrcBar.value));
   // Schedule
   document.querySelectorAll('input[name="optSchedule"]').forEach(r => {
     r.addEventListener('change', e => {
@@ -11197,8 +11232,9 @@ function _ttFocusAfterRetry() {
 async function init() {
   initDark();
   loadSettings();
-  // ?reader=totaltorah: the link's visit hears the Total Torah source (a radio press saves a choice; nothing is stored by the flag).
-  if (ttOffered() && settings.recordingSource !== 'totaltorah') _recSrcOverride = 'totaltorah';
+  // ?reader=totaltorah: the link's visit hears the Total Torah source (a radio press saves a choice; nothing is stored by the
+  // flag). The link itself, never ttOffered(): with the source public, that is every visit, and PocketTorah stays the default.
+  if (new URLSearchParams(location.search).get('reader') === 'totaltorah' && settings.recordingSource !== 'totaltorah') _recSrcOverride = 'totaltorah';
   linkViewApply();          // a practice link's ?s= display settings: shown from the first paint, never saved
   _watchAudioBarHeight();   // keeps the bulk dock clear of the sticky karaoke bar at any width
   _watchBulkDockFocus();    // stops the dock vanishing under a keyboard user's own Clear

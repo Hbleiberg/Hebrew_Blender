@@ -97,7 +97,7 @@ Notes:
   (`?v=1` — the URL is built by concatenation, so the buster is a named constant
   next to `POCKET_TIMINGS_BASE` rather than a literal in the fetch).
   The Torah Trainer's Total Torah source (`totaltorah/manifest.json` and `totaltorah/timings/*.txt`, both via
-  **`TT_DATA_V`**, `?v=2`, fetched only behind `?reader=totaltorah`) follows the same rule; its verse MP3s under
+  **`TT_DATA_V`**, `?v=9`, fetched only behind `?reader=totaltorah`) follows the same rule; its verse MP3s under
   `totaltorah/audio/` are deliberately **not** cached: the worker returns before the `/data/` branch for any
   Range request or `audio` destination (a cached full 200 answering a Range request is refused by Safari, and a
   206 must never be `cache.put`), so the audio always streams from the network like PocketTorah's.
@@ -356,12 +356,13 @@ pages, not the other way round — `grep -o 'Content-Security-Policy[^>]*' *.htm
   pyodide, opentype.js).
 - **Dashboard:** `www.hebcal.com`, `api.open-meteo.com`, `geocoding-api.open-meteo.com`, `nominatim.openstreetmap.org`
   in `connect-src`; `www.youtube.com` + `www.youtube-nocookie.com` in `frame-src`.
-- **Torah Trainer:** `www.sefaria.org` in `connect-src`; `raw.githubusercontent.com` + `blob:` in `media-src`
-  (PocketTorah audio). The chant pitch shifter adds nothing: its AudioWorklet module is same-origin
-  (`script-src 'self'` covers a worklet fetch) and the `<audio crossorigin>` load is the same media host. The Total
-  Torah verse files are same-origin (`data/totaltorah/audio/`, covered by `media-src 'self'`) and the YouTube
-  link-back is a plain `<a target=_blank>` — `frame-src 'none'` stays; moving the corpus to a CDN (Phase 2) adds
-  that host to `media-src` and nothing else.
+- **Torah Trainer:** `www.sefaria.org` in `connect-src`; `raw.githubusercontent.com` + `blob:` +
+  `audio.ivritsuite.com` in `media-src` (PocketTorah audio, and the Total Torah verse files from the R2 bucket
+  `totaltorah-audio` through its custom domain, `TT_AUDIO_BASE`). The chant pitch shifter adds nothing: its
+  AudioWorklet module is same-origin (`script-src 'self'` covers a worklet fetch) and the `<audio crossorigin>`
+  loads are those media hosts (the bucket's CORS policy names the site's origins). The YouTube link-back is a
+  plain `<a target=_blank>` — `frame-src 'none'` stays; moving the corpus to another host (a custom domain on the
+  bucket, say) would swap that one origin in `media-src` and nothing else.
 - **Trope Tutor:** `raw.githubusercontent.com` + `blob:` in `media-src` only — deliberately neither `sefaria.org`
   nor `esm.sh` (its index and clips are pre-built).
 - **Home, Torah Trainer:** `files.readme.io` in `img-src` — the host of Sefaria's attribution wordmark (hot-linked,

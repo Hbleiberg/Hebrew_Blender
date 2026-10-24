@@ -4,7 +4,9 @@
 // A row: parsha (as data/parshiyot.json spells it; a doubled pair joined by '-'), year (1–3; null = one set for every year),
 // aliyah (1–7 or 'M'), ref (the verse range the video chants — the cut and the alignment follow it; data/leyning/triennial.json's
 // division unless `note` says otherwise), page (the range as the Adas page prints it), variant ('chazak': the Chazak ending),
-// note (a cross-check that did not agree); after `meta`: title, duration (s), upload_date and check (the title cross-check).
+// note (a cross-check that did not agree), heard (the maintainer's listening corrected `ref`: `adas` keeps that row's ref),
+// outro (s: a spoken closing announcement starts there — the alignment and the cut stop before it; `adas` keeps it);
+// after `meta`: title, duration (s), upload_date and check (the title cross-check).
 export const VIDEOS = {
   bv1hX3WrRM4: { parsha: 'Bereshit', year: 1, aliyah: 1, ref: 'Genesis 1:1-1:5', page: '1:1 - 1:5', title: 'B\'reishit, Year 1 Aliyah 1', duration: 86, upload_date: '20260911', check: 'ok' },
   Ilh183tcXGI: { parsha: 'Bereshit', year: 1, aliyah: 2, ref: 'Genesis 1:6-1:8', page: '1:6 - 1:8', title: 'B\'reishit, Year 1 Aliyah 2', check: 'ok' },
@@ -16,6 +18,7 @@ export const VIDEOS = {
   vVCou9drfWQ: { parsha: 'Bereshit', year: 2, aliyah: 1, ref: 'Genesis 2:4-2:9', page: '2:4- 2:9', title: 'B\'reishit, Year 2 Aliyah 1', check: 'ok' },
   lnKP1fHbpUs: { parsha: 'Bereshit', year: 2, aliyah: 2, ref: 'Genesis 2:10-2:19', page: '2:10 - 2:19', title: 'B\'reishit, Year 2 Aliyah 2', check: 'ok' },
   'vpNnRvd6k-4': { parsha: 'Bereshit', year: 2, aliyah: 3, ref: 'Genesis 2:20-2:25', page: '2:20- 2:25', title: 'B\'reishit, Year 2 Aliyah 3', check: 'ok' },
+  '8F3cv_FDWTY': { parsha: 'Bereshit', year: 2, aliyah: 4, ref: 'Genesis 3:1-3:21', page: '3:1 - 3:21', note: 'listed on the Adas page without a video link; the id is the channel\'s, from the maintainer\'s download list', title: 'B\'reishit, Year 2 Aliyah 4', check: 'ok' },
   oBne5EVkur8: { parsha: 'Bereshit', year: 2, aliyah: 5, ref: 'Genesis 3:22-3:24', page: '3:22- 3:24', title: 'B\'reishit, Year 2 Aliyah 5', check: 'ok' },
   sZaPi2JmFFU: { parsha: 'Bereshit', year: 2, aliyah: 6, ref: 'Genesis 4:1-4:18', page: '4:1 - 4:18', title: 'B\'reishit, Year 2 Aliyah 6', check: 'ok' },
   zhTp4wWjMPA: { parsha: 'Bereshit', year: 2, aliyah: 7, ref: 'Genesis 4:19-4:26', page: '4:19 - 4:26', title: 'B\'reishit Year 2 Aliyah 7', check: 'ok' },
@@ -135,7 +138,7 @@ export const VIDEOS = {
   bY8T6ahjC74: { parsha: 'Toldot', year: 3, aliyah: 4, ref: 'Genesis 27:38-27:40', page: '27:38 - 27:40', title: 'Toldot, Year 3, Aliyah 4', check: 'ok' },
   pOYkMisdHaI: { parsha: 'Toldot', year: 3, aliyah: 5, ref: 'Genesis 27:41-27:46', page: '27:41 - 27:46', title: 'Toldot, Year 3, Aliyah 5', check: 'ok' },
   b2jqRTOosDA: { parsha: 'Toldot', year: 3, aliyah: 6, ref: 'Genesis 28:1-28:4', page: '28:1 - 28:4', title: 'Toldot, Year 3, Aliyah 6', check: 'ok' },
-  '-CmdgOZKR14': { parsha: 'Toldot', year: 3, aliyah: 7, ref: 'Genesis 28:5-28:9', page: '28:5 - 28:9', title: 'Toldot, Year 3, Aliyah 7', check: 'ok' },
+  '-CmdgOZKR14': { parsha: 'Toldot', year: 3, aliyah: 7, ref: 'Genesis 28:7-28:9', page: '28:5 - 28:9', heard: 'the recording chants 28:7-28:9 (the maftir, as its announcement says) where the page and hebcal give 28:5-28:9; 28:5-28:6 have no Total Torah recording', title: 'Toldot, Year 3, Aliyah 7', check: 'ok' },
   NiLIpgKy8xQ: { parsha: 'Toldot', year: 3, aliyah: 'M', ref: 'Genesis 28:7-28:9', page: '28:7 – 28:9', title: 'Toldot, Maftir', check: 'ok' },
   i8LBv64jiQo: { parsha: 'Vayetzei', year: 1, aliyah: 1, ref: 'Genesis 28:10-28:12', page: '28:10 - 28:12', title: 'Vayetze, Year 1, Aliyah 1', check: 'ok' },
   rx2sXoshZ7s: { parsha: 'Vayetzei', year: 1, aliyah: 2, ref: 'Genesis 28:13-28:17', page: '28:13 - 28:17', title: 'Vayetze, Year 1, Aliyah 2', check: 'ok' },
@@ -269,7 +272,7 @@ export const VIDEOS = {
   '3XKcrkbdRJ4': { parsha: 'Vayechi', year: 3, aliyah: 4, ref: 'Genesis 50:7-50:9', page: '50:7 - 50:9', title: 'Vayechi, Year 3, Aliyah 4', check: 'ok' },
   eFO7YzQpNCI: { parsha: 'Vayechi', year: 3, aliyah: 5, ref: 'Genesis 50:10-50:14', page: '50:10 - 50:14', title: 'Vayechi, Year 3, Aliyah 5', check: 'ok' },
   Wwbq7PFDO7E: { parsha: 'Vayechi', year: 3, aliyah: 6, ref: 'Genesis 50:15-50:20', page: '50: 15 - 50:20', title: 'Vayechi, Year 3, Aliyah 6', check: 'ok' },
-  URmDtWg75tg: { parsha: 'Vayechi', year: 3, aliyah: 7, ref: 'Genesis 50:21-50:26', page: '50:21 - 50:26', title: 'Vayechi, Year 3, Aliyah 7 with Chazak', check: 'title says Chazak' },
+  URmDtWg75tg: { parsha: 'Vayechi', year: 3, aliyah: 7, ref: 'Genesis 50:21-50:26', page: '50:21 - 50:26', outro: 150.4, title: 'Vayechi, Year 3, Aliyah 7 with Chazak', check: 'title says Chazak' },
   '0LMEwt8dAvQ': { parsha: 'Shemot', year: 1, aliyah: 1, ref: 'Exodus 1:1-1:7', page: '1:1 - 1:7', title: 'Sh\'mot, Year 1, Aliyah 1', check: 'ok' },
   NH4swfvq1ro: { parsha: 'Shemot', year: 1, aliyah: 2, ref: 'Exodus 1:8-1:12', page: '1:8 - 1:12', title: 'Sh\'mot, Year 1, Aliyah 2', check: 'ok' },
   J0V1GJasI9A: { parsha: 'Shemot', year: 1, aliyah: 3, ref: 'Exodus 1:13-1:17', page: '1:13 - 1:17', title: 'Sh\'mot, Year 1, Aliyah 3', check: 'ok' },
@@ -655,6 +658,8 @@ export const VIDEOS = {
   iKwBy9JfMSw: { parsha: 'Behar-Bechukotai', year: 3, aliyah: 5, ref: 'Leviticus 27:22-27:25', page: '27:22 - 27:25', title: 'Behar-Bechukotai, Year 3, Aliyah 5', check: 'ok' },
   _MKLFJzC4sI: { parsha: 'Behar-Bechukotai', year: 3, aliyah: 6, ref: 'Leviticus 27:26-27:28', page: '27:26 - 27:28', title: 'Behar-Bechukotai, Year 3, Aliyah 6', check: 'ok' },
   KA8BA8QKDeY: { parsha: 'Behar-Bechukotai', year: 3, aliyah: 7, ref: 'Leviticus 27:29-27:34', page: '27:29 - 27:34', check: 'oEmbed refused (http 403): embedding is off or the video is restricted — the id is probably right; confirm with meta --ytdlp from a home address' },
+  '_to-zBxwnlM': { parsha: 'Behar-Bechukotai', year: 3, aliyah: 7, ref: 'Leviticus 27:29-27:34', page: '27:29 - 27:34', note: 'the Adas page links KA8BA8QKDeY, which YouTube refuses (403); this is the channel\'s re-upload ("new"), from the maintainer\'s download list', title: 'Behar-Bechukotai, Year 3, Aliyah 7 new', check: 'ok' },
+  b1jo8hj5BsA: { parsha: 'Behar-Bechukotai', year: 3, aliyah: 7, ref: 'Leviticus 27:29-27:34', page: '27:29 - 27:34', variant: 'chazak', note: 'the Adas page links jFfygpIziL0, which YouTube refuses (403); this is the channel\'s re-upload ("new with Chazak"), from the maintainer\'s download list', title: 'Behar-Bechukotai, Year 3, Aliyah 7 new with Chazak', check: 'ok' },
   jFfygpIziL0: { parsha: 'Behar-Bechukotai', year: 3, aliyah: 7, ref: 'Leviticus 27:29-27:34', page: '27:29 - 27:34', variant: 'chazak', check: 'oEmbed refused (http 403): embedding is off or the video is restricted — the id is probably right; confirm with meta --ytdlp from a home address' },
   '8WV0Llk3wrM': { parsha: 'Behar-Bechukotai', year: 3, aliyah: 'M', ref: 'Leviticus 27:32-27:34', page: '27:32 – 27:34', title: 'Behar-Bechukotai, Maftir', check: 'ok' },
   bhsP3EgzppU: { parsha: 'Behar-Bechukotai', year: 3, aliyah: 'M', ref: 'Leviticus 27:32-27:34', page: '27:32 – 27:34', variant: 'chazak', title: 'Behar-Bechukotai, Maftir with Chazak', check: 'ok' },
@@ -689,6 +694,7 @@ export const VIDEOS = {
   M80wnzLV_TI: { parsha: 'Nasso', year: 1, aliyah: 5, ref: 'Numbers 4:38-4:49', page: '4:38- 4:49', title: 'Naso, Year 1, Aliyah 5', check: 'ok' },
   '9D5WpHZs-_c': { parsha: 'Nasso', year: 1, aliyah: 6, ref: 'Numbers 5:1-5:4', page: '5:1 - 5:4', title: 'Naso, Year 1, Aliyah 6', check: 'ok' },
   A6H32PzKLq0: { parsha: 'Nasso', year: 1, aliyah: 7, ref: 'Numbers 5:5-5:10', page: '5:5 - 5:10', check: 'no such video (http 404) — the id may be mistyped on the listing, or the video is private' },
+  QnXDF9e8PXs: { parsha: 'Nasso', year: 1, aliyah: 7, ref: 'Numbers 5:5-5:10', page: '5:5 - 5:10', note: 'the Adas page links A6H32PzKLq0, which YouTube does not have (404); this is the channel\'s video, from the maintainer\'s download list', title: 'Naso, Year 1, Aliyah 7', check: 'ok' },
   DfNfgHd3UO0: { parsha: 'Nasso', year: 2, aliyah: 1, ref: 'Numbers 5:11-5:15', page: '5:11 - 5:15', title: 'Naso, Year 2, Aliyah 1', check: 'ok' },
   nzQsi7RDBzk: { parsha: 'Nasso', year: 2, aliyah: 2, ref: 'Numbers 5:16-5:26', page: '5:16 - 5:26', title: 'Naso, Year 2, Aliyah 2', check: 'ok' },
   QrseollPpGo: { parsha: 'Nasso', year: 2, aliyah: 3, ref: 'Numbers 5:27-6:4', page: '5:27 - 6:4', title: 'Naso, Year 2, Aliyah 3', check: 'ok' },
@@ -1035,6 +1041,6 @@ export const VIDEOS = {
   io4GXS_S4wI: { parsha: 'V\'Zot HaBerachah', year: null, aliyah: 3, ref: 'Deuteronomy 33:13-33:17', page: '33:13 - 33:17', note: 'one set for every year', title: 'V\'Zot HaB\'rachah Aliyah 3', check: 'ok' },
   WdNQvMutQiI: { parsha: 'V\'Zot HaBerachah', year: null, aliyah: 4, ref: 'Deuteronomy 33:18-33:21', page: '33:18 – 33:21', note: 'one set for every year', title: 'V\'Zot HaB\'rachah Aliyah 4', check: 'ok' },
   UJLcjxDvARA: { parsha: 'V\'Zot HaBerachah', year: null, aliyah: 5, ref: 'Deuteronomy 33:22-33:26', page: '33:22 – 33:26', note: 'one set for every year', title: 'V\'Zot HaB\'rachah Aliyah 5', check: 'ok' },
-  '8f_kHQdPwJs': { parsha: 'V\'Zot HaBerachah', year: null, aliyah: 6, ref: 'Deuteronomy 33:27-34:12', page: '33:27 – 34:12', note: 'page division differs from hebcal (33:27-33:29); one set for every year', title: 'V\'Zot HaB\'rachah Aliyah 6', check: 'ok' },
+  '8f_kHQdPwJs': { parsha: 'V\'Zot HaBerachah', year: null, aliyah: 6, ref: 'Deuteronomy 33:27-34:12', page: '33:27 – 34:12', note: 'page division differs from hebcal (33:27-33:29); one set for every year', outro: 339.05, title: 'V\'Zot HaB\'rachah Aliyah 6', check: 'ok' },
 };
 export const BOOK_CODE = { Genesis: 'gen', Exodus: 'exo', Leviticus: 'lev', Numbers: 'num', Deuteronomy: 'deu' };

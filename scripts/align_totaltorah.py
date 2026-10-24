@@ -16,6 +16,11 @@ inside the venv they create at source-data/totaltorah-cache/align-env/ (gitignor
              from the earliest offset and the same words are force-aligned from each offset in turn — the result
              is {"id", "results": [{"offset", "onsets", "ends", "scores"} or {"offset", "error"}, …]}. The
              boundaries pass scores a video's possible intro ends this way, one emission pass for all of them.
+             A job with "greedy": true (audio, offset, end; no words) answers {"id", "text"}: the model's own
+             unforced transcript of the span (CTC greedy decoding, consonants and spaces); with "english": true
+             the same through the English model (--english-model, facebook/wav2vec2-base-960h by default, loaded
+             on first use) — the boundaries pass reads each video's spoken intro with it ("B'reishit, Year 1,
+             Aliyah 4" comes back as those words; the Hebrew chant after it comes back as no such words).
 
 The words are the sung words as CONSONANTS ONLY (nikkud and te'amim stripped by the caller, one entry per Trainer
 word, maqaf halves separate). The model's vocabulary is consonantal Hebrew, so that is the transcript; the caller
@@ -59,10 +64,12 @@ def load_runtime():
 
 
 class Aligner:
-    def __init__(self, model_id, revision, window, overlap):
+    def __init__(self, model_id, revision, window, overlap, english_id=None, english_revision=None):
         import torch
         from transformers import Wav2Vec2ForCTC, Wav2Vec2Processor
         self.model_id = model_id
+        self.english_id = english_id or 'facebook/wav2vec2-base-960h'
+        self.english_revision = english_revision
         try:
             self.processor = Wav2Vec2Processor.from_pretrained(model_id, revision=revision)
             self.model = Wav2Vec2ForCTC.from_pretrained(model_id, revision=revision)
@@ -104,9 +111,11 @@ class Aligner:
         return wav[:, start:stop].squeeze(0), sr, offset
 
     # ---- emissions, windowed when the audio is long ----
-    def emissions(self, wav, sr, offset):
+    def emissions(self, wav, sr, offset, model=None, processor=None):
         """log-probs (frames × vocab) for the whole span, plus each frame's absolute start and end time."""
         torch = self.torch
+        model = model or self.model
+        processor = processor or self.processor
         n = wav.shape[0]
         win = int(self.window * sr)
         ov = int(self.overlap * sr)
@@ -124,9 +133,9 @@ class Aligner:
                 s += step
         parts, starts, ends = [], [], []
         for wi, (s, e) in enumerate(spans):
-            inputs = self.processor(wav[s:e].numpy(), sampling_rate=sr, return_tensors='pt')
+            inputs = processor(wav[s:e].numpy(), sampling_rate=sr, return_tensors='pt')
             with torch.inference_mode():
-                logits = self.model(inputs.input_values).logits  # (1, frames, vocab)
+                logits = model(inputs.input_values).logits  # (1, frames, vocab)
             lp = torch.log_softmax(logits[0], dim=-1)
             nf = lp.shape[0]
             frame_s = (e - s) / sr / nf
@@ -193,6 +202,48 @@ class Aligner:
         return {'onsets': onsets, 'ends': ends, 'scores': [round(s, 3) for s in word_scores],
                 'frame': round((f_end[-1] - f_start[0]) / n_frames, 5)}
 
+    # ---- what the model hears, unforced: the greedy CTC transcript of a span ----
+    # The boundaries pass asks this of each possible intro end: over Hebrew chant the letters resemble the verse's
+    # first words, over the spoken English intro they do not — a forced alignment cannot tell the two apart (it
+    # parks the first words on the English and scores the rest no worse), the free transcript can.
+    def greedy(self, audio, offset=0.0, end=None, english=False):
+        t0 = time.time()
+        wav, sr, base = self.load_audio(audio, offset, end)
+        if english:
+            model, processor, model_id = self.english_model()
+        else:
+            model, processor, model_id = self.model, self.processor, self.model_id
+        log_probs, f_start, f_end, n_windows = self.emissions(wav, sr, base, model, processor)
+        vocab = processor.tokenizer.get_vocab()
+        blank = processor.tokenizer.pad_token_id
+        delim = vocab.get(processor.tokenizer.word_delimiter_token or '|')
+        inv = {tid: ch for ch, tid in vocab.items()}
+        out, chars, prev = [], [], None
+        for fi, tid in enumerate(log_probs.argmax(dim=-1).tolist()):
+            if tid != prev and tid != blank:
+                ch = ' ' if tid == delim else inv.get(tid, '')
+                out.append(ch)
+                if ch:   # each emitted character with the time of the frame that emitted it (the caller reads the intro's end off these)
+                    chars.append([ch, round(f_start[fi], 3), round(f_end[fi], 3)])
+            prev = tid
+        return {'text': ' '.join(''.join(out).split()), 'chars': chars, 'windows': n_windows, 'wall': round(time.time() - t0, 1), 'model': model_id, 'revision': self.revision}
+
+    # ---- the English model, loaded on the first intro question ----
+    # Every Total Torah video opens with a spoken English announcement ("B'reishit, Year 1, Aliyah 4"); an English
+    # CTC model reads it as words, and reads the Hebrew chant that follows as nothing of the kind — which is how the
+    # boundaries pass finds where the intro ends. Loaded once, only when asked.
+    def english_model(self):
+        if getattr(self, '_en', None) is None:
+            from transformers import Wav2Vec2ForCTC, Wav2Vec2Processor
+            try:
+                proc = Wav2Vec2Processor.from_pretrained(self.english_id, revision=self.english_revision)
+                model = Wav2Vec2ForCTC.from_pretrained(self.english_id, revision=self.english_revision)
+            except Exception as e:
+                raise AlignError(f'could not load the English model {self.english_id}@{self.english_revision or "main"}: {e}')
+            model.eval()
+            self._en = (model, proc, self.english_id)
+        return self._en
+
     # ---- one job ----
     def align(self, audio, words, offset=0.0, end=None, offsets=None):
         t0 = time.time()
@@ -228,6 +279,8 @@ def main():
     ap.add_argument('--serve', action='store_true', help='load the model once and take JSON jobs on stdin, one per line')
     ap.add_argument('--model', default='imvladikon/wav2vec2-xls-r-300m-hebrew')
     ap.add_argument('--revision', default=None, help='model commit sha to pin; printed on success so the caller can record it')
+    ap.add_argument('--english-model', default='facebook/wav2vec2-base-960h', help='the English CTC model that reads each video\'s spoken intro (loaded on the first "english" job)')
+    ap.add_argument('--english-revision', default=None, help='its commit sha to pin')
     ap.add_argument('--offset', type=float, default=0.0, help='seconds of audio to skip before aligning (a spoken intro); onsets and ends are reported in the file\'s own time')
     ap.add_argument('--end', type=float, default=None, help='stop the aligned span at this second of the file')
     ap.add_argument('--window', type=float, default=40.0, help='seconds of audio per network pass (the attention cost is quadratic in it)')
@@ -238,7 +291,7 @@ def main():
         sys.exit(2)
     try:
         load_runtime()
-        aligner = Aligner(args.model, args.revision, args.window, args.overlap)
+        aligner = Aligner(args.model, args.revision, args.window, args.overlap, args.english_model, args.english_revision)
     except AlignError as e:
         print(f'align: {e}', file=sys.stderr)
         sys.exit(1)
@@ -256,7 +309,10 @@ def main():
                 continue
             jid = job.get('id')
             try:
-                out = aligner.align(job['audio'], job.get('words') or [], job.get('offset') or 0.0, job.get('end'), job.get('offsets'))
+                if job.get('greedy') or job.get('english'):
+                    out = aligner.greedy(job['audio'], job.get('offset') or 0.0, job.get('end'), english=bool(job.get('english')))
+                else:
+                    out = aligner.align(job['audio'], job.get('words') or [], job.get('offset') or 0.0, job.get('end'), job.get('offsets'))
                 out['id'] = jid
                 print(json.dumps(out, ensure_ascii=False), flush=True)
             except AlignError as e:

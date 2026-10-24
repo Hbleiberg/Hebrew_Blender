@@ -22,23 +22,27 @@
  *      be aligned is reported and skipped (nothing written for it); the run exits 1 if any was.
  *
  * --boundaries <id> — the verse boundaries of a whole video, for build-totaltorah-audio.mjs split --boundaries
- * auto. Every Total Torah video opens with a spoken intro, and the cantor's mid-verse pauses (etnachta, zakef)
- * are quieter than her breaths between verses, so silence alone never finds the verses. The intro's end is
- * chosen by alignment: the first verse's words are force-aligned from the file's start and from every silence
- * end in the first 30 s (one network pass), and the candidate whose alignment scores best wins — English speech
- * scores badly against Hebrew text, and a start inside the verse loses words; the old first-silence rule is
- * printed beside it (--intro silence uses that rule, --intro <s> a value confirmed by ear). Then the rest of the
- * file is aligned against the aliyah's whole text in one pass (the network runs in 40 s windows, so a long
- * aliyah needs no more memory than a short one), a cut is placed midway through each gap between a verse's last
- * word and the next verse's first, and source-data/totaltorah-cache/<id>.boundaries.json is written — with
- * every word's onset, end and score, so --derive can write the timings without a second pass.
+ * auto. Nearly every Total Torah video opens with a spoken English announcement ("Parashat B'reishit, Year 1,
+ * Aliyah 4"), and the cantor's mid-verse pauses (etnachta, zakef) are quieter than her breaths between verses,
+ * so silence alone finds neither the intro's end nor the verses. The intro's end is read off an English speech
+ * model's transcript of the first 30 s (facebook/wav2vec2-base-960h, loaded by the aligner on first use): the
+ * aliyah number the whitelist row expects is found in it by fuzzy match, its timestamp is the announcement's
+ * end, and the cut is the first pause after it; the transcript, the match and the old first-silence rule's value
+ * are printed, and a video the transcript cannot settle (no match, an announcement that goes on, no pause) falls
+ * back to that rule and is flagged introUnconfirmed in the boundaries file and the bulk ledger (--intro silence
+ * uses that rule alone, --intro <s> a value confirmed by ear). Then the rest of the file is aligned against the
+ * aliyah's whole text in one pass (the network runs in 40 s windows, so a long aliyah needs no more memory than
+ * a short one), a cut is placed midway through each gap between a verse's last word and the next verse's first,
+ * and source-data/totaltorah-cache/<id>.boundaries.json is written — with every word's onset, end and score, so
+ * --derive can write the timings without a second pass.
  *
  * --derive <id> — the timings of every verse of a video from its boundaries file (no model, no venv): each
  * onset moves back by its cut's start (the boundary minus --pad). The bulk pipeline's default; the per-verse
  * mode above re-aligns each cut on its own and is the second opinion when a verse sounds off.
  *
  * --setup creates the venv and installs the pinned requirements (torch CPU, torchaudio, transformers, soundfile,
- * huggingface_hub); the model is pinned by MODEL + MODEL_REVISION in totaltorah-lib.mjs. If the venv, torch or
+ * huggingface_hub); the models are pinned in totaltorah-lib.mjs (MODEL + MODEL_REVISION for the Hebrew aligner,
+ * MODEL_EN + MODEL_EN_REVISION for the English model that reads the announcements), downloaded on first use. If the venv, torch or
  * the model cannot be installed or downloaded the script exits 1 — there is no heuristic fallback (equal split,
  * syllable count): a plausibly wrong highlight is exactly what must not ship.
  *

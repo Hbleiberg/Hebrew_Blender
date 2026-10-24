@@ -23,6 +23,6 @@ source-data/charts/
 # info JSON, the lossless verse FLACs handed back to Adas Israel, the alignment venv and its model, the audit page, the bulk
 # ledger and logs) — never committed
 source-data/totaltorah-cache/
-# the bulk run's output for the whole series (build-totaltorah-bulk.mjs run --out source-data/totaltorah-out): ~735 MB of
-# verse MP3s plus their manifest and timings — hosted outside the repo (Phase 2), never committed
+# the bulk run's output for the whole series (build-totaltorah-bulk.mjs run --out source-data/totaltorah-out): ~1 GB of
+# verse MP3s plus their manifest and timings — the MP3s live in Hbleiberg/TotalTorahAudio, never committed here
 source-data/totaltorah-out/

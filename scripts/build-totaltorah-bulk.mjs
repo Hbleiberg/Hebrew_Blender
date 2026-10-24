@@ -15,23 +15,31 @@
  *                                         against the row → `check`. Progress is written as it goes.
  *   inventory --from <dir>                what a dump holds — the maintainer's own downloads of the series, in any folder
  *                                         layout (book/parasha/year folders, or flat) — matched to the whitelist by the id
- *                                         in a file name "[id]" or a yt-dlp .info.json sidecar, else by the parasha, year
- *                                         and aliyah named in the file or folder names (English in any common spelling,
+ *                                         in a file name "[id]", a yt-dlp .info.json sidecar, or a video list in the dump
+ *                                         (a .txt of "<title> - https://www.youtube.com/watch?v=<id>" lines: the files are
+ *                                         named by title, so the list says which upload each one is), else by the parasha,
+ *                                         year and aliyah named in the file or folder names (English in any common spelling,
  *                                         or Hebrew). Reports what matched, what did not, and which videos are still missing.
  *   stage     --from <dir> [--apply] [--copy]
  *                                         the matched files into the cache as <id>.<ext> (hard links; --copy copies) with
  *                                         an <id>.info.json each (the sidecar, else synthesized from the row and ffprobe).
  *                                         Without --apply it only reports (same as inventory).
  *   run       [--book B] [--parsha P] [--only ids] [--limit N] [--timings derive|realign|none]
- *             [--maftir] [--chazak] [--redo] [--dry-run] [--pad s]
- *                                         for each staged video, in Torah order: the boundaries pass (intro end by
- *                                         alignment, one whole-file alignment), split --boundaries auto --keep-existing
+ *             [--maftir] [--chazak] [--redo] [--dry-run] [--pad s] [--intro s|silence  (one video: --only <id> --redo)]
+ *                                         for each staged video, in Torah order: the boundaries pass (the intro's end
+ *                                         read off the English transcript, one whole-file alignment), split --boundaries auto --keep-existing
  *                                         (the series repeats some readings — the first cut of a verse wins), and the
  *                                         timings (derive = from the whole-file alignment, the default; realign = a
  *                                         second pass per verse FLAC). One aligner process for the whole run; a video
  *                                         that fails is logged and the run goes on; a re-run skips what is done.
  *                                         Maftir and "w/Chazak" videos repeat verses an aliyah already holds, so they
  *                                         are skipped unless asked for.
+ *   ends      [--book B] [--parsha P] [--only ids] [--apply]
+ *                                         the end-of-verse rule (extendEndsToPauses: a cut ends at the first pause after
+ *                                         the verse's last word, not at the word's aligned end) on the boundaries files a
+ *                                         run already wrote, without the model: reports the cuts that end before the voice
+ *                                         does; --apply rewrites those boundaries files, re-cuts those videos into --out
+ *                                         (split --boundaries auto --keep-existing) and re-derives their timings.
  *   status                                the ledger: per parasha, videos / staged / cut / timed / verified, and the
  *                                         verify commands for what is cut and unheard.
  *
@@ -40,13 +48,15 @@
  * maintainer listens, then build-totaltorah-audio.mjs verify --video <id> / --parsha <name>.
  *
  * The ledger and logs live in <cache>/bulk/ (gitignored with the cache): status.json, inventory.json, logs/<id>.log.
+ * run --ledger <name> keeps its own status-<name>.json, so two runs can go at once on different --book / --out pairs
+ * (never the same --out: each run merges that folder's manifest); status reads every ledger.
  */
 import { execFileSync, spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync, statSync, linkSync, copyFileSync, unlinkSync } from 'node:fs';
 import { join, dirname, basename, extname, relative } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { CACHE_DIR as REAL_CACHE, OUT_DIR as REAL_OUT, BOOK_CODE, SOURCE_EXTS, DEFAULT_PAD, AlignerClient, checkEnv, sourceAudio, computeBoundaries,
-  refVerses, deriveVideoTimings, alignVerses, ffprobeDuration, parseRef, loadBookText, r2 } from './totaltorah-lib.mjs';
+  refVerses, deriveVideoTimings, alignVerses, ffprobeDuration, parseRef, loadBookText, r2, extendEndsToPauses } from './totaltorah-lib.mjs';
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
 const AUDIO_SCRIPT = join(repoRoot, 'scripts', 'build-totaltorah-audio.mjs');
@@ -70,7 +80,9 @@ const OUT = flags.out ? String(flags.out) : REAL_OUT;
 const VIDEOS_PATH = flags.videos ? String(flags.videos) : REAL_VIDEOS;
 const BULK_DIR = join(CACHE, 'bulk');
 const LOG_DIR = join(BULK_DIR, 'logs');
-const STATUS_PATH = join(BULK_DIR, 'status.json');
+// --ledger <name>: a run of its own ledger (status-<name>.json), so two runs can go at once on different books with
+// different --out folders; `status` reads every ledger. Two runs must never share an --out (each merges its manifest).
+const STATUS_PATH = join(BULK_DIR, flags.ledger ? `status-${String(flags.ledger).replace(/[^\w-]/g, '_')}.json` : 'status.json');
 const INVENTORY_PATH = join(BULK_DIR, 'inventory.json');
 const MANIFEST = join(OUT, 'manifest.json');
 const AUDIO_DIR = join(OUT, 'audio');
@@ -213,7 +225,7 @@ async function loadVideos(path = VIDEOS_PATH) {
 }
 const isIdent = (k) => /^[A-Za-z_$][\w$]*$/.test(k);
 const lit = (v) => (v === null ? 'null' : typeof v === 'number' || typeof v === 'boolean' ? String(v) : `'${String(v).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\r?\n/g, ' ')}'`);
-const ROW_KEYS = ['parsha', 'year', 'aliyah', 'ref', 'page', 'variant', 'note', 'title', 'duration', 'upload_date', 'check'];
+const ROW_KEYS = ['parsha', 'year', 'aliyah', 'ref', 'page', 'variant', 'note', 'heard', 'outro', 'title', 'duration', 'upload_date', 'check'];
 function rowLiteral(r) { return `{ ${ROW_KEYS.filter((k) => r[k] !== undefined).map((k) => `${k}: ${lit(r[k])}`).join(', ')} }`; }
 function rowOrder(id, r) {
   const u = rowUnit(r);
@@ -233,7 +245,9 @@ export function writeVideos(videos, path, missing = []) {
     '// A row: parsha (as data/parshiyot.json spells it; a doubled pair joined by \'-\'), year (1–3; null = one set for every year),',
     '// aliyah (1–7 or \'M\'), ref (the verse range the video chants — the cut and the alignment follow it; data/leyning/triennial.json\'s',
     '// division unless `note` says otherwise), page (the range as the Adas page prints it), variant (\'chazak\': the Chazak ending),',
-    '// note (a cross-check that did not agree); after `meta`: title, duration (s), upload_date and check (the title cross-check).',
+    '// note (a cross-check that did not agree), heard (the maintainer\'s listening corrected `ref`: `adas` keeps that row\'s ref),',
+    '// outro (s: a spoken closing announcement starts there — the alignment and the cut stop before it; `adas` keeps it);',
+    '// after `meta`: title, duration (s), upload_date and check (the title cross-check).',
   ];
   if (missing.length) { lines.push('// Listed on the page without a video link (no row until an id is known):'); for (const m of missing) lines.push(`//   ${m}`); }
   lines.push('export const VIDEOS = {');
@@ -355,6 +369,8 @@ async function cmdAdas() {
     if (videos[e.id]) { dupIds.set(e.id, (dupIds.get(e.id) || 1) + 1); problems.push(`${e.file}:${e.line}: id ${e.id} appears more than once (also ${videos[e.id].parsha} Y${videos[e.id].year} A${videos[e.id].aliyah})`); continue; }
     const prev = existing[e.id] || {};
     for (const k of ['title', 'duration', 'upload_date', 'check']) if (prev[k] !== undefined) row[k] = prev[k];
+    if (prev.heard) { row.ref = prev.ref; row.heard = prev.heard; }   // a range corrected by ear outranks the page's
+    if (prev.outro !== undefined) row.outro = prev.outro;
     videos[e.id] = row;
   }
   // rows the page does not list (added by hand through /addTOTT) stay
@@ -499,8 +515,35 @@ function sidecarOf(file) {
   }
   return null;
 }
-// what the path says about the file: id, and (from the file name first, then its folders) parasha, year, aliyah, chazak
-export function describeFile(file, videos) {
+// A dump's own video list: any .txt under it whose lines read "<title> - https://www.youtube.com/watch?v=<id>" (the
+// list the maintainer downloaded the series from). yt-dlp names each file by its title, so the list is the id each
+// file was fetched from — exact where the names are not: the channel re-uploaded a few aliyot under a title that
+// differs by a comma, and the Adas page links only one of the two.
+const YT_FILENAME_CHARS = { ':': '：', '/': '⧸', '\\': '⧹', '?': '？', '"': '＂', '*': '＊', '<': '＜', '>': '＞', '|': '｜' };   // yt-dlp's full-width stand-ins
+export function titleAsFileName(title) { return String(title).replace(/[:/\\?"*<>|]/g, (c) => YT_FILENAME_CHARS[c]).replace(/\s+/g, ' ').trim(); }
+export function readVideoLists(from) {
+  const index = new Map();   // the title as a file name → [{ id, title, list }]
+  (function walkTxt(dir) {
+    for (const name of readdirSync(dir)) {
+      if (name.startsWith('.')) continue;
+      const p = join(dir, name);
+      let st; try { st = statSync(p); } catch { continue; }
+      if (st.isDirectory()) { walkTxt(p); continue; }
+      if (!/\.txt$/i.test(name) || st.size > 4 * 1024 * 1024) continue;
+      for (const line of readFileSync(p, 'utf8').split(/\r?\n/)) {
+        const m = /^(.+?)\s+-\s+https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]{11})\s*$/.exec(line.trim());
+        if (!m) continue;
+        const k = titleAsFileName(m[1]);
+        const hits = index.get(k) || [];
+        if (!hits.some((h) => h.id === m[2])) index.set(k, hits.concat({ id: m[2], title: m[1].trim(), list: relative(from, p) }));
+      }
+    }
+  })(from);
+  return index;
+}
+// what the path says about the file: id (from "[id]" in the name, a yt-dlp sidecar, or the dump's video list), and
+// (from the file name first, then its folders) parasha, year, aliyah, chazak
+export function describeFile(file, videos, lists = null) {
   const d = { id: null, idFrom: null, year: null, aliyah: null, chazak: false, unit: null, book: null, title: null };
   const stem = basename(file.name, extname(file.name));
   let m = /\[([\w-]{11})\]/.exec(stem);
@@ -508,6 +551,13 @@ export function describeFile(file, videos) {
   else if (/^[\w-]{11}$/.test(stem) && videos[stem]) { d.id = stem; d.idFrom = 'file name'; }
   const side = sidecarOf(file);
   if (side) { if (!d.id) { d.id = side.info.id; d.idFrom = 'sidecar'; } d.title = side.info.title || null; d.sidecar = side.path; }
+  const listed = lists && lists.get(titleAsFileName(stem));
+  if (!d.id && listed) {
+    const onList = listed.filter((h) => videos[h.id]);
+    const pick = listed.length === 1 ? listed[0] : onList.length === 1 ? onList[0] : null;   // two uploads of one title: the one the Adas page links
+    if (pick) { d.id = pick.id; d.idFrom = listed.length === 1 ? 'video list' : `video list; ${listed.length} uploads share this title, this one is on the Adas page`; d.title = d.title || pick.title; }
+    else d.listIds = listed.map((h) => h.id);
+  }
   const segments = [stem, ...file.rel.split(/[\\/]/).slice(0, -1).reverse()];
   for (const seg of segments) {
     const bits = parseBits(seg);
@@ -524,15 +574,16 @@ export function describeFile(file, videos) {
   return d;
 }
 function rowKey(parshaUnitName, year, aliyah, chazak) { return `${parshaUnitName}|${year ?? '-'}|${aliyah}|${chazak ? 'chazak' : ''}`; }
-function matchFiles(files, videos) {
+function matchFiles(files, videos, lists = null) {
   const keyIndex = new Map();
   for (const [id, r] of Object.entries(videos)) { const k = rowKey(r.parsha, r.year, r.aliyah, r.variant === 'chazak'); keyIndex.set(k, (keyIndex.get(k) || []).concat(id)); }
   const matched = new Map();   // id → [files]
   const unmatched = [];
   for (const f of files) {
-    const d = describeFile(f, videos);
+    const d = describeFile(f, videos, lists);
     let id = null, how = null, why = null;
     if (d.id) { if (videos[d.id]) { id = d.id; how = `id (${d.idFrom})`; } else why = `id ${d.id} is not on the Adas listing`; }
+    else if (d.listIds) why = `the video list gives ${d.listIds.length} ids for this title (${d.listIds.join(', ')}) and ${d.listIds.filter((x) => videos[x]).length ? 'more than one is' : 'none is'} on the Adas listing`;
     if (!id && !why) {
       if (!d.unit) why = 'no parasha name found in the file or folder names';
       else if (d.aliyah === null) why = 'no aliyah number (or Maftir) found';
@@ -568,6 +619,9 @@ function inventoryReport(videos, matched, unmatched, files, from) {
   }
   const dups = [...matched.entries()].filter(([, fs]) => fs.length > 1);
   console.log(`inventory: ${files.length} audio files under ${from}; ${matched.size} videos matched (${[...matched.values()].reduce((s, v) => s + v.length, 0)} files), ${unmatched.length} files unmatched, ${dups.length} videos with more than one file`);
+  const hows = new Map();
+  for (const fs of matched.values()) for (const f of fs) { const h = f.how.includes(';') ? f.how.slice(0, f.how.indexOf(';')) + ')' : f.how; hows.set(h, (hows.get(h) || 0) + 1); }
+  console.log(`  matched by: ${[...hows.entries()].map(([h, n]) => `${h} ${n}`).join(', ')}`);
   for (const book of BOOKS) {
     const units = [...perUnit.entries()].filter(([, u]) => u.book === book);
     if (!units.length) continue;
@@ -595,7 +649,9 @@ async function cmdInventory(apply) {
   const videos = await loadVideos();
   if (!Object.keys(videos).length) fail('the whitelist is empty — run adas --accept first', 2);
   const files = walk(from);
-  const { matched, unmatched } = matchFiles(files, videos);
+  const lists = readVideoLists(from);
+  if (lists.size) console.log(`inventory: a video list under ${from} names ${lists.size} titles (${[...new Set([...lists.values()].flat().map((h) => h.list))].join(', ')})`);
+  const { matched, unmatched } = matchFiles(files, videos, lists);
   inventoryReport(videos, matched, unmatched, files, from);
   if (!apply) { if (cmd === 'stage') console.log('\n(report only — add --apply to stage the matched files into the cache)'); return; }
   mkdirSync(CACHE, { recursive: true });
@@ -633,6 +689,20 @@ async function cmdInventory(apply) {
 
 /* ================================================================== run ================================================================== */
 function readStatus() { try { return JSON.parse(readFileSync(STATUS_PATH, 'utf8')); } catch { return {}; } }
+// every ledger in the bulk folder (status, and a run's "already done" check): where two ledgers hold the same video,
+// the entry whose run started later wins (a --redo in a ledger of its own supersedes the book run's entry)
+function readAllStatus() {
+  const all = {};
+  if (!existsSync(BULK_DIR)) return all;
+  const overlay = (s) => { for (const [id, e] of Object.entries(s)) if (!all[id] || String(e.started || '') >= String(all[id].started || '')) all[id] = e; };
+  for (const f of ['status.json', ...readdirSync(BULK_DIR).filter((x) => /^status-[\w-]+\.json$/.test(x)).sort()]) {
+    const p = join(BULK_DIR, f);
+    if (p === STATUS_PATH || !existsSync(p)) continue;
+    try { overlay(JSON.parse(readFileSync(p, 'utf8'))); } catch { /* a half-written ledger: skipped */ }
+  }
+  overlay(readStatus());
+  return all;
+}
 function writeStatus(s) { mkdirSync(BULK_DIR, { recursive: true }); writeFileSync(STATUS_PATH, JSON.stringify(s, null, 1) + '\n'); }
 function readManifest() { try { return JSON.parse(readFileSync(MANIFEST, 'utf8')); } catch { return null; } }
 function selectRows(videos) {
@@ -650,7 +720,8 @@ function selectRows(videos) {
 }
 async function cmdRun() {
   const videos = await loadVideos();
-  const status = readStatus();
+  const status = readStatus();          // this run's ledger: what it writes
+  const known = readAllStatus();        // every ledger: what is already done or has a boundaries file to reuse
   const pad = flags.pad !== undefined ? parseFloat(flags.pad) : DEFAULT_PAD;
   const timingsMode = flags.timings ? String(flags.timings) : 'derive';
   if (!['derive', 'realign', 'none'].includes(timingsMode)) fail('--timings takes derive, realign or none', 2);
@@ -660,7 +731,7 @@ async function cmdRun() {
   let noRef = 0, notStaged = 0, doneBefore = 0;
   for (const id of ids) {
     const r = videos[id];
-    const st = status[id] || {};
+    const st = known[id] || {};
     if (!r.ref) { noRef++; continue; }
     const src = sourceAudio(id, CACHE);
     if (!src) { notStaged++; continue; }
@@ -669,7 +740,15 @@ async function cmdRun() {
     plan.push({ id, r, src });
   }
   const todo = plan.slice(0, limit);
-  console.log(`run: ${ids.length} videos selected; ${noRef} without a ref, ${notStaged} not staged, ${doneBefore} already done → ${todo.length} to process${plan.length > todo.length ? ` (${plan.length - todo.length} more after --limit)` : ''}; timings: ${timingsMode}; pad ${pad} s`);
+  // --intro <s> | silence: the announcement's end by hand (one video, with --only and --redo), for the few videos whose
+  // announcement goes on into a spoken lesson the transcript walk cannot follow
+  let introFlag = 'auto';
+  if (flags.intro !== undefined) {
+    if (todo.length !== 1) fail(`--intro is for one video at a time (use --only <id> --redo); ${todo.length} selected`, 2);
+    introFlag = flags.intro === 'silence' ? 'silence' : parseFloat(String(flags.intro));
+    if (typeof introFlag === 'number' && !isFinite(introFlag)) fail('--intro takes seconds, or "silence"', 2);
+  }
+  console.log(`run: ${ids.length} videos selected; ${noRef} without a ref, ${notStaged} not staged, ${doneBefore} already done → ${todo.length} to process${plan.length > todo.length ? ` (${plan.length - todo.length} more after --limit)` : ''}; timings: ${timingsMode}; pad ${pad} s${introFlag !== 'auto' ? `; intro ${introFlag}` : ''}`);
   if (!todo.length) { console.log('nothing to do'); return; }
   // the repo holds a mockup's worth of audio, never the corpus (≈ 735 MB for the whole Torah — Phase 2 hosts it on R2):
   // more than a parasha or so into data/totaltorah/ needs saying so
@@ -692,7 +771,7 @@ async function cmdRun() {
       const label = `${id} ${r.parsha} Y${r.year ?? '-'} A${r.aliyah}${r.variant ? ' chazak' : ''}`;
       const logLines = [`# ${label} — ${r.ref} — ${new Date().toISOString()}`];
       const log = (s) => logLines.push(String(s));
-      const st = status[id] = { ...(status[id] || {}), ref: r.ref, started: new Date().toISOString() };
+      const st = status[id] = { ...(known[id] || {}), ref: r.ref, started: new Date().toISOString() };
       delete st.error;
       const tv = Date.now();
       try {
@@ -725,8 +804,8 @@ async function cmdRun() {
           if (bj.ref !== r.ref || !Array.isArray(bj.verses)) bj = null;
         }
         if (!bj) {
-          bj = await computeBoundaries({ id, row: r, src, client, intro: 'auto', pad, keep16k: false, log, cacheDir: CACHE });
-          st.boundaries = { ok: true, at: today(), introEnd: bj.introEnd, introBy: bj.introBy, legacyIntro: bj.legacyIntro, minGap: bj.gaps.length ? Math.min(...bj.gaps) : null, wall: bj.wall, windows: bj.windows };
+          bj = await computeBoundaries({ id, row: r, src, client, intro: introFlag, pad, keep16k: false, log, cacheDir: CACHE });
+          st.boundaries = { ok: true, at: today(), introEnd: bj.introEnd, introBy: bj.introBy, legacyIntro: bj.legacyIntro, introUnconfirmed: !!bj.introUnconfirmed, introWarning: bj.introWarning || null, introTranscript: bj.introTranscript || null, minGap: bj.gaps.length ? Math.min(...bj.gaps) : null, wall: bj.wall, windows: bj.windows };
         }
         // 3. split (the audio script owns the manifest, the license and the triennial cross-check)
         if (!(st.split && st.split.ok) || flags.redo) {
@@ -759,7 +838,7 @@ async function cmdRun() {
         st.wall = r2((Date.now() - tv) / 1000);
         okCount++;
         const b = st.boundaries || {};
-        console.log(`  ✓ ${label}: ${verses.length} verses${st.split && st.split.kept ? ` (${st.split.kept} kept)` : ''}, intro ${b.introEnd} s (${b.introBy}${b.legacyIntro !== undefined && Math.abs(b.legacyIntro - b.introEnd) > 0.3 ? `, silence rule ${b.legacyIntro} s` : ''}), min gap ${b.minGap} s${st.timings ? `, ${st.timings.low} low-score words of ${st.timings.words}` : ''}${st.split && st.split.triennial === 'MISMATCH' ? ', triennial MISMATCH' : ''}, ${st.wall} s`);
+        console.log(`  ✓ ${label}: ${verses.length} verses${st.split && st.split.kept ? ` (${st.split.kept} kept)` : ''}, intro ${b.introEnd} s (${b.introBy}${b.legacyIntro !== undefined && Math.abs(b.legacyIntro - b.introEnd) > 0.3 ? `, silence rule ${b.legacyIntro} s` : ''})${b.introUnconfirmed ? ' ⚠ intro unconfirmed' : ''}, min gap ${b.minGap} s${st.timings ? `, ${st.timings.low} low-score words of ${st.timings.words}` : ''}${st.split && st.split.triennial === 'MISMATCH' ? ', triennial MISMATCH' : ''}, ${st.wall} s`);
       } catch (e) {
         failCount++;
         st.error = e && e.message ? e.message : String(e);
@@ -778,10 +857,48 @@ async function cmdRun() {
   console.log(`next: node scripts/build-totaltorah-bulk.mjs status   — then listen, and flip what you accept with build-totaltorah-audio.mjs verify --video <id> (or --parsha <name>), and again with --timings`);
 }
 
+/* ================================================================== ends ================================================================== */
+async function cmdEnds() {
+  const videos = await loadVideos();
+  const ids = selectRows(videos);
+  const manifest0 = readManifest();
+  if (flags.apply && !manifest0) fail(`no manifest in ${OUT} — --apply re-cuts into an --out that already holds the series`, 2);
+  mkdirSync(LOG_DIR, { recursive: true });
+  let checked = 0, moved = 0, bounds = 0;
+  for (const id of ids) {
+    const r = videos[id];
+    const bp = join(CACHE, `${id}.boundaries.json`);
+    const src = sourceAudio(id, CACHE);
+    if (!r.ref || !src || !existsSync(bp)) continue;
+    const bj = JSON.parse(readFileSync(bp, 'utf8'));
+    if (bj.ref !== r.ref || !Array.isArray(bj.verses)) { console.log(`  ? ${id}: its boundaries file is for ${bj.ref}, the row says ${r.ref} — skipped (re-run it with run --only ${id} --redo)`); continue; }
+    if (manifest0 && !bj.verses.some((v) => manifest0[v.key] && manifest0[v.key].video === id)) continue;   // every verse held by another video
+    checked++;
+    const moves = extendEndsToPauses(bj, src);
+    if (!moves.length) continue;
+    moved++; bounds += moves.length;
+    console.log(`  ${id} ${r.parsha} Y${r.year ?? '-'} A${r.aliyah}: ${moves.map((m) => `${m.key} +${r2(m.to - m.from)} s`).join(', ')}`);
+    if (!flags.apply) continue;
+    writeFileSync(bp, JSON.stringify(bj, null, 1) + '\n');
+    const args = [AUDIO_SCRIPT, 'split', '--video', id, '--boundaries', 'auto', '--pad', String(bj.pad ?? DEFAULT_PAD), '--keep-existing'];
+    if (flags.cache) args.push('--cache', CACHE);
+    if (flags.out) args.push('--out', OUT);
+    const sp = spawnSync(process.execPath, args, { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+    writeFileSync(join(LOG_DIR, `${id}.ends.log`), `# ends ${new Date().toISOString()}\n${JSON.stringify(moves)}\n${sp.stdout || ''}${sp.stderr || ''}`);
+    if (sp.status !== 0) fail(`split ${id} exited ${sp.status}: ${(sp.stderr || sp.stdout || '').trim().split('\n').pop()}`);
+    const manifest = readManifest();
+    if (manifest0.credit && manifest0.credit.videos && manifest0.credit.videos[id]) manifest.credit.videos[id] = manifest0.credit.videos[id];   // the source is the same file
+    const res = deriveVideoTimings({ id, manifest, log: () => {}, cacheDir: CACHE, timingsDir: TIMINGS_DIR });
+    writeFileSync(MANIFEST, JSON.stringify(manifest, null, 1) + '\n');
+    if (res.failures.length) console.log(`    ✗ timings: ${res.failures.map((f) => `${f.key}: ${f.error}`).join('; ')}`);
+  }
+  console.log(`\nends: ${checked} videos checked, ${moved} with a cut that ended before the voice (${bounds} boundaries)${flags.apply ? ` — re-cut into ${OUT} and their timings re-derived; every re-cut file is unheard again` : ' — add --apply to re-cut them'}`);
+}
+
 /* ================================================================== status ================================================================== */
 async function cmdStatus() {
   const videos = await loadVideos();
-  const status = readStatus();
+  const status = readAllStatus();
   const manifest = readManifest() || {};
   const ids = sortedIds(videos);
   const byUnit = new Map();
@@ -824,6 +941,8 @@ async function cmdStatus() {
   if (failed.length) console.log(`\nfailed videos (${failed.length}; re-run picks them up, --redo recomputes):\n` + failed.map((id) => `  ${id} ${videos[id].parsha} Y${videos[id].year ?? '-'} A${videos[id].aliyah}: ${status[id].error}`).join('\n'));
   const mismatch = ids.filter((id) => status[id] && status[id].split && status[id].split.triennial === 'MISMATCH');
   if (mismatch.length) console.log(`\ntriennial cross-check mismatches (reported, data left as is): ${mismatch.join(', ')}`);
+  const unconfirmed = ids.filter((id) => status[id] && status[id].boundaries && status[id].boundaries.introUnconfirmed);
+  if (unconfirmed.length) console.log(`\nintro end not confirmed by the English transcript (${unconfirmed.length}; the first-silence rule decided — listen to the first verse before verifying):\n` + unconfirmed.map((id) => `  ${id} ${videos[id].parsha} Y${videos[id].year ?? '-'} A${videos[id].aliyah}: cut at ${status[id].boundaries.introEnd} s — ${status[id].boundaries.introWarning || ''}`).join('\n'));
   const noRef = ids.filter((id) => !videos[id].ref);
   if (noRef.length) console.log(`\nvideos without a ref (set it by hand in the whitelist): ${noRef.map((id) => `${id} (${videos[id].parsha} Y${videos[id].year ?? '-'} A${videos[id].aliyah})`).join(', ')}`);
   const toHear = [...byUnit.entries()].filter(([, u]) => u.verses && u.verified < u.verses).map(([name]) => name);
@@ -841,7 +960,8 @@ try {
   else if (cmd === 'stage') await cmdInventory(!!flags.apply);
   else if (cmd === 'run') await cmdRun();
   else if (cmd === 'status') await cmdStatus();
-  else { console.log('usage: build-totaltorah-bulk.mjs (adas|meta|inventory|stage|run|status) … (see the header comment)'); process.exit(2); }
+  else if (cmd === 'ends') await cmdEnds();
+  else { console.log('usage: build-totaltorah-bulk.mjs (adas|meta|inventory|stage|run|ends|status) … (see the header comment)'); process.exit(2); }
 } catch (e) {
   fail(e && e.stack ? e.stack.split('\n').slice(0, 3).join('\n') : String(e));
 }

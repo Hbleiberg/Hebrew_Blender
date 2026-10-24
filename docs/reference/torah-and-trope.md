@@ -901,24 +901,35 @@ never a practice link (`LINK_DISPLAY` says how a reading looks, never how it sou
 - **Total Torah** is Cantor Arianne Brown's *Tricks of the Trope – Total Torah* (Adas Israel Congregation): the whole
   Torah chanted verse by verse, one YouTube video per triennial aliyah, used with her written permission
   (`THIRD_PARTY_LICENSES.md`; `data/totaltorah/LICENSE.txt`). **Per-verse files**, not aliyah files:
-  `data/totaltorah/audio/gen-001-001.mp3` (book code, chapter, verse, zero-padded), optional per-verse timings
-  `data/totaltorah/timings/gen-001-001.txt` in the PocketTorah label format (comma-separated word onsets, index = word
-  index, one trailing end-of-last-word value), and `data/totaltorah/manifest.json`: a top-level `credit` block (names,
-  URLs, the permission, each source video's title and upload date) beside one entry per verse, keyed `"Genesis 1:1"` —
-  `{ file, dur, video, parsha, year, aliyah, verified, timings, timingsVerified }`. The manifest and the timings are
-  fetched with `TT_DATA_V` (`?v=2`; `/data/` is cache-first and exact-URL keyed); the audio is left to the network by
-  `sw.js` (a Range request must never be answered from the cache).
+  `gen-001-001.mp3` (book code, chapter, verse, zero-padded) served from the Cloudflare R2 bucket
+  `totaltorah-audio` (`audio/`, 5,846 files for the whole Torah, ≈ 1 GB — never in this repository) at
+  `TT_AUDIO_BASE`, the bucket's custom domain `audio.ivritsuite.com` (Cloudflare-cached; the `r2.dev` development
+  URL is rate-limited and for testing only, never `TT_AUDIO_BASE`), which the CSP's `media-src` carries; the bucket's CORS policy
+  allows GET/HEAD from `ivritsuite.com`, `www.ivritsuite.com`, `hbleiberg.github.io` and `localhost:8080` and
+  exposes `Content-Length`, `Content-Range`, `Accept-Ranges` (the audio element is `crossorigin` for the pitch
+  shifter); the private repository `Hbleiberg/TotalTorahAudio` is the files' master copy; per-verse timings `data/totaltorah/timings/gen-001-001.txt`
+  in the PocketTorah label format (comma-separated word onsets, index = word index, one trailing end-of-last-word
+  value), and `data/totaltorah/manifest.json`: a top-level `credit` block (names, URLs, the permission, each source
+  video's title and upload date) beside one entry per verse, keyed `"Genesis 1:1"` — `{ file, dur, video, parsha,
+  year, aliyah, verified, timings, timingsVerified }`. The manifest and the timings are fetched with `TT_DATA_V`
+  (`?v=9`; `/data/` is cache-first and exact-URL keyed); the audio is left to the network by `sw.js` (a Range
+  request must never be answered from the cache).
 - **Verified or nothing.** `ttEntryFor(vk)` returns an entry only while it is `verified: true`, and its timings count
   only while `timingsVerified: true` — the maintainer flips both by listening (`build-totaltorah-audio.mjs verify`),
   the trope motifs' discipline. An unverified verse is a verse with no recording (PocketTorah plays it); verified
   audio with unverified timings plays with a **whole-verse highlight** (`timings = [0]`, `updateKaraokeWordRefs` maps
   every word of the verse to index 0) and the Karaoke section's `#kfTTNote` says word-by-word follow is not there yet.
-- **The approval gate.** `TOTALTORAH_PUBLIC = false` keeps the option off every page; `?reader=totaltorah`
-  (`ttOffered()`) reveals it for a visit and, when the stored source is PocketTorah, selects it for that visit only
-  (`_recSrcOverride`, the tutor's `?melody=` idea — never saved; a radio press saves a choice and ends it; Reset clears
-  it). Without the flag nothing changes for anyone: the manifest is not fetched (`ensureTotalTorahManifest` returns
-  null), the Recording row (`#optRecSrcRow`) stays `hidden`, `syncAudioCredit` returns before touching the bar, and
-  every entry point asks `ttEntryFor`, which answers null.
+- **The approval gate.** `TOTALTORAH_PUBLIC = true` offers the option to every visitor (`ttOffered()`), with
+  PocketTorah the default (`settings.recordingSource`); `?reader=totaltorah` selects Total Torah for that visit only
+  when the stored source is PocketTorah (`_recSrcOverride`, the tutor's `?melody=` idea — never saved; a radio press
+  saves a choice and ends it; Reset clears it) — `init` reads the link itself, never `ttOffered()`, or every visit
+  would hear Total Torah. With the flag `false` the link alone reveals it, and nothing changes for anyone else: the manifest is not fetched (`ensureTotalTorahManifest` returns
+  null), the Recording row (`#optRecSrcRow`) and the controls bar's Chanting picker (`#ttRecSrcCtrl`) stay `hidden`,
+  `syncAudioCredit` returns before touching the bar, and every entry point asks `ttEntryFor`, which answers null.
+- **Two controls, one writer.** The controls bar's **Chanting** picker (`#ttRecSrcBar`, beside the Translit /
+  Translation switches: *PocketTorah (Reform)* / *Total Torah (Conservative)*) is the Audio tab's Recording radios as
+  a `<select>`. `setRecordingSource` writes for both; `syncRecSrcControls` sets the picker's value, disables its Total
+  Torah option and swaps its title for the *no recording* note exactly as it does for the radio.
 - **One engine.** A loaded verse file is a one-verse "aliyah" to the karaoke engine: `loadTotalTorahVerse` sets
   verse-local `currentTimings`, `_holidayKaraoke = { map: { [vk]: 0 } }` (so `updateKaraokeWordRefs` lights only that
   verse's words), `_loadedChantKey = 'tt|' + vk` (so `chantHolidayWord` never matches it) and `_ttLoaded = { vk,
@@ -946,7 +957,10 @@ never a practice link (`LINK_DISPLAY` says how a reading looks, never how it sou
   block `#optRecCreditTT` with the same links and one `torah.recsrc.this_reading` line per source video (parasha,
   year, aliyah — the triennial aliyah the verses on screen come from), shown instead of `#optRecCreditPocket` while
   the source is on; `syncRecSrcControls()` is the read-only settings → controls half, from `syncFormToSettings`,
-  `applyI18n` and the end of every `fetchAndRender`. The reading header: `torah.recsrc.chip` (its tip says the
+  `applyI18n` and the end of every `fetchAndRender`. It also picks the footer's pinned-English audio credit:
+  `#ttFooterAudioTT` (Cantor Brown, Adas Israel, "used by permission") while the source is on for the reading,
+  `#ttFooterAudioPocket` (PocketTorah, CC BY-SA 4.0) otherwise — and both while some verse on screen has no Total
+  Torah recording and so plays PocketTorah (`ttReadingEntries(true).count < currentVerses.length`). The reading header: `torah.recsrc.chip` (its tip says the
   Trainer's staffs show the Avery/Binder chart) while the reading has entries; the Spiro chips (`hh_chant_chip`,
   `staff_chant_chip`) stand down then.
 - **The data pipeline** (`scripts/build-totaltorah-audio.mjs`, `scripts/build-totaltorah-timings.mjs` with
@@ -955,9 +969,10 @@ never a practice link (`LINK_DISPLAY` says how a reading looks, never how it sou
   `silencedetect` and refuses a segment count that differs from the ref's verse count — which it always does: every
   video opens with a spoken intro, and the cantor's mid-verse pauses at the etnachta and zakef are quieter than her
   breaths between verses, so the usual cut is `--boundaries auto`, the file `build-totaltorah-timings.mjs
-  --boundaries <id>` writes after one whole-file alignment (the intro taken to end at the first silence after a
-  second of sound, `--intro <s>` to override; a boundary midway through each inter-verse gap); `--boundaries
-  "t0,…,tN"` is the hand override, and a guess is never made. It writes the MP3s, a lossless FLAC per verse for
+  --boundaries <id>` writes after one whole-file alignment (the spoken announcement's end read off an English
+  speech model's transcript of the opening — the aliyah number's timestamp, then the first pause after it — with
+  the first-silence rule as the flagged fallback, `--intro <s>` to override; a boundary midway through each
+  inter-verse gap); `--boundaries "t0,…,tN"` is the hand override, and a guess is never made. It writes the MP3s, a lossless FLAC per verse for
   Adas Israel, the manifest (`verified: false`) and the license; the whitelist both scripts read is
   `scripts/totaltorah-videos.mjs`, and `/addTOTT` (`.claude/skills/addTOTT/SKILL.md`) is the intake recipe for
   the next video; the timings script aligns each verse FLAC against its consonantal text (the Trainer's tokenization,
@@ -973,17 +988,33 @@ never a practice link (`LINK_DISPLAY` says how a reading looks, never how it sou
   one unit on the page and follows its combined table; Ha'azinu and V'Zot HaBerachah carry `year: null` (one set
   for all three years). `meta` checks every id's title through YouTube's oEmbed endpoint (the bot gate refuses
   yt-dlp from a cloud address) and records `check`. `inventory` / `stage` match a dump of the maintainer's downloads
-  — by the id in a file name or yt-dlp sidecar, else by the parasha, year and aliyah in the file and folder names,
-  English in any spelling or Hebrew — and hard-link the matched files into the cache with an `<id>.info.json` each.
+  — by the id in a file name or yt-dlp sidecar, or by the dump's own video list (a `.txt` of "title - YouTube URL"
+  lines: the files are named by title, and where two uploads share a title the one on the Adas page wins), else by
+  the parasha, year and aliyah in the file and folder names, English in any spelling or Hebrew — and hard-link the
+  matched files into the cache with an `<id>.info.json` each.
   `run` drives boundaries → `split --boundaries auto --keep-existing` → timings per video with one aligner process
   (`align_totaltorah.py --serve`; the network runs in 40 s windows, so a long aliyah needs no more memory than a
-  short one; the intro end is the best-scoring of the silence-end candidates, the first-silence rule the tiebreak;
+  short one; the intro end comes from the English transcript as above, and a video it cannot settle is flagged
+  `introUnconfirmed` in the ledger for the listening pass;
   `--timings derive` reads each verse's timings off the whole-file alignment — the boundaries file carries every
   word — and `realign` is the per-verse second pass), cuts each verse once (the series repeats some readings; the
   first video in Torah order wins, later ones are `duplicate`), skips maftir and Chazak videos unless asked, and
-  logs every failure and goes on; `status` is the ledger. The corpus (≈ 735 MB) never enters the repo: `run`
-  refuses more than a parasha into `data/totaltorah/` without `--into-repo`, and the series goes `--out
-  source-data/totaltorah-out` (gitignored) until Phase 2 hosts it (R2 + one `media-src` origin).
+  logs every failure and goes on; `run --ledger <name>` keeps a run's own ledger so two runs can go at once on
+  different books and `--out` folders (two aligners at default threads starve each other — `OMP_NUM_THREADS=2`
+  each), `run --only <id> --redo --intro <s>` cuts one video's announcement by hand, and `status` reads every
+  ledger (the later run's entry wins) and lists the flagged intros. A verse's cut ends at the first pause after its
+  last word (`extendEndsToPauses`: −45 dB held 0.15 s, + 0.1 s), never at the word's aligned end alone — the
+  alignment ends a held note early, and an aliyah's closing cadence rang up to 4.7 s past it (the old aligned end
+  + 0.4 s clipped the last verse of about a third of the series); a boundary only moves later, only past a 0.1 s
+  tolerance, and never within 0.2 s of the next verse's first word. `ends [--apply]` runs that rule on boundaries
+  files already written, without the model, and re-cuts what moved. A row's `outro` (seconds) marks a spoken closing
+  announcement — the "congregation says chazak" after the last verse of Genesis and of the Torah — and both the
+  alignment and the cut stop before it (without it the alignment stretched the last words over the speech). The corpus (≈ 1 GB) never enters this repo: `run`
+  refuses more than a parasha into `data/totaltorah/` without `--into-repo`, the series goes `--out
+  source-data/totaltorah-out` (gitignored), its manifest and timings move into `data/totaltorah/`, and its MP3s go
+  to the private `Hbleiberg/TotalTorahAudio` repository (the master copy) and to the R2 bucket `totaltorah-audio`
+  (the serving copy: one `PUT …/r2/buckets/totaltorah-audio/objects/audio/<file>` per file through the Cloudflare
+  API, with an account token that is never kept in a file).
 
 ---
 
