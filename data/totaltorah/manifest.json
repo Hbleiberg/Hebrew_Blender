@@ -7399,9 +7399,9 @@
   "parsha": "Bereshit",
   "year": 1,
   "aliyah": 2,
-  "verified": false,
+  "verified": true,
   "timings": "gen-001-006.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 1:7": {
   "file": "gen-001-007.mp3",
@@ -7410,9 +7410,9 @@
   "parsha": "Bereshit",
   "year": 1,
   "aliyah": 2,
-  "verified": false,
+  "verified": true,
   "timings": "gen-001-007.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 1:8": {
   "file": "gen-001-008.mp3",
@@ -7421,9 +7421,9 @@
   "parsha": "Bereshit",
   "year": 1,
   "aliyah": 2,
-  "verified": false,
+  "verified": true,
   "timings": "gen-001-008.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 1:9": {
   "file": "gen-001-009.mp3",
@@ -7432,9 +7432,9 @@
   "parsha": "Bereshit",
   "year": 1,
   "aliyah": 3,
-  "verified": false,
+  "verified": true,
   "timings": "gen-001-009.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 1:10": {
   "file": "gen-001-010.mp3",
@@ -7443,9 +7443,9 @@
   "parsha": "Bereshit",
   "year": 1,
   "aliyah": 3,
-  "verified": false,
+  "verified": true,
   "timings": "gen-001-010.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 1:11": {
   "file": "gen-001-011.mp3",
@@ -7454,9 +7454,9 @@
   "parsha": "Bereshit",
   "year": 1,
   "aliyah": 3,
-  "verified": false,
+  "verified": true,
   "timings": "gen-001-011.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 1:12": {
   "file": "gen-001-012.mp3",
@@ -7465,9 +7465,9 @@
   "parsha": "Bereshit",
   "year": 1,
   "aliyah": 3,
-  "verified": false,
+  "verified": true,
   "timings": "gen-001-012.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 1:13": {
   "file": "gen-001-013.mp3",
@@ -7476,9 +7476,9 @@
   "parsha": "Bereshit",
   "year": 1,
   "aliyah": 3,
-  "verified": false,
+  "verified": true,
   "timings": "gen-001-013.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 1:14": {
   "file": "gen-001-014.mp3",
@@ -7487,9 +7487,9 @@
   "parsha": "Bereshit",
   "year": 1,
   "aliyah": 4,
-  "verified": false,
+  "verified": true,
   "timings": "gen-001-014.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 1:15": {
   "file": "gen-001-015.mp3",
@@ -7498,9 +7498,9 @@
   "parsha": "Bereshit",
   "year": 1,
   "aliyah": 4,
-  "verified": false,
+  "verified": true,
   "timings": "gen-001-015.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 1:16": {
   "file": "gen-001-016.mp3",
@@ -7509,9 +7509,9 @@
   "parsha": "Bereshit",
   "year": 1,
   "aliyah": 4,
-  "verified": false,
+  "verified": true,
   "timings": "gen-001-016.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 1:17": {
   "file": "gen-001-017.mp3",
@@ -7520,9 +7520,9 @@
   "parsha": "Bereshit",
   "year": 1,
   "aliyah": 4,
-  "verified": false,
+  "verified": true,
   "timings": "gen-001-017.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 1:18": {
   "file": "gen-001-018.mp3",
@@ -7531,9 +7531,9 @@
   "parsha": "Bereshit",
   "year": 1,
   "aliyah": 4,
-  "verified": false,
+  "verified": true,
   "timings": "gen-001-018.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 1:19": {
   "file": "gen-001-019.mp3",
@@ -7542,9 +7542,9 @@
   "parsha": "Bereshit",
   "year": 1,
   "aliyah": 4,
-  "verified": false,
+  "verified": true,
   "timings": "gen-001-019.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 1:20": {
   "file": "gen-001-020.mp3",
@@ -7553,9 +7553,9 @@
   "parsha": "Bereshit",
   "year": 1,
   "aliyah": 5,
-  "verified": false,
+  "verified": true,
   "timings": "gen-001-020.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 1:21": {
   "file": "gen-001-021.mp3",
@@ -7564,9 +7564,9 @@
   "parsha": "Bereshit",
   "year": 1,
   "aliyah": 5,
-  "verified": false,
+  "verified": true,
   "timings": "gen-001-021.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 1:22": {
   "file": "gen-001-022.mp3",
@@ -7575,9 +7575,9 @@
   "parsha": "Bereshit",
   "year": 1,
   "aliyah": 5,
-  "verified": false,
+  "verified": true,
   "timings": "gen-001-022.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 1:23": {
   "file": "gen-001-023.mp3",
@@ -7586,9 +7586,9 @@
   "parsha": "Bereshit",
   "year": 1,
   "aliyah": 5,
-  "verified": false,
+  "verified": true,
   "timings": "gen-001-023.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 1:24": {
   "file": "gen-001-024.mp3",
@@ -7597,9 +7597,9 @@
   "parsha": "Bereshit",
   "year": 1,
   "aliyah": 6,
-  "verified": false,
+  "verified": true,
   "timings": "gen-001-024.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 1:25": {
   "file": "gen-001-025.mp3",
@@ -7608,9 +7608,9 @@
   "parsha": "Bereshit",
   "year": 1,
   "aliyah": 6,
-  "verified": false,
+  "verified": true,
   "timings": "gen-001-025.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 1:26": {
   "file": "gen-001-026.mp3",
@@ -7619,9 +7619,9 @@
   "parsha": "Bereshit",
   "year": 1,
   "aliyah": 6,
-  "verified": false,
+  "verified": true,
   "timings": "gen-001-026.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 1:27": {
   "file": "gen-001-027.mp3",
@@ -7630,9 +7630,9 @@
   "parsha": "Bereshit",
   "year": 1,
   "aliyah": 6,
-  "verified": false,
+  "verified": true,
   "timings": "gen-001-027.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 1:28": {
   "file": "gen-001-028.mp3",
@@ -7641,9 +7641,9 @@
   "parsha": "Bereshit",
   "year": 1,
   "aliyah": 6,
-  "verified": false,
+  "verified": true,
   "timings": "gen-001-028.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 1:29": {
   "file": "gen-001-029.mp3",
@@ -7652,9 +7652,9 @@
   "parsha": "Bereshit",
   "year": 1,
   "aliyah": 6,
-  "verified": false,
+  "verified": true,
   "timings": "gen-001-029.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 1:30": {
   "file": "gen-001-030.mp3",
@@ -7663,9 +7663,9 @@
   "parsha": "Bereshit",
   "year": 1,
   "aliyah": 6,
-  "verified": false,
+  "verified": true,
   "timings": "gen-001-030.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 1:31": {
   "file": "gen-001-031.mp3",
@@ -7674,9 +7674,9 @@
   "parsha": "Bereshit",
   "year": 1,
   "aliyah": 6,
-  "verified": false,
+  "verified": true,
   "timings": "gen-001-031.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 2:1": {
   "file": "gen-002-001.mp3",
@@ -7685,9 +7685,9 @@
   "parsha": "Bereshit",
   "year": 1,
   "aliyah": 7,
-  "verified": false,
+  "verified": true,
   "timings": "gen-002-001.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 2:2": {
   "file": "gen-002-002.mp3",
@@ -7696,9 +7696,9 @@
   "parsha": "Bereshit",
   "year": 1,
   "aliyah": 7,
-  "verified": false,
+  "verified": true,
   "timings": "gen-002-002.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 2:3": {
   "file": "gen-002-003.mp3",
@@ -7707,9 +7707,9 @@
   "parsha": "Bereshit",
   "year": 1,
   "aliyah": 7,
-  "verified": false,
+  "verified": true,
   "timings": "gen-002-003.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 2:4": {
   "file": "gen-002-004.mp3",
@@ -7718,9 +7718,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 1,
-  "verified": false,
+  "verified": true,
   "timings": "gen-002-004.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 2:5": {
   "file": "gen-002-005.mp3",
@@ -7729,9 +7729,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 1,
-  "verified": false,
+  "verified": true,
   "timings": "gen-002-005.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 2:6": {
   "file": "gen-002-006.mp3",
@@ -7740,9 +7740,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 1,
-  "verified": false,
+  "verified": true,
   "timings": "gen-002-006.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 2:7": {
   "file": "gen-002-007.mp3",
@@ -7751,9 +7751,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 1,
-  "verified": false,
+  "verified": true,
   "timings": "gen-002-007.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 2:8": {
   "file": "gen-002-008.mp3",
@@ -7762,9 +7762,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 1,
-  "verified": false,
+  "verified": true,
   "timings": "gen-002-008.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 2:9": {
   "file": "gen-002-009.mp3",
@@ -7773,9 +7773,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 1,
-  "verified": false,
+  "verified": true,
   "timings": "gen-002-009.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 2:10": {
   "file": "gen-002-010.mp3",
@@ -7784,9 +7784,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 2,
-  "verified": false,
+  "verified": true,
   "timings": "gen-002-010.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 2:11": {
   "file": "gen-002-011.mp3",
@@ -7795,9 +7795,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 2,
-  "verified": false,
+  "verified": true,
   "timings": "gen-002-011.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 2:12": {
   "file": "gen-002-012.mp3",
@@ -7806,9 +7806,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 2,
-  "verified": false,
+  "verified": true,
   "timings": "gen-002-012.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 2:13": {
   "file": "gen-002-013.mp3",
@@ -7817,9 +7817,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 2,
-  "verified": false,
+  "verified": true,
   "timings": "gen-002-013.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 2:14": {
   "file": "gen-002-014.mp3",
@@ -7828,9 +7828,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 2,
-  "verified": false,
+  "verified": true,
   "timings": "gen-002-014.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 2:15": {
   "file": "gen-002-015.mp3",
@@ -7839,9 +7839,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 2,
-  "verified": false,
+  "verified": true,
   "timings": "gen-002-015.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 2:16": {
   "file": "gen-002-016.mp3",
@@ -7850,9 +7850,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 2,
-  "verified": false,
+  "verified": true,
   "timings": "gen-002-016.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 2:17": {
   "file": "gen-002-017.mp3",
@@ -7861,9 +7861,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 2,
-  "verified": false,
+  "verified": true,
   "timings": "gen-002-017.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 2:18": {
   "file": "gen-002-018.mp3",
@@ -7872,9 +7872,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 2,
-  "verified": false,
+  "verified": true,
   "timings": "gen-002-018.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 2:19": {
   "file": "gen-002-019.mp3",
@@ -7883,9 +7883,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 2,
-  "verified": false,
+  "verified": true,
   "timings": "gen-002-019.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 2:20": {
   "file": "gen-002-020.mp3",
@@ -7894,9 +7894,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 3,
-  "verified": false,
+  "verified": true,
   "timings": "gen-002-020.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 2:21": {
   "file": "gen-002-021.mp3",
@@ -7905,9 +7905,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 3,
-  "verified": false,
+  "verified": true,
   "timings": "gen-002-021.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 2:22": {
   "file": "gen-002-022.mp3",
@@ -7916,9 +7916,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 3,
-  "verified": false,
+  "verified": true,
   "timings": "gen-002-022.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 2:23": {
   "file": "gen-002-023.mp3",
@@ -7927,9 +7927,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 3,
-  "verified": false,
+  "verified": true,
   "timings": "gen-002-023.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 2:24": {
   "file": "gen-002-024.mp3",
@@ -7938,9 +7938,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 3,
-  "verified": false,
+  "verified": true,
   "timings": "gen-002-024.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 2:25": {
   "file": "gen-002-025.mp3",
@@ -7949,9 +7949,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 3,
-  "verified": false,
+  "verified": true,
   "timings": "gen-002-025.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 3:1": {
   "file": "gen-003-001.mp3",
@@ -7960,9 +7960,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 4,
-  "verified": false,
+  "verified": true,
   "timings": "gen-003-001.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 3:2": {
   "file": "gen-003-002.mp3",
@@ -7971,9 +7971,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 4,
-  "verified": false,
+  "verified": true,
   "timings": "gen-003-002.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 3:3": {
   "file": "gen-003-003.mp3",
@@ -7982,9 +7982,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 4,
-  "verified": false,
+  "verified": true,
   "timings": "gen-003-003.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 3:4": {
   "file": "gen-003-004.mp3",
@@ -7993,9 +7993,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 4,
-  "verified": false,
+  "verified": true,
   "timings": "gen-003-004.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 3:5": {
   "file": "gen-003-005.mp3",
@@ -8004,9 +8004,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 4,
-  "verified": false,
+  "verified": true,
   "timings": "gen-003-005.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 3:6": {
   "file": "gen-003-006.mp3",
@@ -8015,9 +8015,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 4,
-  "verified": false,
+  "verified": true,
   "timings": "gen-003-006.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 3:7": {
   "file": "gen-003-007.mp3",
@@ -8026,9 +8026,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 4,
-  "verified": false,
+  "verified": true,
   "timings": "gen-003-007.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 3:8": {
   "file": "gen-003-008.mp3",
@@ -8037,9 +8037,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 4,
-  "verified": false,
+  "verified": true,
   "timings": "gen-003-008.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 3:9": {
   "file": "gen-003-009.mp3",
@@ -8048,9 +8048,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 4,
-  "verified": false,
+  "verified": true,
   "timings": "gen-003-009.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 3:10": {
   "file": "gen-003-010.mp3",
@@ -8059,9 +8059,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 4,
-  "verified": false,
+  "verified": true,
   "timings": "gen-003-010.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 3:11": {
   "file": "gen-003-011.mp3",
@@ -8070,9 +8070,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 4,
-  "verified": false,
+  "verified": true,
   "timings": "gen-003-011.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 3:12": {
   "file": "gen-003-012.mp3",
@@ -8081,9 +8081,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 4,
-  "verified": false,
+  "verified": true,
   "timings": "gen-003-012.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 3:13": {
   "file": "gen-003-013.mp3",
@@ -8092,9 +8092,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 4,
-  "verified": false,
+  "verified": true,
   "timings": "gen-003-013.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 3:14": {
   "file": "gen-003-014.mp3",
@@ -8103,9 +8103,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 4,
-  "verified": false,
+  "verified": true,
   "timings": "gen-003-014.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 3:15": {
   "file": "gen-003-015.mp3",
@@ -8114,9 +8114,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 4,
-  "verified": false,
+  "verified": true,
   "timings": "gen-003-015.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 3:16": {
   "file": "gen-003-016.mp3",
@@ -8125,9 +8125,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 4,
-  "verified": false,
+  "verified": true,
   "timings": "gen-003-016.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 3:17": {
   "file": "gen-003-017.mp3",
@@ -8136,9 +8136,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 4,
-  "verified": false,
+  "verified": true,
   "timings": "gen-003-017.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 3:18": {
   "file": "gen-003-018.mp3",
@@ -8147,9 +8147,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 4,
-  "verified": false,
+  "verified": true,
   "timings": "gen-003-018.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 3:19": {
   "file": "gen-003-019.mp3",
@@ -8158,9 +8158,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 4,
-  "verified": false,
+  "verified": true,
   "timings": "gen-003-019.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 3:20": {
   "file": "gen-003-020.mp3",
@@ -8169,9 +8169,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 4,
-  "verified": false,
+  "verified": true,
   "timings": "gen-003-020.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 3:21": {
   "file": "gen-003-021.mp3",
@@ -8180,9 +8180,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 4,
-  "verified": false,
+  "verified": true,
   "timings": "gen-003-021.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 3:22": {
   "file": "gen-003-022.mp3",
@@ -8191,9 +8191,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 5,
-  "verified": false,
+  "verified": true,
   "timings": "gen-003-022.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 3:23": {
   "file": "gen-003-023.mp3",
@@ -8202,9 +8202,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 5,
-  "verified": false,
+  "verified": true,
   "timings": "gen-003-023.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 3:24": {
   "file": "gen-003-024.mp3",
@@ -8213,9 +8213,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 5,
-  "verified": false,
+  "verified": true,
   "timings": "gen-003-024.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 4:1": {
   "file": "gen-004-001.mp3",
@@ -8224,9 +8224,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 6,
-  "verified": false,
+  "verified": true,
   "timings": "gen-004-001.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 4:2": {
   "file": "gen-004-002.mp3",
@@ -8235,9 +8235,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 6,
-  "verified": false,
+  "verified": true,
   "timings": "gen-004-002.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 4:3": {
   "file": "gen-004-003.mp3",
@@ -8246,9 +8246,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 6,
-  "verified": false,
+  "verified": true,
   "timings": "gen-004-003.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 4:4": {
   "file": "gen-004-004.mp3",
@@ -8257,9 +8257,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 6,
-  "verified": false,
+  "verified": true,
   "timings": "gen-004-004.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 4:5": {
   "file": "gen-004-005.mp3",
@@ -8268,9 +8268,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 6,
-  "verified": false,
+  "verified": true,
   "timings": "gen-004-005.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 4:6": {
   "file": "gen-004-006.mp3",
@@ -8279,9 +8279,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 6,
-  "verified": false,
+  "verified": true,
   "timings": "gen-004-006.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 4:7": {
   "file": "gen-004-007.mp3",
@@ -8290,9 +8290,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 6,
-  "verified": false,
+  "verified": true,
   "timings": "gen-004-007.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 4:8": {
   "file": "gen-004-008.mp3",
@@ -8301,9 +8301,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 6,
-  "verified": false,
+  "verified": true,
   "timings": "gen-004-008.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 4:9": {
   "file": "gen-004-009.mp3",
@@ -8312,9 +8312,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 6,
-  "verified": false,
+  "verified": true,
   "timings": "gen-004-009.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 4:10": {
   "file": "gen-004-010.mp3",
@@ -8323,9 +8323,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 6,
-  "verified": false,
+  "verified": true,
   "timings": "gen-004-010.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 4:11": {
   "file": "gen-004-011.mp3",
@@ -8334,9 +8334,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 6,
-  "verified": false,
+  "verified": true,
   "timings": "gen-004-011.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 4:12": {
   "file": "gen-004-012.mp3",
@@ -8345,9 +8345,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 6,
-  "verified": false,
+  "verified": true,
   "timings": "gen-004-012.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 4:13": {
   "file": "gen-004-013.mp3",
@@ -8356,9 +8356,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 6,
-  "verified": false,
+  "verified": true,
   "timings": "gen-004-013.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 4:14": {
   "file": "gen-004-014.mp3",
@@ -8367,9 +8367,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 6,
-  "verified": false,
+  "verified": true,
   "timings": "gen-004-014.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 4:15": {
   "file": "gen-004-015.mp3",
@@ -8378,9 +8378,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 6,
-  "verified": false,
+  "verified": true,
   "timings": "gen-004-015.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 4:16": {
   "file": "gen-004-016.mp3",
@@ -8389,9 +8389,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 6,
-  "verified": false,
+  "verified": true,
   "timings": "gen-004-016.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 4:17": {
   "file": "gen-004-017.mp3",
@@ -8400,9 +8400,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 6,
-  "verified": false,
+  "verified": true,
   "timings": "gen-004-017.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 4:18": {
   "file": "gen-004-018.mp3",
@@ -8411,9 +8411,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 6,
-  "verified": false,
+  "verified": true,
   "timings": "gen-004-018.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 4:19": {
   "file": "gen-004-019.mp3",
@@ -8422,9 +8422,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 7,
-  "verified": false,
+  "verified": true,
   "timings": "gen-004-019.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 4:20": {
   "file": "gen-004-020.mp3",
@@ -8433,9 +8433,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 7,
-  "verified": false,
+  "verified": true,
   "timings": "gen-004-020.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 4:21": {
   "file": "gen-004-021.mp3",
@@ -8444,9 +8444,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 7,
-  "verified": false,
+  "verified": true,
   "timings": "gen-004-021.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 4:22": {
   "file": "gen-004-022.mp3",
@@ -8455,9 +8455,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 7,
-  "verified": false,
+  "verified": true,
   "timings": "gen-004-022.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 4:23": {
   "file": "gen-004-023.mp3",
@@ -8466,9 +8466,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 7,
-  "verified": false,
+  "verified": true,
   "timings": "gen-004-023.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 4:24": {
   "file": "gen-004-024.mp3",
@@ -8477,9 +8477,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 7,
-  "verified": false,
+  "verified": true,
   "timings": "gen-004-024.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 4:25": {
   "file": "gen-004-025.mp3",
@@ -8488,9 +8488,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 7,
-  "verified": false,
+  "verified": true,
   "timings": "gen-004-025.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 4:26": {
   "file": "gen-004-026.mp3",
@@ -8499,9 +8499,9 @@
   "parsha": "Bereshit",
   "year": 2,
   "aliyah": 7,
-  "verified": false,
+  "verified": true,
   "timings": "gen-004-026.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 5:1": {
   "file": "gen-005-001.mp3",
@@ -8510,9 +8510,9 @@
   "parsha": "Bereshit",
   "year": 3,
   "aliyah": 1,
-  "verified": false,
+  "verified": true,
   "timings": "gen-005-001.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 5:2": {
   "file": "gen-005-002.mp3",
@@ -8521,9 +8521,9 @@
   "parsha": "Bereshit",
   "year": 3,
   "aliyah": 1,
-  "verified": false,
+  "verified": true,
   "timings": "gen-005-002.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 5:3": {
   "file": "gen-005-003.mp3",
@@ -8532,9 +8532,9 @@
   "parsha": "Bereshit",
   "year": 3,
   "aliyah": 1,
-  "verified": false,
+  "verified": true,
   "timings": "gen-005-003.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 5:4": {
   "file": "gen-005-004.mp3",
@@ -8543,9 +8543,9 @@
   "parsha": "Bereshit",
   "year": 3,
   "aliyah": 1,
-  "verified": false,
+  "verified": true,
   "timings": "gen-005-004.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 5:5": {
   "file": "gen-005-005.mp3",
@@ -8554,9 +8554,9 @@
   "parsha": "Bereshit",
   "year": 3,
   "aliyah": 1,
-  "verified": false,
+  "verified": true,
   "timings": "gen-005-005.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 5:6": {
   "file": "gen-005-006.mp3",
@@ -8565,9 +8565,9 @@
   "parsha": "Bereshit",
   "year": 3,
   "aliyah": 2,
-  "verified": false,
+  "verified": true,
   "timings": "gen-005-006.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 5:7": {
   "file": "gen-005-007.mp3",
@@ -8576,9 +8576,9 @@
   "parsha": "Bereshit",
   "year": 3,
   "aliyah": 2,
-  "verified": false,
+  "verified": true,
   "timings": "gen-005-007.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 5:8": {
   "file": "gen-005-008.mp3",
@@ -8587,9 +8587,9 @@
   "parsha": "Bereshit",
   "year": 3,
   "aliyah": 2,
-  "verified": false,
+  "verified": true,
   "timings": "gen-005-008.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 5:9": {
   "file": "gen-005-009.mp3",
@@ -8598,9 +8598,9 @@
   "parsha": "Bereshit",
   "year": 3,
   "aliyah": 3,
-  "verified": false,
+  "verified": true,
   "timings": "gen-005-009.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 5:10": {
   "file": "gen-005-010.mp3",
@@ -8609,9 +8609,9 @@
   "parsha": "Bereshit",
   "year": 3,
   "aliyah": 3,
-  "verified": false,
+  "verified": true,
   "timings": "gen-005-010.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 5:11": {
   "file": "gen-005-011.mp3",
@@ -8620,9 +8620,9 @@
   "parsha": "Bereshit",
   "year": 3,
   "aliyah": 3,
-  "verified": false,
+  "verified": true,
   "timings": "gen-005-011.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 5:12": {
   "file": "gen-005-012.mp3",
@@ -8631,9 +8631,9 @@
   "parsha": "Bereshit",
   "year": 3,
   "aliyah": 3,
-  "verified": false,
+  "verified": true,
   "timings": "gen-005-012.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 5:13": {
   "file": "gen-005-013.mp3",
@@ -8642,9 +8642,9 @@
   "parsha": "Bereshit",
   "year": 3,
   "aliyah": 3,
-  "verified": false,
+  "verified": true,
   "timings": "gen-005-013.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 5:14": {
   "file": "gen-005-014.mp3",
@@ -8653,9 +8653,9 @@
   "parsha": "Bereshit",
   "year": 3,
   "aliyah": 3,
-  "verified": false,
+  "verified": true,
   "timings": "gen-005-014.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 5:15": {
   "file": "gen-005-015.mp3",
@@ -8664,9 +8664,9 @@
   "parsha": "Bereshit",
   "year": 3,
   "aliyah": 4,
-  "verified": false,
+  "verified": true,
   "timings": "gen-005-015.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 5:16": {
   "file": "gen-005-016.mp3",
@@ -8675,9 +8675,9 @@
   "parsha": "Bereshit",
   "year": 3,
   "aliyah": 4,
-  "verified": false,
+  "verified": true,
   "timings": "gen-005-016.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 5:17": {
   "file": "gen-005-017.mp3",
@@ -8686,9 +8686,9 @@
   "parsha": "Bereshit",
   "year": 3,
   "aliyah": 4,
-  "verified": false,
+  "verified": true,
   "timings": "gen-005-017.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 5:18": {
   "file": "gen-005-018.mp3",
@@ -8697,9 +8697,9 @@
   "parsha": "Bereshit",
   "year": 3,
   "aliyah": 4,
-  "verified": false,
+  "verified": true,
   "timings": "gen-005-018.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 5:19": {
   "file": "gen-005-019.mp3",
@@ -8708,9 +8708,9 @@
   "parsha": "Bereshit",
   "year": 3,
   "aliyah": 4,
-  "verified": false,
+  "verified": true,
   "timings": "gen-005-019.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 5:20": {
   "file": "gen-005-020.mp3",
@@ -8719,9 +8719,9 @@
   "parsha": "Bereshit",
   "year": 3,
   "aliyah": 4,
-  "verified": false,
+  "verified": true,
   "timings": "gen-005-020.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 5:21": {
   "file": "gen-005-021.mp3",
@@ -8730,9 +8730,9 @@
   "parsha": "Bereshit",
   "year": 3,
   "aliyah": 5,
-  "verified": false,
+  "verified": true,
   "timings": "gen-005-021.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 5:22": {
   "file": "gen-005-022.mp3",
@@ -8741,9 +8741,9 @@
   "parsha": "Bereshit",
   "year": 3,
   "aliyah": 5,
-  "verified": false,
+  "verified": true,
   "timings": "gen-005-022.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 5:23": {
   "file": "gen-005-023.mp3",
@@ -8752,9 +8752,9 @@
   "parsha": "Bereshit",
   "year": 3,
   "aliyah": 5,
-  "verified": false,
+  "verified": true,
   "timings": "gen-005-023.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 5:24": {
   "file": "gen-005-024.mp3",
@@ -8763,9 +8763,9 @@
   "parsha": "Bereshit",
   "year": 3,
   "aliyah": 5,
-  "verified": false,
+  "verified": true,
   "timings": "gen-005-024.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 5:25": {
   "file": "gen-005-025.mp3",
@@ -8774,9 +8774,9 @@
   "parsha": "Bereshit",
   "year": 3,
   "aliyah": 6,
-  "verified": false,
+  "verified": true,
   "timings": "gen-005-025.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 5:26": {
   "file": "gen-005-026.mp3",
@@ -8785,9 +8785,9 @@
   "parsha": "Bereshit",
   "year": 3,
   "aliyah": 6,
-  "verified": false,
+  "verified": true,
   "timings": "gen-005-026.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 5:27": {
   "file": "gen-005-027.mp3",
@@ -8796,9 +8796,9 @@
   "parsha": "Bereshit",
   "year": 3,
   "aliyah": 6,
-  "verified": false,
+  "verified": true,
   "timings": "gen-005-027.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 5:28": {
   "file": "gen-005-028.mp3",
@@ -8807,9 +8807,9 @@
   "parsha": "Bereshit",
   "year": 3,
   "aliyah": 6,
-  "verified": false,
+  "verified": true,
   "timings": "gen-005-028.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 5:29": {
   "file": "gen-005-029.mp3",
@@ -8818,9 +8818,9 @@
   "parsha": "Bereshit",
   "year": 3,
   "aliyah": 6,
-  "verified": false,
+  "verified": true,
   "timings": "gen-005-029.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 5:30": {
   "file": "gen-005-030.mp3",
@@ -8829,9 +8829,9 @@
   "parsha": "Bereshit",
   "year": 3,
   "aliyah": 6,
-  "verified": false,
+  "verified": true,
   "timings": "gen-005-030.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 5:31": {
   "file": "gen-005-031.mp3",
@@ -8840,9 +8840,9 @@
   "parsha": "Bereshit",
   "year": 3,
   "aliyah": 6,
-  "verified": false,
+  "verified": true,
   "timings": "gen-005-031.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 5:32": {
   "file": "gen-005-032.mp3",
@@ -8851,9 +8851,9 @@
   "parsha": "Bereshit",
   "year": 3,
   "aliyah": 7,
-  "verified": false,
+  "verified": true,
   "timings": "gen-005-032.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 6:1": {
   "file": "gen-006-001.mp3",
@@ -8862,9 +8862,9 @@
   "parsha": "Bereshit",
   "year": 3,
   "aliyah": 7,
-  "verified": false,
+  "verified": true,
   "timings": "gen-006-001.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 6:2": {
   "file": "gen-006-002.mp3",
@@ -8873,9 +8873,9 @@
   "parsha": "Bereshit",
   "year": 3,
   "aliyah": 7,
-  "verified": false,
+  "verified": true,
   "timings": "gen-006-002.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 6:3": {
   "file": "gen-006-003.mp3",
@@ -8884,9 +8884,9 @@
   "parsha": "Bereshit",
   "year": 3,
   "aliyah": 7,
-  "verified": false,
+  "verified": true,
   "timings": "gen-006-003.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 6:4": {
   "file": "gen-006-004.mp3",
@@ -8895,9 +8895,9 @@
   "parsha": "Bereshit",
   "year": 3,
   "aliyah": 7,
-  "verified": false,
+  "verified": true,
   "timings": "gen-006-004.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 6:5": {
   "file": "gen-006-005.mp3",
@@ -8906,9 +8906,9 @@
   "parsha": "Bereshit",
   "year": 3,
   "aliyah": 7,
-  "verified": false,
+  "verified": true,
   "timings": "gen-006-005.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 6:6": {
   "file": "gen-006-006.mp3",
@@ -8917,9 +8917,9 @@
   "parsha": "Bereshit",
   "year": 3,
   "aliyah": 7,
-  "verified": false,
+  "verified": true,
   "timings": "gen-006-006.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 6:7": {
   "file": "gen-006-007.mp3",
@@ -8928,9 +8928,9 @@
   "parsha": "Bereshit",
   "year": 3,
   "aliyah": 7,
-  "verified": false,
+  "verified": true,
   "timings": "gen-006-007.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 6:8": {
   "file": "gen-006-008.mp3",
@@ -8939,9 +8939,9 @@
   "parsha": "Bereshit",
   "year": 3,
   "aliyah": 7,
-  "verified": false,
+  "verified": true,
   "timings": "gen-006-008.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 6:9": {
   "file": "gen-006-009.mp3",
