@@ -4246,6 +4246,7 @@ torah.controls.layout_page,Page view,תצוגת עמוד,layout radio,
 torah.controls.layout_side,Side by side,זה לצד זה,layout radio,
 torah.controls.parsha_label,Parsha:,פרשה:,control label,
 torah.controls.reading_label,Reading:,קריאה:,control label (scope select),
+torah.controls.chanting_label,Chanting:,קריאה בטעמים:,control label (the recording-source picker; the Audio tab's Recording radios as a dropdown; hidden until the Total Torah source is offered),
 torah.controls.scope_aria,Reading scope,היקף הקריאה,scope select aria-label,aria-label only
 torah.controls.scope_holiday_note,This reading has one part; the Parsha box leads back to the weekly parasha.,לקריאה הזו חלק אחד בלבד; תיבת הפרשה מחזירה אל פרשת השבוע.,scope select title while it is disabled on a holiday or custom reading with one part,title only
 torah.controls.translation_toggle,Show translation,הצגת תרגום,switch at the top of the Text tab's Translation section (was the toolbar's Translation toggle); also the title of the projector bar's Translation toggle,
@@ -6307,10 +6308,9 @@ torah.staff.double_chip,Two cantillations,שתי מערכות טעמים,"verse 
 torah.staff.double_tip,"This verse is printed with two sets of cantillation marks at once, so the staff leaves it to the words.","הפסוק הזה מודפס עם שתי מערכות טעמים בו־זמנית, ולכן החמשה משאירה אותו למילים בלבד.",tooltip,
 torah.staff.follow_note,"In the Trope staff layout the highlight follows each word under its notes; the transliteration, when shown, moves with it.","בפריסת חמשת הטעמים ההדגשה עוקבת אחרי כל מילה מתחת לתווים שלה; התעתיק, כשהוא מוצג, זז יחד איתה.",note under the karaoke Follow radios while the staff layout is on,
 torah.recsrc.label,Recording,הקלטה,Audio tab: label of the recording-source radio group (which chant recordings the Chant buttons play),
-torah.recsrc.header_label,Chanting,קריאה בטעמים,header: visible label of the recording-source picker (the drawer's Recording radios as a dropdown; hidden until the Total Torah source is offered),
-torah.recsrc.header_title,Which recording the Chant buttons play,איזו הקלטה כפתורי השירה מנגנים,header recording-source picker: its tooltip while both recordings are available for the reading on screen,
-torah.recsrc.opt_pockettorah,PocketTorah (Reform),PocketTorah (רפורמי),header recording-source picker: the PocketTorah option,do-not-translate PocketTorah (brand)
-torah.recsrc.opt_totaltorah,Total Torah (Conservative),Total Torah (קונסרבטיבי),header recording-source picker: the Total Torah option (disabled while the reading on screen has no recorded verse),do-not-translate Total Torah (brand)
+torah.recsrc.picker_title,Which recording the Chant buttons play,איזו הקלטה כפתורי השירה מנגנים,controls-bar Chanting picker: its tooltip while both recordings are available for the reading on screen,
+torah.recsrc.opt_pockettorah,PocketTorah (Reform),PocketTorah (רפורמי),controls-bar Chanting picker: the PocketTorah option,do-not-translate PocketTorah (brand)
+torah.recsrc.opt_totaltorah,Total Torah (Conservative),Total Torah (קונסרבטיבי),controls-bar Chanting picker: the Total Torah option (disabled while the reading on screen has no recorded verse),do-not-translate Total Torah (brand)
 torah.recsrc.pockettorah,PocketTorah (Spiro melody),PocketTorah (מנגינת שפירו),recording-source radio: the PocketTorah recordings,do-not-translate PocketTorah (brand)
 torah.recsrc.totaltorah,"Total Torah — Cantor Arianne Brown, Adas Israel","Total Torah — החזנית אריאן בראון, Adas Israel",recording-source radio: the Total Torah recordings (hidden until the source is public),do-not-translate Total Torah / Arianne Brown / Adas Israel (brand credits)
 torah.recsrc.none_note,No Total Torah recording for this reading yet.,עדיין אין הקלטת Total Torah לקריאה הזו.,inline note under the disabled Total Torah radio while the reading on screen has no recorded verse,do-not-translate Total Torah (brand)

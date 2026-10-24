@@ -922,14 +922,12 @@ never a practice link (`LINK_DISPLAY` says how a reading looks, never how it sou
   (`ttOffered()`) reveals it for a visit and, when the stored source is PocketTorah, selects it for that visit only
   (`_recSrcOverride`, the tutor's `?melody=` idea — never saved; a radio press saves a choice and ends it; Reset clears
   it). Without the flag nothing changes for anyone: the manifest is not fetched (`ensureTotalTorahManifest` returns
-  null), the Recording row (`#optRecSrcRow`) and the header's Chanting picker (`#hdrRecSrcWrap`) stay `hidden`,
+  null), the Recording row (`#optRecSrcRow`) and the controls bar's Chanting picker (`#ttRecSrcCtrl`) stay `hidden`,
   `syncAudioCredit` returns before touching the bar, and every entry point asks `ttEntryFor`, which answers null.
-- **Two controls, one writer.** The header's **Chanting** picker (`#hdrRecSrc`: *PocketTorah (Reform)* / *Total Torah
-  (Conservative)*) is the drawer's Recording radios as a `<select>`. `setRecordingSource` writes for both;
-  `syncRecSrcControls` sets the picker's value, disables its Total Torah option and swaps its title for the
-  *no recording* note exactly as it does for the radio, and toggles `header.tt-hdr-recsrc`. That class carries the
-  picker's own measured header gates (its word label visually hidden under 1280px, the button row on a line of its
-  own at 1100px and under), so a header without the picker lays out exactly as before.
+- **Two controls, one writer.** The controls bar's **Chanting** picker (`#ttRecSrcBar`, beside the Translit /
+  Translation switches: *PocketTorah (Reform)* / *Total Torah (Conservative)*) is the Audio tab's Recording radios as
+  a `<select>`. `setRecordingSource` writes for both; `syncRecSrcControls` sets the picker's value, disables its Total
+  Torah option and swaps its title for the *no recording* note exactly as it does for the radio.
 - **One engine.** A loaded verse file is a one-verse "aliyah" to the karaoke engine: `loadTotalTorahVerse` sets
   verse-local `currentTimings`, `_holidayKaraoke = { map: { [vk]: 0 } }` (so `updateKaraokeWordRefs` lights only that
   verse's words), `_loadedChantKey = 'tt|' + vk` (so `chantHolidayWord` never matches it) and `_ttLoaded = { vk,

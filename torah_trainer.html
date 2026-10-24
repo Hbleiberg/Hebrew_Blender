@@ -380,20 +380,6 @@ header p { font-size:0.78rem; color:var(--gold-light); margin-top:2px; }
 }
 .hbtn:hover { background:rgba(255,255,255,0.18); border-color:rgba(255,255,255,0.3); }
 .hbtn.icon-btn { padding:7px 10px; font-size:1rem; }
-/* The header's Chanting picker (#hdrRecSrcWrap): the drawer's Recording radios as a <select>, hidden with them until
-   the Total Torah source is offered (ttOffered()). Dressed as an .hbtn; the options take the light page colours
-   because a native list does not inherit the translucent header fill. */
-.hsel { display:inline-flex; align-items:center; gap:6px; color:var(--gold-light); font-size:0.78rem; font-weight:600; }
-.hsel[hidden] { display:none; }
-.hsel select {
-  background:rgba(255,255,255,0.08); color:#fff;
-  border:1px solid rgba(255,255,255,0.18); border-radius:6px;
-  min-height:35px; padding:6px 8px; max-width:16em;
-  font-family:inherit; font-size:0.82rem; font-weight:600; cursor:pointer;
-}
-.hsel select:hover { background:rgba(255,255,255,0.18); border-color:rgba(255,255,255,0.3); }
-.hsel select:focus-visible { outline:2px solid var(--gold-light); outline-offset:2px; }
-.hsel select option { color:#1a2744; background:#fff; }
 
 /* ───── Top controls bar ───── */
 .tt-controls {
@@ -427,7 +413,8 @@ body.dark .tt-ctrl select, body.dark .tt-ctrl input[type="number"], body.dark .t
 }
 .tt-ctrl select { min-width:110px; max-width:100%; }
 .tt-custom { flex-wrap:wrap; }        /* on a phone the verse boxes and Go drop to a second line instead of crushing the select */
-.tt-custom[hidden] { display:none; }  /* [hidden] must beat the inline-flex rule (the #triYearRow trap) */
+.tt-custom[hidden] { display:none; }
+#ttRecSrcCtrl[hidden] { display:none; }   /* the Chanting picker: hidden until the Total Torah source is offered */  /* [hidden] must beat the inline-flex rule (the #triYearRow trap) */
 .tt-custom select { min-width:96px; }  /* "Deuteronomy" fits; the 110px floor is the parsha picker's */
 .tt-custom input[type="number"] { padding-inline:6px; }
 .tt-ctrl select:focus, .tt-ctrl input:focus { outline:2px solid var(--focus-ring); outline-offset:0; }
@@ -1869,18 +1856,6 @@ body.fullscreen .tt-hint-toast { bottom: calc(var(--tt-audio-h, 96px) + 90px); }
   .tt-cell.heb, .tt-heb { font-size:calc(var(--tt-heb-size, 1.5rem) * 0.9); }
 }
 
-/* The Chanting picker (header.tt-hdr-recsrc, set by syncRecSrcControls only while the Total Torah source is offered)
-   widens the row by about 270px, so it gets its own measured gates: under 1280px its word label goes visually hidden
-   (the <label> still names the select), and under 1100px — where the title block would drop under 300px — the header
-   wraps, the button row taking a line of its own (flex-basis 100%: the title's flex:1 has a zero basis, so wrap alone
-   never breaks the line) with its buttons at the end. Without the picker neither gate matches. */
-@media (max-width: 1279px) {
-  header.tt-hdr-recsrc .hsel > span { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
-}
-@media (max-width: 1100px) {
-  header.tt-hdr-recsrc { flex-wrap:wrap; }
-  header.tt-hdr-recsrc .hright { flex:1 1 100%; flex-wrap:wrap; max-width:100%; justify-content:flex-end; }
-}
 /* Phone widths: let the header button row wrap onto a second line instead of pushing the
    page sideways (WCAG 1.4.10 reflow). max-width is the operative half — the row is
    flex-shrink:0, so nothing makes it wrap until something caps its width. This page needs
@@ -2191,12 +2166,6 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
   <div class="hright">
     <a class="hbtn" href="/"><svg class="hi hi-arrow dir-arrow" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/></svg><span class="hi-lbl" data-i18n="torah.header.home">Home</span></a>
     <div data-i18n-switcher></div>
-    <label class="hsel" id="hdrRecSrcWrap" hidden><span data-i18n="torah.recsrc.header_label">Chanting</span>
-      <select id="hdrRecSrc">
-        <option value="pockettorah" data-i18n="torah.recsrc.opt_pockettorah">PocketTorah (Reform)</option>
-        <option value="totaltorah" data-i18n="torah.recsrc.opt_totaltorah">Total Torah (Conservative)</option>
-      </select>
-    </label>
     <button id="tourBtn" class="hbtn" onclick="tourStart()" title="Take a quick tour" data-i18n-title="torah.header.tour_title"><svg class="hi hi-help" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.6a2.5 2.5 0 1 1 3.6 2.2c-.8.4-1.2 1-1.2 1.9"/><circle cx="12" cy="17" r=".7" fill="currentColor" stroke="none"/></svg><span class="hi-lbl" data-i18n="torah.header.tour_button">Tour</span></button>
     <button id="darkBtn" class="hbtn icon-btn" onclick="toggleDark()" title="Toggle dark mode" aria-label="Toggle dark mode" data-i18n-title="shared.darkmode.toggle_title" data-i18n-aria-label="shared.darkmode.toggle_title" aria-pressed="false"><svg class="hi hi-moon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15.5A7 7 0 0 1 8.5 6a7 7 0 1 0 9.5 9.5z"/><path d="M17.5 2.5l.9 2.4 2.4.9-2.4.9-.9 2.4-.9-2.4-2.4-.9 2.4-.9z" fill="currentColor" stroke="none"/></svg><svg class="hi hi-sun" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></svg></button>
     <button id="fsBtn" class="hbtn icon-btn" onclick="toggleFullscreen()" title="Present fullscreen" aria-label="Toggle fullscreen" data-i18n-title="shared.fullscreen.enter_title" data-i18n-aria-label="shared.fullscreen.toggle_aria"></button>
@@ -2339,6 +2308,15 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
       <label for="ttShowTranslationBar" data-i18n="torah.controls.translation_short">Translation</label>
       <label class="toggle"><input type="checkbox" id="ttShowTranslationBar"><span class="slider"></span></label>
     </span>
+  </span>
+  <!-- Chanting: the Audio tab's Recording radios as a picker (one setting, two controls; setRecordingSource writes,
+       syncRecSrcControls mirrors). Hidden with them until the Total Torah source is offered (ttOffered()). -->
+  <span class="tt-ctrl" id="ttRecSrcCtrl" hidden>
+    <label for="ttRecSrcBar" data-i18n="torah.controls.chanting_label">Chanting:</label>
+    <select id="ttRecSrcBar">
+      <option value="pockettorah" data-i18n="torah.recsrc.opt_pockettorah">PocketTorah (Reform)</option>
+      <option value="totaltorah" data-i18n="torah.recsrc.opt_totaltorah">Total Torah (Conservative)</option>
+    </select>
   </span>
   <!-- Settings: the drawer's one entry, in the row a teacher already looks at (a gear among the header's
        icon buttons was easy to overlook). Primary-styled and labelled, pushed to the inline end. -->
@@ -7406,8 +7384,8 @@ function syncRecSrcControls() {
   if (!row) return;
   const offered = ttOffered();
   row.hidden = !offered;
-  const hdr = document.getElementById('hdrRecSrcWrap'), sel = document.getElementById('hdrRecSrc');
-  if (hdr) { hdr.hidden = !offered; hdr.closest('header').classList.toggle('tt-hdr-recsrc', offered); }
+  const ctrl = document.getElementById('ttRecSrcCtrl'), sel = document.getElementById('ttRecSrcBar');
+  if (ctrl) ctrl.hidden = !offered;
   const note = document.getElementById('optRecSrcNote'), ttDiv = document.getElementById('optRecCreditTT'), pocketDiv = document.getElementById('optRecCreditPocket'), karNote = document.getElementById('kfTTNote');
   if (!offered) { if (note) note.hidden = true; if (ttDiv) ttDiv.hidden = true; if (pocketDiv) pocketDiv.hidden = false; if (karNote) karNote.hidden = true; return; }
   const ents = ttReadingEntries(true);
@@ -7418,10 +7396,10 @@ function syncRecSrcControls() {
   total.setAttribute('aria-disabled', none ? 'true' : 'false');
   total.checked = active;
   pocket.checked = !active;
-  if (sel) {   // the header picker mirrors the radios: the same value, the same disabled option, the note as its title
+  if (sel) {   // the Chanting picker mirrors the radios: the same value, the same disabled option, the note as its title
     sel.value = active ? 'totaltorah' : 'pockettorah';
     sel.querySelector('option[value="totaltorah"]').disabled = none;
-    sel.title = I18n.t(none ? 'torah.recsrc.none_note' : 'torah.recsrc.header_title');
+    sel.title = I18n.t(none ? 'torah.recsrc.none_note' : 'torah.recsrc.picker_title');
   }
   if (note) note.hidden = !none;
   if (ttDiv) {
@@ -7435,7 +7413,7 @@ function syncRecSrcControls() {
   if (pocketDiv) pocketDiv.hidden = active;
   if (karNote) karNote.hidden = !(active && ents.unTimed > 0);
 }
-function setRecordingSource(v) {   // the one writer, for the drawer's radios and the header picker
+function setRecordingSource(v) {   // the one writer, for the drawer's radios and the controls bar's Chanting picker
   v = v === 'totaltorah' ? 'totaltorah' : 'pockettorah';
   _recSrcOverride = null;
   if (settings.recordingSource !== v) { settings.recordingSource = v; saveSettings(); }
@@ -9618,8 +9596,8 @@ function wireSettingsForm() {
   document.querySelectorAll('input[name="optRecSrc"]').forEach(r => {
     r.addEventListener('change', e => { if (e.target.checked) setRecordingSource(e.target.value); });
   });
-  const hdrRecSrc = document.getElementById('hdrRecSrc');
-  if (hdrRecSrc) hdrRecSrc.addEventListener('change', () => setRecordingSource(hdrRecSrc.value));
+  const recSrcBar = document.getElementById('ttRecSrcBar');
+  if (recSrcBar) recSrcBar.addEventListener('change', () => setRecordingSource(recSrcBar.value));
   // Schedule
   document.querySelectorAll('input[name="optSchedule"]').forEach(r => {
     r.addEventListener('change', e => {
