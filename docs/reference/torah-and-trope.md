@@ -911,7 +911,7 @@ never a practice link (`LINK_DISPLAY` says how a reading looks, never how it sou
   value), and `data/totaltorah/manifest.json`: a top-level `credit` block (names, URLs, the permission, each source
   video's title and upload date) beside one entry per verse, keyed `"Genesis 1:1"` — `{ file, dur, video, parsha,
   year, aliyah, verified, timings, timingsVerified }`. The manifest and the timings are fetched with `TT_DATA_V`
-  (`?v=8`; `/data/` is cache-first and exact-URL keyed); the audio is left to the network by `sw.js` (a Range
+  (`?v=9`; `/data/` is cache-first and exact-URL keyed); the audio is left to the network by `sw.js` (a Range
   request must never be answered from the cache).
 - **Verified or nothing.** `ttEntryFor(vk)` returns an entry only while it is `verified: true`, and its timings count
   only while `timingsVerified: true` — the maintainer flips both by listening (`build-totaltorah-audio.mjs verify`),
