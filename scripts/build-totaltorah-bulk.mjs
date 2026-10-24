@@ -219,7 +219,7 @@ async function loadVideos(path = VIDEOS_PATH) {
 }
 const isIdent = (k) => /^[A-Za-z_$][\w$]*$/.test(k);
 const lit = (v) => (v === null ? 'null' : typeof v === 'number' || typeof v === 'boolean' ? String(v) : `'${String(v).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\r?\n/g, ' ')}'`);
-const ROW_KEYS = ['parsha', 'year', 'aliyah', 'ref', 'page', 'variant', 'note', 'title', 'duration', 'upload_date', 'check'];
+const ROW_KEYS = ['parsha', 'year', 'aliyah', 'ref', 'page', 'variant', 'note', 'heard', 'title', 'duration', 'upload_date', 'check'];
 function rowLiteral(r) { return `{ ${ROW_KEYS.filter((k) => r[k] !== undefined).map((k) => `${k}: ${lit(r[k])}`).join(', ')} }`; }
 function rowOrder(id, r) {
   const u = rowUnit(r);
@@ -239,7 +239,8 @@ export function writeVideos(videos, path, missing = []) {
     '// A row: parsha (as data/parshiyot.json spells it; a doubled pair joined by \'-\'), year (1–3; null = one set for every year),',
     '// aliyah (1–7 or \'M\'), ref (the verse range the video chants — the cut and the alignment follow it; data/leyning/triennial.json\'s',
     '// division unless `note` says otherwise), page (the range as the Adas page prints it), variant (\'chazak\': the Chazak ending),',
-    '// note (a cross-check that did not agree); after `meta`: title, duration (s), upload_date and check (the title cross-check).',
+    '// note (a cross-check that did not agree), heard (the maintainer\'s listening corrected `ref`: `adas` keeps that row\'s ref);',
+    '// after `meta`: title, duration (s), upload_date and check (the title cross-check).',
   ];
   if (missing.length) { lines.push('// Listed on the page without a video link (no row until an id is known):'); for (const m of missing) lines.push(`//   ${m}`); }
   lines.push('export const VIDEOS = {');
@@ -361,6 +362,7 @@ async function cmdAdas() {
     if (videos[e.id]) { dupIds.set(e.id, (dupIds.get(e.id) || 1) + 1); problems.push(`${e.file}:${e.line}: id ${e.id} appears more than once (also ${videos[e.id].parsha} Y${videos[e.id].year} A${videos[e.id].aliyah})`); continue; }
     const prev = existing[e.id] || {};
     for (const k of ['title', 'duration', 'upload_date', 'check']) if (prev[k] !== undefined) row[k] = prev[k];
+    if (prev.heard) { row.ref = prev.ref; row.heard = prev.heard; }   // a range corrected by ear outranks the page's
     videos[e.id] = row;
   }
   // rows the page does not list (added by hand through /addTOTT) stay

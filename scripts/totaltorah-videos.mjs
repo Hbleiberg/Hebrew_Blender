@@ -4,7 +4,8 @@
 // A row: parsha (as data/parshiyot.json spells it; a doubled pair joined by '-'), year (1–3; null = one set for every year),
 // aliyah (1–7 or 'M'), ref (the verse range the video chants — the cut and the alignment follow it; data/leyning/triennial.json's
 // division unless `note` says otherwise), page (the range as the Adas page prints it), variant ('chazak': the Chazak ending),
-// note (a cross-check that did not agree); after `meta`: title, duration (s), upload_date and check (the title cross-check).
+// note (a cross-check that did not agree), heard (the maintainer's listening corrected `ref`: `adas` keeps that row's ref);
+// after `meta`: title, duration (s), upload_date and check (the title cross-check).
 export const VIDEOS = {
   bv1hX3WrRM4: { parsha: 'Bereshit', year: 1, aliyah: 1, ref: 'Genesis 1:1-1:5', page: '1:1 - 1:5', title: 'B\'reishit, Year 1 Aliyah 1', duration: 86, upload_date: '20260911', check: 'ok' },
   Ilh183tcXGI: { parsha: 'Bereshit', year: 1, aliyah: 2, ref: 'Genesis 1:6-1:8', page: '1:6 - 1:8', title: 'B\'reishit, Year 1 Aliyah 2', check: 'ok' },
@@ -136,7 +137,7 @@ export const VIDEOS = {
   bY8T6ahjC74: { parsha: 'Toldot', year: 3, aliyah: 4, ref: 'Genesis 27:38-27:40', page: '27:38 - 27:40', title: 'Toldot, Year 3, Aliyah 4', check: 'ok' },
   pOYkMisdHaI: { parsha: 'Toldot', year: 3, aliyah: 5, ref: 'Genesis 27:41-27:46', page: '27:41 - 27:46', title: 'Toldot, Year 3, Aliyah 5', check: 'ok' },
   b2jqRTOosDA: { parsha: 'Toldot', year: 3, aliyah: 6, ref: 'Genesis 28:1-28:4', page: '28:1 - 28:4', title: 'Toldot, Year 3, Aliyah 6', check: 'ok' },
-  '-CmdgOZKR14': { parsha: 'Toldot', year: 3, aliyah: 7, ref: 'Genesis 28:5-28:9', page: '28:5 - 28:9', title: 'Toldot, Year 3, Aliyah 7', check: 'ok' },
+  '-CmdgOZKR14': { parsha: 'Toldot', year: 3, aliyah: 7, ref: 'Genesis 28:7-28:9', page: '28:5 - 28:9', heard: 'the recording chants 28:7-28:9 (the maftir, as its announcement says) where the page and hebcal give 28:5-28:9; 28:5-28:6 have no Total Torah recording', title: 'Toldot, Year 3, Aliyah 7', check: 'ok' },
   NiLIpgKy8xQ: { parsha: 'Toldot', year: 3, aliyah: 'M', ref: 'Genesis 28:7-28:9', page: '28:7 – 28:9', title: 'Toldot, Maftir', check: 'ok' },
   i8LBv64jiQo: { parsha: 'Vayetzei', year: 1, aliyah: 1, ref: 'Genesis 28:10-28:12', page: '28:10 - 28:12', title: 'Vayetze, Year 1, Aliyah 1', check: 'ok' },
   rx2sXoshZ7s: { parsha: 'Vayetzei', year: 1, aliyah: 2, ref: 'Genesis 28:13-28:17', page: '28:13 - 28:17', title: 'Vayetze, Year 1, Aliyah 2', check: 'ok' },

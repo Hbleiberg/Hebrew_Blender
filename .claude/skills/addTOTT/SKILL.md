@@ -146,7 +146,9 @@ has every flag). Facts learned preparing the first pass (Oct 2026):
   announcement at all (Beshalach Y2 A3 `jIqnsc45oOQ`, cut at 0 s). One recording does not hold its range: Toldot Y3
   A7 `-CmdgOZKR14` (page and hebcal say Genesis 28:5–28:9) chants from 28:7 — every verse scores near zero and the
   words come twice as fast as anywhere else; the alignment-plausibility scan (mean word score, words per second,
-  zero-score verses) is how such a video shows itself, and the maintainer decides its range.
+  zero-score verses) is how such a video shows itself, and the maintainer decides its range by ear. A range so
+  decided goes into the row's `ref` with a `heard` note (Toldot Y3 A7: 28:7–28:9, its announcement's maftir;
+  28:5–28:6 have no recording anywhere in the series), and `adas` keeps a `heard` row's ref over the page's.
 - **Never two aligners at default threads on one machine.** Two torch processes spinning on four cores slowed a
   video from 35 s to 290 s; two chains run with `OMP_NUM_THREADS=2` each (together about 1.5× one chain's pace),
   on different books, each with its own `--out` and `--ledger`, as detached processes (a harness background
