@@ -13130,9 +13130,9 @@
   "parsha": "Vayera",
   "year": 3,
   "aliyah": 2,
-  "verified": false,
+  "verified": true,
   "timings": "gen-021-013.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 21:14": {
   "file": "gen-021-014.mp3",
@@ -24174,9 +24174,9 @@
   "parsha": "Vayechi",
   "year": 3,
   "aliyah": 7,
-  "verified": false,
+  "verified": true,
   "timings": "gen-050-026.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Exodus 1:1": {
   "file": "exo-001-001.mp3",
@@ -71617,8 +71617,8 @@
   "parsha": "V'Zot HaBerachah",
   "year": null,
   "aliyah": 6,
-  "verified": false,
+  "verified": true,
   "timings": "deu-034-012.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  }
 }
