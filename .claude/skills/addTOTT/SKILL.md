@@ -55,7 +55,7 @@ series (a dump of the maintainer's own downloads) is *Bulk intake* at the end �
   a fresh container run `--setup` once; it needs `huggingface.co` and `download.pytorch.org` reachable (the two
   models, ≈ 1.6 GB together, download on first use into the Hugging Face cache).
 - The MP3s are **not** sized for this repo: ~165 KB per verse, ≈ 1 GB for the whole Torah. The Trainer plays them
-  from the Cloudflare R2 bucket `totaltorah-audio` (`TT_AUDIO_BASE`, the bucket's public hostname; CORS for the
+  from the Cloudflare R2 bucket `totaltorah-audio` (`TT_AUDIO_BASE`, the bucket's custom domain `audio.ivritsuite.com`; CORS for the
   site's origins set on the bucket), and the private `Hbleiberg/TotalTorahAudio` repository (`audio/<file>.mp3`,
   the same `LICENSE.txt`, a README) is their master copy. A new or re-cut verse file goes to both — a push to the
   repository, and one `PUT https://api.cloudflare.com/client/v4/accounts/<account>/r2/buckets/totaltorah-audio/objects/audio/<file>`

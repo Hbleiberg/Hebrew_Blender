@@ -357,8 +357,8 @@ pages, not the other way round — `grep -o 'Content-Security-Policy[^>]*' *.htm
 - **Dashboard:** `www.hebcal.com`, `api.open-meteo.com`, `geocoding-api.open-meteo.com`, `nominatim.openstreetmap.org`
   in `connect-src`; `www.youtube.com` + `www.youtube-nocookie.com` in `frame-src`.
 - **Torah Trainer:** `www.sefaria.org` in `connect-src`; `raw.githubusercontent.com` + `blob:` +
-  `pub-d4caf796127c4e3cb3de55d33a2c7981.r2.dev` in `media-src` (PocketTorah audio, and the Total Torah verse
-  files from the R2 bucket `totaltorah-audio`, `TT_AUDIO_BASE`). The chant pitch shifter adds nothing: its
+  `audio.ivritsuite.com` in `media-src` (PocketTorah audio, and the Total Torah verse files from the R2 bucket
+  `totaltorah-audio` through its custom domain, `TT_AUDIO_BASE`). The chant pitch shifter adds nothing: its
   AudioWorklet module is same-origin (`script-src 'self'` covers a worklet fetch) and the `<audio crossorigin>`
   loads are those media hosts (the bucket's CORS policy names the site's origins). The YouTube link-back is a
   plain `<a target=_blank>` — `frame-src 'none'` stays; moving the corpus to another host (a custom domain on the

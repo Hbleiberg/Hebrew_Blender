@@ -903,7 +903,8 @@ never a practice link (`LINK_DISPLAY` says how a reading looks, never how it sou
   (`THIRD_PARTY_LICENSES.md`; `data/totaltorah/LICENSE.txt`). **Per-verse files**, not aliyah files:
   `gen-001-001.mp3` (book code, chapter, verse, zero-padded) served from the Cloudflare R2 bucket
   `totaltorah-audio` (`audio/`, 5,846 files for the whole Torah, ≈ 1 GB — never in this repository) at
-  `TT_AUDIO_BASE`, the bucket's public hostname, which the CSP's `media-src` carries; the bucket's CORS policy
+  `TT_AUDIO_BASE`, the bucket's custom domain `audio.ivritsuite.com` (Cloudflare-cached; the `r2.dev` development
+  URL is rate-limited and for testing only, never `TT_AUDIO_BASE`), which the CSP's `media-src` carries; the bucket's CORS policy
   allows GET/HEAD from `ivritsuite.com`, `www.ivritsuite.com`, `hbleiberg.github.io` and `localhost:8080` and
   exposes `Content-Length`, `Content-Range`, `Accept-Ranges` (the audio element is `crossorigin` for the pitch
   shifter); the private repository `Hbleiberg/TotalTorahAudio` is the files' master copy; per-verse timings `data/totaltorah/timings/gen-001-001.txt`
@@ -918,10 +919,11 @@ never a practice link (`LINK_DISPLAY` says how a reading looks, never how it sou
   the trope motifs' discipline. An unverified verse is a verse with no recording (PocketTorah plays it); verified
   audio with unverified timings plays with a **whole-verse highlight** (`timings = [0]`, `updateKaraokeWordRefs` maps
   every word of the verse to index 0) and the Karaoke section's `#kfTTNote` says word-by-word follow is not there yet.
-- **The approval gate.** `TOTALTORAH_PUBLIC = false` keeps the option off every page; `?reader=totaltorah`
-  (`ttOffered()`) reveals it for a visit and, when the stored source is PocketTorah, selects it for that visit only
-  (`_recSrcOverride`, the tutor's `?melody=` idea — never saved; a radio press saves a choice and ends it; Reset clears
-  it). Without the flag nothing changes for anyone: the manifest is not fetched (`ensureTotalTorahManifest` returns
+- **The approval gate.** `TOTALTORAH_PUBLIC = true` offers the option to every visitor (`ttOffered()`), with
+  PocketTorah the default (`settings.recordingSource`); `?reader=totaltorah` selects Total Torah for that visit only
+  when the stored source is PocketTorah (`_recSrcOverride`, the tutor's `?melody=` idea — never saved; a radio press
+  saves a choice and ends it; Reset clears it) — `init` reads the link itself, never `ttOffered()`, or every visit
+  would hear Total Torah. With the flag `false` the link alone reveals it, and nothing changes for anyone else: the manifest is not fetched (`ensureTotalTorahManifest` returns
   null), the Recording row (`#optRecSrcRow`) and the controls bar's Chanting picker (`#ttRecSrcCtrl`) stay `hidden`,
   `syncAudioCredit` returns before touching the bar, and every entry point asks `ttEntryFor`, which answers null.
 - **Two controls, one writer.** The controls bar's **Chanting** picker (`#ttRecSrcBar`, beside the Translit /

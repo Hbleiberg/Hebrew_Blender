@@ -9,7 +9,7 @@
      before this tag. Update this when adding any external script/font/fetch/iframe (see CLAUDE.md).
      The chant pitch shifter's AudioWorklet module (js/tt-pitch-worklet.js) is same-origin — covered by
      script-src 'self' — and its media host is already in media-src, so no origin was added for it. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://esm.sh https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com https://files.readme.io; media-src 'self' blob: https://raw.githubusercontent.com https://pub-d4caf796127c4e3cb3de55d33a2c7981.r2.dev; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://esm.sh https://cdn.jsdelivr.net https://www.sefaria.org https://hhkmqwpjsyxdeuhvcyis.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://esm.sh https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com https://files.readme.io; media-src 'self' blob: https://raw.githubusercontent.com https://audio.ivritsuite.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://esm.sh https://cdn.jsdelivr.net https://www.sefaria.org https://hhkmqwpjsyxdeuhvcyis.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
@@ -3138,15 +3138,17 @@ const POCKET_AUDIO_BASE = 'https://raw.githubusercontent.com/rneiss/PocketTorah/
 const POCKET_TIMINGS_BASE = 'data/pockettorah/timings/';
 const POCKET_TIMINGS_V = '?v=1';   // cache-buster for the timings corpus — bump when a timings file changes
 // Total Torah (Cantor Arianne Brown, Adas Israel Congregation): a second recording source — per-VERSE MP3s and timings
-// under data/totaltorah/, used only for a verse whose manifest entry is verified, and offered only behind
-// ?reader=totaltorah until TOTALTORAH_PUBLIC flips (docs/reference/torah-and-trope.md → Recording sources).
-const TOTALTORAH_PUBLIC = false;
+// under data/totaltorah/, used only for a verse whose manifest entry is verified. TOTALTORAH_PUBLIC offers it to every
+// visitor (PocketTorah stays the default; ?reader=totaltorah preselects it for one visit); false hides it again behind
+// that link alone (docs/reference/torah-and-trope.md → Recording sources).
+const TOTALTORAH_PUBLIC = true;
 const TT_BASE = 'data/totaltorah/';
 // The verse MP3s (5,846 files, ~1 GB — never in this repository) are served from the Cloudflare R2 bucket
-// totaltorah-audio through its public hostname (the origin is in the CSP's media-src); their master copy is the
+// totaltorah-audio through its custom domain, Cloudflare-cached (the origin is in the CSP's media-src; the bucket's
+// r2.dev development URL is rate-limited and for testing only, never TT_AUDIO_BASE); their master copy is the
 // private repository Hbleiberg/TotalTorahAudio. The manifest and the timings stay same-origin under TT_BASE,
 // behind TT_DATA_V.
-const TT_AUDIO_BASE = 'https://pub-d4caf796127c4e3cb3de55d33a2c7981.r2.dev/audio/';
+const TT_AUDIO_BASE = 'https://audio.ivritsuite.com/audio/';
 const TT_DATA_V = '?v=9';   // cache-buster for the manifest and the timings files (the /data/ cache is exact-URL keyed)
 const TT_CREDIT_URL = 'https://www.adasisrael.org/trope';
 const TT_VIDEO_RE = /^[\w-]{11}$/;   // a video id goes into an href — validated before it does
@@ -11221,8 +11223,9 @@ function _ttFocusAfterRetry() {
 async function init() {
   initDark();
   loadSettings();
-  // ?reader=totaltorah: the link's visit hears the Total Torah source (a radio press saves a choice; nothing is stored by the flag).
-  if (ttOffered() && settings.recordingSource !== 'totaltorah') _recSrcOverride = 'totaltorah';
+  // ?reader=totaltorah: the link's visit hears the Total Torah source (a radio press saves a choice; nothing is stored by the
+  // flag). The link itself, never ttOffered(): with the source public, that is every visit, and PocketTorah stays the default.
+  if (new URLSearchParams(location.search).get('reader') === 'totaltorah' && settings.recordingSource !== 'totaltorah') _recSrcOverride = 'totaltorah';
   linkViewApply();          // a practice link's ?s= display settings: shown from the first paint, never saved
   _watchAudioBarHeight();   // keeps the bulk dock clear of the sticky karaoke bar at any width
   _watchBulkDockFocus();    // stops the dock vanishing under a keyboard user's own Clear
