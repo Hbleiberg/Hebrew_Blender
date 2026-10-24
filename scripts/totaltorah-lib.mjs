@@ -300,6 +300,33 @@ export function pauseAfter(src, t, maxS) {
   }
   return null;
 }
+// Where each verse's sound really stops. The alignment ends a held note early — a verse's last word, above all an
+// aliyah's closing cadence, rings on for up to a few seconds past its aligned end — so a cut at that end + 0.4 s
+// clipped the last verse of about a third of the series and some 70 verses mid-aliyah. A boundary moves later, never
+// earlier, to the first pause after the verse's last word (END_THRESH held for END_MINDUR) + END_MARGIN, only where
+// the old cut ended more than END_TOLERANCE before that pause (a fainter decay is inaudible, and it is what the
+// maintainer approved by ear), and never closer than 0.2 s to the next verse's first word; a last verse with no
+// pause before the file ends runs to the end. Mutates bj.boundaries; returns the moves.
+export const END_THRESH = '-45dB', END_MINDUR = '0.15', END_MARGIN = 0.1, END_TOLERANCE = 0.1;
+export function extendEndsToPauses(bj, src) {
+  const { silences, dur } = detectSegments(src, END_THRESH, END_MINDUR);
+  const pad = bj.pad ?? DEFAULT_PAD;
+  const moves = [];
+  bj.verses.forEach((v, i) => {
+    const last = i === bj.verses.length - 1;
+    const wordEnd = v.ends[v.ends.length - 1];
+    const old = bj.boundaries[i + 1];
+    const p = silences.find((x) => x.s >= wordEnd - 0.25 && x.s < (last ? dur : bj.verses[i + 1].first));
+    const soundEnd = p ? p.s : last ? dur : null;
+    if (soundEnd === null || soundEnd - Math.min(dur, old + pad) <= END_TOLERANCE) return;
+    const nb = r2(last ? Math.min(dur, soundEnd + END_MARGIN - pad) : Math.min(soundEnd + END_MARGIN - pad, bj.verses[i + 1].first - 0.2));
+    if (nb <= old) return;
+    bj.boundaries[i + 1] = nb;
+    moves.push({ key: v.key, from: old, to: nb, soundEnd: r2(soundEnd) });
+  });
+  bj.ends = { rule: 'pause', thresh: END_THRESH, mindur: +END_MINDUR, margin: END_MARGIN, tolerance: END_TOLERANCE, moved: moves.length };
+  return moves;
+}
 // The announcement's end from the English transcript (see above). Returns { introEnd, by, transcript, match, tEnd,
 // snapped, unconfirmed, warning }; `by` is 'english' or 'silence (unconfirmed)'.
 export async function englishIntroEnd({ src, flac, row, dur, client, legacy, maxS = 30, log = console.log }) {
@@ -404,9 +431,10 @@ export async function computeBoundaries({ id, row, src, client, intro = 'auto', 
   const result = { id, ref: row.ref, introEnd: b[0], introBy, legacyIntro: r2(legacy), boundaries: b, gaps, pad, dur: r2(dur),
     introTranscript: english ? english.transcript : null, introMatch: english ? english.match : null, introUnconfirmed: english ? english.unconfirmed || firstGap > 3 : false, introWarning: english ? english.warning : null,
     verses: out, wall: a.wall, windows: a.windows, model: a.model, revision: a.revision, built: new Date().toISOString().slice(0, 10) };
+  for (const m of extendEndsToPauses(result, src)) log(`  end of ${m.key}: the sound runs to ${m.soundEnd} s — boundary ${m.from} → ${m.to} s`);
   writeFileSync(join(cacheDir, `${id}.boundaries.json`), JSON.stringify(result, null, 1) + '\n');
   if (!keep16k) { try { unlinkSync(flac); } catch { /* already gone */ } }
-  log(`\nboundaries: ${b.join(',')}  (gaps between verses: ${gaps.join(', ')} s; alignment ${a.wall} s, ${a.windows} window(s))\nwrote ${join(cacheDir, id + '.boundaries.json')}`);
+  log(`\nboundaries: ${result.boundaries.join(',')}  (gaps between verses: ${gaps.join(', ')} s; alignment ${a.wall} s, ${a.windows} window(s))\nwrote ${join(cacheDir, id + '.boundaries.json')}`);
   return result;
 }
 

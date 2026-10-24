@@ -161,6 +161,12 @@ has every flag). Facts learned preparing the first pass (Oct 2026):
   it chose the file's start in four of eight Bereshit videos (a forced alignment of the Hebrew from 0 s parks the
   first two words on the English and scores higher), so it is gone. The alignment itself is sound: re-aligning the
   verified pilot video reproduced the maintainer-approved cuts within 0.1 s on every verse but the intro one.
+- **A cut ends at the first pause after the verse's last word, not at the word's aligned end.** The alignment ends a
+  held note early: with the old rule (aligned end + 0.4 s, + the 0.15 s pad) the last verse of about a third of the
+  series lost its closing cadence — by more than half a second in 181 videos, 4.7 s at the end of Genesis — and the
+  maintainer heard it on Toldot Y3 A7's 28:9. `extendEndsToPauses` (in the boundaries pass, and `ends --apply` for
+  files already cut) moves a boundary later to the pause (−45 dB for 0.15 s, + 0.1 s), only where the old cut ended
+  more than 0.1 s before it, never within 0.2 s of the next verse's first word.
 - **Timings come from the whole-file alignment by default** (`--timings derive`; `realign` is the per-verse second
   pass of the recipe above), so each video is aligned once: the series' ≈ 34 h of audio is about 7–8 h of CPU here,
   plus ffmpeg (the source is decoded once per video since the same pass).

@@ -997,7 +997,12 @@ never a practice link (`LINK_DISPLAY` says how a reading looks, never how it sou
   logs every failure and goes on; `run --ledger <name>` keeps a run's own ledger so two runs can go at once on
   different books and `--out` folders (two aligners at default threads starve each other — `OMP_NUM_THREADS=2`
   each), `run --only <id> --redo --intro <s>` cuts one video's announcement by hand, and `status` reads every
-  ledger (the later run's entry wins) and lists the flagged intros. The corpus (≈ 1 GB) never enters this repo: `run`
+  ledger (the later run's entry wins) and lists the flagged intros. A verse's cut ends at the first pause after its
+  last word (`extendEndsToPauses`: −45 dB held 0.15 s, + 0.1 s), never at the word's aligned end alone — the
+  alignment ends a held note early, and an aliyah's closing cadence rang up to 4.7 s past it (the old aligned end
+  + 0.4 s clipped the last verse of about a third of the series); a boundary only moves later, only past a 0.1 s
+  tolerance, and never within 0.2 s of the next verse's first word. `ends [--apply]` runs that rule on boundaries
+  files already written, without the model, and re-cuts what moved. The corpus (≈ 1 GB) never enters this repo: `run`
   refuses more than a parasha into `data/totaltorah/` without `--into-repo`, the series goes `--out
   source-data/totaltorah-out` (gitignored), its manifest and timings move into `data/totaltorah/`, and its MP3s go
   to the private `Hbleiberg/TotalTorahAudio` repository (the master copy) and to the R2 bucket `totaltorah-audio`

@@ -34,6 +34,12 @@
  *                                         that fails is logged and the run goes on; a re-run skips what is done.
  *                                         Maftir and "w/Chazak" videos repeat verses an aliyah already holds, so they
  *                                         are skipped unless asked for.
+ *   ends      [--book B] [--parsha P] [--only ids] [--apply]
+ *                                         the end-of-verse rule (extendEndsToPauses: a cut ends at the first pause after
+ *                                         the verse's last word, not at the word's aligned end) on the boundaries files a
+ *                                         run already wrote, without the model: reports the cuts that end before the voice
+ *                                         does; --apply rewrites those boundaries files, re-cuts those videos into --out
+ *                                         (split --boundaries auto --keep-existing) and re-derives their timings.
  *   status                                the ledger: per parasha, videos / staged / cut / timed / verified, and the
  *                                         verify commands for what is cut and unheard.
  *
@@ -50,7 +56,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync, statSy
 import { join, dirname, basename, extname, relative } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { CACHE_DIR as REAL_CACHE, OUT_DIR as REAL_OUT, BOOK_CODE, SOURCE_EXTS, DEFAULT_PAD, AlignerClient, checkEnv, sourceAudio, computeBoundaries,
-  refVerses, deriveVideoTimings, alignVerses, ffprobeDuration, parseRef, loadBookText, r2 } from './totaltorah-lib.mjs';
+  refVerses, deriveVideoTimings, alignVerses, ffprobeDuration, parseRef, loadBookText, r2, extendEndsToPauses } from './totaltorah-lib.mjs';
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
 const AUDIO_SCRIPT = join(repoRoot, 'scripts', 'build-totaltorah-audio.mjs');
@@ -849,6 +855,44 @@ async function cmdRun() {
   console.log(`next: node scripts/build-totaltorah-bulk.mjs status   — then listen, and flip what you accept with build-totaltorah-audio.mjs verify --video <id> (or --parsha <name>), and again with --timings`);
 }
 
+/* ================================================================== ends ================================================================== */
+async function cmdEnds() {
+  const videos = await loadVideos();
+  const ids = selectRows(videos);
+  const manifest0 = readManifest();
+  if (flags.apply && !manifest0) fail(`no manifest in ${OUT} — --apply re-cuts into an --out that already holds the series`, 2);
+  mkdirSync(LOG_DIR, { recursive: true });
+  let checked = 0, moved = 0, bounds = 0;
+  for (const id of ids) {
+    const r = videos[id];
+    const bp = join(CACHE, `${id}.boundaries.json`);
+    const src = sourceAudio(id, CACHE);
+    if (!r.ref || !src || !existsSync(bp)) continue;
+    const bj = JSON.parse(readFileSync(bp, 'utf8'));
+    if (bj.ref !== r.ref || !Array.isArray(bj.verses)) { console.log(`  ? ${id}: its boundaries file is for ${bj.ref}, the row says ${r.ref} — skipped (re-run it with run --only ${id} --redo)`); continue; }
+    if (manifest0 && !bj.verses.some((v) => manifest0[v.key] && manifest0[v.key].video === id)) continue;   // every verse held by another video
+    checked++;
+    const moves = extendEndsToPauses(bj, src);
+    if (!moves.length) continue;
+    moved++; bounds += moves.length;
+    console.log(`  ${id} ${r.parsha} Y${r.year ?? '-'} A${r.aliyah}: ${moves.map((m) => `${m.key} +${r2(m.to - m.from)} s`).join(', ')}`);
+    if (!flags.apply) continue;
+    writeFileSync(bp, JSON.stringify(bj, null, 1) + '\n');
+    const args = [AUDIO_SCRIPT, 'split', '--video', id, '--boundaries', 'auto', '--pad', String(bj.pad ?? DEFAULT_PAD), '--keep-existing'];
+    if (flags.cache) args.push('--cache', CACHE);
+    if (flags.out) args.push('--out', OUT);
+    const sp = spawnSync(process.execPath, args, { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+    writeFileSync(join(LOG_DIR, `${id}.ends.log`), `# ends ${new Date().toISOString()}\n${JSON.stringify(moves)}\n${sp.stdout || ''}${sp.stderr || ''}`);
+    if (sp.status !== 0) fail(`split ${id} exited ${sp.status}: ${(sp.stderr || sp.stdout || '').trim().split('\n').pop()}`);
+    const manifest = readManifest();
+    if (manifest0.credit && manifest0.credit.videos && manifest0.credit.videos[id]) manifest.credit.videos[id] = manifest0.credit.videos[id];   // the source is the same file
+    const res = deriveVideoTimings({ id, manifest, log: () => {}, cacheDir: CACHE, timingsDir: TIMINGS_DIR });
+    writeFileSync(MANIFEST, JSON.stringify(manifest, null, 1) + '\n');
+    if (res.failures.length) console.log(`    ✗ timings: ${res.failures.map((f) => `${f.key}: ${f.error}`).join('; ')}`);
+  }
+  console.log(`\nends: ${checked} videos checked, ${moved} with a cut that ended before the voice (${bounds} boundaries)${flags.apply ? ` — re-cut into ${OUT} and their timings re-derived; every re-cut file is unheard again` : ' — add --apply to re-cut them'}`);
+}
+
 /* ================================================================== status ================================================================== */
 async function cmdStatus() {
   const videos = await loadVideos();
@@ -914,7 +958,8 @@ try {
   else if (cmd === 'stage') await cmdInventory(!!flags.apply);
   else if (cmd === 'run') await cmdRun();
   else if (cmd === 'status') await cmdStatus();
-  else { console.log('usage: build-totaltorah-bulk.mjs (adas|meta|inventory|stage|run|status) … (see the header comment)'); process.exit(2); }
+  else if (cmd === 'ends') await cmdEnds();
+  else { console.log('usage: build-totaltorah-bulk.mjs (adas|meta|inventory|stage|run|ends|status) … (see the header comment)'); process.exit(2); }
 } catch (e) {
   fail(e && e.stack ? e.stack.split('\n').slice(0, 3).join('\n') : String(e));
 }
