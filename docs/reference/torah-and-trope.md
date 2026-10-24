@@ -911,7 +911,7 @@ never a practice link (`LINK_DISPLAY` says how a reading looks, never how it sou
   value), and `data/totaltorah/manifest.json`: a top-level `credit` block (names, URLs, the permission, each source
   video's title and upload date) beside one entry per verse, keyed `"Genesis 1:1"` — `{ file, dur, video, parsha,
   year, aliyah, verified, timings, timingsVerified }`. The manifest and the timings are fetched with `TT_DATA_V`
-  (`?v=5`; `/data/` is cache-first and exact-URL keyed); the audio is left to the network by `sw.js` (a Range
+  (`?v=6`; `/data/` is cache-first and exact-URL keyed); the audio is left to the network by `sw.js` (a Range
   request must never be answered from the cache).
 - **Verified or nothing.** `ttEntryFor(vk)` returns an entry only while it is `verified: true`, and its timings count
   only while `timingsVerified: true` — the maintainer flips both by listening (`build-totaltorah-audio.mjs verify`),
@@ -1002,7 +1002,9 @@ never a practice link (`LINK_DISPLAY` says how a reading looks, never how it sou
   alignment ends a held note early, and an aliyah's closing cadence rang up to 4.7 s past it (the old aligned end
   + 0.4 s clipped the last verse of about a third of the series); a boundary only moves later, only past a 0.1 s
   tolerance, and never within 0.2 s of the next verse's first word. `ends [--apply]` runs that rule on boundaries
-  files already written, without the model, and re-cuts what moved. The corpus (≈ 1 GB) never enters this repo: `run`
+  files already written, without the model, and re-cuts what moved. A row's `outro` (seconds) marks a spoken closing
+  announcement — the "congregation says chazak" after the last verse of Genesis and of the Torah — and both the
+  alignment and the cut stop before it (without it the alignment stretched the last words over the speech). The corpus (≈ 1 GB) never enters this repo: `run`
   refuses more than a parasha into `data/totaltorah/` without `--into-repo`, the series goes `--out
   source-data/totaltorah-out` (gitignored), its manifest and timings move into `data/totaltorah/`, and its MP3s go
   to the private `Hbleiberg/TotalTorahAudio` repository (the master copy) and to the R2 bucket `totaltorah-audio`

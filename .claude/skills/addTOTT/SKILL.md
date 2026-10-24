@@ -167,6 +167,13 @@ has every flag). Facts learned preparing the first pass (Oct 2026):
   maintainer heard it on Toldot Y3 A7's 28:9. `extendEndsToPauses` (in the boundaries pass, and `ends --apply` for
   files already cut) moves a boundary later to the pause (−45 dB for 0.15 s, + 0.1 s), only where the old cut ended
   more than 0.1 s before it, never within 0.2 s of the next verse's first word.
+- **A video that ends with a spoken announcement gets an `outro`.** Vayechi Y3 A7 (`URmDtWg75tg`, "with Chazak") and
+  V'Zot HaBerachah A6 (`8f_kHQdPwJs`) end with "the congregation says chazak chazak v'nitchazek" and the reader's
+  repeat, with no pause long enough for the end rule; the whole-file alignment also stretched the last two words
+  over that speech, so the highlighting stalled. The row's `outro` (the speech's start, read off the English
+  transcript of the tail and the silence before it) stops the alignment and the cut there; `adas` keeps it. A verse
+  whose highlighting the maintainer hears drifting can be re-timed alone with the per-verse pass (`alignVerses`, the
+  `realign` timings) — it fixed Genesis 21:13, where the whole-file pass stretched *ben* over *ben-ha'amah*.
 - **Timings come from the whole-file alignment by default** (`--timings derive`; `realign` is the per-verse second
   pass of the recipe above), so each video is aligned once: the series' ≈ 34 h of audio is about 7–8 h of CPU here,
   plus ffmpeg (the source is decoded once per video since the same pass).

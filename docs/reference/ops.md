@@ -97,7 +97,7 @@ Notes:
   (`?v=1` — the URL is built by concatenation, so the buster is a named constant
   next to `POCKET_TIMINGS_BASE` rather than a literal in the fetch).
   The Torah Trainer's Total Torah source (`totaltorah/manifest.json` and `totaltorah/timings/*.txt`, both via
-  **`TT_DATA_V`**, `?v=5`, fetched only behind `?reader=totaltorah`) follows the same rule; its verse MP3s under
+  **`TT_DATA_V`**, `?v=6`, fetched only behind `?reader=totaltorah`) follows the same rule; its verse MP3s under
   `totaltorah/audio/` are deliberately **not** cached: the worker returns before the `/data/` branch for any
   Range request or `audio` destination (a cached full 200 answering a Range request is refused by Safari, and a
   206 must never be `cache.put`), so the audio always streams from the network like PocketTorah's.

@@ -306,20 +306,23 @@ export function pauseAfter(src, t, maxS) {
 // earlier, to the first pause after the verse's last word (END_THRESH held for END_MINDUR) + END_MARGIN, only where
 // the old cut ended more than END_TOLERANCE before that pause (a fainter decay is inaudible, and it is what the
 // maintainer approved by ear), and never closer than 0.2 s to the next verse's first word; a last verse with no
-// pause before the file ends runs to the end. Mutates bj.boundaries; returns the moves.
+// pause before the file ends runs to the end — or to `bj.outro`, where a spoken closing announcement starts (the
+// "congregation says chazak" at the end of a book), which no cut passes. Mutates bj.boundaries; returns the moves.
 export const END_THRESH = '-45dB', END_MINDUR = '0.15', END_MARGIN = 0.1, END_TOLERANCE = 0.1;
 export function extendEndsToPauses(bj, src) {
   const { silences, dur } = detectSegments(src, END_THRESH, END_MINDUR);
   const pad = bj.pad ?? DEFAULT_PAD;
+  const stop = bj.outro ? Math.min(dur, bj.outro) : dur;     // where the last verse's sound must end
+  const cap = bj.outro ? stop - pad : dur;                    // its last boundary (the cut adds the pad)
   const moves = [];
   bj.verses.forEach((v, i) => {
     const last = i === bj.verses.length - 1;
     const wordEnd = v.ends[v.ends.length - 1];
     const old = bj.boundaries[i + 1];
-    const p = silences.find((x) => x.s >= wordEnd - 0.25 && x.s < (last ? dur : bj.verses[i + 1].first));
-    const soundEnd = p ? p.s : last ? dur : null;
-    if (soundEnd === null || soundEnd - Math.min(dur, old + pad) <= END_TOLERANCE) return;
-    const nb = r2(last ? Math.min(dur, soundEnd + END_MARGIN - pad) : Math.min(soundEnd + END_MARGIN - pad, bj.verses[i + 1].first - 0.2));
+    const p = silences.find((x) => x.s >= wordEnd - 0.25 && x.s < (last ? stop : bj.verses[i + 1].first));
+    const soundEnd = p ? p.s : last ? stop : null;
+    if (soundEnd === null || soundEnd - Math.min(stop, old + pad) <= END_TOLERANCE) return;
+    const nb = r2(last ? Math.min(cap, soundEnd + END_MARGIN - pad) : Math.min(soundEnd + END_MARGIN - pad, bj.verses[i + 1].first - 0.2));
     if (nb <= old) return;
     bj.boundaries[i + 1] = nb;
     moves.push({ key: v.key, from: old, to: nb, soundEnd: r2(soundEnd) });
@@ -405,7 +408,10 @@ export async function computeBoundaries({ id, row, src, client, intro = 'auto', 
   const words = [], display = [];
   for (const v of verses) for (let i = 0; i < v.cons.length; i++) { words.push(v.cons[i]); display.push(v.words[i]); }
   log(`  aligning ${words.length} words from ${introEnd.toFixed(2)} s …`);
-  const a = await client.align({ audio: flac, words, offset: introEnd });
+  // a row's `outro`: a spoken closing announcement starts there — the alignment and the cut stop before it
+  const outro = row.outro !== undefined && isFinite(+row.outro) && +row.outro > introEnd && +row.outro < dur ? +row.outro : null;
+  if (outro) log(`  outro: a closing announcement starts at ${outro} s — aligning and cutting before it`);
+  const a = await client.align({ audio: flac, words, offset: introEnd, end: outro });
   const b = [r2(introEnd)];
   const gaps = [];
   const out = [];
@@ -425,10 +431,10 @@ export async function computeBoundaries({ id, row, src, client, intro = 'auto', 
     out.push({ key: v.key, file: v.file, n, first, lastEnd, minScore: r3(minScore), words: v.words, onsets, ends, scores });
     i += n;
   });
-  b.push(r2(Math.min(dur, a.ends[a.ends.length - 1] + 0.4)));
+  b.push(r2(Math.min(outro ? outro - pad : dur, a.ends[a.ends.length - 1] + 0.4)));
   const firstGap = r2(a.onsets[0] - introEnd);
   if (firstGap > 3) log(`  ⚠ the first word is aligned ${firstGap} s after the intro end — something (more announcement? a long pause?) sits between them; listen`);
-  const result = { id, ref: row.ref, introEnd: b[0], introBy, legacyIntro: r2(legacy), boundaries: b, gaps, pad, dur: r2(dur),
+  const result = { id, ref: row.ref, introEnd: b[0], introBy, legacyIntro: r2(legacy), boundaries: b, gaps, pad, dur: r2(dur), ...(outro ? { outro } : {}),
     introTranscript: english ? english.transcript : null, introMatch: english ? english.match : null, introUnconfirmed: english ? english.unconfirmed || firstGap > 3 : false, introWarning: english ? english.warning : null,
     verses: out, wall: a.wall, windows: a.windows, model: a.model, revision: a.revision, built: new Date().toISOString().slice(0, 10) };
   for (const m of extendEndsToPauses(result, src)) log(`  end of ${m.key}: the sound runs to ${m.soundEnd} s — boundary ${m.from} → ${m.to} s`);

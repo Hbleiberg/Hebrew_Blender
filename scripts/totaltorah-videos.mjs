@@ -4,7 +4,8 @@
 // A row: parsha (as data/parshiyot.json spells it; a doubled pair joined by '-'), year (1–3; null = one set for every year),
 // aliyah (1–7 or 'M'), ref (the verse range the video chants — the cut and the alignment follow it; data/leyning/triennial.json's
 // division unless `note` says otherwise), page (the range as the Adas page prints it), variant ('chazak': the Chazak ending),
-// note (a cross-check that did not agree), heard (the maintainer's listening corrected `ref`: `adas` keeps that row's ref);
+// note (a cross-check that did not agree), heard (the maintainer's listening corrected `ref`: `adas` keeps that row's ref),
+// outro (s: a spoken closing announcement starts there — the alignment and the cut stop before it; `adas` keeps it);
 // after `meta`: title, duration (s), upload_date and check (the title cross-check).
 export const VIDEOS = {
   bv1hX3WrRM4: { parsha: 'Bereshit', year: 1, aliyah: 1, ref: 'Genesis 1:1-1:5', page: '1:1 - 1:5', title: 'B\'reishit, Year 1 Aliyah 1', duration: 86, upload_date: '20260911', check: 'ok' },
@@ -271,7 +272,7 @@ export const VIDEOS = {
   '3XKcrkbdRJ4': { parsha: 'Vayechi', year: 3, aliyah: 4, ref: 'Genesis 50:7-50:9', page: '50:7 - 50:9', title: 'Vayechi, Year 3, Aliyah 4', check: 'ok' },
   eFO7YzQpNCI: { parsha: 'Vayechi', year: 3, aliyah: 5, ref: 'Genesis 50:10-50:14', page: '50:10 - 50:14', title: 'Vayechi, Year 3, Aliyah 5', check: 'ok' },
   Wwbq7PFDO7E: { parsha: 'Vayechi', year: 3, aliyah: 6, ref: 'Genesis 50:15-50:20', page: '50: 15 - 50:20', title: 'Vayechi, Year 3, Aliyah 6', check: 'ok' },
-  URmDtWg75tg: { parsha: 'Vayechi', year: 3, aliyah: 7, ref: 'Genesis 50:21-50:26', page: '50:21 - 50:26', title: 'Vayechi, Year 3, Aliyah 7 with Chazak', check: 'title says Chazak' },
+  URmDtWg75tg: { parsha: 'Vayechi', year: 3, aliyah: 7, ref: 'Genesis 50:21-50:26', page: '50:21 - 50:26', outro: 150.4, title: 'Vayechi, Year 3, Aliyah 7 with Chazak', check: 'title says Chazak' },
   '0LMEwt8dAvQ': { parsha: 'Shemot', year: 1, aliyah: 1, ref: 'Exodus 1:1-1:7', page: '1:1 - 1:7', title: 'Sh\'mot, Year 1, Aliyah 1', check: 'ok' },
   NH4swfvq1ro: { parsha: 'Shemot', year: 1, aliyah: 2, ref: 'Exodus 1:8-1:12', page: '1:8 - 1:12', title: 'Sh\'mot, Year 1, Aliyah 2', check: 'ok' },
   J0V1GJasI9A: { parsha: 'Shemot', year: 1, aliyah: 3, ref: 'Exodus 1:13-1:17', page: '1:13 - 1:17', title: 'Sh\'mot, Year 1, Aliyah 3', check: 'ok' },
@@ -1040,6 +1041,6 @@ export const VIDEOS = {
   io4GXS_S4wI: { parsha: 'V\'Zot HaBerachah', year: null, aliyah: 3, ref: 'Deuteronomy 33:13-33:17', page: '33:13 - 33:17', note: 'one set for every year', title: 'V\'Zot HaB\'rachah Aliyah 3', check: 'ok' },
   WdNQvMutQiI: { parsha: 'V\'Zot HaBerachah', year: null, aliyah: 4, ref: 'Deuteronomy 33:18-33:21', page: '33:18 – 33:21', note: 'one set for every year', title: 'V\'Zot HaB\'rachah Aliyah 4', check: 'ok' },
   UJLcjxDvARA: { parsha: 'V\'Zot HaBerachah', year: null, aliyah: 5, ref: 'Deuteronomy 33:22-33:26', page: '33:22 – 33:26', note: 'one set for every year', title: 'V\'Zot HaB\'rachah Aliyah 5', check: 'ok' },
-  '8f_kHQdPwJs': { parsha: 'V\'Zot HaBerachah', year: null, aliyah: 6, ref: 'Deuteronomy 33:27-34:12', page: '33:27 – 34:12', note: 'page division differs from hebcal (33:27-33:29); one set for every year', title: 'V\'Zot HaB\'rachah Aliyah 6', check: 'ok' },
+  '8f_kHQdPwJs': { parsha: 'V\'Zot HaBerachah', year: null, aliyah: 6, ref: 'Deuteronomy 33:27-34:12', page: '33:27 – 34:12', note: 'page division differs from hebcal (33:27-33:29); one set for every year', outro: 339.05, title: 'V\'Zot HaB\'rachah Aliyah 6', check: 'ok' },
 };
 export const BOOK_CODE = { Genesis: 'gen', Exodus: 'exo', Leviticus: 'lev', Numbers: 'num', Deuteronomy: 'deu' };
