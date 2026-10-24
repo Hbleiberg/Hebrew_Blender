@@ -3086,7 +3086,10 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
     <!-- pinned-English credits (never translated): dir="ltr" keeps each phrase in English order in the RTL UI, and lang="en" has a screen reader voice it in English -->
     <span dir="ltr" lang="en">Hebrew text via <a href="https://www.sefaria.org" target="_blank" rel="noopener" class="sefaria-attr"><img src="https://files.readme.io/87c5652-image.png" alt="Sefaria" class="sefaria-light" loading="lazy"><img src="https://files.readme.io/dcee0a8-image.png" alt="Sefaria" class="sefaria-dark" loading="lazy"></a> · public domain</span>
     <span id="ttFooterTrans" data-i18n="torah.footer.translation_static">Translation: (none selected)</span>
-    <span dir="ltr" lang="en">Cantillation audio: <a href="https://github.com/rneiss/PocketTorah" target="_blank" rel="noopener">PocketTorah</a> · CC BY-SA 4.0</span>
+    <!-- The audio credit follows the Chanting choice (syncRecSrcControls): PocketTorah's, Cantor Brown's, or both while
+         the reading on screen mixes them (a verse with no Total Torah recording plays PocketTorah). -->
+    <span id="ttFooterAudioPocket" dir="ltr" lang="en">Cantillation audio: <a href="https://github.com/rneiss/PocketTorah" target="_blank" rel="noopener">PocketTorah</a> · CC BY-SA 4.0</span>
+    <span id="ttFooterAudioTT" dir="ltr" lang="en" hidden>Cantillation audio: <a href="https://www.adasisrael.org/trope" target="_blank" rel="noopener">Cantor Arianne Brown, Adas Israel Congregation</a> · Tricks of the Trope: Total Torah · used by permission</span>
     <span data-i18n="torah.footer.license_note">Only translations whose license permits redistribution are offered (Public Domain, CC0, CC BY, CC BY-SA, CC BY-NC, CC BY-NC-SA).</span>
     <span><a href="contact.html" data-i18n="contact.page_title">Contact &amp; Support</a></span>
   </div>
@@ -7389,7 +7392,8 @@ function syncRecSrcControls() {
   const ctrl = document.getElementById('ttRecSrcCtrl'), sel = document.getElementById('ttRecSrcBar');
   if (ctrl) ctrl.hidden = !offered;
   const note = document.getElementById('optRecSrcNote'), ttDiv = document.getElementById('optRecCreditTT'), pocketDiv = document.getElementById('optRecCreditPocket'), karNote = document.getElementById('kfTTNote');
-  if (!offered) { if (note) note.hidden = true; if (ttDiv) ttDiv.hidden = true; if (pocketDiv) pocketDiv.hidden = false; if (karNote) karNote.hidden = true; return; }
+  const footPocket = document.getElementById('ttFooterAudioPocket'), footTT = document.getElementById('ttFooterAudioTT');
+  if (!offered) { if (note) note.hidden = true; if (ttDiv) ttDiv.hidden = true; if (pocketDiv) pocketDiv.hidden = false; if (karNote) karNote.hidden = true; if (footPocket) footPocket.hidden = false; if (footTT) footTT.hidden = true; return; }
   const ents = ttReadingEntries(true);
   const none = ents.count === 0;
   const total = document.getElementById('rsTotal'), pocket = document.getElementById('rsPocket');
@@ -7414,6 +7418,11 @@ function syncRecSrcControls() {
   }
   if (pocketDiv) pocketDiv.hidden = active;
   if (karNote) karNote.hidden = !(active && ents.unTimed > 0);
+  // the footer credits whoever the reading on screen will play: Cantor Brown while Total Torah is chosen and recorded
+  // here, PocketTorah otherwise — and both while some verse on screen has no Total Torah recording (it plays PocketTorah)
+  const mixed = active && !!currentVerses && ents.count < currentVerses.length;
+  if (footTT) footTT.hidden = !active;
+  if (footPocket) footPocket.hidden = active && !mixed;
 }
 function setRecordingSource(v) {   // the one writer, for the drawer's radios and the controls bar's Chanting picker
   v = v === 'totaltorah' ? 'totaltorah' : 'pockettorah';

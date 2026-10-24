@@ -957,7 +957,10 @@ never a practice link (`LINK_DISPLAY` says how a reading looks, never how it sou
   block `#optRecCreditTT` with the same links and one `torah.recsrc.this_reading` line per source video (parasha,
   year, aliyah — the triennial aliyah the verses on screen come from), shown instead of `#optRecCreditPocket` while
   the source is on; `syncRecSrcControls()` is the read-only settings → controls half, from `syncFormToSettings`,
-  `applyI18n` and the end of every `fetchAndRender`. The reading header: `torah.recsrc.chip` (its tip says the
+  `applyI18n` and the end of every `fetchAndRender`. It also picks the footer's pinned-English audio credit:
+  `#ttFooterAudioTT` (Cantor Brown, Adas Israel, "used by permission") while the source is on for the reading,
+  `#ttFooterAudioPocket` (PocketTorah, CC BY-SA 4.0) otherwise — and both while some verse on screen has no Total
+  Torah recording and so plays PocketTorah (`ttReadingEntries(true).count < currentVerses.length`). The reading header: `torah.recsrc.chip` (its tip says the
   Trainer's staffs show the Avery/Binder chart) while the reading has entries; the Spiro chips (`hh_chant_chip`,
   `staff_chant_chip`) stand down then.
 - **The data pipeline** (`scripts/build-totaltorah-audio.mjs`, `scripts/build-totaltorah-timings.mjs` with
