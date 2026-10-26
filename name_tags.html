@@ -2537,6 +2537,13 @@ function ntWireLists() {
   document.getElementById('ntDashOpen').addEventListener('click', ntOpenDash);
   document.getElementById('ntDashAdd').addEventListener('click', ntBringDash);
   document.getElementById('ntDashCancel').addEventListener('click', () => { ntCloseInline(); document.getElementById('ntDashOpen').focus(); });
+  // Escape anywhere in the Paste or Dashboard row does what its Cancel does (the Rename field's rule): the row closes and
+  // the focus goes back to the button that opened it. A key the ask dialog or the tour already handled is left alone.
+  [['ntPasteRow', 'ntPasteCancel'], ['ntDashRow', 'ntDashCancel']].forEach(([rowId, cancelId]) => {
+    document.getElementById(rowId).addEventListener('keydown', e => {
+      if (e.key === 'Escape' && !e.defaultPrevented) { e.preventDefault(); document.getElementById(cancelId).click(); }
+    });
+  });
   document.getElementById('ntImportAdd').addEventListener('click', () => ntApplyImport('add'));
   document.getElementById('ntImportNew').addEventListener('click', () => ntApplyImport('new'));
   document.getElementById('ntImportReplace').addEventListener('click', () => ntApplyImport('replace'));
