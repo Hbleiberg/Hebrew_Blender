@@ -633,6 +633,7 @@ body.dark .wm-act.copied,body.dark .wm-act.copied:hover{background:var(--gold);}
 body.bulk-mode .wc-bulk-cb{display:block;}
 body.bulk-mode .word-card,body.bulk-mode .emoji-card{cursor:pointer;}
 .emoji-card.bulk-selected{border-color:var(--gold);background:color-mix(in srgb,var(--gold) 10%,var(--white));}
+body.dark .word-card.bulk-selected,body.dark .emoji-card.bulk-selected{background:color-mix(in srgb,var(--gold) 5%,var(--white));}   /* in dark the 10% gold over the card's #1e2535 lifts the plate to rgb(49,50,53), where the muted transliteration reads 4.19:1 — under AA; 5% keeps it at 4.61:1 with the plate still a step above the grid, and the gold border carries the state (S556; pattern contrast-below-AA-on-a-tinted-or-coloured-plate) */
 /* min 24px = the WCAG 2.5.8 floor (S178 haul: these measured 21px, x300 cards). Deliberately NOT
    the 30px house bar: the trio floats over the card corner where long Hebrew words already pass
    beneath them, and 30px boxes would meaningfully deepen that zone. Offsets re-pitched for the
@@ -1000,6 +1001,7 @@ footer details > summary:hover{text-decoration:underline;}   /* FAQ / How-To row
     font-size: 0.6rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin-top: 2px; }
   .shoresh-pat.empty { border: 1px dashed var(--border); color: var(--muted); }
   .shoresh-pat.filled { border: 1px solid var(--gold); background: color-mix(in srgb, var(--gold) 12%, var(--white)); cursor: pointer; }
+  body.dark .shoresh-pat.filled { background: color-mix(in srgb, var(--gold) 5%, var(--white)); }   /* the same plate: 12% gold over the dark card put the pattern's sub-label at 4.03:1; 5% reads 4.61:1 (S556) */
   .shoresh-pat.filled .pat-match { display: block; font-family: var(--heb-font); direction: rtl; font-size: 1.15rem; margin-top: 5px; color: var(--gold-text); }
   .shoresh-flash { animation: shoreshFlash 1.2s ease; }
   @keyframes shoreshFlash { 0%,100% { box-shadow: 0 0 0 0 transparent; } 30% { box-shadow: 0 0 0 3px var(--gold); } }
