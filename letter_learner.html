@@ -3410,11 +3410,14 @@ function llColoringify(svg) {
       } else n.setAttribute('stroke', shade ? LL_CS_DETAIL : LL_CS_INK);
     } else if (lined) n.setAttribute('stroke', LL_CS_INK);
     if (!hasFill) return;   // no fill named: the drawing relies on none here, as on screen
-    let width = 1.3;
+    let width = 1.3, strokeFirst = false;
     if (llCsInk(fill)) {
       // A cursive trick's handwritten letter is its one even-odd ink path: hollow at any size (yod is a raindrop).
       if (frac(n) < 0.05 && n.getAttribute('fill-rule') !== 'evenodd') { n.setAttribute('fill', LL_CS_INK); return; }
-      width = 2.6;   // the letter's own edge: the line a child colours up to
+      // The letter's own edge, the line a child colours up to: 2.6 where it shows. It is painted under the paper (stroke
+      // first, as llCsLetter paints the hollow letter), so the paper hides the seams where a traced letter's contours
+      // overlap (the dalet's leg runs up into its roof); only its outer half shows, so it is drawn twice as wide.
+      width = 5.2; strokeFirst = true;
     } else if (twin !== null) {
       n.setAttribute('fill', LL_CS_PAPER);   // its ink twin draws the edge
       return;
@@ -3428,6 +3431,7 @@ function llColoringify(svg) {
       n.setAttribute('stroke-width', String(width));
       n.setAttribute('stroke-linejoin', 'round');
       n.setAttribute('vector-effect', 'non-scaling-stroke');   // one weight inside scaled groups
+      if (strokeFirst) n.setAttribute('paint-order', 'stroke');
     }
   });
 }
