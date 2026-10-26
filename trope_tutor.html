@@ -591,8 +591,10 @@ body.dark .tu-scope-row select { background:var(--navy-deep); color:var(--text);
 body.dark .tu-note.error { color:#ff6666; }
 
 /* Missed-marks review (results screen) */
+/* 14px under the box: on the results screen "Drill again" sat 4px below it, where every other block there is 10–14px apart;
+   on the start screen the margin collapses into the mastery grid's 14px, so nothing moves there. */
 .tu-review {
-  margin:12px auto 4px; max-width:460px; text-align:initial;
+  margin:12px auto 14px; max-width:460px; text-align:initial;
   border:1px solid var(--border); border-radius:10px; background:var(--cream);
   padding:12px 14px;
 }
