@@ -419,7 +419,8 @@ buttons was overlooked); its Holiday Torah Readings (calendar) and Share (link) 
 drawer, so the calendar glyph is the Calendar tab's and the link glyph the Share tab's (and its Copy link's).
 Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_dashboard`, `flash_cards`,
 `torah_trainer`, `trope_tutor`, `Hebrew_Font_Maker`, `resources`, `contact`, `privacy`, `terms`,
-`account`, `404`, `letter_learner`, `parsha_emojis`, `name_tags`; the chip's glyph lives in `js/ivrit-account.js` (`ICON_USER`).
+`account`, `404`, `letter_learner`, `parsha_emojis`, `name_tags`, and the generated `parsha/` pages (their copy is taken
+from `parsha_emojis` by `scripts/build-parsha-pages.mjs`, so it cannot drift); the chip's glyph lives in `js/ivrit-account.js` (`ICON_USER`).
 
 ### The two byte-identical parts
 - **The `/* ═══ header-icons CSS ═══ */` block**, pasted before the main stylesheet's `</style>` on every
@@ -592,7 +593,7 @@ CSS block's `.hol-ico` and palette (*Parasha icons* below).
 - Swapping a drawing means replacing that family's entry in `HOLIDAY_ICONS` on **both** carriers, re-truing the
   carrier list in both markers if a page joins, then sha-verifying the two blocks across carriers.
 
-## Parasha icons and notes — generated modules (the dashboard's parsha line, the Torah Trainer's header, lookup and emoji gallery, the parsha emojis page)
+## Parasha icons and notes — generated modules (the dashboard's parsha line, the Torah Trainer's header, lookup and emoji gallery, the parsha emojis page, the parsha coloring pages)
 
 One flat 48×48 SVG per weekly parasha, all 54 chosen by the maintainer from three drafts each, drawn in the holiday
 icons' style and palette. The source is the catalog `ParashaEmojis.md` (repo root): each parasha's reading, a
@@ -716,6 +717,53 @@ header-icons and holiday-icons CSS blocks.
   re-renders, it re-runs `etLoad()` and, after a keyboard press, hands the focus to the new button or the chosen
   view). Without `ParashaNotes` the cards show the icon, names and range only. `applyI18n` re-renders the cards,
   read-only.
+- **Under the cards, *Parsha coloring sheets for every Torah portion*** (`#etSheets`, screen only) names all 54 by
+  book, English and Hebrew (the Hebrew leads in the Hebrew UI), each linking to that parasha's coloring page
+  (`parsha/<slug>.html`, below); the cards cover this week's alone until a book is chosen, so this static list is what
+  a search engine reads of the rest. Each card's foot also carries *Coloring page* (`etPageOf(p)`, same tab) before the
+  Trainer link. **`?parsha=<name>`** (`etDeepLink`, once per visit after the data and `I18n` are ready; the Trainer's
+  letters-only, any-case matching, so `lech-lecha`, `Lech-Lecha` and `lechlecha` are one parasha) opens that
+  parasha's book and the coloring popup with it alone chosen (`etCsOpen([i])`); an unknown name is ignored and the
+  address is never rewritten. It is where a coloring page's Print button lands.
+
+### The parsha coloring pages (`parsha/<slug>.html`, generated)
+One static, indexable page per parasha for searches like "Parshat Noach coloring page", **generated** by
+`node scripts/build-parsha-pages.mjs` from `ParashaEmojis.md` (read by `scripts/parasha-catalog.mjs`, the parser
+`build-parasha-icons.mjs` shares) — run it after `build-parasha-icons.mjs` whenever the catalog changes, never edit
+an output; `--check` exits 1 when a page, the sitemap block or a picture is stale. The slug is the English name
+lowercased, apostrophes dropped and spaces turned into hyphens (`chayei-sara`, `vzot-haberachah`), the same as
+`etPageOf` and the `?parsha=` links.
+- **The one folder of pages outside the root.** Every path in them is absolute (`/js/…`, `/parsha_emojis.html`,
+  `/manifest.webmanifest`) and they fetch no data, so the root rule's reason (relative `data/` fetches) does not
+  apply; the folder keeps 54 generated files out of every root-page census. They are not precached (network-first on
+  a visit, like any page) and carry no account wiring, no splash block and no tour. `parsha/index.html` forwards a
+  bare `/parsha/` to the list (`noindex`, the `emoji_torah.html` stub's pattern).
+- **What each holds:** the title, description, OG/Twitter and JSON-LD (`BreadcrumbList`, and a `LearningResource`
+  whose `ImageObject` carries the CC BY-NC-SA `license`, `acquireLicensePage`, `creditText` and creator, for Google
+  Images' licensable badge); the breadcrumb; an `h1` in English and Hebrew; the reading; **Also spelled:** (the
+  catalog's optional `**Also spelled:**` line — other English spellings, comma-separated, checked by the parser); the
+  seven often-doubled parshiyot's partner (`PAIRS` in the script); the sheet's picture; **Print this coloring page**
+  (`/parsha_emojis.html?parsha=<slug>`: every print option, no second copy of the sheet builder); the Torah Trainer
+  link; the English summary, the drawing's title and description and why it was chosen, then the Hebrew summary and
+  reason (both languages whatever the UI's, the Hebrew first in the Hebrew UI); the previous and next parasha (the
+  cycle wraps) and the list. Ctrl+P on the page prints the picture alone.
+- **Copied from `parsha_emojis.html` at build time**, so they cannot drift: the gtag snippet with the cleaned
+  `page_location`, the Google Fonts links, both no-flash IIFEs, the palette, the header icons and the header-icons CSS
+  block (the generated pages are listed among its carriers). The page CSS is inline (pages are network-first; an
+  external stylesheet would sit cache-first behind the service worker).
+- **`js/parsha-page.js`** (the pages' one script, deferred after `i18n.js` and `hebrew-calendar.js`): the dark toggle,
+  `applyI18n` (static chrome, the picture's alt, the partner line) and the next Shabbat that reads the parasha
+  (`HebCal.nextOccurrence`, on the Trainer's Diaspora/Israel choice, read and never written; V'Zot HaBerachah says
+  Simchat Torah). The chrome is `parshapage.*` in the CSV; the names and the catalog's sentences are content.
+- **The pictures** (`parsha/img/<slug>-coloring-page.png`, 992 × 1312) are the popup's own default sheet (outline,
+  Letter portrait, English text), rendered by the script with Playwright (Google Fonts allowed) and reduced to 64
+  colours with PIL when it is installed. `parsha/img/inputs.json` keeps a hash of what each sheet shows; a picture
+  re-renders when it changes (`--images=all` forces all; bump `RENDER_VERSION` when the sheet builder's look
+  changes), and a re-rendered picture needs the `sw.js` `VERSION` bump (static media is cache-first per version).
+- **Sitemap and `llms.txt`:** the script writes one `<url>` per page between the *parsha coloring pages* markers in
+  `sitemap.xml` (keeping each `<lastmod>`, which `update-sitemap.mjs` owns); `update-llms-txt.mjs` lists the 54 as one
+  line. `check-i18n` and `check-inline-js` scan `parsha/` too, and `node scripts/smoke-parsha-pages.mjs` loads every
+  page.
 
 ## Shared UX components — the conventions all tools are converging on
 

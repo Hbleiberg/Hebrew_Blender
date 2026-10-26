@@ -24,7 +24,7 @@ index below) — read the file for the area you are touching before you touch it
 |---|---|
 | localStorage keys, AllTools export/import/erase, `.ivrit` files, presets, folder trees | `docs/reference/storage-and-backup.md` |
 | Any UI string, CSV/locale build, `check-i18n` details, adding a language | `docs/reference/i18n.md` |
-| A `═══`-marked shared block (fonts store, keyboard, test phrases, resize, toast, panel memory), the parasha icons and notes (`js/parasha-icons.js`, `js/parasha-notes.js`, `ParashaEmojis.md`) and their page `parsha_emojis.html`, tours, tooltips, share links, reduced motion, `<kbd>` hints | `docs/reference/shared-components.md` |
+| A `═══`-marked shared block (fonts store, keyboard, test phrases, resize, toast, panel memory), the parasha icons and notes (`js/parasha-icons.js`, `js/parasha-notes.js`, `ParashaEmojis.md`) and their page `parsha_emojis.html`, the generated parsha coloring pages (`parsha/`, `scripts/build-parsha-pages.mjs`, `js/parsha-page.js`), tours, tooltips, share links, reduced motion, `<kbd>` hints | `docs/reference/shared-components.md` |
 | `Hebrew_Font_Maker.html` (undo/autosave, modals, fidelity, Starting Fonts) | `docs/reference/font-maker.md` |
 | Adding a glyph set to the Font Maker (a new alphabet tab, LTR or RTL, or a tab of composed forms) — its census, direction rules and the Save-letter-&-next contract | `docs/reference/newglyphset.md` |
 | `classroom_dashboard.html` (dark mode, font picker, nikkud colors, drawer, tooltips) | `docs/reference/dashboard.md` |
@@ -99,7 +99,7 @@ Cross-page code ships as `/* ═══ … ═══ */`-marked blocks that are 
 - Paste the block; put per-page wiring **below** the end marker (the cfg object, pick handler, mount call).
 - When a page adopts a block, re-true the carrier list in the marker comments of **all** carriers, anchoring on a multi-line match (the keyboard and test-phrases headers share a sentence), then **sha-verify** identity across carriers — don't eyeball it.
 - The `.ivrit-*` CSS is convention-shared but deliberately not byte-identical (indentation differs per page) — don't "fix" it.
-- **The parasha icons and notes are generated, not pasted:** `ParashaEmojis.md` is the only hand-edited copy of a drawing and of its summary and why-sentence (English and Hebrew), and `node scripts/build-parasha-icons.mjs` rebuilds `js/parasha-icons.js`, `js/parasha-notes.js` and the `docs/parasha-emojis/` previews from it — never edit an output (the next build silently undoes it).
+- **The parasha icons and notes are generated, not pasted:** `ParashaEmojis.md` is the only hand-edited copy of a drawing and of its summary and why-sentence (English and Hebrew), and `node scripts/build-parasha-icons.mjs` rebuilds `js/parasha-icons.js`, `js/parasha-notes.js` and the `docs/parasha-emojis/` previews from it, then `node scripts/build-parsha-pages.mjs` rebuilds the `parsha/` coloring pages (a re-rendered picture needs the `sw.js` bump) — never edit an output (the next build silently undoes it).
 - Carriers, host contracts and adoption recipes: `docs/reference/shared-components.md`.
 
 ## Shared UX rules (every tool, every new feature)
@@ -153,7 +153,7 @@ Full internals: `docs/reference/font-maker.md`. Locate everything by pattern —
 
 ## Deploy (GitHub Pages, no build step)
 - A push to `main` triggers the "pages build and deployment" run; **that run's `success` is the deploy**, and rapid pushes cancel in-flight runs — batch, then confirm the last run. A hung/failed deploy is re-triggered with an empty commit.
-- Pages stay at repo root (every tool fetches `data/…` relatively); never move a page into a subfolder.
+- Pages stay at repo root (every tool fetches `data/…` relatively); never move a page into a subfolder — the one exception is `parsha/`, the generated parsha coloring pages, which use only absolute paths and fetch no data (`docs/reference/shared-components.md` → The parsha coloring pages).
 - "Can't see the change" order: bytes on `main` → latest Pages run → `sw.js` VERSION bumped? → hard refresh / reopen the PWA.
 - `scripts/update-sitemap.mjs` and `scripts/update-llms-txt.mjs` are idempotent generators; the sitemap one refuses a shallow clone (`git fetch --unshallow` first). Details: `docs/reference/ops.md`.
 

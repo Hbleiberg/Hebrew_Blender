@@ -15,7 +15,9 @@ import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const pages = readdirSync(root).filter(f => f.endsWith('.html')).sort();
+// The root pages, then the generated parsha/ coloring pages (scripts/build-parsha-pages.mjs).
+const pages = [...readdirSync(root).filter(f => f.endsWith('.html')).sort(),
+  ...(() => { try { return readdirSync(join(root, 'parsha')).filter(f => f.endsWith('.html')).sort().map(f => 'parsha/' + f); } catch (e) { return []; } })()];
 const RE = /<script(?![^>]*\bsrc=)([^>]*)>([\s\S]*?)<\/script>/gi;
 
 // Several pages document their own structure in HTML comments that contain the literal text

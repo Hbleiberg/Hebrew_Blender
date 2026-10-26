@@ -491,14 +491,17 @@ function checkCorpus(targets) {
 }
 
 function main() {
-  // Targets: every root *.html (minus the harnesses) + pwa.js + the shared js/ modules below.
+  // Targets: every root *.html (minus the harnesses), the generated parsha/ coloring pages, pwa.js + the shared js/
+  // modules below.
   const targets = fs.readdirSync(ROOT)
     .filter(f => f.endsWith('.html') && !SKIP_HTML.has(f))
     .map(f => path.join(ROOT, f));
+  const parshaDir = path.join(ROOT, 'parsha');
+  if (fs.existsSync(parshaDir)) fs.readdirSync(parshaDir).filter(f => f.endsWith('.html')).sort().forEach(f => targets.push(path.join(parshaDir, f)));
   const pwa = path.join(ROOT, 'pwa.js');
   if (fs.existsSync(pwa)) targets.push(pwa);
   // Shared modules that build UI themselves (same t(key, fallback) shape as pwa.js).
-  ['ivrit-account.js', 'ivrit-saves.js', 'ivrit-projects.js'].forEach(f => {
+  ['ivrit-account.js', 'ivrit-saves.js', 'ivrit-projects.js', 'parsha-page.js'].forEach(f => {
     const m = path.join(ROOT, 'js', f);
     if (fs.existsSync(m)) targets.push(m);
   });

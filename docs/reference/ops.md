@@ -189,6 +189,10 @@ recipe:
 - Headless focus quirk: `el.focus()` on the page's real inputs may not stick (activeElement stays
   BODY). When testing typing guards, inject a temporary `<input>` and use `page.focus()` on it.
 - Test matrix: light **and** dark (`toggleDark()`), desktop (~1280px) **and** stacked (~800px) viewports.
+- **The parsha coloring pages:** `node scripts/smoke-parsha-pages.mjs` (its own server; every foreign origin
+  aborted) loads all 54 plus the forwarder and checks each: 0 page errors, its picture loaded, the Print link landing
+  on the Parsha Emojis popup with that parasha alone, the Trainer, pager and list links resolving, the Hebrew UI and
+  dark mode, and no horizontal scroll at 360px. Run it after `build-parsha-pages.mjs` writes anything.
 
 ### Backend smokes — the accounts / cloud layer
 
@@ -277,7 +281,10 @@ push, is what updates the live site.
 - **Pages must stay at repo root**: every tool fetches its data by relative path
   (`fetch('data/…')`), and cross-page links/manifest/sw registrations assume root. Never move a
   page into a subfolder (this is also why extensionless "clean URLs" via `foo/index.html`
-  restructuring was evaluated and rejected — it breaks every relative `data/` fetch).
+  restructuring was evaluated and rejected — it breaks every relative `data/` fetch). The one exception is
+  `parsha/`: the 54 generated parsha coloring pages and their forwarder, written by
+  `scripts/build-parsha-pages.mjs` with only absolute paths and no data fetch (`shared-components.md` → The parsha
+  coloring pages).
 - **Keep `sitemap.xml` `<lastmod>` fresh** with `node scripts/update-sitemap.mjs` (plain Node, no
   deps). It maps each `<loc>` to its file, reads that file's last commit date via
   `git log -1 --format=%cs`, and rewrites only the `<lastmod>` values (changefreq/priority/format
@@ -341,6 +348,9 @@ pages, not the other way round — `grep -o 'Content-Security-Policy[^>]*' *.htm
   `data:` nor `blob:` (its zip is an `<a download>`, not an image load). It is the tighter page, so never loosen it to match the others. The harnesses
   (`i18n-test.html`, `account-test.html`, `saves-test.html`) carry no gtag and no Google Fonts and allow only
   `data:` images.
+- **The generated parsha coloring pages** (`parsha/<slug>.html`) carry the everywhere set above without `data:` /
+  `blob:` (they export nothing) and without the account origins (no sign-in); the CSP is written by
+  `scripts/build-parsha-pages.mjs`. Their forwarder `parsha/index.html` allows only `'self'`, like the stub below.
 - **The `emoji_torah.html` forwarding stub** (the Parsha Emojis page's address before its launch) allows only
   `'self'`: no gtag (the hop would count twice), no Google Fonts, no `data:`/`blob:`; it loads `/js/i18n.js` and the favicon.
 - **Pages that offer accounts** (Home, Generator, Flash Cards, Dictionary, Torah Trainer, Trope Tutor, Dashboard, Letter Learner, Parsha Emojis, Name Tags, Font Maker, the account page `account.html`, `account-test.html`, `saves-test.html`): `cdn.jsdelivr.net` in `script-src` (the
