@@ -58,7 +58,8 @@
 - **Record (ledger row at S544):** - **`live-region-shown-with-its-text`** (NEW S537; `61762cf` ×8, `6d095c0` ×3): ACTIVE, streak 0. A status region made or un-hidden with its first message. Detection: findings S537 (grep + CDP).
 
 ## `abs-child-escapes-its-scroller`
-- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S534 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S555 · **Streak:** 1 · **Detector:** recipe
+- **Record (S555):** flash_cards clean: 0 escaping elements in 256 cells (the `.vh` file input included); the wide-absolute plant fired once the audit measured against `documentElement.clientWidth` (trap 352). Recipe: `n555/common.mjs` `__n.audit().escapes`.
 - **Shape:** An absolute `.
 - **Detection:** `n534/escape.mjs`. — `n534/escape.mjs` is a scratchpad path that was never committed: port it to `scripts/loop/detect-<id>.mjs` (with `--plant`) at the next A, or the row goes DRAFT.
 - **Record (ledger row at S544):** - **`abs-child-escapes-its-scroller`** (NEW S534 N; `f7c4981`): ACTIVE, streak 0. An absolute `.vh` escaping its `overflow` box widens the page. Detection: `n534/escape.mjs`.
@@ -132,7 +133,8 @@
 - **Record (ledger row at S544):** - **`page-drops-a-field-it-cannot-apply`** (NEW S507 P; trope `3b9915b9`): ACTIVE, streak 0. A page rebuilds a synced blob from its known fields, dropping a newer build's field from the account. Detection: `p507/trope.mjs` T6.
 
 ## `theme-token-on-an-always-dark-surface`
-- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S506 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S555 · **Streak:** 1 · **Detector:** recipe
+- **Record (S555):** flash_cards clean: 0 text nodes under 4.5:1 (3:1 large) across 256 cells, the navy card back, the dark dialogs and the listening tiles included (a `#777`-on-navy plant fired).
 - **Shape:** A theme token (`--text`, `.
 - **Detection:** `n506/pickcon.mjs`. — `n506/pickcon.mjs` is a scratchpad path that was never committed: port it to `scripts/loop/detect-<id>.mjs` (with `--plant`) at the next A, or the row goes DRAFT.
 - **Record (ledger row at S544):** - **`theme-token-on-an-always-dark-surface`** (NEW S506 N; dashboard picker Close `87745776`; suite unswept): ACTIVE, streak 0. A theme token (`--text`, `.btn-secondary`) on an overlay that is dark in both themes. Detection: `n506/pickcon.mjs`.
@@ -247,7 +249,8 @@
 - **Archived full text (latest compaction copy):** - **`latin-tracking-on-hebrew-labels`** (gate 3: drop suite-wide; S502 dashboard + dictionary; S503 flash; S504 torah `8e48daa5`; S505 Beta badges `0abb1f57`; S511 flash report `th` `90e592b`; open: generator `.ws-version-label` — Hebrew by headerLang, outside `html[lang=he]` (S512 H)): ACTIVE, streak 0. Detection: `a502/dash-track.mjs`; torah …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `forward-arrow-points-back-in-rtl-copy`
-- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S533 · **Streak:** 2 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S555 · **Streak:** 3 · **Detector:** recipe
+- **Record (S555):** flash_cards clean: 6 `flashcards.*` Hebrew rows carry an arrow, all exempt or correct (prev/next "(→)/(←)", the Home orphan, "לשלב הבא ←", "שמיעה ← זיהוי", the emoji-gender tip).
 - **Detection:** the S462 CSV census; exempt "(→)", A→Z, Back labels, the orphan
 - **Record (ledger row at S544):** - **`forward-arrow-points-back-in-rtl-copy`** (NEW S462 N; FIXED S464 `5f7f8a40` ×48; open 0): ACTIVE, streak 2 (S533: 9 delta rows with arrows, 0 — the LL key titles mirror the handler; S472: 47, 0). Detection: the S462 CSV census; exempt "(→)", A→Z, Back labels, the orphan
 - **Archived full text (latest compaction copy):** - **`forward-arrow-points-back-in-rtl-copy`** (NEW S462 N; FIXED S464 `5f7f8a40` ×48; open 0): ACTIVE, streak 2 (S533: 9 delta rows with arrows, 0 — the LL key titles mirror the handler; S472: 47, 0). Detection: the S462 CSV census; exempt "(→)", A→Z, Back labels, the orphan `flashcards.header.home`.
@@ -392,13 +395,15 @@
 - **Archived full text (latest compaction copy):** - **`editor-re-parse-caps-a-merged-list`** (**NEW S421 Pass P — 1 carrier, FIXED `288af4a`**): ACTIVE, consequence-critical (a sync carries the cut list to the account); never retires. A list the sync merges uncapped is re-parsed by its tool's editor or restore path through the …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `window-taller-than-a-phone-without-a-scroll`
-- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S506 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S555 · **Streak:** 1 · **Detector:** recipe
+- **Record (S555):** flash_cards clean: every dialog (ladder, weaknesses, profile picker, backup, sheet menu, tour card) fits the SE and i13 landscape with its close hit-testable and its list scrolling; a 900px planted box fired.
 - **Detection:** `n476` `modalFit` on an SE + 13 landscape, a tapped last button;
 - **Record (ledger row at S544):** - **`window-taller-than-a-phone-without-a-scroll`** (NEW S476 N; FM `fe808b64`; S506 variant, a sticky head covering its own scroller in landscape: dashboard bulk edit `232ea19e`): ACTIVE, streak 0. Detection: `n476` `modalFit` on an SE + 13 landscape, a tapped last button;
 - **Archived full text (latest compaction copy):** - **`window-taller-than-a-phone-without-a-scroll`** (NEW S476 N; FM `fe808b64`; S506 variant, a sticky head covering its own scroller in landscape: dashboard bulk edit `232ea19e`): ACTIVE, streak 0. Detection: `n476` `modalFit` on an SE + 13 landscape, a tapped last button; plant 900px. …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `install-banner-over-a-sheet's-bottom-controls`
-- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S547 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S555 · **Streak:** 0 · **Detector:** recipe
+- **Record (S555):** flash_cards FOUND + FIXED `0bfe77e`: the iOS hint forced on SE + i13 (EN/HE) sat over the sticky Start bar (Print whole, Start's lower half), the tour's Next and, on the SE, the marks after a flip; the bar rides above it by `--pwa-banner-space` (≤767px) and the hint hides while `#tourCard` or `#screenCard` is up (`n555/banner.mjs`, `fix1-verify.mjs`: every control hit-testable at centre and bottom edge, real taps; a tap on Next had timed out under the hint). Open: torah gallery.
 - **Shape:** pwa.js's install hint (fixed at the bottom, above every z-index) sits over a sheet's, a modal's or the tour's bottom controls on a phone; the carrier hides it while that state is open (`body:has(…) #pwaInstallBanner { visibility:hidden }`) or lifts its bar by `--pwa-banner-space`.
 - **Detection:** force the iOS hint (`Object.defineProperty(navigator,'standalone',{get:()=>false})` on an iPhone descriptor, the dismiss key cleared), open each modal and the tour, and read `elementFromPoint` at each bottom control's centre (`n545/banner2.mjs`, `n547/banner.mjs`); S545 letter_learner `1c24c5f` (two modals + the tour); S547 parsha_emojis `37bb922` (the coloring-sheets popup's pinned footer, the hide rule keyed on the page's own `body.et-cs-open`). A page's own end is exempt: pwa.js adds a spacer, so the footer scrolls out from under the hint. Earlier: `a472/banner2.mjs` (sheet — `a472/banner2.mjs` is a scratchpad path that was never committed: port it to `scripts/loop/detect-<id>.mjs` (with `--plant`) at the next A, or the row goes DRAFT.
 - **Record (ledger row at S547):** - **`install-banner-over-a-sheet's-bottom-controls`** (NEW S420 N, hub `f44a17e`; S472 generator bar `8081fc83` (pwa.js `--pwa-banner-space`), FM's 16 windows `56c7a179`; S476 torah gallery `30fcc886`; S545 letter_learner `1c24c5f`; S547 parsha_emojis `37bb922` — open: none known; Name Tags' S534 N predates the recipe, so its next N runs it): ACTIVE, streak 0. Detection: `n547/banner.mjs`; earlier `a472/banner2.mjs` (sheet
@@ -466,7 +471,8 @@
 - **Archived full text (latest compaction copy):** - **`live-region-display-none-while-empty`** (S408; **all 4 FIXED `efbc98a` S409**; **S530 4 more FIXED `66ecdc9f`, `a530/fix1.mjs`**): ACTIVE, streak 0. Detection: `:empty{display:none}` on a `role=status`/`aria-live` line, then CDP AX on it empty (`notRendered` = hit); flex-wrap rows need `position:absolute`, not height.
 
 ## `dark-base-rule-outranks-variant`
-- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S554 · **Streak:** 1 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S555 · **Streak:** 0 · **Detector:** recipe
+- **Record (S555):** name_tags FIXED `05e585a`: `.nt-sb-tab` (the sidebar's hide / show edge tab) — `body.dark .nt-sb-tab` outranked its hover; `body.dark .nt-sb-tab:hover { background:#345090 }` (real mouse: #2a4070 → #345090; the pre-fix page unchanged, the control).
 - **Record (S554):** fontmaker clean: 392 controls × 7 views hovered by the real mouse in both themes — 0 whose light hover lacks a dark twin (the 12 `.mark-sq` tiles move their gold border in dark while the fill stays the rest colour: the `dark-hover-resolves-to-the-rest-colour` shape, a P4 candidate); the plant — a dark base rule on `.ctl-btn` (`body.dark .ctl-btn{background:#1e2535 !important}`) — fired on 6 controls; a first plant on the ghost `tbtn` was silent because that class's light hover moves no fill (a plant must mirror the detector's own test).
 - **Record (S552):** name_tags: 1 hit — the edge tab (`body.dark .nt-sb-tab` outranks `.nt-sb-tab:hover`; 28 controls hovered in both themes, the plant fired) — candidate (the governor); the same shape pre-empted on the four carriers' new dark Merge rule by its hover twin (`c1f42ae`).
 - **Shape:** Detection: `m408/darkvariant.
@@ -479,7 +485,8 @@
 - **Archived full text (latest compaction copy):** - **`aria-disabled-lock-no-handler-checks`** (**NEW, registered 2026-09-23 (S407 Pass P) — 1 carrier, fixed `e5c4784`**): ACTIVE, clean streak 0. A control marked busy or invalid by `aria-disabled="true"` whose activation handler never reads that state: the look says locked, a …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `text-field-under-16px-zooms-on-ios-focus`
-- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S508 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S555 · **Streak:** 0 · **Detector:** recipe
+- **Record (S555):** flash_cards 2 open carriers: `#newProfileNameInput` 14.08px (inline `0.88rem`, the profile picker) and `#shareCodeOutput` 11.84px (`.share-out`, readonly — a tap to copy still focuses it); P4s behind the governor (16px in the coarse-pointer rule, `!important` against the inline style). The 14 other text-like fields are 16px (`n555/common.mjs` fields arm; a 13px plant fired).
 - **Detection:** computed …[full text: IMPROVEMENT_ARCHIVE.md]
 - **Record (ledger row at S544):** - **`text-field-under-16px-zooms-on-ios-focus`** (NEW S406; FIXED ×2; S465 contact ×4 `5a7a8ed`; S492 dictionary ×6 `07177214`; S506 torah ×17, trope ×3; S507 dashboard ×23, flash ×10; S508 resources ×6, account ×2; open: none): ACTIVE, streak 0.
 - **Archived full text (latest compaction copy):** - **`text-field-under-16px-zooms-on-ios-focus`** (NEW S406; FIXED ×2; S465 contact ×4 `5a7a8ed`; S492 dictionary ×6 `07177214`; S506 torah ×17, trope ×3; S507 dashboard ×23, flash ×10; S508 resources ×6 `f07cd8c`, account ×2 `43b24e2`; open: none known): ACTIVE, streak 0. Detection: computed …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -720,7 +727,8 @@
 - **Archived full text (latest compaction copy):** - **legibility-destroyed-by-a-second-dimming-layer**: **re-swept 2026-08-27 (S263, all 3 `#fsExitBtn` carriers) -- hits: 1 (`hebrew_blend_generator.html`, the LAST unfixed carrier), fixed in-pass (`eb0eab3`); clean streak: 0 -- ACTIVE, consequence-critical (legibility), never …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `fixed-control-positioned-outside-the-viewport`
-- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S262 · **Streak:** 0 · **Hits:** 1 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S555 · **Streak:** 1 · **Hits:** 1 · **Detector:** recipe
+- **Record (S555):** flash_cards clean: 0 fixed elements outside the viewport in 256 cells (a sticky bar scrolled away at the page's end is its natural position, not a hit; a fixed plant at left:−40 fired).
 - **Record (ledger row at S544):** - **fixed-control-positioned-outside-the-viewport**: **REGISTERED + first swept suite-wide 2026-08-26 (S262 Pass N) -- hits: 1 carrier (`hebrew_blend_generator.html` `#sidebarToggleBtn`), fixed in-pass (`5f6a0a0`); census 78 cells (13 pages x 3 phone descriptors x EN/HE)
 - **Archived full text (latest compaction copy):** - **fixed-control-positioned-outside-the-viewport**: **REGISTERED + first swept suite-wide 2026-08-26 (S262 Pass N) -- hits: 1 carrier (`hebrew_blend_generator.html` `#sidebarToggleBtn`), fixed in-pass (`5f6a0a0`); census 78 cells (13 pages x 3 phone descriptors x EN/HE) …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -756,7 +764,8 @@
 - **Archived full text (latest compaction copy):** - **state-mutation-that-never-arms-its-persistence**: **re-swept 2026-08-26 (S257) - hits: 1, the knowingly-deferred `setInputMode`, now fixed (`57abf9c`); clean streak: 0 - ACTIVE (consequence-critical: data loss, so it never retires on streak).** **The fix shape is the finding …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `flex-column-crushing-its-own-rows`
-- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S249 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S555 · **Streak:** 1 · **Detector:** recipe
+- **Record (S555):** flash_cards clean: no crushed rows in the ladder, weaknesses, profile-picker or backup dialogs on the SE or in i13 landscape; the plant needs `min-height:0` rows — flex items with `min-height:auto` overflow instead of crushing (then it is `window-taller…`'s shape).
 - **Record (ledger row at S544):** - **flex-column-crushing-its-own-rows** (**NEW, registered 2026-08-23 (S249 Pass N arm 4)**): a `display:flex; flex-direction:column` container that is ALSO height-constrained and scrollable (`max-height`/`flex:1` + `overflow-y:auto`) silently **compresses its children instead
 - **Archived full text (latest compaction copy):** - **flex-column-crushing-its-own-rows** (**NEW, registered 2026-08-23 (S249 Pass N arm 4)**): a `display:flex; flex-direction:column` container that is ALSO height-constrained and scrollable (`max-height`/`flex:1` + `overflow-y:auto`) silently **compresses its children instead …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -778,12 +787,14 @@
 - **Archived full text (latest compaction copy):** - **i18n cross-column parity (placeholders, plurals, inline markup)**: **S533 (K): 41 raw `{placeholder}` mismatches over 6,593 keys, all the `.one` shape — hits 0, streak 2.** **re-swept 2026-09-03 (S320 Pass K, detector 1 only): `{placeholder}` sets en vs he over 5,128 keys, raw 30 → hits: 0 — all thirty are the S261-refuted `.one` plural shape (Hebrew spells the singular number; …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `horizontal-overflow-at-narrow-widths`
-- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S334 · **Streak:** 0 · **Hits:** 1 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S555 · **Streak:** 0 · **Hits:** 2 · **Detector:** recipe
+- **Record (S555):** flash_cards FOUND + FIXED `8198628` (the clipped variant): a saved preset's row needs 426 px (EN) / 380 (HE) and `.panel` clips — Move ▾ 125/82/60 px past the panel on SE/i13/Pixel 7, the ⧉ and × with it on the SE, a profile's row on the SE; `.preset-item { flex-wrap: wrap }` under the 526px header query. Found only by a real preset save (S361's seed had no preset). Census 16 cells × 16 views: 0 `scrollWidth` overflow; escapes measured against `documentElement.clientWidth` (trap 352).
 - **Record (ledger row at S544):** - **horizontal-overflow-at-narrow-widths**: **re-swept 2026-09-03 (S334 Pass N, `torah_trainer.html`, 12 real-descriptor loads × 10 views incl. the S324 presentation toolbar) — hits: 1, the clipped-not-scrolled variant (`.tt-fs-plate` 340px in a 320px viewport, −10..330, A− and
 - **Archived full text (latest compaction copy):** - **horizontal-overflow-at-narrow-widths**: **re-swept 2026-09-03 (S334 Pass N, `torah_trainer.html`, 12 real-descriptor loads × 10 views incl. the S324 presentation toolbar) — hits: 1, the clipped-not-scrolled variant (`.tt-fs-plate` 340px in a 320px viewport, −10..330, A− and …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `hover-only-affordance-under-a-synthetic-mouse-event`
-- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S249 · **Streak:** 0 · **Hits:** 1 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S555 · **Streak:** 1 · **Hits:** 1 · **Detector:** recipe
+- **Record (S555):** flash_cards clean: 0 `:hover` rules that reveal content (static); the tooltip's tap contract holds (tap opens, a second tap closes); `.lc-tile:hover` moves only a border.
 - **Record (ledger row at S544):** - **hover-only-affordance-under-a-synthetic-mouse-event**: **re-swept 2026-08-23 (S249 Pass N arm 4) — hits: 1, the THIRD and FINAL carrier (`hebrew_dictionary.html`), fixed `383aa2a`; clean streak: 0 — ACTIVE.** **The class is now fully swept: all three `bindTip` carriers are
 - **Archived full text (latest compaction copy):** - **hover-only-affordance-under-a-synthetic-mouse-event**: **re-swept 2026-08-23 (S249 Pass N arm 4) — hits: 1, the THIRD and FINAL carrier (`hebrew_dictionary.html`), fixed `383aa2a`; clean streak: 0 — ACTIVE.** **The class is now fully swept: all three `bindTip` carriers are …[full text: IMPROVEMENT_ARCHIVE.md]
 

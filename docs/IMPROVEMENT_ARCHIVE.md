@@ -94414,3 +94414,37 @@ _(prior)_ **Next session (S554):** **PR `claude/loop-s549-nametags-d` (S549–S5
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 - M aesthetics & visual design (one surface): 2026-10-26 (**S554 — 29th M, fontmaker (3rd: S225 → S335 → S554): 112 full-page shots (14 views × EN/HE × light/dark × 1280/800) in the real faces, 11 census arms (type, radius, contrast on ~15,600 text nodes, white plates and navy text in dark, 392 real hovers × 2 themes, 479 dark fills × 4 cells, 13 live regions by CDP × 7 views, the header gate 1 px 1000→320 × EN/HE × fine/coarse, RTL prose 37 blocks × 14 help tabs); every plant fired. FOUND 5, FIXED 3 (+2 P4) + a new pattern with its detector. M-next: dictionary (S362), trope (S376).**)
+
+_(prior)_ **Next session (S555):** **PR `claude/adoring-noether-q8qk1e` (S554, #368): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1096**, FM **5.59**, corpus ?v=7. ⚑ drift: main=2cc90bb sw=v1096 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest by the rule: N's flash (S361), M's dictionary (S362), H's trope (S367); A (S530), E (S531), L (S532) are 24 sessions old and the 32-commit outside-loop delta (sw v1080 → v1095: Total Torah public + the Trainer's Chanting picker, the 54 generated `parsha/` pages, the Letter Learner's coloring sheets) is unaudited — A or B first is defensible; `parsha/` is a page kind the Surfaces list does not name (a protocol call). ⚑ Keep-alive #42–#44 green. ⚑ Seeds: 50. ⚑ 27 DRAFT pattern rows: recipe or retirement at the next A (`m554/` recipes are port candidates). ⚑ Queues behind the governor: name_tags 6 P4s, the FM 3 (Candidates). ⚑ `offscreen-sheets-laid-out-on-every-rebuild`: the generator's worksheet next. ⚑ The `.ivrit` ask overlay and the account modals have no print rule (suite P4). ⚑ Maintainer: `08b8611` (keep both name lines?); O's permission rule; CI for `closeout.mjs --static`; translit second source; sw.js `no-store`; 14 fonts; torah screen reader; the locale's size and the Resources fonts' precache (Awaiting); gates 2–4; the S546 P3.
+
+
+<!-- archived by compact-ledger at the S556 boundary, 2026-10-26 -->
+## Compaction (S556, 2026-10-26) — moved verbatim from the live ledger
+
+### from Candidates (prioritized, top = next)
+
+- [ ] P4 (**NEW S555 N — pattern `text-field-under-16px-zooms-on-ios-focus`; flash at the governor's cap**) | flash_cards.html | **The profile picker's name box is 14.08px (iOS zooms on focus) and on an iPhone SE its Save button runs 34 px past the dialog (off the left edge in Hebrew)**: `#newProfileNameInput` into the coarse-pointer 16px rule (`!important`, it is inline) and `min-width:0` on the flex input. | found S555
+
+### from Done
+
+- [x] 2026-10-26 | (S555 close-out) | branch/deploy note | **S555 = N on flash cards (3rd: S244 → S361 → S555): FOUND 5, FIXED 2 (+2 P4 behind the governor, 1 measurement for D); + the Name Tags edge tab's dark hover (the queued S552 P4).** Branch `claude/adoring-noether-q8qk1e` (PR #368 continued); drift: nothing moved. 4 iterations (pass + 3 fixes); gates asked: none (every fix sits inside the phone-only hint's widths, the header's phone query or a dark hover). Decisions deferred: none new. sw.js v1096 → v1097. Human: merge #368, confirm the Pages deploy.
+
+- [x] 2026-10-26 | `0bfe77e` | flash_cards.html | **The install hint no longer covers the sticky Start bar (Print whole, half of Start), the tour's Next or a drill's marks on a phone** — the bar rides above the hint by `--pwa-banner-space` (≤767px), the hint hidden while the tour or a drill is up (pattern `install-banner-over-a-sheet's-bottom-controls`) | SE / i13 / Pixel 7 with the iOS hint forced × EN/HE (+ dark): every control hit-testable at centre and bottom edge, real taps on Print (menu opens), Next and Yes; hint back on results/setup; 1280/800 × light/dark inert; 0 errors
+
+- [x] 2026-10-26 | `8198628` | flash_cards.html | **A saved preset's row wraps at phone widths** (Move ▾ 60–125 px past the panel on every phone, delete and duplicate with it on the SE; a profile's row on the SE) — `.preset-item { flex-wrap: wrap }` under the header's 526px query (pattern `horizontal-overflow-at-narrow-widths`) | real preset save on SE / i13 / Pixel 7 × EN/HE (+ dark): every preset and profile button inside the panel and hit-testable, a real tap on Move ▾ opens its menu; 1280/800 × light/dark × EN/HE one line, nowrap; 0 errors
+
+- [x] 2026-10-26 | `05e585a` | name_tags.html | **The sidebar edge tab's hover shows in dark mode** (`body.dark .nt-sb-tab:hover { background:#345090 }`, the LL / generator / dictionary edge tabs' dark hover; pattern `dark-base-rule-outranks-variant`) | real mouse hover on the hide and show tabs at 1280 × EN/HE × light/dark: dark #2a4070 → #345090 (the pre-fix page: unchanged, the control), light unchanged; 800px tabs hidden by design; 0 errors
+
+- [x] 2026-10-23 | (S550 close-out) | branch/deploy note | **S550 = G on name_tags (first): FOUND 4, FIXED 2 (+2 P4, 1 suite P4); then the generator's font note (live-region pattern) and the Parsha Emojis popup's off-screen sheets (offscreen-sheets' second carrier).** Branch `claude/loop-s549-nametags-d` (PR #362 continued), drift: none. sw v1078→v1079; no FM bump. Unattended: no gate asked.
+
+- [x] 2026-10-23 | `887e8c5` | parsha_emojis.html | (S550) **A coloring sheet off-screen in the preview skips its layout and paint** (`content-visibility:auto` on the preview's pages and papers; pattern `offscreen-sheets-laid-out-on-every-rebuild`). | 54 chosen, medians of 3 alternated loads @4×: the open 2,089 → 1,739 ms of long tasks, a 20-move synopsis drag + refit 1,374 → 826; HE dark 800 and …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-23 | `2b86472` | hebrew_blend_generator.html | (S550) **The missing-font note is a live region before its first message** (no `hidden`; `:empty` collapse; pattern `live-region-shown-with-its-text`). | CDP AX tree: at load ignored → `status`; the note's height 0 and the next control's top identical; a missing My Font names itself at the same height; found again → empty
+
+- [x] 2026-10-23 | `970d7db` | name_tags.html | (S550) **The turned Avery 5168 labels print without a phantom border strip** (the tag centred by its own offsets in inches, not a percent translate). | HEAD's PDF: a navy strip from the two lower labels to the sheet's edge on pages 1–5 of 6, those tags' box at 0.75–3.75in where the preview (and page 6) had 0.56–3.94; tree: every page 0.56–3.94, ink …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-23 | `59f8e43` | name_tags.html | (S550) **The last row's bottom border prints whole** (`overflow:clip` + `overflow-clip-margin:0.02in` on the printed sheet). | 300 dpi column runs: the bottom border 1 → 7 px (rounded), 0 → 3 (thin), 7 → 13 (thick), the top's; page counts unchanged on 28 layouts; A/B vs HEAD: only that one bottom row differs; screen identical
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- N mobile & touch-device (one surface): 2026-10-26 (**S555 — 30th N, `flash_cards.html` (3rd: S244 → S361 → S555): 16 cells (SE 320, i13 390 + landscape, Pixel 7 412 × EN/HE × light/dark) × 16 views by real taps (the sheet menu, listening round, save-deck row and backup dialog new to N), the iOS hint forced on SE + i13, a real preset save, an orientation flip mid-drill and mid-dialog, 4× CPU; plants 8/8. FOUND 5, FIXED 2 (+2 P4, 1 for D). N-next: trope (S389), generator (S434).**)
