@@ -94532,3 +94532,41 @@ _(prior)_ **Next session (S558):** **PR `claude/adoring-noether-q8qk1e` (S554–
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 - M aesthetics & visual design (one surface): 2026-10-26 (**S558 — 31st M, trope (3rd: S245 → S376 → S558): 136 full-page shots (17 views × EN/HE × light/dark × 1280/800), a census of ~24,800 text nodes, 967 real hovers × 2 themes, 1,386 keyboard focus rings, 2,362 dark fills, live regions by CDP × 9 states, the header gate 1px, RTL sentences, row heights; every plant fired. FOUND 4, FIXED 2 (+1 gate 2, 1 P4). M-next: torah (S422), generator (S436).**)
+
+_(prior)_ **Next session (S559):** **PR `claude/adoring-noether-q8qk1e` (S554–S558, #368): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1100**, FM **5.59**, corpus ?v=7. ⚑ drift: main=2cc90bb sw=v1100 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest by the rule: H's fontmaker (S380), C's flash (S381), P's fontmaker (S382), N's trope (S389), G's generator (S392); A (S530), E (S531), L (S532) are 28 sessions old and the 32-commit outside-loop delta (sw v1080 → v1095) is unaudited — A or B first is defensible; `parsha/` is a page kind the Surfaces list does not name. ⚑ Keep-alive #42–#44 green. ⚑ Seeds: 51. ⚑ `tour-step-in-a-hidden-view`: 0 open (the six per-file tours unprobed). ⚑ 27 DRAFT rows: recipe or retirement at the next A (`m554/`, `n555/`, `m556/`, `m558/` (ring arm, fixed compositing), `h557/common.mjs` (206 audio stub) are port candidates; traps 352, 356–364). ⚑ Queues: trope 2 P4s, dictionary 3, name_tags 4, FM 2. ⚑ The `.ivrit` ask overlay and the account modals have no print rule (suite P4). ⚑ Maintainer: `08b8611`; O's permission rule; CI for `closeout.mjs --static`; translit second source; sw.js `no-store`; 14 fonts; torah screen reader; the locale's size and the Resources fonts' precache (Awaiting); gates 2–4 incl. the vowel palette's gold (S556), the trope link that resets the Trainer's reading (S557) and the Phrases chips' casing (S558); the S546 P3.
+
+
+<!-- archived by compact-ledger at the S560 boundary, 2026-10-26 -->
+## Compaction (S560, 2026-10-26) — moved verbatim from the live ledger
+
+### from Candidates (prioritized, top = next)
+
+- [ ] P2 (**NEW S559 H — the FM at the cap**) | Hebrew_Font_Maker.html | **Auto-detect matches a printed template page only when every row's box count is exact, and rows group by the box's top edge**: lamed's ascender splits its row (print page 1: 4,4,4,3,1,4), a letter written in two strokes adds a box (the cursive alef: 5,4,4,4,4), and the page falls back to the free-form right-to-left order — 4 of 20 right on the cursive page 1, 0 of 7 on page 2. Group rows by centre; fold same-cell fragments when the row count matches (findings S559). | found S559
+
+- [ ] P2 (**NEW S559 H — verify first**) | Hebrew_Font_Maker.html | **5 of 132 untouched starting fonts fail the export's shaping check**: "Right-meteg check failed … expected -49/166, got -49/167" (BenOr Rashi; Miriam CLM 178/169, Shuneet Square 125/150, Shuneet Classic 97/122) and "Hataf Patach + ZWJ + meteg did not compose" (Rommvilna), so a first export says "vowels/trop may be misplaced". Find whether the check's ink-based expectation or the emitted meteg form is wrong (`h559/osprobe.mjs`). | found S559
+
+- [ ] P3 (**NEW S559 H — the FM at the cap**) | Hebrew_Font_Maker.html | **Auto-detect is offered on every tab's sheet view but knows only the Hebrew letters**: on the English tab the English template's 30 boxes are assigned צ ץ ק … and then the traced Hebrew letters, and Apply would replace their photos and outlines (one Ctrl+Z). Hide it off the Letters tab, or make it tab-aware (seed). | found S559
+
+### from Feature seeds (micro-features only; see the Micro-feature track in the session prompt)
+
+- [ ] S | Hebrew_Font_Maker.html | **Auto-detect and the template link for the other alphabets**: the English, Cyrillic, Phoenician, Aramaic and Samaritan tabs have printed templates (`TEMPLATE_SPECS`) and sheet sizing already knows Latin and Cyrillic descenders, but Auto-detect matches and assigns Hebrew only, and the wizard's "Print a template sheet" prints the Hebrew sheet even with English ticked. | found S559 H
+
+### from Done
+
+- [x] 2026-10-26 | (S559 close-out) | branch/deploy note | **S559 = H on the Font Maker (5th: S97 → S163 → S241 → S380 → S559): 3 lessons + the student cell + a 132-font export census; FOUND 12, FIXED 2 (+2 P2, 2 P3, 1 gate 2, 3 P4, 2 seeds) + Name Tags' English column and the Trope Tutor's Study button. Branch `claude/adoring-noether-q8qk1e`, PR #368 (S554–S559), sw v1101 — deploy on merge.** | closeout.mjs clean
+
+- [x] 2026-10-26 | (S554 close-out) | branch/deploy note | **S554 = M on the Font Maker (3rd: S225 → S335 → S554): FOUND 5, FIXED 3 (+2 P4), NEW pattern `latin-sentence-boundary-in-hebrew-prose` with its detector; + the Name Tags Merge button (the dark-navy pattern's fifth carrier). 5 iterations.** Branch `claude/adoring-noether-q8qk1e` off `origin/main` 2cc90bb (PR #362 merged 10-23), draft PR …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-26 | `24e9f73` | name_tags.html | (S554) **The restore dialog's Merge button shows in dark mode** (the hub's two dark lines; pattern `dark-navy-fill-matches-its-ground`'s fifth carrier). | `ivritAskMode()` by real call in 8 cells (EN/HE × light/dark × 1280/800): dark fill vs the card 1.03 → 1.51:1, the label 10.17:1, the gold hover fires under the dark rule, light 14.81 unchanged; 0 …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-26 | `bf895ee` | locales/ui-strings.csv (FM help + FAQ, dictionary, generator, privacy), scripts/loop/detect-latin-sentence-boundary-in-hebrew-prose.mjs | (S554) **A Hebrew sentence ending in a Latin term no longer runs into the next one's Latin opening** (U+200F after the period at 9 sites; NEW pattern `latin-sentence-boundary-in-hebrew-prose` + its static detector). | The detector …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-26 | `7a3faf7` | Hebrew_Font_Maker.html | (S554) **The primary buttons keep a visible fill in dark mode** (`body.dark .ctl-btn.primary{background:#2a4070;border-color:#4a6aaa}`; pattern `dark-navy-fill-matches-its-ground`). | Every visible `.ctl-btn.primary` over 6 views × 8 cells: dark fill vs ground 1.03–1.15 → 1.51–1.67:1, the edge 2.87–3.19, the label 10.17:1; light 11.29–14 …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-26 | `6f51579` | Hebrew_Font_Maker.html | (S554) **The grid step, bold-every and guide position boxes follow dark mode** (outside a `label.fld` they took the UA's white plate; now `#adToolbar`'s number-input look). | Computed fill / text / border / radius of the three boxes vs a `label.fld` input in 8 cells: dark 30,37,53 / 221,228,240 / 42,51,73 / 5px = the reference's, light white …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-26 | (outside the loop) | repo root | (S554) **The empty `Total Torah Files` is gone from `main`** (S553's Awaiting item; undone outside the loop before 2cc90bb). | `git ls-tree origin/main` at 2cc90bb: absent
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- H teacher walkthrough / paper-cuts (one tool): 2026-10-26 (**S559 — fontmaker (5th: S97 → S163 → S241 → S380 → S559): 3 lessons by real input × EN light 1280 / HE dark 800 (the template photographed → Auto-detect → Trace all → export → My Fonts → Name Tags; a starting font; a next-day load) + the student cell (Draw, 1366 windowed, 1024 fullscreen) + a 132-font export census. FOUND 12, FIXED 2 (+2 P2, 2 P3, 1 gate 2, 3 P4, 2 seeds). H-next: dashboard (S395), flash (S412).**)
