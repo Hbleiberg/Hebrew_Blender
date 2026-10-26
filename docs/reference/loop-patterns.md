@@ -17,7 +17,24 @@
 >
 > _(history)_ **The per-sweep result rows (S141–S357, 83 rows) moved verbatim to `docs/IMPROVEMENT_ARCHIVE.md` in S361 ("Sweep-status rows moved out of the ledger"); the current state of every pattern lives in Pattern health above.** Grep …[full text: IMPROVEMENT_ARCHIVE.md]
 
-## Active, draft and guard patterns (164; newest first, as the ledger lists them)
+## Active, draft and guard patterns (166; newest first, as the ledger lists them)
+
+## `tour-step-in-a-hidden-view`
+- **Status:** ACTIVE · **Owner:** A · **Consequence:** normal · **Last:** S557 · **Streak:** 0 · **Detector:** recipe
+- **Shape:** A tour step whose target sits in a view the page lets the user hide — another tab, a hidden sidebar, a folded section — is skipped by the shared engine (`_resolveStep` → `_tourVisible`), so the Tour pressed from that state shows fewer steps, never explains that part, and gives no sign that anything was left out.
+- **Detection:** per tour carrier, list the states the page can be in when Tour is pressed (each tab or mode, the sidebar shown or hidden, each fold, a session in progress); press Tour by a real click in each and count the steps to Done; a count below the default view's is a hit. Control: the default state, or HEAD, shows the full count.
+- **Fix shape:** the page's own Tour button opens the view before calling the engine (`ntTourStart`: the sidebar and the class list; `tuTourStart`: the Learn tab) — a view switch that saves no setting, no progress and no panel memory; the shared engine stays byte-identical.
+- **Carriers:** name_tags FIXED (`ntTourStart`, before S557); trope_tutor FIXED S557 `69bb568`; letter_learner OPEN (sidebar hidden: 4 of 6 steps). Unprobed: the six per-file engines, whose steps reveal hidden panels by design (`docs/reference/shared-components.md`).
+- **Record (S557):** NEW — trope from Phrases 6 of 9, from Drill or Settings 4 of 9 (8 cells, HEAD the control) → 9 from every tab, settings and progress byte-equal across the tour, a drill resuming its question; the Letter Learner 6 → 4 with its sidebar hidden (EN 1280, HE 800), candidate.
+
+## `dark-hover-resolves-to-the-rest-colour`
+- **Status:** ACTIVE · **Owner:** A · **Consequence:** normal · **Last:** S557 · **Streak:** 0 · **Detector:** recipe
+- **Shape:** Shape: a `:hover` that resolves to the rest background in the OTHER theme (dark `--warm-gray` = dark `--white`).
+- **Detection:** `warm-gray` hover rules minus those with a `body.dark X:hover` twin, confirmed by a real dark hover. Fix shape: `body.dark X:hover{background:#2a3349;}`. An A2 hit un-retires.
+- **Record (ledger row at S544):** - **`dark-hover-resolves-to-the-rest-colour`**: RETIRED 2026-09-09 (S357 Pass A, clean streak 3: S330, S343, S357 — the delta's 17 new `:hover` rules all measured with feedback). Shape: a `:hover` that resolves to the rest background in the OTHER theme (dark `--warm-gray` = dark `--white`). Detection: `warm-gray` hover rules minus those with a `body.dark X:hover` twin, confirmed by a real dark hover. Fix shape: `body.dark X:hover{background:#2a3349;}`. An A2 hit un-retires.
+- **Fix shape:** the page's own dark hover fill, `body.dark X:hover{background:#2a3349}` (FM `.ctl-btn`, dictionary `.emoji-gender-btn`); light keeps `--warm-gray`.
+- **Carriers (S557):** FM `.mark-sq` FIXED `14f9875`; dictionary `.shoresh-chip` + `.dict-tool-btn` FIXED `39e085a` — open 0.
+- **Record (S557):** UN-RETIRED — two M passes found carriers after the S357 retirement (S554 the FM's 12 nikkud tiles, S556 the dictionary's 787 root chips and toolbar), both FIXED: by the real mouse in 8 cells with HEAD served as the control, dark 0/12 → 12/12 tiles (the active one too) and 0/3, 0/40 → 3/3, 40/40; labels ≥ 9.85:1 on #2a3349; light unchanged. Owner stays A: its sweep, and M's hover arm, catch it.
 
 ## `offscreen-sheets-laid-out-on-every-rebuild`
 - **Status:** ACTIVE · **Owner:** D · **Consequence:** normal · **Last:** S550 · **Streak:** 0 · **Detector:** recipe
@@ -322,7 +339,8 @@
 - **Archived full text (latest compaction copy):** - **`cdn-library-parser-blocking-for-one-action`** (NEW S452 D; generator `82bbe313`, FM `d01a33cd`): ACTIVE, streak 0. A parser-blocking CDN `<script src>` in `<head>` for one action. Detection: `grep -n '<script[^>]*src="https\?://' *.html | grep -v ' async\| …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `dark-navy-fill-matches-its-ground`
-- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S556 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S557 · **Streak:** 0 · **Detector:** recipe
+- **Record (S557):** dictionary FIXED `488d4a7` — `.b-len` and `.ec-tag.cat` take `body.dark … {background:#2a4070}`: 100 + 100 chips × 8 cells, dark chip vs card 1.03 → 1.51:1, the gold label ≥ 7.3:1, light 14.81 unchanged, print still the transparent outlined chip (its `!important` rule); open 0 on the dictionary.
 - **Record (S556):** dictionary: the length badge `.b-len` (11 per view) and the emoji card's `.ec-tag.cat` (100 per emoji view) at 1.03:1 on the dark card plate — the chip vanishes, its gold label floats (5.02:1 itself); candidate (the governor), fix `body.dark .b-len, body.dark .ec-tag.cat{background:#2a4070}`. 6,558 controls × 4 dark cells × 15 views; `.shoresh-lookup-btn` 1.15 on the page (S451's suite look) and the header's switcher / account chip 1.03 with a 1.18 edge (S552's ruling) exempt; a ground-painted `.load-more-btn` plant fired.
 - **Record (S554):** fontmaker: `.ctl-btn.primary` on the dark panels (Re-trace 1.03, Confirm placement / Add pair 1.15, Save letter & next) FIXED `7a3faf7` — `body.dark .ctl-btn.primary{background:#2a4070;border-color:#4a6aaa}` reads 1.51–1.67 with a 2.87–3.19 edge; name_tags' Merge button FIXED `24e9f73`, the rule's fifth carrier (open 0). 479 controls × 4 dark cells; the 213 readings at 1.11–1.22 are the suite's dark tiles, tabs and selects (S552's ruling); a ground-painted ghost `tbtn` plant fired.
 - **Record (S552):** name_tags: the restore dialog's Merge button 1.03:1 on its dark card — the rule's five carriers; the hub, generator, dashboard and flash cards FIXED `c1f42ae` with their pressed Backup toggle (1.03–1.14:1 beside the unpressed one), name_tags' Merge button a candidate (the governor). Clean otherwise over 72–112 controls × 6 states × 2 dark cells (the panel titles' 1.15:1 are the suite's dark look; a ground-coloured plant fired).
@@ -1023,7 +1041,7 @@
 - **Record (ledger row at S544):** - **placeholder-as-only-accessible-name** (a text input/textarea whose ONLY name source is its `placeholder` — no `aria-label`, `aria-labelledby`, `label[for]`, wrapping `<label>` or `title`. Under ACCNAME `placeholder` is the last-resort source, so the name is announced on an
 - **Archived full text (latest compaction copy):** - **placeholder-as-only-accessible-name** (a text input/textarea whose ONLY name source is its `placeholder` — no `aria-label`, `aria-labelledby`, `label[for]`, wrapping `<label>` or `title`. Under ACCNAME `placeholder` is the last-resort source, so the name is announced on an …[full text: IMPROVEMENT_ARCHIVE.md]
 
-## Retired patterns (15)
+## Retired patterns (14)
 
 ## `synced-key-wiped-without-forgetRow`
 - **Status:** retired · **Owner:** P · **Consequence:** critical · **Last:** S0 · **Streak:** 0 · **Detector:** recipe
@@ -1041,12 +1059,6 @@
 - **Shape:** Shape: a per-frame writer sets a root custom property.
 - **Detection:** `grep -n 'documentElement.style.setProperty' *.html`, keep writers on a drag/slider/rAF path. Fix: write on the consumers' nearest ancestor. An A2 hit un-retires.
 - **Record (ledger row at S544):** - **`custom-property-written-on-documentElement-per-frame`**: RETIRED 2026-09-09 (S357 Pass A, clean streak 3: S330, S343, S357 — the delta's 5 new `setProperty('--heb-font'` writers are one-shot). Shape: a per-frame writer sets a root custom property. Detection: `grep -n 'documentElement.style.setProperty' *.html`, keep writers on a drag/slider/rAF path. Fix: write on the consumers' nearest ancestor. An A2 hit un-retires.
-
-## `dark-hover-resolves-to-the-rest-colour`
-- **Status:** retired · **Owner:** A · **Consequence:** normal · **Last:** S357 · **Streak:** 3 · **Detector:** recipe
-- **Shape:** Shape: a `:hover` that resolves to the rest background in the OTHER theme (dark `--warm-gray` = dark `--white`).
-- **Detection:** `warm-gray` hover rules minus those with a `body.dark X:hover` twin, confirmed by a real dark hover. Fix shape: `body.dark X:hover{background:#2a3349;}`. An A2 hit un-retires.
-- **Record (ledger row at S544):** - **`dark-hover-resolves-to-the-rest-colour`**: RETIRED 2026-09-09 (S357 Pass A, clean streak 3: S330, S343, S357 — the delta's 17 new `:hover` rules all measured with feedback). Shape: a `:hover` that resolves to the rest background in the OTHER theme (dark `--warm-gray` = dark `--white`). Detection: `warm-gray` hover rules minus those with a `body.dark X:hover` twin, confirmed by a real dark hover. Fix shape: `body.dark X:hover{background:#2a3349;}`. An A2 hit un-retires.
 
 ## `elevation-cue-doubled-or-dead`
 - **Status:** retired · **Owner:** A · **Consequence:** normal · **Last:** S343 · **Streak:** 0 · **Detector:** recipe

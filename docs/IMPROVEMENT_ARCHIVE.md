@@ -94484,3 +94484,31 @@ _(prior)_ **Next session (S556):** **PR `claude/adoring-noether-q8qk1e` (S554–
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 - M aesthetics & visual design (one surface): 2026-10-26 (**S556 — 30th M, dictionary (3rd: S237 → S362 → S556): 152 full-page shots (19 views × EN/HE × light/dark × 1280/800), 11 census arms (type, radius, contrast on ~12,000 text nodes per cell, dark plates and navy text, 2,778 + 2,762 real hovers × 2 themes, 6,558 dark fills × 4 cells, 7 live regions by CDP × 10 states, the header gate 1px 1000→320, the rows, Hebrew prose in 13 views; every plant fired). FOUND 7, FIXED 2 (+4 P4 behind the governor, 1 Awaiting gate 3, 1 refuted). M-next: trope (S376), torah (S422).**)
+
+_(prior)_ **Next session (S557):** **PR `claude/adoring-noether-q8qk1e` (S554–S556, #368): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1098**, FM **5.59**, corpus ?v=7. ⚑ drift: main=2cc90bb sw=v1098 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest by the rule: H's trope (S367), M's trope (S376), C's flash (S381), P's fontmaker (S382); A (S530), E (S531), L (S532) are 26 sessions old and the 32-commit outside-loop delta (sw v1080 → v1095: Total Torah public, the Chanting picker, the 54 `parsha/` pages, the coloring sheets) is unaudited — A or B first is defensible; `parsha/` is a page kind the Surfaces list does not name (a protocol call). ⚑ Keep-alive #42–#44 green. ⚑ Seeds: 50. ⚑ 27 DRAFT pattern rows: recipe or retirement at the next A (`m554/`, `n555/common.mjs` and `m556/` are port candidates; traps 352, 356–358). ⚑ Queues behind the governor: dictionary 5 P4s, name_tags 5, the FM 3 (Candidates). ⚑ `offscreen-sheets-laid-out-on-every-rebuild`: the generator's worksheet next. ⚑ The `.ivrit` ask overlay and the account modals have no print rule (suite P4). ⚑ Maintainer: `08b8611` (keep both name lines?); O's permission rule; CI for `closeout.mjs --static`; translit second source; sw.js `no-store`; 14 fonts; torah screen reader; the locale's size and the Resources fonts' precache (Awaiting); gates 2–4 incl. the vowel palette's gold (S556); the S546 P3.
+
+
+<!-- archived by compact-ledger at the S558 boundary, 2026-10-26 -->
+## Compaction (S558, 2026-10-26) — moved verbatim from the live ledger
+
+### from Candidates (prioritized, top = next)
+
+- [ ] P3 (**NEW S557 H — gate 2, the Trainer's deep-link contract**) | trope_tutor.html → torah_trainer.html | **A Learn card's "See it in the parsha →" replaces the Trainer's saved reading**: `?parsha=` saves the parsha with `scope:'parsha-full'` and drops a holiday, so a student on aliyah 3 of Ki Tavo or on Rosh Hashanah day 1 reopens the Trainer on Bereshit (both measured, 2 cells); a visit-only link (the tutor's `?melody=` rule) would keep it. | found S557
+
+### from Done
+
+- [x] 2026-10-26 | (S557 close-out) | branch/deploy note | **S557 = H on the Trope Tutor (5th: S87 → S140 → S228 → S367 → S557): FOUND 4, FIXED 1 (+2 gate-2 candidates, 1 seed; 1 refuted); NEW pattern `tour-step-in-a-hidden-view` (the Letter Learner's carrier logged); + `dark-hover-resolves-to-the-rest-colour` un-retired with both open carriers fixed (FM, dictionary) and the dictionary's navy chips.** Branch `claude/adoring-noether-q8qk1e` (PR #368 continued, S554–S557); drift: nothing moved. 5 iterations; gates asked: none (unattended: the two calls are gate-2 candidates). sw v1098→v1099; no FM bump (a CSS fix). Deploy: after the merge.
+
+- [x] 2026-10-26 | `488d4a7` | hebrew_dictionary.html | (S557) **The length badge and the emoji category tag keep their chip in dark** (`body.dark .b-len, body.dark .ec-tag.cat{background:#2a4070}`; pattern `dark-navy-fill-matches-its-ground`, the S556 candidate). | 8 cells vs HEAD, 100 + 100 chips: dark chip vs card 1.03 → 1.51:1, the label ≥ 7.3; light 14.81 unchanged; dark print still transparent; 0 errors
+
+- [x] 2026-10-23 | (S552 close-out) | branch/deploy note | **S552 = M on name_tags (first): FOUND 7, FIXED 2 (+1 P3, 5 P4 candidates); the queued UTF-16 P3 fixed; the restore dialog's dark fill fixed on its four other carriers.** Branch `claude/loop-s549-nametags-d` (PR #362 continued), drift: none. sw v1079→v1080 (hub, generator, dashboard, flash cards); no FM bump. Unattended: no gate asked …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-23 | `c1f42ae` | index.html, hebrew_blend_generator.html, classroom_dashboard.html, flash_cards.html | (S552) **The Backup block's pressed mode button and the restore dialog's Merge button show in dark mode** (the suite's #2a4070 fill, the Merge hover's dark twin; patterns dark-navy-fill-matches-its-ground, dark-base-rule-outranks-variant). | Verified by computed fills on each page: …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-23 | `927d80b` | name_tags.html | (S552) **Each column's heading sits where its names sit** (`.nt-col-he` right, `.nt-col-tr` / `.nt-col-en` left in both UIs — the page's one alignment by script). | Verified in 4 cells with real fonts: heading-to-names −175 px (EN Hebrew), +150 / +121 (HE transliteration / English) → the 7 px inset of every column; the preview's markup identical to …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-23 | `b40407e` | name_tags.html | (S552) **A UTF-16 roster (Excel's "Unicode Text") imports its students** (the byte-order mark, or NULs on one side of every pair, read before UTF-8). | Verified through the real file input, HEAD vs tree, six encodings of one roster: UTF-16LE / BE with the mark and LE without, 4 / 3 / 4 NUL-laced students → the 2; UTF-8 with / without a mark and …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- H teacher walkthrough / paper-cuts (one tool): 2026-10-26 (**S557 — trope (5th: S87 → S140 → S228 → S367 → S557): 12 lessons by real input × EN light 1280 / HE dark 800 (tour, families, High Holidays, key/voice/names/sing-back, `?melody=`, the Trainer link, a drill + review, Sephardi + size, a device move, resets, the tour from every tab) + the student cell (1366 windowed, 1024 fullscreen). FOUND 4, FIXED 1 (+2 gate 2, 1 seed), 1 refuted. H-next: fontmaker (S380), dashboard (S395).**)
