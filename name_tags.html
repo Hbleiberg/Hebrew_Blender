@@ -3113,8 +3113,11 @@ function ntPositionSidebarTab() {
   const aside = document.getElementById('ntSidebar'), tab = document.getElementById('ntSidebarHide');
   if (!aside || !tab || !ntSidebarShown()) return;
   const a = aside.getBoundingClientRect();
-  const edge = document.documentElement.dir === 'rtl' ? window.innerWidth - a.left : a.right;
-  tab.style.insetInlineStart = Math.min(edge + 4, Math.max(0, window.innerWidth - 24)) + 'px';
+  // The layout viewport's width, not window.innerWidth: a classic scrollbar sits inside innerWidth but outside a fixed
+  // inset and the client rect, so innerWidth put the Hebrew tab a scrollbar's width (15–17px) into the page.
+  const vw = document.documentElement.clientWidth || window.innerWidth;
+  const edge = document.documentElement.dir === 'rtl' ? vw - a.left : a.right;
+  tab.style.insetInlineStart = Math.min(edge + 4, Math.max(0, vw - 24)) + 'px';
 }
 function initSidebarToggle() {
   ['ntSidebarHide', 'ntSidebarShow'].forEach(id => { const t = document.getElementById(id); if (t) t.addEventListener('click', () => ntToggleSidebar()); });

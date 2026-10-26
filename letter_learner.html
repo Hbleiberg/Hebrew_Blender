@@ -4669,7 +4669,11 @@ function llPositionSidebarTab() {
   const aside = document.getElementById('llSidebar'), tab = document.getElementById('llSidebarHide');
   if (!aside || !tab || !llSidebarShown()) return;
   const a = aside.getBoundingClientRect();
-  const maxInset = Math.max(0, window.innerWidth - 24);
+  // The layout viewport's width, not window.innerWidth: a fixed element's `right` and the sidebar's client rect are
+  // both measured inside a classic scrollbar, which innerWidth includes — measured 15–17px off (the tab floated a
+  // scrollbar's width into the page on Windows and on a Mac with a mouse; overlay scrollbars hid it).
+  const vw = document.documentElement.clientWidth || window.innerWidth;
+  const maxInset = Math.max(0, vw - 24);
   if (document.documentElement.dir === 'rtl') {
     const x = a.right;   // the tab's inline-end edge (its left side in Hebrew)
     tab.style.right = 'auto';
@@ -4677,7 +4681,7 @@ function llPositionSidebarTab() {
   } else {
     const x = a.left;    // the tab's inline-end edge (its right side in English)
     tab.style.left = 'auto';
-    tab.style.right = Math.min(window.innerWidth - x, maxInset) + 'px';
+    tab.style.right = Math.min(vw - x, maxInset) + 'px';
   }
 }
 function initSidebarToggle() {

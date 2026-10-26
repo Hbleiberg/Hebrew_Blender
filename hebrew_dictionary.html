@@ -4127,10 +4127,13 @@ function positionSidebarTab() {
   const btn = document.getElementById('sidebarToggleBtn');
   if (!sidebar || !btn || sidebar.classList.contains('hidden')) return;
   const rect = sidebar.getBoundingClientRect();
-  const maxInset = Math.max(0, window.innerWidth - 24);
+  // The layout viewport's width, not window.innerWidth: a classic scrollbar sits inside innerWidth but outside a fixed
+  // `right` and the client rect, so innerWidth put the Hebrew tab a scrollbar's width (15–17px) into the page.
+  const vw = document.documentElement.clientWidth || window.innerWidth;
+  const maxInset = Math.max(0, vw - 24);
   if (document.documentElement.dir === 'rtl') {
     btn.style.left = 'auto';
-    btn.style.right = Math.min(window.innerWidth - rect.left + 4, maxInset) + 'px';
+    btn.style.right = Math.min(vw - rect.left + 4, maxInset) + 'px';
   } else {
     btn.style.right = 'auto';
     btn.style.left = Math.min(rect.right + 4, maxInset) + 'px';
