@@ -1628,6 +1628,7 @@ body.dark .btn-secondary:hover { background:#2a3349; }
 }
 body.dark .font-opt { background:#1e2535; border-color:var(--border); }
 .font-opt:hover { border-color:var(--gold); }
+body.dark .font-opt:hover { border-color:var(--gold); }   /* the dark base rule above outranked this hover, so in dark no card moved; the generator's and dictionary's twin (pattern dark-base-rule-outranks-variant). Before .active, so the chosen card keeps its gold-light edge. */
 .font-opt.active { border-color:var(--gold); background:rgba(201,146,42,0.12); }
 body.dark .font-opt.active { background:rgba(224,168,50,0.16); border-color:var(--gold-light); }
 .font-opt-preview { font-size:1.35rem; direction:rtl; line-height:1.2; color:var(--text); margin-bottom:1px; }
