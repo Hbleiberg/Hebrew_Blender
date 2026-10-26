@@ -510,8 +510,8 @@ body.dark .ll-mode-btn[aria-pressed="true"] { background:#2a4070; border-color:#
 .ll-tip-pair { font-family:var(--heb-font); font-size:1.3rem; line-height:1; margin-inline:2px; }
 .ll-tips[data-script="cursive"] .ll-tip-pair { font-family:var(--heb-cursive-font); }
 
-/* ───── Aleph bet coloring sheets (#llSheets): the intro beside a picture of three sheets, then the 22 letters as small
-   tiles in alef-bet order (right to left, as the grid), each a link to its coloring sheet. Screen only. ───── */
+/* ───── Aleph bet coloring sheets (#llSheets): the intro beside a picture of three sheets, then every letter card's tile
+   in the grid's order (right to left; the pairs and finals included), each a link to its coloring sheet. Screen only. ───── */
 .ll-sheets { margin-block-start:28px; }
 .ll-sheets-title { font-family:'Libre Baskerville', serif; font-size:1.25rem; color:var(--navy); margin:0; padding-block-end:6px; border-block-end:1px solid var(--border); }
 body.dark .ll-sheets-title { color:var(--gold-light); }
@@ -520,6 +520,7 @@ body.dark .ll-sheets-title { color:var(--gold-light); }
 .ll-sheets-img { display:block; width:100%; height:auto; border:1px solid var(--border); border-radius:10px; }
 .ll-sheets-list { list-style:none; margin:14px 0 0; padding:0; display:grid; grid-template-columns:repeat(auto-fill, minmax(76px, 1fr)); gap:8px; }
 .ll-sheets-list a { display:flex; flex-direction:column; align-items:center; padding:6px 4px; background:var(--white); border:1px solid var(--border); border-radius:10px; color:var(--text); text-decoration:none; }
+.ll-sheets-list a.is-final { border-style:dashed; }   /* the grid's final-form cards */
 .ll-sheets-list a:hover { border-color:var(--gold); }
 .ll-sheets-list a:focus-visible { outline:2px solid var(--focus-ring); outline-offset:2px; }
 .ll-sheets-glyph { font-family:var(--heb-font); font-size:1.6rem; line-height:1.2; }
@@ -1127,10 +1128,12 @@ body.dark #appToast { background: #0a0f1c; }
       <p class="ll-note" id="llTipsIntro" data-i18n="letterlearner.tips.intro">Every vowel family gets three cues that point to the same sound: a name tied to the vowel's shape, a gesture kids do while saying it, and a color that rhymes with the sound.</p>
       <ul id="llTipsList" dir="ltr" lang="en"></ul>
     </details>
-    <!-- Aleph bet coloring sheets: what the sheets are, a picture of three, and the 22 letters, each linking to its sheet
+    <!-- Aleph bet coloring sheets: what the sheets are, a picture of three, and a tile for every letter card (the 31 of
+         llOrder(true): the pairs Vet, Chaf, Fe and Sin and the five finals too), each linking to its sheet
          (?letter=<id>&tab=coloring, llOpenFromUrl) — the static text a search engine reads without running the page, and a
-         teacher's way straight to one letter's sheet. A plain click opens it in place (llSheetsWire). The letters' names are
-         learner content, not UI strings (i18n-ignore). Screen only: printing the grid stays one sheet. -->
+         teacher's way straight to one letter's sheet. A plain click opens it in place (llSheetsWire); the pair tiles
+         (data-pair) hide while the Options card folds the pairs into one card (llSheetsSync), as the grid does. The
+         letters' names are learner content, not UI strings (i18n-ignore). Screen only: printing the grid stays one sheet. -->
     <section class="ll-sheets" id="llSheets" aria-labelledby="llSheetsTitle">
       <h2 class="ll-sheets-title" id="llSheetsTitle" data-i18n="letterlearner.sheets.title">Free aleph bet coloring sheets</h2>
       <div class="ll-sheets-lead">
@@ -1140,6 +1143,7 @@ body.dark #appToast { background: #0a0f1c; }
       <ul class="ll-sheets-list" dir="rtl" aria-label="Coloring sheets by letter" data-i18n-aria-label="letterlearner.sheets.list_aria">
       <li><a href="letter_learner.html?letter=alef&amp;tab=coloring" data-letter="alef"><span class="ll-sheets-glyph" lang="he" dir="rtl">א</span><span class="ll-sheets-name" lang="en" dir="ltr">Alef</span></a></li>
       <li><a href="letter_learner.html?letter=bet&amp;tab=coloring" data-letter="bet"><span class="ll-sheets-glyph" lang="he" dir="rtl">בּ</span><span class="ll-sheets-name" lang="en" dir="ltr">Bet</span></a></li>
+      <li data-pair="1"><a href="letter_learner.html?letter=vet&amp;tab=coloring" data-letter="vet"><span class="ll-sheets-glyph" lang="he" dir="rtl">ב</span><span class="ll-sheets-name" lang="en" dir="ltr">Vet</span></a></li>
       <li><a href="letter_learner.html?letter=gimel&amp;tab=coloring" data-letter="gimel"><span class="ll-sheets-glyph" lang="he" dir="rtl">ג</span><span class="ll-sheets-name" lang="en" dir="ltr">Gimel</span></a></li>
       <li><a href="letter_learner.html?letter=dalet&amp;tab=coloring" data-letter="dalet"><span class="ll-sheets-glyph" lang="he" dir="rtl">ד</span><span class="ll-sheets-name" lang="en" dir="ltr">Dalet</span></a></li>
       <li><a href="letter_learner.html?letter=he&amp;tab=coloring" data-letter="he"><span class="ll-sheets-glyph" lang="he" dir="rtl">ה</span><span class="ll-sheets-name" lang="en" dir="ltr">He</span></a></li>
@@ -1149,16 +1153,24 @@ body.dark #appToast { background: #0a0f1c; }
       <li><a href="letter_learner.html?letter=tet&amp;tab=coloring" data-letter="tet"><span class="ll-sheets-glyph" lang="he" dir="rtl">ט</span><span class="ll-sheets-name" lang="en" dir="ltr">Tet</span></a></li>
       <li><a href="letter_learner.html?letter=yod&amp;tab=coloring" data-letter="yod"><span class="ll-sheets-glyph" lang="he" dir="rtl">י</span><span class="ll-sheets-name" lang="en" dir="ltr">Yod</span></a></li>
       <li><a href="letter_learner.html?letter=kaf&amp;tab=coloring" data-letter="kaf"><span class="ll-sheets-glyph" lang="he" dir="rtl">כּ</span><span class="ll-sheets-name" lang="en" dir="ltr">Kaf</span></a></li>
+      <li data-pair="1"><a href="letter_learner.html?letter=chaf&amp;tab=coloring" data-letter="chaf"><span class="ll-sheets-glyph" lang="he" dir="rtl">כ</span><span class="ll-sheets-name" lang="en" dir="ltr">Chaf</span></a></li>
+      <li><a href="letter_learner.html?letter=kaf_sofit&amp;tab=coloring" data-letter="kaf_sofit" class="is-final"><span class="ll-sheets-glyph" lang="he" dir="rtl">ך</span><span class="ll-sheets-name" lang="en" dir="ltr">Final Chaf</span></a></li>
       <li><a href="letter_learner.html?letter=lamed&amp;tab=coloring" data-letter="lamed"><span class="ll-sheets-glyph" lang="he" dir="rtl">ל</span><span class="ll-sheets-name" lang="en" dir="ltr">Lamed</span></a></li>
       <li><a href="letter_learner.html?letter=mem&amp;tab=coloring" data-letter="mem"><span class="ll-sheets-glyph" lang="he" dir="rtl">מ</span><span class="ll-sheets-name" lang="en" dir="ltr">Mem</span></a></li>
+      <li><a href="letter_learner.html?letter=mem_sofit&amp;tab=coloring" data-letter="mem_sofit" class="is-final"><span class="ll-sheets-glyph" lang="he" dir="rtl">ם</span><span class="ll-sheets-name" lang="en" dir="ltr">Final Mem</span></a></li>
       <li><a href="letter_learner.html?letter=nun&amp;tab=coloring" data-letter="nun"><span class="ll-sheets-glyph" lang="he" dir="rtl">נ</span><span class="ll-sheets-name" lang="en" dir="ltr">Nun</span></a></li>
+      <li><a href="letter_learner.html?letter=nun_sofit&amp;tab=coloring" data-letter="nun_sofit" class="is-final"><span class="ll-sheets-glyph" lang="he" dir="rtl">ן</span><span class="ll-sheets-name" lang="en" dir="ltr">Final Nun</span></a></li>
       <li><a href="letter_learner.html?letter=samech&amp;tab=coloring" data-letter="samech"><span class="ll-sheets-glyph" lang="he" dir="rtl">ס</span><span class="ll-sheets-name" lang="en" dir="ltr">Samech</span></a></li>
       <li><a href="letter_learner.html?letter=ayin&amp;tab=coloring" data-letter="ayin"><span class="ll-sheets-glyph" lang="he" dir="rtl">ע</span><span class="ll-sheets-name" lang="en" dir="ltr">Ayin</span></a></li>
       <li><a href="letter_learner.html?letter=pe&amp;tab=coloring" data-letter="pe"><span class="ll-sheets-glyph" lang="he" dir="rtl">פּ</span><span class="ll-sheets-name" lang="en" dir="ltr">Pe</span></a></li>
+      <li data-pair="1"><a href="letter_learner.html?letter=fe&amp;tab=coloring" data-letter="fe"><span class="ll-sheets-glyph" lang="he" dir="rtl">פ</span><span class="ll-sheets-name" lang="en" dir="ltr">Fe</span></a></li>
+      <li><a href="letter_learner.html?letter=pe_sofit&amp;tab=coloring" data-letter="pe_sofit" class="is-final"><span class="ll-sheets-glyph" lang="he" dir="rtl">ף</span><span class="ll-sheets-name" lang="en" dir="ltr">Final Fe</span></a></li>
       <li><a href="letter_learner.html?letter=tzadi&amp;tab=coloring" data-letter="tzadi"><span class="ll-sheets-glyph" lang="he" dir="rtl">צ</span><span class="ll-sheets-name" lang="en" dir="ltr">Tzadi</span></a></li>
+      <li><a href="letter_learner.html?letter=tzadi_sofit&amp;tab=coloring" data-letter="tzadi_sofit" class="is-final"><span class="ll-sheets-glyph" lang="he" dir="rtl">ץ</span><span class="ll-sheets-name" lang="en" dir="ltr">Final Tzadi</span></a></li>
       <li><a href="letter_learner.html?letter=kuf&amp;tab=coloring" data-letter="kuf"><span class="ll-sheets-glyph" lang="he" dir="rtl">ק</span><span class="ll-sheets-name" lang="en" dir="ltr">Kuf</span></a></li>
       <li><a href="letter_learner.html?letter=resh&amp;tab=coloring" data-letter="resh"><span class="ll-sheets-glyph" lang="he" dir="rtl">ר</span><span class="ll-sheets-name" lang="en" dir="ltr">Resh</span></a></li>
       <li><a href="letter_learner.html?letter=shin&amp;tab=coloring" data-letter="shin"><span class="ll-sheets-glyph" lang="he" dir="rtl">שׁ</span><span class="ll-sheets-name" lang="en" dir="ltr">Shin</span></a></li>
+      <li data-pair="1"><a href="letter_learner.html?letter=sin&amp;tab=coloring" data-letter="sin"><span class="ll-sheets-glyph" lang="he" dir="rtl">שׂ</span><span class="ll-sheets-name" lang="en" dir="ltr">Sin</span></a></li>
       <li><a href="letter_learner.html?letter=tav&amp;tab=coloring" data-letter="tav"><span class="ll-sheets-glyph" lang="he" dir="rtl">ת</span><span class="ll-sheets-name" lang="en" dir="ltr">Tav</span></a></li>
       </ul>
     </section>
@@ -2424,6 +2436,7 @@ function llRenderTips() {
    GRID
    ══════════════════════════════════════════════════════ */
 function renderGrid() {
+  llSheetsSync();   // the coloring-sheet tiles below follow the same Separate-cards switch
   const grid = document.getElementById('llGrid');
   grid.textContent = '';
   const note = document.getElementById('llGridNote');
@@ -4461,6 +4474,11 @@ function llOpenTab(id, tab) {
   llOpen(id);
   const card = llCard(id);
   if (card && tab && /^[a-z]{1,12}$/.test(tab) && llTabsFor(card).includes(tab)) llSelectTab(tab);
+}
+// The pair tiles under Aleph bet coloring sheets follow the Options card's "Separate cards" switch, as the grid does
+// (folded, Vet's sheet is Bet's card's: a Vet tile would open Bet).
+function llSheetsSync() {
+  document.querySelectorAll('#llSheets li[data-pair]').forEach(li => { li.hidden = !settings.splitPairs; });
 }
 // The letters under Aleph bet coloring sheets (#llSheets): a plain click opens that letter's coloring sheet in place —
 // in the letter mode showing (Vowels switches to Block first); a new-tab click or a copied link takes the address.
