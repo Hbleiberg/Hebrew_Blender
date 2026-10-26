@@ -18,7 +18,7 @@
  * the preview.
  *
  * It also checks each section's prose. The paragraphs come in one order — the preview, **Reading:** (equal to
- * parshiyot.json's ref), **Summary:**, **Emoji: <Title>.**, **Why this emoji:**, then the Hebrew twins
+ * parshiyot.json's ref), the optional **Also spelled:** (other spellings of the name, for the coloring pages), **Summary:**, **Emoji: <Title>.**, **Why this emoji:**, then the Hebrew twins
  * **תקציר:** and **למה האימוג׳י הזה:**, then the drawing. Each summary and reason is one plain-text sentence of
  * 40–400 characters, its wrapped lines joined with one space (so no line may end in a hyphen, dash or maqaf): curly
  * quotes and apostrophes, no markup, entity, ASCII quote, control or bidi character. The Hebrew ones are Hebrew with
@@ -29,134 +29,28 @@
  *   node scripts/build-parasha-icons.mjs --check          check only, and exit 1 if a file it writes would change
  *   node scripts/build-parasha-icons.mjs --catalog=<path> check a copy of the catalog only; write nothing
  *
- * Both modules are precached: a changed one needs a VERSION bump in sw.js.
+ * Both modules are precached: a changed one needs a VERSION bump in sw.js. The catalog is read by
+ * scripts/parasha-catalog.mjs, the parser this script shares with scripts/build-parsha-pages.mjs (the coloring
+ * pages, which re-run after a catalog edit too).
  */
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
-import { fileURLToPath } from 'node:url';
+import { ROOT, CATALOG, PREVIEW_DIR, readCatalog } from './parasha-catalog.mjs';
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const CATALOG = 'ParashaEmojis.md';
 const OUT_JS = 'js/parasha-icons.js';
 const OUT_NOTES = 'js/parasha-notes.js';
-const PREVIEW_DIR = 'docs/parasha-emojis';
 const CHECK = process.argv.includes('--check');
 const CATALOG_ARG = process.argv.find((a) => a.startsWith('--catalog='));
 const CATALOG_PATH = CATALOG_ARG ? path.resolve(CATALOG_ARG.slice('--catalog='.length)) : path.join(ROOT, CATALOG);
 
-const TOKENS = ['line', 'gold', 'gold-lt', 'paper', 'navy', 'red', 'green', 'blue', 'flame', 'ground'];
-const COLOUR = new RegExp(`^(none|var\\(--hol-(${TOKENS.join('|')})\\))$`);
-const TAGS = new Set(['path', 'circle', 'ellipse', 'rect', 'line', 'polyline', 'polygon', 'g']);
-const ATTRS = new Set(['d', 'cx', 'cy', 'r', 'rx', 'ry', 'x', 'y', 'width', 'height', 'x1', 'y1', 'x2', 'y2', 'points',
-  'fill', 'stroke', 'stroke-width', 'stroke-linecap', 'stroke-linejoin', 'stroke-dasharray', 'transform', 'fill-rule']);
-const TRANSFORM = /^\s*(rotate|translate)\([-\d.\s,]*\)(\s+(rotate|translate)\([-\d.\s,]*\))*\s*$/;
 // The holiday-icons CSS block's palettes, built into each preview so it can be opened on its own.
 const LIGHT = '--hol-line:#1a2744;--hol-gold:#c9922a;--hol-gold-lt:#f0d080;--hol-paper:#fffaf0;--hol-navy:#2a3b66;--hol-red:#c0392b;--hol-green:#3a7d44;--hol-blue:#3b6fb6;--hol-flame:#f0a030;--hol-ground:#fdf8ef';
 const DARK = '--hol-line:#e8e0d0;--hol-gold:#e0a832;--hol-gold-lt:#f5d97a;--hol-paper:#e8e0d0;--hol-navy:#5a6d9c;--hol-red:#e0584a;--hol-green:#5aa865;--hol-blue:#6a9ae0;--hol-flame:#f6b84a;--hol-ground:#161c2a';
 
-// A section's paragraphs, in this order; the prose ones carry the label they open with.
-const PARAS = [
-  ['img', /^<img src="/], ['reading', /^\*\*Reading:\*\* \S/],
-  ['summary.en', /^\*\*Summary:\*\*\s/, '**Summary:**'], ['emoji', /^\*\*Emoji: /],
-  ['why.en', /^\*\*Why this emoji:\*\*\s/, '**Why this emoji:**'],
-  ['summary.he', /^\*\*תקציר:\*\*\s/u, '**תקציר:**'], ['why.he', /^\*\*למה האימוג׳י הזה:\*\*\s/u, '**למה האימוג׳י הזה:**'],
-  ['html', /^```html\n/],
-];
-// Plain text: the gallery shows it through textContent-equivalent escaping, and nothing in it needs escaping in JS.
-const PROSE_BANNED = /[<>&`\\$*_~[\]"'\u0000-\u001f\u007f\u00a0\u200b-\u200f\u2028\u2029\u202a-\u202e\u2066-\u2069\ufeff]/u;
-const POINTS = /[\u0591-\u05bd\u05bf-\u05c7]/u;          // nikkud and cantillation (the maqaf, U+05BE, is punctuation)
-const DIVINE = /יהוה|אלהים|אלוהים/u;
-const HEB = /[\u05d0-\u05ea]/u, LATIN = /[A-Za-z]/, SENTENCE_END = /[.!?][”’)]*$/u;
-const cp = (c) => 'U+' + c.codePointAt(0).toString(16).toUpperCase().padStart(4, '0');
-
-const keyOf = (en) => en.toLowerCase().replace(/[^a-z]/g, '');
-const problems = [];
+// The catalog is read and checked by the parser both builders share (scripts/parasha-catalog.mjs).
+const { icons, problems } = readCatalog(CATALOG_PATH);
 const fail = (where, msg) => problems.push(`${where}: ${msg}`);
-
-// Every character of a drawing belongs to an allowed tag; attributes and colours as above; <g> balanced.
-function checkDrawing(where, svg) {
-  if (/[\n'\\`]|\$\{|<\/script/i.test(svg)) fail(where, 'the drawing must be one line with no single quote, backslash, backtick, ${ or </script');
-  const TAG = /<(\/?)([a-z]+)((?:\s+[a-z-]+="[^"]*")*)\s*(\/?)>/gy;
-  let pos = 0, depth = 0, n = 0;
-  while (pos < svg.length) {
-    if (/\s/.test(svg[pos])) { pos++; continue; }
-    TAG.lastIndex = pos;
-    const m = TAG.exec(svg);
-    if (!m) { fail(where, `unexpected markup at «${svg.slice(pos, pos + 40)}»`); return; }
-    pos = TAG.lastIndex;
-    const [, close, tag, attrs, selfClose] = m;
-    if (!TAGS.has(tag)) fail(where, `element <${tag}>`);
-    if (close) { if (tag !== 'g' || attrs.trim() || --depth < 0) fail(where, `stray </${tag}>`); continue; }
-    n++;
-    if (tag === 'g' && !selfClose) depth++;
-    else if (tag !== 'g' && !selfClose) fail(where, `<${tag}> must close itself`);
-    for (const [, name, value] of attrs.matchAll(/([a-z-]+)="([^"]*)"/g)) {
-      if (!ATTRS.has(name)) fail(where, `attribute ${name} on <${tag}>`);
-      if ((name === 'fill' || name === 'stroke') && !COLOUR.test(value.trim())) fail(where, `${name}="${value}" on <${tag}>`);
-      if (name === 'transform' && !TRANSFORM.test(value)) fail(where, `transform="${value}"`);
-    }
-  }
-  if (depth !== 0) fail(where, 'unbalanced <g>');
-  if (!n) fail(where, 'empty drawing');
-}
-
-// One summary or reason: the label stripped, wrapped lines joined, then held to the rules in the header.
-function prose(where, kind, para, label) {
-  if (/[-–־]\n/u.test(para)) fail(where, `${label} breaks a line after a hyphen, dash or maqaf (the lines are joined with a space)`);
-  const t = para.slice(label.length).replace(/\s*\n\s*/g, ' ').trim();
-  if (!t) { fail(where, `${label} is empty`); return ''; }
-  const bad = t.match(PROSE_BANNED);
-  if (bad) fail(where, `${label} has ${JSON.stringify(bad[0])} (${cp(bad[0])}): plain text only — curly quotes “ ” ’, Hebrew geresh ׳ and gershayim ״`);
-  if (!SENTENCE_END.test(t)) fail(where, `${label} does not end a sentence`);
-  if (t.length < 40 || t.length > 400) fail(where, `${label} is ${t.length} characters (one sentence of 40–400)`);
-  if (kind.endsWith('.he')) {
-    if (!HEB.test(t)) fail(where, `${label} has no Hebrew letters`);
-    if (LATIN.test(t)) fail(where, `${label} has Latin letters`);
-    const pt = t.match(POINTS);
-    if (pt) fail(where, `${label} has nikkud or cantillation (${cp(pt[0])}): the Hebrew text is unpointed`);
-    if (DIVINE.test(t)) fail(where, `${label} writes the divine name in full: ה׳, or אלוקים in a quoted verse`);
-  }
-  return t;
-}
-
-const parshiyot = JSON.parse(readFileSync(path.join(ROOT, 'data/parshiyot.json'), 'utf8'));
-if (parshiyot.length !== 54) fail('data/parshiyot.json', `${parshiyot.length} entries, expected 54`);
-const md = readFileSync(CATALOG_PATH, 'utf8');
-// A section runs from its "### N. En · He" heading to the next heading of level 2 or 3.
-const heads = [...md.matchAll(/^### (\d+)\. (.+?) · (.+?)\s*$/gm)];
-const icons = [];
-heads.forEach((h, i) => {
-  const [, num, en, he] = h;
-  const where = `${CATALOG} § ${num}. ${en}`;
-  const n = Number(num), p = parshiyot[i];
-  if (n !== i + 1) fail(where, `numbered ${n}, expected ${i + 1}`);
-  if (!p) return;
-  if (p.n !== n || p.en !== en || p.he !== he) fail(where, `heading should read "### ${p.n}. ${p.en} · ${p.he}" (data/parshiyot.json)`);
-  const start = h.index + h[0].length;
-  const next = md.slice(start).search(/^#{2,3} /m);
-  const body = md.slice(start, next < 0 ? md.length : start + next);
-  const key = keyOf(p.en);
-  if (!body.includes(`<img src="${PREVIEW_DIR}/${key}.svg"`)) fail(where, `no <img src="${PREVIEW_DIR}/${key}.svg"> preview`);
-  const blocks = [...body.matchAll(/^```html\n([^\n]*)\n```$/gm)];
-  if (blocks.length !== 1) { fail(where, `${blocks.length} one-line \`\`\`html drawing blocks, expected 1`); return; }
-  const svg = blocks[0][1].trim();
-  checkDrawing(where, svg);
-  // The prose: every paragraph recognised, all of them present, in order.
-  const paras = body.split(/\n[ \t]*\n/).map((s) => s.trim()).filter(Boolean);
-  const kinds = paras.map((t) => (PARAS.find(([, re]) => re.test(t)) || [null])[0]);
-  paras.forEach((t, j) => kinds[j] || fail(where, `unrecognized paragraph «${t.slice(0, 48).replace(/\n/g, ' ')}»` +
-    (/^\*\*(תקציר|למה)/u.test(t) ? ' — the Hebrew labels are exactly **תקציר:** and **למה האימוג׳י הזה:** (geresh U+05F3)' : '')));
-  const order = PARAS.map(([k]) => k).join(', ');
-  if (kinds.join(', ') !== order) fail(where, `paragraphs are ${kinds.map((k) => k || '?').join(', ')}; expected ${order}`);
-  const text = {};
-  for (const [k, , label] of PARAS) if (label) { const j = kinds.indexOf(k); text[k] = j < 0 ? '' : prose(where, k, paras[j], label); }
-  const ri = kinds.indexOf('reading');
-  const reading = ri < 0 ? '' : paras[ri].slice('**Reading:** '.length).trim();
-  if (reading !== p.ref.replace(/-/g, '–')) fail(where, `**Reading:** should be ${p.ref.replace(/-/g, '–')} (data/parshiyot.json)`);
-  icons.push({ n: p.n, en: p.en, key, svg, summary: { en: text['summary.en'], he: text['summary.he'] }, why: { en: text['why.en'], he: text['why.he'] } });
-});
-if (heads.length !== 54) fail(CATALOG, `${heads.length} "### N. Name · שם" sections, expected 54`);
 if (problems.length) {
   console.error(`build-parasha-icons: ${problems.length} problem(s), nothing written:\n  ` + problems.join('\n  '));
   process.exit(1);

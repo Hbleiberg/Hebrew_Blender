@@ -2,7 +2,7 @@
 
 One small emoji-style picture for each of the 54 weekly Torah portions, shown on the classroom dashboard's
 parsha line and in the Torah Trainer (the reading's header and the date lookup). Each drawing was chosen from three
-drafts, the way the suite's holiday and weather icons were. Each portion's section gives its reading, a one-sentence summary of the parasha, the emoji and
+drafts, the way the suite's holiday and weather icons were. Each portion's section gives its reading, other spellings of its name (where it has them), a one-sentence summary of the parasha, the emoji and
 what it shows, why it was chosen, the summary and the reason again in Hebrew, and its markup. The Torah Trainer's
 emoji gallery (its reading header's emoji opens it) shows each summary and reason in the page's language.
 
@@ -17,7 +17,9 @@ emoji gallery (its reading header's emoji opens it) shows each summary and reaso
   letter is drawn as a path, never set in a font.
 - Each preview image is `docs/parasha-emojis/<key>.svg`: the same markup with both palettes built in (the dark one
   under `prefers-color-scheme: dark`), so it can be opened on its own.
-- Each section's prose, in this order: `**Reading:**`, `**Summary:**`, `**Emoji: <Title>.**`, `**Why this emoji:**`,
+- Each section's prose, in this order: `**Reading:**`, `**Also spelled:**` (optional: other English spellings of the
+  name, comma-separated, which the coloring pages show for searches like Bereishit or Noah), `**Summary:**`,
+  `**Emoji: <Title>.**`, `**Why this emoji:**`,
   then the Hebrew twins of the summary and the reason, `**תקציר:**` and `**למה האימוג׳י הזה:**`. Each summary and
   reason is one plain-text sentence (curly quotes “ ”, no markup). The Hebrew is unpointed modern Hebrew, the same
   facts as the English: ה׳ for God and אלוקים where a quoted verse has Elohim, never the Name written in full,
@@ -25,7 +27,8 @@ emoji gallery (its reading header's emoji opens it) shows each summary and reaso
 - **This file is the source.** The pages load the drawings from `js/parasha-icons.js` (`ParashaIcons.html(i)` wraps
   them as above), and the Torah Trainer's emoji gallery loads the summaries and reasons, English and Hebrew, from
   `js/parasha-notes.js`; `node scripts/build-parasha-icons.mjs` builds both from this file, together with
-  the preview images. To change a drawing, edit its block here, run the script and bump `VERSION` in `sw.js` (the
+  the preview images, and `node scripts/build-parsha-pages.mjs` builds the coloring page of every parasha
+  (`parsha/<slug>.html`) from it. To change a drawing, edit its block here, run the script and bump `VERSION` in `sw.js` (the
   module is precached); never edit the module or a preview by hand. The script refuses a section whose number,
   names or drawing break these rules.
 
@@ -96,6 +99,8 @@ emoji gallery (its reading header's emoji opens it) shows each summary and reaso
 
 **Reading:** Genesis 1:1–6:8
 
+**Also spelled:** Bereishit, Breishit, Bereishis, Bereshis
+
 **Summary:** God creates the world in six days and rests on the seventh, Adam and Eve eat the forbidden fruit and
 must leave the Garden of Eden, Cain kills his brother Abel, and by the tenth generation only Noah finds favor in
 God’s eyes.
@@ -123,6 +128,8 @@ whole first week of creation.
 
 **Reading:** Genesis 6:9–11:32
 
+**Also spelled:** Noah
+
 **Summary:** Noah builds an ark that carries his family and the animals through the Flood, a dove brings back an
 olive leaf, God sets a rainbow in the clouds as a promise never to flood the world again, and the builders of the
 Tower of Babel are scattered.
@@ -149,6 +156,8 @@ the ark and ends it with hope, and it is the picture children connect most with 
 
 **Reading:** Genesis 12:1–17:27
 
+**Also spelled:** Lekh Lekha, Lech L'cha
+
 **Summary:** God tells Abram to leave his land and his father’s house and go to Canaan, promises him children as
 many as the stars, and makes a covenant with him, changing his name to Abraham.
 
@@ -172,6 +181,8 @@ show that journey away from home to a new land, the act of faith that begins the
 <img src="docs/parasha-emojis/vayera.svg" width="96" height="96" alt="A ram’s head in a green bush">
 
 **Reading:** Genesis 18:1–22:24
+
+**Also spelled:** Vayeira, Vayeirah
 
 **Summary:** Abraham welcomes three visitors who promise that Sarah will have a son, Sodom is destroyed, Isaac is
 born, and Abraham’s faith is tested at the binding of Isaac, where a ram is offered in Isaac’s place.
@@ -199,6 +210,8 @@ and its horns recall the shofar.
 
 **Reading:** Genesis 23:1–25:18
 
+**Also spelled:** Chayei Sarah, Chaye Sarah, Hayei Sarah, Chayei Sora
+
 **Summary:** After Sarah dies, Abraham buys the Cave of Machpelah in Hebron to bury her, and his servant finds
 Rebecca at the well, where her kindness to his camels shows she is the right wife for Isaac.
 
@@ -222,6 +235,8 @@ well, where Rebecca’s kindness in drawing water for the servant and all his ca
 <img src="docs/parasha-emojis/toldot.svg" width="96" height="96" alt="Two baby faces, one with red hair">
 
 **Reading:** Genesis 25:19–28:9
+
+**Also spelled:** Toldos, Toledot
 
 **Summary:** Rebecca gives birth to twins, Esau sells his birthright to Jacob for a bowl of red lentil stew, and
 Jacob, dressed in goatskins, receives the blessing Isaac meant for Esau.
@@ -248,6 +263,8 @@ blessing.
 
 **Reading:** Genesis 28:10–32:3
 
+**Also spelled:** Vayetze, Vayeitzei, Vayeitze
+
 **Summary:** Jacob dreams of a ladder reaching to heaven with angels going up and down it, works twenty years for
 Laban, marries Leah and Rachel, and his family grows to eleven sons and a daughter.
 
@@ -272,6 +289,8 @@ best-known moment, when God promises to protect Jacob on his journey away from h
 <img src="docs/parasha-emojis/vayishlach.svg" width="96" height="96" alt="Two hands shaking, with a heart above">
 
 **Reading:** Genesis 32:4–36:43
+
+**Also spelled:** Vayishlah, Vayishlakh
 
 **Summary:** Jacob sends gifts ahead to Esau, wrestles all night with an angel and is renamed Israel, the
 brothers meet in peace, and Rachel dies giving birth to Benjamin.
@@ -299,6 +318,8 @@ that peace.
 
 **Reading:** Genesis 37:1–40:23
 
+**Also spelled:** Vayeishev, Vayesheiv
+
 **Summary:** Jacob gives Joseph a coat of many colors, Joseph’s dreams make his brothers jealous enough to sell
 him, and in Egypt he lands in prison, where he explains the dreams of Pharaoh’s butler and baker.
 
@@ -322,6 +343,8 @@ to Joseph afterward, and it is the most recognizable image of his story.
 <img src="docs/parasha-emojis/miketz.svg" width="96" height="96" alt="A silver goblet in a sack of grain">
 
 **Reading:** Genesis 41:1–44:17
+
+**Also spelled:** Mikeitz, Mikketz, Mikets
 
 **Summary:** Joseph explains Pharaoh’s dreams of seven fat and seven thin cows, is put in charge of Egypt to
 store grain for the famine, and tests his brothers when they come to buy food by hiding his silver goblet in
@@ -349,6 +372,8 @@ whether his brothers have changed, and the reading stops with Benjamin about to 
 
 **Reading:** Genesis 44:18–47:27
 
+**Also spelled:** Vayiggash
+
 **Summary:** Judah offers to stay as a slave in Benjamin’s place, Joseph tells his brothers who he is, and
 Jacob’s whole family moves down to Egypt to live in the land of Goshen.
 
@@ -372,6 +397,8 @@ of the Torah’s story, from slavery to the Exodus, and pyramids with the Nile s
 <img src="docs/parasha-emojis/vayechi.svg" width="96" height="96" alt="Two crossed arms with open hands">
 
 **Reading:** Genesis 47:28–50:26
+
+**Also spelled:** Vayehi, Vaychi
 
 **Summary:** Jacob blesses Joseph’s sons Ephraim and Manasseh and each of his own twelve sons, is buried in the
 Cave of Machpelah, and Joseph makes his brothers promise to carry his bones to the Land of Israel.
@@ -400,6 +427,8 @@ is the blessing parents still give their children every Friday night, a link chi
 
 **Reading:** Exodus 1:1–6:1
 
+**Also spelled:** Shemos, Shmot
+
 **Summary:** A new Pharaoh makes the Israelites slaves, baby Moses is saved from the Nile in a basket, and God
 speaks to Moses from a burning bush and sends him to tell Pharaoh, “Let My people go.”
 
@@ -425,6 +454,8 @@ remember.
 <img src="docs/parasha-emojis/vaeira.svg" width="96" height="96" alt="Red river waves with reeds and a water jar">
 
 **Reading:** Exodus 6:2–9:35
+
+**Also spelled:** Vaera
 
 **Summary:** God promises to bring the Israelites out of Egypt, Aaron’s staff turns into a snake, and Egypt is
 struck by the first seven plagues, from the Nile turning to blood to frogs and hail.
@@ -476,6 +507,8 @@ at the Seder.
 
 **Reading:** Exodus 13:17–17:16
 
+**Also spelled:** Beshalah, B'shalach, Beshallach
+
 **Summary:** The Israelites cross the sea on dry land and sing the Song of the Sea, Miriam leads the women with
 timbrels, and in the desert God feeds the people with manna and brings water from a rock.
 
@@ -500,6 +533,8 @@ at a glance.
 <img src="docs/parasha-emojis/yitro.svg" width="96" height="96" alt="The two tablets shining on a hill">
 
 **Reading:** Exodus 18:1–20:23
+
+**Also spelled:** Yisro, Jethro
 
 **Summary:** Moses’s father-in-law Jethro advises him to appoint judges to help him, and at Mount Sinai, with
 thunder, lightning and the sound of the shofar, God gives the Ten Commandments.
@@ -527,6 +562,8 @@ set it apart from the Shavuot holiday icon, which shows two plain tablets.
 
 **Reading:** Exodus 21:1–24:18
 
+**Also spelled:** Mishpotim
+
 **Summary:** God gives laws for living together fairly, such as caring for the stranger, the widow and the orphan
 and returning a lost animal, and the people promise, “We will do and we will listen.”
 
@@ -552,6 +589,8 @@ donkey of someone you dislike, shows its idea of fairness and kindness in a pict
 
 **Reading:** Exodus 25:1–27:19
 
+**Also spelled:** Trumah, Teruma
+
 **Summary:** God asks the Israelites to bring gifts to build the Mishkan, a portable sanctuary, and describes the
 Ark with its golden cherubim, the table, the menorah and the curtains.
 
@@ -575,6 +614,8 @@ tablets of the covenant and stands in the holiest place, with the golden cherubi
 <img src="docs/parasha-emojis/tetzaveh.svg" width="96" height="96" alt="A breastplate with twelve colored stones">
 
 **Reading:** Exodus 27:20–30:10
+
+**Also spelled:** Tetzave, Tetsaveh, T'tzaveh
 
 **Summary:** God commands pure olive oil for a lamp that always burns and describes the special clothes of Aaron
 and his sons, including the breastplate with twelve stones for the twelve tribes.
@@ -602,6 +643,8 @@ serves.
 
 **Reading:** Exodus 30:11–34:35
 
+**Also spelled:** Ki Tissa, Ki Sisa
+
 **Summary:** Everyone gives a half-shekel, the people build a golden calf while Moses is on Mount Sinai, Moses
 breaks the tablets and prays for forgiveness, and he comes down with new tablets, his face shining.
 
@@ -627,6 +670,8 @@ wrong and starting again.
 
 **Reading:** Exodus 35:1–38:20
 
+**Also spelled:** Vayakheil
+
 **Summary:** Moses gathers the people to keep Shabbat and to build the Mishkan, and they bring so many gifts that
 they are told to stop, while Betzalel and the other skilled workers build it.
 
@@ -650,6 +695,8 @@ Mishkan stops for Shabbat, and Shabbat candles are the picture of Shabbat childr
 <img src="docs/parasha-emojis/pekudei.svg" width="96" height="96" alt="A cloud and a pillar of fire">
 
 **Reading:** Exodus 38:21–40:38
+
+**Also spelled:** Pekude, P'kudei
 
 **Summary:** Moses counts the gold, silver and copper given for the Mishkan, the priests’ clothes are made, the
 Mishkan is set up, and God’s cloud fills it, leading the people by day with fire by night.
@@ -678,6 +725,8 @@ journeys, a cloud by day and fire by night, so the book closes with God’s pres
 
 **Reading:** Leviticus 1:1–5:26
 
+**Also spelled:** Vayiqra
+
 **Summary:** God calls to Moses from the Mishkan and teaches the different offerings, from animals and birds to a
 simple offering of flour and oil, so that even a poor person can bring a gift to God.
 
@@ -703,6 +752,8 @@ person can bring a gift to God; Rashi teaches that God counts it as if the giver
 
 **Reading:** Leviticus 6:1–8:36
 
+**Also spelled:** Tsav
+
 **Summary:** God teaches the priests how to bring each offering and to keep the fire on the altar burning always,
 and Moses dresses and anoints Aaron and his sons for seven days to begin their service.
 
@@ -727,6 +778,8 @@ wood to keep it burning, a picture of faith kept alight day and night.
 <img src="docs/parasha-emojis/shemini.svg" width="96" height="96" alt="Fire coming down from a cloud onto an altar">
 
 **Reading:** Leviticus 9:1–11:47
+
+**Also spelled:** Shmini
 
 **Summary:** On the eighth day the Mishkan begins its service and fire from God comes down onto the altar,
 Aaron’s sons Nadav and Avihu die after offering a fire God had not commanded, and God teaches which animals, fish
@@ -754,6 +807,8 @@ down onto the altar, the sign that God accepts the people’s offerings and dwel
 
 **Reading:** Leviticus 12:1–13:59
 
+**Also spelled:** Sazria
+
 **Summary:** The Torah teaches what a mother does after a baby is born, including the brit milah on the eighth
 day, and how the kohen examines tzara’at, a skin affliction that can also appear on clothing.
 
@@ -777,6 +832,8 @@ a parasha that is mostly about tzara’at, and a picture every child understands
 <img src="docs/parasha-emojis/metzora.svg" width="96" height="96" alt="A cedar stick and a hyssop sprig tied with red thread">
 
 **Reading:** Leviticus 14:1–15:33
+
+**Also spelled:** Metsora, Metzorah
 
 **Summary:** A person healed of tzara’at is purified with cedar wood, red thread, hyssop and two birds, one of
 which is set free, and the Torah teaches what to do when tzara’at appears on the walls of a house.
@@ -803,6 +860,8 @@ purification; Rashi reads the tall cedar and the low hyssop as a lesson to set p
 
 **Reading:** Leviticus 16:1–18:30
 
+**Also spelled:** Acharei Mot, Achare Mot, Acharei Mos
+
 **Summary:** God teaches the Yom Kippur service, when the High Priest enters the Holy of Holies in white linen
 and one goat is sent into the wilderness carrying the people’s sins, and gives laws for living a holy life.
 
@@ -826,6 +885,8 @@ garments for plain white linen, which is why many people still wear white on Yom
 <img src="docs/parasha-emojis/kedoshim.svg" width="96" height="96" alt="Tall wheat left standing in one corner of a cut field">
 
 **Reading:** Leviticus 19:1–20:27
+
+**Also spelled:** K'doshim
 
 **Summary:** God tells the people, “You shall be holy,” and shows how: love your neighbor as yourself, leave the
 corners of your field for the poor, do not spread gossip, honor the elderly and be honest in business.
@@ -877,6 +938,8 @@ for Sukkot itself.
 
 **Reading:** Leviticus 25:1–26:2
 
+**Also spelled:** B'har
+
 **Summary:** Every seventh year the land rests, in the fiftieth year, the Jubilee, the shofar proclaims freedom
 throughout the land, and the Torah commands helping a neighbor who becomes poor.
 
@@ -901,6 +964,8 @@ shemitah.
 <img src="docs/parasha-emojis/bechukotai.svg" width="96" height="96" alt="A bunch of grapes with ears of wheat">
 
 **Reading:** Leviticus 26:3–27:34
+
+**Also spelled:** Bechukosai, B'chukotai, Bechukkotai
 
 **Summary:** God promises rain in its season, plentiful harvests and peace if the people follow the commandments,
 warns of what will happen if they do not, and Leviticus ends with the laws of gifts dedicated to God.
@@ -928,6 +993,8 @@ into the next, and grapes with wheat show that plenty, closing Leviticus on a no
 
 **Reading:** Numbers 1:1–4:20
 
+**Also spelled:** Bemidbar, B'midbar
+
 **Summary:** In the wilderness of Sinai Moses counts the Israelites, each tribe camps around the Mishkan under
 its own banner, and the Levites are given the work of carrying the Mishkan.
 
@@ -953,6 +1020,8 @@ wilderness, a place that belongs to no one, so that it would belong to everyone.
 <img src="docs/parasha-emojis/nasso.svg" width="96" height="96" alt="Two hands raised in the Priestly Blessing">
 
 **Reading:** Numbers 4:21–7:89
+
+**Also spelled:** Naso
 
 **Summary:** The Levite families receive their tasks, the Torah teaches about the nazir who gives up wine, the
 kohanim are given the Priestly Blessing, and the twelve tribal leaders bring the same gifts to dedicate the
@@ -981,6 +1050,8 @@ see and hear.
 
 **Reading:** Numbers 8:1–12:16
 
+**Also spelled:** Behaalotecha, B'haalot'cha, Behaaloscha
+
 **Summary:** Aaron lights the menorah, the Israelites leave Sinai following the cloud and the call of silver
 trumpets, the people complain about the manna and receive quail, and Moses prays for his sister Miriam to be
 healed.
@@ -1005,6 +1076,8 @@ meat instead of manna, and the round little bird makes that story friendly and e
 <img src="docs/parasha-emojis/shlach.svg" width="96" height="96" alt="A jug of milk beside a honeycomb">
 
 **Reading:** Numbers 13:1–15:41
+
+**Also spelled:** Shelach, Shelach Lecha, Sh'lach Lecha
 
 **Summary:** Moses sends twelve spies into Canaan, they return with a giant cluster of grapes, ten of them
 frighten the people, and the Israelites must wander forty years; the parasha ends with the mitzvah of tzitzit.
@@ -1031,6 +1104,8 @@ the Rosh Hashanah apple and honey.
 
 **Reading:** Numbers 16:1–18:32
 
+**Also spelled:** Korah
+
 **Summary:** Korach leads a rebellion against Moses and Aaron, the earth opens and swallows the rebels, and
 Aaron’s staff blossoms overnight with flowers and almonds to show that God chose him.
 
@@ -1054,6 +1129,8 @@ that God chose Moses and Aaron, and a calm crack in the earth tells it without f
 <img src="docs/parasha-emojis/chukat.svg" width="96" height="96" alt="Water pouring from a rock, with a staff beside it">
 
 **Reading:** Numbers 19:1–22:1
+
+**Also spelled:** Chukas, Hukkat
 
 **Summary:** The Torah teaches the law of the red heifer, Miriam dies and the water runs out, Moses strikes the
 rock instead of speaking to it, Aaron dies, and a copper snake on a pole heals people bitten by snakes.
@@ -1104,6 +1181,8 @@ open the Mah Tovu prayer said on entering a synagogue, so the row of tents ties 
 
 **Reading:** Numbers 25:10–30:1
 
+**Also spelled:** Pinehas, Pinhas
+
 **Summary:** Pinchas is given God’s covenant of peace, the five daughters of Tzelofchad win the right to inherit
 their father’s land, Joshua is chosen to lead after Moses, and the offerings for each holiday are listed.
 
@@ -1128,6 +1207,8 @@ staff passed from hand to hand shows that handover and Moses’ care for the peo
 <img src="docs/parasha-emojis/matot.svg" width="96" height="96" alt="A silver pot of water over a small fire, with sparkles">
 
 **Reading:** Numbers 30:2–32:42
+
+**Also spelled:** Mattot, Matos
 
 **Summary:** The Torah teaches that a promise must be kept and that metal vessels are made pure with fire and
 water, and the tribes of Reuben and Gad ask to settle east of the Jordan with their flocks, promising to fight
@@ -1154,6 +1235,8 @@ of dipping new dishes in a mikveh, things children see at home, especially befor
 <img src="docs/parasha-emojis/masei.svg" width="96" height="96" alt="A map with a dotted route to a tent">
 
 **Reading:** Numbers 33:1–36:13
+
+**Also spelled:** Maasei
 
 **Summary:** The Torah lists all forty-two stops on the Israelites’ journey through the wilderness, sets the
 borders of the Land of Israel, and sets aside cities of refuge where someone who caused a death by accident could
@@ -1182,6 +1265,8 @@ route to a tent shows the whole forty-year journey that closes the book of Numbe
 
 **Reading:** Deuteronomy 1:1–3:22
 
+**Also spelled:** D'varim
+
 **Summary:** On the plains of Moab, Moses begins his farewell speeches, retelling the forty years in the
 wilderness, from appointing judges to the sin of the spies and the victory over the giant king Og, as the people
 prepare to enter the land.
@@ -1209,6 +1294,8 @@ the whole book.
 
 **Reading:** Deuteronomy 3:23–7:11
 
+**Also spelled:** Vaeschanan
+
 **Summary:** Moses pleads to enter the land, repeats the Ten Commandments, and teaches the Shema, with the
 mitzvot of loving God, teaching your children, tefillin and the mezuzah.
 
@@ -1232,6 +1319,8 @@ mezuzah, so the mezuzah children touch at the doorway carries the parasha into e
 <img src="docs/parasha-emojis/eikev.svg" width="96" height="96" alt="A basket of the seven species">
 
 **Reading:** Deuteronomy 7:12–11:25
+
+**Also spelled:** Ekev
 
 **Summary:** Moses promises blessings if the people keep the mitzvot, praises the land of the seven species,
 teaches the blessing after meals, and recalls the golden calf and the second tablets.
@@ -1259,6 +1348,8 @@ of the land.
 
 **Reading:** Deuteronomy 11:26–16:17
 
+**Also spelled:** Re'e
+
 **Summary:** Moses sets before the people a blessing and a curse, and teaches the laws of kosher food, giving
 tzedakah with an open hand, and celebrating Pesach, Shavuot and Sukkot.
 
@@ -1282,6 +1373,8 @@ tzedakah, and a coin dropping into a tzedakah box is a mitzvah children practice
 <img src="docs/parasha-emojis/shoftim.svg" width="96" height="96" alt="A judge’s gavel">
 
 **Reading:** Deuteronomy 16:18–21:9
+
+**Also spelled:** Shofetim
 
 **Summary:** The people must appoint fair judges and pursue justice, the rules for a king, a prophet and the
 cities of refuge are given, and even in war the fruit trees must not be cut down.
@@ -1307,6 +1400,8 @@ the gavel says “justice” at a glance while staying apart from the Yom Kippur
 
 **Reading:** Deuteronomy 21:10–25:19
 
+**Also spelled:** Ki Tetzei, Ki Tetze, Ki Seitzei, Ki Teitze
+
 **Summary:** Ki Teitzei holds more mitzvot than any other parasha, from returning lost things and sending away
 the mother bird to building a railing on your roof and paying workers on time.
 
@@ -1330,6 +1425,8 @@ one that children can picture right away: taking care of other people’s safety
 <img src="docs/parasha-emojis/kitavo.svg" width="96" height="96" alt="A basket of first fruits with a flower garland">
 
 **Reading:** Deuteronomy 26:1–29:8
+
+**Also spelled:** Ki Savo
 
 **Summary:** Farmers bring their first fruits to the Temple with a declaration of thanks, the Torah is to be
 written on stones after crossing the Jordan, and Moses describes the blessings and curses that follow the
@@ -1357,6 +1454,8 @@ words of thanks, a picture of gratitude that children recreate with baskets of f
 
 **Reading:** Deuteronomy 29:9–30:20
 
+**Also spelled:** Nitsavim
+
 **Summary:** The whole people stands together to enter God’s covenant, Moses promises that anyone can return to
 God, teaches that the Torah is “not in heaven” but close to us, and urges, “Choose life.”
 
@@ -1380,6 +1479,8 @@ so the path that turns back home shows teshuvah, the theme of the season.
 <img src="docs/parasha-emojis/vayeilech.svg" width="96" height="96" alt="A quill, an inkwell and a parchment">
 
 **Reading:** Deuteronomy 31:1–31:30
+
+**Also spelled:** Vayelech
 
 **Summary:** At 120 years old, Moses tells Joshua and the people to be strong and brave, writes down the Torah,
 and commands that it be read to the whole people every seven years.
@@ -1430,6 +1531,8 @@ layout, and music notes show at a glance that this parasha is a song.
 <img src="docs/parasha-emojis/vzothaberachah.svg" width="96" height="96" alt="A Simchat Torah flag with a little Torah scroll">
 
 **Reading:** Deuteronomy 33:1–34:12
+
+**Also spelled:** Vezot Haberakhah, V'Zot HaBrachah, Zot HaBerachah, Vezot Habracha
 
 **Summary:** Moses blesses each of the tribes, climbs Mount Nebo to see the whole land, and dies there; this last
 parasha is read on Simchat Torah, when the Torah ends and begins again.
