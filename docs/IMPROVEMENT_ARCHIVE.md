@@ -94512,3 +94512,23 @@ _(prior)_ **Next session (S557):** **PR `claude/adoring-noether-q8qk1e` (S554–
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 - H teacher walkthrough / paper-cuts (one tool): 2026-10-26 (**S557 — trope (5th: S87 → S140 → S228 → S367 → S557): 12 lessons by real input × EN light 1280 / HE dark 800 (tour, families, High Holidays, key/voice/names/sing-back, `?melody=`, the Trainer link, a drill + review, Sephardi + size, a device move, resets, the tour from every tab) + the student cell (1366 windowed, 1024 fullscreen). FOUND 4, FIXED 1 (+2 gate 2, 1 seed), 1 refuted. H-next: fontmaker (S380), dashboard (S395).**)
+
+_(prior)_ **Next session (S558):** **PR `claude/adoring-noether-q8qk1e` (S554–S557, #368): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1099**, FM **5.59**, corpus ?v=7. ⚑ drift: main=2cc90bb sw=v1099 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest by the rule: M's trope (S376), H's fontmaker (S380), C's flash (S381), P's fontmaker (S382); A (S530), E (S531), L (S532) are 27 sessions old and the 32-commit outside-loop delta (sw v1080 → v1095) is unaudited — A or B first is defensible; `parsha/` is a page kind the Surfaces list does not name. ⚑ Keep-alive #42–#44 green. ⚑ Seeds: 51. ⚑ NEW `tour-step-in-a-hidden-view`: the Letter Learner open (P3); the six per-file tours unprobed. ⚑ 27 DRAFT rows: recipe or retirement at the next A (`m554/`, `n555/`, `m556/`, `h557/common.mjs` with its 206 audio stub are port candidates; traps 352, 356–361). ⚑ Queues: dictionary 3 P4s, name_tags 5, FM 2. ⚑ The `.ivrit` ask overlay and the account modals have no print rule (suite P4). ⚑ Maintainer: `08b8611`; O's permission rule; CI for `closeout.mjs --static`; translit second source; sw.js `no-store`; 14 fonts; torah screen reader; the locale's size and the Resources fonts' precache (Awaiting); gates 2–4 incl. the vowel palette's gold (S556) and the trope link that resets the Trainer's reading (S557); the S546 P3.
+
+
+<!-- archived by compact-ledger at the S559 boundary, 2026-10-26 -->
+## Compaction (S559, 2026-10-26) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-23 | (S553 close-out) | branch/deploy note | **S553 = V (first run, suite): FOUND 1, FIXED 1 (+1 Awaiting); then the two queued Name Tags P3s (the sliders' floor, the status lines' tree).** Branch `claude/loop-s549-nametags-d` (PR #362 continued); drift: `main` moved one web-UI commit (the empty `Total Torah Files`, Awaiting). No sw bump (sw.js itself and the unlisted Name Tags …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-23 | `2357424` | sw.js, scripts/loop/probes/S553-sw-precache-revalidates.mjs | (S553) **The install revalidates every precached asset** (`cache:'no-cache'`: a bump within GitHub Pages' max-age=600 of a visit precached the previous deploy's copies). | Real worker, in-process server sending max-age=600: the old install asked the server for 1 file (sw.js), 3/3 stale → 40 files, 3/3 …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-23 | `abb81be` | name_tags.html | (S553) **The five size sliders and the fold button reach the 24px floor** (`height:24px`, the LL rule; `min-height:24px`; pattern `sub-floor touch target`). | 4 cells vs HEAD: 16 → 24 ×5, 23.5 → 24; the under-24 census 32 → 26 at 1280, 30 → 24 at 800; real clicks on each slider's top and bottom rows move its value; plant fired; 0 errors
+
+- [x] 2026-10-23 | `2ba4ff9` | name_tags.html | (S553) **The status lines are live regions before their first message** (`:empty{position:absolute;margin:0}` on `.nt-note` and `#ntFontMissing`, no `hidden`; patterns `live-region-display-none-while-empty` ×4 + `live-region-shown-with-its-text`). | CDP in 4 cells vs HEAD: ignored (notRendered) → `status` on the list, print and font notes and on the …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- M aesthetics & visual design (one surface): 2026-10-26 (**S558 — 31st M, trope (3rd: S245 → S376 → S558): 136 full-page shots (17 views × EN/HE × light/dark × 1280/800), a census of ~24,800 text nodes, 967 real hovers × 2 themes, 1,386 keyboard focus rings, 2,362 dark fills, live regions by CDP × 9 states, the header gate 1px, RTL sentences, row heights; every plant fired. FOUND 4, FIXED 2 (+1 gate 2, 1 P4). M-next: torah (S422), generator (S436).**)

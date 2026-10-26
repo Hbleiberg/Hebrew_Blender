@@ -8,10 +8,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P3 (**NEW S557 H — gate 2, the Trainer's deep-link contract**) | trope_tutor.html → torah_trainer.html | **A Learn card's "See it in the parsha →" replaces the Trainer's saved reading**: `?parsha=` saves the parsha with `scope:'parsha-full'` and drops a holiday, so a student on aliyah 3 of Ki Tavo or on Rosh Hashanah day 1 reopens the Trainer on Bereshit (both measured, 2 cells); a …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [ ] P3 (**NEW S557 — pattern `tour-step-in-a-hidden-view`**) | letter_learner.html | **With the options sidebar hidden the tour shows 4 of its 6 steps** (Options and Your account skipped; EN 1280, HE 800): an `llTourStart()` that opens the sidebar first, as `ntTourStart` and `tuTourStart` do. | found S557
-
 - [ ] P3 (**NEW S512 H — gate 2**) | hebrew_blend_generator.html | **Nothing says a preset, the remembered setup or an `.ivrit` file made under "Imported List" keeps no words** (memory-only; *Save as Word List* exists for this): the reopen shows an empty pool + the "No words match" note. A share link does carry them. | found S512
 
 - [ ] P3 (**NEW S492 N — needs the tour-engine extraction, UX rule 1**) | 7 tools' tour engines | **A tour does not follow a rotation**: `resize` re-places the card but never scrolls its target back; 4 of 7 dictionary steps strand it off-screen (findings S492). | found S492
@@ -26,9 +22,15 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**S410 D; S480 re-measured; `content-visibility` reverted**) | Hebrew_Font_Maker.html | **The Spacing tab rebuilds all kerning rows on each show, pair click, add and delete**: 2,000 pairs 213–251ms @1×, 1.0–1.2s @4×. Next: a pair click rebuilds the editor only (findings S480). | found S410
 
+- [ ] P3 (**NEW S557 H — gate 2, the Trainer's deep-link contract**) | trope_tutor.html → torah_trainer.html | **A Learn card's "See it in the parsha →" replaces the Trainer's saved reading**: `?parsha=` saves the parsha with `scope:'parsha-full'` and drops a holiday, so a student on aliyah 3 of Ki Tavo or on Rosh Hashanah day 1 reopens the Trainer on Bereshit (both measured, 2 cells); a …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [ ] P3 (**NEW 2026-09-26**) | trope_tutor.html (trope_index.json) | **8 Learn example clips sit where PocketTorah's taps slip by a word** (`build-trope-phrases.mjs` TIMING_SLIPS), so each likely plays a neighbouring word; the index builder could skip those verses. **S454: not small** (findings S454). | found 2026-09-26
 
 - [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
+
+- [ ] P4 (**NEW S558 M — the Trope Tutor at the cap**) | trope_tutor.html | **The review list's "Study →" button wraps its label** where a mark's name is long: Yerach Ben Yomo at every width (30 → 34px, EN and HE), 14–15 of the 26 marks at 390px — the name takes the row's slack and the button shrinks; `flex:none; white-space:nowrap` on the row's `.btn-xs`. | found S558
+
+- [ ] P4 (**NEW S558 M — gate 2, copy**) | trope_tutor.html | **The Phrases chips write the clause names in sentence case ("Sof pasuk clause", "Zakef katon clause") where the Learn chips, the drill grid and the printed chart's legend use title case ("Sof Pasuk clause")**: one casing for a mark's name across the page. | found S558
 
 - [ ] P4 (**NEW S557 H — gate 2, copy**) | trope_tutor.html | **Under the High Holiday, Haftarah and megillah melodies the Learn examples and the Drill's Hear and Melody questions still sound PocketTorah's year-round reading**; only the Phrases examples are named (the HH note), the drill start says nothing. | found S557
 
@@ -53,8 +55,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S549 D**) | name_tags.html | **A keyboard move (↑/↓) rebuilds the whole table and every sheet per press** (three presses on 200 students: 3 table rebuilds + 3 renders, 425 ms at 1× before `2499371`, 227 after) — swap the two rows and renumber instead. | found S549
 
 - [ ] P4 (**NEW S549 D**) | name_tags.html | **A structural edit rebuilds the 200-row table** (30 ms of script + the layout, ~55–75 ms at 1×, ~300 at 4×: the first key in the new row, Remove, Undo, a translit mode, the extra toggle, a list switch, a paste) — its three icon buttons are parsed from `innerHTML` 600 times; a template clone or an in-place row would do. | found S549
-
-- [ ] P4 (**NEW S548 C**) | name_tags.html | **Escape closes the Rename row but not the Paste or Dashboard rows** (only `#ntRenameInput` has the keydown; each row's Cancel works). | found S548
 
 - [ ] P4 (**NEW S548 C**) | name_tags.html | **After a keyboard Remove, the Undo sits behind the focus**: the note is before the table, so from the 12th row Undo is 64 Shift+Tabs back (the live region does announce it). | found S548
 
@@ -338,6 +338,16 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-26 | (S558 close-out) | branch/deploy note | **S558 = M on the Trope Tutor (3rd: S245 → S376 → S558): FOUND 4, FIXED 2 (+1 gate-2 candidate, 1 P4 at the cap; 5 settled) + the Letter Learner's tour (`tour-step-in-a-hidden-view`'s last open carrier) and Name Tags' Escape. Branch `claude/adoring-noether-q8qk1e`, PR #368 (S554–S558), sw v1100 — deploy on merge.** | closeout.mjs clean
+
+- [x] 2026-10-26 | `ac68c64` | name_tags.html | (S558) **Escape closes the Paste and Dashboard rows, as it does Rename** (each row's keydown runs its Cancel; a key the ask dialog or the tour handled is left alone; the S548 C candidate). | 8 cells, HEAD the control: 4 controls × 2 rows close with the focus on the opener (HEAD stays open); text kept; tour Escape ends the tour only; store byte-equal.
+
+- [x] 2026-10-26 | `0d6cacb` | letter_learner.html, shared-components.md | (S558) **The Tour shows every step with the options sidebar hidden** (`llTourStart()` brings the sidebar out first; pattern `tour-step-in-a-hidden-view`, the S557 candidate). | 8 cells × Block/Vowels × sidebar shown/hidden, HEAD the control: hidden 6 / 5 steps (HEAD 4 / 3); store byte-equal; engine sha-identical ×3.
+
+- [x] 2026-10-26 | `3e5c6b2` | trope_tutor.html | (S558) **"Drill again" no longer sits flush under the review box** (`.tu-review` bottom margin 4 → 14px; the start screen's collapses into the grid's 14). | 8 cells, HEAD the control: results 4 → 14px, the start screen 14 → 14 with the box shown.
+
+- [x] 2026-10-26 | `1feea8e` | trope_tutor.html, torah_trainer.html, sw.js | (S558) **The Hebrew font cards show their hover in dark** (`body.dark .font-opt:hover{border-color:var(--gold)}`, the generator's and dictionary's twin; pattern `dark-base-rule-outranks-variant`). | Real mouse on 16 cards × 8 cells × 2 pages, HEAD the control: dark 16/16 (HEAD 0/16), light 16/16 both.
+
 - [x] 2026-10-26 | (S557 close-out) | branch/deploy note | **S557 = H on the Trope Tutor (5th: S87 → S140 → S228 → S367 → S557): FOUND 4, FIXED 1 (+2 gate-2 candidates, 1 seed; 1 refuted); NEW pattern `tour-step-in-a-hidden-view` (the Letter Learner's carrier logged); + `dark-hover-resolves-to-the-rest-colour` un-retired with both open carriers fixed (FM, dictionary) and the dictionary's navy …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-10-26 | `488d4a7` | hebrew_dictionary.html | (S557) **The length badge and the emoji category tag keep their chip in dark** (`body.dark .b-len, body.dark .ec-tag.cat{background:#2a4070}`; pattern `dark-navy-fill-matches-its-ground`, the S556 candidate). | 8 cells vs HEAD, 100 + 100 chips: dark chip vs card 1.03 → 1.51:1, the label ≥ 7.3; light 14.81 unchanged; dark print still …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -372,17 +382,11 @@ _(none)_
 
 - [x] 2026-10-26 | (outside the loop) | repo root | (S554) **The empty `Total Torah Files` is gone from `main`** (S553's Awaiting item; undone outside the loop before 2cc90bb). | `git ls-tree origin/main` at 2cc90bb: absent
 
-- [x] 2026-10-23 | (S553 close-out) | branch/deploy note | **S553 = V (first run, suite): FOUND 1, FIXED 1 (+1 Awaiting); then the two queued Name Tags P3s (the sliders' floor, the status lines' tree).** Branch `claude/loop-s549-nametags-d` (PR #362 continued); drift: `main` moved one web-UI commit (the empty `Total Torah Files`, Awaiting). No sw bump (sw.js itself and the unlisted Name Tags …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-10-23 | `2357424` | sw.js, scripts/loop/probes/S553-sw-precache-revalidates.mjs | (S553) **The install revalidates every precached asset** (`cache:'no-cache'`: a bump within GitHub Pages' max-age=600 of a visit precached the previous deploy's copies). | Real worker, in-process server sending max-age=600: the old install asked the server for 1 file (sw.js), 3/3 stale → 40 files, 3/3 …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-10-23 | `abb81be` | name_tags.html | (S553) **The five size sliders and the fold button reach the 24px floor** (`height:24px`, the LL rule; `min-height:24px`; pattern `sub-floor touch target`). | 4 cells vs HEAD: 16 → 24 ×5, 23.5 → 24; the under-24 census 32 → 26 at 1280, 30 → 24 at 800; real clicks on each slider's top and bottom rows move its value; plant fired; 0 errors
-
-- [x] 2026-10-23 | `2ba4ff9` | name_tags.html | (S553) **The status lines are live regions before their first message** (`:empty{position:absolute;margin:0}` on `.nt-note` and `#ntFontMissing`, no `hidden`; patterns `live-region-display-none-while-empty` ×4 + `live-region-shown-with-its-text`). | CDP in 4 cells vs HEAD: ignored (notRendered) → `status` on the list, print and font notes and on the …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-26 | **S558** | iters: 5 | tools: trope ×2, torah, letter_learner, name_tags, shared-components.md, sw | patterns fixed: dark-base-rule ×1 (2 carriers), tour-step-in-a-hidden-view ×1 | pass run: M (trope, 3rd) | SW: v1099→v1100
 
 - 2026-10-26 | **S557** | iters: 5 | tools: trope, FM, dictionary ×2, shared-components.md, sw | patterns fixed: tour-step-in-a-hidden-view (NEW) ×1, dark-hover ×2, dark-navy-fill ×1 | pass run: H (trope, 5th) | SW: v1098→v1099
 
@@ -416,13 +420,13 @@ _(none)_
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S557 (2026-10-26):** sw.js, trope, FM, dictionary, shared-components.md, loop-findings, loop-patterns S557 · flash S556 · name_tags S555 · locales, generator, privacy, scripts/loop S554 · name-tags.md, ops.md, loop-passes S553 · i18n.md, index, dashboard S552 · parsha_emojis S550 · letter_learner, resources, contact S549 · torah S545 · skill, ledger scripts S544 · CSV S542 · i18n.js S541 · 5 toast pages S537 · saves S536 · scripts S535 · README, sitemap S532 · account, terms, 404 S530 · corpus S524 · pwa S472.
+- **Snapshot S558 (2026-10-26):** sw.js, trope, torah, letter_learner, name_tags, shared-components.md, loop-findings, loop-patterns S558 · FM, dictionary S557 · flash S556 · locales, generator, privacy, scripts/loop S554 · name-tags.md, ops.md, loop-passes S553 · i18n.md, index, dashboard S552 · parsha_emojis S550 · resources, contact S549 · skill, ledger scripts S544 · CSV S542 · i18n.js S541 · 5 toast pages S537 · saves S536 · scripts S535 · README, sitemap S532 · account, terms, 404 S530 · corpus S524 · pwa S472.
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
-- `tour-step-in-a-hidden-view` | ACTIVE | owner A | det: recipe | last S557 | streak 0
+- `tour-step-in-a-hidden-view` | ACTIVE | owner A | det: recipe | last S558 | streak 0
 
-- `dark-hover-resolves-to-the-rest-colour` | ACTIVE | owner A | det: recipe | last S557 | streak 0
+- `dark-hover-resolves-to-the-rest-colour` | ACTIVE | owner A | det: recipe | last S558 | streak 1
 
 - `latin-sentence-boundary-in-hebrew-prose` | ACTIVE | owner M | det: scripts/loop/detect-latin-sentence-boundary-in-hebrew-prose.mjs | last S554 | streak 0
 
@@ -474,7 +478,7 @@ _(none)_
 
 - `hidden-input-anchored-outside-its-scroller` | ACTIVE | owner C | det: recipe | last S499 | streak 0
 
-- `hebrew-faux-italic` | ACTIVE | owner M | det: recipe | last S556 | streak 3
+- `hebrew-faux-italic` | ACTIVE | owner M | det: recipe | last S558 | streak 4
 
 - `fixed-toast-duration-shorter-than-its-text` | ACTIVE | owner F | det: recipe | last S487 | streak 0
 
@@ -492,7 +496,7 @@ _(none)_
 
 - `placeholder-keeps-the-browser-gray` | ACTIVE | owner F | det: recipe | last S470 | streak 0
 
-- `header-wrap-gate-below-its-ceiling` | ACTIVE | owner M | det: recipe | last S556 | streak 3
+- `header-wrap-gate-below-its-ceiling` | ACTIVE | owner M | det: recipe | last S558 | streak 4
 
 - `latin-tracking-on-hebrew-labels` | ACTIVE | owner H | det: recipe | last S551 | streak 1
 
@@ -518,7 +522,7 @@ _(none)_
 
 - `cdn-library-parser-blocking-for-one-action` | ACTIVE | owner D | det: recipe | last S452 | streak 0
 
-- `dark-navy-fill-matches-its-ground` | ACTIVE | owner M | det: recipe | last S557 | streak 0
+- `dark-navy-fill-matches-its-ground` | ACTIVE | owner M | det: recipe | last S558 | streak 1
 
 - `ring-below-3-on-light` | ACTIVE | owner F | det: recipe | last S443 | streak 0
 
@@ -560,9 +564,9 @@ _(none)_
 
 - `settings-lost-across-a-load` | ACTIVE | owner H | det: recipe | last S551 | streak 1
 
-- `live-region-display-none-while-empty` | ACTIVE | owner M | det: recipe | last S556 | streak 0
+- `live-region-display-none-while-empty` | ACTIVE | owner M | det: recipe | last S558 | streak 1
 
-- `dark-base-rule-outranks-variant` | ACTIVE | owner M | det: recipe | last S556 | streak 1
+- `dark-base-rule-outranks-variant` | ACTIVE | owner M | det: recipe | last S558 | streak 0
 
 - `aria-disabled-lock-no-handler-checks` | ACTIVE | owner P | det: recipe | last S407 | streak 0
 
@@ -638,7 +642,7 @@ _(none)_
 
 - `dark-print-shadow-slab` | DRAFT | owner A | det: none | last S385 | streak 0
 
-- `pinned-english-prose-in-rtl-paragraph` | ACTIVE | owner M | det: recipe | last S556 | streak 3
+- `pinned-english-prose-in-rtl-paragraph` | ACTIVE | owner M | det: recipe | last S558 | streak 4
 
 - `fixed-width-third-party-embed-inflates-phone-layout` | ACTIVE | owner N | det: recipe | last S276 | streak 0 | hits 2
 
@@ -680,7 +684,7 @@ _(none)_
 
 - `dark-override-outranks-hover` | ACTIVE | owner A | det: recipe | last S357 | streak 1 | hits 0
 
-- `contrast-below-AA-on-a-tinted-or-coloured-plate` | ACTIVE | owner M | det: recipe | last S556 | streak 0
+- `contrast-below-AA-on-a-tinted-or-coloured-plate` | ACTIVE | owner M | det: recipe | last S558 | streak 1
 
 - `async-store-backed-choice-clobbered-by-a-sync-fallback` | ACTIVE | owner A | det: recipe | last S226 | streak 1
 
@@ -762,7 +766,7 @@ _(none)_
 
 - N mobile & touch-device (one surface): 2026-10-26 (**S555 — 30th N, `flash_cards.html` (3rd: S244 → S361 → S555): 16 cells (SE 320, i13 390 + landscape, Pixel 7 412 × EN/HE × light/dark) × 16 views by real taps (the sheet menu, listening round, save-deck row and backup dialog new to N), the iOS hint forced on SE + i13, a real preset save, an orientation flip mid-drill and mid-dialog, 4× CPU; …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- M aesthetics & visual design (one surface): 2026-10-26 (**S556 — 30th M, dictionary (3rd: S237 → S362 → S556): 152 full-page shots (19 views × EN/HE × light/dark × 1280/800), 11 census arms (type, radius, contrast on ~12,000 text nodes per cell, dark plates and navy text, 2,778 + 2,762 real hovers × 2 themes, 6,558 dark fills × 4 cells, 7 live regions by CDP × 10 states, the header gate 1px …[full text: IMPROVEMENT_ARCHIVE.md]
+- M aesthetics & visual design (one surface): 2026-10-26 (**S558 — 31st M, trope (3rd: S245 → S376 → S558): 136 full-page shots (17 views × EN/HE × light/dark × 1280/800), a census of ~24,800 text nodes, 967 real hovers × 2 themes, 1,386 keyboard focus rings, 2,362 dark fills, live regions by CDP × 9 states, the header gate 1px, RTL sentences, row heights; every plant fired. FOUND 4, FIXED 2 (+1 …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - K i18n / localization audit: 2026-10-21 (**S533 — 36th K, `db80feb4..843984b3` (111 commits; parsha_emojis' first): CSV +209 (all resolve), 12 reworded, 0 removed; static 5,502 refs + 2,974 fallback sites (the html arm, lapsed since S475); blind 0/4,328 lines; 102 states by the real switcher (twins = base + 5 known); retry 4/4; 10 surfaces by real input + a switch mid-state. FOUND 4, FIXED 4.**)
 
@@ -790,4 +794,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-22 (**S542 — 40th F, loading states (first since S189): 14 surfaces held, then aborted. FOUND 7, FIXED 4. F-next: long-build progress.**)
 
-**Next session (S558):** **PR `claude/adoring-noether-q8qk1e` (S554–S557, #368): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1099**, FM **5.59**, corpus ?v=7. ⚑ drift: main=2cc90bb sw=v1099 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest by the rule: M's trope (S376), H's fontmaker (S380), C's flash (S381), P's fontmaker (S382); A (S530), E (S531), L (S532) are 27 sessions old and the 32-commit outside-loop delta (sw v1080 → v1095) is unaudited — A or B first is defensible; `parsha/` is a page kind the Surfaces list does not name. ⚑ Keep-alive #42–#44 green. ⚑ Seeds: 51. ⚑ NEW `tour-step-in-a-hidden-view`: the Letter Learner open (P3); the six per-file tours unprobed. ⚑ 27 DRAFT rows: recipe or retirement at the next A (`m554/`, `n555/`, `m556/`, `h557/common.mjs` with its 206 audio stub are port candidates; traps 352, 356–361). ⚑ Queues: dictionary 3 P4s, name_tags 5, FM 2. ⚑ The `.ivrit` ask overlay and the account modals have no print rule (suite P4). ⚑ Maintainer: `08b8611`; O's permission rule; CI for `closeout.mjs --static`; translit second source; sw.js `no-store`; 14 fonts; torah screen reader; the locale's size and the Resources fonts' precache (Awaiting); gates 2–4 incl. the vowel palette's gold (S556) and the trope link that resets the Trainer's reading (S557); the S546 P3.
+**Next session (S559):** **PR `claude/adoring-noether-q8qk1e` (S554–S558, #368): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1100**, FM **5.59**, corpus ?v=7. ⚑ drift: main=2cc90bb sw=v1100 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest by the rule: H's fontmaker (S380), C's flash (S381), P's fontmaker (S382), N's trope (S389), G's generator (S392); A (S530), E (S531), L (S532) are 28 sessions old and the 32-commit outside-loop delta (sw v1080 → v1095) is unaudited — A or B first is defensible; `parsha/` is a page kind the Surfaces list does not name. ⚑ Keep-alive #42–#44 green. ⚑ Seeds: 51. ⚑ `tour-step-in-a-hidden-view`: 0 open (the six per-file tours unprobed). ⚑ 27 DRAFT rows: recipe or retirement at the next A (`m554/`, `n555/`, `m556/`, `m558/` (ring arm, fixed compositing), `h557/common.mjs` (206 audio stub) are port candidates; traps 352, 356–364). ⚑ Queues: trope 2 P4s, dictionary 3, name_tags 4, FM 2. ⚑ The `.ivrit` ask overlay and the account modals have no print rule (suite P4). ⚑ Maintainer: `08b8611`; O's permission rule; CI for `closeout.mjs --static`; translit second source; sw.js `no-store`; 14 fonts; torah screen reader; the locale's size and the Resources fonts' precache (Awaiting); gates 2–4 incl. the vowel palette's gold (S556), the trope link that resets the Trainer's reading (S557) and the Phrases chips' casing (S558); the S546 P3.

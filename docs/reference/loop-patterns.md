@@ -20,15 +20,17 @@
 ## Active, draft and guard patterns (166; newest first, as the ledger lists them)
 
 ## `tour-step-in-a-hidden-view`
-- **Status:** ACTIVE · **Owner:** A · **Consequence:** normal · **Last:** S557 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** A · **Consequence:** normal · **Last:** S558 · **Streak:** 0 · **Detector:** recipe
+- **Record (S558):** letter_learner FIXED `0d6cacb` — `llTourStart()` brings the options sidebar out before the engine: hidden 6 / 5 steps (Block / Vowels; HEAD 4 / 3) × 8 cells, store byte-equal, focus back on Tour. Open carriers: 0 (the six per-file engines unprobed).
 - **Shape:** A tour step whose target sits in a view the page lets the user hide — another tab, a hidden sidebar, a folded section — is skipped by the shared engine (`_resolveStep` → `_tourVisible`), so the Tour pressed from that state shows fewer steps, never explains that part, and gives no sign that anything was left out.
 - **Detection:** per tour carrier, list the states the page can be in when Tour is pressed (each tab or mode, the sidebar shown or hidden, each fold, a session in progress); press Tour by a real click in each and count the steps to Done; a count below the default view's is a hit. Control: the default state, or HEAD, shows the full count.
 - **Fix shape:** the page's own Tour button opens the view before calling the engine (`ntTourStart`: the sidebar and the class list; `tuTourStart`: the Learn tab) — a view switch that saves no setting, no progress and no panel memory; the shared engine stays byte-identical.
-- **Carriers:** name_tags FIXED (`ntTourStart`, before S557); trope_tutor FIXED S557 `69bb568`; letter_learner OPEN (sidebar hidden: 4 of 6 steps). Unprobed: the six per-file engines, whose steps reveal hidden panels by design (`docs/reference/shared-components.md`).
+- **Carriers:** name_tags FIXED (`ntTourStart`, before S557); trope_tutor FIXED S557 `69bb568`; letter_learner FIXED S558 `0d6cacb` (`llTourStart`) — open 0. Unprobed: the six per-file engines, whose steps reveal hidden panels by design (`docs/reference/shared-components.md`).
 - **Record (S557):** NEW — trope from Phrases 6 of 9, from Drill or Settings 4 of 9 (8 cells, HEAD the control) → 9 from every tab, settings and progress byte-equal across the tour, a drill resuming its question; the Letter Learner 6 → 4 with its sidebar hidden (EN 1280, HE 800), candidate.
 
 ## `dark-hover-resolves-to-the-rest-colour`
-- **Status:** ACTIVE · **Owner:** A · **Consequence:** normal · **Last:** S557 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** A · **Consequence:** normal · **Last:** S558 · **Streak:** 1 · **Detector:** recipe
+- **Record (S558):** trope clean — the hover arm's fill test over 967 controls × 2 themes found no dark hover equal to its rest fill (the font cards were the base-rule shape, a border).
 - **Shape:** Shape: a `:hover` that resolves to the rest background in the OTHER theme (dark `--warm-gray` = dark `--white`).
 - **Detection:** `warm-gray` hover rules minus those with a `body.dark X:hover` twin, confirmed by a real dark hover. Fix shape: `body.dark X:hover{background:#2a3349;}`. An A2 hit un-retires.
 - **Record (ledger row at S544):** - **`dark-hover-resolves-to-the-rest-colour`**: RETIRED 2026-09-09 (S357 Pass A, clean streak 3: S330, S343, S357 — the delta's 17 new `:hover` rules all measured with feedback). Shape: a `:hover` that resolves to the rest background in the OTHER theme (dark `--warm-gray` = dark `--white`). Detection: `warm-gray` hover rules minus those with a `body.dark X:hover` twin, confirmed by a real dark hover. Fix shape: `body.dark X:hover{background:#2a3349;}`. An A2 hit un-retires.
@@ -194,7 +196,8 @@
 - **Archived full text (latest compaction copy):** - **`hidden-input-anchored-outside-its-scroller`** (NEW S499 C; dashboard's 25 drawer radios FIXED `55891185`, torah fixed outside the loop; latent: `.vh-file` ×4, its label on screen on every path measured): ACTIVE, streak 0. Detection: a `position:absolute|fixed` focusable input with a scroll container between it and its containing block (`c499/anchor.mjs`; plant: torah's `.radio-group{position:static}` → 53); runtime: Tab/Shift+Tab, the focused label inside the scroller.
 
 ## `hebrew-faux-italic`
-- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S556 · **Streak:** 3 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S558 · **Streak:** 4 · **Detector:** recipe
+- **Record (S558):** trope clean — 0 italic Hebrew text nodes in 17 views × 8 cells (~24,800 nodes; `m558/shots.mjs`).
 - **Record (S556):** dictionary clean: 0 of ~12,000 visible text nodes per cell (19 views × 8 cells) with Hebrew in a synthesized italic; an inline-italic plant fired.
 - **Record (S554):** fontmaker clean: 0 of ~15,600 visible text nodes (14 views × 8 cells) with Hebrew in a synthesized italic; an inline-italic plant fired.
 - **Record (S552):** name_tags clean: 0 of 1,253 / 1,240 visible elements with Hebrew in a synthesized italic (EN light 1280, HE dark 800; a planted `<i>` fired).
@@ -252,7 +255,8 @@
 - **Record (ledger row at S544):** - **`placeholder-keeps-the-browser-gray`** (NEW S470 `45a3073e`): ACTIVE, streak 0. Detection: `f470/ph.mjs` < 4.5:1 (plant 1.3:1).
 
 ## `header-wrap-gate-below-its-ceiling`
-- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S556 · **Streak:** 3 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S558 · **Streak:** 4 · **Detector:** recipe
+- **Record (S558):** trope clean — 1px from 1000 to 320, EN/HE × fine/coarse: no overflow; the actions wrap under the title at 746/756 (EN), 494/504 (HE); the nowrap plant overflowed 173–209 widths (`m558/gate.mjs`).
 - **Record (S556):** dictionary clean: 1 px 1000 → 320 × EN/HE × fine/coarse in the real faces — no overflow at any width and the actions never drop below the title (the header stacks by its own rule); a nowrap plant overflowed 541 → 320 (max 117px).
 - **Record (S554):** fontmaker clean: 1 px 1000 → 320 × EN/HE × fine/coarse in the real faces — no overflow at any width; the header's own `flex-wrap` drops the actions below the title at 786 (EN) / 697 (HE) and the 560 rule then shrinks the buttons; a nowrap plant overflowed 491 → 320 (max 173 px).
 - **Record (S552):** name_tags clean: 1 px 720 → 540 × EN/HE × fine/coarse in the real faces — no overflow above the gate, the first wrap at exactly 576 / 585; a nowrap plant fired in each. Read the wrap against `.htitle`'s bottom, not the `h1`'s (the centred controls dip below a two-line title from 696 down).
@@ -339,7 +343,8 @@
 - **Archived full text (latest compaction copy):** - **`cdn-library-parser-blocking-for-one-action`** (NEW S452 D; generator `82bbe313`, FM `d01a33cd`): ACTIVE, streak 0. A parser-blocking CDN `<script src>` in `<head>` for one action. Detection: `grep -n '<script[^>]*src="https\?://' *.html | grep -v ' async\| …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `dark-navy-fill-matches-its-ground`
-- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S557 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S558 · **Streak:** 1 · **Detector:** recipe
+- **Record (S558):** trope clean — 2,362 filled controls × 14 views × 4 dark cells: no navy fill on its ground (the hits are bordered dark cards and the gold-text selected segment); plant 2/2 (`m558/navy.mjs`).
 - **Record (S557):** dictionary FIXED `488d4a7` — `.b-len` and `.ec-tag.cat` take `body.dark … {background:#2a4070}`: 100 + 100 chips × 8 cells, dark chip vs card 1.03 → 1.51:1, the gold label ≥ 7.3:1, light 14.81 unchanged, print still the transparent outlined chip (its `!important` rule); open 0 on the dictionary.
 - **Record (S556):** dictionary: the length badge `.b-len` (11 per view) and the emoji card's `.ec-tag.cat` (100 per emoji view) at 1.03:1 on the dark card plate — the chip vanishes, its gold label floats (5.02:1 itself); candidate (the governor), fix `body.dark .b-len, body.dark .ec-tag.cat{background:#2a4070}`. 6,558 controls × 4 dark cells × 15 views; `.shoresh-lookup-btn` 1.15 on the page (S451's suite look) and the header's switcher / account chip 1.03 with a 1.18 edge (S552's ruling) exempt; a ground-painted `.load-more-btn` plant fired.
 - **Record (S554):** fontmaker: `.ctl-btn.primary` on the dark panels (Re-trace 1.03, Confirm placement / Add pair 1.15, Save letter & next) FIXED `7a3faf7` — `body.dark .ctl-btn.primary{background:#2a4070;border-color:#4a6aaa}` reads 1.51–1.67 with a 2.87–3.19 edge; name_tags' Merge button FIXED `24e9f73`, the rule's fifth carrier (open 0). 479 controls × 4 dark cells; the 213 readings at 1.11–1.22 are the suite's dark tiles, tabs and selects (S552's ruling); a ground-painted ghost `tbtn` plant fired.
@@ -483,7 +488,8 @@
 - **Archived full text (latest compaction copy):** - **`settings-lost-across-a-load`** (NEW S412; dictionary ×4 FIXED S482 `8d99ad93`, flash FIXED S491 `adce6574`; 0 open): ACTIVE, streak 0. A setting comes back changed after a reload. Detection (`h482/dictsave.mjs`): change each control by a real click, wait out the save, reload, require it …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `live-region-display-none-while-empty`
-- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S556 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S558 · **Streak:** 1 · **Detector:** recipe
+- **Record (S558):** trope clean — every `[role=status]`/`aria-live` region in a shown view is in the CDP tree while empty (9 states); the flagged ones sit inside hidden tab panels; plant fired (`m558/live.mjs`).
 - **Record (S556):** dictionary: 2 hits — `#wlActiveBanner` (inline `display:none` until a list loads as a filter) and `#printSizeNote` (`hidden` until a large set) notRendered while empty in 10 states by CDP, both filled and shown by JS in one task; candidate (the governor). `#exportErr` notRendered only with its collapsed panel (the S553 shape); `#resultCount`, `#a11yStatus`, `#appToast` rendered empty; a `display:none` `role=status` plant fired 10/10.
 - **Record (S554):** fontmaker clean: 13 regions × 7 views by CDP — `#statusMsg` (`:empty{padding-block:0}`) and `#nextStepHint` (refilled on every render) rendered while empty; `#nodeHint`, `#nsSel`, `#wizOsNameNote`, `#drawSelLive` notRendered only with their hidden row (the S553 shape); a `display:none` `role=status` plant fired.
 - **Record (S553):** name_tags' 4 hits FIXED `2ba4ff9` — `:empty{position:absolute;margin:0}` (the flex-gap shape: in flow an empty line still takes its panel's gap); CDP in 4 cells: notRendered → `status` on the list and print notes and on the rename note once a real message is cleared (its row `hidden` until Rename opens, it is notRendered with the row — correct); every other box unmoved.
@@ -493,7 +499,8 @@
 - **Archived full text (latest compaction copy):** - **`live-region-display-none-while-empty`** (S408; **all 4 FIXED `efbc98a` S409**; **S530 4 more FIXED `66ecdc9f`, `a530/fix1.mjs`**): ACTIVE, streak 0. Detection: `:empty{display:none}` on a `role=status`/`aria-live` line, then CDP AX on it empty (`notRendered` = hit); flex-wrap rows need `position:absolute`, not height.
 
 ## `dark-base-rule-outranks-variant`
-- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S556 · **Streak:** 1 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S558 · **Streak:** 0 · **Detector:** recipe
+- **Record (S558):** trope + torah FIXED `1feea8e` — `body.dark .font-opt{border-color:var(--border)}` outranked `.font-opt:hover`, so in dark none of the 16 Hebrew font cards moved; `body.dark .font-opt:hover{border-color:var(--gold)}` before `.active` (the generator's and dictionary's twin). Real mouse × 8 cells × 2 pages, HEAD the control: dark 0/16 → 16/16. Trope otherwise clean: 967 controls × 10 views × 2 themes (`m558/hover.mjs`; a dark tab plant fired 3/3). The dashboard's dark base rule sets only the fill, so its hover stands.
 - **Record (S556):** dictionary clean: 2,778 (EN) + 2,762 (HE) controls × 12 views hovered by the real mouse in both themes — 0 whose light hover lacks a dark twin; a planted dark base rule on `.dict-tool-btn` fired 4/4. The sibling `dark-hover-resolves-to-the-rest-colour` shape: the 787 shoresh chips and the 4 toolbar buttons hover to `--warm-gray` = dark `--white` (only the border moves) — candidate.
 - **Record (S555):** name_tags FIXED `05e585a`: `.nt-sb-tab` (the sidebar's hide / show edge tab) — `body.dark .nt-sb-tab` outranked its hover; `body.dark .nt-sb-tab:hover { background:#345090 }` (real mouse: #2a4070 → #345090; the pre-fix page unchanged, the control).
 - **Record (S554):** fontmaker clean: 392 controls × 7 views hovered by the real mouse in both themes — 0 whose light hover lacks a dark twin (the 12 `.mark-sq` tiles move their gold border in dark while the fill stays the rest colour: the `dark-hover-resolves-to-the-rest-colour` shape, a P4 candidate); the plant — a dark base rule on `.ctl-btn` (`body.dark .ctl-btn{background:#1e2535 !important}`) — fired on 6 controls; a first plant on the ghost `tbtn` was silent because that class's light hover moves no fill (a plant must mirror the detector's own test).
@@ -718,7 +725,8 @@
 - **Record (S554):** NEW — found by M's RTL-prose arm on the Font Maker's Hebrew help (5 of the 37 mixed Hebrew-and-Latin blocks across its 14 tabs); the static sweep then found 4 more in 3 other tools; all 9 FIXED, 0 open; the plant fires; the runtime arm reads 0 of 37 blocks after the fix.
 
 ## `pinned-english-prose-in-rtl-paragraph`
-- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S556 · **Streak:** 3 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S558 · **Streak:** 4 · **Detector:** recipe
+- **Record (S558):** trope clean — HE × 13 views incl. all 9 tour steps: 0; plant 1/1 (`m558/rtl.mjs`).
 - **Record (S556):** dictionary clean: 0 pinned-span hits over 120 mixed blocks × 13 HE views incl. all 7 tour steps; a pinned `<span dir=ltr>roster.csv.</span>` plant fired in the sidebar and the tour card.
 - **Record (S554):** fontmaker clean: 0 pinned-span hits over 37 mixed blocks × 14 help tabs + 9 views; the 5 period-mid-island hits are the new sibling `latin-sentence-boundary-in-hebrew-prose` (FIXED `bf895ee`); a pinned `<span dir=ltr>roster.csv.</span>` plant fired 14/14.
 - **Record (S552):** name_tags clean: the HE UI's one sentence mixing Hebrew and Latin ("… ב־roster.csv.") ends with its period at the left; a pinned `<span dir=ltr>Avery 5395.</span>` plant fired.
@@ -836,7 +844,8 @@
 - **Archived full text (latest compaction copy):** - **dark-override-outranks-hover**: ACTIVE. **Re-swept 2026-09-09 (S357 Pass A): static detector 0/14 pages; runtime 34 cells on the 8 fixed carriers, every one with real-hover feedback (light as the control) — hits 0, clean streak 1.** S354–S356: 8 carriers fixed. Detection: …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `contrast-below-AA-on-a-tinted-or-coloured-plate`
-- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S556 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S558 · **Streak:** 1 · **Detector:** recipe
+- **Record (S558):** trope clean — ~24,800 text nodes × 8 cells, 0 under AA; the one flag (`.mark-hit` 1.99:1 while an example plays) was the helper compositing two translucent tints as opaque (findings trap 362): 4.24 / 7.55:1.
 - **Record (S556):** dictionary: the bulk-selected card's transliteration 4.19:1 on the dark 10% gold tint and a filled shoresh pattern's sub-label 4.03 on its 12% tint FIXED `ef4eb37` (5% in dark → 4.61 both, the plates 1.21:1 above the grid; light unchanged); every other text node ≥ 4.5 (large ≥ 3) over ~12,000 nodes × 8 cells × 19 views; the colour-coding picker's 8 palette examples (2.99–4.28 at 17.6px) are the content itself — Awaiting, gate 3; plants 1.15 / 1.00 / 1.69 fired.
 - **Record (S554):** fontmaker clean: every visible text node ≥ 4.5:1 (large ≥ 3) over ~15,600 nodes × 112 cells; the one 1.31 reading was the probe's own `color(srgb)` parse of the gold Below chip (5.2:1 by hand); plants 1.03 / 1.00 / 1.52 fired.
 - **Record (S552):** name_tags: 1 hit — the carried row's number 3.91:1 on the gold drag tint in dark (light 5.32); every other text node ≥ 5.02 dark / 5.38 light across 13 states × 4 cells, the tags' text on the six pastels ≥ 3; plants 1.39 / 1.64 fired. Candidate (the governor).
