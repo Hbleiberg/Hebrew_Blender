@@ -840,6 +840,15 @@ body.dark .count-custom.active { background: var(--navy-deep); border-color: var
   font-weight: 700;
   letter-spacing: 0.02em;
 }
+/* pwa.js's install hint (#pwaInstallBanner: position:fixed at the bottom, z-index above everything; shown under 768px)
+   sat over this sticky bar on every phone — Print card sheet whole, the lower half of Start — and over the tour's Next on
+   the steps that place the card low; after a flip on an iPhone SE, over the Yes / No marks. The generator's rule for a
+   bar: it rides above the hint by the space pwa.js publishes while the hint shows. The Letter Learner's rule for the tour
+   and a modal: the hint steps aside while that state is open (the CSS state, so a hint built after the tour opened is
+   covered too) and is back the moment it closes; a running drill takes the same, its marks being the action there. Only
+   the teacher's ✕ dismisses the hint for good. (S555 Pass N, pattern install-banner-over-a-sheet's-bottom-controls) */
+@media (max-width: 767px) { .start-cta { bottom: var(--pwa-banner-space, 0px); } }
+body:has(#tourCard:not([hidden]), #screenCard.active) #pwaInstallBanner { visibility: hidden; }
 
 /* ============== PRESET LIST ============== */
 .preset-list { list-style: none; margin: 8px 0 0; padding: 0; }
