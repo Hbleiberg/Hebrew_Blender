@@ -787,8 +787,9 @@ first-visit pulse gated by a `hebrew<Tool>_tourSeen` flag (set once so the pulse
   whose target is hidden is skipped, and "Step X of N", Back and Done count only the steps shown now (`_tourCounter`;
   the dictionary's and the Trainer's per-file copies count by a target's presence, because their steps reveal
   hidden panels). A page whose steps point into a view that can be hidden opens it from its Tour button before the
-  engine starts, a view switch that saves nothing: `name_tags.html`'s `ntTourStart` (the sidebar and the class list)
-  and `trope_tutor.html`'s `tuTourStart` (the Learn tab, which holds five of its nine steps' targets). The other six
+  engine starts, a view switch that saves nothing: `name_tags.html`'s `ntTourStart` (the sidebar and the class list),
+  `trope_tutor.html`'s `tuTourStart` (the Learn tab, which holds five of its nine steps' targets) and
+  `letter_learner.html`'s `llTourStart` (the options sidebar, which holds its last two steps' targets). The other six
   are still **per-file engines**. Flags are
   `hebrew<Tool>_tourSeen` except Font Maker's legacy `hebrewFontMaker_tourDone`. The generator's engine is
   a copy of Font Maker's; flash cards' and the trope tutor's are copies of the generator/torah lineage
