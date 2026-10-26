@@ -937,7 +937,7 @@ body:has(#tourCard:not([hidden]), #screenCard.active) #pwaInstallBanner { visibi
    its sizes. Five set theirs inline, so their line needs !important. The language switcher is i18n.js's. */
 @media (pointer: coarse) {
   .count-custom, .preset-input, .tx-area { font-size: 16px; }
-  #numMinInput, #numMaxInput, #wordsMinInput, #wordsMaxInput, #translitStyleSelect, #newProfileNameInput { font-size: 16px !important; }   /* the profile picker's name box (inline 0.88rem = 14.08px, so !important): iOS zoomed the dialog on focus (S556; pattern text-field-under-16px-zooms-on-ios-focus) */
+  #numMinInput, #numMaxInput, #wordsMinInput, #wordsMaxInput, #translitStyleSelect, #newProfileNameInput, .share-out { font-size: 16px !important; }   /* the profile picker's name box (inline 0.88rem = 14.08px, so !important): iOS zoomed the dialog on focus (S556; pattern text-field-under-16px-zooms-on-ios-focus); .share-out the same — its 0.74rem rule sits later in the sheet, and a tap to copy the code focuses it */
 }
 
 /* ============== CARD SCREEN ============== */
