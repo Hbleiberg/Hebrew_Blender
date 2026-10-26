@@ -26,8 +26,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
 
-- [ ] P4 (**NEW S552 M — pattern `dark-navy-fill-matches-its-ground`; its four other carriers fixed `c1f42ae`**) | name_tags.html | **The restore dialog's Merge button is a bare label in dark mode** (navy on the card's #1e2535, 1.03:1): `body.dark .ivrit-ask-btn[data-act="merge"]{background:#2a4070}` plus the dark hover twin, as on the hub. | found S552
-
 - [ ] P4 (**NEW S552 M — pattern `dark-base-rule-outranks-variant`**) | name_tags.html | **The edge tab's hover is dead in dark mode**: `body.dark .nt-sb-tab` outranks `.nt-sb-tab:hover`; the LL, generator and dictionary carry `body.dark …:hover{background:#345090}`. | found S552
 
 - [ ] P4 (**NEW S552 M — pattern `contrast-below-AA-on-a-tinted-or-coloured-plate`**) | name_tags.html | **A carried row's number drops to 3.91:1 in dark** (muted #8a94a8 on the gold drag tint; light 5.32): `tr.nt-dragging .nt-num{color:var(--text)}`. | found S552
@@ -123,6 +121,10 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (S476 N — gate 4) | hebrew_blend_generator.html | **On desktop the Generate bar covers 1–3 footer FAQ rows at the page end** (phones fixed `dbf2d7a0`). | found S476
 
 - [ ] P4 (**NEW S466 D**) | js/ivrit-saves.js | **A fresh device's first signed-in load rewrites the whole sync memory once per row** (tasks 50→340 ms, settled in 47 s @4×, 410 rows) and fetches each row by its own GET (457). | found S466
+
+- [ ] P4 (**NEW S554 M — the `dark-hover-resolves-to-the-rest-colour` shape; the FM at the governor's cap**) | Hebrew_Font_Maker.html | **The nikkud preview tiles' dark hover moves only the border**: `.mark-sq:hover{background:var(--warm-gray)}` is the rest fill in dark (#1e2535), so 12 tiles show a gold edge and no fill change and the active tile (navy inset ring) hovers to nothing at all; light …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] P4 (**NEW S554 M — hierarchy; the FM at the cap**) | Hebrew_Font_Maker.html | **The Settings tab's three group headings ("Add glyphs & languages", "Input mode", "Canvas") are 13 px serif under their own items' 11 px uppercase labels**, so a group reads lighter than its members; the `.ws-side-title` uppercase treatment, or the help modal's h4 weight, would give the group its rank (screens …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S550 G — a shared-block change: the `.ivrit` engine's six carriers + the hub; pattern `fixed-surface-missing-from-the-print-hide-list`**) | the `.ivrit` engine, js/ivrit-account.js, js/ivrit-saves.js | **The Merge/Replace ask overlay (an inline-styled fixed div with no id) and the account and saves modals have no print rule**: Ctrl+P with one open prints it over every sheet …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -278,8 +280,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Awaiting the maintainer (an action or an answer only the maintainer can give; a session that resolves one moves it to Done)
 
-- [ ] P4 (**NEW S553 — drift on `main`, the maintainer's**) | `Total Torah Files` (repo root) | **An empty file named `Total Torah Files` landed on `main` from the web UI** — a folder intended? CLAUDE.md keeps the Total Torah corpus out of the repo (anything beyond a parasha runs `--out` into a gitignored folder); remove it, or say what it is for. | found S553
-
 - [ ] P4 (**NEW S553 V — precache size vs offline completeness, the maintainer's call**) | resources.html, sw.js | **The Resources page's four partner fonts (Reuben, TzviScript, its Stroke Guide, Lakhish Bold; 56 KB) are not precached**, so offline the Fonts section's specimens render in a fallback face until the page was visited online once (every other same-origin file the 17 precached pages …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S549 D — an architecture choice, the maintainer's call**) | js/i18n.js, locales/*.json | **Every page downloads the whole suite's locale**: `en.json` 610 KB raw / 166 KB gzip, `he.json` 769 / 184, for a page's own tenth of the 6,789 keys (a first visit's largest file; the SW caches it once). A per-page split or a lazily fetched second half changes the build (`build-locales.js`) …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -328,6 +328,18 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-26 | (S554 close-out) | branch/deploy note | **S554 = M on the Font Maker (3rd: S225 → S335 → S554): FOUND 5, FIXED 3 (+2 P4), NEW pattern `latin-sentence-boundary-in-hebrew-prose` with its detector; + the Name Tags Merge button (the dark-navy pattern's fifth carrier). 5 iterations.** Branch `claude/adoring-noether-q8qk1e` off `origin/main` 2cc90bb (PR #362 merged 10-23), draft PR …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-26 | `24e9f73` | name_tags.html | (S554) **The restore dialog's Merge button shows in dark mode** (the hub's two dark lines; pattern `dark-navy-fill-matches-its-ground`'s fifth carrier). | `ivritAskMode()` by real call in 8 cells (EN/HE × light/dark × 1280/800): dark fill vs the card 1.03 → 1.51:1, the label 10.17:1, the gold hover fires under the dark rule, light 14.81 unchanged; 0 …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-26 | `bf895ee` | locales/ui-strings.csv (FM help + FAQ, dictionary, generator, privacy), scripts/loop/detect-latin-sentence-boundary-in-hebrew-prose.mjs | (S554) **A Hebrew sentence ending in a Latin term no longer runs into the next one's Latin opening** (U+200F after the period at 9 sites; NEW pattern `latin-sentence-boundary-in-hebrew-prose` + its static detector). | The detector …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-26 | `7a3faf7` | Hebrew_Font_Maker.html | (S554) **The primary buttons keep a visible fill in dark mode** (`body.dark .ctl-btn.primary{background:#2a4070;border-color:#4a6aaa}`; pattern `dark-navy-fill-matches-its-ground`). | Every visible `.ctl-btn.primary` over 6 views × 8 cells: dark fill vs ground 1.03–1.15 → 1.51–1.67:1, the edge 2.87–3.19, the label 10.17:1; light 11.29–14 …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-26 | `6f51579` | Hebrew_Font_Maker.html | (S554) **The grid step, bold-every and guide position boxes follow dark mode** (outside a `label.fld` they took the UA's white plate; now `#adToolbar`'s number-input look). | Computed fill / text / border / radius of the three boxes vs a `label.fld` input in 8 cells: dark 30,37,53 / 221,228,240 / 42,51,73 / 5px = the reference's, light white …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-26 | (outside the loop) | repo root | (S554) **The empty `Total Torah Files` is gone from `main`** (S553's Awaiting item; undone outside the loop before 2cc90bb). | `git ls-tree origin/main` at 2cc90bb: absent
+
 - [x] 2026-10-23 | (S553 close-out) | branch/deploy note | **S553 = V (first run, suite): FOUND 1, FIXED 1 (+1 Awaiting); then the two queued Name Tags P3s (the sliders' floor, the status lines' tree).** Branch `claude/loop-s549-nametags-d` (PR #362 continued); drift: `main` moved one web-UI commit (the empty `Total Torah Files`, Awaiting). No sw bump (sw.js itself and the unlisted Name Tags …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-10-23 | `2357424` | sw.js, scripts/loop/probes/S553-sw-precache-revalidates.mjs | (S553) **The install revalidates every precached asset** (`cache:'no-cache'`: a bump within GitHub Pages' max-age=600 of a visit precached the previous deploy's copies). | Real worker, in-process server sending max-age=600: the old install asked the server for 1 file (sw.js), 3/3 stale → 40 files, 3/3 …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -360,19 +372,11 @@ _(none)_
 
 - [x] 2026-10-23 | `59f8e43` | name_tags.html | (S550) **The last row's bottom border prints whole** (`overflow:clip` + `overflow-clip-margin:0.02in` on the printed sheet). | 300 dpi column runs: the bottom border 1 → 7 px (rounded), 0 → 3 (thin), 7 → 13 (thick), the top's; page counts unchanged on 28 layouts; A/B vs HEAD: only that one bottom row differs; screen identical
 
-- [x] 2026-10-23 | (S549 close-out) | branch/deploy note | **S549 = D on name_tags (first): FOUND 4, FIXED 2 (+3 P4, 1 Awaiting); then the HC backplate correction on nine pages and the pattern's last five carriers.** Branch `claude/loop-s549-nametags-d`, draft PR #362; drift at start: `main` 44fc930 → ac6b96b (two commits outside the loop), sw v1076 → v1077. sw v1077 → v1078; no FM bump. …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-10-23 | `9140333` | hebrew_dictionary.html, resources.html, flash_cards.html, hebrew_blend_generator.html, index.html | (S549) **The keyboard's open tab and the Backup panel's pressed mode show in HC** (`selected-state-lost-in-forced-colors`: the last open carriers; the hub's first block, (0,3,0) past the AllTools panel's body-level style). | 4× clips under forced colours × light/dark: …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-10-23 | `37966be` | parsha_emojis, letter_learner, resources, contact, flash, generator, trope, dictionary, FM | (S549) **A selected label stays legible in HC on the nine earlier carriers** (`forced-color-adjust:none` on every filled selected rule — the S548 backplate correction). | 15 states × light/dark: the backplate's white share 20–48 % → 1.5–11 % (the planted pair 52 → 12); 36 …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-10-23 | `6ace493` | name_tags.html | (S549) **Typing into the Extra line waits for the typing pause on a long list** (`ntQueuePreviewTyping`, the cells' rule). | 200 students, "Grade 4": 7 → 1 renders, long tasks 510 → 0 ms at 1×, 3,808 → 730 at 4×; placeholders ×7, the stored line and the preview equal; 24 students per key as before
-
-- [x] 2026-10-23 | `2499371` | name_tags.html | (S549) **A sheet off-screen in the preview skips its layout and paint** (`content-visibility:auto` on `.nt-frame`, `visible` in print; pattern `offscreen-sheets-laid-out-on-every-rebuild`). | medians of 3 alternated fresh loads, 200 students: a 20-move drag 646 → 0 ms of long tasks at 1×, 7,000 → 3,035 at 4× (max 683 → 212); per page 1 569 → 211; …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-26 | **S554** | iters: 5 | tools: FM ×2, locales (FM help + FAQ, dictionary, generator, privacy), name_tags, scripts/loop, sw | patterns fixed: dark-navy-fill ×2, latin-sentence-boundary (NEW) ×1 | pass run: M (fontmaker, 3rd) | SW: v1095→v1096
 
 - 2026-10-23 | **S553** | iters: 4 | tools: sw, name_tags ×2, scripts/loop | patterns fixed: sub-floor ×1, live-region-display-none ×1 (+ shown-with-its-text ×1) | pass run: V (first) | SW: v1080→v1080
 
@@ -398,7 +402,7 @@ _(none)_
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S553 (2026-10-23):** sw.js, name_tags, name-tags.md, ops.md, scripts/loop, loop-findings, loop-patterns, loop-passes S553 · i18n.md, index, generator, dashboard, flash S552 · parsha_emojis, shared-components.md S550 · letter_learner, resources, contact, trope, dictionary, FM S549 · torah S545 · skill, ledger scripts S544 · CSV S542 · i18n.js S541 · 5 toast pages S537 · saves S536 · scripts S535 · README, sitemap S532 · account, privacy, terms, 404 S530 · corpus S524 · pwa S472.
+- **Snapshot S554 (2026-10-26):** sw.js, FM, locales, name_tags, dictionary, generator, privacy, scripts/loop, loop-findings, loop-patterns S554 · name-tags.md, ops.md, loop-passes S553 · i18n.md, index, dashboard, flash S552 · parsha_emojis, shared-components.md S550 · letter_learner, resources, contact, trope S549 · torah S545 · skill, ledger scripts S544 · CSV S542 · i18n.js S541 · 5 toast pages S537 · saves S536 · scripts S535 · README, sitemap S532 · account, terms, 404 S530 · corpus S524 · pwa S472.
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -452,7 +456,7 @@ _(none)_
 
 - `hidden-input-anchored-outside-its-scroller` | ACTIVE | owner C | det: recipe | last S499 | streak 0
 
-- `hebrew-faux-italic` | ACTIVE | owner M | det: recipe | last S552 | streak 1
+- `hebrew-faux-italic` | ACTIVE | owner M | det: recipe | last S554 | streak 2
 
 - `fixed-toast-duration-shorter-than-its-text` | ACTIVE | owner F | det: recipe | last S487 | streak 0
 
@@ -470,7 +474,7 @@ _(none)_
 
 - `placeholder-keeps-the-browser-gray` | ACTIVE | owner F | det: recipe | last S470 | streak 0
 
-- `header-wrap-gate-below-its-ceiling` | ACTIVE | owner M | det: recipe | last S552 | streak 1
+- `header-wrap-gate-below-its-ceiling` | ACTIVE | owner M | det: recipe | last S554 | streak 2
 
 - `latin-tracking-on-hebrew-labels` | ACTIVE | owner H | det: recipe | last S551 | streak 1
 
@@ -496,7 +500,7 @@ _(none)_
 
 - `cdn-library-parser-blocking-for-one-action` | ACTIVE | owner D | det: recipe | last S452 | streak 0
 
-- `dark-navy-fill-matches-its-ground` | ACTIVE | owner M | det: recipe | last S552 | streak 0
+- `dark-navy-fill-matches-its-ground` | ACTIVE | owner M | det: recipe | last S554 | streak 0
 
 - `ring-below-3-on-light` | ACTIVE | owner F | det: recipe | last S443 | streak 0
 
@@ -538,9 +542,9 @@ _(none)_
 
 - `settings-lost-across-a-load` | ACTIVE | owner H | det: recipe | last S551 | streak 1
 
-- `live-region-display-none-while-empty` | ACTIVE | owner M | det: recipe | last S553 | streak 0
+- `live-region-display-none-while-empty` | ACTIVE | owner M | det: recipe | last S554 | streak 1
 
-- `dark-base-rule-outranks-variant` | ACTIVE | owner M | det: recipe | last S552 | streak 0
+- `dark-base-rule-outranks-variant` | ACTIVE | owner M | det: recipe | last S554 | streak 1
 
 - `aria-disabled-lock-no-handler-checks` | ACTIVE | owner P | det: recipe | last S407 | streak 0
 
@@ -616,7 +620,7 @@ _(none)_
 
 - `dark-print-shadow-slab` | DRAFT | owner A | det: none | last S385 | streak 0
 
-- `pinned-english-prose-in-rtl-paragraph` | ACTIVE | owner M | det: recipe | last S552 | streak 1
+- `pinned-english-prose-in-rtl-paragraph` | ACTIVE | owner M | det: recipe | last S554 | streak 2
 
 - `fixed-width-third-party-embed-inflates-phone-layout` | ACTIVE | owner N | det: recipe | last S276 | streak 0 | hits 2
 
@@ -658,7 +662,7 @@ _(none)_
 
 - `dark-override-outranks-hover` | ACTIVE | owner A | det: recipe | last S357 | streak 1 | hits 0
 
-- `contrast-below-AA-on-a-tinted-or-coloured-plate` | ACTIVE | owner M | det: recipe | last S552 | streak 0
+- `contrast-below-AA-on-a-tinted-or-coloured-plate` | ACTIVE | owner M | det: recipe | last S554 | streak 1
 
 - `async-store-backed-choice-clobbered-by-a-sync-fallback` | ACTIVE | owner A | det: recipe | last S226 | streak 1
 
@@ -740,7 +744,7 @@ _(none)_
 
 - N mobile & touch-device (one surface): 2026-10-22 (**S547 — 29th N, `parsha_emojis.html` (first audit): 16 cells × 14 views by real taps, rotation, finger drags, 4×, the forced iOS hint, three tablets; plants 6/6. FOUND 1, FIXED 1. N-next: flash (S361), trope (S389).**)
 
-- M aesthetics & visual design (one surface): 2026-10-23 (**S552 — 28th M, name_tags (first): 89 full-page shots × 6 cells in the real faces, 11 census arms (type, rhythm, alignment at 3 widths, 28 hovers in both themes, contrast on 13 states × 4 cells, the header gate, RTL prose, faux italic, dark fills in 6 states, live regions by CDP, the sidebar beside 3 twins); plants fired. FOUND 7, FIXED 2 …[full text: IMPROVEMENT_ARCHIVE.md]
+- M aesthetics & visual design (one surface): 2026-10-26 (**S554 — 29th M, fontmaker (3rd: S225 → S335 → S554): 112 full-page shots (14 views × EN/HE × light/dark × 1280/800) in the real faces, 11 census arms (type, radius, contrast on ~15,600 text nodes, white plates and navy text in dark, 392 real hovers × 2 themes, 479 dark fills × 4 cells, 13 live regions by CDP × 7 views, the header gate 1 …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - K i18n / localization audit: 2026-10-21 (**S533 — 36th K, `db80feb4..843984b3` (111 commits; parsha_emojis' first): CSV +209 (all resolve), 12 reworded, 0 removed; static 5,502 refs + 2,974 fallback sites (the html arm, lapsed since S475); blind 0/4,328 lines; 102 states by the real switcher (twins = base + 5 known); retry 4/4; 10 surfaces by real input + a switch mid-state. FOUND 4, FIXED 4.**)
 
@@ -768,4 +772,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-22 (**S542 — 40th F, loading states (first since S189): 14 surfaces held, then aborted. FOUND 7, FIXED 4. F-next: long-build progress.**)
 
-**Next session (S554):** **PR `claude/loop-s549-nametags-d` (S549–S553, #362): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1080**, FM **5.59**, corpus ?v=7. ⚑ drift: main=238ffaf sw=v1080 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest: M's FM (S335), then A (S530), E (S531), L (S532). ⚑ Keep-alive #41 green; #42 (10-24): confirm. ⚑ Seeds: 50. ⚑ 27 DRAFT pattern rows: recipe or retirement at the next A. ⚑ `Total Torah Files`: an empty file at the repo root landed on `main` from the web UI (Awaiting). ⚑ name_tags' governor queue (two touches a session): the Merge fill, the tab's dark hover, the carried row's number, the Look selects, the HE translit indent, the Hebrew-headed file's English column, the load / keyboard-move / table P4s. ⚑ `offscreen-sheets-laid-out-on-every-rebuild`: the generator's chunked worksheet next. ⚑ The `.ivrit` ask overlay and the account/saves modals have no print rule (suite P4; one class in the engine, five carriers). ⚑ The S546 P3 (the false "replaced" note): the maintainer's call. ⚑ Maintainer: `08b8611` drops a transliteration that spells the English name — keep both lines?; O's Bash permission rule; CI for `closeout.mjs --static`; translit second source; sw.js `no-store`; 14 fonts; torah screen reader; A/B week eyes; the locale's size and the Resources fonts' precache (Awaiting); gates 2–4 (+ field borders, retry copy).
+**Next session (S555):** **PR `claude/adoring-noether-q8qk1e` (S554, #368): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1096**, FM **5.59**, corpus ?v=7. ⚑ drift: main=2cc90bb sw=v1096 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest by the rule: N's flash (S361), M's dictionary (S362), H's trope (S367); A (S530), E (S531), L (S532) are 24 sessions old and the 32-commit outside-loop delta (sw v1080 → v1095: Total Torah public + the Trainer's Chanting picker, the 54 generated `parsha/` pages, the Letter Learner's coloring sheets) is unaudited — A or B first is defensible; `parsha/` is a page kind the Surfaces list does not name (a protocol call). ⚑ Keep-alive #42–#44 green. ⚑ Seeds: 50. ⚑ 27 DRAFT pattern rows: recipe or retirement at the next A (`m554/` recipes are port candidates). ⚑ Queues behind the governor: name_tags 6 P4s, the FM 3 (Candidates). ⚑ `offscreen-sheets-laid-out-on-every-rebuild`: the generator's worksheet next. ⚑ The `.ivrit` ask overlay and the account modals have no print rule (suite P4). ⚑ Maintainer: `08b8611` (keep both name lines?); O's permission rule; CI for `closeout.mjs --static`; translit second source; sw.js `no-store`; 14 fonts; torah screen reader; the locale's size and the Resources fonts' precache (Awaiting); gates 2–4; the S546 P3.
