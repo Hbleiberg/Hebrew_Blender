@@ -563,6 +563,7 @@ body.fullscreen .app{height:100vh;min-height:unset;}
 /* Section 1: toolbar share/reset buttons */
 .dict-tool-btn{padding:4px 10px;border:1px solid var(--border);border-radius:5px;background:var(--white);color:var(--text);font-size:0.78rem;font-family:'Source Sans 3',sans-serif;cursor:pointer;transition:background 0.15s,border-color 0.15s;white-space:nowrap;min-height:30px;box-sizing:border-box;}
 .dict-tool-btn:hover{background:var(--warm-gray);border-color:var(--gold);}
+body.dark .dict-tool-btn:hover{background:#2a3349;}   /* dark --warm-gray is the button's rest fill (--white, #1e2535): only the border moved; the page's .emoji-gender-btn hover (pattern dark-hover-resolves-to-the-rest-colour) */
 .dict-tool-btn.copied{background:var(--gold);border-color:var(--gold);color:var(--navy);}
 /* Section 2: active-filter chip row */
 .filter-chips{display:flex;flex-wrap:wrap;gap:6px;padding:0 20px;background:var(--cream);border-bottom:1px solid var(--border);align-items:center;overflow:hidden;}
@@ -971,6 +972,7 @@ footer details > summary:hover{text-decoration:underline;}   /* FAQ / How-To row
     padding: 3px 11px; border: 1px solid var(--border); border-radius: 14px;
     background: var(--white); color: var(--text); cursor: pointer; transition: border-color 0.15s, background 0.15s; }
   .shoresh-chip:hover { border-color: var(--gold); background: var(--warm-gray); }
+  body.dark .shoresh-chip:hover { background: #2a3349; }   /* the same: in dark the chips' hover was their rest fill (pattern dark-hover-resolves-to-the-rest-colour) */
   .shoresh-header { text-align: center; padding: 16px 14px; margin-bottom: 16px;
     border: 1px solid var(--border); border-radius: 10px; background: var(--white); }
   .shoresh-root-big { font-family: var(--heb-font); direction: rtl; font-size: 2.7rem; line-height: 1.2; color: var(--text); }
