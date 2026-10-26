@@ -608,6 +608,8 @@ body.dark .tu-review { background:#131a29; }
 }
 /* The name takes the slack so every ▶ lands on the same inline edge, LTR and RTL alike. */
 .tu-review-name { font-size:0.86rem; font-weight:600; color:var(--text); flex:1 1 auto; }
+/* …and the name is the one that wraps: a long one (Yerach Ben Yomo) used to squeeze "Study →" onto two lines. */
+.tu-review-row .btn-xs { flex:none; white-space:nowrap; }
 /* The list's call to action. Inside #resReview on purpose: the box is hidden on a clean sweep,
    so the button needs no visibility state of its own. */
 .tu-review-drill { margin-block-start:10px; width:100%; }
