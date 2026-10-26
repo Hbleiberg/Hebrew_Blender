@@ -7775,6 +7775,13 @@ function cropKbdCancel() { if (cropDrag && cropDrag.kbd) { cropDrag = null; rend
 function adBinarize(imageData, thOverride) {
   const pl = lumPlane(imageData);
   const flat = flattenLum(pl.lum, estimateBackground(pl.lum, pl.mask, pl.w, pl.h));
+  // The printed template's light-blue grid and labels (TPL_INK) are paper here, kept out of the ink
+  // statistics as well as the ink: a thin hand leaves so little dark ink that Otsu split the page
+  // between the paper and the blue, and every box border and corner label became a letter (no
+  // template match, ~50 boxes on a page of 20). Only a light AND clearly blue pixel is dropped —
+  // dark-blue pen is dark, pencil is grey.
+  const d = imageData.data;
+  for (let i = 0, p = 0; i < flat.length; i++, p += 4) if (pl.mask[i] && flat[i] > 120 && d[p + 2] - d[p] > 50) pl.mask[i] = 0;
   const hs = histOf(flat, pl.mask);
   const th = thOverride != null ? thOverride : otsuThreshold(hs.hist, hs.total);
   const n = pl.w * pl.h, bits = new Uint8Array(n);
