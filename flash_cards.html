@@ -855,6 +855,13 @@ body.dark .count-custom.active { background: var(--navy-deep); border-color: var
    the teacher's ✕ dismisses the hint for good. (S555 Pass N, pattern install-banner-over-a-sheet's-bottom-controls) */
 @media (max-width: 767px) { .start-cta { bottom: var(--pwa-banner-space, 0px); } }
 body:has(#tourCard:not([hidden]), #screenCard.active) #pwaInstallBanner { visibility: hidden; }
+/* Keyboard focus the browser scrolls to an edge lands clear of the sticky header and, on the setup screen, of this bar
+   (and the install hint under it on a phone): with the panels open, Tab put 34 of the setup's 155 stops wholly under the
+   bar and Shift+Tab 8–17 under the header (WCAG 2.4.11). --fc-head-h / --fc-cta-h are their live heights, kept by
+   fcTrackStickies() (the header wraps on a phone, the Start note adds a line). (S560 Pass C, pattern
+   focus-hidden-under-a-sticky-bar) */
+html { scroll-padding-block-start: calc(var(--fc-head-h, 64px) + 8px); }
+html:has(#screenSetup.active) { scroll-padding-block-end: calc(var(--fc-cta-h, 136px) + var(--pwa-banner-space, 0px) + 8px); }
 
 /* ============== PRESET LIST ============== */
 .preset-list { list-style: none; margin: 8px 0 0; padding: 0; }
@@ -6962,6 +6969,17 @@ function wireProfilesPanel() {
   document.getElementById('progressReportBtn').addEventListener('click', () => openProgressReport());
 }
 
+// The sticky header's and Start bar's live heights, for the root's scroll-padding (the CSS beside .start-cta).
+function fcTrackStickies() {
+  [['.app-header', '--fc-head-h'], ['.start-cta', '--fc-cta-h']].forEach(([sel, v]) => {
+    const el = document.querySelector(sel);
+    if (!el) return;
+    const set = () => document.documentElement.style.setProperty(v, el.offsetHeight + 'px');
+    set();
+    if (window.ResizeObserver) new ResizeObserver(set).observe(el); else window.addEventListener('resize', set);
+  });
+}
+
 // Collapsible sub-section headings inside the Advanced Settings panel
 function initAdvSubCollapse() {
   document.querySelectorAll('.adv-subhead').forEach(head => {
@@ -8905,6 +8923,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderProfiles();
   wireProfilesPanel();
   initAdvSubCollapse();
+  fcTrackStickies();
   initPanelCollapse();
   panelMemApply();   // restore the teacher's saved open/closed panels
   nameSwitchRows();   // give every settings switch an accessible name
