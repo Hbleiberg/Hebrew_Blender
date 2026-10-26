@@ -337,6 +337,7 @@ header p { font-size:0.78rem; color:var(--gold-light); margin-top:2px; }
 .nt-app.sidebar-hidden .nt-sb-hide { display:none; }
 .nt-app.sidebar-hidden .nt-sb-show { display:flex; }
 body.dark .nt-sb-tab { background:#2a4070; }
+body.dark .nt-sb-tab:hover { background:#345090; }   /* the dark base rule above outranks .nt-sb-tab:hover by a class, so the tab's hover was dead in dark (S555; the Letter Learner's, generator's and dictionary's edge tabs take the same dark hover; pattern dark-base-rule-outranks-variant) */
 .nt-note { font-size:0.8rem; color:var(--muted); margin:4px 0 0; }
 .nt-note:empty, .font-missing-note:empty { position:absolute; margin:0; }   /* empty, a status line leaves the flow (in flow it would still take its panel's gap) but never the accessibility tree: display:none on a role=status drops it from the tree, so its first message can go unheard */
 .nt-note.warn { color:var(--danger-text); }
