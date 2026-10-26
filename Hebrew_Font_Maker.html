@@ -815,6 +815,10 @@ body.dark .hi-sun{display:inline-block;}
      hover. The dark selector is listed separately because body.dark .ctl-btn:hover is (0,3,1). */
   .ctl-btn:disabled:hover, body.dark .ctl-btn:disabled:hover { background-color: var(--white); }
   .ctl-btn.primary { background: var(--navy); color: #fff; border-color: var(--navy); }
+  /* --navy stays #1a2744 in dark, 1.03–1.15:1 on the dark panels (Re-trace, Confirm placement, Add pair:
+     S554 Pass M) — the suite's dark navy-control fill, as the draw chips and the Backup dialogs take it
+     (pattern dark-navy-fill-matches-its-ground); the dark hover below still outranks this by its pseudo-class. */
+  body.dark .ctl-btn.primary { background: #2a4070; border-color: #4a6aaa; }
   /* A hovered primary kept its rest navy in light (.ctl-btn:hover and .ctl-btn.primary tie at (0,2,0), the
      later primary rule wins) — the only button class on the page with no hover change. The chrome pages'
      primary hover colours (contact / resources), placed after the dark .ctl-btn:hover so they win there too. */
