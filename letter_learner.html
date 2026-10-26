@@ -524,6 +524,7 @@ body.dark .ll-sheets-title { color:var(--gold-light); }
 .ll-sheets-list a:hover { border-color:var(--gold); }
 .ll-sheets-list a:focus-visible { outline:2px solid var(--focus-ring); outline-offset:2px; }
 .ll-sheets-glyph { font-family:var(--heb-font); font-size:1.6rem; line-height:1.2; }
+.ll-sheets[data-script="cursive"] .ll-sheets-glyph { font-family:var(--heb-cursive-font); }   /* the tiles follow the mode showing, as the grid does */
 .ll-sheets-name { font-size:0.78rem; font-weight:700; color:var(--gold-text); }
 @media (max-width:800px) { .ll-sheets-lead { grid-template-columns:1fr; } .ll-sheets-img { max-width:440px; } }   /* stacked: a picture, not a wall */
 
@@ -1132,8 +1133,10 @@ body.dark #appToast { background: #0a0f1c; }
          llOrder(true): the pairs Vet, Chaf, Fe and Sin and the five finals too), each linking to its sheet
          (?letter=<id>&tab=coloring, llOpenFromUrl) — the static text a search engine reads without running the page, and a
          teacher's way straight to one letter's sheet. A plain click opens it in place (llSheetsWire); the pair tiles
-         (data-pair) hide while the Options card folds the pairs into one card (llSheetsSync), as the grid does. The
-         letters' names are learner content, not UI strings (i18n-ignore). Screen only: printing the grid stays one sheet. -->
+         (data-pair) hide while the Options card folds the pairs into one card (llSheetsSync), as the grid does, and in
+         Cursive mode llSetMode sets data-script="cursive" here (the glyphs in the handwriting face) and adds &mode=cursive
+         to every link. The letters' names are learner content, not UI strings (i18n-ignore). Screen only: printing the
+         grid stays one sheet. -->
     <section class="ll-sheets" id="llSheets" aria-labelledby="llSheetsTitle">
       <h2 class="ll-sheets-title" id="llSheetsTitle" data-i18n="letterlearner.sheets.title">Free aleph bet coloring sheets</h2>
       <div class="ll-sheets-lead">
@@ -2372,6 +2375,13 @@ function llSetMode(mode, opts) {
   document.getElementById('llBpOpen').hidden = vowels;   // coloring sheets are letters' (Block and Cursive) only
   const tips = document.getElementById('llTips');
   if (cursive) tips.dataset.script = 'cursive'; else delete tips.dataset.script;   // the look-alike glyphs in the mode's face
+  // The coloring-sheet tiles (#llSheets) follow the mode too: their glyphs in the mode's face, and their addresses (a
+  // new-tab click or a copied link) carrying ?mode=cursive, so the sheet opens in the script the tile showed.
+  const sheets = document.getElementById('llSheets');
+  if (sheets) {
+    if (cursive) sheets.dataset.script = 'cursive'; else delete sheets.dataset.script;
+    sheets.querySelectorAll('a[data-letter]').forEach(a => { a.href = 'letter_learner.html?letter=' + a.dataset.letter + '&tab=coloring' + (cursive ? '&mode=cursive' : ''); });
+  }
   _llSwapText(document.getElementById('llTipsSummary'), vowels ? 'letterlearner.tips.summary' : 'letterlearner.tips.cursive_summary',
     vowels ? 'Teaching tips' : 'Look-alikes and final letters');
   _llSwapText(document.getElementById('llTipsIntro'), vowels ? 'letterlearner.tips.intro' : cursive ? 'letterlearner.tips.cursive_intro' : 'letterlearner.tips.block_intro',
