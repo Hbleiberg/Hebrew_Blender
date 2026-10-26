@@ -1078,7 +1078,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
   <div class="hright">
     <a class="hbtn" href="/"><svg class="hi hi-arrow dir-arrow" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/></svg><span class="hi-lbl" data-i18n="trope.header.home">Home</span></a>
     <div data-i18n-switcher></div>
-    <button id="tourBtn" class="hbtn" onclick="tourStart()" title="Take a quick tour" data-i18n-title="trope.header.tour_title"><svg class="hi hi-help" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.6a2.5 2.5 0 1 1 3.6 2.2c-.8.4-1.2 1-1.2 1.9"/><circle cx="12" cy="17" r=".7" fill="currentColor" stroke="none"/></svg><span class="hi-lbl" data-i18n="trope.header.tour_button">Tour</span></button>
+    <button id="tourBtn" class="hbtn" onclick="tuTourStart()" title="Take a quick tour" data-i18n-title="trope.header.tour_title"><svg class="hi hi-help" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.6a2.5 2.5 0 1 1 3.6 2.2c-.8.4-1.2 1-1.2 1.9"/><circle cx="12" cy="17" r=".7" fill="currentColor" stroke="none"/></svg><span class="hi-lbl" data-i18n="trope.header.tour_button">Tour</span></button>
     <button id="darkBtn" class="hbtn icon-btn" onclick="toggleDark()" title="Toggle dark mode" aria-label="Toggle dark mode" data-i18n-title="shared.darkmode.toggle_title" data-i18n-aria-label="shared.darkmode.toggle_title" aria-pressed="false"><svg class="hi hi-moon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15.5A7 7 0 0 1 8.5 6a7 7 0 1 0 9.5 9.5z"/><path d="M17.5 2.5l.9 2.4 2.4.9-2.4.9-.9 2.4-.9-2.4-2.4-.9 2.4-.9z" fill="currentColor" stroke="none"/></svg><svg class="hi hi-sun" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></svg></button>
     <button id="fsBtn" class="hbtn icon-btn" onclick="toggleFullscreen()" title="Present fullscreen" aria-label="Toggle fullscreen" data-i18n-title="shared.fullscreen.enter_title" data-i18n-aria-label="shared.fullscreen.toggle_aria"><svg class="hi hi-fs-enter" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
   </div>
@@ -4412,6 +4412,15 @@ const TOUR_STEPS = [
   { target: () => document.getElementById('tabSettings'),
     titleKey: 'trope.tour.s6_title', bodyKey: 'trope.tour.s6_body' },
 ];
+// The Tour button. The engine skips a step whose target is hidden, and five of the nine steps point into the Learn tab
+// (the melody and the key, whose bar also travels to Phrases, then the families, a card and Next family): pressed on
+// Drill or Settings the tour showed four steps, on Phrases six. The Learn tab comes up first, then the tour starts — a
+// view switch only, as name_tags' ntTourStart opens its sidebar: setMode('learn') saves no setting and no progress,
+// and a drill in progress waits on its own tab.
+function tuTourStart() {
+  if (document.getElementById('learnView').hidden) setMode('learn');
+  tourStart();
+}
 /* ═══ shared: tour engine ═══ byte-identical across trope_tutor.html, letter_learner.html, name_tags.html.
    The page defines TOUR_SEEN_KEY (its per-device, erase-only hebrew<Tool>_tourSeen key) and TOUR_STEPS
    ({ target(), titleKey, bodyKey }) above this block, plus the #tourBtn / #tourSpot / #tourCard markup and CSS.
