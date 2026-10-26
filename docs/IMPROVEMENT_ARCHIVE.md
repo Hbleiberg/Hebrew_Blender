@@ -94448,3 +94448,39 @@ _(prior)_ **Next session (S555):** **PR `claude/adoring-noether-q8qk1e` (S554, #
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 - N mobile & touch-device (one surface): 2026-10-26 (**S555 — 30th N, `flash_cards.html` (3rd: S244 → S361 → S555): 16 cells (SE 320, i13 390 + landscape, Pixel 7 412 × EN/HE × light/dark) × 16 views by real taps (the sheet menu, listening round, save-deck row and backup dialog new to N), the iOS hint forced on SE + i13, a real preset save, an orientation flip mid-drill and mid-dialog, 4× CPU; plants 8/8. FOUND 5, FIXED 2 (+2 P4, 1 for D). N-next: trope (S389), generator (S434).**)
+
+_(prior)_ **Next session (S556):** **PR `claude/adoring-noether-q8qk1e` (S554–S555, #368): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1097**, FM **5.59**, corpus ?v=7. ⚑ drift: main=2cc90bb sw=v1097 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest by the rule: M's dictionary (S362), H's trope (S367), C's flash (S381); A (S530), E (S531), L (S532) are 25 sessions old and the 32-commit outside-loop delta (sw v1080 → v1095: Total Torah public + the Trainer's Chanting picker, the 54 generated `parsha/` pages, the Letter Learner's coloring sheets) is unaudited — A or B first is defensible; `parsha/` is a page kind the Surfaces list does not name (a protocol call). ⚑ Keep-alive #42–#44 green. ⚑ Seeds: 50. ⚑ 27 DRAFT pattern rows: recipe or retirement at the next A (`m554/` and `n555/common.mjs` are port candidates; trap 352). ⚑ Queues behind the governor: name_tags 5 P4s, the FM 3, flash 2 (Candidates). ⚑ `offscreen-sheets-laid-out-on-every-rebuild`: the generator's worksheet next. ⚑ The `.ivrit` ask overlay and the account modals have no print rule (suite P4). ⚑ Maintainer: `08b8611` (keep both name lines?); O's permission rule; CI for `closeout.mjs --static`; translit second source; sw.js `no-store`; 14 fonts; torah screen reader; the locale's size and the Resources fonts' precache (Awaiting); gates 2–4; the S546 P3.
+
+
+<!-- archived by compact-ledger at the S557 boundary, 2026-10-26 -->
+## Compaction (S557, 2026-10-26) — moved verbatim from the live ledger
+
+### from Candidates — aged P4 (found more than 90 sessions before S557)
+
+- [ ] P4 (**NEW S466 D**) | js/ivrit-saves.js | **A fresh device's first signed-in load rewrites the whole sync memory once per row** (tasks 50→340 ms, settled in 47 s @4×, 410 rows) and fetches each row by its own GET (457). | found S466
+
+### from Candidates (prioritized, top = next)
+
+- [ ] P4 (**NEW S556 M — the `dark-hover-resolves-to-the-rest-colour` shape; the dictionary at the governor's cap**) | hebrew_dictionary.html | **In dark the 787 shoresh chips and the four toolbar buttons hover to their rest fill** (`--warm-gray` = `--white` in dark; only the gold border moves): `body.dark .shoresh-chip:hover, body.dark .dict-tool-btn:hover { background:#2a3349 }`, the page's own `.emoji-gender-btn` rule. | found S556
+
+- [ ] P4 (**NEW S556 M — pattern `live-region-display-none-while-empty`; the dictionary at the cap**) | hebrew_dictionary.html | **`#wlActiveBanner` and `#printSizeNote` leave the accessibility tree while empty** (inline `display:none` / `hidden`, both toggled by JS with their text): keep them rendered empty (`:empty{position:absolute;margin:0;padding:0;border:0}`, the S553 shape) and drop the toggles. | found S556
+
+### from Awaiting the maintainer (an action or an answer only the maintainer can give; a session that resolves one moves it to Done)
+
+- [ ] P4 (**NEW S556 M — GATE 3: the suite's default vowel palette, four tools; deferred unattended; `m556/shots/1280-light-en-color.png`**) | hebrew_dictionary.html (+ dashboard, generator, flash, torah) | **The default scheme's cholam gold (#bb8800) reads 2.99:1 on the cream** — under 3.0 for the 32px headwords it colours and 4.5 for the picker's 17.6px examples (teal 3.16, tzere's purple 3.97, chirik's green 4.28 the same there; the colour is the content). A darker gold would change every colour-coded word on four tools — the maintainer's call. | found S556
+
+### from Done
+
+- [x] 2026-10-26 | (S556 close-out) | branch/deploy note | **S556 = M on the dictionary (3rd: S237 → S362 → S556): FOUND 7, FIXED 2 (+4 P4 behind the governor, 1 Awaiting gate 3, 1 refuted); + the two queued S555 flash P4s (`text-field-under-16px-zooms-on-ios-focus`, open 0).** Branch `claude/adoring-noether-q8qk1e` (PR #368 continued, S554–S556), 4 fix commits + this close-out; `sw.js` v1097 → v1098. Deploy = the maintainer's merge → Pages `success`. Decisions deferred to maintainer: gate 3 (the vowel palette's gold), gate 2 (a panel title per mode). Protocol: traps 356–358. | `closeout.mjs` clean; `check-i18n` + `check-inline-js` clean
+
+- [x] 2026-10-26 | `ef4eb37` | hebrew_dictionary.html | (S556) **The dark selected-card and filled-pattern plates keep their muted text readable** (the gold tint 10 / 12% → 5% in dark; pattern `contrast-below-AA-on-a-tinted-or-coloured-plate`). | 8 cells by a real selection and a real root: dark 4.19 / 4.03 → 4.61:1, the plates 1.21:1 above the grid; light 5.62 / 5.52 unchanged; 0 errors; `deliver/fix1-*.png`
+
+- [x] 2026-10-23 | (S551 close-out) | branch/deploy note | **S551 = H on name_tags (first): FOUND 5, FIXED 2 (+1 P3, 2 P4, 2 seeds).** Branch `claude/loop-s549-nametags-d` (PR #362 continued), drift: none. No sw bump (name_tags is unlisted and not precached); no FM bump. Unattended: no gate asked; the omitted-line rule (`08b8611`) is a small output fix, named for the maintainer in the summary.
+
+- [x] 2026-10-23 | `86d41b0` | name_tags.html | (S551) **A spreadsheet's names are found by their script when its headers do not name them** (the content search on the unnamed columns; a name in the other script's column sorted by `ntSplitName`; a class column alone is not a student). | 21 files + the paste box, HEAD vs tree: 9 import as intended (Hebrew headers, Full Name / שם מלא / תלמיד + …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-23 | `08b8611` | name_tags.html | (S551) **A transliteration that spells the English name is left off the tag** (`omit` on the line; it still counts for the sizing rule, so the tag keeps the slider sizes). | 39/50 common names printed "David / David"; HEAD vs tree on 7 lists × EN light 1280 / HE dark 800: 96 lines omitted, every kept line's slot and tag box identical, pages …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- M aesthetics & visual design (one surface): 2026-10-26 (**S556 — 30th M, dictionary (3rd: S237 → S362 → S556): 152 full-page shots (19 views × EN/HE × light/dark × 1280/800), 11 census arms (type, radius, contrast on ~12,000 text nodes per cell, dark plates and navy text, 2,778 + 2,762 real hovers × 2 themes, 6,558 dark fills × 4 cells, 7 live regions by CDP × 10 states, the header gate 1px 1000→320, the rows, Hebrew prose in 13 views; every plant fired). FOUND 7, FIXED 2 (+4 P4 behind the governor, 1 Awaiting gate 3, 1 refuted). M-next: trope (S376), torah (S422).**)

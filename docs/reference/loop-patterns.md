@@ -177,7 +177,8 @@
 - **Archived full text (latest compaction copy):** - **`hidden-input-anchored-outside-its-scroller`** (NEW S499 C; dashboard's 25 drawer radios FIXED `55891185`, torah fixed outside the loop; latent: `.vh-file` ×4, its label on screen on every path measured): ACTIVE, streak 0. Detection: a `position:absolute|fixed` focusable input with a scroll container between it and its containing block (`c499/anchor.mjs`; plant: torah's `.radio-group{position:static}` → 53); runtime: Tab/Shift+Tab, the focused label inside the scroller.
 
 ## `hebrew-faux-italic`
-- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S554 · **Streak:** 2 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S556 · **Streak:** 3 · **Detector:** recipe
+- **Record (S556):** dictionary clean: 0 of ~12,000 visible text nodes per cell (19 views × 8 cells) with Hebrew in a synthesized italic; an inline-italic plant fired.
 - **Record (S554):** fontmaker clean: 0 of ~15,600 visible text nodes (14 views × 8 cells) with Hebrew in a synthesized italic; an inline-italic plant fired.
 - **Record (S552):** name_tags clean: 0 of 1,253 / 1,240 visible elements with Hebrew in a synthesized italic (EN light 1280, HE dark 800; a planted `<i>` fired).
 - **Shape:** Detection: `h526/ital.
@@ -234,7 +235,8 @@
 - **Record (ledger row at S544):** - **`placeholder-keeps-the-browser-gray`** (NEW S470 `45a3073e`): ACTIVE, streak 0. Detection: `f470/ph.mjs` < 4.5:1 (plant 1.3:1).
 
 ## `header-wrap-gate-below-its-ceiling`
-- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S554 · **Streak:** 2 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S556 · **Streak:** 3 · **Detector:** recipe
+- **Record (S556):** dictionary clean: 1 px 1000 → 320 × EN/HE × fine/coarse in the real faces — no overflow at any width and the actions never drop below the title (the header stacks by its own rule); a nowrap plant overflowed 541 → 320 (max 117px).
 - **Record (S554):** fontmaker clean: 1 px 1000 → 320 × EN/HE × fine/coarse in the real faces — no overflow at any width; the header's own `flex-wrap` drops the actions below the title at 786 (EN) / 697 (HE) and the 560 rule then shrinks the buttons; a nowrap plant overflowed 491 → 320 (max 173 px).
 - **Record (S552):** name_tags clean: 1 px 720 → 540 × EN/HE × fine/coarse in the real faces — no overflow above the gate, the first wrap at exactly 576 / 585; a nowrap plant fired in each. Read the wrap against `.htitle`'s bottom, not the `h1`'s (the centred controls dip below a two-line title from 696 down).
 - **Shape:** Detection: `n520/gates2.
@@ -320,7 +322,8 @@
 - **Archived full text (latest compaction copy):** - **`cdn-library-parser-blocking-for-one-action`** (NEW S452 D; generator `82bbe313`, FM `d01a33cd`): ACTIVE, streak 0. A parser-blocking CDN `<script src>` in `<head>` for one action. Detection: `grep -n '<script[^>]*src="https\?://' *.html | grep -v ' async\| …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `dark-navy-fill-matches-its-ground`
-- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S554 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S556 · **Streak:** 0 · **Detector:** recipe
+- **Record (S556):** dictionary: the length badge `.b-len` (11 per view) and the emoji card's `.ec-tag.cat` (100 per emoji view) at 1.03:1 on the dark card plate — the chip vanishes, its gold label floats (5.02:1 itself); candidate (the governor), fix `body.dark .b-len, body.dark .ec-tag.cat{background:#2a4070}`. 6,558 controls × 4 dark cells × 15 views; `.shoresh-lookup-btn` 1.15 on the page (S451's suite look) and the header's switcher / account chip 1.03 with a 1.18 edge (S552's ruling) exempt; a ground-painted `.load-more-btn` plant fired.
 - **Record (S554):** fontmaker: `.ctl-btn.primary` on the dark panels (Re-trace 1.03, Confirm placement / Add pair 1.15, Save letter & next) FIXED `7a3faf7` — `body.dark .ctl-btn.primary{background:#2a4070;border-color:#4a6aaa}` reads 1.51–1.67 with a 2.87–3.19 edge; name_tags' Merge button FIXED `24e9f73`, the rule's fifth carrier (open 0). 479 controls × 4 dark cells; the 213 readings at 1.11–1.22 are the suite's dark tiles, tabs and selects (S552's ruling); a ground-painted ghost `tbtn` plant fired.
 - **Record (S552):** name_tags: the restore dialog's Merge button 1.03:1 on its dark card — the rule's five carriers; the hub, generator, dashboard and flash cards FIXED `c1f42ae` with their pressed Backup toggle (1.03–1.14:1 beside the unpressed one), name_tags' Merge button a candidate (the governor). Clean otherwise over 72–112 controls × 6 states × 2 dark cells (the panel titles' 1.15:1 are the suite's dark look; a ground-coloured plant fired).
 - **Shape:** Detection (`g451/navy.
@@ -462,7 +465,8 @@
 - **Archived full text (latest compaction copy):** - **`settings-lost-across-a-load`** (NEW S412; dictionary ×4 FIXED S482 `8d99ad93`, flash FIXED S491 `adce6574`; 0 open): ACTIVE, streak 0. A setting comes back changed after a reload. Detection (`h482/dictsave.mjs`): change each control by a real click, wait out the save, reload, require it …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `live-region-display-none-while-empty`
-- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S554 · **Streak:** 1 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S556 · **Streak:** 0 · **Detector:** recipe
+- **Record (S556):** dictionary: 2 hits — `#wlActiveBanner` (inline `display:none` until a list loads as a filter) and `#printSizeNote` (`hidden` until a large set) notRendered while empty in 10 states by CDP, both filled and shown by JS in one task; candidate (the governor). `#exportErr` notRendered only with its collapsed panel (the S553 shape); `#resultCount`, `#a11yStatus`, `#appToast` rendered empty; a `display:none` `role=status` plant fired 10/10.
 - **Record (S554):** fontmaker clean: 13 regions × 7 views by CDP — `#statusMsg` (`:empty{padding-block:0}`) and `#nextStepHint` (refilled on every render) rendered while empty; `#nodeHint`, `#nsSel`, `#wizOsNameNote`, `#drawSelLive` notRendered only with their hidden row (the S553 shape); a `display:none` `role=status` plant fired.
 - **Record (S553):** name_tags' 4 hits FIXED `2ba4ff9` — `:empty{position:absolute;margin:0}` (the flex-gap shape: in flow an empty line still takes its panel's gap); CDP in 4 cells: notRendered → `status` on the list and print notes and on the rename note once a real message is cleared (its row `hidden` until Rename opens, it is notRendered with the row — correct); every other box unmoved.
 - **Record (S552):** name_tags: 4 hits — `.nt-note:empty{display:none}` on `#ntListNote`, `#ntRenameNote`, `#ntPrintNote`, `#ntTrNote` (`#ntTentNote` the same rule, text at load), CDP `notRendered` on each while empty; a planted hidden `role=status` fired. Candidate (the governor), one concern with `#ntFontMissing`.
@@ -471,7 +475,8 @@
 - **Archived full text (latest compaction copy):** - **`live-region-display-none-while-empty`** (S408; **all 4 FIXED `efbc98a` S409**; **S530 4 more FIXED `66ecdc9f`, `a530/fix1.mjs`**): ACTIVE, streak 0. Detection: `:empty{display:none}` on a `role=status`/`aria-live` line, then CDP AX on it empty (`notRendered` = hit); flex-wrap rows need `position:absolute`, not height.
 
 ## `dark-base-rule-outranks-variant`
-- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S555 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S556 · **Streak:** 1 · **Detector:** recipe
+- **Record (S556):** dictionary clean: 2,778 (EN) + 2,762 (HE) controls × 12 views hovered by the real mouse in both themes — 0 whose light hover lacks a dark twin; a planted dark base rule on `.dict-tool-btn` fired 4/4. The sibling `dark-hover-resolves-to-the-rest-colour` shape: the 787 shoresh chips and the 4 toolbar buttons hover to `--warm-gray` = dark `--white` (only the border moves) — candidate.
 - **Record (S555):** name_tags FIXED `05e585a`: `.nt-sb-tab` (the sidebar's hide / show edge tab) — `body.dark .nt-sb-tab` outranked its hover; `body.dark .nt-sb-tab:hover { background:#345090 }` (real mouse: #2a4070 → #345090; the pre-fix page unchanged, the control).
 - **Record (S554):** fontmaker clean: 392 controls × 7 views hovered by the real mouse in both themes — 0 whose light hover lacks a dark twin (the 12 `.mark-sq` tiles move their gold border in dark while the fill stays the rest colour: the `dark-hover-resolves-to-the-rest-colour` shape, a P4 candidate); the plant — a dark base rule on `.ctl-btn` (`body.dark .ctl-btn{background:#1e2535 !important}`) — fired on 6 controls; a first plant on the ghost `tbtn` was silent because that class's light hover moves no fill (a plant must mirror the detector's own test).
 - **Record (S552):** name_tags: 1 hit — the edge tab (`body.dark .nt-sb-tab` outranks `.nt-sb-tab:hover`; 28 controls hovered in both themes, the plant fired) — candidate (the governor); the same shape pre-empted on the four carriers' new dark Merge rule by its hover twin (`c1f42ae`).
@@ -485,7 +490,8 @@
 - **Archived full text (latest compaction copy):** - **`aria-disabled-lock-no-handler-checks`** (**NEW, registered 2026-09-23 (S407 Pass P) — 1 carrier, fixed `e5c4784`**): ACTIVE, clean streak 0. A control marked busy or invalid by `aria-disabled="true"` whose activation handler never reads that state: the look says locked, a …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `text-field-under-16px-zooms-on-ios-focus`
-- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S555 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S556 · **Streak:** 0 · **Detector:** recipe
+- **Record (S556):** flash FIXED ×2 — `#newProfileNameInput` 14.08 → 16px (+ `min-width:0`: the Save button back inside the dialog on an iPhone SE) `730e84e`; `.share-out` 11.84 → 16px `ffbd65b`; by descriptor against a HEAD copy; open carriers: 0 known.
 - **Record (S555):** flash_cards 2 open carriers: `#newProfileNameInput` 14.08px (inline `0.88rem`, the profile picker) and `#shareCodeOutput` 11.84px (`.share-out`, readonly — a tap to copy still focuses it); P4s behind the governor (16px in the coarse-pointer rule, `!important` against the inline style). The 14 other text-like fields are 16px (`n555/common.mjs` fields arm; a 13px plant fired).
 - **Detection:** computed …[full text: IMPROVEMENT_ARCHIVE.md]
 - **Record (ledger row at S544):** - **`text-field-under-16px-zooms-on-ios-focus`** (NEW S406; FIXED ×2; S465 contact ×4 `5a7a8ed`; S492 dictionary ×6 `07177214`; S506 torah ×17, trope ×3; S507 dashboard ×23, flash ×10; S508 resources ×6, account ×2; open: none): ACTIVE, streak 0.
@@ -694,7 +700,8 @@
 - **Record (S554):** NEW — found by M's RTL-prose arm on the Font Maker's Hebrew help (5 of the 37 mixed Hebrew-and-Latin blocks across its 14 tabs); the static sweep then found 4 more in 3 other tools; all 9 FIXED, 0 open; the plant fires; the runtime arm reads 0 of 37 blocks after the fix.
 
 ## `pinned-english-prose-in-rtl-paragraph`
-- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S554 · **Streak:** 2 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S556 · **Streak:** 3 · **Detector:** recipe
+- **Record (S556):** dictionary clean: 0 pinned-span hits over 120 mixed blocks × 13 HE views incl. all 7 tour steps; a pinned `<span dir=ltr>roster.csv.</span>` plant fired in the sidebar and the tour card.
 - **Record (S554):** fontmaker clean: 0 pinned-span hits over 37 mixed blocks × 14 help tabs + 9 views; the 5 period-mid-island hits are the new sibling `latin-sentence-boundary-in-hebrew-prose` (FIXED `bf895ee`); a pinned `<span dir=ltr>roster.csv.</span>` plant fired 14/14.
 - **Record (S552):** name_tags clean: the HE UI's one sentence mixing Hebrew and Latin ("… ב־roster.csv.") ends with its period at the left; a pinned `<span dir=ltr>Avery 5395.</span>` plant fired.
 - **Shape:** Detection: Range x-order of the phrase and its period in the HE UI; exempt lists, single runs, print.
@@ -749,7 +756,8 @@
 - **Archived full text (latest compaction copy):** - **global-keydown-preventDefault-without-target-guard** (**NEW, registered 2026-08-28 (S272 Pass A) from S271’s `38ab28f`**): a document/window-level `keydown` handler that calls `preventDefault()` on Enter/Space (or another activation/printable key) with no interactive-target …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `row-siblings-with-mismatched-heights`
-- **Status:** ACTIVE · **Owner:** A · **Consequence:** normal · **Last:** S385 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** A · **Consequence:** normal · **Last:** S556 · **Streak:** 1 · **Detector:** recipe
+- **Record (S556):** dictionary clean: the header's 5 controls 30 ×5 in 4 cells (the S362 fix holds), the mode switcher 24 ×3; the toolbar's 30 beside the 32px print note is S362's known border.
 - **Record (ledger row at S544):** - **row-siblings-with-mismatched-heights**: ACTIVE. **S385 (Pass A): 1 hit FIXED — `hebrew_blend_generator.html`'s account chip (`0a46f67`) stood 41px at top 14 beside five 35px controls at top 17, because `.ivacct` carries `align-self:stretch` and that header's flex line is its
 - **Archived full text (latest compaction copy):** - **row-siblings-with-mismatched-heights**: ACTIVE. **S385 (Pass A): 1 hit FIXED — `hebrew_blend_generator.html`'s account chip (`0a46f67`) stood 41px at top 14 beside five 35px controls at top 17, because `.ivacct` carries `align-self:stretch` and that header's flex line is its …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -810,7 +818,8 @@
 - **Archived full text (latest compaction copy):** - **dark-override-outranks-hover**: ACTIVE. **Re-swept 2026-09-09 (S357 Pass A): static detector 0/14 pages; runtime 34 cells on the 8 fixed carriers, every one with real-hover feedback (light as the control) — hits 0, clean streak 1.** S354–S356: 8 carriers fixed. Detection: …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `contrast-below-AA-on-a-tinted-or-coloured-plate`
-- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S554 · **Streak:** 1 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S556 · **Streak:** 0 · **Detector:** recipe
+- **Record (S556):** dictionary: the bulk-selected card's transliteration 4.19:1 on the dark 10% gold tint and a filled shoresh pattern's sub-label 4.03 on its 12% tint FIXED `ef4eb37` (5% in dark → 4.61 both, the plates 1.21:1 above the grid; light unchanged); every other text node ≥ 4.5 (large ≥ 3) over ~12,000 nodes × 8 cells × 19 views; the colour-coding picker's 8 palette examples (2.99–4.28 at 17.6px) are the content itself — Awaiting, gate 3; plants 1.15 / 1.00 / 1.69 fired.
 - **Record (S554):** fontmaker clean: every visible text node ≥ 4.5:1 (large ≥ 3) over ~15,600 nodes × 112 cells; the one 1.31 reading was the probe's own `color(srgb)` parse of the gold Below chip (5.2:1 by hand); plants 1.03 / 1.00 / 1.52 fired.
 - **Record (S552):** name_tags: 1 hit — the carried row's number 3.91:1 on the gold drag tint in dark (light 5.32); every other text node ≥ 5.02 dark / 5.38 light across 13 states × 4 cells, the tags' text on the six pastels ≥ 3; plants 1.39 / 1.64 fired. Candidate (the governor).
 - **Record (ledger row at S544):** - **contrast-below-AA-on-a-tinted-or-coloured-plate**: **S501 `[DEFAULT]` on the dark active font tile, dashboard + torah `0053db78` (3.71→5.56:1).** **S488 dashboard ribbon `5da9ecbe`.** **S422: torah's vowel Letter on the trope tint FIXED `e55b811` (1.85:1; streak 0).**
