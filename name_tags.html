@@ -1651,13 +1651,24 @@ const NT_HEADERS = {   // i18n-ignore: spreadsheet column names a teacher's file
   tr: /^(transliteration|translit|pronunciation|transliterated|sounds like|תעתיק|הגייה)$/,
   ex: /^(extra|extra line|class|grade|room|homeroom|כיתה|שכבה)$/
 };
+const NT_EN_NAMED = /^(english|english name|שם באנגלית|אנגלית)$/;   // i18n-ignore: the en headers that name the language, not just a name
 function ntImportRows(table) {
   const norm = s => String(s || '').replace(/^\uFEFF/, '').trim().toLowerCase().replace(/\s+/g, ' ');
   const map = {};
   let body = table;
   (table[0] || []).forEach((c, i) => {
     const h = norm(c);
-    for (const f in NT_HEADERS) if (!(f in map) && NT_HEADERS[f].test(h)) { map[f] = i; break; }
+    for (const f in NT_HEADERS) {
+      if (!NT_HEADERS[f].test(h)) continue;
+      if (!(f in map)) { map[f] = i; break; }
+      // A first-name column beside one named for English ("שם פרטי,שם משפחה,English", "English,שם פרטי"): the English
+      // column is the English name, and the first-name column is not dropped — it is the name's first half, read below
+      // with the last name in its own script.
+      if (f === 'en' && !('first' in map) && NT_EN_NAMED.test(h) !== NT_EN_NAMED.test(norm(table[0][map.en]))) {
+        if (NT_EN_NAMED.test(h)) { map.first = map.en; map.en = i; } else map.first = i;
+        break;
+      }
+    }
   });
   if (Object.keys(map).length) body = table.slice(1);
   if (!('he' in map) && !('en' in map)) {   // no column is named for a name (no header row, or a header row naming "Full Name" / "שם מלא" / "תלמיד" with the class): find them by what they hold
@@ -1676,7 +1687,11 @@ function ntImportRows(table) {
   const get = (r, f) => (map[f] != null ? String(r[map[f]] || '') : '').replace(/\s+/g, ' ').trim().slice(0, NT_MAX_FIELD);
   const out = [];
   body.forEach(r => {
-    let he = get(r, 'he'), en = [get(r, 'en'), get(r, 'last')].filter(Boolean).join(' ').slice(0, NT_MAX_FIELD);
+    let he = get(r, 'he'), en = [get(r, 'en'), 'first' in map ? '' : get(r, 'last')].filter(Boolean).join(' ').slice(0, NT_MAX_FIELD);
+    if ('first' in map) {
+      const full = [get(r, 'first'), get(r, 'last')].filter(Boolean).join(' ').slice(0, NT_MAX_FIELD);
+      if (NT_HEB_RE.test(full)) { if (!he) he = full; } else if (!en) en = full;
+    }
     // A name in the other script's column — a Hebrew first and last name under "שם פרטי / שם משפחה" (a first name is a
     // name, whatever its letters), "דָּוִד David" in one Name column, the two columns swapped — is sorted by script, as a
     // Dashboard roster line is.

@@ -143,7 +143,9 @@ Both are **one-time copies**; nothing links a list to its source afterwards.
 comma). `ntImportRows` finds columns by an English or Hebrew header (`NT_HEADERS`: Hebrew/עברית, English/Name/First
 plus Last, Transliteration/Pronunciation/תעתיק, Extra/Class/Grade/כיתה) and, when no header names a name column
 (no header row, or "Full Name" / "שם מלא" / "תלמיד" beside a class), by content among the columns left (the column of
-Hebrew letters, then the first and second Latin columns). A name in the other script's column — Hebrew first and last
+Hebrew letters, then the first and second Latin columns). A column named for the language (English / שם באנגלית /
+אנגלית, `NT_EN_NAMED`) beside a first-name column (Name / First / שם פרטי, either order) is the English name, and the
+first-name column becomes the name's first half: with the last name it fills the field of its own script. A name in the other script's column — Hebrew first and last
 names under שם פרטי / שם משפחה, "דָּוִד David" in one Name column, the two columns swapped — is sorted by script with
 `ntSplitName`, as a Dashboard roster line is; a row with no name and no transliteration (a class column alone) is not a
 student. A file is decoded as UTF-16 when it carries a byte-order mark or its NULs sit on one side of every byte pair (Excel's
