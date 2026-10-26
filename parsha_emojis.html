@@ -63,37 +63,38 @@
     catch (e) { return location.href; }
   })() });
 </script>
-<title>Parsha Emojis — A Picture for Every Torah Portion | IvritSuite</title>
-<meta name="description" content="All 54 weekly Torah portions, each with an emoji drawing, a one-sentence summary and why that picture was chosen, in English and Hebrew — plus coloring sheets.">
+<title>Free Parsha Coloring Sheets for Every Torah Portion | IvritSuite</title>
+<meta name="description" content="Free printable parsha coloring sheets for all 54 weekly Torah portions: each parasha drawn as an emoji to color, with a short summary in English and Hebrew.">
 <link rel="canonical" href="https://ivritsuite.com/parsha_emojis.html">
 <meta name="robots" content="index, follow">
 <meta name="author" content="Harrison Bleiberg">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="IvritSuite">
-<meta property="og:title" content="Parsha Emojis — A Picture for Every Torah Portion | IvritSuite">
-<meta property="og:description" content="All 54 weekly Torah portions, each with its own emoji drawing, a one-sentence summary and why that picture was chosen, in English and Hebrew.">
+<meta property="og:title" content="Parsha Emojis — Free Coloring Sheets for Every Torah Portion">
+<meta property="og:description" content="All 54 weekly Torah portions, each an emoji drawing to color with a one-sentence summary and why that picture was chosen, in English and Hebrew. Printable and free.">
 <meta property="og:url" content="https://ivritsuite.com/parsha_emojis.html">
-<meta property="og:image" content="https://ivritsuite.com/og-card.png?v=4">
+<meta property="og:image" content="https://ivritsuite.com/parsha-coloring-sheets.png?v=1">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="IvritSuite — free tools for Jewish schools: worksheets, flash cards, dictionary, Torah and trope practice, and a font maker">
+<meta property="og:image:alt" content="Three printable parsha coloring sheets: Bereshit, Noach and Lech-Lecha, each with the parasha's emoji drawing to color, its names, verses and a short summary">
 <meta property="og:locale" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Parsha Emojis — A Picture for Every Torah Portion | IvritSuite">
-<meta name="twitter:description" content="All 54 weekly Torah portions, each with its own emoji drawing, a one-sentence summary and why that picture was chosen, in English and Hebrew.">
-<meta name="twitter:image" content="https://ivritsuite.com/og-card.png?v=4">
+<meta name="twitter:title" content="Parsha Emojis — Free Coloring Sheets for Every Torah Portion">
+<meta name="twitter:description" content="All 54 weekly Torah portions, each an emoji drawing to color with a one-sentence summary and why that picture was chosen, in English and Hebrew. Printable and free.">
+<meta name="twitter:image" content="https://ivritsuite.com/parsha-coloring-sheets.png?v=1">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "WebApplication",
   "name": "Parsha Emojis",
   "url": "https://ivritsuite.com/parsha_emojis.html",
-  "description": "All 54 weekly Torah portions, each with its own emoji drawing, a one-sentence summary and why that picture was chosen, in English and Hebrew — with this week's parsha first, a link to practice each one in the Torah Trainer, and printable coloring sheets of every drawing.",
+  "description": "Free printable parsha coloring sheets for all 54 weekly Torah portions: each parasha's own emoji drawing to color (or already colored in), with its English and Hebrew names, its verses, a one-sentence summary and why that picture was chosen, in English and Hebrew — with this week's parsha first and a link to practice each one in the Torah Trainer.",
+  "image": "https://ivritsuite.com/parsha-coloring-sheets.png",
   "applicationCategory": "EducationalApplication",
   "operatingSystem": "Any (web browser)",
   "isAccessibleForFree": true,
   "inLanguage": "en",
-  "keywords": "parsha, parashat hashavua, weekly Torah portion, parsha emoji, parsha coloring pages, Torah portion summary, parsha for kids, Hebrew school, Jewish education",
+  "keywords": "parsha coloring sheets, parsha coloring pages, parshah coloring pages, Torah portion coloring sheets, Torah portion coloring pages, weekly parsha coloring pages, parashat hashavua, weekly Torah portion, parsha emoji, Torah portion summary, parsha for kids, Hebrew school, Jewish education",
   "offers": {
     "@type": "Offer",
     "price": "0",
@@ -149,10 +150,10 @@
     },
     {
       "@type": "Question",
-      "name": "Can my class color them in?",
+      "name": "Can I print parsha coloring sheets?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes. Print coloring sheets turns any of the parshiyot into coloring pages: choose which ones, the copies and their order, the paper size, one, two or four pages to a sheet, the text language, which parts print, and outlines or already colored in."
+        "text": "Yes, free, for every Torah portion. Each sheet has the parasha's emoji drawing in outline (or already colored in), its English and Hebrew names, its verses, a short summary, why that picture was chosen and a line for the child's name. Press Print coloring sheets and choose the parshiyot, the copies and their order, the paper size, one, two or four pages to a sheet, the text language and which parts print."
       }
     },
     {
@@ -177,6 +178,14 @@
       "acceptedAnswer": {
         "@type": "Answer",
         "text": "Yes. Print prints the cards on screen (this week's, one book or all 54) on white paper."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I link straight to one parasha's coloring sheet?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Add ?parsha= and the parasha's name to the address: parsha_emojis.html?parsha=noach opens the coloring sheet for Noach, ready to print. Every parasha in the list of coloring sheets on the page links this way."
       }
     },
     {
@@ -368,6 +377,29 @@ body.dark .et-name{color:var(--gold-light);}
 .et-featured .et-name{font-size:1.25rem;}
 .et-featured .et-sum,.et-featured .et-why{font-size:0.98rem;}
 
+/* ───── Parsha coloring sheets (#etSheets): the intro beside a picture of three sheets, then every parasha by name under
+   its book, each a link to its coloring sheet — the five books side by side, stacked on a phone. In the Hebrew UI each
+   link leads with the Hebrew name (order), the way the cards put the UI's language first. Screen only. ───── */
+.et-sheets{margin-block-start:36px;}
+.et-sheets-title{font-family:'Libre Baskerville',serif;font-size:1.3rem;color:var(--navy);margin:0;padding-block-end:6px;border-block-end:1px solid var(--border);}
+.et-sheets-lead{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,420px);gap:18px;align-items:center;margin-block-start:14px;}
+.et-sheets-intro{margin:0;font-size:0.98rem;line-height:1.6;}
+.et-sheets-img{display:block;width:100%;height:auto;border:1px solid var(--border);border-radius:8px;}
+.et-sheets-books{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,180px),1fr));gap:10px 18px;margin-block-start:18px;}
+.et-sheets-book-name{font-family:'Libre Baskerville',serif;font-size:1rem;color:var(--navy);margin:0 0 4px;}
+body.dark .et-sheets-title,body.dark .et-sheets-book-name{color:var(--gold-light);}
+.et-sheets-list{list-style:none;margin:0;padding:0;}
+/* inline-flex + block padding: a >=24px tap target (WCAG 2.5.8), as .et-go. */
+.et-sheets-link{display:inline-flex;flex-wrap:wrap;align-items:baseline;gap:0 6px;padding-block:3px;min-height:24px;font-size:0.9rem;font-weight:600;color:var(--gold-text);text-decoration:none;}
+.et-sheets-link:hover{color:var(--gold-text-hover);text-decoration:underline;}
+.et-sheets-link:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;}
+.et-sheets-he{font-family:var(--heb-font);font-size:1.08em;font-weight:400;}
+html[lang="he"] .et-sheets-he{order:-1;}
+@media (max-width:640px){
+  .et-sheets-lead{grid-template-columns:1fr;}
+  .et-sheets-img{max-width:440px;}   /* stacked: a picture, not a wall */
+}
+
 footer{text-align:center;padding:16px;font-size:0.75rem;color:var(--muted);border-top:1px solid var(--border);background:var(--white);}
 footer a{color:var(--gold-text);text-decoration:none;}
 footer a:hover{text-decoration:underline;}
@@ -544,7 +576,7 @@ html[lang="he"] .et-cs-set legend,html[lang="he"] .et-cs-legend{letter-spacing:n
     --warm-gray:#e8e0d0;--text:#1a2744;--muted:#6b6050;--border:#c8bfa8;--white:#fff;--gold-text:#7f5a13;--gold-text-hover:#5c4010;
     background:#fff !important; color:#1a2744 !important;
   }
-  header, footer, .skip-link, .et-bar, .et-go-row, .et-retry, #pwaInstallBanner { display: none !important; }
+  header, footer, .skip-link, .et-bar, .et-go-row, .et-retry, .et-sheets, #pwaInstallBanner { display: none !important; }
   main { max-width: none; padding: 0; }
   .et-title { font-size: 1.5rem; margin-bottom: 4px; }
   .et-book, .et-week { margin-top: 12px; break-after: avoid; page-break-after: avoid; }
@@ -615,7 +647,7 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
   <span class="star" aria-hidden="true">✡︎</span>
   <div>
     <div class="brand-title" data-i18n="emojitorah.header.title">IvritSuite — Parsha Emojis</div>
-    <p data-i18n="emojitorah.header.tagline">A picture for every parasha</p>
+    <p data-i18n="emojitorah.header.tagline">A picture and a coloring sheet for every parasha</p>
   </div>
   <div class="hright">
     <a class="hbtn" href="/"><svg class="hi hi-arrow dir-arrow" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/></svg><span class="hi-lbl" data-i18n="emojitorah.header.home">Home</span></a>
@@ -625,7 +657,7 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
 </header>
 
 <main id="mainContent" tabindex="-1">
-  <h1 class="et-title" data-i18n="emojitorah.page_title">The Parsha Emojis</h1>
+  <h1 class="et-title" data-i18n="emojitorah.page_title">Parsha Emojis and Coloring Sheets</h1>
   <div class="et-bar">
     <div class="et-views" id="etViews" role="group" aria-label="Choose which parshiyot to show" data-i18n-aria-label="emojitorah.views.label">
       <button type="button" class="et-view" data-view="today" aria-pressed="true" data-i18n="emojitorah.views.today">Today's parasha</button>
@@ -643,6 +675,99 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
   </div>
   <p class="et-note" id="etNote" role="status" aria-live="polite"></p>
   <div id="etCards"></div>
+  <!-- Parsha coloring sheets, every parasha by name: the cards above show this week's alone until a book is chosen, so
+       this list is what a search engine reads of the other 53 (and what a teacher who searched for one parasha's sheet
+       finds). Each link is a ?parsha= deep link (etDeepLink: a new tab, a bookmark, a shared address); a plain click opens
+       the coloring-sheet popup in place (etSheetsWire). The names are the corpus's own, not UI strings (i18n-ignore).
+       Screen only: Print prints the cards. -->
+  <section class="et-sheets" id="etSheets" aria-labelledby="etSheetsTitle">
+    <h2 class="et-sheets-title" id="etSheetsTitle" data-i18n="emojitorah.sheets.title">Parsha coloring sheets for every Torah portion</h2>
+    <div class="et-sheets-lead">
+      <p class="et-sheets-intro" data-i18n="emojitorah.sheets.intro">Free printable coloring sheets for all 54 weekly parshiyot. Each one has the parasha's emoji drawing to color, its English and Hebrew names, its verses and a one-sentence summary. Choose a parasha to open its sheet, ready to print, or press Print coloring sheets to print many at once.</p>
+      <img class="et-sheets-img" src="parsha-coloring-sheets.png?v=1" width="1200" height="630" loading="lazy" decoding="async" alt="Three printable parsha coloring sheets: Bereshit, Noach and Lech-Lecha, each with the parasha's emoji drawing to color, its names, verses and a short summary">
+    </div>
+    <div class="et-sheets-books">
+      <div class="et-sheets-book">
+        <h3 class="et-sheets-book-name" data-i18n="torah.custom.book_genesis">Genesis</h3>
+        <ul class="et-sheets-list">
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=bereshit" data-n="1"><span lang="en" dir="ltr">Bereshit</span> <span class="et-sheets-he" lang="he" dir="rtl">בְּרֵאשִׁית</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=noach" data-n="2"><span lang="en" dir="ltr">Noach</span> <span class="et-sheets-he" lang="he" dir="rtl">נֹחַ</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=lech-lecha" data-n="3"><span lang="en" dir="ltr">Lech-Lecha</span> <span class="et-sheets-he" lang="he" dir="rtl">לֶךְ-לְךָ</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=vayera" data-n="4"><span lang="en" dir="ltr">Vayera</span> <span class="et-sheets-he" lang="he" dir="rtl">וַיֵּרָא</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=chayei-sara" data-n="5"><span lang="en" dir="ltr">Chayei Sara</span> <span class="et-sheets-he" lang="he" dir="rtl">חַיֵּי שָׂרָה</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=toldot" data-n="6"><span lang="en" dir="ltr">Toldot</span> <span class="et-sheets-he" lang="he" dir="rtl">תּוֹלְדוֹת</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=vayetzei" data-n="7"><span lang="en" dir="ltr">Vayetzei</span> <span class="et-sheets-he" lang="he" dir="rtl">וַיֵּצֵא</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=vayishlach" data-n="8"><span lang="en" dir="ltr">Vayishlach</span> <span class="et-sheets-he" lang="he" dir="rtl">וַיִּשְׁלַח</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=vayeshev" data-n="9"><span lang="en" dir="ltr">Vayeshev</span> <span class="et-sheets-he" lang="he" dir="rtl">וַיֵּשֶׁב</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=miketz" data-n="10"><span lang="en" dir="ltr">Miketz</span> <span class="et-sheets-he" lang="he" dir="rtl">מִקֵּץ</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=vayigash" data-n="11"><span lang="en" dir="ltr">Vayigash</span> <span class="et-sheets-he" lang="he" dir="rtl">וַיִּגַּשׁ</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=vayechi" data-n="12"><span lang="en" dir="ltr">Vayechi</span> <span class="et-sheets-he" lang="he" dir="rtl">וַיְחִי</span></a></li>
+        </ul>
+      </div>
+      <div class="et-sheets-book">
+        <h3 class="et-sheets-book-name" data-i18n="torah.custom.book_exodus">Exodus</h3>
+        <ul class="et-sheets-list">
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=shemot" data-n="13"><span lang="en" dir="ltr">Shemot</span> <span class="et-sheets-he" lang="he" dir="rtl">שְׁמוֹת</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=vaeira" data-n="14"><span lang="en" dir="ltr">Va&#39;eira</span> <span class="et-sheets-he" lang="he" dir="rtl">וָאֵרָא</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=bo" data-n="15"><span lang="en" dir="ltr">Bo</span> <span class="et-sheets-he" lang="he" dir="rtl">בֹּא</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=beshalach" data-n="16"><span lang="en" dir="ltr">Beshalach</span> <span class="et-sheets-he" lang="he" dir="rtl">בְּשַׁלַּח</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=yitro" data-n="17"><span lang="en" dir="ltr">Yitro</span> <span class="et-sheets-he" lang="he" dir="rtl">יִתְרוֹ</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=mishpatim" data-n="18"><span lang="en" dir="ltr">Mishpatim</span> <span class="et-sheets-he" lang="he" dir="rtl">מִשְׁפָּטִים</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=terumah" data-n="19"><span lang="en" dir="ltr">Terumah</span> <span class="et-sheets-he" lang="he" dir="rtl">תְּרוּמָה</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=tetzaveh" data-n="20"><span lang="en" dir="ltr">Tetzaveh</span> <span class="et-sheets-he" lang="he" dir="rtl">תְּצַוֶּה</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=ki-tisa" data-n="21"><span lang="en" dir="ltr">Ki Tisa</span> <span class="et-sheets-he" lang="he" dir="rtl">כִּי תִשָּׂא</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=vayakhel" data-n="22"><span lang="en" dir="ltr">Vayakhel</span> <span class="et-sheets-he" lang="he" dir="rtl">וַיַּקְהֵל</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=pekudei" data-n="23"><span lang="en" dir="ltr">Pekudei</span> <span class="et-sheets-he" lang="he" dir="rtl">פְקוּדֵי</span></a></li>
+        </ul>
+      </div>
+      <div class="et-sheets-book">
+        <h3 class="et-sheets-book-name" data-i18n="torah.custom.book_leviticus">Leviticus</h3>
+        <ul class="et-sheets-list">
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=vayikra" data-n="24"><span lang="en" dir="ltr">Vayikra</span> <span class="et-sheets-he" lang="he" dir="rtl">וַיִּקְרָא</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=tzav" data-n="25"><span lang="en" dir="ltr">Tzav</span> <span class="et-sheets-he" lang="he" dir="rtl">צַו</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=shemini" data-n="26"><span lang="en" dir="ltr">Shemini</span> <span class="et-sheets-he" lang="he" dir="rtl">שְׁמִינִי</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=tazria" data-n="27"><span lang="en" dir="ltr">Tazria</span> <span class="et-sheets-he" lang="he" dir="rtl">תַזְרִיעַ</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=metzora" data-n="28"><span lang="en" dir="ltr">Metzora</span> <span class="et-sheets-he" lang="he" dir="rtl">מְצֹרָע</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=achrei-mot" data-n="29"><span lang="en" dir="ltr">Achrei Mot</span> <span class="et-sheets-he" lang="he" dir="rtl">אַחֲרֵי מוֹת</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=kedoshim" data-n="30"><span lang="en" dir="ltr">Kedoshim</span> <span class="et-sheets-he" lang="he" dir="rtl">קְדֹשִׁים</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=emor" data-n="31"><span lang="en" dir="ltr">Emor</span> <span class="et-sheets-he" lang="he" dir="rtl">אֱמֹר</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=behar" data-n="32"><span lang="en" dir="ltr">Behar</span> <span class="et-sheets-he" lang="he" dir="rtl">בְּהַר</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=bechukotai" data-n="33"><span lang="en" dir="ltr">Bechukotai</span> <span class="et-sheets-he" lang="he" dir="rtl">בְּחֻקֹּתַי</span></a></li>
+        </ul>
+      </div>
+      <div class="et-sheets-book">
+        <h3 class="et-sheets-book-name" data-i18n="torah.custom.book_numbers">Numbers</h3>
+        <ul class="et-sheets-list">
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=bamidbar" data-n="34"><span lang="en" dir="ltr">Bamidbar</span> <span class="et-sheets-he" lang="he" dir="rtl">בְּמִדְבַּר</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=nasso" data-n="35"><span lang="en" dir="ltr">Nasso</span> <span class="et-sheets-he" lang="he" dir="rtl">נָשֹׂא</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=behaalotcha" data-n="36"><span lang="en" dir="ltr">Beha&#39;alotcha</span> <span class="et-sheets-he" lang="he" dir="rtl">בְּהַעֲלֹתְךָ</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=shlach" data-n="37"><span lang="en" dir="ltr">Sh&#39;lach</span> <span class="et-sheets-he" lang="he" dir="rtl">שְׁלַח לְךָ</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=korach" data-n="38"><span lang="en" dir="ltr">Korach</span> <span class="et-sheets-he" lang="he" dir="rtl">קֹרַח</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=chukat" data-n="39"><span lang="en" dir="ltr">Chukat</span> <span class="et-sheets-he" lang="he" dir="rtl">חֻקַּת</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=balak" data-n="40"><span lang="en" dir="ltr">Balak</span> <span class="et-sheets-he" lang="he" dir="rtl">בָּלָק</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=pinchas" data-n="41"><span lang="en" dir="ltr">Pinchas</span> <span class="et-sheets-he" lang="he" dir="rtl">פִּינְחָס</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=matot" data-n="42"><span lang="en" dir="ltr">Matot</span> <span class="et-sheets-he" lang="he" dir="rtl">מַטּוֹת</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=masei" data-n="43"><span lang="en" dir="ltr">Masei</span> <span class="et-sheets-he" lang="he" dir="rtl">מַסְעֵי</span></a></li>
+        </ul>
+      </div>
+      <div class="et-sheets-book">
+        <h3 class="et-sheets-book-name" data-i18n="torah.custom.book_deuteronomy">Deuteronomy</h3>
+        <ul class="et-sheets-list">
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=devarim" data-n="44"><span lang="en" dir="ltr">Devarim</span> <span class="et-sheets-he" lang="he" dir="rtl">דְּבָרִים</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=vaetchanan" data-n="45"><span lang="en" dir="ltr">Va&#39;etchanan</span> <span class="et-sheets-he" lang="he" dir="rtl">וָאֶתְחַנַּן</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=eikev" data-n="46"><span lang="en" dir="ltr">Eikev</span> <span class="et-sheets-he" lang="he" dir="rtl">עֵקֶב</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=reeh" data-n="47"><span lang="en" dir="ltr">Re&#39;eh</span> <span class="et-sheets-he" lang="he" dir="rtl">רְאֵה</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=shoftim" data-n="48"><span lang="en" dir="ltr">Shoftim</span> <span class="et-sheets-he" lang="he" dir="rtl">שֹׁפְטִים</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=ki-teitzei" data-n="49"><span lang="en" dir="ltr">Ki Teitzei</span> <span class="et-sheets-he" lang="he" dir="rtl">כִּי-תֵצֵא</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=ki-tavo" data-n="50"><span lang="en" dir="ltr">Ki Tavo</span> <span class="et-sheets-he" lang="he" dir="rtl">כִּי-תָבוֹא</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=nitzavim" data-n="51"><span lang="en" dir="ltr">Nitzavim</span> <span class="et-sheets-he" lang="he" dir="rtl">נִצָּבִים</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=vayeilech" data-n="52"><span lang="en" dir="ltr">Vayeilech</span> <span class="et-sheets-he" lang="he" dir="rtl">וַיֵּלֶךְ</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=haazinu" data-n="53"><span lang="en" dir="ltr">Ha&#39;azinu</span> <span class="et-sheets-he" lang="he" dir="rtl">הַאֲזִינוּ</span></a></li>
+          <li><a class="et-sheets-link" href="parsha_emojis.html?parsha=vzot-haberachah" data-n="54"><span lang="en" dir="ltr">V&#39;Zot HaBerachah</span> <span class="et-sheets-he" lang="he" dir="rtl">וְזֹאת הַבְּרָכָה</span></a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
 </main>
 
 <footer>
@@ -659,10 +784,11 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
       <div style="padding:4px 0;max-width:640px;margin:0 auto;text-align:start;">
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="emojitorah.faq.q1">What are the Parsha Emojis?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="emojitorah.faq.a1">A picture for every weekly Torah portion: all 54 parshiyot, each drawn as an emoji with a one-sentence summary and the reason that picture was chosen, in English and Hebrew.</p></details>
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="emojitorah.faq.q2">Which parasha does the page show first?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="emojitorah.faq.a2">This week's. The page opens on the parasha read this Shabbat, with both when two are read together, and the next one when a holiday reading takes its place. Choose a book of the Torah or View All to see the others.</p></details>
-        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="emojitorah.faq.q3">Can my class color them in?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="emojitorah.faq.a3">Yes. Print coloring sheets turns any of the parshiyot into coloring pages: choose which ones, the copies and their order, the paper size, one, two or four pages to a sheet, the text language, which parts print, and outlines or already colored in.</p></details>
+        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="emojitorah.faq.q3">Can I print parsha coloring sheets?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="emojitorah.faq.a3">Yes, free, for every Torah portion. Each sheet has the parasha's emoji drawing in outline (or already colored in), its English and Hebrew names, its verses, a short summary, why that picture was chosen and a line for the child's name. Press Print coloring sheets and choose the parshiyot, the copies and their order, the paper size, one, two or four pages to a sheet, the text language and which parts print.</p></details>
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="emojitorah.faq.q4">Are the summaries in Hebrew too?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="emojitorah.faq.a4">Yes. Every summary and reason is written in English and in Hebrew, and the cards follow the language you pick at the top of the page.</p></details>
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="emojitorah.faq.q5">How do we practice reading the parasha itself?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="emojitorah.faq.a5">Every card links to its parasha in the Torah Trainer, which reads the text with vowel coloring, transliteration, translation and chanted audio.</p></details>
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="emojitorah.faq.q6">Can I print the cards?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="emojitorah.faq.a6">Yes. Print prints the cards on screen (this week's, one book or all 54) on white paper.</p></details>
+        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="emojitorah.faq.q8">Can I link straight to one parasha's coloring sheet?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n-html="emojitorah.faq.a8">Yes. Add <bdi dir="ltr">?parsha=</bdi> and the parasha's name to the address: <bdi dir="ltr">parsha_emojis.html?parsha=noach</bdi> opens the coloring sheet for Noach, ready to print. Every parasha in the list of coloring sheets on the page links this way.</p></details>
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="emojitorah.faq.q7">Are the Parsha Emojis free?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="emojitorah.faq.a7">Yes. Free for non-commercial educational use under CC BY-NC-SA 4.0, with nothing to sign up for. A free account is optional and keeps your coloring-sheet options on every device.</p></details>
       </div>
     </details>
@@ -684,7 +810,7 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
     <ul style="list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;justify-content:center;gap:2px 18px;">
       <li><a href="torah_trainer.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_torah">Torah reading practice →</a></li>
       <li><a href="trope_tutor.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_trope">learn Torah trope (cantillation) →</a></li>
-      <li><a href="letter_learner.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_letterlearner">learn the Hebrew alef-bet →</a></li>
+      <li><a href="letter_learner.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_letterlearner">aleph bet letters and coloring sheets →</a></li>
       <li><a href="flash_cards.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_flashcards">Hebrew alphabet flash cards →</a></li>
       <li><a href="hebrew_blend_generator.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_worksheets">printable Hebrew worksheets →</a></li>
       <li><a href="hebrew_dictionary.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_dictionary">Hebrew word lookup →</a></li>
@@ -800,7 +926,8 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
    data/parshiyot.json (the Trainer's ?v=, so one cached copy serves both), js/parasha-icons.js and
    js/parasha-notes.js (both built from ParashaEmojis.md); this week's reading comes from js/hebrew-calendar.js on
    the Torah Trainer's own Diaspora/Israel choice, read and never written. Each card links to its parasha in the
-   Torah Trainer (?parsha=, a new tab). The page stores one thing, its coloring sheets' print options
+   Torah Trainer (?parsha=, a new tab); this page's own ?parsha= opens that parasha's coloring sheet (etDeepLink), and
+   the list under the cards links all 54 that way. The page stores one thing, its coloring sheets' print options
    (hebrewEmojiTorah_settings, synced to the account; see COLORING SHEETS below). ───── */
 const ET_BOOKS = ['Genesis', 'Exodus', 'Leviticus', 'Numbers', 'Deuteronomy'];
 let etData = null, etFailed = false, etView = 'today';
@@ -924,8 +1051,41 @@ function etLoad() {
     .catch(() => { etFailed = true; })
     .then(() => {
       document.getElementById('etCsOpen').disabled = !etData;   // the coloring sheets are built from the same data
-      if (window.I18n) return I18n.ready.then(etRender);
+      if (window.I18n) return I18n.ready.then(() => { etRender(); etDeepLink(); });
     });
+}
+// One parasha by name, the Torah Trainer's ?parsha= matching (letters only, any case): Lech-Lecha, lech-lecha and
+// lechlecha are one parasha. null for anything else.
+const etNormName = s => String(s || '').toLowerCase().replace(/[^a-z]/g, '');
+function etFindParsha(name) {
+  const want = etNormName(name);
+  return (want && etData && etData.find(p => etNormName(p.en) === want)) || null;
+}
+// ?parsha=<name>: the page opens on that parasha's book with its coloring sheet ready to print, once per visit (a
+// Try again after a failed load still honours it). An unknown name is ignored, as the Trainer ignores one; the address
+// is never rewritten, so a bookmark keeps landing on the sheet.
+let _etDeepDone = false;
+function etDeepLink() {
+  if (_etDeepDone || !etData) return;
+  _etDeepDone = true;
+  let p = null;
+  try { p = etFindParsha(new URLSearchParams(location.search).get('parsha')); } catch (e) {}
+  if (!p) return;
+  etView = etBookKey(p.book);
+  etRender();
+  etCsOpen([p.n - 1]);
+}
+// The list of coloring sheets under the cards: a plain click opens that parasha's sheet in place; a new-tab click, a
+// middle click or a copied link takes the ?parsha= address instead.
+function etSheetsWire() {
+  document.getElementById('etSheets').addEventListener('click', e => {
+    const a = e.target.closest('a.et-sheets-link');
+    if (!a || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    const p = etData && etData.find(x => String(x.n) === a.dataset.n);
+    if (!p) return;   // still loading, or the load failed: the link loads the page with the sheet instead
+    e.preventDefault();
+    etCsOpen([p.n - 1]);
+  });
 }
 // A failed load offers the suite's in-place Try again beside its message (the corpus model the Dictionary, the Torah
 // Trainer and the Trope Tutor share), kept across re-renders so a language switch never drops its focus.
@@ -1357,10 +1517,12 @@ function etCsPageStyle() {
   const st = document.getElementById('etPageSize');
   if (st) st.textContent = etCsIsOpen() ? '@page { size: ' + (etCs.paper === 'a4' ? 'A4' : 'letter') + ' ' + etCsLayout().paperOrient + '; margin: 0.35in; }' : '';   // i18n-ignore: CSS, not text
 }
-function etCsOpen() {
+// `only` (a list of parasha indexes) opens on those alone: one parasha's sheet from the list under the cards or a
+// ?parsha= link. The bar's button passes its click event, so it opens on the current view's parshiyot.
+function etCsOpen(only) {
   if (etCsIsOpen() || !etData) return;
   _etCsOpener = document.activeElement;
-  _etCsChosen = new Set(etVisibleIdx());
+  _etCsChosen = new Set(Array.isArray(only) ? only : etVisibleIdx());
   document.getElementById('etCsOverlay').hidden = false;
   document.body.classList.add('et-cs-open');   // print keys on it: paper gets the run alone
   etCsSyncControls();
@@ -1775,6 +1937,7 @@ function applyI18n() {
   if (!window.I18n) return;
   I18n.applyStaticI18n();
   try { const _db = document.getElementById('darkBtn'); if (_db) (_db.querySelector('.hi-lbl') || _db).textContent = document.body.classList.contains('dark') ? I18n.t('shared.darkmode.label_light') : I18n.t('shared.darkmode.label_dark'); } catch (e) {}
+  try { const img = document.querySelector('.et-sheets-img'); if (img) img.alt = I18n.t('emojitorah.sheets.img_alt'); } catch (e) {}
   etRender();
   etCsI18n();   // the coloring-sheet popup, when open (read-only: it writes no option)
 }
@@ -1798,6 +1961,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('etPrint').addEventListener('click', () => window.print());
   etCsLoad();
   etCsWire();
+  etSheetsWire();
   etTrackBar();
   etLoad();
   initCloudSaves();

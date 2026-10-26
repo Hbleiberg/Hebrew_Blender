@@ -341,7 +341,7 @@ Yes. As you build each letter you can anchor its nikkud and trop marks, and the 
 
 https://ivritsuite.com/letter_learner.html
 
-Every Hebrew letter for beginning readers: a picture to remember it by, four illustrated words, the letter with every vowel read aloud, and how it looks in different fonts — plus a Cursive mode with every letter in Israeli handwriting and the letters it is easy to mix up with, a Vowels mode with a name, gesture and color for every vowel family, and printable coloring sheets.
+Free printable aleph bet coloring sheets and an alef-bet tool for beginning readers. Every Hebrew letter has a coloring sheet (the letter in outline beside four illustrated words to color, in block print or Israeli cursive, on Letter or A4 paper), a picture to remember it by, the letter with every vowel read aloud, and how it looks in different fonts — plus a Cursive mode with every letter in Israeli handwriting and the letters it is easy to mix up with, and a Vowels mode with a name, gesture and color for every vowel family.
 
 ### How to teach the Hebrew letters with the Letter Learner (about 2 minutes)
 
@@ -373,13 +373,13 @@ In Vowels, every vowel has its own card, and each vowel family has three cues th
 
 With your device's own Hebrew voice (its built-in text-to-speech). The Options card chooses the voice and whether each word gets a speaker. A device with no Hebrew voice can add one in its speech settings.
 
-**Can I print coloring sheets?**
+**Can I print aleph bet coloring sheets?**
 
-Yes. Every letter card has a coloring sheet, and Print coloring sheets prints many letters at once: choose the letters, the copies and their order, block or cursive, Letter or A4 paper, one, two or four pages to a sheet, and outlines or already colored in.
+Yes, free. Every letter of the alef-bet has its own coloring sheet: the letter in outline (or with its picture hint inside), four illustrated words that start with it, and a line for the child's name. Open a letter's card for its sheet, or press Print coloring sheets to print many letters at once: choose the letters, the copies and their order, block or cursive, Letter or A4 paper, one, two or four pages to a sheet, and outlines or already colored in.
 
 **Can I link straight to one letter?**
 
-Yes. Add ?letter= and the letter's name to the address: letter_learner.html?letter=gimel opens the Gimel card, and ?mode=cursive&letter=gimel opens it in cursive. The mode you switch to stays in the address, so a bookmark keeps it.
+Yes. Add ?letter= and the letter's name to the address: letter_learner.html?letter=gimel opens the Gimel card, ?letter=gimel&tab=coloring opens its coloring sheet, and ?mode=cursive&letter=gimel opens it in cursive. The mode you switch to stays in the address, so a bookmark keeps it.
 
 **Is the Letter Learner free?**
 
@@ -391,7 +391,7 @@ Yes. Free for non-commercial educational use under CC BY-NC-SA 4.0, with nothing
 
 https://ivritsuite.com/parsha_emojis.html
 
-All 54 weekly Torah portions, each with its own emoji drawing, a one-sentence summary and why that picture was chosen, in English and Hebrew — with this week's parsha first, a link to practice each one in the Torah Trainer, and printable coloring sheets of every drawing.
+Free printable parsha coloring sheets for all 54 weekly Torah portions: each parasha's own emoji drawing to color (or already colored in), with its English and Hebrew names, its verses, a one-sentence summary and why that picture was chosen, in English and Hebrew — with this week's parsha first and a link to practice each one in the Torah Trainer.
 
 ### How to teach the weekly parsha with the Parsha Emojis (about 2 minutes)
 
@@ -411,9 +411,9 @@ A picture for every weekly Torah portion: all 54 parshiyot, each drawn as an emo
 
 This week's. The page opens on the parasha read this Shabbat, with both when two are read together, and the next one when a holiday reading takes its place. Choose a book of the Torah or View All to see the others.
 
-**Can my class color them in?**
+**Can I print parsha coloring sheets?**
 
-Yes. Print coloring sheets turns any of the parshiyot into coloring pages: choose which ones, the copies and their order, the paper size, one, two or four pages to a sheet, the text language, which parts print, and outlines or already colored in.
+Yes, free, for every Torah portion. Each sheet has the parasha's emoji drawing in outline (or already colored in), its English and Hebrew names, its verses, a short summary, why that picture was chosen and a line for the child's name. Press Print coloring sheets and choose the parshiyot, the copies and their order, the paper size, one, two or four pages to a sheet, the text language and which parts print.
 
 **Are the summaries in Hebrew too?**
 
@@ -426,6 +426,10 @@ Every card links to its parasha in the Torah Trainer, which reads the text with 
 **Can I print the cards?**
 
 Yes. Print prints the cards on screen (this week's, one book or all 54) on white paper.
+
+**Can I link straight to one parasha's coloring sheet?**
+
+Yes. Add ?parsha= and the parasha's name to the address: parsha_emojis.html?parsha=noach opens the coloring sheet for Noach, ready to print. Every parasha in the list of coloring sheets on the page links this way.
 
 **Are the Parsha Emojis free?**
 

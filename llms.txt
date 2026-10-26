@@ -18,8 +18,8 @@ incorporating PocketTorah audio is CC BY-SA 4.0).
 - [Torah Trainer](https://ivritsuite.com/torah_trainer.html): Read the weekly parsha with vowel coloring, transliteration, translation, and chanted-audio karaoke — plus the holiday readings and the five Megillot.
 - [Trope Tutor](https://ivritsuite.com/trope_tutor.html): Learn the Torah cantillation marks — symbols, Ashkenazi and Sephardi names, and melodies — with real chanted examples and three drill modes.
 - [Hebrew Font Maker](https://ivritsuite.com/Hebrew_Font_Maker.html): Turn handwritten Hebrew letters into a real, installable font with nikkud and cantillation; export TTF, WOFF2, or UFO.
-- [Letter Learner](https://ivritsuite.com/letter_learner.html): Every Hebrew letter with a picture to remember it by, illustrated words, its vowels read aloud, cursive handwriting and printable coloring sheets.
-- [Parsha Emojis](https://ivritsuite.com/parsha_emojis.html): All 54 weekly Torah portions, each with an emoji drawing, a one-sentence summary and why that picture was chosen, plus coloring sheets.
+- [Letter Learner](https://ivritsuite.com/letter_learner.html): Free printable aleph bet coloring sheets for every Hebrew letter, plus a picture to remember it by, illustrated words, its vowels read aloud and cursive handwriting.
+- [Parsha Emojis](https://ivritsuite.com/parsha_emojis.html): Free printable parsha coloring sheets for all 54 weekly Torah portions, each an emoji drawing with a one-sentence summary and why that picture was chosen.
 - [Hebrew Teaching Resources](https://ivritsuite.com/resources.html): A curated directory of free Hebrew learning resources, printables, and Jewish education tools.
 
 ## Optional
