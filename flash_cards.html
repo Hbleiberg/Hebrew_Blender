@@ -491,6 +491,12 @@ body.fs-idle #fsBtn:not(:focus-visible) { opacity: 0; pointer-events: none; }
   .h-right { gap: 4px; flex-wrap: wrap; max-width: 100%; justify-content: flex-end; }
   #tourBtn { padding: 0 9px !important; font-size: 0.74rem !important; }
   .app-header .i18n-switch select { padding-block: 3px; font-size: 0.72rem; }
+  /* A saved preset's row (handle, name, Play, Load, Save, duplicate, delete, Move ▾) needs ~430 px and never wrapped,
+     and .panel clips: on every phone (320–412 px) the Move ▾ sat 60–125 px past the panel's edge (14–85 in Hebrew),
+     on an iPhone SE the delete and duplicate buttons with it, and a profile's row the same on the SE. Under the
+     header's phone query the row wraps instead — the name keeps its line, the actions flow onto the next — and a
+     row that fits is unchanged. (S555 Pass N, pattern horizontal-overflow-at-narrow-widths) */
+  .preset-item { flex-wrap: wrap; }
 }
 
 /* ============== LAYOUT ============== */
