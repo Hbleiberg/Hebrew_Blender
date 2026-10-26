@@ -937,7 +937,7 @@ body:has(#tourCard:not([hidden]), #screenCard.active) #pwaInstallBanner { visibi
    its sizes. Five set theirs inline, so their line needs !important. The language switcher is i18n.js's. */
 @media (pointer: coarse) {
   .count-custom, .preset-input, .tx-area { font-size: 16px; }
-  #numMinInput, #numMaxInput, #wordsMinInput, #wordsMaxInput, #translitStyleSelect { font-size: 16px !important; }
+  #numMinInput, #numMaxInput, #wordsMinInput, #wordsMaxInput, #translitStyleSelect, #newProfileNameInput { font-size: 16px !important; }   /* the profile picker's name box (inline 0.88rem = 14.08px, so !important): iOS zoomed the dialog on focus (S556; pattern text-field-under-16px-zooms-on-ios-focus) */
 }
 
 /* ============== CARD SCREEN ============== */
@@ -5698,7 +5698,7 @@ function chooseProfileModal(opts) {
     }
     html += `<div style="font-size:0.82rem;font-weight:600;margin-bottom:5px;">${esc(I18n.t('flashcards.profile.new_profile_heading'))}</div>`
       + '<div style="display:flex;gap:6px;">'
-      + `<input type="text" id="newProfileNameInput" maxlength="40" placeholder="${esc(I18n.t('flashcards.profile.student_name_placeholder'))}" aria-label="${esc(I18n.t('flashcards.profile.student_name_placeholder'))}" style="flex:1;padding:8px 10px;border:1px solid var(--border,#ccc);border-radius:6px;background:var(--white,#fff);color:inherit;font-family:inherit;font-size:0.88rem;">`
+      + `<input type="text" id="newProfileNameInput" maxlength="40" placeholder="${esc(I18n.t('flashcards.profile.student_name_placeholder'))}" aria-label="${esc(I18n.t('flashcards.profile.student_name_placeholder'))}" style="flex:1;min-width:0;padding:8px 10px;border:1px solid var(--border,#ccc);border-radius:6px;background:var(--white,#fff);color:inherit;font-family:inherit;font-size:0.88rem;">`
       + `<button data-act="create" class="fc-dlg-btn">${esc(I18n.t(confirmKey))}</button>`
       + '</div>'
       + `<button data-act="cancel" class="fc-dlg-btn fc-dlg-wide">${esc(I18n.t('flashcards.profile.cancel'))}</button>`;
