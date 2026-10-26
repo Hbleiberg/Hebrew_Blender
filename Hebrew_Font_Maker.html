@@ -8018,14 +8018,16 @@ async function adRunDetection() {
   status('');
   renderAdOverlay();
 }
-/* Default assignment: detections in order vs the expected letters — untraced letters first
-   (free-form sheets); a matched template page assigns its exact cell order instead. */
+/* Default assignment: detections in order vs the expected letters — letters with no picture and no
+   outline first (free-form sheets); a matched template page assigns its exact cell order instead.
+   "Taken" is the picker's rule: an Apply leaves its letters photographed but not yet traced, so a
+   test of the outline alone started a second sheet at Alef again, over the first sheet's photos. */
 function adAssignDefaults() {
   let order;
   if (adState.matched) order = adState.matched.order;
   else {
     const core = _adCoreLetters();
-    const traced = new Set(project.letters.filter(l => l.contours).map(l => l.codepoint));
+    const traced = new Set(project.letters.filter(l => l.contours || (l.source && l.source.dataUrl)).map(l => l.codepoint));
     order = core.filter(L => !traced.has(L.cp)).concat(core.filter(L => traced.has(L.cp))).map(L => L.cp);
   }
   adState.boxes.forEach((b, i) => { b.cp = order[i] || null; b.skip = false; });
