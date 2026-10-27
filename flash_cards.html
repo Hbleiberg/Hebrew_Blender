@@ -6983,12 +6983,21 @@ function fcTrackStickies() {
 // Collapsible sub-section headings inside the Advanced Settings panel
 function initAdvSubCollapse() {
   document.querySelectorAll('.adv-subhead').forEach(head => {
+    // A disclosure button, as the vowel-group heads are: the nine headings folded by a click alone, and Tab never
+    // reached them. (Two also name a select through aria-labelledby, which reads their text either way.)
+    head.setAttribute('tabindex', '0');
+    head.setAttribute('role', 'button');
+    head.setAttribute('aria-expanded', String(!head.classList.contains('collapsed')));
     head.addEventListener('click', () => {
       // Walk past any intervening nodes (e.g. an inline <style>) to the body.
       let body = head.nextElementSibling;
       while (body && !body.classList.contains('adv-subbody')) body = body.nextElementSibling;
       head.classList.toggle('collapsed');
       if (body) body.classList.toggle('collapsed');
+      head.setAttribute('aria-expanded', String(!head.classList.contains('collapsed')));
+    });
+    head.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); head.click(); }
     });
   });
 }
