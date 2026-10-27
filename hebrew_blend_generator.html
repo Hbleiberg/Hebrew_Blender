@@ -2290,6 +2290,9 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
     .sidebar, header, footer, .zoom-bar, .print-tip, .main-toolbar,
     .sidebar-toggle-btn, .sidebar-show-btn, .sbr-split, #fsBtn, #previewNotice, #appToast,
     .score-bar, .self-check-controls, .timer-bar { display: none !important; }
+    /* The QR's "too many items" notice tells the teacher to shorten the sheet; it stays on screen, never on the
+       student's copy (exportPDF's onclone hides it too). */
+    .qr-ak-note { display: none !important; }
     .app { display: block; min-height: unset; }
     .main { padding: 0; overflow: visible; }
     /* The on-screen layout pads .main-content by 28px on top — without
@@ -9615,6 +9618,8 @@ async function exportPDF() {
           if (isBingoPage) {
             el.querySelectorAll('.bingo-cut-line').forEach(d => d.remove());
           }
+          // The QR's "too many items" notice is for the teacher on screen, not the student's copy (the print block's twin)
+          el.querySelectorAll('.qr-ak-note').forEach(n => { n.style.visibility = 'hidden'; });
           if (isCaller) {
             const top = el.getBoundingClientRect().top;
             callerRows = [...new Set([...el.querySelectorAll('.caller-item')].map(it => it.getBoundingClientRect().top - top))];
