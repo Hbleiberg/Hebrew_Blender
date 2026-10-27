@@ -19,6 +19,22 @@
 
 ## Active, draft and guard patterns (166; newest first, as the ledger lists them)
 
+## `focus-hidden-under-a-sticky-bar`
+- **Status:** ACTIVE · **Owner:** C · **Consequence:** normal · **Last:** S560 · **Streak:** 0 · **Detector:** recipe
+- **Shape:** A sticky or fixed bar at a window edge (a header, a Start / action bar, a jump bar, an audio bar) and the browser's focus scrolling: Tab, Shift+Tab or a page's roving arrow-key focus brings a control just into view at that edge — under the bar, its indicator wholly hidden (WCAG 2.4.11).
+- **Detection:** a real Tab and Shift+Tab walk of each screen (and the page's roving-focus keys over its widest list), five sample points per stop by `elementFromPoint`, a point counting when it lands in a sticky / fixed ancestor that does not contain the stop; wholly hidden = every on-screen point; HEAD routed as the control, a phone with the install hint as an extra cell (`c560/tabwalk.mjs`, `phonewalk.mjs`, `torahwalk.mjs` — scratchpad paths never committed: port them at the next A, or the row goes DRAFT). Start a walk by clicking the page ground at the top (trap 373) and key its loop detection on an expando id (trap 374).
+- **Fix shape:** the root's `scroll-padding-block` reserves the bars' live heights — a `ResizeObserver` writes `--…-h` on `<html>` (0 while a bar is hidden or closed), `+ 8px`; a bar that only one screen shows is scoped with `html:has(#screen.active)`, and a bar that rides above the install hint adds `--pwa-banner-space`. Centred scrolls (`block:'center'`) then centre in the clear band.
+- **Carriers:** parsha_emojis FIXED S522 `297ea36` (the first: its pinned bar); flash FIXED S560 `7032085` (`fcTrackStickies`: header + Start bar); torah FIXED S560 `a22de39` (`ttTrackStickies`: jump bar + karaoke bar) — open 0 measured. Unprobed: the generator's sticky `.main-toolbar`, the dictionary's phone `#mobileBar`, the Letter Learner's sticky dialog head (inside a scroller: that scroller's own `scroll-padding`).
+- **Record (S560):** NEW — flash setup 34 wholly + 2 partly under the Start bar, Shift+Tab 8–17 + 9–20 under the header (8 cells), 48–72 on two iPhones with the hint → 0; torah 7 + 21 under the jump bar, 28 + 0–35 under the open audio bar → 0 (findings S560).
+
+## `hover-tip-not-dismissible-or-hoverable`
+- **Status:** ACTIVE · **Owner:** C · **Consequence:** normal · **Last:** S560 · **Streak:** 0 · **Detector:** recipe
+- **Shape:** A tooltip opened by mouse hover (`pointerenter` on the trigger) cannot be dismissed by Escape unless the trigger has the focus (the Escape handler sits on the trigger), and vanishes when the pointer moves onto the bubble (`#tipFloat` is `pointer-events:none` and the trigger's `pointerleave` hides it) — WCAG 1.4.13's dismissible and hoverable.
+- **Detection:** `c560/hovertip.mjs` (`PAGE=<file>`) — each visible `[data-tip]` hovered by a real mouse with the focus on `<body>`: shown, still shown after 3 s (persistent), still shown after Escape (not dismissible), and after a re-hover still shown with the pointer moved onto the bubble's centre (hoverable). The control comes with the first fix: the fixed carrier must read 0 / 0.
+- **Fix shape (proposed):** a document-level Escape that hides a shown tip before anything else answers it (closing only the bubble, the `tip-escape-drops-focus` rule), and a hover bridge — the bubble takes pointer events while shown, the trigger's `pointerleave` waits ~150 ms, the bubble's `pointerenter` cancels the hide and its `pointerleave` runs it. The idiom is per page (not a `═══` block): `openEl` on flash, `openWrap` on the dictionary, trope, torah and dashboard.
+- **Carriers:** flash (7 tips: 7/7 not dismissible, 5/7 not hoverable — measured S560); the dictionary, trope, torah and dashboard carry the same idiom, unmeasured. Open 5.
+- **Record (S560):** NEW — measured on flash only (findings S560); the candidate names the five pages.
+
 ## `tour-step-in-a-hidden-view`
 - **Status:** ACTIVE · **Owner:** A · **Consequence:** normal · **Last:** S558 · **Streak:** 0 · **Detector:** recipe
 - **Record (S558):** letter_learner FIXED `0d6cacb` — `llTourStart()` brings the options sidebar out before the engine: hidden 6 / 5 steps (Block / Vowels; HEAD 4 / 3) × 8 cells, store byte-equal, focus back on Tour. Open carriers: 0 (the six per-file engines unprobed).

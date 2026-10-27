@@ -94570,3 +94570,31 @@ _(prior)_ **Next session (S559):** **PR `claude/adoring-noether-q8qk1e` (S554–
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 - H teacher walkthrough / paper-cuts (one tool): 2026-10-26 (**S559 — fontmaker (5th: S97 → S163 → S241 → S380 → S559): 3 lessons by real input × EN light 1280 / HE dark 800 (the template photographed → Auto-detect → Trace all → export → My Fonts → Name Tags; a starting font; a next-day load) + the student cell (Draw, 1366 windowed, 1024 fullscreen) + a 132-font export census. FOUND 12, FIXED 2 (+2 P2, 2 P3, 1 gate 2, 3 P4, 2 seeds). H-next: dashboard (S395), flash (S412).**)
+
+_(prior)_ **Next session (S560):** **PR `claude/adoring-noether-q8qk1e` (S554–S559, #368): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1101**, FM **5.59**, corpus ?v=7. ⚑ drift: main=2cc90bb sw=v1101 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest by the rule: C's flash (S381), P's fontmaker (S382), N's trope (S389), G's generator (S392), H's dashboard (S395); A/E/L (S530–S532) are 29 sessions old, the outside-loop delta (sw v1080 → v1095) unaudited — A or B first is defensible; `parsha/` is not in the Surfaces list. ⚑ Keep-alive #42–#44 green. ⚑ Seeds: 53. ⚑ FM: the template matcher and 5 starting fonts failing the shaping check (P2s; probes `h559/detect.mjs`, `osprobe.mjs`). ⚑ 27 DRAFT rows: recipe or retirement at the next A (`m554/`, `n555/`, `m556/`, `m558/`, `h557/`, `h559/common.mjs` (the engine mirror) are port candidates; traps 352, 356–372). ⚑ Queues: trope 1 P4, dictionary 3, name_tags 3, FM 2 + 8 new. ⚑ Maintainer: `08b8611`; O's permission rule; CI for `closeout.mjs --static`; translit second source; sw.js `no-store`; 14 fonts; torah screen reader; the locale's size and the Resources fonts' precache (Awaiting); gates 2–4 incl. the vowel palette's gold (S556), the trope link that resets the Trainer's reading (S557), the Phrases chips' casing (S558) and the FM's sheet-upload copy (S559); the S546 P3.
+
+
+<!-- archived by compact-ledger at the S561 boundary, 2026-10-27 -->
+## Compaction (S561, 2026-10-27) — moved verbatim from the live ledger
+
+### from Candidates (prioritized, top = next)
+
+- [ ] P3 (**NEW S560 C — a suite pattern**) | flash_cards.html, hebrew_dictionary.html, trope_tutor.html, torah_trainer.html, classroom_dashboard.html | **A hover-opened tip ignores Escape and vanishes when the pointer moves onto it** (WCAG 1.4.13): on flash 7/7 stay up under Escape with the focus elsewhere and 5/7 hide on the way to the bubble (`pointer-events:none`); the same idiom on the other four. Pattern `hover-tip-not-dismissible-or-hoverable` (fix shape in its catalog entry). | found S560
+
+- [ ] P3 (**NEW S560 C — census the rest**) | hebrew_blend_generator.html, hebrew_dictionary.html, letter_learner.html | **Keyboard focus may land under the remaining sticky bars**: the generator's `.main-toolbar`, the dictionary's phone `#mobileBar`, the Letter Learner's dialog head are unprobed carriers of `focus-hidden-under-a-sticky-bar` (parsha_emojis, flash and torah fixed); walk each with Tab / Shift+Tab. | found S560
+
+### from Awaiting the maintainer (an action or an answer only the maintainer can give; a session that resolves one moves it to Done)
+
+- [ ] P3 (**NEW S560 C — GATE 4: short windows; deferred unattended; `c560/shots/short-zoom400-en-light.png`, `short-zoom400-he-dark.png`, `short-i13L-en-light.png`**) | flash_cards.html | **At 400% zoom (1280×1024 → 320×256) the sticky header (112–121px) and Start bar (136–138) leave the setup screen 8px in EN and none in HE** (1366×768 at 200%: 181–184 of 384; iPhone 13 landscape 140 of 342). Proposal: under `max-height:500px` both scroll with the page and the root's scroll-padding drops to 0 (the parsha_emojis / dashboard rule) — what a zoomed desktop and a turned phone see changes.
+
+### from Done
+
+- [x] 2026-10-27 | (S560 close-out) | branch/deploy note | **S560 = C on flash (6th: S381 → S560, 114 commits): census 104 loads (7,960 controls), Tab / Shift+Tab walks × 8 cells + 2 iPhones, dialogs, motion, spacing, reflow, 400% zoom, hover content; FOUND 6, FIXED 2 + torah's carrier + the FM fullscreen P3; 2 new patterns.** Branch `claude/adoring-noether-q8qk1e` (PR #368, draft, S554–S560); deploy = the merge's Pages run. Decisions deferred to maintainer: gate 4 (short windows, Awaiting), gate 3 (the Exit label, P4). | `closeout.mjs` clean
+
+- [x] 2026-10-27 | `f00f4bc` | Hebrew_Font_Maker.html | (S560) **In fullscreen the Exit button no longer sits on Help** (`body.fullscreen .toolbar{padding-inline-end:84px}`, the Trainer's value; the S559 student-cell P3). | `fsprobe2.mjs` × EN/HE × light/dark × 5 widths × 2 steps, HEAD the control: a control under the plate 40 → 0 cells; the spilling label grazes 3% in 16 (P4); rows unchanged but Hebrew 800 (2 → 3).
+
+- [x] 2026-10-26 | (S555 close-out) | branch/deploy note | **S555 = N on flash cards (3rd: S244 → S361 → S555): FOUND 5, FIXED 2 (+2 P4 behind the governor, 1 measurement for D); + the Name Tags edge tab's dark hover (the queued S552 P4).** Branch `claude/adoring-noether-q8qk1e` (PR #368 continued); drift: nothing moved. 4 iterations (pass + 3 fixes); gates asked: none (every fix sits inside the …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- C accessibility (one tool): 2026-10-27 (**S560 — flash's 6th C (S381 → S560, 114 commits): a 104-load census (7,960 controls, plants 5/5), real Tab / Shift+Tab walks of 5 screens × 8 cells + 2 iPhones with the hint, dialogs, motion, spacing, 320px reflow, 400% zoom, hover content by a real mouse. FOUND 6, FIXED 2 (+ torah's carrier, the FM fullscreen P3, gate 4, 2 new patterns). C-next: dictionary (S427), torah (S441).**)
