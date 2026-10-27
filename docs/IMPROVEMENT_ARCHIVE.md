@@ -94636,3 +94636,43 @@ _(prior)_ **Next session (S561):** **PR `claude/adoring-noether-q8qk1e` (S554–
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 - P accounts & cloud (one surface): 2026-10-27 (**S561 — 14th P, fontmaker (its first alone; S382 audited the layer suite-wide): 7 smokes with `--sdk` (fontmaker 59 → 62 with 3 new checks; tools' 1 red a stale Letter Learner check), static 10/10 (plants 8/8), the 53 cloud keys en + he, W1–W3 by real clicks on the fake cloud with HEAD the control, live clean. FOUND 4, FIXED 3 (+ 1 P3 at the cap) + the generator's Generate bar over focus. P-next: dashboard (S421), flash (S435).**)
+
+_(prior)_ **Next session (S562):** **PR `claude/adoring-noether-q8qk1e` (S554–S561, #368): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1103**, FM **5.59**, corpus ?v=7. ⚑ drift: main=2cc90bb sw=v1103 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest by the rule: N's trope (S389), G's generator (S392), H's dashboard (S395), D's fontmaker (S410); A/E/L (S530–S532) are 31 sessions old — A first is defensible (27 DRAFT rows; two S560 patterns to census); `parsha/` is not in the Surfaces list. ⚑ Keep-alive #44 green. ⚑ Seeds: 53. ⚑ FM: the template matcher and 5 starting fonts failing the shaping check (P2s; `h559/detect.mjs`, `osprobe.mjs`); the deleted-copy snapshot (P3, `p561/fm.mjs` W3). ⚑ Ports at the next A: `m554/`, `n555/`, `m556/`, `m558/`, `h557/`, `h559/common.mjs`, `c560/`, `p561/` (fm.mjs + lib.part, genwalk, static); traps 352, 356–378. ⚑ Queues: trope 1, dictionary 3, name_tags 3, FM 11, torah 1, flash 1, generator 1, suite 2. ⚑ Maintainer: `08b8611`; O's permission rule; CI for `closeout.mjs --static`; translit second source; sw.js `no-store`; 14 fonts; torah screen reader; the locale's size and the Resources fonts' precache (Awaiting); gates 2–4 incl. the vowel palette's gold (S556), the trope link (S557), the Phrases chips' casing (S558), the FM's sheet-upload copy (S559), flash's short windows (S560, gate 4) and the FM Exit label (S560, gate 3); the S546 P3.
+
+
+<!-- archived by compact-ledger at the S563 boundary, 2026-10-27 -->
+## Compaction (S563, 2026-10-27) — moved verbatim from the live ledger
+
+### from Candidates (prioritized, top = next)
+
+- [ ] P3 (**NEW S562 N — trope at the cap**) | trope_tutor.html, letter_learner.html, name_tags.html (the shared tour engine) | **After a phone is turned the tour card can sit off-screen**: `_tourReposition` clamps to `window.innerWidth/innerHeight`, which a flip inflates for its one `resize` (461 for 390): trope EN steps 8–9 end 48–63 px past the edge with the × off, Name Tags EN 4–5 below the screen. `n562/patch-tour.py` (`documentElement.clientWidth/Height`) measured 2 → 0 on both; the 6 per-file engines carry the line (findings S562). | found S562
+
+- [ ] P3 (**NEW S492 N — needs the tour-engine extraction, UX rule 1**) | 7 tools' tour engines | **A tour does not follow a rotation**: `resize` re-places the card but never scrolls its target back; 4 of 7 dictionary steps strand it off-screen (findings S492; S562's census, not the clamp's: the dictionary 4/4, the generator EN 7/7, the dashboard's last step — `n562/tourflip-suite.mjs`). | found S492
+
+- [ ] P4 (**NEW S562 N — unmeasured carriers**) | torah_trainer.html, hebrew_dictionary.html, flash_cards.html, classroom_dashboard.html | **The tip placement trope fixed in `4b16e61` (no room above or below → off the bottom of a phone held sideways) is the same code in 4 per-file copies**: the landscape probe opened no tip there at load (theirs sit in closed panels and drawers) — open them, then `n562/tip-suite.mjs` and `patch-tip.py`. | found S562
+
+### from Done
+
+- [x] 2026-10-27 | (S562 close-out) | branch/deploy note | **S562 = N on the Trope Tutor (3rd: S248 → S389 → S562): 336 loads on real descriptors (plants 5/5), the iOS hint forced (160), touch by finger, flips mid-state, 4× CPU, a 9-page tour-flip census; FOUND 6, FIXED 2 on trope (+1 P3 at the cap) + the generator's faded Generate bar and the FM's deleted-copy snapshot from the queue.** Branch `claude/adoring-noether-q8qk1e` (PR #368, draft, S554–S562); deploy = the merge's Pages run. Decisions deferred to maintainer: none (no gate asked). Needs a redeploy: none.
+
+- [x] 2026-10-27 | `75ac986` | Hebrew_Font_Maker.html, scripts/smoke-fontmaker.mjs, font-maker.md | (S562) **Deleting the open project's account copy also unlinks this browser's snapshot** (`fmCloudDelete` → `autosaveNow()`; the S561 P3). | `p561/fm.mjs` W3 by real clicks, HEAD the control: the snapshot kept the deleted id, Continue relinked it, Unsaved for good → id null, opened as a local project, no badge; smoke-fontmaker 63/63 (HEAD 62/63); recipe 8 cells, 0 errors.
+
+- [x] 2026-10-27 | `e75e9ef` | trope_tutor.html | (S562) **The install hint steps aside while the tour or a drill question is up** (`body:has(#tourCard:not([hidden]), #drillQ:not([hidden]))`; pattern `install-banner-over-a-sheet's-bottom-controls`). | `banner.mjs`, the iOS hint forced on SE + i13 × 4, HEAD the control: the tour by real taps stalled at 2/9 or 4/9 → 9/9; drill Next covered on 1–4 of 5 → 0; the hint back after; recipe 8 cells, 0 errors.
+
+- [x] 2026-10-26 | (S557 close-out) | branch/deploy note | **S557 = H on the Trope Tutor (5th: S87 → S140 → S228 → S367 → S557): FOUND 4, FIXED 1 (+2 gate-2 candidates, 1 seed; 1 refuted); NEW pattern `tour-step-in-a-hidden-view` (the Letter Learner's carrier logged); + `dark-hover-resolves-to-the-rest-colour` un-retired with both open carriers fixed (FM, dictionary) and the dictionary's navy …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-26 | `488d4a7` | hebrew_dictionary.html | (S557) **The length badge and the emoji category tag keep their chip in dark** (`body.dark .b-len, body.dark .ec-tag.cat{background:#2a4070}`; pattern `dark-navy-fill-matches-its-ground`, the S556 candidate). | 8 cells vs HEAD, 100 + 100 chips: dark chip vs card 1.03 → 1.51:1, the label ≥ 7.3; light 14.81 unchanged; dark print still …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-26 | `39e085a` | hebrew_dictionary.html, sw.js | (S557) **The shoresh chips and toolbar buttons show their hover in dark** (`body.dark … :hover{background:#2a3349}`; pattern `dark-hover-resolves-to-the-rest-colour`, un-retired). | Real mouse, 8 cells vs HEAD: dark 3/3 buttons + 40/40 chips move (HEAD 0/3, 0/40), light both; labels ≥ 9.85; 0 errors; sw v1098→v1099
+
+- [x] 2026-10-26 | `14f9875` | Hebrew_Font_Maker.html | (S557) **The nikkud preview tiles show their hover in dark** (`body.dark .mark-sq:hover{background:#2a3349}`; the same pattern, the S554 candidate). | Real mouse on 12 tiles × 8 cells vs HEAD: dark 12/12 move, the active one too (HEAD 0/12); light 12/12; label ≥ 9.85; 0 errors
+
+- [x] 2026-10-26 | `69bb568` | trope_tutor.html, shared-components.md | (S557) **The Tour shows all nine steps from any tab** (`tuTourStart()` brings up Learn first, as `ntTourStart` opens its sidebar; NEW pattern `tour-step-in-a-hidden-view`). | 8 cells × 5 starts vs HEAD: 9 every time (HEAD 9/6/4/4/4); settings + progress byte-equal; focus back on Tour; a drill resumes its question; 0 errors
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S562 (2026-10-27):** sw.js, trope, generator, FM, scripts, font-maker.md, loop-findings, loop-patterns S562 · projects, accounts-and-cloud.md S561 · flash, torah S560 · name_tags, name-tags.md S559 · letter_learner, shared-components.md S558 · dictionary S557 · locales, privacy, scripts/loop S554 · ops.md, loop-passes S553 · i18n.md, index, dashboard S552 · parsha_emojis S550 · resources, contact S549 · skill, ledger scripts S544 · CSV S542 · i18n.js S541 · 5 toast pages S537 · saves S536 · README, sitemap S532 · account, terms, 404 …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- N mobile & touch-device (one surface): 2026-10-27 (**S562 — 31st N, `trope_tutor.html` (3rd: S248 → S389 → S562): 16 cells (SE 320, i13 390 + landscape, Pixel 7 412 × EN/HE × light/dark) × 20 views by real taps (plants 5/5), the iOS hint forced on SE + i13, tips / sliders / the staff by finger, flips mid-drill / tour / tip / menu, 4× CPU; + a 9-page tour-flip census. FOUND 6, FIXED 2 (+1 P3 at the cap, 2 P4). N-next: generator (S434), torah (S448).**)
