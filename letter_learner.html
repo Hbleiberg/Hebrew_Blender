@@ -4442,7 +4442,9 @@ function _tourReposition() {
   spot.style.width = (r.width + pad * 2) + 'px';
   spot.style.height = (r.height + pad * 2) + 'px';
   const card = document.getElementById('tourCard');
-  const cw = card.offsetWidth, ch = card.offsetHeight, vw = window.innerWidth, vh = window.innerHeight;
+  // The layout viewport, not innerWidth/innerHeight: a phone turned mid-tour fires resize while the card still sits at its
+  // old place, the page zooms out to fit it and innerWidth reads the zoomed width (461 for a 390px screen) for that event.
+  const cw = card.offsetWidth, ch = card.offsetHeight, vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight;
   let top = r.bottom + 12;
   if (top + ch > vh - 8) { const above = r.top - ch - 12; top = (above >= 8) ? above : Math.max(8, vh - ch - 8); }
   let left = r.left + r.width / 2 - cw / 2;
