@@ -1337,6 +1337,10 @@ body.dark .hi-sun{display:inline-block;}
 
   /* Fullscreen (matches torah_trainer.html / classroom_dashboard.html) */
   body.fullscreen header, body.fullscreen footer { display: none; }
+  /* The floating Exit button (a 60px plate 16px from the inline end) stands over the toolbar, which fullscreen keeps:
+     it covered most of Help, and at 1024px a wrapped Export. The toolbar keeps the plate's strip clear, as the Torah
+     Trainer's jump bar does; a wider strip for the label that spills past the plate wrapped the Hebrew toolbar at 1280. */
+  body.fullscreen .toolbar { padding-inline-end: 84px; }
   #fsExitBtn, #fsPanelsBtn {
     display: none; position: fixed; top: 14px; inset-inline-end: 16px; z-index: 200;
     background: rgba(13,18,32,0.55); color: #fff; border: 1.5px solid rgba(255,255,255,0.2);
