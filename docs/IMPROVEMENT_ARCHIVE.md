@@ -94676,3 +94676,47 @@ _(prior)_ **Next session (S562):** **PR `claude/adoring-noether-q8qk1e` (S554–
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 - N mobile & touch-device (one surface): 2026-10-27 (**S562 — 31st N, `trope_tutor.html` (3rd: S248 → S389 → S562): 16 cells (SE 320, i13 390 + landscape, Pixel 7 412 × EN/HE × light/dark) × 20 views by real taps (plants 5/5), the iOS hint forced on SE + i13, tips / sliders / the staff by finger, flips mid-drill / tour / tip / menu, 4× CPU; + a 9-page tour-flip census. FOUND 6, FIXED 2 (+1 P3 at the cap, 2 P4). N-next: generator (S434), torah (S448).**)
+
+_(prior)_ **Next session (S563):** **PR `claude/adoring-noether-q8qk1e` (S554–S562, #368): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1104**, FM **5.59**, corpus ?v=7. ⚑ drift: main=2cc90bb sw=v1104 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest: G's generator (S392), H's dashboard (S395), D's fontmaker (S410); A/E/L (S530–S532) are 32 sessions old — A first is defensible (27 DRAFT rows). ⚑ Keep-alive not re-read in S562 (S561: #44 green). ⚑ Seeds: 53. ⚑ Trope at the cap: the shared tour engine's clamp after a flip (P3, `n562/patch-tour.py` measured on copies). ⚑ FM: the template matcher and 5 starting fonts failing the shaping check (P2s; `h559/detect.mjs`, `osprobe.mjs`). ⚑ Ports at the next A: `m554/`, `n555/`, `m556/`, `m558/`, `h557/`, `h559/common.mjs`, `c560/`, `p561/`, `n562/` (census, banner, tourflip-suite, tip-suite); traps 352, 356–382. ⚑ Queues: trope 2, dictionary 3, name_tags 3, FM 10, torah 1, flash 1, suite 3. ⚑ Maintainer: `08b8611`; O's permission rule; CI for `closeout.mjs --static`; translit second source; sw.js `no-store`; 14 fonts; torah screen reader; the locale's size and the Resources fonts' precache (Awaiting); gates 2–4 incl. the vowel palette's gold (S556), the trope link (S557), the Phrases chips' casing (S558), the FM's sheet-upload copy (S559), flash's short windows (S560, gate 4) and the FM Exit label (S560, gate 3); the S546 P3.
+
+
+<!-- archived by compact-ledger at the S564 boundary, 2026-10-27 -->
+## Compaction (S564, 2026-10-27) — moved verbatim from the live ledger
+
+### from Candidates (prioritized, top = next)
+
+- [ ] P3 (**NEW S563 G — gate 3, the sheet's layout**) | hebrew_blend_generator.html | **Name the Letter with QR Answer Key prints the code alone on page 2** (Letter and A4, 4/4 cells; Export PDF fits it): the 40-letter sheet is 977 of the page's 989 px and the QR block needs 109, so every student copy costs an extra sheet and loses its code. No small fix keeps both: tighter cells in print when the QR is on, the code beside Name/Date, or a smaller code (findings S563). | found S563
+
+- [ ] P3 (**NEW S563 G — gate 3 or a shorter payload**) | hebrew_blend_generator.html | **The printed answer-key QR is 2.2 cm for 81–125 modules, 0.18–0.27 mm a module** (below the ~0.33 mm print guidance): decoded from the Print PDF at 300 dpi only 3/10 shapes, at 600 dpi 10/10, so an ordinary phone at reading distance may fail. Larger box (layout) or a shorter `?ak=` payload (findings S563). | found S563
+
+### from Done
+
+- [x] 2026-10-27 | (S563 close-out) | branch/deploy note | **S563 = G on the generator (4th: S137 → S265 → S392 → S563): 36 shapes × 2 cells to Letter + A4 PDFs (plants 5/5), Export PDF by click, the QR decoded from paper and file, `.ivrit` and share link 0/142; FOUND 11, FIXED 2 (+3 P3, 2 of them gate 3, 6 P4) + the shared tour engine's clamp and flash's fold triangles from the queue.** Branch `claude/adoring-noether-q8qk1e` (PR #368, draft, S554–S563); deploy = the merge's Pages run. Decisions deferred to maintainer: none asked; 2 gate-3 candidates logged. Needs a redeploy: none.
+
+- [x] 2026-10-27 | `7f8a628` | hebrew_blend_generator.html | (S563) **The QR's "too many items" notice stays on screen, off the student's paper** (print hide + Export PDF's `onclone`). | `g563/note.mjs`, Word Search + Identify with QR × 4 cells vs HEAD: on paper 8/8 → 0/8, pages unchanged; Export's lowest ink up 11–16 pt (8/8); still on screen 8/8; a fitting QR still prints, export identical; 0 errors.
+
+- [x] 2026-10-27 | `00c7d7a` | trope_tutor.html, letter_learner.html, name_tags.html | (S563) **A phone turned mid-tour no longer leaves the card off the screen** (the shared engine clamps to `documentElement.clientWidth/Height`; the S562 P3; pattern `fixed-control-positioned-outside-the-viewport`). | `n562/tourflip-suite.mjs` vs HEAD: trope EN 2 → 0, Name Tags EN 2 → 0, LL 0; desktop 8 cells × 3 pages: every card rect equal to HEAD's, 0 errors; block sha-identical on 3 carriers.
+
+- [x] 2026-10-27 | `6b8a624` | hebrew_blend_generator.html, sw.js | (S563) **Export PDF's answer-key QR keeps its own pixels** (the box blanked in the capture, the code's PNG placed over it after the raster; it was ~1.4 px a module). | `g563/qrcrop.mjs`, 9 QR shapes × 2 cells (+3 at 800 px), jsQR or ZXing at 800/1200 dpi ± blur vs HEAD: 86/88 vs 45/88; within 1–2 px of HEAD's box; sizes and pages unchanged; 0 errors. sw.js v1104 → v1105.
+
+- [x] 2026-10-26 | (S558 close-out) | branch/deploy note | **S558 = M on the Trope Tutor (3rd: S245 → S376 → S558): FOUND 4, FIXED 2 (+1 gate-2 candidate, 1 P4 at the cap; 5 settled) + the Letter Learner's tour (`tour-step-in-a-hidden-view`'s last open carrier) and Name Tags' Escape. Branch `claude/adoring-noether-q8qk1e`, PR #368 (S554–S558), sw v1100 — deploy on merge.** | closeout.mjs clean
+
+- [x] 2026-10-26 | `ac68c64` | name_tags.html | (S558) **Escape closes the Paste and Dashboard rows, as it does Rename** (each row's keydown runs its Cancel; a key the ask dialog or the tour handled is left alone; the S548 C candidate). | 8 cells, HEAD the control: 4 controls × 2 rows close with the focus on the opener (HEAD stays open); text kept; tour Escape ends the tour only; store byte-equal.
+
+- [x] 2026-10-26 | `0d6cacb` | letter_learner.html, shared-components.md | (S558) **The Tour shows every step with the options sidebar hidden** (`llTourStart()` brings the sidebar out first; pattern `tour-step-in-a-hidden-view`, the S557 candidate). | 8 cells × Block/Vowels × sidebar shown/hidden, HEAD the control: hidden 6 / 5 steps (HEAD 4 / 3); store byte-equal; engine sha-identical ×3.
+
+- [x] 2026-10-26 | `3e5c6b2` | trope_tutor.html | (S558) **"Drill again" no longer sits flush under the review box** (`.tu-review` bottom margin 4 → 14px; the start screen's collapses into the grid's 14). | 8 cells, HEAD the control: results 4 → 14px, the start screen 14 → 14 with the box shown.
+
+- [x] 2026-10-26 | `1feea8e` | trope_tutor.html, torah_trainer.html, sw.js | (S558) **The Hebrew font cards show their hover in dark** (`body.dark .font-opt:hover{border-color:var(--gold)}`, the generator's and dictionary's twin; pattern `dark-base-rule-outranks-variant`). | Real mouse on 16 cards × 8 cells × 2 pages, HEAD the control: dark 16/16 (HEAD 0/16), light 16/16 both.
+
+### from Per-session log (one line per session)
+
+- 2026-10-22 | **S543** | iters: 5 | tools: gen, dict ×2, flash, torah, name_tags, resources, contact, sw | patterns fixed: forced-colors ×2 | pass run: B | SW: v1071→v1072
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S563 (2026-10-27):** sw.js, generator, trope, letter_learner, name_tags, flash, loop-findings, loop-patterns S563 · FM, scripts, font-maker.md S562 · projects, accounts-and-cloud.md S561 · torah S560 · name-tags.md S559 · shared-components.md S558 · dictionary S557 · locales, privacy, scripts/loop S554 · ops.md, loop-passes S553 · i18n.md, index, dashboard S552 · parsha_emojis S550 · resources, contact S549 · skill, ledger scripts S544 · CSV S542 · i18n.js S541 · 5 toast pages S537 · saves S536 · README, sitemap S532 · account, terms, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- G print & export fidelity (one tool): 2026-10-27 (**S563 — generator (4th: S137 → S265 → S392 → S563; 117 commits since): 36 shapes × EN light / HE dark to Letter + A4 PDFs (plants 5/5), ink with backgrounds off and on, Export PDF by click (26 + 10 at 800), the QR decoded from paper and file, `.ivrit` and share link 0/142, nikkud paper. FOUND 11, FIXED 2 (+3 P3, 2 gate 3; 6 P4). G-next: flash (S423), chrome (S437).**)

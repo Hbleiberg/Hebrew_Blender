@@ -124,7 +124,8 @@
 - **Record (ledger row at S544):** - **`layout-read-per-grid-at-build`** (NEW S524 D; `roveTileGrid` ×3 FIXED `aa14beba`; open 0): ACTIVE, streak 0. A builder's layout read (`offsetParent`, a rect) per grid while the page still builds. Detection: `d524/trace.mjs` (forced Layout by stack line).
 
 ## `dark-palette-baked-into-paper`
-- **Status:** ACTIVE · **Owner:** G · **Consequence:** normal · **Last:** S523 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** G · **Consequence:** normal · **Last:** S563 · **Streak:** 1 · **Detector:** recipe
+- **Record (S563, G generator):** clean — colour-coded reading sheets printed from dark: every Letter-mode glyph fill is one of the light palette's colours, and Underline's stroke colours equal light's set (`g563/nikpaper.mjs`, pdfplumber's `non_stroking_color` / `stroking_color`).
 - **Shape:** Detection: `getNikudColor` output that reaches paper (print, `onclone`) resolves the light palette; a PDF from dark = light's.
 - **Detection:** `getNikudColor` output that reaches paper (print, `onclone`) resolves the light palette; a PDF from dark = light's.
 - **Record (ledger row at S544):** - **`dark-palette-baked-into-paper`** (NEW S523 G; torah, dictionary, generator fixed; open 0): ACTIVE, streak 0. Detection: `getNikudColor` output that reaches paper (print, `onclone`) resolves the light palette; a PDF from dark = light's.
@@ -424,7 +425,8 @@
 - **Archived full text (latest compaction copy):** - **`button-focus-lost-to-its-own-rebuild`** (**S542 dictionary corpus Try again ×2 `72b005c1`, parsha_emojis' new Try again built to it `20823f85`; S513 FM glyph tiles `a54e6d2`; S500 hebrew-keyboard tabs + layout, 4 carriers `1c701fc9`; S499 torah Try again ×2 `80c0a440`; S488 trope Try again ×2 `183605ba`; S483 hub `ab1a235e`; S474 flash Return to Options `3235f8eb`; S473 …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `dark-literal-escapes-the-print-tokens`
-- **Status:** ACTIVE · **Owner:** G · **Consequence:** normal · **Last:** S550 · **Streak:** 2 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** G · **Consequence:** normal · **Last:** S563 · **Streak:** 3 · **Detector:** recipe
+- **Record (S563, G generator):** clean — the ink census with backgrounds off and on reads the same hits printed from HE dark as from EN light on 36 shapes; Export PDF's mean luminance is 250–252 from both themes.
 - **Shape:** Detection: PDFs dark vs light, ink per page (<200 at 40 dpi); a lighter dark sheet = a `body.
 - **Detection:** PDFs dark vs light, ink per page (<200 at 40 dpi); a lighter dark sheet = a `body.dark` literal the print
 - **Record (S550, G name_tags):** clean — 28 layouts' PDFs from HE dark equal EN light's at the pixel (56 cells, a 1 px-tolerant diff; the inverted-sheet plant read 1,201 px); the sheet's ink, paper and cut lines are literal colours.
@@ -648,7 +650,8 @@
 - **Archived full text (latest compaction copy):** - **`save-over-an-existing-name-without-confirm`**: ACTIVE **S371 (Pass A): 3rd carrier FIXED `b85b579` — the dashboard's `saveWeekScheduleAs` (its comment even said "same-name save overwrites, like savePreset" — from before savePreset confirmed). Census: every other …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `fixed-surface-missing-from-the-print-hide-list`
-- **Status:** ACTIVE · **Owner:** G · **Consequence:** normal · **Last:** S550 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** G · **Consequence:** normal · **Last:** S563 · **Streak:** 1 · **Detector:** recipe
+- **Record (S563, G generator):** clean — 36 shapes × 2 cells in print media: 0 fixed or sticky boxes over 400 px² visible (the plant, a fixed box, fired in both cells). A screen-only *in-flow* notice is the same family: the QR's "too many items" note printed on student copies (FIXED `7f8a628`, print hide plus `onclone`).
 - **Record (S550, G name_tags):** the page's own surfaces clean — 12 states by real clicks (toast, tour, keyboard, edge tab, paste, import choice, rename, install banner with pwa.js's own rule) print nothing outside the sheets (plant: a fixed box → on paper). 1 HIT, suite-wide: the `.ivrit` engine's Merge/Replace ask overlay is an inline-styled fixed div with no id or class (`ivritAskMode`), and `js/ivrit-account.js`' `.ivacct-modal` and `js/ivrit-saves.js`' `.ivsav-overlay` carry no print rule either — open during Ctrl+P, each prints over every sheet (Candidate: a shared-block change across the six carriers and the hub).
 - **Record (ledger row at S544):** - **`fixed-surface-missing-from-the-print-hide-list`**: ACTIVE. **S496: `.bpe-*` FIXED `4c4dd3ae`.** **S392 (Pass G, `hebrew_blend_generator.html`): swept CLEAN — first clean sweep since registration, clean
 - **Archived full text (latest compaction copy):** - **`fixed-surface-missing-from-the-print-hide-list`**: ACTIVE. **S495 (G, dashboard): 1 HIT OPEN — Bulk preset edit's `.bpe-*` (added outside the loop); streak → 0.** **S392 (Pass G, `hebrew_blend_generator.html`): swept CLEAN — first clean sweep since registration, clean streak 0 → 1.** 36 print-media cells (18 printable shapes × EN light / HE dark, at the 749px Letter content …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -778,7 +781,8 @@
 - **Archived full text (latest compaction copy):** - **legibility-destroyed-by-a-second-dimming-layer**: **re-swept 2026-08-27 (S263, all 3 `#fsExitBtn` carriers) -- hits: 1 (`hebrew_blend_generator.html`, the LAST unfixed carrier), fixed in-pass (`eb0eab3`); clean streak: 0 -- ACTIVE, consequence-critical (legibility), never …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `fixed-control-positioned-outside-the-viewport`
-- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S562 · **Streak:** 0 · **Hits:** 3 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S563 · **Streak:** 0 · **Hits:** 3 · **Detector:** recipe
+- **Record (S563):** the S562 P3 FIXED `00c7d7a`: the shared tour engine clamps to `documentElement.clientWidth/Height`. Every step, iPhone 13 portrait → landscape → portrait (`n562/tourflip-suite.mjs`, HEAD copies the control): trope EN 2 → 0, Name Tags EN 2 → 0, the Letter Learner 0 → 0. Desktop × 8 cells × 3 pages: every card rect equals HEAD's. The six per-page engines carry the same line, with no stranding measured from it there.
 - **Record (S562):** trope_tutor — two carriers the at-rest census cannot see. (1) The Melody tip on a phone held sideways: no room above or below its icon, 38 / 49 px off the bottom — FIXED `4b16e61` (pinned inside the window). (2) The shared tour engine after a flip: `_tourReposition` clamps to `innerWidth`/`innerHeight`, which read the zoomed-out viewport for the one `resize` a flip fires while the card still sits at its old place (461 for 390) — trope EN steps 8–9 and Name Tags EN 4–5 stranded; P3 (the clamp to `documentElement.clientWidth/Height` measured 2 → 0 on both). Detection extends to a flip mid-state (`setViewportSize` portrait ⇄ landscape on the descriptor) and every tip opened in landscape, judged by `clientWidth/clientHeight` (`n562/tourflip-suite.mjs`, `tip-suite.mjs`).
 - **Record (S555):** flash_cards clean: 0 fixed elements outside the viewport in 256 cells (a sticky bar scrolled away at the page's end is its natural position, not a hit; a fixed plant at left:−40 fired).
 - **Record (ledger row at S544):** - **fixed-control-positioned-outside-the-viewport**: **REGISTERED + first swept suite-wide 2026-08-26 (S262 Pass N) -- hits: 1 carrier (`hebrew_blend_generator.html` `#sidebarToggleBtn`), fixed in-pass (`5f6a0a0`); census 78 cells (13 pages x 3 phone descriptors x EN/HE)
@@ -882,7 +886,8 @@
 - **Archived full text (latest compaction copy):** - **rebuild-where-a-class-swap-would-do**: **REGISTERED 2026-08-16 (S220)** — not yet swept suite-wide, hits: 1 (`26b9e7e`), clean streak: 0 — ACTIVE. **Definition:** a settings toggle whose visual effect is ALREADY gated in CSS on a body/root class, yet whose handler calls the …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `decorative-glyph-carrier-exposed-to-assistive-tech`
-- **Status:** ACTIVE · **Owner:** A · **Consequence:** normal · **Last:** S530 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** A · **Consequence:** normal · **Last:** S563 · **Streak:** 0 · **Detector:** recipe
+- **Record (S563):** flash_cards FIXED `872d772`: three CSS-generated ▾ (`.panel-title::after`, `.adv-subhead::before`, `.vgroup-head::after`) joined 25 accessible names ("Mode ▾", "▾ Presets", the selects "▾ Profiles & Results" / "▾ Transliteration", "AH Sound – Aqua ▾"). The fix is `content: '▾' / ''` after a plain `content` fallback. Recipe extension for generated content: CDP `Accessibility.getFullAXTree`, names matching the glyph, with full-page screenshots byte-equal as the visual control (25 → 0 in 8/8 cells). Open: 11 like rules on 6 pages (candidate).
 - **Record (ledger row at S544):** - **decorative-glyph-carrier-exposed-to-assistive-tech** (**S530: header ✡︎ ×13 `eee7080d`, generator ⚡/🔍 `b298abb2` FIXED (`a530/fix2.mjs`, `fix4.mjs`); category emoji unruled (candidate).** **S529: generator start screen + chips `19ece1f1`.** **S528: resources' icons FIXED
 - **Archived full text (latest compaction copy):** - **decorative-glyph-carrier-exposed-to-assistive-tech** (**S530: header ✡︎ ×13 `eee7080d`, generator ⚡/🔍 `b298abb2` FIXED (`a530/fix2.mjs`, `fix4.mjs`); category emoji unruled (candidate).** **S529: generator start screen + chips `19ece1f1`.** **S528: resources' icons FIXED `34ae261b`.** **2nd instance fixed 2026-08-15, S219, c2399f1 — …[full text: IMPROVEMENT_ARCHIVE.md]
 
