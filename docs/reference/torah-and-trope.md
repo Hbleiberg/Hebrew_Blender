@@ -235,7 +235,7 @@ stop and reconsider. Shell (dark mode, tooltips, tour, toast, My Fonts) is copie
 (Learn | Phrases | Drill | Settings) laid out like the Font Maker's Settings tab: a serif heading per group over a
 hairline rule, the group's items in a grid (three across, two below 1024px, one below 640px) with small
 uppercase item labels, and nothing to collapse — so the page carries no panel-collapse memory. The
-groups are names and tradition (primary names, and a pointer to the Melody dropdown), sing along (key, voice, note
+groups are names and tradition (primary names, and a pointer to the two Melody dropdowns), sing along (key, voice, note
 names, tune speed, play each tune and the sing-back pause — see *Key and voice*, *Note names* and *Tune practice*
 below), drill, Hebrew font, and a shared row of progress, your account and about.
 There is no header gear; `openSettings()` survives only as `setMode('settings')` for the tools smoke; the *Your
@@ -293,8 +293,8 @@ to Learn), and a caller that opens something inside the new tab (`openLearnFor`)
   the key is spelled by `motifPitchPos`'s rule — raised 1st and 4th, lowered 3rd, 6th and 7th —
   which gives the charts' own spellings: A major's lowered seventh is G♮, and C major writes F♯ and
   B♭.
-  **The file is the Learn cards' staff, nothing else** — the drill's Melody questions play
-  PocketTorah recordings, not the motifs — and it is fetched `?v=6`. **Every shipped entry is `verified:true`,
+  **The file is the Learn cards' staff** — the year-round drill plays PocketTorah recordings, not the motifs (a
+  motif file sounds the drill only in a melody nobody recorded: *Drill* below) — and it is fetched `?v=6`. **Every shipped entry is `verified:true`,
   hand-transcribed from the printed Ashkenazi cantillation chart recorded in
   `docs/tropepatterns.md`** (each `source` names the chart row it comes from; the row is read onto
   the staff's four values as section A there says — a grace note is a full eighth, since the staff has
@@ -332,14 +332,18 @@ to Learn), and a caller that opens something inside the new tab (`openLearnFor`)
   tabs with the melody note in `#tuKeyDock` (`setMode`): `settings.melody`, `'torah'` by default, one of
   `MELODY_KEYS` — torah, conservative, highholiday, haftarah, esther, megillot, eicha — through the one writer `setMelody`;
   `syncMelodyNote` sets the dropdown and shows the melody's note span) picks which file draws the Learn staffs,
-  which chart the Phrases tab shows and what the tune buttons play. The key bar shows once the dictionary has
+  which chart the Phrases tab shows, what the tune buttons play and what the drill plays. Its twin on the Drill
+  start screen (`#drillMelodySel`, *Drill* below) writes the same setting through the same `setMelody`, so a choice
+  there moves the Learn staffs too. The key bar shows once the dictionary has
   loaded; only its key controls (`#tuKeyCtl`) wait for staffs to move, so a melody whose motif file is missing
   can be left (`syncTuneControls`). `MELODY_INFO` is the one table behind it: each melody's file with its
   `?v=` (null for a melody not yet transcribed) and the note span under the bar (the note names the chart and its source — the Avery/Binder charts or
   The Art of Cantillation — so the bar carries no separate credit), whether the key readout names the relative
   minor (haftarah and eicha, whose sof pasuk comes to rest on C: `keyNameText` through `trope.key.name_minor`,
   as the Trainer's staff readout does), whether the Phrases cards have examples (year-round and High Holidays —
-  the census reads no other text) and whether the chart's closing ends a chapter (the three megillah charts).
+  the census reads no other text), whether the chart's closing ends a chapter (the three megillah charts) and
+  `drillTunes` — a melody nobody recorded (High Holidays, Haftarah, Esther, the three Megillot, Eicha), whose drill
+  plays its chart's tunes (`drillUsesTunes`; *Drill* below).
   Two more fields carry the *Year Round [Conservative]* melody — Cantor Arianne Brown's own, the Total Torah
   recordings' (*Recording sources* below): `clips: 'totaltorah'`, so the Learn examples and the drill's Hear and
   Melody questions come from the Total Torah clip index (`activeIndex()`, `examplesFor(key, melody)`; every other
@@ -352,7 +356,7 @@ to Learn), and a caller that opens something inside the new tab (`openLearnFor`)
   (`&reader=totaltorah`), the footer's pinned-English credit `#tuFooterAudioTT` shows through `syncMelodyNote` while
   the melody is chosen, and a drill session snapshots the melody it started under (`drill.melody`, read through
   `drillMelody()`, so a choice made on another tab mid-session never mixes two recordings in one question; the start
-  screen follows the bar, `setMelody` refreshes it). *Adding the Conservative rows later* (below) is the recipe for
+  screen's dropdown shows the same setting, and `setMelody` refreshes the screen). *Adding the Conservative rows later* (below) is the recipe for
   the transcription.
   The closing group's title and each closing card's tag name what the closing ends (`closingTitleKey`): an
   aliyah on the year-round and High Holiday charts (`trope.phrases.group_closing`, the card tag
@@ -363,12 +367,13 @@ to Learn), and a caller that opens something inside the new tab (`openLearnFor`)
   survives a round trip. **`?melody=<key>`** (the Torah Trainer's links: `highholiday` from a Rosh Hashanah or
   Yom Kippur reading, `haftarah` from a haftarah, a megillah's own melody) shows that melody for the visit only
   — `_melodyOverride`, read once at init, never saved or synced, silent on any other value; the bar shows it.
-  Choosing in the bar, or Reset all, replaces it and drops the param with `history.replaceState` (the other
-  params and the hash stay), so a reload after a choice does not bring the link's melody back. The bar's note
+  Choosing in the bar or on the Drill start screen, or Reset all, replaces it and drops the param with
+  `history.replaceState` (the other params and the hash stay), so a reload after a choice does not bring the link's
+  melody back. The bar's note
   (`#tuMelodyNote`, one span per melody with its own static `data-i18n`, shown by `syncMelodyNote`) names the
   melody and its chart — it prints with the chart, the dropdown does not; a card whose chart prints no row for its
   mark says so where the staff would be (`trope.learn.no_figure_m`); the staff's aria-label names the melody
-  (`trope.learn.motif_aria_m`, `trope.phrases.staff_aria_m`); Settings keeps only a pointer to the bar
+  (`trope.learn.motif_aria_m`, `trope.phrases.staff_aria_m`); Settings keeps only a pointer to the two dropdowns
   (`trope.melody.where`); the tour's second step lands on the bar. The motif builder never reads or writes the High Holiday
   file — there are no High Holiday recordings to draft from — so it is edited by hand like a verified
   entry (the phrases builder checks it against its rows), and its `?v=` is bumped on every change.
@@ -566,7 +571,8 @@ to Learn), and a caller that opens something inside the new tab (`openLearnFor`)
     segol's run) would blur into one sound, so they are held that long and the tune stretches around
     them. The staff still shows the printed rhythm.
     Both tunes go through `_playTuneCore`, so `stopTune()` stops either, and a clip, a tab switch or a
-    settings change stops both. A phrase tune's id is `phrase:<melody>:<row>`.
+    settings change stops both. A phrase tune's id is `phrase:<melody>:<row>`; the Drill's tunes (*Drill* below) use
+    the same scheduler, with the id `drill:<mark>`.
   - **One key bar.** `setMode` moves `#tuKeyBar` into `#tuKeySlotPhrases` and back above the family
     chips. On the Phrases tab, `syncTuneControls` names the phrase chart's key and waits for that file,
     not the motif file.
@@ -655,7 +661,8 @@ to Learn), and a caller that opens something inside the new tab (`openLearnFor`)
   bar). Three fields of the settings blob shape every tune, the Learn cards' and the Phrases tab's alike; the staffs
   never change, so nothing re-renders.
   - **`tuneRate`** (0.5–1.5×, default 1, clamped by `_sliderNum` on load, read through `tuneRateVal()`) is the
-    tunes' own speed: `playTune` and `togglePhraseTune` divide their 0.32 s eighth by it. The recordings keep the
+    tunes' own speed: `playTune` and `togglePhraseTune` divide their 0.32 s eighth by it, and so does the Drill's tune
+    in a melody nobody recorded (`playDrillTune`, through the same `_motifTimeline`). The recordings keep the
     Drill group's `playbackRate`, which no tune reads. *Slow for learning* (`TUNE_SLOW`, 0.70×) is a toggle button in
     Settings with a twin on the key bar: pressed while the speed is 0.70, back to 1.00 when pressed again.
   - **`tuneRepeats`** (1, 2 or 3, read through `tuneRepeatsVal()`) and **`tuneEcho`** (on only when `true`) make each
@@ -727,10 +734,41 @@ to Learn), and a caller that opens something inside the new tab (`openLearnFor`)
   to minimize MP3 hops; distractors sampled without replacement, weighted toward same-family ∪
   `CONFUSABLE_PAIRS` (pashta↔kadma etc.) as the answer's mastery rises. Melody choices are two-tap:
   first tap plays, second tap answers.
+  - **The melody to drill** is chosen on the start screen (`#drillMelodySel`, *Which melody?*): the key bar's Melody
+    dropdown again, one setting (`settings.melody`) and one writer (`setMelody`), so a choice here moves the Learn
+    staffs too and drops a `?melody=` link's per-visit choice. It is JS-built from `MELODY_INFO` in the bar's order
+    with the bar's labels (`buildDrillMelodySel`, the first of `syncDrillSelects`' three), and `syncMelodyNote` keeps
+    its value in step with the bar's without rebuilding it. The line under it (`#drillMelodySrc`, written by
+    `updateDrillStart` and named by the select's `aria-describedby`) says what the drill sounds like in that melody:
+    PocketTorah's recordings (`trope.drill.src_pockettorah`), Cantor Brown's Total Torah recordings
+    (`trope.drill.src_totaltorah`), or the chart's tunes (`trope.drill.src_tunes`).
+  - **A melody nobody recorded** (`MELODY_INFO.drillTunes`: High Holidays, Haftarah, Esther, the three Megillot,
+    Eicha — PocketTorah's reading is the year-round melody, so its clips would drill the wrong melody) plays each
+    mark's figure from its own motif file instead, exactly as the Learn card's tune button sounds it (the Sing along
+    key, voice and tune speed, `_motifTimeline`), once (`playDrillTune` passes `once` to `_playTuneCore`: no repeats,
+    no sing-back turn, no button pressed and no staff lit). `drillSound(key, ex, cbs, melody)` sounds a question's
+    own mark — the Hear question's autoplay and its Play the melody button, the Identify question's sound after the
+    answer, the feedback's Replay and the review list's ▶ — and picks the clip or the tune from the melody; a tune
+    never fails to load, so only a clip reaches `onError`. Each Melody choice's first tap makes the same choice inline
+    (`buildMelodyChoices`), where a recorded choice re-picks its own example when its clip fails.
+    - A mark is drillable there when the chart prints a figure for it (`motifFor` in that melody's set) and the
+      index has a word for an Identify question (`drillableTropes(melody)`), so a mark the chart does not print is
+      never asked. The questions show an index example's word only, never play its file: `pickExample` takes any of
+      them (`anyFile`), and the session skips the sort by file key, keeping its no-adjacent-repeat order.
+    - A chart can sing two marks alike (the festival megillot's munach and mercha, Eicha's etnachta and sof pasuk):
+      `pickDistractors(answer, n, byEar)`, asked by the Hear and Melody questions with `byEar`, then offers no choice
+      whose figure (`drillTuneSig`, the notes' `p:d` run) equals the answer's or one already chosen. An Identify
+      question's name choices keep the twin, which is a fair distractor by sight.
+    - A melody whose motif file did not load (loadData leaves it null) cannot drill: the start screen says
+      `trope.drill.chart_not_loaded`, keeps *Start drill* locked and shows the Try again, as for a missing Total
+      Torah index (`trope.drill.tt_index_not_loaded`).
+    - Mastery stays one record per mark whatever the melody, like the Conservative melody's: `recordAnswer` is
+      unchanged and the progress blob gains no field.
 - **Results screen**: `showResults()` distils the session's wrong answers into `_lastMissed` (first
-  miss per mark wins, keeping the clip that was playing) and `buildMissedReview()` renders that list
-  **read-only** — safe to re-render on a language or font change, it never touches progress. Each row
-  offers ▶ (replay the clip) and "Study →" (`openLearnFor(key)`); "Drill these marks" sets
+  miss per mark wins, keeping the clip that was playing and the session's melody, `mel`) and `buildMissedReview()`
+  renders that list **read-only** — safe to re-render on a language or font change, it never touches progress. Each row
+  offers ▶ (replay the clip, or the mark's tune in `mel`: a melody chosen since never changes what it plays) and
+  "Study →" (`openLearnFor(key)`); "Drill these marks" sets
   `_missedPool`, a **one-session answer-pool override** that `startDrill()` consumes on its first
   line, before any bail can return, so it can never leak into the next ordinary drill (no storage
   key, nothing synced, nothing to reset). The button lives inside `#resReview`, so a clean sweep
@@ -739,9 +777,10 @@ to Learn), and a caller that opens something inside the new tab (`openLearnFor`)
   (`data-key`) and flashes `.pulse-attn`; it **deliberately marks the family visited** — unlike the
   `_i18nRerender` / `_chartPrintBuild` read-only paths — because the student really is about to
   study it. `setMode('drill')` re-shows the start screen whenever no session is active, so a Learn
-  detour from the results screen ends there: the score is gone, but while `_lastMissed` holds marks
-  the start screen repeats the count and "Drill these marks" (`#drillStartReview`, filled by
-  `updateDrillStart()`, so a tab switch, a language change and a reset all keep it current).
+  detour from the results screen ends there: the score is gone, but while `_lastMissed` holds marks the chosen
+  melody can sound, the start screen repeats their count and "Drill these marks" (`#drillStartReview`, filled by
+  `updateDrillStart()`, so a tab switch, a language change, a melody choice and a reset all keep it current);
+  `startDrill` leaves the others out of the focused pool the same way, and an ordinary drill starts if none is left.
 
 - **Adding the Conservative rows later.** The *Year Round [Conservative]* melody ships with `staffs: false`: Cantor
   Brown's melody has no printed chart, so its rows are transcribed by ear from the Total Torah recordings when the

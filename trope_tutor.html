@@ -100,7 +100,7 @@
     { "@type": "Question", "name": "What is the Trope Tutor?", "acceptedAnswer": { "@type": "Answer", "text": "A free interactive tutor for the Torah cantillation marks. Learn mode teaches each mark's symbol, names, and melody with real chanted examples; Phrases shows every line of the printed chart on a full staff; Drill mode quizzes you three ways with per-mark mastery tracking." } },
     { "@type": "Question", "name": "What melody tradition is this?", "acceptedAnswer": { "@type": "Answer", "text": "The recordings are PocketTorah's, chanted in the Spiro (Conservative) melody. The staffs follow printed charts: the Avery/Binder (Reform) charts for the year-round and High Holiday melodies, and The Art of Cantillation (Portnoy & Wolff, UAHC) for the Haftarah, Esther, Shir HaShirim / Ruth / Kohelet and Eicha melodies — the Melody dropdown in the key bar picks one. Year Round [Conservative] plays Cantor Arianne Brown's Total Torah recordings (Adas Israel Congregation) — her own Conservative melody, with no staff yet. Both Ashkenazi and Sephardi trope names are shown, and you can switch the primary naming tradition in settings." } },
     { "@type": "Question", "name": "What are trope (te'amim)?", "acceptedAnswer": { "@type": "Answer", "text": "Cantillation marks printed above and below the words of the Hebrew Bible. Each mark names a melodic phrase and marks the grammar of the verse — together they tell you how to chant it." } },
-    { "@type": "Question", "name": "How does Drill mode work?", "acceptedAnswer": { "@type": "Answer", "text": "Each session asks 5, 10 or 20 questions (your choice) of three kinds: see a marked word and name the trope, hear a clip and pick the symbol, or see a symbol and pick the matching melody. Marks you miss come up more often, and distractors get sneakier (like pashta vs. kadma) as your mastery grows." } },
+    { "@type": "Question", "name": "How does Drill mode work?", "acceptedAnswer": { "@type": "Answer", "text": "Each session asks 5, 10 or 20 questions (your choice) in the melody you choose, of three kinds: see a marked word and name the trope, hear a clip and pick the symbol, or see a symbol and pick the matching melody. The two year-round melodies play real recordings; the High Holiday, Haftarah, Esther, Megillot and Eicha melodies play each mark's tune from the printed chart. Marks you miss come up more often, and distractors get sneakier (like pashta vs. kadma) as your mastery grows." } },
     { "@type": "Question", "name": "Where do the chanted examples come from?", "acceptedAnswer": { "@type": "Answer", "text": "Every example is a real word from the Torah reading, clipped from PocketTorah's recordings (by Russel Neiss & Rabbi Charlie Schwartz, CC BY-SA 4.0) using their word-level timings — or, on the Year Round [Conservative] melody, from Cantor Arianne Brown's Total Torah recordings (Adas Israel Congregation, used by permission), each linked to its complete video on YouTube. The Hebrew text comes from Sefaria." } },
     { "@type": "Question", "name": "Is the Trope Tutor free?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Materials that incorporate PocketTorah audio are CC BY-SA 4.0; the Total Torah clips are Cantor Arianne Brown's, used by permission (not CC-licensed); other IvritSuite content is CC BY-NC-SA 4.0. No account required, no ads." } },
     { "@type": "Question", "name": "Can I print a chart of all the trope marks?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. In Learn mode, Print chart prints all 26 marks as one reference chart — each mark's symbol, its Ashkenazi and Sephardi names, and its melody on a staff in the melody and key you chose, with chanted examples, grouped by clause family. On the Phrases tab, Print phrases prints every phrase of that melody." } },
@@ -120,7 +120,7 @@
     { "@type": "HowToStep", "position": 2, "name": "Study each mark's card", "text": "Every card shows the mark's symbol on a Hebrew word plus its Ashkenazi and Sephardi names. Switch the primary naming tradition in settings." },
     { "@type": "HowToStep", "position": 3, "name": "Play the chanted example", "text": "Each card plays a real word from the Torah reading, clipped from PocketTorah's recordings — or from Cantor Arianne Brown's Total Torah recordings on the Year Round [Conservative] melody — so you hear the mark's actual melody." },
     { "@type": "HowToStep", "position": 4, "name": "Hear the marks together", "text": "Open the Phrases tab to see each line of the printed chart as it is sung, on a full staff: play it as tones, then hear real verses where the Torah sings it." },
-    { "@type": "HowToStep", "position": 5, "name": "Switch to Drill", "text": "Drill sessions ask 5, 10 or 20 questions of three kinds: name the trope on a marked word, hear a clip and pick the symbol, or pick the melody that matches a symbol." },
+    { "@type": "HowToStep", "position": 5, "name": "Switch to Drill", "text": "Choose the melody to drill, then answer 5, 10 or 20 questions of three kinds: name the trope on a marked word, hear a melody and pick the symbol, or pick the melody that matches a symbol." },
     { "@type": "HowToStep", "position": 6, "name": "Track your mastery", "text": "The per-mark mastery grid shows your progress. Marks you miss come up more often, and distractors get sneakier as your mastery grows." }
   ]
 }
@@ -588,6 +588,9 @@ body.dark .tu-feedback .no { color:#ff6666; }
 }
 .tu-scope-row select:focus { outline:2px solid var(--focus-ring); outline-offset:0; }
 body.dark .tu-scope-row select { background:var(--navy-deep); color:var(--text); }
+/* What the drill plays in the melody chosen just above (updateDrillStart): tucked under its row, the rows' 14px below it. */
+.tu-drill-src { font-size:0.78rem; line-height:1.45; color:var(--muted); max-width:560px; margin:-8px auto 14px; }
+.tu-drill-src:empty { display:none; }
 /* Under a finger these selects compute 13.1px, and iOS Safari zooms the page into a focused field under 16px and leaves
    it zoomed. 16px only where the pointer is coarse (the dictionary's and contact's rule); the desktop keeps its size. */
 @media (pointer:coarse) { .tu-key-sel, .tu-scope-row select { font-size:16px; } }
@@ -1136,9 +1139,11 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
          controls (#tuKeyCtl) stay hidden while no motif file is loaded (no staffs to move), its Melody
          dropdown (#tuMelodySel: which of the six printed charts the Learn cards, the Phrases tab and their
          play buttons draw, or the Conservative melody — settings.melody, one of MELODY_KEYS; one writer,
-         setMelody) never does, so a melody whose file is missing can be left. The drill and the recordings
-         are PocketTorah's year-round melody whatever it says — except under Year Round [Conservative], whose
-         clips (MELODY_INFO.clips) are the Total Torah verse files — and the note under the bar says so; a
+         setMelody) never does, so a melody whose file is missing can be left. Its twin on the Drill start
+         screen (#drillMelodySel) writes the same setting. The recordings are PocketTorah's year-round melody
+         whatever it says — except under Year Round [Conservative], whose clips (MELODY_INFO.clips) are the
+         Total Torah verse files — and the note under the bar says so; the drill plays those recordings in the
+         two year-round melodies and the chart's own tunes in the others (MELODY_INFO.drillTunes). A
          ?melody= link chooses for the visit
          only (readMelodyParam). Slow for learning is the twin of the Tune speed button in Settings (one
          writer, setTuneRate). The arrows, the reset, Slow and the dropdown are screen-only; the line prints
@@ -1222,6 +1227,15 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
              heading through I18n.t('trope.drill.heading', {n}) — the #drillTypesSummary shape below. -->
         <h2 id="drillHeading"></h2>
         <p class="tu-drill-sub" id="drillTypesSummary"></p>
+        <!-- The key bar's Melody dropdown, again: one setting (settings.melody, one writer setMelody), so a choice here
+             moves the Learn staffs too. JS-built from MELODY_INFO by buildDrillMelodySel (syncDrillSelects), its value
+             kept by syncMelodyNote. The line under it (updateDrillStart) says what the drill sounds like in that melody:
+             PocketTorah's recordings, Cantor Brown's, or the chart's own tunes for a melody nobody recorded. -->
+        <div class="tu-scope-row">
+          <label for="drillMelodySel" data-i18n="trope.drill.melody_label">Which melody?</label>
+          <select id="drillMelodySel" onchange="setMelody(this.value)" aria-describedby="drillMelodySrc"></select>
+        </div>
+        <p class="tu-drill-src" id="drillMelodySrc"></p>
         <div class="tu-scope-row">
           <label for="drillScopeSel" data-i18n="trope.drill.scope_label">Drill which marks?</label>
           <select id="drillScopeSel" onchange="setDrillScope(this.value)"></select>
@@ -1300,8 +1314,8 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
           </div>
           <div class="tu-set-item">
             <div class="tu-set-label"><span data-i18n="trope.melody.label">Melody</span></div>
-            <p class="settings-note" data-i18n="trope.melody.where">Choose the melody in the Key bar on the Learn and Phrases tabs; it follows you between them.</p>
-            <p class="settings-note" data-i18n="trope.melody.note">The staffs and their play buttons follow that choice: the Avery/Binder (Reform) charts for Year-round and High Holidays, The Art of Cantillation's (Portnoy &amp; Wolff, UAHC) for Haftarah, Esther, the three Megillot and Eicha. The recordings and the drill use PocketTorah's Spiro (Conservative) year-round melody — except Year Round [Conservative], which plays Cantor Arianne Brown's Total Torah recordings (Adas Israel Congregation) instead; it has no staff yet.</p>
+            <p class="settings-note" data-i18n="trope.melody.where">Choose the melody in the Key bar on the Learn and Phrases tabs, or on the Drill tab before you start; one choice serves all three.</p>
+            <p class="settings-note" data-i18n="trope.melody.note">The staffs and their play buttons follow that choice: the Avery/Binder (Reform) charts for Year-round and High Holidays, The Art of Cantillation's (Portnoy &amp; Wolff, UAHC) for Haftarah, Esther, the three Megillot and Eicha. The recordings are PocketTorah's Spiro (Conservative) year-round melody — except Year Round [Conservative], which plays Cantor Arianne Brown's Total Torah recordings (Adas Israel Congregation) instead; it has no staff yet. The drill follows the choice too: it plays the recordings in the two year-round melodies, and each mark's tune from the chart in the others.</p>
           </div>
         </div>
       </div>
@@ -1476,7 +1490,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="trope.footer.faq_q1">What is the Trope Tutor?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a1">A free interactive tutor for the Torah cantillation marks. Learn mode teaches each mark's symbol, names, and melody with real chanted examples; Phrases shows every line of the printed chart on a full staff; Drill mode quizzes you three ways with per-mark mastery tracking.</p></details>
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="trope.footer.faq_q2">What melody tradition is this?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a2">The recordings are PocketTorah's, chanted in the Spiro (Conservative) melody. The staffs follow printed charts: the Avery/Binder (Reform) charts for the year-round and High Holiday melodies, and The Art of Cantillation (Portnoy &amp; Wolff, UAHC) for the Haftarah, Esther, Shir HaShirim / Ruth / Kohelet and Eicha melodies — the Melody dropdown in the key bar picks one. Year Round [Conservative] plays Cantor Arianne Brown's Total Torah recordings (Adas Israel Congregation) — her own Conservative melody, with no staff yet. Both Ashkenazi and Sephardi trope names are shown, and you can switch the primary naming tradition in settings.</p></details>
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="trope.footer.faq_q3">What are trope (te'amim)?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a3">Cantillation marks printed above and below the words of the Hebrew Bible. Each mark names a melodic phrase and marks the grammar of the verse — together they tell you how to chant it.</p></details>
-        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="trope.footer.faq_q4">How does Drill mode work?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a4">Each session asks 5, 10 or 20 questions (your choice) of three kinds: name the trope on a marked word, pick the symbol for a melody you hear, or pick the melody that matches a symbol. Marks you miss come up more often, and distractors get sneakier (pashta vs. kadma) as your mastery grows.</p></details>
+        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="trope.footer.faq_q4">How does Drill mode work?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a4">Each session asks 5, 10 or 20 questions (your choice) in the melody you choose, of three kinds: name the trope on a marked word, pick the symbol for a melody you hear, or pick the melody that matches a symbol. The two year-round melodies play real recordings; the High Holiday, Haftarah, Esther, Megillot and Eicha melodies play each mark's tune from the printed chart. Marks you miss come up more often, and distractors get sneakier (pashta vs. kadma) as your mastery grows.</p></details>
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="trope.footer.faq_q5">Where do the chanted examples come from?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a5">Every example is a real word from the Torah reading, clipped from PocketTorah's recordings (Russel Neiss &amp; Rabbi Charlie Schwartz, CC BY-SA 4.0) using their word-level timings — or, on the Year Round [Conservative] melody, from Cantor Arianne Brown's Total Torah recordings (Adas Israel Congregation, used by permission), each linked to its complete video on YouTube. The Hebrew text comes from Sefaria.</p></details>
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="trope.footer.faq_q6">Is the Trope Tutor free?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a6">Yes. Materials that incorporate PocketTorah audio are CC BY-SA 4.0; the Total Torah clips are Cantor Arianne Brown's, used by permission (not CC-licensed); other IvritSuite content is CC BY-NC-SA 4.0. No account required, no ads.</p></details>
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="trope.footer.faq_q7">Can I print a chart of all the trope marks?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a7">Yes. In Learn mode, Print chart prints all 26 marks as one reference chart — each mark's symbol, its Ashkenazi and Sephardi names, and its melody on a staff in the melody and key you chose, with chanted examples, grouped by clause family. On the Phrases tab, Print phrases prints every phrase of that melody.</p></details>
@@ -1641,23 +1655,28 @@ let TT_INDEX = null;     // data/trope/trope_index_totaltorah.json (validated by
 // whether the Phrases cards have examples (the census reads the Torah and the High Holiday readings only), whether the
 // chart's closing row ends a chapter (the three megillah charts), `clips` — where the Learn examples and the drill's
 // Hear and Melody questions come from (absent: PocketTorah's year-round reading, INDEX; 'totaltorah': the Total Torah
-// verse files, TT_INDEX) — and `staffs: false` for a melody not yet transcribed (its cards and the Phrases tab say so
-// instead of drawing; absent: the motif file and the phrase rows are expected).
-// trope.melody.<key> is the Melody dropdown's option label; the Torah Trainer's ?melody= links carry the same keys.
+// verse files, TT_INDEX) — `staffs: false` for a melody not yet transcribed (its cards and the Phrases tab say so
+// instead of drawing; absent: the motif file and the phrase rows are expected) — and `drillTunes: true` for a melody
+// nobody recorded: PocketTorah's reading is the year-round melody, so its Drill plays the chart's own tunes instead
+// (playDrillTune), and drills only the marks the chart prints.
+// trope.melody.<key> is the Melody dropdown's option label (the key bar's and the Drill start screen's); the Torah
+// Trainer's ?melody= links carry the same keys.
 const MELODY_INFO = [
   { key: 'torah',        file: 'data/trope/trope_motifs.json?v=6',          note: 'tuMelodyNoteTorah', minor: false, examples: true,  chapters: false },
   { key: 'conservative', file: null,                                        note: 'tuMelodyNoteCons',  minor: false, examples: false, chapters: false, clips: 'totaltorah', staffs: false },
-  { key: 'highholiday',  file: 'data/trope/trope_motifs_hh.json?v=4',       note: 'tuMelodyNoteHH',    minor: false, examples: true,  chapters: false },
-  { key: 'haftarah',     file: 'data/trope/trope_motifs_haftarah.json?v=2', note: 'tuMelodyNoteHaf',   minor: true,  examples: false, chapters: false },
-  { key: 'esther',       file: 'data/trope/trope_motifs_esther.json?v=1',   note: 'tuMelodyNoteEst',   minor: false, examples: false, chapters: true },
-  { key: 'megillot',     file: 'data/trope/trope_motifs_megillot.json?v=1', note: 'tuMelodyNoteMeg',   minor: false, examples: false, chapters: true },
-  { key: 'eicha',        file: 'data/trope/trope_motifs_eicha.json?v=1',    note: 'tuMelodyNoteEic',   minor: true,  examples: false, chapters: true },
+  { key: 'highholiday',  file: 'data/trope/trope_motifs_hh.json?v=4',       note: 'tuMelodyNoteHH',    minor: false, examples: true,  chapters: false, drillTunes: true },
+  { key: 'haftarah',     file: 'data/trope/trope_motifs_haftarah.json?v=2', note: 'tuMelodyNoteHaf',   minor: true,  examples: false, chapters: false, drillTunes: true },
+  { key: 'esther',       file: 'data/trope/trope_motifs_esther.json?v=1',   note: 'tuMelodyNoteEst',   minor: false, examples: false, chapters: true,  drillTunes: true },
+  { key: 'megillot',     file: 'data/trope/trope_motifs_megillot.json?v=1', note: 'tuMelodyNoteMeg',   minor: false, examples: false, chapters: true,  drillTunes: true },
+  { key: 'eicha',        file: 'data/trope/trope_motifs_eicha.json?v=1',    note: 'tuMelodyNoteEic',   minor: true,  examples: false, chapters: true,  drillTunes: true },
 ];
 const MELODY_KEYS = MELODY_INFO.map((m) => m.key);
 function melodyInfo(k) { return MELODY_INFO.find((m) => m.key === k) || MELODY_INFO[0]; }
 // Where a melody's recorded clips come from, and the index that lists them (null while that file has not loaded).
 function clipSource(m = melodyKey()) { return melodyInfo(m).clips === 'totaltorah' ? 'totaltorah' : 'pockettorah'; }
 function activeIndex(m = melodyKey()) { return clipSource(m) === 'totaltorah' ? TT_INDEX : INDEX; }
+// The Drill plays the chart's tunes, not recordings, in this melody (MELODY_INFO.drillTunes).
+function drillUsesTunes(m) { return !!melodyInfo(m).drillTunes; }
 // The Learn-card staffs, one validated file per melody; a set left null (missing or malformed file) draws no staffs.
 const MOTIF_SETS = Object.fromEntries(MELODY_KEYS.map((k) => [k, null]));
 let currentFamily = 'sofpasuk';
@@ -2008,10 +2027,14 @@ function dropMelodyParam() {
 }
 function melodyKey() { const m = _melodyOverride || settings.melody; return MELODY_KEYS.includes(m) ? m : 'torah'; }
 function melodyLabel(k = melodyKey()) { return I18n.t('trope.melody.' + k); }   // the Melody dropdown's option label, for the notes that name the melody
-function syncMelodyNote() {   // the dropdown shows the melody on screen and the note names it (one span per melody, each with its own static data-i18n)
+function syncMelodyNote() {   // both dropdowns show the melody on screen and the note names it (one span per melody, each with its own static data-i18n)
   const mel = melodyKey();
-  const sel = document.getElementById('tuMelodySel');
-  if (sel && sel.value !== mel) sel.value = mel;
+  // The key bar's, and its twin on the Drill start screen (JS-built by buildDrillMelodySel, so empty until the
+  // dictionary has loaded; it sets its own value when it builds).
+  for (const id of ['tuMelodySel', 'drillMelodySel']) {
+    const sel = document.getElementById(id);
+    if (sel && sel.options.length && sel.value !== mel) sel.value = mel;
+  }
   for (const info of MELODY_INFO) { const el = document.getElementById(info.note); if (el) el.hidden = info.key !== mel; }
   // The footer's Total Torah credit shows while that recording is what the page plays (the Trainer's #ttFooterAudioTT rule).
   const tt = document.getElementById('tuFooterAudioTT');
@@ -2389,9 +2412,11 @@ function renderMotifStaff(t, motif) {
    dashed (.is-echo) while its notes light again in time with no sound. One tune
    at a time: starting one stops the clip engine, and a clip, a mode or family
    switch or a print stops the tune, its repeats and turns included (stopTune()).
-   The Learn cards and the Phrases tab share the scheduler (_playTuneCore): each
-   tune has an id (a Learn card's mark key, or 'phrase:<melody>:<row>'), and
-   stopTune() resets whichever is playing.
+   The Learn cards, the Phrases tab and the Drill share the scheduler (_playTuneCore):
+   each tune has an id (a Learn card's mark key, 'phrase:<melody>:<row>', or
+   'drill:<mark key>' — a melody nobody recorded is drilled with its chart's tunes,
+   played once, with no staff to light: playDrillTune), and stopTune() resets
+   whichever is playing.
    ══════════════════════════════════════════════════════ */
 let _tuneCtx = null, _tuneOscs = [], _tuneTimers = [], _tuneKey = null, _tuneBtn = null;
 let _tuneBtnSel = '', _tuneAriaFn = null;   // the live play button's selector, and its label when stopped
@@ -2444,6 +2469,8 @@ window.addEventListener('beforeprint', stopTune);
 // seconds) and `lights` [{at, i}] (the note whose data-i lights at that moment, in the staff find()
 // returns, among its `noteSel` groups), played as the practice Settings sets. The whole practice is
 // scheduled at once, so stopTune() cancels all of it. The button is pressed until the last part ends + 120 ms.
+// The Drill's tune (playDrillTune) has no button and no staff, and plays once: `once` skips the repeats and the
+// sing-back turn, which are the Learn and Phrases practice, not a quiz question.
 function _playTuneCore(o) {
   stopClip();                                        // never fight the real clip engine
   stopTune();
@@ -2453,9 +2480,11 @@ function _playTuneCore(o) {
   if (_tuneCtx.state === 'suspended') _tuneCtx.resume();
   const REF_HZ = 493.88;                             // B4, the written pitch
   const t0 = _tuneCtx.currentTime + 0.05;
-  _tuneKey = o.id; _tuneBtn = o.btn; _tuneBtnSel = o.btnSel; _tuneAriaFn = o.ariaFn;
-  o.btn.classList.add('is-playing');
-  o.btn.setAttribute('aria-pressed', 'true');   // the name stays "Play the tune of …": pressed says it is playing
+  _tuneKey = o.id; _tuneBtn = o.btn || null; _tuneBtnSel = o.btnSel || ''; _tuneAriaFn = o.ariaFn || null;
+  if (o.btn) {
+    o.btn.classList.add('is-playing');
+    o.btn.setAttribute('aria-pressed', 'true');   // the name stays "Play the tune of …": pressed says it is playing
+  }
   const staff = o.find();
   if (staff) staff.classList.add('is-playing');
   let li = 0;
@@ -2479,7 +2508,8 @@ function _playTuneCore(o) {
   };
   // The practice on one timeline: tuneRepeatsVal() plays, each followed while tuneEchoOn() by the class's turn (the
   // same lights, no sound), and a breath before every part but the first, in which the part before goes dark.
-  const reps = o.total > 0 ? tuneRepeatsVal() : 1, echo = o.total > 0 && tuneEchoOn(), breath = TUNE_BREATH / tuneRateVal();
+  const practice = o.total > 0 && !o.once;
+  const reps = practice ? tuneRepeatsVal() : 1, echo = practice && tuneEchoOn(), breath = TUNE_BREATH / tuneRateVal();
   const sounds = [], lights = [];
   let end = 0;
   for (let r = 0; r < reps; r++) {
@@ -2514,9 +2544,10 @@ function _playTuneCore(o) {
   lightsUntil(Infinity);
   _tuneTimers.push(setTimeout(stopTune, Math.round((end + 0.05) * 1000) + 120));
 }
-function playTune(t, motif, btn) {
-  const rate = tuneRateVal();
-  const UNIT = 0.32 / rate;                          // seconds per d unit (an eighth) at 1×
+// A Learn figure on the tune clock: its notes in the staff's key (and the octave the 8 under the clef asks for), one
+// d unit an eighth at the tune speed, and the light for each note as it starts.
+function _motifTimeline(motif) {
+  const UNIT = 0.32 / tuneRateVal();                 // seconds per d unit (an eighth) at 1×
   const low = tuneVoiceKey() === 'low';
   const shift = tuneShiftVal() + (low ? -12 : 0);   // the staff's key, and the octave the 8 under the clef asks for
   const sounds = [], lights = [];
@@ -2527,13 +2558,26 @@ function playTune(t, motif, btn) {
     lights.push({ at, i });
     at += dur;
   });
+  return { low, sounds, lights, total: at };
+}
+function playTune(t, motif, btn) {
+  const { low, sounds, lights, total } = _motifTimeline(motif);
   const name = tropeName(t);
   _playTuneCore({ id: t.key, btn, btnSel: '.tu-tune-play[data-key="' + t.key + '"]',
     ariaFn: () => I18n.t('trope.learn.play_tune_aria', { name }),
-    low, sounds, lights, total: at, find: () => _tuneStaff(t.key), noteSel: '.tu-motif-note' });
+    low, sounds, lights, total, find: () => _tuneStaff(t.key), noteSel: '.tu-motif-note' });
 }
 function toggleTune(t, motif, btn) {
   if (_tuneKey === t.key) stopTune(); else playTune(t, motif, btn);
+}
+// The Drill's sound in a melody nobody recorded (MELODY_INFO.drillTunes): the mark's figure from that melody's chart,
+// exactly as its Learn card's tune button sounds it (the Sing along key, voice and tune speed), played once, with no
+// staff on screen to light. Silent for a mark the chart prints no figure for — drillableTropes never asks for one.
+function playDrillTune(key, m) {
+  const motif = motifFor(key, MOTIF_SETS[m]);
+  if (!motif) return;
+  const { low, sounds, total } = _motifTimeline(motif);
+  _playTuneCore({ id: 'drill:' + key, once: true, low, sounds, lights: [], total, find: () => null, noteSel: '' });
 }
 
 /* ══════════════════════════════════════════════════════
@@ -3398,7 +3442,7 @@ function openLearnFor(key) {
    ══════════════════════════════════════════════════════ */
 const DRILL_LENGTHS = [5, 10, 20];   // a warm-up, the house default, a test
 const QUESTIONS_PER_SESSION = 10;    // the default only — startDrill() reads drillLength()
-const drill = { active: false, melody: null, qs: [], i: -1, correct: 0, results: [], best: 0 };   // melody: the session's clip source (drillMelody)
+const drill = { active: false, melody: null, qs: [], i: -1, correct: 0, results: [], best: 0 };   // melody: the session's, its recordings or its chart's tunes (drillMelody)
 
 function enabledTypes() {
   const types = [];
@@ -3408,10 +3452,29 @@ function enabledTypes() {
   return types;
 }
 // The melody a drill reads its clips from: the running session's (startDrill snapshots it, so a melody chosen on
-// another tab mid-session never mixes two recordings in one question), else the bar's.
+// another tab mid-session never mixes two recordings in one question), else the one the dropdowns show (the key bar's
+// and the start screen's: one setting).
 function drillMelody() { return drill.active && drill.melody ? drill.melody : melodyKey(); }
+// A mark is drillable when the melody can sound it: a clip in its recordings, or — in a melody nobody recorded — a
+// figure on its chart (a mark the chart does not print is left out) plus a word in the index for an Identify question.
 function drillableTropes(m = drillMelody()) {
+  if (drillUsesTunes(m)) {
+    const set = MOTIF_SETS[m];
+    return set ? TROPES.filter(t => motifFor(t.key, set) && examplesFor(t.key, m).length > 0) : [];
+  }
   return TROPES.filter(t => examplesFor(t.key, m).length > 0);
+}
+// What a tune sounds like, for telling two marks apart by ear: a chart can sing two marks alike (the festival
+// megillot's munach and mercha, Eicha's etnachta and sof pasuk), and a Hear or Melody question never offers both.
+function drillTuneSig(key, m) {
+  const mo = motifFor(key, MOTIF_SETS[m]);
+  return mo ? mo.notes.map(n => n.p + ':' + n.d).join(' ') : '';
+}
+// The drill's one sound for a mark: its clip from the melody's recordings, or its tune from the melody's chart
+// (playDrillTune). A tune never fails to load, so only a clip ever reaches cbs.onError.
+function drillSound(key, ex, cbs, m = drillMelody()) {
+  if (drillUsesTunes(m)) { playDrillTune(key, m); return; }
+  playClip(ex, cbs);
 }
 /* ─── Drill scope: "drill only what you just taught" ───
    Answers-only filter — pickDistractors stays global so a 3-mark family still fills
@@ -3471,12 +3534,28 @@ function setDrillLength(v) {
   saveSettings();
   updateDrillStart();
 }
-/* Both drill selects are JS-built, so every path that can change the stored value rebuilds them:
-   a language switch (applyI18n, which is also the FIRST build — the scope options are i18n text,
-   so there is deliberately no init() call), a cloud download, and a settings reset. NOT from
+/* The start screen's Melody dropdown: the key bar's twin (one setting, settings.melody, one writer, setMelody — a
+   choice here moves the Learn staffs too, and drops a ?melody= link's per-visit choice, as the bar does). Built from
+   MELODY_INFO in the bar's order with the bar's labels; syncMelodyNote() keeps its value in step with the bar's. */
+function buildDrillMelodySel() {
+  const sel = document.getElementById('drillMelodySel');
+  if (!sel) return;
+  sel.innerHTML = '';
+  for (const info of MELODY_INFO) {
+    const o = document.createElement('option');
+    o.value = info.key;
+    o.textContent = melodyLabel(info.key);
+    sel.appendChild(o);
+  }
+  sel.value = melodyKey();
+}
+/* The drill's selects are JS-built, so every path that can change the stored value rebuilds them:
+   a language switch (applyI18n, which is also the FIRST build — the scope and melody options are i18n
+   text, so there is deliberately no init() call), a cloud download, and a settings reset. NOT from
    updateDrillStart(): that runs on every tab switch, and rebuilding a <select> under the
-   teacher's cursor is its own defect. */
-function syncDrillSelects() { buildDrillScopeSel(); buildDrillLenSel(); }
+   teacher's cursor is its own defect (a melody chosen elsewhere moves the melody box's value only:
+   syncMelodyNote). */
+function syncDrillSelects() { buildDrillMelodySel(); buildDrillScopeSel(); buildDrillLenSel(); }
 function updateDrillStart() {
   const types = enabledTypes();
   const names = { identify: I18n.t('trope.drill.type_identify'), hear: I18n.t('trope.drill.type_hear'), melody: I18n.t('trope.drill.type_melody') };
@@ -3485,16 +3564,25 @@ function updateDrillStart() {
     I18n.t('trope.drill.types_summary', { types: types.map(t => names[t]).join(' · '), n: progress.pbStreak });
   const btn = document.getElementById('drillStartBtn');
   const note = document.getElementById('drillStartNote');
-  const pool = drillableTropes();
+  const mel = drillMelody();
+  const tunes = drillUsesTunes(mel);
+  // What the drill sounds like in this melody, under its dropdown: PocketTorah's recordings, Cantor Brown's, or the
+  // chart's own tunes (a melody nobody recorded).
+  document.getElementById('drillMelodySrc').textContent = I18n.t(tunes ? 'trope.drill.src_tunes'
+    : clipSource(mel) === 'totaltorah' ? 'trope.drill.src_totaltorah' : 'trope.drill.src_pockettorah');
+  const pool = drillableTropes(mel);
   // Unreachable with today's index (every family has ≥3 drillable marks) — guards a
   // future rebuild that empties one, so a scoped drill can never start with no answers.
-  const scopedEmpty = !scopedDrillPool().length;
-  const idx = activeIndex();   // the chosen melody's clip index (the Conservative melody's is its own file)
-  if (_phrasesTried && !idx) _setRetryVisible(true);   // its load failed: the Try again the note names
-  if (!idx || pool.length < 4 || scopedEmpty) {
+  const scopedEmpty = !scopedDrillPool(mel).length;
+  const idx = activeIndex(mel);   // the chosen melody's clip index (the Conservative melody's is its own file)
+  // A melody that drills its chart's tunes needs that chart's motif file too (loadData leaves a failed one null).
+  const chartMissing = tunes && !!idx && _phrasesTried && !MOTIF_SETS[mel];
+  if (_phrasesTried && (!idx || chartMissing)) _setRetryVisible(true);   // its load failed: the Try again the note names
+  if (!idx || chartMissing || pool.length < 4 || scopedEmpty) {
     btn.setAttribute('aria-disabled', 'true');
     note.classList.toggle('error', !!idx || _phrasesTried);   // still loading: a wait, not an error
-    note.textContent = !idx ? I18n.t(_phrasesTried ? (clipSource() === 'totaltorah' ? 'trope.drill.tt_index_not_loaded' : 'trope.drill.index_not_loaded') : 'trope.status.loading_index')
+    note.textContent = !idx ? I18n.t(_phrasesTried ? (clipSource(mel) === 'totaltorah' ? 'trope.drill.tt_index_not_loaded' : 'trope.drill.index_not_loaded') : 'trope.status.loading_index')
+      : chartMissing ? I18n.t('trope.drill.chart_not_loaded')
       : pool.length < 4 ? I18n.t('trope.drill.not_enough')
       : I18n.t('trope.drill.scope_not_enough');
   } else {
@@ -3502,11 +3590,15 @@ function updateDrillStart() {
     note.classList.remove('error');
     note.textContent = '';
   }
+  // The marks missed last session that this melody can sound: a melody chosen since may not print them all, and
+  // startDrill leaves those out of "Drill these marks" the same way.
+  const canDrill = new Set(pool.map(t => t.key));
+  const missed = _lastMissed.filter(x => canDrill.has(x.key));
   const review = document.getElementById('drillStartReview');
-  review.hidden = !_lastMissed.length;
-  if (_lastMissed.length) document.getElementById('drillStartReviewTitle').textContent =
-    I18n.t(_lastMissed.length === 1 ? 'trope.drill.review_title.one' : 'trope.drill.review_title.other',
-           { count: _lastMissed.length });
+  review.hidden = !missed.length;
+  if (missed.length) document.getElementById('drillStartReviewTitle').textContent =
+    I18n.t(missed.length === 1 ? 'trope.drill.review_title.one' : 'trope.drill.review_title.other',
+           { count: missed.length });
   buildMasteryGrid(document.getElementById('masteryGridStart'));
 }
 
@@ -3568,9 +3660,14 @@ function pickExample(key, preferFileKey, anyFile, m = drillMelody()) {
   return randomOf(pool);
 }
 
-function pickDistractors(answerKey, n) {
+// byEar: the choices are told apart by their sound (a Hear or a Melody question). In a melody that drills its chart's
+// tunes, no choice then sings the answer's figure, and no two choices sing the same one (drillTuneSig).
+function pickDistractors(answerKey, n, byEar) {
   const answer = TROPE_BY_KEY[answerKey];
-  const eligible = drillableTropes().map(t => t.key).filter(k => k !== answerKey);
+  const mel = drillMelody();
+  const sig = byEar && drillUsesTunes(mel) ? (k) => drillTuneSig(k, mel) : null;
+  let eligible = drillableTropes(mel).map(t => t.key).filter(k => k !== answerKey);
+  if (sig) eligible = eligible.filter(k => sig(k) !== sig(answerKey));
   const confusables = new Set([
     ...(CONFUSABLE_PAIRS[answerKey] || []),
     ...TROPES.filter(t => t.family === answer.family).map(t => t.key),
@@ -3578,7 +3675,15 @@ function pickDistractors(answerKey, n) {
   confusables.delete(answerKey);
   const m = masteryOf(answerKey);
   const weightFn = k => confusables.has(k) ? 1 + 3 * m : 1;
-  return weightedSample(eligible, weightFn, n, { withoutReplacement: true });
+  if (!sig) return weightedSample(eligible, weightFn, n, { withoutReplacement: true });
+  // The same weighted draw, read in order, skipping a mark that sounds like one already chosen.
+  const out = [], heard = new Set();
+  for (const k of weightedSample(eligible, weightFn, eligible.length, { withoutReplacement: true })) {
+    if (out.length >= n) break;
+    const s = sig(k);
+    if (!heard.has(s)) { heard.add(s); out.push(k); }
+  }
+  return out;
 }
 
 function startDrill() {
@@ -3590,12 +3695,19 @@ function startDrill() {
   if (btn.getAttribute('aria-disabled') === 'true') { updateDrillStart(); return; }
   const types = enabledTypes();
   const n = drillLength();   // read once: the session length cannot shift while the questions are built
-  const mel = melodyKey();   // read once too: the session's clips all come from the melody the bar shows now (drillMelody)
-  // A focused pool repeats to fill the session — the same contract as a small family scope below.
-  const tropePool = (forced && forced.length) ? forced.slice() : scopedDrillPool(mel).map(t => t.key);
+  const mel = melodyKey();   // read once too: the session's clips all come from the melody the dropdowns show now (drillMelody)
+  // A melody nobody recorded sounds its chart's tunes: its questions only show their example's word (an Identify
+  // question's), never play its file, so any example will do and no file can fail.
+  const tunes = drillUsesTunes(mel);
+  const drillable = drillableTropes(mel);
+  // A focused pool repeats to fill the session — the same contract as a small family scope below. Missed marks the
+  // melody cannot sound (another melody's misses, a mark this chart does not print) are left out of it.
+  const canDrill = new Set(drillable.map(t => t.key));
+  const focused = (forced || []).filter(k => canDrill.has(k));
+  const tropePool = focused.length ? focused : scopedDrillPool(mel).map(t => t.key);
   // choices need ≥4 distinct marks GLOBALLY (distractors are unscoped); the scoped
   // answer pool itself just needs to be non-empty — repeats are the point of a focused drill
-  if (!types.length || !tropePool.length || drillableTropes(mel).length < 4) { updateDrillStart(); return; }
+  if (!types.length || !tropePool.length || drillable.length < 4) { updateDrillStart(); return; }
 
   const weightFn = k => {
     let w = 0.35 + (1 - masteryOf(k));
@@ -3605,15 +3717,16 @@ function startDrill() {
   const answers = weightedSample(tropePool, weightFn, n, { noAdjacentRepeat: true });
   const qs = answers.map((key, i) => {
     const type = types[i % types.length];
-    return { type, key, ex: pickExample(key, undefined, type === 'identify', mel) };
+    return { type, key, ex: pickExample(key, undefined, tunes || type === 'identify', mel) };
   }).filter(q => q.ex);
-  // group questions by source audio file so streamed-MP3 hops are rare
-  qs.sort((a, b) => clipFileKey(a.ex).localeCompare(clipFileKey(b.ex)));
+  // group questions by source audio file so streamed-MP3 hops are rare (a tune session loads no file, and keeps its
+  // no-adjacent-repeat order)
+  if (!tunes) qs.sort((a, b) => clipFileKey(a.ex).localeCompare(clipFileKey(b.ex)));
   // top up if any answer had no playable example (rare)
   while (qs.length < n && tropePool.length) {
     const key = randomOf(tropePool);
     const type = types[qs.length % types.length];
-    const ex = pickExample(key, undefined, type === 'identify', mel);
+    const ex = pickExample(key, undefined, tunes || type === 'identify', mel);
     if (ex) qs.push({ type, key, ex });
     else break;
   }
@@ -3638,6 +3751,7 @@ function startDrill() {
 
 function nextQuestion() {
   stopClip();
+  stopTune();   // a tune session's sound
   drill.i++;
   if (drill.i >= drill.qs.length) { showResults(); return; }
   renderQuestion(drill.qs[drill.i], 0);
@@ -3674,10 +3788,10 @@ function renderQuestion(q, regenDepth) {
     play.className = 'tu-qplay';
     play.className += ' hi-btn';
     play.innerHTML = ICON_PLAY_SM + esc(I18n.t('trope.drill.play_melody'));
-    play.onclick = () => playClip(q.ex, { onError: onClipError });
+    play.onclick = () => drillSound(q.key, q.ex, { onError: onClipError });
     stem.appendChild(play);
     buildSymbolChoices(q, t);
-    playClip(q.ex, { onError: onClipError });   // autoplay attempt; blocked → button remains
+    drillSound(q.key, q.ex, { onError: onClipError });   // autoplay attempt; blocked → button remains
   } else {
     document.getElementById('qPrompt').textContent = I18n.t('trope.drill.q_melody');
     stem.appendChild(tropeGlyphSpan(t, 'tu-qglyph'));
@@ -3712,7 +3826,7 @@ function buildNameChoices(q, t) {
   }
 }
 function buildSymbolChoices(q, t) {
-  const keys = shuffle([q.key, ...pickDistractors(q.key, 3)]);
+  const keys = shuffle([q.key, ...pickDistractors(q.key, 3, true)]);
   const choices = document.getElementById('qChoices');
   for (const k of keys) {
     const kt = TROPE_BY_KEY[k];
@@ -3731,11 +3845,14 @@ function buildSymbolChoices(q, t) {
   }
 }
 function buildMelodyChoices(q, t, regenDepth) {
-  const distractors = pickDistractors(q.key, 3);
+  const distractors = pickDistractors(q.key, 3, true);
+  // In a melody nobody recorded each choice is a mark's tune from the chart: nothing to fetch, nothing to fail.
+  const mel = drillMelody(), tunes = drillUsesTunes(mel);
   const prefer = clipFileKey(q.ex);
   const options = shuffle([
     { key: q.key, ex: q.ex },
-    ...distractors.map(k => ({ key: k, ex: pickExample(k, prefer) })).filter(o => o.ex),
+    ...(tunes ? distractors.map(k => ({ key: k, ex: null }))
+              : distractors.map(k => ({ key: k, ex: pickExample(k, prefer) })).filter(o => o.ex)),
   ]);
   const choices = document.getElementById('qChoices');
   options.forEach((opt, idx) => {
@@ -3764,6 +3881,7 @@ function buildMelodyChoices(q, t, regenDepth) {
       btn.classList.add('armed');
       btn.setAttribute('aria-pressed', 'true');
       sub.hidden = false;
+      if (tunes) { playDrillTune(opt.key, mel); return; }
       playClip(opt.ex, { onError: () => {
         // a distractor clip failing is recoverable in place: re-pick its example
         const alt = pickExample(opt.key, prefer);
@@ -3816,7 +3934,8 @@ function answer(q, pickedKey, btn) {
   recordAnswer(q.key, ok);
   if (ok) drill.correct++;
   if (sessionStreak > drill.best) drill.best = sessionStreak;
-  drill.results.push({ key: q.key, ok, ex: q.ex });   // ex: the clip the review list replays
+  const mel = drillMelody();   // the session's: the review list replays this melody's sound for the mark
+  drill.results.push({ key: q.key, ok, ex: q.ex, mel });   // ex: the clip the review list replays (a tune melody's: its tune)
   updateStreakLine();
 
   const choices = document.getElementById('qChoices');
@@ -3841,7 +3960,7 @@ function answer(q, pickedKey, btn) {
   replay.className = 'btn btn-xs btn-secondary';
   replay.className += ' hi-btn';
   replay.innerHTML = ICON_RETRY + esc(I18n.t('trope.drill.replay'));
-  replay.onclick = () => playClip(q.ex, { onError: () => showToast(I18n.t('trope.toast.clip_wont_load')) });
+  replay.onclick = () => drillSound(q.key, q.ex, { onError: () => showToast(I18n.t('trope.toast.clip_wont_load')) }, mel);
   feedback.appendChild(replay);
   const next = document.createElement('button');
   next.type = 'button';
@@ -3852,7 +3971,7 @@ function answer(q, pickedKey, btn) {
   feedback.appendChild(next);
   next.focus();
   // reinforce the sound on Identify questions (audio is optional there)
-  if (q.type === 'identify') playClip(q.ex, { onError: () => {} });
+  if (q.type === 'identify') drillSound(q.key, q.ex, { onError: () => {} }, mel);
 }
 
 /* ═══ Review what you missed ═══
@@ -3905,7 +4024,7 @@ function buildMissedReview() {
       play.className = 'tu-ex-play';
       play.innerHTML = ICON_PLAY;
       play.setAttribute('aria-label', I18n.t('trope.drill.review_play_aria', { name: tropeName(t) }));
-      play.onclick = () => playClip(miss.ex, { onError: () => showToast(I18n.t('trope.toast.clip_wont_load')) });
+      play.onclick = () => drillSound(miss.key, miss.ex, { onError: () => showToast(I18n.t('trope.toast.clip_wont_load')) }, miss.mel);
       li.appendChild(play);
     }
     list.appendChild(li);
@@ -3914,6 +4033,7 @@ function buildMissedReview() {
 
 function showResults() {
   stopClip();
+  stopTune();
   drill.active = false;
   document.getElementById('drillQ').hidden = true;
   document.getElementById('drillResults').hidden = false;
@@ -3985,7 +4105,7 @@ function setMelody(v) {   // the Melody dropdown's one writer
   renderLearn();
   renderPhrasesIfShown();
   syncTuneControls();   // the key bar's name follows the melody
-  updateDrillStart();   // the start screen's pool follows the melody's clips (the Conservative melody has its own index)
+  updateDrillStart();   // the start screen's pool and its melody line follow the melody (its own clip index, or its chart's tunes)
 }
 /* ── Sing along: Key (settings.tuneShift), Voice (settings.tuneVoice), Note names (settings.noteNames) and the
    practice — Tune speed (settings.tuneRate), Play each tune (settings.tuneRepeats) and the sing-back pause
