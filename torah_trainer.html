@@ -747,6 +747,11 @@ body.dark .tt-jumpnav { background:var(--navy-deep); }
 .tt-holiday-opt.active { background:var(--gold); border-color:var(--gold); color:var(--navy); }
 .tt-jump-pos { margin-inline-start:auto; font-size:0.78rem; font-weight:600; color:var(--muted); font-variant-numeric:tabular-nums; }
 body.fullscreen .tt-jumpnav { padding-right:84px; }   /* clear the fullscreen exit button */
+/* Keyboard focus the browser scrolls to an edge (Tab, or the reading's arrow keys walking the roving word) lands clear of
+   the sticky jump bar and, while it is open, the karaoke audio bar: with the bar open, ArrowLeft through 160 words put
+   30 wholly under it, and walking back put 7 under the jump bar (WCAG 2.4.11). --tt-jump-h / --tt-audio-h are their live
+   heights (0 while hidden or closed), kept by ttTrackStickies(). (S560 Pass C, pattern focus-hidden-under-a-sticky-bar) */
+html { scroll-padding-block: calc(var(--tt-jump-h, 0px) + 8px) calc(var(--tt-audio-h, 0px) + 8px); }
 
 /* Inline aliyah divider (block; full-parsha only). Muted, thin rules, RTL-safe. */
 .tt-aliyah-divider {
@@ -9362,6 +9367,18 @@ function _emoDialogKey(e) {
   f[i === -1 ? (e.shiftKey ? n - 1 : 0) : (i + (e.shiftKey ? n - 1 : 1)) % n].focus();
 }
 
+// The sticky jump bar's and karaoke audio bar's live heights, for the root's scroll-padding (the CSS beside .tt-jumpnav).
+function ttTrackStickies() {
+  [['ttJumpNav', '--tt-jump-h'], ['ttAudioBar', '--tt-audio-h']].forEach(([id, v]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const set = () => document.documentElement.style.setProperty(v, el.offsetHeight + 'px');
+    set();
+    if (window.ResizeObserver) new ResizeObserver(set).observe(el); else window.addEventListener('resize', set);
+  });
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ttTrackStickies);
+else ttTrackStickies();
 /* Settings-drawer resize wiring (per-page; the engine is the shared block above). */
 function initDrawerResize() {
   mountSidebarResize({
