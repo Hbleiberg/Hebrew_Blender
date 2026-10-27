@@ -36,7 +36,8 @@
  *   downloadSource(id, name)   Blob
  *   listSources(id)            [{name, size}]
  *   remove(id)                 true — every object in the three buckets, then the row
- *   saveExport(id, blob, name) the row (one export slot: older exports in the folder are removed)
+ *   saveExport(id, blob, name, expectedUpdatedAt?)  the row (one export slot: older exports in the folder are
+ *                              removed); with expectedUpdatedAt, row.changed when another write had moved the row
  *   downloadExport(id)         {blob, name}
  *   projectFile(id, {onProgress})  {name, blob, failed, total, row} — the project as a .hebrewfont file with its
  *                              photos put back (what Save Project writes); onProgress(done, total) per photo
@@ -319,7 +320,7 @@
   }
 
   /* ---------- exports ---------- */
-  function saveExport(id, blob, name) {
+  function saveExport(id, blob, name, expectedUpdatedAt) {
     return Promise.resolve().then(function () {
       var u = ensureUser();
       if (!isUuid(id)) throw makeError('not_found');
@@ -334,7 +335,13 @@
           return removeObjects(BUCKETS.exports, older).catch(function (e) { warn('older export not removed:', e); });
         });
       }).then(function () {
-        return withClient(function (c) { return c.from('font_projects').update({ export_path: path, exported_at: new Date().toISOString() }).eq('id', id).select(ROW_COLS).single(); });
+        var patch = { export_path: path, exported_at: new Date().toISOString() };
+        var plain = function () { return withClient(function (c) { return c.from('font_projects').update(patch).eq('id', id).select(ROW_COLS).single(); }); };
+        if (!expectedUpdatedAt) return plain();
+        // The row moves for the export too, so the caller may adopt its new revision only when nothing else moved it:
+        // after another device's save the export is still recorded, and `changed` says this copy no longer matches.
+        return withClient(function (c) { return c.from('font_projects').update(patch).eq('id', id).eq('updated_at', expectedUpdatedAt).select(ROW_COLS); })
+          .then(function (rows) { return rows && rows.length ? rows[0] : plain().then(function (row) { return Object.assign({}, row, { changed: true }); }); });
       }).then(function (row) { invalidate(); emit(); return row; });
     });
   }

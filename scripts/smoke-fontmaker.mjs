@@ -18,7 +18,8 @@
  *   4. Another device changes the row → the next autosave raises the conflict dialog; Overwrite takes the
  *      row as it is; a second change + Keep both makes a second project (a copy) with its own row.
  *   5. Delete from the Load menu removes the row and every object in its folder.
- *   6. Keep an export: the Exported ✓ dialog's ☁ button uploads the file and the Load row gains ⬇.
+ *   6. Keep an export: the Exported ✓ dialog's ☁ button uploads the file and the Load row gains ⬇; the next autosave
+ *      writes without asking, and an export kept after another device's save leaves that autosave asking.
  *   7. Storage refuses a photo (413): the save fails cleanly, no row stays behind, the badge stays hidden.
  *   8. ?start=<unknown>&error=access_denied: both params stripped, 0 pageerrors.
  *   9. Hebrew + dark at 800 px: the Load menu's cloud section renders (screenshot).
@@ -395,6 +396,22 @@ try {
     const copyRow = rows.find(r => r.id !== firstId);
     const exp = folderObjects(cloud, 'font-exports', copyRow.id);
     check('6: the Exported ✓ dialog kept the export in the account (object + row export_path)', kept && exp.length === 1 && exp[0].name === 'SmokeFont.ttf' && exp[0].obj.type === 'font/ttf' && copyRow.export_path === UID + '/' + copyRow.id + '/SmokeFont.ttf' && !!copyRow.exported_at, JSON.stringify({ kept, exp: exp.map(f => f.name), export_path: copyRow.export_path }));
+    // The export moved the row: with nobody else writing, the next autosave writes without asking — but an export kept
+    // after another device's save must not adopt that revision, or the next autosave overwrites the other device's work.
+    const edit6 = () => page.evaluate(() => { udDo([{ t: 'item', kind: 'letter', cp: '05D0' }], 'smoke', () => { const l = project.letters.find(l => l.codepoint === '05D0'); l.advance = (l.advance || 600) + 1; }); return fmCloudAutosave(); });
+    const path6 = copyRow.project_path;
+    await edit6();
+    const t6a = await askTitle(page);
+    check('6: after the export, the next autosave writes without asking', !t6a && copyRow.project_path !== path6, JSON.stringify({ t6a, moved: copyRow.project_path !== path6 }));
+    copyRow.updated_at = cloud.stamp();   // another device saved
+    const theirs = copyRow.project_path, exportedAt = copyRow.exported_at;
+    await page.evaluate(() => { offerSaveToMyFonts(true); const b = [...document.querySelectorAll('#askOverlay button')].find(b => /Keep this export/.test(b.textContent)); if (b) b.click(); });
+    await waitFor(() => copyRow.exported_at !== exportedAt, 15000);
+    await page.waitForTimeout(300);
+    await edit6();
+    const t6b = await askTitle(page);
+    check('6: an export kept after another device saved leaves the next autosave asking, the account copy untouched', /Changed on another device/.test(t6b) && copyRow.project_path === theirs && copyRow.exported_at !== exportedAt, JSON.stringify({ t6b, untouched: copyRow.project_path === theirs }));
+    if (t6b) await clickAsk(page, 'Not now');
     await page.evaluate(() => document.querySelector('[data-i18n="fontmaker.toolbar.load_project"]').click());
     await page.waitForFunction(() => document.querySelectorAll('#loadMenuCloud .load-menu-row').length === 2, null, { timeout: 15000 });
     const menu2 = await page.evaluate(() => ({ dl: document.querySelectorAll('#loadMenuCloud .load-menu-cdl').length, rows: document.querySelectorAll('#loadMenuCloud .load-menu-row').length }));

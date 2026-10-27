@@ -22730,8 +22730,9 @@ async function fmCloudKeepExport(file) {
   if (!project || !project.cloudId || !fmCloudUser() || !file) return;
   status(_cT('phase_export', 'Uploading the export…'), true);
   try {
-    const row = await IvritProjects.saveExport(project.cloudId, file, file.name);
-    project.cloudRev = row.updated_at;   // the row moved for this export, not for another device's edit
+    const row = await IvritProjects.saveExport(project.cloudId, file, file.name, project.cloudRev);
+    // The row moved for this export: adopt its revision — unless another device saved first, when the next save must ask
+    if (!row.changed && project && project.cloudId === row.id) project.cloudRev = row.updated_at;
     status(_cT('export_kept_toast', 'Export kept in your account'));
   } catch (e) { status(fmCloudErrorText(e), true); }
 }

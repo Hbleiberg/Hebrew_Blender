@@ -83,7 +83,9 @@ The page loads `/js/supabase-config.js`, `/js/ivrit-account.js`, `/js/ivrit-save
   `fmCloudOpen(id)` is local-first (the IndexedDB snapshot with the same `cloudRev` and `cloudClean` needs
   no download), else download → unpack → `applyProjectData`. `fmCloudDelete(id)` closes the menu, confirms,
   removes row + objects, reopens the menu. The Exported ✓ dialog gains `fmCloudKeepExport(dlFile)` (the
-  snapshotted file, ≤ 5 MB) and a row with an export shows ⬇ (`fmCloudDownloadExport`).
+  snapshotted file, ≤ 5 MB; it passes `cloudRev` and adopts the row's new revision only when no other device moved the
+  row first, so a kept export never hides that device's save from the next save's check) and a row with an export shows ⬇
+  (`fmCloudDownloadExport`).
 - **Guards**: `udShortcutBlocked()` and the global keydown return early while the saves module's device-extras
   card (`.ivsav-overlay`, the one overlay it opens) is up, so a keypress meant for it does not reach the editor's
   own modal. Strings are
