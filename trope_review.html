@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Trope traditions review</title>
+<!-- The maintainer's review of the other traditions (docs/trope-traditions.md) before students see them: every row of
+     every tradition on a staff, beside its source, and the one line of data/trope/trope_approvals.json an approval
+     changes. Not linked from anywhere, not in the sitemap, llms.txt or the service worker's precache, and English only
+     (it is listed in check-i18n's SKIP_HTML): a tool for one person, like the account harnesses. It reads the same
+     files the pages read and changes nothing — an approval is a commit. docs/reference/torah-and-trope.md → Traditions. -->
+<style>
+@font-face { font-family:'Frank Ruhl Libre'; src:url('/fonts/FrankRuhlLibre-Regular.ttf') format('truetype'); font-weight:400; font-display:swap; }
+@font-face { font-family:'IvritSuite Taamim'; src:url('/fonts/NotoSerifHebrew-Taamim.ttf') format('truetype'); font-weight:400; font-display:swap; }
+:root { --bg:#fdf8ef; --card:#fff; --text:#1a2744; --muted:#6b6050; --border:#c8bfa8; --accent:#7f5a13; --ok:#1d6b3a; --warn:#9a3b1f; --focus:#a0701c;
+  --heb:'Frank Ruhl Libre', 'IvritSuite Taamim', serif; color-scheme:light; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#161c2a; --card:#1e2535; --text:#dde4f0; --muted:#8a94a8; --border:#2a3349; --accent:#e0a832; --ok:#7fd49c; --warn:#f0a58a; --focus:#e0a832; color-scheme:dark; }
+}
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--text); font:15px/1.5 system-ui, -apple-system, 'Segoe UI', sans-serif; }
+main { max-inline-size:1100px; margin:0 auto; padding:20px 16px 60px; }
+h1 { font-size:1.5rem; margin:0 0 6px; }
+h2 { font-size:1.2rem; margin:0; }
+a { color:var(--accent); }
+:focus-visible { outline:2px solid var(--focus); outline-offset:2px; }
+.lead, .muted { color:var(--muted); }
+.box { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:14px 16px; margin:14px 0; }
+table { border-collapse:collapse; inline-size:100%; font-size:0.9rem; }
+th, td { text-align:start; padding:5px 8px; border-bottom:1px solid var(--border); vertical-align:top; }
+code, .mono { font-family:ui-monospace, Menlo, Consolas, monospace; font-size:0.86em; }
+.status-approved { color:var(--ok); font-weight:700; }
+.status-not, .status-stale { color:var(--warn); font-weight:700; }
+.sys-head { display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 14px; }
+.sys-meta { margin:8px 0; font-size:0.9rem; }
+.sys-meta dt { font-weight:700; }
+.sys-meta dd { margin:0 0 6px; }
+.actions { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:10px 0; }
+button { font:inherit; padding:6px 12px; border-radius:6px; border:1px solid var(--accent); background:var(--card); color:var(--text); cursor:pointer; }
+button.primary { background:var(--accent); color:var(--card); font-weight:700; }
+.approve-panel { white-space:pre-wrap; background:var(--bg); border:1px dashed var(--accent); border-radius:8px; padding:10px 12px; margin:8px 0; }
+.approve-panel:empty { display:none; }
+.row { border-top:1px solid var(--border); padding:12px 0; }
+.row-head { display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 12px; }
+.row-n { font-weight:700; color:var(--accent); min-inline-size:2.4em; }
+.row-he { font-family:var(--heb); font-size:1.5rem; }
+.flags { margin:4px 0 6px; padding-inline-start:18px; font-size:0.86rem; color:var(--muted); }
+.flags .check { color:var(--warn); }
+.staff { overflow-x:auto; direction:ltr; padding:4px 0; }
+.staff svg { display:block; color:var(--text); }
+.staff .tu-pbar { fill:var(--border); }
+.staff .tu-pbar.is-fb { fill:none; stroke:currentColor; stroke-dasharray:2 1.5; }
+.staff .tu-nn { fill:var(--muted); }
+.toc { columns:2 18em; padding-inline-start:18px; }
+#loadStatus:empty { display:none; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Trope traditions review</h1>
+  <p class="lead">Each of the twenty traditions of <code>docs/trope-traditions.md</code> was transcribed from scans with AI help. Check every row against its source below; when a tradition is right, press <strong>Approve</strong> and make the one-line change it names in <code>data/trope/trope_approvals.json</code> (in a commit, as any edit). The pages then offer that tradition to everyone. Until then they show it only on a <code>?preview=traditions</code> visit, marked <em>Unverified transcription</em>.</p>
+  <div class="box">
+    <strong>How to read a row.</strong> The staff is drawn exactly as the pages draw it, in the key the tradition is written in. Under each row, the things most worth checking against the scan:
+    <ul>
+      <li><em>chromatic notes</em> — each one's spelling as the staff draws it (the six JE columns whose minor-sixth step is spelled as a raised fifth draw G♯ in C, D♯ in G);</li>
+      <li><em>a printed 3 kept as written</em> (<code>3!{</code>) — a bracket numbered 3 whose notes do not add up to a triplet; the 127 that do were made true triplets (two-thirds length) on import;</li>
+      <li><em>pickups</em> (Spiro's notes in parentheses) and <em>fermatas</em>.</li>
+    </ul>
+    The import also let each syllable run to the next one (covering the rests after it), made a JE sign's name span its sign, and started the telisha syllable of the Common Torah melody's rows 9 and 10 on its first note. To correct a note, edit its row in <code>docs/trope-traditions.md</code> (the line is named beside each row), run <code>node scripts/build-trope-phrases.mjs</code>, bump <code>trope_phrases.json</code>'s <code>?v=</code> on both pages and <code>sw.js</code>'s <code>VERSION</code> — the fingerprint then changes, and the tradition needs approving again.
+  </div>
+  <p id="loadStatus" role="status"></p>
+  <div class="box">
+    <h2 id="sumTitle">All traditions</h2>
+    <table aria-labelledby="sumTitle"><thead><tr><th scope="col">Tradition</th><th scope="col">Reading</th><th scope="col">Rows</th><th scope="col">Status</th></tr></thead><tbody id="sumBody"></tbody></table>
+  </div>
+  <div id="systems"></div>
+</main>
+<script src="/js/trope-staff.js"></script>
+<script>
+'use strict';
+const PHRASES_URL = 'data/trope/trope_phrases.json?v=5';   // the pages' own ?v= (ops.md)
+const APPROVALS_URL = 'data/trope/trope_approvals.json';
+const DOC_URL = 'docs/trope-traditions.md';
+const GROUP_NAMES = { torah: 'Torah', haftarah: 'Haftarah', hhd: 'High Holy Days', esther: 'Esther', eicha: 'Eicha', megillot: 'Festival megillot' };
+const el = (tag, attrs, text) => { const e = document.createElement(tag); for (const k in attrs || {}) e.setAttribute(k, attrs[k]); if (text != null) e.textContent = text; return e; };
+const famOf = (k) => (TROPE_BY_KEY[k] ? TROPE_BY_KEY[k].family : '');
+const markName = (k) => (TROPE_BY_KEY[k] ? TROPE_BY_KEY[k].ashk : k === 'munach_legarmeh' ? 'Munach Legarmeh' : k);
+function noteName(p, key, chroma) {   // as the staff spells it: its letter, the sign it draws, its octave
+  const { step, acc } = motifPitchPos(p, key, chroma);
+  const L = 'BCDEFGA'[((step % 7) + 7) % 7];
+  return L + acc + (step + 34 - LETTER_STEP[L]) / 7;   // B4 is step 0: step = octave × 7 + the letter's step − 34
+}
+// Where each row (and each tradition's trope-system block) stands in the doc: the line to edit.
+function docLines(text) {
+  const lines = text.split('\n'), sys = {}, rows = {};
+  for (let i = 0; i < lines.length; i++) {
+    let m = lines[i].match(/^```trope-system\s+(\S+)/);
+    if (m) { sys[m[1]] = i + 1; continue; }
+    m = lines[i].match(/^```trope-row\s+(\S+)/);
+    if (m && lines[i + 1]) { const h = lines[i + 1].match(/^#(\S+)/); if (h) (rows[m[1]] = rows[m[1]] || {})[h[1]] = i + 2; }
+  }
+  return { sys, rows };
+}
+// The approvals file's line for a tradition, as the builder requires it: "<id>": false | "<fingerprint>",
+function approvalLine(text, id) {
+  const lines = text.split('\n');
+  for (let i = 0; i < lines.length; i++) if (new RegExp('^\\s*"' + id + '":\\s*(false|"[0-9a-f]{12}"),?\\s*$').test(lines[i])) return { n: i + 1, text: lines[i] };
+  return null;
+}
+function rowFlags(row, sys) {
+  const out = [];
+  const chrom = new Map();
+  for (const n of row.notes) if (!n.r) { const pos = motifPitchPos(n.p, sys.key, sys.chroma); if (pos.acc) { const nm = noteName(n.p, sys.key, sys.chroma); chrom.set(nm, (chrom.get(nm) || 0) + 1); } }
+  if (chrom.size) out.push(['chromatic notes as drawn: ' + [...chrom].map(([k, c]) => k + (c > 1 ? ' ×' + c : '')).join(', '), false]);
+  const bang = row.tup.filter((t) => t.n === 3);
+  for (const t of bang) out.push(['a printed 3 kept as written over notes ' + (t.from + 1) + '–' + (t.to + 1) + ' (' + row.notes.slice(t.from, t.to + 1).map((x) => x.v).join(' ') + '): triplet or not?', true]);
+  const opt = row.notes.filter((n) => n.opt).length, f = row.notes.filter((n) => n.f).length;
+  if (opt) out.push([opt + ' pickup' + (opt > 1 ? 's' : '') + ' in parentheses', false]);
+  if (f) out.push([f + ' fermata' + (f > 1 ? 's' : ''), false]);
+  const trip = row.tup.filter((t) => !t.n).length;
+  if (trip) out.push([trip + ' triplet' + (trip > 1 ? 's' : '') + ' (two-thirds length)', false]);
+  return out;
+}
+async function main() {
+  const status = document.getElementById('loadStatus');
+  status.textContent = 'Loading…';
+  let pj, apText, docText;
+  try {
+    const [a, b, c] = await Promise.all([fetch(PHRASES_URL), fetch(APPROVALS_URL, { cache: 'no-store' }), fetch(DOC_URL, { cache: 'no-store' })]);
+    if (!a.ok || !b.ok || !c.ok) throw new Error('HTTP ' + a.status + '/' + b.status + '/' + c.status);
+    pj = JSON.parse(await a.text()); apText = await b.text(); docText = await c.text();
+  } catch (e) { status.textContent = 'Could not load the files (' + e.message + '). Serve the repository root over HTTP.'; return; }
+  let approved = {};
+  try { approved = JSON.parse(apText).approved || {}; } catch (e) { status.textContent = 'data/trope/trope_approvals.json does not parse.'; }
+  const where = docLines(docText);
+  const systems = _tradSystemsFrom(pj);
+  const host = document.getElementById('systems'), sum = document.getElementById('sumBody');
+  const toc = el('ol', { class: 'toc' });
+  for (const sys of Object.values(systems)) {
+    const fp = await tropeSystemFingerprint(sys);
+    const ap = approved[sys.id], line = approvalLine(apText, sys.id);
+    const st = ap === fp ? ['approved', 'Approved'] : typeof ap === 'string' ? ['stale', 'Approval stale (the rows changed)'] : ['not', 'Not approved'];
+    // the summary row
+    const tr = el('tr');
+    const a = el('a', { href: '#sys-' + sys.id }, sys.label);
+    const td0 = el('td'); td0.appendChild(a); tr.appendChild(td0);
+    tr.appendChild(el('td', {}, GROUP_NAMES[sys.group] || sys.group));
+    tr.appendChild(el('td', {}, String(sys.rows.length)));
+    tr.appendChild(el('td', { class: 'status-' + st[0] }, st[1]));
+    sum.appendChild(tr);
+    // the tradition
+    const sec = el('section', { class: 'box', id: 'sys-' + sys.id, 'aria-labelledby': 'h-' + sys.id });
+    const head = el('div', { class: 'sys-head' });
+    head.appendChild(el('h2', { id: 'h-' + sys.id }, sys.label));
+    head.appendChild(el('code', {}, sys.id));
+    head.appendChild(el('span', { class: 'status-' + st[0] }, st[1]));
+    sec.appendChild(head);
+    const dl = el('dl', { class: 'sys-meta' });
+    const meta = [['Tradition', sys.trad + ' — ' + sys.sub], ['Source', sys.source], ['License', sys.license], ['About it', sys.note],
+      ['Key', sys.key + (sys.chroma ? ' (its own spelling: ' + JSON.stringify(sys.chroma) + ')' : '')],
+      ['Fingerprint', fp || '(this browser cannot compute it: open the page over https or localhost)'],
+      ['In the doc', 'docs/trope-traditions.md line ' + (where.sys[sys.id] || '?') + ' (its trope-system block)']];
+    for (const [k, v] of meta) { dl.appendChild(el('dt', {}, k)); dl.appendChild(el('dd', {}, v)); }
+    sec.appendChild(dl);
+    const acts = el('div', { class: 'actions' });
+    const btn = el('button', { type: 'button', class: 'primary', 'aria-controls': 'ap-' + sys.id }, 'Approve ' + sys.label);
+    const panel = el('div', { class: 'approve-panel mono', id: 'ap-' + sys.id, role: 'status', 'aria-live': 'polite' });
+    let wanted = '';
+    btn.addEventListener('click', () => {
+      if (!fp) { panel.textContent = 'No fingerprint: open this page over https or http://localhost.'; return; }
+      if (!line) { panel.textContent = 'data/trope/trope_approvals.json has no line for "' + sys.id + '" — the builder requires one; add it as "' + sys.id + '": false, first.'; return; }
+      if (ap === fp) { panel.textContent = 'Already approved: data/trope/trope_approvals.json line ' + line.n + ' holds this fingerprint.\n' + line.text.trim(); return; }
+      const comma = /,\s*$/.test(line.text) ? ',' : '';
+      wanted = '  "' + sys.id + '": "' + fp + '"' + comma;
+      panel.textContent = 'In data/trope/trope_approvals.json, line ' + line.n + ', change\n' + line.text + '\nto\n' + wanted
+        + '\n\nand change nothing else. Commit it; once deployed, students see this tradition (no rebuild or cache bump needed).';
+      copy.hidden = false;
+    });
+    const copy = el('button', { type: 'button', hidden: '' }, 'Copy the new line');
+    copy.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(wanted); copy.textContent = 'Copied'; setTimeout(() => { copy.textContent = 'Copy the new line'; }, 1500); }
+      catch (e) { copy.textContent = 'Select the line above and copy it'; }
+    });
+    acts.appendChild(btn);
+    acts.appendChild(copy);
+    const tutor = el('a', { href: 'trope_tutor.html?preview=traditions&melody=' + encodeURIComponent(sys.id), target: '_blank', rel: 'noopener' }, 'Hear it in the Trope Tutor (preview)');
+    acts.appendChild(tutor);
+    const trainer = el('a', { href: 'torah_trainer.html?preview=traditions', target: '_blank', rel: 'noopener' }, 'Torah Trainer (preview: Layout → Trope staff, then Tradition)');
+    acts.appendChild(trainer);
+    sec.appendChild(acts);
+    sec.appendChild(panel);
+    for (const row of sys.rows) {
+      const art = el('article', { class: 'row', 'aria-labelledby': 'r-' + sys.id + '-' + row.n });
+      const rh = el('div', { class: 'row-head' });
+      rh.appendChild(el('span', { class: 'row-n', id: 'r-' + sys.id + '-' + row.n }, '#' + row.n));
+      rh.appendChild(el('span', { class: 'row-he', lang: 'he', dir: 'rtl' }, row.he));
+      if (row.src) rh.appendChild(el('span', { class: 'muted' }, 'source: ' + row.src));
+      if (row.tags.includes('aliyah-end')) rh.appendChild(el('span', { class: 'muted' }, '[aliyah-end]'));
+      const ln = where.rows[sys.id] && where.rows[sys.id][row.n];
+      rh.appendChild(el('span', { class: 'muted mono' }, 'docs/trope-traditions.md:' + (ln || '?')));
+      art.appendChild(rh);
+      const flags = rowFlags(row, sys);
+      if (flags.length) {
+        const ul = el('ul', { class: 'flags' });
+        for (const [t, warn] of flags) ul.appendChild(el('li', warn ? { class: 'check' } : {}, t));
+        art.appendChild(ul);
+      }
+      const wrap = el('div', { class: 'staff', tabindex: '0', role: 'group', 'aria-label': 'Row ' + row.n + ' of ' + sys.label + ': ' + row.units.map((u) => markName(u.k)).join(', ') });
+      wrap.appendChild(renderPhraseStaff(row, { key: sys.key, shift: 0, low: false, famOf, chroma: sys.chroma }));
+      art.appendChild(wrap);
+      sec.appendChild(art);
+    }
+    host.appendChild(sec);
+  }
+  status.textContent = '';
+}
+main();
+</script>
+</body>
+</html>

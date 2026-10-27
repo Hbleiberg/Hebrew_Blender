@@ -64,7 +64,8 @@ const CSV_PATH = path.join(ROOT, 'locales', 'ui-strings.csv');
 const BASELINE_PATH = path.join(__dirname, 'check-i18n-baseline.txt');
 
 // Files whose *.html we deliberately do NOT scan (the i18n dev harness).
-const SKIP_HTML = new Set(['i18n-test.html', 'account-test.html', 'saves-test.html']);
+// trope_review.html is the maintainer's English-only review of the trope traditions (not linked, noindex).
+const SKIP_HTML = new Set(['i18n-test.html', 'account-test.html', 'saves-test.html', 'trope_review.html']);
 // Keys whose empty cell is intentional English (Check B allowlist — applies to every language column).
 // Currently empty, and that is the healthy state: the corpus has no untranslated cell to excuse.
 // `worksheet.layout.title_default` sat here from the first localization pass until S308, which
