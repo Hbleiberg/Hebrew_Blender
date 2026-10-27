@@ -355,6 +355,26 @@ body.dark .tu-card { background:#131a29; }
 }
 .tu-melody-note[hidden] { display:none; }
 body.dark .tu-melody-note { background:#131a29; }
+/* The other traditions (docs/trope-traditions.md): a tradition's note names its source, pinned English like a
+   credit, and an unverified one (shown only with ?preview=traditions) carries the badge on its note and its
+   options. */
+.tu-trad-cite { color:var(--muted); }
+.tu-unverified-tag { display:inline-block; font-size:0.68rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase;
+  color:#9a3b1f; border:1px solid currentColor; border-radius:4px; padding:1px 6px; }
+body.dark .tu-unverified-tag { color:#f0a58a; }
+.tu-preview-banner { margin:0 0 12px; padding:8px 12px; border:1px dashed var(--gold-text); border-radius:8px; font-size:0.84rem; line-height:1.45; }
+.tu-preview-banner[hidden] { display:none; }
+/* A tradition's Learn figure is drawn in full notation (renderPhraseStaff: its pickups, fermatas and signs), at the
+   motif staff's place in the card, shrinking to the card on a phone. */
+.tu-learn-pstaff { flex-shrink:0; margin-inline-start:auto; max-inline-size:100%; block-size:auto !important; }
+.tu-base-fig { display:flex; flex-wrap:wrap; align-items:center; justify-content:flex-end; gap:4px 10px; margin-inline-start:auto; }
+.tu-base-fig[hidden] { display:none; }
+.tu-base-cap { flex-basis:100%; text-align:end; font-size:0.72rem; font-style:italic; color:var(--muted); }
+.tu-base-btn { margin-inline-start:auto; }
+.tu-sources { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px; font-size:0.82rem; line-height:1.5; }
+.tu-sources li { padding-block-end:8px; border-bottom:1px solid var(--border); }
+.tu-sources li:last-child { border-bottom:0; }
+.tu-sources .tu-src-name { font-weight:700; }
 /* Learn tab: the key bar (Settings → Key's twin). The name keeps a floor width so the arrows beside it
    do not jump as "C major" becomes "D♭ major"; the reset sits at the row's end and wraps below on a phone. */
 .tu-key-bar {
@@ -970,6 +990,8 @@ footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-co
   /* These slabs only surface when the teacher turns background graphics ON to get the card
      rules; then they print as solid blocks of ink. */
   body.dark .tu-card, body.dark .tu-family-note, body.dark .tu-glyph, body.dark .tu-melody-note, body.dark .tu-key-bar { background:#fff; }
+  body.dark .tu-unverified-tag { color:#9a3b1f; }   /* paper takes the light palette */
+  .tu-base-btn, .tu-preview-banner { display:none !important; }
   /* A card is one self-contained reference unit — its mark, its name in both traditions, its
      melody staff and its examples only mean anything together, so it must not be split across
      sheets (the torah_trainer .tt-verse treatment). Best-effort: a card taller than the page
@@ -1114,6 +1136,9 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
 
 <main class="tu-page" id="tuMain" tabindex="-1">
   <div class="tu-status" id="tuStatus" role="status"></div>
+  <!-- ?preview=traditions (the maintainer's review, never saved): the unverified transcriptions are offered too, each
+       marked so; this line says why they are there. -->
+  <p class="tu-preview-banner" id="tuPreviewBanner" role="note" hidden data-i18n="trope.preview.banner">Preview: the traditions not yet checked against their sources are shown too, each marked Unverified transcription. Students never see them.</p>
   <!-- The class's turn in a sing-back pause, for a screen reader (the staff shows it dashed): written only by the
        tune player, outside the tab views so it speaks on Learn and Phrases alike. -->
   <span class="vh" id="tuTuneLive" aria-live="polite"></span>
@@ -1186,6 +1211,8 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
       <span id="tuMelodyNoteEst" hidden data-i18n="trope.learn.melody_est_note">These staffs show the Esther melody, for Megillat Esther on Purim — The Art of Cantillation's chart (Portnoy &amp; Wolff). Each chapter ends on the chart's closing phrase.</span>
       <span id="tuMelodyNoteMeg" hidden data-i18n="trope.learn.melody_meg_note">These staffs show the melody for Shir HaShirim (Pesach), Ruth (Shavuot) and Kohelet (Sukkot) — The Art of Cantillation's chart (Portnoy &amp; Wolff), with its own phrase for the end of a book.</span>
       <span id="tuMelodyNoteEic" hidden data-i18n="trope.learn.melody_eic_note">These staffs show the Eicha melody, for Megillat Eicha on Tisha B'Av — The Art of Cantillation's chart (Portnoy &amp; Wolff).</span>
+      <!-- One of the other traditions (MELODY_INFO's trad rows): written by syncMelodyNote — its name, what it lacks, its source. -->
+      <span id="tuMelodyNoteTrad" hidden></span>
     </p>
     </div>
     <div class="tu-chips" id="tuFamilyChips" role="group" aria-label="Trope clause families" data-i18n-aria-label="trope.learn.families_aria"></div>
@@ -1440,6 +1467,14 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
         </div>
       </div>
 
+      <!-- The other traditions' sources (renderTradSources): shown while any is offered — approved, or this visit's
+           ?preview=traditions. Each citation and its terms are pinned English, like the footer's credits. -->
+      <div class="tu-set-group" id="setTradSources" hidden>
+        <h2 class="tu-set-title" data-i18n="trope.sources.title">Tradition sources</h2>
+        <p class="settings-note tu-set-first" data-i18n="trope.sources.note">The traditions besides the Avery/Binder and Portnoy &amp; Wolff charts, and where each one's staffs come from.</p>
+        <ul class="tu-sources" id="tuSourcesList"></ul>
+      </div>
+
       <!-- Three short groups share one row on a desktop instead of three near-empty rows. -->
       <div class="tu-set-row">
         <div class="tu-set-group">
@@ -1672,6 +1707,17 @@ const MELODY_INFO = [
 ];
 const MELODY_KEYS = MELODY_INFO.map((m) => m.key);
 function melodyInfo(k) { return MELODY_INFO.find((m) => m.key === k) || MELODY_INFO[0]; }
+// The other traditions (docs/trope-traditions.md: the Common melody, Spiro, the Jewish Encyclopedia's tables), from the
+// phrase file. One is offered — a row appended to MELODY_INFO and MELODY_KEYS (registerTraditions), so every melody
+// path takes it — only while data/trope/trope_approvals.json holds its fingerprint (the maintainer checked it against
+// its source on trope_review.html), or on a ?preview=traditions visit, which shows the rest marked Unverified
+// transcription and is never saved. A tradition draws its Learn figures and its Phrases rows from the phrase file (no
+// motif file) and drills by tune; a mark it prints no figure for says so and offers its reading's default chart's.
+const TRAD_PREVIEW = (() => { try { return new URLSearchParams(location.search).get('preview') === 'traditions'; } catch (e) { return false; } })();
+const APPROVALS_URL = 'data/trope/trope_approvals.json';   // network-first in sw.js, no ?v=: an approval needs no rebuild
+let TRAD = {};   // the offered traditions: _tradSystemsFrom's entries, each with `approved`
+function isTrad(m) { return !!TRAD[m]; }
+function tradLabel(m) { return I18n.t('shared.trad.' + m); }   // the tradition's own name (an option under its reading)
 // Where a melody's recorded clips come from, and the index that lists them (null while that file has not loaded).
 function clipSource(m = melodyKey()) { return melodyInfo(m).clips === 'totaltorah' ? 'totaltorah' : 'pockettorah'; }
 function activeIndex(m = melodyKey()) { return clipSource(m) === 'totaltorah' ? TT_INDEX : INDEX; }
@@ -1906,14 +1952,15 @@ function setStatusKey(key, en, isError) {
 async function loadData() {
   setStatusKey('trope.status.loading_index', 'Loading the trope index…');
   try {
-    const [idxRes, manRes, phrRes, phrExRes, ttRes, ...motifRes] = await Promise.all([
+    const [idxRes, manRes, phrRes, phrExRes, ttRes, apRes, ...motifRes] = await Promise.all([
       // ?v= is the DATA_CACHE refresh mechanism (sw.js serves /data/ cache-first,
       // matched by exact URL) — bump it whenever the committed index is rebuilt.
       fetch('data/trope/trope_index.json?v=2'),
       fetch('data/pockettorah/manifest.json?v=1'),
-      fetch('data/trope/trope_phrases.json?v=4').catch(() => null),   // the Phrases tab; ?v= bumps with the file
+      fetch('data/trope/trope_phrases.json?v=5').catch(() => null),   // the Phrases tab and the traditions; ?v= bumps with the file
       fetch('data/trope/trope_phrase_examples.json?v=1').catch(() => null),
       fetch(TT_INDEX_URL).catch(() => null),   // the Conservative melody's clips (TT_INDEX_URL carries its ?v=)
+      fetch(APPROVALS_URL, { cache: 'no-store' }).catch(() => null),   // which traditions the maintainer has approved
       // the motif files (MELODY_INFO.file carries each one's ?v=; the bump rule applies to every one; a melody without a
       // transcription has no file and fetches nothing)
       ...MELODY_INFO.map((info) => info.file ? fetch(info.file).catch(() => null) : Promise.resolve(null)),
@@ -1939,7 +1986,11 @@ async function loadData() {
       } catch (e) { console.warn('trope motifs load failed', system, e); }
     }
     try {   // the phrase chart is the Phrases tab's alone: a bad or missing file never takes the rest down
-      if (phrRes && phrRes.ok) PHRASES = _phraseSetsFrom(ivritSafeParse(await phrRes.text())) || PHRASES;
+      if (phrRes && phrRes.ok) {
+        const pj = ivritSafeParse(await phrRes.text());
+        PHRASES = _phraseSetsFrom(pj) || PHRASES;
+        await registerTraditions(pj, apRes);
+      }
       if (phrExRes && phrExRes.ok) PHRASE_EXAMPLES = _phraseExamplesFrom(ivritSafeParse(await phrExRes.text())) || PHRASE_EXAMPLES;
     } catch (e) { console.warn('trope phrases load failed', e); }
     setStatus('');
@@ -1951,6 +2002,24 @@ async function loadData() {
     setStatusKey('trope.status.index_unavailable', 'Example clips unavailable (couldn’t load the trope index) — Learn mode still shows every mark.', true);
   } finally {
     _phrasesTried = true;
+  }
+}
+// The traditions this visit offers (TRAD) and their MELODY_INFO rows. An approval counts only while it names the
+// fingerprint of the rows this page holds (tropeSystemFingerprint): rows changed since are hidden again. The approvals
+// file failing to load approves nothing. Called again by a retry, so it first clears what it added.
+async function registerTraditions(pj, apRes) {
+  let approved = {};
+  try { if (apRes && apRes.ok) { const a = ivritSafeParse(await apRes.text()); if (a && a.v === 1 && a.approved && typeof a.approved === 'object') approved = a.approved; } }
+  catch (e) { console.warn('trope approvals load failed', e); }
+  for (let i = MELODY_INFO.length - 1; i >= 0; i--) if (MELODY_INFO[i].trad) { MELODY_INFO.splice(i, 1); MELODY_KEYS.splice(i, 1); }
+  TRAD = {};
+  for (const sys of Object.values(_tradSystemsFrom(pj))) {
+    const fp = await tropeSystemFingerprint(sys);
+    const ok = !!fp && typeof approved[sys.id] === 'string' && approved[sys.id] === fp;
+    if (!ok && !TRAD_PREVIEW) continue;
+    TRAD[sys.id] = Object.assign(sys, { approved: ok });
+    MELODY_INFO.push({ key: sys.id, file: null, note: 'tuMelodyNoteTrad', minor: false, examples: false, chapters: false, drillTunes: true, trad: true, group: sys.group });
+    MELODY_KEYS.push(sys.id);
   }
 }
 function _setRetryVisible(on) {
@@ -1968,6 +2037,7 @@ async function retryLoadData() {
   const ae = document.activeElement, pressed = ae && (ae.id === 'tuRetryBtn' || ae.id === 'tuPhrRetry') ? ae : null;
   if (b) b.disabled = true;
   await loadData();
+  buildMelodySelects();
   renderPhrasesIfShown();
   if (activeIndex()) { renderLearn(); updateDrillStart(); }   // the index the chosen melody reads (the Conservative melody's is its own)
   else if (b) b.disabled = false;
@@ -2007,13 +2077,15 @@ function _ttIndexFrom(j) {
 // The Melody dropdown (in the key bar). An unknown stored value (a newer page's melody) shows the year-round staffs but stays
 // in the stored blob, so a round trip through this page never rewrites another device's choice.
 // ?melody=<one of MELODY_KEYS> (the Torah Trainer's links: highholiday from a Rosh Hashanah or Yom Kippur
-// reading, haftarah from a haftarah, a megillah's own melody) shows that melody for this visit only: never saved
-// or synced, silent on any other value. Choosing in the dropdown, or resetting the settings, replaces it and drops the param.
+// reading, haftarah from a haftarah, a megillah's own melody, a tradition the Trainer draws) shows that melody for
+// this visit only: never saved or synced, silent on any other value. A tradition's id is kept as it is read (the
+// traditions arrive with the phrase file) and counts only once it is offered. Choosing in the dropdown, or resetting
+// the settings, replaces it and drops the param.
 let _melodyOverride = null;
 function readMelodyParam() {
   try {
     const v = new URLSearchParams(location.search).get('melody');
-    if (MELODY_KEYS.includes(v)) _melodyOverride = v;
+    if (MELODY_KEYS.includes(v) || TROPE_TRAD_ID_RE.test(v || '')) _melodyOverride = v;
   } catch (e) {}
 }
 function dropMelodyParam() {
@@ -2025,8 +2097,17 @@ function dropMelodyParam() {
     history.replaceState(history.state, '', u.pathname + u.search + u.hash);   // other params and the hash stay
   } catch (e) {}
 }
-function melodyKey() { const m = _melodyOverride || settings.melody; return MELODY_KEYS.includes(m) ? m : 'torah'; }
-function melodyLabel(k = melodyKey()) { return I18n.t('trope.melody.' + k); }   // the Melody dropdown's option label, for the notes that name the melody
+function melodyKey() {
+  const o = MELODY_KEYS.includes(_melodyOverride) ? _melodyOverride : null, m = o || settings.melody;
+  return MELODY_KEYS.includes(m) ? m : 'torah';
+}
+// The melody's name, for the notes and labels that name it: a tradition's carries its reading and, in a staff's spoken
+// label, says it is unverified (bare: where the badge beside it already does).
+function melodyLabel(k = melodyKey(), bare = false) {
+  if (!isTrad(k)) return I18n.t('trope.melody.' + k);
+  const name = I18n.t('shared.trad.name_m', { reading: I18n.t('trope.melody.group_' + TRAD[k].group), name: tradLabel(k) });
+  return TRAD[k].approved || bare ? name : I18n.t('shared.trad.unverified_m', { name });
+}
 function syncMelodyNote() {   // both dropdowns show the melody on screen and the note names it (one span per melody, each with its own static data-i18n)
   const mel = melodyKey();
   // The key bar's, and its twin on the Drill start screen (JS-built by buildDrillMelodySel, so empty until the
@@ -2035,12 +2116,31 @@ function syncMelodyNote() {   // both dropdowns show the melody on screen and th
     const sel = document.getElementById(id);
     if (sel && sel.options.length && sel.value !== mel) sel.value = mel;
   }
-  for (const info of MELODY_INFO) { const el = document.getElementById(info.note); if (el) el.hidden = info.key !== mel; }
+  const noteId = melodyInfo(mel).note;
+  for (const id of new Set(MELODY_INFO.map((info) => info.note))) { const el = document.getElementById(id); if (el) el.hidden = id !== noteId; }
+  if (isTrad(mel)) fillTradNote(mel);
   // The footer's Total Torah credit shows while that recording is what the page plays (the Trainer's #ttFooterAudioTT rule).
   const tt = document.getElementById('tuFooterAudioTT');
   if (tt) tt.hidden = clipSource(mel) !== 'totaltorah';
 }
-function activeMotifs() { return MOTIF_SETS[melodyKey()]; }
+// A tradition's note under the key bar: what it is (its reading and name), what it prints no figure for, the JE tables'
+// sample contexts, and its source — the citation pinned English, as the footer's credits are — with the badge while
+// it is unverified. DOM-built: the source is data.
+function fillTradNote(m) {
+  const el = document.getElementById('tuMelodyNoteTrad'), sys = TRAD[m];
+  if (!el || !sys || !_i18nReady) return;
+  el.textContent = '';
+  const add = (txt, cls) => { const s = document.createElement('span'); if (cls) s.className = cls; s.textContent = txt; el.appendChild(s); el.appendChild(document.createTextNode(' ')); return s; };
+  if (!sys.approved) add(I18n.t('shared.trad.unverified'), 'tu-unverified-tag');
+  add(I18n.t('trope.learn.melody_trad_note_m', { melody: melodyLabel(m, true) }));
+  const lacks = TROPES.filter((t) => !tropeFirstFigure(sys, t.key) && t.key !== 'geresh_muqdam');   // no chart prints geresh muqdam
+  // the names are isolated (FSI … PDI), so a list of Latin names keeps its order inside a Hebrew sentence
+  if (lacks.length) add(I18n.t('trope.learn.melody_trad_lacks_m', { marks: '\u2068' + lacks.map((t) => tropeName(t)).join(', ') + '\u2069' }));
+  if (sys.underlay === 'names') add(I18n.t('trope.learn.melody_trad_sample'));
+  const cite = add(sys.source + '. ' + sys.license, 'tu-trad-cite');   // a citation — i18n-ignore
+  cite.lang = 'en'; cite.dir = 'ltr';
+}
+function activeMotifs() { const m = melodyKey(); return isTrad(m) ? TRAD[m] : MOTIF_SETS[m]; }   // a tradition's: its key, no motifs
 function motifFor(key, set = activeMotifs()) {
   const m = set && set.tropes && set.tropes[key];
   return (m && Array.isArray(m.notes) && m.notes.length &&
@@ -2312,9 +2412,9 @@ function noteNamesMode() { return _i18nReady && window.I18n ? noteNamesKey() : '
 // carries the sign it takes against the signature (A major's G♮ is ti♭, C major's F♯ is fa♯). '' when names are
 // off, and for do re mi on a staff with no key to count from.
 const NOTE_SIGN = { '-1': '♭', 0: '', 1: '♯' };
-function noteNameAt(p, key, mode) {
+function noteNameAt(p, key, mode, chroma) {   // chroma: a tradition's own spelling (motifPitchPos), so a name says what the staff writes
   if (mode !== 'letters' && mode !== 'solfa') return '';
-  const { step, acc } = motifPitchPos(p, key);
+  const { step, acc } = motifPitchPos(p, key, chroma);
   const letter = 'BCDEFGA'[((step % 7) + 7) % 7];   // step 0 is B4; the letters are notation, not UI text — i18n-ignore
   const inSig = (keySignature(key).find((k) => k.letter === letter) || { acc: 0 }).acc;
   const alt = acc === '♯' ? 1 : acc === '♭' ? -1 : acc === '♮' ? 0 : inSig;
@@ -2326,8 +2426,8 @@ function noteNameAt(p, key, mode) {
 function noteNamesAria(label, names) {   // a staff's spoken label, with its names when they are shown
   return I18n.t('trope.notes.staff_aria', { label, names: names.filter(Boolean).join(' ') });
 }
-function renderMotifStaff(t, motif) {
-  const key = staffKey();
+function renderMotifStaff(t, motif, set = activeMotifs(), mel = melodyKey(), named = mel !== 'torah') {   // set/mel: whose key and name (a tradition card's default figure, named whatever it is)
+  const key = staffKey(set);
   const shift = tuneShiftVal();
   const sig = keySignature(key);
   const count = motif.notes.length;
@@ -2364,7 +2464,7 @@ function renderMotifStaff(t, motif) {
   const svg = _svgEl('svg', { viewBox: '0 0 ' + W + ' ' + H, class: 'tu-motif', role: 'img' });
   if (W !== 180) svg.style.inlineSize = Math.round(W * 165 / 180) + 'px';
   if (H !== 56) svg.style.blockSize = Math.ceil(H * 165 / 180) + 'px';
-  const label = melodyKey() === 'torah' ? I18n.t('trope.learn.motif_aria', { name: tropeName(t) }) : I18n.t('trope.learn.motif_aria_m', { name: tropeName(t), melody: melodyLabel() });
+  const label = !named ? I18n.t('trope.learn.motif_aria', { name: tropeName(t) }) : I18n.t('trope.learn.motif_aria_m', { name: tropeName(t), melody: melodyLabel(mel) });
   svg.setAttribute('aria-label', names ? noteNamesAria(label, names) : label);
   staffLines(svg, W, MID);
   staffClef(svg, MID, tuneVoiceKey() === 'low');
@@ -2439,7 +2539,7 @@ function _tuneLowWaveFor(ctx) {   // null when the browser cannot build one: the
 }
 function _tuneStaff(key) {   // re-found on every note: a language-switch re-render mid-tune must not break the highlight
   const card = document.querySelector('.tu-card[data-key="' + key + '"]');
-  return card ? card.querySelector('.tu-motif') : null;
+  return card ? card.querySelector('.tu-motif, .tu-learn-pstaff') : null;
 }
 function stopTune() {
   for (const o of _tuneOscs) { try { o.stop(); } catch (e) {} }
@@ -2570,13 +2670,26 @@ function playTune(t, motif, btn) {
 function toggleTune(t, motif, btn) {
   if (_tuneKey === t.key) stopTune(); else playTune(t, motif, btn);
 }
+// A tradition's figure for a mark (its first, as tropeFirstFigure finds it) as a one-mark row; null when it prints none.
+function tradFigureRow(key, m) {
+  const sys = TRAD[m], f = sys && tropeFirstFigure(sys, key);
+  return f ? tropeFigureRow(sys, f.n, f.ui) : null;
+}
+function toggleTradTune(t, row, btn) {
+  if (_tuneKey === t.key) { stopTune(); return; }
+  const { low, sounds, lights, total } = _phraseTimeline(row);
+  const name = tropeName(t);
+  _playTuneCore({ id: t.key, btn, btnSel: '.tu-tune-play[data-key="' + t.key + '"]',
+    ariaFn: () => I18n.t('trope.learn.play_tune_aria', { name }),
+    low, sounds, lights, total, find: () => _tuneStaff(t.key), noteSel: '.tu-pn' });
+}
 // The Drill's sound in a melody nobody recorded (MELODY_INFO.drillTunes): the mark's figure from that melody's chart,
 // exactly as its Learn card's tune button sounds it (the Sing along key, voice and tune speed), played once, with no
 // staff on screen to light. Silent for a mark the chart prints no figure for — drillableTropes never asks for one.
 function playDrillTune(key, m) {
-  const motif = motifFor(key, MOTIF_SETS[m]);
-  if (!motif) return;
-  const { low, sounds, total } = _motifTimeline(motif);
+  const row = isTrad(m) ? tradFigureRow(key, m) : null, motif = row ? null : motifFor(key, MOTIF_SETS[m]);
+  if (!row && !motif) return;
+  const { low, sounds, total } = row ? _phraseTimeline(row) : _motifTimeline(motif);
   _playTuneCore({ id: 'drill:' + key, once: true, low, sounds, lights: [], total, find: () => null, noteSel: '' });
 }
 
@@ -2690,7 +2803,7 @@ function closingTitleKey(m) {
 }
 function phraseGroupTitleKey(groupKey, m) { return groupKey === 'closing' ? closingTitleKey(m) : 'trope.phrases.group_' + groupKey; }
 const PHRASE_GROUP_FAMILY = { etnachta: 'etnachta', sofpasuk: 'sofpasuk', katon: 'katon', geresh: 'geresh', revia: 'revia',
-  gershayim: 'geresh', tevir: 'revia', telisha: 'geresh', gadol: 'katon', segol: 'segol', rare: 'rare', closing: 'sofpasuk', other: 'rare' };
+  gershayim: 'geresh', tevir: 'revia', telisha: 'geresh', gadol: 'katon', segol: 'segol', rare: 'rare', closing: 'sofpasuk', other: 'rare', all: 'sofpasuk' };
 // The one phrase mark the tutor has no card for: munach with the legarmeh line after it. Names stay in their
 // tradition's transliteration, like every mark name (i18n-ignore).
 const PHRASE_LEGARMEH = { key: 'munach_legarmeh', ashk: 'Munach Legarmeh', seph: 'Legarmeh', family: 'revia' };
@@ -2710,7 +2823,7 @@ function _phraseExamplesFrom(j) {
   }
   return out;
 }
-function phraseSet() { return PHRASES && PHRASES[melodyKey()]; }
+function phraseSet() { const m = melodyKey(); return (PHRASES && PHRASES[m]) || TRAD[m] || null; }   // a tradition's rows are its set
 function phraseStaffKey() { const s = phraseSet(); return s ? shiftedKey(s.key, tuneShiftVal()) : ''; }
 function phrasesShown() { const v = document.getElementById('phrasesView'); return !!v && !v.hidden; }
 function renderPhrasesIfShown() { if (phrasesShown()) renderPhrases(); }
@@ -2723,7 +2836,7 @@ function phraseGroups(set, m) {
     if (rows.length) groups.push({ key: g.key, rows });
   }
   const rest = set.rows.filter((r) => !seen.has(r.n));
-  if (rest.length) groups.push({ key: 'other', rows: rest });
+  if (rest.length) groups.push({ key: isTrad(m) ? 'all' : 'other', rows: rest });   // a tradition: its rows in its own order, one group
   return groups;
 }
 function phraseMarksText(row) {   // "Mercha, Tipcha, Munach, Etnachta", in the tradition Settings chooses
@@ -2858,15 +2971,15 @@ function buildPhraseCard(m, set, row, forPrint) {
   const wrap = document.createElement('div');
   wrap.className = 'tu-pstaff-wrap';
   wrap.dir = 'ltr';
-  const key = shiftedKey(set.key, tuneShiftVal()), shift = tuneShiftVal(), mode = noteNamesMode();
-  const names = mode === 'off' ? null : row.notes.map((n) => (n.r ? '' : noteNameAt(n.p + shift, key, mode)));
+  const key = shiftedKey(set.key, tuneShiftVal()), shift = tuneShiftVal(), mode = noteNamesMode(), chroma = set.chroma;   // chroma: a tradition's own spelling
+  const names = mode === 'off' ? null : row.notes.map((n) => (n.r ? '' : noteNameAt(n.p + shift, key, mode, chroma)));
   if (!forPrint) {
     wrap.tabIndex = 0;   // a keyboard can scroll a wide row
     wrap.setAttribute('role', 'group');
     const label = m === 'torah' ? I18n.t('trope.phrases.staff_aria', { n: row.n, marks: phraseMarksText(row) }) : I18n.t('trope.phrases.staff_aria_m', { n: row.n, marks: phraseMarksText(row), melody: melodyLabel(m) });
     wrap.setAttribute('aria-label', names ? noteNamesAria(label, names) : label);
   }
-  const svg = renderPhraseStaff(row, { key, shift, low: tuneVoiceKey() === 'low', famOf: _phraseFamily, names });
+  const svg = renderPhraseStaff(row, { key, shift, low: tuneVoiceKey() === 'low', famOf: _phraseFamily, names, chroma });
   if (!forPrint && _tuneKey === id) { svg.classList.add('is-playing'); svg.classList.toggle('is-echo', _tuneTurn); }
   wrap.appendChild(svg);
   card.appendChild(wrap);
@@ -2966,9 +3079,8 @@ function togglePhraseExample(pid, ex, btn) {
 // gershayim's turn, segol's run) blur into one sound, so each is held long enough to hear and the tune
 // stretches around it.
 const PHRASE_MIN_NOTE = 0.1;
-function togglePhraseTune(m, row, btn) {
-  const id = 'phrase:' + m + ':' + row.n;
-  if (_tuneKey === id) { stopTune(); return; }
+// A note under a fermata (a tradition's `f`) is held PHRASE_FERMATA times its value.
+function _phraseTimeline(row) {
   const rate = tuneRateVal();
   const tick = 0.32 / 24 / rate;
   const low = tuneVoiceKey() === 'low';
@@ -2984,7 +3096,7 @@ function togglePhraseTune(m, row, btn) {
       at += d; borrowed += d;
       return;
     }
-    const len = Math.max(PHRASE_MIN_NOTE / rate, n.t * tick - borrowed);
+    const len = Math.max(PHRASE_MIN_NOTE / rate, n.t * tick * (n.f ? PHRASE_FERMATA : 1) - borrowed);
     borrowed = 0;
     const prev = row.notes[i - 1];
     if (prev && prev.tie && !prev.r && prev.p === n.p && sounds.length) sounds[sounds.length - 1].dur += len;
@@ -2992,8 +3104,14 @@ function togglePhraseTune(m, row, btn) {
     lights.push({ at, i });
     at += len;
   });
+  return { low, sounds, lights, total: at };
+}
+function togglePhraseTune(m, row, btn) {
+  const id = 'phrase:' + m + ':' + row.n;
+  if (_tuneKey === id) { stopTune(); return; }
+  const { low, sounds, lights, total } = _phraseTimeline(row);
   _playTuneCore({ id, btn, btnSel: '#tuPhraseCards .tu-ptune[data-tune="' + id + '"]',
-    ariaFn: () => I18n.t('trope.phrases.play_aria', { n: row.n }), low, sounds, lights, total: at,
+    ariaFn: () => I18n.t('trope.phrases.play_aria', { n: row.n }), low, sounds, lights, total,
     find: () => document.querySelector('#tuPhraseCards .tu-pcard[data-phrase="' + m + ':' + row.n + '"] .tu-pstaff'), noteSel: '.tu-pn' });
 }
 /* ── Print: from the Phrases tab, every group of the melody on screen, in the key on screen (the key bar
@@ -3175,6 +3293,84 @@ function spreadPick(arr, n) {
   return out.slice(0, n);
 }
 
+// A tradition's Learn figure: the mark's first figure in its rows, drawn as the Phrases staffs are (its pickups,
+// fermatas and spelling), with the tune button the motif cards have. A mark it prints no figure for says so plainly,
+// and offers the figure of the chart its reading draws by default (or the year-round chart, for a mark that one lacks
+// too — shalshelet outside the Torah), behind a button: never one made up. Which marks are open is this visit's only.
+const _tradBaseOpen = new Set();   // melody:mark
+function renderTradFigure(head, t) {
+  const m = melodyKey(), sys = TRAD[m], row = tradFigureRow(t.key, m);
+  if (row) {
+    const tune = document.createElement('button');
+    tune.type = 'button';
+    tune.className = 'tu-ex-play tu-tune-play';
+    tune.innerHTML = ICON_PLAY;
+    tune.dataset.key = t.key;
+    tune.setAttribute('aria-pressed', _tuneKey === t.key ? 'true' : 'false');
+    if (_tuneKey === t.key) tune.classList.add('is-playing');
+    tune.setAttribute('aria-label', I18n.t('trope.learn.play_tune_aria', { name: tropeName(t) }));
+    tune.title = I18n.t('trope.learn.play_tune_title');
+    tune.onclick = () => toggleTradTune(t, row, tune);
+    head.appendChild(tune);
+    const shift = tuneShiftVal(), key = shiftedKey(sys.key, shift), mode = noteNamesMode();
+    const names = mode === 'off' ? null : row.notes.map((n) => (n.r ? '' : noteNameAt(n.p + shift, key, mode, sys.chroma)));
+    const label = I18n.t('trope.learn.motif_aria_m', { name: tropeName(t), melody: melodyLabel(m) });
+    const svg = renderPhraseStaff(row, { key, shift, low: tuneVoiceKey() === 'low', famOf: _phraseFamily, names, chroma: sys.chroma,
+      ariaLabel: names ? noteNamesAria(label, names) : label });
+    svg.classList.add('tu-learn-pstaff');
+    if (_tuneKey === t.key) { svg.classList.add('is-playing'); svg.classList.toggle('is-echo', _tuneTurn); }
+    head.appendChild(svg);
+    return;
+  }
+  // No figure here: the default chart of the tradition's reading, else the year-round chart, else nothing to offer.
+  let base = TROPE_GROUP_BASE[sys.group], motif = motifFor(t.key, MOTIF_SETS[base]);
+  if (!motif && base !== 'torah') { base = 'torah'; motif = motifFor(t.key, MOTIF_SETS.torah); }
+  const none = document.createElement('span');
+  none.className = 'tu-motif-none';
+  none.textContent = I18n.t('trope.learn.no_figure_trad_m', { melody: melodyLabel(m, true) });
+  head.appendChild(none);
+  if (!motif) return;
+  const k = m + ':' + t.key, open = _tradBaseOpen.has(k), boxId = 'tuBaseFig-' + t.key;
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'btn btn-xs btn-secondary tu-base-btn';
+  btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  btn.setAttribute('aria-controls', boxId);
+  btn.textContent = I18n.t(open ? 'trope.learn.hide_base_m' : 'trope.learn.show_base_m', { melody: melodyLabel(base) });
+  btn.onclick = () => {
+    if (_tradBaseOpen.has(k)) _tradBaseOpen.delete(k); else _tradBaseOpen.add(k);
+    stopTune();
+    _i18nRerender = true;   // a read-only re-render: the family is already the visited one
+    try { renderLearn(); } finally { _i18nRerender = false; }
+    const again = document.querySelector('.tu-card[data-key="' + t.key + '"] .tu-base-btn');
+    if (again) again.focus();
+  };
+  head.appendChild(btn);
+  const box = document.createElement('div');
+  box.className = 'tu-base-fig';
+  box.id = boxId;
+  box.hidden = !open;
+  if (open) {
+    const cap = document.createElement('span');
+    cap.className = 'tu-base-cap';
+    cap.textContent = I18n.t('trope.learn.base_caption_m', { melody: melodyLabel(base) });
+    box.appendChild(cap);
+    const tune = document.createElement('button');
+    tune.type = 'button';
+    tune.className = 'tu-ex-play tu-tune-play';
+    tune.innerHTML = ICON_PLAY;
+    tune.dataset.key = t.key;
+    tune.setAttribute('aria-pressed', _tuneKey === t.key ? 'true' : 'false');
+    tune.setAttribute('aria-label', I18n.t('trope.learn.play_tune_aria', { name: tropeName(t) }));   // the caption and the staff's label name the chart
+    tune.title = I18n.t('trope.learn.play_tune_title');
+    tune.onclick = () => toggleTune(t, motif, tune);
+    box.appendChild(tune);
+    const staff = renderMotifStaff(t, motif, MOTIF_SETS[base], base, true);
+    if (_tuneKey === t.key) { staff.classList.add('is-playing'); staff.classList.toggle('is-echo', _tuneTurn); }
+    box.appendChild(staff);
+  }
+  head.appendChild(box);
+}
 function renderLearn() {
   const fam = TROPE_FAMILY_DEFS.find(f => f.key === currentFamily) || TROPE_FAMILY_DEFS[0];
   currentFamily = fam.key;
@@ -3232,7 +3428,8 @@ function renderLearn() {
     }
     head.appendChild(names);
     const motif = motifFor(t.key);
-    if (motif) {
+    if (isTrad(melodyKey())) renderTradFigure(head, t);
+    else if (motif) {
       const tune = document.createElement('button');   // play the staff as tones, notes lighting up in turn
       tune.type = 'button';
       tune.className = 'tu-ex-play tu-tune-play';
@@ -3459,6 +3656,7 @@ function drillMelody() { return drill.active && drill.melody ? drill.melody : me
 // figure on its chart (a mark the chart does not print is left out) plus a word in the index for an Identify question.
 function drillableTropes(m = drillMelody()) {
   if (drillUsesTunes(m)) {
+    if (isTrad(m)) return TROPES.filter(t => tropeFirstFigure(TRAD[m], t.key) && examplesFor(t.key, m).length > 0);
     const set = MOTIF_SETS[m];
     return set ? TROPES.filter(t => motifFor(t.key, set) && examplesFor(t.key, m).length > 0) : [];
   }
@@ -3467,6 +3665,7 @@ function drillableTropes(m = drillMelody()) {
 // What a tune sounds like, for telling two marks apart by ear: a chart can sing two marks alike (the festival
 // megillot's munach and mercha, Eicha's etnachta and sof pasuk), and a Hear or Melody question never offers both.
 function drillTuneSig(key, m) {
+  if (isTrad(m)) { const row = tradFigureRow(key, m); return row ? row.notes.map(n => (n.r ? 'r' : n.p) + ':' + n.t).join(' ') : ''; }
   const mo = motifFor(key, MOTIF_SETS[m]);
   return mo ? mo.notes.map(n => n.p + ':' + n.d).join(' ') : '';
 }
@@ -3540,14 +3739,67 @@ function setDrillLength(v) {
 function buildDrillMelodySel() {
   const sel = document.getElementById('drillMelodySel');
   if (!sel) return;
+  _fillMelodySel(sel);
+}
+// One melody <select>'s options. With no tradition offered: the seven melodies in MELODY_INFO's order (the key bar keeps
+// its static markup then — byte for byte the page before the traditions). With one or more: an <optgroup> per reading
+// (TROPE_TRAD_GROUPS' order: Torah, Haftarah, High Holy Days, Esther, Eicha, the festival megillot), each opening on
+// the chart the page draws by default and then that reading's traditions, an unverified one saying so.
+const MELODY_GROUP_OF = { torah: 'torah', conservative: 'torah', highholiday: 'hhd', haftarah: 'haftarah', esther: 'esther', eicha: 'eicha', megillot: 'megillot' };
+function _fillMelodySel(sel) {
   sel.innerHTML = '';
-  for (const info of MELODY_INFO) {
+  const opt = (k, parent) => {
     const o = document.createElement('option');
-    o.value = info.key;
-    o.textContent = melodyLabel(info.key);
-    sel.appendChild(o);
+    o.value = k;
+    o.textContent = !isTrad(k) ? melodyLabel(k) : TRAD[k].approved ? tradLabel(k) : I18n.t('shared.trad.option_unverified_m', { name: tradLabel(k) });
+    parent.appendChild(o);
+  };
+  if (!Object.keys(TRAD).length) for (const info of MELODY_INFO) opt(info.key, sel);
+  else for (const g of TROPE_TRAD_GROUPS) {
+    const og = document.createElement('optgroup');
+    og.label = I18n.t('trope.melody.group_' + g);
+    for (const info of MELODY_INFO) if ((info.trad ? info.group : MELODY_GROUP_OF[info.key]) === g) opt(info.key, og);
+    if (og.children.length) sel.appendChild(og);
   }
   sel.value = melodyKey();
+}
+function buildMelodySelects() {
+  if (!_i18nReady) return;   // applyI18n builds them once the dictionary is there
+  const bar = document.getElementById('tuMelodySel');
+  if (bar && (Object.keys(TRAD).length || bar.querySelector('optgroup'))) _fillMelodySel(bar);
+  buildDrillMelodySel();
+  renderTradSources();
+  const banner = document.getElementById('tuPreviewBanner');
+  if (banner) banner.hidden = !TRAD_PREVIEW;
+}
+// Settings → Tradition sources: each offered tradition's name, citation and terms (pinned English, as credits are), and
+// whether it is still an unverified transcription. Hidden while none is offered.
+function renderTradSources() {
+  const group = document.getElementById('setTradSources'), list = document.getElementById('tuSourcesList');
+  if (!group || !list) return;
+  list.textContent = '';
+  const ids = Object.keys(TRAD);
+  group.hidden = !ids.length;
+  for (const id of ids) {
+    const sys = TRAD[id], li = document.createElement('li');
+    const name = document.createElement('span');
+    name.className = 'tu-src-name';
+    name.textContent = melodyLabel(id, true);
+    li.appendChild(name);
+    if (!sys.approved) {
+      li.appendChild(document.createTextNode(' '));
+      const tag = document.createElement('span');
+      tag.className = 'tu-unverified-tag';
+      tag.textContent = I18n.t('shared.trad.unverified');
+      li.appendChild(tag);
+    }
+    li.appendChild(document.createElement('br'));
+    const cite = document.createElement('span');
+    cite.lang = 'en'; cite.dir = 'ltr';
+    cite.textContent = sys.trad + ' — ' + sys.source + '. ' + sys.license;   // data: the atlas's tradition and citation — i18n-ignore
+    li.appendChild(cite);
+    list.appendChild(li);
+  }
 }
 /* The drill's selects are JS-built, so every path that can change the stored value rebuilds them:
    a language switch (applyI18n, which is also the FIRST build — the scope and melody options are i18n
@@ -3555,7 +3807,7 @@ function buildDrillMelodySel() {
    updateDrillStart(): that runs on every tab switch, and rebuilding a <select> under the
    teacher's cursor is its own defect (a melody chosen elsewhere moves the melody box's value only:
    syncMelodyNote). */
-function syncDrillSelects() { buildDrillMelodySel(); buildDrillScopeSel(); buildDrillLenSel(); }
+function syncDrillSelects() { buildMelodySelects(); buildDrillScopeSel(); buildDrillLenSel(); }
 function updateDrillStart() {
   const types = enabledTypes();
   const names = { identify: I18n.t('trope.drill.type_identify'), hear: I18n.t('trope.drill.type_hear'), melody: I18n.t('trope.drill.type_melody') };
@@ -3576,7 +3828,7 @@ function updateDrillStart() {
   const scopedEmpty = !scopedDrillPool(mel).length;
   const idx = activeIndex(mel);   // the chosen melody's clip index (the Conservative melody's is its own file)
   // A melody that drills its chart's tunes needs that chart's motif file too (loadData leaves a failed one null).
-  const chartMissing = tunes && !!idx && _phrasesTried && !MOTIF_SETS[mel];
+  const chartMissing = tunes && !!idx && _phrasesTried && !(isTrad(mel) || MOTIF_SETS[mel]);   // a tradition is offered only once its rows loaded
   if (_phrasesTried && (!idx || chartMissing)) _setRetryVisible(true);   // its load failed: the Try again the note names
   if (!idx || chartMissing || pool.length < 4 || scopedEmpty) {
     btn.setAttribute('aria-disabled', 'true');
@@ -4793,6 +5045,7 @@ async function init() {
   refreshMyFonts();
   initCloudSaves();
   await loadData();
+  buildMelodySelects();     // the traditions arrived with the phrase file
   renderPhrasesIfShown();   // a Phrases tab opened while the chart downloaded shows it now (or says it failed), as retryLoadData does
   renderLearn();
   updateDrillStart();

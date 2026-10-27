@@ -1,5 +1,5 @@
 /* IvritSuite service worker — bump VERSION to invalidate the cache on deploy. */
-const VERSION = 'v1107';
+const VERSION = 'v1108';
 const CACHE = 'ivritsuite-' + VERSION;
 // Version-independent cache for the big data/ corpora (dictionary words / emoji / parshiyot /
 // pockettorah). Kept OUT of the version-scoped CACHE so a routine VERSION bump no longer evicts
@@ -87,6 +87,24 @@ self.addEventListener('fetch', (event) => {
   // Range header, and a cached full 200 served for a Range request is refused by Safari, while a 206 must
   // never be cache.put — so neither the cache-first branch below nor DATA_CACHE sees audio.
   if (req.headers.has('range') || req.destination === 'audio') return;
+  // The trope traditions' approvals (hand-edited, one line per tradition; docs/reference/torah-and-trope.md →
+  // Traditions): network-first like the starting-font manifest below, never cache-first like the rest of /data/, so
+  // an approval reaches returning users with no ?v= or VERSION bump. Offline: the copy last fetched, else nothing —
+  // and nothing approves nothing, which is the safe side.
+  if (url.pathname === '/data/trope/trope_approvals.json') {
+    event.respondWith(
+      fetch(req, { cache: 'no-store' })
+        .then((res) => {
+          if (res && res.ok && res.type === 'basic') {
+            const copy = res.clone();
+            caches.open(CACHE).then((cache) => cache.put(req, copy));
+          }
+          return res;
+        })
+        .catch(() => caches.match(req, { ignoreSearch: true }).then((hit) => hit || Response.error()))
+    );
+    return;
+  }
   if (url.pathname.startsWith('/data/')) {
     event.respondWith(
       caches.open(DATA_CACHE).then((cache) =>

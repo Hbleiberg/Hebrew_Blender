@@ -1510,7 +1510,18 @@ body.dark .form-row select, body.dark .form-row input[type="text"], body.dark .f
 /* The two drawer selects whose options outgrow the 170px cap: the transliteration Style ("Modern Israeli [DEFAULT]"
    showed as "…[DEFAU") and the Trope staff's Melody ("Year Round [Binder-Reform]" as "…[Binder-Re"). Their short
    labels leave the row room for the select's own width; on a phone-narrow drawer the Melody row wraps instead. */
-#optTranslitStyle, #optStaffMelody { max-width:none; }
+#optTranslitStyle, #optStaffMelody, #optStaffTradition { max-width:none; }
+/* The Tradition row (one of the other traditions, docs/trope-traditions.md): shown only while the reading's chart has one
+   on offer; its source line under it, pinned English like a credit; a figure borrowed from the default chart (a mark the
+   tradition prints none for) draws a dashed bar. */
+#rowStaffTradition[hidden], #staffTradSources[hidden] { display:none; }
+.tt-staff-trad-src { flex-basis:100%; font-size:0.72rem; color:var(--muted); line-height:1.4; margin-top:6px; }
+.tt-unverified-tag { display:inline-block; font-size:0.66rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:#9a3b1f; border:1px solid currentColor; border-radius:4px; padding:0 5px; margin-inline-end:6px; }
+body.dark .tt-unverified-tag { color:#f0a58a; }
+#staffTradSources { font-size:0.72rem; color:var(--muted); line-height:1.45; margin:0 0 10px; }
+#staffTradSources ul { margin:6px 0 0; padding-inline-start:18px; }
+#staffTradSources li { margin-bottom:6px; }
+.tt-staff-sys .tu-pbar.is-fb { fill:none !important; stroke:currentColor; stroke-width:0.7; stroke-dasharray:2 1.5; opacity:0.75; }
 body.dark .form-row input[type="date"] { color-scheme: dark; }   /* the picker's own popup and icon follow the theme */
 .toggle { position:relative; display:inline-block; width:38px; height:24px; flex-shrink:0; }   /* 24px = the WCAG 2.5.8 touch floor */
 .toggle input { opacity:0; width:0; height:0; }
@@ -2771,6 +2782,19 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
             <option value="eicha" data-i18n="trope.melody.eicha">Eicha</option>
           </select>
         </div>
+        <!-- Tradition: one of the other traditions of the reading's chart (settings.staffTradition, one per reading — torah,
+             haftarah, hhd, esther, eicha, megillot; one writer, setStaffTradition), offered only once the maintainer has
+             approved it, or on a ?preview=traditions visit (each marked). syncStaffControls builds the options and shows
+             the row only while there is a choice to make; the line under it is the chosen one's source. -->
+        <div class="form-row" id="rowStaffTradition" style="flex-wrap:wrap;" hidden>
+          <label for="optStaffTradition"><span data-i18n="torah.staff.tradition_label">Tradition</span> <span class="tip-wrap" data-i18n-tip="torah.staff.tradition_tip" data-tip="Another tradition's chart for this reading — a different melody for the same marks. A mark it prints no figure for takes the default chart's, under a dashed bar, and the reading's header names them. The recordings keep their own tune."><i class="tip-icon">?</i></span></label>
+          <select id="optStaffTradition" style="margin-inline-start:auto;"></select>
+          <div class="tt-staff-trad-src" id="staffTradSource"></div>
+        </div>
+        <details id="staffTradSources" hidden>
+          <summary data-i18n="torah.staff.sources_title">Sources of the staff traditions</summary>
+          <ul id="staffTradSourcesList"></ul>
+        </details>
         <div class="form-row">
           <label id="lblStaffWords" data-i18n="torah.staff.words_label">Words</label>
           <span class="radio-group" role="group" aria-labelledby="lblStaffWords" aria-describedby="staffWordsNote" style="margin-inline-start:auto;">
@@ -3239,6 +3263,7 @@ const DEFAULTS = {
   staffNoteNames: 'off',       // 'off' | 'letters' | 'solfa' — staffNoteNamesKey(); a name under every staff note
   staffTuneRate: 1.0,          // 0.5–1.5× — staffRateVal()
   staffMelody: 'auto',         // 'auto' (follow the reading) | one of TROPE_MELODIES — staffMelodyChoice(); the Trope staff panel's Melody dropdown
+  staffTradition: {},          // { [reading group]: tradition id } — the Tradition dropdown (staffTradChoice); a group absent = its default chart
 };
 let settings = JSON.parse(JSON.stringify(DEFAULTS));
 
@@ -4571,11 +4596,11 @@ function readingTutorMelody() {
 }
 function tropeTutorHref() {
   const m = tutorLinkMelody();
-  return m ? TROPE_TUTOR_URL + '?melody=' + m : TROPE_TUTOR_URL;
+  return m ? TROPE_TUTOR_URL + '?melody=' + m + (STAFF_TRAD[m] && !STAFF_TRAD[m].approved ? '&preview=traditions' : '') : TROPE_TUTOR_URL;
 }
 // The legend carries two links: the plain one, and one naming the reading's melody (its text is built here, so
 // applyI18n calls this on a language switch); only the one matching the reading shows.
-function melodyLabel(m) { return I18n.t('trope.melody.' + m); }   // the Trope Tutor's melody-bar label, shared through the locale
+function melodyLabel(m) { return STAFF_TRAD[m] ? staffTradLabel(m) : I18n.t('trope.melody.' + m); }   // the Trope Tutor's melody-bar label, shared through the locale
 function syncTropeTutorLink() {
   const plain = document.getElementById('ttTropeTutorLink'), mel = document.getElementById('ttTropeTutorLinkM');
   if (!plain || !mel || !TROPE_TUTOR_URL) return;
@@ -5304,7 +5329,7 @@ function renderText() {
   const hhChantChip = TROPE_TUTOR_URL && !staffMelodyChoice() && readingTutorMelody() === 'highholiday' && canChant && !ttChip;   // a haftarah's recording IS its melody
   // A chart chosen in the Trope staff panel: the same notice, generic, while the recording sings another melody
   // (PocketTorah's year-round melody, or a parasha haftarah's own).
-  const chosenChantChip = TROPE_TUTOR_URL && !hhChantChip && !ttChip && canChant && !!staffMelodyChoice() && staffMelodyChoice() !== (currentReadingCtx && currentReadingCtx.isHaftarah ? 'haftarah' : 'torah');
+  const chosenChantChip = TROPE_TUTOR_URL && !hhChantChip && !ttChip && canChant && ((!!staffMelodyChoice() && staffMelodyChoice() !== (currentReadingCtx && currentReadingCtx.isHaftarah ? 'haftarah' : 'torah')) || (layout === 'staff' && !!staffTradChoice()));
   const tutorMelody = tutorLinkMelody();
   const holRead = settings.scope === 'custom' && settings.holidayKey ? holidayByKey(settings.holidayKey) : null;   // a loaded HOLIDAY_READINGS entry leads with its family's icon (holiday-icons block)
   let html = `<div class="tt-ref-hdr">
@@ -5574,7 +5599,14 @@ function effectiveVersion() { return _versionFallback || settings.translationVer
    note and its word; Chant is the recording, and paintKaraokeIdx lights the whole
    figure of the word being sung. docs/reference/torah-and-trope.md → Trope staff.
    ══════════════════════════════════════════════════════ */
-let STAFF_SETS = null;          // the phrase sets by melody (_phraseSetsFrom: torah, highholiday, haftarah, esther, megillot, eicha), once loaded
+let STAFF_SETS = null;          // the phrase sets by melody (_phraseSetsFrom: torah, highholiday, haftarah, esther, megillot, eicha), once loaded,
+                                // and the offered traditions (STAFF_TRAD) beside them, so a pick names either
+// The other traditions (docs/trope-traditions.md), from the same file: one is offered only while
+// data/trope/trope_approvals.json holds its fingerprint (the maintainer checked it against its source), or on a
+// ?preview=traditions visit, which shows the rest marked unverified and is never saved.
+let STAFF_TRAD = {};
+const STAFF_PREVIEW = (() => { try { return new URLSearchParams(location.search).get('preview') === 'traditions'; } catch (e) { return false; } })();
+const STAFF_APPROVALS_URL = 'data/trope/trope_approvals.json';   // network-first in sw.js, no ?v=: an approval needs no rebuild
 // The four Portnoy–Wolff charts stand alone: never a Torah figure among their notes, and without their rows the words
 // alone (staffSetName, the no_tune chip); the Haftarah and Eicha charts read in the relative minor (staffKeyText).
 const STAFF_STANDALONE = new Set(['haftarah', 'esther', 'megillot', 'eicha']);
@@ -5582,7 +5614,7 @@ const STAFF_MINOR_SETS = new Set(['haftarah', 'eicha']);
 let STAFF_CTX = {};             // per melody: tropeContextsOf(set)
 let _staffLoad = null;          // the in-flight fetch, so two renders start one load
 let _staffFailed = false;       // the last load failed (the header chip offers Try again)
-const STAFF_PHRASES_URL = 'data/trope/trope_phrases.json?v=4';   // the ?v= the Trope Tutor fetches — bump both together (ops.md)
+const STAFF_PHRASES_URL = 'data/trope/trope_phrases.json?v=5';   // the ?v= the Trope Tutor fetches — bump both together (ops.md)
 // Verses printed with two sets of cantillation marks at once (the census leaves them out too): words only.
 const STAFF_DOUBLE_CANT = {
   Genesis: new Set(['35:22']),
@@ -5603,12 +5635,23 @@ function ensureStaffData() {
   if (STAFF_SETS) return Promise.resolve(true);
   if (_staffLoad) return _staffLoad;
   _staffFailed = false;
+  const approvals = fetch(STAFF_APPROVALS_URL, { cache: 'no-store' }).then(r => (r.ok ? r.text() : '')).catch(() => '');
   _staffLoad = fetch(STAFF_PHRASES_URL)
     .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
-    .then(txt => {
-      const sets = _phraseSetsFrom(ivritSafeParse(txt));
+    .then(async txt => {
+      const j = ivritSafeParse(txt), sets = _phraseSetsFrom(j);
       if (!sets) throw new Error('the phrase file did not validate');
+      // The traditions: an approval counts only while it names the fingerprint of these rows; a bad approvals file approves nothing.
+      let approved = {};
+      try { const a = ivritSafeParse((await approvals) || 'null'); if (a && a.v === 1 && a.approved && typeof a.approved === 'object') approved = a.approved; } catch (e) {}
+      const trad = {};
+      for (const sys of Object.values(_tradSystemsFrom(j))) {
+        const fp = await tropeSystemFingerprint(sys);
+        const ok = !!fp && typeof approved[sys.id] === 'string' && approved[sys.id] === fp;
+        if (ok || STAFF_PREVIEW) { trad[sys.id] = Object.assign(sys, { approved: ok }); sets[sys.id] = sys; }
+      }
       STAFF_SETS = sets;
+      STAFF_TRAD = trad;
       STAFF_CTX = {};
       for (const m of Object.keys(sets)) if (sets[m]) STAFF_CTX[m] = tropeContextsOf(sets[m]);
       return true;
@@ -5645,7 +5688,35 @@ function retryStaffData() {
 // 'auto' = follow the reading), else the reading's own (readingTutorMelody), else the year-round chart.
 function staffMelodyChoice() { return TROPE_MELODIES.includes(settings.staffMelody) ? settings.staffMelody : null; }
 function staffMelody() { return staffMelodyChoice() || readingTutorMelody() || 'torah'; }
-function tutorLinkMelody() { const m = staffMelody(); return m === 'torah' ? null : m; }   // the legend's and header's Tutor link name what the staff draws
+// The reading group of the chart staffMelody() names (the traditions are filed under it), and the tradition chosen for
+// it while that one is offered (settings.staffTradition: one per group; any other value draws the default chart and
+// stays stored, so a tradition not approved yet — or a newer page's — is kept for the day it is).
+const STAFF_GROUP_OF = { torah: 'torah', highholiday: 'hhd', haftarah: 'haftarah', esther: 'esther', eicha: 'eicha', megillot: 'megillot' };
+function staffGroup() { return STAFF_GROUP_OF[staffMelody()] || 'torah'; }
+function staffTradMap() { const v = settings.staffTradition; return v && typeof v === 'object' && !Array.isArray(v) ? v : {}; }
+function staffTradChoice() {
+  const g = staffGroup(), id = staffTradMap()[g];
+  return typeof id === 'string' && STAFF_TRAD[id] && STAFF_TRAD[id].group === g ? id : null;
+}
+function staffTradsOf(g) { return Object.values(STAFF_TRAD).filter(sys => sys.group === g); }
+function setStaffTradition(v) {   // the Tradition dropdown's one writer: '' is the reading's default chart
+  const g = staffGroup(), map = Object.assign({}, staffTradMap());
+  if (v && STAFF_TRAD[v] && STAFF_TRAD[v].group === g) map[g] = v; else delete map[g];
+  if ((map[g] || null) === staffTradChoice()) return;
+  settings.staffTradition = map;
+  saveSettings();
+  stopStaffTune();
+  syncStaffControls();
+  syncTropeTutorLink();
+  renderText();
+}
+// A tradition's name with its reading (and, unverified, saying so) — the Trope Tutor's melodyLabel for a tradition.
+function staffTradLabel(id, bare) {
+  const sys = STAFF_TRAD[id];
+  const name = I18n.t('shared.trad.name_m', { reading: I18n.t('trope.melody.group_' + sys.group), name: I18n.t('shared.trad.' + id) });
+  return sys.approved || bare ? name : I18n.t('shared.trad.unverified_m', { name });
+}
+function tutorLinkMelody() { const t = staffTradChoice(); if (t) return t; const m = staffMelody(); return m === 'torah' ? null : m; }   // the legend's and header's Tutor link name what the staff draws
 function setStaffMelody(v) {   // the Melody dropdown's one writer
   v = TROPE_MELODIES.includes(v) ? v : 'auto';
   if (v === (staffMelodyChoice() || 'auto')) return;
@@ -5658,7 +5729,7 @@ function setStaffMelody(v) {   // the Melody dropdown's one writer
 }
 // A missing High Holiday half draws the year-round one; a Portnoy–Wolff chart is never drawn in the Torah tune —
 // without its rows the reading shows its words, and the header chip says why (staffHeaderChipsHTML).
-function staffSetName() { const m = staffMelody(); return STAFF_SETS && STAFF_SETS[m] ? m : STAFF_STANDALONE.has(m) ? null : 'torah'; }
+function staffSetName() { const t = staffTradChoice(); if (t) return t; const m = staffMelody(); return STAFF_SETS && STAFF_SETS[m] ? m : STAFF_STANDALONE.has(m) ? null : 'torah'; }
 function staffSet() { const n = staffSetName(); return STAFF_SETS && n ? STAFF_SETS[n] : null; }
 function staffKeyName(key) {   // the note the key is named after, as the tutor's trope.key.note_* spells it; '' outside the table
   const n = { C: 'c', Db: 'db', D: 'd', Eb: 'eb', E: 'e', F: 'f', 'F#': 'fs', G: 'g', Ab: 'ab', A: 'a', Bb: 'bb', B: 'b' }[key];
@@ -5681,9 +5752,9 @@ function staffKeyText(key) {
 // the note the key is named after, so a moved staff keeps its names, and a note outside the key carries the sign it
 // takes against the signature. '' with names off, and for do re mi in a key the table does not know.
 const STAFF_NOTE_SIGN = { '-1': '♭', 0: '', 1: '♯' };
-function staffNoteNameAt(p, key, mode) {
+function staffNoteNameAt(p, key, mode, chroma) {   // chroma: a tradition's own spelling (motifPitchPos)
   if (mode !== 'letters' && mode !== 'solfa') return '';
-  const { step, acc } = motifPitchPos(p, key);
+  const { step, acc } = motifPitchPos(p, key, chroma);
   const letter = 'BCDEFGA'[((step % 7) + 7) % 7];   // step 0 is B4; the letters are notation, not UI text — i18n-ignore
   const inSig = (keySignature(key).find((k) => k.letter === letter) || { acc: 0 }).acc;
   const alt = acc === '♯' ? 1 : acc === '♭' ? -1 : acc === '♮' ? 0 : inSig;
@@ -5790,6 +5861,30 @@ function staffWordWidthPx(word, cells, sink, underWord, wordsMode) {
 function staffCellHTML(word, cells, sink) {
   return word.cells.map(ci => cells[ci].pieces.map(pi => sink[pi].html).join('־')).join(' ');
 }
+// What a tradition lacks is drawn from its reading's default chart, then the year-round chart (tropeChooseFigures'
+// fallbacks), each such unit marked so its bar is dashed — never a figure made up.
+function staffTradFallbacks(trad) {
+  const out = [], base = TROPE_GROUP_BASE[trad.group];
+  if (STAFF_CTX[base]) out.push({ ctx: STAFF_CTX[base], melody: base });
+  if (base !== 'torah' && STAFF_CTX.torah) out.push({ ctx: STAFF_CTX.torah, melody: 'torah' });
+  return out;
+}
+// The marks of the reading on screen that the drawn tradition prints no figure for (the header chip names them).
+function staffTradLacked(id) {
+  const ctx = STAFF_CTX[id], out = [];
+  if (!ctx || !currentVerses) return out;
+  const seen = new Set();
+  for (const v of currentVerses) for (const u of tropeUnitsOfVerse(v.hebrew).units) if (!ctx.has(u.k) && !seen.has(u.k)) { seen.add(u.k); out.push(u.k); }
+  return out;
+}
+function staffTradMarkName(k) {   // the reading's legend names: Ashkenazi transliterations, as the Trope Tutor's chips (i18n-ignore)
+  const t = TROPE_BY_KEY[k];
+  return t ? t.ashk : k === 'munach_legarmeh' ? 'Munach Legarmeh' : k;
+}
+// A chip whose text carries parameters: no data-i18n (applyI18n re-renders the header, which rebuilds it).
+function staffParamChip(text, tip) {
+  return ` <span class="tt-notice-chip" aria-label="${esc(text)}" data-tip="${esc(tip)}">${esc(text)}</span>`;
+}
 function staffNoticeChip(k, tipK) {
   return ` <span class="tt-notice-chip" data-i18n="${k}" data-i18n-aria-label="${k}" aria-label="${esc(I18n.t(k))}" data-i18n-tip="${tipK}" data-tip="${esc(I18n.t(tipK))}">${esc(I18n.t(k))}</span>`;
 }
@@ -5801,6 +5896,18 @@ function staffHeaderChipsHTML(layout) {
   if (!STAFF_SETS && _staffFailed) return staffNoticeChip('torah.staff.failed_chip', 'torah.staff.failed_tip')
     + ` <button class="tt-readall hi-btn" type="button" onclick="retryStaffData()">${ICON_RETRY}${esc(I18n.t('torah.staff.retry'))}</button>`;
   if (!STAFF_SETS) return staffNoticeChip('torah.staff.loading_chip', 'torah.staff.loading_tip');
+  const tid = staffTradChoice();
+  if (tid) {   // one of the other traditions: unverified (a preview), and the marks of this reading it borrows
+    const sys = STAFF_TRAD[tid];
+    let out = sys.approved ? '' : staffNoticeChip('shared.trad.unverified', 'torah.staff.unverified_tip');
+    const lacked = staffTradLacked(tid);
+    if (lacked.length) {
+      const base = TROPE_GROUP_BASE[sys.group];
+      out += staffParamChip(I18n.t('torah.staff.trad_fallback_chip.' + (lacked.length === 1 ? 'one' : 'other'), { count: lacked.length }),
+        I18n.t('torah.staff.trad_fallback_tip_m', { tradition: staffTradLabel(tid, true), marks: '\u2068' + lacked.map(staffTradMarkName).join(', ') + '\u2069', melody: melodyLabel(base) }));
+    }
+    return out;
+  }
   if (STAFF_STANDALONE.has(staffMelody())) {
     const set = STAFF_SETS[staffMelody()];
     if (!set) return staffNoticeChip('torah.staff.no_haftarah_chip', 'torah.staff.no_haftarah_tip');
@@ -5825,7 +5932,9 @@ function renderStaffView(verses, wordIdxRef, canChant, canLoop, aStartByLabel, u
   aStartByLabel = aStartByLabel || {};
   _staffSystems = {};
   const set = staffSet(), setName = staffSetName(), ctx = setName ? STAFF_CTX[setName] : null;
-  const fbCtx = STAFF_STANDALONE.has(setName) ? null : STAFF_CTX.torah;   // a Portnoy–Wolff chart stands alone: never a Torah figure among its notes
+  const trad = STAFF_TRAD[setName] || null;   // one of the other traditions: what it lacks comes from its reading's chart, then the year-round one, marked
+  const fbCtx = trad || STAFF_STANDALONE.has(setName) ? null : STAFF_CTX.torah;   // a Portnoy–Wolff chart stands alone: never a Torah figure among its notes
+  const tradFb = trad ? staffTradFallbacks(trad) : null;
   if (!set && !_staffFailed) ensureStaffData();
   const shift = staffShiftVal(), key = staffDrawKey(), low = staffVoiceKey() === 'low', wordsMode = staffWordsKey(), nmode = staffNoteNamesMode(), rtlStaff = staffDirKey() === 'rtl';
   const root = document.getElementById('ttReading');
@@ -5840,8 +5949,10 @@ function renderStaffView(verses, wordIdxRef, canChant, canLoop, aStartByLabel, u
   // Note names, index-aligned with a row's notes (a rest has none): namesOf lets tropeSplitSystems wrap each system at
   // the width it is drawn at, and the same names go to its layout below. The SVG stays aria-hidden (the words are the
   // accessible content), so no spoken list of names is built.
-  const namesOf = nmode === 'off' ? null : (r) => r.notes.map(n => (n.r ? '' : staffNoteNameAt(n.p + shift, key, nmode)));
+  const chroma = trad ? trad.chroma : undefined;
+  const namesOf = nmode === 'off' ? null : (r) => r.notes.map(n => (n.r ? '' : staffNoteNameAt(n.p + shift, key, nmode, chroma)));
   const layoutOpts = { lyrics: false, accidentals: 'unit', namesOf };
+  if (chroma) layoutOpts.chroma = chroma;
   let html = '<div class="tt-interlinear tt-staff-reading">';
   for (const v of verses) {
     const numLabel = `${v.chapter}:${v.verse}`;
@@ -5872,8 +5983,10 @@ function renderStaffView(verses, wordIdxRef, canChant, canLoop, aStartByLabel, u
         const rc = currentReadingCtx || {};
         const megEnd = rc.megillah ? staffMegillahEnd(v.chapter, v.verse) : null;
         const atEnd = rc.megillah ? !!megEnd : rc.isHaftarah ? staffIsRefEnd(v.chapter, v.verse) : (staffIsAliyahEnd(v.chapter, v.verse) || (rc.custom && staffIsRefEnd(v.chapter, v.verse)));
-        const picks = tropeChooseFigures(units.units, ctx, { melody: setName, aliyahEnd: atEnd, closingRow: megEnd === 'book' && setName === 'megillot' ? '39a' : undefined, fallbackCtx: fbCtx, fallbackMelody: 'torah' });
-        const row = tropeBuildReadingRow(units.units, picks, units.cells, STAFF_SETS, { n: numLabel });
+        const chooseOpts = { melody: setName, aliyahEnd: atEnd, closingRow: megEnd === 'book' && setName === 'megillot' ? '39a' : undefined, fallbackCtx: fbCtx, fallbackMelody: 'torah' };
+        if (tradFb) chooseOpts.fallbacks = tradFb;
+        const picks = tropeChooseFigures(units.units, ctx, chooseOpts);
+        const row = tropeBuildReadingRow(units.units, picks, units.cells, STAFF_SETS, trad ? { n: numLabel, main: setName } : { n: numLabel });
         if (row.notes.length && row.words.length) {
           for (const w of row.words) w.w = staffWordWidthPx(w, units.cells, sink, underWord, wordsMode) / PHRASE_SCALE;
           systems = tropeSplitSystems(row, key, shift, maxW, layoutOpts);
@@ -5884,7 +5997,8 @@ function renderStaffView(verses, wordIdxRef, canChant, canLoop, aStartByLabel, u
       html += `  <div class="tt-verse-row"><span class="tt-heb" lang="he">${hebHtml}</span></div>`;
     } else {
       const list = _staffSystems[numLabel] = [];
-      html += `  <div class="tt-staff-rows">`;
+      // a tradition's staff names it for a screen reader (the SVG is hidden; the words inside keep their own reading)
+      html += trad ? `  <div class="tt-staff-rows" role="group" aria-label="${esc(I18n.t('torah.staff.rows_aria_m', { melody: staffTradLabel(setName) }))}">` : `  <div class="tt-staff-rows">`;
       systems.forEach((sys, k) => {
         const L = layoutPhraseStaff(sys.row, key, shift, namesOf ? namesOf(sys.row) : null, layoutOpts);
         const MID = -L.barY + 5, H = Math.ceil(Math.max(MID + L.lyricY + 4, low ? MID + 30 : 0));   // renderPhraseStaff's own height
@@ -5892,7 +6006,7 @@ function renderStaffView(verses, wordIdxRef, canChant, canLoop, aStartByLabel, u
           const word = sys.row.words.find(w => w.cells.includes(u.ci));
           return word ? word.cells.flatMap(ci => units.cells[ci].pieces.map(pi => sink[pi].twi)) : [sink[u.pi].twi];
         });
-        list.push({ row: sys.row, L, key, shift, low, H, cells: units.cells, sink, twisOfUnit });
+        list.push({ row: sys.row, L, key, shift, low, H, cells: units.cells, sink, twisOfUnit, chroma });
         // The system's box: its natural width on screen; on paper the wrap width (a one-word system wider than the
         // wrap keeps its own), so a sheet narrower than the wrap shrinks every system by the same factor. The SVG
         // takes its share of the box (--tt-sys-w) and the cells sit at their share of it. The words' two size vars
@@ -5950,8 +6064,10 @@ function staffEnsureSvg(el) {
   if (!el || el.querySelector('svg')) return;
   const sys = staffSysOf(el), ph = el.querySelector('.tt-staff-svg');
   if (!sys || !ph) return;
-  const svg = renderPhraseStaff(sys.row, { key: sys.key, shift: sys.shift, low: sys.low, layout: sys.L, lyrics: false, rtl: el.classList.contains('is-rtl'),
-    famOf: (k, ui, u) => (u && u.fam) || '' });
+  const opts = { key: sys.key, shift: sys.shift, low: sys.low, layout: sys.L, lyrics: false, rtl: el.classList.contains('is-rtl'),
+    famOf: (k, ui, u) => (u && u.fam) || '' };
+  if (sys.chroma) opts.chroma = sys.chroma;
+  const svg = renderPhraseStaff(sys.row, opts);
   svg.style.inlineSize = ''; svg.style.blockSize = '';   // the CSS sizes it to its system (100% / auto), so paper and a narrow viewport shrink it
   ph.replaceWith(svg);
 }
@@ -6052,7 +6168,7 @@ function _staffStart(vk, onEnd) {
         at += d; borrowed += d;
         return;
       }
-      const len = Math.max(STAFF_MIN_NOTE / rate, n.t * tick - borrowed);
+      const len = Math.max(STAFF_MIN_NOTE / rate, n.t * tick * (n.f ? PHRASE_FERMATA : 1) - borrowed);   // a tradition's fermata holds
       borrowed = 0;
       const prev = notes[i - 1];
       if (prev && prev.tie && !prev.r && prev.p === n.p && sounds.length) sounds[sounds.length - 1].dur += len;
@@ -6208,6 +6324,7 @@ function syncStaffControls() {
   if (sl) sl.value = sh;
   const ms = document.getElementById('optStaffMelody');
   if (ms) ms.value = staffMelodyChoice() || 'auto';
+  syncStaffTradition();
   if (val) val.textContent = pitchReadout(sh);   // "−3" with a minus sign, as the pitch readouts and the Trope Tutor's Key write it
   if (rs) rs.value = rate;
   if (rv) rv.textContent = rate.toFixed(2) + '×';
@@ -6220,6 +6337,64 @@ function syncStaffControls() {
   if (sl) sl.setAttribute('aria-valuetext', note.textContent);
 }
 
+// The Tradition row: the reading group's default chart and its offered traditions (an unverified one says so). Rebuilt
+// only when that list or the language changes, so a re-render never rebuilds the box under the teacher's cursor.
+let _staffTradSig = '';
+function syncStaffTradition() {
+  const row = document.getElementById('rowStaffTradition'), sel = document.getElementById('optStaffTradition');
+  const src = document.getElementById('staffTradSource');
+  if (!row || !sel || !window.I18n) return;
+  const g = staffGroup(), list = staffTradsOf(g), base = TROPE_GROUP_BASE[g];
+  row.hidden = !list.length;
+  const sig = [I18n.lang, g, ...list.map(sys => sys.id + (sys.approved ? '' : '?'))].join('|');
+  if (sig !== _staffTradSig) {
+    _staffTradSig = sig;
+    sel.innerHTML = '';
+    const def = document.createElement('option');
+    def.value = '';
+    def.textContent = I18n.t('torah.staff.tradition_default_m', { melody: melodyLabel(base) });
+    sel.appendChild(def);
+    for (const sys of list) {
+      const o = document.createElement('option');
+      o.value = sys.id;
+      o.textContent = sys.approved ? I18n.t('shared.trad.' + sys.id) : I18n.t('shared.trad.option_unverified_m', { name: I18n.t('shared.trad.' + sys.id) });
+      sel.appendChild(o);
+    }
+  }
+  const chosen = staffTradChoice();
+  sel.value = chosen || '';
+  if (src) {
+    src.textContent = '';
+    const sys = chosen && STAFF_TRAD[chosen];
+    if (sys) {
+      if (!sys.approved) { const tag = document.createElement('span'); tag.className = 'tt-unverified-tag'; tag.textContent = I18n.t('shared.trad.unverified'); src.appendChild(tag); }
+      const cite = document.createElement('span');
+      cite.lang = 'en'; cite.dir = 'ltr';
+      cite.textContent = sys.source + '. ' + sys.license;   // a citation — i18n-ignore
+      src.appendChild(cite);
+    }
+  }
+  // every offered tradition's source, in the section (the Trope Tutor's Tradition sources)
+  const box = document.getElementById('staffTradSources'), ul = document.getElementById('staffTradSourcesList');
+  if (box && ul) {
+    const all = Object.values(STAFF_TRAD);
+    box.hidden = !all.length;
+    ul.textContent = '';
+    for (const sys of all) {
+      const li = document.createElement('li');
+      const b = document.createElement('strong');
+      b.textContent = staffTradLabel(sys.id, true);
+      li.appendChild(b);
+      if (!sys.approved) { li.appendChild(document.createTextNode(' ')); const tag = document.createElement('span'); tag.className = 'tt-unverified-tag'; tag.textContent = I18n.t('shared.trad.unverified'); li.appendChild(tag); }
+      li.appendChild(document.createElement('br'));
+      const cite = document.createElement('span');
+      cite.lang = 'en'; cite.dir = 'ltr';
+      cite.textContent = sys.trad + ' — ' + sys.source + '. ' + sys.license;   // data — i18n-ignore
+      li.appendChild(cite);
+      ul.appendChild(li);
+    }
+  }
+}
 async function fetchAndRender() {
   if (clampScopeToCycle()) { saveSettings(); const _ss = document.getElementById('scopeSelect'); if (_ss) _ss.value = settings.scope; }
   const r = resolveRef();
@@ -9799,6 +9974,7 @@ function wireSettingsForm() {
   });
   document.getElementById('optStaffShift').addEventListener('input', e => setStaffShift(e.target.value));
   document.getElementById('optStaffMelody').addEventListener('change', e => setStaffMelody(e.target.value));
+  document.getElementById('optStaffTradition').addEventListener('change', e => setStaffTradition(e.target.value));
   ['optStaffTuneRate', 'ttStaffTuneRate'].forEach(id => {   // the drawer's slider and the audio bar's Tune row: one writer
     const el = document.getElementById(id);
     if (el) el.addEventListener('input', e => setStaffTuneRate(e.target.value));
@@ -12003,6 +12179,12 @@ function _linkSize(v, sliderId) {
   const n = _sliderNum(v, sliderId, NaN);   // clamped to the slider's own range
   return Number.isFinite(n) ? Math.round(n * 20) / 20 : undefined;
 }
+function _linkTradMap(v) {
+  if (!v || typeof v !== 'object' || Array.isArray(v)) return undefined;
+  const out = {};
+  for (const g of TROPE_TRAD_GROUPS) if (typeof v[g] === 'string' && TROPE_TRAD_ID_RE.test(v[g])) out[g] = v[g];
+  return out;
+}
 function _linkHexMap(v, keys) {
   if (!v || typeof v !== 'object' || Array.isArray(v)) return undefined;
   const out = {};
@@ -12051,7 +12233,8 @@ const LINK_DISPLAY = {
   staffVoice:          v => _linkOneOf(v, _linkChoices('input[name="optStaffVoice"]')),
   staffDir:            v => _linkOneOf(v, _linkChoices('input[name="optStaffDir"]')),
   staffNoteNames:      v => _linkOneOf(v, _linkChoices('input[name="optStaffNames"]')),
-  staffMelody:         v => _linkOneOf(v, _linkChoices('#optStaffMelody option')),   // the chart it draws (Follow the reading, or one of the six)
+  staffMelody:         v => _linkOneOf(v, _linkChoices('#optStaffMelody option')),
+  staffTradition:      v => _linkTradMap(v),   // { reading group: tradition id }: drawn only where the reader's page offers it   // the chart it draws (Follow the reading, or one of the six)
 };
 // Each color list's look, with the on/off switch it shows under. A look is on screen only while its
 // coloring is on, so it rides a link only then, and a reader takes one only then.
