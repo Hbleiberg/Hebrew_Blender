@@ -22306,11 +22306,11 @@ function fmDerivedProjectName(familyName, reservedFontName, style) {   // mirror
   const res = reservedFontName || '';
   return (res && res !== base) ? `${fam} - ${res}` : fam;   // a fresh project seeds reservedFontName = familyName — never show "X - X"
 }
-function fmUniqueCopyName(base, style) {                               // "X copy", "X copy 2", … not already in Recents
+function fmUniqueCopyName(base, style, alsoTaken) {                    // "X copy", "X copy 2", … not already in Recents (nor in alsoTaken)
   const b = ((base || '').trim()) || 'My Hebrew Font';
   const taken = _recentNames;   // kept in step by every Recent read and save
   let n = b + ' copy', i = 1;
-  while (taken.has(fmDerivedProjectName(n, n, style))) n = b + ' copy ' + (++i);
+  while (taken.has(fmDerivedProjectName(n, n, style)) || (alsoTaken && alsoTaken.has(fmDerivedProjectName(n, n, style)))) n = b + ' copy ' + (++i);
   return n;
 }
 function saveProjectAs() {
@@ -22652,7 +22652,11 @@ function fmCloudConflict(row) {
      { label: _cT('conflict_not_now', 'Not now'), cls: 'ghost' }]);
 }
 async function fmCloudKeepBoth() {   // this copy becomes a new project (the Save as… recipe) and goes up under its own row
-  const style = project.font.style, name = fmUniqueCopyName(project.font.familyName, style);
+  // The copy's name must be free in the account too: a copy made on another device is not in this browser's Recent,
+  // and a taken name refuses the upload (23505) after the copy is already open here.
+  let accountNames = null;
+  try { accountNames = new Set((await IvritProjects.list({ fresh: true })).map(r => r.name)); } catch (e) {}
+  const style = project.font.style, name = fmUniqueCopyName(project.font.familyName, style, accountNames);
   project.savedAt = new Date().toISOString();
   pushRecentQuiet(project);
   const copy = JSON.parse(JSON.stringify(project));

@@ -378,11 +378,16 @@ try {
     st = await state(page);
     check('4: Overwrite took the row as it is and wrote over it', /Overwrite/.test(clicked) && st.cloudRev === cloud.tables.font_projects[0].updated_at && cloud.tables.font_projects.length === 1, JSON.stringify({ clicked, rev: st.cloudRev, rowRev: cloud.tables.font_projects[0].updated_at }));
     cloud.tables.font_projects[0].updated_at = cloud.stamp();
+    // another device already made "Smoke Font copy": it is not in this browser's Recent, and the copy's name must avoid it
+    const otherCopy = cloud.freshRow('font_projects', { name: 'Smoke Font copy', family_name: 'Smoke Font copy' });
+    cloud.tables.font_projects.push(otherCopy);
     await page.evaluate(() => { udDo([{ t: 'item', kind: 'letter', cp: '05D0' }], 'smoke', () => { const l = project.letters.find(l => l.codepoint === '05D0'); l.advance = (l.advance || 600) + 1; }); });
     await page.evaluate(() => fmCloudAutosave());
     const clicked2 = await clickAsk(page, 'Keep both');
-    await page.waitForFunction(() => project && project.cloudId && project.font.familyName !== 'Smoke Font' && document.getElementById('cloudPip').dataset.state === 'saved', null, { timeout: 30000 });
+    await page.waitForFunction(() => project && project.cloudId && project.font.familyName !== 'Smoke Font' && document.getElementById('cloudPip').dataset.state === 'saved', null, { timeout: 30000 }).catch(() => {});
     st = await state(page);
+    check('4: Keep both names the copy clear of a copy another device already put in the account', st.name === 'Smoke Font copy 2' && cloud.tables.font_projects.some(r => r.id === st.cloudId && r.name === 'Smoke Font copy 2'), JSON.stringify({ name: st.name, cloudId: st.cloudId, status: st.status }));
+    cloud.tables.font_projects = cloud.tables.font_projects.filter(r => r !== otherCopy);   // that device deletes it again
     const rows = cloud.tables.font_projects;
     check('4: Keep both made a copy with its own row, leaving the account\'s copy alone', /Keep both/.test(clicked2) && rows.length === 2 && st.cloudId !== firstId && rows.some(r => r.id === st.cloudId && /copy/.test(r.name)) && st.name !== 'Smoke Font', JSON.stringify({ clicked2, rows: rows.map(r => [r.name, r.id === firstId]), st: { cloudId: st.cloudId, name: st.name } }));
     // 6. keep an export with the copy

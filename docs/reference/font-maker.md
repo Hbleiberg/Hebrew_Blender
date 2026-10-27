@@ -61,7 +61,7 @@ The page loads `/js/supabase-config.js`, `/js/ivrit-account.js`, `/js/ivrit-save
 - **Saving**: Save Project ▾ → `fmCloudMenuRow()` (a sign-in row when signed out); `fmCloudSave()` shows one
   dialog the first time, then `fmCloudWrite(mode)`: probe the row (`IvritProjects.get`), compare its
   `updated_at` with `cloudRev` (a mismatch raises the conflict dialog — Overwrite / Keep both via the Save-as
-  recipe / Not now, which pauses autosave), pack, gzip (rewrapped as `application/gzip`), `IvritProjects.save`
+  recipe, its copy named clear of the account's project names as well as Recent's / Not now, which pauses autosave), pack, gzip (rewrapped as `application/gzip`), `IvritProjects.save`
   with progress phases through `status()` inside `ipArm(0)`, then `cloudId`/`cloudRev` are set and a local
   `autosaveNow()` records the revision (`cloudRev` + `cloudClean` on the IndexedDB record). `markDirty()` also
   sets `_cloudDirty`, bumps the edit counter `_cloudGen` and arms a 10 s `fmCloudAutosave()` (skipped while signed
