@@ -536,7 +536,10 @@ body.dark .panel-title {
   background: linear-gradient(180deg, #1f2942, var(--panel-bg));
 }
 .panel-title::after {
+  /* The fold triangle is drawn, not read: the empty alt keeps it out of the title's name ("Mode", not "Mode ▾");
+     the first line is the fallback where the alt form is not parsed. Likewise .vgroup-head and .adv-subhead. */
   content: '▾';
+  content: '▾' / '';
   font-size: 0.85rem;
   color: var(--muted);
   transition: transform 0.2s;
@@ -746,7 +749,7 @@ body.dark .slider::before { background: #d8dde9; }
   cursor: pointer;
   user-select: none;
 }
-.vgroup-head::after { content: '▾'; font-size: 0.75rem; opacity: 0.6; transition: transform 0.2s; }
+.vgroup-head::after { content: '▾'; content: '▾' / ''; font-size: 0.75rem; opacity: 0.6; transition: transform 0.2s; }
 .vgroup.collapsed .vgroup-head::after { transform: rotate(-90deg); }
 .vgroup-body { padding: 8px 10px 10px; display: grid; grid-template-columns: repeat(auto-fill, minmax(74px, 1fr)); gap: 6px; }
 .vgroup.collapsed .vgroup-body { display: none; }
@@ -2233,7 +2236,7 @@ html[lang="he"] .beta-tag { letter-spacing: normal; text-transform: none; }   /*
         .weak-tab.active:hover{background:var(--gold,#c9922a);color:var(--navy,#1a2744);}
         /* Collapsible sub-section headings inside Advanced Settings */
         .adv-subhead{display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none;font-weight:600;margin-bottom:4px;}
-        .adv-subhead::before{content:'▾';color:var(--gold);font-size:0.9rem;transition:transform 0.2s;flex-shrink:0;}
+        .adv-subhead::before{content:'▾';content:'▾' / '';color:var(--gold);font-size:0.9rem;transition:transform 0.2s;flex-shrink:0;}
         .adv-subhead.collapsed::before{transform:rotate(-90deg);}
         .adv-subbody.collapsed{display:none;}
       </style>
