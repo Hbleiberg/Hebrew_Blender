@@ -108,8 +108,11 @@ function keySignature(key) {                 // [{letter, acc}] in writing order
   if (!Number.isInteger(n) || n === 0) return [];
   return (n > 0 ? SHARP_ORDER.slice(0, n) : FLAT_ORDER.slice(0, -n)).map((letter) => ({ letter, acc: n > 0 ? 1 : -1 }));
 }
-// Semitones-from-B4 → diatonic steps above the middle line + the accidental to draw.
-function motifPitchPos(p, key) {
+// Semitones-from-B4 → diatonic steps above the middle line + the accidental to draw. chroma (optional, a
+// tradition's own spelling of a chromatic degree, docs/trope-traditions.md): {semitones above the tonic:
+// [letter offset, direction]} laid over DEG below — {8: [4, 1]} writes the raised fifth (G♯ in C, B♮ in E♭)
+// where the charts' rule writes the lowered sixth. Without it the spelling is exactly as before.
+function motifPitchPos(p, key, chroma) {
   const q = Math.round(p);
   const sig = {};
   keySignature(key).forEach((k) => { sig[k.letter] = k.acc; });
@@ -125,7 +128,8 @@ function motifPitchPos(p, key) {
     // 3rd, 6th and 7th — so C major writes F♯ and B♭, and A major's lowered seventh is G♮.
     const T = key[0], tAlt = key[1] === '#' ? 1 : key[1] === 'b' ? -1 : 0;
     const DEG = { 1: [0, 1], 3: [2, -1], 6: [3, 1], 8: [5, -1], 10: [6, -1] };   // semitones above the tonic → [letter offset, direction]
-    const deg = DEG[(((pc - pcOf(T, tAlt)) % 12) + 12) % 12];
+    const off = (((pc - pcOf(T, tAlt)) % 12) + 12) % 12;
+    const deg = (chroma && chroma[off]) || DEG[off];
     if (deg) {
       const LETTERS = 'CDEFGAB', L = LETTERS[(LETTERS.indexOf(T) + deg[0]) % 7];
       const total = ((((pc - LETTER_PC[L]) % 12) + 18) % 12) - 6;   // the sounding alteration that letter needs
@@ -247,6 +251,8 @@ const PHRASE_VALUE = {   // the phrase file's values (64 is the Megillot chart's
   q: { flags: 0 }, dq: { flags: 0, dot: true }, h: { flags: 0, open: true }, dh: { flags: 0, open: true, dot: true }, g: { flags: 1 },
 };
 const PHRASE_STEP = 3, PHRASE_STEM = 18, PHRASE_SYL_SIZE = 8.5;
+const PHRASE_PAREN = 4;      // the room a pickup's parentheses take on each side (opt)
+const PHRASE_FERMATA = 1.6;  // how much longer the tune players hold a note under a fermata (f)
 const PHRASE_SCALE = 1.5;   // px per staff unit on screen (renderPhraseStaff sizes the SVG by it)
 // Estimated advance of one capital (the syllables are the chart's transliterations), in ems.
 function _phraseTextWidth(s) {
@@ -291,7 +297,10 @@ function layoutPhraseStaff(row, key, shift, names, opts = {}) {
   // opts (all default-off; the tutor passes none): lyrics:false — no syllable text under the staff, so the
   // syllables neither space the notes nor take a line (a caller lays its own words under the SVG);
   // accidentals:'unit' — an accidental holds only to the end of its mark's figure, not the row (a reading
-  // has no bar lines, and each figure is printed on the chart with its own signs).
+  // has no bar lines, and each figure is printed on the chart with its own signs); chroma — a tradition's
+  // spelling of its chromatic degrees (motifPitchPos). Two note fields only a tradition's rows carry
+  // (docs/trope-traditions.md): `opt`, a pickup the chart prints in parentheses (drawn in them, never beamed,
+  // its stem up), and `f`, a fermata over the note.
   const lyrics = opts.lyrics !== false;
   const sig = keySignature(key), sigAlt = {};
   sig.forEach((k) => { sigAlt[k.letter] = k.acc; });
@@ -302,9 +311,9 @@ function layoutPhraseStaff(row, key, shift, names, opts = {}) {
   row.syl.forEach((s, si) => { for (let i = s.from; i <= s.to; i++) sylOf[i] = si; });
   const notes = row.notes.map((n, i) => {
     const o = { i, u: unitOf[i], s: sylOf[i], rest: !!n.r, grace: !!n.g, val: PHRASE_VALUE[n.v] || PHRASE_VALUE.q, t: n.t,
-      tie: !!n.tie, marks: Array.isArray(n.a) ? n.a : [] };
+      tie: !!n.tie, marks: Array.isArray(n.a) ? n.a : [], opt: !!n.opt, ferm: !!n.f };
     if (!o.rest) {
-      const { step, acc } = motifPitchPos(n.p + shift, key);
+      const { step, acc } = motifPitchPos(n.p + shift, key, opts.chroma);
       o.step = step; o.y = -step * STEP;
       o.alt = acc === '♯' ? 1 : acc === '♭' ? -1 : acc === '♮' ? 0 : (sigAlt[letterOf(step)] || 0);
     } else o.rg = phraseRestGlyph(o.val);
@@ -326,7 +335,7 @@ function layoutPhraseStaff(row, key, shift, names, opts = {}) {
   let cur = [];
   const flush = () => { if (cur.length > 1) beams.push(cur); cur = []; };
   for (const o of notes) {
-    const beamable = !o.rest && o.val.flags > 0;
+    const beamable = !o.rest && o.val.flags > 0 && !o.opt;
     if (!beamable || (cur.length && (notes[cur[0]].grace !== o.grace || notes[cur[0]].s !== o.s))) flush();
     if (beamable) cur.push(o.i);
   }
@@ -343,7 +352,7 @@ function layoutPhraseStaff(row, key, shift, names, opts = {}) {
   }
   split.forEach((b, bi) => b.forEach((i) => { notes[i].beam = bi; }));
   // Stems: a beam's by the note farthest from the middle line; a lone note's by its own side; grace notes up.
-  for (const o of notes) if (!o.rest && o.beam === undefined) o.up = o.grace || o.step < 0;
+  for (const o of notes) if (!o.rest && o.beam === undefined) o.up = o.grace || o.opt || o.step < 0;
   for (const b of split) {
     const above = Math.max(...b.map((i) => notes[i].step)), below = Math.max(...b.map((i) => -notes[i].step));
     const up = notes[b[0]].grace || below > above;
@@ -352,8 +361,8 @@ function layoutPhraseStaff(row, key, shift, names, opts = {}) {
   // Horizontal spacing: log of the sounding length, widened so accidentals, dots, flags and syllables fit.
   const sigW = sig.length * 6, X0 = 36 + sigW;
   const space = (o) => (o.grace ? 7 : 9 + 6.5 * Math.log2(1 + o.t / 12));
-  const leftExt = (o) => (o.rest ? Math.max(4, o.rg.l + 0.6) : o.accText ? (o.grace ? 8 : 12) : (o.grace ? 3 : 4));
-  const rightExt = (o) => (o.rest ? Math.max(4, o.rg.r + 0.6) : (o.val.dot ? 8 : 4) + (o.up && o.val.flags && o.beam === undefined && !o.grace ? 5 : 0));
+  const leftExt = (o) => (o.rest ? Math.max(4, o.rg.l + 0.6) : (o.accText ? (o.grace ? 8 : 12) : (o.grace ? 3 : 4)) + (o.opt ? PHRASE_PAREN : 0));
+  const rightExt = (o) => (o.rest ? Math.max(4, o.rg.r + 0.6) : (o.val.dot ? 8 : 4) + (o.up && o.val.flags && o.beam === undefined && !o.grace ? 5 : 0) + (o.opt ? PHRASE_PAREN : 0));
   const sylW = row.syl.map((s) => _phraseTextWidth(s.t));
   const sylStart = [], sylEnd = [];
   let x = X0 + leftExt(notes[0] || { accText: false });
@@ -441,11 +450,16 @@ function layoutPhraseStaff(row, key, shift, names, opts = {}) {
       }
     }
   }
-  // Accents and tenuto lines: above the staff, or above the note where it stands higher.
+  // Accents and tenuto lines: above the staff, or above the note where it stands higher; a fermata above them.
   for (const o of notes) if (o.marks.length) {
     const top = Math.min(o.y - 4, o.up ? o.tip - 2 : o.y - 4, -15);
     o.markY = top - 4;
   }
+  for (const o of notes) if (o.ferm && !o.rest) {
+    const top = Math.min(o.y - 4, o.up ? o.tip - 2 : o.y - 4, -15);
+    o.fermY = (o.markY === undefined ? top - 4 : o.markY - 6 * o.marks.length) - 1;   // the arc's foot; it rises 5 above
+  }
+  const capOf = (o) => (o.fermY === undefined ? Infinity : o.fermY - 7);
   // Ties (away from the stem) and slurs (on the heads' side when every stem in them rises, else above).
   const ties = [];
   notes.forEach((o, i) => {
@@ -482,7 +496,7 @@ function layoutPhraseStaff(row, key, shift, names, opts = {}) {
       const xa = a.x, xb = b.x, f = fitArc(ns, xa, xb, a.y + 5, b.y + 5, 1, (o) => o.y + 4);
       return { from: sl.from, to: sl.to, above: false, xa, xb, ya: f.ya, yb: f.yb, c: f.c, dashed: !!sl.dashed };
     }
-    const topOf = (o) => Math.min(o.up ? o.tip - 1 : o.y - 4, o.markY === undefined ? Infinity : o.markY - 3 - 6 * (o.marks.length - 1));
+    const topOf = (o) => Math.min(o.up ? o.tip - 1 : o.y - 4, o.markY === undefined ? Infinity : o.markY - 3 - 6 * (o.marks.length - 1), capOf(o));
     const xa = a.x + (a.up ? 3 : 0), xb = b.x + (b.up ? 3 : 0);
     const f = fitArc(ns, xa, xb, topOf(a) - 3, topOf(b) - 3, -1, topOf);
     return { from: sl.from, to: sl.to, above: true, xa, xb, ya: f.ya, yb: f.yb, c: f.c, dashed: !!sl.dashed };
@@ -500,7 +514,7 @@ function layoutPhraseStaff(row, key, shift, names, opts = {}) {
       return withN({ bracket: false, x: (sx(ns[0]) + sx(ns[ns.length - 1])) / 2, y: bl.at(xm) + (bl.up ? -4 : 11) });
     }
     let top = Math.min(...ns.map((o) => (o.rest ? o.rg.top - 2 : Math.min(o.y - 4, o.up ? o.tip : o.y - 4,
-      o.markY === undefined ? Infinity : o.markY - 3 - 6 * (o.marks.length - 1)))), -12);
+      o.markY === undefined ? Infinity : o.markY - 3 - 6 * (o.marks.length - 1), capOf(o)))), -12);
     for (const sl of slurs) if (sl.above && sl.from <= tp.to && sl.to >= tp.from) top = Math.min(top, sl.c + 1);
     return withN({ bracket: true, xa: ns[0].x - 4, xb: ns[ns.length - 1].x + 4, x: xm, y: top - 6 });
   });
@@ -511,6 +525,7 @@ function layoutPhraseStaff(row, key, shift, names, opts = {}) {
     if (o.rest) { see(o.rg.top); see(o.rg.bottom); continue; }
     see(o.y - 4); see(o.y + 4); see(o.tip);
     if (o.markY !== undefined) see(o.markY - 3);
+    if (o.fermY !== undefined) see(o.fermY - 6);
   }
   for (const s of segs) { see(s.ya + (s.up ? 0 : s.thick)); see(s.yb + (s.up ? 0 : s.thick)); }
   for (const tp of tups) { see(tp.y - 8); see(tp.y + 2); }
@@ -558,7 +573,8 @@ function renderPhraseStaff(row, opts) {
     const prev = L.units[ui - 1], next = L.units[ui + 1];
     const xa = prev ? (prev.xb + u.xa) / 2 + 1.5 : u.xa - 6, xb = next ? (u.xb + next.xa) / 2 - 1.5 : u.xb + 6;
     const fam = opts.famOf ? opts.famOf(u.k, ui, row.units[ui]) : '';   // the row's unit rides along (a reading's unit carries its word's family)
-    deco.appendChild(_svgEl('rect', { class: 'tu-pbar' + (fam ? ' fam-' + fam : ''), 'data-u': ui, x: Math.round(xa * 100) / 100,
+    const fb = row.units[ui] && row.units[ui].fb ? ' is-fb' : '';      // a figure borrowed from another chart (tropeBuildReadingRow's opts.main)
+    deco.appendChild(_svgEl('rect', { class: 'tu-pbar' + (fam ? ' fam-' + fam : '') + fb, 'data-u': ui, x: Math.round(xa * 100) / 100,
       y: Y(L.barY), width: Math.round((xb - xa) * 100) / 100, height: 3.5, rx: 1.5 }));
     if (next) {
       const xd = Math.round(((u.xb + next.xa) / 2) * 100) / 100;
@@ -589,12 +605,15 @@ function renderPhraseStaff(row, opts) {
     const cy = Y(o.y);
     staffLedgers(g, cx, o.step, MID, PHRASE_STEP, o.grace ? 4.5 : 6);
     if (o.accText) {
-      const a = _svgEl('text', { x: cx - (o.grace ? 7 : 9.5), y: cy + 3, 'font-size': o.grace ? 7 : 9, fill: 'currentColor' });
+      const a = _svgEl('text', { x: cx - (o.grace ? 7 : 9.5) - (o.opt ? PHRASE_PAREN : 0), y: cy + 3, 'font-size': o.grace ? 7 : 9, fill: 'currentColor' });
       a.textContent = o.accText;
       g.appendChild(a);
     }
     if (o.grace) staffHead(g, cx, cy, false, 2.2, 1.6);
     else staffHead(g, cx, cy, !!o.val.open);
+    if (o.opt) for (const s of [-1, 1])   // a pickup the chart prints in parentheses
+      g.appendChild(_svgEl('path', { class: 'tu-popt', d: 'M ' + (cx + s * 5.4) + ' ' + Y(o.y - 5) + ' q ' + s * 2.2 + ' 5 0 10',
+        fill: 'none', stroke: 'currentColor', 'stroke-width': 0.8 }));
     const stx = Math.round((o.grace ? o.x + (o.up ? 2 : -2) : o.x + (o.up ? 3.1 : -3.1)) * 100) / 100;
     g.appendChild(_svgEl('line', { x1: stx, y1: cy + (o.up ? -1 : 1), x2: stx, y2: Y(o.tip), stroke: 'currentColor', 'stroke-width': o.grace ? 0.8 : 1.1 }));
     if (o.beam === undefined && o.val.flags) {   // flags off the stem tip
@@ -613,6 +632,10 @@ function renderPhraseStaff(row, opts) {
         fill: 'none', stroke: 'currentColor', 'stroke-width': 0.9 }));
       else if (m === '-') g.appendChild(_svgEl('line', { x1: cx - 3.2, y1: Y(my), x2: cx + 3.2, y2: Y(my), stroke: 'currentColor', 'stroke-width': 1.1 }));
       my -= 6;
+    }
+    if (o.fermY !== undefined) {   // a fermata: an arc over a dot
+      g.appendChild(_svgEl('path', { class: 'tu-pferm', d: 'M ' + (cx - 4.5) + ' ' + Y(o.fermY) + ' a 4.5 4.5 0 0 1 9 0', fill: 'none', stroke: 'currentColor', 'stroke-width': 0.9 }));
+      g.appendChild(_svgEl('circle', { cx, cy: Y(o.fermY - 1.3), r: 0.95, fill: 'currentColor' }));
     }
     if (o.name) g.appendChild(noteNameEl(o.name, cx, Y(L.nameY), o.grace ? PHRASE_GRACE_NAME_SIZE : PHRASE_NAME_SIZE));
     host.appendChild(g);
@@ -689,6 +712,69 @@ function _phraseSetsFrom(j) {
     out[m] = rows.length ? { key: s.key, rows } : null;
   }
   return TROPE_MELODIES.some((m) => out[m]) ? out : null;
+}
+// The other traditions of the phrase file (docs/trope-traditions.md: the Common melody, Spiro, the Jewish
+// Encyclopedia tables), each under the reading it is sung for. TROPE_GROUP_BASE names the chart a page draws
+// for that reading when no tradition is chosen — the one a missing figure is offered from.
+const TROPE_TRAD_GROUPS = ['torah', 'haftarah', 'hhd', 'esther', 'eicha', 'megillot'];
+const TROPE_GROUP_BASE = { torah: 'torah', haftarah: 'haftarah', hhd: 'highholiday', esther: 'esther', eicha: 'eicha', megillot: 'megillot' };
+const TROPE_TRAD_ID_RE = /^[a-z][a-z0-9_]{0,39}$/;
+// A tradition's chromatic spellings ({semitones above the tonic: [letter offset 0–6, ±1]}): undefined when it has
+// none, false when malformed.
+function _tradChroma(c) {
+  if (c === undefined || c === null) return undefined;
+  if (typeof c !== 'object' || Array.isArray(c)) return false;
+  const out = {};
+  for (const k of Object.keys(c)) {
+    const v = c[k], n = Number(k);
+    if (!Number.isInteger(n) || n < 1 || n > 11 || !Array.isArray(v) || v.length !== 2 || !Number.isInteger(v[0]) || v[0] < 0 || v[0] > 6 || (v[1] !== 1 && v[1] !== -1)) return false;
+    out[n] = [v[0], v[1]];
+  }
+  return out;
+}
+// {<id>: {id, group, key, chroma, underlay, rows, label, short, trad, sub, note, source, license, fp, canon}} in the
+// file's order; a tradition with any row that does not hold together is left out whole (it is shown to nobody
+// rather than shown short). `canon` is the exact text tropeSystemFingerprint hashes — the key, the spellings and
+// the rows as the file holds them — so an approval (data/trope/trope_approvals.json) covers what is drawn.
+function _tradSystemsFrom(j) {
+  const out = {};
+  if (!j || j.v !== 1 || j.tpq !== 48 || !j.melodies || typeof j.melodies !== 'object') return out;
+  for (const id of Object.keys(j.melodies)) {
+    if (TROPE_MELODIES.includes(id) || !TROPE_TRAD_ID_RE.test(id)) continue;
+    const s = j.melodies[id];
+    if (!s || !TROPE_TRAD_GROUPS.includes(s.group) || !Number.isInteger(KEY_SHARPS[s.key]) || !Array.isArray(s.rows) || !s.rows.length || !s.rows.every(_validPhraseRow)) continue;
+    const chroma = _tradChroma(s.chroma);
+    if (chroma === false) continue;
+    const str = (k) => (typeof s[k] === 'string' ? s[k] : '');
+    out[id] = { id, group: s.group, key: s.key, chroma, underlay: s.underlay === 'names' ? 'names' : 'syllables', rows: s.rows,
+      label: str('label'), short: str('short'), trad: str('trad'), sub: str('sub'), note: str('note'), source: str('source'), license: str('license'),
+      fp: str('fp'), canon: JSON.stringify({ key: s.key, chroma: s.chroma || null, rows: s.rows }) };
+  }
+  return out;
+}
+// The first 12 hex digits of SHA-256 over a tradition's canon (scripts/build-trope-phrases.mjs writes the same as
+// its `fp`): the value an approval carries. Resolves null where the browser has no WebCrypto (an insecure
+// context), so the tradition then counts as unapproved.
+function tropeSystemFingerprint(sys) {
+  const subtle = typeof crypto !== 'undefined' && crypto && crypto.subtle;
+  if (!subtle || !sys || typeof sys.canon !== 'string') return Promise.resolve(null);
+  return subtle.digest('SHA-256', new TextEncoder().encode(sys.canon))
+    .then((buf) => Array.from(new Uint8Array(buf), (b) => b.toString(16).padStart(2, '0')).join('').slice(0, 12))
+    .catch(() => null);
+}
+// A mark's first figure in a set (the row and unit it is first printed in), and that figure as a row of its own in
+// the phrase file's shape — what a tradition's Learn card draws and its drill sings.
+function tropeFirstFigure(set, k) {
+  if (!set || !Array.isArray(set.rows)) return null;
+  for (const row of set.rows) { const ui = row.units.findIndex((u) => u.k === k); if (ui >= 0) return { n: row.n, ui }; }
+  return null;
+}
+function tropeFigureRow(set, n, ui) {
+  const row = set && Array.isArray(set.rows) ? set.rows.find((r) => r.n === n) : null, u = row && row.units[ui];
+  if (!u) return null;
+  const r = tropeBuildReadingRow([{ k: u.k, ci: 0, pi: 0 }], [{ set: 's', n, ui }], [{ pieces: [0] }], { s: set }, { n });
+  delete r.words;
+  return r;
 }
 
 /* ══════════════════════════════════════════════════════
@@ -793,7 +879,8 @@ function tropeContextsOf(set) {
 // longest [aliyah-end] row whose marks close the verse takes those last units — between two of the same length,
 // the one opts.closingRow names (the Megillot chart's end-of-book 39a beside its end-of-chapter 39), else the
 // first printed. A mark the melody's chart lacks is looked up in fallbackCtx (the year-round chart; the Trainer
-// passes none for the Portnoy–Wolff charts, which stand alone) — picks say which set they came from.
+// passes none for the Portnoy–Wolff charts, which stand alone), then in opts.fallbacks, [{ctx, melody}] in order
+// (a tradition's: its reading's chart, then the year-round chart) — picks say which set they came from.
 // Returns picks[i] = {set, n, ui} or null.
 function tropeChooseFigures(units, ctx, opts = {}) {
   const ks = units.map((u) => u.k), N = ks.length, picks = new Array(N).fill(null);
@@ -830,6 +917,11 @@ function tropeChooseFigures(units, ctx, opts = {}) {
     const k = ks[i];
     let p = ctx && ctx.has(k) ? pickFrom(ctx.get(k), i, (TROPE_LEARN_ROW[melody] || {})[k]) : null, set = melody;
     if (!p && opts.fallbackCtx && opts.fallbackCtx.has(k)) { p = pickFrom(opts.fallbackCtx.get(k), i, (TROPE_LEARN_ROW[fbMelody] || {})[k]); set = fbMelody; }
+    if (!p && Array.isArray(opts.fallbacks)) for (const fb of opts.fallbacks) {
+      if (!fb || !fb.ctx || !fb.ctx.has(k)) continue;
+      p = pickFrom(fb.ctx.get(k), i, (TROPE_LEARN_ROW[fb.melody] || {})[k]);
+      if (p) { set = fb.melody; break; }
+    }
     if (p) picks[i] = { set, n: p.n, ui: p.ui };
   }
   return picks;
@@ -839,7 +931,8 @@ function tropeChooseFigures(units, ctx, opts = {}) {
 // one figure (one cut at a figure's edge is drawn by value), and `words`: one per cell, spanning its units'
 // notes, `w` left 0 for the caller to measure. A cell none of whose units got a figure has no notes: its
 // pieces join the word before it (the first cell, the word after), so every piece is still on the page.
-// sets: the phrase sets by melody (_phraseSetsFrom; a pick names its set).
+// sets: the phrase sets by melody (_phraseSetsFrom; a pick names its set). opts.main (optional): the set the
+// reading is drawn in — a unit picked from any other set is marked `fb`, and its bar is drawn dashed.
 function tropeBuildReadingRow(units, picks, cells, sets, opts = {}) {
   const notes = [], syl = [], outUnits = [], tup = [], slur = [];
   const byN = {};
@@ -865,7 +958,9 @@ function tropeBuildReadingRow(units, picks, cells, sets, opts = {}) {
     for (const t of row.tup) if (t.from >= su.from && t.to <= su.to) { const o = { from: t.from + off, to: t.to + off }; if (t.n) o.n = t.n; tup.push(o); }
     for (const sl of row.slur) if (sl.from >= su.from && sl.to <= su.to) slur.push({ from: sl.from + off, to: sl.to + off, dashed: !!sl.dashed });
     const from = su.from + off, to = su.to + off;
-    outUnits.push({ k: u.k, from, to, ci: u.ci, pi: u.pi, fam: u.fam || '', twi: u.twi });
+    const ou = { k: u.k, from, to, ci: u.ci, pi: u.pi, fam: u.fam || '', twi: u.twi };
+    if (opts.main && p.set !== opts.main) ou.fb = 1;
+    outUnits.push(ou);
     const cs = cellSpan.get(u.ci);
     if (cs) cs.to = to; else cellSpan.set(u.ci, { from, to });
   });
