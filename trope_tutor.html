@@ -850,6 +850,12 @@ body.dark #tipFloat { background:#0a0f1c; }
 .tour-meta { display:flex; align-items:center; justify-content:space-between; gap:10px; }
 .tour-meta > span:first-child { font-size:0.72rem; font-weight:700; color:var(--muted); }
 .tour-btns { display:flex; gap:8px; }
+/* pwa.js's install hint (#pwaInstallBanner: position:fixed at the bottom, z-index above everything; shown under 768px) sat
+   over the tour's Next on the steps that place the card low — on an iPhone SE and 13 a tap on the last step's Done landed on
+   the banner — and, on the SE, over a drill question's Next. The Letter Learner's and flash cards' rule: the hint steps aside
+   while the tour or a drill question is up (the CSS state, so a hint built after either opened is covered too) and is back
+   the moment it closes; only the teacher's ✕ dismisses it for good. (S562 Pass N, pattern install-banner-over-a-sheet's-bottom-controls) */
+body:has(#tourCard:not([hidden]), #drillQ:not([hidden])) #pwaInstallBanner { visibility:hidden; }
 /* The first-visit nudge on the Tour button: a gold ring on a pseudo-element, animated in transform and opacity only, so the
    compositor runs it by itself. The earlier box-shadow pulse made the main thread repaint the whole viewport twice a frame
    for as long as the button pulsed (13% of the main thread at 1x CPU, 36% at 4x — measured in loop S510 on the Letter
