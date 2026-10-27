@@ -84,7 +84,7 @@ Notes:
   and every existing visitor keeps the old bytes forever with nothing to see. Where two pages
   fetch the same corpus they must use the **same** value (mismatched ones evict each other's
   copy on alternate visits). Current: `hebrew_words.json?v=7`,
-  `trope/trope_index.json?v=2`, `trope/trope_motifs.json?v=6`, `trope/trope_motifs_hh.json?v=4`, `trope/trope_motifs_haftarah.json?v=2`, `trope/trope_motifs_esther.json?v=1`, `trope/trope_motifs_megillot.json?v=1`, `trope/trope_motifs_eicha.json?v=1` (the last four written by the phrases builder; the Trope Tutor's `MELODY_INFO` carries each one's value),
+  `trope/trope_index.json?v=2`, `trope/trope_index_totaltorah.json?v=1` (the Trope Tutor's Conservative melody, `TT_INDEX_URL`), `trope/trope_motifs.json?v=6`, `trope/trope_motifs_hh.json?v=4`, `trope/trope_motifs_haftarah.json?v=2`, `trope/trope_motifs_esther.json?v=1`, `trope/trope_motifs_megillot.json?v=1`, `trope/trope_motifs_eicha.json?v=1` (the last four written by the phrases builder; the Trope Tutor's `MELODY_INFO` carries each one's value),
   `trope/trope_phrases.json?v=4` (fetched by the Trope Tutor **and** the Torah Trainer's Trope staff layout — one value),
   `trope/trope_phrase_examples.json?v=1`,
   `hebrew_emojis.json?v=2`,
@@ -373,8 +373,9 @@ pages, not the other way round — `grep -o 'Content-Security-Policy[^>]*' *.htm
   loads are those media hosts (the bucket's CORS policy names the site's origins). The YouTube link-back is a
   plain `<a target=_blank>` — `frame-src 'none'` stays; moving the corpus to another host (a custom domain on the
   bucket, say) would swap that one origin in `media-src` and nothing else.
-- **Trope Tutor:** `raw.githubusercontent.com` + `blob:` in `media-src` only — deliberately neither `sefaria.org`
-  nor `esm.sh` (its index and clips are pre-built).
+- **Trope Tutor:** `raw.githubusercontent.com` (PocketTorah) + `audio.ivritsuite.com` (the Total Torah verse files, the
+  Year Round [Conservative] melody's clips) + `blob:` in `media-src` only — deliberately neither `sefaria.org`
+  nor `esm.sh` (its indexes and clips are pre-built).
 - **Home, Torah Trainer:** `files.readme.io` in `img-src` — the host of Sefaria's attribution wordmark (hot-linked,
   documented in `THIRD_PARTY_LICENSES.md`).
 - **Contact / Resources:** `js.hcaptcha.com` + `*.hcaptcha.com` in `script-src` (Contact also `web3forms.com`, its

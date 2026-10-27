@@ -261,6 +261,27 @@ to Learn), and a caller that opens something inside the new tab (`openLearnFor`)
   commit both files together, AND bump the `?v=` on the page's index fetch (the sw.js `DATA_CACHE`
   matches exact URLs — the `?v=` bump is what refreshes returning users) whenever the taxonomy or
   selection rules change.
+- **The Total Torah clip index**: `data/trope/trope_index_totaltorah.json` — `{v:1, system:"torah",
+  clips:"totaltorah", built, license, credit, tropes:{<key>:[{p,ref,f,v,w,he,s,e}]}}`, the *Year Round
+  [Conservative]* melody's clips: `p` the parasha's pocket key (as the PocketTorah index writes it, so the Learn
+  card's parasha link and the drill's same-parasha preference read both alike), `ref` "C:V", `f` the verse file
+  (`gen-001-001.mp3`, played from `TT_AUDIO_BASE`), `v` the source video's YouTube id (the permission's per-verse
+  link), `w` the clip's first word (= timings index), `he` the sung word (a maqaf compound joined), `s`/`e` in
+  seconds — `e` null for the verse's last word, which plays to the file's end (the pipeline cut each verse at the
+  next pause). Built offline by **`node scripts/build-trope-totaltorah-index.mjs`** (plain Node, zero deps;
+  `--check` proves the committed file is a fresh build) from the Total Torah manifest and timings and the same
+  Sefaria export (MAM, the edition the timings were aligned against — asserted), each verse split by
+  `tropeUnitsOfVerse` from `js/trope-staff.js` loaded in a vm (piece *i* is timings index *i*; the builder carries
+  no copy of the taxonomy); a verse is used only while `verified`, `timingsVerified` and its timings count its words
+  plus one, never from the double-cantillation passages, and never Genesis 28:5–6 (the series does not chant them).
+  A clip is a sung word carrying exactly one Learn-card mark (munach legarmeh and two-mark words are out),
+  0.35–6 s (8 s for rare marks, 15 s for shalshelet — the cantor chants more slowly than PocketTorah's reader, and
+  the long marks' length is the lesson), the 0.6–3 s band first, one per parasha per pass spread through the Torah,
+  cap 40 per mark, in Torah order. The page validates every entry (`_ttIndexFrom`: the file name and the video id
+  against the Trainer's patterns before either reaches a URL or an href) and drops a bad one alone; a bad or missing
+  file leaves only that melody without examples (its cards say `trope.learn.tt_examples_unavailable`, the drill
+  start `trope.drill.tt_index_not_loaded`, both with the Try again). It rewrites
+  `docs/trope_totaltorah_index_report.md`; commit both, and bump `TT_INDEX_URL`'s `?v=` on the page.
 - **Melody motifs**: `data/trope/trope_motifs.json` — `{v:1, system:"torah", key, built, license,
   tropes:{<key>:{notes:[{p,d}], verified, source}}}`, where `p` = semitones from B4 (the treble
   middle line: the chart's tonic A4 is `-2`, its low A3 `-14`) and `d` = relative duration 1–4,
@@ -309,16 +330,30 @@ to Learn), and a caller that opens something inside the new tab (`openLearnFor`)
   (`docs/tropepatterns.md` → A names the row behind every entry), fetched `?v=1` each and validated like the others.
   **The Melody dropdown** (`#tuMelodySel`, at the end of the key bar, which moves between the Learn and Phrases
   tabs with the melody note in `#tuKeyDock` (`setMode`): `settings.melody`, `'torah'` by default, one of
-  `MELODY_KEYS` — torah, highholiday, haftarah, esther, megillot, eicha — through the one writer `setMelody`;
+  `MELODY_KEYS` — torah, conservative, highholiday, haftarah, esther, megillot, eicha — through the one writer `setMelody`;
   `syncMelodyNote` sets the dropdown and shows the melody's note span) picks which file draws the Learn staffs,
   which chart the Phrases tab shows and what the tune buttons play. The key bar shows once the dictionary has
   loaded; only its key controls (`#tuKeyCtl`) wait for staffs to move, so a melody whose motif file is missing
   can be left (`syncTuneControls`). `MELODY_INFO` is the one table behind it: each melody's file with its
-  `?v=` and the note span under the bar (the note names the chart and its source — the Avery/Binder charts or
+  `?v=` (null for a melody not yet transcribed) and the note span under the bar (the note names the chart and its source — the Avery/Binder charts or
   The Art of Cantillation — so the bar carries no separate credit), whether the key readout names the relative
   minor (haftarah and eicha, whose sof pasuk comes to rest on C: `keyNameText` through `trope.key.name_minor`,
   as the Trainer's staff readout does), whether the Phrases cards have examples (year-round and High Holidays —
   the census reads no other text) and whether the chart's closing ends a chapter (the three megillah charts).
+  Two more fields carry the *Year Round [Conservative]* melody — Cantor Arianne Brown's own, the Total Torah
+  recordings' (*Recording sources* below): `clips: 'totaltorah'`, so the Learn examples and the drill's Hear and
+  Melody questions come from the Total Torah clip index (`activeIndex()`, `examplesFor(key, melody)`; every other
+  melody reads PocketTorah's), and `staffs: false`, no motif file and no phrase rows yet: each card the year-round
+  chart prints a row for says so where its staff would be (`trope.learn.no_staff_yet_m`), the key controls stay
+  hidden (nothing to move), the Phrases tab shows `trope.phrases.no_rows_yet_m` with no Try again, and the melody
+  note names the cantor and Adas Israel. The clips follow the melody at every play: a Total Torah example row
+  carries the link to its verse's complete video under its reference (`trope.learn.watch_youtube`, the Trainer's
+  `torah.recsrc.watch_youtube` as its title — the permission's per-verse link, a link and never an embed), its parasha link opens the Trainer on that recording for the visit
+  (`&reader=totaltorah`), the footer's pinned-English credit `#tuFooterAudioTT` shows through `syncMelodyNote` while
+  the melody is chosen, and a drill session snapshots the melody it started under (`drill.melody`, read through
+  `drillMelody()`, so a choice made on another tab mid-session never mixes two recordings in one question; the start
+  screen follows the bar, `setMelody` refreshes it). *Adding the Conservative rows later* (below) is the recipe for
+  the transcription.
   The closing group's title and each closing card's tag name what the closing ends (`closingTitleKey`): an
   aliyah on the year-round and High Holiday charts (`trope.phrases.group_closing`, the card tag
   `trope.phrases.aliyah_end_tag`), the haftarah on the Haftarah chart (`trope.phrases.group_closing_haftarah`;
@@ -331,7 +366,7 @@ to Learn), and a caller that opens something inside the new tab (`openLearnFor`)
   Choosing in the bar, or Reset all, replaces it and drops the param with `history.replaceState` (the other
   params and the hash stay), so a reload after a choice does not bring the link's melody back. The bar's note
   (`#tuMelodyNote`, one span per melody with its own static `data-i18n`, shown by `syncMelodyNote`) names the
-  melody and its chart — it prints with the chart, the radios do not; a card whose chart prints no row for its
+  melody and its chart — it prints with the chart, the dropdown does not; a card whose chart prints no row for its
   mark says so where the staff would be (`trope.learn.no_figure_m`); the staff's aria-label names the melody
   (`trope.learn.motif_aria_m`, `trope.phrases.staff_aria_m`); Settings keeps only a pointer to the bar
   (`trope.melody.where`); the tour's second step lands on the bar. The motif builder never reads or writes the High Holiday
@@ -466,7 +501,7 @@ to Learn), and a caller that opens something inside the new tab (`openLearnFor`)
 - **The Phrases tab** (`#phrasesView`) draws that file: one clause group at a time (`PHRASE_GROUPS`, the
   charts' own teaching order, 12 Torah, 11 High Holiday, 12 Haftarah, 12 Esther, 11 Megillot and 11 Eicha groups; a
   row the table misses joins a last "More phrases" group, so every row shows exactly once), in the melody the
-  Melody dropdown chooses.
+  Melody dropdown chooses (a melody with `staffs: false` — the Conservative melody — has no rows and says so).
   - **A card per row**: its number, the Hebrew as printed, a chip per mark (glyph and name in the chosen
     tradition; it opens that mark's Learn card through `openLearnFor`, and hovering or focusing it lights
     the mark's notes, bar and syllables), the staff, and a play button.
@@ -653,9 +688,13 @@ to Learn), and a caller that opens something inside the new tab (`openLearnFor`)
   (above). `sof_pasuk` has no chars (positional; siluk = meteg U+05BD, never mapped); `zarka` matches BOTH U+0598 and U+05AE
   (Unicode's swapped names) and displays corpus-dominant U+05AE; `geresh_muqdam` has zero corpus
   occurrences (the Learn card handles example-less tropes).
-- **Audio clip engine**: ONE `<audio id="tuAudio">`; `playClip({p,a,w,ref,he,s,e})` resolves the MP3
-  via `manifest[p].audioBase` (URL = `POCKET_AUDIO_BASE + encodeURIComponent(audioBase + '-' + a + '.mp3')`),
-  swaps `src` only when the aliyah file changes, seeks after `loadedmetadata`, and stops at `e` via
+- **Audio clip engine**: ONE `<audio id="tuAudio">`; `playClip(ex)` resolves the MP3 through `clipUrl` — a
+  PocketTorah clip `{p,a,w,ref,he,s,e}` via `manifest[p].audioBase` (URL = `POCKET_AUDIO_BASE +
+  encodeURIComponent(audioBase + '-' + a + '.mp3')`), a Total Torah clip `{p,ref,f,v,w,he,s,e}` as `TT_AUDIO_BASE
+  + f` once `f` passes `TT_FILE_RE` (`clipFileKey` is `p|a` or `p|f`, the parasha first either way, so
+  `pickExample`'s same-parasha preference reads both alike; the CSP's `media-src` carries both hosts, and the element
+  has no `crossorigin`, so no CORS is involved) —
+  swaps `src` only when the file changes, seeks after `loadedmetadata`, and stops at `e` via
   an rAF watcher + `timeupdate` fallback (the `_verseEndStopAt` pattern; iOS timeupdate is ~4 Hz).
   `playbackRate` (the recordings' speed only; the staff tunes read `tuneRate`) is re-asserted in the `play`
   handler (iOS resets it). Failures add the file to
@@ -703,6 +742,24 @@ to Learn), and a caller that opens something inside the new tab (`openLearnFor`)
   detour from the results screen ends there: the score is gone, but while `_lastMissed` holds marks
   the start screen repeats the count and "Drill these marks" (`#drillStartReview`, filled by
   `updateDrillStart()`, so a tab switch, a language change and a reset all keep it current).
+
+- **Adding the Conservative rows later.** The *Year Round [Conservative]* melody ships with `staffs: false`: Cantor
+  Brown's melody has no printed chart, so its rows are transcribed by ear from the Total Torah recordings when the
+  maintainer gets to them. The recipe, in this order: (1) **licence first** — the phrases builder stamps CC BY-SA 4.0
+  on `trope_phrases.json` and on every derived motif file, and a transcription of Cantor Brown's melody is not covered
+  by the recordings' permission as written, so agree its terms with Adas Israel (or give it its own file and licence
+  string) before a row is committed; (2) **the rows and the builder in one commit** — `docs/tropepatterns.md` → L
+  holds the 41 row headers to transcribe against; the rows go in as column-0 ```trope-conservative``` fences in the
+  grammar of its *How to read this file*, and `scripts/build-trope-phrases.mjs` gets `MELODIES.conservative`
+  (`info: 'trope-conservative'`, `derived: true`, `motifs: 'data/trope/trope_motifs_conservative.json'`, the key, the
+  row count, `spell` and `rule`) with its `SPELLING`, `SMOKE` and `DEPARTURES` entries and a *Conservative row*
+  column in section A's table (an unknown fence info string fails the build, so neither half ships without the
+  other); (3) `js/trope-staff.js`: `TROPE_LEARN_ROW.conservative` and `conservative` in `TROPE_MELODIES`, with
+  `scripts/smoke-trope-staff.mjs`'s `MELS` and key assertion; (4) `trope_tutor.html`: `MELODY_INFO.conservative.file`
+  (the derived motif file with its `?v=`), drop `staffs: false`, `PHRASE_GROUPS.conservative`, the melody note, tip
+  and tour copy; `torah_trainer.html`: the `#optStaffMelody` option and its `STAFF_*` sets; (5) the `?v=` bumps —
+  `trope_phrases.json` on both pages (one value), the motif file in `MELODY_INFO`, `ops.md`'s list — and `sw.js`;
+  then the phrases builder, `smoke-trope-staff.mjs` and the staff snapshot matrix, green.
 
 ---
 
@@ -869,7 +926,9 @@ beta leaves open.
   buttons, FAQ and footer credit. The Trainer's second recording source, Total Torah (*Recording sources* below), is
   Cantor Arianne Brown's own Conservative melody — named as its own tradition where it plays (the audio-bar credit, the
   Audio tab's credit, the reading header's chip), never as Spiro's and never as the charts' — and the Spiro chips stand
-  down while it plays.
+  down while it plays. The tutor's *Year Round [Conservative]* melody is that recording's: its option label names only
+  the tradition, and its melody note, the example rows' video links, the footer credit, the Learn intro, the Settings
+  notes and the FAQ name Cantor Brown and Adas Israel — never Spiro, never a chart.
 - **Note names** (`staffNoteNames`: `'off'`, `'letters'`, `'solfa'`; an unknown stored value shows none and stays
   stored). The tutor's option for the reading: `renderStaffView` builds `namesOf`, a callback giving a row's names
   index-aligned with its notes (a rest has none) from `staffNoteNameAt` — the tutor's `noteNameAt` kept page-local,
@@ -904,7 +963,9 @@ never a practice link (`LINK_DISPLAY` says how a reading looks, never how it sou
   `gen-001-001.mp3` (book code, chapter, verse, zero-padded) served from the Cloudflare R2 bucket
   `totaltorah-audio` (`audio/`, 5,846 files for the whole Torah, ≈ 1 GB — never in this repository) at
   `TT_AUDIO_BASE`, the bucket's custom domain `audio.ivritsuite.com` (Cloudflare-cached; the `r2.dev` development
-  URL is rate-limited and for testing only, never `TT_AUDIO_BASE`), which the CSP's `media-src` carries; the bucket's CORS policy
+  URL is rate-limited and for testing only, never `TT_AUDIO_BASE`), which the Trainer's and the Trope Tutor's CSP
+  `media-src` carry (the tutor's *Year Round [Conservative]* melody seeks into the same files for its example and
+  drill clips, with the same credit and per-verse link — *Trope Tutor* above); the bucket's CORS policy
   allows GET/HEAD from `ivritsuite.com`, `www.ivritsuite.com`, `hbleiberg.github.io` and `localhost:8080` and
   exposes `Content-Length`, `Content-Range`, `Accept-Ranges` (the audio element is `crossorigin` for the pitch
   shifter); the private repository `Hbleiberg/TotalTorahAudio` is the files' master copy; per-verse timings `data/totaltorah/timings/gen-001-001.txt`

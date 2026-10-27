@@ -173,6 +173,8 @@ katon's TON (9–14) and on telisha gedola's last three notes (29); in the Eicha
 the last three notes of etnachta and sof pasuk (1–8), revia (17–19), tevir (23–28) and zakef gadol
 (31). The staffs do not draw these marks.
 
+There is no column for the *Year Round [Conservative]* melody: it has no rows yet (section L).
+
 ## B. The 41 Torah phrase patterns
 
 Read note for note from the clean scans, once by hand and once more independently; the two readings
@@ -2499,3 +2501,62 @@ tipcha    TIP- C5(e) CHA C5(e) ~C5(32) ~B♭4(32) ~A♭4(32) ~G4(32) ~F4(q) rest
 mercha    MER- C4(e) CHA 3{F4(e)
 sof_pasuk SOF- C4(e) PA- F4(e)} SUK E♭4(de) ~D4(s) ~C4(q)
 ```
+
+## L. The Conservative phrase patterns (Cantor Arianne Brown) — not yet transcribed
+
+The Trope Tutor's *Year Round [Conservative]* melody is Cantor Arianne Brown's own, heard in her *Tricks of the
+Trope – Total Torah* recordings (Adas Israel Congregation, used by permission: `THIRD_PARTY_LICENSES.md`). There
+is no printed chart of it, so its rows wait to be transcribed by ear from those recordings — the tutor plays them
+as the melody's example clips, and `data/trope/trope_index_totaltorah.json` lists a clip for every mark. Until
+then the melody has no fence here, no builder entry, no motif file and no column in section A: its Learn cards say
+the staff is not yet transcribed, and its Phrases tab has no rows (`docs/reference/torah-and-trope.md` → *Adding
+the Conservative rows later* is the recipe — the licence question first, because a transcription of her melody is
+not the recordings' permission).
+
+When the rows come, they follow section B's numbering and Hebrew word for word — the same 41 phrase patterns in
+the same order, so a Learn card's row in section A's table can keep its number — written in the grammar of *How
+to read this file*, in the key the recordings settle on (to be measured by ear: the sof pasuk's resting note). The
+row headers to transcribe against, as section B prints them (a list, not fences: the builder reads none of this
+section):
+
+- `#1 מֵרְכָ֥א טִפְּחָ֖א מֻנָּ֣ח אֶתְנַחְתָּ֑א`
+- `#2 טִפְּחָ֖א מֻנָּ֣ח אֶתְנַחְתָּ֑א`
+- `#3 מֵרְכָ֥א טִפְּחָ֖א אֶתְנַחְתָּ֑א`
+- `#4 טִפְּחָ֖א אֶתְנַחְתָּ֑א`
+- `#5 מֵרְכָ֥א טִפְּחָ֖א מֵרְכָ֥א סוֹף־פָּסֽוּק׃`
+- `#6 טִפְּחָ֖א מֵרְכָ֥א סוֹף־פָּסֽוּק׃`
+- `#7 מֵרְכָ֥א טִפְּחָ֖א סוֹף־פָּסֽוּק׃`
+- `#8 טִפְּחָ֖א סוֹף־פָּסֽוּק׃`
+- `#9 קַדְמָ֨א מַהְפָּ֤ךְ פַּשְׁטָא֙ מֻנָּ֣ח קָטֹ֔ן`
+- `#10 מַהְפָּ֤ךְ פַּשְׁטָא֙ מֻנָּ֣ח קָטֹ֔ן`
+- `#11 מַהְפָּ֤ךְ פַּשְׁטָא֙ קָטֹ֔ן`
+- `#12 פַּשְׁטָא֙ מֻנָּ֣ח קָטֹ֔ן`
+- `#13 פַּשְׁטָא֙ קָטֹ֔ן`
+- `#14 מֻנָּ֣ח מַהְפָּ֤ךְ פַּשְׁטָא֙ מֻנָּ֣ח קָטֹ֔ן`
+- `#15 קַדְמָ֨א וְאַזְלָ֜א`
+- `#16 גֵּ֜רֵשׁ`
+- `#17 מֻנָּ֣ח ׀ מֻנָּ֣ח רְבִיעִ֗י`
+- `#18 מֻנָּ֣ח רְבִיעִ֗י`
+- `#19 רְבִיעִ֗י`
+- `#20 גֵּרְשַׁיִ֞ם`
+- `#21 דַּרְגָּ֧א`
+- `#22 תְּבִ֛יר`
+- `#23 דַּרְגָּ֧א תְּבִ֛יר`
+- `#24 מֵרְכָ֥א תְּבִ֛יר`
+- `#25 קַדְמָ֨א דַּרְגָּ֧א תְּבִ֛יר`
+- `#26 קַדְמָ֨א מֵרְכָ֥א תְּבִ֛יר`
+- `#27 מֻנָּ֣ח דַּרְגָּ֧א תְּבִ֛יר`
+- `#28 מֻנָּ֣ח תְּ֠לִישָׁא גְּדוֹלָה֠`
+- `#29 מֻנָּ֣ח תְּלִישָׁא קְטַנָּה֩`
+- `#30 מֻנָּ֣ח פָּזֵ֡ר`
+- `#31 זָקֵף גָּד֕וֹל`
+- `#32 יְ֚תִיב מֻנָּ֣ח קָטֹ֔ן`
+- `#33 יְ֚תִיב קָטֹ֔ן`
+- `#34 מֻנָּ֣ח זַרְקָא֮ מֻנָּ֣ח סֶגּוֹל֒`
+- `#35 מֻנָּ֣ח זַרְקָא֮ סֶגּוֹל֒`
+- `#36 זַרְקָא֮ מֻנָּ֣ח סֶגּוֹל֒`
+- `#37 זַרְקָא֮ סֶגּוֹל֒`
+- `#38 שַׁלְשֶׁ֓לֶת`
+- `#39 מֵרְכָא כְּפוּלָ֦ה`
+- `#40 יָרֵחַ בֶּן יוֹמ֪וֹ קַרְנֵי פָּרָה֟`
+- `#41 [aliyah-end] מֵרְכָ֥א טִפְּחָ֖א מֵרְכָ֥א סוֹף־פָּסֽוּק׃`

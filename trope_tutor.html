@@ -6,8 +6,10 @@
      any script/style loads. script-src keeps 'unsafe-inline' because all app JS is inline by design; the
      value here is blocking REMOTE script injection, object/base-uri hijacks, and unexpected connect/frame
      origins. This page never calls sefaria.org (it consumes only the pre-built data/trope/ index) and
-     loads no ESM modules. Update this when adding any external script/font/fetch/iframe (see CLAUDE.md). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com; media-src 'self' blob: https://raw.githubusercontent.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://hhkmqwpjsyxdeuhvcyis.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
+     loads no ESM modules; media-src carries PocketTorah's recordings (GitHub raw) and the Total Torah verse
+     files (audio.ivritsuite.com) the Year Round [Conservative] melody plays. Update this when adding any
+     external script/font/fetch/iframe (see CLAUDE.md). -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com; media-src 'self' blob: https://raw.githubusercontent.com https://audio.ivritsuite.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://hhkmqwpjsyxdeuhvcyis.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
@@ -96,11 +98,11 @@
   "@type": "FAQPage",
   "mainEntity": [
     { "@type": "Question", "name": "What is the Trope Tutor?", "acceptedAnswer": { "@type": "Answer", "text": "A free interactive tutor for the Torah cantillation marks. Learn mode teaches each mark's symbol, names, and melody with real chanted examples; Phrases shows every line of the printed chart on a full staff; Drill mode quizzes you three ways with per-mark mastery tracking." } },
-    { "@type": "Question", "name": "What melody tradition is this?", "acceptedAnswer": { "@type": "Answer", "text": "The recordings are PocketTorah's, chanted in the Spiro (Conservative) melody. The staffs follow printed charts: the Avery/Binder (Reform) charts for the year-round and High Holiday melodies, and The Art of Cantillation (Portnoy & Wolff, UAHC) for the Haftarah, Esther, Shir HaShirim / Ruth / Kohelet and Eicha melodies — the Melody dropdown in the key bar picks one. Both Ashkenazi and Sephardi trope names are shown, and you can switch the primary naming tradition in settings." } },
+    { "@type": "Question", "name": "What melody tradition is this?", "acceptedAnswer": { "@type": "Answer", "text": "The recordings are PocketTorah's, chanted in the Spiro (Conservative) melody. The staffs follow printed charts: the Avery/Binder (Reform) charts for the year-round and High Holiday melodies, and The Art of Cantillation (Portnoy & Wolff, UAHC) for the Haftarah, Esther, Shir HaShirim / Ruth / Kohelet and Eicha melodies — the Melody dropdown in the key bar picks one. Year Round [Conservative] plays Cantor Arianne Brown's Total Torah recordings (Adas Israel Congregation) — her own Conservative melody, with no staff yet. Both Ashkenazi and Sephardi trope names are shown, and you can switch the primary naming tradition in settings." } },
     { "@type": "Question", "name": "What are trope (te'amim)?", "acceptedAnswer": { "@type": "Answer", "text": "Cantillation marks printed above and below the words of the Hebrew Bible. Each mark names a melodic phrase and marks the grammar of the verse — together they tell you how to chant it." } },
     { "@type": "Question", "name": "How does Drill mode work?", "acceptedAnswer": { "@type": "Answer", "text": "Each session asks 5, 10 or 20 questions (your choice) of three kinds: see a marked word and name the trope, hear a clip and pick the symbol, or see a symbol and pick the matching melody. Marks you miss come up more often, and distractors get sneakier (like pashta vs. kadma) as your mastery grows." } },
-    { "@type": "Question", "name": "Where do the chanted examples come from?", "acceptedAnswer": { "@type": "Answer", "text": "Every example is a real word from the Torah reading, clipped from PocketTorah's recordings (by Russel Neiss & Rabbi Charlie Schwartz, CC BY-SA 4.0) using their word-level timings. The Hebrew text comes from Sefaria." } },
-    { "@type": "Question", "name": "Is the Trope Tutor free?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Materials that incorporate PocketTorah audio are CC BY-SA 4.0; other IvritSuite content is CC BY-NC-SA 4.0. No account required, no ads." } },
+    { "@type": "Question", "name": "Where do the chanted examples come from?", "acceptedAnswer": { "@type": "Answer", "text": "Every example is a real word from the Torah reading, clipped from PocketTorah's recordings (by Russel Neiss & Rabbi Charlie Schwartz, CC BY-SA 4.0) using their word-level timings — or, on the Year Round [Conservative] melody, from Cantor Arianne Brown's Total Torah recordings (Adas Israel Congregation, used by permission), each linked to its complete video on YouTube. The Hebrew text comes from Sefaria." } },
+    { "@type": "Question", "name": "Is the Trope Tutor free?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Materials that incorporate PocketTorah audio are CC BY-SA 4.0; the Total Torah clips are Cantor Arianne Brown's, used by permission (not CC-licensed); other IvritSuite content is CC BY-NC-SA 4.0. No account required, no ads." } },
     { "@type": "Question", "name": "Can I print a chart of all the trope marks?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. In Learn mode, Print chart prints all 26 marks as one reference chart — each mark's symbol, its Ashkenazi and Sephardi names, and its melody on a staff in the melody and key you chose, with chanted examples, grouped by clause family. On the Phrases tab, Print phrases prints every phrase of that melody." } },
     { "@type": "Question", "name": "What does the Phrases tab show?", "acceptedAnswer": { "@type": "Answer", "text": "Every line of the printed cantillation chart, marks as they are sung together, on a full music staff you can play, in any of the six melodies — year-round, High Holidays, Haftarah, Esther, the three Megillot or Eicha — and in any key. Each phrase lists real verses where the Torah sings it, with PocketTorah's recording for the year-round melody, and the whole chart prints on one sheet." } }
   ]
@@ -116,7 +118,7 @@
   "step": [
     { "@type": "HowToStep", "position": 1, "name": "Pick a clause family", "text": "Start in Learn mode. The trope marks are grouped by clause family — use the chips above the cards to move between families." },
     { "@type": "HowToStep", "position": 2, "name": "Study each mark's card", "text": "Every card shows the mark's symbol on a Hebrew word plus its Ashkenazi and Sephardi names. Switch the primary naming tradition in settings." },
-    { "@type": "HowToStep", "position": 3, "name": "Play the chanted example", "text": "Each card plays a real word from the Torah reading, clipped from PocketTorah's recordings, so you hear the mark's actual melody." },
+    { "@type": "HowToStep", "position": 3, "name": "Play the chanted example", "text": "Each card plays a real word from the Torah reading, clipped from PocketTorah's recordings — or from Cantor Arianne Brown's Total Torah recordings on the Year Round [Conservative] melody — so you hear the mark's actual melody." },
     { "@type": "HowToStep", "position": 4, "name": "Hear the marks together", "text": "Open the Phrases tab to see each line of the printed chart as it is sung, on a full staff: play it as tones, then hear real verses where the Torah sings it." },
     { "@type": "HowToStep", "position": 5, "name": "Switch to Drill", "text": "Drill sessions ask 5, 10 or 20 questions of three kinds: name the trope on a marked word, hear a clip and pick the symbol, or pick the melody that matches a symbol." },
     { "@type": "HowToStep", "position": 6, "name": "Track your mastery", "text": "The per-mark mastery grid shows your progress. Marks you miss come up more often, and distractors get sneakier as your mastery grows." }
@@ -426,6 +428,10 @@ body.dark .tu-motif .tu-motif-note.is-sounding ellipse { stroke:var(--gold-light
   flex:1; text-align:right; color:var(--text);
 }
 .tu-ex-ref { font-size:0.72rem; color:var(--muted); flex-shrink:0; font-variant-numeric:tabular-nums; }
+/* The reference, and under it a Total Torah clip's link to its complete video (the permission's per-verse link). */
+.tu-ex-meta { display:flex; flex-direction:column; align-items:flex-end; flex-shrink:0; min-inline-size:0; text-align:end; line-height:1.25; }
+.tu-ex-yt { font-size:0.72rem; color:var(--gold-text); text-decoration:none; font-weight:600; padding-block:5px; }   /* vertical padding grows the hit box, as .tu-card-links a */
+.tu-ex-yt:hover { text-decoration:underline; }
 .tu-ex-none { font-size:0.8rem; color:var(--muted); font-style:italic; padding:2px 6px; }
 /* Darker readable-gold literal (same precedent as the radio-group pill): --gold on
    the cream tint measures ~2.3:1 — far below AA even at large text sizes. */
@@ -980,6 +986,7 @@ footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-co
   .tu-ex-row { padding:2px 6px; }
   .tu-ex-word { font-size:1.7rem; line-height:1.35; }
   .tu-card-links { display:none; }
+  .tu-ex-yt { display:none; }   /* a dead link on paper; the footer's Total Torah credit prints instead */
   /* The screen studies ONE clause family at a time; the sheet is a wall chart, so paper swaps the
      live view for the all-families copy buildPrintChart() assembles. That also retires the chrome
      S195 found on the sheet — the family chips and "Next family →" are navigation for a view the
@@ -1119,7 +1126,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
   <!-- ════════ LEARN ════════ -->
   <section class="tu-view" id="learnView" role="tabpanel" aria-labelledby="tabLearn">
     <p class="tu-intro" data-i18n-html="trope.learn.intro">Trope (te'amim) are the cantillation marks that tell you how to chant the Torah.
-      Each card shows the mark's melody on a small music staff, as a printed cantillation chart gives it: the Avery/Binder (Reform) year-round melody in A major, or the melody you choose in the Key bar below — High Holidays, Haftarah, Esther, the three Megillot or Eicha. The recordings are PocketTorah's, one reader's year-round rendition in the Spiro (Conservative) melody, so a note may differ here and there.
+      Each card shows the mark's melody on a small music staff, as a printed cantillation chart gives it: the Avery/Binder (Reform) year-round melody in A major, or the melody you choose in the Key bar below — High Holidays, Haftarah, Esther, the three Megillot, Eicha, or Cantor Brown's Conservative melody. The recordings are PocketTorah's, one reader's year-round rendition in the Spiro (Conservative) melody, so a note may differ here and there. With Year Round [Conservative] chosen, the clips are Cantor Arianne Brown's Total Torah recordings (Adas Israel Congregation) — her own Conservative melody, not yet transcribed to a staff.
       Work through them one clause family at a time, then switch to <strong>Drill</strong> to test yourself.
       When you're ready to see them in context, open the companion reader:
       <a href="torah_trainer.html">Torah Trainer →</a></p>
@@ -1128,9 +1135,11 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
          setting as Settings → Sing along → Key). syncTuneControls() writes its text and states; its key
          controls (#tuKeyCtl) stay hidden while no motif file is loaded (no staffs to move), its Melody
          dropdown (#tuMelodySel: which of the six printed charts the Learn cards, the Phrases tab and their
-         play buttons draw — settings.melody, one of MELODY_KEYS; one writer, setMelody) never does, so a
-         melody whose file is missing can be left. The drill and the recordings are PocketTorah's year-round
-         melody whatever it says, and the note under the bar says so; a ?melody= link chooses for the visit
+         play buttons draw, or the Conservative melody — settings.melody, one of MELODY_KEYS; one writer,
+         setMelody) never does, so a melody whose file is missing can be left. The drill and the recordings
+         are PocketTorah's year-round melody whatever it says — except under Year Round [Conservative], whose
+         clips (MELODY_INFO.clips) are the Total Torah verse files — and the note under the bar says so; a
+         ?melody= link chooses for the visit
          only (readMelodyParam). Slow for learning is the twin of the Tune speed button in Settings (one
          writer, setTuneRate). The arrows, the reset, Slow and the dropdown are screen-only; the line prints
          only while the staffs are moved (.is-moved), so a moved chart names its key; the note prints with
@@ -1152,9 +1161,10 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
       </span>
       <span class="tu-key-melody" id="tuKeyMelody">
         <label class="tu-key-lbl" for="tuMelodySel" data-i18n="trope.melody.label">Melody</label>
-        <span class="tip-wrap" data-i18n-tip="trope.melody.tip" data-tip="The year-round melody is chanted on Shabbat, weekdays and festivals; the High Holiday melody on Rosh Hashanah and Yom Kippur; the Haftarah melody for the reading from the Prophets; the Esther melody for Megillat Esther on Purim; one melody for Shir HaShirim, Ruth and Kohelet on the three festivals; the Eicha melody on Tisha B'Av. A mark a chart does not print has no staff in that melody."><i class="tip-icon">?</i></span>
+        <span class="tip-wrap" data-i18n-tip="trope.melody.tip" data-tip="The year-round melody is chanted on Shabbat, weekdays and festivals; the High Holiday melody on Rosh Hashanah and Yom Kippur; the Haftarah melody for the reading from the Prophets; the Esther melody for Megillat Esther on Purim; one melody for Shir HaShirim, Ruth and Kohelet on the three festivals; the Eicha melody on Tisha B'Av. A mark a chart does not print has no staff in that melody. Year Round [Conservative] is Cantor Arianne Brown's melody, heard in her Total Torah recordings; it has no staff yet."><i class="tip-icon">?</i></span>
         <select class="tu-key-sel" id="tuMelodySel" onchange="setMelody(this.value)">
           <option value="torah" data-i18n="trope.melody.torah">Year Round [Binder-Reform]</option>
+          <option value="conservative" data-i18n="trope.melody.conservative">Year Round [Conservative]</option>
           <option value="highholiday" data-i18n="trope.melody.highholiday">High Holidays [Binder-Reform]</option>
           <option value="haftarah" data-i18n="trope.melody.haftarah">Haftarah</option>
           <option value="esther" data-i18n="trope.melody.esther">Esther</option>
@@ -1165,6 +1175,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
     </div>
     <p class="tu-melody-note" id="tuMelodyNote">
       <span id="tuMelodyNoteTorah" data-i18n="trope.learn.melody_torah_note">These staffs show the year-round melody, for the Torah reading on Shabbat, weekdays and festivals — the Avery/Binder (Reform) chart, in A major.</span>
+      <span id="tuMelodyNoteCons" hidden data-i18n="trope.learn.melody_cons_note">These cards play Cantor Arianne Brown's own Conservative melody — her Tricks of the Trope: Total Torah recordings (Adas Israel Congregation, used by permission), each example linked to its complete video. The melody has not been transcribed yet, so the cards show no staff and the Phrases tab has no rows.</span>
       <span id="tuMelodyNoteHH" hidden data-i18n="trope.learn.melody_hh_note">These staffs show the High Holiday melody, for the Torah reading on Rosh Hashanah and Yom Kippur — the Avery/Binder (Reform) chart. There are no High Holiday recordings, so the Phrases examples show the words only.</span>
       <span id="tuMelodyNoteHaf" hidden data-i18n="trope.learn.melody_haf_note">These staffs show the Haftarah melody, for the reading from the Prophets — The Art of Cantillation's chart (Portnoy &amp; Wolff), transcribed note for note. The Phrases tab has no examples for it yet.</span>
       <span id="tuMelodyNoteEst" hidden data-i18n="trope.learn.melody_est_note">These staffs show the Esther melody, for Megillat Esther on Purim — The Art of Cantillation's chart (Portnoy &amp; Wolff). Each chapter ends on the chart's closing phrase.</span>
@@ -1285,12 +1296,12 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
               <input type="radio" id="tradSeph" name="tuTradition" value="seph" onchange="setTradition('seph')">
               <label for="tradSeph" data-i18n="trope.tradition.sephardi">Sephardi</label>
             </span>
-            <p class="settings-note" data-i18n="trope.tradition.note">The recordings themselves follow PocketTorah's Spiro (Conservative) melody either way.</p>
+            <p class="settings-note" data-i18n="trope.tradition.note">The recordings themselves follow PocketTorah's Spiro (Conservative) melody either way — or Cantor Arianne Brown's Conservative melody when Year Round [Conservative] is chosen.</p>
           </div>
           <div class="tu-set-item">
             <div class="tu-set-label"><span data-i18n="trope.melody.label">Melody</span></div>
             <p class="settings-note" data-i18n="trope.melody.where">Choose the melody in the Key bar on the Learn and Phrases tabs; it follows you between them.</p>
-            <p class="settings-note" data-i18n="trope.melody.note">The staffs and their play buttons follow that choice: the Avery/Binder (Reform) charts for Year-round and High Holidays, The Art of Cantillation's (Portnoy &amp; Wolff, UAHC) for Haftarah, Esther, the three Megillot and Eicha. The recordings and the drill use PocketTorah's Spiro (Conservative) year-round melody either way.</p>
+            <p class="settings-note" data-i18n="trope.melody.note">The staffs and their play buttons follow that choice: the Avery/Binder (Reform) charts for Year-round and High Holidays, The Art of Cantillation's (Portnoy &amp; Wolff, UAHC) for Haftarah, Esther, the three Megillot and Eicha. The recordings and the drill use PocketTorah's Spiro (Conservative) year-round melody — except Year Round [Conservative], which plays Cantor Arianne Brown's Total Torah recordings (Adas Israel Congregation) instead; it has no staff yet.</p>
           </div>
         </div>
       </div>
@@ -1453,7 +1464,9 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
     <!-- pinned-English credits (never translated): dir="ltr" keeps each phrase in English order in the RTL UI, and lang="en" has a screen reader voice it in English (the melody's name is the page's own string, so it stays outside its credit's English) -->
     <span dir="ltr" lang="en">Hebrew text via <a href="https://www.sefaria.org" target="_blank" rel="noopener">Sefaria</a> · public domain (extracted at build time — this page never calls Sefaria)</span>
     <span><span dir="ltr" lang="en">Cantillation audio © Russel Neiss &amp; Rabbi Charlie Schwartz, <a href="https://github.com/rneiss/PocketTorah" target="_blank" rel="noopener">PocketTorah</a> · <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a></span> · <span data-i18n="trope.footer.recording_melody">Spiro (Conservative) melody</span></span>
-    <span data-i18n="trope.footer.materials_note">Materials incorporating PocketTorah audio (including this page's example clips and notated melody motifs) are CC BY-SA 4.0.</span>
+    <!-- The Total Torah credit (the permission's terms: the cantor and Adas Israel named, with the link back) shows while the Year Round [Conservative] melody is chosen — syncMelodyNote, the Trainer's #ttFooterAudioTT rule; pinned English like the line above. -->
+    <span id="tuFooterAudioTT" dir="ltr" lang="en" hidden>Cantillation audio (Year Round [Conservative]): <a href="https://www.adasisrael.org/trope" target="_blank" rel="noopener">Cantor Arianne Brown, Adas Israel Congregation</a> · Tricks of the Trope: Total Torah · used by permission</span>
+    <span data-i18n="trope.footer.materials_note">Materials incorporating PocketTorah audio (including this page's PocketTorah example clips and notated melody motifs) are CC BY-SA 4.0. The Total Torah clips (Cantor Arianne Brown, Adas Israel Congregation) are used by permission and are not CC-licensed.</span>
     <span><a href="contact.html" data-i18n="contact.page_title">Contact &amp; Support</a></span>
   </div>
   <div style="margin-top:10px;">
@@ -1461,11 +1474,11 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
       <summary style="cursor:pointer;font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);padding:5px 0;" data-i18n="trope.footer.faq_summary">Frequently Asked Questions</summary>
       <div style="padding:4px 0;max-width:640px;margin:0 auto;text-align:start;">
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="trope.footer.faq_q1">What is the Trope Tutor?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a1">A free interactive tutor for the Torah cantillation marks. Learn mode teaches each mark's symbol, names, and melody with real chanted examples; Phrases shows every line of the printed chart on a full staff; Drill mode quizzes you three ways with per-mark mastery tracking.</p></details>
-        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="trope.footer.faq_q2">What melody tradition is this?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a2">The recordings are PocketTorah's, chanted in the Spiro (Conservative) melody. The staffs follow printed charts: the Avery/Binder (Reform) charts for the year-round and High Holiday melodies, and The Art of Cantillation (Portnoy &amp; Wolff, UAHC) for the Haftarah, Esther, Shir HaShirim / Ruth / Kohelet and Eicha melodies — the Melody dropdown in the key bar picks one. Both Ashkenazi and Sephardi trope names are shown, and you can switch the primary naming tradition in settings.</p></details>
+        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="trope.footer.faq_q2">What melody tradition is this?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a2">The recordings are PocketTorah's, chanted in the Spiro (Conservative) melody. The staffs follow printed charts: the Avery/Binder (Reform) charts for the year-round and High Holiday melodies, and The Art of Cantillation (Portnoy &amp; Wolff, UAHC) for the Haftarah, Esther, Shir HaShirim / Ruth / Kohelet and Eicha melodies — the Melody dropdown in the key bar picks one. Year Round [Conservative] plays Cantor Arianne Brown's Total Torah recordings (Adas Israel Congregation) — her own Conservative melody, with no staff yet. Both Ashkenazi and Sephardi trope names are shown, and you can switch the primary naming tradition in settings.</p></details>
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="trope.footer.faq_q3">What are trope (te'amim)?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a3">Cantillation marks printed above and below the words of the Hebrew Bible. Each mark names a melodic phrase and marks the grammar of the verse — together they tell you how to chant it.</p></details>
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="trope.footer.faq_q4">How does Drill mode work?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a4">Each session asks 5, 10 or 20 questions (your choice) of three kinds: name the trope on a marked word, pick the symbol for a melody you hear, or pick the melody that matches a symbol. Marks you miss come up more often, and distractors get sneakier (pashta vs. kadma) as your mastery grows.</p></details>
-        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="trope.footer.faq_q5">Where do the chanted examples come from?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a5">Every example is a real word from the Torah reading, clipped from PocketTorah's recordings (Russel Neiss &amp; Rabbi Charlie Schwartz, CC BY-SA 4.0) using their word-level timings. The Hebrew text comes from Sefaria.</p></details>
-        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="trope.footer.faq_q6">Is the Trope Tutor free?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a6">Yes. Materials that incorporate PocketTorah audio are CC BY-SA 4.0; other IvritSuite content is CC BY-NC-SA 4.0. No account required, no ads.</p></details>
+        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="trope.footer.faq_q5">Where do the chanted examples come from?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a5">Every example is a real word from the Torah reading, clipped from PocketTorah's recordings (Russel Neiss &amp; Rabbi Charlie Schwartz, CC BY-SA 4.0) using their word-level timings — or, on the Year Round [Conservative] melody, from Cantor Arianne Brown's Total Torah recordings (Adas Israel Congregation, used by permission), each linked to its complete video on YouTube. The Hebrew text comes from Sefaria.</p></details>
+        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="trope.footer.faq_q6">Is the Trope Tutor free?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a6">Yes. Materials that incorporate PocketTorah audio are CC BY-SA 4.0; the Total Torah clips are Cantor Arianne Brown's, used by permission (not CC-licensed); other IvritSuite content is CC BY-NC-SA 4.0. No account required, no ads.</p></details>
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="trope.footer.faq_q7">Can I print a chart of all the trope marks?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a7">Yes. In Learn mode, Print chart prints all 26 marks as one reference chart — each mark's symbol, its Ashkenazi and Sephardi names, and its melody on a staff in the melody and key you chose, with chanted examples, grouped by clause family. On the Phrases tab, Print phrases prints every phrase of that melody.</p></details>
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="trope.footer.faq_q8">What does the Phrases tab show?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a8">Every line of the printed cantillation chart, marks as they are sung together, on a full music staff you can play, in any of the six melodies — year-round, High Holidays, Haftarah, Esther, the three Megillot or Eicha — and in any key. Each phrase lists real verses where the Torah sings it, with PocketTorah's recording for the year-round melody, and the whole chart prints on one sheet.</p></details>
       </div>
@@ -1523,6 +1536,14 @@ const STORAGE_KEY  = 'hebrewTropeTutor_settings';
 const PROGRESS_KEY = 'hebrewTropeTutor_progress';
 const DARK_KEY     = 'hebrewBlender_darkMode';   // shared across all IvritSuite tools
 const POCKET_AUDIO_BASE = 'https://raw.githubusercontent.com/rneiss/PocketTorah/master/data/audio/';
+// The Total Torah recordings (Cantor Arianne Brown, Adas Israel Congregation — the Torah Trainer's second recording
+// source, by written permission; torah-and-trope.md → Recording sources): the per-verse files the Year Round
+// [Conservative] melody's examples and drill clips seek into. The two patterns are the Trainer's: a file name or a
+// video id that fails one never reaches a URL or an href.
+const TT_AUDIO_BASE = 'https://audio.ivritsuite.com/audio/';
+const TT_INDEX_URL = 'data/trope/trope_index_totaltorah.json?v=1';   // scripts/build-trope-totaltorah-index.mjs; ?v= bumps with the file
+const TT_FILE_RE = /^[a-z]{3}-\d{3}-\d{3}\.mp3$/;
+const TT_VIDEO_RE = /^[\w-]{11}$/;
 
 /* Family order + colors ported from torah_trainer.html (TROPE_COLOR_DEFS /
    TROPE_DEFAULTS_LIGHT / TROPE_DEFAULTS_DARK) — keep the hues in sync so the
@@ -1610,24 +1631,33 @@ let settings = JSON.parse(JSON.stringify(DEFAULTS));
 const PROGRESS_DEFAULTS = { v: 1, tropes: {}, families: {}, pbStreak: 0 };
 let progress = JSON.parse(JSON.stringify(PROGRESS_DEFAULTS));
 
-let INDEX = null;        // data/trope/trope_index.json (validated)
+let INDEX = null;        // data/trope/trope_index.json (validated): PocketTorah's clips
 let MANIFEST = null;     // data/pockettorah/manifest.json (audioBase lookup)
-// The six melodies, in the bar's order (the phrase file's TROPE_MELODIES): the motif file each Learn card draws
-// from (its own ?v=, bumped when the file changes — ops.md's list), the bar's radio and note span, whether the key
-// readout names the relative minor (the chart's sof pasuk comes to rest on the sixth degree: haftarah and eicha),
-// whether the Phrases cards have examples (the census reads the Torah and the High Holiday readings only),
-// whether the chart's closing row ends a chapter (the three megillah charts) and the credit the key bar names.
+let TT_INDEX = null;     // data/trope/trope_index_totaltorah.json (validated by _ttIndexFrom): the Conservative melody's clips
+// The seven melodies, in the bar's order: the six printed charts (the phrase file's TROPE_MELODIES) and the Conservative
+// melody heard in the Total Torah recordings. Per row: the motif file each Learn card draws from (its own ?v=, bumped
+// when the file changes — ops.md's list; null while the melody has no transcription), the bar's note span, whether the
+// key readout names the relative minor (the chart's sof pasuk comes to rest on the sixth degree: haftarah and eicha),
+// whether the Phrases cards have examples (the census reads the Torah and the High Holiday readings only), whether the
+// chart's closing row ends a chapter (the three megillah charts), `clips` — where the Learn examples and the drill's
+// Hear and Melody questions come from (absent: PocketTorah's year-round reading, INDEX; 'totaltorah': the Total Torah
+// verse files, TT_INDEX) — and `staffs: false` for a melody not yet transcribed (its cards and the Phrases tab say so
+// instead of drawing; absent: the motif file and the phrase rows are expected).
 // trope.melody.<key> is the Melody dropdown's option label; the Torah Trainer's ?melody= links carry the same keys.
 const MELODY_INFO = [
-  { key: 'torah',       file: 'data/trope/trope_motifs.json?v=6',          note: 'tuMelodyNoteTorah', minor: false, examples: true,  chapters: false },
-  { key: 'highholiday', file: 'data/trope/trope_motifs_hh.json?v=4',       note: 'tuMelodyNoteHH',    minor: false, examples: true,  chapters: false },
-  { key: 'haftarah',    file: 'data/trope/trope_motifs_haftarah.json?v=2', note: 'tuMelodyNoteHaf',   minor: true,  examples: false, chapters: false },
-  { key: 'esther',      file: 'data/trope/trope_motifs_esther.json?v=1',   note: 'tuMelodyNoteEst',   minor: false, examples: false, chapters: true },
-  { key: 'megillot',    file: 'data/trope/trope_motifs_megillot.json?v=1', note: 'tuMelodyNoteMeg',   minor: false, examples: false, chapters: true },
-  { key: 'eicha',       file: 'data/trope/trope_motifs_eicha.json?v=1',    note: 'tuMelodyNoteEic',   minor: true,  examples: false, chapters: true },
+  { key: 'torah',        file: 'data/trope/trope_motifs.json?v=6',          note: 'tuMelodyNoteTorah', minor: false, examples: true,  chapters: false },
+  { key: 'conservative', file: null,                                        note: 'tuMelodyNoteCons',  minor: false, examples: false, chapters: false, clips: 'totaltorah', staffs: false },
+  { key: 'highholiday',  file: 'data/trope/trope_motifs_hh.json?v=4',       note: 'tuMelodyNoteHH',    minor: false, examples: true,  chapters: false },
+  { key: 'haftarah',     file: 'data/trope/trope_motifs_haftarah.json?v=2', note: 'tuMelodyNoteHaf',   minor: true,  examples: false, chapters: false },
+  { key: 'esther',       file: 'data/trope/trope_motifs_esther.json?v=1',   note: 'tuMelodyNoteEst',   minor: false, examples: false, chapters: true },
+  { key: 'megillot',     file: 'data/trope/trope_motifs_megillot.json?v=1', note: 'tuMelodyNoteMeg',   minor: false, examples: false, chapters: true },
+  { key: 'eicha',        file: 'data/trope/trope_motifs_eicha.json?v=1',    note: 'tuMelodyNoteEic',   minor: true,  examples: false, chapters: true },
 ];
 const MELODY_KEYS = MELODY_INFO.map((m) => m.key);
 function melodyInfo(k) { return MELODY_INFO.find((m) => m.key === k) || MELODY_INFO[0]; }
+// Where a melody's recorded clips come from, and the index that lists them (null while that file has not loaded).
+function clipSource(m = melodyKey()) { return melodyInfo(m).clips === 'totaltorah' ? 'totaltorah' : 'pockettorah'; }
+function activeIndex(m = melodyKey()) { return clipSource(m) === 'totaltorah' ? TT_INDEX : INDEX; }
 // The Learn-card staffs, one validated file per melody; a set left null (missing or malformed file) draws no staffs.
 const MOTIF_SETS = Object.fromEntries(MELODY_KEYS.map((k) => [k, null]));
 let currentFamily = 'sofpasuk';
@@ -1857,16 +1887,22 @@ function setStatusKey(key, en, isError) {
 async function loadData() {
   setStatusKey('trope.status.loading_index', 'Loading the trope index…');
   try {
-    const [idxRes, manRes, phrRes, phrExRes, ...motifRes] = await Promise.all([
+    const [idxRes, manRes, phrRes, phrExRes, ttRes, ...motifRes] = await Promise.all([
       // ?v= is the DATA_CACHE refresh mechanism (sw.js serves /data/ cache-first,
       // matched by exact URL) — bump it whenever the committed index is rebuilt.
       fetch('data/trope/trope_index.json?v=2'),
       fetch('data/pockettorah/manifest.json?v=1'),
       fetch('data/trope/trope_phrases.json?v=4').catch(() => null),   // the Phrases tab; ?v= bumps with the file
       fetch('data/trope/trope_phrase_examples.json?v=1').catch(() => null),
-      // the six motif files (MELODY_INFO.file carries each one's ?v=; the bump rule applies to every one)
-      ...MELODY_INFO.map((info) => fetch(info.file).catch(() => null)),
+      fetch(TT_INDEX_URL).catch(() => null),   // the Conservative melody's clips (TT_INDEX_URL carries its ?v=)
+      // the motif files (MELODY_INFO.file carries each one's ?v=; the bump rule applies to every one; a melody without a
+      // transcription has no file and fetches nothing)
+      ...MELODY_INFO.map((info) => info.file ? fetch(info.file).catch(() => null) : Promise.resolve(null)),
     ]);
+    try {   // the Total Torah index is the Conservative melody's alone: a bad or missing file leaves that melody without
+            // examples (its cards and the drill say so) and never takes the PocketTorah index down, nor the other way round
+      if (ttRes && ttRes.ok) TT_INDEX = _ttIndexFrom(await ttRes.json()) || null;   // same-origin data/ corpus — trusted
+    } catch (e) { console.warn('trope totaltorah index load failed', e); }
     if (!idxRes.ok || !manRes.ok) throw new Error('HTTP ' + idxRes.status + '/' + manRes.status);
     const idx = await idxRes.json();          // same-origin data/ corpus — trusted
     const man = await manRes.json();
@@ -1914,7 +1950,7 @@ async function retryLoadData() {
   if (b) b.disabled = true;
   await loadData();
   renderPhrasesIfShown();
-  if (INDEX) { renderLearn(); updateDrillStart(); }
+  if (activeIndex()) { renderLearn(); updateDrillStart(); }   // the index the chosen melody reads (the Conservative melody's is its own)
   else if (b) b.disabled = false;
   if (pressed) _focusAfterRetry(pressed);
 }
@@ -1928,8 +1964,26 @@ function _focusAfterRetry(btn) {
     .find((x) => x.tabIndex >= 0 && !x.disabled && x.getClientRects().length);
   if (t) t.focus();
 }
-function examplesFor(key) {
-  return (INDEX && INDEX.tropes && INDEX.tropes[key]) || [];
+function examplesFor(key, m = melodyKey()) {   // the melody's clips: PocketTorah's, or the Total Torah verse files
+  const idx = activeIndex(m);
+  return (idx && idx.tropes && idx.tropes[key]) || [];
+}
+// The Total Torah clip index (scripts/build-trope-totaltorah-index.mjs): per mark, clips into the per-verse files —
+// {p (the parasha's PocketTorah key, as INDEX writes it), ref 'C:V', f (the verse file), v (the source video's YouTube
+// id: the permission's per-verse link), w, he, s, e (null: the verse's last word, played to the file's end)}. Validated
+// like _phraseExamplesFrom, the file name and the video id against the Trainer's patterns before either can reach a
+// URL or an href; an entry that fails is dropped alone, a file of the wrong shape is no index.
+function _ttIndexFrom(j) {
+  if (!j || j.v !== 1 || j.system !== 'torah' || j.clips !== 'totaltorah' || !j.tropes || typeof j.tropes !== 'object') return null;
+  const tropes = {};
+  for (const t of TROPES) {
+    const list = Array.isArray(j.tropes[t.key]) ? j.tropes[t.key] : [];
+    tropes[t.key] = list.filter((x) => x && typeof x.p === 'string' && typeof x.ref === 'string' && /^\d+:\d+$/.test(x.ref)
+      && typeof x.f === 'string' && TT_FILE_RE.test(x.f) && typeof x.v === 'string' && TT_VIDEO_RE.test(x.v)
+      && Number.isInteger(x.w) && x.w >= 0 && typeof x.he === 'string' && Number.isFinite(x.s) && x.s >= 0
+      && (x.e === null || (Number.isFinite(x.e) && x.e > x.s)));
+  }
+  return { v: 1, clips: 'totaltorah', tropes };
 }
 // The Melody dropdown (in the key bar). An unknown stored value (a newer page's melody) shows the year-round staffs but stays
 // in the stored blob, so a round trip through this page never rewrites another device's choice.
@@ -1959,6 +2013,9 @@ function syncMelodyNote() {   // the dropdown shows the melody on screen and the
   const sel = document.getElementById('tuMelodySel');
   if (sel && sel.value !== mel) sel.value = mel;
   for (const info of MELODY_INFO) { const el = document.getElementById(info.note); if (el) el.hidden = info.key !== mel; }
+  // The footer's Total Torah credit shows while that recording is what the page plays (the Trainer's #ttFooterAudioTT rule).
+  const tt = document.getElementById('tuFooterAudioTT');
+  if (tt) tt.hidden = clipSource(mel) !== 'totaltorah';
 }
 function activeMotifs() { return MOTIF_SETS[melodyKey()]; }
 function motifFor(key, set = activeMotifs()) {
@@ -1986,8 +2043,11 @@ const _SEEK_EPS = 0.35;      // s — MP3 seeks land on frame boundaries, allow 
 const _RESEEK_MAX = 2;
 const _badFiles = new Set(); // aliyah files that failed to load this session
 
-function clipFileKey(ex) { return ex.p + '|' + ex.a; }
+// The file a clip lives in — PocketTorah's aliyah file (p|a) or a Total Torah verse file (p|f): the parasha first either
+// way, so pickExample's same-parasha preference reads both keys alike.
+function clipFileKey(ex) { return ex.p + '|' + (ex.f || ex.a); }
 function clipUrl(ex) {
+  if (ex.f) return TT_FILE_RE.test(ex.f) ? TT_AUDIO_BASE + ex.f : null;   // a Total Torah clip (the Conservative melody)
   const m = MANIFEST && MANIFEST[ex.p];
   if (!m) return null;
   return POCKET_AUDIO_BASE + encodeURIComponent(m.audioBase + '-' + ex.a + '.mp3');
@@ -2636,8 +2696,10 @@ function renderPhrases() {
   document.getElementById('tuPhraseNav').hidden = !set;
   status.hidden = !!set;
   if (!set) {
-    document.getElementById('tuPhrStatusText').textContent = I18n.t(_phrasesTried ? 'trope.phrases.unavailable' : 'trope.phrases.loading');
-    document.getElementById('tuPhrRetry').hidden = !_phrasesTried;
+    const pending = melodyInfo(m).staffs === false;   // a melody not yet transcribed: no rows to show, and no load to retry
+    document.getElementById('tuPhrStatusText').textContent = pending ? I18n.t('trope.phrases.no_rows_yet_m', { melody: melodyLabel(m) })
+      : I18n.t(_phrasesTried ? 'trope.phrases.unavailable' : 'trope.phrases.loading');
+    document.getElementById('tuPhrRetry').hidden = pending || !_phrasesTried;
     return;
   }
   const groups = phraseGroups(set, m);
@@ -3141,6 +3203,13 @@ function renderLearn() {
       const staff = renderMotifStaff(t, motif);
       if (_tuneKey === t.key) { staff.classList.add('is-playing'); staff.classList.toggle('is-echo', _tuneTurn); }
       head.appendChild(staff);
+    } else if (melodyInfo(melodyKey()).staffs === false && motifFor(t.key, MOTIF_SETS.torah)) {
+      // A melody not yet transcribed (the Conservative melody): the marks the year-round chart prints get the note; a mark
+      // no chart prints (geresh muqdam) stays bare, as under every melody.
+      const none = document.createElement('span');
+      none.className = 'tu-motif-none';
+      none.textContent = I18n.t('trope.learn.no_staff_yet_m', { melody: melodyLabel() });
+      head.appendChild(none);
     } else if (melodyKey() !== 'torah' && MOTIF_SETS[melodyKey()] && motifFor(t.key, MOTIF_SETS.torah)) {
       // A mark this chart prints no row for (the rare marks the reading never uses): say why the staff is missing.
       const none = document.createElement('span');
@@ -3164,7 +3233,10 @@ function renderLearn() {
       const li = document.createElement('li');
       li.className = 'tu-ex-none';
       // Three states, as the Phrases tab's: the index loading (painted by applyI18n before loadData ends) is not a failure.
-      li.textContent = I18n.t(INDEX ? 'trope.learn.no_example' : _phrasesTried ? 'trope.learn.examples_unavailable' : 'trope.learn.examples_loading');
+      li.textContent = I18n.t(activeIndex() ? 'trope.learn.no_example'
+        : _phrasesTried ? (clipSource() === 'totaltorah' ? 'trope.learn.tt_examples_unavailable' : 'trope.learn.examples_unavailable')
+        : 'trope.learn.examples_loading');
+      if (_phrasesTried && !activeIndex()) _setRetryVisible(true);   // the melody's own index failed (loadData shows it for the PocketTorah one): the Try again it names
       list.appendChild(li);
     } else {
       for (const ex of spreadPick(pool, 4)) {
@@ -3178,10 +3250,24 @@ function renderLearn() {
         play.onclick = () => playLearnExample(t, ex, play);
         li.appendChild(play);
         li.appendChild(renderMarkedWord(ex.he, t));
+        const meta = document.createElement('span');   // the reference, and under it a Total Torah clip's link to its complete video
+        meta.className = 'tu-ex-meta';
         const ref = document.createElement('span');
         ref.className = 'tu-ex-ref';
         ref.textContent = ex.p + ' ' + ex.ref;
-        li.appendChild(ref);
+        meta.appendChild(ref);
+        if (ex.v && TT_VIDEO_RE.test(ex.v)) {   // the permission's per-verse link — a link, never an embed (frame-src 'none')
+          const yt = document.createElement('a');
+          yt.className = 'tu-ex-yt';
+          yt.href = 'https://youtu.be/' + ex.v;
+          yt.target = '_blank';
+          yt.rel = 'noopener';
+          yt.textContent = I18n.t('trope.learn.watch_youtube');   // short on the card; the full sentence is its title and its name
+          yt.title = I18n.t('torah.recsrc.watch_youtube');
+          yt.setAttribute('aria-label', I18n.t('trope.learn.watch_youtube_aria', { parsha: ex.p, ref: ex.ref }));
+          meta.appendChild(yt);
+        }
+        li.appendChild(meta);
         list.appendChild(li);
       }
     }
@@ -3193,10 +3279,11 @@ function renderLearn() {
     // Deep-link to the reader at this trope's first (earliest-in-Torah) example verse.
     // pool = examplesFor(t.key) is in scope; ex.p = PocketTorah parsha key (== Sefaria en for 53/54,
     // resolved by torah_trainer's findParshaByName), ex.ref = "C:V". encodeURIComponent handles the
-    // apostrophes/spaces in keys like Va'eira / Lech Lecha and the colon in the ref.
+    // apostrophes/spaces in keys like Va'eira / Lech Lecha and the colon in the ref. A Total Torah example opens the
+    // Trainer on that recording for the visit (?reader=totaltorah: never saved there).
     const primary = pool[0];
     a.href = primary
-      ? 'torah_trainer.html?parsha=' + encodeURIComponent(primary.p) + '&v=' + encodeURIComponent(primary.ref)
+      ? 'torah_trainer.html?parsha=' + encodeURIComponent(primary.p) + '&v=' + encodeURIComponent(primary.ref) + (primary.f ? '&reader=totaltorah' : '')
       : 'torah_trainer.html';
     a.textContent = I18n.t('trope.learn.see_in_parsha');
     a.title = I18n.t('trope.learn.see_in_parsha_title');
@@ -3311,7 +3398,7 @@ function openLearnFor(key) {
    ══════════════════════════════════════════════════════ */
 const DRILL_LENGTHS = [5, 10, 20];   // a warm-up, the house default, a test
 const QUESTIONS_PER_SESSION = 10;    // the default only — startDrill() reads drillLength()
-const drill = { active: false, qs: [], i: -1, correct: 0, results: [], best: 0 };
+const drill = { active: false, melody: null, qs: [], i: -1, correct: 0, results: [], best: 0 };   // melody: the session's clip source (drillMelody)
 
 function enabledTypes() {
   const types = [];
@@ -3320,8 +3407,11 @@ function enabledTypes() {
   if (settings.drillMelody) types.push('melody');
   return types;
 }
-function drillableTropes() {
-  return TROPES.filter(t => examplesFor(t.key).length > 0);
+// The melody a drill reads its clips from: the running session's (startDrill snapshots it, so a melody chosen on
+// another tab mid-session never mixes two recordings in one question), else the bar's.
+function drillMelody() { return drill.active && drill.melody ? drill.melody : melodyKey(); }
+function drillableTropes(m = drillMelody()) {
+  return TROPES.filter(t => examplesFor(t.key, m).length > 0);
 }
 /* ─── Drill scope: "drill only what you just taught" ───
    Answers-only filter — pickDistractors stays global so a 3-mark family still fills
@@ -3331,8 +3421,8 @@ function drillScope() {
   const v = settings.drillScope;
   return (v && v !== 'all' && TROPE_FAMILY_DEFS.some(f => f.key === v)) ? v : 'all';
 }
-function scopedDrillPool() {
-  const pool = drillableTropes();
+function scopedDrillPool(m = drillMelody()) {
+  const pool = drillableTropes(m);
   const scope = drillScope();
   return scope === 'all' ? pool : pool.filter(t => t.family === scope);
 }
@@ -3399,10 +3489,12 @@ function updateDrillStart() {
   // Unreachable with today's index (every family has ≥3 drillable marks) — guards a
   // future rebuild that empties one, so a scoped drill can never start with no answers.
   const scopedEmpty = !scopedDrillPool().length;
-  if (!INDEX || pool.length < 4 || scopedEmpty) {
+  const idx = activeIndex();   // the chosen melody's clip index (the Conservative melody's is its own file)
+  if (_phrasesTried && !idx) _setRetryVisible(true);   // its load failed: the Try again the note names
+  if (!idx || pool.length < 4 || scopedEmpty) {
     btn.setAttribute('aria-disabled', 'true');
-    note.classList.toggle('error', !!INDEX || _phrasesTried);   // still loading: a wait, not an error
-    note.textContent = !INDEX ? I18n.t(_phrasesTried ? 'trope.drill.index_not_loaded' : 'trope.status.loading_index')
+    note.classList.toggle('error', !!idx || _phrasesTried);   // still loading: a wait, not an error
+    note.textContent = !idx ? I18n.t(_phrasesTried ? (clipSource() === 'totaltorah' ? 'trope.drill.tt_index_not_loaded' : 'trope.drill.index_not_loaded') : 'trope.status.loading_index')
       : pool.length < 4 ? I18n.t('trope.drill.not_enough')
       : I18n.t('trope.drill.scope_not_enough');
   } else {
@@ -3458,13 +3550,13 @@ function shuffle(arr) {
 }
 function randomOf(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
-function pickExample(key, preferFileKey, anyFile) {
-  let pool = examplesFor(key).filter(x => !_badFiles.has(clipFileKey(x)));
+function pickExample(key, preferFileKey, anyFile, m = drillMelody()) {
+  let pool = examplesFor(key, m).filter(x => !_badFiles.has(clipFileKey(x)));
   // anyFile: the caller can show this example without its clip (an Identify question is a printed
   // word; its post-answer autoplay already fails silently). Without it, blocked audio — a school
   // filter, the PWA offline — marks one file bad per answered question until a family's whole
   // pool is excluded and startDrill builds a 1-question, then a 0-question session (S367).
-  if (!pool.length && anyFile) pool = examplesFor(key);
+  if (!pool.length && anyFile) pool = examplesFor(key, m);
   if (!pool.length) return null;
   if (preferFileKey) {
     const same = pool.filter(x => clipFileKey(x) === preferFileKey);
@@ -3498,11 +3590,12 @@ function startDrill() {
   if (btn.getAttribute('aria-disabled') === 'true') { updateDrillStart(); return; }
   const types = enabledTypes();
   const n = drillLength();   // read once: the session length cannot shift while the questions are built
+  const mel = melodyKey();   // read once too: the session's clips all come from the melody the bar shows now (drillMelody)
   // A focused pool repeats to fill the session — the same contract as a small family scope below.
-  const tropePool = (forced && forced.length) ? forced.slice() : scopedDrillPool().map(t => t.key);
+  const tropePool = (forced && forced.length) ? forced.slice() : scopedDrillPool(mel).map(t => t.key);
   // choices need ≥4 distinct marks GLOBALLY (distractors are unscoped); the scoped
   // answer pool itself just needs to be non-empty — repeats are the point of a focused drill
-  if (!types.length || !tropePool.length || drillableTropes().length < 4) { updateDrillStart(); return; }
+  if (!types.length || !tropePool.length || drillableTropes(mel).length < 4) { updateDrillStart(); return; }
 
   const weightFn = k => {
     let w = 0.35 + (1 - masteryOf(k));
@@ -3512,7 +3605,7 @@ function startDrill() {
   const answers = weightedSample(tropePool, weightFn, n, { noAdjacentRepeat: true });
   const qs = answers.map((key, i) => {
     const type = types[i % types.length];
-    return { type, key, ex: pickExample(key, undefined, type === 'identify') };
+    return { type, key, ex: pickExample(key, undefined, type === 'identify', mel) };
   }).filter(q => q.ex);
   // group questions by source audio file so streamed-MP3 hops are rare
   qs.sort((a, b) => clipFileKey(a.ex).localeCompare(clipFileKey(b.ex)));
@@ -3520,7 +3613,7 @@ function startDrill() {
   while (qs.length < n && tropePool.length) {
     const key = randomOf(tropePool);
     const type = types[qs.length % types.length];
-    const ex = pickExample(key, undefined, type === 'identify');
+    const ex = pickExample(key, undefined, type === 'identify', mel);
     if (ex) qs.push({ type, key, ex });
     else break;
   }
@@ -3529,6 +3622,7 @@ function startDrill() {
   if (!qs.length) { showToast(I18n.t('trope.toast.audio_unavailable')); updateDrillStart(); return; }
 
   drill.active = true;
+  drill.melody = mel;
   drill.qs = qs.slice(0, n);
   drill.i = -1;
   drill.correct = 0;
@@ -3891,6 +3985,7 @@ function setMelody(v) {   // the Melody dropdown's one writer
   renderLearn();
   renderPhrasesIfShown();
   syncTuneControls();   // the key bar's name follows the melody
+  updateDrillStart();   // the start screen's pool follows the melody's clips (the Conservative melody has its own index)
 }
 /* ── Sing along: Key (settings.tuneShift), Voice (settings.tuneVoice), Note names (settings.noteNames) and the
    practice — Tune speed (settings.tuneRate), Play each tune (settings.tuneRepeats) and the sing-back pause
