@@ -840,6 +840,10 @@ body.dark .hi-sun{display:inline-block;}
   /* Reserve room so the fixed footer never hides the last slice of sidebar content (its taller
      post-Generate state, with the page-count line, included). */
   .sidebar { padding-bottom: 88px; }
+  /* …and keyboard focus the browser scrolls to the window's bottom edge lands clear of it: the page scrolls, not the
+     sidebar, so the root reserves the bar's live height (initGenFab writes --gen-fab-h; S561, pattern
+     focus-hidden-under-a-sticky-bar). */
+  html { scroll-padding-block-end: calc(var(--gen-fab-h, 0px) + var(--pwa-banner-space, 0px) + 8px); }
   @media (max-width: 700px) {
     .gen-fab { width: 100%; border-inline-end: none; } /* mobile: full (stacked) width; sidebar uses border-bottom, no inner divider */
     .main-content { padding-bottom: 96px; }      /* clear the fixed footer (with its page-count line) over the worksheet */
@@ -6843,6 +6847,11 @@ document.addEventListener('DOMContentLoaded', () => {
     sizeFab();
     if ('ResizeObserver' in window) new ResizeObserver(sizeFab).observe(sidebar);
     else window.addEventListener('resize', sizeFab);
+    // The bar's live height (0 while it is not displayed) for the root's scroll-padding, so focus never lands under it.
+    const fabH = () => document.documentElement.style.setProperty('--gen-fab-h', fab.offsetHeight + 'px');
+    fabH();
+    if ('ResizeObserver' in window) new ResizeObserver(fabH).observe(fab);
+    else window.addEventListener('resize', fabH);
     // The page (not the sidebar) scrolls, so observe against the viewport: hide the frozen footer
     // whenever the inline Generate button is itself on screen.
     if ('IntersectionObserver' in window) {
