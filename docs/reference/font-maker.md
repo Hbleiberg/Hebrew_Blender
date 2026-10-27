@@ -82,7 +82,8 @@ The page loads `/js/supabase-config.js`, `/js/ivrit-account.js`, `/js/ivrit-save
   (`.load-menu-cdel`, `.load-menu-cdl`) so `reopenLoadMenu`'s 🗑 index keeps counting Recent rows.
   `fmCloudOpen(id)` is local-first (the IndexedDB snapshot with the same `cloudRev` and `cloudClean` needs
   no download), else download → unpack → `applyProjectData`. `fmCloudDelete(id)` closes the menu, confirms,
-  removes row + objects, reopens the menu. The Exported ✓ dialog gains `fmCloudKeepExport(dlFile)` (the
+  removes row + objects, reopens the menu; when the row is the open project's, it drops `cloudId`/`cloudRev` and
+  rewrites the local snapshot (`autosaveNow()`), or a reload's Continue would relink the project to a row that is gone. The Exported ✓ dialog gains `fmCloudKeepExport(dlFile)` (the
   snapshotted file, ≤ 5 MB; it passes `cloudRev` and adopts the row's new revision only when no other device moved the
   row first, so a kept export never hides that device's save from the next save's check) and a row with an export shows ⬇
   (`fmCloudDownloadExport`).

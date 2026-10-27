@@ -17,7 +17,8 @@
  *      back byte-equal, the SVG sheet is intact, the badge shows Saved; a re-save uploads no photo.
  *   4. Another device changes the row → the next autosave raises the conflict dialog; Overwrite takes the
  *      row as it is; a second change + Keep both makes a second project (a copy) with its own row.
- *   5. Delete from the Load menu removes the row and every object in its folder.
+ *   5. Delete from the Load menu removes the row and every object in its folder; deleting the open project's account
+ *      copy also drops the link from this browser's snapshot (a Continue would otherwise relink it).
  *   6. Keep an export: the Exported ✓ dialog's ☁ button uploads the file and the Load row gains ⬇; the next autosave
  *      writes without asking, and an export kept after another device's save leaves that autosave asking.
  *   7. Storage refuses a photo (413): the save fails cleanly, no row stays behind, the badge stays hidden.
@@ -427,6 +428,18 @@ try {
     await page.waitForFunction(() => document.getElementById('loadMenu') && document.querySelectorAll('#loadMenuCloud .load-menu-row').length === 1, null, { timeout: 15000 }).catch(() => {});
     const left = { rows: cloud.tables.font_projects.length, srcs: folderObjects(cloud, 'font-sources', firstId).length, projs: folderObjects(cloud, 'font-projects', firstId).length, menuRows: await page.evaluate(() => document.querySelectorAll('#loadMenuCloud .load-menu-row').length) };
     check('5: Delete removed the row and every object in its folder, and the menu came back with one row', /Delete/.test(del) && left.rows === 1 && left.srcs === 0 && left.projs === 0 && left.menuRows === 1, JSON.stringify(left));
+    // Deleting the account copy of the project that is open: the link goes here AND in this browser's snapshot, or a
+    // reload's Continue relinks the project to a row the account no longer has (a badge that never clears).
+    const openId = await page.evaluate(() => project.cloudId || null);
+    if (openId) {
+      await page.evaluate((id) => fmCloudDelete(id), openId);
+      await clickAsk(page, 'Delete');
+      await waitFor(() => !cloud.tables.font_projects.some(r => r.id === openId), 15000);
+      await page.waitForFunction(() => !project.cloudId && !_autosaveInFlight, null, { timeout: 15000 }).catch(() => {});
+      await page.waitForTimeout(300);
+    }
+    const snap5 = await page.evaluate(async () => { let snap = 'none'; try { const rec = await autosaveGet(); snap = JSON.parse(await gunzipText(rec.gz)).cloudId || null; } catch (e) { snap = 'unreadable'; } return { live: project.cloudId || null, snap }; });
+    check('5: deleting the account copy of the open project unlinks it here and in the local snapshot', !!openId && !cloud.tables.font_projects.some(r => r.id === openId) && snap5.live === null && snap5.snap === null, JSON.stringify({ openId: !!openId, ...snap5 }));
     check('3–6: 0 pageerrors', errors.length === 0, errors.join(' | '));
     await ctx.close();
   }

@@ -22720,7 +22720,7 @@ async function fmCloudDelete(id) {
      { label: _cT('delete_btn', 'Delete'), onClick: async () => {
          try {
            await IvritProjects.remove(id);
-           if (project && project.cloudId === id) { delete project.cloudId; delete project.cloudRev; fmCloudReset(); }
+           if (project && project.cloudId === id) { delete project.cloudId; delete project.cloudRev; fmCloudReset(); autosaveNow(); }   // the local snapshot forgets the deleted row too (a Continue would relink it)
            status(_cT('deleted_toast', 'Deleted {name} from your account.', { name }));
          } catch (e) { status(fmCloudErrorText(e), true); }
          reopenLoadMenu(0);
