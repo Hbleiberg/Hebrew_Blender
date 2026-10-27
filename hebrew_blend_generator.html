@@ -9578,6 +9578,8 @@ async function exportPDF() {
       const hasTwoRows = isFourUp && sheet.classList.contains('has-two-rows');
       const isCaller = sheet.classList.contains('caller-sheet');
       let callerRows = [];   // where each row of calls starts in the clone that is captured (css px)
+      const qrSpots = [];    // each answer-key QR's image box in that clone (css px), drawn at full resolution below
+      const qrImgs = [...sheet.querySelectorAll('.qr-ak img')];   // the live, decoded images, in the clone's order
       const capW = isBingoPage && bingoRefW ? bingoRefW : sheet.scrollWidth + 8;
       const capH = isBingoPage && bingoRefH ? bingoRefH : sheet.scrollHeight + 8;
       const canvas = await html2canvas(sheet, {
@@ -9617,6 +9619,18 @@ async function exportPDF() {
             const top = el.getBoundingClientRect().top;
             callerRows = [...new Set([...el.querySelectorAll('.caller-item')].map(it => it.getBoundingClientRect().top - top))];
           }
+          // The answer-key QR rasterised with the sheet is its 2.2 cm box at scale 2: about 1.4 px a module for a
+          // long key, too coarse to scan (Print keeps the image's own pixels). Note where each image sits, after the
+          // padding change above, and blank it here; the image itself goes over that box once the raster is placed.
+          const o = el.getBoundingClientRect();
+          el.querySelectorAll('.qr-ak img').forEach((im, k) => {
+            if (!(qrImgs[k] && qrImgs[k].naturalWidth)) return;   // not decoded yet: the raster keeps its own copy
+            const r = im.getBoundingClientRect(), cs = clonedDoc.defaultView.getComputedStyle(im);
+            const pl = parseFloat(cs.paddingLeft) || 0, pr = parseFloat(cs.paddingRight) || 0;
+            const pt = parseFloat(cs.paddingTop) || 0, pb = parseFloat(cs.paddingBottom) || 0;
+            qrSpots.push({ k, x: r.left - o.left + pl, y: r.top - o.top + pt, w: r.width - pl - pr, h: r.height - pt - pb });
+            im.style.visibility = 'hidden';
+          });
         },
       });
       if (isCaller) {
@@ -9644,6 +9658,14 @@ async function exportPDF() {
 
       if (i > 0) pdf.addPage();
       pdf.addImage(imgData, 'PNG', xOffset, yOffset, imgW, imgH, undefined, 'FAST');   // 'FAST' = Flate-compress the page raster (lossless); without it jsPDF stores ~10 MB per page raw
+      // As a PNG: jsPDF re-encodes a GIF as a quality-100 JPEG, ~170 KB a code where the PNG is a few KB.
+      const mmPerPx = imgW / capW;   // the canvas is capW css px wide
+      qrSpots.forEach(q => {
+        const im = qrImgs[q.k], c = document.createElement('canvas');
+        c.width = im.naturalWidth; c.height = im.naturalHeight;
+        c.getContext('2d').drawImage(im, 0, 0);
+        pdf.addImage(c.toDataURL('image/png'), 'PNG', xOffset + q.x * mmPerPx, yOffset + q.y * mmPerPx, q.w * mmPerPx, q.h * mmPerPx, undefined, 'FAST');
+      });
 
       // Draw the cut lines as vector PDF primitives. We *measure* the actual
       // card-border positions in the captured canvas (rather than assuming
