@@ -165,6 +165,14 @@ The staffs of `trope_tutor.html` and of the Torah Trainer's Trope staff layout d
 
 The melodies themselves are traditional and belong to no one. What this repository holds is a transcription of the charts' notes — `docs/tropepatterns.md`, the only hand-kept copy, and the `data/trope/*.json` files built from it — released under CC BY-SA 4.0 like the rest of the trope data. No page image, lesson text, exercise, blessing or any other part of either book is reproduced, and the scans the transcription was read from stay outside the repository (`source-data/charts/`, gitignored).
 
+**The other traditions** (`docs/trope-traditions.md`, built into the same `data/trope/trope_phrases.json`; shown to students only once the maintainer approves each one) are transcriptions of the notes of:
+
+- the cantillation tables of *The Jewish Encyclopedia* (Funk & Wagnalls, New York, 1901–1906), article "Cantillation" by Francis L. Cohen — seventeen columns (Western Ashkenazi, Spanish & Portuguese, Moroccan, Syrian, Baghdadi, and Reuchlin's 1518 notation as the table re-sets it). The Encyclopedia is in the public domain;
+- the common (Lithuanian) Torah and haftarah melodies, from a Conservative congregation's printed learner's charts;
+- Hazzan Pinchas Spiro's High Holy Day Torah trope chart.
+
+Each tradition names its own source and terms in the JSON (`source`, `license`) and in both pages' sources lists. The melodies are traditional; the transcriptions are CC BY-SA 4.0, like the rest of the trope data, and reproduce no page image or text of their sources.
+
 ---
 
 ## Third-Party Web Services & APIs

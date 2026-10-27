@@ -16,6 +16,10 @@ for note, read from scans of the charts. The scans are not in the repository (th
 are copyrighted; they live in the gitignored `source-data/charts/`); the melodies themselves are
 traditional. This transcription is CC BY-SA 4.0, like the data files it feeds.
 
+The other traditions a teacher may choose instead — the Common melody, Spiro's High Holy Day chart and the Jewish
+Encyclopedia's tables — are transcribed in `docs/trope-traditions.md`, in this file's grammar with a few extensions
+(its *How to read this file*), and built into the same JSON.
+
 **Sections B, C and H–K are data.** `node scripts/build-trope-phrases.mjs` reads their row blocks and writes
 `data/trope/trope_phrases.json` — every row's notes, syllables, triplets, ties and slurs, the input for
 a staff of a whole parasha (section G) — together with `docs/trope_phrases_report.md`, which lists

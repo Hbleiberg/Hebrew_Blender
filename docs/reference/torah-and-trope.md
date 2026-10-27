@@ -411,7 +411,7 @@ to Learn), and a caller that opens something inside the new tab (`openLearnFor`)
   39 Shir HaShirim / Ruth / Kohelet + the end-of-book 39a, 38 Eicha), for a staff of a whole reading. The Torah
   and High Holiday charts are the teacher's (Avery/Binder); the other four are *The Art of Cantillation, Vol. 2*
   (Portnoy and Wolff, UAHC Press, 2001), appendices D–G, transcribed in `docs/tropepatterns.md` sections H–K.
-  The Phrases tab fetches it (`?v=4`, in `docs/reference/ops.md`'s list — the Torah Trainer's Trope staff
+  The Phrases tab fetches it (`?v=5`, in `docs/reference/ops.md`'s list — the Torah Trainer's Trope staff
   fetches the same URL); bump that with every rebuild that changes it. The tutor draws the melody the bar
   chooses (`phraseSet()`, any of the six); `PHRASE_GROUPS` orders each chart's rows into its clause groups (a
   row the table does not name joins *More phrases*).
@@ -988,6 +988,79 @@ beta leaves open.
   staff smaller than the chosen size, uniformly.
 
 ---
+
+## Traditions — the other charts (`docs/trope-traditions.md`)
+
+Twenty more charts a teacher may choose instead of the six: the common (Lithuanian) melody's Torah and haftarah charts
+(`cons_torah`, `cons_haftarah`), Spiro's High Holy Day chart (`spiro_hhd`) and seventeen columns of the *Jewish
+Encyclopedia*'s cantillation tables (`je_*`: Western Ashkenazi, Spanish & Portuguese, Moroccan, Syrian, Baghdadi and
+Reuchlin's 1518 notation; the Torah, the haftarah, the High Holy Days, Esther, Eicha and the festival megillot). They came
+from the "Ta'amei HaMikra Trope Atlas", transcribed from scans with AI help; the atlas's six shared charts matched
+`docs/tropepatterns.md` note for note and are not repeated.
+
+- **Data.** `docs/trope-traditions.md` is the only hand-kept copy: a ```` ```trope-system <id> ```` block per tradition
+  (`group` — the reading: `torah`, `haftarah`, `hhd`, `esther`, `eicha`, `megillot`; `key`; `rows`; `underlay`;
+  `accidentals`; `lacks`; its names; `source`; `license`; `note`) and a ```` ```trope-row <id> ```` block per row, in
+  tropepatterns.md's grammar with the extensions its *How to read this file* lists (`,opt` a pickup in parentheses,
+  `,fermata`, mixed-case syllables, a `src:` line, `3!{ … }` a printed 3 that is not a triplet, `underlay: names` for
+  the JE tables, whose sign name the builder writes, spanning its sign). `scripts/build-trope-phrases.mjs` builds them
+  into `data/trope/trope_phrases.json` beside the six (schema still `v:1`; the six's objects untouched), each melody
+  carrying `group`, its names, `source`, `license`, `underlay`, `chroma` (below) and `fp`, and checks each: its row
+  count, the marks it `lacks`, the signs it prints, one spelling per pitch, and that the staff engine (loaded in a vm)
+  draws every note as the row writes it. The figure index covers them like the six.
+- **Spelling.** `motifPitchPos(p, key, chroma)` spells a chromatic degree by the charts' rule (raised 1st and 4th, lowered
+  3rd, 6th and 7th) unless the tradition's `chroma` says otherwise: `{"8":[4,1]}` — the raised fifth, G♯ in C, D♯ in G
+  — in six JE columns. The builder derives it from the rows' spellings; `layoutPhraseStaff`'s `opts.chroma`, the tutor's
+  `noteNameAt` and the Trainer's `staffNoteNameAt` take it, so a staff moved by the Key setting keeps the degree (G♯ in
+  C is B♮ in E♭). Without it every staff is byte-identical to before.
+- **The gate.** `data/trope/trope_approvals.json` lists every tradition on a line of its own — `false`, or the 12-digit
+  fingerprint the maintainer approved — and the builder fails if it misses one or a value is malformed. The fingerprint
+  is the first 12 hex digits of SHA-256 over `{key, chroma, rows}` exactly as the JSON holds them (the builder writes it
+  as `fp`; the pages compute it themselves with `tropeSystemFingerprint`, WebCrypto), so an edit to an approved
+  tradition's rows hides it again until it is re-approved. A page offers a tradition only while the two agree, or on a
+  `?preview=traditions` visit (read once, never saved or synced), which offers the rest marked *Unverified
+  transcription* (`shared.trad.unverified`). The approvals file has no `?v=`: `sw.js` serves it network-first, so an
+  approval is live once deployed; offline, the last copy fetched, else nothing (nothing approved).
+- **Review.** `trope_review.html` (unlisted, `noindex`, English, in check-i18n's `SKIP_HTML`; not in the sitemap,
+  `llms.txt` or `CORE_ASSETS`) draws every row of every tradition on a staff beside its source, its `src`, its doc line and
+  what to check (chromatic notes as drawn, `3!` brackets, pickups, fermatas). Its **Approve** names the approvals
+  file's line and the text to put there. An approval is the maintainer's commit, never a session's.
+- **Trope Tutor.** `registerTraditions` (in `loadData`, after the phrase file and the approvals) appends one
+  `MELODY_INFO` row per offered tradition (`trad: true`, `group`, `drillTunes`, `note: 'tuMelodyNoteTrad'`) and its id to
+  `MELODY_KEYS`, so `settings.melody`, `setMelody`, `?melody=` (a tradition's id is kept as read and counts once offered)
+  and every melody path take it; a stored id the page does not offer shows the year-round chart and stays stored.
+  - Both melody selects stay exactly as before while no tradition is offered; with one, `_fillMelodySel` builds an
+    `<optgroup>` per reading (`TROPE_TRAD_GROUPS`' order, `trope.melody.group_*`), each opening on its default chart.
+  - A Learn card draws the mark's first figure (`tropeFirstFigure` → `tropeFigureRow`) in full notation, class
+    `tu-learn-pstaff`, labelled `trope.learn.motif_aria_m` with the tradition's name; its tune is `_phraseTimeline`
+    (shared with the Phrases tune; a fermata holds `PHRASE_FERMATA` times its value). A mark the tradition lacks says
+    `trope.learn.no_figure_trad_m` and offers, behind a button with `aria-expanded`, the figure of its reading's default
+    chart (`TROPE_GROUP_BASE`), else the year-round chart's, captioned (`trope.learn.base_caption_m`); which are open is
+    the visit's only.
+  - The Phrases tab shows its rows as one group (`trope.phrases.group_all`), with its `chroma`; the drill plays its
+    figures (`playDrillTune`, `drillTuneSig`) and asks only the marks it prints.
+  - `#tuMelodyNoteTrad` (`fillTradNote`) names it, what it lacks (FSI/PDI-isolated names), the JE tables' sample
+    contexts, and its source pinned English, with the badge while unverified; Settings → *Tradition sources*
+    (`renderTradSources`) lists every offered one; `#tuPreviewBanner` shows on a preview visit.
+- **Torah Trainer.** `ensureStaffData` loads the offered traditions into `STAFF_TRAD` and beside the six in
+  `STAFF_SETS` / `STAFF_CTX`. `settings.staffTradition` is `{reading group: id}` (the `staffTuneChoice` model; one writer,
+  `setStaffTradition`; travels in a practice link through `_linkTradMap`, shape only); `staffTradChoice()` is the chosen
+  one while offered for `staffMelody()`'s group, and `staffSetName()` returns it first.
+  - The Trope staff section's Tradition row (`#rowStaffTradition`, `syncStaffTradition`) shows only while the reading's
+    group has an offered tradition: its default chart and its traditions, rebuilt only when that list or the language
+    changes; the chosen one's source line under it; `#staffTradSources` lists every offered one.
+  - A tradition draws with `tropeChooseFigures`' `fallbacks` (its reading's default chart, then the year-round chart)
+    and `tropeBuildReadingRow`'s `main`, so a borrowed figure's unit carries `fb` and its bar is drawn dashed
+    (`.tu-pbar.is-fb`); the header names those marks (`torah.staff.trad_fallback_chip.*`), shows the unverified chip,
+    and the recording chip (`torah.reading.staff_chant_chip`) says Chant sings its own tune. Each verse's
+    `.tt-staff-rows` is a `role="group"` named `torah.staff.rows_aria_m`. The verse Tune holds a fermata. The Tutor
+    links carry the tradition's id (and `preview=traditions` while it is unverified).
+- **Approving one:** open `trope_review.html` (served from the repo root), compare each row with the source, press
+  Approve, and make the one-line change it names in `data/trope/trope_approvals.json`. **Correcting a note:** edit its
+  row in `docs/trope-traditions.md`, run the builder, bump `trope_phrases.json`'s `?v=` on both pages and the review
+  page and `sw.js`'s `VERSION` — the fingerprint changes, so the tradition needs approving again. **Adding a
+  tradition:** a new `trope-system` block and its rows, its line in the approvals file (`false`), its
+  `shared.trad.<id>` name (EN + HE) in `locales/ui-strings.csv`, then the same rebuild and bumps.
 
 ## Recording sources — PocketTorah and Total Torah (`torah_trainer.html`)
 
@@ -1643,6 +1716,9 @@ Both pages sync one settings blob (and the Trope Tutor its mastery progress) thr
   runs `cloudReread()` — the `resetAllSettings()` sequence plus `syncParshaSelect` and the fallback reset
   (`syncFormToSettings` re-syncs the handout section too) — afterwards. The Trope Tutor's hook also rebuilds the drill-scope box (`buildDrillScopeSel`),
   which is otherwise built once at init.
+- **A tradition chosen but not offered stays chosen.** The Trope Tutor's `settings.melody` and the Torah Trainer's
+  `settings.staffTradition` keep a tradition's id on a device where it is not offered (not approved yet, or a preview's
+  choice); the page draws the default chart and a round trip leaves the stored choice as it was.
 - **A practice link's look never reaches the account.** While a link view is up, every write (the module's
   `flush` included) stores the reader's own display values, so opening a link cannot make the settings row read
   "newer here". A download ends the view (`cloudReread` calls `linkViewEnd` first).

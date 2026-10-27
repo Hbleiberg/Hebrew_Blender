@@ -85,7 +85,8 @@ Notes:
   fetch the same corpus they must use the **same** value (mismatched ones evict each other's
   copy on alternate visits). Current: `hebrew_words.json?v=7`,
   `trope/trope_index.json?v=2`, `trope/trope_index_totaltorah.json?v=1` (the Trope Tutor's Conservative melody, `TT_INDEX_URL`), `trope/trope_motifs.json?v=6`, `trope/trope_motifs_hh.json?v=4`, `trope/trope_motifs_haftarah.json?v=2`, `trope/trope_motifs_esther.json?v=1`, `trope/trope_motifs_megillot.json?v=1`, `trope/trope_motifs_eicha.json?v=1` (the last four written by the phrases builder; the Trope Tutor's `MELODY_INFO` carries each one's value),
-  `trope/trope_phrases.json?v=4` (fetched by the Trope Tutor **and** the Torah Trainer's Trope staff layout — one value),
+  `trope/trope_phrases.json?v=5` (fetched by the Trope Tutor, the Torah Trainer's Trope staff layout **and** `trope_review.html` — one value),
+  and no value at all on `trope/trope_approvals.json`, which `sw.js` serves network-first (an approval is live without a bump),
   `trope/trope_phrase_examples.json?v=1`,
   `hebrew_emojis.json?v=2`,
   `parshiyot.json?v=1`, `pockettorah/manifest.json?v=1`, `pockettorah/aliyah.json?v=1`

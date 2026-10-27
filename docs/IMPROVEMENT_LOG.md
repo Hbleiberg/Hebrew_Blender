@@ -334,6 +334,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Awaiting the maintainer (an action or an answer only the maintainer can give; a session that resolves one moves it to Done)
 
+- [ ] P3 (**NEW — the maintainer's review, by design**) | trope_review.html, data/trope/trope_approvals.json | **20 trope traditions wait to be checked against their scans and approved one by one** (all `false`; AI-assisted transcriptions). Check especially the 18 printed 3s kept as written, the raised-fifth spellings of six JE columns (G♯ in C, D♯ in G) and the two Common-melody rows whose syllable moved; the 50 new HE strings are drafts. | found 2026-10-27
+
 - [ ] P3 (**NEW S560 C — GATE 4: short windows; deferred unattended; `c560/shots/short-zoom400-en-light.png`, `short-zoom400-he-dark.png`, `short-i13L-en-light.png`**) | flash_cards.html | **At 400% zoom (1280×1024 → 320×256) the sticky header (112–121px) and Start bar (136–138) leave the setup screen 8px in EN and none in HE** (1366×768 at 200%: 181–184 of 384; iPhone 13 landscape 140 of 342). …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S556 M — GATE 3: the suite's default vowel palette, four tools; deferred unattended; `m556/shots/1280-light-en-color.png`**) | hebrew_dictionary.html (+ dashboard, generator, flash, torah) | **The default scheme's cholam gold (#bb8800) reads 2.99:1 on the cream** — under 3.0 for the 32px headwords it colours and 4.5 for the picker's 17.6px examples (teal 3.16, tzere's purple 3.97, …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -385,6 +387,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 _(none)_
 
 ## Done
+
+- [x] 2026-10-27 | `8110b5cc` `2fb65c5e` `2e527118` `5979d80a` | js/trope-staff.js, build-trope-phrases.mjs, docs/trope-traditions.md, data/trope/*, trope_tutor, torah_trainer, trope_review, sw.js | (feature, not a loop session) **20 more trope traditions (the Trope Atlas's Common melody, Spiro HHD, 17 JE tables) on both trope pages, hidden until the maintainer approves each** | six charts byte-identical (JSON; 210 Tutor configs EN/HE + 12 Trainer readings vs HEAD); builder green, 9 mutations caught; smoke-trope-staff 25/25, smoke-tools 14/14 + 18/18, smoke-sync 215/215; a11y probes pass.
 
 - [x] 2026-10-27 | (S563 close-out) | branch/deploy note | **S563 = G on the generator (4th: S137 → S265 → S392 → S563): 36 shapes × 2 cells to Letter + A4 PDFs (plants 5/5), Export PDF by click, the QR decoded from paper and file, `.ivrit` and share link 0/142; FOUND 11, FIXED 2 (+3 P3, 2 of them gate 3, 6 P4) + the shared tour engine's clamp and flash's fold triangles from the queue.** Branch …[full text: IMPROVEMENT_ARCHIVE.md]
 
