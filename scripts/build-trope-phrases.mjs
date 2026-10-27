@@ -94,8 +94,8 @@ const REPORT_PATH = OUT_DIR ? join(OUT_DIR, 'trope_phrases_report.md') : join(re
 const CENSUS_PATH = OUT_DIR ? join(OUT_DIR, 'trope_contexts_report.md') : join(repoRoot, 'docs', 'trope_contexts_report.md');
 const EXAMPLES_PATH = OUT_DIR ? join(OUT_DIR, 'trope_phrase_examples.json') : join(repoRoot, 'data', 'trope', 'trope_phrase_examples.json');
 const CACHE_DIR = join(repoRoot, 'source-data', 'trope-cache');
-const SIZE_BUDGET = 256 * 1024;   // six melodies at one row per line (the teacher's two charts and Portnoy & Wolff's four)
-const LICENSE = 'Hand transcriptions of the traditional Ashkenazi cantillation melodies from two printed sources: the Torah and High Holiday charts of a teacher\'s cantillation chart (docs/tropepatterns.md, sections B and C) and the Haftarah, Esther, Megillot (Shir HaShirim, Ruth, Kohelet) and Eicha charts of The Art of Cantillation, Vol. 2 (Portnoy and Wolff, 2001; sections H to K). The melodies are traditional; this file is CC BY-SA 4.0.';
+const SIZE_BUDGET = 640 * 1024;   // the six melodies and the twenty traditions at one row per line (~60 KB over the wire, gzipped)
+const LICENSE = 'Hand transcriptions of the traditional Ashkenazi cantillation melodies from two printed sources: the Torah and High Holiday charts of a teacher\'s cantillation chart (docs/tropepatterns.md, sections B and C) and the Haftarah, Esther, Megillot (Shir HaShirim, Ruth, Kohelet) and Eicha charts of The Art of Cantillation, Vol. 2 (Portnoy and Wolff, 2001; sections H to K); and the other traditions of docs/trope-traditions.md, each naming its own source and terms in its melody\'s source and license. The melodies are traditional; this file is CC BY-SA 4.0.';
 
 const failures = [];
 const fail = (msg) => failures.push(msg);
@@ -167,14 +167,39 @@ const MELODIES = {
     rule: 'the Eicha chart (three flats) writes every B, E and A with its ♭ or ♮ and prints no other accidental' },
 };
 const INFO_TO_MELODY = Object.fromEntries(Object.entries(MELODIES).map(([m, d]) => [d.info, m]));
+
+/* ---------- the other traditions: docs/trope-traditions.md ---------- */
+// Twenty more charts a teacher may choose instead of the six above, each under the reading it is sung for (the
+// Common melody's Torah and haftarah charts, Spiro's High Holy Day chart, the Jewish Encyclopedia's tables): rows in
+// the grammar above with a few extensions (that doc's "How to read this file"), each tradition opened by a
+// ```trope-system <id> block and its rows in ```trope-row <id> blocks. They go into the JSON beside the six with
+// their names, source, license, spelling (`chroma`) and fingerprint (`fp`), and data/trope/trope_approvals.json
+// must name every one of them: false, or the fingerprint the maintainer approved on trope_review.html — the pages
+// show a tradition to students only while the two agree.
+const TRAD_DOC_PATH = join(repoRoot, 'docs', 'trope-traditions.md');
+const APPROVALS_PATH = join(repoRoot, 'data', 'trope', 'trope_approvals.json');
+const TRAD_GROUPS = ['torah', 'haftarah', 'hhd', 'esther', 'eicha', 'megillot'];   // js/trope-staff.js's TROPE_TRAD_GROUPS
+const TRAD_META = ['group', 'key', 'rows', 'underlay', 'accidentals', 'lacks', 'label', 'short', 'trad', 'sub', 'source', 'license', 'note'];
+const TRAD_KEY_SHARPS = { C: 0, G: 1, D: 2, A: 3, E: 4, B: 5, 'F#': 6, F: -1, Bb: -2, Eb: -3, Ab: -4, Db: -5, Gb: -6 };
+// The JE tables print each sign's name under its notes (`underlay: names`); the builder writes it, as the atlas does.
+const TRAD_NAME_LABELS = { zarka: 'Zar-ka', segol: 'Se-gol', munach_legarmeh: 'Mu-nach l.', munach: 'Mu-nach', revia: "R'vi-a",
+  mahpach: 'Mah-pach', pashta: 'Pash-ta', zakef_katon: 'Za-kef', yetiv: "Y'tiv", zakef_gadol: 'Za-kef ga-dol', mercha: 'Mer-cha',
+  tipcha: 'Tip-cha', etnachta: 'Et-nach-ta', pazer: 'Pa-zer', telisha_gedola: "T'li-sha g.", telisha_ketana: "T'li-sha k.",
+  kadma: 'Kad-ma', geresh: 'Az-la', gershayim: 'Ger-sha-yim', darga: 'Dar-ga', tevir: "T'vir", sof_pasuk: 'Sof pa-suk',
+  shalshelet: 'Shal-she-let', mercha_kefula: "Mer-cha k'fu-la", karnei_parah: 'Kar-nei fa-ra', yerach_ben_yomo: 'Ye-rach ben yo-mo' };
+const TRAD_SYL_RE = /^([A-Za-z][A-Za-z'.]*(?:-[A-Za-z'.]+)*)(-?)$/;   // the chart's own case and inner hyphens
+const TRADS = {};   // id -> { meta, line, spec, rowsWant, lacks, accidentals, chroma, fp }
 const TAGS = new Set(['aliyah-end', 'unverified', 'derived']);   // [derived]: a row not printed but read off a printed one (its number + a letter) — checked below
 const LETTER_PC = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
 const ACC = { '': 0, '♯': 1, '♭': -1, '♮': 0 };
 const P_MIN = -16, P_MAX = 6;   // G3 … F5: the charts' whole range
 
 const SYL_RE = /^([A-Z][A-Z']*)(-?)$/;
-const NOTE_RE = /^(\d+\{)?(~~|~=|~|=)?([A-G])([♯♭♮]?)(\d)\(([^)]*)\)(\})?$/;
-const REST_RE = /^(\d+\{)?rest\(([^)]*)\)(\})?$/;
+const NOTE_RE = /^(\d+!?\{)?(~~|~=|~|=)?([A-G])([♯♭♮]?)(\d)\(([^)]*)\)(\})?$/;   // 3!{ only in docs/trope-traditions.md
+const REST_RE = /^(\d+!?\{)?rest\(([^)]*)\)(\})?$/;
+// What one block's rows may contain: the six charts' grammar (MELODIES), or a tradition's (TRADS).
+const melodySpec = (m) => ({ label: MELODIES[m].label, spell: MELODIES[m].spell, rule: MELODIES[m].rule, range: [P_MIN, P_MAX], rangeText: 'G3–F5', sylRe: SYL_RE, names: false, ext: false });
+const labelOf = (m) => (MELODIES[m] ? MELODIES[m].label : TRADS[m] ? TRADS[m].meta.label : m);
 
 function parseDoc(text, path) {
   const lines = text.split('\n');
@@ -188,10 +213,69 @@ function parseDoc(text, path) {
     let j = i + 1;
     for (; j < lines.length && !/^```\s*$/.test(lines[j]); j++) body.push({ text: lines[j], line: j + 1 });
     if (j >= lines.length) { fail(`${path}:${i + 1}: block never closed`); break; }
-    blocks.push({ melody, body, line: i + 1 });
+    blocks.push({ melody, body, line: i + 1, spec: melodySpec(melody) });
     i = j;
   }
   return blocks;
+}
+// docs/trope-traditions.md: a trope-system block (`name: value` lines) opens each tradition, its trope-row blocks
+// follow. Registers TRADS[id] and melodies[id]; returns the row blocks.
+function parseTradDoc(text, path) {
+  const lines = text.split('\n');
+  const blocks = [];
+  for (let i = 0; i < lines.length; i++) {
+    const m = lines[i].match(/^```(trope-[a-z-]+)(?:[ \t]+(\S+))?\s*$/);
+    if (!m) continue;
+    const body = [];
+    let j = i + 1;
+    for (; j < lines.length && !/^```\s*$/.test(lines[j]); j++) body.push({ text: lines[j], line: j + 1 });
+    if (j >= lines.length) { fail(`${path}:${i + 1}: block never closed`); break; }
+    const id = m[2] || '';
+    if (m[1] === 'trope-system') {
+      if (!/^[a-z][a-z0-9_]{0,39}$/.test(id) || Object.hasOwn(MELODIES, id) || id === 'conservative') fail(`${path}:${i + 1}: "${id}" is not a tradition id (lowercase letters, digits and _, never one of the six charts' names)`);
+      else if (TRADS[id]) fail(`${path}:${i + 1}: tradition ${id} is opened twice`);
+      else registerTrad(id, body, i + 1, path);
+    } else if (m[1] === 'trope-row') {
+      if (!TRADS[id]) fail(`${path}:${i + 1}: a row of "${id}" before its trope-system block`);
+      else blocks.push({ melody: id, body, line: i + 1, spec: TRADS[id].spec });
+    } else fail(`${path}:${i + 1}: unknown block type \`${m[1]}\` (this file holds trope-system and trope-row blocks)`);
+    i = j;
+  }
+  return blocks;
+}
+function registerTrad(id, body, line, path) {
+  const meta = {};
+  for (const b of body) {
+    if (!b.text.trim()) continue;
+    const mm = b.text.match(/^([a-z]+):\s*(.*)$/);
+    if (!mm || !TRAD_META.includes(mm[1])) { fail(`${path}:${b.line}: expected one of ${TRAD_META.join(', ')} as "name: value"`); continue; }
+    if (Object.hasOwn(meta, mm[1])) fail(`${path}:${b.line}: ${mm[1]} given twice`);
+    meta[mm[1]] = mm[2].trim();
+  }
+  for (const k of TRAD_META) if (!meta[k]) fail(`${path}:${line}: tradition ${id} has no ${k}`);
+  if (meta.group && !TRAD_GROUPS.includes(meta.group)) fail(`${path}:${line}: ${id}'s group "${meta.group}" is not one of ${TRAD_GROUPS.join(', ')}`);
+  if (meta.key && !Number.isInteger(TRAD_KEY_SHARPS[meta.key])) fail(`${path}:${line}: ${id}'s key "${meta.key}" is not a major key name`);
+  if (meta.underlay && !['syllables', 'names'].includes(meta.underlay)) fail(`${path}:${line}: ${id}'s underlay is syllables or names`);
+  const rowsWant = /^\d+$/.test(meta.rows || '') ? +meta.rows : (fail(`${path}:${line}: ${id}'s rows is a count`), 0);
+  const list = (v) => (!v || v === '—' ? [] : v.split(/\s+/));
+  const lacks = list(meta.lacks);
+  for (const k of lacks) if (!KEY_SET.has(k)) fail(`${path}:${line}: ${id} lacks "${k}", which is not a mark`);
+  // the signature letters always carry their sign; `accidentals` adds the signs the chart prints beyond it
+  const n = TRAD_KEY_SHARPS[meta.key] || 0, sig = {};
+  (n > 0 ? 'FCGDAEB'.slice(0, n) : 'BEADGCF'.slice(0, -n)).split('').forEach((L) => { sig[L] = n > 0 ? '♯' : '♭'; });
+  const spell = {};
+  for (const L of 'CDEFGAB') spell[L] = [sig[L] || ''];
+  const accidentals = list(meta.accidentals);
+  for (const a of accidentals) {
+    const am = a.match(/^([A-G])([♯♭♮])$/);
+    if (!am || (am[2] === '♮') !== !!sig[am[1]] || am[2] === sig[am[1]]) { fail(`${path}:${line}: ${id}'s accidental "${a}" — a sign beyond the key of ${meta.key} (a natural only on a letter its signature alters)`); continue; }
+    if (!spell[am[1]].includes(am[2])) spell[am[1]].push(am[2]);
+  }
+  const sigText = Object.keys(sig).length ? `its key signature (${Object.entries(sig).map(([L, a]) => L + a).join(' ')}) on every such letter` : 'no key signature';
+  const spec = { label: meta.label || id, spell, rule: `${meta.label || id} writes ${sigText} and prints ${accidentals.length ? 'only ' + accidentals.join(' ') : 'no accidental'} beyond it (its accidentals line)`,
+    range: [-19, 13], rangeText: 'E3–C6', sylRe: TRAD_SYL_RE, names: meta.underlay === 'names', ext: true, seen: {} };
+  TRADS[id] = { meta, line, spec, rowsWant, lacks, accidentals, sig };
+  melodies[id] = { key: meta.key, rows: [] };
 }
 
 function pitchOf(letter, acc, octave) { return (octave + 1) * 12 + LETTER_PC[letter] + ACC[acc] - 71; }
@@ -210,15 +294,23 @@ function parseRow(block, path) {
   const stray = hm[3].match(/[\[\]A-Za-z]/);
   if (stray) fail(`${where(lines[0].line)}: row #${hm[1]}'s Hebrew holds "${stray[0]}" — tags go right after #${hm[1]}, and the rest of the line is only the Hebrew as printed`);
   const row = { n: hm[1], he: hm[3].trim(), tags, notes: [], syl: [], units: [], tup: [], slur: [] };
-  const spell = MELODIES[block.melody].spell;
-  let tupOpen = -1, tupN = 0, slurOpen = null;
-  for (const ln of lines.slice(1)) {
+  const spec = block.spec, spell = spec.spell;
+  let markLines = lines.slice(1);
+  // a tradition's row may name where it stands in its source, on the line under its header
+  if (spec.ext && markLines.length && /^src:/.test(markLines[0].text.trim())) {
+    row.src = markLines[0].text.trim().slice(4).trim();
+    if (!row.src) fail(`${where(markLines[0].line)}: an empty src line`);
+    markLines = markLines.slice(1);
+  }
+  let tupOpen = -1, tupN = 0, tupBang = false, slurOpen = null;
+  for (const ln of markLines) {
     const um = ln.text.trim().match(/^([a-z_]+)\s+(.+)$/);
     if (!um) { fail(`${where(ln.line)}: expected "<tropeKey> <syllables and notes>"`); continue; }
     if (!KEY_SET.has(um[1])) { fail(`${where(ln.line)}: unknown trope key "${um[1]}"`); continue; }
     const unitIdx = row.units.length;
     const unit = { k: um[1], from: row.notes.length, to: -1 };
     let cur = null;   // the open syllable
+    if (spec.names && !TRAD_NAME_LABELS[um[1]]) fail(`${where(ln.line)}: no name to write under ${um[1]}`);
     const closeSyl = () => {
       if (!cur) return;
       cur.to = row.notes.length - 1;
@@ -229,46 +321,61 @@ function parseRow(block, path) {
     for (const raw of um[2].trim().split(/\s+/)) {
       const tok = raw.replace(/’/g, "'");
       let m;
-      if ((m = tok.match(SYL_RE))) {
+      if ((m = tok.match(spec.sylRe))) {
+        if (spec.names) { fail(`${where(ln.line)}: "${tok}" — ${spec.label}'s lines carry notes only (underlay: names)`); continue; }
         closeSyl();
         cur = { t: m[1], hyphen: m[2] === '-', unit: unitIdx, from: row.notes.length, to: -1 };
         continue;
       }
       const note = {};
-      let open = 0, close = false, link = '';   // open: the bracket's number (the N of N{), 0 for none
+      let open = 0, bang = false, close = false, link = '';   // open: the bracket's number (the N of N{), 0 for none
       if ((m = tok.match(NOTE_RE))) {
         const [, o, lk, letter, acc, oct, inner, c] = m;
-        open = o ? parseInt(o, 10) : 0; close = !!c; link = lk || '';
+        open = o ? parseInt(o, 10) : 0; bang = !!o && o.includes('!'); close = !!c; link = lk || '';
         const [val, ...flags] = inner.split(',');
         if (!Object.hasOwn(VALUES, val)) { fail(`${where(ln.line)}: unknown value "${val}" in ${tok}`); continue; }
         if (!spell[letter].includes(acc))
-          fail(`${where(ln.line)}: ${letter}${acc || ''}${oct} — ${MELODIES[block.melody].rule}`);
+          fail(`${where(ln.line)}: ${letter}${acc || ''}${oct} — ${spec.rule}`);
         note.p = pitchOf(letter, acc, +oct);
-        if (note.p < P_MIN || note.p > P_MAX) fail(`${where(ln.line)}: ${tok} is outside G3–F5`);
+        if (note.p < spec.range[0] || note.p > spec.range[1]) fail(`${where(ln.line)}: ${tok} is outside ${spec.rangeText}`);
+        if (spec.seen) {   // a tradition spells each pitch one way, so its staff can draw it as written
+          const pc = (((note.p + 71) % 12) + 12) % 12, sp = letter + acc;
+          if (spec.seen[pc] && spec.seen[pc] !== sp) fail(`${where(ln.line)}: ${tok} — ${spec.label} spells this pitch ${spec.seen[pc]} elsewhere (one spelling a pitch)`);
+          else spec.seen[pc] = sp;
+        }
         note.v = val;
         note.t = VALUES[val];
         if (val === 'g') note.g = 1;
         const accents = [];
+        let opt = false, ferm = false;
         for (const f of flags) {
           if (f === '>' || f === '-') accents.push(f);
-          else fail(`${where(ln.line)}: unknown mark "${f}" in ${tok} (use > or -)`);
+          else if (spec.ext && f === 'opt') opt = true;
+          else if (spec.ext && f === 'fermata') ferm = true;
+          else fail(`${where(ln.line)}: unknown mark "${f}" in ${tok} (use > or -${spec.ext ? ', opt or fermata' : ''})`);
         }
         if (accents.length) note.a = accents;
+        if (opt) note.opt = 1;
+        if (ferm) note.f = 1;
       } else if ((m = tok.match(REST_RE))) {
         const [, o, val, c] = m;
-        open = o ? parseInt(o, 10) : 0; close = !!c;
+        open = o ? parseInt(o, 10) : 0; bang = !!o && o.includes('!'); close = !!c;
         if (!Object.hasOwn(VALUES, val) || val === 'g') { fail(`${where(ln.line)}: bad rest value in ${tok}`); continue; }
         note.r = 1; note.v = val; note.t = VALUES[val];
       } else {
         fail(`${where(ln.line)}: cannot read "${tok}"`);
         continue;
       }
+      // a JE column: the sign's name, written by the builder, runs from the sign's first sounding note to its end
+      if (spec.names && !cur && !note.r && TRAD_NAME_LABELS[um[1]] && !row.syl.some((x) => x.unit === unitIdx))
+        cur = { t: TRAD_NAME_LABELS[um[1]], hyphen: false, unit: unitIdx, from: row.notes.length, to: -1 };
       if (!cur && !note.r) fail(`${where(ln.line)}: ${tok} comes before the first syllable (only a rest may)`);
       const idx = row.notes.length;
       if (open) {
         if (tupOpen >= 0) fail(`${where(ln.line)}: a bracket opens inside another`);
         else if (open < 3) fail(`${where(ln.line)}: ${tok} opens a bracket of ${open} — the charts print none below 3`);
-        tupOpen = idx; tupN = open;
+        if (bang && (!spec.ext || open !== 3)) fail(`${where(ln.line)}: ${tok} — only a tradition's row writes 3!{ (a printed 3 that is not a triplet)`);
+        tupOpen = idx; tupN = open; tupBang = bang;
       }
       if (link === '=' || link === '~=') {
         // A tie holds one sound inside one mark's line: each staff merges its own tied notes, and a
@@ -299,7 +406,10 @@ function parseRow(block, path) {
           const written = members.reduce((a, n) => a + n.t, 0);
           const sounding = members.filter((n) => !n.r && !n.g).length;
           const N = tupN;
-          if (N === 3) {
+          if (tupBang) {
+            // a printed 3 the transcription's notes do not make a triplet of: kept as written, left to the scan
+            if (members.filter((n) => !n.g).length < 2 || sounding < 1) fail(`${where(ln.line)}: 3!{ … } needs at least two notes`);
+          } else if (N === 3) {
             // a triplet: three of one plain value, sung in the time of two
             if (sounding < 2 || written % 3 !== 0 || !PLAIN_TICKS.includes(written / 3))
               fail(`${where(ln.line)}: 3{ … } of ${sounding} sounding note${sounding === 1 ? '' : 's'} written as ${written} ticks — a triplet is at least two sounding notes whose written values add up to three of one value (32nds, sixteenths, eighths or quarters: ${PLAIN_TICKS.map((t) => t * 3).join(', ')} ticks), sung in the time of two`);
@@ -311,7 +421,7 @@ function parseRow(block, path) {
               fail(`${where(ln.line)}: ${N}{ … } holds ${heads} note${heads === 1 ? '' : 's'} — a bracket of ${N} groups exactly ${N} notes (grace notes aside), at least two of them sounding, and keeps their written values`);
           }
           const tp = { from: tupOpen, to: idx };
-          if (N !== 3) tp.n = N;   // a plain triplet carries no number
+          if (N !== 3 || tupBang) tp.n = N;   // a plain triplet carries no number; a 3!{ … } carries its 3
           row.tup.push(tp);
           tupOpen = -1;
         }
@@ -340,27 +450,31 @@ const SPELLING = {
   megillot: { 0: 'C', 2: 'D', 4: 'E', 5: 'F', 7: 'G', 9: 'A', 11: 'B' },
   eicha: { 0: 'C', 2: 'D', 3: 'E♭', 4: 'E♮', 5: 'F', 7: 'G', 8: 'A♭', 9: 'A♮', 10: 'B♭', 11: 'B♮' },
 };
+// A tradition's spellings are the ones its rows use (TRADS[…].spec.seen, one a pitch class); the octave is the
+// written letter's, so a B♯ or C♭ would keep its own.
 function spellPitch(p, melody) {
-  const midi = p + 71, pc = ((midi % 12) + 12) % 12, oct = Math.floor(midi / 12) - 1;
-  return (SPELLING[melody][pc] || `?${pc}`) + oct;
+  const midi = p + 71, pc = ((midi % 12) + 12) % 12;
+  const name = (SPELLING[melody] || (TRADS[melody] && TRADS[melody].spec.seen) || {})[pc];
+  if (!name) return `?${pc}${Math.floor(midi / 12) - 1}`;
+  return name + (Math.floor((midi - LETTER_PC[name[0]] - ACC[name.slice(1)]) / 12) - 1);
 }
 function noteText(row, i, melody) {
   const n = row.notes[i];
   let s = '';
   const tp = row.tup.find((t) => t.from === i);
-  if (tp) s += `${tp.n || 3}{`;
+  if (tp) s += tp.n === 3 ? '3!{' : `${tp.n || 3}{`;
   const inSlur = row.slur.find((sl) => sl.from < i && sl.to >= i);
   if (i > 0 && row.notes[i - 1].tie) s += inSlur ? '~=' : '=';
   else if (inSlur) s += inSlur.dashed ? '~~' : '~';
   if (n.r) s += `rest(${n.v})`;
-  else s += `${spellPitch(n.p, melody)}(${[n.v, ...(n.a || [])].join(',')})`;
+  else s += `${spellPitch(n.p, melody)}(${[n.v, ...(n.a || []), ...(n.opt ? ['opt'] : []), ...(n.f ? ['fermata'] : [])].join(',')})`;
   if (row.tup.some((t) => t.to === i)) s += '}';
   return s;
 }
 function unitTokens(row, u, melody) {
-  const unit = row.units[u], toks = [];
+  const unit = row.units[u], toks = [], names = !!(TRADS[melody] && TRADS[melody].spec.names);
   for (let i = unit.from; i <= unit.to; i++) {
-    const s = row.syl.find((x) => x.unit === u && x.from === i);
+    const s = !names && row.syl.find((x) => x.unit === u && x.from === i);   // a JE sign's name is the builder's, never written
     if (s) toks.push(s.t + (s.hyphen ? '-' : ''));
     toks.push(noteText(row, i, melody));
   }
@@ -400,24 +514,27 @@ const docText = readFileSync(DOC_PATH, 'utf8');
 const blocks = parseDoc(docText, DOC_PATH.replace(repoRoot + '/', ''));
 const melodies = {};
 for (const [m, d] of Object.entries(MELODIES)) melodies[m] = { key: d.key, rows: [] };
+if (!existsSync(TRAD_DOC_PATH)) die(`no traditions file at ${TRAD_DOC_PATH}`);
+const tradDocText = readFileSync(TRAD_DOC_PATH, 'utf8');
+blocks.push(...parseTradDoc(tradDocText, TRAD_DOC_PATH.replace(repoRoot + '/', '')));
 for (const b of blocks) {
-  const row = parseRow(b, DOC_PATH.replace(repoRoot + '/', ''));
+  const row = parseRow(b, (TRADS[b.melody] ? TRAD_DOC_PATH : DOC_PATH).replace(repoRoot + '/', ''));
   if (!row) continue;
   const rows = melodies[b.melody].rows;
-  if (rows.some((r) => r.n === row.n)) fail(`${MELODIES[b.melody].label} row #${row.n} appears twice`);
+  if (rows.some((r) => r.n === row.n)) fail(`${labelOf(b.melody)} row #${row.n} appears twice`);
   rows.push(row);
   // round trip: the parsed row, written back, must read exactly as the block (spacing aside)
   const src = row._src.map((l) => l.text.trim().replace(/’/g, "'").split(/\s+/));
-  const back = [headerTokens(row), ...row.units.map((u, i) => [u.k, ...unitTokens(row, i, b.melody)])];
+  const back = [headerTokens(row), ...(row.src ? [['src:', ...row.src.split(/\s+/)]] : []), ...row.units.map((u, i) => [u.k, ...unitTokens(row, i, b.melody)])];
   if (JSON.stringify(src) !== JSON.stringify(back))
-    fail(`${MELODIES[b.melody].label} row #${row.n}: does not round-trip —\n    read:    ${src.map((l) => l.join(' ')).join(' / ')}\n    written: ${back.map((l) => l.join(' ')).join(' / ')}`);
+    fail(`${labelOf(b.melody)} row #${row.n}: does not round-trip —\n    read:    ${src.map((l) => l.join(' ')).join(' / ')}\n    written: ${back.map((l) => l.join(' ')).join(' / ')}`);
   if (!LENIENT) {
-    if (!row.he) fail(`${MELODIES[b.melody].label} row #${row.n}: no Hebrew line`);
+    if (!row.he) fail(`${labelOf(b.melody)} row #${row.n}: no Hebrew line`);
     else {
       const printed = marksOfHebrew(row.he);
       const lines = row.units.map((u) => u.k);
       if (JSON.stringify(printed) !== JSON.stringify(lines))
-        fail(`${MELODIES[b.melody].label} row #${row.n}: the Hebrew's marks (${printed.join(' ')}) are not the lines' marks (${lines.join(' ')})`);
+        fail(`${labelOf(b.melody)} row #${row.n}: the Hebrew's marks (${printed.join(' ')}) are not the lines' marks (${lines.join(' ')})`);
     }
   }
 }
@@ -461,6 +578,44 @@ if (!LENIENT) {
       else j++;
     });
     derivedFrom.push({ m, n: row.n, from: from.n });
+  }
+}
+
+/* ---------- the traditions: rows, marks, spelling, approvals ---------- */
+// The staff engine, loaded as the pages load it, so a tradition's notes are checked against what it draws.
+const ENGINE = vm.runInNewContext(`${readFileSync(join(repoRoot, 'js/trope-staff.js'), 'utf8')}\n;({ motifPitchPos, keySignature, TROPE_TRAD_GROUPS });`,
+  { document: { createElementNS: () => ({ setAttribute() {}, appendChild() {}, style: {} }) }, console });
+if (JSON.stringify([...ENGINE.TROPE_TRAD_GROUPS]) !== JSON.stringify(TRAD_GROUPS)) fail(`js/trope-staff.js's TROPE_TRAD_GROUPS is not ${TRAD_GROUPS.join(', ')}`);
+const TRAD_DEG = { 1: [0, 1], 3: [2, -1], 6: [3, 1], 8: [5, -1], 10: [6, -1] };   // the engine's rule (motifPitchPos's DEG)
+const LETTER_ORDER = 'CDEFGAB';
+const mod12 = (x) => ((x % 12) + 12) % 12;
+for (const [id, T] of Object.entries(TRADS)) {
+  const rows = melodies[id].rows, label = T.meta.label;
+  if (!LENIENT && rows.length !== T.rowsWant) fail(`${label}: ${rows.length} rows, but its trope-system block says ${T.rowsWant}`);
+  const printed = new Set(rows.flatMap((r) => r.units.map((u) => u.k)));
+  const lacks = KEYS.filter((k) => !printed.has(k)).sort();
+  if (!LENIENT && lacks.join(' ') !== [...T.lacks].sort().join(' ')) fail(`${label} prints no figure for ${lacks.join(' ') || 'nothing'}; its lacks line says ${T.lacks.join(' ') || '—'}`);
+  // chroma: each chromatic pitch as the rows spell it, where that is not the engine's own rule
+  const key = T.meta.key, tonic = mod12(LETTER_PC[key[0]] + (key[1] === '#' ? 1 : key[1] === 'b' ? -1 : 0)), chroma = {};
+  for (const [pcS, name] of Object.entries(T.spec.seen)) {
+    const pc = +pcS, L = name[0];
+    const sounding = ACC[name.slice(1)];   // a bare letter is natural (a signature letter always carries its sign)
+    const off = mod12(pc - tonic);
+    if (!TRAD_DEG[off]) continue;   // in the key
+    const lo = (LETTER_ORDER.indexOf(L) - LETTER_ORDER.indexOf(key[0]) + 7) % 7, dir = sounding - ({ '♯': 1, '♭': -1 }[T.sig[L]] || 0);
+    if (dir !== 1 && dir !== -1) { fail(`${label}: ${name} is not one step from its key-signature letter`); continue; }
+    if (lo !== TRAD_DEG[off][0] || dir !== TRAD_DEG[off][1]) chroma[off] = [lo, dir];
+  }
+  T.chroma = Object.keys(chroma).length ? chroma : undefined;
+  // the staff must draw every note exactly as its row writes it (the letter and the sign it sounds)
+  const sigAlt = {};
+  ENGINE.keySignature(key).forEach((k) => { sigAlt[k.letter] = k.acc; });
+  for (const r of rows) for (const n of r.notes) {
+    if (n.r) continue;
+    const want = T.spec.seen[mod12(n.p + 71)], pos = ENGINE.motifPitchPos(n.p, key, T.chroma);
+    const L = 'BCDEFGA'[((pos.step % 7) + 7) % 7], alt = pos.acc === '♯' ? 1 : pos.acc === '♭' ? -1 : pos.acc === '♮' ? 0 : (sigAlt[L] || 0);
+    const wantAlt = ACC[want.slice(1)];
+    if (L !== want[0] || alt !== wantAlt) { fail(`${label} row #${r.n}: the staff would draw ${L}${['♭', '♮', '♯'][alt + 1]} where the row writes ${want}`); break; }
   }
 }
 
@@ -698,11 +853,24 @@ if (!LENIENT) {
 const clean = (row) => { const { _src, ...r } = row; return r; };
 // every melody's section ("B, C, … and K"), named alike by the JSON's source and the contexts report
 const SECTIONS = Object.values(MELODIES).map((d) => d.section).join(', ').replace(/, ([^,]*)$/, ' and $1');
+// A tradition's fingerprint: the first 12 hex digits of SHA-256 over its key, spellings and rows exactly as the JSON
+// holds them — what js/trope-staff.js's tropeSystemFingerprint hashes in the browser, and what an approval names.
+for (const [id, T] of Object.entries(TRADS))
+  T.fp = createHash('sha256').update(JSON.stringify({ key: melodies[id].key, chroma: T.chroma || null, rows: melodies[id].rows.map(clean) })).digest('hex').slice(0, 12);
+// A tradition's melody carries its names, source and terms ahead of its rows; the six carry their key alone.
+function melodyHead(m, mel) {
+  const T = TRADS[m];
+  if (!T) return { key: mel.key };
+  const d = T.meta, head = { key: mel.key, group: d.group, label: d.label, short: d.short, trad: d.trad, sub: d.sub, note: d.note, source: d.source, license: d.license, underlay: d.underlay };
+  if (T.chroma) head.chroma = T.chroma;
+  head.fp = T.fp;
+  return head;
+}
 function serialize(built) {
-  const head = { v: 1, built, license: LICENSE, source: `docs/tropepatterns.md, sections ${SECTIONS}`, tpq: TPQ, values: VALUES };
+  const head = { v: 1, built, license: LICENSE, source: `docs/tropepatterns.md, sections ${SECTIONS}; docs/trope-traditions.md`, tpq: TPQ, values: VALUES };
   let s = JSON.stringify(head).slice(0, -1) + ',"melodies":{\n';
   s += Object.entries(melodies).map(([m, mel]) =>
-    `${JSON.stringify(m)}:{"key":${JSON.stringify(mel.key)},"rows":[\n` + mel.rows.map((r) => JSON.stringify(clean(r))).join(',\n') + '\n]}').join(',\n');
+    `${JSON.stringify(m)}:${JSON.stringify(melodyHead(m, mel)).slice(0, -1)},"rows":[\n` + mel.rows.map((r) => JSON.stringify(clean(r))).join(',\n') + '\n]}').join(',\n');
   s += '},\n"figures":{\n';
   s += Object.entries(figures).map(([m, f]) =>
     `${JSON.stringify(m)}:{\n` + Object.entries(f).map(([k, list]) => `${JSON.stringify(k)}:${JSON.stringify(list)}`).join(',\n') + '\n}').join(',\n');
@@ -723,6 +891,32 @@ const bytes = Buffer.byteLength(json);
 try { JSON.parse(json); } catch (e) { fail(`smoke: the JSON does not parse (${e.message})`); }
 if (!LENIENT && bytes > SIZE_BUDGET) fail(`smoke: trope_phrases.json is ${bytes} bytes (budget ${SIZE_BUDGET})`);
 
+/* ---------- data/trope/trope_approvals.json: one line per tradition, false or its approved fingerprint ---------- */
+// Hand-edited (trope_review.html names the line to change), never written here: it must name exactly the traditions,
+// in the file's order, each on a line of its own. An approval that no longer matches its tradition's rows is not an
+// error — the pages hide that tradition until it is approved again — but the build says so.
+const approvals = {};
+{
+  const rel = APPROVALS_PATH.replace(repoRoot + '/', '');
+  let text = '', j = null;
+  try { text = readFileSync(APPROVALS_PATH, 'utf8'); j = JSON.parse(text); } catch (e) { fail(`${rel}: ${existsSync(APPROVALS_PATH) ? 'does not parse (' + e.message + ')' : 'missing'}`); }
+  const ap = j && j.approved;
+  if (j && (j.v !== 1 || !ap || typeof ap !== 'object' || Array.isArray(ap))) fail(`${rel}: expected {"v":1, "note":…, "approved":{<id>: false | "<fingerprint>"}}`);
+  else if (ap) {
+    const ids = Object.keys(TRADS);
+    if (JSON.stringify(Object.keys(ap)) !== JSON.stringify(ids)) fail(`${rel}: "approved" must name exactly the traditions of docs/trope-traditions.md, in its order: ${ids.join(', ')}`);
+    const lines = text.split('\n');
+    for (const id of ids) {
+      const v = ap[id];
+      if (v !== false && !(typeof v === 'string' && /^[0-9a-f]{12}$/.test(v))) { fail(`${rel}: ${id} is ${JSON.stringify(v)} — false, or the 12-digit fingerprint trope_review.html shows`); continue; }
+      const own = lines.filter((l) => new RegExp(`^\\s*"${id}":\\s*(false|"[0-9a-f]{12}"),?\\s*$`).test(l)).length;
+      if (own !== 1) fail(`${rel}: ${id} must stand on a line of its own ("${id}": false,), so the review page can name it`);
+      approvals[id] = v === false ? 'not approved' : v === TRADS[id].fp ? 'approved' : 'approval stale';
+      if (approvals[id] === 'approval stale') console.warn(`build-trope-phrases: ${labelOf(id)} was approved as ${v}, but its rows now fingerprint ${TRADS[id].fp} — the pages hide it until it is approved again`);
+    }
+  }
+}
+
 /* ---------- report ---------- */
 function degree(p) {   // Torah chart: A = 1 (A3 … G♯4 plain, A4 … primed)
   const s = p + 14, oct = Math.floor(s / 12), pc = ((s % 12) + 12) % 12;
@@ -734,9 +928,10 @@ function report() {
   const total = (m) => melodies[m].rows.reduce((a, r) => a + r.notes.filter((n) => !n.r).length, 0);
   L.push('# Trope phrases build report', '');
   L.push(`- **Built:** ${built}`);
-  L.push(`- **Source:** \`docs/tropepatterns.md\` — ${Object.values(MELODIES).map((d) => `section ${d.section} (${d.label}: ${d.book})`).join('; ')} — every row transcribed from scans of the printed chart`);
+  L.push(`- **Source:** \`docs/tropepatterns.md\` — ${Object.values(MELODIES).map((d) => `section ${d.section} (${d.label}: ${d.book})`).join('; ')} — every row transcribed from scans of the printed chart; and \`docs/trope-traditions.md\`, the other traditions`);
   L.push(`- **Output:** \`data/trope/trope_phrases.json\` — ${bytes.toLocaleString('en-US')} bytes (budget ${SIZE_BUDGET.toLocaleString('en-US')})`);
   L.push(`- **Rows:** ${Object.entries(MELODIES).map(([m, d]) => `${d.label} ${melodies[m].rows.length} (${total(m)} notes)`).join(' · ')}`);
+  L.push(`- **Traditions** (\`docs/trope-traditions.md\`): ${Object.keys(TRADS).length}, ${Object.keys(TRADS).reduce((a, id) => a + melodies[id].rows.length, 0)} rows — see *The other traditions* below`);
   if (derivedFrom.length) L.push(`- **Derived rows** (not printed: a printed row with units left out, each kept note for note): ${derivedFrom.map((x) => `${MELODIES[x.m].label} ${x.n} from ${x.from}`).join(', ')}`);
   L.push('- **License:** hand transcriptions of the traditional melodies — [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/), like the JSON.');
   L.push('', 'Generated by `node scripts/build-trope-phrases.mjs`; do not edit by hand. To change a note, edit its row',
@@ -758,6 +953,32 @@ function report() {
         const notes = unitTokens(row, u, m).join(' ');
         const deg = m === 'torah' ? ' · degrees ' + row.notes.slice(unit.from, unit.to + 1).filter((x) => !x.r).map((x) => degree(x.p)).join(' ') : '';
         L.push(`- \`${notes}\` — rows ${f.refs.map((r) => r[0]).join(', ')} · after ${f.prev.join(', ')} · before ${f.next.join(', ')}${deg}`);
+      }
+      L.push('');
+    }
+  }
+  L.push('## The other traditions', '');
+  L.push('Each tradition of `docs/trope-traditions.md`: its reading, key, rows, the marks it prints no figure for, the',
+    'chromatic spellings its staff draws apart from the charts\' rule (`chroma`, semitones above the tonic → letter',
+    'offset and direction), its fingerprint and whether `data/trope/trope_approvals.json` approves it. A tradition',
+    'is shown to students only while it is approved; `trope_review.html` names the line to change.', '');
+  L.push('| Tradition | Reading | Key | Rows | Lacks | Chroma | Fingerprint | Approval |', '|---|---|---|---|---|---|---|---|');
+  for (const [id, T] of Object.entries(TRADS))
+    L.push(`| ${T.meta.label} (\`${id}\`) | ${T.meta.group} | ${T.meta.key} | ${melodies[id].rows.length} | ${T.lacks.join(', ') || '—'} | ${T.chroma ? JSON.stringify(T.chroma) : '—'} | \`${T.fp}\` | ${approvals[id] || '—'} |`);
+  L.push('');
+  const unsure = [];
+  for (const id of Object.keys(TRADS)) for (const r of melodies[id].rows) for (const t of r.tup) if (t.n === 3) unsure.push(`${TRADS[id].meta.label} #${r.n}`);
+  L.push(`**Printed 3s kept as written** (\`3!{\`, not a triplet — to check against the scan): ${unsure.join(', ') || 'none'}.`, '');
+  for (const [id, T] of Object.entries(TRADS)) {
+    L.push(`### ${T.meta.label} (\`${id}\`)`, '');
+    for (const k of KEYS) {
+      const list = figures[id][k];
+      if (!list) continue;
+      L.push(`#### ${k}`, '');
+      for (const f of list) {
+        const [n, u] = f.refs[0];
+        const row = melodies[id].rows.find((r) => r.n === n);
+        L.push(`- \`${unitTokens(row, u, id).join(' ')}\` — rows ${f.refs.map((r) => r[0]).join(', ')} · after ${f.prev.join(', ')} · before ${f.next.join(', ')}`);
       }
       L.push('');
     }
@@ -1570,7 +1791,9 @@ mkdirSync(dirname(JSON_PATH), { recursive: true });
 writeFileSync(JSON_PATH, json);
 if (!LENIENT) for (const [m, d] of Object.entries(MELODIES)) if (d.derived && derivedMotifs[m]) writeFileSync(join(repoRoot, d.motifs), JSON.stringify(derivedMotifs[m]) + '\n');
 if (!LENIENT) writeFileSync(REPORT_PATH, report() + '\n');
-console.log(`build-trope-phrases: ${Object.entries(MELODIES).map(([m, d]) => `${melodies[m].rows.length} ${d.label}`).join(' + ')} rows -> ${JSON_PATH.replace(repoRoot + '/', '')} (${bytes} bytes)${LENIENT ? ' [lenient]' : `; ${crossCheck.length} staffs checked`}`);
+const tradRows = Object.keys(TRADS).reduce((a, id) => a + melodies[id].rows.length, 0);
+const tradApproved = Object.values(approvals).filter((v) => v === 'approved').length;
+console.log(`build-trope-phrases: ${Object.entries(MELODIES).map(([m, d]) => `${melodies[m].rows.length} ${d.label}`).join(' + ')} rows + ${Object.keys(TRADS).length} traditions (${tradRows} rows, ${tradApproved} approved) -> ${JSON_PATH.replace(repoRoot + '/', '')} (${bytes} bytes)${LENIENT ? ' [lenient]' : `; ${crossCheck.length} staffs checked`}`);
 if (counted) {
   writeFileSync(CENSUS_PATH, counted.text);
   writeFileSync(EXAMPLES_PATH, counted.examples);

@@ -1,9 +1,10 @@
 # Trope phrases build report
 
-- **Built:** 2026-10-07
-- **Source:** `docs/tropepatterns.md` — section B (Torah: the teacher's cantillation chart (Torah Cantillation)); section C (High Holiday: the teacher's cantillation chart (High Holiday Torah Cantillation)); section H (Haftarah: The Art of Cantillation, Vol. 2 (Portnoy and Wolff, 2001), Appendix D); section I (Esther: The Art of Cantillation, Vol. 2 (Portnoy and Wolff, 2001), Appendix E); section J (Megillot: The Art of Cantillation, Vol. 2 (Portnoy and Wolff, 2001), Appendix F); section K (Eicha: The Art of Cantillation, Vol. 2 (Portnoy and Wolff, 2001), Appendix G) — every row transcribed from scans of the printed chart
-- **Output:** `data/trope/trope_phrases.json` — 226,428 bytes (budget 262,144)
+- **Built:** 2026-10-27
+- **Source:** `docs/tropepatterns.md` — section B (Torah: the teacher's cantillation chart (Torah Cantillation)); section C (High Holiday: the teacher's cantillation chart (High Holiday Torah Cantillation)); section H (Haftarah: The Art of Cantillation, Vol. 2 (Portnoy and Wolff, 2001), Appendix D); section I (Esther: The Art of Cantillation, Vol. 2 (Portnoy and Wolff, 2001), Appendix E); section J (Megillot: The Art of Cantillation, Vol. 2 (Portnoy and Wolff, 2001), Appendix F); section K (Eicha: The Art of Cantillation, Vol. 2 (Portnoy and Wolff, 2001), Appendix G) — every row transcribed from scans of the printed chart; and `docs/trope-traditions.md`, the other traditions
+- **Output:** `data/trope/trope_phrases.json` — 498,668 bytes (budget 655,360)
 - **Rows:** Torah 41 (436 notes) · High Holiday 34 (459 notes) · Haftarah 43 (499 notes) · Esther 41 (485 notes) · Megillot 40 (498 notes) · Eicha 38 (461 notes)
+- **Traditions** (`docs/trope-traditions.md`): 20, 320 rows — see *The other traditions* below
 - **Derived rows** (not printed: a printed row with units left out, each kept note for note): Haftarah 40b from 40, Haftarah 40c from 40, Haftarah 40d from 40
 - **License:** hand transcriptions of the traditional melodies — [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/), like the JSON.
 
@@ -722,6 +723,2038 @@ only) count from A = 1; ′ is the octave above.
 #### munach_legarmeh
 
 - `MU- E♭4(e) NACH 3{E♭4(e) ~D4(e) ~E♭4(e)} ~F4(e) ~E♭4(e) rest(e)` — rows 17 · after ^ · before munach
+
+## The other traditions
+
+Each tradition of `docs/trope-traditions.md`: its reading, key, rows, the marks it prints no figure for, the
+chromatic spellings its staff draws apart from the charts' rule (`chroma`, semitones above the tonic → letter
+offset and direction), its fingerprint and whether `data/trope/trope_approvals.json` approves it. A tradition
+is shown to students only while it is approved; `trope_review.html` names the line to change.
+
+| Tradition | Reading | Key | Rows | Lacks | Chroma | Fingerprint | Approval |
+|---|---|---|---|---|---|---|---|
+| Torah · Common melody (`cons_torah`) | torah | C | 31 | yetiv, zakef_gadol, geresh_muqdam, pazer | — | `20d78c0c4893` | not approved |
+| Haftarah · Common melody (`cons_haftarah`) | haftarah | F | 36 | shalshelet, geresh_muqdam, karnei_parah, yerach_ben_yomo | — | `e0b224989bf8` | not approved |
+| High Holy Day Torah · Spiro (`spiro_hhd`) | hhd | C | 20 | shalshelet, geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo, munach_legarmeh | — | `3802db671fae` | not approved |
+| Torah · Western Ashkenazi (`je_torah_western`) | torah | G | 16 | geresh_muqdam | — | `49a2aabd7899` | not approved |
+| Torah · Ashkenazi 1518 (Reuchlin) (`je_torah_reuchlin`) | torah | G | 15 | shalshelet, geresh_muqdam | — | `7e4b1d6bec5e` | not approved |
+| Torah · Spanish & Portuguese (`je_torah_sp`) | torah | C | 15 | geresh_muqdam, karnei_parah, yerach_ben_yomo | {"8":[4,1]} | `5e06e4fb77fc` | not approved |
+| Torah · Moroccan (`je_torah_morocco`) | torah | C | 14 | geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo | — | `50626c6f0d63` | not approved |
+| Torah · Syrian (Egypt & Syria) (`je_torah_syria`) | torah | G | 14 | geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo | {"8":[4,1]} | `dc788799c8d7` | not approved |
+| Torah · Baghdadi (`je_torah_baghdad`) | torah | G | 16 | geresh_muqdam | {"8":[4,1]} | `678d640b232c` | not approved |
+| High Holy Day Torah · Western Ashkenazi (`je_hhd_western`) | hhd | G | 13 | shalshelet, geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo | — | `156389085c1b` | not approved |
+| Haftarah · Western Ashkenazi (`je_haf_western`) | haftarah | G | 13 | shalshelet, geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo | — | `d3570d929471` | not approved |
+| Haftarah · Spanish & Portuguese (`je_haf_sp`) | haftarah | G | 13 | shalshelet, geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo | {"8":[4,1]} | `b30fe9da2459` | not approved |
+| Haftarah · Baghdadi (`je_haf_baghdad`) | haftarah | D | 13 | shalshelet, geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo | — | `754031d18aac` | not approved |
+| Esther · Western Ashkenazi (`je_esther_western`) | esther | G | 13 | shalshelet, geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo | — | `fa7f4aac2552` | not approved |
+| Esther · Spanish & Portuguese (`je_esther_sp`) | esther | G | 13 | shalshelet, geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo | {"8":[4,1]} | `ca2e74d75513` | not approved |
+| Eicha · Western Ashkenazi (`je_eicha_western`) | eicha | G | 13 | shalshelet, geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo | — | `595b87cd9694` | not approved |
+| Eicha · Spanish & Portuguese (`je_eicha_sp`) | eicha | G | 13 | shalshelet, geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo | {"8":[4,1]} | `77f5dfb11d7c` | not approved |
+| Eicha · Syrian (Egypt & Syria) (`je_eicha_syria`) | eicha | C | 13 | shalshelet, geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo | — | `66d9fc2acc8e` | not approved |
+| Ruth · Spanish & Portuguese (`je_ruth_sp`) | megillot | G | 13 | shalshelet, geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo | — | `2494ebe042f1` | not approved |
+| Ketuvim · Baghdadi (`je_ketuvim_baghdad`) | megillot | G | 13 | shalshelet, geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo | — | `a425f7ff7afb` | not approved |
+
+**Printed 3s kept as written** (`3!{`, not a triplet — to check against the scan): Torah · Common melody #3a, Torah · Common melody #3c, Torah · Common melody #3e, Torah · Common melody #16, Haftarah · Common melody #6a, Torah · Moroccan #12, Torah · Moroccan #13, Torah · Baghdadi #9, High Holy Day Torah · Western Ashkenazi #13, Haftarah · Spanish & Portuguese #10, Haftarah · Baghdadi #10, Haftarah · Baghdadi #11, Haftarah · Baghdadi #12, Esther · Western Ashkenazi #1, Eicha · Western Ashkenazi #6, Eicha · Spanish & Portuguese #12, Eicha · Spanish & Portuguese #13, Ruth · Spanish & Portuguese #11.
+
+### Torah · Common melody (`cons_torah`)
+
+#### mercha
+
+- `Mer- E4(e) chaw G4(de)` — rows 1a, 1b, 2a, 2b · after ^ · before tipcha
+- `mer- E4(e) chaw G4(e)` — rows 2a, 2c · after tipcha · before sof_pasuk
+- `Mer- A4(e) chaw C5(e) ~G4(q)` — rows 4b · after ^ · before tevir
+- `mer- A4(e) chaw C5(e) ~G4(q)` — rows 4d · after munach · before tevir
+
+#### tipcha
+
+- `tip- G4(s) chaw A4(de) ~C5(s) ~G4(e) C5(e)` — rows 1a, 1b, 2a, 2b · after mercha · before munach, etnachta, mercha, sof_pasuk
+- `tip- A4(e) chaw A4(de) ~C5(s) ~G4(e) C5(e)` — rows 1c, 2c, 2d · after ^ · before munach, mercha, sof_pasuk
+
+#### munach
+
+- `mu- G4(e) nach F4(e) ~D4(e)` — rows 1a, 1c · after tipcha · before etnachta
+- `mu- A4(e) nach 3!{A4(s) ~G4(s) ~A4(de)}` — rows 3a, 3c, 3e · after pashta · before zakef_katon
+- `mu- C5(e) nach C5(s) ~A4(s) ~C5(s) ~C5(e)` — rows 3e, 3f, 4c, 4d · after ^ · before mahpach, darga, mercha
+- `mu- G4(e) nach C5(e) ~A4(q)` — rows 6a, 6b · after munach_legarmeh, ^ · before revia
+- `mu- F4(e) nach A4(e) ~G4(e)` — rows 9, 10 · after ^ · before telisha_gedola, telisha_ketana
+- `mu- B♭4(e) nach 3{A4(e) ~G4(e)` — rows 11c · after ^ · before zarka
+
+#### etnachta
+
+- `es- C4(e) nach- C4(e) taw G4(q)` — rows 1a, 1b, 1c · after munach, tipcha · before $
+
+#### sof_pasuk
+
+- `sof G4(e) paw- G4(e) suk F4(e) ~C4(dq)` — rows 2a, 2b, 2c, 2d · after mercha, tipcha · before $
+
+#### mahpach
+
+- `mah- A4(s) pach A4(e) ~C4(s) ~F4(s)` — rows 3a, 3b · after kadma · before pashta
+- `mah- A4(e) pach A4(e) ~C4(s) ~F4(s)` — rows 3e, 3f · after munach · before pashta
+
+#### pashta
+
+- `pash- F4(e) taw ~C5(q) rest(q)` — rows 3a, 3b, 3c · after mahpach, ^ · before munach, zakef_katon
+- `pash- F4(e) taw ~C5(dq)` — rows 3d · after ^ · before zakef_katon
+- `pash- F4(e) taw C5(e) rest(e)` — rows 3e · after mahpach · before munach
+- `pash- F4(e) taw C5(dq)` — rows 3f · after mahpach · before zakef_katon
+
+#### zakef_katon
+
+- `kaw- A4(s) ton C5(e) ~G4(dq)` — rows 3a, 3c · after munach · before $
+- `kaw- A4(e) ton C5(e) ~G4(dq)` — rows 3b, 3d, 3f · after pashta · before $
+- `ko- A4(s) ton C5(e) ~G4(dq)` — rows 3e · after munach · before $
+
+#### zarka
+
+- `zar- G4(e)} rest(e) kaw G4(e) ~G4(s) ~F4(s) ~E4(s) ~D4(s) ~E4(e) ~C4(e) rest(e)` — rows 11c · after munach · before segol
+- `zar- G4(e) rest(e) kaw G4(e) ~G4(s) ~F4(s) ~E4(s) ~D4(s) ~E4(e) ~C4(e) rest(e)` — rows 11d · after ^ · before segol
+
+#### segol
+
+- `se- G4(e) gol A4(e) ~G4(dq)` — rows 11c, 11d · after zarka · before $
+
+#### shalshelet
+
+- `shal- F4(e) she F4(s) ~A4(s) ~C5(s) ~A4(s) ~F4(s) ~A4(s) ~C5(s) ~A4(s) ~F4(s) ~A4(s) ~C5(s) ~A4(s) ~D5(e) les ~C5(dq)` — rows 15a · after ^ · before $
+- `shal- F4(e) she F4(32) ~G4(32) 3{~A4(32) ~B♭4(32) ~C5(32)} ~D5(e) ~C5(e) ~F4(32) ~G4(32) 3{~A4(32) ~B♭4(32) ~C5(32)} ~D5(e) ~C5(e) ~F4(32) ~G4(32) ~A4(32) ~B♭4(32) ~C5(32) 3{~D5(e,-) ~C5(e,-) les A4(e,-)} ~G4(q,-)` — rows 15b · after ^ · before $
+
+#### revia
+
+- `re- A4(e) vi- G4(e) ~F4(s) ~E4(s) a D4(q)` — rows 6a, 6b · after munach · before $
+
+#### darga
+
+- `dar- A4(e) gaw C5(de) ~B♭4(32) ~A4(32) ~G4(de)` — rows 4a, 4c · after ^, munach · before tevir
+- `dar- A4(e) gaw C5(de) ~B♭4(32) ~A4(32) ~G4(e) rest(e)` — rows 16 · after ^ · before mercha_kefula
+
+#### tevir
+
+- `te- G4(s) vir 3{F4(e) ~E4(s) ~F4(s) ~G4(e)} ~G4(q)` — rows 4a, 4c · after darga · before $
+- `te- G4(e) vir 3{F4(e) ~E4(s) ~F4(s) ~G4(e)} ~G4(q)` — rows 4b, 4d · after mercha · before $
+
+#### kadma
+
+- `kad- F4(e) maw A4(de)` — rows 3a, 3b · after ^ · before mahpach
+- `kad- F4(e) maw A4(e)` — rows 7 · after ^ · before geresh
+- `kad- F4(s) maw A4(s)` — rows 8a · after ^ · before geresh
+
+#### geresh
+
+- `v'- A4(s) az- A4(s) law D5(e) ~C5(dq)` — rows 7 · after kadma · before $
+- `ge- 3{C5(e) ~A4(e) ~D5(e)} resh C5(q)` — rows 8a, 8b · after kadma, ^ · before $
+
+#### gershayim
+
+- `ger- F4(s) sha- F4(s) yim A4(q) ~A4(e) ~A4(32) ~G4(32) ~F4(32) ~G4(32) ~A4(e) rest(e)` — rows 5 · after ^ · before $
+
+#### telisha_ketana
+
+- `t'li- C5(e) 3{F4(s) shaw F4(s) k'ta- F4(s)} naw F4(e) ~E4(s) ~F4(s) ~G4(e) ~F4(q)` — rows 10 · after munach · before $
+
+#### telisha_gedola
+
+- `t'li- C5(e) 3{F4(s) shaw F4(s) g'do- F4(s)} law F4(e) ~G4(s) ~A4(s) ~B♭4(s) 3{~C5(e,-) ~A4(e,-) ~G4(e,-)} ~F4(q,-)` — rows 9 · after munach · before $
+
+#### mercha_kefula
+
+- `mer- G4(s) chaw G4(s) c'hfu- G4(s) law 3!{G4(s) ~A4(s) ~B♭4(e)} 3{~C5(32) ~B♭4(32) ~A4(32)} ~G4(q)` — rows 16 · after darga · before $
+
+#### karnei_parah
+
+- `kar- F4(s) ne F4(s) faw 3{F4(e) raw E4(e) ~F4(e)} ~G4(e) ~F4(de) ~F4(s) ~G4(32) ~A4(32) ~B♭4(32) 3{~C5(e,-) ~A4(e,-) ~G4(e,-)} ~F4(q,-)` — rows 17 · after yerach_ben_yomo · before $
+
+#### yerach_ben_yomo
+
+- `ye- F4(s) rach F4(s) ben F4(s) yo- F4(s) moh A4(e) ~G4(q)` — rows 17 · after ^ · before karnei_parah
+
+#### munach_legarmeh
+
+- `mu- F4(e) nach F4(s) ~G4(s) ~A4(s) ~F4(s) ~G4(e) rest(e)` — rows 6a · after ^ · before munach
+
+### Haftarah · Common melody (`cons_haftarah`)
+
+#### mercha
+
+- `Mer- D4(e) chaw G4(de) ~G4(s)` — rows 1a, 1b · after ^ · before tipcha
+- `Mer- D4(e) chaw F4(de) ~D4(s)` — rows 2a, 2b · after ^ · before tipcha
+- `mer- C4(e) chaw C4(e)` — rows 2a, 2c · after tipcha · before sof_pasuk
+- `Mer- G4(e) chaw D5(q) ~G4(q)` — rows 4b · after ^ · before tevir
+- `Mer- F4(e) chaw B♮4(de) ~B♮4(s)` — rows 15a, 15c · after ^ · before tipcha
+- `mer- F4(e) chaw F4(e)` — rows 15a, 15b · after tipcha · before sof_pasuk
+
+#### tipcha
+
+- `tip- F4(e) chaw D4(e)` — rows 1a, 1b · after mercha · before munach, etnachta
+- `tip- D4(e) chaw D4(e)` — rows 1c, 1d · after ^ · before munach
+- `tip- G4(e) chaw C5(q)` — rows 2a, 2b · after mercha · before mercha, sof_pasuk
+- `tip- D4(e) chaw C5(q)` — rows 2c · after ^ · before mercha
+- `tip- D4(e) chaw D4(s) ~C5(s) ~A4(s)` — rows 2d · after ^ · before sof_pasuk
+- `tip- B♮4(e) chaw A4(s) ~G4(s) ~C5(s) ~F4(e) rest(e)` — rows 15a, 15c · after mercha · before mercha, sof_pasuk
+- `tip- B♮4(e) chaw B♮4(s) ~A4(s) ~G4(s) ~C5(s) ~F4(e) rest(e)` — rows 15b, 15d · after ^ · before mercha, sof_pasuk
+
+#### munach
+
+- `mu- C5(e) nach D4(e)` — rows 1a, 12b · after tipcha, zarka · before etnachta, segol
+- `mu- A4(s) nach G4(s) ~G4(e)` — rows 1c, 1d · after tipcha · before etnachta
+- `mu- C5(e) nach F4(s) ~F4(s) ~D4(e)` — rows 3a, 3b, 3c, 3e · after pashta · before zakef_katon
+- `mu- G4(e) nach G4(s) ~F4(s) ~G4(s) ~A4(s) ~G4(e)` — rows 3e, 4c · after ^ · before mahpach, darga
+- `mu- G4(s) nach D5(s) 3!{~D5(s) ~G4(s) ~G4(e)}` — rows 6a · after munach_legarmeh · before revia
+- `mu- G4(e) nach D5(e) ~G4(e)` — rows 6b · after ^ · before revia
+- `mu- D4(e) nach G4(e) ~F4(e)` — rows 9a, 9b · after ^ · before telisha_gedola, telisha_ketana
+- `mu- D4(e) nach G4(de) ~F4(s)` — rows 10 · after ^ · before pazer
+- `mu- D4(e) nach A4(s) ~G4(s)` — rows 11a · after yetiv · before zakef_katon
+- `mu- G4(e) nach 3{B♮4(e) ~A4(e) ~G4(e)}` — rows 12a · after ^ · before zarka
+- `mu- E4(e) nach D4(e)` — rows 12a · after zarka · before segol
+
+#### etnachta
+
+- `es- G4(e) nach- G4(e) taw D4(s) ~F4(s) ~D4(s) ~F4(s) ~A4(q) ~G4(q)` — rows 1a · after munach · before $
+- `es- D4(e) nach- D4(e) taw F4(s) ~D4(s) ~F4(s) ~A4(q) ~G4(q)` — rows 1b, 1d · after tipcha, munach · before $
+- `es- G4(e) nach- D4(e) taw D4(s) ~F4(s) ~D4(s) ~F4(s) ~A4(q) ~G4(q)` — rows 1c · after munach · before $
+
+#### sof_pasuk
+
+- `sof D4(e) paw- D4(e) suk F4(e) ~D4(q)` — rows 2a, 2c · after mercha · before $
+- `sof C4(e) paw- D4(e) suk F4(e) ~D4(q)` — rows 2b, 2d · after tipcha · before $
+- `sof F4(e) paw- 3{F4(e) ~F4(e) ~F4(e)} suk G4(e) ~F4(dq)` — rows 15a, 15b · after mercha · before $
+- `sof F4(e) paw- F4(e) suk G4(e) ~F4(dq)` — rows 15c, 15d · after tipcha · before $
+
+#### mahpach
+
+- `mah- G4(e) pach D4(s) ~C4(s) ~D4(s)` — rows 3a · after kadma · before pashta
+- `mah- G4(e) pach G4(e) ~D4(s) ~C4(s) ~D4(s)` — rows 3b, 3e · after ^, munach · before pashta
+
+#### pashta
+
+- `pash- D4(e) taw B♮4(e) rest(e)` — rows 3a, 3b, 3c, 3e · after mahpach, ^ · before munach
+- `pash- D4(e) taw B♮4(e)` — rows 3d · after ^ · before zakef_katon
+
+#### yetiv
+
+- `ye- G5(g) siv D5(q) ~D4(q) rest(e)` — rows 11a, 11b · after ^ · before munach, zakef_katon
+
+#### zakef_katon
+
+- `kaw- B♮4(e) ton A4(s) ~G4(s) ~F4(dq)` — rows 3a, 3c, 3e · after munach · before $
+- `ko- B♮4(e) ton A4(s) ~G4(s) ~F4(dq)` — rows 3b · after munach · before $
+- `kaw- A4(e) ton G4(e) ~F4(dq)` — rows 3d · after pashta · before $
+- `kaw- A4(e) ton G4(s) ~F4(s) ~D4(dq)` — rows 11a, 11b · after munach, yetiv · before $
+
+#### zakef_gadol
+
+- `zaw- 3{D4(e) kef D4(e) gaw- D4(e)} 3{~A4(e) ~F4(e) ~D4(e)} dol G4(e) ~F4(dq)` — rows 13 · after ^ · before $
+
+#### zarka
+
+- `zar- C5(e) kaw G4(s) ~F4(s) ~G4(s) ~A4(s) ~B♮4(s) ~C5(s) ~A4(s) ~F4(s) ~A4(de) ~A4(s) ~F4(s) ~F4(e)` — rows 12a · after munach · before munach
+- `zar- G4(e) kaw F4(s) ~G4(s) ~A4(s) ~B♮4(s) ~C5(s) ~A4(s) ~F4(s) ~A4(de) ~A4(s) ~F4(s) ~E4(s) ~D4(s)` — rows 12b · after ^ · before munach
+- `zar- G4(e) kaw F4(s) ~G4(s) ~A4(s) ~B♮4(s) ~C5(s) ~A4(s) ~F4(s) ~A4(de) ~A4(s) ~F4(s) ~E4(s) ~D4(s) rest(q)` — rows 12c · after ^ · before segol
+
+#### segol
+
+- `se- C5(e) gol D4(e) ~G4(e) ~G4(e) ~A4(de) ~F4(s) ~A4(e) ~G4(q)` — rows 12a · after munach · before $
+- `se- G4(e) gol G4(e) ~G4(e) ~F4(e) ~A4(e) ~G4(q)` — rows 12b · after munach · before $
+- `se- C5(e) gol G4(e) ~G4(e) ~F4(e) ~A4(e) ~G4(q)` — rows 12c · after zarka · before $
+
+#### revia
+
+- `re- G4(de) vi- F4(s) ~D4(s) a F4(e) ~D4(dq)` — rows 6a, 6b · after munach · before $
+
+#### darga
+
+- `dar- G4(e) gaw D5(e) ~D5(s) ~C5(s) ~B♮4(s) ~A4(s) ~G4(de)` — rows 4a, 4c, 14 · after ^, munach · before tevir, mercha_kefula
+
+#### tevir
+
+- `te- G4(e) vir D4(e) ~D4(e) ~C4(s) ~D4(s) ~F4(s) ~E4(s) ~D4(q)` — rows 4a, 4c · after darga · before $
+- `te- D4(e) vir D4(e) ~C4(s) ~D4(s) ~F4(s) ~E4(s) ~D4(q)` — rows 4b · after mercha · before $
+
+#### kadma
+
+- `kad- D4(e) maw G4(de) ~G4(s)` — rows 3a · after ^ · before mahpach
+- `kad- D4(e) maw G4(de)` — rows 7, 8a · after ^ · before geresh
+
+#### geresh
+
+- `ve- A4(s) az- A4(s) ~B♮4(s) 3{~C5(e) ~A4(e) ~G4(e)} law D5(q) ~G4(dq)` — rows 7 · after kadma · before $
+- `ge- G4(s) ~A4(s) ~B♮4(s) ~A4(s) ~C5(s) ~B♮4(s) ~A4(s) ~G4(s) resh A4(e) ~G4(q)` — rows 8a, 8b · after kadma, ^ · before $
+
+#### gershayim
+
+- `ger- D4(e) sha- D4(e) yim G4(s) ~A4(s) ~B♮4(s) ~A4(s) ~G4(s) ~A4(e) ~B♮4(q)` — rows 5 · after ^ · before $
+
+#### telisha_ketana
+
+- `t'li- D4(s) shaw D4(s) k'ta- D4(s) naw G4(e) ~G4(e) ~F4(s) ~G4(s) ~A4(s) ~F4(s) ~D4(q)` — rows 9b · after munach · before $
+
+#### telisha_gedola
+
+- `t'li- D4(s) shaw D4(s) g'do- D4(s) law 3{E4(e) ~F4(e) ~D5(e)} ~G4(s) 3{~F4(e) ~E4(e) ~D4(e)}` — rows 9a · after munach · before $
+
+#### pazer
+
+- `paw- D4(e) zer G4(s) ~A4(s) ~B♮4(s) ~C5(s) ~D5(s) ~C5(s) ~A4(s) ~G4(s) ~F4(s) ~G4(s) ~A4(s) ~G4(q)` — rows 10 · after munach · before $
+
+#### mercha_kefula
+
+- `mer- G4(e) chaw 3{G4(e) ~G4(e) ~G4(e)} c'hfu- G4(s) ~A4(s) ~B♮4(s) ~C5(s) law B♮4(s) ~A4(s) ~G4(q)` — rows 14 · after darga · before $
+
+#### munach_legarmeh
+
+- `mu- D4(e) nach 5{D4(s) ~E4(s) ~F4(s) ~D4(s) ~G4(s)} rest(e)` — rows 6a · after ^ · before munach
+
+### High Holy Day Torah · Spiro (`spiro_hhd`)
+
+#### mercha
+
+- `Mer- D4(e,opt) chah D4(q)` — rows 1, 2, 19, 20 · after ^ · before tipcha
+- `Mer- G4(e,opt) chah G4(s) ~D5(s) ~D4(e) rest(e)` — rows 9 · after ^ · before tevir
+
+#### tipcha
+
+- `Tip- E4(e,opt) chah F4(de) ~G4(s) ~E4(e) rest(e)` — rows 1 · after mercha · before munach
+- `Tip- E4(e,opt) chah G4(s) ~F4(s) ~B4(s) ~E4(e) rest(e)` — rows 2 · after mercha · before sof_pasuk
+- `Tip- E4(e,opt) chah F4(de) ~G4(s) ~B4(s) ~E4(e) rest(e)` — rows 19 · after mercha · before etnachta
+- `Tip- E4(e,opt) chah A4(e) ~G4(e) ~F4(e) ~E4(e) ~D4(e) ~D4(dq) rest(e)` — rows 20 · after mercha · before sof_pasuk
+
+#### munach
+
+- `Mu- E4(e,opt) nach D4(q)` — rows 1 · after tipcha · before etnachta
+- `Mu- D4(e,opt) nach F♯4(e) ~D4(e) ~G4(s)` — rows 4, 18 · after pashta, yetiv · before zakef_katon
+- `Mu- D4(e,opt) nach 3{D4(e) ~D4(e) ~D4(e)} ~D4(dq) rest(e)` — rows 6 · after ^ · before munach
+- `Mu- D4(e,opt) nach A4(e) ~G4(de)` — rows 6 · after munach · before revia
+- `Mu- D4(e,opt) nach D4(q)` — rows 17 · after ^ · before zarka
+- `Mu- D4(e,opt) nach G4(q)` — rows 17 · after zarka · before segol
+
+#### etnachta
+
+- `Et- C4(e,opt) nach- F4(s) ~E4(s) tah D4(dq)` — rows 1 · after munach · before $
+- `Et- C4(e,opt) nach- F4(e) ~E4(e) tah D4(dq)` — rows 19 · after tipcha · before $
+
+#### sof_pasuk
+
+- `Si- D4(e,opt) luk D4(s) ~C4(s) ~B3(s) ~D4(s) ~C4(q,fermata)` — rows 2 · after tipcha · before $
+- `Sof D4(e) Ha- E4(e) Che- E4(e) ~D4(e) ~C4(e) ~C4(e) lek D4(e) ~D4(dq,fermata)` — rows 20 · after tipcha · before $
+
+#### mahpach
+
+- `Mah- G4(e,opt) pach 3{G4(e) ~D4(e) ~C4(e)} ~D4(q)` — rows 3, 4 · after ^, kadma · before pashta
+
+#### pashta
+
+- `Pash- D4(e,opt) tah A4(e) ~E5(s) ~G4(e) rest(e)` — rows 3, 4 · after mahpach · before zakef_katon, munach
+
+#### yetiv
+
+- `Y'- B♭4(s) ~A4(s) tiv B4(s) ~D5(s) ~G4(e) rest(e)` — rows 18 · after ^ · before munach
+
+#### zakef_katon
+
+- `Ka- F♯4(e,opt) ton G4(e) ~D5(s) ~D4(e) rest(e)` — rows 3, 4, 18 · after pashta, munach · before $
+
+#### zakef_gadol
+
+- `Ga- D4(e,opt) dol B4(e) ~A4(e) ~G4(e) ~F4(e) ~E4(e) ~F4(de) ~B4(s) ~D4(de) rest(e)` — rows 5 · after ^ · before $
+
+#### zarka
+
+- `Zar- D4(e,opt) kah D4(s) ~D4(s) ~B3(s) ~B3(s) ~C4(s) ~B3(s) ~A3(s) ~A4(s)` — rows 17 · after munach · before munach
+
+#### segol
+
+- `Se- G4(e,opt) gol 5{G4(s) ~F4(s) ~E4(s) ~D4(s) ~E4(s)} ~F4(s) ~E4(s) ~D4(dq)` — rows 17 · after munach · before $
+
+#### revia
+
+- `R'vi- G4(e,opt) ee 3{G4(e) ~F4(e) ~D5(e)} ~E4(e) ~D4(e) ~E4(s) ~D4(s) ~C4(dq)` — rows 6 · after munach · before $
+
+#### darga
+
+- `Dar- G4(e,opt) gah G4(s) ~A4(s) ~G4(e) ~D4(q)` — rows 8 · after ^ · before tevir
+
+#### tevir
+
+- `T'- E4(e,opt) vir E4(q) ~E4(s) ~D4(s) ~C4(s) ~D4(de) rest(e)` — rows 7 · after ^ · before $
+- `T'- C4(e,opt) vir C4(e) ~D4(s) ~F4(s) ~E4(e) ~D4(de) rest(e)` — rows 8, 9 · after darga, mercha · before $
+
+#### kadma
+
+- `Kad- D4(e,opt) mah G4(q)` — rows 4, 10, 12 · after ^ · before mahpach, geresh
+
+#### geresh
+
+- `Az- F♯4(e,opt) lah A4(e) ~D5(s) ~G4(e) rest(e)` — rows 10 · after kadma · before $
+- `Ge- D4(e,opt) resh B4(e) ~B♭4(s) ~A4(s) ~G4(s) ~A4(s) ~G4(de) rest(e)` — rows 11, 12 · after ^, kadma · before $
+
+#### gershayim
+
+- `Ger- D4(e,opt) sha- G4(s) ~F♯4(s) yim G4(e) ~A4(s) ~G4(e) rest(e)` — rows 13 · after ^ · before $
+
+#### telisha_ketana
+
+- `K'ta- D4(e,opt) nah G4(e) ~F♯4(s) ~G4(s) ~B4(s) ~D4(e) rest(e)` — rows 14 · after ^ · before $
+
+#### telisha_gedola
+
+- `G'do- D4(e,opt) lah D4(e) ~D4(e) ~G4(s) ~E4(s) ~F4(s) ~D4(e) ~C4(q) rest(e)` — rows 15 · after ^ · before $
+
+#### pazer
+
+- `Pa- D4(e,opt) zer G4(e) ~A4(s) ~B♭4(s) ~C5(s) ~D5(s) ~C5(s) ~B♭4(s) ~A4(s) ~G4(s) ~F♯4(s) ~A4(e) ~G4(e) rest(e)` — rows 16 · after ^ · before $
+
+### Torah · Western Ashkenazi (`je_torah_western`)
+
+#### mercha
+
+- `A4(e) A4(e)` — rows 6 · after ^ · before tipcha
+- `D4(de) D4(s)` — rows 13 · after ^ · before tipcha
+- `E4(de) E4(s)` — rows 13 · after tipcha · before sof_pasuk
+
+#### tipcha
+
+- `G4(s) B4(e) ~E4(e) E4(e)` — rows 6 · after mercha · before munach
+- `A4(q) G4(e) A4(e) G4(e) ~E4(e)` — rows 13 · after mercha · before mercha
+
+#### munach
+
+- `G4(dq) F♯4(s) G4(s) A4(e) F♯4(e)` — rows 2 · after munach_legarmeh · before revia
+- `B4(e) ~A4(e)` — rows 6 · after tipcha · before etnachta
+
+#### etnachta
+
+- `E4(s) E4(s) G4(e) ~D4(e,fermata)` — rows 6 · after munach · before $
+
+#### sof_pasuk
+
+- `B4(e) ~A4(e) E4(e) G4(q,fermata)` — rows 13 · after mercha · before $
+
+#### mahpach
+
+- `E4(e) ~G4(e) G4(e) B4(e)` — rows 3 · after ^ · before pashta
+
+#### pashta
+
+- `G4(e) D5(s) F♯4(s) B4(q) ~A4(h) B4(q)` — rows 3 · after mahpach · before zakef_katon
+
+#### yetiv
+
+- `G4(e) G4(e) D5(dq) B4(e) rest(e) A4(e)` — rows 4 · after ^ · before zakef_katon
+
+#### zakef_katon
+
+- `B4(e) ~G4(e) G4(e) A4(s) B4(s) G4(e)` — rows 3, 4 · after pashta, yetiv · before $
+
+#### zakef_gadol
+
+- `G4(e) G4(e) G4(e) B4(e) ~G4(e) ~D4(dq) D4(e)` — rows 5 · after ^ · before $
+
+#### zarka
+
+- `G4(q) 3{A4(e) B4(e) C5(e)} 3{D5(e) B4(e) G4(e)} A4(e) 3{G4(32) F♯4(32) E4(32)} E4(s)` — rows 1 · after ^ · before segol
+
+#### segol
+
+- `B4(q) rest(q)` — rows 1 · after zarka · before $
+
+#### shalshelet
+
+- `G4(de) F♯4(s) E4(s) F♯4(s) G4(s) F♯4(s) E4(s) F♯4(s) G4(s) F♯4(s) F♯4(s) G4(s) A4(s) B4(s) C5(s) D5(s) 3{C5(s) B4(s) A4(s)} G4(s) A4(q) G4(q)` — rows 14 · after ^ · before $
+
+#### revia
+
+- `A4(q) C5(q) ~B4(h) G4(q) A4(dq) G4(32) F♯4(32) E4(s) E4(q) E4(e)` — rows 2 · after munach · before $
+
+#### darga
+
+- `G4(de) G4(s) 3{D5(s) C5(s) B4(s)} 3{A4(s) G4(s) A4(s)} B4(e) A4(e) ~A4(e)` — rows 12 · after ^ · before tevir
+
+#### tevir
+
+- `E4(e) 3{E4(s) D4(s) E4(s)} G4(dh)` — rows 12 · after darga · before $
+
+#### kadma
+
+- `G4(dq) G4(e) B4(q)` — rows 10 · after ^ · before geresh
+
+#### geresh
+
+- `C5(dh) G4(e) B4(e) C5(h) B4(q)` — rows 10 · after kadma · before $
+
+#### gershayim
+
+- `G4(q) B4(q) ~B4(s) A4(s) G4(s) A4(s) B4(e) B4(e)` — rows 11 · after ^ · before $
+
+#### telisha_ketana
+
+- `G4(q) A4(s) G4(s) F♯4(s) G4(s) ~D4(h)` — rows 9 · after ^ · before $
+
+#### telisha_gedola
+
+- `G4(de) A4(s) 3{B4(e) A4(e) G4(e)} A4(e) G4(e) G4(q)` — rows 8 · after ^ · before $
+
+#### pazer
+
+- `B4(e) ~B4(h) D4(q) G4(e) ~G4(s) A4(s) B4(s) C5(s) B4(s) C5(s) B4(s) A4(s) B4(s) A4(s) D5(s) B4(s) A4(h) ~A4(q) rest(q)` — rows 7 · after ^ · before $
+
+#### mercha_kefula
+
+- `C5(de) B4(s) A4(de) B4(s) C5(de) D5(s) E5(e) D5(e) C5(e) B4(e) A4(e)` — rows 15 · after ^ · before $
+
+#### karnei_parah
+
+- `G4(q) 3{G4(s) A4(s) G4(s)} F♮4(s) G4(s) A4(de) D4(s) C5(de) A4(s)` — rows 16 · after ^ · before yerach_ben_yomo
+
+#### yerach_ben_yomo
+
+- `G4(s) A4(s) G4(s) F♮4(s) G4(s) A4(e) D4(s) A4(s) 3{B4(s) A4(s) G4(s)} A4(e) ~G4(h)` — rows 16 · after karnei_parah · before $
+
+#### munach_legarmeh
+
+- `G4(q)` — rows 2 · after ^ · before munach
+
+### Torah · Ashkenazi 1518 (Reuchlin) (`je_torah_reuchlin`)
+
+#### mercha
+
+- `A4(e) G4(e)` — rows 6 · after ^ · before tipcha
+- `E4(de) E4(s)` — rows 13, 13 · after ^, tipcha · before tipcha, sof_pasuk
+
+#### tipcha
+
+- `G4(e) ~E4(e) E4(e)` — rows 6 · after mercha · before munach
+- `A4(q) G4(e) G4(e) ~E4(e)` — rows 13 · after mercha · before mercha
+
+#### munach
+
+- `B4(q) ~A4(h) G4(q)` — rows 2 · after munach_legarmeh · before revia
+- `E4(q)` — rows 6 · after tipcha · before etnachta
+
+#### etnachta
+
+- `E4(s) G4(s) A4(e) ~G4(e,fermata)` — rows 6 · after munach · before $
+
+#### sof_pasuk
+
+- `G4(q) A4(e) G4(q,fermata)` — rows 13 · after mercha · before $
+
+#### mahpach
+
+- `E4(e) ~G4(e) G4(e)` — rows 3 · after ^ · before pashta
+
+#### pashta
+
+- `G4(e) B4(h) ~G4(q)` — rows 3 · after mahpach · before zakef_katon
+
+#### yetiv
+
+- `D4(e) G4(e) ~G4(e) rest(e) A4(e)` — rows 4 · after ^ · before zakef_katon
+
+#### zakef_katon
+
+- `A4(e) B4(e) G4(e)` — rows 3, 4 · after pashta, yetiv · before $
+
+#### zakef_gadol
+
+- `G4(e) G4(e) G4(e) B4(e) ~D4(e) ~G4(h) E4(dq) E4(s)` — rows 5 · after ^ · before $
+
+#### zarka
+
+- `G4(q) 3{F♯4(e) G4(e) A4(e)} B4(e) G4(e) 3{A4(e) G4(e) E4(e)} G4(e)` — rows 1 · after ^ · before segol
+
+#### segol
+
+- `G4(dh)` — rows 1 · after zarka · before $
+
+#### revia
+
+- `B4(q) ~A4(h) A4(q) G4(e) F♯4(e) G4(e) E4(e) D4(q) D4(e)` — rows 2 · after munach · before $
+
+#### darga
+
+- `B4(de) B4(s) 3{B4(e) A4(e) G4(e)} A4(e) G4(e) ~G4(e)` — rows 12 · after ^ · before tevir
+
+#### tevir
+
+- `E4(e) 3{E4(s) D4(s) E4(s)} G4(dh)` — rows 12 · after darga · before $
+
+#### kadma
+
+- `A4(dq) G4(e) A4(q)` — rows 10 · after ^ · before geresh
+
+#### geresh
+
+- `A4(dh) rest(q) C5(h) B4(q)` — rows 10 · after kadma · before $
+
+#### gershayim
+
+- `G4(e) ~A4(e) C5(h) B4(q)` — rows 11 · after ^ · before $
+
+#### telisha_ketana
+
+- `G4(q) G4(e) A4(e) B4(e) G4(e) ~G4(q) G4(q)` — rows 9 · after ^ · before $
+
+#### telisha_gedola
+
+- `G4(e) D4(e) ~G4(e) 3{B4(e) A4(e) G4(e)} A4(e) G4(e) ~G4(e)` — rows 8 · after ^ · before $
+
+#### pazer
+
+- `B4(q) ~B4(h) D4(q) G4(e) B4(e) D5(e) E5(e) D5(e) B4(e) B4(e) C5(e) A4(e) ~A4(h) rest(e)` — rows 7 · after ^ · before $
+
+#### mercha_kefula
+
+- `B4(e) A4(e) G4(e) A4(q) G4(e)` — rows 14 · after ^ · before $
+
+#### karnei_parah
+
+- `E4(q) E4(h) F♮4(q) E4(e) E4(e)` — rows 15 · after ^ · before yerach_ben_yomo
+
+#### yerach_ben_yomo
+
+- `E4(e) G4(e) A4(e) B4(e) A4(e) G4(e) A4(s) G4(s) E4(dh)` — rows 15 · after karnei_parah · before $
+
+#### munach_legarmeh
+
+- `G4(q)` — rows 2 · after ^ · before munach
+
+### Torah · Spanish & Portuguese (`je_torah_sp`)
+
+#### mercha
+
+- `A4(e) A4(e)` — rows 6 · after ^ · before tipcha
+- `B4(de) A4(s)` — rows 13 · after ^ · before tipcha
+- `G4(de) G4(s)` — rows 13 · after tipcha · before sof_pasuk
+
+#### tipcha
+
+- `A4(e) G♯4(e) G4(e)` — rows 6 · after mercha · before munach
+- `A4(q) A4(e) A4(e) G♯4(s) ~G4(s)` — rows 13 · after mercha · before mercha
+
+#### munach
+
+- `A4(h) E5(e) A4(e) rest(e) A4(q)` — rows 2 · after munach_legarmeh · before revia
+- `G♯4(q)` — rows 6 · after tipcha · before etnachta
+
+#### etnachta
+
+- `G4(e) G4(e) A4(h,fermata)` — rows 6 · after munach · before $
+
+#### sof_pasuk
+
+- `G4(q) G4(s) A4(s) A4(q,fermata)` — rows 13 · after mercha · before $
+
+#### mahpach
+
+- `D5(e) ~C5(e) C5(e) A4(e)` — rows 3 · after ^ · before pashta
+
+#### pashta
+
+- `D5(e) C5(e) A4(e) G♯4(e) ~G♯4(q) D5(q)` — rows 3 · after mahpach · before zakef_katon
+
+#### yetiv
+
+- `A4(e) A4(e) G♯4(e) ~G4(dq) rest(e) G4(e)` — rows 4 · after ^ · before zakef_katon
+
+#### zakef_katon
+
+- `G♯4(e) ~F♯4(e) G4(e) A4(q)` — rows 3, 4 · after pashta, yetiv · before $
+
+#### zakef_gadol
+
+- `D5(e) D5(e) D5(e) D5(e) C5(e) A4(h) ~A4(dq) A4(s)` — rows 5 · after ^ · before $
+
+#### zarka
+
+- `A4(dq) G4(e) 3{A4(e) B4(e) C5(e)} C5(h) C5(q)` — rows 1 · after ^ · before segol
+
+#### segol
+
+- `C5(q) ~A4(h)` — rows 1 · after zarka · before $
+
+#### shalshelet
+
+- `F4(de) G4(s) A4(q) G5(e) ~G4(e) 3{A4(e) B4(e) C5(e)} D5(q) E5(s) D5(s) C5(s) D5(s) A5(q)` — rows 14 · after ^ · before $
+
+#### revia
+
+- `F4(e) G4(e) A4(h) A4(q) G4(q) C5(e) ~A4(q) A4(e) A4(e)` — rows 2 · after munach · before $
+
+#### darga
+
+- `A4(de) A4(s) A4(dq) B4(32) C5(32) 3{E5(e) C5(e) B4(e)} C5(e) ~A4(e)` — rows 12 · after ^ · before tevir
+
+#### tevir
+
+- `A4(de) G4(s) A4(s) G4(s) F4(s) G4(s) G4(e)` — rows 12 · after darga · before $
+
+#### kadma
+
+- `D5(q) D5(q) B4(q) E5(de) E5(s) D5(q)` — rows 10 · after ^ · before geresh
+
+#### geresh
+
+- `C5(q) ~C5(h) rest(q) C5(de) G4(32) D5(32) C5(s) B4(s) A4(e) A4(q)` — rows 10 · after kadma · before $
+
+#### gershayim
+
+- `A4(e) ~B4(e) C5(de) G4(32) D5(32) C5(s) B4(s) A4(q) A4(q)` — rows 11 · after ^ · before $
+
+#### telisha_ketana
+
+- `A4(q) A4(de) G4(32) A4(32) G4(s) ~G4(h)` — rows 9 · after ^ · before $
+
+#### telisha_gedola
+
+- `A4(q) A4(de) G4(s) A4(s) G4(s) F4(h)` — rows 8 · after ^ · before $
+
+#### pazer
+
+- `A4(h) ~A4(e) E5(e,fermata) rest(q) A4(e) A4(q) B4(e) C5(e) D5(e) E5(s) D5(s) C5(s) B4(s) A4(h) rest(q)` — rows 7 · after ^ · before $
+
+#### mercha_kefula
+
+- `B♭4(q) A4(e) G4(e) F4(e) E4(e) F4(e) G4(e) A4(h)` — rows 15 · after ^ · before $
+
+#### munach_legarmeh
+
+- `A4(q)` — rows 2 · after ^ · before munach
+
+### Torah · Moroccan (`je_torah_morocco`)
+
+#### mercha
+
+- `A4(s) 3{B♭4(s) A4(s) G4(s)} F4(e)` — rows 6 · after ^ · before tipcha
+- `F4(de) G4(s)` — rows 13 · after ^ · before tipcha
+- `F4(q) G4(e)` — rows 13 · after tipcha · before sof_pasuk
+
+#### tipcha
+
+- `G4(e) G4(e)` — rows 6 · after mercha · before munach
+- `A4(e) 3!{B♭4(s) A4(s)} G4(e) F4(e)` — rows 13 · after mercha · before mercha
+
+#### munach
+
+- `A4(h) ~E5(e) A4(e) rest(e) A4(q)` — rows 2 · after munach_legarmeh · before revia
+- `G4(q)` — rows 6 · after tipcha · before etnachta
+
+#### etnachta
+
+- `G4(e) G4(s) D5(s) A4(e) ~A4(dq,fermata)` — rows 6 · after munach · before $
+
+#### sof_pasuk
+
+- `G4(de) G4(s) G4(q) G4(e) A4(s) A4(q,fermata)` — rows 13 · after mercha · before $
+
+#### mahpach
+
+- `3{B4(s) C5(s) B4(s)} A4(e) C5(e)` — rows 3 · after ^ · before pashta
+
+#### pashta
+
+- `E5(e) D5(e) 3{C5(s) D5(s) B4(s)} A4(s) B4(s) G4(e) ~D5(q)` — rows 3 · after mahpach · before zakef_katon
+
+#### yetiv
+
+- `A4(e) A4(dq) ~E5(e) rest(e) F4(e)` — rows 4 · after ^ · before zakef_katon
+
+#### zakef_katon
+
+- `G4(e) C4(e) A4(e)` — rows 3, 4 · after pashta, yetiv · before $
+
+#### zakef_gadol
+
+- `D5(e) D5(q) E5(q) D5(s) C5(s) B4(s) C5(s) ~C5(h) F4(dq) G4(s)` — rows 5 · after ^ · before $
+
+#### zarka
+
+- `G4(q) A4(e) C5(e) C5(h) B4(q)` — rows 1 · after ^ · before segol
+
+#### segol
+
+- `C5(q) ~A4(h)` — rows 1 · after zarka · before $
+
+#### shalshelet
+
+- `F♯4(q) G4(de) F♯4(s) F♯4(s) G4(s) F♯4(s) G4(s) F♯4(s) E4(s) F♯4(s) C5(q)` — rows 14 · after ^ · before $
+
+#### revia
+
+- `F4(e) G4(e) A4(h) G4(q) 3{C5(s) D5(s) C5(s)} B4(32) C5(32) A4(q) A4(e) A4(e)` — rows 2 · after munach · before $
+
+#### darga
+
+- `G4(de) G4(s) 3!{A4(s) B4(s) C5(e)} C5(h) B4(q)` — rows 12 · after ^ · before tevir
+
+#### tevir
+
+- `A4(e) 3{G4(s) F4(s) G4(s)} G4(h)` — rows 12 · after darga · before $
+
+#### kadma
+
+- `F4(e) ~G4(dq) G4(e) G4(q)` — rows 10 · after ^ · before geresh
+
+#### geresh
+
+- `G4(q) ~A4(h) rest(q) D5(s) C5(s) B4(s) C5(s) B4(s) C5(s) A4(q) A4(q)` — rows 10 · after kadma · before $
+
+#### gershayim
+
+- `G4(e) ~E5(e) D5(s) C5(s) B4(s) C5(s) A4(q) A4(q)` — rows 11 · after ^ · before $
+
+#### telisha_ketana
+
+- `D5(q) C5(e) G4(e) A4(e) G4(e) ~G4(q) F4(q)` — rows 9 · after ^ · before $
+
+#### telisha_gedola
+
+- `D5(q) C5(e) G4(e) ~A4(e) G4(e) ~G4(e)` — rows 8 · after ^ · before $
+
+#### pazer
+
+- `D5(s) C5(s) B4(s) C5(s) C5(q,fermata) G4(q) G4(q) A4(q) A4(h) ~A4(h) rest(q)` — rows 7 · after ^ · before $
+
+#### munach_legarmeh
+
+- `A4(q)` — rows 2 · after ^ · before munach
+
+### Torah · Syrian (Egypt & Syria) (`je_torah_syria`)
+
+#### mercha
+
+- `G4(de) F♯4(s)` — rows 6 · after ^ · before tipcha
+- `F♯4(de) F♯4(s)` — rows 13 · after ^ · before tipcha
+- `E4(de) E4(s)` — rows 13 · after tipcha · before sof_pasuk
+
+#### tipcha
+
+- `F♯4(e) F♯4(e) E4(e) E4(e)` — rows 6 · after mercha · before munach
+- `F♯4(q) F♯4(e) F♯4(e) E4(e)` — rows 13 · after mercha · before mercha
+
+#### munach
+
+- `G4(dh) G4(q)` — rows 2 · after munach_legarmeh · before revia
+- `E4(q)` — rows 6 · after tipcha · before etnachta
+
+#### etnachta
+
+- `E4(e) E4(e) F♯4(q,fermata)` — rows 6 · after munach · before $
+
+#### sof_pasuk
+
+- `E4(q) E4(e) F♯4(q,fermata)` — rows 13 · after mercha · before $
+
+#### mahpach
+
+- `G4(s) ~A4(s) B4(s) C5(s) D5(s) E5(e) C5(s) C5(s) G4(e) ~G4(dh) G4(q)` — rows 3 · after ^ · before pashta
+
+#### pashta
+
+- `G4(q) G4(dh) B4(q)` — rows 3 · after mahpach · before zakef_katon
+
+#### yetiv
+
+- `A4(e) G4(dq) ~F♯4(e) rest(q) G4(e)` — rows 4 · after ^ · before zakef_katon
+
+#### zakef_katon
+
+- `A4(e) F♯4(e) F♯4(e)` — rows 3, 4 · after pashta, yetiv · before $
+
+#### zakef_gadol
+
+- `B4(e) B4(dq) B4(e) A4(s) B4(s) C5(s) D5(s) E5(s) D5(s) C5(s) B4(s) A4(dq) G4(e) G4(e) G4(dh)` — rows 5 · after ^ · before $
+
+#### zarka
+
+- `D4(q) A4(dq) B4(e) A4(s) G4(s) G4(h) G4(q)` — rows 1 · after ^ · before segol
+
+#### segol
+
+- `E4(h) ~G4(q)` — rows 1 · after zarka · before $
+
+#### shalshelet
+
+- `D4(q) E4(e) F♯4(e) G4(e) A4(e) B4(q)` — rows 14 · after ^ · before $
+
+#### revia
+
+- `G4(dq) F♯4(s) G4(s) A4(e) F♯4(e) D4(q) 3{G4(e) F♯4(e) G4(e)} A4(e) G4(e) E4(s) E4(s) E4(e)` — rows 2 · after munach · before $
+
+#### darga
+
+- `G4(de) G4(s) A4(s) G4(s) A4(de) B4(s) A4(s) B4(de) 3{A4(s) B4(s) A4(s)} G4(de) F♯4(s) G4(de)` — rows 12 · after ^ · before tevir
+
+#### tevir
+
+- `F♯4(s) E4(e) D♯4(s) E4(s) F♯4(h)` — rows 12 · after darga · before $
+
+#### kadma
+
+- `G4(q) ~E4(e) E4(e) D4(q)` — rows 10 · after ^ · before geresh
+
+#### geresh
+
+- `A4(dh) D4(q) ~D4(e) G4(s) A4(s) F♯4(de) E4(s) D4(q)` — rows 10 · after kadma · before $
+
+#### gershayim
+
+- `D4(q) A4(s) A4(s) A4(s) G4(s) A4(s) F♯4(de) E4(s) D4(q) ~D4(h) rest(q)` — rows 11 · after ^ · before $
+
+#### telisha_ketana
+
+- `B3(q) E4(s) 3{C5(s) G4(s) F♯4(s)} F♯4(de) E4(s) D4(e) G4(q)` — rows 9 · after ^ · before $
+
+#### telisha_gedola
+
+- `D4(q) G4(e) A4(s) B4(s) A4(s) G4(s) A4(s) G4(s) F♯4(s) E4(e)` — rows 8 · after ^ · before $
+
+#### pazer
+
+- `G4(dh) E4(q) G4(dh) F♯4(e) G4(s) G4(s) ~G4(h) rest(q)` — rows 7 · after ^ · before $
+
+#### munach_legarmeh
+
+- `G4(q)` — rows 2 · after ^ · before munach
+
+### Torah · Baghdadi (`je_torah_baghdad`)
+
+#### mercha
+
+- `E4(e) ~D♯4(e)` — rows 6 · after ^ · before tipcha
+- `G4(de) F♯4(s)` — rows 13 · after ^ · before tipcha
+- `F♯4(de) F♯4(s)` — rows 13 · after tipcha · before sof_pasuk
+
+#### tipcha
+
+- `E4(e) F♯4(q) F♯4(e)` — rows 6 · after mercha · before munach
+- `E4(e) ~D♯4(e) E4(e) F♯4(e)` — rows 13 · after mercha · before mercha
+
+#### munach
+
+- `G4(h) ~D5(e) F♯4(e) rest(e) G4(q)` — rows 2 · after munach_legarmeh · before revia
+- `F♯4(q)` — rows 6 · after tipcha · before etnachta
+
+#### etnachta
+
+- `G4(e) G4(e) D4(q,fermata)` — rows 6 · after munach · before $
+
+#### sof_pasuk
+
+- `F♯4(q) G4(e) D4(q,fermata)` — rows 13 · after mercha · before $
+
+#### mahpach
+
+- `D5(e) B4(e) G4(q)` — rows 3 · after ^ · before pashta
+
+#### pashta
+
+- `C5(e) B4(e) A4(e) A4(e) G4(e) G4(e) G4(q)` — rows 3 · after mahpach · before zakef_katon
+
+#### yetiv
+
+- `G4(e) D5(e) ~D4(e) rest(e) rest(q) G4(e)` — rows 4 · after ^ · before zakef_katon
+
+#### zakef_katon
+
+- `C5(e) B4(e) A4(e) G4(e)` — rows 3, 4 · after pashta, yetiv · before $
+
+#### zakef_gadol
+
+- `G4(q) rest(q) rest(e) G4(e) G4(e) C5(e) B4(e) ~B♭4(e) A4(h) ~A4(dq) G4(e)` — rows 5 · after ^ · before $
+
+#### zarka
+
+- `G4(q) 3{E4(e) F♯4(e) G4(e)} A4(e) G4(e) F♯4(q) E4(s) F♯4(s)` — rows 1 · after ^ · before segol
+
+#### segol
+
+- `G4(dh)` — rows 1 · after zarka · before $
+
+#### shalshelet
+
+- `G4(q) G4(de) A4(s) B4(e) C5(e) D5(q)` — rows 14 · after ^ · before $
+
+#### revia
+
+- `G4(h) ~G4(e) D5(e) rest(e) G4(q) B4(dq) A4(e) 3{B4(e) A4(e) G4(e)} G4(e)` — rows 2 · after munach · before $
+
+#### darga
+
+- `G4(de) G4(s) G4(dh) G4(q)` — rows 12 · after ^ · before tevir
+
+#### tevir
+
+- `A4(e) ~E4(e) G4(h)` — rows 12 · after darga · before $
+
+#### kadma
+
+- `C5(q) C5(dq) B4(e) ~B4(h)` — rows 10 · after ^ · before geresh
+
+#### geresh
+
+- `B4(e) B♭4(s) A4(s) G4(q) rest(h) B4(e) B♭4(e) 3{A4(e) G4(e) G4(e)} rest(q)` — rows 10 · after kadma · before $
+
+#### gershayim
+
+- `D5(e) ~B4(e) B4(de) A4(s) G4(q) rest(q)` — rows 11 · after ^ · before $
+
+#### telisha_ketana
+
+- `G4(q) G4(s) A4(s) 3!{G4(s) F♯4(s) E4(h)}` — rows 9 · after ^ · before $
+
+#### telisha_gedola
+
+- `A4(e) ~B4(e) B4(dh)` — rows 8 · after ^ · before $
+
+#### pazer
+
+- `G4(dh) B4(s) G4(s) G4(de) F♯4(s) ~F♯4(s) B4(de) F♯4(s) B4(e) B4(de) F♯4(s) ~F♯4(h) rest(q)` — rows 7 · after ^ · before $
+
+#### mercha_kefula
+
+- `B4(s) A4(s) B4(e) E4(q) A4(s) F♯4(s) G4(e) ~E4(e)` — rows 15 · after ^ · before $
+
+#### karnei_parah
+
+- `A4(e) F♯4(e) E4(dq) A4(s) A4(s) C5(e) A4(e) A4(e)` — rows 16 · after ^ · before yerach_ben_yomo
+
+#### yerach_ben_yomo
+
+- `G4(q) A4(s) G4(s) F♯4(s) E4(s) E4(e) ~D4(e)` — rows 16 · after karnei_parah · before $
+
+#### munach_legarmeh
+
+- `G4(q)` — rows 2 · after ^ · before munach
+
+### High Holy Day Torah · Western Ashkenazi (`je_hhd_western`)
+
+#### mercha
+
+- `A4(e) A4(e)` — rows 6 · after ^ · before tipcha
+- `E4(de) D4(s)` — rows 13 · after ^ · before tipcha
+- `A4(de) A4(s)` — rows 13 · after tipcha · before sof_pasuk
+
+#### tipcha
+
+- `B4(q) B4(e)` — rows 6 · after mercha · before munach
+- `A4(q) A4(e) A4(e) 3!{C5(e) B4(e)}` — rows 13 · after mercha · before mercha
+
+#### munach
+
+- `F♯4(q) ~A4(q) A4(q)` — rows 2 · after munach_legarmeh · before revia
+- `B4(e) ~G4(e)` — rows 6 · after tipcha · before etnachta
+
+#### etnachta
+
+- `G4(s) G4(s) B4(e) ~A4(e,fermata)` — rows 6 · after munach · before $
+
+#### sof_pasuk
+
+- `B4(e) ~G4(e) G4(e) B4(e) A4(q,fermata)` — rows 13 · after mercha · before $
+
+#### mahpach
+
+- `F♯4(e) ~A4(e) A4(e)` — rows 3 · after ^ · before pashta
+
+#### pashta
+
+- `A4(e) F♮5(q) ~D5(h) A4(q)` — rows 3 · after mahpach · before zakef_katon
+
+#### yetiv
+
+- `A4(e) E5(q) ~D5(q) rest(q) A4(e)` — rows 4 · after ^ · before zakef_katon
+
+#### zakef_katon
+
+- `D5(q) C♯5(e) D5(e) ~G4(e)` — rows 3, 4 · after pashta, yetiv · before $
+
+#### zakef_gadol
+
+- `A4(e) A4(e) A4(e) D5(e) ~F♯4(e) ~A4(h) D4(dq) D4(s)` — rows 5 · after ^ · before $
+
+#### zarka
+
+- `F♯4(e) G4(e) A4(q) B4(32) A4(32) G4(32) F♯4(32) E4(q) E4(q)` — rows 1 · after ^ · before segol
+
+#### segol
+
+- `B4(q) ~A4(h)` — rows 1 · after zarka · before $
+
+#### revia
+
+- `F♮5(q) ~D5(q) D5(q) D5(dq) 3{C5(s) B4(s) A4(s)} G4(q) G4(e)` — rows 2 · after munach · before $
+
+#### darga
+
+- `A4(de) A4(s) 3{D5(s) C5(s) B4(s)} 3{A4(s) G4(s) A4(s)} B4(e) A4(e) ~A4(e)` — rows 12 · after ^ · before tevir
+
+#### tevir
+
+- `A4(e) 3{G4(s) F♯4(s) G4(s)} A4(dh)` — rows 12 · after darga · before $
+
+#### kadma
+
+- `A4(q) C5(dq) B4(e) D5(e) ~B4(e) F♯5(e) ~D5(q)` — rows 10 · after ^ · before geresh
+
+#### geresh
+
+- `A4(e) ~D5(e) G5(h) ~G5(q) D5(q)` — rows 10 · after kadma · before $
+
+#### gershayim
+
+- `A4(q) D5(q) ~D5(s) C5(s) B4(s) C5(s) D5(e) D5(e)` — rows 11 · after ^ · before $
+
+#### telisha_ketana
+
+- `A4(de) B4(s) 3{C5(e) B4(e) A4(e)} G4(h)` — rows 9 · after ^ · before $
+
+#### telisha_gedola
+
+- `A4(de) B4(s) C5(e) 3{B4(e) A4(e) B4(e)} A4(e) ~A4(e)` — rows 8 · after ^ · before $
+
+#### pazer
+
+- `A4(q) F♯4(de) D4(s) B4(s) A4(s) B4(s) C♯5(s) D5(s) 3{E5(s) F♯5(s) D5(s)} F♯5(q) ~D5(q) ~D5(h) rest(q)` — rows 7 · after ^ · before $
+
+#### munach_legarmeh
+
+- `A4(q)` — rows 2 · after ^ · before munach
+
+### Haftarah · Western Ashkenazi (`je_haf_western`)
+
+#### mercha
+
+- `G4(e) A4(e)` — rows 6 · after ^ · before tipcha
+- `E4(de) E4(s)` — rows 13, 13 · after ^, tipcha · before tipcha, sof_pasuk
+
+#### tipcha
+
+- `C5(e) ~B4(e) A4(e)` — rows 6 · after mercha · before munach
+- `C5(dq) B4(e) A4(e) 3{A4(s) B4(s) A4(s)} G4(e)` — rows 13 · after mercha · before mercha
+
+#### munach
+
+- `3{G4(e) A4(e) G4(e)} F♯4(h) E4(q)` — rows 2 · after munach_legarmeh · before revia
+- `B4(q)` — rows 6 · after tipcha · before etnachta
+
+#### etnachta
+
+- `B4(s) A4(s) A4(e) ~E4(e,fermata)` — rows 6 · after munach · before $
+
+#### sof_pasuk
+
+- `G4(de) D4(s) E4(q,fermata)` — rows 13 · after mercha · before $
+
+#### mahpach
+
+- `E4(e) ~A4(e) A4(e)` — rows 3 · after ^ · before pashta
+
+#### pashta
+
+- `A4(e) D5(q) ~C5(h) A4(q)` — rows 3 · after mahpach · before zakef_katon
+
+#### yetiv
+
+- `A4(e) D5(q) ~C5(q) rest(q) E4(e)` — rows 4 · after ^ · before zakef_katon
+
+#### zakef_katon
+
+- `A4(e) G4(e) F♯4(e) G4(e)` — rows 3, 4 · after pashta, yetiv · before $
+
+#### zakef_gadol
+
+- `G4(e) G4(e) G4(e) B4(e) ~D4(e) ~G4(h) E4(dq) E4(s)` — rows 5 · after ^ · before $
+
+#### zarka
+
+- `F♯4(e) G4(e) A4(q) B4(32) A4(32) G4(32) F♯4(32) E4(q) E4(q)` — rows 1 · after ^ · before segol
+
+#### segol
+
+- `B4(q) ~A4(h)` — rows 1 · after zarka · before $
+
+#### revia
+
+- `G4(q) ~F♯4(h) E4(q) A4(dq) G4(32) F♯4(32) E4(s) E4(q) E4(e)` — rows 2 · after munach · before $
+
+#### darga
+
+- `G4(de) G4(s) G4(s) A4(s) B4(s) G4(s) C5(e) B4(e) A4(e) ~G4(h) rest(e)` — rows 12 · after ^ · before tevir
+
+#### tevir
+
+- `E4(e) E4(e) 3{E4(s) D4(s) E4(s)} G4(dh)` — rows 12 · after darga · before $
+
+#### kadma
+
+- `G4(q) B4(e) G4(e) B4(e) D5(s) C5(s) B4(s) A4(de) ~A4(e) rest(e)` — rows 10 · after ^ · before geresh
+
+#### geresh
+
+- `C5(h) ~C5(q) E4(q)` — rows 10 · after kadma · before $
+
+#### gershayim
+
+- `A4(q) ~A4(s) G4(s) F♯4(s) G4(s) A4(e) A4(e)` — rows 11 · after ^ · before $
+
+#### telisha_ketana
+
+- `G4(q) A4(s) G4(s) F♯4(s) G4(s) ~D4(h)` — rows 9 · after ^ · before $
+
+#### telisha_gedola
+
+- `G4(de) A4(s) 3{B4(e) A4(e) G4(e)} A4(e) G4(e) ~G4(e)` — rows 8 · after ^ · before $
+
+#### pazer
+
+- `B4(e) ~B4(h) D4(q) G4(e) ~G4(s) A4(s) B4(s) C5(s) B4(s) C5(s) B4(s) A4(s) B4(s) A4(s) D5(s) B4(s) A4(h) ~A4(q) rest(q)` — rows 7 · after ^ · before $
+
+#### munach_legarmeh
+
+- `E4(q)` — rows 2 · after ^ · before munach
+
+### Haftarah · Spanish & Portuguese (`je_haf_sp`)
+
+#### mercha
+
+- `G4(e) ~A4(e)` — rows 6 · after ^ · before tipcha
+- `E4(de) F♯4(s)` — rows 13 · after ^ · before tipcha
+- `F♯4(de) F♯4(s)` — rows 13 · after tipcha · before sof_pasuk
+
+#### tipcha
+
+- `G4(e) F♯4(e) G4(e)` — rows 6 · after mercha · before munach
+- `G4(e) ~A4(e) G4(e) G4(e)` — rows 13 · after mercha · before mercha
+
+#### munach
+
+- `E4(h) ~B4(e) rest(e) E4(q)` — rows 2 · after munach_legarmeh · before revia
+- `G4(q)` — rows 6 · after tipcha · before etnachta
+
+#### etnachta
+
+- `G4(s) F♯4(s) F♯4(e) E4(e) ~E4(dq,fermata)` — rows 6 · after munach · before $
+
+#### sof_pasuk
+
+- `A4(s) E4(s) F♯4(de) G4(de) F♯4(s) E4(q,fermata)` — rows 13 · after mercha · before $
+
+#### mahpach
+
+- `3{B4(s) A4(s) C5(s)} B4(s) A4(e) A4(e) B4(e)` — rows 3 · after ^ · before pashta
+
+#### pashta
+
+- `B4(e) B4(s) 3{A4(32) C5(32) B4(32)} A4(s) B4(s) F♯4(e) ~E4(q)` — rows 3 · after mahpach · before zakef_katon
+
+#### yetiv
+
+- `B4(e) B4(e) ~F♯4(e) rest(e) F♯4(e) F♯4(dq) F♯4(e)` — rows 4 · after ^ · before zakef_katon
+
+#### zakef_katon
+
+- `G4(dq) F♯4(e) F♯4(e) E4(e) ~E4(e)` — rows 3, 4 · after pashta, yetiv · before $
+
+#### zakef_gadol
+
+- `B4(e) B4(e) B4(e) A4(dq) G4(s) F♯4(s) G4(s) F♯4(s) E4(e) ~E4(dq) F♯4(s)` — rows 5 · after ^ · before $
+
+#### zarka
+
+- `B4(q) B4(dq) A4(e) B4(s) E5(s) F♯4(dq) G4(q)` — rows 1 · after ^ · before segol
+
+#### segol
+
+- `F♯4(s) B4(s) E4(dq) ~E4(h)` — rows 1 · after zarka · before $
+
+#### revia
+
+- `E4(h) ~B4(e) rest(e) B4(q) A4(dq) G4(32) F♯4(32) E4(s) E4(q) E4(e)` — rows 2 · after munach · before $
+
+#### darga
+
+- `E4(de) E4(s) E4(dq) G4(s) F♯4(s) 3{E4(s) F♯4(s) E4(s)} D4(e) ~D4(e) D♯4(e) C4(e)` — rows 12 · after ^ · before tevir
+
+#### tevir
+
+- `D4(dq) E4(s) F♯4(s) E4(e)` — rows 12 · after darga · before $
+
+#### kadma
+
+- `B4(de) B4(e) A4(e) 3{A4(s) G4(s) F♯4(s)} E4(e)` — rows 10 · after ^ · before geresh
+
+#### geresh
+
+- `A4(s) G4(s) F♯4(s) 3!{F♯4(e) E4(de)} E4(q)` — rows 10 · after kadma · before $
+
+#### gershayim
+
+- `A4(q) B4(de) A4(s) A4(s) ~G4(s) F♯4(s) F♯4(e) E4(e) E4(e) E4(e)` — rows 11 · after ^ · before $
+
+#### telisha_ketana
+
+- `G4(q) F♯4(s) G4(s) A4(s) B4(s) G4(s) A4(s) ~A4(q)` — rows 9 · after ^ · before $
+
+#### telisha_gedola
+
+- `F♯4(q) G4(s) A4(s) B4(s) A4(s) F♯4(e) A4(q)` — rows 8 · after ^ · before $
+
+#### pazer
+
+- `A4(q) B4(s) A4(s) G4(s) G4(s) A4(s) G4(q) G4(q)` — rows 7 · after ^ · before $
+
+#### munach_legarmeh
+
+- `E4(q)` — rows 2 · after ^ · before munach
+
+### Haftarah · Baghdadi (`je_haf_baghdad`)
+
+#### mercha
+
+- `F♯4(e) E4(e)` — rows 6 · after ^ · before tipcha
+- `E4(de) E4(s)` — rows 13 · after ^ · before tipcha
+- `D4(de) D4(s)` — rows 13 · after tipcha · before sof_pasuk
+
+#### tipcha
+
+- `E4(s) D4(s) C♯4(s) D4(e) D4(e)` — rows 6 · after mercha · before munach
+- `F♯4(q) E4(e) E4(e) D4(s) C♯4(s) D4(e)` — rows 13 · after mercha · before mercha
+
+#### munach
+
+- `E4(q) ~F♯4(h) E4(q)` — rows 2 · after munach_legarmeh · before revia
+- `F♯4(q)` — rows 6 · after tipcha · before etnachta
+
+#### etnachta
+
+- `E4(e) E4(e) F♯4(q,fermata)` — rows 6 · after munach · before $
+
+#### sof_pasuk
+
+- `F♯4(q) E4(e) E4(q,fermata)` — rows 13 · after mercha · before $
+
+#### mahpach
+
+- `D4(q) D4(e) ~E4(s) F♯4(s)` — rows 3 · after ^ · before pashta
+
+#### pashta
+
+- `E4(q) A4(de) G♯4(s) F♯4(q) E4(q)` — rows 3 · after mahpach · before zakef_katon
+
+#### yetiv
+
+- `F♯4(e) F♯4(e) ~F♯4(de) E4(s) G4(e) F♯4(e) F♯4(e)` — rows 4 · after ^ · before zakef_katon
+
+#### zakef_katon
+
+- `F♯4(e) F♯4(e) F♯4(s) E4(e) ~E4(e)` — rows 3, 4 · after pashta, yetiv · before $
+
+#### zakef_gadol
+
+- `E4(e) E4(e) E4(e) F♯4(dq) E4(s) F♯4(s) E4(e) ~E4(dq) E4(s)` — rows 5 · after ^ · before $
+
+#### zarka
+
+- `D4(q) D4(q) ~E4(q) A4(dq) G♯4(s) A4(q)` — rows 1 · after ^ · before segol
+
+#### segol
+
+- `F♯4(q) ~E4(h)` — rows 1 · after zarka · before $
+
+#### revia
+
+- `E4(q) ~F♯4(h) E4(q) F♯4(h) F♯4(e) F♯4(s) F♯4(s)` — rows 2 · after munach · before $
+
+#### darga
+
+- `D4(de) D4(s) D4(h) ~E4(q) E4(q)` — rows 12 · after ^ · before tevir
+
+#### tevir
+
+- `E4(e) 3!{D4(e) C♯4(e)} D4(q)` — rows 12 · after darga · before $
+
+#### kadma
+
+- `E4(q) A4(de) G♯4(s) A4(de) F♯4(s) E4(q)` — rows 10 · after ^ · before geresh
+
+#### geresh
+
+- `rest(q) 3!{G4(de) F♯4(e) E4(e)}` — rows 10 · after kadma · before $
+
+#### gershayim
+
+- `A4(de) F♯4(s) 3!{G4(de) F♯4(e) E4(e)}` — rows 11 · after ^ · before $
+
+#### telisha_ketana
+
+- `D4(q) 3{D4(q) C♯4(q) D4(q)} E4(h)` — rows 9 · after ^ · before $
+
+#### telisha_gedola
+
+- `F♯4(q) 3{E4(s) F♯4(s) E4(s)} D4(s) E4(s) F♯4(h)` — rows 8 · after ^ · before $
+
+#### pazer
+
+- `A4(s) G4(s) F♯4(e) E4(e) ~E4(h) ~E4(h)` — rows 7 · after ^ · before $
+
+#### munach_legarmeh
+
+- `E4(q)` — rows 2 · after ^ · before munach
+
+### Esther · Western Ashkenazi (`je_esther_western`)
+
+#### mercha
+
+- `B4(e) B4(e)` — rows 6 · after ^ · before tipcha
+- `B4(de) B4(s)` — rows 13, 13 · after ^, tipcha · before tipcha, sof_pasuk
+
+#### tipcha
+
+- `B4(de) G4(s) E5(s) B4(e) B4(e)` — rows 6 · after mercha · before munach
+- `B4(q) B4(e) B4(de) G4(s) E5(e) B4(e)` — rows 13 · after mercha · before mercha
+
+#### munach
+
+- `G4(e) 3{F♯4(s) G4(s) A4(s)} G4(h) B4(q)` — rows 2 · after munach_legarmeh · before revia
+- `B4(q)` — rows 6 · after tipcha · before etnachta
+
+#### etnachta
+
+- `E4(s) F♯4(s) G4(s) C5(s) E4(e,fermata)` — rows 6 · after munach · before $
+
+#### sof_pasuk
+
+- `B4(e) E4(e) E4(s) F♯4(s) G4(e) B4(e) ~A4(q,fermata)` — rows 13 · after mercha · before $
+
+#### mahpach
+
+- `E4(e) ~G4(e) G4(e)` — rows 3 · after ^ · before pashta
+
+#### pashta
+
+- `B4(e) D5(dh) G4(q)` — rows 3 · after mahpach · before zakef_katon
+
+#### yetiv
+
+- `G4(e) D5(q) G4(e) A4(q) F♯4(e)` — rows 4 · after ^ · before zakef_katon
+
+#### zakef_katon
+
+- `A4(q) A4(e) A4(s) F♯4(s) E5(s) D4(e)` — rows 3, 4 · after pashta, yetiv · before $
+
+#### zakef_gadol
+
+- `G4(e) G4(e) G4(e) D5(s) B4(s) ~G4(e) ~G4(h) B4(dq) B4(s)` — rows 5 · after ^ · before $
+
+#### zarka
+
+- `A4(q) 3!{E4(e) A4(s) C5(s)} E5(s) F♯5(32) D5(32) C5(32) B4(32) A4(e) 3{E4(e) F♯4(e) G♯4(e)}` — rows 1 · after ^ · before segol
+
+#### segol
+
+- `B4(q) ~A4(h)` — rows 1 · after zarka · before $
+
+#### revia
+
+- `E5(q) ~D5(h) B4(q) B4(dq) A4(e) 3{G4(32) F♯4(32) E4(32)} E4(q) E4(e)` — rows 2 · after munach · before $
+
+#### darga
+
+- `G4(de) G4(s) 3{D5(s) C5(s) A4(s)} 3{A4(s) G4(s) A4(s)} B4(e) A4(e) ~A4(e)` — rows 12 · after ^ · before tevir
+
+#### tevir
+
+- `E4(e) 3{E4(s) D4(s) E4(s)} G4(dh)` — rows 12 · after darga · before $
+
+#### kadma
+
+- `D5(q) D5(dq) B4(e) D5(e) G5(e) ~D5(e)` — rows 10 · after ^ · before geresh
+
+#### geresh
+
+- `C5(h) D5(q) B4(q)` — rows 10 · after kadma · before $
+
+#### gershayim
+
+- `D5(q) ~D5(s) C5(s) B4(s) C5(s) D5(e) D5(e)` — rows 11 · after ^ · before $
+
+#### telisha_ketana
+
+- `G4(q) 3{A4(e) G4(e) F♯4(e)} A4(e) G4(e) ~G4(q) D5(q)` — rows 9 · after ^ · before $
+
+#### telisha_gedola
+
+- `G4(de) B4(s) 3{B4(e) A4(e) G4(e)} A4(e) G4(e) ~G4(e)` — rows 8 · after ^ · before $
+
+#### pazer
+
+- `C5(dh) G4(q) G4(de) E5(s) E4(e) B4(s) C5(s) D5(e) 3{E5(s) F♯5(s) E5(s)} 3{F♯5(e) G5(e) D5(e)} D5(q)` — rows 7 · after ^ · before $
+
+#### munach_legarmeh
+
+- `F♯4(q)` — rows 2 · after ^ · before munach
+
+### Esther · Spanish & Portuguese (`je_esther_sp`)
+
+#### mercha
+
+- `G4(e) A4(s) G4(s)` — rows 6 · after ^ · before tipcha
+- `F♯4(de) F♯4(s)` — rows 13 · after ^ · before tipcha
+- `G4(de) G4(s)` — rows 13 · after tipcha · before sof_pasuk
+
+#### tipcha
+
+- `G4(e) G4(q) G4(e)` — rows 6 · after mercha · before munach
+- `G4(e) A4(s) G4(e) G4(q) G4(q)` — rows 13 · after mercha · before mercha
+
+#### munach
+
+- `G4(h) ~D5(e) G4(e) rest(e) G4(q)` — rows 2 · after munach_legarmeh · before revia
+- `A4(q)` — rows 6 · after tipcha · before etnachta
+
+#### etnachta
+
+- `G4(e) G4(e) G4(q,fermata)` — rows 6 · after munach · before $
+
+#### sof_pasuk
+
+- `A4(q) G4(e) G4(q,fermata)` — rows 13 · after mercha · before $
+
+#### mahpach
+
+- `G4(q) G4(e) D5(e)` — rows 3 · after ^ · before pashta
+
+#### pashta
+
+- `G4(q) D5(dh) G4(q)` — rows 3 · after mahpach · before zakef_katon
+
+#### yetiv
+
+- `G4(e) D5(e) G4(e) B4(q)` — rows 4 · after ^ · before zakef_katon
+
+#### zakef_katon
+
+- `B4(q) A4(e) A4(s) G4(s) F♯4(s) E4(e) ~D4(e)` — rows 3, 4 · after pashta, yetiv · before $
+
+#### zakef_gadol
+
+- `B4(e) B4(e) B4(e) 3{A4(s) B4(s) A4(s)} G4(s) F♯4(s) G4(s) F♯4(s) E4(h) F♯4(dq) F♯4(s)` — rows 5 · after ^ · before $
+
+#### zarka
+
+- `D5(q) D5(dh) B4(q)` — rows 1 · after ^ · before segol
+
+#### segol
+
+- `3{A4(s) B4(s) A4(s)} G4(s) F♯4(32) E4(32) E4(h)` — rows 1 · after zarka · before $
+
+#### revia
+
+- `G4(h) ~G4(e) D5(e) rest(e) B4(q) 3{A4(s) B4(s) A4(s)} G4(s) F♯4(32) E4(32) E4(q) E4(q)` — rows 2 · after munach · before $
+
+#### darga
+
+- `E4(de) E4(s) E4(s) F♯4(s) E4(s) D4(s) C4(dq) D4(e)` — rows 12 · after ^ · before tevir
+
+#### tevir
+
+- `E4(e) F♯4(e) E4(s) D♯4(s) F♯4(s) D4(e)` — rows 12 · after darga · before $
+
+#### kadma
+
+- `F♯4(q) F♯4(dq) F♯4(e) G4(e) A4(e)` — rows 10 · after ^ · before geresh
+
+#### geresh
+
+- `B4(h) B4(h)` — rows 10 · after kadma · before $
+
+#### gershayim
+
+- `B4(q) F♯4(q) F♯4(e) G4(e) A4(e) B4(e) B4(e)` — rows 11 · after ^ · before $
+
+#### telisha_ketana
+
+- `B4(q) A4(e) G4(s) F♯4(s) ~F♯4(h)` — rows 9 · after ^ · before $
+
+#### telisha_gedola
+
+- `B4(q) A4(e) G4(s) F♯4(s) F♯4(h)` — rows 8 · after ^ · before $
+
+#### pazer
+
+- `G4(h) ~G4(e) D5(e,fermata) rest(q) B4(q) 3{A4(s) B4(s) A4(s)} G4(e) F♯4(e) ~F♯4(h)` — rows 7 · after ^ · before $
+
+#### munach_legarmeh
+
+- `G4(q)` — rows 2 · after ^ · before munach
+
+### Eicha · Western Ashkenazi (`je_eicha_western`)
+
+#### mercha
+
+- `A4(dq) B4(e) C5(s) 3!{C5(s) F♯4(e) B4(e)}` — rows 6 · after ^ · before tipcha
+- `E4(de) E4(s)` — rows 13 · after ^ · before tipcha
+- `A4(de) A4(s)` — rows 13 · after tipcha · before sof_pasuk
+
+#### tipcha
+
+- `A4(e) A4(e)` — rows 6 · after mercha · before munach
+- `A4(dq) B4(e) C5(e) ~C5(de) B4(s) A4(e)` — rows 13 · after mercha · before mercha
+
+#### munach
+
+- `G4(e) 3{F♯4(s) G4(s) A4(s)} G4(h) B4(q)` — rows 2 · after munach_legarmeh · before revia
+- `B4(q)` — rows 6 · after tipcha · before etnachta
+
+#### etnachta
+
+- `3{G4(e) G4(e) F♯4(e)} E4(q,fermata)` — rows 6 · after munach · before $
+
+#### sof_pasuk
+
+- `B4(dq) G4(e) F♯4(e) E4(q,fermata)` — rows 13 · after mercha · before $
+
+#### mahpach
+
+- `D4(e) ~G4(e) G4(e)` — rows 3 · after ^ · before pashta
+
+#### pashta
+
+- `B4(e) E5(q) ~D5(h) G4(q)` — rows 3 · after mahpach · before zakef_katon
+
+#### yetiv
+
+- `B4(e) E5(dq) ~D5(e) rest(e) G4(e)` — rows 4 · after ^ · before zakef_katon
+
+#### zakef_katon
+
+- `G4(e) A4(e) B4(e) ~G4(e)` — rows 3, 4 · after pashta, yetiv · before $
+
+#### zakef_gadol
+
+- `B4(e) B4(e) B4(e) D4(e) ~G4(e) ~G4(h) D4(dq) D4(s)` — rows 5 · after ^ · before $
+
+#### zarka
+
+- `E5(q) E5(q) 3{D5(e) C5(e) B4(e)} A4(q) C5(q)` — rows 1 · after ^ · before segol
+
+#### segol
+
+- `C5(q) ~A4(h)` — rows 1 · after zarka · before $
+
+#### revia
+
+- `E5(q) ~D5(h) B4(q) B4(e) A4(e) 3{G4(s) F♯4(s) G4(s)} E4(e) D4(q) D4(e)` — rows 2 · after munach · before $
+
+#### darga
+
+- `C5(de) C5(s) 3{E5(s) D5(s) C5(s)} 3{B4(s) G4(s) A4(s)} B4(e) A4(e) ~A4(e)` — rows 12 · after ^ · before tevir
+
+#### tevir
+
+- `E4(e) 3{E4(s) D4(s) E4(s)} G4(dh)` — rows 12 · after darga · before $
+
+#### kadma
+
+- `D5(dq) D5(e) B4(e) E5(e) ~D5(e)` — rows 10 · after ^ · before geresh
+
+#### geresh
+
+- `C5(h) D5(q) A4(q)` — rows 10 · after kadma · before $
+
+#### gershayim
+
+- `D5(q) ~D5(s) C5(s) B4(s) C5(s) D5(e) D5(e)` — rows 11 · after ^ · before $
+
+#### telisha_ketana
+
+- `G4(q) G4(e) E4(s) F♯4(s) G4(s) A4(s) G4(e) B4(q)` — rows 9 · after ^ · before $
+
+#### telisha_gedola
+
+- `G4(de) B4(s) 3{B4(e) A4(e) B4(e)} A4(e) A4(e) ~A4(e)` — rows 8 · after ^ · before $
+
+#### pazer
+
+- `B4(e) ~B4(h) D4(q) G4(e) ~G4(s) A4(s) B4(s) C5(s) D5(s) C5(s) B4(s) A4(s) B4(s) A4(s) D5(s) B4(s) A4(h) ~A4(q) rest(q)` — rows 7 · after ^ · before $
+
+#### munach_legarmeh
+
+- `G4(q)` — rows 2 · after ^ · before munach
+
+### Eicha · Spanish & Portuguese (`je_eicha_sp`)
+
+#### mercha
+
+- `G4(dq) A4(e)` — rows 6 · after ^ · before tipcha
+- `E4(de) F♯4(s)` — rows 13, 13 · after ^, tipcha · before tipcha, sof_pasuk
+
+#### tipcha
+
+- `3{G4(s) A4(s) G4(s)} F♯4(s) E4(e) ~E4(e) E4(e)` — rows 6 · after mercha · before munach
+- `G4(q) A4(e) G4(e) 3!{A4(s) G4(s)} F♯4(s) E4(s)` — rows 13 · after mercha · before mercha
+
+#### munach
+
+- `A4(h) ~E5(e) A4(e) rest(e) A4(q)` — rows 2 · after munach_legarmeh · before revia
+- `F♯4(q)` — rows 6 · after tipcha · before etnachta
+
+#### etnachta
+
+- `3{F♯4(s) G4(s) F♯4(s)} E4(s) D4(s) E4(dq,fermata)` — rows 6 · after munach · before $
+
+#### sof_pasuk
+
+- `E4(e) D4(e) C4(e) D4(e) E4(q,fermata)` — rows 13 · after mercha · before $
+
+#### mahpach
+
+- `B4(s) D5(s) C5(s) B4(e)` — rows 3 · after ^ · before pashta
+
+#### pashta
+
+- `B4(q) B4(s) D5(s) C5(s) B4(s) ~A4(h) D4(q)` — rows 3 · after mahpach · before zakef_katon
+
+#### yetiv
+
+- `B4(e) B4(e) ~A4(e) A4(e) G4(q) A4(e)` — rows 4 · after ^ · before zakef_katon
+
+#### zakef_katon
+
+- `A4(q) G4(e) A4(e) A4(e) ~E4(e)` — rows 3, 4 · after pashta, yetiv · before $
+
+#### zakef_gadol
+
+- `E4(e) A4(e) G♯4(e) ~G4(e) A4(e) A4(e) ~E4(e) E4(dq) F♯4(s)` — rows 5 · after ^ · before $
+
+#### zarka
+
+- `D5(q) D5(dh) A4(q)` — rows 1 · after ^ · before segol
+
+#### segol
+
+- `G♯4(e) A4(e) F♯4(h)` — rows 1 · after zarka · before $
+
+#### revia
+
+- `A4(h) ~E5(e) A4(e) rest(e) A4(e) G♯4(e) A4(e) A4(e) F♯4(e) F♯4(e) E4(q) E4(e) rest(e)` — rows 2 · after munach · before $
+
+#### darga
+
+- `F♯4(de) F♯4(s) E4(e) F♯4(e) E4(e) D4(e) C4(dq) D4(e)` — rows 12 · after ^ · before tevir
+
+#### tevir
+
+- `E4(e) 3!{F♯4(s) E4(s)} D♯4(s) F♯4(s) E4(e)` — rows 12 · after darga · before $
+
+#### kadma
+
+- `A4(q) 3{A4(s) B4(s) A4(s)} G♯4(de) A4(s) A4(q) A4(e) E4(e)` — rows 10 · after ^ · before geresh
+
+#### geresh
+
+- `G♯4(e) A4(e) ~A4(h) E4(q)` — rows 10 · after kadma · before $
+
+#### gershayim
+
+- `A4(q) 3{A4(s) B4(s) A4(s)} G♯4(q) A4(q) A4(e) E4(e)` — rows 11 · after ^ · before $
+
+#### telisha_ketana
+
+- `E4(q) E4(de) G4(32) D4(s) E4(s) D4(s) ~D4(h) A4(q)` — rows 9 · after ^ · before $
+
+#### telisha_gedola
+
+- `E4(q) E4(de) D4(s) E4(s) D4(s) D4(h)` — rows 8 · after ^ · before $
+
+#### pazer
+
+- `3{G4(s) F♯4(s) E4(s)} E4(h) E4(q) E4(q) F♯4(e) G4(e) A4(q) B4(s) A4(s) G4(s) F♯4(s) ~F♯4(h) rest(q)` — rows 7 · after ^ · before $
+
+#### munach_legarmeh
+
+- `A4(q)` — rows 2 · after ^ · before munach
+
+### Eicha · Syrian (Egypt & Syria) (`je_eicha_syria`)
+
+#### mercha
+
+- `B4(q) B4(e)` — rows 6 · after ^ · before tipcha
+- `A4(de) A4(s)` — rows 13 · after ^ · before tipcha
+- `G4(de) G4(s)` — rows 13 · after tipcha · before sof_pasuk
+
+#### tipcha
+
+- `G4(q) G4(e)` — rows 6 · after mercha · before munach
+- `B4(q) A4(e) A4(e) G4(e)` — rows 13 · after mercha · before mercha
+
+#### munach
+
+- `A4(h) ~E5(e) A4(e) rest(e) A4(q)` — rows 2 · after munach_legarmeh · before revia
+- `G4(q)` — rows 6 · after tipcha · before etnachta
+
+#### etnachta
+
+- `A4(e) A4(e) A4(q,fermata)` — rows 6 · after munach · before $
+
+#### sof_pasuk
+
+- `B4(q) G4(e) A4(q,fermata)` — rows 13 · after mercha · before $
+
+#### mahpach
+
+- `A4(q) A4(e) D5(e)` — rows 3 · after ^ · before pashta
+
+#### pashta
+
+- `A4(q) F5(e) E5(e) ~E5(h) A4(q)` — rows 3 · after mahpach · before zakef_katon
+
+#### yetiv
+
+- `A4(e) D5(e) A4(q)` — rows 4 · after ^ · before zakef_katon
+
+#### zakef_katon
+
+- `C5(e) ~D5(e) B4(s) ~B4(s) A4(q)` — rows 3, 4 · after pashta, yetiv · before $
+
+#### zakef_gadol
+
+- `E5(e) D5(e) C5(e) B4(e) A4(q) A4(dq) A4(s)` — rows 5 · after ^ · before $
+
+#### zarka
+
+- `D5(q) D5(dh) E5(q)` — rows 1 · after ^ · before segol
+
+#### segol
+
+- `E5(q) 3{D5(e) C5(e) B4(e)} A4(h)` — rows 1 · after zarka · before $
+
+#### revia
+
+- `A4(h) ~E5(e) A4(e) rest(e) D5(q) 3{D5(e) C5(e) B4(e)} A4(q) A4(e) rest(e)` — rows 2 · after munach · before $
+
+#### darga
+
+- `G4(de) G4(s) G4(dh) G4(q)` — rows 12 · after ^ · before tevir
+
+#### tevir
+
+- `G4(e) 3{G4(e) F♯4(e) G4(e)} A4(h)` — rows 12 · after darga · before $
+
+#### kadma
+
+- `F5(dq) E5(e) D5(q) C5(e) A4(e)` — rows 10 · after ^ · before geresh
+
+#### geresh
+
+- `A4(h) rest(q) rest(q) C5(h) A4(q)` — rows 10 · after kadma · before $
+
+#### gershayim
+
+- `A4(q) F5(q) E5(e) D5(q) C5(e) A4(e) A4(dh)` — rows 11 · after ^ · before $
+
+#### telisha_ketana
+
+- `E5(q) 3{D5(e) C5(e) B4(e)} A4(h) A4(q)` — rows 9 · after ^ · before $
+
+#### telisha_gedola
+
+- `E5(q) D5(e) 3{C5(e) C5(e) A4(e)} A4(h)` — rows 8 · after ^ · before $
+
+#### pazer
+
+- `D5(e) 3{C5(e) B4(e) A4(e)} A4(h)` — rows 7 · after ^ · before $
+
+#### munach_legarmeh
+
+- `A4(q)` — rows 2 · after ^ · before munach
+
+### Ruth · Spanish & Portuguese (`je_ruth_sp`)
+
+#### mercha
+
+- `3{A4(s) B4(s) A4(s)} G4(e) F♯4(e)` — rows 6 · after ^ · before tipcha
+- `A4(de) B4(s)` — rows 13 · after ^ · before tipcha
+- `F♯4(de) F♯4(s)` — rows 13 · after tipcha · before sof_pasuk
+
+#### tipcha
+
+- `F♯4(s) 3{G4(s) A4(s) G4(s)} F♯4(e) E4(e) F♯4(e)` — rows 6 · after mercha · before munach
+- `3{A4(s) B4(s) A4(s)} G4(e) F♯4(e) F♯4(s) 3{F♯4(s) G4(s) F♯4(s)} E4(e)` — rows 13 · after mercha · before mercha
+
+#### munach
+
+- `F♯4(h) ~D5(e) F♯4(e) rest(e) G4(q)` — rows 2 · after munach_legarmeh · before revia
+- `F♯4(q)` — rows 6 · after tipcha · before etnachta
+
+#### etnachta
+
+- `F♯4(e) D4(e) F♯4(q,fermata)` — rows 6 · after munach · before $
+
+#### sof_pasuk
+
+- `F♯4(q) F♯4(s) D4(s) F♯4(q,fermata)` — rows 13 · after mercha · before $
+
+#### mahpach
+
+- `3{B4(s) C5(s) B4(s)} F♯4(e) ~F♯4(e) B4(e)` — rows 3 · after ^ · before pashta
+
+#### pashta
+
+- `B4(e) 3{A4(s) B4(s) A4(s)} G4(h) F♯4(q)` — rows 3 · after mahpach · before zakef_katon
+
+#### yetiv
+
+- `F♯4(e) B4(dq) A4(e) A4(dq) G4(e)` — rows 4 · after ^ · before zakef_katon
+
+#### zakef_katon
+
+- `A4(dq) G4(e) G4(e) 3{A4(s) B4(s) A4(s)} F♯4(e) ~F♯4(e)` — rows 3, 4 · after pashta, yetiv · before $
+
+#### zakef_gadol
+
+- `B4(e) A4(e) ~G4(e) A4(e) 3{G4(s) A4(s) G4(s)} 3{F♯4(s) G4(s) F♯4(s)} F♯4(dq) B4(s)` — rows 5 · after ^ · before $
+
+#### zarka
+
+- `F♯4(q) 3{B4(e) C5(e) B4(e)} A4(s) B4(s) G4(e) A4(q) C5(e) A4(e)` — rows 1 · after ^ · before segol
+
+#### segol
+
+- `G4(q) ~F♯4(h)` — rows 1 · after zarka · before $
+
+#### revia
+
+- `F♯4(h) ~D5(e) F♯4(e) rest(e) F♯4(q) 3{B4(s) C5(s) B4(s)} A4(e) F♯4(s) G4(s) A4(s) 3{G4(s) F♯4(s) G4(s)} F♯4(e) ~F♯4(e) F♯4(e)` — rows 2 · after munach · before $
+
+#### darga
+
+- `G4(de) G4(s) G4(e) A4(e) G4(h) G4(q)` — rows 12 · after ^ · before tevir
+
+#### tevir
+
+- `E4(e) F♯4(e) 3{G4(e) A4(e) G4(e)} F♯4(q)` — rows 12 · after darga · before $
+
+#### kadma
+
+- `B4(e) C5(s) B4(s) A4(e) G4(e) A4(q) G4(e) A4(s) G4(s)` — rows 10 · after ^ · before geresh
+
+#### geresh
+
+- `F♯4(h) rest(q) rest(q) A4(q) G4(e) A4(s) G4(s)` — rows 10 · after kadma · before $
+
+#### gershayim
+
+- `F♯4(q) F♯4(q) B4(e) C5(s) B4(s) A4(e) G4(s) A4(e) G4(s) 3!{A4(s) G4(s)} F♯4(dh)` — rows 11 · after ^ · before $
+
+#### telisha_ketana
+
+- `G4(q) F♯4(e) G4(e) A4(e) 3{B4(e) A4(e) G4(e)} F♯4(e) F♯4(q)` — rows 9 · after ^ · before $
+
+#### telisha_gedola
+
+- `G4(q) E4(e) G4(s) A4(s) 3{B4(e) A4(e) G4(e)}` — rows 8 · after ^ · before $
+
+#### pazer
+
+- `3{G4(s) F♯4(s) E4(s)} F♯4(h) G4(q) F♯4(e) ~F♯4(h) ~F♯4(q) A4(q) 3{B4(s) C5(s) B4(s)} A4(e) ~A4(e) G4(e) F♯4(e)` — rows 7 · after ^ · before $
+
+#### munach_legarmeh
+
+- `G4(q)` — rows 2 · after ^ · before munach
+
+### Ketuvim · Baghdadi (`je_ketuvim_baghdad`)
+
+#### mercha
+
+- `G4(e) F♯4(s) E4(s) E4(e)` — rows 6 · after ^ · before tipcha
+- `A4(de) A4(s)` — rows 13, 13 · after ^, tipcha · before tipcha, sof_pasuk
+
+#### tipcha
+
+- `E4(e)` — rows 6 · after mercha · before munach
+- `G4(q) F♯4(s) E4(s) E4(q)` — rows 13 · after mercha · before mercha
+
+#### munach
+
+- `E4(h) ~C♯5(e) E4(e) rest(e) F♯4(q)` — rows 2 · after munach_legarmeh · before revia
+- `A4(q)` — rows 6 · after tipcha · before etnachta
+
+#### etnachta
+
+- `A4(e) A4(e) G4(e) F♯4(e,fermata)` — rows 6 · after munach · before $
+
+#### sof_pasuk
+
+- `G4(q) A4(e) G4(e) F♯4(q,fermata)` — rows 13 · after mercha · before $
+
+#### mahpach
+
+- `D5(q) B4(e) A4(q)` — rows 3 · after ^ · before pashta
+
+#### pashta
+
+- `B4(q) 3{B4(s) A4(s) B4(s)} A4(s) ~A4(h) F♯4(q)` — rows 3 · after mahpach · before zakef_katon
+
+#### yetiv
+
+- `F♯4(e) A4(q) F♯4(e) A4(q) G4(e)` — rows 4 · after ^ · before zakef_katon
+
+#### zakef_katon
+
+- `G4(e) F♯4(q)` — rows 3, 4 · after pashta, yetiv · before $
+
+#### zakef_gadol
+
+- `B4(e) A4(q) B4(s) A4(s) G4(s) F♯4(s) G4(e) ~F♯4(e) A4(dq) A4(s)` — rows 5 · after ^ · before $
+
+#### zarka
+
+- `G4(q) A4(dq) G4(e) A4(q) A4(q)` — rows 1 · after ^ · before segol
+
+#### segol
+
+- `G4(q) ~F♯4(h)` — rows 1 · after zarka · before $
+
+#### revia
+
+- `E4(h) ~C♯5(e) E4(e) rest(e) G4(dq) F♯4(e) F♯4(q)` — rows 2 · after munach · before $
+
+#### darga
+
+- `F♯4(de) D4(s) F♯4(h) G4(q)` — rows 12 · after ^ · before tevir
+
+#### tevir
+
+- `A4(e) G4(e) A4(h)` — rows 12 · after darga · before $
+
+#### kadma
+
+- `G4(q) A4(dq) A4(e) A4(e) G4(e)` — rows 10 · after ^ · before geresh
+
+#### geresh
+
+- `F♯4(h) rest(q) G4(h) F♯4(q)` — rows 10 · after kadma · before $
+
+#### gershayim
+
+- `F♯4(q) B4(de) A4(s) A4(de) F♯4(s) G4(e) F♯4(e)` — rows 11 · after ^ · before $
+
+#### telisha_ketana
+
+- `F♯4(q) E4(q) G4(q) F♯4(q) G4(q)` — rows 9 · after ^ · before $
+
+#### telisha_gedola
+
+- `G4(q) F♯4(e) G4(e) A4(h)` — rows 8 · after ^ · before $
+
+#### pazer
+
+- `G4(e) E4(e) F♯4(e) G4(e) A4(q)` — rows 7 · after ^ · before $
+
+#### munach_legarmeh
+
+- `F♯4(q)` — rows 2 · after ^ · before munach
 
 ## The Trope Tutor's staffs against their rows
 

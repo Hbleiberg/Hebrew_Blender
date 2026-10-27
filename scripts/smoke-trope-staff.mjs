@@ -226,4 +226,80 @@ const row12 = (() => {
   ok('rtl: the reflecting group, every glyph and rest upright, anchors swapped; rtl:false and absent draw the same LTR tree');
 }
 
+// 8. the other traditions (docs/trope-traditions.md): they load beside the six, their fingerprints are the builder's,
+// a tradition's own spelling draws its chromatic notes as its rows write them, pickups and fermatas lay out, and a
+// mark a tradition lacks is drawn from the chart after it, marked as borrowed.
+{
+  const mk = (tag) => ({ tag, attrs: {}, children: [], style: {}, textContent: '', setAttribute(k, v) { this.attrs[k] = String(v); }, appendChild(c) { this.children.push(c); return c; } });
+  const api3 = vm.runInNewContext(src + '\n;({ _tradSystemsFrom, tropeSystemFingerprint, tropeFirstFigure, tropeFigureRow, motifPitchPos, shiftedKey, layoutPhraseStaff, renderPhraseStaff, tropeContextsOf, tropeChooseFigures, tropeBuildReadingRow, _phraseSetsFrom, TROPE_TRAD_GROUPS, TROPE_GROUP_BASE, TROPE_MELODIES })',
+    { document: { createElementNS: (ns, tag) => mk(tag) }, console, crypto: globalThis.crypto, TextEncoder });
+  const file = JSON.parse(readFileSync(join(root, 'data/trope/trope_phrases.json'), 'utf8'));
+  const trads = api3._tradSystemsFrom(file);
+  const ids = Object.keys(file.melodies).filter((m) => !MELS.includes(m));
+  same(Object.keys(trads), ids, 'every tradition of the file loads, in its order');
+  assert.equal(ids.length, 20, 'twenty traditions');
+  for (const id of ids) {
+    assert.ok(api3.TROPE_TRAD_GROUPS.includes(trads[id].group), id + ' has a reading');
+    assert.equal(trads[id].rows.length, file.melodies[id].rows.length, id + ': every row validates');
+    assert.equal(await api3.tropeSystemFingerprint(trads[id]), file.melodies[id].fp, id + ': the page fingerprints what the builder did');
+  }
+  same(Object.keys(api3._phraseSetsFrom(file)), MELS, 'the six charts\' loader still returns the six alone');
+  const approvals = JSON.parse(readFileSync(join(root, 'data/trope/trope_approvals.json'), 'utf8'));
+  same(Object.keys(approvals.approved), ids, 'the approvals file names every tradition, in order');
+  ok('20 traditions load beside the six; each fingerprint equals the builder\'s; the approvals file names them all');
+  // a tampered row changes the fingerprint (an approval never covers rows it was not given)
+  const t2 = api3._tradSystemsFrom(JSON.parse(JSON.stringify(file).replace('"je_torah_sp":{', '"je_torah_sp":{"x":0,')));
+  const tampered = JSON.parse(JSON.stringify(file)); tampered.melodies.je_torah_sp.rows[0].notes[0].p += 1;
+  assert.notEqual(await api3.tropeSystemFingerprint(api3._tradSystemsFrom(tampered).je_torah_sp), file.melodies.je_torah_sp.fp, 'a moved note changes it');
+  assert.equal(await api3.tropeSystemFingerprint(t2.je_torah_sp), file.melodies.je_torah_sp.fp, 'a field outside key, chroma and rows does not');
+  ok('the fingerprint follows the notes and nothing else');
+  // spelling: the S&P Torah column's raised fifth is G♯ in C and B♮ in E♭ (moved up three half steps); the charts' rule would write A♭ and C♭
+  const sp = trads.je_torah_sp;
+  same(sp.chroma, { 8: [4, 1] }, 'je_torah_sp spells the minor sixth as a raised fifth');
+  const at = (p, key, chroma) => { const o = motifPitchPos(p, key, chroma); return 'BCDEFGA'[((o.step % 7) + 7) % 7] + o.acc; };
+  const { motifPitchPos } = api3;
+  assert.equal(at(-3, 'C', sp.chroma), 'G♯'); assert.equal(at(-3, 'C'), 'A♭', 'control: the charts\' rule');
+  assert.equal(api3.shiftedKey('C', 3), 'Eb');
+  assert.equal(at(0, 'Eb', sp.chroma), 'B♮'); assert.equal(at(0, 'Eb'), 'C♭', 'control');
+  const r3 = sp.rows.find((r) => r.n === '3'), L3 = api3.layoutPhraseStaff(r3, 'C', 0, null, { chroma: sp.chroma });
+  assert.ok(L3.notes.some((o) => !o.rest && o.accText === '♯' && ((o.step % 7) + 7) % 7 === 5), 'row 3 draws G♯ with its sharp');
+  const L3e = api3.layoutPhraseStaff(r3, 'Eb', 3, null, { chroma: sp.chroma });
+  assert.ok(L3e.notes.some((o) => !o.rest && o.accText === '♮' && ((o.step % 7) + 7) % 7 === 0), 'moved to E♭, the same note is B♮');
+  ok('je_torah_sp: G♯ in C, B♮ in E♭ (+3) with its chroma; A♭ / C♭ without it');
+  // pickups and fermatas (Spiro): drawn in parentheses, unbeamed, stems up; a fermata above
+  const spiro = trads.spiro_hhd, r2 = spiro.rows.find((r) => r.n === '2');
+  const L2 = api3.layoutPhraseStaff(r2, 'C', 0);
+  const opt = L2.notes.filter((o) => o.opt), ferm = L2.notes.filter((o) => o.ferm);
+  assert.ok(opt.length >= 2 && opt.every((o) => o.beam === undefined && o.up), 'pickups are unbeamed with their stems up');
+  assert.equal(ferm.length, 1); assert.ok(ferm[0].fermY < ferm[0].y - 4, 'the fermata stands above its note');
+  const svg = api3.renderPhraseStaff(r2, { key: 'C', shift: 0 });
+  const cls = []; const walk = (el) => { if (el.attrs && el.attrs.class) cls.push(el.attrs.class); (el.children || []).forEach(walk); }; walk(svg);
+  assert.equal(cls.filter((c) => c === 'tu-popt').length, opt.length * 2, 'two parentheses a pickup');
+  assert.equal(cls.filter((c) => c === 'tu-pferm').length, 1, 'one fermata');
+  const plainRow = JSON.parse(JSON.stringify(r2)); plainRow.notes.forEach((x) => { delete x.opt; delete x.f; });
+  const cls0 = []; const walk0 = (el) => { if (el.attrs && el.attrs.class) cls0.push(el.attrs.class); (el.children || []).forEach(walk0); }; walk0(api3.renderPhraseStaff(plainRow, { key: 'C', shift: 0 }));
+  assert.ok(!cls0.includes('tu-popt') && !cls0.includes('tu-pferm'), 'control: none without the fields');
+  ok('Spiro row 2: pickups in parentheses, unbeamed, stems up; one fermata over its last note');
+  // a Learn card's figure: the mark's first figure, alone
+  const ff = api3.tropeFirstFigure(trads.cons_torah, 'munach');
+  same(ff, { n: '1a', ui: 2 });
+  const fr = api3.tropeFigureRow(trads.cons_torah, ff.n, ff.ui);
+  assert.equal(fr.units.length, 1); assert.equal(fr.units[0].k, 'munach'); assert.equal(fr.notes.length, 3); assert.ok(!('words' in fr));
+  assert.equal(api3.tropeFirstFigure(trads.cons_torah, 'pazer'), null, 'cons_torah prints no pazer');
+  ok('tropeFirstFigure / tropeFigureRow: Common-melody munach is row 1a\'s, three notes; no pazer');
+  // fallbacks: the Common melody lacks pazer, so its figure comes from the year-round chart, marked fb
+  const units = [{ k: 'pazer', ci: 0, pi: 0 }, { k: 'tipcha', ci: 1, pi: 1 }, { k: 'sof_pasuk', ci: 2, pi: 2 }];
+  const cctx = api3.tropeContextsOf(trads.cons_torah), tctx = api3.tropeContextsOf(sets.torah);
+  const picks = api3.tropeChooseFigures(units, cctx, { melody: 'cons_torah', fallbacks: [{ ctx: tctx, melody: 'torah' }] });
+  same(picks.map((p) => p.set), ['torah', 'cons_torah', 'cons_torah']);
+  assert.equal(api3.tropeChooseFigures(units, cctx, { melody: 'cons_torah' })[0], null, 'without fallbacks pazer has no figure');
+  const all = Object.assign({}, sets, { cons_torah: trads.cons_torah });
+  const row = api3.tropeBuildReadingRow(units, picks, [{ pieces: [0] }, { pieces: [1] }, { pieces: [2] }], all, { main: 'cons_torah' });
+  same(row.units.map((u) => !!u.fb), [true, false, false]);
+  assert.ok(!api3.tropeBuildReadingRow(units, picks, [{ pieces: [0] }, { pieces: [1] }, { pieces: [2] }], all, {}).units.some((u) => 'fb' in u), 'no main, no marks');
+  const bars = []; const walkB = (el) => { if (el.tag === 'rect') bars.push(el.attrs.class); (el.children || []).forEach(walkB); }; walkB(api3.renderPhraseStaff(row, { key: 'C', shift: 0, lyrics: false }));
+  same(bars.map((c) => / is-fb/.test(c)), [true, false, false]);
+  ok('a mark a tradition lacks is drawn from the fallback chart, its unit marked fb and its bar dashed');
+}
+
 console.log(`smoke-trope-staff: ${n} checks passed`);
