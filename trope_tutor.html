@@ -4335,6 +4335,8 @@ function dismissToast() {
     if (left < 6) left = 6;
     if (left + tw > window.innerWidth - 6) left = window.innerWidth - tw - 6;
     if (top < 6) top = r.bottom + 6;   // flip below if no room above
+    const vh = document.documentElement.clientHeight;   // no room below either (a phone held sideways): pin it inside the window
+    if (top + th > vh - 6) top = Math.max(6, vh - th - 6);
     t.style.left = left + 'px';
     t.style.top  = top  + 'px';
   }
