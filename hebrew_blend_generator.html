@@ -815,7 +815,9 @@ body.dark .hi-sun{display:inline-block;}
   }
   body.dark .gen-fab { background: #1e2535; }
   .gen-fab .btn { width: auto; min-width: 200px; margin: 0; }
-  .gen-fab.gen-fab-hidden { opacity: 0; pointer-events: none; }
+  /* Hidden also leaves the Tab order (visibility, once the fade ends): faded alone, Tab still landed on the invisible
+     duplicate Generate. Shown again, visibility returns at once and the opacity fades in. */
+  .gen-fab.gen-fab-hidden { opacity: 0; pointer-events: none; visibility: hidden; transition: opacity 0.15s, visibility 0s 0.15s; }
   /* Post-Generate actions ride the bar that is ALREADY pinned, rather than adding a second
      fixed element: after Generate, Print / PDF sat ~2,500px down the options sidebar while the
      worksheet rendered at viewport top (measured S299 at 1280 and 800 — #printBtn at 2472/2525
