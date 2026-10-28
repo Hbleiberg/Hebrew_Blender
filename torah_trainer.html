@@ -1510,7 +1510,10 @@ body.dark .form-row select, body.dark .form-row input[type="text"], body.dark .f
 /* The two drawer selects whose options outgrow the 170px cap: the transliteration Style ("Modern Israeli [DEFAULT]"
    showed as "…[DEFAU") and the Trope staff's Melody ("Year Round [Binder-Reform]" as "…[Binder-Re"). Their short
    labels leave the row room for the select's own width; on a phone-narrow drawer the Melody row wraps instead. */
-#optTranslitStyle, #optStaffMelody, #optStaffTradition { max-width:none; }
+#optTranslitStyle, #optStaffMelody { max-width:none; }
+/* The Tradition select's names run longer ("Common melody (Lithuanian) — unverified transcription", 363px): capped at
+   the row, it wraps under its label instead of spilling past the drawer's edge. */
+#optStaffTradition { max-width:100%; min-width:0; }
 /* The Tradition row (one of the other traditions, docs/trope-traditions.md): shown only while the reading's chart has one
    on offer; its source line under it, pinned English like a credit; a figure borrowed from the default chart (a mark the
    tradition prints none for) draws a dashed bar. */
