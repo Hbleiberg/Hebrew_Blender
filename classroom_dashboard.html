@@ -6959,6 +6959,7 @@ function mountSidebarResize(cfg) {
     const pointerBefore = settings.activeRosterId;
     const weatherWasHidden = !!settings.hideWeather;
     const placeBefore = settings.location;
+    const holidayBefore = settings.showHolidayCountdown, shabbatBefore = settings.showShabbatTimes;
     // Preserve schedule configuration — it must never be overwritten by loading a display preset
     // (Schedule Sync applies presets, so a preset carrying schedule state would clobber the very
     // schedule driving it; presetColors is shared class data on the same footing as rosters).
@@ -7038,6 +7039,18 @@ function mountSidebarResize(cfg) {
     renderWeather();
     if ((weatherWasHidden && !settings.hideWeather) || placeChanged) fetchWeather();   // as the switch does: nothing was fetched while the card was hidden
     if (placeChanged) fetchShabbat(true);
+    // The holiday countdown, the Shabbat times and the Omer line render outside the paths above, so they follow a
+    // starter, preset, .ivrit file or Schedule Sync period here as they follow their own switches (else the General
+    // starter kept a Chanukah countdown it turns off until midnight). Only a switch that changed fetches, cache-first.
+    if (settings.showHolidayCountdown !== holidayBefore) {
+      if (settings.showHolidayCountdown) fetchHolidays();
+      else document.getElementById('holidayCountdown').style.display = 'none';
+    }
+    if (settings.showShabbatTimes !== shabbatBefore && !placeChanged) {
+      if (settings.showShabbatTimes) fetchShabbat(false);
+      else document.getElementById('shabbatTimes').style.display = 'none';
+    }
+    updateOmerDisplay();
     applyTimerVisibility();
     applyStudentPickerVisibility();
     applyPanelLayout();   // reparent panels + recompute zone emptiness AFTER the visibility appliers above
