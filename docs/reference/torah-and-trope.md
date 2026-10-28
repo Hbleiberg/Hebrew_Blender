@@ -1107,8 +1107,9 @@ traditions were imported from, and was rebuilt on the suite's own pieces, so it 
   below 1000px: Escape and an outside click close it, focus goes to its first link and back to the button), the
   sections. The melody grid scrolls in its own box so its heading row and sign column both stay; the staffs are
   pinned `direction:ltr`, the rest mirrors in Hebrew. The header's wrap gate is the page's measured ceiling.
-- **The hub's Trope card** holds two links, so it is a group, not a link; the What's-new card's *Show me* finds the
-  Discover card by its `aria-labelledby`, never as the first `.page-card-group`.
+- **The hub's Trope card** holds two links, so it is a group, not a link; the What's-new card (its announcement
+  of the atlas) lists it first, and its *Show me* finds the Trope card by its `aria-labelledby` (never as the first
+  `.page-card-group`) and focuses the Atlas button.
 
 ## Recording sources — PocketTorah and Total Torah (`torah_trainer.html`)
 

@@ -436,8 +436,9 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
 <div class="wn-pop" id="wnPop" role="dialog" aria-modal="false" aria-labelledby="wnTitle" hidden>
   <button type="button" class="wn-x" id="wnClose" aria-label="Close" data-i18n-aria-label="home.whatsnew.close_aria"><svg class="hi hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
   <h2 class="wn-title" id="wnTitle" data-i18n="home.whatsnew.title">New on IvritSuite</h2>
-  <p class="wn-lede" data-i18n="home.whatsnew.lede">Two new tools, in the new Discover card:</p>
+  <p class="wn-lede" data-i18n="home.whatsnew.lede">A new reference in the Trope card, and two new tools in the Discover card:</p>
   <ul class="wn-list">
+    <li data-i18n-html="home.whatsnew.item_tropeatlas"><a href="trope_atlas.html">Trope Atlas</a>: every cantillation sign on a staff in each reading tradition, side by side, from today’s Reform and Conservative melodies to older Ashkenazi and Sephardi readings, and every staff plays aloud.</li>
     <li data-i18n-html="home.whatsnew.item_letterlearner"><a href="letter_learner.html">Letter Learner</a>: every Hebrew letter with a picture, words, its vowels read aloud, cursive and coloring sheets.</li>
     <li data-i18n-html="home.whatsnew.item_parshaemojis"><a href="parsha_emojis.html">Parsha Emojis</a>: an emoji drawing for every weekly parasha, with a summary and coloring sheets.</li>
   </ul>
@@ -2242,7 +2243,7 @@ function applyI18n() {
    who saw this one sees that one once. A first visit (no suite key in this browser before this load — read in <head>,
    before the page's own writes) marks the current id seen and shows nothing: the hub it just met already has the
    tools. The flag is set when the card shows, so a tab closed before a click does not bring it back. ── */
-const WN_ID = '2026-10-discover', WN_KEY = 'hebrewBlender_whatsNewSeen';
+const WN_ID = '2026-10-trope-atlas', WN_KEY = 'hebrewBlender_whatsNewSeen';
 function whatsNewInit() {
   let seen;
   try { seen = localStorage.getItem(WN_KEY); } catch (e) { return; }
@@ -2267,13 +2268,13 @@ function whatsNewInit() {
   document.getElementById('wnShow').addEventListener('click', () => {
     pop.hidden = true;
     document.removeEventListener('keydown', onKey);
-    const card = document.querySelector('.page-card-group[aria-labelledby="discoverTitle"]');
+    const card = document.querySelector('.page-card-group[aria-labelledby="tropeTitle"]');   // the newest: the Trope card's Atlas
     if (!card) return;
     const still = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
     card.scrollIntoView({ behavior: still ? 'auto' : 'smooth', block: 'center' });
     card.classList.remove('wn-flash'); void card.offsetWidth; card.classList.add('wn-flash');
     card.addEventListener('animationend', () => card.classList.remove('wn-flash'), { once: true });
-    const b = card.querySelector('.go-btn');
+    const b = card.querySelector('.go-btn[href="trope_atlas.html"]') || card.querySelector('.go-btn');
     if (b) b.focus({ preventScroll: true });
   });
   pop.hidden = false;
