@@ -883,6 +883,10 @@ footer details > summary:hover{text-decoration:underline;}   /* FAQ / How-To row
   #appSidebar{display:flex!important;width:100%;overflow-y:visible;border-inline-end:none;border-bottom:1px solid var(--border);order:2;}
   #mobileBar{display:flex;flex-direction:column;gap:8px;padding:10px 12px;background:var(--cream);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;}
   #mobileBar .search-wrap{margin:0;}
+  /* Keyboard focus the browser scrolls to the top edge lands clear of the sticky bar: Shift+Tab put 16–30 of 160 stops
+     wholly under its 127px (WCAG 2.4.11). --dict-mbar-h is its live height (the script after the bar's relocation).
+     (S564, pattern focus-hidden-under-a-sticky-bar) */
+  html{scroll-padding-block-start:calc(var(--dict-mbar-h,127px) + 8px);}
   .content{overflow-y:visible;padding:14px 12px;}
   .sidebar-toggle-btn,.sidebar-show-btn,#fsBtn,.sbr-split{display:none!important;}
   body{overflow-y:auto;}
@@ -6443,6 +6447,14 @@ function dictActiveGroupCount() {
   const onChange = e => (e.matches ? enterMobile() : exitMobile());
   if (mq.addEventListener) mq.addEventListener('change', onChange); else if (mq.addListener) mq.addListener(onChange);
   if (mq.matches) enterMobile();
+})();
+// The phone bar's live height, for the root's scroll-padding (the CSS beside #mobileBar): 0 while it is hidden.
+(function () {
+  const bar = document.getElementById('mobileBar');
+  if (!bar) return;
+  const set = () => document.documentElement.style.setProperty('--dict-mbar-h', bar.offsetHeight + 'px');
+  set();
+  if (window.ResizeObserver) new ResizeObserver(set).observe(bar); else window.addEventListener('resize', set);
 })();
 
 /* ===== Section 5: accessible tooltips (ported from torah_trainer.html) ===== */
