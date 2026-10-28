@@ -734,25 +734,25 @@ is shown to students only while it is approved; `trope_review.html` names the li
 | Tradition | Reading | Key | Rows | Lacks | Chroma | Fingerprint | Approval |
 |---|---|---|---|---|---|---|---|
 | Torah · Common melody (`cons_torah`) | torah | C | 31 | yetiv, zakef_gadol, geresh_muqdam, pazer | — | `20d78c0c4893` | approved |
-| Haftarah · Common melody (`cons_haftarah`) | haftarah | F | 36 | shalshelet, geresh_muqdam, karnei_parah, yerach_ben_yomo | — | `e0b224989bf8` | not approved |
-| High Holy Day Torah · Spiro (`spiro_hhd`) | hhd | C | 20 | shalshelet, geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo, munach_legarmeh | — | `3802db671fae` | not approved |
-| Torah · Western Ashkenazi (`je_torah_western`) | torah | G | 16 | geresh_muqdam | — | `49a2aabd7899` | not approved |
-| Torah · Ashkenazi 1518 (Reuchlin) (`je_torah_reuchlin`) | torah | G | 15 | shalshelet, geresh_muqdam | — | `7e4b1d6bec5e` | not approved |
-| Torah · Spanish & Portuguese (`je_torah_sp`) | torah | C | 15 | geresh_muqdam, karnei_parah, yerach_ben_yomo | {"8":[4,1]} | `5e06e4fb77fc` | not approved |
-| Torah · Moroccan (`je_torah_morocco`) | torah | C | 14 | geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo | — | `50626c6f0d63` | not approved |
-| Torah · Syrian (Egypt & Syria) (`je_torah_syria`) | torah | G | 14 | geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo | {"8":[4,1]} | `dc788799c8d7` | not approved |
-| Torah · Baghdadi (`je_torah_baghdad`) | torah | G | 16 | geresh_muqdam | {"8":[4,1]} | `678d640b232c` | not approved |
-| High Holy Day Torah · Western Ashkenazi (`je_hhd_western`) | hhd | G | 13 | shalshelet, geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo | — | `156389085c1b` | not approved |
-| Haftarah · Western Ashkenazi (`je_haf_western`) | haftarah | G | 13 | shalshelet, geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo | — | `d3570d929471` | not approved |
-| Haftarah · Spanish & Portuguese (`je_haf_sp`) | haftarah | G | 13 | shalshelet, geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo | {"8":[4,1]} | `b30fe9da2459` | not approved |
-| Haftarah · Baghdadi (`je_haf_baghdad`) | haftarah | D | 13 | shalshelet, geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo | — | `754031d18aac` | not approved |
-| Esther · Western Ashkenazi (`je_esther_western`) | esther | G | 13 | shalshelet, geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo | — | `fa7f4aac2552` | not approved |
-| Esther · Spanish & Portuguese (`je_esther_sp`) | esther | G | 13 | shalshelet, geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo | {"8":[4,1]} | `ca2e74d75513` | not approved |
-| Eicha · Western Ashkenazi (`je_eicha_western`) | eicha | G | 13 | shalshelet, geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo | — | `595b87cd9694` | not approved |
-| Eicha · Spanish & Portuguese (`je_eicha_sp`) | eicha | G | 13 | shalshelet, geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo | {"8":[4,1]} | `77f5dfb11d7c` | not approved |
-| Eicha · Syrian (Egypt & Syria) (`je_eicha_syria`) | eicha | C | 13 | shalshelet, geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo | — | `66d9fc2acc8e` | not approved |
-| Ruth · Spanish & Portuguese (`je_ruth_sp`) | megillot | G | 13 | shalshelet, geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo | — | `2494ebe042f1` | not approved |
-| Ketuvim · Baghdadi (`je_ketuvim_baghdad`) | megillot | G | 13 | shalshelet, geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo | — | `a425f7ff7afb` | not approved |
+| Haftarah · Common melody (`cons_haftarah`) | haftarah | F | 36 | shalshelet, geresh_muqdam, karnei_parah, yerach_ben_yomo | — | `e0b224989bf8` | approved |
+| High Holy Day Torah · Spiro (`spiro_hhd`) | hhd | C | 20 | shalshelet, geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo, munach_legarmeh | — | `3802db671fae` | approved |
+| Torah · Western Ashkenazi (`je_torah_western`) | torah | G | 16 | geresh_muqdam | — | `49a2aabd7899` | approved |
+| Torah · Ashkenazi 1518 (Reuchlin) (`je_torah_reuchlin`) | torah | G | 15 | shalshelet, geresh_muqdam | — | `7e4b1d6bec5e` | approved |
+| Torah · Spanish & Portuguese (`je_torah_sp`) | torah | C | 15 | geresh_muqdam, karnei_parah, yerach_ben_yomo | {"8":[4,1]} | `5e06e4fb77fc` | approved |
+| Torah · Moroccan (`je_torah_morocco`) | torah | C | 14 | geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo | — | `50626c6f0d63` | approved |
+| Torah · Syrian (Egypt & Syria) (`je_torah_syria`) | torah | G | 14 | geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo | {"8":[4,1]} | `dc788799c8d7` | approved |
+| Torah · Baghdadi (`je_torah_baghdad`) | torah | G | 16 | geresh_muqdam | {"8":[4,1]} | `678d640b232c` | approved |
+| High Holy Day Torah · Western Ashkenazi (`je_hhd_western`) | hhd | G | 13 | shalshelet, geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo | — | `156389085c1b` | approved |
+| Haftarah · Western Ashkenazi (`je_haf_western`) | haftarah | G | 13 | shalshelet, geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo | — | `d3570d929471` | approved |
+| Haftarah · Spanish & Portuguese (`je_haf_sp`) | haftarah | G | 13 | shalshelet, geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo | {"8":[4,1]} | `b30fe9da2459` | approved |
+| Haftarah · Baghdadi (`je_haf_baghdad`) | haftarah | D | 13 | shalshelet, geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo | — | `754031d18aac` | approved |
+| Esther · Western Ashkenazi (`je_esther_western`) | esther | G | 13 | shalshelet, geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo | — | `fa7f4aac2552` | approved |
+| Esther · Spanish & Portuguese (`je_esther_sp`) | esther | G | 13 | shalshelet, geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo | {"8":[4,1]} | `ca2e74d75513` | approved |
+| Eicha · Western Ashkenazi (`je_eicha_western`) | eicha | G | 13 | shalshelet, geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo | — | `595b87cd9694` | approved |
+| Eicha · Spanish & Portuguese (`je_eicha_sp`) | eicha | G | 13 | shalshelet, geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo | {"8":[4,1]} | `77f5dfb11d7c` | approved |
+| Eicha · Syrian (Egypt & Syria) (`je_eicha_syria`) | eicha | C | 13 | shalshelet, geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo | — | `66d9fc2acc8e` | approved |
+| Ruth · Spanish & Portuguese (`je_ruth_sp`) | megillot | G | 13 | shalshelet, geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo | — | `2494ebe042f1` | approved |
+| Ketuvim · Baghdadi (`je_ketuvim_baghdad`) | megillot | G | 13 | shalshelet, geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo | — | `a425f7ff7afb` | approved |
 
 **Printed 3s kept as written** (`3!{`, not a triplet — to check against the scan): Torah · Common melody #3a, Torah · Common melody #3c, Torah · Common melody #3e, Torah · Common melody #16, Haftarah · Common melody #6a, Torah · Moroccan #12, Torah · Moroccan #13, Torah · Baghdadi #9, High Holy Day Torah · Western Ashkenazi #13, Haftarah · Spanish & Portuguese #10, Haftarah · Baghdadi #10, Haftarah · Baghdadi #11, Haftarah · Baghdadi #12, Esther · Western Ashkenazi #1, Eicha · Western Ashkenazi #6, Eicha · Spanish & Portuguese #12, Eicha · Spanish & Portuguese #13, Ruth · Spanish & Portuguese #11.
 
