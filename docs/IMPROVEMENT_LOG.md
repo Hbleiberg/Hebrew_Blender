@@ -334,7 +334,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Awaiting the maintainer (an action or an answer only the maintainer can give; a session that resolves one moves it to Done)
 
-- [ ] P3 (**NEW — the maintainer's review, by design**) | trope_review.html, data/trope/trope_approvals.json | **20 trope traditions wait to be checked against their scans and approved one by one** (all `false`; AI-assisted transcriptions). Check especially the 18 printed 3s kept as written, the raised-fifth spellings of six JE columns (G♯ in C, D♯ in G) and the two Common-melody rows whose syllable moved; the 50 new HE strings are drafts. | found 2026-10-27
+- [ ] P3 (**NEW — the maintainer's review, by design**) | trope_review.html, data/trope/trope_approvals.json | **19 trope traditions wait to be checked against their scans and approved one by one** (`cons_torah` approved by the maintainer 2026-10-28; the rest `false`; AI-assisted transcriptions). Check especially the 14 printed 3s kept as written and the raised-fifth spellings of six JE columns (G♯ in C, D♯ in G); the 50 new HE strings are drafts. | found 2026-10-27
 
 - [ ] P3 (**NEW S560 C — GATE 4: short windows; deferred unattended; `c560/shots/short-zoom400-en-light.png`, `short-zoom400-he-dark.png`, `short-i13L-en-light.png`**) | flash_cards.html | **At 400% zoom (1280×1024 → 320×256) the sticky header (112–121px) and Start bar (136–138) leave the setup screen 8px in EN and none in HE** (1366×768 at 200%: 181–184 of 384; iPhone 13 landscape 140 of 342). …[full text: IMPROVEMENT_ARCHIVE.md]
 

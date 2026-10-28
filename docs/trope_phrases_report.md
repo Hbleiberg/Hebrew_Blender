@@ -733,7 +733,7 @@ is shown to students only while it is approved; `trope_review.html` names the li
 
 | Tradition | Reading | Key | Rows | Lacks | Chroma | Fingerprint | Approval |
 |---|---|---|---|---|---|---|---|
-| Torah · Common melody (`cons_torah`) | torah | C | 31 | yetiv, zakef_gadol, geresh_muqdam, pazer | — | `20d78c0c4893` | not approved |
+| Torah · Common melody (`cons_torah`) | torah | C | 31 | yetiv, zakef_gadol, geresh_muqdam, pazer | — | `20d78c0c4893` | approved |
 | Haftarah · Common melody (`cons_haftarah`) | haftarah | F | 36 | shalshelet, geresh_muqdam, karnei_parah, yerach_ben_yomo | — | `e0b224989bf8` | not approved |
 | High Holy Day Torah · Spiro (`spiro_hhd`) | hhd | C | 20 | shalshelet, geresh_muqdam, mercha_kefula, karnei_parah, yerach_ben_yomo, munach_legarmeh | — | `3802db671fae` | not approved |
 | Torah · Western Ashkenazi (`je_torah_western`) | torah | G | 16 | geresh_muqdam | — | `49a2aabd7899` | not approved |

@@ -1,7 +1,7 @@
 {"v":1,
 "note":"One line per tradition of docs/trope-traditions.md. false: shown to nobody but a ?preview=traditions visit, marked Unverified transcription. To approve one after checking it against its source on trope_review.html, replace its false with the 12-digit fingerprint that page shows (in quotes), and change nothing else. An approved tradition whose rows change later is hidden again until its new fingerprint is approved.",
 "approved":{
-  "cons_torah": false,
+  "cons_torah": "20d78c0c4893",
   "cons_haftarah": false,
   "spiro_hhd": false,
   "je_torah_western": false,
