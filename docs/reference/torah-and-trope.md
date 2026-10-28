@@ -1065,11 +1065,12 @@ from the "Ta'amei HaMikra Trope Atlas", transcribed from scans with AI help; the
 
 ## Trope Atlas (`trope_atlas.html`)
 
-A reference page, **unlisted** while it is new (`docs/reference/ops.md` → *An unlisted page*: `noindex, follow`, no
-sitemap block, no hub card or link from any page, not in `CORE_ASSETS`): every cantillation sign of the 21 books with
-its Hebrew, Ashkenazi and Sephardi names, Unicode, rank and role; one figure per sign in every offered melody (the
-melody table, a grid or stacked cards); every row of one melody at a time (the phrase browser, grouped by clause); the
-poetic (אמ״ת) signs; how to read the staffs; the sources. It began as the standalone "Ta'amei HaMikra Trope Atlas" the
+A reference page, reached from the hub's Trope card — a `role="group"` card like Discover, its two buttons the
+Tutor's and the Atlas's — and listed like any tool page (the sitemap, the hub's `ItemList` and
+`SiteNavigationElement`, `CORE_ASSETS`, its own `WebApplication` and `BreadcrumbList` JSON-LD): every cantillation sign
+of the 21 books with its Hebrew, Ashkenazi and Sephardi names, Unicode, rank and role; one figure per sign in every
+offered melody (the melody table, a grid or stacked cards); every row of one melody at a time (the phrase browser,
+grouped by clause); the poetic (אמ״ת) signs; how to read the staffs; the sources. It began as the standalone "Ta'amei HaMikra Trope Atlas" the
 traditions were imported from, and was rebuilt on the suite's own pieces, so it holds **no notes of its own**:
 
 - **Data and engine.** It fetches `data/trope/trope_phrases.json` with the tutor's `?v=` and the approvals file
@@ -1106,8 +1107,8 @@ traditions were imported from, and was rebuilt on the suite's own pieces, so it 
   below 1000px: Escape and an outside click close it, focus goes to its first link and back to the button), the
   sections. The melody grid scrolls in its own box so its heading row and sign column both stay; the staffs are
   pinned `direction:ltr`, the rest mirrors in Hebrew. The header's wrap gate is the page's measured ceiling.
-- **Launching it** is `ops.md`'s reverse list: the sitemap block, a hub card and `ItemList` entry, `CORE_ASSETS`,
-  `robots` back to `index, follow`, then both generators.
+- **The hub's Trope card** holds two links, so it is a group, not a link; the What's-new card's *Show me* finds the
+  Discover card by its `aria-labelledby`, never as the first `.page-card-group`.
 
 ## Recording sources — PocketTorah and Total Torah (`torah_trainer.html`)
 

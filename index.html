@@ -109,7 +109,7 @@
       "name": "IvritSuite Tools",
       "description": "Free Hebrew literacy tools offered by IvritSuite.",
       "itemListOrder": "https://schema.org/ItemListOrderAscending",
-      "numberOfItems": 10,
+      "numberOfItems": 11,
       "itemListElement": [
         { "@type": "ListItem", "position": 1, "name": "Hebrew Worksheet Generator", "url": "https://ivritsuite.com/hebrew_blend_generator.html", "description": "Create printable Hebrew decoding worksheets, bingo cards, and vocabulary drills with nikkud." },
         { "@type": "ListItem", "position": 2, "name": "Hebrew Word Lookup", "url": "https://ivritsuite.com/hebrew_dictionary.html", "description": "Browse and filter Hebrew vocabulary by theme, length, part of speech, era, and letter position." },
@@ -117,10 +117,11 @@
         { "@type": "ListItem", "position": 4, "name": "Hebrew Flash Cards", "url": "https://ivritsuite.com/flash_cards.html", "description": "Decode one, two, or three Hebrew letters at a time with full nikkud support." },
         { "@type": "ListItem", "position": 5, "name": "Torah Trainer", "url": "https://ivritsuite.com/torah_trainer.html", "description": "Read the weekly parsha with vowel coloring, transliteration, translation, and chanted-audio karaoke — plus the holiday readings and the five Megillot." },
         { "@type": "ListItem", "position": 6, "name": "Trope Tutor", "url": "https://ivritsuite.com/trope_tutor.html", "description": "Learn the Torah cantillation marks — symbols, Ashkenazi and Sephardi names, and melodies — with real chanted examples and three drill modes." },
-        { "@type": "ListItem", "position": 7, "name": "Hebrew Font Maker", "url": "https://ivritsuite.com/Hebrew_Font_Maker.html", "description": "Turn handwritten Hebrew letters into a real, installable font with nikkud and cantillation; export TTF, WOFF2, or UFO." },
-        { "@type": "ListItem", "position": 8, "name": "Letter Learner", "url": "https://ivritsuite.com/letter_learner.html", "description": "Free printable aleph bet coloring sheets for every Hebrew letter, plus a picture to remember it by, illustrated words, its vowels read aloud and cursive handwriting." },
-        { "@type": "ListItem", "position": 9, "name": "Parsha Emojis", "url": "https://ivritsuite.com/parsha_emojis.html", "description": "Free printable parsha coloring sheets for all 54 weekly Torah portions, each an emoji drawing with a one-sentence summary and why that picture was chosen." },
-        { "@type": "ListItem", "position": 10, "name": "Hebrew Teaching Resources", "url": "https://ivritsuite.com/resources.html", "description": "A curated directory of free Hebrew learning resources, printables, and Jewish education tools." }
+        { "@type": "ListItem", "position": 7, "name": "Trope Atlas", "url": "https://ivritsuite.com/trope_atlas.html", "description": "A side-by-side reference to the cantillation signs of the Hebrew Bible: each sign's names, rank and role, and its melody on a staff in every reading tradition, playable and movable into a common key." },
+        { "@type": "ListItem", "position": 8, "name": "Hebrew Font Maker", "url": "https://ivritsuite.com/Hebrew_Font_Maker.html", "description": "Turn handwritten Hebrew letters into a real, installable font with nikkud and cantillation; export TTF, WOFF2, or UFO." },
+        { "@type": "ListItem", "position": 9, "name": "Letter Learner", "url": "https://ivritsuite.com/letter_learner.html", "description": "Free printable aleph bet coloring sheets for every Hebrew letter, plus a picture to remember it by, illustrated words, its vowels read aloud and cursive handwriting." },
+        { "@type": "ListItem", "position": 10, "name": "Parsha Emojis", "url": "https://ivritsuite.com/parsha_emojis.html", "description": "Free printable parsha coloring sheets for all 54 weekly Torah portions, each an emoji drawing with a one-sentence summary and why that picture was chosen." },
+        { "@type": "ListItem", "position": 11, "name": "Hebrew Teaching Resources", "url": "https://ivritsuite.com/resources.html", "description": "A curated directory of free Hebrew learning resources, printables, and Jewish education tools." }
       ]
     },
     {
@@ -133,6 +134,7 @@
         "Hebrew Flash Cards",
         "Torah Trainer",
         "Trope Tutor",
+        "Trope Atlas",
         "Hebrew Font Maker",
         "Letter Learner",
         "Parsha Emojis",
@@ -145,6 +147,7 @@
         "https://ivritsuite.com/flash_cards.html",
         "https://ivritsuite.com/torah_trainer.html",
         "https://ivritsuite.com/trope_tutor.html",
+        "https://ivritsuite.com/trope_atlas.html",
         "https://ivritsuite.com/Hebrew_Font_Maker.html",
         "https://ivritsuite.com/letter_learner.html",
         "https://ivritsuite.com/parsha_emojis.html",
@@ -248,7 +251,7 @@ header .hright{margin-inline-start:auto;display:flex;gap:10px;align-items:center
 .page-card p{font-size:0.82rem;color:var(--muted);text-align:center;line-height:1.5;}
 .page-card .go-btn{margin-top:6px;background:var(--navy);color:var(--gold-light);border:none;border-radius:7px;padding:9px 28px;font-size:0.88rem;font-family:'Source Sans 3',sans-serif;font-weight:600;cursor:pointer;letter-spacing:0.02em;transition:background 0.15s;}
 .page-card:hover .go-btn{background:var(--gold);color:var(--navy);}
-/* The Discover card holds two links, so it is a role="group" div, not a link: the card keeps its hover frame, the
+/* The Discover and Trope cards hold two links each, so each is a role="group" div, not a link: the card keeps its hover frame, the
    buttons stack full width, and each lights on its own hover or keyboard focus instead of both at once. */
 .page-card-group{cursor:default;}
 .page-card-group .go-links{display:flex;flex-direction:column;align-items:stretch;gap:10px;width:100%;margin-top:6px;}
@@ -585,7 +588,8 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
       </span>
     </a>
 
-    <a class="page-card" href="trope_tutor.html">
+    <!-- Trope: the Tutor and the Atlas in one card, so the card is a group, not a link (a link cannot hold two links). -->
+    <div class="page-card page-card-group" role="group" aria-labelledby="tropeTitle">
       <div class="icon"><svg viewBox="0 0 64 64" width="58" height="58" aria-hidden="true" focusable="false" fill="none" stroke="var(--ik-ink)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M6 24 H58" stroke-width="1.2"/>
         <path d="M6 28 H58" stroke-width="1.2"/>
@@ -606,10 +610,13 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
         <path d="M114 78 162 75V125Q184 130 200 141Q215 152 223 168Q231 184 234 198Q236 212 236 230Q236 242 236 254Q235 265 234 276L187 279Q188 266 189 257Q190 248 190 237Q190 202 176 185Q162 168 137 168Q86 168 86 235Q86 244 86 254Q86 264 88 276L42 279Q39 258 39 235Q39 198 53 169Q70 134 114 125Z" transform="translate(42.01 9.58) scale(0.04)" fill="var(--ik-gold)" stroke="none"/>
         </g>
       </svg></div>
-      <h2 data-i18n="home.card.trope.name">Trope Tutor</h2>
+      <h2 id="tropeTitle" data-i18n="home.card.trope.name">Trope Tutor</h2>
       <p data-i18n="home.card.trope.desc">Learn the Torah cantillation marks (trope / te'amim) — symbols, Ashkenazi and Sephardi names, and melodies with real chanted examples — then drill yourself with three quiz modes.</p>
-      <div class="go-btn" data-i18n="home.card.trope.cta">Practice trope →</div>
-    </a>
+      <div class="go-links">
+        <a class="go-btn" href="trope_tutor.html" data-i18n="home.card.trope.cta">Practice trope →</a>
+        <a class="go-btn" href="trope_atlas.html" data-i18n="home.card.trope.cta_atlas">Trope Atlas →</a>
+      </div>
+    </div>
 
     <a class="page-card" href="Hebrew_Font_Maker.html">
       <div class="icon"><svg viewBox="0 0 64 64" width="58" height="58" aria-hidden="true" focusable="false" fill="none" stroke="var(--ik-ink)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -2260,7 +2267,7 @@ function whatsNewInit() {
   document.getElementById('wnShow').addEventListener('click', () => {
     pop.hidden = true;
     document.removeEventListener('keydown', onKey);
-    const card = document.querySelector('.page-card-group');
+    const card = document.querySelector('.page-card-group[aria-labelledby="discoverTitle"]');
     if (!card) return;
     const still = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
     card.scrollIntoView({ behavior: still ? 'auto' : 'smooth', block: 'center' });

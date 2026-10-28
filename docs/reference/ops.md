@@ -293,7 +293,7 @@ push, is what updates the live site.
   that session's commit. It's idempotent (re-running with no new commits is a no-op) and produces
   per-file dates. When you add a new page, add its `<url>` block to `sitemap.xml` first, then run
   the script. Sits alongside the `sw.js VERSION` bump in the end-of-session checklist above.
-- **An unlisted page** (today: `name_tags.html` and `trope_atlas.html`, while they are new) is a production page reached by its address
+- **An unlisted page** (today: `name_tags.html`, while it is new) is a production page reached by its address
   only: `<meta name="robots" content="noindex, follow">`, no `<url>` block in `sitemap.xml` (so neither generator
   ever lists it — both read their page set from the sitemap), no card, link or `ItemList` entry on `index.html`, and
   not in `sw.js` `CORE_ASSETS` (an unannounced page costs no visitor's install; it is still cached network-first on

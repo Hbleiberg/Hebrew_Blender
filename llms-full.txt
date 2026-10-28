@@ -284,6 +284,14 @@ Every line of the printed cantillation chart, marks as they are sung together, o
 
 ---
 
+## Trope Atlas
+
+https://ivritsuite.com/trope_atlas.html
+
+A side-by-side reference to the cantillation signs (te'amim) of the Hebrew Bible: every sign's Hebrew, Ashkenazi and Sephardi names, Unicode, rank and role; one figure for each sign in each reading tradition, from the Reform and Conservative Torah, Haftarah, High Holy Day and megillot melodies to the older Ashkenazi and Sephardi readings of the Jewish Encyclopedia's tables; every phrase pattern of a melody on a staff; and the poetic signs of Psalms, Proverbs and Job. Every staff plays aloud and moves into a common key for comparison.
+
+---
+
 ## Hebrew Font Maker
 
 https://ivritsuite.com/Hebrew_Font_Maker.html

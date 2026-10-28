@@ -3559,6 +3559,7 @@ home.card.torah.desc,"Read the weekly parsha with vowel coloring, transliteratio
 home.card.torah.name,Torah Trainer,מאמן התורה,tool card title,
 home.card.torah.sefaria_title,Texts from Sefaria,טקסטים מ-Sefaria,Sefaria attribution link tooltip,aria/title
 home.card.trope.cta,Practice trope →,תרגלו טעמים ←,tool card button,
+home.card.trope.cta_atlas,Trope Atlas →,אטלס הטעמים ←,Trope card's second button (the Trope Atlas: every sign in every melody side by side),
 home.card.trope.desc,"Learn the Torah cantillation marks (trope / te'amim) — symbols, Ashkenazi and Sephardi names, and melodies with real chanted examples — then drill yourself with three quiz modes.","למדו את טעמי המקרא (trope / te'amim) — הסימנים, השמות האשכנזיים והספרדיים, והמנגינות עם דוגמאות הקראה אמיתיות — ואז תרגלו את עצמכם בשלושה מצבי חידון.",tool card description,scope-ambiguous (card desc)
 home.card.trope.name,Trope Tutor,מאמן הטעמים,tool card title,
 home.contact_link,✉️ Contact & Support,✉️ יצירת קשר ותמיכה,link button,leading-emoji
