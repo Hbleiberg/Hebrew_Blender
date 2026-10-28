@@ -7715,6 +7715,12 @@ function mountSidebarResize(cfg) {
   function computeGroupSizes(total, mode, n) {
     n = Math.max(2, Math.floor(n) || 2);
     let numGroups = (mode === 'count') ? Math.min(Math.max(1, n), total) : Math.max(1, Math.floor(total / n));
+    // Groups of N: ⌊total/N⌋ groups put a small class in one group (6 present, N = 4 → one group of 6), so take one
+    // more group when its sizes stray less from N; a tie keeps the larger groups (pairs from an odd class: one trio).
+    if (mode !== 'count' && numGroups < total) {
+      const stray = g => Math.max(Math.abs(Math.floor(total / g) - n), Math.abs(Math.ceil(total / g) - n));
+      if (stray(numGroups + 1) < stray(numGroups)) numGroups++;
+    }
     const base = Math.floor(total / numGroups), rem = total % numGroups, sizes = [];
     for (let i = 0; i < numGroups; i++) sizes.push(base + (i < rem ? 1 : 0));
     return sizes;
