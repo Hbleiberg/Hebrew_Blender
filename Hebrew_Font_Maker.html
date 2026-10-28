@@ -7367,15 +7367,15 @@ function _boxBlurH(src, dst, w, h, r) {
     }
   }
 }
+// Row by row, one running sum per column (doubles, as the column-by-column walk kept them, added in the same order,
+// so the result is bit-identical): walking a column jumped a whole row in memory per pixel, and on a 12 MP phone
+// photo that one pass took 1.1 s of the 3.9 s the Trace step froze for.
 function _boxBlurV(src, dst, w, h, r) {
-  const win = 2 * r + 1;
-  for (let x = 0; x < w; x++) {
-    let acc = 0;
-    for (let y = -r; y <= r; y++) acc += src[Math.min(h - 1, Math.max(0, y)) * w + x];
-    for (let y = 0; y < h; y++) {
-      dst[y * w + x] = acc / win;
-      acc += src[Math.min(h - 1, y + r + 1) * w + x] - src[Math.max(0, y - r) * w + x];
-    }
+  const win = 2 * r + 1, acc = new Float64Array(w);
+  for (let y = -r; y <= r; y++) { const row = Math.min(h - 1, Math.max(0, y)) * w; for (let x = 0; x < w; x++) acc[x] += src[row + x]; }
+  for (let y = 0; y < h; y++) {
+    const row = y * w, add = Math.min(h - 1, y + r + 1) * w, sub = Math.max(0, y - r) * w;
+    for (let x = 0; x < w; x++) { dst[row + x] = acc[x] / win; acc[x] += src[add + x] - src[sub + x]; }
   }
 }
 /* Paper-background estimate: heavily blurred luminance (3 box-blur rounds ≈ Gaussian),
