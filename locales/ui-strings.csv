@@ -3973,6 +3973,7 @@ shared.nav.link_parshaemojis,parsha emojis and coloring pages →,אימוג׳י
 shared.nav.link_resources,free Hebrew teaching resources →,משאבים חינמיים להוראת עברית ←,Related-tools nav link,shared
 shared.nav.link_torah,Torah reading practice →,תרגול קריאה בתורה ←,Related-tools nav link,shared
 shared.nav.link_trope,learn Torah trope (cantillation) →,למדו טעמי המקרא ←,Related-tools nav link,shared
+shared.nav.link_tropeatlas,every trope melody side by side →,כל נגינות הטעמים זו לצד זו ←,Related-tools nav link (the Trope Atlas),shared
 shared.nav.link_worksheets,printable Hebrew worksheets →,דפי עבודה להדפסה בעברית ←,Related-tools nav link,shared
 shared.resize.sidebar_title,Drag to resize the sidebar (double-click to reset),גרירה לשינוי רוחב הסרגל (לחיצה כפולה לאיפוס),Sidebar resize splitter — title + aria-label,"shared (carriers: dictionary, generator)"
 shared.resize.drawer_title,Drag to resize the settings drawer (double-click to reset),גרירה לשינוי רוחב חלונית ההגדרות (לחיצה כפולה לאיפוס),Settings-drawer resize handle — title + aria-label,"shared (carriers: dashboard, torah, trope)"
