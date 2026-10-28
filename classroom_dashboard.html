@@ -1772,6 +1772,18 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
   body.fullscreen .current-time { font-size: calc(var(--time-size) * 1.235); }
   body.fullscreen .weather-emoji { font-size: 4.2rem; }
   body.fullscreen .weather-temp { font-size: calc(var(--temp-size) * 1.2); }
+  /* Full Screen on a short or 4:3 screen. The center card stretched to the tallest rail (weather + timer + picker run
+     past 768px) and centred its text in that, so the board message sat below the screen at 1366×768 and 1280×720;
+     at 1024×768 its 300px column also wrapped the clock and the Hebrew date onto two lines each. The card now stops
+     at the screen's bottom edge when the rails run past it, and those three lines shrink with the column before they
+     wrap — never below their phone size (the ≤600px factors), so the zoom slider cannot make them tiny. */
+  @media (min-width: 981px) {
+    body.fullscreen .dash-center { align-self: start; min-height: min(100%, calc(100vh - 86px)); container-type: inline-size; }
+    body.fullscreen.zoombar-hidden .dash-center { min-height: min(100%, calc(100vh - 40px)); }
+    body.fullscreen .current-time { font-size: clamp(calc(var(--time-size) * 0.765), 22cqi, calc(var(--time-size) * 1.235)); }
+    body.fullscreen .heb-date { font-size: clamp(calc(var(--heb-date-size) * 0.769), 16cqi, calc(var(--heb-date-size) * 1.231)); }
+    body.fullscreen .parsha-line { font-size: clamp(calc(var(--heb-date-size) * 0.6 * 0.769), 9.6cqi, calc(var(--heb-date-size) * 0.6 * 1.231)); }
+  }
 
   /* ── Screen Wake Lock indicator ── */
   .wake-dot { display: none; align-items: center; margin-inline-start: 2px; }
