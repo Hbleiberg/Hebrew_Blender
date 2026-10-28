@@ -94720,3 +94720,51 @@ _(prior)_ **Next session (S563):** **PR `claude/adoring-noether-q8qk1e` (S554–
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 - G print & export fidelity (one tool): 2026-10-27 (**S563 — generator (4th: S137 → S265 → S392 → S563; 117 commits since): 36 shapes × EN light / HE dark to Letter + A4 PDFs (plants 5/5), ink with backgrounds off and on, Export PDF by click (26 + 10 at 800), the QR decoded from paper and file, `.ivrit` and share link 0/142, nikkud paper. FOUND 11, FIXED 2 (+3 P3, 2 gate 3; 6 P4). G-next: flash (S423), chrome (S437).**)
+
+
+<!-- archived by compact-ledger at the S565 boundary, 2026-10-28 -->
+## Compaction (S565, 2026-10-28) — moved verbatim from the live ledger
+
+### from Candidates (prioritized, top = next)
+
+- [ ] P2 (**NEW S564 H — the dashboard at the cap**) | classroom_dashboard.html | **Make Groups' "Groups of N" puts a small class in one group**: `computeGroupSizes` takes ⌊total/N⌋ groups, so under 2N present students it makes one group of everyone (6 with N = 4 → one group of 6; 7 → one of 7). Take one more group when its sizes stray less from N; a tie keeps the larger groups, so pairs from an odd class make one trio (findings S564). | found S564
+
+- [ ] P3 (**NEW S560 C — census the rest; S561 the generator, S564 the dictionary**) | letter_learner.html | **Keyboard focus may land under the Letter Learner's sticky dialog head** (inside a scroller: that scroller's own `scroll-padding`), the last unprobed carrier of `focus-hidden-under-a-sticky-bar` (parsha_emojis, flash, torah, the generator and the dictionary fixed); walk it with Tab / Shift+Tab (`h564/dictwalk.mjs`'s method; findings S560, S564). | found S560
+
+- [ ] P3 (**NEW S560 C — a suite pattern; torah FIXED S564**) | flash_cards.html, hebrew_dictionary.html, trope_tutor.html, classroom_dashboard.html | **A hover-opened tip ignores Escape and vanishes when the pointer moves onto it** (WCAG 1.4.13): flash 7/7 and 5/7 (S560); the other three carry the same idiom. Port torah's fix (`f59d609`: capture-phase Escape, 150 ms hover bridge; pattern `hover-tip-not-dismissible-or-hoverable`). | found S560
+
+### from Awaiting the maintainer (an action or an answer only the maintainer can give; a session that resolves one moves it to Done)
+
+- [ ] P3 (**NEW — the maintainer's review, by design**) | trope_review.html, data/trope/trope_approvals.json | **All 20 trope traditions approved; 19 (2026-10-28, at the maintainer's request) without the row-by-row check against their scans.** Still worth checking on `trope_review.html`: the 14 printed 3s kept as written and the raised-fifth spellings of six JE columns; a corrected row hides its tradition until re-approved. The 50 new HE strings are drafts. | found 2026-10-27
+
+### from Done
+
+- [x] 2026-10-28 | (S564 close-out) | branch/deploy note | **S564 = H on the dashboard (4th: S107 → S278 → S395 → S564): 3 lessons by real input (EN light 1280, HE dark 800) + the student cell (1366 windowed, 1024 Full Screen); FOUND 6, FIXED 2 (one chosen at gate 3) + 1 P2 at the cap, 1 P3, 2 P4; + the dictionary's phone bar and the Trainer's hover tips from the queue.** Branch `claude/vibrant-dirac-c3547q`, PR #373 (draft), sw v1113 — deploy on merge. | closeout.mjs clean
+
+- [x] 2026-10-28 | `f59d609` | torah_trainer.html | (S564) **Escape closes a hovered tip, not the drawer under it, and a mouse can move onto the tip** (capture-phase Escape on a shown bubble; 150 ms hover bridge; pattern `hover-tip-not-dismissible-or-hoverable`, its first fix). | `hovertip.mjs` × 6 drawer tips × EN light 1280 / HE dark 800, HEAD the control: not hoverable 6/6, drawer closed by Escape 6/6 → 0 / 0; keyboard, touch, second Escape as HEAD.
+
+- [x] 2026-10-28 | `1966781` | classroom_dashboard.html | (S564) **In Full Screen the board message stays on a 1366×768 or 4:3 projector screen** (≥981px: the center card stops at the screen's edge; clock, Hebrew date and parsha line `clamp()` with `cqi`, floored at their phone size; gate 3, the maintainer chose it). | probe `S564-dashboard-fullscreen-fits-the-screen.mjs`: message 715–920 → 555–761 at 1024×768, 685–801 → 587–703 at 1366; 1920 card 1000 → 994; windowed equal.
+
+- [x] 2026-10-28 | `1c886d3` | classroom_dashboard.html, sw.js | (S564) **A starter, preset or `.ivrit` file shows or hides the holiday, Shabbat and Omer lines at once** (`applySettings` follows each switch that changed, cache-first). | probe `S564-dashboard-calendar-lines-follow-settings.mjs` × 2 dates × 4 cells, the switches the control: HEAD 5 lines out of step → 0; Hebcal fetches 2 + 7 both. sw.js v1112 → v1113.
+
+- [x] 2026-10-27 | `8110b5cc` `2fb65c5e` `2e527118` `5979d80a` | js/trope-staff.js, build-trope-phrases.mjs, docs/trope-traditions.md, data/trope/*, trope_tutor, torah_trainer, trope_review, sw.js | (feature, not a loop session) **20 more trope traditions (the Trope Atlas's Common melody, Spiro HHD, 17 JE tables) on both trope pages, hidden until the maintainer approves each** | six charts byte-identical (JSON; 210 Tutor configs EN/HE + 12 Trainer readings vs HEAD); builder green, 9 mutations caught; smoke-trope-staff 25/25, smoke-tools 14/14 + 18/18, smoke-sync 215/215; a11y probes pass.
+
+- [x] 2026-10-26 | (S559 close-out) | branch/deploy note | **S559 = H on the Font Maker (5th: S97 → S163 → S241 → S380 → S559): 3 lessons + the student cell + a 132-font export census; FOUND 12, FIXED 2 (+2 P2, 2 P3, 1 gate 2, 3 P4, 2 seeds) + Name Tags' English column and the Trope Tutor's Study button. Branch `claude/adoring-noether-q8qk1e`, PR #368 (S554–S559), sw v1101 — deploy on merge.** | …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-26 | `f2e95a2` | trope_tutor.html | (S559) **The review list's Study button keeps its label on one line** (`.tu-review-row .btn-xs{flex:none;white-space:nowrap}`; the S558 M candidate). | Two all-wrong drills × 8 cells, HEAD the control: wrapped 6 → 0; all 26 rows at 1280/800/390/320 × EN/HE: HEAD up to 19, fix 0, no overflow.
+
+- [x] 2026-10-26 | `0ee7be0` | name_tags.html, name-tags.md | (S559) **A roster's English column survives a first-name column** (`NT_EN_NAMED`: a column named for English is the English name; a first-name column beside it is the name's first half; the S551 H candidate). | 9 rosters by the real Import × 8 cells, HEAD the control: 5 that lost a name now keep both, 4 byte-identical.
+
+- [x] 2026-10-26 | `fda06a1` | Hebrew_Font_Maker.html | (S559) **Auto-detect no longer reads the template's blue grid as letters** (light, clearly blue pixels are paper in `adBinarize`, out of Otsu's statistics too). | 5 sheets × 8 cells, HEAD the control: thin print 54 → 20 boxes, blue pen 81 → 20 and matched 20/20; cursive and free-form identical.
+
+- [x] 2026-10-26 | `f3cc586` | Hebrew_Font_Maker.html, sw.js | (S559) **A second auto-detected sheet no longer restarts at Alef** (`adAssignDefaults` uses the picker's rule: a photo or an outline is taken). | Free-form 14 + 13 applied in turn × 8 cells, HEAD the control: page 2 0/13 → 13/13, 27 photos each from its own sheet.
+
+### from Per-session log (one line per session)
+
+- 2026-10-22 | **S544** | iters: 0 | tools: skill, ledger scripts, scripts/loop, docs/reference | patterns fixed: — | pass run: — (protocol audit, no discovery pass) | SW: v1072→v1072
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- H teacher walkthrough / paper-cuts (one tool): 2026-10-28 (**S564 — dashboard (4th: S107 → S278 → S395 → S564): 3 lessons by real input × EN light 1280 / HE dark 800 (an A/B rotation from a first visit; a Hebrew test day; a riddle, then a second laptop by `.ivrit`) + the student cell (1366 windowed, 1024 Full Screen). FOUND 6, FIXED 2 (+1 P2, 1 P3, 2 P4). H-next: flash (S412), dictionary (S440).**)
+
+_(prior)_ **Next session (S564):** **PR `claude/adoring-noether-q8qk1e` (S554–S563, #368): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1105**, FM **5.59**, corpus ?v=7. ⚑ drift: main=2cc90bb sw=v1105 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest: H's dashboard (S395), D's fontmaker (S410), P's dashboard (S421); A/E/L (S530–S532) 33 sessions old (A: 27 DRAFT rows, the ▾ census). ⚑ Keep-alive not re-read in S563 (S561: #44 green). ⚑ Seeds: 53. ⚑ Generator: 2 gate-3 QR P3s, the blend Hebrew's `lang` (P3). ⚑ FM: the template matcher and 5 starting fonts failing the shaping check (P2s; `h559/detect.mjs`, `osprobe.mjs`). ⚑ Ports at the next A: `m554/`–`n562/` as listed in S562's handoff, `g563/` (census, pdfscan, qrcrop + zx); traps 352, 356–387. ⚑ Queues: generator 10, FM 10, dictionary 3, name_tags 3, trope 1, torah 1, suite 4. ⚑ Maintainer: `08b8611`; O's permission rule; CI for `closeout.mjs --static`; translit second source; sw.js `no-store`; 14 fonts; torah screen reader; the locale's size and the Resources fonts' precache (Awaiting); gates 2–4 incl. the vowel palette's gold (S556), the trope link (S557), the Phrases chips' casing (S558), the FM's sheet-upload copy (S559), flash's short windows (S560, gate 4), the FM Exit label (S560, gate 3) and the generator's QR layout (S563, gate 3); the S546 P3.

@@ -353,6 +353,11 @@ body.dark #tipFloat { background: #0a0f1c; }
 - Tooltip appears **above** the `?` icon by default; flips **below** if near the top of the viewport
 - Viewport clamping prevents left/right overflow
 - One `#tipFloat` element is reused for all tooltips — never create per-tooltip bubble spans
+- Hover content must be dismissible and hoverable (WCAG 1.4.13; pattern `hover-tip-not-dismissible-or-hoverable`). The
+  Torah Trainer's module carries the shape: a capture-phase document Escape closes a shown bubble and only it, wherever
+  the focus is; `#tipFloat` takes the pointer, the trigger's `pointerleave` waits 150 ms and the bubble's own
+  `pointerenter` / `pointerleave` keep or close it. This page, the dictionary, the Trope Tutor and Flash Cards still
+  carry `pointer-events: none` and the trigger-only Escape.
 
 ---
 
@@ -421,6 +426,11 @@ body.dark #tipFloat { background: #0a0f1c; }
   it was fetched for (`location`), and `resolveShabbatGeo()` reuses its place only for that city: right after a change
   the weather fetch is still in flight (or the card is hidden and never fetches), so the cache would hand Hebcal the
   old city.
+- **Calendar lines:** the holiday countdown, the Shabbat times and the Omer line render outside `applySettings`' own
+  paths, so it repaints them as their switches do — a `showHolidayCountdown` / `showShabbatTimes` that changed fetches
+  (cache-first) or hides, `updateOmerDisplay()` always — and a starter, preset, `.ivrit` file or Schedule Sync period
+  shows or hides them at once (the General starter turns all three off). A new card that renders outside the paths
+  joins this tail.
 
 ---
 
@@ -537,6 +547,16 @@ page wears the gold halo and the dark shadow, as from a light one. An unrevealed
 faces are sample letters, so `nameFromTitle` gives them their title as the accessible name.
 
 ---
+
+## Full Screen on a short screen (`classroom_dashboard.html`)
+In Full Screen the side rails often run past a 768px screen (weather + timer + picker), and the center card used to
+stretch to them and centre its text there — the board message sat below the screen. At the desktop grid (≥981px) the
+card is `align-self: start` with `min-height: min(100%, calc(100vh - 86px))` (`40px` under `body.zoombar-hidden`: the
+46px zoom bar plus the dashboard's 40px top padding), so it keeps the rails' height when they fit and stops at the
+screen's bottom edge when they do not. The card is an inline-size container, and the clock, the Hebrew date and the
+parsha line take `clamp(<phone factor>, <n>cqi, <Full Screen factor>)` — they shrink with a narrow column (a 4:3
+projector's 300px) before they wrap, and never below the ≤600px factors, so the zoom slider cannot make them tiny.
+Windowed layouts and phones are untouched.
 
 ## Your account (optional accounts)
 
