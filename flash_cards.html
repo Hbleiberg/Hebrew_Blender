@@ -1538,7 +1538,7 @@ body.dark .ladder-strip-line { color: var(--gold-light); }
   box-shadow: var(--shadow-md);
   line-height: 1.4;
 }
-#tipFloat.show { opacity: 1; }
+#tipFloat.show { opacity: 1; pointer-events: auto; }   /* shown, it takes the pointer, so a mouse can move onto it (the hover bridge in the tooltip script); hidden, it stays click-through */
 
 /* ============== UTILITIES ============== */
 /* .sub gets dedicated colors (not var(--muted)) to hit WCAG AA 4.5:1 — the shared
@@ -4315,7 +4315,11 @@ function initPanelCollapse() {
 (function tooltipIIFE() {
   const tip = document.getElementById('tipFloat');
   if (!tip) return;
-  let openEl = null;
+  let openEl = null, hideTimer = null;
+  // Hoverable (WCAG 1.4.13): the pointer can travel from the trigger onto the bubble — the trigger's leave waits a
+  // beat, the bubble's enter keeps it open and its leave closes it.
+  tip.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') clearTimeout(hideTimer); });
+  tip.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse' && openEl) hide(); });
   function position(el) {
     const r = el.getBoundingClientRect();
     const tw = tip.offsetWidth, th = tip.offsetHeight;
@@ -4328,12 +4332,14 @@ function initPanelCollapse() {
   function isShown(el) { return openEl === el && tip.classList.contains('show'); }
   function show(el) {
     const text = el.dataset.tip; if (!text) return;
+    clearTimeout(hideTimer);
     tip.textContent = text; position(el); tip.classList.add('show');
     if (openEl && openEl !== el && openEl.hasAttribute('aria-expanded')) openEl.setAttribute('aria-expanded', 'false');
     openEl = el;
     if (el.hasAttribute('aria-expanded')) el.setAttribute('aria-expanded', 'true');
   }
   function hide() {
+    clearTimeout(hideTimer);
     tip.classList.remove('show');
     if (openEl && openEl.hasAttribute('aria-expanded')) openEl.setAttribute('aria-expanded', 'false');
     openEl = null;
@@ -4343,7 +4349,11 @@ function initPanelCollapse() {
     el._tipBound = true;
     el.setAttribute('aria-describedby', 'tipFloat');
     el.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') show(el); });
-    el.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse' && openEl === el) hide(); });
+    el.addEventListener('pointerleave', e => {
+      if (e.pointerType !== 'mouse' || openEl !== el) return;
+      clearTimeout(hideTimer);
+      hideTimer = setTimeout(() => { if (openEl === el) hide(); }, 150);   // time to cross onto the bubble
+    });
     // Focus opens the tip for KEYBOARD users only. A pointer/touch press focuses the trigger
     // before its own click lands, so an unguarded focus handler re-created the same race the
     // pointerType guard above just closed: focus opened the bubble, then click saw it shown and
@@ -4370,6 +4380,11 @@ function initPanelCollapse() {
     });
   }
   document.querySelectorAll('.has-tip').forEach(bindTip);
+  // Dismissible (WCAG 1.4.13): Escape closes a shown bubble wherever the focus is — a tip opened by hovering leaves the
+  // focus elsewhere, so the trigger's own Escape never heard it. Capture phase, so it closes only the bubble.
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && openEl && tip.classList.contains('show')) { e.stopImmediatePropagation(); hide(); }
+  }, true);
   document.addEventListener('click', () => { if (openEl) hide(); });
   window.addEventListener('scroll', () => { if (openEl) hide(); }, true);
 })();
