@@ -8,11 +8,15 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P2 (**NEW S564 H — the dashboard at the cap**) | classroom_dashboard.html | **Make Groups' "Groups of N" puts a small class in one group**: `computeGroupSizes` takes ⌊total/N⌋ groups, so under 2N present students it makes one group of everyone (6 with N = 4 → one group of 6; 7 → one of 7). Take one more group when its sizes stray less from N; a tie keeps the larger groups, so pairs from an …[full text: IMPROVEMENT_ARCHIVE.md]
-
 - [ ] P2 (**NEW S559 H — the FM at the cap**) | Hebrew_Font_Maker.html | **Auto-detect matches a printed template page only when every row's box count is exact, and rows group by the box's top edge**: lamed's ascender splits its row (print page 1: 4,4,4,3,1,4), a letter written in two strokes adds a box (the cursive alef: 5,4,4,4,4), and the page falls back to the free-form right-to-left order — …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P2 (**NEW S559 H — verify first**) | Hebrew_Font_Maker.html | **5 of 132 untouched starting fonts fail the export's shaping check**: "Right-meteg check failed … expected -49/166, got -49/167" (BenOr Rashi; Miriam CLM 178/169, Shuneet Square 125/150, Shuneet Classic 97/122) and "Hataf Patach + ZWJ + meteg did not compose" (Rommvilna), so a first export says "vowels/trop may be misplaced". …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] P3 (**NEW S565 D**) | Hebrew_Font_Maker.html | **Auto-detect runs as one 556 ms task @1× (1.7 s @4×)** on a phone photo of a sheet: `adBinarize` (lumPlane → estimateBackground → flatten → Otsu) has no yield inside; split its stages with `_adYield()` in `adRunDetection`, the functions staying pure. | found S565
+
+- [ ] P3 (**NEW S565 D**) | Hebrew_Font_Maker.html | **Auto-detect's Apply yields only every 4th crop**: 4 × (`toDataURL` + `autoThresholdFor`) make one 495 ms task @1×; yield after each crop (`(i & 3) === 3` in `adApply`; `uploadForLetters` has the same shape). | found S565
+
+- [ ] P3 (**NEW S565 D — verify first, signed in**) | Hebrew_Font_Maker.html | **The cloud autosave still clones the whole project with its photos**: `fmCloudPack` runs `JSON.parse(JSON.stringify(p))` on every 10 s save of a dirty cloud project — the copy `c85bdd1` took out of the local autosave; measure with smoke-fontmaker's `--sdk` fixture and 8 phone photos. | found S565
 
 - [ ] P3 (**NEW S564 H — K; Hebrew unit words to author**) | classroom_dashboard.html | **Schedule Sync's durations stay English in the Hebrew UI**: `formatDiffMins` builds "20m", "1h 5m", "2d 3h" in code, so the Now block reads "נותרו 20m" and the countdown line the same; one CSV key per shape with Hebrew units, the English output byte-identical. | found S564
 
@@ -30,11 +34,13 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW S436 M — layout, gate 3/4**) | hebrew_blend_generator.html | **The bingo preview is unreadable in a narrow window**: at 800px a 4-up card is ~120px and its blends overrun their cells (print/PDF fine since `141aa8f7`). | found S436
 
-- [ ] P3 (**S410 D; S480 re-measured; `content-visibility` reverted**) | Hebrew_Font_Maker.html | **The Spacing tab rebuilds all kerning rows on each show, pair click, add and delete**: 2,000 pairs 213–251ms @1×, 1.0–1.2s @4×. Next: a pair click rebuilds the editor only (findings S480). | found S410
+- [ ] P3 (**S410 D; S480 re-measured; `content-visibility` reverted**) | Hebrew_Font_Maker.html | **The Spacing tab rebuilds all kerning rows on each show, pair click, add and delete**: 2,000 pairs 213–251ms @1×, 1.0–1.2s @4× (S565: 302–502 @1×). Next: a pair click rebuilds the editor only (findings S480). | found S410
+
+- [ ] P3 (**NEW S565 D — the intake half is gate 2**) | Hebrew_Font_Maker.html | **The Trace step still freezes 1.5–1.9 s on a 12 MP phone photo** (3.1–3.3 s before `6ef102d`; 16 s @4×): `flatCanvasFor` flattens the whole 3024×4032 photo (decode + `getImageData` ~1 s, the blur 0.55 s). Keeping intake photos near 2,000 px (`prepImageForItem`) would cut it ~4× and shrink every snapshot and file — a …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P3 (**NEW S560 C — census the rest; S561 the generator, S564 the dictionary**) | letter_learner.html | **Keyboard focus may land under the Letter Learner's sticky dialog head** (inside a scroller: that scroller's own `scroll-padding`), the last unprobed carrier of `focus-hidden-under-a-sticky-bar` (parsha_emojis, flash, torah, the generator and the dictionary fixed); walk it with Tab / …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] P3 (**NEW S560 C — a suite pattern; torah FIXED S564**) | flash_cards.html, hebrew_dictionary.html, trope_tutor.html, classroom_dashboard.html | **A hover-opened tip ignores Escape and vanishes when the pointer moves onto it** (WCAG 1.4.13): flash 7/7 and 5/7 (S560); the other three carry the same idiom. Port torah's fix (`f59d609`: capture-phase Escape, 150 ms hover bridge; pattern …[full text: IMPROVEMENT_ARCHIVE.md]
+- [ ] P3 (**NEW S560 C — a suite pattern; torah FIXED S564, flash S565**) | hebrew_dictionary.html, trope_tutor.html, classroom_dashboard.html | **A hover-opened tip ignores Escape and vanishes when the pointer moves onto it** (WCAG 1.4.13): flash was 6/6 and 4/6 (S565); the other three carry the same idiom. Port torah's fix (`f59d609`: capture-phase Escape, 150 ms hover bridge; pattern …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P3 (**NEW S563 G — gate 3, the sheet's layout**) | hebrew_blend_generator.html | **Name the Letter with QR Answer Key prints the code alone on page 2** (Letter and A4, 4/4 cells; Export PDF fits it): the 40-letter sheet is 977 of the page's 989 px and the QR block needs 109, so every student copy costs an extra sheet and loses its code. No small fix keeps both: tighter cells in print when …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -49,6 +55,12 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P3 (**NEW 2026-09-26**) | trope_tutor.html (trope_index.json) | **8 Learn example clips sit where PocketTorah's taps slip by a word** (`build-trope-phrases.mjs` TIMING_SLIPS), so each likely plays a neighbouring word; the index builder could skip those verses. **S454: not small** (findings S454). | found 2026-09-26
 
 - [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
+
+- [ ] P4 (**NEW S565 D**) | Hebrew_Font_Maker.html | **Save Project (.hebrewfont) still serializes in one string**: `JSON.stringify` + `gzipBlob`, 1.6 s @1× with 8 phone photos, once per click; `autosaveParts` would serve it. | found S565
+
+- [ ] P4 (**NEW S565 D**) | Hebrew_Font_Maker.html | **QA Check opens in one task**: 205–230 ms @1× on FreeSerif (346 glyphs), 795 ms @4× on a 27-letter sheet project (`qaBuild` + `qaRenderGrid`). | found S565
+
+- [ ] P4 (**NEW S565 D**) | Hebrew_Font_Maker.html | **A cold load @4× has three tasks over 200 ms**: parse 391–441, `init` 687–757, the `I18n.ready` re-render 207–324 (S410: two, 306–365 + 492–560); 1× has none (top 150–160, was 96–102). | found S565
 
 - [ ] P4 (**NEW S564 H**) | classroom_dashboard.html | **A period painted in the week editor reaches the board up to 30 s later**: the Now block names the new class at once while the board keeps the last preset until `checkSchedule`'s 30 s tick (painting the current period, Enable Schedule Sync, a cycle's "This week is"); the account download and Bulk edit already call it at once. | found S564
 
@@ -396,6 +408,16 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-28 | (S565 close-out) | branch/deploy note | **S565 = D on fontmaker (4th: S196 → S294 → S410 → S565; 86 commits since): cold 8 cells, a starting-font import, letters, tabs, QA, autosave and Continue, the one-sheet path (a 12 MP sheet photo → Auto-detect → Apply → Trace all), 8 phone photos on the wizard's default path, Draw — 1× and 4× with profile attribution, a planted 450 ms …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-28 | `1bd06e8` | flash_cards.html | (S565) **Escape closes a hovered tip and a mouse can move onto it** (torah's `f59d609` ported; the bubble takes the pointer only while `.show`; pattern `hover-tip-not-dismissible-or-hoverable`). | `flash-hovertip.mjs` × 6 tips × EN light 1280 / HE dark 800, HEAD the control: not dismissible 6 → 0, not hoverable 4 → 0; keyboard 6/6, touch tap / tap …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-28 | `9cb2d28` | classroom_dashboard.html | (S565) **Make Groups' "Groups of N" no longer puts a small class in one group** (one more group when its sizes stray less from N; a tie keeps the larger groups; the S564 P2). | census 1–40 × N 2–8: 44 cases closer to N, 236 unchanged, "N groups" untouched; probe `S565-dashboard-groups-of-n.mjs` by real clicks × EN 1280 / HE 800: 6 / 4 → …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-28 | `6ef102d` | Hebrew_Font_Maker.html | (S565) **The lighting flatten blurs a phone photo row by row** (`_boxBlurV`: one running sum per column, the same doubles in the same order — bit-identical). | probe `S565-fontmaker-flatten-blur.mjs`, the fix-1 tree the control: the full-size estimate 1,334 → 554 ms (0.37×), flatCanvasFor per 12 MP photo median 2,475–2,766 → 1,718–1,834, the …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-28 | `c85bdd1` | Hebrew_Font_Maker.html, sw.js, font-maker.md | (S565) **An autosave no longer freezes the page on a project of photos** (`autosaveParts`: long data: URLs leave the JSON as markers and join the Blob as parts encoded once). | probe `S565-fontmaker-autosave-photos.mjs`, 8 phone photos, HEAD the control: 413–1,521 ms before the first yield → 3–4; the snapshot = …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [x] 2026-10-28 | (S564 close-out) | branch/deploy note | **S564 = H on the dashboard (4th: S107 → S278 → S395 → S564): 3 lessons by real input (EN light 1280, HE dark 800) + the student cell (1366 windowed, 1024 Full Screen); FOUND 6, FIXED 2 (one chosen at gate 3) + 1 P2 at the cap, 1 P3, 2 P4; + the dictionary's phone bar and the Trainer's hover tips from the queue.** Branch …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-10-28 | `f59d609` | torah_trainer.html | (S564) **Escape closes a hovered tip, not the drawer under it, and a mouse can move onto the tip** (capture-phase Escape on a shown bubble; 150 ms hover bridge; pattern `hover-tip-not-dismissible-or-hoverable`, its first fix). | `hovertip.mjs` × 6 drawer tips × EN light 1280 / HE dark 800, HEAD the control: not hoverable 6/6, drawer closed by …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -436,19 +458,11 @@ _(none)_
 
 - [x] 2026-10-27 | `167582b` | js/ivrit-projects.js, Hebrew_Font_Maker.html, scripts/smoke-fontmaker.mjs, sw.js | (S561) **Keeping an export no longer hides another device's save** (`saveExport`'s row update conditional on the caller's revision, `changed` back when it moved; the page adopts only without it). | `fm.mjs` W1 / W1b, HEAD the control: overwritten silently → the conflict dialog, the …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-10-27 | (S560 close-out) | branch/deploy note | **S560 = C on flash (6th: S381 → S560, 114 commits): census 104 loads (7,960 controls), Tab / Shift+Tab walks × 8 cells + 2 iPhones, dialogs, motion, spacing, reflow, 400% zoom, hover content; FOUND 6, FIXED 2 + torah's carrier + the FM fullscreen P3; 2 new patterns.** Branch `claude/adoring-noether-q8qk1e` (PR #368, draft, S554–S560); …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-10-27 | `f00f4bc` | Hebrew_Font_Maker.html | (S560) **In fullscreen the Exit button no longer sits on Help** (`body.fullscreen .toolbar{padding-inline-end:84px}`, the Trainer's value; the S559 student-cell P3). | `fsprobe2.mjs` × EN/HE × light/dark × 5 widths × 2 steps, HEAD the control: a control under the plate 40 → 0 cells; the spilling label grazes 3% in 16 (P4); rows unchanged but …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-10-27 | `a22de39` | torah_trainer.html | (S560) **Keyboard focus in the reading stays clear of the jump bar and audio bar** (root `scroll-padding-block` from `ttTrackStickies`). | Arrow-key walks over a stubbed reading × 8 cells, HEAD the control: jump bar 7 + 21 → 0; audio bar open 28 + 0–35 → 0.
-
-- [x] 2026-10-27 | `f440750` | flash_cards.html | (S560) **The Teacher Tools / Advanced sub-headings fold from the keyboard** (tabindex, role button, aria-expanded, Enter / Space — the vowel heads' idiom). | Tab walk × 8 cells, HEAD the control: reached 0 → 9, each folded and unfolded by keys, no scroll, ring, 9 AX buttons with a state; mouse unchanged.
-
-- [x] 2026-10-27 | `7032085` | flash_cards.html, sw.js | (S560) **Keyboard focus stays clear of the sticky header and Start bar** (root `scroll-padding-block` from `fcTrackStickies`; pattern `focus-hidden-under-a-sticky-bar`). | Tab / Shift+Tab walks × 5 screens × 8 cells, HEAD the control: setup 34 + 2 → 0, Shift+Tab 8–17 + 9–20 → 0; two iPhones with the hint 48–72 → 0.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-28 | **S565** | iters: 5 | tools: FM ×2, dashboard, flash, font-maker.md, scripts/loop, sw | patterns fixed: hover-tip-not-dismissible-or-hoverable ×1 | pass run: D (fontmaker, 4th) | SW: v1113→v1114
 
 - 2026-10-28 | **S564** | iters: 5 | tools: dashboard ×2, dictionary, torah, scripts/loop, sw | patterns fixed: focus-hidden-under-a-sticky-bar ×1, hover-tip-not-dismissible-or-hoverable ×1 | pass run: H (dashboard, 4th) | SW: v1112→v1113
 
@@ -488,17 +502,15 @@ _(none)_
 
 - 2026-10-22 | **S546** | iters: 4 | tools: letter_learner, trope, dictionary, sw | patterns fixed: defaults-filed ×1, forced-colors ×2 | pass run: P (parsha_emojis + letter_learner, both first) | SW: v1073→v1074
 
-- 2026-10-22 | **S545** | iters: 5 | tools: letter_learner, flash, generator, torah, sw | patterns fixed: install-banner ×1, forced-colors ×2, button-focus ×1 | pass run: N (letter_learner, first) | SW: v1072→v1073
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S564 (2026-10-28):** sw.js, dashboard, dictionary, torah, dashboard.md, scripts/loop, loop-findings, loop-patterns S564 · generator, trope, letter_learner, name_tags, flash S563 · FM, scripts, font-maker.md S562 · projects, accounts-and-cloud.md S561 · name-tags.md S559 · shared-components.md S558 · locales, privacy S554 · ops.md, loop-passes S553 · i18n.md, index S552 · parsha_emojis S550 · resources, contact S549 · skill, ledger scripts S544 · CSV S542 · i18n.js S541 · saves S536 · README, sitemap S532 · account, terms, 404 S530.
+- **Snapshot S565 (2026-10-28):** sw.js, FM, dashboard, flash, font-maker.md, scripts/loop, loop-findings, loop-patterns S565 · dictionary, torah, dashboard.md S564 · generator, trope, letter_learner, name_tags S563 · scripts S562 · projects, accounts-and-cloud.md S561 · name-tags.md S559 · shared-components.md S558 · locales, privacy S554 · ops.md, loop-passes S553 · i18n.md, index S552 · parsha_emojis S550 · resources, contact S549 · skill, ledger scripts S544 · CSV S542 · i18n.js S541 · saves S536 · README, sitemap S532 · account, terms, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
 - `focus-hidden-under-a-sticky-bar` | ACTIVE | owner C | det: recipe | last S564 | streak 0
 
-- `hover-tip-not-dismissible-or-hoverable` | ACTIVE | owner C | det: recipe | last S564 | streak 0
+- `hover-tip-not-dismissible-or-hoverable` | ACTIVE | owner C | det: recipe | last S565 | streak 0
 
 - `tour-step-in-a-hidden-view` | ACTIVE | owner A | det: recipe | last S558 | streak 0
 
@@ -852,7 +864,7 @@ _(none)_
 
 - G print & export fidelity (one tool): 2026-10-27 (**S563 — generator (4th: S137 → S265 → S392 → S563; 117 commits since): 36 shapes × EN light / HE dark to Letter + A4 PDFs (plants 5/5), ink with backgrounds off and on, Export PDF by click (26 + 10 at 800), the QR decoded from paper and file, `.ivrit` and share link 0/142, nikkud paper. FOUND 11, FIXED 2 (+3 P3, 2 gate 3; 6 P4). G-next: flash …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- D performance (one tool): 2026-10-23 (**S549 — name_tags' first D: cold 12 cells (virgin / 24 / 200 students × 1×/4× × EN light / HE dark), 56 arms by real input × 1×/4× on 200 students with the library served from npm, profile + trace attribution, idle, leak, bytes; a planted busy loop fired in every cell. FOUND 4, FIXED 2 (+3 P4, 1 Awaiting). D-next: fontmaker (S410), torah (S424).**)
+- D performance (one tool): 2026-10-28 (**S565 — the Font Maker (4th: S196 → S294 → S410 → S565; 86 commits since): cold 8 cells, a starting-font import, letters / tabs / QA, autosave + Continue, the one-sheet path from a 12 MP photo, 8 phone photos, Draw — 1× and 4× with profile attribution (a planted 450 ms handler read 455). FOUND 9, FIXED 2 (the photo autosave, the flatten's blur; + 3 P3, 3 …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - I first-load & empty-state: 2026-10-22 (**S539 — 40th I, S525 → S538 (93 commits; name_tags' first I, parsha_emojis' under its name): 63 virgin cells (plants 334/336); 69 seeds; 27 tours; ~250 openers; 280 bad URLs; failure paths 20. FOUND 2, FIXED 1.**)
 
@@ -870,5 +882,5 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-22 (**S542 — 40th F, loading states (first since S189): 14 surfaces held, then aborted. FOUND 7, FIXED 4. F-next: long-build progress.**)
 
-**Next session (S565):** **PR `claude/vibrant-dirac-c3547q` (S564, #373): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1113**, FM **5.59**, corpus ?v=7. ⚑ drift: main=840cb19 sw=v1113 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest: D's fontmaker (S410), H's flash (S412), P's dashboard (S421); A/E/L (S530–S532) 34 sessions old (A: 27 DRAFT rows, the ▾ census). ⚑ Landed outside the loop (S564's drift): the Trope Atlas `trope_atlas.html` (unlisted) and the traditions' review page `trope_review.html` — the atlas's first N and P are due by S578. ⚑ Keep-alive not re-read since S561 (#44 green). ⚑ Seeds: 53. ⚑ Dashboard: Make Groups' small class in one group (P2, top of the queue), the durations' Hebrew units (P3, K). ⚑ Hover tips: torah fixed S564 — port `f59d609` to flash, dictionary, trope, dashboard (P3). ⚑ Sticky bars: the Letter Learner's dialog head is the last unprobed carrier. ⚑ FM: the template matcher and 5 starting fonts failing the shaping check (P2s). ⚑ Generator: 2 gate-3 QR P3s, the blend Hebrew's `lang` (P3). ⚑ Ports at the next A: `m554/`–`n562/`, `g563/`, `h564/` (dictwalk, hovertip, f3-measure); traps 352, 356–393. ⚑ Queues: generator 10, FM 10, dashboard 4 new, dictionary 3, name_tags 3, trope 1, torah 1, suite 4.
-⚑ Maintainer: `08b8611`; O's permission rule; CI for `closeout.mjs --static`; translit second source; sw.js `no-store`; 14 fonts; torah screen reader; the locale's size and the Resources fonts' precache (Awaiting); gates 2–4 incl. the vowel palette's gold (S556), the trope link (S557), the Phrases chips' casing (S558), the FM's sheet-upload copy (S559), flash's short windows (S560, gate 4), the FM Exit label (S560, gate 3), the generator's QR layout (S563, gate 3); the S546 P3; S564's gate 3 (Full Screen fit) answered → fixed.
+**Next session (S566):** **PR `claude/vibrant-dirac-c3547q` (S564–S565, #373): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1114**, FM **5.59**, corpus ?v=7. ⚑ drift: main=840cb19 sw=v1114 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest: H's flash (S412), P's dashboard (S421), M's torah (S422), D's torah (S424); A/E/L (S530–S532) 35 sessions old (A: 27 DRAFT rows, the ▾ census). ⚑ Landed outside the loop (S564's drift): the Trope Atlas `trope_atlas.html` (unlisted) and `trope_review.html` — the atlas's first N and P are due by S578. ⚑ Keep-alive not re-read since S561 (#44 green). ⚑ Seeds: 53. ⚑ FM (S565 D): the Trace freeze on a 12 MP photo (P3; intake size is gate 2), Auto-detect's one task, Apply's 4-crop chunks, the cloud autosave's clone (P3s); the template matcher, 5 starting fonts' shaping (P2s). ⚑ Hover tips: torah S564 and flash S565 fixed — port to the dictionary, trope, dashboard (P3). ⚑ Sticky bars: the Letter Learner's dialog head is the last unprobed carrier. ⚑ Dashboard: the durations' Hebrew units (P3, K). ⚑ Generator: 2 gate-3 QR P3s, the blend Hebrew's `lang` (P3). ⚑ Ports at the next A: `m554/`–`n562/`, `g563/`, `h564/` (dictwalk, hovertip, f3-measure), `d565/` (lib, sheet, photos, flash-hovertip); traps 352, 356–400. ⚑ Queues: FM 13, generator 10, dashboard 3, dictionary 3, name_tags 3, trope 1, torah 1, suite 4.
+⚑ Maintainer: `08b8611`; O's permission rule; CI for `closeout.mjs --static`; translit second source; sw.js `no-store`; 14 fonts; torah screen reader; the locale's size and the Resources fonts' precache (Awaiting); gates 2–4 incl. the vowel palette's gold (S556), the trope link (S557), the Phrases chips' casing (S558), the FM's sheet-upload copy (S559), flash's short windows (S560, gate 4), the FM Exit label (S560, gate 3), the generator's QR layout (S563, gate 3); the S546 P3; the FM's photo intake size (S565, gate 2, not yet asked).
