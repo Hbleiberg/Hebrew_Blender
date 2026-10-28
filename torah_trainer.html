@@ -1710,7 +1710,7 @@ body.dark .tip-icon { background:var(--warm-gray); color:var(--muted); }
   font-size:0.72rem; font-weight:400; line-height:1.45;
   padding:6px 9px; border-radius:6px; max-width:220px;
   z-index:9999; box-shadow:0 2px 8px rgba(0,0,0,0.3);
-  pointer-events:none;
+  /* takes the pointer while shown, so a mouse can move onto it (the hover bridge in the tooltip script) */
 }
 body.dark #tipFloat { background:#0a0f1c; }
 
@@ -11804,11 +11804,15 @@ window.addEventListener('afterprint', _handoutExit);
    Extends the shared #tipFloat mechanism; exposes bindTip() for dynamic nodes.
    ══════════════════════════════════════════════════════ */
 (function() {
-  let tip = null, openWrap = null;
+  let tip = null, openWrap = null, hideTimer = null;
   function ensureTip() {
     if (tip) return tip;
     tip = document.createElement('div');
     tip.id = 'tipFloat';
+    // Hoverable (WCAG 1.4.13): the pointer can travel from the icon onto the bubble — the icon's leave waits a beat,
+    // the bubble's enter keeps it open and its leave closes it.
+    tip.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') clearTimeout(hideTimer); });
+    tip.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse' && openWrap) hide(openWrap); });
     document.body.appendChild(tip);
     return tip;
   }
@@ -11829,6 +11833,7 @@ window.addEventListener('afterprint', _handoutExit);
   function show(wrap) {
     const text = wrap.dataset.tip;
     if (!text) return;
+    clearTimeout(hideTimer);
     const t = ensureTip();
     t.textContent = text;
     t.style.display = 'block';
@@ -11838,6 +11843,7 @@ window.addEventListener('afterprint', _handoutExit);
     wrap.setAttribute('aria-expanded', 'true');
   }
   function hide(wrap) {
+    clearTimeout(hideTimer);
     if (tip) tip.style.display = 'none';
     if (openWrap) openWrap.setAttribute('aria-expanded', 'false');
     openWrap = null;
@@ -11860,7 +11866,11 @@ window.addEventListener('afterprint', _handoutExit);
     // Hover only for a real mouse (touch synthesizes pointerenter+click and would
     // otherwise show-then-toggle-off immediately).
     wrap.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') show(wrap); });
-    wrap.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse' && openWrap === wrap) hide(wrap); });
+    wrap.addEventListener('pointerleave', e => {
+      if (e.pointerType !== 'mouse' || openWrap !== wrap) return;
+      clearTimeout(hideTimer);
+      hideTimer = setTimeout(() => { if (openWrap === wrap) hide(wrap); }, 150);   // time to cross onto the bubble
+    });
     wrap.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); isShown(wrap) ? hide(wrap) : show(wrap); });
     // Focus opens the tip for KEYBOARD users only. A pointer press focuses this tabindex-bearing
     // wrap BEFORE its own click lands, so an unguarded focus handler re-created one layer down the
@@ -11883,6 +11893,12 @@ window.addEventListener('afterprint', _handoutExit);
   document.addEventListener('DOMContentLoaded', () => document.querySelectorAll('.tip-wrap').forEach(bindTip));
   document.addEventListener('click', () => { if (openWrap) hide(openWrap); });       // tap outside closes
   window.addEventListener('scroll', () => { if (openWrap) hide(openWrap); }, true);   // reposition-free: close on scroll
+  // Dismissible (WCAG 1.4.13): Escape closes a shown bubble wherever the focus is, and only the bubble — a tip hovered
+  // in the settings drawer stayed up while the drawer's own Escape closed the drawer under it. (S564, pattern
+  // hover-tip-not-dismissible-or-hoverable)
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && openWrap && isShown(openWrap)) { e.stopImmediatePropagation(); hide(openWrap); }
+  }, true);
 })();
 
 /* ══════════════════════════════════════════════════════
