@@ -419,7 +419,7 @@ buttons was overlooked); its Holiday Torah Readings (calendar) and Share (link) 
 drawer, so the calendar glyph is the Calendar tab's and the link glyph the Share tab's (and its Copy link's).
 Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_dashboard`, `flash_cards`,
 `torah_trainer`, `trope_tutor`, `Hebrew_Font_Maker`, `resources`, `contact`, `privacy`, `terms`,
-`account`, `404`, `letter_learner`, `parsha_emojis`, `name_tags`, and the generated `parsha/` pages (their copy is taken
+`account`, `404`, `letter_learner`, `parsha_emojis`, `name_tags`, `trope_atlas`, and the generated `parsha/` pages (their copy is taken
 from `parsha_emojis` by `scripts/build-parsha-pages.mjs`, so it cannot drift); the chip's glyph lives in `js/ivrit-account.js` (`ICON_USER`).
 
 ### The two byte-identical parts
@@ -1078,7 +1078,7 @@ const PANEL_MEM_CFG = {
 
 ### 10. Header skip link — the keyboard bypass, on every page
 An `<a class="skip-link">` as the **first child of `<body>`**, hidden off-screen until it takes keyboard
-focus, then dropping in at the top inline start. One rule, sha-identical on all 17 carriers modulo
+focus, then dropping in at the top inline start. One rule, sha-identical on all 18 carriers modulo
 indentation — paste it, do not re-author it:
 ```css
 .skip-link {
@@ -1099,6 +1099,6 @@ indentation — paste it, do not re-author it:
 - The **label names the destination** (maintainer's call, S397): one key per page under that page's own
   prefix — `home.a11y.skip_to_tools`, `worksheet.a11y.skip_to_worksheet`, `dashboard.a11y.skip_to_board`,
   and so on. Hebrew uses the `דילוג ל…` form and that page's own vocabulary. Never a single shared label.
-- **Implemented on:** all 17 root pages. The dictionary's separate `.skip-results` is a *mid-page* bypass
+- **Implemented on:** all 18 root pages (every one but the harnesses, the `emoji_torah.html` stub and `trope_review.html`). The dictionary's separate `.skip-results` is a *mid-page* bypass
   of the results grid — a different affordance, not a second header skip link.
 - **Rule:** a new page ships this block, an anchored target with `tabindex="-1"`, and its own label key.

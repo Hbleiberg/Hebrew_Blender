@@ -162,7 +162,7 @@
    under the WCAG 2.5.8 24px floor with no qualifying spacing). inline-block + block
    padding grows each link's BOX to >=24px; prose flow and wrapping are unaffected. */
 footer a { display: inline-block; padding-block: 5px; }
-/* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner, parsha_emojis, name_tags, the generated parsha/ pages (copied from parsha_emojis by scripts/build-parsha-pages.mjs) (docs/reference/shared-components.md → Header icons).
+/* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner, parsha_emojis, name_tags, trope_atlas, the generated parsha/ pages (copied from parsha_emojis by scripts/build-parsha-pages.mjs) (docs/reference/shared-components.md → Header icons).
    The header controls and the in-page control buttons (play, pause, stop, reset, retry, loop, sound) carry inline
    SVGs from one shared set (.hi-*); ink is currentColor, so each button's own colour applies. .hi-sm is the 13px
    size the tiny settings buttons take, .hi-btn lines an icon up with its label inside a button.
@@ -1358,6 +1358,7 @@ function exportAllSettings() {
     emojiTorahSettings: lsJSON('hebrewEmojiTorah_settings', {}),
     nameTagSettings:    lsJSON('hebrewNameTags_settings', {}),
     nameTagLists:       lsJSON('hebrewNameTags_lists', {}),
+    tropeAtlasSettings: lsJSON('hebrewTropeAtlas_settings', {}),
     tropeTutorProgress:  lsJSON('hebrewTropeTutor_progress', {}),
     inputMode:           localStorage.getItem('hebrewBlender_inputMode') || 'auto',
     hebFont:             localStorage.getItem('hebrewBlender_hebFont') || '',
@@ -1512,6 +1513,11 @@ async function importAllSettings() {
     if (parsed.nameTagLists && typeof parsed.nameTagLists === 'object' && !Array.isArray(parsed.nameTagLists) && Object.keys(parsed.nameTagLists).length) {
       const existing = ivritSafeParse(localStorage.getItem('hebrewNameTags_lists') || '{}');
       localStorage.setItem('hebrewNameTags_lists', JSON.stringify(ivritSafeAssign(existing, parsed.nameTagLists)));
+    }
+    // Trope Atlas: its view choices (key, layout, readings shown, note names, melody, phrase group), one blob, flat merge
+    if (parsed.tropeAtlasSettings && Object.keys(parsed.tropeAtlasSettings).length) {
+      const existing = ivritSafeParse(localStorage.getItem('hebrewTropeAtlas_settings') || '{}');
+      localStorage.setItem('hebrewTropeAtlas_settings', JSON.stringify(ivritSafeAssign(existing, parsed.tropeAtlasSettings)));
     }
     if (parsed.tropeTutorSettings && Object.keys(parsed.tropeTutorSettings).length) {
       const existing = ivritSafeParse(localStorage.getItem('hebrewTropeTutor_settings') || '{}');
@@ -1719,6 +1725,7 @@ async function eraseAllSettings() {
     'hebrewEmojiTorah_settings',
     'hebrewNameTags_settings',
     'hebrewNameTags_lists',
+    'hebrewTropeAtlas_settings',
     'hebrewTropeTutor_progress',
     'hebrewBlender_inputMode',
     // per-device, export-exempt: when this device last saved an AllTools .ivrit (the line under the inventory)
@@ -1803,6 +1810,7 @@ const IVRIT_CFG = {
       emojiTorahSettings: lsJSON('hebrewEmojiTorah_settings', {}),
       nameTagSettings:    lsJSON('hebrewNameTags_settings', {}),
       nameTagLists:       lsJSON('hebrewNameTags_lists', {}),
+      tropeAtlasSettings: lsJSON('hebrewTropeAtlas_settings', {}),
       tropeTutorProgress:  lsJSON('hebrewTropeTutor_progress',      {}),
       inputMode:           localStorage.getItem('hebrewBlender_inputMode') || 'auto',
       hebFont:             localStorage.getItem('hebrewBlender_hebFont') || '',
@@ -1873,6 +1881,7 @@ const IVRIT_CFG = {
     if (data.emojiTorahSettings && Object.keys(data.emojiTorahSettings).length) { mergeObj('hebrewEmojiTorah_settings', data.emojiTorahSettings); touched = true; }
     if (data.nameTagSettings && Object.keys(data.nameTagSettings).length) { mergeObj('hebrewNameTags_settings', data.nameTagSettings); touched = true; }
     if (data.nameTagLists && Object.keys(data.nameTagLists).length) { mergeObj('hebrewNameTags_lists', data.nameTagLists); touched = true; }   // by list name, like presets
+    if (data.tropeAtlasSettings && Object.keys(data.tropeAtlasSettings).length) { mergeObj('hebrewTropeAtlas_settings', data.tropeAtlasSettings); touched = true; }
     if (data.tropeTutorProgress && Object.keys(data.tropeTutorProgress).length) { tropeProgressMerge(data.tropeTutorProgress, mode === 'replace'); touched = true; }
     if (data.wordLists)           { wlMergeIntoStorage(data.wordLists, mode === 'replace', mode === 'fill'); touched = true; }
     if (data.dictAudioEnabled  !== undefined) { setPref('hebrewDictionary_audioEnabled', data.dictAudioEnabled);  touched = true; }

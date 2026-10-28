@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!-- Content-Security-Policy (defense-in-depth). Placed right after <meta charset> so it applies before
+     any script/style loads. script-src keeps 'unsafe-inline' because all app JS is inline by design; the
+     value here is blocking REMOTE script injection, object/base-uri hijacks, and unexpected connect/frame
+     origins. The page fetches only its own data/trope/ files and plays its staffs with WebAudio, so it needs
+     no origin beyond the fonts and the analytics tag. Update this when adding any external
+     script/font/fetch/iframe (see CLAUDE.md). -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=2">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=2">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=2">
+<link rel="manifest" href="manifest.webmanifest?v=3">
+<meta name="theme-color" content="#1a2744">
+<script src="/pwa.js" defer></script>
+<script src="/js/i18n.js" defer></script>
+<!-- iOS standalone + launch (splash) screens — regenerate with splash/gen_splash.py -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="IvritSuite">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-750x1334.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1242x2208.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1125x2436.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-828x1792.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1242x2688.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1170x2532.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1284x2778.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1179x2556.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1290x2796.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1206x2622.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1320x2868.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 744px) and (device-height: 1133px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-1488x2266.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-1536x2048.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-1620x2160.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 820px) and (device-height: 1180px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-1640x2360.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-1668x2224.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-1668x2388.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-2048x2732.png">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-CMLC81Z0HC"></script>
+<title>Trope Atlas — Ta'amei HaMikra Signs and Melodies Side by Side | IvritSuite</title>
+<meta name="description" content="A side-by-side reference to the cantillation signs (ta'amim) of the Hebrew Bible: every sign's names, rank and role, and its melody on a staff in each reading tradition, playable and movable into a common key.">
+<link rel="canonical" href="https://ivritsuite.com/trope_atlas.html">
+<!-- Unlisted while it is new: no link from the home page or any other page, not in sitemap.xml, llms.txt or the
+     service worker's precache, and kept out of search (docs/reference/ops.md → An unlisted page). -->
+<meta name="robots" content="noindex, follow">
+<meta name="author" content="Harrison Bleiberg">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="IvritSuite">
+<meta property="og:title" content="Trope Atlas | IvritSuite">
+<meta property="og:description" content="Every cantillation sign of the Hebrew Bible on a staff, in each reading tradition, side by side: playable and movable into a common key.">
+<meta property="og:url" content="https://ivritsuite.com/trope_atlas.html">
+<meta property="og:image" content="https://ivritsuite.com/og-trope.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Trope Atlas | IvritSuite">
+<meta name="twitter:description" content="Every cantillation sign of the Hebrew Bible on a staff, in each reading tradition, side by side: playable and movable into a common key.">
+<meta name="twitter:image" content="https://ivritsuite.com/og-trope.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" media="print" onload="this.media='all'" rel="stylesheet">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet"></noscript>
+<!-- Early dark mode (avoid flash) -->
+<script>(function(){try{var s=localStorage.getItem('hebrewBlender_darkMode');if(s==='1'||(s===null&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark-early');}}catch(e){}})()</script>
+<!-- Early language/dir (avoid LTR->RTL flash); authoritative set later in /js/i18n.js -->
+<script>(function(){try{var p=new URLSearchParams(location.search).get('lang');var l=(p==='en'||p==='he')?p:(localStorage.getItem('hebrewBlender_lang')||'en');if(l!=='en'&&l!=='he')l='en';document.documentElement.lang=l;document.documentElement.dir=(l==='he'?'rtl':'ltr');}catch(e){}})()</script>
+<style>
+@font-face{font-family:'Frank Ruhl Libre';src:url('/fonts/FrankRuhlLibre-Regular.ttf') format('truetype');font-weight:400;font-display:swap;}
+@font-face{font-family:'IvritSuite Taamim';src:url('/fonts/NotoSerifHebrew-Taamim.ttf') format('truetype');font-weight:400;font-display:swap;}
+/* ───── Design tokens (the Trope Tutor's, lifted from classroom_dashboard.html) ───── */
+:root {
+  --navy:#1a2744; --navy-deep:#0d1220;
+  --gold:#c9922a; --focus-ring:#a0701c; --gold-light:#f0d080;
+  --gold-text:#7f5a13;   /* readable gold for small TEXT on light surfaces — brand --gold stays for borders/buttons */
+  --cream:#fdf8ef; --warm-gray:#e8e0d0;
+  --text:#1a2744; --muted:#6b6050;
+  --border:#c8bfa8; --white:#ffffff;
+  --heb-font:'Frank Ruhl Libre', 'IvritSuite Taamim', serif;
+  --shadow-sm:0 2px 8px rgba(26,39,68,0.05);
+  /* A sign's rank (the sign table) and the clause families (the staffs' bars and the phrase chips: the Trope Tutor's
+     and the Torah Trainer's default trope colours). */
+  --rank-E:#8a2f2f; --rank-K:#2d5a99; --rank-D:#2f6b4f; --rank-C:#7f5a13; --rank-S:#6b6050;
+  --trope-sofpasuk-line:#d64541; --trope-etnachta-line:#c8651b; --trope-katon-line:#3b82c4; --trope-segol-line:#8e5bbf;
+  --trope-revia-line:#3a9e4e; --trope-geresh-line:#2aa6a0; --trope-rare-line:#c74f8e;
+  --at-bar-h:52px;   /* the sticky bar's height, re-measured by the page (the index and the anchors sit under it) */
+}
+html.dark-early body, body.dark {
+  --navy:#1a2744; --gold:#e0a832; --focus-ring:var(--gold); --gold-light:#f5d97a;
+  --gold-text:var(--gold);
+  --cream:#161c2a; --warm-gray:#1e2535;
+  --text:#dde4f0; --muted:#8a94a8;
+  --border:#2a3349; --white:#1e2535;
+  --shadow-sm:0 2px 8px rgba(0,0,0,0.40);
+  --rank-E:#e39a9a; --rank-K:#8fb3ec; --rank-D:#8fcfae; --rank-C:#e0bf7a; --rank-S:#a4a8b3;
+  --trope-sofpasuk-line:#e0635e; --trope-etnachta-line:#ee8a3c; --trope-katon-line:#5c9fe0; --trope-segol-line:#a97fe0;
+  --trope-revia-line:#55c06a; --trope-geresh-line:#3fbdb6; --trope-rare-line:#e07ab0;
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; }
+body {
+  font-family:'Source Sans 3', sans-serif;
+  background:var(--cream); color:var(--text);
+  min-height:100vh; display:flex; flex-direction:column;
+  line-height:1.5;
+}
+/* ───── Skip link (house pattern; the same rule on every page) ───── */
+.skip-link {
+  position:absolute; inset-inline-start:8px; top:-48px; z-index:200;
+  background:var(--navy); color:#fff; padding:8px 14px;
+  border-radius:0 0 6px 6px; font-size:0.8rem; font-weight:600;
+  text-decoration:none;
+}
+.skip-link:focus { top:0; outline:2px solid var(--focus-ring); outline-offset:2px; }
+/* ───── Header (house pattern) ───── */
+header {
+  background:var(--navy); color:#fff;
+  padding:14px 28px;
+  display:flex; align-items:center; gap:16px;
+  border-bottom:4px solid var(--gold); flex-shrink:0;
+}
+body.dark header { background:var(--navy-deep); }
+.star { font-size:28px; color:var(--gold); flex-shrink:0; }
+.htitle { flex:1; min-width:0; }
+header h1 { font-family:'Libre Baskerville',serif; font-size:1.35rem; color:#fff; line-height:1.2; }
+header p { font-size:0.78rem; color:var(--gold-light); margin-top:2px; }
+.hright { display:flex; gap:6px; align-items:center; flex-shrink:0; }
+.dir-arrow { display:inline-block; }
+[dir="rtl"] .dir-arrow { transform:scaleX(-1); }
+.hbtn {
+  background:rgba(255,255,255,0.08); color:#fff;
+  border:1px solid rgba(255,255,255,0.18);
+  padding:7px 12px; border-radius:6px; min-height:35px;
+  font-family:inherit; font-size:0.82rem; font-weight:600;
+  cursor:pointer; text-decoration:none;
+  display:inline-flex; align-items:center; gap:6px;
+  transition:background 0.15s, border-color 0.15s;
+}
+.hbtn:hover { background:rgba(255,255,255,0.18); border-color:rgba(255,255,255,0.3); }
+.hbtn:focus-visible { outline:2px solid var(--gold-light); outline-offset:2px; }
+:focus-visible { outline:2px solid var(--focus-ring); outline-offset:2px; }
+.vh { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+
+/* ───── The sticky bar: the contents button (narrow screens), the title, the Key select ───── */
+.at-bar { position:sticky; top:0; z-index:20; background:var(--white); border-bottom:1px solid var(--border); box-shadow:var(--shadow-sm); }
+body.dark .at-bar { background:var(--navy-deep); }
+.at-bar-in { display:flex; align-items:center; flex-wrap:wrap; gap:6px 14px; padding:8px 24px; }
+.at-bartitle { font-family:'Libre Baskerville',serif; font-weight:700; font-size:0.95rem; color:var(--text); text-decoration:none; white-space:nowrap; }
+.at-bartitle .at-he { color:var(--muted); font-weight:400; font-size:1.05rem; }
+html[lang="he"] .at-bartitle .at-he { display:none; }   /* the Hebrew UI's title already is the Hebrew */
+.at-keypick { display:flex; align-items:center; flex-wrap:wrap; gap:4px 8px; margin-inline-start:auto; min-width:0; max-width:100%; }
+.at-lbl { font-size:0.74rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; }
+html[lang="he"] .at-lbl { letter-spacing:normal; text-transform:none; }
+.at-sel {
+  border:1px solid var(--border); background:var(--white); color:var(--text); min-width:0; max-width:100%;
+  padding:4px 8px; border-radius:5px; font:inherit; font-size:0.86rem; min-height:30px;
+}
+body.dark .at-sel { background:var(--navy-deep); color:var(--text); }
+.at-keyhint { color:var(--muted); font-size:0.78rem; line-height:1.35; max-width:52ch; }
+@media (pointer:coarse) { .at-sel { font-size:16px; } }   /* iOS zooms into a focused field under 16px */
+.at-idxbtn {
+  font:inherit; font-size:0.86rem; font-weight:600; padding:5px 12px; min-height:32px;
+  border:1px solid var(--border); border-radius:6px; background:transparent; color:var(--text); cursor:pointer;
+}
+.at-idxbtn:hover { border-color:var(--gold); }
+
+/* ───── Layout: the contents rail beside the reading column (a drawer on narrow screens) ───── */
+.at-layout { display:grid; grid-template-columns:minmax(0, 1fr); width:100%; max-width:1560px; margin:0 auto; flex:1; }
+.at-main { min-width:0; padding:8px 24px 40px; }
+.at-index { font-size:0.88rem; line-height:1.35; }
+.at-index ul { list-style:none; }
+.at-index > ul > li { margin-top:8px; }
+.at-index > ul > li > a { font-weight:700; }
+.at-index .at-sysidx li.g { margin-top:8px; }
+.at-index .at-sysidx li.g > a { font-size:0.7rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--gold-text); }
+html[lang="he"] .at-index .at-sysidx li.g > a { letter-spacing:normal; text-transform:none; font-size:0.8rem; }
+.at-index .at-sysidx li.g ul { border-inline-start:1px solid var(--border); margin-block-start:3px; margin-inline-start:2px; }
+.at-index .at-sysidx li.g ul a { display:block; padding-block:2px; padding-inline:10px 0; margin-inline-start:-1px; border-inline-start:2px solid transparent; }
+.at-index a { color:var(--text); text-decoration:none; }
+.at-index a:hover { color:var(--gold-text); }
+.at-index a.cur { color:var(--gold-text); }
+.at-index .at-sysidx li.g ul a.cur { border-inline-start-color:var(--gold); }
+.at-idxhead { font-size:0.72rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); }
+html[lang="he"] .at-idxhead { letter-spacing:normal; text-transform:none; }
+@media (min-width:1000px) {
+  .at-layout { grid-template-columns:240px minmax(0, 1fr); }
+  .at-index {
+    position:sticky; top:var(--at-bar-h); align-self:start; max-height:calc(100vh - var(--at-bar-h)); overflow-y:auto;
+    padding-block:16px 32px; padding-inline:24px 12px; border-inline-end:1px solid var(--border); overscroll-behavior:contain;
+  }
+  .at-idxbtn { display:none; }
+}
+@media (max-width:999.98px) {
+  .at-index {
+    position:fixed; z-index:30; top:0; bottom:0; inset-inline-start:0; width:min(300px, 86vw); overflow-y:auto;
+    background:var(--white); border-inline-end:1px solid var(--border); box-shadow:0 0 40px rgba(0,0,0,.25);
+    padding:16px; transform:translateX(-105%); transition:transform .2s ease; visibility:hidden;
+  }
+  [dir="rtl"] .at-index { transform:translateX(105%); }
+  .at-index.open, [dir="rtl"] .at-index.open { transform:none; visibility:visible; }
+  body.dark .at-index { background:var(--navy-deep); }
+  .at-keyhint { display:none; }
+}
+@media (max-width:560px) { .at-bartitle { display:none; } .at-bar-in { padding-inline:12px; } .at-main { padding-inline:12px; } }
+
+/* ───── Sections ───── */
+section { padding-block:22px 10px; border-bottom:1px solid var(--border); scroll-margin-top:calc(var(--at-bar-h) + 8px); }
+section:last-of-type { border-bottom:0; }
+.at-main h2 { font-family:'Libre Baskerville',serif; font-size:1.45rem; font-weight:700; margin:0 0 8px; line-height:1.25; }
+.at-main h3 { font-family:'Libre Baskerville',serif; font-size:1.1rem; font-weight:700; margin:22px 0 8px; }
+.at-hsub { font-family:var(--heb-font); font-weight:400; color:var(--muted); font-size:0.85em; margin-inline-start:10px; }
+html[lang="he"] .at-hsub { display:none; }   /* the Hebrew heading already says it */
+.at-intro { max-width:72ch; margin:0 0 14px; font-size:0.98rem; }
+.at-intro a, .at-notes a, .at-cites a, .at-citeref { color:var(--gold-text); font-weight:600; }
+.at-lede { padding-block:18px 6px; border-bottom:0; }
+.at-lede p { max-width:72ch; font-size:1.05rem; color:var(--text); }
+.at-lede p + p { margin-top:6px; }
+.at-he { font-family:var(--heb-font); unicode-bidi:isolate; }
+.at-preview { margin:14px 0 0; padding:8px 12px; border:1px dashed var(--gold-text); border-radius:8px; font-size:0.86rem; line-height:1.45; max-width:72ch; }
+.at-preview[hidden] { display:none; }
+.at-status { font-size:0.88rem; color:var(--muted); display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:12px 0 0; }
+.at-status:empty { margin:0; }
+.at-status.error { color:#b3261e; font-weight:600; }
+body.dark .at-status.error { color:#ff8a80; }
+.at-unverified { display:inline-block; font-size:0.66rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase;
+  color:#9a3b1f; border:1px solid currentColor; border-radius:4px; padding:0 5px; margin-inline-start:6px; vertical-align:middle; white-space:nowrap; }
+body.dark .at-unverified { color:#f0a58a; }
+html[lang="he"] .at-unverified { letter-spacing:normal; text-transform:none; }
+.btn { background:var(--gold); color:var(--navy); border:1px solid var(--gold); padding:5px 12px; border-radius:5px; font:inherit; font-weight:700; font-size:0.84rem; min-height:30px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; }
+.btn:hover { background:var(--gold-light); border-color:var(--gold-light); }
+
+/* ───── The sign tables ───── */
+.at-tablewrap { overflow-x:auto; max-width:100%; border:1px solid var(--border); border-radius:8px; background:var(--white); }
+body.dark .at-tablewrap { background:var(--navy-deep); }
+table.at-signs { border-collapse:collapse; width:100%; min-width:860px; font-size:0.92rem; }
+table.at-signs.at-small { min-width:680px; }
+table.at-signs th { text-align:start; font-size:0.72rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--muted); padding:8px 10px; border-bottom:1px solid var(--border); }
+html[lang="he"] table.at-signs th { letter-spacing:normal; text-transform:none; font-size:0.8rem; }
+table.at-signs td { padding:6px 10px; border-bottom:1px solid var(--border); vertical-align:middle; }
+table.at-signs tbody tr:last-child td { border-bottom:0; }
+table.at-signs tbody tr:hover td { background:rgba(201,146,42,0.08); }
+table.at-signs tbody tr[id] { cursor:pointer; }
+.at-glyph { font-family:var(--heb-font); font-size:2rem; line-height:1.15; display:inline-block; min-width:1.6em; text-align:center; }
+.at-hename { font-family:var(--heb-font); font-size:1.2rem; white-space:nowrap; }
+.at-mono { font-family:ui-monospace, Menlo, Consolas, monospace; font-size:0.8rem; color:var(--muted); white-space:nowrap; }
+.at-mono span { display:block; font-family:'Source Sans 3', sans-serif; white-space:normal; font-size:0.76rem; }   /* zarka's second code point, on a line of its own */
+.at-role { color:var(--muted); min-width:24ch; }
+.at-jump { color:var(--text); font-weight:700; text-decoration:underline; text-decoration-color:var(--border); text-underline-offset:3px; }
+.at-jump:hover { color:var(--gold-text); text-decoration-color:currentColor; }
+.at-rank { font-size:0.8rem; font-weight:600; white-space:nowrap; }
+.rE { color:var(--rank-E); } .rK { color:var(--rank-K); } .rD { color:var(--rank-D); } .rC { color:var(--rank-C); } .rS { color:var(--rank-S); }
+
+/* ───── Staffs (js/trope-staff.js draws them; notation reads left to right in both interfaces) ───── */
+.at-stf { direction:ltr; overflow-x:auto; padding-bottom:2px; }
+.tu-pstaff { display:block; color:var(--text); max-width:none; }
+.tu-pstaff .tu-pbar { fill:var(--border); }
+.tu-pstaff .tu-pbar.fam-sofpasuk { fill:var(--trope-sofpasuk-line); }
+.tu-pstaff .tu-pbar.fam-etnachta { fill:var(--trope-etnachta-line); }
+.tu-pstaff .tu-pbar.fam-katon    { fill:var(--trope-katon-line); }
+.tu-pstaff .tu-pbar.fam-segol    { fill:var(--trope-segol-line); }
+.tu-pstaff .tu-pbar.fam-revia    { fill:var(--trope-revia-line); }
+.tu-pstaff .tu-pbar.fam-geresh   { fill:var(--trope-geresh-line); }
+.tu-pstaff .tu-pbar.fam-rare     { fill:var(--trope-rare-line); }
+.tu-pstaff .tu-nn { fill:var(--muted); }
+.tu-pstaff.is-playing { background:rgba(201,146,42,.14); border-radius:6px; }
+.tu-pstaff .tu-pn.is-sounding { color:var(--gold); }
+.tu-pstaff .tu-pn.is-rest.is-sounding { color:var(--gold-text); }
+body.dark .tu-pstaff .tu-pn.is-sounding { color:var(--gold-light); }
+.tu-pstaff .tu-pn.is-sounding ellipse { stroke:var(--navy); stroke-width:1.6; }
+body.dark .tu-pstaff .tu-pn.is-sounding ellipse { stroke:var(--gold-light); }
+.tu-pstaff .tu-pn.is-sounding .tu-nn { fill:var(--gold-text); font-weight:700; }
+.at-singwrap { display:flex; align-items:center; gap:6px; }
+.at-sing {
+  flex:none; width:32px; height:32px; border-radius:50%; border:1px solid var(--border); background:var(--white);
+  color:var(--gold-text); cursor:pointer; display:inline-flex; align-items:center; justify-content:center;
+}
+.at-sing:hover { border-color:var(--gold); }
+.at-sing[aria-pressed="true"] { background:var(--navy); color:var(--gold-light); border-color:var(--navy); box-shadow:0 0 0 3px var(--gold-light); }
+body.dark .at-sing[aria-pressed="true"] { background:var(--gold-light); color:var(--navy-deep); border-color:var(--gold-light); box-shadow:0 0 0 3px var(--gold); }
+.at-sing .hi { width:14px; height:14px; }
+
+/* ───── Chips and the view bar ───── */
+.at-viewbar { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:0 0 12px; font-size:0.86rem; color:var(--muted); }
+.at-viewbar label { display:inline-flex; align-items:center; gap:6px; cursor:pointer; color:var(--text); }
+.at-sep { width:1px; height:18px; background:var(--border); margin-inline:4px; }
+.at-chips { display:inline-flex; flex-wrap:wrap; gap:6px; }
+.at-chip {
+  display:inline-flex; align-items:baseline; gap:6px;
+  padding:5px 12px; min-height:30px; font:inherit; font-size:0.82rem; font-weight:700;
+  border:1px solid var(--border); border-radius:6px; background:transparent; color:var(--text); cursor:pointer;
+  transition:border-color 0.15s, background 0.15s;
+}
+.at-chip:hover { border-color:var(--gold); }
+.at-chip[aria-pressed="true"] { background:var(--warm-gray); border-color:var(--gold); }
+.at-chip .n { font-size:0.72rem; font-weight:600; color:var(--muted); font-variant-numeric:tabular-nums; }
+.at-chip.fam { border-inline-start:5px solid var(--border); }
+.at-chip.fam-sofpasuk { border-inline-start-color:var(--trope-sofpasuk-line); }
+.at-chip.fam-etnachta { border-inline-start-color:var(--trope-etnachta-line); }
+.at-chip.fam-katon    { border-inline-start-color:var(--trope-katon-line); }
+.at-chip.fam-segol    { border-inline-start-color:var(--trope-segol-line); }
+.at-chip.fam-revia    { border-inline-start-color:var(--trope-revia-line); }
+.at-chip.fam-geresh   { border-inline-start-color:var(--trope-geresh-line); }
+.at-chip.fam-rare     { border-inline-start-color:var(--trope-rare-line); }
+
+/* ───── The melody table: a grid that scrolls in its own box, so its heading row and sign column both hold ───── */
+.at-grid { max-height:min(80vh, 900px); overflow:auto; border:1px solid var(--border); border-radius:8px; overscroll-behavior:contain; background:var(--cream); }
+table.at-atlas { border-collapse:separate; border-spacing:0; font-size:0.86rem; }
+table.at-atlas thead th {
+  text-align:start; font-size:0.72rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:var(--muted);
+  padding:8px 10px; border-bottom:1px solid var(--border); background:var(--white); position:sticky; top:0; z-index:2; vertical-align:bottom;
+  box-shadow:0 1px 0 var(--border);
+}
+body.dark table.at-atlas thead th { background:var(--navy-deep); }
+html[lang="he"] table.at-atlas thead th { letter-spacing:normal; text-transform:none; }
+table.at-atlas thead th .at-th-grp { display:block; font-size:0.66rem; color:var(--gold-text); }
+table.at-atlas thead th b { display:block; font-size:0.9rem; text-transform:none; letter-spacing:0; color:var(--text); }
+table.at-atlas thead th small { display:block; text-transform:none; letter-spacing:0; font-size:0.78rem; font-weight:400; color:var(--muted); margin-top:2px; }
+table.at-atlas td, table.at-atlas tbody th { padding:6px 10px; border-bottom:1px solid var(--border); vertical-align:middle; text-align:start; font-weight:400; }
+table.at-atlas .lead { position:sticky; inset-inline-start:0; background:var(--cream); z-index:1; min-width:170px; max-width:220px; border-inline-end:1px solid var(--border); }
+table.at-atlas thead th.lead { z-index:4; background:var(--white); }
+body.dark table.at-atlas thead th.lead { background:var(--navy-deep); }
+table.at-atlas .lead .at-glyph { font-size:1.8rem; min-width:1.2em; }
+table.at-atlas .lead b { display:block; font-size:0.92rem; }
+table.at-atlas .lead .alt { color:var(--muted); font-size:0.8rem; }
+table.at-atlas td.cell { min-width:120px; }
+table.at-atlas td.none { color:var(--border); text-align:center; font-size:1.1rem; }
+.at-grid:focus-visible { outline:2px solid var(--focus-ring); outline-offset:2px; }
+.at-cards { display:grid; gap:14px; }
+.at-card { background:var(--white); border:1px solid var(--border); border-radius:8px; padding:12px 14px 8px; }
+body.dark .at-card { background:var(--navy-deep); }
+.at-card .head { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:4px; }
+.at-card .head b { font-size:1.05rem; }
+.at-card .head .alt { color:var(--muted); font-size:0.88rem; }
+.at-card .trad { display:grid; grid-template-columns:170px minmax(0, 1fr); gap:10px; align-items:center; padding:4px 0; border-top:1px solid var(--border); }
+.at-card .trad .lab { font-size:0.8rem; color:var(--muted); line-height:1.25; }
+.at-card .trad .lab b { color:var(--text); display:block; font-size:0.84rem; }
+@media (max-width:560px) { .at-card .trad { grid-template-columns:1fr; gap:2px; } }
+.at-flash { animation:at-flash 1.6s ease-out 1; }
+@keyframes at-flash { from { background:rgba(201,146,42,.3); } to { background:transparent; } }
+.at-flash > td { animation:at-flash 1.6s ease-out 1; }
+
+/* ───── The phrase browser: one melody at a time, grouped by clause ───── */
+.at-phrasebar { display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; padding:10px 14px; border:1px solid var(--border); border-radius:8px; background:var(--white); margin:16px 0 12px; }
+body.dark .at-phrasebar { background:var(--navy-deep); }
+.at-phrasebar .at-sel { flex:1 1 260px; font-size:0.94rem; }
+.at-count { font-size:0.8rem; color:var(--muted); font-variant-numeric:tabular-nums; }
+.at-melinfo .syshead { display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 14px; margin:4px 0; scroll-margin-top:calc(var(--at-bar-h) + 8px); }
+.at-melinfo .syshead h3 { margin:0; }
+.at-melinfo .sub { color:var(--muted); font-size:0.88rem; }
+.at-melinfo .sysnote { color:var(--muted); font-size:0.9rem; max-width:72ch; margin:0 0 6px; }
+.at-melinfo .keyline { font-size:0.8rem; color:var(--muted); margin:0 0 12px; }
+.at-citeref { font-size:.82em; text-decoration:none; white-space:nowrap; }
+.at-citeref:hover { text-decoration:underline; }
+.at-clauses { margin:0 0 12px; }
+.at-rows { display:grid; }
+.at-prow { display:grid; grid-template-columns:56px minmax(0, 1fr); gap:8px 12px; align-items:start; padding:8px 0; border-top:1px solid var(--border); }
+.at-prow .num { font-family:'Libre Baskerville',serif; font-weight:700; font-size:0.86rem; color:var(--gold-text); padding-top:6px; font-variant-numeric:tabular-nums; }
+.at-prow .body { min-width:0; }
+/* The names sit over the staff's start: match-parent takes the interface's start, not the Hebrew run's own. */
+.at-prow .at-pheb { font-family:var(--heb-font); font-size:1.45rem; line-height:1.3; text-align:match-parent; margin:0 0 2px; }
+.at-tag { font-family:'Source Sans 3', sans-serif; font-size:0.72rem; font-weight:700; color:var(--gold-text); margin-inline-start:8px; letter-spacing:0.04em; }
+@media (max-width:560px) { .at-prow { grid-template-columns:1fr; } .at-prow .num { padding-top:0; } }
+
+/* ───── Notes and sources ───── */
+.at-notes { max-width:78ch; padding-inline-start:20px; }
+.at-notes li { margin:6px 0; font-size:0.95rem; }
+.at-cites { padding-inline-start:1.6em; display:grid; gap:10px; max-width:72ch; font-size:0.92rem; }
+.at-cites li { padding-inline-start:4px; }
+.at-cites li:target { background:rgba(201,146,42,.14); }
+.at-gaps { margin-top:24px; padding-top:14px; border-top:1px solid var(--border); font-size:0.9rem; }
+
+/* ───── Footer ───── */
+footer {
+  background:var(--white); border-top:1px solid var(--border);
+  padding:14px 24px; color:var(--muted);
+  font-size:0.78rem; text-align:center; flex-shrink:0;
+}
+body.dark footer { background:var(--navy-deep); }
+footer a { color:var(--gold-text); text-decoration:none; font-weight:600; display:inline-block; padding-block:5px; }
+footer a:hover { text-decoration:underline; }
+footer .footer-credits { display:flex; flex-wrap:wrap; gap:4px 24px; justify-content:center; align-items:center; }
+html[lang="he"] footer [style*="letter-spacing:0.08em"] { letter-spacing:normal !important; text-transform:none !important; }
+
+@media (max-width:720px) {
+  header { padding:12px 16px; }
+  header h1 { font-size:1.1rem; }
+  header p { display:none; }
+  .hbtn { padding:6px 9px; font-size:0.78rem; }
+}
+/* Phone widths: let the header button row wrap onto a second line instead of pushing the page sideways (WCAG 1.4.10).
+   322px is this page's MEASURED overflow ceiling, not a device width: the one-row header spills past the screen up to 322px (the dark theme's "Light" label is the widest) and fits above it, so the gate ends where the break does. Re-measure when a header control changes width; ungating moves layouts that already fit. */
+@media (max-width:322px) {
+  header { flex-wrap:wrap; row-gap:8px; }
+  .hright { flex-wrap:wrap; max-width:100%; justify-content:flex-end; }
+}
+@media print {
+  body, body.dark, html.dark-early body {
+    --navy:#1a2744; --gold:#c9922a; --gold-light:#f0d080; --cream:#fff; --warm-gray:#e8e0d0; --text:#1a2744; --muted:#6b6050;
+    --border:#c8bfa8; --white:#fff; --gold-text:#7f5a13;
+    --rank-E:#8a2f2f; --rank-K:#2d5a99; --rank-D:#2f6b4f; --rank-C:#7f5a13; --rank-S:#6b6050;
+    --trope-sofpasuk-line:#d64541; --trope-etnachta-line:#c8651b; --trope-katon-line:#3b82c4; --trope-segol-line:#8e5bbf;
+    --trope-revia-line:#3a9e4e; --trope-geresh-line:#2aa6a0; --trope-rare-line:#c74f8e;
+    background:#fff !important; color:#1a2744 !important;
+  }
+  header .hright, .at-bar, .at-index, .at-sing, .at-viewbar, .at-phrasebar, .at-clauses, .skip-link, footer nav { display:none !important; }
+  .at-layout { display:block; }
+  .at-grid { max-height:none; overflow:visible; }
+  table.at-atlas th, table.at-atlas .lead { position:static; }
+}
+/* Reduced motion: the universal neutralizer (0.001ms rather than 0 so animationend still fires). */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+/* High Contrast (forced colours) paints every chip Canvas on CanvasText, so the chosen layout, readings and phrase group
+   would read like their neighbours: the pressed ones take the selection pair. */
+@media (forced-colors:active) {
+  .at-chip[aria-pressed="true"], .at-sing[aria-pressed="true"] { background:Highlight; color:HighlightText; border-color:Highlight; forced-color-adjust:none; }
+  .at-chip[aria-pressed="true"] .n { color:HighlightText; }
+}
+/* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner, parsha_emojis, name_tags, trope_atlas, the generated parsha/ pages (copied from parsha_emojis by scripts/build-parsha-pages.mjs) (docs/reference/shared-components.md → Header icons).
+   The header controls and the in-page control buttons (play, pause, stop, reset, retry, loop, sound) carry inline
+   SVGs from one shared set (.hi-*); ink is currentColor, so each button's own colour applies. .hi-sm is the 13px
+   size the tiny settings buttons take, .hi-btn lines an icon up with its label inside a button.
+   The dark toggle holds both the moon and the sun and body.dark picks one; scripts change only the .hi-lbl text beside it. */
+.hi{width:16px;height:16px;flex-shrink:0;display:inline-block;vertical-align:-0.2em;}
+.hi-sm{width:13px;height:13px;}
+.hi-btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;}
+.hi-sun{display:none;}
+body.dark .hi-moon{display:none;}
+body.dark .hi-sun{display:inline-block;}
+[dir="rtl"] .hi-arrow{transform:scaleX(-1);}
+/* ═══ end header-icons CSS ═══ */
+</style>
+</head>
+<body>
+<a class="skip-link" href="#mainContent" data-i18n="atlas.a11y.skip_to_atlas">Skip to the atlas</a>
+<header>
+  <div class="star" aria-hidden="true">✡︎</div>
+  <div class="htitle">
+    <h1 data-i18n="atlas.header.title">Trope Atlas</h1>
+    <p data-i18n="atlas.header.subtitle">Ta’amei HaMikra: the cantillation signs and their melodies, side by side</p>
+  </div>
+  <div class="hright">
+    <a class="hbtn" href="/"><svg class="hi hi-arrow dir-arrow" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/></svg><span class="hi-lbl" data-i18n="atlas.header.home">Home</span></a>
+    <div data-i18n-switcher></div>
+    <button class="hbtn" id="darkBtn" type="button" onclick="toggleDark()" aria-pressed="false" aria-label="Toggle dark mode" data-i18n-aria-label="shared.darkmode.toggle_title" data-i18n-title="shared.darkmode.toggle_title"><svg class="hi hi-moon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15.5A7 7 0 0 1 8.5 6a7 7 0 1 0 9.5 9.5z"/><path d="M17.5 2.5l.9 2.4 2.4.9-2.4.9-.9 2.4-.9-2.4-2.4-.9 2.4-.9z" fill="currentColor" stroke="none"/></svg><svg class="hi hi-sun" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></svg><span class="hi-lbl" data-i18n="shared.darkmode.label_dark">Dark</span></button>
+  </div>
+</header>
+
+<div class="at-bar" id="atBar">
+  <div class="at-bar-in">
+    <button type="button" id="atIdxBtn" class="at-idxbtn hi-btn" aria-controls="atIndex" aria-expanded="false"><svg class="hi hi-book" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7.2v12.4"/><path d="M12 7.2S10 5.4 6 5.4a18 18 0 0 0-2.4.2v12.6A18 18 0 0 1 6 18c4 0 6 1.6 6 1.6s2-1.6 6-1.6a18 18 0 0 1 2.4.2V5.6A18 18 0 0 0 18 5.4c-4 0-6 1.8-6 1.8Z"/></svg><span class="hi-lbl" data-i18n="atlas.index.toggle">Contents</span></button>
+    <a class="at-bartitle" href="#top"><span data-i18n="atlas.header.title">Trope Atlas</span> <span class="at-he" lang="he" dir="rtl">טַעֲמֵי הַמִּקְרָא</span></a>
+    <div class="at-keypick">
+      <label class="at-lbl" for="atKey" data-i18n="trope.key.label">Key</label>
+      <select class="at-sel" id="atKey" aria-describedby="atKeyHint"></select>
+      <span id="atKeyHint" class="at-keyhint" data-i18n="atlas.key.hint">Moves every staff so its key note lands on the one you pick, for side-by-side comparison. The play buttons follow.</span>
+    </div>
+  </div>
+</div>
+
+<div class="at-layout">
+<nav class="at-index" id="atIndex" aria-label="Contents" data-i18n-aria-label="atlas.index.heading">
+  <p class="at-idxhead" data-i18n="atlas.index.heading">Contents</p>
+  <ul>
+    <li><a href="#signs" data-i18n="atlas.signs.heading">The signs</a></li>
+    <li><a href="#atlas" data-i18n="atlas.table.heading">Melody table</a></li>
+    <li><a href="#phrases" data-i18n="atlas.phrases.heading">Phrase patterns</a>
+      <ul class="at-sysidx" id="atSysIdx"></ul></li>
+    <li><a href="#emet" data-i18n="atlas.index.emet">Psalms, Proverbs, Job</a></li>
+    <li><a href="#notes" data-i18n="atlas.notes.heading">Reading the staffs</a></li>
+    <li><a href="#sources" data-i18n="atlas.sources.heading">Sources</a></li>
+  </ul>
+</nav>
+<main class="at-main" id="mainContent" tabindex="-1">
+<section class="at-lede" id="top">
+  <!-- ?preview=traditions (the maintainer's review, never saved): the transcriptions not yet checked against their
+       sources are offered too, each marked so; this line says why they are there. -->
+  <p class="at-preview" id="atPreview" role="note" hidden data-i18n="trope.preview.banner">Preview: the traditions not yet checked against their sources are shown too, each marked Unverified transcription. Students never see them.</p>
+  <p><span data-i18n="atlas.intro.lede">A side-by-side reference to the cantillation signs of the Hebrew Bible and the melodies they carry. Each sign is written out on a staff in every reading tradition on this page, from the melodies most American Reform and Conservative congregations use for Torah, Haftarah, the High Holy Days and the megillot. Every staff can be played aloud and moved into a common key for comparison.</span> <span id="atIntroHist" data-i18n="atlas.intro.historical" hidden>Beside them stand older Ashkenazi and Sephardi readings, from the cantillation tables of the Jewish Encyclopedia (1902).</span></p>
+  <p class="at-status" id="atStatus" role="status"></p>
+</section>
+
+<section id="signs">
+  <h2><span data-i18n="atlas.signs.heading">The signs</span> <span class="at-hsub" lang="he" dir="rtl">הַטְּעָמִים</span></h2>
+  <p class="at-intro" data-i18n-html="atlas.signs.intro">The 21 prose books share one set of signs. Each sign is either a <em>disjunctive</em> (a pause, ranked emperor, king, duke or count) or a <em>conjunctive</em> that leads into the pause after it. The sign is printed above or below the stressed syllable, except for the postpositive and prepositive signs noted below. Select a sign’s name to jump to its melodies.</p>
+  <div class="at-tablewrap">
+  <table class="at-signs" id="atSigns">
+    <thead><tr><th scope="col" data-i18n="atlas.signs.col_sign">Sign</th><th scope="col" data-i18n="atlas.signs.col_hebrew">Hebrew name</th><th scope="col" data-i18n="atlas.signs.col_ashk">Ashkenazi name</th><th scope="col" data-i18n="atlas.signs.col_seph">Sephardi name</th><th scope="col" data-i18n="atlas.signs.col_unicode">Unicode</th><th scope="col" data-i18n="atlas.signs.col_rank">Rank</th><th scope="col" data-i18n="atlas.signs.col_role">What it does</th></tr></thead>
+    <tbody>
+    <!-- The names are the taught Ashkenazi and Sephardi names (never translated); the rank and the role translate. -->
+<tr id="m-sof_pasuk"><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">אֽ׃</span></td><td class="at-hename" lang="he" dir="rtl">סוֹף פָּסוּק / סִלּוּק</td><td><a class="at-jump" href="#atlas-sof_pasuk">Sof Pasuk (Siluk)</a></td><td>Sof Pasuk</td><td class="at-mono" dir="ltr">U+05BD + U+05C3</td><td><span class="at-rank rE" data-i18n="atlas.rank.emperor">Emperor (keisar)</span></td><td class="at-role" data-i18n="atlas.role.sof_pasuk">Ends the verse. The mark under the stressed syllable is the siluk (meteg shape); the two dots ׃ close the verse.</td></tr>
+<tr id="m-etnachta"><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֑</span></td><td class="at-hename" lang="he" dir="rtl">אֶתְנַחְתָּא</td><td><a class="at-jump" href="#atlas-etnachta">Etnachta</a></td><td>Atnach</td><td class="at-mono" dir="ltr">U+0591</td><td><span class="at-rank rE" data-i18n="atlas.rank.emperor">Emperor (keisar)</span></td><td class="at-role" data-i18n="atlas.role.etnachta">Main pause: divides the verse in two.</td></tr>
+<tr id="m-tipcha"><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֖</span></td><td class="at-hename" lang="he" dir="rtl">טִפְּחָא</td><td><a class="at-jump" href="#atlas-tipcha">Tipcha</a></td><td>Tarcha</td><td class="at-mono" dir="ltr">U+0596</td><td><span class="at-rank rK" data-i18n="atlas.rank.king">King (melech)</span></td><td class="at-role" data-i18n="atlas.role.tipcha">Last divider before etnachta or sof pasuk.</td></tr>
+<tr id="m-mercha"><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֥</span></td><td class="at-hename" lang="he" dir="rtl">מֵרְכָא</td><td><a class="at-jump" href="#atlas-mercha">Mercha</a></td><td>Ma&#x27;arich</td><td class="at-mono" dir="ltr">U+05A5</td><td><span class="at-rank rS" data-i18n="atlas.rank.connector">Connector (meshareit)</span></td><td class="at-role" data-i18n="atlas.role.mercha">Connects to tipcha, tevir or sof pasuk.</td></tr>
+<tr id="m-munach"><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֣</span></td><td class="at-hename" lang="he" dir="rtl">מֻנַּח</td><td><a class="at-jump" href="#atlas-munach">Munach</a></td><td>Shofar Holech</td><td class="at-mono" dir="ltr">U+05A3</td><td><span class="at-rank rS" data-i18n="atlas.rank.connector">Connector (meshareit)</span></td><td class="at-role" data-i18n="atlas.role.munach">The most common connector; its melody changes with the mark it leads to.</td></tr>
+<tr id="m-zakef_katon"><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֔</span></td><td class="at-hename" lang="he" dir="rtl">זָקֵף קָטָן</td><td><a class="at-jump" href="#atlas-zakef_katon">Zakef Katon</a></td><td>Zakef Katon</td><td class="at-mono" dir="ltr">U+0594</td><td><span class="at-rank rK" data-i18n="atlas.rank.king">King (melech)</span></td><td class="at-role" data-i18n="atlas.role.zakef_katon">Divides the half-verse; usually closes a pashta or yetiv phrase.</td></tr>
+<tr id="m-zakef_gadol"><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֕</span></td><td class="at-hename" lang="he" dir="rtl">זָקֵף גָּדוֹל</td><td><a class="at-jump" href="#atlas-zakef_gadol">Zakef Gadol</a></td><td>Zakef Gadol</td><td class="at-mono" dir="ltr">U+0595</td><td><span class="at-rank rK" data-i18n="atlas.rank.king">King (melech)</span></td><td class="at-role" data-i18n="atlas.role.zakef_gadol">Zakef standing on a word with no connector before it.</td></tr>
+<tr id="m-pashta"><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֙</span></td><td class="at-hename" lang="he" dir="rtl">פַּשְׁטָא</td><td><a class="at-jump" href="#atlas-pashta">Pashta</a></td><td>Kadma</td><td class="at-mono" dir="ltr">U+0599</td><td><span class="at-rank rD" data-i18n="atlas.rank.duke">Duke (mishneh)</span></td><td class="at-role" data-i18n="atlas.role.pashta">Postpositive: written on the last letter, whatever the stress (doubled when the stress falls earlier).</td></tr>
+<tr id="m-mahpach"><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֤</span></td><td class="at-hename" lang="he" dir="rtl">מַהְפַּךְ</td><td><a class="at-jump" href="#atlas-mahpach">Mahpach</a></td><td>Shofar Mehupach</td><td class="at-mono" dir="ltr">U+05A4</td><td><span class="at-rank rS" data-i18n="atlas.rank.connector">Connector (meshareit)</span></td><td class="at-role" data-i18n="atlas.role.mahpach">Connects to pashta.</td></tr>
+<tr id="m-yetiv"><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֚</span></td><td class="at-hename" lang="he" dir="rtl">יְתִיב</td><td><a class="at-jump" href="#atlas-yetiv">Yetiv</a></td><td>Yetiv</td><td class="at-mono" dir="ltr">U+059A</td><td><span class="at-rank rD" data-i18n="atlas.rank.duke">Duke (mishneh)</span></td><td class="at-role" data-i18n="atlas.role.yetiv">Prepositive: written before the first letter; replaces pashta on short words.</td></tr>
+<tr id="m-kadma"><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֨</span></td><td class="at-hename" lang="he" dir="rtl">קַדְמָא</td><td><a class="at-jump" href="#atlas-kadma">Kadma</a></td><td>Azla</td><td class="at-mono" dir="ltr">U+05A8</td><td><span class="at-rank rS" data-i18n="atlas.rank.connector">Connector (meshareit)</span></td><td class="at-role" data-i18n="atlas.role.kadma">Same shape as pashta but on the stressed syllable; connects to mahpach, darga, mercha or geresh.</td></tr>
+<tr id="m-segol"><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֒</span></td><td class="at-hename" lang="he" dir="rtl">סֶגוֹל</td><td><a class="at-jump" href="#atlas-segol">Segol</a></td><td>Segolta</td><td class="at-mono" dir="ltr">U+0592</td><td><span class="at-rank rK" data-i18n="atlas.rank.king">King (melech)</span></td><td class="at-role" data-i18n="atlas.role.segol">Postpositive. Divides a long first half-verse; always after a zarka.</td></tr>
+<tr id="m-zarka"><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֮</span></td><td class="at-hename" lang="he" dir="rtl">זַרְקָא</td><td><a class="at-jump" href="#atlas-zarka">Zarka</a></td><td>Zarka</td><td class="at-mono" dir="ltr">U+05AE <span data-i18n="atlas.signs.zarka_alt">(fonts also use U+0598)</span></td><td><span class="at-rank rD" data-i18n="atlas.rank.duke">Duke (mishneh)</span></td><td class="at-role" data-i18n="atlas.role.zarka">Postpositive; opens the segol phrase.</td></tr>
+<tr id="m-shalshelet"><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֓׀</span></td><td class="at-hename" lang="he" dir="rtl">שַׁלְשֶׁלֶת</td><td><a class="at-jump" href="#atlas-shalshelet">Shalshelet</a></td><td>Shalshelet</td><td class="at-mono" dir="ltr">U+0593 + U+05C0</td><td><span class="at-rank rK" data-i18n="atlas.rank.king">King (melech)</span></td><td class="at-role" data-i18n="atlas.role.shalshelet">Rare (7 times in the Torah). Stands in for segol; always followed by paseq ׀.</td></tr>
+<tr id="m-revia"><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֗</span></td><td class="at-hename" lang="he" dir="rtl">רְבִיעַ</td><td><a class="at-jump" href="#atlas-revia">Revia (Revi&#x27;i)</a></td><td>Revia</td><td class="at-mono" dir="ltr">U+0597</td><td><span class="at-rank rD" data-i18n="atlas.rank.duke">Duke (mishneh)</span></td><td class="at-role" data-i18n="atlas.role.revia">Divides a zakef or segol phrase.</td></tr>
+<tr id="m-munach_legarmeh"><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֣׀</span></td><td class="at-hename" lang="he" dir="rtl">מֻנַּח לְגַרְמֵהּ</td><td><a class="at-jump" href="#atlas-munach_legarmeh">Munach Legarmeh</a></td><td>Shofar Holech Legarmeh</td><td class="at-mono" dir="ltr">U+05A3 + U+05C0</td><td><span class="at-rank rC" data-i18n="atlas.rank.count">Count (shalish)</span></td><td class="at-role" data-i18n="atlas.role.munach_legarmeh">Munach followed by paseq ׀: a divider before revia, not a connector.</td></tr>
+<tr id="m-darga"><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֧</span></td><td class="at-hename" lang="he" dir="rtl">דַּרְגָּא</td><td><a class="at-jump" href="#atlas-darga">Darga</a></td><td>Darga</td><td class="at-mono" dir="ltr">U+05A7</td><td><span class="at-rank rS" data-i18n="atlas.rank.connector">Connector (meshareit)</span></td><td class="at-role" data-i18n="atlas.role.darga">Connects to tevir (or mercha kefula).</td></tr>
+<tr id="m-tevir"><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֛</span></td><td class="at-hename" lang="he" dir="rtl">תְּבִיר</td><td><a class="at-jump" href="#atlas-tevir">Tevir</a></td><td>Tevir</td><td class="at-mono" dir="ltr">U+059B</td><td><span class="at-rank rD" data-i18n="atlas.rank.duke">Duke (mishneh)</span></td><td class="at-role" data-i18n="atlas.role.tevir">Divides a tipcha phrase.</td></tr>
+<tr id="m-geresh"><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֜</span></td><td class="at-hename" lang="he" dir="rtl">גֵּרֵשׁ / אַזְלָא</td><td><a class="at-jump" href="#atlas-geresh">Geresh (Azla)</a></td><td>Geresh</td><td class="at-mono" dir="ltr">U+059C</td><td><span class="at-rank rC" data-i18n="atlas.rank.count">Count (shalish)</span></td><td class="at-role" data-i18n="atlas.role.geresh">Called azla when a kadma precedes it (kadma v’azla).</td></tr>
+<tr id="m-gershayim"><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֞</span></td><td class="at-hename" lang="he" dir="rtl">גֵּרְשַׁיִם</td><td><a class="at-jump" href="#atlas-gershayim">Gershayim</a></td><td>Shenei Gerishin</td><td class="at-mono" dir="ltr">U+059E</td><td><span class="at-rank rC" data-i18n="atlas.rank.count">Count (shalish)</span></td><td class="at-role" data-i18n="atlas.role.gershayim">Double geresh; takes the place of geresh on a word with no kadma.</td></tr>
+<tr id="m-telisha_ketana"><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֩</span></td><td class="at-hename" lang="he" dir="rtl">תְּלִישָׁא קְטַנָּה</td><td><a class="at-jump" href="#atlas-telisha_ketana">Telisha Ketana</a></td><td>Talsha</td><td class="at-mono" dir="ltr">U+05A9</td><td><span class="at-rank rS" data-i18n="atlas.rank.connector">Connector (meshareit)</span></td><td class="at-role" data-i18n="atlas.role.telisha_ketana">Postpositive connector before kadma or geresh.</td></tr>
+<tr id="m-telisha_gedola"><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֠</span></td><td class="at-hename" lang="he" dir="rtl">תְּלִישָׁא גְדוֹלָה</td><td><a class="at-jump" href="#atlas-telisha_gedola">Telisha Gedola</a></td><td>Tirtzah</td><td class="at-mono" dir="ltr">U+05A0</td><td><span class="at-rank rC" data-i18n="atlas.rank.count">Count (shalish)</span></td><td class="at-role" data-i18n="atlas.role.telisha_gedola">Prepositive divider; the mirror image of telisha ketana.</td></tr>
+<tr id="m-pazer"><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֡</span></td><td class="at-hename" lang="he" dir="rtl">פָּזֵר</td><td><a class="at-jump" href="#atlas-pazer">Pazer</a></td><td>Pazer Gadol</td><td class="at-mono" dir="ltr">U+05A1</td><td><span class="at-rank rC" data-i18n="atlas.rank.count">Count (shalish)</span></td><td class="at-role" data-i18n="atlas.role.pazer">Divider deep inside a long phrase.</td></tr>
+<tr id="m-karnei_parah"><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֟</span></td><td class="at-hename" lang="he" dir="rtl">קַרְנֵי פָרָה</td><td><a class="at-jump" href="#atlas-karnei_parah">Karnei Parah</a></td><td>Karnei Farah</td><td class="at-mono" dir="ltr">U+059F</td><td><span class="at-rank rC" data-i18n="atlas.rank.count">Count (shalish)</span></td><td class="at-role" data-i18n="atlas.role.karnei_parah">Rare (once in the Torah, Num. 35:5). A grand pazer; always after yerach ben yomo.</td></tr>
+<tr id="m-yerach_ben_yomo"><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֪</span></td><td class="at-hename" lang="he" dir="rtl">יֶרַח בֶּן יוֹמוֹ / גַּלְגַּל</td><td><a class="at-jump" href="#atlas-yerach_ben_yomo">Yerach Ben Yomo</a></td><td>Yareach Ben Yomo</td><td class="at-mono" dir="ltr">U+05AA</td><td><span class="at-rank rS" data-i18n="atlas.rank.connector">Connector (meshareit)</span></td><td class="at-role" data-i18n="atlas.role.yerach_ben_yomo">Rare connector before karnei parah.</td></tr>
+<tr id="m-mercha_kefula"><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֦</span></td><td class="at-hename" lang="he" dir="rtl">מֵרְכָא כְפוּלָה</td><td><a class="at-jump" href="#atlas-mercha_kefula">Mercha Kefula</a></td><td>Tere Ta&#x27;amei</td><td class="at-mono" dir="ltr">U+05A6</td><td><span class="at-rank rS" data-i18n="atlas.rank.connector">Connector (meshareit)</span></td><td class="at-role" data-i18n="atlas.role.mercha_kefula">Rare (5 times in the Torah). Double mercha before tipcha.</td></tr>
+<tr id="m-geresh_muqdam"><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֝</span></td><td class="at-hename" lang="he" dir="rtl">גֵּרֵשׁ מֻקְדָּם</td><td><a class="at-jump" href="#atlas-geresh_muqdam">Geresh Muqdam</a></td><td>Geresh Muqdam</td><td class="at-mono" dir="ltr">U+059D</td><td><span class="at-rank rC" data-i18n="atlas.rank.count">Count (shalish)</span></td><td class="at-role" data-i18n="atlas.role.geresh_muqdam">A geresh printed before the stressed letter in some editions. No melody of its own: chant it as geresh.</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <h3 data-i18n="atlas.signs.aux_heading">Signs that travel with the te’amim</h3>
+  <div class="at-tablewrap">
+  <table class="at-signs at-small">
+    <thead><tr><th scope="col" data-i18n="atlas.signs.col_sign">Sign</th><th scope="col" data-i18n="atlas.signs.col_hebrew">Hebrew name</th><th scope="col" data-i18n="atlas.signs.col_name">Name</th><th scope="col" data-i18n="atlas.signs.col_unicode">Unicode</th><th scope="col" data-i18n="atlas.signs.col_role">What it does</th></tr></thead>
+    <tbody>
+<tr><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א׀</span></td><td class="at-hename" lang="he" dir="rtl">פָּסֵק</td><td><b>Paseq</b></td><td class="at-mono" dir="ltr">U+05C0</td><td class="at-role" data-i18n="atlas.aux.paseq">A vertical bar between words: a slight separation, not a melody. Turns munach into munach legarmeh.</td></tr>
+<tr><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">אֽ</span></td><td class="at-hename" lang="he" dir="rtl">מֶתֶג</td><td><b>Meteg</b></td><td class="at-mono" dir="ltr">U+05BD</td><td class="at-role" data-i18n="atlas.aux.meteg">Secondary stress mark, same shape and code point as siluk. Only the one on the last word of a verse is chanted (as sof pasuk).</td></tr>
+<tr><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א־</span></td><td class="at-hename" lang="he" dir="rtl">מַקָּף</td><td><b>Makaf</b></td><td class="at-mono" dir="ltr">U+05BE</td><td class="at-role" data-i18n="atlas.aux.makaf">Hyphen: joins words into one accent unit; only the last word carries a ta’am.</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section id="atlas">
+  <h2><span data-i18n="atlas.table.heading">Melody table</span> <span class="at-hsub" lang="he" dir="rtl">הַנְּגִינוֹת</span></h2>
+  <p class="at-intro" data-i18n="atlas.table.intro">One figure for each sign in each tradition, taken from the first phrase of its chart that carries the sign. The column headings stay in view as you scroll; scroll sideways to see more traditions, or use the filter to show only one kind of reading. Syllables under the notes spell the sign’s own name, as each source prints it. A dash means the sign does not occur in that reading or the source does not give it.</p>
+  <div class="at-viewbar" role="group" aria-label="Layout" data-i18n-aria-label="atlas.table.layout_aria">
+    <span data-i18n="atlas.table.layout_label">Layout:</span>
+    <span class="at-chips">
+      <button type="button" class="at-chip" id="atViewGrid" aria-pressed="true" data-i18n="atlas.table.grid">Grid</button>
+      <button type="button" class="at-chip" id="atViewCards" aria-pressed="false" data-i18n="atlas.table.stacked">Stacked</button>
+    </span>
+    <span class="at-sep" aria-hidden="true"></span>
+    <label><input type="checkbox" id="atNames"> <span data-i18n="atlas.table.names">Note names</span></label>
+    <span class="at-sep" aria-hidden="true"></span>
+    <span data-i18n="atlas.table.show_label">Show:</span>
+    <span class="at-chips" id="atGroups" role="group" aria-label="Readings to show" data-i18n-aria-label="atlas.table.filter_aria"></span>
+  </div>
+  <div id="atTable"></div>
+</section>
+
+<section id="phrases">
+  <h2><span data-i18n="atlas.phrases.heading">Phrase patterns</span> <span class="at-hsub" lang="he" dir="rtl">צֵרוּפֵי טְעָמִים</span></h2>
+  <p class="at-intro" data-i18n="atlas.phrases.intro">The te’amim are usually learned in phrases rather than one at a time, because a conjunctive sign takes its tune from the pause it leads into, and many pauses are sung differently at the end of a verse or a reading. Choose a melody, then a group of phrases: each pattern shows the Hebrew sign names above the staff and the names sung syllable by syllable beneath it. A dashed line marks where one sign’s notes end and the next begin. Press ▶ beside any staff to hear it, sung an octave below the written notes; press ■ to stop.</p>
+  <div class="at-phrasebar">
+    <label class="at-lbl" for="atMel" data-i18n="trope.melody.label">Melody</label>
+    <select class="at-sel" id="atMel"></select>
+    <span class="at-count" id="atMelCount"></span>
+  </div>
+  <div id="atMelInfo" class="at-melinfo"></div>
+  <div id="atClauses" class="at-chips at-clauses" role="group" aria-label="Phrase group" data-i18n-aria-label="atlas.phrases.groups_aria"></div>
+  <div id="atPhraseRows"></div>
+</section>
+
+<section id="emet">
+  <h2><span data-i18n="atlas.emet.heading">The poetic signs</span> <span class="at-hsub" lang="he" dir="rtl">טַעֲמֵי אֱמֶ״ת</span></h2>
+  <p class="at-intro" data-i18n-html="atlas.emet.intro">Psalms, Proverbs and Job (<span class="at-he" lang="he" dir="rtl">אֱמֶ״ת</span>, from the initials of their Hebrew names) use a second system of signs. Few communities still chant these books with their own cantillation melody, and none of the sources used here notate one, so this table gives the signs and their function only.</p>
+  <div class="at-tablewrap">
+  <table class="at-signs at-small">
+    <thead><tr><th scope="col" data-i18n="atlas.signs.col_sign">Sign</th><th scope="col" data-i18n="atlas.signs.col_hebrew">Hebrew name</th><th scope="col" data-i18n="atlas.signs.col_name">Name</th><th scope="col" data-i18n="atlas.signs.col_unicode">Unicode</th><th scope="col" data-i18n="atlas.signs.col_role">What it does</th></tr></thead>
+    <tbody>
+<tr><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֥֫</span></td><td class="at-hename" lang="he" dir="rtl">עוֹלֶה וְיוֹרֵד</td><td><b>Ole ve-Yored</b></td><td class="at-mono" dir="ltr">U+05AB + U+05A5</td><td class="at-role" data-i18n="atlas.emet.role.ole_veyored">Strongest divider after sof pasuk; ole on the syllable before the stress, yored (mercha shape) on the stress.</td></tr>
+<tr><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֑</span></td><td class="at-hename" lang="he" dir="rtl">אֶתְנַחְתָּא</td><td><b>Etnachta</b></td><td class="at-mono" dir="ltr">U+0591</td><td class="at-role" data-i18n="atlas.emet.role.etnachta">As in prose, but a rank below ole ve-yored.</td></tr>
+<tr><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֝֗</span></td><td class="at-hename" lang="he" dir="rtl">רְבִיעַ מֻגְרָשׁ</td><td><b>Revia Mugrash</b></td><td class="at-mono" dir="ltr">U+059D + U+0597</td><td class="at-role" data-i18n="atlas.emet.role.revia_mugrash">Revia with a geresh-shaped stroke before the stress; the usual divider in the second half.</td></tr>
+<tr><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֓׀</span></td><td class="at-hename" lang="he" dir="rtl">שַׁלְשֶׁלֶת גְּדוֹלָה</td><td><b>Shalshelet Gedola</b></td><td class="at-mono" dir="ltr">U+0593 + U+05C0</td><td class="at-role" data-i18n="atlas.emet.role.shalshelet_gedola">Disjunctive shalshelet (with paseq).</td></tr>
+<tr><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֮</span></td><td class="at-hename" lang="he" dir="rtl">צִנּוֹר</td><td><b>Tsinnor</b></td><td class="at-mono" dir="ltr">U+05AE</td><td class="at-role" data-i18n="atlas.emet.role.tsinnor">Zarka-shaped postpositive divider.</td></tr>
+<tr><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֗</span></td><td class="at-hename" lang="he" dir="rtl">רְבִיעַ גָּדוֹל / קָטָן</td><td><b>Revia Gadol / Katan</b></td><td class="at-mono" dir="ltr">U+0597</td><td class="at-role" data-i18n="atlas.emet.role.revia_gadol_katan">Dividers of different rank, same sign.</td></tr>
+<tr><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֭</span></td><td class="at-hename" lang="he" dir="rtl">דְּחִי</td><td><b>Dechi</b></td><td class="at-mono" dir="ltr">U+05AD</td><td class="at-role" data-i18n="atlas.emet.role.dechi">Prepositive divider (tipcha shape, before the word).</td></tr>
+<tr><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֡</span></td><td class="at-hename" lang="he" dir="rtl">פָּזֵר</td><td><b>Pazer</b></td><td class="at-mono" dir="ltr">U+05A1</td><td class="at-role" data-i18n="atlas.emet.role.as_prose">As in prose.</td></tr>
+<tr><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֤׀</span></td><td class="at-hename" lang="he" dir="rtl">מַהְפַּךְ לְגַרְמֵהּ</td><td><b>Mahpach Legarmeh</b></td><td class="at-mono" dir="ltr">U+05A4 + U+05C0</td><td class="at-role" data-i18n="atlas.emet.role.mahpach_legarmeh">Mahpach with paseq, used as a divider.</td></tr>
+<tr><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֨׀</span></td><td class="at-hename" lang="he" dir="rtl">אַזְלָא לְגַרְמֵהּ</td><td><b>Azla Legarmeh</b></td><td class="at-mono" dir="ltr">U+05A8 + U+05C0</td><td class="at-role" data-i18n="atlas.emet.role.azla_legarmeh">Kadma with paseq, used as a divider.</td></tr>
+<tr><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֣</span></td><td class="at-hename" lang="he" dir="rtl">מֻנַּח</td><td><b>Munach</b></td><td class="at-mono" dir="ltr">U+05A3</td><td class="at-role" data-i18n="atlas.emet.role.connector">Connector.</td></tr>
+<tr><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֥</span></td><td class="at-hename" lang="he" dir="rtl">מֵרְכָא</td><td><b>Mercha</b></td><td class="at-mono" dir="ltr">U+05A5</td><td class="at-role" data-i18n="atlas.emet.role.connector">Connector.</td></tr>
+<tr><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֓</span></td><td class="at-hename" lang="he" dir="rtl">שַׁלְשֶׁלֶת קְטַנָּה</td><td><b>Shalshelet Ketana</b></td><td class="at-mono" dir="ltr">U+0593</td><td class="at-role" data-i18n="atlas.emet.role.shalshelet_ketana">Conjunctive shalshelet (no paseq).</td></tr>
+<tr><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֘</span></td><td class="at-hename" lang="he" dir="rtl">צִנּוֹרִית</td><td><b>Tsinnorit</b></td><td class="at-mono" dir="ltr">U+0598</td><td class="at-role" data-i18n="atlas.emet.role.tsinnorit">Conjunctive, on an open syllable before the stress (with mercha or mahpach).</td></tr>
+<tr><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֤</span></td><td class="at-hename" lang="he" dir="rtl">מַהְפַּךְ</td><td><b>Mahpach</b></td><td class="at-mono" dir="ltr">U+05A4</td><td class="at-role" data-i18n="atlas.emet.role.connector">Connector.</td></tr>
+<tr><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֬</span></td><td class="at-hename" lang="he" dir="rtl">עִלּוּי</td><td><b>Iluy</b></td><td class="at-mono" dir="ltr">U+05AC</td><td class="at-role" data-i18n="atlas.emet.role.iluy">Connector written above the word (a munach above).</td></tr>
+<tr><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֖</span></td><td class="at-hename" lang="he" dir="rtl">טַרְחָא</td><td><b>Tarcha</b></td><td class="at-mono" dir="ltr">U+0596</td><td class="at-role" data-i18n="atlas.emet.role.tarcha">Connector (tipcha shape, under the stress).</td></tr>
+<tr><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֪</span></td><td class="at-hename" lang="he" dir="rtl">גַּלְגַּל / יֶרַח בֶּן יוֹמוֹ</td><td><b>Galgal</b></td><td class="at-mono" dir="ltr">U+05AA</td><td class="at-role" data-i18n="atlas.emet.role.galgal">Connector before pazer.</td></tr>
+<tr><td class="at-sym"><span class="at-glyph" lang="he" dir="rtl">א֢</span></td><td class="at-hename" lang="he" dir="rtl">אַתְנָח הָפוּךְ</td><td><b>Atnach Hafukh</b></td><td class="at-mono" dir="ltr">U+05A2</td><td class="at-role" data-i18n="atlas.emet.role.atnach_hafukh">Connector (an inverted etnachta); in some editions written as a yerach ben yomo.</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section id="notes">
+  <h2 data-i18n="atlas.notes.heading">Reading the staffs</h2>
+  <ul class="at-notes">
+    <li data-i18n-html="atlas.notes.pitch"><b>Pitch.</b> Staffs use a treble clef with an 8 below it, the usual clef for a man’s voice: the music sounds an octave lower than written. Each melody appears in the key its source prints, unless you choose a common key at the top of the page.</li>
+    <li data-i18n-html="atlas.notes.rhythm"><b>Rhythm.</b> Chant follows the words, not a beat. The note values are the sources’ own and show only the relative length of each note. There are no bar lines, so an accidental lasts to the end of its row.</li>
+    <li data-i18n-html="atlas.notes.symbols"><b>Symbols.</b> A slur joins the notes sung on one syllable. A small note in parentheses is an optional pickup for unstressed syllables before the sign. A bracket with a number groups notes into a tuplet (a 3 is a triplet), and a fermata marks a held final note. The coloured bar over each sign’s notes shows its clause family, in the colours the Trope Tutor uses.</li>
+    <li data-i18n-html="atlas.notes.names"><b>Names.</b> Ashkenazi names follow common American usage; Sephardi names follow the Jerusalem Sephardi tradition.</li>
+    <li data-i18n-html="atlas.notes.transcriptions"><b>Transcriptions.</b> Every staff is a new transcription from the printed source cited with it. The melodies are traditional; the transcriptions are released under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>. Corrections are welcome through the <a href="contact.html">contact page</a>.</li>
+  </ul>
+</section>
+
+<section id="sources">
+  <h2 data-i18n="atlas.sources.heading">Sources</h2>
+  <!-- Bibliographic citations, pinned English like every page's credits (dir="ltr" keeps their order in the Hebrew
+       interface, lang="en" has a screen reader voice them in English). A source no offered melody cites is hidden,
+       and the [n] beside a melody's note counts only the ones shown. -->
+  <ol class="at-cites" id="atCites" dir="ltr" lang="en">
+<li id="cite-huc">Hebrew Union College cantillation chart, in the tradition of A. W. Binder (<i>Biblical Chant</i>, New York: Philosophical Library, 1959). Transcribed by Harrison Bleiberg for <a href="https://ivritsuite.com">IvritSuite</a>.</li>
+<li id="cite-portnoy">Marshall Portnoy and Josée Wolff, <i>The Art of Cantillation, Vol. 2: A Step-by-Step Guide to Chanting Haftarot and M’gilot</i> (New York: UAHC Press, 2001), appendices D–G. <a href="https://openlibrary.org/isbn/9780807407561" target="_blank" rel="noopener">Open Library record</a>.</li>
+<li id="cite-sholom">Torah and Haftarah trope charts, Temple Sholom, Greenwich, Connecticut. <a href="https://www.templesholom.com/worship/music-and-prayers/trope-torah-and-haftarah" target="_blank" rel="noopener">templesholom.com</a>.</li>
+<li id="cite-spiro">Pinchas Spiro, “High Holy Day Torah Trope,” chart posted by Congregation Beth Ami. <a href="https://bethami.org/services-and-holidays/high-holy-days/high-holy-days-trope/attachment/high-holy-day-torah-trope-by-hazzan-pinchas-spiro-001/" target="_blank" rel="noopener">bethami.org</a>.</li>
+<li id="cite-je">Francis L. Cohen, “Cantillation,” <i>The Jewish Encyclopedia</i>, vol. 3 (New York: Funk &amp; Wagnalls, 1902), pp. 537–549, tables on pp. 540–548 (public domain). <a href="https://www.jewishencyclopedia.com/articles/3986-cantillation.html" target="_blank" rel="noopener">Article text</a>; page scans on Wikimedia Commons: <a href="https://commons.wikimedia.org/wiki/File:The_Jewish_Encylopedia_1901%E2%80%931906_Volume_III_Cantillation_by_Francis_L._Cohen_p._540.png" target="_blank" rel="noopener">p. 540</a>, <a href="https://commons.wikimedia.org/wiki/File:The_Jewish_Encylopedia_1901%E2%80%931906_Volume_III_Cantillation_by_Francis_L._Cohen_p._541.png" target="_blank" rel="noopener">p. 541</a>, <a href="https://commons.wikimedia.org/wiki/File:The_Jewish_Encylopedia_1901%E2%80%931906_Volume_III_Cantillation_by_Francis_L._Cohen_p._542.png" target="_blank" rel="noopener">p. 542</a>, <a href="https://commons.wikimedia.org/wiki/File:The_Jewish_Encylopedia_1901%E2%80%931906_Volume_III_Cantillation_by_Francis_L._Cohen_p._543.png" target="_blank" rel="noopener">p. 543</a>, <a href="https://commons.wikimedia.org/wiki/File:The_Jewish_Encylopedia_1901%E2%80%931906_Volume_III_Cantillation_by_Francis_L._Cohen_p._544.png" target="_blank" rel="noopener">p. 544</a>, <a href="https://commons.wikimedia.org/wiki/File:The_Jewish_Encylopedia_1901%E2%80%931906_Volume_III_Cantillation_by_Francis_L._Cohen_p._545.png" target="_blank" rel="noopener">p. 545</a>, <a href="https://commons.wikimedia.org/wiki/File:The_Jewish_Encylopedia_1901%E2%80%931906_Volume_III_Cantillation_by_Francis_L._Cohen_p._546.png" target="_blank" rel="noopener">p. 546</a>, <a href="https://commons.wikimedia.org/wiki/File:The_Jewish_Encylopedia_1901%E2%80%931906_Volume_III_Cantillation_by_Francis_L._Cohen_p._548_Mer%27ka_Kefulah,_Karne_Farah,_and_Yerah_ben_Yomo.png" target="_blank" rel="noopener">p. 548</a>.</li>
+  </ol>
+  <p class="at-intro at-gaps" data-i18n-html="atlas.sources.gaps"><b>Traditions not included.</b> Several living reading traditions are not represented because no notated source for them could be used: among them Chabad-Lubavitch and other Hasidic readings, Yemenite (Teimani), Italian (Italki), Romaniote, Persian, Kurdish, Bukharan, Georgian and Indian (Bene Israel and Cochin). The Psalms, Proverbs and Job melodies are not included for the same reason.</p>
+</section>
+</main>
+</div>
+
+<footer>
+  <div class="footer-credits">
+    <!-- pinned-English credits (never translated): dir="ltr" keeps each phrase in English order in the RTL UI, and lang="en" has a screen reader voice it in English -->
+    <span dir="ltr" lang="en">Created by <a href="https://harrisonbleiberg.wpcomstaging.com/" target="_blank" rel="noopener">Harrison Bleiberg</a></span>
+    <span data-i18n="atlas.footer.transcriptions">Trope Atlas transcriptions: CC BY-SA 4.0</span>
+    <span><span data-i18n="shared.footer.license_note">Free to use and adapt for non-commercial educational purposes with attribution</span> · <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a></span>
+    <span><a href="https://github.com/hbleiberg/Hebrew_Blender" target="_blank" rel="noopener">GitHub</a> · <a href="privacy.html" data-i18n="shared.footer.privacy_link">Privacy Policy</a> · <a href="terms.html" data-i18n="shared.footer.terms_link">Terms of Use</a> · <a href="contact.html" data-i18n="contact.page_title">Contact &amp; Support</a></span>
+  </div>
+  <nav aria-label="Related Hebrew Tools" data-i18n-aria-label="shared.nav.header" style="margin-top:10px;border-top:1px solid var(--border);padding-top:10px;">
+    <div style="font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;" data-i18n="shared.nav.header">Related Hebrew Tools</div>
+    <ul style="list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;justify-content:center;gap:2px 18px;">
+      <li><a href="trope_tutor.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_trope">learn Torah trope (cantillation) →</a></li>
+      <li><a href="torah_trainer.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_torah">Torah reading practice →</a></li>
+      <li><a href="parsha_emojis.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_parshaemojis">parsha emojis and coloring pages →</a></li>
+      <li><a href="resources.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_resources">free Hebrew teaching resources →</a></li>
+    </ul>
+  </nav>
+</footer>
+
+<script src="/js/trope-staff.js"></script>
+<script>
+'use strict';
+/* ══════════════════════════════════════════════════════
+   TROPE ATLAS — every cantillation sign in every offered melody, side by side
+   (docs/reference/torah-and-trope.md → Trope Atlas). The staffs are js/trope-staff.js's
+   renderPhraseStaff, drawn from the one phrase file (data/trope/trope_phrases.json, built by
+   scripts/build-trope-phrases.mjs from docs/tropepatterns.md and docs/trope-traditions.md) —
+   the page holds no notes of its own. A tradition of docs/trope-traditions.md is offered only
+   while data/trope/trope_approvals.json holds its fingerprint, or on a ?preview=traditions
+   visit, which shows the rest marked Unverified transcription (never saved).
+   ══════════════════════════════════════════════════════ */
+const PHRASES_URL = 'data/trope/trope_phrases.json?v=5';   // the tutor's, the Trainer's and the review page's ?v=: bump them together
+const APPROVALS_URL = 'data/trope/trope_approvals.json';   // network-first in sw.js, no ?v=: an approval needs no rebuild
+const TRAD_PREVIEW = (() => { try { return new URLSearchParams(location.search).get('preview') === 'traditions'; } catch (e) { return false; } })();
+const STORAGE_KEY = 'hebrewTropeAtlas_settings';
+const ICON_PLAY = '<svg class="hi hi-play" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 5.4 19 12 8.5 18.6Z" fill="currentColor"/></svg>';
+const ICON_STOP = '<svg class="hi hi-stop" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2.2" fill="currentColor"/></svg>';
+const ICON_RETRY = '<svg class="hi hi-sm hi-retry" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.2 18.58 A7.6 7.6 0 1 1 15.8 18.58 M15.8 18.58 L16.96 15.39 M15.8 18.58 L19.15 19.17"/></svg>';
+
+// The melodies in the atlas's order, each under its reading and with the source its note cites (the Sources list's
+// ids). base: one of the six charts of docs/tropepatterns.md; the rest are traditions of docs/trope-traditions.md,
+// shown only while approved (or on a preview). A tradition the phrase file adds later needs a row here and its
+// atlas.sys.<id>.* strings before the atlas shows it.
+const SYSTEMS = [
+  { id: 'torah', group: 'torah', cite: 'huc', base: true },
+  { id: 'cons_torah', group: 'torah', cite: 'sholom' },
+  { id: 'haftarah', group: 'haftarah', cite: 'portnoy', base: true },
+  { id: 'cons_haftarah', group: 'haftarah', cite: 'sholom' },
+  { id: 'highholiday', group: 'hhd', cite: 'huc', base: true },
+  { id: 'spiro_hhd', group: 'hhd', cite: 'spiro' },
+  { id: 'esther', group: 'esther', cite: 'portnoy', base: true },
+  { id: 'eicha', group: 'eicha', cite: 'portnoy', base: true },
+  { id: 'megillot', group: 'megillot', cite: 'portnoy', base: true },
+  { id: 'je_torah_western', group: 'torah', cite: 'je' },
+  { id: 'je_torah_reuchlin', group: 'torah', cite: 'je' },
+  { id: 'je_torah_sp', group: 'torah', cite: 'je' },
+  { id: 'je_torah_morocco', group: 'torah', cite: 'je' },
+  { id: 'je_torah_syria', group: 'torah', cite: 'je' },
+  { id: 'je_torah_baghdad', group: 'torah', cite: 'je' },
+  { id: 'je_hhd_western', group: 'hhd', cite: 'je' },
+  { id: 'je_haf_western', group: 'haftarah', cite: 'je' },
+  { id: 'je_haf_sp', group: 'haftarah', cite: 'je' },
+  { id: 'je_haf_baghdad', group: 'haftarah', cite: 'je' },
+  { id: 'je_esther_western', group: 'esther', cite: 'je' },
+  { id: 'je_esther_sp', group: 'esther', cite: 'je' },
+  { id: 'je_eicha_western', group: 'eicha', cite: 'je' },
+  { id: 'je_eicha_sp', group: 'eicha', cite: 'je' },
+  { id: 'je_eicha_syria', group: 'eicha', cite: 'je' },
+  { id: 'je_ruth_sp', group: 'megillot', cite: 'je' },
+  { id: 'je_ketuvim_baghdad', group: 'megillot', cite: 'je' },
+];
+const GROUPS = ['torah', 'haftarah', 'hhd', 'esther', 'eicha', 'megillot'];
+const CITES = ['huc', 'portnoy', 'sholom', 'spiro', 'je'];   // the Sources list's order
+const MARKS = [   // [key, glyph on an alef, Hebrew name, Ashkenazi name, Sephardi name]: the sign table's order; names are taught content — i18n-ignore
+  ["sof_pasuk", "אֽ׃", "סוֹף פָּסוּק / סִלּוּק", "Sof Pasuk (Siluk)", "Sof Pasuk"],
+  ["etnachta", "א֑", "אֶתְנַחְתָּא", "Etnachta", "Atnach"],
+  ["tipcha", "א֖", "טִפְּחָא", "Tipcha", "Tarcha"],
+  ["mercha", "א֥", "מֵרְכָא", "Mercha", "Ma'arich"],
+  ["munach", "א֣", "מֻנַּח", "Munach", "Shofar Holech"],
+  ["zakef_katon", "א֔", "זָקֵף קָטָן", "Zakef Katon", "Zakef Katon"],
+  ["zakef_gadol", "א֕", "זָקֵף גָּדוֹל", "Zakef Gadol", "Zakef Gadol"],
+  ["pashta", "א֙", "פַּשְׁטָא", "Pashta", "Kadma"],
+  ["mahpach", "א֤", "מַהְפַּךְ", "Mahpach", "Shofar Mehupach"],
+  ["yetiv", "א֚", "יְתִיב", "Yetiv", "Yetiv"],
+  ["kadma", "א֨", "קַדְמָא", "Kadma", "Azla"],
+  ["segol", "א֒", "סֶגוֹל", "Segol", "Segolta"],
+  ["zarka", "א֮", "זַרְקָא", "Zarka", "Zarka"],
+  ["shalshelet", "א֓׀", "שַׁלְשֶׁלֶת", "Shalshelet", "Shalshelet"],
+  ["revia", "א֗", "רְבִיעַ", "Revia (Revi'i)", "Revia"],
+  ["munach_legarmeh", "א֣׀", "מֻנַּח לְגַרְמֵהּ", "Munach Legarmeh", "Shofar Holech Legarmeh"],
+  ["darga", "א֧", "דַּרְגָּא", "Darga", "Darga"],
+  ["tevir", "א֛", "תְּבִיר", "Tevir", "Tevir"],
+  ["geresh", "א֜", "גֵּרֵשׁ / אַזְלָא", "Geresh (Azla)", "Geresh"],
+  ["gershayim", "א֞", "גֵּרְשַׁיִם", "Gershayim", "Shenei Gerishin"],
+  ["telisha_ketana", "א֩", "תְּלִישָׁא קְטַנָּה", "Telisha Ketana", "Talsha"],
+  ["telisha_gedola", "א֠", "תְּלִישָׁא גְדוֹלָה", "Telisha Gedola", "Tirtzah"],
+  ["pazer", "א֡", "פָּזֵר", "Pazer", "Pazer Gadol"],
+  ["karnei_parah", "א֟", "קַרְנֵי פָרָה", "Karnei Parah", "Karnei Farah"],
+  ["yerach_ben_yomo", "א֪", "יֶרַח בֶּן יוֹמוֹ / גַּלְגַּל", "Yerach Ben Yomo", "Yareach Ben Yomo"],
+  ["mercha_kefula", "א֦", "מֵרְכָא כְפוּלָה", "Mercha Kefula", "Tere Ta'amei"],
+  ["geresh_muqdam", "א֝", "גֵּרֵשׁ מֻקְדָּם", "Geresh Muqdam", "Geresh Muqdam"],
+];
+const MARK_BY_KEY = {};
+for (const m of MARKS) MARK_BY_KEY[m[0]] = m;
+// The phrase browser's groups, in chip order, each with the clause family its chip is striped in.
+const CLAUSES = [
+  ['etnachta', 'etnachta'], ['sof', 'sofpasuk'], ['zakef', 'katon'], ['geresh', 'geresh'], ['revia', 'revia'], ['gershayim', 'geresh'],
+  ['tevir', 'revia'], ['telisha', 'geresh'], ['gadol', 'katon'], ['segol', 'segol'], ['rare', 'rare'], ['end', 'sofpasuk'], ['other', ''],
+];
+function clauseOf(r) {
+  const k = new Set(r.units.map((u) => u.k));
+  const has = (...xs) => xs.some((x) => k.has(x));
+  if (r.tags.includes('aliyah-end')) return 'end';
+  if (has('shalshelet', 'karnei_parah', 'yerach_ben_yomo', 'mercha_kefula')) return 'rare';
+  if (has('telisha_gedola', 'telisha_ketana', 'pazer')) return 'telisha';
+  if (has('zakef_gadol', 'yetiv')) return 'gadol';
+  if (has('segol', 'zarka')) return 'segol';
+  if (has('gershayim')) return 'gershayim';
+  if (has('geresh')) return 'geresh';
+  if (has('revia')) return 'revia';
+  if (has('tevir', 'darga')) return 'tevir';
+  if (has('zakef_katon', 'pashta')) return 'zakef';
+  if (has('sof_pasuk')) return 'sof';
+  if (has('etnachta')) return 'etnachta';
+  return 'other';
+}
+
+/* ── helpers + storage ── */
+// Parse JSON from possibly-imported input, dropping keys that could pollute Object.prototype.
+function ivritSafeParse(str) {
+  return JSON.parse(str, (k, v) =>
+    (k === '__proto__' || k === 'constructor' || k === 'prototype') ? undefined : v);
+}
+function ivritSafeAssign(target, src) {
+  if (src && typeof src === 'object' && !Array.isArray(src))
+    for (const k in src) if (Object.prototype.hasOwnProperty.call(src, k) &&
+        k !== '__proto__' && k !== 'constructor' && k !== 'prototype') target[k] = src[k];
+  return target;
+}
+// One element: attrs set as attributes (class as className; a null one skipped), children as text or nodes — never innerHTML.
+function h(tag, attrs, ...kids) {
+  const e = document.createElement(tag);
+  for (const k in attrs || {}) { if (attrs[k] == null) continue; if (k === 'class') e.className = attrs[k]; else e.setAttribute(k, attrs[k]); }
+  for (const k of kids) if (k != null && k !== '') e.appendChild(typeof k === 'string' ? document.createTextNode(k) : k);
+  return e;
+}
+// The page's settings, one blob (hebrewTropeAtlas_settings, registered with the hub's AllTools backup). Each field is
+// read through its validator, so a stored value this page does not know shows the default and stays stored.
+const KEY_CHOICES = ['C', 'G', 'D', 'A', 'E', 'F', 'Bb', 'Eb', 'Ab'];
+let settings = {};
+try { const raw = localStorage.getItem(STORAGE_KEY); if (raw) ivritSafeAssign(settings, ivritSafeParse(raw)); } catch (e) { settings = {}; }
+function saveSettings() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(settings)); } catch (e) {} }
+function keyVal() { return KEY_CHOICES.includes(settings.key) ? settings.key : 'orig'; }
+function viewVal() { return settings.view === 'cards' ? 'cards' : 'grid'; }
+function namesOn() { return settings.names === true; }
+function groupsVal() {   // null: every reading
+  const g = Array.isArray(settings.groups) ? settings.groups.filter((x) => GROUPS.includes(x)) : [];
+  return g.length ? g : null;
+}
+
+/* ── data: the offered melodies ── */
+let _hashMel = null;  // a #sys-<id> address's melody: shown while offered, until the reader picks another; never stored
+let SETS = null;      // {id: {id, group, cite, base, key, chroma, rows, approved}} in SYSTEMS order; null until loaded
+let _loading = false, _i18nReady = false;
+const FIG = {};       // 'sys:mark' → that melody's first figure of the mark as a one-mark row, or null
+async function loadData() {
+  _loading = true;
+  renderStatus();
+  let pj, approved = {};
+  try {
+    const [pr, ar] = await Promise.all([fetch(PHRASES_URL), fetch(APPROVALS_URL, { cache: 'no-store' }).catch(() => null)]);
+    if (!pr.ok) throw new Error('HTTP ' + pr.status);
+    pj = ivritSafeParse(await pr.text());   // hand-transcribed data: parsed like imported data, checked row by row by the engine
+    try { if (ar && ar.ok) { const a = ivritSafeParse(await ar.text()); if (a && a.v === 1 && a.approved && typeof a.approved === 'object') approved = a.approved; } }
+    catch (e) { console.warn('trope atlas: approvals load failed', e); }   // nothing approved: the six charts only
+  } catch (e) {
+    console.warn('trope atlas: phrase file load failed', e);
+    _loading = false; renderStatus();
+    return;
+  }
+  const base = _phraseSetsFrom(pj) || {}, trads = _tradSystemsFrom(pj), out = {};
+  for (const s of SYSTEMS) {
+    if (s.base) {
+      const set = base[s.id];
+      if (set) out[s.id] = Object.assign({}, s, { key: set.key, chroma: undefined, rows: set.rows, approved: true });
+      continue;
+    }
+    const t = trads[s.id];
+    if (!t || t.group !== s.group) continue;
+    const fp = await tropeSystemFingerprint(t);
+    const ok = !!fp && typeof approved[s.id] === 'string' && approved[s.id] === fp;
+    if (!ok && !TRAD_PREVIEW) continue;
+    out[s.id] = Object.assign({}, s, { key: t.key, chroma: t.chroma, rows: t.rows, approved: ok });
+  }
+  for (const k of Object.keys(FIG)) delete FIG[k];
+  SETS = Object.keys(out).length ? out : null;
+  _loading = false;
+  renderAll();
+}
+function figureRow(sys, k) {
+  const id = sys.id + ':' + k;
+  if (!(id in FIG)) { const f = tropeFirstFigure(sys, k); FIG[id] = f ? tropeFigureRow(sys, f.n, f.ui) : null; }
+  return FIG[id];
+}
+function shownSystems() { const g = groupsVal(); return Object.values(SETS || {}).filter((s) => !g || g.includes(s.group)); }
+function melVal() {   // the phrase browser's melody: the address's, else the stored one, while offered; else the first offered
+  if (SETS && SETS[_hashMel]) return _hashMel;
+  if (SETS && SETS[settings.mel]) return settings.mel;
+  return SETS ? Object.keys(SETS)[0] : 'torah';
+}
+
+/* ── names ── */
+function groupName(g) { return I18n.t('atlas.group.' + g); }
+function sysName(s) { return I18n.t('atlas.sys.' + s.id + '.name'); }
+function sysLabel(s) { return I18n.t('atlas.sys.label_m', { group: groupName(s.group), name: sysName(s) }); }
+function markName(k) { const m = MARK_BY_KEY[k]; return m ? m[3] : k.replace(/_/g, ' '); }   // the taught Ashkenazi name — i18n-ignore
+function unverifiedTag() { return h('span', { class: 'at-unverified' }, I18n.t('shared.trad.unverified')); }
+const NOTE_SLUG = { C: 'c', D: 'd', E: 'e', F: 'f', G: 'g', A: 'a', B: 'b', Bb: 'bb', Eb: 'eb', Ab: 'ab', Db: 'db', 'F#': 'fs' };
+function keyText(k) {   // a key by its note and its signature ("E♭ (3♭)"), never "major": the haftarah and eicha modes are minor-coloured
+  const n = KEY_SHARPS[k];
+  // the signature's count and sign (notation — i18n-ignore), isolated so a Hebrew sentence keeps "3♭" in its order
+  const sig = n === 0 ? I18n.t('atlas.key.no_sig') : '\u2066' + Math.abs(n) + (n > 0 ? '♯' : '♭') + '\u2069';
+  return I18n.t('atlas.key.option_m', { note: NOTE_SLUG[k] ? I18n.t('trope.key.note_' + NOTE_SLUG[k]) : k, sig });
+}
+
+/* ── the staffs ── */
+// The half steps that move a melody's tonic to the chosen key by the nearest way, and the key it is then drawn in.
+function shiftFor(sys) {
+  const k = keyVal();
+  if (k === 'orig') return 0;
+  let d = (((keyPc(k) - keyPc(sys.key)) % 12) + 12) % 12;
+  if (d > 6) d -= 12;
+  return d;
+}
+function drawKey(sys) { return shiftedKey(sys.key, shiftFor(sys)); }
+const NOTE_SIGN = { '-1': '♭', 0: '', 1: '♯' };
+function noteLetter(p, key, chroma) {   // the letter the staff writes, with the alteration it sounds (the tutor's noteNameAt, letters)
+  const { step, acc } = motifPitchPos(p, key, chroma);
+  const letter = 'BCDEFGA'[((step % 7) + 7) % 7];   // step 0 is B4; the letters are notation, not UI text — i18n-ignore
+  const inSig = (keySignature(key).find((k) => k.letter === letter) || { acc: 0 }).acc;
+  const alt = acc === '♯' ? 1 : acc === '♭' ? -1 : acc === '♮' ? 0 : inSig;
+  return letter + (NOTE_SIGN[alt] || '');
+}
+function famOf(k) { const t = TROPE_BY_KEY[k]; return t ? t.family : ''; }
+function drawStaff(row, sys, label) {
+  const shift = shiftFor(sys), key = drawKey(sys);
+  const names = namesOn() ? row.notes.map((n) => (n.r ? '' : noteLetter(n.p + shift, key, sys.chroma))) : null;
+  return renderPhraseStaff(row, { key, shift, low: true, famOf, names, chroma: sys.chroma, ariaLabel: label });
+}
+// A staff with its play button. `id` names it for the singer, which finds the staff afresh on every note, so a
+// re-render while it sings (a language switch) keeps the highlight and the pressed button.
+function singWrap(id, row, sys, label) {
+  const svg = drawStaff(row, sys, label);
+  const wrap = h('div', { class: 'at-singwrap', 'data-sing': id });
+  const on = SING.id === id;
+  const btn = h('button', { type: 'button', class: 'at-sing', title: I18n.t('atlas.sing.title'), 'aria-label': I18n.t('atlas.sing.aria_m', { label }), 'aria-pressed': on ? 'true' : 'false' });
+  btn.innerHTML = on ? ICON_STOP : ICON_PLAY;   // the page's own icon markup
+  btn.addEventListener('click', (e) => { e.stopPropagation(); if (SING.id === id) singStop(); else singStart(id, row, sys); });
+  if (on) svg.classList.add('is-playing');
+  const stf = h('div', { class: 'at-stf', dir: 'ltr' });
+  stf.appendChild(svg);
+  wrap.appendChild(btn); wrap.appendChild(stf);
+  return wrap;
+}
+
+/* ── the singer: a vowel-like synth voice that sings a staff, lighting each note as it sounds ── */
+// The tune clock is the Trope Tutor's (an eighth 0.32 s, a grace note borrowed from the note after it, ties one
+// note, a fermata held PHRASE_FERMATA times); the voice is a sawtooth through three "ah" formants with a slow vibrato
+// on long notes, gliding between the notes of one slur. Sung an octave below the written notes, as the 8 says.
+const SING_TICK = 0.32 / 24, SING_GRACE = 0.07, SING_MIN = 0.1, SING_HZ = 493.88;   // B4, the written pitch
+const SING = { id: null, ctx: null, osc: null, lfo: null, out: null, timers: [] };
+function singTimeline(row, shift) {
+  const slurred = new Set();
+  for (const s of row.slur) for (let i = s.from + 1; i <= s.to; i++) slurred.add(i);
+  const sounds = [], lights = [];
+  let at = 0, borrowed = 0;
+  row.notes.forEach((n, i) => {
+    if (n.r) { lights.push({ at, i }); at += n.t * SING_TICK; return; }
+    if (n.g) { sounds.push({ p: n.p + shift, at, dur: SING_GRACE, legato: false, opt: false }); lights.push({ at, i }); at += SING_GRACE; borrowed += SING_GRACE; return; }
+    const len = Math.max(SING_MIN, n.t * SING_TICK * (n.f ? PHRASE_FERMATA : 1) - borrowed);
+    borrowed = 0;
+    const prev = row.notes[i - 1];
+    if (prev && prev.tie && !prev.r && prev.p === n.p && sounds.length) sounds[sounds.length - 1].dur += len;
+    else sounds.push({ p: n.p + shift, at, dur: len, legato: slurred.has(i) && !!prev && !prev.r, opt: !!n.opt });
+    lights.push({ at, i });
+    at += len;
+  });
+  return { sounds, lights, total: at };
+}
+function singLight(i) {
+  const svg = document.querySelector('[data-sing="' + SING.id + '"] svg.tu-pstaff');
+  if (!svg) return;
+  svg.classList.add('is-playing');
+  svg.querySelectorAll('.tu-pn.is-sounding').forEach((g) => g.classList.remove('is-sounding'));
+  const g = svg.querySelector('.tu-pn[data-i="' + i + '"]');
+  if (g) g.classList.add('is-sounding');
+}
+function singStop() {
+  const c = SING.ctx;
+  if (c && SING.out) {
+    try { const t = c.currentTime; SING.out.gain.cancelScheduledValues(t); SING.out.gain.setTargetAtTime(0, t, 0.03); SING.osc.stop(t + 0.2); SING.lfo.stop(t + 0.2); } catch (e) {}
+  }
+  SING.timers.forEach(clearTimeout);
+  SING.timers = []; SING.osc = SING.lfo = SING.out = null; SING.id = null;
+  document.querySelectorAll('.tu-pn.is-sounding').forEach((g) => g.classList.remove('is-sounding'));
+  document.querySelectorAll('svg.tu-pstaff.is-playing').forEach((s) => s.classList.remove('is-playing'));
+  document.querySelectorAll('.at-sing[aria-pressed="true"]').forEach((b) => { b.setAttribute('aria-pressed', 'false'); b.innerHTML = ICON_PLAY; });
+}
+function singStart(id, row, sys) {
+  singStop();
+  if (!SING.ctx) { try { SING.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return; } }
+  const a = SING.ctx;
+  if (a.state === 'suspended') a.resume();
+  const { sounds, lights, total } = singTimeline(row, shiftFor(sys) - 12);
+  const t0 = a.currentTime + 0.08;
+  const osc = a.createOscillator(); osc.type = 'sawtooth';
+  const lfo = a.createOscillator(); lfo.frequency.value = 5.4;
+  const lfoGain = a.createGain(); lfoGain.gain.value = 0;
+  lfo.connect(lfoGain); lfoGain.connect(osc.detune);
+  const out = a.createGain(); out.gain.value = 0;
+  for (const [f, q, g] of [[700, 6, 1.0], [1150, 8, 0.5], [2800, 10, 0.18]]) {
+    const bp = a.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = f; bp.Q.value = q;
+    const gg = a.createGain(); gg.gain.value = g * 2.2;
+    osc.connect(bp); bp.connect(gg); gg.connect(out);
+  }
+  const low = a.createBiquadFilter(); low.type = 'lowpass'; low.frequency.value = 3500;
+  const master = a.createGain(); master.gain.value = 0.9;
+  out.connect(low); low.connect(master); master.connect(a.destination);
+  let prevEnd = -1;
+  sounds.forEach((s, k) => {
+    const t = t0 + s.at, hz = SING_HZ * Math.pow(2, s.p / 12);
+    const joined = s.legato && Math.abs(prevEnd - s.at) < 0.001;   // slurred on from the note before: glide, no new attack
+    if (joined) osc.frequency.setTargetAtTime(hz, t, 0.018); else osc.frequency.setValueAtTime(hz, t);
+    if (!joined) {
+      out.gain.setTargetAtTime(prevEnd >= 0 && Math.abs(prevEnd - s.at) < 0.001 ? 0.35 : 0, Math.max(t0, t - 0.015), 0.008);
+      out.gain.setTargetAtTime(s.opt ? 0.55 : 0.85, t + 0.005, 0.025);
+    }
+    lfoGain.gain.setTargetAtTime(0, t, 0.01);
+    if (s.dur > 0.25) lfoGain.gain.setTargetAtTime(14, t + 0.18, 0.08);   // vibrato on long notes
+    const next = sounds[k + 1];
+    if (!next || next.at > s.at + s.dur + 0.001) out.gain.setTargetAtTime(0, t + s.dur, 0.02);   // a rest (or the end) follows
+    prevEnd = s.at + s.dur;
+  });
+  osc.start(t0 - 0.02); lfo.start(t0 - 0.02); osc.stop(t0 + total + 0.5); lfo.stop(t0 + total + 0.5);
+  Object.assign(SING, { id, osc, lfo, out });
+  for (const l of lights) SING.timers.push(setTimeout(() => singLight(l.i), Math.round((t0 - a.currentTime + l.at) * 1000)));
+  SING.timers.push(setTimeout(() => { if (SING.id === id) singStop(); }, Math.round((t0 - a.currentTime + total) * 1000) + 300));
+  document.querySelectorAll('[data-sing="' + id + '"] .at-sing').forEach((b) => { b.setAttribute('aria-pressed', 'true'); b.innerHTML = ICON_STOP; });
+}
+window.addEventListener('beforeprint', singStop);
+document.addEventListener('visibilitychange', () => { if (document.hidden) singStop(); });
+
+/* ── the melody table ── */
+function markLead(m, tag) {
+  return h(tag, { class: 'lead', scope: tag === 'th' ? 'row' : null },
+    h('span', { class: 'at-glyph', lang: 'he', dir: 'rtl' }, m[1]),
+    h('b', {}, m[3]),
+    m[4] !== m[3] ? h('span', { class: 'alt' }, m[4]) : null);
+}
+function figureCell(sys, m, id) {
+  const row = figureRow(sys, m[0]);
+  return row ? singWrap(id, row, sys, I18n.t('atlas.table.figure_aria_m', { mark: m[3], melody: sysLabel(sys) })) : null;
+}
+function buildGrid(host) {
+  const systems = shownSystems();
+  const table = h('table', { class: 'at-atlas' });
+  const head = h('tr', {}, h('th', { class: 'lead', scope: 'col' }, I18n.t('atlas.signs.col_sign')));
+  for (const s of systems) {
+    const th = h('th', { scope: 'col' }, h('span', { class: 'at-th-grp' }, groupName(s.group)), h('b', {}, sysName(s)), h('small', {}, I18n.t('atlas.sys.' + s.id + '.trad')));
+    if (!s.approved) th.appendChild(unverifiedTag());
+    head.appendChild(th);
+  }
+  table.appendChild(h('thead', {}, head));
+  const body = h('tbody');
+  for (const m of MARKS) {
+    const tr = h('tr', { id: 'atlas-' + m[0], tabindex: '-1' }, markLead(m, 'th'));
+    for (const s of systems) {
+      const w = figureCell(s, m, 'g:' + s.id + ':' + m[0]);
+      tr.appendChild(w ? h('td', { class: 'cell' }, w) : h('td', { class: 'none', title: I18n.t('atlas.table.none_title') }, '—'));
+    }
+    body.appendChild(tr);
+  }
+  table.appendChild(body);
+  host.className = 'at-grid';
+  host.setAttribute('tabindex', '0');
+  host.setAttribute('role', 'region');
+  host.setAttribute('aria-label', I18n.t('atlas.table.region_aria'));
+  host.appendChild(table);
+}
+function buildCards(host) {
+  const systems = shownSystems();
+  const wrap = h('div', { class: 'at-cards' });
+  for (const m of MARKS) {
+    const card = h('div', { class: 'at-card', id: 'atlas-' + m[0], tabindex: '-1' },
+      h('div', { class: 'head' }, h('span', { class: 'at-glyph', lang: 'he', dir: 'rtl' }, m[1]), h('b', {}, m[3]),
+        h('span', { class: 'alt' }, m[4]), h('span', { class: 'alt at-he', lang: 'he', dir: 'rtl' }, m[2])));
+    let any = false;
+    for (const s of systems) {
+      const w = figureCell(s, m, 'c:' + s.id + ':' + m[0]);
+      if (!w) continue;
+      any = true;
+      const lab = h('div', { class: 'lab' }, h('b', {}, sysLabel(s)), I18n.t('atlas.sys.' + s.id + '.trad'));
+      if (!s.approved) lab.appendChild(unverifiedTag());
+      card.appendChild(h('div', { class: 'trad' }, lab, h('div', { class: 'at-stfcell' }, w)));
+    }
+    if (!any) card.appendChild(h('div', { class: 'trad' }, h('div', { class: 'lab' }, I18n.t('atlas.table.none_cards')), h('div')));
+    wrap.appendChild(card);
+  }
+  host.className = '';
+  host.removeAttribute('tabindex'); host.removeAttribute('role'); host.removeAttribute('aria-label');
+  host.appendChild(wrap);
+}
+function buildFilter() {
+  const host = document.getElementById('atGroups');
+  host.textContent = '';
+  const g = groupsVal();
+  const chip = (label, on, fn) => { const b = h('button', { type: 'button', class: 'at-chip', 'aria-pressed': on ? 'true' : 'false' }, label); b.addEventListener('click', fn); host.appendChild(b); };
+  chip(I18n.t('atlas.table.all'), !g, () => setGroups(null));
+  for (const id of GROUPS) {
+    if (!Object.values(SETS).some((s) => s.group === id)) continue;
+    chip(groupName(id), !!g && g.includes(id), () => {
+      const cur = groupsVal() || [];
+      setGroups(cur.includes(id) ? cur.filter((x) => x !== id) : cur.concat(id));
+    });
+  }
+}
+function setGroups(list) { settings.groups = list && list.length ? list : null; saveSettings(); buildAtlas(); }
+function buildAtlas() {
+  const host = document.getElementById('atTable');
+  host.textContent = '';
+  if (viewVal() === 'grid') buildGrid(host); else buildCards(host);
+  document.getElementById('atViewGrid').setAttribute('aria-pressed', viewVal() === 'grid' ? 'true' : 'false');
+  document.getElementById('atViewCards').setAttribute('aria-pressed', viewVal() === 'cards' ? 'true' : 'false');
+  document.getElementById('atNames').checked = namesOn();
+  buildFilter();
+}
+
+/* ── the phrase browser ── */
+function citeNumbers() {   // the [n] of each source shown: only the ones an offered melody cites, in the list's order
+  const used = new Set(Object.values(SETS).map((s) => s.cite)), out = {};
+  let n = 0;
+  for (const c of CITES) { const li = document.getElementById('cite-' + c); if (li) li.hidden = !used.has(c); if (used.has(c)) out[c] = ++n; }
+  return out;
+}
+function fillMelodySelect() {
+  const sel = document.getElementById('atMel');
+  sel.textContent = '';
+  for (const g of GROUPS) {
+    const ss = Object.values(SETS).filter((s) => s.group === g);
+    if (!ss.length) continue;
+    const og = h('optgroup', { label: groupName(g) });
+    for (const s of ss) {
+      const name = I18n.t('atlas.sys.option_m', { name: sysName(s), trad: I18n.t('atlas.sys.' + s.id + '.trad') });
+      og.appendChild(h('option', { value: s.id }, s.approved ? name : I18n.t('shared.trad.option_unverified_m', { name })));
+    }
+    sel.appendChild(og);
+  }
+  sel.value = melVal();
+}
+function selectMel(id, scroll) {
+  if (!SETS || !SETS[id]) return;
+  settings.mel = id; saveSettings(); _hashMel = null;
+  singStop();
+  buildPhrases();
+  try { history.replaceState(null, '', '#sys-' + id); } catch (e) {}
+  if (scroll) document.getElementById('phrases').scrollIntoView();
+  spySoon();
+}
+function buildPhrases() {
+  const s = SETS[melVal()], cites = citeNumbers();
+  document.getElementById('atMel').value = s.id;
+  const rowsAll = s.rows;
+  document.getElementById('atMelCount').textContent = I18n.t(rowsAll.length === 1 ? 'atlas.phrases.count.one' : 'atlas.phrases.count.other', { count: rowsAll.length });
+  const info = document.getElementById('atMelInfo');
+  info.textContent = '';
+  const head = h('div', { class: 'syshead', id: 'sys-' + s.id }, h('h3', {}, sysLabel(s)), h('span', { class: 'sub' }, I18n.t('atlas.sys.' + s.id + '.sub')));
+  if (!s.approved) head.appendChild(unverifiedTag());
+  info.appendChild(head);
+  const note = h('p', { class: 'sysnote' }, I18n.t('atlas.sys.' + s.id + '.note') + (s.cite === 'je' ? ' ' + I18n.t('atlas.sys.je_note') : '') + ' ');
+  if (cites[s.cite]) note.appendChild(h('a', { class: 'at-citeref', href: '#cite-' + s.cite, 'aria-label': I18n.t('atlas.phrases.source_aria_m', { n: cites[s.cite] }) }, '[' + cites[s.cite] + ']'));
+  info.appendChild(note);
+  const k = keyVal();
+  info.appendChild(h('p', { class: 'keyline' }, k === 'orig' ? I18n.t('atlas.phrases.key_written_m', { key: keyText(s.key) })
+    : I18n.t('atlas.phrases.key_shown_m', { key: keyText(drawKey(s)), orig: keyText(s.key) })));
+  // the clause chips, each with its count; a stored group this melody lacks falls to the first it has
+  const counts = {};
+  for (const r of rowsAll) { const c = clauseOf(r); counts[c] = (counts[c] || 0) + 1; }
+  let clause = settings.clause === 'all' || counts[settings.clause] ? settings.clause : null;
+  if (!clause) { const f = CLAUSES.find(([id]) => counts[id]); clause = f ? f[0] : 'all'; }
+  const chips = document.getElementById('atClauses');
+  chips.textContent = '';
+  const mk = (id, label, fam, n) => {
+    const b = h('button', { type: 'button', class: 'at-chip fam' + (fam ? ' fam-' + fam : ''), 'aria-pressed': clause === id ? 'true' : 'false' }, label, h('span', { class: 'n' }, String(n)));
+    b.addEventListener('click', () => { settings.clause = id; saveSettings(); singStop(); buildPhrases(); });
+    chips.appendChild(b);
+  };
+  mk('all', I18n.t('atlas.table.all'), '', rowsAll.length);
+  for (const [id, fam] of CLAUSES) if (counts[id]) mk(id, I18n.t('atlas.clause.' + id), fam, counts[id]);
+  const rows = h('div', { class: 'at-rows' });
+  for (const r of rowsAll) {
+    if (clause !== 'all' && clauseOf(r) !== clause) continue;
+    const heb = h('p', { class: 'at-pheb', lang: 'he', dir: 'rtl' }, r.he);
+    if (r.tags.includes('aliyah-end')) heb.appendChild(h('span', { class: 'at-tag', lang: I18n.lang, dir: I18n.dir }, I18n.t('atlas.phrases.end_tag')));
+    const label = I18n.t('atlas.phrases.staff_aria_m', { melody: sysLabel(s), n: r.n, marks: r.units.map((u) => markName(u.k)).join(', ') });
+    rows.appendChild(h('div', { class: 'at-prow' }, h('div', { class: 'num' }, r.n), h('div', { class: 'body' }, heb, singWrap('p:' + s.id + ':' + r.n, r, s, label))));
+  }
+  const host = document.getElementById('atPhraseRows');
+  host.textContent = '';
+  host.appendChild(rows);
+}
+
+/* ── the contents rail: its melody list, the drawer on narrow screens, and where the reader is ── */
+function buildIndex() {
+  const ul = document.getElementById('atSysIdx');
+  ul.textContent = '';
+  for (const g of GROUPS) {
+    const ss = Object.values(SETS).filter((s) => s.group === g);
+    if (!ss.length) continue;
+    const sub = h('ul');
+    for (const s of ss) sub.appendChild(h('li', {}, h('a', { href: '#sys-' + s.id }, sysName(s))));
+    ul.appendChild(h('li', { class: 'g' }, h('a', { href: '#grp-' + g }, groupName(g)), sub));
+  }
+}
+const idxNav = document.getElementById('atIndex'), idxBtn = document.getElementById('atIdxBtn');
+const narrow = () => window.matchMedia('(max-width: 999.98px)').matches;
+function setIndexOpen(o) {
+  idxNav.classList.toggle('open', o);
+  idxBtn.setAttribute('aria-expanded', o ? 'true' : 'false');
+  if (o) { const a = idxNav.querySelector('a'); if (a) a.focus(); }
+}
+idxBtn.addEventListener('click', () => setIndexOpen(!idxNav.classList.contains('open')));
+idxNav.addEventListener('click', (e) => {
+  const a = e.target.closest('a');
+  if (!a) return;
+  const href = a.getAttribute('href');
+  let id = null;
+  if (href.startsWith('#sys-')) id = href.slice(5);
+  else if (href.startsWith('#grp-')) { const s = SETS && Object.values(SETS).find((x) => x.group === href.slice(5)); if (s) id = s.id; }
+  if (id) { e.preventDefault(); selectMel(id, true); }
+  if (narrow()) setIndexOpen(false);
+});
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && idxNav.classList.contains('open')) { setIndexOpen(false); idxBtn.focus(); } });
+document.addEventListener('click', (e) => { if (idxNav.classList.contains('open') && !idxNav.contains(e.target) && !idxBtn.contains(e.target)) setIndexOpen(false); });
+let _spyTick = false;
+function spySoon() { if (!_spyTick) { _spyTick = true; requestAnimationFrame(spy); } }
+function spy() {
+  _spyTick = false;
+  const links = Array.from(idxNav.querySelectorAll('a[href^="#"]'));
+  const byId = {};
+  for (const a of links) byId[a.getAttribute('href').slice(1)] = a;
+  const line = document.getElementById('atBar').getBoundingClientRect().bottom + 70;
+  let cur = null;
+  for (const id of ['signs', 'atlas', 'phrases', 'emet', 'notes', 'sources']) { const el = document.getElementById(id); if (el && el.getBoundingClientRect().top < line) cur = id; }
+  if (cur === 'phrases' && byId['sys-' + melVal()]) cur = 'sys-' + melVal();
+  for (const a of links) { a.classList.remove('cur'); a.removeAttribute('aria-current'); }
+  const a = cur && byId[cur];
+  if (!a) return;
+  a.classList.add('cur'); a.setAttribute('aria-current', 'true');
+  const top = a.closest('.at-index > ul > li'); if (top && top.firstElementChild !== a) top.firstElementChild.classList.add('cur');
+  const g = a.closest('li.g'); if (g && g.firstElementChild !== a) g.firstElementChild.classList.add('cur');
+  if (!narrow()) { const r = a.getBoundingClientRect(), nr = idxNav.getBoundingClientRect(); if (r.top < nr.top + 20 || r.bottom > nr.bottom - 20) idxNav.scrollTop += r.top - nr.top - nr.height / 2; }
+}
+window.addEventListener('scroll', spySoon, { passive: true });
+// The bar's height, for the rail's top and every anchor's landing (it wraps on a narrow screen).
+const barObs = 'ResizeObserver' in window ? new ResizeObserver(() => {
+  document.documentElement.style.setProperty('--at-bar-h', Math.round(document.getElementById('atBar').getBoundingClientRect().height) + 'px');
+}) : null;
+if (barObs) barObs.observe(document.getElementById('atBar'));
+
+/* ── the sign table: a sign's name (or anywhere on its row) jumps to its row of the melody table ── */
+function jumpToMark(k) {
+  const t = document.getElementById('atlas-' + k);
+  if (!t) return;
+  t.scrollIntoView({ block: 'center' });
+  t.focus({ preventScroll: true });
+  t.classList.remove('at-flash'); void t.offsetWidth; t.classList.add('at-flash');
+}
+document.getElementById('atSigns').addEventListener('click', (e) => {
+  const tr = e.target.closest('tr[id^="m-"]');
+  if (!tr || (e.target.closest('a') && !e.target.closest('.at-jump'))) return;
+  e.preventDefault();
+  jumpToMark(tr.id.slice(2));
+});
+
+/* ── the Key select ── */
+function fillKeySelect() {
+  const sel = document.getElementById('atKey');
+  sel.textContent = '';
+  sel.appendChild(h('option', { value: 'orig' }, I18n.t('atlas.key.as_printed')));
+  for (const k of KEY_CHOICES) sel.appendChild(h('option', { value: k }, keyText(k)));
+  sel.value = keyVal();
+}
+document.getElementById('atKey').addEventListener('change', (e) => { settings.key = e.target.value; saveSettings(); singStop(); renderStaffs(); });
+document.getElementById('atNames').addEventListener('change', (e) => { settings.names = e.target.checked; saveSettings(); singStop(); renderStaffs(); });
+document.getElementById('atViewGrid').addEventListener('click', () => { settings.view = 'grid'; saveSettings(); singStop(); buildAtlas(); });
+document.getElementById('atViewCards').addEventListener('click', () => { settings.view = 'cards'; saveSettings(); singStop(); buildAtlas(); });
+document.getElementById('atMel').addEventListener('change', (e) => selectMel(e.target.value, false));
+
+/* ── rendering ── */
+function renderStatus() {
+  const el = document.getElementById('atStatus');
+  el.textContent = '';
+  el.classList.remove('error');
+  if (!_i18nReady || SETS) return;
+  if (_loading) { el.textContent = I18n.t('atlas.status.loading'); return; }
+  el.classList.add('error');
+  el.appendChild(document.createTextNode(I18n.t('atlas.status.failed') + ' '));
+  const b = h('button', { type: 'button', class: 'btn' });
+  b.innerHTML = ICON_RETRY;   // the page's own icon markup
+  b.appendChild(h('span', {}, I18n.t('atlas.status.retry')));
+  b.addEventListener('click', loadData);
+  el.appendChild(b);
+}
+function renderStaffs() { if (!SETS) return; fillKeySelect(); buildAtlas(); buildPhrases(); }
+function renderAll() {
+  renderStatus();
+  if (!SETS || !_i18nReady) return;
+  document.getElementById('atPreview').hidden = !TRAD_PREVIEW;
+  document.getElementById('atIntroHist').hidden = !Object.keys(SETS).some((id) => id.startsWith('je_'));
+  fillKeySelect();
+  buildIndex();
+  fillMelodySelect();
+  buildAtlas();
+  buildPhrases();
+  spySoon();
+}
+
+/* ── dark mode (house pattern) ── */
+function syncDarkLabel() {
+  const _db = document.getElementById('darkBtn'), dark = document.body.classList.contains('dark');
+  (_db.querySelector('.hi-lbl') || _db).textContent = dark ? (window.I18n ? I18n.t('shared.darkmode.label_light') : 'Light') : (window.I18n ? I18n.t('shared.darkmode.label_dark') : 'Dark');
+  _db.setAttribute('aria-pressed', dark ? 'true' : 'false');
+}
+function toggleDark() {
+  const dark = document.body.classList.toggle('dark');
+  document.documentElement.classList.remove('dark-early');
+  try { localStorage.setItem('hebrewBlender_darkMode', dark ? '1' : '0'); } catch (e) {}
+  syncDarkLabel();
+}
+
+/* ── i18n: the static chrome, then everything the page builds (read-only: a tune in progress keeps playing) ── */
+function applyI18n() {
+  _i18nReady = true;
+  I18n.applyStaticI18n();
+  syncDarkLabel();
+  renderAll();
+}
+document.addEventListener('DOMContentLoaded', () => {
+  try {
+    const s = localStorage.getItem('hebrewBlender_darkMode');
+    if (s === '1' || (s === null && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches)) document.body.classList.add('dark');
+  } catch (e) {}
+  syncDarkLabel();
+  // A #sys-<id> address opens the phrase browser on that melody (once it is offered), without storing it.
+  const hm = /^#sys-([a-z0-9_]+)$/.exec(location.hash);
+  if (hm) _hashMel = hm[1];
+  if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); }
+  loadData().then(() => {
+    if (hm && SETS && SETS[hm[1]]) { const el = document.getElementById('sys-' + hm[1]); if (el) el.scrollIntoView(); }
+  });
+});
+</script>
+</body>
+</html>

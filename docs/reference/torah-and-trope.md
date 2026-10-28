@@ -215,8 +215,8 @@ imported blobs are untrusted, AND the value takes an appended `59` alpha suffix 
 
 ## Trope Tutor (`trope_tutor.html`)
 
-**The staff engine is `js/trope-staff.js`**, one classic same-origin script both this page and the Torah
-Trainer load right before their inline `<script>` (plain globals): the `TROPES` taxonomy, the pitch model
+**The staff engine is `js/trope-staff.js`**, one classic same-origin script this page, the Torah
+Trainer and the Trope Atlas load right before their inline `<script>` (plain globals): the `TROPES` taxonomy, the pitch model
 (`keySignature`, `motifPitchPos`, `shiftedKey`…), the staff primitives, `layoutPhraseStaff` /
 `renderPhraseStaff`, the phrase-file validation, and the reading-staff functions the Trainer's *Trope staff*
 layout uses (below). It reads no `settings`, no `I18n` and no DOM but `createElementNS`; a function that
@@ -797,7 +797,7 @@ to Learn), and a caller that opens something inside the new tab (`openLearnFor`)
   `scripts/smoke-trope-staff.mjs`'s `MELS` and key assertion; (4) `trope_tutor.html`: `MELODY_INFO.conservative.file`
   (the derived motif file with its `?v=`), drop `staffs: false`, `PHRASE_GROUPS.conservative`, the melody note, tip
   and tour copy; `torah_trainer.html`: the `#optStaffMelody` option and its `STAFF_*` sets; (5) the `?v=` bumps —
-  `trope_phrases.json` on both pages (one value), the motif file in `MELODY_INFO`, `ops.md`'s list — and `sw.js`;
+  `trope_phrases.json` on both pages and the Trope Atlas (one value), the motif file in `MELODY_INFO`, `ops.md`'s list — and `sw.js`;
   then the phrases builder, `smoke-trope-staff.mjs` and the staff snapshot matrix, green.
 
 ---
@@ -1057,10 +1057,57 @@ from the "Ta'amei HaMikra Trope Atlas", transcribed from scans with AI help; the
     links carry the tradition's id (and `preview=traditions` while it is unverified).
 - **Approving one:** open `trope_review.html` (served from the repo root), compare each row with the source, press
   Approve, and make the one-line change it names in `data/trope/trope_approvals.json`. **Correcting a note:** edit its
-  row in `docs/trope-traditions.md`, run the builder, bump `trope_phrases.json`'s `?v=` on both pages and the review
-  page and `sw.js`'s `VERSION` — the fingerprint changes, so the tradition needs approving again. **Adding a
+  row in `docs/trope-traditions.md`, run the builder, bump `trope_phrases.json`'s `?v=` on both pages, the Trope Atlas and the
+  review page and `sw.js`'s `VERSION` — the fingerprint changes, so the tradition needs approving again. **Adding a
   tradition:** a new `trope-system` block and its rows, its line in the approvals file (`false`), its
-  `shared.trad.<id>` name (EN + HE) in `locales/ui-strings.csv`, then the same rebuild and bumps.
+  `shared.trad.<id>` name (EN + HE) in `locales/ui-strings.csv`, its row in the Trope Atlas's `SYSTEMS` with its
+  `atlas.sys.<id>.*` strings (*Trope Atlas* below), then the same rebuild and bumps.
+
+## Trope Atlas (`trope_atlas.html`)
+
+A reference page, **unlisted** while it is new (`docs/reference/ops.md` → *An unlisted page*: `noindex, follow`, no
+sitemap block, no hub card or link from any page, not in `CORE_ASSETS`): every cantillation sign of the 21 books with
+its Hebrew, Ashkenazi and Sephardi names, Unicode, rank and role; one figure per sign in every offered melody (the
+melody table, a grid or stacked cards); every row of one melody at a time (the phrase browser, grouped by clause); the
+poetic (אמ״ת) signs; how to read the staffs; the sources. It began as the standalone "Ta'amei HaMikra Trope Atlas" the
+traditions were imported from, and was rebuilt on the suite's own pieces, so it holds **no notes of its own**:
+
+- **Data and engine.** It fetches `data/trope/trope_phrases.json` with the tutor's `?v=` and the approvals file
+  (`cache: no-store`), parses both with `ivritSafeParse`, takes the six charts through `_phraseSetsFrom` and the
+  traditions through `_tradSystemsFrom`, and draws every staff with `js/trope-staff.js`'s `renderPhraseStaff`
+  (`low: true`, the clause-family bars through `famOf`, a tradition's `chroma`). A melody table figure is the mark's
+  first figure on its chart (`tropeFirstFigure` → `tropeFigureRow`), cached per melody and mark. Note names are the
+  tutor's `noteNameAt` letters, kept page-local.
+- **The gate.** A tradition is shown only while the approvals file holds its fingerprint (`tropeSystemFingerprint`),
+  or on a `?preview=traditions` visit (the tutor's `trope.preview.banner`; every unverified melody carries
+  `shared.trad.unverified`, its select option `shared.trad.option_unverified_m`). The intro's second sentence
+  (`atlas.intro.historical`) shows only while a Jewish Encyclopedia tradition is offered, and a source in the list
+  shows only while an offered melody cites it — the `[n]` beside a melody's note counts the shown ones.
+- **`SYSTEMS`** is the page's order of the melodies, each with its reading (`group`) and the source it cites; a
+  melody the phrase file adds is shown only once it has a row there and its `atlas.sys.<id>.name` / `.trad` / `.sub`
+  / `.note` strings (a Jewish Encyclopedia note is followed by `atlas.sys.je_note`). `MARKS` is the sign table's
+  order with each sign's glyph and names (taught content, never translated).
+- **Key.** *As printed*, or a common key: each melody moves its tonic to the chosen one by the nearest interval
+  (`shiftFor`, at most a tritone) and is drawn in `shiftedKey(key, shift)`; a key is named by its note
+  (`trope.key.note_*`) and signature (`atlas.key.option_m`), never as major or minor — the haftarah and eicha modes
+  are minor-coloured.
+- **The singer** sings a staff on the tutor's tune clock (an eighth 0.32 s, grace notes borrowed, ties merged, a
+  fermata held `PHRASE_FERMATA` times) in a vowel-like voice (a sawtooth through three formants, gliding inside a
+  slur, vibrato on long notes), an octave below the written notes. Each staff's wrapper carries `data-sing`; the
+  singer finds the staff afresh on every note, so `applyI18n`'s re-render leaves a tune playing with its highlight
+  (`.tu-pn.is-sounding`, `svg.is-playing`) and its button pressed (`aria-pressed`; the name stays `atlas.sing.aria_m`,
+  the icon turns to stop). A key, note-name, layout, melody or group change stops it, as do `beforeprint` and a
+  hidden tab.
+- **Storage:** one blob, `hebrewTropeAtlas_settings` (`key`, `view`, `groups`, `names`, `mel`, `clause`), each
+  field read through a validator so an unknown stored value shows the default and stays stored; registered at the
+  hub's AllTools sites (export, import, erase, `IVRIT_CFG.gather/apply`) and not synced (no registry row; the page
+  offers no account). A `#sys-<id>` address opens that melody without storing it.
+- **Layout.** A sticky bar (the contents button below 1000px, the title, the Key select), a contents rail (a drawer
+  below 1000px: Escape and an outside click close it, focus goes to its first link and back to the button), the
+  sections. The melody grid scrolls in its own box so its heading row and sign column both stay; the staffs are
+  pinned `direction:ltr`, the rest mirrors in Hebrew. The header's wrap gate is the page's measured ceiling.
+- **Launching it** is `ops.md`'s reverse list: the sitemap block, a hub card and `ItemList` entry, `CORE_ASSETS`,
+  `robots` back to `index, follow`, then both generators.
 
 ## Recording sources — PocketTorah and Total Torah (`torah_trainer.html`)
 

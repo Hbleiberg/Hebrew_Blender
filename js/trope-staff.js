@@ -1,7 +1,8 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    IvritSuite — the one trope staff engine: js/trope-staff.js
-   Loaded by trope_tutor.html (the Learn cards' and Phrases tab's staffs) and
-   torah_trainer.html (the Trope staff layout) as a classic script placed right
+   Loaded by trope_tutor.html (the Learn cards' and Phrases tab's staffs),
+   torah_trainer.html (the Trope staff layout) and trope_atlas.html (the atlas's
+   figures and phrase rows) as a classic script placed right
    before each page's inline <script>, so every name below is a plain global the
    page's own code calls unqualified. It reads no `settings`, no `I18n` and no DOM
    but document.createElementNS: anything that needs a page's state stays in that
