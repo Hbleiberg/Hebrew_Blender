@@ -21096,8 +21096,8 @@ function offerSaveToMyFonts(licenseSeparate) {   // post-export success screen (
     + fellHtml + gateHtml,
     btns);
 }
-async function gzipBlob(str) {                       // string → gzip Blob (native, no libs)
-  return new Response(new Blob([str]).stream().pipeThrough(new CompressionStream('gzip'))).blob();
+async function gzipBlob(str) {                       // string (or an array of Blob parts) → gzip Blob (native, no libs)
+  return new Response(new Blob(Array.isArray(str) ? str : [str]).stream().pipeThrough(new CompressionStream('gzip'))).blob();
 }
 async function gunzipText(buf) {                     // gzip ArrayBuffer → string
   return new Response(new Blob([buf]).stream().pipeThrough(new DecompressionStream('gzip'))).text();
@@ -23075,6 +23075,30 @@ function autosaveDiscard() {   // user explicitly starts over → drop the conti
 // One snapshot at a time; a request while one is being written is not dropped: the writer runs once more when it
 // finishes, so the newest edit always reaches the snapshot (a close right after an edit would otherwise lose it).
 let _autosaveAgain = false;
+// The photos are most of a snapshot's bytes and seldom change between two snapshots, yet each one copied every photo
+// into one JSON string — a two-byte string as soon as the project holds any Hebrew, so its UTF-8 copy is the slow kind:
+// eight phone photos froze the page for 1.6 s (6.5 s on a 4× slower laptop) three seconds after every edit. A long
+// data: URL now leaves the JSON as a marker and joins the Blob as a part of its own, encoded once and reused while the
+// project still holds that URL. The bytes are exactly JSON.stringify(p)'s (markers that do not add up fall back to it).
+const _autosaveUrlParts = new Map();   // data URL → Blob of its JSON string literal
+function autosaveParts(p) {
+  const big = [];
+  const json = JSON.stringify(p, (k, v) => (typeof v === 'string' && v.length >= 4096 && v.startsWith('data:'))
+    ? '\u0000ivrit-part:' + (big.push(v) - 1) + '\u0000' : v);
+  if (!big.length) return [json];
+  const bits = json.split(/"\\u0000ivrit-part:(\d+)\\u0000"/);   // text, index, text, index, …, text
+  if (bits.length !== 2 * big.length + 1) return [JSON.stringify(p)];
+  const parts = [], keep = new Map();
+  for (let i = 0; i < bits.length; i++) {
+    if (!(i & 1)) { if (bits[i]) parts.push(bits[i]); continue; }
+    if (+bits[i] !== (i - 1) / 2) return [JSON.stringify(p)];
+    const u = big[+bits[i]];
+    const b = keep.get(u) || _autosaveUrlParts.get(u) || new Blob([JSON.stringify(u)]);
+    keep.set(u, b); parts.push(b);
+  }
+  _autosaveUrlParts.clear(); keep.forEach((b, u) => _autosaveUrlParts.set(u, b));   // only the URLs this project still holds
+  return parts;
+}
 async function autosaveNow() {
   if (!project) return;
   if (_autosaveInFlight) { _autosaveAgain = true; return; }
@@ -23083,9 +23107,8 @@ async function autosaveNow() {
     do {
       _autosaveAgain = false;
       try {
-        const json = JSON.stringify(project);
         if (typeof indexedDB === 'undefined' || typeof CompressionStream === 'undefined') throw new Error('no IDB/gzip');
-        const blob = await gzipBlob(json);                       // full project incl. images, gzipped
+        const blob = await gzipBlob(autosaveParts(project));     // full project incl. images, gzipped
         await autosavePut({ id: 'current', savedAt: new Date().toISOString(), gz: await blob.arrayBuffer(), cloudRev: (project.cloudRev || null), cloudClean: !_cloudDirty });   // cloudRev/cloudClean: lets a cloud Open reuse this snapshot
       } catch (e) {   // private mode / no IndexedDB → stripped localStorage slot (outlines survive, images don't)
         try { localStorage.setItem('hebrewFontMaker_autosave', JSON.stringify(stripImagesForAutosave(project))); } catch (_) {}

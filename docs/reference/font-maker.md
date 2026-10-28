@@ -322,6 +322,13 @@ covers undo + dirty + autosave in one. Pure-UI state (panel collapse, toggles) c
 directly with no undo entry. Read-only features (tour, QA grid, shortcuts sheet) must touch none of
 this — zero project-state changes.
 
+The snapshot `autosaveNow` writes is the gzip of exactly `JSON.stringify(project)`, but it is built by
+`autosaveParts(project)`: every string of 4,096+ characters starting `data:` (the photos and sheets)
+leaves the JSON as a marker and joins the Blob as its own part, a Blob of its JSON literal kept in
+`_autosaveUrlParts` and reused while the project still holds that URL. Never go back to one
+`JSON.stringify` + `new Blob([json])` there: any Hebrew in the project makes that string two-byte, and
+re-encoding every photo on each autosave froze the page for seconds three seconds after every edit.
+
 An **image assignment needs `withSource: true`** on its item scope (and `withDraw: true` when it can
 replace a drawing) — `ITEM_SKIP` holds `source`/`savedAnchors`/`draw` out of snapshots by default, so
 without the opt-in `udRestore` keeps the *new* image and rolls back only the geometry around it,
