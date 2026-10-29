@@ -109,6 +109,10 @@ Notes:
   print** — print media is measured at the sheet's width (Letter 740px, A4 718px at default
   margins), under that cutoff, and a `position:fixed` box repeats on every sheet — so no page's
   print hide-list needs to name it.
+  It also steps aside while a tour is open (`body:has(#tourCard:not([hidden]))`, the shared tour
+  engine's card), so no tour page needs a rule of its own; a page hides it under its other bottom
+  windows with its own `body:has(…) #pwaInstallBanner { visibility:hidden }`, or lifts a fixed
+  bottom bar by the `--pwa-banner-space` the banner publishes while it shows.
 
 ### Rule: bump the cache version when you change a precached asset
 

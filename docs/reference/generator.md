@@ -336,3 +336,11 @@ outrank an inline colour: each syllable `colorizeHebrew` builds also carries `--
 light palette, or the teacher's override) and a `nik-lt` / `nik-ul` / `nik-hl` class, and the `onclone`
 writes that colour into the clone (Highlight keeps its tint there; the print block draws it as an underline,
 since the dialog's background-graphics-off default drops the tint).
+
+## Real Words card grids (`.rw-grid`)
+
+Every builder of a Real Words card grid sets `grid-template-columns: repeat(cols, 1fr)` inline (4–6 from the
+item count) **and** writes the same count to `--rw-cols`. On screen only, `.rw-grid[style*="--rw-cols"]`
+lets a narrow sheet (a phone, a window with the sidebar beside it) take fewer columns, never one narrower
+than 100px, and keeps exactly `--rw-cols` wherever they fit; print is not screen and the PDF capture pins
+`#worksheet` at full width, so paper and the PDF keep the builder's columns. A new card grid writes both.
