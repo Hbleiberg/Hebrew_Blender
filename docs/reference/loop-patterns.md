@@ -220,7 +220,8 @@
 - **Archived full text (latest compaction copy):** - **`hidden-input-anchored-outside-its-scroller`** (NEW S499 C; dashboard's 25 drawer radios FIXED `55891185`, torah fixed outside the loop; latent: `.vh-file` ×4, its label on screen on every path measured): ACTIVE, streak 0. Detection: a `position:absolute|fixed` focusable input with a scroll container between it and its containing block (`c499/anchor.mjs`; plant: torah's `.radio-group{position:static}` → 53); runtime: Tab/Shift+Tab, the focused label inside the scroller.
 
 ## `hebrew-faux-italic`
-- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S569 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S570 · **Streak:** 0 · **Detector:** recipe
+- **Record (S570, queue):** FIXED flash `5a04c5a8` — `html[lang="he"] .fcr-note, .fcc-lead { font-style:normal }` in the print block; a print-media census of the report and the certificate, opened by their real buttons × 4 cells: Hebrew italic 3 → 0 (the English UI 0 / 0). Open: none known.
 - **Record (S569, G flash):** FOUND on paper, which no screen census reaches — the HE UI's progress report (`.fcr-note`: the history-cap note, the "no mistakes" note) and certificate (`.fcc-lead`) print Hebrew in a synthesized italic (`g569/report.mjs`, a print-media census of the host; a planted italic line fired). Open: flash (P3, at the cap). A print census of every Hebrew-UI print host belongs to this pattern's recipe.
 - **Record (S568):** torah clean: Hebrew-majority text nodes in italic or oblique 0 across 31 views × 8 cells (EN and HE UIs; the transliteration's italic is Latin).
 - **Record (S558):** trope clean — 0 italic Hebrew text nodes in 17 views × 8 cells (~24,800 nodes; `m558/shots.mjs`).
@@ -292,7 +293,8 @@
 - **Record (ledger row at S544):** - **`header-wrap-gate-below-its-ceiling`** (NEW S478 M; ×8 `92a21164`; S489 `f620c768`; S520 touch ×8 `186ea5f4`): ACTIVE, streak 0. Detection: `n520/gates2.mjs` (1px 320-1000, EN/HE × themes, mouse+touch, real fonts); HEAD the control.
 
 ## `latin-tracking-on-hebrew-labels`
-- **Status:** ACTIVE · **Owner:** H · **Consequence:** normal · **Last:** S569 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** H · **Consequence:** normal · **Last:** S570 · **Streak:** 0 · **Detector:** recipe
+- **Record (S570, queue):** FIXED flash `5a04c5a8` — the certificate's `.fcc-suite` and `.fcc-seal-w` take the `html[lang="he"]` reset (letter-spacing and the uppercase); tracked Hebrew 1 → 0 by the census (the suite line "IvritSuite · כרטיסיות" counts as Latin-majority there, so it was read on the rendered page). Open: none known.
 - **Record (S569, G flash):** FOUND on paper — the HE certificate's `.fcc-suite` (0.18em, uppercase) and seal word `.fcc-seal-w` (0.14em) track Hebrew letters; print-only CSS, so the screen censuses never saw it (`g569/report.mjs`; a planted tracked line fired). Open: flash (P3, at the cap).
 - **Record (S551):** name_tags clean: the four tracked rules (panel titles, legends, table heads, keyboard subheads) each carry the `html[lang=he]` reset.
 - **Detection:** `a502/dash-track.mjs`; torah …[full text: IMPROVEMENT_ARCHIVE.md] — `a502/dash-track.mjs` is a scratchpad path that was never committed: port it to `scripts/loop/detect-<id>.mjs` (with `--plant`) at the next A, or the row goes DRAFT.
