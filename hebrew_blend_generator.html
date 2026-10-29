@@ -1751,6 +1751,15 @@ body.dark .hi-sun{display:inline-block;}
   .rw-pos-tag { position: absolute; top: 4px; right: 6px; font-size: 0.58rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
   .rw-num { position: absolute; top: 4px; left: 6px; font-size: 0.6rem; color: var(--muted); }
   .rw-grid { display: grid; gap: 10px; direction: ltr; }
+  /* On screen a sheet narrower than its builder's 4–6 columns need (a phone, a phone held sideways, a window with the
+     sidebar beside it) squeezed each card into 44–93px: its number ran into its part-of-speech tag ("P1ROPER NOUN") and,
+     under ~50px, the Hebrew word overran the card and was cut. There a column is never narrower than 100px (what the
+     longest tags need beside their number), so the row takes fewer, wider cards; at the builder's own width or more the
+     row is exactly its --rw-cols. Paper and the PDF keep the builder's columns: print is not screen, and the PDF's capture
+     pins #worksheet at its full width. (S572 Pass N; the maintainer chose this over phones-only) */
+  @media screen {
+    .rw-grid[style*="--rw-cols"] { grid-template-columns: repeat(auto-fill, minmax(max(100px, (100% - (var(--rw-cols) - 1) * 10px) / var(--rw-cols) - 0.5px), 1fr)) !important; }
+  }
   /* ── MATCHING DRILL (real words) ── */
   .match-wrap { display: flex; justify-content: space-between; align-items: flex-start; gap: 36px; direction: ltr; margin-top: 10px; }
   .match-col { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 0; }
@@ -12204,6 +12213,7 @@ function generateRealWords(reuse) {
   const grid = document.createElement('div');
   grid.className = 'rw-grid';
   grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+  grid.style.setProperty('--rw-cols', cols);   // the screen's narrow-sheet rule keeps this count at full width
 
   // Vocab/self-check placement: front | back | both
   const vocabTrlOnFront = drill === 'vocab' && showTranslit    && (rwTranslitPage === 'front' || rwTranslitPage === 'both');
@@ -12318,6 +12328,7 @@ function generateRealWords(reuse) {
     const keyGrid = document.createElement('div');
     keyGrid.className = 'rw-grid';
     keyGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+    keyGrid.style.setProperty('--rw-cols', cols);   // the screen's narrow-sheet rule keeps this count at full width
     items.forEach((w, idx) => {
       const card = document.createElement('div');
       card.className = 'rw-card';
@@ -13155,6 +13166,7 @@ function renderRealWordsFillVowels(ws, words, trOnSheet, tnOnSheet, trOnKey, tnO
   const grid = document.createElement('div');
   grid.className = 'rw-grid';
   grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+  grid.style.setProperty('--rw-cols', cols);   // the screen's narrow-sheet rule keeps this count at full width
   sheet.appendChild(grid);
 
   words.forEach((w, idx) => {
@@ -13194,6 +13206,7 @@ function renderRealWordsFillVowels(ws, words, trOnSheet, tnOnSheet, trOnKey, tnO
   const akGrid = document.createElement('div');
   akGrid.className = 'rw-grid';
   akGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+  akGrid.style.setProperty('--rw-cols', cols);   // the screen's narrow-sheet rule keeps this count at full width
   ak.appendChild(akGrid);
 
   words.forEach((w, idx) => {
@@ -13237,6 +13250,7 @@ function generateIdentifyDrill(pool, count, trOnSheet, tnOnSheet, trOnKey, tnOnK
     const grid = document.createElement('div');
     grid.className = 'rw-grid';
     grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+    grid.style.setProperty('--rw-cols', cols);   // the screen's narrow-sheet rule keeps this count at full width
     const showTr = reveal ? trOnKey : trOnSheet;
     const showTn = reveal ? tnOnKey : tnOnSheet;
     items.forEach((w, idx) => {
