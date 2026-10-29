@@ -12217,7 +12217,7 @@ function generateRealWords(reuse) {
             <span class="rw-heb" lang="he">${esc(w.heb)}</span>
             ${vocabTrlOnFront && w.translit ? `<span class="rw-translit">${esc(w.translitDisplay ?? w.translit)}</span>` : ''}
             ${vocabTnOnFront && w.translation ? `<span class="rw-translation">${esc(w.translation)}</span>` : ''}
-            <span class="rw-translit rw-flip-hint" style="font-size:0.65rem;opacity:0.6;">tap to flip</span>
+            <span class="rw-translit rw-flip-hint" style="font-size:0.65rem;opacity:0.6;">${esc(I18n.t('worksheet.selfcheck.tap_to_flip_hint'))}</span>
           </div>
           <div class="rw-flip-back">
             <span class="rw-num">${idx + 1}</span>

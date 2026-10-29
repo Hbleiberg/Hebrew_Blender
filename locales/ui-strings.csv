@@ -5475,6 +5475,7 @@ worksheet.selfcheck.tap_back_hear,🔊 Tap back to hear,🔊 הקישו על ה�
 worksheet.selfcheck.tap_reveal_gematria,Tap a card to reveal its Gematria value,הקישו על כרטיס כדי לחשוף את ערך הגימטריה שלו,self-check control hint,
 worksheet.selfcheck.tap_reveal_word,Tap a card to reveal the Hebrew word,הקישו על כרטיס כדי לחשוף את המילה בעברית,self-check control hint,
 worksheet.selfcheck.tap_to_flip,Tap a card to flip,הקישו על כרטיס כדי להפוך,self-check control hint,
+worksheet.selfcheck.tap_to_flip_hint,tap to flip,הקישו כדי להפוך,Real Words vocab card front hint,
 worksheet.selfcheck.tap_to_reveal,tap to reveal,הקישו כדי לחשוף,flip-card hint,
 worksheet.selfcheck.timer_pause,Pause,השהה,timer control button,leading-emoji
 worksheet.selfcheck.timer_start,Start,התחל,timer control button,leading-emoji

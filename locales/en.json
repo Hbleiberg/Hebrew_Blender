@@ -7073,6 +7073,7 @@
   "worksheet.selfcheck.tap_reveal_gematria": "Tap a card to reveal its Gematria value",
   "worksheet.selfcheck.tap_reveal_word": "Tap a card to reveal the Hebrew word",
   "worksheet.selfcheck.tap_to_flip": "Tap a card to flip",
+  "worksheet.selfcheck.tap_to_flip_hint": "tap to flip",
   "worksheet.selfcheck.tap_to_reveal": "tap to reveal",
   "worksheet.selfcheck.timer_pause": "Pause",
   "worksheet.selfcheck.timer_start": "Start",
