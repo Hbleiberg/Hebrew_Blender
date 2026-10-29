@@ -20,11 +20,12 @@
 ## Active, draft and guard patterns (166; newest first, as the ledger lists them)
 
 ## `focus-hidden-under-a-sticky-bar`
-- **Status:** ACTIVE · **Owner:** C · **Consequence:** normal · **Last:** S564 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** C · **Consequence:** normal · **Last:** S569 · **Streak:** 0 · **Detector:** recipe
+- **Record (S569):** letter_learner — the card dialog scrolls under its own sticky head: a Tab / Shift+Tab walk of every tab (`g569/llwalk.mjs`) found the Vowels tab wholly hidden on the way back up (1280 / 800, EN / HE) and 3 Coloring radios wholly + 1 partly on an iPhone 13 → 0 in 6 cells (`3c04af41`: the dialog's `scroll-padding-block-start` from `--ll-head-h`, a `ResizeObserver` in `wireDialog`); a planted 260px head fired (findings S569).
 - **Shape:** A sticky or fixed bar at a window edge (a header, a Start / action bar, a jump bar, an audio bar) and the browser's focus scrolling: Tab, Shift+Tab or a page's roving arrow-key focus brings a control just into view at that edge — under the bar, its indicator wholly hidden (WCAG 2.4.11).
 - **Detection:** a real Tab and Shift+Tab walk of each screen (and the page's roving-focus keys over its widest list), five sample points per stop by `elementFromPoint`, a point counting when it lands in a sticky / fixed ancestor that does not contain the stop; wholly hidden = every on-screen point; HEAD routed as the control, a phone with the install hint as an extra cell (`c560/tabwalk.mjs`, `phonewalk.mjs`, `torahwalk.mjs`, `p561/genwalk.mjs` — scratchpad paths never committed: port them at the next A, or the row goes DRAFT). Start a walk by clicking the page ground at the top (trap 373) and key its loop detection on an expando id (trap 374).
 - **Fix shape:** the root's `scroll-padding-block` reserves the bars' live heights — a `ResizeObserver` writes `--…-h` on `<html>` (0 while a bar is hidden or closed), `+ 8px`; a bar that only one screen shows is scoped with `html:has(#screen.active)`, and a bar that rides above the install hint adds `--pwa-banner-space`. Centred scrolls (`block:'center'`) then centre in the clear band.
-- **Carriers:** parsha_emojis FIXED S522 `297ea36` (the first: its pinned bar); flash FIXED S560 `7032085` (`fcTrackStickies`: header + Start bar); torah FIXED S560 `a22de39` (`ttTrackStickies`: jump bar + karaoke bar); generator FIXED S561 `e9e07d8` (the fixed Generate bar over the sidebar's end: `initGenFab` writes `--gen-fab-h`; its sticky `.main-toolbar` measured clean); dictionary FIXED S564 `06aba22` (the phone `#mobileBar`, sticky at ≤680px: a `ResizeObserver` writes `--dict-mbar-h`, 0 while it is hidden) — open 0 measured. Unprobed: the Letter Learner's sticky dialog head (inside a scroller: that scroller's own `scroll-padding`).
+- **Carriers:** parsha_emojis FIXED S522 `297ea36` (the first: its pinned bar); flash FIXED S560 `7032085` (`fcTrackStickies`: header + Start bar); torah FIXED S560 `a22de39` (`ttTrackStickies`: jump bar + karaoke bar); generator FIXED S561 `e9e07d8` (the fixed Generate bar over the sidebar's end: `initGenFab` writes `--gen-fab-h`; its sticky `.main-toolbar` measured clean); dictionary FIXED S564 `06aba22` (the phone `#mobileBar`, sticky at ≤680px: a `ResizeObserver` writes `--dict-mbar-h`, 0 while it is hidden); letter_learner FIXED S569 `3c04af41` (the card dialog's sticky head inside the dialog scroller: the scroller's own `scroll-padding-block-start` from `--ll-head-h`) — open 0 measured, every known carrier walked.
 - **Record (S564):** dictionary — Shift+Tab 16–30 stops wholly + 8–16 partly under the 127px bar in 4 cells (390 / 680 × EN / HE) → 0; Tab forward 0 and desktop 0 before and after (`h564/dictwalk.mjs`; findings S564).
 - **Record (S561):** generator — 5–10 stops wholly + 0–1 partly under the Generate bar going forward in all 8 cells, 2–6 at 390 → 0; Shift+Tab 0 (findings S561).
 - **Record (S560):** NEW — flash setup 34 wholly + 2 partly under the Start bar, Shift+Tab 8–17 + 9–20 under the header (8 cells), 48–72 on two iPhones with the hint → 0; torah 7 + 21 under the jump bar, 28 + 0–35 under the open audio bar → 0 (findings S560).
@@ -219,7 +220,8 @@
 - **Archived full text (latest compaction copy):** - **`hidden-input-anchored-outside-its-scroller`** (NEW S499 C; dashboard's 25 drawer radios FIXED `55891185`, torah fixed outside the loop; latent: `.vh-file` ×4, its label on screen on every path measured): ACTIVE, streak 0. Detection: a `position:absolute|fixed` focusable input with a scroll container between it and its containing block (`c499/anchor.mjs`; plant: torah's `.radio-group{position:static}` → 53); runtime: Tab/Shift+Tab, the focused label inside the scroller.
 
 ## `hebrew-faux-italic`
-- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S568 · **Streak:** 5 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S569 · **Streak:** 0 · **Detector:** recipe
+- **Record (S569, G flash):** FOUND on paper, which no screen census reaches — the HE UI's progress report (`.fcr-note`: the history-cap note, the "no mistakes" note) and certificate (`.fcc-lead`) print Hebrew in a synthesized italic (`g569/report.mjs`, a print-media census of the host; a planted italic line fired). Open: flash (P3, at the cap). A print census of every Hebrew-UI print host belongs to this pattern's recipe.
 - **Record (S568):** torah clean: Hebrew-majority text nodes in italic or oblique 0 across 31 views × 8 cells (EN and HE UIs; the transliteration's italic is Latin).
 - **Record (S558):** trope clean — 0 italic Hebrew text nodes in 17 views × 8 cells (~24,800 nodes; `m558/shots.mjs`).
 - **Record (S556):** dictionary clean: 0 of ~12,000 visible text nodes per cell (19 views × 8 cells) with Hebrew in a synthesized italic; an inline-italic plant fired.
@@ -290,7 +292,8 @@
 - **Record (ledger row at S544):** - **`header-wrap-gate-below-its-ceiling`** (NEW S478 M; ×8 `92a21164`; S489 `f620c768`; S520 touch ×8 `186ea5f4`): ACTIVE, streak 0. Detection: `n520/gates2.mjs` (1px 320-1000, EN/HE × themes, mouse+touch, real fonts); HEAD the control.
 
 ## `latin-tracking-on-hebrew-labels`
-- **Status:** ACTIVE · **Owner:** H · **Consequence:** normal · **Last:** S551 · **Streak:** 1 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** H · **Consequence:** normal · **Last:** S569 · **Streak:** 0 · **Detector:** recipe
+- **Record (S569, G flash):** FOUND on paper — the HE certificate's `.fcc-suite` (0.18em, uppercase) and seal word `.fcc-seal-w` (0.14em) track Hebrew letters; print-only CSS, so the screen censuses never saw it (`g569/report.mjs`; a planted tracked line fired). Open: flash (P3, at the cap).
 - **Record (S551):** name_tags clean: the four tracked rules (panel titles, legends, table heads, keyboard subheads) each carry the `html[lang=he]` reset.
 - **Detection:** `a502/dash-track.mjs`; torah …[full text: IMPROVEMENT_ARCHIVE.md] — `a502/dash-track.mjs` is a scratchpad path that was never committed: port it to `scripts/loop/detect-<id>.mjs` (with `--plant`) at the next A, or the row goes DRAFT.
 - **Record (ledger row at S544):** - **`latin-tracking-on-hebrew-labels`** (gate 3: drop suite-wide; S502 dashboard + dictionary; S503 flash; S504 torah `8e48daa5`; S505 Beta badges `0abb1f57`; S511 flash report `th` `90e592b`; **S513 generator `.ws-version-label` `c6fe147` — open: none known**
@@ -433,7 +436,8 @@
 - **Archived full text (latest compaction copy):** - **`button-focus-lost-to-its-own-rebuild`** (**S542 dictionary corpus Try again ×2 `72b005c1`, parsha_emojis' new Try again built to it `20823f85`; S513 FM glyph tiles `a54e6d2`; S500 hebrew-keyboard tabs + layout, 4 carriers `1c701fc9`; S499 torah Try again ×2 `80c0a440`; S488 trope Try again ×2 `183605ba`; S483 hub `ab1a235e`; S474 flash Return to Options `3235f8eb`; S473 …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `dark-literal-escapes-the-print-tokens`
-- **Status:** ACTIVE · **Owner:** G · **Consequence:** normal · **Last:** S563 · **Streak:** 3 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** G · **Consequence:** normal · **Last:** S569 · **Streak:** 0 · **Detector:** recipe
+- **Record (S569, G flash):** FOUND + FIXED `a7d5606d` — `body.dark .results-hero .pct`, `.panel-title` and `.ladder-strip-line` name gold-light / a literal gradient, so the results screen printed from dark carried a 1.50:1 score, heading and level line; a dark-vs-light computed-colour diff under print media (`g569/darkdiff.mjs`, `darkdiff2.mjs`) 18 → 0 and 5 → 0, the card screen 0 before and after.
 - **Record (S563, G generator):** clean — the ink census with backgrounds off and on reads the same hits printed from HE dark as from EN light on 36 shapes; Export PDF's mean luminance is 250–252 from both themes.
 - **Shape:** Detection: PDFs dark vs light, ink per page (<200 at 40 dpi); a lighter dark sheet = a `body.
 - **Detection:** PDFs dark vs light, ink per page (<200 at 40 dpi); a lighter dark sheet = a `body.dark` literal the print
@@ -984,7 +988,8 @@
 - **Archived full text (latest compaction copy):** - **print-media-leak / var-chain-overridden-by-a-literal** (a screen-only `@media (max-width:N)` block whose declarations also apply to PAPER — print media has a width too — or, more generally, a literal `font-size`/colour declaration that out-specifies a `var(--x)` chain the …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `incomplete-print-token-reset`
-- **Status:** ACTIVE · **Owner:** A · **Consequence:** normal · **Last:** S0 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** A · **Consequence:** normal · **Last:** S569 · **Streak:** 0 · **Detector:** recipe
+- **Record (S569, G flash):** FOUND + FIXED `a7d5606d` — flash's print block restated 14 of the dark block's tokens, not `--bg`, `--panel-bg`, `--good(-soft)`, `--bad(-soft)`: the results screen from dark printed a navy panel (with background graphics on, the drilled cards' navy ink invisible on it) and pale marks. Detection as stated, run as a dark-vs-light diff of computed colours under print media (`g569/darkdiff.mjs`).
 - **Detection:** diff the token list inside the print block's `html.dark-early
 - **Record (ledger row at S544):** - **incomplete-print-token-reset** (a `@media print` dark-token re-statement that restates SOME of the theme tokens the dark block overrides but not all — the missing ones keep their dark values on paper. Detection: diff the token list inside the print block's `html.dark-early
 - **Archived full text (latest compaction copy):** - **incomplete-print-token-reset** (a `@media print` dark-token re-statement that restates SOME of the theme tokens the dark block overrides but not all — the missing ones keep their dark values on paper. Detection: diff the token list inside the print block's `html.dark-early …[full text: IMPROVEMENT_ARCHIVE.md]
