@@ -1273,6 +1273,16 @@ body.dark .ladder-strip-line { color: var(--gold-light); }
 .result-item.bad .rmark { color: var(--bad); }
 .result-item .rheb { font-family: var(--heb-font); font-size: 1.5rem; direction: rtl; }
 .result-item .rtr { font-family: var(--serif); color: var(--ink-soft); font-size: 0.95rem; }
+/* The results screen's per-card list as a grid of chips above phone width: one full-width row per card put Redo
+   and Practice Mistakes ~1,000px down on a 1366×768 laptop or a projector after a 10-card drill (S566 gate 3, the
+   compact grid). A chip too narrow for its word drops the transliteration to a second line instead of overflowing
+   (Words, Numbers, Emoji). #profileHistory shares .results-list and keeps its rows. */
+@media (min-width: 521px) {
+  #resultsList { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; }
+  #resultsList .result-item { display: flex; flex-wrap: wrap; align-items: center; column-gap: 8px; row-gap: 0; padding: 6px 10px; margin: 0; }
+  #resultsList .result-item .rheb { font-size: 1.3rem; flex: 1 1 auto; min-width: 0; }
+  #resultsList .result-item .rtr { margin-inline-start: auto; }
+}
 
 .results-actions {
   display: flex;
