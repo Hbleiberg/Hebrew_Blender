@@ -95136,3 +95136,11 @@ _(prior)_ **Next session (S572):** **PR `claude/improveloop-s570` (S570–S571, 
 ### from Tool coverage (last-touched date per tool)
 
 - **Snapshot S572 (2026-10-29):** sw.js, generator, pwa.js, name_tags, scripts/loop, loop-findings, loop-patterns, generator.md, ops.md S572 · dictionary, flash, torah, locales, CSV S571 · torah-and-trope.md S570 · letter_learner, dashboard S569 · scripts, dashboard.md, sitemap S567 · trope S566 · FM, font-maker.md S565 · projects, accounts-and-cloud.md S561 · name-tags.md S559 · shared-components.md S558 · privacy S554 · loop-passes S553 · i18n.md, index S552 · parsha_emojis S550 · resources, contact S549 · skill, ledger scripts S544 · i18n.js S541 · saves …[full text: IMPROVEMENT_ARCHIVE.md]
+
+
+<!-- archived by compact-ledger at the S573 boundary, 2026-10-29 -->
+## Compaction (S573, 2026-10-29) — moved verbatim from the live ledger
+
+### from Per-session log (one line per session)
+
+- 2026-10-29 | **S572** | iters: 5 | tools: generator ×2, pwa.js, name_tags, torah (reported), smoke-sync, scripts/loop, sw | patterns fixed: text-field-under-16px-zooms-on-ios-focus ×1, install-banner-over-a-sheet's-bottom-controls ×1, fixed-columns-crush-a-narrow-sheet ×1 (new) | pass run: N (generator, 3rd) | SW: v1126→v1131

@@ -430,6 +430,8 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-29 | `30c2a2ff` | torah_trainer.html, smoke-sync, sw.js | (S572, reported) **A Torah Trainer link keeps its reading over the load's sync** (an account moved elsewhere won the merge). | smoke-sync D40 4/4 (HEAD fails 2)
+
 - [x] 2026-10-29 | (S572 close-out) | branch/deploy note | **S572 = N on the generator (3rd: S262 → S434 → S572): 560 phone loads by real taps (16 cells × 35 views, plants 8/8), every field, the iOS hint + a 9-page tour census, touch, flips, sideways scrollers, 4×, Export PDF replayed. FOUND 9, FIXED 3 (+ Name Tags from the queue); gate 4 asked → "fewer cards when narrow"; 3 probes, 1 new …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-10-29 | `31814fa3` | scripts/loop | (S572) **Three fix probes: the narrow Real Words cards, the install hint over the tours, Name Tags' typed transliteration.** | 24/24, 36/36, 10/10; their parents fail 20, 24 and 5 cells
@@ -486,7 +488,7 @@ _(none)_
 
 ### Per-session log (one line per session)
 
-- 2026-10-29 | **S572** | iters: 5 | tools: generator ×2, pwa.js, name_tags, scripts/loop, sw | patterns fixed: text-field-under-16px-zooms-on-ios-focus ×1, install-banner-over-a-sheet's-bottom-controls ×1, fixed-columns-crush-a-narrow-sheet ×1 (new) | pass run: N (generator, 3rd) | SW: v1126→v1130
+- 2026-10-29 | **S572** | iters: 5 | tools: generator ×2, pwa.js, name_tags, torah (reported), smoke-sync, scripts/loop, sw | patterns fixed: text-field-under-16px-zooms-on-ios-focus ×1, install-banner-over-a-sheet's-bottom-controls ×1, fixed-columns-crush-a-narrow-sheet ×1 (new) | pass run: N …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - 2026-10-29 | **S571** | iters: 5 | tools: dictionary ×2, flash, generator, torah, locales, scripts/loop, sw | patterns fixed: button-focus-lost-to-its-own-rebuild ×1, selected-state-lost-in-forced-colors ×1 | pass run: C (dictionary, first since S427) | SW: v1122→v1126
 
@@ -528,7 +530,7 @@ _(none)_
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S572 (2026-10-29):** sw.js, generator, pwa.js, name_tags, scripts/loop, loop-findings, loop-patterns, generator.md, ops.md S572 · dictionary, flash, torah, locales, CSV S571 · torah-and-trope.md S570 · letter_learner, dashboard S569 · scripts, dashboard.md, sitemap S567 · trope S566 · FM, font-maker.md S565 · projects, accounts-and-cloud.md S561 · name-tags.md S559 · shared-components.md S558 · privacy S554 · loop-passes S553 · i18n.md, index S552 · parsha_emojis S550 · resources, contact S549 · skill, ledger scripts S544 · …[full text: IMPROVEMENT_ARCHIVE.md]
+- **Snapshot S572 (2026-10-29):** sw.js, generator, pwa.js, name_tags, torah, scripts, scripts/loop, loop-findings, loop-patterns, generator.md, ops.md, torah-and-trope.md S572 · dictionary, flash, locales, CSV S571 · letter_learner, dashboard S569 · dashboard.md, sitemap S567 · trope S566 · FM, font-maker.md S565 · projects, accounts-and-cloud.md S561 · name-tags.md S559 · shared-components.md S558 · privacy S554 · loop-passes S553 · i18n.md, index S552 · parsha_emojis S550 · resources, contact S549 · skill, ledger scripts S544 · …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -908,4 +910,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-22 (**S542 — 40th F, loading states (first since S189): 14 surfaces held, then aborted. FOUND 7, FIXED 4. F-next: long-build progress.**)
 
-**Next session (S573):** **PR `claude/improveloop-s570` (S570–S572, #374): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1130**, FM **5.59**, corpus ?v=7. ⚑ drift: main=93b6e09 sw=v1130 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest: P's flash (S435), M's generator (S436), C's torah (S441); A/E/L/K (S530–S533) 42 sessions old (A: 27 DRAFT rows, the ▾ census). ⚑ The Trope Atlas `trope_atlas.html` (unlisted): its first N and P are due by S578. ⚑ Seeds: 54. ⚑ N (S572): a page whose main column scrolls hides sideways overflow from the document arm — read every scroller (trap 433); the generator's HE Inverse / Gematria sheets past a phone's left edge (P3) wait at its cap. ⚑ pwa.js hides the install hint under any open `#tourCard`. ⚑ Forced colours: the Torah Trainer has no block (P3, census first). ⚑ Dictionary: the word card's nested controls (P3). ⚑ Deep links: census the ones that apply settings before a lazy corpus lands. ⚑ Sync (S567 P): the shared-module P3 (verify first). ⚑ Ports at the next A: `m554/`–`n562/`, `g563/`, `h564/`, `d565/`, `h566/`, `p567/`, `m568/`, `g569/`, `d570/`, `c571/`, `n572/`; traps 352, 356–435. ⚑ Queues (candidates naming one page): generator 23, FM 20, dictionary 13, torah 13, flash 8, name_tags 8, dashboard 6, PE 5, trope 4.
+**Next session (S573):** **PR `claude/improveloop-s570` (S570–S572, #374): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1131**, FM **5.59**, corpus ?v=7. ⚑ drift: main=93b6e09 sw=v1131 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest: P's flash (S435), M's generator (S436), C's torah (S441); A/E/L/K (S530–S533) 42 sessions old (A: 27 DRAFT rows, the ▾ census). ⚑ The Trope Atlas `trope_atlas.html` (unlisted): its first N and P are due by S578. ⚑ Seeds: 54. ⚑ N (S572): a page whose main column scrolls hides sideways overflow from the document arm — read every scroller (trap 433); the generator's HE Inverse / Gematria sheets past a phone's left edge (P3) wait at its cap. ⚑ pwa.js hides the install hint under any open `#tourCard`. ⚑ Forced colours: the Torah Trainer has no block (P3, census first). ⚑ Dictionary: the word card's nested controls (P3). ⚑ Deep links: census the ones that apply settings before a lazy corpus lands. ⚑ Sync (S567 P): the shared-module P3 (verify first). ⚑ Ports at the next A: `m554/`–`n562/`, `g563/`, `h564/`, `d565/`, `h566/`, `p567/`, `m568/`, `g569/`, `d570/`, `c571/`, `n572/`; traps 352, 356–435. ⚑ Queues (candidates naming one page): generator 23, FM 20, dictionary 13, torah 13, flash 8, name_tags 8, dashboard 6, PE 5, trope 4.
