@@ -658,6 +658,9 @@ body.dark .tt-bulk-selected { background: rgba(224,168,50,0.16); }
    text on a tinted dark plate (.vowel-chip-sub, S196). Light mode passes at 5.25:1. */
 body.dark .tt-bulk-selected .tt-verse-num,
 body.dark .tt-bulk-selected .tt-rowlabel { color:#adb6c9; }
+/* The verse's Read / Chant / Tune / Loop / Copy chips are --muted on the same plate: 4.15:1. :where() keeps this at
+   (0,1,0), so the chips' gold hover text and an active chip's navy on gold still win. */
+:where(body.dark .tt-bulk-selected) :is(.tt-speak, .tt-chant, .tt-loop, .tt-copy, .tt-tune) { color:#adb6c9; }
 body.tt-bulk-mode #ttReading [data-vk] { cursor:pointer; }
 /* Per-verse bulk-select checkbox — hidden until "Select verses" mode is on
    (mirrors the dictionary's .wc-bulk-cb). Placement per layout: absolute
@@ -1670,6 +1673,7 @@ body.dark .font-opt-default { color:#adb6c9; }
    suite's 11.2px floor, the credit line one step under it at 0.62rem (was 8.64px). (S322 Pass M) */
 .font-opt-name { font-size:0.7rem; font-weight:600; color:var(--text); line-height:1.15; word-break:break-word; }
 .font-opt-attr { font-size:0.7rem; color:var(--muted); line-height:1.2; word-break:break-word; text-decoration:none; margin-top:1px; }
+body.dark .font-opt-attr { color:#adb6c9; }   /* --muted read 3.71:1 on the dark active plate, as the [DEFAULT] tag did; the generator's and dictionary's rule */
 
 /* ───── Color pickers ───── */
 .color-pick-list { display:flex; flex-direction:column; gap:3px; margin-top:6px; }
