@@ -83,6 +83,11 @@
       '#pwaInstallBanner .pwa-banner-close:active{transform:scale(0.9);}',
       // Mobile only — hide on desktop regardless of how the banner was triggered.
       '@media (min-width:768px){#pwaInstallBanner,#pwaBannerSpacer{display:none !important;}}',
+      // Every tool's tour card (#tourCard, the shared tour engine's) can sit where the banner does: on an iPhone a
+      // tap on Next landed on the banner, stalling six tours at step 1–6 (the dashboard's, the Font Maker's and Name
+      // Tags' at step 1 on an SE). The banner steps aside while a tour is up and is back when it closes; only its ×
+      // dismisses it for good. A page's own rule hides it for its other windows.
+      'body:has(#tourCard:not([hidden])) #pwaInstallBanner{visibility:hidden;}',
       // Never on paper. Print media is measured at the sheet's width (Letter 740px, A4 718px at
       // the dialog's default margins), under the cutoff above, so a desktop print showed the
       // banner that the screen hides — and a position:fixed box repeats on every printed sheet.
