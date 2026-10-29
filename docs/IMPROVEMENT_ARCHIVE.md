@@ -95036,3 +95036,50 @@ _(prior)_ **Next session (S569):** **PR `claude/vibrant-dirac-c3547q` (S564–S5
 
 _(prior)_ **Next session (S570):** **PR `claude/vibrant-dirac-c3547q` (S564–S569, #373): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1118**, FM **5.59**, corpus ?v=7. ⚑ drift: main=840cb19 sw=v1118 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest: D's torah (S424), C's dictionary (S427), P's flash (S435); A/E/L/K (S530–S533) 39 sessions old (A: 27 DRAFT rows, the ▾ census). ⚑ The Trope Atlas `trope_atlas.html` (unlisted, landed S564's drift): its first N and P are due by S578. ⚑ Seeds: 54. ⚑ Flash at the cap (S569 G): its Hebrew report / certificate italic + tracking, and the ladder strip's buttons on paper — one print-block commit each. ⚑ Deep links: flash's ?s= raced its lazy corpora (emoji, the dictionary) until `9388361` — census the suite's other deep links that apply settings before a lazy corpus lands. ⚑ Sync (S567 P): the shared-module P3 (verify first); smoke-sync D31 — watch it. ⚑ FM: the photo intake size is still unasked — measure Trace's outline at ~2,000 px first. ⚑ Ports at the next A: `m554/`–`n562/`, `g563/`, `h564/`, `d565/`, `h566/`, `p567/`, `m568/`, `g569/` (report / cert / sheet / results / darkdiff / share2 / llwalk / dash); traps 352, 356–421. ⚑ Queues (candidates naming one page): FM 20, generator 18, flash 10, torah 10, dictionary 9, name_tags 9, dashboard 6, trope 5, PE 5.
 ⚑ Maintainer: `08b8611`; O's permission rule; CI for `closeout.mjs --static`; translit second source; sw.js `no-store`; 14 fonts; torah screen reader; the locale's size and the Resources fonts' precache (Awaiting); gates 2–4 incl. the vowel palette's gold (S556), the trope link (S557), the Phrases chips' casing (S558), the FM's sheet-upload copy (S559), flash's short windows (S560, gate 4), the FM Exit label (S560, gate 3), the generator's QR layout (S563, gate 3); the S546 P3; the flash report's totals (S566, gate 2).
+
+
+<!-- archived by compact-ledger at the S572 boundary, 2026-10-29 -->
+## Compaction (S572, 2026-10-29) — moved verbatim from the live ledger
+
+### from Candidates — aged P4 (found more than 90 sessions before S572)
+
+- [ ] P4 (**NEW S481 I**) | FM, i18n.js, flash, terms | **FM help's old layout; raw keys if a locale never loads; "Click Start", "use my location"** (findings S481; gate 2 ×2). | found S481
+
+### from Candidates (prioritized, top = next)
+
+- [ ] P3 (**NEW S571 C — not small**) | hebrew_dictionary.html | **A word card is one `role=button` holding its own select box, Copy, Hear and Google controls** (axe's nested-interactive: a button's children are presentational, so a screen reader can flatten them; Chromium still lists them). The fix moves the details action onto the headword, the card a group: the tour's target, the card's ring, bulk mode's select-on-click and all three modes' cards. | found S571
+
+### from Awaiting the maintainer (an action or an answer only the maintainer can give; a session that resolves one moves it to Done)
+
+- [ ] P4 (**NEW S571 C — GATE 4: short windows, not asked (flash's S560 twin waits on the same answer); `c571/shots/zoom400-en-light.png`, `zoom400-he-dark.png`**) | hebrew_dictionary.html | **At 400% zoom (320×256) the sticky phone bar holds 127 of the window's 256 px** (search, keyboard toggle, modes, Filters), so the results scroll in 129 px; 1.4.10 holds (no sideways scroll in any mode). | found S571
+
+### from Done
+
+- [x] 2026-10-29 | (S571 close-out) | branch/deploy note | **S571 = C on the dictionary (its 3rd dedicated C: S285 → S427 → S571; 84 commits since): census 88 loads × 11 views (~40,000 controls), Tab / Shift+Tab walks of 3 modes, 48 dialog paths, 20 keyboard scenarios, label-in-name, motion, 1.4.12, 320 reflow, 400% zoom, forced colours, hover content; every plant fired. FOUND 8, FIXED 3 in 2 commits (+ flash's carrier, 2 queue P4s); 2 probes. Branch `claude/improveloop-s570` (#374, continued), sw v1122 → v1126; deploy after merge.**
+
+- [x] 2026-10-29 | `2e075abc` | hebrew_dictionary.html, sw.js | (S571) **The sidebar tabs and "Words from this root" keep the keyboard's place** (the generator's visible-twin rule; the root's first family card; pattern `button-focus-lost-to-its-own-rebuild`). | `c571/fix1.mjs` × 8 cells, HEAD the control: 40 → 0 (BODY after each tab, the sidebar left hidden; BODY after the root button by key and click); a programmatic call keeps the focus; the ring by keyboard only
+
+- [x] 2026-10-29 | (S566 close-out) | branch/deploy note | **S566 = H on flash (first since S412; 93 commits): 6 lessons by real input × EN light 1280 / HE dark 800 + the student cell (1366 windowed and 657, fullscreen 1024 / 1280 / 1366) and the Learning Path; FOUND 8, FIXED 2 (the unreached-card tally, the results grid at gate 3) + the hover-tip port to trope and the dictionary.** Gates: gate 3 …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-29 | `63c43a1` | hebrew_dictionary.html | (S566) **Escape closes a hovered tip and a mouse can move onto it** (torah's `f59d609` ported; pattern `hover-tip-not-dismissible-or-hoverable`). | `h566/dict-hovertip.mjs` × 5 sidebar tips (folds opened by clicks) × EN light 1280 / HE dark 1024 vs HEAD: 5/5 + 5/5 → 0 / 0, no setting flipped, keyboard 5/5, touch as before
+
+- [x] 2026-10-29 | `3a401e7` | trope_tutor.html | (S566) **Escape closes a hovered tip and a mouse can move onto it** (torah's fix ported; pattern `hover-tip-not-dismissible-or-hoverable`). | `h566/trope-hovertip.mjs` × 3 tips (Learn's key bar, Settings) × EN light 1280 / HE dark 800 vs HEAD: 3/3 + 3/3 → 0 / 0, the view unchanged, keyboard 3/3, touch as before
+
+- [x] 2026-10-29 | `91c3e41` | flash_cards.html, sw.js | (S566) **The results list is a compact grid, so Redo and Practice Mistakes stay on screen** (above 520px; a narrow chip wraps its transliteration; the phone and `#profileHistory` unchanged; gate 3 answered). | probe `S566-flash-results-grid.mjs` fails 3/4 on HEAD, passes 4/4 (Mistakes ends 685–687 of 720–768); 6 deck types × 3 widths, 0 …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-29 | `2834cc5` | flash_cards.html | (S566) **A card the drill never reached is no longer counted as a weakness** (`analyzeWeaknesses` skips score null; `collectMissedCards` takes only the wrong). | probe `S566-flash-unreached-not-missed.mjs` fails 3/3 on HEAD, passes 3/3; viewer, weak deck and report by clicks, a seeded complete drill identical on both trees
+
+### from Per-session log (one line per session)
+
+- 2026-10-23 | **S551** | iters: 3 | tools: name_tags ×2 | patterns fixed: — | pass run: H (name_tags, first) | SW: v1079→v1079
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S571 (2026-10-29):** sw.js, dictionary, flash, generator, torah, locales, CSV, scripts/loop, loop-findings, loop-patterns S571 · torah-and-trope.md S570 · letter_learner, dashboard S569 · name_tags, scripts, dashboard.md, sitemap S567 · trope S566 · FM, font-maker.md S565 · projects, accounts-and-cloud.md S561 · name-tags.md S559 · shared-components.md S558 · privacy S554 · ops.md, loop-passes S553 · i18n.md, index S552 · parsha_emojis S550 · resources, contact S549 · skill, ledger scripts S544 · i18n.js S541 · saves S536 · README S532 · account, terms, 404 S530.
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- C accessibility (one tool): 2026-10-29 (**S571 — the dictionary's 3rd dedicated C (S285 → S427 → S571, 84 commits): an 88-load census of 11 views (~40,000 controls, plants 8/8), Tab / Shift+Tab walks of 3 modes × 8 / 4 cells, 48 dialog paths, 20 keyboard scenarios, label-in-name, motion, 1.4.12, 320 reflow, 400% zoom, forced colours, hover content by a real mouse. FOUND 8, FIXED 3 in 2 commits (+ flash's carrier, 2 queue P4s). C-next: torah (S441), trope (S455).**)
+
+_(prior)_ **Next session (S571):** **PR `claude/improveloop-s570` (S570, #374): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1122**, FM **5.59**, corpus ?v=7. ⚑ drift: main=93b6e09 sw=v1122 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest: C's dictionary (S427), N's generator (S434), P's flash (S435); A/E/L/K (S530–S533) 40 sessions old (A: 27 DRAFT rows, the ▾ census). ⚑ The Trope Atlas `trope_atlas.html` (unlisted, landed S564's drift): its first N and P are due by S578. ⚑ Seeds: 54. ⚑ Torah (S570 D): Translit's first pass is the one big freeze (2.45 s @4×) — architecture, not a missing memo. ⚑ Deep links: flash's ?s= raced its lazy corpora until `9388361` — census the suite's other deep links that apply settings before a lazy corpus lands. ⚑ Sync (S567 P): the shared-module P3 (verify first); smoke-sync D31 — watch it. ⚑ FM: the photo intake size is still unasked — measure Trace's outline at ~2,000 px first. ⚑ Ports at the next A: `m554/`–`n562/`, `g563/`, `h564/`, `d565/`, `h566/`, `p567/`, `m568/`, `g569/`, `d570/` (report / cert / sheet / results / darkdiff / share2 / llwalk / dash / the recorder); traps 352, 356–425. ⚑ Queues (candidates naming one page): FM 20, generator 18, torah 13, dictionary 9, name_tags 9, flash 8, dashboard 6, trope 5, PE 5.
+⚑ Maintainer: `08b8611`; O's permission rule; CI for `closeout.mjs --static`; translit second source; sw.js `no-store`; 14 fonts; torah screen reader; the locale's size and the Resources fonts' precache (Awaiting); gates 2–4 incl. the vowel palette's gold (S556), the trope link (S557), the Phrases chips' casing (S558), the FM's sheet-upload copy (S559), flash's short windows (S560, gate 4), the FM Exit label (S560, gate 3), the generator's QR layout (S563, gate 3); the S546 P3; the flash report's totals (S566, gate 2).
