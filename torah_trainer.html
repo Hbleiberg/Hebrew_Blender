@@ -5484,7 +5484,7 @@ function renderSideBySide(verses, withTranslit, withTrans, wordIdxRef, canChant,
     html += `</div>`;
   }
   // Hebrew column (right)
-  html += `<div class="tt-grid-col tt-col-heb"><h3 style="grid-row:1;grid-column:${colHeb}">עִבְרִית</h3>`;
+  html += `<div class="tt-grid-col tt-col-heb"><h3 lang="he" style="grid-row:1;grid-column:${colHeb}">עִבְרִית</h3>`;   // Hebrew in both UIs (UX rule 8)
   perVerse.forEach(({ v, hebHtml }, i) => {
     const numLabel = `${v.chapter}:${v.verse}`;
     const vkEsc = cssEscape(numLabel);
