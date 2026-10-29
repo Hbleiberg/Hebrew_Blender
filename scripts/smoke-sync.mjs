@@ -146,6 +146,10 @@
  *  D40. A Torah Trainer deep link on a device whose account another device has moved since its last sync: the page
  *      ends on the link's reading (?parsha=&scope=, ?ref=) and the account takes it; with no link the account's reading
  *      lands; a reading the teacher picks while the load's sync is still on its way is not forced back to the link's.
+ *  D41. A Flash Cards ?wl= link whose list is only in the account, opened while another device's newer settings land
+ *      in the same load (either download first): the list opens once that sync has ended, the account takes the
+ *      account's lesson with the link's list, and a second sync in the tab keeps it (it used to stay here unsent,
+ *      and that sync took the account's copy back over it).
  *
 
  * Every scenario asserts 0 pageerrors. Run from the repo root:
@@ -2090,6 +2094,42 @@ try {
     const d = await run({ parshahKey: 'Noach', scope: 'parsha-full' }, '?parsha=Vayera', 'Lech-Lecha');
     check('D40: a reading picked while the sync is held is not forced back to the link\'s (the usual merge decides)', d.picked === 'Lech-Lecha' && d.end.key !== 'Vayera', JSON.stringify({ picked: d.picked, end: d.end }));
     check('D40: 0 pageerrors', [a, b, c, d].every(r => r.errors.length === 0), [a, b, c, d].flatMap(r => r.errors).join(' | '));
+  }
+  // ---- D41. a Flash Cards ?wl= link whose list is only in the account, while another device's newer settings land ----
+  if (want('D41')) {
+    const FC_OMIT = ['audioEnabled', 'ttsRate', 'hideHomeBtn', 'sheetDuplex'];
+    const fcProject = (b) => Object.fromEntries(Object.entries(b).filter(([k]) => !FC_OMIT.includes(k)));
+    // the page's own blob (every key, normalized), from one anonymous load
+    const capCtx = await browser.newContext({ serviceWorkers: 'block' });
+    await capCtx.route('**/*', r => (r.request().url().startsWith(BASE) || r.request().url().startsWith('data:')) ? r.continue() : r.abort());
+    const capPage = await capCtx.newPage();
+    await capPage.goto(BASE + '/flash_cards.html', { waitUntil: 'domcontentloaded' });
+    await capPage.waitForFunction(() => typeof saveSettings === 'function' && !!window.I18n, null, { timeout: HYDRATE_MS });
+    await capPage.waitForTimeout(1200);
+    const DEV = await capPage.evaluate(() => { saveSettings(); return JSON.parse(localStorage.getItem('hebrewFlashCards_settings')); });
+    await capCtx.close();
+    const ACC = Object.assign(fcProject(DEV), { mode: 3, cardCount: 25, inverse: true });   // another device changed the lesson
+    const list = DICT_ROWS()[0];
+    const pick = (o) => canonJson({ mode: o.mode, cardCount: o.cardCount, inverse: o.inverse, other: o.otherModeActive, sub: o.otherSubMode, src: o.wordsSource, ids: o.selectedWordListIds });
+    const WANT = pick({ mode: 3, cardCount: 25, inverse: true, otherModeActive: true, otherSubMode: 'words', wordsSource: 'mylists', selectedWordListIds: [list.name] });
+    for (const held of ['none', 'settings']) {
+      const cloud = new FakeCloud([{ tool: 'FlashCards', kind: 'settings', name: 'default', data: ACC }, list]);
+      const row = cloud.find('settings', 'default', 'FlashCards');
+      if (held === 'settings') cloud.delayFor = (url, m) => (m === 'GET' && url.searchParams.get('id') === 'eq.' + row.id ? 4000 : 0);
+      // this device synced the old copy and never had the list
+      const memory = { FlashCards: { settings: { default: { h: hashOf(fcProject(DEV)), id: row.id, u: '2026-09-14T19:00:00.000Z', at: '2026-09-14T19:00:00.000Z' } } } };
+      const ctx = await openContext(browser, cloud, SEED({ memory, extra: { hebrewFlashCards_settings: JSON.stringify(DEV) } }));
+      const { page, errors } = await openPage(ctx, 'flash_cards.html?wl=' + list.name, { tools: FC_TOOLS });
+      await page.waitForTimeout(held === 'none' ? 1000 : 5000); await settled(page, FC_TOOLS, HYDRATE_MS); await page.waitForTimeout(WRITE_MS); await settled(page, FC_TOOLS);
+      const local = (await lsJSON(page, 'hebrewFlashCards_settings')) || {};
+      check(`D41 (${held === 'none' ? 'as they come' : 'the settings download held'}): the list opened over the account's lesson, here and in the account`, pick(local) === WANT && pick(row.data) === WANT, JSON.stringify({ local: pick(local), account: pick(row.data), calls: methods(cloud, 0) }));
+      await page.evaluate(() => IvritSaves.hydrate(['FlashCards']));   // what another tab's write, Retry or the online event starts
+      await settled(page, FC_TOOLS, HYDRATE_MS); await page.waitForTimeout(WRITE_MS); await settled(page, FC_TOOLS);
+      const again = (await lsJSON(page, 'hebrewFlashCards_settings')) || {};
+      check(`D41 (${held === 'none' ? 'as they come' : 'the settings download held'}): a second sync in the tab keeps the list, here and in the account`, pick(again) === WANT && pick(row.data) === WANT, JSON.stringify({ local: pick(again), account: pick(row.data) }));
+      check(`D41 (${held === 'none' ? 'as they come' : 'the settings download held'}): 0 pageerrors`, errors.length === 0, errors.join(' | '));
+      await ctx.close();
+    }
   }
 } finally {
   await browser.close();

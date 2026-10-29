@@ -9112,8 +9112,8 @@ function initCloudSaves() {
       profile: mergeProfileEntry
     },
     onLocalChanged: function (kind) {
-      if (kind === 'wordList') {   // read on demand by the picker; a ?wl= list that was only in the account opens now
-        if (_pendingWl && !_ladderActive && !_sharedDrill && openWlLink(_pendingWl)) _pendingWl = null;
+      if (kind === 'wordList') {   // read on demand by the picker; a ?wl= list that was only in the account opens once its sync ends
+        if (_pendingWl) window.addEventListener('ivritsuite:hydrated', openPendingWl, { once: true });
         return;
       }
       if (kind === 'preset' || kind === 'presetFolders') renderPresets();
@@ -9145,6 +9145,13 @@ function openWlLink(id) {
   syncOtherSubUI();     // show Words options + render the picker (list pre-checked) + count
   document.getElementById('wordsOpts')?.scrollIntoView({ block: 'nearest' });
   return true;
+}
+// The ?wl= list arrived with the account's rows: open it once the sync that brought it has ended. Opening it saves the
+// settings, and a save made while rows are still landing does not reach the account: the next sync in this tab would
+// take the account's copy back over it.
+function openPendingWl(e) {
+  if ((((e && e.detail) || {}).tools || []).indexOf('Dictionary') < 0) { window.addEventListener('ivritsuite:hydrated', openPendingWl, { once: true }); return; }
+  if (_pendingWl && !_ladderActive && !_sharedDrill && openWlLink(_pendingWl)) _pendingWl = null;
 }
 
 // True when the UI is rendering right-to-left (Hebrew). Used to flip Arrow-key nav to visual dir.
