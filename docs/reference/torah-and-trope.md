@@ -1148,6 +1148,10 @@ never a practice link (`LINK_DISPLAY` says how a reading looks, never how it sou
   would hear Total Torah. With the flag `false` the link alone reveals it, and nothing changes for anyone else: the manifest is not fetched (`ensureTotalTorahManifest` returns
   null), the Recording row (`#optRecSrcRow`) and the controls bar's Chanting picker (`#ttRecSrcCtrl`) stay `hidden`,
   `syncAudioCredit` returns before touching the bar, and every entry point asks `ttEntryFor`, which answers null.
+  With the flag `true` every visit fetches the manifest (1.5 MB), but `init` waits for it before the first render
+  only when the visit chants from it (`recordingSourceKey()`): on PocketTorah the reading's markup never reads it, and
+  `ttManifestLanded` re-syncs the Chanting picker when it lands (re-rendering a reading switched to Total Torah
+  meanwhile). Until then the option stays enabled and its *no recording* note hidden — still loading is not "none".
 - **Two controls, one writer.** The controls bar's **Chanting** picker (`#ttRecSrcBar`, beside the Translit /
   Translation switches: *PocketTorah (Reform)* / *Total Torah (Conservative)*) is the Audio tab's Recording radios as
   a `<select>`. `setRecordingSource` writes for both; `syncRecSrcControls` sets the picker's value, disables its Total

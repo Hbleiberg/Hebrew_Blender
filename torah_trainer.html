@@ -7409,8 +7409,8 @@ function recordingSourceKey() {
   if (!ttOffered()) return 'pockettorah';
   return (settings.recordingSource === 'totaltorah' || _recSrcOverride === 'totaltorah') ? 'totaltorah' : 'pockettorah';
 }
-// The manifest is fetched only when the source is offered — an ordinary visit downloads nothing extra — and fails soft
-// to "no recordings" (the option disabled, with its note). Same-origin data/ JSON (res.json(), exempt), but every
+// The manifest is fetched only when the source is offered (every visit while TOTALTORAH_PUBLIC) and fails soft to
+// "no recordings" (the option disabled, with its note). Same-origin data/ JSON (res.json(), exempt), but every
 // field the page uses is validated: a file name, an 11-character video id, booleans.
 function ensureTotalTorahManifest() {
   if (ttManifest) return Promise.resolve(ttManifest);
@@ -7440,6 +7440,13 @@ function ensureTotalTorahManifest() {
     })
     .catch(e => { console.warn('Total Torah manifest', e); ttManifest = {}; return ttManifest; });
   return _ttManifestLoad;
+}
+// The manifest landing after the first render (init waits for it only on a Total Torah visit): the Chanting picker
+// learns which verses the reading has, and a reading that chants from it by now (picked meanwhile, or an account's
+// settings downloaded meanwhile) re-renders for its header chip and Loop buttons.
+function ttManifestLanded() {
+  try { syncRecSrcControls(); } catch (e) {}
+  if (recordingSourceKey() === 'totaltorah' && currentVerses && currentVerses.length) renderText();
 }
 function ttBookNow() {
   const ctx = currentReadingCtx;
@@ -7588,7 +7595,7 @@ function syncRecSrcControls() {
   const footPocket = document.getElementById('ttFooterAudioPocket'), footTT = document.getElementById('ttFooterAudioTT');
   if (!offered) { if (note) note.hidden = true; if (ttDiv) ttDiv.hidden = true; if (pocketDiv) pocketDiv.hidden = false; if (karNote) karNote.hidden = true; if (footPocket) footPocket.hidden = false; if (footTT) footTT.hidden = true; return; }
   const ents = ttReadingEntries(true);
-  const none = ents.count === 0;
+  const none = ents.count === 0 && !(!ttManifest && _ttManifestLoad);   // still loading is not "no recording"
   const total = document.getElementById('rsTotal'), pocket = document.getElementById('rsPocket');
   const active = recordingSourceKey() === 'totaltorah' && !none;
   total.disabled = none;
@@ -11447,9 +11454,14 @@ async function init() {
   const fsBtn = document.getElementById('fsBtn');
   if (fsBtn) fsBtn.innerHTML = FS_ENTER;
 
-  // Fetch static data files (extracted; a failure renders the empty card's ↻ Try again); the Total Torah manifest
-  // rides along only when that source is offered (never rejects), so the first render knows which verses it has.
-  await Promise.all([loadStaticData(), ensureTotalTorahManifest()]);
+  // Fetch static data files (extracted; a failure renders the empty card's ↻ Try again). The Total Torah manifest
+  // (1.5 MB; it never rejects) rides along whenever that source is offered, but the first render waits for it only
+  // when this visit chants from it: on PocketTorah nothing on screen reads it but the Chanting picker, which
+  // ttManifestLanded re-syncs — the first verse no longer waits about a second for it on a slow connection.
+  const ttFirst = recordingSourceKey() === 'totaltorah';
+  const ttLoad = ensureTotalTorahManifest();
+  await Promise.all([loadStaticData(), ttFirst ? ttLoad : null]);
+  if (!ttFirst) ttLoad.then(ttManifestLanded);
 
   // Build UI
   applyFontSizes();
