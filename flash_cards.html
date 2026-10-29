@@ -4912,13 +4912,18 @@ function saveDeckFromResults() {
   _setSaveDeckNote('flashcards.results.deck_saved', { name: name });
   showAppToast(I18n.t('flashcards.results.deck_saved', { name: name }));
 }
+// The fields a preset leaves as this device has them (the account's settings row omits the same four).
+const PRESET_KEEPS_DEVICE = ['audioEnabled', 'ttsRate', 'hideHomeBtn', 'sheetDuplex'];
 function loadPreset(name) {
   const presets = readPresets();
   // A hand-edited .ivrit can leave a non-object member under presets (the import merges the map
   // shallowly); applying one used to wipe the current letters and vowels to none, then save that.
   const s = presets[name] && presets[name].settings;
   if (!s || typeof s !== 'object' || Array.isArray(s)) return;
-  applySettings(s);
+  // A preset is a lesson: this device keeps its own speakers, voice speed, kiosk home button and two-sided printing (the
+  // fields the account's settings row leaves per device), so a preset saved on a classroom tablet never mutes a laptop.
+  const own = getSettings();
+  applySettings(Object.assign({}, s, Object.fromEntries(PRESET_KEEPS_DEVICE.map(k => [k, own[k]]))));
   saveSettings();
 }
 function playPreset(name) {
