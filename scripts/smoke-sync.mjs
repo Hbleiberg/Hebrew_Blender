@@ -143,6 +143,9 @@
  *      card asks about that progress and nothing of it is sent; the first answer sends it.
  *  D39. Bulk preset edit opened while the load's download of another device's newer preset is on its way: the
  *      teacher changes another preset and saves — only that one goes up, and the downloaded one stays as it landed.
+ *  D40. A Torah Trainer deep link on a device whose account another device has moved since its last sync: the page
+ *      ends on the link's reading (?parsha=&scope=, ?ref=) and the account takes it; with no link the account's reading
+ *      lands; a reading the teacher picks while the load's sync is still on its way is not forced back to the link's.
  *
 
  * Every scenario asserts 0 pageerrors. Run from the repo root:
@@ -2051,6 +2054,42 @@ try {
     check('D39: the other device\'s Monday, downloaded while Bulk preset edit was open, stays here and in the account; only Tuesday (changed) goes up; the save asks about 1 preset', opened && landed && ok && canonJson(local.Monday) === canonJson(B) && canonJson(cloud.find('preset', 'Monday').data) === canonJson(B) && canonJson(cloud.find('preset', 'Tuesday').data) !== canonJson(T) && presetPatches().every(e => e.hit.join() === 'preset:Tuesday') && /\b1\b/.test((dialogs.seen[asked] || {}).message || ''), JSON.stringify({ opened, landed, ok, local: local.Monday, account: cloud.find('preset', 'Monday').data, sent: methods(cloud, 0), asked: dialogs.seen.map(d => d.message) }));
     check('D39: 0 pageerrors', errors.length === 0, errors.join(' | '));
     await ctx.close();
+  }
+  // ---- D40. a Torah Trainer deep link over an account another device has moved: the link's reading stays and goes up ----
+  if (want('D40')) {
+    const reading = (page) => page.evaluate(() => ({ key: settings.parshahKey, scope: settings.scope, hol: settings.holidayKey, custom: settings.customRef }));
+    const moveRow = (cloud, patch) => { const r = cloud.find('settings', 'default', 'TorahTrainer'); r.data = Object.assign({}, r.data, patch); r.data_hash = hashOf(r.data); r.bytes = Buffer.byteLength(canonJson(r.data)); r.updated_at = cloud.stamp(); return r; };
+    // This device syncs Bereshit, another device then opens `move`, and this device opens `q` (picking `pick` while the sync is held).
+    const run = async (move, q, pick) => {
+      const cloud = new FakeCloud(CLOUD_ROWS().concat([{ tool: 'TorahTrainer', kind: 'settings', name: 'default', data: { parshahKey: 'Bereshit', scope: 'parsha-full', hebFontSize: 2.2 } }]));
+      const ctx = await openContext(browser, cloud, SEED({ extra: { hebrewTorahTrainer_tourSeen: '1' } }));
+      const { page, errors } = await openPage(ctx, 'torah_trainer.html', { tools: TORAH_TOOLS });
+      await page.waitForTimeout(2600); await settled(page, TORAH_TOOLS);
+      moveRow(cloud, move);
+      if (pick) cloud.delayFor = (url, m) => (m === 'GET' && /\/rest\/v1\/saves/.test(url.pathname) ? 6000 : 0);
+      await page.goto(BASE + '/torah_trainer.html' + q, { waitUntil: 'domcontentloaded' });
+      let picked = null;
+      if (pick) {
+        await page.waitForFunction(() => typeof settings !== 'undefined' && !!settings.parshahKey && !!document.getElementById('parshaSelect').options.length, null, { timeout: HYDRATE_MS });
+        await page.waitForTimeout(800);
+        await page.selectOption('#parshaSelect', pick, { force: true });
+        picked = await page.evaluate(() => settings.parshahKey);
+        cloud.delayFor = null;
+      }
+      await waitSignedIn(page); await settled(page, TORAH_TOOLS, HYDRATE_MS); await page.waitForTimeout(WRITE_MS); await settled(page, TORAH_TOOLS);
+      const out = { end: await reading(page), account: cloud.find('settings', 'default', 'TorahTrainer').data, picked, errors };
+      await ctx.close();
+      return out;
+    };
+    const a = await run({ parshahKey: 'Noach', scope: 'parsha-aliyah-2' }, '?parsha=Vayera&scope=parsha-aliyah-3');
+    check('D40: ?parsha=Vayera&scope=parsha-aliyah-3 over an account moved to Noach aliyah 2 → the page and the account end on Vayera aliyah 3 (not Noach, nor a mix)', a.end.key === 'Vayera' && a.end.scope === 'parsha-aliyah-3' && a.account.parshahKey === 'Vayera' && a.account.scope === 'parsha-aliyah-3', JSON.stringify({ end: a.end, account: [a.account.parshahKey, a.account.scope] }));
+    const b = await run({ scope: 'custom', holidayKey: 'purim', customRef: 'Exodus 17:8-16', customLabel: 'Purim' }, '?ref=Exodus%206:2-6:9');
+    check('D40: ?ref=Exodus 6:2-9 over an account moved to Purim → the range, here and in the account', b.end.scope === 'custom' && b.end.custom === 'Exodus 6:2-9' && b.end.hol === null && b.account.customRef === 'Exodus 6:2-9', JSON.stringify({ end: b.end, account: [b.account.scope, b.account.holidayKey, b.account.customRef] }));
+    const c = await run({ parshahKey: 'Noach', scope: 'parsha-full' }, '');
+    check('D40: no link (control) → the account\'s Noach lands', c.end.key === 'Noach', JSON.stringify(c.end));
+    const d = await run({ parshahKey: 'Noach', scope: 'parsha-full' }, '?parsha=Vayera', 'Lech-Lecha');
+    check('D40: a reading picked while the sync is held is not forced back to the link\'s (the usual merge decides)', d.picked === 'Lech-Lecha' && d.end.key !== 'Vayera', JSON.stringify({ picked: d.picked, end: d.end }));
+    check('D40: 0 pageerrors', [a, b, c, d].every(r => r.errors.length === 0), [a, b, c, d].flatMap(r => r.errors).join(' | '));
   }
 } finally {
   await browser.close();

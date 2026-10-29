@@ -1798,7 +1798,11 @@ Both pages sync one settings blob (and the Trope Tutor its mastery progress) thr
 - By design: `?parsha=` / `?holiday=` / `?ref=` deep links persist the reading and travel (a bookmark on one
   device is the next device's starting point, and a favorite is the durable form of the same reading); a
   `?ref=` range seeds `parshahKey` only when the device has none, so a teacher's own week survives opening a
-  colleague's link; `lastPos` and `loopVerse` stay per device (omitted — the cross-device memory of *what* to
+  colleague's link; the reading a link opens outlasts the load's own sync: each branch records the fields it wrote
+  (`linkReadingMark` → `_linkReading`), and a `cloudReread` while the teacher is still on them puts them back and
+  saves, so the account takes the link's reading even where another device moved the same fields since this
+  device's last sync (the merge would keep the account's side); the record ends at this load's first successful
+  `ivritsuite:hydrated` for the page or once the teacher opens another reading; `lastPos` and `loopVerse` stay per device (omitted — the cross-device memory of *what* to
   read is a favorite, not the scroll position); the Trope merge
   maxes `w` as well as `r` (mastery can read lower after a lossless merge, never higher than either side);
   `progress.v` is maxed and then forced to the current schema version.

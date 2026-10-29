@@ -10641,6 +10641,10 @@ function printReading() {
    while active. */
 let _handoutActive = false;
 let _pendingCloudReread = false;   // a cloud download landed while the handout print override was up: re-read afterwards
+// The reading a ?parsha= / ?holiday= / ?ref= link opened, field by field, kept over the account's copy until this load's
+// first sync has landed (cloudReread; initCloudSaves clears it on that sync's ivritsuite:hydrated).
+let _linkReading = null;
+function linkReadingMark(keys) { _linkReading = {}; keys.forEach(k => { _linkReading[k] = settings[k] === undefined ? null : settings[k]; }); }
 let _handoutSnap = null;
 let _handoutVersesSnap = null;   // currentVerses swapped out for a selected-verses-only handout
 function _handoutEnter() {
@@ -11541,6 +11545,7 @@ async function init() {
         if (_rp) settings.parshahKey = _rp.en;
       }
       deepRefApplied = true;
+      linkReadingMark(['scope', 'holidayKey', 'customRef', 'customLabel']);   // the week stays the device's own
       saveSettings();
       syncParshaSelect();
     } else if (_dlParsha) {
@@ -11553,6 +11558,7 @@ async function init() {
         const _dlScope = _dl.get('scope');
         settings.scope = /^parsha-(aliyah-[1-7]|maftir|haftarah)$/.test(_dlScope || '') ? _dlScope : 'parsha-full';
         settings.holidayKey = null; settings.customRef = null; settings.customLabel = null;
+        linkReadingMark(['parshahKey', 'scope', 'holidayKey', 'customRef', 'customLabel']);
         saveSettings();
         syncParshaSelect();
         document.getElementById('scopeSelect').value = settings.scope;
@@ -11570,6 +11576,7 @@ async function init() {
       settings.customRef = holidayPartRef(_dlHol, _dlPart);
       settings.customLabel = holidayLabel(_dlHol, _dlPart);
       settings.scope = 'custom';
+      linkReadingMark(['scope', 'holidayKey', 'holidayPart', 'customRef', 'customLabel']);
       saveSettings();
       syncParshaSelect();   // otherwise the picker and the holiday strip strand on the stale week
       const _dlV = _dl.get('v');
@@ -11654,6 +11661,7 @@ async function init() {
       vcmp(_cvv[0], _cvv[1], a.startC, a.startV) >= 0 && vcmp(_cvv[0], _cvv[1], a.endC, a.endV) <= 0));
     if (!_inPortion && deepParsha.ref && parseRefRange(deepParsha.ref)) {
       settings.scope = 'custom'; settings.customRef = deepParsha.ref; settings.customLabel = labelForCustomRef(deepParsha.ref, null);
+      if (_linkReading) linkReadingMark(Object.keys(_linkReading));
       saveSettings();
       syncParshaSelect();
       document.getElementById('scopeSelect').value = settings.scope;
@@ -11674,9 +11682,16 @@ document.addEventListener('DOMContentLoaded', init);
 // resetAllSettings() sequence plus the parsha box and the version fallback (syncFormToSettings re-syncs
 // the handout section too).
 function cloudReread() {
+  // This load's own sync landing over a reading a link just opened: the link is the newer request, so its reading stays
+  // and goes up with the save below. A signed-in device whose account another device had moved since its last sync
+  // otherwise took that device's reading (the merge keeps the account's side of a field both changed), a moment after
+  // showing the link's. Only while the teacher is still on it: a reading chosen meanwhile is theirs.
+  const keepLink = _linkReading && Object.keys(_linkReading).every(k => (settings[k] === undefined ? null : settings[k]) === _linkReading[k]) ? _linkReading : null;
+  if (!keepLink) _linkReading = null;
   linkViewEnd();   // the stored settings are what the reader asked for now, not a practice link's
   settings = JSON.parse(JSON.stringify(DEFAULTS));
   loadSettings();
+  if (keepLink) { Object.assign(settings, keepLink); saveSettings(); }
   _versionFallback = null;
   syncFormToSettings();
   setHebFont(settings.hebFont);
@@ -11699,6 +11714,9 @@ function initCloudSaves() {
   // A font from the account landed in the shared store: re-list My Fonts, which also re-applies a face
   // this page had chosen by name but could not show until now.
   window.addEventListener('ivritsuite:fonts', () => { try { refreshMyFonts(); } catch (e) {} });
+  // This load's first sync has landed (its download, if any, already re-read above): from now on a download is a
+  // choice made elsewhere after the link was opened, and takes the reading as usual.
+  window.addEventListener('ivritsuite:hydrated', e => { const d = e.detail || {}; if (d.ok && Array.isArray(d.tools) && d.tools.includes('TorahTrainer')) _linkReading = null; });
   IvritSaves.attach({
     tool: 'TorahTrainer',
     status: '#cloudSavesPanel',
