@@ -3976,9 +3976,13 @@ function toggleSidebar() {
   const s = document.getElementById('appSidebar');
   const show = document.getElementById('sidebarShowBtn');
   const hide = document.getElementById('sidebarToggleBtn');
+  const hadFocus = document.activeElement;
   const c = s.classList.toggle('hidden');
   show.style.display = c ? 'flex' : 'none';
   hide.style.display = c ? 'none' : 'flex';
+  // The pressed tab just became display:none — hand focus to its visible twin (guarded on activeElement, so a
+  // programmatic call never steals focus: the generator's rule).
+  if (hadFocus === (c ? hide : show)) (c ? show : hide).focus();
   positionSidebarTab();   // a resize while hidden left the tab's last measured inset stale
 }
 
@@ -6267,7 +6271,13 @@ function openWordModal(w) {
     const row = document.createElement('div'); row.className = 'wm-root-row';
     const rb = document.createElement('button'); rb.className = 'wm-root-btn';
     rb.textContent = I18n.t('dictionary.modal.words_from_root', { root: [...rc].join('־') });
-    rb.addEventListener('click', () => { closeWordModal(); setDictMode('shoresh'); runShoreshLookup(rc); });
+    rb.addEventListener('click', () => {
+      closeWordModal(); setDictMode('shoresh'); runShoreshLookup(rc);
+      // The window hands the focus back to its word card, which Shoresh mode hides (the keyboard's place fell to the
+      // page): land it on the root's family instead — its first card, or the root field when the family is empty.
+      const to = document.querySelector('#shoreshResults .word-card') || document.getElementById('shoreshInput');
+      if (to) to.focus();
+    });
     row.appendChild(rb); b.appendChild(row);
   }
 
