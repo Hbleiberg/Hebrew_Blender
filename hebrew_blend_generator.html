@@ -2293,8 +2293,9 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
     /* The QR's "too many items" notice tells the teacher to shorten the sheet; it stays on screen, never on the
        student's copy (exportPDF's onclone hides it too). */
     .qr-ak-note { display: none !important; }
-    /* Self-Check's "tap to flip" is an instruction for the screen; on paper there is nothing to tap (exportPDF hides it too). */
-    .rw-flip-hint { display: none !important; }
+    /* Self-Check's "tap to flip" / "tap to reveal" are instructions for the screen; on paper there is nothing to tap
+       (exportPDF hides them too). */
+    .rw-flip-hint, .flip-card-hint { display: none !important; }
     .app { display: block; min-height: unset; }
     .main { padding: 0; overflow: visible; }
     /* The on-screen layout pads .main-content by 28px on top — without
@@ -2376,6 +2377,13 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
        dark block + gold text onto paper — the body.dark reset above only covers dark mode.
        Relight it for print in both modes (unscoped, non-!important, wins by source order). */
     .flip-card-back { background:#fff; color:#1a2744; }
+    /* Paper flattens the flip: print paints both faces and ignores backface-visibility, so each card's back (the answer,
+       mirrored by its rotateY) printed over its front, and every Self-Check sheet put its answers on paper backwards.
+       Paper shows the face the screen shows (the front; the back once flipped, as Reveal All does), unmirrored;
+       exportPDF's clone does the same. */
+    .flip-card-inner, .rw-flip-inner, .flip-card-back, .rw-flip-back { transform: none !important; }
+    .flip-card:not(.flipped) .flip-card-back, .rw-flip:not(.flipped) .rw-flip-back,
+    .flip-card.flipped .flip-card-front, .rw-flip.flipped .rw-flip-front { display: none !important; }
     body.dark .match-dot { background:#fff; border-color:#1a2744; }
     /* Relight the banner to the LIGHT-mode navy/gold it wears in light print and the
        exportPDF output (per this block's goal), not a third beige scheme — so the same
@@ -9622,9 +9630,16 @@ async function exportPDF() {
           if (isBingoPage) {
             el.querySelectorAll('.bingo-cut-line').forEach(d => d.remove());
           }
-          // The QR's "too many items" notice is for the teacher on screen, not the student's copy, nor is Self-Check's
-          // "tap to flip" (the print block's twins)
-          el.querySelectorAll('.qr-ak-note, .rw-flip-hint').forEach(n => { n.style.visibility = 'hidden'; });
+          // The QR's "too many items" notice is for the teacher on screen, not the student's copy, nor are Self-Check's
+          // "tap to flip" / "tap to reveal" (the print block's twins)
+          el.querySelectorAll('.qr-ak-note, .rw-flip-hint, .flip-card-hint').forEach(n => { n.style.visibility = 'hidden'; });
+          // html2canvas flattens the Self-Check flip as print does (both faces, the back mirrored on top): keep the face
+          // the screen shows, unmirrored (the print block's twin)
+          el.querySelectorAll('.flip-card, .rw-flip').forEach(c => {
+            c.querySelectorAll('.flip-card-inner, .rw-flip-inner, .flip-card-back, .rw-flip-back').forEach(n => { n.style.transform = 'none'; });
+            const off = c.querySelector(c.classList.contains('flipped') ? '.flip-card-front, .rw-flip-front' : '.flip-card-back, .rw-flip-back');
+            if (off) off.style.display = 'none';
+          });
           if (isCaller) {
             const top = el.getBoundingClientRect().top;
             callerRows = [...new Set([...el.querySelectorAll('.caller-item')].map(it => it.getBoundingClientRect().top - top))];
