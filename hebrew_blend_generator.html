@@ -2293,6 +2293,8 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
     /* The QR's "too many items" notice tells the teacher to shorten the sheet; it stays on screen, never on the
        student's copy (exportPDF's onclone hides it too). */
     .qr-ak-note { display: none !important; }
+    /* Self-Check's "tap to flip" is an instruction for the screen; on paper there is nothing to tap (exportPDF hides it too). */
+    .rw-flip-hint { display: none !important; }
     .app { display: block; min-height: unset; }
     .main { padding: 0; overflow: visible; }
     /* The on-screen layout pads .main-content by 28px on top — without
@@ -9620,8 +9622,9 @@ async function exportPDF() {
           if (isBingoPage) {
             el.querySelectorAll('.bingo-cut-line').forEach(d => d.remove());
           }
-          // The QR's "too many items" notice is for the teacher on screen, not the student's copy (the print block's twin)
-          el.querySelectorAll('.qr-ak-note').forEach(n => { n.style.visibility = 'hidden'; });
+          // The QR's "too many items" notice is for the teacher on screen, not the student's copy, nor is Self-Check's
+          // "tap to flip" (the print block's twins)
+          el.querySelectorAll('.qr-ak-note, .rw-flip-hint').forEach(n => { n.style.visibility = 'hidden'; });
           if (isCaller) {
             const top = el.getBoundingClientRect().top;
             callerRows = [...new Set([...el.querySelectorAll('.caller-item')].map(it => it.getBoundingClientRect().top - top))];
@@ -12199,7 +12202,7 @@ function generateRealWords(reuse) {
             <span class="rw-heb" lang="he">${esc(w.heb)}</span>
             ${vocabTrlOnFront && w.translit ? `<span class="rw-translit">${esc(w.translitDisplay ?? w.translit)}</span>` : ''}
             ${vocabTnOnFront && w.translation ? `<span class="rw-translation">${esc(w.translation)}</span>` : ''}
-            <span class="rw-translit" style="font-size:0.65rem;opacity:0.6;">tap to flip</span>
+            <span class="rw-translit rw-flip-hint" style="font-size:0.65rem;opacity:0.6;">tap to flip</span>
           </div>
           <div class="rw-flip-back">
             <span class="rw-num">${idx + 1}</span>
