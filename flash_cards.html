@@ -1432,6 +1432,7 @@ body.dark .ladder-strip-line { color: var(--gold-light); }
   .fcr-stat b { display:block; font-size:15pt; line-height:1.15; }
   .fcr-stat span { font-size:8pt; color:#3d4a63; }
   .fcr-note { font-size:8pt; color:#3d4a63; margin:4pt 0 0; font-style:italic; }
+  html[lang="he"] .fcr-note, html[lang="he"] .fcc-lead { font-style:normal; }   /* Hebrew has no italic: the browser only slanted the letters */
   /* Learning Path standing — information, not a footnote: upright ink, a step above the notes. */
   .fcr-ladder { font-size:9pt; color:#1a2a47; font-style:normal; }
   /* 1pt (was 1.5pt): the other half of the Learning Path line's budget — see #fcReportSheet. */
@@ -1505,6 +1506,7 @@ body.dark .ladder-strip-line { color: var(--gold-light); }
   .fcc-seal-n { font-family:var(--serif); font-size:17pt; font-weight:700; line-height:1; color:#1a2a47; }
   .fcc-seal-w { font-size:6.5pt; letter-spacing:0.14em; text-transform:uppercase; color:#7f5a13;
     margin-block-start:1pt; }
+  html[lang="he"] .fcc-suite, html[lang="he"] .fcc-seal-w { letter-spacing:normal; text-transform:none; }   /* Hebrew has no capitals, and the tracking only spaced its letters apart */
 }
 /* The sheet hosts never show on screen — they exist only to be printed. */
 #fcSheet, #fcReportSheet, #fcCertSheet { display:none; }
