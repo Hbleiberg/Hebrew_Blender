@@ -96,13 +96,40 @@ the CSS class→var mapping is manual).
 ## Trope Color Coding (`torah_trainer.html`)
 
 A second, composable color dimension alongside nikkud coloring: each **word** is classed by its
-cantillation **clause family**. Settings keys (in the `hebrewTorahTrainer_settings` blob, so no
-AllTools wiring): `colorCodeTrope` (bool) + `tropeCodingMode` (`'highlight'` tint by default or
-`'underline'`, read through `tropeModeKey()`: any other stored value shows as Highlight and stays
-stored) + `tropeColorOverrides` (family → hex, validated on
+cantillation **clause family** and, beside it, by its own **mark**. Settings keys (in the
+`hebrewTorahTrainer_settings` blob, so no AllTools wiring): `colorCodeTrope` (bool) + `tropeCodingMode`
+(`'highlight'` tint by default or `'underline'`, read through `tropeModeKey()`: any other stored value
+shows as Highlight and stays stored) + `tropeColorOverrides` (family → hex, validated on
 every read with the **strict `TROPE_HEX6_RE`** (`#rrggbb` only, not the looser `HEX_COLOR_RE`) —
 imported blobs are untrusted, AND the value takes an appended `59` alpha suffix and seeds
-`<input type=color>`, both of which require the 6-digit form).
+`<input type=color>`, both of which require the 6-digit form) + `tropeColorBy` (`'phrase'` by default or
+`'mark'`, read through `tropeColorByKey()`, the same unknown-value rule) + `tropeMarkColors` (mark key →
+hex, the same strict check, `getTropeMarkColor`) + `tropeMarksOff` (the mark keys left uncolored while
+coloring by mark, in `TROPES` order with any key the page does not know kept after them, read through
+`tropeMarkOn()`; one writer, `setTropeMarkOn`, plus the list's Color all / Color none).
+
+- **Color by: Trope phrases or Individual trope.** The Colors tab's `optTropeBy` radios (`#tropeByRow`, shown
+  with the pickers while trope coloring is on). By phrase is everything below. By mark, every mark of the
+  `TROPES` taxonomy (`js/trope-staff.js`; `TROPE_MARK_KEYS`, its keys and phrase order) has its own color
+  (`TROPE_MARK_DEFAULTS_LIGHT` / `_DARK`: marks that stand side by side in a phrase are kept apart, sof pasuk
+  and etnachta keep their clause's red and orange, none near the karaoke gold) and a checkbox, so a teacher can
+  follow one mark through a reading or color only the marks a class is learning. A word's mark is
+  `tropeMarkOf(rawTok)`: the last mark wins as in `tropeFamilyOf`, a pashta written twice (kadma's codepoint
+  first) is one pashta, the verse's last word is `sof_pasuk` by position, a maqaf proclitic inherits its
+  partner's mark, and the realign path passes `tropeMarkOf` to `tropeRealignFamilies` as its classifier; the
+  etnachta split is a clause rule and does not apply. **Every word always carries both classes**
+  (`trope-<fam>` and `tm tm-<mark>`), so switching is a body class (`body.trope-by-mark`) and the
+  `--tropem-<mark>-bg` / `-line` / `-bar` vars `applyTropeColors()` sets (transparent, and the staff bar the
+  uncolored `--border`, for an unchecked mark) — never a rebuild. The class → var lines (`.tm-<mark>` →
+  `--tm-bg` / `--tm-line` / `--tm-bar`) are generated once from `TROPE_MARK_KEYS` into `<style
+  id="ttTropeMarkVars">` (the `.nik-<key>` idiom without the hand-kept list); every family rule carries
+  `:not(.trope-by-mark)` and the mark rules sit beside them at the same `:where()` specificity, on screen, in
+  the underline look, under-word transliteration, print and the Trope staff's bars (`staffEnsureSvg` classes
+  each `.tu-pbar` with its unit's mark; munach legarmeh is munach). The picker list (`initTropeColorPickers` →
+  `initTropeMarkPickers`) shows the marks under their family's heading, a color pick checks its mark, and
+  Reset (`torah.confirm.reset_trope_mark_colors`) clears the mark colors and checks every mark. The mark names
+  are the Ashkenazi transliterations in both UIs (`tropeMarkNameEl`, `dir="ltr" lang="en"`), as the Trope
+  Tutor's chips name them. The copy path reads `tm-<mark>` the same way (an unchecked mark pastes uncolored).
 
 - **The Colors tab's two sections are one list each, and the list is the on/off switch.** Vowel
   color coding is No highlight · Letter · Highlight · Underline (radios `optColorMode`), trope
@@ -167,8 +194,10 @@ imported blobs are untrusted, AND the value takes an appended `59` alpha suffix 
   `--tt-sw-line`). The copy path (`_inlineCopyStyles`) never reads it: it applies the same rule to
   the copy's own options and marks (Copy → Nikkud can include vowels the screen hides, or drop ones
   it shows). Print always underlines.
-- **Legend** `#ttTropeLegend` sits above `#ttReading` (renderText never touches it); chips are
-  generated once at init from `TROPE_COLOR_DEFS`, and swatches read the body vars (the tint, or
+- **Legend** `#ttTropeLegend` sits above `#ttReading`; by phrase its chips come from `TROPE_COLOR_DEFS`, by mark
+  one per mark of the reading on screen that is checked (`tropeLegendMarks()`, memoized on the verse array, no
+  tip). `buildTropeLegend()` runs from `applyTropeColors` and rebuilds only when the chips it would draw differ
+  (`applyI18n` forces it), and swatches read the body vars (the tint, or
   the solid line color while `body.trope-underline-fallback` is set), so theme, picker and look
   changes recolor them for free. It shows only when trope coloring is on **and** a
   reading is loaded (hidden over the empty state). The "Learn the trope names →" link renders
@@ -197,7 +226,8 @@ imported blobs are untrusted, AND the value takes an appended `59` alpha suffix 
   directly above `#ttReading` (so it prints once, on sheet 1), populated by `buildPrintBand()`
   in the beforeprint handler: range label + compact clause key. The old card's 35%-tint
   (`--trope-<fam>-bg`) swatches collapsed into one grey band on a greyscale copier, so the
-  band's swatches use the SOLID `--trope-<fam>-line` ink the printed underlines use. **Sheets
+  band's swatches use the SOLID `--trope-<fam>-line` ink the printed underlines use (by mark, one chip per
+  mark of the legend, in `--tropem-<mark>-line`). **Sheets
   2..N are identified by `@page` margin boxes** (`@top-left`/`@top-right`, Chromium 131+;
   other engines print an unlabelled margin): the range label on the reading's start side and
   a `counter(page) " / " counter(pages)` opposite, fed by four `--tt-print-*` custom properties
@@ -1713,7 +1743,7 @@ synced with the blob).
 - **What travels.** `LINK_DISPLAY` is the one list of carried keys, each with the check a value must
   pass: layout, the four show-toggles (nikkud, te'amim, transliteration, translation), the parsha emojis switch
   (`showParshaIcons`), the transliteration style and placement, the Hebrew font and the three text sizes, vowel coding (on, mode, scheme,
-  overrides), trope coding (on, look, overrides), karaoke style and follow, and the Trope staff's words, key,
+  overrides), trope coding (on, look, overrides, color by, mark colors, unchecked marks), karaoke style and follow, and the Trope staff's words, key,
   voice, direction and note names (`staffWords`, `staffShift` as a whole number of half steps, `staffVoice`,
   `staffDir`, `staffNoteNames`; the layout itself travels as `layout: 'staff'`). Enum lists are read from the
   page's own radios and `<option>`s (a color list's No highlight is left out: it travels as the
@@ -1731,7 +1761,7 @@ synced with the blob).
   `loadSettings()`. It is silent on garbage: the payload must be an object with the current `v`, at
   most 4096 characters. A key the link leaves out takes `DEFAULTS`, so the reader sees the sender's
   whole look rather than a blend with their own. A key it names but whose value fails its check keeps
-  the reader's own. A look (`colorCodingMode`, `tropeCodingMode`) is taken only when the coloring the
+  the reader's own. A look (`colorCodingMode`, `tropeCodingMode`, `tropeColorBy`) is taken only when the coloring the
   view will show is on (the link's value, the reader's own where the link's is refused, `DEFAULTS`,
   off for both, where it is left out); otherwise the reader keeps their own look, untracked, so a
   link carrying a look whose coloring is off raises no note and gives Keep nothing to take. The keys that differ become `_linkView = {own, shown}`, and **`storedSettings()`

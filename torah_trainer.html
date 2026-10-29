@@ -966,7 +966,8 @@ body.translit-under.kar-style-underline .tt-word.active { text-decoration:none; 
 body.translit-under.kar-style-underline .tt-word.active > .tt-wh {
   text-decoration:underline solid var(--gold); text-decoration-thickness:3px; text-underline-offset:0.2em;
 }
-:where(body.translit-under.trope-underline-fallback) .tt-word:where(.trope-sofpasuk, .trope-etnachta, .trope-katon, .trope-segol, .trope-revia, .trope-geresh, .trope-rare) > .tt-wh {
+:where(body.translit-under.trope-underline-fallback:not(.trope-by-mark)) .tt-word:where(.trope-sofpasuk, .trope-etnachta, .trope-katon, .trope-segol, .trope-revia, .trope-geresh, .trope-rare) > .tt-wh,
+:where(body.translit-under.trope-underline-fallback.trope-by-mark) .tt-word:where(.tm) > .tt-wh {
   text-decoration-line:underline; text-decoration-thickness:4px;
   text-underline-offset:0.68em; text-decoration-skip-ink:none; text-decoration-color:var(--tt-tl);
 }
@@ -1011,13 +1012,13 @@ body.nik-mode-underline .nik { text-decoration-line:underline !important; text-d
    .tt-word:hover (0,2,0) and the karaoke-active rules (0,3,1) always win —
    the moving karaoke highlight must stay dominant over any trope treatment. */
 :where(body.trope-on) :where(.tt-heb, .tt-cell.heb) .tt-word { padding:1px 3px; }  /* keep maqaf-adjacent tinted words visually separate */
-:where(body.trope-on:not(.trope-underline-fallback)) .tt-word:where(.trope-sofpasuk) { background-color:var(--trope-sofpasuk-bg); }
-:where(body.trope-on:not(.trope-underline-fallback)) .tt-word:where(.trope-etnachta) { background-color:var(--trope-etnachta-bg); }
-:where(body.trope-on:not(.trope-underline-fallback)) .tt-word:where(.trope-katon)    { background-color:var(--trope-katon-bg); }
-:where(body.trope-on:not(.trope-underline-fallback)) .tt-word:where(.trope-segol)    { background-color:var(--trope-segol-bg); }
-:where(body.trope-on:not(.trope-underline-fallback)) .tt-word:where(.trope-revia)    { background-color:var(--trope-revia-bg); }
-:where(body.trope-on:not(.trope-underline-fallback)) .tt-word:where(.trope-geresh)   { background-color:var(--trope-geresh-bg); }
-:where(body.trope-on:not(.trope-underline-fallback)) .tt-word:where(.trope-rare)     { background-color:var(--trope-rare-bg); }
+:where(body.trope-on:not(.trope-underline-fallback):not(.trope-by-mark)) .tt-word:where(.trope-sofpasuk) { background-color:var(--trope-sofpasuk-bg); }
+:where(body.trope-on:not(.trope-underline-fallback):not(.trope-by-mark)) .tt-word:where(.trope-etnachta) { background-color:var(--trope-etnachta-bg); }
+:where(body.trope-on:not(.trope-underline-fallback):not(.trope-by-mark)) .tt-word:where(.trope-katon)    { background-color:var(--trope-katon-bg); }
+:where(body.trope-on:not(.trope-underline-fallback):not(.trope-by-mark)) .tt-word:where(.trope-segol)    { background-color:var(--trope-segol-bg); }
+:where(body.trope-on:not(.trope-underline-fallback):not(.trope-by-mark)) .tt-word:where(.trope-revia)    { background-color:var(--trope-revia-bg); }
+:where(body.trope-on:not(.trope-underline-fallback):not(.trope-by-mark)) .tt-word:where(.trope-geresh)   { background-color:var(--trope-geresh-bg); }
+:where(body.trope-on:not(.trope-underline-fallback):not(.trope-by-mark)) .tt-word:where(.trope-rare)     { background-color:var(--trope-rare-bg); }
 /* The underline look (body.trope-underline-fallback, set by applyTropeColors): the teacher
    chose Underline in the trope list, or the collision fallback. When nikkud color coding
    is in Highlight mode it owns word backgrounds (per-syllable tints), and in Letter mode its
@@ -1025,17 +1026,27 @@ body.nik-mode-underline .nik { text-decoration-line:underline !important; text-d
    thick clause underline pushed below the nikkud zone instead. text-decoration longhands on purpose:
    box-shadow is contended by hover/karaoke (flicker) and border-bottom reflows
    justified text; kar-style-underline's .active shorthand still overrides these. */
-:where(body.trope-underline-fallback) .tt-word:where(.trope-sofpasuk, .trope-etnachta, .trope-katon, .trope-segol, .trope-revia, .trope-geresh, .trope-rare) {
+:where(body.trope-underline-fallback:not(.trope-by-mark)) .tt-word:where(.trope-sofpasuk, .trope-etnachta, .trope-katon, .trope-segol, .trope-revia, .trope-geresh, .trope-rare) {
   text-decoration-line:underline; text-decoration-thickness:4px;
   text-underline-offset:0.68em; text-decoration-skip-ink:none;
 }
-:where(body.trope-underline-fallback) .tt-word:where(.trope-sofpasuk) { text-decoration-color:var(--trope-sofpasuk-line); --tt-tl:var(--trope-sofpasuk-line); }
-:where(body.trope-underline-fallback) .tt-word:where(.trope-etnachta) { text-decoration-color:var(--trope-etnachta-line); --tt-tl:var(--trope-etnachta-line); }
-:where(body.trope-underline-fallback) .tt-word:where(.trope-katon)    { text-decoration-color:var(--trope-katon-line); --tt-tl:var(--trope-katon-line); }
-:where(body.trope-underline-fallback) .tt-word:where(.trope-segol)    { text-decoration-color:var(--trope-segol-line); --tt-tl:var(--trope-segol-line); }
-:where(body.trope-underline-fallback) .tt-word:where(.trope-revia)    { text-decoration-color:var(--trope-revia-line); --tt-tl:var(--trope-revia-line); }
-:where(body.trope-underline-fallback) .tt-word:where(.trope-geresh)   { text-decoration-color:var(--trope-geresh-line); --tt-tl:var(--trope-geresh-line); }
-:where(body.trope-underline-fallback) .tt-word:where(.trope-rare)     { text-decoration-color:var(--trope-rare-line); --tt-tl:var(--trope-rare-line); }
+:where(body.trope-underline-fallback:not(.trope-by-mark)) .tt-word:where(.trope-sofpasuk) { text-decoration-color:var(--trope-sofpasuk-line); --tt-tl:var(--trope-sofpasuk-line); }
+:where(body.trope-underline-fallback:not(.trope-by-mark)) .tt-word:where(.trope-etnachta) { text-decoration-color:var(--trope-etnachta-line); --tt-tl:var(--trope-etnachta-line); }
+:where(body.trope-underline-fallback:not(.trope-by-mark)) .tt-word:where(.trope-katon)    { text-decoration-color:var(--trope-katon-line); --tt-tl:var(--trope-katon-line); }
+:where(body.trope-underline-fallback:not(.trope-by-mark)) .tt-word:where(.trope-segol)    { text-decoration-color:var(--trope-segol-line); --tt-tl:var(--trope-segol-line); }
+:where(body.trope-underline-fallback:not(.trope-by-mark)) .tt-word:where(.trope-revia)    { text-decoration-color:var(--trope-revia-line); --tt-tl:var(--trope-revia-line); }
+:where(body.trope-underline-fallback:not(.trope-by-mark)) .tt-word:where(.trope-geresh)   { text-decoration-color:var(--trope-geresh-line); --tt-tl:var(--trope-geresh-line); }
+:where(body.trope-underline-fallback:not(.trope-by-mark)) .tt-word:where(.trope-rare)     { text-decoration-color:var(--trope-rare-line); --tt-tl:var(--trope-rare-line); }
+/* Coloring by mark (body.trope-by-mark, Individual trope): every Hebrew word also carries `tm tm-<mark>` (tokenizeHebrew),
+   and the generated .tm-<mark> lines (ttTropeMarkVars) point --tm-bg / --tm-line / --tm-bar at that mark's
+   --tropem-<mark>-* body vars, which applyTropeColors sets (transparent for an unchecked mark). The same two looks, at the
+   same :where() specificity, so hover and karaoke still win; the family rules above stand down meanwhile. */
+:where(body.trope-on.trope-by-mark:not(.trope-underline-fallback)) .tt-word:where(.tm) { background-color:var(--tm-bg); }
+:where(body.trope-underline-fallback.trope-by-mark) .tt-word:where(.tm) {
+  text-decoration-line:underline; text-decoration-thickness:4px;
+  text-underline-offset:0.68em; text-decoration-skip-ink:none;
+  text-decoration-color:var(--tm-line); --tt-tl:var(--tm-line);
+}
 
 /* Legend strip above #ttReading (card look borrowed from .tt-jumpnav, non-sticky).
    Swatches read the same body vars, so theme/picker changes recolor them for free. */
@@ -1056,6 +1067,8 @@ body.dark .tt-trope-legend { background:var(--navy-deep); }
 .tt-trope-chip:hover { background:var(--warm-gray); }
 body.dark .tt-trope-chip:hover { background:rgba(255,255,255,0.07); }
 .tt-trope-chip:focus-visible { outline:2px solid var(--focus-ring); outline-offset:1px; }
+.tt-trope-chip.is-mark { cursor:default; }   /* a mark's chip is a key only (no tip to open) */
+.tt-trope-chip.is-mark:hover { background:none; }
 /* Sample mark on its alef carrier — the family's "what does this look like" cue. */
 .tt-trope-glyph { font-family:var(--heb-font); font-size:1.15rem; line-height:1; flex-shrink:0; }
 .tt-trope-swatch { width:14px; height:14px; border-radius:4px; border:1px solid var(--border); flex-shrink:0; background:var(--tt-sw-bg); }
@@ -1097,13 +1110,14 @@ body.staff-words-translit.kar-style-underline .tt-staff-reading .tt-word.active 
 .tt-staff-probe-he { font-family:var(--heb-font); font-size:var(--tt-heb-size, 1.5rem); }
 .tt-staff-probe-tl { font-size:var(--tt-translit-size, 0.95rem); }
 .tt-staff-sys .tu-pbar { fill:var(--border); }
-body.trope-on .tt-staff-sys .tu-pbar.fam-sofpasuk { fill:var(--trope-sofpasuk-line); }
-body.trope-on .tt-staff-sys .tu-pbar.fam-etnachta { fill:var(--trope-etnachta-line); }
-body.trope-on .tt-staff-sys .tu-pbar.fam-katon    { fill:var(--trope-katon-line); }
-body.trope-on .tt-staff-sys .tu-pbar.fam-segol    { fill:var(--trope-segol-line); }
-body.trope-on .tt-staff-sys .tu-pbar.fam-revia    { fill:var(--trope-revia-line); }
-body.trope-on .tt-staff-sys .tu-pbar.fam-geresh   { fill:var(--trope-geresh-line); }
-body.trope-on .tt-staff-sys .tu-pbar.fam-rare     { fill:var(--trope-rare-line); }
+body.trope-on:not(.trope-by-mark) .tt-staff-sys .tu-pbar.fam-sofpasuk { fill:var(--trope-sofpasuk-line); }
+body.trope-on:not(.trope-by-mark) .tt-staff-sys .tu-pbar.fam-etnachta { fill:var(--trope-etnachta-line); }
+body.trope-on:not(.trope-by-mark) .tt-staff-sys .tu-pbar.fam-katon    { fill:var(--trope-katon-line); }
+body.trope-on:not(.trope-by-mark) .tt-staff-sys .tu-pbar.fam-segol    { fill:var(--trope-segol-line); }
+body.trope-on:not(.trope-by-mark) .tt-staff-sys .tu-pbar.fam-revia    { fill:var(--trope-revia-line); }
+body.trope-on:not(.trope-by-mark) .tt-staff-sys .tu-pbar.fam-geresh   { fill:var(--trope-geresh-line); }
+body.trope-on:not(.trope-by-mark) .tt-staff-sys .tu-pbar.fam-rare     { fill:var(--trope-rare-line); }
+body.trope-on.trope-by-mark .tt-staff-sys .tu-pbar.tm { fill:var(--tm-bar); }   /* each bar is one mark's (staffEnsureSvg classes it) */
 /* The chant lights the sung word's whole figure (.is-hl); the tune lights the sounding note (.is-sounding). Colour only. */
 .tt-staff-sys .tu-pn.is-hl { color:var(--gold-text); }
 .tt-staff-sys .tu-pbar.is-hl { stroke:var(--text); stroke-width:0.8; }
@@ -1684,6 +1698,14 @@ body.dark .font-opt-attr { color:#adb6c9; }   /* --muted read 3.71:1 on the dark
 .color-pick-ex { font-family:var(--heb-font); font-size:1.15rem; direction:rtl; width:26px; text-align:center; }
 .color-pick-label { flex:1; font-size:0.78rem; color:var(--text); }
 .color-pick-input { width:28px; height:22px; border:1px solid var(--border); border-radius:3px; cursor:pointer; padding:0; }
+/* Coloring by mark: the note over the list, a family heading over each group of marks, and a checkbox on every row (an
+   unchecked mark's row dims, and its picker still takes a color, which checks it). */
+.tt-trope-mark-note { font-size:0.72rem; color:var(--muted); line-height:1.4; margin:-2px 0 4px; }
+.color-pick-group { font-size:0.68rem; font-weight:700; letter-spacing:0.04em; color:var(--muted); margin-top:6px; }
+.color-pick-group:first-child { margin-top:0; }
+.color-pick-row.is-mark .color-pick-label { cursor:pointer; }
+.color-pick-row.is-mark input[type="checkbox"] { inline-size:18px; block-size:18px; margin:0; accent-color:var(--gold); cursor:pointer; flex-shrink:0; }
+.color-pick-row.is-off .color-pick-ex, .color-pick-row.is-off .color-pick-label { opacity:0.5; }
 /* ───── Vowel color-scheme selector (Default · TaL AM · Reset) ───── */
 .vowel-scheme-row { display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-top:6px; }
 .vowel-scheme-btn { flex:1; padding:4px 8px; font-size:0.72rem; font-family:inherit; cursor:pointer;
@@ -2045,26 +2067,35 @@ body.fullscreen .tt-hint-toast { bottom: calc(var(--tt-audio-h, 96px) + 90px); }
      trope coloring on gets an uncolored sheet with no cue. Force the existing clause-
      underline treatment (the highlight-collision fallback) for every trope-classed word
      in print — text-decoration always prints, in every browser and B/W too. */
-  body.trope-on .tt-word:where(.trope-sofpasuk, .trope-etnachta, .trope-katon, .trope-segol, .trope-revia, .trope-geresh, .trope-rare) {
+  body.trope-on:not(.trope-by-mark) .tt-word:where(.trope-sofpasuk, .trope-etnachta, .trope-katon, .trope-segol, .trope-revia, .trope-geresh, .trope-rare) {
     background-color:transparent !important;
     text-decoration-line:underline; text-decoration-thickness:4px;
     text-underline-offset:0.68em; text-decoration-skip-ink:none;
   }
-  body.trope-on .tt-word.trope-sofpasuk { text-decoration-color:var(--trope-sofpasuk-line); --tt-tl:var(--trope-sofpasuk-line); }
-  body.trope-on .tt-word.trope-etnachta { text-decoration-color:var(--trope-etnachta-line); --tt-tl:var(--trope-etnachta-line); }
-  body.trope-on .tt-word.trope-katon    { text-decoration-color:var(--trope-katon-line); --tt-tl:var(--trope-katon-line); }
-  body.trope-on .tt-word.trope-segol    { text-decoration-color:var(--trope-segol-line); --tt-tl:var(--trope-segol-line); }
-  body.trope-on .tt-word.trope-revia    { text-decoration-color:var(--trope-revia-line); --tt-tl:var(--trope-revia-line); }
-  body.trope-on .tt-word.trope-geresh   { text-decoration-color:var(--trope-geresh-line); --tt-tl:var(--trope-geresh-line); }
-  body.trope-on .tt-word.trope-rare     { text-decoration-color:var(--trope-rare-line); --tt-tl:var(--trope-rare-line); }
+  body.trope-on:not(.trope-by-mark) .tt-word.trope-sofpasuk { text-decoration-color:var(--trope-sofpasuk-line); --tt-tl:var(--trope-sofpasuk-line); }
+  body.trope-on:not(.trope-by-mark) .tt-word.trope-etnachta { text-decoration-color:var(--trope-etnachta-line); --tt-tl:var(--trope-etnachta-line); }
+  body.trope-on:not(.trope-by-mark) .tt-word.trope-katon    { text-decoration-color:var(--trope-katon-line); --tt-tl:var(--trope-katon-line); }
+  body.trope-on:not(.trope-by-mark) .tt-word.trope-segol    { text-decoration-color:var(--trope-segol-line); --tt-tl:var(--trope-segol-line); }
+  body.trope-on:not(.trope-by-mark) .tt-word.trope-revia    { text-decoration-color:var(--trope-revia-line); --tt-tl:var(--trope-revia-line); }
+  body.trope-on:not(.trope-by-mark) .tt-word.trope-geresh   { text-decoration-color:var(--trope-geresh-line); --tt-tl:var(--trope-geresh-line); }
+  body.trope-on:not(.trope-by-mark) .tt-word.trope-rare     { text-decoration-color:var(--trope-rare-line); --tt-tl:var(--trope-rare-line); }
   /* Under-word transliteration on paper: as on screen, the clause line moves onto the Hebrew item so the
      Latin line under it is not underlined. */
-  body.translit-under.trope-on .tt-word:where(.trope-sofpasuk, .trope-etnachta, .trope-katon, .trope-segol, .trope-revia, .trope-geresh, .trope-rare) { text-decoration-line:none; }
-  body.translit-under.trope-on .tt-word:where(.trope-sofpasuk, .trope-etnachta, .trope-katon, .trope-segol, .trope-revia, .trope-geresh, .trope-rare) > .tt-wh {
+  body.translit-under.trope-on:not(.trope-by-mark) .tt-word:where(.trope-sofpasuk, .trope-etnachta, .trope-katon, .trope-segol, .trope-revia, .trope-geresh, .trope-rare) { text-decoration-line:none; }
+  body.translit-under.trope-on:not(.trope-by-mark) .tt-word:where(.trope-sofpasuk, .trope-etnachta, .trope-katon, .trope-segol, .trope-revia, .trope-geresh, .trope-rare) > .tt-wh,
+  body.translit-under.trope-on.trope-by-mark .tt-word.tm > .tt-wh {
     text-decoration-line:underline; text-decoration-thickness:4px;
     text-underline-offset:0.68em; text-decoration-skip-ink:none; text-decoration-color:var(--tt-tl);
   }
   body.translit-under.trope-on .tt-wtl { margin-block-start:0.4em; }
+  /* Coloring by mark prints the same way, in each mark's own line color (transparent for an unchecked mark). */
+  body.trope-on.trope-by-mark .tt-word.tm {
+    background-color:transparent !important;
+    text-decoration-line:underline; text-decoration-thickness:4px;
+    text-underline-offset:0.68em; text-decoration-skip-ink:none;
+    text-decoration-color:var(--tm-line); --tt-tl:var(--tm-line);
+  }
+  body.translit-under.trope-on.trope-by-mark .tt-word.tm { text-decoration-line:none; }
   /* That 4px band needs somewhere to live. At the screen leading of 1.7 it lands in the
      interline gap with NOTHING to spare: measured from print renderings (band rows taken
      with trope on, glyph rows with it off, same wrapping), the band ends on the very row
@@ -2674,15 +2705,27 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
         <h3 class="tt-set-title" tabindex="-1" data-i18n="torah.settings.panel_trope_color">Trope color coding</h3>
         <!-- Same shape as the vowel list: No highlight writes colorCodeTrope:false and keeps tropeCodingMode. -->
         <div class="form-row tt-color-row" style="flex-wrap:wrap;">
-          <label><span id="lblColorCodeTrope" data-i18n="torah.color.code_trope">Color-code trope families</span> <span class="tip-wrap" data-i18n-tip="torah.color.code_trope_tip" data-tip="Colors each word by its cantillation clause family — Sof Pasuk, Etnachta, Zakef Katon, Segol, Revia, Geresh, and rare marks — so the verse's phrase structure stays visible even with the marks hidden. Highlight tints the word; Underline draws a colored line under it. When vowel coloring is in Letter or Highlight mode, trope shows as an underline instead."><i class="tip-icon">?</i></span></label>
+          <label><span id="lblColorCodeTrope" data-i18n="torah.color.code_trope">Color-code trope</span> <span class="tip-wrap" data-i18n-tip="torah.color.code_trope_tip" data-tip="Colors each word by its trope. Trope phrases colors the word by its clause family — Sof Pasuk, Etnachta, Zakef Katon, Segol, Revia, Geresh, and rare marks — so the verse's phrase structure stays visible even with the marks hidden. Individual trope gives every trope mark its own color, which you choose, and colors only the marks you check. Highlight tints the word; Underline draws a colored line under it. When vowel coloring is in Letter or Highlight mode, trope shows as an underline instead."><i class="tip-icon">?</i></span></label>
           <span class="radio-group tt-color-list" role="group" aria-labelledby="lblColorCodeTrope" style="margin-inline-start:auto;">
             <input type="radio" name="optTropeMode" id="tmNone" value="none"><label for="tmNone" data-i18n="torah.color.mode_none">No highlight</label>
             <input type="radio" name="optTropeMode" id="tmHighlight" value="highlight"><label for="tmHighlight" data-i18n="torah.color.mode_highlight">Highlight</label>
             <input type="radio" name="optTropeMode" id="tmUnderline" value="underline"><label for="tmUnderline" data-i18n="torah.color.mode_underline">Underline</label>
           </span>
         </div>
+        <!-- Color by: the clause families (Phrases) or each mark its own color (Individual trope, tropeColorBy:'mark');
+             shown with the pickers while trope coloring is on. -->
+        <div class="form-row tt-color-row" id="tropeByRow" style="flex-wrap:wrap;display:none;">
+          <label id="lblTropeBy" data-i18n="torah.color.trope_by">Color by</label>
+          <span class="radio-group tt-color-list" role="group" aria-labelledby="lblTropeBy" style="margin-inline-start:auto;">
+            <input type="radio" name="optTropeBy" id="tbPhrase" value="phrase"><label for="tbPhrase" data-i18n="torah.color.trope_by_phrase">Trope phrases</label>
+            <input type="radio" name="optTropeBy" id="tbMark" value="mark"><label for="tbMark" data-i18n="torah.color.trope_by_mark">Individual trope</label>
+          </span>
+        </div>
+        <div id="tropeByMarkNote" class="tt-trope-mark-note" data-i18n="torah.color.trope_marks_note" style="display:none;">Pick a color for each trope. Uncheck a trope to leave it uncolored.</div>
         <div class="color-pick-list" id="tropeColorPickerList" style="display:none;"></div>
         <div class="form-row vowel-scheme-row" id="tropeResetRow" style="display:none;">
+          <button class="vowel-scheme-btn tt-trope-marks-btn" onclick="setAllTropeMarks(true)" type="button" data-i18n="torah.color.trope_marks_all">Color all</button>
+          <button class="vowel-scheme-btn tt-trope-marks-btn" onclick="setAllTropeMarks(false)" type="button" data-i18n="torah.color.trope_marks_none">Color none</button>
           <button class="vowel-scheme-btn" onclick="resetTropeColors()" type="button" data-i18n="torah.color.trope_reset">Reset</button>
         </div>
       </div>
@@ -3233,6 +3276,9 @@ const DEFAULTS = {
   colorCodeTrope: false,       // color each word by its cantillation clause family
   tropeCodingMode: 'highlight', // 'highlight' (tint) | 'underline' (clause line); read through tropeModeKey()
   tropeColorOverrides: {},     // family key → hex (HEX_COLOR_RE-validated on read)
+  tropeColorBy: 'phrase',      // 'phrase' (each word by its clause family) | 'mark' (each mark its own color); read through tropeColorByKey()
+  tropeMarkColors: {},         // mark key (TROPES, js/trope-staff.js) → hex, TROPE_HEX6_RE-validated on read
+  tropeMarksOff: [],           // mark keys left uncolored while coloring by mark; read through tropeMarkOn()
   translitStyle: 'modernIsraeli',
   translitPlacement: 'row',    // 'row' (its own line / column / block) | 'word' (under each Hebrew word)
   // TTS + Chanting are always available; rate sliders apply.
@@ -4593,6 +4639,35 @@ const TROPE_DEFAULTS_DARK = {
   sofpasuk:'#e0635e', etnachta:'#ee8a3c', katon:'#5c9fe0', segol:'#a97fe0',
   revia:'#55c06a',    geresh:'#3fbdb6',   rare:'#e07ab0'
 };
+// Coloring by mark (settings.tropeColorBy === 'mark'): every mark of the TROPES taxonomy (js/trope-staff.js, its phrase
+// order and keys) takes its own color, so a teacher can follow one mark through a reading or color only the marks a class
+// is learning (settings.tropeMarksOff). The defaults keep the marks that stand side by side in a phrase apart (mercha,
+// tipcha, munach, etnachta; kadma, mahpach, pashta, zakef katon; darga, tevir), keep sof pasuk and etnachta in their
+// clause's red and orange, and stay off the karaoke gold. Munach legarmeh prints as munach and takes its color.
+const TROPE_MARK_KEYS = TROPES.map(t => t.key);
+const TROPE_MARK_DEFAULTS_LIGHT = {
+  mercha:'#3b82c4', tipcha:'#3a9e4e', munach:'#8e5bbf', etnachta:'#c8651b', sof_pasuk:'#d64541',
+  mahpach:'#2aa6a0', pashta:'#c74f8e', yetiv:'#8a7560', zakef_katon:'#4f5bd5', zakef_gadol:'#5f7d95',
+  zarka:'#1490c0', segol:'#b8324f', shalshelet:'#7d3c98', revia:'#b03ab0', darga:'#a0522d', tevir:'#00897b',
+  kadma:'#7c8f1c', geresh:'#d81b60', geresh_muqdam:'#c2185b', gershayim:'#0277bd', telisha_ketana:'#558b2f',
+  telisha_gedola:'#6a1b9a', pazer:'#bf360c', mercha_kefula:'#1565c0', karnei_parah:'#6d4c41', yerach_ben_yomo:'#546e7a'
+};
+const TROPE_MARK_DEFAULTS_DARK = {
+  mercha:'#5c9fe0', tipcha:'#55c06a', munach:'#a97fe0', etnachta:'#ee8a3c', sof_pasuk:'#e0635e',
+  mahpach:'#3fbdb6', pashta:'#e07ab0', yetiv:'#af9e8d', zakef_katon:'#8089e1', zakef_gadol:'#89a0b4',
+  zarka:'#55bee7', segol:'#d6677f', shalshelet:'#af74c8', revia:'#cf6dcf', darga:'#d48b68', tevir:'#4fd1c3',
+  kadma:'#a8c75a', geresh:'#e7558a', geresh_muqdam:'#e7558f', gershayim:'#55b0e7', telisha_ketana:'#96ce6e',
+  telisha_gedola:'#af5ae2', pazer:'#e77855', mercha_kefula:'#5599e7', karnei_parah:'#b79286', yerach_ben_yomo:'#8ca5b0'
+};
+// The class → var line of every mark (the .nik-<key> lines' idiom, generated from TROPE_MARK_KEYS so no mark lacks one): a
+// .tm-<mark> word or staff bar reads its mark's --tropem-<mark>-* body vars through --tm-bg / --tm-line / --tm-bar, which
+// the coloring-by-mark rules in the stylesheet paint with.
+(function () {
+  const st = document.createElement('style');
+  st.id = 'ttTropeMarkVars';
+  st.textContent = TROPE_MARK_KEYS.map(k => `.tm-${k}{--tm-bg:var(--tropem-${k}-bg);--tm-line:var(--tropem-${k}-line);--tm-bar:var(--tropem-${k}-bar)}`).join('\n');
+  document.head.appendChild(st);
+})();
 // Cross-link to the Trope Tutor (Learn + Drill page for the trope names/melodies).
 // The legend's "Learn the trope names →" link renders only when this is a real URL.
 const TROPE_TUTOR_URL = 'trope_tutor.html';
@@ -4639,15 +4714,26 @@ function tropeFamilyOf(rawTok) {
   }
   return fam;
 }
+// The mark of one word (raw token) when coloring by mark, or null: the last mark wins, as in tropeFamilyOf, except that a
+// pashta written twice (its first glyph is kadma's codepoint) is one pashta, as tropeUnitsOfVerse reads it. The sof pasuk
+// word is positional (tokenizeHebrew), since siluk shares meteg's codepoint.
+function tropeMarkOf(rawTok) {
+  let k = null, pashta = false;
+  for (const ch of rawTok) {
+    const m = TROPE_CHAR_TO_KEY[ch];
+    if (m) { k = m; if (m === 'pashta') pashta = true; }
+  }
+  return k === 'kadma' && pashta ? 'pashta' : k;
+}
 // Realign display tokens to raw tokens when stripNikkud swallowed separators
 // (its U+05B0–U+05C7 range includes maqaf U+05BE and paseq U+05C0), merging
 // display tokens. Letters are never stripped, so a display token's letters equal
 // the concatenated letters of the raw tokens it came from — walk both lists
 // matching on letters and take the clause family across the consumed raw tokens
-// (last mark wins, as in tropeFamilyOf). Returns famByTi keyed by display token
-// index. Any desync stops coloring from that point on: no color is acceptable, a
-// wrong color is not.
-function tropeRealignFamilies(tokens, rawTokens) {
+// (last mark wins, as in tropeFamilyOf; tropeMarkOf passed as `classify` reads the
+// marks instead). Returns famByTi keyed by display token index. Any desync stops
+// coloring from that point on: no color is acceptable, a wrong color is not.
+function tropeRealignFamilies(tokens, rawTokens, classify = tropeFamilyOf) {
   const letters = s => s.replace(/[^א-ת]/g, '');
   const rawWords = rawTokens.filter(t => /[א-ת]/.test(t));
   const famByTi = [];
@@ -4659,7 +4745,7 @@ function tropeRealignFamilies(tokens, rawTokens) {
     let acc = '', fam = null;
     while (rp < rawWords.length && acc.length < target.length) {
       acc += letters(rawWords[rp]);
-      fam = tropeFamilyOf(rawWords[rp]) || fam;
+      fam = classify(rawWords[rp]) || fam;
       rp++;
     }
     if (acc !== target) return famByTi;   // desync — leave the rest uncolored
@@ -4684,9 +4770,22 @@ function getTropeColor(fam) {
   return ((_printForceLight ? false : document.body.classList.contains('dark'))
     ? TROPE_DEFAULTS_DARK : TROPE_DEFAULTS_LIGHT)[fam] || '#888888';
 }
+// A mark's color while coloring by mark: the same trust model, over its own map.
+function getTropeMarkColor(k) {
+  const ov = settings.tropeMarkColors && settings.tropeMarkColors[k];
+  if (typeof ov === 'string' && TROPE_HEX6_RE.test(ov)) return ov;
+  return ((_printForceLight ? false : document.body.classList.contains('dark'))
+    ? TROPE_MARK_DEFAULTS_DARK : TROPE_MARK_DEFAULTS_LIGHT)[k] || '#888888';
+}
 // The trope look the drawer's list stores. Any other value (a newer page's choice) shows as
 // Highlight and stays stored.
 function tropeModeKey() { return settings.tropeCodingMode === 'underline' ? 'underline' : 'highlight'; }
+// What a word is colored by: its clause family (Phrases) or its own mark (Individual trope). Any other stored value shows
+// as Phrases and stays stored.
+function tropeColorByKey() { return settings.tropeColorBy === 'mark' ? 'mark' : 'phrase'; }
+// Whether a mark is colored while coloring by mark: every mark is, until the teacher unchecks it (an imported list that is
+// not an array colors them all).
+function tropeMarkOn(k) { return !(Array.isArray(settings.tropeMarksOff) && settings.tropeMarksOff.includes(k)); }
 // The Trope staff layout's settings, read at use time the same way: an unknown stored value (a newer page's choice,
 // an edited link) shows as the default and stays stored; the numbers are clamped again for a value written since load.
 function staffWordsKey() { return settings.staffWords === 'translit' ? 'translit' : 'both'; }   // the sub-choice under the Translit switch; a stored 'hebrew' (the retired third choice) reads 'both' and stays stored
@@ -4722,6 +4821,20 @@ function applyTropeColors() {
     body.style.setProperty('--trope-' + fam + '-bg', c + '59');   // 0x59 ≈ 35% alpha
     body.style.setProperty('--trope-' + fam + '-line', c);
   }
+  // Coloring by mark: the words carry their mark's class beside the family's (tokenizeHebrew), so Phrases ↔ Individual
+  // trope is this body class and the --tropem-<mark>-* vars, never a rebuild. An unchecked mark paints nothing: no tint,
+  // no line, and its staff bar the uncolored grey.
+  const byMark = tropeColorByKey() === 'mark';
+  body.classList.toggle('trope-by-mark', byMark);
+  if (byMark) {
+    for (const k of TROPE_MARK_KEYS) {
+      const c = getTropeMarkColor(k), lit = tropeMarkOn(k);
+      body.style.setProperty('--tropem-' + k + '-bg', lit ? c + '59' : 'transparent');
+      body.style.setProperty('--tropem-' + k + '-line', lit ? c : 'transparent');
+      body.style.setProperty('--tropem-' + k + '-bar', lit ? c : 'var(--border)');
+    }
+  }
+  buildTropeLegend();   // by mark, the key names the marks in the reading; a no-op while nothing it shows has changed
   // The legend only makes sense over an actual reading — keep it hidden on the
   // empty state and while a fetch is in flight (renderText re-syncs after load).
   const legend = document.getElementById('ttTropeLegend');
@@ -4756,16 +4869,69 @@ function syncTropeModeRadios() {
   check('tmNone', !on);
   check('tmHighlight', on && m === 'highlight');
   check('tmUnderline', on && m === 'underline');
+  check('tbPhrase', tropeColorByKey() === 'phrase');
+  check('tbMark', tropeColorByKey() === 'mark');
   toggleTropeOptionsVisibility(on);
 }
 
-// Build (or rebuild, on a language switch) the trope-legend family chips from TROPE_COLOR_DEFS.
-// Family names come from the torah.glyphname.trope_* keys (fall back to def.name pre-i18n).
-function buildTropeLegend() {
+// A mark's name: the Ashkenazi transliteration in both UIs, as the Trope Tutor's chips and the staff's notes name them
+// (trope pronunciation names are never translated). The element carries dir/lang so "Sof Pasuk (Siluk)" keeps its
+// English order in the Hebrew UI and a screen reader voices it in English.
+function tropeMarkNameEl(k) {
+  const sp = document.createElement('span');
+  sp.dir = 'ltr'; sp.lang = 'en';
+  sp.textContent = (TROPE_BY_KEY[k] || {}).ashk || k;   // i18n-ignore (trope pronunciation name)
+  return sp;
+}
+// The marks the coloring-by-mark key lists: the ones the reading on screen carries, read the way tokenizeHebrew colors
+// its words (each word's own mark, the verse's last word sof pasuk), less the ones the teacher left uncolored. Memoized
+// on the verse array, which every load replaces.
+let _tropeMarksFor = null, _tropeMarksSeen = null;
+function tropeLegendMarks() {
+  if (_tropeMarksFor !== currentVerses) {
+    _tropeMarksFor = currentVerses;
+    _tropeMarksSeen = new Set();
+    for (const v of currentVerses || []) {
+      const words = String(v.hebrew || '').split(/(\s+|־)/).filter(t => /[א-ת]/.test(t));
+      words.forEach((w, i) => { const k = i === words.length - 1 ? 'sof_pasuk' : tropeMarkOf(w); if (k) _tropeMarksSeen.add(k); });
+    }
+  }
+  return TROPE_MARK_KEYS.filter(k => _tropeMarksSeen.has(k) && tropeMarkOn(k));
+}
+// Build (or rebuild) the trope-legend chips. By phrase: one per family of TROPE_COLOR_DEFS, named from the
+// torah.glyphname.trope_* keys (def.name pre-i18n), each with its tip. By mark: one per mark of tropeLegendMarks(), its
+// glyph and name, no tip. applyTropeColors calls it on every render and color change, and it rebuilds only when the
+// chips it would draw differ; applyI18n forces it (the family names are the dictionary's).
+let _tropeLegendSig = null;
+function buildTropeLegend(force) {
   const tutorLink = document.getElementById('ttTropeTutorLink');
   if (!tutorLink) return;
+  const marks = tropeColorByKey() === 'mark' ? tropeLegendMarks() : null;
+  const sig = marks ? 'mark:' + marks.join(',') : 'phrase';
+  if (!force && sig === _tropeLegendSig) return;
+  _tropeLegendSig = sig;
   const legend = tutorLink.parentNode;
   legend.querySelectorAll('.tt-trope-chip').forEach(c => c.remove());
+  if (marks) {
+    marks.forEach(k => {
+      const chip = document.createElement('span');
+      chip.className = 'tt-trope-chip is-mark';
+      const sw = document.createElement('span');
+      sw.className = 'tt-trope-swatch';
+      sw.style.setProperty('--tt-sw-bg', 'var(--tropem-' + k + '-bg)');
+      sw.style.setProperty('--tt-sw-line', 'var(--tropem-' + k + '-line)');
+      chip.appendChild(sw);
+      const gl = document.createElement('span');
+      gl.className = 'tt-trope-glyph';
+      gl.lang = 'he';
+      gl.dir = 'rtl';
+      gl.textContent = 'א' + TROPE_BY_KEY[k].display;   // the mark on its alef carrier
+      chip.appendChild(gl);
+      chip.appendChild(tropeMarkNameEl(k));
+      legend.insertBefore(chip, tutorLink);
+    });
+    return;
+  }
   TROPE_COLOR_DEFS.forEach(def => {
     const chip = document.createElement('span');
     chip.className = 'tt-trope-chip';
@@ -4850,16 +5016,19 @@ function buildPrintBand() {
   ref.textContent = label;
   band.appendChild(ref);
   if (settings.colorCodeTrope) {
-    TROPE_COLOR_DEFS.forEach(def => {
+    const pchip = (line, name) => {
       const chip = document.createElement('span');
       chip.className = 'pbnd-chip';
       const sw = document.createElement('span');
       sw.className = 'pbnd-sw';
-      sw.style.background = 'var(--trope-' + def.key + '-line)';
+      sw.style.background = line;
       chip.appendChild(sw);
-      chip.appendChild(document.createTextNode(window.I18n ? I18n.t('torah.glyphname.trope_' + def.key) : def.name));
+      chip.appendChild(name);
       band.appendChild(chip);
-    });
+    };
+    if (tropeColorByKey() === 'mark') tropeLegendMarks().forEach(k => pchip('var(--tropem-' + k + '-line)', tropeMarkNameEl(k)));
+    else TROPE_COLOR_DEFS.forEach(def => pchip('var(--trope-' + def.key + '-line)',
+      document.createTextNode(window.I18n ? I18n.t('torah.glyphname.trope_' + def.key) : def.name)));
   }
 }
 
@@ -5079,6 +5248,7 @@ function tokenizeHebrew(text, wordIdxStartRef, opts, underWord, sink) {
   const rawTokens = tropeOn ? text.split(/(\s+|־)/) : null;
   const rawAligned = tropeOn && rawTokens.length === tokens.length;
   const famByTi = (tropeOn && !rawAligned) ? tropeRealignFamilies(tokens, rawTokens) : null;
+  const markByTi = (tropeOn && !rawAligned) ? tropeRealignFamilies(tokens, rawTokens, tropeMarkOf) : null;
   // Sof pasuk has no usable codepoint (Unicode unifies siluk with meteg, U+05BD),
   // so the verse-final word is classified POSITIONALLY: every caller passes exactly
   // one verse, so the last Hebrew token of this call is the sof-pasuk word.
@@ -5089,15 +5259,19 @@ function tokenizeHebrew(text, wordIdxStartRef, opts, underWord, sink) {
     }
   }
   // Resolve every Hebrew token's own clause family up front, so the maqaf pass can
-  // look ahead at a partner's family before any spans are emitted.
-  let famOf = null;
+  // look ahead at a partner's family before any spans are emitted. Each word's own mark
+  // (coloring by mark) is resolved beside it, by the same rules but the etnachta split.
+  let famOf = null, markOf = null;
   if (tropeOn) {
-    famOf = [];
+    famOf = []; markOf = [];
     for (let ti = 0; ti < tokens.length; ti++) {
       if (!/[א-ת]/.test(tokens[ti] || '')) continue;
       famOf[ti] = (ti === lastHebIdx) ? 'sofpasuk'
                 : rawAligned ? tropeFamilyOf(rawTokens[ti])
                 : (famByTi[ti] || null);
+      markOf[ti] = (ti === lastHebIdx) ? 'sof_pasuk'
+                 : rawAligned ? tropeMarkOf(rawTokens[ti])
+                 : (markByTi[ti] || null);
     }
     // Etnachta splits the verse in half: mercha, tipcha and munach lead into it before it and
     // into sof pasuk after it, so each per-mark 'sofpasuk' word before the verse's etnachta word
@@ -5119,8 +5293,9 @@ function tokenizeHebrew(text, wordIdxStartRef, opts, underWord, sink) {
     // it, and a partner with none (realign desync tail) contributes nothing — no
     // color, never wrong color.
     for (let ti = tokens.length - 1; ti >= 0; ti--) {
-      if (famOf[ti] || !/[א-ת]/.test(tokens[ti] || '')) continue;
-      if (tokens[ti + 1] === '־' && famOf[ti + 2]) famOf[ti] = famOf[ti + 2];
+      if (!/[א-ת]/.test(tokens[ti] || '') || tokens[ti + 1] !== '־') continue;
+      if (!famOf[ti] && famOf[ti + 2]) famOf[ti] = famOf[ti + 2];
+      if (!markOf[ti] && markOf[ti + 2]) markOf[ti] = markOf[ti + 2];
     }
   }
   const out = [];
@@ -5136,6 +5311,7 @@ function tokenizeHebrew(text, wordIdxStartRef, opts, underWord, sink) {
         : esc(tok);
       let tropeCls = '';
       if (tropeOn && famOf[ti]) tropeCls = ' trope-' + famOf[ti];   // fam ∈ TROPE_FAMILIES — internal constant, not user data
+      if (tropeOn && markOf[ti]) tropeCls += ' tm tm-' + markOf[ti];   // a TROPES key — internal constant, not user data
       // Under-word transliteration (screen renders only — the copy path passes opts and never asks): the
       // Hebrew and its Latin line become the two items of the same .tt-word cell. .tt-wtl is never a
       // .tt-word and never carries data-twi — every karaoke/rover/copy consumer counts one .tt-word per
@@ -6102,6 +6278,12 @@ function staffEnsureSvg(el) {
     famOf: (k, ui, u) => (u && u.fam) || '' };
   if (sys.chroma) opts.chroma = sys.chroma;
   const svg = renderPhraseStaff(sys.row, opts);
+  // Each bar is one mark's (data-u, the row's unit): its mark class colors it while coloring by mark (munach legarmeh
+  // prints as munach); the family class above colors it by phrase.
+  svg.querySelectorAll('.tu-pbar').forEach(r => {
+    const u = sys.row.units[+r.getAttribute('data-u')], k = u && (u.k === 'munach_legarmeh' ? 'munach' : u.k);
+    if (k && TROPE_BY_KEY[k]) r.classList.add('tm', 'tm-' + k);
+  });
   svg.style.inlineSize = ''; svg.style.blockSize = '';   // the CSS sizes it to its system (100% / auto), so paper and a narrow viewport shrink it
   ph.replaceWith(svg);
 }
@@ -8617,10 +8799,72 @@ function setVowelScheme(s) {
 }
 
 /* ── Trope-family color pickers (mirror of the nikkud pickers above) ── */
+// By mark the list is one row per mark of TROPES, grouped under its family's heading (the families in TROPE_COLOR_DEFS
+// order, each family's marks in TROPES order): a checkbox (colored or not), the mark on its alef, its name (the
+// checkbox's label) and its color, which checks the mark when picked.
+function initTropeMarkPickers(list) {
+  TROPE_COLOR_DEFS.forEach(def => {
+    const marks = TROPES.filter(t => t.family === def.key);
+    if (!marks.length) return;
+    const h = document.createElement('div');
+    h.className = 'color-pick-group';
+    h.textContent = tropeDefName(def);
+    list.appendChild(h);
+    marks.forEach(t => initTropeMarkRow(list, t));
+  });
+}
+function initTropeMarkRow(list, t) {
+  const k = t.key, on = tropeMarkOn(k);
+  const row = document.createElement('div');
+  row.className = 'color-pick-row is-mark' + (on ? '' : ' is-off');
+  const cb = document.createElement('input');
+  cb.type = 'checkbox'; cb.id = 'tmk-' + k; cb.checked = on;
+  const ex = document.createElement('span');
+  ex.className = 'color-pick-ex'; ex.lang = 'he'; ex.setAttribute('aria-hidden', 'true'); ex.textContent = 'א' + t.display;
+  const lbl = document.createElement('label');
+  lbl.className = 'color-pick-label'; lbl.htmlFor = cb.id;
+  lbl.appendChild(tropeMarkNameEl(k));
+  const inp = document.createElement('input');
+  inp.type = 'color'; inp.className = 'color-pick-input';
+  inp.setAttribute('aria-label', I18n.t('torah.settings.color_for_aria', {name: t.ashk}));
+  inp.value = getTropeMarkColor(k);
+  cb.addEventListener('change', () => setTropeMarkOn(k, cb.checked));
+  inp.addEventListener('input', () => {
+    if (!settings.tropeMarkColors || typeof settings.tropeMarkColors !== 'object') settings.tropeMarkColors = {};
+    settings.tropeMarkColors[k] = inp.value;
+    if (!tropeMarkOn(k)) { setTropeMarkOn(k, true); return; }   // a color picked for a mark means: color it
+    applyTropeColors();          // CSS-var recolor only — the word classes are already in the DOM
+    saveSettings();
+  });
+  row.appendChild(cb); row.appendChild(ex); row.appendChild(lbl); row.appendChild(inp);
+  list.appendChild(row);
+}
+// The unchecked marks in TROPES order, so equal lists compare equal (practice links); a key this page does not know (a
+// newer page's mark) is kept after them, never dropped.
+function tropeMarksOffList(off) {
+  return TROPE_MARK_KEYS.filter(m => off.has(m)).concat([...off].filter(m => typeof m === 'string' && !TROPE_MARK_KEYS.includes(m)));
+}
+// The one writer of a mark's checkbox.
+function setTropeMarkOn(k, on) {
+  const off = new Set(Array.isArray(settings.tropeMarksOff) ? settings.tropeMarksOff : []);
+  if (on) off.delete(k); else off.add(k);
+  settings.tropeMarksOff = tropeMarksOffList(off);
+  const cb = document.getElementById('tmk-' + k);
+  if (cb) { cb.checked = on; cb.closest('.color-pick-row').classList.toggle('is-off', !on); }
+  applyTropeColors();
+  saveSettings();
+}
+function setAllTropeMarks(on) {
+  settings.tropeMarksOff = on ? [] : tropeMarksOffList(new Set(TROPE_MARK_KEYS.concat(Array.isArray(settings.tropeMarksOff) ? settings.tropeMarksOff : [])));
+  initTropeColorPickers();
+  applyTropeColors();
+  saveSettings();
+}
 function initTropeColorPickers() {
   const list = document.getElementById('tropeColorPickerList');
   if (!list) return;
   list.innerHTML = '';
+  if (tropeColorByKey() === 'mark') { initTropeMarkPickers(list); return; }
   TROPE_COLOR_DEFS.forEach(def => {
     const row = document.createElement('div');
     row.className = 'color-pick-row';
@@ -8643,16 +8887,23 @@ function initTropeColorPickers() {
     list.appendChild(row);
   });
 }
+// Reset is the list on show's: the family colors by phrase, the mark colors (and every mark colored again) by mark.
 function resetTropeColors() {
-  if (!confirm(I18n.t('torah.confirm.reset_trope_colors'))) return;
-  settings.tropeColorOverrides = {};
+  const byMark = tropeColorByKey() === 'mark';
+  if (!confirm(I18n.t(byMark ? 'torah.confirm.reset_trope_mark_colors' : 'torah.confirm.reset_trope_colors'))) return;
+  if (byMark) { settings.tropeMarkColors = {}; settings.tropeMarksOff = []; }
+  else settings.tropeColorOverrides = {};
   initTropeColorPickers();
   applyTropeColors();
   saveSettings();
 }
 function toggleTropeOptionsVisibility(show) {
+  const byMark = tropeColorByKey() === 'mark';
+  document.getElementById('tropeByRow').style.display = show ? '' : 'none';
+  document.getElementById('tropeByMarkNote').style.display = show && byMark ? '' : 'none';
   document.getElementById('tropeColorPickerList').style.display = show ? '' : 'none';
   document.getElementById('tropeResetRow').style.display = show ? '' : 'none';
+  document.querySelectorAll('.tt-trope-marks-btn').forEach(b => { b.hidden = !byMark; });
 }
 
 /* ══════════════════════════════════════════════════════
@@ -9918,6 +10169,18 @@ function wireSettingsForm() {
       saveSettings(); applyTropeColors();
     });
   });
+  // Color by: Trope phrases or Individual trope. Every word carries both classes, so this too is a class+var swap; the
+  // picker list below it swaps to the families' or the marks' rows.
+  document.querySelectorAll('input[name="optTropeBy"]').forEach(r => {
+    r.addEventListener('change', e => {
+      if (!e.target.checked) return;
+      settings.tropeColorBy = e.target.value === 'mark' ? 'mark' : 'phrase';
+      linkViewClaim(['tropeColorBy']);
+      initTropeColorPickers();
+      toggleTropeOptionsVisibility(!!settings.colorCodeTrope);
+      saveSettings(); applyTropeColors();
+    });
+  });
   // TTS rate sliders — drawer + audio bar both write to settings.ttsRate and
   // mirror each other so the user sees the same value wherever they adjust.
   function applyTtsRate(v) {
@@ -10886,10 +11149,13 @@ function _inlineCopyStyles(container, opts) {
     }
     sp.removeAttribute('class');
   });
+  const byMark = tropeColorByKey() === 'mark';
   container.querySelectorAll('span.tt-word').forEach(sp => {
-    const fam = (sp.className.match(/trope-([a-z]+)/) || [])[1];
-    if (fam) {
-      const c = getTropeColor(fam);
+    // By mark, the word's own mark (an unchecked one pastes uncolored); by phrase, its clause family.
+    const mk = byMark ? (sp.className.match(/\btm-([a-z_]+)/) || [])[1] : null;
+    const fam = byMark ? null : (sp.className.match(/trope-([a-z]+)/) || [])[1];
+    const c = mk ? (tropeMarkOn(mk) ? getTropeMarkColor(mk) : null) : fam ? getTropeColor(fam) : null;
+    if (c) {
       if (underline) _copySetStyle(sp, [`text-decoration:underline solid ${c}`,
                                         'text-decoration-thickness:3px', 'text-underline-offset:0.6em']);
       else           _copySetStyle(sp, [`background-color:${_copyBlendOnWhite(c, 0x59)}`]);
@@ -11496,8 +11762,8 @@ async function init() {
   refreshMyFonts();   // async: adds a "My Fonts" section from the shared IndexedDB store + re-applies a saved user font
   initColorPickers();
   initTropeColorPickers();
-  // Legend chips are generated once from TROPE_COLOR_DEFS (single source of truth
-  // with the pickers); the strip is static thereafter — renderText never touches it.
+  // Legend chips come from TROPE_COLOR_DEFS (single source of truth with the pickers), or by mark from the
+  // marks of the reading on screen — applyTropeColors keeps them current.
   buildTropeLegend();
   applyTropeColors();   // also shows the legend's tutor link (syncTropeTutorLink) when TROPE_TUTOR_URL is set
   populateParshaPicker();
@@ -11751,7 +12017,7 @@ function applyI18n() {
   try { initColorPickers(); } catch (e) {}          // vowel colour inputs — aria-label is I18n.t(...{name})
   try { initTropeColorPickers(); } catch (e) {}     // trope-family colour inputs — same
   try { syncStaffControls(); } catch (e) {}         // the staff panel's key name (trope.key.*)
-  try { buildTropeLegend(); } catch (e) {}          // family chips (glyphname keys)
+  try { buildTropeLegend(true); } catch (e) {}      // family chips (glyphname keys)
   try { refreshScopeLabels(); } catch (e) {}        // scope dropdown per-parsha labels
   try { syncCycleControls(); } catch (e) {}         // the reading-cycle note (year, loading, failed)
   try { lookupRender(); } catch (e) {}              // the portion lookup's result, in the new language
@@ -12265,6 +12531,11 @@ function _linkTradMap(v) {
   for (const g of TROPE_TRAD_GROUPS) if (typeof v[g] === 'string' && TROPE_TRAD_ID_RE.test(v[g])) out[g] = v[g];
   return out;
 }
+// A list of known keys (the unchecked marks), deduplicated in the order of `keys`.
+function _linkKeyList(v, keys) {
+  if (!Array.isArray(v)) return undefined;
+  return keys.filter(k => v.includes(k));
+}
 function _linkHexMap(v, keys) {
   if (!v || typeof v !== 'object' || Array.isArray(v)) return undefined;
   const out = {};
@@ -12304,6 +12575,9 @@ const LINK_DISPLAY = {
   colorCodeTrope:      _linkBool,
   tropeCodingMode:     v => _linkOneOf(v, _linkChoices('input[name="optTropeMode"]:not([value="none"])')),
   tropeColorOverrides: v => _linkHexMap(v, TROPE_FAMILIES),
+  tropeColorBy:        v => _linkOneOf(v, _linkChoices('input[name="optTropeBy"]')),
+  tropeMarkColors:     v => _linkHexMap(v, TROPE_MARK_KEYS),
+  tropeMarksOff:       v => _linkKeyList(v, TROPE_MARK_KEYS),
   karaokeStyle:        v => _linkOneOf(v, _linkChoices('input[name="optKarStyle"]')),
   karaokeFollow:       v => _linkOneOf(v, _linkChoices('input[name="optKarFollow"]')),
   // The Trope staff layout: what sits under the notes, the key it is drawn in, the voice (the 8 under the clef) and
@@ -12318,7 +12592,7 @@ const LINK_DISPLAY = {
 };
 // Each color list's look, with the on/off switch it shows under. A look is on screen only while its
 // coloring is on, so it rides a link only then, and a reader takes one only then.
-const LINK_LOOK_SWITCH = { colorCodingMode: 'colorCodeNikkud', tropeCodingMode: 'colorCodeTrope' };
+const LINK_LOOK_SWITCH = { colorCodingMode: 'colorCodeNikkud', tropeCodingMode: 'colorCodeTrope', tropeColorBy: 'colorCodeTrope' };
 function linkDisplayParam() {
   const out = { v: LINK_VIEW_V };
   Object.keys(LINK_DISPLAY).forEach(k => {
@@ -12368,7 +12642,7 @@ function linkViewApply() {
     if (Object.prototype.hasOwnProperty.call(data, k)) { want = LINK_DISPLAY[k](data[k]); if (want === undefined) return; }
     // Compared with what the reader sees: a stored value a reader never sees (the staff's retired 'hebrew' Words
     // choice, an unknown note-names value) must not open the link view for a difference that is invisible.
-    const seen = k === 'staffWords' ? staffWordsKey() : k === 'staffNoteNames' ? staffNoteNamesKey() : settings[k];
+    const seen = k === 'staffWords' ? staffWordsKey() : k === 'staffNoteNames' ? staffNoteNamesKey() : k === 'tropeColorBy' ? tropeColorByKey() : settings[k];
     if (_linkSame(want, seen)) return;
     own[k] = settings[k];
     shown[k] = JSON.parse(JSON.stringify(want));
