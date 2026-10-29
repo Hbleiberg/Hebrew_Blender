@@ -141,7 +141,10 @@
  *      when its hidden-tab flush found the store already holding it).
  *  D38. A first sign-in on a device that has only opened the Trope Tutor (its first render marked one family seen): no
  *      card asks about that progress and nothing of it is sent; the first answer sends it.
+ *  D39. Bulk preset edit opened while the load's download of another device's newer preset is on its way: the
+ *      teacher changes another preset and saves — only that one goes up, and the downloaded one stays as it landed.
  *
+
  * Every scenario asserts 0 pageerrors. Run from the repo root:
  *   node scripts/smoke-sync.mjs --sdk path/to/supabase.js [--port 8081]
  * The script starts python3 -m http.server itself (port 8081 by default, so it can run beside the others).
@@ -2022,6 +2025,31 @@ try {
     const row = cloud.find('progress', 'default', 'TropeTutor'), local = await lsJSON(page, 'hebrewTropeTutor_progress');
     check('D38: the first answer sends it (one POST), the account = the device', ok && !!row && canonJson(row.data) === canonJson(local) && row.data.tropes.etnachta.r === 1, JSON.stringify({ ok, calls: methods(cloud, from) }));
     check('D38: 0 pageerrors', errors.length === 0, errors.join(' | '));
+    await ctx.close();
+  }
+  // ---- D39. Bulk preset edit open while the load's download of another device's newer preset lands: Save sends only what the teacher changed ----
+  if (want('D39')) {
+    const A = { dashTextHTML: '<div>Monday from this laptop</div>', hideWeather: false };
+    const B = { dashTextHTML: '<div>Monday edited on the classroom PC</div>', hideWeather: true };
+    const T = { dashTextHTML: '<div>Tuesday</div>', hideWeather: false };
+    const cloud = new FakeCloud([]);
+    const mon = cloud.add({ tool: 'Dashboard', kind: 'preset', name: 'Monday', data: B }), tue = cloud.add({ tool: 'Dashboard', kind: 'preset', name: 'Tuesday', data: T });
+    const memory = { Dashboard: { preset: { Monday: { h: hashOf(A), id: mon.id, u: '2026-09-14T00:00:00.000Z', at: '2026-09-14T00:00:00.000Z' }, Tuesday: memOf(tue) } } };
+    cloud.delayFor = (url, m) => (m === 'GET' && /(^|,)\s*data(,|$)/.test(url.searchParams.get('select') || '')) ? 5000 : 0;   // the downloads, not the listing
+    const ctx = await openContext(browser, cloud, SEED({ memory, extra: { hebrewDashboard_presets: JSON.stringify({ Monday: A, Tuesday: T }), hebrewDashboard_tourSeen: '1' } }));
+    const presetPatches = () => reqs(cloud, 0, 'PATCH').filter(e => (e.hit || []).some(h => h.startsWith('preset:')));
+    const { page, errors, dialogs } = await openPage(ctx, 'classroom_dashboard.html', { settle: false });
+    await page.click('#gearBtn'); await page.click('#dashTabPresets'); await page.click('#bulkPresetBtn');
+    const opened = await page.evaluate((a) => !!_bpeDraft && _bpeDraft.Monday.dashTextHTML === a, A.dashTextHTML);
+    const landed = await page.waitForFunction((b) => { try { return JSON.parse(localStorage.getItem('hebrewDashboard_presets')).Monday.dashTextHTML === b; } catch (e) { return false; } }, B.dashTextHTML, { timeout: HYDRATE_MS }).then(() => true, () => false);
+    await page.click('.bpe-card[data-name="Tuesday"] .bpe-chip >> nth=0');
+    const asked = dialogs.seen.length;
+    await page.click('#bpeSaveBtn');
+    const ok = await waitLog(() => presetPatches().length > 0, 10000) && await settled(page, DASH_TOOLS, HYDRATE_MS);
+    await sleep(WRITE_MS);
+    const local = (await lsJSON(page, 'hebrewDashboard_presets')) || {};
+    check('D39: the other device\'s Monday, downloaded while Bulk preset edit was open, stays here and in the account; only Tuesday (changed) goes up; the save asks about 1 preset', opened && landed && ok && canonJson(local.Monday) === canonJson(B) && canonJson(cloud.find('preset', 'Monday').data) === canonJson(B) && canonJson(cloud.find('preset', 'Tuesday').data) !== canonJson(T) && presetPatches().every(e => e.hit.join() === 'preset:Tuesday') && /\b1\b/.test((dialogs.seen[asked] || {}).message || ''), JSON.stringify({ opened, landed, ok, local: local.Monday, account: cloud.find('preset', 'Monday').data, sent: methods(cloud, 0), asked: dialogs.seen.map(d => d.message) }));
+    check('D39: 0 pageerrors', errors.length === 0, errors.join(' | '));
     await ctx.close();
   }
 } finally {

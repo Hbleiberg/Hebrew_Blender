@@ -8026,9 +8026,18 @@ function mountSidebarResize(cfg) {
     tb.addEventListener('focusin', () => { if (!_activeEditable) setDrawerEditor(id); });
     return tb;
   }
+  // A preset's edits = the fields this screen set that differ from the preset as it stands now. Only those count and
+  // only those are saved: an account download that replaced a preset while the screen was open (another device's edit)
+  // keeps every field the teacher did not touch here, and a preset untouched here is never written back over it.
+  function bpeEdits(n) {
+    const cur = presets[n], d = _bpeDraft && _bpeDraft[n], out = {};
+    if (!cur || typeof cur !== 'object' || Array.isArray(cur) || !d || !_bpeTouched[n]) return out;
+    _bpeTouched[n].forEach(k => { if (JSON.stringify(d[k]) !== JSON.stringify(cur[k])) out[k] = d[k]; });
+    return out;
+  }
   function bpeChangedNames() {
     if (!_bpeDraft) return [];
-    return _bpeOrder.filter(n => presets[n] !== undefined && JSON.stringify(_bpeDraft[n]) !== JSON.stringify(presets[n]));
+    return _bpeOrder.filter(n => Object.keys(bpeEdits(n)).length > 0);
   }
   function bpeRefreshNote() {
     const el = document.getElementById('bpeNote'); if (!el || !_bpeDraft) return;
@@ -8257,9 +8266,9 @@ function mountSidebarResize(cfg) {
                          : (one ? 'dashboard.preset.bulk_save_confirm.one' : 'dashboard.preset.bulk_save_confirm.other');
     if (!confirm(I18n.t(ask, { count: changed.length }))) return;
     changed.forEach(n => {
-      const d = _bpeDraft[n];
-      if (_bpeTouched[n].has('dashTextHTML')) d.dashTextHTML = sanitizeDashHTML(d.dashTextHTML || '');
-      presets[n] = d;
+      const edits = bpeEdits(n);
+      if (edits.dashTextHTML !== undefined) edits.dashTextHTML = sanitizeDashHTML(edits.dashTextHTML || '');
+      presets[n] = Object.assign({}, presets[n], edits);
     });
     savePresetsStorage();   // one write; the account hook uploads only the rows that changed
     // Schedule Sync owns the board: if the period on it now is one of the changed presets, re-apply it now

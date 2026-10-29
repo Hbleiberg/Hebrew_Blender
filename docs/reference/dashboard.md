@@ -644,8 +644,10 @@ head holding the master row. `.bpe-backdrop` and `.bpe-modal` are on the print b
 surfaces, so Ctrl+P with the editor open prints the board underneath, as with the drawer.
 
 - **A draft, written only by Save.** `_bpeDraft` is a deep clone of `presets`; every card edit lands there and
-  `bpeSave()` writes the drafts whose JSON differs (`bpeChangedNames()`) back into `presets` with one
-  `savePresetsStorage()`, so the account hook uploads just the rows that changed. Cancel, Escape and the backdrop
+  `bpeSave()` writes, per preset, only the touched fields that differ from the preset *as it stands now*
+  (`bpeEdits(n)`; `bpeChangedNames()` lists the presets that have any) onto that preset, with one
+  `savePresetsStorage()`, so the account hook uploads just the rows that changed. Never the draft whole: a preset
+  the account replaced while the editor was open keeps every field the teacher did not touch here. Cancel, Escape and the backdrop
   ask (`dashboard.preset.bulk_discard_confirm`) only while something differs; Save confirms with the count, naming
   the account-wide effect while a session is stored. The two confirms and the master row's caption are `.one` /
   `.other` pairs: a new board already holds one preset, Default, so the singular is the first thing a teacher sees. A preset deleted on another device while the editor was open
@@ -664,7 +666,9 @@ surfaces, so Ctrl+P with the editor open prints the board underneath, as with th
   into the draft (`bpeMirror`) and never into the board; `pickEditorFont` with nothing selected restyles that
   card's whole text, as it does the Intermission editor's, never `settings.engFont`. Closing resets
   `_drawerEditorId` to `dashEditor` with a null range. The account module's `editing` reports true while focus
-  is inside the modal, so a download waits.
+  is inside the modal, so another tab's write waits; this page's own hydration (at load, or the `online` retry)
+  still lands its downloads in `presets` while the editor is open — the reason Save merges edits, above
+  (`scripts/smoke-sync.mjs` D39).
 - **The master row** sets a switch on every draft at once (a native checkbox, `indeterminate` when the presets
   differ; the card chips are the page's sliders), one display size for all (`#bpeMasterSize`, blank + "mixed"
   while they differ), and each card has *Copy this text to all presets* (a `confirm`, then every other draft and
