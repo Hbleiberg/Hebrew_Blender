@@ -546,6 +546,10 @@ body:has(#llOverlay:not([hidden]), #llBpOverlay:not([hidden]), #tourCard:not([hi
   box-shadow:var(--shadow-lg); width:min(780px, 94vw); max-height:calc(100dvh - 32px);
   overflow:auto; overscroll-behavior:contain; display:flex; flex-direction:column;
 }
+/* The dialog scrolls under its sticky head, so a control the keyboard reaches near the top (the tab strip on the way
+   back up, the Coloring sheet's options on a phone) was brought only into the scroller's box, under the head. The
+   scroller reserves the head's live height (--ll-head-h, written by wireDialog). Pattern focus-hidden-under-a-sticky-bar. */
+.ll-dialog { scroll-padding-block-start:calc(var(--ll-head-h, 64px) + 8px); }
 .ll-dlg-head {
   position:sticky; top:0; z-index:2; background:var(--white); flex-shrink:0;
   display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:10px 12px 8px; border-bottom:1px solid var(--border);
@@ -2551,6 +2555,12 @@ function llTrapKeys(ov, box, close) {
 function wireDialog() {
   const ov = document.getElementById('llOverlay'), box = ov.querySelector('.ll-dialog');
   llTrapKeys(ov, box, llClose);
+  // The sticky head's live height for the dialog's scroll-padding (it wraps on a phone, and the key line shows only
+  // under a fine pointer); 0 while the dialog is closed.
+  const head = box.querySelector('.ll-dlg-head');
+  const setHeadH = () => box.style.setProperty('--ll-head-h', head.offsetHeight + 'px');
+  setHeadH();
+  if (window.ResizeObserver) new ResizeObserver(setHeadH).observe(head); else window.addEventListener('resize', setHeadH);
   ov.addEventListener('click', e => { if (e.target === ov) llClose(); });
   document.getElementById('llClose').addEventListener('click', llClose);
   document.getElementById('llPrev').addEventListener('click', () => llStep(-1));
