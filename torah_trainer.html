@@ -1231,6 +1231,9 @@ body.layout-staff .tt-audio-bar .tt-audio-rates .row.tt-audio-tune { display:fle
   max-width:240px;
 }
 .tt-audio-bar .tt-audio-credit a { color:var(--gold-light); text-decoration:underline; }
+/* The Total Torah verse's video link reads a step larger than the credit around it — it is the one link a teacher
+   is meant to follow (ttCreditHTML). */
+.tt-audio-bar .tt-audio-credit a.tt-credit-yt { font-size:0.8rem; font-weight:600; }
 @media (max-width: 900px) {
   .tt-audio-bar .tt-audio-credit { flex-basis:100%; margin-inline-start:0; padding-top:4px; max-width:none; }
 }
@@ -7593,7 +7596,7 @@ function pocketCreditHTML() {
 function ttCreditHTML(entry, linkStyle) {
   const st = linkStyle ? ` style="${linkStyle}"` : '';
   let h = `${esc(I18n.t('torah.recsrc.credit_prefix'))} <a href="${TT_CREDIT_URL}" target="_blank" rel="noopener" dir="ltr" lang="en"${st}>${esc(I18n.t('torah.recsrc.credit_name'))}</a>`;
-  if (entry && TT_VIDEO_RE.test(entry.video)) h += ` · <a href="https://youtu.be/${esc(entry.video)}" target="_blank" rel="noopener"${st}>${esc(I18n.t('torah.recsrc.watch_youtube'))}</a>`;
+  if (entry && TT_VIDEO_RE.test(entry.video)) h += ` · <a class="tt-credit-yt" href="https://youtu.be/${esc(entry.video)}" target="_blank" rel="noopener"${st}>${esc(I18n.t('torah.recsrc.watch_youtube'))}</a>`;
   return h;
 }
 function syncAudioCredit() {
