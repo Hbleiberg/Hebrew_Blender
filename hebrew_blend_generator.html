@@ -1383,8 +1383,8 @@ body.dark .hi-sun{display:inline-block;}
     margin-bottom: 12px;
     font-size: 0.88rem;
   }
-  .score-correct { color: #27ae60; font-weight: 700; }
-  .score-incorrect { color: #c0392b; font-weight: 700; }
+  .score-correct { color: #19703c; font-weight: 700; }     /* 4.67:1 on the bar (AA for the small bold count) */
+  .score-incorrect { color: #a93226; font-weight: 700; }   /* 5.05:1 */
   .score-remaining { color: var(--muted); }
   .score-summary {
     background: var(--navy);
@@ -1416,7 +1416,7 @@ body.dark .hi-sun{display:inline-block;}
     cursor: pointer;
     font-family: inherit;
   }
-  .score-btn.correct { background: #27ae60; color: white; }
+  .score-btn.correct { background: #19703c; color: white; }   /* white 6.13:1 */
   .score-btn.incorrect { background: #c0392b; color: white; }
   .flip-score-badge {
     position: absolute;
@@ -1434,10 +1434,10 @@ body.dark .hi-sun{display:inline-block;}
     pointer-events: none;
     line-height: 1;
   }
-  .flip-card[data-score="correct"] .flip-score-badge { background: #27ae60; color: #fff; }
+  .flip-card[data-score="correct"] .flip-score-badge { background: #19703c; color: #fff; }
   .flip-card[data-score="incorrect"] .flip-score-badge { background: #c0392b; color: #fff; }
-  body.dark .flip-card[data-score="correct"] .flip-score-badge { background: #22c55e; }
-  body.dark .flip-card[data-score="incorrect"] .flip-score-badge { background: #ef4444; }
+  body.dark .flip-card[data-score="correct"] .flip-score-badge { background: #22c55e; color: #0b1f12; }     /* dark ink on the bright badges: 7.56 / 5.23:1 */
+  body.dark .flip-card[data-score="incorrect"] .flip-score-badge { background: #ef4444; color: #1a0505; }
 
   /* ── PRESET PANEL ── */
   .preset-row {
@@ -1997,6 +1997,8 @@ body.dark .hi-sun{display:inline-block;}
   }
   body.dark .timer-bar,
   body.dark .score-bar { background: var(--warm-gray); }
+  body.dark .score-correct { color: #27ae60; }     /* 5.33:1 on the dark bar */
+  body.dark .score-incorrect { color: #e57373; }   /* 5.13:1 */
   body.dark .timer-display { color: #dde4f0; }
   body.dark .score-summary { background: #0d1220; }
   body.dark .preset-item { background: #1e2535; border-color: var(--border); color: #dde4f0; }
