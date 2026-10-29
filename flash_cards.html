@@ -3916,9 +3916,11 @@ function wlLiveSelectedCount() {
   return [...selectedWordListIds].filter(id => !!lists[id]).length;
 }
 
+let _wordsFetchP = null;   // the in-flight fetch: a shared link's wait and the page's own sync share one ~3 MB download
 function fetchAllWordsData() {
+  if (_wordsFetchP) return _wordsFetchP;
   _wordsLoadFailed = false;
-  return fetch('data/hebrew_words.json?v=7')
+  return (_wordsFetchP = fetch('data/hebrew_words.json?v=7')
     .then(r => r.json())
     .then(data => { ALL_WORDS_DATA = data; updateWordsCount(); })
     .catch(() => {
@@ -3928,7 +3930,8 @@ function fetchAllWordsData() {
       // direct write was overwritten by the next routine re-render (a length tweak, a language
       // switch), and it also showed a dictionary error to My-Word-Lists users, who never need it.
       updateWordsCount();
-    });
+    })
+    .finally(() => { _wordsFetchP = null; }));
 }
 
 // Resolve the current word pool: [{word, translit, translation}].
@@ -7917,8 +7920,8 @@ function startPractice() {
     WORDS_POOL = resolveWordsPool();
     if (wordsSource === 'alldict' && !ALL_WORDS_DATA) {
       // Same Start-as-retry shape as emoji above. Only a FAILED load may re-fetch
-      // (fetchAllWordsData has no in-flight promise guard, so tap-spam mid-download must not
-      // stack fetches) — capture the flag first: fetchAllWordsData resets it synchronously.
+      // (a load still in flight is already coming, and a re-entry per tap would start a drill
+      // per tap) — capture the flag first: fetchAllWordsData resets it synchronously.
       // When the retry lands, re-enter like the emoji wait does; a still-down network leaves
       // the failed note standing with no re-entry, so there is no offline retry loop.
       const failed = _wordsLoadFailed;
@@ -9040,12 +9043,24 @@ document.addEventListener('DOMContentLoaded', () => {
           const payload = shareCodeDecode(sParam);
           const data = payload && typeof payload === 'object' ? (payload.data || (payload.tool ? null : payload)) : null;
           if (!data || typeof data !== 'object') return;
-          const shared = withOwnLook(data);   // read the reader's own look before the drill replaces it
-          _sharedDrill = true;
-          applySettings(shared);
-          startPractice();
-          const active = document.querySelector('.screen.active');
-          if (!active || active.id === 'screenSetup') _leaveSharedDrill();   // the drill could not start: the teacher's settings are back at once
+          const run = () => {
+            try {
+              const shared = withOwnLook(data);   // read the reader's own look before the drill replaces it
+              _sharedDrill = true;
+              applySettings(shared);
+              startPractice();
+              const active = document.querySelector('.screen.active');
+              if (!active || active.id === 'screenSetup') _leaveSharedDrill();   // the drill could not start: the teacher's settings are back at once
+            } catch (e) { _leaveSharedDrill(); }
+          };
+          // An emoji or All Dictionary deck draws from a file fetched on demand, which a first visit has not got yet:
+          // startPractice then stopped on setup with the reader's own settings put back (the dictionary), or waited for
+          // the file and started the reader's own deck once _leaveSharedDrill had restored it (emoji). Fetch it first.
+          const other = data.otherModeActive === true;
+          const corpus = other && data.otherSubMode === 'emoji' && !EMOJI_DATA ? fetchEmojiData()
+            : other && data.otherSubMode === 'words' && data.wordsSource === 'alldict' && !ALL_WORDS_DATA ? fetchAllWordsData()
+            : null;
+          if (corpus) corpus.then(run, run); else run();
         } catch (e) { _leaveSharedDrill(); }
       };
       if (window.I18n) I18n.ready.then(enterSharedDrill);
