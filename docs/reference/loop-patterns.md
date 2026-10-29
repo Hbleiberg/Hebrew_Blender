@@ -101,7 +101,8 @@
 - **Record (ledger row at S544):** - **`live-region-shown-with-its-text`** (NEW S537; `61762cf` ×8, `6d095c0` ×3): ACTIVE, streak 0. A status region made or un-hidden with its first message. Detection: findings S537 (grep + CDP).
 
 ## `abs-child-escapes-its-scroller`
-- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S555 · **Streak:** 1 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S572 · **Streak:** 2 · **Detector:** recipe
+- **Record (S572):** generator clean: 0 escapes in 560 loads (16 cells × 35 views by real taps; the measure is `documentElement.clientWidth`, trap 352).
 - **Record (S555):** flash_cards clean: 0 escaping elements in 256 cells (the `.vh` file input included); the wide-absolute plant fired once the audit measured against `documentElement.clientWidth` (trap 352). Recipe: `n555/common.mjs` `__n.audit().escapes`.
 - **Shape:** An absolute `.
 - **Detection:** `n534/escape.mjs`. — `n534/escape.mjs` is a scratchpad path that was never committed: port it to `scripts/loop/detect-<id>.mjs` (with `--plant`) at the next A, or the row goes DRAFT.
@@ -177,7 +178,8 @@
 - **Record (ledger row at S544):** - **`page-drops-a-field-it-cannot-apply`** (NEW S507 P; trope `3b9915b9`): ACTIVE, streak 0. A page rebuilds a synced blob from its known fields, dropping a newer build's field from the account. Detection: `p507/trope.mjs` T6.
 
 ## `theme-token-on-an-always-dark-surface`
-- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S555 · **Streak:** 1 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S572 · **Streak:** 2 · **Detector:** recipe
+- **Record (S572):** generator clean in the dark cells: every low reading sat on the paper sheet or a light plate.
 - **Record (S555):** flash_cards clean: 0 text nodes under 4.5:1 (3:1 large) across 256 cells, the navy card back, the dark dialogs and the listening tiles included (a `#777`-on-navy plant fired).
 - **Shape:** A theme token (`--text`, `.
 - **Detection:** `n506/pickcon.mjs`. — `n506/pickcon.mjs` is a scratchpad path that was never committed: port it to `scripts/loop/detect-<id>.mjs` (with `--plant`) at the next A, or the row goes DRAFT.
@@ -456,14 +458,16 @@
 - **Archived full text (latest compaction copy):** - **`editor-re-parse-caps-a-merged-list`** (**NEW S421 Pass P — 1 carrier, FIXED `288af4a`**): ACTIVE, consequence-critical (a sync carries the cut list to the account); never retires. A list the sync merges uncapped is re-parsed by its tool's editor or restore path through the …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `window-taller-than-a-phone-without-a-scroll`
-- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S555 · **Streak:** 1 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S572 · **Streak:** 2 · **Detector:** recipe
+- **Record (S572):** generator clean: the tour card, the `.ivrit` restore dialog and the frozen Generate bar fit every cell, the landscape SE included.
 - **Record (S555):** flash_cards clean: every dialog (ladder, weaknesses, profile picker, backup, sheet menu, tour card) fits the SE and i13 landscape with its close hit-testable and its list scrolling; a 900px planted box fired.
 - **Detection:** `n476` `modalFit` on an SE + 13 landscape, a tapped last button;
 - **Record (ledger row at S544):** - **`window-taller-than-a-phone-without-a-scroll`** (NEW S476 N; FM `fe808b64`; S506 variant, a sticky head covering its own scroller in landscape: dashboard bulk edit `232ea19e`): ACTIVE, streak 0. Detection: `n476` `modalFit` on an SE + 13 landscape, a tapped last button;
 - **Archived full text (latest compaction copy):** - **`window-taller-than-a-phone-without-a-scroll`** (NEW S476 N; FM `fe808b64`; S506 variant, a sticky head covering its own scroller in landscape: dashboard bulk edit `232ea19e`): ACTIVE, streak 0. Detection: `n476` `modalFit` on an SE + 13 landscape, a tapped last button; plant 900px. …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `install-banner-over-a-sheet's-bottom-controls`
-- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S562 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S572 · **Streak:** 0 · **Detector:** `scripts/loop/probes/S572-install-hint-tours.mjs`
+- **Record (S572):** six tours FOUND + FIXED `6bda33bc` in one shared rule: the generator's N forced the iOS hint and its tour stalled at step 3 (SE and 13, EN/HE); the suite census of every tour page then stalled the dashboard's, the Font Maker's and Name Tags' at step 1 (SE), the dictionary's at 3–6 and the Torah Trainer's at 4 (SE). pwa.js now hides the hint while `#tourCard` is up (`body:has(#tourCard:not([hidden]))`), so a new tour page needs no rule of its own; the page rules stay for their other windows. Probe `S572-install-hint-tours.mjs` (9 pages × SE/13 × EN/HE, every step by real taps: 36/36; the parent fails the six pages' 24 cells). Open: none known.
 - **Record (S562):** trope_tutor FOUND + FIXED `e75e9ef`: the iOS hint forced on SE + i13 × EN/HE × light/dark — a real tap on the tour's Next stalled at step 2 (SE) / 4 (i13) in 8/8 cells, and on the SE a drill question's Next sat under it; the hint now hides while `#tourCard` or `#drillQ` is up (`n562/banner.mjs`: the whole tour 9/9 and 5/5 drill Nexts by real taps, the hint back after). In-page controls under the hint at rest scroll out — exempt, as the page's own end.
 - **Record (S555):** flash_cards FOUND + FIXED `0bfe77e`: the iOS hint forced on SE + i13 (EN/HE) sat over the sticky Start bar (Print whole, Start's lower half), the tour's Next and, on the SE, the marks after a flip; the bar rides above it by `--pwa-banner-space` (≤767px) and the hint hides while `#tourCard` or `#screenCard` is up (`n555/banner.mjs`, `fix1-verify.mjs`: every control hit-testable at centre and bottom edge, real taps; a tap on Next had timed out under the hint). Open: torah gallery.
 - **Shape:** pwa.js's install hint (fixed at the bottom, above every z-index) sits over a sheet's, a modal's or the tour's bottom controls on a phone; the carrier hides it while that state is open (`body:has(…) #pwaInstallBanner { visibility:hidden }`) or lifts its bar by `--pwa-banner-space`.
@@ -553,7 +557,8 @@
 - **Archived full text (latest compaction copy):** - **`aria-disabled-lock-no-handler-checks`** (**NEW, registered 2026-09-23 (S407 Pass P) — 1 carrier, fixed `e5c4784`**): ACTIVE, clean streak 0. A control marked busy or invalid by `aria-disabled="true"` whose activation handler never reads that state: the look says locked, a …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `text-field-under-16px-zooms-on-ios-focus`
-- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S556 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S572 · **Streak:** 0 · **Detector:** recipe
+- **Record (S572):** generator FIXED ×32 `800b827d` — never swept before: 32 of its 33 fields 11.2–13.6px under a coarse pointer (30 sized inline); one `(pointer: coarse)` rule on the sidebar's text, number, select and textarea fields, `!important`. By descriptor (SE, 13, 13 landscape, Pixel 7) against a HEAD copy: 0 / 33 under 16px (HEAD 32); the 560-load phone census after it: 0 overflow, nothing clipped; 1280 / 800 sizes identical to HEAD. Open: none known (`n572/fields.mjs` lists every field, shown or not).
 - **Record (S556):** flash FIXED ×2 — `#newProfileNameInput` 14.08 → 16px (+ `min-width:0`: the Save button back inside the dialog on an iPhone SE) `730e84e`; `.share-out` 11.84 → 16px `ffbd65b`; by descriptor against a HEAD copy; open carriers: 0 known.
 - **Record (S555):** flash_cards 2 open carriers: `#newProfileNameInput` 14.08px (inline `0.88rem`, the profile picker) and `#shareCodeOutput` 11.84px (`.share-out`, readonly — a tap to copy still focuses it); P4s behind the governor (16px in the coarse-pointer rule, `!important` against the inline style). The 14 other text-like fields are 16px (`n555/common.mjs` fields arm; a 13px plant fired).
 - **Detection:** computed …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -800,7 +805,8 @@
 - **Archived full text (latest compaction copy):** - **legibility-destroyed-by-a-second-dimming-layer**: **re-swept 2026-08-27 (S263, all 3 `#fsExitBtn` carriers) -- hits: 1 (`hebrew_blend_generator.html`, the LAST unfixed carrier), fixed in-pass (`eb0eab3`); clean streak: 0 -- ACTIVE, consequence-critical (legibility), never …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `fixed-control-positioned-outside-the-viewport`
-- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S563 · **Streak:** 0 · **Hits:** 3 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S572 · **Streak:** 1 · **Hits:** 3 · **Detector:** recipe
+- **Record (S572):** generator clean: 0 fixed boxes off-screen in 560 loads; a tip, the generated sheet, the `.ivrit` dialog and Quick start across a portrait ⇄ landscape flip: 0.
 - **Record (S563):** the S562 P3 FIXED `00c7d7a`: the shared tour engine clamps to `documentElement.clientWidth/Height`. Every step, iPhone 13 portrait → landscape → portrait (`n562/tourflip-suite.mjs`, HEAD copies the control): trope EN 2 → 0, Name Tags EN 2 → 0, the Letter Learner 0 → 0. Desktop × 8 cells × 3 pages: every card rect equals HEAD's. The six per-page engines carry the same line, with no stranding measured from it there.
 - **Record (S562):** trope_tutor — two carriers the at-rest census cannot see. (1) The Melody tip on a phone held sideways: no room above or below its icon, 38 / 49 px off the bottom — FIXED `4b16e61` (pinned inside the window). (2) The shared tour engine after a flip: `_tourReposition` clamps to `innerWidth`/`innerHeight`, which read the zoomed-out viewport for the one `resize` a flip fires while the card still sits at its old place (461 for 390) — trope EN steps 8–9 and Name Tags EN 4–5 stranded; P3 (the clamp to `documentElement.clientWidth/Height` measured 2 → 0 on both). Detection extends to a flip mid-state (`setViewportSize` portrait ⇄ landscape on the descriptor) and every tip opened in landscape, judged by `clientWidth/clientHeight` (`n562/tourflip-suite.mjs`, `tip-suite.mjs`).
 - **Record (S555):** flash_cards clean: 0 fixed elements outside the viewport in 256 cells (a sticky bar scrolled away at the page's end is its natural position, not a hit; a fixed plant at left:−40 fired).
@@ -840,7 +846,8 @@
 - **Archived full text (latest compaction copy):** - **state-mutation-that-never-arms-its-persistence**: **re-swept 2026-08-26 (S257) - hits: 1, the knowingly-deferred `setInputMode`, now fixed (`57abf9c`); clean streak: 0 - ACTIVE (consequence-critical: data loss, so it never retires on streak).** **The fix shape is the finding …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `flex-column-crushing-its-own-rows`
-- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S555 · **Streak:** 1 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S572 · **Streak:** 2 · **Detector:** recipe
+- **Record (S572):** generator clean: the readings were a flip card's hidden back, an open tip's panel and, in HE landscape, a wrapped (?) badge 5px past its toggle row (nothing overlaps).
 - **Record (S555):** flash_cards clean: no crushed rows in the ladder, weaknesses, profile-picker or backup dialogs on the SE or in i13 landscape; the plant needs `min-height:0` rows — flex items with `min-height:auto` overflow instead of crushing (then it is `window-taller…`'s shape).
 - **Record (ledger row at S544):** - **flex-column-crushing-its-own-rows** (**NEW, registered 2026-08-23 (S249 Pass N arm 4)**): a `display:flex; flex-direction:column` container that is ALSO height-constrained and scrollable (`max-height`/`flex:1` + `overflow-y:auto`) silently **compresses its children instead
 - **Archived full text (latest compaction copy):** - **flex-column-crushing-its-own-rows** (**NEW, registered 2026-08-23 (S249 Pass N arm 4)**): a `display:flex; flex-direction:column` container that is ALSO height-constrained and scrollable (`max-height`/`flex:1` + `overflow-y:auto`) silently **compresses its children instead …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -863,13 +870,22 @@
 - **Archived full text (latest compaction copy):** - **i18n cross-column parity (placeholders, plurals, inline markup)**: **S533 (K): 41 raw `{placeholder}` mismatches over 6,593 keys, all the `.one` shape — hits 0, streak 2.** **re-swept 2026-09-03 (S320 Pass K, detector 1 only): `{placeholder}` sets en vs he over 5,128 keys, raw 30 → hits: 0 — all thirty are the S261-refuted `.one` plural shape (Hebrew spells the singular number; …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `horizontal-overflow-at-narrow-widths`
-- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S555 · **Streak:** 0 · **Hits:** 2 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S572 · **Streak:** 0 · **Hits:** 4 · **Detector:** recipe
+- **Record (S572):** generator, the clipped variant: held sideways (iPhone 13, 750×342, the sidebar 311px) the Hebrew Font size row's reset button sits 17–18px past its sub-panel's `overflow:hidden` edge in EN and HE (the range keeps its 129px minimum); a P4 at the cap. The at-rest census missed it — it skips anything inside a clipping box — so `n572/helpers.js` gained a cut arm (a control past its nearest clipping ancestor). 0 document overflow in 560 loads. And inside a scroller: the page's `.main` / `.main-content` are `overflow:auto` at phone widths, so a sheet wider than the phone scrolls sideways inside them while the document reads 0 — the Hebrew UI's Inverse / Gematria sheets past the left edge (−106 px on an SE), Real Words Bingo's caller list and Word Search's grid on an SE (P3 + P4 at the cap). Detection adds every visible scroller's `scrollWidth − clientWidth` (`n572/hscroll.mjs`).
 - **Record (S555):** flash_cards FOUND + FIXED `8198628` (the clipped variant): a saved preset's row needs 426 px (EN) / 380 (HE) and `.panel` clips — Move ▾ 125/82/60 px past the panel on SE/i13/Pixel 7, the ⧉ and × with it on the SE, a profile's row on the SE; `.preset-item { flex-wrap: wrap }` under the 526px header query. Found only by a real preset save (S361's seed had no preset). Census 16 cells × 16 views: 0 `scrollWidth` overflow; escapes measured against `documentElement.clientWidth` (trap 352).
 - **Record (ledger row at S544):** - **horizontal-overflow-at-narrow-widths**: **re-swept 2026-09-03 (S334 Pass N, `torah_trainer.html`, 12 real-descriptor loads × 10 views incl. the S324 presentation toolbar) — hits: 1, the clipped-not-scrolled variant (`.tt-fs-plate` 340px in a 320px viewport, −10..330, A− and
 - **Archived full text (latest compaction copy):** - **horizontal-overflow-at-narrow-widths**: **re-swept 2026-09-03 (S334 Pass N, `torah_trainer.html`, 12 real-descriptor loads × 10 views incl. the S324 presentation toolbar) — hits: 1, the clipped-not-scrolled variant (`.tt-fs-plate` 340px in a 320px viewport, −10..330, A− and …[full text: IMPROVEMENT_ARCHIVE.md]
 
+## `fixed-columns-crush-a-narrow-sheet`
+- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S572 · **Streak:** 0 · **Hits:** 1 · **Detector:** `scripts/loop/probes/S572-generator-realwords-narrow-cards.mjs`
+- **Shape:** A builder sets a sheet's column count from its item count alone (`repeat(cols, 1fr)`), and the on-screen sheet is fluid, so a phone, a phone held sideways or a window with the sidebar beside it squeezes every cell below what its content needs — labels run into each other, a word overruns its cell and is cut. Paper is fine (the sheet's width is fixed there), so print checks never see it.
+- **Fix shape:** screen only, a column never narrower than the content's floor and exactly the builder's count where it fits: the builder also writes `--rw-cols`, and `@media screen` sets `repeat(auto-fill, minmax(max(<floor>, (100% − (cols − 1) × gap) / cols − 0.5px), 1fr))`; the PDF capture pins the sheet at full width, so it keeps the builder's columns.
+- **Detection:** per width (real descriptors SE / 13 / 13 landscape / Pixel 7, windows 768–1440) generate by real taps and read each cell's width, label collisions (the Range rects of the corner labels) and content past the cell; print media at Letter width and a replayed Export PDF as the controls that must not move.
+- **Record (S572):** generator Real Words cards FOUND + FIXED `39e7b42b` (the maintainer chose "fewer cards when narrow" at gate 4): 44–93px cards at ≤ 1024px windows and on every phone → ≥ 100px, Hebrew cut 7–36 → 0 per sheet; 1100–1440, print and the PDF unchanged. Open: the blend Bingo preview at ≤ 800px (S436's P3, gate 3/4), the same shape in `.bingo-grid`.
+
 ## `hover-only-affordance-under-a-synthetic-mouse-event`
-- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S555 · **Streak:** 1 · **Hits:** 1 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S572 · **Streak:** 2 · **Hits:** 1 · **Detector:** recipe
+- **Record (S572):** generator clean: the hover preview is `(hover: hover)`-scoped since S434; every visible tip opens on a tap, closes on a second and on an outside tap (4 cells).
 - **Record (S555):** flash_cards clean: 0 `:hover` rules that reveal content (static); the tooltip's tap contract holds (tap opens, a second tap closes); `.lc-tile:hover` moves only a border.
 - **Record (ledger row at S544):** - **hover-only-affordance-under-a-synthetic-mouse-event**: **re-swept 2026-08-23 (S249 Pass N arm 4) — hits: 1, the THIRD and FINAL carrier (`hebrew_dictionary.html`), fixed `383aa2a`; clean streak: 0 — ACTIVE.** **The class is now fully swept: all three `bindTip` carriers are
 - **Archived full text (latest compaction copy):** - **hover-only-affordance-under-a-synthetic-mouse-event**: **re-swept 2026-08-23 (S249 Pass N arm 4) — hits: 1, the THIRD and FINAL carrier (`hebrew_dictionary.html`), fixed `383aa2a`; clean streak: 0 — ACTIVE.** **The class is now fully swept: all three `bindTip` carriers are …[full text: IMPROVEMENT_ARCHIVE.md]

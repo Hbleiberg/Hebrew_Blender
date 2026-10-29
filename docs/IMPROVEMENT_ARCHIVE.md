@@ -95083,3 +95083,56 @@ _(prior)_ **Next session (S570):** **PR `claude/vibrant-dirac-c3547q` (S564–S5
 
 _(prior)_ **Next session (S571):** **PR `claude/improveloop-s570` (S570, #374): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1122**, FM **5.59**, corpus ?v=7. ⚑ drift: main=93b6e09 sw=v1122 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest: C's dictionary (S427), N's generator (S434), P's flash (S435); A/E/L/K (S530–S533) 40 sessions old (A: 27 DRAFT rows, the ▾ census). ⚑ The Trope Atlas `trope_atlas.html` (unlisted, landed S564's drift): its first N and P are due by S578. ⚑ Seeds: 54. ⚑ Torah (S570 D): Translit's first pass is the one big freeze (2.45 s @4×) — architecture, not a missing memo. ⚑ Deep links: flash's ?s= raced its lazy corpora until `9388361` — census the suite's other deep links that apply settings before a lazy corpus lands. ⚑ Sync (S567 P): the shared-module P3 (verify first); smoke-sync D31 — watch it. ⚑ FM: the photo intake size is still unasked — measure Trace's outline at ~2,000 px first. ⚑ Ports at the next A: `m554/`–`n562/`, `g563/`, `h564/`, `d565/`, `h566/`, `p567/`, `m568/`, `g569/`, `d570/` (report / cert / sheet / results / darkdiff / share2 / llwalk / dash / the recorder); traps 352, 356–425. ⚑ Queues (candidates naming one page): FM 20, generator 18, torah 13, dictionary 9, name_tags 9, flash 8, dashboard 6, trope 5, PE 5.
 ⚑ Maintainer: `08b8611`; O's permission rule; CI for `closeout.mjs --static`; translit second source; sw.js `no-store`; 14 fonts; torah screen reader; the locale's size and the Resources fonts' precache (Awaiting); gates 2–4 incl. the vowel palette's gold (S556), the trope link (S557), the Phrases chips' casing (S558), the FM's sheet-upload copy (S559), flash's short windows (S560, gate 4), the FM Exit label (S560, gate 3), the generator's QR layout (S563, gate 3); the S546 P3; the flash report's totals (S566, gate 2).
+
+
+<!-- archived by compact-ledger at the S573 boundary, 2026-10-29 -->
+## Compaction (S573, 2026-10-29) — moved verbatim from the live ledger
+
+### from Candidates — aged P4 (found more than 90 sessions before S573)
+
+- [ ] P4 (**NEW S482 H — gate 2**) | torah_trainer.html | **"Select verses to copy…" opens the Copy bar with selection off** (as documented): one more click; a verse clicked meanwhile chants. | found S482
+
+### from Candidates (prioritized, top = next)
+
+- [ ] P3 (**NEW S572 N — the generator at the cap; pattern `horizontal-overflow-at-narrow-widths`, inside a scroller**) | hebrew_blend_generator.html | **In the Hebrew UI the Inverse, Gematria and Real Words Gematria sheets run past a phone's left edge**: their 5th column sits at −106..−37 px on an iPhone SE (Gematria −25, iPhone 13 −41, Pixel 7 −23), reached only by scrolling the worksheet area sideways; the English UI fits. | found S572
+
+- [ ] P4 (**NEW S572 N — the generator at the cap; pattern `horizontal-overflow-at-narrow-widths`, clipped**) | hebrew_blend_generator.html | **Held sideways (iPhone 13, 750×342) the Hebrew Font size row's reset button sits 17–18px outside its sub-panel** (EN and HE): the range keeps its 129px minimum in the 311px sidebar; `min-width:0` on `.font-size-row input[type=range]` would fit it. | found S572
+
+### from Done
+
+- [x] 2026-10-29 | (S572 close-out) | branch/deploy note | **S572 = N on the generator (3rd: S262 → S434 → S572): 560 phone loads by real taps (16 cells × 35 views, plants 8/8), every field, the iOS hint + a 9-page tour census, touch, flips, sideways scrollers, 4×, Export PDF replayed. FOUND 9, FIXED 3 (+ Name Tags from the queue); gate 4 asked → "fewer cards when narrow"; 3 probes, 1 new pattern. #374 continued, sw v1126 → v1130.**
+
+- [x] 2026-10-29 | (S567 close-out) | branch/deploy note | **S567 = P on the dashboard (its first since S421; 113 commits to the page): all 7 smokes with the pinned SDK, static arms 3–7 (59 checks, 7 plants fired), live read-only, and the page's signed-in editors by real clicks on the fake cloud with HEAD the control. FOUND 2, FIXED 1 (Bulk preset edit's overwrite) + 1 shared-module P3; + the …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-29 | (struck) | Hebrew_Font_Maker.html | (S567) **"Auto-detect's Apply yields only every 4th crop" struck**: every crop already awaits `loadImg` (a task boundary), and Apply's long tasks are outside the loop (@1× top 78 ms; @4× 335 / 266). | `d565/sheet.mjs` @1× and @4× on the S567 tree
+
+- [x] 2026-10-29 | `cfb160c2` | name_tags.html | (S567) **A carried row's number stays readable in dark mode** (`tr.nt-dragging .nt-num` takes `--text`; pattern `contrast-below-AA-on-a-tinted-or-coloured-plate`). | `p567/nt-drag-contrast.mjs`, a real pointer holding the first grip × EN/HE × light/dark vs HEAD: dark 3.91 → 9.33, light 5.32 → 12.81, resting rows unchanged, Escape leaves no tint
+
+- [x] 2026-10-29 | `3e7be195` | hebrew_blend_generator.html | (S567) **The Hebrew on every worksheet carries `lang="he"` in the English UI** (UX rule 8, at each builder: reading cells, self-check, tracing, Name the Letter, number practice, bingo's header row, gematria, the word search, the crossword, the scanned key). | `p567/gen-lang.mjs` × 25 shapes (Real Words drills by clicks): 1,348 Hebrew …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-29 | `73ac80d1` | classroom_dashboard.html | (S567) **Escape closes a hovered tip and a mouse can move onto it** (torah's `f59d609` ported; pattern `hover-tip-not-dismissible-or-hoverable`, its last carrier). | `p567/dash-hovertip.mjs` + `swm-hovertip.mjs`, 7 of 8 tips × EN light 1280 / HE dark 800 vs HEAD: the drawer or week editor closed by Escape 7 → 0, not hoverable 7 → 0, no …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-29 | `a0a45526` | classroom_dashboard.html, sw.js, scripts/smoke-sync.mjs, dashboard.md | (S567) **Bulk preset edit saves only the fields the teacher changed, onto each preset as it stands** — a download of another device's preset that landed while the editor was open is no longer sent back over it (`bpeEdits`). | smoke-sync D39 (new) fails on HEAD (2 presets counted, Monday …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Per-session log (one line per session)
+
+- 2026-10-23 | **S552** | iters: 4 | tools: name_tags ×2, index, generator, dashboard, flash, sw | patterns fixed: dark-navy-fill ×1 (4 carriers), dark-base-rule ×1 | pass run: M (name_tags, first) | SW: v1079→v1080
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S572 (2026-10-29):** sw.js, generator, pwa.js, name_tags, scripts/loop, loop-findings, loop-patterns S572 · dictionary, flash, torah, locales, CSV S571 · torah-and-trope.md S570 · letter_learner, dashboard S569 · scripts, dashboard.md, sitemap S567 · trope S566 · FM, font-maker.md S565 · projects, accounts-and-cloud.md S561 · name-tags.md S559 · shared-components.md S558 · privacy S554 · ops.md, loop-passes S553 · i18n.md, index S552 · parsha_emojis S550 · resources, contact S549 · skill, ledger scripts S544 · i18n.js S541 · saves S536 · README S532 · account, terms, 404 S530.
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- N mobile & touch-device (one surface): 2026-10-29 (**S572 — 32nd N, `hebrew_blend_generator.html` (3rd: S262 → S434 → S572): 16 cells (SE 320, i13 390 + landscape, Pixel 7 412 × EN/HE × light/dark) × 35 views by real taps = 560 loads (plants 8/8), every field, the iOS hint over 7 views + a 9-page tour census, tips and sliders by finger, flips, sideways scrollers, 4× CPU, Export PDF replayed. FOUND 9, FIXED 3 (+ Name Tags from the queue; gate 4 answered). N-next: torah (S448), fontmaker (S476).**)
+
+_(prior)_ **Next session (S572):** **PR `claude/improveloop-s570` (S570–S571, #374): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1126**, FM **5.59**, corpus ?v=7. ⚑ drift: main=93b6e09 sw=v1126 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest: N's generator (S434), P's flash (S435), M's generator (S436); A/E/L/K (S530–S533) 41 sessions old (A: 27 DRAFT rows, the ▾ census). ⚑ The Trope Atlas `trope_atlas.html` (unlisted, landed S564's drift): its first N and P are due by S578. ⚑ Seeds: 54. ⚑ Forced colours (S571 C): S549's "census complete" missed the font pickers; the Torah Trainer has no block at all (P3, census first). ⚑ Dictionary (S571 C): the word card's nested controls are its one structural a11y debt (P3). ⚑ Torah (S570 D): Translit's first pass (2.45 s @4×) is architecture, not a memo. ⚑ Deep links: census the ones that apply settings before a lazy corpus lands (flash's `9388361`). ⚑ Sync (S567 P): the shared-module P3 (verify first); smoke-sync D31 — watch it. ⚑ FM: the photo intake size is still unasked — measure Trace's outline at ~2,000 px first. ⚑ Ports at the next A: `m554/`–`n562/`, `g563/`, `h564/`, `d565/`, `h566/`, `p567/`, `m568/`, `g569/`, `d570/`, `c571/`; traps 352, 356–430. ⚑ Queues (candidates naming one page): FM 20, generator 17, torah 13, dictionary 12, name_tags 9, flash 8, dashboard 6, PE 5, trope 3.
+⚑ Maintainer: `08b8611`; O's permission rule; CI for `closeout.mjs --static`; translit second source; sw.js `no-store`; 14 fonts; torah screen reader; the locale's size and the Resources fonts' precache (Awaiting); gates 2–4 incl. the vowel palette's gold (S556), the trope link (S557), the Phrases chips' casing (S558), the FM's sheet-upload copy (S559), flash's short windows (S560, gate 4), the FM Exit label (S560, gate 3), the generator's QR layout (S563, gate 3); the S546 P3; the flash report's totals (S566, gate 2).
+
+
+<!-- archived by compact-ledger at the S573 boundary, 2026-10-29 -->
+## Compaction (S573, 2026-10-29) — moved verbatim from the live ledger
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S572 (2026-10-29):** sw.js, generator, pwa.js, name_tags, scripts/loop, loop-findings, loop-patterns, generator.md, ops.md S572 · dictionary, flash, torah, locales, CSV S571 · torah-and-trope.md S570 · letter_learner, dashboard S569 · scripts, dashboard.md, sitemap S567 · trope S566 · FM, font-maker.md S565 · projects, accounts-and-cloud.md S561 · name-tags.md S559 · shared-components.md S558 · privacy S554 · loop-passes S553 · i18n.md, index S552 · parsha_emojis S550 · resources, contact S549 · skill, ledger scripts S544 · i18n.js S541 · saves …[full text: IMPROVEMENT_ARCHIVE.md]
