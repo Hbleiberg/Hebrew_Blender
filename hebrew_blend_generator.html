@@ -970,7 +970,7 @@ body.dark .hi-sun{display:inline-block;}
   }
   .blend-answer {
     font-size: 0.72rem;
-    color: var(--gold);
+    color: var(--gold-text);   /* the readable gold (4.5:1 on a white cell); brand --gold read 2.75:1 */
     letter-spacing: 0.04em;
     font-style: italic;
     min-height: 14px;
@@ -8013,7 +8013,7 @@ function renderNameTheLetter(ws) {
     ak.appendChild(banner);
     const akHdr = document.createElement('div');
     akHdr.className = 'ws-header';
-    akHdr.innerHTML = `<div><div class="ws-title">${title}</div><div class="ws-subtitle ws-ak-subtitle" style="color:var(--gold)">Answer Key — Teacher Copy</div></div>`;
+    akHdr.innerHTML = `<div><div class="ws-title">${title}</div><div class="ws-subtitle ws-ak-subtitle" style="color:var(--gold-text)">Answer Key — Teacher Copy</div></div>`;
     ak.appendChild(akHdr);
     const akGrid = document.createElement('div');
     akGrid.className = 'blends-grid';
@@ -8462,7 +8462,7 @@ function renderNumberPractice(ws) {
     ak.appendChild(banner);
     const akHeader = document.createElement('div');
     akHeader.className = 'ws-header';
-    akHeader.innerHTML = `<div><div class="ws-title">${title}</div><div class="ws-subtitle ws-ak-subtitle" style="color:var(--gold)">Answer Key — Teacher Copy</div></div>`;
+    akHeader.innerHTML = `<div><div class="ws-title">${title}</div><div class="ws-subtitle ws-ak-subtitle" style="color:var(--gold-text)">Answer Key — Teacher Copy</div></div>`;
     ak.appendChild(akHeader);
 
     const akGrid = document.createElement('div');
@@ -10306,7 +10306,7 @@ function renderGematriaSheet(ws, items, showTranslit = false, showTranslation = 
     keySheet.appendChild(banner);
     const keyHeader = document.createElement('div');
     keyHeader.className = 'ws-header';
-    keyHeader.innerHTML = `<div><div class="ws-title">${title}</div><div class="ws-subtitle ws-ak-subtitle" style="color:var(--gold)">Gematria Answer Key — Teacher Copy</div></div>`;
+    keyHeader.innerHTML = `<div><div class="ws-title">${title}</div><div class="ws-subtitle ws-ak-subtitle" style="color:var(--gold-text)">Gematria Answer Key — Teacher Copy</div></div>`;
     keySheet.appendChild(keyHeader);
     const keyGrid = document.createElement('div');
     keyGrid.className = 'blends-grid';
@@ -10469,7 +10469,7 @@ function renderWorksheet(animate = false) {
       answerSheet.appendChild(akBanner);
       const akHeader = document.createElement('div');
       akHeader.className = 'ws-header';
-      akHeader.innerHTML = `<div><div class="ws-title">${title}</div><div class="ws-subtitle ws-ak-subtitle" style="color:var(--gold)">Answer Key — Teacher Copy</div></div>`;
+      akHeader.innerHTML = `<div><div class="ws-title">${title}</div><div class="ws-subtitle ws-ak-subtitle" style="color:var(--gold-text)">Answer Key — Teacher Copy</div></div>`;
       answerSheet.appendChild(akHeader);
       const akGrid = document.createElement('div');
       akGrid.className = 'blends-grid';
@@ -10638,7 +10638,7 @@ function appendStandardBlendSheets(ws, arr, ctx, versionLabel) {
       <div>
         ${verHtml}
         <div class="ws-title">${title}</div>
-        <div class="ws-subtitle ws-ak-subtitle" style="color:var(--gold)">Answer Key — Teacher Copy</div>
+        <div class="ws-subtitle ws-ak-subtitle" style="color:var(--gold-text)">Answer Key — Teacher Copy</div>
       </div>
     `;
     answerSheet.appendChild(akHeader);
@@ -12236,7 +12236,7 @@ function generateRealWords(reuse) {
             <span class="rw-heb" lang="he">${esc(w.heb)}</span>
             ${vocabTrlOnFront && w.translit ? `<span class="rw-translit">${esc(w.translitDisplay ?? w.translit)}</span>` : ''}
             ${vocabTnOnFront && w.translation ? `<span class="rw-translation">${esc(w.translation)}</span>` : ''}
-            <span class="rw-translit rw-flip-hint" style="font-size:0.65rem;opacity:0.6;">${esc(I18n.t('worksheet.selfcheck.tap_to_flip_hint'))}</span>
+            <span class="rw-translit rw-flip-hint" style="font-size:0.65rem;">${esc(I18n.t('worksheet.selfcheck.tap_to_flip_hint'))}</span>
           </div>
           <div class="rw-flip-back">
             <span class="rw-num">${idx + 1}</span>
@@ -12325,7 +12325,7 @@ function generateRealWords(reuse) {
     keySheet.appendChild(banner);
     const keyHdr = document.createElement('div');
     keyHdr.className = 'ws-header';
-    keyHdr.innerHTML = `<div><div class="ws-title">Hebrew Word Practice</div><div class="ws-subtitle ws-ak-subtitle" style="color:var(--gold)">Answer Key — Teacher Copy</div></div>`;
+    keyHdr.innerHTML = `<div><div class="ws-title">Hebrew Word Practice</div><div class="ws-subtitle ws-ak-subtitle" style="color:var(--gold-text)">Answer Key — Teacher Copy</div></div>`;
     keySheet.appendChild(keyHdr);
     const keyGrid = document.createElement('div');
     keyGrid.className = 'rw-grid';
@@ -12587,7 +12587,7 @@ function renderMatchingSheets(ws, versionsItems, opts) {
       keyHdr.className = 'ws-header';
       keyHdr.innerHTML = '<div>' + verHtml +
         '<div class="ws-title">' + title + '</div>' +
-        '<div class="ws-subtitle ws-ak-subtitle" style="color:var(--gold)">Answer Key — Teacher Copy</div></div>';
+        '<div class="ws-subtitle ws-ak-subtitle" style="color:var(--gold-text)">Answer Key — Teacher Copy</div></div>';
       keySheet.appendChild(keyHdr);
       const list = document.createElement('div');
       list.className = 'match-ak-list';
@@ -12863,7 +12863,7 @@ function generateWordSearch(pool, reuse) {
   ak.appendChild(banner);
   const akHeader = document.createElement('div');
   akHeader.className = 'ws-header';
-  akHeader.innerHTML = `<div><div class="ws-title">${title}</div><div class="ws-subtitle ws-ak-subtitle" style="color:var(--gold)">Answer Key — Teacher Copy</div></div>`;
+  akHeader.innerHTML = `<div><div class="ws-title">${title}</div><div class="ws-subtitle ws-ak-subtitle" style="color:var(--gold-text)">Answer Key — Teacher Copy</div></div>`;
   ak.appendChild(akHeader);
   ak.appendChild(renderGrid(true));
   ak.appendChild(renderWordBank(trOnKey, tnOnKey));
@@ -13136,7 +13136,7 @@ function renderCrossword(d) {
     ak.appendChild(banner);
     const akHeader = document.createElement('div');
     akHeader.className = 'ws-header';
-    akHeader.innerHTML = `<div><div class="ws-title">${title}</div><div class="ws-subtitle ws-ak-subtitle" style="color:var(--gold)">Answer Key — Teacher Copy</div></div>`;
+    akHeader.innerHTML = `<div><div class="ws-title">${title}</div><div class="ws-subtitle ws-ak-subtitle" style="color:var(--gold-text)">Answer Key — Teacher Copy</div></div>`;
     ak.appendChild(akHeader);
     const akWrap = document.createElement('div');
     akWrap.style.cssText = 'display:flex;justify-content:center;margin:12px 0;';
@@ -13203,7 +13203,7 @@ function renderRealWordsFillVowels(ws, words, trOnSheet, tnOnSheet, trOnKey, tnO
   ak.appendChild(banner);
   const akHeader = document.createElement('div');
   akHeader.className = 'ws-header';
-  akHeader.innerHTML = `<div><div class="ws-title">${title}</div><div class="ws-subtitle ws-ak-subtitle" style="color:var(--gold)">Answer Key — Teacher Copy</div></div>`;
+  akHeader.innerHTML = `<div><div class="ws-title">${title}</div><div class="ws-subtitle ws-ak-subtitle" style="color:var(--gold-text)">Answer Key — Teacher Copy</div></div>`;
   ak.appendChild(akHeader);
   const akGrid = document.createElement('div');
   akGrid.className = 'rw-grid';
@@ -13310,7 +13310,7 @@ function generateIdentifyDrill(pool, count, trOnSheet, tnOnSheet, trOnKey, tnOnK
   keyHdr.innerHTML = `
     <div>
       <div class="ws-title">Identify the Real Word</div>
-      <div class="ws-subtitle ws-ak-subtitle" style="color:var(--gold)">Answer Key — Teacher Copy &nbsp;·&nbsp; ★ = real word</div>
+      <div class="ws-subtitle ws-ak-subtitle" style="color:var(--gold-text)">Answer Key — Teacher Copy &nbsp;·&nbsp; ★ = real word</div>
     </div>`;
   keySheet.appendChild(keyHdr);
   keySheet.appendChild(makeGrid(items, true));
