@@ -5889,7 +5889,8 @@ function renderProfileHistory(name) {
   if (reportBtn) reportBtn.disabled = results.length === 0;
 }
 
-// Gather missed (score !== true) cards across a profile's results, ranked by miss frequency
+// Gather missed (score === false) cards across a profile's results, ranked by miss frequency. A card the drill
+// never reached (ended early, the time limit ran out) is saved with score null: not missed, so not here.
 function collectMissedCards(name) {
   const db = readProfiles();
   const prof = db.profiles[name];
@@ -5897,7 +5898,7 @@ function collectMissedCards(name) {
   const byHeb = new Map(); // heb -> { card, count }
   (prof.results || []).forEach(r => {
     (r.cards || []).forEach(c => {
-      if (c.score === true) return;
+      if (c.score !== false) return;
       const key = c.heb;
       if (!key) return;
       if (byHeb.has(key)) byHeb.get(key).count++;
@@ -6125,7 +6126,7 @@ function cardOtherType(c) {
 
 // Tally seen/missed per vowel, per letter, per letter+vowel, and per "Other" type
 // across a profile's results. A unit is "seen" once per card it appears in; "missed"
-// if that card was wrong.
+// if that card was wrong. A card the drill never reached (score null) was not seen.
 function analyzeWeaknesses(name) {
   const db = readProfiles();
   const prof = db.profiles[name];
@@ -6136,7 +6137,8 @@ function analyzeWeaknesses(name) {
   };
   (prof && prof.results || []).forEach(r => {
     (r.cards || []).forEach(c => {
-      const missed = c.score !== true;
+      if (c.score !== true && c.score !== false) return;
+      const missed = c.score === false;
       // Emoji / number / color cards aren't letter+vowel blends — tally them
       // under "Other" instead of decomposing their Hebrew word into letters/vowels.
       const ot = cardOtherType(c);
