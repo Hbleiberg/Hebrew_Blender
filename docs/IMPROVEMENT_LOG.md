@@ -52,6 +52,20 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
 
+- [ ] P4 (**NEW S568 M**) | torah_trainer.html | **At Hebrew size ≥ 2.5rem the trope clause line meets the Latin under each word, reading and staff alike** (−0.7 → −3.4 px at 2.5 → 3.5rem): the Latin's 0.4em margin is the Latin's em, the line's 0.68em offset the Hebrew's; `padding-block-end:0.18em` on `.tt-wh` keeps the default and holds at every size. | found S568
+
+- [ ] P4 (**NEW S568 M — converge**) | torah_trainer.html, hebrew_blend_generator.html | **The fullscreen Exit label is 8.3 px** (`#fsExitBtn .fs-label` 0.52rem) where the dashboard and the FM use 0.7rem: the projected lesson's one way out has the page's smallest text. | found S568
+
+- [ ] P4 (**NEW S568 M — suite-wide**) | torah, dashboard, FM, generator | **Two controls render in the UA font (Arial), not Source Sans 3**: every page's `#fsExitBtn` and torah's `#ttAudioCollapseBtn` lack `font-family:inherit` (torah's census of computed families: only these two). | found S568
+
+- [ ] P4 (**NEW S568 M — UX rule 8**) | torah_trainer.html | **Side by side's Hebrew column heading "עִבְרִית" has no `lang="he"`** (a literal in the builder) and falls from Libre Baskerville to the system serif beside the EN UI's uppercase ENGLISH / TRANSLITERATION. | found S568
+
+- [ ] P4 (**NEW S568 M — pattern `live-region-display-none-while-empty`**) | torah_trainer.html | **The Audio tab's `#optPitchStatus` and `#optRecSrcNote` are `hidden` live regions unhidden and filled in one task** (CDP: notRendered while their panel shows): the first message may go unannounced. | found S568
+
+- [ ] P4 (**NEW S568 — found verifying `f6d4a231`**) | hebrew_blend_generator.html | **Export PDF carries the blend Self-Check's screen controls** (score bar, Reveal All / Hide All, Per row, "Tap a card to flip") that print hides (`.score-bar, .self-check-controls`); a flipped card's Missed / Got it buttons print and export too. | found S568
+
+- [ ] P4 (**NEW S568 — K**) | hebrew_blend_generator.html | **Real Words Self-Check's "tap to flip" is a hardcoded English literal** in the Hebrew UI (a template literal, outside `check-i18n`'s reach). | found S568
+
 - [ ] P4 (**NEW S566 H — K, Hebrew to author**) | flash_cards.html | **The Hebrew profile picker reads "Avi · 1 שמורים"**: `flashcards.profile.button_label` has no `.one`/`.other` split, and שמורים is masculine for results (תוצאות). | found S566
 
 - [ ] P4 (**NEW S566 H — gate 2, copy**) | flash_cards.html | **The results actions mix the Hebrew register**: "שמור תוצאות" (singular) among "שמרו / חזרו / תרגלו / הדפיסו / שתפו" (plural); a preset row's Play / Load / Save are singular too. One register per screen. | found S566
@@ -71,8 +85,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S563 G**) | hebrew_blend_generator.html | **A long Real Words answer key can print its footer alone on a page** (Letter: reading EN/HE, ID Parts of Speech EN, Reverse HE; A4: reading + QR EN, Gematria EN — 6 of 48 cells, the definitions' lengths decide): `break-before: avoid` on the key's footer, or fit the key. | found S563
 
 - [ ] P4 (**NEW S563 G**) | hebrew_blend_generator.html | **Gold that the B/W ink list misses prints at 2.75:1**: Class Set's VERSION A/B/C label (`.ws-version-label`) and Real Words Gematria's translations (inline `color:var(--gold)`), with backgrounds on or off; the print block darkens the other answer golds to `#6b4e12`. | found S563
-
-- [ ] P4 (**NEW S563 G**) | hebrew_blend_generator.html | **Self-Check prints "tap to flip" on every card** (an inline-styled `.rw-translit` hint): a screen instruction on paper. | found S563
 
 - [ ] P4 (**NEW S563 G**) | hebrew_blend_generator.html | **Blend Bingo hides Page Size (and Header Labels, Landscape) where Real Words Bingo shows them**: on A4 paper a teacher sets the size only from another mode first (the pill's value still applies). | found S563
 
@@ -177,10 +189,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S479 G**) | trope_tutor.html | **Paper waste: Phrases 9–12 sheets at ~4 cards; 2 Letter charts end on the credits alone, EN Learn on one card.** | found S479
 
 - [ ] P4 (**NEW S479 G — gate 2**) | trope_tutor.html | **Only the Haftarah note says the Phrases tab has no examples** (Esther, Megillot, Eicha lack them too). | found S479
-
-- [ ] P4 (**NEW S478 M**) | 6 chrome headers | **A phone header leaves the star alone on a row** (EN contact ≤396, account ≤474). S489: a title beside the star stacks 3 lines at 320 (taller) — gate 3. S520: privacy/terms' dark toggle alone on a 3rd row at 320. | found S478
-
-- [ ] P4 (**NEW S478 M**) | 6 chrome footers | **A "·" ends a footer line below ~700px.** S489: no CSS-only fix; a bound dot starts the line instead — gate 3. | found S478
 
 - [ ] P4 (**NEW S565 D; S567 re-measured**) | Hebrew_Font_Maker.html | **Auto-detect on a phone photo of a sheet makes three long tasks @4× (431 / 695 / 338 ms; @1× its top is 134 ms, not S565's 556)**: `adBinarize` (lumPlane → estimateBackground → flatten → Otsu) has no yield inside, but splitting it in `adRunDetection` takes the 695 only to ~400, since the first task is the 1800 px canvas's …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -406,6 +414,16 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-29 | (S568 close-out) | branch/deploy note | **S568 = M on the Torah Trainer (its 2nd: S422 → S568): 31 views × 8 cells by real clicks (248 shots; real fonts, Sefaria stubbed from the MAM phrases), census ~16,000 text nodes, hover, Tab rings, dark fills, header gate, RTL sentences, live regions — every plant fired. FOUND 6, FIXED 2 + 4 P4; + the generator's Self-Check paper (queue) …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-29 | `f6d4a231` | hebrew_blend_generator.html | (S568) **Both Self-Check sheets print and export the card face the screen shows, unmirrored** (print and html2canvas flattened the 3D flip: every card's back — the answer, mirrored — over its front; the blend fronts' "tap to reveal" off paper too). | `m568/flipprint.mjs` (pypdf matrices) × 8 runs vs HEAD: mirrored runs 80–256 → 0, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-29 | `398ec8aa` | hebrew_blend_generator.html | (S568) **Self-Check's "tap to flip" stays on screen, off paper** (the print block + exportPDF's clone; S563's G P4). | `m568/fix3-verify.mjs` × 4 cells vs HEAD: screen 30 → 30, the print PDF 30 → 0, Export PDF's clone 30 → 0, one page
+
+- [x] 2026-10-29 | `203370c8` | torah_trainer.html | (S568) **Dark mode's selected-verse chips (4.15:1) and the chosen font's credit (3.71:1) pass AA** (`#adb6c9`, the neighbours'; pattern `contrast-below-AA-on-a-tinted-or-coloured-plate`). | `m568/fix2-verify.mjs` × 8 cells vs HEAD: sub-AA 4 → 0 and 1 → 0 in dark; gold hover and navy-on-gold active still win; light unchanged
+
+- [x] 2026-10-29 | `7f88d10d` | torah_trainer.html, sw.js | (S568) **In the Trope staff layout the trope clause line no longer crosses the transliteration** (a staff cell's 1.3 leading put the Latin 0.2em of the Hebrew higher; the Latin and its box get it back). | `m568/fix1-verify.mjs` × 8 cells × 3 modes vs HEAD: gap −3.6 → +1.2 px, the Latin inside its box, without the underline look geometry …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [x] 2026-10-29 | (S567 close-out) | branch/deploy note | **S567 = P on the dashboard (its first since S421; 113 commits to the page): all 7 smokes with the pinned SDK, static arms 3–7 (59 checks, 7 plants fired), live read-only, and the page's signed-in editors by real clicks on the fake cloud with HEAD the control. FOUND 2, FIXED 1 (Bulk preset edit's overwrite) + 1 shared-module P3; + the …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-10-29 | (struck) | Hebrew_Font_Maker.html | (S567) **"Auto-detect's Apply yields only every 4th crop" struck**: every crop already awaits `loadImg` (a task boundary), and Apply's long tasks are outside the loop (@1× top 78 ms; @4× 335 / 266). | `d565/sheet.mjs` @1× and @4× on the S567 tree
@@ -448,19 +466,11 @@ _(none)_
 
 - [x] 2026-10-28 | `1c886d3` | classroom_dashboard.html, sw.js | (S564) **A starter, preset or `.ivrit` file shows or hides the holiday, Shabbat and Omer lines at once** (`applySettings` follows each switch that changed, cache-first). | probe `S564-dashboard-calendar-lines-follow-settings.mjs` × 2 dates × 4 cells, the switches the control: HEAD 5 lines out of step → 0; Hebcal fetches 2 + 7 both. …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-10-27 | (S563 close-out) | branch/deploy note | **S563 = G on the generator (4th: S137 → S265 → S392 → S563): 36 shapes × 2 cells to Letter + A4 PDFs (plants 5/5), Export PDF by click, the QR decoded from paper and file, `.ivrit` and share link 0/142; FOUND 11, FIXED 2 (+3 P3, 2 of them gate 3, 6 P4) + the shared tour engine's clamp and flash's fold triangles from the queue.** Branch …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-10-27 | `872d772` | flash_cards.html | (S563) **The fold triangles are drawn, not read** (`content: '▾' / ''` on `.panel-title::after`, `.adv-subhead::before`, `.vgroup-head::after`; the S560 P4; pattern `decorative-glyph-carrier-exposed-to-assistive-tech`). | CDP AX tree × 8 cells vs HEAD: names with a ▾ 25 → 0; the other 130 names equal; full-page screenshots byte-identical; 0 errors.
-
-- [x] 2026-10-27 | `7f8a628` | hebrew_blend_generator.html | (S563) **The QR's "too many items" notice stays on screen, off the student's paper** (print hide + Export PDF's `onclone`). | `g563/note.mjs`, Word Search + Identify with QR × 4 cells vs HEAD: on paper 8/8 → 0/8, pages unchanged; Export's lowest ink up 11–16 pt (8/8); still on screen 8/8; a fitting QR still prints, export identical; 0 …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-10-27 | `00c7d7a` | trope_tutor.html, letter_learner.html, name_tags.html | (S563) **A phone turned mid-tour no longer leaves the card off the screen** (the shared engine clamps to `documentElement.clientWidth/Height`; the S562 P3; pattern `fixed-control-positioned-outside-the-viewport`). | `n562/tourflip-suite.mjs` vs HEAD: trope EN 2 → 0, Name Tags EN 2 → 0, LL 0; desktop 8 cells × 3 …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-10-27 | `6b8a624` | hebrew_blend_generator.html, sw.js | (S563) **Export PDF's answer-key QR keeps its own pixels** (the box blanked in the capture, the code's PNG placed over it after the raster; it was ~1.4 px a module). | `g563/qrcrop.mjs`, 9 QR shapes × 2 cells (+3 at 800 px), jsQR or ZXing at 800/1200 dpi ± blur vs HEAD: 86/88 vs 45/88; within 1–2 px of HEAD's box; sizes and pages …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-29 | **S568** | iters: 5 | tools: torah ×2, generator ×2, sw | patterns fixed: contrast-below-AA-on-a-tinted-or-coloured-plate ×1 | pass run: M (torah, 2nd) | SW: v1116→v1117
 
 - 2026-10-29 | **S567** | iters: 5 | tools: dashboard ×2, generator, name_tags, scripts, dashboard.md, sw | patterns fixed: hover-tip-not-dismissible-or-hoverable ×1, contrast-below-AA-on-a-tinted-or-coloured-plate ×1 | pass run: P (dashboard, first since S421) | SW: v1115→v1116
 
@@ -500,11 +510,9 @@ _(none)_
 
 - 2026-10-23 | **S549** | iters: 5 | tools: name_tags ×2, parsha_emojis, letter_learner, resources ×2, contact, flash ×2, generator ×2, trope, dictionary ×2, FM, index, sw | patterns fixed: forced-colors ×2 (+ offscreen-sheets NEW ×1) | pass run: D (name_tags, first) | SW: v1077→v1078
 
-- 2026-10-22 | **S548** | iters: 5 (+1 correction) | tools: name_tags ×3, dashboard ×2, trope, sw | patterns fixed: forced-colors ×2 | pass run: C (name_tags, first) | SW: v1075→v1076
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S567 (2026-10-29):** sw.js, dashboard, generator, name_tags, scripts, dashboard.md, sitemap, loop-findings, loop-patterns S567 · flash, trope, dictionary, scripts/loop S566 · FM, font-maker.md S565 · torah S564 · letter_learner S563 · projects, accounts-and-cloud.md S561 · name-tags.md S559 · shared-components.md S558 · locales, privacy S554 · ops.md, loop-passes S553 · i18n.md, index S552 · parsha_emojis S550 · resources, contact S549 · skill, ledger scripts S544 · CSV S542 · i18n.js S541 · saves S536 · README S532 · account, …[full text: IMPROVEMENT_ARCHIVE.md]
+- **Snapshot S568 (2026-10-29):** sw.js, torah, generator, loop-findings, loop-patterns S568 · dashboard, name_tags, scripts, dashboard.md, sitemap S567 · flash, trope, dictionary, scripts/loop S566 · FM, font-maker.md S565 · letter_learner S563 · projects, accounts-and-cloud.md S561 · name-tags.md S559 · shared-components.md S558 · locales, privacy S554 · ops.md, loop-passes S553 · i18n.md, index S552 · parsha_emojis S550 · resources, contact S549 · skill, ledger scripts S544 · CSV S542 · i18n.js S541 · saves S536 · README S532 · account, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -566,7 +574,7 @@ _(none)_
 
 - `hidden-input-anchored-outside-its-scroller` | ACTIVE | owner C | det: recipe | last S499 | streak 0
 
-- `hebrew-faux-italic` | ACTIVE | owner M | det: recipe | last S558 | streak 4
+- `hebrew-faux-italic` | ACTIVE | owner M | det: recipe | last S568 | streak 5
 
 - `fixed-toast-duration-shorter-than-its-text` | ACTIVE | owner F | det: recipe | last S487 | streak 0
 
@@ -584,7 +592,7 @@ _(none)_
 
 - `placeholder-keeps-the-browser-gray` | ACTIVE | owner F | det: recipe | last S470 | streak 0
 
-- `header-wrap-gate-below-its-ceiling` | ACTIVE | owner M | det: recipe | last S558 | streak 4
+- `header-wrap-gate-below-its-ceiling` | ACTIVE | owner M | det: recipe | last S568 | streak 5
 
 - `latin-tracking-on-hebrew-labels` | ACTIVE | owner H | det: recipe | last S551 | streak 1
 
@@ -610,7 +618,7 @@ _(none)_
 
 - `cdn-library-parser-blocking-for-one-action` | ACTIVE | owner D | det: recipe | last S452 | streak 0
 
-- `dark-navy-fill-matches-its-ground` | ACTIVE | owner M | det: recipe | last S558 | streak 1
+- `dark-navy-fill-matches-its-ground` | ACTIVE | owner M | det: recipe | last S568 | streak 2
 
 - `ring-below-3-on-light` | ACTIVE | owner F | det: recipe | last S443 | streak 0
 
@@ -652,9 +660,9 @@ _(none)_
 
 - `settings-lost-across-a-load` | ACTIVE | owner H | det: recipe | last S551 | streak 1
 
-- `live-region-display-none-while-empty` | ACTIVE | owner M | det: recipe | last S558 | streak 1
+- `live-region-display-none-while-empty` | ACTIVE | owner M | det: recipe | last S568 | streak 0
 
-- `dark-base-rule-outranks-variant` | ACTIVE | owner M | det: recipe | last S558 | streak 0
+- `dark-base-rule-outranks-variant` | ACTIVE | owner M | det: recipe | last S568 | streak 1
 
 - `aria-disabled-lock-no-handler-checks` | ACTIVE | owner P | det: recipe | last S407 | streak 0
 
@@ -730,7 +738,7 @@ _(none)_
 
 - `dark-print-shadow-slab` | DRAFT | owner A | det: none | last S385 | streak 0
 
-- `pinned-english-prose-in-rtl-paragraph` | ACTIVE | owner M | det: recipe | last S558 | streak 4
+- `pinned-english-prose-in-rtl-paragraph` | ACTIVE | owner M | det: recipe | last S568 | streak 5
 
 - `fixed-width-third-party-embed-inflates-phone-layout` | ACTIVE | owner N | det: recipe | last S276 | streak 0 | hits 2
 
@@ -772,7 +780,7 @@ _(none)_
 
 - `dark-override-outranks-hover` | ACTIVE | owner A | det: recipe | last S357 | streak 1 | hits 0
 
-- `contrast-below-AA-on-a-tinted-or-coloured-plate` | ACTIVE | owner M | det: recipe | last S567 | streak 0
+- `contrast-below-AA-on-a-tinted-or-coloured-plate` | ACTIVE | owner M | det: recipe | last S568 | streak 0
 
 - `async-store-backed-choice-clobbered-by-a-sync-fallback` | ACTIVE | owner A | det: recipe | last S226 | streak 1
 
@@ -854,7 +862,7 @@ _(none)_
 
 - N mobile & touch-device (one surface): 2026-10-27 (**S562 — 31st N, `trope_tutor.html` (3rd: S248 → S389 → S562): 16 cells (SE 320, i13 390 + landscape, Pixel 7 412 × EN/HE × light/dark) × 20 views by real taps (plants 5/5), the iOS hint forced on SE + i13, tips / sliders / the staff by finger, flips mid-drill / tour / tip / menu, 4× CPU; + a 9-page tour-flip census. FOUND 6, FIXED 2 (+1 P3 at …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- M aesthetics & visual design (one surface): 2026-10-26 (**S558 — 31st M, trope (3rd: S245 → S376 → S558): 136 full-page shots (17 views × EN/HE × light/dark × 1280/800), a census of ~24,800 text nodes, 967 real hovers × 2 themes, 1,386 keyboard focus rings, 2,362 dark fills, live regions by CDP × 9 states, the header gate 1px, RTL sentences, row heights; every plant fired. FOUND 4, FIXED 2 (+1 …[full text: IMPROVEMENT_ARCHIVE.md]
+- M aesthetics & visual design (one surface): 2026-10-29 (**S568 — 32nd M, torah (2nd: S422 → S568): 31 views × 8 cells by real clicks (248 shots; real fonts, Sefaria stubbed from the MAM phrases), census ~16,000 text nodes, hover 397/386 controls × 2 themes, 820 Tab stops, dark fills, header gate 1px, RTL sentences, live regions by CDP; every plant fired. FOUND 6, FIXED 2 (the staff's clause …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - K i18n / localization audit: 2026-10-21 (**S533 — 36th K, `db80feb4..843984b3` (111 commits; parsha_emojis' first): CSV +209 (all resolve), 12 reworded, 0 removed; static 5,502 refs + 2,974 fallback sites (the html arm, lapsed since S475); blind 0/4,328 lines; 102 states by the real switcher (twins = base + 5 known); retry 4/4; 10 surfaces by real input + a switch mid-state. FOUND 4, FIXED 4.**)
 
@@ -882,5 +890,5 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-22 (**S542 — 40th F, loading states (first since S189): 14 surfaces held, then aborted. FOUND 7, FIXED 4. F-next: long-build progress.**)
 
-**Next session (S568):** **PR `claude/vibrant-dirac-c3547q` (S564–S567, #373): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1116**, FM **5.59**, corpus ?v=7. ⚑ drift: main=840cb19 sw=v1116 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest: M's torah (S422), G's flash (S423), D's torah (S424); A/E/L/K (S530–S533) 37 sessions old (A: 27 DRAFT rows, the ▾ census). ⚑ The Trope Atlas `trope_atlas.html` (unlisted, landed S564's drift): its first N and P are due by S578. ⚑ Keep-alive re-read S567 (#46 green). ⚑ Seeds: 54. ⚑ Sync (S567 P): a page write during a slow load's sync goes up only at the next load while the status says Saved (P3, `js/ivrit-saves.js`, verify first — the loop's one shared-module iteration); smoke-sync D31 went red once under four parallel smokes (green in 6 re-runs) — watch it. ⚑ Hover tips: every carrier fixed (dashboard S567); the pattern's streak starts at the next sweep. ⚑ FM: the photo intake size is still unasked — measure Trace's outline at ~2,000 px first, so the gate can name its cost. ⚑ Ports at the next A: `m554/`–`n562/`, `g563/`, `h564/`, `d565/`, `h566/`, `p567/` (lib = smoke-sync's harness, w1–w1d, static, recipe, the hover tips, gen-lang, nt-drag-contrast); traps 352, 356–410. ⚑ Queues (candidates naming one page): FM 20, generator 17, name_tags 9, dictionary 9, dashboard 7, torah 7, flash 5, trope 5.
+**Next session (S569):** **PR `claude/vibrant-dirac-c3547q` (S564–S568, #373): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1117**, FM **5.59**, corpus ?v=7. ⚑ drift: main=840cb19 sw=v1117 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest: G's flash (S423), D's torah (S424), C's dictionary (S427); A/E/L/K (S530–S533) 38 sessions old (A: 27 DRAFT rows, the ▾ census). ⚑ The Trope Atlas `trope_atlas.html` (unlisted, landed S564's drift): its first N and P are due by S578. ⚑ Seeds: 54. ⚑ Sync (S567 P): the shared-module P3 (a write during a slow load's sync waits for the next load while the status says Saved; verify first); smoke-sync D31 went red once under four parallel smokes — watch it. ⚑ Paper: the generator's two Self-Check sheets printed every answer mirrored until S568 and a text-only print census missed it (S563) — a G judges each sheet's rendered page, not its extracted text. ⚑ FM: the photo intake size is still unasked — measure Trace's outline at ~2,000 px first, so the gate can name its cost. ⚑ Ports at the next A: `m554/`–`n562/`, `g563/`, `h564/`, `d565/`, `h566/`, `p567/`, `m568/` (real fonts + a Sefaria stub, census, arms, gate, rtl, live, flipprint + mirror.py); traps 352, 356–415. ⚑ Queues (candidates naming one page): FM 20, generator 18, torah 10, dictionary 9, name_tags 9, dashboard 7, flash 5, trope 5, PE 5.
 ⚑ Maintainer: `08b8611`; O's permission rule; CI for `closeout.mjs --static`; translit second source; sw.js `no-store`; 14 fonts; torah screen reader; the locale's size and the Resources fonts' precache (Awaiting); gates 2–4 incl. the vowel palette's gold (S556), the trope link (S557), the Phrases chips' casing (S558), the FM's sheet-upload copy (S559), flash's short windows (S560, gate 4), the FM Exit label (S560, gate 3), the generator's QR layout (S563, gate 3); the S546 P3; the flash report's totals (S566, gate 2).
