@@ -5830,10 +5830,10 @@ function _staffProbe(kind) {
   }
   return kind === 'tl' ? _staffProbeTl : _staffProbeHe;
 }
+function _staffFontOf(kind) { const cs = getComputedStyle(_staffProbe(kind)); return cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily; }
 function staffMeasurePx(text, kind) {
   if (!text) return 0;
-  const cs = getComputedStyle(_staffProbe(kind));
-  const font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+  const font = _staffFontOf(kind);
   const k = kind + '\u0001' + font + '\u0001' + text;
   let w = _staffMeasureMemo.get(k);
   if (w === undefined) {
@@ -5844,6 +5844,25 @@ function staffMeasurePx(text, kind) {
     _staffMeasureMemo.set(k, w);
   }
   return w;
+}
+// A face finishing its load can change what the words measure, but the memo is keyed by the font's name, not its load
+// state: a width taken before the face arrived (the fallback's) outlived it, and the re-render the load forced re-read
+// that same width. So a load re-takes every width remembered in the fonts the probes draw in now (the rest are dropped,
+// measured afresh if that font comes back) and says whether one moved — the re-wrap runs only then, never on a load
+// that changes nothing (the UI's own faces, a face the words already had).
+function staffRemeasure() {
+  if (!_staffMeasureMemo.size || !_staffCanvas) return false;
+  const cur = { he: _staffFontOf('he'), tl: _staffFontOf('tl') };
+  const g = _staffCanvas.getContext('2d');
+  let moved = false, set = null;
+  for (const [k, w] of _staffMeasureMemo) {
+    const a = k.indexOf('\u0001'), b = k.indexOf('\u0001', a + 1), font = k.slice(a + 1, b);
+    if (cur[k.slice(0, a)] !== font) { _staffMeasureMemo.delete(k); continue; }
+    if (set !== font) g.font = set = font;
+    const nw = g.measureText(k.slice(b + 1)).width;
+    if (nw !== w) { _staffMeasureMemo.set(k, nw); moved = true; }
+  }
+  return moved;
 }
 function staffFontPx(kind) { return parseFloat(getComputedStyle(_staffProbe(kind)).fontSize) || 0; }   // the size the words are measured at
 const STAFF_CQ = !!(window.CSS && CSS.supports && CSS.supports('font-size', '1cqw'));   // container-query units; without them the words keep their size on a shrunk system (the older behaviour)
@@ -6268,8 +6287,8 @@ function staffInitWatchers() {
   const root = document.getElementById('ttReading');
   if (root && window.ResizeObserver) new ResizeObserver(() => staffRelayoutSoon(false)).observe(root);
   if (document.fonts) {
-    document.fonts.ready.then(() => staffRelayoutSoon(true)).catch(() => {});
-    document.fonts.addEventListener('loadingdone', () => staffRelayoutSoon(true));
+    document.fonts.ready.then(() => { if (staffRemeasure()) staffRelayoutSoon(true); }).catch(() => {});
+    document.fonts.addEventListener('loadingdone', () => { if (staffRemeasure()) staffRelayoutSoon(true); });
   }
   const a = document.getElementById('ttAudio');
   if (a) a.addEventListener('pause', () => { if (_staffRelayoutPending) { _staffRelayoutPending = false; staffRelayoutSoon(true); } });

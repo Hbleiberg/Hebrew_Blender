@@ -879,7 +879,11 @@ beta leaves open.
   layout spreads figures apart for a long word. The systems are wrapped to `#ttReading`'s width, so
   `staffRelayoutSoon()` re-renders (debounced, this layout only, only when the width really changed, never
   under a playing tune or chant — it waits for the stop or pause) from a `ResizeObserver`, `fonts.ready`,
-  the fonts' `loadingdone` (a My Font arrives late), `setHebFont` and `setFontSize`.
+  the fonts' `loadingdone` (a My Font arrives late), `setHebFont` and `setFontSize`. The memo is keyed by the
+  font's name, not its load state, so `fonts.ready` and `loadingdone` first call `staffRemeasure()`: it re-takes
+  every width remembered in the probes' current fonts (dropping the rest) and the re-wrap runs only when one moved —
+  a width taken in the fallback before the face arrived never outlives it, and a load that changes nothing
+  (the UI's faces, a face the words already had) re-renders nothing.
 - **A system's box and its scaling.** Each `.tt-staff-sys` is a size container (`container-type:inline-size`)
   whose box is the system's natural width on screen; `.tt-staff-words` restates `--tt-heb-size` and
   `--tt-translit-size` in `cqw` of that box (`staffFontPx` — at full width they equal the page's sizes, so the
