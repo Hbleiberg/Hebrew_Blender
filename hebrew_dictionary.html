@@ -1085,6 +1085,10 @@ html[lang="he"] .beta-tag { letter-spacing: normal; text-transform: none; }   /*
 @media (forced-colors:active) {
   .emoji-gender-btn.active, .emoji-gender-btn.active:hover, body.dark .emoji-gender-btn.active, body.dark .emoji-gender-btn.active:hover { background: Highlight; color: HighlightText; forced-color-adjust: none; }
   .hk-tab.active, body.dark .hk-tab.active { background: Highlight; border-color: Highlight; color: HighlightText; forced-color-adjust: none; }
+  /* The chosen font card too: its edge and fill were its only mark. Its credit and [DEFAULT] lines keep an author colour
+     once the card opts out, so they take the label's (S571). */
+  .font-opt.active, body.dark .font-opt.active { background: Highlight; border-color: Highlight; color: HighlightText; forced-color-adjust: none; }
+  .font-opt.active .font-opt-attr, .font-opt.active .font-opt-default { color: HighlightText; }
 }
 </style>
 </head>
