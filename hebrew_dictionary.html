@@ -726,7 +726,7 @@ body.dict-audio-on .ec-speak{display:inline-flex;}
 body.dark .tip-icon{color:var(--navy);}
 .tip-wrap:focus-visible{outline:none;}
 .tip-wrap:focus-visible .tip-icon{outline:2px solid var(--focus-ring);outline-offset:1px;}
-#tipFloat{display:none;position:fixed;background:var(--navy);color:#fff;font-size:0.72rem;font-weight:400;line-height:1.45;padding:6px 9px;border-radius:6px;max-width:220px;z-index:9999;box-shadow:0 2px 8px rgba(0,0,0,0.3);pointer-events:none;}
+#tipFloat{display:none;position:fixed;background:var(--navy);color:#fff;font-size:0.72rem;font-weight:400;line-height:1.45;padding:6px 9px;border-radius:6px;max-width:220px;z-index:9999;box-shadow:0 2px 8px rgba(0,0,0,0.3);}   /* takes the pointer while shown, so a mouse can move onto it (the hover bridge in the tooltip script) */
 body.dark #tipFloat{background:#0a0f1c;}
   /* ═══ shared: app-toast CSS ═══ (byte-identical across generator/dashboard/flash_cards/dictionary/letter_learner/name_tags; self-contained incl. reduced-motion) ═══ */
 #appToast {
@@ -6459,8 +6459,16 @@ function dictActiveGroupCount() {
 
 /* ===== Section 5: accessible tooltips (ported from torah_trainer.html) ===== */
 (function () {
-  let tip = null, openWrap = null;
-  function ensureTip() { if (tip) return tip; tip = document.createElement('div'); tip.id = 'tipFloat'; document.body.appendChild(tip); return tip; }
+  let tip = null, openWrap = null, hideTimer = null;
+  function ensureTip() {
+    if (tip) return tip;
+    tip = document.createElement('div'); tip.id = 'tipFloat';
+    // Hoverable (WCAG 1.4.13): the pointer can travel from the icon onto the bubble — the icon's leave waits a beat,
+    // the bubble's enter keeps it open and its leave closes it.
+    tip.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') clearTimeout(hideTimer); });
+    tip.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse' && openWrap) hide(); });
+    document.body.appendChild(tip); return tip;
+  }
   function position(wrap) {
     const t = ensureTip();
     const iconEl = wrap.querySelector('.tip-icon') || wrap;
@@ -6475,11 +6483,12 @@ function dictActiveGroupCount() {
   function isShown(wrap) { return openWrap === wrap && tip && tip.style.display === 'block'; }
   function show(wrap) {
     const text = wrap.dataset.tip; if (!text) return;
+    clearTimeout(hideTimer);
     const t = ensureTip(); t.textContent = text; t.style.display = 'block'; position(wrap);
     if (openWrap && openWrap !== wrap) openWrap.setAttribute('aria-expanded', 'false');
     openWrap = wrap; wrap.setAttribute('aria-expanded', 'true');
   }
-  function hide() { if (tip) tip.style.display = 'none'; if (openWrap) openWrap.setAttribute('aria-expanded', 'false'); openWrap = null; }
+  function hide() { clearTimeout(hideTimer); if (tip) tip.style.display = 'none'; if (openWrap) openWrap.setAttribute('aria-expanded', 'false'); openWrap = null; }
   function bindTip(wrap) {
     if (wrap._tipBound) return;
     wrap._tipBound = true;
@@ -6496,7 +6505,11 @@ function dictActiveGroupCount() {
       wrap.setAttribute('aria-label', _tipAria === 'shared.tip.aria_more_info' ? 'More information' : _tipAria);
     }
     wrap.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') show(wrap); });
-    wrap.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse' && openWrap === wrap) hide(); });
+    wrap.addEventListener('pointerleave', e => {
+      if (e.pointerType !== 'mouse' || openWrap !== wrap) return;
+      clearTimeout(hideTimer);
+      hideTimer = setTimeout(() => { if (openWrap === wrap) hide(); }, 150);   // time to cross onto the bubble
+    });
     // preventDefault is load-bearing, not defensive: 6 of this page's tips sit INSIDE a <label>
     // that wraps a radio/checkbox, and a label forwards its activation click to that control.
     // Tapping the ? therefore fired a SECOND click on the input, which the outside-click handler
@@ -6528,6 +6541,12 @@ function dictActiveGroupCount() {
   document.addEventListener('DOMContentLoaded', () => document.querySelectorAll('.tip-wrap').forEach(bindTip));
   document.addEventListener('click', () => { if (openWrap) hide(); });
   window.addEventListener('scroll', () => { if (openWrap) hide(); }, true);
+  // Dismissible (WCAG 1.4.13): Escape closes a shown bubble wherever the focus is, and only the bubble — a tip opened
+  // by hover ignored Escape unless its icon had the focus. (S566, pattern hover-tip-not-dismissible-or-hoverable;
+  // the Torah Trainer's fix)
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && openWrap && isShown(openWrap)) { e.stopImmediatePropagation(); hide(); }
+  }, true);
 })();
 
 /* ===== Section 5: guided tour (ported from hebrew_blend_generator.html) ===== */
