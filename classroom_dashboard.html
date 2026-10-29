@@ -1222,7 +1222,7 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
     padding: 6px 9px; border-radius: 6px;
     max-width: 220px; z-index: 9999;
     box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    pointer-events: none;
+    /* takes the pointer while shown, so a mouse can move onto it (the hover bridge in the tooltip script) */
   }
   body.dark #tipFloat { background: #0a0f1c; }
   .tt-set hr {
@@ -12671,7 +12671,11 @@ async function onUploadEngFontPick(input){
     tip.id = 'tipFloat';
     tip.setAttribute('role', 'tooltip');
     document.body.appendChild(tip);
-    let openWrap = null;
+    let openWrap = null, hideTimer = null;
+    // Hoverable (WCAG 1.4.13): the pointer can travel from the icon onto the bubble — the icon's leave waits a beat,
+    // the bubble's enter keeps it open and its leave closes it.
+    tip.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') clearTimeout(hideTimer); });
+    tip.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse' && openWrap) hide(); });
     function place(wrap) {
       const icon = wrap.querySelector('.tip-icon'); if (!icon) return;
       tip.textContent = wrap.dataset.tip || '';
@@ -12691,10 +12695,11 @@ async function onUploadEngFontPick(input){
       if (icon) icon.setAttribute('aria-expanded', String(!!expanded));
     }
     function show(wrap) {
+      clearTimeout(hideTimer);
       if (openWrap && openWrap !== wrap) _tipIconAria(openWrap, false);
       openWrap = wrap; place(wrap); _tipIconAria(wrap, true);
     }
-    function hide() { _tipIconAria(openWrap, false); openWrap = null; tip.style.display = 'none'; }
+    function hide() { clearTimeout(hideTimer); _tipIconAria(openWrap, false); openWrap = null; tip.style.display = 'none'; }
     function wire(wrap) {
       const icon = wrap.querySelector('.tip-icon'); if (!icon) return;
       icon.tabIndex = 0; icon.setAttribute('role', 'button');
@@ -12714,7 +12719,11 @@ async function onUploadEngFontPick(input){
       // hebrew_dictionary.html's bindTip already uses; mouse hover behaviour is unchanged.
       // (S247 Pass N arm 4)
       wrap.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') show(wrap); });
-      wrap.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse' && openWrap === wrap) hide(); });
+      wrap.addEventListener('pointerleave', e => {
+        if (e.pointerType !== 'mouse' || openWrap !== wrap) return;
+        clearTimeout(hideTimer);
+        hideTimer = setTimeout(() => { if (openWrap === wrap) hide(); }, 150);   // time to cross onto the bubble
+      });
       // Focus opens the tip for KEYBOARD users only. A pointer/touch press focuses the icon before
       // its own click lands, so an unguarded focus handler re-created the same race the pointerType
       // guard above just closed: focus opened the bubble, then click saw openWrap === wrap and shut
@@ -12730,6 +12739,11 @@ async function onUploadEngFontPick(input){
       });
     }
     document.querySelectorAll('.tip-wrap').forEach(wire);
+    // Dismissible (WCAG 1.4.13): Escape closes a shown bubble wherever the focus is — one opened by hover too — before
+    // anything else answers the key (the drawer's own Escape would otherwise close the drawer under the tip).
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && openWrap && tip.style.display === 'block') { e.stopImmediatePropagation(); hide(); }
+    }, true);
     document.addEventListener('click', e => { if (openWrap && !e.target.closest('.tip-wrap')) hide(); });
     window.addEventListener('scroll', () => { if (openWrap) place(openWrap); }, true);
     window.addEventListener('resize', () => { if (openWrap) place(openWrap); });
