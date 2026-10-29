@@ -9273,20 +9273,21 @@ else ivritInit();
       else { targetEntry = sorted[0]; isTomorrow = true; }
     }
     const h = Math.floor(diffMins / 60), m = diffMins % 60;
-    return { status, sorted, currentIdx, currentEntry, targetEntry, diffMins, isTomorrow, timeStr: h > 0 ? `${h}h ${m}m` : `${m}m` };
+    return { status, sorted, currentIdx, currentEntry, targetEntry, diffMins, isTomorrow, timeStr: h > 0 ? I18n.t('dashboard.schedule.dur_hm', { h, m }) : I18n.t('dashboard.schedule.dur_m', { m }) };
   }
 
   // Countdown formatter shared by the weekly engine's two clocks. Multi-day spans (Friday → Monday)
-  // read 'Xd Yh'; same-day spans keep the legacy 'Hh Mm'/'Mm' convention. (Unit letters untranslated —
-  // same pre-existing debt as the legacy timeStr. Wall-clock-naive across DST: a multi-day countdown
-  // spanning a shift is off by 1h until the next tick recomputes — cosmetic.)
+  // read 'Xd Yh'; same-day spans keep the legacy 'Hh Mm'/'Mm' convention. The units are UI strings
+  // (dashboard.schedule.dur_*, which the legacy timeStr uses too): built in code, the Hebrew UI read "נותרו 20m"
+  // on the Now block and the countdown line. (Wall-clock-naive across DST: a multi-day countdown spanning a
+  // shift is off by 1h until the next tick recomputes — cosmetic.)
   function formatDiffMins(m) {
     if (m >= 24 * 60) {
       const d = Math.floor(m / (24 * 60)), h = Math.floor((m % (24 * 60)) / 60);
-      return `${d}d ${h}h`;
+      return I18n.t(d === 1 ? 'dashboard.schedule.dur_dh.one' : 'dashboard.schedule.dur_dh.other', { d, h });
     }
     const h = Math.floor(m / 60);
-    return h > 0 ? `${h}h ${m % 60}m` : `${m % 60}m`;
+    return h > 0 ? I18n.t('dashboard.schedule.dur_hm', { h, m: m % 60 }) : I18n.t('dashboard.schedule.dur_m', { m: m % 60 });
   }
 
   // Weekly engine. Returns a superset of the legacy shape (status/sorted/currentIdx/currentEntry/

@@ -461,6 +461,10 @@ dashboard.schedule.countdown_next_named,Next: {preset} in {time},הבא: {preset
 dashboard.schedule.day_menu_aria,Options for {day},אפשרויות עבור {day},weekly grid day-header menu button,aria-label only — do not translate {…}
 dashboard.schedule.delete_confirm,"Delete schedule ""{name}""?","למחוק את מערכת השעות ""{name}""?",confirm dialog,mixed UI+content — do not translate {…}
 dashboard.schedule.delete_confirm_cloud,"Delete schedule ""{name}""? You are signed in, so it is removed from your account and from every device.","למחוק את המערכת ""{name}""? אתם מחוברים, ולכן היא תוסר מהחשבון ומכל מכשיר.",Confirm before deleting a saved schedule while signed in,has {name}
+dashboard.schedule.dur_m,{m}m,{m} דק׳,Schedule Sync duration under an hour (countdown line and the Now block's time left),do not translate {m}
+dashboard.schedule.dur_hm,{h}h {m}m,{h} שע׳ ו־{m} דק׳,Schedule Sync duration of hours and minutes,do not translate {h} {m}
+dashboard.schedule.dur_dh.one,{d}d {h}h,יום ו־{h} שע׳,Schedule Sync duration of one day and hours (a class next week),plural; do not translate {d} {h}
+dashboard.schedule.dur_dh.other,{d}d {h}h,{d} ימים ו־{h} שע׳,Schedule Sync duration of days and hours (a class next week),plural; do not translate {d} {h}
 dashboard.schedule.editor_button,Set up Schedule Sync…,הגדרת סנכרון מערכת שעות…,settings button that opens the weekly editor,
 dashboard.schedule.editor_close_aria,Close schedule editor,סגור את עורך מערכת השעות,weekly editor close button,aria-label only
 dashboard.schedule.editor_done,Done,סיום,weekly editor footer button,
