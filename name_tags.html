@@ -463,7 +463,7 @@ html[lang="he"] .nt-table th { letter-spacing:normal; text-transform:none; }
 .nt-table input:hover { border-color:var(--warm-gray); }
 .nt-table input:focus { border-color:var(--focus-ring); box-shadow:inset 0 0 0 1px var(--focus-ring); background:var(--cream); outline:none; }   /* the ring colour, not --gold: gold on the white row is 2.75:1, under 1.4.11's 3:1 for a state indicator; the inset shadow brings the 1.5px border to the suite's 2px without moving the cell (S548 pass C) */
 .nt-table input[lang="he"] { font-family:var(--nt-he-font, var(--heb-font)); font-size:1.15rem; }   /* the chosen tag font (ntApplyFont sets the var; its stack ends in the te'amim face) */
-.nt-table .nt-trcell { display:flex; align-items:center; gap:2px; }
+.nt-table .nt-trcell { display:flex; align-items:center; gap:2px; direction:ltr; }   /* the cell reads as its Latin text does in both UIs (the heading's rule above): in the Hebrew UI the back-to-automatic icon took the row's inline end — the left, before the text — and a typed transliteration started 30px in from the automatic ones (S572) */
 .nt-icon-btn { flex-shrink:0; display:inline-flex; align-items:center; justify-content:center; min-width:28px; min-height:28px; border:1px solid transparent; border-radius:6px; background:transparent; color:var(--muted); cursor:pointer; }
 .nt-icon-btn:hover { border-color:var(--border); color:var(--text); }
 .nt-icon-btn[hidden] { display:none; }
