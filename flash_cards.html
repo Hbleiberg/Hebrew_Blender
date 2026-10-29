@@ -1331,8 +1331,16 @@ body.dark .ladder-strip-line { color: var(--gold-light); }
     --gold:#c9922a; --gold-text:#7f5a13; --gold-light:#f0d080;
     --white:#fff; --paper:#fff; --ink:#1a2a47; --text:#1a2a47; --ink-soft:#3d4a63;
     --muted:#5a6070; --border:#c8bfa8; --border-strong:#8d8570;
+    /* The rest of what body.dark overrides, at their light values: without them the results screen printed
+       from dark kept its navy panel and dark green / red chips, so with background graphics on the drilled
+       cards' navy ink vanished into the slab, and with them off the marks printed pale. */
+    --bg:#fff; --panel-bg:#fff; --good:#287542; --good-soft:#d8efd8; --bad:#ad3538; --bad-soft:#f3d6d6;
     background:#fff !important; color:#1a2a47 !important;
   }
+  /* Three dark rules name a colour of their own (gold-light, a literal gradient), which no token above can reach:
+     on paper the score, the Results heading and a Learning Path level's outcome line printed pale gold, 1.5:1. */
+  body.dark .results-hero .pct, body.dark .panel-title, body.dark .ladder-strip-line { color:var(--navy); }
+  body.dark .panel-title { background:linear-gradient(180deg, var(--paper), var(--white)); }
   .app-header, footer, nav, .stats-bar, .progress, .fc-hint, .fc-back-q,
   #tourBtn, #fsBtn, #darkToggle, .i18n-select, #tipFloat, #appToast, #sheetMenu,
   #prevBtn, #flipBtn, #nextBtn, #endEarlyBtn, #fcSpeakBtn, #fcSpeakBtnFront, #markYes, #markNo,
