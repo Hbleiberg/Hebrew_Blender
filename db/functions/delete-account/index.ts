@@ -7,7 +7,12 @@
 //      only ever delete the account that is calling it.
 //   2. Removes every file under <user id>/ in the three Font Maker buckets (project files, photos,
 //      exports). Deleting an auth user does NOT remove Storage objects, so this has to happen first, here.
-//   3. Deletes the auth user. The profiles, saves and font_projects rows go with it (on delete cascade).
+//   3. Deletes the student accounts this teacher created (Torah Trainer reading assignments): a students row
+//      cascades with the teacher, but a student's own auth user does not, and nobody but this function could
+//      remove it afterwards. Their rows cascade; their audio goes at the Worker's next daily reconcile.
+//   4. Deletes the auth user. The profiles, saves, font_projects, classes and assignments rows go with it
+//      (on delete cascade).
+//   A student account cannot call this at all (student_forbidden): its teacher manages it.
 //
 // It needs the project's secret key — which never ships to the browser — and the platform hands that to
 // every Edge Function as an environment variable (SUPABASE_SECRET_KEYS, or the legacy
@@ -83,9 +88,10 @@ Deno.serve(async (req: Request) => {
   const { data: who, error: whoErr } = await admin.auth.getUser(jwt);
   if (whoErr || !who?.user) return reply(req, 401, { error: 'invalid_token' });
   const uid = who.user.id;
+  if (who.user.app_metadata?.role === 'student') return reply(req, 403, { error: 'student_forbidden' });
 
   try {
-    const deleted = { saves: await countRows(admin, 'saves', uid), projects: await countRows(admin, 'font_projects', uid), files: 0 };
+    const deleted = { saves: await countRows(admin, 'saves', uid), projects: await countRows(admin, 'font_projects', uid), files: 0, students: 0 };
     // 2. Files first: once the rows are gone nothing would point at them any more.
     for (const bucket of BUCKETS) {
       const paths = await listFiles(admin, bucket, uid);
@@ -95,7 +101,18 @@ Deno.serve(async (req: Request) => {
       }
       deleted.files += paths.length;
     }
-    // 3. The account itself; the profiles / saves / font_projects rows cascade.
+    // 3. The teacher's student accounts (their rows cascade with each one).
+    for (let offset = 0; ; offset += PAGE) {
+      const { data: kids, error: kErr } = await admin.from('students').select('id').eq('teacher_id', uid).order('id').range(offset, offset + PAGE - 1);
+      if (kErr) throw kErr;
+      for (const k of kids ?? []) {
+        const { error: dErr } = await admin.auth.admin.deleteUser(k.id);
+        if (dErr) throw dErr;
+        deleted.students++;
+      }
+      if (!kids || kids.length < PAGE) break;
+    }
+    // 4. The account itself; the profiles / saves / font_projects / classes / assignments rows cascade.
     const { error: delErr } = await admin.auth.admin.deleteUser(uid);
     if (delErr) throw delErr;
     return reply(req, 200, { ok: true, deleted });

@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!-- Content-Security-Policy (defense-in-depth). Placed right after <meta charset> so it applies before any
+     script/style loads. Accounts (Supabase): cdn.jsdelivr.net serves the pinned SDK, hhkmqwpjsyxdeuhvcyis.supabase.co
+     is Auth + PostgREST + the manage-students Edge Function; recordings.ivritsuite.com is the audio Worker
+     (workers/audio/) the recordings are fetched from; media-src blob: is how a fetched recording is played. No
+     analytics tag on this page (student data), on purpose. Update this when adding any external
+     script/font/fetch/iframe (see CLAUDE.md). -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self'; media-src blob:; connect-src 'self' https://hhkmqwpjsyxdeuhvcyis.supabase.co https://recordings.ivritsuite.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
+<!-- Clickjacking guard. This page manages students and their recordings, so it is never legitimately embedded;
+     frame-ancestors is ignored in a <meta> CSP and GitHub Pages sends no headers, so the inline script below
+     marks a framed document and the CSS shows only a link out (the account page's guard, verbatim). -->
+<script>(function(){try{if(window.top!==window.self)document.documentElement.classList.add('ivframed');}catch(e){document.documentElement.classList.add('ivframed');}})()</script>
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=2">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=2">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=2">
+<link rel="manifest" href="manifest.webmanifest?v=3">
+<meta name="theme-color" content="#1a2744">
+<script src="/pwa.js" defer></script>
+<script src="/js/i18n.js" defer></script>
+<script src="/js/supabase-config.js" defer></script>
+<script src="/js/ivrit-account.js" defer></script>
+<script src="/js/ivrit-saves.js" defer></script>
+<script src="/js/ivrit-assignments.js" defer></script>
+<title>Reading Assignments — Torah Trainer | IvritSuite</title>
+<meta name="description" content="A teacher's page for Torah Trainer reading assignments: student logins, assignments under a code word, and the recordings students submit.">
+<!-- Unlisted while the feature is behind its flag: no link from the home page, not in sitemap.xml or llms.txt, kept out of search. -->
+<meta name="robots" content="noindex, nofollow">
+<meta name="author" content="Harrison Bleiberg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" media="print" onload="this.media='all'" rel="stylesheet">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet"></noscript>
+<script>(function(){try{var s=localStorage.getItem('hebrewBlender_darkMode');if(s==='1'||(s===null&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark-early');}}catch(e){}})()</script>
+<script>
+  /* No-flash UI-language IIFE — sets dir/lang before paint so Hebrew never flashes LTR->RTL. */
+  (function () {
+    try {
+      var p = new URLSearchParams(location.search).get('lang');
+      var l = (p === 'en' || p === 'he') ? p : (localStorage.getItem('hebrewBlender_lang') || 'en');
+      if (l !== 'en' && l !== 'he') l = 'en';
+      document.documentElement.lang = l;
+      document.documentElement.dir = (l === 'he' ? 'rtl' : 'ltr');
+    } catch (e) {}
+  })();
+</script>
+<style>
+:root {
+  --navy:#1a2744;--gold:#c9922a;--focus-ring:#a0701c;--gold-light:#f0d080;--cream:#fdf8ef;
+  --warm-gray:#e8e0d0;--text:#1a2744;--muted:#6b6050;--border:#c8bfa8;--white:#ffffff;
+  --gold-text:#7f5a13;--gold-text-hover:#5c4010;--danger-text:#b3261e;--danger-bg:#fdecec;--danger-border:#e5a5a5;
+  --ok-text:#1f6b3a;--ok-bg:#e6f4ea;--warn-text:#7a4a00;--warn-bg:#fff4dc;
+}
+html.dark-early body,body.dark {
+  --navy:#1a2744;--gold:#e0a832;--focus-ring:var(--gold);--gold-light:#f5d97a;--cream:#161c2a;
+  --warm-gray:#1e2535;--text:#dde4f0;--muted:#8a94a8;--border:#2a3349;--white:#1e2535;--gold-text:var(--gold);--gold-text-hover:var(--gold-light);
+  --danger-text:#ff9c94;--danger-bg:#3a1f1f;--danger-border:#6b3434;--ok-text:#8fd3a3;--ok-bg:#1f3328;--warn-text:#f0c060;--warn-bg:#3a2f14;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+input::placeholder,textarea::placeholder{color:var(--muted);}
+[hidden]{display:none!important;}
+body{font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+.skip-link{position:absolute;inset-inline-start:8px;top:-48px;z-index:200;background:var(--navy);color:#fff;padding:8px 14px;border-radius:0 0 6px 6px;font-size:0.8rem;font-weight:600;text-decoration:none;}
+.skip-link:focus{top:0;outline:2px solid var(--focus-ring);outline-offset:2px;}
+header{background:var(--navy);color:#fff;padding:22px 40px;display:flex;align-items:center;gap:16px;border-bottom:4px solid var(--gold);}
+header .star{font-size:32px;color:var(--gold);}
+header .brand-title{font-family:'Libre Baskerville',serif;font-size:1.5rem;letter-spacing:0.01em;}
+header p{font-size:0.85rem;color:var(--gold-light);margin-top:3px;}
+header .hright{margin-inline-start:auto;display:flex;gap:10px;align-items:center;}
+.hbtn{background:none;border:1px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:5px 14px;font-size:0.8rem;cursor:pointer;font-family:'Source Sans 3',sans-serif;text-decoration:none;min-height:30px;display:inline-flex;align-items:center;gap:6px;justify-content:center;}
+.hbtn:hover{background:rgba(255,255,255,0.1);}
+.dark-btn{background:none;border:1px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:5px 14px;font-size:0.8rem;cursor:pointer;font-family:'Source Sans 3',sans-serif;min-height:30px;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
+.dark-btn:hover{background:rgba(255,255,255,0.1);}
+main{flex:1;width:100%;max-width:1040px;margin:0 auto;padding:40px 24px 64px;}
+main h1.page-title{font-family:'Libre Baskerville',serif;font-size:1.9rem;color:var(--text);margin-bottom:6px;}
+main .lede{font-size:0.95rem;color:var(--muted);margin-bottom:24px;line-height:1.55;}
+main h2{font-family:'Libre Baskerville',serif;font-size:1.2rem;color:var(--text);margin:0 0 8px;}
+main h3{font-size:1rem;margin:14px 0 6px;}
+main p,main li,main td,main th,main label{font-size:0.92rem;line-height:1.5;color:var(--text);}
+main p{margin-bottom:8px;}
+main a{color:var(--gold-text);text-decoration:underline;}
+main a:hover{color:var(--gold-text-hover);}
+.tile{background:var(--white);border:1px solid var(--border);border-top:3px solid var(--gold);border-radius:12px;padding:20px 22px;box-shadow:0 2px 10px rgba(0,0,0,0.05);margin-block-end:22px;}
+.tile:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;}
+.muted{color:var(--muted);}
+.note{font-size:0.86rem;color:var(--muted);margin-bottom:10px;line-height:1.5;}
+.status{margin-top:8px;font-size:0.9rem;color:var(--muted);min-height:1.3em;overflow-wrap:anywhere;}
+.status.is-error{color:var(--danger-text);}
+.status:empty{min-height:0;margin-block:0;}
+.field{margin-block:8px;}
+.field label{display:block;font-size:0.82rem;font-weight:600;margin-bottom:4px;}
+.field input,.field select,.field textarea{width:100%;max-width:460px;border:1px solid var(--border);border-radius:8px;background:var(--white);color:var(--text);padding:8px 10px;font-family:inherit;font-size:0.95rem;}
+.field textarea{min-height:110px;resize:vertical;}
+@media (pointer: coarse) { .field input,.field select,.field textarea,.cell-input{font-size:16px;} }
+.field input:focus,.field select:focus,.field textarea:focus,.cell-input:focus{outline:2px solid var(--focus-ring);outline-offset:1px;}
+.row{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:flex-end;}
+.row .field{flex:1 1 200px;}
+.check{display:flex;align-items:flex-start;gap:8px;margin-block:8px;font-size:0.92rem;line-height:1.5;}
+.check input{margin-block-start:4px;flex-shrink:0;}
+.btn{background:var(--navy);color:#fff;border:1px solid transparent;border-radius:8px;padding:9px 16px;font-family:inherit;font-size:0.92rem;font-weight:600;cursor:pointer;transition:background 0.15s;margin-inline-end:6px;margin-block:4px;}
+.btn:hover{background:#24345c;}
+.btn:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;}
+.btn[aria-disabled="true"]{opacity:0.55;cursor:default;}
+.btn[aria-disabled="true"]:hover{background:var(--navy);}
+body.dark .btn{background:#2a4070;}
+body.dark .btn:hover{background:#345090;}
+body.dark .btn[aria-disabled="true"]:hover{background:#2a4070;}
+.btn.ghost{background:transparent;color:var(--text);border-color:var(--border);}
+.btn.ghost:hover{background:var(--warm-gray);}
+.btn.ghost[aria-disabled="true"]:hover{background:transparent;}
+.btn.danger{background:var(--danger-text);color:#fff;}
+.btn.danger:hover{background:#8f1d17;}
+body.dark .btn.danger{background:#a83a32;}
+body.dark .btn.ghost{background:transparent;}
+body.dark .btn.ghost:hover{background:var(--border);}
+body.dark .btn.danger:hover{background:#bb4a41;}
+.btn.sm{padding:5px 10px;font-size:0.82rem;margin-block:2px;}
+.link-btn{background:none;border:0;padding:0 2px;color:var(--gold-text);font:inherit;font-size:0.88rem;text-decoration:underline;cursor:pointer;}
+.link-btn:hover{color:var(--gold-text-hover);}
+.link-btn:focus-visible{outline:2px solid var(--focus-ring);outline-offset:1px;}
+table{width:100%;border-collapse:collapse;margin-block:8px 10px;}
+th,td{text-align:start;padding:7px 8px;border-bottom:1px solid var(--border);vertical-align:top;}
+th{font-size:0.8rem;text-transform:uppercase;letter-spacing:0.04em;color:var(--muted);}
+td.actions{white-space:nowrap;}
+.cell-input{width:100%;min-width:7ch;border:1px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);padding:5px 7px;font-family:inherit;font-size:0.9rem;}
+.code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:1.02rem;letter-spacing:0.02em;direction:ltr;unicode-bidi:isolate;}
+.badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:0.76rem;font-weight:600;border:1px solid var(--border);}
+.badge.ok{color:var(--ok-text);background:var(--ok-bg);border-color:transparent;}
+.badge.warn{color:var(--warn-text);background:var(--warn-bg);border-color:transparent;}
+.badge.off{color:var(--muted);}
+.sub-row{border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-block:10px;background:var(--cream);}
+body.dark .sub-row{background:#161c2a;}
+.sub-head{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;}
+.sub-head strong{font-size:1rem;}
+.sub-audio{margin-block:8px;}
+.sub-audio audio{width:100%;max-width:520px;display:block;}
+.fb textarea{width:100%;max-width:620px;min-height:72px;border:1px solid var(--border);border-radius:8px;background:var(--white);color:var(--text);padding:8px 10px;font-family:inherit;font-size:0.92rem;}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin-block:6px 10px;}
+.toolbar label{font-size:0.86rem;font-weight:600;}
+.toolbar select{border:1px solid var(--border);border-radius:8px;background:var(--white);color:var(--text);padding:6px 8px;font-family:inherit;font-size:0.9rem;}
+/* The edit dialog: a sibling of <main>, its own focus trap, Escape closes it (the account page has no dialog; this
+   follows the Trainer's favorite popup). */
+.dlg-backdrop{position:fixed;inset:0;background:rgba(13,18,32,0.45);z-index:110;}
+.dlg{position:fixed;inset:0;margin:auto;width:min(520px,92vw);max-height:88vh;height:fit-content;overflow:auto;background:var(--white);border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.28);padding:18px 20px;z-index:120;}
+.dlg h2{margin-bottom:10px;}
+.dlg-actions{display:flex;justify-content:flex-end;gap:8px;margin-block-start:12px;flex-wrap:wrap;}
+.notsub{margin:4px 0 8px;padding-inline-start:18px;}
+.preview-note{font-size:0.84rem;color:var(--muted);}
+footer{text-align:center;padding:16px;font-size:0.75rem;color:var(--muted);border-top:1px solid var(--border);background:var(--white);}
+footer a{color:var(--gold-text);text-decoration:none;display:inline-block;padding-block:5px;}
+footer a:hover{text-decoration:underline;}
+/* Login cards: a print-only grid of the batch just created (the one time a password is visible). */
+#printCards{display:none;}
+@media (max-width:640px){
+  header{padding:16px 20px;} header .brand-title{font-size:1.2rem;} main{padding:24px 16px 48px;} main h1.page-title{font-size:1.45rem;} .tile{padding:16px 14px;}
+  table,thead,tbody,tr,th,td{display:block;} thead{display:none;} td{border:0;padding:3px 0;} tr{border-bottom:1px solid var(--border);padding-block:8px;} td.actions{white-space:normal;}
+}
+@media (max-width:535px), (pointer:coarse) and (max-width:545px){ header{flex-wrap:wrap;} header .hright{flex-wrap:wrap;max-width:100%;justify-content:flex-end;} }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important; } }
+#framedOut{display:none;}
+html.ivframed #framedOut{display:block;max-inline-size:34rem;margin:18vh auto 0;padding:0 24px;text-align:center;}
+html.ivframed body > *:not(#framedOut){display:none !important;}
+html.ivframed #framedOut h2{margin-block-end:12px;}
+html.ivframed #framedOut p{color:var(--muted);margin-block-end:20px;}
+@media print {
+  body, body.dark, html.dark-early body { --cream:#fff;--text:#1a2744;--muted:#6b6050;--border:#c8bfa8;--white:#fff; background:#fff !important; color:#1a2744 !important; }
+  body.printing-cards > *:not(#printCards){display:none !important;}
+  body.printing-cards #printCards{display:grid;grid-template-columns:repeat(2,1fr);gap:10mm;padding:10mm;}
+  .card{border:1px dashed #888;border-radius:6px;padding:8mm;break-inside:avoid;font-family:'Source Sans 3',sans-serif;}
+  .card .card-title{font-family:'Libre Baskerville',serif;font-size:11pt;margin-bottom:4mm;}
+  .card dt{font-size:8pt;text-transform:uppercase;letter-spacing:0.05em;color:#555;margin-top:3mm;}
+  .card dd{font-family:ui-monospace,Menlo,monospace;font-size:13pt;direction:ltr;}
+  .card .card-site{font-size:8pt;color:#555;margin-top:4mm;}
+}
+/* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner, parsha_emojis, name_tags, trope_atlas, the generated parsha/ pages (copied from parsha_emojis by scripts/build-parsha-pages.mjs) (docs/reference/shared-components.md → Header icons).
+   The header controls and the in-page control buttons (play, pause, stop, reset, retry, loop, sound) carry inline
+   SVGs from one shared set (.hi-*); ink is currentColor, so each button's own colour applies. .hi-sm is the 13px
+   size the tiny settings buttons take, .hi-btn lines an icon up with its label inside a button.
+   The dark toggle holds both the moon and the sun and body.dark picks one; scripts change only the .hi-lbl text beside it. */
+.hi{width:16px;height:16px;flex-shrink:0;display:inline-block;vertical-align:-0.2em;}
+.hi-sm{width:13px;height:13px;}
+.hi-btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;}
+.hi-sun{display:none;}
+body.dark .hi-moon{display:none;}
+body.dark .hi-sun{display:inline-block;}
+[dir="rtl"] .hi-arrow{transform:scaleX(-1);}
+/* ═══ end header-icons CSS ═══ */
+</style>
+</head>
+<body><a class="skip-link" href="#mainContent" data-i18n="assign.a11y.skip">Skip to the assignments</a>
+<div id="framedOut" role="alert">
+  <h2 data-i18n="assign.framed.head">This page can't be shown inside another site</h2>
+  <p data-i18n="assign.framed.body">Student logins and recordings open only on ivritsuite.com, so no one can place a fake page over them.</p>
+  <a class="hbtn" href="/reading_assignments.html" target="_top" data-i18n="assign.framed.link">Open the page →</a>
+</div>
+
+<header>
+  <span class="star" aria-hidden="true">✡︎</span>
+  <div>
+    <div class="brand-title" data-i18n="assign.header.title">IvritSuite — Reading assignments</div>
+    <p data-i18n="assign.header.tagline">Student logins · Assignments under a code word · The recordings they submit</p>
+  </div>
+  <div class="hright">
+    <a class="hbtn" href="/torah_trainer.html?assignments=1"><svg class="hi hi-arrow dir-arrow" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/></svg><span class="hi-lbl" data-i18n="assign.header.trainer_link">Torah Trainer</span></a>
+    <div data-i18n-switcher></div>
+    <button class="dark-btn" id="darkBtn" onclick="toggleDark()" aria-pressed="false" aria-label="Toggle dark mode" data-i18n-aria-label="shared.darkmode.toggle_title" data-i18n-title="shared.darkmode.toggle_title"><svg class="hi hi-moon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15.5A7 7 0 0 1 8.5 6a7 7 0 1 0 9.5 9.5z"/><path d="M17.5 2.5l.9 2.4 2.4.9-2.4.9-.9 2.4-.9-2.4-2.4-.9 2.4-.9z" fill="currentColor" stroke="none"/></svg><svg class="hi hi-sun" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></svg><span class="hi-lbl" data-i18n="shared.darkmode.label_dark">Dark</span></button>
+  </div>
+</header>
+
+<main id="mainContent" tabindex="-1">
+  <h1 class="page-title" data-i18n="assign.page_title">Reading assignments</h1>
+  <p class="lede" data-i18n-html="assign.lede">Give each student a login, assign a Torah portion under a code word, and listen to what they record in the Torah Trainer. How student accounts and recordings are kept: <a href="privacy.html">Privacy Policy</a>.</p>
+
+  <section class="tile" id="stOut" hidden>
+    <p class="status" id="outNote" role="status" aria-live="polite"></p>
+    <button class="btn" type="button" id="outBtn" data-i18n="account.out.sign_in">Sign in</button>
+  </section>
+  <section class="tile" id="stBusy">
+    <p class="status" id="busyNote" role="status" aria-live="polite" data-i18n="account.out.loading">Checking your sign-in…</p>
+  </section>
+  <section class="tile" id="stStudent" hidden>
+    <h2 data-i18n="assign.student.head">This page is for teachers</h2>
+    <p data-i18n="assign.student.body">You are signed in with a student account. Your assignments, recordings and your teacher's feedback are in the Torah Trainer.</p>
+    <p><a href="/torah_trainer.html?assignments=1" data-i18n="assign.student.link">Go to the Torah Trainer</a></p>
+  </section>
+
+  <div id="stIn" hidden>
+    <!-- ───── Students ───── -->
+    <section class="tile" id="secStudents" aria-labelledby="studentsHead">
+      <h2 id="studentsHead" data-i18n="assign.students.head">Students</h2>
+      <p class="note" data-i18n="assign.students.note">Each student signs in to the Torah Trainer with a username and a password you give them — no email address. Print the login cards right after you create a batch; the passwords are shown only then. You can reset a password at any time.</p>
+      <div class="toolbar">
+        <label for="classFilter" data-i18n="assign.students.filter_class">Class</label>
+        <select id="classFilter"></select>
+        <button class="btn ghost sm" type="button" id="studentsRefresh" data-i18n="account.holds.refresh">Refresh</button>
+      </div>
+      <div id="studentsHost" aria-live="polite"></div>
+      <p class="status" id="studentsStatus" role="status" aria-live="polite"></p>
+
+      <h3 data-i18n="assign.students.add_head">Add students</h3>
+      <p class="note" data-i18n="assign.students.add_note">Type one name per line (a first name or a nickname is enough — it is what the student sees), or take the names from a class list saved on this device. Then check the usernames and passwords in the preview and press Create.</p>
+      <div class="row">
+        <div class="field" style="flex:1 1 320px;">
+          <label for="namesInput" data-i18n="assign.students.names_label">Names, one per line</label>
+          <textarea id="namesInput" autocomplete="off" spellcheck="false"></textarea>
+        </div>
+        <div class="field" style="flex:0 1 260px;">
+          <label for="importSource" data-i18n="assign.students.import_label">From a class list on this device</label>
+          <select id="importSource"></select>
+          <button class="btn ghost sm" type="button" id="importBtn" data-i18n="assign.students.import_btn">Add these names</button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="field" style="flex:0 1 240px;">
+          <label for="newClassSel" data-i18n="assign.students.new_class">Class for these students</label>
+          <select id="newClassSel"></select>
+        </div>
+        <div><button class="btn ghost" type="button" id="previewBtn" data-i18n="assign.students.preview_btn">Preview usernames and passwords</button></div>
+      </div>
+      <div id="previewHost"></div>
+      <p class="status" id="createStatus" role="status" aria-live="polite"></p>
+      <div id="createdHost"></div>
+
+      <h3 data-i18n="assign.classes.head">Classes</h3>
+      <p class="note" data-i18n="assign.classes.note">Optional. A class groups students and lets an assignment say who has not submitted yet.</p>
+      <div id="classesHost"></div>
+      <div class="row">
+        <div class="field" style="flex:0 1 280px;"><label for="newClassName" data-i18n="assign.classes.new_label">New class name</label><input type="text" id="newClassName" maxlength="80" autocomplete="off"></div>
+        <div><button class="btn ghost" type="button" id="newClassBtn" data-i18n="assign.classes.new_btn">Add class</button></div>
+      </div>
+      <p class="status" id="classStatus" role="status" aria-live="polite"></p>
+    </section>
+
+    <!-- ───── Assignments ───── -->
+    <section class="tile" id="secAssignments" aria-labelledby="asgHead">
+      <h2 id="asgHead" data-i18n="assign.list.head">Assignments</h2>
+      <p class="note" data-i18n-html="assign.list.note">To make a new one, open the <a href="/torah_trainer.html?assignments=1">Torah Trainer</a>, choose the parsha, aliyah or verse range as usual, and press <strong>Assign this reading</strong>. Students enter the code word in the Trainer to see the portion and record it.</p>
+      <div class="toolbar"><button class="btn ghost sm" type="button" id="asgRefresh" data-i18n="account.holds.refresh">Refresh</button></div>
+      <div id="asgHost" aria-live="polite"></div>
+      <p class="status" id="asgStatus" role="status" aria-live="polite"></p>
+    </section>
+
+    <!-- ───── Submissions ───── -->
+    <section class="tile" id="secSubs" aria-labelledby="subsHead" tabindex="-1" hidden>
+      <h2 id="subsHead" data-i18n="assign.subs.head">Recordings</h2>
+      <p id="subsFor" class="note"></p>
+      <div class="toolbar">
+        <label for="subsFilter" data-i18n="assign.subs.filter_label">Show</label>
+        <select id="subsFilter">
+          <option value="current" data-i18n="assign.subs.filter_current">Latest recording per student</option>
+          <option value="submitted" data-i18n="assign.subs.filter_submitted">Waiting for feedback</option>
+          <option value="needs_rerecord" data-i18n="assign.subs.filter_needs">Re-recording requested</option>
+          <option value="approved" data-i18n="assign.subs.filter_approved">Approved</option>
+          <option value="all" data-i18n="assign.subs.filter_all">Every version</option>
+        </select>
+        <button class="btn ghost sm" type="button" id="subsRefresh" data-i18n="account.holds.refresh">Refresh</button>
+        <button class="btn ghost sm" type="button" id="subsZip" aria-disabled="true" data-i18n="assign.subs.download_all">Download all (.zip)</button>
+        <button class="btn ghost sm" type="button" id="subsBack" data-i18n="assign.subs.back">Back to the list</button>
+      </div>
+      <div id="notSubHost"></div>
+      <div id="subsHost"></div>
+      <p class="status" id="subsStatus" role="status" aria-live="polite"></p>
+    </section>
+  </div>
+</main>
+
+<!-- The assignment edit dialog. -->
+<div class="dlg-backdrop" id="dlgBackdrop" hidden></div>
+<div class="dlg" id="asgDlg" role="dialog" aria-modal="true" aria-labelledby="dlgTitle" hidden>
+  <h2 id="dlgTitle" data-i18n="assign.edit.head">Edit assignment</h2>
+  <p class="note" id="dlgReading"></p>
+  <form id="dlgForm" novalidate>
+    <div class="field"><label for="dlgTitleIn" data-i18n="assign.edit.title">Title</label><input type="text" id="dlgTitleIn" maxlength="120" required></div>
+    <div class="field"><label for="dlgCode" data-i18n="assign.edit.code">Code word</label><input type="text" id="dlgCode" class="code" maxlength="40" required autocomplete="off" spellcheck="false"> <button class="btn ghost sm" type="button" id="dlgRegen" data-i18n="assign.edit.regen">New code word</button></div>
+    <div class="row">
+      <div class="field"><label for="dlgMinutes" data-i18n="assign.edit.minutes">Maximum minutes</label><input type="number" id="dlgMinutes" min="1" max="30" step="1" value="10"></div>
+      <div class="field"><label for="dlgDue" data-i18n="assign.edit.due">Due date (optional)</label><input type="date" id="dlgDue"></div>
+      <div class="field"><label for="dlgRetention" data-i18n="assign.edit.retention">Keep recordings for (days after closing)</label><input type="number" id="dlgRetention" min="7" max="180" step="1" value="30"></div>
+    </div>
+    <div class="field"><label for="dlgClass" data-i18n="assign.edit.class">Class (optional)</label><select id="dlgClass"></select></div>
+    <label class="check"><input type="checkbox" id="dlgPeers"> <span data-i18n="assign.edit.peers">Classmates may listen to each other's latest recording (never to feedback)</span></label>
+    <p class="status" id="dlgStatus" role="status" aria-live="polite"></p>
+    <div class="dlg-actions">
+      <button class="btn ghost" type="button" id="dlgCancel" data-i18n="assign.edit.cancel">Cancel</button>
+      <button class="btn" type="submit" id="dlgSave" data-i18n="assign.edit.save">Save</button>
+    </div>
+  </form>
+</div>
+
+<!-- Printed login cards (built from the batch just created; shown only on paper). -->
+<div id="printCards" aria-hidden="true"></div>
+
+<footer>
+  <!-- pinned-English credits (never translated): dir="ltr" keeps each phrase in English order in the RTL UI, and lang="en" has a screen reader voice it in English -->
+  <span dir="ltr" lang="en">Created by <a href="https://harrisonbleiberg.wpcomstaging.com/" target="_blank" style="font-weight:600;">Harrison Bleiberg</a></span><br>
+  <span data-i18n="shared.footer.license_note">Free to use and adapt for non-commercial educational purposes with attribution</span> &nbsp;·&nbsp;
+  <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> &nbsp;·&nbsp;
+  <a href="https://github.com/hbleiberg/Hebrew_Blender" target="_blank">GitHub</a> &nbsp;·&nbsp;
+  <a href="privacy.html" data-i18n="shared.footer.privacy_link">Privacy Policy</a> &nbsp;·&nbsp;
+  <a href="terms.html" data-i18n="shared.footer.terms_link">Terms of Use</a>
+</footer>
+
+<script>
+function toggleDark() {
+  const dark = document.body.classList.toggle('dark');
+  document.documentElement.classList.remove('dark-early');
+  try { localStorage.setItem('hebrewBlender_darkMode', dark ? '1' : '0'); } catch(e) {}
+  const _db = document.getElementById('darkBtn');
+  (_db.querySelector('.hi-lbl') || _db).textContent = dark ? (window.I18n ? I18n.t('shared.darkmode.label_light') : 'Light') : (window.I18n ? I18n.t('shared.darkmode.label_dark') : 'Dark');
+  _db.setAttribute('aria-pressed', dark ? 'true' : 'false');
+}
+
+/* ── The teacher's page. Every cloud call goes through IvritAssignments (and IvritAccount for the session); this
+   script only renders and asks. Nothing user- or server-supplied is ever written with innerHTML: names, usernames,
+   titles, comments and code words all go through textContent. ── */
+const $ = (id) => document.getElementById(id);
+const t = (k, p) => (window.I18n ? I18n.t(k, p) : k);
+const AS = () => window.IvritAssignments;
+let user = null, classes = [], students = [], assignments = [], subs = null, subsFor = null, batch = null, preview = null;
+const lines = {};
+function say(id, render, isError) { lines[id] = render || null; const n = $(id); if (!n) return; n.textContent = render ? render() : ''; n.classList.toggle('is-error', !!isError); }
+function el(tag, cls, text) { const n = document.createElement(tag); if (cls) n.className = cls; if (text !== undefined && text !== null) n.textContent = text; return n; }
+function btn(label, cls, onClick) { const b = el('button', 'btn ' + (cls || 'ghost sm'), label); b.type = 'button'; b.addEventListener('click', onClick); return b; }
+function setBusy(id, on) { const n = $(id); if (n) n.setAttribute('aria-disabled', on ? 'true' : 'false'); }
+function isDisabled(n) { return !n || n.getAttribute('aria-disabled') === 'true'; }
+function fmtDate(iso) { if (!iso) return ''; try { return new Date(iso).toLocaleDateString(window.I18n && I18n.lang === 'he' ? 'he-IL' : undefined, { dateStyle: 'medium' }); } catch (e) { return String(iso).slice(0, 10); } }
+function fmtDur(s) { s = Math.max(0, Math.round(Number(s) || 0)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
+function show(which) { ['stOut', 'stBusy', 'stStudent', 'stIn'].forEach(id => { $(id).hidden = id !== which; }); }
+function errText(err) { return AS() ? AS().errorText(err) : String(err && err.message || err); }
+function className(id) { const c = classes.find(x => x.id === id); return c ? c.name : ''; }
+function fillClassSelect(sel, withAll, current) {
+  while (sel.firstChild) sel.removeChild(sel.firstChild);
+  const first = el('option', '', withAll ? t('assign.students.filter_all') : t('assign.students.no_class')); first.value = ''; sel.appendChild(first);
+  classes.forEach(c => { const o = el('option', '', c.name); o.value = c.id; sel.appendChild(o); });
+  sel.value = current || '';
+}
+function fillAllClassSelects() {
+  const f = $('classFilter').value;
+  fillClassSelect($('classFilter'), true, f);
+  fillClassSelect($('newClassSel'), false, $('newClassSel').value);
+  fillClassSelect($('dlgClass'), false, $('dlgClass').value);
+}
+
+/* ── state ── */
+function onAccount(u, status) {
+  const was = user; user = u;
+  if (u) {
+    if (u.role === 'student') { show('stStudent'); return; }
+    show('stIn');
+    if (!was || was.id !== u.id) { loadAll(); }
+    return;
+  }
+  if (status === 'disabled') { say('outNote', () => t('account.out.disabled')); $('outBtn').hidden = true; show('stOut'); }
+  else if (status === 'loading') { say('busyNote', () => t('account.out.loading')); show('stBusy'); }
+  else if (status === 'offline' || status === 'unavailable') { say('busyNote', () => t('account.out.offline')); show('stBusy'); }
+  else { say('outNote', () => t('assign.out.note')); $('outBtn').hidden = false; show('stOut'); }
+}
+function loadAll() { loadStudents(); loadAssignments(); }
+
+/* ── students ── */
+function loadStudents() {
+  const me = user && user.id; if (!me) return;
+  say('studentsStatus', () => t('account.holds.checking')); setBusy('studentsRefresh', true);
+  Promise.all([AS().classes.list(), AS().students.list()]).then(res => {
+    if (!user || user.id !== me) return;
+    classes = res[0] || []; students = res[1] || [];
+    fillAllClassSelects(); renderStudents(); renderClasses(); say('studentsStatus', null);
+  }).catch(err => { if (user && user.id === me) say('studentsStatus', () => errText(err), true); })
+    .then(() => setBusy('studentsRefresh', false));
+}
+function renderStudents() {
+  const host = $('studentsHost'); while (host.firstChild) host.removeChild(host.firstChild);
+  const filter = $('classFilter').value;
+  const rows = students.filter(s => !filter || s.class_id === filter);
+  if (!rows.length) { host.appendChild(el('p', 'muted', students.length ? t('assign.students.none_in_class') : t('assign.students.none'))); return; }
+  const table = el('table'); const thead = el('thead'), tr = el('tr');
+  [t('assign.students.col_name'), t('assign.students.col_username'), t('assign.students.col_class'), t('assign.students.col_actions')].forEach(h => tr.appendChild(el('th', '', h)));
+  thead.appendChild(tr); table.appendChild(thead);
+  const tbody = el('tbody');
+  rows.forEach(s => {
+    const r = el('tr');
+    r.appendChild(el('td', '', s.display_name));
+    r.appendChild(el('td', 'code', s.username));
+    const tdc = el('td'); const sel = el('select'); sel.setAttribute('aria-label', t('assign.students.move_aria', { name: s.display_name }));
+    fillClassSelect(sel, false, s.class_id || '');
+    sel.addEventListener('change', () => { AS().students.setClass(s.id, sel.value || null).then(() => { s.class_id = sel.value || null; say('studentsStatus', () => t('assign.students.moved', { name: s.display_name })); }).catch(err => { sel.value = s.class_id || ''; say('studentsStatus', () => errText(err), true); }); });
+    tdc.appendChild(sel); r.appendChild(tdc);
+    const act = el('td', 'actions');
+    act.appendChild(btn(t('assign.students.reset_btn'), 'ghost sm', () => resetPassword(s, act)));
+    act.appendChild(btn(t('assign.students.remove_btn'), 'ghost sm', () => removeStudent(s)));
+    r.appendChild(act); tbody.appendChild(r);
+  });
+  table.appendChild(tbody); host.appendChild(table);
+  host.appendChild(el('p', 'muted', t('assign.students.count', { n: rows.length })));
+}
+function resetPassword(s, cell) {
+  const pw = AS().passphrase();
+  if (!window.confirm(t('assign.students.reset_confirm', { name: s.display_name, password: pw }))) return;
+  say('studentsStatus', () => t('shared.account.sending'));
+  AS().students.resetPassword(s.id, pw).then(() => {
+    say('studentsStatus', () => t('assign.students.reset_done', { name: s.display_name, username: s.username, password: pw }));
+    batch = [{ display_name: s.display_name, username: s.username, password: pw }];
+    renderCreated([{ display_name: s.display_name, username: s.username, password: pw }], true);
+  }).catch(err => say('studentsStatus', () => errText(err), true));
+}
+function removeStudent(s) {
+  if (!window.confirm(t('assign.students.remove_confirm', { name: s.display_name }))) return;
+  say('studentsStatus', () => t('shared.account.sending'));
+  AS().students.remove(s.id).then(() => { students = students.filter(x => x.id !== s.id); renderStudents(); say('studentsStatus', () => t('assign.students.removed', { name: s.display_name })); })
+    .catch(err => say('studentsStatus', () => errText(err), true));
+}
+
+/* ── adding students: names → preview → create → cards ── */
+function deviceLists() {
+  // Class lists the suite keeps on this device: the Dashboard's rosters, the Name Tags lists, the Flash Cards profiles.
+  // Read through the suite's prototype-safe parser; only names are taken.
+  const out = [];
+  const parse = (k) => { try { const raw = localStorage.getItem(k); return raw ? JSON.parse(raw, (key, v) => (key === '__proto__' || key === 'constructor' || key === 'prototype') ? undefined : v) : null; } catch (e) { return null; } };
+  const dash = parse('hebrewDashboard_settings');
+  if (dash && dash.rosters && typeof dash.rosters === 'object') Object.keys(dash.rosters).forEach(id => { const r = dash.rosters[id]; if (r && Array.isArray(r.names) && r.names.length) out.push({ label: t('assign.students.import_dashboard', { name: String(r.name || '') }), names: r.names.map(x => typeof x === 'string' ? x : (x && (x.en || x.he || x.name)) || '').filter(Boolean) }); });
+  const tags = parse('hebrewNameTags_lists');
+  if (tags && typeof tags === 'object') Object.keys(tags).forEach(name => { const l = tags[name]; if (l && Array.isArray(l.rows) && l.rows.length) out.push({ label: t('assign.students.import_nametags', { name }), names: l.rows.map(x => (x && (x.en || x.he)) || '').filter(Boolean) }); });
+  const fc = parse('hebrewFlashCards_profiles');
+  if (fc && fc.profiles && typeof fc.profiles === 'object') { const names = Object.keys(fc.profiles).map(k => (fc.profiles[k] && (fc.profiles[k].name || fc.profiles[k].displayName)) || k).filter(Boolean); if (names.length) out.push({ label: t('assign.students.import_flashcards'), names }); }
+  return out;
+}
+function renderImportSources() {
+  const sel = $('importSource'); while (sel.firstChild) sel.removeChild(sel.firstChild);
+  const lists = deviceLists();
+  const first = el('option', '', lists.length ? t('assign.students.import_pick') : t('assign.students.import_none')); first.value = ''; sel.appendChild(first);
+  lists.forEach((l, i) => { const o = el('option', '', l.label + ' (' + l.names.length + ')'); o.value = String(i); sel.appendChild(o); });
+  sel._lists = lists;
+  setBusy('importBtn', !lists.length);
+}
+function importNames() {
+  const sel = $('importSource'); const l = sel._lists && sel._lists[Number(sel.value)]; if (!l) return;
+  const ta = $('namesInput');
+  ta.value = (ta.value.trim() ? ta.value.replace(/\s+$/, '') + '\n' : '') + l.names.join('\n');
+  ta.focus();
+}
+function buildPreview() {
+  const names = $('namesInput').value.split('\n').map(s => s.replace(/\s+/g, ' ').trim()).filter(Boolean).slice(0, 60);
+  if (!names.length) { say('createStatus', () => t('assign.students.names_empty'), true); $('namesInput').focus(); return; }
+  const taken = new Set(students.map(s => s.username));
+  preview = names.map(n => { let u = AS().usernameFor(n); for (let k = 0; k < 20 && taken.has(u); k++) u = AS().usernameFor(n); taken.add(u); return { display_name: n.slice(0, 80), username: u, password: AS().passphrase() }; });
+  say('createStatus', null);
+  renderPreview();
+}
+function renderPreview() {
+  const host = $('previewHost'); while (host.firstChild) host.removeChild(host.firstChild);
+  if (!preview) return;
+  host.appendChild(el('p', 'preview-note', t('assign.students.preview_note')));
+  const table = el('table'); const thead = el('thead'), tr = el('tr');
+  [t('assign.students.col_name'), t('assign.students.col_username'), t('assign.students.col_password')].forEach(h => tr.appendChild(el('th', '', h)));
+  thead.appendChild(tr); table.appendChild(thead);
+  const tbody = el('tbody');
+  preview.forEach((p, i) => {
+    const r = el('tr');
+    [['display_name', 'text', 80], ['username', 'text', 30], ['password', 'text', 72]].forEach(([f, type, max]) => {
+      const td = el('td'); const inp = el('input', 'cell-input'); inp.type = type; inp.maxLength = max; inp.value = p[f]; inp.autocomplete = 'off'; inp.spellcheck = false;
+      if (f !== 'display_name') { inp.dir = 'ltr'; inp.classList.add('code'); }
+      inp.setAttribute('aria-label', t('assign.students.cell_aria', { field: f === 'display_name' ? t('assign.students.col_name') : f === 'username' ? t('assign.students.col_username') : t('assign.students.col_password'), n: i + 1 }));
+      inp.addEventListener('input', () => { p[f] = f === 'username' ? inp.value.trim().toLowerCase() : inp.value; if (p.error) { p.error = null; } });
+      td.appendChild(inp);
+      if (p.error) td.appendChild(el('div', 'status is-error', p.error));
+      r.appendChild(td);
+    });
+    tbody.appendChild(r);
+  });
+  table.appendChild(tbody); host.appendChild(table);
+  host.appendChild(btn(t('assign.students.create_btn', { n: preview.length }), '', createStudents));
+  host.appendChild(btn(t('assign.students.preview_clear'), 'ghost', () => { preview = null; renderPreview(); }));
+}
+function createStudents() {
+  if (!preview || !preview.length) return;
+  const classId = $('newClassSel').value || null;
+  say('createStatus', () => t('assign.students.creating', { n: preview.length }));
+  const rows = preview.map(p => ({ display_name: p.display_name, username: p.username, password: p.password }));
+  AS().students.create(rows).then(results => {
+    const made = [], failed = [];
+    results.forEach((r, i) => { const p = preview[i]; if (!p) return; if (r.error) { p.error = errText({ code: r.error }); failed.push(p); } else { p.id = r.id; made.push(p); } });
+    const after = () => {
+      batch = made.slice();
+      if (made.length) renderCreated(made, false);
+      preview = failed.length ? failed : null;
+      renderPreview();
+      say('createStatus', () => failed.length ? t('assign.students.created_some', { made: made.length, failed: failed.length }) : t('assign.students.created_all', { n: made.length }), !!failed.length);
+      if (made.length) $('namesInput').value = failed.map(p => p.display_name).join('\n');
+      loadStudents();
+    };
+    if (classId && made.length) Promise.all(made.map(p => AS().students.setClass(p.id, classId).catch(() => {}))).then(after); else after();
+  }).catch(err => say('createStatus', () => errText(err), true));
+}
+function renderCreated(made, isReset) {
+  const host = $('createdHost'); while (host.firstChild) host.removeChild(host.firstChild);
+  host.appendChild(el('h3', '', isReset ? t('assign.students.reset_head') : t('assign.students.created_head')));
+  host.appendChild(el('p', 'note', t('assign.students.created_note')));
+  const table = el('table'); const thead = el('thead'), tr = el('tr');
+  [t('assign.students.col_name'), t('assign.students.col_username'), t('assign.students.col_password')].forEach(h => tr.appendChild(el('th', '', h)));
+  thead.appendChild(tr); table.appendChild(thead);
+  const tbody = el('tbody');
+  made.forEach(p => { const r = el('tr'); r.appendChild(el('td', '', p.display_name)); r.appendChild(el('td', 'code', p.username)); r.appendChild(el('td', 'code', p.password)); tbody.appendChild(r); });
+  table.appendChild(tbody); host.appendChild(table);
+  host.appendChild(btn(t('assign.students.print_cards'), '', () => printCards(made)));
+  host.appendChild(btn(t('assign.students.hide_passwords'), 'ghost', () => { batch = null; while (host.firstChild) host.removeChild(host.firstChild); }));
+}
+function printCards(made) {
+  const host = $('printCards'); while (host.firstChild) host.removeChild(host.firstChild);
+  made.forEach(p => {
+    const c = el('div', 'card');
+    c.appendChild(el('div', 'card-title', t('assign.cards.title', { name: p.display_name })));
+    const dl = el('dl');
+    dl.appendChild(el('dt', '', t('assign.students.col_username'))); dl.appendChild(el('dd', '', p.username));
+    dl.appendChild(el('dt', '', t('assign.students.col_password'))); dl.appendChild(el('dd', '', p.password));
+    c.appendChild(dl);
+    c.appendChild(el('div', 'card-site', t('assign.cards.site', { url: 'ivritsuite.com/torah_trainer.html?assignments=1' })));
+    host.appendChild(c);
+  });
+  document.body.classList.add('printing-cards');
+  const done = () => { document.body.classList.remove('printing-cards'); window.removeEventListener('afterprint', done); };
+  window.addEventListener('afterprint', done);
+  window.print();
+  setTimeout(done, 60000);
+}
+
+/* ── classes ── */
+function renderClasses() {
+  const host = $('classesHost'); while (host.firstChild) host.removeChild(host.firstChild);
+  if (!classes.length) { host.appendChild(el('p', 'muted', t('assign.classes.none'))); return; }
+  const ul = el('ul'); ul.style.listStyle = 'none';
+  classes.forEach(c => {
+    const li = el('li'); li.style.marginBlock = '4px';
+    li.appendChild(el('strong', '', c.name));
+    li.appendChild(document.createTextNode(' · ' + t('assign.classes.members', { n: students.filter(s => s.class_id === c.id).length }) + ' '));
+    li.appendChild(btn(t('assign.classes.rename_btn'), 'ghost sm', () => { const n = window.prompt(t('assign.classes.rename_prompt'), c.name); if (n === null || !n.trim()) return; AS().classes.rename(c.id, n).then(r => { c.name = r.name; fillAllClassSelects(); renderClasses(); renderStudents(); }).catch(err => say('classStatus', () => errText(err), true)); }));
+    li.appendChild(btn(t('assign.classes.delete_btn'), 'ghost sm', () => { if (!window.confirm(t('assign.classes.delete_confirm', { name: c.name }))) return; AS().classes.remove(c.id).then(() => { classes = classes.filter(x => x.id !== c.id); students.forEach(s => { if (s.class_id === c.id) s.class_id = null; }); fillAllClassSelects(); renderClasses(); renderStudents(); }).catch(err => say('classStatus', () => errText(err), true)); }));
+    ul.appendChild(li);
+  });
+  host.appendChild(ul);
+}
+function addClass() {
+  const name = $('newClassName').value.trim(); if (!name) { $('newClassName').focus(); return; }
+  AS().classes.create(name).then(c => { classes.push(c); classes.sort((a, b) => a.name.localeCompare(b.name)); $('newClassName').value = ''; fillAllClassSelects(); renderClasses(); say('classStatus', () => t('assign.classes.added', { name: c.name })); })
+    .catch(err => say('classStatus', () => errText(err), true));
+}
+
+/* ── assignments ── */
+function loadAssignments() {
+  const me = user && user.id; if (!me) return;
+  say('asgStatus', () => t('account.holds.checking')); setBusy('asgRefresh', true);
+  AS().assignments.list().then(rows => { if (!user || user.id !== me) return; assignments = rows || []; renderAssignments(); say('asgStatus', null); if (subsFor) { const a = assignments.find(x => x.id === subsFor.id); if (a) subsFor = a; } })
+    .catch(err => { if (user && user.id === me) say('asgStatus', () => errText(err), true); }).then(() => setBusy('asgRefresh', false));
+}
+function trainerLink(a) { return '/torah_trainer.html?assignments=1&ref=' + encodeURIComponent(a.ref); }
+function renderAssignments() {
+  const host = $('asgHost'); while (host.firstChild) host.removeChild(host.firstChild);
+  if (!assignments.length) { host.appendChild(el('p', 'muted', t('assign.list.none'))); return; }
+  assignments.forEach(a => {
+    const box = el('div', 'sub-row');
+    const head = el('div', 'sub-head');
+    head.appendChild(el('strong', '', a.title));
+    head.appendChild(el('span', 'muted', a.ref_label));
+    head.appendChild(el('span', 'badge ' + (a.is_open ? 'ok' : 'off'), a.is_open ? t('assign.list.open') : t('assign.list.closed')));
+    box.appendChild(head);
+    const code = el('p'); code.appendChild(document.createTextNode(t('assign.list.code_label') + ' ')); code.appendChild(el('strong', 'code', a.code_word)); box.appendChild(code);
+    const facts = [t('assign.list.submitted_count', { n: a.submitted }), a.needs_rerecord ? t('assign.list.needs_count', { n: a.needs_rerecord }) : '', a.approved ? t('assign.list.approved_count', { n: a.approved }) : '',
+      a.due_date ? t('assign.list.due', { date: fmtDate(a.due_date) }) : '', a.class_id ? t('assign.list.class', { name: className(a.class_id) }) : '', a.peers_can_listen ? t('assign.list.peers_on') : '',
+      !a.is_open && a.closed_at ? t('assign.list.deletes_on', { date: fmtDate(new Date(new Date(a.closed_at).getTime() + a.retention_days * 86400000).toISOString()) }) : ''].filter(Boolean);
+    box.appendChild(el('p', 'muted', facts.join(' · ')));
+    const act = el('div');
+    act.appendChild(btn(t('assign.list.subs_btn'), '', () => openSubs(a)));
+    const open = el('a', 'btn ghost sm', t('assign.list.trainer_btn')); open.href = trainerLink(a); open.setAttribute('role', 'button'); act.appendChild(open);
+    act.appendChild(btn(t('assign.list.edit_btn'), 'ghost sm', () => openDlg(a)));
+    act.appendChild(btn(a.is_open ? t('assign.list.close_btn') : t('assign.list.reopen_btn'), 'ghost sm', () => {
+      if (a.is_open && !window.confirm(t('assign.list.close_confirm', { title: a.title, days: a.retention_days }))) return;
+      AS().assignments.setOpen(a.id, !a.is_open).then(() => loadAssignments()).catch(err => say('asgStatus', () => errText(err), true));
+    }));
+    act.appendChild(btn(t('assign.list.delete_btn'), 'ghost sm', () => {
+      if (!window.confirm(t('assign.list.delete_confirm', { title: a.title }))) return;
+      AS().assignments.remove(a.id).then(() => { if (subsFor && subsFor.id === a.id) closeSubs(); loadAssignments(); }).catch(err => say('asgStatus', () => errText(err), true));
+    }));
+    box.appendChild(act);
+    host.appendChild(box);
+  });
+}
+
+/* ── the edit dialog ── */
+let dlgFor = null, dlgOpener = null;
+function openDlg(a) {
+  dlgFor = a; dlgOpener = document.activeElement;
+  $('dlgReading').textContent = a.ref_label;
+  $('dlgTitleIn').value = a.title; $('dlgCode').value = a.code_word; $('dlgMinutes').value = a.max_minutes; $('dlgDue').value = a.due_date || '';
+  $('dlgRetention').value = a.retention_days; fillClassSelect($('dlgClass'), false, a.class_id || ''); $('dlgPeers').checked = !!a.peers_can_listen;
+  say('dlgStatus', null);
+  $('dlgBackdrop').hidden = false; $('asgDlg').hidden = false;
+  document.addEventListener('keydown', dlgKey, true);
+  $('dlgTitleIn').focus();
+}
+function dlgKey(e) {
+  const dlg = $('asgDlg');
+  if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); closeDlg(); return; }
+  if (e.key !== 'Tab') return;
+  const f = [...dlg.querySelectorAll('button, input, select, textarea, a[href]')].filter(n => n.offsetParent !== null && !n.disabled);
+  if (!f.length) return;
+  const a = document.activeElement, first = f[0], last = f[f.length - 1], out = !dlg.contains(a);
+  if (e.shiftKey && (a === first || out)) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && (a === last || out)) { e.preventDefault(); first.focus(); }
+}
+function closeDlg() {
+  $('dlgBackdrop').hidden = true; $('asgDlg').hidden = true;
+  document.removeEventListener('keydown', dlgKey, true);
+  const o = dlgOpener; dlgOpener = null; dlgFor = null;
+  try { (o && o.isConnected ? o : $('asgRefresh')).focus(); } catch (e) {}
+}
+function saveDlg(e) {
+  e.preventDefault();
+  if (!dlgFor || isDisabled($('dlgSave'))) return;
+  const f = { title: $('dlgTitleIn').value, code_word: $('dlgCode').value, max_minutes: $('dlgMinutes').value, due_date: $('dlgDue').value || null, retention_days: $('dlgRetention').value, class_id: $('dlgClass').value || null, peers_can_listen: $('dlgPeers').checked };
+  if (!f.title.trim()) { say('dlgStatus', () => t('assign.edit.title_empty'), true); $('dlgTitleIn').focus(); return; }
+  if (AS().codeWord.normalize(f.code_word).length < 6) { say('dlgStatus', () => t('assign.edit.code_short'), true); $('dlgCode').focus(); return; }
+  setBusy('dlgSave', true); say('dlgStatus', () => t('shared.account.sending'));
+  AS().assignments.update(dlgFor.id, f).then(() => { closeDlg(); loadAssignments(); }).catch(err => say('dlgStatus', () => errText(err), true)).then(() => setBusy('dlgSave', false));
+}
+
+/* ── submissions ── */
+function openSubs(a) {
+  subsFor = a; subs = null;
+  $('secSubs').hidden = false;
+  $('subsFor').textContent = t('assign.subs.for', { title: a.title, reading: a.ref_label, code: a.code_word });
+  renderSubs();
+  loadSubs();
+  $('secSubs').focus();
+}
+function closeSubs() { subsFor = null; subs = null; $('secSubs').hidden = true; $('asgRefresh').focus(); }
+function loadSubs() {
+  const a = subsFor; if (!a) return;
+  say('subsStatus', () => t('account.holds.checking')); setBusy('subsRefresh', true);
+  Promise.all([AS().submissions.listFor(a.id), AS().assignments.members(a.id)]).then(res => {
+    if (subsFor !== a) return;
+    subs = res[0] || []; a.members = res[1] || [];
+    renderSubs(); say('subsStatus', null);
+  }).catch(err => { if (subsFor === a) say('subsStatus', () => errText(err), true); }).then(() => setBusy('subsRefresh', false));
+}
+function renderSubs() {
+  const host = $('subsHost'), ns = $('notSubHost');
+  while (host.firstChild) host.removeChild(host.firstChild); while (ns.firstChild) ns.removeChild(ns.firstChild);
+  const a = subsFor; if (!a) return;
+  setBusy('subsZip', !subs || !subs.some(s => s.upload_status === 'uploaded'));
+  if (!subs) return;
+  // Who has not submitted: the class's students when the assignment names a class, else everyone who joined by code.
+  const submitted = new Set(subs.filter(s => s.is_current && s.upload_status === 'uploaded').map(s => s.student_id));
+  const pool = a.class_id ? students.filter(s => s.class_id === a.class_id) : (a.members || []).map(m => students.find(s => s.id === m.student_id)).filter(Boolean);
+  const missing = pool.filter(s => !submitted.has(s.id));
+  if (pool.length) {
+    ns.appendChild(el('p', 'muted', missing.length ? t('assign.subs.not_submitted', { n: missing.length, of: pool.length }) : t('assign.subs.all_submitted', { n: pool.length })));
+    if (missing.length) { const ul = el('ul', 'notsub'); missing.forEach(s => ul.appendChild(el('li', '', s.display_name + ' (' + s.username + ')'))); ns.appendChild(ul); }
+  }
+  const filter = $('subsFilter').value;
+  let rows = subs.slice();
+  if (filter !== 'all') rows = rows.filter(s => s.is_current);
+  if (filter === 'submitted' || filter === 'needs_rerecord' || filter === 'approved') rows = rows.filter(s => s.status === filter);
+  if (!rows.length) { host.appendChild(el('p', 'muted', subs.length ? t('assign.subs.none_match') : t('assign.subs.none'))); return; }
+  rows.forEach(s => host.appendChild(renderSub(s)));
+}
+function statusBadge(s) {
+  if (s.upload_status !== 'uploaded') return el('span', 'badge warn', t('assign.subs.status_pending'));
+  if (s.status === 'approved') return el('span', 'badge ok', t('assign.subs.status_approved'));
+  if (s.status === 'needs_rerecord') return el('span', 'badge warn', t('assign.subs.status_needs'));
+  return el('span', 'badge', t('assign.subs.status_submitted'));
+}
+function renderSub(s) {
+  const box = el('div', 'sub-row');
+  const head = el('div', 'sub-head');
+  head.appendChild(el('strong', '', s.student_name || t('assign.subs.unknown_student')));
+  head.appendChild(el('span', '', s.title));
+  head.appendChild(el('span', 'muted', t('assign.subs.version', { n: s.version }) + (s.is_current ? '' : ' · ' + t('assign.subs.older'))));
+  head.appendChild(el('span', 'muted', fmtDur(s.duration_seconds) + ' · ' + fmtDate(s.created_at)));
+  head.appendChild(statusBadge(s));
+  box.appendChild(head);
+  const audioWrap = el('div', 'sub-audio');
+  const playBtn = btn(t('assign.subs.play_btn'), 'ghost sm', () => playSub(s, audioWrap, playBtn));
+  if (s.upload_status !== 'uploaded') playBtn.setAttribute('aria-disabled', 'true');
+  audioWrap.appendChild(playBtn);
+  box.appendChild(audioWrap);
+  if (s.is_current && s.upload_status === 'uploaded') {
+    const fb = el('div', 'fb');
+    const lbl = el('label', '', t('assign.subs.feedback_label')); const ta = el('textarea'); ta.id = 'fb-' + s.id; ta.maxLength = 2000; lbl.htmlFor = ta.id; ta.value = (s.feedback && s.feedback.comment) || '';
+    fb.appendChild(lbl); fb.appendChild(ta);
+    const chk = el('label', 'check'); const cb = el('input'); cb.type = 'checkbox'; cb.checked = !!(s.feedback && s.feedback.request_rerecord) || s.status === 'needs_rerecord'; chk.appendChild(cb); chk.appendChild(el('span', '', t('assign.subs.request_rerecord'))); fb.appendChild(chk);
+    const line = el('p', 'status'); line.setAttribute('role', 'status'); line.setAttribute('aria-live', 'polite');
+    fb.appendChild(btn(t('assign.subs.save_feedback'), '', () => {
+      line.textContent = t('shared.account.sending');
+      AS().feedback.save(s.id, { comment: ta.value, request_rerecord: cb.checked }).then(f => { s.feedback = f; s.status = cb.checked ? 'needs_rerecord' : (s.status === 'needs_rerecord' ? 'submitted' : s.status); line.textContent = t('assign.subs.feedback_saved'); renderSubs(); loadAssignments(); })
+        .catch(err => { line.textContent = errText(err); line.classList.add('is-error'); });
+    }));
+    fb.appendChild(btn(s.status === 'approved' ? t('assign.subs.unapprove_btn') : t('assign.subs.approve_btn'), 'ghost sm', () => {
+      AS().submissions.setStatus(s.id, s.status === 'approved' ? 'submitted' : 'approved').then(r => { s.status = r.status; renderSubs(); loadAssignments(); }).catch(err => { line.textContent = errText(err); line.classList.add('is-error'); });
+    }));
+    fb.appendChild(line);
+    box.appendChild(fb);
+  }
+  const act = el('div');
+  act.appendChild(btn(t('assign.subs.delete_btn'), 'ghost sm', () => {
+    if (!window.confirm(t('assign.subs.delete_confirm', { name: s.student_name, title: s.title }))) return;
+    say('subsStatus', () => t('shared.account.sending'));
+    AS().submissions.remove(s.id).then(() => { subs = subs.filter(x => x.id !== s.id); renderSubs(); say('subsStatus', () => t('assign.subs.deleted')); loadAssignments(); }).catch(err => say('subsStatus', () => errText(err), true));
+  }));
+  box.appendChild(act);
+  return box;
+}
+const blobUrls = [];
+function playSub(s, wrap, playBtn) {
+  if (isDisabled(playBtn)) return;
+  playBtn.setAttribute('aria-disabled', 'true'); playBtn.textContent = t('assign.subs.loading_audio');
+  AS().audio(s.id).then(blob => {
+    const url = URL.createObjectURL(blob); blobUrls.push(url);
+    const audio = el('audio'); audio.controls = true; audio.src = url; audio.setAttribute('aria-label', t('assign.subs.audio_aria', { name: s.student_name, title: s.title }));
+    wrap.replaceChild(audio, playBtn);
+    audio.play().catch(() => {});
+    audio.focus();
+  }).catch(err => { playBtn.setAttribute('aria-disabled', 'false'); playBtn.textContent = t('assign.subs.play_btn'); say('subsStatus', () => errText(err), true); });
+}
+
+/* ── download all: one store-only zip (the account page's writer) ── */
+const enc = new TextEncoder();
+const CRC_TABLE = (() => { const tbl = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = (c >>> 1) ^ (0xEDB88320 & -(c & 1)); tbl[n] = c >>> 0; } return tbl; })();
+function _crc32(bytes) { let c = ~0 >>> 0; for (let i = 0; i < bytes.length; i++) c = CRC_TABLE[(c ^ bytes[i]) & 0xff] ^ (c >>> 8); return (~c) >>> 0; }
+function makeZip(files, when) {
+  const u16 = n => [n & 0xff, (n >>> 8) & 0xff];
+  const u32 = n => [n & 0xff, (n >>> 8) & 0xff, (n >>> 16) & 0xff, (n >>> 24) & 0xff];
+  const d = when || new Date(), y = Math.min(2107, Math.max(1980, d.getFullYear()));
+  const dosTime = u16((d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1));
+  const dosDate = u16(((y - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate());
+  const parts = [], central = []; let offset = 0;
+  for (const f of files) {
+    const name = enc.encode(f.name), data = f.bytes, crc = _crc32(data);
+    const lfh = new Uint8Array([].concat(u32(0x04034b50), u16(20), u16(0x0800), u16(0), dosTime, dosDate, u32(crc), u32(data.length), u32(data.length), u16(name.length), u16(0)));
+    parts.push(lfh, name, data);
+    central.push(new Uint8Array([].concat(u32(0x02014b50), u16(20), u16(20), u16(0x0800), u16(0), dosTime, dosDate, u32(crc), u32(data.length), u32(data.length), u16(name.length), u16(0), u16(0), u16(0), u16(0), u32(0), u32(offset))), name);
+    offset += lfh.length + name.length + data.length;
+  }
+  const cdStart = offset; let cdSize = 0; central.forEach(c => cdSize += c.length);
+  const eocd = new Uint8Array([].concat(u32(0x06054b50), u16(0), u16(0), u16(files.length), u16(files.length), u32(cdSize), u32(cdStart), u16(0)));
+  const all = [...parts, ...central, eocd]; let total = 0; all.forEach(a => total += a.length);
+  const out = new Uint8Array(total); let p = 0; all.forEach(a => { out.set(a, p); p += a.length; });
+  return out;
+}
+function safeStem(s) { return String(s || '').replace(/[\\/:*?"<>|\x00-\x1f]+/g, '_').replace(/^\.+/, '').trim().slice(0, 60) || 'recording'; }
+function saveBlob(blob, filename) { const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1500); }
+let zipBusy = false;
+async function downloadAll() {
+  const a = subsFor; if (!a || zipBusy || !subs || isDisabled($('subsZip'))) return;
+  zipBusy = true; setBusy('subsZip', true);
+  const rows = subs.filter(s => s.upload_status === 'uploaded');
+  const files = []; let failed = 0;
+  try {
+    for (let i = 0; i < rows.length; i++) {
+      const s = rows[i];
+      say('subsStatus', () => t('assign.subs.zip_progress', { i: i + 1, n: rows.length }));
+      try {
+        const blob = await AS().audio(s.id);
+        const ext = s.mime_type.indexOf('mp4') >= 0 ? 'm4a' : (s.mime_type.indexOf('ogg') >= 0 ? 'ogg' : 'webm');
+        files.push({ name: safeStem(s.student_name) + '/' + safeStem(s.title) + '-v' + s.version + '.' + ext, bytes: new Uint8Array(await blob.arrayBuffer()) });
+      } catch (e) { failed++; }
+    }
+    const lines = rows.map(s => [s.student_name, s.title, 'v' + s.version, fmtDur(s.duration_seconds), s.status, s.created_at, (s.feedback && s.feedback.comment) || ''].map(x => '"' + String(x).replace(/"/g, '""') + '"').join(','));
+    files.unshift({ name: 'recordings.csv', bytes: enc.encode('student,title,version,duration,status,submitted,feedback\n' + lines.join('\n') + '\n') });
+    if (subsFor !== a) return;
+    const date = new Date().toISOString().slice(0, 10);
+    saveBlob(new Blob([makeZip(files, new Date())], { type: 'application/zip' }), 'IvritSuite-recordings-' + safeStem(a.title) + '-' + date + '.zip');
+    say('subsStatus', () => t('assign.subs.zip_done', { n: files.length - 1, failed }), !!failed);
+  } catch (err) { say('subsStatus', () => errText(err), true); }
+  finally { zipBusy = false; setBusy('subsZip', false); }
+}
+
+/* ── i18n ── */
+function applyI18n() {
+  if (!window.I18n) return;
+  I18n.applyStaticI18n();
+  try { const _db = $('darkBtn'); if (_db) (_db.querySelector('.hi-lbl') || _db).textContent = document.body.classList.contains('dark') ? I18n.t('shared.darkmode.label_light') : I18n.t('shared.darkmode.label_dark'); } catch (e) {}
+  fillAllClassSelects(); renderImportSources(); renderStudents(); renderClasses(); renderPreview(); renderAssignments(); if (subsFor) { $('subsFor').textContent = t('assign.subs.for', { title: subsFor.title, reading: subsFor.ref_label, code: subsFor.code_word }); renderSubs(); }
+  if (batch && $('createdHost').firstChild) renderCreated(batch, false);
+  Object.keys(lines).forEach(id => { const r = lines[id], n = $(id); if (n && r) n.textContent = r(); });
+}
+document.addEventListener('DOMContentLoaded', () => {
+  try {
+    const s = localStorage.getItem('hebrewBlender_darkMode');
+    if (s === '1' || (s === null && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.body.classList.add('dark');
+      const _db = $('darkBtn'); (_db.querySelector('.hi-lbl') || _db).textContent = (window.I18n ? I18n.t('shared.darkmode.label_light') : 'Light'); _db.setAttribute('aria-pressed', 'true');
+    }
+  } catch(e) {}
+  if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); }
+  renderImportSources();
+  $('outBtn').addEventListener('click', () => { if (window.IvritAccount) IvritAccount.openMenu(); });
+  $('classFilter').addEventListener('change', renderStudents);
+  $('studentsRefresh').addEventListener('click', () => { if (!isDisabled($('studentsRefresh'))) loadStudents(); });
+  $('importBtn').addEventListener('click', () => { if (!isDisabled($('importBtn'))) importNames(); });
+  $('previewBtn').addEventListener('click', buildPreview);
+  $('newClassBtn').addEventListener('click', addClass);
+  $('newClassName').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); addClass(); } });
+  $('asgRefresh').addEventListener('click', () => { if (!isDisabled($('asgRefresh'))) loadAssignments(); });
+  $('subsRefresh').addEventListener('click', () => { if (!isDisabled($('subsRefresh'))) loadSubs(); });
+  $('subsFilter').addEventListener('change', renderSubs);
+  $('subsZip').addEventListener('click', downloadAll);
+  $('subsBack').addEventListener('click', closeSubs);
+  $('dlgForm').addEventListener('submit', saveDlg);
+  $('dlgCancel').addEventListener('click', closeDlg);
+  $('dlgBackdrop').addEventListener('click', closeDlg);
+  $('dlgRegen').addEventListener('click', () => { $('dlgCode').value = AS().codeWord.generate(); $('dlgCode').focus(); });
+  window.addEventListener('pagehide', () => blobUrls.forEach(u => { try { URL.revokeObjectURL(u); } catch (e) {} }));
+  if (window.IvritAccount && window.IvritSaves && window.IvritAssignments) {
+    IvritAccount.init({ nameStep: true });
+    window.addEventListener('ivritsuite:prefs', () => { const want = localStorage.getItem('hebrewBlender_darkMode'); if ((want === '1' || want === '0') && document.body.classList.contains('dark') !== (want === '1')) toggleDark(); });
+    try { IvritSaves.attach({ tool: 'Suite' }); } catch (e) { console.warn(e); }
+    IvritAccount.onChange(onAccount);
+  } else { say('busyNote', () => t('account.out.offline')); show('stBusy'); }
+});
+</script>
+</body>
+</html>

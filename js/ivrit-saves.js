@@ -3150,6 +3150,10 @@
     cfg = cfg || {};
     var tool = cfg.tool;
     if (TOOLS.indexOf(tool) < 0) { warn('attach: unknown tool', tool); return null; }
+    // A student account (Torah Trainer reading assignments) holds no saves: the server refuses it the tables, and
+    // this device never caches, hydrates, hooks or asks about anything for it. Decided from the stored session, so
+    // a student's page never lists even once while the SDK loads.
+    if (studentSession()) { studentAttached = true; return null; }
     (cfg.entries || []).forEach(function (e) {
       var why = validEntry(e);
       if (why) { warn('attach: entry skipped —', why, e); return; }
@@ -3182,6 +3186,12 @@
     }
     return true;
   }
+
+  function studentSession() {
+    var a = A();
+    try { return !!(a && typeof a.storedRole === 'function' && a.storedRole() === 'student'); } catch (e) { return false; }
+  }
+  var studentAttached = false;
 
   /* ---------- public surface ---------- */
   window.IvritSaves = {

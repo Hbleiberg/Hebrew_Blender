@@ -9,7 +9,7 @@
      before this tag. Update this when adding any external script/font/fetch/iframe (see CLAUDE.md).
      The chant pitch shifter's AudioWorklet module (js/tt-pitch-worklet.js) is same-origin — covered by
      script-src 'self' — and its media host is already in media-src, so no origin was added for it. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://esm.sh https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com https://files.readme.io; media-src 'self' blob: https://raw.githubusercontent.com https://audio.ivritsuite.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://esm.sh https://cdn.jsdelivr.net https://www.sefaria.org https://hhkmqwpjsyxdeuhvcyis.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://esm.sh https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com https://files.readme.io; media-src 'self' blob: https://raw.githubusercontent.com https://audio.ivritsuite.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://esm.sh https://cdn.jsdelivr.net https://www.sefaria.org https://hhkmqwpjsyxdeuhvcyis.supabase.co https://recordings.ivritsuite.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
@@ -720,6 +720,49 @@ body.dark .tt-resume-chip { background:var(--navy-deep); }
 .tt-linkview[hidden] { display:none; }
 .tt-linkview-btns { display:inline-flex; flex-wrap:wrap; gap:6px; }
 body.fullscreen .tt-linkview { display:none; }   /* the projector shows the reading, not this reader's choice */
+/* Reading assignments (?assignments=1): the region above the reading (the link-view note's look), its lists, and the
+   recorder. Hidden without the flag; body.fullscreen hides it like the note. The recorder's "Recording…" dot pulses
+   (neutralized under reduced motion with every other animation). */
+.tt-assign { margin:0 0 14px; background:var(--white); border:1px solid var(--border); border-inline-start:4px solid var(--gold); border-radius:8px; padding:10px 14px; font-size:0.86rem; color:var(--text); box-shadow:var(--shadow-sm); }
+.tt-assign[hidden], .tt-assign [hidden] { display:none; }
+body.fullscreen .tt-assign { display:none; }
+.tt-assign-title { font-family:'Libre Baskerville',serif; font-size:0.95rem; font-weight:400; margin:0 0 6px; color:var(--navy); }
+body.dark .tt-assign-title { color:var(--gold-light); }
+.tt-assign-h3 { font-size:0.84rem; margin:12px 0 4px; }
+.tt-assign p { margin:0 0 6px; line-height:1.45; }
+.tt-assign-muted { color:var(--muted); font-size:0.8rem; }
+.tt-assign-note { font-size:0.8rem; color:var(--muted); margin:6px 0 0; }
+.tt-assign-note.is-error, #ttAsgDlgNote.is-error { color:#b3261e; }
+body.dark .tt-assign-note.is-error, body.dark #ttAsgDlgNote.is-error { color:#ffb4a9; }
+.tt-assign-actions { display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin:4px 0 0; }
+.tt-assign-code { display:flex; flex-wrap:wrap; gap:6px 10px; align-items:flex-end; }
+.tt-assign-code label { font-weight:600; display:flex; flex-direction:column; gap:3px; font-size:0.82rem; }
+.tt-assign-code input, #ttRecTitleIn { border:1px solid var(--border); border-radius:6px; padding:6px 9px; font-family:inherit; font-size:0.95rem; background:var(--white); color:var(--text); min-width:14ch; }
+.tt-assign-code input { direction:ltr; text-transform:lowercase; }
+@media (pointer:coarse) { .tt-assign-code input, #ttRecTitleIn { font-size:16px; } }
+.tt-assign-list { list-style:none; margin:0; padding:0; }
+.tt-assign-list li { border-block-start:1px solid var(--border); padding:6px 0; }
+.tt-assign-item-head { display:flex; flex-wrap:wrap; gap:4px 10px; align-items:baseline; }
+.tt-assign-badge { display:inline-block; padding:1px 8px; border-radius:999px; font-size:0.72rem; font-weight:600; border:1px solid var(--border); }
+.tt-assign-badge.is-ok { color:#1f6b3a; background:#e6f4ea; border-color:transparent; }
+.tt-assign-badge.is-warn { color:#7a4a00; background:#fff4dc; border-color:transparent; }
+body.dark .tt-assign-badge.is-ok { color:#8fd3a3; background:#1f3328; }
+body.dark .tt-assign-badge.is-warn { color:#f0c060; background:#3a2f14; }
+.tt-assign-feedback { background:var(--cream); border-radius:6px; padding:6px 10px; }
+.tt-assign-fblabel { font-weight:700; }
+.tt-assign-closed { color:#b3261e; font-weight:600; }
+.tt-rec { border:1px dashed var(--border); border-radius:8px; padding:10px 12px; margin:8px 0; }
+.tt-rec-state { font-weight:600; margin:0 0 8px; min-height:1.3em; }
+.tt-rec-btns { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+#ttRecStop::before { content:''; display:inline-block; inline-size:8px; block-size:8px; border-radius:50%; background:#b3261e; margin-inline-end:6px; animation:ttRecPulse 1s ease-in-out infinite; }
+@keyframes ttRecPulse { 0%,100% { opacity:1; } 50% { opacity:0.25; } }
+#ttRecAudio, #ttAsgPeers audio, #ttAsgMine audio { display:block; inline-size:100%; max-inline-size:480px; margin:8px 0; }
+#ttRecSubmitForm { display:flex; flex-wrap:wrap; gap:6px 10px; align-items:flex-end; margin:8px 0 0; }
+#ttRecSubmitForm label { font-weight:600; display:flex; flex-direction:column; gap:3px; font-size:0.82rem; }
+.tt-rec-progress progress { inline-size:100%; max-inline-size:480px; display:block; margin:6px 0; }
+.tt-assign-bigcode { text-align:center; margin:10px 0; }
+.tt-assign-codeword { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:1.5rem; letter-spacing:0.04em; direction:ltr; unicode-bidi:isolate; padding:6px 14px; border:1px solid var(--border); border-radius:8px; background:var(--cream); }
+.tt-assign .btn.btn-xs[aria-disabled="true"], .tt-fav-dialog .btn[aria-disabled="true"] { opacity:0.55; cursor:default; }
 /* Brief highlight flash when jumping to a verse (resume / jump nav). */
 @keyframes ttFlash {
   0%   { background:rgba(201,146,42,0.45); }
@@ -2448,6 +2491,49 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
       <button class="btn btn-xs btn-secondary" type="button" onclick="linkViewRevert()" data-i18n="torah.share.view_revert">Use my settings</button>
     </span>
   </div>
+  <!-- Reading assignments (?assignments=1): the region's three faces (signed out / teacher / student) are shown by
+       asgRender(); the recorder's state line is the one live region the flow announces through. Hidden without the flag. -->
+  <section class="tt-assign" id="ttAssign" aria-labelledby="ttAssignTitle" hidden>
+    <h2 class="tt-assign-title" id="ttAssignTitle" data-i18n="torah.assign.title">Reading assignments</h2>
+    <div id="ttAsgOut" hidden><p class="tt-assign-note" id="ttAsgOutNote" role="status" aria-live="polite"></p></div>
+    <div id="ttAsgTeacher" hidden>
+      <p data-i18n="torah.assign.teacher_note">Choose the parsha, aliyah or verse range as usual, then assign it: students type the code word here to see it and record it.</p>
+      <div class="tt-assign-actions">
+        <button type="button" class="btn btn-xs" id="ttAsgAssignBtn" data-i18n="torah.assign.assign_btn">Assign this reading…</button>
+        <a class="btn btn-xs btn-secondary" href="/reading_assignments.html" data-i18n="torah.assign.manage_link">Students, assignments and recordings</a>
+      </div>
+    </div>
+    <div id="ttAsgStudent" hidden>
+      <form class="tt-assign-code" id="ttAsgCodeForm" novalidate>
+        <label><span data-i18n="torah.assign.code_label">Code word from your teacher</span><input type="text" id="ttAsgCode" maxlength="40" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="sunny-fox-38" data-i18n-placeholder="torah.assign.code_placeholder"></label>
+        <button type="submit" class="btn btn-xs" data-i18n="torah.assign.code_btn">Open the reading</button>
+      </form>
+      <p class="tt-assign-note" id="ttAsgStudentStatus" role="status" aria-live="polite" hidden></p>
+      <div id="ttAsgCurrent" hidden>
+        <p id="ttAsgCurrentLine"></p>
+        <div class="tt-assign-actions"><button type="button" class="btn btn-xs btn-secondary" id="ttAsgOpenBtn" data-i18n="torah.assign.open_btn">Show the reading</button></div>
+        <div class="tt-rec" id="ttRec" role="group" aria-labelledby="ttRecTitle">
+          <h3 class="tt-assign-h3" id="ttRecTitle" data-i18n="torah.assign.rec_title">Record your reading</h3>
+          <p class="tt-rec-state" id="ttRecState" role="status" aria-live="polite" aria-atomic="true"></p>
+          <div class="tt-rec-btns">
+            <button type="button" class="btn btn-xs" id="ttRecStart" data-i18n="torah.assign.rec_start">Record</button>
+            <button type="button" class="btn btn-xs" id="ttRecStop" hidden data-i18n="torah.assign.rec_stop">Stop</button>
+            <button type="button" class="btn btn-xs btn-secondary" id="ttRecPlay" hidden data-i18n="torah.assign.rec_play">Play it back</button>
+            <button type="button" class="btn btn-xs btn-secondary" id="ttRecAgain" hidden data-i18n="torah.assign.rec_again">Record again</button>
+          </div>
+          <audio id="ttRecAudio" controls hidden aria-label="Your recording" data-i18n-aria-label="torah.assign.rec_audio_aria"></audio>
+          <form id="ttRecSubmitForm" novalidate hidden>
+            <label><span data-i18n="torah.assign.rec_name_label">Name your recording</span><input type="text" id="ttRecTitleIn" maxlength="80" autocomplete="off"></label>
+            <button type="submit" class="btn btn-xs" id="ttRecSubmit" data-i18n="torah.assign.rec_submit">Submit</button>
+          </form>
+          <div class="tt-rec-progress" id="ttRecProgressWrap" hidden><progress id="ttRecProgress" max="100" value="0" aria-label="Upload progress" data-i18n-aria-label="torah.assign.rec_progress_aria"></progress></div>
+          <button type="button" class="btn btn-xs" id="ttRecRetry" hidden data-i18n="torah.assign.rec_retry">Try the upload again</button>
+        </div>
+      </div>
+      <div id="ttAsgMine"></div>
+      <div id="ttAsgPeers"></div>
+    </div>
+  </section>
   <!-- In-page nav: aliyah jump chips + "you are here" readout (long readings). -->
   <div class="tt-jumpnav" id="ttJumpNav" role="navigation" aria-label="Jump to aliyah" data-i18n-aria-label="torah.jumpnav.aria" hidden></div>
   <!-- One-way discoverability chip: trope coloring is otherwise invisible until found inside
@@ -3157,6 +3243,28 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
     <button type="button" class="btn btn-xs btn-secondary" onclick="closeFavoriteDialog()" data-i18n="torah.fav.dlg_cancel">Cancel</button>
     <button type="button" class="btn btn-xs" id="ttFavSaveBtn" onclick="saveFavoriteFromDialog()" data-i18n="torah.fav.dlg_save">Save</button>
   </div>
+</div>
+<!-- Assign this reading (?assignments=1): the favorite popup's contract (classes, trap, Escape), opened by #ttAsgAssignBtn. -->
+<div class="tt-fav-backdrop" id="ttAsgBackdrop" hidden></div>
+<div class="tt-fav-dialog" id="ttAsgDialog" role="dialog" aria-modal="true" aria-labelledby="ttAsgDlgHead" hidden>
+  <h3 class="tt-set-title" id="ttAsgDlgHead" data-i18n="torah.assign.dlg_title">Assign this reading</h3>
+  <p class="tt-fav-reading"><span data-i18n="torah.fav.dlg_reading">Reading:</span> <strong id="ttAsgDlgReading"></strong></p>
+  <form id="ttAsgDlgForm" novalidate>
+    <div class="form-row"><label for="ttAsgDlgTitle" data-i18n="torah.assign.dlg_name">Title</label><input type="text" id="ttAsgDlgTitle" maxlength="120" autocomplete="off"></div>
+    <div class="form-row"><label for="ttAsgDlgCode" data-i18n="torah.assign.dlg_code">Code word</label><input type="text" id="ttAsgDlgCode" maxlength="40" autocomplete="off" spellcheck="false" style="direction:ltr;"></div>
+    <div class="form-row"><span></span><button type="button" class="btn btn-xs btn-secondary" id="ttAsgDlgRegen" data-i18n="torah.assign.dlg_regen">New code word</button></div>
+    <div class="form-row"><label for="ttAsgDlgMinutes" data-i18n="torah.assign.dlg_minutes">Maximum minutes</label><input type="number" id="ttAsgDlgMinutes" min="1" max="30" step="1" value="10"></div>
+    <div class="form-row"><label for="ttAsgDlgDue" data-i18n="torah.assign.dlg_due">Due date (optional)</label><input type="date" id="ttAsgDlgDue"></div>
+    <div class="form-row"><label for="ttAsgDlgClass" data-i18n="torah.assign.dlg_class">Class (optional)</label><select id="ttAsgDlgClass"></select></div>
+    <div class="form-row"><label for="ttAsgDlgRetention" data-i18n="torah.assign.dlg_retention">Keep recordings (days after closing)</label><input type="number" id="ttAsgDlgRetention" min="7" max="180" step="1" value="30"></div>
+    <label class="tt-fav-check"><input type="checkbox" id="ttAsgDlgPeers"><span data-i18n="torah.assign.dlg_peers">Classmates may listen to each other's latest recording (never to feedback)</span></label>
+    <p class="tt-fav-note" id="ttAsgDlgNote" role="status" aria-live="polite" hidden></p>
+    <div id="ttAsgDlgDone" hidden></div>
+    <div class="tt-fav-actions">
+      <button type="button" class="btn btn-xs btn-secondary" id="ttAsgDlgCancel" data-i18n="torah.fav.dlg_cancel">Cancel</button>
+      <button type="submit" class="btn btn-xs" id="ttAsgDlgCreate" data-i18n="torah.assign.dlg_create">Create assignment</button>
+    </div>
+  </form>
 </div>
 <!-- Parasha emoji gallery: the reading header's parasha icon opens it (openParashaGallery). Outside #ttReading on
      purpose (renderText rebuilds that); the same modal contract as the favorite popup (see the .tt-emo-dialog CSS
@@ -11920,6 +12028,7 @@ async function init() {
   document.addEventListener('keydown', _pitchKick, true);
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') _pitchKick(); });
   initCloudSaves();
+  initAssignments();   // ?assignments=1 only; inert otherwise
   // On the Triennial or Weekday cycle 'parsha-full' is that cycle's portion (Bereshit's weekday reading is
   // Genesis 1:1-13), so a ?parsha=&v= link could land outside it with nothing shown. The link names the
   // parsha: a verse outside the portion opens the whole parsha as a range under the parsha's name, and the
@@ -12086,6 +12195,7 @@ function applyI18n() {
   // Re-render the reading so row labels / aliyah markers / verse buttons translate — but NEVER
   // while audio is playing or looping (a renderText() rebuild would desync the karaoke data-twi
   // word-timing). When playing, the reading re-translates the next time it is rebuilt.
+  try { asgApplyI18n(); } catch (e) {}
   const playing = (typeof chantAllState !== 'undefined' && chantAllState.active) ||
                   (typeof loopState !== 'undefined' && loopState.active) ||
                   (typeof currentAudio !== 'undefined' && currentAudio && !currentAudio.paused);
@@ -12716,6 +12826,387 @@ function dismissHintToast() {
   const el = document.getElementById('ttHintToast');
   if (el) el.classList.remove('show');
   if (_hintTimer) { clearTimeout(_hintTimer); _hintTimer = null; }
+}
+
+/* ══════════════════════════════════════════════════════
+   READING ASSIGNMENTS (?assignments=1) — a teacher assigns the reading on screen under a code word; a student
+   enters the code, sees the portion, records it here and submits. Everything below is inert without the flag:
+   the markup stays hidden and js/ivrit-assignments.js is never downloaded. Signed in, the role comes from the
+   token (IvritAccount.role()); the database's policies decide the rest. No user text ever reaches innerHTML —
+   titles, feedback, names and code words are written with textContent. The recording's elapsed-time timer is the
+   one timer this feature adds (the recorder's; the upload is event-driven).
+   ══════════════════════════════════════════════════════ */
+const ASSIGN_FLAG = new URLSearchParams(location.search).get('assignments') === '1';
+const ASSIGN_REF_RE = /^(Genesis|Exodus|Leviticus|Numbers|Deuteronomy) [0-9]{1,3}:[0-9]{1,3}(-([0-9]{1,3}:)?[0-9]{1,3})?$/;
+const _asg = { loaded: false, role: null, current: null, mine: null, peers: null, take: null, recorder: null, pendingRow: null, uploading: false, state: 'idle', xhr: null, classes: null, blobUrls: [] };
+const asgEl = (id) => document.getElementById(id);
+function asgT(k, p) { return window.I18n ? I18n.t(k, p) : k; }
+function asgMake(tag, cls, text) { const n = document.createElement(tag); if (cls) n.className = cls; if (text !== undefined && text !== null) n.textContent = text; return n; }
+function asgBtn(label, cls, onClick) { const b = asgMake('button', 'btn btn-xs ' + (cls || ''), label); b.type = 'button'; b.addEventListener('click', onClick); return b; }
+function asgSay(id, text, isError) { const n = asgEl(id); if (!n) return; n.textContent = text || ''; n.classList.toggle('is-error', !!isError); n.hidden = !text; }
+function asgErr(err) { return window.IvritAssignments ? IvritAssignments.errorText(err) : String(err && err.message || err); }
+function asgDate(iso) { if (!iso) return ''; try { return new Date(iso).toLocaleDateString(window.I18n && I18n.lang === 'he' ? 'he-IL' : undefined, { dateStyle: 'medium' }); } catch (e) { return String(iso).slice(0, 10); } }
+function asgClock(s) { s = Math.max(0, Math.round(Number(s) || 0)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
+
+function initAssignments() {
+  if (!ASSIGN_FLAG) return;
+  const region = asgEl('ttAssign');
+  if (!region || !window.IvritAccount) return;
+  region.hidden = false;
+  document.body.classList.add('tt-assign-on');
+  IvritAccount.init({ studentSignIn: true });   // the chip's menu gains the username + password form on this page only
+  // The module is loaded only now: an unflagged visit never downloads it.
+  const s = document.createElement('script');
+  s.src = '/js/ivrit-assignments.js';
+  s.async = true;
+  s.onload = () => { _asg.loaded = true; asgRender(); };
+  s.onerror = () => { asgSay('ttAsgOutNote', asgT('torah.assign.module_failed'), true); asgEl('ttAsgOut').hidden = false; };
+  document.head.appendChild(s);
+  IvritAccount.onChange(() => asgRender());
+  // Wiring (static controls; the lists are rebuilt by their renderers).
+  asgEl('ttAsgCodeForm').addEventListener('submit', asgClaim);
+  asgEl('ttAsgAssignBtn').addEventListener('click', openAsgDialog);
+  asgEl('ttAsgDlgCancel').addEventListener('click', closeAsgDialog);
+  asgEl('ttAsgBackdrop').addEventListener('click', closeAsgDialog);
+  asgEl('ttAsgDlgRegen').addEventListener('click', () => { asgEl('ttAsgDlgCode').value = IvritAssignments.codeWord.generate(); asgEl('ttAsgDlgCode').focus(); });
+  asgEl('ttAsgDlgForm').addEventListener('submit', createAssignment);
+  asgEl('ttRecStart').addEventListener('click', recStart);
+  asgEl('ttRecStop').addEventListener('click', recStop);
+  asgEl('ttRecPlay').addEventListener('click', recPlay);
+  asgEl('ttRecAgain').addEventListener('click', recAgain);
+  asgEl('ttRecSubmitForm').addEventListener('submit', recSubmit);
+  asgEl('ttRecRetry').addEventListener('click', () => recUpload());
+  // Leaving mid-recording, with an unsubmitted take, or mid-upload: the browser's own "leave this page?" question.
+  window.addEventListener('beforeunload', (e) => {
+    if (_asg.state === 'recording' || _asg.state === 'uploading' || (_asg.state === 'stopped' && _asg.take)) { e.preventDefault(); e.returnValue = ''; }
+  });
+  window.addEventListener('pagehide', () => { if (_asg.recorder) { try { _asg.recorder.cancel(); } catch (e) {} } _asg.blobUrls.forEach(u => { try { URL.revokeObjectURL(u); } catch (e) {} }); });
+}
+
+// Which of the three faces the region shows, from the session state and the role.
+function asgRender() {
+  if (!ASSIGN_FLAG) return;
+  const a = window.IvritAccount, st = a ? a.status() : 'disabled';
+  const user = a && a.user();
+  const role = user ? user.role : null;
+  const out = asgEl('ttAsgOut'), teacher = asgEl('ttAsgTeacher'), student = asgEl('ttAsgStudent');
+  if (!_asg.loaded || !user) {
+    out.hidden = false; teacher.hidden = true; student.hidden = true;
+    asgSay('ttAsgOutNote', st === 'loading' ? asgT('shared.account.loading') : (st === 'offline' || st === 'unavailable') ? asgT('shared.account.needs_internet') : asgT('torah.assign.out_note'), false);
+    if (!user && _asg.role) { _asg.role = null; _asg.current = null; _asg.mine = null; recReset(); }
+    return;
+  }
+  out.hidden = true;
+  if (role === 'student') {
+    teacher.hidden = true; student.hidden = false;
+    if (_asg.role !== 'student') { _asg.role = 'student'; asgLoadMine(); }
+  } else {
+    student.hidden = true; teacher.hidden = false;
+    _asg.role = 'teacher';
+  }
+}
+function asgApplyI18n() {
+  if (!ASSIGN_FLAG) return;
+  asgRender();
+  asgRenderCurrent(); asgRenderMine(); asgRenderPeers(); recRenderState();
+}
+
+/* ───── the student: a code word opens the reading ───── */
+function asgLoadRef(ref, label) {
+  // The same walk the ?ref= deep link takes: rebuilt from integers, Torah books only, into the custom scope.
+  const clean = parseSharedRef(ref);
+  if (!clean) return false;
+  settings.holidayKey = null; settings.holidayPart = null;
+  settings.customRef = clean;
+  settings.customLabel = label || labelForCustomRef(clean, null) || clean;
+  settings.scope = 'custom';
+  if (!settings.parshahKey) { const rp = parshaContainingRef(clean); if (rp) settings.parshahKey = rp.en; }
+  saveSettings(); syncParshaSelect(); fetchAndRender();
+  return true;
+}
+function asgClaim(e) {
+  e.preventDefault();
+  const input = asgEl('ttAsgCode'), code = input.value.trim();
+  if (!code) { asgSay('ttAsgStudentStatus', asgT('torah.assign.code_empty'), true); input.focus(); return; }
+  asgSay('ttAsgStudentStatus', asgT('shared.account.sending'), false);
+  IvritAssignments.claim(code).then(row => {
+    if (!row) { asgSay('ttAsgStudentStatus', asgT('torah.assign.code_none'), true); input.select(); return; }
+    asgSetCurrent(row, true);
+    input.value = '';
+    asgSay('ttAsgStudentStatus', asgT('torah.assign.code_opened', { title: row.title }), false);
+    asgLoadMine();
+  }).catch(err => { asgSay('ttAsgStudentStatus', asgErr(err), true); input.select(); });
+}
+function asgSetCurrent(row, load) {
+  if (_asg.current && _asg.current.id !== row.id) recReset();
+  _asg.current = row;
+  if (load) asgLoadRef(row.ref, row.ref_label);
+  asgRenderCurrent();
+  asgLoadPeers();
+}
+function asgRenderCurrent() {
+  const box = asgEl('ttAsgCurrent'), a = _asg.current;
+  if (!box) return;
+  if (!a) { box.hidden = true; return; }
+  box.hidden = false;
+  const line = asgEl('ttAsgCurrentLine');
+  while (line.firstChild) line.removeChild(line.firstChild);
+  line.appendChild(asgMake('strong', '', a.title));
+  line.appendChild(document.createTextNode(' · ' + a.ref_label + ' · ' + asgT('torah.assign.current_max', { n: a.max_minutes }) + (a.due_date ? ' · ' + asgT('torah.assign.current_due', { date: asgDate(a.due_date) }) : '')));
+  if (!a.is_open) line.appendChild(asgMake('span', 'tt-assign-closed', ' ' + asgT('torah.assign.current_closed')));
+  asgEl('ttRec').hidden = !a.is_open;
+  const open = asgEl('ttAsgOpenBtn');
+  open.onclick = () => { asgLoadRef(a.ref, a.ref_label); };
+  recRenderState();
+}
+
+/* ───── my recordings ───── */
+function asgLoadMine() {
+  if (!_asg.loaded || !window.IvritAssignments) return;
+  Promise.all([IvritAssignments.my.assignments(), IvritAssignments.my.submissions()]).then(res => {
+    _asg.mine = { assignments: res[0] || [], submissions: res[1] || [] };
+    if (_asg.current) { const fresh = _asg.mine.assignments.find(x => x.id === _asg.current.id); if (fresh) { _asg.current = fresh; asgRenderCurrent(); } }
+    asgRenderMine();
+  }).catch(err => { asgSay('ttAsgStudentStatus', asgErr(err), true); });
+}
+function asgStatusText(s) {
+  if (!s) return asgT('torah.assign.status_none');
+  if (s.upload_status !== 'uploaded') return asgT('torah.assign.status_pending');
+  if (s.status === 'approved') return asgT('torah.assign.status_approved');
+  if (s.status === 'needs_rerecord') return asgT('torah.assign.status_needs');
+  return asgT('torah.assign.status_submitted');
+}
+function asgRenderMine() {
+  const host = asgEl('ttAsgMine'); if (!host) return;
+  while (host.firstChild) host.removeChild(host.firstChild);
+  const m = _asg.mine; if (!m) return;
+  host.appendChild(asgMake('h3', 'tt-assign-h3', asgT('torah.assign.mine_title')));
+  if (!m.assignments.length) { host.appendChild(asgMake('p', 'tt-assign-muted', asgT('torah.assign.mine_none'))); return; }
+  const ul = asgMake('ul', 'tt-assign-list');
+  m.assignments.forEach(a => {
+    const subs = m.submissions.filter(s => s.assignment_id === a.id);
+    const cur = subs.find(s => s.is_current) || null;
+    const li = asgMake('li');
+    const head = asgMake('div', 'tt-assign-item-head');
+    head.appendChild(asgMake('strong', '', a.title));
+    head.appendChild(asgMake('span', 'tt-assign-muted', a.ref_label));
+    head.appendChild(asgMake('span', 'tt-assign-badge' + (cur && cur.status === 'needs_rerecord' ? ' is-warn' : cur && cur.status === 'approved' ? ' is-ok' : ''), asgStatusText(cur)));
+    li.appendChild(head);
+    if (cur) {
+      li.appendChild(asgMake('p', 'tt-assign-muted', asgT('torah.assign.mine_item', { title: cur.title, date: asgDate(cur.created_at), n: cur.version })));
+      if (cur.feedback && cur.feedback.comment) { const fb = asgMake('p', 'tt-assign-feedback'); fb.appendChild(asgMake('span', 'tt-assign-fblabel', asgT('torah.assign.feedback_label') + ' ')); fb.appendChild(document.createTextNode(cur.feedback.comment)); li.appendChild(fb); }
+    }
+    const act = asgMake('div', 'tt-assign-actions');
+    act.appendChild(asgBtn(asgT('torah.assign.open_btn'), 'btn-secondary', () => { asgSetCurrent(a, true); asgEl('ttAsgCurrent').scrollIntoView({ block: 'nearest' }); asgEl('ttRecStart').focus(); }));
+    if (cur && cur.upload_status === 'uploaded') { const wrap = asgMake('span'); wrap.appendChild(asgBtn(asgT('torah.assign.play_btn'), 'btn-secondary', (ev) => asgPlay(cur.id, cur.title, wrap, ev.currentTarget))); act.appendChild(wrap); }
+    if (a.is_open && cur && cur.status === 'needs_rerecord') act.appendChild(asgBtn(asgT('torah.assign.rerecord_btn'), '', () => { asgSetCurrent(a, true); recReset(); asgEl('ttRecStart').focus(); }));
+    li.appendChild(act);
+    ul.appendChild(li);
+  });
+  host.appendChild(ul);
+}
+function asgPlay(id, title, wrap, button) {
+  if (button.getAttribute('aria-disabled') === 'true') return;
+  button.setAttribute('aria-disabled', 'true'); button.textContent = asgT('torah.assign.loading_audio');
+  IvritAssignments.audio(id).then(blob => {
+    const url = URL.createObjectURL(blob); _asg.blobUrls.push(url);
+    const audio = asgMake('audio'); audio.controls = true; audio.src = url; audio.setAttribute('aria-label', title);
+    wrap.replaceChild(audio, button);
+    audio.play().catch(() => {}); audio.focus();
+  }).catch(err => { button.setAttribute('aria-disabled', 'false'); button.textContent = asgT('torah.assign.play_btn'); asgSay('ttAsgStudentStatus', asgErr(err), true); });
+}
+
+/* ───── classmates ───── */
+function asgLoadPeers() {
+  const a = _asg.current; _asg.peers = null; asgRenderPeers();
+  if (!a || !a.peers_can_listen || !window.IvritAssignments) return;
+  IvritAssignments.peers(a.id).then(rows => { if (_asg.current && _asg.current.id === a.id) { _asg.peers = rows || []; asgRenderPeers(); } }).catch(() => {});
+}
+function asgRenderPeers() {
+  const host = asgEl('ttAsgPeers'); if (!host) return;
+  while (host.firstChild) host.removeChild(host.firstChild);
+  const a = _asg.current; if (!a || !a.peers_can_listen || !_asg.peers) return;
+  host.appendChild(asgMake('h3', 'tt-assign-h3', asgT('torah.assign.peers_title', { title: a.title })));
+  if (!_asg.peers.length) { host.appendChild(asgMake('p', 'tt-assign-muted', asgT('torah.assign.peers_none'))); return; }
+  const ul = asgMake('ul', 'tt-assign-list');
+  _asg.peers.forEach(p => {
+    const li = asgMake('li'); const head = asgMake('div', 'tt-assign-item-head');
+    head.appendChild(asgMake('strong', '', p.title)); head.appendChild(asgMake('span', 'tt-assign-muted', asgClock(p.duration_seconds) + ' · ' + asgDate(p.created_at)));
+    li.appendChild(head);
+    const wrap = asgMake('div', 'tt-assign-actions'); wrap.appendChild(asgBtn(asgT('torah.assign.play_btn'), 'btn-secondary', (ev) => asgPlay(p.id, p.title, wrap, ev.currentTarget))); li.appendChild(wrap);
+    ul.appendChild(li);
+  });
+  host.appendChild(ul);
+}
+
+/* ───── the recorder: record → listen → name → submit ───── */
+function recRenderState() {
+  const a = _asg.current, st = _asg.state;
+  const show = (id, on) => { const n = asgEl(id); if (n) n.hidden = !on; };
+  show('ttRecStart', st === 'idle' || st === 'done' || st === 'failed');
+  show('ttRecStop', st === 'recording');
+  show('ttRecPlay', st === 'stopped' && !!_asg.take);
+  show('ttRecAgain', (st === 'stopped' || st === 'failed') && !!_asg.take);
+  show('ttRecSubmitForm', st === 'stopped' && !!_asg.take);
+  show('ttRecRetry', st === 'failed' && !!_asg.pendingRow);
+  show('ttRecProgressWrap', st === 'uploading');
+  const state = asgEl('ttRecState'); if (!state || !a) return;
+  const max = asgClock(a.max_minutes * 60);
+  if (st === 'idle') state.textContent = asgT('torah.assign.state_idle', { max: max });
+  else if (st === 'recording') state.textContent = asgT('torah.assign.state_recording', { time: asgClock(_asg.recorder ? _asg.recorder.seconds() : 0), max: max });
+  else if (st === 'stopped') state.textContent = asgT('torah.assign.state_stopped', { time: asgClock(_asg.take ? _asg.take.seconds : 0) });
+  else if (st === 'uploading') state.textContent = asgT('torah.assign.state_uploading', { pct: _asg.pct || 0 });
+  else if (st === 'done') state.textContent = asgT('torah.assign.state_done');
+  else if (st === 'failed') state.textContent = asgT('torah.assign.state_failed', { error: _asg.lastError || '' });
+}
+function recReset() {
+  if (_asg.recorder) { try { _asg.recorder.cancel(); } catch (e) {} _asg.recorder = null; }
+  if (_asg.xhr) { try { _asg.xhr.abort(); } catch (e) {} _asg.xhr = null; }
+  _asg.take = null; _asg.pendingRow = null; _asg.state = 'idle'; _asg.pct = 0; _asg.lastError = '';
+  const audio = asgEl('ttRecAudio'); if (audio) { audio.pause(); audio.removeAttribute('src'); audio.hidden = true; }
+  recRenderState();
+}
+let _recTickLast = -1;
+function recStart() {
+  const a = _asg.current; if (!a || !window.IvritAssignments) return;
+  if (!IvritAssignments.recorder.supported()) { asgSay('ttAsgStudentStatus', asgErr({ code: 'unsupported' }), true); return; }
+  if (_asg.state !== 'idle' && _asg.state !== 'done' && _asg.state !== 'failed') return;
+  _asg.take = null; _asg.pendingRow = null; _asg.lastError = '';
+  const audio = asgEl('ttRecAudio'); audio.pause(); audio.removeAttribute('src'); audio.hidden = true;
+  asgSay('ttAsgStudentStatus', '', false);
+  _recTickLast = -1;
+  _asg.recorder = IvritAssignments.recorder.create({
+    maxSeconds: a.max_minutes * 60,
+    onTick: (s) => { if (s !== _recTickLast) { _recTickLast = s; recRenderState(); } },
+    onStop: (take) => { _asg.take = take; _asg.recorder = null; _asg.state = 'stopped'; recRenderState(); const name = asgEl('ttRecTitleIn'); if (!name.value) name.value = asgT('torah.assign.default_title', { name: (IvritAccount.user() || {}).name || '' }); name.focus(); name.select(); },
+    onError: (err) => { _asg.recorder = null; _asg.state = 'idle'; recRenderState(); asgSay('ttAsgStudentStatus', asgErr(err), true); }
+  });
+  _asg.state = 'starting';
+  asgEl('ttRecState').textContent = asgT('torah.assign.state_starting');
+  _asg.recorder.start().then(() => { _asg.state = 'recording'; recRenderState(); asgEl('ttRecStop').focus(); },
+    err => { _asg.recorder = null; _asg.state = 'idle'; recRenderState(); asgSay('ttAsgStudentStatus', asgErr(err), true); });
+}
+function recStop() { if (_asg.recorder && _asg.state === 'recording') _asg.recorder.stop(); }
+function recPlay() {
+  if (!_asg.take) return;
+  const audio = asgEl('ttRecAudio');
+  if (!audio.src || audio.dataset.take !== String(_asg.take.seconds)) {
+    const url = URL.createObjectURL(_asg.take.blob); _asg.blobUrls.push(url);
+    audio.src = url; audio.dataset.take = String(_asg.take.seconds);
+  }
+  audio.hidden = false; audio.play().catch(() => {}); audio.focus();
+}
+function recAgain() {
+  if (_asg.state === 'uploading') return;
+  if (_asg.take && !window.confirm(asgT('torah.assign.again_confirm'))) return;
+  recReset();
+  recStart();
+}
+function recSubmit(e) {
+  e.preventDefault();
+  const a = _asg.current, take = _asg.take; if (!a || !take || _asg.state !== 'stopped') return;
+  const title = asgEl('ttRecTitleIn').value.replace(/\s+/g, ' ').trim();
+  if (!title) { asgSay('ttAsgStudentStatus', asgT('torah.assign.title_empty'), true); asgEl('ttRecTitleIn').focus(); return; }
+  _asg.state = 'uploading'; _asg.pct = 0; recRenderState();
+  IvritAssignments.submissions.create({ assignment_id: a.id, title: title, mime_type: take.mime, duration_seconds: take.seconds })
+    .then(row => { _asg.pendingRow = row; return recUpload(); })
+    .catch(err => { _asg.state = 'stopped'; recRenderState(); asgSay('ttAsgStudentStatus', asgErr(err), true); });
+}
+function recUpload() {
+  const row = _asg.pendingRow, take = _asg.take; if (!row || !take) return Promise.resolve();
+  _asg.state = 'uploading'; _asg.pct = 0; _asg.lastError = ''; recRenderState();
+  asgSay('ttAsgStudentStatus', '', false);
+  let announced = 0;
+  return IvritAssignments.upload(row.id, take.blob, {
+    mime: take.mime, duration: take.seconds,
+    onStart: (xhr) => { _asg.xhr = xhr; },
+    onProgress: (loaded, total) => {
+      const pct = total ? Math.min(100, Math.round(loaded * 100 / total)) : 0;
+      _asg.pct = pct; asgEl('ttRecProgress').value = pct;
+      // The live line speaks at quarter steps, not on every event (a screen reader would otherwise never finish a sentence).
+      if (pct >= announced + 25 || pct === 100) { announced = pct - (pct % 25); recRenderState(); }
+    }
+  }).then(() => {
+    _asg.xhr = null; _asg.state = 'done'; _asg.take = null; _asg.pendingRow = null; recRenderState();
+    const audio = asgEl('ttRecAudio'); audio.pause(); audio.removeAttribute('src'); audio.hidden = true;
+    asgEl('ttRecTitleIn').value = '';
+    asgLoadMine();
+    asgEl('ttRecStart').focus();
+  }).catch(err => {
+    _asg.xhr = null; _asg.lastError = asgErr(err);
+    // A refusal that no retry can fix drops the pending row (a new take makes a new row); anything else keeps it for Retry.
+    const code = err && err.code;
+    if (code === 'closed' || code === 'not_accepted' || code === 'too_large' || code === 'unsupported_type' || code === 'not_found') _asg.pendingRow = null;
+    _asg.state = 'failed'; recRenderState();
+    (_asg.pendingRow ? asgEl('ttRecRetry') : asgEl('ttRecStart')).focus();
+  });
+}
+
+/* ───── the teacher: assign the reading on screen ───── */
+let _asgOpener = null;
+function openAsgDialog() {
+  const r = resolveRef();
+  const ref = r && r.ref ? String(r.ref) : '';
+  if (!ref || !ASSIGN_REF_RE.test(ref) || !parseSharedRef(ref)) { showHintToast(asgT('torah.assign.dlg_not_torah')); return; }
+  const dlg = asgEl('ttAsgDialog'), bd = asgEl('ttAsgBackdrop');
+  asgEl('ttAsgDlgReading').textContent = r.label || ref;
+  asgEl('ttAsgDlgTitle').value = r.label || ref;
+  asgEl('ttAsgDlgCode').value = IvritAssignments.codeWord.generate();
+  asgEl('ttAsgDlgMinutes').value = 10; asgEl('ttAsgDlgDue').value = ''; asgEl('ttAsgDlgPeers').checked = false; asgEl('ttAsgDlgRetention').value = 30;
+  asgEl('ttAsgDlgCreate').hidden = false; asgEl('ttAsgDlgCreate').setAttribute('aria-disabled', 'false'); asgEl('ttAsgDlgDone').hidden = true;
+  asgSay('ttAsgDlgNote', '', false);
+  dlg.dataset.ref = ref;
+  const sel = asgEl('ttAsgDlgClass'); while (sel.firstChild) sel.removeChild(sel.firstChild);
+  const none = asgMake('option', '', asgT('torah.assign.dlg_no_class')); none.value = ''; sel.appendChild(none);
+  IvritAssignments.classes.list().then(rows => { (rows || []).forEach(c => { const o = asgMake('option', '', c.name); o.value = c.id; sel.appendChild(o); }); }).catch(() => {});
+  dismissHintToast();
+  _asgOpener = document.activeElement;
+  bd.hidden = false; dlg.hidden = false;
+  document.addEventListener('keydown', _asgDialogKey, true);
+  asgEl('ttAsgDlgTitle').focus(); asgEl('ttAsgDlgTitle').select();
+}
+function _asgDialogKey(e) {
+  const dlg = asgEl('ttAsgDialog');
+  if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); closeAsgDialog(); return; }
+  if (e.key !== 'Tab') return;
+  const f = [...dlg.querySelectorAll('button, input, select, textarea, a[href]')].filter(n => n.offsetParent !== null && !n.disabled && !n.hidden);
+  if (!f.length) return;
+  const a = document.activeElement, first = f[0], last = f[f.length - 1], out = !dlg.contains(a);
+  if (e.shiftKey && (a === first || out)) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && (a === last || out)) { e.preventDefault(); first.focus(); }
+}
+function closeAsgDialog() {
+  const dlg = asgEl('ttAsgDialog'), bd = asgEl('ttAsgBackdrop');
+  if (!dlg || dlg.hidden) return;
+  dlg.hidden = true; bd.hidden = true;
+  document.removeEventListener('keydown', _asgDialogKey, true);
+  const o = _asgOpener; _asgOpener = null;
+  try { ((o && o.isConnected && o !== document.body) ? o : asgEl('ttAsgAssignBtn')).focus(); } catch (e) {}
+}
+function createAssignment(e) {
+  e.preventDefault();
+  const dlg = asgEl('ttAsgDialog'); if (dlg.hidden || asgEl('ttAsgDlgCreate').getAttribute('aria-disabled') === 'true') return;
+  const ref = dlg.dataset.ref, title = asgEl('ttAsgDlgTitle').value.replace(/\s+/g, ' ').trim(), code = asgEl('ttAsgDlgCode').value.trim();
+  if (!title) { asgSay('ttAsgDlgNote', asgT('torah.assign.dlg_name_empty'), true); asgEl('ttAsgDlgTitle').focus(); return; }
+  if (IvritAssignments.codeWord.normalize(code).length < 6) { asgSay('ttAsgDlgNote', asgT('torah.assign.dlg_code_short'), true); asgEl('ttAsgDlgCode').focus(); return; }
+  const reading = { parshahKey: settings.parshahKey || null, scope: settings.scope || null, holidayKey: settings.holidayKey || null, holidayPart: settings.holidayPart || null, readingCycle: settings.readingCycle || null };
+  asgEl('ttAsgDlgCreate').setAttribute('aria-disabled', 'true');
+  asgSay('ttAsgDlgNote', asgT('shared.account.sending'), false);
+  IvritAssignments.assignments.create({
+    title: title, code_word: code, ref: ref, ref_label: asgEl('ttAsgDlgReading').textContent, reading: reading,
+    peers_can_listen: asgEl('ttAsgDlgPeers').checked, max_minutes: asgEl('ttAsgDlgMinutes').value, due_date: asgEl('ttAsgDlgDue').value || null,
+    retention_days: asgEl('ttAsgDlgRetention').value, class_id: asgEl('ttAsgDlgClass').value || null
+  }).then(row => {
+    asgSay('ttAsgDlgNote', '', false);
+    const done = asgEl('ttAsgDlgDone'); while (done.firstChild) done.removeChild(done.firstChild);
+    done.appendChild(asgMake('p', '', asgT('torah.assign.dlg_created')));
+    const big = asgMake('p', 'tt-assign-bigcode'); big.appendChild(asgMake('span', 'tt-assign-codeword', row.code_word)); done.appendChild(big);
+    done.appendChild(asgMake('p', 'tt-assign-muted', asgT('torah.assign.dlg_created_note')));
+    done.hidden = false;
+    asgEl('ttAsgDlgCreate').hidden = true;
+    asgEl('ttAsgDlgCancel').textContent = asgT('torah.assign.dlg_close');
+    asgEl('ttAsgDlgCancel').focus();
+  }).catch(err => { asgEl('ttAsgDlgCreate').setAttribute('aria-disabled', 'false'); asgSay('ttAsgDlgNote', asgErr(err), true); });
 }
 </script>
 </body>

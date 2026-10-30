@@ -13,7 +13,11 @@
  *   onChange(fn)               fn(user|null, status): called once when known, then on every change
  *   signIn('google')           Promise<void> — full-page redirect to Google and back to THIS page
  *   signIn('email', {email})   Promise<{sent:true}> — emails a 6-digit code and a link that fills it in
- *                              (the email's text: db/email-templates/sign-in-code.html)
+ *                              (the email's text: db/email-templates/sign-in-code.html); refuses an address
+ *                              under the student domain (those accounts have no inbox)
+ *   signIn('student', {username, password})   Promise<user> — a student account a teacher created (Torah Trainer
+ *                              reading assignments): the username is mapped to its synthetic address under
+ *                              STUDENT_DOMAIN and signed in with the password; no email is ever sent
  *   verifyCode(email, code)    Promise<user> — signs in with the emailed code (works on any device)
  *   signOut(opts)              Promise<void> — this device only. Runs every onSignOut hook first (the saves
  *                              module flushes pending edits and removes the account's cached items), then the
@@ -22,8 +26,10 @@
  *   client()                   Promise<SupabaseClient> — loads the SDK on demand; rejects with
  *                              err.code = 'disabled' | 'offline' | 'blocked'
  *   mountChip(target)          element | selector | 'auto' — renders the header chip
- *   init(opts)                 optional { mount: 'auto' | selector | element | false, nameStep: false }
- *                              (nameStep: false — account.html has its own name form)
+ *   init(opts)                 optional { mount: 'auto' | selector | element | false, nameStep: false,
+ *                              studentSignIn: true } (nameStep: false — account.html has its own name form;
+ *                              studentSignIn — the chip's menu offers the username + password form; the Torah
+ *                              Trainer sets it behind its ?assignments=1 flag, and a later call only adds options)
  *   t(key, fallback)           translate via I18n when loaded, else the English fallback
  *   onSignOut(fn)              fn(uid, { keepLocal }) → void | Promise — run and awaited (bounded) before the
  *                              SDK sign-out, while the session is still valid
@@ -39,6 +45,10 @@
  *                              callback), 'restored' when it came from storage, null when signed out
  *   openMenu()                 opens the chip's menu (false when no chip is mounted) — for a panel's Sign in button
  *   focusChip()                puts the focus on the chip (false when none is shown) — for a screen whose opener is gone
+ *   role()                     'student' | 'teacher' | null — from the token's app_metadata (only the server writes
+ *                              it); storedRole() reads the stored session without the SDK, as storedUserId does
+ *   accessToken()              Promise<string|null> — the current access token (refreshed by the SDK when stale),
+ *                              for js/ivrit-assignments.js's calls to the audio Worker; null when signed out
  *   profile()                 Promise<{displayName, createdAt}> — the account's profiles row (signed in only)
  *   setDisplayName(name)       Promise<name> — 1–80 characters; writes the user's metadata (what the chip shows)
  *                              and profiles.display_name
@@ -81,6 +91,10 @@
   // The emailed link's hash key (#ivsignin=<code>). The pages' inline analytics tag drops a hash carrying it,
   // spelled out there as a literal — keep the two in step, as with AUTH_QUERY_KEYS.
   var LINK_HASH_KEY = 'ivsignin';
+  // Student accounts (Torah Trainer reading assignments): a username, mapped to a synthetic address under a domain
+  // that receives no mail (a null MX record). Never offered a code, never shown an inbox.
+  var STUDENT_DOMAIN = 'students.ivritsuite.com';
+  var USERNAME_RE = /^[a-z0-9][a-z0-9.]{1,28}[a-z0-9]$/;
   var REQUEST_KEY = 'ivritSuite_signInRequest';      // {e, at}: this browser asked for a sign-in email for e, at ms
   var REQUEST_TTL_MS = 24 * 3600 * 1000;             // the longest Supabase lets an email code live; the server keeps the real clock
 
@@ -325,7 +339,18 @@
     if (!u) return null;
     var md = u.user_metadata || {};
     var am = u.app_metadata || {};
-    return { id: u.id, email: u.email || '', name: md.full_name || md.name || '', provider: am.provider || '' };
+    return { id: u.id, email: u.email || '', name: md.full_name || md.name || '', provider: am.provider || '', role: am.role === 'student' ? 'student' : 'teacher' };
+  }
+  // The role in the stored session, for a page deciding before the SDK has loaded (the saves module never attaches
+  // for a student). null when nothing is stored or it cannot be read.
+  function storedRole() {
+    if (currentUser) return currentUser.role;
+    try {
+      var s = JSON.parse(lsGet(AUTH_KEY) || 'null');
+      var u = s && (s.user || (s.currentSession && s.currentSession.user));
+      if (!u) return null;
+      return (u.app_metadata && u.app_metadata.role === 'student') ? 'student' : 'teacher';
+    } catch (e) { return null; }
   }
 
   function handleAuthEvent(event, session) {
@@ -372,7 +397,7 @@
   function settleNameStep() {
     if (nameStepOutcome || nameStep) return;
     if (!currentUser) return;                       // signed out: nothing to settle (a later sign-in decides)
-    if (currentUser.name) { fireNameStep('none'); return; }
+    if (currentUser.name || currentUser.role === 'student') { fireNameStep('none'); return; }
     if (nameStepAsked) return;
     nameStepAsked = true;
     var uid = currentUser.id;
@@ -503,11 +528,27 @@
       if (method === 'email') {
         var email = String(opts.email || '').trim();
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw makeError('invalid_email', 'IvritAccount: a valid email is required');
+        if (email.toLowerCase().slice(-STUDENT_DOMAIN.length - 1) === '@' + STUDENT_DOMAIN) throw makeError('student_email', 'IvritAccount: a student account signs in with its username');
         return c.auth.signInWithOtp({ email: email, options: { emailRedirectTo: redirectTarget(), shouldCreateUser: true } })
           .then(function (r) { if (r && r.error) throw r.error; rememberRequest(email); return { sent: true }; });
       }
+      if (method === 'student') {
+        var username = String(opts.username || '').trim().toLowerCase();
+        var password = String(opts.password || '');
+        if (!USERNAME_RE.test(username)) throw makeError('invalid_username', 'IvritAccount: a username is 3 to 30 lowercase letters, digits and dots');
+        if (!password) throw makeError('invalid_credentials', 'IvritAccount: a password is required');
+        codeInFlight = true;
+        return c.auth.signInWithPassword({ email: username + '@' + STUDENT_DOMAIN, password: password })
+          .then(function (r) { codeInFlight = false; if (r && r.error) throw r.error; return userFromSession(r.data && r.data.session); },
+            function (e) { codeInFlight = false; throw e; });
+      }
       throw makeError('bad_method', 'IvritAccount: unknown sign-in method ' + method);
     });
+  }
+  function accessToken() {
+    if (!currentUser) return Promise.resolve(null);
+    return getClient().then(function (c) { return c.auth.getSession(); })
+      .then(function (r) { var sess = r && r.data && r.data.session; return sess && sess.access_token ? sess.access_token : null; }, function () { return null; });
   }
 
   function verifyCode(email, code) {
@@ -556,6 +597,9 @@
     var msg = String((err && err.message) || '').toLowerCase();
     if (code === 'offline') return t('shared.account.needs_internet', 'Sign-in needs an internet connection.');
     if (code === 'blocked' || code === 'disabled') return t('shared.account.unavailable', 'Cloud sign-in is unavailable right now. Your local saves still work.');
+    if (code === 'student_email') return t('shared.account.error_student_email', 'That is a student account: use the student sign-in with your username.');
+    if (code === 'invalid_username') return t('shared.account.error_username', 'A username is 3 to 30 lowercase letters, digits and dots.');
+    if (code === 'invalid_credentials' || /invalid login credentials/.test(msg)) return t('shared.account.error_student_login', 'That username and password do not match. Ask your teacher if you need a new password.');
     if (code === 'invalid_email' || code === 'validation_failed' || /valid email/.test(msg)) return t('shared.account.error_email', 'Please enter a valid email address.');
     if (st === 429 || code === 'over_email_send_rate_limit' || code === 'over_request_rate_limit' || /rate limit/.test(msg)) return t('shared.account.error_rate_limited', 'Too many attempts. Wait a few minutes and try again.');
     if (code === 'invalid_code' || code === 'otp_expired' || code === 'otp_disabled' || (/token|otp|code/.test(msg) && /expired|invalid/.test(msg))) return t('shared.account.error_invalid_code', 'That code is not valid or has expired. Check the email and try again.');
@@ -959,12 +1003,17 @@
     note.setAttribute('aria-live', 'polite');
 
     if (status === 'signed-in' && currentUser) {
-      m.appendChild(el('p', 'ivacct-who', t('shared.account.signed_in_as', 'Signed in as {email}', { email: currentUser.email })));
-      // The account page: who the account is, what it holds, download everything, delete it.
-      var acct = el('a', 'ivacct-item', t('shared.account.account_item', 'Account…'));
-      acct.setAttribute('data-ivk', 'account');
-      acct.href = '/account.html';
-      m.appendChild(acct);
+      if (currentUser.role === 'student') {
+        // A student account: no inbox behind its address, no account page (the teacher manages it).
+        m.appendChild(el('p', 'ivacct-who', t('shared.account.signed_in_student', 'Signed in as {name} (student account)', { name: currentUser.name || currentUser.email.split('@')[0] })));
+      } else {
+        m.appendChild(el('p', 'ivacct-who', t('shared.account.signed_in_as', 'Signed in as {email}', { email: currentUser.email })));
+        // The account page: who the account is, what it holds, download everything, delete it.
+        var acct = el('a', 'ivacct-item', t('shared.account.account_item', 'Account…'));
+        acct.setAttribute('data-ivk', 'account');
+        acct.href = '/account.html';
+        m.appendChild(acct);
+      }
       var out = el('button', 'ivacct-item', t('shared.account.sign_out', 'Sign out'));
       out.setAttribute('data-ivk', 'signout');
       out.type = 'button';
@@ -996,6 +1045,43 @@
         ? t('shared.account.needs_internet', 'Sign-in needs an internet connection.')
         : t('shared.account.unavailable', 'Cloud sign-in is unavailable right now. Your local saves still work.');
       m.appendChild(note);
+      return;
+    }
+
+    // A student's form (username + password), offered only where the page asked for it (the Torah Trainer with
+    // its assignments flag): no email is involved, and nothing is sent until Sign in is pressed.
+    if (menuStage === 'student' && initOpts && initOpts.studentSignIn) {
+      var sform = el('form', 'ivacct-form');
+      sform.setAttribute('novalidate', '');
+      var uLabel = el('label', 'ivacct-label', t('shared.account.student_username', 'Username'));
+      var uInput = el('input', 'ivacct-input');
+      uInput.setAttribute('data-ivk', 'username'); uInput.type = 'text'; uInput.name = 'username'; uInput.autocomplete = 'username';
+      uInput.autocapitalize = 'none'; uInput.spellcheck = false; uInput.dir = 'ltr'; uInput.required = true; uInput.maxLength = 30;
+      uLabel.appendChild(uInput);
+      var pLabel = el('label', 'ivacct-label', t('shared.account.student_password', 'Password'));
+      var pInput = el('input', 'ivacct-input');
+      pInput.setAttribute('data-ivk', 'password'); pInput.type = 'password'; pInput.name = 'password'; pInput.autocomplete = 'current-password'; pInput.dir = 'ltr'; pInput.required = true;
+      pLabel.appendChild(pInput);
+      var go = el('button', 'ivacct-item', t('shared.account.student_sign_in', 'Sign in'));
+      go.setAttribute('data-ivk', 'studentgo'); go.type = 'submit';
+      var back = el('button', 'ivacct-item', t('shared.account.student_back', 'Back to teacher sign-in'));
+      back.setAttribute('data-ivk', 'studentback'); back.type = 'button';
+      back.addEventListener('click', function () { if (menuBusy) return; menuStage = 'email'; noteState = null; renderMenu(); var g = chip && chip.menu.querySelector('[data-ivk="google"], [data-ivk="email"]'); if (g) g.focus(); });
+      sform.addEventListener('submit', function (e) {
+        e.preventDefault();
+        if (menuBusy) return;
+        setBusy(true);
+        setNote(t('shared.account.sending', 'Sending…'), false);
+        signIn('student', { username: uInput.value, password: pInput.value }).then(function () {
+          setBusy(false); menuStage = 'email'; closeMenu(true);
+        }).catch(function (err) { setBusy(false); setNote(errorText(err), true); pInput.value = ''; pInput.focus(); });
+      });
+      sform.appendChild(uLabel); sform.appendChild(pLabel); sform.appendChild(go); sform.appendChild(back);
+      m.appendChild(sform);
+      m.appendChild(note);
+      if (noteState) setNote(noteState.text, noteState.isError);
+      else note.textContent = t('shared.account.student_note', 'Your teacher gave you a username and a password.');
+      clampMenu();
       return;
     }
 
@@ -1096,6 +1182,12 @@
       form.appendChild(emailLabel); form.appendChild(send); form.appendChild(codeWrap);
     }
     m.appendChild(form);
+    if (initOpts && initOpts.studentSignIn) {
+      var stu = el('button', 'ivacct-item', t('shared.account.student_switch', 'Student? Sign in with your username'));
+      stu.setAttribute('data-ivk', 'student'); stu.type = 'button';
+      stu.addEventListener('click', function () { if (menuBusy) return; menuStage = 'student'; noteState = null; renderMenu(); var u = chip && chip.menu.querySelector('[data-ivk="username"]'); if (u) u.focus(); });
+      m.appendChild(stu);
+    }
     m.appendChild(note);
     if (pendingError) {
       if (pendingError.code === 'link_other_browser') { menuStage = 'code'; codeWrap.hidden = false; }
@@ -1182,7 +1274,7 @@
   }
 
   function init(opts) {
-    initOpts = opts || {};
+    initOpts = initOpts ? Object.assign(initOpts, opts || {}) : (opts || {});   // a second call (a page's flag, decided late) adds options
     whenReady(function () {
       if (initOpts.mount === false) return;
       mountChip(initOpts.mount === undefined ? 'auto' : initOpts.mount);
@@ -1202,7 +1294,10 @@
   window.IvritAccount = {
     ready: ready,
     status: function () { return status; },
-    user: function () { return currentUser ? { id: currentUser.id, email: currentUser.email, name: currentUser.name, provider: currentUser.provider } : null; },
+    user: function () { return currentUser ? { id: currentUser.id, email: currentUser.email, name: currentUser.name, provider: currentUser.provider, role: currentUser.role } : null; },
+    role: function () { return currentUser ? currentUser.role : null; },
+    storedRole: function () { return enabled ? storedRole() : null; },
+    accessToken: accessToken,
     onChange: function (fn) {
       if (typeof fn !== 'function') return;
       handlers.push(fn);

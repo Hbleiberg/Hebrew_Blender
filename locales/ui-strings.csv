@@ -7148,3 +7148,245 @@ atlas.sys.je_ketuvim_baghdad.name,Baghdadi,בגדאדי,"Trope Atlas: a melody's
 atlas.sys.je_ketuvim_baghdad.trad,Iraqi,עיראקי,Trope Atlas: the tradition a melody belongs to,
 atlas.sys.je_ketuvim_baghdad.sub,The scrolls,המגילות,Trope Atlas: a melody's one-line description,
 atlas.sys.je_ketuvim_baghdad.note,The Baghdadi chant for the Writings.,הנגינה הבגדאדית לכתובים.,Trope Atlas: a melody's note in the phrase header (followed by atlas.sys.je_note),
+shared.account.signed_in_student,Signed in as {name} (student account),מחוברים בתור {name} (חשבון תלמיד/ה),"Account popover, a student account",shared; template
+shared.account.student_username,Username,שם משתמש,Account popover: student sign-in field,shared
+shared.account.student_password,Password,סיסמה,Account popover: student sign-in field,shared
+shared.account.student_sign_in,Sign in,כניסה,Account popover: student sign-in button,shared
+shared.account.student_back,Back to teacher sign-in,חזרה לכניסת מורים,Account popover: leave the student form,shared
+shared.account.student_note,Your teacher gave you a username and a password.,המורה נתן/ה לכם שם משתמש וסיסמה.,Account popover: note under the student form,shared
+shared.account.student_switch,Student? Sign in with your username,תלמיד/ה? היכנסו עם שם המשתמש שלכם,Account popover: opens the student form (Torah Trainer only),shared
+shared.account.error_student_email,That is a student account: use the student sign-in with your username.,זהו חשבון תלמיד/ה: השתמשו בכניסת התלמידים עם שם המשתמש.,Account popover error,shared
+shared.account.error_username,"A username is 3 to 30 lowercase letters, digits and dots.","שם משתמש הוא 3 עד 30 אותיות לטיניות קטנות, ספרות ונקודות.",Account popover error,shared
+shared.account.error_student_login,That username and password do not match. Ask your teacher if you need a new password.,שם המשתמש והסיסמה אינם תואמים. בקשו מהמורה סיסמה חדשה אם צריך.,Account popover error,shared
+torah.assign.title,Reading assignments,משימות קריאה,Torah Trainer: assignments region heading,
+torah.assign.out_note,Teachers sign in with the account button. Students: open the account button and choose “Student? Sign in with your username”.,מורים נכנסים דרך כפתור החשבון. תלמידים: פתחו את כפתור החשבון ובחרו ״תלמיד/ה? היכנסו עם שם המשתמש שלכם״.,"Torah Trainer: assignments region, signed out",
+torah.assign.module_failed,The assignments feature could not load. Check the connection and reload the page.,לא ניתן היה לטעון את משימות הקריאה. בדקו את החיבור וטענו מחדש את הדף.,Torah Trainer: the module script failed,
+torah.assign.teacher_note,"Choose the parsha, aliyah or verse range as usual, then assign it: students type the code word here to see it and record it.","בחרו פרשה, עלייה או טווח פסוקים כרגיל, ואז הקצו אותם: התלמידים מקלידים כאן את מילת הקוד כדי לראות את הקריאה ולהקליט אותה.",Torah Trainer: teacher face of the region,
+torah.assign.assign_btn,Assign this reading…,הקצאת הקריאה הזו…,Torah Trainer: opens the assign dialog,
+torah.assign.manage_link,"Students, assignments and recordings","תלמידים, משימות והקלטות",Torah Trainer: link to the management page,
+torah.assign.code_label,Code word from your teacher,מילת הקוד מהמורה,Torah Trainer: student code field label,
+torah.assign.code_placeholder,sunny-fox-38,sunny-fox-38,Torah Trainer: code field placeholder (an example code; stays Latin),
+torah.assign.code_btn,Open the reading,פתיחת הקריאה,Torah Trainer: submit the code,
+torah.assign.code_empty,Type the code word your teacher gave you.,הקלידו את מילת הקוד שקיבלתם מהמורה.,Torah Trainer: validation,
+torah.assign.code_none,No assignment matches that code word. Check the spelling with your teacher.,אין משימה שמתאימה למילת הקוד הזו. בדקו את האיות עם המורה.,Torah Trainer: claim miss,
+torah.assign.code_opened,Opened: {title},נפתח: {title},Torah Trainer: claim hit,template
+torah.assign.current_max,up to {n} minutes,עד {n} דקות,Torah Trainer: assignment line fragment,template
+torah.assign.current_due,due {date},להגשה עד {date},Torah Trainer: assignment line fragment,template
+torah.assign.current_closed,(closed — no more recordings),(סגורה — אין עוד הקלטות),Torah Trainer: assignment line fragment,
+torah.assign.open_btn,Show the reading,הצגת הקריאה,Torah Trainer: reload the assigned portion,
+torah.assign.rec_title,Record your reading,הקלטת הקריאה שלכם,Torah Trainer: recorder group heading,
+torah.assign.rec_start,Record,הקלטה,Torah Trainer: recorder button,
+torah.assign.rec_stop,Stop,עצירה,Torah Trainer: recorder button,
+torah.assign.rec_play,Play it back,השמעה,Torah Trainer: recorder button,
+torah.assign.rec_again,Record again,הקלטה מחדש,Torah Trainer: recorder button,
+torah.assign.rec_audio_aria,Your recording,ההקלטה שלכם,Torah Trainer: the playback element,aria
+torah.assign.rec_name_label,Name your recording,תנו שם להקלטה,Torah Trainer: title field,
+torah.assign.rec_submit,Submit,הגשה,Torah Trainer: submit the recording,
+torah.assign.rec_progress_aria,Upload progress,התקדמות ההעלאה,Torah Trainer: progress bar,aria
+torah.assign.rec_retry,Try the upload again,ניסיון העלאה נוסף,Torah Trainer: retry after a failed upload,
+torah.assign.state_idle,"Ready to record (up to {max}). Press Record, read, then press Stop.","מוכן להקלטה (עד {max}). לחצו ״הקלטה״, קראו, ואז לחצו ״עצירה״.",Torah Trainer: recorder live line,template
+torah.assign.state_starting,Opening the microphone…,פותח את המיקרופון…,Torah Trainer: recorder live line,
+torah.assign.state_recording,Recording… {time} of {max},מקליט… {time} מתוך {max},Torah Trainer: recorder live line,template
+torah.assign.state_stopped,"Recorded {time}. Listen to it, give it a name, then submit.","הוקלט {time}. האזינו, תנו שם, ואז הגישו.",Torah Trainer: recorder live line,template
+torah.assign.state_uploading,Uploading… {pct}%,מעלה… {pct}%,Torah Trainer: recorder live line,template
+torah.assign.state_done,Submitted! Your teacher will see it.,הוגש! המורה יראה/תראה את זה.,Torah Trainer: recorder live line,
+torah.assign.state_failed,Not submitted: {error},לא הוגש: {error},Torah Trainer: recorder live line,template
+torah.assign.default_title,{name}’s recording,ההקלטה של {name},Torah Trainer: default recording title,template
+torah.assign.again_confirm,Throw away this recording and record again?,למחוק את ההקלטה הזו ולהקליט מחדש?,Torah Trainer: confirm,
+torah.assign.title_empty,Give your recording a name first.,תנו קודם שם להקלטה.,Torah Trainer: validation,
+torah.assign.status_none,Not recorded yet,עדיין לא הוקלט,Torah Trainer: my recordings status,
+torah.assign.status_pending,Upload did not finish,ההעלאה לא הושלמה,Torah Trainer: my recordings status,
+torah.assign.status_approved,Approved,אושר,Torah Trainer: my recordings status,
+torah.assign.status_needs,Your teacher asked for a re-recording,המורה ביקש/ה הקלטה מחדש,Torah Trainer: my recordings status,
+torah.assign.status_submitted,Submitted,הוגש,Torah Trainer: my recordings status,
+torah.assign.mine_title,My recordings,ההקלטות שלי,Torah Trainer: list heading,
+torah.assign.mine_none,No assignments yet. Type a code word above.,עדיין אין משימות. הקלידו מילת קוד למעלה.,Torah Trainer: empty list,
+torah.assign.mine_item,“{title}” · {date} · take {n},״{title}״ · {date} · הקלטה {n},Torah Trainer: my recordings line,template
+torah.assign.feedback_label,Your teacher says:,המורה אומר/ת:,Torah Trainer: feedback label,
+torah.assign.play_btn,Play,השמעה,Torah Trainer: play a recording,
+torah.assign.rerecord_btn,Re-record,הקלטה מחדש,Torah Trainer: re-record when asked,
+torah.assign.loading_audio,Loading…,טוען…,Torah Trainer: play button while fetching,
+torah.assign.peers_title,Classmates’ recordings — {title},הקלטות של חברים לכיתה — {title},Torah Trainer: peers heading,template
+torah.assign.peers_none,No classmate has submitted yet.,אף חבר/ה לכיתה עדיין לא הגיש/ה.,Torah Trainer: peers empty,
+torah.assign.dlg_title,Assign this reading,הקצאת הקריאה הזו,Torah Trainer: assign dialog heading,
+torah.assign.dlg_name,Title,כותרת,Torah Trainer: assign dialog field,
+torah.assign.dlg_code,Code word,מילת קוד,Torah Trainer: assign dialog field,
+torah.assign.dlg_regen,New code word,מילת קוד חדשה,Torah Trainer: assign dialog button,
+torah.assign.dlg_minutes,Maximum minutes,מקסימום דקות,Torah Trainer: assign dialog field,
+torah.assign.dlg_due,Due date (optional),תאריך הגשה (לא חובה),Torah Trainer: assign dialog field,
+torah.assign.dlg_class,Class (optional),כיתה (לא חובה),Torah Trainer: assign dialog field,
+torah.assign.dlg_no_class,Any of my students,כל התלמידים שלי,Torah Trainer: assign dialog class option,
+torah.assign.dlg_retention,Keep recordings (days after closing),שמירת ההקלטות (ימים אחרי הסגירה),Torah Trainer: assign dialog field,
+torah.assign.dlg_peers,Classmates may listen to each other’s latest recording (never to feedback),חברים לכיתה רשאים להאזין להקלטה האחרונה זה של זה (לעולם לא למשוב),Torah Trainer: assign dialog checkbox,
+torah.assign.dlg_create,Create assignment,יצירת משימה,Torah Trainer: assign dialog button,
+torah.assign.dlg_not_torah,"Only a Torah reading (Genesis to Deuteronomy, one verse range) can be assigned. Choose a parsha, an aliyah or a verse range first.","אפשר להקצות רק קריאה מהתורה (מבראשית עד דברים, טווח פסוקים אחד). בחרו קודם פרשה, עלייה או טווח פסוקים.",Torah Trainer: assign refused,
+torah.assign.dlg_name_empty,Give the assignment a title.,תנו כותרת למשימה.,Torah Trainer: validation,
+torah.assign.dlg_code_short,A code word needs at least 6 letters or digits.,מילת קוד צריכה לפחות 6 אותיות או ספרות.,Torah Trainer: validation,
+torah.assign.dlg_created,Created. Give your students this code word:,נוצר. מסרו לתלמידים את מילת הקוד הזו:,Torah Trainer: assign dialog success,
+torah.assign.dlg_created_note,"They type it in the Torah Trainer after signing in as a student. Edit, close or delete the assignment from the Students, assignments and recordings page.","הם מקלידים אותה ב״מאמן הקריאה בתורה״ אחרי כניסה כתלמידים. עריכה, סגירה או מחיקה של המשימה — בדף התלמידים, המשימות וההקלטות.",Torah Trainer: assign dialog success note,
+torah.assign.dlg_close,Close,סגירה,Torah Trainer: assign dialog after success,
+assign.a11y.skip,Skip to the assignments,דילוג למשימות,Skip-link (a11y),aria/skip-link
+assign.framed.head,This page can’t be shown inside another site,אי אפשר להציג את הדף הזה בתוך אתר אחר,Management page: framed guard,
+assign.framed.body,"Student logins and recordings open only on ivritsuite.com, so no one can place a fake page over them.","כניסות של תלמידים והקלטות נפתחות רק ב-ivritsuite.com, כך שאיש לא יוכל להניח מעליהן דף מזויף.",Management page: framed guard,
+assign.framed.link,Open the page →,פתיחת הדף ←,Management page: framed guard link,
+assign.header.title,IvritSuite — Reading assignments,IvritSuite — משימות קריאה,Management page header,
+assign.header.tagline,Student logins · Assignments under a code word · The recordings they submit,כניסות תלמידים · משימות עם מילת קוד · ההקלטות שהם מגישים,Management page header,
+assign.header.trainer_link,Torah Trainer,מאמן הקריאה בתורה,Management page header link,
+assign.page_title,Reading assignments,משימות קריאה,Management page h1,
+assign.lede,"Give each student a login, assign a Torah portion under a code word, and listen to what they record in the Torah Trainer. How student accounts and recordings are kept: <a href=""privacy.html"">Privacy Policy</a>.","תנו לכל תלמיד/ה כניסה, הקצו קטע מהתורה עם מילת קוד, והאזינו למה שהם מקליטים במאמן הקריאה בתורה. איך נשמרים חשבונות התלמידים וההקלטות: <a href=""privacy.html"">מדיניות הפרטיות</a>.",Management page lede (HTML),html
+assign.out.note,Sign in with your teacher account to manage students and assignments.,היכנסו עם חשבון המורה שלכם כדי לנהל תלמידים ומשימות.,"Management page, signed out",
+assign.student.head,This page is for teachers,הדף הזה מיועד למורים,"Management page, a student signed in",
+assign.student.body,"You are signed in with a student account. Your assignments, recordings and your teacher’s feedback are in the Torah Trainer.","אתם מחוברים עם חשבון תלמיד/ה. המשימות, ההקלטות והמשוב מהמורה נמצאים במאמן הקריאה בתורה.","Management page, a student signed in",
+assign.student.link,Go to the Torah Trainer,למאמן הקריאה בתורה,"Management page, a student signed in",
+assign.students.head,Students,תלמידים,Management page section,
+assign.students.note,Each student signs in to the Torah Trainer with a username and a password you give them — no email address. Print the login cards right after you create a batch; the passwords are shown only then. You can reset a password at any time.,כל תלמיד/ה נכנס/ת למאמן הקריאה בתורה עם שם משתמש וסיסמה שאתם נותנים — בלי כתובת אימייל. הדפיסו את כרטיסי הכניסה מיד אחרי יצירת הקבוצה; הסיסמאות מוצגות רק אז. אפשר לאפס סיסמה בכל עת.,Management page section note,
+assign.students.filter_class,Class,כיתה,Management page: filter label,
+assign.students.filter_all,All students,כל התלמידים,Management page: filter option,
+assign.students.no_class,No class,ללא כיתה,Management page: class option,
+assign.students.none,No students yet. Add them below.,עדיין אין תלמידים. הוסיפו אותם למטה.,Management page: empty list,
+assign.students.none_in_class,No students in this class.,אין תלמידים בכיתה הזו.,Management page: empty list,
+assign.students.col_name,Name,שם,Management page: table column,
+assign.students.col_username,Username,שם משתמש,Management page: table column,
+assign.students.col_class,Class,כיתה,Management page: table column,
+assign.students.col_actions,Actions,פעולות,Management page: table column,
+assign.students.col_password,Password,סיסמה,Management page: table column,
+assign.students.move_aria,Class of {name},הכיתה של {name},Management page: class select,aria; template
+assign.students.moved,{name}’s class was changed.,הכיתה של {name} שונתה.,Management page: status,template
+assign.students.reset_btn,Reset password,איפוס סיסמה,Management page: row button,
+assign.students.remove_btn,Remove,הסרה,Management page: row button,
+assign.students.count,{n} students,{n} תלמידים,Management page: under the table,template
+assign.students.reset_confirm,Give {name} the new password “{password}”? The old one stops working at once.,לתת ל{name} את הסיסמה החדשה ״{password}״? הישנה תפסיק לעבוד מיד.,Management page: confirm,template
+assign.students.reset_done,"New password for {name}: username {username}, password {password}. Write it down now — it is not shown again.","סיסמה חדשה ל{name}: שם משתמש {username}, סיסמה {password}. רשמו עכשיו — היא לא תוצג שוב.",Management page: status,template
+assign.students.reset_head,New password,סיסמה חדשה,Management page: heading over the reset table,
+assign.students.remove_confirm,Remove {name}’s account? Their recordings and your feedback on them are deleted too. This cannot be undone.,להסיר את החשבון של {name}? גם ההקלטות שלהם והמשוב שלכם עליהן יימחקו. אי אפשר לבטל.,Management page: confirm,template
+assign.students.removed,{name}’s account was removed.,החשבון של {name} הוסר.,Management page: status,template
+assign.students.add_head,Add students,הוספת תלמידים,Management page: heading,
+assign.students.add_note,"Type one name per line (a first name or a nickname is enough — it is what the student sees), or take the names from a class list saved on this device. Then check the usernames and passwords in the preview and press Create.","הקלידו שם אחד בכל שורה (שם פרטי או כינוי מספיק — זה מה שהתלמיד/ה רואה), או קחו את השמות מרשימת כיתה ששמורה במכשיר הזה. אחר כך בדקו את שמות המשתמש והסיסמאות בתצוגה המקדימה ולחצו ״יצירה״.",Management page: note,
+assign.students.names_label,"Names, one per line","שמות, אחד בכל שורה",Management page: field,
+assign.students.import_label,From a class list on this device,מרשימת כיתה במכשיר הזה,Management page: field,
+assign.students.import_btn,Add these names,הוספת השמות האלה,Management page: button,
+assign.students.import_pick,Choose a list…,בחרו רשימה…,Management page: select placeholder,
+assign.students.import_none,No class list saved on this device,אין רשימת כיתה שמורה במכשיר הזה,Management page: select placeholder,
+assign.students.import_dashboard,Dashboard class: {name},כיתה בלוח הכיתה: {name},Management page: import source,template
+assign.students.import_nametags,Name Tags list: {name},רשימת תוויות שם: {name},Management page: import source,template
+assign.students.import_flashcards,Flash Cards profiles,פרופילים בכרטיסיות,Management page: import source,
+assign.students.new_class,Class for these students,כיתה לתלמידים האלה,Management page: field,
+assign.students.preview_btn,Preview usernames and passwords,תצוגה מקדימה של שמות משתמש וסיסמאות,Management page: button,
+assign.students.names_empty,Type at least one name first.,הקלידו קודם לפחות שם אחד.,Management page: validation,
+assign.students.preview_note,"Check each row — you can edit a name, username or password before creating. Usernames are lowercase letters, digits and dots; passwords at least 8 characters.","בדקו כל שורה — אפשר לערוך שם, שם משתמש או סיסמה לפני היצירה. שמות משתמש הם אותיות לטיניות קטנות, ספרות ונקודות; סיסמאות לפחות 8 תווים.",Management page: preview note,
+assign.students.cell_aria,"{field}, row {n}","{field}, שורה {n}",Management page: preview cell,aria; template
+assign.students.create_btn,Create {n} accounts,יצירת {n} חשבונות,Management page: button,template
+assign.students.preview_clear,Clear the preview,ניקוי התצוגה המקדימה,Management page: button,
+assign.students.creating,Creating {n} accounts…,יוצר {n} חשבונות…,Management page: status,template
+assign.students.created_some,{made} accounts created; {failed} could not be (see the rows below).,{made} חשבונות נוצרו; {failed} לא ניתן היה ליצור (ראו את השורות למטה).,Management page: status,template
+assign.students.created_all,{n} accounts created. Print the login cards now.,{n} חשבונות נוצרו. הדפיסו עכשיו את כרטיסי הכניסה.,Management page: status,template
+assign.students.created_head,New logins,כניסות חדשות,Management page: heading,
+assign.students.created_note,"These passwords are shown only now. Print the cards or write them down, then hide them.","הסיסמאות האלה מוצגות רק עכשיו. הדפיסו את הכרטיסים או רשמו אותן, ואז הסתירו.",Management page: note,
+assign.students.print_cards,Print login cards,הדפסת כרטיסי כניסה,Management page: button,
+assign.students.hide_passwords,Hide the passwords,הסתרת הסיסמאות,Management page: button,
+assign.cards.title,Torah Trainer login for {name},כניסה למאמן הקריאה בתורה עבור {name},Printed login card,template
+assign.cards.site,"Go to {url}, open the account button and choose “Student? Sign in with your username”.","היכנסו ל-{url}, פתחו את כפתור החשבון ובחרו ״תלמיד/ה? היכנסו עם שם המשתמש שלכם״.",Printed login card,template
+assign.classes.head,Classes,כיתות,Management page: heading,
+assign.classes.note,Optional. A class groups students and lets an assignment say who has not submitted yet.,לא חובה. כיתה מקבצת תלמידים ומאפשרת למשימה להראות מי עדיין לא הגיש/ה.,Management page: note,
+assign.classes.none,No classes yet.,עדיין אין כיתות.,Management page: empty,
+assign.classes.members,{n} students,{n} תלמידים,Management page: class line,template
+assign.classes.rename_btn,Rename,שינוי שם,Management page: button,
+assign.classes.rename_prompt,New name for the class:,שם חדש לכיתה:,Management page: prompt,
+assign.classes.delete_btn,Delete,מחיקה,Management page: button,
+assign.classes.delete_confirm,Delete the class “{name}”? Its students keep their accounts and recordings; they just have no class.,למחוק את הכיתה ״{name}״? התלמידים שומרים על החשבונות וההקלטות; הם פשוט נשארים ללא כיתה.,Management page: confirm,template
+assign.classes.new_label,New class name,שם כיתה חדשה,Management page: field,
+assign.classes.new_btn,Add class,הוספת כיתה,Management page: button,
+assign.classes.added,Class “{name}” added.,הכיתה ״{name}״ נוספה.,Management page: status,template
+assign.list.head,Assignments,משימות,Management page: heading,
+assign.list.note,"To make a new one, open the <a href=""/torah_trainer.html?assignments=1"">Torah Trainer</a>, choose the parsha, aliyah or verse range as usual, and press <strong>Assign this reading</strong>. Students enter the code word in the Trainer to see the portion and record it.","כדי ליצור משימה חדשה, פתחו את <a href=""/torah_trainer.html?assignments=1"">מאמן הקריאה בתורה</a>, בחרו פרשה, עלייה או טווח פסוקים כרגיל, ולחצו <strong>הקצאת הקריאה הזו</strong>. התלמידים מקלידים את מילת הקוד במאמן כדי לראות את הקטע ולהקליט אותו.",Management page: note (HTML),html
+assign.list.none,No assignments yet.,עדיין אין משימות.,Management page: empty,
+assign.list.open,Open,פתוחה,Management page: badge,
+assign.list.closed,Closed,סגורה,Management page: badge,
+assign.list.code_label,Code word:,מילת קוד:,Management page: label,
+assign.list.submitted_count,{n} submitted,{n} הגישו,Management page: fact,template
+assign.list.needs_count,{n} asked to re-record,{n} התבקשו להקליט מחדש,Management page: fact,template
+assign.list.approved_count,{n} approved,{n} אושרו,Management page: fact,template
+assign.list.due,due {date},להגשה עד {date},Management page: fact,template
+assign.list.class,class: {name},כיתה: {name},Management page: fact,template
+assign.list.peers_on,classmates may listen,חברים לכיתה רשאים להאזין,Management page: fact,
+assign.list.deletes_on,recordings deleted on {date},ההקלטות יימחקו ב-{date},Management page: fact,template
+assign.list.subs_btn,Recordings,הקלטות,Management page: button,
+assign.list.trainer_btn,Open in the Trainer,פתיחה במאמן,Management page: link button,
+assign.list.edit_btn,Edit,עריכה,Management page: button,
+assign.list.close_btn,Close,סגירה,Management page: button,
+assign.list.reopen_btn,Reopen,פתיחה מחדש,Management page: button,
+assign.list.close_confirm,"Close “{title}”? Students can no longer submit, and the recordings are deleted {days} days from now unless you reopen it. Download them first if you want to keep them.","לסגור את ״{title}״? התלמידים לא יוכלו עוד להגיש, וההקלטות יימחקו בעוד {days} ימים אלא אם תפתחו מחדש. הורידו אותן קודם אם תרצו לשמור.",Management page: confirm,template
+assign.list.delete_btn,Delete,מחיקה,Management page: button,
+assign.list.delete_confirm,Delete “{title}” with every recording and comment in it? This cannot be undone.,למחוק את ״{title}״ עם כל ההקלטות וההערות שבה? אי אפשר לבטל.,Management page: confirm,template
+assign.edit.head,Edit assignment,עריכת משימה,Management page: dialog,
+assign.edit.title,Title,כותרת,Management page: dialog field,
+assign.edit.code,Code word,מילת קוד,Management page: dialog field,
+assign.edit.regen,New code word,מילת קוד חדשה,Management page: dialog button,
+assign.edit.minutes,Maximum minutes,מקסימום דקות,Management page: dialog field,
+assign.edit.due,Due date (optional),תאריך הגשה (לא חובה),Management page: dialog field,
+assign.edit.retention,Keep recordings for (days after closing),שמירת ההקלטות (ימים אחרי הסגירה),Management page: dialog field,
+assign.edit.class,Class (optional),כיתה (לא חובה),Management page: dialog field,
+assign.edit.peers,Classmates may listen to each other’s latest recording (never to feedback),חברים לכיתה רשאים להאזין להקלטה האחרונה זה של זה (לעולם לא למשוב),Management page: dialog checkbox,
+assign.edit.cancel,Cancel,ביטול,Management page: dialog button,
+assign.edit.save,Save,שמירה,Management page: dialog button,
+assign.edit.title_empty,Give the assignment a title.,תנו כותרת למשימה.,Management page: validation,
+assign.edit.code_short,A code word needs at least 6 letters or digits.,מילת קוד צריכה לפחות 6 אותיות או ספרות.,Management page: validation,
+assign.subs.head,Recordings,הקלטות,Management page: heading,
+assign.subs.for,{title} · {reading} · code word {code},{title} · {reading} · מילת קוד {code},Management page: submissions subtitle,template
+assign.subs.filter_label,Show,הצגה,Management page: filter,
+assign.subs.filter_current,Latest recording per student,ההקלטה האחרונה של כל תלמיד/ה,Management page: filter option,
+assign.subs.filter_submitted,Waiting for feedback,ממתינות למשוב,Management page: filter option,
+assign.subs.filter_needs,Re-recording requested,התבקשה הקלטה מחדש,Management page: filter option,
+assign.subs.filter_approved,Approved,אושרו,Management page: filter option,
+assign.subs.filter_all,Every version,כל הגרסאות,Management page: filter option,
+assign.subs.download_all,Download all (.zip),הורדת הכול (.zip),Management page: button,
+assign.subs.back,Back to the list,חזרה לרשימה,Management page: button,
+assign.subs.not_submitted,{n} of {of} have not submitted yet:,{n} מתוך {of} עדיין לא הגישו:,Management page: line,template
+assign.subs.all_submitted,All {n} have submitted.,כל {n} הגישו.,Management page: line,template
+assign.subs.none_match,No recordings match this filter.,אין הקלטות שמתאימות למסנן הזה.,Management page: empty,
+assign.subs.none,No recordings yet.,עדיין אין הקלטות.,Management page: empty,
+assign.subs.status_pending,upload did not finish,ההעלאה לא הושלמה,Management page: badge,
+assign.subs.status_approved,approved,אושר,Management page: badge,
+assign.subs.status_needs,re-recording requested,התבקשה הקלטה מחדש,Management page: badge,
+assign.subs.status_submitted,waiting for feedback,ממתין למשוב,Management page: badge,
+assign.subs.unknown_student,(student removed),(התלמיד/ה הוסר/ה),Management page: row,
+assign.subs.version,take {n},הקלטה {n},Management page: row,template
+assign.subs.older,older version,גרסה ישנה,Management page: row,
+assign.subs.play_btn,Play,השמעה,Management page: button,
+assign.subs.feedback_label,Feedback for the student,משוב לתלמיד/ה,Management page: field,
+assign.subs.request_rerecord,Ask for a re-recording,בקשת הקלטה מחדש,Management page: checkbox,
+assign.subs.save_feedback,Save feedback,שמירת המשוב,Management page: button,
+assign.subs.feedback_saved,Feedback saved.,המשוב נשמר.,Management page: status,
+assign.subs.approve_btn,Approve,אישור,Management page: button,
+assign.subs.unapprove_btn,Undo approval,ביטול האישור,Management page: button,
+assign.subs.delete_btn,Delete recording,מחיקת ההקלטה,Management page: button,
+assign.subs.delete_confirm,Delete {name}’s recording “{title}” and its audio? This cannot be undone.,למחוק את ההקלטה ״{title}״ של {name} ואת השמע שלה? אי אפשר לבטל.,Management page: confirm,template
+assign.subs.deleted,Recording deleted.,ההקלטה נמחקה.,Management page: status,
+assign.subs.loading_audio,Loading…,טוען…,Management page: play button while fetching,
+assign.subs.audio_aria,{name}: {title},{name}: {title},Management page: audio element,aria; template
+assign.subs.zip_progress,Fetching recording {i} of {n}…,מביא הקלטה {i} מתוך {n}…,Management page: status,template
+assign.subs.zip_done,Downloaded {n} recordings as a .zip ({failed} could not be fetched).,הורדו {n} הקלטות כקובץ .zip ({failed} לא ניתן היה להביא).,Management page: status,template
+assign.error.offline,This needs an internet connection. Check the connection and try again.,נדרש חיבור לאינטרנט. בדקו את החיבור ונסו שוב.,Assignments error,shared
+assign.error.too_many,"Too many tries. Wait ten minutes, then try the code word again.",יותר מדי ניסיונות. המתינו עשר דקות ונסו שוב את מילת הקוד.,Assignments error,shared
+assign.error.not_student,Only a student account can enter a code word.,רק חשבון תלמיד/ה יכול להקליד מילת קוד.,Assignments error,shared
+assign.error.teacher_only,Only a teacher account can do this.,רק חשבון מורה יכול לעשות זאת.,Assignments error,shared
+assign.error.username_taken,That username is already taken. Choose another.,שם המשתמש הזה כבר תפוס. בחרו אחר.,Assignments error,shared
+assign.error.username_invalid,"A username is 3 to 30 lowercase letters, digits and dots.","שם משתמש הוא 3 עד 30 אותיות לטיניות קטנות, ספרות ונקודות.",Assignments error,shared
+assign.error.password_invalid,A password is 8 to 72 characters.,סיסמה היא 8 עד 72 תווים.,Assignments error,shared
+assign.error.name_invalid,Each student needs a name.,כל תלמיד/ה צריך/ה שם.,Assignments error,shared
+assign.error.too_many_students,An account can have at most 200 students.,חשבון יכול להכיל לכל היותר 200 תלמידים.,Assignments error,shared
+assign.error.code_taken,You already use that code word for another assignment. Choose a different one.,מילת הקוד הזו כבר משמשת למשימה אחרת שלכם. בחרו אחרת.,Assignments error,shared
+assign.error.out_of_range,"Something in the form is out of range. Check the code word (6 to 40 letters and digits), the minutes and the dates.","משהו בטופס מחוץ לטווח. בדקו את מילת הקוד (6 עד 40 אותיות וספרות), את הדקות ואת התאריכים.",Assignments error,shared
+assign.error.refused,That is not allowed for this account.,הפעולה הזו אינה מותרת לחשבון הזה.,Assignments error,shared
+assign.error.not_found,That item no longer exists.,הפריט הזה כבר לא קיים.,Assignments error,shared
+assign.error.closed,This assignment is closed; it no longer takes recordings.,המשימה הזו סגורה; היא כבר לא מקבלת הקלטות.,Assignments error,shared
+assign.error.not_accepted,This recording cannot be replaced any more. Record a new one instead.,אי אפשר עוד להחליף את ההקלטה הזו. הקליטו חדשה במקום.,Assignments error,shared
+assign.error.too_large,The recording is too long for this assignment. Record a shorter one.,ההקלטה ארוכה מדי למשימה הזו. הקליטו קצרה יותר.,Assignments error,shared
+assign.error.unsupported_type,This browser records in a format the server does not accept.,הדפדפן הזה מקליט בפורמט שהשרת לא מקבל.,Assignments error,shared
+assign.error.missing,The audio for this recording is gone. Ask for a new recording.,השמע של ההקלטה הזו נעלם. בקשו הקלטה חדשה.,Assignments error,shared
+assign.error.mic_denied,"The microphone is blocked. Allow the microphone for this site in the browser’s address bar, then try again.",המיקרופון חסום. אפשרו מיקרופון לאתר הזה בשורת הכתובת של הדפדפן ונסו שוב.,Assignments error,shared
+assign.error.no_mic,"No microphone was found. Plug one in or check the sound settings, then try again.",לא נמצא מיקרופון. חברו אחד או בדקו את הגדרות השמע ונסו שוב.,Assignments error,shared
+assign.error.unsupported,"This browser cannot record audio. Try a current Chrome, Edge, Firefox or Safari.","הדפדפן הזה לא יכול להקליט שמע. נסו Chrome, Edge, Firefox או Safari עדכניים.",Assignments error,shared
+assign.error.mic_failed,The microphone stopped working. Try again.,המיקרופון הפסיק לעבוד. נסו שוב.,Assignments error,shared
+assign.error.aborted,The upload was stopped.,ההעלאה הופסקה.,Assignments error,shared
+assign.error.generic,Something went wrong. Try again in a moment.,משהו השתבש. נסו שוב בעוד רגע.,Assignments error,shared
