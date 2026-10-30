@@ -522,6 +522,9 @@ body.dark .tt-handout-shem-note { color:var(--gold-light); }
 /* Copy All's inline "select a verse first" reason — the button is aria-disabled rather than
    dead, and this states why (never an alert()). */
 #ttCopyAllNote:empty { position:absolute; }   /* the range note's rule, for the same reason */
+/* The Audio tab's two notes, for the same reason (pattern live-region-display-none-while-empty): empty, they leave the
+   drawer's flow, never [hidden], so the first "no recording" or "pitch unavailable" is announced. */
+#optRecSrcNote:empty, #optPitchStatus:empty { position:absolute; }
 #ttCopyRichNote[hidden] { display:none; }   /* [hidden] must beat the flex row, as for #ttCopyBulkPanel */
 #ttCopyPrereqNote[hidden] { display:none; }   /* same trap */
 #ttCopyAllBtn[aria-disabled="true"], #ttBulkDockCopy[aria-disabled="true"], #ttFavSaveBtn[aria-disabled="true"] { opacity:0.55; cursor:not-allowed; }
@@ -2745,7 +2748,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
             <input type="radio" name="optRecSrc" id="rsTotal" value="totaltorah"><label for="rsTotal" data-i18n="torah.recsrc.totaltorah">Total Torah — Cantor Arianne Brown, Adas Israel</label>
           </span>
         </div>
-        <div id="optRecSrcNote" role="status" aria-live="polite" style="font-size:0.7rem;color:var(--muted);margin-top:-4px;margin-bottom:8px;line-height:1.4;" data-i18n="torah.recsrc.none_note" hidden>No Total Torah recording for this reading yet.</div>
+        <div id="optRecSrcNote" role="status" aria-live="polite" style="font-size:0.7rem;color:var(--muted);margin-top:-4px;margin-bottom:8px;line-height:1.4;"></div>
         <div class="slider-row">
           <label for="optKaraokeRate" data-i18n="torah.audio.speed_chant">Chant</label>
           <input type="range" id="optKaraokeRate" min="0.5" max="1.5" step="0.05" value="1.0">
@@ -2760,7 +2763,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
           <span class="sval" id="optKaraokePitchVal">0</span>
           <button class="sreset" onclick="resetKaraokePitch()" type="button" title="Restore default" aria-label="Restore default" data-i18n-aria-label="torah.display.restore_default" data-i18n-title="torah.display.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
         </div>
-        <div id="optPitchStatus" role="status" aria-live="polite" style="font-size:0.7rem;color:var(--muted);margin-top:-4px;margin-bottom:8px;line-height:1.4;" hidden></div>
+        <div id="optPitchStatus" role="status" aria-live="polite" style="font-size:0.7rem;color:var(--muted);margin-top:-4px;margin-bottom:8px;line-height:1.4;"></div>
         <div class="slider-row">
           <label for="optTTSRate" data-i18n="torah.audio.speed_read">Read</label>
           <input type="range" id="optTTSRate" min="0.5" max="1.5" step="0.05" value="0.75">
@@ -7797,7 +7800,7 @@ function syncRecSrcControls() {
   if (ctrl) ctrl.hidden = !offered;
   const note = document.getElementById('optRecSrcNote'), ttDiv = document.getElementById('optRecCreditTT'), pocketDiv = document.getElementById('optRecCreditPocket'), karNote = document.getElementById('kfTTNote');
   const footPocket = document.getElementById('ttFooterAudioPocket'), footTT = document.getElementById('ttFooterAudioTT');
-  if (!offered) { if (note) note.hidden = true; if (ttDiv) ttDiv.hidden = true; if (pocketDiv) pocketDiv.hidden = false; if (karNote) karNote.hidden = true; if (footPocket) footPocket.hidden = false; if (footTT) footTT.hidden = true; return; }
+  if (!offered) { if (note) note.textContent = ''; if (ttDiv) ttDiv.hidden = true; if (pocketDiv) pocketDiv.hidden = false; if (karNote) karNote.hidden = true; if (footPocket) footPocket.hidden = false; if (footTT) footTT.hidden = true; return; }
   const ents = ttReadingEntries(true);
   const none = ents.count === 0 && !(!ttManifest && _ttManifestLoad);   // still loading is not "no recording"
   const total = document.getElementById('rsTotal'), pocket = document.getElementById('rsPocket');
@@ -7811,7 +7814,7 @@ function syncRecSrcControls() {
     sel.querySelector('option[value="totaltorah"]').disabled = none;
     sel.title = I18n.t(none ? 'torah.recsrc.none_note' : 'torah.recsrc.picker_title');
   }
-  if (note) note.hidden = !none;
+  if (note) note.textContent = none ? I18n.t('torah.recsrc.none_note') : '';   // empty, it stays a live region out of the flow (:empty)
   if (ttDiv) {
     ttDiv.hidden = !active;
     if (active) {
@@ -8385,7 +8388,6 @@ function pitchUnavailable(reason) {
     const key = 'torah.audio.pitch_' + reason;   // unsupported | load_failed | blocked
     st.textContent = I18n.t(key);
     st.dataset.i18nKey = key;   // applyI18n re-resolves it (a pre-ready write, a language switch)
-    st.hidden = false;
   }
   syncMiniRate();
 }

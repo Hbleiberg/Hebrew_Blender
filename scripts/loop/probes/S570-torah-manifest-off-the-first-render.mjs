@@ -62,7 +62,7 @@ for (const arm of ['pocket', 'totaltorah']) for (const [lang, dark, w] of [['en'
   await page.goto(BASE + '/torah_trainer.html', { waitUntil: 'domcontentloaded' });
   await page.waitForFunction(() => window.__firstWordAt > 0, null, { timeout: HOLD + 20000 });
   const state = () => { const sel = document.getElementById('ttRecSrcBar'), opt = sel && sel.querySelector('option[value="totaltorah"]');
-    return { loaded: !!(typeof ttManifest !== 'undefined' && ttManifest && Object.keys(ttManifest).length), value: sel && sel.value, disabled: !!(opt && opt.disabled), note: !document.getElementById('optRecSrcNote').hidden }; };
+    return { loaded: !!(typeof ttManifest !== 'undefined' && ttManifest && Object.keys(ttManifest).length), value: sel && sel.value, disabled: !!(opt && opt.disabled), note: !!document.getElementById('optRecSrcNote').textContent.trim() }; };   // the note is empty, not [hidden], when there is a recording (S574)
   const early = await page.evaluate(state), firstWordAt = await page.evaluate(() => window.__firstWordAt);
   await page.waitForFunction(() => typeof ttManifest !== 'undefined' && ttManifest && Object.keys(ttManifest).length > 0, null, { timeout: HOLD + 20000 });
   await page.waitForTimeout(300);
