@@ -482,6 +482,23 @@ create policy "submissions: teacher deletes for own assignments"
   on public.submissions for delete to authenticated
   using (public.app_role() = 'teacher' and public.owns_assignment(assignment_id));
 
+-- What the Worker's daily reconcile asks (service role only): the rows whose assignment has been closed for
+-- longer than its retention period. The Worker deletes each one's object first, then the rows, in chunks.
+create or replace function public.retention_due()
+returns table (id uuid, r2_key text)
+language sql
+stable
+security invoker
+set search_path = ''
+as $$
+  select s.id, s.r2_key
+    from public.submissions s join public.assignments a on a.id = s.assignment_id
+   where a.closed_at is not null and a.closed_at + make_interval(days => a.retention_days) < now()
+   limit 1000;
+$$;
+revoke all on function public.retention_due() from public, anon, authenticated;
+grant execute on function public.retention_due() to service_role;
+
 -- ═══════════════════════════════ 7. feedback ═══════════════════════════════
 -- One overall comment per submission, by the teacher of its assignment. The student reads their own; a
 -- classmate never does (no policy says so). Asking for a re-recording sets the submission's status, through a

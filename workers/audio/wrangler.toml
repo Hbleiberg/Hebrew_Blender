@@ -1,0 +1,44 @@
+# IvritSuite — the audio Worker for Torah Trainer reading assignments (see README.md for every step).
+#
+# Nothing in this file is secret. The one secret, the Supabase project's secret key used only by the daily
+# reconcile, is set with `wrangler secret put SUPABASE_SERVICE_ROLE_KEY` and never written down anywhere.
+
+name = "ivritsuite-recordings"
+main = "worker.js"
+compatibility_date = "2025-09-01"
+
+# Settings the Worker reads. The anon key is the same public "publishable" key every page of the site ships
+# (js/supabase-config.js); the Worker sends it as the `apikey` header beside each caller's own token.
+[vars]
+SUPABASE_URL = "https://hhkmqwpjsyxdeuhvcyis.supabase.co"
+SUPABASE_ANON_KEY = "sb_publishable_pqTQ0XtPQpcRWYs9sNTVNQ_IlV3GaG8"
+ALLOWED_ORIGINS = "https://ivritsuite.com,https://www.ivritsuite.com,http://localhost:8080"
+
+# The private bucket. The Worker is its only client — no public access, no r2.dev URL, no custom domain.
+[[r2_buckets]]
+binding = "RECORDINGS"
+bucket_name = "torahtrainer-recordings"
+
+# Per-person request limits (approximate, per Cloudflare location — abuse damping; the database's policies are
+# the real boundary). `period` may only be 10 or 60.
+[[ratelimits]]
+name = "RL_UPLOAD"
+namespace_id = "1001"
+simple = { limit = 20, period = 60 }
+
+[[ratelimits]]
+name = "RL_AUDIO"
+namespace_id = "1002"
+simple = { limit = 120, period = 60 }
+
+[[ratelimits]]
+name = "RL_DELETE"
+namespace_id = "1003"
+simple = { limit = 30, period = 60 }
+
+# The daily reconcile (03:17 UTC): stale uploads, orphaned objects, retention, the attempt log.
+[triggers]
+crons = ["17 3 * * *"]
+
+[observability]
+enabled = true
