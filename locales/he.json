@@ -146,7 +146,7 @@
   "assign.error.unsupported": "הדפדפן הזה לא יכול להקליט שמע. נסו Chrome, Edge, Firefox או Safari עדכניים.",
   "assign.error.unsupported_type": "הדפדפן הזה מקליט בפורמט שהשרת לא מקבל.",
   "assign.error.username_invalid": "שם משתמש הוא 3 עד 30 אותיות לטיניות קטנות, ספרות ונקודות.",
-  "assign.error.username_taken": "שם המשתמש הזה כבר תפוס. בחרו אחר.",
+  "assign.error.username_taken": "שם המשתמש הזה כבר בשימוש של תלמיד במקום אחר באתר (שמות משתמש משותפים לכל המורים). הוסיפו כמה ספרות או בחרו אחר, ואז לחצו שוב על יצירה.",
   "assign.framed.body": "כניסות של תלמידים והקלטות נפתחות רק ב-ivritsuite.com, כך שאיש לא יוכל להניח מעליהן דף מזויף.",
   "assign.framed.head": "אי אפשר להציג את הדף הזה בתוך אתר אחר",
   "assign.framed.link": "פתיחת הדף ←",

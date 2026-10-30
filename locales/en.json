@@ -146,7 +146,7 @@
   "assign.error.unsupported": "This browser cannot record audio. Try a current Chrome, Edge, Firefox or Safari.",
   "assign.error.unsupported_type": "This browser records in a format the server does not accept.",
   "assign.error.username_invalid": "A username is 3 to 30 lowercase letters, digits and dots.",
-  "assign.error.username_taken": "That username is already taken. Choose another.",
+  "assign.error.username_taken": "That username is already used by a student somewhere on the site (usernames are shared across every teacher). Add a couple of digits or pick another, then press Create again.",
   "assign.framed.body": "Student logins and recordings open only on ivritsuite.com, so no one can place a fake page over them.",
   "assign.framed.head": "This page can’t be shown inside another site",
   "assign.framed.link": "Open the page →",
