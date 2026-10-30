@@ -340,9 +340,18 @@ upgrade of an older device's sync memory (nothing deleted, nothing removed from 
   quietly skip their signed-in scenarios instead, so a pass without it is only a partial pass. The fixture
   is `npm pack @supabase/supabase-js@<version>` → `package/dist/umd/supabase.js`, and it must be the
   version you just pinned. Full table: `docs/reference/ops.md` → *Backend smokes*.
-- **A database change** is a new `db/migrations/NNNN_<name>.sql` applied once; **a change to the delete-account
-  function** is a redeploy — both in `db/README.md`. Never a `supabase/` folder (the GitHub integration would open
-  a paid preview branch).
+- **A database change** is a new `db/migrations/NNNN_<name>.sql` applied once; **a change to an Edge Function**
+  (`delete-account`, `manage-students`) is a redeploy — both in `db/README.md`. Never a `supabase/` folder (the
+  GitHub integration would open a paid preview branch).
+- **Torah Trainer reading assignments** (student logins, recordings): the recordings live in the private Cloudflare
+  R2 bucket `torahtrainer-recordings` behind the Worker `recordings.ivritsuite.com` (`workers/audio/`); the setup —
+  the bucket, `wrangler login`, the one secret, the deploy, the custom domain, the bucket's two lifecycle rules, the
+  `students.ivritsuite.com` null-MX and SPF records, the Supabase password settings — is `workers/audio/README.md`,
+  step by step. A change to `worker.js` is live only after `npx wrangler deploy` there; `npx wrangler tail` watches
+  it, and its nightly tidy-up prints one `reconcile {…}` line. The eighth smoke, `node scripts/smoke-assignments.mjs
+  --sdk <supabase.js>` (port 8086), replays both pages end to end; `node scripts/test-rls-assignments.mjs` proves the
+  policies on a throwaway local Postgres; `cd workers/audio && npm test` the Worker. The teacher's how-to:
+  `docs/reading-assignments-teacher-guide.md`.
 - **Restoring a person's data from their *Download everything* zip:** the `.ivrit` inside goes through the home
   page's *Import / Export All Settings → Import* (choose *Merge*; it restores every tool's saved items on that
   device); each `font-projects/<name>/<name>.hebrewfont` opens in the Font Maker through *Load Project ▾ → 📂 Load
@@ -390,7 +399,8 @@ upgrade of an older device's sync memory (nothing deleted, nothing removed from 
 | `sw.js` | Service worker — precaches the app shell for offline use (cache `ivritsuite-v<VERSION>`) |
 | `manifest.webmanifest` | PWA manifest (name, icons, theme/background color) |
 | `js/i18n.js` | Shared i18n runtime (`window.I18n`) loaded by every page — the EN / עברית switcher, `data-i18n*` filling, RTL flip |
-| `js/supabase-config.js`, `js/ivrit-account.js`, `js/ivrit-saves.js`, `js/ivrit-projects.js` | The optional account layer — public project settings; sign-in, the header chip and the required-name step; the account's saves (brought onto the device at load, written through two seconds after an edit, one status line, the sign-out removal); Font Maker cloud projects; the only files that talk to Supabase (see *Accounts*) |
+| `js/supabase-config.js`, `js/ivrit-account.js`, `js/ivrit-saves.js`, `js/ivrit-projects.js`, `js/ivrit-assignments.js` | The optional account layer — public project settings; sign-in, the header chip and the required-name step (and the student username + password form the Torah Trainer offers behind `?assignments=1`); the account's saves (brought onto the device at load, written through two seconds after an edit, one status line, the sign-out removal); Font Maker cloud projects; Torah Trainer reading assignments (the tables, the `manage-students` function, the audio Worker, the recorder); the only files that talk to Supabase (see *Accounts*) |
+| `reading_assignments.html` (+ `workers/audio/`, `db/functions/manage-students/`, `db/tests/`, `scripts/test-rls-assignments.mjs`, `scripts/smoke-assignments.mjs`, `docs/reading-assignments-teacher-guide.md`) | **Unlisted while new** — a teacher's page for Torah Trainer reading assignments: student logins (printable cards), classes, assignments under a code word, the recordings students submit with feedback, re-record requests, approval, deletion and a zip. The Worker in `workers/audio/` (its README is the setup guide) stands in front of the private R2 bucket the recordings live in; the function creates the logins; the two test runners prove the policies and the Worker without the live project; the smoke replays both pages end to end |
 | `js/tt-pitch-worklet.js` | The Torah Trainer's chant pitch shifter — an AudioWorklet processor (time-domain WSOLA) that transposes the PocketTorah recording by whole semitones without changing its tempo; same-origin, precached and served cache-first, so an edit needs the `sw.js` `VERSION` bump |
 | `js/hebrew-calendar.js` (+ `scripts/smoke-hebrew-calendar.mjs`) | The Torah Trainer's Hebrew calendar (`window.HebCal`): the date converter, the weekly parasha for any Shabbat on the Israel and Diaspora schedules, and the triennial-cycle helpers — no network, so finding an ordinary week's parasha asks Sefaria nothing. The smoke proves it without a browser (`--hebcal` adds a check against Hebcal, installed for the check and never committed) |
 | `js/trope-staff.js` (+ `scripts/smoke-trope-staff.mjs`) | The one trope staff engine, loaded by the Trope Tutor (Learn cards, Phrases tab) and the Torah Trainer (the Trope staff layout): the `TROPES` taxonomy (kept identical with `build-trope-index.mjs`'s), the pitch model and the staff drawing. The smoke checks the Torah Trainer's reading-staff half without a browser |

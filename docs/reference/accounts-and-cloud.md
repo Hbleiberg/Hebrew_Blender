@@ -821,6 +821,85 @@ localStorage dump byte-identical to a control run with the three account scripts
 session with the API unreachable (the status line fails soft, no name step and no card), and Hebrew + dark at
 800 px.
 
+## Reading assignments (`js/ivrit-assignments.js`, migration 0008, `workers/audio/`)
+
+The one feature in which a student's work reaches the account layer. A teacher creates student logins, assigns the
+reading on the Torah Trainer's screen under a code word, and listens to what students record; the student side lives
+in `torah_trainer.html` behind `?assignments=1`, the teacher's management in `reading_assignments.html` (unlisted:
+`noindex`, not in the sitemap, `llms.txt` or `CORE_ASSETS`; covered by `scripts/smoke-assignments.mjs` instead of
+`smoke-tools`). The audio never enters Supabase: it lives in a private Cloudflare R2 bucket behind the Worker in
+`workers/audio/` (its README is the setup guide). What the policy text promises about it: `privacy.legal.ferpa_norecords`.
+
+| Piece | File | Role |
+|---|---|---|
+| the module | `js/ivrit-assignments.js` (`window.IvritAssignments`) | the fifth file allowed to talk to Supabase: the assignment tables through `IvritAccount.client()`, the `manage-students` Edge Function, and the Worker (bearer `fetch`; the upload as an `XMLHttpRequest` for progress). Also the code-word and passphrase generators, the `MediaRecorder` recorder, and `errorText`. Loaded by the Trainer only when the flag is on, and by the management page |
+| the account module | `js/ivrit-account.js` | `signIn('student', {username, password})` → `signInWithPassword` on `<username>@students.ivritsuite.com`; `accessToken()`; `role()` / `storedRole()` from the token's `app_metadata.role`; the chip's *Student? Sign in with your username* form when the page called `init({ studentSignIn: true })` (the Trainer with the flag; a late `init()` only adds options); no name step for a student; `signIn('email')` refuses the student domain |
+| the saves module | `js/ivrit-saves.js` | inert for a student account: `attach()` returns `null`, a sign-in by a student after an anonymous attach hydrates nothing, the status line hides, no hook, no card, no sync memory |
+| the schema | `db/migrations/0008_reading_assignments.sql` | `profiles.role` (mirror), `classes`, `students`, `assignments`, `assignment_members`, `submissions`, `feedback`, `code_attempts`; `claim_assignment()`, `retention_due()`, the definer helpers and the guards — proved by `node scripts/test-rls-assignments.mjs` (157 cases on a throwaway cluster) |
+| the functions | `db/functions/manage-students/`, `db/functions/delete-account/` | creating, resetting and removing student logins with the secret key; a teacher's deletion removes their students' auth users first and refuses a student caller |
+| the Worker | `workers/audio/worker.js` | `PUT /upload/{id}`, `GET /audio/{id}`, `POST /delete`, the daily reconcile; 67 local cases in `workers/audio/test/run.mjs` |
+
+**Who is a student.** The role rides in the access token (`app_metadata.role = 'student'`, written only by the Edge
+Function through the admin API) and is mirrored into `profiles.role` by the sign-up trigger; every policy reads
+`public.app_role()` (the token, no table), the Worker reads the same claim, and the browser modules read
+`user.app_metadata.role`. Nothing a client can write changes it. A student's synthetic address under
+`students.ivritsuite.com` receives no mail (a null MX record); the chip never offers a code to it.
+
+**Who sees what** (the policies, all `to authenticated` on `(select auth.uid())`; the two cross-table questions —
+membership and ownership — go through `security definer` helpers that read only rows tied to the caller, because
+assignments asking memberships and memberships asking assignments under RLS is a cycle Postgres refuses):
+
+| Table | A student | A teacher |
+|---|---|---|
+| `profiles` | own | own + own students' |
+| `classes` | — | own |
+| `students` | own row | own students; `class_id` only (guard) |
+| `assignments` | the ones joined — never by code | own |
+| `assignment_members` | own | own assignments'; un-enrol |
+| `submissions` | own; insert while a member and the assignment is open; `title` and `upload_status` pending → uploaded (guard); classmates' current uploads only when `peers_can_listen` | own assignments'; `status` only (guard); delete |
+| `feedback` | on own submissions | own assignments' |
+| `saves`, `font_projects`, `storage.objects` | **refused** (restrictive policies) | as before |
+
+**Column guards are triggers, not grants** — a student and a teacher are both the Postgres role `authenticated`, so
+a column grant cannot tell them apart and an RLS `with check` cannot see the old row. `submissions_guard()` and
+`students_guard()` compare old and new per caller; `submissions_before_insert()` sets `version`, `is_current` and the
+object key `submissions/{assignment}/{student}/{id}.{ext}` (a client never names a key); `submissions_after_delete()`
+makes the latest remaining take current again; `feedback_apply_status()` (definer, re-checking the teacher) moves the
+submission to `needs_rerecord` and back. `claim_assignment(code)` is the one way to join: students only, the code
+matched the way a child types it (case, spaces and dashes ignored) against their own teacher's open assignments, a
+miss answered with **no rows** (an exception would roll the attempt row back), ten misses in ten minutes refused
+with `too_many_attempts`, a hit clearing the misses. `code_attempts` has no API grants (the reconcile prunes it).
+
+**The Worker** verifies the token itself (ES256 against the project's JWKS: `alg`, `kid`, `exp`, `iss`, `aud` and
+`role` both `authenticated`, `is_anonymous`; no HS256 fallback) and then asks PostgREST **as the caller** (`apikey`
+= the publishable key, `Authorization` = the caller's token), so the policies above decide every question; "not
+yours" and "does not exist" both answer `not_found`. An upload requires `Content-Length` (capped at the assignment's
+minutes × 32 kbps × 1.5 + 1 MB, never above 16 MB) and streams through a `FixedLengthStream` into the bucket binding —
+a short or long body stores nothing — then marks the row uploaded as the student with the true size. Playback is a
+bearer `fetch` played from a `blob:` URL: no shareable audio address exists. Delete (teacher only) removes the object,
+then the row. The daily reconcile is the only use of the secret key (a Worker secret): stale pending rows fixed or
+dropped, orphaned objects deleted, `retention_due()` applied, the attempt log pruned — batched inside the free plan's
+budget. `ALLOWED_ORIGINS` and the rate limits are in `wrangler.toml`.
+
+**The pages.** The Trainer's region (`#ttAssign`) shows one of three faces by session state and role: signed out (the
+chip's two paths), teacher (*Assign this reading…* → the dialog on `resolveRef()`'s ref, Torah ranges only, with a
+generated code word; the link to the management page) and student (the code-word form; the assignment line; the
+recorder — Record / Stop / Play it back / Record again / a name / Submit, one `aria-live` line for state, elapsed
+time and the upload's quarter steps, `beforeunload` while a take is unsubmitted; *My recordings* with the teacher's
+feedback and *Re-record* when asked; *Classmates' recordings* when allowed). An assigned range loads through
+`parseSharedRef` into the custom scope like a `?ref=` link. The management page: students from typed names or a
+class list on the device (Dashboard rosters, Name Tags lists, Flash Cards profiles), a preview with editable usernames
+and passphrases, the created table and printable login cards (the one time a password is visible), reset and remove;
+classes; assignments (edit, close with the deletion date, reopen, delete, *Open in the Trainer*); recordings per
+assignment (filter, who has not submitted, play, feedback + *Ask for a re-recording*, approve, delete, *Download all*
+as a zip with a CSV). Nothing user-entered reaches `innerHTML` on either page.
+
+**Proving it.** `node scripts/test-rls-assignments.mjs` (the policies, on a local throwaway Postgres);
+`cd workers/audio && npm test` (the Worker under `wrangler dev --local` against a fake Supabase);
+`node scripts/smoke-assignments.mjs --sdk <supabase.js>` (port 8086: both pages end to end against a fake cloud and
+a fake Worker with Chromium's fake microphone — 86 checks, keyboard-only included). Applying 0008, deploying the two
+functions, and the Worker's own deploy are live actions outside every smoke (`workers/audio/README.md`, `db/README.md`).
+
 ## Font Maker projects (`js/ivrit-projects.js`)
 
 A project is one `font_projects` row (the catalogue entry: name, family, style, schema version, letters
