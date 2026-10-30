@@ -386,7 +386,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Awaiting the maintainer (an action or an answer only the maintainer can give; a session that resolves one moves it to Done)
 
-- [ ] P1 (**NEW — the reading-assignments build's live actions; BACKEND BOUNDARY**) | db/migrations/0008_*, db/functions/manage-students/, db/functions/delete-account/, workers/audio/ | **Nothing of the feature works live until: 0008 applied (read back; `Live?` yes), `manage-students` deployed and `delete-account` redeployed, the Cloudflare steps in `workers/audio/README.md` done, the `students.ivritsuite.com` null-MX + SPF records added, the Supabase password settings on.** Then an iPad hand test (mic prompt in the PWA, an `audio/mp4` round trip, WebM playback on Safari < 17.4). | found this build
+- [ ] P1 (**NEW — the reading-assignments build's live actions; BACKEND BOUNDARY**) | db/migrations/0008_*, db/functions/manage-students/, db/functions/delete-account/, workers/audio/ | **Nothing of the feature works live until: 0008 applied (read back; `Live?` yes), `manage-students` deployed and `delete-account` redeployed, the Cloudflare steps in `workers/audio/README.md` done, the `students.ivritsuite.com` null-MX + SPF records added, the Supabase password settings on.** Then an iPad hand test (the mic prompt in the PWA, `audio/mp4`, WebM playback on Safari < 17.4). | found this build
 
 - [ ] P4 (**NEW S577 N — GATE 2: a phone's default layout; deferred unattended; `n577/sheets/atlas-phone-i13.png`**) | trope_atlas.html | **On a phone the melody table opens as the Grid, where a figure shows its clef only; Stacked shows whole figures**: open Stacked under 560px while no layout is stored? | found S577
 
