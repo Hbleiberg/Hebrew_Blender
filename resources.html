@@ -515,6 +515,13 @@ body.dark #fontToast{background:#2a4070;}
      Suite-wide across all six chrome pages (privacy + terms took it first at 44bd07c) -- the
      rule is the same on every one, so a future page copies one line, not a judgement call. */
   header .hright { display: none !important; }
+  /* A card cut at a sheet foot put its title on one sheet and its description, grades and link on the next (6–8 of the
+     42 in every language and paper size). Whole cards cost a sheet, which the filter bar pays back: its chips, the
+     Links / Fonts toggle and Suggest a Resource are dead on paper, and the count line and each card's own category and
+     grades still say what was printed. The footer moves whole rather than leave its last link alone on a sheet. */
+  .resource-card { break-inside: avoid; }
+  .view-toggle, .filter-bar { display: none !important; }
+  footer { break-inside: avoid; }
 }
 </style>
 </head>

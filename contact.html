@@ -303,6 +303,8 @@ footer a { display: inline-block; padding-block: 5px; }
      Suite-wide across all six chrome pages (privacy + terms took it first at 44bd07c) -- the
      rule is the same on every one, so a future page copies one line, not a judgement call. */
   header .hright { display: none !important; }
+  /* On A4 the Support tile's title printed alone at the first sheet's foot, its text and links overleaf. */
+  .cs-tile { break-inside: avoid; }
 }
 /* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner, parsha_emojis, name_tags, trope_atlas, the generated parsha/ pages (copied from parsha_emojis by scripts/build-parsha-pages.mjs) (docs/reference/shared-components.md → Header icons).
    The header controls and the in-page control buttons (play, pause, stop, reset, retry, loop, sound) carry inline
