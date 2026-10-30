@@ -365,7 +365,9 @@ body.dark .at-card { background:var(--navy-deep); }
 .at-card .trad { display:grid; grid-template-columns:170px minmax(0, 1fr); gap:10px; align-items:center; padding:4px 0; border-top:1px solid var(--border); }
 .at-card .trad .lab { font-size:0.8rem; color:var(--muted); line-height:1.25; }
 .at-card .trad .lab b { color:var(--text); display:block; font-size:0.84rem; }
-@media (max-width:560px) { .at-card .trad { grid-template-columns:1fr; gap:2px; } }
+/* One column on a phone, never wider than the card: a plain 1fr kept its figure's full width as its minimum, so every
+   card took the longest figure's (659px) and the whole page panned sideways; a longer figure scrolls in its own row. */
+@media (max-width:560px) { .at-card .trad { grid-template-columns:minmax(0, 1fr); gap:2px; } }
 .at-flash { animation:at-flash 1.6s ease-out 1; }
 @keyframes at-flash { from { background:rgba(201,146,42,.3); } to { background:transparent; } }
 .at-flash > td { animation:at-flash 1.6s ease-out 1; }
