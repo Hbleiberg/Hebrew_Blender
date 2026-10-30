@@ -684,6 +684,12 @@ try {
     await page.locator('#cvHost tbody tr', { hasText: 'Tal' }).locator('td .btn').first().click();
     check('C: Add enrols the student (a membership row) and the cell turns to Assigned', await waitText(page, '#cvStatus', /Tal was added to/) && cloud.t.assignment_members.some(m => m.student_id === cloud.t.students.find(s => s.username === 'tal.r').id) && await page.evaluate(() => { const tr = [...document.querySelectorAll('#cvHost tbody tr')].find(r => r.querySelector('th').textContent === 'Tal'); return tr && tr.querySelector('td .badge') && tr.querySelector('td .badge').textContent === 'Assigned'; }));
     await page.screenshot({ path: path.join(SHOTS, 'C-teacher-page-grid.png'), fullPage: true });
+    // a second Noam: both Noams carry their username in the grid, Tal stays plain
+    cloud.manageStudents({ action: 'create', students: [{ display_name: 'Noam', username: 'noam.second', password: 'river-cat-56' }] }, { id: T1, role: 'teacher' });
+    await page.click('#studentsRefresh');
+    await page.waitForFunction(() => document.querySelectorAll('#cvHost tbody tr').length === 4, null, { timeout: 15000 });
+    const labels = await page.evaluate(() => [...document.querySelectorAll('#cvHost tbody tr th')].map(th => th.textContent));
+    check('C: duplicated display names show their usernames in the class view; unique names stay plain', labels.filter(l => /^Noam · noam\./.test(l)).length === 2 && labels.includes('Tal'), JSON.stringify(labels));
     check('C: the assignment row counts 3 students enrolled and offers Copy link', await page.evaluate(() => /3 students enrolled/.test(document.getElementById('asgHost').textContent) && [...document.querySelectorAll('#asgHost .btn')].some(b => b.textContent === 'Copy link')));
     await page.waitForFunction(() => document.querySelectorAll('#asgHost .sub-row').length === 1, null, { timeout: 10000 });
     const listLine = await text(page, '#asgHost');
@@ -734,6 +740,21 @@ try {
     await ruthRow.locator('.fb .btn.ghost', { hasText: 'Approve' }).click();
     check('C: Approve marks take 2 approved', await waitText(page, '#subsHost', /approved/) && cloud.t.submissions.find(s => s.title === 'Ruth take 2').status === 'approved');
     check('C: 0 pageerrors (approve)', errors.length === 0, errors.join(' | '));
+    await ctx.close();
+  }
+
+  /* ───── C2. the Assign dialog's checklist tells the two Noams apart ───── */
+  {
+    const ctx = await newCtx(browser, cloud, { session: teacherSession });
+    const { page, errors } = await openPage(ctx, 'torah_trainer.html', { query: '?parsha=Bereshit&scope=parsha-aliyah-1' });
+    await page.waitForFunction(() => window.IvritAssignments && !document.getElementById('ttTeachIn').hidden, null, { timeout: 15000 });
+    await page.evaluate(() => { openSettings(); setSettingsTab('teacher'); });
+    await page.click('#ttAsgAssignBtn');
+    await page.waitForFunction(() => document.querySelectorAll('#ttAsgDlgStudents input').length === 4, null, { timeout: 10000 });
+    const names = await page.evaluate(() => [...document.querySelectorAll('#ttAsgDlgStudents label')].map(l => l.textContent.trim()));
+    check('C2: the checklist names both Noams with their usernames and Tal plainly', names.filter(n => /^Noam · noam\./.test(n)).length === 2 && names.includes('Tal'), JSON.stringify(names));
+    await page.keyboard.press('Escape');
+    check('C2: 0 pageerrors', errors.length === 0, errors.join(' | '));
     await ctx.close();
   }
 
@@ -879,18 +900,18 @@ try {
   {
     const ctx = await newCtx(browser, cloud, { session: teacherSession });
     const { page, errors } = await openPage(ctx, 'reading_assignments.html');
-    await page.waitForFunction(() => document.querySelectorAll('#studentsHost tbody tr').length === 3, null, { timeout: 15000 });
+    await page.waitForFunction(() => document.querySelectorAll('#studentsHost tbody tr').length === 4, null, { timeout: 15000 });
     await page.click('#bulkOneBtn');
     const pd = await page.evaluate(() => ({ open: !document.getElementById('pwDlg').hidden, note: document.getElementById('pwDlgNote').textContent, pw: document.getElementById('pwDlgIn').value, focused: document.activeElement && document.activeElement.id }));
     await page.screenshot({ path: path.join(SHOTS, 'M-one-password-dialog.png') });
-    check('M: the one-password dialog opens on the password field, prefilled, naming the 3 students shown', pd.open && /All 3 students shown/.test(pd.note) && pd.pw.length >= 8 && pd.focused === 'pwDlgIn', JSON.stringify(pd));
+    check('M: the one-password dialog opens on the password field, prefilled, naming the 4 students shown', pd.open && /All 4 students shown/.test(pd.note) && pd.pw.length >= 8 && pd.focused === 'pwDlgIn', JSON.stringify(pd));
     await page.fill('#pwDlgIn', 'class-pass-77');
     await page.click('#pwDlgGo');
-    check('M: every shown student gets the one password, shown once in the logins table', await waitText(page, '#studentsStatus', /3 passwords set/) && await page.evaluate(() => document.getElementById('pwDlg').hidden && [...document.querySelectorAll('#createdHost tbody tr')].length === 3 && [...document.querySelectorAll('#createdHost tbody tr td:last-child')].every(td => td.textContent === 'class-pass-77')) && cloud.t.students.every(s => cloud.users.get(s.id).password === 'class-pass-77'));
+    check('M: every shown student gets the one password, shown once in the logins table', await waitText(page, '#studentsStatus', /4 passwords set/) && await page.evaluate(() => document.getElementById('pwDlg').hidden && [...document.querySelectorAll('#createdHost tbody tr')].length === 4 && [...document.querySelectorAll('#createdHost tbody tr td:last-child')].every(td => td.textContent === 'class-pass-77')) && cloud.t.students.every(s => cloud.users.get(s.id).password === 'class-pass-77'));
     await page.click('#bulkEachBtn');
-    await waitText(page, '#studentsStatus', /3 passwords set/);
+    await waitText(page, '#studentsStatus', /4 passwords set/);
     const each = cloud.t.students.map(s => cloud.users.get(s.id).password);
-    check('M: New password for each gives three different random passphrases, listed for printing', new Set(each).size === 3 && each.every(p => /^[a-z]+-[a-z]+-[2-9]{2}$/.test(p)) && await page.evaluate(() => [...document.querySelectorAll('#createdHost tbody tr')].length === 3), JSON.stringify(each));
+    check('M: New password for each gives three different random passphrases, listed for printing', new Set(each).size === 4 && each.every(p => /^[a-z]+-[a-z]+-[2-9]{2}$/.test(p)) && await page.evaluate(() => [...document.querySelectorAll('#createdHost tbody tr')].length === 4), JSON.stringify(each));
     check('M: 0 pageerrors', errors.length === 0, errors.join(' | '));
     await ctx.close();
   }
