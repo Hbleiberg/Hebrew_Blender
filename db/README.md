@@ -16,6 +16,7 @@ the tables are used from the browser: `docs/reference/accounts-and-cloud.md`.
 | `migrations/0005_saves_tool_emoji_torah.sql` | yes — applied through the connector before the page reached `main`; `saves_tool_check` read back with nine ids and the migrations list records it; the security advisors show nothing new | widens `saves.tool`'s CHECK to nine ids (adds `EmojiTorah`, the Parsha Emojis page's coloring-sheet options, mirroring `var TOOLS`): the same one-constraint swap as 0004, inside a single transaction; no table, row, policy or function is dropped |
 | `migrations/0006_no_default_grants.sql` | yes — applied through the connector; the default privileges read back with no `anon`, `authenticated` or `service_role` entry under `postgres` for tables, sequences or functions, the three tables' and six functions' privileges read back identical to before, the migrations list records it, and the security advisors show only the Auth leaked-password setting, which no migration touches | stops the project granting new `public` tables, sequences and functions to `anon`, `authenticated` and `service_role` automatically (its default privileges), so a table is reachable only through the grants its own migration writes — a function still needs its own `revoke … from public`, because Postgres's built-in grant of execute to every role is global and outlives a schema-level revoke; no existing table, sequence, function, policy or grant changes — `profiles`, `saves` and `font_projects` keep what 0001 gave them, `keepalive()` what 0003 gave it |
 | `migrations/0007_saves_tool_name_tags.sql` | yes — applied through the connector before the page reached `main`; `saves_tool_check` read back with ten ids and the migrations list records it; `anon` still holds no privilege on `saves`; the security advisors show only the Auth leaked-password setting, which no migration touches | widens `saves.tool`'s CHECK to ten ids (adds `NameTags`, the Name Tags page's class lists and design options, mirroring `var TOOLS`): the same one-constraint swap as 0004 and 0005, inside a single transaction; no table, row, policy or function is dropped |
+| `migrations/0008_reading_assignments.sql` | **no** — written, replayed on a throwaway local cluster by `node scripts/test-rls-assignments.mjs` (153 cases green), not yet applied to the project | Torah Trainer reading assignments: `profiles.role` (the mirror of the token's `app_metadata.role`; the sign-up trigger replaced to copy it in), `classes`, `students`, `assignments`, `assignment_members`, `submissions`, `feedback`, `code_attempts`, the `claim_assignment()` code-word function, four definer helpers the policies ask about membership and ownership, the per-caller column guards (triggers, since a student and a teacher are both the `authenticated` role), and three **restrictive** policies that close `saves`, `font_projects` and Storage to student accounts. The audio itself never enters Supabase (a private R2 bucket behind `workers/audio/`). Nothing dropped, no row deleted; `handle_new_user` is `create or replace`d, 0001's file untouched |
 
 Each file starts with a comment that explains every block in plain language.
 
@@ -62,6 +63,17 @@ bucket means editing all four, under a house rule that forbids `drop`.
 `GET /rest/v1/rpc/keepalive`, which is what the workflow's `curl` calls. Making it `volatile` would require a
 POST and break the workflow without changing anything the function returns. Its grant pair (`revoke all …
 from public`, then `grant execute … to anon, authenticated`) is equally load-bearing.
+
+### Proving the policies without the project (`tests/`)
+
+`node scripts/test-rls-assignments.mjs` boots a throwaway Postgres cluster in a temp directory (the server
+binaries only; nothing is installed and nothing touches the live project), loads `tests/supabase-shim.sql`
+(stand-ins for the roles, `auth.uid()`, `auth.jwt()` and the `storage` tables), replays **every** migration in
+order and unchanged, then runs `tests/rls-assignments.sql`: each case is one statement as one identity (a
+Postgres role plus the JWT claims PostgREST would set), and what comes back — rows touched, or the SQLSTATE —
+is compared with what the policy promises. It prints the failures and the counts; `--verbose` prints every
+case, `--keep` leaves the cluster running. A change to any policy, guard or grant is proved there first.
+The container's cluster is Postgres 16 and production is 17; RLS, grants and plpgsql behave the same.
 
 ## Why `db/` and not `supabase/`
 
