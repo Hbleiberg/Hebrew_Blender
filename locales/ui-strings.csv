@@ -7282,10 +7282,12 @@ assign.students.col_actions,Actions,פעולות,Management page: table column,
 assign.students.col_password,Password,סיסמה,Management page: table column,
 assign.students.move_aria,Class of {name},הכיתה של {name},Management page: class select,aria; template
 assign.students.moved,{name}’s class was changed.,הכיתה של {name} שונתה.,Management page: status,template
-assign.students.reset_btn,Reset password,איפוס סיסמה,Management page: row button,
+assign.students.reset_btn,New password…,סיסמה חדשה…,Management page: row button — opens the set-password dialog on that student,
 assign.students.remove_btn,Remove,הסרה,Management page: row button,
-assign.students.count,{n} students,{n} תלמידים,Management page: under the table,template
-assign.students.reset_confirm,Give {name} the new password “{password}”? The old one stops working at once.,לתת ל{name} את הסיסמה החדשה ״{password}״? הישנה תפסיק לעבוד מיד.,Management page: confirm,template
+assign.students.count.one,{n} student,תלמיד/ה אחד/ת,Management page: under the table,template
+assign.students.count.other,{n} students,{n} תלמידים,Management page: under the table,template
+assign.students.pw_dlg_head_one,New password for {name},סיסמה חדשה ל{name},Management page: set-password dialog heading (one student),template
+assign.students.pw_dlg_note_one,{name} ({username}) gets this password. The old one stops working at once.,{name} ({username}) יקבל/תקבל את הסיסמה הזו. הישנה תפסיק לעבוד מיד.,Management page: set-password dialog note (one student),template
 assign.students.reset_done,"New password for {name}: username {username}, password {password}. Write it down now — it is not shown again.","סיסמה חדשה ל{name}: שם משתמש {username}, סיסמה {password}. רשמו עכשיו — היא לא תוצג שוב.",Management page: status,template
 assign.students.reset_head,New password,סיסמה חדשה,Management page: heading over the reset table,
 assign.students.remove_confirm,Remove {name}’s account? Their recordings and your feedback on them are deleted too. This cannot be undone.,להסיר את החשבון של {name}? גם ההקלטות שלהם והמשוב שלכם עליהן יימחקו. אי אפשר לבטל.,Management page: confirm,template
@@ -7308,7 +7310,10 @@ assign.students.create_btn,Create {n} accounts,יצירת {n} חשבונות,Man
 assign.students.preview_clear,Clear the preview,ניקוי התצוגה המקדימה,Management page: button,
 assign.students.creating,Creating {n} accounts…,יוצר {n} חשבונות…,Management page: status,template
 assign.students.created_some,{made} accounts created; {failed} could not be (see the rows below).,{made} חשבונות נוצרו; {failed} לא ניתן היה ליצור (ראו את השורות למטה).,Management page: status,template
-assign.students.created_all,{n} accounts created. Print the login cards now.,{n} חשבונות נוצרו. הדפיסו עכשיו את כרטיסי הכניסה.,Management page: status,template
+assign.students.created_all.one,1 account created. Print the login card now.,חשבון אחד נוצר. הדפיסו עכשיו את כרטיס הכניסה.,Management page: status,template
+assign.students.created_all.other,{n} accounts created. Print the login cards now.,{n} חשבונות נוצרו. הדפיסו עכשיו את כרטיסי הכניסה.,Management page: status,template
+assign.students.password_fix.one,One password needs fixing before anything is created: a password is 8 to 72 characters.,סיסמה אחת דורשת תיקון לפני היצירה: סיסמה היא 8 עד 72 תווים.,Management page: status when the preview holds a bad password (nothing was sent),template
+assign.students.password_fix.other,{n} passwords need fixing before anything is created: a password is 8 to 72 characters.,{n} סיסמאות דורשות תיקון לפני היצירה: סיסמה היא 8 עד 72 תווים.,Management page: status when the preview holds bad passwords (nothing was sent),template
 assign.students.created_head,New logins,כניסות חדשות,Management page: heading,
 assign.students.created_note,"These passwords are shown only now. Print the cards or write them down, then hide them.","הסיסמאות האלה מוצגות רק עכשיו. הדפיסו את הכרטיסים או רשמו אותן, ואז הסתירו.",Management page: note,
 assign.students.print_cards,Print login cards,הדפסת כרטיסי כניסה,Management page: button,
@@ -7366,7 +7371,8 @@ assign.students.bulk_dlg_note.other,All {n} students shown get this password. Th
 assign.students.bulk_dlg_password,Password (at least 8 characters),סיסמה (לפחות 8 תווים),Management page: dialog field,
 assign.students.bulk_dlg_go,Set the password,קביעת הסיסמה,Management page: dialog button,
 assign.students.bulk_each_confirm,Give each of the {n} students shown a new random password? The old ones stop working at once.,לתת לכל אחד מ-{n} התלמידים המוצגים סיסמה אקראית חדשה? הישנות יפסיקו לעבוד מיד.,Management page: confirm,template
-assign.students.bulk_done,{n} passwords set. Print the login cards now.,{n} סיסמאות נקבעו. הדפיסו עכשיו את כרטיסי הכניסה.,Management page: status,template
+assign.students.bulk_done.one,1 password set. Print the login card now.,סיסמה אחת נקבעה. הדפיסו עכשיו את כרטיס הכניסה.,Management page: status,template
+assign.students.bulk_done.other,{n} passwords set. Print the login cards now.,{n} סיסמאות נקבעו. הדפיסו עכשיו את כרטיסי הכניסה.,Management page: status,template
 assign.students.bulk_some,{n} passwords set; {failed} could not be.,{n} סיסמאות נקבעו; {failed} לא ניתן היה לקבוע.,Management page: status,template
 assign.classview.head,Class view,תצוגת כיתה,Management page: section heading,
 assign.classview.note,"Every student against every open assignment. Add puts a student on an assignment (they see it in their Torah Trainer at once); Assign a new reading… opens the Torah Trainer with that student already chosen.","כל תלמיד מול כל משימה פתוחה. ״הוספה״ רושמת תלמיד למשימה (הוא יראה אותה ב-Torah Trainer מיד); ״הקצאת קריאה חדשה…״ פותחת את Torah Trainer עם התלמיד כבר נבחר.",Management page: section note,
@@ -7445,6 +7451,7 @@ assign.error.teacher_only,Only a teacher account can do this.,רק חשבון מ
 assign.error.username_taken,"That username is already used by a student somewhere on the site (usernames are shared across every teacher). Add a couple of digits or pick another, then press Create again.","שם המשתמש הזה כבר בשימוש של תלמיד במקום אחר באתר (שמות משתמש משותפים לכל המורים). הוסיפו כמה ספרות או בחרו אחר, ואז לחצו שוב על יצירה.",Assignments error (the refused preview row and the status line),shared
 assign.error.username_invalid,"A username is 3 to 30 lowercase letters, digits and dots.","שם משתמש הוא 3 עד 30 אותיות לטיניות קטנות, ספרות ונקודות.",Assignments error,shared
 assign.error.password_invalid,A password is 8 to 72 characters.,סיסמה היא 8 עד 72 תווים.,Assignments error,shared
+assign.error.password_weak,That password is too easy to guess: it appears in lists of leaked passwords. Choose another.,הסיסמה הזו קלה מדי לניחוש: היא מופיעה ברשימות של סיסמאות שדלפו. בחרו אחרת.,Assignments error (Auth's leaked-password check refused it),shared
 assign.error.name_invalid,Each student needs a name.,כל תלמיד/ה צריך/ה שם.,Assignments error,shared
 assign.error.too_many_students,An account can have at most 200 students.,חשבון יכול להכיל לכל היותר 200 תלמידים.,Assignments error,shared
 assign.error.code_taken,You already use that code word for another assignment. Choose a different one.,מילת הקוד הזו כבר משמשת למשימה אחרת שלכם. בחרו אחרת.,Assignments error,shared

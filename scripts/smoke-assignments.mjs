@@ -63,11 +63,13 @@ const T1 = '10000000-0000-4000-8000-000000000001';
 const TEACHER = { id: T1, email: 'morah@example.org', user_metadata: { full_name: 'Morah Leah' }, app_metadata: { provider: 'email' }, role: 'authenticated', aud: 'authenticated' };
 const sessionFor = (u) => ({ access_token: 'tok-' + u.id, refresh_token: 'ref-' + u.id, expires_at: 4102444800, expires_in: 3600, token_type: 'bearer', user: u });
 
+const LEAKED = new Set(['password1', '12345678', 'qwerty123']);   // stands in for Auth's HaveIBeenPwned check
 class FakeCloud {
   constructor() {
     this.users = new Map([[T1, Object.assign({ password: null }, TEACHER)]]);   // id → auth user (+password for students)
     this.t = { profiles: [{ id: T1, display_name: 'Morah Leah', role: 'teacher' }], classes: [], students: [], assignments: [], assignment_members: [], submissions: [], feedback: [], code_attempts: [] };
     this.objects = new Map();   // r2_key → { bytes, type }
+    this.fnCalls = 0;           // manage-students calls answered (the page must refuse a bad password before making one)
     this.log = [];
     this.workerFail = null;     // (path) → status to answer instead, once
     this.tokenStatus = null;    // a status for the next password sign-in
@@ -216,13 +218,15 @@ class FakeCloud {
   // ---- the Edge Function ----
   manageStudents(body, who) {
     if (who.role === 'student') return { status: 403, body: { error: 'student_forbidden' } };
+    // The live function's password answers: the length rule → invalid_password; Auth's leaked-password refusal → weak_password.
+    const pwCode = (pw) => pw.length < 8 || pw.length > 72 ? 'invalid_password' : LEAKED.has(pw) ? 'weak_password' : null;
     if (body.action === 'create') {
       const results = [];
       for (const r of body.students || []) {
         const username = String(r.username || '').toLowerCase(), name = String(r.display_name || '').trim(), pw = String(r.password || '');
         if (!name) { results.push({ username, error: 'invalid_name' }); continue; }
         if (!/^[a-z0-9][a-z0-9.]{1,28}[a-z0-9]$/.test(username)) { results.push({ username, error: 'invalid_username' }); continue; }
-        if (pw.length < 8) { results.push({ username, error: 'invalid_password' }); continue; }
+        if (pwCode(pw)) { results.push({ username, error: pwCode(pw) }); continue; }
         if (this.t.students.some(s => s.username === username)) { results.push({ username, error: 'username_taken' }); continue; }
         const id = crypto.randomUUID();
         this.users.set(id, { id, email: username + '@students.ivritsuite.com', user_metadata: { full_name: name }, app_metadata: { provider: 'email', role: 'student' }, role: 'authenticated', aud: 'authenticated', password: pw });
@@ -235,14 +239,14 @@ class FakeCloud {
     if (body.action === 'reset_passwords') {
       const ids = Array.isArray(body.ids) ? body.ids : [];
       if (!ids.length || ids.length > 60) return { status: 400, body: { error: 'bad_request' } };
-      if (String(body.password || '').length < 8) return { status: 400, body: { error: 'invalid_password' } };
+      if (pwCode(String(body.password || ''))) return { status: 400, body: { error: pwCode(String(body.password || '')) } };
       const results = [];
       for (const id of new Set(ids)) { const st = this.t.students.find(x => x.id === id && x.teacher_id === who.id); if (!st) { results.push({ id, error: 'not_found' }); continue; } this.users.get(st.id).password = body.password; results.push({ id, username: st.username }); }
       return { status: 200, body: { ok: true, results } };
     }
     const s = this.t.students.find(x => x.id === body.id && x.teacher_id === who.id);
     if (!s) return { status: 404, body: { error: 'not_found' } };
-    if (body.action === 'reset_password') { if (String(body.password || '').length < 8) return { status: 400, body: { error: 'invalid_password' } }; this.users.get(s.id).password = body.password; return { status: 200, body: { ok: true, id: s.id } }; }
+    if (body.action === 'reset_password') { if (pwCode(String(body.password || ''))) return { status: 400, body: { error: pwCode(String(body.password || '')) } }; this.users.get(s.id).password = body.password; return { status: 200, body: { ok: true, id: s.id } }; }
     if (body.action === 'delete') { this.users.delete(s.id); this.t.students = this.t.students.filter(x => x.id !== s.id); this.t.profiles = this.t.profiles.filter(x => x.id !== s.id); this.t.assignment_members = this.t.assignment_members.filter(m => m.student_id !== s.id); this.t.submissions.filter(x => x.student_id === s.id).forEach(x => this.cascade('submissions', x)); this.t.submissions = this.t.submissions.filter(x => x.student_id !== s.id); return { status: 200, body: { ok: true, id: s.id } }; }
     return { status: 400, body: { error: 'bad_request' } };
   }
@@ -306,7 +310,7 @@ class FakeCloud {
     if (url.pathname.endsWith('/auth/v1/user')) { const who = this.who(headers); if (!who) return json(401, { code: 401, error_code: 'session_not_found', msg: 'no session' }); const { password, ...pub } = who.user; return json(200, pub); }
     if (url.pathname.endsWith('/auth/v1/logout')) return route.fulfill({ status: 204, headers: cors });
     // ---- the Edge Function ----
-    if (/\/functions\/v1\/manage-students$/.test(url.pathname)) { const who = this.who(headers); if (!who) return json(401, { error: 'no_token' }); const r = this.manageStudents(body || {}, who); return json(r.status, r.body); }
+    if (/\/functions\/v1\/manage-students$/.test(url.pathname)) { this.fnCalls++; const who = this.who(headers); if (!who) return json(401, { error: 'no_token' }); const r = this.manageStudents(body || {}, who); return json(r.status, r.body); }
     // ---- PostgREST ----
     const who = this.who(headers);
     if (!who) return json(401, { code: 'PGRST301', message: 'JWT invalid' });
@@ -920,6 +924,51 @@ try {
     await waitText(page, '#studentsStatus', /2 passwords set/);
     const each = inClass.map(s => cloud.users.get(s.id).password);
     check('M: New password for each gives the class two different random passphrases, listed for printing', new Set(each).size === 2 && each.every(p => /^[a-z]+-[a-z]+-[2-9]{2}$/.test(p)) && await page.evaluate(() => [...document.querySelectorAll('#createdHost tbody tr')].length === 2), JSON.stringify(each));
+    // the password dialog's refusals say what is wrong, in words (no raw key): too short, then one Auth would refuse as leaked
+    await page.click('#bulkOneBtn');
+    await page.fill('#pwDlgIn', 'abc');
+    await page.click('#pwDlgGo');
+    const shortMsg = await page.evaluate(() => document.getElementById('pwDlgStatus').textContent);
+    check('M: a 5-character password is refused in the dialog with "A password is 8 to 72 characters." (nothing sent, no raw key)', /8 to 72 characters/.test(shortMsg) && !/assign\./.test(shortMsg) && await page.evaluate(() => !document.getElementById('pwDlg').hidden && document.activeElement.id === 'pwDlgIn') && inClass.every(s => cloud.users.get(s.id).password !== 'abc'), shortMsg);
+    await page.fill('#pwDlgIn', 'password1');
+    await page.click('#pwDlgGo');
+    const weakMsg = await waitText(page, '#pwDlgStatus', /easy to guess/) && await page.evaluate(() => document.getElementById('pwDlgStatus').textContent);
+    check('M: a leaked password is refused with the weak-password text and the dialog stays open', /too easy to guess/.test(weakMsg || '') && await page.evaluate(() => !document.getElementById('pwDlg').hidden), String(weakMsg));
+    // Escape closes the top dialog only; the class popup under it keeps the backdrop and still closes on Escape
+    await page.keyboard.press('Escape');
+    const afterOne = await page.evaluate(() => ({ pw: document.getElementById('pwDlg').hidden, cls: document.getElementById('clsDlg').hidden, backdrop: document.getElementById('dlgBackdrop').hidden, focused: document.activeElement && document.activeElement.id }));
+    check('M: Escape closes the password dialog alone; the class popup stays open behind the backdrop, the focus back on its opener', afterOne.pw && !afterOne.cls && !afterOne.backdrop && afterOne.focused === 'bulkOneBtn', JSON.stringify(afterOne));
+    await page.keyboard.press('Escape');
+    const afterTwo = await page.evaluate(() => ({ cls: document.getElementById('clsDlg').hidden, backdrop: document.getElementById('dlgBackdrop').hidden, focusText: document.activeElement && document.activeElement.textContent.trim() }));
+    check('M: a second Escape closes the class popup and hides the backdrop; the focus lands on that class\'s Edit class… button', afterTwo.cls && afterTwo.backdrop && /Edit class/.test(afterTwo.focusText || ''), JSON.stringify(afterTwo));
+    // the Close button works after a nested dialog (the maintainer's bug): reopen, run the one-password flow, press Close
+    await page.locator('#classesHost button', { hasText: 'Edit class' }).first().click();
+    await page.waitForFunction(() => !document.getElementById('clsDlg').hidden && document.querySelectorAll('#studentsHost tbody tr').length === 2, null, { timeout: 15000 });
+    await page.click('#bulkOneBtn'); await page.fill('#pwDlgIn', 'class-pass-88'); await page.click('#pwDlgGo');
+    await waitText(page, '#studentsStatus', /2 passwords set/);
+    await page.click('#clsDlgClose');
+    const closed = await page.evaluate(() => ({ cls: document.getElementById('clsDlg').hidden, pw: document.getElementById('pwDlg').hidden, backdrop: document.getElementById('dlgBackdrop').hidden, focusText: document.activeElement && document.activeElement.textContent.trim() }));
+    check('M: after the one-password flow, the class popup\'s Close closes it, hides the backdrop and returns the focus to Edit class…', closed.cls && closed.pw && closed.backdrop && /Edit class/.test(closed.focusText || ''), JSON.stringify(closed));
+    // a row's New password… opens the same dialog on that one student
+    await page.locator('#classesHost button', { hasText: 'Edit class' }).first().click();
+    await page.waitForFunction(() => !document.getElementById('clsDlg').hidden && document.querySelectorAll('#studentsHost tbody tr').length === 2, null, { timeout: 15000 });
+    await page.locator('#studentsHost tbody tr').first().locator('button', { hasText: 'New password' }).click();
+    const oneDlg = await page.evaluate(() => ({ open: !document.getElementById('pwDlg').hidden, title: document.getElementById('pwDlgTitle').textContent, note: document.getElementById('pwDlgNote').textContent, focused: document.activeElement && document.activeElement.id }));
+    await page.screenshot({ path: path.join(SHOTS, 'M-set-password-one.png') });
+    const firstUser = await page.evaluate(() => document.querySelector('#studentsHost tbody tr td.code').textContent);
+    const firstRow = inClass.find(s => s.username === firstUser);
+    check('M: New password… opens the set-password dialog for that student alone, naming them and their username', oneDlg.open && firstRow && oneDlg.title === 'New password for ' + cloud.t.profiles.find(p => p.id === firstRow.id).display_name && oneDlg.note.includes('(' + firstRow.username + ')') && oneDlg.focused === 'pwDlgIn', JSON.stringify(oneDlg));
+    await page.fill('#pwDlgIn', 'only-mine-55'); await page.click('#pwDlgGo');
+    check('M: the one student gets the typed password (shown once with the username), the classmate keeps theirs, the dialog closes', await waitText(page, '#studentsStatus', /New password for .*only-mine-55/) && cloud.users.get(firstRow.id).password === 'only-mine-55' && inClass.filter(s => s.id !== firstRow.id).every(s => cloud.users.get(s.id).password === 'class-pass-88') && await page.evaluate(() => document.getElementById('pwDlg').hidden && !document.getElementById('clsDlg').hidden && [...document.querySelectorAll('#createdHost tbody tr')].length === 1));
+    // the preview refuses a short password before anything is sent
+    await page.fill('#namesInput', 'Short Pass');
+    await page.click('#previewBtn');
+    await page.waitForFunction(() => document.querySelectorAll('#previewHost tbody tr').length === 1, null, { timeout: 5000 });
+    await page.locator('#previewHost tbody tr input').nth(2).fill('tiny');
+    const callsBefore = cloud.fnCalls;
+    await page.locator('#previewHost button', { hasText: 'Create' }).click();
+    const refused = await page.evaluate(() => ({ status: document.getElementById('createStatus').textContent, rowErr: (document.querySelector('#previewHost .status.is-error') || {}).textContent, rows: document.querySelectorAll('#previewHost tbody tr').length }));
+    check('M: a preview row with a 4-character password is refused on the page — the row marked, the status naming the rule, no call made', /password needs fixing/.test(refused.status) && /8 to 72 characters/.test(refused.rowErr || '') && refused.rows === 1 && cloud.fnCalls === callsBefore && !cloud.t.students.some(s => s.username.startsWith('short')), JSON.stringify(refused));
     check('M: 0 pageerrors', errors.length === 0, errors.join(' | '));
     await ctx.close();
   }
