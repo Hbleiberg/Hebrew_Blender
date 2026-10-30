@@ -4487,6 +4487,7 @@ torah.settings.panel_print,Print,הדפסה,section heading (Share tab),
 torah.settings.panel_reset,Reset,איפוס,section heading (More tab),
 torah.settings.panel_schedule,Reading schedule,לוח קריאה,section heading (Calendar tab),
 torah.settings.panel_share,Practice link,קישור לתרגול,section heading (Share tab),
+torah.settings.panel_teacher,Teacher options,אפשרויות למורה,section heading (Teacher tab): reading assignments,
 torah.settings.panel_translit,Transliteration,תעתיק,section heading (Text tab),
 torah.settings.panel_translation,Translation,תרגום,section heading (Text tab): the Show translation switch and the version list,
 torah.settings.panel_trope_color,Trope color coding,צביעת טעמים,section heading (Colors tab),
@@ -4501,6 +4502,7 @@ torah.tabs.colors,Colors,צבעים,settings drawer tab label (palette icon in t
 torah.tabs.audio,Audio,שמע,"settings drawer tab label (music icon in the markup): speeds & pitch, karaoke highlighting, the Trope staff",svg-icon-in-markup; keep short
 torah.tabs.calendar,Calendar,לוח שנה,settings drawer tab label (calendar icon in the markup),svg-icon-in-markup; keep short
 torah.tabs.share,Share,שיתוף,"settings drawer tab label (link icon in the markup): practice link, copy verses, student handout, print",svg-icon-in-markup; keep short
+torah.tabs.teacher,Teacher,מורה,"settings drawer tab label (pencil icon in the markup): reading assignments — the teacher's side",svg-icon-in-markup; keep short
 torah.tabs.more,More,עוד,"settings drawer tab label (gear icon in the markup): your account, about & FAQ, reset",svg-icon-in-markup; keep short
 torah.fav.title,Favorite readings,קריאות מועדפות,section heading (Favorites tab),
 torah.fav.add,Save current selection as favorite,שמירת הקריאה הנוכחית כמועדפת,Favorites tab button (plus icon in the markup): opens the save popup,svg-icon-in-markup
@@ -7159,9 +7161,16 @@ shared.account.error_student_email,That is a student account: use the student si
 shared.account.error_username,"A username is 3 to 30 lowercase letters, digits and dots.","שם משתמש הוא 3 עד 30 אותיות לטיניות קטנות, ספרות ונקודות.",Account popover error,shared
 shared.account.error_student_login,That username and password do not match. Ask your teacher if you need a new password.,שם המשתמש והסיסמה אינם תואמים. בקשו מהמורה סיסמה חדשה אם צריך.,Account popover error,shared
 torah.assign.title,Reading assignments,משימות קריאה,Torah Trainer: assignments region heading,
-torah.assign.out_note,Teachers sign in with the account button. Students: open the account button and choose “Student? Sign in with your username”.,מורים נכנסים דרך כפתור החשבון. תלמידים: פתחו את כפתור החשבון ובחרו ״תלמיד/ה? היכנסו עם שם המשתמש שלכם״.,"Torah Trainer: assignments region, signed out",
 torah.assign.module_failed,The assignments feature could not load. Check the connection and reload the page.,לא ניתן היה לטעון את משימות הקריאה. בדקו את החיבור וטענו מחדש את הדף.,Torah Trainer: the module script failed,
-torah.assign.teacher_note,"Choose the parsha, aliyah or verse range as usual, then assign it: students type the code word here to see it and record it.","בחרו פרשה, עלייה או טווח פסוקים כרגיל, ואז הקצו אותם: התלמידים מקלידים כאן את מילת הקוד כדי לראות את הקריאה ולהקליט אותה.",Torah Trainer: teacher face of the region,
+torah.assign.teacher_note,"Choose the parsha, aliyah or verse range as usual, then assign it: students type the code word in their Torah Trainer to see it and record it.","בחרו פרשה, עלייה או טווח פסוקים כרגיל, ואז הקצו אותם: התלמידים מקלידים את מילת הקוד ב-Torah Trainer שלהם כדי לראות את הקריאה ולהקליט אותה.",Torah Trainer: Teacher tab note,
+torah.assign.teach_out,Sign in with your teacher account (the account button in the header) to assign readings to your students and hear their recordings.,היכנסו עם חשבון המורה שלכם (כפתור החשבון בכותרת) כדי להקצות קריאות לתלמידים ולשמוע את ההקלטות שלהם.,Torah Trainer: Teacher tab while signed out,
+torah.assign.teach_student,This section is for teachers. Your assignments and recordings are in the panel above the reading.,החלק הזה מיועד למורים. המשימות וההקלטות שלכם נמצאות בלוח שמעל הקריאה.,Torah Trainer: Teacher tab for a student account,
+torah.assign.hide_btn,Hide,הסתרה,Torah Trainer: collapses the student panel to the controls strip button,
+torah.assign.dlg_look,"Students see this reading with my display settings as they are now (layout, font, colors, what the reading shows)","התלמידים יראו את הקריאה עם הגדרות התצוגה שלי כפי שהן עכשיו (פריסה, גופן, צבעים, מה הקריאה מציגה)",Torah Trainer: assign dialog checkbox,
+torah.assign.dlg_look_none,"Your display settings are the defaults, so there is nothing to send: students see the reading as it looks to everyone.","הגדרות התצוגה שלכם הן ברירת המחדל, אז אין מה לשלוח: התלמידים יראו את הקריאה כפי שכולם רואים אותה.",Torah Trainer: assign dialog summary when the look is the default,
+torah.assign.dlg_look_big,Your display settings are too large to send with the assignment (too many custom colors). Untick the box or reset some colors.,הגדרות התצוגה שלכם גדולות מדי לשליחה עם המשימה (יותר מדי צבעים מותאמים). בטלו את הסימון או אפסו חלק מהצבעים.,Torah Trainer: assign dialog refusal,
+torah.assign.look_summary,"Students will see: {layout} · transliteration {translit} · translation {translation} · vowel colors {colors} · trope colors {trope} · {font}, plus your sizes and karaoke look.","התלמידים יראו: {layout} · תעתיק {translit} · תרגום {translation} · צבעי ניקוד {colors} · צבעי טעמים {trope} · {font}, וגם הגדלים ומראה הקריוקי שלכם.",Torah Trainer: assign dialog summary line,template
+torah.assign.view_note,You're seeing this reading with your teacher's display settings. Your own settings haven't changed.,אתם רואים את הקריאה עם הגדרות התצוגה של המורה שלכם. ההגדרות שלכם לא השתנו.,Torah Trainer: the link-view banner for an assignment's look,
 torah.assign.assign_btn,Assign this reading…,הקצאת הקריאה הזו…,Torah Trainer: opens the assign dialog,
 torah.assign.manage_link,"Students, assignments and recordings","תלמידים, משימות והקלטות",Torah Trainer: link to the management page,
 torah.assign.code_label,Code word from your teacher,מילת הקוד מהמורה,Torah Trainer: student code field label,
@@ -7299,7 +7308,7 @@ assign.classes.new_label,New class name,שם כיתה חדשה,Management page: 
 assign.classes.new_btn,Add class,הוספת כיתה,Management page: button,
 assign.classes.added,Class “{name}” added.,הכיתה ״{name}״ נוספה.,Management page: status,template
 assign.list.head,Assignments,משימות,Management page: heading,
-assign.list.note,"To make a new one, open the <a href=""/torah_trainer.html?assignments=1"">Torah Trainer</a>, choose the parsha, aliyah or verse range as usual, and press <strong>Assign this reading</strong>. Students enter the code word in the Trainer to see the portion and record it.","כדי ליצור משימה חדשה, פתחו את <a href=""/torah_trainer.html?assignments=1"">מאמן הקריאה בתורה</a>, בחרו פרשה, עלייה או טווח פסוקים כרגיל, ולחצו <strong>הקצאת הקריאה הזו</strong>. התלמידים מקלידים את מילת הקוד במאמן כדי לראות את הקטע ולהקליט אותו.",Management page: note (HTML),html
+assign.list.note,"To make a new one, open the <a href=""/torah_trainer.html"">Torah Trainer</a>, choose the parsha, aliyah or verse range as usual, and press <strong>Assign this reading</strong>. Students enter the code word in the Trainer to see the portion and record it.","כדי ליצור משימה חדשה, פתחו את <a href=""/torah_trainer.html"">מאמן הקריאה בתורה</a>, בחרו פרשה, עלייה או טווח פסוקים כרגיל, ולחצו <strong>הקצאת הקריאה הזו</strong>. התלמידים מקלידים את מילת הקוד במאמן כדי לראות את הקטע ולהקליט אותו.",Management page: note (HTML),html
 assign.list.none,No assignments yet.,עדיין אין משימות.,Management page: empty,
 assign.list.open,Open,פתוחה,Management page: badge,
 assign.list.closed,Closed,סגורה,Management page: badge,
@@ -7310,6 +7319,7 @@ assign.list.approved_count,{n} approved,{n} אושרו,Management page: fact,tem
 assign.list.due,due {date},להגשה עד {date},Management page: fact,template
 assign.list.class,class: {name},כיתה: {name},Management page: fact,template
 assign.list.peers_on,classmates may listen,חברים לכיתה רשאים להאזין,Management page: fact,
+assign.list.with_look,with your display settings,עם הגדרות התצוגה שלכם,Management page: fact (the assignment carries the teacher's look),
 assign.list.deletes_on,recordings deleted on {date},ההקלטות יימחקו ב-{date},Management page: fact,template
 assign.list.subs_btn,Recordings,הקלטות,Management page: button,
 assign.list.trainer_btn,Open in the Trainer,פתיחה במאמן,Management page: link button,

@@ -1,7 +1,7 @@
 /*
  * ivrit-assignments.js — Torah Trainer reading assignments: the one module that talks to the assignment tables,
  * the manage-students Edge Function and the audio Worker. Loaded by torah_trainer.html (only with its
- * ?assignments=1 flag) and by reading_assignments.html, after /js/ivrit-account.js:
+ * once a session is stored) and by reading_assignments.html, after /js/ivrit-account.js:
  *   <script src="/js/i18n.js" defer></script>
  *   <script src="/js/supabase-config.js" defer></script>
  *   <script src="/js/ivrit-account.js" defer></script>
