@@ -2147,6 +2147,7 @@
   function hydrate(tools) {
     tools = normTools(tools);
     if (!currentUser()) return Promise.reject(makeError('signed_out'));
+    if (studentSession()) return Promise.resolve({ ok: true, tools: [] });   // a student account never syncs
     if (!tools.length) return Promise.resolve({ ok: true, tools: [] });
     var key = tools.join(',');
     if (pendingHydrate[key]) return pendingHydrate[key];
@@ -2765,6 +2766,8 @@
     if (!s || !s.root) return;
     var root = s.root;
     while (root.firstChild) root.removeChild(root.firstChild);
+    root.hidden = studentSession();   // a student account has no saves to report on
+    if (root.hidden) return;
     var line = el('p', 'ivsav-status');
     line.setAttribute('role', 'status');
     line.setAttribute('aria-live', 'polite');
@@ -3092,6 +3095,11 @@
     if (a && typeof a.onChange === 'function') {
       a.onChange(function (user) {
         var uid = user ? user.id : null;
+        if (user && user.role === 'student') {   // a student account: nothing syncs, nothing is listed, nothing is asked (the status line hides)
+          eventUser = uid; listedFor = {}; hookOn = false;
+          renderAllStatuses();
+          return;
+        }
         if (user) {
           if (uid !== eventUser) { listedFor = {}; stale = {}; seenNames = {}; tabBase = {}; hydratedTools = {}; signedInAt = Date.now(); snapshotLocal(attachedTools()); }
           purging = false;   // a page that did not reload after a sign-out (needsReload) is signed in again: writes go through
