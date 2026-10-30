@@ -230,17 +230,22 @@ body.dark .hi-sun{display:inline-block;}
   </section>
 
   <div id="stIn" hidden>
+    <!-- ───── Classes ───── -->
+    <section class="tile" id="secClasses" aria-labelledby="classesHead">
+      <h2 id="classesHead" data-i18n="assign.classes.head">Classes</h2>
+      <p class="note" data-i18n="assign.classes.note">Optional, but make them first: a class groups students, lets an assignment go to one class, and shows who has not submitted yet.</p>
+      <div class="row">
+        <div class="field" style="flex:0 1 280px;"><label for="newClassName" data-i18n="assign.classes.new_label">New class name</label><input type="text" id="newClassName" maxlength="80" autocomplete="off"></div>
+        <div><button class="btn ghost" type="button" id="newClassBtn" data-i18n="assign.classes.new_btn">Add class</button></div>
+      </div>
+      <p class="status" id="classStatus" role="status" aria-live="polite"></p>
+      <div id="classesHost"></div>
+    </section>
+
     <!-- ───── Students ───── -->
     <section class="tile" id="secStudents" aria-labelledby="studentsHead">
       <h2 id="studentsHead" data-i18n="assign.students.head">Students</h2>
       <p class="note" data-i18n="assign.students.note">Each student signs in to the Torah Trainer with a username and a password you give them — no email address. Print the login cards right after you create a batch; the passwords are shown only then. You can reset a password at any time.</p>
-      <div class="toolbar">
-        <label for="classFilter" data-i18n="assign.students.filter_class">Class</label>
-        <select id="classFilter"></select>
-        <button class="btn ghost sm" type="button" id="studentsRefresh" data-i18n="account.holds.refresh">Refresh</button>
-      </div>
-      <div id="studentsHost" aria-live="polite"></div>
-      <p class="status" id="studentsStatus" role="status" aria-live="polite"></p>
 
       <h3 data-i18n="assign.students.add_head">Add students</h3>
       <p class="note" data-i18n="assign.students.add_note">Type one name per line (a first name or a nickname is enough — it is what the student sees), or take the names from a class list saved on this device. Then check the usernames and passwords in the preview and press Create.</p>
@@ -266,14 +271,14 @@ body.dark .hi-sun{display:inline-block;}
       <p class="status" id="createStatus" role="status" aria-live="polite"></p>
       <div id="createdHost"></div>
 
-      <h3 data-i18n="assign.classes.head">Classes</h3>
-      <p class="note" data-i18n="assign.classes.note">Optional. A class groups students and lets an assignment say who has not submitted yet.</p>
-      <div id="classesHost"></div>
-      <div class="row">
-        <div class="field" style="flex:0 1 280px;"><label for="newClassName" data-i18n="assign.classes.new_label">New class name</label><input type="text" id="newClassName" maxlength="80" autocomplete="off"></div>
-        <div><button class="btn ghost" type="button" id="newClassBtn" data-i18n="assign.classes.new_btn">Add class</button></div>
+      <h3 data-i18n="assign.students.list_head">Your students</h3>
+      <div class="toolbar">
+        <label for="classFilter" data-i18n="assign.students.filter_class">Class</label>
+        <select id="classFilter"></select>
+        <button class="btn ghost sm" type="button" id="studentsRefresh" data-i18n="account.holds.refresh">Refresh</button>
       </div>
-      <p class="status" id="classStatus" role="status" aria-live="polite"></p>
+      <div id="studentsHost" aria-live="polite"></div>
+      <p class="status" id="studentsStatus" role="status" aria-live="polite"></p>
     </section>
 
     <!-- ───── Assignments ───── -->

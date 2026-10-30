@@ -7243,7 +7243,7 @@ assign.students.note,Each student signs in to the Torah Trainer with a username 
 assign.students.filter_class,Class,כיתה,Management page: filter label,
 assign.students.filter_all,All students,כל התלמידים,Management page: filter option,
 assign.students.no_class,No class,ללא כיתה,Management page: class option,
-assign.students.none,No students yet. Add them below.,עדיין אין תלמידים. הוסיפו אותם למטה.,Management page: empty list,
+assign.students.none,No students yet. Add them above.,עדיין אין תלמידים. הוסיפו אותם למעלה.,Management page: empty list,
 assign.students.none_in_class,No students in this class.,אין תלמידים בכיתה הזו.,Management page: empty list,
 assign.students.col_name,Name,שם,Management page: table column,
 assign.students.col_username,Username,שם משתמש,Management page: table column,
@@ -7261,6 +7261,7 @@ assign.students.reset_head,New password,סיסמה חדשה,Management page: hea
 assign.students.remove_confirm,Remove {name}’s account? Their recordings and your feedback on them are deleted too. This cannot be undone.,להסיר את החשבון של {name}? גם ההקלטות שלהם והמשוב שלכם עליהן יימחקו. אי אפשר לבטל.,Management page: confirm,template
 assign.students.removed,{name}’s account was removed.,החשבון של {name} הוסר.,Management page: status,template
 assign.students.add_head,Add students,הוספת תלמידים,Management page: heading,
+assign.students.list_head,Your students,התלמידים שלכם,Management page: heading over the roster,
 assign.students.add_note,"Type one name per line (a first name or a nickname is enough — it is what the student sees), or take the names from a class list saved on this device. Then check the usernames and passwords in the preview and press Create.","הקלידו שם אחד בכל שורה (שם פרטי או כינוי מספיק — זה מה שהתלמיד/ה רואה), או קחו את השמות מרשימת כיתה ששמורה במכשיר הזה. אחר כך בדקו את שמות המשתמש והסיסמאות בתצוגה המקדימה ולחצו ״יצירה״.",Management page: note,
 assign.students.names_label,"Names, one per line","שמות, אחד בכל שורה",Management page: field,
 assign.students.import_label,From a class list on this device,מרשימת כיתה במכשיר הזה,Management page: field,
@@ -7287,7 +7288,7 @@ assign.students.hide_passwords,Hide the passwords,הסתרת הסיסמאות,Ma
 assign.cards.title,Torah Trainer login for {name},כניסה למאמן הקריאה בתורה עבור {name},Printed login card,template
 assign.cards.site,"Go to {url}, open the account button and choose “Student? Sign in with your username”.","היכנסו ל-{url}, פתחו את כפתור החשבון ובחרו ״תלמיד/ה? היכנסו עם שם המשתמש שלכם״.",Printed login card,template
 assign.classes.head,Classes,כיתות,Management page: heading,
-assign.classes.note,Optional. A class groups students and lets an assignment say who has not submitted yet.,לא חובה. כיתה מקבצת תלמידים ומאפשרת למשימה להראות מי עדיין לא הגיש/ה.,Management page: note,
+assign.classes.note,"Optional, but make them first: a class groups students, lets an assignment go to one class, and shows who has not submitted yet.","לא חובה, אבל כדאי ליצור אותן קודם: כיתה מקבצת תלמידים, מאפשרת לתת משימה לכיתה אחת, ומראה מי עדיין לא הגיש.",Management page: note,
 assign.classes.none,No classes yet.,עדיין אין כיתות.,Management page: empty,
 assign.classes.members,{n} students,{n} תלמידים,Management page: class line,template
 assign.classes.rename_btn,Rename,שינוי שם,Management page: button,
