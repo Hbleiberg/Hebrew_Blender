@@ -1192,6 +1192,11 @@ body.dark .hi-sun{display:inline-block;}
   .preview-notice .pn-close:hover { opacity: 1; }
   body.dark .preview-notice { color: #dde4f0; }
   body.dark .preview-notice.notice-info { color: #dde4f0; }
+  /* Live regions stay in the accessibility tree while empty (pattern live-region-display-none-while-empty): a status
+     line un-hidden in the same moment its text arrives is not reliably announced. Empty, each leaves the flow instead,
+     and its script only sets and clears the text. */
+  .gen-note:empty, #presetNameNote:empty, #shareNotice:empty, #printCount:empty { position: absolute; }
+  #previewNotice:empty { position: absolute; padding: 0; border: 0; margin: 0; }
 
   .sidebar-toggle-btn {
     position: fixed;
@@ -3779,14 +3784,14 @@ html[lang="he"] .beta-tag { letter-spacing: normal; text-transform: none; }   /*
     <!-- Generate (desktop) -->
     <div class="desktop-buttons">
       <button class="btn btn-primary hi-btn" id="generateBtn" onclick="generate()"><svg class="hi hi-sm hi-page" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3H7a2.2 2.2 0 0 0-2.2 2.2v13.6A2.2 2.2 0 0 0 7 21h10a2.2 2.2 0 0 0 2.2-2.2V8.7z"/><path d="M13.5 3v5.7h5.7"/><path d="M8.6 13h6.8M8.6 16.6h4.6"/></svg><span class="hi-lbl" data-i18n="worksheet.actions.generate">Generate Worksheet</span></button>
-      <div class="gen-note" role="status" aria-live="polite" style="display:none;font-size:0.7rem;color:var(--gold);margin-top:4px;"></div>
+      <div class="gen-note" role="status" aria-live="polite" style="font-size:0.7rem;color:var(--gold);margin-top:4px;"></div>
       <button class="btn btn-outline hi-btn" id="regenBtn" onclick="regenerate()" disabled aria-disabled="true" title="Generate a worksheet first" data-i18n-title="worksheet.actions.disabled_hint" style="opacity:0.4;cursor:not-allowed;"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg><span class="hi-lbl" data-i18n="worksheet.actions.regenerate">Regenerate</span></button>
       <button class="btn btn-secondary hi-btn" id="printBtn" onclick="window.print()" disabled aria-disabled="true" title="Generate a worksheet first" data-i18n-title="worksheet.actions.disabled_hint" style="opacity:0.4;cursor:not-allowed;"><svg class="hi hi-sm hi-print" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9.2V3.6h10v5.6"/><path d="M7 9.2H5.6A2.1 2.1 0 0 0 3.5 11.3v3.6a2.1 2.1 0 0 0 2.1 2.1H7"/><path d="M17 9.2h1.4a2.1 2.1 0 0 1 2.1 2.1v3.6a2.1 2.1 0 0 1-2.1 2.1H17"/><rect x="7" y="14.2" width="10" height="6.2" rx="1.2"/><circle cx="17.6" cy="12" r="1" fill="currentColor" stroke="none"/></svg><span class="hi-lbl" data-i18n="worksheet.actions.print">Print</span></button>
       <button class="btn btn-outline hi-btn" id="pdfBtn" onclick="exportPDF()" disabled aria-disabled="true" title="Generate a worksheet first" data-i18n-title="worksheet.actions.disabled_hint" style="opacity:0.4;cursor:not-allowed;margin-top:8px;"><svg class="hi hi-sm hi-download" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.4v11.2"/><path d="M7.6 10.4 12 14.8l4.4-4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="worksheet.actions.export_pdf">Export PDF</span></button>
       <button class="btn btn-outline hi-btn" id="shareBtn" onclick="copyShareLink('shareBtn')" style="margin-top:8px;"><svg class="hi hi-sm hi-link" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 13.7a4 4 0 0 0 5.7 0l3-3a4 4 0 1 0-5.7-5.7l-1.7 1.7"/><path d="M13.7 10.3a4 4 0 0 0-5.7 0l-3 3a4 4 0 1 0 5.7 5.7l1.7-1.7"/></svg><span class="hi-lbl" data-i18n="worksheet.actions.copy_link">Copy shareable link</span></button>
-      <div id="shareNotice" role="status" style="display:none;margin-top:6px;font-size:0.72rem;color:var(--muted);text-align:center;line-height:1.4;"></div>
+      <div id="shareNotice" role="status" style="margin-top:6px;font-size:0.72rem;color:var(--muted);text-align:center;line-height:1.4;"></div>
       <button class="btn btn-outline" id="fcHandoffBtn" onclick="openInFlashCards()" style="margin-top:6px;" title="Open these letters and vowels as a Flash Cards drill" data-i18n="worksheet.actions.practice_flashcards" data-i18n-title="worksheet.actions.practice_flashcards_title">🃏 Practice these in Flash Cards</button>
-      <div class="print-tip" id="printCount" role="status" aria-live="polite" hidden style="margin-top:8px;font-size:0.72rem;color:var(--muted);text-align:center;"></div>
+      <div class="print-tip" id="printCount" role="status" aria-live="polite" style="margin-top:8px;font-size:0.72rem;color:var(--muted);text-align:center;"></div>
       <div class="print-tip" id="printTip" style="display:none;margin-top:8px;font-size:0.72rem;color:var(--muted);background:var(--warm-gray);border-radius:5px;padding:7px 9px;line-height:1.4;" data-i18n-html="worksheet.actions.print_tip">
         💡 <strong>Print tip:</strong> In the print dialog, uncheck <em>Headers and footers</em> to remove the URL and date.
       </div>
@@ -3800,7 +3805,7 @@ html[lang="he"] .beta-tag { letter-spacing: normal; text-transform: none; }   /*
           <input type="text" id="presetName" placeholder="Preset name..." data-i18n-placeholder="worksheet.presets.name_placeholder" aria-label="Preset name..." data-i18n-aria-label="worksheet.presets.name_placeholder" oninput="onPresetNameInput()" onkeydown="if(event.key==='Enter')savePreset()">
           <button class="btn-xs hi-btn" id="savePresetBtn" onclick="savePreset()" aria-disabled="true"><svg class="hi hi-sm hi-save" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 6.2A2.2 2.2 0 0 1 6.7 4h9.4L20 7.9v9.9a2.2 2.2 0 0 1-2.2 2.2H6.7a2.2 2.2 0 0 1-2.2-2.2z"/><path d="M8 4v5.2h7V4"/><rect x="8" y="13.4" width="8" height="6.6" rx="1.2"/></svg><span class="hi-lbl" data-i18n="worksheet.presets.save">Save</span></button>
         </div>
-        <div id="presetNameNote" role="status" aria-live="polite" style="display:none;font-size:0.7rem;color:var(--gold);margin-top:4px;"></div>
+        <div id="presetNameNote" role="status" aria-live="polite" style="font-size:0.7rem;color:var(--gold);margin-top:4px;"></div>
         <div class="preset-list" id="presetList"></div>
       </div>
     </div>
@@ -3982,7 +3987,7 @@ html[lang="he"] .beta-tag { letter-spacing: normal; text-transform: none; }   /*
       <div class="gen-fab-primary">
         <button class="btn btn-primary hi-btn" onclick="generate()" title="Generate Worksheet" data-i18n-title="worksheet.actions.generate"><svg class="hi hi-sm hi-page" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3H7a2.2 2.2 0 0 0-2.2 2.2v13.6A2.2 2.2 0 0 0 7 21h10a2.2 2.2 0 0 0 2.2-2.2V8.7z"/><path d="M13.5 3v5.7h5.7"/><path d="M8.6 13h6.8M8.6 16.6h4.6"/></svg><span class="hi-lbl" data-i18n="worksheet.actions.generate_mob">Generate</span></button>
       </div>
-      <div class="gen-note" role="status" aria-live="polite" style="display:none;font-size:0.7rem;color:var(--gold);margin-top:4px;"></div>
+      <div class="gen-note" role="status" aria-live="polite" style="font-size:0.7rem;color:var(--gold);margin-top:4px;"></div>
       <!-- Post-Generate actions: revealed by enableButtons() once a worksheet exists, so the
            thing a teacher wants next isn't ~2,500px down the options sidebar. -->
       <div class="gen-fab-actions" id="genFabActions">
@@ -4028,7 +4033,7 @@ html[lang="he"] .beta-tag { letter-spacing: normal; text-transform: none; }   /*
       </div>
     </div>
     <div class="main-content">
-    <div id="previewNotice" class="preview-notice" style="display:none;" role="status"></div>
+    <div id="previewNotice" class="preview-notice" role="status"></div>
     <div class="worksheet-scaler" id="worksheetScaler">
       <div class="worksheet" id="worksheet">
         <div class="empty-state">
@@ -5512,7 +5517,6 @@ function _setGenerateNote(key, params) {
   const msg = _genNoteKey && window.I18n ? I18n.t(_genNoteKey, _genNoteParams || undefined) : '';
   document.querySelectorAll('.gen-note').forEach(n => {
     n.textContent = msg;
-    n.style.display = msg ? '' : 'none';
   });
   // Every Generate button reflects the blocked state; aria-disabled (not `disabled`) keeps them
   // focusable so a screen-reader user can still reach the control and hear why.
@@ -5530,7 +5534,7 @@ function _setPresetNameNote(key) {
   const msg = _presetNameNoteKey && window.I18n ? I18n.t(_presetNameNoteKey) : '';
   const note = document.getElementById('presetNameNote');
   const btn = document.getElementById('savePresetBtn');
-  if (note) { note.textContent = msg; note.style.display = msg ? '' : 'none'; }
+  if (note) note.textContent = msg;
   if (btn) btn.setAttribute('aria-disabled', msg ? 'true' : 'false');
 }
 function onPresetNameInput() {
@@ -6953,19 +6957,18 @@ function showPreviewNotice(text, opts = {}) {
     btn.addEventListener('click', hidePreviewNotice);
     el.appendChild(btn);
   }
-  el.style.display = 'flex';
   if (_previewNoticeTimer) { clearTimeout(_previewNoticeTimer); _previewNoticeTimer = null; }
   if (opts.autohide) _previewNoticeTimer = setTimeout(hidePreviewNotice, opts.autohide);
 }
 function hidePreviewNotice() {
   const el = document.getElementById('previewNotice');
-  if (el) el.style.display = 'none';
+  if (el) el.textContent = '';
   _previewNoticeLast = null;
   if (_previewNoticeTimer) { clearTimeout(_previewNoticeTimer); _previewNoticeTimer = null; }
 }
 function rerenderPreviewNotice() {
   const el = document.getElementById('previewNotice');
-  if (!el || el.style.display === 'none' || !_previewNoticeLast) return;
+  if (!el || !_previewNoticeLast) return;
   showPreviewNotice(_previewNoticeLast.render, _previewNoticeLast.opts);
 }
 
@@ -7195,7 +7198,7 @@ function onGenerateSettled() {
 // rerenderCurrentSheet for a presentation change, the chunked Class Set pump appending sheets after
 // enableButtons already ran), so the count follows the worksheet's own child list through one
 // observer, coalesced to a frame, rather than a call at every writer. 0 pages (empty state, before
-// the first Generate) hides both hosts.
+// the first Generate) empties the line and hides the badge.
 function updatePrintCount() {
   const ws = document.getElementById('worksheet');
   const n = ws ? ws.querySelectorAll('.sheet, .bingo-page, .caller-sheet').length : 0;
@@ -7204,7 +7207,7 @@ function updatePrintCount() {
     const el = document.getElementById(id);
     if (!el) return;
     el.textContent = text;
-    el.hidden = !text;
+    if (id !== 'printCount') el.hidden = !text;   // the count line is a live region: emptied, never hidden
   });
 }
 (function () {
@@ -13918,7 +13921,6 @@ function _setShareNotice(msg) {
   const el = document.getElementById('shareNotice');
   if (!el) return;
   el.textContent = msg || '';
-  el.style.display = msg ? '' : 'none';
 }
 function serializeSettings() {
   const base = location.origin + location.pathname;
