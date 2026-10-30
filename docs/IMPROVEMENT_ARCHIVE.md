@@ -95381,3 +95381,31 @@ _(prior)_ **Next session (S578):** **PR `claude/improveloop-s573` (S573–S577, 
 ### from Done
 
 - [x] 2026-10-30 | (same build) | torah_trainer.html, reading_assignments.html, js/ivrit-assignments.js, js/ivrit-account.js, db/migrations/0009, db/functions/manage-students, CSV, docs, sw.js | **Assignments: deep links, enrolment, class view, verse picking, bulk logins**: `?assignment=<code>` (signed out: a sign-in note on the student form; signed in: claims by itself); 0009 lets a teacher enrol own students (Who: everyone / a class / chosen), so the student panel leads with "You have N assignments"; a verse checklist stores `reading.skip` (dimmed with a tag on the student's page); the teacher page gains an Add class dialog, five username styles, one-password-for-all and new-password-each (`reset_passwords`), a students × assignments grid with Add, and Copy link. Fixed on the way: a replacement look ended the first view without restoring the student's own values (`linkViewDiscard`). RLS 164/164, smoke 122/122. | found this build
+
+
+<!-- archived by compact-ledger at the S580 boundary, 2026-10-30 -->
+## Compaction (S580, 2026-10-30) — moved verbatim from the live ledger
+
+### from Candidates (prioritized, top = next)
+
+- [ ] P3 (**S579 D — measured, no small fix**) | trope_atlas.html, js/trope-staff.js | **The atlas's load and its Stacked / Grid / key re-draws are style + layout of ~32,000 SVG nodes (594 staffs × ~53), not script**: at 4× CPU layout 520 + style 416 of 2.7 s; `content-visibility:auto` on the cells cuts 36 % but 594 of 598 sing buttons leave the accessibility tree (refuted, findings S579), `contain:` and `table-layout` move nothing — the way down is fewer nodes per staff in the shared engine (proved by the tutor's staff snapshot). | found S577
+
+### from Done
+
+- [x] 2026-10-30 | (S574 close-out) | branch/deploy note | **S574 = M on the generator (2nd: S436 → S574): 34 views × 8 cells by real clicks (272 loads, real fonts), a census of every text node, hover 3,478 controls × 2 themes, dark fills, live regions by CDP, the header 1px × EN/HE × mouse/touch, RTL 887 blocks; every plant fired. FOUND 10, FIXED 2 (+ torah's and the dictionary's live regions …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-30 | `491af144` | hebrew_dictionary.html | (S574, queue) **The saved-list banner and the print-size note stay live regions while empty** (pattern `live-region-display-none-while-empty`). | `m574/fix4.mjs` × 4 cells by real input: notRendered → status (HEAD fails 4); layout identical
+
+- [x] 2026-10-30 | `4d5d0089` | torah_trainer.html, scripts/loop | (S574, queue) **The Audio tab's "no recording" and "pitch unavailable" notes stay live regions while empty** (same pattern; the S570 probe reads the note's text). | `m574/fix3.mjs` × 4 cells (HEAD fails 4); drawer rows identical; S570 probe 4/4
+
+- [x] 2026-10-30 | `88665ff0` | hebrew_blend_generator.html | (S574) **Hebrew on the Real Words sheets is upright**: Self-Check's "tap to flip" in the Hebrew UI (30 a sheet, from S571's `c563fb2e`) and the crossword's "Not placed:" words (pattern `hebrew-faux-italic`). | `m574/fix2.mjs` × 8 cells, screen + print media (HEAD fails 8)
+
+- [x] 2026-10-30 | `1219f340` | hebrew_blend_generator.html, sw.js | (S574) **At tablet widths the header's buttons take their own row under a one-line title** (701–960px, Hebrew 701–860: 142–340 → 122px; gate 3, the maintainer's choice). | 1px × EN/HE × mouse/touch vs HEAD; probe `d69e701f` 4/4 (the pre-fix tree fails 4)
+
+### from Per-session log (one line per session)
+
+- 2026-10-26 | **S559** | iters: 5 | tools: FM ×2, name_tags, trope, name-tags.md, sw | patterns fixed: — | pass run: H (fontmaker, 5th) | SW: v1100→v1101
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S579 (2026-10-30):** loop docs S579 · trope_atlas, flash, locales, CSV, sw.js, smoke-account, ops.md, torah-and-trope.md, loop docs S578 · dashboard, generator, dashboard.md, scripts/loop S577 · resources, contact, privacy, terms, sitemap S575 · torah, dictionary S574 · scripts, accounts-and-cloud.md S573 · pwa.js, name_tags, generator.md S572 · letter_learner S569 · trope S566 · FM, font-maker.md S565 · projects S561 · name-tags.md S559 · shared-components.md S558 · i18n.md, index S552 · parsha_emojis S550 · skill, ledger scripts S544
