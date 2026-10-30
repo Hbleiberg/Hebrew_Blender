@@ -3829,6 +3829,7 @@ function syncOtherSubUI() {
     if (wordsSource === 'alldict' && !ALL_WORDS_DATA) fetchAllWordsData();
     updateWordsCount();
   }
+  _retireDictLoadingNote();
 }
 
 function fetchEmojiData() {
@@ -3935,7 +3936,7 @@ function fetchAllWordsData() {
       // switch), and it also showed a dictionary error to My-Word-Lists users, who never need it.
       updateWordsCount();
     })
-    .finally(() => { _wordsFetchP = null; }));
+    .finally(() => { _wordsFetchP = null; _retireDictLoadingNote(); }));
 }
 
 // Resolve the current word pool: [{word, translit, translation}].
@@ -4180,6 +4181,7 @@ function setOtherMode(on) {
   if (on && nameLetterMode) setNameLetterMode(false);
   updateListeningAvailability();
   _retireWsHandoffNote();
+  _retireDictLoadingNote();
   saveSettings();
 }
 
@@ -4863,6 +4865,11 @@ function _setStartNote(keys) {
 // precedent). Start re-validates and re-shows anything still blocked.
 function _retireStartNote(key, ok) {
   if (ok && _startNoteKeys.includes(key)) _setStartNote(_startNoteKeys.filter(k => k !== key));
+}
+// "Dictionary still loading" is about the download: it retires once the file settles or the deck stops drawing on
+// it, rather than standing over a Numbers deck, or over a dictionary that has landed, until Start is pressed again.
+function _retireDictLoadingNote() {
+  _retireStartNote('flashcards.start.err_dict_loading', !_wordsFetchP || !(otherModeActive && otherSubMode === 'words' && wordsSource === 'alldict'));
 }
 // Stores the KEY (like _setStartNote) so applyI18n can re-render a note still on screen
 // after a live EN⇄HE switch.
@@ -8764,6 +8771,7 @@ function wireSetupScreen() {
     wordsInlinePool = null;
     syncWordsSourceUI();
     if (wordsSource === 'alldict' && !ALL_WORDS_DATA) fetchAllWordsData();
+    _retireDictLoadingNote();
     updateWordsCount();
     saveSettings();
   }));
