@@ -1800,11 +1800,23 @@ take or an upload runs behind a collapsed panel the button's label mirrors the r
 page's: Assign closes the drawer first (the Copy bar's pattern) and Escape returns the focus to the gear.
 `asgApplyI18n()` re-renders the lists and the banner on a language switch (wired from `applyI18n`).
 
+- **Deep link:** `?assignment=<code word>` (`IvritAssignments.deepLink`, the *Copy link* on the success card and on
+  the teacher page). Signed out, `#ttAsgLinkNote` above the reading asks for the student sign-in (its button is
+  `IvritAccount.openMenu({ stage: 'student' })`); a signed-in student claims the code once the module is loaded
+  (`asgClaimCode`, the same walk as the form) and the parameter is dropped from the address bar. A teacher's
+  visit ignores it. `?assignTo=<student id>` opens the Assign dialog with that student pre-ticked (the class view's
+  *Assign a new reading…*).
 - **Teacher:** *Assign this reading…* takes `resolveRef()`'s `ref` — accepted only when it is one Torah range
   (`ASSIGN_REF_RE`, then `parseSharedRef`); a haftarah, a megillah or a multi-part holiday reading is refused with a
   hint toast. The dialog (title, a generated code word with *New code word*, minutes 1–30, due date, class, keep-for
   days, classmates may listen) creates the row through `IvritAssignments.assignments.create` with the Trainer's own
-  identifiers in `reading` (`parshahKey`, `scope`, `holidayKey`, `holidayPart`, `readingCycle`) and, while the dialog's
+  identifiers in `reading` (`parshahKey`, `scope`, `holidayKey`, `holidayPart`, `readingCycle`), the **Who** choice
+  (everyone with the code word; a class, whose students are enrolled on create; chosen students from a checklist
+  grouped by class — the enrolment is a second write through `assignments.enrol`, reported on the success card
+  and never fatal, since the code word still works), the **Verses** checklist (every verse of `currentVerses`,
+  all ticked or the Copy bar's ticks when any; the unticked keys travel as `reading.skip`, and the student's
+  page sets those verses aside — `asgMarkSkipped` after every `renderText`, `tt-verse-skipped` + a tag — only
+  while the assignment's own ref is on screen) and, while the dialog's
   *Students see this reading with my display settings* box is ticked (on by default whenever the look differs from
   the defaults; disabled with a note when it does not), the teacher's look as `reading.view` — `linkDisplayObject()`,
   the very object the practice link's `?s=` encodes, so the same `LINK_DISPLAY` validators and the same
@@ -1822,8 +1834,9 @@ page's: Assign closes the drawer first (the Copy bar's pattern) and Escape retur
   idle → starting → recording → stopped → uploading → done / failed are one `aria-live` line (`#ttRecState`), with
   the upload announced at quarter steps only. A failed upload keeps the pending row for *Try the upload again*
   unless the server's answer rules it out (`closed`, `not_accepted`, `too_large`, `unsupported_type`, `not_found`).
-  *My recordings* lists each joined assignment with its current take, status and the teacher's comment; *Re-record*
-  reloads the range and focuses Record. *Classmates' recordings* appears only while `peers_can_listen`.
+  The panel leads with *You have N assignments* (the joined list, open ones counted; the folded top button carries
+  the count), each with *Open the reading*, its current take, status and the teacher's comment; *Re-record*
+  reloads the range and focuses Record; the code form sits below under *Have a code word from your teacher?*. *Classmates' recordings* appears only while `peers_can_listen`.
 - **Strings** are `torah.assign.*`; the management page's are `assign.*`; the module's errors `assign.error.*`; the
   chip's `shared.account.student_*`.
 

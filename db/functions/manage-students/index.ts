@@ -18,6 +18,8 @@
 //                            created; a students row that cannot be written removes the auth user again. Caps:
 //                            60 rows per call, 200 students per teacher.
 //   action "reset_password"  { id, password } → a new password for one of this teacher's students.
+//   action "reset_passwords" { ids: [..], password } → the same new password for up to 60 of this teacher's students
+//                            (the class setup page's "one password for everyone shown"); per-id results.
 //   action "delete"          { id } → removes one of this teacher's students (auth user; the rows cascade; the
 //                            audio objects go at the Worker's next daily reconcile).
 // Replies: { ok: true, ... } or { error: <one word> } — never a stack trace.
@@ -141,6 +143,22 @@ Deno.serve(async (req: Request) => {
       const { error } = await admin.auth.admin.updateUserById(id, { password });
       if (error) { console.error('manage-students reset:', id, error.message); return reply(req, 500, { error: /password/i.test(error.message) ? 'invalid_password' : 'reset_failed' }); }
       return reply(req, 200, { ok: true, id });
+    }
+
+    if (action === 'reset_passwords') {
+      const ids = Array.isArray(body.ids) ? body.ids.filter((x: unknown) => typeof x === 'string') : [];
+      const password = typeof body.password === 'string' ? body.password : '';
+      if (!ids.length || ids.length > MAX_PER_CALL) return reply(req, 400, { error: 'bad_request' });
+      if (password.length < PASSWORD_MIN || password.length > PASSWORD_MAX) return reply(req, 400, { error: 'invalid_password' });
+      const results: Array<Record<string, unknown>> = [];
+      for (const id of new Set(ids)) {
+        const s = await ownStudent(admin, teacherId, id);
+        if (!s) { results.push({ id, error: 'not_found' }); continue; }
+        const { error } = await admin.auth.admin.updateUserById(id, { password });
+        if (error) { console.error('manage-students reset_passwords:', id, error.message); results.push({ id, error: /password/i.test(error.message) ? 'invalid_password' : 'reset_failed' }); continue; }
+        results.push({ id, username: s.username });
+      }
+      return reply(req, 200, { ok: true, results });
     }
 
     if (action === 'delete') {

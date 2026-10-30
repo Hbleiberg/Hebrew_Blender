@@ -43,7 +43,8 @@
  *   openNameStep()             shows the required-name step (the saves module never calls it; tests do)
  *   sessionSource()            'new' when this page load established the session (a sign-in here, or an auth
  *                              callback), 'restored' when it came from storage, null when signed out
- *   openMenu()                 opens the chip's menu (false when no chip is mounted) — for a panel's Sign in button
+ *   openMenu(opts)             opens the chip's menu (false when no chip is mounted) — for a panel's Sign in button;
+ *                              { stage: 'student' } opens it on the username + password form where the page offers it
  *   focusChip()                puts the focus on the chip (false when none is shown) — for a screen whose opener is gone
  *   role()                     'student' | 'teacher' | null — from the token's app_metadata (only the server writes
  *                              it); storedRole() reads the stored session without the SDK, as storedUserId does
@@ -1327,7 +1328,8 @@
     signOutHandled: function () { return signOutHandledUid; },
     openNameStep: openNameStep,
     sessionSource: function () { return sessionSource; },
-    openMenu: function () { if (!chip || !mounted) return false; openMenu(); return true; },   // a page's own "Sign in" button opens the chip's menu
+    // A page's own "Sign in" button opens the chip's menu; { stage: 'student' } opens it on the student form (where offered).
+    openMenu: function (opts) { if (!chip || !mounted) return false; if (opts && opts.stage === 'student' && initOpts && initOpts.studentSignIn) { menuStage = 'student'; noteState = null; } openMenu(); if (opts && opts.stage === 'student') { var u = chip.menu.querySelector('[data-ivk="username"]'); if (u) u.focus(); } return true; },
     focusChip: function () { if (!chip || !mounted || !chip.btn.getClientRects().length) return false; chip.btn.focus(); return true; },
     profile: profile,
     setDisplayName: setDisplayName,

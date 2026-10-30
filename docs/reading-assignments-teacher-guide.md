@@ -16,20 +16,24 @@ only asks you to sign in; students never see it do anything.)
 ## 2. Make your students' logins (once per class)
 
 1. Press **Students, assignments and recordings**. The page that opens is yours alone.
-2. Under *Add students*, type one name per line — a first name or a nickname is enough; it is what the student
-   sees on screen. If you keep a class list in the Classroom Dashboard, Name Tags or Flash Cards on this
-   computer, the drop-down beside the box can add those names for you.
-3. (Optional) Make a class first under *Classes* and pick it in *Class for these students*, so the page can
-   later tell you who has not submitted.
-4. Press **Preview usernames and passwords**. Each student gets a username (like `ruth.47`) and a three-word
-   password (like `blue-tiger-42`). Change any of them if you like — usernames are lowercase letters, digits and
-   dots; passwords at least 8 characters.
+2. Press **Add class…** at the top and name the class (optional, but it is what lets you assign a reading to the
+   whole class at once and see who has not submitted).
+3. Under *Add students*, type one name per line — a first name or a nickname is enough; it is what the student
+   sees on screen. Type a last name too if you want usernames like `ruth.cohen`. If you keep a class list in the
+   Classroom Dashboard, Name Tags or Flash Cards on this computer, the drop-down beside the box can add those
+   names for you. Pick the class in *Class for these students*.
+4. Choose a **Username style** (first name + number, first.last, initial + last name…) and press **Preview
+   usernames and passwords**. Each student gets a username and a three-word password (like `blue-tiger-42`).
+   Change any of them if you like — usernames are lowercase letters, digits and dots; passwords at least 8
+   characters.
 5. Press **Create … accounts**. The new logins appear in a table, and **Print login cards** prints one small
    card per student with their username and password and where to go. **This is the only time a password is
    shown.** Print or write them down, then press **Hide the passwords**.
 
 Lost a password? In the students list press **Reset password** next to the name: a new one is made and shown
-once. **Remove** deletes the login and every recording it made.
+once. For a whole class, **Set one password for everyone shown…** gives every student in the list the same
+password (handy for a first lesson), and **New password for each shown** gives each a fresh random one; both
+show the new logins once, with *Print login cards*. **Remove** deletes the login and every recording it made.
 
 ## 3. Assign a reading
 
@@ -40,21 +44,31 @@ once. **Remove** deletes the login and every recording it made.
    transliteration, translation, the font and sizes, the layout — exactly as you would for yourself.
 3. Open Settings → **Teacher** → **Assign this reading…**. Give it a title, keep the suggested code word or press
    *New code word*, set the maximum length (10 minutes to start), an optional due date, and whether
-   **classmates may listen** to each other's recording (they never see your feedback). The box **Students see
-   this reading with my display settings as they are now** is ticked whenever your look differs from the
-   defaults; the line under it says what will travel. Untick it if students should keep their own settings.
-4. Press **Create assignment**. The code word appears large — write it on the board or send it home. Students
-   type it in the Trainer; it does not matter if they use capitals, spaces or dashes.
+   **classmates may listen** to each other's recording (they never see your feedback).
+4. **Who**: *Anyone of my students who types the code word*, one **class** (every student in it right now), or
+   **Chosen students…** (tick them). Students you choose see the assignment in their Torah Trainer at once,
+   with nothing to type; the code word still works for anyone else of yours.
+5. **Verses**: every verse of the reading is ticked. Untick the ones to leave out (the student still sees them
+   on the page, dimmed and marked *not part of the assignment*). If you had ticked verses in the Copy bar
+   first, the list starts from that.
+6. The box **Students see this reading with my display settings as they are now** is ticked whenever your look
+   differs from the defaults; the line under it says what will travel. Untick it if students should keep their
+   own settings.
+7. Press **Create assignment**. The code word appears large — write it on the board or send it home — and
+   **Copy link** copies an address you can post in Google Classroom or anywhere else: a student who opens it
+   signs in with their username and the assignment opens by itself.
 
 Each assignment has its own code word, and the same code word cannot be reused by you while the first one
 exists. A code word only works for *your* students.
 
 ## 4. What a student does
 
-1. Opens the same address and presses the account button, then **Student? Sign in with your username**, and
-   types the username and password from their card.
-2. A panel titled *Reading assignments* appears above the reading. They type the code word in *Code word from
-   your teacher* and press **Open the reading**. The portion loads with every tool they already know (the
+1. Opens the same address (or your link) and presses the account button, then **Student? Sign in with your
+   username**, and types the username and password from their card.
+2. A panel titled *Reading assignments* appears above the reading. It leads with **You have N assignments**
+   and an **Open the reading** button for each one you gave them; a code word is needed only for an
+   assignment you did not give them directly (*Have a code word from your teacher?* below). With your link,
+   the assignment opens by itself after the sign-in. The portion loads with every tool they already know (the
    chanted recording to listen to first, and so on). If you sent your display settings with it, a note says so
    and offers *Keep these settings* or *Use my settings*; nothing of theirs changes unless they press Keep.
    **Hide** folds the panel away to a *Reading assignments* button at the top of the page, which brings it back;
@@ -70,6 +84,11 @@ exists. A code word only works for *your* students.
 Students should sign out on a shared computer (the account button → Sign out).
 
 ## 5. Listen and give feedback
+
+The **Class view** on the assignments page is one table: every student against every open assignment, with the
+status in each cell (assigned, submitted, re-record, approved). **Add** in an empty cell puts that student on
+that assignment; **Assign a new reading…** on a row opens the Torah Trainer with that student already chosen, so
+different students can get different readings.
 
 On the assignments page, press **Recordings** on an assignment. For each student you see the latest recording
 with a **Play** button, a box for your comment, and **Ask for a re-recording**. Press **Save feedback**; the

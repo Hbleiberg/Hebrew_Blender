@@ -28,7 +28,10 @@
  *   upload(submissionId, blob, {mime, duration, onProgress})   PUT to the Worker with progress; marks the row uploaded
  *   audio(submissionId)                     Promise<Blob> — plays from a blob: URL; no shareable address exists
  *   recorder.supported() / recorder.pickMime() / recorder.create(opts)   MediaRecorder, mono, 32 kbps, timed
- *   codeWord.generate() / codeWord.normalize(s) / passphrase() / usernameFor(name)
+ *   codeWord.generate() / codeWord.normalize(s) / passphrase() / usernameFor(name, style) / deepLink(code)
+ *     usernameFor styles: 'first.nn' (first name + '.' + two digits, the default), 'first.last', 'firstnn', 'flast'
+ *     (first initial + last name), 'first.l' (first name + '.' + last initial); a name without a last name falls
+ *     back to the digits; deepLink gives the Torah Trainer address that opens the assignment (?assignment=<code>)
  *   errorText(err)                          one localized sentence for any failure above
  */
 (function () {
@@ -76,12 +79,29 @@
   function normalizeCode(s) { return String(s || '').toLowerCase().replace(/[\s\-_]/g, ''); }
   function passphrase() { return wordPair() + '-' + twoDigits(); }         // the same shape; 8+ characters always
   // A username from a display name: the first word's ASCII letters and digits, else "student", plus two digits.
-  function usernameFor(name) {
-    var first = String(name || '').trim().split(/\s+/)[0] || '';
-    var base = first.normalize ? first.normalize('NFD') : first;
-    base = base.replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 20);
-    if (base.length < 2) base = 'student';
-    return base + '.' + twoDigits();
+  function asciiPart(s, max) {
+    var base = s.normalize ? s.normalize('NFD') : s;
+    return base.replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, max);
+  }
+  var USERNAME_STYLES = ['first.nn', 'first.last', 'firstnn', 'flast', 'first.l'];
+  function usernameFor(name, style) {
+    var parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+    var first = asciiPart(parts[0] || '', 20), last = asciiPart(parts.length > 1 ? parts[parts.length - 1] : '', 20);
+    if (first.length < 2) first = 'student';
+    if (USERNAME_STYLES.indexOf(style) < 0) style = 'first.nn';
+    if (!last) style = style === 'first.nn' || style === 'firstnn' ? style : 'first.nn';   // a single name: the digits keep it unique
+    var u;
+    if (style === 'first.last') u = first + '.' + last;
+    else if (style === 'flast') u = first.charAt(0) + last;
+    else if (style === 'first.l') u = first + '.' + last.charAt(0);
+    else if (style === 'firstnn') u = first + twoDigits();
+    else u = first + '.' + twoDigits();
+    u = u.slice(0, 30).replace(/\.$/, '');
+    if (u.length < 3) u = (u + twoDigits()).slice(0, 30);
+    return u;
+  }
+  function deepLink(code) {
+    return location.origin + '/torah_trainer.html?assignment=' + encodeURIComponent(normalizeCode(code) ? String(code || '').trim() : '');
   }
 
   /* ---------- teachers ---------- */
@@ -112,6 +132,7 @@
     },
     create: function (rows) { return invoke('manage-students', { action: 'create', students: rows }).then(function (d) { return d.results || []; }); },
     resetPassword: function (id, password) { return invoke('manage-students', { action: 'reset_password', id: id, password: password }); },
+    resetPasswords: function (ids, password) { return invoke('manage-students', { action: 'reset_passwords', ids: ids, password: password }).then(function (d) { return d.results || []; }); },
     remove: function (id) { return invoke('manage-students', { action: 'delete', id: id }); },
     setClass: function (id, classId) { return client().then(function (c) { requireUser(); return c.from('students').update({ class_id: classId || null }).eq('id', id).select('id, class_id'); }).then(unwrap).then(function (rows) { if (!rows || !rows.length) throw makeError('not_found', 'student not found'); return rows[0]; }); }
   };
@@ -174,10 +195,21 @@
     update: function (id, f) { return client().then(function (c) { requireUser(); return c.from('assignments').update(cleanAssignment(f)).eq('id', id).select(ASSIGNMENT_COLS); }).then(unwrap).then(function (rows) { if (!rows || !rows.length) throw makeError('not_found', 'assignment not found'); return rows[0]; }); },
     setOpen: function (id, open) { return assignments.update(id, { is_open: !!open }); },
     remove: function (id) { return client().then(function (c) { requireUser(); return c.from('assignments').delete().eq('id', id).select('id'); }).then(unwrap).then(function (rows) { if (!rows || !rows.length) throw makeError('not_found', 'assignment not found'); return true; }); },
-    members: function (id) { return client().then(function (c) { requireUser(); return c.from('assignment_members').select('student_id, joined_at').eq('assignment_id', id); }).then(unwrap); }
+    members: function (id) { return client().then(function (c) { requireUser(); return c.from('assignment_members').select('student_id, joined_at').eq('assignment_id', id); }).then(unwrap); },
+    // Every membership of the teacher's assignments (the class view's grid): the policy scopes the listing.
+    allMembers: function () { return client().then(function (c) { requireUser(); return c.from('assignment_members').select('assignment_id, student_id, joined_at'); }).then(unwrap); },
+    // The teacher enrols their own students (migration 0009's policy); one already enrolled is left as is.
+    enrol: function (id, studentIds) {
+      var rows = (studentIds || []).filter(function (x) { return typeof x === 'string' && x; }).map(function (sid) { return { assignment_id: id, student_id: sid }; });
+      if (!rows.length) return Promise.resolve([]);
+      return client().then(function (c) { requireUser(); return c.from('assignment_members').upsert(rows, { onConflict: 'assignment_id,student_id', ignoreDuplicates: true }).select('assignment_id, student_id'); }).then(unwrap).then(function (r) { return r || []; });
+    },
+    unenrol: function (id, studentId) { return client().then(function (c) { requireUser(); return c.from('assignment_members').delete().eq('assignment_id', id).eq('student_id', studentId).select('student_id'); }).then(unwrap).then(function (rows) { return !!(rows && rows.length); }); }
   };
 
   var SUBMISSION_COLS = 'id, assignment_id, student_id, title, version, is_current, mime_type, duration_seconds, size_bytes, upload_status, status, created_at, updated_at';
+  // Every current take of the teacher's assignments, four columns (the class view's grid): the policy scopes it.
+  function currentAll() { return client().then(function (c) { requireUser(); return c.from('submissions').select('assignment_id, student_id, status, upload_status').eq('is_current', true); }).then(unwrap).then(function (r) { return r || []; }); }
   function withFeedback(c, rows) {
     var ids = (rows || []).map(function (r) { return r.id; });
     if (!ids.length) return Promise.resolve(rows || []);
@@ -189,6 +221,7 @@
       });
   }
   var submissions = {
+    currentAll: currentAll,
     listFor: function (assignmentId) {
       return client().then(function (c) {
         requireUser();
@@ -429,6 +462,8 @@
     codeWord: { generate: generateCode, normalize: normalizeCode },
     passphrase: passphrase,
     usernameFor: usernameFor,
+    USERNAME_STYLES: USERNAME_STYLES.slice(),
+    deepLink: deepLink,
     classes: classes,
     students: students,
     assignments: assignments,
