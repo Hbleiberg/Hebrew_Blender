@@ -814,7 +814,8 @@ the date plus `currentEntry.periodIdx`, a run applies its preset **once**, at it
 period or a long break re-applies on its own boundary. **`_lastScheduleKey` is not a render cache:** clearing it
 re-applies the period's preset over whatever the teacher has typed on the board, so only a restore, an account
 download and a Bulk preset edit Save of the preset on now clear it; `weekChanged()` and `applyI18n()` never do (an
-edit that changes what is on now changes the key by itself). The board follows an edit at once rather than at
+edit that changes what is on now changes the key by itself). The key carries the preset's name, so `renamePreset()`
+renames it there too (either shape), or the next tick would read the renamed period as new. The board follows an edit at once rather than at
 the next 30-second tick: `closeWeekEditor()` and `toggleScheduleSync()` call `checkSchedule()`; inside the open
 editor a paint drag stays one apply, at close. The drawer's preview draws one chip per run. The legacy
 single-day engine (`currentSchedule`) merges consecutive rows naming the same preset the same way (its rows are

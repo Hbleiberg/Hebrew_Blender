@@ -7936,6 +7936,11 @@ function mountSidebarResize(cfg) {
     if (saved) saveSchedulesStorage();   // else a later Load re-injects the dead name into the grid
     _ftRenameNode('hebrewDashboard_presetsFolders', name, nn);
     if (_armedChip === name) _armedChip = nn;
+    // The schedule key names the preset on now (checkSchedule): it takes the new name too, or the next tick reads the
+    // renamed period as a new one and re-applies that preset over whatever the board shows.
+    const sk = _lastScheduleKey;
+    if (sk && sk.endsWith('|' + name)) _lastScheduleKey = sk.slice(0, -name.length) + nn;         // weekly: date|run|preset
+    else if (sk && sk.startsWith(name + '|')) _lastScheduleKey = nn + sk.slice(name.length);    // legacy: preset|until
     weekChanged();                       // saves settings, nulls the 3 caches, re-renders grid/palette/validation/summary/UI
     renderPresets();
     if (refs + saved) showAppToast(I18n.t('dashboard.preset.rename_toast', { name: nn }));
