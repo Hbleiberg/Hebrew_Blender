@@ -557,7 +557,9 @@ try {
   // Every page's inline gtag('config') runs during parse, before the module strips the hash, and reports an
   // explicit page_location: it must drop a hash carrying the link and keep any other hash as before.
   {
-    const gaPages = fs.readdirSync(ROOT).filter(f => f.endsWith('.html') && fs.readFileSync(path.join(ROOT, f), 'utf8').includes('page_location')).sort();
+    // A page is an analytics page by loading the tag, not by carrying the snippet: picked by `page_location`, a page
+    // with the loader and no snippet (no visit counted) or a bare gtag('config') (the code reported) was never checked.
+    const gaPages = fs.readdirSync(ROOT).filter(f => f.endsWith('.html') && fs.readFileSync(path.join(ROOT, f), 'utf8').includes('googletagmanager.com/gtag/js')).sort();
     // Five of them (404, contact, privacy, resources, terms) do not load the account module: no sign-in is asked
     // from them, so no link returns to them, and only their analytics tag has to hold.
     const loadsModule = (f) => /<script src="\/js\/ivrit-account\.js"/.test(fs.readFileSync(path.join(ROOT, f), 'utf8'));
