@@ -464,6 +464,7 @@ body.dark .hi-sun{display:inline-block;}
     border-bottom: 4px solid var(--gold);
   }
   header .star { font-size: 28px; color: var(--gold); flex-shrink: 0; }
+  header > .hdr-title { flex: 1; }
   /* One height for every control in the header row (pattern: row-siblings-with-mismatched-
      heights, S225). These four carry hand-rolled inline styles rather than one shared class,
      so the row ran 29 / 29 / 33 / 35: font-size decides the line box, and both 0.8rem
@@ -2119,6 +2120,18 @@ body.dark .hi-sun{display:inline-block;}
   @media (max-width: 749px), (pointer: coarse) and (max-width: 759px) {
     header { flex-wrap: wrap; row-gap: 8px; }
   }
+  /* Above the MOBILE gate, at tablet widths (an iPad held upright), the title column shrank to 125–250px beside
+     the buttons: three lines of title over a tagline of up to seven, a header 142–223px tall. There the title
+     and tagline take the whole first row and the buttons wrap to their own (~122px). Hebrew's shorter title
+     keeps one line beside the buttons to ~860px, so its gate starts lower. The maintainer's choice (gate 3). */
+  @media (min-width: 701px) and (max-width: 960px) {
+    html:not([lang="he"]) header { flex-wrap: wrap; row-gap: 8px; }
+    html:not([lang="he"]) header > .hdr-title { flex-basis: calc(100% - 48px); }
+  }
+  @media (min-width: 701px) and (max-width: 860px) {
+    html[lang="he"] header { flex-wrap: wrap; row-gap: 8px; }
+    html[lang="he"] header > .hdr-title { flex-basis: calc(100% - 48px); }
+  }
 
   /* ── MOBILE ── */
   @media (max-width: 700px) {
@@ -2554,7 +2567,7 @@ html[lang="he"] .beta-tag { letter-spacing: normal; text-transform: none; }   /*
 <body><a class="skip-link" href="#mainContent" data-i18n="worksheet.a11y.skip_to_worksheet">Skip to the worksheet</a>
 <header>
   <span class="star" aria-hidden="true">✡︎</span>
-  <div style="flex:1;">
+  <div class="hdr-title">
     <h1 data-i18n="worksheet.title">Hebrew Worksheet Generator</h1>
     <p id="headerSub" data-i18n="worksheet.header_sub">Free printable Hebrew worksheets, bingo cards, and decoding drills for Hebrew reading practice with nikkud.</p>
   </div>
