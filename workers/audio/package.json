@@ -1,0 +1,15 @@
+{
+  "name": "ivritsuite-audio-worker",
+  "private": true,
+  "description": "The Cloudflare Worker in front of the private R2 bucket that holds Torah Trainer reading-assignment recordings. One file, no dependencies beyond wrangler for deploying and testing.",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail",
+    "test": "node test/run.mjs"
+  },
+  "devDependencies": {
+    "wrangler": "^4.36.0"
+  }
+}

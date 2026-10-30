@@ -269,6 +269,10 @@ select tst.who('service_role', null);
 select tst.x('the service role (reconcile) may mark a pending row uploaded', format('update public.submissions set upload_status = ''uploaded'', size_bytes = 7 where assignment_id = %L and title = ''sneaky''', :A2), 'ok:1');
 select tst.x('the service role may not change a title', format('update public.submissions set title = ''x'' where id = %L', :SB1), '42501');
 select tst.x('the service role may not change a status', format('update public.submissions set status = ''submitted'' where id = %L', :SB1), '42501');
+select tst.x('the service role may ask what retention is due', 'select * from public.retention_due()', 'ok:0');
+select tst.who('authenticated', :T1, 'teacher');
+select tst.x('a teacher may not call retention_due', 'select * from public.retention_due()', '42501');
+select tst.who('service_role', null);
 select tst.x('the service role deletes a stale row (reconcile)', format('delete from public.submissions where id = %L', :SB4), 'ok:1');
 
 -- ───────── 6. deletion cascades ─────────
