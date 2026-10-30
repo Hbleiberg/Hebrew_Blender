@@ -13394,9 +13394,12 @@ function asgBuildStudentPick() {
   const loose = _asg.students.filter(st => !_asg.classes.some(c => c.id === st.class_id));
   if (loose.length) groups.push({ name: asgT('torah.assign.dlg_no_class'), rows: loose });
   if (!_asg.students.length) { host.appendChild(asgMake('span', 'tt-asg-group', asgT('torah.assign.dlg_students_none'))); return; }
+  // Two students with one display name: each gets its username after the name, so the teacher can tell them apart.
+  const seen = new Map(); _asg.students.forEach(st => { const k = String(st.display_name || '').trim().toLowerCase(); seen.set(k, (seen.get(k) || 0) + 1); });
+  const label = st => st.display_name + (seen.get(String(st.display_name || '').trim().toLowerCase()) > 1 ? ' · ' + st.username : '');
   groups.forEach(g => {
     host.appendChild(asgMake('span', 'tt-asg-group', g.name));
-    g.rows.forEach(st => { const l = asgMake('label'); const cb = asgMake('input'); cb.type = 'checkbox'; cb.value = st.id; l.appendChild(cb); l.appendChild(document.createTextNode(' ' + st.display_name)); host.appendChild(l); });
+    g.rows.forEach(st => { const l = asgMake('label'); const cb = asgMake('input'); cb.type = 'checkbox'; cb.value = st.id; l.appendChild(cb); l.appendChild(document.createTextNode(' ' + label(st))); host.appendChild(l); });
   });
 }
 function syncAsgTarget() {

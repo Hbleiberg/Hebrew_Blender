@@ -673,6 +673,14 @@ function modalClose(id) {
 }
 /* ── bulk passwords: everyone the roster shows (the class filter) ── */
 function shownStudents() { const f = $('classFilter').value; return students.filter(s => !f || s.class_id === f); }
+// Two students with one display name: the label carries the username after the name, so a list that shows names only
+// (the class view, the recordings) still tells them apart. Unique names stay plain.
+function studentLabel(s) {
+  if (!s) return '';
+  const k = String(s.display_name || '').trim().toLowerCase();
+  const dup = students.filter(x => String(x.display_name || '').trim().toLowerCase() === k).length > 1;
+  return dup ? s.display_name + ' · ' + s.username : s.display_name;
+}
 function bulkOne() {
   const rows = shownStudents(); if (!rows.length) { say('studentsStatus', () => t('assign.students.bulk_none'), true); return; }
   $('pwDlgNote').textContent = tn('assign.students.bulk_dlg_note', rows.length);
@@ -729,7 +737,7 @@ function renderClassView() {
   thead.appendChild(tr); table.appendChild(thead);
   const tbody = el('tbody');
   rows.forEach(s => {
-    const r = el('tr'); r.appendChild(el('th', '', s.display_name)).scope = 'row';
+    const r = el('tr'); r.appendChild(el('th', '', studentLabel(s))).scope = 'row';
     cols.forEach(a => {
       const td = el('td'); const st = gridStatus(a, s);
       if (!st) {
@@ -881,7 +889,7 @@ function statusBadge(s) {
 function renderSub(s) {
   const box = el('div', 'sub-row');
   const head = el('div', 'sub-head');
-  head.appendChild(el('strong', '', s.student_name || t('assign.subs.unknown_student')));
+  head.appendChild(el('strong', '', (() => { const st = students.find(x => x.id === s.student_id); return st ? studentLabel(st) : (s.student_name || t('assign.subs.unknown_student')); })()));
   head.appendChild(el('span', '', s.title));
   head.appendChild(el('span', 'muted', t('assign.subs.version', { n: s.version }) + (s.is_current ? '' : ' · ' + t('assign.subs.older'))));
   head.appendChild(el('span', 'muted', fmtDur(s.duration_seconds) + ' · ' + fmtDate(s.created_at)));
