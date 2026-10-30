@@ -5484,6 +5484,13 @@ function loadShareCode() {
     saveSettings();
     shareErr('');
     startPractice();
+    // An All Dictionary deck on a first visit: the file is still on its way, so startPractice stopped on its
+    // "still loading" note. Start once it lands, as an emoji code (startPractice's own wait) and the ?s= link do,
+    // unless the reader has moved on meanwhile (another deck, or a drill already running).
+    if (_wordsFetchP && !ALL_WORDS_DATA) _wordsFetchP.then(() => {
+      const setup = document.getElementById('screenSetup');
+      if (otherModeActive && otherSubMode === 'words' && wordsSource === 'alldict' && setup && setup.classList.contains('active')) startPractice();
+    });
   } catch (e) {
     shareErr(I18n.t('flashcards.share.invalid_code'));
   }
