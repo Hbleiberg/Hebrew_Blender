@@ -95314,3 +95314,36 @@ _(prior)_ **Next session (S574):** **PR `claude/improveloop-s573` (S573, #377): 
 
 _(prior)_ **Next session (S577):** **PR `claude/improveloop-s573` (S573–S576, #377): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1137**, FM **5.59**, corpus ?v=7. ⚑ drift: main=a7fa5f1 sw=v1137 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ **The Trope Atlas (unlisted, `9e51b6e`): its first N and P are due by S578 — S577 takes one, S578 the other.** ⚑ Then stalest: H dictionary (S440), C torah (S441), N torah (S448); A/E/L/K 46 sessions old. ⚑ Unaudited since it landed: the Torah Trainer's per-mark trope colouring (`a7fa5f1`). ⚑ 54 seeds.
 ⚑ Sync P2 (S573): a write after a hydration's plan is not sent. ⚑ The account page signed in is unprinted (needs `--sdk`): the next G or P on the chrome. ⚑ Gate 4 to propose with phone shots: the generator's blend sheets past a phone's left edge. ⚑ smoke-sync D31 flake (P4). ⚑ Never `content-visibility` on interactive cards (AX tree, findings S576). ⚑ Ports at the next A: the `m554/`–`d576/` harnesses; traps 352, 356–448. ⚑ Queues: generator 27, FM 20, dictionary 11, torah 11, dashboard 8, name_tags 8, flash 7, PE 5, trope 3, LL 2, index 1, privacy 1, contact 1.
+
+
+<!-- archived by compact-ledger at the S579 boundary, 2026-10-30 -->
+## Compaction (S579, 2026-10-30) — moved verbatim from the live ledger
+
+### from Candidates (prioritized, top = next)
+
+- [ ] P4 (**NEW S578 P — not reachable today**) | index.html | **Erase All's bounded flush names 7 of the 10 synced tools** (written before Letter Learner, Emoji Torah and Name Tags joined `var TOOLS`): a hub write to one of the three within 2 s of the last confirm would stay unsent; the two dialogs outlast the 2 s debounce and the confirm counts it as unsynced, so read the module's list when the hub is next touched. | found S578
+
+- [ ] P4 (**NEW S568 M — suite-wide; S578: wider than two, a page-level rule, census first**) | torah, dashboard, FM, generator | **Buttons render in the UA font (Arial), not Source Sans 3**: S578's census (every `<button>` whose family is a bare button's) counts dashboard 50, generator 7, torah 7, FM 3 per cell — `#fsExitBtn` everywhere, torah's audio bar and mini rate, the generator's sidebar toggles and bingo steps, the dashboard's `.btn-xs` and Schedule Sync's Copy / Add / iCal / Print; one `button { font-family:inherit }` per page, then every changed width checked. | found S568
+
+### from Done
+
+- [x] 2026-10-30 | (S573 close-out) | branch/deploy note | **S573 = P on Flash Cards (its first P alone since S435; 81 commits to the page): all 7 smokes with `--sdk`, static 57 checks (plants 9/9), live read-only clean, 3 signed-in probes by real clicks (the `?wl=` race in 3 orders + a second sync, a `?s=` drill with a mid-drill download, the toggles). FOUND 5, FIXED 2 (+2 generator contrast …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-30 | `e8392bf1` | hebrew_blend_generator.html | (S573, queue) **The answer keys' gold line, Fill Vowels' answers and the Real Words flip hint read at AA on screen** (`--gold-text`; pattern `contrast-below-AA-on-a-tinted-or-coloured-plate`). | probe × 5 cells (HEAD fails 5); lowest 4.52
+
+- [x] 2026-10-30 | `201b73ca` | hebrew_blend_generator.html | (S573, queue) **Self-Check's counts, Got it button and card badges read at AA in both themes** (2.19–3.76 → ≥ 4.67; same pattern). | probe × 5 cells (HEAD fails 5)
+
+- [x] 2026-10-30 | `28cd68ae` | flash_cards.html | (S573) **Loading or playing a preset keeps this device's audio, voice speed, home button and two-sided printing** (gate 2: the maintainer's choice). | probe × 10 cells by real clicks (HEAD fails 10)
+
+- [x] 2026-10-30 | `2d6fcaee` | flash_cards.html, smoke-sync, sw.js | (S573) **A `?wl=` list that was only in the account opens once its sync ends, and the account keeps it** (it stayed unsent; the tab's next sync reverted it). | smoke-sync D41 7/7 (HEAD fails 4); sync 228/228, migration 47/47, tools 21/21
+
+### from Per-session log (one line per session)
+
+- 2026-10-26 | **S558** | iters: 5 | tools: trope ×2, torah, letter_learner, name_tags, shared-components.md, sw | patterns fixed: dark-base-rule ×1 (2 carriers), tour-step-in-a-hidden-view ×1 | pass run: M (trope, 3rd) | SW: v1099→v1100
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- P accounts & cloud (one surface): 2026-10-30 (**S578 — 17th P, `trope_atlas.html` (its first; no account wiring by design): arm 1 by real input on a stored session (nothing requested or touched; the tutor the control), CSP 23 pages, `CORE_ASSETS`, `TOOLS` = the CHECK, live read-only clean, smoke-account `--sdk` (its J widened, planted). FOUND 3, FIXED 2 (+2 queue). P-next: generator (S463), chrome (S477).**)
+
+_(prior)_ **Next session (S578):** **PR `claude/improveloop-s573` (S573–S577, #377): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1138**, FM **5.59**, corpus ?v=7. ⚑ drift: main=a7fa5f1 sw=v1138 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ **The Trope Atlas's first P is due now (rotation override 4; its N ran S577); never audited, it heads C, D, G, H, M too.** It has no account wiring by design: if clean by mid-session, a second surface (generator S463). ⚑ Then: H dictionary (S440), C torah (S441). ⚑ Unaudited since it landed: the Torah Trainer's per-mark trope colouring (`a7fa5f1`). ⚑ 54 seeds.
+⚑ Sync P2 (S573): a write after a hydration's plan is not sent. ⚑ The account page signed in is unprinted (needs `--sdk`): the next G or P on the chrome. ⚑ Gate 4 to propose with phone shots: the generator's blend sheets past a phone's left edge; gate 2: the atlas's phone default (Awaiting). ⚑ smoke-sync D31 flake (P4). ⚑ Never `content-visibility` on interactive cards (AX tree, findings S576). ⚑ Touch swipes: raw `Input.dispatchTouchEvent` (trap 449). ⚑ Ports at the next A: the `m554/`–`n577/` harnesses; traps 352, 356–451. ⚑ Queues: generator 26, FM 20, dictionary 11, torah 11, name_tags 8, flash 7, dashboard 7, PE 5, atlas 3, trope 3, LL 2, index 1, privacy 1, contact 1.

@@ -14,8 +14,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P2 (**NEW S559 H — verify first**) | Hebrew_Font_Maker.html | **5 of 132 untouched starting fonts fail the export's shaping check**: "Right-meteg check failed … expected -49/166, got -49/167" (BenOr Rashi; Miriam CLM 178/169, Shuneet Square 125/150, Shuneet Classic 97/122) and "Hataf Patach + ZWJ + meteg did not compose" (Rommvilna), so a first export says "vowels/trop may be misplaced". …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] P3 (**NEW S577 N — pattern `install-banner-over-a-sheet's-bottom-controls`; the atlas at the cap**) | trope_atlas.html | **The iOS install hint covers the contents drawer's last links** (3 on an SE, 2 on a 13): the siblings' `body:has(#atIndex.open)` rule. | found S577
-
 - [ ] P3 (**NEW S577 N**) | trope_atlas.html | **On a phone the melody table's sign column takes 170px of a 294–386px box**, so beside it a figure shows its clef and key only (546px columns): a narrower sign column under 560px. | found S577
 
 - [ ] P3 (**NEW S577 N arm 7 — D's**) | trope_atlas.html | **At 4× CPU (iPhone 13) the load is one 1.9 s task (598 staffs) and Stacked, Grid and a key change each re-draw in one 2.8 / 2.6 / 1.1 s task**: the atlas's first D starts here. | found S577
@@ -64,6 +62,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
 
+- [ ] P4 (**NEW S578 P — not reachable today**) | index.html | **Erase All's bounded flush names 7 of the 10 synced tools** (not Letter Learner, Emoji Torah, Name Tags): a hub write to those within 2 s of the last confirm stays unsent; two dialogs outlast the debounce. Use the module's list when next touched. | found S578
+
 - [ ] P4 (**NEW S576 D — pattern `layout-read-per-grid-at-build`**) | classroom_dashboard.html | **A cold load lays the page out twice during init**: the rails' ceiling (`_railMaxFor`) reads `clientWidth` mid-build (~86 ms @4×, ~20 @1×), which the first frame redoes; ask it after the first frame. | found S576
 
 - [ ] P4 (**NEW S576 D**) | classroom_dashboard.html | **Bulk preset edit's Save over 40 changed presets is one 203 ms task @4×** (unprofiled). | found S576
@@ -106,11 +106,9 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S568 M — converge**) | torah_trainer.html, hebrew_blend_generator.html | **The fullscreen Exit label is 8.3 px** (`#fsExitBtn .fs-label` 0.52rem) where the dashboard and the FM use 0.7rem: the projected lesson's one way out has the page's smallest text. | found S568
 
-- [ ] P4 (**NEW S568 M — suite-wide**) | torah, dashboard, FM, generator | **Two controls render in the UA font (Arial), not Source Sans 3**: every page's `#fsExitBtn` and torah's `#ttAudioCollapseBtn` lack `font-family:inherit` (torah's census of computed families: only these two). | found S568
+- [ ] P4 (**NEW S568 M — S578: page-wide, census first**) | torah, dashboard, FM, generator | **Buttons render in the UA font (Arial), not Source Sans 3**: dashboard 50, generator 7, torah 7, FM 3 buttons per cell (`#fsExitBtn`, torah's audio bar, the dashboard's `.btn-xs`…); one `button { font-family:inherit }` per page, then every changed width checked. | found S568
 
 - [ ] P4 (**NEW S568 — found verifying `f6d4a231`**) | hebrew_blend_generator.html | **Export PDF carries the blend Self-Check's screen controls** (score bar, Reveal All / Hide All, Per row, "Tap a card to flip") that print hides (`.score-bar, .self-check-controls`); a flipped card's Missed / Got it buttons print and export too. | found S568
-
-- [ ] P4 (**NEW S566 H — K, Hebrew to author**) | flash_cards.html | **The Hebrew profile picker reads "Avi · 1 שמורים"**: `flashcards.profile.button_label` has no `.one`/`.other` split, and שמורים is masculine for results (תוצאות). | found S566
 
 - [ ] P4 (**NEW S566 H — gate 2, copy**) | flash_cards.html | **The results actions mix the Hebrew register**: "שמור תוצאות" (singular) among "שמרו / חזרו / תרגלו / הדפיסו / שתפו" (plural); a preset row's Play / Load / Save are singular too. One register per screen. | found S566
 
@@ -446,6 +444,16 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-30 | (S578 close-out) | branch/deploy note | **S578 = P on the Trope Atlas (its first P; no account wiring by design): arms 1–8 behind controls, the 7 smokes' J by `--sdk`. FOUND 3, FIXED 2 (+2 queue), 1 P4 logged, 1 rescoped. PR #377, sw v1139; deploy on merge. Gates: none asked.**
+
+- [x] 2026-10-30 | `225fe22e` | flash_cards.html, CSV, locales | (S578, queue S566) **The Hebrew save-to-profile chooser reads "תוצאה שמורה אחת" / "{n} תוצאות שמורות"** (`.one` / `.other`; was "1 שמורים"). | `p578/flash-label.mjs` real drill + Save results: EN 1280, HE 800 dark, HE 390 (HEAD fails 2); check-i18n
+
+- [x] 2026-10-30 | `1d7b34d5` | trope_atlas.html | (S578, queue S577) **The iOS hint steps aside while the contents drawer is open** (`install-banner-over-a-sheet's-bottom-controls`). | `n577/banner.mjs` 3 phones × EN/HE: 2–3 links → 0 (= hint dismissed); back after an outside tap and Escape
+
+- [x] 2026-10-30 | `89f9fbfa` | scripts/smoke-account.mjs | (S578) **J checks every page that loads the analytics tag** (was: only pages already carrying `page_location`). | `--sdk`: 18 pages; the tree before the atlas fix fails on it alone; a planted bare `gtag('config')` fails it
+
+- [x] 2026-10-30 | `1a29f606` | trope_atlas.html, sw.js | (S578) **The atlas's analytics tag counts a visit** (the suite's snippet, the sign-in code left out of `page_location`; it loaded gtag.js with no config). | `p578/atlas-recipe.mjs` 8 cells 48/48 (HEAD 16 fail); smoke-account 112/112
+
 - [x] 2026-10-30 | (S577 close-out) | branch/deploy note | **S577 = N on the Trope Atlas (first audit; a surface since `8ffab9be`). FOUND 6, FIXED 2 (+2 queue), 3 P3, 1 gate 2 deferred. PR #377, sw v1138, probe `7376d267`; deploy on merge. Gates: none asked.**
 
 - [x] 2026-10-30 | `3458305e` | hebrew_blend_generator.html | (S577, queue S572) **Held sideways, the font-size reset stays in its panel** (`flex-range-keeps-its-min-content-width`). | `n577/genrange.mjs` 4 phones × EN/HE (17 → 0 px); desktop unchanged; recipe
@@ -486,19 +494,11 @@ _(none)_
 
 - [x] 2026-10-30 | `1219f340` | hebrew_blend_generator.html, sw.js | (S574) **At tablet widths the header's buttons take their own row under a one-line title** (701–960px, Hebrew 701–860: 142–340 → 122px; gate 3, the maintainer's choice). | 1px × EN/HE × mouse/touch vs HEAD; probe `d69e701f` 4/4 (the pre-fix tree fails 4)
 
-- [x] 2026-10-30 | (S573 close-out) | branch/deploy note | **S573 = P on Flash Cards (its first P alone since S435; 81 commits to the page): all 7 smokes with `--sdk`, static 57 checks (plants 9/9), live read-only clean, 3 signed-in probes by real clicks (the `?wl=` race in 3 orders + a second sync, a `?s=` drill with a mid-drill download, the toggles). FOUND 5, FIXED 2 (+2 generator contrast …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-10-30 | `e8392bf1` | hebrew_blend_generator.html | (S573, queue) **The answer keys' gold line, Fill Vowels' answers and the Real Words flip hint read at AA on screen** (`--gold-text`; pattern `contrast-below-AA-on-a-tinted-or-coloured-plate`). | probe × 5 cells (HEAD fails 5); lowest 4.52
-
-- [x] 2026-10-30 | `201b73ca` | hebrew_blend_generator.html | (S573, queue) **Self-Check's counts, Got it button and card badges read at AA in both themes** (2.19–3.76 → ≥ 4.67; same pattern). | probe × 5 cells (HEAD fails 5)
-
-- [x] 2026-10-30 | `28cd68ae` | flash_cards.html | (S573) **Loading or playing a preset keeps this device's audio, voice speed, home button and two-sided printing** (gate 2: the maintainer's choice). | probe × 10 cells by real clicks (HEAD fails 10)
-
-- [x] 2026-10-30 | `2d6fcaee` | flash_cards.html, smoke-sync, sw.js | (S573) **A `?wl=` list that was only in the account opens once its sync ends, and the account keeps it** (it stayed unsent; the tab's next sync reverted it). | smoke-sync D41 7/7 (HEAD fails 4); sync 228/228, migration 47/47, tools 21/21
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-30 | **S578** | iters: 5 | tools: atlas ×2, flash, scripts/smoke-account, locales, sw | patterns fixed: install-banner-over-a-sheet's-bottom-controls ×1 | pass run: P (trope_atlas, its first) | SW: v1138→v1139
 
 - 2026-10-30 | **S577** | iters: 5 | tools: atlas ×2, dashboard, generator, dashboard.md, scripts/loop, sw | patterns fixed: horizontal-overflow-at-narrow-widths ×1, flex-range-keeps-its-min-content-width ×1 | pass run: N (trope_atlas, its first) | SW: v1137→v1138
 
@@ -538,11 +538,9 @@ _(none)_
 
 - 2026-10-26 | **S559** | iters: 5 | tools: FM ×2, name_tags, trope, name-tags.md, sw | patterns fixed: — | pass run: H (fontmaker, 5th) | SW: v1100→v1101
 
-- 2026-10-26 | **S558** | iters: 5 | tools: trope ×2, torah, letter_learner, name_tags, shared-components.md, sw | patterns fixed: dark-base-rule ×1 (2 carriers), tour-step-in-a-hidden-view ×1 | pass run: M (trope, 3rd) | SW: v1099→v1100
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S577 (2026-10-30):** trope_atlas, dashboard, generator, dashboard.md, sw.js, scripts/loop, loop docs S577 · flash S576 · resources, contact, privacy, terms, sitemap S575 · torah, dictionary S574 · scripts, accounts-and-cloud.md, ops.md S573 · pwa.js, name_tags, generator.md, torah-and-trope.md S572 · locales, CSV S571 · letter_learner S569 · trope S566 · FM, font-maker.md S565 · projects S561 · name-tags.md S559 · shared-components.md S558 · i18n.md, index S552 · parsha_emojis S550 · skill, ledger scripts S544
+- **Snapshot S578 (2026-10-30):** trope_atlas, flash, locales, CSV, sw.js, smoke-account, ops.md, torah-and-trope.md, loop docs S578 · dashboard, generator, dashboard.md, scripts/loop S577 · resources, contact, privacy, terms, sitemap S575 · torah, dictionary S574 · scripts, accounts-and-cloud.md S573 · pwa.js, name_tags, generator.md S572 · letter_learner S569 · trope S566 · FM, font-maker.md S565 · projects S561 · name-tags.md S559 · shared-components.md S558 · i18n.md, index S552 · parsha_emojis S550 · skill, ledger scripts S544
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -674,7 +672,7 @@ _(none)_
 
 - `window-taller-than-a-phone-without-a-scroll` | ACTIVE | owner N | det: recipe | last S577 | streak 3
 
-- `install-banner-over-a-sheet's-bottom-controls` | ACTIVE | owner N | det: scripts/loop/probes/S572-install-hint-tours.mjs | last S577 | streak 0
+- `install-banner-over-a-sheet's-bottom-controls` | ACTIVE | owner N | det: scripts/loop/probes/S572-install-hint-tours.mjs | last S578 | streak 0
 
 - `flash-restores-captured-text-not-its-key` | ACTIVE | owner E | det: recipe | last S417 | streak 0
 
@@ -890,7 +888,7 @@ _(none)_
 
 ### Discovery-pass rotation (run one per session, stalest first)
 
-- P accounts & cloud (one surface): 2026-10-30 (**S573 — 16th P, `flash_cards.html` (its first alone since S435; 81 commits to the page): all 7 smokes with `--sdk`, static 57 checks (plants 9/9), live clean, 3 signed-in probes by real clicks on the fake cloud. FOUND 5, FIXED 2 (+2 generator from the queue); the S567 module P3 root-caused → P2. P-next: generator (S463), chrome (S477).**)
+- P accounts & cloud (one surface): 2026-10-30 (**S578 — 17th P, `trope_atlas.html` (its first; no account by design): arms 1–8 behind controls (a stored session untouched, the tutor the control), live read-only clean, smoke-account `--sdk` (J widened, planted). FOUND 3, FIXED 2 (+2 queue). P-next: generator (S463), chrome (S477).**)
 
 - O deslop — AI-design-tell sweep (one surface): SKIP since S403 — the sandbox refuses to execute the third-party detector ("Code from External"); runs again once the maintainer commits a `.claude/settings.json` permission rule for it (`docs/reference/deslop-detector.md`). Last run 2026-09-08 (S346, `flash_cards.html`, 6th O; the S399/S403 refusals are in the archive).
 
@@ -924,5 +922,5 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-22 (**S542 — 40th F, loading states (first since S189): 14 surfaces held, then aborted. FOUND 7, FIXED 4. F-next: long-build progress.**)
 
-**Next session (S578):** **PR `claude/improveloop-s573` (S573–S577, #377): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1138**, FM **5.59**, corpus ?v=7. ⚑ drift: main=a7fa5f1 sw=v1138 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ **The Trope Atlas's first P is due now (rotation override 4; its N ran S577); never audited, it heads C, D, G, H, M too.** It has no account wiring by design: if clean by mid-session, a second surface (generator S463). ⚑ Then: H dictionary (S440), C torah (S441). ⚑ Unaudited since it landed: the Torah Trainer's per-mark trope colouring (`a7fa5f1`). ⚑ 54 seeds.
-⚑ Sync P2 (S573): a write after a hydration's plan is not sent. ⚑ The account page signed in is unprinted (needs `--sdk`): the next G or P on the chrome. ⚑ Gate 4 to propose with phone shots: the generator's blend sheets past a phone's left edge; gate 2: the atlas's phone default (Awaiting). ⚑ smoke-sync D31 flake (P4). ⚑ Never `content-visibility` on interactive cards (AX tree, findings S576). ⚑ Touch swipes: raw `Input.dispatchTouchEvent` (trap 449). ⚑ Ports at the next A: the `m554/`–`n577/` harnesses; traps 352, 356–451. ⚑ Queues: generator 26, FM 20, dictionary 11, torah 11, name_tags 8, flash 7, dashboard 7, PE 5, atlas 3, trope 3, LL 2, index 1, privacy 1, contact 1.
+**Next session (S579):** **PR `claude/improveloop-s573` (S573–S578, #377): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1139**, FM **5.59**, corpus ?v=7. ⚑ drift: main=a7fa5f1 sw=v1139 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ **The Trope Atlas is never audited for C, D, G, H, M: S579 takes one (its 4× P3 opens D; then C, H, G, M).** ⚑ Then: H dictionary (S440), C torah (S441). ⚑ Unaudited since it landed: the Torah Trainer's per-mark trope colouring (`a7fa5f1`). ⚑ 54 seeds.
+⚑ Sync P2 (S573): a write after a hydration's plan is not sent. ⚑ The account page signed in is unprinted (needs `--sdk`): the next G or P on the chrome. ⚑ Gate 4 to propose with phone shots: the generator's blend sheets past a phone's left edge; gate 2: the atlas's phone default (Awaiting). ⚑ smoke-sync D31 flake (P4). ⚑ A page that loads gtag.js now meets smoke-account's J. ⚑ Ports at the next A: the `m554/`–`p578/` harnesses; traps 352, 356–453. ⚑ Queues: generator 26, FM 20, dictionary 11, torah 11, name_tags 8, dashboard 7, flash 6, PE 5, trope 3, atlas 2, index 2, LL 2, privacy 1, contact 1.

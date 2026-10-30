@@ -1138,7 +1138,8 @@ traditions were imported from, and was rebuilt on the suite's own pieces, so it 
   hub's AllTools sites (export, import, erase, `IVRIT_CFG.gather/apply`) and not synced (no registry row; the page
   offers no account). A `#sys-<id>` address opens that melody without storing it.
 - **Layout.** A sticky bar (the contents button below 1000px, the title, the Key select), a contents rail (a drawer
-  below 1000px: Escape and an outside click close it, focus goes to its first link and back to the button), the
+  below 1000px: Escape and an outside click close it, focus goes to its first link and back to the button, and pwa.js's
+  install hint steps aside while it is open), the
   sections. The melody grid scrolls in its own box so its heading row and sign column both stay (contained sideways;
   on a touch screen a swipe past its first or last row goes on to the page, since the box fills a phone); a Stacked
   card's one column under 560px is `minmax(0, 1fr)`, so a long figure scrolls in its row. The staffs are
