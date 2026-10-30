@@ -1558,6 +1558,7 @@ body.dark .hi-sun{display:inline-block;}
   .cw-clue { font-size: 0.82rem; line-height: 1.5; }
   .cw-clue-num { font-weight: 700; color: var(--gold-text); }
   .cw-unplaced { margin-top: 12px; font-size: 0.78rem; color: var(--muted); font-style: italic; }
+  .cw-unplaced [lang="he"] { font-style: normal; }   /* Hebrew has no italic: the browser only slants the letters (pattern hebrew-faux-italic) */
 
   /* Flip cards for vocab drill */
   .rw-flip { perspective: 600px; cursor: pointer; }
@@ -1748,6 +1749,7 @@ body.dark .hi-sun{display:inline-block;}
   }
   .rw-heb { font-family: var(--heb-font); font-size: 2rem; direction: rtl; color: var(--text); line-height: 1.2; }
   .rw-translit { font-size: 0.72rem; color: var(--muted); font-style: italic; }
+  html[lang="he"] .rw-flip-hint { font-style: normal; }   /* the hint speaks the UI's language; Hebrew has no italic (pattern hebrew-faux-italic) */
   .rw-translation { font-size: 0.75rem; color: var(--gold-text); font-weight: 600; min-height: 14px; }
   .rw-pos-tag { position: absolute; top: 4px; right: 6px; font-size: 0.58rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
   .rw-num { position: absolute; top: 4px; left: 6px; font-size: 0.6rem; color: var(--muted); }
@@ -13127,7 +13129,14 @@ function renderCrossword(d) {
   if (d.unplaced.length) {
     const np = document.createElement('div');
     np.className = 'cw-unplaced';
-    np.textContent = 'Not placed: ' + d.unplaced.map(w => w.heb).join(' · ');
+    np.append('Not placed: ');   // i18n-ignore (printed worksheet text)
+    d.unplaced.forEach((w, i) => {
+      if (i) np.append(' · ');
+      const s = document.createElement('span');
+      s.lang = 'he';
+      s.textContent = w.heb;
+      np.appendChild(s);
+    });
     sheet.appendChild(np);
   }
   const cwFoot = footer(`${d.placedWords.length} words · Hebrew Blend Generator`);
