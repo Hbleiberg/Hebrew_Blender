@@ -7438,7 +7438,7 @@ assign.error.offline,This needs an internet connection. Check the connection and
 assign.error.too_many,"Too many tries. Wait ten minutes, then try the code word again.",יותר מדי ניסיונות. המתינו עשר דקות ונסו שוב את מילת הקוד.,Assignments error,shared
 assign.error.not_student,Only a student account can enter a code word.,רק חשבון תלמיד/ה יכול להקליד מילת קוד.,Assignments error,shared
 assign.error.teacher_only,Only a teacher account can do this.,רק חשבון מורה יכול לעשות זאת.,Assignments error,shared
-assign.error.username_taken,That username is already taken. Choose another.,שם המשתמש הזה כבר תפוס. בחרו אחר.,Assignments error,shared
+assign.error.username_taken,"That username is already used by a student somewhere on the site (usernames are shared across every teacher). Add a couple of digits or pick another, then press Create again.","שם המשתמש הזה כבר בשימוש של תלמיד במקום אחר באתר (שמות משתמש משותפים לכל המורים). הוסיפו כמה ספרות או בחרו אחר, ואז לחצו שוב על יצירה.",Assignments error (the refused preview row and the status line),shared
 assign.error.username_invalid,"A username is 3 to 30 lowercase letters, digits and dots.","שם משתמש הוא 3 עד 30 אותיות לטיניות קטנות, ספרות ונקודות.",Assignments error,shared
 assign.error.password_invalid,A password is 8 to 72 characters.,סיסמה היא 8 עד 72 תווים.,Assignments error,shared
 assign.error.name_invalid,Each student needs a name.,כל תלמיד/ה צריך/ה שם.,Assignments error,shared
