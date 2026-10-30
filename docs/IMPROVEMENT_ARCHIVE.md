@@ -95144,3 +95144,43 @@ _(prior)_ **Next session (S572):** **PR `claude/improveloop-s570` (S570–S571, 
 ### from Per-session log (one line per session)
 
 - 2026-10-29 | **S572** | iters: 5 | tools: generator ×2, pwa.js, name_tags, torah (reported), smoke-sync, scripts/loop, sw | patterns fixed: text-field-under-16px-zooms-on-ios-focus ×1, install-banner-over-a-sheet's-bottom-controls ×1, fixed-columns-crush-a-narrow-sheet ×1 (new) | pass run: N (generator, 3rd) | SW: v1126→v1131
+
+
+<!-- archived by compact-ledger at the S574 boundary, 2026-10-30 -->
+## Compaction (S574, 2026-10-30) — moved verbatim from the live ledger
+
+### from Candidates — aged P4 (found more than 90 sessions before S574)
+
+- [ ] P4 (**NEW S483 C — gate 2**) | index.html | **Three `alert()`s stay**: "Use in all tools" repeats the status line; the Manual pane's two validation messages have no inline line (`#ivritStatus` is in the Automatic pane). | found S483
+
+### from Candidates (prioritized, top = next)
+
+- [ ] P2 (**S567 P; S573 P root-caused — a shared module, not small**) | js/ivrit-saves.js | **A page write made after a hydration planned its uploads, before it ends, is not sent, and the tab's next sync downloads the account's copy over it**: the hook is not armed yet, and step 4's `snapshotNames` takes the post-write hash as the tab's seen view, so `actionFor` reads it as another tab's write. Seen: the dashboard's Bulk preset edit (S567 W1c), Flash Cards' `?wl=` (page-side `2d6fcaee`; findings S573). | found S567
+
+- [ ] P3 (**S572 N; S573 re-measured — gate 4: port `39e7b42`'s narrow-sheet rule; pattern `horizontal-overflow-at-narrow-widths`**) | hebrew_blend_generator.html | **A blend sheet's five columns spill past a phone's left edge (the grid is right-to-left), and in the English UI the cut cells cannot be reached** (Inverse, iPhone 13: −37 HE / −41 EN; the Hebrew page scrolls to them): 11 `blends-grid` builders; propose with phone screenshots. | found S572
+
+### from Done
+
+- [x] 2026-10-30 | (S573 close-out) | branch/deploy note | **S573 = P on Flash Cards (its first P alone since S435; 81 commits to the page): all 7 smokes with `--sdk`, static 57 checks (plants 9/9), live read-only clean, 3 signed-in probes by real clicks (the `?wl=` race in 3 orders + a second sync, a `?s=` drill with a mid-drill download, the toggles). FOUND 5, FIXED 2 (+2 generator contrast from the queue); gate 2 asked → "keep the device's four"; 3 probes + smoke-sync D41. Branch `claude/improveloop-s573`, draft PR #377; deploy on merge.**
+
+- [x] 2026-10-29 | (S568 close-out) | branch/deploy note | **S568 = M on the Torah Trainer (its 2nd: S422 → S568): 31 views × 8 cells by real clicks (248 shots; real fonts, Sefaria stubbed from the MAM phrases), census ~16,000 text nodes, hover, Tab rings, dark fills, header gate, RTL sentences, live regions — every plant fired. FOUND 6, FIXED 2 + 4 P4; + the generator's Self-Check paper (queue) …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-29 | `f6d4a231` | hebrew_blend_generator.html | (S568) **Both Self-Check sheets print and export the card face the screen shows, unmirrored** (print and html2canvas flattened the 3D flip: every card's back — the answer, mirrored — over its front; the blend fronts' "tap to reveal" off paper too). | `m568/flipprint.mjs` (pypdf matrices) × 8 runs vs HEAD: mirrored runs 80–256 → 0, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-29 | `398ec8aa` | hebrew_blend_generator.html | (S568) **Self-Check's "tap to flip" stays on screen, off paper** (the print block + exportPDF's clone; S563's G P4). | `m568/fix3-verify.mjs` × 4 cells vs HEAD: screen 30 → 30, the print PDF 30 → 0, Export PDF's clone 30 → 0, one page
+
+- [x] 2026-10-29 | `203370c8` | torah_trainer.html | (S568) **Dark mode's selected-verse chips (4.15:1) and the chosen font's credit (3.71:1) pass AA** (`#adb6c9`, the neighbours'; pattern `contrast-below-AA-on-a-tinted-or-coloured-plate`). | `m568/fix2-verify.mjs` × 8 cells vs HEAD: sub-AA 4 → 0 and 1 → 0 in dark; gold hover and navy-on-gold active still win; light unchanged
+
+- [x] 2026-10-29 | `7f88d10d` | torah_trainer.html, sw.js | (S568) **In the Trope staff layout the trope clause line no longer crosses the transliteration** (a staff cell's 1.3 leading put the Latin 0.2em of the Hebrew higher; the Latin and its box get it back). | `m568/fix1-verify.mjs` × 8 cells × 3 modes vs HEAD: gap −3.6 → +1.2 px, the Latin inside its box, without the underline look geometry …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Per-session log (one line per session)
+
+- 2026-10-23 | **S553** | iters: 4 | tools: sw, name_tags ×2, scripts/loop | patterns fixed: sub-floor ×1, live-region-display-none ×1 (+ shown-with-its-text ×1) | pass run: V (first) | SW: v1080→v1080
+
+
+<!-- archived by compact-ledger at the S574 boundary, 2026-10-30 -->
+## Compaction (S574, 2026-10-30) — moved verbatim from the live ledger
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+_(prior)_ **Next session (S573):** **PR `claude/improveloop-s570` (S570–S572, #374): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1131**, FM **5.59**, corpus ?v=7. ⚑ drift: main=93b6e09 sw=v1131 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest: P's flash (S435), M's generator (S436), C's torah (S441); A/E/L/K (S530–S533) 42 sessions old (A: 27 DRAFT rows, the ▾ census). ⚑ The Trope Atlas `trope_atlas.html` (unlisted): its first N and P are due by S578. ⚑ Seeds: 54. ⚑ N (S572): a page whose main column scrolls hides sideways overflow from the document arm — read every scroller (trap 433); the generator's HE Inverse / Gematria sheets past a phone's left edge (P3) wait at its cap. ⚑ pwa.js hides the install hint under any open `#tourCard`. ⚑ Forced colours: the Torah Trainer has no block (P3, census first). ⚑ Dictionary: the word card's nested controls (P3). ⚑ Deep links: census the ones that apply settings before a lazy corpus lands. ⚑ Sync (S567 P): the shared-module P3 (verify first). ⚑ Ports at the next A: `m554/`–`n562/`, `g563/`, `h564/`, `d565/`, `h566/`, `p567/`, `m568/`, `g569/`, `d570/`, `c571/`, `n572/`; traps 352, 356–435. ⚑ Queues (candidates naming one page): generator 23, FM 20, dictionary 13, torah 13, flash 8, name_tags 8, dashboard 6, PE 5, trope 4.

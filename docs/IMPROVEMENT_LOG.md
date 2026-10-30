@@ -8,13 +8,11 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P2 (**S567 P; S573 P root-caused — a shared module, not small**) | js/ivrit-saves.js | **A page write made after a hydration planned its uploads, before it ends, is not sent, and the tab's next sync downloads the account's copy over it**: the hook is not armed yet, and step 4's `snapshotNames` takes the post-write hash as the tab's seen view, so `actionFor` reads it as another tab's write. …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [ ] P2 (**NEW S559 H — the FM at the cap**) | Hebrew_Font_Maker.html | **Auto-detect matches a printed template page only when every row's box count is exact, and rows group by the box's top edge**: lamed's ascender splits its row (print page 1: 4,4,4,3,1,4), a letter written in two strokes adds a box (the cursive alef: 5,4,4,4,4), and the page falls back to the free-form right-to-left order — …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P2 (**NEW S559 H — verify first**) | Hebrew_Font_Maker.html | **5 of 132 untouched starting fonts fail the export's shaping check**: "Right-meteg check failed … expected -49/166, got -49/167" (BenOr Rashi; Miriam CLM 178/169, Shuneet Square 125/150, Shuneet Classic 97/122) and "Hataf Patach + ZWJ + meteg did not compose" (Rommvilna), so a first export says "vowels/trop may be misplaced". …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [ ] P3 (**NEW S572 N — C's; the generator at the cap**) | hebrew_blend_generator.html | **The blend Self-Check's score line and Got-it button read under AA**: #27ae60 on the bar 2.19:1, white on #27ae60 2.87:1. | found S572
-
-- [ ] P3 (**NEW S572 N — the generator at the cap; pattern `horizontal-overflow-at-narrow-widths`**) | hebrew_blend_generator.html | **In the Hebrew UI the Inverse and Gematria sheets run past a phone's left edge** (SE −106 px, iPhone 13 −41), reached only by scrolling the worksheet area sideways; English fits. | found S572
 
 - [ ] P3 (**NEW S571 C — not small**) | hebrew_dictionary.html | **A word card is one `role=button` holding its select box, Copy, Hear and Google controls** (a button's children are presentational): move the details action onto the headword, the card a group. | found S571
 
@@ -36,9 +34,9 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**S410 D; S480 re-measured; `content-visibility` reverted**) | Hebrew_Font_Maker.html | **The Spacing tab rebuilds all kerning rows on each show, pair click, add and delete**: 2,000 pairs 213–251ms @1×, 1.0–1.2s @4× (S565: 302–502 @1×). Next: a pair click rebuilds the editor only (findings S480). | found S410
 
-- [ ] P3 (**NEW S570 D — not small: yield per verse or a worker**) | torah_trainer.html | **Turning Translit on freezes the page for the reading's first transliteration pass**: one task of 520 ms @1× / 2.45 s @4× on Vayera (2,085 words; the Trope staff 447 / 2,691), and a cold load with Translit on 536–582 / 2,751–2,948 — the library's syllabification; the memos spare only re-renders (findings …[full text: IMPROVEMENT_ARCHIVE.md]
+- [ ] P3 (**S572 N; S573 re-measured — gate 4: port `39e7b42`'s narrow-sheet rule; pattern `horizontal-overflow-at-narrow-widths`**) | hebrew_blend_generator.html | **A blend sheet's five columns spill past a phone's left edge (the grid is right-to-left), and in the English UI the cut cells cannot be reached** (Inverse, iPhone 13: −37 HE / −41 EN; the Hebrew page scrolls to them): 11 …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] P3 (**NEW S567 P — verify first; a shared module**) | js/ivrit-saves.js | **A page write made while a slow load's sync is still settling goes up only at the next load, and the status line says "Saved in your account" meanwhile**: the dashboard's Bulk preset edit saved after a download landed while the listing and the download each took 7 s → no PATCH, the rows `local-changed` in `lastPlan`, …[full text: IMPROVEMENT_ARCHIVE.md]
+- [ ] P3 (**NEW S570 D — not small: yield per verse or a worker**) | torah_trainer.html | **Turning Translit on freezes the page for the reading's first transliteration pass**: one task of 520 ms @1× / 2.45 s @4× on Vayera (2,085 words; the Trope staff 447 / 2,691), and a cold load with Translit on 536–582 / 2,751–2,948 — the library's syllabification; the memos spare only re-renders (findings …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P3 (**NEW S566 H — gate 2, what a saved score means**) | flash_cards.html | **The progress report and the history count unreached cards as attempted**: 3 of 3 answered before a 30 s limit ran out reads "20 cards attempted · 15% accuracy · 15% best drill" on the parent report and "15% 3/20" in the history, where the results screen said 100% (3/3). The saved `total`/`pct` are deck-wide on …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -58,11 +56,11 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
 
+- [ ] P4 (**NEW S573 P**) | scripts/smoke-sync.mjs | **D31 (the Trope merge after a button sign-out) failed the first full run in S567 and in S573** ("neither side merged") and passed alone and in every re-run: a timing race left in the scenario or the module. | found S573
+
 - [ ] P4 (**NEW S572 N — pattern `horizontal-overflow-at-narrow-widths`**) | hebrew_blend_generator.html | **On an iPhone SE Real Words Bingo's caller list and Word Search's grid scroll sideways** (82 / 73 px). | found S572
 
 - [ ] P4 (**NEW S572 N**) | hebrew_blend_generator.html | **A Real Words card's longest part-of-speech tags still run into its number** ("prepositional phrase" at 104–144px, a full desktop too). | found S572
-
-- [ ] P4 (**NEW S572 N — C's**) | hebrew_blend_generator.html | **Screen-only gold answers read 2.75:1** (Fill Vowels, the Gematria key subtitle; print darkens both); the flip hint 2.60:1. | found S572
 
 - [ ] P4 (**NEW S572 N — the generator at the cap**) | hebrew_blend_generator.html | **Held sideways (iPhone 13) the Hebrew Font size reset sits 17–18px outside its panel**: the range keeps its 129px minimum (`min-width:0` fits it). | found S572
 
@@ -201,8 +199,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S497 I — gate 2**) | classroom_dashboard.html | **A Hebrew first visit's demo message is English** (`DEFAULT_PRESET`, a `smoke-sync` canon). | found S497
 
 - [ ] P4 (**NEW S492 N — tour engine**) | hebrew_dictionary.html | **The tour ring runs past the window on a full-width target**: `_tourReposition` clamps `left`, not the width. | found S492
-
-- [ ] P4 (**NEW S483 C — gate 2**) | index.html | **Three `alert()`s stay**: "Use in all tools" repeats the status line; the Manual pane's two validation messages have no inline line (`#ivritStatus` is in the Automatic pane). | found S483
 
 - [ ] P4 (**NEW S565 D; S567 re-measured**) | Hebrew_Font_Maker.html | **Auto-detect on a phone photo of a sheet makes three long tasks @4× (431 / 695 / 338 ms; @1× its top is 134 ms, not S565's 556)**: `adBinarize` (lumPlane → estimateBackground → flatten → Otsu) has no yield inside, but splitting it in `adRunDetection` takes the 695 only to ~400, since the first task is the 1800 px canvas's …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -430,6 +426,16 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-30 | (S573 close-out) | branch/deploy note | **S573 = P on Flash Cards (its first P alone since S435; 81 commits to the page): all 7 smokes with `--sdk`, static 57 checks (plants 9/9), live read-only clean, 3 signed-in probes by real clicks (the `?wl=` race in 3 orders + a second sync, a `?s=` drill with a mid-drill download, the toggles). FOUND 5, FIXED 2 (+2 generator contrast …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-30 | `e8392bf1` | hebrew_blend_generator.html | (S573, queue) **The answer keys' gold line, Fill Vowels' answers and the Real Words flip hint read at AA on screen** (`--gold-text`; pattern `contrast-below-AA-on-a-tinted-or-coloured-plate`). | probe × 5 cells (HEAD fails 5); lowest 4.52
+
+- [x] 2026-10-30 | `201b73ca` | hebrew_blend_generator.html | (S573, queue) **Self-Check's counts, Got it button and card badges read at AA in both themes** (2.19–3.76 → ≥ 4.67; same pattern). | probe × 5 cells (HEAD fails 5)
+
+- [x] 2026-10-30 | `28cd68ae` | flash_cards.html | (S573) **Loading or playing a preset keeps this device's audio, voice speed, home button and two-sided printing** (gate 2: the maintainer's choice). | probe × 10 cells by real clicks (HEAD fails 10)
+
+- [x] 2026-10-30 | `2d6fcaee` | flash_cards.html, smoke-sync, sw.js | (S573) **A `?wl=` list that was only in the account opens once its sync ends, and the account keeps it** (it stayed unsent; the tab's next sync reverted it). | smoke-sync D41 7/7 (HEAD fails 4); sync 228/228, migration 47/47, tools 21/21
+
 - [x] 2026-10-29 | `30c2a2ff` | torah_trainer.html, smoke-sync, sw.js | (S572, reported) **A Torah Trainer link keeps its reading over the load's sync** (an account moved elsewhere won the merge). | smoke-sync D40 4/4 (HEAD fails 2)
 
 - [x] 2026-10-29 | (S572 close-out) | branch/deploy note | **S572 = N on the generator (3rd: S262 → S434 → S572): 560 phone loads by real taps (16 cells × 35 views, plants 8/8), every field, the iOS hint + a 9-page tour census, touch, flips, sideways scrollers, 4×, Export PDF replayed. FOUND 9, FIXED 3 (+ Name Tags from the queue); gate 4 asked → "fewer cards when narrow"; 3 probes, 1 new …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -474,19 +480,11 @@ _(none)_
 
 - [x] 2026-10-29 | `a7d5606d` | flash_cards.html, sw.js | (S569) **The results screen printed from dark mode prints the light theme's ink** (6 tokens restated in the print block, 3 dark rules pointed at the print navy; patterns `incomplete-print-token-reset`, `dark-literal-escapes-the-print-tokens`). | `g569/darkdiff.mjs` + `darkdiff2.mjs` vs HEAD: dark-vs-light print diffs 18 → 0 (a ladder drill …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-10-29 | (S568 close-out) | branch/deploy note | **S568 = M on the Torah Trainer (its 2nd: S422 → S568): 31 views × 8 cells by real clicks (248 shots; real fonts, Sefaria stubbed from the MAM phrases), census ~16,000 text nodes, hover, Tab rings, dark fills, header gate, RTL sentences, live regions — every plant fired. FOUND 6, FIXED 2 + 4 P4; + the generator's Self-Check paper (queue) …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-10-29 | `f6d4a231` | hebrew_blend_generator.html | (S568) **Both Self-Check sheets print and export the card face the screen shows, unmirrored** (print and html2canvas flattened the 3D flip: every card's back — the answer, mirrored — over its front; the blend fronts' "tap to reveal" off paper too). | `m568/flipprint.mjs` (pypdf matrices) × 8 runs vs HEAD: mirrored runs 80–256 → 0, …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-10-29 | `398ec8aa` | hebrew_blend_generator.html | (S568) **Self-Check's "tap to flip" stays on screen, off paper** (the print block + exportPDF's clone; S563's G P4). | `m568/fix3-verify.mjs` × 4 cells vs HEAD: screen 30 → 30, the print PDF 30 → 0, Export PDF's clone 30 → 0, one page
-
-- [x] 2026-10-29 | `203370c8` | torah_trainer.html | (S568) **Dark mode's selected-verse chips (4.15:1) and the chosen font's credit (3.71:1) pass AA** (`#adb6c9`, the neighbours'; pattern `contrast-below-AA-on-a-tinted-or-coloured-plate`). | `m568/fix2-verify.mjs` × 8 cells vs HEAD: sub-AA 4 → 0 and 1 → 0 in dark; gold hover and navy-on-gold active still win; light unchanged
-
-- [x] 2026-10-29 | `7f88d10d` | torah_trainer.html, sw.js | (S568) **In the Trope staff layout the trope clause line no longer crosses the transliteration** (a staff cell's 1.3 leading put the Latin 0.2em of the Hebrew higher; the Latin and its box get it back). | `m568/fix1-verify.mjs` × 8 cells × 3 modes vs HEAD: gap −3.6 → +1.2 px, the Latin inside its box, without the underline look geometry …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-30 | **S573** | iters: 5 | tools: flash ×2, generator ×2, smoke-sync, accounts-and-cloud.md, ops.md, scripts/loop, sw | patterns fixed: contrast-below-AA-on-a-tinted-or-coloured-plate ×2 | pass run: P (flash, first alone since S435) | SW: v1133→v1134
 
 - 2026-10-29 | **S572** | iters: 5 | tools: generator ×2, pwa.js, name_tags, torah (reported), smoke-sync, scripts/loop, sw | patterns fixed: text-field-under-16px-zooms-on-ios-focus ×1, install-banner-over-a-sheet's-bottom-controls ×1, fixed-columns-crush-a-narrow-sheet ×1 (new) | pass run: N …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -526,11 +524,9 @@ _(none)_
 
 - 2026-10-26 | **S554** | iters: 5 | tools: FM ×2, locales (FM help + FAQ, dictionary, generator, privacy), name_tags, scripts/loop, sw | patterns fixed: dark-navy-fill ×2, latin-sentence-boundary (NEW) ×1 | pass run: M (fontmaker, 3rd) | SW: v1095→v1096
 
-- 2026-10-23 | **S553** | iters: 4 | tools: sw, name_tags ×2, scripts/loop | patterns fixed: sub-floor ×1, live-region-display-none ×1 (+ shown-with-its-text ×1) | pass run: V (first) | SW: v1080→v1080
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S572 (2026-10-29):** sw.js, generator, pwa.js, name_tags, torah, scripts, scripts/loop, loop-findings, loop-patterns, generator.md, ops.md, torah-and-trope.md S572 · dictionary, flash, locales, CSV S571 · letter_learner, dashboard S569 · dashboard.md, sitemap S567 · trope S566 · FM, font-maker.md S565 · projects, accounts-and-cloud.md S561 · name-tags.md S559 · shared-components.md S558 · privacy S554 · loop-passes S553 · i18n.md, index S552 · parsha_emojis S550 · resources, contact S549 · skill, ledger scripts S544 · …[full text: IMPROVEMENT_ARCHIVE.md]
+- **Snapshot S573 (2026-10-30):** flash, generator, sw.js, scripts, scripts/loop, loop-findings, loop-patterns, accounts-and-cloud.md, ops.md S573 · pwa.js, name_tags, torah, generator.md, torah-and-trope.md S572 · dictionary, locales, CSV S571 · letter_learner, dashboard S569 · dashboard.md, sitemap S567 · trope S566 · FM, font-maker.md S565 · projects S561 · name-tags.md S559 · shared-components.md S558 · privacy S554 · loop-passes S553 · i18n.md, index S552 · parsha_emojis S550 · resources, contact S549 · skill, ledger scripts S544 · …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -800,7 +796,7 @@ _(none)_
 
 - `dark-override-outranks-hover` | ACTIVE | owner A | det: recipe | last S357 | streak 1 | hits 0
 
-- `contrast-below-AA-on-a-tinted-or-coloured-plate` | ACTIVE | owner M | det: recipe | last S568 | streak 0
+- `contrast-below-AA-on-a-tinted-or-coloured-plate` | ACTIVE | owner M | det: recipe | last S573 | streak 0
 
 - `async-store-backed-choice-clobbered-by-a-sync-fallback` | ACTIVE | owner A | det: recipe | last S226 | streak 1
 
@@ -876,7 +872,7 @@ _(none)_
 
 ### Discovery-pass rotation (run one per session, stalest first)
 
-- P accounts & cloud (one surface): 2026-10-29 (**S567 — 15th P, dashboard (its first since S421; 113 commits to the page): all 7 smokes with `--sdk` (sync 216/217 in the parallel run, D31 green in 6 re-runs), static 59 checks (plants 7/7), live clean, the page's editors signed in by real clicks on the fake cloud with HEAD the control. FOUND 2, FIXED 1 (Bulk preset edit sent a stale preset back …[full text: IMPROVEMENT_ARCHIVE.md]
+- P accounts & cloud (one surface): 2026-10-30 (**S573 — 16th P, `flash_cards.html` (its first alone since S435; 81 commits to the page): all 7 smokes with `--sdk`, static 57 checks (plants 9/9), live clean, 3 signed-in probes by real clicks on the fake cloud. FOUND 5, FIXED 2 (+2 generator from the queue); the S567 module P3 root-caused → P2. P-next: generator (S463), chrome (S477).**)
 
 - O deslop — AI-design-tell sweep (one surface): SKIP since S403 — the sandbox refuses to execute the third-party detector ("Code from External"); runs again once the maintainer commits a `.claude/settings.json` permission rule for it (`docs/reference/deslop-detector.md`). Last run 2026-09-08 (S346, `flash_cards.html`, 6th O; the S399/S403 refusals are in the archive).
 
@@ -910,4 +906,5 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-22 (**S542 — 40th F, loading states (first since S189): 14 surfaces held, then aborted. FOUND 7, FIXED 4. F-next: long-build progress.**)
 
-**Next session (S573):** **PR `claude/improveloop-s570` (S570–S572, #374): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1131**, FM **5.59**, corpus ?v=7. ⚑ drift: main=93b6e09 sw=v1131 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest: P's flash (S435), M's generator (S436), C's torah (S441); A/E/L/K (S530–S533) 42 sessions old (A: 27 DRAFT rows, the ▾ census). ⚑ The Trope Atlas `trope_atlas.html` (unlisted): its first N and P are due by S578. ⚑ Seeds: 54. ⚑ N (S572): a page whose main column scrolls hides sideways overflow from the document arm — read every scroller (trap 433); the generator's HE Inverse / Gematria sheets past a phone's left edge (P3) wait at its cap. ⚑ pwa.js hides the install hint under any open `#tourCard`. ⚑ Forced colours: the Torah Trainer has no block (P3, census first). ⚑ Dictionary: the word card's nested controls (P3). ⚑ Deep links: census the ones that apply settings before a lazy corpus lands. ⚑ Sync (S567 P): the shared-module P3 (verify first). ⚑ Ports at the next A: `m554/`–`n562/`, `g563/`, `h564/`, `d565/`, `h566/`, `p567/`, `m568/`, `g569/`, `d570/`, `c571/`, `n572/`; traps 352, 356–435. ⚑ Queues (candidates naming one page): generator 23, FM 20, dictionary 13, torah 13, flash 8, name_tags 8, dashboard 6, PE 5, trope 4.
+**Next session (S574):** **PR `claude/improveloop-s573` (S573, #377): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1134**, FM **5.59**, corpus ?v=7. ⚑ drift: main=a7fa5f1 sw=v1134 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Landed outside the loop since S572: the Torah Trainer's per-mark trope colouring (`a7fa5f1`: 3 new settings that travel in links, favorites and the synced settings row), its larger YouTube link (`c75243a`) and its deep-link sync fix (`30c2a2f`, D40) — prime territory for the next torah pass. ⚑ Stalest: M's generator (S436), G's chrome (S437), D's dashboard (S438), H's dictionary (S440), C's torah (S441); A/E/L/K (S530–S533) 43 sessions old (A: 27 DRAFT rows, the ▾ census). ⚑ The Trope Atlas `trope_atlas.html` (unlisted): its first N and P are due by S578. ⚑ Seeds: 54.
+⚑ Sync P2 (S573, root-caused in findings): a page write made after a hydration's plan is not sent and the tab's next sync downloads over it — a shared-module fix with smoke-sync's 228 checks as its gate. ⚑ Gate 4 to propose with phone screenshots: the generator's blend sheets past a phone's left edge (the English UI cannot scroll to them). ⚑ smoke-sync D31 flaked on two first full runs (P4). ⚑ pwa.js hides the install hint under any open `#tourCard`. ⚑ Forced colours: the Torah Trainer has no block (P3, census first). ⚑ Dictionary: the word card's nested controls (P3). ⚑ Ports at the next A: `m554/`–`n562/`, `g563/`, `h564/`, `d565/`, `h566/`, `p567/`, `m568/`, `g569/`, `d570/`, `c571/`, `n572/`, `p573/`; traps 352, 356–438. ⚑ Queues (candidates naming one page): generator 21, FM 20, dictionary 12, torah 12, flash 8, name_tags 8, dashboard 6, PE 5, trope 3.
