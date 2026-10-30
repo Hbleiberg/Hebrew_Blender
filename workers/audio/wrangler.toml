@@ -6,6 +6,7 @@
 name = "ivritsuite-recordings"
 main = "worker.js"
 compatibility_date = "2025-09-01"
+workers_dev = false   # no workers.dev address: the site only ever calls the custom domain below
 
 # Settings the Worker reads. The anon key is the same public "publishable" key every page of the site ships
 # (js/supabase-config.js); the Worker sends it as the `apikey` header beside each caller's own token.
@@ -13,6 +14,13 @@ compatibility_date = "2025-09-01"
 SUPABASE_URL = "https://hhkmqwpjsyxdeuhvcyis.supabase.co"
 SUPABASE_ANON_KEY = "sb_publishable_pqTQ0XtPQpcRWYs9sNTVNQ_IlV3GaG8"
 ALLOWED_ORIGINS = "https://ivritsuite.com,https://www.ivritsuite.com,http://localhost:8080"
+
+# The Worker's own address, the one js/ivrit-assignments.js and the pages' Content Security Policy name.
+# Declared here so a `wrangler deploy` creates the DNS record and the certificate by itself (README Step 6;
+# the dashboard form does the same). The workers.dev address stays off: the site only ever calls this name.
+[[routes]]
+pattern = "recordings.ivritsuite.com"
+custom_domain = true
 
 # The private bucket. The Worker is its only client — no public access, no r2.dev URL, no custom domain.
 [[r2_buckets]]
