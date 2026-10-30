@@ -16,12 +16,13 @@ only asks you to sign in; students never see it do anything.)
 ## 2. Make your students' logins (once per class)
 
 1. Press **Students, assignments and recordings**. The page that opens is yours alone.
-2. Press **Add class…** at the top and name the class (optional, but it is what lets you assign a reading to the
-   whole class at once and see who has not submitted).
+2. Press **Add class…** at the top and name the class. The popup stays open on the new class: everything about
+   its students happens in there, and **Edit class…** next to a class brings it back. (Students you never put in
+   a class live under *Students without a class*, with the same popup.)
 3. Under *Add students*, type one name per line — a first name or a nickname is enough; it is what the student
    sees on screen. Type a last name too if you want usernames like `ruth.cohen`. If you keep a class list in the
    Classroom Dashboard, Name Tags or Flash Cards on this computer, the drop-down beside the box can add those
-   names for you. Pick the class in *Class for these students*.
+   names for you.
 4. Choose a **Username style** (first name + number, first.last, initial + last name…) and press **Preview
    usernames and passwords**. Each student gets a username and a three-word password (like `blue-tiger-42`).
    Change any of them if you like — usernames are lowercase letters, digits and dots; passwords at least 8
@@ -30,10 +31,11 @@ only asks you to sign in; students never see it do anything.)
    card per student with their username and password and where to go. **This is the only time a password is
    shown.** Print or write them down, then press **Hide the passwords**.
 
-Lost a password? In the students list press **Reset password** next to the name: a new one is made and shown
-once. For a whole class, **Set one password for everyone shown…** gives every student in the list the same
-password (handy for a first lesson), and **New password for each shown** gives each a fresh random one; both
-show the new logins once, with *Print login cards*. **Remove** deletes the login and every recording it made.
+Lost a password? In the class popup's list press **Reset password** next to the name: a new one is made and
+shown once. For a whole class, **Set one password for everyone shown…** gives every student in the popup the
+same password (handy for a first lesson), and **New password for each shown** gives each a fresh random one;
+both show the new logins once, with *Print login cards*. **Remove** deletes the login and every recording it
+made; the *Class* drop-down on a row moves a student to another class.
 
 ## 3. Assign a reading
 

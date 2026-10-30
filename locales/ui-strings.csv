@@ -7269,7 +7269,6 @@ assign.out.note,Sign in with your teacher account to manage students and assignm
 assign.student.head,This page is for teachers,הדף הזה מיועד למורים,"Management page, a student signed in",
 assign.student.body,"You are signed in with a student account. Your assignments, recordings and your teacher’s feedback are in the Torah Trainer.","אתם מחוברים עם חשבון תלמיד/ה. המשימות, ההקלטות והמשוב מהמורה נמצאים במאמן הקריאה בתורה.","Management page, a student signed in",
 assign.student.link,Go to the Torah Trainer,למאמן הקריאה בתורה,"Management page, a student signed in",
-assign.students.head,Students,תלמידים,Management page section,
 assign.students.note,Each student signs in to the Torah Trainer with a username and a password you give them — no email address. Print the login cards right after you create a batch; the passwords are shown only then. You can reset a password at any time.,כל תלמיד/ה נכנס/ת למאמן הקריאה בתורה עם שם משתמש וסיסמה שאתם נותנים — בלי כתובת אימייל. הדפיסו את כרטיסי הכניסה מיד אחרי יצירת הקבוצה; הסיסמאות מוצגות רק אז. אפשר לאפס סיסמה בכל עת.,Management page section note,
 assign.students.filter_class,Class,כיתה,Management page: filter label,
 assign.students.filter_all,All students,כל התלמידים,Management page: filter option,
@@ -7292,7 +7291,6 @@ assign.students.reset_head,New password,סיסמה חדשה,Management page: hea
 assign.students.remove_confirm,Remove {name}’s account? Their recordings and your feedback on them are deleted too. This cannot be undone.,להסיר את החשבון של {name}? גם ההקלטות שלהם והמשוב שלכם עליהן יימחקו. אי אפשר לבטל.,Management page: confirm,template
 assign.students.removed,{name}’s account was removed.,החשבון של {name} הוסר.,Management page: status,template
 assign.students.add_head,Add students,הוספת תלמידים,Management page: heading,
-assign.students.list_head,Your students,התלמידים שלכם,Management page: heading over the roster,
 assign.students.add_note,"Type one name per line (a first name or a nickname is enough — it is what the student sees), or take the names from a class list saved on this device. Then check the usernames and passwords in the preview and press Create.","הקלידו שם אחד בכל שורה (שם פרטי או כינוי מספיק — זה מה שהתלמיד/ה רואה), או קחו את השמות מרשימת כיתה ששמורה במכשיר הזה. אחר כך בדקו את שמות המשתמש והסיסמאות בתצוגה המקדימה ולחצו ״יצירה״.",Management page: note,
 assign.students.names_label,"Names, one per line","שמות, אחד בכל שורה",Management page: field,
 assign.students.import_label,From a class list on this device,מרשימת כיתה במכשיר הזה,Management page: field,
@@ -7302,7 +7300,6 @@ assign.students.import_none,No class list saved on this device,אין רשימת
 assign.students.import_dashboard,Dashboard class: {name},כיתה בלוח הכיתה: {name},Management page: import source,template
 assign.students.import_nametags,Name Tags list: {name},רשימת תוויות שם: {name},Management page: import source,template
 assign.students.import_flashcards,Flash Cards profiles,פרופילים בכרטיסיות,Management page: import source,
-assign.students.new_class,Class for these students,כיתה לתלמידים האלה,Management page: field,
 assign.students.preview_btn,Preview usernames and passwords,תצוגה מקדימה של שמות משתמש וסיסמאות,Management page: button,
 assign.students.names_empty,Type at least one name first.,הקלידו קודם לפחות שם אחד.,Management page: validation,
 assign.students.preview_note,"Check each row — you can edit a name, username or password before creating. Usernames are lowercase letters, digits and dots; passwords at least 8 characters.","בדקו כל שורה — אפשר לערוך שם, שם משתמש או סיסמה לפני היצירה. שמות משתמש הם אותיות לטיניות קטנות, ספרות ונקודות; סיסמאות לפחות 8 תווים.",Management page: preview note,
@@ -7319,11 +7316,9 @@ assign.students.hide_passwords,Hide the passwords,הסתרת הסיסמאות,Ma
 assign.cards.title,Torah Trainer login for {name},כניסה למאמן הקריאה בתורה עבור {name},Printed login card,template
 assign.cards.site,"Go to {url}, open the account button and choose “Student? Sign in with your username”.","היכנסו ל-{url}, פתחו את כפתור החשבון ובחרו ״תלמיד/ה? היכנסו עם שם המשתמש שלכם״.",Printed login card,template
 assign.classes.head,Classes,כיתות,Management page: heading,
-assign.classes.note,"Optional, but make them first: a class groups students, lets an assignment go to one class, and shows who has not submitted yet.","לא חובה, אבל כדאי ליצור אותן קודם: כיתה מקבצת תלמידים, מאפשרת לתת משימה לכיתה אחת, ומראה מי עדיין לא הגיש.",Management page: note,
+assign.classes.note,"A class holds its students: add a class, then add its students in the popup that opens. Edit class… reopens it. Students you never put in a class are under Students without a class.","כיתה מכילה את התלמידים שלה: הוסיפו כיתה, ואז הוסיפו את התלמידים בחלון שנפתח. ״עריכת כיתה…״ פותח אותו שוב. תלמידים שלא שובצו לכיתה נמצאים תחת ״תלמידים ללא כיתה״.",Management page: note,
 assign.classes.none,No classes yet.,עדיין אין כיתות.,Management page: empty,
 assign.classes.members,{n} students,{n} תלמידים,Management page: class line,template
-assign.classes.rename_btn,Rename,שינוי שם,Management page: button,
-assign.classes.rename_prompt,New name for the class:,שם חדש לכיתה:,Management page: prompt,
 assign.classes.delete_btn,Delete,מחיקה,Management page: button,
 assign.classes.delete_confirm,Delete the class “{name}”? Its students keep their accounts and recordings; they just have no class.,למחוק את הכיתה ״{name}״? התלמידים שומרים על החשבונות וההקלטות; הם פשוט נשארים ללא כיתה.,Management page: confirm,template
 assign.classes.new_label,New class name,שם כיתה חדשה,Management page: field,
@@ -7347,6 +7342,15 @@ assign.list.enrolled_count.one,{n} student enrolled,תלמיד אחד רשום,M
 assign.list.enrolled_count.other,{n} students enrolled,{n} תלמידים רשומים,Management page: fact,template
 assign.classes.add_btn,Add class…,הוספת כיתה…,Management page: opens the add-class dialog,
 assign.classes.dlg_head,Add a class,הוספת כיתה,Management page: dialog heading,
+assign.classes.edit_btn,Edit class…,עריכת כיתה…,Management page: opens the class popup,
+assign.classes.noclass_entry,Students without a class,תלמידים ללא כיתה,Management page: the class list's last entry and that popup's title,
+assign.classes.noclass_edit,Edit…,עריכה…,Management page: opens the no-class popup,
+assign.classes.name_label,Class name,שם הכיתה,Management page: class popup field,
+assign.classes.save_name,Save name,שמירת השם,Management page: class popup button (rename),
+assign.classes.renamed,Class renamed.,שם הכיתה שונה.,Management page: status,
+assign.classes.added_next,Class “{name}” added. Now add its students below.,הכיתה ״{name}״ נוספה. עכשיו הוסיפו את התלמידים שלה למטה.,Management page: status in the popup,template
+assign.classes.close,Close,סגירה,Management page: class popup button,
+assign.students.roster_head,Students in this class,התלמידים בכיתה הזו,Management page: class popup heading over the roster,
 assign.students.style_label,Username style,סגנון שם המשתמש,Management page: field beside Preview,
 assign.students.style_first_nn,first name + number (ruth.47),שם פרטי + מספר (ruth.47),Management page: username style,
 assign.students.style_first_last,first.last (ruth.cohen),שם.משפחה (ruth.cohen),Management page: username style,
