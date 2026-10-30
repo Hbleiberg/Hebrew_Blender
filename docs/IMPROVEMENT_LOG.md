@@ -386,7 +386,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Awaiting the maintainer (an action or an answer only the maintainer can give; a session that resolves one moves it to Done)
 
-- [ ] P1 (**NEW — the reading-assignments build's live actions; BACKEND BOUNDARY**) | db/migrations/0008_*, db/functions/manage-students/, db/functions/delete-account/, workers/audio/ | **Nothing of the feature works live until: 0008 applied (read back; `Live?` yes), `manage-students` deployed and `delete-account` redeployed, the Cloudflare steps in `workers/audio/README.md` done, the `students.ivritsuite.com` null-MX + SPF records added, the Supabase password settings on.** Then an iPad hand test (the mic prompt in the PWA, `audio/mp4`, WebM playback on Safari < 17.4). | found this build
+- [ ] P1 (**NEW — the reading-assignments build's live actions; BACKEND BOUNDARY**) | db/migrations/0008_*, db/functions/manage-students/, db/functions/delete-account/, workers/audio/ | **Nothing of the feature works live until: 0008 applied (read back; `Live?` yes), `manage-students` deployed and `delete-account` redeployed, the Cloudflare steps in `workers/audio/README.md` done, the …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S577 N — GATE 2: a phone's default layout; deferred unattended; `n577/sheets/atlas-phone-i13.png`**) | trope_atlas.html | **On a phone the melody table opens as the Grid, where a figure shows its clef only; Stacked shows whole figures**: open Stacked under 560px while no layout is stored? | found S577
 
@@ -445,11 +445,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 _(none)_
 
 ## Done
-
-- [x] 2026-10-30 | `efa1e46`→`1e47b7a`+ (plan-driven feature build, branch `claude/quirky-galileo-wqpkll`, draft PR — NOT an improveloop session) | db/migrations/0008_reading_assignments.sql (new), db/tests/ (new), scripts/test-rls-assignments.mjs (new) | **Torah Trainer reading assignments, phase 1 — the schema** (`accounts-and-cloud.md` → Reading assignments): seven tables, `claim_assignment()`, definer helpers, column guards as triggers, restrictive policies closing saves / fonts / Storage to students. | `test-rls-assignments` 157/157 on a throwaway Postgres; `Live?` no
-- [x] 2026-10-30 | (same build) | workers/audio/ (new), .gitignore | **Phase 2 — the audio Worker**: ES256 token check against the JWKS, every row question asked of PostgREST as the caller, uploads through a `FixedLengthStream` into the R2 binding, bearer playback (no shareable URL), teacher-only delete, rate limits, the daily reconcile as the one use of the secret key; the README is the setup guide. | `npm test` 67/67 under `wrangler dev --local`
-- [x] 2026-10-30 | (same build) | js/ivrit-assignments.js (new), js/ivrit-account.js, js/ivrit-saves.js, torah_trainer.html, reading_assignments.html (new, unlisted), account.html, db/functions/, CSV, sw.js | **Phases 3–5 — the teacher and student flows**: student logins (username + password, `app_metadata.role`), the Trainer's `?assignments=1` region (code word, the range, record / listen / name / submit, my recordings, classmates), the teacher's page (logins, cards, classes, assignments, recordings, feedback, zip). | `smoke-assignments` 86/86; smoke-account 112/112; sw v1140
-- [x] 2026-10-30 | (same build) | privacy.html, terms.html, CSV (EN+HE), docs/reference/*, docs/backend-architecture.md, README.md, db/README.md, CLAUDE.md, docs/reading-assignments-teacher-guide.md (new) | **Phase 6 — the words**: the policy names reading assignments and Cloudflare as a subprocessor; the reference sections, the architecture map, the teacher's guide, the rules. | check-i18n Check E clean; check-ledger
 
 - [x] 2026-10-30 | (S578 close-out) | branch/deploy note | **S578 = P on the Trope Atlas (its first P; no account wiring by design): arms 1–8 behind controls, the 7 smokes' J by `--sdk`. FOUND 3, FIXED 2 (+2 queue), 1 P4 logged, 1 rescoped. PR #377, sw v1139; deploy on merge. Gates: none asked.**
 
