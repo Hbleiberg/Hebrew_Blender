@@ -244,6 +244,9 @@ html[lang="he"] .at-idxhead { letter-spacing:normal; text-transform:none; }
   [dir="rtl"] .at-index { transform:translateX(105%); }
   .at-index.open, [dir="rtl"] .at-index.open { transform:none; visibility:visible; }
   body.dark .at-index { background:var(--navy-deep); }
+  /* pwa.js's install hint (#pwaInstallBanner: fixed at the bottom, above everything, shown under 768px) sat over the
+     drawer's last links once it was scrolled to its end (3 on an iPhone SE): it steps aside while the drawer is open. */
+  body:has(#atIndex.open) #pwaInstallBanner { visibility:hidden; }
   .at-keyhint { display:none; }
 }
 @media (max-width:560px) { .at-bartitle { display:none; } .at-bar-in { padding-inline:12px; } .at-main { padding-inline:12px; } }
