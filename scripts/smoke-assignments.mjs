@@ -428,13 +428,13 @@ try {
     const ctx = await newCtx(browser, cloud, { session: teacherSession });
     const { page, errors, dialogs } = await openPage(ctx, 'reading_assignments.html');
     await page.waitForFunction(() => !document.getElementById('stIn').hidden, null, { timeout: 10000 });
-    check('A: the teacher page shows the signed-in tiles', await visible(page, '#secStudents'));
+    check('A: the teacher page shows the signed-in tiles', await visible(page, '#secClasses'));
     // a class, through the Add class dialog
     await page.click('#addClassBtn');
     check('A: Add class opens a modal dialog with the name field focused', await page.evaluate(() => !document.getElementById('clsDlg').hidden && document.getElementById('clsDlg').getAttribute('aria-modal') === 'true' && document.activeElement && document.activeElement.id === 'newClassName'));
     await page.fill('#newClassName', 'Kitah Gimel ' + XSS);
     await page.click('#newClassBtn');
-    check('A: a class is created (its name rendered as text), the dialog closes and the focus returns to the button', await waitText(page, '#classStatus', /added/) && (await page.evaluate(() => document.querySelector('#classesHost strong').textContent)).includes('<img') && !(await page.evaluate(() => window.__xss)) && await page.evaluate(() => document.getElementById('clsDlg').hidden && document.activeElement && document.activeElement.id === 'addClassBtn'));
+    check('A: a class is created (its name rendered as text) and the popup stays open on it with the students section, the names field focused', await waitText(page, '#classStatus', /added/) && (await page.evaluate(() => document.querySelector('#classesHost strong').textContent)).includes('<img') && !(await page.evaluate(() => window.__xss)) && await page.evaluate(() => !document.getElementById('clsDlg').hidden && !document.getElementById('clsBody').hidden && document.getElementById('clsDlgTitle').textContent.includes('Kitah Gimel') && document.getElementById('newClassBtn').textContent === 'Save name' && document.activeElement && document.activeElement.id === 'namesInput'));
     // the username styles: a preview with last names, then cleared
     await page.selectOption('#usernameStyle', 'first.last');
     await page.fill('#namesInput', 'Ruth Cohen\nNoam\n');
@@ -445,7 +445,6 @@ try {
     await page.selectOption('#usernameStyle', 'first.nn');
     // students from names → preview → create
     await page.fill('#namesInput', 'Ruth ' + XSS + '\nNoam\n');
-    await page.selectOption('#newClassSel', { index: 1 });
     await page.click('#previewBtn');
     const previewRows = await page.evaluate(() => [...document.querySelectorAll('#previewHost tbody tr')].map(tr => [...tr.querySelectorAll('input')].map(i => i.value)));
     check('A: the preview holds two rows with usernames and 8+ character passwords', previewRows.length === 2 && previewRows.every(r => /^[a-z0-9.]{3,30}$/.test(r[1]) && r[2].length >= 8), JSON.stringify(previewRows));
@@ -458,7 +457,13 @@ try {
     await page.click('#createdHost button.ghost');
     check('A: Hide the passwords clears the table', !(await page.evaluate(() => document.querySelector('#createdHost tbody'))));
     const listed = await page.evaluate(() => [...document.querySelectorAll('#studentsHost tbody tr')].length);
-    check('A: the students list shows both', listed === 2, listed);
+    check('A: the class popup\'s roster shows both', listed === 2, listed);
+    await page.keyboard.press('Escape');
+    check('A: Escape closes the popup, the focus returns to Add class…, and the list counts the class\'s 2 students and none without a class', await page.evaluate(() => document.getElementById('clsDlg').hidden && document.activeElement && document.activeElement.id === 'addClassBtn' && /2 students/.test(document.querySelector('#classesHost li').textContent) && /Students without a class · 0 students/.test(document.getElementById('classesHost').textContent)));
+    await page.locator('#classesHost button', { hasText: 'Edit class' }).first().click();
+    check('A: Edit class… reopens the popup on that class', await page.evaluate(() => !document.getElementById('clsDlg').hidden && document.getElementById('clsDlgTitle').textContent.includes('Kitah Gimel') && document.querySelectorAll('#studentsHost tbody tr').length === 2));
+    await page.screenshot({ path: path.join(SHOTS, 'A-class-popup.png') });
+    await page.keyboard.press('Escape');
     check('A: 0 pageerrors on the teacher page', errors.length === 0, errors.join(' | '));
     await page.screenshot({ path: path.join(SHOTS, 'A-teacher-page.png'), fullPage: true });
     await page.close();
@@ -678,7 +683,7 @@ try {
     const grid = await page.evaluate(() => [...document.querySelectorAll('#cvHost tbody tr')].map(tr => [tr.querySelector('th').textContent, tr.querySelector('td .badge') ? tr.querySelector('td .badge').textContent : null, !!tr.querySelector('a[href*="assignTo="]')]));
     check('C: the class view lists both students as Submitted, each with Assign a new reading…', grid.length === 2 && grid.every(r => r[1] === 'Submitted' && r[2]), JSON.stringify(grid));
     cloud.manageStudents({ action: 'create', students: [{ display_name: 'Tal', username: 'tal.r', password: 'river-cat-55' }] }, { id: T1, role: 'teacher' });
-    await page.click('#studentsRefresh');
+    await page.evaluate(() => loadStudents());
     await page.waitForFunction(() => document.querySelectorAll('#cvHost tbody tr').length === 3, null, { timeout: 15000 });
     check('C: the new student\'s cell offers Add', await page.evaluate(() => { const tr = [...document.querySelectorAll('#cvHost tbody tr')].find(r => r.querySelector('th').textContent === 'Tal'); return tr && tr.querySelector('td .btn') && /Add/.test(tr.querySelector('td .btn').textContent) && /Add Tal to/.test(tr.querySelector('td .btn').getAttribute('aria-label')); }));
     await page.locator('#cvHost tbody tr', { hasText: 'Tal' }).locator('td .btn').first().click();
@@ -686,7 +691,7 @@ try {
     await page.screenshot({ path: path.join(SHOTS, 'C-teacher-page-grid.png'), fullPage: true });
     // a second Noam: both Noams carry their username in the grid, Tal stays plain
     cloud.manageStudents({ action: 'create', students: [{ display_name: 'Noam', username: 'noam.second', password: 'river-cat-56' }] }, { id: T1, role: 'teacher' });
-    await page.click('#studentsRefresh');
+    await page.evaluate(() => loadStudents());
     await page.waitForFunction(() => document.querySelectorAll('#cvHost tbody tr').length === 4, null, { timeout: 15000 });
     const labels = await page.evaluate(() => [...document.querySelectorAll('#cvHost tbody tr th')].map(th => th.textContent));
     check('C: duplicated display names show their usernames in the class view; unique names stay plain', labels.filter(l => /^Noam · noam\./.test(l)).length === 2 && labels.includes('Tal'), JSON.stringify(labels));
@@ -900,18 +905,21 @@ try {
   {
     const ctx = await newCtx(browser, cloud, { session: teacherSession });
     const { page, errors } = await openPage(ctx, 'reading_assignments.html');
-    await page.waitForFunction(() => document.querySelectorAll('#studentsHost tbody tr').length === 4, null, { timeout: 15000 });
+    await page.waitForFunction(() => document.querySelectorAll('#classesHost button').length >= 2, null, { timeout: 15000 });
+    await page.locator('#classesHost button', { hasText: 'Edit class' }).first().click();
+    await page.waitForFunction(() => document.querySelectorAll('#studentsHost tbody tr').length === 2, null, { timeout: 15000 });
+    const inClass = cloud.t.students.filter(s => s.class_id === cloud.t.classes[0].id);
     await page.click('#bulkOneBtn');
     const pd = await page.evaluate(() => ({ open: !document.getElementById('pwDlg').hidden, note: document.getElementById('pwDlgNote').textContent, pw: document.getElementById('pwDlgIn').value, focused: document.activeElement && document.activeElement.id }));
     await page.screenshot({ path: path.join(SHOTS, 'M-one-password-dialog.png') });
-    check('M: the one-password dialog opens on the password field, prefilled, naming the 4 students shown', pd.open && /All 4 students shown/.test(pd.note) && pd.pw.length >= 8 && pd.focused === 'pwDlgIn', JSON.stringify(pd));
+    check('M: the one-password dialog opens over the class popup, on the password field, prefilled, naming the class\'s 2 students', pd.open && /All 2 students shown/.test(pd.note) && pd.pw.length >= 8 && pd.focused === 'pwDlgIn', JSON.stringify(pd));
     await page.fill('#pwDlgIn', 'class-pass-77');
     await page.click('#pwDlgGo');
-    check('M: every shown student gets the one password, shown once in the logins table', await waitText(page, '#studentsStatus', /4 passwords set/) && await page.evaluate(() => document.getElementById('pwDlg').hidden && [...document.querySelectorAll('#createdHost tbody tr')].length === 4 && [...document.querySelectorAll('#createdHost tbody tr td:last-child')].every(td => td.textContent === 'class-pass-77')) && cloud.t.students.every(s => cloud.users.get(s.id).password === 'class-pass-77'));
+    check('M: every student of the class gets the one password, shown once in the logins table; the others keep theirs', await waitText(page, '#studentsStatus', /2 passwords set/) && await page.evaluate(() => document.getElementById('pwDlg').hidden && !document.getElementById('clsDlg').hidden && [...document.querySelectorAll('#createdHost tbody tr')].length === 2 && [...document.querySelectorAll('#createdHost tbody tr td:last-child')].every(td => td.textContent === 'class-pass-77')) && inClass.every(s => cloud.users.get(s.id).password === 'class-pass-77') && cloud.t.students.filter(s => !s.class_id).every(s => cloud.users.get(s.id).password !== 'class-pass-77'));
     await page.click('#bulkEachBtn');
-    await waitText(page, '#studentsStatus', /4 passwords set/);
-    const each = cloud.t.students.map(s => cloud.users.get(s.id).password);
-    check('M: New password for each gives three different random passphrases, listed for printing', new Set(each).size === 4 && each.every(p => /^[a-z]+-[a-z]+-[2-9]{2}$/.test(p)) && await page.evaluate(() => [...document.querySelectorAll('#createdHost tbody tr')].length === 4), JSON.stringify(each));
+    await waitText(page, '#studentsStatus', /2 passwords set/);
+    const each = inClass.map(s => cloud.users.get(s.id).password);
+    check('M: New password for each gives the class two different random passphrases, listed for printing', new Set(each).size === 2 && each.every(p => /^[a-z]+-[a-z]+-[2-9]{2}$/.test(p)) && await page.evaluate(() => [...document.querySelectorAll('#createdHost tbody tr')].length === 2), JSON.stringify(each));
     check('M: 0 pageerrors', errors.length === 0, errors.join(' | '));
     await ctx.close();
   }

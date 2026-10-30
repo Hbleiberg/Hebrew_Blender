@@ -149,6 +149,8 @@ body.dark .sub-row{background:#161c2a;}
 .dlg{position:fixed;inset:0;margin:auto;width:min(520px,92vw);max-height:88vh;height:fit-content;overflow:auto;background:var(--white);border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.28);padding:18px 20px;z-index:120;}
 .dlg h2{margin-bottom:10px;}
 .dlg-actions{display:flex;justify-content:flex-end;gap:8px;margin-block-start:12px;flex-wrap:wrap;}
+.dlg.dlg-wide{width:min(900px,94vw);}
+.dlg h3{font-size:0.95rem;margin:16px 0 4px;}
 .notsub{margin:4px 0 8px;padding-inline-start:18px;}
 .preview-note{font-size:0.84rem;color:var(--muted);}
 footer{text-align:center;padding:16px;font-size:0.75rem;color:var(--muted);border-top:1px solid var(--border);background:var(--white);}
@@ -230,64 +232,13 @@ body.dark .hi-sun{display:inline-block;}
   </section>
 
   <div id="stIn" hidden>
-    <!-- ───── Classes ───── -->
+    <!-- ───── Classes (each class's students live in its popup) ───── -->
     <section class="tile" id="secClasses" aria-labelledby="classesHead">
       <h2 id="classesHead" data-i18n="assign.classes.head">Classes</h2>
-      <p class="note" data-i18n="assign.classes.note">Optional, but make them first: a class groups students, lets an assignment go to one class, and shows who has not submitted yet.</p>
+      <p class="note" data-i18n="assign.classes.note">A class holds its students: add a class, then add its students in the popup that opens. Edit class… reopens it. Students you never put in a class are under Students without a class.</p>
       <div class="toolbar"><button class="btn" type="button" id="addClassBtn" data-i18n="assign.classes.add_btn">Add class…</button></div>
       <p class="status" id="classStatus" role="status" aria-live="polite"></p>
       <div id="classesHost"></div>
-    </section>
-
-    <!-- ───── Students ───── -->
-    <section class="tile" id="secStudents" aria-labelledby="studentsHead">
-      <h2 id="studentsHead" data-i18n="assign.students.head">Students</h2>
-      <p class="note" data-i18n="assign.students.note">Each student signs in to the Torah Trainer with a username and a password you give them — no email address. Print the login cards right after you create a batch; the passwords are shown only then. You can reset a password at any time.</p>
-
-      <h3 data-i18n="assign.students.add_head">Add students</h3>
-      <p class="note" data-i18n="assign.students.add_note">Type one name per line (a first name or a nickname is enough — it is what the student sees), or take the names from a class list saved on this device. Then check the usernames and passwords in the preview and press Create.</p>
-      <div class="row">
-        <div class="field" style="flex:1 1 320px;">
-          <label for="namesInput" data-i18n="assign.students.names_label">Names, one per line</label>
-          <textarea id="namesInput" autocomplete="off" spellcheck="false"></textarea>
-        </div>
-        <div class="field" style="flex:0 1 260px;">
-          <label for="importSource" data-i18n="assign.students.import_label">From a class list on this device</label>
-          <select id="importSource"></select>
-          <button class="btn ghost sm" type="button" id="importBtn" data-i18n="assign.students.import_btn">Add these names</button>
-        </div>
-      </div>
-      <div class="row">
-        <div class="field" style="flex:0 1 240px;">
-          <label for="newClassSel" data-i18n="assign.students.new_class">Class for these students</label>
-          <select id="newClassSel"></select>
-        </div>
-        <div class="field" style="flex:0 1 260px;">
-          <label for="usernameStyle" data-i18n="assign.students.style_label">Username style</label>
-          <select id="usernameStyle">
-            <option value="first.nn" data-i18n="assign.students.style_first_nn">first name + number (ruth.47)</option>
-            <option value="first.last" data-i18n="assign.students.style_first_last">first.last (ruth.cohen)</option>
-            <option value="firstnn" data-i18n="assign.students.style_firstnn">first name + number (ruth47)</option>
-            <option value="flast" data-i18n="assign.students.style_flast">initial + last name (rcohen)</option>
-            <option value="first.l" data-i18n="assign.students.style_first_l">first name + initial (ruth.c)</option>
-          </select>
-        </div>
-        <div><button class="btn ghost" type="button" id="previewBtn" data-i18n="assign.students.preview_btn">Preview usernames and passwords</button></div>
-      </div>
-      <div id="previewHost"></div>
-      <p class="status" id="createStatus" role="status" aria-live="polite"></p>
-      <div id="createdHost"></div>
-
-      <h3 data-i18n="assign.students.list_head">Your students</h3>
-      <div class="toolbar">
-        <label for="classFilter" data-i18n="assign.students.filter_class">Class</label>
-        <select id="classFilter"></select>
-        <button class="btn ghost sm" type="button" id="studentsRefresh" data-i18n="account.holds.refresh">Refresh</button>
-        <button class="btn ghost sm" type="button" id="bulkOneBtn" data-i18n="assign.students.bulk_one_btn">Set one password for everyone shown…</button>
-        <button class="btn ghost sm" type="button" id="bulkEachBtn" data-i18n="assign.students.bulk_each_btn">New password for each shown</button>
-      </div>
-      <div id="studentsHost" aria-live="polite"></div>
-      <p class="status" id="studentsStatus" role="status" aria-live="polite"></p>
     </section>
 
     <!-- ───── Class view: students × open assignments ───── -->
@@ -360,16 +311,56 @@ body.dark .hi-sun{display:inline-block;}
 </div>
 
 <!-- Add a class, and one password for everyone shown: the edit dialog's contract (modal, trapped, Escape closes). -->
-<div class="dlg" id="clsDlg" role="dialog" aria-modal="true" aria-labelledby="clsDlgTitle" hidden>
-  <h2 id="clsDlgTitle" data-i18n="assign.classes.dlg_head">Add a class</h2>
-  <form id="clsDlgForm" novalidate>
-    <div class="field"><label for="newClassName" data-i18n="assign.classes.new_label">New class name</label><input type="text" id="newClassName" maxlength="80" autocomplete="off"></div>
-    <p class="status" id="clsDlgStatus" role="status" aria-live="polite"></p>
-    <div class="dlg-actions">
-      <button class="btn ghost" type="button" id="clsDlgCancel" data-i18n="assign.edit.cancel">Cancel</button>
-      <button class="btn" type="submit" id="newClassBtn" data-i18n="assign.classes.new_btn">Add class</button>
+<div class="dlg dlg-wide" id="clsDlg" role="dialog" aria-modal="true" aria-labelledby="clsDlgTitle" hidden>
+  <h2 id="clsDlgTitle"></h2>
+  <form id="clsNameForm" novalidate>
+    <div class="row">
+      <div class="field" style="flex:0 1 320px;"><label for="newClassName" data-i18n="assign.classes.name_label">Class name</label><input type="text" id="newClassName" maxlength="80" autocomplete="off"></div>
+      <div><button class="btn" type="submit" id="newClassBtn" data-i18n="assign.classes.new_btn">Add class</button></div>
     </div>
+    <p class="status" id="clsDlgStatus" role="status" aria-live="polite"></p>
   </form>
+  <div id="clsBody" hidden>
+    <p class="note" data-i18n="assign.students.note">Each student signs in to the Torah Trainer with a username and a password you give them — no email address. Print the login cards right after you create a batch; the passwords are shown only then. You can reset a password at any time.</p>
+    <h3 data-i18n="assign.students.add_head">Add students</h3>
+    <p class="note" data-i18n="assign.students.add_note">Type one name per line (a first name or a nickname is enough — it is what the student sees), or take the names from a class list saved on this device. Then check the usernames and passwords in the preview and press Create.</p>
+    <div class="row">
+      <div class="field" style="flex:1 1 320px;">
+        <label for="namesInput" data-i18n="assign.students.names_label">Names, one per line</label>
+        <textarea id="namesInput" autocomplete="off" spellcheck="false"></textarea>
+      </div>
+      <div class="field" style="flex:0 1 260px;">
+        <label for="importSource" data-i18n="assign.students.import_label">From a class list on this device</label>
+        <select id="importSource"></select>
+        <button class="btn ghost sm" type="button" id="importBtn" data-i18n="assign.students.import_btn">Add these names</button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="field" style="flex:0 1 260px;">
+        <label for="usernameStyle" data-i18n="assign.students.style_label">Username style</label>
+        <select id="usernameStyle">
+          <option value="first.nn" data-i18n="assign.students.style_first_nn">first name + number (ruth.47)</option>
+          <option value="first.last" data-i18n="assign.students.style_first_last">first.last (ruth.cohen)</option>
+          <option value="firstnn" data-i18n="assign.students.style_firstnn">first name + number (ruth47)</option>
+          <option value="flast" data-i18n="assign.students.style_flast">initial + last name (rcohen)</option>
+          <option value="first.l" data-i18n="assign.students.style_first_l">first name + initial (ruth.c)</option>
+        </select>
+      </div>
+      <div><button class="btn ghost" type="button" id="previewBtn" data-i18n="assign.students.preview_btn">Preview usernames and passwords</button></div>
+    </div>
+    <div id="previewHost"></div>
+    <p class="status" id="createStatus" role="status" aria-live="polite"></p>
+    <div id="createdHost"></div>
+    <h3 id="clsRosterHead"></h3>
+    <div class="toolbar">
+      <button class="btn ghost sm" type="button" id="studentsRefresh" data-i18n="account.holds.refresh">Refresh</button>
+      <button class="btn ghost sm" type="button" id="bulkOneBtn" data-i18n="assign.students.bulk_one_btn">Set one password for everyone shown…</button>
+      <button class="btn ghost sm" type="button" id="bulkEachBtn" data-i18n="assign.students.bulk_each_btn">New password for each shown</button>
+    </div>
+    <div id="studentsHost" aria-live="polite"></div>
+    <p class="status" id="studentsStatus" role="status" aria-live="polite"></p>
+  </div>
+  <div class="dlg-actions"><button class="btn ghost" type="button" id="clsDlgClose" data-i18n="assign.classes.close">Close</button></div>
 </div>
 <div class="dlg" id="pwDlg" role="dialog" aria-modal="true" aria-labelledby="pwDlgTitle" hidden>
   <h2 id="pwDlgTitle" data-i18n="assign.students.bulk_dlg_head">One password for everyone shown</h2>
@@ -414,6 +405,11 @@ const $ = (id) => document.getElementById(id);
 const t = (k, p) => (window.I18n ? I18n.t(k, p) : k);
 const AS = () => window.IvritAssignments;
 let user = null, classes = [], students = [], assignments = [], subs = null, subsFor = null, batch = null, preview = null, members = [], currentSubs = [];
+// The class popup: { mode: 'new' } (naming a class to add), { mode: 'class', id } (one class: its name, its students) or
+// { mode: 'none' } (the students without a class). curClassId() is '' for the no-class view.
+let clsDlg = { mode: 'new', id: null };
+function curClassId() { return clsDlg.mode === 'class' ? clsDlg.id : ''; }
+function curClass() { return clsDlg.mode === 'class' ? classes.find(c => c.id === clsDlg.id) || null : null; }
 const lines = {};
 function tn(key, n, p) { return t(key + (n === 1 ? '.one' : '.other'), Object.assign({ n }, p || {})); }   // the .one / .other pair
 function say(id, render, isError) { lines[id] = render || null; const n = $(id); if (!n) return; n.textContent = render ? render() : ''; n.classList.toggle('is-error', !!isError); }
@@ -433,10 +429,7 @@ function fillClassSelect(sel, withAll, current) {
   sel.value = current || '';
 }
 function fillAllClassSelects() {
-  const f = $('classFilter').value;
-  fillClassSelect($('classFilter'), true, f);
   fillClassSelect($('cvClassFilter'), true, $('cvClassFilter').value);
-  fillClassSelect($('newClassSel'), false, $('newClassSel').value);
   fillClassSelect($('dlgClass'), false, $('dlgClass').value);
 }
 
@@ -469,8 +462,8 @@ function loadStudents() {
 }
 function renderStudents() {
   const host = $('studentsHost'); while (host.firstChild) host.removeChild(host.firstChild);
-  const filter = $('classFilter').value;
-  const rows = students.filter(s => !filter || s.class_id === filter);
+  const filter = curClassId();
+  const rows = students.filter(s => (s.class_id || '') === filter);
   if (!rows.length) { host.appendChild(el('p', 'muted', students.length ? t('assign.students.none_in_class') : t('assign.students.none'))); return; }
   const table = el('table'); const thead = el('thead'), tr = el('tr');
   [t('assign.students.col_name'), t('assign.students.col_username'), t('assign.students.col_class'), t('assign.students.col_actions')].forEach(h => tr.appendChild(el('th', '', h)));
@@ -573,7 +566,7 @@ function renderPreview() {
 }
 function createStudents() {
   if (!preview || !preview.length) return;
-  const classId = $('newClassSel').value || null;
+  const classId = curClassId() || null;
   say('createStatus', () => t('assign.students.creating', { n: preview.length }));
   const rows = preview.map(p => ({ display_name: p.display_name, username: p.username, password: p.password }));
   AS().students.create(rows).then(results => {
@@ -626,25 +619,64 @@ function printCards(made) {
 /* ── classes ── */
 function renderClasses() {
   const host = $('classesHost'); while (host.firstChild) host.removeChild(host.firstChild);
-  if (!classes.length) { host.appendChild(el('p', 'muted', t('assign.classes.none'))); return; }
   const ul = el('ul'); ul.style.listStyle = 'none';
+  if (!classes.length) ul.appendChild(el('li', 'muted', t('assign.classes.none')));
   classes.forEach(c => {
     const li = el('li'); li.style.marginBlock = '4px';
     li.appendChild(el('strong', '', c.name));
     li.appendChild(document.createTextNode(' · ' + t('assign.classes.members', { n: students.filter(s => s.class_id === c.id).length }) + ' '));
-    li.appendChild(btn(t('assign.classes.rename_btn'), 'ghost sm', () => { const n = window.prompt(t('assign.classes.rename_prompt'), c.name); if (n === null || !n.trim()) return; AS().classes.rename(c.id, n).then(r => { c.name = r.name; fillAllClassSelects(); renderClasses(); renderStudents(); }).catch(err => say('classStatus', () => errText(err), true)); }));
+    li.appendChild(btn(t('assign.classes.edit_btn'), '', () => openClassDlg({ mode: 'class', id: c.id })));
     li.appendChild(btn(t('assign.classes.delete_btn'), 'ghost sm', () => { if (!window.confirm(t('assign.classes.delete_confirm', { name: c.name }))) return; AS().classes.remove(c.id).then(() => { classes = classes.filter(x => x.id !== c.id); students.forEach(s => { if (s.class_id === c.id) s.class_id = null; }); fillAllClassSelects(); renderClasses(); renderStudents(); }).catch(err => say('classStatus', () => errText(err), true)); }));
     ul.appendChild(li);
   });
+  const loose = students.filter(s => !s.class_id).length;
+  const none = el('li'); none.style.marginBlock = '4px';
+  none.appendChild(el('strong', '', t('assign.classes.noclass_entry')));
+  none.appendChild(document.createTextNode(' · ' + t('assign.classes.members', { n: loose }) + ' '));
+  none.appendChild(btn(t('assign.classes.noclass_edit'), 'ghost sm', () => openClassDlg({ mode: 'none' })));
+  ul.appendChild(none);
   host.appendChild(ul);
+}
+// The class popup: naming a new class, or one class with its students, or the students without a class.
+function openClassDlg(state) {
+  clsDlg = state;
+  const c = curClass();
+  $('newClassName').value = c ? c.name : '';
+  say('clsDlgStatus', null); say('createStatus', null); say('studentsStatus', null);
+  preview = null; renderPreview();
+  if (clsDlg.mode !== 'class') { batch = null; const h = $('createdHost'); while (h.firstChild) h.removeChild(h.firstChild); }
+  $('namesInput').value = '';
+  syncClassDlg();
+  renderStudents();
+  modalOpen('clsDlg', clsDlg.mode === 'none' ? 'namesInput' : 'newClassName');
+}
+function syncClassDlg() {
+  const c = curClass();
+  $('clsDlgTitle').textContent = clsDlg.mode === 'new' ? t('assign.classes.dlg_head') : clsDlg.mode === 'none' ? t('assign.classes.noclass_entry') : (c ? c.name : '');
+  $('clsNameForm').hidden = clsDlg.mode === 'none';
+  $('newClassBtn').textContent = clsDlg.mode === 'class' ? t('assign.classes.save_name') : t('assign.classes.new_btn');
+  $('clsBody').hidden = clsDlg.mode === 'new';
+  $('clsRosterHead').textContent = clsDlg.mode === 'none' ? t('assign.classes.noclass_entry') : t('assign.students.roster_head');
 }
 function addClass(e) {
   if (e) e.preventDefault();
   const name = $('newClassName').value.trim(); if (!name) { $('newClassName').focus(); return; }
   if (isDisabled($('newClassBtn'))) return;
   setBusy('newClassBtn', true); say('clsDlgStatus', () => t('account.holds.checking'));
-  AS().classes.create(name).then(c => { classes.push(c); classes.sort((a, b) => a.name.localeCompare(b.name)); $('newClassName').value = ''; fillAllClassSelects(); renderClasses(); say('clsDlgStatus', null); modalClose('clsDlg'); say('classStatus', () => t('assign.classes.added', { name: c.name })); })
-    .catch(err => say('clsDlgStatus', () => errText(err), true)).then(() => setBusy('newClassBtn', false));
+  if (clsDlg.mode === 'class') {   // the name field saves a rename
+    const c = curClass(); if (!c) return;
+    AS().classes.rename(c.id, name).then(r => { c.name = r.name; classes.sort((a, b) => a.name.localeCompare(b.name)); fillAllClassSelects(); renderClasses(); renderStudents(); renderClassView(); syncClassDlg(); say('clsDlgStatus', () => t('assign.classes.renamed')); })
+      .catch(err => say('clsDlgStatus', () => errText(err), true)).then(() => setBusy('newClassBtn', false));
+    return;
+  }
+  AS().classes.create(name).then(c => {
+    classes.push(c); classes.sort((a, b) => a.name.localeCompare(b.name)); fillAllClassSelects(); renderClasses();
+    say('classStatus', () => t('assign.classes.added', { name: c.name }));
+    // The new class opens at once, so its students can be added without a second click.
+    clsDlg = { mode: 'class', id: c.id }; syncClassDlg(); renderStudents();
+    say('clsDlgStatus', () => t('assign.classes.added_next', { name: c.name }));
+    $('namesInput').focus();
+  }).catch(err => say('clsDlgStatus', () => errText(err), true)).then(() => setBusy('newClassBtn', false));
 }
 /* ── the two small dialogs (the edit dialog's contract: modal, focus trapped, Escape closes, the opener gets the focus back) ── */
 let _modal = null, _modalOpener = null;
@@ -672,7 +704,7 @@ function modalClose(id) {
   try { (o && o.isConnected ? o : $('mainContent')).focus(); } catch (e) {}
 }
 /* ── bulk passwords: everyone the roster shows (the class filter) ── */
-function shownStudents() { const f = $('classFilter').value; return students.filter(s => !f || s.class_id === f); }
+function shownStudents() { const f = curClassId(); return students.filter(s => (s.class_id || '') === f); }
 // Two students with one display name: the label carries the username after the name, so a list that shows names only
 // (the class view, the recordings) still tells them apart. Unique names stay plain.
 function studentLabel(s) {
@@ -996,7 +1028,7 @@ function applyI18n() {
   if (!window.I18n) return;
   I18n.applyStaticI18n();
   try { const _db = $('darkBtn'); if (_db) (_db.querySelector('.hi-lbl') || _db).textContent = document.body.classList.contains('dark') ? I18n.t('shared.darkmode.label_light') : I18n.t('shared.darkmode.label_dark'); } catch (e) {}
-  fillAllClassSelects(); renderImportSources(); renderStudents(); renderClasses(); renderPreview(); renderAssignments(); renderClassView(); if (subsFor) { $('subsFor').textContent = t('assign.subs.for', { title: subsFor.title, reading: subsFor.ref_label, code: subsFor.code_word }); renderSubs(); }
+  fillAllClassSelects(); renderImportSources(); renderStudents(); renderClasses(); renderPreview(); renderAssignments(); renderClassView(); syncClassDlg(); if (subsFor) { $('subsFor').textContent = t('assign.subs.for', { title: subsFor.title, reading: subsFor.ref_label, code: subsFor.code_word }); renderSubs(); }
   if (batch && $('createdHost').firstChild) renderCreated(batch, false);
   Object.keys(lines).forEach(id => { const r = lines[id], n = $(id); if (n && r) n.textContent = r(); });
 }
@@ -1011,13 +1043,12 @@ document.addEventListener('DOMContentLoaded', () => {
   if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); }
   renderImportSources();
   $('outBtn').addEventListener('click', () => { if (window.IvritAccount) IvritAccount.openMenu(); });
-  $('classFilter').addEventListener('change', renderStudents);
   $('studentsRefresh').addEventListener('click', () => { if (!isDisabled($('studentsRefresh'))) loadStudents(); });
   $('importBtn').addEventListener('click', () => { if (!isDisabled($('importBtn'))) importNames(); });
   $('previewBtn').addEventListener('click', buildPreview);
-  $('addClassBtn').addEventListener('click', () => { $('newClassName').value = ''; say('clsDlgStatus', null); modalOpen('clsDlg', 'newClassName'); });
-  $('clsDlgForm').addEventListener('submit', addClass);
-  $('clsDlgCancel').addEventListener('click', () => modalClose('clsDlg'));
+  $('addClassBtn').addEventListener('click', () => openClassDlg({ mode: 'new' }));
+  $('clsNameForm').addEventListener('submit', addClass);
+  $('clsDlgClose').addEventListener('click', () => modalClose('clsDlg'));
   $('bulkOneBtn').addEventListener('click', bulkOne);
   $('bulkEachBtn').addEventListener('click', bulkEach);
   $('pwDlgForm').addEventListener('submit', bulkOneGo);
