@@ -125,6 +125,7 @@
   var chip = null;
   var menuStage = 'email';   // 'email' | 'code' — which step of the email sign-in the form is on
   var lastEmail = '';
+  var lastUsername = '';   // the student form's username survives a rebuild (the first Sign in creates the SDK client, whose INITIAL_SESSION re-renders the open menu); the password never does
   var noteState = null;      // {text, isError} — the popover's note, kept across re-renders (I18n.ready, language switch)
   var menuBusy = false;      // a sign-in or sign-out is in flight — kept here, not on the buttons, which a re-render replaces
   var pendingCode = '';      // the code an emailed link brought (#ivsignin=): filled into the field, never sent without a press
@@ -993,6 +994,8 @@
     var m = chip.menu;
     var typed = m.querySelector('input[type=email]');
     if (typed && typed.value) lastEmail = typed.value;
+    var typedUser = m.querySelector('input[name=username]');
+    if (typedUser && typedUser.value) lastUsername = typedUser.value;
     // The code survives a rebuild too: the first Verify after a link creates the SDK client, whose
     // INITIAL_SESSION re-renders the open menu while the code is being checked.
     var typedCode = m.querySelector('input[name=code]');
@@ -1057,6 +1060,7 @@
       var uInput = el('input', 'ivacct-input');
       uInput.setAttribute('data-ivk', 'username'); uInput.type = 'text'; uInput.name = 'username'; uInput.autocomplete = 'username';
       uInput.autocapitalize = 'none'; uInput.spellcheck = false; uInput.dir = 'ltr'; uInput.required = true; uInput.maxLength = 30;
+      uInput.value = lastUsername;
       uLabel.appendChild(uInput);
       var pLabel = el('label', 'ivacct-label', t('shared.account.student_password', 'Password'));
       var pInput = el('input', 'ivacct-input');
@@ -1072,8 +1076,9 @@
         if (menuBusy) return;
         setBusy(true);
         setNote(t('shared.account.sending', 'Sending…'), false);
+        lastUsername = uInput.value;
         signIn('student', { username: uInput.value, password: pInput.value }).then(function () {
-          setBusy(false); menuStage = 'email'; closeMenu(true);
+          setBusy(false); menuStage = 'email'; lastUsername = ''; closeMenu(true);
         }).catch(function (err) { setBusy(false); setNote(errorText(err), true); pInput.value = ''; pInput.focus(); });
       });
       sform.appendChild(uLabel); sform.appendChild(pLabel); sform.appendChild(go); sform.appendChild(back);

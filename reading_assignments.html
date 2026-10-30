@@ -126,7 +126,7 @@ body.dark .btn.danger:hover{background:#bb4a41;}
 table{width:100%;border-collapse:collapse;margin-block:8px 10px;}
 th,td{text-align:start;padding:7px 8px;border-bottom:1px solid var(--border);vertical-align:top;}
 th{font-size:0.8rem;text-transform:uppercase;letter-spacing:0.04em;color:var(--muted);}
-td.actions{white-space:nowrap;}
+td.actions .btn{margin-inline-end:4px;}
 .cell-input{width:100%;min-width:7ch;border:1px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);padding:5px 7px;font-family:inherit;font-size:0.9rem;}
 .code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:1.02rem;letter-spacing:0.02em;direction:ltr;unicode-bidi:isolate;}
 .badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:0.76rem;font-weight:600;border:1px solid var(--border);}
@@ -365,7 +365,7 @@ let user = null, classes = [], students = [], assignments = [], subs = null, sub
 const lines = {};
 function say(id, render, isError) { lines[id] = render || null; const n = $(id); if (!n) return; n.textContent = render ? render() : ''; n.classList.toggle('is-error', !!isError); }
 function el(tag, cls, text) { const n = document.createElement(tag); if (cls) n.className = cls; if (text !== undefined && text !== null) n.textContent = text; return n; }
-function btn(label, cls, onClick) { const b = el('button', 'btn ' + (cls || 'ghost sm'), label); b.type = 'button'; b.addEventListener('click', onClick); return b; }
+function btn(label, cls, onClick) { const b = el('button', 'btn ' + (cls === undefined ? 'ghost sm' : cls), label); b.type = 'button'; b.addEventListener('click', onClick); return b; }
 function setBusy(id, on) { const n = $(id); if (n) n.setAttribute('aria-disabled', on ? 'true' : 'false'); }
 function isDisabled(n) { return !n || n.getAttribute('aria-disabled') === 'true'; }
 function fmtDate(iso) { if (!iso) return ''; try { return new Date(iso).toLocaleDateString(window.I18n && I18n.lang === 'he' ? 'he-IL' : undefined, { dateStyle: 'medium' }); } catch (e) { return String(iso).slice(0, 10); } }

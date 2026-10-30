@@ -277,6 +277,8 @@ select tst.x('the service role deletes a stale row (reconcile)', format('delete 
 
 -- ───────── 6. deletion cascades ─────────
 select tst.who('authenticated', :T1, 'teacher');
+select tst.x('T1 deletes S1''s current take in A2 (version 3)', format('delete from public.submissions where id = %L', :SB5), 'ok:1');
+select tst.q('…and version 2 becomes current again', format('select is_current::text from public.submissions where id = %L', :SB3), 'true');
 select tst.x('T1 deletes S1''s approved recording', format('delete from public.submissions where id = %L', :SB1), 'ok:1');
 select tst.x('T1 deletes A1', format('delete from public.assignments where id = %L', :A1), 'ok:1');
 select tst.q('…its memberships, submissions and feedback went with it', format('select count(*) from public.feedback where id = %L', :F1), '0');

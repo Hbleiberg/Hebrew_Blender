@@ -397,6 +397,32 @@ create trigger submissions_before_insert
   before insert on public.submissions
   for each row execute function public.submissions_before_insert();
 
+-- When the current take goes (a teacher's delete, the reconcile removing a stale pending row, a cascade), the
+-- student's latest remaining take becomes current again, so a take that never finished uploading cannot leave a
+-- student with no recording for a classmate or a filter to find. `security definer` as the insert trigger; the
+-- guard below lets the update through by trigger depth.
+create or replace function public.submissions_after_delete()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  if old.is_current then
+    update public.submissions s set is_current = true
+     where s.id = (select s2.id from public.submissions s2
+                    where s2.assignment_id = old.assignment_id and s2.student_id = old.student_id
+                    order by s2.version desc limit 1);
+  end if;
+  return old;
+end;
+$$;
+revoke execute on function public.submissions_after_delete() from public, anon, authenticated;
+
+create trigger submissions_after_delete
+  after delete on public.submissions
+  for each row execute function public.submissions_after_delete();
+
 -- Who may change which column. The owning student: the title, and upload_status pending → uploaded together
 -- with the size and duration, only while the teacher has not acted (status = submitted) and the assignment is
 -- open. The teacher of the assignment: status, nothing else. The service role (the Worker's daily reconcile):

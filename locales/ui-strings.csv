@@ -7390,3 +7390,6 @@ assign.error.unsupported,"This browser cannot record audio. Try a current Chrome
 assign.error.mic_failed,The microphone stopped working. Try again.,המיקרופון הפסיק לעבוד. נסו שוב.,Assignments error,shared
 assign.error.aborted,The upload was stopped.,ההעלאה הופסקה.,Assignments error,shared
 assign.error.generic,Something went wrong. Try again in a moment.,משהו השתבש. נסו שוב בעוד רגע.,Assignments error,shared
+account.student.head,A student account,חשבון תלמיד/ה,Account page: a student account signed in,
+account.student.body,"This account was made by your teacher for Torah Trainer reading assignments. It keeps no saved items here, and only your teacher can change its password or remove it. Your recordings and feedback are in the Torah Trainer.","החשבון הזה נוצר על ידי המורה שלכם למשימות הקריאה במאמן הקריאה בתורה. הוא לא שומר כאן פריטים, ורק המורה יכול/ה לשנות את הסיסמה או להסיר אותו. ההקלטות והמשוב שלכם נמצאים במאמן הקריאה בתורה.",Account page: a student account signed in,
+account.student.link,Go to the Torah Trainer,למאמן הקריאה בתורה,Account page: a student account signed in,
