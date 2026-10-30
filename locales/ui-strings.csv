@@ -1357,7 +1357,8 @@ flashcards.mode.words_length_unit,letters,אותיות,words length unit suffix,
 flashcards.mode.words_source_alldict,All Dictionary,כל המילון,words source pill,
 flashcards.mode.words_source_label,Source:,מקור:,words source row label,
 flashcards.mode.words_source_mylists,My Word Lists,רשימות המילים שלי,words source pill,
-flashcards.profile.button_label,{name}  ·  {count} saved,{name}  ·  {count} שמורים,save-to-profile choice button,
+flashcards.profile.button_label.one,{name}  ·  {count} saved,{name}  ·  תוצאה שמורה אחת,save-to-profile choice button: the profile and its one saved result,plural
+flashcards.profile.button_label.other,{name}  ·  {count} saved,{name}  ·  {count} תוצאות שמורות,save-to-profile choice button: the profile and its saved results (results: feminine),plural
 flashcards.profile.cancel,Cancel,ביטול,save-to-profile cancel button,
 flashcards.profile.delete_confirm,"Delete profile ""{name}"" and all of its saved results? This cannot be undone.","למחוק את הפרופיל ""{name}"" ואת כל התוצאות השמורות שלו? לא ניתן לבטל זאת.",confirm dialog,mixed UI+content — do not translate {…}
 flashcards.profile.delete_confirm_cloud,"Delete profile ""{name}"" and all of its saved results? You are signed in, so it is removed from your account and from every device. This cannot be undone.","למחוק את הפרופיל ""{name}"" ואת כל התוצאות השמורות שלו? אתם מחוברים, ולכן הוא יוסר מהחשבון ומכל מכשיר. לא ניתן לבטל.",confirm dialog while signed in,mixed UI+content

@@ -5777,7 +5777,7 @@ function chooseProfileModal(opts) {
       const b = box.querySelector(`button[data-name="${encodeURIComponent(n)}"]`);
       if (b) {
         const count = (db.profiles[n].results || []).length;
-        b.textContent = I18n.t('flashcards.profile.button_label', { name: n, count: count });
+        b.textContent = I18n.t('flashcards.profile.button_label' + (count === 1 ? '.one' : '.other'), { name: n, count: count });
       }
     });
     ov.appendChild(box); document.body.appendChild(ov);
