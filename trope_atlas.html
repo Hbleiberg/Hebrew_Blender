@@ -356,6 +356,10 @@ table.at-atlas .lead .alt { color:var(--muted); font-size:0.8rem; }
 table.at-atlas td.cell { min-width:120px; }
 table.at-atlas td.none { color:var(--border); text-align:center; font-size:1.1rem; }
 .at-grid:focus-visible { outline:2px solid var(--focus-ring); outline-offset:2px; }
+/* On a touch screen the box fills nearly the whole window (all but 18–118px of a phone's), so once it reached its last
+   row a swipe that began on it moved nothing and the page stopped at the table: there the swipe goes on to the page.
+   Sideways it stays contained, and a mouse wheel keeps the box's own end. */
+@media (pointer:coarse) { .at-grid { overscroll-behavior-y:auto; } }
 .at-cards { display:grid; gap:14px; }
 .at-card { background:var(--white); border:1px solid var(--border); border-radius:8px; padding:12px 14px 8px; }
 body.dark .at-card { background:var(--navy-deep); }
