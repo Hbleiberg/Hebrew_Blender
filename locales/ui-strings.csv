@@ -7170,6 +7170,29 @@ torah.assign.dlg_look,"Students see this reading with my display settings as the
 torah.assign.dlg_look_none,"Your display settings are the defaults, so there is nothing to send: students see the reading as it looks to everyone.","הגדרות התצוגה שלכם הן ברירת המחדל, אז אין מה לשלוח: התלמידים יראו את הקריאה כפי שכולם רואים אותה.",Torah Trainer: assign dialog summary when the look is the default,
 torah.assign.dlg_look_big,Your display settings are too large to send with the assignment (too many custom colors). Untick the box or reset some colors.,הגדרות התצוגה שלכם גדולות מדי לשליחה עם המשימה (יותר מדי צבעים מותאמים). בטלו את הסימון או אפסו חלק מהצבעים.,Torah Trainer: assign dialog refusal,
 torah.assign.look_summary,"Students will see: {layout} · transliteration {translit} · translation {translation} · vowel colors {colors} · trope colors {trope} · {font}, plus your sizes and karaoke look.","התלמידים יראו: {layout} · תעתיק {translit} · תרגום {translation} · צבעי ניקוד {colors} · צבעי טעמים {trope} · {font}, וגם הגדלים ומראה הקריוקי שלכם.",Torah Trainer: assign dialog summary line,template
+torah.assign.link_signin,This link opens one of your assignments. Sign in with your student username to see it.,הקישור הזה פותח אחת מהמשימות שלכם. היכנסו עם שם המשתמש של התלמיד כדי לראות אותה.,Torah Trainer: a deep link while signed out,
+torah.assign.code_head,Have a code word from your teacher?,יש לכם מילת קוד מהמורה?,Torah Trainer: heading over the code form in the student panel,
+torah.assign.inbox_title.one,You have {n} assignment,יש לכם משימה אחת,Torah Trainer: the student panel's heading (count of open assignments),template
+torah.assign.inbox_title.other,You have {n} assignments,יש לכם {n} משימות,Torah Trainer: the student panel's heading (count of open assignments),template
+torah.assign.inbox_note,Press Open the reading on an assignment to see it and record it.,לחצו על ״הצגת הקריאה״ במשימה כדי לראות אותה ולהקליט.,Torah Trainer: under the inbox heading,
+torah.assign.verse_skipped,not part of the assignment,לא חלק מהמשימה,Torah Trainer: the tag on a verse the teacher left out,
+torah.assign.dlg_who,Who,למי,Torah Trainer: assign dialog field,
+torah.assign.dlg_who_code,Anyone of my students who types the code word,כל תלמיד שלי שיקליד את מילת הקוד,Torah Trainer: assign dialog option,
+torah.assign.dlg_who_class,Class: {name} (its students now),כיתה: {name} (התלמידים שבה עכשיו),Torah Trainer: assign dialog option,template
+torah.assign.dlg_who_pick,Chosen students…,תלמידים נבחרים…,Torah Trainer: assign dialog option,
+torah.assign.dlg_students_lbl,Students,תלמידים,Torah Trainer: assign dialog checklist label,
+torah.assign.dlg_students_none,"You have no students yet — make their logins on the Students, assignments and recordings page.","עדיין אין לכם תלמידים — צרו את הכניסות שלהם בדף ״תלמידים, משימות והקלטות״.",Torah Trainer: assign dialog empty checklist,
+torah.assign.dlg_students_empty,Tick at least one student.,סמנו לפחות תלמיד אחד.,Torah Trainer: assign dialog validation,
+torah.assign.dlg_verses,Verses,פסוקים,Torah Trainer: assign dialog checklist label,
+torah.assign.dlg_verses_all,All,הכול,Torah Trainer: assign dialog button,
+torah.assign.dlg_verses_none,None,אף אחד,Torah Trainer: assign dialog button,
+torah.assign.dlg_verses_note,{n} of {total} verses,{n} מתוך {total} פסוקים,Torah Trainer: assign dialog verse count,template
+torah.assign.dlg_verses_empty,Tick at least one verse.,סמנו לפחות פסוק אחד.,Torah Trainer: assign dialog validation,
+torah.assign.dlg_enrolled.one,{n} student can see it now.,תלמיד אחד יכול לראות אותה עכשיו.,Torah Trainer: assign dialog success card,template
+torah.assign.dlg_enrolled.other,{n} students can see it now.,{n} תלמידים יכולים לראות אותה עכשיו.,Torah Trainer: assign dialog success card,template
+torah.assign.dlg_enrol_failed,The assignment was created but the students could not be added ({error}). They can still join with the code word.,המשימה נוצרה אבל לא ניתן היה להוסיף את התלמידים ({error}). הם עדיין יכולים להצטרף עם מילת הקוד.,Torah Trainer: assign dialog success card,template
+torah.assign.dlg_copy_link,Copy link,העתקת קישור,Torah Trainer: assign dialog success card (the deep link),
+torah.assign.dlg_link_copied,"Link copied. Students who open it sign in, and the assignment opens.","הקישור הועתק. תלמידים שפותחים אותו נכנסים לחשבון, והמשימה נפתחת.",Torah Trainer: toast,
 torah.assign.view_note,You're seeing this reading with your teacher's display settings. Your own settings haven't changed.,אתם רואים את הקריאה עם הגדרות התצוגה של המורה שלכם. ההגדרות שלכם לא השתנו.,Torah Trainer: the link-view banner for an assignment's look,
 torah.assign.assign_btn,Assign this reading…,הקצאת הקריאה הזו…,Torah Trainer: opens the assign dialog,
 torah.assign.manage_link,"Students, assignments and recordings","תלמידים, משימות והקלטות",Torah Trainer: link to the management page,
@@ -7223,7 +7246,6 @@ torah.assign.dlg_code,Code word,מילת קוד,Torah Trainer: assign dialog fie
 torah.assign.dlg_regen,New code word,מילת קוד חדשה,Torah Trainer: assign dialog button,
 torah.assign.dlg_minutes,Maximum minutes,מקסימום דקות,Torah Trainer: assign dialog field,
 torah.assign.dlg_due,Due date (optional),תאריך הגשה (לא חובה),Torah Trainer: assign dialog field,
-torah.assign.dlg_class,Class (optional),כיתה (לא חובה),Torah Trainer: assign dialog field,
 torah.assign.dlg_no_class,Any of my students,כל התלמידים שלי,Torah Trainer: assign dialog class option,
 torah.assign.dlg_retention,Keep recordings (days after closing),שמירת ההקלטות (ימים אחרי הסגירה),Torah Trainer: assign dialog field,
 torah.assign.dlg_peers,Classmates may listen to each other’s latest recording (never to feedback),חברים לכיתה רשאים להאזין להקלטה האחרונה זה של זה (לעולם לא למשוב),Torah Trainer: assign dialog checkbox,
@@ -7319,6 +7341,41 @@ assign.list.approved_count,{n} approved,{n} אושרו,Management page: fact,tem
 assign.list.due,due {date},להגשה עד {date},Management page: fact,template
 assign.list.class,class: {name},כיתה: {name},Management page: fact,template
 assign.list.peers_on,classmates may listen,חברים לכיתה רשאים להאזין,Management page: fact,
+assign.list.copy_link,Copy link,העתקת קישור,Management page: assignment row button (the deep link),
+assign.list.link_copied,Link copied.,הקישור הועתק.,Management page: status,
+assign.list.enrolled_count.one,{n} student enrolled,תלמיד אחד רשום,Management page: fact,template
+assign.list.enrolled_count.other,{n} students enrolled,{n} תלמידים רשומים,Management page: fact,template
+assign.classes.add_btn,Add class…,הוספת כיתה…,Management page: opens the add-class dialog,
+assign.classes.dlg_head,Add a class,הוספת כיתה,Management page: dialog heading,
+assign.students.style_label,Username style,סגנון שם המשתמש,Management page: field beside Preview,
+assign.students.style_first_nn,first name + number (ruth.47),שם פרטי + מספר (ruth.47),Management page: username style,
+assign.students.style_first_last,first.last (ruth.cohen),שם.משפחה (ruth.cohen),Management page: username style,
+assign.students.style_firstnn,first name + number (ruth47),שם פרטי + מספר (ruth47),Management page: username style,
+assign.students.style_flast,initial + last name (rcohen),אות ראשונה + שם משפחה (rcohen),Management page: username style,
+assign.students.style_first_l,first name + initial (ruth.c),שם פרטי + אות (ruth.c),Management page: username style,
+assign.students.bulk_one_btn,Set one password for everyone shown…,קביעת סיסמה אחת לכל המוצגים…,Management page: button over the roster,
+assign.students.bulk_each_btn,New password for each shown,סיסמה חדשה לכל אחד מהמוצגים,Management page: button over the roster,
+assign.students.bulk_none,No students are shown.,לא מוצגים תלמידים.,Management page: status,
+assign.students.bulk_dlg_head,One password for everyone shown,סיסמה אחת לכל המוצגים,Management page: dialog heading,
+assign.students.bulk_dlg_note.one,The {n} student shown gets this password. The old one stops working at once.,התלמיד המוצג יקבל את הסיסמה הזו. הישנה תפסיק לעבוד מיד.,Management page: dialog note,template
+assign.students.bulk_dlg_note.other,All {n} students shown get this password. The old ones stop working at once.,כל {n} התלמידים המוצגים יקבלו את הסיסמה הזו. הישנות יפסיקו לעבוד מיד.,Management page: dialog note,template
+assign.students.bulk_dlg_password,Password (at least 8 characters),סיסמה (לפחות 8 תווים),Management page: dialog field,
+assign.students.bulk_dlg_go,Set the password,קביעת הסיסמה,Management page: dialog button,
+assign.students.bulk_each_confirm,Give each of the {n} students shown a new random password? The old ones stop working at once.,לתת לכל אחד מ-{n} התלמידים המוצגים סיסמה אקראית חדשה? הישנות יפסיקו לעבוד מיד.,Management page: confirm,template
+assign.students.bulk_done,{n} passwords set. Print the login cards now.,{n} סיסמאות נקבעו. הדפיסו עכשיו את כרטיסי הכניסה.,Management page: status,template
+assign.students.bulk_some,{n} passwords set; {failed} could not be.,{n} סיסמאות נקבעו; {failed} לא ניתן היה לקבוע.,Management page: status,template
+assign.classview.head,Class view,תצוגת כיתה,Management page: section heading,
+assign.classview.note,"Every student against every open assignment. Add puts a student on an assignment (they see it in their Torah Trainer at once); Assign a new reading… opens the Torah Trainer with that student already chosen.","כל תלמיד מול כל משימה פתוחה. ״הוספה״ רושמת תלמיד למשימה (הוא יראה אותה ב-Torah Trainer מיד); ״הקצאת קריאה חדשה…״ פותחת את Torah Trainer עם התלמיד כבר נבחר.",Management page: section note,
+assign.classview.none,No open assignments or no students to show.,אין משימות פתוחות או אין תלמידים להצגה.,Management page: empty grid,
+assign.classview.col_student,Student,תלמיד,Management page: grid column,
+assign.classview.assign_btn,Assign a new reading…,הקצאת קריאה חדשה…,Management page: grid row link,
+assign.classview.add_btn,Add,הוספה,Management page: grid cell button (enrol),
+assign.classview.add_aria,Add {name} to {title},הוספת {name} ל{title},Management page: grid cell button aria,aria; template
+assign.classview.status_assigned,Assigned,הוקצתה,Management page: grid cell,
+assign.classview.status_submitted,Submitted,הוגשה,Management page: grid cell,
+assign.classview.status_needs,Re-record,להקליט שוב,Management page: grid cell,
+assign.classview.status_approved,Approved,אושרה,Management page: grid cell,
+assign.classview.added,{name} was added to {title}.,{name} נוסף/ה ל{title}.,Management page: status,template
 assign.list.with_look,with your display settings,עם הגדרות התצוגה שלכם,Management page: fact (the assignment carries the teacher's look),
 assign.list.deletes_on,recordings deleted on {date},ההקלטות יימחקו ב-{date},Management page: fact,template
 assign.list.subs_btn,Recordings,הקלטות,Management page: button,

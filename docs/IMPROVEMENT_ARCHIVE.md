@@ -95373,3 +95373,11 @@ _(prior)_ **Next session (S578):** **PR `claude/improveloop-s573` (S573–S577, 
 ### from Done
 
 - [x] 2026-10-30 | (same build) | torah_trainer.html, reading_assignments.html, account.html, index.html, js/ivrit-account.js, js/ivrit-assignments.js, CSV, docs, sw.js | **Reading assignments go public**: no `?assignments=1`; the teacher's side is the drawer's new Teacher tab (Assign closes the drawer; Escape returns the focus to the gear); the panel above the reading is the student's alone, with Hide folding it to a controls-strip button that mirrors the recording clock (`hebrewTorahTrainer_assignCollapsed`, per device); the Assign dialog sends the teacher's look as `reading.view` (the practice link's object; refused over the row's 2000-byte CHECK, measured worst case 1845), applied on the student's page as a link view named as the teacher's. Found on the way: two id-weight `display` rules outranked `[hidden]` (the recorder's audio element and submit form drew while idle). smoke-assignments 101/101, now on computed display. | found this build
+
+
+<!-- archived by compact-ledger at the S579 boundary, 2026-10-30 -->
+## Compaction (S579, 2026-10-30) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-30 | (same build) | torah_trainer.html, reading_assignments.html, js/ivrit-assignments.js, js/ivrit-account.js, db/migrations/0009, db/functions/manage-students, CSV, docs, sw.js | **Assignments: deep links, enrolment, class view, verse picking, bulk logins**: `?assignment=<code>` (signed out: a sign-in note on the student form; signed in: claims by itself); 0009 lets a teacher enrol own students (Who: everyone / a class / chosen), so the student panel leads with "You have N assignments"; a verse checklist stores `reading.skip` (dimmed with a tag on the student's page); the teacher page gains an Add class dialog, five username styles, one-password-for-all and new-password-each (`reset_passwords`), a students × assignments grid with Add, and Copy link. Fixed on the way: a replacement look ended the first view without restoring the student's own values (`linkViewDiscard`). RLS 164/164, smoke 122/122. | found this build

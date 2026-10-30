@@ -234,10 +234,7 @@ body.dark .hi-sun{display:inline-block;}
     <section class="tile" id="secClasses" aria-labelledby="classesHead">
       <h2 id="classesHead" data-i18n="assign.classes.head">Classes</h2>
       <p class="note" data-i18n="assign.classes.note">Optional, but make them first: a class groups students, lets an assignment go to one class, and shows who has not submitted yet.</p>
-      <div class="row">
-        <div class="field" style="flex:0 1 280px;"><label for="newClassName" data-i18n="assign.classes.new_label">New class name</label><input type="text" id="newClassName" maxlength="80" autocomplete="off"></div>
-        <div><button class="btn ghost" type="button" id="newClassBtn" data-i18n="assign.classes.new_btn">Add class</button></div>
-      </div>
+      <div class="toolbar"><button class="btn" type="button" id="addClassBtn" data-i18n="assign.classes.add_btn">Add class…</button></div>
       <p class="status" id="classStatus" role="status" aria-live="polite"></p>
       <div id="classesHost"></div>
     </section>
@@ -265,6 +262,16 @@ body.dark .hi-sun{display:inline-block;}
           <label for="newClassSel" data-i18n="assign.students.new_class">Class for these students</label>
           <select id="newClassSel"></select>
         </div>
+        <div class="field" style="flex:0 1 260px;">
+          <label for="usernameStyle" data-i18n="assign.students.style_label">Username style</label>
+          <select id="usernameStyle">
+            <option value="first.nn" data-i18n="assign.students.style_first_nn">first name + number (ruth.47)</option>
+            <option value="first.last" data-i18n="assign.students.style_first_last">first.last (ruth.cohen)</option>
+            <option value="firstnn" data-i18n="assign.students.style_firstnn">first name + number (ruth47)</option>
+            <option value="flast" data-i18n="assign.students.style_flast">initial + last name (rcohen)</option>
+            <option value="first.l" data-i18n="assign.students.style_first_l">first name + initial (ruth.c)</option>
+          </select>
+        </div>
         <div><button class="btn ghost" type="button" id="previewBtn" data-i18n="assign.students.preview_btn">Preview usernames and passwords</button></div>
       </div>
       <div id="previewHost"></div>
@@ -276,9 +283,24 @@ body.dark .hi-sun{display:inline-block;}
         <label for="classFilter" data-i18n="assign.students.filter_class">Class</label>
         <select id="classFilter"></select>
         <button class="btn ghost sm" type="button" id="studentsRefresh" data-i18n="account.holds.refresh">Refresh</button>
+        <button class="btn ghost sm" type="button" id="bulkOneBtn" data-i18n="assign.students.bulk_one_btn">Set one password for everyone shown…</button>
+        <button class="btn ghost sm" type="button" id="bulkEachBtn" data-i18n="assign.students.bulk_each_btn">New password for each shown</button>
       </div>
       <div id="studentsHost" aria-live="polite"></div>
       <p class="status" id="studentsStatus" role="status" aria-live="polite"></p>
+    </section>
+
+    <!-- ───── Class view: students × open assignments ───── -->
+    <section class="tile" id="secClassView" aria-labelledby="cvHead">
+      <h2 id="cvHead" data-i18n="assign.classview.head">Class view</h2>
+      <p class="note" data-i18n="assign.classview.note">Every student against every open assignment. Add puts a student on an assignment (they see it in their Torah Trainer at once); Assign a new reading… opens the Torah Trainer with that student already chosen.</p>
+      <div class="toolbar">
+        <label for="cvClassFilter" data-i18n="assign.students.filter_class">Class</label>
+        <select id="cvClassFilter"></select>
+        <button class="btn ghost sm" type="button" id="cvRefresh" data-i18n="account.holds.refresh">Refresh</button>
+      </div>
+      <div id="cvHost" aria-live="polite"></div>
+      <p class="status" id="cvStatus" role="status" aria-live="polite"></p>
     </section>
 
     <!-- ───── Assignments ───── -->
@@ -337,6 +359,31 @@ body.dark .hi-sun{display:inline-block;}
   </form>
 </div>
 
+<!-- Add a class, and one password for everyone shown: the edit dialog's contract (modal, trapped, Escape closes). -->
+<div class="dlg" id="clsDlg" role="dialog" aria-modal="true" aria-labelledby="clsDlgTitle" hidden>
+  <h2 id="clsDlgTitle" data-i18n="assign.classes.dlg_head">Add a class</h2>
+  <form id="clsDlgForm" novalidate>
+    <div class="field"><label for="newClassName" data-i18n="assign.classes.new_label">New class name</label><input type="text" id="newClassName" maxlength="80" autocomplete="off"></div>
+    <p class="status" id="clsDlgStatus" role="status" aria-live="polite"></p>
+    <div class="dlg-actions">
+      <button class="btn ghost" type="button" id="clsDlgCancel" data-i18n="assign.edit.cancel">Cancel</button>
+      <button class="btn" type="submit" id="newClassBtn" data-i18n="assign.classes.new_btn">Add class</button>
+    </div>
+  </form>
+</div>
+<div class="dlg" id="pwDlg" role="dialog" aria-modal="true" aria-labelledby="pwDlgTitle" hidden>
+  <h2 id="pwDlgTitle" data-i18n="assign.students.bulk_dlg_head">One password for everyone shown</h2>
+  <p class="note" id="pwDlgNote"></p>
+  <form id="pwDlgForm" novalidate>
+    <div class="field"><label for="pwDlgIn" data-i18n="assign.students.bulk_dlg_password">Password (at least 8 characters)</label><input type="text" id="pwDlgIn" class="code" maxlength="72" autocomplete="off" spellcheck="false"></div>
+    <p class="status" id="pwDlgStatus" role="status" aria-live="polite"></p>
+    <div class="dlg-actions">
+      <button class="btn ghost" type="button" id="pwDlgCancel" data-i18n="assign.edit.cancel">Cancel</button>
+      <button class="btn" type="submit" id="pwDlgGo" data-i18n="assign.students.bulk_dlg_go">Set the password</button>
+    </div>
+  </form>
+</div>
+
 <!-- Printed login cards (built from the batch just created; shown only on paper). -->
 <div id="printCards" aria-hidden="true"></div>
 
@@ -366,8 +413,9 @@ function toggleDark() {
 const $ = (id) => document.getElementById(id);
 const t = (k, p) => (window.I18n ? I18n.t(k, p) : k);
 const AS = () => window.IvritAssignments;
-let user = null, classes = [], students = [], assignments = [], subs = null, subsFor = null, batch = null, preview = null;
+let user = null, classes = [], students = [], assignments = [], subs = null, subsFor = null, batch = null, preview = null, members = [], currentSubs = [];
 const lines = {};
+function tn(key, n, p) { return t(key + (n === 1 ? '.one' : '.other'), Object.assign({ n }, p || {})); }   // the .one / .other pair
 function say(id, render, isError) { lines[id] = render || null; const n = $(id); if (!n) return; n.textContent = render ? render() : ''; n.classList.toggle('is-error', !!isError); }
 function el(tag, cls, text) { const n = document.createElement(tag); if (cls) n.className = cls; if (text !== undefined && text !== null) n.textContent = text; return n; }
 function btn(label, cls, onClick) { const b = el('button', 'btn ' + (cls === undefined ? 'ghost sm' : cls), label); b.type = 'button'; b.addEventListener('click', onClick); return b; }
@@ -387,6 +435,7 @@ function fillClassSelect(sel, withAll, current) {
 function fillAllClassSelects() {
   const f = $('classFilter').value;
   fillClassSelect($('classFilter'), true, f);
+  fillClassSelect($('cvClassFilter'), true, $('cvClassFilter').value);
   fillClassSelect($('newClassSel'), false, $('newClassSel').value);
   fillClassSelect($('dlgClass'), false, $('dlgClass').value);
 }
@@ -414,7 +463,7 @@ function loadStudents() {
   Promise.all([AS().classes.list(), AS().students.list()]).then(res => {
     if (!user || user.id !== me) return;
     classes = res[0] || []; students = res[1] || [];
-    fillAllClassSelects(); renderStudents(); renderClasses(); say('studentsStatus', null);
+    fillAllClassSelects(); renderStudents(); renderClasses(); renderClassView(); say('studentsStatus', null);
   }).catch(err => { if (user && user.id === me) say('studentsStatus', () => errText(err), true); })
     .then(() => setBusy('studentsRefresh', false));
 }
@@ -492,7 +541,8 @@ function buildPreview() {
   const names = $('namesInput').value.split('\n').map(s => s.replace(/\s+/g, ' ').trim()).filter(Boolean).slice(0, 60);
   if (!names.length) { say('createStatus', () => t('assign.students.names_empty'), true); $('namesInput').focus(); return; }
   const taken = new Set(students.map(s => s.username));
-  preview = names.map(n => { let u = AS().usernameFor(n); for (let k = 0; k < 20 && taken.has(u); k++) u = AS().usernameFor(n); taken.add(u); return { display_name: n.slice(0, 80), username: u, password: AS().passphrase() }; });
+  const style = $('usernameStyle').value;
+  preview = names.map(n => { let u = AS().usernameFor(n, style); for (let k = 0; k < 20 && taken.has(u); k++) u = AS().usernameFor(n, k < 10 ? style : 'first.nn'); if (taken.has(u)) u = AS().usernameFor(n, 'first.nn'); taken.add(u); return { display_name: n.slice(0, 80), username: u, password: AS().passphrase() }; });
   say('createStatus', null);
   renderPreview();
 }
@@ -588,17 +638,126 @@ function renderClasses() {
   });
   host.appendChild(ul);
 }
-function addClass() {
+function addClass(e) {
+  if (e) e.preventDefault();
   const name = $('newClassName').value.trim(); if (!name) { $('newClassName').focus(); return; }
-  AS().classes.create(name).then(c => { classes.push(c); classes.sort((a, b) => a.name.localeCompare(b.name)); $('newClassName').value = ''; fillAllClassSelects(); renderClasses(); say('classStatus', () => t('assign.classes.added', { name: c.name })); })
-    .catch(err => say('classStatus', () => errText(err), true));
+  if (isDisabled($('newClassBtn'))) return;
+  setBusy('newClassBtn', true); say('clsDlgStatus', () => t('account.holds.checking'));
+  AS().classes.create(name).then(c => { classes.push(c); classes.sort((a, b) => a.name.localeCompare(b.name)); $('newClassName').value = ''; fillAllClassSelects(); renderClasses(); say('clsDlgStatus', null); modalClose('clsDlg'); say('classStatus', () => t('assign.classes.added', { name: c.name })); })
+    .catch(err => say('clsDlgStatus', () => errText(err), true)).then(() => setBusy('newClassBtn', false));
+}
+/* ── the two small dialogs (the edit dialog's contract: modal, focus trapped, Escape closes, the opener gets the focus back) ── */
+let _modal = null, _modalOpener = null;
+function modalOpen(id, focusId) {
+  _modal = id; _modalOpener = document.activeElement;
+  $('dlgBackdrop').hidden = false; $(id).hidden = false;
+  document.addEventListener('keydown', modalKey, true);
+  const f = $(focusId); if (f) { f.focus(); if (f.select) f.select(); }
+}
+function modalKey(e) {
+  const dlg = $(_modal); if (!dlg) return;
+  if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); modalClose(_modal); return; }
+  if (e.key !== 'Tab') return;
+  const f = [...dlg.querySelectorAll('button, input, select, textarea, a[href]')].filter(n => n.offsetParent !== null && !n.disabled);
+  if (!f.length) return;
+  const a = document.activeElement, first = f[0], last = f[f.length - 1], out = !dlg.contains(a);
+  if (e.shiftKey && (a === first || out)) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && (a === last || out)) { e.preventDefault(); first.focus(); }
+}
+function modalClose(id) {
+  if (_modal !== id) return;
+  $('dlgBackdrop').hidden = true; $(id).hidden = true;
+  document.removeEventListener('keydown', modalKey, true);
+  const o = _modalOpener; _modal = null; _modalOpener = null;
+  try { (o && o.isConnected ? o : $('mainContent')).focus(); } catch (e) {}
+}
+/* ── bulk passwords: everyone the roster shows (the class filter) ── */
+function shownStudents() { const f = $('classFilter').value; return students.filter(s => !f || s.class_id === f); }
+function bulkOne() {
+  const rows = shownStudents(); if (!rows.length) { say('studentsStatus', () => t('assign.students.bulk_none'), true); return; }
+  $('pwDlgNote').textContent = tn('assign.students.bulk_dlg_note', rows.length);
+  $('pwDlgIn').value = AS().passphrase(); say('pwDlgStatus', null);
+  modalOpen('pwDlg', 'pwDlgIn');
+}
+function bulkOneGo(e) {
+  e.preventDefault();
+  if (isDisabled($('pwDlgGo'))) return;
+  const pw = $('pwDlgIn').value, rows = shownStudents();
+  if (pw.length < 8) { say('pwDlgStatus', () => t('assign.error.invalid_password'), true); $('pwDlgIn').focus(); return; }
+  setBusy('pwDlgGo', true); say('pwDlgStatus', () => t('account.holds.checking'));
+  AS().students.resetPasswords(rows.map(s => s.id), pw).then(results => {
+    const ok = results.filter(r => !r.error), failed = results.length - ok.length;
+    const made = ok.map(r => { const s = rows.find(x => x.id === r.id); return { display_name: s ? s.display_name : r.username, username: r.username || (s && s.username) || '', password: pw }; });
+    batch = made.slice(); renderCreated(made, true);
+    say('pwDlgStatus', null); modalClose('pwDlg');
+    say('studentsStatus', () => failed ? t('assign.students.bulk_some', { n: ok.length, failed }) : t('assign.students.bulk_done', { n: ok.length }), !!failed);
+    $('createdHost').scrollIntoView({ block: 'nearest' });
+  }).catch(err => say('pwDlgStatus', () => errText(err), true)).then(() => setBusy('pwDlgGo', false));
+}
+function bulkEach() {
+  const rows = shownStudents(); if (!rows.length) { say('studentsStatus', () => t('assign.students.bulk_none'), true); return; }
+  if (!window.confirm(t('assign.students.bulk_each_confirm', { n: rows.length }))) return;
+  if (isDisabled($('bulkEachBtn'))) return;
+  setBusy('bulkEachBtn', true); say('studentsStatus', () => t('account.holds.checking'));
+  const made = []; let failed = 0;
+  rows.reduce((p, s) => p.then(() => { const pw = AS().passphrase(); return AS().students.resetPassword(s.id, pw).then(() => made.push({ display_name: s.display_name, username: s.username, password: pw }), () => { failed++; }); }), Promise.resolve())
+    .then(() => { batch = made.slice(); renderCreated(made, true); say('studentsStatus', () => failed ? t('assign.students.bulk_some', { n: made.length, failed }) : t('assign.students.bulk_done', { n: made.length }), !!failed); $('createdHost').scrollIntoView({ block: 'nearest' }); })
+    .then(() => setBusy('bulkEachBtn', false));
+}
+/* ── the class view: students × open assignments ── */
+function loadGrid() {
+  const me = user && user.id; if (!me) return;
+  setBusy('cvRefresh', true);
+  Promise.all([AS().assignments.allMembers(), AS().submissions.currentAll()]).then(res => { if (!user || user.id !== me) return; members = res[0] || []; currentSubs = res[1] || []; renderClassView(); renderAssignments(); say('cvStatus', null); })
+    .catch(err => { if (user && user.id === me) say('cvStatus', () => errText(err), true); }).then(() => setBusy('cvRefresh', false));
+}
+function gridStatus(a, s) {
+  if (!members.some(m => m.assignment_id === a.id && m.student_id === s.id)) return null;
+  const cur = currentSubs.find(x => x.assignment_id === a.id && x.student_id === s.id && x.upload_status === 'uploaded');
+  if (!cur) return 'assigned';
+  return cur.status === 'needs_rerecord' ? 'needs' : cur.status === 'approved' ? 'approved' : 'submitted';
+}
+function renderClassView() {
+  const host = $('cvHost'); while (host.firstChild) host.removeChild(host.firstChild);
+  const f = $('cvClassFilter').value;
+  const rows = students.filter(s => !f || s.class_id === f), cols = assignments.filter(a => a.is_open);
+  if (!rows.length || !cols.length) { host.appendChild(el('p', 'muted', t('assign.classview.none'))); return; }
+  const table = el('table', 'cv-table'); const thead = el('thead'), tr = el('tr');
+  tr.appendChild(el('th', '', t('assign.classview.col_student')));
+  cols.forEach(a => { const th = el('th', '', a.title); th.title = a.ref_label; tr.appendChild(th); });
+  tr.appendChild(el('th', '', t('assign.students.col_actions')));
+  thead.appendChild(tr); table.appendChild(thead);
+  const tbody = el('tbody');
+  rows.forEach(s => {
+    const r = el('tr'); r.appendChild(el('th', '', s.display_name)).scope = 'row';
+    cols.forEach(a => {
+      const td = el('td'); const st = gridStatus(a, s);
+      if (!st) {
+        const b = btn(t('assign.classview.add_btn'), 'ghost sm', () => {
+          if (isDisabled(b)) return; setBusy(b.id = 'cv-' + a.id + '-' + s.id, true);
+          AS().assignments.enrol(a.id, [s.id]).then(() => { members.push({ assignment_id: a.id, student_id: s.id, joined_at: new Date().toISOString() }); renderClassView(); renderAssignments(); say('cvStatus', () => t('assign.classview.added', { name: s.display_name, title: a.title })); })
+            .catch(err => { setBusy(b.id, false); say('cvStatus', () => errText(err), true); });
+        });
+        b.setAttribute('aria-label', t('assign.classview.add_aria', { name: s.display_name, title: a.title }));
+        td.appendChild(b);
+      } else td.appendChild(el('span', 'badge ' + (st === 'approved' ? 'ok' : st === 'needs' ? 'warn' : st === 'submitted' ? 'ok' : 'off'), t('assign.classview.status_' + st)));
+      r.appendChild(td);
+    });
+    const act = el('td'); const link = el('a', 'btn ghost sm', t('assign.classview.assign_btn')); link.href = '/torah_trainer.html?assignTo=' + encodeURIComponent(s.id); link.setAttribute('role', 'button'); act.appendChild(link); r.appendChild(act);
+    tbody.appendChild(r);
+  });
+  table.appendChild(tbody); host.appendChild(table);
+}
+function copyText(text, done) {
+  const fallback = () => { try { const ta = el('textarea'); ta.value = text; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.insetInlineStart = '-9999px'; document.body.appendChild(ta); ta.select(); const ok = document.execCommand('copy'); ta.remove(); if (ok) done(); } catch (e) {} };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback); else fallback();
 }
 
 /* ── assignments ── */
 function loadAssignments() {
   const me = user && user.id; if (!me) return;
   say('asgStatus', () => t('account.holds.checking')); setBusy('asgRefresh', true);
-  AS().assignments.list().then(rows => { if (!user || user.id !== me) return; assignments = rows || []; renderAssignments(); say('asgStatus', null); if (subsFor) { const a = assignments.find(x => x.id === subsFor.id); if (a) subsFor = a; } })
+  AS().assignments.list().then(rows => { if (!user || user.id !== me) return; assignments = rows || []; renderAssignments(); say('asgStatus', null); loadGrid(); if (subsFor) { const a = assignments.find(x => x.id === subsFor.id); if (a) subsFor = a; } })
     .catch(err => { if (user && user.id === me) say('asgStatus', () => errText(err), true); }).then(() => setBusy('asgRefresh', false));
 }
 function trainerLink(a) { return '/torah_trainer.html?ref=' + encodeURIComponent(a.ref); }
@@ -614,12 +773,13 @@ function renderAssignments() {
     box.appendChild(head);
     const code = el('p'); code.appendChild(document.createTextNode(t('assign.list.code_label') + ' ')); code.appendChild(el('strong', 'code', a.code_word)); box.appendChild(code);
     const facts = [t('assign.list.submitted_count', { n: a.submitted }), a.needs_rerecord ? t('assign.list.needs_count', { n: a.needs_rerecord }) : '', a.approved ? t('assign.list.approved_count', { n: a.approved }) : '',
-      a.due_date ? t('assign.list.due', { date: fmtDate(a.due_date) }) : '', a.class_id ? t('assign.list.class', { name: className(a.class_id) }) : '', a.peers_can_listen ? t('assign.list.peers_on') : '', (a.reading && a.reading.view && typeof a.reading.view === 'object') ? t('assign.list.with_look') : '',
+      a.due_date ? t('assign.list.due', { date: fmtDate(a.due_date) }) : '', a.class_id ? t('assign.list.class', { name: className(a.class_id) }) : '', a.peers_can_listen ? t('assign.list.peers_on') : '', (a.reading && a.reading.view && typeof a.reading.view === 'object') ? t('assign.list.with_look') : '', (() => { const n = members.filter(m => m.assignment_id === a.id).length; return n ? tn('assign.list.enrolled_count', n) : ''; })(),
       !a.is_open && a.closed_at ? t('assign.list.deletes_on', { date: fmtDate(new Date(new Date(a.closed_at).getTime() + a.retention_days * 86400000).toISOString()) }) : ''].filter(Boolean);
     box.appendChild(el('p', 'muted', facts.join(' · ')));
     const act = el('div');
     act.appendChild(btn(t('assign.list.subs_btn'), '', () => openSubs(a)));
     const open = el('a', 'btn ghost sm', t('assign.list.trainer_btn')); open.href = trainerLink(a); open.setAttribute('role', 'button'); act.appendChild(open);
+    act.appendChild(btn(t('assign.list.copy_link'), 'ghost sm', () => copyText(AS().deepLink(a.code_word), () => say('asgStatus', () => t('assign.list.link_copied')))));
     act.appendChild(btn(t('assign.list.edit_btn'), 'ghost sm', () => openDlg(a)));
     act.appendChild(btn(a.is_open ? t('assign.list.close_btn') : t('assign.list.reopen_btn'), 'ghost sm', () => {
       if (a.is_open && !window.confirm(t('assign.list.close_confirm', { title: a.title, days: a.retention_days }))) return;
@@ -828,7 +988,7 @@ function applyI18n() {
   if (!window.I18n) return;
   I18n.applyStaticI18n();
   try { const _db = $('darkBtn'); if (_db) (_db.querySelector('.hi-lbl') || _db).textContent = document.body.classList.contains('dark') ? I18n.t('shared.darkmode.label_light') : I18n.t('shared.darkmode.label_dark'); } catch (e) {}
-  fillAllClassSelects(); renderImportSources(); renderStudents(); renderClasses(); renderPreview(); renderAssignments(); if (subsFor) { $('subsFor').textContent = t('assign.subs.for', { title: subsFor.title, reading: subsFor.ref_label, code: subsFor.code_word }); renderSubs(); }
+  fillAllClassSelects(); renderImportSources(); renderStudents(); renderClasses(); renderPreview(); renderAssignments(); renderClassView(); if (subsFor) { $('subsFor').textContent = t('assign.subs.for', { title: subsFor.title, reading: subsFor.ref_label, code: subsFor.code_word }); renderSubs(); }
   if (batch && $('createdHost').firstChild) renderCreated(batch, false);
   Object.keys(lines).forEach(id => { const r = lines[id], n = $(id); if (n && r) n.textContent = r(); });
 }
@@ -847,8 +1007,15 @@ document.addEventListener('DOMContentLoaded', () => {
   $('studentsRefresh').addEventListener('click', () => { if (!isDisabled($('studentsRefresh'))) loadStudents(); });
   $('importBtn').addEventListener('click', () => { if (!isDisabled($('importBtn'))) importNames(); });
   $('previewBtn').addEventListener('click', buildPreview);
-  $('newClassBtn').addEventListener('click', addClass);
-  $('newClassName').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); addClass(); } });
+  $('addClassBtn').addEventListener('click', () => { $('newClassName').value = ''; say('clsDlgStatus', null); modalOpen('clsDlg', 'newClassName'); });
+  $('clsDlgForm').addEventListener('submit', addClass);
+  $('clsDlgCancel').addEventListener('click', () => modalClose('clsDlg'));
+  $('bulkOneBtn').addEventListener('click', bulkOne);
+  $('bulkEachBtn').addEventListener('click', bulkEach);
+  $('pwDlgForm').addEventListener('submit', bulkOneGo);
+  $('pwDlgCancel').addEventListener('click', () => modalClose('pwDlg'));
+  $('cvClassFilter').addEventListener('change', renderClassView);
+  $('cvRefresh').addEventListener('click', () => { if (!isDisabled($('cvRefresh'))) loadGrid(); });
   $('asgRefresh').addEventListener('click', () => { if (!isDisabled($('asgRefresh'))) loadAssignments(); });
   $('subsRefresh').addEventListener('click', () => { if (!isDisabled($('subsRefresh'))) loadSubs(); });
   $('subsFilter').addEventListener('change', renderSubs);
@@ -856,7 +1023,7 @@ document.addEventListener('DOMContentLoaded', () => {
   $('subsBack').addEventListener('click', closeSubs);
   $('dlgForm').addEventListener('submit', saveDlg);
   $('dlgCancel').addEventListener('click', closeDlg);
-  $('dlgBackdrop').addEventListener('click', closeDlg);
+  $('dlgBackdrop').addEventListener('click', () => { if (_modal) modalClose(_modal); else closeDlg(); });
   $('dlgRegen').addEventListener('click', () => { $('dlgCode').value = AS().codeWord.generate(); $('dlgCode').focus(); });
   window.addEventListener('pagehide', () => blobUrls.forEach(u => { try { URL.revokeObjectURL(u); } catch (e) {} }));
   if (window.IvritAccount && window.IvritSaves && window.IvritAssignments) {

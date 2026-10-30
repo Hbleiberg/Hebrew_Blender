@@ -129,6 +129,17 @@ select tst.q('T2 sees none of T1''s students', 'select count(*) from public.stud
 select tst.x('T2 cannot close T1''s assignment (0 rows)', format('update public.assignments set is_open = false where id = %L', :A1), 'ok:0');
 select tst.x('T2 cannot delete T1''s assignment (0 rows)', format('delete from public.assignments where id = %L', :A1), 'ok:0');
 
+-- ───────── 1b. the teacher enrols students (0009) ─────────
+select tst.who('authenticated', :T1, 'teacher');
+select tst.x('T1 enrols S2 in A1', format('insert into public.assignment_members (assignment_id, student_id) values (%L, %L)', :A1, :S2), 'ok:1');
+select tst.x('T1 enrolling S2 again is a no-op with on conflict do nothing (the client upserts with ignore-duplicates)', format('insert into public.assignment_members (assignment_id, student_id) values (%L, %L) on conflict do nothing', :A1, :S2), 'ok:0');
+select tst.x('T1 cannot enrol T2''s student in A1', format('insert into public.assignment_members (assignment_id, student_id) values (%L, %L)', :A1, :S3), '42501');
+select tst.x('T1 cannot enrol their own student in T2''s assignment', format('insert into public.assignment_members (assignment_id, student_id) values (%L, %L)', :A3, :S1), '42501');
+select tst.q('T1 sees the membership', format('select count(*) from public.assignment_members where assignment_id = %L', :A1), '1');
+select tst.x('T1 un-enrols S2 from A1 (leaving the claim flow below as it was)', format('delete from public.assignment_members where assignment_id = %L and student_id = %L', :A1, :S2), 'ok:1');
+select tst.who('authenticated', :T2, 'teacher');
+select tst.x('T2 cannot enrol T1''s student in T2''s own assignment', format('insert into public.assignment_members (assignment_id, student_id) values (%L, %L)', :A3, :S1), '42501');
+
 -- ───────── 2. the student claims by code ─────────
 select tst.who('authenticated', :S1, 'student');
 select tst.q('S1 sees no assignment before claiming', 'select count(*) from public.assignments', '0');
@@ -304,15 +315,15 @@ select tst.q('anon holds no privilege on any new table',
   $q$select count(*)::text from (values ('classes'),('students'),('assignments'),('assignment_members'),('submissions'),('feedback'),('code_attempts')) t(tbl)
       where has_table_privilege('anon', 'public.' || t.tbl, 'select') or has_table_privilege('anon', 'public.' || t.tbl, 'insert')
          or has_table_privilege('anon', 'public.' || t.tbl, 'update') or has_table_privilege('anon', 'public.' || t.tbl, 'delete')$q$, '0');
-select tst.q('authenticated cannot insert students or members, nor read code_attempts',
-  $q$select (has_table_privilege('authenticated', 'public.students', 'insert') or has_table_privilege('authenticated', 'public.assignment_members', 'insert')
-             or has_table_privilege('authenticated', 'public.code_attempts', 'select'))::text$q$, 'false');
+select tst.q('authenticated cannot insert students nor read code_attempts; it may insert members (0009, under the teacher policy)',
+  $q$select (not has_table_privilege('authenticated', 'public.students', 'insert') and has_table_privilege('authenticated', 'public.assignment_members', 'insert')
+             and not has_table_privilege('authenticated', 'public.code_attempts', 'select'))::text$q$, 'true');
 select tst.q('RLS is on for every new table',
   $q$select count(*)::text from pg_tables where schemaname = 'public' and rowsecurity
       and tablename in ('classes','students','assignments','assignment_members','submissions','feedback','code_attempts')$q$, '7');
 select tst.q('no public-executable new function', 
   $q$select count(*)::text from pg_proc p join pg_namespace n on n.oid = p.pronamespace
-      where n.nspname = 'public' and p.proname in ('claim_assignment','submissions_guard','students_guard','profiles_guard','feedback_apply_status','submissions_before_insert','assignments_before_write')
+      where n.nspname = 'public' and p.proname in ('claim_assignment','submissions_guard','students_guard','profiles_guard','feedback_apply_status','submissions_before_insert','assignments_before_write','is_my_student')
         and has_function_privilege('anon', p.oid, 'execute')$q$, '0');
 
 commit;

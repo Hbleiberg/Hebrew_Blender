@@ -755,6 +755,15 @@ body.dark .tt-assign-badge.is-warn { color:#f0c060; background:#3a2f14; }
 .tt-assign-feedback { background:var(--cream); border-radius:6px; padding:6px 10px; }
 .tt-assign-fblabel { font-weight:700; }
 .tt-assign-closed { color:#b3261e; font-weight:600; }
+.tt-asg-picklist { max-block-size:11em; overflow:auto; border:1px solid var(--border); border-radius:6px; padding:6px 8px; display:flex; flex-wrap:wrap; gap:4px 12px; font-size:0.82rem; background:var(--white); }
+.tt-asg-picklist label { display:inline-flex; align-items:center; gap:4px; white-space:nowrap; }
+.tt-asg-picklist .tt-asg-group { flex-basis:100%; font-weight:700; margin-block-start:4px; }
+.tt-asg-pickbar { display:flex; flex-wrap:wrap; gap:6px 10px; align-items:center; font-size:0.8rem; color:var(--muted); margin:4px 0; }
+.tt-asg-inbox-head { display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; }
+.tt-assign-codehead { margin:12px 0 4px; }
+/* A verse the teacher left out of the assignment: still on the page for context, visibly set aside, and said so. */
+#ttReading [data-vk].tt-verse-skipped { opacity:0.45; }
+#ttReading [data-vk].tt-verse-skipped .tt-skip-tag { display:inline-block; font-size:0.72rem; color:var(--muted); border:1px solid var(--border); border-radius:999px; padding:0 8px; margin-inline-start:6px; vertical-align:middle; opacity:1; }
 .tt-rec { border:1px dashed var(--border); border-radius:8px; padding:10px 12px; margin:8px 0; }
 .tt-rec-state { font-weight:600; margin:0 0 8px; min-height:1.3em; }
 .tt-rec-btns { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
@@ -2506,12 +2515,19 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
   <!-- Reading assignments: the student's panel (shown by asgPanelSync only while a student is signed in; Hide collapses
        it to #ttAsgTopBtn in the controls strip). The recorder's state line is the one live region the flow announces
        through. The teacher's side is the drawer's Teacher tab (#ttTabPanelTeacher). -->
+  <!-- A link that opens an assignment (?assignment=<code word>) while nobody is signed in: the one line a visitor sees. -->
+  <div class="tt-linkview" id="ttAsgLinkNote" role="group" aria-labelledby="ttAsgLinkNoteMsg" hidden>
+    <span id="ttAsgLinkNoteMsg" data-i18n="torah.assign.link_signin">This link opens one of your assignments. Sign in with your student username to see it.</span>
+    <span class="tt-linkview-btns"><button class="btn btn-xs" type="button" id="ttAsgLinkSignIn" data-i18n="shared.account.student_sign_in">Sign in</button></span>
+  </div>
   <section class="tt-assign" id="ttAssign" aria-labelledby="ttAssignTitle" hidden>
     <div class="tt-assign-head">
       <h2 class="tt-assign-title" id="ttAssignTitle" tabindex="-1" data-i18n="torah.assign.title">Reading assignments</h2>
       <button type="button" class="btn btn-xs btn-secondary hi-btn" id="ttAsgHideBtn" aria-controls="ttAssign"><svg class="hi hi-sm hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg><span class="hi-lbl" data-i18n="torah.assign.hide_btn">Hide</span></button>
     </div>
     <div id="ttAsgStudent">
+      <div id="ttAsgMine"></div>
+      <h3 class="tt-assign-h3 tt-assign-codehead" data-i18n="torah.assign.code_head">Have a code word from your teacher?</h3>
       <form class="tt-assign-code" id="ttAsgCodeForm" novalidate>
         <label><span data-i18n="torah.assign.code_label">Code word from your teacher</span><input type="text" id="ttAsgCode" maxlength="40" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="sunny-fox-38" data-i18n-placeholder="torah.assign.code_placeholder"></label>
         <button type="submit" class="btn btn-xs" data-i18n="torah.assign.code_btn">Open the reading</button>
@@ -2538,7 +2554,6 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
           <button type="button" class="btn btn-xs" id="ttRecRetry" hidden data-i18n="torah.assign.rec_retry">Try the upload again</button>
         </div>
       </div>
-      <div id="ttAsgMine"></div>
       <div id="ttAsgPeers"></div>
     </div>
   </section>
@@ -3284,7 +3299,12 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
     <div class="form-row"><span></span><button type="button" class="btn btn-xs btn-secondary" id="ttAsgDlgRegen" data-i18n="torah.assign.dlg_regen">New code word</button></div>
     <div class="form-row"><label for="ttAsgDlgMinutes" data-i18n="torah.assign.dlg_minutes">Maximum minutes</label><input type="number" id="ttAsgDlgMinutes" min="1" max="30" step="1" value="10"></div>
     <div class="form-row"><label for="ttAsgDlgDue" data-i18n="torah.assign.dlg_due">Due date (optional)</label><input type="date" id="ttAsgDlgDue"></div>
-    <div class="form-row"><label for="ttAsgDlgClass" data-i18n="torah.assign.dlg_class">Class (optional)</label><select id="ttAsgDlgClass"></select></div>
+    <div class="form-row"><label for="ttAsgDlgTarget" data-i18n="torah.assign.dlg_who">Who</label><select id="ttAsgDlgTarget" onchange="syncAsgTarget()"></select></div>
+    <!-- Chosen students: a checklist grouped by class (asgBuildStudentPick); ?assignTo=<id> pre-ticks one. -->
+    <div class="tt-asg-picklist" id="ttAsgDlgStudents" role="group" aria-labelledby="ttAsgDlgStudentsLbl" hidden><span class="tt-asg-group" id="ttAsgDlgStudentsLbl" data-i18n="torah.assign.dlg_students_lbl">Students</span></div>
+    <!-- The verses of the reading on screen, all ticked (or the Copy bar's ticks when any); the unticked ones travel as reading.skip. -->
+    <div class="tt-asg-pickbar"><span id="ttAsgDlgVersesLbl" data-i18n="torah.assign.dlg_verses">Verses</span><span id="ttAsgDlgVersesNote"></span><button type="button" class="btn btn-xs btn-secondary" id="ttAsgDlgVersesAll" data-i18n="torah.assign.dlg_verses_all">All</button><button type="button" class="btn btn-xs btn-secondary" id="ttAsgDlgVersesNone" data-i18n="torah.assign.dlg_verses_none">None</button></div>
+    <div class="tt-asg-picklist" id="ttAsgDlgVerses" role="group" aria-labelledby="ttAsgDlgVersesLbl"></div>
     <div class="form-row"><label for="ttAsgDlgRetention" data-i18n="torah.assign.dlg_retention">Keep recordings (days after closing)</label><input type="number" id="ttAsgDlgRetention" min="7" max="180" step="1" value="30"></div>
     <label class="tt-fav-check"><input type="checkbox" id="ttAsgDlgPeers"><span data-i18n="torah.assign.dlg_peers">Classmates may listen to each other's latest recording (never to feedback)</span></label>
     <!-- The teacher's look rides along as reading.view — the practice link's ?s= object (LINK_DISPLAY), applied on the
@@ -5706,6 +5726,7 @@ function renderText() {
     if (window.bindTip) bindTip(el);
   });
   syncBulkClasses();   // innerHTML rebuild dropped any bulk-selection tint
+  asgMarkSkipped();    // an assignment's left-out verses, set aside again after the rebuild
   if (currentTimings && currentAudio) updateKaraokeWordRefs();
   // Re-apply the loop marker/button state to the freshly-built DOM (survives a
   // layout/font re-render of the same reading; the timing indices are unchanged).
@@ -12787,7 +12808,7 @@ function linkViewApply(data, from) {
     if (Object.prototype.hasOwnProperty.call(data, sw)) { const v = LINK_DISPLAY[sw](data[sw]); on = v === undefined ? settings[sw] : v; }
     lookOn[k] = !!on;
   });
-  if (_linkView) linkViewEnd();   // a second look replaces the first: nothing of it may be mistaken for the reader's
+  if (_linkView) linkViewDiscard();   // a second look replaces the first: the reader's own values come back before the new ones go in
   const own = {}, shown = {};
   Object.keys(LINK_DISPLAY).forEach(k => {
     if (Object.prototype.hasOwnProperty.call(lookOn, k) && !lookOn[k]) return;
@@ -12815,6 +12836,13 @@ function linkViewSyncNote() {
   if (!_linkView) { note.hidden = true; return; }
   msg.textContent = I18n.t(_linkView.from === 'teacher' ? 'torah.assign.view_note' : 'torah.share.view_note');
   note.hidden = false;
+}
+// Ends a view by putting the reader's own values back (the opposite of Keep): what a replacement look, or an
+// assignment without a look, does before anything is repainted. Saves nothing; the stored form never held the view.
+function linkViewDiscard() {
+  if (!_linkView) return;
+  Object.keys(_linkView.own).forEach(k => { settings[k] = JSON.parse(JSON.stringify(_linkView.own[k])); });
+  linkViewEnd();
 }
 function linkViewEnd() {
   if (!_linkView) return;
@@ -12895,9 +12923,12 @@ function dismissHintToast() {
 const ASSIGN_COLLAPSED_KEY = 'hebrewTorahTrainer_assignCollapsed';   // per-device, erase-only (index.html's list)
 const ASSIGN_READING_MAX = 2000;   // bytes: assignments.reading's CHECK (db/migrations/0008); the dialog refuses a look that would not fit
 const ASSIGN_REF_RE = /^(Genesis|Exodus|Leviticus|Numbers|Deuteronomy) [0-9]{1,3}:[0-9]{1,3}(-([0-9]{1,3}:)?[0-9]{1,3})?$/;
-const _asg = { loaded: false, loading: false, collapsed: false, role: null, current: null, mine: null, peers: null, take: null, recorder: null, pendingRow: null, uploading: false, state: 'idle', xhr: null, classes: null, blobUrls: [] };
+const _asg = { loaded: false, loading: false, collapsed: false, role: null, current: null, mine: null, peers: null, take: null, recorder: null, pendingRow: null, uploading: false, state: 'idle', xhr: null, classes: null, students: null, blobUrls: [], linkCode: null, assignTo: null, skip: [] };
+const ASSIGN_VK_RE = /^[0-9]{1,3}:[0-9]{1,3}$/;
 const asgEl = (id) => document.getElementById(id);
+function IvritAssignmentsCodeLooksOk(c) { return /^[\p{L}\p{N}\s_-]{6,40}$/u.test(String(c || '')); }
 function asgT(k, p) { return window.I18n ? I18n.t(k, p) : k; }
+function asgTn(k, n, p) { return asgT(k + (n === 1 ? '.one' : '.other'), Object.assign({ n: n }, p || {})); }   // the .one / .other pair
 function asgMake(tag, cls, text) { const n = document.createElement(tag); if (cls) n.className = cls; if (text !== undefined && text !== null) n.textContent = text; return n; }
 function asgBtn(label, cls, onClick) { const b = asgMake('button', 'btn btn-xs ' + (cls || ''), label); b.type = 'button'; b.addEventListener('click', onClick); return b; }
 function asgSay(id, text, isError) { const n = asgEl(id); if (!n) return; n.textContent = text || ''; n.classList.toggle('is-error', !!isError); n.hidden = !text; }
@@ -12909,6 +12940,11 @@ function initAssignments() {
   const region = asgEl('ttAssign');
   if (!region || !window.IvritAccount) return;
   try { _asg.collapsed = localStorage.getItem(ASSIGN_COLLAPSED_KEY) === '1'; } catch (e) {}
+  try {
+    const q = new URLSearchParams(location.search);
+    const lc = q.get('assignment'); if (lc && lc.length <= 40 && IvritAssignmentsCodeLooksOk(lc)) _asg.linkCode = lc.trim();
+    const to = q.get('assignTo'); if (to && /^[0-9a-f-]{36}$/i.test(to)) _asg.assignTo = to.toLowerCase();
+  } catch (e) {}
   IvritAccount.init({ studentSignIn: true });   // the chip's menu gains the username + password form on this page only
   IvritAccount.onChange(() => asgRender());
   asgRender();
@@ -12917,6 +12953,9 @@ function initAssignments() {
   asgEl('ttAsgAssignBtn').addEventListener('click', () => { closeSettings(); openAsgDialog(document.getElementById('gearBtn')); });   // the dialog is the page's: the gear, not the drawer's button, gets the focus back
   asgEl('ttTeachSignIn').addEventListener('click', () => { closeSettings(); IvritAccount.openMenu(); });
   asgEl('ttAsgHideBtn').addEventListener('click', () => asgCollapse(true));
+  asgEl('ttAsgLinkSignIn').addEventListener('click', () => IvritAccount.openMenu({ stage: 'student' }));
+  asgEl('ttAsgDlgVersesAll').addEventListener('click', () => asgTickVerses(true));
+  asgEl('ttAsgDlgVersesNone').addEventListener('click', () => asgTickVerses(false));
   asgEl('ttAsgTopBtn').addEventListener('click', () => asgCollapse(false));
   asgEl('ttAsgDlgCancel').addEventListener('click', closeAsgDialog);
   asgEl('ttAsgBackdrop').addEventListener('click', closeAsgDialog);
@@ -12953,6 +12992,10 @@ function asgRender() {
   const role = user ? user.role : null;
   if (a && a.hasStoredSession()) asgEnsureModule();
   const out = asgEl('ttTeachOut'), tIn = asgEl('ttTeachIn'), tStu = asgEl('ttTeachStudent');
+  // A link to an assignment: signed out it asks for the student sign-in; a signed-in student claims it once.
+  const note = asgEl('ttAsgLinkNote');
+  if (note) note.hidden = !(_asg.linkCode && !user && !(a && a.hasStoredSession()));
+  if (_asg.linkCode && user && role === 'student' && _asg.loaded) { const c = _asg.linkCode; _asg.linkCode = null; asgDropLinkParam(); asgClaimCode(c); }
   if (!user) {
     out.hidden = false; tIn.hidden = true; tStu.hidden = true;
     if (_asg.role) { _asg.role = null; _asg.current = null; _asg.mine = null; _asg.peers = null; recReset(); asgRenderCurrent(); asgRenderMine(); asgRenderPeers(); }
@@ -12976,6 +13019,9 @@ function asgPanelSync() {
   top.setAttribute('aria-expanded', _asg.collapsed ? 'false' : 'true');
   asgTopBtnSync();
 }
+function asgDropLinkParam() {
+  try { const u = new URL(location.href); if (u.searchParams.has('assignment')) { u.searchParams.delete('assignment'); history.replaceState(history.state, '', prettyLinkURL(u)); } } catch (e) {}
+}
 function asgCollapse(collapse) {
   _asg.collapsed = !!collapse;
   try { if (_asg.collapsed) localStorage.setItem(ASSIGN_COLLAPSED_KEY, '1'); else localStorage.removeItem(ASSIGN_COLLAPSED_KEY); } catch (e) {}
@@ -12988,10 +13034,12 @@ function asgCollapse(collapse) {
 function asgTopBtnSync() {
   const top = asgEl('ttAsgTopBtn'); if (!top) return;
   let label = asgT('torah.assign.title');
+  const n = asgOpenCount(); if (n) label += ' (' + n + ')';
   const st = asgEl('ttRecState');
   if (_asg.collapsed && (_asg.state === 'recording' || _asg.state === 'uploading') && st && st.textContent) label += ' · ' + st.textContent;
   top.textContent = label;
 }
+function asgOpenCount() { return (_asg.mine && _asg.mine.assignments || []).filter(a => a.is_open).length; }
 function asgApplyI18n() {
   asgRender();
   asgRenderCurrent(); asgRenderMine(); asgRenderPeers(); recRenderState();
@@ -13015,11 +13063,14 @@ function asgClaim(e) {
   e.preventDefault();
   const input = asgEl('ttAsgCode'), code = input.value.trim();
   if (!code) { asgSay('ttAsgStudentStatus', asgT('torah.assign.code_empty'), true); input.focus(); return; }
+  asgClaimCode(code, input);
+}
+function asgClaimCode(code, input) {
   asgSay('ttAsgStudentStatus', asgT('shared.account.sending'), false);
   IvritAssignments.claim(code).then(row => {
-    if (!row) { asgSay('ttAsgStudentStatus', asgT('torah.assign.code_none'), true); input.select(); return; }
+    if (!row) { asgSay('ttAsgStudentStatus', asgT('torah.assign.code_none'), true); if (input) input.select(); return; }
     asgSetCurrent(row, true);
-    input.value = '';
+    if (input) input.value = '';
     asgSay('ttAsgStudentStatus', asgT('torah.assign.code_opened', { title: row.title }), false);
     asgLoadMine();
   }).catch(err => { asgSay('ttAsgStudentStatus', asgErr(err), true); input.select(); });
@@ -13027,17 +13078,43 @@ function asgClaim(e) {
 function asgSetCurrent(row, load) {
   if (_asg.current && _asg.current.id !== row.id) recReset();
   _asg.current = row;
+  _asg.skip = asgSkipFrom(row);
   if (load) { asgApplyView(row); asgLoadRef(row.ref, row.ref_label); }
   asgRenderCurrent();
+  asgMarkSkipped();
   asgLoadPeers();
 }
 // The teacher's look (reading.view), shown as a link view: the controls, the font and the colorings repaint from the
 // swapped-in values (the cloud-download sequence, short of the reading, which asgLoadRef fetches next); without one,
 // a look a previous assignment left on screen ends. Nothing is saved: Keep / Use my settings on the banner decide.
+// The verses the teacher left out (reading.skip, "C:V" keys, hostile like any cloud value): kept only while the
+// assignment's own reading is on screen, so a key such as "1:1" never dims a verse of some other range.
+function asgSkipFrom(row) {
+  const v = row && row.reading && row.reading.skip;
+  if (!Array.isArray(v)) return [];
+  return v.filter(k => typeof k === 'string' && ASSIGN_VK_RE.test(k)).slice(0, 300);
+}
+function asgMarkSkipped() {
+  const reading = document.getElementById('ttReading'); if (!reading) return;
+  const a = _asg.current, ctx = (typeof currentReadingCtx !== 'undefined' && currentReadingCtx) ? currentReadingCtx.ref : null;
+  const on = !!(a && _asg.skip.length && ctx && a.ref === String(ctx));
+  reading.querySelectorAll('[data-vk]').forEach(el => {
+    const skip = on && _asg.skip.includes(el.dataset.vk);
+    el.classList.toggle('tt-verse-skipped', skip);
+    const old = el.querySelector(':scope > .tt-verse-row .tt-skip-tag, :scope > .tt-skip-tag');
+    if (!skip) { if (old) old.remove(); return; }
+    if (old) return;
+    const tag = asgMake('span', 'tt-skip-tag', asgT('torah.assign.verse_skipped'));
+    const num = el.querySelector('.tt-verse-num');
+    if (num && num.parentNode) num.parentNode.insertBefore(tag, num.nextSibling); else el.insertBefore(tag, el.firstChild);
+  });
+}
 function asgApplyView(row) {
   const v = row && row.reading && row.reading.view;
+  const had = !!(_linkView && _linkView.from === 'teacher');
+  if (had) linkViewDiscard();   // the previous assignment's look goes first, so this one is measured against the student's own
   const opened = (v && typeof v === 'object' && !Array.isArray(v)) ? linkViewApply(v, 'teacher') : false;
-  if (!opened) { if (_linkView && _linkView.from === 'teacher') linkViewEnd(); return; }
+  if (!opened && !had) return;
   syncFormToSettings();
   setHebFont(settings.hebFont);
   initColorPickers();
@@ -13081,8 +13158,11 @@ function asgRenderMine() {
   const host = asgEl('ttAsgMine'); if (!host) return;
   while (host.firstChild) host.removeChild(host.firstChild);
   const m = _asg.mine; if (!m) return;
-  host.appendChild(asgMake('h3', 'tt-assign-h3', asgT('torah.assign.mine_title')));
-  if (!m.assignments.length) { host.appendChild(asgMake('p', 'tt-assign-muted', asgT('torah.assign.mine_none'))); return; }
+  const open = m.assignments.filter(a => a.is_open).length;
+  host.appendChild(asgMake('h3', 'tt-assign-h3', open ? asgTn('torah.assign.inbox_title', open) : asgT('torah.assign.mine_title')));
+  if (!m.assignments.length) { host.appendChild(asgMake('p', 'tt-assign-muted', asgT('torah.assign.mine_none'))); asgTopBtnSync(); return; }
+  if (open) host.appendChild(asgMake('p', 'tt-assign-muted', asgT('torah.assign.inbox_note')));
+  asgTopBtnSync();
   const ul = asgMake('ul', 'tt-assign-list');
   m.assignments.forEach(a => {
     const subs = m.submissions.filter(s => s.assignment_id === a.id);
@@ -13261,9 +13341,23 @@ function openAsgDialog(opener) {
   asgEl('ttAsgDlgCreate').hidden = false; asgEl('ttAsgDlgCreate').setAttribute('aria-disabled', 'false'); asgEl('ttAsgDlgDone').hidden = true;
   asgSay('ttAsgDlgNote', '', false);
   dlg.dataset.ref = ref;
-  const sel = asgEl('ttAsgDlgClass'); while (sel.firstChild) sel.removeChild(sel.firstChild);
-  const none = asgMake('option', '', asgT('torah.assign.dlg_no_class')); none.value = ''; sel.appendChild(none);
-  IvritAssignments.classes.list().then(rows => { (rows || []).forEach(c => { const o = asgMake('option', '', c.name); o.value = c.id; sel.appendChild(o); }); }).catch(() => {});
+  // Who: everyone with the code word, one class (its students now), or chosen students. The lists arrive async;
+  // a preselected student (?assignTo=) picks "chosen" once they are here.
+  const sel = asgEl('ttAsgDlgTarget'); while (sel.firstChild) sel.removeChild(sel.firstChild);
+  const optCode = asgMake('option', '', asgT('torah.assign.dlg_who_code')); optCode.value = 'code'; sel.appendChild(optCode);
+  const optPick = asgMake('option', '', asgT('torah.assign.dlg_who_pick')); optPick.value = 'pick'; sel.appendChild(optPick);
+  _asg.classes = []; _asg.students = [];
+  Promise.all([IvritAssignments.classes.list().catch(() => []), IvritAssignments.students.list().catch(() => [])]).then(res => {
+    if (dlg.hidden) return;
+    _asg.classes = res[0] || []; _asg.students = res[1] || [];
+    _asg.classes.forEach(c => { const o = asgMake('option', '', asgT('torah.assign.dlg_who_class', { name: c.name })); o.value = 'class:' + c.id; sel.insertBefore(o, optPick); });
+    asgBuildStudentPick();
+    if (_asg.assignTo && _asg.students.some(st => st.id === _asg.assignTo)) { sel.value = 'pick'; const cb = asgEl('ttAsgDlgStudents').querySelector('input[value="' + _asg.assignTo + '"]'); if (cb) cb.checked = true; }
+    _asg.assignTo = null;
+    syncAsgTarget();
+  });
+  syncAsgTarget();
+  asgBuildVersePick();
   dismissHintToast();
   _asgOpener = opener || document.activeElement;
   bd.hidden = false; dlg.hidden = false;
@@ -13292,6 +13386,47 @@ function closeAsgDialog() {
 }
 // The dialog's summary of the look that would travel (the favorite popup's sentence shape; the standard font named,
 // a My Font of the teacher's own left out as a practice link leaves it out).
+// The students checklist, grouped by class (the class's own name as a group line; the rest under "No class").
+function asgBuildStudentPick() {
+  const host = asgEl('ttAsgDlgStudents'); if (!host) return;
+  [...host.querySelectorAll('label, .tt-asg-group:not(#ttAsgDlgStudentsLbl)')].forEach(n => n.remove());
+  const groups = _asg.classes.map(c => ({ name: c.name, rows: _asg.students.filter(st => st.class_id === c.id) })).filter(g => g.rows.length);
+  const loose = _asg.students.filter(st => !_asg.classes.some(c => c.id === st.class_id));
+  if (loose.length) groups.push({ name: asgT('torah.assign.dlg_no_class'), rows: loose });
+  if (!_asg.students.length) { host.appendChild(asgMake('span', 'tt-asg-group', asgT('torah.assign.dlg_students_none'))); return; }
+  groups.forEach(g => {
+    host.appendChild(asgMake('span', 'tt-asg-group', g.name));
+    g.rows.forEach(st => { const l = asgMake('label'); const cb = asgMake('input'); cb.type = 'checkbox'; cb.value = st.id; l.appendChild(cb); l.appendChild(document.createTextNode(' ' + st.display_name)); host.appendChild(l); });
+  });
+}
+function syncAsgTarget() {
+  const sel = asgEl('ttAsgDlgTarget'), host = asgEl('ttAsgDlgStudents');
+  if (sel && host) host.hidden = sel.value !== 'pick';
+}
+// The verse checklist: the reading on screen, every verse ticked — or only the Copy bar's ticked verses when the
+// teacher selected some there first. The unticked ones become reading.skip.
+function asgBuildVersePick() {
+  const host = asgEl('ttAsgDlgVerses'); if (!host) return;
+  while (host.firstChild) host.removeChild(host.firstChild);
+  const verses = currentVerses || [];
+  const pre = (typeof ttBulkSelected !== 'undefined' && ttBulkSelected.size) ? ttBulkSelected : null;
+  verses.forEach(v => {
+    const vk = v.chapter + ':' + v.verse;
+    const l = asgMake('label'); const cb = asgMake('input'); cb.type = 'checkbox'; cb.value = vk; cb.checked = pre ? pre.has(vk) : true;
+    cb.addEventListener('change', asgSyncVerseNote);
+    l.appendChild(cb); l.appendChild(document.createTextNode(' ' + vk)); host.appendChild(l);
+  });
+  asgSyncVerseNote();
+}
+function asgTickVerses(on) { asgEl('ttAsgDlgVerses').querySelectorAll('input').forEach(cb => { cb.checked = !!on; }); asgSyncVerseNote(); }
+function asgVersePick() {
+  const all = [...asgEl('ttAsgDlgVerses').querySelectorAll('input')];
+  return { total: all.length, skip: all.filter(cb => !cb.checked).map(cb => cb.value) };
+}
+function asgSyncVerseNote() {
+  const p = asgVersePick(), note = asgEl('ttAsgDlgVersesNote');
+  if (note) note.textContent = asgT('torah.assign.dlg_verses_note', { n: p.total - p.skip.length, total: p.total });
+}
 function syncAsgLookSummary() {
   const box = asgEl('ttAsgDlgLook'), el = asgEl('ttAsgDlgLookSummary');
   if (!box || !el) return;
@@ -13319,19 +13454,38 @@ function createAssignment(e) {
   if (IvritAssignments.codeWord.normalize(code).length < 6) { asgSay('ttAsgDlgNote', asgT('torah.assign.dlg_code_short'), true); asgEl('ttAsgDlgCode').focus(); return; }
   const reading = { parshahKey: settings.parshahKey || null, scope: settings.scope || null, holidayKey: settings.holidayKey || null, holidayPart: settings.holidayPart || null, readingCycle: settings.readingCycle || null };
   if (asgEl('ttAsgDlgLook').checked && !asgEl('ttAsgDlgLook').disabled) reading.view = JSON.parse(JSON.stringify(linkDisplayObject()));
+  const vp = asgVersePick();
+  if (vp.total && vp.skip.length >= vp.total) { asgSay('ttAsgDlgNote', asgT('torah.assign.dlg_verses_empty'), true); asgEl('ttAsgDlgVersesAll').focus(); return; }
+  if (vp.skip.length) reading.skip = vp.skip;
+  const target = asgEl('ttAsgDlgTarget').value || 'code';
+  const classId = target.startsWith('class:') ? target.slice(6) : null;
+  let enrolIds = [];
+  if (classId) enrolIds = _asg.students.filter(st => st.class_id === classId).map(st => st.id);
+  else if (target === 'pick') { enrolIds = [...asgEl('ttAsgDlgStudents').querySelectorAll('input:checked')].map(cb => cb.value); if (!enrolIds.length) { asgSay('ttAsgDlgNote', asgT('torah.assign.dlg_students_empty'), true); const first = asgEl('ttAsgDlgStudents').querySelector('input'); if (first) first.focus(); return; } }
   if (new TextEncoder().encode(JSON.stringify(reading)).length > ASSIGN_READING_MAX) { asgSay('ttAsgDlgNote', asgT('torah.assign.dlg_look_big'), true); asgEl('ttAsgDlgLook').focus(); return; }
   asgEl('ttAsgDlgCreate').setAttribute('aria-disabled', 'true');
   asgSay('ttAsgDlgNote', asgT('shared.account.sending'), false);
   IvritAssignments.assignments.create({
     title: title, code_word: code, ref: ref, ref_label: asgEl('ttAsgDlgReading').textContent, reading: reading,
     peers_can_listen: asgEl('ttAsgDlgPeers').checked, max_minutes: asgEl('ttAsgDlgMinutes').value, due_date: asgEl('ttAsgDlgDue').value || null,
-    retention_days: asgEl('ttAsgDlgRetention').value, class_id: asgEl('ttAsgDlgClass').value || null
+    retention_days: asgEl('ttAsgDlgRetention').value, class_id: classId
   }).then(row => {
+    // The enrolment is a second write; a refusal is reported on the card, the assignment stands (the code word still works).
+    const enrol = enrolIds.length ? IvritAssignments.assignments.enrol(row.id, enrolIds).then(() => ({ n: enrolIds.length, err: null }), err => ({ n: 0, err })) : Promise.resolve({ n: 0, err: null });
+    return enrol.then(en => ({ row, en }));
+  }).then(({ row, en }) => {
     asgSay('ttAsgDlgNote', '', false);
     const done = asgEl('ttAsgDlgDone'); while (done.firstChild) done.removeChild(done.firstChild);
     done.appendChild(asgMake('p', '', asgT('torah.assign.dlg_created')));
     const big = asgMake('p', 'tt-assign-bigcode'); big.appendChild(asgMake('span', 'tt-assign-codeword', row.code_word)); done.appendChild(big);
+    if (en.err) done.appendChild(asgMake('p', 'tt-assign-note is-error', asgT('torah.assign.dlg_enrol_failed', { error: asgErr(en.err) })));
+    else if (en.n) done.appendChild(asgMake('p', '', asgTn('torah.assign.dlg_enrolled', en.n)));
     done.appendChild(asgMake('p', 'tt-assign-muted', asgT('torah.assign.dlg_created_note')));
+    const linkRow = asgMake('div', 'tt-assign-actions');
+    const link = IvritAssignments.deepLink(row.code_word);
+    linkRow.appendChild(asgBtn(asgT('torah.assign.dlg_copy_link'), 'btn-secondary', () => ttCopyToClipboard(link, () => showHintToast(asgT('torah.assign.dlg_link_copied')))));
+    done.appendChild(linkRow);
+    const linkLine = asgMake('p', 'tt-assign-muted'); const code = asgMake('code', '', link); linkLine.appendChild(code); done.appendChild(linkLine);
     done.hidden = false;
     asgEl('ttAsgDlgCreate').hidden = true;
     asgEl('ttAsgDlgCancel').textContent = asgT('torah.assign.dlg_close');

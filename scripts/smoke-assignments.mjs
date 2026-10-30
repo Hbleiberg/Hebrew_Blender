@@ -118,9 +118,15 @@ class FakeCloud {
   }
   pgError(status, code, message) { return { __err: true, status, body: { code, details: null, hint: null, message } }; }
   // ---- writes under the triggers ----
-  insert(table, b, who) {
+  insert(table, b, who, ignoreDup) {
     const now = this.stamp();
     if (who.role !== 'teacher' && table !== 'submissions') return this.pgError(403, '42501', 'new row violates row-level security policy');
+    if (table === 'assignment_members') {   // 0009: the teacher's own assignment and own student, else the policy refuses
+      const st = this.t.students.find(x => x.id === b.student_id && x.teacher_id === who.id);
+      if (!st || this.teacherOf(b.assignment_id) !== who.id) return this.pgError(403, '42501', 'new row violates row-level security policy');
+      if (this.member(b.assignment_id, b.student_id)) return ignoreDup ? null : this.pgError(409, '23505', 'duplicate key value violates unique constraint "assignment_members_pkey"');
+      const r = { assignment_id: b.assignment_id, student_id: b.student_id, joined_at: now }; this.t.assignment_members.push(r); return r;
+    }
     if (table === 'classes') { if (this.t.classes.some(c => c.teacher_id === who.id && c.name === b.name)) return this.pgError(409, '23505', 'duplicate'); const r = { id: crypto.randomUUID(), teacher_id: who.id, name: String(b.name), created_at: now, updated_at: now }; this.t.classes.push(r); return r; }
     if (table === 'assignments') {
       const norm = String(b.code_word || '').toLowerCase().replace(/[\s\-_]/g, '');
@@ -226,6 +232,14 @@ class FakeCloud {
       }
       return { status: 200, body: { ok: true, results } };
     }
+    if (body.action === 'reset_passwords') {
+      const ids = Array.isArray(body.ids) ? body.ids : [];
+      if (!ids.length || ids.length > 60) return { status: 400, body: { error: 'bad_request' } };
+      if (String(body.password || '').length < 8) return { status: 400, body: { error: 'invalid_password' } };
+      const results = [];
+      for (const id of new Set(ids)) { const st = this.t.students.find(x => x.id === id && x.teacher_id === who.id); if (!st) { results.push({ id, error: 'not_found' }); continue; } this.users.get(st.id).password = body.password; results.push({ id, username: st.username }); }
+      return { status: 200, body: { ok: true, results } };
+    }
     const s = this.t.students.find(x => x.id === body.id && x.teacher_id === who.id);
     if (!s) return { status: 404, body: { error: 'not_found' } };
     if (body.action === 'reset_password') { if (String(body.password || '').length < 8) return { status: 400, body: { error: 'invalid_password' } }; this.users.get(s.id).password = body.password; return { status: 200, body: { ok: true, id: s.id } }; }
@@ -308,7 +322,8 @@ class FakeCloud {
     const table = tm[1], q = url.searchParams, filters = this.filtersOf(q);
     const single = /vnd\.pgrst\.object/.test(headers.accept || '');
     const represent = /return=representation/.test(headers.prefer || '') || q.has('select');
-    if (table === 'code_attempts' || (table === 'assignment_members' && m === 'POST') || (table === 'students' && m === 'POST')) return json(403, { code: '42501', message: 'permission denied for table ' + table });
+    if (table === 'code_attempts' || (table === 'students' && m === 'POST')) return json(403, { code: '42501', message: 'permission denied for table ' + table });
+    const ignoreDup = /resolution=ignore-duplicates/.test(headers.prefer || '');
     let rows = this.t[table].filter(r => this.visible(table, r, who) && this.match(r, filters));
     let status = 200;
     if (m === 'GET') {
@@ -319,7 +334,7 @@ class FakeCloud {
     } else if (m === 'POST') {
       const bodies = Array.isArray(body) ? body : [body];
       const made = [];
-      for (const b of bodies) { const r = this.insert(table, b, who); if (r && r.__err) return json(r.status, r.body); made.push(r); }
+      for (const b of bodies) { const r = this.insert(table, b, who, ignoreDup); if (r === null) continue; if (r && r.__err) return json(r.status, r.body); made.push(r); }
       rows = made; status = 201;
     } else if (m === 'PATCH') {
       for (const r of rows) { const err = this.guard(table, r, Object.assign({}, body), who); if (err) return json(err.status, err.body); }
@@ -357,6 +372,12 @@ async function newCtx(browser, cloud, { session, viewport = { width: 1280, heigh
     if (u === CFG.sdk) return route.fulfill({ status: 200, body: SDK_BYTES, headers: { 'content-type': 'application/javascript; charset=utf-8', 'access-control-allow-origin': '*' } });
     if (u.startsWith(CFG.url)) return cloud.answer(route);
     if (u.startsWith(WORKER)) { if (abortWorker) return route.abort('failed'); return cloud.answer(route); }
+    // Sefaria, stubbed: Genesis 1:1-2:3 (31 + 3 verses) in the v3 shape the Trainer parses, so the reading renders
+    // and the Assign dialog's verse checklist has verses; nothing else of Sefaria is answered.
+    if (/^https:\/\/www\.sefaria\.org\/api\/v3\/texts\//.test(u)) {
+      const vs = n => Array.from({ length: n }, (_, i) => 'בְּרֵאשִׁ֖ית בָּרָ֣א אֱלֹהִ֑ים ' + (i + 1));
+      return route.fulfill({ status: 200, headers: { 'content-type': 'application/json', 'access-control-allow-origin': '*' }, body: JSON.stringify({ ref: 'Genesis 1:1-2:3', sections: ['1', '1'], versions: [{ language: 'he', text: [vs(31), vs(3)] }] }) });
+    }
     return route.abort();
   });
   return ctx;
@@ -408,10 +429,20 @@ try {
     const { page, errors, dialogs } = await openPage(ctx, 'reading_assignments.html');
     await page.waitForFunction(() => !document.getElementById('stIn').hidden, null, { timeout: 10000 });
     check('A: the teacher page shows the signed-in tiles', await visible(page, '#secStudents'));
-    // a class
+    // a class, through the Add class dialog
+    await page.click('#addClassBtn');
+    check('A: Add class opens a modal dialog with the name field focused', await page.evaluate(() => !document.getElementById('clsDlg').hidden && document.getElementById('clsDlg').getAttribute('aria-modal') === 'true' && document.activeElement && document.activeElement.id === 'newClassName'));
     await page.fill('#newClassName', 'Kitah Gimel ' + XSS);
     await page.click('#newClassBtn');
-    check('A: a class is created (its name rendered as text)', await waitText(page, '#classStatus', /added/) && (await page.evaluate(() => document.querySelector('#classesHost strong').textContent)).includes('<img') && !(await page.evaluate(() => window.__xss)));
+    check('A: a class is created (its name rendered as text), the dialog closes and the focus returns to the button', await waitText(page, '#classStatus', /added/) && (await page.evaluate(() => document.querySelector('#classesHost strong').textContent)).includes('<img') && !(await page.evaluate(() => window.__xss)) && await page.evaluate(() => document.getElementById('clsDlg').hidden && document.activeElement && document.activeElement.id === 'addClassBtn'));
+    // the username styles: a preview with last names, then cleared
+    await page.selectOption('#usernameStyle', 'first.last');
+    await page.fill('#namesInput', 'Ruth Cohen\nNoam\n');
+    await page.click('#previewBtn');
+    const styled = await page.evaluate(() => [...document.querySelectorAll('#previewHost tbody tr')].map(tr => tr.querySelectorAll('input')[1].value));
+    check('A: the first.last style gives ruth.cohen, and a single name falls back to the digits', styled.length === 2 && styled[0] === 'ruth.cohen' && /^noam\.[2-9]{2}$/.test(styled[1]), JSON.stringify(styled));
+    await page.locator('#previewHost button', { hasText: 'Clear the preview' }).click();
+    await page.selectOption('#usernameStyle', 'first.nn');
     // students from names → preview → create
     await page.fill('#namesInput', 'Ruth ' + XSS + '\nNoam\n');
     await page.selectOption('#newClassSel', { index: 1 });
@@ -450,6 +481,15 @@ try {
     await tt.page.keyboard.press('Escape');
     check('J: Escape closes the dialog and puts the focus on the gear (its opener sits in the closed drawer)', await tt.page.evaluate(() => document.getElementById('ttAsgDialog').hidden && document.activeElement && document.activeElement.id === 'gearBtn'));
     await openAssign();
+    await tt.page.waitForFunction(() => document.querySelectorAll('#ttAsgDlgTarget option').length >= 3 && document.querySelectorAll('#ttAsgDlgVerses input').length === 34, null, { timeout: 10000 });
+    const who = await tt.page.evaluate(() => ({ opts: [...document.querySelectorAll('#ttAsgDlgTarget option')].map(o => o.value), pickHidden: document.getElementById('ttAsgDlgStudents').hidden, verses: document.querySelectorAll('#ttAsgDlgVerses input:checked').length, note: document.getElementById('ttAsgDlgVersesNote').textContent }));
+    check('A: the dialog offers everyone / the class / chosen students, and lists the 34 verses all ticked', who.opts[0] === 'code' && who.opts.some(v => v.startsWith('class:')) && who.opts[who.opts.length - 1] === 'pick' && who.pickHidden && who.verses === 34 && /34 of 34/.test(who.note), JSON.stringify(who));
+    await tt.page.selectOption('#ttAsgDlgTarget', 'pick');
+    check('A: Chosen students shows the checklist grouped by class with both students', await tt.page.evaluate(() => !document.getElementById('ttAsgDlgStudents').hidden && document.querySelectorAll('#ttAsgDlgStudents input').length === 2 && [...document.querySelectorAll('#ttAsgDlgStudents .tt-asg-group')].some(g => /Kitah Gimel/.test(g.textContent))));
+    await tt.page.selectOption('#ttAsgDlgTarget', 'class:' + cloud.t.classes[0].id);
+    await tt.page.uncheck('#ttAsgDlgVerses input[value="2:3"]');
+    check('A: unticking a verse updates the count', /33 of 34/.test(await text(tt.page, '#ttAsgDlgVersesNote')));
+    await tt.page.screenshot({ path: path.join(SHOTS, 'A-assign-dialog.png') });
     const look = await tt.page.evaluate(() => ({ checked: document.getElementById('ttAsgDlgLook').checked, disabled: document.getElementById('ttAsgDlgLook').disabled, summary: document.getElementById('ttAsgDlgLookSummary').textContent }));
     check('A: the look box is ticked by default and its summary names the transliteration and the vowel colors', look.checked && !look.disabled && /transliteration on/.test(look.summary) && /vowel colors on/.test(look.summary), JSON.stringify(look));
     await tt.page.fill('#ttAsgDlgTitle', 'Bereshit aliyah 1 ' + XSS);
@@ -464,6 +504,9 @@ try {
     check('A: the row carries the ref, the Trainer identifiers and the teacher', cloud.t.assignments[0].ref === 'Genesis 1:1-2:3' && cloud.t.assignments[0].reading.parshahKey === 'Bereshit' && cloud.t.assignments[0].teacher_id === T1 && cloud.t.assignments[0].max_minutes === 2, JSON.stringify(cloud.t.assignments[0]));
     const view = cloud.t.assignments[0].reading.view;
     check('A: …and the teacher\'s look as reading.view (the practice link\'s object: version, the two colorings, the transliteration)', view && view.v === 1 && view.colorCodeNikkud === true && view.vowelColorScheme === 'talam' && view.showTranslit === true && !('hebFont' in view), JSON.stringify(view));
+    check('A: …the left-out verse as reading.skip, the class on the row, and both students enrolled', JSON.stringify(cloud.t.assignments[0].reading.skip) === '["2:3"]' && cloud.t.assignments[0].class_id === cloud.t.classes[0].id && cloud.t.assignment_members.length === 2 && cloud.t.assignment_members.every(m => m.assignment_id === assignmentId), JSON.stringify(cloud.t.assignment_members));
+    const card = await tt.page.evaluate(() => ({ text: document.getElementById('ttAsgDlgDone').textContent, link: (document.querySelector('#ttAsgDlgDone code') || {}).textContent }));
+    check('A: the success card says 2 students can see it and shows the deep link', /2 students can see it now/.test(card.text) && card.link === 'http://localhost:8086/torah_trainer.html?assignment=' + encodeURIComponent(codeWord), JSON.stringify(card));
     check('A: the same code word again is refused as taken', await (async () => { await tt.page.keyboard.press('Escape'); await openAssign(); await tt.page.fill('#ttAsgDlgCode', codeWord.toUpperCase()); await tt.page.click('#ttAsgDlgCreate'); return waitText(tt.page, '#ttAsgDlgNote', /already use/); })());
     await tt.page.keyboard.press('Escape');
     check('A: 0 pageerrors on the Trainer (teacher)', tt.errors.length === 0, tt.errors.join(' | '));
@@ -500,6 +543,12 @@ try {
     student1Session = await page.evaluate((k) => JSON.parse(localStorage.getItem(k)), AUTH_KEY);
     await page.waitForFunction(() => window.IvritAssignments && !document.getElementById('ttAssign').hidden, null, { timeout: 15000 });
     check('B: the student panel appears above the reading once the student is in, expanded (its top button not drawn), and the Teacher tab says it is for teachers', await page.evaluate(() => getComputedStyle(document.getElementById('ttAssign')).display !== 'none' && getComputedStyle(document.getElementById('ttAsgTopCtrl')).display === 'none' && !document.getElementById('ttTeachStudent').hidden && document.getElementById('ttTeachIn').hidden));
+    await page.waitForFunction(() => document.querySelectorAll('#ttAsgMine li').length === 1, null, { timeout: 10000 });
+    check('B: the panel leads with "You have 1 assignment" and an Open button — enrolled by the teacher, no code typed', await page.evaluate(() => { const h = document.querySelector('#ttAsgMine h3'); const first = document.getElementById('ttAsgStudent').firstElementChild; return h && /You have 1 assignment/.test(h.textContent) && first && first.id === 'ttAsgMine' && !!document.querySelector('#ttAsgMine .btn'); }));
+    await page.locator('#ttAsgMine .btn', { hasText: 'Show the reading' }).first().click();
+    await page.waitForFunction(() => !document.getElementById('ttAsgCurrent').hidden && document.querySelector('#ttReading [data-vk="2:3"]'), null, { timeout: 15000 });
+    await page.screenshot({ path: path.join(SHOTS, 'B-student-inbox.png') });
+    check('B: the left-out verse is set aside on the page, with its tag, and the others are not', await page.evaluate(() => { const v = document.querySelector('#ttReading [data-vk="2:3"]'); const tag = v && v.querySelector('.tt-skip-tag'); return v && v.classList.contains('tt-verse-skipped') && tag && /not part of the assignment/.test(tag.textContent) && !document.querySelector('#ttReading [data-vk="1:1"]').classList.contains('tt-verse-skipped') && document.querySelectorAll('#ttReading .tt-verse-skipped').length === 1; }));
     await sleep(1500);
     check('B: the student face shows; the saves module never synced (no saves listing, no sync memory, the status line hidden)', !cloud.log.slice(logAtSignIn).some(l => l.path === '/rest/v1/saves') && await page.evaluate(() => !localStorage.getItem('ivritSuite_syncMeta2') && !document.querySelector('#cloudSavesPanel .ivsav:not([hidden])')), JSON.stringify(cloud.log.slice(logAtSignIn).filter(l => /saves/.test(l.path))));
     check('B: the chip names the student account, without an account link', await page.evaluate(() => { IvritAccount.openMenu(); const who = document.querySelector('.ivacct-who'); const acct = document.querySelector('[data-ivk="account"]'); IvritAccount.focusChip(); return who && /student account/.test(who.textContent) && !acct; }));
@@ -514,7 +563,7 @@ try {
     check('B: idle, the recorder draws neither the audio element nor the name-and-submit form (hidden as drawn, not only by attribute)', await page.evaluate(() => getComputedStyle(document.getElementById('ttRecAudio')).display === 'none' && getComputedStyle(document.getElementById('ttRecSubmitForm')).display === 'none'));
     check('B: the Trainer loaded the assigned range into the custom scope and shows the recorder', loaded.ref === 'Genesis 1:1-2:3' && loaded.scope === 'custom' && /up to 2 minutes/.test(loaded.line) && loaded.rec && /Ready to record/.test(loaded.state), JSON.stringify(loaded));
     check('B: the title rendered as text (no element created)', (await text(page, '#ttAsgCurrentLine')).includes('<img') && !(await page.evaluate(() => window.__xss)) && !(await page.evaluate(() => !!document.querySelector('#ttAssign img'))));
-    check('B: membership was recorded', cloud.t.assignment_members.length === 1);
+    check('B: the claim by code left the membership as it was (already enrolled)', cloud.t.assignment_members.length === 2);
     // the teacher's look: a live view, named as the teacher's, never stored
     const tv = await page.evaluate(() => ({ banner: !document.getElementById('ttLinkView').hidden, msg: document.getElementById('ttLinkViewMsg').textContent, translit: settings.showTranslit, scheme: settings.vowelColorScheme, colors: settings.colorCodeNikkud, stored: storedSettings().showTranslit, storedScheme: storedSettings().vowelColorScheme, bar: document.getElementById('ttShowTranslitBar').checked }));
     check('B: the teacher\'s look opened as a view: the banner names the teacher, transliteration and the Talam vowel colors are on screen, the stored settings untouched', tv.banner && /your teacher/.test(tv.msg) && tv.translit === true && tv.scheme === 'talam' && tv.colors === true && tv.stored === false && tv.storedScheme !== 'talam' && tv.bar, JSON.stringify(tv));
@@ -527,7 +576,7 @@ try {
     // Hide while recording: the panel folds to the top button, which shows the clock; the recording goes on
     await page.click('#ttAsgHideBtn');
     const folded = await page.evaluate(() => ({ hidden: getComputedStyle(document.getElementById('ttAssign')).display === 'none', top: getComputedStyle(document.getElementById('ttAsgTopCtrl')).display !== 'none', expanded: document.getElementById('ttAsgTopBtn').getAttribute('aria-expanded'), label: document.getElementById('ttAsgTopBtn').textContent, focus: document.activeElement && document.activeElement.id, stored: localStorage.getItem('hebrewTorahTrainer_assignCollapsed') }));
-    check('B: Hide folds the panel to the top button, which takes the focus, says aria-expanded=false and mirrors the recording clock', folded.hidden && folded.top && folded.expanded === 'false' && /Reading assignments · Recording… 0:0[1-9]/.test(folded.label) && folded.focus === 'ttAsgTopBtn' && folded.stored === '1', JSON.stringify(folded));
+    check('B: Hide folds the panel to the top button, which takes the focus, says aria-expanded=false, carries the count and mirrors the recording clock', folded.hidden && folded.top && folded.expanded === 'false' && /Reading assignments \(1\) · Recording… 0:0[1-9]/.test(folded.label) && folded.focus === 'ttAsgTopBtn' && folded.stored === '1', JSON.stringify(folded));
     await sleep(1200);
     check('B: …and the mirrored clock keeps counting', /Recording… 0:0[2-9]/.test(await text(page, '#ttAsgTopBtn')), await text(page, '#ttAsgTopBtn'));
     await page.click('#ttAsgTopBtn');
@@ -552,10 +601,28 @@ try {
     await page.click('#ttAsgHideBtn');
     await page.reload({ waitUntil: 'domcontentloaded' });
     await page.waitForFunction(() => window.IvritAssignments && !document.getElementById('ttAsgTopCtrl').hidden, null, { timeout: 15000 });
-    check('B: after a reload the panel is still folded and the button says so', await page.evaluate(() => document.getElementById('ttAssign').hidden && document.getElementById('ttAsgTopBtn').textContent === 'Reading assignments' && document.getElementById('ttAsgTopBtn').getAttribute('aria-expanded') === 'false'));
+    check('B: after a reload the panel is still folded and the button says so, with the count', await page.evaluate(() => document.getElementById('ttAssign').hidden && /^Reading assignments( \(1\))?$/.test(document.getElementById('ttAsgTopBtn').textContent) && document.getElementById('ttAsgTopBtn').getAttribute('aria-expanded') === 'false'));
     await page.click('#ttAsgTopBtn');
     check('B: 0 pageerrors (student)', errors.length === 0, errors.join(' | '));
     await page.screenshot({ path: path.join(SHOTS, 'B-student.png') });
+    await ctx.close();
+  }
+
+  /* ───── L. the deep link: signed out it asks for the student sign-in; signed in it opens the assignment ───── */
+  {
+    const ctx = await newCtx(browser, cloud);
+    const { page, errors } = await openPage(ctx, 'torah_trainer.html', { query: '?assignment=' + encodeURIComponent(codeWord.toUpperCase()), waitSignedIn: false });
+    await page.waitForFunction(() => window.IvritAccount && IvritAccount.status() === 'anonymous', null, { timeout: 15000 });
+    await page.screenshot({ path: path.join(SHOTS, 'L-deep-link-signed-out.png') });
+    check('L: signed out, the link shows the sign-in note and nothing else of the feature', await page.evaluate(() => getComputedStyle(document.getElementById('ttAsgLinkNote')).display !== 'none' && getComputedStyle(document.getElementById('ttAssign')).display === 'none' && !window.IvritAssignments));
+    await page.click('#ttAsgLinkSignIn');
+    check('L: its Sign in button opens the chip on the student form with the username focused', await page.evaluate(() => document.getElementById('ivacctMenu') && !document.getElementById('ivacctMenu').hidden && document.activeElement && document.activeElement.getAttribute('data-ivk') === 'username'));
+    await page.fill('[data-ivk="username"]', student1.username);
+    await page.fill('[data-ivk="password"]', student1.password);
+    await page.click('[data-ivk="studentgo"]');
+    await page.waitForFunction(() => window.IvritAssignments && !document.getElementById('ttAsgCurrent').hidden && /Bereshit aliyah 1/.test(document.getElementById('ttAsgCurrentLine').textContent), null, { timeout: 20000 });
+    check('L: after the sign-in the assignment opened by itself, the note is gone and the address no longer carries the code', await page.evaluate(() => getComputedStyle(document.getElementById('ttAsgLinkNote')).display === 'none' && !new URLSearchParams(location.search).has('assignment') && settings.customRef === 'Genesis 1:1-2:3'));
+    check('L: 0 pageerrors', errors.length === 0, errors.join(' | '));
     await ctx.close();
   }
 
@@ -606,6 +673,18 @@ try {
   {
     const ctx = await newCtx(browser, cloud, { session: teacherSession });
     const { page, errors, dialogs } = await openPage(ctx, 'reading_assignments.html');
+    // the class view: both students submitted; a third student, not enrolled, gets an Add button
+    await page.waitForFunction(() => document.querySelectorAll('#cvHost tbody tr').length === 2, null, { timeout: 15000 });
+    const grid = await page.evaluate(() => [...document.querySelectorAll('#cvHost tbody tr')].map(tr => [tr.querySelector('th').textContent, tr.querySelector('td .badge') ? tr.querySelector('td .badge').textContent : null, !!tr.querySelector('a[href*="assignTo="]')]));
+    check('C: the class view lists both students as Submitted, each with Assign a new reading…', grid.length === 2 && grid.every(r => r[1] === 'Submitted' && r[2]), JSON.stringify(grid));
+    cloud.manageStudents({ action: 'create', students: [{ display_name: 'Tal', username: 'tal.r', password: 'river-cat-55' }] }, { id: T1, role: 'teacher' });
+    await page.click('#studentsRefresh');
+    await page.waitForFunction(() => document.querySelectorAll('#cvHost tbody tr').length === 3, null, { timeout: 15000 });
+    check('C: the new student\'s cell offers Add', await page.evaluate(() => { const tr = [...document.querySelectorAll('#cvHost tbody tr')].find(r => r.querySelector('th').textContent === 'Tal'); return tr && tr.querySelector('td .btn') && /Add/.test(tr.querySelector('td .btn').textContent) && /Add Tal to/.test(tr.querySelector('td .btn').getAttribute('aria-label')); }));
+    await page.locator('#cvHost tbody tr', { hasText: 'Tal' }).locator('td .btn').first().click();
+    check('C: Add enrols the student (a membership row) and the cell turns to Assigned', await waitText(page, '#cvStatus', /Tal was added to/) && cloud.t.assignment_members.some(m => m.student_id === cloud.t.students.find(s => s.username === 'tal.r').id) && await page.evaluate(() => { const tr = [...document.querySelectorAll('#cvHost tbody tr')].find(r => r.querySelector('th').textContent === 'Tal'); return tr && tr.querySelector('td .badge') && tr.querySelector('td .badge').textContent === 'Assigned'; }));
+    await page.screenshot({ path: path.join(SHOTS, 'C-teacher-page-grid.png'), fullPage: true });
+    check('C: the assignment row counts 3 students enrolled and offers Copy link', await page.evaluate(() => /3 students enrolled/.test(document.getElementById('asgHost').textContent) && [...document.querySelectorAll('#asgHost .btn')].some(b => b.textContent === 'Copy link')));
     await page.waitForFunction(() => document.querySelectorAll('#asgHost .sub-row').length === 1, null, { timeout: 10000 });
     const listLine = await text(page, '#asgHost');
     check('C: the assignment is listed with its code word, 2 submitted and the title as text', listLine.includes(codeWord) && /2 submitted/.test(listLine) && listLine.includes('<img') && !(await page.evaluate(() => window.__xss)), listLine.slice(0, 200));
@@ -793,6 +872,26 @@ try {
     }, { noamId, mineId: mine.id, aid: assignmentId, ownIds: cloud.t.submissions.filter(s => s.student_id === ruthId).map(s => s.id) });
     check('H: the student cannot change their role, approve, rename the key, read a classmate\'s rows (peers off), forge a row, insert a membership, see other assignments, read a peer\'s profile, read others\' feedback, or re-upload an uploaded take',
       r.role === '42501' && r.approve === '42501' && r.key === '42501' && r.otherRows === 0 && r.forge === '42501' && r.member === '42501' && r.byCode === 0 && r.peerProfile === 0 && r.feedbackRows === 0 && r.reupload === 'not_accepted', JSON.stringify(r));
+    await ctx.close();
+  }
+
+  /* ───── M. bulk passwords: one for everyone shown, then a new one each ───── */
+  {
+    const ctx = await newCtx(browser, cloud, { session: teacherSession });
+    const { page, errors } = await openPage(ctx, 'reading_assignments.html');
+    await page.waitForFunction(() => document.querySelectorAll('#studentsHost tbody tr').length === 3, null, { timeout: 15000 });
+    await page.click('#bulkOneBtn');
+    const pd = await page.evaluate(() => ({ open: !document.getElementById('pwDlg').hidden, note: document.getElementById('pwDlgNote').textContent, pw: document.getElementById('pwDlgIn').value, focused: document.activeElement && document.activeElement.id }));
+    await page.screenshot({ path: path.join(SHOTS, 'M-one-password-dialog.png') });
+    check('M: the one-password dialog opens on the password field, prefilled, naming the 3 students shown', pd.open && /All 3 students shown/.test(pd.note) && pd.pw.length >= 8 && pd.focused === 'pwDlgIn', JSON.stringify(pd));
+    await page.fill('#pwDlgIn', 'class-pass-77');
+    await page.click('#pwDlgGo');
+    check('M: every shown student gets the one password, shown once in the logins table', await waitText(page, '#studentsStatus', /3 passwords set/) && await page.evaluate(() => document.getElementById('pwDlg').hidden && [...document.querySelectorAll('#createdHost tbody tr')].length === 3 && [...document.querySelectorAll('#createdHost tbody tr td:last-child')].every(td => td.textContent === 'class-pass-77')) && cloud.t.students.every(s => cloud.users.get(s.id).password === 'class-pass-77'));
+    await page.click('#bulkEachBtn');
+    await waitText(page, '#studentsStatus', /3 passwords set/);
+    const each = cloud.t.students.map(s => cloud.users.get(s.id).password);
+    check('M: New password for each gives three different random passphrases, listed for printing', new Set(each).size === 3 && each.every(p => /^[a-z]+-[a-z]+-[2-9]{2}$/.test(p)) && await page.evaluate(() => [...document.querySelectorAll('#createdHost tbody tr')].length === 3), JSON.stringify(each));
+    check('M: 0 pageerrors', errors.length === 0, errors.join(' | '));
     await ctx.close();
   }
 
