@@ -84,6 +84,15 @@ Check it worked — this prints your account name:
 npx wrangler whoami
 ```
 
+*No browser on the machine that runs the commands* (a server, a cloud session such as Claude Code, a CI job)?
+Use an API token instead of `wrangler login`: Cloudflare dashboard → **Manage account** → **Account API
+tokens** → **Create Token** → the **Edit Cloudflare Workers** template → under *Account Resources* pick this
+account, under *Zone Resources* pick `ivritsuite.com` (the custom domain in Step 6 needs the zone's *Workers
+Routes: Edit*, which the template includes) → **Continue to summary** → **Create Token** → copy it (shown once).
+Store it as the environment variable `CLOUDFLARE_API_TOKEN` where the commands run (in Claude Code: the cloud
+environment's settings → *Edit* → secrets; never in a file in this repository, never pasted into a chat).
+Every `wrangler` command below then works without a login; `npx wrangler whoami` confirms it.
+
 Now the one secret. The Worker's nightly tidy-up job (it removes audio whose recording was deleted, and
 recordings past their retention date) needs the Supabase project's **secret key**. Find it: Supabase
 dashboard → the IvritSuite project → **Project Settings** (the gear) → **API Keys** → the **Secret keys** tab
@@ -103,24 +112,28 @@ Deploy:
 npx wrangler deploy
 ```
 
-The last lines print the Worker's address, something like
-`https://ivritsuite-recordings.<your-subdomain>.workers.dev`. Open that address with `/health` on the end in
-a browser — it must show the word `ok`. (The deploy also creates the daily schedule and the three rate-limit
-rules from `wrangler.toml`; nothing else to click.)
+The last lines name the Worker and its address, `recordings.ivritsuite.com` (Step 6 explains that name). After
+a minute, open <https://recordings.ivritsuite.com/health> in a browser — it must show the word `ok`. (The
+deploy also creates the daily schedule, the three rate-limit rules and the address from `wrangler.toml`;
+nothing else to click.)
 
-If `deploy` complains that the bucket does not exist, Step 2's name differs from `wrangler.toml`.
+If `deploy` complains that the bucket does not exist, Step 2's name differs from `wrangler.toml`. If it
+complains about the route or the zone, the sign-in (or the API token) lacks the zone's *Workers Routes: Edit*
+permission — see Step 6 for the dashboard way instead.
 
-## Step 6 — give the Worker its own address: `recordings.ivritsuite.com`
+## Step 6 — the Worker's own address: `recordings.ivritsuite.com`
 
 The site's pages are told to talk to `https://recordings.ivritsuite.com` (it is in `js/ivrit-assignments.js`
-and in the pages' Content Security Policy), so the Worker needs that name. Because `ivritsuite.com`'s DNS is
-already on Cloudflare, this is one form:
+and in the pages' Content Security Policy), so the Worker needs that name. `wrangler.toml` declares it
+(`[[routes]]` with `custom_domain = true`), and because `ivritsuite.com`'s DNS is already on Cloudflare, Step 5's
+deploy creates the DNS record and the certificate by itself. Nothing to do unless the deploy could not — then
+it is one dashboard form:
 
 1. Cloudflare dashboard → **Workers & Pages** → click **ivritsuite-recordings**.
 2. **Settings** tab → **Domains & Routes** → **Add** → **Custom domain**.
 3. Type `recordings.ivritsuite.com` → **Add domain**.
 4. Cloudflare creates the DNS record and the certificate by itself. After a minute, open
-   <https://recordings.ivritsuite.com/health> — `ok` again.
+   <https://recordings.ivritsuite.com/health> — `ok`.
 
 If it refuses because a record named `recordings` already exists in DNS, remove that record first (DNS →
 Records) and try again. The Total Torah address `audio.ivritsuite.com` is a different name and is not touched.
@@ -137,6 +150,18 @@ the nightly job ever stops running:
    so nothing is lost mid-year even if a teacher never closes an assignment). Save.
 3. **Add rule** again. Rule 2 — **Rule name:** `abort-unfinished-uploads`; leave the prefix empty; tick
    **Abort incomplete multipart uploads** and set **1 day**. Save.
+
+The same two rules from the terminal (signed in as in Step 5), if you prefer:
+
+```bash
+npx wrangler r2 bucket lifecycle add torahtrainer-recordings expire-recordings submissions/ --expire-days 400 --force
+```
+
+```bash
+npx wrangler r2 bucket lifecycle add torahtrainer-recordings abort-unfinished-uploads --abort-multipart-days 1 --force
+```
+
+`npx wrangler r2 bucket lifecycle list torahtrainer-recordings` shows both afterwards.
 
 ## Step 8 — the Supabase side
 

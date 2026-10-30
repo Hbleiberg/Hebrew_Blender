@@ -345,7 +345,7 @@ upgrade of an older device's sync memory (nothing deleted, nothing removed from 
   GitHub integration would open a paid preview branch).
 - **Torah Trainer reading assignments** (student logins, recordings): the recordings live in the private Cloudflare
   R2 bucket `torahtrainer-recordings` behind the Worker `recordings.ivritsuite.com` (`workers/audio/`); the setup —
-  the bucket, `wrangler login`, the one secret, the deploy, the custom domain, the bucket's two lifecycle rules, the
+  the bucket, the sign-in (`wrangler login`, or an API token where no browser is), the one secret, the deploy (which also creates the custom domain), the bucket's two lifecycle rules, the
   `students.ivritsuite.com` null-MX and SPF records, the Supabase password settings — is `workers/audio/README.md`,
   step by step. A change to `worker.js` is live only after `npx wrangler deploy` there; `npx wrangler tail` watches
   it, and its nightly tidy-up prints one `reconcile {…}` line. The eighth smoke, `node scripts/smoke-assignments.mjs
