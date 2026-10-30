@@ -363,7 +363,7 @@ body.dark .hi-sun{display:inline-block;}
   <div class="dlg-actions"><button class="btn ghost" type="button" id="clsDlgClose" data-i18n="assign.classes.close">Close</button></div>
 </div>
 <div class="dlg" id="pwDlg" role="dialog" aria-modal="true" aria-labelledby="pwDlgTitle" hidden>
-  <h2 id="pwDlgTitle" data-i18n="assign.students.bulk_dlg_head">One password for everyone shown</h2>
+  <h2 id="pwDlgTitle">One password for everyone shown</h2>
   <p class="note" id="pwDlgNote"></p>
   <form id="pwDlgForm" novalidate>
     <div class="field"><label for="pwDlgIn" data-i18n="assign.students.bulk_dlg_password">Password (at least 8 characters)</label><input type="text" id="pwDlgIn" class="code" maxlength="72" autocomplete="off" spellcheck="false"></div>
@@ -478,22 +478,12 @@ function renderStudents() {
     sel.addEventListener('change', () => { AS().students.setClass(s.id, sel.value || null).then(() => { s.class_id = sel.value || null; say('studentsStatus', () => t('assign.students.moved', { name: s.display_name })); }).catch(err => { sel.value = s.class_id || ''; say('studentsStatus', () => errText(err), true); }); });
     tdc.appendChild(sel); r.appendChild(tdc);
     const act = el('td', 'actions');
-    act.appendChild(btn(t('assign.students.reset_btn'), 'ghost sm', () => resetPassword(s, act)));
+    act.appendChild(btn(t('assign.students.reset_btn'), 'ghost sm', () => openPwDlg({ kind: 'one', rows: [s] })));
     act.appendChild(btn(t('assign.students.remove_btn'), 'ghost sm', () => removeStudent(s)));
     r.appendChild(act); tbody.appendChild(r);
   });
   table.appendChild(tbody); host.appendChild(table);
-  host.appendChild(el('p', 'muted', t('assign.students.count', { n: rows.length })));
-}
-function resetPassword(s, cell) {
-  const pw = AS().passphrase();
-  if (!window.confirm(t('assign.students.reset_confirm', { name: s.display_name, password: pw }))) return;
-  say('studentsStatus', () => t('shared.account.sending'));
-  AS().students.resetPassword(s.id, pw).then(() => {
-    say('studentsStatus', () => t('assign.students.reset_done', { name: s.display_name, username: s.username, password: pw }));
-    batch = [{ display_name: s.display_name, username: s.username, password: pw }];
-    renderCreated([{ display_name: s.display_name, username: s.username, password: pw }], true);
-  }).catch(err => say('studentsStatus', () => errText(err), true));
+  host.appendChild(el('p', 'muted', tn('assign.students.count', rows.length)));
 }
 function removeStudent(s) {
   if (!window.confirm(t('assign.students.remove_confirm', { name: s.display_name }))) return;
@@ -566,6 +556,9 @@ function renderPreview() {
 }
 function createStudents() {
   if (!preview || !preview.length) return;
+  let bad = 0;
+  preview.forEach(p => { if (!pwOk(p.password)) { p.error = errText({ code: 'invalid_password' }); bad++; } });
+  if (bad) { renderPreview(); say('createStatus', () => tn('assign.students.password_fix', bad), true); const f = $('previewHost').querySelector('.status.is-error'); if (f && f.previousSibling && f.previousSibling.focus) f.previousSibling.focus(); return; }
   const classId = curClassId() || null;
   say('createStatus', () => t('assign.students.creating', { n: preview.length }));
   const rows = preview.map(p => ({ display_name: p.display_name, username: p.username, password: p.password }));
@@ -577,7 +570,7 @@ function createStudents() {
       if (made.length) renderCreated(made, false);
       preview = failed.length ? failed : null;
       renderPreview();
-      say('createStatus', () => failed.length ? t('assign.students.created_some', { made: made.length, failed: failed.length }) : t('assign.students.created_all', { n: made.length }), !!failed.length);
+      say('createStatus', () => failed.length ? t('assign.students.created_some', { made: made.length, failed: failed.length }) : tn('assign.students.created_all', made.length), !!failed.length);
       if (made.length) $('namesInput').value = failed.map(p => p.display_name).join('\n');
       loadStudents();
     };
@@ -678,17 +671,21 @@ function addClass(e) {
     $('namesInput').focus();
   }).catch(err => say('clsDlgStatus', () => errText(err), true)).then(() => setBusy('newClassBtn', false));
 }
-/* ── the two small dialogs (the edit dialog's contract: modal, focus trapped, Escape closes, the opener gets the focus back) ── */
-let _modal = null, _modalOpener = null;
+/* ── the small dialogs (the edit dialog's contract: modal, focus trapped, Escape closes, the opener gets the focus back).
+   A stack, because the password dialog opens over the class popup: closing the top one hands the backdrop and the key
+   handler back to the one below; closing a lower one takes everything above it with it. ── */
+const _modals = [];   // [{ id, opener }], bottom first
+function modalTop() { return _modals.length ? _modals[_modals.length - 1] : null; }
 function modalOpen(id, focusId) {
-  _modal = id; _modalOpener = document.activeElement;
-  $('dlgBackdrop').hidden = false; $(id).hidden = false;
-  document.addEventListener('keydown', modalKey, true);
+  if (_modals.some(m => m.id === id)) return;
+  if (!_modals.length) { $('dlgBackdrop').hidden = false; document.addEventListener('keydown', modalKey, true); }
+  _modals.push({ id, opener: document.activeElement });
+  $(id).hidden = false;
   const f = $(focusId); if (f) { f.focus(); if (f.select) f.select(); }
 }
 function modalKey(e) {
-  const dlg = $(_modal); if (!dlg) return;
-  if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); modalClose(_modal); return; }
+  const top = modalTop(); const dlg = top && $(top.id); if (!dlg) return;
+  if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); modalClose(top.id); return; }
   if (e.key !== 'Tab') return;
   const f = [...dlg.querySelectorAll('button, input, select, textarea, a[href]')].filter(n => n.offsetParent !== null && !n.disabled);
   if (!f.length) return;
@@ -697,11 +694,12 @@ function modalKey(e) {
   else if (!e.shiftKey && (a === last || out)) { e.preventDefault(); first.focus(); }
 }
 function modalClose(id) {
-  if (_modal !== id) return;
-  $('dlgBackdrop').hidden = true; $(id).hidden = true;
-  document.removeEventListener('keydown', modalKey, true);
-  const o = _modalOpener; _modal = null; _modalOpener = null;
-  try { (o && o.isConnected ? o : $('mainContent')).focus(); } catch (e) {}
+  const at = _modals.findIndex(m => m.id === id); if (at < 0) return;
+  const closing = _modals.splice(at);            // this one and everything stacked above it
+  closing.forEach(m => { $(m.id).hidden = true; });
+  if (!_modals.length) { $('dlgBackdrop').hidden = true; document.removeEventListener('keydown', modalKey, true); }
+  const o = closing[0].opener;
+  try { (o && o.isConnected && !o.closest('[hidden]') ? o : (_modals.length ? $(modalTop().id) : $('mainContent'))).focus(); } catch (e) {}
 }
 /* ── bulk passwords: everyone the roster shows (the class filter) ── */
 function shownStudents() { const f = curClassId(); return students.filter(s => (s.class_id || '') === f); }
@@ -713,24 +711,37 @@ function studentLabel(s) {
   const dup = students.filter(x => String(x.display_name || '').trim().toLowerCase() === k).length > 1;
   return dup ? s.display_name + ' · ' + s.username : s.display_name;
 }
-function bulkOne() {
-  const rows = shownStudents(); if (!rows.length) { say('studentsStatus', () => t('assign.students.bulk_none'), true); return; }
-  $('pwDlgNote').textContent = tn('assign.students.bulk_dlg_note', rows.length);
+function pwOk(pw) { return typeof pw === 'string' && pw.length >= 8 && pw.length <= 72; }   // what the function accepts (8 to 72)
+// The one "set password" dialog: { kind: 'one', rows: [student] } from a row's New password… button, { kind: 'all', rows } from
+// the button over the roster. It opens over the class popup; the password is prefilled with a passphrase and editable.
+let pwDlgState = null;
+function openPwDlg(state) {
+  pwDlgState = state;
+  const one = state.kind === 'one' ? state.rows[0] : null;
+  $('pwDlgTitle').textContent = one ? t('assign.students.pw_dlg_head_one', { name: one.display_name }) : t('assign.students.bulk_dlg_head');
+  $('pwDlgNote').textContent = one ? t('assign.students.pw_dlg_note_one', { name: one.display_name, username: one.username }) : tn('assign.students.bulk_dlg_note', state.rows.length);
   $('pwDlgIn').value = AS().passphrase(); say('pwDlgStatus', null);
   modalOpen('pwDlg', 'pwDlgIn');
 }
-function bulkOneGo(e) {
+function bulkOne() {
+  const rows = shownStudents(); if (!rows.length) { say('studentsStatus', () => t('assign.students.bulk_none'), true); return; }
+  openPwDlg({ kind: 'all', rows });
+}
+function pwDlgGo(e) {
   e.preventDefault();
-  if (isDisabled($('pwDlgGo'))) return;
-  const pw = $('pwDlgIn').value, rows = shownStudents();
-  if (pw.length < 8) { say('pwDlgStatus', () => t('assign.error.invalid_password'), true); $('pwDlgIn').focus(); return; }
+  if (isDisabled($('pwDlgGo')) || !pwDlgState) return;
+  const pw = $('pwDlgIn').value, rows = pwDlgState.rows;
+  if (!pwOk(pw)) { say('pwDlgStatus', () => errText({ code: 'invalid_password' }), true); $('pwDlgIn').focus(); return; }
   setBusy('pwDlgGo', true); say('pwDlgStatus', () => t('account.holds.checking'));
-  AS().students.resetPasswords(rows.map(s => s.id), pw).then(results => {
+  const one = pwDlgState.kind === 'one' ? rows[0] : null;
+  const call = one ? AS().students.resetPassword(one.id, pw).then(() => [{ id: one.id, username: one.username }]) : AS().students.resetPasswords(rows.map(s => s.id), pw);
+  call.then(results => {
     const ok = results.filter(r => !r.error), failed = results.length - ok.length;
+    if (!ok.length) { const first = results.find(r => r.error); say('pwDlgStatus', () => errText({ code: first && first.error }), true); return; }
     const made = ok.map(r => { const s = rows.find(x => x.id === r.id); return { display_name: s ? s.display_name : r.username, username: r.username || (s && s.username) || '', password: pw }; });
     batch = made.slice(); renderCreated(made, true);
     say('pwDlgStatus', null); modalClose('pwDlg');
-    say('studentsStatus', () => failed ? t('assign.students.bulk_some', { n: ok.length, failed }) : t('assign.students.bulk_done', { n: ok.length }), !!failed);
+    say('studentsStatus', () => one ? t('assign.students.reset_done', { name: one.display_name, username: one.username, password: pw }) : failed ? t('assign.students.bulk_some', { n: ok.length, failed }) : tn('assign.students.bulk_done', ok.length), !!failed);
     $('createdHost').scrollIntoView({ block: 'nearest' });
   }).catch(err => say('pwDlgStatus', () => errText(err), true)).then(() => setBusy('pwDlgGo', false));
 }
@@ -741,7 +752,7 @@ function bulkEach() {
   setBusy('bulkEachBtn', true); say('studentsStatus', () => t('account.holds.checking'));
   const made = []; let failed = 0;
   rows.reduce((p, s) => p.then(() => { const pw = AS().passphrase(); return AS().students.resetPassword(s.id, pw).then(() => made.push({ display_name: s.display_name, username: s.username, password: pw }), () => { failed++; }); }), Promise.resolve())
-    .then(() => { batch = made.slice(); renderCreated(made, true); say('studentsStatus', () => failed ? t('assign.students.bulk_some', { n: made.length, failed }) : t('assign.students.bulk_done', { n: made.length }), !!failed); $('createdHost').scrollIntoView({ block: 'nearest' }); })
+    .then(() => { batch = made.slice(); renderCreated(made, true); say('studentsStatus', () => failed ? t('assign.students.bulk_some', { n: made.length, failed }) : tn('assign.students.bulk_done', made.length), !!failed); $('createdHost').scrollIntoView({ block: 'nearest' }); })
     .then(() => setBusy('bulkEachBtn', false));
 }
 /* ── the class view: students × open assignments ── */
@@ -1051,7 +1062,7 @@ document.addEventListener('DOMContentLoaded', () => {
   $('clsDlgClose').addEventListener('click', () => modalClose('clsDlg'));
   $('bulkOneBtn').addEventListener('click', bulkOne);
   $('bulkEachBtn').addEventListener('click', bulkEach);
-  $('pwDlgForm').addEventListener('submit', bulkOneGo);
+  $('pwDlgForm').addEventListener('submit', pwDlgGo);
   $('pwDlgCancel').addEventListener('click', () => modalClose('pwDlg'));
   $('cvClassFilter').addEventListener('change', renderClassView);
   $('cvRefresh').addEventListener('click', () => { if (!isDisabled($('cvRefresh'))) loadGrid(); });
@@ -1062,7 +1073,7 @@ document.addEventListener('DOMContentLoaded', () => {
   $('subsBack').addEventListener('click', closeSubs);
   $('dlgForm').addEventListener('submit', saveDlg);
   $('dlgCancel').addEventListener('click', closeDlg);
-  $('dlgBackdrop').addEventListener('click', () => { if (_modal) modalClose(_modal); else closeDlg(); });
+  $('dlgBackdrop').addEventListener('click', () => { const top = modalTop(); if (top) modalClose(top.id); else closeDlg(); });
   $('dlgRegen').addEventListener('click', () => { $('dlgCode').value = AS().codeWord.generate(); $('dlgCode').focus(); });
   window.addEventListener('pagehide', () => blobUrls.forEach(u => { try { URL.revokeObjectURL(u); } catch (e) {} }));
   if (window.IvritAccount && window.IvritSaves && window.IvritAssignments) {

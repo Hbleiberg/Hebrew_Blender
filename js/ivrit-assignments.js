@@ -433,6 +433,7 @@
     if (code === 'username_taken') return t('assign.error.username_taken', 'That username is already taken. Choose another.');
     if (code === 'invalid_username') return t('assign.error.username_invalid', 'A username is 3 to 30 lowercase letters, digits and dots.');
     if (code === 'invalid_password') return t('assign.error.password_invalid', 'A password is 8 to 72 characters.');
+    if (code === 'weak_password') return t('assign.error.password_weak', 'That password is too easy to guess: it appears in lists of leaked passwords. Choose another.');
     if (code === 'invalid_name') return t('assign.error.name_invalid', 'Each student needs a name.');
     if (code === 'too_many_students') return t('assign.error.too_many_students', 'An account can have at most 200 students.');
     if (code === '23505') return t('assign.error.code_taken', 'You already use that code word for another assignment. Choose a different one.');

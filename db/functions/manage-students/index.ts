@@ -33,6 +33,14 @@ const USERNAME_RE = /^[a-z0-9][a-z0-9.]{1,28}[a-z0-9]$/;
 const MAX_PER_CALL = 60;
 const MAX_PER_TEACHER = 200;
 const PASSWORD_MIN = 8, PASSWORD_MAX = 72;
+// Auth's refusal of a password, told apart for the page: one that fails the leaked-password check (the dashboard's
+// "weak password" protection, HaveIBeenPwned) is 'weak_password' (the page says "too easy to guess — choose another"); any
+// other password complaint is 'invalid_password' (the length rule); anything else is the action's own failure code.
+function passwordCode(message: unknown, fallback: string): string {
+  const m = String(message ?? '').toLowerCase();
+  if (/weak|pwned|leaked|compromised|easy to guess|known to be/.test(m)) return 'weak_password';
+  return /password/.test(m) ? 'invalid_password' : fallback;
+}
 
 function corsHeaders(req: Request): Record<string, string> {
   const origin = req.headers.get('Origin') ?? '';
@@ -118,7 +126,7 @@ Deno.serve(async (req: Request) => {
         });
         if (mkErr || !created?.user) {
           const m = String(mkErr?.message ?? '').toLowerCase();
-          out.error = /already|registered|exists/.test(m) ? 'username_taken' : (/password/.test(m) ? 'invalid_password' : 'create_failed');
+          out.error = /already|registered|exists/.test(m) ? 'username_taken' : passwordCode(m, 'create_failed');
           console.error('manage-students create:', username, mkErr?.message);
           results.push(out); continue;
         }
@@ -141,7 +149,7 @@ Deno.serve(async (req: Request) => {
       const s = await ownStudent(admin, teacherId, id);
       if (!s) return reply(req, 404, { error: 'not_found' });
       const { error } = await admin.auth.admin.updateUserById(id, { password });
-      if (error) { console.error('manage-students reset:', id, error.message); return reply(req, 500, { error: /password/i.test(error.message) ? 'invalid_password' : 'reset_failed' }); }
+      if (error) { console.error('manage-students reset:', id, error.message); return reply(req, 500, { error: passwordCode(error.message, 'reset_failed') }); }
       return reply(req, 200, { ok: true, id });
     }
 
@@ -155,7 +163,7 @@ Deno.serve(async (req: Request) => {
         const s = await ownStudent(admin, teacherId, id);
         if (!s) { results.push({ id, error: 'not_found' }); continue; }
         const { error } = await admin.auth.admin.updateUserById(id, { password });
-        if (error) { console.error('manage-students reset_passwords:', id, error.message); results.push({ id, error: /password/i.test(error.message) ? 'invalid_password' : 'reset_failed' }); continue; }
+        if (error) { console.error('manage-students reset_passwords:', id, error.message); results.push({ id, error: passwordCode(error.message, 'reset_failed') }); continue; }
         results.push({ id, username: s.username });
       }
       return reply(req, 200, { ok: true, results });

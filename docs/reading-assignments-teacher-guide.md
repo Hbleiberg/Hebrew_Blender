@@ -31,10 +31,13 @@ only asks you to sign in; students never see it do anything.)
    card per student with their username and password and where to go. **This is the only time a password is
    shown.** Print or write them down, then press **Hide the passwords**.
 
-Lost a password? In the class popup's list press **Reset password** next to the name: a new one is made and
-shown once. For a whole class, **Set one password for everyone shown…** gives every student in the popup the
-same password (handy for a first lesson), and **New password for each shown** gives each a fresh random one;
-both show the new logins once, with *Print login cards*. **Remove** deletes the login and every recording it
+Lost a password? In the class popup's list press **New password…** next to the name: a small window opens
+with a fresh password already filled in (change it if you like), and **Set the password** makes it the
+student's new one, shown once. For a whole class, **Set one password for everyone shown…** opens the same
+window for every student in the popup (handy for a first lesson), and **New password for each shown** gives
+each a fresh random one; all three show the new logins once, with *Print login cards*. A password is 8 to 72
+characters; one that appears in lists of leaked passwords (such as `password1`) is refused with a note asking
+for another. **Remove** deletes the login and every recording it
 made; the *Class* drop-down on a row moves a student to another class.
 
 ## 3. Assign a reading
