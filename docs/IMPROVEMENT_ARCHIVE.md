@@ -95409,3 +95409,29 @@ _(prior)_ **Next session (S578):** **PR `claude/improveloop-s573` (S573–S577, 
 ### from Tool coverage (last-touched date per tool)
 
 - **Snapshot S579 (2026-10-30):** loop docs S579 · trope_atlas, flash, locales, CSV, sw.js, smoke-account, ops.md, torah-and-trope.md, loop docs S578 · dashboard, generator, dashboard.md, scripts/loop S577 · resources, contact, privacy, terms, sitemap S575 · torah, dictionary S574 · scripts, accounts-and-cloud.md S573 · pwa.js, name_tags, generator.md S572 · letter_learner S569 · trope S566 · FM, font-maker.md S565 · projects S561 · name-tags.md S559 · shared-components.md S558 · i18n.md, index S552 · parsha_emojis S550 · skill, ledger scripts S544
+
+
+<!-- archived by compact-ledger at the S581 boundary, 2026-10-30 -->
+## Compaction (S581, 2026-10-30) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-30 | this commit | trope_atlas.html, sw.js | **S580 C: `td.none` colour `--border` → `--muted` (the "no figure" dash read 1.73:1 light, 1.35:1 dark → ~6:1) and the rail's sub-links `padding-block` 2 → 3px (23 → 25px, the 24px floor)** | `d579/c.mjs` census EN light 1280 / HE dark 800: low-contrast 1 → 0, sub-24px links 8+ → 0, 0 page errors; `c6.mjs` 4 cells (EN/HE × light/dark) colours measured, link 25px; rail still scrolls inside its box (749/549/700px)
+
+- [x] 2026-10-30 | (S575 close-out) | branch/deploy note | **S575 = G on the chrome bundle (index, resources, contact, privacy + terms, 404, account; first G there since S437, 78 commits): the key census and export = import = gather (clean), the `.ivrit` by real clicks (Merge 42/43 + 1 by design, Replace 43/43, paste 42/43, the font), 64 PDFs (dark ink = light), a marker-per-sheet probe. FOUND 6, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-30 | `0effa2bb` | hebrew_blend_generator.html | (S575, queue) **Six live regions stay in the accessibility tree while empty**: both Generate notes, the preset-name note, the Flash Cards notice, the page count and the preview notice (pattern `live-region-display-none-while-empty`). | `g575/fix4.mjs` × 4 cells by real input (HEAD fails 4: all six notRendered); layout and screen …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-30 | `75e5cf71` | hebrew_blend_generator.html | (S575, queue) **The Bingo caller sheet's title reads in dark mode** (blend, number, Real Words: 1.03 → 11.98:1; paper navy unchanged; pattern `contrast-below-AA-on-a-tinted-or-coloured-plate`). | `g575/fix3.mjs` 3 kinds × EN/HE × light/dark, 12/12 (HEAD fails the 6 dark)
+
+- [x] 2026-10-30 | `f1a7ccee` | privacy.html, terms.html | (S575) **On paper a section heading stays with its text** (stranded in 6 of 8 cells; pattern `print-block-split-at-a-sheet-foot`). | `g575/cuts.mjs` 8 cells: 0 stranded, sheets unchanged; screen identical in 16; dark ink = light
+
+- [x] 2026-10-30 | `044e1fa6` | resources.html, contact.html, sw.js | (S575) **On paper a resource card and a contact tile stay whole** (6–8 of 42 cut a cell, the Fonts view 2, the Support tile on A4); the dead filter bar off pays back the sheet (pattern `print-block-split-at-a-sheet-foot`). | `g575/cuts.mjs` 12 cells: 0 cut, 6 / 2 / 2 sheets as before (HEAD cuts in 7); screen identical in 16
+
+### from Per-session log (one line per session)
+
+- 2026-10-27 | **S560** | iters: 5 | tools: flash ×2, torah, FM, sw | patterns fixed: focus-hidden-under-a-sticky-bar ×2 | pass run: C (flash, 6th) | SW: v1101→v1102
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S580 (2026-10-30):** trope_atlas, sw.js, loop docs S580 · trope_atlas, flash, locales, CSV, sw.js, smoke-account, ops.md, torah-and-trope.md, loop docs S578 · dashboard, generator, dashboard.md, scripts/loop S577 · resources, contact, privacy, terms, sitemap S575 · torah, dictionary S574 · scripts, accounts-and-cloud.md S573 · pwa.js, name_tags, generator.md S572 · letter_learner S569 · trope S566 · FM, font-maker.md S565 · projects S561 · name-tags.md S559 · shared-components.md S558 · i18n.md, index S552 · parsha_emojis S550 · skill, ledger scripts …[full text: IMPROVEMENT_ARCHIVE.md]

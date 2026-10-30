@@ -14,6 +14,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P2 (**NEW S559 H — verify first**) | Hebrew_Font_Maker.html | **5 of 132 untouched starting fonts fail the export's shaping check**: "Right-meteg check failed … expected -49/166, got -49/167" (BenOr Rashi; Miriam CLM 178/169, Shuneet Square 125/150, Shuneet Classic 97/122) and "Hataf Patach + ZWJ + meteg did not compose" (Rommvilna), so a first export says "vowels/trop may be misplaced". …[full text: IMPROVEMENT_ARCHIVE.md]
 
+- [ ] P3 (**NEW S580 C — design call**) | trope_atlas.html | **The melody table is 594 tab stops (one sing button per figure)**: a keyboard user crosses the whole table to reach the phrase section; a roving tabindex (one stop per row, arrows between) or a skip past the table would fix it. | found S580
+
 - [ ] P3 (**NEW S577 N**) | trope_atlas.html | **On a phone the melody table's sign column takes 170px of a 294–386px box**, so beside it a figure shows its clef and key only (546px columns): a narrower sign column under 560px. | found S577
 
 - [ ] P3 (**NEW S574 M — verify paper first**) | hebrew_blend_generator.html | **The crossword's grid is never cropped to its words**: a 10-word puzzle in a 12×12 black square (~70% black). | found S574
@@ -444,6 +446,10 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-30 | this commit | trope_atlas.html, sw.js | **S580 C: `td.none` colour `--border` → `--muted` (the "no figure" dash read 1.73:1 light, 1.35:1 dark → ~6:1) and the rail's sub-links `padding-block` 2 → 3px (23 → 25px, the 24px floor)** | `d579/c.mjs` census EN light 1280 / HE dark 800: low-contrast 1 → 0, sub-24px links 8+ → 0, 0 page errors; `c6.mjs` 4 cells (EN/HE × light/dark) …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-30 | (S580 close-out) | branch/deploy note | **S580 = C on the Trope Atlas (its first C): FOUND 3, FIXED 2 in one commit (the "—" cells' contrast, the contents rail's 23px links), 1 P3 queued. Same PR #383, sw v1147; deploy on merge. Gates: none asked.**
+
 - [x] 2026-10-30 | (S579 close-out) | branch/deploy note | **S579 = D on the Trope Atlas (its first D): one iteration, nothing shipped — the only measured win, `content-visibility:auto`, drops the sing buttons from the accessibility tree. Branch `claude/improveloop-s579`; ledger/findings only, no `sw.js` bump. Gates: none asked.**
 
 - [x] 2026-10-30 | (S578 close-out) | branch/deploy note | **S578 = P on the Trope Atlas (its first P; no account wiring by design): arms 1–8 behind controls, the 7 smokes' J by `--sdk`. FOUND 3, FIXED 2 (+2 queue), 1 P4 logged, 1 rescoped. PR #377, sw v1139; deploy on merge. Gates: none asked.**
@@ -476,19 +482,11 @@ _(none)_
 
 - [x] 2026-10-30 | `e6808987` | classroom_dashboard.html | (S576) **Bulk preset edit builds a screenful of cards, then chunks** (pattern `offscreen-sheets-laid-out-on-every-rebuild`; 40 presets 539 → 153 ms @4×). | `d576/fix1.mjs`; smoke-sync D39 …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-10-30 | (S575 close-out) | branch/deploy note | **S575 = G on the chrome bundle (index, resources, contact, privacy + terms, 404, account; first G there since S437, 78 commits): the key census and export = import = gather (clean), the `.ivrit` by real clicks (Merge 42/43 + 1 by design, Replace 43/43, paste 42/43, the font), 64 PDFs (dark ink = light), a marker-per-sheet probe. FOUND 6, …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-10-30 | `0effa2bb` | hebrew_blend_generator.html | (S575, queue) **Six live regions stay in the accessibility tree while empty**: both Generate notes, the preset-name note, the Flash Cards notice, the page count and the preview notice (pattern `live-region-display-none-while-empty`). | `g575/fix4.mjs` × 4 cells by real input (HEAD fails 4: all six notRendered); layout and screen …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-10-30 | `75e5cf71` | hebrew_blend_generator.html | (S575, queue) **The Bingo caller sheet's title reads in dark mode** (blend, number, Real Words: 1.03 → 11.98:1; paper navy unchanged; pattern `contrast-below-AA-on-a-tinted-or-coloured-plate`). | `g575/fix3.mjs` 3 kinds × EN/HE × light/dark, 12/12 (HEAD fails the 6 dark)
-
-- [x] 2026-10-30 | `f1a7ccee` | privacy.html, terms.html | (S575) **On paper a section heading stays with its text** (stranded in 6 of 8 cells; pattern `print-block-split-at-a-sheet-foot`). | `g575/cuts.mjs` 8 cells: 0 stranded, sheets unchanged; screen identical in 16; dark ink = light
-
-- [x] 2026-10-30 | `044e1fa6` | resources.html, contact.html, sw.js | (S575) **On paper a resource card and a contact tile stay whole** (6–8 of 42 cut a cell, the Fonts view 2, the Support tile on A4); the dead filter bar off pays back the sheet (pattern `print-block-split-at-a-sheet-foot`). | `g575/cuts.mjs` 12 cells: 0 cut, 6 / 2 / 2 sheets as before (HEAD cuts in 7); screen identical in 16
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-30 | **S580** | iters: 1 | tools: trope_atlas, sw | patterns fixed: — | pass run: C (atlas, first) | SW: v1146→v1147
 
 - 2026-10-30 | **S579** | iters: 1 | tools: trope_atlas (measured only), loop docs | patterns fixed: — | pass run: D (atlas, first) | SW: v1146→v1146
 
@@ -528,11 +526,9 @@ _(none)_
 
 - 2026-10-27 | **S561** | iters: 5 | tools: FM ×2, ivrit-projects, generator, smoke-fontmaker, smoke-tools, accounts-and-cloud.md, font-maker.md, sw | patterns fixed: focus-hidden-under-a-sticky-bar ×1 | pass run: P (fontmaker, first alone) | SW: v1102→v1103
 
-- 2026-10-27 | **S560** | iters: 5 | tools: flash ×2, torah, FM, sw | patterns fixed: focus-hidden-under-a-sticky-bar ×2 | pass run: C (flash, 6th) | SW: v1101→v1102
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S579 (2026-10-30):** loop docs S579 · trope_atlas, flash, locales, CSV, sw.js, smoke-account, ops.md, torah-and-trope.md, loop docs S578 · dashboard, generator, dashboard.md, scripts/loop S577 · resources, contact, privacy, terms, sitemap S575 · torah, dictionary S574 · scripts, accounts-and-cloud.md S573 · pwa.js, name_tags, generator.md S572 · letter_learner S569 · trope S566 · FM, font-maker.md S565 · projects S561 · name-tags.md S559 · shared-components.md S558 · i18n.md, index S552 · parsha_emojis S550 · skill, ledger scripts …[full text: IMPROVEMENT_ARCHIVE.md]
+- **Snapshot S580 (2026-10-30):** trope_atlas, sw.js, loop docs S580 · trope_atlas, flash, locales, CSV, sw.js, smoke-account, ops.md, torah-and-trope.md, loop docs S578 · dashboard, generator, dashboard.md, scripts/loop S577 · resources, contact, privacy, terms, sitemap S575 · torah, dictionary S574 · scripts, accounts-and-cloud.md S573 · pwa.js, name_tags, generator.md S572 · letter_learner S569 · trope S566 · FM, font-maker.md S565 · projects S561 · name-tags.md S559 · shared-components.md S558 · i18n.md, index S552 · parsha_emojis S550 · …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -890,7 +886,7 @@ _(none)_
 
 - K i18n / localization audit: 2026-10-21 (**S533 — 36th K, `db80feb4..843984b3` (111 commits; parsha_emojis' first): CSV +209 (all resolve), 12 reworded, 0 removed; static 5,502 refs + 2,974 fallback sites (the html arm, lapsed since S475); blind 0/4,328 lines; 102 states by the real switcher (twins = base + 5 known); retry 4/4; 10 surfaces by real input + a switch mid-state. FOUND 4, FIXED 4.**)
 
-- C accessibility (one tool): 2026-10-29 (**S571 — the dictionary's 3rd C (S285 → S427 → S571, 84 commits): 88-load census, Tab walks of 3 modes, 48 dialogs, 20 scenarios, motion, spacing, reflow, zoom, forced colours, hover. FOUND 8, FIXED 3 (+ flash, 2 queue P4s). C-next: torah (S441), trope (S455).**)
+- C accessibility (one tool): 2026-10-30 (**S580 — `trope_atlas.html` (its first C): EN light 1280 / HE dark 800 — headings, landmarks, names of 721 tab stops, ids, svg roles, contrast of every text node, 24px floor, a 100-stop Tab walk for focus under the sticky bar (smooth-scroll latency waited out). FOUND 3: 2 FIXED, 1 queued. C-next: torah (S441), trope (S455).**)
 
 - A recurring-pattern sweep: 2026-10-21 (**S530 — 41st A, `d77484c5..6f9a5992` (109 commits; parsha_emojis' first): 53 static + 16 runtime arms × 16 pages vs pre-delta (plants fired), 18 blocks, dialogs, print, 1px sweep. FOUND 4, FIXED 4.**)
 
@@ -914,5 +910,5 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-22 (**S542 — 40th F, loading states (first since S189): 14 surfaces held, then aborted. FOUND 7, FIXED 4. F-next: long-build progress.**)
 
-**Next session (S580):** **Branch `claude/improveloop-s579` (S579, ledger-only): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1146**, FM **5.59**, corpus ?v=7. ⚑ drift: main=aab737c sw=v1146 fm=5.59 migration=0009_assignment_enrolment.sql live=yes functions=bcbee20 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ **Reading assignments (migrations 0008–0009, `manage-students`, the audio Worker, the Trainer's student panel, `reading_assignments.html`) landed outside the loop between S578 and S579: unaudited, prime territory for P / B / H.** ⚑ Suite passes A (S530), E (S531), L (S532), K (S533) are the stalest by date; the surface passes have run since S570. ⚑ The atlas still has no C, G, H or M (S580 takes one). ⚑ Then: D generator (S452), H dictionary (S440), C torah (S441). ⚑ 54 seeds.
+**Next session (S581):** **Branch `claude/improveloop-s579` (S579–S580, PR #383): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1147**, FM **5.59**, corpus ?v=7. ⚑ drift: main=aab737c sw=v1147 fm=5.59 migration=0009_assignment_enrolment.sql live=yes functions=bcbee20 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ **Reading assignments (migrations 0008–0009, `manage-students`, the audio Worker, the Trainer's student panel, `reading_assignments.html`) landed outside the loop between S578 and S579: unaudited, prime territory for P / B / H.** ⚑ Suite passes A (S530), E (S531), L (S532), K (S533) are the stalest by date; the surface passes have run since S570. ⚑ The atlas still has no G, H or M (S581 takes one). ⚑ Then: D generator (S452), H dictionary (S440), C torah (S441). ⚑ 54 seeds.
 ⚑ Sync P2 (S573): a write after a hydration's plan is not sent. ⚑ The account page signed in is unprinted (needs `--sdk`): the next G or P on the chrome. ⚑ Gate 4 to propose with phone shots: the generator's blend sheets past a phone's left edge; gate 2: the atlas's phone default (Awaiting). ⚑ smoke-sync D31 flake (P4). ⚑ A page that loads gtag.js now meets smoke-account's J. ⚑ Ports at the next A: the `m554/`–`p578/` harnesses; traps 352, 356–453. ⚑ Queues: generator 26, FM 20, dictionary 11, torah 11, name_tags 8, dashboard 7, flash 6, PE 5, trope 3, atlas 2, index 2, LL 2, privacy 1, contact 1.
