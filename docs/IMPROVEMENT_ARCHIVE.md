@@ -95219,3 +95219,31 @@ _(prior)_ **Next session (S573):** **PR `claude/improveloop-s570` (S570–S572, 
 
 _(prior)_ **Next session (S574):** **PR `claude/improveloop-s573` (S573, #377): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1134**, FM **5.59**, corpus ?v=7. ⚑ drift: main=a7fa5f1 sw=v1134 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Landed outside the loop since S572: the Torah Trainer's per-mark trope colouring (`a7fa5f1`: 3 new settings that travel in links, favorites and the synced settings row), its larger YouTube link (`c75243a`) and its deep-link sync fix (`30c2a2f`, D40) — prime territory for the next torah pass. ⚑ Stalest: M's generator (S436), G's chrome (S437), D's dashboard (S438), H's dictionary (S440), C's torah (S441); A/E/L/K (S530–S533) 43 sessions old (A: 27 DRAFT rows, the ▾ census). ⚑ The Trope Atlas `trope_atlas.html` (unlisted): its first N and P are due by S578. ⚑ Seeds: 54.
 ⚑ Sync P2 (S573, root-caused in findings): a page write made after a hydration's plan is not sent and the tab's next sync downloads over it — a shared-module fix with smoke-sync's 228 checks as its gate. ⚑ Gate 4 to propose with phone screenshots: the generator's blend sheets past a phone's left edge (the English UI cannot scroll to them). ⚑ smoke-sync D31 flaked on two first full runs (P4). ⚑ pwa.js hides the install hint under any open `#tourCard`. ⚑ Forced colours: the Torah Trainer has no block (P3, census first). ⚑ Dictionary: the word card's nested controls (P3). ⚑ Ports at the next A: `m554/`–`n562/`, `g563/`, `h564/`, `d565/`, `h566/`, `p567/`, `m568/`, `g569/`, `d570/`, `c571/`, `n572/`, `p573/`; traps 352, 356–438. ⚑ Queues (candidates naming one page): generator 21, FM 20, dictionary 12, torah 12, flash 8, name_tags 8, dashboard 6, PE 5, trope 3.
+
+
+<!-- archived by compact-ledger at the S576 boundary, 2026-10-30 -->
+## Compaction (S576, 2026-10-30) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-30 | (S575 close-out) | branch/deploy note | **S575 = G on the chrome bundle (index, resources, contact, privacy + terms, 404, account; first G there since S437, 78 commits): the key census and export = import = gather (clean), the `.ivrit` by real clicks (Merge 42/43 + 1 by design, Replace 43/43, paste 42/43, the font), 64 PDFs (dark ink = light), a marker-per-sheet probe. FOUND 6, FIXED 3 in 2 commits (+2 generator from the queue). Continues draft PR #377 (`claude/improveloop-s573`, base `a7fa5f1`, unmerged). DRIFT: none. sw v1135→v1136. FM: no bump. Gates: none asked. Deferred: none.** | `closeout.mjs` clean; the probe `1f6c26ad` 20/20 (the pre-fix tree 12 fail)
+
+- [x] 2026-10-30 | `0effa2bb` | hebrew_blend_generator.html | (S575, queue) **Six live regions stay in the accessibility tree while empty**: both Generate notes, the preset-name note, the Flash Cards notice, the page count and the preview notice (pattern `live-region-display-none-while-empty`). | `g575/fix4.mjs` × 4 cells by real input (HEAD fails 4: all six notRendered); layout and screen identical; S571–S574 probes pass
+
+- [x] 2026-10-29 | (S570 close-out) | branch/deploy note | **S570 = D on the Torah Trainer (5th: S184/S185 → S307 → S424 → S570; 143 commits since): cold 8 cells × 1× / 4× vs the S424-era page on real Vayera, 6 configurations, 21 interactions, Slow 4G, Esther, idle, heap. FOUND 7, FIXED 2 (+2 flash print P3s); 2 probes. Branch …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-29 | `5a04c5a8` | flash_cards.html, sw.js | (S570) **The Hebrew progress report and certificate print upright and unspaced** (`html[lang="he"]` resets for `.fcr-note`, `.fcc-lead`, `.fcc-suite`, `.fcc-seal-w` in the print block; patterns `hebrew-faux-italic` + `latin-tracking-on-hebrew-labels`). | `flash/italic.mjs`: print-media census × 4 cells, Hebrew italic 3 → 0, tracked 1 → 0; …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-29 | `1b368a15` | flash_cards.html, sw.js | (S570) **A Learning Path drill's printed results leave out the level strip's buttons** (`.ladder-strip-actions` joins the print block's hidden screen controls). | `flash/strip.mjs` by keys × 4 cells: under print 2 → 0, in the PDF text 2 → 0, the line prints, 1 page
+
+- [x] 2026-10-29 | `79527496` | torah_trainer.html, sw.js, torah-and-trope.md | (S570) **The Trope staff re-measures its words when a font lands and re-wraps only if one moved** (`staffRemeasure`; the memo is keyed by the font's name). | probe `S570-torah-staff-font-remeasure.mjs` (fails on the parent); renders 3 → 2, markup identical; …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-29 | `61cd88a2` | torah_trainer.html, sw.js, torah-and-trope.md | (S570) **The first verse no longer waits for the Total Torah manifest on PocketTorah** (awaited only on a Total Torah visit; `ttManifestLanded` re-syncs the picker). | probe `S570-torah-manifest-off-the-first-render.mjs` (fails on the parent); Slow 4G 3,927 → 2,968 ms @1×, 4,632 → …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Per-session log (one line per session)
+
+- 2026-10-26 | **S555** | iters: 4 | tools: flash ×2, name_tags, sw | patterns fixed: install-banner ×1, horizontal-overflow ×1, dark-base-rule ×1 | pass run: N (flash, 3rd) | SW: v1096→v1097
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- G print & export fidelity (one tool): 2026-10-30 (**S575 — the chrome bundle (first G there since S437; 78 commits): the key census (export = import = gather), the `.ivrit` by real clicks (Merge 42/43 + 1 by design, Replace 43/43, paste 42/43, the font), 7 pages × EN/HE × light/dark × Letter/A4 + the Fonts view = 64 PDFs (dark ink = light), a marker-per-sheet probe. FOUND 6, FIXED 3 in 2 commits (+2 generator from the queue). G-next: torah (S451), fontmaker (S465).**)
