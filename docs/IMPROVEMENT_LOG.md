@@ -14,6 +14,12 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P2 (**NEW S559 H — verify first**) | Hebrew_Font_Maker.html | **5 of 132 untouched starting fonts fail the export's shaping check**: "Right-meteg check failed … expected -49/166, got -49/167" (BenOr Rashi; Miriam CLM 178/169, Shuneet Square 125/150, Shuneet Classic 97/122) and "Hataf Patach + ZWJ + meteg did not compose" (Rommvilna), so a first export says "vowels/trop may be misplaced". …[full text: IMPROVEMENT_ARCHIVE.md]
 
+- [ ] P3 (**NEW S577 N — pattern `install-banner-over-a-sheet's-bottom-controls`; the atlas at the cap**) | trope_atlas.html | **The iOS install hint covers the contents drawer's last links** (3 on an SE, 2 on a 13): the siblings' `body:has(#atIndex.open)` rule. | found S577
+
+- [ ] P3 (**NEW S577 N**) | trope_atlas.html | **On a phone the melody table's sign column takes 170px of a 294–386px box**, so beside it a figure shows its clef and key only (546px columns): a narrower sign column under 560px. | found S577
+
+- [ ] P3 (**NEW S577 N arm 7 — D's**) | trope_atlas.html | **At 4× CPU (iPhone 13) the load is one 1.9 s task (598 staffs) and Stacked, Grid and a key change each re-draw in one 2.8 / 2.6 / 1.1 s task**: the atlas's first D starts here. | found S577
+
 - [ ] P3 (**NEW S574 M — verify paper first**) | hebrew_blend_generator.html | **The crossword's grid is never cropped to its words**: a 10-word puzzle in a 12×12 black square (~70% black). | found S574
 
 - [ ] P3 (**NEW S571 C — not small**) | hebrew_dictionary.html | **A word card is one `role=button` holding its select box, Copy, Hear and Google controls** (a button's children are presentational): move the details action onto the headword, the card a group. | found S571
@@ -62,8 +68,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S576 D**) | classroom_dashboard.html | **Bulk preset edit's Save over 40 changed presets is one 203 ms task @4×** (unprofiled). | found S576
 
-- [ ] P4 (**NEW S576 — found fixing `3b031f01`**) | classroom_dashboard.html | **Renaming the preset on now re-applies it at the next tick** over a note typed on the board (the schedule key holds the name). | found S576
-
 - [ ] P4 (**NEW S575 G — pattern `print-block-split-at-a-sheet-foot`; whole cards cost a sheet here**) | index.html | **Printed, the hub cuts a tool card across sheets (EN Letter, HE A4) and prints Bookmark and Import / Export, dead on paper**; whole cards alone add a footer-only sheet (EN Letter). | found S575
 
 - [ ] P4 (**NEW S575 G — pattern `print-trailing-padding-adds-a-sheet`**) | privacy.html | **In English on Letter the footer prints alone on a 6th sheet** ; main's padding off does not fit it (and splits Terms' footer). | found S575
@@ -85,8 +89,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S572 N — pattern `horizontal-overflow-at-narrow-widths`**) | hebrew_blend_generator.html | **On an iPhone SE Real Words Bingo's caller list and Word Search's grid scroll sideways** (82 / 73 px). | found S572
 
 - [ ] P4 (**NEW S572 N**) | hebrew_blend_generator.html | **A Real Words card's longest part-of-speech tags still run into its number** ("prepositional phrase" at 104–144px, a full desktop too). | found S572
-
-- [ ] P4 (**NEW S572 N — the generator at the cap**) | hebrew_blend_generator.html | **Held sideways (iPhone 13) the Hebrew Font size reset sits 17–18px outside its panel**: the range keeps its 129px minimum (`min-width:0` fits it). | found S572
 
 - [ ] P4 (**NEW S571 C**) | hebrew_dictionary.html | **The export section dims its count and note to 2.12:1 and its live, unmarked buttons to 2.87:1**: `aria-disabled` them while inactive (UX rule 5) and dim only them. | found S571
 
@@ -386,6 +388,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Awaiting the maintainer (an action or an answer only the maintainer can give; a session that resolves one moves it to Done)
 
+- [ ] P4 (**NEW S577 N — GATE 2: a phone's default layout; deferred unattended; `n577/sheets/atlas-phone-i13.png`**) | trope_atlas.html | **On a phone the melody table opens as the Grid, where a figure shows its clef only; Stacked shows whole figures**: open Stacked under 560px while no layout is stored? | found S577
+
 - [ ] P3 (**NEW — the maintainer's review, by design**) | trope_review.html, data/trope/trope_approvals.json | **All 20 trope traditions approved; 19 (2026-10-28, at the maintainer's request) without the row-by-row check against their scans.** Still worth checking on `trope_review.html`: the 14 printed 3s kept as written and the raised-fifth spellings of six JE columns; a corrected row hides its …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S571 C — GATE 4, not asked (flash's S560 twin waits); `c571/shots/zoom400-*.png`**) | hebrew_dictionary.html | **At 400% zoom (320×256) the sticky phone bar holds 127 of the window's 256 px.** | found S571
@@ -442,6 +446,16 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-30 | (S577 close-out) | branch/deploy note | **S577 = N on the Trope Atlas (first audit; a surface since `8ffab9be`). FOUND 6, FIXED 2 (+2 queue), 3 P3, 1 gate 2 deferred. PR #377, sw v1138, probe `7376d267`; deploy on merge. Gates: none asked.**
+
+- [x] 2026-10-30 | `3458305e` | hebrew_blend_generator.html | (S577, queue S572) **Held sideways, the font-size reset stays in its panel** (`flex-range-keeps-its-min-content-width`). | `n577/genrange.mjs` 4 phones × EN/HE (17 → 0 px); desktop unchanged; recipe
+
+- [x] 2026-10-30 | `575457c4` | classroom_dashboard.html, dashboard.md | (S577, queue S576) **Renaming the preset on now no longer re-applies it at the next tick.** | probe `S577-dashboard-rename-keeps-the-board` (HEAD fails 1 of 6); S576 probe; recipe
+
+- [x] 2026-10-30 | `05e71676` | trope_atlas.html | (S577) **On a touch screen a swipe past the melody table's end moves the page.** | `n577/trap.mjs` raw touches, 4 phones: 0 → 544–1861 px; probe `S577-atlas-phone-stacked-and-swipe`
+
+- [x] 2026-10-30 | `450b75dc` | trope_atlas.html, sw.js | (S577) **Stacked fits a phone instead of a 671px page** (`horizontal-overflow-at-narrow-widths`). | `n577/widths.mjs` 11 widths × EN/HE; census 16 cells; recipe; probe `S577-atlas-phone-stacked-and-swipe`
+
 - [x] 2026-10-30 | (S576 close-out) | branch/deploy note | **S576 = D on the dashboard (first since S438): cold, 35 steps and idle = the S438 tree; Bulk preset edit 167/812/1,504 ms @4× at 10/40/100 presets; `content-visibility` refuted (13/200 in the AX tree). FOUND 5, FIXED 2 (+ flash ×2). PR #377, sw v1137, probes `94a0fc94`; deploy on merge. Gates: none.** …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-10-30 | `7e510fd6` | flash_cards.html | (S576) **"Dictionary still loading" clears when the file lands or the deck changes.** | `d576/note.mjs` 5 cells (HEAD keeps it in 4); probe `S576-flash-dictionary-wait`
@@ -482,23 +496,11 @@ _(none)_
 
 - [x] 2026-10-30 | `2d6fcaee` | flash_cards.html, smoke-sync, sw.js | (S573) **A `?wl=` list that was only in the account opens once its sync ends, and the account keeps it** (it stayed unsent; the tab's next sync reverted it). | smoke-sync D41 7/7 (HEAD fails 4); sync 228/228, migration 47/47, tools 21/21
 
-- [x] 2026-10-29 | `30c2a2ff` | torah_trainer.html, smoke-sync, sw.js | (S572, reported) **A Torah Trainer link keeps its reading over the load's sync** (an account moved elsewhere won the merge). | smoke-sync D40 4/4 (HEAD fails 2)
-
-- [x] 2026-10-29 | (S572 close-out) | branch/deploy note | **S572 = N on the generator (3rd: S262 → S434 → S572): 560 phone loads by real taps (16 cells × 35 views, plants 8/8), every field, the iOS hint + a 9-page tour census, touch, flips, sideways scrollers, 4×, Export PDF replayed. FOUND 9, FIXED 3 (+ Name Tags from the queue); gate 4 asked → "fewer cards when narrow"; 3 probes, 1 new …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-10-29 | `31814fa3` | scripts/loop | (S572) **Three fix probes: the narrow Real Words cards, the install hint over the tours, Name Tags' typed transliteration.** | 24/24, 36/36, 10/10; their parents fail 20, 24 and 5 cells
-
-- [x] 2026-10-29 | `39e7b42b` | hebrew_blend_generator.html, sw.js | (S572) **A Real Words sheet on a narrow screen lays out fewer, wider cards** (≥ 100px on screen; gate 4, the maintainer's choice; new pattern `fixed-columns-crush-a-narrow-sheet`). | probe × 24 cells; Hebrew cut 7–36 → 0; the PDF replayed: 5 columns as HEAD
-
-- [x] 2026-10-29 | `522220fc` | name_tags.html, sw.js | (S572) **A typed transliteration lines up with the automatic ones in the Hebrew UI** (S552's M P4). | probe × 10 cells: HE 30–42px → 0; EN unchanged
-
-- [x] 2026-10-29 | `6bda33bc` | pwa.js, sw.js | (S572) **The install hint steps aside while any tour is open** (pattern `install-banner-over-a-sheet's-bottom-controls`: six tours stalled at step 1–6). | probe × 36 cells; the parent fails 24
-
-- [x] 2026-10-29 | `800b827d` | hebrew_blend_generator.html, sw.js | (S572) **The sidebar's 32 fields read 16px under a finger** (pattern `text-field-under-16px-zooms-on-ios-focus`). | 4 descriptors: 32 → 0 vs HEAD; the 560-load census clean
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-30 | **S577** | iters: 5 | tools: atlas ×2, dashboard, generator, dashboard.md, scripts/loop, sw | patterns fixed: horizontal-overflow-at-narrow-widths ×1, flex-range-keeps-its-min-content-width ×1 | pass run: N (trope_atlas, its first) | SW: v1137→v1138
 
 - 2026-10-30 | **S576** | iters: 5 | tools: dashboard ×2, flash ×2, dashboard.md, scripts/loop, sw | patterns fixed: offscreen-sheets-laid-out-on-every-rebuild ×1 (chunked) | pass run: D (dashboard, first since S438) | SW: v1136→v1137
 
@@ -538,11 +540,9 @@ _(none)_
 
 - 2026-10-26 | **S558** | iters: 5 | tools: trope ×2, torah, letter_learner, name_tags, shared-components.md, sw | patterns fixed: dark-base-rule ×1 (2 carriers), tour-step-in-a-hidden-view ×1 | pass run: M (trope, 3rd) | SW: v1099→v1100
 
-- 2026-10-26 | **S557** | iters: 5 | tools: trope, FM, dictionary ×2, shared-components.md, sw | patterns fixed: tour-step-in-a-hidden-view (NEW) ×1, dark-hover ×2, dark-navy-fill ×1 | pass run: H (trope, 5th) | SW: v1098→v1099
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S576 (2026-10-30):** dashboard, flash, dashboard.md, sw.js, scripts/loop, loop-findings, loop-patterns S576 · resources, contact, privacy, terms, generator, sitemap S575 · torah, dictionary S574 · scripts, accounts-and-cloud.md, ops.md S573 · pwa.js, name_tags, generator.md, torah-and-trope.md S572 · locales, CSV S571 · letter_learner S569 · trope S566 · FM, font-maker.md S565 · projects S561 · name-tags.md S559 · shared-components.md S558 · loop-passes S553 · i18n.md, index S552 · parsha_emojis S550 · skill, ledger scripts S544
+- **Snapshot S577 (2026-10-30):** trope_atlas, dashboard, generator, dashboard.md, sw.js, scripts/loop, loop docs S577 · flash S576 · resources, contact, privacy, terms, sitemap S575 · torah, dictionary S574 · scripts, accounts-and-cloud.md, ops.md S573 · pwa.js, name_tags, generator.md, torah-and-trope.md S572 · locales, CSV S571 · letter_learner S569 · trope S566 · FM, font-maker.md S565 · projects S561 · name-tags.md S559 · shared-components.md S558 · i18n.md, index S552 · parsha_emojis S550 · skill, ledger scripts S544
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -640,7 +640,7 @@ _(none)_
 
 - `stale-tab-flush-writes-its-old-copy` | ACTIVE | owner A | det: recipe | last S493 | streak 0
 
-- `flex-range-keeps-its-min-content-width` | ACTIVE | owner B | det: recipe | last S493 | streak 0
+- `flex-range-keeps-its-min-content-width` | ACTIVE | owner B | det: recipe | last S577 | streak 0
 
 - `slider-value-announced-as-its-position` | ACTIVE | owner F | det: recipe | last S456 | streak 0
 
@@ -672,9 +672,9 @@ _(none)_
 
 - `editor-re-parse-caps-a-merged-list` | ACTIVE | owner P | det: recipe | last S421 | streak 0
 
-- `window-taller-than-a-phone-without-a-scroll` | ACTIVE | owner N | det: recipe | last S572 | streak 2
+- `window-taller-than-a-phone-without-a-scroll` | ACTIVE | owner N | det: recipe | last S577 | streak 3
 
-- `install-banner-over-a-sheet's-bottom-controls` | ACTIVE | owner N | det: scripts/loop/probes/S572-install-hint-tours.mjs | last S572 | streak 0
+- `install-banner-over-a-sheet's-bottom-controls` | ACTIVE | owner N | det: scripts/loop/probes/S572-install-hint-tours.mjs | last S577 | streak 0
 
 - `flash-restores-captured-text-not-its-key` | ACTIVE | owner E | det: recipe | last S417 | streak 0
 
@@ -804,11 +804,11 @@ _(none)_
 
 - `i18n cross-column parity (placeholders, plurals, inline markup)` | ACTIVE | owner K | det: recipe | last S533 | streak 2 | hits 0
 
-- `horizontal-overflow-at-narrow-widths` | ACTIVE | owner N | det: recipe | last S572 | streak 0 | hits 4
+- `horizontal-overflow-at-narrow-widths` | ACTIVE | owner N | det: recipe | last S577 | streak 0 | hits 5
 
 - `fixed-columns-crush-a-narrow-sheet` | ACTIVE | owner N | det: scripts/loop/probes/S572-generator-realwords-narrow-cards.mjs | last S572 | streak 0 | hits 1
 
-- `hover-only-affordance-under-a-synthetic-mouse-event` | ACTIVE | owner N | det: recipe | last S572 | streak 2 | hits 1
+- `hover-only-affordance-under-a-synthetic-mouse-event` | ACTIVE | owner N | det: recipe | last S577 | streak 3 | hits 1
 
 - `contrast-inverted-by-a-hover-or-active-state` | ACTIVE | owner C | det: recipe | last S368 | streak 0
 
@@ -894,7 +894,7 @@ _(none)_
 
 - O deslop — AI-design-tell sweep (one surface): SKIP since S403 — the sandbox refuses to execute the third-party detector ("Code from External"); runs again once the maintainer commits a `.claude/settings.json` permission rule for it (`docs/reference/deslop-detector.md`). Last run 2026-09-08 (S346, `flash_cards.html`, 6th O; the S399/S403 refusals are in the archive).
 
-- N mobile & touch-device (one surface): 2026-10-29 (**S572 — 32nd N, `hebrew_blend_generator.html` (3rd: S262 → S434 → S572): 16 cells (SE 320, i13 390 + landscape, Pixel 7 412 × EN/HE × light/dark) × 35 views by real taps = 560 loads (plants 8/8), every field, the iOS hint over 7 views + a 9-page tour census, tips and sliders by finger, flips, sideways scrollers, 4× CPU, Export PDF replayed. …[full text: IMPROVEMENT_ARCHIVE.md]
+- N mobile & touch-device (one surface): 2026-10-30 (**S577 — 33rd N, `trope_atlas.html` (its first audit): 16 phone cells × 11 views by real taps, raw-touch swipes, the iOS hint, 4× CPU, 11 widths. FOUND 6, FIXED 2 (+2 queue). N-next: torah (S448), fontmaker (S476).**)
 
 - M aesthetics & visual design (one surface): 2026-10-30 (**S574 — 33rd M, generator (2nd: S436 → S574): 34 views × 8 cells by real clicks (272 loads, real fonts), census, hover 3,478 controls × 2 themes, dark fills, live regions by CDP, header 1px × EN/HE × mouse/touch, RTL 887 blocks; every plant fired. FOUND 10, FIXED 2 (the tablet header at gate 3, Hebrew faux italic) + 8 logged at the cap. …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -924,5 +924,5 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-22 (**S542 — 40th F, loading states (first since S189): 14 surfaces held, then aborted. FOUND 7, FIXED 4. F-next: long-build progress.**)
 
-**Next session (S577):** **PR `claude/improveloop-s573` (S573–S576, #377): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1137**, FM **5.59**, corpus ?v=7. ⚑ drift: main=a7fa5f1 sw=v1137 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ **The Trope Atlas (unlisted, `9e51b6e`): its first N and P are due by S578 — S577 takes one, S578 the other.** ⚑ Then stalest: H dictionary (S440), C torah (S441), N torah (S448); A/E/L/K 46 sessions old. ⚑ Unaudited since it landed: the Torah Trainer's per-mark trope colouring (`a7fa5f1`). ⚑ 54 seeds.
-⚑ Sync P2 (S573): a write after a hydration's plan is not sent. ⚑ The account page signed in is unprinted (needs `--sdk`): the next G or P on the chrome. ⚑ Gate 4 to propose with phone shots: the generator's blend sheets past a phone's left edge. ⚑ smoke-sync D31 flake (P4). ⚑ Never `content-visibility` on interactive cards (AX tree, findings S576). ⚑ Ports at the next A: the `m554/`–`d576/` harnesses; traps 352, 356–448. ⚑ Queues: generator 27, FM 20, dictionary 11, torah 11, dashboard 8, name_tags 8, flash 7, PE 5, trope 3, LL 2, index 1, privacy 1, contact 1.
+**Next session (S578):** **PR `claude/improveloop-s573` (S573–S577, #377): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1138**, FM **5.59**, corpus ?v=7. ⚑ drift: main=a7fa5f1 sw=v1138 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ **The Trope Atlas's first P is due now (rotation override 4; its N ran S577); never audited, it heads C, D, G, H, M too.** It has no account wiring by design: if clean by mid-session, a second surface (generator S463). ⚑ Then: H dictionary (S440), C torah (S441). ⚑ Unaudited since it landed: the Torah Trainer's per-mark trope colouring (`a7fa5f1`). ⚑ 54 seeds.
+⚑ Sync P2 (S573): a write after a hydration's plan is not sent. ⚑ The account page signed in is unprinted (needs `--sdk`): the next G or P on the chrome. ⚑ Gate 4 to propose with phone shots: the generator's blend sheets past a phone's left edge; gate 2: the atlas's phone default (Awaiting). ⚑ smoke-sync D31 flake (P4). ⚑ Never `content-visibility` on interactive cards (AX tree, findings S576). ⚑ Touch swipes: raw `Input.dispatchTouchEvent` (trap 449). ⚑ Ports at the next A: the `m554/`–`n577/` harnesses; traps 352, 356–451. ⚑ Queues: generator 26, FM 20, dictionary 11, torah 11, name_tags 8, flash 7, dashboard 7, PE 5, atlas 3, trope 3, LL 2, index 1, privacy 1, contact 1.

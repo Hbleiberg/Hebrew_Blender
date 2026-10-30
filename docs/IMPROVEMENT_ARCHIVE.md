@@ -95277,3 +95277,40 @@ _(prior)_ **Next session (S574):** **PR `claude/improveloop-s573` (S573, #377): 
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 - D performance (one tool): 2026-10-30 (**S576 — `classroom_dashboard.html` (6th: … S325 → S438 → S576; 107 commits since): cold ×3 at 1×/4× vs the S438 tree, the init task profiled and traced, 35 steps by real input × 1×/4×, Bulk preset edit at 10/40/100 presets (trace), the week editor, idle 10 s, 20-cycle hygiene; a 300 ms control fired. FOUND 5, FIXED 2 (Bulk edit chunked; Schedule Sync, the queue P4 widened), 3 P4; `content-visibility` refuted for interactive cards. D-next: generator (S452), chrome (S466).**)
+
+
+<!-- archived by compact-ledger at the S578 boundary, 2026-10-30 -->
+## Compaction (S578, 2026-10-30) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-30 | (S577 close-out) | branch/deploy note | **S577 = N on the Trope Atlas (its first audit; the page joined the surfaces, `8ffab9be`): 16 phone cells × 11 views by real taps, raw-touch swipes, the iOS hint, 4× CPU, 11 widths. FOUND 6, FIXED 2 (+ dashboard, generator from the queue), 3 P3, 1 gate 2 deferred. PR #377 (S573–S577), sw v1137→v1138, probe `7376d267`; deploy on merge. Gates: none asked.**
+
+- [x] 2026-10-29 | `30c2a2ff` | torah_trainer.html, smoke-sync, sw.js | (S572, reported) **A Torah Trainer link keeps its reading over the load's sync** (an account moved elsewhere won the merge). | smoke-sync D40 4/4 (HEAD fails 2)
+
+- [x] 2026-10-29 | (S572 close-out) | branch/deploy note | **S572 = N on the generator (3rd: S262 → S434 → S572): 560 phone loads by real taps (16 cells × 35 views, plants 8/8), every field, the iOS hint + a 9-page tour census, touch, flips, sideways scrollers, 4×, Export PDF replayed. FOUND 9, FIXED 3 (+ Name Tags from the queue); gate 4 asked → "fewer cards when narrow"; 3 probes, 1 new …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-29 | `31814fa3` | scripts/loop | (S572) **Three fix probes: the narrow Real Words cards, the install hint over the tours, Name Tags' typed transliteration.** | 24/24, 36/36, 10/10; their parents fail 20, 24 and 5 cells
+
+- [x] 2026-10-29 | `39e7b42b` | hebrew_blend_generator.html, sw.js | (S572) **A Real Words sheet on a narrow screen lays out fewer, wider cards** (≥ 100px on screen; gate 4, the maintainer's choice; new pattern `fixed-columns-crush-a-narrow-sheet`). | probe × 24 cells; Hebrew cut 7–36 → 0; the PDF replayed: 5 columns as HEAD
+
+- [x] 2026-10-29 | `522220fc` | name_tags.html, sw.js | (S572) **A typed transliteration lines up with the automatic ones in the Hebrew UI** (S552's M P4). | probe × 10 cells: HE 30–42px → 0; EN unchanged
+
+- [x] 2026-10-29 | `6bda33bc` | pwa.js, sw.js | (S572) **The install hint steps aside while any tour is open** (pattern `install-banner-over-a-sheet's-bottom-controls`: six tours stalled at step 1–6). | probe × 36 cells; the parent fails 24
+
+- [x] 2026-10-29 | `800b827d` | hebrew_blend_generator.html, sw.js | (S572) **The sidebar's 32 fields read 16px under a finger** (pattern `text-field-under-16px-zooms-on-ios-focus`). | 4 descriptors: 32 → 0 vs HEAD; the 560-load census clean
+
+### from Per-session log (one line per session)
+
+- 2026-10-26 | **S557** | iters: 5 | tools: trope, FM, dictionary ×2, shared-components.md, sw | patterns fixed: tour-step-in-a-hidden-view (NEW) ×1, dark-hover ×2, dark-navy-fill ×1 | pass run: H (trope, 5th) | SW: v1098→v1099
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S577 (2026-10-30):** trope_atlas, dashboard, generator, dashboard.md, sw.js, scripts/loop, loop-passes, loop-findings, loop-patterns S577 · flash S576 · resources, contact, privacy, terms, sitemap S575 · torah, dictionary S574 · scripts, accounts-and-cloud.md, ops.md S573 · pwa.js, name_tags, generator.md, torah-and-trope.md S572 · locales, CSV S571 · letter_learner S569 · trope S566 · FM, font-maker.md S565 · projects S561 · name-tags.md S559 · shared-components.md S558 · i18n.md, index S552 · parsha_emojis S550 · skill, ledger scripts S544
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- N mobile & touch-device (one surface): 2026-10-30 (**S577 — 33rd N, `trope_atlas.html` (its first audit of any kind): 16 cells (SE, 13 + landscape, Pixel 7 × EN/HE × light/dark) × 11 views by real taps, twice; raw-touch swipes on the melody table (4 phones, a text control), the iOS hint over the drawer (12 cells), 4× CPU, 11 widths. FOUND 6, FIXED 2 (+ dashboard, generator from the queue). N-next: torah (S448), fontmaker (S476).**)
+
+_(prior)_ **Next session (S577):** **PR `claude/improveloop-s573` (S573–S576, #377): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1137**, FM **5.59**, corpus ?v=7. ⚑ drift: main=a7fa5f1 sw=v1137 fm=5.59 migration=0007_saves_tool_name_tags.sql live=yes functions=a0151a3 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ **The Trope Atlas (unlisted, `9e51b6e`): its first N and P are due by S578 — S577 takes one, S578 the other.** ⚑ Then stalest: H dictionary (S440), C torah (S441), N torah (S448); A/E/L/K 46 sessions old. ⚑ Unaudited since it landed: the Torah Trainer's per-mark trope colouring (`a7fa5f1`). ⚑ 54 seeds.
+⚑ Sync P2 (S573): a write after a hydration's plan is not sent. ⚑ The account page signed in is unprinted (needs `--sdk`): the next G or P on the chrome. ⚑ Gate 4 to propose with phone shots: the generator's blend sheets past a phone's left edge. ⚑ smoke-sync D31 flake (P4). ⚑ Never `content-visibility` on interactive cards (AX tree, findings S576). ⚑ Ports at the next A: the `m554/`–`d576/` harnesses; traps 352, 356–448. ⚑ Queues: generator 27, FM 20, dictionary 11, torah 11, dashboard 8, name_tags 8, flash 7, PE 5, trope 3, LL 2, index 1, privacy 1, contact 1.
