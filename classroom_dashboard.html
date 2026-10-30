@@ -9490,10 +9490,12 @@ else ivritInit();
   function dayName(i) { return I18n.t('dashboard.days.' + DOW_I18N[i]); }
   function weekVisibleDays(week) { return week.weekend ? [0, 1, 2, 3, 4, 5, 6] : [1, 2, 3, 4, 5]; }
 
-  // EVERY scheduleWeek/presetColors mutation funnels through here: live-save, reset the three
-  // render caches (the _lastScheduleKey discipline), and refresh every consuming surface.
+  // EVERY scheduleWeek/presetColors mutation funnels through here: live-save, reset the two
+  // render caches, and refresh every consuming surface. Not _lastScheduleKey: it names the period on
+  // now (date, run, preset), so an edit that changes what is on now changes the key by itself, and a
+  // reset re-applied the same preset over the board's text after an edit to any other cell.
   function weekChanged(opts) {
-    _lastScheduleKey = null; _lastPreviewKey = null; _lastNowNextKey = null;
+    _lastPreviewKey = null; _lastNowNextKey = null;
     saveSettingsToStorage();
     renderCycleBar();   // before the grid: it clamps the shown week to the cycle
     if (!(opts && opts.skipGrid)) renderWeekGrid();
@@ -10809,6 +10811,7 @@ else ivritInit();
     document.removeEventListener('keydown', weekEditorKey, true);
     renderWeekSummary();       // the panel behind catches up (Done and ✕ are the same — live-save)
     renderSchedulePreview();
+    checkSchedule();           // and the board: a newly painted period on now applies here, not at the next 30 s tick
     const o = _swmOpener; _swmOpener = null;
     if (o && o.focus) { try { o.focus(); } catch (e) {} }
   }
@@ -10939,6 +10942,7 @@ else ivritInit();
     _lastScheduleKey = null;
     renderScheduleUI();
     saveSettingsToStorage();
+    checkSchedule();   // switched on during a period, the board takes it now (a no-op when off)
   }
 
   function setScheduleCountdown(enabled) {
@@ -12500,7 +12504,7 @@ async function onUploadEngFontPick(input){
     function applyI18n() {
       if (!window.I18n) return;
       I18n.applyStaticI18n();
-      _lastPreviewKey = null; _lastScheduleKey = null; _lastNowNextKey = null;   // bust caches so the schedule preview/countdown/now-next re-render translated
+      _lastPreviewKey = null; _lastNowNextKey = null;   // bust caches so the schedule preview/countdown/now-next re-render translated (never _lastScheduleKey: that re-applied the period's preset over the board)
       try { initFontSelector(); } catch (e) {}           // font-picker section headers build via t()
       try { initEngFontSelector(); } catch (e) {}
       try { initColorPickers(); } catch (e) {}           // vowel rows are named via the glyphname keys; rebuild reads current colours, so it's read-only
