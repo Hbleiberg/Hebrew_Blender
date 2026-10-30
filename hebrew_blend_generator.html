@@ -383,6 +383,8 @@ body.dark .hi-sun{display:inline-block;}
   body.dark .ws-title { color: #dde4f0; }
   body.dark .ws-subtitle { color: var(--muted); }
   body.dark .ws-header { border-bottom-color: #4a5a7a; }
+  /* The Bingo caller sheet's title (blend, number and Real Words) read var(--navy) on the dark sheet, 1.03:1. */
+  body.dark .caller-title { color: #dde4f0; border-bottom-color: #4a5a7a; }
   body.dark .ws-field-line { border-bottom-color: #dde4f0; }
   body.dark .blend-hebrew { color: #dde4f0; }
   body.dark .blend-cell { border-bottom-color: var(--border); }
@@ -2398,8 +2400,8 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
     body.dark .worksheet { background:#fff; color:#1a2744; }
     body.dark .ws-title, body.dark .blend-hebrew, body.dark .rw-heb,
     body.dark .trace-copy, body.dark .match-heb, body.dark .match-label,
-    body.dark .match-num, body.dark .match-ak-heb, body.dark .timer-display { color:#1a2744; }
-    body.dark .ws-header { border-bottom-color:#1a2744; }
+    body.dark .match-num, body.dark .match-ak-heb, body.dark .timer-display, body.dark .caller-title { color:#1a2744; }
+    body.dark .ws-header, body.dark .caller-title { border-bottom-color:#1a2744; }
     body.dark .ws-field-line { border-bottom-color:#1a2744; }
     body.dark .ws-cell { background:#fff; }
     body.dark .flip-card-front, body.dark .flip-card-back,
