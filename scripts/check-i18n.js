@@ -502,7 +502,7 @@ function main() {
   const pwa = path.join(ROOT, 'pwa.js');
   if (fs.existsSync(pwa)) targets.push(pwa);
   // Shared modules that build UI themselves (same t(key, fallback) shape as pwa.js).
-  ['ivrit-account.js', 'ivrit-saves.js', 'ivrit-projects.js', 'parsha-page.js'].forEach(f => {
+  ['ivrit-account.js', 'ivrit-saves.js', 'ivrit-projects.js', 'ivrit-assignments.js', 'parsha-page.js'].forEach(f => {
     const m = path.join(ROOT, 'js', f);
     if (fs.existsSync(m)) targets.push(m);
   });

@@ -27,3 +27,6 @@ source-data/totaltorah-cache/
 # the bulk run's output for the whole series (build-totaltorah-bulk.mjs run --out source-data/totaltorah-out): ~1 GB of
 # verse MP3s plus their manifest and timings — the MP3s live in Hbleiberg/TotalTorahAudio, never committed here
 source-data/totaltorah-out/
+
+# wrangler dev / test state for the audio Worker (workers/audio/README.md) — never committed
+workers/audio/.wrangler/

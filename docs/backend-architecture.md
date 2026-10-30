@@ -12,10 +12,13 @@ server of ours, no build step, no framework. Every tool does its work in the bro
 the browser (localStorage, IndexedDB) and in files the teacher downloads (`.ivrit`, `.hebrewfont`). The
 optional account layer adds one outside service, **Supabase**, which is a hosted Postgres database with
 three doors in front of it: **Auth** (who is signed in), the **Data API** (rows in tables, where the
-database itself decides which rows a caller may see) and **Storage** (files). One small program of ours runs
-on Supabase's servers, the **delete-account** Edge Function, because deleting an account needs a key that
-must never reach a browser. A **GitHub Actions** job asks the database one tiny question a day so the free
-project is never paused for inactivity. That is the whole backend.
+database itself decides which rows a caller may see) and **Storage** (files). Two small programs of ours run
+on Supabase's servers, the **delete-account** and **manage-students** Edge Functions, because deleting an
+account and creating a student login need a key that must never reach a browser. The Torah Trainer's reading
+assignments add one more outside service: a private **Cloudflare R2** bucket holding the students' recordings,
+reached only through a small **Cloudflare Worker** of ours (`workers/audio/`) that checks the sign-in and asks
+the database, as that person, whether they may touch that recording. A **GitHub Actions** job asks the
+database one tiny question a day so the free project is never paused for inactivity. That is the whole backend.
 
 ## The picture
 
@@ -26,18 +29,28 @@ flowchart LR
     acct["js/ivrit-account.js<br/>sign-in, the header chip"]
     saves["js/ivrit-saves.js<br/>the account's saves: hydrate at load, write through"]
     proj["js/ivrit-projects.js<br/>Font Maker projects"]
+    asg["js/ivrit-assignments.js<br/>reading assignments"]
     page --> acct
     page --> saves
     page --> proj
+    page --> asg
   end
+  subgraph cloudflare["Cloudflare"]
+    worker["Worker · recordings.ivritsuite.com<br/>checks the token, asks the Data API as the caller"]
+    r2[("R2 bucket<br/>torahtrainer-recordings<br/>private, no public address")]
+    worker --> r2
+  end
+  asg --> worker
+  worker --> api
+  worker --> auth
   pages["GitHub Pages · ivritsuite.com<br/>serves the files, nothing else"] -. "HTML, JS, data/" .-> page
   cdn["jsDelivr CDN<br/>the pinned Supabase SDK, integrity-checked"] -. "first sign-in only" .-> acct
   subgraph supabase["Supabase project hhkmqwpjsyxdeuhvcyis · AWS us-west-2"]
     auth["Auth<br/>email codes, Google, session tokens"]
     api["Data API · PostgREST<br/>rows in tables"]
     storage["Storage<br/>three private buckets"]
-    fn["Edge Function<br/>delete-account"]
-    db[("Postgres<br/>profiles · saves · font_projects<br/>Row Level Security")]
+    fn["Edge Functions<br/>delete-account · manage-students"]
+    db[("Postgres<br/>profiles · saves · font_projects<br/>classes · students · assignments<br/>submissions · feedback<br/>Row Level Security")]
     auth --> db
     api --> db
     storage --> db
@@ -50,6 +63,8 @@ flowchart LR
   saves --> api
   proj --> api
   proj --> storage
+  asg --> api
+  asg --> fn
   mail["Email provider · SMTP<br/>delivers the sign-in codes"]
   google["Google<br/>Continue with Google"]
   auth --> mail
@@ -71,11 +86,16 @@ anonymous visitor uses only the dotted ones — the SDK is not even downloaded u
 | `js/ivrit-saves.js` | Supabase Data API | at every signed-in page load one listing of `saves` without the data, then only the rows whose hash differs; a page's own edits two seconds after the last one; an item's removal | the publishable key + the session token |
 | `js/ivrit-projects.js` | Data API + Storage | Font Maker projects: `font_projects` rows and files in the three buckets | the same |
 | `js/ivrit-account.js` | the Edge Function | *Delete my account* | the session token (the function checks it again itself) |
+| `js/ivrit-assignments.js` | the Data API | a teacher's students, classes, assignments and the recordings' rows; a student's code word (`claim_assignment`), their own rows and feedback | the publishable key + the session token |
+| `js/ivrit-assignments.js` | the `manage-students` Edge Function | creating, resetting and removing student logins | the session token (the function checks it again and refuses a student) |
+| `js/ivrit-assignments.js` | the Worker | uploading a recording, playing one back, a teacher deleting one | the session token; the Worker verifies it against the project's public signing key |
+| The Worker | the Data API | "may this person touch this recording?" — as the caller, so Row Level Security answers; then the row marked uploaded | the publishable key + the caller's token |
+| The Worker, once a night | the Data API | the tidy-up: stale uploads, orphaned files, recordings past retention, the code-word attempt log | the project's **secret** key, a Worker secret — the one place outside the Edge Functions it exists |
 | The Edge Function | Auth + Storage | delete the caller's files, then the caller's user record | the project's **secret** key from its own environment — never in a page |
 | Supabase Auth | the email provider (SMTP), Google | sending a code; the Google round trip | Supabase's own dashboard settings |
 | GitHub Actions | Data API | once a day | the publishable key, read out of `js/supabase-config.js` at run time |
 
-Two things never happen. A tool page never calls Supabase itself — only the four `js/` modules do, so there is
+Two things never happen. A tool page never calls Supabase itself — only the five `js/` modules do, so there is
 one place to audit and one switch (`enabled: false` in `js/supabase-config.js`) that turns everything off. And
 the browser polls nothing and holds no live connection (no Realtime): signed in, a page reads the account once
 at load and then sends what changed, two seconds after the last edit; that debounce and the Font Maker's
@@ -200,13 +220,19 @@ removed, 100 at a time, recursing into each project's folder.
 | Who the account is: email, sign-in method, display name | Supabase Auth's user record + the `profiles` row a trigger creates | — | that account | *Delete my account* |
 | Saved items: presets, decks, settings, word lists, mastery progress, student profiles, class lists | one row each in `saves` (the item's JSON inside the row) | 2 MB per item at the database; **1.8 MB is the real limit**, refused in the browser before anything is sent. 2000 items per account | that account | deleting the item in its tool while signed in (it leaves the account within seconds and every other signed-in device at its next load); *Delete my account* |
 | Font Maker projects | a `font_projects` row plus files in three private buckets: the gzipped project, the photos it was traced from (original size), the latest exported font | 25 projects per account; 20 / 15 / 5 MB per file | that account | 🗑 in *Load Project ▾ → In your account*; *Delete my account* |
+| Student logins (Torah Trainer reading assignments): the name the teacher typed, a username, a password, the teacher, a class | Supabase Auth's user record (a synthetic address under `students.ivritsuite.com` that receives no mail) + a `profiles` row (role `student`) + a `students` row | 200 per teacher | the student (own row), the teacher | *Remove* on the assignments page; *Delete my account* by the teacher |
+| Assignments and the recordings' rows: title, code word, verse range, status, feedback | `classes`, `assignments`, `assignment_members`, `submissions`, `feedback` | — | the teacher; the student (own); classmates (current uploads only, when the teacher allows) | delete on the assignments page; closing + the retention period; cascades |
+| The recordings themselves | files in the private R2 bucket `torahtrainer-recordings`, under `submissions/<assignment>/<student>/<recording>.<ext>` | 16 MB per file, in practice ~2.4 MB per ten minutes | through the Worker only: the student, the teacher, classmates when allowed | the Worker's delete; the nightly tidy-up 30 days after closing (7–180 per assignment); the bucket's 400-day rule |
 | The session | that browser's localStorage | — | that browser | *Sign out* (which also removes the account's items from that device), *Erase All Settings* |
 | This device's sync memory (what it last synced, and whether it has asked about the device's own items) | that browser's localStorage (`ivritSuite_syncMeta2`; the cross-tab stamps in `ivritSuite_syncMeta`; each settings row's last synced value, the base of a setting-by-setting merge, in `ivritSuite_syncBase`; a device's own settings that the account's copy replaced at a first sign-in, kept for download until dismissed, in `ivritSuite_replaced`; a copy of each item removed here because the account no longer lists it, until dismissed, in `ivritSuite_removedByAccount`) | — | that browser | *Erase All Settings*; *Delete my account* forgets that account's part; *Sign out* forgets the rows it removed |
 | Everything anonymous: every tool's saves, `.ivrit` files, custom fonts | the browser and the teacher's own files | — | — | the teacher |
 
 Nothing about a student reaches Supabase unless a teacher is signed in — Flash Cards profiles and Classroom
 Dashboard class lists are then saved to the account like everything else, and only into that teacher's own
-rows; using the tools signed out keeps everything on the device. The privacy policy states exactly this list; a new
+rows; using the tools signed out keeps everything on the device. Reading assignments are the one feature where
+a student acts for themselves: with a login their teacher made, they record and submit, and the database's
+policies let them see their own rows, their teacher's feedback, and classmates' current recordings only when
+the teacher turned that on. The privacy policy states exactly this list; a new
 kind of stored data updates the policy in the same commit (`CLAUDE.md`, accounts rule 8).
 
 ## What runs on a schedule
@@ -215,10 +241,11 @@ kind of stored data updates the policy in the same commit (`CLAUDE.md`, accounts
 |---|---|---|---|
 | *Supabase keep-alive* | GitHub Actions, `.github/workflows/supabase-keepalive.yml` | daily | one database query with the publishable key so the free project is never paused for inactivity, then a check that the three account tables refuse an anonymous read — and it insists the refusal come from the database itself (the reply must carry Postgres error `42501`), because a gateway-level 401 would look identical while hiding a stray permission granted to the anonymous role; a failed run opens a tracking issue, closed by the next green run |
 | *pages build and deployment* | GitHub Actions (GitHub's own) | every push to `main` | the deploy — that run's success is what updates the live site |
+| *the recordings tidy-up* | the Cloudflare Worker's cron (`workers/audio/wrangler.toml`) | daily, 03:17 UTC | rows stuck pending fixed or dropped, files no row names deleted, recordings past retention deleted, the code-word attempt log pruned — with the secret key, four narrow queries; `npx wrangler tail` shows its one `reconcile {…}` line |
 | *OpenSiddur font list audit* | GitHub Actions, `.github/workflows/os-fonts-audit.yml` | weekly | Font Maker starting fonts; not part of the account layer |
 
-Nothing on Supabase's side runs on a schedule: no cron jobs, no Realtime, no webhooks. The Edge Function runs
-only when someone presses *Delete my account*.
+Nothing on Supabase's side runs on a schedule: no cron jobs, no Realtime, no webhooks. The Edge Functions run
+only when someone presses *Delete my account* or manages student logins on the assignments page.
 
 ## When something fails, where to look
 
@@ -231,6 +258,8 @@ only when someone presses *Delete my account*.
 | The status line says an item could not be saved (*Couldn't save "…"*) | Supabase → *Logs → API*: `42501` is a policy, `23514` a cap (2 MB / 2000 rows / 25 projects), `23505` a taken name — `db/README.md`, *If something goes wrong* |
 | A Font Maker upload is refused | *Logs → Storage*: the file's type or size against the bucket's allow-list (`db/README.md`) |
 | *Delete my account* fails | Supabase → *Edge Functions → delete-account → Logs* (every call, every error); a 401 before the function runs is the platform's own token check |
+| A student cannot sign in, or creating logins fails | *Authentication → Users* (the student's synthetic address is there?), *Edge Functions → manage-students → Logs*; the assignments page's status line names the refusal (a taken username, a short password) |
+| A recording will not upload or play | <https://recordings.ivritsuite.com/health> (`ok`?), then `npx wrangler tail` in `workers/audio/` — `workers/audio/README.md` → *When something fails* |
 | A red *Supabase keep-alive* run | the run's log: the heartbeat line names the HTTP status; the privacy check names the table that answered 200 |
 | "It worked yesterday" | Supabase → *Advisors* (security + performance should stay clean) and *Reports*; a paused project; the SDK pin in `js/supabase-config.js` |
 
@@ -262,7 +291,8 @@ to a paid plan removes the pausing rule and adds daily backups; nothing in the r
 - **PKCE** — the safe way to bring a sign-in back to the page: a one-time code in the address that only the browser that started the sign-in can redeem.
 - **Publishable key** — the public identifier of the project, committed in `js/supabase-config.js`. Not a secret.
 - **Secret key** — the key that bypasses every rule. Only the Edge Function holds it, only on Supabase's servers.
-- **Edge Function** — a small program running on Supabase's servers (`db/functions/delete-account/`). Ours only deletes the calling account.
+- **Edge Function** — a small program running on Supabase's servers (`db/functions/`). Ours delete the calling account and manage a teacher's student logins.
+- **Worker / R2** — Cloudflare's small-program service and its file storage (`workers/audio/`): the one place the students' recordings live, with no public address.
 - **Migration** — one SQL file that changes the database once (`db/migrations/`). Applied in order, never edited afterwards.
 - **jsDelivr / CDN** — the public file server the pinned Supabase SDK is downloaded from, checked against its integrity hash.
 - **SRI (Subresource Integrity)** — the hash in `sdkIntegrity`; the browser refuses a file whose bytes differ.

@@ -1,0 +1,107 @@
+# Reading assignments in the Torah Trainer — a teacher's guide
+
+Students read a Torah portion you choose, record themselves in the Torah Trainer, and send you the recording.
+You listen, write a comment, and can ask for another try. Nothing is graded by a machine, nothing is public,
+and a student needs no email address.
+
+While the feature is new it is reached by one address: **`ivritsuite.com/torah_trainer.html?assignments=1`**
+(the Torah Trainer with `?assignments=1` on the end). Bookmark it; give students the same address.
+
+## 1. Sign in as yourself
+
+Open that address and sign in with your usual IvritSuite account (the account button at the top: Google, or an
+emailed code). A box titled *Reading assignments* appears above the reading. It shows two buttons:
+**Assign this reading…** and **Students, assignments and recordings**.
+
+## 2. Make your students' logins (once per class)
+
+1. Press **Students, assignments and recordings**. The page that opens is yours alone.
+2. Under *Add students*, type one name per line — a first name or a nickname is enough; it is what the student
+   sees on screen. If you keep a class list in the Classroom Dashboard, Name Tags or Flash Cards on this
+   computer, the drop-down beside the box can add those names for you.
+3. (Optional) Make a class first under *Classes* and pick it in *Class for these students*, so the page can
+   later tell you who has not submitted.
+4. Press **Preview usernames and passwords**. Each student gets a username (like `ruth.47`) and a three-word
+   password (like `blue-tiger-42`). Change any of them if you like — usernames are lowercase letters, digits and
+   dots; passwords at least 8 characters.
+5. Press **Create … accounts**. The new logins appear in a table, and **Print login cards** prints one small
+   card per student with their username and password and where to go. **This is the only time a password is
+   shown.** Print or write them down, then press **Hide the passwords**.
+
+Lost a password? In the students list press **Reset password** next to the name: a new one is made and shown
+once. **Remove** deletes the login and every recording it made.
+
+## 3. Assign a reading
+
+1. Go back to the Torah Trainer (the button at the top of the page) and choose the reading as you always do:
+   a parsha, an aliyah, or a verse range with the custom picker. Only Torah readings can be assigned (not a
+   haftarah or a megillah).
+2. Press **Assign this reading…**. Give it a title, keep the suggested code word or press *New code word*,
+   set the maximum length (10 minutes to start), an optional due date, and whether **classmates may listen** to
+   each other's recording (they never see your feedback).
+3. Press **Create assignment**. The code word appears large — write it on the board or send it home. Students
+   type it in the Trainer; it does not matter if they use capitals, spaces or dashes.
+
+Each assignment has its own code word, and the same code word cannot be reused by you while the first one
+exists. A code word only works for *your* students.
+
+## 4. What a student does
+
+1. Opens the same address and presses the account button, then **Student? Sign in with your username**, and
+   types the username and password from their card.
+2. Types the code word in *Code word from your teacher* and presses **Open the reading**. The portion loads
+   with every tool they already know (vowel colors, transliteration, the chanted recording to listen to first).
+3. Presses **Record**, reads, presses **Stop**. The line above the buttons says how long they have recorded,
+   and recording stops by itself at your maximum.
+4. Presses **Play it back** to hear it. Not happy? **Record again**. Happy? Types a name for the recording
+   (it starts as "Ruth's recording") and presses **Submit**. The line shows the upload's progress and then
+   *Submitted!*
+5. *My recordings* under the box lists every assignment they have joined, with your feedback once you leave
+   some. When you ask for a re-recording, a **Re-record** button appears there.
+
+Students should sign out on a shared computer (the account button → Sign out).
+
+## 5. Listen and give feedback
+
+On the assignments page, press **Recordings** on an assignment. For each student you see the latest recording
+with a **Play** button, a box for your comment, and **Ask for a re-recording**. Press **Save feedback**; the
+student sees the comment the next time they open the Trainer. **Approve** marks a recording done. The filter
+at the top shows only those waiting for feedback, only those you asked to re-record, or every version a student
+ever submitted (older takes are kept). The page also lists who has not submitted yet when the assignment has a
+class, or whoever joined by code otherwise.
+
+**Download all (.zip)** saves every recording of the assignment to your computer, with a small spreadsheet of
+names, titles, dates, statuses and your comments. **Delete recording** removes one for good.
+
+## 6. Closing, and how long recordings are kept
+
+**Close** an assignment when it is finished: students can no longer submit, and its recordings are deleted
+automatically **30 days later** (you can set 7 to 180 days per assignment under *Edit*). The list shows the
+date. Download them first if you want to keep them. **Reopen** cancels the countdown. Recordings are in any
+case deleted about 400 days after they were uploaded, whatever happens.
+
+You can delete an assignment outright at any time; its recordings and comments go with it.
+
+## 7. Privacy, in short
+
+- A student login holds the name you typed, a username, a password, and the recordings and feedback for your
+  assignments — nothing else. No email, no birthdate.
+- A recording can be heard by the student who made it, by you, and by classmates only when you switched that
+  on for that assignment. Feedback is between you and the student.
+- Recordings are stored with Cloudflare (a storage provider) behind a private address that needs a sign-in;
+  everything else is in the site's Supabase database. The full statement is in the
+  [Privacy Policy](https://ivritsuite.com/privacy.html), section 7.
+- Removing a student, deleting a recording, closing an assignment or deleting your own account deletes the
+  recordings concerned.
+
+## If something is odd
+
+- *No assignment matches that code word*: check the spelling, that the assignment is still open, and that the
+  student's login was made by you (another teacher's code words do not work).
+- *Too many tries*: ten wrong code words in ten minutes lock that student for the rest of the ten minutes.
+- *The microphone is blocked*: the browser asked once and was told no; the address bar's padlock or camera
+  icon lets the student allow it again.
+- Nothing records at all on a very old browser or iPad: recording needs a current Chrome, Edge, Firefox or
+  Safari (iPadOS 14.3 or newer).
+- An upload fails: the student presses **Try the upload again**; the recording is still there until they
+  leave the page.

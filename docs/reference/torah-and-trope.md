@@ -1784,6 +1784,33 @@ synced with the blob).
 ---
 
 
+## Reading assignments — the `?assignments=1` region (`torah_trainer.html`)
+
+Behind the flag only: `initAssignments()` (called from `init()` after `initCloudSaves()`) shows the `#ttAssign`
+region above the reading, tells the chip to offer the student form (`IvritAccount.init({ studentSignIn: true })`)
+and injects `/js/ivrit-assignments.js`; without the flag the region, the dialog (`#ttAsgDialog`, on the favorite
+popup's classes and trap) and the code stay inert and nothing extra is downloaded — `smoke-assignments` case I.
+`asgRender()` picks the face from `IvritAccount.status()` and `role()`; `asgApplyI18n()` re-renders the lists on a
+language switch (wired from `applyI18n`).
+
+- **Teacher:** *Assign this reading…* takes `resolveRef()`'s `ref` — accepted only when it is one Torah range
+  (`ASSIGN_REF_RE`, then `parseSharedRef`); a haftarah, a megillah or a multi-part holiday reading is refused with a
+  hint toast. The dialog (title, a generated code word with *New code word*, minutes 1–30, due date, class, keep-for
+  days, classmates may listen) creates the row through `IvritAssignments.assignments.create` with the Trainer's own
+  identifiers in `reading` (`parshahKey`, `scope`, `holidayKey`, `holidayPart`, `readingCycle`); the success card shows
+  the code word large. A code word already used by that teacher is refused (`23505` → `assign.error.code_taken`).
+- **Student:** `asgClaim` → `IvritAssignments.claim(code)` → `asgSetCurrent(row, true)` → `asgLoadRef(ref, label)`,
+  the `?ref=` walk (`parseSharedRef`, `customRef` / `customLabel` / `scope = 'custom'`, the containing parasha seeded,
+  `saveSettings(); syncParshaSelect(); fetchAndRender()`), so every reading tool works on the assigned range. The
+  recorder (`IvritAssignments.recorder.create`) counts its own clock and stops at the assignment's minutes; states
+  idle → starting → recording → stopped → uploading → done / failed are one `aria-live` line (`#ttRecState`), with
+  the upload announced at quarter steps only. A failed upload keeps the pending row for *Try the upload again*
+  unless the server's answer rules it out (`closed`, `not_accepted`, `too_large`, `unsupported_type`, `not_found`).
+  *My recordings* lists each joined assignment with its current take, status and the teacher's comment; *Re-record*
+  reloads the range and focuses Record. *Classmates' recordings* appears only while `peers_can_listen`.
+- **Strings** are `torah.assign.*`; the management page's are `assign.*`; the module's errors `assign.error.*`; the
+  chip's `shared.account.student_*`.
+
 ## Your account — what the two pages round-trip
 
 Both pages sync one settings blob (and the Trope Tutor its mastery progress) through the shared module
