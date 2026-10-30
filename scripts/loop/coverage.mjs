@@ -6,7 +6,7 @@
  * the live rotation rows, the archive's compacted rotation rows and the findings file's session
  * headings; this script reads all three and prints, per pass, every surface from stalest to newest.
  *
- * Surfaces: the ten tool pages plus one chrome bundle (index, resources, contact, privacy, terms,
+ * Surfaces: the eleven tool pages plus one chrome bundle (index, resources, contact, privacy, terms,
  * 404, account — one surface for a per-surface pass; the variety governor still counts each page).
  *
  * Usage:
@@ -23,13 +23,14 @@ import { LEDGER, ARCHIVE, FINDINGS } from '../ledger-rules.mjs';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const read = p => existsSync(join(root, p)) ? readFileSync(join(root, p), 'utf8') : '';
 const SURFACE_PASSES = ['C', 'D', 'G', 'H', 'M', 'N', 'P'];
-const SURFACES = ['generator', 'dictionary', 'flash', 'torah', 'trope', 'dashboard', 'fontmaker', 'letter_learner', 'parsha_emojis', 'name_tags', 'chrome'];
+const SURFACES = ['generator', 'dictionary', 'flash', 'torah', 'trope', 'dashboard', 'fontmaker', 'letter_learner', 'parsha_emojis', 'name_tags', 'atlas', 'chrome'];
 // First alias that matches wins; order matters (a chrome page named beside a tool loses to the tool).
 const ALIASES = [
   ['generator', /hebrew_blend_generator\.html|\bgenerator\b|\bgen\b/i],
   ['dictionary', /hebrew_dictionary\.html|\bdictionary\b|\bdict\b/i],
   ['flash', /flash_cards\.html|\bflash\b/i],
   ['torah', /torah_trainer\.html|\btorah\b|\btrainer\b/i],
+  ['atlas', /trope_atlas\.html|trope[ _]atlas|\batlas\b/i],   // before trope: "Trope Atlas" ties with \btrope\b at the same index
   ['trope', /trope_tutor\.html|\btrope\b|\btutor\b/i],
   ['dashboard', /classroom_dashboard\.html|\bdashboard\b/i],
   ['fontmaker', /Hebrew_Font_Maker\.html|font[ _]maker/i], ['fontmaker', /\bFM\b/],

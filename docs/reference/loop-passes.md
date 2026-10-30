@@ -35,8 +35,8 @@ into a target.
 
 Two kinds of pass: a **suite** pass (A, B, E, F, I, K, L) covers the whole suite over the commit delta
 since its last run; a **surface** pass (C, D, G, H, M, N, P) takes one surface per run. The surfaces are
-the ten tool pages — generator, dictionary, flash cards, Torah Trainer, Trope Tutor, dashboard, Font
-Maker, Letter Learner, Parsha Emojis, Name Tags — plus one **chrome bundle** (index, resources, contact,
+the eleven tool pages — generator, dictionary, flash cards, Torah Trainer, Trope Tutor, dashboard, Font
+Maker, Letter Learner, Parsha Emojis, Name Tags, Trope Atlas — plus one **chrome bundle** (index, resources, contact,
 privacy + terms, 404, account, audited together as one surface; for the variety governor's caps each
 chrome page is still its own tool). A surface pass picks the least-recently-audited surface as
 `node scripts/loop/coverage.mjs` reports it (a never-audited surface outranks everything) and records its
