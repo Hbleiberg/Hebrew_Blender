@@ -4,14 +4,14 @@ Students read a Torah portion you choose, record themselves in the Torah Trainer
 You listen, write a comment, and can ask for another try. Nothing is graded by a machine, nothing is public,
 and a student needs no email address.
 
-While the feature is new it is reached by one address: **`ivritsuite.com/torah_trainer.html?assignments=1`**
-(the Torah Trainer with `?assignments=1` on the end). Bookmark it; give students the same address.
+Everything happens in the Torah Trainer: **`ivritsuite.com/torah_trainer.html`**. Give students the same address.
 
 ## 1. Sign in as yourself
 
-Open that address and sign in with your usual IvritSuite account (the account button at the top: Google, or an
-emailed code). A box titled *Reading assignments* appears above the reading. It shows two buttons:
-**Assign this reading…** and **Students, assignments and recordings**.
+Open the Torah Trainer and sign in with your usual IvritSuite account (the account button at the top: Google, or
+an emailed code). Open **Settings** (the gear) and pick the **Teacher** tab: *Teacher options* holds the two
+buttons you will use, **Assign this reading…** and **Students, assignments and recordings**. (Signed out, the tab
+only asks you to sign in; students never see it do anything.)
 
 ## 2. Make your students' logins (once per class)
 
@@ -36,10 +36,14 @@ once. **Remove** deletes the login and every recording it made.
 1. Go back to the Torah Trainer (the button at the top of the page) and choose the reading as you always do:
    a parsha, an aliyah, or a verse range with the custom picker. Only Torah readings can be assigned (not a
    haftarah or a megillah).
-2. Press **Assign this reading…**. Give it a title, keep the suggested code word or press *New code word*,
-   set the maximum length (10 minutes to start), an optional due date, and whether **classmates may listen** to
-   each other's recording (they never see your feedback).
-3. Press **Create assignment**. The code word appears large — write it on the board or send it home. Students
+2. Set up the reading the way you want your students to see it — vowel colors on or off and which scheme,
+   transliteration, translation, the font and sizes, the layout — exactly as you would for yourself.
+3. Open Settings → **Teacher** → **Assign this reading…**. Give it a title, keep the suggested code word or press
+   *New code word*, set the maximum length (10 minutes to start), an optional due date, and whether
+   **classmates may listen** to each other's recording (they never see your feedback). The box **Students see
+   this reading with my display settings as they are now** is ticked whenever your look differs from the
+   defaults; the line under it says what will travel. Untick it if students should keep their own settings.
+4. Press **Create assignment**. The code word appears large — write it on the board or send it home. Students
    type it in the Trainer; it does not matter if they use capitals, spaces or dashes.
 
 Each assignment has its own code word, and the same code word cannot be reused by you while the first one
@@ -49,8 +53,12 @@ exists. A code word only works for *your* students.
 
 1. Opens the same address and presses the account button, then **Student? Sign in with your username**, and
    types the username and password from their card.
-2. Types the code word in *Code word from your teacher* and presses **Open the reading**. The portion loads
-   with every tool they already know (vowel colors, transliteration, the chanted recording to listen to first).
+2. A panel titled *Reading assignments* appears above the reading. They type the code word in *Code word from
+   your teacher* and press **Open the reading**. The portion loads with every tool they already know (the
+   chanted recording to listen to first, and so on). If you sent your display settings with it, a note says so
+   and offers *Keep these settings* or *Use my settings*; nothing of theirs changes unless they press Keep.
+   **Hide** folds the panel away to a *Reading assignments* button at the top of the page, which brings it back;
+   a recording keeps running while it is hidden, and the button shows the time.
 3. Presses **Record**, reads, presses **Stop**. The line above the buttons says how long they have recorded,
    and recording stops by itself at your maximum.
 4. Presses **Play it back** to hear it. Not happy? **Record again**. Happy? Types a name for the recording

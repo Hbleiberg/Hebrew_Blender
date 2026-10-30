@@ -3,7 +3,7 @@
  * smoke-assignments.mjs — headless end-to-end test of Torah Trainer reading assignments against a fake cloud.
  *
  * What it proves, without any real network: the teacher's page (reading_assignments.html) and the Trainer's
- * ?assignments=1 region (torah_trainer.html), driven through the real js/ivrit-account.js, js/ivrit-saves.js and
+ * student panel + Teacher tab (torah_trainer.html), driven through the real js/ivrit-account.js, js/ivrit-saves.js and
  * js/ivrit-assignments.js, with Chromium's fake microphone so MediaRecorder produces real bytes:
  *
  *   A. The teacher creates a class and two student logins from typed names (the preview, the created table with
@@ -24,7 +24,8 @@
  *      text: no element is created, no pageerror.
  *   H. Privilege attempts through the fake, as the student: the role column, another student's recording, a
  *      foreign upload, a status change — each refused.
- *   I. Signed out and without the flag the Trainer shows nothing of this and downloads nothing extra.
+ *   I. Signed out the Trainer shows nothing above the reading, downloads nothing extra, and its Teacher tab only asks
+ *      to sign in.
  *   J. Accessibility: every control named, the dialogs modal with a focus trap and Escape, live regions present,
  *      the recorder's buttons real buttons.
  *
@@ -126,6 +127,7 @@ class FakeCloud {
       if (!/^[\p{L}\p{N}]{6,40}$/u.test(norm)) return this.pgError(400, '23514', 'assignments_code_norm_shape');
       if (!/^(Genesis|Exodus|Leviticus|Numbers|Deuteronomy) [0-9]{1,3}:[0-9]{1,3}(-([0-9]{1,3}:)?[0-9]{1,3})?$/.test(String(b.ref || ''))) return this.pgError(400, '23514', 'assignments_ref_check');
       if (this.t.assignments.some(a => a.teacher_id === who.id && a.code_norm === norm)) return this.pgError(409, '23505', 'duplicate key value violates unique constraint "assignments_one_code_per_teacher"');
+      if (Buffer.byteLength(JSON.stringify(b.reading === undefined ? {} : b.reading)) > 2000) return this.pgError(400, '23514', 'assignments_reading_check');
       const r = Object.assign({ id: crypto.randomUUID(), teacher_id: who.id, class_id: null, peers_can_listen: false, is_open: true, closed_at: null, max_minutes: 10, due_date: null, retention_days: 30, reading: {}, created_at: now, updated_at: now }, b, { code_norm: norm });
       if (!r.is_open) r.closed_at = now;
       this.t.assignments.push(r); return r;
@@ -382,13 +384,20 @@ const browser = await chromium.launch({ args: ['--use-fake-ui-for-media-stream',
 const teacherSession = sessionFor(TEACHER);
 let codeWord = '', assignmentId = '', studentCreds = [];
 try {
-  /* ───── I. the Trainer without the flag, signed out ───── */
+  /* ───── I. the Trainer signed out ───── */
   {
     const ctx = await newCtx(browser, cloud);
     const { page, errors, requested } = await openPage(ctx, 'torah_trainer.html', { waitSignedIn: false });
-    const r = await page.evaluate(() => ({ hidden: document.getElementById('ttAssign').hidden, display: getComputedStyle(document.getElementById('ttAssign')).display, module: !!window.IvritAssignments, dialog: document.getElementById('ttAsgDialog').hidden, flag: typeof ASSIGN_FLAG !== 'undefined' && ASSIGN_FLAG === false }));
-    check('I: without the flag the region and dialog stay hidden, the flag is off, the module is not loaded', r.hidden && r.display === 'none' && !r.module && r.dialog && r.flag, JSON.stringify(r));
+    await page.waitForFunction(() => window.IvritAccount && IvritAccount.status() === 'anonymous', null, { timeout: 15000 });
+    const r = await page.evaluate(() => ({ hidden: document.getElementById('ttAssign').hidden, display: getComputedStyle(document.getElementById('ttAssign')).display, top: document.getElementById('ttAsgTopCtrl').hidden, topDisplay: getComputedStyle(document.getElementById('ttAsgTopCtrl')).display, module: !!window.IvritAssignments, dialog: document.getElementById('ttAsgDialog').hidden }));
+    check('I: signed out the student panel, its top button and the dialog stay hidden (as drawn, not only by attribute) and the module is not loaded', r.hidden && r.display === 'none' && r.top && r.topDisplay === 'none' && !r.module && r.dialog, JSON.stringify(r));
     check('I: …and the module file was never requested', !requested.some(u => u.includes('ivrit-assignments.js')));
+    await page.evaluate(() => { openSettings(); setSettingsTab('teacher'); });
+    const tab = await page.evaluate(() => ({ selected: document.getElementById('ttTabTeacher').getAttribute('aria-selected'), panel: !document.getElementById('ttTabPanelTeacher').hidden, out: !document.getElementById('ttTeachOut').hidden, tin: document.getElementById('ttTeachIn').hidden, note: document.getElementById('ttTeachOut').textContent }));
+    check('I: the drawer\'s Teacher tab shows the sign-in note and nothing of the teacher\'s side', tab.selected === 'true' && tab.panel && tab.out && tab.tin && /Sign in with your teacher account/.test(tab.note), JSON.stringify(tab));
+    await page.click('#ttTeachSignIn');
+    check('I: its Sign in button closes the drawer and opens the chip\'s menu', await page.evaluate(() => !document.getElementById('settingsModal').classList.contains('open') && document.getElementById('ivacctMenu') && !document.getElementById('ivacctMenu').hidden));
+    await page.keyboard.press('Escape');
     check('I: 0 pageerrors', errors.length === 0, errors.join(' | '));
     await ctx.close();
   }
@@ -423,18 +432,26 @@ try {
     await page.screenshot({ path: path.join(SHOTS, 'A-teacher-page.png'), fullPage: true });
     await page.close();
     // the assignment, from the Trainer
-    const tt = await openPage(ctx, 'torah_trainer.html', { query: '?assignments=1&parsha=Bereshit&scope=parsha-aliyah-1' });
-    await tt.page.waitForFunction(() => window.IvritAssignments && !document.getElementById('ttAsgTeacher').hidden, null, { timeout: 15000 });
-    check('A: the Trainer shows the teacher face', await visible(tt.page, '#ttAsgAssignBtn'));
+    const tt = await openPage(ctx, 'torah_trainer.html', { query: '?parsha=Bereshit&scope=parsha-aliyah-1' });
+    await tt.page.waitForFunction(() => window.IvritAssignments && !document.getElementById('ttTeachIn').hidden, null, { timeout: 15000 });
+    check('A: a teacher sees no panel and no top button above the reading', await tt.page.evaluate(() => getComputedStyle(document.getElementById('ttAssign')).display === 'none' && getComputedStyle(document.getElementById('ttAsgTopCtrl')).display === 'none'));
+    const openAssign = async () => { await tt.page.evaluate(() => { openSettings(); setSettingsTab('teacher'); }); await tt.page.click('#ttAsgAssignBtn'); };
+    await tt.page.evaluate(() => { openSettings(); setSettingsTab('teacher'); });
+    check('A: the drawer\'s Teacher tab shows the teacher face', await visible(tt.page, '#ttAsgAssignBtn') && await tt.page.evaluate(() => document.getElementById('ttTeachOut').hidden && document.getElementById('ttTeachStudent').hidden));
+    // the look that will travel: vowel colors in the Talam scheme and transliteration on, as a teacher would set them up first
+    await tt.page.evaluate(() => { settings.colorCodeNikkud = true; settings.vowelColorScheme = 'talam'; settings.showTranslit = true; saveSettings(); });
     await tt.page.click('#ttAsgAssignBtn');
+    check('A: Assign closes the drawer before the dialog opens', await tt.page.evaluate(() => !document.getElementById('settingsModal').classList.contains('open')));
     const dlg = await tt.page.evaluate(() => ({ open: !document.getElementById('ttAsgDialog').hidden, modal: document.getElementById('ttAsgDialog').getAttribute('aria-modal'), reading: document.getElementById('ttAsgDlgReading').textContent, code: document.getElementById('ttAsgDlgCode').value, focused: document.activeElement && document.activeElement.id }));
     check('A: the dialog opens modal on the reading with a generated code word and the focus on the title', dlg.open && dlg.modal === 'true' && /Genesis 1:1-2:3/.test(dlg.reading) && /^[a-z]+-[a-z]+-[2-9]{2}$/.test(dlg.code) && dlg.focused === 'ttAsgDlgTitle', JSON.stringify(dlg));
     // J: the trap and Escape
     await tt.page.keyboard.press('Shift+Tab');
     check('J: Shift+Tab from the first control wraps to the last', await tt.page.evaluate(() => document.activeElement && document.activeElement.id === 'ttAsgDlgCreate'));
     await tt.page.keyboard.press('Escape');
-    check('J: Escape closes the dialog and returns the focus to its opener', await tt.page.evaluate(() => document.getElementById('ttAsgDialog').hidden && document.activeElement && document.activeElement.id === 'ttAsgAssignBtn'));
-    await tt.page.click('#ttAsgAssignBtn');
+    check('J: Escape closes the dialog and puts the focus on the gear (its opener sits in the closed drawer)', await tt.page.evaluate(() => document.getElementById('ttAsgDialog').hidden && document.activeElement && document.activeElement.id === 'gearBtn'));
+    await openAssign();
+    const look = await tt.page.evaluate(() => ({ checked: document.getElementById('ttAsgDlgLook').checked, disabled: document.getElementById('ttAsgDlgLook').disabled, summary: document.getElementById('ttAsgDlgLookSummary').textContent }));
+    check('A: the look box is ticked by default and its summary names the transliteration and the vowel colors', look.checked && !look.disabled && /transliteration on/.test(look.summary) && /vowel colors on/.test(look.summary), JSON.stringify(look));
     await tt.page.fill('#ttAsgDlgTitle', 'Bereshit aliyah 1 ' + XSS);
     await tt.page.fill('#ttAsgDlgCode', 'ab');
     await tt.page.click('#ttAsgDlgCreate');
@@ -445,7 +462,9 @@ try {
     check('A: the assignment is created and the code word shown large', await waitText(tt.page, '#ttAsgDlgDone', /code word/i) && cloud.t.assignments.length === 1, await text(tt.page, '#ttAsgDlgNote'));
     codeWord = cloud.t.assignments[0].code_word; assignmentId = cloud.t.assignments[0].id;
     check('A: the row carries the ref, the Trainer identifiers and the teacher', cloud.t.assignments[0].ref === 'Genesis 1:1-2:3' && cloud.t.assignments[0].reading.parshahKey === 'Bereshit' && cloud.t.assignments[0].teacher_id === T1 && cloud.t.assignments[0].max_minutes === 2, JSON.stringify(cloud.t.assignments[0]));
-    check('A: the same code word again is refused as taken', await (async () => { await tt.page.keyboard.press('Escape'); await tt.page.click('#ttAsgAssignBtn'); await tt.page.fill('#ttAsgDlgCode', codeWord.toUpperCase()); await tt.page.click('#ttAsgDlgCreate'); return waitText(tt.page, '#ttAsgDlgNote', /already use/); })());
+    const view = cloud.t.assignments[0].reading.view;
+    check('A: …and the teacher\'s look as reading.view (the practice link\'s object: version, the two colorings, the transliteration)', view && view.v === 1 && view.colorCodeNikkud === true && view.vowelColorScheme === 'talam' && view.showTranslit === true && !('hebFont' in view), JSON.stringify(view));
+    check('A: the same code word again is refused as taken', await (async () => { await tt.page.keyboard.press('Escape'); await openAssign(); await tt.page.fill('#ttAsgDlgCode', codeWord.toUpperCase()); await tt.page.click('#ttAsgDlgCreate'); return waitText(tt.page, '#ttAsgDlgNote', /already use/); })());
     await tt.page.keyboard.press('Escape');
     check('A: 0 pageerrors on the Trainer (teacher)', tt.errors.length === 0, tt.errors.join(' | '));
     await tt.page.screenshot({ path: path.join(SHOTS, 'A-trainer-teacher.png') });
@@ -465,8 +484,8 @@ try {
   let student1Session = null, firstTake = null;
   {
     const ctx = await newCtx(browser, cloud);
-    const { page, errors } = await openPage(ctx, 'torah_trainer.html', { query: '?assignments=1', waitSignedIn: false });
-    await page.waitForFunction(() => window.IvritAssignments, null, { timeout: 15000 });
+    const { page, errors } = await openPage(ctx, 'torah_trainer.html', { waitSignedIn: false });
+    await page.waitForFunction(() => window.IvritAccount && IvritAccount.status() === 'anonymous', null, { timeout: 15000 });
     // a wrong password first
     await page.evaluate(() => IvritAccount.openMenu());
     await page.click('[data-ivk="student"]');
@@ -479,7 +498,8 @@ try {
     await page.click('[data-ivk="studentgo"]');
     check('B: the student signs in with username + password', await page.waitForFunction(() => IvritAccount.status() === 'signed-in' && IvritAccount.role() === 'student', null, { timeout: 15000 }).then(() => true, () => false), JSON.stringify({ note: await text(page, '.ivacct-note'), status: await page.evaluate(() => IvritAccount.status() + '/' + IvritAccount.role()), log: cloud.log.slice(-6) }));
     student1Session = await page.evaluate((k) => JSON.parse(localStorage.getItem(k)), AUTH_KEY);
-    await page.waitForFunction(() => !document.getElementById('ttAsgStudent').hidden, null, { timeout: 10000 });
+    await page.waitForFunction(() => window.IvritAssignments && !document.getElementById('ttAssign').hidden, null, { timeout: 15000 });
+    check('B: the student panel appears above the reading once the student is in, expanded (its top button not drawn), and the Teacher tab says it is for teachers', await page.evaluate(() => getComputedStyle(document.getElementById('ttAssign')).display !== 'none' && getComputedStyle(document.getElementById('ttAsgTopCtrl')).display === 'none' && !document.getElementById('ttTeachStudent').hidden && document.getElementById('ttTeachIn').hidden));
     await sleep(1500);
     check('B: the student face shows; the saves module never synced (no saves listing, no sync memory, the status line hidden)', !cloud.log.slice(logAtSignIn).some(l => l.path === '/rest/v1/saves') && await page.evaluate(() => !localStorage.getItem('ivritSuite_syncMeta2') && !document.querySelector('#cloudSavesPanel .ivsav:not([hidden])')), JSON.stringify(cloud.log.slice(logAtSignIn).filter(l => /saves/.test(l.path))));
     check('B: the chip names the student account, without an account link', await page.evaluate(() => { IvritAccount.openMenu(); const who = document.querySelector('.ivacct-who'); const acct = document.querySelector('[data-ivk="account"]'); IvritAccount.focusChip(); return who && /student account/.test(who.textContent) && !acct; }));
@@ -491,17 +511,31 @@ try {
     await page.click('#ttAsgCodeForm button[type=submit]');
     check('B: the right code word, with caps and spaces, opens the assignment', await waitText(page, '#ttAsgStudentStatus', /Opened:/));
     const loaded = await page.evaluate(() => ({ ref: settings.customRef, scope: settings.scope, line: document.getElementById('ttAsgCurrentLine').textContent, rec: !document.getElementById('ttRec').hidden, state: document.getElementById('ttRecState').textContent }));
+    check('B: idle, the recorder draws neither the audio element nor the name-and-submit form (hidden as drawn, not only by attribute)', await page.evaluate(() => getComputedStyle(document.getElementById('ttRecAudio')).display === 'none' && getComputedStyle(document.getElementById('ttRecSubmitForm')).display === 'none'));
     check('B: the Trainer loaded the assigned range into the custom scope and shows the recorder', loaded.ref === 'Genesis 1:1-2:3' && loaded.scope === 'custom' && /up to 2 minutes/.test(loaded.line) && loaded.rec && /Ready to record/.test(loaded.state), JSON.stringify(loaded));
     check('B: the title rendered as text (no element created)', (await text(page, '#ttAsgCurrentLine')).includes('<img') && !(await page.evaluate(() => window.__xss)) && !(await page.evaluate(() => !!document.querySelector('#ttAssign img'))));
     check('B: membership was recorded', cloud.t.assignment_members.length === 1);
+    // the teacher's look: a live view, named as the teacher's, never stored
+    const tv = await page.evaluate(() => ({ banner: !document.getElementById('ttLinkView').hidden, msg: document.getElementById('ttLinkViewMsg').textContent, translit: settings.showTranslit, scheme: settings.vowelColorScheme, colors: settings.colorCodeNikkud, stored: storedSettings().showTranslit, storedScheme: storedSettings().vowelColorScheme, bar: document.getElementById('ttShowTranslitBar').checked }));
+    check('B: the teacher\'s look opened as a view: the banner names the teacher, transliteration and the Talam vowel colors are on screen, the stored settings untouched', tv.banner && /your teacher/.test(tv.msg) && tv.translit === true && tv.scheme === 'talam' && tv.colors === true && tv.stored === false && tv.storedScheme !== 'talam' && tv.bar, JSON.stringify(tv));
+    await page.locator('#ttLinkView button', { hasText: 'Use my settings' }).click();
+    await page.waitForFunction(() => document.getElementById('ttLinkView').hidden, null, { timeout: 5000 });
+    check('B: Use my settings puts the student\'s own look back', await page.evaluate(() => settings.showTranslit === false && settings.colorCodeNikkud === false && !document.getElementById('ttShowTranslitBar').checked));
     // record
     await page.click('#ttRecStart');
     check('B: recording starts, the live line counts, the focus is on Stop', await waitText(page, '#ttRecState', /Recording… 0:0[1-9]/, 8000) && await page.evaluate(() => document.activeElement && document.activeElement.id === 'ttRecStop'), await text(page, '#ttRecState'));
-    await sleep(1500);
+    // Hide while recording: the panel folds to the top button, which shows the clock; the recording goes on
+    await page.click('#ttAsgHideBtn');
+    const folded = await page.evaluate(() => ({ hidden: getComputedStyle(document.getElementById('ttAssign')).display === 'none', top: getComputedStyle(document.getElementById('ttAsgTopCtrl')).display !== 'none', expanded: document.getElementById('ttAsgTopBtn').getAttribute('aria-expanded'), label: document.getElementById('ttAsgTopBtn').textContent, focus: document.activeElement && document.activeElement.id, stored: localStorage.getItem('hebrewTorahTrainer_assignCollapsed') }));
+    check('B: Hide folds the panel to the top button, which takes the focus, says aria-expanded=false and mirrors the recording clock', folded.hidden && folded.top && folded.expanded === 'false' && /Reading assignments · Recording… 0:0[1-9]/.test(folded.label) && folded.focus === 'ttAsgTopBtn' && folded.stored === '1', JSON.stringify(folded));
+    await sleep(1200);
+    check('B: …and the mirrored clock keeps counting', /Recording… 0:0[2-9]/.test(await text(page, '#ttAsgTopBtn')), await text(page, '#ttAsgTopBtn'));
+    await page.click('#ttAsgTopBtn');
+    check('B: the top button brings the panel back with the focus on its title and the recording still running', await page.evaluate(() => !document.getElementById('ttAssign').hidden && document.getElementById('ttAsgTopCtrl').hidden && document.activeElement && document.activeElement.id === 'ttAssignTitle' && /Recording…/.test(document.getElementById('ttRecState').textContent) && !localStorage.getItem('hebrewTorahTrainer_assignCollapsed')));
     await page.click('#ttRecStop');
     check('B: stopping yields a take, the line says so, the name field gets the focus with a default name', await waitText(page, '#ttRecState', /Recorded 0:0[1-9]/, 8000) && await page.evaluate(() => document.activeElement && document.activeElement.id === 'ttRecTitleIn' && /recording/.test(document.getElementById('ttRecTitleIn').value) && !document.getElementById('ttRecSubmitForm').hidden), await text(page, '#ttRecState'));
     await page.click('#ttRecPlay');
-    check('B: Play it back shows the audio element with a blob source', await page.evaluate(() => { const a = document.getElementById('ttRecAudio'); return !a.hidden && /^blob:/.test(a.src); }));
+    check('B: Play it back shows the audio element with a blob source, and the name-and-submit form is drawn', await page.evaluate(() => { const a = document.getElementById('ttRecAudio'); return !a.hidden && getComputedStyle(a).display !== 'none' && /^blob:/.test(a.src) && getComputedStyle(document.getElementById('ttRecSubmitForm')).display === 'flex'; }));
     await page.fill('#ttRecTitleIn', 'Ruth reads Bereshit ' + XSS);
     const announced = [];
     await page.exposeFunction('__announce', (t) => announced.push(t));
@@ -514,6 +548,12 @@ try {
     check('B: the row is uploaded with the true size, the object stored under the row\'s key, the type webm', sub && sub.upload_status === 'uploaded' && sub.size_bytes > 0 && cloud.objects.has(sub.r2_key) && cloud.objects.get(sub.r2_key).bytes.length === sub.size_bytes && /^audio\/webm/.test(sub.mime_type) && sub.duration_seconds >= 1, JSON.stringify(sub));
     check('B: My recordings lists it as Submitted, with the title as text', await waitText(page, '#ttAsgMine', /Submitted/) && (await text(page, '#ttAsgMine')).includes('<img') && !(await page.evaluate(() => window.__xss)));
     check('B: the focus returned to Record', await page.evaluate(() => document.activeElement && document.activeElement.id === 'ttRecStart'));
+    // the fold is remembered on this device across a reload
+    await page.click('#ttAsgHideBtn');
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => window.IvritAssignments && !document.getElementById('ttAsgTopCtrl').hidden, null, { timeout: 15000 });
+    check('B: after a reload the panel is still folded and the button says so', await page.evaluate(() => document.getElementById('ttAssign').hidden && document.getElementById('ttAsgTopBtn').textContent === 'Reading assignments' && document.getElementById('ttAsgTopBtn').getAttribute('aria-expanded') === 'false'));
+    await page.click('#ttAsgTopBtn');
     check('B: 0 pageerrors (student)', errors.length === 0, errors.join(' | '));
     await page.screenshot({ path: path.join(SHOTS, 'B-student.png') });
     await ctx.close();
@@ -522,8 +562,11 @@ try {
   /* ───── B2. keyboard-only, from the signed-in state, as the second student ───── */
   {
     const ctx = await newCtx(browser, cloud);
-    const { page, errors } = await openPage(ctx, 'torah_trainer.html', { query: '?assignments=1', waitSignedIn: false });
-    await page.waitForFunction(() => window.IvritAssignments, null, { timeout: 15000 });
+    const { page, errors } = await openPage(ctx, 'torah_trainer.html', { waitSignedIn: false });
+    await page.waitForFunction(() => window.IvritAccount && IvritAccount.status() === 'anonymous', null, { timeout: 15000 });
+    // a hostile look on the row (another device could write any JSON): every value passes the link's validators or is dropped
+    const goodView = cloud.t.assignments[0].reading.view;
+    cloud.t.assignments[0].reading.view = JSON.parse('{"v":1,"showTranslit":true,"hebFont":"<img src=x onerror=window.__xss=1>","layout":"javascript:alert(1)","bogus":"<script>","colorCodeNikkud":true,"nikudColorOverrides":{"patach":"javascript:alert(1)","__proto__":{"polluted":1}},"hebFontSize":"9999"}');
     // the chip by keyboard: Tab to it, Enter opens, ArrowDown walks to the student button
     const tabTo = async (pred, max = 60) => { for (let i = 0; i < max; i++) { await page.keyboard.press('Tab'); if (await page.evaluate(pred)) return true; } return false; };
     check('K: Tab reaches the account chip', await tabTo(() => document.activeElement && document.activeElement.classList.contains('ivacct-btn')));
@@ -538,11 +581,14 @@ try {
     await page.keyboard.type(student2.password);
     await page.keyboard.press('Enter');
     check('K: Enter signs the student in', await page.waitForFunction(() => IvritAccount.status() === 'signed-in' && IvritAccount.role() === 'student', null, { timeout: 15000 }).then(() => true, () => false));
-    await page.waitForFunction(() => !document.getElementById('ttAsgStudent').hidden, null, { timeout: 10000 });
+    await page.waitForFunction(() => window.IvritAssignments && !document.getElementById('ttAssign').hidden, null, { timeout: 15000 });
     check('K: Tab reaches the code word field', await tabTo(() => document.activeElement && document.activeElement.id === 'ttAsgCode'));
     await page.keyboard.type(codeWord);
     await page.keyboard.press('Enter');
     check('K: Enter opens the assignment', await waitText(page, '#ttAsgStudentStatus', /Opened:/));
+    const hv = await page.evaluate(() => ({ translit: settings.showTranslit, font: settings.hebFont, layout: settings.layout, size: settings.hebFontSize, over: JSON.stringify(settings.nikudColorOverrides || {}), polluted: 'polluted' in {}, xss: !!window.__xss, img: !!document.querySelector('#ttReading img, .tt-page img[src="x"]') }));
+    check('K: the hostile look kept only what passes the validators (transliteration on; the font, layout, size and colors untouched; no prototype pollution, no element)', hv.translit === true && !/img/.test(String(hv.font)) && hv.layout !== 'javascript:alert(1)' && Number(hv.size) < 9999 && !/javascript/.test(hv.over) && !hv.polluted && !hv.xss && !hv.img, JSON.stringify(hv));
+    cloud.t.assignments[0].reading.view = goodView;
     check('K: Tab reaches Record', await tabTo(() => document.activeElement && document.activeElement.id === 'ttRecStart'));
     await page.keyboard.press('Space');
     check('K: Space starts recording and the focus lands on Stop', await waitText(page, '#ttRecState', /Recording…/, 8000) && await page.evaluate(() => document.activeElement && document.activeElement.id === 'ttRecStop'));
@@ -580,8 +626,8 @@ try {
   }
   {
     const ctx = await newCtx(browser, cloud, { session: student1Session });
-    const { page, errors } = await openPage(ctx, 'torah_trainer.html', { query: '?assignments=1' });
-    await page.waitForFunction(() => window.IvritAssignments && !document.getElementById('ttAsgStudent').hidden, null, { timeout: 15000 });
+    const { page, errors } = await openPage(ctx, 'torah_trainer.html');
+    await page.waitForFunction(() => window.IvritAssignments && !document.getElementById('ttAssign').hidden, null, { timeout: 15000 });
     check('C: the student sees the request and the teacher\'s words', await waitText(page, '#ttAsgMine', /asked for a re-recording/) && /Slow down on the trope/.test(await text(page, '#ttAsgMine')));
     await page.locator('#ttAsgMine .btn', { hasText: 'Re-record' }).click();
     check('C: Re-record loads the assignment and focuses Record', await page.waitForFunction(() => !document.getElementById('ttAsgCurrent').hidden && document.activeElement && document.activeElement.id === 'ttRecStart', null, { timeout: 10000 }).then(() => true, () => false));
@@ -615,7 +661,7 @@ try {
   /* ───── D. classmates may listen ───── */
   async function peersView(session) {
     const ctx = await newCtx(browser, cloud, { session });
-    const { page, errors } = await openPage(ctx, 'torah_trainer.html', { query: '?assignments=1' });
+    const { page, errors } = await openPage(ctx, 'torah_trainer.html');
     await page.waitForFunction(() => window.IvritAssignments && document.querySelectorAll('#ttAsgMine li').length >= 1, null, { timeout: 15000 });
     await page.locator('#ttAsgMine .btn', { hasText: 'Show the reading' }).first().click();
     await sleep(800);
@@ -634,7 +680,7 @@ try {
     check('D: with classmates on, the second student sees the first\'s current take by title, never the feedback', /Ruth take 2/.test(v.peers) && !/take 1|Ruth reads/.test(v.peers) && !/Slow down/.test(v.peers) && v.hasAudioBtn, JSON.stringify(v));
     // the Worker lets the classmate fetch it, and refuses the older take
     const ctx = await newCtx(browser, cloud, { session: noamSession });
-    const { page } = await openPage(ctx, 'torah_trainer.html', { query: '?assignments=1' });
+    const { page } = await openPage(ctx, 'torah_trainer.html');
     await page.waitForFunction(() => window.IvritAssignments, null, { timeout: 15000 });
     const ruthTakes = cloud.t.submissions.filter(s => s.title.startsWith('Ruth'));
     const fetched = await page.evaluate(async (ids) => { const out = {}; for (const [k, id] of Object.entries(ids)) { try { const b = await IvritAssignments.audio(id); out[k] = b.size; } catch (e) { out[k] = e.code; } } return out; }, { current: ruthTakes[1].id, older: ruthTakes[0].id });
@@ -667,7 +713,7 @@ try {
 
   /* ───── F. error states ───── */
   {
-    const open = async (opts) => { const ctx = await newCtx(browser, cloud, Object.assign({ session: student1Session }, opts)); const r = await openPage(ctx, 'torah_trainer.html', { query: '?assignments=1' }); await r.page.waitForFunction(() => window.IvritAssignments && document.querySelectorAll('#ttAsgMine li').length >= 1, null, { timeout: 15000 }); await r.page.locator('#ttAsgMine .btn', { hasText: 'Show the reading' }).first().click(); await r.page.waitForFunction(() => !document.getElementById('ttAsgCurrent').hidden, null, { timeout: 5000 }); return { ctx, ...r }; };
+    const open = async (opts) => { const ctx = await newCtx(browser, cloud, Object.assign({ session: student1Session }, opts)); const r = await openPage(ctx, 'torah_trainer.html'); await r.page.waitForFunction(() => window.IvritAssignments && document.querySelectorAll('#ttAsgMine li').length >= 1, null, { timeout: 15000 }); await r.page.locator('#ttAsgMine .btn', { hasText: 'Show the reading' }).first().click(); await r.page.waitForFunction(() => !document.getElementById('ttAsgCurrent').hidden, null, { timeout: 5000 }); return { ctx, ...r }; };
     cloud.t.submissions.find(s => s.title === 'Ruth take 2').status = 'submitted';   // the student may record again in F
     // mic denied
     let r = await open({ init: () => { const g = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices); navigator.mediaDevices.getUserMedia = () => Promise.reject(Object.assign(new Error('denied'), { name: 'NotAllowedError' })); } });
@@ -698,8 +744,8 @@ try {
     cloud.t.submissions.filter(s => s.upload_status === 'pending').forEach(s => { cloud.cascade('submissions', s); cloud.t.submissions = cloud.t.submissions.filter(x => x !== s); });   // what the reconcile would do
     // a rate-limited sign-in
     const ctx = await newCtx(browser, cloud);
-    const p2 = await openPage(ctx, 'torah_trainer.html', { query: '?assignments=1', waitSignedIn: false });
-    await p2.page.waitForFunction(() => window.IvritAssignments, null, { timeout: 15000 });
+    const p2 = await openPage(ctx, 'torah_trainer.html', { waitSignedIn: false });
+    await p2.page.waitForFunction(() => window.IvritAccount && IvritAccount.status() === 'anonymous', null, { timeout: 15000 });
     cloud.tokenStatus = 429;
     await p2.page.evaluate(() => IvritAccount.openMenu()); await p2.page.click('[data-ivk="student"]'); await p2.page.fill('[data-ivk="username"]', student1.username); await p2.page.fill('[data-ivk="password"]', student1.password); await p2.page.click('[data-ivk="studentgo"]');
     check('F: a rate-limited sign-in says to wait, and the password field is cleared', await waitText(p2.page, '.ivacct-note', /Too many attempts/) && (await p2.page.inputValue('[data-ivk="password"]')) === '');
@@ -716,7 +762,7 @@ try {
   /* ───── H. privilege attempts through the fake, as the student ───── */
   {
     const ctx = await newCtx(browser, cloud, { session: student1Session });
-    const { page } = await openPage(ctx, 'torah_trainer.html', { query: '?assignments=1' });
+    const { page } = await openPage(ctx, 'torah_trainer.html');
     await page.waitForFunction(() => window.IvritAssignments, null, { timeout: 15000 });
     const noamId = cloud.t.students.find(x => /Noam/.test(cloud.t.profiles.find(p => p.id === x.id).display_name)).id;
     const ruthId = cloud.t.students.find(x => /Ruth/.test(cloud.t.profiles.find(p => p.id === x.id).display_name)).id;
@@ -753,8 +799,8 @@ try {
   /* ───── J. names and live regions; Hebrew + dark at 800px ───── */
   {
     const ctx = await newCtx(browser, cloud, { session: student1Session, lang: 'he', dark: true, viewport: { width: 800, height: 900 } });
-    const { page, errors } = await openPage(ctx, 'torah_trainer.html', { query: '?assignments=1' });
-    await page.waitForFunction(() => window.IvritAssignments && !document.getElementById('ttAsgStudent').hidden, null, { timeout: 15000 });
+    const { page, errors } = await openPage(ctx, 'torah_trainer.html');
+    await page.waitForFunction(() => window.IvritAssignments && !document.getElementById('ttAssign').hidden, null, { timeout: 15000 });
     await page.locator('#ttAsgMine .btn').first().click().catch(() => {});
     await sleep(500);
     const a11y = await page.evaluate(() => {
@@ -763,7 +809,7 @@ try {
       const unnamed = buttons.filter(b => !name(b)).map(b => b.id || b.className);
       const inputs = [...document.querySelectorAll('#ttAssign input, #ttAsgDialog input, #ttAsgDialog select')];
       const unlabeled = inputs.filter(i => !i.getAttribute('aria-label') && !i.closest('label') && !document.querySelector('label[for="' + i.id + '"]')).map(i => i.id);
-      const live = ['ttRecState', 'ttAsgStudentStatus', 'ttAsgOutNote', 'ttAsgDlgNote'].map(id => { const n = document.getElementById(id); return n && n.getAttribute('aria-live') === 'polite'; });
+      const live = ['ttRecState', 'ttAsgStudentStatus', 'ttAsgDlgNote'].map(id => { const n = document.getElementById(id); return n && n.getAttribute('aria-live') === 'polite'; });
       return { unnamed, unlabeled, live, dir: document.documentElement.dir, dark: document.body.classList.contains('dark'), overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1, raw: /\b(torah|assign|shared)\.[a-z_]+\.[a-z_]+/.test(document.getElementById('ttAssign').innerText) };
     });
     check('J: every button and field in the region and dialog is named; the live regions are polite', a11y.unnamed.length === 0 && a11y.unlabeled.length === 0 && a11y.live.every(Boolean), JSON.stringify(a11y));

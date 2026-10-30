@@ -29,7 +29,7 @@
  *   init(opts)                 optional { mount: 'auto' | selector | element | false, nameStep: false,
  *                              studentSignIn: true } (nameStep: false — account.html has its own name form;
  *                              studentSignIn — the chip's menu offers the username + password form; the Torah
- *                              Trainer sets it behind its ?assignments=1 flag, and a later call only adds options)
+ *                              Trainer sets it on every visit, and a later call only adds options)
  *   t(key, fallback)           translate via I18n when loaded, else the English fallback
  *   onSignOut(fn)              fn(uid, { keepLocal }) → void | Promise — run and awaited (bounded) before the
  *                              SDK sign-out, while the session is still valid

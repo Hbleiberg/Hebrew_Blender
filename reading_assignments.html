@@ -206,7 +206,7 @@ body.dark .hi-sun{display:inline-block;}
     <p data-i18n="assign.header.tagline">Student logins · Assignments under a code word · The recordings they submit</p>
   </div>
   <div class="hright">
-    <a class="hbtn" href="/torah_trainer.html?assignments=1"><svg class="hi hi-arrow dir-arrow" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/></svg><span class="hi-lbl" data-i18n="assign.header.trainer_link">Torah Trainer</span></a>
+    <a class="hbtn" href="/torah_trainer.html"><svg class="hi hi-arrow dir-arrow" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/></svg><span class="hi-lbl" data-i18n="assign.header.trainer_link">Torah Trainer</span></a>
     <div data-i18n-switcher></div>
     <button class="dark-btn" id="darkBtn" onclick="toggleDark()" aria-pressed="false" aria-label="Toggle dark mode" data-i18n-aria-label="shared.darkmode.toggle_title" data-i18n-title="shared.darkmode.toggle_title"><svg class="hi hi-moon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15.5A7 7 0 0 1 8.5 6a7 7 0 1 0 9.5 9.5z"/><path d="M17.5 2.5l.9 2.4 2.4.9-2.4.9-.9 2.4-.9-2.4-2.4-.9 2.4-.9z" fill="currentColor" stroke="none"/></svg><svg class="hi hi-sun" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></svg><span class="hi-lbl" data-i18n="shared.darkmode.label_dark">Dark</span></button>
   </div>
@@ -226,7 +226,7 @@ body.dark .hi-sun{display:inline-block;}
   <section class="tile" id="stStudent" hidden>
     <h2 data-i18n="assign.student.head">This page is for teachers</h2>
     <p data-i18n="assign.student.body">You are signed in with a student account. Your assignments, recordings and your teacher's feedback are in the Torah Trainer.</p>
-    <p><a href="/torah_trainer.html?assignments=1" data-i18n="assign.student.link">Go to the Torah Trainer</a></p>
+    <p><a href="/torah_trainer.html" data-i18n="assign.student.link">Go to the Torah Trainer</a></p>
   </section>
 
   <div id="stIn" hidden>
@@ -284,7 +284,7 @@ body.dark .hi-sun{display:inline-block;}
     <!-- ───── Assignments ───── -->
     <section class="tile" id="secAssignments" aria-labelledby="asgHead">
       <h2 id="asgHead" data-i18n="assign.list.head">Assignments</h2>
-      <p class="note" data-i18n-html="assign.list.note">To make a new one, open the <a href="/torah_trainer.html?assignments=1">Torah Trainer</a>, choose the parsha, aliyah or verse range as usual, and press <strong>Assign this reading</strong>. Students enter the code word in the Trainer to see the portion and record it.</p>
+      <p class="note" data-i18n-html="assign.list.note">To make a new one, open the <a href="/torah_trainer.html">Torah Trainer</a>, choose the parsha, aliyah or verse range as usual, and press <strong>Assign this reading</strong>. Students enter the code word in the Trainer to see the portion and record it.</p>
       <div class="toolbar"><button class="btn ghost sm" type="button" id="asgRefresh" data-i18n="account.holds.refresh">Refresh</button></div>
       <div id="asgHost" aria-live="polite"></div>
       <p class="status" id="asgStatus" role="status" aria-live="polite"></p>
@@ -563,7 +563,7 @@ function printCards(made) {
     dl.appendChild(el('dt', '', t('assign.students.col_username'))); dl.appendChild(el('dd', '', p.username));
     dl.appendChild(el('dt', '', t('assign.students.col_password'))); dl.appendChild(el('dd', '', p.password));
     c.appendChild(dl);
-    c.appendChild(el('div', 'card-site', t('assign.cards.site', { url: 'ivritsuite.com/torah_trainer.html?assignments=1' })));
+    c.appendChild(el('div', 'card-site', t('assign.cards.site', { url: 'ivritsuite.com/torah_trainer.html' })));
     host.appendChild(c);
   });
   document.body.classList.add('printing-cards');
@@ -601,7 +601,7 @@ function loadAssignments() {
   AS().assignments.list().then(rows => { if (!user || user.id !== me) return; assignments = rows || []; renderAssignments(); say('asgStatus', null); if (subsFor) { const a = assignments.find(x => x.id === subsFor.id); if (a) subsFor = a; } })
     .catch(err => { if (user && user.id === me) say('asgStatus', () => errText(err), true); }).then(() => setBusy('asgRefresh', false));
 }
-function trainerLink(a) { return '/torah_trainer.html?assignments=1&ref=' + encodeURIComponent(a.ref); }
+function trainerLink(a) { return '/torah_trainer.html?ref=' + encodeURIComponent(a.ref); }
 function renderAssignments() {
   const host = $('asgHost'); while (host.firstChild) host.removeChild(host.firstChild);
   if (!assignments.length) { host.appendChild(el('p', 'muted', t('assign.list.none'))); return; }
@@ -614,7 +614,7 @@ function renderAssignments() {
     box.appendChild(head);
     const code = el('p'); code.appendChild(document.createTextNode(t('assign.list.code_label') + ' ')); code.appendChild(el('strong', 'code', a.code_word)); box.appendChild(code);
     const facts = [t('assign.list.submitted_count', { n: a.submitted }), a.needs_rerecord ? t('assign.list.needs_count', { n: a.needs_rerecord }) : '', a.approved ? t('assign.list.approved_count', { n: a.approved }) : '',
-      a.due_date ? t('assign.list.due', { date: fmtDate(a.due_date) }) : '', a.class_id ? t('assign.list.class', { name: className(a.class_id) }) : '', a.peers_can_listen ? t('assign.list.peers_on') : '',
+      a.due_date ? t('assign.list.due', { date: fmtDate(a.due_date) }) : '', a.class_id ? t('assign.list.class', { name: className(a.class_id) }) : '', a.peers_can_listen ? t('assign.list.peers_on') : '', (a.reading && a.reading.view && typeof a.reading.view === 'object') ? t('assign.list.with_look') : '',
       !a.is_open && a.closed_at ? t('assign.list.deletes_on', { date: fmtDate(new Date(new Date(a.closed_at).getTime() + a.retention_days * 86400000).toISOString()) }) : ''].filter(Boolean);
     box.appendChild(el('p', 'muted', facts.join(' · ')));
     const act = el('div');

@@ -95365,3 +95365,11 @@ _(prior)_ **Next session (S578):** **PR `claude/improveloop-s573` (S573–S577, 
 - [x] 2026-10-30 | (same build) | js/ivrit-assignments.js (new), js/ivrit-account.js, js/ivrit-saves.js, torah_trainer.html, reading_assignments.html (new, unlisted), account.html, db/functions/, CSV, sw.js | **Phases 3–5 — the teacher and student flows**: student logins (username + password, `app_metadata.role`), the Trainer's `?assignments=1` region (code word, the range, record / listen / name / submit, my recordings, classmates), the teacher's page (logins, cards, classes, assignments, recordings, feedback, zip). | `smoke-assignments` 86/86; smoke-account 112/112; sw v1140
 
 - [x] 2026-10-30 | (same build) | privacy.html, terms.html, CSV (EN+HE), docs/reference/*, docs/backend-architecture.md, README.md, db/README.md, CLAUDE.md, docs/reading-assignments-teacher-guide.md (new) | **Phase 6 — the words**: the policy names reading assignments and Cloudflare as a subprocessor; the reference sections, the architecture map, the teacher's guide, the rules. | check-i18n Check E clean; check-ledger
+
+
+<!-- archived by compact-ledger at the S579 boundary, 2026-10-30 -->
+## Compaction (S579, 2026-10-30) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-30 | (same build) | torah_trainer.html, reading_assignments.html, account.html, index.html, js/ivrit-account.js, js/ivrit-assignments.js, CSV, docs, sw.js | **Reading assignments go public**: no `?assignments=1`; the teacher's side is the drawer's new Teacher tab (Assign closes the drawer; Escape returns the focus to the gear); the panel above the reading is the student's alone, with Hide folding it to a controls-strip button that mirrors the recording clock (`hebrewTorahTrainer_assignCollapsed`, per device); the Assign dialog sends the teacher's look as `reading.view` (the practice link's object; refused over the row's 2000-byte CHECK, measured worst case 1845), applied on the student's page as a link view named as the teacher's. Found on the way: two id-weight `display` rules outranked `[hidden]` (the recorder's audio element and submit form drew while idle). smoke-assignments 101/101, now on computed display. | found this build

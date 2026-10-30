@@ -1784,22 +1784,38 @@ synced with the blob).
 ---
 
 
-## Reading assignments — the `?assignments=1` region (`torah_trainer.html`)
+## Reading assignments — the student panel and the drawer's Teacher tab (`torah_trainer.html`)
 
-Behind the flag only: `initAssignments()` (called from `init()` after `initCloudSaves()`) shows the `#ttAssign`
-region above the reading, tells the chip to offer the student form (`IvritAccount.init({ studentSignIn: true })`)
-and injects `/js/ivrit-assignments.js`; without the flag the region, the dialog (`#ttAsgDialog`, on the favorite
-popup's classes and trap) and the code stay inert and nothing extra is downloaded — `smoke-assignments` case I.
-`asgRender()` picks the face from `IvritAccount.status()` and `role()`; `asgApplyI18n()` re-renders the lists on a
-language switch (wired from `applyI18n`).
+`initAssignments()` (called from `init()` after `initCloudSaves()`) tells the chip to offer the student form
+(`IvritAccount.init({ studentSignIn: true })`) and renders two things from `IvritAccount.status()` and `role()`
+(`asgRender()`, re-run on every account change): the **Teacher tab** of the settings drawer (`#ttTabPanelTeacher`,
+three faces — signed out with a Sign in button that opens the chip's menu, a student's account, a teacher with
+*Assign this reading…* and the management link) and the **student's panel** `#ttAssign` above the reading, shown
+only for a student's account (`asgPanelSync`). `/js/ivrit-assignments.js` is injected by `asgEnsureModule()` only
+once a session is stored, so an anonymous visit downloads nothing and sees nothing above the reading —
+`smoke-assignments` case I. The panel's *Hide* collapses it to `#ttAsgTopBtn` in the controls strip
+(`aria-expanded`, `aria-controls`), remembered per device in `hebrewTorahTrainer_assignCollapsed` (erase-only); while a
+take or an upload runs behind a collapsed panel the button's label mirrors the recorder's state line (the panel's
+`aria-live` line stays the announcer). The dialog (`#ttAsgDialog`, on the favorite popup's classes and trap) is the
+page's: Assign closes the drawer first (the Copy bar's pattern) and Escape returns the focus to the gear.
+`asgApplyI18n()` re-renders the lists and the banner on a language switch (wired from `applyI18n`).
 
 - **Teacher:** *Assign this reading…* takes `resolveRef()`'s `ref` — accepted only when it is one Torah range
   (`ASSIGN_REF_RE`, then `parseSharedRef`); a haftarah, a megillah or a multi-part holiday reading is refused with a
   hint toast. The dialog (title, a generated code word with *New code word*, minutes 1–30, due date, class, keep-for
   days, classmates may listen) creates the row through `IvritAssignments.assignments.create` with the Trainer's own
-  identifiers in `reading` (`parshahKey`, `scope`, `holidayKey`, `holidayPart`, `readingCycle`); the success card shows
+  identifiers in `reading` (`parshahKey`, `scope`, `holidayKey`, `holidayPart`, `readingCycle`) and, while the dialog's
+  *Students see this reading with my display settings* box is ticked (on by default whenever the look differs from
+  the defaults; disabled with a note when it does not), the teacher's look as `reading.view` — `linkDisplayObject()`,
+  the very object the practice link's `?s=` encodes, so the same `LINK_DISPLAY` validators and the same
+  My-Font exclusion apply; `syncAsgLookSummary()` writes the dialog's summary line. A look too large for the row's
+  2000-byte CHECK (`ASSIGN_READING_MAX`) is refused in the dialog, never trimmed silently. The success card shows
   the code word large. A code word already used by that teacher is refused (`23505` → `assign.error.code_taken`).
-- **Student:** `asgClaim` → `IvritAssignments.claim(code)` → `asgSetCurrent(row, true)` → `asgLoadRef(ref, label)`,
+- **Student:** `asgClaim` → `IvritAssignments.claim(code)` → `asgSetCurrent(row, true)` → `asgApplyView(row)` (a
+  `reading.view` opens as a link view, `linkViewApply(view, 'teacher')`: the values swap in, the controls, font and
+  colorings repaint through the cloud-download sequence, and the `#ttLinkView` banner says *your teacher's display
+  settings* with Keep / Use my settings — nothing is saved until Keep; a row without a view ends a previous
+  teacher's view) → `asgLoadRef(ref, label)`,
   the `?ref=` walk (`parseSharedRef`, `customRef` / `customLabel` / `scope = 'custom'`, the containing parasha seeded,
   `saveSettings(); syncParshaSelect(); fetchAndRender()`), so every reading tool works on the assigned range. The
   recorder (`IvritAssignments.recorder.create`) counts its own clock and stops at the assignment's minutes; states

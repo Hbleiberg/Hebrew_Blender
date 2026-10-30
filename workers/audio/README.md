@@ -197,7 +197,7 @@ around the internet:
 ## Checking that it all works
 
 - <https://recordings.ivritsuite.com/health> shows `ok`.
-- Sign in as a teacher on <https://ivritsuite.com/torah_trainer.html?assignments=1>, open the management page
+- Sign in as a teacher on <https://ivritsuite.com/torah_trainer.html>, open Settings → the **Teacher** tab, open the management page
   from there, create one test student (yourself), create an assignment, then sign in as that student in a
   private window, enter the code word, record ten seconds and submit. Back as the teacher, play it. The
   teacher guide (`docs/reading-assignments-teacher-guide.md`) walks through the same thing with pictures of

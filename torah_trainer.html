@@ -414,7 +414,8 @@ body.dark .tt-ctrl select, body.dark .tt-ctrl input[type="number"], body.dark .t
 .tt-ctrl select { min-width:110px; max-width:100%; }
 .tt-custom { flex-wrap:wrap; }        /* on a phone the verse boxes and Go drop to a second line instead of crushing the select */
 .tt-custom[hidden] { display:none; }
-#ttRecSrcCtrl[hidden] { display:none; }   /* the Chanting picker: hidden until the Total Torah source is offered */  /* [hidden] must beat the inline-flex rule (the #triYearRow trap) */
+#ttRecSrcCtrl[hidden] { display:none; }
+#ttAsgTopCtrl[hidden] { display:none; }   /* the student's collapsed assignments panel: shown by asgPanelSync only while folded */   /* the Chanting picker: hidden until the Total Torah source is offered */  /* [hidden] must beat the inline-flex rule (the #triYearRow trap) */
 .tt-custom select { min-width:96px; }  /* "Deuteronomy" fits; the 110px floor is the parsha picker's */
 .tt-custom input[type="number"] { padding-inline:6px; }
 .tt-ctrl select:focus, .tt-ctrl input:focus { outline:2px solid var(--focus-ring); outline-offset:0; }
@@ -720,13 +721,16 @@ body.dark .tt-resume-chip { background:var(--navy-deep); }
 .tt-linkview[hidden] { display:none; }
 .tt-linkview-btns { display:inline-flex; flex-wrap:wrap; gap:6px; }
 body.fullscreen .tt-linkview { display:none; }   /* the projector shows the reading, not this reader's choice */
-/* Reading assignments (?assignments=1): the region above the reading (the link-view note's look), its lists, and the
-   recorder. Hidden without the flag; body.fullscreen hides it like the note. The recorder's "Recording…" dot pulses
-   (neutralized under reduced motion with every other animation). */
+/* Reading assignments: the STUDENT's panel above the reading (the link-view note's look), its lists, and the recorder.
+   Shown only while a student is signed in (asgPanelSync); Hide collapses it to #ttAsgTopBtn in the controls strip;
+   body.fullscreen hides it like the note. The recorder's "Recording…" dot pulses (neutralized under reduced motion
+   with every other animation). The teacher's side lives in the drawer's Teacher tab. */
 .tt-assign { margin:0 0 14px; background:var(--white); border:1px solid var(--border); border-inline-start:4px solid var(--gold); border-radius:8px; padding:10px 14px; font-size:0.86rem; color:var(--text); box-shadow:var(--shadow-sm); }
 .tt-assign[hidden], .tt-assign [hidden] { display:none; }
 body.fullscreen .tt-assign { display:none; }
-.tt-assign-title { font-family:'Libre Baskerville',serif; font-size:0.95rem; font-weight:400; margin:0 0 6px; color:var(--navy); }
+.tt-assign-head { display:flex; align-items:center; justify-content:space-between; gap:8px; margin:0 0 6px; }
+.tt-assign-title { font-family:'Libre Baskerville',serif; font-size:0.95rem; font-weight:400; margin:0; color:var(--navy); }
+.tt-assign-title:focus-visible { outline:2px solid var(--focus-ring); outline-offset:2px; border-radius:3px; }
 body.dark .tt-assign-title { color:var(--gold-light); }
 .tt-assign-h3 { font-size:0.84rem; margin:12px 0 4px; }
 .tt-assign p { margin:0 0 6px; line-height:1.45; }
@@ -758,6 +762,7 @@ body.dark .tt-assign-badge.is-warn { color:#f0c060; background:#3a2f14; }
 @keyframes ttRecPulse { 0%,100% { opacity:1; } 50% { opacity:0.25; } }
 #ttRecAudio, #ttAsgPeers audio, #ttAsgMine audio { display:block; inline-size:100%; max-inline-size:480px; margin:8px 0; }
 #ttRecSubmitForm { display:flex; flex-wrap:wrap; gap:6px 10px; align-items:flex-end; margin:8px 0 0; }
+#ttRecAudio[hidden], #ttRecSubmitForm[hidden] { display:none; }   /* an id's display rule outranks .tt-assign [hidden]: say it again at the id's weight */
 #ttRecSubmitForm label { font-weight:600; display:flex; flex-direction:column; gap:3px; font-size:0.82rem; }
 .tt-rec-progress progress { inline-size:100%; max-inline-size:480px; display:block; margin:6px 0; }
 .tt-assign-bigcode { text-align:center; margin:10px 0; }
@@ -1391,7 +1396,7 @@ body.dark .settings-header { background:var(--navy-deep); }
 #drawerDarkBtn { font-size:1rem; }
 .settings-body { flex:1; overflow-y:auto; padding:16px; }
 
-/* ───── Drawer tabs (APG tablist; icon above label so seven fit the 380px drawer and a 92vw phone) ───── */
+/* ───── Drawer tabs (APG tablist; icon above label so eight fit the 380px drawer and a 92vw phone) ───── */
 .tt-tabs { display:flex; flex-shrink:0; background:var(--cream); border-block-end:1px solid var(--border); padding-inline:4px; container-type:inline-size; }
 body.dark .tt-tabs { background:var(--navy-deep); }
 .settings-modal .tt-tab {                       /* (0,2,0) beats .hi-btn's row layout */
@@ -1407,12 +1412,14 @@ body.dark .settings-modal .tt-tab { color:#99a2b8; }            /* the page's da
 body.dark .settings-modal .tt-tab[aria-selected="true"] { color:var(--text); }
 .settings-modal .tt-tab:focus-visible { outline:2px solid var(--focus-ring); outline-offset:-2px; }
 .tt-tabpanel[hidden] { display:none; }
-/* Seven labels share ~53px each at the default width (measured: "Favorites" needs 50px at 0.7rem, so the tabs carry no
-   side padding), ~46px on a 360px phone (92vw drawer) and ~44px at the 320px minimum the resize handle allows — a
-   viewport query is the wrong lever, the drawer is resized by hand, so the steps key on the strip's own width
-   (0.6rem: "Favorites" 43px; 0.58rem: 42px). After the base rule (same specificity — source order decides); a browser without container queries keeps the ellipsis. */
-@container (max-width: 345px) { .settings-modal .tt-tab { font-size:0.6rem; } }
-@container (max-width: 318px) { .settings-modal .tt-tab { font-size:0.58rem; } }
+/* Eight labels share ~46px each at the default width (measured: "Favorites" needs 50px at 0.7rem and 43px at 0.6rem, so
+   the tabs carry no side padding and drop to 0.6rem already at the default width), ~41px on a 360px phone (92vw
+   drawer) and ~39px at the 320px minimum the resize handle allows — a viewport query is the wrong lever, the drawer
+   is resized by hand, so the steps key on the strip's own width (0.58rem: "Favorites" 42px; 0.55rem: 39px). After
+   the base rule (same specificity — source order decides); a browser without container queries keeps the ellipsis. */
+@container (max-width: 400px) { .settings-modal .tt-tab { font-size:0.6rem; } }
+@container (max-width: 350px) { .settings-modal .tt-tab { font-size:0.58rem; } }
+@container (max-width: 325px) { .settings-modal .tt-tab { font-size:0.55rem; } }
 
 /* ───── Sections: a serif heading over a hairline rule (the Trope Tutor's .tu-set-title); flat, nothing collapses ───── */
 .tt-set + .tt-set { margin-block-start:22px; }
@@ -2429,6 +2436,11 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
   </span>
   <!-- Settings: the drawer's one entry, in the row a teacher already looks at (a gear among the header's
        icon buttons was easy to overlook). Primary-styled and labelled, pushed to the inline end. -->
+  <!-- The student's collapsed assignments panel (asgPanelSync owns `hidden`; its label mirrors the recorder's state
+       while a take or an upload runs with the panel hidden, so the reading can be read while recording). -->
+  <span class="tt-ctrl" id="ttAsgTopCtrl" hidden>
+    <button id="ttAsgTopBtn" class="btn btn-xs btn-secondary" type="button" aria-expanded="false" aria-controls="ttAssign"></button>
+  </span>
   <span class="tt-ctrl" style="margin-inline-start:auto;">
     <button id="gearBtn" class="btn btn-xs hi-btn" onclick="openSettings()" type="button" title="Settings" data-i18n-title="torah.header.settings_title"><svg class="hi hi-sm hi-gear" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12.0 1.8 L14.0 2.0 L15.1 4.6 L16.4 5.3 L19.2 4.8 L20.5 6.3 L19.4 8.9 L19.8 10.4 L22.2 12.0 L22.0 14.0 L19.4 15.1 L18.7 16.4 L19.2 19.2 L17.7 20.5 L15.1 19.4 L13.6 19.8 L12.0 22.2 L10.0 22.0 L8.9 19.4 L7.6 18.7 L4.8 19.2 L3.5 17.7 L4.6 15.1 L4.2 13.6 L1.8 12.0 L2.0 10.0 L4.6 8.9 L5.3 7.6 L4.8 4.8 L6.3 3.5 L8.9 4.6 L10.4 4.2 Z"/><circle cx="12" cy="12" r="3.2"/></svg><span class="hi-lbl" data-i18n="torah.header.settings_title">Settings</span></button>
   </span>
@@ -2491,19 +2503,15 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
       <button class="btn btn-xs btn-secondary" type="button" onclick="linkViewRevert()" data-i18n="torah.share.view_revert">Use my settings</button>
     </span>
   </div>
-  <!-- Reading assignments (?assignments=1): the region's three faces (signed out / teacher / student) are shown by
-       asgRender(); the recorder's state line is the one live region the flow announces through. Hidden without the flag. -->
+  <!-- Reading assignments: the student's panel (shown by asgPanelSync only while a student is signed in; Hide collapses
+       it to #ttAsgTopBtn in the controls strip). The recorder's state line is the one live region the flow announces
+       through. The teacher's side is the drawer's Teacher tab (#ttTabPanelTeacher). -->
   <section class="tt-assign" id="ttAssign" aria-labelledby="ttAssignTitle" hidden>
-    <h2 class="tt-assign-title" id="ttAssignTitle" data-i18n="torah.assign.title">Reading assignments</h2>
-    <div id="ttAsgOut" hidden><p class="tt-assign-note" id="ttAsgOutNote" role="status" aria-live="polite"></p></div>
-    <div id="ttAsgTeacher" hidden>
-      <p data-i18n="torah.assign.teacher_note">Choose the parsha, aliyah or verse range as usual, then assign it: students type the code word here to see it and record it.</p>
-      <div class="tt-assign-actions">
-        <button type="button" class="btn btn-xs" id="ttAsgAssignBtn" data-i18n="torah.assign.assign_btn">Assign this reading…</button>
-        <a class="btn btn-xs btn-secondary" href="/reading_assignments.html" data-i18n="torah.assign.manage_link">Students, assignments and recordings</a>
-      </div>
+    <div class="tt-assign-head">
+      <h2 class="tt-assign-title" id="ttAssignTitle" tabindex="-1" data-i18n="torah.assign.title">Reading assignments</h2>
+      <button type="button" class="btn btn-xs btn-secondary hi-btn" id="ttAsgHideBtn" aria-controls="ttAssign"><svg class="hi hi-sm hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg><span class="hi-lbl" data-i18n="torah.assign.hide_btn">Hide</span></button>
     </div>
-    <div id="ttAsgStudent" hidden>
+    <div id="ttAsgStudent">
       <form class="tt-assign-code" id="ttAsgCodeForm" novalidate>
         <label><span data-i18n="torah.assign.code_label">Code word from your teacher</span><input type="text" id="ttAsgCode" maxlength="40" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="sunny-fox-38" data-i18n-placeholder="torah.assign.code_placeholder"></label>
         <button type="submit" class="btn btn-xs" data-i18n="torah.assign.code_btn">Open the reading</button>
@@ -2656,6 +2664,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
     <button type="button" class="tt-tab hi-btn" role="tab" id="ttTabAudio" aria-controls="ttTabPanelAudio" aria-selected="false" tabindex="-1" onclick="setSettingsTab('audio')"><svg class="hi hi-sm hi-music" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17.5V5.2l10-2v12.3"/><ellipse cx="6.4" cy="17.8" rx="2.7" ry="2.3" fill="currentColor"/><ellipse cx="16.4" cy="15.5" rx="2.7" ry="2.3" fill="currentColor"/></svg><span class="hi-lbl" data-i18n="torah.tabs.audio">Audio</span></button>
     <button type="button" class="tt-tab hi-btn" role="tab" id="ttTabCalendar" aria-controls="ttTabPanelCalendar" aria-selected="false" tabindex="-1" onclick="setSettingsTab('calendar')"><svg class="hi hi-sm hi-calendar" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.2" y="5.4" width="17.6" height="15.2" rx="2.2"/><path d="M3.2 10.2h17.6"/><path d="M8.2 3v4.4M15.8 3v4.4"/><circle cx="12" cy="15.6" r="1.7" fill="currentColor" stroke="none"/></svg><span class="hi-lbl" data-i18n="torah.tabs.calendar">Calendar</span></button>
     <button type="button" class="tt-tab hi-btn" role="tab" id="ttTabShare" aria-controls="ttTabPanelShare" aria-selected="false" tabindex="-1" onclick="setSettingsTab('share')"><svg class="hi hi-sm hi-link" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 13.7a4 4 0 0 0 5.7 0l3-3a4 4 0 1 0-5.7-5.7l-1.7 1.7"/><path d="M13.7 10.3a4 4 0 0 0-5.7 0l-3 3a4 4 0 1 0 5.7 5.7l1.7-1.7"/></svg><span class="hi-lbl" data-i18n="torah.tabs.share">Share</span></button>
+    <button type="button" class="tt-tab hi-btn" role="tab" id="ttTabTeacher" aria-controls="ttTabPanelTeacher" aria-selected="false" tabindex="-1" onclick="setSettingsTab('teacher')"><svg class="hi hi-sm hi-pencil" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17v3z"/><path d="M13.5 6.5l3 3"/></svg><span class="hi-lbl" data-i18n="torah.tabs.teacher">Teacher</span></button>
     <button type="button" class="tt-tab hi-btn" role="tab" id="ttTabMore" aria-controls="ttTabPanelMore" aria-selected="false" tabindex="-1" onclick="setSettingsTab('more')"><svg class="hi hi-sm hi-gear" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12.0 1.8 L14.0 2.0 L15.1 4.6 L16.4 5.3 L19.2 4.8 L20.5 6.3 L19.4 8.9 L19.8 10.4 L22.2 12.0 L22.0 14.0 L19.4 15.1 L18.7 16.4 L19.2 19.2 L17.7 20.5 L15.1 19.4 L13.6 19.8 L12.0 22.2 L10.0 22.0 L8.9 19.4 L7.6 18.7 L4.8 19.2 L3.5 17.7 L4.6 15.1 L4.2 13.6 L1.8 12.0 L2.0 10.0 L4.6 8.9 L5.3 7.6 L4.8 4.8 L6.3 3.5 L8.9 4.6 L10.4 4.2 Z"/><circle cx="12" cy="12" r="3.2"/></svg><span class="hi-lbl" data-i18n="torah.tabs.more">More</span></button>
   </div>
   <div class="settings-body">
@@ -3185,6 +3194,26 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
         </div>
       </div>
     </div>
+    <!-- Teacher options: reading assignments (the teacher's side; the student's panel is #ttAssign above the reading).
+         Three faces by asgRender(): signed out, a student's account, a teacher. Assign closes the drawer first (the
+         Copy bar's pattern: the dialog is the page's, not the drawer's). -->
+    <div class="tt-tabpanel" id="ttTabPanelTeacher" role="tabpanel" aria-labelledby="ttTabTeacher" hidden>
+      <div class="tt-set" data-set="teacher">
+        <h3 class="tt-set-title" tabindex="-1" data-i18n="torah.settings.panel_teacher">Teacher options</h3>
+        <div id="ttTeachOut">
+          <p class="tt-set-note" data-i18n="torah.assign.teach_out">Sign in with your teacher account (the account button in the header) to assign readings to your students and hear their recordings.</p>
+          <div class="form-row"><button type="button" class="btn btn-xs" id="ttTeachSignIn" data-i18n="account.out.sign_in">Sign in</button></div>
+        </div>
+        <div id="ttTeachStudent" hidden>
+          <p class="tt-set-note" data-i18n="torah.assign.teach_student">This section is for teachers. Your assignments and recordings are in the panel above the reading.</p>
+        </div>
+        <div id="ttTeachIn" hidden>
+          <p class="tt-set-note" data-i18n="torah.assign.teacher_note">Choose the parsha, aliyah or verse range as usual, then assign it: students type the code word in their Torah Trainer to see it and record it.</p>
+          <div class="form-row"><button type="button" class="btn btn-xs hi-btn" id="ttAsgAssignBtn"><svg class="hi hi-sm hi-pencil" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17v3z"/><path d="M13.5 6.5l3 3"/></svg><span class="hi-lbl" data-i18n="torah.assign.assign_btn">Assign this reading…</span></button></div>
+          <div class="form-row"><a class="btn btn-xs btn-secondary" href="/reading_assignments.html" data-i18n="torah.assign.manage_link">Students, assignments and recordings</a></div>
+        </div>
+      </div>
+    </div>
     <div class="tt-tabpanel" id="ttTabPanelMore" role="tabpanel" aria-labelledby="ttTabMore" hidden>
       <!-- Account saves (optional accounts): the shared js/ivrit-saves.js status line renders into #cloudSavesPanel (the id predates the line); see initCloudSaves() -->
       <div class="tt-set" data-set="cloud">
@@ -3244,7 +3273,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
     <button type="button" class="btn btn-xs" id="ttFavSaveBtn" onclick="saveFavoriteFromDialog()" data-i18n="torah.fav.dlg_save">Save</button>
   </div>
 </div>
-<!-- Assign this reading (?assignments=1): the favorite popup's contract (classes, trap, Escape), opened by #ttAsgAssignBtn. -->
+<!-- Assign this reading: the favorite popup's contract (classes, trap, Escape), opened by #ttAsgAssignBtn in the drawer's Teacher tab (the drawer closes first). -->
 <div class="tt-fav-backdrop" id="ttAsgBackdrop" hidden></div>
 <div class="tt-fav-dialog" id="ttAsgDialog" role="dialog" aria-modal="true" aria-labelledby="ttAsgDlgHead" hidden>
   <h3 class="tt-set-title" id="ttAsgDlgHead" data-i18n="torah.assign.dlg_title">Assign this reading</h3>
@@ -3258,6 +3287,10 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
     <div class="form-row"><label for="ttAsgDlgClass" data-i18n="torah.assign.dlg_class">Class (optional)</label><select id="ttAsgDlgClass"></select></div>
     <div class="form-row"><label for="ttAsgDlgRetention" data-i18n="torah.assign.dlg_retention">Keep recordings (days after closing)</label><input type="number" id="ttAsgDlgRetention" min="7" max="180" step="1" value="30"></div>
     <label class="tt-fav-check"><input type="checkbox" id="ttAsgDlgPeers"><span data-i18n="torah.assign.dlg_peers">Classmates may listen to each other's latest recording (never to feedback)</span></label>
+    <!-- The teacher's look rides along as reading.view — the practice link's ?s= object (LINK_DISPLAY), applied on the
+         student's page as a link view (banner, Keep / Use my settings). syncAsgLookSummary owns the summary line. -->
+    <label class="tt-fav-check"><input type="checkbox" id="ttAsgDlgLook" onchange="syncAsgLookSummary()"><span data-i18n="torah.assign.dlg_look">Students see this reading with my display settings as they are now (layout, font, colors, what the reading shows)</span></label>
+    <p class="tt-fav-summary" id="ttAsgDlgLookSummary" hidden></p>
     <p class="tt-fav-note" id="ttAsgDlgNote" role="status" aria-live="polite" hidden></p>
     <div id="ttAsgDlgDone" hidden></div>
     <div class="tt-fav-actions">
@@ -9059,7 +9092,7 @@ function maybeEnsureTranslit() {
    '*Collapsed' omit still covers karaokeBarCollapsed). setSettingsTab is the one writer of tab state;
    the drawer always opens on Favorites (no tab memory — see openSettings), and openSettingsAtPanel(key)
    lands on a section by its data-set key. */
-const TT_TAB_IDS = { favorites: 'ttTabFavorites', text: 'ttTabText', colors: 'ttTabColors', audio: 'ttTabAudio', calendar: 'ttTabCalendar', share: 'ttTabShare', more: 'ttTabMore' };
+const TT_TAB_IDS = { favorites: 'ttTabFavorites', text: 'ttTabText', colors: 'ttTabColors', audio: 'ttTabAudio', calendar: 'ttTabCalendar', share: 'ttTabShare', teacher: 'ttTabTeacher', more: 'ttTabMore' };
 // Section key → tab. The keys are the old panel keys, so openSettingsAtPanel's callers — the Copy bar's
 // "Copy options…" ('copy'), IvritSaves.attach's open ('cloud'), the toolbar's Share ('share') — and
 // scripts/smoke-tools.mjs keep working.
@@ -9070,6 +9103,7 @@ const TT_SECTION_TAB = {
   audio: 'audio', karaoke: 'audio', staff: 'audio',
   schedule: 'calendar', lookup: 'calendar', holiday: 'calendar', special: 'calendar', megillah: 'calendar',
   share: 'share', copy: 'share', handout: 'share', print: 'share',
+  teacher: 'teacher',
   cloud: 'more', about: 'more', reset: 'more'
 };
 function setSettingsTab(name) {
@@ -12028,7 +12062,7 @@ async function init() {
   document.addEventListener('keydown', _pitchKick, true);
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') _pitchKick(); });
   initCloudSaves();
-  initAssignments();   // ?assignments=1 only; inert otherwise
+  initAssignments();   // the Teacher tab's faces and the student's panel; downloads nothing for an anonymous visit
   // On the Triennial or Weekday cycle 'parsha-full' is that cycle's portion (Bereshit's weekday reading is
   // Genesis 1:1-13), so a ?parsha=&v= link could land outside it with nothing shown. The link names the
   // parsha: a verse outside the portion opens the whole parsha as a range under the parsha's name, and the
@@ -12705,7 +12739,8 @@ const LINK_DISPLAY = {
 // Each color list's look, with the on/off switch it shows under. A look is on screen only while its
 // coloring is on, so it rides a link only then, and a reader takes one only then.
 const LINK_LOOK_SWITCH = { colorCodingMode: 'colorCodeNikkud', tropeCodingMode: 'colorCodeTrope', tropeColorBy: 'colorCodeTrope' };
-function linkDisplayParam() {
+// The look as an object — what ?s= carries, and what an assignment stores as reading.view (same validators both ways).
+function linkDisplayObject() {
   const out = { v: LINK_VIEW_V };
   Object.keys(LINK_DISPLAY).forEach(k => {
     const v = LINK_DISPLAY[k](settings[k]);
@@ -12718,22 +12753,29 @@ function linkDisplayParam() {
     const sw = LINK_LOOK_SWITCH[k];
     if (!(Object.prototype.hasOwnProperty.call(out, sw) ? out[sw] : DEFAULTS[sw])) delete out[k];
   });
-  return shareB64Encode(JSON.stringify(out));
+  return out;
 }
+function linkDisplayParam() { return shareB64Encode(JSON.stringify(linkDisplayObject())); }
 // The teacher's font when it is one of their own (My Fonts, on this device only), for the toast to
 // name; '' when every copy of this page has the face.
 function linkFontLeftOut() {
   const f = settings.hebFont;
   return (typeof f === 'string' && f && LINK_DISPLAY.hebFont(f) === undefined) ? f : '';
 }
-function linkViewApply() {
-  let data = null;
-  try {
-    const raw = new URLSearchParams(location.search).get('s');
-    if (!raw || raw.length > 4096) return;   // no link, or far longer than any this page writes
-    data = ivritSafeParse(shareB64Decode(raw));
-  } catch (e) { return; }
-  if (!data || typeof data !== 'object' || Array.isArray(data) || data.v !== LINK_VIEW_V) return;
+// data: the look object, from the address bar's ?s= when absent (from = 'link'), or a teacher's assignment row
+// (from = 'teacher': reading.view, hostile data like any cloud value — every key passes LINK_DISPLAY's validator, an
+// unknown key is ignored, and the banner names the teacher). Returns true when a view opened.
+function linkViewApply(data, from) {
+  from = from || 'link';
+  if (data === undefined) {
+    data = null;
+    try {
+      const raw = new URLSearchParams(location.search).get('s');
+      if (!raw || raw.length > 4096) return false;   // no link, or far longer than any this page writes
+      data = ivritSafeParse(shareB64Decode(raw));
+    } catch (e) { return false; }
+  }
+  if (!data || typeof data !== 'object' || Array.isArray(data) || data.v !== LINK_VIEW_V) return false;
   // The on/off each look will show under during the view: the link's value, the reader's own where
   // the link names one it refuses, the pristine default where it leaves it out. A look whose
   // coloring will be off is not taken at all — the reader keeps their own, untracked — since nothing
@@ -12745,6 +12787,7 @@ function linkViewApply() {
     if (Object.prototype.hasOwnProperty.call(data, sw)) { const v = LINK_DISPLAY[sw](data[sw]); on = v === undefined ? settings[sw] : v; }
     lookOn[k] = !!on;
   });
+  if (_linkView) linkViewEnd();   // a second look replaces the first: nothing of it may be mistaken for the reader's
   const own = {}, shown = {};
   Object.keys(LINK_DISPLAY).forEach(k => {
     if (Object.prototype.hasOwnProperty.call(lookOn, k) && !lookOn[k]) return;
@@ -12760,16 +12803,26 @@ function linkViewApply() {
     shown[k] = JSON.parse(JSON.stringify(want));
     settings[k] = JSON.parse(JSON.stringify(want));   // a copy of its own: the pickers edit the color maps in place
   });
-  if (!Object.keys(own).length) return;   // the reader already sees it this way
-  _linkView = { own, shown };
-  const note = document.getElementById('ttLinkView');
-  if (note) note.hidden = false;
+  if (!Object.keys(own).length) return false;   // the reader already sees it this way
+  _linkView = { own, shown, from };
+  linkViewSyncNote();
+  return true;
+}
+// The banner's sentence: the sender's (a practice link) or the teacher's (an assignment); re-run on a language change.
+function linkViewSyncNote() {
+  const note = document.getElementById('ttLinkView'), msg = document.getElementById('ttLinkViewMsg');
+  if (!note || !msg) return;
+  if (!_linkView) { note.hidden = true; return; }
+  msg.textContent = I18n.t(_linkView.from === 'teacher' ? 'torah.assign.view_note' : 'torah.share.view_note');
+  note.hidden = false;
 }
 function linkViewEnd() {
   if (!_linkView) return;
+  const fromLink = _linkView.from !== 'teacher';
   _linkView = null;
   const note = document.getElementById('ttLinkView');
   if (note) note.hidden = true;
+  if (!fromLink) return;   // a teacher's look came from the row, not the address bar: nothing there to drop
   // Decided: a reload now opens what the reader chose, not the link's look again.
   try {
     const u = new URL(location.href);
@@ -12829,16 +12882,20 @@ function dismissHintToast() {
 }
 
 /* ══════════════════════════════════════════════════════
-   READING ASSIGNMENTS (?assignments=1) — a teacher assigns the reading on screen under a code word; a student
-   enters the code, sees the portion, records it here and submits. Everything below is inert without the flag:
-   the markup stays hidden and js/ivrit-assignments.js is never downloaded. Signed in, the role comes from the
-   token (IvritAccount.role()); the database's policies decide the rest. No user text ever reaches innerHTML —
-   titles, feedback, names and code words are written with textContent. The recording's elapsed-time timer is the
-   one timer this feature adds (the recorder's; the upload is event-driven).
+   READING ASSIGNMENTS — a teacher assigns the reading on screen under a code word (the drawer's Teacher tab); a
+   student enters the code in the panel above the reading, sees the portion, records it there and submits. An
+   anonymous visit downloads nothing extra: js/ivrit-assignments.js loads only once a session is stored
+   (asgEnsureModule), and the student's panel shows only for a student's account (asgPanelSync; Hide collapses it
+   to the controls strip's button, remembered per device in hebrewTorahTrainer_assignCollapsed). Signed in, the
+   role comes from the token (IvritAccount.role()); the database's policies decide the rest. No user text ever
+   reaches innerHTML — titles, feedback, names and code words are written with textContent. The recording's
+   elapsed-time timer is the one timer this feature adds (the recorder's; the upload is event-driven). A teacher's
+   look travels as reading.view, applied on the student's page as a link view (LINK VIEW above).
    ══════════════════════════════════════════════════════ */
-const ASSIGN_FLAG = new URLSearchParams(location.search).get('assignments') === '1';
+const ASSIGN_COLLAPSED_KEY = 'hebrewTorahTrainer_assignCollapsed';   // per-device, erase-only (index.html's list)
+const ASSIGN_READING_MAX = 2000;   // bytes: assignments.reading's CHECK (db/migrations/0008); the dialog refuses a look that would not fit
 const ASSIGN_REF_RE = /^(Genesis|Exodus|Leviticus|Numbers|Deuteronomy) [0-9]{1,3}:[0-9]{1,3}(-([0-9]{1,3}:)?[0-9]{1,3})?$/;
-const _asg = { loaded: false, role: null, current: null, mine: null, peers: null, take: null, recorder: null, pendingRow: null, uploading: false, state: 'idle', xhr: null, classes: null, blobUrls: [] };
+const _asg = { loaded: false, loading: false, collapsed: false, role: null, current: null, mine: null, peers: null, take: null, recorder: null, pendingRow: null, uploading: false, state: 'idle', xhr: null, classes: null, blobUrls: [] };
 const asgEl = (id) => document.getElementById(id);
 function asgT(k, p) { return window.I18n ? I18n.t(k, p) : k; }
 function asgMake(tag, cls, text) { const n = document.createElement(tag); if (cls) n.className = cls; if (text !== undefined && text !== null) n.textContent = text; return n; }
@@ -12849,23 +12906,18 @@ function asgDate(iso) { if (!iso) return ''; try { return new Date(iso).toLocale
 function asgClock(s) { s = Math.max(0, Math.round(Number(s) || 0)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
 
 function initAssignments() {
-  if (!ASSIGN_FLAG) return;
   const region = asgEl('ttAssign');
   if (!region || !window.IvritAccount) return;
-  region.hidden = false;
-  document.body.classList.add('tt-assign-on');
+  try { _asg.collapsed = localStorage.getItem(ASSIGN_COLLAPSED_KEY) === '1'; } catch (e) {}
   IvritAccount.init({ studentSignIn: true });   // the chip's menu gains the username + password form on this page only
-  // The module is loaded only now: an unflagged visit never downloads it.
-  const s = document.createElement('script');
-  s.src = '/js/ivrit-assignments.js';
-  s.async = true;
-  s.onload = () => { _asg.loaded = true; asgRender(); };
-  s.onerror = () => { asgSay('ttAsgOutNote', asgT('torah.assign.module_failed'), true); asgEl('ttAsgOut').hidden = false; };
-  document.head.appendChild(s);
   IvritAccount.onChange(() => asgRender());
+  asgRender();
   // Wiring (static controls; the lists are rebuilt by their renderers).
   asgEl('ttAsgCodeForm').addEventListener('submit', asgClaim);
-  asgEl('ttAsgAssignBtn').addEventListener('click', openAsgDialog);
+  asgEl('ttAsgAssignBtn').addEventListener('click', () => { closeSettings(); openAsgDialog(document.getElementById('gearBtn')); });   // the dialog is the page's: the gear, not the drawer's button, gets the focus back
+  asgEl('ttTeachSignIn').addEventListener('click', () => { closeSettings(); IvritAccount.openMenu(); });
+  asgEl('ttAsgHideBtn').addEventListener('click', () => asgCollapse(true));
+  asgEl('ttAsgTopBtn').addEventListener('click', () => asgCollapse(false));
   asgEl('ttAsgDlgCancel').addEventListener('click', closeAsgDialog);
   asgEl('ttAsgBackdrop').addEventListener('click', closeAsgDialog);
   asgEl('ttAsgDlgRegen').addEventListener('click', () => { asgEl('ttAsgDlgCode').value = IvritAssignments.codeWord.generate(); asgEl('ttAsgDlgCode').focus(); });
@@ -12883,32 +12935,67 @@ function initAssignments() {
   window.addEventListener('pagehide', () => { if (_asg.recorder) { try { _asg.recorder.cancel(); } catch (e) {} } _asg.blobUrls.forEach(u => { try { URL.revokeObjectURL(u); } catch (e) {} }); });
 }
 
-// Which of the three faces the region shows, from the session state and the role.
+// The module, once a session is stored (signed in, loading, or remembered offline): an anonymous visit never asks for it.
+function asgEnsureModule() {
+  if (_asg.loaded || _asg.loading || window.IvritAssignments) { if (window.IvritAssignments) _asg.loaded = true; return; }
+  _asg.loading = true;
+  const s = document.createElement('script');
+  s.src = '/js/ivrit-assignments.js';
+  s.async = true;
+  s.onload = () => { _asg.loaded = true; _asg.loading = false; asgRender(); };
+  s.onerror = () => { _asg.loading = false; showHintToast(asgT('torah.assign.module_failed')); };
+  document.head.appendChild(s);
+}
+// The Teacher tab's face and the student's panel, from the session state and the role.
 function asgRender() {
-  if (!ASSIGN_FLAG) return;
-  const a = window.IvritAccount, st = a ? a.status() : 'disabled';
+  const a = window.IvritAccount;
   const user = a && a.user();
   const role = user ? user.role : null;
-  const out = asgEl('ttAsgOut'), teacher = asgEl('ttAsgTeacher'), student = asgEl('ttAsgStudent');
-  if (!_asg.loaded || !user) {
-    out.hidden = false; teacher.hidden = true; student.hidden = true;
-    asgSay('ttAsgOutNote', st === 'loading' ? asgT('shared.account.loading') : (st === 'offline' || st === 'unavailable') ? asgT('shared.account.needs_internet') : asgT('torah.assign.out_note'), false);
-    if (!user && _asg.role) { _asg.role = null; _asg.current = null; _asg.mine = null; recReset(); }
-    return;
-  }
-  out.hidden = true;
-  if (role === 'student') {
-    teacher.hidden = true; student.hidden = false;
-    if (_asg.role !== 'student') { _asg.role = 'student'; asgLoadMine(); }
+  if (a && a.hasStoredSession()) asgEnsureModule();
+  const out = asgEl('ttTeachOut'), tIn = asgEl('ttTeachIn'), tStu = asgEl('ttTeachStudent');
+  if (!user) {
+    out.hidden = false; tIn.hidden = true; tStu.hidden = true;
+    if (_asg.role) { _asg.role = null; _asg.current = null; _asg.mine = null; _asg.peers = null; recReset(); asgRenderCurrent(); asgRenderMine(); asgRenderPeers(); }
+  } else if (role === 'student') {
+    out.hidden = true; tIn.hidden = true; tStu.hidden = false;
+    if (_asg.loaded && _asg.role !== 'student') { _asg.role = 'student'; asgLoadMine(); }
   } else {
-    student.hidden = true; teacher.hidden = false;
+    out.hidden = true; tStu.hidden = true; tIn.hidden = false;
     _asg.role = 'teacher';
   }
+  asgPanelSync();
+}
+// The student's panel is on screen only for a student with the module loaded; collapsed, its button stands in the
+// controls strip instead. Nothing of it exists for a teacher or a visitor (the DOM above the reading is theirs as before).
+function asgPanelSync() {
+  const a = window.IvritAccount, user = a && a.user();
+  const isStudent = !!(_asg.loaded && user && user.role === 'student');
+  const region = asgEl('ttAssign'), ctrl = asgEl('ttAsgTopCtrl'), top = asgEl('ttAsgTopBtn');
+  region.hidden = !isStudent || _asg.collapsed;
+  ctrl.hidden = !isStudent || !_asg.collapsed;
+  top.setAttribute('aria-expanded', _asg.collapsed ? 'false' : 'true');
+  asgTopBtnSync();
+}
+function asgCollapse(collapse) {
+  _asg.collapsed = !!collapse;
+  try { if (_asg.collapsed) localStorage.setItem(ASSIGN_COLLAPSED_KEY, '1'); else localStorage.removeItem(ASSIGN_COLLAPSED_KEY); } catch (e) {}
+  asgPanelSync();
+  const to = _asg.collapsed ? asgEl('ttAsgTopBtn') : asgEl('ttAssignTitle');
+  if (to && !to.hidden) { try { to.focus(); } catch (e) {} }
+}
+// The collapsed button names the panel; while a take or an upload runs behind it, the recorder's state as well (the
+// panel's live line stays the announcer; this is the eye's copy).
+function asgTopBtnSync() {
+  const top = asgEl('ttAsgTopBtn'); if (!top) return;
+  let label = asgT('torah.assign.title');
+  const st = asgEl('ttRecState');
+  if (_asg.collapsed && (_asg.state === 'recording' || _asg.state === 'uploading') && st && st.textContent) label += ' · ' + st.textContent;
+  top.textContent = label;
 }
 function asgApplyI18n() {
-  if (!ASSIGN_FLAG) return;
   asgRender();
   asgRenderCurrent(); asgRenderMine(); asgRenderPeers(); recRenderState();
+  linkViewSyncNote();
 }
 
 /* ───── the student: a code word opens the reading ───── */
@@ -12940,9 +13027,23 @@ function asgClaim(e) {
 function asgSetCurrent(row, load) {
   if (_asg.current && _asg.current.id !== row.id) recReset();
   _asg.current = row;
-  if (load) asgLoadRef(row.ref, row.ref_label);
+  if (load) { asgApplyView(row); asgLoadRef(row.ref, row.ref_label); }
   asgRenderCurrent();
   asgLoadPeers();
+}
+// The teacher's look (reading.view), shown as a link view: the controls, the font and the colorings repaint from the
+// swapped-in values (the cloud-download sequence, short of the reading, which asgLoadRef fetches next); without one,
+// a look a previous assignment left on screen ends. Nothing is saved: Keep / Use my settings on the banner decide.
+function asgApplyView(row) {
+  const v = row && row.reading && row.reading.view;
+  const opened = (v && typeof v === 'object' && !Array.isArray(v)) ? linkViewApply(v, 'teacher') : false;
+  if (!opened) { if (_linkView && _linkView.from === 'teacher') linkViewEnd(); return; }
+  syncFormToSettings();
+  setHebFont(settings.hebFont);
+  initColorPickers();
+  initTropeColorPickers();
+  applyTropeColors();
+  applyDisplayClasses();
 }
 function asgRenderCurrent() {
   const box = asgEl('ttAsgCurrent'), a = _asg.current;
@@ -13058,6 +13159,7 @@ function recRenderState() {
   else if (st === 'uploading') state.textContent = asgT('torah.assign.state_uploading', { pct: _asg.pct || 0 });
   else if (st === 'done') state.textContent = asgT('torah.assign.state_done');
   else if (st === 'failed') state.textContent = asgT('torah.assign.state_failed', { error: _asg.lastError || '' });
+  asgTopBtnSync();
 }
 function recReset() {
   if (_asg.recorder) { try { _asg.recorder.cancel(); } catch (e) {} _asg.recorder = null; }
@@ -13144,7 +13246,7 @@ function recUpload() {
 
 /* ───── the teacher: assign the reading on screen ───── */
 let _asgOpener = null;
-function openAsgDialog() {
+function openAsgDialog(opener) {
   const r = resolveRef();
   const ref = r && r.ref ? String(r.ref) : '';
   if (!ref || !ASSIGN_REF_RE.test(ref) || !parseSharedRef(ref)) { showHintToast(asgT('torah.assign.dlg_not_torah')); return; }
@@ -13153,6 +13255,9 @@ function openAsgDialog() {
   asgEl('ttAsgDlgTitle').value = r.label || ref;
   asgEl('ttAsgDlgCode').value = IvritAssignments.codeWord.generate();
   asgEl('ttAsgDlgMinutes').value = 10; asgEl('ttAsgDlgDue').value = ''; asgEl('ttAsgDlgPeers').checked = false; asgEl('ttAsgDlgRetention').value = 30;
+  const lookBox = asgEl('ttAsgDlgLook'), hasLook = Object.keys(linkDisplayObject()).length > 1;   // more than the version
+  lookBox.disabled = !hasLook; lookBox.checked = hasLook;
+  syncAsgLookSummary();
   asgEl('ttAsgDlgCreate').hidden = false; asgEl('ttAsgDlgCreate').setAttribute('aria-disabled', 'false'); asgEl('ttAsgDlgDone').hidden = true;
   asgSay('ttAsgDlgNote', '', false);
   dlg.dataset.ref = ref;
@@ -13160,7 +13265,7 @@ function openAsgDialog() {
   const none = asgMake('option', '', asgT('torah.assign.dlg_no_class')); none.value = ''; sel.appendChild(none);
   IvritAssignments.classes.list().then(rows => { (rows || []).forEach(c => { const o = asgMake('option', '', c.name); o.value = c.id; sel.appendChild(o); }); }).catch(() => {});
   dismissHintToast();
-  _asgOpener = document.activeElement;
+  _asgOpener = opener || document.activeElement;
   bd.hidden = false; dlg.hidden = false;
   document.addEventListener('keydown', _asgDialogKey, true);
   asgEl('ttAsgDlgTitle').focus(); asgEl('ttAsgDlgTitle').select();
@@ -13181,7 +13286,30 @@ function closeAsgDialog() {
   dlg.hidden = true; bd.hidden = true;
   document.removeEventListener('keydown', _asgDialogKey, true);
   const o = _asgOpener; _asgOpener = null;
-  try { ((o && o.isConnected && o !== document.body) ? o : asgEl('ttAsgAssignBtn')).focus(); } catch (e) {}
+  // The opener sits in the drawer, closed before the dialog opened: the gear that opens the drawer takes the focus.
+  const back = (o && o.isConnected && o !== document.body && o.offsetParent !== null) ? o : document.getElementById('gearBtn');
+  try { back.focus(); } catch (e) {}
+}
+// The dialog's summary of the look that would travel (the favorite popup's sentence shape; the standard font named,
+// a My Font of the teacher's own left out as a practice link leaves it out).
+function syncAsgLookSummary() {
+  const box = asgEl('ttAsgDlgLook'), el = asgEl('ttAsgDlgLookSummary');
+  if (!box || !el) return;
+  if (box.disabled) { el.textContent = asgT('torah.assign.dlg_look_none'); el.hidden = false; return; }
+  el.hidden = !box.checked;
+  if (!box.checked) return;
+  const lay = document.querySelector('input[name="ttLayout"]:checked');
+  const layLbl = lay ? document.querySelector('label[for="' + lay.id + '"]') : null;
+  const onOff = b => asgT(b ? 'torah.fav.on' : 'torah.fav.off');
+  const font = LINK_DISPLAY.hebFont(settings.hebFont) || asgT('torah.fav.font_standard');
+  let t = asgT('torah.assign.look_summary', {
+    layout: layLbl ? layLbl.textContent.replace(/\s+/g, ' ').trim() : String(settings.layout || ''),
+    translit: onOff(settings.showTranslit), translation: onOff(settings.showTranslation),
+    colors: onOff(settings.colorCodeNikkud), trope: onOff(settings.colorCodeTrope), font
+  });
+  const left = linkFontLeftOut();
+  if (left) t += ' ' + asgT('torah.fav.font_left_out', { font: left });
+  el.textContent = t;
 }
 function createAssignment(e) {
   e.preventDefault();
@@ -13190,6 +13318,8 @@ function createAssignment(e) {
   if (!title) { asgSay('ttAsgDlgNote', asgT('torah.assign.dlg_name_empty'), true); asgEl('ttAsgDlgTitle').focus(); return; }
   if (IvritAssignments.codeWord.normalize(code).length < 6) { asgSay('ttAsgDlgNote', asgT('torah.assign.dlg_code_short'), true); asgEl('ttAsgDlgCode').focus(); return; }
   const reading = { parshahKey: settings.parshahKey || null, scope: settings.scope || null, holidayKey: settings.holidayKey || null, holidayPart: settings.holidayPart || null, readingCycle: settings.readingCycle || null };
+  if (asgEl('ttAsgDlgLook').checked && !asgEl('ttAsgDlgLook').disabled) reading.view = JSON.parse(JSON.stringify(linkDisplayObject()));
+  if (new TextEncoder().encode(JSON.stringify(reading)).length > ASSIGN_READING_MAX) { asgSay('ttAsgDlgNote', asgT('torah.assign.dlg_look_big'), true); asgEl('ttAsgDlgLook').focus(); return; }
   asgEl('ttAsgDlgCreate').setAttribute('aria-disabled', 'true');
   asgSay('ttAsgDlgNote', asgT('shared.account.sending'), false);
   IvritAssignments.assignments.create({

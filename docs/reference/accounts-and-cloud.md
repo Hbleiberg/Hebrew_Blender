@@ -825,15 +825,15 @@ session with the API unreachable (the status line fails soft, no name step and n
 
 The one feature in which a student's work reaches the account layer. A teacher creates student logins, assigns the
 reading on the Torah Trainer's screen under a code word, and listens to what students record; the student side lives
-in `torah_trainer.html` behind `?assignments=1`, the teacher's management in `reading_assignments.html` (unlisted:
+in `torah_trainer.html` (the student's panel above the reading; the teacher's side is the settings drawer's Teacher tab), the teacher's management in `reading_assignments.html` (unlisted:
 `noindex`, not in the sitemap, `llms.txt` or `CORE_ASSETS`; covered by `scripts/smoke-assignments.mjs` instead of
 `smoke-tools`). The audio never enters Supabase: it lives in a private Cloudflare R2 bucket behind the Worker in
 `workers/audio/` (its README is the setup guide). What the policy text promises about it: `privacy.legal.ferpa_norecords`.
 
 | Piece | File | Role |
 |---|---|---|
-| the module | `js/ivrit-assignments.js` (`window.IvritAssignments`) | the fifth file allowed to talk to Supabase: the assignment tables through `IvritAccount.client()`, the `manage-students` Edge Function, and the Worker (bearer `fetch`; the upload as an `XMLHttpRequest` for progress). Also the code-word and passphrase generators, the `MediaRecorder` recorder, and `errorText`. Loaded by the Trainer only when the flag is on, and by the management page |
-| the account module | `js/ivrit-account.js` | `signIn('student', {username, password})` → `signInWithPassword` on `<username>@students.ivritsuite.com`; `accessToken()`; `role()` / `storedRole()` from the token's `app_metadata.role`; the chip's *Student? Sign in with your username* form when the page called `init({ studentSignIn: true })` (the Trainer with the flag; a late `init()` only adds options); no name step for a student; `signIn('email')` refuses the student domain |
+| the module | `js/ivrit-assignments.js` (`window.IvritAssignments`) | the fifth file allowed to talk to Supabase: the assignment tables through `IvritAccount.client()`, the `manage-students` Edge Function, and the Worker (bearer `fetch`; the upload as an `XMLHttpRequest` for progress). Also the code-word and passphrase generators, the `MediaRecorder` recorder, and `errorText`. Loaded by the Trainer only once a session is stored (an anonymous visit downloads nothing), and by the management page |
+| the account module | `js/ivrit-account.js` | `signIn('student', {username, password})` → `signInWithPassword` on `<username>@students.ivritsuite.com`; `accessToken()`; `role()` / `storedRole()` from the token's `app_metadata.role`; the chip's *Student? Sign in with your username* form when the page called `init({ studentSignIn: true })` (the Trainer, on every visit; a late `init()` only adds options); no name step for a student; `signIn('email')` refuses the student domain |
 | the saves module | `js/ivrit-saves.js` | inert for a student account: `attach()` returns `null`, a sign-in by a student after an anonymous attach hydrates nothing, the status line hides, no hook, no card, no sync memory |
 | the schema | `db/migrations/0008_reading_assignments.sql` | `profiles.role` (mirror), `classes`, `students`, `assignments`, `assignment_members`, `submissions`, `feedback`, `code_attempts`; `claim_assignment()`, `retention_due()`, the definer helpers and the guards — proved by `node scripts/test-rls-assignments.mjs` (157 cases on a throwaway cluster) |
 | the functions | `db/functions/manage-students/`, `db/functions/delete-account/` | creating, resetting and removing student logins with the secret key; a teacher's deletion removes their students' auth users first and refuses a student caller |
