@@ -681,6 +681,14 @@ surfaces, so Ctrl+P with the editor open prints the board underneath, as with th
 - **The live board.** Saving never applies a preset by itself; when Schedule Sync is on and the period on the
   board now is one of the changed presets, `bpeSave` clears `_lastScheduleKey` and calls `checkSchedule()` (the
   account download's pattern), so the board re-applies it now rather than at the next boundary.
+- **The cards build a screenful first.** `renderBpeCards()` builds six cards in the opening click and the rest
+  eight per task (`_bpeBuildT`, a `setTimeout` chain; `bpeBuildCard(host, name, i)` builds one): built in one go,
+  a long preset list was one long task, nearly all of it the style, layout and paint of cards below the fold. A
+  card reads its draft when it is built, so a master switch or a copy made meanwhile reaches the cards still to
+  come; every reader of the card DOM (`bpeSyncChips`, the master size, `bpeCopyTextTo`) touches only the cards
+  that exist. A re-render (`applyI18n`) cancels the pending chain, and a chain whose `_bpeOrder` is no longer the
+  current one (Cancel, Save, a reopen) stops by itself. Not `content-visibility:auto`: Chromium leaves a skipped
+  card out of the accessibility tree, so a screen reader would find only the presets in view.
 - Strings: `dashboard.preset.bulk_*`; `applyI18n` rebuilds the open editor's toolbar, cards and master row from
   the draft (strings only). No new storage key, no new resource, nothing for the registry or the legal text.
 

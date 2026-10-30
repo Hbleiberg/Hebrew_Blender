@@ -8056,47 +8056,63 @@ function mountSidebarResize(cfg) {
     tg.appendChild(cb); tg.appendChild(sl); lab.appendChild(tg);
     return lab;
   }
+  // A screenful of cards first, then the rest a chunk per task: built in one go, opening the editor over 40 presets
+  // was one ~0.8 s task at 4× CPU, nearly all of it the style, layout and paint of cards below the fold. A card reads
+  // its draft when it is built, so a master switch or a copy made meanwhile reaches the cards still to come.
+  // (content-visibility:auto would skip them instead, but Chromium leaves a skipped card out of the accessibility
+  // tree, so a screen reader would find only the presets in view.)
+  let _bpeBuildT = null;
   function renderBpeCards() {
     const host = document.getElementById('bpeCards'); if (!host || !_bpeDraft) return;
+    clearTimeout(_bpeBuildT); _bpeBuildT = null;
     host.innerHTML = '';
     if (!_bpeOrder.length) { const e = document.createElement('p'); e.className = 'bpe-empty'; e.textContent = I18n.t('dashboard.preset.bulk_empty'); host.appendChild(e); return; }
-    _bpeOrder.forEach((name, i) => {
-      const id = 'bpeEd_' + i;
-      const card = document.createElement('section'); card.className = 'bpe-card'; card.dataset.name = name;
-      const head = document.createElement('div'); head.className = 'bpe-card-head';
-      const h = document.createElement('h3'); h.className = 'bpe-name'; h.id = id + '_h'; h.textContent = name; head.appendChild(h);
-      if (_bpeFolders[name]) { const f = document.createElement('span'); f.className = 'bpe-folder'; f.textContent = I18n.t('dashboard.preset.bulk_folder', { folder: _bpeFolders[name] }); head.appendChild(f); }
-      card.appendChild(head);
-      card.appendChild(bpeBuildToolbar(id));
-      const ed = document.createElement('div'); ed.className = 'editor bpe-editor'; ed.id = id; ed.contentEditable = 'true'; ed.setAttribute('dir', 'auto');
-      ed.setAttribute('role', 'textbox'); ed.setAttribute('aria-multiline', 'true'); ed.setAttribute('aria-labelledby', id + '_h');
-      ed.innerHTML = sanitizeDashHTML(_bpeDraft[name].dashTextHTML || '');   // a stored message is teacher data: through the sanitizer, as the drawer's editor does
-      ed.addEventListener('paste', _pasteSanitized);
-      ed.addEventListener('focusin', () => setDrawerEditor(id));
-      ed.addEventListener('input', () => bpeMirror(id));
-      card.appendChild(ed);
-      const row = document.createElement('div'); row.className = 'bpe-row';
-      const copy = document.createElement('button'); copy.type = 'button'; copy.className = 'btn btn-xs btn-secondary';
-      copy.textContent = I18n.t('dashboard.preset.bulk_copy_text');
-      copy.addEventListener('click', () => bpeCopyTextToAll(name));
-      row.appendChild(copy);
-      const pick = document.createElement('button'); pick.type = 'button'; pick.className = 'btn btn-xs btn-secondary';
-      pick.textContent = I18n.t('dashboard.preset.bulk_copy_pick'); pick.setAttribute('aria-expanded', 'false');
-      pick.addEventListener('click', () => bpeTogglePicker(name, card, pick));
-      row.appendChild(pick);
-      const sz = document.createElement('label'); sz.className = 'bpe-size';
-      const szL = document.createElement('span'); szL.textContent = I18n.t('dashboard.text.display_size'); sz.appendChild(szL);
-      const szI = document.createElement('input'); szI.type = 'range'; szI.min = '0.8'; szI.max = '5'; szI.step = '0.1'; szI.className = 'bpe-size-in';
-      szI.value = String(bpeVal(name, 'dashTextSize') ?? 1.8);
-      const szV = document.createElement('span'); szV.className = 'size-val'; szV.textContent = (+szI.value).toFixed(1) + 'rem';
-      szI.addEventListener('input', () => { bpeSet(name, 'dashTextSize', +szI.value); szV.textContent = (+szI.value).toFixed(1) + 'rem'; bpeSyncMasterSize(); });
-      sz.appendChild(szI); sz.appendChild(szV); row.appendChild(sz);
-      card.appendChild(row);
-      const chips = document.createElement('div'); chips.className = 'bpe-chips';
-      BPE_TOGGLES.forEach(t => chips.appendChild(bpeChip(name, t)));
-      card.appendChild(chips);
-      host.appendChild(card);
-    });
+    const order = _bpeOrder;
+    let i = 0;
+    const build = (n) => {
+      _bpeBuildT = null;
+      if (_bpeOrder !== order || !_bpeDraft) return;   // closed (or reopened) since
+      for (const end = Math.min(order.length, i + n); i < end; i++) bpeBuildCard(host, order[i], i);
+      if (i < order.length) _bpeBuildT = setTimeout(build, 0, 8);
+    };
+    build(6);
+  }
+  function bpeBuildCard(host, name, i) {
+    const id = 'bpeEd_' + i;
+    const card = document.createElement('section'); card.className = 'bpe-card'; card.dataset.name = name;
+    const head = document.createElement('div'); head.className = 'bpe-card-head';
+    const h = document.createElement('h3'); h.className = 'bpe-name'; h.id = id + '_h'; h.textContent = name; head.appendChild(h);
+    if (_bpeFolders[name]) { const f = document.createElement('span'); f.className = 'bpe-folder'; f.textContent = I18n.t('dashboard.preset.bulk_folder', { folder: _bpeFolders[name] }); head.appendChild(f); }
+    card.appendChild(head);
+    card.appendChild(bpeBuildToolbar(id));
+    const ed = document.createElement('div'); ed.className = 'editor bpe-editor'; ed.id = id; ed.contentEditable = 'true'; ed.setAttribute('dir', 'auto');
+    ed.setAttribute('role', 'textbox'); ed.setAttribute('aria-multiline', 'true'); ed.setAttribute('aria-labelledby', id + '_h');
+    ed.innerHTML = sanitizeDashHTML(_bpeDraft[name].dashTextHTML || '');   // a stored message is teacher data: through the sanitizer, as the drawer's editor does
+    ed.addEventListener('paste', _pasteSanitized);
+    ed.addEventListener('focusin', () => setDrawerEditor(id));
+    ed.addEventListener('input', () => bpeMirror(id));
+    card.appendChild(ed);
+    const row = document.createElement('div'); row.className = 'bpe-row';
+    const copy = document.createElement('button'); copy.type = 'button'; copy.className = 'btn btn-xs btn-secondary';
+    copy.textContent = I18n.t('dashboard.preset.bulk_copy_text');
+    copy.addEventListener('click', () => bpeCopyTextToAll(name));
+    row.appendChild(copy);
+    const pick = document.createElement('button'); pick.type = 'button'; pick.className = 'btn btn-xs btn-secondary';
+    pick.textContent = I18n.t('dashboard.preset.bulk_copy_pick'); pick.setAttribute('aria-expanded', 'false');
+    pick.addEventListener('click', () => bpeTogglePicker(name, card, pick));
+    row.appendChild(pick);
+    const sz = document.createElement('label'); sz.className = 'bpe-size';
+    const szL = document.createElement('span'); szL.textContent = I18n.t('dashboard.text.display_size'); sz.appendChild(szL);
+    const szI = document.createElement('input'); szI.type = 'range'; szI.min = '0.8'; szI.max = '5'; szI.step = '0.1'; szI.className = 'bpe-size-in';
+    szI.value = String(bpeVal(name, 'dashTextSize') ?? 1.8);
+    const szV = document.createElement('span'); szV.className = 'size-val'; szV.textContent = (+szI.value).toFixed(1) + 'rem';
+    szI.addEventListener('input', () => { bpeSet(name, 'dashTextSize', +szI.value); szV.textContent = (+szI.value).toFixed(1) + 'rem'; bpeSyncMasterSize(); });
+    sz.appendChild(szI); sz.appendChild(szV); row.appendChild(sz);
+    card.appendChild(row);
+    const chips = document.createElement('div'); chips.className = 'bpe-chips';
+    BPE_TOGGLES.forEach(t => chips.appendChild(bpeChip(name, t)));
+    card.appendChild(chips);
+    host.appendChild(card);
   }
   function bpeSyncChips(key) {   // after a master switch: every card's chip for that key, in place
     const t = BPE_TOGGLES.find(x => x.key === key); if (!t) return;
