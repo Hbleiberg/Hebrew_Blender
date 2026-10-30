@@ -95247,3 +95247,33 @@ _(prior)_ **Next session (S574):** **PR `claude/improveloop-s573` (S573, #377): 
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 - G print & export fidelity (one tool): 2026-10-30 (**S575 — the chrome bundle (first G there since S437; 78 commits): the key census (export = import = gather), the `.ivrit` by real clicks (Merge 42/43 + 1 by design, Replace 43/43, paste 42/43, the font), 7 pages × EN/HE × light/dark × Letter/A4 + the Fonts view = 64 PDFs (dark ink = light), a marker-per-sheet probe. FOUND 6, FIXED 3 in 2 commits (+2 generator from the queue). G-next: torah (S451), fontmaker (S465).**)
+
+
+<!-- archived by compact-ledger at the S577 boundary, 2026-10-30 -->
+## Compaction (S577, 2026-10-30) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-30 | (S576 close-out) | branch/deploy note | **S576 = D on the dashboard (first since S438; 107 commits): cold ×3 at 1×/4× and 35 steps by real input vs the S438 tree (no regression: one init task 243–342 ms @4× in both), Bulk preset edit at 10/40/100 presets (167/812/1,504 ms @4×, every card styled with 1 in view; `content-visibility` refuted: Chromium 153 exposes 13/200), idle + hygiene = S438. FOUND 5, FIXED 2 (+ flash ×2). PR #377 (S573–S576), sw v1136→v1137, probes `94a0fc94`; deploy on merge. Gates: none.**
+
+- [x] 2026-10-30 | `3b031f01` | classroom_dashboard.html, dashboard.md | (S576, queue S564 + found) **A Schedule Sync edit reaches the board at once, and an edit to another period or a language switch no longer replaces the board's text** (`_lastScheduleKey` is not a render cache). | `d576/sched.mjs` frozen Wednesday, 6 scenarios by real clicks (HEAD fails 5); probe `S576-dashboard-schedule-edit-reaches-board`
+
+- [x] 2026-10-30 | `e6808987` | classroom_dashboard.html, dashboard.md, sw.js | (S576) **Bulk preset edit builds a screenful of cards in the click and the rest in chunks** (pattern `offscreen-sheets-laid-out-on-every-rebuild`, chunked; 40 presets 539 → 153 ms @4×, 95 → 0 @1×). | `d576/fix1.mjs` medians of 3 + 8 mid-build checks; smoke-sync D39 3/3 `--sdk`; probe `S576-dashboard-bulk-edit-builds-in-chunks`
+
+- [x] 2026-10-29 | (S571 close-out) | branch/deploy note | **S571 = C on the dictionary (3rd: S285 → S427 → S571): an 88-load census, Tab walks, 48 dialogs, 20 scenarios, motion, spacing, reflow, zoom, forced colours, hover; plants fired. FOUND 8, FIXED 3 (+ flash, 2 queue P4s); 2 probes. #374 continued, sw v1122 → v1126.**
+
+- [x] 2026-10-29 | `4c0b957c` | torah_trainer.html, sw.js | (S571) **Side by side's Hebrew column head is marked Hebrew** (UX rule 8). | probe × 8 cells: EN `lang` en → he; pixel-identical
+
+- [x] 2026-10-29 | `c563fb2e` | hebrew_blend_generator.html, locales, sw.js | (S571) **Real Words Self-Check's "tap to flip" speaks the UI's language.** | probe × 8 cells × 30 cards: the parent English everywhere
+
+- [x] 2026-10-29 | `a3c39846` | hebrew_dictionary.html, flash_cards.html, sw.js | (S571) **The chosen font card stands out in High Contrast** (pattern `selected-state-lost-in-forced-colors`). | `c571/fix2.mjs` × 4 cells: 15–33 → 154–166 mean; outside HC identical
+
+- [x] 2026-10-29 | `2e075abc` | hebrew_dictionary.html, sw.js | (S571) **The sidebar tabs and "Words from this root" keep the keyboard's place** (pattern `button-focus-lost-to-its-own-rebuild`). | `c571/fix1.mjs` × 8 cells: 40 → 0 vs HEAD
+
+### from Per-session log (one line per session)
+
+- 2026-10-26 | **S556** | iters: 5 | tools: dictionary ×2, flash ×2, sw | patterns fixed: contrast-below-AA ×1, text-field-16px ×2 | pass run: M (dictionary, 3rd) | SW: v1097→v1098
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- D performance (one tool): 2026-10-30 (**S576 — `classroom_dashboard.html` (6th: … S325 → S438 → S576; 107 commits since): cold ×3 at 1×/4× vs the S438 tree, the init task profiled and traced, 35 steps by real input × 1×/4×, Bulk preset edit at 10/40/100 presets (trace), the week editor, idle 10 s, 20-cycle hygiene; a 300 ms control fired. FOUND 5, FIXED 2 (Bulk edit chunked; Schedule Sync, the queue P4 widened), 3 P4; `content-visibility` refuted for interactive cards. D-next: generator (S452), chrome (S466).**)
