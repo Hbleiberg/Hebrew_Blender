@@ -2472,6 +2472,8 @@ function wlLoadListAsFilter(id) {
   if (sc) sc.textContent = countText;
   if (n === 0) renderDictEmptyState(false);
   wlShowActiveBanner(list.name, n);
+  rebuildFilterChips();
+  if (window._updateMobileFiltersBtn) window._updateMobileFiltersBtn();
   closeWordModal();
 }
 
@@ -6020,7 +6022,9 @@ function dictAfterFilter() {
 // chip row and Section 4's "Filters (N)" badge. Empty in shoresh mode.
 function computeActiveChips() {
   const chips = [];
-  if (shoreshMode) return chips;
+  // A loaded word list shows exactly its words, whatever the sidebar holds: chips naming the sidebar's filters there
+  // described a filtering the view does not do (the banner's Exit list returns to them).
+  if (shoreshMode || _wlActiveListName) return chips;
   const q = document.getElementById('searchInput').value.trim();
   if (q) chips.push({ key: 'search', label: I18n.t('dictionary.chips.search', { query: q }), panel: '.search-wrap' });
 
