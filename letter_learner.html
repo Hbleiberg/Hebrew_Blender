@@ -413,7 +413,8 @@ body.dark .ll-sb-tab:hover { background:#345090; }
   background:var(--navy); color:#fff; font-family:'Libre Baskerville',serif; font-size:0.8rem; letter-spacing:0.08em; text-transform:uppercase;
   padding:8px 14px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:8px; border-radius:7px 7px 0 0; user-select:none;
 }
-.panel-title::after { content:'▾'; font-size:1rem; color:var(--gold-light); transition:transform 0.2s; }
+/* The fold triangle is drawn, not read: the empty alt keeps "▾" out of the panel toggle's name (the first content is the fallback). */
+.panel-title::after { content:'▾'; content:'▾' / ''; font-size:1rem; color:var(--gold-light); transition:transform 0.2s; }
 .panel-title:hover { background:#24345c; }   /* the suite's navy-control hover pair */
 .panel.collapsed .panel-title { border-radius:7px; }
 .panel.collapsed .panel-title::after { transform:rotate(-90deg); }
