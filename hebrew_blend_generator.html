@@ -6384,10 +6384,18 @@ function colorizeHebrew(text, mode) {
   return out.join('');
 }
 
+// The colour-coding controls redraw the worksheet on show, but only once one has been generated
+// (liveArmed). Before the first Generate the page shows "Ready to Generate"; a redraw from an empty
+// draw would replace it with an empty sheet or a "select letters" note — and on a restored last setup
+// (applySettings → setColorMode) it ran before I18n.ready, so that note was the raw key.
+function recolorWorksheet() {
+  if (liveArmed) renderWorksheet(false);
+}
+
 function toggleColorCoding(on) {
   colorCodingEnabled = on;
   document.getElementById('colorCodingOptions').style.display = on ? 'flex' : 'none';
-  renderWorksheet(false);
+  recolorWorksheet();
 }
 
 function setColorMode(mode) {
@@ -6396,7 +6404,7 @@ function setColorMode(mode) {
   document.getElementById('colorModeHighlight').classList.toggle('active', mode === 'highlight');
   document.getElementById('colorModeUnderline').classList.toggle('active', mode === 'underline');
   refreshColorExPreviews();
-  renderWorksheet(false);
+  recolorWorksheet();
 }
 
 /* Page size (Letter / A4) + orientation. Drives BOTH output paths: the
@@ -6481,7 +6489,7 @@ function initColorPickers() {
       nikudColorOverrides[def.key] = e.target.value;
       const ex2 = document.getElementById(`colorEx_${def.key}`);
       if (ex2) applyColorExStyle(ex2, e.target.value);
-      if (colorCodingEnabled) renderWorksheet(false);
+      if (colorCodingEnabled) recolorWorksheet();
     });
     row.appendChild(ex); row.appendChild(lbl); row.appendChild(pick);
     list.appendChild(row);
@@ -6497,7 +6505,7 @@ function updateColorPickerValues() {
     if (pick) pick.value = rgbToHex(color);
     if (ex)   applyColorExStyle(ex, color);
   });
-  if (colorCodingEnabled) renderWorksheet(false);
+  if (colorCodingEnabled) recolorWorksheet();
 }
 
 function resetNikudColors() {
@@ -6520,7 +6528,7 @@ function setVowelScheme(s) {
   initColorPickers();            // re-order/re-seed the color-picker list
   refreshVowelGroupColors();
   syncSchemeButtons();
-  if (colorCodingEnabled) renderWorksheet(false);
+  if (colorCodingEnabled) recolorWorksheet();
   // No standing-preference save here: unlike flash cards (which has a saveSettings() and calls it
   // unconditionally), the generator has no such function, so the guard that used to sit here could
   // never fire and quietly implied a persistence this tool has never had. The scheme travels via
@@ -7926,7 +7934,7 @@ function generateNameTheLetter() {
 function renderNameTheLetter(ws) {
   ws.innerHTML = '';
   if (blends.length === 0) {
-    ws.innerHTML = '<div class="empty-state"><h2>' + esc(I18n.t('worksheet.empty.select_letter')) + '</h2></div>';
+    ws.innerHTML = emptyStateHTML('worksheet.empty.select_letter');
     return;
   }
 
@@ -8388,7 +8396,7 @@ function renderNumberPractice(ws) {
 
   const items = numberPracticeItems;
   if (items.length === 0) {
-    ws.innerHTML = '<div class="empty-state"><h2>' + esc(I18n.t('worksheet.empty.number_ready')) + '</h2></div>';
+    ws.innerHTML = emptyStateHTML('worksheet.empty.number_ready');
     return;
   }
 
@@ -8990,7 +8998,7 @@ function renderBingo(ws) {
   const sharedBlends = document.getElementById('bingoSharedBlends').checked;
 
   const vowelKeys = getActiveVowelKeys();
-  if (vowelKeys.length === 0) { ws.innerHTML = '<div class="empty-state"><h2>' + esc(I18n.t('worksheet.empty.select_vowel')) + '</h2></div>'; return; }
+  if (vowelKeys.length === 0) { ws.innerHTML = emptyStateHTML('worksheet.empty.select_vowel'); return; }
 
   const VAV_VARIANTS = new Set(['וֹ','וּ']);
   const HAS_SOFIT    = new Set(LETTERS.filter(l => l.sofit).map(l => l.heb));
@@ -8999,10 +9007,10 @@ function renderBingo(ws) {
   let thirdPool  = [...selectedLetters].filter(h => !HAS_SOFIT.has(h) && !VAV_VARIANTS.has(h));
 
   if (oneLetter && firstPool.length === 0) {
-    ws.innerHTML = '<div class="empty-state"><h2>' + esc(I18n.t('worksheet.empty.select_more_letters')) + '</h2></div>'; return;
+    ws.innerHTML = emptyStateHTML('worksheet.empty.select_more_letters'); return;
   }
   if (!oneLetter && (firstPool.length === 0 || secondPool.length === 0)) {
-    ws.innerHTML = '<div class="empty-state"><h2>' + esc(I18n.t('worksheet.empty.select_more_letters')) + '</h2></div>'; return;
+    ws.innerHTML = emptyStateHTML('worksheet.empty.select_more_letters'); return;
   }
 
   const cellsNeeded = freeSpace ? gridSize * gridSize - 1 : gridSize * gridSize;
@@ -10414,6 +10422,16 @@ function flushWorksheetBuild() {
 // window.print() (both print buttons) AND on Ctrl+P, before the dialog snapshots the page.
 window.addEventListener('beforeprint', flushWorksheetBuild);
 
+// A worksheet empty state built in JS. Its keys ride as data-i18n, so applyI18n()'s static sweep
+// re-translates it when the locale lands after a render that ran before I18n.ready (a ?s= link generates
+// at load) and on a language switch — otherwise the raw key, or the old language, stays on screen.
+// A body with {params} has no key to re-read, so its one caller (the number-bingo range note) builds its own.
+function emptyStateHTML(titleKey, bodyKey) {
+  let html = '<div class="empty-state"><h2 data-i18n="' + esc(titleKey) + '">' + esc(I18n.t(titleKey)) + '</h2>';
+  if (bodyKey) html += '<p data-i18n="' + esc(bodyKey) + '" style="margin-top:8px;font-size:0.9rem;color:var(--muted);">' + esc(I18n.t(bodyKey)) + '</p>';
+  return html + '</div>';
+}
+
 function renderWorksheet(animate = false) {
   // Any re-render invalidates an in-flight chunked build (covers every dispatch branch below).
   cancelWorksheetBuild();
@@ -10450,7 +10468,7 @@ function renderWorksheet(animate = false) {
   if (selfCheck) { renderSelfCheck(ws, autoCols(blends.length), title, subtitle); return; }
 
   if (oneLetter || nikudOnly) {
-    if (blends.length === 0) { ws.innerHTML = '<div class="empty-state"><h2>' + esc(I18n.t('worksheet.empty.select_letters_vowels')) + '</h2></div>'; return; }
+    if (blends.length === 0) { ws.innerHTML = emptyStateHTML('worksheet.empty.select_letters_vowels'); return; }
     ws.innerHTML = '';
     const sheet = document.createElement('div');
     sheet.className = 'sheet';
@@ -10792,7 +10810,7 @@ function traceCopyEl(text, opacity) {
 function renderTracingSheet(ws) {
   ws.innerHTML = '';
   if (blends.length === 0) {
-    ws.innerHTML = '<div class="empty-state"><h2>' + esc(I18n.t('worksheet.empty.select_letters_vowels')) + '</h2></div>';
+    ws.innerHTML = emptyStateHTML('worksheet.empty.select_letters_vowels');
     return;
   }
 
@@ -12475,10 +12493,10 @@ function generateRealWordsMatching(pool, reuse) {
   const ws = document.getElementById('worksheet');
   // Emoji target needs the lexicon; lazy-load, then re-run generate().
   if (matchTarget === 'emoji' && !EMOJI_MAP) {
-    ws.innerHTML = '<div class="empty-state"><h2>' + esc(I18n.t('worksheet.empty.loading_emoji')) + '</h2></div>';
+    ws.innerHTML = emptyStateHTML('worksheet.empty.loading_emoji');
     loadEmojiMap()
       .then(() => generateRealWords())
-      .catch(() => { ws.innerHTML = '<div class="empty-state"><h2>' + esc(I18n.t('worksheet.empty.emoji_failed_title')) + '</h2><p style="margin-top:8px;font-size:0.9rem;color:var(--muted);">' + esc(I18n.t('worksheet.empty.emoji_failed_body')) + '</p></div>'; });
+      .catch(() => { ws.innerHTML = emptyStateHTML('worksheet.empty.emoji_failed_title', 'worksheet.empty.emoji_failed_body'); });
     return;
   }
 
@@ -12486,11 +12504,9 @@ function generateRealWordsMatching(pool, reuse) {
   updateMatchPoolNote();
 
   if (usable.length < 2) {
-    ws.innerHTML = '<div class="empty-state"><h2>' +
-      esc(matchTarget === 'emoji' ? I18n.t('worksheet.empty.no_emoji_words') : I18n.t('worksheet.empty.not_enough_words')) +
-      '</h2><p style="margin-top:8px;font-size:0.9rem;color:var(--muted);">' +
-      esc(matchTarget === 'emoji' ? I18n.t('worksheet.empty.loosen_emoji') : I18n.t('worksheet.empty.loosen_pairs')) +
-      '</p></div>';
+    ws.innerHTML = matchTarget === 'emoji'
+      ? emptyStateHTML('worksheet.empty.no_emoji_words', 'worksheet.empty.loosen_emoji')
+      : emptyStateHTML('worksheet.empty.not_enough_words', 'worksheet.empty.loosen_pairs');
     return;
   }
 
@@ -12660,9 +12676,8 @@ function renderBlendMatching(ws) {
   );
 
   if (!versionsItems[0] || versionsItems[0].length < 2) {
-    ws.innerHTML = '<div class="empty-state"><h2>' +
-      esc((blends && blends.length) ? I18n.t('worksheet.empty.not_enough_blends') : I18n.t('worksheet.empty.select_letters_vowels')) +
-      '</h2><p style="margin-top:8px;font-size:0.9rem;color:var(--muted);">' + esc(I18n.t('worksheet.empty.pick_two_letters_vowel')) + '</p></div>';
+    ws.innerHTML = emptyStateHTML((blends && blends.length) ? 'worksheet.empty.not_enough_blends' : 'worksheet.empty.select_letters_vowels',
+                                  'worksheet.empty.pick_two_letters_vowel');
     enableButtons();
     return;
   }
@@ -12725,7 +12740,7 @@ function generateWordSearch(pool, reuse) {
     const showNikkud   = document.getElementById('wsShowNikkud').checked;
     const dirKeys = [...document.querySelectorAll('.ws-dir:checked')].map(cb => cb.value);
     if (dirKeys.length === 0) {
-      ws.innerHTML = '<div class="empty-state"><h2>' + esc(I18n.t('worksheet.empty.pick_direction_title')) + '</h2><p style="margin-top:8px;font-size:0.9rem;color:var(--muted);">' + esc(I18n.t('worksheet.empty.pick_direction_body')) + '</p></div>';
+      ws.innerHTML = emptyStateHTML('worksheet.empty.pick_direction_title', 'worksheet.empty.pick_direction_body');
       return;
     }
     const dirs = dirKeys.map(k => _WS_DIRS[k]);
@@ -12742,7 +12757,7 @@ function generateWordSearch(pool, reuse) {
       chosen.push({ ...w, gridText, cells });
     }
     if (chosen.length === 0) {
-      ws.innerHTML = '<div class="empty-state"><h2>' + esc(I18n.t('worksheet.empty.no_words_match_title')) + '</h2><p style="margin-top:8px;font-size:0.9rem;color:var(--muted);">' + esc(I18n.t('worksheet.empty.no_words_match_body')) + '</p></div>';
+      ws.innerHTML = emptyStateHTML('worksheet.empty.no_words_match_title', 'worksheet.empty.no_words_match_body');
       return;
     }
 
@@ -12787,7 +12802,7 @@ function generateWordSearch(pool, reuse) {
       }
     }
     if (placedWords.length === 0) {
-      ws.innerHTML = '<div class="empty-state"><h2>' + esc(I18n.t('worksheet.empty.cant_place_title')) + '</h2><p style="margin-top:8px;font-size:0.9rem;color:var(--muted);">' + esc(I18n.t('worksheet.empty.cant_place_body')) + '</p></div>';
+      ws.innerHTML = emptyStateHTML('worksheet.empty.cant_place_title', 'worksheet.empty.cant_place_body');
       return;
     }
 
@@ -13032,7 +13047,7 @@ function generateCrossword(pool, reuse) {
   }
 
   if (placedWords.length < 4) {
-    ws.innerHTML = '<div class="empty-state"><h2>' + esc(I18n.t('worksheet.empty.too_few_intersect')) + '</h2></div>';
+    ws.innerHTML = emptyStateHTML('worksheet.empty.too_few_intersect');
     return;
   }
 
