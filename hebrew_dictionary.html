@@ -3266,7 +3266,17 @@ function onFilter() {
   const sort = document.getElementById('sortSel').value;
   const qn = q.replace(/\s+/g, ' '), qKey = glossKey(qn);
   const tier = new Map();   // only the exact meanings (0 and 1); every other word is 2
-  if (qn && qn.indexOf('|') < 0) {   // '|' is the cache's own separator
+  // A Hebrew search gets the same treatment: the word itself first, then a phrase holding it as a whole word, then the
+  // rest. Sorted A→Z alone, "ספר" put סֵפֶר below the 12th of 41 (after אַטְמוֹסְפֶרָה), "ילד" put יֶלֶד 5th. w.bare has no
+  // spaces, so a phrase's words come from the pointed form, marks dropped.
+  const qb = qn.replace(/[^א-ת]/g, '');
+  if (qb) {
+    const one = !/\s/.test(qn);
+    for (const w of filtered) {
+      if (w.bare === qb) tier.set(w, 0);
+      else if (one && w.word.replace(/[֑-ׇ]/g, '').split(/[^א-ת]+/).includes(qb)) tier.set(w, 1);
+    }
+  } else if (qn && qn.indexOf('|') < 0) {   // '|' is the cache's own separator
     const needle = '|' + qn + '|', keyNeedle = '|' + qKey + '|';
     for (const w of filtered) { const t = glossTier(w, needle, keyNeedle); if (t < 2) tier.set(w, t); }
   }
