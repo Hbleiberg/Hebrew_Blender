@@ -95724,3 +95724,32 @@ _(prior)_ **Next session (S588):** **Branch `claude/improveloop-s579` (S579–S5
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 - M aesthetics & visual design (one surface): 2026-10-31 (**S588 — 35th M, `flash_cards.html` (first since S450): setup / card / flipped / results + every panel, the Learning Path, the listening round × 8 cells in the real faces; arms: a flex-whitespace census (new pattern, suite-wide), subsection rhythm, key-caps, the fold glyphs. FOUND 8: 2 FIXED, 1 P3 at the cap, 3 P4, 1 refuted, 1 gate answered. M-next: chrome (S494), dashboard (S508).**)
+
+_(prior)_ **Next session (S589):** **Branch `claude/amazing-gauss-gli685` (S588, draft PR): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1175**, FM **5.59**, corpus ?v=7. ⚑ drift: main=697d533 sw=v1175 fm=5.59 migration=0009_assignment_enrolment.sql live=yes functions=bcbee20 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest now: G torah (S451), D generator (S452), C trope (S455), P generator (S463), N fontmaker (S476), H torah (S482), M chrome (S494); suite E (S531), L (S532), K (S533). ⚑ Ready (flash was at the cap): the replay icon and the four Hebrew font headings (gate answered). ⚑ The signed-in reading-assignments UI still wants its first P and H. ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
+⚑ Sync P2 (S573). ⚑ The account page signed in is unprinted (`--sdk`): the next G or P on the chrome. ⚑ Gate 4 to propose: the generator's blend sheets on a phone. ⚑ smoke-sync D31 flake. ⚑ Ports at the next A: `m554/`–`m588/`; traps 352, 356–458. ⚑ Queues: generator 26, FM 20, dictionary 11, torah 10, dashboard 9, flash 8, name_tags 7; the rest ≤ 5.
+
+
+<!-- archived by compact-ledger at the S590 boundary, 2026-10-31 -->
+## Compaction (S590, 2026-10-31) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-31 | (S584 close-out) | branch/deploy note | **S584 = M on the Trope Atlas (its first M): FOUND 2 (1 fixed, 1 P4 to verify), six pattern arms clean; + the S577 phone column and the S583 Hebrew Exit label; FIXED 3. Same PR #383, sw v1156; deploy on merge. Gates: none asked. Screenshots: `m584/` (before/after: `cmp-pheb.png`, `cmp-grid.png`).**
+
+- [x] 2026-10-31 | `ca223af4` | torah_trainer.html, hebrew_blend_generator.html, sw.js | (S584, queue S583) **The Hebrew fullscreen Exit label without letter-spacing** (the dashboard's `html[lang="he"]` rule). | `m584/f3.mjs` 3 pages × EN/HE × light/dark × 1280/800: HE `normal`, plate 103px on all three, EN 0.04em unchanged, 0 errors
+
+- [x] 2026-10-31 | `e325fbf2` | trope_atlas.html, sw.js | (S584, queue S577 N) **On a phone the sign column narrows to its longest word** (under 560px: 170 → 87px). | `m584/f2.mjs` EN/HE × light/dark × 320–800: first figure 180 → 263px at 375 (125 → 208 at 320), 0 names overflowing, row heights and ≥ 561px unchanged; 375 shots before/after
+
+- [x] 2026-10-31 | `98242d66` | trope_atlas.html, sw.js | (S584 M) **A phrase's sign names sit over its staff in the English UI** (the line takes the UI direction, the Hebrew run its own; was `match-parent` on a dir=rtl line, 56–795px away). | `m584/f1.mjs` 24 cells EN/HE × light/dark × 1280/800/400 × two clauses: HEAD EN 12/12 away, tree 0; Hebrew unchanged; looked at
+
+### from Per-session log (one line per session)
+
+- 2026-10-29 | **S569** | iters: 5 | tools: flash ×2, letter_learner, dashboard, locales, sw | patterns fixed: incomplete-print-token-reset + dark-literal-escapes-the-print-tokens ×1, focus-hidden-under-a-sticky-bar ×1 | pass run: G (flash, 5th) | SW: v1117→v1118
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S589 (2026-10-31):** torah, flash, dashboard, locales, sw.js, scripts/loop, loop docs S589 · flash, dashboard, fontmaker, locales, sw.js, scripts/loop, loop docs S588 · torah, name_tags, letter_learner, sw.js, scripts/loop, loop docs S587 · torah, dictionary, generator, sw.js, scripts/loop, loop docs S586 · dictionary, name_tags, contact, sw.js, loop docs S585 · trope_atlas, torah, generator, sw.js, loop docs S584 · trope_atlas, torah, generator, sw.js S583 · trope_atlas, sw.js S582 · torah, sw.js, scripts/loop, loop docs S581 · trope_atlas S580 · trope_atlas, flash, locales, CSV, sw.js, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- G print & export fidelity (one tool): 2026-10-31 (**S589 — `torah_trainer.html` (first since S451): real Sefaria text replayed from disk; 4 layouts × EN/HE × light/dark × Letter/A4 by `page.pdf` (0.4in), with translation + translit, colour coding (5 looks, dark = light pixel-for-pixel), 6 reading kinds, the handout's 9 options × 3 layouts, Copy, the `?s=` link (30 keys) and Hebrew at 3.5rem. FOUND 3, FIXED 2 (+2 queue), 1 P4. G-next: fontmaker (S465), trope (S479).**)
