@@ -234,7 +234,8 @@
 - **Archived full text (latest compaction copy):** - **`hidden-input-anchored-outside-its-scroller`** (NEW S499 C; dashboard's 25 drawer radios FIXED `55891185`, torah fixed outside the loop; latent: `.vh-file` ×4, its label on screen on every path measured): ACTIVE, streak 0. Detection: a `position:absolute|fixed` focusable input with a scroll container between it and its containing block (`c499/anchor.mjs`; plant: torah's `.radio-group{position:static}` → 53); runtime: Tab/Shift+Tab, the focused label inside the scroller.
 
 ## `hebrew-faux-italic`
-- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S574 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S584 · **Streak:** 1 · **Detector:** recipe
+- **Record (S584):** atlas clean: Hebrew-bearing text nodes in italic or oblique 0 of 138–1,560 per cell (EN 1280 / HE 800 × light/dark × Grid/Stacked); a planted `<i>` fired 8/8 (`m584/arms.mjs`).
 - **Record (S574, M generator):** FIXED `88665ff0` — Real Words Self-Check's "tap to flip" speaks the UI's language since S571's `c563fb2e`, so in the Hebrew UI its 30 hints a sheet were Hebrew in `.rw-translit`'s italic (`html[lang="he"] .rw-flip-hint{font-style:normal}`); the crossword's "Not placed:" note slanted its Hebrew words with its English label (`lang="he"` spans, upright; screen and print media). Census: every text node × 34 views × 8 cells (`m574/census.mjs`); `m574/fix2.mjs` HEAD fails 8/8. Open: Hebrew inside English definitions on the Real Words caller sheet (inline italic; P4 with UX rule 8).
 - **Record (S570, queue):** FIXED flash `5a04c5a8` — `html[lang="he"] .fcr-note, .fcc-lead { font-style:normal }` in the print block; a print-media census of the report and the certificate, opened by their real buttons × 4 cells: Hebrew italic 3 → 0 (the English UI 0 / 0). Open: none known.
 - **Record (S569, G flash):** FOUND on paper, which no screen census reaches — the HE UI's progress report (`.fcr-note`: the history-cap note, the "no mistakes" note) and certificate (`.fcc-lead`) print Hebrew in a synthesized italic (`g569/report.mjs`, a print-media census of the host; a planted italic line fired). Open: flash (P3, at the cap). A print census of every Hebrew-UI print host belongs to this pattern's recipe.
@@ -298,7 +299,8 @@
 - **Record (ledger row at S544):** - **`placeholder-keeps-the-browser-gray`** (NEW S470 `45a3073e`): ACTIVE, streak 0. Detection: `f470/ph.mjs` < 4.5:1 (plant 1.3:1).
 
 ## `header-wrap-gate-below-its-ceiling`
-- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S574 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S584 · **Streak:** 1 · **Detector:** recipe
+- **Record (S584):** atlas clean in the real faces: 1px 1000 → 318 × EN/HE × light/dark, header and sticky bar — no overflow, overlap or clipped control; the 322px gate holds (with Google Fonts blocked the fallback face overflowed at 323–324px EN: measure with the real fonts); a nowrap plant fired (`m584/gateF.mjs`).
 - **Record (S574, M generator):** FOUND the gate's other failure, a squeeze rather than an overflow: no overflow, overlap or clipped control 1000 → 320 (a nowrap plant overflowed 681 widths), but from 960px (EN; 860 HE) down to the 750px wrap gate the title column shrank beside the buttons to 125–250px — three title lines over a tagline of up to seven, the header 142–340px. FIXED `1219f340` at gate 3: from there down the title and tagline take the first row, the buttons the second (122px). The measure: title and tagline line counts and the header's height per width, not only overflow (`scripts/loop/probes/S574-generator-header-tablet-row.mjs`). Other tools at 768px: dictionary 201, Letter Learner 165, torah 112, flash 64 (sticky).
 - **Record (S568):** torah clean: 1px from 1000 to 320, EN/HE × light/dark: no overflow, title–actions overlap or clipped control; the actions wrap at 842 (EN) / 915 (HE); a nowrap plant overflowed 174 widths.
 - **Record (S558):** trope clean — 1px from 1000 to 320, EN/HE × fine/coarse: no overflow; the actions wrap under the title at 746/756 (EN), 494/504 (HE); the nowrap plant overflowed 173–209 widths (`m558/gate.mjs`).
@@ -391,7 +393,8 @@
 - **Archived full text (latest compaction copy):** - **`cdn-library-parser-blocking-for-one-action`** (NEW S452 D; generator `82bbe313`, FM `d01a33cd`): ACTIVE, streak 0. A parser-blocking CDN `<script src>` in `<head>` for one action. Detection: `grep -n '<script[^>]*src="https\?://' *.html | grep -v ' async\| …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `dark-navy-fill-matches-its-ground`
-- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S574 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S584 · **Streak:** 1 · **Detector:** recipe
+- **Record (S584):** atlas clean: the outlined chips, sing buttons, selects and the contents button read their edge 1.35–1.48:1 in dark (the suite's outline idiom; the pressed chip 7.96:1), no filled control on its ground (`m584/fill.mjs`).
 - **Record (S574, M generator):** 1 hit — the disabled Print button in dark: fill and edge 1.00:1 on the sidebar (`body.dark .btn[disabled]` sets a border colour `.btn-secondary` has no width for) beside the outlined disabled Regenerate and Export PDF; P4 candidate. The panel title bars at 1.10:1 are the suite's dark bar (white text). A ground-coloured plant on the active practice and worksheet buttons fired (`m574/arms.mjs`).
 - **Record (S568):** torah clean: every visible button / `.btn` / active / pressed / selected control × 11 views in the dark EN 1280 and HE 800 cells; the one 1.00:1 (Favorites' New folder) is a ghost button in light too; a fill set to the gear's computed ground fired 9/9 views.
 - **Record (S558):** trope clean — 2,362 filled controls × 14 views × 4 dark cells: no navy fill on its ground (the hits are bordered dark cards and the gold-text selected segment); plant 2/2 (`m558/navy.mjs`).
@@ -549,7 +552,8 @@
 - **Archived full text (latest compaction copy):** - **`settings-lost-across-a-load`** (NEW S412; dictionary ×4 FIXED S482 `8d99ad93`, flash FIXED S491 `adce6574`; 0 open): ACTIVE, streak 0. A setting comes back changed after a reload. Detection (`h482/dictsave.mjs`): change each control by a real click, wait out the save, reload, require it …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `live-region-display-none-while-empty`
-- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S575 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S584 · **Streak:** 1 · **Detector:** recipe
+- **Record (S584):** atlas clean: its one live region, `#atStatus`, stays rendered (flex) while empty in 8 cells.
 - **Record (S575):** generator FIXED `0effa2bb` (S574's queue): both `.gen-note`s, `#presetNameNote`, `#shareNotice`, `#printCount` and `#previewNotice` — `:empty{position:absolute}` (the notice bar also drops padding, border, margin), writers set and clear text only, the notice's hide empties it; the FAB badge (aria-hidden) keeps `[hidden]`. CDP at load notRendered ×6 → status, by real input 4/4 (HEAD fails 4/4).
 - **Record (S574):** FIXED torah's 2 (`4d5d0089`: `#optRecSrcNote`, `#optPitchStatus`) and the dictionary's 2 (`491af144`: `#wlActiveBanner`, `#printSizeNote`) — `:empty{position:absolute}` (with no border or padding where the box has them), the JS only sets or clears the text, `data-i18n` moved into the writer applyI18n already runs; CDP notRendered → status while empty, layout identical to HEAD. FOUND the generator's 5 (both `.gen-note`s, `#presetNameNote`, `#shareNotice`, `#printCount`, `#previewNotice`; candidate, the page at the cap); `#lastSetupBar` settled (static text revealed at load). Plant fired (`m574/arms.mjs`).
 - **Record (S568):** torah: 2 hits — the Audio tab's `#optPitchStatus` (empty, `hidden`, unhidden and filled in one task by `pitchUnavailable`) and `#optRecSrcNote` (`hidden` with its text) notRendered while their panel shows (CDP × 10 views; 12 other regions rendered); candidate. A `display:none` `role=status` plant fired 2/2 views.
@@ -563,7 +567,8 @@
 - **Archived full text (latest compaction copy):** - **`live-region-display-none-while-empty`** (S408; **all 4 FIXED `efbc98a` S409**; **S530 4 more FIXED `66ecdc9f`, `a530/fix1.mjs`**): ACTIVE, streak 0. Detection: `:empty{display:none}` on a `role=status`/`aria-live` line, then CDP AX on it empty (`notRendered` = hit); flex-wrap rows need `position:absolute`, not height.
 
 ## `dark-base-rule-outranks-variant`
-- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S574 · **Streak:** 2 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S584 · **Streak:** 3 · **Detector:** recipe
+- **Record (S584):** atlas clean: 19 control kinds hovered by the real mouse × EN/HE × both themes — 0 whose light hover lacks a dark move (the unmoved: pressed chips, the current rail link, the bar title, the selects — the tutor's selects have no hover either); a dark base-rule plant on `.at-chip` fired 3 × 2 (`m584/hover.mjs`).
 - **Record (S574):** generator clean: 3,478 controls compared × 11 views × EN 1280 / HE 800, hovered by the real mouse in both themes — 0 whose light hover lacks a dark twin; a dark base-rule plant on `.btn-xs` fired on 9 controls × 4 (`m574/arms.mjs`).
 - **Record (S568):** torah clean: 397 (EN 1280) / 386 (HE 800) controls × 11 views hovered by the real mouse in both themes — 0 whose light hover lacks a dark move; a `body.dark .btn-secondary` base-rule plant (fill and edge `!important`) fired 16 (a first plant on the drawer tabs was silent: their light hover moves only the colour).
 - **Record (S558):** trope + torah FIXED `1feea8e` — `body.dark .font-opt{border-color:var(--border)}` outranked `.font-opt:hover`, so in dark none of the 16 Hebrew font cards moved; `body.dark .font-opt:hover{border-color:var(--gold)}` before `.active` (the generator's and dictionary's twin). Real mouse × 8 cells × 2 pages, HEAD the control: dark 0/16 → 16/16. Trope otherwise clean: 967 controls × 10 views × 2 themes (`m558/hover.mjs`; a dark tab plant fired 3/3). The dashboard's dark base rule sets only the fill, so its hover stands.
@@ -794,7 +799,8 @@
 - **Record (S554):** NEW — found by M's RTL-prose arm on the Font Maker's Hebrew help (5 of the 37 mixed Hebrew-and-Latin blocks across its 14 tabs); the static sweep then found 4 more in 3 other tools; all 9 FIXED, 0 open; the plant fires; the runtime arm reads 0 of 37 blocks after the fix.
 
 ## `pinned-english-prose-in-rtl-paragraph`
-- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S574 · **Streak:** 6 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S584 · **Streak:** 7 · **Detector:** recipe
+- **Record (S584):** atlas clean: HE × Grid/Stacked × light/dark — 0 pinned English phrases ending their RTL block (the sources list is its own LTR block).
 - **Record (S574):** generator clean: HE × 9 views (top, panels, both tour ends, Quick start, the footer, Self-Check, bingo, Real Words): 887 mixed blocks, 0 stranded periods; a pinned `roster.csv.` plant fired in every view (`m574/rtl.mjs`).
 - **Record (S568):** torah clean: HE × 17 views (the drawer's 7 tabs, 7 tour steps, the emojis dialog, the footer): the one hit is the footer's licence list ending a Hebrew sentence (its period is the sentence's); a planted English sentence in an RTL paragraph fired.
 - **Record (S558):** trope clean — HE × 13 views incl. all 9 tour steps: 0; plant 1/1 (`m558/rtl.mjs`).
