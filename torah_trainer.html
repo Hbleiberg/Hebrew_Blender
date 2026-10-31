@@ -11394,8 +11394,10 @@ function buildCopyHTML(verses) {
     // without widening the trust boundary past what #ttReading already renders.
     const ltr = t => `<p dir="ltr" style="margin:0 0 4pt;">${t}</p>`;
     const out = [];
+    // The label is in the UI's language (the Hebrew UI's mixes Hebrew and Latin), so it pastes in the UI's direction,
+    // reading as the print band does — never pinned ltr.
     if (settings.copyIncludeHeading && currentRangeLabel)
-      out.push(`<p dir="ltr" style="font-weight:bold;margin:0 0 8pt;">${esc(currentRangeLabel)}</p>`);
+      out.push(`<p dir="${getComputedStyle(document.documentElement).direction === 'rtl' ? 'rtl' : 'ltr'}" style="font-weight:bold;margin:0 0 8pt;">${esc(currentRangeLabel)}</p>`);
     const rows = verses.map(v => {
       const p = verseCopyParts(v);
       return { v, tr: p.tr ? esc(p.tr) : '',
