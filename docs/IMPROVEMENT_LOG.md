@@ -672,7 +672,7 @@ _(none)_
 
 - `toggle-name-flips-with-its-pressed-state` | ACTIVE | owner F | det: recipe | last S431 | streak 0
 
-- `author-display-defeats-the-hidden-attribute` | ACTIVE | owner F | det: recipe | last S511 | streak 0
+- `author-display-defeats-the-hidden-attribute` | ACTIVE | owner F | det: scripts/loop/detect-author-display-defeats-the-hidden-attribute.mjs | last S581 | streak 0 | hits 1
 
 - `button-group-label-not-programmatic` | ACTIVE | owner C | det: recipe | last S413 | streak 0
 
