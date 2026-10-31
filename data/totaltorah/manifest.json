@@ -15904,27 +15904,27 @@
  },
  "Genesis 28:5": {
   "file": "gen-028-005.mp3",
-  "dur": 27.5,
+  "dur": 25.15,
   "video": null,
   "direct": "direct-gen-028-005",
   "parsha": "Toldot",
   "year": 3,
   "aliyah": 7,
-  "verified": false,
+  "verified": true,
   "timings": "gen-028-005.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 28:6": {
   "file": "gen-028-006.mp3",
-  "dur": 39.14,
+  "dur": 39.19,
   "video": null,
   "direct": "direct-gen-028-005",
   "parsha": "Toldot",
   "year": 3,
   "aliyah": 7,
-  "verified": false,
+  "verified": true,
   "timings": "gen-028-006.txt",
-  "timingsVerified": false
+  "timingsVerified": true
  },
  "Genesis 28:7": {
   "file": "gen-028-007.mp3",
