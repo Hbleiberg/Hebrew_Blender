@@ -1505,7 +1505,7 @@ body.dark .preset-item { background:var(--navy-deep); }
 body.dark .tt-fav-dialog { background:var(--navy-deep); }
 .tt-fav-backdrop[hidden], .tt-fav-dialog[hidden] { display:none; }
 .tt-fav-dialog .form-row input[type="text"], .tt-fav-dialog .form-row select { max-width:none; flex:1 1 60%; min-width:0; }   /* min-width:0: a text field's ~20ch intrinsic width (225px at 16px on touch) would push a 320px phone's dialog sideways */
-.tt-fav-dialog .form-row label:not(.toggle) { flex:0 0 auto; min-inline-size:56px; }
+.tt-fav-dialog .form-row label:not(.toggle) { flex:0 1 auto; min-inline-size:56px; }   /* shrinks (wraps) beside a number/date field: unshrinkable, "Keep recordings (days after closing)" pushed the assignment dialog's field past a 320px phone's edge */
 .tt-fav-reading { font-size:0.8rem; margin:0 0 12px; line-height:1.4; }
 .tt-fav-check { display:flex; align-items:flex-start; gap:8px; font-size:0.82rem; font-weight:600; margin-block:12px 4px; cursor:pointer; }
 .tt-fav-check input { margin:2px 0 0; flex:0 0 auto; }
