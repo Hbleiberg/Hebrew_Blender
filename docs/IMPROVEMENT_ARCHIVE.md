@@ -95506,3 +95506,44 @@ _(prior)_ **Next session (S582):** **Branch `claude/improveloop-s579` (S579–S5
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 - G print & export fidelity (one tool): 2026-10-31 (**S582 — `trope_atlas.html` (its first G): Grid and Stacked × EN/HE × light/dark × Letter/A4 by `page.pdf` (0.4in margins) and print-width measures of every sign-table cell and staff; page sheets looked at. FOUND 3, FIXED 2 (the sign tables clipped, the Grid printing 1–2 of 26 melodies — gate 2), 1 P2 queued. G-next: torah (S451), fontmaker (S465).**)
+
+_(prior)_ **Next session (S583):** **Branch `claude/improveloop-s579` (S579–S582, PR #383): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1150**, FM **5.59**, corpus ?v=7. ⚑ drift: main=aab737c sw=v1150 fm=5.59 migration=0009_assignment_enrolment.sql live=yes functions=bcbee20 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ The atlas still has no H or M (never-audited: they outrank everything); its printed Stacked figures clip (P2, S582). ⚑ The signed-in reading-assignments UI still wants its first P and H (smoke-assignments' fake cloud). ⚑ Stalest suite passes: E (S531), L (S532), K (S533). ⚑ Closeout runs two rendered detectors (~2.5 min). ⚑ 54 seeds.
+⚑ Sync P2 (S573): a write after a hydration's plan is not sent. ⚑ The account page signed in is unprinted (needs `--sdk`): the next G or P on the chrome. ⚑ Gate 4 to propose with phone shots: the generator's blend sheets past a phone's left edge; gate 2: the atlas's phone default (Awaiting). ⚑ smoke-sync D31 flake (P4). ⚑ Ports at the next A: the `m554/`–`p578/` harnesses; traps 352, 356–455. ⚑ Queues: generator 26, FM 20, dictionary 11, torah 11, name_tags 8, dashboard 7, flash 6, PE 5, trope 3, atlas 3, index 2, LL 2, privacy 1, contact 1.
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- H teacher walkthrough / paper-cuts (one tool): 2026-10-29 (**S566 — flash (first H since S412; 93 commits): 6 lessons by real input × EN light 1280 / HE dark 800 (a vowel review to fullscreen; an ulpan's word lists by code and link; Name the Letter, Listening, the card sheet, the worksheet, an `.ivrit`; 25 children saving; the edges) + the student cell and the Learning Path. FOUND 8, FIXED 2 …[full text: IMPROVEMENT_ARCHIVE.md]
+
+
+<!-- archived by compact-ledger at the S584 boundary, 2026-10-31 -->
+## Compaction (S584, 2026-10-31) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-31 | `06b4495d` | torah_trainer.html, hebrew_blend_generator.html, sw.js | (S583, queue S568) **The fullscreen Exit label at the dashboard's 0.7rem** (was 0.52rem, 8.3px: the projected lesson's one way out had the smallest text). | `h583/f3.mjs` 3 pages × EN/HE × light/dark × 1280/800 in fullscreen state: 11.2px on all three, label inside its plate, plate on screen, 0 page errors; the corner looked at
+
+- [x] 2026-10-31 | `ab6a528f` | trope_atlas.html, sw.js | (S583, queue S582) **A long printed figure shrinks to its column instead of losing its tail** (print: `.at-stf` overflow visible, its svg `max-width:100%`). | `h583/f2b.mjs` every figure's edges vs its card at 739 / 718px EN/HE: HEAD 23 off-card (up to 116px), tree 0, scale ≥ 1.17 (screen 1.5); `f2.mjs` scrollWidth 104 → 0 over 8 cells; A4 page 44 HEAD vs tree looked at
+
+- [x] 2026-10-31 | `1734bedb` | trope_atlas.html, sw.js | (S583 H) **A shared link to a sign or a section lands on it** (the page lands again once the table and phrases are built; a sign click writes `#atlas-<sign>`; a Stacked card lands at its heading). | `h583/f1.mjs` 7 addresses × EN/HE × light/dark × 1280/800 × Grid/Stacked: HEAD 82/112 off target, tree 0; `f1c.mjs` clicks: hash written, Stacked head visible (HEAD 0/6)
+
+- [x] 2026-10-30 | (S578 close-out) | branch/deploy note | **S578 = P on the Trope Atlas (its first P; no account wiring by design): arms 1–8 behind controls, the 7 smokes' J by `--sdk`. FOUND 3, FIXED 2 (+2 queue), 1 P4 logged, 1 rescoped. PR #377, sw v1139; deploy on merge. Gates: none asked.**
+
+- [x] 2026-10-30 | `225fe22e` | flash_cards.html, CSV, locales | (S578, queue S566) **The Hebrew save-to-profile chooser reads "תוצאה שמורה אחת" / "{n} תוצאות שמורות"** (`.one` / `.other`; was "1 שמורים"). | `p578/flash-label.mjs` real drill + Save results: EN 1280, HE 800 dark, HE 390 (HEAD fails 2); check-i18n
+
+- [x] 2026-10-30 | `1d7b34d5` | trope_atlas.html | (S578, queue S577) **The iOS hint steps aside while the contents drawer is open** (`install-banner-over-a-sheet's-bottom-controls`). | `n577/banner.mjs` 3 phones × EN/HE: 2–3 links → 0 (= hint dismissed); back after an outside tap and Escape
+
+- [x] 2026-10-30 | `89f9fbfa` | scripts/smoke-account.mjs | (S578) **J checks every page that loads the analytics tag** (was: only pages already carrying `page_location`). | `--sdk`: 18 pages; the tree before the atlas fix fails on it alone; a planted bare `gtag('config')` fails it
+
+- [x] 2026-10-30 | `1a29f606` | trope_atlas.html, sw.js | (S578) **The atlas's analytics tag counts a visit** (the suite's snippet, the sign-in code left out of `page_location`; it loaded gtag.js with no config). | `p578/atlas-recipe.mjs` 8 cells 48/48 (HEAD 16 fail); smoke-account 112/112
+
+### from Per-session log (one line per session)
+
+- 2026-10-27 | **S563** | iters: 5 | tools: generator ×2, trope, letter_learner, name_tags, flash, sw | patterns fixed: fixed-control-positioned-outside-the-viewport ×1, decorative-glyph-carrier-exposed-to-assistive-tech ×1 | pass run: G (generator, 4th) | SW: v1104→v1105
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S583 (2026-10-31):** trope_atlas, torah, generator, sw.js, loop docs S583 · trope_atlas, sw.js S582 · torah, sw.js, scripts/loop, loop docs S581 · trope_atlas S580 · trope_atlas, flash, locales, CSV, sw.js, smoke-account, ops.md, torah-and-trope.md, loop docs S578 · dashboard, generator, dashboard.md, scripts/loop S577 · resources, contact, privacy, terms, sitemap S575 · torah, dictionary S574 · scripts, accounts-and-cloud.md S573 · pwa.js, name_tags, generator.md S572 · letter_learner S569 · trope S566 · FM, font-maker.md S565 · projects S561 · name-tags.md S559 · …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- H teacher walkthrough / paper-cuts (one tool): 2026-10-31 (**S583 — `trope_atlas.html` (its first H): a zakef-katon lesson by real clicks at 1366×768 EN/HE (sign → melody row, the Show filter, Key, the phrase browser, a copied link, printing filtered) + the student cell (plays by click at 1366×768 / 1024×768 HE; no Present mode: a reference page). FOUND 4: 1 FIXED (shared links), 2 seeds, the student cell clean. H-next: dictionary (S440), torah (S482).**)
