@@ -220,7 +220,7 @@ body.dark .at-sel { background:var(--navy-deep); color:var(--text); }
 .at-index .at-sysidx li.g > a { font-size:0.7rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--gold-text); }
 html[lang="he"] .at-index .at-sysidx li.g > a { letter-spacing:normal; text-transform:none; font-size:0.8rem; }
 .at-index .at-sysidx li.g ul { border-inline-start:1px solid var(--border); margin-block-start:3px; margin-inline-start:2px; }
-.at-index .at-sysidx li.g ul a { display:block; padding-block:2px; padding-inline:10px 0; margin-inline-start:-1px; border-inline-start:2px solid transparent; }
+.at-index .at-sysidx li.g ul a { display:block; padding-block:3px; padding-inline:10px 0; margin-inline-start:-1px; border-inline-start:2px solid transparent; }
 .at-index a { color:var(--text); text-decoration:none; }
 .at-index a:hover { color:var(--gold-text); }
 .at-index a.cur { color:var(--gold-text); }
@@ -293,6 +293,7 @@ table.at-signs tbody tr[id] { cursor:pointer; }
 .at-mono { font-family:ui-monospace, Menlo, Consolas, monospace; font-size:0.8rem; color:var(--muted); white-space:nowrap; }
 .at-mono span { display:block; font-family:'Source Sans 3', sans-serif; white-space:normal; font-size:0.76rem; }   /* zarka's second code point, on a line of its own */
 .at-role { color:var(--muted); min-width:24ch; }
+.at-signs tr[id], .at-card { scroll-margin-top:calc(var(--at-bar-h) + 8px); }
 .at-jump { color:var(--text); font-weight:700; text-decoration:underline; text-decoration-color:var(--border); text-underline-offset:3px; }
 .at-jump:hover { color:var(--gold-text); text-decoration-color:currentColor; }
 .at-rank { font-size:0.8rem; font-weight:600; white-space:nowrap; }
@@ -371,7 +372,9 @@ table.at-atlas .lead .at-glyph { font-size:1.8rem; min-width:1.2em; }
 table.at-atlas .lead b { display:block; font-size:0.92rem; }
 table.at-atlas .lead .alt { color:var(--muted); font-size:0.8rem; }
 table.at-atlas td.cell { min-width:120px; }
-table.at-atlas td.none { color:var(--border); text-align:center; font-size:1.1rem; }
+/* On a phone the sign column took 170px of a 294–386px box, leaving a figure its clef and key: it narrows to its longest word. */
+@media (max-width:560px) { table.at-atlas .lead { min-width:0; width:96px; padding-inline:8px; } }
+table.at-atlas td.none { color:var(--muted); text-align:center; font-size:1.1rem; }
 .at-grid:focus-visible { outline:2px solid var(--focus-ring); outline-offset:2px; }
 /* On a touch screen the box fills nearly the whole window (all but 18–118px of a phone's), so once it reached its last
    row a swipe that began on it moved nothing and the page stopped at the table: there the swipe goes on to the page.
@@ -410,8 +413,9 @@ body.dark .at-phrasebar { background:var(--navy-deep); }
 .at-prow { display:grid; grid-template-columns:56px minmax(0, 1fr); gap:8px 12px; align-items:start; padding:8px 0; border-top:1px solid var(--border); }
 .at-prow .num { font-family:'Libre Baskerville',serif; font-weight:700; font-size:0.86rem; color:var(--gold-text); padding-top:6px; font-variant-numeric:tabular-nums; }
 .at-prow .body { min-width:0; }
-/* The names sit over the staff's start: match-parent takes the interface's start, not the Hebrew run's own. */
-.at-prow .at-pheb { font-family:var(--heb-font); font-size:1.45rem; line-height:1.3; text-align:match-parent; margin:0 0 2px; }
+/* The names sit over the staff's start: the line takes the interface's direction (its Hebrew run keeps its own), so
+   start is the interface's start. (match-parent on a dir=rtl line computed to that line's own start, the far end in English.) */
+.at-prow .at-pheb { font-family:var(--heb-font); font-size:1.45rem; line-height:1.3; text-align:start; margin:0 0 2px; }
 .at-tag { font-family:'Source Sans 3', sans-serif; font-size:0.72rem; font-weight:700; color:var(--gold-text); margin-inline-start:8px; letter-spacing:0.04em; }
 @media (max-width:560px) { .at-prow { grid-template-columns:1fr; } .at-prow .num { padding-top:0; } }
 
@@ -459,7 +463,16 @@ html[lang="he"] footer [style*="letter-spacing:0.08em"] { letter-spacing:normal 
   header .hright, .at-bar, .at-index, .at-sing, .at-viewbar, .at-phrasebar, .at-clauses, .skip-link, footer nav { display:none !important; }
   .at-layout { display:block; }
   .at-grid { max-height:none; overflow:visible; }
+  /* Paper has no sideways scroll: the sign tables wrap to the sheet instead of clipping their last column. */
+  .at-tablewrap { overflow:visible; }
+  table.at-signs, table.at-signs.at-small { min-width:0; }
+  table.at-signs .at-hename, table.at-signs .at-mono, table.at-signs .at-rank { white-space:normal; }
+  table.at-signs td, table.at-signs th { padding-inline:6px; }
+  .at-role { min-width:16ch; }
   table.at-atlas th, table.at-atlas .lead { position:static; }
+  /* Nor does a long figure scroll in its row: it shrinks to the sheet's column, whole. */
+  .at-stf { overflow:visible; min-width:0; }
+  .at-stf svg { max-width:100%; height:auto; }
 }
 /* Reduced motion: the universal neutralizer (0.001ms rather than 0 so animationend still fires). */
 @media (prefers-reduced-motion: reduce) {
@@ -1031,6 +1044,20 @@ function singStart(id, row, sys) {
   document.querySelectorAll('[data-sing="' + id + '"] .at-sing').forEach((b) => { b.setAttribute('aria-pressed', 'true'); b.innerHTML = ICON_STOP; });
 }
 window.addEventListener('beforeprint', singStop);
+window.addEventListener('beforeprint', () => {
+  if (!SETS || viewVal() !== 'grid' || _printCards) return;
+  const g = document.getElementById('atTable');
+  _printCards = { top: g.scrollTop, left: g.scrollLeft };
+  buildAtlas();
+});
+window.addEventListener('afterprint', () => {
+  if (!_printCards) return;
+  const at = _printCards;
+  _printCards = null;
+  buildAtlas();
+  const g = document.getElementById('atTable');
+  g.scrollTop = at.top; g.scrollLeft = at.left;
+});
 document.addEventListener('visibilitychange', () => { if (document.hidden) singStop(); });
 
 /* ── the melody table ── */
@@ -1108,10 +1135,13 @@ function buildFilter() {
   }
 }
 function setGroups(list) { settings.groups = list && list.length ? list : null; saveSettings(); buildAtlas(); }
+// Paper has no sideways scroll, so the Grid's one column per melody would print the first one or two: the sheet gets
+// the Stacked cards (never stored) and the screen its Grid back, scrolled where it was, once the dialog closes.
+let _printCards = null;   // the Grid's scroll offsets while the cards stand in for it on paper
 function buildAtlas() {
   const host = document.getElementById('atTable');
   host.textContent = '';
-  if (viewVal() === 'grid') buildGrid(host); else buildCards(host);
+  if (viewVal() === 'grid' && !_printCards) buildGrid(host); else buildCards(host);
   document.getElementById('atViewGrid').setAttribute('aria-pressed', viewVal() === 'grid' ? 'true' : 'false');
   document.getElementById('atViewCards').setAttribute('aria-pressed', viewVal() === 'cards' ? 'true' : 'false');
   document.getElementById('atNames').checked = namesOn();
@@ -1182,7 +1212,7 @@ function buildPhrases() {
   const rows = h('div', { class: 'at-rows' });
   for (const r of rowsAll) {
     if (clause !== 'all' && clauseOf(r) !== clause) continue;
-    const heb = h('p', { class: 'at-pheb', lang: 'he', dir: 'rtl' }, r.he);
+    const heb = h('p', { class: 'at-pheb', dir: I18n.dir }, h('span', { lang: 'he', dir: 'rtl' }, r.he));
     if (r.tags.includes('aliyah-end')) heb.appendChild(h('span', { class: 'at-tag', lang: I18n.lang, dir: I18n.dir }, I18n.t('atlas.phrases.end_tag')));
     const label = I18n.t('atlas.phrases.staff_aria_m', { melody: sysLabel(s), n: r.n, marks: r.units.map((u) => markName(u.k)).join(', ') });
     rows.appendChild(h('div', { class: 'at-prow' }, h('div', { class: 'num' }, r.n), h('div', { class: 'body' }, heb, singWrap('p:' + s.id + ':' + r.n, r, s, label))));
@@ -1254,7 +1284,7 @@ if (barObs) barObs.observe(document.getElementById('atBar'));
 function jumpToMark(k) {
   const t = document.getElementById('atlas-' + k);
   if (!t) return;
-  t.scrollIntoView({ block: 'center' });
+  t.scrollIntoView({ block: t.offsetHeight > innerHeight / 2 ? 'start' : 'center' });   // a Stacked card is taller than the window: its heading first
   t.focus({ preventScroll: true });
   t.classList.remove('at-flash'); void t.offsetWidth; t.classList.add('at-flash');
 }
@@ -1263,6 +1293,7 @@ document.getElementById('atSigns').addEventListener('click', (e) => {
   if (!tr || (e.target.closest('a') && !e.target.closest('.at-jump'))) return;
   e.preventDefault();
   jumpToMark(tr.id.slice(2));
+  try { history.replaceState(null, '', '#atlas-' + tr.id.slice(2)); } catch (err) {}   // the address bar then shares the row
 });
 
 /* ── the Key select ── */
@@ -1338,8 +1369,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const hm = /^#sys-([a-z0-9_]+)$/.exec(location.hash);
   if (hm) _hashMel = hm[1];
   if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); }
-  loadData().then(() => {
-    if (hm && SETS && SETS[hm[1]]) { const el = document.getElementById('sys-' + hm[1]); if (el) el.scrollIntoView(); }
+  // The browser scrolls to an address before the table and the phrases exist, so the page lands again once they are built.
+  Promise.all([window.I18n ? I18n.ready : null, loadData()]).then(() => {
+    if (!SETS) return;
+    const ha = /^#atlas-([a-z_]+)$/.exec(location.hash);
+    let el = null;
+    if (hm && SETS[hm[1]]) el = document.getElementById('sys-' + hm[1]);
+    else if (ha) { jumpToMark(ha[1]); return; }
+    else if (/^#[a-z][a-z0-9_-]*$/.test(location.hash)) el = document.getElementById(location.hash.slice(1));
+    if (el) el.scrollIntoView();
   });
 });
 </script>

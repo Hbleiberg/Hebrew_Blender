@@ -8,7 +8,7 @@
   *Miqra according to the Masorah* edition the timings were aligned against); each verse split by `tropeUnitsOfVerse`
   (`js/trope-staff.js`, loaded in a vm), so piece *i* is timings index *i*.
 - **Output:** `data/trope/trope_index_totaltorah.json` — 103,493 bytes (budget 163,840)
-- **Verses:** 5,846 in the text; 2 without a recording (Genesis 28:5, Genesis 28:6);
+- **Verses:** 5,846 in the text; 0 without a recording (none); 2 from a recording Cantor Brown sent directly, with no video to link, left out (Genesis 28:5, Genesis 28:6);
   27 double-cantillation verses left out (Genesis 35:22 and the two Decalogues); 0 excluded
   (below); **5,817 aligned** (79,710 words, 68,171 sung words).
 - **Selection:** a sung word (a maqaf compound joined; an unmarked word with the marked neighbour it sings with) whose

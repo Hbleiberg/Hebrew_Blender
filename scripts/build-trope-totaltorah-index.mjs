@@ -123,7 +123,7 @@ const credit = manifest.credit && typeof manifest.credit === 'object' ? manifest
 for (const k of ['reader', 'congregation', 'series', 'url']) if (typeof credit[k] !== 'string' || !credit[k]) die(`manifest credit lacks ${k}`);
 const creditOut = { reader: credit.reader, congregation: credit.congregation, series: credit.series, url: credit.url };
 
-const census = { versesInText: 0, unrecorded: [], doubleAccented: 0, excluded: [], aligned: 0, cells: 0, pieces: 0 };
+const census = { versesInText: 0, unrecorded: [], direct: [], doubleAccented: 0, excluded: [], aligned: 0, cells: 0, pieces: 0 };
 const skipped = { twoMark: 0, legarmeh: 0, separator: 0, tooShort: 0, tooLong: 0 };
 const durations = Object.fromEntries(TROPES.map((t) => [t.key, []]));   // every one-key cell's duration, before the bounds
 const candidates = Object.fromEntries(TROPES.map((t) => [t.key, []]));
@@ -140,6 +140,8 @@ for (const book of BOOKS) {
       const key = `${book} ${c}:${v}`;
       const entry = manifest[key];
       if (!entry || typeof entry !== 'object') { census.unrecorded.push(key); continue; }
+      // a verse Cantor Brown recorded outside the series (scripts/totaltorah-direct.mjs) has no video for an example row to link
+      if (entry.video === null && typeof entry.direct === 'string') { census.direct.push(key); continue; }
       if (isDoubleAccented(book, c, v)) { census.doubleAccented++; continue; }
       if (entry.verified !== true || entry.timingsVerified !== true || typeof entry.timings !== 'string') { census.excluded.push({ key, why: 'not verified (audio or timings)' }); continue; }
       if (!FILE_RE.test(entry.file || '')) { census.excluded.push({ key, why: `file "${entry.file}" fails the Trainer's pattern` }); continue; }
@@ -275,8 +277,8 @@ for (const [key, list] of Object.entries(tropes)) {
   }
 }
 if (bytes > SIZE_BUDGET) failures.push(`index is ${bytes} bytes (> ${SIZE_BUDGET}); lower CAP_PER_TROPE`);
-if (census.unrecorded.length !== 2 || census.unrecorded.join(',') !== 'Genesis 28:5,Genesis 28:6')
-  failures.push(`unrecorded verses: ${census.unrecorded.length} (${census.unrecorded.slice(0, 5).join(', ')}) — the series skips only Genesis 28:5–6`);
+if ([...census.unrecorded, ...census.direct].sort().join(',') !== 'Genesis 28:5,Genesis 28:6')
+  failures.push(`unrecorded verses: ${census.unrecorded.length} (${census.unrecorded.slice(0, 5).join(', ')}), direct: ${census.direct.length} — the series skips only Genesis 28:5–6 (a direct recording may fill them)`);
 
 /* ── report ─────────────────────────────────────────────────────────────── */
 const skippedWhy = `two marks on one word ${fmt(skipped.twoMark)} (a kadma or munach with its zakef, a mercha with its tevir…), munach legarmeh ${fmt(skipped.legarmeh)} (no Learn card), a paseq inside the word ${fmt(skipped.separator)}, shorter than ${CLIP_MIN} s ${fmt(skipped.tooShort)}, longer than the mark's ceiling ${fmt(skipped.tooLong)}`;
@@ -290,7 +292,7 @@ const report = `# Total Torah clip index — build report
   *${TEXT_EDITION}* edition the timings were aligned against); each verse split by \`tropeUnitsOfVerse\`
   (\`js/trope-staff.js\`, loaded in a vm), so piece *i* is timings index *i*.
 - **Output:** \`data/trope/trope_index_totaltorah.json\` — ${fmt(bytes)} bytes (budget ${fmt(SIZE_BUDGET)})
-- **Verses:** ${fmt(census.versesInText)} in the text; ${census.unrecorded.length} without a recording (${census.unrecorded.join(', ') || 'none'});
+- **Verses:** ${fmt(census.versesInText)} in the text; ${census.unrecorded.length} without a recording (${census.unrecorded.join(', ') || 'none'}); ${census.direct.length} from a recording Cantor Brown sent directly, with no video to link, left out (${census.direct.join(', ') || 'none'});
   ${census.doubleAccented} double-cantillation verses left out (Genesis 35:22 and the two Decalogues); ${census.excluded.length} excluded
   (below); **${fmt(census.aligned)} aligned** (${fmt(census.pieces)} words, ${fmt(census.cells)} sung words).
 - **Selection:** a sung word (a maqaf compound joined; an unmarked word with the marked neighbour it sings with) whose

@@ -1573,6 +1573,9 @@ html[lang="he"] .beta-tag { letter-spacing: normal; text-transform: none; }   /*
 // Canonical HTML escaper (all five metacharacters) — used when interpolating translated/dynamic
 // strings into innerHTML templates. Prefer textContent where possible; this covers the template spots.
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+// esc(), with each Hebrew run of a mixed English UI string ("Root (שׁורש)") on a lang="he" span (UX rule 8); the Hebrew UI
+// is lang="he" already, so it gets esc() alone.
+function escHe(s){ const e = esc(s); return window.I18n && I18n.lang === 'he' ? e : e.replace(/[\u0590-\u05FF](?:[\u0590-\u05FF\s]*[\u0590-\u05FF])?/g, m => '<span lang="he">' + m + '</span>'); }
 // Translate a Hebrew letter/vowel display name (e.g. "Alef", "Khaf sf", "Shin/Sin", "Hataf Patach")
 // to its localized form via the dictionary.glyphname.* keys. Falls back to the English name if no key.
 function glyphLetterName(n){ const k='dictionary.glyphname.letter_'+String(n).toLowerCase().replace(/[ \/]+/g,'_'); const v=I18n.t(k); return v===k?n:v; }
@@ -2472,6 +2475,8 @@ function wlLoadListAsFilter(id) {
   if (sc) sc.textContent = countText;
   if (n === 0) renderDictEmptyState(false);
   wlShowActiveBanner(list.name, n);
+  rebuildFilterChips();
+  if (window._updateMobileFiltersBtn) window._updateMobileFiltersBtn();
   closeWordModal();
 }
 
@@ -3266,7 +3271,17 @@ function onFilter() {
   const sort = document.getElementById('sortSel').value;
   const qn = q.replace(/\s+/g, ' '), qKey = glossKey(qn);
   const tier = new Map();   // only the exact meanings (0 and 1); every other word is 2
-  if (qn && qn.indexOf('|') < 0) {   // '|' is the cache's own separator
+  // A Hebrew search gets the same treatment: the word itself first, then a phrase holding it as a whole word, then the
+  // rest. Sorted A→Z alone, "ספר" put סֵפֶר below the 12th of 41 (after אַטְמוֹסְפֶרָה), "ילד" put יֶלֶד 5th. w.bare has no
+  // spaces, so a phrase's words come from the pointed form, marks dropped.
+  const qb = qn.replace(/[^א-ת]/g, '');
+  if (qb) {
+    const one = !/\s/.test(qn);
+    for (const w of filtered) {
+      if (w.bare === qb) tier.set(w, 0);
+      else if (one && w.word.replace(/[֑-ׇ]/g, '').split(/[^א-ת]+/).includes(qb)) tier.set(w, 1);
+    }
+  } else if (qn && qn.indexOf('|') < 0) {   // '|' is the cache's own separator
     const needle = '|' + qn + '|', keyNeedle = '|' + qKey + '|';
     for (const w of filtered) { const t = glossTier(w, needle, keyNeedle); if (t < 2) tier.set(w, t); }
   }
@@ -3543,10 +3558,10 @@ function buildWordCard(w) {
     ${w.translit ? `<div class="wc-translit">${translitDisplayOf(w)}</div>` : ''}
     ${w.translation ? `<div class="wc-transl">${w.translation}</div>` : ''}
     <div class="wc-badges">
-      ${w.pos ? `<span class="badge b-pos">${esc(posLabel(w.pos))}</span>` : ''}
+      ${w.pos ? `<span class="badge b-pos">${escHe(posLabel(w.pos))}</span>` : ''}
       <span class="badge ${ec}">${el}</span>
       <span class="badge b-len">${w.len}L</span>
-      ${showGematria ? `<span class="badge" style="background:var(--warm-gray);color:var(--muted);">&#x05D2; ${calcGematria(w.bare)}</span>` : ''}
+      ${showGematria ? `<span class="badge" style="background:var(--warm-gray);color:var(--muted);">${escHe('\u05D2')} ${calcGematria(w.bare)}</span>` : ''}
     </div>`;
   while (inner.firstChild) card.appendChild(inner.firstChild);
   return card;
@@ -5584,6 +5599,7 @@ function relabelVowelFilter() {
 function applyI18n() {
   if (!window.I18n) return;
   I18n.applyStaticI18n();
+  document.querySelectorAll('[data-i18n="dictionary.pos.root"], [data-i18n="dictionary.shoresh.enter_label"]').forEach(e => { e.innerHTML = escHe(e.textContent); });   // their Hebrew word, lang="he"
   const _db = document.getElementById('darkBtn');
   if (_db) (_db.querySelector('.hi-lbl') || _db).textContent = I18n.t(document.body.classList.contains('dark') ? 'shared.darkmode.label_light' : 'shared.darkmode.label_dark');
   initColorPickers();
@@ -6010,7 +6026,9 @@ function dictAfterFilter() {
 // chip row and Section 4's "Filters (N)" badge. Empty in shoresh mode.
 function computeActiveChips() {
   const chips = [];
-  if (shoreshMode) return chips;
+  // A loaded word list shows exactly its words, whatever the sidebar holds: chips naming the sidebar's filters there
+  // described a filtering the view does not do (the banner's Exit list returns to them).
+  if (shoreshMode || _wlActiveListName) return chips;
   const q = document.getElementById('searchInput').value.trim();
   if (q) chips.push({ key: 'search', label: I18n.t('dictionary.chips.search', { query: q }), panel: '.search-wrap' });
 
@@ -6248,10 +6266,10 @@ function openWordModal(w) {
   if (w.translation) { const t = document.createElement('div'); t.className = 'wm-transl'; t.textContent = w.translation; b.appendChild(t); }
 
   const badges = document.createElement('div'); badges.className = 'wm-badges';
-  if (w.pos) badges.appendChild(_wmBadge('b-pos', posLabel(w.pos)));
+  if (w.pos) { const pb = _wmBadge('b-pos', ''); pb.innerHTML = escHe(posLabel(w.pos)); badges.appendChild(pb); }
   badges.appendChild(_wmBadge(ec, el));
   badges.appendChild(_wmBadge('b-len', w.len + 'L'));
-  const gb = _wmBadge('', 'ג ' + calcGematria(w.bare)); gb.style.background = 'var(--warm-gray)'; gb.style.color = 'var(--muted)'; badges.appendChild(gb);
+  const gb = _wmBadge('', ''); gb.innerHTML = escHe('ג ' + calcGematria(w.bare)); gb.style.background = 'var(--warm-gray)'; gb.style.color = 'var(--muted)'; badges.appendChild(gb);
   b.appendChild(badges);
 
   const actions = document.createElement('div'); actions.className = 'wm-actions';
@@ -6273,7 +6291,7 @@ function openWordModal(w) {
   if (rc && rc.length >= 2) {
     const row = document.createElement('div'); row.className = 'wm-root-row';
     const rb = document.createElement('button'); rb.className = 'wm-root-btn';
-    rb.textContent = I18n.t('dictionary.modal.words_from_root', { root: [...rc].join('־') });
+    rb.innerHTML = escHe(I18n.t('dictionary.modal.words_from_root', { root: [...rc].join('־') }));
     rb.addEventListener('click', () => {
       closeWordModal(); setDictMode('shoresh'); runShoreshLookup(rc);
       // The window hands the focus back to its word card, which Shoresh mode hides (the keyboard's place fell to the

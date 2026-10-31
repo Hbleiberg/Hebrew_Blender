@@ -756,6 +756,7 @@ body.dark .tt-assign-badge.is-warn { color:#f0c060; background:#3a2f14; }
 .tt-assign-fblabel { font-weight:700; }
 .tt-assign-closed { color:#b3261e; font-weight:600; }
 .tt-asg-picklist { max-block-size:11em; overflow:auto; border:1px solid var(--border); border-radius:6px; padding:6px 8px; display:flex; flex-wrap:wrap; gap:4px 12px; font-size:0.82rem; background:var(--white); }
+.tt-asg-picklist[hidden] { display:none; }
 .tt-asg-picklist label { display:inline-flex; align-items:center; gap:4px; white-space:nowrap; }
 .tt-asg-picklist .tt-asg-group { flex-basis:100%; font-weight:700; margin-block-start:4px; }
 .tt-asg-pickbar { display:flex; flex-wrap:wrap; gap:6px 10px; align-items:center; font-size:0.8rem; color:var(--muted); margin:4px 0; }
@@ -1504,7 +1505,7 @@ body.dark .preset-item { background:var(--navy-deep); }
 body.dark .tt-fav-dialog { background:var(--navy-deep); }
 .tt-fav-backdrop[hidden], .tt-fav-dialog[hidden] { display:none; }
 .tt-fav-dialog .form-row input[type="text"], .tt-fav-dialog .form-row select { max-width:none; flex:1 1 60%; min-width:0; }   /* min-width:0: a text field's ~20ch intrinsic width (225px at 16px on touch) would push a 320px phone's dialog sideways */
-.tt-fav-dialog .form-row label:not(.toggle) { flex:0 0 auto; min-inline-size:56px; }
+.tt-fav-dialog .form-row label:not(.toggle) { flex:0 1 auto; min-inline-size:56px; }   /* shrinks (wraps) beside a number/date field: unshrinkable, "Keep recordings (days after closing)" pushed the assignment dialog's field past a 320px phone's edge */
 .tt-fav-reading { font-size:0.8rem; margin:0 0 12px; line-height:1.4; }
 .tt-fav-check { display:flex; align-items:flex-start; gap:8px; font-size:0.82rem; font-weight:600; margin-block:12px 4px; cursor:pointer; }
 .tt-fav-check input { margin:2px 0 0; flex:0 0 auto; }
@@ -1879,7 +1880,8 @@ body.fullscreen .tt-status { font-size: 1rem; }
 }
 #fsExitBtn:hover { background: rgba(13,18,32,0.88); }
 #fsExitBtn .fs-x { font-size: 1.5rem; line-height: 1; }
-#fsExitBtn .fs-label { font-size: 0.52rem; letter-spacing: 0.04em; opacity: 0.85; white-space: nowrap; }
+#fsExitBtn .fs-label { font-size: 0.7rem; letter-spacing: 0.04em; opacity: 0.85; white-space: nowrap; }
+html[lang="he"] #fsExitBtn .fs-label { letter-spacing: normal; }   /* spaced Hebrew letters read as separate letters (the dashboard's rule) */
 body.fullscreen #fsExitBtn { display: flex; }
 /* Idle-hide (shared fullscreen idle-hide block): the exit plate fades after 3s without pointer activity, returns on
    the next move, never hides while keyboard-focused. #ttFsBar keeps its own 4s show/hide. */
@@ -2529,7 +2531,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
       <div id="ttAsgMine"></div>
       <h3 class="tt-assign-h3 tt-assign-codehead" data-i18n="torah.assign.code_head">Have a code word from your teacher?</h3>
       <form class="tt-assign-code" id="ttAsgCodeForm" novalidate>
-        <label><span data-i18n="torah.assign.code_label">Code word from your teacher</span><input type="text" id="ttAsgCode" maxlength="40" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="sunny-fox-38" data-i18n-placeholder="torah.assign.code_placeholder"></label>
+        <label><span data-i18n="torah.assign.code_label">Code word from your teacher</span><input type="text" id="ttAsgCode" maxlength="40" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="sunny-fox-38" data-i18n-placeholder="torah.assign.code_placeholder"></label>
         <button type="submit" class="btn btn-xs" data-i18n="torah.assign.code_btn">Open the reading</button>
       </form>
       <p class="tt-assign-note" id="ttAsgStudentStatus" role="status" aria-live="polite" hidden></p>
@@ -3295,7 +3297,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
   <p class="tt-fav-reading"><span data-i18n="torah.fav.dlg_reading">Reading:</span> <strong id="ttAsgDlgReading"></strong></p>
   <form id="ttAsgDlgForm" novalidate>
     <div class="form-row"><label for="ttAsgDlgTitle" data-i18n="torah.assign.dlg_name">Title</label><input type="text" id="ttAsgDlgTitle" maxlength="120" autocomplete="off"></div>
-    <div class="form-row"><label for="ttAsgDlgCode" data-i18n="torah.assign.dlg_code">Code word</label><input type="text" id="ttAsgDlgCode" maxlength="40" autocomplete="off" spellcheck="false" style="direction:ltr;"></div>
+    <div class="form-row"><label for="ttAsgDlgCode" data-i18n="torah.assign.dlg_code">Code word</label><input type="text" id="ttAsgDlgCode" maxlength="40" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" style="direction:ltr;"></div>
     <div class="form-row"><span></span><button type="button" class="btn btn-xs btn-secondary" id="ttAsgDlgRegen" data-i18n="torah.assign.dlg_regen">New code word</button></div>
     <div class="form-row"><label for="ttAsgDlgMinutes" data-i18n="torah.assign.dlg_minutes">Maximum minutes</label><input type="number" id="ttAsgDlgMinutes" min="1" max="30" step="1" value="10"></div>
     <div class="form-row"><label for="ttAsgDlgDue" data-i18n="torah.assign.dlg_due">Due date (optional)</label><input type="date" id="ttAsgDlgDue"></div>
@@ -3404,9 +3406,10 @@ const TT_BASE = 'data/totaltorah/';
 // private repository Hbleiberg/TotalTorahAudio. The manifest and the timings stay same-origin under TT_BASE,
 // behind TT_DATA_V.
 const TT_AUDIO_BASE = 'https://audio.ivritsuite.com/audio/';
-const TT_DATA_V = '?v=9';   // cache-buster for the manifest and the timings files (the /data/ cache is exact-URL keyed)
+const TT_DATA_V = '?v=10';   // cache-buster for the manifest and the timings files (the /data/ cache is exact-URL keyed)
 const TT_CREDIT_URL = 'https://www.adasisrael.org/trope';
 const TT_VIDEO_RE = /^[\w-]{11}$/;   // a video id goes into an href — validated before it does
+const TT_DIRECT_RE = /^direct-[a-z0-9-]{1,40}$/;   // a directly recorded set's id (no video, no link)
 const TORAH_BOOK_CHAPTERS = { Genesis:50, Exodus:40, Leviticus:27, Numbers:36, Deuteronomy:34 };
 
 const DEFAULTS = {
@@ -4303,8 +4306,11 @@ function lookupRender() {
   if (r.kind === 'parsha') {
     const ps = r.idx.map(parshaByIdx).filter(Boolean);
     if (!ps.length) { line(I18n.t('torah.lookup.invalid')); return; }
-    const name = ps.map(x => x.en).join('-') + ' (' + ps.map(x => x.he).join('–') + ')';
-    const pl = line(I18n.t('torah.lookup.parsha', { name, schedule }));
+    // The Hebrew name rides a lang="he" span (UX rule 8): a \u0001 marks its slot in the translated sentence.
+    const [pre, post] = I18n.t('torah.lookup.parsha', { name: ps.map(x => x.en).join('-') + ' (\u0001)', schedule }).split('\u0001');
+    const pl = line(pre), heName = document.createElement('span');
+    heName.lang = 'he'; heName.textContent = ps.map(x => x.he).join('–');
+    pl.append(heName, post || '');
     if (icons && window.ParashaIcons) pl.insertAdjacentHTML('afterbegin', ParashaIcons.html(ps.map(x => x.n - 1)));   // a doubled week shows both, in reading order
     if (cycleKey() === 'triennial') line(I18n.t('torah.lookup.triennial_year', { n: HebCal.triennialYear(r.hyear) }));
     if (ps[1]) { const n = line(I18n.t('torah.lookup.doubled_note', { first: ps[0].en, second: ps[1].en })); n.style.color = 'var(--muted)'; }
@@ -7795,9 +7801,11 @@ function ensureTotalTorahManifest() {
           if (k === 'credit') { ttCredit = (e && typeof e === 'object') ? e : null; return; }
           if (!/^[A-Z][a-z]+ \d+:\d+$/.test(k) || !e || typeof e !== 'object') return;
           if (typeof e.file !== 'string' || !/^[a-z]{3}-\d{3}-\d{3}\.mp3$/.test(e.file)) return;
-          if (typeof e.video !== 'string' || !TT_VIDEO_RE.test(e.video)) return;
+          // a verse Cantor Brown recorded directly (scripts/totaltorah-direct.mjs) has no video: `video: null` + a `direct` id
+          const direct = e.video === null && typeof e.direct === 'string' && TT_DIRECT_RE.test(e.direct) ? e.direct : null;
+          if (!direct && (typeof e.video !== 'string' || !TT_VIDEO_RE.test(e.video))) return;
           out[k] = {
-            file: e.file, dur: +e.dur || 0, video: e.video, parsha: String(e.parsha || ''), year: +e.year || 0, aliyah: +e.aliyah || 0,
+            file: e.file, dur: +e.dur || 0, video: direct ? null : e.video, direct, parsha: String(e.parsha || ''), year: +e.year || 0, aliyah: +e.aliyah || 0,
             verified: e.verified === true,
             timings: (typeof e.timings === 'string' && /^[a-z]{3}-\d{3}-\d{3}\.txt$/.test(e.timings)) ? e.timings : null,
             timingsVerified: e.timingsVerified === true,
@@ -7841,7 +7849,8 @@ function ttReadingEntries(anySource) {
     if (!e) continue;
     out.count++;
     if (!(e.timings && e.timingsVerified)) out.unTimed++;
-    if (!seen[e.video]) { seen[e.video] = true; out.videos.push(e); }
+    const src = e.video || e.direct;
+    if (!seen[src]) { seen[src] = true; out.videos.push(e); }
   }
   return out;
 }
@@ -7981,8 +7990,9 @@ function syncRecSrcControls() {
     ttDiv.hidden = !active;
     if (active) {
       const st = 'color:var(--gold-text);';
-      ttDiv.innerHTML = `<div>${ttCreditHTML(null, st)}</div>` + ents.videos.map(e =>
-        `<div style="margin-top:4px;">${esc(I18n.t('torah.recsrc.this_reading', { parsha: e.parsha, year: e.year, aliyah: e.aliyah }))} · <a href="https://youtu.be/${esc(e.video)}" target="_blank" rel="noopener" style="${st}">${esc(I18n.t('torah.recsrc.watch_youtube'))}</a></div>`).join('');
+      ttDiv.innerHTML = `<div>${ttCreditHTML(null, st)}</div>` + ents.videos.map(e => e.direct
+        ? `<div style="margin-top:4px;">${esc(I18n.t('torah.recsrc.this_reading_direct', { parsha: e.parsha }))}</div>`
+        : `<div style="margin-top:4px;">${esc(I18n.t('torah.recsrc.this_reading', { parsha: e.parsha, year: e.year, aliyah: e.aliyah }))} · <a href="https://youtu.be/${esc(e.video)}" target="_blank" rel="noopener" style="${st}">${esc(I18n.t('torah.recsrc.watch_youtube'))}</a></div>`).join('');
     }
   }
   if (pocketDiv) pocketDiv.hidden = active;
@@ -8320,7 +8330,9 @@ function onAudioTimeUpdate() {
     const lead = firstKaraokeSpan(idx);
     if (lead) {
       const r = lead.getBoundingClientRect();
-      if (r.top < 80 || r.bottom > window.innerHeight - 120) {
+      // The bottom band clears the open audio bar, whose height follows its wrapping (101px wide, 131 at 800, 252 on a phone).
+      const barH = document.getElementById('ttAudioBar')?.offsetHeight || 0;
+      if (r.top < 80 || r.bottom > window.innerHeight - Math.max(120, barH + 16)) {
         // Honor reduced-motion: no smooth auto-scroll during chanting for motion-sensitive users (mirrors the jump-nav scroll).
         const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         lead.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });

@@ -305,6 +305,19 @@ footer a { display: inline-block; padding-block: 5px; }
   header .hright { display: none !important; }
   /* On A4 the Support tile's title printed alone at the first sheet's foot, its text and links overleaf. */
   .cs-tile { break-inside: avoid; }
+  /* On paper the form is empty boxes and a Send button, and the payment tabs and "Open PayPal →" are links nobody can
+     press: they go, the write-to address stays, and every way to give prints (the two handles, and the Zelle QR,
+     which scans from paper) instead of only the tab that happened to be open. */
+  #contactForm, .cf-intro, .pill-wrap, .donate-btn { display: none !important; }
+  .donate-panel { display: flex !important; flex-direction: column; align-items: center; min-height: 0; padding: 6px 4px; break-inside: avoid; }
+  .zelle-qr { max-width: 150px; }
+  /* Blocks, not a one-column grid: Chrome moved the whole grid row, the short Get in touch tile with it, to sheet 2. */
+  .cs-grid { display: block; }
+  .cs-tile + .cs-tile { margin-top: 16px; }
+  /* What is left fits one sheet once main's screen padding (48 / 64 px) and the captions' gaps shrink; at screen size the
+     footer printed alone on sheet 2 (pattern print-trailing-padding-adds-a-sheet). */
+  main { padding-block: 20px 12px; }
+  .donate-sub { margin-bottom: 8px; }
 }
 /* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner, parsha_emojis, name_tags, trope_atlas, the generated parsha/ pages (copied from parsha_emojis by scripts/build-parsha-pages.mjs) (docs/reference/shared-components.md → Header icons).
    The header controls and the in-page control buttons (play, pause, stop, reset, retry, loop, sound) carry inline
@@ -342,7 +355,7 @@ body.dark .hi-sun{display:inline-block;}
   <div class="cs-grid">
     <section class="cs-tile">
       <h2 data-i18n="contact.getintouch_heading">Get in touch</h2>
-      <p data-i18n="contact.getintouch_intro">Send a message below and it will go straight to my inbox. Please include your email so I can write back.</p>
+      <p class="cf-intro" data-i18n="contact.getintouch_intro">Send a message below and it will go straight to my inbox. Please include your email so I can write back.</p>
       <form id="contactForm">
       <input type="hidden" name="access_key" value="236416bf-9bf9-459c-9bf2-e31303467db4">
       <div class="field">

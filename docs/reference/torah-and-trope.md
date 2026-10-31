@@ -303,7 +303,7 @@ to Learn), and a caller that opens something inside the new tab (`openLearnFor`)
   Sefaria export (MAM, the edition the timings were aligned against — asserted), each verse split by
   `tropeUnitsOfVerse` from `js/trope-staff.js` loaded in a vm (piece *i* is timings index *i*; the builder carries
   no copy of the taxonomy); a verse is used only while `verified`, `timingsVerified` and its timings count its words
-  plus one, never from the double-cantillation passages, and never Genesis 28:5–6 (the series does not chant them).
+  plus one, never from the double-cantillation passages, and never a directly recorded verse (Genesis 28:5–6: no video to link to).
   A clip is a sung word carrying exactly one Learn-card mark (munach legarmeh and two-mark words are out),
   0.35–6 s (8 s for rare marks, 15 s for shalshelet — the cantor chants more slowly than PocketTorah's reader, and
   the long marks' length is the lesson), the 0.6–3 s band first, one per parasha per pass spread through the Torah,
@@ -1170,8 +1170,12 @@ never a practice link (`LINK_DISPLAY` says how a reading looks, never how it sou
   in the PocketTorah label format (comma-separated word onsets, index = word index, one trailing end-of-last-word
   value), and `data/totaltorah/manifest.json`: a top-level `credit` block (names, URLs, the permission, each source
   video's title and upload date) beside one entry per verse, keyed `"Genesis 1:1"` — `{ file, dur, video, parsha,
-  year, aliyah, verified, timings, timingsVerified }`. The manifest and the timings are fetched with `TT_DATA_V`
-  (`?v=9`; `/data/` is cache-first and exact-URL keyed); the audio is left to the network by `sw.js` (a Range
+  year, aliyah, verified, timings, timingsVerified }`. A verse the series never chants (Genesis 28:5–6) is cut from
+  a recording Cantor Brown sent directly (`scripts/totaltorah-direct.mjs`, cut by `build-totaltorah-direct.mjs`
+  with the same alignment, end rule and timings as a video): its entry carries `video: null, direct: "<id>"`
+  (`TT_DIRECT_RE`), the credit's `direct` block names the recording, and the page credits Cantor Brown and Adas
+  Israel with no YouTube link (the Audio tab's line is `torah.recsrc.this_reading_direct`). The manifest and the
+  timings are fetched with `TT_DATA_V` (`?v=10`; `/data/` is cache-first and exact-URL keyed); the audio is left to the network by `sw.js` (a Range
   request must never be answered from the cache).
 - **Verified or nothing.** `ttEntryFor(vk)` returns an entry only while it is `verified: true`, and its timings count
   only while `timingsVerified: true` — the maintainer flips both by listening (`build-totaltorah-audio.mjs verify`),

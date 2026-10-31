@@ -7335,6 +7335,13 @@
     "channel": "Tricks of the Trope: Total Torah",
     "fetched": "2026-10-23"
    }
+  },
+  "direct": {
+   "direct-gen-028-005": {
+    "ref": "Genesis 28:5-28:6",
+    "recorded": "2026-10-28",
+    "note": "the two verses of Toldot Y3 A7 that its video (-CmdgOZKR14) does not chant: recorded by Cantor Brown on a phone and sent to the maintainer, October 2026"
+   }
   }
  },
  "Genesis 1:1": {
@@ -15893,6 +15900,30 @@
   "aliyah": 6,
   "verified": true,
   "timings": "gen-028-004.txt",
+  "timingsVerified": true
+ },
+ "Genesis 28:5": {
+  "file": "gen-028-005.mp3",
+  "dur": 25.15,
+  "video": null,
+  "direct": "direct-gen-028-005",
+  "parsha": "Toldot",
+  "year": 3,
+  "aliyah": 7,
+  "verified": true,
+  "timings": "gen-028-005.txt",
+  "timingsVerified": true
+ },
+ "Genesis 28:6": {
+  "file": "gen-028-006.mp3",
+  "dur": 39.19,
+  "video": null,
+  "direct": "direct-gen-028-005",
+  "parsha": "Toldot",
+  "year": 3,
+  "aliyah": 7,
+  "verified": true,
+  "timings": "gen-028-006.txt",
   "timingsVerified": true
  },
  "Genesis 28:7": {
