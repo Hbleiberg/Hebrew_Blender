@@ -8325,7 +8325,9 @@ function onAudioTimeUpdate() {
     const lead = firstKaraokeSpan(idx);
     if (lead) {
       const r = lead.getBoundingClientRect();
-      if (r.top < 80 || r.bottom > window.innerHeight - 120) {
+      // The bottom band clears the open audio bar, whose height follows its wrapping (101px wide, 131 at 800, 252 on a phone).
+      const barH = document.getElementById('ttAudioBar')?.offsetHeight || 0;
+      if (r.top < 80 || r.bottom > window.innerHeight - Math.max(120, barH + 16)) {
         // Honor reduced-motion: no smooth auto-scroll during chanting for motion-sensitive users (mirrors the jump-nav scroll).
         const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         lead.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
