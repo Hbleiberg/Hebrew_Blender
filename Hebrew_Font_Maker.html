@@ -291,6 +291,8 @@ body.dark .hi-sun{display:inline-block;}
     font-family: 'Source Sans 3', sans-serif;
   }
   .tbtn.ghost { background: transparent; color: var(--gold-light); border: 1.5px solid var(--gold-light); }
+  /* A menu button's caret is drawn, not read: the empty alt keeps "▾" out of its name (the strings carry no glyph). */
+  .menu-caret::after { content: ' ▾'; content: ' ▾' / ''; }
   .tbtn:hover { filter: brightness(1.06); }
   .tbtn:disabled { opacity: 0.45; cursor: default; filter: none; }
   .tbtn-select {
@@ -1577,8 +1579,8 @@ html[lang="he"] .tp-label{letter-spacing:normal;text-transform:none;}
 <div class="toolbar">
   <div class="tb-group">
     <button class="tbtn ghost" onclick="newProjectFresh()" data-i18n="fontmaker.toolbar.new">New</button>
-    <button class="tbtn ghost" onclick="toggleLoadMenu(event)" aria-expanded="false" data-i18n="fontmaker.toolbar.load_project">Load Project ▾</button>
-    <button class="tbtn ghost" onclick="toggleSaveMenu(event)" aria-expanded="false" data-i18n="fontmaker.toolbar.save_project_menu">Save Project ▾</button>
+    <button class="tbtn ghost menu-caret" onclick="toggleLoadMenu(event)" aria-expanded="false" data-i18n="fontmaker.toolbar.load_project">Load Project</button>
+    <button class="tbtn ghost menu-caret" onclick="toggleSaveMenu(event)" aria-expanded="false" data-i18n="fontmaker.toolbar.save_project_menu">Save Project</button>
     <button id="cloudPip" class="engine-badge cloud-pip" type="button" hidden onclick="fmCloudPipClick()"><span class="engine-dot" aria-hidden="true"></span><svg class="hi hi-sm hi-cloud" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.2 18.4h9.9a3.9 3.9 0 0 0 .5-7.77 5.6 5.6 0 0 0-10.72-1.2A4.5 4.5 0 0 0 7.2 18.4Z"/></svg><span class="cloud-pip-text"></span></button>
     <input type="file" id="projFile" accept=".hebrewfont,.json,application/json,application/gzip" style="display:none;">
   </div>
@@ -2188,7 +2190,7 @@ html[lang="he"] .tp-label{letter-spacing:normal;text-transform:none;}
     <div class="wiz-head">
       <h3 id="wizTitle" data-i18n="fontmaker.wizard.title">✍️ Create a new font</h3>
       <div class="wiz-head-btns">
-        <button class="tbtn ghost" id="wizOpenProject" onclick="toggleLoadMenu(event)" aria-expanded="false" data-i18n="fontmaker.wizard.open_project">Open a project ▾</button>
+        <button class="tbtn ghost menu-caret" id="wizOpenProject" onclick="toggleLoadMenu(event)" aria-expanded="false" data-i18n="fontmaker.wizard.open_project">Open a project</button>
         <button class="tbtn ghost hi-btn" id="wizStartFromFont" onclick="osPickOpen(_wizardMode)"><svg class="hi hi-sm hi-book" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7.2v12.4"/><path d="M12 7.2S10 5.4 6 5.4a18 18 0 0 0-2.4.2v12.6A18 18 0 0 1 6 18c4 0 6 1.6 6 1.6s2-1.6 6-1.6a18 18 0 0 1 2.4.2V5.6A18 18 0 0 0 18 5.4c-4 0-6 1.8-6 1.8Z"/></svg><span class="hi-lbl" data-i18n="fontmaker.wizard.start_from_font">Start from an existing font</span></button>
         <button class="tbtn ghost" id="wizCancelBtn" onclick="wizardCancel()" data-i18n="fontmaker.wizard.cancel" hidden>Cancel</button>
       </div>

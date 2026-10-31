@@ -3416,7 +3416,7 @@ fontmaker.toolbar.help,Help,עזרה,toolbar button,svg-icon-in-markup
 fontmaker.toolbar.help_aria,Help,עזרה,toolbar Help button,aria-label only
 fontmaker.toolbar.help_title,A plain-language guide to the whole tool,מדריך בשפה פשוטה לכל הכלי,toolbar button title,
 fontmaker.toolbar.home,Home,בית,toolbar link,svg-arrow-in-markup
-fontmaker.toolbar.load_project,Load Project ▾,טעינת פרויקט ▾,toolbar button,
+fontmaker.toolbar.load_project,Load Project,טעינת פרויקט,toolbar button,
 fontmaker.toolbar.new,New,חדש,toolbar button,
 fontmaker.toolbar.preview_pdf,Preview PDF,תצוגה מקדימה PDF,toolbar button,
 fontmaker.toolbar.qa_check,QA Check,בדיקת איכות,toolbar button,svg-icon-in-markup
@@ -3424,7 +3424,7 @@ fontmaker.toolbar.qa_check_title,Review every letter × mark placement for colli
 fontmaker.toolbar.redo_aria,Redo,בצע שוב,aria-label only,aria-label only
 fontmaker.toolbar.redo_title,Redo (Ctrl+Shift+Z),בצע שוב (Ctrl+Shift+Z),toolbar button title,
 fontmaker.toolbar.save_project,Save Project,שמירת פרויקט,toolbar button,
-fontmaker.toolbar.save_project_menu,Save Project ▾,שמירת פרויקט ▾,toolbar button,
+fontmaker.toolbar.save_project_menu,Save Project,שמירת פרויקט,toolbar button,
 fontmaker.toolbar.tour_aria,Tour,סיור,toolbar Tour button,aria-label only
 fontmaker.toolbar.tour_btn,Tour,סיור,toolbar tour launcher button,svg-icon-in-markup
 fontmaker.toolbar.tour_title,Take a quick tour,צאו לסיור מהיר,toolbar button title,
@@ -5761,7 +5761,7 @@ flashcards.cert.generated_announce,Certificate ready for {name}.,התעודה ש
 flashcards.cert.lead_in,This is to certify that,תעודה זו מוענקת ל־,completion certificate lead-in line above the student name,
 flashcards.cert.seal_levels,Levels,שלבים,completion certificate seal text under the big level-count numeral,
 fontmaker.wizard.title,✍️ Create a new font,✍️ יצירת גופן חדש,wizard dialog title,leading-emoji
-fontmaker.wizard.open_project,Open a project ▾,פתיחת פרויקט ▾,wizard header button,
+fontmaker.wizard.open_project,Open a project,פתיחת פרויקט,wizard header button,
 fontmaker.wizard.cancel,Cancel,ביטול,wizard header button,
 fontmaker.wizard.step1_title,Step 1 of 3 — Name your font,שלב 1 מתוך 3 — תנו שם לגופן,wizard step heading,
 fontmaker.wizard.name_label,Font name,שם הגופן,field label,
