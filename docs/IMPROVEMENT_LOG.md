@@ -598,6 +598,8 @@ _(none)_
 
 - `hebrew-faux-italic` | ACTIVE | owner M | det: recipe | last S584 | streak 1
 
+- `flex-box-drops-a-sentence-space` | ACTIVE | owner M | det: scripts/loop/probes/S588-flex-box-keeps-its-sentence-spaces.mjs | last S588 | streak 0 | hits 1
+
 - `fixed-toast-duration-shorter-than-its-text` | ACTIVE | owner F | det: recipe | last S487 | streak 0
 
 - `centred-fixed-box-shrinks-to-half-the-viewport` | ACTIVE | owner F | det: recipe | last S484 | streak 0
