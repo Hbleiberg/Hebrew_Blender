@@ -362,7 +362,8 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
   background:var(--navy); color:#fff; font-family:'Libre Baskerville',serif; font-size:0.8rem; letter-spacing:0.08em; text-transform:uppercase;
   padding:8px 14px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:8px; border-radius:7px 7px 0 0; user-select:none;
 }
-.panel-title::after { content:'▾'; font-size:1rem; color:var(--gold-light); transition:transform 0.2s; }
+/* The fold triangles are drawn, not read: the empty alt keeps "▾" out of the toggle's name (the first content is the fallback). */
+.panel-title::after { content:'▾'; content:'▾' / ''; font-size:1rem; color:var(--gold-light); transition:transform 0.2s; }
 .panel-title:hover { background:#24345c; }
 .panel.collapsed .panel-title { border-radius:7px; }
 .panel.collapsed .panel-title::after { transform:rotate(-90deg); }
@@ -434,7 +435,7 @@ html[lang="he"] fieldset.nt-set legend, html[lang="he"] .nt-head { letter-spacin
 .nt-lists.panel { background:none; border:none; border-radius:0; }
 .nt-lists .nt-section-head h2 { margin-inline-end:0; }
 .nt-list-toggle { display:inline-flex; align-items:center; gap:8px; min-height:24px; /* the target floor: the heading's line box alone is 23.5px */ font:inherit; color:inherit; background:none; border:none; padding:0; cursor:pointer; text-align:start; }
-.nt-list-toggle::after { content:'▾'; font-size:1rem; color:var(--gold-text); transition:transform 0.2s; }
+.nt-list-toggle::after { content:'▾'; content:'▾' / ''; font-size:1rem; color:var(--gold-text); transition:transform 0.2s; }
 .nt-lists.collapsed .nt-list-toggle::after { transform:rotate(-90deg); }
 .nt-lists.collapsed .nt-list-body { display:none; }
 .nt-list-sum { font-size:0.86rem; color:var(--muted); }
