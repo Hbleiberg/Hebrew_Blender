@@ -95685,3 +95685,42 @@ _(prior)_ **Next session (S587):** **Branch `claude/improveloop-s579` (S579–S5
 ### from Tool coverage (last-touched date per tool)
 
 - **Snapshot S587 (2026-10-31):** torah, name_tags, letter_learner, sw.js, scripts/loop, loop docs S587 · torah, dictionary, generator, sw.js, scripts/loop, loop docs S586 · dictionary, name_tags, contact, sw.js, loop docs S585 · trope_atlas, torah, generator, sw.js, loop docs S584 · trope_atlas, torah, generator, sw.js S583 · trope_atlas, sw.js S582 · torah, sw.js, scripts/loop, loop docs S581 · trope_atlas S580 · trope_atlas, flash, locales, CSV, sw.js, smoke-account, ops.md, torah-and-trope.md, loop docs S578 · dashboard, generator, dashboard.md, scripts/loop S577 · resources, contact, privacy, terms, sitemap …[full text: IMPROVEMENT_ARCHIVE.md]
+
+_(prior)_ **Next session (S588):** **Branch `claude/improveloop-s579` (S579–S587, PR #383): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1168**, FM **5.59**, corpus ?v=7. ⚑ drift: main=aab737c sw=v1168 fm=5.59 migration=0009_assignment_enrolment.sql live=yes functions=bcbee20 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest now: M flash (S450), G torah (S451), D generator (S452), C trope (S455), P generator (S463) — and the suite passes E (S531), L (S532), K (S533); H's next is torah (S482). ⚑ The signed-in reading-assignments UI still wants its first P and H (smoke-assignments' fake cloud). ⚑ Closeout runs two rendered detectors (~2.5 min). ⚑ 57 seeds.
+⚑ Sync P2 (S573): a write after a hydration's plan is not sent. ⚑ The account page signed in is unprinted (needs `--sdk`): the next G or P on the chrome. ⚑ Gate 4 to propose with phone shots: the generator's blend sheets past a phone's left edge; gate 2: the atlas's phone default (Awaiting). ⚑ Corpus content (Awaiting, S585): adult terms in the dictionary's word list — the maintainer's call. ⚑ A planted wide div in a phone-descriptor context widens the layout viewport (S587): every later tap misses — plant in its own context. ⚑ smoke-sync D31 flake (P4). ⚑ Ports at the next A: the `m554/`–`n587/` harnesses; traps 352, 356–458. ⚑ Queues: generator 26, FM 20, dictionary 11, torah 10, name_tags 7, dashboard 7, flash 6, PE 5, trope 3, atlas 2, index 2, LL 2, privacy 1; ▾ census left: FM, dashboard, generator, dictionary.
+
+
+<!-- archived by compact-ledger at the S589 boundary, 2026-10-31 -->
+## Compaction (S589, 2026-10-31) — moved verbatim from the live ledger
+
+### from Candidates (prioritized, top = next)
+
+- [ ] P4 (**NEW S563 — pattern `decorative-glyph-carrier-exposed-to-assistive-tech`, census; S588: dashboard FIXED, FM's three menu strings FIXED**) | FM, generator, dictionary | **CSS-generated ▾ (`.panel-title::after` and kin; Name Tags, Letter Learner FIXED S587) may join their controls' names**, as flash's 25 did before `872d772`; the fix is `content: '▾' / ''` after a plain fallback (findings S563). FM's `.panel-title::after` / `.npnl-disc summary::before` drew nothing in the start views (census 0): read them in an open project. | found S563
+
+### from Awaiting the maintainer (an action or an answer only the maintainer can give; a session that resolves one moves it to Done)
+
+- [ ] P4 (**NEW S588 — gate 2 ANSWERED S588: ship it; flash was at the cap**) | flash_cards.html + classroom_dashboard.html (`locales/ui-strings.csv`) | **The English-font pickers' Sans, Serif, Kid-Friendly and Easy Reading headers render "גופני Sans" … in the Hebrew UI**: four rows `shared.fonts.section_sans|serif|kid_friendly|easy_reading` (EN "Sans Fonts", "Serif Fonts", "Kid-Friendly Fonts", "Easy Reading Fonts"; HE, the maintainer's choice: "גופני סנס", "גופני סריף", "גופנים לילדים", "גופנים לקריאה נוחה") + one map line each in the two pages' `fontSectionLabel()`. | found S333
+
+### from Done
+
+- [x] 2026-10-31 | (S588 close-out) | branch/deploy note | **S588 = M on Flash Cards (first since S450): FOUND 8: 2 FIXED on the page, 1 P3 at the cap, 3 P4, 1 refuted (fallback face), 1 gate answered; + the ▾ census on the dashboard and the Font Maker from the queue; FIXED 4. Branch `claude/amazing-gauss-gli685`, sw v1175; deploy on merge. Gates: 1 asked (gate 2, the four font headings) → "short type terms".**
+
+- [x] 2026-10-31 | (S583 close-out) | branch/deploy note | **S583 = H on the Trope Atlas (its first H): FOUND 4 (1 fixed, 2 seeds, the student cell clean) + the atlas P2 and an S568 P4 from the queue; FIXED 3. Same PR #383, sw v1153; deploy on merge. Gates: none asked.**
+
+- [x] 2026-10-31 | `06b4495d` | torah_trainer.html, hebrew_blend_generator.html, sw.js | (S583, queue S568) **The fullscreen Exit label at the dashboard's 0.7rem** (was 0.52rem, 8.3px: the projected lesson's one way out had the smallest text). | `h583/f3.mjs` 3 pages × EN/HE × light/dark × 1280/800 in fullscreen state: 11.2px on all three, label inside its plate, plate on screen, 0 page errors; …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-31 | `ab6a528f` | trope_atlas.html, sw.js | (S583, queue S582) **A long printed figure shrinks to its column instead of losing its tail** (print: `.at-stf` overflow visible, its svg `max-width:100%`). | `h583/f2b.mjs` every figure's edges vs its card at 739 / 718px EN/HE: HEAD 23 off-card (up to 116px), tree 0, scale ≥ 1.17 (screen 1.5); `f2.mjs` scrollWidth 104 → 0 over 8 cells; A4 …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-31 | `1734bedb` | trope_atlas.html, sw.js | (S583 H) **A shared link to a sign or a section lands on it** (the page lands again once the table and phrases are built; a sign click writes `#atlas-<sign>`; a Stacked card lands at its heading). | `h583/f1.mjs` 7 addresses × EN/HE × light/dark × 1280/800 × Grid/Stacked: HEAD 82/112 off target, tree 0; `f1c.mjs` clicks: hash written, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Per-session log (one line per session)
+
+- 2026-10-29 | **S568** | iters: 5 | tools: torah ×2, generator ×2, sw | patterns fixed: contrast-below-AA-on-a-tinted-or-coloured-plate ×1 | pass run: M (torah, 2nd) | SW: v1116→v1117
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S588 (2026-10-31):** flash, dashboard, fontmaker, locales, sw.js, scripts/loop, loop docs S588 · torah, name_tags, letter_learner, sw.js, scripts/loop, loop docs S587 · torah, dictionary, generator, sw.js, scripts/loop, loop docs S586 · dictionary, name_tags, contact, sw.js, loop docs S585 · trope_atlas, torah, generator, sw.js, loop docs S584 · trope_atlas, torah, generator, sw.js S583 · trope_atlas, sw.js S582 · torah, sw.js, scripts/loop, loop docs S581 · trope_atlas S580 · trope_atlas, flash, locales, CSV, sw.js, smoke-account, ops.md, torah-and-trope.md, loop docs S578 · dashboard, generator, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- M aesthetics & visual design (one surface): 2026-10-31 (**S588 — 35th M, `flash_cards.html` (first since S450): setup / card / flipped / results + every panel, the Learning Path, the listening round × 8 cells in the real faces; arms: a flex-whitespace census (new pattern, suite-wide), subsection rhythm, key-caps, the fold glyphs. FOUND 8: 2 FIXED, 1 P3 at the cap, 3 P4, 1 refuted, 1 gate answered. M-next: chrome (S494), dashboard (S508).**)
