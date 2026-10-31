@@ -372,6 +372,8 @@ table.at-atlas .lead .at-glyph { font-size:1.8rem; min-width:1.2em; }
 table.at-atlas .lead b { display:block; font-size:0.92rem; }
 table.at-atlas .lead .alt { color:var(--muted); font-size:0.8rem; }
 table.at-atlas td.cell { min-width:120px; }
+/* On a phone the sign column took 170px of a 294–386px box, leaving a figure its clef and key: it narrows to its longest word. */
+@media (max-width:560px) { table.at-atlas .lead { min-width:0; width:96px; padding-inline:8px; } }
 table.at-atlas td.none { color:var(--muted); text-align:center; font-size:1.1rem; }
 .at-grid:focus-visible { outline:2px solid var(--focus-ring); outline-offset:2px; }
 /* On a touch screen the box fills nearly the whole window (all but 18–118px of a phone's), so once it reached its last
