@@ -95435,3 +95435,37 @@ _(prior)_ **Next session (S578):** **PR `claude/improveloop-s573` (S573–S577, 
 ### from Tool coverage (last-touched date per tool)
 
 - **Snapshot S580 (2026-10-30):** trope_atlas, sw.js, loop docs S580 · trope_atlas, flash, locales, CSV, sw.js, smoke-account, ops.md, torah-and-trope.md, loop docs S578 · dashboard, generator, dashboard.md, scripts/loop S577 · resources, contact, privacy, terms, sitemap S575 · torah, dictionary S574 · scripts, accounts-and-cloud.md S573 · pwa.js, name_tags, generator.md S572 · letter_learner S569 · trope S566 · FM, font-maker.md S565 · projects S561 · name-tags.md S559 · shared-components.md S558 · i18n.md, index S552 · parsha_emojis S550 · skill, ledger scripts …[full text: IMPROVEMENT_ARCHIVE.md]
+
+
+<!-- archived by compact-ledger at the S582 boundary, 2026-10-31 -->
+## Compaction (S582, 2026-10-31) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-10-31 | 664e6f4d | scripts/loop/detect-placeholder-keeps-the-browser-gray.mjs | **The catalog's standing port: rendered, light + dark, harnesses skipped via check-i18n's `SKIP_HTML`** | plant (1.4:1) reported; 0 hits over 86 fields / 20 pages; a run measuring no field fails
+
+- [x] 2026-10-31 | a82d3c14 | scripts/loop/detect-author-display-defeats-the-hidden-attribute.mjs | **The catalog's standing port (since S472): rendered at 1280 + 800, every root page** | plant reported; HEAD before 74fd0a92: 2 hits (torah `#ttAsgDlgStudents` × 2 widths); after: 0 over 24 pages × 2 widths
+
+- [x] 2026-10-31 | 74fd0a92 | torah_trainer.html, sw.js | **The assign dialog's student checklist stayed on screen when Who was a class (`.tt-asg-picklist{display:flex}` over `[hidden]`): `.tt-asg-picklist[hidden]{display:none}`, sw v1148** | `pick.mjs` 4 cells (EN/HE × light/dark × 1280/800): Who ≠ pick → none (HEAD flex), pick → flex; smoke-assignments `--sdk` 2.116.0 135/135; test-rls-assignments 164/164
+
+- [x] 2026-10-30 | (S576 close-out) | branch/deploy note | **S576 = D on the dashboard (first since S438): cold, 35 steps and idle = the S438 tree; Bulk preset edit 167/812/1,504 ms @4× at 10/40/100 presets; `content-visibility` refuted (13/200 in the AX tree). FOUND 5, FIXED 2 (+ flash ×2). PR #377, sw v1137, probes `94a0fc94`; deploy on merge. Gates: none.** …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-30 | `7e510fd6` | flash_cards.html | (S576) **"Dictionary still loading" clears when the file lands or the deck changes.** | `d576/note.mjs` 5 cells (HEAD keeps it in 4); probe `S576-flash-dictionary-wait`
+
+- [x] 2026-10-30 | `5584ef2b` | flash_cards.html | (S576, queue S569) **A pasted All Dictionary code starts once the dictionary lands.** | `d576/flash.mjs` 6 cells by real clicks (HEAD: setup in 3)
+
+- [x] 2026-10-30 | `3b031f01` | classroom_dashboard.html | (S576, queue S564) **A Schedule Sync edit reaches the board at once; an edit elsewhere or a language switch keeps the board's text.** | `d576/sched.mjs` 6 scenarios (HEAD fails 5) …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-30 | `e6808987` | classroom_dashboard.html | (S576) **Bulk preset edit builds a screenful of cards, then chunks** (pattern `offscreen-sheets-laid-out-on-every-rebuild`; 40 presets 539 → 153 ms @4×). | `d576/fix1.mjs`; smoke-sync D39 …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Per-session log (one line per session)
+
+- 2026-10-27 | **S561** | iters: 5 | tools: FM ×2, ivrit-projects, generator, smoke-fontmaker, smoke-tools, accounts-and-cloud.md, font-maker.md, sw | patterns fixed: focus-hidden-under-a-sticky-bar ×1 | pass run: P (fontmaker, first alone) | SW: v1102→v1103
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S581 (2026-10-31):** torah, sw.js, scripts/loop, loop docs S581 · trope_atlas S580 · trope_atlas, flash, locales, CSV, sw.js, smoke-account, ops.md, torah-and-trope.md, loop docs S578 · dashboard, generator, dashboard.md, scripts/loop S577 · resources, contact, privacy, terms, sitemap S575 · torah, dictionary S574 · scripts, accounts-and-cloud.md S573 · pwa.js, name_tags, generator.md S572 · letter_learner S569 · trope S566 · FM, font-maker.md S565 · projects S561 · name-tags.md S559 · shared-components.md S558 · i18n.md, index S552 · parsha_emojis S550 · …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- A recurring-pattern sweep: 2026-10-31 (**S581 — 42nd A, scoped to the outside-loop reading-assignments landing (`a7fa5f1..aab737c`, 18 of its 53 commits; `reading_assignments.html`, `js/ivrit-assignments.js`, the Trainer's +838): the security arms (no `innerHTML`, reviver-safe parses, URL sinks, an anonymous Trainer loads no assignments module), then two catalog recipes committed as detectors and run over every page. FOUND 1, FIXED 1; 141 ACTIVE rows not swept this run — the next A takes the delta from here.**)
