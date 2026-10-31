@@ -11769,7 +11769,9 @@ async function ivUploadFontFromFile(file){
 // the generic "{section} Fonts" for the rest. Per-page wiring, below the shared block like the render sites.
 function fontSectionLabel(sec) {
   const KEYS = { 'My Fonts': 'shared.fonts.section_my_fonts', 'Cursive': 'shared.fonts.section_cursive',
-                 'Block': 'shared.fonts.section_block', 'Print': 'shared.fonts.section_print', 'Torah': 'shared.fonts.section_torah' };
+                 'Block': 'shared.fonts.section_block', 'Print': 'shared.fonts.section_print', 'Torah': 'shared.fonts.section_torah',
+                 'Sans': 'shared.fonts.section_sans', 'Serif': 'shared.fonts.section_serif',
+                 'Kid-Friendly': 'shared.fonts.section_kid_friendly', 'Easy Reading': 'shared.fonts.section_easy_reading' };
   return Object.prototype.hasOwnProperty.call(KEYS, sec) ? I18n.t(KEYS[sec]) : I18n.t('shared.fonts.section_generic', { section: sec });
 }
 /* Per-page pick handler(s) — thin wrappers over the shared uploader (each page routes the new font into its own picker/manager). */

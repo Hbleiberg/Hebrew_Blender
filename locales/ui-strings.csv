@@ -3813,6 +3813,10 @@ shared.fonts.section_cursive,Cursive / Script,כתב יד / סקריפט,Font-pi
 shared.fonts.section_block,Block Fonts,גופני בלוק,Font-picker section header (Block category),shared (carriers: classroom_dashboard / flash_cards / hebrew_blend_generator / hebrew_dictionary)
 shared.fonts.section_print,Print Fonts,גופני דפוס,Font-picker section header (Print category),shared (carriers: torah_trainer / trope_tutor)
 shared.fonts.section_torah,Torah Fonts,גופני תורה,Font-picker section header (Torah category),shared (carriers: torah_trainer / trope_tutor)
+shared.fonts.section_sans,Sans Fonts,גופני סנס,Font-picker section header (English Sans category),shared (carriers: classroom_dashboard / flash_cards)
+shared.fonts.section_serif,Serif Fonts,גופני סריף,Font-picker section header (English Serif category),shared (carriers: classroom_dashboard / flash_cards)
+shared.fonts.section_kid_friendly,Kid-Friendly Fonts,גופנים לילדים,Font-picker section header (English Kid-Friendly category),shared (carriers: classroom_dashboard / flash_cards)
+shared.fonts.section_easy_reading,Easy Reading Fonts,גופנים לקריאה נוחה,Font-picker section header (English Easy Reading category),shared (carriers: classroom_dashboard / flash_cards)
 shared.fonts.section_generic,{section} Fonts,גופני {section},"Font-picker section header (e.g. Block Fonts, Print Fonts, Torah Fonts)",mixed UI+content — {section} is a category name; shared
 shared.fonts.section_my_fonts,My Fonts,הגופנים שלי,Font-picker section header (custom fonts group),shared (carriers: all font-selector tools)
 shared.fonts.upload_label,Upload your own font?,העלו גופן משלכם?,My Fonts uploader label (below font grid),leading-emoji; shared (carriers: 8 font-selector tools)
