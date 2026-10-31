@@ -608,7 +608,7 @@ _(none)_
 
 - `enter-ignored-beside-its-own-button` | ACTIVE | owner B | det: recipe | last S472 | streak 0
 
-- `placeholder-keeps-the-browser-gray` | ACTIVE | owner F | det: recipe | last S470 | streak 0
+- `placeholder-keeps-the-browser-gray` | ACTIVE | owner F | det: scripts/loop/detect-placeholder-keeps-the-browser-gray.mjs | last S581 | streak 1
 
 - `header-wrap-gate-below-its-ceiling` | ACTIVE | owner M | det: recipe | last S574 | streak 0
 

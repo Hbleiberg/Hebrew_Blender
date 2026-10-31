@@ -291,9 +291,10 @@
 - **Record (ledger row at S544):** - **`enter-ignored-beside-its-own-button`** (NEW S471; dashboard ×5, generator ×2; S472 torah range ×3 `60229f0f`): ACTIVE, streak 0. Detection: `a472/enter.py`, then typed Enter vs the button.
 
 ## `placeholder-keeps-the-browser-gray`
-- **Status:** ACTIVE · **Owner:** F · **Consequence:** normal · **Last:** S470 · **Streak:** 0 · **Detector:** recipe
-- **Shape:** Detection: `f470/ph.
-- **Detection:** `f470/ph.mjs` < 4.5:1 (plant 1.3:1). — `f470/ph.mjs` is a scratchpad path that was never committed: port it to `scripts/loop/detect-<id>.mjs` (with `--plant`) at the next A, or the row goes DRAFT.
+- **Status:** ACTIVE · **Owner:** F · **Consequence:** normal · **Last:** S581 · **Streak:** 1 · **Detector:** `scripts/loop/detect-placeholder-keeps-the-browser-gray.mjs`
+- **Shape:** a field's placeholder keeps the browser's default gray, or a token too faint for its field, and reads under 4.5:1 (dark mode most of all).
+- **Detection:** rendered, committed S581 — every root page but the harnesses (check-i18n's `SKIP_HTML`, read from that file) in light and dark at 1280: each `input`/`textarea` with a placeholder, its `::placeholder` colour (alpha and opacity folded in) against the first opaque background up its ancestors, < 4.5:1 a hit; `--plant` adds a #d8d8d8-on-white field (1.4:1) to the hub; a run that measures no field fails.
+- **Record (S581):** clean — 86 fields on 20 pages × light/dark, the reading-assignments page's included; the only sub-4.5 fields were `account-test.html`'s two (3.32:1 dark, the UA gray), a harness, out of scope by design.
 - **Record (ledger row at S544):** - **`placeholder-keeps-the-browser-gray`** (NEW S470 `45a3073e`): ACTIVE, streak 0. Detection: `f470/ph.mjs` < 4.5:1 (plant 1.3:1).
 
 ## `header-wrap-gate-below-its-ceiling`
