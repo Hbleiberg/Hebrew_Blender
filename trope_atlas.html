@@ -1037,6 +1037,20 @@ function singStart(id, row, sys) {
   document.querySelectorAll('[data-sing="' + id + '"] .at-sing').forEach((b) => { b.setAttribute('aria-pressed', 'true'); b.innerHTML = ICON_STOP; });
 }
 window.addEventListener('beforeprint', singStop);
+window.addEventListener('beforeprint', () => {
+  if (!SETS || viewVal() !== 'grid' || _printCards) return;
+  const g = document.getElementById('atTable');
+  _printCards = { top: g.scrollTop, left: g.scrollLeft };
+  buildAtlas();
+});
+window.addEventListener('afterprint', () => {
+  if (!_printCards) return;
+  const at = _printCards;
+  _printCards = null;
+  buildAtlas();
+  const g = document.getElementById('atTable');
+  g.scrollTop = at.top; g.scrollLeft = at.left;
+});
 document.addEventListener('visibilitychange', () => { if (document.hidden) singStop(); });
 
 /* ── the melody table ── */
@@ -1114,10 +1128,13 @@ function buildFilter() {
   }
 }
 function setGroups(list) { settings.groups = list && list.length ? list : null; saveSettings(); buildAtlas(); }
+// Paper has no sideways scroll, so the Grid's one column per melody would print the first one or two: the sheet gets
+// the Stacked cards (never stored) and the screen its Grid back, scrolled where it was, once the dialog closes.
+let _printCards = null;   // the Grid's scroll offsets while the cards stand in for it on paper
 function buildAtlas() {
   const host = document.getElementById('atTable');
   host.textContent = '';
-  if (viewVal() === 'grid') buildGrid(host); else buildCards(host);
+  if (viewVal() === 'grid' && !_printCards) buildGrid(host); else buildCards(host);
   document.getElementById('atViewGrid').setAttribute('aria-pressed', viewVal() === 'grid' ? 'true' : 'false');
   document.getElementById('atViewCards').setAttribute('aria-pressed', viewVal() === 'cards' ? 'true' : 'false');
   document.getElementById('atNames').checked = namesOn();
