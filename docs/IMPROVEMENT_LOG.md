@@ -124,7 +124,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S563 G**) | hebrew_blend_generator.html | **The Identify key leaves a 2 px gold sliver at a page's foot**: a ★ card pushed to the next page by `break-inside: avoid` still paints its inline `outline` top edge on the previous one. | found S563
 
-- [ ] P4 (**NEW S563 — pattern `decorative-glyph-carrier-exposed-to-assistive-tech`, census**) | FM, dashboard, generator, dictionary, letter_learner, name_tags | **11 more CSS-generated ▾ (`.panel-title::after` and kin) may join their controls' names**, as flash's 25 did before `872d772`; the fix is `content: '▾' / ''` after a plain fallback (findings S563). | found S563
+- [ ] P4 (**NEW S563 — pattern `decorative-glyph-carrier-exposed-to-assistive-tech`, census**) | FM, dashboard, generator, dictionary | **8 more CSS-generated ▾ (`.panel-title::after` and kin; Name Tags, Letter Learner FIXED S587) may join their controls' names**, as flash's 25 did before `872d772`; the fix is `content: '▾' / ''` after a plain fallback (findings S563). | found S563
 
 - [ ] P4 (**NEW S562 N — touch parity**) | trope_tutor.html | **A Phrases chip lights its notes on the staff only by hover or focus**: a tap opens the mark's Learn card at once, so a touch user never sees which notes a chip names (`mouseenter` / `focus` → `.is-hl`; measured: the highlight flashes, then the tab changes). | found S562
 
@@ -203,8 +203,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S503 E, gate 2**) | torah_trainer.html | **Total Torah on: Chant says "(PocketTorah audio)"** (`verse_chant_aria`). | found S503
 
 - [ ] P4 (**S502 A — radio-set twin**) | dictionary, resources | **Unnamed pressed rows**: dictionary mode, resources view (gate 2). | found S502
-
-- [ ] P4 (**NEW S497 I — gate 2**) | classroom_dashboard.html | **A Hebrew first visit's demo message is English** (`DEFAULT_PRESET`, a `smoke-sync` canon). | found S497
 
 - [ ] P4 (**NEW S565 D; S567 re-measured**) | Hebrew_Font_Maker.html | **Auto-detect on a phone photo of a sheet makes three long tasks @4× (431 / 695 / 338 ms; @1× its top is 134 ms, not S565's 556)**: `adBinarize` (lumPlane → estimateBackground → flatten → Otsu) has no yield inside, but splitting it in `adRunDetection` takes the 695 only to ~400, since the first task is the 1800 px canvas's …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -442,6 +440,16 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-31 | (S587 close-out) | branch/deploy note | **S587 = N on the Torah Trainer (first since S448): FOUND 2, FIXED 2; + the ▾ census on Name Tags and Letter Learner from the queue; FIXED 4. Same PR #383, sw v1168; deploy on merge. Gates: none asked.**
+
+- [x] 2026-10-31 | `ed1f74fe` | letter_learner.html, sw.js | (S587, queue S563) **The panel toggles' fold ▾ leaves their names** (`content:'▾' / ''`). | `n587/glyph.mjs` CDP AX tree 8 cells: 32 → 0; screenshots as HEAD's
+
+- [x] 2026-10-31 | `8d79bcdd` | name_tags.html, sw.js | (S587, queue S563) **The panel and class-list toggles' fold ▾ leaves their names.** | `n587/glyph.mjs` 8 cells: 64 → 0; full-page screenshots byte-equal 8/8
+
+- [x] 2026-10-31 | `3f32408d` | torah_trainer.html, sw.js | (S587 N) **Both code-word fields turn off phone autocorrect** (+ `autocapitalize="none"` on the teacher's). | `n587/fix2.mjs` properties read back EN/HE (HEAD: autocorrect unset on both)
+
+- [x] 2026-10-31 | `6ed3b0a6` | torah_trainer.html, sw.js | (S587 N) **The assignment dialog's labels wrap on a 320px phone** (Due date and Keep recordings ran 21/38px out). | probe `S587-torah-assignment-dialog-fits-a-phone.mjs`: 32/32 (pre-fix 4 SE cells fail); desktop rows unchanged
+
 - [x] 2026-10-31 | (S586 close-out) | branch/deploy note | **S586 = C on the Torah Trainer (first since S441): FOUND 1, FIXED 1; + three from the queue; FIXED 4. Same PR #383, sw v1164; deploy on merge. Gates: none asked.**
 
 - [x] 2026-10-31 | `3c9effb8` | hebrew_blend_generator.html, sw.js | (S586, queue S574 M) **A Real Words key's ★ cards keep their muted text above AA in dark mode.** | `c586/fix4.mjs` 7 cells: ★ pixel 4.51 → 4.98:1, dark only (findings S586)
@@ -478,15 +486,11 @@ _(none)_
 
 - [x] 2026-10-31 | `1734bedb` | trope_atlas.html, sw.js | (S583 H) **A shared link to a sign or a section lands on it** (the page lands again once the table and phrases are built; a sign click writes `#atlas-<sign>`; a Stacked card lands at its heading). | `h583/f1.mjs` 7 addresses × EN/HE × light/dark × 1280/800 × Grid/Stacked: HEAD 82/112 off target, tree 0; `f1c.mjs` clicks: hash written, …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-10-31 | (S582 close-out) | branch/deploy note | **S582 = G on the Trope Atlas (its first G): FOUND 3, FIXED 2, 1 P2 queued at the cap. Same PR #383, sw v1150; deploy on merge. Gates: gate 2 asked — printing the Grid → "Print as Stacked".**
-
-- [x] 2026-10-31 | `dd1dcff6` | trope_atlas.html, sw.js | (S582) **Printing from the Grid puts every melody on paper** (beforeprint builds the Stacked cards, afterprint the Grid with its scroll back; the stored view untouched) — gate 2 answered in-session. | `g582/f2.mjs` 16 cells EN/HE × light/dark × Letter/A4: HEAD Grid 7–12 pages (7 of 98 'Binder'), tree = Stacked (79–84 pages, same text …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-10-31 | `deb9df3e` | trope_atlas.html, sw.js | (S582) **The printed sign tables wrap to the sheet** (print: no min-width, names/codes/ranks wrap, the box overflows visibly; was: 'What it does' off the paper, right in EN, left in HE). | `g582/f1.mjs` every td of 3 tables in 739 / 718px: HEAD 27 off-sheet × 16 cells, tree 0; A4 PDFs looked at
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-31 | **S587** | iters: 5 | tools: torah ×2, name_tags, letter_learner, sw | patterns fixed: decorative-glyph-carrier-exposed-to-assistive-tech ×2 | pass run: N (torah, first since S448) | SW: v1164→v1168
 
 - 2026-10-31 | **S586** | iters: 5 | tools: torah ×2, dictionary, generator, sw | patterns fixed: contrast-below-AA-on-a-tinted-or-coloured-plate ×1 | pass run: C (torah, first since S441) | SW: v1160→v1164
 
@@ -526,11 +530,9 @@ _(none)_
 
 - 2026-10-29 | **S568** | iters: 5 | tools: torah ×2, generator ×2, sw | patterns fixed: contrast-below-AA-on-a-tinted-or-coloured-plate ×1 | pass run: M (torah, 2nd) | SW: v1116→v1117
 
-- 2026-10-29 | **S567** | iters: 5 | tools: dashboard ×2, generator, name_tags, scripts, dashboard.md, sw | patterns fixed: hover-tip-not-dismissible-or-hoverable ×1, contrast-below-AA-on-a-tinted-or-coloured-plate ×1 | pass run: P (dashboard, first since S421) | SW: v1115→v1116
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S586 (2026-10-31):** torah, dictionary, generator, sw.js, scripts/loop, loop docs S586 · dictionary, name_tags, contact, sw.js, loop docs S585 · trope_atlas, torah, generator, sw.js, loop docs S584 · trope_atlas, torah, generator, sw.js S583 · trope_atlas, sw.js S582 · torah, sw.js, scripts/loop, loop docs S581 · trope_atlas S580 · trope_atlas, flash, locales, CSV, sw.js, smoke-account, ops.md, torah-and-trope.md, loop docs S578 · dashboard, generator, dashboard.md, scripts/loop S577 · resources, contact, privacy, terms, sitemap …[full text: IMPROVEMENT_ARCHIVE.md]
+- **Snapshot S587 (2026-10-31):** torah, name_tags, letter_learner, sw.js, scripts/loop, loop docs S587 · torah, dictionary, generator, sw.js, scripts/loop, loop docs S586 · dictionary, name_tags, contact, sw.js, loop docs S585 · trope_atlas, torah, generator, sw.js, loop docs S584 · trope_atlas, torah, generator, sw.js S583 · trope_atlas, sw.js S582 · torah, sw.js, scripts/loop, loop docs S581 · trope_atlas S580 · trope_atlas, flash, locales, CSV, sw.js, smoke-account, ops.md, torah-and-trope.md, loop docs S578 · dashboard, generator, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -808,7 +810,7 @@ _(none)_
 
 - `rebuild-where-a-class-swap-would-do` | ACTIVE | owner A | det: recipe | last S220 | streak 0 | hits 1
 
-- `decorative-glyph-carrier-exposed-to-assistive-tech` | ACTIVE | owner A | det: recipe | last S563 | streak 0
+- `decorative-glyph-carrier-exposed-to-assistive-tech` | ACTIVE | owner A | det: recipe | last S587 | streak 0
 
 - `error-status-clobbered-by-a-later-routine-write` | DRAFT | owner A | det: none | last S411 | streak 0
 
@@ -882,7 +884,7 @@ _(none)_
 
 - O deslop — AI-design-tell sweep (one surface): SKIP since S403 — the sandbox refuses to execute the third-party detector ("Code from External"); runs again once the maintainer commits a `.claude/settings.json` permission rule for it (`docs/reference/deslop-detector.md`). Last run 2026-09-08 (S346, `flash_cards.html`, 6th O; the S399/S403 refusals are in the archive).
 
-- N mobile & touch-device (one surface): 2026-10-30 (**S577 — 33rd N, `trope_atlas.html` (its first audit): 16 phone cells × 11 views by real taps, raw-touch swipes, the iOS hint, 4× CPU, 11 widths. FOUND 6, FIXED 2 (+2 queue). N-next: torah (S448), fontmaker (S476).**)
+- N mobile & touch-device (one surface): 2026-10-31 (**S587 — 34th N, `torah_trainer.html` (first since S448): 16 phone cells × 4 layouts, audio bar, 8 tabs, gallery, both dialogs, tour, a flip, 4× CPU. FOUND 2, FIXED 2 (+2 queue). N-next: fontmaker (S476), dictionary (S492).**)
 
 - M aesthetics & visual design (one surface): 2026-10-31 (**S584 — 34th M, `trope_atlas.html` (its first M): 7 sections × 8 cells + Stacked and the drawer, in the real faces; arms: faux italic, live regions, RTL periods, hover twins, dark fills, the header gate 1px — each with a plant. FOUND 2: 1 FIXED (the English phrase names off their staff), 1 P4 to verify. M-next: flash (S450), chrome …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -912,5 +914,5 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-22 (**S542 — 40th F, loading states (first since S189): 14 surfaces held, then aborted. FOUND 7, FIXED 4. F-next: long-build progress.**)
 
-**Next session (S587):** **Branch `claude/improveloop-s579` (S579–S586, PR #383): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1164**, FM **5.59**, corpus ?v=7. ⚑ drift: main=aab737c sw=v1164 fm=5.59 migration=0009_assignment_enrolment.sql live=yes functions=bcbee20 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest now: N torah (S448), M flash (S450), G torah (S451), D generator (S452), C trope (S455) — and the suite passes E (S531), L (S532), K (S533); H's next is torah (S482). ⚑ The signed-in reading-assignments UI still wants its first P and H (smoke-assignments' fake cloud). ⚑ Closeout runs two rendered detectors (~2.5 min). ⚑ 57 seeds.
-⚑ Sync P2 (S573): a write after a hydration's plan is not sent. ⚑ The account page signed in is unprinted (needs `--sdk`): the next G or P on the chrome. ⚑ Gate 4 to propose with phone shots: the generator's blend sheets past a phone's left edge; gate 2: the atlas's phone default (Awaiting). ⚑ Corpus content (Awaiting, S585): adult terms in the dictionary's word list — the maintainer's call. ⚑ A contrast helper that takes the first opaque ancestor skips a translucent inline tint (S586): composite it or sample the pixel. ⚑ smoke-sync D31 flake (P4). ⚑ Ports at the next A: the `m554/`–`c586/` harnesses; traps 352, 356–458. ⚑ Queues: generator 26, FM 20, dictionary 11, torah 10, name_tags 7, dashboard 7, flash 6, PE 5, trope 3, atlas 2, index 2, LL 2, privacy 1.
+**Next session (S588):** **Branch `claude/improveloop-s579` (S579–S587, PR #383): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1168**, FM **5.59**, corpus ?v=7. ⚑ drift: main=aab737c sw=v1168 fm=5.59 migration=0009_assignment_enrolment.sql live=yes functions=bcbee20 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest now: M flash (S450), G torah (S451), D generator (S452), C trope (S455), P generator (S463) — and the suite passes E (S531), L (S532), K (S533); H's next is torah (S482). ⚑ The signed-in reading-assignments UI still wants its first P and H (smoke-assignments' fake cloud). ⚑ Closeout runs two rendered detectors (~2.5 min). ⚑ 57 seeds.
+⚑ Sync P2 (S573): a write after a hydration's plan is not sent. ⚑ The account page signed in is unprinted (needs `--sdk`): the next G or P on the chrome. ⚑ Gate 4 to propose with phone shots: the generator's blend sheets past a phone's left edge; gate 2: the atlas's phone default (Awaiting). ⚑ Corpus content (Awaiting, S585): adult terms in the dictionary's word list — the maintainer's call. ⚑ A planted wide div in a phone-descriptor context widens the layout viewport (S587): every later tap misses — plant in its own context. ⚑ smoke-sync D31 flake (P4). ⚑ Ports at the next A: the `m554/`–`n587/` harnesses; traps 352, 356–458. ⚑ Queues: generator 26, FM 20, dictionary 11, torah 10, name_tags 7, dashboard 7, flash 6, PE 5, trope 3, atlas 2, index 2, LL 2, privacy 1; ▾ census left: FM, dashboard, generator, dictionary.
