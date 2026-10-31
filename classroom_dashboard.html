@@ -522,8 +522,10 @@
     flex-shrink: 0;
   }
   body.dark .col-title { background: #0a0f1c; }
+  /* The fold triangles are drawn, not read: the empty alt keeps "▾" out of the toggle's name (the first content is the fallback). */
   .col-title::after {
     content: '▾';
+    content: '▾' / '';
     font-size: 0.9rem;
     color: var(--gold-light);
     transition: transform 0.2s;
@@ -1172,7 +1174,7 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
     cursor: pointer; user-select: none; padding: 2px 0 7px;
     min-height: 24px;   /* WCAG 2.5.8 floor — collapse headers, per the S207 precedent */
   }
-  .sub-section-hdr::after { content: '▾'; font-size: 0.75rem; transition: transform 0.2s; flex-shrink: 0; }
+  .sub-section-hdr::after { content: '▾'; content: '▾' / ''; font-size: 0.75rem; transition: transform 0.2s; flex-shrink: 0; }
   .sub-section.collapsed .sub-section-hdr::after { transform: rotate(-90deg); }
   .sub-section-hdr:hover { color: var(--text); }   /* the Font Maker footer eyebrow's hover (summary.ft-h); a collapse header had no hover state (S317 → F S328) */
   .sub-section.collapsed .sub-section-body { display: none; }
