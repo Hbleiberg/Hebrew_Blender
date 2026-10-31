@@ -124,7 +124,8 @@
 - **Record (S575, G chrome, NEW):** 2 FIXED — Resources cut 6–8 of 42 cards a cell (Fonts view 2) and Contact's Support tile on A4 (`044e1fa6`: cards whole, the dead filter bar off pays back the sheet, the footer whole: 6 / 2 / 2 sheets as before); Privacy + Terms stranded 1–3 headings in 6 of 8 cells (`f1a7ccee`). Open: the hub (P4, whole cards add a footer-only sheet). Precedent on the tools: torah's aliyah divider, trope's family heading, parsha_emojis' week heading already `break-after: avoid`.
 
 ## `print-trailing-padding-adds-a-sheet`
-- **Status:** ACTIVE · **Owner:** H · **Consequence:** normal · **Last:** S575 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** H · **Consequence:** normal · **Last:** S585 · **Streak:** 0 · **Detector:** recipe
+- **Record (S585, queue S575 on contact):** 1 hit, FIXED `4db6668b` — once the dead form and tabs left the printed contact page, its footer printed alone on sheet 2 (EN Letter; one footer line in HE A4) under main's screen padding (48 / 64 px); 20 / 12 px on paper fits one sheet in 4/4 cells.
 - **Record (S575, G chrome):** 1 hit, logged P4 — Privacy in English on Letter prints its footer alone on a 6th sheet (only its last line before `f1a7ccee` kept headings with their text). Not the padding this time: `main{padding-block-end:0}` on paper leaves the sheet and splits Terms' footer onto one of its own (A4 EN, Letter HE). The other 55 chrome PDFs end on content.
 - **Detection:** `h526/fix1.mjs` (a header-only or empty PDF sheet). — `a530/pcs.mjs` is a scratchpad path that was never committed: port it to `scripts/loop/detect-<id>.mjs` (with `--plant`) at the next A, or the row goes DRAFT.
 - **Record (ledger row at S544):** - **`print-trailing-padding-adds-a-sheet`** (NEW S526 H; account S523, LL `198ccfac`): ACTIVE, streak 1 (S530 `a530/pcs.mjs`). Detection: `h526/fix1.mjs` (a header-only or empty PDF sheet).

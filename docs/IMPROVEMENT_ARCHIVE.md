@@ -95574,3 +95574,46 @@ _(prior)_ **Next session (S584):** **Branch `claude/improveloop-s579` (S579–S5
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 - M aesthetics & visual design (one surface): 2026-10-31 (**S584 — 34th M, `trope_atlas.html` (its first M): 7 sections × 8 cells + Stacked and the drawer, in the real faces; arms: faux italic, live regions, RTL periods, hover twins, dark fills, the header gate 1px — each with a plant. FOUND 2: 1 FIXED (the English phrase names off their staff), 1 P4 to verify. M-next: flash (S450), chrome (S494).**)
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S584 (2026-10-31):** trope_atlas, torah, generator, sw.js, loop docs S584 · trope_atlas, torah, generator, sw.js S583 · trope_atlas, sw.js S582 · torah, sw.js, scripts/loop, loop docs S581 · trope_atlas S580 · trope_atlas, flash, locales, CSV, sw.js, smoke-account, ops.md, torah-and-trope.md, loop docs S578 · dashboard, generator, dashboard.md, scripts/loop S577 · resources, contact, privacy, terms, sitemap S575 · torah, dictionary S574 · scripts, accounts-and-cloud.md S573 · pwa.js, name_tags, generator.md S572 · letter_learner …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- H teacher walkthrough / paper-cuts (one tool): 2026-10-31 (**S583 — `trope_atlas.html` (its first H): a zakef-katon lesson by real clicks at 1366×768 EN/HE (sign → melody row, the Show filter, Key, the phrase browser, a copied link, printing filtered) + the student cell (plays by click at 1366×768 / 1024×768 HE; no Present mode: a reference page). FOUND 4: 1 FIXED (shared links), 2 seeds, the …[full text: IMPROVEMENT_ARCHIVE.md]
+
+_(prior)_ **Next session (S585):** **Branch `claude/improveloop-s579` (S579–S584, PR #383): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1156**, FM **5.59**, corpus ?v=7. ⚑ drift: main=aab737c sw=v1156 fm=5.59 migration=0009_assignment_enrolment.sql live=yes functions=bcbee20 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Every surface has now had every surface pass; the stalest are C torah (S441), D generator (S452), G torah (S451), N torah (S448), M flash (S450), H dictionary (S440) — and the suite passes E (S531), L (S532), K (S533). ⚑ The signed-in reading-assignments UI still wants its first P and H (smoke-assignments' fake cloud). ⚑ Closeout runs two rendered detectors (~2.5 min). ⚑ 56 seeds.
+⚑ Sync P2 (S573): a write after a hydration's plan is not sent. ⚑ The account page signed in is unprinted (needs `--sdk`): the next G or P on the chrome. ⚑ Gate 4 to propose with phone shots: the generator's blend sheets past a phone's left edge; gate 2: the atlas's phone default (Awaiting). ⚑ contact's printed form (P4 S575): hiding it strands its "Send a message below" intro — a copy call. ⚑ Real fonts for any width or wrap measure (`fonts.googleapis.com` / `fonts.gstatic.com` let through): the fallback face moved the atlas's header gate 2px. ⚑ smoke-sync D31 flake (P4). ⚑ Ports at the next A: the `m554/`–`p578/` harnesses; traps 352, 356–455. ⚑ Queues: generator 27, FM 20, dictionary 11, torah 11, name_tags 8, dashboard 7, flash 6, PE 5, trope 3, atlas 2, index 2, LL 2, privacy 1, contact 1.
+
+
+<!-- archived by compact-ledger at the S586 boundary, 2026-10-31 -->
+## Compaction (S586, 2026-10-31) — moved verbatim from the live ledger
+
+### from Awaiting the maintainer (an action or an answer only the maintainer can give; a session that resolves one moves it to Done)
+
+- [ ] P3 (**NEW S585 H — a corpus content call**) | data/hebrew_words.json, hebrew_dictionary.html | **The word corpus carries adult and explicit terms that an elementary search surfaces** (a child's search for "ילד" listed one 4th on HEAD, below the word and its phrases after `9b6b2a7d`); nothing in the page filters content. Dropping or hiding a list of entries (with the corpus `?v=` bump on every fetcher) is the maintainer's decision. | found S585
+
+### from Done
+
+- [x] 2026-10-31 | (S585 close-out) | branch/deploy note | **S585 = H on the dictionary (first since S440): 3 lessons + the student cell by real clicks; FOUND 5: 2 FIXED (Hebrew search tiers, stale chips over a loaded list), 1 P4, 1 seed, 1 Awaiting (corpus content); + the S552 Name Tags column and the S575 contact print from the queue; FIXED 4. Same PR #383, sw v1160; deploy on merge. Gates: none asked (the contact print hides its form's intro with it, so no wording changed).**
+
+- [x] 2026-10-31 | `4db6668b` | contact.html, sw.js | (S585, queue S575 G) **The printed contact page drops the blank form, its intro, the tabs and the open buttons, and prints all three ways to give on one sheet** (grid → blocks, QR 150px, main's padding trimmed). | `h585/ct.mjs` EN/HE × Letter/A4 `page.pdf` + `pdftotext` + sheets looked at: 2 sheets → 1 in 4/4, form labels / Send 4 → 0, the Venmo handle 0 → 4, the QR drawn; screen pixel-identical to HEAD (a flaky first shot re-run clean).
+
+- [x] 2026-10-31 | `9b6b2a7d` | hebrew_dictionary.html, sw.js | (S585 H) **A Hebrew search lists the word itself first, then phrases holding it as a whole word** (the English glossTier's twin). | `h585/fix1.mjs` 8 queries × EN light 1280 / HE dark 800 by real input: the plain word outside the first four 4/16 on HEAD (סֵפֶר 19th for "ספר") → 0/16; English "dog" / "water" unchanged; sort honoured inside the tiers.
+
+- [x] 2026-10-30 | this commit | trope_atlas.html, sw.js | **S580 C: `td.none` colour `--border` → `--muted` (the "no figure" dash read 1.73:1 light, 1.35:1 dark → ~6:1) and the rail's sub-links `padding-block` 2 → 3px (23 → 25px, the 24px floor)** | `d579/c.mjs` census EN light 1280 / HE dark 800: low-contrast 1 → 0, sub-24px links 8+ → 0, 0 page errors; `c6.mjs` 4 cells (EN/HE × light/dark) …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-30 | (S580 close-out) | branch/deploy note | **S580 = C on the Trope Atlas (its first C): FOUND 3, FIXED 2 in one commit (the "—" cells' contrast, the contents rail's 23px links), 1 P3 queued. Same PR #383, sw v1147; deploy on merge. Gates: none asked.**
+
+### from Per-session log (one line per session)
+
+- 2026-10-28 | **S565** | iters: 5 | tools: FM ×2, dashboard, flash, font-maker.md, scripts/loop, sw | patterns fixed: hover-tip-not-dismissible-or-hoverable ×1 | pass run: D (fontmaker, 4th) | SW: v1113→v1114
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S585 (2026-10-31):** dictionary, name_tags, contact, sw.js, loop docs S585 · trope_atlas, torah, generator, sw.js, loop docs S584 · trope_atlas, torah, generator, sw.js S583 · trope_atlas, sw.js S582 · torah, sw.js, scripts/loop, loop docs S581 · trope_atlas S580 · trope_atlas, flash, locales, CSV, sw.js, smoke-account, ops.md, torah-and-trope.md, loop docs S578 · dashboard, generator, dashboard.md, scripts/loop S577 · resources, contact, privacy, terms, sitemap S575 · torah, dictionary S574 · scripts, accounts-and-cloud.md S573 · pwa.js, name_tags, generator.md S572 · letter_learner …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- H teacher walkthrough / paper-cuts (one tool): 2026-10-31 (**S585 — `hebrew_dictionary.html` (its first H since S440): 3 lessons by real clicks at 1366×768 (a kamatz-patach ב list → Save as Word List → the generator; a shared `?s=` link in HE dark; the Word Lists manager, Load as filter and its print) + the student cell (lookups EN 1366×768, HE fullscreen 1024×768). FOUND 5: 2 FIXED (Hebrew search tiers; stale chips over a loaded list), 1 P4, 1 seed, 1 Awaiting (corpus content). H-next: torah (S482), chrome (S498).**)
