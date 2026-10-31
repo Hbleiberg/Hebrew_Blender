@@ -411,8 +411,9 @@ body.dark .at-phrasebar { background:var(--navy-deep); }
 .at-prow { display:grid; grid-template-columns:56px minmax(0, 1fr); gap:8px 12px; align-items:start; padding:8px 0; border-top:1px solid var(--border); }
 .at-prow .num { font-family:'Libre Baskerville',serif; font-weight:700; font-size:0.86rem; color:var(--gold-text); padding-top:6px; font-variant-numeric:tabular-nums; }
 .at-prow .body { min-width:0; }
-/* The names sit over the staff's start: match-parent takes the interface's start, not the Hebrew run's own. */
-.at-prow .at-pheb { font-family:var(--heb-font); font-size:1.45rem; line-height:1.3; text-align:match-parent; margin:0 0 2px; }
+/* The names sit over the staff's start: the line takes the interface's direction (its Hebrew run keeps its own), so
+   start is the interface's start. (match-parent on a dir=rtl line computed to that line's own start, the far end in English.) */
+.at-prow .at-pheb { font-family:var(--heb-font); font-size:1.45rem; line-height:1.3; text-align:start; margin:0 0 2px; }
 .at-tag { font-family:'Source Sans 3', sans-serif; font-size:0.72rem; font-weight:700; color:var(--gold-text); margin-inline-start:8px; letter-spacing:0.04em; }
 @media (max-width:560px) { .at-prow { grid-template-columns:1fr; } .at-prow .num { padding-top:0; } }
 
@@ -1209,7 +1210,7 @@ function buildPhrases() {
   const rows = h('div', { class: 'at-rows' });
   for (const r of rowsAll) {
     if (clause !== 'all' && clauseOf(r) !== clause) continue;
-    const heb = h('p', { class: 'at-pheb', lang: 'he', dir: 'rtl' }, r.he);
+    const heb = h('p', { class: 'at-pheb', dir: I18n.dir }, h('span', { lang: 'he', dir: 'rtl' }, r.he));
     if (r.tags.includes('aliyah-end')) heb.appendChild(h('span', { class: 'at-tag', lang: I18n.lang, dir: I18n.dir }, I18n.t('atlas.phrases.end_tag')));
     const label = I18n.t('atlas.phrases.staff_aria_m', { melody: sysLabel(s), n: r.n, marks: r.units.map((u) => markName(u.k)).join(', ') });
     rows.appendChild(h('div', { class: 'at-prow' }, h('div', { class: 'num' }, r.n), h('div', { class: 'body' }, heb, singWrap('p:' + s.id + ':' + r.n, r, s, label))));
