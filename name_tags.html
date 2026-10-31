@@ -389,6 +389,10 @@ html[lang="he"] .panel-title { letter-spacing:normal; text-transform:none; }
 .nt-opt input[type="color"] { width:34px; height:26px; padding:0 2px; border:1.5px solid var(--border); border-radius:5px; background:var(--white); cursor:pointer; flex-shrink:0; }
 .nt-opt input[type="color"]:disabled { opacity:0.4; cursor:default; }
 .nt-opt input:disabled + span, .nt-opt input:disabled ~ span { opacity:0.5; }
+/* The Look panel's three label + select rows (font, border, background) share one label column, so the selects start
+   together: sized to their own label they began 49 / 81 / 82 px into the panel. 5.5em holds the longest ("Hebrew font",
+   74 px); a longer translation still grows its own label. */
+#panelLook .nt-opt > label[for] { min-inline-size:5.5em; flex-shrink:0; }
 fieldset.nt-set { border:none; padding:0; margin:0; min-width:0; display:flex; flex-direction:column; gap:2px; }
 fieldset.nt-set legend, .nt-head { font-size:0.74rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:var(--muted); margin-block:4px 2px; padding:0; }
 html[lang="he"] fieldset.nt-set legend, html[lang="he"] .nt-head { letter-spacing:normal; text-transform:none; }
