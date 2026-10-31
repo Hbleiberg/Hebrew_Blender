@@ -4305,8 +4305,11 @@ function lookupRender() {
   if (r.kind === 'parsha') {
     const ps = r.idx.map(parshaByIdx).filter(Boolean);
     if (!ps.length) { line(I18n.t('torah.lookup.invalid')); return; }
-    const name = ps.map(x => x.en).join('-') + ' (' + ps.map(x => x.he).join('–') + ')';
-    const pl = line(I18n.t('torah.lookup.parsha', { name, schedule }));
+    // The Hebrew name rides a lang="he" span (UX rule 8): a \u0001 marks its slot in the translated sentence.
+    const [pre, post] = I18n.t('torah.lookup.parsha', { name: ps.map(x => x.en).join('-') + ' (\u0001)', schedule }).split('\u0001');
+    const pl = line(pre), heName = document.createElement('span');
+    heName.lang = 'he'; heName.textContent = ps.map(x => x.he).join('–');
+    pl.append(heName, post || '');
     if (icons && window.ParashaIcons) pl.insertAdjacentHTML('afterbegin', ParashaIcons.html(ps.map(x => x.n - 1)));   // a doubled week shows both, in reading order
     if (cycleKey() === 'triennial') line(I18n.t('torah.lookup.triennial_year', { n: HebCal.triennialYear(r.hyear) }));
     if (ps[1]) { const n = line(I18n.t('torah.lookup.doubled_note', { first: ps[0].en, second: ps[1].en })); n.style.color = 'var(--muted)'; }
