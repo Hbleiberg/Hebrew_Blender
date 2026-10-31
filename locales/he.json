@@ -6304,6 +6304,7 @@
   "torah.recsrc.picker_title": "איזו הקלטה כפתורי השירה מנגנים",
   "torah.recsrc.pockettorah": "PocketTorah (מנגינת שפירו)",
   "torah.recsrc.this_reading": "הקריאה הזו: סרטון Total Torah — {parsha}, שנה {year} · עלייה {aliyah}",
+  "torah.recsrc.this_reading_direct": "וגם: פסוקים מפרשת {parsha} שהחזנית בראון הקליטה עבור האתר (אין להם סרטון)",
   "torah.recsrc.totaltorah": "Total Torah — החזנית אריאן בראון, Adas Israel",
   "torah.recsrc.watch_youtube": "לצפייה בעלייה המלאה ב-YouTube ↗",
   "torah.schedule.cycle_failed": "לא ניתן היה לטעון את חלוקת הקריאה.",

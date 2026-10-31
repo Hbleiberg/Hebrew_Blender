@@ -6304,6 +6304,7 @@
   "torah.recsrc.picker_title": "Which recording the Chant buttons play",
   "torah.recsrc.pockettorah": "PocketTorah (Spiro melody)",
   "torah.recsrc.this_reading": "This reading: Total Torah video — {parsha}, Year {year} · Aliyah {aliyah}",
+  "torah.recsrc.this_reading_direct": "Also: {parsha} verses Cantor Brown recorded for this site (no video of them)",
   "torah.recsrc.totaltorah": "Total Torah — Cantor Arianne Brown, Adas Israel",
   "torah.recsrc.watch_youtube": "Watch the full aliyah on YouTube ↗",
   "torah.schedule.cycle_failed": "The reading divisions could not be loaded.",

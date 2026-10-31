@@ -3406,9 +3406,10 @@ const TT_BASE = 'data/totaltorah/';
 // private repository Hbleiberg/TotalTorahAudio. The manifest and the timings stay same-origin under TT_BASE,
 // behind TT_DATA_V.
 const TT_AUDIO_BASE = 'https://audio.ivritsuite.com/audio/';
-const TT_DATA_V = '?v=9';   // cache-buster for the manifest and the timings files (the /data/ cache is exact-URL keyed)
+const TT_DATA_V = '?v=10';   // cache-buster for the manifest and the timings files (the /data/ cache is exact-URL keyed)
 const TT_CREDIT_URL = 'https://www.adasisrael.org/trope';
 const TT_VIDEO_RE = /^[\w-]{11}$/;   // a video id goes into an href — validated before it does
+const TT_DIRECT_RE = /^direct-[a-z0-9-]{1,40}$/;   // a directly recorded set's id (no video, no link)
 const TORAH_BOOK_CHAPTERS = { Genesis:50, Exodus:40, Leviticus:27, Numbers:36, Deuteronomy:34 };
 
 const DEFAULTS = {
@@ -7800,9 +7801,11 @@ function ensureTotalTorahManifest() {
           if (k === 'credit') { ttCredit = (e && typeof e === 'object') ? e : null; return; }
           if (!/^[A-Z][a-z]+ \d+:\d+$/.test(k) || !e || typeof e !== 'object') return;
           if (typeof e.file !== 'string' || !/^[a-z]{3}-\d{3}-\d{3}\.mp3$/.test(e.file)) return;
-          if (typeof e.video !== 'string' || !TT_VIDEO_RE.test(e.video)) return;
+          // a verse Cantor Brown recorded directly (scripts/totaltorah-direct.mjs) has no video: `video: null` + a `direct` id
+          const direct = e.video === null && typeof e.direct === 'string' && TT_DIRECT_RE.test(e.direct) ? e.direct : null;
+          if (!direct && (typeof e.video !== 'string' || !TT_VIDEO_RE.test(e.video))) return;
           out[k] = {
-            file: e.file, dur: +e.dur || 0, video: e.video, parsha: String(e.parsha || ''), year: +e.year || 0, aliyah: +e.aliyah || 0,
+            file: e.file, dur: +e.dur || 0, video: direct ? null : e.video, direct, parsha: String(e.parsha || ''), year: +e.year || 0, aliyah: +e.aliyah || 0,
             verified: e.verified === true,
             timings: (typeof e.timings === 'string' && /^[a-z]{3}-\d{3}-\d{3}\.txt$/.test(e.timings)) ? e.timings : null,
             timingsVerified: e.timingsVerified === true,
@@ -7846,7 +7849,8 @@ function ttReadingEntries(anySource) {
     if (!e) continue;
     out.count++;
     if (!(e.timings && e.timingsVerified)) out.unTimed++;
-    if (!seen[e.video]) { seen[e.video] = true; out.videos.push(e); }
+    const src = e.video || e.direct;
+    if (!seen[src]) { seen[src] = true; out.videos.push(e); }
   }
   return out;
 }
@@ -7986,8 +7990,9 @@ function syncRecSrcControls() {
     ttDiv.hidden = !active;
     if (active) {
       const st = 'color:var(--gold-text);';
-      ttDiv.innerHTML = `<div>${ttCreditHTML(null, st)}</div>` + ents.videos.map(e =>
-        `<div style="margin-top:4px;">${esc(I18n.t('torah.recsrc.this_reading', { parsha: e.parsha, year: e.year, aliyah: e.aliyah }))} · <a href="https://youtu.be/${esc(e.video)}" target="_blank" rel="noopener" style="${st}">${esc(I18n.t('torah.recsrc.watch_youtube'))}</a></div>`).join('');
+      ttDiv.innerHTML = `<div>${ttCreditHTML(null, st)}</div>` + ents.videos.map(e => e.direct
+        ? `<div style="margin-top:4px;">${esc(I18n.t('torah.recsrc.this_reading_direct', { parsha: e.parsha }))}</div>`
+        : `<div style="margin-top:4px;">${esc(I18n.t('torah.recsrc.this_reading', { parsha: e.parsha, year: e.year, aliyah: e.aliyah }))} · <a href="https://youtu.be/${esc(e.video)}" target="_blank" rel="noopener" style="${st}">${esc(I18n.t('torah.recsrc.watch_youtube'))}</a></div>`).join('');
     }
   }
   if (pocketDiv) pocketDiv.hidden = active;
