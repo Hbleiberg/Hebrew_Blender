@@ -467,6 +467,9 @@ html[lang="he"] footer [style*="letter-spacing:0.08em"] { letter-spacing:normal 
   table.at-signs td, table.at-signs th { padding-inline:6px; }
   .at-role { min-width:16ch; }
   table.at-atlas th, table.at-atlas .lead { position:static; }
+  /* Nor does a long figure scroll in its row: it shrinks to the sheet's column, whole. */
+  .at-stf { overflow:visible; min-width:0; }
+  .at-stf svg { max-width:100%; height:auto; }
 }
 /* Reduced motion: the universal neutralizer (0.001ms rather than 0 so animationend still fires). */
 @media (prefers-reduced-motion: reduce) {
