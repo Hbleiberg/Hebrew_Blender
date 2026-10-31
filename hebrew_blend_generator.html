@@ -420,6 +420,9 @@ body.dark .hi-sun{display:inline-block;}
   body.dark .btn:disabled { opacity: 1 !important; color: #3d4f6a !important; border-color: #2a3349 !important; background-color: transparent !important; }
   body.dark #focusYudWarning { color: var(--gold-light); }
   body.dark .rw-card { background: #252d3e; border-color: var(--border); }
+  /* A key's ★ card: its inline 8% gold tint over the dark sheet holds the muted number, tag and transliteration at
+     4.46:1, so they lighten there (4.93:1). Screen only: print resets the tokens, Export PDF drops dark mode. */
+  @media screen { body.dark .rw-card.rw-star { --muted: #929cb0; } }
   body.dark .rw-heb { color: #dde4f0; }
   body.dark .rw-translit { color: var(--muted); }
   body.dark .rw-flip-front { background: #252d3e; }
@@ -12355,7 +12358,7 @@ function generateRealWords(reuse) {
     items.forEach((w, idx) => {
       const card = document.createElement('div');
       card.className = 'rw-card';
-      if (starRealOn && w.isReal) { card.style.outline = '2px solid var(--gold)'; card.style.background = 'rgba(201,146,42,0.08)'; }
+      if (starRealOn && w.isReal) { card.classList.add('rw-star'); card.style.outline = '2px solid var(--gold)'; card.style.background = 'rgba(201,146,42,0.08)'; }
       card.innerHTML = `
         <span class="rw-num">${idx + 1}${starRealOn && w.isReal ? ' ★' : ''}</span>
         <span class="rw-pos-tag">${esc(w.pos)}</span>
@@ -13287,6 +13290,7 @@ function generateIdentifyDrill(pool, count, trOnSheet, tnOnSheet, trOnKey, tnOnK
       const card = document.createElement('div');
       card.className = 'rw-card';
       if (reveal && w.isReal) {
+        card.classList.add('rw-star');
         card.style.outline = '2px solid var(--gold)';
         card.style.background = 'rgba(201,146,42,0.08)';
       }
