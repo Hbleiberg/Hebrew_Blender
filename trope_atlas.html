@@ -293,6 +293,7 @@ table.at-signs tbody tr[id] { cursor:pointer; }
 .at-mono { font-family:ui-monospace, Menlo, Consolas, monospace; font-size:0.8rem; color:var(--muted); white-space:nowrap; }
 .at-mono span { display:block; font-family:'Source Sans 3', sans-serif; white-space:normal; font-size:0.76rem; }   /* zarka's second code point, on a line of its own */
 .at-role { color:var(--muted); min-width:24ch; }
+.at-signs tr[id], .at-card { scroll-margin-top:calc(var(--at-bar-h) + 8px); }
 .at-jump { color:var(--text); font-weight:700; text-decoration:underline; text-decoration-color:var(--border); text-underline-offset:3px; }
 .at-jump:hover { color:var(--gold-text); text-decoration-color:currentColor; }
 .at-rank { font-size:0.8rem; font-weight:600; white-space:nowrap; }
@@ -1277,7 +1278,7 @@ if (barObs) barObs.observe(document.getElementById('atBar'));
 function jumpToMark(k) {
   const t = document.getElementById('atlas-' + k);
   if (!t) return;
-  t.scrollIntoView({ block: 'center' });
+  t.scrollIntoView({ block: t.offsetHeight > innerHeight / 2 ? 'start' : 'center' });   // a Stacked card is taller than the window: its heading first
   t.focus({ preventScroll: true });
   t.classList.remove('at-flash'); void t.offsetWidth; t.classList.add('at-flash');
 }
@@ -1286,6 +1287,7 @@ document.getElementById('atSigns').addEventListener('click', (e) => {
   if (!tr || (e.target.closest('a') && !e.target.closest('.at-jump'))) return;
   e.preventDefault();
   jumpToMark(tr.id.slice(2));
+  try { history.replaceState(null, '', '#atlas-' + tr.id.slice(2)); } catch (err) {}   // the address bar then shares the row
 });
 
 /* ── the Key select ── */
@@ -1361,8 +1363,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const hm = /^#sys-([a-z0-9_]+)$/.exec(location.hash);
   if (hm) _hashMel = hm[1];
   if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); }
-  loadData().then(() => {
-    if (hm && SETS && SETS[hm[1]]) { const el = document.getElementById('sys-' + hm[1]); if (el) el.scrollIntoView(); }
+  // The browser scrolls to an address before the table and the phrases exist, so the page lands again once they are built.
+  Promise.all([window.I18n ? I18n.ready : null, loadData()]).then(() => {
+    if (!SETS) return;
+    const ha = /^#atlas-([a-z_]+)$/.exec(location.hash);
+    let el = null;
+    if (hm && SETS[hm[1]]) el = document.getElementById('sys-' + hm[1]);
+    else if (ha) { jumpToMark(ha[1]); return; }
+    else if (/^#[a-z][a-z0-9_-]*$/.test(location.hash)) el = document.getElementById(location.hash.slice(1));
+    if (el) el.scrollIntoView();
   });
 });
 </script>
