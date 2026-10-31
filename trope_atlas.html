@@ -459,6 +459,12 @@ html[lang="he"] footer [style*="letter-spacing:0.08em"] { letter-spacing:normal 
   header .hright, .at-bar, .at-index, .at-sing, .at-viewbar, .at-phrasebar, .at-clauses, .skip-link, footer nav { display:none !important; }
   .at-layout { display:block; }
   .at-grid { max-height:none; overflow:visible; }
+  /* Paper has no sideways scroll: the sign tables wrap to the sheet instead of clipping their last column. */
+  .at-tablewrap { overflow:visible; }
+  table.at-signs, table.at-signs.at-small { min-width:0; }
+  table.at-signs .at-hename, table.at-signs .at-mono, table.at-signs .at-rank { white-space:normal; }
+  table.at-signs td, table.at-signs th { padding-inline:6px; }
+  .at-role { min-width:16ch; }
   table.at-atlas th, table.at-atlas .lead { position:static; }
 }
 /* Reduced motion: the universal neutralizer (0.001ms rather than 0 so animationend still fires). */
