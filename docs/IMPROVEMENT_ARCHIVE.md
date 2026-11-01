@@ -95862,3 +95862,50 @@ _(prior)_ **Next session (S592):** **Branch `claude/amazing-gauss-gli685` (S588�
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 - P accounts & cloud (one surface): 2026-11-01 (**S592 — 18th P, `hebrew_blend_generator.html` (first since S463): arms 1–8 behind controls (smoke-tools 23/23, smoke-sync 228/228, migration 47/47, a 21-check signed-in walk by real clicks, static 3–7, live read-only). FOUND 5: Start fresh FIXED, delete-account's paging FIXED (needs a redeploy), the colour-reset confirm ×5 FIXED (gate 2), 2 logged. P-next: chrome (S477), torah (S493).**)
+
+
+<!-- archived by compact-ledger at the S594 boundary, 2026-11-01 -->
+## Compaction (S594, 2026-11-01) — moved verbatim from the live ledger
+
+### from Candidates — aged P4 (found more than 90 sessions before S594)
+
+- [ ] P4 (**NEW S503 E, gate 2**) | torah_trainer.html | **Total Torah on: Chant says "(PocketTorah audio)"** (`verse_chant_aria`). | found S503
+
+### from Candidates (prioritized, top = next)
+
+- [ ] P2 (**NEW S559 H — the FM at the cap; S593: the order half FIXED `55e45af`**) | Hebrew_Font_Maker.html | **Auto-detect matches a printed template page only when every row's box count is exact, and rows group by the box's top edge**: lamed's ascender splits its row (4,4,4,3,1,4), a letter in two strokes or a ה in two pieces adds a box (5,4,4,4,4; 21 for 20), and every later letter shifts one box (S593: 5/20 right). The print and the read now run right to left alike. | found S559
+
+- [ ] P2 (**NEW S559 H; S593 root-caused, BenOr Rashi FIXED `cd875c6`**) | Hebrew_Font_Maker.html | **4 of 132 untouched starting fonts still fail the export's shaping check**: Miriam CLM (9 units) and Shuneet Square / Classic (25) pin their vowels, and `uniE0B1` attaches at the shared below anchor, not the qamats's pin (riding the meteg's pin put it on the wrong side: findings S593; Shuneet's left pair is 415 units apart); RommVilna's hataf + ZWJ + meteg does not compose. | found S559
+
+### from Done
+
+- [x] 2026-11-01 | (S593 close-out) | branch/deploy note | **S593 = G on the Font Maker (first since S465): FOUND 4: 2 FIXED (one by gate 2), 1 P2 re-scoped, 1 P3, 1 refuted; + Name Tags' CSV name and the dashboard's video header from the queue; FIXED 4. Same branch `claude/amazing-gauss-gli685` (PR #386, still open), sw v1195; deploy on merge.** Gate 2 asked → "Always right to left". No live action.
+
+- [x] 2026-11-01 | `55e45afd` | Hebrew_Font_Maker.html, font-maker.md, newglyphset.md | (S593 G, gate 2 "always right to left"; pattern RTL-inheritance-on-a-Latin-script-container) **A printed template runs in its script's direction in both languages, and Auto-detect reads it that way**: HE-printed sheets 0/20 → 20/20. | probe S593-…-template-reads-in-print-order 4/4 (HEAD fails 2); templates × EN/HE × light/dark vs HEAD
+
+- [x] 2026-10-31 | (S588 close-out) | branch/deploy note | **S588 = M on Flash Cards (first since S450): FOUND 8, FIXED 2 + the ▾ census on dashboard and FM; FIXED 4. Branch `claude/amazing-gauss-gli685`, sw v1175; deploy on merge. Gate 2 asked → answered.**
+
+- [x] 2026-10-31 | `41c4703` | Hebrew_Font_Maker.html, locales, sw.js | (S588, queue) **Three menu buttons draw their ▾, not name it.** | CDP AX 20 → 0; widths, shots = HEAD
+
+- [x] 2026-10-31 | `906ee49` | classroom_dashboard.html, sw.js | (S588, queue) **The board's fold ▾ leaves its names.** | CDP AX 24 → 0; shots byte-equal
+
+- [x] 2026-10-31 | `1a60ba0` | flash_cards.html, sw.js | (S588 M) **Two Advanced subsections get their divider** (0 → 12px). | `gaps.mjs` 8 cells; folds 9/9
+
+- [x] 2026-10-31 | `17a82db` | flash_cards.html, sw.js | (S588 M) **"Count וֹ/וּ as a letter" keeps its spaces.** | probe S588: HEAD 8/8 → 0; suite 0
+
+- [x] 2026-10-31 | (S588 gate) | flash + dashboard | (Awaiting S333) **The four font headings' Hebrew chosen** → Candidates P3. | AskUserQuestion
+
+### from Per-session log (one line per session)
+
+- 2026-10-30 | **S573** | iters: 5 | tools: flash ×2, generator ×2, smoke-sync, accounts-and-cloud.md, ops.md, scripts/loop, sw | patterns fixed: contrast-below-AA-on-a-tinted-or-coloured-plate ×2 | pass run: P (flash, first alone since S435) | SW: v1133→v1134
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S593 (2026-11-01):** fontmaker, name_tags, dashboard, sw.js, scripts/loop, loop docs S593 · generator, dashboard, torah, dictionary, flash, db/functions/delete-account, smoke-sync, locales, sw.js, scripts/loop, loop docs S592 · trope, dictionary, index, sw.js, scripts/loop, loop docs S591 · resources, generator, dashboard, sw.js, scripts/loop, loop docs S590 · torah, flash, dashboard, locales, sw.js, scripts/loop, loop docs S589 · flash, dashboard, fontmaker, locales, sw.js, scripts/loop, loop docs S588 · torah, name_tags, letter_learner, sw.js, scripts/loop, loop docs S587 …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- G print & export fidelity (one tool): 2026-11-01 (**S593 — `Hebrew_Font_Maker.html` (first since S465): the engine mirrored lazily from the real CDNs; FreeSans by `?start=` → every export by clicks, EN light / HE dark (font tables, WOFF2 = TTF, UFO by ufo2ft); paper dark = light; file + autosave round trips lossless; a Hebrew family name; Auto-detect on printed templates; the S559 export census. FOUND 4: 2 FIXED (one gate 2), 1 P2 re-scoped, 1 P3; 1 refuted. G-next: trope (S479), dashboard (S495).**)
+
+_(prior)_ **Next session (S593):** **Branch `claude/amazing-gauss-gli685` (S588–S592, PR #386): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1191**, FM **5.59**, corpus ?v=7. ⚑ drift: main=697d533 sw=v1191 fm=5.59 migration=0009_assignment_enrolment.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b (functions: delete-account and manage-students both live as v8, the repo's source). ⚑ Stalest now: G fontmaker (S465), C generator (S469), N fontmaker (S476), P chrome (S477), D trope (S480), H torah (S482), M chrome (S494); suite E (S531), L (S532), K (S533). ⚑ The signed-in reading-assignments UI still wants its first P and H. ⚑ Record-replay harnesses to port: `g589/common.mjs` (Sefaria), `d590/hcreplay.mjs` (hCaptcha), `c591/common.mjs` (a tone for every `.mp3`), `p592/lib.mjs` (smoke-sync's fake cloud with a stale-port guard). ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
+⚑ Sync P2 (S573). ⚑ The account page signed in is unprinted (`--sdk`): the next G or P on the chrome. ⚑ Gate 4 to propose: the generator's blend sheets on a phone. ⚑ smoke-sync D31 flake (again S592; alone 3/3). ⚑ Ports at the next A: `m554/`–`p592/`; traps 352, 356–473. ⚑ Queues: generator 25, FM 21, torah 13, dictionary 10, dashboard 8; the rest ≤ 6.
