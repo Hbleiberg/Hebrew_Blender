@@ -502,7 +502,7 @@ _(none)_
 
 ### Per-session log (one line per session)
 
-- 2026-11-01 | **S592** | iters: 5 | tools: generator ×2, dashboard, torah, dictionary, flash, delete-account (function, not deployed), smoke-sync, scripts/loop, locales, sw | patterns fixed: account-wide-delete-confirm-without-signed-in-wording ×5 carriers (gate 2) | pass run: P (generator, first …[full text: IMPROVEMENT_ARCHIVE.md]
+- 2026-11-01 | **S592** | iters: 5 | tools: generator ×2, dashboard, torah, dictionary, flash, delete-account (function, deployed v7), smoke-sync, scripts/loop, locales, sw | patterns fixed: account-wide-delete-confirm-without-signed-in-wording ×5 carriers (gate 2) | pass run: P (generator, first …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - 2026-11-01 | **S591** | iters: 5 | tools: trope ×2, dictionary, index, scripts/loop, sw | patterns fixed: contrast-below-AA-on-a-tinted-or-coloured-plate ×1, fixed-surface-missing-from-the-print-hide-list ×1 | pass run: C (trope, first since S455) | SW: v1183→v1187
 
