@@ -95944,3 +95944,38 @@ _(prior)_ **Next session (S593):** **Branch `claude/amazing-gauss-gli685` (S588�
 
 _(prior)_ **Next session (S594):** **Branch `claude/amazing-gauss-gli685` (S588–S593, PR #386): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1195**, FM **5.59**, corpus ?v=7. ⚑ drift: main=697d533 sw=v1195 fm=5.59 migration=0009_assignment_enrolment.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest now: C generator (S469), N fontmaker (S476), P chrome (S477), G trope (S479), D trope (S480), H torah (S482), M chrome (S494); suite E (S531), L (S532), K (S533). ⚑ The signed-in reading-assignments UI still wants its first P and H. ⚑ The FM engine mirrors by curl (`g593/lib.mjs`). ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
 ⚑ Sync P2 (S573). ⚑ The account page signed in is unprinted (`--sdk`): the next G or P on the chrome. ⚑ Gate 4 to propose: the generator's blend sheets on a phone. ⚑ smoke-sync D31 flake (again S592; alone 3/3). ⚑ Ports at the next A: `m554/`–`g593/`; traps 352, 356–477. ⚑ Queues: generator 25, FM 21, torah 13, dictionary 10, dashboard 7; the rest ≤ 6.
+
+
+<!-- archived by compact-ledger at the S596 boundary, 2026-11-01 -->
+## Compaction (S596, 2026-11-01) — moved verbatim from the live ledger
+
+### from Candidates (prioritized, top = next)
+
+- [ ] P3 (**NEW S595 N — needs the tour-engine extraction, UX rule 1**) | Hebrew_Font_Maker.html (+ the shared tour engine, 3 carriers) | **On a landscape phone the tour card lands on its own target**: with no room above or below (750×342) the card falls back to the window's foot over the target — the starting-font tour covers Edit points, Place Nikkud and Export (steps 2, 3, 7: 93–100%) in EN and HE; the shared engine has the same fallback. | found S595
+
+### from Done
+
+- [x] 2026-11-01 | (S590 close-out) | branch/deploy note | **S590 = D on the generator (first since S452) + chrome (since S466): FOUND 3, FIXED 1 + 3 from the queue; FIXED 4. Same branch `claude/amazing-gauss-gli685` (PR #386, still open), sw v1183; deploy on merge. Gates: none asked. `d37fd204`'s message omits its pattern (`fixed-surface-missing-from-the-print-hide-list`).**
+
+- [x] 2026-11-01 | `120de7cc` | classroom_dashboard.html, sw.js | (S590, queue S576 D) **A cold load lays the page out once for the rails' ceiling** (the mounts in the first frame, same order). | trace: forced 42–79 ms → 0; widths = HEAD × 8 incl. binding; no frame at the fallback
+
+- [x] 2026-11-01 | `0772dda5` | hebrew_blend_generator.html, sw.js | (S590, queue S563/S574) **Class Set's version label and RW Gematria's translations read at AA**, screen and paper. | 2.75 → 6.22 screen / 7.71 print; dark = HEAD; diffs only in their boxes
+
+- [x] 2026-11-01 | `d37fd204` | hebrew_blend_generator.html, sw.js | (S590, queue S568) **A Self-Check's screen controls stay off paper**, printed and exported. | probe S590 selfcheck: 6/6 (HEAD 1/6); other exports pixel-identical
+
+- [x] 2026-11-01 | `ccadcc2b` | resources.html, sw.js | (S590 D) **hCaptcha loads when the Suggest window first opens**, not with every visit. | probe S590 captcha: 6/6 (HEAD fails visit + blocked); real script: 0 requests on a visit
+
+### from Per-session log (one line per session)
+
+- 2026-10-30 | **S575** | iters: 5 | tools: resources, contact, privacy, terms, generator ×2, scripts/loop, sw | patterns fixed: print-block-split-at-a-sheet-foot (NEW) ×2, contrast-below-AA ×1, live-region-display-none-while-empty ×1 | pass run: G (chrome, first since S437) | SW: v1135→v1136
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S595 (2026-11-01):** fontmaker, generator, locales, sw.js, loop docs S595 · generator, dictionary, locales, sw.js, loop docs S594 · fontmaker, name_tags, dashboard, sw.js, scripts/loop, loop docs S593 · generator, dashboard, torah, dictionary, flash, db/functions/delete-account, smoke-sync, locales, sw.js, scripts/loop, loop docs S592 · trope, dictionary, index, sw.js, scripts/loop, loop docs S591 · resources, generator, dashboard, sw.js, scripts/loop, loop docs S590 · torah, flash, dashboard, locales, sw.js, scripts/loop, loop docs S589 · flash, dashboard, fontmaker, locales, sw.js, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- N mobile & touch-device (one surface): 2026-11-01 (**S595 — 35th N, `Hebrew_Font_Maker.html` (first since S476): 8 phone cells × a fresh project (36 views), a partner font (24 views + its 7-step tour), a sheet upload and Auto-detect, every field in the DOM, finger strokes, a flip. FOUND 5: 2 FIXED (16px fields, the canvas titles), 3 logged (+2 generator from the queue). N-next: dictionary (S492), dashboard (S506).**)
+
+_(prior)_ **Next session (S595):** **Branch `claude/amazing-gauss-gli685` (S588–S594, PR #386): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1199**, FM **5.59**, corpus ?v=7. ⚑ drift: main=697d533 sw=v1199 fm=5.59 migration=0009_assignment_enrolment.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest now: N fontmaker (S476), P chrome (S477), G trope (S479), D trope (S480), H torah (S482), C chrome (S483), M chrome (S494); suite E (S531), L (S532), K (S533). ⚑ The signed-in reading-assignments UI still wants its first P and H. ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
+⚑ Sync P2 (S573). ⚑ The account page signed in is unprinted (`--sdk`): the next G or P on the chrome. ⚑ Gate 4 to propose: the generator's blend sheets on a phone. ⚑ smoke-sync D31 flake (again S592; alone 3/3). ⚑ Ports at the next A: `m554/`–`c594/`; traps 352, 356–480. ⚑ Queues: generator 26, FM 21, torah 13, dictionary 10, dashboard 7; the rest ≤ 6.

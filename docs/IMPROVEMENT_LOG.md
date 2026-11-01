@@ -14,7 +14,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P2 (**S567 P; S573 P root-caused — a shared module, not small**) | js/ivrit-saves.js | **A page write made after a hydration planned its uploads, before it ends, is not sent, and the tab's next sync downloads the account's copy over it**: the hook is not armed yet, and step 4's `snapshotNames` takes the post-write hash as the tab's seen view, so `actionFor` reads it as another tab's write. …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] P3 (**NEW S594 C — at the cap**) | hebrew_blend_generator.html | **Hebrew in the English sidebar lacks `lang="he"`** (20 nodes): the Header Labels עברית button, "Root (שׁורש)", the vowel colour examples, two tips' Hebrew. | found S594
+- [ ] P3 (**NEW S595 N — needs the tour-engine extraction, UX rule 1**) | Hebrew_Font_Maker.html, tour engine | **On a landscape phone (750×342) the tour card falls back onto its own target**: the starting-font tour's steps 2, 3, 7 covered 93–100%; the shared engine shares the fallback. | found S595
 
 - [ ] P3 (**NEW S593 G — verify on a Mac first**) | Hebrew_Font_Maker.html | **Every font named only in Hebrew exports with nameID 6 `MyHebrewFont-Regular` (and `MyHebrewFont.ttf`)**: two such fonts share one PostScript name, which Font Book and Mac apps key fonts by; a stem from the name (a short hash or a transliteration) would keep them apart. | found S593
 
@@ -64,6 +64,12 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
 
+- [ ] P4 (**NEW S595 N**) | Hebrew_Font_Maker.html | **A window opened mid-tour opens under the tour's card**: on a phone the card covers its Close (the card's ✕ still ends the tour). | found S595
+
+- [ ] P4 (**NEW S595 N — gate 2/4**) | Hebrew_Font_Maker.html | **A phone turned sideways gets the tablet notice** (tiered by width alone); one over 820px gets none. | found S595
+
+- [ ] P4 (**NEW S595 N — after `829cc1b`**) | Hebrew_Font_Maker.html | **On a 320px phone the export row reaches the screen edge**: let the group wrap below ~360px. | found S595
+
 - [ ] P4 (**NEW S594 C**) | generator, dictionary | **A control inside a collapse header joins its name**: "Saved Presets More information", "1st Letter Clear" ×7. | found S594
 
 - [ ] P4 (**NEW S591 C — 1.4.12**) | trope_tutor.html | **Under 1.4.12's text spacing a Phrases example's verse reference ("Beha'alotcha 10:10", no-wrap) pushes a 320px window 3px wide** (EN and HE; 0 at the page's own spacing). | found S591
@@ -92,7 +98,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S574 M — H's**) | hebrew_blend_generator.html | **The crossword's "Not placed:" note can list 50+ pool words on the student's sheet.** | found S574
 
-- [ ] P4 (**NEW S574 M — UX rule 8**) | hebrew_blend_generator.html | **Hebrew in the English UI sits under `lang="en"`**: "עברית", the colour-coding examples, Hebrew inside English definitions. | found S574
+- [ ] P4 (**NEW S574 M — UX rule 8; S595: the sidebar half FIXED `a339e56`**) | hebrew_blend_generator.html | **Hebrew inside the English Real Words definitions sits under `lang="en"`** (findings S595). | found S574
 
 - [ ] P4 (**NEW S574 M — component consistency**) | hebrew_blend_generator.html | **The Advanced panel's TTS speed box is not a sub-panel** like its five navy-bar neighbours. | found S574
 
@@ -132,7 +138,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S563 G**) | hebrew_blend_generator.html | **The Identify key leaves a 2 px gold sliver at a page's foot**: a ★ card pushed to the next page by `break-inside: avoid` still paints its inline `outline` top edge on the previous one. | found S563
 
-- [ ] P4 (**NEW S563 — glyph census; dictionary FIXED S594**) | FM, generator | **CSS-drawn ▾ joins control names**: generator 14 (at the cap S594); FM: an open project. | found S563
+- [ ] P4 (**NEW S563 — glyph census; dictionary, generator FIXED**) | Hebrew_Font_Maker.html | **CSS-drawn ▾ in control names: count it with a project open.** | found S563
 
 - [ ] P4 (**NEW S562 N — touch parity**) | trope_tutor.html | **A Phrases chip lights its notes on the staff only by hover or focus**: a tap opens the mark's Learn card at once, so a touch user never sees which notes a chip names (`mouseenter` / `focus` → `.is-hl`; measured: the highlight flashes, then the tab changes). | found S562
 
@@ -442,6 +448,16 @@ _(none)_
 
 ## Done
 
+- [x] 2026-11-01 | (S595 close-out) | branch/deploy note | **S595 = N on the Font Maker (first since S476): FOUND 5, FIXED 2 + 2 generator. PR #386 open, sw v1203; deploy on merge.** No gate or live action.
+
+- [x] 2026-11-01 | `7c3922e0` | Hebrew_Font_Maker.html, locales, sw.js | (S595 N) **The canvas's guide and segment titles are translated.** | 4 cells; stage = HEAD
+
+- [x] 2026-11-01 | `829cc1b4` | Hebrew_Font_Maker.html, sw.js | (S595 N; 16px pattern) **Fields read at 16px under a finger.** | 0/41 (HEAD 39); desktop = HEAD
+
+- [x] 2026-11-01 | `4ab246cf` | hebrew_blend_generator.html, sw.js | (S595 queue; glyph pattern) **Fold triangles drawn, not read**: ▾ names 23 → 0. | AX × 4 cells; shots = HEAD
+
+- [x] 2026-11-01 | `a339e565` | hebrew_blend_generator.html, locales, sw.js | (S595 queue; UX rule 8) **The sidebar's Hebrew carries lang=he**: 20 → 0. | 4 cells; shots = HEAD
+
 - [x] 2026-11-01 | (S594 close-out) | branch/deploy note | **S594 = C on the generator (first since S469): FOUND 7, FIXED 2 + 2 on the dictionary. PR #386 open, sw v1199; deploy on merge.** No gate, no live action.
 
 - [x] 2026-11-01 | `458694b1` | hebrew_dictionary.html, locales, sw.js | (S594 C) **Emoji category arrows are named in the UI's language.** | 14 × 4 cells + a live switch; HEAD English
@@ -490,19 +506,11 @@ _(none)_
 
 - [x] 2026-11-01 | `14e06862` | trope_tutor.html, sw.js | (S591 C) **A drill choice's "choose again to answer" reads at AA in dark mode.** | 4.26 → 6.1:1; light and forced colours pixel-identical (the forced-colours control fired)
 
-- [x] 2026-11-01 | (S590 close-out) | branch/deploy note | **S590 = D on the generator (first since S452) + chrome (since S466): FOUND 3, FIXED 1 + 3 from the queue; FIXED 4. Same branch `claude/amazing-gauss-gli685` (PR #386, still open), sw v1183; deploy on merge. Gates: none asked. `d37fd204`'s message omits its pattern (`fixed-surface-missing-from-the-print-hide-list`).**
-
-- [x] 2026-11-01 | `120de7cc` | classroom_dashboard.html, sw.js | (S590, queue S576 D) **A cold load lays the page out once for the rails' ceiling** (the mounts in the first frame, same order). | trace: forced 42–79 ms → 0; widths = HEAD × 8 incl. binding; no frame at the fallback
-
-- [x] 2026-11-01 | `0772dda5` | hebrew_blend_generator.html, sw.js | (S590, queue S563/S574) **Class Set's version label and RW Gematria's translations read at AA**, screen and paper. | 2.75 → 6.22 screen / 7.71 print; dark = HEAD; diffs only in their boxes
-
-- [x] 2026-11-01 | `d37fd204` | hebrew_blend_generator.html, sw.js | (S590, queue S568) **A Self-Check's screen controls stay off paper**, printed and exported. | probe S590 selfcheck: 6/6 (HEAD 1/6); other exports pixel-identical
-
-- [x] 2026-11-01 | `ccadcc2b` | resources.html, sw.js | (S590 D) **hCaptcha loads when the Suggest window first opens**, not with every visit. | probe S590 captcha: 6/6 (HEAD fails visit + blocked); real script: 0 requests on a visit
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-11-01 | **S595** | iters: 5 | tools: fontmaker ×2, generator ×2, locales, sw | patterns fixed: text-field-under-16px-zooms-on-ios-focus ×1, decorative-glyph-carrier-exposed-to-assistive-tech ×1 | pass run: N (fontmaker) | SW: v1199→v1203
 
 - 2026-11-01 | **S594** | iters: 5 | tools: generator ×2, dictionary ×2, locales, sw | patterns fixed: hover-tip-not-dismissible-or-hoverable ×1, help-affordance-inside-a-label-forwards-its-tap ×1, sub-floor touch target ×1, decorative-glyph-carrier-exposed-to-assistive-tech ×1 | pass run: C …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -542,11 +550,9 @@ _(none)_
 
 - 2026-10-30 | **S576** | iters: 5 | tools: dashboard ×2, flash ×2, dashboard.md, scripts/loop, sw | patterns fixed: offscreen-sheets-laid-out-on-every-rebuild ×1 (chunked) | pass run: D (dashboard, first since S438) | SW: v1136→v1137
 
-- 2026-10-30 | **S575** | iters: 5 | tools: resources, contact, privacy, terms, generator ×2, scripts/loop, sw | patterns fixed: print-block-split-at-a-sheet-foot (NEW) ×2, contrast-below-AA ×1, live-region-display-none-while-empty ×1 | pass run: G (chrome, first since S437) | SW: v1135→v1136
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S594 (2026-11-01):** generator, dictionary, locales, sw.js, loop docs S594 · fontmaker, name_tags, dashboard, sw.js, scripts/loop, loop docs S593 · generator, dashboard, torah, dictionary, flash, db/functions/delete-account, smoke-sync, locales, sw.js, scripts/loop, loop docs S592 · trope, dictionary, index, sw.js, scripts/loop, loop docs S591 · resources, generator, dashboard, sw.js, scripts/loop, loop docs S590 · torah, flash, dashboard, locales, sw.js, scripts/loop, loop docs S589 · flash, dashboard, fontmaker, locales, sw.js, …[full text: IMPROVEMENT_ARCHIVE.md]
+- **Snapshot S595 (2026-11-01):** fontmaker, generator, locales, sw.js, loop docs S595 · generator, dictionary, locales, sw.js, loop docs S594 · fontmaker, name_tags, dashboard, sw.js, scripts/loop, loop docs S593 · generator, dashboard, torah, dictionary, flash, db/functions/delete-account, smoke-sync, locales, sw.js, scripts/loop, loop docs S592 · trope, dictionary, index, sw.js, scripts/loop, loop docs S591 · resources, generator, dashboard, sw.js, scripts/loop, loop docs S590 · torah, flash, dashboard, locales, sw.js, scripts/loop, loop …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -572,7 +578,7 @@ _(none)_
 
 - `live-region-shown-with-its-text` | ACTIVE | owner G | det: recipe | last S553 | streak 0
 
-- `abs-child-escapes-its-scroller` | ACTIVE | owner N | det: recipe | last S572 | streak 2
+- `abs-child-escapes-its-scroller` | ACTIVE | owner N | det: recipe | last S595 | streak 3
 
 - `empty-result-not-announced` | ACTIVE | owner F | det: recipe | last S530 | streak 1
 
@@ -678,7 +684,7 @@ _(none)_
 
 - `editor-re-parse-caps-a-merged-list` | ACTIVE | owner P | det: recipe | last S421 | streak 0
 
-- `window-taller-than-a-phone-without-a-scroll` | ACTIVE | owner N | det: recipe | last S577 | streak 3
+- `window-taller-than-a-phone-without-a-scroll` | ACTIVE | owner N | det: recipe | last S595 | streak 4
 
 - `install-banner-over-a-sheet's-bottom-controls` | ACTIVE | owner N | det: scripts/loop/probes/S572-install-hint-tours.mjs | last S578 | streak 0
 
@@ -704,7 +710,7 @@ _(none)_
 
 - `aria-disabled-lock-no-handler-checks` | ACTIVE | owner P | det: recipe | last S407 | streak 0
 
-- `text-field-under-16px-zooms-on-ios-focus` | ACTIVE | owner N | det: recipe | last S572 | streak 0
+- `text-field-under-16px-zooms-on-ios-focus` | ACTIVE | owner N | det: recipe | last S595 | streak 0
 
 - `textContent-rewrite-erases-a-control-icon` | ACTIVE | owner K | det: recipe | last S501 | streak 0
 
@@ -788,7 +794,7 @@ _(none)_
 
 - `legibility-destroyed-by-a-second-dimming-layer` | ACTIVE | owner A | det: recipe | last S263 | streak 0 | hits 1
 
-- `fixed-control-positioned-outside-the-viewport` | ACTIVE | owner N | det: recipe | last S572 | streak 1 | hits 3
+- `fixed-control-positioned-outside-the-viewport` | ACTIVE | owner N | det: recipe | last S595 | streak 2 | hits 3
 
 - `executable-javascript-in-a-localization-cell` | ACTIVE | owner A | det: recipe | last S357 | streak 1 | hits 0
 
@@ -810,11 +816,11 @@ _(none)_
 
 - `i18n cross-column parity (placeholders, plurals, inline markup)` | ACTIVE | owner K | det: recipe | last S533 | streak 2 | hits 0
 
-- `horizontal-overflow-at-narrow-widths` | ACTIVE | owner N | det: recipe | last S577 | streak 0 | hits 5
+- `horizontal-overflow-at-narrow-widths` | ACTIVE | owner N | det: recipe | last S595 | streak 1 | hits 5
 
 - `fixed-columns-crush-a-narrow-sheet` | ACTIVE | owner N | det: scripts/loop/probes/S572-generator-realwords-narrow-cards.mjs | last S572 | streak 0 | hits 1
 
-- `hover-only-affordance-under-a-synthetic-mouse-event` | ACTIVE | owner N | det: recipe | last S577 | streak 3 | hits 1
+- `hover-only-affordance-under-a-synthetic-mouse-event` | ACTIVE | owner N | det: recipe | last S595 | streak 4 | hits 1
 
 - `contrast-inverted-by-a-hover-or-active-state` | ACTIVE | owner C | det: recipe | last S368 | streak 0
 
@@ -826,7 +832,7 @@ _(none)_
 
 - `rebuild-where-a-class-swap-would-do` | ACTIVE | owner A | det: recipe | last S220 | streak 0 | hits 1
 
-- `decorative-glyph-carrier-exposed-to-assistive-tech` | ACTIVE | owner A | det: recipe | last S594 | streak 0
+- `decorative-glyph-carrier-exposed-to-assistive-tech` | ACTIVE | owner A | det: recipe | last S595 | streak 0
 
 - `error-status-clobbered-by-a-later-routine-write` | DRAFT | owner A | det: none | last S411 | streak 0
 
@@ -900,7 +906,7 @@ _(none)_
 
 - O deslop — AI-design-tell sweep (one surface): SKIP since S403 — the sandbox refuses to execute the third-party detector ("Code from External"); runs again once the maintainer commits a `.claude/settings.json` permission rule for it (`docs/reference/deslop-detector.md`). Last run 2026-09-08 (S346, `flash_cards.html`, 6th O; the S399/S403 refusals are in the archive).
 
-- N mobile & touch-device (one surface): 2026-10-31 (**S587 — 34th N, `torah_trainer.html` (first since S448): 16 phone cells × 4 layouts, audio bar, 8 tabs, gallery, both dialogs, tour, a flip, 4× CPU. FOUND 2, FIXED 2 (+2 queue). N-next: fontmaker (S476), dictionary (S492).**)
+- N mobile & touch-device (one surface): 2026-11-01 (**S595 — 35th N, `Hebrew_Font_Maker.html` (first since S476): 8 phone cells, 3 project kinds, every field, finger strokes, a flip. FOUND 5, FIXED 2 (+2 generator). N-next: dictionary (S492), dashboard (S506).**)
 
 - M aesthetics & visual design (one surface): 2026-10-31 (**S588 — 35th M, `flash_cards.html` (first since S450): 4 screens + every panel, Learning Path, listening × 8 cells, real faces. FOUND 8: 2 FIXED, 1 P3 at the cap, 3 P4, 1 refuted, 1 gate answered. M-next: chrome (S494), dashboard (S508).**)
 
@@ -930,5 +936,5 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-22 (**S542 — 40th F, loading states (first since S189): 14 surfaces held, then aborted. FOUND 7, FIXED 4. F-next: long-build progress.**)
 
-**Next session (S595):** **Branch `claude/amazing-gauss-gli685` (S588–S594, PR #386): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1199**, FM **5.59**, corpus ?v=7. ⚑ drift: main=697d533 sw=v1199 fm=5.59 migration=0009_assignment_enrolment.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest now: N fontmaker (S476), P chrome (S477), G trope (S479), D trope (S480), H torah (S482), C chrome (S483), M chrome (S494); suite E (S531), L (S532), K (S533). ⚑ The signed-in reading-assignments UI still wants its first P and H. ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
-⚑ Sync P2 (S573). ⚑ The account page signed in is unprinted (`--sdk`): the next G or P on the chrome. ⚑ Gate 4 to propose: the generator's blend sheets on a phone. ⚑ smoke-sync D31 flake (again S592; alone 3/3). ⚑ Ports at the next A: `m554/`–`c594/`; traps 352, 356–480. ⚑ Queues: generator 26, FM 21, torah 13, dictionary 10, dashboard 7; the rest ≤ 6.
+**Next session (S596):** **Branch `claude/amazing-gauss-gli685` (S588–S595, PR #386): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1203**, FM **5.59**, corpus ?v=7. ⚑ drift: main=697d533 sw=v1203 fm=5.59 migration=0009_assignment_enrolment.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: P chrome (S477), G trope (S479), D trope (S480), H torah (S482), C chrome (S483), N dictionary (S492), M chrome (S494); suite E (S531), L (S532), K (S533). ⚑ The signed-in reading-assignments UI still wants its first P and H. ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
+⚑ Sync P2 (S573). ⚑ The account page signed in is unprinted (`--sdk`): the next G or P on the chrome. ⚑ Gate 4 to propose: the generator's blend sheets on a phone. ⚑ smoke-sync D31 flake (again S592; alone 3/3). ⚑ Ports at the next A: `m554/`–`n595/`; traps 352, 356–484. ⚑ Queues: FM 25, generator 25, torah 13, dictionary 10, dashboard 7; the rest ≤ 6.
