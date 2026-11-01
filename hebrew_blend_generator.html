@@ -1730,6 +1730,10 @@ body.dark .hi-sun{display:inline-block;}
   }
   .rw-section.collapsed .rw-section-header::before { transform: rotate(-90deg); }
   .rw-section.collapsed .rw-section-body { display: none; }
+  /* WCAG 2.5.8 (pattern sub-floor touch target): a Word Filters checkbox's label is its target — 19px tall at a 21–22px
+     pitch, so their 24px circles overlapped. 24px rows with no row gap meet the size itself (the Part of Speech grid
+     keeps it when the ID Parts of Speech drill moves it up into Drill Options). */
+  #rwSectionWordFilters label, #rwPosFilterBlock label { min-height: 24px; }
 
   /* ── REAL WORDS CARDS ── */
   .rw-drill-btn {
@@ -3190,7 +3194,7 @@ html[lang="he"] .beta-tag { letter-spacing: normal; text-transform: none; }   /*
             <div class="rw-section-body">
               <div style="margin-bottom:6px;">
                 <div style="font-size:0.72rem;font-weight:600;margin-bottom:3px;color:var(--text);" data-i18n="worksheet.realwords.filters.length">Length</div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px 12px;">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 12px;">
                   <label style="display:flex;align-items:center;gap:3px;font-size:0.75rem;cursor:pointer;"><input type="checkbox" id="rwLen1" checked style="accent-color:var(--gold);"> <span data-i18n="worksheet.realwords.filters.len.prefix">Prefixes/Suffixes</span></label>
                   <label style="display:flex;align-items:center;gap:3px;font-size:0.75rem;cursor:pointer;"><input type="checkbox" id="rwLen2" checked style="accent-color:var(--gold);"> <span data-i18n="worksheet.realwords.filters.len.2">2-Letter</span></label>
                   <label style="display:flex;align-items:center;gap:3px;font-size:0.75rem;cursor:pointer;"><input type="checkbox" id="rwLen3" checked style="accent-color:var(--gold);"> <span data-i18n="worksheet.realwords.filters.len.3">3-Letter</span></label>
@@ -3203,7 +3207,7 @@ html[lang="he"] .beta-tag { letter-spacing: normal; text-transform: none; }   /*
               </div>
               <div id="rwPosFilterBlock" style="margin-bottom:6px;">
                 <div id="rwPosFilterLabel" style="font-size:0.72rem;font-weight:600;margin-bottom:3px;color:var(--text);" data-i18n="worksheet.realwords.filters.pos">Part of Speech</div>
-                <div id="rwPosFilterGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:2px 8px;">
+                <div id="rwPosFilterGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:0 8px;">
                   <label style="display:flex;align-items:center;gap:3px;font-size:0.72rem;cursor:pointer;"><input type="checkbox" class="rw-pos" value="noun" checked style="accent-color:var(--gold);"> <span data-i18n="worksheet.realwords.pos.noun">Noun</span></label>
                   <label style="display:flex;align-items:center;gap:3px;font-size:0.72rem;cursor:pointer;"><input type="checkbox" class="rw-pos" value="proper noun" checked style="accent-color:var(--gold);"> <span data-i18n="worksheet.realwords.pos.proper_noun">Proper Noun</span></label>
                   <label style="display:flex;align-items:center;gap:3px;font-size:0.72rem;cursor:pointer;"><input type="checkbox" class="rw-pos" value="root" checked style="accent-color:var(--gold);"> <span data-i18n="worksheet.realwords.pos.root">Root (שׁורש)</span></label>
