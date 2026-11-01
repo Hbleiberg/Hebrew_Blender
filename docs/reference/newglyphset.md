@@ -98,7 +98,8 @@ The shared `.letter-grid` is pinned `direction: rtl` for the Hebrew tiles and `.
 - **Bidi**: `bidiClassOf` returns `BIDI_L` for the set (`isEng(cell.cp) || isCyr(cell.cp) || is<Stem>(…)`).
   A letter left `BIDI_NEUTRAL` takes its neighbours' direction and reverses inside a mixed sample.
 - **Specimen page**: `{ rtl: false, cols: 9, glyphPx: 38 }`. **Template**: add `kind === '<id>'` to the
-  standalone list in `templateCellHTML` (no dotted circle).
+  standalone list in `templateCellHTML` (no dotted circle) and to the `ltr` test in
+  `renderTemplateCanvases`, so the printed page flows left to right in both UI languages.
 - **Save letter & next** lands on the tile immediately to the **right**; the status dot sits top-left.
 
 ### RTL set (Samaritan, Paleo-Hebrew, Judeo-Arabic letters …)
@@ -110,7 +111,8 @@ The shared `.letter-grid` is pinned `direction: rtl` for the Hebrew tiles and `.
   predicate it shares with the legacy-`kern` importer (which skips RTL pairs, since that table's order is
   unknowable for them). Kerning pairs stay in logical (reading) order; the FEA convention is direction-agnostic.
 - **Specimen page**: `{ rtl: true, cols: 8, glyphPx: 44 }`, like the Hebrew add-on sections.
-  **Template**: the same `kind` line as LTR — standalone glyph, no dotted circle.
+  **Template**: the same `kind` line as LTR — standalone glyph, no dotted circle; the page prints right
+  to left in both UI languages by default.
 - **Save letter & next** lands on the tile immediately to the **left**.
 - **Marks**: an RTL set that must carry the Hebrew nikkud is the fourth row of §0, not this recipe; a script with combining marks of its own adds a mark family after its letters ship, as Samaritan did (`font-maker.md` → *Mark families*).
 

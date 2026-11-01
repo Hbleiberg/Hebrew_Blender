@@ -357,6 +357,13 @@ SVG mode routes through `uploadSvgForCurrent`, which replaces the trace rather t
 stays one-at-a-time. `wireDrop(id, cb, multi)`'s third argument opts a zone into whole-`FileList`
 drops; every other zone keeps the first-file contract.
 
+**Reading order.** A printed template flows in its script's direction in both UI languages —
+`renderTemplateCanvases` pins the sheet: English and Cyrillic left to right, every other set right to
+left (alef top-right) — and Auto-detect reads every sheet right to left: a page `adMatchTemplate`
+recognises takes that page's letter order cell by cell, a free-form sheet the untraced letters in order.
+A template's direction never follows the UI language: a photographed page cannot say which interface
+printed it, and a Hebrew-UI page read in the English order swapped every letter in its row.
+
 **Sheet sizing.** Auto-detect crops each letter to its own ink box, so the per-crop fit
 (`defaultFitTransform`: the crop's height onto the glyph's band) stretched a yod up to alef's height
 and shrank a tall handwritten letter — the "yod was resized" report. `adApply` now sizes the sheet

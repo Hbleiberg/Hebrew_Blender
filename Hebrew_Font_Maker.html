@@ -7948,9 +7948,9 @@ function adReadingOrder(comps) {
   return { ordered: rows.flatMap(r => r.boxes), rows };
 }
 /* Cheap template-layout match: same row count and per-row counts as a page of the printed Letters
-   template → use that page's known letter order. NOTE the printed grid fills LEFT-to-right (CSS
-   grid in an LTR document — Alef is top-LEFT on the printout), so a matched page assigns cells
-   left-to-right, unlike the RTL free-form fallback. */
+   template → use that page's known letter order. The printed grid fills RIGHT-to-left in both UI
+   languages (renderTemplateCanvases pins it: Alef is top-RIGHT on the printout), so a matched page
+   reads its cells in the same right-to-left order as the free-form fallback. */
 function adMatchTemplate(rows) {
   const spec = TEMPLATE_SPECS.letters, per = spec.cols * spec.rowsPerPage;
   const sig = rows.map(r => r.boxes.length);
@@ -8020,9 +8020,7 @@ async function adRunDetection() {
   const kept = adMergeFragments(adFilter(comps, w, h, labels));
   const { rows } = adReadingOrder(kept);
   const matched = adMatchTemplate(rows);
-  const seq = matched
-    ? rows.flatMap(r => r.boxes.slice().sort((a, b) => (a.x0 + a.x1) - (b.x0 + b.x1)))   // printed grid → LTR cells
-    : rows.flatMap(r => r.boxes);                                                        // free-form → RTL reading order
+  const seq = rows.flatMap(r => r.boxes);   // right-to-left reading order: a printed template page and a free-form sheet alike
   const rects = adPadAndMap(seq, 10, scale, im.width, im.height);
   adState.scale = scale; adState.detTh = bin.th; adState.matched = matched;
   adState.boxes = rects.map((r, i) => ({ id: i + 1, rect: r, cp: null, skip: false }));
@@ -22167,9 +22165,14 @@ async function renderTemplateCanvases(kind) {
   const per = spec.cols * spec.rowsPerPage, pages = [];
   for (let i = 0; i < spec.items.length; i += per) pages.push(spec.items.slice(i, i + per));
   const canvases = [];
+  // The page flows in its script's direction in BOTH UI languages, as the tab's letter grid does: English and
+  // Cyrillic left to right, every other set right to left (alef top-right). The sheet used to inherit the page's
+  // direction, so the Hebrew UI printed alef top-right and the English UI top-left, and Auto-detect could not
+  // know which order a photographed page was in. Auto-detect reads every sheet right to left (adRunDetection).
+  const dir = (spec.kind === 'latin' || spec.kind === 'cyrillic') ? 'ltr' : 'rtl';
   for (let p = 0; p < pages.length; p++) {
     const sheet = document.createElement('div');
-    sheet.style.cssText = 'position:fixed;left:-5000px;top:0;box-sizing:border-box;'
+    sheet.style.cssText = 'position:fixed;left:-5000px;top:0;box-sizing:border-box;direction:' + dir + ';'
       + 'width:' + TPL_PAGE.w + 'px;height:' + TPL_PAGE.h + 'px;padding:' + TPL_PAGE.pad + 'px;'
       + 'background:#fff;font-family:\'Source Sans 3\',sans-serif;overflow:hidden;';
     sheet.innerHTML = buildTemplatePageHTML(spec, pages[p], p, pages.length);
