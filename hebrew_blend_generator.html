@@ -3210,7 +3210,7 @@ html[lang="he"] .beta-tag { letter-spacing: normal; text-transform: none; }   /*
                 <div id="rwPosFilterGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:0 8px;">
                   <label style="display:flex;align-items:center;gap:3px;font-size:0.72rem;cursor:pointer;"><input type="checkbox" class="rw-pos" value="noun" checked style="accent-color:var(--gold);"> <span data-i18n="worksheet.realwords.pos.noun">Noun</span></label>
                   <label style="display:flex;align-items:center;gap:3px;font-size:0.72rem;cursor:pointer;"><input type="checkbox" class="rw-pos" value="proper noun" checked style="accent-color:var(--gold);"> <span data-i18n="worksheet.realwords.pos.proper_noun">Proper Noun</span></label>
-                  <label style="display:flex;align-items:center;gap:3px;font-size:0.72rem;cursor:pointer;"><input type="checkbox" class="rw-pos" value="root" checked style="accent-color:var(--gold);"> <span data-i18n="worksheet.realwords.pos.root">Root (שׁורש)</span></label>
+                  <label style="display:flex;align-items:center;gap:3px;font-size:0.72rem;cursor:pointer;"><input type="checkbox" class="rw-pos" value="root" checked style="accent-color:var(--gold);"> <span data-i18n-html="worksheet.realwords.pos.root">Root (<span lang="he">שׁורש</span>)</span></label>
                   <label style="display:flex;align-items:center;gap:3px;font-size:0.72rem;cursor:pointer;"><input type="checkbox" class="rw-pos" value="verb" checked style="accent-color:var(--gold);"> <span data-i18n="worksheet.realwords.pos.verb">Verb</span></label>
                   <label style="display:flex;align-items:center;gap:3px;font-size:0.72rem;cursor:pointer;"><input type="checkbox" class="rw-pos" value="adjective" checked style="accent-color:var(--gold);"> <span data-i18n="worksheet.realwords.pos.adjective">Adjective</span></label>
                   <label style="display:flex;align-items:center;gap:3px;font-size:0.72rem;cursor:pointer;"><input type="checkbox" class="rw-pos" value="pronoun" checked style="accent-color:var(--gold);"> <span data-i18n="worksheet.realwords.pos.pronoun">Pronoun</span></label>
@@ -3631,7 +3631,7 @@ html[lang="he"] .beta-tag { letter-spacing: normal; text-transform: none; }   /*
           <input type="text" id="wsSubtitle" aria-label="Worksheet subtitle" data-i18n-aria-label="worksheet.layout.subtitle_aria" placeholder="Optional instructions..." data-i18n-placeholder="worksheet.layout.subtitle_placeholder" style="width:160px;padding:5px 8px;border:1px solid var(--border);border-radius:5px;font-family:inherit;font-size:0.85rem;">
         </div>
         <div class="option-row" style="margin-top:4px;">
-          <div class="option-label"><span data-i18n="worksheet.layout.exclude_repeats">Exclude Repeats</span> <span class="tooltip-wrap" style="font-size:0.65rem;">?<span class="tooltip-box" data-i18n="worksheet.layout.exclude_repeats_tooltip">When on, a blend never uses the same letter twice in a row (no בָּב), and Name the Letter tries to show every chosen letter before repeating one. The same blend can still appear twice.</span></span></div>
+          <div class="option-label"><span data-i18n="worksheet.layout.exclude_repeats">Exclude Repeats</span> <span class="tooltip-wrap" style="font-size:0.65rem;">?<span class="tooltip-box" data-i18n-html="worksheet.layout.exclude_repeats_tooltip">When on, a blend never uses the same letter twice in a row (no <span lang="he">בָּב</span>), and Name the Letter tries to show every chosen letter before repeating one. The same blend can still appear twice.</span></span></div>
           <label class="toggle"><input type="checkbox" id="excludeRepeats"><span class="slider"></span></label>
         </div>
         <div class="option-row">
@@ -3649,7 +3649,7 @@ html[lang="he"] .beta-tag { letter-spacing: normal; text-transform: none; }   /*
           <div class="option-label" id="headerLangLbl" data-i18n="worksheet.layout.header_labels">Header Labels</div>
           <div role="group" aria-labelledby="headerLangLbl" style="display:flex;gap:0;border:1px solid var(--border);border-radius:5px;overflow:hidden;font-size:0.78rem;">
             <button id="headerLangEn" class="color-mode-btn active" onclick="setHeaderLang('en')" data-i18n="worksheet.layout.header.en">English</button>
-            <button id="headerLangHe" class="color-mode-btn" style="font-family:var(--heb-font);" onclick="setHeaderLang('he')" data-i18n="worksheet.layout.header.he">עברית</button>
+            <button id="headerLangHe" class="color-mode-btn" lang="he" style="font-family:var(--heb-font);" onclick="setHeaderLang('he')" data-i18n="worksheet.layout.header.he">עברית</button>
           </div>
         </div>
         <div class="option-row">
@@ -3740,7 +3740,7 @@ html[lang="he"] .beta-tag { letter-spacing: normal; text-transform: none; }   /*
           <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;cursor:pointer;user-select:none;">
             <input type="checkbox" id="vavAsLetterCheck" aria-labelledby="vavAsLetterLbl" onchange="setVavAsLetter(this.checked)" checked style="accent-color:var(--gold);width:13px;height:13px;">
             <span id="vavAsLetterLbl" data-i18n-html="worksheet.vowels.count_vav">Count <span style="font-family:var(--heb-font);direction:rtl;" lang="he" dir="rtl">וֹ/וּ</span> as a letter</span>
-            <span class="tooltip-wrap" style="font-size:0.6rem;">?<span class="tooltip-box" data-i18n-html="worksheet.vowels.count_vav_tooltip">When unchecked, vav-holam (<span style="font-family:var(--heb-font);">וֹ</span>) and shuruk (<span style="font-family:var(--heb-font);">וּ</span>) appear alongside a consonant — the Vav is the vowel marker, not counted as a letter. When checked (default), they appear as standalone <span style="font-family:var(--heb-font);">וֹ</span> and <span style="font-family:var(--heb-font);">וּ</span> — the Vav itself is the letter.</span></span>
+            <span class="tooltip-wrap" style="font-size:0.6rem;">?<span class="tooltip-box" data-i18n-html="worksheet.vowels.count_vav_tooltip">When unchecked, vav-holam (<span lang="he" style="font-family:var(--heb-font);">וֹ</span>) and shuruk (<span lang="he" style="font-family:var(--heb-font);">וּ</span>) appear alongside a consonant — the Vav is the vowel marker, not counted as a letter. When checked (default), they appear as standalone <span lang="he" style="font-family:var(--heb-font);">וֹ</span> and <span lang="he" style="font-family:var(--heb-font);">וּ</span> — the Vav itself is the letter.</span></span>
           </label>
         </div>
         <!-- Lock Vowels -->
@@ -6484,6 +6484,7 @@ function initColorPickers() {
     row.style.cssText = 'display:flex;align-items:center;gap:6px;';
     const ex = document.createElement('div');
     ex.className = 'color-pick-example';
+    ex.lang = 'he';   // the vowel's example letter: a screen reader voices it in Hebrew in the English UI
     ex.id = `colorEx_${def.key}`;
     ex.dataset.example  = def.example;
     ex.dataset.vowelKey = def.key;
