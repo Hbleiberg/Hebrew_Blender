@@ -584,6 +584,7 @@ body.dark .tu-choice { background:var(--navy-deep); }
 body.dark .tu-choice.good { border-color:#55c06a; background:rgba(85,192,106,0.16); }
 body.dark .tu-choice.bad  { border-color:#ff6666; background:rgba(255,102,102,0.14); }
 body.dark .tu-choice.armed { background:rgba(224,168,50,0.16); }   /* body.dark .tu-choice outranks .tu-choice.armed: the armed tint never painted in dark */
+body.dark .tu-choice.armed .c-sub { color:var(--gold-text); }   /* --muted read 4.26:1 on the dark armed tint; gold 6.1:1, the armed border's colour */
 .tu-feedback {
   margin:14px auto 0; max-width:560px; min-height:2.2em;
   display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap;
@@ -1105,7 +1106,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
   /* The drill's three answer states lose their tints too: an armed choice (pressed, tap again to confirm) and the right answer
      take the selection pair, a wrong pick a dashed ring inside its edge — told apart with no colour of their own (S547). */
   .tu-choice.armed, body.dark .tu-choice.armed, .tu-choice.good, body.dark .tu-choice.good { background: Highlight; border-color: Highlight; color: HighlightText; forced-color-adjust: none; }
-  .tu-choice.armed .c-glyph, .tu-choice.armed .c-sub, .tu-choice.good .c-glyph, .tu-choice.good .c-sub { color: HighlightText; }
+  .tu-choice.armed .c-glyph, .tu-choice.armed .c-sub, body.dark .tu-choice.armed .c-sub, .tu-choice.good .c-glyph, .tu-choice.good .c-sub { color: HighlightText; }
   .tu-choice.bad, body.dark .tu-choice.bad { outline: 3px dashed CanvasText; outline-offset: -4px; }
 }
 </style>
