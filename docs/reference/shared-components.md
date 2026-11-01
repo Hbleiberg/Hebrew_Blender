@@ -815,7 +815,10 @@ first-visit pulse gated by a `hebrew<Tool>_tourSeen` flag (set once so the pulse
 Hover is preserved, **and** tap/click plus Enter/Space toggle the bubble; Escape, an outside click, or
 blur closes it; only one is open at a time; the bubble is viewport-clamped and has **no** fixed-duration
 auto-hide timer. The trigger carries `tabindex="0"`, `role="button"`, `aria-expanded`, and
-`aria-describedby` pointing at the bubble.
+`aria-describedby` pointing at the bubble. A hover-opened bubble is WCAG 1.4.13's too: it stays up while the
+pointer moves onto it, and Escape hides it (closing only the bubble, ahead of a drawer or tour); and a click or
+key on a trigger or inside its bubble never reaches the control the trigger sits in (a label, a collapse header —
+the generator runs its handlers in the capture phase for this).
 - **Implemented on:** `hebrew_blend_generator.html` (via `.tooltip-wrap`/`.tooltip-box`), plus
   `hebrew_dictionary.html`, `torah_trainer.html`, and `classroom_dashboard.html` (via `.tip-wrap`/`data-tip`
   + `bindTip`), and `flash_cards.html` (its `tooltipIIFE` carries the `bindTip` wiring

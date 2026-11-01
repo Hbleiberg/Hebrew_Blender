@@ -95909,3 +95909,38 @@ _(prior)_ **Next session (S592):** **Branch `claude/amazing-gauss-gli685` (S588�
 
 _(prior)_ **Next session (S593):** **Branch `claude/amazing-gauss-gli685` (S588–S592, PR #386): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1191**, FM **5.59**, corpus ?v=7. ⚑ drift: main=697d533 sw=v1191 fm=5.59 migration=0009_assignment_enrolment.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b (functions: delete-account and manage-students both live as v8, the repo's source). ⚑ Stalest now: G fontmaker (S465), C generator (S469), N fontmaker (S476), P chrome (S477), D trope (S480), H torah (S482), M chrome (S494); suite E (S531), L (S532), K (S533). ⚑ The signed-in reading-assignments UI still wants its first P and H. ⚑ Record-replay harnesses to port: `g589/common.mjs` (Sefaria), `d590/hcreplay.mjs` (hCaptcha), `c591/common.mjs` (a tone for every `.mp3`), `p592/lib.mjs` (smoke-sync's fake cloud with a stale-port guard). ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
 ⚑ Sync P2 (S573). ⚑ The account page signed in is unprinted (`--sdk`): the next G or P on the chrome. ⚑ Gate 4 to propose: the generator's blend sheets on a phone. ⚑ smoke-sync D31 flake (again S592; alone 3/3). ⚑ Ports at the next A: `m554/`–`p592/`; traps 352, 356–473. ⚑ Queues: generator 25, FM 21, torah 13, dictionary 10, dashboard 8; the rest ≤ 6.
+
+
+<!-- archived by compact-ledger at the S595 boundary, 2026-11-01 -->
+## Compaction (S595, 2026-11-01) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-11-01 | `f2716727` | hebrew_dictionary.html, sw.js | (S563 queue; pattern decorative-glyph-carrier-exposed-to-assistive-tech) **The fold triangles are drawn, not read**: ▾ nodes 93 → 3 (Words), 39 → 3 (Shoresh). | AX tree × 4 cells × 3 modes; 12 shots = HEAD
+
+- [x] 2026-10-31 | (S589 close-out) | branch/deploy note | **S589 = G on the Torah Trainer (first since S451): FOUND 3, FIXED 2 + 2 from the queue; FIXED 4. Same branch `claude/amazing-gauss-gli685` (PR #386, still open), sw v1179; deploy on merge. Gates: none asked.**
+
+- [x] 2026-10-31 | `665ddf9` | flash_cards.html, classroom_dashboard.html, locales, sw.js | (S589, queue S333/S588) **The English-font groups get their Hebrew headings** (the S588 gate's wording). | `fix4.mjs` × EN/HE × light/dark + a live switch: HE authored, EN unchanged
+
+- [x] 2026-10-31 | `8a39413` | flash_cards.html, sw.js | (S589, queue S588 M) **The listening round's replay speaker 16 → 40px** in its 92px circle. | `fix3.mjs` 8 cells: centred, button unchanged, a real click plays
+
+- [x] 2026-10-31 | `e065a2d` | torah_trainer.html, sw.js | (S589 G) **The colour-coded Copy's heading pastes in the UI's direction.** | probe S589 copy-heading: 12/12 (HEAD fails 6); EN payload identical
+
+- [x] 2026-10-31 | `7dcd200` | torah_trainer.html, sw.js | (S589 G) **The Hebrew UI's running label on sheets 2–N reads like sheet 1's band** (an RTL isolate). | probe S589 running-label: 12/12 (HEAD fails 5); EN PDFs word-identical
+
+### from Per-session log (one line per session)
+
+- 2026-11-01 | **S594** | iters: 5 | tools: generator ×2, dictionary ×2, locales, sw | patterns fixed: hover-tip-not-dismissible-or-hoverable ×1, help-affordance-inside-a-label-forwards-its-tap ×1, sub-floor touch target ×1, decorative-glyph-carrier-exposed-to-assistive-tech ×1 | pass run: C (generator, first since S469) | SW: v1195→v1199
+
+- 2026-10-30 | **S574** | iters: 5 | tools: generator ×2, torah, dictionary, scripts/loop, sw | patterns fixed: header-wrap-gate (squeeze) ×1, hebrew-faux-italic ×1, live-region-display-none-while-empty ×2 | pass run: M (generator, 2nd) | SW: v1134→v1135
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S594 (2026-11-01):** generator, dictionary, locales, sw.js, loop docs S594 · fontmaker, name_tags, dashboard, sw.js, scripts/loop, loop docs S593 · generator, dashboard, torah, dictionary, flash, db/functions/delete-account, smoke-sync, locales, sw.js, scripts/loop, loop docs S592 · trope, dictionary, index, sw.js, scripts/loop, loop docs S591 · resources, generator, dashboard, sw.js, scripts/loop, loop docs S590 · torah, flash, dashboard, locales, sw.js, scripts/loop, loop docs S589 · flash, dashboard, fontmaker, locales, sw.js, scripts/loop, loop docs S588 · torah, name_tags, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- C accessibility (one tool): 2026-11-01 (**S594 — `hebrew_blend_generator.html` (first since S469; 80 commits): 4 cells × 12 states by the AX tree, contrast, targets, `lang`; Tab walks × 3 states; forced colours; reduced motion; 1.4.12 + 320px; tour, sidebar, presets, menus by keys; the ? bubbles by mouse, keys, touch. FOUND 7: 2 FIXED + 2 dictionary, 3 logged. C-next: chrome (S483), dashboard (S499).**)
+
+_(prior)_ **Next session (S594):** **Branch `claude/amazing-gauss-gli685` (S588–S593, PR #386): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1195**, FM **5.59**, corpus ?v=7. ⚑ drift: main=697d533 sw=v1195 fm=5.59 migration=0009_assignment_enrolment.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest now: C generator (S469), N fontmaker (S476), P chrome (S477), G trope (S479), D trope (S480), H torah (S482), M chrome (S494); suite E (S531), L (S532), K (S533). ⚑ The signed-in reading-assignments UI still wants its first P and H. ⚑ The FM engine mirrors by curl (`g593/lib.mjs`). ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
+⚑ Sync P2 (S573). ⚑ The account page signed in is unprinted (`--sdk`): the next G or P on the chrome. ⚑ Gate 4 to propose: the generator's blend sheets on a phone. ⚑ smoke-sync D31 flake (again S592; alone 3/3). ⚑ Ports at the next A: `m554/`–`g593/`; traps 352, 356–477. ⚑ Queues: generator 25, FM 21, torah 13, dictionary 10, dashboard 7; the rest ≤ 6.

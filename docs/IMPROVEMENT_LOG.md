@@ -14,6 +14,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P2 (**S567 P; S573 P root-caused — a shared module, not small**) | js/ivrit-saves.js | **A page write made after a hydration planned its uploads, before it ends, is not sent, and the tab's next sync downloads the account's copy over it**: the hook is not armed yet, and step 4's `snapshotNames` takes the post-write hash as the tab's seen view, so `actionFor` reads it as another tab's write. …[full text: IMPROVEMENT_ARCHIVE.md]
 
+- [ ] P3 (**NEW S594 C — at the cap**) | hebrew_blend_generator.html | **Hebrew in the English sidebar lacks `lang="he"`** (20 nodes): the Header Labels עברית button, "Root (שׁורש)", the vowel colour examples, two tips' Hebrew. | found S594
+
 - [ ] P3 (**NEW S593 G — verify on a Mac first**) | Hebrew_Font_Maker.html | **Every font named only in Hebrew exports with nameID 6 `MyHebrewFont-Regular` (and `MyHebrewFont.ttf`)**: two such fonts share one PostScript name, which Font Book and Mac apps key fonts by; a stem from the name (a short hash or a transliteration) would keep them apart. | found S593
 
 - [ ] P3 (**NEW S580 C — design call**) | trope_atlas.html | **The melody table is 594 tab stops (one sing button per figure)**: a keyboard user crosses the whole table to reach the phrase section; a roving tabindex (one stop per row, arrows between) or a skip past the table would fix it. | found S580
@@ -62,13 +64,15 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
 
+- [ ] P4 (**NEW S594 C**) | generator, dictionary | **A control inside a collapse header joins its name**: "Saved Presets More information", "1st Letter Clear" ×7. | found S594
+
 - [ ] P4 (**NEW S591 C — 1.4.12**) | trope_tutor.html | **Under 1.4.12's text spacing a Phrases example's verse reference ("Beha'alotcha 10:10", no-wrap) pushes a 320px window 3px wide** (EN and HE; 0 at the page's own spacing). | found S591
 
 - [ ] P4 (**NEW S590 — found verifying `d37fd204`**) | hebrew_blend_generator.html | **Real Words Gematria Self-Check's flipped card spills its back in Export PDF**: the translation runs past the card's edge and the Hebrew word sits above it (print not checked). | found S590
 
 - [ ] P4 (**NEW S589 G**) | torah_trainer.html | **Side by side at the Hebrew size's maximum (3.5rem) with transliteration under each word, a verse row taller than a Letter sheet leaves its bottom rule alone on the next sheet** (4 of 50 sheets; A4 none). | found S589
 
-- [ ] P4 (**NEW S588 M — glyph pattern; shared block**) | folder-tree block (5 carriers) | **The folder twisty is a text ▾ read in the tree**: `aria-hidden` in the block, re-paste, sha-verify. | found S588
+- [ ] P4 (**NEW S588 M — glyph pattern; shared block**) | folder-tree block (5 carriers) | **The twisty ▾ and the strings "Move ▾", "⌂ Root" are read**: `aria-hidden` / markup in the block, re-paste, sha-verify. | found S588
 
 - [ ] P4 (**NEW S588 M — 13 carriers**) | footer About column | **At ~800px the licence line wraps after a separator** ("CC BY-NC-SA 4.0 · GitHub ·" / "Contact & Support"). | found S588
 
@@ -128,7 +132,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S563 G**) | hebrew_blend_generator.html | **The Identify key leaves a 2 px gold sliver at a page's foot**: a ★ card pushed to the next page by `break-inside: avoid` still paints its inline `outline` top edge on the previous one. | found S563
 
-- [ ] P4 (**NEW S563 — glyph census; S588: dashboard, FM menus FIXED**) | FM, generator, dictionary | **CSS-drawn ▾ may join control names**; `content:'▾' / ''` (findings S563; FM: an open project). | found S563
+- [ ] P4 (**NEW S563 — glyph census; dictionary FIXED S594**) | FM, generator | **CSS-drawn ▾ joins control names**: generator 14 (at the cap S594); FM: an open project. | found S563
 
 - [ ] P4 (**NEW S562 N — touch parity**) | trope_tutor.html | **A Phrases chip lights its notes on the staff only by hover or focus**: a tap opens the mark's Learn card at once, so a touch user never sees which notes a chip names (`mouseenter` / `focus` → `.is-hl`; measured: the highlight flashes, then the tab changes). | found S562
 
@@ -438,6 +442,16 @@ _(none)_
 
 ## Done
 
+- [x] 2026-11-01 | (S594 close-out) | branch/deploy note | **S594 = C on the generator (first since S469): FOUND 7, FIXED 2 + 2 on the dictionary. PR #386 open, sw v1199; deploy on merge.** No gate, no live action.
+
+- [x] 2026-11-01 | `458694b1` | hebrew_dictionary.html, locales, sw.js | (S594 C) **Emoji category arrows are named in the UI's language.** | 14 × 4 cells + a live switch; HEAD English
+
+- [x] 2026-11-01 | `f2716727` | hebrew_dictionary.html, sw.js | (S594, the S563 queue; glyph pattern) **The fold triangles are drawn, not read**: ▾ nodes 93 → 3. | AX × 4 cells × 3 modes; shots = HEAD
+
+- [x] 2026-11-01 | `43d5a9c5` | hebrew_blend_generator.html, sw.js | (S594 C; pattern sub-floor touch target) **Real Words' 20 filter checkboxes take 24px rows.** | 2.5.8 fails 18 → 0 × 4 cells
+
+- [x] 2026-11-01 | `9f2455cb` | hebrew_blend_generator.html, sw.js | (S594 C; hover-tip pattern) **A help bubble answers Escape, stays up under the pointer, keeps its clicks.** | 10/10 × 4 cells; HEAD fails all
+
 - [x] 2026-11-01 | (S593 close-out) | branch/deploy note | **S593 = G on the Font Maker (first since S465): FOUND 4, FIXED 2 + 2 from the queue. Same branch (PR #386, open), sw v1195; deploy on merge.** Gate 2 → "Always right to left". No live action.
 
 - [x] 2026-11-01 | `fc2671ea` | classroom_dashboard.html, sw.js | (S593 queue; pattern decorative-glyph-carrier-exposed-to-assistive-tech) **The video header's ▾ stays out of its accessible name.** | AX name × 4 cells; pixel-identical
@@ -486,19 +500,11 @@ _(none)_
 
 - [x] 2026-11-01 | `ccadcc2b` | resources.html, sw.js | (S590 D) **hCaptcha loads when the Suggest window first opens**, not with every visit. | probe S590 captcha: 6/6 (HEAD fails visit + blocked); real script: 0 requests on a visit
 
-- [x] 2026-10-31 | (S589 close-out) | branch/deploy note | **S589 = G on the Torah Trainer (first since S451): FOUND 3, FIXED 2 + 2 from the queue; FIXED 4. Same branch `claude/amazing-gauss-gli685` (PR #386, still open), sw v1179; deploy on merge. Gates: none asked.**
-
-- [x] 2026-10-31 | `665ddf9` | flash_cards.html, classroom_dashboard.html, locales, sw.js | (S589, queue S333/S588) **The English-font groups get their Hebrew headings** (the S588 gate's wording). | `fix4.mjs` × EN/HE × light/dark + a live switch: HE authored, EN unchanged
-
-- [x] 2026-10-31 | `8a39413` | flash_cards.html, sw.js | (S589, queue S588 M) **The listening round's replay speaker 16 → 40px** in its 92px circle. | `fix3.mjs` 8 cells: centred, button unchanged, a real click plays
-
-- [x] 2026-10-31 | `e065a2d` | torah_trainer.html, sw.js | (S589 G) **The colour-coded Copy's heading pastes in the UI's direction.** | probe S589 copy-heading: 12/12 (HEAD fails 6); EN payload identical
-
-- [x] 2026-10-31 | `7dcd200` | torah_trainer.html, sw.js | (S589 G) **The Hebrew UI's running label on sheets 2–N reads like sheet 1's band** (an RTL isolate). | probe S589 running-label: 12/12 (HEAD fails 5); EN PDFs word-identical
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-11-01 | **S594** | iters: 5 | tools: generator ×2, dictionary ×2, locales, sw | patterns fixed: hover-tip-not-dismissible-or-hoverable ×1, help-affordance-inside-a-label-forwards-its-tap ×1, sub-floor touch target ×1, decorative-glyph-carrier-exposed-to-assistive-tech ×1 | pass run: C …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - 2026-11-01 | **S593** | iters: 5 | tools: fontmaker ×2, name_tags, dashboard, scripts/loop, sw | patterns fixed: RTL-inheritance-on-a-Latin-script-container ×1, decorative-glyph-carrier-exposed-to-assistive-tech ×1 | pass run: G (fontmaker, first since S465) | SW: v1191→v1195
 
@@ -538,19 +544,17 @@ _(none)_
 
 - 2026-10-30 | **S575** | iters: 5 | tools: resources, contact, privacy, terms, generator ×2, scripts/loop, sw | patterns fixed: print-block-split-at-a-sheet-foot (NEW) ×2, contrast-below-AA ×1, live-region-display-none-while-empty ×1 | pass run: G (chrome, first since S437) | SW: v1135→v1136
 
-- 2026-10-30 | **S574** | iters: 5 | tools: generator ×2, torah, dictionary, scripts/loop, sw | patterns fixed: header-wrap-gate (squeeze) ×1, hebrew-faux-italic ×1, live-region-display-none-while-empty ×2 | pass run: M (generator, 2nd) | SW: v1134→v1135
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S593 (2026-11-01):** fontmaker, name_tags, dashboard, sw.js, scripts/loop, loop docs S593 · generator, dashboard, torah, dictionary, flash, db/functions/delete-account, smoke-sync, locales, sw.js, scripts/loop, loop docs S592 · trope, dictionary, index, sw.js, scripts/loop, loop docs S591 · resources, generator, dashboard, sw.js, scripts/loop, loop docs S590 · torah, flash, dashboard, locales, sw.js, scripts/loop, loop docs S589 · flash, dashboard, fontmaker, locales, sw.js, scripts/loop, loop docs S588 · torah, name_tags, …[full text: IMPROVEMENT_ARCHIVE.md]
+- **Snapshot S594 (2026-11-01):** generator, dictionary, locales, sw.js, loop docs S594 · fontmaker, name_tags, dashboard, sw.js, scripts/loop, loop docs S593 · generator, dashboard, torah, dictionary, flash, db/functions/delete-account, smoke-sync, locales, sw.js, scripts/loop, loop docs S592 · trope, dictionary, index, sw.js, scripts/loop, loop docs S591 · resources, generator, dashboard, sw.js, scripts/loop, loop docs S590 · torah, flash, dashboard, locales, sw.js, scripts/loop, loop docs S589 · flash, dashboard, fontmaker, locales, sw.js, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
 - `print-block-split-at-a-sheet-foot` | ACTIVE | owner G | det: scripts/loop/probes/S575-chrome-print-whole-blocks.mjs | last S575 | streak 0
 
-- `focus-hidden-under-a-sticky-bar` | ACTIVE | owner C | det: recipe | last S569 | streak 0
+- `focus-hidden-under-a-sticky-bar` | ACTIVE | owner C | det: recipe | last S594 | streak 1
 
-- `hover-tip-not-dismissible-or-hoverable` | ACTIVE | owner C | det: recipe | last S567 | streak 0
+- `hover-tip-not-dismissible-or-hoverable` | ACTIVE | owner C | det: recipe | last S594 | streak 0
 
 - `tour-step-in-a-hidden-view` | ACTIVE | owner A | det: recipe | last S558 | streak 0
 
@@ -564,7 +568,7 @@ _(none)_
 
 - `defaults-filed-as-the-device's-own-at-first-sign-in` | ACTIVE | owner P | det: recipe | last S546 | streak 0 | hits 6
 
-- `selected-state-lost-in-forced-colors` | ACTIVE | owner C | det: recipe | last S571 | streak 0
+- `selected-state-lost-in-forced-colors` | ACTIVE | owner C | det: recipe | last S594 | streak 1
 
 - `live-region-shown-with-its-text` | ACTIVE | owner G | det: recipe | last S553 | streak 0
 
@@ -750,7 +754,7 @@ _(none)_
 
 - `light-literal-text-on-the-gold-token` | ACTIVE | owner A | det: recipe | last S399 | streak 0
 
-- `sub-floor touch target` | ACTIVE | owner E | det: recipe | last S553 | streak 0
+- `sub-floor touch target` | ACTIVE | owner E | det: recipe | last S594 | streak 0
 
 - `vh-capped-sheet-without-dvh-twin` | ACTIVE | owner A | det: recipe | last S385 | streak 1
 
@@ -766,7 +770,7 @@ _(none)_
 
 - `animation-outside-its-reduced-motion-block` | ACTIVE | owner A | det: recipe | last S357 | streak 2 | hits 0
 
-- `help-affordance-inside-a-label-forwards-its-tap` | ACTIVE | owner A | det: recipe | last S284 | streak 0
+- `help-affordance-inside-a-label-forwards-its-tap` | ACTIVE | owner A | det: recipe | last S594 | streak 0
 
 - `csv-cell-quoting-integrity` | ACTIVE | owner I | det: recipe | last S281 | streak 0
 
@@ -822,7 +826,7 @@ _(none)_
 
 - `rebuild-where-a-class-swap-would-do` | ACTIVE | owner A | det: recipe | last S220 | streak 0 | hits 1
 
-- `decorative-glyph-carrier-exposed-to-assistive-tech` | ACTIVE | owner A | det: recipe | last S593 | streak 0
+- `decorative-glyph-carrier-exposed-to-assistive-tech` | ACTIVE | owner A | det: recipe | last S594 | streak 0
 
 - `error-status-clobbered-by-a-later-routine-write` | DRAFT | owner A | det: none | last S411 | streak 0
 
@@ -902,7 +906,7 @@ _(none)_
 
 - K i18n / localization audit: 2026-10-21 (**S533 — 36th K, `db80feb4..843984b3` (111 commits; parsha_emojis' first): CSV +209 (all resolve), 12 reworded, 0 removed; static 5,502 refs + 2,974 fallback sites (the html arm, lapsed since S475); blind 0/4,328 lines; 102 states by the real switcher (twins = base + 5 known); retry 4/4; 10 surfaces by real input + a switch mid-state. FOUND 4, FIXED 4.**)
 
-- C accessibility (one tool): 2026-11-01 (**S591 — `trope_tutor.html` (first since S455): 4 cells × 4 tabs (names by the AX tree, composited contrast, 24px targets, Tab walks, `lang`), 27 melodies × Learn/Phrases at every chip (`?preview=traditions`), every control pressed by its key, the drill by keyboard in 5 melody kinds, tour, tips, playing states, reduced motion, 1.4.12 spacing and 320px …[full text: IMPROVEMENT_ARCHIVE.md]
+- C accessibility (one tool): 2026-11-01 (**S594 — `hebrew_blend_generator.html` (first since S469): 4 cells × 12 states (AX names, contrast, targets, `lang`), Tab walks, forced colours, motion, 1.4.12, keys, the ? bubbles. FOUND 7: 2 FIXED + 2 dictionary, 3 logged. C-next: chrome (S483), dashboard (S499).**)
 
 - A recurring-pattern sweep: 2026-10-31 (**S581 — 42nd A, scoped to the outside-loop reading-assignments landing (`a7fa5f1..aab737c`, 18 of its 53 commits; `reading_assignments.html`, `js/ivrit-assignments.js`, the Trainer's +838): the security arms (no `innerHTML`, reviver-safe parses, URL sinks, an anonymous Trainer loads no assignments module), then two catalog recipes committed as detectors …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -926,5 +930,5 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-22 (**S542 — 40th F, loading states (first since S189): 14 surfaces held, then aborted. FOUND 7, FIXED 4. F-next: long-build progress.**)
 
-**Next session (S594):** **Branch `claude/amazing-gauss-gli685` (S588–S593, PR #386): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1195**, FM **5.59**, corpus ?v=7. ⚑ drift: main=697d533 sw=v1195 fm=5.59 migration=0009_assignment_enrolment.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest now: C generator (S469), N fontmaker (S476), P chrome (S477), G trope (S479), D trope (S480), H torah (S482), M chrome (S494); suite E (S531), L (S532), K (S533). ⚑ The signed-in reading-assignments UI still wants its first P and H. ⚑ The FM engine mirrors by curl (`g593/lib.mjs`). ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
-⚑ Sync P2 (S573). ⚑ The account page signed in is unprinted (`--sdk`): the next G or P on the chrome. ⚑ Gate 4 to propose: the generator's blend sheets on a phone. ⚑ smoke-sync D31 flake (again S592; alone 3/3). ⚑ Ports at the next A: `m554/`–`g593/`; traps 352, 356–477. ⚑ Queues: generator 25, FM 21, torah 13, dictionary 10, dashboard 7; the rest ≤ 6.
+**Next session (S595):** **Branch `claude/amazing-gauss-gli685` (S588–S594, PR #386): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1199**, FM **5.59**, corpus ?v=7. ⚑ drift: main=697d533 sw=v1199 fm=5.59 migration=0009_assignment_enrolment.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest now: N fontmaker (S476), P chrome (S477), G trope (S479), D trope (S480), H torah (S482), C chrome (S483), M chrome (S494); suite E (S531), L (S532), K (S533). ⚑ The signed-in reading-assignments UI still wants its first P and H. ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
+⚑ Sync P2 (S573). ⚑ The account page signed in is unprinted (`--sdk`): the next G or P on the chrome. ⚑ Gate 4 to propose: the generator's blend sheets on a phone. ⚑ smoke-sync D31 flake (again S592; alone 3/3). ⚑ Ports at the next A: `m554/`–`c594/`; traps 352, 356–480. ⚑ Queues: generator 26, FM 21, torah 13, dictionary 10, dashboard 7; the rest ≤ 6.
