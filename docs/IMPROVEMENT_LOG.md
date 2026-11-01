@@ -446,7 +446,7 @@ _(none)_
 
 - [x] 2026-11-01 | `876c221b` | generator, dashboard, torah, dictionary, flash, locales, sw.js | (S592 P, gate 2 answered; pattern account-wide-delete-confirm-without-signed-in-wording) **Signed in, Reset vowel colors says it resets them on every device.** | 20 presses (EN light 1280 / HE dark 800 × signed out / in): 20/20 (HEAD fails the 10 signed in); smoke-tools 220/220
 
-- [x] 2026-11-01 | `7157c391` | classroom_dashboard.html, torah_trainer.html, locales, sw.js | (S592, the maintainer's ask; pattern account-wide-delete-confirm-without-signed-in-wording) **Signed in, the dashboard's text-size, intermission, clear-day and remove-period confirms and the Trainer's two trope-colour resets say the change reaches every device.** | 24 real presses (EN light 1280 / HE dark 800 × out / in): 24/24; the tree before fails the 12 signed in; smoke-tools 220/220
+- [x] 2026-11-01 | `7157c391` | classroom_dashboard.html, torah_trainer.html, locales, sw.js | (S592, the maintainer's ask; pattern account-wide-delete-confirm-without-signed-in-wording) **Signed in, six more resets (dashboard ×4, trope colours ×2) say they reach every device.** | 24 real presses: 24/24 (the tree before fails the 12 signed in); smoke-tools 220/220
 
 - [x] 2026-11-01 | (live) | manage-students | (S592, the maintainer's in-session ask) **The two localhost origins removed: version 8, JWT check on, read back identical** (live v7 had matched the repo first); a live preflight answers the two real origins only. | preflights × 4 origins; Node CORS check new vs v7
 
