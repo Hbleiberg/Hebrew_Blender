@@ -21,7 +21,7 @@
 // Where this lives and how it is deployed: db/README.md ("Edge Functions").
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2';
 
-const ALLOWED_ORIGINS = ['https://ivritsuite.com', 'https://www.ivritsuite.com', 'http://localhost:8080', 'http://127.0.0.1:8080'];
+const ALLOWED_ORIGINS = ['https://ivritsuite.com', 'https://www.ivritsuite.com'];
 const BUCKETS = ['font-projects', 'font-sources', 'font-exports'];
 const PAGE = 100;
 
