@@ -557,6 +557,7 @@ body.dark .hi-sun{display:inline-block;}
   }
   .panel-title::after {
     content: '▾';
+    content: '▾' / '';   /* drawn, not read: the panel's name is its title */
     font-size: 1rem;
     color: var(--gold-light);
     transition: transform 0.2s;
@@ -1725,7 +1726,7 @@ body.dark .hi-sun{display:inline-block;}
     cursor: pointer; user-select: none; margin-bottom: 5px;
   }
   .rw-section-header::before {
-    content: '▾'; font-size: 0.85rem; color: var(--gold-light);
+    content: '▾'; content: '▾' / ''; font-size: 0.85rem; color: var(--gold-light);
     transition: transform 0.2s; flex-shrink: 0;
   }
   .rw-section.collapsed .rw-section-header::before { transform: rotate(-90deg); }
@@ -4631,6 +4632,7 @@ function initVowels() {
       const arrow = document.createElement('span');
       arrow.className = 'vg-arrow';
       arrow.textContent = '▾';
+      arrow.setAttribute('aria-hidden', 'true');   // drawn, not read: the header's name is its sound (pattern decorative-glyph-carrier-exposed-to-assistive-tech)
       arrow.style.cssText = 'font-size:0.75rem;transition:transform 0.2s;';
       header.appendChild(hdrText);
       header.appendChild(arrow);
