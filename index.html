@@ -409,6 +409,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
      rule is the same on every one, so a future page copies one line, not a judgement call. */
   header .hright { display: none !important; }
   .wn-pop { display: none !important; }   /* a position:fixed box repeats on every printed sheet */
+  .bookmark-btn, button.ie-btn { display: none !important; }   /* Bookmark and Import / Export do nothing on paper (the Contact link keeps its name) */
 }
 /* High Contrast (forced colours) paints both Backup mode buttons Canvas on CanvasText, so the pressed Automatic / Manual
    read exactly like each other (pattern selected-state-lost-in-forced-colors, S548). System colours are kept in that mode,
