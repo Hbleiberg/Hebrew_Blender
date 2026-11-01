@@ -19195,7 +19195,10 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
     const addPair = (t, name) => {
       const pr = metegPairFor(t);
       if (!pr) return;
-      const k = pr.dv + ',' + pr.dm;
+      // The key carries the right-side pair too: two vowels whose left pair rounds alike can round apart on the
+      // right (BenOr Rashi's qamats: 117, its group's representative 118), and the group's one MR value is its rep's.
+      const rr = builtMetegForms.right ? metegPairRightFor(t) : null;
+      const k = pr.dv + ',' + pr.dm + (rr ? ',' + rr.dv + ',' + rr.dm : '');
       if (!pairGroups.has(k)) pairGroups.set(k, { names: [], rep: t });
       pairGroups.get(k).names.push(name);
     };
@@ -19214,8 +19217,8 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
         pairRules += `  pos [${g.names.join(' ')}]' lookup NIK_METEG_V_${gi} [${meteg}];\n`;
         pairRules += `  pos [${g.names.join(' ')}] [${meteg}]' lookup NIK_METEG_M_${gi};\n`;
         // The CGJ right-side form (v5.36): <uniE0B1, vowel> — the meteg glyph precedes its vowel in
-        // the stream, mirrored values RECOMPUTED per group (same (dv,dm) partition implies the same
-        // (W,cx), so the group's representative stands for every member; the cx terms don't negate).
+        // the stream, mirrored values RECOMPUTED per group (the key holds both pairs, so the group's
+        // representative stands for every member; the cx terms don't negate).
         if (rightNm) {
           const rr = metegPairRightFor(g.rep);
           if (rr) {
