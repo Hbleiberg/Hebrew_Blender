@@ -2202,8 +2202,8 @@ function openSubmitFont(pf) {
 
 <div id="fontToast" role="status" aria-live="polite"></div>
 
-<!-- hCaptcha (explicit render so it works inside the popup; recaptchacompat off so Web3Forms treats it as free hCaptcha, not Pro reCaptcha) -->
-<script src="https://js.hcaptcha.com/1/api.js?render=explicit&recaptchacompat=off" async defer></script>
+<!-- hCaptcha (explicit render so it works inside the popup; recaptchacompat off so Web3Forms treats it as free hCaptcha,
+     not Pro reCaptcha) loads on the Suggest window's first opening, from loadCaptchaApi() below -->
 <script>
 (function(){
   const HCAPTCHA_SITEKEY = '50b2fe65-b00b-4b9e-ad62-3ba471098be2'; // Web3Forms shared free key
@@ -2235,7 +2235,21 @@ function openSubmitFont(pf) {
   // as long as the tab is open. The counter resets on each opening, so a network that comes back
   // still gets a fresh 6 seconds the next time the teacher tries.
   let hcTries = 0;
-  const HC_MAX_TRIES = 20;   // × 300ms = 6s, and the script is async-defer so it is normally there already
+  const HC_MAX_TRIES = 20;   // × 300ms = 6s from the opening that asked for the script
+  // The script (~416 KB, and a logo fetch from hCaptcha on arrival) serves this window alone, so it loads on the window's
+  // first opening, not with the page: a visit that suggests nothing never contacts hCaptcha, as the privacy page says
+  // ("used only if you send…"), and the page's own script time is not multiplied by ten. A failed load is not kept
+  // (the next opening asks again); one that lands after the 6 s of retries still renders while the window is open.
+  let hcScript = null;
+  function loadCaptchaApi(){
+    if (window.hcaptcha || hcScript) return;
+    hcScript = document.createElement('script');
+    hcScript.src = 'https://js.hcaptcha.com/1/api.js?render=explicit&recaptchacompat=off';
+    hcScript.async = true;
+    hcScript.onload = function(){ if (backdrop.classList.contains('open')) ensureCaptcha(); };
+    hcScript.onerror = function(){ hcScript.remove(); hcScript = null; };
+    document.head.appendChild(hcScript);
+  }
   function ensureCaptcha(){
     const box = document.getElementById('sgHcaptcha');
     if (hcId !== null || !box || box.querySelector('iframe')) return;
@@ -2271,7 +2285,7 @@ function openSubmitFont(pf) {
   window.openSuggestModal = function(){
     hcTries = 0;
     if (!form.querySelector('button[type="submit"]').disabled){ statusEl.textContent = ''; statusEl.style.color = ''; }
-    sgDialogOpen('sgBackdrop', '.sg-modal-close'); ensureCaptcha();
+    sgDialogOpen('sgBackdrop', '.sg-modal-close'); loadCaptchaApi(); ensureCaptcha();
   };
   window.closeSuggestModal = function(e){ if (e && e.target !== backdrop) return; sgDialogClose('sgBackdrop'); };
 
