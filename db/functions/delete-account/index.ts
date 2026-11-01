@@ -101,13 +101,18 @@ Deno.serve(async (req: Request) => {
       }
       deleted.files += paths.length;
     }
-    // 3. The teacher's student accounts (their rows cascade with each one).
-    for (let offset = 0; ; offset += PAGE) {
-      const { data: kids, error: kErr } = await admin.from('students').select('id').eq('teacher_id', uid).order('id').range(offset, offset + PAGE - 1);
+    // 3. The teacher's student accounts (their rows cascade with each one). Every pass reads from the start: a
+    //    deleted student's row leaves the list, so stepping an offset skipped the next hundred (a teacher with
+    //    150 logins kept 50). A row seen again after its deletion stops the call rather than looping.
+    const gone = new Set<string>();
+    for (;;) {
+      const { data: kids, error: kErr } = await admin.from('students').select('id').eq('teacher_id', uid).order('id').range(0, PAGE - 1);
       if (kErr) throw kErr;
       for (const k of kids ?? []) {
+        if (gone.has(k.id)) throw new Error('a student row outlived its deletion');
         const { error: dErr } = await admin.auth.admin.deleteUser(k.id);
         if (dErr) throw dErr;
+        gone.add(k.id);
         deleted.students++;
       }
       if (!kids || kids.length < PAGE) break;
