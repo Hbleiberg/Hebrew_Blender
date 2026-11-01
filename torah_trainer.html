@@ -9069,7 +9069,8 @@ function initTropeColorPickers() {
 // Reset is the list on show's: the family colors by phrase, the mark colors (and every mark colored again) by mark.
 function resetTropeColors() {
   const byMark = tropeColorByKey() === 'mark';
-  if (!confirm(I18n.t(byMark ? 'torah.confirm.reset_trope_mark_colors' : 'torah.confirm.reset_trope_colors'))) return;
+  const signedIn = !!(window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession());   // the trope colours travel with the account: signed in, the reset reaches every device
+  if (!confirm(I18n.t(byMark ? (signedIn ? 'torah.confirm.reset_trope_mark_colors_cloud' : 'torah.confirm.reset_trope_mark_colors') : (signedIn ? 'torah.confirm.reset_trope_colors_cloud' : 'torah.confirm.reset_trope_colors')))) return;
   if (byMark) { settings.tropeMarkColors = {}; settings.tropeMarksOff = []; }
   else settings.tropeColorOverrides = {};
   initTropeColorPickers();

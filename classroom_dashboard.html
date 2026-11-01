@@ -4420,7 +4420,7 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
   }
 
   function resetAllTextSizes() {
-    if (!confirm(I18n.t('dashboard.display.reset_all_text_sizes_confirm'))) return;
+    if (!confirm(I18n.t((window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession()) ? 'dashboard.display.reset_all_text_sizes_confirm_cloud' : 'dashboard.display.reset_all_text_sizes_confirm'))) return;
     setEngDateSize(1.35);
     setHebDateSize(2.6);
     setTimeSize(3.4);
@@ -9828,7 +9828,7 @@ else ivritInit();
     const week = settings.scheduleWeek;
     if (!week || !week.periods[p]) return;
     const hasAssignments = weekAllCells(week).some(c => WEEK_KEYS.some(d => c[d][p]));
-    if (hasAssignments && !confirm(I18n.t('dashboard.schedule.remove_period_confirm', { n: p + 1 }))) return;
+    if (hasAssignments && !confirm(I18n.t((window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession()) ? 'dashboard.schedule.remove_period_confirm_cloud' : 'dashboard.schedule.remove_period_confirm', { n: p + 1 }))) return;
     week.periods.splice(p, 1);
     weekAllCells(week).forEach(c => WEEK_KEYS.forEach(d => c[d].splice(p, 1)));
     weekChanged();
@@ -10071,7 +10071,7 @@ else ivritInit();
     if (!week) return;
     const cells = weekCellsAt(week, _swmWeekIdx);
     if (cells[WEEK_KEYS[d]].some(Boolean) &&
-        !confirm(I18n.t('dashboard.schedule.clear_day_confirm', { day: dayName(d) }))) return;
+        !confirm(I18n.t((window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession()) ? 'dashboard.schedule.clear_day_confirm_cloud' : 'dashboard.schedule.clear_day_confirm', { day: dayName(d) }))) return;
     cells[WEEK_KEYS[d]] = cells[WEEK_KEYS[d]].map(() => null);
     weekChanged();
   }
@@ -12095,7 +12095,7 @@ async function onUploadEngFontPick(input){
   function editIntermissionFromDrawer() { setIntermission(true); enterIntermissionEdit(); }
   function resetIntermissionWords() {
     if (!intermissionCustomHTML()) return;
-    if (!confirm(I18n.t('dashboard.intermission.reset_confirm'))) return;
+    if (!confirm(I18n.t((window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession()) ? 'dashboard.intermission.reset_confirm_cloud' : 'dashboard.intermission.reset_confirm'))) return;
     settings.intermissionHTML = '';
     saveSettingsToStorage();
     renderIntermission();

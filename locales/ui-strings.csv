@@ -244,6 +244,7 @@ dashboard.display.location_placeholder,"City, e.g. New York","עיר, למשל N
 dashboard.display.location_update,Update,עדכן,location update button,
 dashboard.display.reset_all_text_sizes,Reset all text sizes,אפס את כל גדלי הטקסט,settings button,leading-emoji
 dashboard.display.reset_all_text_sizes_confirm,Reset all text sizes to defaults?,לאפס את כל גדלי הטקסט לברירות המחדל?,confirm dialog,
+dashboard.display.reset_all_text_sizes_confirm_cloud,"Reset all text sizes to defaults? You are signed in, so your text sizes are reset on every device.","לאפס את כל גדלי הטקסט לברירות המחדל? אתם מחוברים, ולכן גדלי הטקסט יתאפסו בכל מכשיר.",confirm dialog while signed in (the change reaches the account and every device),REVIEW: HE draft
 dashboard.display.show_text_size_options,Show text size options,הצג אפשרויות גודל טקסט,settings label,
 dashboard.display.show_video_embed,Show video embed,הצג הטמעת וידאו,settings label,
 dashboard.display.wake_dot,Screen will stay awake,המסך יישאר פעיל,wake-lock indicator (title+aria),
@@ -455,6 +456,7 @@ dashboard.schedule.cell_aria,"{day}, {start}–{end}: {assignment}","{day}, {sta
 dashboard.schedule.chip_color_aria,Change color for {name},שינוי צבע עבור {name},weekly palette swatch input,aria-label only; mixed UI+content — do not translate {…}
 dashboard.schedule.clear_day,Clear {day},נקה את {day},weekly day menu action,do not translate {…}
 dashboard.schedule.clear_day_confirm,Clear all of {day}'s assignments?,לנקות את כל השיבוצים של {day}?,confirm dialog,do not translate {…}
+dashboard.schedule.clear_day_confirm_cloud,"Clear all of {day}'s assignments? You are signed in, so they are cleared on every device.","לנקות את כל השיבוצים של {day}? אתם מחוברים, ולכן הם יימחקו בכל מכשיר.",confirm dialog while signed in (the change reaches the account and every device),REVIEW: HE draft; do not translate {…}
 dashboard.schedule.copy_day_all,Copy to all weekdays,העתק לכל ימי החול,weekly day menu action copying the column to Mon–Fri,
 dashboard.schedule.copy_to_day,Copy to {day},העתק אל {day},weekly day menu action,do not translate {…}
 dashboard.schedule.countdown_next_generic,Next class in {time},השיעור הבא בעוד {time},countdown line,
@@ -524,6 +526,7 @@ dashboard.schedule.preview_hint_week,No classes assigned yet — open Set up Sch
 dashboard.schedule.remove,Remove,הסר,weekly grid remove-period button title,
 dashboard.schedule.remove_period_aria,Remove period {n},הסר שיעור {n},weekly grid remove-period button,aria-label only
 dashboard.schedule.remove_period_confirm,Remove period {n}? Its class assignments will be cleared.,להסיר את שיעור {n}? שיבוצי הכיתות שלו יימחקו.,confirm dialog,
+dashboard.schedule.remove_period_confirm_cloud,"Remove period {n}? Its class assignments will be cleared. You are signed in, so this happens on every device.","להסיר את שיעור {n}? שיבוצי הכיתות שלו יימחקו. אתם מחוברים, ולכן השינוי יחול בכל מכשיר.",confirm dialog while signed in (the change reaches the account and every device),REVIEW: HE draft
 dashboard.schedule.save_as,Save Schedule As…,שמור מערכת שעות בשם…,settings button,
 dashboard.schedule.save_empty,Add at least one schedule entry first.,הוסיפו תחילה לפחות רשומה אחת למערכת השעות.,inline save note when the week has no periods,
 dashboard.schedule.save_name_empty,Enter a name first.,הזינו שם תחילה.,inline save note for a blank name,
@@ -4117,7 +4120,9 @@ torah.color.trope_marks_none,Color none,ביטול כל הצביעה,button: unc
 torah.confirm.reset_all,Reset all Torah Trainer settings to defaults?,לאפס את כל הגדרות מאמן התורה לברירת המחדל?,confirm dialog,
 torah.confirm.reset_all_cloud,"Reset all Torah Trainer settings to defaults? You are signed in, so the reset is saved to your account and applies on every device.","לאפס את כל הגדרות מאמן התורה לברירת המחדל? אתם מחוברים, ולכן האיפוס נשמר בחשבון וחל בכל מכשיר.",confirm() before Reset all settings while signed in,
 torah.confirm.reset_trope_mark_colors,Are you sure? This resets your trope colors to the defaults and colors every trope again.,האם אתם בטוחים? פעולה זו מאפסת את צבעי הטעמים לברירת המחדל וצובעת שוב את כל הטעמים.,confirm dialog: Reset while coloring by individual trope,
+torah.confirm.reset_trope_mark_colors_cloud,"Are you sure? This resets your trope colors to the defaults and colors every trope again. You are signed in, so your colors are reset on every device.","האם אתם בטוחים? פעולה זו מאפסת את צבעי הטעמים לברירת המחדל וצובעת שוב את כל הטעמים. אתם מחוברים, ולכן הצבעים יתאפסו בכל מכשיר.",confirm dialog: Reset while coloring by individual trope while signed in (the change reaches the account and every device),REVIEW: HE draft
 torah.confirm.reset_trope_colors,Are you sure? This resets your custom trope-family colors to the defaults.,האם אתם בטוחים? פעולה זו מאפסת את צבעי משפחות הטעמים המותאמים אישית שלכם לברירת המחדל.,confirm dialog,
+torah.confirm.reset_trope_colors_cloud,"Are you sure? This resets your custom trope-family colors to the defaults. You are signed in, so your colors are reset on every device.","האם אתם בטוחים? פעולה זו מאפסת את צבעי משפחות הטעמים המותאמים אישית שלכם לברירת המחדל. אתם מחוברים, ולכן הצבעים יתאפסו בכל מכשיר.",confirm dialog while signed in (the change reaches the account and every device),REVIEW: HE draft
 torah.confirm.reset_vowel_colors,Are you sure? This resets your custom vowel colors for both the Default and TaL AM schemes.,האם אתם בטוחים? פעולה זו מאפסת את צבעי התנועות המותאמים אישית שלכם עבור ערכות ברירת המחדל ותל-עם כאחד.,confirm dialog,
 torah.confirm.reset_vowel_colors_cloud,"Are you sure? This resets your custom vowel colors for both the Default and TaL AM schemes. You are signed in, so your colors are reset on every device.","האם אתם בטוחים? פעולה זו מאפסת את צבעי התנועות המותאמים אישית שלכם עבור ערכות ברירת המחדל ותל-עם כאחד. אתם מחוברים, ולכן הצבעים יתאפסו בכל מכשיר.",confirm dialog while signed in (the reset reaches the account and every device),REVIEW: HE draft
 torah.controls.print_title,Print this reading for students,הדפיסו את הקריאה עבור התלמידים,title of the Share tab's Print this reading button,
@@ -6173,6 +6178,7 @@ dashboard.intermission.show,Show screen,הצגת המסך,settings drawer button
 dashboard.intermission.edit_on_screen,Edit on the screen,עריכה על המסך,settings drawer button: opens the sheet straight into its in-place editor (the drawer has its own editor above),svg-icon-in-markup
 dashboard.intermission.reset,Use the default word,חזרה למילת ברירת המחדל,settings drawer button: drops the teacher's words so the sheet shows the default word again (disabled while it already does),svg-icon-in-markup
 dashboard.intermission.reset_confirm,Replace your intermission words with the default word?,להחליף את מילות ההפסקה שלכם במילת ברירת המחדל?,confirm() before dropping the teacher's Intermission words,
+dashboard.intermission.reset_confirm_cloud,"Replace your intermission words with the default word? You are signed in, so they are replaced on every device.","להחליף את מילות ההפסקה שלכם במילת ברירת המחדל? אתם מחוברים, ולכן הן יוחלפו בכל מכשיר.",confirm() before dropping the teacher's Intermission words while signed in (the change reaches the account and every device),REVIEW: HE draft
 dashboard.blackout.hint,"Tap, or press any key, to return","הקישו, או לחצו על מקש כלשהו, כדי לחזור",Dim hint shown on the blackout overlay and the Intermission screen themselves (any key returns — the wake guard),
 fontmaker.panels.letter_multi_hint,Pick or drop several at once — the rest fill the next empty letters (a file named <b>alef</b> or <b>05D0</b> goes straight to that letter).,אפשר לבחור או לשחרר כמה בבת אחת — השאר ימלאו את האותיות הריקות הבאות (קובץ בשם <b>alef</b> או <b>05D0</b> יגיע ישירות לאות ההיא).,hint under the Individual-pictures drop zone,contains <b> markup; REVIEW: machine-drafted HE — confirm
 fontmaker.status.upload_no_room,Every letter already has a picture or an outline — open one letter and drop a single photo onto it to replace what is there.,לכל אות כבר יש תמונה או קו מתאר — פתחו אות אחת ושחררו עליה תמונה בודדת כדי להחליף את מה שיש.,toast,REVIEW: machine-drafted HE — confirm

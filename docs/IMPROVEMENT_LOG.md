@@ -14,8 +14,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P2 (**NEW S559 H — verify first**) | Hebrew_Font_Maker.html | **5 of 132 untouched starting fonts fail the export's shaping check**: "Right-meteg check failed … expected -49/166, got -49/167" (BenOr Rashi; Miriam CLM 178/169, Shuneet Square 125/150, Shuneet Classic 97/122) and "Hataf Patach + ZWJ + meteg did not compose" (Rommvilna), so a first export says "vowels/trop may be misplaced". …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] P3 (**NEW S592 P — gate 2, the twin of `876c221b`**) | torah_trainer.html (+ classroom_dashboard.html) | **Signed in, the Trainer's trope-colour reset (both modes) and the dashboard's text-size, intermission, clear-day and remove-period confirms name no account-wide effect** (fields that travel). | found S592
-
 - [ ] P3 (**NEW S580 C — design call**) | trope_atlas.html | **The melody table is 594 tab stops (one sing button per figure)**: a keyboard user crosses the whole table to reach the phrase section; a roving tabindex (one stop per row, arrows between) or a skip past the table would fix it. | found S580
 
 - [ ] P3 (**NEW S574 M — verify paper first**) | hebrew_blend_generator.html | **The crossword's grid is never cropped to its words**: a 10-word puzzle in a 12×12 black square (~70% black). | found S574
@@ -447,6 +445,8 @@ _(none)_
 - [x] 2026-11-01 | (S592 close-out) | branch/deploy note | **S592 = P on the generator (first since S463): FOUND 5: 2 FIXED (one needs a redeploy), 1 gate 2 answered and FIXED on five tools, 2 logged; + the S575 detector re-trued from the queue; FIXED 4. Same branch `claude/amazing-gauss-gli685` (PR #386, still open), sw v1189; deploy on merge; delete-account needs the maintainer's redeploy. …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-11-01 | `876c221b` | generator, dashboard, torah, dictionary, flash, locales, sw.js | (S592 P, gate 2 answered; pattern account-wide-delete-confirm-without-signed-in-wording) **Signed in, Reset vowel colors says it resets them on every device.** | 20 presses (EN light 1280 / HE dark 800 × signed out / in): 20/20 (HEAD fails the 10 signed in); smoke-tools 220/220
+
+- [x] 2026-11-01 | (next commit) | classroom_dashboard.html, torah_trainer.html, locales, sw.js | (S592, the maintainer's ask; pattern account-wide-delete-confirm-without-signed-in-wording) **Signed in, the dashboard's text-size, intermission, clear-day and remove-period confirms and the Trainer's two trope-colour resets say the change reaches every device.** | 24 real presses (EN light 1280 / HE dark 800 × out / in): 24/24; the tree before fails the 12 signed in; smoke-tools 220/220
 
 - [x] 2026-11-01 | (live) | manage-students | (S592, the maintainer's in-session ask) **The two localhost origins removed: version 8, JWT check on, read back identical** (live v7 had matched the repo first); a live preflight answers the two real origins only. | preflights × 4 origins; Node CORS check new vs v7
 
