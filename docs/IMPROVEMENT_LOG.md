@@ -46,8 +46,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW S570 D — not small: yield per verse or a worker**) | torah_trainer.html | **Turning Translit on freezes the page for the reading's first transliteration pass**: one task of 520 ms @1× / 2.45 s @4× on Vayera (2,085 words; the Trope staff 447 / 2,691), and a cold load with Translit on 536–582 / 2,751–2,948 — the library's syllabification; the memos spare only re-renders (findings …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] P3 (**NEW S566 H — gate 2, what a saved score means**) | flash_cards.html | **The progress report and the history count unreached cards as attempted**: 3 of 3 answered before a 30 s limit ran out reads "20 cards attempted · 15% accuracy · 15% best drill" on the parent report and "15% 3/20" in the history, where the results screen said 100% (3/3). The saved `total`/`pct` are deck-wide on …[full text: IMPROVEMENT_ARCHIVE.md]
-
 - [ ] P3 (**NEW S565 D — the intake half is gate 2**) | Hebrew_Font_Maker.html | **The Trace step still freezes 1.5–1.9 s on a 12 MP phone photo** (3.1–3.3 s before `6ef102d`; 16 s @4×): `flatCanvasFor` flattens the whole 3024×4032 photo (decode + `getImageData` ~1 s, the blur 0.55 s). Keeping intake photos near 2,000 px (`prepImageForItem`) would cut it ~4× and shrink every snapshot and file — a …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P3 (**NEW S563 G — gate 3, the sheet's layout**) | hebrew_blend_generator.html | **Name the Letter with QR Answer Key prints the code alone on page 2** (Letter and A4, 4/4 cells; Export PDF fits it): the 40-letter sheet is 977 of the page's 989 px and the QR block needs 109, so every student copy costs an extra sheet and loses its code. No small fix keeps both: tighter cells in print when …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -63,6 +61,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P3 (**NEW 2026-09-26**) | trope_tutor.html (trope_index.json) | **8 Learn example clips sit where PocketTorah's taps slip by a word** (`build-trope-phrases.mjs` TIMING_SLIPS), so each likely plays a neighbouring word; the index builder could skip those verses. **S454: not small** (findings S454). | found 2026-09-26
 
 - [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
+
+- [ ] P4 (**NEW S596 P — the "only if they have students" half of gate 2**) | account.html | **The account page lists and downloads none of a teacher's reading-assignment data** (classes, student logins, assignments, recordings): the listing and the .zip cover saves and Font Maker projects only; counting them needs `js/ivrit-assignments.js` on that page (CLAUDE.md accounts rule 2 names its …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S595 N**) | Hebrew_Font_Maker.html | **A window opened mid-tour opens under the tour's card**: on a phone the card covers its Close (the card's ✕ still ends the tour). | found S595
 
@@ -86,8 +86,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S584 M — verify on a real device**) | trope_atlas.html | **The sof pasuk mark (׃) in the sign table's role text has zero advance in headless Chromium on Linux** ("the two dots ׃ close" draws as "dots :close"): the cell's stack is `"Source Sans 3", sans-serif`, no Hebrew face; check a Mac / iPhone before wrapping ׃ and ׀ in a Hebrew-font span (the strings are i18n). | found S584
 
-- [ ] P4 (**NEW S578 P — not reachable today**) | index.html | **Erase All's bounded flush names 7 of the 10 synced tools** (not Letter Learner, Emoji Torah, Name Tags): a hub write to those within 2 s of the last confirm stays unsent; two dialogs outlast the debounce. Use the module's list when next touched. | found S578
-
 - [ ] P4 (**NEW S576 D**) | classroom_dashboard.html | **Bulk preset edit's Save over 40 changed presets is one 203 ms task @4×** (unprofiled). | found S576
 
 - [ ] P4 (**NEW S575 G — pattern `print-block-split-at-a-sheet-foot`; whole cards cost a sheet here; S591: its dead buttons FIXED `61d3a8ab` — re-measure the sheets**) | index.html | **Printed, the hub cuts a tool card across sheets (EN Letter, HE A4)**; whole cards alone added a footer-only sheet (EN Letter). | found S575
@@ -102,7 +100,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S574 M — component consistency**) | hebrew_blend_generator.html | **The Advanced panel's TTS speed box is not a sub-panel** like its five navy-bar neighbours. | found S574
 
-- [ ] P4 (**NEW S573 P**) | scripts/smoke-sync.mjs | **D31 (the Trope merge after a button sign-out) failed the first full run in S567 and in S573** ("neither side merged") and passed alone and in every re-run: a timing race left in the scenario or the module. | found S573
+- [ ] P4 (**NEW S573 P; S596: alone 1 of 3 green**) | scripts/smoke-sync.mjs, js/ivrit-saves.js | **D31 (the Trope merge after a button sign-out) fails more often**: the S596 full run red and alone 1 of 3 green (S592: alone 3/3), always "neither side merged" with `settled` true — the shape of the S567 P2 above (a page write after the hydration planned is not sent; the Trope Learn tab saves on its …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S572 N — pattern `horizontal-overflow-at-narrow-widths`**) | hebrew_blend_generator.html | **On an iPhone SE Real Words Bingo's caller list and Word Search's grid scroll sideways** (82 / 73 px). | found S572
 
@@ -113,8 +111,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S570 D**) | torah_trainer.html | **init's synchronous work before the Sefaria request grew ~120 ms @4× since S424**: `wireSettingsForm` 55–64 ms (4–5 then: two `lookupRender` for the closed Calendar tab, ~25 each), `staffInitWatchers`' `document.fonts.ready` read forces a style + layout (30), `buildHolidayPicker` 13–15 (findings S570). | found S570
 
 - [ ] P4 (**NEW S569 G — gate 2, copy on paper**) | flash_cards.html | **Every card-sheet page is headed with the button's label** — "Print card sheet 1 / 3", "הדפיסו דף כרטיסים 1 / 3" (`flashcards.sheet.button` reused by `printCardSheet`): an instruction printed on the artifact; a noun ("Flash cards", "כרטיסיות") would read as a title. | found S569
-
-- [ ] P4 (**NEW S569 G — K, gate 2**) | flash_cards.html | **The progress report's Score column reads "ניקוד" in Hebrew** — in a reading tool the word for vowel points; "ציון" is the score (`flashcards.report.col_score`). | found S569
 
 - [ ] P4 (**NEW S568 M**) | torah_trainer.html | **At Hebrew size ≥ 2.5rem the trope clause line meets the Latin under each word, reading and staff alike** (−0.7 → −3.4 px at 2.5 → 3.5rem): the Latin's 0.4em margin is the Latin's em, the line's 0.68em offset the Hebrew's; `padding-block-end:0.18em` on `.tt-wh` keeps the default and holds at every size. | found S568
 
@@ -442,11 +438,23 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW S546 P — a shared-module rule, the maintainer's call before a loop fix**) | js/ivrit-saves.js (flash_cards, torah_trainer, trope_tutor, classroom_dashboard, index) | **A brand-new device's first sign-in says "Your account's … settings replaced the ones this device had before you signed in" and offers a download of nothing but the page's defaults** on those five pages (each writes …[full text: IMPROVEMENT_ARCHIVE.md]
 
+- [ ] P4 (**NEW S596 P — backend boundary: a drafted migration, applied by the maintainer**) | db/migrations (0008's tables) | **The performance advisor flags 12 lints on the assignment tables**: 4 foreign keys without a covering index (`assignments.class_id`, `feedback.teacher_id`, `students.class_id`, `submissions.student_id`), `code_attempts` without a primary key, 7 tables with two permissive …[full text: IMPROVEMENT_ARCHIVE.md]
+
 ## In progress
 
 _(none)_
 
 ## Done
+
+- [x] 2026-11-01 | (S596 close-out) | branch/deploy note | **S596 = P on the chrome pages (first since S477): FOUND 4, FIXED 2 + 2 Flash Cards from the queue (S578's flush P4 struck by `eb031296`). PR #386 open, sw v1207; deploy on merge.** Two gate 2 questions asked and answered; no live action.
+
+- [x] 2026-11-01 | `512d1617` | locales, sw.js | (S596 queue; gate 2) **Flash Cards' Hebrew report heads its score column ציון, not ניקוד.** | report header by real clicks, 4 cells
+
+- [x] 2026-11-01 | `22c44d48` | flash_cards.html, locales, sw.js | (S596 queue S566; gate 2) **The history and the progress report count answered cards**: 3/3 before an early end reads 100% · 7 not reached (was ✗ 30% 3/10). | real drill + report × 4 cells; HEAD control
+
+- [x] 2026-11-01 | `eb031296` | index.html, sw.js | (S596 P; S578's P4) **Erase All flushes all ten synced tools before its last confirm.** | fix2.mjs 4/4 (HEAD 0/4); smoke-sync 11 + D33
+
+- [x] 2026-11-01 | `562a8b1f` | account.html, locales, sw.js | (S596 P; gate 2) **The delete step says reading assignments are not in the .zip and go with the account.** | fix1.mjs 4 cells; smoke-account-page 65/65
 
 - [x] 2026-11-01 | (S595 close-out) | branch/deploy note | **S595 = N on the Font Maker (first since S476): FOUND 5, FIXED 2 + 2 generator. PR #386 open, sw v1203; deploy on merge.** No gate or live action.
 
@@ -496,19 +504,11 @@ _(none)_
 
 - [x] 2026-11-01 | `77cc8eda` | hebrew_blend_generator.html, smoke-sync, docs, sw.js | (S592 P) **Start fresh, signed in, holds across the next load and on the teacher's other devices.** | smoke-sync D42 4/4 (HEAD 2/4); walk 21/21 (HEAD 18, planted 15); signed out 8 cells = HEAD; smoke-sync 227/228 (D31 flake, alone 3/3); migration 47/47
 
-- [x] 2026-11-01 | (S591 close-out) | branch/deploy note | **S591 = C on the Trope Tutor (first since S455): FOUND 3, FIXED 2 + 2 from the queue; FIXED 4. Same branch `claude/amazing-gauss-gli685` (PR #386, still open), sw v1187; deploy on merge. Gates: none asked.**
-
-- [x] 2026-11-01 | `61d3a8ab` | index.html, sw.js | (S591, queue S575 G) **A printed hub leaves out Bookmark and Import / Export.** | page.pdf × 8: the labels 0 (HEAD 8), other text word-for-word, 3 sheets = HEAD; screen identical
-
-- [x] 2026-11-01 | `3f63a49c` | trope_tutor.html, sw.js | (S591 C) **A Learn card note's Hebrew carries lang="he" in the English UI** (sof pasuk's ׃). | probe S591 note: 4/4 (HEAD 0/4); 16 notes' text = HEAD; pixel-identical
-
-- [x] 2026-11-01 | `97a77674` | hebrew_dictionary.html, sw.js | (S591, queue S571 C) **An inactive Export Selected Words dims only its two buttons, marked aria-disabled.** | probe S591 export: 4/4 (HEAD 0/4); count + note 2.12/2.38 → 5.81/5.58; live box pixel-identical
-
-- [x] 2026-11-01 | `14e06862` | trope_tutor.html, sw.js | (S591 C) **A drill choice's "choose again to answer" reads at AA in dark mode.** | 4.26 → 6.1:1; light and forced colours pixel-identical (the forced-colours control fired)
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-11-01 | **S596** | iters: 5 | tools: account, index, flash ×2, locales, sw | patterns fixed: — | pass run: P (chrome, first since S477) | SW: v1203→v1207
 
 - 2026-11-01 | **S595** | iters: 5 | tools: fontmaker ×2, generator ×2, locales, sw | patterns fixed: text-field-under-16px-zooms-on-ios-focus ×1, decorative-glyph-carrier-exposed-to-assistive-tech ×1 | pass run: N (fontmaker) | SW: v1199→v1203
 
@@ -548,11 +548,9 @@ _(none)_
 
 - 2026-10-30 | **S577** | iters: 5 | tools: atlas ×2, dashboard, generator, dashboard.md, scripts/loop, sw | patterns fixed: horizontal-overflow-at-narrow-widths ×1, flex-range-keeps-its-min-content-width ×1 | pass run: N (trope_atlas, its first) | SW: v1137→v1138
 
-- 2026-10-30 | **S576** | iters: 5 | tools: dashboard ×2, flash ×2, dashboard.md, scripts/loop, sw | patterns fixed: offscreen-sheets-laid-out-on-every-rebuild ×1 (chunked) | pass run: D (dashboard, first since S438) | SW: v1136→v1137
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S595 (2026-11-01):** fontmaker, generator, locales, sw.js, loop docs S595 · generator, dictionary, locales, sw.js, loop docs S594 · fontmaker, name_tags, dashboard, sw.js, scripts/loop, loop docs S593 · generator, dashboard, torah, dictionary, flash, db/functions/delete-account, smoke-sync, locales, sw.js, scripts/loop, loop docs S592 · trope, dictionary, index, sw.js, scripts/loop, loop docs S591 · resources, generator, dashboard, sw.js, scripts/loop, loop docs S590 · torah, flash, dashboard, locales, sw.js, scripts/loop, loop …[full text: IMPROVEMENT_ARCHIVE.md]
+- **Snapshot S596 (2026-11-01):** account, index, flash, locales, sw.js, loop docs S596 · fontmaker, generator, locales, sw.js, loop docs S595 · generator, dictionary, locales, sw.js, loop docs S594 · fontmaker, name_tags, dashboard, sw.js, scripts/loop, loop docs S593 · generator, dashboard, torah, dictionary, flash, db/functions/delete-account, smoke-sync, locales, sw.js, scripts/loop, loop docs S592 · trope, dictionary, index, sw.js, scripts/loop, loop docs S591 · resources, generator, dashboard, sw.js, scripts/loop, loop docs S590 · torah, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -668,7 +666,7 @@ _(none)_
 
 - `tip-escape-drops-focus` | ACTIVE | owner C | det: recipe | last S441 | streak 0
 
-- `account-wide-delete-confirm-without-signed-in-wording` | ACTIVE | owner P | det: recipe | last S592 | streak 0
+- `account-wide-delete-confirm-without-signed-in-wording` | ACTIVE | owner P | det: recipe | last S596 | streak 1
 
 - `logical-inset-mirrors-onto-pinned-content` | ACTIVE | owner H | det: recipe | last S440 | streak 0
 
@@ -730,7 +728,7 @@ _(none)_
 
 - `untrusted-card-field-interpolated-unescaped` | ACTIVE | owner D | det: recipe | last S393 | streak 0
 
-- `auth-param-read-before-its-cleanup-runs` | ACTIVE | owner P | det: recipe | last S390 | streak 0
+- `auth-param-read-before-its-cleanup-runs` | ACTIVE | owner P | det: recipe | last S596 | streak 1
 
 - `hover-feedback-survives-the-disabled-state` | ACTIVE | owner F | det: recipe | last S394 | streak 0
 
@@ -902,7 +900,7 @@ _(none)_
 
 ### Discovery-pass rotation (run one per session, stalest first)
 
-- P accounts & cloud (one surface): 2026-11-01 (**S592 — 18th P, `hebrew_blend_generator.html` (first since S463): arms 1–8 behind controls (smoke-tools 23/23, smoke-sync 228/228, migration 47/47, a 21-check signed-in walk by real clicks, static 3–7, live read-only). FOUND 5: Start fresh FIXED, delete-account's paging FIXED (needs a redeploy), the colour-reset confirm ×5 FIXED (gate 2), 2 logged. …[full text: IMPROVEMENT_ARCHIVE.md]
+- P accounts & cloud (one surface): 2026-11-01 (**S596 — 19th P, chrome (index + account, first since S477): the seven smokes with the pinned SDK (account 112, saves 15, tools 220, sync 230/231 — D31, account-page 65, migration 47, assignments 135), arms 1/3 behind plants, 4–7 static, the signed-in account page printed (8 PDFs, 2 sheets each), live read-only. FOUND 4: 2 FIXED (one gate 2), 2 P4 …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - O deslop — AI-design-tell sweep (one surface): SKIP since S403 — the sandbox refuses to execute the third-party detector ("Code from External"); runs again once the maintainer commits a `.claude/settings.json` permission rule for it (`docs/reference/deslop-detector.md`). Last run 2026-09-08 (S346, `flash_cards.html`, 6th O; the S399/S403 refusals are in the archive).
 
@@ -936,5 +934,5 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-22 (**S542 — 40th F, loading states (first since S189): 14 surfaces held, then aborted. FOUND 7, FIXED 4. F-next: long-build progress.**)
 
-**Next session (S596):** **Branch `claude/amazing-gauss-gli685` (S588–S595, PR #386): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1203**, FM **5.59**, corpus ?v=7. ⚑ drift: main=697d533 sw=v1203 fm=5.59 migration=0009_assignment_enrolment.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: P chrome (S477), G trope (S479), D trope (S480), H torah (S482), C chrome (S483), N dictionary (S492), M chrome (S494); suite E (S531), L (S532), K (S533). ⚑ The signed-in reading-assignments UI still wants its first P and H. ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
-⚑ Sync P2 (S573). ⚑ The account page signed in is unprinted (`--sdk`): the next G or P on the chrome. ⚑ Gate 4 to propose: the generator's blend sheets on a phone. ⚑ smoke-sync D31 flake (again S592; alone 3/3). ⚑ Ports at the next A: `m554/`–`n595/`; traps 352, 356–484. ⚑ Queues: FM 25, generator 25, torah 13, dictionary 10, dashboard 7; the rest ≤ 6.
+**Next session (S597):** **Branch `claude/amazing-gauss-gli685` (S588–S596, PR #386): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1207**, FM **5.59**, corpus ?v=7. ⚑ drift: main=697d533 sw=v1207 fm=5.59 migration=0009_assignment_enrolment.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: G trope (S479), D trope (S480), H torah (S482), C chrome (S483), N dictionary (S492), P torah (S493), M chrome (S494); suite E (S531), L (S532), K (S533). ⚑ The signed-in reading-assignments UI still wants its first H (its P so far: smoke-assignments 135/135). ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
+⚑ Sync P2 (S573): D31 now fails alone 2 in 3 — likely the same race. ⚑ Gate 4 to propose: the generator's blend sheets on a phone. ⚑ Ports at the next A: `m554/`–`p596/`; traps 352, 356–489. ⚑ Queues: FM 25, generator 25, torah 13, dictionary 10, dashboard 7; the rest ≤ 6.

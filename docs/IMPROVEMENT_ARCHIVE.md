@@ -95979,3 +95979,44 @@ _(prior)_ **Next session (S594):** **Branch `claude/amazing-gauss-gli685` (S588�
 
 _(prior)_ **Next session (S595):** **Branch `claude/amazing-gauss-gli685` (S588–S594, PR #386): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1199**, FM **5.59**, corpus ?v=7. ⚑ drift: main=697d533 sw=v1199 fm=5.59 migration=0009_assignment_enrolment.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest now: N fontmaker (S476), P chrome (S477), G trope (S479), D trope (S480), H torah (S482), C chrome (S483), M chrome (S494); suite E (S531), L (S532), K (S533). ⚑ The signed-in reading-assignments UI still wants its first P and H. ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
 ⚑ Sync P2 (S573). ⚑ The account page signed in is unprinted (`--sdk`): the next G or P on the chrome. ⚑ Gate 4 to propose: the generator's blend sheets on a phone. ⚑ smoke-sync D31 flake (again S592; alone 3/3). ⚑ Ports at the next A: `m554/`–`c594/`; traps 352, 356–480. ⚑ Queues: generator 26, FM 21, torah 13, dictionary 10, dashboard 7; the rest ≤ 6.
+
+
+<!-- archived by compact-ledger at the S597 boundary, 2026-11-01 -->
+## Compaction (S597, 2026-11-01) — moved verbatim from the live ledger
+
+### from Candidates (prioritized, top = next)
+
+- [ ] P4 (**NEW S596 P — the "only if they have students" half of gate 2**) | account.html | **The account page lists and downloads none of a teacher's reading-assignment data** (classes, student logins, assignments, recordings): the listing and the .zip cover saves and Font Maker projects only; counting them needs `js/ivrit-assignments.js` on that page (CLAUDE.md accounts rule 2 names its loaders). The delete step now says so (`562a8b1f`). | found S596
+
+- [ ] P4 (**NEW S573 P; S596: alone 1 of 3 green**) | scripts/smoke-sync.mjs, js/ivrit-saves.js | **D31 (the Trope merge after a button sign-out) fails more often**: the S596 full run red and alone 1 of 3 green (S592: alone 3/3), always "neither side merged" with `settled` true — the shape of the S567 P2 above (a page write after the hydration planned is not sent; the Trope Learn tab saves on its first render): root-cause it with that P2. | found S573
+
+### from Awaiting the maintainer (an action or an answer only the maintainer can give; a session that resolves one moves it to Done)
+
+- [ ] P4 (**NEW S596 P — backend boundary: a drafted migration, applied by the maintainer**) | db/migrations (0008's tables) | **The performance advisor flags 12 lints on the assignment tables**: 4 foreign keys without a covering index (`assignments.class_id`, `feedback.teacher_id`, `students.class_id`, `submissions.student_id`), `code_attempts` without a primary key, 7 tables with two permissive SELECT/UPDATE policies; tiny tables today. Draft `0010` with the four `create index` lines; merging the policies needs a `drop`, which db/README's style refuses. | found S596
+
+### from Done
+
+- [x] 2026-11-01 | (S591 close-out) | branch/deploy note | **S591 = C on the Trope Tutor (first since S455): FOUND 3, FIXED 2 + 2 from the queue; FIXED 4. Same branch `claude/amazing-gauss-gli685` (PR #386, still open), sw v1187; deploy on merge. Gates: none asked.**
+
+- [x] 2026-11-01 | `61d3a8ab` | index.html, sw.js | (S591, queue S575 G) **A printed hub leaves out Bookmark and Import / Export.** | page.pdf × 8: the labels 0 (HEAD 8), other text word-for-word, 3 sheets = HEAD; screen identical
+
+- [x] 2026-11-01 | `3f63a49c` | trope_tutor.html, sw.js | (S591 C) **A Learn card note's Hebrew carries lang="he" in the English UI** (sof pasuk's ׃). | probe S591 note: 4/4 (HEAD 0/4); 16 notes' text = HEAD; pixel-identical
+
+- [x] 2026-11-01 | `97a77674` | hebrew_dictionary.html, sw.js | (S591, queue S571 C) **An inactive Export Selected Words dims only its two buttons, marked aria-disabled.** | probe S591 export: 4/4 (HEAD 0/4); count + note 2.12/2.38 → 5.81/5.58; live box pixel-identical
+
+- [x] 2026-11-01 | `14e06862` | trope_tutor.html, sw.js | (S591 C) **A drill choice's "choose again to answer" reads at AA in dark mode.** | 4.26 → 6.1:1; light and forced colours pixel-identical (the forced-colours control fired)
+
+### from Per-session log (one line per session)
+
+- 2026-10-30 | **S576** | iters: 5 | tools: dashboard ×2, flash ×2, dashboard.md, scripts/loop, sw | patterns fixed: offscreen-sheets-laid-out-on-every-rebuild ×1 (chunked) | pass run: D (dashboard, first since S438) | SW: v1136→v1137
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S596 (2026-11-01):** account, index, flash, locales, sw.js, loop docs S596 · fontmaker, generator, locales, sw.js, loop docs S595 · generator, dictionary, locales, sw.js, loop docs S594 · fontmaker, name_tags, dashboard, sw.js, scripts/loop, loop docs S593 · generator, dashboard, torah, dictionary, flash, db/functions/delete-account, smoke-sync, locales, sw.js, scripts/loop, loop docs S592 · trope, dictionary, index, sw.js, scripts/loop, loop docs S591 · resources, generator, dashboard, sw.js, scripts/loop, loop docs S590 · torah, flash, dashboard, locales, sw.js, scripts/loop, loop …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- P accounts & cloud (one surface): 2026-11-01 (**S596 — 19th P, chrome (index + account, first since S477): the seven smokes with the pinned SDK (account 112, saves 15, tools 220, sync 230/231 — D31, account-page 65, migration 47, assignments 135), arms 1/3 behind plants, 4–7 static, the signed-in account page printed (8 PDFs, 2 sheets each), live read-only. FOUND 4: 2 FIXED (one gate 2), 2 P4 logged. P-next: torah (S493), trope (S507).**)
+
+_(prior)_ **Next session (S596):** **Branch `claude/amazing-gauss-gli685` (S588–S595, PR #386): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1203**, FM **5.59**, corpus ?v=7. ⚑ drift: main=697d533 sw=v1203 fm=5.59 migration=0009_assignment_enrolment.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: P chrome (S477), G trope (S479), D trope (S480), H torah (S482), C chrome (S483), N dictionary (S492), M chrome (S494); suite E (S531), L (S532), K (S533). ⚑ The signed-in reading-assignments UI still wants its first P and H. ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
+⚑ Sync P2 (S573). ⚑ The account page signed in is unprinted (`--sdk`): the next G or P on the chrome. ⚑ Gate 4 to propose: the generator's blend sheets on a phone. ⚑ smoke-sync D31 flake (again S592; alone 3/3). ⚑ Ports at the next A: `m554/`–`n595/`; traps 352, 356–484. ⚑ Queues: FM 25, generator 25, torah 13, dictionary 10, dashboard 7; the rest ≤ 6.
