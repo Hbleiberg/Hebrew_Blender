@@ -6297,23 +6297,32 @@ function mountSidebarResize(cfg) {
       min: 320, dflt: 380,
       max: () => Math.min(640, Math.round(window.innerWidth * 0.92))
     });
-    _railMounts.left = mountSidebarResize({
-      handle: document.getElementById('railLeftSplit'),
-      cssVar: '--dash-rail-l',
-      scope: document.querySelector('.dashboard'),   // grid-template-columns lives here; a root write restyled the whole page per frame
-      storageKey: 'hebrewDashboard_railLeftW',
-      anchor: 'start',
-      min: 220, dflt: 290,
-      max: () => _railMaxFor('--dash-rail-r', document.getElementById('zoneRight'))
-    });
-    _railMounts.right = mountSidebarResize({
-      handle: document.getElementById('railRightSplit'),
-      cssVar: '--dash-rail-r',
-      scope: document.querySelector('.dashboard'),
-      storageKey: 'hebrewDashboard_railRightW',
-      anchor: 'end',
-      min: 220, dflt: 290,
-      max: () => _railMaxFor('--dash-rail-l', document.getElementById('zoneLeft'))
+    // The rails mount in the first frame, before it paints: each mount measures its ceiling (_railMaxFor reads
+    // .dashboard's clientWidth), and read from init it forced a layout of the half-built page that this frame then redid
+    // (pattern layout-read-per-grid-at-build). Same order as before — left, right, then the re-clamp updateDashboardGrid
+    // runs (its own call from init finds no mounts yet) — so a window too narrow for both stored widths still favours
+    // the left rail; until then the grid's 290px fallbacks hold the columns, and nothing paints in between.
+    requestAnimationFrame(() => {
+      _railMounts.left = mountSidebarResize({
+        handle: document.getElementById('railLeftSplit'),
+        cssVar: '--dash-rail-l',
+        scope: document.querySelector('.dashboard'),   // grid-template-columns lives here; a root write restyled the whole page per frame
+        storageKey: 'hebrewDashboard_railLeftW',
+        anchor: 'start',
+        min: 220, dflt: 290,
+        max: () => _railMaxFor('--dash-rail-r', document.getElementById('zoneRight'))
+      });
+      _railMounts.right = mountSidebarResize({
+        handle: document.getElementById('railRightSplit'),
+        cssVar: '--dash-rail-r',
+        scope: document.querySelector('.dashboard'),
+        storageKey: 'hebrewDashboard_railRightW',
+        anchor: 'end',
+        min: 220, dflt: 290,
+        max: () => _railMaxFor('--dash-rail-l', document.getElementById('zoneLeft'))
+      });
+      if (_railMounts.left)  _railMounts.left.refresh();
+      if (_railMounts.right) _railMounts.right.refresh();
     });
   }
 
@@ -12459,7 +12468,7 @@ async function onUploadEngFontPick(input){
     initTimer();
     initOmer();
     initStudentPicker();
-    initResizeHandles();     // drawer + rail drag resizers (shared sidebar-resize block); before updateDashboardGrid so its refresh() re-clamp sees live mounts
+    initResizeHandles();     // drawer + rail drag resizers (shared sidebar-resize block); the rails mount in the first frame, then re-clamp as updateDashboardGrid would
     updateDashboardGrid();   // initTimer/initStudentPicker set timer/picker display — recompute zone collapse now that visibility is final
     renderPresets();
     checkSchedule();
