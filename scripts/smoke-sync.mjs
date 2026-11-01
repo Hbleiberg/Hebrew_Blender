@@ -150,6 +150,10 @@
  *      in the same load (either download first): the list opens once that sync has ended, the account takes the
  *      account's lesson with the link's list, and a second sync in the tab keeps it (it used to stay here unsent,
  *      and that sync took the account's copy back over it).
+ *  D42. The generator's Start fresh signed in holds: the account keeps the pristine marker through the reload it starts
+ *      and the next visit (no "setup is back" bar), and a device still holding the older setup, opened after it, shows
+ *      the defaults and leaves the marker alone (the next load's flush wrote the defaults over it, and the other
+ *      device sent its old setup back).
  *
 
  * Every scenario asserts 0 pageerrors. Run from the repo root:
@@ -2130,6 +2134,46 @@ try {
       check(`D41 (${held === 'none' ? 'as they come' : 'the settings download held'}): 0 pageerrors`, errors.length === 0, errors.join(' | '));
       await ctx.close();
     }
+  }
+
+  // ---- D42. the generator's Start fresh signed in holds, here and on a device still holding the older setup ----
+  if (want('D42')) {
+    // a real remembered setup (every key the page writes), from one anonymous load, with three letters chosen
+    const capCtx = await browser.newContext({ serviceWorkers: 'block' });
+    await capCtx.route('**/*', r => (r.request().url().startsWith(BASE) || r.request().url().startsWith('data:')) ? r.continue() : r.abort());
+    const capPage = await capCtx.newPage();
+    await capPage.goto(BASE + '/hebrew_blend_generator.html', { waitUntil: 'domcontentloaded' });
+    await capPage.waitForFunction(() => typeof getSettings === 'function' && !!SHARE_DEFAULTS, null, { timeout: HYDRATE_MS });
+    const SETUP = await capPage.evaluate(() => Object.assign(getSettings(), { selectedLetters: ['ג', 'ד', 'ה'] }));
+    await capCtx.close();
+    const cloud = new FakeCloud([{ tool: 'Worksheet', kind: 'lastState', name: 'default', data: SETUP }]);
+    const memory = { Worksheet: { lastState: { default: memOf(cloud.find('lastState', 'default', 'Worksheet')) } } };
+    const acc = () => (cloud.find('lastState', 'default', 'Worksheet') || {}).data || {};
+    const extra = { hebrewBlender_lastState: JSON.stringify(SETUP), hebrewBlender_tourSeen: '1' };
+    const view = (page) => page.evaluate(() => ({ letters: getSettings().selectedLetters.length, bar: getComputedStyle(document.getElementById('lastSetupBar')).display }));
+    const ctxA = await openContext(browser, cloud, SEED({ memory, extra }));
+    const a = await openPage(ctxA, 'hebrew_blend_generator.html', { tools: GEN_TOOLS });
+    await a.page.waitForTimeout(500);
+    const before = await view(a.page);
+    await Promise.all([a.page.waitForNavigation({ timeout: HYDRATE_MS }).catch(() => {}), a.page.click('#lastSetupBar [onclick="startFreshSetup()"]')]);
+    await a.page.waitForFunction(() => window.IvritSaves && IvritSaves._test.settled(['Worksheet', 'Suite', 'Dictionary']), null, { timeout: HYDRATE_MS });
+    await a.page.waitForTimeout(WRITE_MS); await settled(a.page, GEN_TOOLS);
+    await a.page.reload({ waitUntil: 'domcontentloaded' });
+    await a.page.waitForFunction(() => window.IvritSaves && IvritSaves._test.settled(['Worksheet', 'Suite', 'Dictionary']), null, { timeout: HYDRATE_MS });
+    await a.page.waitForTimeout(WRITE_MS); await settled(a.page, GEN_TOOLS);
+    const next = await view(a.page);
+    check('D42: Start fresh keeps the pristine marker in the account through its reload and the next visit, with no "setup is back" bar', before.letters === 3 && before.bar === 'flex' && acc().pristine === true && next.letters > 20 && next.bar === 'none', JSON.stringify({ before, next, account: JSON.stringify(acc()).slice(0, 60), calls: methods(cloud, 0) }));
+    // another device: it synced the older setup and holds it; the account's row is now the marker
+    const ctxB = await openContext(browser, cloud, SEED({ memory, extra }));
+    const b = await openPage(ctxB, 'hebrew_blend_generator.html', { tools: GEN_TOOLS });
+    await b.page.waitForTimeout(WRITE_MS); await settled(b.page, GEN_TOOLS);
+    const onB = await view(b.page);
+    const from = cloud.log.length;
+    await b.page.goto(BASE + '/index.html', { waitUntil: 'domcontentloaded' });   // the generator's pagehide flush
+    await sleep(WRITE_MS);
+    check('D42: a device still holding the older setup shows the defaults once the marker lands, and leaving it keeps the marker', onB.letters > 20 && onB.bar === 'none' && acc().pristine === true && !reqs(cloud, from, 'PATCH').length, JSON.stringify({ onB, account: JSON.stringify(acc()).slice(0, 60), calls: methods(cloud, from) }));
+    check('D42: 0 pageerrors', a.errors.length === 0 && b.errors.length === 0, a.errors.concat(b.errors).join(' | '));
+    await ctxA.close(); await ctxB.close();
   }
 } finally {
   await browser.close();

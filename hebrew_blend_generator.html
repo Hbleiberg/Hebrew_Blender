@@ -14168,9 +14168,13 @@ function rememberSetup(force = false) {
   if (_urlSetupActive && _urlSetupText !== null) { let live = null; try { live = JSON.stringify(getSettings()); } catch (e) {} if (live === _urlSetupText) return; }
   // A pristine setup is the absence of a setup: with nothing remembered and every control at its default,
   // nothing is written — so "Start fresh" leaves no blank setup behind to be synced over a real one.
+  // Signed in, "Start fresh" leaves its marker in place of the key, which is no setup either: the next load's
+  // account flush used to write the defaults over it, and the "setup is back" bar returned here and on every device.
   let had = null;
   try { had = localStorage.getItem(LAST_SETUP_KEY); } catch (e) {}
-  if (had === null && SHARE_DEFAULTS && text === JSON.stringify(SHARE_DEFAULTS)) return;
+  let pristine = had === null;
+  if (!pristine) { try { const o = ivritSafeParse(had); pristine = !!o && o.pristine === true; } catch (e) {} }
+  if (pristine && SHARE_DEFAULTS && text === JSON.stringify(SHARE_DEFAULTS)) return;
   try { localStorage.setItem(LAST_SETUP_KEY, text); } catch (e) {}
 }
 
@@ -14178,7 +14182,20 @@ function restoreLastSetup() {
   let saved = null;
   try { saved = ivritSafeParse(localStorage.getItem(LAST_SETUP_KEY) || 'null'); } catch (e) { return; }
   if (!saved || typeof saved !== 'object' || Array.isArray(saved)) return;
-  if (saved.pristine === true) return;   // "Start fresh" (here or on another device): nothing to restore
+  if (saved.pristine === true) {   // "Start fresh" (here or on another device): nothing to restore
+    // Landed from the account over a setup this visit restored: back to the defaults, or the next flush would
+    // remember that setup and send it over the fresh start. The suite-wide font, size and Live update stay.
+    const bar = document.getElementById('lastSetupBar');
+    if (bar) bar.style.display = 'none';
+    let live = null;
+    try { live = getSettings(); } catch (e) {}
+    if (live && SHARE_DEFAULTS && JSON.stringify(live) !== JSON.stringify(SHARE_DEFAULTS)) {
+      _lastSetupRestoring = true;
+      try { applySettings(Object.assign({}, SHARE_DEFAULTS, { hebFont: live.hebFont, hebFontSize: live.hebFontSize, livePreview: live.livePreview })); } catch (e) {}
+      _lastSetupRestoring = false;
+    }
+    return;
+  }
   // A snapshot with no letter set (a hand-edited key; ivritSafeParse leaves `{}` of a __proto__
   // payload) would restore an EMPTY selection over the defaults — drop it like an unapplicable one.
   if (!Array.isArray(saved.selectedLetters)) { try { localStorage.removeItem(LAST_SETUP_KEY); } catch (e2) {} return; }
