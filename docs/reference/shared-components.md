@@ -346,7 +346,10 @@ print list, collapse interplay, ak-view-style overrides).
    zone hides it for free; that function's tail calls `refresh()` on both rails so the survivor's
    dynamic max re-clamps. Rail max math measures **layout px** (`clientWidth` + computed
    padding/gap), never `window.innerWidth` — the dashboard's `style.zoom` scales the visual box
-   only.
+   only. The two rail mounts run in `initResizeHandles`' `requestAnimationFrame` — left, right, then that
+   re-clamp — so the `clientWidth` read lands after init's last write instead of forcing a layout of the
+   half-built page; keep that order, it decides which rail a window too narrow for both stored widths
+   favours (the left).
 
 ### Collapse / close interplay
 Resize never touches the collapse machinery — `toggleSidebar()`, `openSettings()`/

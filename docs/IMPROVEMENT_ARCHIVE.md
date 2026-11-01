@@ -95753,3 +95753,40 @@ _(prior)_ **Next session (S589):** **Branch `claude/amazing-gauss-gli685` (S588,
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 - G print & export fidelity (one tool): 2026-10-31 (**S589 — `torah_trainer.html` (first since S451): real Sefaria text replayed from disk; 4 layouts × EN/HE × light/dark × Letter/A4 by `page.pdf` (0.4in), with translation + translit, colour coding (5 looks, dark = light pixel-for-pixel), 6 reading kinds, the handout's 9 options × 3 layouts, Copy, the `?s=` link (30 keys) and Hebrew at 3.5rem. FOUND 3, FIXED 2 (+2 queue), 1 P4. G-next: fontmaker (S465), trope (S479).**)
+
+_(prior)_ **Next session (S590):** **Branch `claude/amazing-gauss-gli685` (S588–S589, PR #386): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1179**, FM **5.59**, corpus ?v=7. ⚑ drift: main=697d533 sw=v1179 fm=5.59 migration=0009_assignment_enrolment.sql live=yes functions=bcbee20 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest now: D generator (S452), C trope (S455), P generator (S463), G fontmaker (S465), N fontmaker (S476), H torah (S482), M chrome (S494); suite E (S531), L (S532), K (S533). ⚑ The signed-in reading-assignments UI still wants its first P and H. ⚑ The Sefaria record-replay harness (`g589/common.mjs`: curl to a disk cache, real text and chapters) is the one to port for any torah pass. ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
+⚑ Sync P2 (S573). ⚑ The account page signed in is unprinted (`--sdk`): the next G or P on the chrome. ⚑ Gate 4 to propose: the generator's blend sheets on a phone. ⚑ smoke-sync D31 flake. ⚑ Ports at the next A: `m554/`–`g589/`; traps 352, 356–458. ⚑ Queues: generator 25, FM 21, torah 13, dictionary 13, dashboard 10; the rest ≤ 7.
+
+
+<!-- archived by compact-ledger at the S591 boundary, 2026-11-01 -->
+## Compaction (S591, 2026-11-01) — moved verbatim from the live ledger
+
+### from Candidates (prioritized, top = next)
+
+- [ ] P4 (**NEW S590 D — not small: `content-visibility` on off-screen sheets, a11y + print first**) | hebrew_blend_generator.html | **Dragging the sidebar seam over a 40-version Class Set reflows all 40 sheets per move**: one forced layout of ~134 ms @4× per pointer move (`positionSidebarTab` reads the sidebar's rect after the width write), 7 s for a 150px drag; 11 ms with one sheet (findings S590). | found S590
+
+### from Done
+
+- [x] 2026-10-31 | (S585 close-out) | branch/deploy note | **S585 = H on the dictionary (first since S440): 3 lessons + the student cell by real clicks; FOUND 5: 2 FIXED (Hebrew search tiers, stale chips over a loaded list), 1 P4, 1 seed, 1 Awaiting (corpus content); + the S552 Name Tags column and the S575 contact print from the queue; FIXED 4. Same PR #383, sw v1160; deploy on merge. Gates: …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-31 | `4db6668b` | contact.html, sw.js | (S585, queue S575 G) **The printed contact page drops the blank form, its intro, the tabs and the open buttons, and prints all three ways to give on one sheet** (grid → blocks, QR 150px, main's padding trimmed). | `h585/ct.mjs` EN/HE × Letter/A4 `page.pdf` + `pdftotext` + sheets looked at: 2 sheets → 1 in 4/4, form labels / Send 4 → 0, the …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-31 | `30868ca1` | name_tags.html, sw.js | (S585, queue S552 M) **The Look panel's font, border and background selects start in one column** (a shared 5.5em label column). | `h585/nt.mjs` EN light 1280 / HE dark 800 / EN 375 / HE light 1280: select starts 95/62/94 and 75/64/46 px → 100 in all; screenshots looked at. (Name Tags is not precached: the bump was harmless.)
+
+- [x] 2026-10-31 | `4715e222` | hebrew_dictionary.html, sw.js | (S585 H) **A loaded word list hides the sidebar's filter chips** (and the phone's Filters (N) count), as the print header already did. | `h585/fix2.mjs` real clicks EN light 1280 / HE dark 800: chips while loaded 2 → 0 (HEAD 2), 0 across a language switch, 2 after Exit list, 3 after a search; 0 pageerrors.
+
+- [x] 2026-10-31 | `9b6b2a7d` | hebrew_dictionary.html, sw.js | (S585 H) **A Hebrew search lists the word itself first, then phrases holding it as a whole word** (the English glossTier's twin). | `h585/fix1.mjs` 8 queries × EN light 1280 / HE dark 800 by real input: the plain word outside the first four 4/16 on HEAD (סֵפֶר 19th for "ספר") → 0/16; English "dog" / "water" unchanged; sort honoured …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Per-session log (one line per session)
+
+- 2026-11-01 | **S590** | iters: 5 | tools: generator ×2, resources, dashboard, scripts/loop, sw | patterns fixed: cdn-library-parser-blocking-for-one-action ×1, fixed-surface-missing-from-the-print-hide-list ×1, contrast-below-AA-on-a-tinted-or-coloured-plate ×1, layout-read-per-grid-at-build ×1 | pass run: D (generator, first since S452 + chrome, since S466) | SW: v1179→v1183
+
+- 2026-10-29 | **S570** | iters: 5 | tools: torah ×2, flash ×2, torah-and-trope.md, scripts/loop, sw | patterns fixed: hebrew-faux-italic + latin-tracking-on-hebrew-labels ×1 | pass run: D (torah, 5th) | SW: v1118→v1122
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S590 (2026-11-01):** resources, generator, dashboard, sw.js, scripts/loop, loop docs S590 · torah, flash, dashboard, locales, sw.js, scripts/loop, loop docs S589 · flash, dashboard, fontmaker, locales, sw.js, scripts/loop, loop docs S588 · torah, name_tags, letter_learner, sw.js, scripts/loop, loop docs S587 · torah, dictionary, generator, sw.js, scripts/loop, loop docs S586 · dictionary, name_tags, contact, sw.js, loop docs S585 · trope_atlas, torah, generator, sw.js, loop docs S584 · trope_atlas, torah, generator, sw.js S583 · trope_atlas, sw.js S582 · torah, sw.js, scripts/loop, loop docs S581 · …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- D performance (one tool): 2026-11-01 (**S590 — `hebrew_blend_generator.html` (first since S452) + chrome (since S466): cold load and 9 interactions at 1×/4× against the S452 tree (equal within noise), forced layouts by stack, Print and Export PDF by stage, an 80-Generate leak arm; chrome 28 cold cells + 10 interactions, hCaptcha replayed. FOUND 3: 1 FIXED (resources' hCaptcha), 2 P4; + 3 from the queue. D-next: trope (S480), dictionary (S496).**)

@@ -338,6 +338,10 @@ outrank an inline colour: each syllable `colorizeHebrew` builds also carries `--
 light palette, or the teacher's override) and a `nik-lt` / `nik-ul` / `nik-hl` class, and the `onclone`
 writes that colour into the clone (Highlight keeps its tint there; the print block draws it as an underline,
 since the dialog's background-graphics-off default drops the tint).
+A Self-Check's screen rows (score and timer bars, both control rows, a flipped card's Got it / Missed) are one
+selector, `SC_SCREEN_ROWS`, the twin of the print block's `display:none` list: the `onclone` drops them, and the
+canvas height is the sheet's measured with them out for a moment, so the page is not shrunk around a blank band.
+A new screen-only row joins both lists.
 
 ## Real Words card grids (`.rw-grid`)
 
