@@ -1651,7 +1651,7 @@ async function eraseAllSettings() {
   let unsynced = 0, unknown = false;
   if (signedIn && window.IvritSaves && typeof IvritSaves.flush === 'function') {
     try {
-      const tools = ['Suite', 'Worksheet', 'FlashCards', 'Dictionary', 'TorahTrainer', 'TropeTutor', 'Dashboard'];
+      const tools = ['Suite', 'Worksheet', 'FlashCards', 'Dictionary', 'TorahTrainer', 'TropeTutor', 'Dashboard', 'LetterLearner', 'EmojiTorah', 'NameTags'];
       await Promise.race([Promise.all(tools.map(t => IvritSaves.flush(t).catch(() => null))), new Promise(r => setTimeout(r, 5000))]);
       const ps = (typeof IvritSaves.pendingSignOut === 'function' && IvritSaves.pendingSignOut()) || {};
       unsynced = Number(ps.unsynced) || 0; unknown = !!ps.unknown;
