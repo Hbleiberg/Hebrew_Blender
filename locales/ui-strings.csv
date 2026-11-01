@@ -1388,7 +1388,7 @@ flashcards.profile.student_name_placeholder,Student name…,שם התלמיד…
 flashcards.report.button,Progress Report,דוח התקדמות,progress-report button (Teacher Tools),leading-emoji
 flashcards.report.button_title,Print a one-page progress report for this student,הדפסת דוח התקדמות בן עמוד אחד לתלמיד זה,progress-report button title,
 flashcards.report.col_mode,Drill,תרגול,progress-report drills-table column header,
-flashcards.report.col_score,Score,ניקוד,progress-report drills-table column header,
+flashcards.report.col_score,Score,ציון,progress-report drills-table column header,
 flashcards.report.comments_label,Teacher comments,הערות המורה,progress-report footer label above blank ruled lines,
 flashcards.report.drills_heading,Recent drills,תרגולים אחרונים,progress-report section heading,
 flashcards.report.focus_heading,Focus areas,נושאים לחיזוק,progress-report section heading,
