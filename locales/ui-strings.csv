@@ -2528,6 +2528,8 @@ fontmaker.node_editor.scale_apply_title,Scale by the percentage entered (about t
 fontmaker.node_editor.scale_aria,Scale percentage about the selection's center — 100 is unchanged,אחוז שינוי גודל סביב מרכז הבחירה — 100 ללא שינוי,input aria-label,aria-label only
 fontmaker.node_editor.scale_label,Scale %,גודל %,input label,
 fontmaker.node_editor.scale_slider_aria,"Scale percentage about the selection's center — previews live, commits on release; 100 is unchanged","אחוז שינוי גודל סביב מרכז הבחירה — תצוגה מקדימה חיה, מתבצע בשחרור; 100 ללא שינוי",slider aria-label,aria-label only
+fontmaker.node_editor.seg_curve_title,Curve segment — click to make it a straight line,מקטע מעוקל — לחצו כדי להפוך אותו לקו ישר,segment dot title (SVG),
+fontmaker.node_editor.seg_line_title,Line segment — click to make it a curve,מקטע ישר — לחצו כדי להפוך אותו לעקומה,segment dot title (SVG),
 fontmaker.node_editor.seg_why,— select 2+ adjacent points first,— בחרו קודם 2+ נקודות סמוכות,button title suffix,
 fontmaker.node_editor.select_all,Select all,בחר הכל,button,
 fontmaker.node_editor.select_all_title,Select every point ({mod}+A),בחר את כל הנקודות ({mod}+A),button title,
@@ -2802,6 +2804,8 @@ fontmaker.panels.guide_color_title,Guide color,צבע קו עזר,input title,
 fontmaker.panels.guide_default_h,Horizontal,אופקי,guide default name,
 fontmaker.panels.guide_default_v,Vertical,אנכי,guide default name,
 fontmaker.panels.guide_delete_title,Delete this guide,מחק קו עזר זה,button title,
+fontmaker.panels.guide_x_drag,Guide x={pos} — drag,קו עזר x={pos} — גררו,guide handle title (SVG),do not translate {…}
+fontmaker.panels.guide_y_drag,Guide y={pos} — drag,קו עזר y={pos} — גררו,guide handle title (SVG),do not translate {…}
 fontmaker.panels.guide_name_title,Guide name,שם קו העזר,input title,
 fontmaker.panels.guide_pos,Pos ({axis}),מיקום ({axis}),label,
 fontmaker.panels.guide_pos_title,{axis} position (font units),מיקום {axis} (יחידות גופן),input title,

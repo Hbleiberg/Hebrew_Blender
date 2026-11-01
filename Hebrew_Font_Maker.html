@@ -5776,12 +5776,12 @@ function userGuidesSVG(){
     if (it.axis === 'v') {                       // vertical line — drag left/right (font X)
       const x = fx(it.pos);
       h += `<line x1="${x.toFixed(1)}" y1="${gy1}" x2="${x.toFixed(1)}" y2="${gy2}" stroke="${col}" stroke-width="${w}"${dash} opacity="${op}" pointer-events="none"/>`;
-      h += `<circle class="guide-h" data-guide-id="${it.id}" cx="${x.toFixed(1)}" cy="${gyh}" r="6" fill="${col}" stroke="#fff" stroke-width="2.5" paint-order="stroke" style="cursor:ew-resize;filter:drop-shadow(0 0 1px rgba(0,0,0,0.5));"><title>Guide x=${Math.round(it.pos)} — drag</title></circle>`;
+      h += `<circle class="guide-h" data-guide-id="${it.id}" cx="${x.toFixed(1)}" cy="${gyh}" r="6" fill="${col}" stroke="#fff" stroke-width="2.5" paint-order="stroke" style="cursor:ew-resize;filter:drop-shadow(0 0 1px rgba(0,0,0,0.5));"><title>${esc(_pT('guide_x_drag', `Guide x=${Math.round(it.pos)} — drag`, { pos: Math.round(it.pos) }))}</title></circle>`;
       h += `<text class="guide-h-lbl" x="${(x+8).toFixed(1)}" y="${gyh + 4}" fill="${col}" font-size="9" font-family="monospace" pointer-events="none">${Math.round(it.pos)}</text>`;
     } else {                                     // horizontal line — drag up/down (font Y)
       const y = fy(it.pos);
       h += `<line x1="8" y1="${y.toFixed(1)}" x2="592" y2="${y.toFixed(1)}" stroke="${col}" stroke-width="${w}"${dash} opacity="${op}" pointer-events="none"/>`;
-      h += `<circle class="guide-h" data-guide-id="${it.id}" cx="18" cy="${y.toFixed(1)}" r="6" fill="${col}" stroke="#fff" stroke-width="2.5" paint-order="stroke" style="cursor:ns-resize;filter:drop-shadow(0 0 1px rgba(0,0,0,0.5));"><title>Guide y=${Math.round(it.pos)} — drag</title></circle>`;
+      h += `<circle class="guide-h" data-guide-id="${it.id}" cx="18" cy="${y.toFixed(1)}" r="6" fill="${col}" stroke="#fff" stroke-width="2.5" paint-order="stroke" style="cursor:ns-resize;filter:drop-shadow(0 0 1px rgba(0,0,0,0.5));"><title>${esc(_pT('guide_y_drag', `Guide y=${Math.round(it.pos)} — drag`, { pos: Math.round(it.pos) }))}</title></circle>`;
       h += `<text class="guide-h-lbl" x="30" y="${(y-5).toFixed(1)}" fill="${col}" font-size="9" font-family="monospace" pointer-events="none">${Math.round(it.pos)}</text>`;
     }
   });
@@ -12694,7 +12694,7 @@ function segMidMarkersSVG() {
       const a = ct.nodes[k], b = ct.nodes[(k+1)%n];
       const mid = (a.out && b.in) ? _bezEval([[a.x,a.y], a.out, b.in, [b.x,b.y]], 0.5)
                                   : [(a.x+b.x)/2, (a.y+b.y)/2];
-      h += `<circle class="seg-mid" data-ci="${ci}" data-si="${k}" cx="${fx(mid[0]).toFixed(1)}" cy="${fy(mid[1]).toFixed(1)}" r="3"><title>${segIsCurve(ct,k) ? 'Curve segment — click to make it a straight line' : 'Line segment — click to make it a curve'}</title></circle>`;
+      h += `<circle class="seg-mid" data-ci="${ci}" data-si="${k}" cx="${fx(mid[0]).toFixed(1)}" cy="${fy(mid[1]).toFixed(1)}" r="3"><title>${esc(segIsCurve(ct,k) ? I18n.t('fontmaker.node_editor.seg_curve_title') : I18n.t('fontmaker.node_editor.seg_line_title'))}</title></circle>`;
     }
   });
   return h;
