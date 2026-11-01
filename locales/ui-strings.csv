@@ -870,6 +870,7 @@ dictionary.filters.emoji_gender_all,All,הכול,emoji gender button,
 dictionary.filters.emoji_gender_fem,♀ Fem,♀ נקבה,emoji gender button,leading-emoji
 dictionary.filters.emoji_gender_masc,♂ Masc,♂ זכר,emoji gender button,leading-emoji
 dictionary.filters.emoji_none,None,ללא,emoji category select-none,
+dictionary.filters.emoji_subcats_aria,{name} subcategories,תת-קטגוריות של {name},emoji category expand-arrow aria-label (the name is directory data),do not translate {…}
 dictionary.filters.era_biblical,Biblical,מקראית,era checkbox,
 dictionary.filters.era_head,Era,תקופה,era subheading,
 dictionary.filters.era_modern,Modern,מודרנית,era checkbox,

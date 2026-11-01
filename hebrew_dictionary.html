@@ -5246,7 +5246,8 @@ function renderEmojiCatTree() {
     arrow.textContent = '▾';
     arrow.tabIndex = 0;
     arrow.setAttribute('role', 'button');
-    arrow.setAttribute('aria-label', c.name + ' subcategories');
+    arrow.dataset.cat = c.name;   // applyI18n relabels the arrows in place (a re-render would fold every open group)
+    arrow.setAttribute('aria-label', I18n.t('dictionary.filters.emoji_subcats_aria', { name: c.name }));
     arrow.setAttribute('aria-expanded', 'false');
     arrow.addEventListener('click', e => {
       e.preventDefault(); e.stopPropagation();
@@ -5616,6 +5617,7 @@ function applyI18n() {
   positionSidebarTab();   // the live language switch flips dir without a resize event
   if (_hk) _hk.applyI18n();   // read-only re-render of the on-screen keyboard labels
   rebuildFilterChips();
+  document.querySelectorAll('.emoji-cat-arrow').forEach(a => a.setAttribute('aria-label', I18n.t('dictionary.filters.emoji_subcats_aria', { name: a.dataset.cat })));
   // Re-render the active result view with translated strings, preserving the current mode/selection.
   try {
     if (typeof wlFilterOverride !== 'undefined' && wlFilterOverride) {

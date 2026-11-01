@@ -1349,6 +1349,7 @@
   "dictionary.filters.emoji_gender_fem": "♀ Fem",
   "dictionary.filters.emoji_gender_masc": "♂ Masc",
   "dictionary.filters.emoji_none": "None",
+  "dictionary.filters.emoji_subcats_aria": "{name} subcategories",
   "dictionary.filters.era_biblical": "Biblical",
   "dictionary.filters.era_head": "Era",
   "dictionary.filters.era_modern": "Modern",
