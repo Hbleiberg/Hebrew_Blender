@@ -5703,6 +5703,16 @@ function buildResultObject() {
     cards,
   };
 }
+// What the history and the progress report show for a saved drill: only the cards the student answered, as the
+// results screen's hero does — a card a time limit or an early end left unreached is not an attempt. The saved
+// `pct` / `total` stay deck-wide on purpose (the Learning Path gate reads them), so this is display only. A result
+// saved without `cards`, or with nothing answered, keeps its deck-wide numbers; a fully marked drill is unchanged.
+function resultShown(r) {
+  const total = r.total || 0, correct = r.correct || 0;
+  const answered = Array.isArray(r.cards) ? r.cards.filter(c => c && (c.score === true || c.score === false)).length : total;
+  const den = (answered > 0 && answered < total) ? answered : total;
+  return { correct, den, pct: den ? Math.round((correct / den) * 100) : 0, notReached: total - den };
+}
 
 // Modal to pick an existing profile or create a new one. Resolves to a name or null.
 // Give a JS-built overlay proper dialog semantics: role/aria-modal/aria-labelledby,
@@ -5908,10 +5918,12 @@ function renderProfileHistory(name) {
       const dateStr = d.toLocaleDateString((window.I18n && I18n.lang) || undefined, { month: 'short', day: 'numeric', year: 'numeric' });   // UI language, not browser locale
       const timeStr = r.timeSec != null ? ` · ${formatTimerSecs(r.timeSec)}` : '';
       li.style.cssText = 'display:flex;align-items:center;gap:8px;';
+      const shown = resultShown(r);
+      const unreached = shown.notReached ? ' · ' + I18n.t('flashcards.profile.history_not_reached' + (shown.notReached === 1 ? '.one' : '.other'), { n: shown.notReached }) : '';
       li.innerHTML = `
-        <span class="rmark">${r.pct >= 80 ? '✓' : r.pct >= 50 ? '–' : '✗'}</span>
+        <span class="rmark">${shown.pct >= 80 ? '✓' : shown.pct >= 50 ? '–' : '✗'}</span>
         <span style="flex:1;">
-          <b>${r.pct}%</b> <span class="sub">${esc(I18n.t('flashcards.profile.history_pct_frac', { correct: r.correct, total: r.total }))}</span><br>
+          <b>${shown.pct}%</b> <span class="sub">${esc(I18n.t('flashcards.profile.history_pct_frac', { correct: shown.correct, total: shown.den }) + unreached)}</span><br>
           <span class="sub" style="font-size:0.72rem;">${dateStr} · ${describeResultMode(r.settings)}${timeStr}</span>
         </span>
         <button class="btn sm danger" data-act="del" aria-label="${esc(I18n.t('flashcards.actions.delete_aria', { name: dateStr }))}"><svg class="hi hi-sm hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
@@ -6754,10 +6766,11 @@ function _reportEnter(name) {
 
   const fmtDate = iso => new Date(iso).toLocaleDateString((window.I18n && I18n.lang) || undefined, { month: 'short', day: 'numeric', year: 'numeric' });   // UI language, not browser locale
   const stamps = results.map(r => r.savedAt).filter(Boolean).sort();
-  const totalCards = results.reduce((n, r) => n + (r.total || 0), 0);
-  const totalRight = results.reduce((n, r) => n + (r.correct || 0), 0);
+  const shownAll = results.map(resultShown);   // answered cards only, as the history shows them
+  const totalCards = shownAll.reduce((n, x) => n + x.den, 0);
+  const totalRight = shownAll.reduce((n, x) => n + x.correct, 0);
   const overall = totalCards ? Math.round((totalRight / totalCards) * 100) : 0;
-  const best = results.reduce((m, r) => Math.max(m, r.pct || 0), 0);
+  const best = shownAll.reduce((m, x) => Math.max(m, x.pct), 0);
 
   let html = `<div class="fcr-head">
     <h1 class="fcr-title">${esc(I18n.t('flashcards.report.title'))}</h1>
@@ -6828,13 +6841,13 @@ function _reportEnter(name) {
       <th>${esc(I18n.t('flashcards.report.col_score'))}</th>
       <th>%</th>
     </tr></thead><tbody>`
-    + recent.map(r => `<tr>
-        <td class="fcr-mark">${r.pct >= 80 ? '✓' : r.pct >= 50 ? '–' : '✗'}</td>
+    + recent.map(r => { const x = resultShown(r); return `<tr>
+        <td class="fcr-mark">${x.pct >= 80 ? '✓' : x.pct >= 50 ? '–' : '✗'}</td>
         <td class="bidi-isolate">${esc(r.savedAt ? fmtDate(r.savedAt) : '')}</td>
         <td>${esc(describeResultMode(r.settings))}</td>
-        <td class="bidi-isolate">${esc(r.correct + '/' + r.total)}</td>
-        <td class="bidi-isolate">${esc(r.pct + '%')}</td>
-      </tr>`).join('')
+        <td class="bidi-isolate">${esc(x.correct + '/' + x.den)}</td>
+        <td class="bidi-isolate">${esc(x.pct + '%')}</td>
+      </tr>`; }).join('')
     + `</tbody></table></div>`;
 
   // ── Footer: handwriting space + the storage-locality line (reassurance AND accurate product

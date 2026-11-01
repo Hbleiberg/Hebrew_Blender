@@ -1372,6 +1372,8 @@ flashcards.profile.delete_confirm_cloud,"Delete profile ""{name}"" and all of it
 flashcards.profile.delete_result_confirm,Delete this saved result?,למחוק את התוצאה השמורה הזו?,confirm dialog,
 flashcards.profile.delete_result_confirm_cloud,"Delete this saved result? You are signed in, so it is removed from your account and from every device.","למחוק את התוצאה השמורה הזו? אתם מחוברים, ולכן היא תוסר מהחשבון ומכל מכשיר.",confirm dialog while signed in,
 flashcards.profile.history_pct_frac,({correct}/{total}),({correct}/{total}),history item score fraction,
+flashcards.profile.history_not_reached.one,{n} not reached,{n} לא הגיעו אליו,"history item: how many cards of the drill the student never reached (a time limit or an early end), after the score fraction",plural; template
+flashcards.profile.history_not_reached.other,{n} not reached,{n} לא הגיעו אליהם,"history item: how many cards of the drill the student never reached (a time limit or an early end), after the score fraction",plural; template
 flashcards.profile.merge_confirm,"Profile ""{newName}"" already exists — merge ""{oldName}"" into it?","הפרופיל ""{newName}"" כבר קיים — למזג את ""{oldName}"" אליו?",confirm dialog,mixed UI+content — do not translate {…}
 flashcards.profile.merge_confirm_cloud,"Profile ""{newName}"" already exists — merge ""{oldName}"" into it? You are signed in, so the merge is saved to your account.","הפרופיל ""{newName}"" כבר קיים — למזג את ""{oldName}"" אליו? אתם מחוברים, ולכן המיזוג נשמר בחשבון שלכם.",confirm dialog while signed in,mixed UI+content
 flashcards.profile.new_profile_heading,New profile,פרופיל חדש,save-to-profile modal section,

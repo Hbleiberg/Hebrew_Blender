@@ -2028,6 +2028,8 @@
   "flashcards.profile.delete_confirm_cloud": "למחוק את הפרופיל \"{name}\" ואת כל התוצאות השמורות שלו? אתם מחוברים, ולכן הוא יוסר מהחשבון ומכל מכשיר. לא ניתן לבטל.",
   "flashcards.profile.delete_result_confirm": "למחוק את התוצאה השמורה הזו?",
   "flashcards.profile.delete_result_confirm_cloud": "למחוק את התוצאה השמורה הזו? אתם מחוברים, ולכן היא תוסר מהחשבון ומכל מכשיר.",
+  "flashcards.profile.history_not_reached.one": "{n} לא הגיעו אליו",
+  "flashcards.profile.history_not_reached.other": "{n} לא הגיעו אליהם",
   "flashcards.profile.history_pct_frac": "({correct}/{total})",
   "flashcards.profile.merge_confirm": "הפרופיל \"{newName}\" כבר קיים — למזג את \"{oldName}\" אליו?",
   "flashcards.profile.merge_confirm_cloud": "הפרופיל \"{newName}\" כבר קיים — למזג את \"{oldName}\" אליו? אתם מחוברים, ולכן המיזוג נשמר בחשבון שלכם.",
