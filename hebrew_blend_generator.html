@@ -2333,7 +2333,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
        stay byte-identical across its four carriers. */
     .sidebar, header, footer, .zoom-bar, .print-tip, .main-toolbar,
     .sidebar-toggle-btn, .sidebar-show-btn, .sbr-split, #fsBtn, #previewNotice, #appToast,
-    .score-bar, .self-check-controls, .timer-bar { display: none !important; }
+    .score-bar, .self-check-controls, .sc-controls, .timer-bar, .flip-card-score-btns { display: none !important; }
     /* The QR's "too many items" notice tells the teacher to shorten the sheet; it stays on screen, never on the
        student's copy (exportPDF's onclone hides it too). */
     .qr-ak-note { display: none !important; }
@@ -9505,6 +9505,8 @@ const PDF_LIBS = [
 ];
 let _pdfLibsPromise = null;
 const pdfFailedNotice = () => I18n.t('worksheet.validation.pdf_failed');
+// Self-Check's rows for the screen alone: exportPDF drops them from its capture, the print block's display:none twin.
+const SC_SCREEN_ROWS = '.score-bar, .self-check-controls, .sc-controls, .timer-bar, .flip-card-score-btns';
 function ensurePdfLibs() {
   if (_pdfLibsPromise) return _pdfLibsPromise;
   _pdfLibsPromise = Promise.all(PDF_LIBS.filter(l => !l.ready()).map(l => new Promise((resolve, reject) => {
@@ -9645,8 +9647,16 @@ async function exportPDF() {
       let callerRows = [];   // where each row of calls starts in the clone that is captured (css px)
       const qrSpots = [];    // each answer-key QR's image box in that clone (css px), drawn at full resolution below
       const qrImgs = [...sheet.querySelectorAll('.qr-ak img')];   // the live, decoded images, in the clone's order
+      // Self-Check's screen rows (score and timer bars, Reveal All / Hide All / per row, a flipped card's Got it / Missed)
+      // leave the clone below as the print block drops them: the canvas takes the sheet's height without them, measured
+      // here with them out for a moment, so the page is not shrunk around a blank band.
+      const scRows = [...sheet.querySelectorAll(SC_SCREEN_ROWS)];
+      const scWas = scRows.map(n => [n.style.getPropertyValue('display'), n.style.getPropertyPriority('display')]);
+      scRows.forEach(n => n.style.setProperty('display', 'none', 'important'));
+      const sheetH = sheet.scrollHeight;
+      scRows.forEach((n, k) => { if (scWas[k][0]) n.style.setProperty('display', scWas[k][0], scWas[k][1]); else n.style.removeProperty('display'); });
       const capW = isBingoPage && bingoRefW ? bingoRefW : sheet.scrollWidth + 8;
-      const capH = isBingoPage && bingoRefH ? bingoRefH : sheet.scrollHeight + 8;
+      const capH = isBingoPage && bingoRefH ? bingoRefH : sheetH + 8;
       const canvas = await html2canvas(sheet, {
         scale: 2,
         useCORS: true,
@@ -9683,6 +9693,7 @@ async function exportPDF() {
           // The QR's "too many items" notice is for the teacher on screen, not the student's copy, nor are Self-Check's
           // "tap to flip" / "tap to reveal" (the print block's twins)
           el.querySelectorAll('.qr-ak-note, .rw-flip-hint, .flip-card-hint').forEach(n => { n.style.visibility = 'hidden'; });
+          el.querySelectorAll(SC_SCREEN_ROWS).forEach(n => n.style.setProperty('display', 'none', 'important'));
           // html2canvas flattens the Self-Check flip as print does (both faces, the back mirrored on top): keep the face
           // the screen shows, unmirrored (the print block's twin)
           el.querySelectorAll('.flip-card, .rw-flip').forEach(c => {
