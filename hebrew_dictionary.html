@@ -449,7 +449,7 @@ body.dark .mobile-filters-btn:hover{background:var(--navy);}   /* the dark overr
 @keyframes loadIndet{0%{margin-left:-40%;}100%{margin-left:100%;}}
 .panel{background:var(--cream);border:1px solid var(--border);border-radius:8px;}
 .panel-title{background:var(--navy);color:#fff;font-family:'Libre Baskerville',serif;font-size:0.8rem;letter-spacing:0.08em;text-transform:uppercase;padding:8px 14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;border-radius:8px 8px 0 0;}
-.panel-title::after{content:'▾';font-size:1rem;color:var(--gold-light);transition:transform 0.2s;}
+.panel-title::after{content:'▾';content:'▾' / '';font-size:1rem;color:var(--gold-light);transition:transform 0.2s;}
 .panel.collapsed .panel-title::after{transform:rotate(-90deg);}
 .panel-title:hover{background:#24345c;}   /* the suite's navy-control hover pair (contact/resources/FM primary); a collapse bar had no hover state (S317 → F S328) */
 body.dark .panel-title:hover{background:#345090;}
@@ -458,7 +458,7 @@ body.dark .panel-title:hover{background:#345090;}
 .adv-section{border:1px solid var(--border);border-radius:6px;margin-bottom:8px;}
 .adv-section:last-child{margin-bottom:0;}
 .adv-section-title{display:flex;justify-content:space-between;align-items:center;padding:6px 10px;background:var(--warm-gray);font-size:0.72rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;user-select:none;color:var(--text);border-radius:6px 6px 0 0;}
-.adv-section-title::after{content:'▾';font-size:0.9rem;color:var(--muted);transition:transform 0.2s;}
+.adv-section-title::after{content:'▾';content:'▾' / '';font-size:0.9rem;color:var(--muted);transition:transform 0.2s;}
 .adv-section.collapsed .adv-section-title::after{transform:rotate(-90deg);}
 .adv-section-body{padding:10px;}
 .adv-section.collapsed .adv-section-body{display:none !important;}
@@ -996,7 +996,7 @@ footer details > summary:hover{text-decoration:underline;}   /* FAQ / How-To row
   .shoresh-patterns-title { background: var(--navy); color: #fff; font-family: 'Libre Baskerville', serif;
     font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 9px 14px; cursor: pointer;
     user-select: none; display: flex; justify-content: space-between; align-items: center; }
-  .shoresh-patterns-title::after { content: '▾'; color: var(--gold-light); transition: transform 0.2s; }
+  .shoresh-patterns-title::after { content: '▾'; content: '▾' / ''; color: var(--gold-light); transition: transform 0.2s; }
   .shoresh-patterns-wrap.collapsed .shoresh-patterns-title::after { transform: rotate(-90deg); }
   .shoresh-patterns-title:hover { background: #24345c; }   /* same navy-bar hover as .panel-title */
   body.dark .shoresh-patterns-title:hover { background: #345090; }
@@ -2821,6 +2821,7 @@ function initVowelFilter() {
     const arrow = document.createElement('span');
     arrow.className = 'vg-arrow';
     arrow.textContent = '▾';
+    arrow.setAttribute('aria-hidden', 'true');   // drawn, not read: the header's name is its sound (pattern decorative-glyph-carrier-exposed-to-assistive-tech)
     arrow.style.cssText = 'font-size:0.75rem;transition:transform 0.2s;';
     header.appendChild(hdrText);
     header.appendChild(arrow);
@@ -3061,7 +3062,7 @@ function initPosFilters() {
           <div class="pos-badges" id="pb${i}"></div>
         </div>
         <button class="pos-clear" onclick="event.stopPropagation();clearPos(${i})" title="${esc(I18n.t('dictionary.filters.pos_clear_title'))}" aria-label="${esc(I18n.t('dictionary.filters.pos_clear_title'))}"><svg class="hi hi-sm hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
-        <span class="pos-arrow">▾</span>
+        <span class="pos-arrow" aria-hidden="true">▾</span>
       </div>
       <div class="pos-sec-body">
         <div class="letter-pos-grid" id="pg${i}"></div>
@@ -3084,7 +3085,7 @@ function initPosFilters() {
         <div class="pos-badges" id="pbAny"></div>
       </div>
       <button class="pos-clear" onclick="event.stopPropagation();clearAnyLetters()" title="${esc(I18n.t('dictionary.filters.pos_clear_title'))}" aria-label="${esc(I18n.t('dictionary.filters.pos_clear_title'))}"><svg class="hi hi-sm hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
-      <span class="pos-arrow">▾</span>
+      <span class="pos-arrow" aria-hidden="true">▾</span>
     </div>
     <div class="pos-sec-body">
       <label class="cb-label" style="margin-bottom:6px;">
