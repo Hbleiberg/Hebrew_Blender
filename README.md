@@ -204,8 +204,9 @@ How it works inside: `docs/reference/accounts-and-cloud.md`.
 **One-time dashboard setup** (Authentication section unless noted):
 1. *URL Configuration* — Site URL `https://ivritsuite.com`; Redirect URLs `https://ivritsuite.com/**`,
    `http://localhost:8080/**`, `http://127.0.0.1:8080/**` (the last two are for local testing). The
-   delete-account Edge Function keeps its own hardcoded copy of the two production origins — changing one
-   means changing both; it answers no localhost origin, so a deletion cannot be made from a local server.
+   delete-account and manage-students Edge Functions keep their own hardcoded copy of the two production
+   origins — changing one means changing all three; they answer no localhost origin, so a local server can
+   neither delete an account nor manage student logins.
 2. *Sign In / Providers → Email* — enabled, sign-ups allowed, Email OTP length 6. Passwords are never
    used; people get an email with a 6-digit code, and a link that opens the site with the code filled in.
 3. *Emails → Templates* — for **both** *Confirm signup* (a person's first email) and *Magic Link*

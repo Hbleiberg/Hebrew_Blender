@@ -27,7 +27,7 @@
 // Deploying it: db/README.md → Edge Functions (through the connector, or the dashboard editor, with Verify JWT on).
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2';
 
-const ALLOWED_ORIGINS = ['https://ivritsuite.com', 'https://www.ivritsuite.com', 'http://localhost:8080', 'http://127.0.0.1:8080'];
+const ALLOWED_ORIGINS = ['https://ivritsuite.com', 'https://www.ivritsuite.com'];
 const STUDENT_DOMAIN = 'students.ivritsuite.com';
 const USERNAME_RE = /^[a-z0-9][a-z0-9.]{1,28}[a-z0-9]$/;
 const MAX_PER_CALL = 60;
