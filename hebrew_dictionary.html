@@ -500,8 +500,8 @@ html[lang="he"] #ttsSpeedLabel,html[lang="he"] [data-i18n="dictionary.translit.s
    (0.35-0.55). Converged on this page's own .tbtn:disabled idiom. The hover guard is (0,3,0)
    against the (0,2,0) it cancels, and --border/--text are themed, so one restate covers both
    themes; .pos-all-btn:hover changes only border and text, so only those are restated. */
-.pos-all-btn:disabled{opacity:0.5;cursor:default;}
-.pos-all-btn:disabled:hover{border-color:var(--border);color:var(--text);}
+.pos-all-btn:disabled,.pos-all-btn[aria-disabled="true"]{opacity:0.5;cursor:default;}
+.pos-all-btn:disabled:hover,.pos-all-btn[aria-disabled="true"]:hover{border-color:var(--border);color:var(--text);}
 /* In-place corpus-retry button (converged retry model) — same S102 floor declarations as above;
    this file has no .btn-xs, so the retry sites carry their own class. Both tokens flip with the
    theme, so no dark rule is needed. */
@@ -946,9 +946,9 @@ footer details > summary:hover{text-decoration:underline;}   /* FAQ / How-To row
     grid-column: 1 / -1; }
 
   /* Export Selected Words */
-  /* The dim is on the box's children, not the box, so the error a press of a dimmed Export explains itself with
-     keeps its full colour (a child cannot undo its parent's opacity: at 0.5 it read 2.35:1 / 2.79:1). */
-  .export-disabled > :not(#exportErr) { opacity: 0.5; }
+  /* Only the two buttons dim, as aria-disabled (the .pos-all-btn rule above): a press still runs and the error under
+     them says why. The count and the instructions keep their colour — dimmed with the buttons they read 2.12:1 /
+     2.38:1, live text that nothing marked inactive. */
   .export-disabled #exportCount { color: var(--muted); }
 
   /* Shoresh (Root) Explorer mode */
@@ -1342,8 +1342,8 @@ html[lang="he"] .beta-tag { letter-spacing: normal; text-transform: none; }   /*
             <div style="font-size:0.65rem;color:var(--muted);margin-bottom:6px;" data-i18n="dictionary.export.hint">Active when Bulk Copy Mode is on and at least one word is selected.</div>
             <div id="exportBox" class="export-disabled">
               <div style="display:flex;gap:5px;">
-                <button class="pos-all-btn hi-btn" style="flex:1;" onclick="exportAnki()"><svg class="hi hi-sm hi-download" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.4v11.2"/><path d="M7.6 10.4 12 14.8l4.4-4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="dictionary.export.anki_button">Export for Anki</span></button>
-                <button class="pos-all-btn hi-btn" style="flex:1;" onclick="exportQuizlet()"><svg class="hi hi-sm hi-download" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.4v11.2"/><path d="M7.6 10.4 12 14.8l4.4-4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="dictionary.export.quizlet_button">Export for Quizlet</span></button>
+                <button class="pos-all-btn hi-btn" style="flex:1;" onclick="exportAnki()" aria-disabled="true"><svg class="hi hi-sm hi-download" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.4v11.2"/><path d="M7.6 10.4 12 14.8l4.4-4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="dictionary.export.anki_button">Export for Anki</span></button>
+                <button class="pos-all-btn hi-btn" style="flex:1;" onclick="exportQuizlet()" aria-disabled="true"><svg class="hi hi-sm hi-download" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.4v11.2"/><path d="M7.6 10.4 12 14.8l4.4-4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="dictionary.export.quizlet_button">Export for Quizlet</span></button>
               </div>
               <div id="exportCount" class="bidi-isolate" style="font-size:0.7rem;color:var(--muted);margin-top:5px;">0 words selected for export.</div>
               <div id="exportErr" role="status" aria-live="polite" style="font-size:0.72rem;color:var(--danger-text);margin-top:3px;min-height:1em;"></div>
@@ -1917,6 +1917,7 @@ function updateExportState() {
   if (!box) return;
   const active = bulkMode && bulkSelected.size > 0;
   box.classList.toggle('export-disabled', !active);
+  box.querySelectorAll('button').forEach(b => b.setAttribute('aria-disabled', active ? 'false' : 'true'));
   const c = document.getElementById('exportCount');
   if (c) c.textContent = I18n.t(bulkSelected.size === 1 ? 'dictionary.export.count.one' : 'dictionary.export.count.other', { count: bulkSelected.size });
   if (active) { const e = document.getElementById('exportErr'); if (e) e.textContent = ''; }
