@@ -95790,3 +95790,38 @@ _(prior)_ **Next session (S590):** **Branch `claude/amazing-gauss-gli685` (S588�
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 - D performance (one tool): 2026-11-01 (**S590 — `hebrew_blend_generator.html` (first since S452) + chrome (since S466): cold load and 9 interactions at 1×/4× against the S452 tree (equal within noise), forced layouts by stack, Print and Export PDF by stage, an 80-Generate leak arm; chrome 28 cold cells + 10 interactions, hCaptcha replayed. FOUND 3: 1 FIXED (resources' hCaptcha), 2 P4; + 3 from the queue. D-next: trope (S480), dictionary (S496).**)
+
+_(prior)_ **Next session (S591):** **Branch `claude/amazing-gauss-gli685` (S588–S590, PR #386): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1183**, FM **5.59**, corpus ?v=7. ⚑ drift: main=697d533 sw=v1183 fm=5.59 migration=0009_assignment_enrolment.sql live=yes functions=bcbee20 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest now: C trope (S455), P generator (S463), G fontmaker (S465), N fontmaker (S476), D trope (S480), H torah (S482), M chrome (S494); suite E (S531), L (S532), K (S533). ⚑ The signed-in reading-assignments UI still wants its first P and H. ⚑ Record-replay harnesses to port: `g589/common.mjs` (Sefaria), `d590/hcreplay.mjs` (every `*.hcaptcha.com` host through curl). ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
+⚑ Sync P2 (S573). ⚑ The account page signed in is unprinted (`--sdk`): the next G or P on the chrome. ⚑ Gate 4 to propose: the generator's blend sheets on a phone. ⚑ smoke-sync D31 flake. ⚑ Ports at the next A: `m554/`–`d590/`; traps 352, 356–464. ⚑ Queues: generator 25, FM 21, torah 13, dictionary 13, dashboard 9; the rest ≤ 7.
+
+
+<!-- archived by compact-ledger at the S592 boundary, 2026-11-01 -->
+## Compaction (S592, 2026-11-01) — moved verbatim from the live ledger
+
+### from Candidates (prioritized, top = next)
+
+- [ ] P3 (**NEW S591 — a pattern's detector gone stale**) | scripts/loop/probes/S575-chrome-print-whole-blocks.mjs | **The `print-block-split-at-a-sheet-foot` detector fails contact 4/4**: S585's print change (`4db6668b`) took the "Support IvritSuite" heading off paper and the probe still marks it ("marker not in the PDF"); skip a marker whose block prints `display:none`, so the pattern has a working detector again. | found S591
+
+### from Done
+
+- [x] 2026-10-31 | (S586 close-out) | branch/deploy note | **S586 = C on the Torah Trainer (first since S441): FOUND 1, FIXED 1; + three from the queue; FIXED 4. Same PR #383, sw v1164; deploy on merge. Gates: none asked.**
+
+- [x] 2026-10-31 | `3c9effb8` | hebrew_blend_generator.html, sw.js | (S586, queue S574 M) **A Real Words key's ★ cards keep their muted text above AA in dark mode.** | `c586/fix4.mjs` 7 cells: ★ pixel 4.51 → 4.98:1, dark only (findings S586)
+
+- [x] 2026-10-31 | `5c374fb7` | torah_trainer.html, sw.js | (S586, queue S560 C) **The karaoke follow-scroll brings the sung word clear of the open audio bar** (band = the bar's height + 16). | probe `S586-torah-karaoke-follow-scroll-clears-bar.mjs`: 44/44 clear (pre-fix 0/44)
+
+- [x] 2026-10-31 | `6446108f` | hebrew_dictionary.html, sw.js | (S586, queue S571 C) **The English UI's Hebrew words carry `lang="he"`** (`escHe()`; the Hebrew UI unchanged). | `c586/fix2.mjs` 8 cells: text identical, unmarked Hebrew 15 → 0 (findings S586)
+
+- [x] 2026-10-31 | `cd5dbe76` | torah_trainer.html, sw.js | (S586 C) **The Calendar lookup's Hebrew parsha name carries `lang="he"`.** | `c586/fix1.mjs` 32 cells: text identical, unmarked 1 → 0 (findings S586)
+
+### from Per-session log (one line per session)
+
+- 2026-10-29 | **S571** | iters: 5 | tools: dictionary ×2, flash, generator, torah, locales, scripts/loop, sw | patterns fixed: button-focus-lost-to-its-own-rebuild ×1, selected-state-lost-in-forced-colors ×1 | pass run: C (dictionary, first since S427) | SW: v1122→v1126
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S591 (2026-11-01):** trope, dictionary, index, sw.js, scripts/loop, loop docs S591 · resources, generator, dashboard, sw.js, scripts/loop, loop docs S590 · torah, flash, dashboard, locales, sw.js, scripts/loop, loop docs S589 · flash, dashboard, fontmaker, locales, sw.js, scripts/loop, loop docs S588 · torah, name_tags, letter_learner, sw.js, scripts/loop, loop docs S587 · torah, dictionary, generator, sw.js, scripts/loop, loop docs S586 · dictionary, name_tags, contact, sw.js, loop docs S585 · trope_atlas, torah, generator, sw.js, loop docs S584 · trope_atlas, torah, generator, sw.js S583 · …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- C accessibility (one tool): 2026-11-01 (**S591 — `trope_tutor.html` (first since S455): 4 cells × 4 tabs (names by the AX tree, composited contrast, 24px targets, Tab walks, `lang`), 27 melodies × Learn/Phrases at every chip (`?preview=traditions`), every control pressed by its key, the drill by keyboard in 5 melody kinds, tour, tips, playing states, reduced motion, 1.4.12 spacing and 320px reflow; plants fired. FOUND 3: 2 FIXED, 1 P4; + 2 from the queue. C-next: generator (S469), chrome (S483).**)
