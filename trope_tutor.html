@@ -3465,7 +3465,14 @@ function renderLearn() {
     if (TROPE_NOTES[t.key]) {
       const note = document.createElement('p');
       note.className = 'tu-card-note';
-      { const _nk = 'trope.learn.trope_note_' + t.key, _nv = I18n.t(_nk); note.textContent = _nv === _nk ? TROPE_NOTES[t.key] : _nv; }
+      { const _nk = 'trope.learn.trope_note_' + t.key, _nv = I18n.t(_nk), txt = _nv === _nk ? TROPE_NOTES[t.key] : _nv;
+        // In the English UI a note's Hebrew (sof pasuk's ׃) rides a lang="he" span (UX rule 8); the rest stays text.
+        if (I18n.lang === 'he') note.textContent = txt;
+        else txt.split(/([֐-׿]+)/).forEach((s, i) => {
+          if (!s) return;
+          if (i % 2) { const h = document.createElement('span'); h.lang = 'he'; h.textContent = s; note.appendChild(h); }
+          else note.appendChild(document.createTextNode(s));
+        }); }
       card.appendChild(note);
     }
 
