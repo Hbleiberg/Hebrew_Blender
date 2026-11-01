@@ -444,7 +444,7 @@ _(none)_
 
 - [x] 2026-11-01 | `876c221b` | generator, dashboard, torah, dictionary, flash, locales, sw.js | (S592 P, gate 2 answered; pattern account-wide-delete-confirm-without-signed-in-wording) **Signed in, Reset vowel colors says it resets them on every device.** | 20 presses (EN light 1280 / HE dark 800 × signed out / in): 20/20 (HEAD fails the 10 signed in); smoke-tools 220/220
 
-- [x] 2026-11-01 | `1b5d451c` | sw.js | (S592, the maintainer's ask) **`js/ivrit-assignments.js` precached: a signed-in Trainer opened offline no longer toasts "could not load".** | offline × 6 cells: toast 2/6 → 0/6, 0 errors
+- [x] 2026-11-01 | `342fc925` | sw.js | (S592, the maintainer's ask) **`js/ivrit-assignments.js` precached: a signed-in Trainer opened offline no longer toasts "could not load".** | offline × 6 cells: toast 2/6 → 0/6, 0 errors
 
 - [x] 2026-11-01 | `7157c391` | classroom_dashboard.html, torah_trainer.html, locales, sw.js | (S592, the maintainer's ask; pattern account-wide-delete-confirm-without-signed-in-wording) **Signed in, six more resets (dashboard ×4, trope colours ×2) say they reach every device.** | 24 real presses: 24/24 (the tree before fails the 12 signed in); smoke-tools 220/220
 
