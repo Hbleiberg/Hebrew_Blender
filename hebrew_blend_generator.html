@@ -1697,7 +1697,12 @@ body.dark .hi-sun{display:inline-block;}
      page is scrollable overflow, so the page shifts, the badge leaves the finger, :hover drops,
      the page snaps back, and the tap lands on the row instead (measured: Hebrew at 320px, the
      Live-update badge flickering every frame). A tap opens the JS-clamped .tooltip-open box. */
-  @media (hover: hover) { .tooltip-wrap:hover .tooltip-box { display: block; } }
+  /* WCAG 1.4.13 (pattern hover-tip-not-dismissible-or-hoverable): the hover preview takes the pointer, so moving onto
+     the bubble to read it keeps the badge hovered — the ::before strip bridges the 8px gap — and Escape hides it until
+     the pointer leaves (.tooltip-hushed, set by the tooltip script). Its clicks stay its own (the script's capture). */
+  @media (hover: hover) { .tooltip-wrap:hover .tooltip-box { display: block; pointer-events: auto; } }
+  .tooltip-wrap .tooltip-box::before { content: ''; position: absolute; inset-inline: 0; bottom: 100%; height: 9px; }
+  .tooltip-wrap.tooltip-hushed:not(.tooltip-open) .tooltip-box { display: none; }
   .tooltip-wrap.tooltip-open .tooltip-box { display: block; }
   /* Tap/keyboard-opened tooltips are interactive & JS-positioned */
   .tooltip-wrap.tooltip-open .tooltip-box { pointer-events: auto; }
@@ -6863,23 +6868,41 @@ document.addEventListener('DOMContentLoaded', () => {
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initTips);
   else initTips();
 
+  // Capture phase, ahead of the controls a badge sits inside: a click or key on a badge or its bubble is the tip's
+  // alone. Bubbling, the Saved Presets title (a collapse button) folded its panel on every press of its "?", and a click
+  // on the vav bubble's text reached its label and unticked "Count וֹ/וּ as a letter".
   document.addEventListener('click', e => {
     if (!e.target.closest) return;
-    // A click inside the open box (e.g. to read/select text) leaves it open.
-    if (e.target.closest('.tooltip-box')) return;
     const wrap = e.target.closest('.tooltip-wrap');
-    if (wrap) { e.preventDefault(); e.stopPropagation(); toggleTip(wrap); return; }
+    if (wrap) {
+      e.preventDefault(); e.stopPropagation();
+      // A click inside the open box (e.g. to read/select text) leaves it open.
+      if (!e.target.closest('.tooltip-box')) toggleTip(wrap);
+      return;
+    }
     if (_openTip) closeTip();
-  });
+  }, true);
 
+  // Registered before the tour's own capture listener, so Escape closes only a shown bubble (WCAG 1.4.13): an open
+  // one as before, or one the pointer rests on, hidden until the pointer leaves it.
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') { if (_openTip) { const w = _openTip; closeTip(); w.focus(); } return; }
+    if (e.key === 'Escape') {
+      if (_openTip) { const w = _openTip; closeTip(); w.focus(); e.preventDefault(); e.stopImmediatePropagation(); return; }
+      const hov = [...document.querySelectorAll('.tooltip-wrap:hover')].pop();
+      const box = hov && hov.querySelector('.tooltip-box');
+      if (box && getComputedStyle(box).display !== 'none') {
+        hov.classList.add('tooltip-hushed');
+        hov.addEventListener('pointerleave', () => hov.classList.remove('tooltip-hushed'), { once: true });
+        e.preventDefault(); e.stopImmediatePropagation();
+      }
+      return;
+    }
     const wrap = e.target.closest && e.target.closest('.tooltip-wrap');
     if (wrap && (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar')) {
-      e.preventDefault();
+      e.preventDefault(); e.stopPropagation();
       toggleTip(wrap);
     }
-  });
+  }, true);
 
   // Closing on focus loss (keyboard tab-away).
   document.addEventListener('focusout', e => {
