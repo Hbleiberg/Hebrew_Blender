@@ -95825,3 +95825,40 @@ _(prior)_ **Next session (S591):** **Branch `claude/amazing-gauss-gli685` (S588�
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 - C accessibility (one tool): 2026-11-01 (**S591 — `trope_tutor.html` (first since S455): 4 cells × 4 tabs (names by the AX tree, composited contrast, 24px targets, Tab walks, `lang`), 27 melodies × Learn/Phrases at every chip (`?preview=traditions`), every control pressed by its key, the drill by keyboard in 5 melody kinds, tour, tips, playing states, reduced motion, 1.4.12 spacing and 320px reflow; plants fired. FOUND 3: 2 FIXED, 1 P4; + 2 from the queue. C-next: generator (S469), chrome (S483).**)
+
+_(prior)_ **Next session (S592):** **Branch `claude/amazing-gauss-gli685` (S588–S591, PR #386): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1187**, FM **5.59**, corpus ?v=7. ⚑ drift: main=697d533 sw=v1187 fm=5.59 migration=0009_assignment_enrolment.sql live=yes functions=bcbee20 sdk=2.116.0 config=58edf33 keepalive=aed4e7b. ⚑ Stalest now: P generator (S463), G fontmaker (S465), C generator (S469), N fontmaker (S476), D trope (S480), H torah (S482), M chrome (S494); suite E (S531), L (S532), K (S533). ⚑ The signed-in reading-assignments UI still wants its first P and H. ⚑ Record-replay harnesses to port: `g589/common.mjs` (Sefaria), `d590/hcreplay.mjs` (every `*.hcaptcha.com` host through curl), `c591/common.mjs` (a tone for every `.mp3`). ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
+⚑ Sync P2 (S573). ⚑ The account page signed in is unprinted (`--sdk`): the next G or P on the chrome. ⚑ Gate 4 to propose: the generator's blend sheets on a phone. ⚑ smoke-sync D31 flake. ⚑ The S575 print probe fails contact since S585 (P3). ⚑ Ports at the next A: `m554/`–`c591/`; traps 352, 356–467. ⚑ Queues: generator 25, FM 21, torah 12, dictionary 10, dashboard 7; the rest ≤ 6.
+
+
+<!-- archived by compact-ledger at the S593 boundary, 2026-11-01 -->
+## Compaction (S593, 2026-11-01) — moved verbatim from the live ledger
+
+### from Candidates — aged P4 (found more than 90 sessions before S593)
+
+- [ ] P4 (**S502 A — radio-set twin**) | dictionary, resources | **Unnamed pressed rows**: dictionary mode, resources view (gate 2). | found S502
+
+### from Done
+
+- [x] 2026-11-01 | (S592 close-out) | branch/deploy note | **S592 = P on the generator (first since S463): FOUND 5: 2 FIXED (one needs a redeploy), 1 gate 2 answered and FIXED on five tools, 2 logged; + the S575 detector re-trued from the queue; FIXED 4. Same branch `claude/amazing-gauss-gli685` (PR #386, still open), sw v1189; deploy on merge; delete-account needs the maintainer's redeploy. Gates: 1 asked (gate 2, the colour-reset confirm ×5) → "add it on all five".**
+
+- [x] 2026-11-01 | `c53054f6` | scripts/loop/probes/S575-chrome-print-whole-blocks.mjs | (S592, queue S591) **The print-block detector marks only text that prints: Contact passes again.** | 20/20 (was 16/20); the S575 control tree 12/20 fail; a planted heading break fails Contact 4/4
+
+- [x] 2026-10-31 | (S587 close-out) | branch/deploy note | **S587 = N on the Torah Trainer (first since S448): FOUND 2, FIXED 2; + the ▾ census on Name Tags and Letter Learner from the queue; FIXED 4. Same PR #383, sw v1168; deploy on merge. Gates: none asked.**
+
+- [x] 2026-10-31 | `ed1f74fe` | letter_learner.html, sw.js | (S587, queue S563) **The panel toggles' fold ▾ leaves their names** (`content:'▾' / ''`). | `n587/glyph.mjs` CDP AX tree 8 cells: 32 → 0; screenshots as HEAD's
+
+- [x] 2026-10-31 | `8d79bcdd` | name_tags.html, sw.js | (S587, queue S563) **The panel and class-list toggles' fold ▾ leaves their names.** | `n587/glyph.mjs` 8 cells: 64 → 0; full-page screenshots byte-equal 8/8
+
+- [x] 2026-10-31 | `3f32408d` | torah_trainer.html, sw.js | (S587 N) **Both code-word fields turn off phone autocorrect** (+ `autocapitalize="none"` on the teacher's). | `n587/fix2.mjs` properties read back EN/HE (HEAD: autocorrect unset on both)
+
+- [x] 2026-10-31 | `6ed3b0a6` | torah_trainer.html, sw.js | (S587 N) **The assignment dialog's labels wrap on a 320px phone** (Due date and Keep recordings ran 21/38px out). | probe `S587-torah-assignment-dialog-fits-a-phone.mjs`: 32/32 (pre-fix 4 SE cells fail); desktop rows unchanged
+
+### from Per-session log (one line per session)
+
+- 2026-11-01 | **S592** | iters: 5 | tools: generator ×2, dashboard, torah, dictionary, flash, delete-account (function, not deployed), smoke-sync, scripts/loop, locales, sw | patterns fixed: account-wide-delete-confirm-without-signed-in-wording ×5 carriers (gate 2) | pass run: P (generator, first since S463) | SW: v1187→v1189
+
+- 2026-10-29 | **S572** | iters: 5 | tools: generator ×2, pwa.js, name_tags, torah (reported), smoke-sync, scripts/loop, sw | patterns fixed: text-field-under-16px-zooms-on-ios-focus ×1, install-banner-over-a-sheet's-bottom-controls ×1, fixed-columns-crush-a-narrow-sheet ×1 (new) | pass run: N …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- P accounts & cloud (one surface): 2026-11-01 (**S592 — 18th P, `hebrew_blend_generator.html` (first since S463): arms 1–8 behind controls (smoke-tools 23/23, smoke-sync 228/228, migration 47/47, a 21-check signed-in walk by real clicks, static 3–7, live read-only). FOUND 5: Start fresh FIXED, delete-account's paging FIXED (needs a redeploy), the colour-reset confirm ×5 FIXED (gate 2), 2 logged. P-next: chrome (S477), torah (S493).**)
