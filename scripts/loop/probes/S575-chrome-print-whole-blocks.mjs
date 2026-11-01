@@ -10,7 +10,8 @@
 //                                                                   5 views × EN/HE × Letter/A4 (Chrome's default 0.4in
 //                                                                   margins, no backgrounds), or a page error
 //   ROOT=<a git archive of the tree> runs it on another copy (the control: the tree before 044e1fa6 / f1a7ccee cuts 7
-//   and strands in 6 of the cells); --json prints the record. Needs poppler's pdfinfo and pdftotext (skips loudly).
+//   and strands in 6 of the cells); --json prints the record. Markers are placed under print media, so text the print styles hide is never
+//   marked (S592: contact's hidden form text had read "marker not in the PDF" in 4 cells since S585). Needs poppler's pdfinfo and pdftotext (skips loudly).
 import pkg from '/opt/node22/lib/node_modules/playwright/index.js';
 import http from 'node:http';
 import fs from 'node:fs';
@@ -56,15 +57,19 @@ for (const v of VIEWS) for (const lang of ['en', 'he']) {
   await page.evaluate(() => window.I18n && I18n.ready);
   await page.waitForTimeout(800);
   if (v.view) { await page.locator(`.view-toggle button[data-view="${v.view}"]`).click(); await page.waitForTimeout(1000); }
+  // Markers go only where paper has text: under print media a block or heading the print styles hide (contact's form
+  // and payment tabs since S585) has no client rects and is skipped, as is hidden text inside a printed block.
+  await page.emulateMedia({ media: 'print' });
   const meta = await page.evaluate(({ items, heads }) => {
     const mk = (t) => { const s = document.createElement('span'); s.textContent = 'QQ' + t + 'QQ'; s.style.cssText = 'position:absolute;color:#fff;font:6px/1 monospace;white-space:nowrap;'; s.setAttribute('aria-hidden', 'true'); return s; };
     const texts = (el) => { const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, { acceptNode: (n) => n.textContent.trim() && n.parentElement.offsetParent !== null ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT }); const a = []; let n; while ((n = w.nextNode())) a.push(n); return a; };
     const vis = (e) => e.getClientRects().length && getComputedStyle(e).visibility !== 'hidden';
     const r = { items: [], heads: [] };
-    if (items) [...document.querySelectorAll(items)].filter(vis).forEach((e, i) => { const t = texts(e); if (!t.length) return; t[0].parentNode.insertBefore(mk('S' + i), t[0]); const l = t[t.length - 1]; l.parentNode.insertBefore(mk('E' + i), l.nextSibling); r.items[i] = (e.querySelector('h2,h3,h4') || e).textContent.trim().slice(0, 40); });
+    if (items) [...document.querySelectorAll(items)].filter(vis).forEach((e, i) => { const t = texts(e); if (!t.length) return; const label = (e.querySelector('h2,h3,h4') || e).textContent.trim().slice(0, 40); t[0].parentNode.insertBefore(mk('S' + i), t[0]); const l = t[t.length - 1]; l.parentNode.insertBefore(mk('E' + i), l.nextSibling); r.items[i] = label; });
     if (heads) [...document.querySelectorAll(heads)].filter(vis).forEach((h, i) => { let f = h.nextElementSibling; while (f && !vis(f)) f = f.nextElementSibling; if (!f) return; const th = texts(h), tf = texts(f); if (!th.length || !tf.length) return; th[0].parentNode.insertBefore(mk('H' + i), th[0]); tf[0].parentNode.insertBefore(mk('F' + i), tf[0]); r.heads[i] = h.textContent.trim().slice(0, 50); });
     return r;
   }, { items: v.items, heads: v.heads });
+  await page.emulateMedia({ media: null });   // page.pdf prints with print styles; a 'screen' left here would print the screen (trap 422)
   for (const [paper, w, h] of [['Letter', 8.5, 11], ['A4', 8.27, 11.69]]) {
     const pdf = path.join(TMP, `${v.name}-${lang}-${paper}.pdf`);
     await page.pdf({ path: pdf, width: w + 'in', height: h + 'in', margin: { top: '0.4in', bottom: '0.4in', left: '0.4in', right: '0.4in' } });
