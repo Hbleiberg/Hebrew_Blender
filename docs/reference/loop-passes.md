@@ -221,8 +221,8 @@ stored (`IvritAccount.hasStoredSession()`), names the account-wide effect (the `
 and no `forgetRow` reference remains anywhere — that memory-forgetting call is gone with the panels;
 **5** the two CSP origins present exactly where the account scripts are, and nowhere else, and every
 gtag page carrying the `page_location` snippet with the same keys as `AUTH_QUERY_KEYS` (the A-sweep
-pattern owns detection; P confirms the carrier count); **6** the four `js/` modules and `account.html`
-in `sw.js` `CORE_ASSETS`; **7** `var TOOLS` still equal to `saves.tool`'s CHECK; **8** (connector
+pattern owns detection; P confirms the carrier count); **6** the five `js/` modules (the assignments one
+included) and `account.html` in `sw.js` `CORE_ASSETS`; **7** `var TOOLS` still equal to `saves.tool`'s CHECK; **8** (connector
 present, read-only) the recorded migrations plus `db/README.md`'s object queries against its `Live?`
 column (a hand-pasted migration has no history row, so an absent record alone is not drift), the
 security and performance advisors clean, `delete-account` deployed with its JWT check on and its

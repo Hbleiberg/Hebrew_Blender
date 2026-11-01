@@ -60,8 +60,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
 
-- [ ] P4 (**NEW S592 P — verify first**) | sw.js, js/ivrit-assignments.js | **The assignments module is not in `CORE_ASSETS`**: a signed-in Torah Trainer opened offline cannot load it; check that the student panel fails soft. | found S592
-
 - [ ] P4 (**NEW S591 C — 1.4.12**) | trope_tutor.html | **Under 1.4.12's text spacing a Phrases example's verse reference ("Beha'alotcha 10:10", no-wrap) pushes a 320px window 3px wide** (EN and HE; 0 at the page's own spacing). | found S591
 
 - [ ] P4 (**NEW S590 — found verifying `d37fd204`**) | hebrew_blend_generator.html | **Real Words Gematria Self-Check's flipped card spills its back in Export PDF**: the translation runs past the card's edge and the Hebrew word sits above it (print not checked). | found S590
@@ -445,6 +443,8 @@ _(none)_
 - [x] 2026-11-01 | (S592 close-out) | branch/deploy note | **S592 = P on the generator (first since S463): FOUND 5: 2 FIXED (one needs a redeploy), 1 gate 2 answered and FIXED on five tools, 2 logged; + the S575 detector re-trued from the queue; FIXED 4. Same branch `claude/amazing-gauss-gli685` (PR #386, still open), sw v1189; deploy on merge; delete-account needs the maintainer's redeploy. …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-11-01 | `876c221b` | generator, dashboard, torah, dictionary, flash, locales, sw.js | (S592 P, gate 2 answered; pattern account-wide-delete-confirm-without-signed-in-wording) **Signed in, Reset vowel colors says it resets them on every device.** | 20 presses (EN light 1280 / HE dark 800 × signed out / in): 20/20 (HEAD fails the 10 signed in); smoke-tools 220/220
+
+- [x] 2026-11-01 | `1b5d451c` | sw.js | (S592, the maintainer's ask) **`js/ivrit-assignments.js` precached: a signed-in Trainer opened offline no longer toasts "could not load".** | offline × 6 cells: toast 2/6 → 0/6, 0 errors
 
 - [x] 2026-11-01 | `7157c391` | classroom_dashboard.html, torah_trainer.html, locales, sw.js | (S592, the maintainer's ask; pattern account-wide-delete-confirm-without-signed-in-wording) **Signed in, six more resets (dashboard ×4, trope colours ×2) say they reach every device.** | 24 real presses: 24/24 (the tree before fails the 12 signed in); smoke-tools 220/220
 
@@ -930,5 +930,5 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-22 (**S542 — 40th F, loading states (first since S189): 14 surfaces held, then aborted. FOUND 7, FIXED 4. F-next: long-build progress.**)
 
-**Next session (S593):** **Branch `claude/amazing-gauss-gli685` (S588–S592, PR #386): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1190**, FM **5.59**, corpus ?v=7. ⚑ drift: main=697d533 sw=v1190 fm=5.59 migration=0009_assignment_enrolment.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b (functions: delete-account and manage-students both live as v8, the repo's source). ⚑ Stalest now: G fontmaker (S465), C generator (S469), N fontmaker (S476), P chrome (S477), D trope (S480), H torah (S482), M chrome (S494); suite E (S531), L (S532), K (S533). ⚑ The signed-in reading-assignments UI still wants its first P and H. ⚑ Record-replay harnesses to port: `g589/common.mjs` (Sefaria), `d590/hcreplay.mjs` (hCaptcha), `c591/common.mjs` (a tone for every `.mp3`), `p592/lib.mjs` (smoke-sync's fake cloud with a stale-port guard). ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
+**Next session (S593):** **Branch `claude/amazing-gauss-gli685` (S588–S592, PR #386): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1191**, FM **5.59**, corpus ?v=7. ⚑ drift: main=697d533 sw=v1191 fm=5.59 migration=0009_assignment_enrolment.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b (functions: delete-account and manage-students both live as v8, the repo's source). ⚑ Stalest now: G fontmaker (S465), C generator (S469), N fontmaker (S476), P chrome (S477), D trope (S480), H torah (S482), M chrome (S494); suite E (S531), L (S532), K (S533). ⚑ The signed-in reading-assignments UI still wants its first P and H. ⚑ Record-replay harnesses to port: `g589/common.mjs` (Sefaria), `d590/hcreplay.mjs` (hCaptcha), `c591/common.mjs` (a tone for every `.mp3`), `p592/lib.mjs` (smoke-sync's fake cloud with a stale-port guard). ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
 ⚑ Sync P2 (S573). ⚑ The account page signed in is unprinted (`--sdk`): the next G or P on the chrome. ⚑ Gate 4 to propose: the generator's blend sheets on a phone. ⚑ smoke-sync D31 flake (again S592; alone 3/3). ⚑ Ports at the next A: `m554/`–`p592/`; traps 352, 356–473. ⚑ Queues: generator 25, FM 21, torah 13, dictionary 10, dashboard 8; the rest ≤ 6.

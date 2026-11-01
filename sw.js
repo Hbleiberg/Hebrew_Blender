@@ -1,5 +1,5 @@
 /* IvritSuite service worker — bump VERSION to invalidate the cache on deploy. */
-const VERSION = 'v1190';
+const VERSION = 'v1191';
 const CACHE = 'ivritsuite-' + VERSION;
 // Version-independent cache for the big data/ corpora (dictionary words / emoji / parshiyot /
 // pockettorah). Kept OUT of the version-scoped CACHE so a routine VERSION bump no longer evicts
@@ -37,6 +37,7 @@ const CORE_ASSETS = [
   '/js/ivrit-account.js',
   '/js/ivrit-saves.js',
   '/js/ivrit-projects.js',
+  '/js/ivrit-assignments.js',   // loaded by the Trainer once a session is stored: precached so an offline visit loads it quietly
   '/js/tt-pitch-worklet.js',
   '/js/hebrew-calendar.js',
   '/js/parasha-icons.js',

@@ -36,7 +36,9 @@ Load order on a page (all deferred, so `window.I18n` and `window.IVRIT_SUPABASE`
 <script src="/js/ivrit-projects.js" defer></script>   <!-- Font Maker and the account page only -->
 ```
 All four of those `js/` files — config, account, saves **and projects** — are in `sw.js` `CORE_ASSETS`
-(network-first like every same-origin script), so editing **any** of them bumps `VERSION`, `ivrit-projects.js`
+(network-first like every same-origin script), and so is the Trainer's `js/ivrit-assignments.js` (otherwise only a
+copy cached by an earlier online visit, which every `VERSION` bump evicts, could load offline, and a signed-in
+Trainer opened offline toasted "could not load"), so editing **any** of them bumps `VERSION`, `ivrit-projects.js`
 included. Two pages depart from the block: `account-test.html` stops at the third line (it offers sign-in
 only, no status line), and only `Hebrew_Font_Maker.html` and `account.html` add the fifth. Loading the saves
 module is not the same as attaching to it: the module starts listening at boot on every page that loads it
