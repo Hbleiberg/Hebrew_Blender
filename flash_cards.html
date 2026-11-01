@@ -8849,7 +8849,7 @@ function wireSetupScreen() {
     saveSettings();
   }));
   document.getElementById('colorReset').addEventListener('click', () => {
-    if (!confirm(I18n.t('flashcards.advanced.color_reset_confirm'))) return;
+    if (!confirm(I18n.t((window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession()) ? 'flashcards.advanced.color_reset_confirm_cloud' : 'flashcards.advanced.color_reset_confirm'))) return;
     nikudColorOverrides = {};
     initColorPickers();
     saveSettings();

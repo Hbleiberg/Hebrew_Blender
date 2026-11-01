@@ -145,6 +145,7 @@ dashboard.color.mode_highlight,Highlight,הדגשה,radio option,
 dashboard.color.mode_underline,Underline,קו תחתון,radio option,
 dashboard.color.reset,Reset,איפוס,vowel scheme reset button,
 dashboard.color.reset_confirm,Are you sure? This resets your custom vowel colors for both the Default and TaL AM schemes.,בטוחים? פעולה זו מאפסת את צבעי התנועות המותאמים שלכם עבור שתי הסכמות — ברירת מחדל ותל-עם.,confirm dialog,
+dashboard.color.reset_confirm_cloud,"Are you sure? This resets your custom vowel colors for both the Default and TaL AM schemes. You are signed in, so your colors are reset on every device.","בטוחים? פעולה זו מאפסת את צבעי התנועות המותאמים שלכם עבור שתי הסכמות — ברירת מחדל ותל-עם. אתם מחוברים, ולכן הצבעים יתאפסו בכל מכשיר.",confirm dialog while signed in (the reset reaches the account and every device),REVIEW: HE draft
 dashboard.color.scheme_default,Default,ברירת מחדל,vowel scheme button,
 dashboard.color.scheme_talam,TaL AM,תל-עם,vowel scheme button,
 dashboard.color.show_nikkud,Show nikkud,הצג ניקוד,settings label,
@@ -769,6 +770,7 @@ dictionary.advanced.color_mode_letter,Letter,אות,color mode button,
 dictionary.advanced.color_mode_underline,Underline,קו תחתון,color mode button,
 dictionary.advanced.color_reset,Reset to defaults,איפוס לברירת מחדל,color reset button,leading-emoji
 dictionary.advanced.color_reset_confirm,Are you sure? This resets your custom vowel colors to the defaults.,בטוחים? פעולה זו מאפסת את צבעי התנועות המותאמים לברירת המחדל.,confirm dialog,
+dictionary.advanced.color_reset_confirm_cloud,"Are you sure? This resets your custom vowel colors to the defaults. You are signed in, so your colors are reset on every device.","בטוחים? פעולה זו מאפסת את צבעי התנועות המותאמים לברירת המחדל. אתם מחוברים, ולכן הצבעים יתאפסו בכל מכשיר.",confirm dialog while signed in (the reset reaches the account and every device),REVIEW: HE draft
 dictionary.advanced.font_head,Hebrew Font,גופן עברי,advanced section title,
 dictionary.advanced.font_size,Size,גודל,font size row label,
 dictionary.advanced.font_size_reset_title,Reset to default,איפוס לברירת מחדל,font size reset button title,aria-label only
@@ -4117,6 +4119,7 @@ torah.confirm.reset_all_cloud,"Reset all Torah Trainer settings to defaults? You
 torah.confirm.reset_trope_mark_colors,Are you sure? This resets your trope colors to the defaults and colors every trope again.,האם אתם בטוחים? פעולה זו מאפסת את צבעי הטעמים לברירת המחדל וצובעת שוב את כל הטעמים.,confirm dialog: Reset while coloring by individual trope,
 torah.confirm.reset_trope_colors,Are you sure? This resets your custom trope-family colors to the defaults.,האם אתם בטוחים? פעולה זו מאפסת את צבעי משפחות הטעמים המותאמים אישית שלכם לברירת המחדל.,confirm dialog,
 torah.confirm.reset_vowel_colors,Are you sure? This resets your custom vowel colors for both the Default and TaL AM schemes.,האם אתם בטוחים? פעולה זו מאפסת את צבעי התנועות המותאמים אישית שלכם עבור ערכות ברירת המחדל ותל-עם כאחד.,confirm dialog,
+torah.confirm.reset_vowel_colors_cloud,"Are you sure? This resets your custom vowel colors for both the Default and TaL AM schemes. You are signed in, so your colors are reset on every device.","האם אתם בטוחים? פעולה זו מאפסת את צבעי התנועות המותאמים אישית שלכם עבור ערכות ברירת המחדל ותל-עם כאחד. אתם מחוברים, ולכן הצבעים יתאפסו בכל מכשיר.",confirm dialog while signed in (the reset reaches the account and every device),REVIEW: HE draft
 torah.controls.print_title,Print this reading for students,הדפיסו את הקריאה עבור התלמידים,title of the Share tab's Print this reading button,
 torah.controls.print_need_reading,Load a parsha first to print.,טענו פרשה קודם כדי להדפיס.,toast,
 torah.shem.chip_label,שם ה׳,שם ה׳,chip in the reading header when a divine name is detected,pinned Hebrew in both languages by design
@@ -5034,6 +5037,7 @@ worksheet.advanced.live_preview,Live update preview,עדכון תצוגה מקד
 worksheet.advanced.live_preview_tooltip,"When on, the worksheet updates as you change settings (after your first Generate). Turn it off to update only when you click Generate.","כשמופעל, דף העבודה מתעדכן תוך כדי שינוי ההגדרות (לאחר היצירה הראשונה). כבו כדי לעדכן רק כשלוחצים על ״צור דף עבודה״.",tooltip,
 worksheet.advanced.panel_title,Advanced,מתקדם,panel title,
 worksheet.advanced.reset_scheme_confirm,Are you sure? This resets your custom vowel colors for both the Default and TaL AM schemes.,האם אתם בטוחים? פעולה זו תאפס את צבעי הניקוד המותאמים שלכם בשתי ערכות הצבע — ברירת המחדל וגם תל-עם.,confirm dialog,
+worksheet.advanced.reset_scheme_confirm_cloud,"Are you sure? This resets your custom vowel colors for both the Default and TaL AM schemes. You are signed in, so your colors are reset on every device.","האם אתם בטוחים? פעולה זו תאפס את צבעי הניקוד המותאמים שלכם בשתי ערכות הצבע — ברירת המחדל וגם תל-עם. אתם מחוברים, ולכן הצבעים יתאפסו בכל מכשיר.",confirm dialog while signed in (the reset reaches the account and every device),REVIEW: HE draft
 worksheet.advanced.scheme.default,Default,ברירת מחדל,vowel-scheme button,
 worksheet.advanced.scheme.reset,Reset,איפוס,vowel-scheme reset button,
 worksheet.advanced.scheme.talam,TaL AM,תל-עם,vowel-scheme button,
@@ -5564,6 +5568,7 @@ flashcards.teachertools.preset_name_required,Enter a preset name to save.,הזי
 flashcards.results.no_results_to_save,No drill results to save.,אין תוצאות תרגול לשמירה.,Guard when tapping Save Results with nothing to save,
 flashcards.card.end_early_confirm,End practice and see results so far?,לסיים את התרגול ולראות את התוצאות עד כה?,Confirm dialog for the End Practice Early button,
 flashcards.advanced.color_reset_confirm,Are you sure? This resets your custom vowel colors for both the Default and TaL AM schemes.,האם אתם בטוחים? פעולה זו תאפס את צבעי הניקוד המותאמים שלכם בשתי ערכות הצבע — ברירת המחדל וגם תל-עם.,Confirm for the color-scheme Reset button,"REVIEW: phrasing of ""resets both schemes"""
+flashcards.advanced.color_reset_confirm_cloud,"Are you sure? This resets your custom vowel colors for both the Default and TaL AM schemes. You are signed in, so your colors are reset on every device.","האם אתם בטוחים? פעולה זו תאפס את צבעי הניקוד המותאמים שלכם בשתי ערכות הצבע — ברירת המחדל וגם תל-עם. אתם מחוברים, ולכן הצבעים יתאפסו בכל מכשיר.",confirm dialog while signed in (the reset reaches the account and every device),REVIEW: HE draft
 shared.range.min_aria,Minimum,מינימום,aria-label for the lower box of a min–max number pair (composed after the pair's visible label),aria-label only
 shared.range.max_aria,Maximum,מקסימום,aria-label for the upper box of a min–max number pair (composed after the pair's visible label),aria-label only
 shared.tip.aria_more_info,More information,מידע נוסף,Default aria-label the tooltip engine adds to a trigger lacking its own label,

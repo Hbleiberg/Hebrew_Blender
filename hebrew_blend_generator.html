@@ -6512,7 +6512,7 @@ function updateColorPickerValues() {
 }
 
 function resetNikudColors() {
-  if (!confirm(I18n.t('worksheet.advanced.reset_scheme_confirm'))) return;
+  if (!confirm(I18n.t((window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession()) ? 'worksheet.advanced.reset_scheme_confirm_cloud' : 'worksheet.advanced.reset_scheme_confirm'))) return;
   nikudColorOverrides = {};
   updateColorPickerValues();
 }

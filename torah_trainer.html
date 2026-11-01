@@ -8955,7 +8955,7 @@ function initColorPickers() {
   });
 }
 function resetNikudColors() {
-  if (!confirm(I18n.t('torah.confirm.reset_vowel_colors'))) return;
+  if (!confirm(I18n.t((window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession()) ? 'torah.confirm.reset_vowel_colors_cloud' : 'torah.confirm.reset_vowel_colors'))) return;
   settings.nikudColorOverrides = {};
   initColorPickers();
   if (settings.colorCodeNikkud) applyNikkudColors();   // var swap, no reading rebuild

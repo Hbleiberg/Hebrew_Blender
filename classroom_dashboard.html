@@ -4254,7 +4254,7 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
     });
   }
   function resetNikudColors() {
-    if (!confirm(I18n.t('dashboard.color.reset_confirm'))) return;
+    if (!confirm(I18n.t((window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession()) ? 'dashboard.color.reset_confirm_cloud' : 'dashboard.color.reset_confirm'))) return;
     settings.nikudColorOverrides = {};
     initColorPickers();
     if (settings.colorCodeNikkud) { updateDateTimeDisplay(); renderDaysList(); renderWeather(); }

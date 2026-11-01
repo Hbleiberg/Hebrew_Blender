@@ -4461,7 +4461,7 @@ function updateColorPickerValues() {
 }
 
 function resetNikudColors() {
-  if (!confirm(I18n.t('dictionary.advanced.color_reset_confirm'))) return;
+  if (!confirm(I18n.t((window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession()) ? 'dictionary.advanced.color_reset_confirm_cloud' : 'dictionary.advanced.color_reset_confirm'))) return;
   nikudColorOverrides = {};
   dictColorsSave();
   updateColorPickerValues();
