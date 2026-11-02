@@ -639,8 +639,11 @@ uploaded was such a seed.
 `#bpeModal`, a dialog in the week editor's shape (backdrop + modal toggled with `.open`, `bpeKey` = Escape +
 `_trapTabWithin`, focus back to the opener) over the drawer: one card per preset, in the folder tree's reading
 order (`bpeOrderNames()` walks `hebrewDashboard_presetsFolders`, then appends any preset the tree lacks; the tree
-never decides what exists, and a stored value that is not an object — null, text, a list — gets no card), each with its own toolbar and message editor and the common switches, under a sticky
-head holding the master row. `.bpe-backdrop` and `.bpe-modal` are on the print block's list of hidden fixed
+never decides what exists, and a stored value that is not an object — null, text, a list — gets no card), each with its own toolbar and message editor and the common switches, between a sticky
+head holding the master row and a sticky footer holding Save (`.bpe-footer`, so Save is on screen however many
+cards there are). Both stick to the dialog's own edges: their insets are the modal's padding negated (`-22px`,
+`-18px` on a phone), so no strip of a scrolling card shows past them. The head goes static on a phone or a short
+screen; the footer stays sticky everywhere. `.bpe-backdrop` and `.bpe-modal` are on the print block's list of hidden fixed
 surfaces, so Ctrl+P with the editor open prints the board underneath, as with the drawer.
 
 - **A draft, written only by Save.** `_bpeDraft` is a deep clone of `presets`; every card edit lands there and
@@ -671,13 +674,17 @@ surfaces, so Ctrl+P with the editor open prints the board underneath, as with th
   is inside the modal, so another tab's write waits; this page's own hydration (at load, or the `online` retry)
   still lands its downloads in `presets` while the editor is open — the reason Save merges edits, above
   (`scripts/smoke-sync.mjs` D39).
-- **The master row** sets a switch on every draft at once (a native checkbox, `indeterminate` when the presets
+- **The master row** is a two-column form (`.bpe-master` is a CSS grid; one column on a phone): each row is a
+  name cell (`.bpe-mgroup-lbl`, which names the row's `role="group"`) and a cell of boxes — the `BPE_GROUPS`
+  rows lay theirs out in aligned columns (`.bpe-mgrid`), then *Text size for all* and *Board-wide*, set apart by
+  one dashed rule (`.bpe-msep` on the name cell, `.bpe-msep-c` on the boxes, so a phone draws it above the name
+  only). It sets a switch on every draft at once (a native checkbox, `indeterminate` when the presets
   differ; the card chips are the page's sliders), one display size for all (`#bpeMasterSize`, blank + "mixed"
   while they differ), and each card has *Copy this text to all presets* (a `confirm`, then every other draft and
   editor takes its HTML) and *Copy this text to chosen presets…*, an inline picker under the card
   (`bpeTogglePicker`: a checkbox per other preset, Select all / none, an Apply naming the count, one picker open at
   a time, Escape closes it before the dialog) — both through `bpeCopyTextTo(from, names)`, drafts only. **Board-wide:** the three Schedule Sync countdown switches are not preset fields
-  (`applySettings` restores the live values), so the master row carries them once, under their own caption, as
+  (`applySettings` restores the live values), so the master row carries them once, in its *Board-wide* row with a one-line hint (`bulk_boardwide_hint`), as
   live settings through the drawer's own setters (`BPE_BOARDWIDE`); hidden behind a note while Schedule Sync is
   off, and `syncFormToSettings()` on close keeps the drawer's checkboxes in step.
 - **The live board follows a Save of the preset it shows.** `_boardPreset` (this tab's memory, never stored) is the

@@ -1972,18 +1972,22 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
     border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow-md); padding: 22px 24px; display: none; }
   .bpe-modal.open { display: block; }
   body.dark .bpe-modal { background: var(--navy-deep); }
-  .bpe-head { position: sticky; inset-block-start: 0; z-index: 2; background: var(--white); margin-inline: -24px; padding: 6px 24px 10px; border-block-end: 1px solid var(--border); }
+  /* The head (master row) and the footer (Save) stick to the dialog's own edges: their insets are the modal's
+     padding, negated, so no strip of a scrolling card shows above the head or below the footer. */
+  .bpe-head { position: sticky; inset-block-start: -22px; z-index: 2; background: var(--white); margin-inline: -24px; padding: 10px 24px 10px; border-block-end: 1px solid var(--border); }
   body.dark .bpe-head { background: var(--navy-deep); }
-  .bpe-master { display: flex; flex-wrap: wrap; gap: 8px 22px; align-items: flex-start; margin-block-start: 8px; }
-  .bpe-master-cap { flex-basis: 100%; font-size: 0.72rem; color: var(--muted); }
-  .bpe-mgroup { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; }
-  .bpe-mgroup-lbl { font-size: 0.7rem; color: var(--muted); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; flex-basis: 100%; }
-  .bpe-mchip { display: inline-flex; align-items: center; gap: 5px; font-size: 0.76rem; cursor: pointer; min-height: 24px; }   /* a 24px row to tap (WCAG 2.5.8); the box itself stays 15px */
+  /* The master row is a two-column form: a group's name, then its boxes on one line. */
+  .bpe-master { display: grid; grid-template-columns: max-content 1fr; column-gap: 0; row-gap: 2px; align-items: center; }
+  .bpe-master-cap { grid-column: 1 / -1; font-size: 0.8rem; font-weight: 700; color: var(--text); margin-block-end: 4px; }
+  .bpe-mgroup-lbl { font-size: 0.68rem; color: var(--muted); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding-inline-end: 18px; }
+  .bpe-mgroup { display: flex; flex-wrap: wrap; gap: 0 18px; align-items: center; min-width: 0; }
+  .bpe-mgroup.bpe-mgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(205px, 1fr)); }   /* a preset group's boxes in aligned columns, so a wrapped row lines up under the first */
+  .bpe-mchip { display: inline-flex; align-items: center; gap: 6px; font-size: 0.78rem; cursor: pointer; min-height: 26px; }   /* a 26px row to tap (WCAG 2.5.8); the box itself stays 15px */
   .bpe-mchip input { accent-color: var(--gold); width: 15px; height: 15px; margin: 0; cursor: pointer; flex-shrink: 0; }
-  .bpe-msize { flex-basis: 100%; }   /* its own row, not the tail of the last toggle group */
   .bpe-msize input[type=number] { width: 64px; font-family: inherit; font-size: 0.78rem; padding: 2px 4px; }
-  .bpe-boardwide { padding: 6px 10px; border: 1px dashed var(--border); border-radius: 8px; }
-  .bpe-boardwide-off { font-size: 0.72rem; color: var(--muted); }
+  /* Text size and the board-wide switches are set apart from the per-preset switches above them by one rule. */
+  .bpe-master .bpe-msep, .bpe-master .bpe-msep-c { border-block-start: 1px dashed var(--border); margin-block-start: 6px; padding-block-start: 6px; align-self: stretch; display: flex; align-items: center; }
+  .bpe-boardwide-hint, .bpe-boardwide-off { font-size: 0.72rem; color: var(--muted); }
   .bpe-cards { display: flex; flex-direction: column; gap: 12px; margin-block-start: 12px; }
   .bpe-card { border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px 12px; background: var(--cream); }
   body.dark .bpe-card { background: var(--navy); }
@@ -2007,7 +2011,10 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
   .bpe-cgroup-lbl { display: block; font-size: 0.68rem; color: var(--muted); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-block-end: 4px; }
   .bpe-chip { display: flex; align-items: center; gap: 10px; font-size: 0.8rem; line-height: 1.3; cursor: pointer; min-height: 30px; padding-block: 2px; }
   .bpe-onboard { font-size: 0.7rem; font-weight: 700; color: var(--gold-text); border: 1px solid currentColor; border-radius: 999px; padding: 1px 8px; }
-  .bpe-footer { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  .bpe-footer { display: flex; justify-content: flex-end; align-items: center; gap: 10px; flex-wrap: wrap;
+    position: sticky; inset-block-end: -22px; z-index: 2; background: var(--white); border-block-start: 1px solid var(--border);
+    margin: 14px -24px -22px; padding: 12px 24px 14px; }   /* Save stays on screen however long the list of cards is */
+  body.dark .bpe-footer { background: var(--navy-deep); }
   .bpe-footer .bpe-note { margin-inline-end: auto; font-size: 0.74rem; color: var(--muted); }
   /* ── Parsha popup (openParshaPopup): the week's parsha emojis, each with its summary and why that picture, opened
      from the parsha line. A teacher-opened card, so it follows the UI language (I18n.lang), unlike the projected line
@@ -2038,6 +2045,10 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
     .bpe-chips { columns: 1; }
     .bpe-modal { padding: 18px 14px; }
     .bpe-head { margin-inline: -14px; padding-inline: 14px; position: static; }   /* a phone's screen is the head's height; it scrolls with the cards there */
+    .bpe-footer { inset-block-end: -18px; margin: 14px -14px -18px; padding-inline: 14px; }
+    .bpe-master { grid-template-columns: 1fr; }   /* a group's name above its boxes */
+    .bpe-mgroup-lbl { padding-block-start: 6px; }
+    .bpe-master .bpe-msep-c { border-block-start: 0; margin-block-start: 0; padding-block-start: 0; }   /* the rule sits above the name only */
   }
   /* A phone turned sideways is wider than 560px but ~340px tall: the sticky head (~300px there) would cover the
      cards and Save as they scroll under it, so a short screen lets it scroll away too. */
@@ -8174,11 +8185,18 @@ function mountSidebarResize(cfg) {
     const host = document.getElementById('bpeMaster'); if (!host || !_bpeDraft) return;
     host.innerHTML = '';
     if (!_bpeOrder.length) return;
+    // A two-column form (CSS grid): each row is a name cell, then a cell of boxes. Every row's boxes are a group
+    // named by its name cell.
+    const row = (label, cls, idSuffix) => {
+      const l = document.createElement('span'); l.className = 'bpe-mgroup-lbl' + (cls ? ' ' + cls : ''); l.id = 'bpeM_' + idSuffix; l.textContent = I18n.t(label);
+      const c = document.createElement('div'); c.className = 'bpe-mgroup' + (cls ? ' ' + cls + '-c' : ''); c.setAttribute('role', 'group'); c.setAttribute('aria-labelledby', l.id);
+      host.appendChild(l); host.appendChild(c);
+      return c;
+    };
     const cap = document.createElement('div'); cap.className = 'bpe-master-cap';
     cap.textContent = I18n.t(_bpeOrder.length === 1 ? 'dashboard.preset.bulk_master_caption.one' : 'dashboard.preset.bulk_master_caption.other', { count: _bpeOrder.length }); host.appendChild(cap);
-    BPE_GROUPS.forEach(g => {
-      const grp = document.createElement('div'); grp.className = 'bpe-mgroup';
-      const gl = document.createElement('span'); gl.className = 'bpe-mgroup-lbl'; gl.textContent = I18n.t(g.label); grp.appendChild(gl);
+    BPE_GROUPS.forEach((g, gi) => {
+      const grp = row(g.label, '', 'g' + gi); grp.classList.add('bpe-mgrid');
       g.items.forEach(t => {
         const vals = _bpeOrder.map(n => !!bpeVal(n, t.key) !== !!t.invert);
         const all = vals.every(Boolean), none = vals.every(v => !v);
@@ -8193,13 +8211,12 @@ function mountSidebarResize(cfg) {
         const s = document.createElement('span'); s.textContent = I18n.t(t.label);
         lab.appendChild(cb); lab.appendChild(s); grp.appendChild(lab);
       });
-      host.appendChild(grp);
     });
     // One text size for every preset
-    const sg = document.createElement('div'); sg.className = 'bpe-mgroup bpe-msize';
+    const sg = row('dashboard.preset.bulk_text_size_all', 'bpe-msep', 'size'); sg.classList.add('bpe-msize');
     const sl = document.createElement('label'); sl.className = 'bpe-mchip';
-    const st = document.createElement('span'); st.textContent = I18n.t('dashboard.preset.bulk_text_size_all'); sl.appendChild(st);
     const si = document.createElement('input'); si.type = 'number'; si.id = 'bpeMasterSize'; si.min = '0.8'; si.max = '5'; si.step = '0.1';
+    si.setAttribute('aria-labelledby', 'bpeM_size');
     si.addEventListener('change', () => {
       const v = Math.min(5, Math.max(0.8, parseFloat(si.value)));
       if (!Number.isFinite(v)) { bpeSyncMasterSize(); return; }
@@ -8211,14 +8228,13 @@ function mountSidebarResize(cfg) {
       bpeSyncMasterSize();
     });
     sl.appendChild(si); const su = document.createElement('span'); su.textContent = 'rem'; sl.appendChild(su); sg.appendChild(sl);   // i18n-ignore — a CSS unit, as the size sliders' "1.8rem" labels are
-    host.appendChild(sg);
     bpeSyncMasterSize();
     // Board-wide: the Schedule Sync countdown switches — live settings, changed now, no preset involved
-    const bw = document.createElement('div'); bw.className = 'bpe-mgroup bpe-boardwide';
-    const bl = document.createElement('span'); bl.className = 'bpe-mgroup-lbl'; bl.textContent = I18n.t('dashboard.preset.bulk_boardwide_caption'); bw.appendChild(bl);
+    const bw = row('dashboard.preset.bulk_boardwide_label', 'bpe-msep', 'board');
     if (!settings.scheduleEnabled) {
       const off = document.createElement('span'); off.className = 'bpe-boardwide-off'; off.textContent = I18n.t('dashboard.preset.bulk_boardwide_off'); bw.appendChild(off);
     } else {
+      const hint = document.createElement('span'); hint.className = 'bpe-boardwide-hint'; hint.textContent = I18n.t('dashboard.preset.bulk_boardwide_hint'); bw.appendChild(hint);
       BPE_BOARDWIDE.forEach(b => {
         const lab = document.createElement('label'); lab.className = 'bpe-mchip';
         const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = b.read();
@@ -8227,7 +8243,6 @@ function mountSidebarResize(cfg) {
         lab.appendChild(cb); lab.appendChild(s); bw.appendChild(lab);
       });
     }
-    host.appendChild(bw);
   }
   // One card's message into other drafts (and their editors). "All" is one click behind a confirm; "chosen" is an
   // inline picker under the card — a checkbox per other preset, Select all / none, Apply — so a teacher can push
