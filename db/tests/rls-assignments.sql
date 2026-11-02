@@ -325,6 +325,17 @@ select tst.q('no public-executable new function',
   $q$select count(*)::text from pg_proc p join pg_namespace n on n.oid = p.pronamespace
       where n.nspname = 'public' and p.proname in ('claim_assignment','submissions_guard','students_guard','profiles_guard','feedback_apply_status','submissions_before_insert','assignments_before_write','is_my_student')
         and has_function_privilege('anon', p.oid, 'execute')$q$, '0');
+select tst.q('the five policy helpers live in private, none in public (0012)',
+  $q$select count(*) filter (where n.nspname = 'private')::text || '/' || count(*) filter (where n.nspname = 'public')::text
+      from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+      where p.proname in ('owns_assignment','is_member','can_submit','peers_allowed','is_my_student')$q$, '5/0');
+select tst.q('the private schema is usable by authenticated and service_role, not anon (0012)',
+  $q$select (has_schema_privilege('authenticated', 'private', 'usage') and has_schema_privilege('service_role', 'private', 'usage')
+             and not has_schema_privilege('anon', 'private', 'usage'))::text$q$, 'true');
+select tst.q('the only definer function in public a signed-in account can call is claim_assignment (0012)',
+  $q$select coalesce(string_agg(p.proname, ',' order by p.proname), '') from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+      where n.nspname = 'public' and p.prosecdef and p.prorettype <> 'trigger'::regtype
+        and has_function_privilege('authenticated', p.oid, 'execute')$q$, 'claim_assignment');
 
 commit;
 

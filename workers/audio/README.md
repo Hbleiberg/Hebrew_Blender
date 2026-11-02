@@ -176,7 +176,9 @@ npx wrangler r2 bucket lifecycle add torahtrainer-recordings abort-unfinished-up
      (it now also removes a teacher's student accounts, and refuses a student), **Deploy**.
 3. **Passwords for students.** **Authentication → Sign In / Providers → Email**: set **Minimum password
    length** to `8` and switch on **Leaked password protection**. Save. (Student logins are generated
-   three-word passphrases, which clear both.)
+   three-word passphrases, which clear both.) Supabase offers leaked-password protection on the Pro plan and
+   above only: on the free plan the switch is not available, the length rule still applies, and the security
+   advisor keeps one warning about it.
 4. Nothing else changes: the email and Google settings stay as they are, and there is no rate-limit setting
    to raise — password sign-ins are limited per school network at 30 in a burst, which fits one class at a
    time; the page tells a student to wait a minute if a whole school signs in at once.
