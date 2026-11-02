@@ -1978,7 +1978,17 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
   body.dark .bpe-head { background: var(--navy-deep); }
   /* The master row is a two-column form: a group's name, then its boxes on one line. */
   .bpe-master { display: grid; grid-template-columns: max-content 1fr; column-gap: 0; row-gap: 2px; align-items: center; }
-  .bpe-master-cap { grid-column: 1 / -1; font-size: 0.8rem; font-weight: 700; color: var(--text); margin-block-end: 4px; }
+  /* Its caption is the fold button: folded, the head is one line and the cards get the room (the choice is this
+     device's, hebrewDashboard_bpeMasterCollapsed). The rows sit in a display:contents body, so they stay cells of
+     the grid while unfolded. */
+  .bpe-master-toggle { grid-column: 1 / -1; justify-self: start; display: inline-flex; align-items: center; gap: 8px; background: none; border: 0; padding: 2px 0; margin-block-end: 4px; font: inherit; font-size: 0.8rem; font-weight: 700; color: var(--text); cursor: pointer; min-height: 26px; }
+  .bpe-master-toggle:hover { color: var(--gold-text); }
+  .bpe-master-toggle::after { content: '▾'; content: '▾' / ''; font-size: 0.8rem; color: var(--muted); transition: transform 0.2s; }
+  .bpe-master.collapsed .bpe-master-toggle { margin-block-end: 0; }
+  .bpe-master.collapsed .bpe-master-toggle::after { transform: rotate(-90deg); }
+  html[dir="rtl"] .bpe-master.collapsed .bpe-master-toggle::after { transform: rotate(90deg); }   /* folded, it points along the reading direction */
+  .bpe-master-body { display: contents; }
+  .bpe-master-body[hidden] { display: none; }
   .bpe-mgroup-lbl { font-size: 0.68rem; color: var(--muted); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding-inline-end: 18px; }
   .bpe-mgroup { display: flex; flex-wrap: wrap; gap: 0 18px; align-items: center; min-width: 0; }
   .bpe-mgroup.bpe-mgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(205px, 1fr)); }   /* a preset group's boxes in aligned columns, so a wrapped row lines up under the first */
@@ -8181,20 +8191,41 @@ function mountSidebarResize(cfg) {
     inp.value = same ? vals[0].toFixed(1) : '';
     inp.placeholder = same ? '' : I18n.t('dashboard.preset.bulk_mixed');
   }
+  // The master row folds to its caption so the cards get the room. Per device (it follows the screen, not the
+  // teacher): erase-only, never in a backup or the account.
+  function bpeMasterCollapsed() { try { return localStorage.getItem('hebrewDashboard_bpeMasterCollapsed') === '1'; } catch (e) { return false; } }
+  function bpeApplyMasterCollapsed(on) {
+    const host = document.getElementById('bpeMaster'), tog = document.getElementById('bpeMasterToggle'), body = document.getElementById('bpeMasterBody');
+    if (host) host.classList.toggle('collapsed', on);
+    if (tog) tog.setAttribute('aria-expanded', on ? 'false' : 'true');
+    if (body) body.hidden = on;
+  }
+  function bpeSetMasterCollapsed(on) {
+    try { if (on) localStorage.setItem('hebrewDashboard_bpeMasterCollapsed', '1'); else localStorage.removeItem('hebrewDashboard_bpeMasterCollapsed'); } catch (e) {}
+    bpeApplyMasterCollapsed(on);
+  }
   function renderBpeMaster() {
     const host = document.getElementById('bpeMaster'); if (!host || !_bpeDraft) return;
     host.innerHTML = '';
     if (!_bpeOrder.length) return;
     // A two-column form (CSS grid): each row is a name cell, then a cell of boxes. Every row's boxes are a group
     // named by its name cell.
+    // The caption is the fold button; the rows go in the body it shows and hides.
+    const collapsed = bpeMasterCollapsed();
+    const tog = document.createElement('button'); tog.type = 'button'; tog.className = 'bpe-master-toggle'; tog.id = 'bpeMasterToggle';
+    tog.textContent = I18n.t(_bpeOrder.length === 1 ? 'dashboard.preset.bulk_master_caption.one' : 'dashboard.preset.bulk_master_caption.other', { count: _bpeOrder.length });
+    tog.setAttribute('aria-controls', 'bpeMasterBody');
+    tog.addEventListener('click', () => bpeSetMasterCollapsed(!bpeMasterCollapsed()));
+    host.appendChild(tog);
+    const body = document.createElement('div'); body.id = 'bpeMasterBody'; body.className = 'bpe-master-body';
+    host.appendChild(body);
+    bpeApplyMasterCollapsed(collapsed);
     const row = (label, cls, idSuffix) => {
       const l = document.createElement('span'); l.className = 'bpe-mgroup-lbl' + (cls ? ' ' + cls : ''); l.id = 'bpeM_' + idSuffix; l.textContent = I18n.t(label);
       const c = document.createElement('div'); c.className = 'bpe-mgroup' + (cls ? ' ' + cls + '-c' : ''); c.setAttribute('role', 'group'); c.setAttribute('aria-labelledby', l.id);
-      host.appendChild(l); host.appendChild(c);
+      body.appendChild(l); body.appendChild(c);
       return c;
     };
-    const cap = document.createElement('div'); cap.className = 'bpe-master-cap';
-    cap.textContent = I18n.t(_bpeOrder.length === 1 ? 'dashboard.preset.bulk_master_caption.one' : 'dashboard.preset.bulk_master_caption.other', { count: _bpeOrder.length }); host.appendChild(cap);
     BPE_GROUPS.forEach((g, gi) => {
       const grp = row(g.label, '', 'g' + gi); grp.classList.add('bpe-mgrid');
       g.items.forEach(t => {

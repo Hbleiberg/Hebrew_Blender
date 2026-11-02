@@ -674,6 +674,11 @@ surfaces, so Ctrl+P with the editor open prints the board underneath, as with th
   is inside the modal, so another tab's write waits; this page's own hydration (at load, or the `online` retry)
   still lands its downloads in `presets` while the editor is open — the reason Save merges edits, above
   (`scripts/smoke-sync.mjs` D39).
+- **The master row folds.** Its caption (*All N presets at once*) is the fold button (`#bpeMasterToggle`,
+  `aria-expanded`, `aria-controls` = `#bpeMasterBody`, the page's ▾ triangle turned toward the reading direction when
+  folded); the rows sit in that body, a `display: contents` div so they stay cells of the grid, and `hidden` when
+  folded, which leaves the sticky head one line tall and gives the cards the room. The choice is this device's
+  (`hebrewDashboard_bpeMasterCollapsed` = `'1'`, read on every open; erase-only — `docs/reference/storage-and-backup.md`).
 - **The master row** is a two-column form (`.bpe-master` is a CSS grid; one column on a phone): each row is a
   name cell (`.bpe-mgroup-lbl`, which names the row's `role="group"`) and a cell of boxes — the `BPE_GROUPS`
   rows lay theirs out in aligned columns (`.bpe-mgrid`), then *Text size for all* and *Board-wide*, set apart by

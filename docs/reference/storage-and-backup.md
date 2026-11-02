@@ -97,7 +97,8 @@ Not every key belongs in the three AllTools functions. Split them:
   `*_welcomeSeen`, `*_hintSeen`, `*_mobileWarnDismissed`, and similar dismissals. Backing these up would
   just re-suppress first-run help on a fresh machine, so they stay out of export/import — but **erase
   means fresh start**, so add them to `eraseAllSettings`. Also in this erase-only set today:
-  `hebrewDashboard_purgeDismissed`, `hebrewBlender_pwaDismissed`, `hebrewBlender_whatsNewSeen` (the hub's
+  `hebrewDashboard_purgeDismissed`, `hebrewDashboard_bpeMasterCollapsed` (Bulk preset edit's master row folded on this
+  device), `hebrewBlender_pwaDismissed`, `hebrewBlender_whatsNewSeen` (the hub's
   What's-new card — see below), `hebrewFontMaker_inputMode`, `hebrewNameTags_activeList` (which class list the Name
   Tags page last had open on this device — a per-device pointer, like the dashboard's omitted `activeRosterId`),
   `hebrewBlender_lastBackupAt` (the ISO time this device last saved an AllTools `.ivrit`; drives the
