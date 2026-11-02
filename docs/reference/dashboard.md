@@ -655,7 +655,9 @@ surfaces, so Ctrl+P with the editor open prints the board underneath, as with th
 - **Touched keys only.** A preset may be partial (the seeded Default has ~30 keys) and loading merges it over the
   live settings, so a chip shows `draft[key] ?? PRISTINE_DEFAULTS[key]` but a key is written only when the teacher
   touched it (`_bpeTouched`): an untouched absent key stays absent, and an untouched preset stays byte-identical.
-  `BPE_GROUPS` is the census of switches (Countdowns / Board cards / Date & time / Hebrew text; "Hide dashboard
+  `BPE_GROUPS` is the census of switches, in the order both the master row and each card show them (Board cards /
+  Date & time / Countdowns / Hebrew text — a card lays them out as `columns` of labelled groups, switch before words,
+  so the two long groups and the two short ones balance into three columns; "Hide dashboard
   text" is `enableDashText` inverted) — a new switch is one row there, with the drawer's own label key.
 - **Each card has its own toolbar**, above its editor as in the drawer: `bpeBuildToolbar(id)` builds it from
   `EDITOR_COMMANDS` with `data-editor` naming the card's editor and wires the two listeners the page gives the
@@ -678,9 +680,17 @@ surfaces, so Ctrl+P with the editor open prints the board underneath, as with th
   (`applySettings` restores the live values), so the master row carries them once, under their own caption, as
   live settings through the drawer's own setters (`BPE_BOARDWIDE`); hidden behind a note while Schedule Sync is
   off, and `syncFormToSettings()` on close keeps the drawer's checkboxes in step.
-- **The live board.** Saving never applies a preset by itself; when Schedule Sync is on and the period on the
+- **The live board follows a Save of the preset it shows.** `_boardPreset` (this tab's memory, never stored) is the
+  preset the board was last set from: `applySettings` sets it from `opts.presetName` (Load, Schedule Sync) and clears
+  it for every other caller (a starter, a file, a share link, a download); saving or overwriting a preset from the
+  board names it, a rename carries it, a delete clears it. `bpeBoardPreset()` reads it, and that preset's card
+  carries the *On the board now* badge (`bulk_on_board`). On Save, when Schedule Sync is on and the period on the
   board now is one of the changed presets, `bpeSave` clears `_lastScheduleKey` and calls `checkSchedule()` (the
-  account download's pattern), so the board re-applies it now rather than at the next boundary.
+  account download's pattern), so the board re-applies it now rather than at the next boundary; otherwise a changed
+  board preset is applied with only the fields edited here (`applySettings(edits, { presetName })`), so the board's
+  other live tweaks since that Load stay. The toast says which happened (`bulk_saved_board`, or `bulk_saved_later`:
+  the board shows it the next time the preset is loaded) — without it, a teacher flipping switches saw nothing
+  change and read the switches as broken.
 - **The cards build a screenful first.** `renderBpeCards()` builds six cards in the opening click and the rest
   eight per task (`_bpeBuildT`, a `setTimeout` chain; `bpeBuildCard(host, name, i)` builds one): built in one go,
   a long preset list was one long task, nearly all of it the style, layout and paint of cards below the fold. A

@@ -429,6 +429,7 @@ dashboard.preset.bulk_group_hebrew,Hebrew text,טקסט עברי,bulk preset edi
 dashboard.preset.bulk_master_caption.one,Your only preset,התבנית היחידה שלכם,bulk preset edit master row caption (count = 1),plural
 dashboard.preset.bulk_master_caption.other,All {count} presets at once,כל {count} התבניות בבת אחת,bulk preset edit master row caption,plural; has {count}
 dashboard.preset.bulk_mixed,mixed,מעורב,bulk preset edit: placeholder of the all-presets text size when presets differ,
+dashboard.preset.bulk_on_board,On the board now,מוצגת עכשיו על הלוח,bulk preset edit: badge on the card of the preset the board was last set from (its Save changes the board at once),
 dashboard.preset.bulk_save,Save all changes,שמירת כל השינויים,bulk preset edit footer button,
 dashboard.preset.bulk_save_confirm.one,Save the changes to 1 preset?,לשמור את השינויים בתבנית אחת?,confirm before writing bulk edits (signed out; count = 1),plural
 dashboard.preset.bulk_save_confirm.other,Save the changes to {count} presets?,לשמור את השינויים ב-{count} תבניות?,confirm before writing bulk edits (signed out),plural; has {count}
@@ -436,6 +437,9 @@ dashboard.preset.bulk_save_confirm_cloud.one,"Save the changes to 1 preset? You 
 dashboard.preset.bulk_save_confirm_cloud.other,"Save the changes to {count} presets? You are signed in, so they reach your account and every device.","לשמור את השינויים ב-{count} תבניות? אתם מחוברים, ולכן השינויים יגיעו לחשבון ולכל מכשיר.",confirm before writing bulk edits while a session is stored,plural; has {count}
 dashboard.preset.bulk_saved.one,1 preset updated.,תבנית אחת עודכנה.,toast after a bulk save (count = 1),has {count}
 dashboard.preset.bulk_saved.other,{count} presets updated.,{count} תבניות עודכנו.,toast after a bulk save,has {count}
+dashboard.preset.bulk_saved_board,The board shows the change now.,השינוי מוצג עכשיו על הלוח.,toast suffix after a bulk save that changed the preset on the board,
+dashboard.preset.bulk_saved_later.one,The board shows it the next time this preset is loaded.,הלוח יציג אותה בפעם הבאה שהתבנית הזאת תיטען.,toast suffix after a bulk save when the changed preset is not on the board (count = 1),plural
+dashboard.preset.bulk_saved_later.other,The board shows them the next time one of these presets is loaded.,הלוח יציג אותן בפעם הבאה שאחת מהתבניות האלה תיטען.,toast suffix after a bulk save when no changed preset is on the board,plural
 dashboard.preset.bulk_skipped.one,"1 removed on another device meanwhile, not written.",תבנית אחת הוסרה בינתיים במכשיר אחר ולא נכתבה.,toast suffix: a preset deleted elsewhere while the bulk editor was open (count = 1),plural
 dashboard.preset.bulk_skipped.other,"{count} removed on another device meanwhile, not written.",{count} הוסרו בינתיים במכשיר אחר ולא נכתבו.,toast suffix: presets deleted elsewhere while the bulk editor was open,plural; has {count}
 dashboard.preset.bulk_sub,"Every preset at once: edit each one's message below with its own toolbar, and flip its switches. The top row sets a switch on all presets. Nothing is saved until you press Save.","כל התבניות בבת אחת: ערכו למטה את ההודעה של כל תבנית בסרגל הכלים שלה, והחליפו את המתגים שלה. השורה העליונה קובעת מתג בכל התבניות. דבר אינו נשמר עד שתלחצו על שמירה.",bulk preset edit dialog subtitle,

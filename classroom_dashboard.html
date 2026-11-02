@@ -1154,7 +1154,7 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
      (the suite's Hebrew-label rule). Drawer sub-heads and title, Saved Schedules, the font picker's heads, the week
      editor's day heads and day menu, Bulk preset edit's group labels, Edit layout's zone names. */
   html[lang="he"] .tt-set-sub, html[lang="he"] .settings-header h2, html[lang="he"] .sub-section-hdr, html[lang="he"] .font-section-hdr,
-  html[lang="he"] .swm-headcell, html[lang="he"] .swm-menu-title, html[lang="he"] .bpe-mgroup-lbl,
+  html[lang="he"] .swm-headcell, html[lang="he"] .swm-menu-title, html[lang="he"] .bpe-mgroup-lbl, html[lang="he"] .bpe-cgroup-lbl,
   html[lang="he"] body.layout-edit .zone-col::before, html[lang="he"] body.layout-edit #videoBelowSlot::before { letter-spacing: normal; text-transform: none; }
   /* Hebrew has no italic either: the browser only slants the letters, so the Hebrew UI's hints and empty states stand
      upright (pattern hebrew-faux-italic). The drawer's three hints carry their italic inline, which !important outranks. */
@@ -2000,8 +2000,13 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
   .bpe-pick-foot { flex-basis: 100%; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-block-start: 4px; }
   .bpe-pick-foot .bpe-link { background: none; border: none; padding: 0; font: inherit; font-size: 0.74rem; color: var(--gold-text); cursor: pointer; text-decoration: underline; min-height: 24px; }
   .bpe-pick-foot .bpe-link:hover, .bpe-pick-foot .bpe-link:focus-visible { color: var(--text); text-decoration-thickness: 2px; }   /* the links had no hover state at all */
-  .bpe-chips { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 4px 14px; }
-  .bpe-chip { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 0.78rem; cursor: pointer; padding: 2px 0; }
+  /* A card's switches: the master row's groups as balanced columns (Board cards | Date & time | Countdowns + Hebrew
+     text), each switch before its words so the switches line up in one column and a long label wraps under itself. */
+  .bpe-chips { columns: 3 220px; column-gap: 28px; margin-block-start: 4px; padding-block-start: 10px; border-block-start: 1px dashed var(--border); }
+  .bpe-cgroup { break-inside: avoid; margin-block-end: 10px; }
+  .bpe-cgroup-lbl { display: block; font-size: 0.68rem; color: var(--muted); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-block-end: 4px; }
+  .bpe-chip { display: flex; align-items: center; gap: 10px; font-size: 0.8rem; line-height: 1.3; cursor: pointer; min-height: 30px; padding-block: 2px; }
+  .bpe-onboard { font-size: 0.7rem; font-weight: 700; color: var(--gold-text); border: 1px solid currentColor; border-radius: 999px; padding: 1px 8px; }
   .bpe-footer { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
   .bpe-footer .bpe-note { margin-inline-end: auto; font-size: 0.74rem; color: var(--muted); }
   /* ── Parsha popup (openParshaPopup): the week's parsha emojis, each with its summary and why that picture, opened
@@ -2030,7 +2035,7 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
   @media (max-width: 520px) { .pp-card { flex-direction: column; gap: 6px; } }
   .bpe-empty { font-size: 0.85rem; color: var(--muted); padding: 20px 0; }
   @media (max-width: 560px) {
-    .bpe-chips { grid-template-columns: 1fr; }
+    .bpe-chips { columns: 1; }
     .bpe-modal { padding: 18px 14px; }
     .bpe-head { margin-inline: -14px; padding-inline: 14px; position: static; }   /* a phone's screen is the head's height; it scrolls with the cards there */
   }
@@ -6971,6 +6976,9 @@ function mountSidebarResize(cfg) {
 
   function applySettings(s, opts) {
     opts = opts || {};
+    // A preset put on the board names itself; anything else (a starter, a file, a share link, a download) leaves no
+    // preset on the board. Bulk preset edit reads this to carry a Save to the board (bpeBoardPreset).
+    _boardPreset = (opts.presetName && presets[opts.presetName]) ? opts.presetName : null;
     // A legacy snapshot (preset or old .ivrit) carries a single `roster` string and no activeRosterId.
     // Detect it BEFORE the merge (afterwards we can't tell whether activeRosterId came from `s`), and
     // fold its names into a matching-or-new class. Per-class pickerSessions mean switching class keeps
@@ -7816,6 +7824,10 @@ function mountSidebarResize(cfg) {
     }
   }
   function savePresetsStorage() { localStorage.setItem('hebrewDashboard_presets', JSON.stringify(presets)); }
+  // The preset the board was last set from (Load, Schedule Sync, or saving the board as a preset) — this tab's memory
+  // only, never stored: after a reload the board names no preset until one is loaded or Schedule Sync applies one.
+  let _boardPreset = null;
+  function bpeBoardPreset() { return (_boardPreset && presets[_boardPreset] && typeof presets[_boardPreset] === 'object') ? _boardPreset : null; }
 
   // Inline preset-name validation (replaces a blocking alert()) — the same helper the
   // generator and flash cards already carry. Stores the KEY so applyI18n can re-render a
@@ -7844,6 +7856,7 @@ function mountSidebarResize(cfg) {
     if (presets[name] !== undefined && !confirm(I18n.t('dashboard.preset.overwrite_confirm', { name: name }))) return;
     presets[name] = getSettings({ forPreset: true });   // rosters are shared — snapshot only activeRosterId
     savePresetsStorage();
+    _boardPreset = name;   // the board is that preset now
     document.getElementById('presetName').value = '';
     renderPresets();
   }
@@ -7856,11 +7869,13 @@ function mountSidebarResize(cfg) {
     if (!confirm(I18n.t('dashboard.preset.overwrite_confirm', { name: name }))) return;
     presets[name] = getSettings({ forPreset: true });   // rosters are shared — snapshot only activeRosterId
     savePresetsStorage();
+    _boardPreset = name;
   }
   function deletePreset(name) {
     const signedIn = !!(window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession());
     if (!confirm(I18n.t(signedIn ? 'dashboard.preset.delete_confirm_cloud' : 'dashboard.preset.delete_confirm', { name: name }))) return;
     delete presets[name];
+    if (_boardPreset === name) _boardPreset = null;
     // Weekly-grid housekeeping: drop the class color; cells keep the name (rendered as "missing",
     // recoverable if the preset is re-created).
     if (settings.presetColors && settings.presetColors[name] !== undefined) {
@@ -7947,6 +7962,7 @@ function mountSidebarResize(cfg) {
     if (saved) saveSchedulesStorage();   // else a later Load re-injects the dead name into the grid
     _ftRenameNode('hebrewDashboard_presetsFolders', name, nn);
     if (_armedChip === name) _armedChip = nn;
+    if (_boardPreset === name) _boardPreset = nn;
     // The schedule key names the preset on now (checkSchedule): it takes the new name too, or the next tick reads the
     // renamed period as a new one and re-applies that preset over whatever the board shows.
     const sk = _lastScheduleKey;
@@ -7967,9 +7983,9 @@ function mountSidebarResize(cfg) {
      the live settings as it always did. The three Schedule Sync countdown switches are NOT preset fields
      (applySettings restores the live values), so the master row carries them once, as live board
      settings. docs/reference/dashboard.md → Bulk preset edit. */
+  // Order = reading order of both the master row and each card's columns (Board cards | Date & time | Countdowns +
+  // Hebrew text: two long groups and two short ones that share the third column).
   const BPE_GROUPS = [
-    { label: 'dashboard.preset.bulk_group_countdowns', items: [
-      { key: 'showHolidayCountdown', label: 'dashboard.datetime.show_holiday_countdown' } ] },
     { label: 'dashboard.preset.bulk_group_cards', items: [
       { key: 'enableDashText', label: 'dashboard.text.hide', invert: true },   // the drawer's switch is "Hide dashboard text"
       { key: 'hideWeather', label: 'dashboard.weather.hide_panel' },
@@ -7984,6 +8000,8 @@ function mountSidebarResize(cfg) {
       { key: 'showShabbatTimes', label: 'dashboard.days.show_shabbat' },
       { key: 'showOmerCounter', label: 'dashboard.days.omer_show_panel' },
       { key: 'showParsha', label: 'dashboard.datetime.show_parsha' } ] },
+    { label: 'dashboard.preset.bulk_group_countdowns', items: [
+      { key: 'showHolidayCountdown', label: 'dashboard.datetime.show_holiday_countdown' } ] },
     { label: 'dashboard.preset.bulk_group_hebrew', items: [
       { key: 'showNikkud', label: 'dashboard.color.show_nikkud' },
       { key: 'colorCodeNikkud', label: 'dashboard.color.color_code_nikkud' } ] },
@@ -8063,13 +8081,14 @@ function mountSidebarResize(cfg) {
   }
   function bpeChip(name, t) {
     // One <label> around text + switch (a nested <label class="toggle"> would be invalid, so the switch is a <span>).
+    // The switch comes first, so a card's switches line up in one column whatever their labels' lengths.
     const lab = document.createElement('label'); lab.className = 'bpe-chip'; lab.dataset.key = t.key;
-    const txt = document.createElement('span'); txt.textContent = I18n.t(t.label); lab.appendChild(txt);
     const tg = document.createElement('span'); tg.className = 'toggle';
     const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = !!bpeVal(name, t.key) !== !!t.invert;
     cb.addEventListener('change', () => { bpeSet(name, t.key, cb.checked !== !!t.invert); renderBpeMaster(); });
     const sl = document.createElement('span'); sl.className = 'slider';
     tg.appendChild(cb); tg.appendChild(sl); lab.appendChild(tg);
+    const txt = document.createElement('span'); txt.textContent = I18n.t(t.label); lab.appendChild(txt);
     return lab;
   }
   // A screenful of cards first, then the rest a chunk per task: built in one go, opening the editor over 40 presets
@@ -8099,6 +8118,7 @@ function mountSidebarResize(cfg) {
     const head = document.createElement('div'); head.className = 'bpe-card-head';
     const h = document.createElement('h3'); h.className = 'bpe-name'; h.id = id + '_h'; h.textContent = name; head.appendChild(h);
     if (_bpeFolders[name]) { const f = document.createElement('span'); f.className = 'bpe-folder'; f.textContent = I18n.t('dashboard.preset.bulk_folder', { folder: _bpeFolders[name] }); head.appendChild(f); }
+    if (name === bpeBoardPreset()) { const b = document.createElement('span'); b.className = 'bpe-onboard'; b.textContent = I18n.t('dashboard.preset.bulk_on_board'); head.appendChild(b); }
     card.appendChild(head);
     card.appendChild(bpeBuildToolbar(id));
     const ed = document.createElement('div'); ed.className = 'editor bpe-editor'; ed.id = id; ed.contentEditable = 'true'; ed.setAttribute('dir', 'auto');
@@ -8126,7 +8146,13 @@ function mountSidebarResize(cfg) {
     sz.appendChild(szI); sz.appendChild(szV); row.appendChild(sz);
     card.appendChild(row);
     const chips = document.createElement('div'); chips.className = 'bpe-chips';
-    BPE_TOGGLES.forEach(t => chips.appendChild(bpeChip(name, t)));
+    BPE_GROUPS.forEach((g, gi) => {   // the master row's groups, each a labelled group of switches
+      const grp = document.createElement('div'); grp.className = 'bpe-cgroup'; grp.setAttribute('role', 'group');
+      const gl = document.createElement('span'); gl.className = 'bpe-cgroup-lbl'; gl.id = id + '_g' + gi; gl.textContent = I18n.t(g.label);
+      grp.setAttribute('aria-labelledby', gl.id); grp.appendChild(gl);
+      g.items.forEach(t => grp.appendChild(bpeChip(name, t)));
+      chips.appendChild(grp);
+    });
     card.appendChild(chips);
     host.appendChild(card);
   }
@@ -8297,20 +8323,31 @@ function mountSidebarResize(cfg) {
     const ask = signedIn ? (one ? 'dashboard.preset.bulk_save_confirm_cloud.one' : 'dashboard.preset.bulk_save_confirm_cloud.other')
                          : (one ? 'dashboard.preset.bulk_save_confirm.one' : 'dashboard.preset.bulk_save_confirm.other');
     if (!confirm(I18n.t(ask, { count: changed.length }))) return;
+    const board = bpeBoardPreset(), saved = {};
     changed.forEach(n => {
       const edits = bpeEdits(n);
       if (edits.dashTextHTML !== undefined) edits.dashTextHTML = sanitizeDashHTML(edits.dashTextHTML || '');
       presets[n] = Object.assign({}, presets[n], edits);
+      saved[n] = edits;
     });
     savePresetsStorage();   // one write; the account hook uploads only the rows that changed
-    // Schedule Sync owns the board: if the period on it now is one of the changed presets, re-apply it now
-    // (the account download's pattern), not at the next period boundary. Otherwise the live board is left alone.
+    // The board follows a Save of the preset it shows. Schedule Sync owns the board: if the period on it now is one of
+    // the changed presets, re-apply it now (the account download's pattern), not at the next period boundary. Else, a
+    // changed preset the teacher put on the board takes just the fields edited here, so the board's other live tweaks
+    // since that Load stay. A preset not on the board waits for its Load or its period.
+    let shown = false;
     if (settings.scheduleEnabled) {
       let cur = null;
       try { const st = computeScheduleState(); cur = (st && st.status === 'active' && st.currentEntry) ? st.currentEntry.preset : null; } catch (e) {}
-      if (cur && changed.includes(cur)) { _lastScheduleKey = null; checkSchedule(); }
+      if (cur && changed.includes(cur)) { _lastScheduleKey = null; checkSchedule(); shown = true; }
+    }
+    if (!shown && board && saved[board]) {
+      applySettings(saved[board], { presetName: board });
+      saveSettingsToStorage();
+      shown = true;
     }
     let msg = I18n.t(changed.length === 1 ? 'dashboard.preset.bulk_saved.one' : 'dashboard.preset.bulk_saved.other', { count: changed.length });
+    msg += ' ' + I18n.t(shown ? 'dashboard.preset.bulk_saved_board' : (changed.length === 1 ? 'dashboard.preset.bulk_saved_later.one' : 'dashboard.preset.bulk_saved_later.other'));
     if (gone.length) msg += ' ' + I18n.t(gone.length === 1 ? 'dashboard.preset.bulk_skipped.one' : 'dashboard.preset.bulk_skipped.other', { count: gone.length });
     bpeClose();
     showAppToast(msg);
