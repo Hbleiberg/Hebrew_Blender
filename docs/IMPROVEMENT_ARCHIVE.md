@@ -96020,3 +96020,38 @@ _(prior)_ **Next session (S595):** **Branch `claude/amazing-gauss-gli685` (S588�
 
 _(prior)_ **Next session (S596):** **Branch `claude/amazing-gauss-gli685` (S588–S595, PR #386): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1203**, FM **5.59**, corpus ?v=7. ⚑ drift: main=697d533 sw=v1203 fm=5.59 migration=0009_assignment_enrolment.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: P chrome (S477), G trope (S479), D trope (S480), H torah (S482), C chrome (S483), N dictionary (S492), M chrome (S494); suite E (S531), L (S532), K (S533). ⚑ The signed-in reading-assignments UI still wants its first P and H. ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
 ⚑ Sync P2 (S573). ⚑ The account page signed in is unprinted (`--sdk`): the next G or P on the chrome. ⚑ Gate 4 to propose: the generator's blend sheets on a phone. ⚑ smoke-sync D31 flake (again S592; alone 3/3). ⚑ Ports at the next A: `m554/`–`n595/`; traps 352, 356–484. ⚑ Queues: FM 25, generator 25, torah 13, dictionary 10, dashboard 7; the rest ≤ 6.
+
+_(prior)_ **Next session (S597):** **Branch `claude/amazing-gauss-gli685` (S588–S596, PR #386): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1207**, FM **5.59**, corpus ?v=7. ⚑ drift: main=697d533 sw=v1207 fm=5.59 migration=0009_assignment_enrolment.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: G trope (S479), D trope (S480), H torah (S482), C chrome (S483), N dictionary (S492), P torah (S493), M chrome (S494); suite E (S531), L (S532), K (S533). ⚑ The signed-in reading-assignments UI still wants its first H (its P so far: smoke-assignments 135/135). ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
+⚑ Sync P2 (S573): D31 now fails alone 2 in 3 — likely the same race. ⚑ Gate 4 to propose: the generator's blend sheets on a phone. ⚑ Ports at the next A: `m554/`–`p596/`; traps 352, 356–489. ⚑ Queues: FM 25, generator 25, torah 13, dictionary 10, dashboard 7; the rest ≤ 6.
+
+
+<!-- archived by compact-ledger at the S598 boundary, 2026-11-03 -->
+## Compaction (S598, 2026-11-03) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-11-01 | (S592 close-out) | branch/deploy note | **S592 = P on the generator (first since S463): FOUND 5: 2 FIXED (one needs a redeploy), 1 gate 2 answered and FIXED on five tools, 2 logged; + the S575 detector re-trued from the queue; FIXED 4. Same branch `claude/amazing-gauss-gli685` (PR #386, still open), sw v1189; deploy on merge; delete-account needs the maintainer's redeploy. …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-01 | `876c221b` | generator, dashboard, torah, dictionary, flash, locales, sw.js | (S592 P, gate 2 answered; pattern account-wide-delete-confirm-without-signed-in-wording) **Signed in, Reset vowel colors says it resets them on every device.** | 20 presses (EN light 1280 / HE dark 800 × signed out / in): 20/20 (HEAD fails the 10 signed in); smoke-tools 220/220
+
+- [x] 2026-11-01 | `342fc925` | sw.js | (S592, the maintainer's ask) **`js/ivrit-assignments.js` precached: a signed-in Trainer opened offline no longer toasts "could not load".** | offline × 6 cells: toast 2/6 → 0/6, 0 errors
+
+- [x] 2026-11-01 | `7157c391` | classroom_dashboard.html, torah_trainer.html, locales, sw.js | (S592, the maintainer's ask; pattern account-wide-delete-confirm-without-signed-in-wording) **Signed in, six more resets (dashboard ×4, trope colours ×2) say they reach every device.** | 24 real presses: 24/24 (the tree before fails the 12 signed in); smoke-tools 220/220
+
+- [x] 2026-11-01 | (live) | manage-students | (S592, the maintainer's in-session ask) **The two localhost origins removed: version 8, JWT check on, read back identical** (live v7 had matched the repo first); a live preflight answers the two real origins only. | preflights × 4 origins; Node CORS check new vs v7
+
+- [x] 2026-11-01 | (live) | delete-account | (S592, the maintainer's in-session ask; closes S390's P4) **The two localhost origins removed: version 8, JWT check on, read back identical**; a live preflight answers the two real origins only. | preflights × 4 origins; the probe 7/7
+
+- [x] 2026-11-01 | (live) | delete-account | (S592, the maintainer's in-session ask) **Redeployed delete-account with `dad86178`: version 7, JWT check on, the source read back identical.** | the probe 7/7 on the deployed file first
+
+- [x] 2026-11-01 | `dad86178` | db/functions/delete-account/index.ts, db/README.md | (S592 P) **delete-account removes every student login a teacher created** (the students step paged by offset over a list its own deletions shortened). Live as version 7. | probe S592 delete-account 7/7 (HEAD 3/7: 1 / 50 / 100 left at 101 / 150 / 200)
+
+- [x] 2026-11-01 | `77cc8eda` | hebrew_blend_generator.html, smoke-sync, docs, sw.js | (S592 P) **Start fresh, signed in, holds across the next load and on the teacher's other devices.** | smoke-sync D42 4/4 (HEAD 2/4); walk 21/21 (HEAD 18, planted 15); signed out 8 cells = HEAD; smoke-sync 227/228 (D31 flake, alone 3/3); migration 47/47
+
+### from Per-session log (one line per session)
+
+- 2026-10-30 | **S577** | iters: 5 | tools: atlas ×2, dashboard, generator, dashboard.md, scripts/loop, sw | patterns fixed: horizontal-overflow-at-narrow-widths ×1, flex-range-keeps-its-min-content-width ×1 | pass run: N (trope_atlas, its first) | SW: v1137→v1138
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S597 (2026-11-03):** trope, generator, sw.js, scripts/loop, loop docs S597 · account, index, flash, locales, sw.js, loop docs S596 · fontmaker, generator, locales, sw.js, loop docs S595 · generator, dictionary, locales, sw.js, loop docs S594 · fontmaker, name_tags, dashboard, sw.js, scripts/loop, loop docs S593 · generator, dashboard, torah, dictionary, flash, db/functions/delete-account, smoke-sync, locales, sw.js, scripts/loop, loop docs S592 · trope, dictionary, index, sw.js, scripts/loop, loop docs S591 · resources, generator, dashboard, sw.js, scripts/loop, loop docs S590 · torah, …[full text: IMPROVEMENT_ARCHIVE.md]
