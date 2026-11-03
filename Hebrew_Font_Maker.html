@@ -307,6 +307,13 @@ body.dark .hi-sun{display:inline-block;}
     border-radius: 6px; padding: 6px 9px; cursor: pointer; font-size: 0.82rem; font-weight: 700;
     font-family: 'Source Sans 3', sans-serif;   /* 6px, not 7px: a select's line box is 2px taller than a button's */
   }
+  /* A phone: under a finger the format select is 16px (the pointer:coarse rule), ~194px wide, so on a 320–360px screen
+     the Export button beside it squeezed its label onto two lines and, at 320, ran past the toolbar's padding to the
+     screen's edge. Below 400px the export group may wrap: the button drops under its select, on one line. */
+  @media (max-width: 400px) {
+    .tb-group.tb-export { flex-wrap: wrap; row-gap: 8px; }
+    #exportBtn { white-space: nowrap; }
+  }
   /* Status line (export/save messages) — its own row below the toolbar, present only when there's a message. */
   #statusMsg { color: var(--gold-light); font-size: 0.78rem; padding: 5px 18px; background: var(--navy); }
   body.dark #statusMsg { background: #0d1220; }
@@ -1599,7 +1606,7 @@ html[lang="he"] .tp-label{letter-spacing:normal;text-transform:none;}
     <button class="tbtn ghost hi-btn" onclick="openQA()" title="Review every letter × mark placement for collisions" data-i18n-title="fontmaker.toolbar.qa_check_title"><svg class="hi hi-sm hi-search" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.6" cy="10.6" r="6.4"/><path d="M15.4 15.4l4.6 4.6"/></svg><span class="hi-lbl" data-i18n="fontmaker.toolbar.qa_check">QA Check</span></button>
     <button class="tbtn ghost" onclick="generatePreviewPDF()" data-i18n="fontmaker.toolbar.preview_pdf">Preview PDF</button>
   </div>
-  <div class="tb-group">
+  <div class="tb-group tb-export">
     <select class="tbtn-select" id="exportFormat" onchange="onExportFormatChange()" title="Choose an export format — or save the font for use in IvritSuite" data-i18n-title="fontmaker.toolbar.export_format_title">
       <option value="ttf" selected data-i18n="fontmaker.toolbar.fmt_ttf">TTF (recommended)</option>
       <option value="woff2" data-i18n="fontmaker.toolbar.fmt_woff2">WOFF2 (web)</option>
