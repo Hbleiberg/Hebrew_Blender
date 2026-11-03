@@ -96154,3 +96154,36 @@ _(prior)_ **Next session (S600):** **Branch `claude/improveloop-s597` (S597–S5
 ### from Tool coverage (last-touched date per tool)
 
 - **Snapshot S600 (2026-11-03):** torah, index, resources, locales, sw.js, loop docs S600 · reading_assignments, torah, trope, locales, llms, sw.js, loop docs S599 · trope, fontmaker, generator, sw.js, loop docs S598 · trope, generator, sw.js, scripts/loop, loop docs S597 · account, index, flash, locales, sw.js, loop docs S596 · fontmaker, generator, locales, sw.js, loop docs S595 · generator, dictionary, locales, sw.js, loop docs S594 · fontmaker, name_tags, dashboard, sw.js, scripts/loop, loop docs S593 · generator, dashboard, torah, dictionary, flash, db/functions/delete-account, smoke-sync, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+_(prior)_ **Next session (S601):** **Branch `claude/improveloop-s597` (S597–S600, PR #393): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1224**, FM **5.59**, corpus ?v=7. ⚑ drift: main=baaaaae sw=v1224 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: N dictionary (S492), P torah (S493), M chrome (S494), G dashboard (S495), D dictionary (S496), H chrome (S498), C dashboard (S499); suite E (S531), L (S532), K (S533). ⚑ S599's gates all built (the Stop strip S600). ⚑ The chrome C harness (index/resources/… + the account page's fake cloud lifted) is `c600/`; the torah/assignments H one `h599/`. ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
+⚑ Sync P2 (S573): D31 now fails alone 2 in 3 — likely the same race. ⚑ Gate 4 to propose: the generator's blend sheets on a phone. ⚑ Ports at the next A: `m554/`–`c600/`; traps 352, 356–500. ⚑ The dashboard's bulk-edit Save (S576 P4, 203 ms @4×) is the 9k-node modal's close, not script: leave it unless the modal changes. ⚑ Queues (first file of each candidate): FM 26, generator 23, torah 13, dictionary 10, parsha_emojis 7, name_tags 7, trope 6, dashboard 6; the rest ≤ 4.
+
+
+<!-- archived by compact-ledger at the S602 boundary, 2026-11-03 -->
+## Compaction (S602, 2026-11-03) — moved verbatim from the live ledger
+
+### from Candidates (prioritized, top = next)
+
+- [ ] P3 (**NEW S595 N — needs the tour-engine extraction, UX rule 1**) | Hebrew_Font_Maker.html, hebrew_dictionary.html, tour engine | **On a landscape phone (750×342) the tour card falls back onto its own target**: the starting-font tour's steps 2, 3, 7 covered 93–100%; the shared engine shares the fallback; the dictionary's own engine (S601 N) covers 31–54% of steps 2–5 at 750×342 and 863×360. | found S595
+
+### from Done
+
+- [x] 2026-11-03 | (outside the loop, `88b0540b`..`baaaaae9`) | db/migrations 0010–0012 | (S596 Awaiting P4) **The 12 performance lints on the assignment tables are gone live**; 4 INFO "unused index" on the new indexes remain (no traffic yet). | read-only: list_migrations, get_advisors
+
+- [x] 2026-11-01 | (S596 close-out) | branch/deploy note | **S596 = P on the chrome pages (first since S477): FOUND 4, FIXED 2 + 2 Flash Cards from the queue (S578's flush P4 struck by `eb031296`). PR #386 open, sw v1207; deploy on merge.** Two gate 2 questions asked and answered; no live action.
+
+- [x] 2026-11-01 | `512d1617` | locales, sw.js | (S596 queue; gate 2) **Flash Cards' Hebrew report heads its score column ציון, not ניקוד.** | report header by real clicks, 4 cells
+
+- [x] 2026-11-01 | `22c44d48` | flash_cards.html, locales, sw.js | (S596 queue S566; gate 2) **The history and the progress report count answered cards**: 3/3 before an early end reads 100% · 7 not reached (was ✗ 30% 3/10). | real drill + report × 4 cells; HEAD control
+
+- [x] 2026-11-01 | `eb031296` | index.html, sw.js | (S596 P; S578's P4) **Erase All flushes all ten synced tools before its last confirm.** | fix2.mjs 4/4 (HEAD 0/4); smoke-sync 11 + D33
+
+- [x] 2026-11-01 | `562a8b1f` | account.html, locales, sw.js | (S596 P; gate 2) **The delete step says reading assignments are not in the .zip and go with the account.** | fix1.mjs 4 cells; smoke-account-page 65/65
+
+### from Per-session log (one line per session)
+
+- 2026-10-31 | **S581** | iters: 4 | tools: torah, scripts/loop, sw | patterns fixed: author-display-defeats-the-hidden-attribute ×1 | pass run: A (scoped: reading assignments) | SW: v1147→v1148
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S601 (2026-11-03):** dictionary, resources, fontmaker, dashboard, name_tags, torah, reading_assignments, sw.js, loop docs S601 · torah, index, resources, locales, sw.js, loop docs S600 · reading_assignments, torah, trope, locales, llms, sw.js, loop docs S599 · trope, fontmaker, generator, sw.js, loop docs S598 · trope, generator, sw.js, scripts/loop, loop docs S597 · account, index, flash, locales, sw.js, loop docs S596 · fontmaker, generator, locales, sw.js, loop docs S595 · generator, dictionary, locales, sw.js, loop docs S594 · fontmaker, name_tags, dashboard, sw.js, scripts/loop, loop docs S593 · generator, dashboard, torah, …[full text: IMPROVEMENT_ARCHIVE.md]
