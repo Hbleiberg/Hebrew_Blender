@@ -3145,7 +3145,10 @@ function buildPhrasePrint() {
   }
 }
 function printPhrases() { document.body.classList.add('tu-print-phrases'); buildPhrasePrint(); window.print(); }
-window.addEventListener('beforeprint', () => { if (phrasesShown()) { document.body.classList.add('tu-print-phrases'); buildPhrasePrint(); } });
+// The Phrases tab prints its sheet only when it has rows to print; with none (a melody not yet transcribed, a failed
+// phrase file) Ctrl+P there prints the Learn chart, as every other tab does.
+function phrasesPrintable() { return phrasesShown() && !!phraseSet(); }
+window.addEventListener('beforeprint', () => { if (phrasesPrintable()) { document.body.classList.add('tu-print-phrases'); buildPhrasePrint(); } });
 window.addEventListener('afterprint', () => {
   document.body.classList.remove('tu-print-phrases');
   const h = document.getElementById('tuPhrasePrintSheet');
@@ -3579,6 +3582,7 @@ function playLearnExample(t, ex, btn) {
    "family visited" progress write (see renderLearn), and the finally-block always restores the
    family the teacher was actually on, even if a card builder throws. */
 let _chartPrintBuild = false;
+let _dockLent = null;   // { home, focus } while a chart print job has borrowed the key dock (buildPrintChart)
 let _i18nRerender = false;   // applyI18n's re-render is read-only (CLAUDE.md i18n §6): it must not mark a family visited
 
 function buildPrintChart() {
@@ -3586,7 +3590,16 @@ function buildPrintChart() {
   const live = document.getElementById('tuCards');
   if (!host || !live) return;
   if (host.childElementCount) return;   // already assembled for this print job (button + beforeprint)
-  if (phrasesShown()) return;           // the Phrases tab prints its own sheet (buildPhrasePrint)
+  if (phrasesPrintable()) return;       // the Phrases tab prints its own sheet (buildPhrasePrint)
+  // The melody note names the chart's melody on paper, and it lives in the key dock, which stays in the Phrases tab
+  // after a visit there: from Drill, Settings or an empty Phrases tab the chart printed without it. The job borrows
+  // the dock into Learn's slot; clearPrintChart puts it back (and the keyboard, if it was in the dock).
+  const dock = document.getElementById('tuKeyDock'), learn = document.getElementById('learnView');
+  if (dock && learn && dock.parentNode !== learn) {
+    const ae = document.activeElement;
+    _dockLent = { home: dock.parentNode, focus: dock.contains(ae) ? ae : null };
+    learn.insertBefore(dock, document.getElementById('tuFamilyChips'));
+  }
   const keep = currentFamily;
   _chartPrintBuild = true;
   try {
@@ -3616,7 +3629,12 @@ function buildPrintChart() {
   }
 }
 /* Cleared after printing so the next job re-reads the live language and tradition. */
-function clearPrintChart() { const h = document.getElementById('tuPrintSheet'); if (h) h.innerHTML = ''; }
+function clearPrintChart() {
+  const h = document.getElementById('tuPrintSheet'); if (h) h.innerHTML = '';
+  const dock = document.getElementById('tuKeyDock'), lent = _dockLent;
+  _dockLent = null;
+  if (dock && lent) { lent.home.appendChild(dock); if (lent.focus && lent.focus.isConnected) lent.focus.focus({ preventScroll: true }); }
+}
 function printChart() { stopTune(); buildPrintChart(); window.print(); }   // the sheet is built from live cards: none may be playing
 window.addEventListener('beforeprint', buildPrintChart);   // plain Ctrl+P gets the full chart too
 window.addEventListener('afterprint', clearPrintChart);
