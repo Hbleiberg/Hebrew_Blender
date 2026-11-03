@@ -1788,6 +1788,14 @@ body.dark .hi-sun{display:inline-block;}
   @media screen {
     .rw-grid[style*="--rw-cols"] { grid-template-columns: repeat(auto-fill, minmax(max(100px, (100% - (var(--rw-cols) - 1) * 10px) / var(--rw-cols) - 0.5px), 1fr)) !important; }
   }
+  /* The same rule for the blend sheets whose cells cannot shrink below their content (Inverse's write box, Gematria and
+     Name the Letter): on a phone or beside the sidebar their five columns ran past the sheet's edge, the cut cells out of
+     reach in the English UI. On screen a column is never narrower than the builder's --bg-floor (blendGridFit: its widest
+     cell, measured), so the row takes fewer, wider cells; with room for --bg-cols it is exactly that. Paper and the PDF
+     keep the builder's columns. A grid with no floor (Reading, Fill the vowels: they fit) is untouched. (S602, gate 4) */
+  @media screen {
+    .blends-grid[style*="--bg-floor"] { grid-template-columns: repeat(auto-fill, minmax(max(var(--bg-floor), (100% - (var(--bg-cols) - 1) * 14px) / var(--bg-cols) - 0.5px), 1fr)) !important; }
+  }
   /* ── MATCHING DRILL (real words) ── */
   .match-wrap { display: flex; justify-content: space-between; align-items: flex-start; gap: 36px; direction: ltr; margin-top: 10px; }
   .match-col { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 0; }
@@ -8052,6 +8060,7 @@ function renderNameTheLetter(ws) {
   grid.className = 'blends-grid';
   grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
   grid.style.direction = inverse ? 'ltr' : 'rtl';
+  if (inverse) blendGridFit(grid, cols, 90);   // a letter's name (widest measured 86px)
   blends.forEach((b, idx) => {
     const cell = document.createElement('div');
     cell.className = 'blend-cell';
@@ -8092,6 +8101,7 @@ function renderNameTheLetter(ws) {
     akGrid.className = 'blends-grid';
     akGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
     akGrid.style.direction = 'rtl';
+    blendGridFit(akGrid, cols, 62);   // the letter with its name (widest measured 59px)
     blends.forEach((b, idx) => {
       const cell = document.createElement('div');
       cell.className = 'blend-cell';
@@ -10348,6 +10358,7 @@ function renderGematriaSheet(ws, items, showTranslit = false, showTranslation = 
     grid.className = 'blends-grid';
     grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
     grid.style.direction = inverse ? 'ltr' : 'rtl';
+    blendGridFit(grid, cols, inverse ? 124 : 56);   // widest measured: 120px inverse, 52px
     items.forEach((b, idx) => {
       const cell = document.createElement('div');
       cell.className = 'blend-cell';
@@ -10671,6 +10682,12 @@ function versionLabelText(i) {
 // Appends one standard blend student sheet (+ its answer key when enabled) for a
 // given blend array, with an optional version label in the header. Used for both the
 // single-worksheet path and each Class Set version.
+// A blend sheet's grid whose cells cannot shrink below `floor` px (their widest content, measured over many sheets in
+// both UIs, plus a margin): the screen's narrow-sheet rule keeps `cols` at full width and takes fewer columns below it.
+function blendGridFit(grid, cols, floor) {
+  grid.style.setProperty('--bg-cols', cols);
+  grid.style.setProperty('--bg-floor', floor + 'px');
+}
 function appendStandardBlendSheets(ws, arr, ctx, versionLabel) {
   const { isInverse, fillVowels, showAnswers, title, subtitle } = ctx;
   const cols = autoCols(arr.length);
@@ -10697,6 +10714,7 @@ function appendStandardBlendSheets(ws, arr, ctx, versionLabel) {
   grid.className = 'blends-grid';
   grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
   grid.style.direction = 'rtl';
+  if (isInverse) blendGridFit(grid, cols, 84);   // the sound over its write box (widest measured 80px)
   studentSheet.appendChild(grid);
   arr.forEach((b, idx) => {
     if (isInverse) renderInverseCell(grid, b, idx, false);
@@ -10740,6 +10758,7 @@ function appendStandardBlendSheets(ws, arr, ctx, versionLabel) {
     akGrid.className = 'blends-grid';
     akGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
     akGrid.style.direction = 'rtl';
+    if (isInverse) blendGridFit(akGrid, cols, 84);
     answerSheet.appendChild(akGrid);
     arr.forEach((b, idx) => {
       if (isInverse) renderInverseCell(akGrid, b, idx, true);
