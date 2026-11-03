@@ -259,6 +259,16 @@ header .hright{margin-inline-start:auto;display:flex;gap:10px;align-items:center
 .page-card.page-card-group:hover .go-btn{background:var(--navy);color:var(--gold-light);}
 .page-card.page-card-group .go-btn:hover,.page-card.page-card-group .go-btn:focus-visible{background:var(--gold);color:var(--navy);}
 .page-card-group .go-btn:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;}
+/* --navy has no dark value, so in dark mode a navy button is 1.03:1 on its dark card and only its gold label shows (pattern
+   dark-navy-fill-matches-its-ground). It takes the suite's dark navy-control fill, as account's .btn and contact's .btn-primary
+   do. Each hover keeps its gold: a body.dark rule outranks the plain :hover rules above, so they are restated. Screen only:
+   paper keeps the print block's light palette. The AllTools modal's primary buttons follow below their own rules. */
+@media screen {
+  body.dark .page-card .go-btn{background:#2a4070;}
+  body.dark .page-card:hover .go-btn{background:var(--gold);}
+  body.dark .page-card.page-card-group:hover .go-btn{background:#2a4070;}
+  body.dark .page-card.page-card-group .go-btn:hover,body.dark .page-card.page-card-group .go-btn:focus-visible{background:var(--gold);}
+}
 
 .beta-tag{display:inline-block;background:var(--gold);color:var(--navy);font-size:0.7rem;font-weight:700;letter-spacing:0.08em;padding:2px 6px;border-radius:4px;vertical-align:middle;margin-inline-start:6px;text-transform:uppercase;}
 html[lang="he"] .beta-tag{letter-spacing:normal;text-transform:none;}   /* בטא: Hebrew has no capitals, and the tracking only spaced its letters apart */
@@ -310,6 +320,10 @@ body.dark .ie-modal-body textarea{background:#0d1220;}
 .ie-action-btn.secondary:hover{border-color:var(--gold);color:var(--gold-text);}
 .ie-action-btn.danger{background:#a83232;color:#fff;}
 .ie-action-btn.danger:hover{background:#8a2828;}   /* the erase buttons were inline-styled with no hover rule at all — pattern control-class-without-a-hover-state */
+@media screen {   /* the dark navy-control fill, as the tool cards' buttons above: Save / Export / Import are 1.03:1 on the dark modal otherwise */
+  body.dark .ie-action-btn.primary{background:#2a4070;}
+  body.dark .ie-action-btn.primary:hover{background:var(--gold);}
+}
 .ie-note{font-size:0.75rem;color:var(--muted);line-height:1.4;}
 /* .ie-note's colour does not reach an <a> inside it — the UA's own link rule wins — so the
    My Fonts note's link kept UA blue: 9.4:1 on light but 1.63:1 on the dark modal. Same
