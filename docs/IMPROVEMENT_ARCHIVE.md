@@ -96228,3 +96228,38 @@ _(prior)_ **Next session (S602):** **Branch `claude/improveloop-s597` (S597–S6
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 - P accounts & cloud (one surface): 2026-11-03 (**S602 — 20th P, `torah_trainer.html` (first since S493; 75 commits, the reading assignments among them): smoke-tools / sync / migration / assignments with the pinned SDK, 3 new signed-in scenarios (the practice link, `?reader=`), arms 3–7 static behind 7 plants, the live project read-only. FOUND 1: FIXED (D43, a new pattern); + the generator's blend sheets (gate 4). P-next: trope (S507), dictionary (S521).**)
+
+_(prior)_ **Next session (S603):** **Branch `claude/improveloop-s597` (S597–S602, PR #393): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1230**, FM **5.59**, corpus ?v=7. ⚑ drift: main=baaaaae sw=v1230 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: M chrome (S494), G dashboard (S495), D dictionary (S496), H chrome (S498), C dashboard (S499), N dashboard (S506), P trope (S507); suite E (S531), L (S532), K (S533). ⚑ Harnesses: torah P `p602/` (`sync602.mjs`: smoke-sync on any root), generator blend sheets `p602/gen/`, dictionary N `n601/`. ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
+⚑ Sync P2 (S573): D31 still fails alone about 1 in 3 (S602: HEAD 2/3, tree 3/3). ⚑ The S602 gate-4 answer (fewer, wider columns on screen where they don't fit; paper unchanged) also covers the landscape blend-sheet P3 and the SE Bingo / Word Search P4s. ⚑ Ports at the next A: `m554/`–`p602/`; traps 352, 356–508. ⚑ The dashboard's bulk-edit Save (S576 P4, 203 ms @4×) is the 9k-node modal's close, not script: leave it unless the modal changes. ⚑ Queues (first file of each candidate): FM 26, generator 23, torah 12, dictionary 11, name_tags 7, parsha_emojis 7, trope 6, dashboard 6; the rest ≤ 4.
+
+
+<!-- archived by compact-ledger at the S604 boundary, 2026-11-03 -->
+## Compaction (S604, 2026-11-03) — moved verbatim from the live ledger
+
+### from Candidates (prioritized, top = next)
+
+- [ ] P4 (**NEW S530 A — glyph census, rule first; S603 M: the hub's two are control labels, the host contract's — `hi-type` is ready for 🔤**) | dictionary, resources, flash, torah, FM, index | **Category and option emoji are still heard** (findings S530): content or decoration is unruled. The hub's "🔤 Hebrew Fonts →" (Resources' own Fonts toggle took `hi-type`) and "✉️ Contact & Support" (no envelope glyph yet) are links, not content. | found S530
+
+### from Done
+
+- [x] 2026-11-03 | (S603 close-out) | branch/deploy note | **S603 = M on the chrome bundle (the hub's first M since S246, the account page's since S408): 84 full-page cells + the hub's states, the signed-in account page, Resources' Fonts view and suggest form; 6 arms behind plants. FOUND 3, FIXED 3; 1 amended, 4 settled. PR #393, sw v1233; deploy on merge.** No gate asked (a gate-3 idea prototyped and dropped); no live action.
+
+- [x] 2026-11-03 | `918d4924` | contact.html, privacy.html, terms.html, account.html, sw.js | (S603 M) **The header title is bold again on the four pages whose h1 became a div** (an h1 is bold by default); the phone rule drops the 0.01em tracking so the Contact title keeps one line at 360px. | 7 pages × 18 cells: 504/504 (HEAD 432/504); header geometry = HEAD in 72/72 cells; smoke-account-page 65/65
+
+- [x] 2026-11-03 | (S598 close-out) | branch/deploy note | **S598 = D on the Trope Tutor (first since S480): cold, 104 interactions × 3 cells, a drill, a leak arm; FOUND 1 (gate asked → log only) + 4 FIXED from the queue (trope ×2, FM, generator). PR #393 continued, sw v1217; deploy on merge.** One gate asked and answered; no live action.
+
+- [x] 2026-11-03 | `690916a8` | trope_tutor.html, sw.js | (S598 queue S591 C) **On a phone a Phrases example's verse reference wraps instead of pushing the page sideways under 1.4.12 spacing** (the Hebrew keeps more room). | fix4.mjs 320/375 × 8: 0 rows past card, 0 sideways (HEAD 84+39 rows, 18/92 groups); 800/1280 boxes = HEAD
+
+- [x] 2026-11-03 | `6480170f` | hebrew_blend_generator.html, sw.js | (S598 queue S574 M; dark-navy pattern) **In dark the disabled Print button keeps an edge** (inset 1.5px, = Regenerate's). | fix3.mjs pixels: dark 1.00 → 1.22:1 4/4; light 2.39 unchanged; enabled buttons = HEAD 8/8
+
+- [x] 2026-11-03 | `fbb1ffb2` | Hebrew_Font_Maker.html, sw.js | (S598 queue S595 N) **On a 320–360px phone the Export button drops under its format menu, on one line.** | fm320.mjs SE/S8/13 × 4: past the box 0 (HEAD 2), one line 12/12 (HEAD 6); desktop toolbar = HEAD 8/8
+
+- [x] 2026-11-03 | `2d049d26` | trope_tutor.html, sw.js | (S598 queue S597 G) **Ctrl+P prints the Learn chart, naming its melody, from an empty Phrases tab, Drill or Settings** (the job borrows the key dock). | fix1.mjs 3 paths × 8 cells: 8/8 each (HEAD 0/8 each); Learn + Phrases text = HEAD 16/16; screen 16/16
+
+### from Per-session log (one line per session)
+
+- 2026-10-31 | **S583** | iters: 4 | tools: trope_atlas ×2, torah, generator, sw | patterns fixed: — | pass run: H (atlas, first) | SW: v1150→v1153
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S603 (2026-11-03):** index, contact, privacy, terms, account, sw.js, loop docs S603 · torah, generator, sw.js, scripts/smoke-sync, loop docs S602 · dictionary, resources, fontmaker, dashboard, name_tags, torah, reading_assignments, sw.js, loop docs S601 · torah, index, resources, locales, sw.js, loop docs S600 · reading_assignments, torah, trope, locales, llms, sw.js, loop docs S599 · trope, fontmaker, generator, sw.js, loop docs S598 · trope, generator, sw.js, scripts/loop, loop docs S597 · account, index, flash, locales, sw.js, loop docs S596 · fontmaker, generator, locales, sw.js, loop docs …[full text: IMPROVEMENT_ARCHIVE.md]
