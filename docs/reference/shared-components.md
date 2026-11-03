@@ -164,7 +164,8 @@ shared component so any tool can adopt it.
 ### Behavior contract (don't regress these when touching the block)
 - **Focus/caret:** the panel's delegated `pointerdown` calls `preventDefault()` so clicking keys never
   steals focus or collapses the caret (the standard on-screen-keyboard trick); keyboard activation
-  (Tab + Enter) still works — every edit ends with `input.focus()`. Selection is read live with a
+  (Tab + Enter) still works — every edit ends with `input.focus()`, except on a touch screen (`pointer:coarse`),
+  where focusing the field from a tap raises the phone's own keyboard over the panel, so the field stays unfocused. Selection is read live with a
   remembered `{s,e}` fallback (tracked on `input/click/keyup/select/focus`), clamped to the value.
 - **A tab or the layout button rebuilds the panel:** a press that had focus (Enter / Space) hands it to the
   rebuilt button for the same tab, or the layout button again — otherwise it would fall to `<body>`.

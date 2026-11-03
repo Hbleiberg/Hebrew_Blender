@@ -1369,7 +1369,9 @@ function mountHebrewKeyboard(cfg) {
         apply('', s - n, s);
       }
     } else if (action === 'clear') { inp.value = ''; if (inp.setSelectionRange) inp.setSelectionRange(0, 0); sel = { s: 0, e: 0 }; }
-    inp.focus();
+    // On a touch screen the field is not focused: focus() inside a tap raised the phone's own keyboard over this one
+    // after every key. The caret needs no focus (setRangeText moves it, `sel` remembers it).
+    if (!(window.matchMedia && matchMedia('(pointer:coarse)').matches)) inp.focus();
     if (cfg.onChange) cfg.onChange();   // setRangeText fires no 'input' event — the host re-renders here
   }
 
