@@ -96121,3 +96121,36 @@ _(prior)_ **Next session (S599):** **Branch `claude/improveloop-s597` (S597–S5
 ### from Tool coverage (last-touched date per tool)
 
 - **Snapshot S599 (2026-11-03):** reading_assignments, torah, trope, locales, llms, sw.js, loop docs S599 · trope, fontmaker, generator, sw.js, loop docs S598 · trope, generator, sw.js, scripts/loop, loop docs S597 · account, index, flash, locales, sw.js, loop docs S596 · fontmaker, generator, locales, sw.js, loop docs S595 · generator, dictionary, locales, sw.js, loop docs S594 · fontmaker, name_tags, dashboard, sw.js, scripts/loop, loop docs S593 · generator, dashboard, torah, dictionary, flash, db/functions/delete-account, smoke-sync, locales, sw.js, scripts/loop, loop docs S592 · trope, dictionary, index, sw.js, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+_(prior)_ **Next session (S600):** **Branch `claude/improveloop-s597` (S597–S599, PR #393): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1220**, FM **5.59**, corpus ?v=7. ⚑ drift: main=baaaaae sw=v1220 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: C chrome (S483), N dictionary (S492), P torah (S493), M chrome (S494), G dashboard (S495), D dictionary (S496), H chrome (S498); suite E (S531), L (S532), K (S533). ⚑ Built from S599's gates: Edit → Class, the Reform name; **still to build: the fullscreen Stop strip (top P3, torah)**. ⚑ The torah/assignments H harness (the smoke's fake cloud + any-ref Sefaria + silent audio) is `h599/`. ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
+⚑ Sync P2 (S573): D31 now fails alone 2 in 3 — likely the same race. ⚑ Gate 4 to propose: the generator's blend sheets on a phone. ⚑ Ports at the next A: `m554/`–`h599/`; traps 352, 356–496. ⚑ The dashboard's bulk-edit Save (S576 P4, 203 ms @4×) is the 9k-node modal's close, not script: leave it unless the modal changes. ⚑ Queues (first file of each candidate): FM 26, generator 23, torah 15, dictionary 10, parsha_emojis 7, name_tags 7, trope 6, dashboard 6; the rest ≤ 4.
+
+
+<!-- archived by compact-ledger at the S601 boundary, 2026-11-03 -->
+## Compaction (S601, 2026-11-03) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-11-03 | (S600 close-out) | branch/deploy note | **S600 = C on the chrome bundle (first since S483; index, resources, contact, privacy + terms, 404, account signed out and in): census 128 cells, Tab walks 44 + dialogs, motion, forced colours, 1.4.12, headings; FOUND 2, FIXED 2 + the approved Stop strip + the EN inbox note. PR #393 continued, sw v1224; deploy on merge.** One gate 4 asked and answered; no live action.
+
+- [x] 2026-11-03 | `7ed01731` | index.html, sw.js | (S600 C, gate 4 answered) **The What's-new card keeps keyboard focus in view** (pattern `focus-hidden-under-a-sticky-bar`): its live height reserved by scroll padding and body padding while it shows; on a phone the page starts below it. | wnwalk.mjs 6 cells × Tab/Shift+Tab: wholly hidden 72 → 0, partly 52 → 4; fix2.mjs every way out releases it, Show me lands clear, no card = no reserve 24/24
+
+- [x] 2026-11-03 | `aa30956e` | torah_trainer.html, sw.js | (S599 gate, built S600) **A take recording behind full screen shows its clock and Stop** (a plate above the presentation bar's live height; Stop → focus to Exit Full Screen). | fix1.mjs 4 cells (1024 reduced motion, HE dark 800, 1280, HE phone 390) by real clicks: absent outside full screen, clock = panel and ticking, Stop 44px, clear of the bar and Exit, stop → exit → Play 4/4 (HEAD 0/4); smoke-assignments 135/135
+
+- [x] 2026-11-01 | (S595 close-out) | branch/deploy note | **S595 = N on the Font Maker (first since S476): FOUND 5, FIXED 2 + 2 generator. PR #386 open, sw v1203; deploy on merge.** No gate or live action.
+
+- [x] 2026-11-01 | `7c3922e0` | Hebrew_Font_Maker.html, locales, sw.js | (S595 N) **The canvas's guide and segment titles are translated.** | 4 cells; stage = HEAD
+
+- [x] 2026-11-01 | `829cc1b4` | Hebrew_Font_Maker.html, sw.js | (S595 N; 16px pattern) **Fields read at 16px under a finger.** | 0/41 (HEAD 39); desktop = HEAD
+
+- [x] 2026-11-01 | `4ab246cf` | hebrew_blend_generator.html, sw.js | (S595 queue; glyph pattern) **Fold triangles drawn, not read**: ▾ names 23 → 0. | AX × 4 cells; shots = HEAD
+
+- [x] 2026-11-01 | `a339e565` | hebrew_blend_generator.html, locales, sw.js | (S595 queue; UX rule 8) **The sidebar's Hebrew carries lang=he**: 20 → 0. | 4 cells; shots = HEAD
+
+### from Per-session log (one line per session)
+
+- 2026-10-30 | **S580** | iters: 1 | tools: trope_atlas, sw | patterns fixed: — | pass run: C (atlas, first) | SW: v1146→v1147
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S600 (2026-11-03):** torah, index, resources, locales, sw.js, loop docs S600 · reading_assignments, torah, trope, locales, llms, sw.js, loop docs S599 · trope, fontmaker, generator, sw.js, loop docs S598 · trope, generator, sw.js, scripts/loop, loop docs S597 · account, index, flash, locales, sw.js, loop docs S596 · fontmaker, generator, locales, sw.js, loop docs S595 · generator, dictionary, locales, sw.js, loop docs S594 · fontmaker, name_tags, dashboard, sw.js, scripts/loop, loop docs S593 · generator, dashboard, torah, dictionary, flash, db/functions/delete-account, smoke-sync, …[full text: IMPROVEMENT_ARCHIVE.md]
