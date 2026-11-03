@@ -808,7 +808,7 @@ function copyText(text, done) {
 function loadAssignments() {
   const me = user && user.id; if (!me) return;
   say('asgStatus', () => t('account.holds.checking')); setBusy('asgRefresh', true);
-  AS().assignments.list().then(rows => { if (!user || user.id !== me) return; assignments = rows || []; renderAssignments(); say('asgStatus', null); loadGrid(); if (subsFor) { const a = assignments.find(x => x.id === subsFor.id); if (a) subsFor = a; } })
+  return AS().assignments.list().then(rows => { if (!user || user.id !== me) return; assignments = rows || []; renderAssignments(); say('asgStatus', null); loadGrid(); if (subsFor) { const a = assignments.find(x => x.id === subsFor.id); if (a) subsFor = a; } })
     .catch(err => { if (user && user.id === me) say('asgStatus', () => errText(err), true); }).then(() => setBusy('asgRefresh', false));
 }
 function trainerLink(a) { return '/torah_trainer.html?ref=' + encodeURIComponent(a.ref); }
@@ -880,7 +880,15 @@ function saveDlg(e) {
   if (!f.title.trim()) { say('dlgStatus', () => t('assign.edit.title_empty'), true); $('dlgTitleIn').focus(); return; }
   if (AS().codeWord.normalize(f.code_word).length < 6) { say('dlgStatus', () => t('assign.edit.code_short'), true); $('dlgCode').focus(); return; }
   setBusy('dlgSave', true); say('dlgStatus', () => t('shared.account.sending'));
-  AS().assignments.update(dlgFor.id, f).then(() => { closeDlg(); loadAssignments(); }).catch(err => say('dlgStatus', () => errText(err), true)).then(() => setBusy('dlgSave', false));
+  // A class chosen here gives the assignment to that class, as the Trainer's Assign dialog does: its students are
+  // enrolled (one already on it is left as is; nobody is ever taken off), so they see it without the code word. The
+  // row is saved either way — an enrolment that fails is reported on the list's status line, never as a failed save.
+  const id = dlgFor.id, newClass = f.class_id && f.class_id !== (dlgFor.class_id || null) ? f.class_id : null;
+  const ids = newClass ? students.filter(s => s.class_id === newClass).map(s => s.id) : [];
+  AS().assignments.update(id, f)
+    .then(() => (ids.length ? AS().assignments.enrol(id, ids).then(() => null, err => err) : null))
+    .then(enrolErr => { closeDlg(); return Promise.resolve(loadAssignments()).then(() => { if (enrolErr) say('asgStatus', () => errText(enrolErr), true); }); }, err => say('dlgStatus', () => errText(err), true))
+    .then(() => setBusy('dlgSave', false));
 }
 
 /* ── submissions ── */
