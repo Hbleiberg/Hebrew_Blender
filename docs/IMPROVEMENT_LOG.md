@@ -64,17 +64,11 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S597 G — after `18d72e52`**) | trope_tutor.html | **15 of 232 printed charts still end on a sheet holding only the footer credits** (the Torah and High Holiday Phrases at Letter, 4 cells each; 4 traditions' Learn in HE A4; 3 more): what is left is the credits block itself (~100px on paper); a shorter credit set on paper is a copy call (findings S597). | found S597
 
-- [ ] P4 (**NEW S597 G**) | trope_tutor.html | **Ctrl+P on the Phrases tab with nothing to print (the Conservative melody has no rows; or the phrase file failed) prints the header, the melody note and the credits only** (8/8 cells, one sheet): the Learn chart is the useful fallback, but `#tuKeyDock` (the melody note) sits in the Phrases slot then. | found S597
-
 - [ ] P4 (**NEW S595 N**) | Hebrew_Font_Maker.html | **A window opened mid-tour opens under the tour's card**: on a phone the card covers its Close (the card's ✕ still ends the tour). | found S595
 
 - [ ] P4 (**NEW S595 N — gate 2/4**) | Hebrew_Font_Maker.html | **A phone turned sideways gets the tablet notice** (tiered by width alone); one over 820px gets none. | found S595
 
-- [ ] P4 (**NEW S595 N — after `829cc1b`**) | Hebrew_Font_Maker.html | **On a 320px phone the export row reaches the screen edge**: let the group wrap below ~360px. | found S595
-
 - [ ] P4 (**NEW S594 C**) | generator, dictionary | **A control inside a collapse header joins its name**: "Saved Presets More information", "1st Letter Clear" ×7. | found S594
-
-- [ ] P4 (**NEW S591 C — 1.4.12**) | trope_tutor.html | **Under 1.4.12's text spacing a Phrases example's verse reference ("Beha'alotcha 10:10", no-wrap) pushes a 320px window 3px wide** (EN and HE; 0 at the page's own spacing). | found S591
 
 - [ ] P4 (**NEW S590 — found verifying `d37fd204`**) | hebrew_blend_generator.html | **Real Words Gematria Self-Check's flipped card spills its back in Export PDF**: the translation runs past the card's edge and the Hebrew word sits above it (print not checked). | found S590
 
@@ -93,8 +87,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S575 G — pattern `print-block-split-at-a-sheet-foot`; whole cards cost a sheet here; S591: its dead buttons FIXED `61d3a8ab` — re-measure the sheets**) | index.html | **Printed, the hub cuts a tool card across sheets (EN Letter, HE A4)**; whole cards alone added a footer-only sheet (EN Letter). | found S575
 
 - [ ] P4 (**NEW S575 G — pattern `print-trailing-padding-adds-a-sheet`**) | privacy.html | **In English on Letter the footer prints alone on a 6th sheet** ; main's padding off does not fit it (and splits Terms' footer). | found S575
-
-- [ ] P4 (**NEW S574 M — pattern `dark-navy-fill-matches-its-ground`**) | hebrew_blend_generator.html | **In dark mode the disabled Print button has no edge** (1.00:1) beside the outlined disabled Regenerate and Export PDF. | found S574
 
 - [ ] P4 (**NEW S574 M — H's**) | hebrew_blend_generator.html | **The crossword's "Not placed:" note can list 50+ pool words on the student's sheet.** | found S574
 
@@ -205,8 +197,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S512 H — gate 2**) | hebrew_blend_generator.html | **Name the Letter counts letters × vowels ("36 possible combinations" for 4 bare letters)**; Vowels Only blanks it. | found S512
 
 - [ ] P4 (**NEW S512 H — design, gate 2**) | hebrew_blend_generator.html | **A quick start replays the full defaults, dropping the chosen word list and source.** | found S512
-
-- [ ] P4 (**NEW S508 M — gate 2**) | dashboard | **"+ Add period" beside two icon buttons; "✨ Quick-start layouts…"** — the glyph belongs in the markup. | found S508
 
 - [ ] P4 (**NEW S596 P — the "only if they have students" half of gate 2**) | account.html | **The account page lists and downloads none of a teacher's reading-assignment data** (classes, student logins, assignments, recordings): the listing and the .zip cover saves and Font Maker projects only; counting them needs `js/ivrit-assignments.js` on that page (CLAUDE.md accounts rule 2 names its …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -388,6 +378,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Awaiting the maintainer (an action or an answer only the maintainer can give; a session that resolves one moves it to Done)
 
+- [ ] P4 (**NEW S598 D — GATE 2/3 ASKED, the maintainer chose "log it only"**) | trope_tutor.html | **A tradition's Phrases tab draws all its rows at once ("All rows", by design), so on the two long ones (cons_torah 31, cons_haftarah 36 rows, 77 staves) a key step, a melody choice or a language switch is one task of 216–475 ms @4× (56–108 @1×)**; the seven melodies page ~4 rows a group (≤127 …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [ ] P3 (**NEW S585 H — a corpus content call**) | data/hebrew_words.json, hebrew_dictionary.html | **The word corpus carries adult and explicit terms that an elementary search surfaces** (a child's search for "ילד" listed one 4th on HEAD, below the word and its phrases after `9b6b2a7d`); nothing in the page filters content. Dropping or hiding a list of entries (with the corpus `?v=` bump on …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P1 (**NEW — the reading-assignments build's live actions; BACKEND BOUNDARY**) | workers/audio/ | **Backend live: 0008, both functions, the Worker on `recordings.ivritsuite.com` (secret, cron, lifecycle rules), the null-MX + SPF records. Left: the Supabase Auth password settings (dashboard), the merge, the iPad hand test (PWA mic, `audio/mp4`, WebM on Safari < 17.4).** | found this build
@@ -446,6 +438,16 @@ _(none)_
 
 ## Done
 
+- [x] 2026-11-03 | (S598 close-out) | branch/deploy note | **S598 = D on the Trope Tutor (first since S480): cold, 104 interactions × 3 cells, a drill, a leak arm; FOUND 1 (gate asked → log only) + 4 FIXED from the queue (trope ×2, FM, generator). PR #393 continued, sw v1217; deploy on merge.** One gate asked and answered; no live action.
+
+- [x] 2026-11-03 | `690916a8` | trope_tutor.html, sw.js | (S598 queue S591 C) **On a phone a Phrases example's verse reference wraps instead of pushing the page sideways under 1.4.12 spacing** (the Hebrew keeps more room). | fix4.mjs 320/375 × 8: 0 rows past card, 0 sideways (HEAD 84+39 rows, 18/92 groups); 800/1280 boxes = HEAD
+
+- [x] 2026-11-03 | `6480170f` | hebrew_blend_generator.html, sw.js | (S598 queue S574 M; dark-navy pattern) **In dark the disabled Print button keeps an edge** (inset 1.5px, = Regenerate's). | fix3.mjs pixels: dark 1.00 → 1.22:1 4/4; light 2.39 unchanged; enabled buttons = HEAD 8/8
+
+- [x] 2026-11-03 | `fbb1ffb2` | Hebrew_Font_Maker.html, sw.js | (S598 queue S595 N) **On a 320–360px phone the Export button drops under its format menu, on one line.** | fm320.mjs SE/S8/13 × 4: past the box 0 (HEAD 2), one line 12/12 (HEAD 6); desktop toolbar = HEAD 8/8
+
+- [x] 2026-11-03 | `2d049d26` | trope_tutor.html, sw.js | (S598 queue S597 G) **Ctrl+P prints the Learn chart, naming its melody, from an empty Phrases tab, Drill or Settings** (the job borrows the key dock). | fix1.mjs 3 paths × 8 cells: 8/8 each (HEAD 0/8 each); Learn + Phrases text = HEAD 16/16; screen 16/16
+
 - [x] 2026-11-03 | (S597 close-out) | branch/deploy note | **S597 = G on the Trope Tutor (first since S479): FOUND 3, FIXED 2 (one partial) + 1 generator from the queue; S596's advisor item resolved live by 0010–0012. PR #393 open, sw v1213; deploy on merge.** No gate asked, no live action (reads only).
 
 - [x] 2026-11-03 | `59c2e67e` | hebrew_blend_generator.html, sw.js | (S597 queue S563 G) **A ★ card's gold outline prints inside it, so no gold line stays at the foot of the page before.** | sliver.mjs 16 PDFs: 2 → 0, sheets = HEAD; fix3.mjs 8/8 (HEAD 0/8)
@@ -486,19 +488,11 @@ _(none)_
 
 - [x] 2026-11-01 | `9f2455cb` | hebrew_blend_generator.html, sw.js | (S594 C; hover-tip pattern) **A help bubble answers Escape, stays up under the pointer, keeps its clicks.** | 10/10 × 4 cells; HEAD fails all
 
-- [x] 2026-11-01 | (S593 close-out) | branch/deploy note | **S593 = G on the Font Maker (first since S465): FOUND 4, FIXED 2 + 2 from the queue. Same branch (PR #386, open), sw v1195; deploy on merge.** Gate 2 → "Always right to left". No live action.
-
-- [x] 2026-11-01 | `fc2671ea` | classroom_dashboard.html, sw.js | (S593 queue; pattern decorative-glyph-carrier-exposed-to-assistive-tech) **The video header's ▾ stays out of its accessible name.** | AX name × 4 cells; pixel-identical
-
-- [x] 2026-11-01 | `96f562eb` | name_tags.html | (S593 queue, S550's second half) **A list name with "/" exports as one clean CSV name.** | Export by clicks, EN/HE; HEAD keeps the runs
-
-- [x] 2026-11-01 | `cd875c61` | Hebrew_Font_Maker.html | (S593 G; one of S559's P2 causes) **The right-side meteg sits at each vowel's own mirrored pair**: BenOr Rashi exports with no warning. | probe 3/3 (HEAD fails 2); HarfBuzz 9/11 → 11/11
-
-- [x] 2026-11-01 | `55e45afd` | Hebrew_Font_Maker.html, font-maker.md, newglyphset.md | (S593 G, gate 2; pattern RTL-inheritance-on-a-Latin-script-container) **A printed template runs in its script's direction in both languages, as Auto-detect reads it**: HE-printed 0/20 → 20/20. | probe 4/4 (HEAD fails 2)
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-11-03 | **S598** | iters: 5 | tools: trope ×2, fontmaker, generator, sw | patterns fixed: dark-navy-fill-matches-its-ground ×1 | pass run: D (trope, first since S480) | SW: v1213→v1217
 
 - 2026-11-03 | **S597** | iters: 4 | tools: trope ×2, generator, scripts/loop, sw | patterns fixed: author-display-defeats-the-hidden-attribute ×1, print-trailing-padding-adds-a-sheet ×1 | pass run: G (trope, first since S479) | SW: v1210→v1213
 
@@ -538,11 +532,9 @@ _(none)_
 
 - 2026-10-30 | **S579** | iters: 1 | tools: trope_atlas (measured only), loop docs | patterns fixed: — | pass run: D (atlas, first) | SW: v1146→v1146
 
-- 2026-10-30 | **S578** | iters: 5 | tools: atlas ×2, flash, scripts/smoke-account, locales, sw | patterns fixed: install-banner-over-a-sheet's-bottom-controls ×1 | pass run: P (trope_atlas, its first) | SW: v1138→v1139
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S597 (2026-11-03):** trope, generator, sw.js, scripts/loop, loop docs S597 · account, index, flash, locales, sw.js, loop docs S596 · fontmaker, generator, locales, sw.js, loop docs S595 · generator, dictionary, locales, sw.js, loop docs S594 · fontmaker, name_tags, dashboard, sw.js, scripts/loop, loop docs S593 · generator, dashboard, torah, dictionary, flash, db/functions/delete-account, smoke-sync, locales, sw.js, scripts/loop, loop docs S592 · trope, dictionary, index, sw.js, scripts/loop, loop docs S591 · resources, generator, …[full text: IMPROVEMENT_ARCHIVE.md]
+- **Snapshot S598 (2026-11-03):** trope, fontmaker, generator, sw.js, loop docs S598 · trope, generator, sw.js, scripts/loop, loop docs S597 · account, index, flash, locales, sw.js, loop docs S596 · fontmaker, generator, locales, sw.js, loop docs S595 · generator, dictionary, locales, sw.js, loop docs S594 · fontmaker, name_tags, dashboard, sw.js, scripts/loop, loop docs S593 · generator, dashboard, torah, dictionary, flash, db/functions/delete-account, smoke-sync, locales, sw.js, scripts/loop, loop docs S592 · trope, dictionary, index, sw.js, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -652,7 +644,7 @@ _(none)_
 
 - `cdn-library-parser-blocking-for-one-action` | ACTIVE | owner D | det: recipe | last S590 | streak 0
 
-- `dark-navy-fill-matches-its-ground` | ACTIVE | owner M | det: recipe | last S584 | streak 1
+- `dark-navy-fill-matches-its-ground` | ACTIVE | owner M | det: recipe | last S598 | streak 0
 
 - `ring-below-3-on-light` | ACTIVE | owner F | det: recipe | last S443 | streak 0
 
@@ -908,7 +900,7 @@ _(none)_
 
 - G print & export fidelity (one tool): 2026-11-03 (**S597 — `trope_tutor.html` (first since S479; 50 commits, the Conservative melody and 20 traditions among them): 232 real-button PDFs, a tradition's .ivrit round trip, deep links, Ctrl+P paths, 5,036 printed cards for overflow. FOUND 3: 2 FIXED (one partial), 1 P4; + 1 generator from the queue. G-next: dashboard (S495), letter_learner (S509).**)
 
-- D performance (one tool): 2026-11-01 (**S590 — `hebrew_blend_generator.html` (first since S452) + chrome (since S466): cold load and 9 interactions at 1×/4× against the S452 tree (equal within noise), forced layouts by stack, Print and Export PDF by stage, an 80-Generate leak arm; chrome 28 cold cells + 10 interactions, hCaptcha replayed. FOUND 3: 1 FIXED (resources' hCaptcha), 2 P4; + 3 from …[full text: IMPROVEMENT_ARCHIVE.md]
+- D performance (one tool): 2026-11-03 (**S598 — `trope_tutor.html` (first since S480; 51 commits: the Conservative melody, 20 traditions, the Drill melody): cold 10 cells (0 tasks >200, worst 120 @4×; ready 254–341 / 964–1225 ms, the phrase file 221 → 499 KB), 104 interactions by real input × 3 cells, a split + profile + trace of the key step, a drill @4×, a 30-cycle leak arm (nodes flat, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - I first-load & empty-state: 2026-10-22 (**S539 — 40th I, S525 → S538 (93 commits; name_tags' first I, parsha_emojis' under its name): 63 virgin cells (plants 334/336); 69 seeds; 27 tours; ~250 openers; 280 bad URLs; failure paths 20. FOUND 2, FIXED 1.**)
 
@@ -926,5 +918,5 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-22 (**S542 — 40th F, loading states (first since S189): 14 surfaces held, then aborted. FOUND 7, FIXED 4. F-next: long-build progress.**)
 
-**Next session (S598):** **Branch `claude/improveloop-s597` (S597, PR #393): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1213**, FM **5.59**, corpus ?v=7. ⚑ drift: main=baaaaae sw=v1213 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: D trope (S480), H torah (S482), C chrome (S483), N dictionary (S492), P torah (S493), M chrome (S494), G dashboard (S495); suite E (S531), L (S532), K (S533). ⚑ The signed-in reading-assignments UI still wants its first H (its P so far: smoke-assignments 135/135). ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
-⚑ Sync P2 (S573): D31 now fails alone 2 in 3 — likely the same race. ⚑ Gate 4 to propose: the generator's blend sheets on a phone. ⚑ Ports at the next A: `m554/`–`g597/`; traps 352, 356–489. ⚑ The hidden-attribute detector now has a print arm (same load, no extra time). ⚑ Queues: FM 25, generator 24, torah 13, dictionary 10, dashboard 7, trope 8; the rest ≤ 6.
+**Next session (S599):** **Branch `claude/improveloop-s597` (S597–S598, PR #393): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1217**, FM **5.59**, corpus ?v=7. ⚑ drift: main=baaaaae sw=v1217 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: H torah (S482), C chrome (S483), N dictionary (S492), P torah (S493), M chrome (S494), G dashboard (S495), D dictionary (S496); suite E (S531), L (S532), K (S533). ⚑ The signed-in reading-assignments UI still wants its first H (its P so far: smoke-assignments 135/135). ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
+⚑ Sync P2 (S573): D31 now fails alone 2 in 3 — likely the same race. ⚑ Gate 4 to propose: the generator's blend sheets on a phone. ⚑ Ports at the next A: `m554/`–`d598/`; traps 352, 356–492. ⚑ The dashboard's bulk-edit Save (S576 P4, 203 ms @4×) is the 9k-node modal's close, not script: leave it unless the modal changes. ⚑ Queues (first file of each candidate): FM 26, generator 23, torah 11, dictionary 10, parsha_emojis 7, name_tags 7, trope 6, dashboard 6; the rest ≤ 4.

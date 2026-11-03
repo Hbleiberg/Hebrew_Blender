@@ -96055,3 +96055,42 @@ _(prior)_ **Next session (S597):** **Branch `claude/amazing-gauss-gli685` (S588�
 ### from Tool coverage (last-touched date per tool)
 
 - **Snapshot S597 (2026-11-03):** trope, generator, sw.js, scripts/loop, loop docs S597 · account, index, flash, locales, sw.js, loop docs S596 · fontmaker, generator, locales, sw.js, loop docs S595 · generator, dictionary, locales, sw.js, loop docs S594 · fontmaker, name_tags, dashboard, sw.js, scripts/loop, loop docs S593 · generator, dashboard, torah, dictionary, flash, db/functions/delete-account, smoke-sync, locales, sw.js, scripts/loop, loop docs S592 · trope, dictionary, index, sw.js, scripts/loop, loop docs S591 · resources, generator, dashboard, sw.js, scripts/loop, loop docs S590 · torah, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+_(prior)_ **Next session (S598):** **Branch `claude/improveloop-s597` (S597, PR #393): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1213**, FM **5.59**, corpus ?v=7. ⚑ drift: main=baaaaae sw=v1213 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: D trope (S480), H torah (S482), C chrome (S483), N dictionary (S492), P torah (S493), M chrome (S494), G dashboard (S495); suite E (S531), L (S532), K (S533). ⚑ The signed-in reading-assignments UI still wants its first H (its P so far: smoke-assignments 135/135). ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
+⚑ Sync P2 (S573): D31 now fails alone 2 in 3 — likely the same race. ⚑ Gate 4 to propose: the generator's blend sheets on a phone. ⚑ Ports at the next A: `m554/`–`g597/`; traps 352, 356–489. ⚑ The hidden-attribute detector now has a print arm (same load, no extra time). ⚑ Queues: FM 25, generator 24, torah 13, dictionary 10, dashboard 7, trope 8; the rest ≤ 6.
+
+
+<!-- archived by compact-ledger at the S599 boundary, 2026-11-03 -->
+## Compaction (S599, 2026-11-03) — moved verbatim from the live ledger
+
+### from Candidates — aged P4 (found more than 90 sessions before S599)
+
+- [ ] P4 (**NEW S508 M — gate 2**) | dashboard | **"+ Add period" beside two icon buttons; "✨ Quick-start layouts…"** — the glyph belongs in the markup. | found S508
+
+### from Awaiting the maintainer (an action or an answer only the maintainer can give; a session that resolves one moves it to Done)
+
+- [ ] P4 (**NEW S598 D — GATE 2/3 ASKED, the maintainer chose "log it only"**) | trope_tutor.html | **A tradition's Phrases tab draws all its rows at once ("All rows", by design), so on the two long ones (cons_torah 31, cons_haftarah 36 rows, 77 staves) a key step, a melody choice or a language switch is one task of 216–475 ms @4× (56–108 @1×)**; the seven melodies page ~4 rows a group (≤127 @4×); staves are 83% of a card's nodes, so a restaff-in-place saves <⅕ (findings S598). | found S598
+
+### from Done
+
+- [x] 2026-11-01 | (S593 close-out) | branch/deploy note | **S593 = G on the Font Maker (first since S465): FOUND 4, FIXED 2 + 2 from the queue. Same branch (PR #386, open), sw v1195; deploy on merge.** Gate 2 → "Always right to left". No live action.
+
+- [x] 2026-11-01 | `fc2671ea` | classroom_dashboard.html, sw.js | (S593 queue; pattern decorative-glyph-carrier-exposed-to-assistive-tech) **The video header's ▾ stays out of its accessible name.** | AX name × 4 cells; pixel-identical
+
+- [x] 2026-11-01 | `96f562eb` | name_tags.html | (S593 queue, S550's second half) **A list name with "/" exports as one clean CSV name.** | Export by clicks, EN/HE; HEAD keeps the runs
+
+- [x] 2026-11-01 | `cd875c61` | Hebrew_Font_Maker.html | (S593 G; one of S559's P2 causes) **The right-side meteg sits at each vowel's own mirrored pair**: BenOr Rashi exports with no warning. | probe 3/3 (HEAD fails 2); HarfBuzz 9/11 → 11/11
+
+- [x] 2026-11-01 | `55e45afd` | Hebrew_Font_Maker.html, font-maker.md, newglyphset.md | (S593 G, gate 2; pattern RTL-inheritance-on-a-Latin-script-container) **A printed template runs in its script's direction in both languages, as Auto-detect reads it**: HE-printed 0/20 → 20/20. | probe 4/4 (HEAD fails 2)
+
+### from Per-session log (one line per session)
+
+- 2026-10-30 | **S578** | iters: 5 | tools: atlas ×2, flash, scripts/smoke-account, locales, sw | patterns fixed: install-banner-over-a-sheet's-bottom-controls ×1 | pass run: P (trope_atlas, its first) | SW: v1138→v1139
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S598 (2026-11-03):** trope, fontmaker, generator, sw.js, loop docs S598 · trope, generator, sw.js, scripts/loop, loop docs S597 · account, index, flash, locales, sw.js, loop docs S596 · fontmaker, generator, locales, sw.js, loop docs S595 · generator, dictionary, locales, sw.js, loop docs S594 · fontmaker, name_tags, dashboard, sw.js, scripts/loop, loop docs S593 · generator, dashboard, torah, dictionary, flash, db/functions/delete-account, smoke-sync, locales, sw.js, scripts/loop, loop docs S592 · trope, dictionary, index, sw.js, scripts/loop, loop docs S591 · resources, generator, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- D performance (one tool): 2026-11-03 (**S598 — `trope_tutor.html` (first since S480; 51 commits: the Conservative melody, 20 traditions, the Drill melody): cold 10 cells (0 tasks >200, worst 120 @4×; ready 254–341 / 964–1225 ms, the phrase file 221 → 499 KB), 104 interactions by real input × 3 cells, a split + profile + trace of the key step, a drill @4×, a 30-cycle leak arm (nodes flat, listeners flat, heap = V8 code + perf entries). FOUND 1 (a tradition's Phrases: key step 216–475 ms @4×; gate asked → log only); + 4 FIXED from the queue. D-next: dictionary (S496), letter_learner (S510).**)
