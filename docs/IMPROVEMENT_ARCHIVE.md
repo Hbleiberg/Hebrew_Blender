@@ -96187,3 +96187,44 @@ _(prior)_ **Next session (S601):** **Branch `claude/improveloop-s597` (S597–S6
 ### from Tool coverage (last-touched date per tool)
 
 - **Snapshot S601 (2026-11-03):** dictionary, resources, fontmaker, dashboard, name_tags, torah, reading_assignments, sw.js, loop docs S601 · torah, index, resources, locales, sw.js, loop docs S600 · reading_assignments, torah, trope, locales, llms, sw.js, loop docs S599 · trope, fontmaker, generator, sw.js, loop docs S598 · trope, generator, sw.js, scripts/loop, loop docs S597 · account, index, flash, locales, sw.js, loop docs S596 · fontmaker, generator, locales, sw.js, loop docs S595 · generator, dictionary, locales, sw.js, loop docs S594 · fontmaker, name_tags, dashboard, sw.js, scripts/loop, loop docs S593 · generator, dashboard, torah, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+_(prior)_ **Next session (S602):** **Branch `claude/improveloop-s597` (S597–S601, PR #393): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1228**, FM **5.59**, corpus ?v=7. ⚑ drift: main=baaaaae sw=v1228 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: P torah (S493), M chrome (S494), G dashboard (S495), D dictionary (S496), H chrome (S498), C dashboard (S499), N dashboard (S506); suite E (S531), L (S532), K (S533). ⚑ Harnesses: dictionary N `n601/`, chrome C `c600/`, torah/assignments H `h599/`. ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
+⚑ Sync P2 (S573): D31 now fails alone 2 in 3 — likely the same race. ⚑ Gate 4 to propose: the generator's blend sheets on a phone (its SE overflow P4s ride with it). ⚑ Ports at the next A: `m554/`–`n601/`; traps 352, 356–504. ⚑ The dashboard's bulk-edit Save (S576 P4, 203 ms @4×) is the 9k-node modal's close, not script: leave it unless the modal changes. ⚑ Queues (first file of each candidate): FM 26, generator 23, torah 12, dictionary 11, parsha_emojis 7, name_tags 7, trope 6, dashboard 6; the rest ≤ 4.
+
+
+<!-- archived by compact-ledger at the S603 boundary, 2026-11-03 -->
+## Compaction (S603, 2026-11-03) — moved verbatim from the live ledger
+
+### from Candidates — aged P4 (found more than 90 sessions before S603)
+
+- [ ] P4 (**NEW S512 H — gate 2**) | hebrew_blend_generator.html | **Real Words Matching prints "Hebrew Word Matching", ignoring the Title field** the other sheets honour. | found S512
+
+- [ ] P4 (**NEW S512 H — gate 2**) | hebrew_blend_generator.html | **Name the Letter and Tracing print the default title "Hebrew Blends"** (only the subtitle is per-type). | found S512
+
+- [ ] P4 (**NEW S512 H — gate 2**) | hebrew_blend_generator.html | **Name the Letter counts letters × vowels ("36 possible combinations" for 4 bare letters)**; Vowels Only blanks it. | found S512
+
+- [ ] P4 (**NEW S512 H — design, gate 2**) | hebrew_blend_generator.html | **A quick start replays the full defaults, dropping the chosen word list and source.** | found S512
+
+### from Done
+
+- [x] 2026-11-03 | `3ab8b385` | hebrew_blend_generator.html, sw.js | (S572 N queue, gate 4) **A blend sheet that cannot fit five columns on screen takes fewer, wider ones** (`blendGridFit` floors; paper and PDF unchanged). | 9 variants × 5 widths × EN/HE: 0/90 off the sheet (HEAD 30/90); print + real Export PDF columns = HEAD 12/12
+
+- [x] 2026-11-03 | (S597 close-out) | branch/deploy note | **S597 = G on the Trope Tutor (first since S479): FOUND 3, FIXED 2 (one partial) + 1 generator from the queue; S596's advisor item resolved live by 0010–0012. PR #393 open, sw v1213; deploy on merge.** No gate asked, no live action (reads only).
+
+- [x] 2026-11-03 | `59c2e67e` | hebrew_blend_generator.html, sw.js | (S597 queue S563 G) **A ★ card's gold outline prints inside it, so no gold line stays at the foot of the page before.** | sliver.mjs 16 PDFs: 2 → 0, sheets = HEAD; fix3.mjs 8/8 (HEAD 0/8)
+
+- [x] 2026-11-03 | `18d72e52` | trope_tutor.html, sw.js | (S597 G; trailing-padding pattern) **Credits-only last sheets 22 → 15** (paper drops the padding under the last card, the empty FAQ wrapper, the Contact link). | 232 PDFs: no chart longer, 0 splits; screen hash = HEAD × 8
+
+- [x] 2026-11-03 | `b9435028` | trope_tutor.html, detector, sw.js | (S597 G; hidden-attribute pattern) **The Total Torah credit prints only under the Conservative melody's chart**; the detector gains a print arm. | fix1.mjs 32/32 (HEAD 8/32); detector 1 → 0, plant
+
+### from Per-session log (one line per session)
+
+- 2026-10-31 | **S582** | iters: 3 | tools: trope_atlas ×2, sw | patterns fixed: — | pass run: G (atlas, first) | SW: v1148→v1150
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S602 (2026-11-03):** torah, generator, sw.js, scripts/smoke-sync, loop docs S602 · dictionary, resources, fontmaker, dashboard, name_tags, torah, reading_assignments, sw.js, loop docs S601 · torah, index, resources, locales, sw.js, loop docs S600 · reading_assignments, torah, trope, locales, llms, sw.js, loop docs S599 · trope, fontmaker, generator, sw.js, loop docs S598 · trope, generator, sw.js, scripts/loop, loop docs S597 · account, index, flash, locales, sw.js, loop docs S596 · fontmaker, generator, locales, sw.js, loop docs S595 · generator, dictionary, locales, sw.js, loop docs S594 · …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- P accounts & cloud (one surface): 2026-11-03 (**S602 — 20th P, `torah_trainer.html` (first since S493; 75 commits, the reading assignments among them): smoke-tools / sync / migration / assignments with the pinned SDK, 3 new signed-in scenarios (the practice link, `?reader=`), arms 3–7 static behind 7 plants, the live project read-only. FOUND 1: FIXED (D43, a new pattern); + the generator's blend sheets (gate 4). P-next: trope (S507), dictionary (S521).**)
