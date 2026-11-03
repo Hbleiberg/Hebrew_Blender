@@ -1955,6 +1955,17 @@ body.fullscreen.tt-karaoke-active #ttFsBar { bottom: calc(var(--tt-audio-h, 96px
    has to clear. Same specificity as the .tt-karaoke-active rule above and later in source
    order, so it wins in both karaoke states. */
 body.fullscreen .tt-hint-toast { bottom: calc(var(--tt-audio-h, 96px) + 90px); }
+/* A take recording behind full screen (#ttRecFs): fullscreen hides the student panel, so its clock and Stop ride a
+   small plate of the presentation bar's look, shown only while a take records (recRenderState sets .is-on) and never
+   faded by the idle timers. Bottom-left, above #ttFsBar's row and the karaoke bar: the Hebrew column is on the right
+   in both UIs, top-right is #fsExitBtn's and the top edge the jump bar's; --tt-fsbar-h is the bar's live height (it
+   wraps on a phone). */
+#ttRecFs { display:none; position:fixed; left:16px; bottom:calc(28px + var(--tt-fsbar-h, 58px)); z-index:201; align-items:center; gap:10px; background:rgba(13,18,32,0.82); backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,0.18); border-radius:14px; padding:6px 7px 6px 14px; box-shadow:0 3px 12px rgba(0,0,0,0.32); color:#fff; font-size:0.92rem; font-weight:600; }
+html[dir="rtl"] #ttRecFs { padding:6px 14px 6px 7px; }
+body.fullscreen #ttRecFs.is-on { display:flex; }
+body.fullscreen.tt-karaoke-active #ttRecFs { bottom: calc(var(--tt-audio-h, 96px) + 22px + var(--tt-fsbar-h, 58px)); }
+#ttRecFs .tt-rec-fs-dot { inline-size:10px; block-size:10px; border-radius:50%; background:#ff6b5e; flex:none; animation:ttRecPulse 1s ease-in-out infinite; }
+#ttRecFs .tt-fs-btn { padding-inline:14px; font-size:0.9rem; }
 
 /* ───── Mobile (matches existing tools' breakpoint) ───── */
 @media (max-width: 720px) {
@@ -2303,6 +2314,12 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
   <span class="fs-x"><svg class="hi hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></span>
   <span class="fs-label" data-i18n="shared.fullscreen.exit_label">Exit Full Screen</span>
 </button>
+<!-- A take recording behind full screen: its clock and Stop (recRenderState shows it only while recording). -->
+<div id="ttRecFs" role="group" aria-labelledby="ttRecFsTime">
+  <span class="tt-rec-fs-dot" aria-hidden="true"></span>
+  <span id="ttRecFsTime"></span>
+  <button type="button" class="tt-fs-btn" id="ttRecFsStop" data-i18n="torah.assign.rec_stop">Stop</button>
+</div>
 
 <!-- Fullscreen presentation toolbar. Static markup, not JS-injected: initDark() runs first in
      init() and syncs every dark toggle by id, so a bar built later would start out of sync.
@@ -10015,9 +10032,10 @@ function _emoDialogKey(e) {
   f[i === -1 ? (e.shiftKey ? n - 1 : 0) : (i + (e.shiftKey ? n - 1 : 1)) % n].focus();
 }
 
-// The sticky jump bar's and karaoke audio bar's live heights, for the root's scroll-padding (the CSS beside .tt-jumpnav).
+// The sticky jump bar's and karaoke audio bar's live heights, for the root's scroll-padding (the CSS beside .tt-jumpnav);
+// the presentation bar's, for the recording strip that sits above it (#ttRecFs; 0 outside full screen).
 function ttTrackStickies() {
-  [['ttJumpNav', '--tt-jump-h'], ['ttAudioBar', '--tt-audio-h']].forEach(([id, v]) => {
+  [['ttJumpNav', '--tt-jump-h'], ['ttAudioBar', '--tt-audio-h'], ['ttFsBar', '--tt-fsbar-h']].forEach(([id, v]) => {
     const el = document.getElementById(id);
     if (!el) return;
     const set = () => document.documentElement.style.setProperty(v, el.offsetHeight + 'px');
@@ -12981,6 +12999,9 @@ function initAssignments() {
   asgEl('ttAsgDlgForm').addEventListener('submit', createAssignment);
   asgEl('ttRecStart').addEventListener('click', recStart);
   asgEl('ttRecStop').addEventListener('click', recStop);
+  // The fullscreen strip's Stop: the same stop; its button then leaves with the strip, so focus goes to the way out of
+  // full screen, where the take waits to be heard and submitted.
+  asgEl('ttRecFsStop').addEventListener('click', () => { recStop(); const x = document.getElementById('fsExitBtn'); if (x && document.body.classList.contains('fullscreen')) x.focus(); });
   asgEl('ttRecPlay').addEventListener('click', recPlay);
   asgEl('ttRecAgain').addEventListener('click', recAgain);
   asgEl('ttRecSubmitForm').addEventListener('submit', recSubmit);
@@ -13252,10 +13273,11 @@ function recRenderState() {
   show('ttRecSubmitForm', st === 'stopped' && !!_asg.take);
   show('ttRecRetry', st === 'failed' && !!_asg.pendingRow);
   show('ttRecProgressWrap', st === 'uploading');
+  const fs = asgEl('ttRecFs'); if (fs) fs.classList.toggle('is-on', st === 'recording' && !!a);
   const state = asgEl('ttRecState'); if (!state || !a) return;
   const max = asgClock(a.max_minutes * 60);
   if (st === 'idle') state.textContent = asgT('torah.assign.state_idle', { max: max });
-  else if (st === 'recording') state.textContent = asgT('torah.assign.state_recording', { time: asgClock(_asg.recorder ? _asg.recorder.seconds() : 0), max: max });
+  else if (st === 'recording') { state.textContent = asgT('torah.assign.state_recording', { time: asgClock(_asg.recorder ? _asg.recorder.seconds() : 0), max: max }); asgEl('ttRecFsTime').textContent = state.textContent; }
   else if (st === 'stopped') state.textContent = asgT('torah.assign.state_stopped', { time: asgClock(_asg.take ? _asg.take.seconds : 0) });
   else if (st === 'uploading') state.textContent = asgT('torah.assign.state_uploading', { pct: _asg.pct || 0 });
   else if (st === 'done') state.textContent = asgT('torah.assign.state_done');
