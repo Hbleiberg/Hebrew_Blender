@@ -616,7 +616,9 @@ function renderClasses() {
   if (!classes.length) ul.appendChild(el('li', 'muted', t('assign.classes.none')));
   classes.forEach(c => {
     const li = el('li'); li.style.marginBlock = '4px';
-    li.appendChild(el('strong', '', c.name));
+    // dir=auto isolates the teacher's name: a Latin name in the Hebrew UI (or a Hebrew one in the English UI) pulled the
+    // " · 2" after it into its own run, so the count read on the wrong side of the name.
+    const nm = el('strong', '', c.name); nm.dir = 'auto'; li.appendChild(nm);
     li.appendChild(document.createTextNode(' · ' + t('assign.classes.members', { n: students.filter(s => s.class_id === c.id).length }) + ' '));
     li.appendChild(btn(t('assign.classes.edit_btn'), '', () => openClassDlg({ mode: 'class', id: c.id })));
     li.appendChild(btn(t('assign.classes.delete_btn'), 'ghost sm', () => { if (!window.confirm(t('assign.classes.delete_confirm', { name: c.name }))) return; AS().classes.remove(c.id).then(() => { classes = classes.filter(x => x.id !== c.id); students.forEach(s => { if (s.class_id === c.id) s.class_id = null; }); fillAllClassSelects(); renderClasses(); renderStudents(); }).catch(err => say('classStatus', () => errText(err), true)); }));
