@@ -1124,7 +1124,7 @@ html[lang="he"] .beta-tag { letter-spacing: normal; text-transform: none; }   /*
       <!-- .search-row is the positioning context for the absolutely-placed ✕: without it the
            button's top:50% would centre on the whole wrap and drop into the keyboard panel. -->
       <div class="search-row">
-        <input type="text" id="searchInput" autocapitalize="off" autocorrect="off" spellcheck="false" aria-keyshortcuts="/" aria-label="Search Hebrew, transliteration, or English" data-i18n-aria-label="dictionary.search.aria" placeholder="Search Hebrew, translit, or English…" data-i18n-placeholder="dictionary.search.placeholder" title="Press / to jump here — Esc clears it" data-i18n-title="dictionary.search.slash_hint" oninput="onSearchInput()" onkeydown="if(event.key==='Escape'){clearDictSearch();}">
+        <input type="text" id="searchInput" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="search" aria-keyshortcuts="/" aria-label="Search Hebrew, transliteration, or English" data-i18n-aria-label="dictionary.search.aria" placeholder="Search Hebrew, translit, or English…" data-i18n-placeholder="dictionary.search.placeholder" title="Press / to jump here — Esc clears it" data-i18n-title="dictionary.search.slash_hint" oninput="onSearchInput()" onkeydown="if(event.key==='Escape'){clearDictSearch();}else{dictEnterLowersKeyboard(event);}">
         <button class="search-clear" id="searchClear" onclick="clearDictSearch()" aria-label="Clear search" title="Clear search" data-i18n-aria-label="dictionary.search.clear_title" data-i18n-title="dictionary.search.clear_title"><svg class="hi hi-sm hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
         <span class="search-kbd-hint" aria-hidden="true"><kbd>/</kbd></span>
       </div>
@@ -1473,7 +1473,7 @@ html[lang="he"] .beta-tag { letter-spacing: normal; text-transform: none; }   /*
       <div id="shoreshControls">
         <label style="display:block;font-size:0.8rem;font-weight:600;color:var(--text);margin-bottom:6px;" data-i18n="dictionary.shoresh.enter_label">Enter a שׁורש (root)</label>
         <div class="shoresh-input-row">
-          <input type="text" id="shoreshInput" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Enter a שׁורש (root)" data-i18n-aria-label="dictionary.shoresh.enter_label" placeholder="e.g. כ-ת-ב" data-i18n-placeholder="dictionary.shoresh.input_placeholder" oninput="onShoreshInput()" onkeydown="onShoreshKey(event)">
+          <input type="text" id="shoreshInput" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="search" aria-label="Enter a שׁורש (root)" data-i18n-aria-label="dictionary.shoresh.enter_label" placeholder="e.g. כ-ת-ב" data-i18n-placeholder="dictionary.shoresh.input_placeholder" oninput="onShoreshInput()" onkeydown="onShoreshKey(event)">
           <button class="shoresh-lookup-btn" onclick="runShoreshLookup(document.getElementById('shoreshInput').value)" data-i18n="dictionary.shoresh.lookup_button">Look up</button>
         </div>
         <div style="font-size:0.7rem;color:var(--muted);margin-bottom:4px;" data-i18n="dictionary.shoresh.browse_roots">Browse roots (alef→tav) — click to look up:</div>
@@ -3764,7 +3764,7 @@ function onShoreshInput() {
   else if (st && st.textContent === none) announce('');
 }
 function onShoreshKey(e) {
-  if (e.key === 'Enter') runShoreshLookup(document.getElementById('shoreshInput').value);
+  if (e.key === 'Enter') { runShoreshLookup(document.getElementById('shoreshInput').value); dictEnterLowersKeyboard(e); }
   // Escape clears the typed root and its chip filter, as it clears the search box (it did nothing here).
   else if (e.key === 'Escape' && e.target.value) { e.preventDefault(); e.target.value = ''; onShoreshInput(); }
 }
@@ -6380,6 +6380,12 @@ function toggleEmojiBulk(e, btn) {
 /* ===== Section 4: search clear + mobile sticky bar ===== */
 
 function onSearchInput() { filterDebounced(); updateSearchClear(); }
+// On a phone the keyboard's Return key (labelled Search: enterkeyhint) lowers that keyboard, which otherwise stayed
+// up over the results it had just found. With a mouse Enter leaves the field focused, as before.
+function dictEnterLowersKeyboard(e) {
+  if (e.key !== 'Enter' || e.isComposing || !(window.matchMedia && matchMedia('(pointer:coarse)').matches)) return;
+  e.target.blur();
+}
 // "/" focuses the search field from anywhere on the page. The dictionary's whole job is a fast
 // lookup, yet its only search field could not be reached without tabbing past the header — and
 // this page had no global key handling at all beyond the tour's. Guarded like the Font Maker's
