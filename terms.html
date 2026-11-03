@@ -132,7 +132,7 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--
 .skip-link:focus { top:0; outline:2px solid var(--focus-ring); outline-offset:2px; }
 header{background:var(--navy);color:#fff;padding:22px 40px;display:flex;align-items:center;gap:16px;border-bottom:4px solid var(--gold);}
 header .star{font-size:32px;color:var(--gold);}
-header .brand-title{font-family:'Libre Baskerville',serif;font-size:1.5rem;letter-spacing:0.01em;}
+header .brand-title{font-family:'Libre Baskerville',serif;font-size:1.5rem;font-weight:700;letter-spacing:0.01em;}   /* bold: the header h1 this div replaced was bold by default, as every other page's header title still is */
 header p{font-size:0.85rem;color:var(--gold-light);margin-top:3px;}
 header .hright{margin-inline-start:auto;display:flex;gap:10px;align-items:center;}
 .hbtn{background:none;border:1px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:5px 14px;font-size:0.8rem;cursor:pointer;font-family:'Source Sans 3',sans-serif;text-decoration:none;min-height:30px;display:inline-flex;align-items:center;gap:6px;justify-content:center;}
@@ -160,7 +160,7 @@ footer a:hover{text-decoration:underline;}   /* the only hover feedback the foot
 
 @media (max-width:640px){
   header{padding:16px 20px;}
-  header .brand-title{font-size:1.2rem;}
+  header .brand-title{font-size:1.2rem;letter-spacing:normal;}   /* the 0.01em is 0.19px a glyph here, and its 6px are what the bold Contact title needs to stay on one line at 360px */
   main{padding:28px 18px 48px;}
   main h1.page-title{font-size:1.5rem;}
 }
