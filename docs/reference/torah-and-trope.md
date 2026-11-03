@@ -990,18 +990,18 @@ beta leaves open.
   class- and `data-twi`-based, and the paper render is the same render.
 - **The melodies' names.** The maintainer identifies the teacher's charts (the year-round and High Holiday charts) as
   the Avery/Binder (Reform) melody; the Haftarah, Esther, Megillot and Eicha rows are transcriptions of *The Art of
-  Cantillation, Vol. 2* (Portnoy and Wolff, UAHC Press, 2001); and PocketTorah's recordings are the
-  Spiro (Conservative) melody. Both pages say so where the staffs and the recordings are: the Trainer's Trope staff
+  Cantillation, Vol. 2* (Portnoy and Wolff, UAHC Press, 2001); and PocketTorah's recordings are a Reform
+  melody (named only as "Reform", never by a cantor's name). Both pages say so where the staffs and the recordings are: the Trainer's Trope staff
   section (`torah.staff.melody_credit`) and Audio speeds & pitch section (`torah.audio.recording_credit`), both on
   the drawer's Audio tab, audio-bar credit
   (`torah.audio.recording_melody`) and High Holiday recording chip; the tutor's Learn intro, the melody note
   under the key bar (one span per melody, each naming its chart's source) and the Settings note, example play
   buttons, FAQ and footer credit. The Trainer's second recording source, Total Torah (*Recording sources* below), is
   Cantor Arianne Brown's own Conservative melody — named as its own tradition where it plays (the audio-bar credit, the
-  Audio tab's credit, the reading header's chip), never as Spiro's and never as the charts' — and the Spiro chips stand
+  Audio tab's credit, the reading header's chip), never as PocketTorah's and never as the charts' — and the PocketTorah chips stand
   down while it plays. The tutor's *Year Round [Conservative]* melody is that recording's: its option label names only
   the tradition, and its melody note, the example rows' video links, the footer credit, the Learn intro, the Settings
-  notes and the FAQ name Cantor Brown and Adas Israel — never Spiro, never a chart.
+  notes and the FAQ name Cantor Brown and Adas Israel — never PocketTorah's melody, never a chart.
 - **Note names** (`staffNoteNames`: `'off'`, `'letters'`, `'solfa'`; an unknown stored value shows none and stays
   stored). The tutor's option for the reading: `renderStaffView` builds `namesOf`, a callback giving a row's names
   index-aligned with its notes (a rest has none) from `staffNoteNameAt` — the tutor's `noteNameAt` kept page-local,
@@ -1228,7 +1228,7 @@ never a practice link (`LINK_DISPLAY` says how a reading looks, never how it sou
   `#ttFooterAudioTT` (Cantor Brown, Adas Israel, "used by permission") while the source is on for the reading,
   `#ttFooterAudioPocket` (PocketTorah, CC BY-SA 4.0) otherwise — and both while some verse on screen has no Total
   Torah recording and so plays PocketTorah (`ttReadingEntries(true).count < currentVerses.length`). The reading header: `torah.recsrc.chip` (its tip says the
-  Trainer's staffs show the Avery/Binder chart) while the reading has entries; the Spiro chips (`hh_chant_chip`,
+  Trainer's staffs show the Avery/Binder chart) while the reading has entries; the PocketTorah chips (`hh_chant_chip`,
   `staff_chant_chip`) stand down then.
 - **The data pipeline** (`scripts/build-totaltorah-audio.mjs`, `scripts/build-totaltorah-timings.mjs` with
   `scripts/align_totaltorah.py`): the audio script's `VIDEOS` table is the only list of ids it will fetch (yt-dlp into
