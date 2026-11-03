@@ -13140,6 +13140,9 @@ function asgApplyView(row) {
   applyTropeColors();
   applyDisplayClasses();
 }
+// The reading's label beside an assignment's title only when it adds something: the Assign dialog fills the title with
+// that label, so an assignment the teacher never renamed would read twice (the management page does the same).
+function asgRefShown(a) { const n = (s) => String(s || '').replace(/\s+/g, ' ').trim(); const r = n(a.ref_label); return r && r !== n(a.title) ? a.ref_label : ''; }
 function asgRenderCurrent() {
   const box = asgEl('ttAsgCurrent'), a = _asg.current;
   if (!box) return;
@@ -13148,7 +13151,7 @@ function asgRenderCurrent() {
   const line = asgEl('ttAsgCurrentLine');
   while (line.firstChild) line.removeChild(line.firstChild);
   line.appendChild(asgMake('strong', '', a.title));
-  line.appendChild(document.createTextNode(' · ' + a.ref_label + ' · ' + asgT('torah.assign.current_max', { n: a.max_minutes }) + (a.due_date ? ' · ' + asgT('torah.assign.current_due', { date: asgDate(a.due_date) }) : '')));
+  line.appendChild(document.createTextNode((asgRefShown(a) ? ' · ' + a.ref_label : '') + ' · ' + asgT('torah.assign.current_max', { n: a.max_minutes }) + (a.due_date ? ' · ' + asgT('torah.assign.current_due', { date: asgDate(a.due_date) }) : '')));
   if (!a.is_open) line.appendChild(asgMake('span', 'tt-assign-closed', ' ' + asgT('torah.assign.current_closed')));
   asgEl('ttRec').hidden = !a.is_open;
   const open = asgEl('ttAsgOpenBtn');
@@ -13188,7 +13191,7 @@ function asgRenderMine() {
     const li = asgMake('li');
     const head = asgMake('div', 'tt-assign-item-head');
     head.appendChild(asgMake('strong', '', a.title));
-    head.appendChild(asgMake('span', 'tt-assign-muted', a.ref_label));
+    if (asgRefShown(a)) head.appendChild(asgMake('span', 'tt-assign-muted', a.ref_label));
     head.appendChild(asgMake('span', 'tt-assign-badge' + (cur && cur.status === 'needs_rerecord' ? ' is-warn' : cur && cur.status === 'approved' ? ' is-ok' : ''), asgStatusText(cur)));
     li.appendChild(head);
     if (cur) {

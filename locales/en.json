@@ -278,6 +278,7 @@
   "assign.subs.filter_needs": "Re-recording requested",
   "assign.subs.filter_submitted": "Waiting for feedback",
   "assign.subs.for": "{title} · {reading} · code word {code}",
+  "assign.subs.for_title": "{title} · code word {code}",
   "assign.subs.head": "Recordings",
   "assign.subs.loading_audio": "Loading…",
   "assign.subs.none": "No recordings yet.",

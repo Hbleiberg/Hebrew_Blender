@@ -278,6 +278,7 @@
   "assign.subs.filter_needs": "התבקשה הקלטה מחדש",
   "assign.subs.filter_submitted": "ממתינות למשוב",
   "assign.subs.for": "{title} · {reading} · מילת קוד {code}",
+  "assign.subs.for_title": "{title} · מילת קוד {code}",
   "assign.subs.head": "הקלטות",
   "assign.subs.loading_audio": "טוען…",
   "assign.subs.none": "עדיין אין הקלטות.",

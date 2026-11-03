@@ -7440,6 +7440,7 @@ assign.edit.title_empty,Give the assignment a title.,תנו כותרת למשי�
 assign.edit.code_short,A code word needs at least 6 letters or digits.,מילת קוד צריכה לפחות 6 אותיות או ספרות.,Management page: validation,
 assign.subs.head,Recordings,הקלטות,Management page: heading,
 assign.subs.for,{title} · {reading} · code word {code},{title} · {reading} · מילת קוד {code},Management page: submissions subtitle,template
+assign.subs.for_title,{title} · code word {code},{title} · מילת קוד {code},"Management page: submissions subtitle when the title is the reading’s own label, which is then shown once",template
 assign.subs.filter_label,Show,הצגה,Management page: filter,
 assign.subs.filter_current,Latest recording per student,ההקלטה האחרונה של כל תלמיד/ה,Management page: filter option,
 assign.subs.filter_submitted,Waiting for feedback,ממתינות למשוב,Management page: filter option,
