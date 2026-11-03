@@ -9,10 +9,14 @@
 // Rendered: an in-process static server over the repo root, Chromium with every foreign origin aborted and the
 // service worker blocked, each root page at 1280×800 and 800×800 after its load settles; a hit is an element
 // with `hidden` (not `until-found`) whose computed `display` is not `none`, outside an <svg>/<template>.
+// The print arm (S597): at 1280, the same load under print media, where an `@media print` display rule outranks
+// `[hidden]` (the Trope Tutor's footer credit printed under every chart) — a hit there must also be visible
+// (`checkVisibility()`), since print hides whole screen regions whose children keep their own display.
 // Exit 1 on hits.
 //   --json   { id, hits: [{ file, line, note }], delta }
-//   --plant  loads one page with a planted `<div class="plant" hidden>` under `.plant{display:block}` and
-//            must report it (exit 1 if it does not)
+//   --plant  loads one page with a planted `<div class="plant" hidden>` under `.plant{display:block}` and a
+//            print-only `<div class="plantp" hidden>` under `@media print{.plantp{display:block}}`, and must
+//            report both (exit 1 if it does not)
 import { createServer } from 'node:http';
 import { readFileSync, readdirSync, existsSync, statSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -29,7 +33,7 @@ for (const p of PW) { try { chromium = (p.startsWith('/') ? (await import(p)).de
 if (!chromium) { console.log(`${ID}: Playwright not found — skipped.`); process.exit(0); }
 
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.woff2': 'font/woff2', '.ttf': 'font/ttf', '.otf': 'font/otf', '.webmanifest': 'application/manifest+json', '.mp3': 'audio/mpeg' };
-const PLANT_HTML = '<style>.plant{display:block}</style><div class="plant" hidden>plant</div>';
+const PLANT_HTML = '<style>.plant{display:block}@media print{.plantp{display:block}}</style><div class="plant" hidden>plant</div><div class="plantp" hidden>plantp</div>';
 const server = createServer((req, res) => {
   const u = decodeURIComponent(new URL(req.url, 'http://x').pathname);
   let f = normalize(join(root, u === '/' ? 'index.html' : u));
@@ -56,6 +60,13 @@ for (const width of PLANT ? [1280] : [1280, 800]) {
         .filter(e => e.getAttribute('hidden') !== 'until-found' && !e.closest('svg, template') && getComputedStyle(e).display !== 'none')
         .map(e => e.tagName.toLowerCase() + (e.id ? '#' + e.id : '') + (e.className && typeof e.className === 'string' ? '.' + e.className.trim().split(/\s+/).join('.') : '') + ' display:' + getComputedStyle(e).display));
       for (const note of found) if (!hits.some(h => h.file === file && h.note === note)) hits.push({ file, line: 0, note: `${note} (at ${width}px)` });
+      if (width === 1280) {   // the print arm, on the same load
+        await page.emulateMedia({ media: 'print' });
+        const inPrint = await page.evaluate(() => [...document.querySelectorAll('[hidden]')]
+          .filter(e => e.getAttribute('hidden') !== 'until-found' && !e.closest('svg, template') && getComputedStyle(e).display !== 'none' && e.checkVisibility())
+          .map(e => e.tagName.toLowerCase() + (e.id ? '#' + e.id : '') + (e.className && typeof e.className === 'string' ? '.' + e.className.trim().split(/\s+/).join('.') : '') + ' display:' + getComputedStyle(e).display));
+        for (const note of inPrint) if (!hits.some(h => h.file === file && h.note.startsWith(note))) hits.push({ file, line: 0, note: `${note} (in print)` });
+      }
     } catch (e) { hits.push({ file, line: 0, note: `load failed: ${String(e.message).split('\n')[0]}` }); }
     await page.close();
   }
@@ -64,11 +75,11 @@ for (const width of PLANT ? [1280] : [1280, 800]) {
 await browser.close(); server.close();
 
 if (PLANT) {
-  const ok = hits.some(h => /\.plant /.test(h.note));
+  const ok = hits.some(h => /\.plant /.test(h.note)) && hits.some(h => /\.plantp .*\(in print\)/.test(h.note));
   if (JSON_OUT) console.log(JSON.stringify({ id: ID, plant: ok }));
   else console.log(ok ? `${ID}: plant reported (${hits.length} hit(s) with it).` : `${ID}: PLANT NOT REPORTED.`);
   process.exit(ok ? 0 : 1);
 }
 if (JSON_OUT) console.log(JSON.stringify({ id: ID, hits, delta: null }, null, 1));
-else { console.log(`${ID}: ${hits.length} hit(s) over ${pages.length} pages × 2 widths.`); for (const h of hits) console.log(`  ${h.file} ${h.note}`); }
+else { console.log(`${ID}: ${hits.length} hit(s) over ${pages.length} pages × 2 widths + print.`); for (const h of hits) console.log(`  ${h.file} ${h.note}`); }
 process.exit(hits.length ? 1 : 0);
