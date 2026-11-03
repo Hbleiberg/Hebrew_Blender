@@ -96094,3 +96094,30 @@ _(prior)_ **Next session (S598):** **Branch `claude/improveloop-s597` (S597, PR 
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 - D performance (one tool): 2026-11-03 (**S598 — `trope_tutor.html` (first since S480; 51 commits: the Conservative melody, 20 traditions, the Drill melody): cold 10 cells (0 tasks >200, worst 120 @4×; ready 254–341 / 964–1225 ms, the phrase file 221 → 499 KB), 104 interactions by real input × 3 cells, a split + profile + trace of the key step, a drill @4×, a 30-cycle leak arm (nodes flat, listeners flat, heap = V8 code + perf entries). FOUND 1 (a tradition's Phrases: key step 216–475 ms @4×; gate asked → log only); + 4 FIXED from the queue. D-next: dictionary (S496), letter_learner (S510).**)
+
+_(prior)_ **Next session (S599):** **Branch `claude/improveloop-s597` (S597–S598, PR #393): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1217**, FM **5.59**, corpus ?v=7. ⚑ drift: main=baaaaae sw=v1217 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: H torah (S482), C chrome (S483), N dictionary (S492), P torah (S493), M chrome (S494), G dashboard (S495), D dictionary (S496); suite E (S531), L (S532), K (S533). ⚑ The signed-in reading-assignments UI still wants its first H (its P so far: smoke-assignments 135/135). ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
+⚑ Sync P2 (S573): D31 now fails alone 2 in 3 — likely the same race. ⚑ Gate 4 to propose: the generator's blend sheets on a phone. ⚑ Ports at the next A: `m554/`–`d598/`; traps 352, 356–492. ⚑ The dashboard's bulk-edit Save (S576 P4, 203 ms @4×) is the 9k-node modal's close, not script: leave it unless the modal changes. ⚑ Queues (first file of each candidate): FM 26, generator 23, torah 11, dictionary 10, parsha_emojis 7, name_tags 7, trope 6, dashboard 6; the rest ≤ 4.
+
+
+<!-- archived by compact-ledger at the S600 boundary, 2026-11-03 -->
+## Compaction (S600, 2026-11-03) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-11-01 | (S594 close-out) | branch/deploy note | **S594 = C on the generator (first since S469): FOUND 7, FIXED 2 + 2 on the dictionary. PR #386 open, sw v1199; deploy on merge.** No gate, no live action.
+
+- [x] 2026-11-01 | `458694b1` | hebrew_dictionary.html, locales, sw.js | (S594 C) **Emoji category arrows are named in the UI's language.** | 14 × 4 cells + a live switch; HEAD English
+
+- [x] 2026-11-01 | `f2716727` | hebrew_dictionary.html, sw.js | (S594, the S563 queue; glyph pattern) **The fold triangles are drawn, not read**: ▾ nodes 93 → 3. | AX × 4 cells × 3 modes; shots = HEAD
+
+- [x] 2026-11-01 | `43d5a9c5` | hebrew_blend_generator.html, sw.js | (S594 C; pattern sub-floor touch target) **Real Words' 20 filter checkboxes take 24px rows.** | 2.5.8 fails 18 → 0 × 4 cells
+
+- [x] 2026-11-01 | `9f2455cb` | hebrew_blend_generator.html, sw.js | (S594 C; hover-tip pattern) **A help bubble answers Escape, stays up under the pointer, keeps its clicks.** | 10/10 × 4 cells; HEAD fails all
+
+### from Per-session log (one line per session)
+
+- 2026-10-30 | **S579** | iters: 1 | tools: trope_atlas (measured only), loop docs | patterns fixed: — | pass run: D (atlas, first) | SW: v1146→v1146
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S599 (2026-11-03):** reading_assignments, torah, trope, locales, llms, sw.js, loop docs S599 · trope, fontmaker, generator, sw.js, loop docs S598 · trope, generator, sw.js, scripts/loop, loop docs S597 · account, index, flash, locales, sw.js, loop docs S596 · fontmaker, generator, locales, sw.js, loop docs S595 · generator, dictionary, locales, sw.js, loop docs S594 · fontmaker, name_tags, dashboard, sw.js, scripts/loop, loop docs S593 · generator, dashboard, torah, dictionary, flash, db/functions/delete-account, smoke-sync, locales, sw.js, scripts/loop, loop docs S592 · trope, dictionary, index, sw.js, …[full text: IMPROVEMENT_ARCHIVE.md]
