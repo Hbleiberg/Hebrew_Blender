@@ -531,6 +531,10 @@ body.dark .tu-slow-btn[aria-pressed="true"], body.dark .tu-slow-btn[aria-pressed
 .tu-pex-title { font-size:0.72rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin:4px 0 0; }
 .tu-pex .tu-ex-list { padding:4px 0 0; }
 .tu-pex .tu-pex-words { font-size:calc(var(--tu-heb-size) * 0.72); flex:0 1 auto; text-align:start; }   /* beside its button on a wide card */
+/* On a phone the verse reference may wrap at its space when the row runs out ("Beha'alotcha / 10:10"), sharing the
+   squeeze with the Hebrew beside it: under a reader's text spacing (WCAG 1.4.12) on a 320px screen the unshrinkable
+   reference ran past its card and the page scrolled sideways. */
+@media (max-width: 480px) { .tu-pex .tu-ex-ref { flex-shrink:1; } }
 .tu-pex-play.is-playing { background:var(--navy); color:var(--gold-light); box-shadow:0 0 0 3px var(--gold-light); }
 body.dark .tu-pex-play.is-playing { background:var(--gold-light); color:var(--navy-deep); box-shadow:0 0 0 3px var(--gold); }
 .tu-phr-status { display:flex; align-items:center; flex-wrap:wrap; gap:8px 12px; margin:0 0 14px; font-size:0.86rem; color:var(--muted); }
