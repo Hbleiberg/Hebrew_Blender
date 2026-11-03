@@ -347,6 +347,12 @@
 - **Detection:** `p463/link-fix.mjs`, `a472/dshare.mjs`. — `p463/link-fix.mjs` is a scratchpad path that was never committed: port it to `scripts/loop/detect-<id>.mjs` (with `--plant`) at the next A, or the row goes DRAFT.
 - **Record (ledger row at S544):** - **`share-link-writes-the-teachers-saved-preferences`** (NEW S463 P, `1eeaacb8`): ACTIVE, streak 1 (S472 dictionary clean). Detection: `p463/link-fix.mjs`, `a472/dshare.mjs`.
 
+## `link-undone-by-its-loads-first-sync`
+- **Status:** ACTIVE · **Owner:** P · **Consequence:** normal · **Last:** S602 · **Streak:** 0 · **Detector:** `scripts/smoke-sync.mjs` (D40, D41, D43)
+- **Shape:** A deep link's request (a reading, a word list, a look) shows, then the same load's first account sync downloads another device's newer settings and the page re-reads them over it: the link's part is gone a moment after it showed, and a view that strips its parameter cannot be reopened by a reload. The link is the newer request: keep what of it is still on screen until that first sync has landed (`ivritsuite:hydrated` for the tool), unsaved where the link is a view.
+- **Detection:** a smoke-sync scenario per carrier: this device syncs, the fake account's row then moves (another device), the page opens the link, and the probe reads the page and the account after the sync — with a no-move control, and the link's own buttons pressed afterwards.
+- **Record:** S602 P (`torah_trainer.html`, the practice link's `?s=` look — HEAD 3/6, the tree 6/6, D43). The same shape fixed outside the loop before it was catalogued: the Trainer's link reading (D40) and Flash Cards' `?wl=` list (D41). Open carriers to check: every other `?s=` page that applies a link over a synced blob.
+
 ## `bulk-apply-skips-a-renderer-the-control-runs`
 - **Status:** ACTIVE · **Owner:** K · **Consequence:** normal · **Last:** S472 · **Streak:** 1 · **Detector:** recipe
 - **Shape:** Detection: `x3/parity.

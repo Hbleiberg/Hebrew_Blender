@@ -1871,7 +1871,10 @@ Both pages sync one settings blob (and the Trope Tutor its mastery progress) thr
   choice); the page draws the default chart and a round trip leaves the stored choice as it was.
 - **A practice link's look never reaches the account.** While a link view is up, every write (the module's
   `flush` included) stores the reader's own display values, so opening a link cannot make the settings row read
-  "newer here". A download ends the view (`cloudReread` calls `linkViewEnd` first).
+  "newer here". A download ends the view (`cloudReread` calls `linkViewEnd` first), except the download of the
+  load that opened the link (`_linkLookFirst`, down at that sync's `ivritsuite:hydrated`, as `_linkReading` keeps a
+  link's reading): what of the look is still on screen is laid over the downloaded settings, still unsaved, with
+  its banner (the link is the newer request); *Use my settings* lowers the flag before its re-read.
 - **A font this device lacks stays chosen.** `setHebFont` on an unknown name keeps `settings.hebFont`, clears
   the `.font-opt` highlights and, once `refreshMyFonts()` has answered (`_myFontsLoaded`), shows
   `shared.fonts.missing_note` under `#fontOptions`.

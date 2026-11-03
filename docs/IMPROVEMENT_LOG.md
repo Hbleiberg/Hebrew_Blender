@@ -628,6 +628,8 @@ _(none)_
 
 - `share-link-writes-the-teachers-saved-preferences` | ACTIVE | owner P | det: recipe | last S472 | streak 1
 
+- `link-undone-by-its-loads-first-sync` | ACTIVE | owner P | det: scripts/smoke-sync.mjs | last S602 | streak 0 | hits 1
+
 - `bulk-apply-skips-a-renderer-the-control-runs` | ACTIVE | owner K | det: recipe | last S472 | streak 1
 
 - `radio-set-without-a-question` | ACTIVE | owner B | det: recipe | last S527 | streak 0

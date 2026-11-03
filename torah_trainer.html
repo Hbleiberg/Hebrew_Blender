@@ -11110,6 +11110,8 @@ let _pendingCloudReread = false;   // a cloud download landed while the handout 
 // The reading a ?parsha= / ?holiday= / ?ref= link opened, field by field, kept over the account's copy until this load's
 // first sync has landed (cloudReread; initCloudSaves clears it on that sync's ivritsuite:hydrated).
 let _linkReading = null;
+// The same for a practice link's look (?s=, LINK VIEW): true from the load that opened it until that first sync has landed.
+let _linkLookFirst = false;
 function linkReadingMark(keys) { _linkReading = {}; keys.forEach(k => { _linkReading[k] = settings[k] === undefined ? null : settings[k]; }); }
 let _handoutSnap = null;
 let _handoutVersesSnap = null;   // currentVerses swapped out for a selected-verses-only handout
@@ -11942,7 +11944,7 @@ async function init() {
   // ?reader=totaltorah: the link's visit hears the Total Torah source (a radio press saves a choice; nothing is stored by the
   // flag). The link itself, never ttOffered(): with the source public, that is every visit, and PocketTorah stays the default.
   if (new URLSearchParams(location.search).get('reader') === 'totaltorah' && settings.recordingSource !== 'totaltorah') _recSrcOverride = 'totaltorah';
-  linkViewApply();          // a practice link's ?s= display settings: shown from the first paint, never saved
+  _linkLookFirst = linkViewApply();   // a practice link's ?s= display settings: shown from the first paint, never saved
   _watchAudioBarHeight();   // keeps the bulk dock clear of the sticky karaoke bar at any width
   _watchBulkDockFocus();    // stops the dock vanishing under a keyboard user's own Clear
   const fsBtn = document.getElementById('fsBtn');
@@ -12160,10 +12162,25 @@ function cloudReread() {
   // showing the link's. Only while the teacher is still on it: a reading chosen meanwhile is theirs.
   const keepLink = _linkReading && Object.keys(_linkReading).every(k => (settings[k] === undefined ? null : settings[k]) === _linkReading[k]) ? _linkReading : null;
   if (!keepLink) _linkReading = null;
-  linkViewEnd();   // the stored settings are what the reader asked for now, not a practice link's
+  // The look a practice link opened, landed under the same way: what of it is still on screen stays there over the
+  // downloaded settings, unsaved, its banner still offering Keep or Go back (it used to end with the view, ?s= and all,
+  // a moment after it showed). A download after that sync, or Go back, ends the view.
+  const keepLook = _linkLookFirst && _linkView && _linkView.from === 'link' ? _linkView.shown : null;
+  if (keepLook) _linkView = null;
+  else linkViewEnd();   // the stored settings are what the reader asked for now, not a practice link's
   settings = JSON.parse(JSON.stringify(DEFAULTS));
   loadSettings();
   if (keepLink) { Object.assign(settings, keepLink); saveSettings(); }
+  if (keepLook) {
+    const own = {}, shown = {};
+    Object.keys(keepLook).forEach(k => {
+      if (_linkSame(keepLook[k], settings[k])) return;
+      own[k] = settings[k]; shown[k] = keepLook[k];
+      settings[k] = JSON.parse(JSON.stringify(keepLook[k]));
+    });
+    _linkView = { own, shown, from: 'link' };
+    if (Object.keys(own).length) linkViewSyncNote(); else linkViewEnd();   // the account's copy already looks this way
+  }
   _versionFallback = null;
   syncFormToSettings();
   setHebFont(settings.hebFont);
@@ -12188,7 +12205,7 @@ function initCloudSaves() {
   window.addEventListener('ivritsuite:fonts', () => { try { refreshMyFonts(); } catch (e) {} });
   // This load's first sync has landed (its download, if any, already re-read above): from now on a download is a
   // choice made elsewhere after the link was opened, and takes the reading as usual.
-  window.addEventListener('ivritsuite:hydrated', e => { const d = e.detail || {}; if (d.ok && Array.isArray(d.tools) && d.tools.includes('TorahTrainer')) _linkReading = null; });
+  window.addEventListener('ivritsuite:hydrated', e => { const d = e.detail || {}; if (d.ok && Array.isArray(d.tools) && d.tools.includes('TorahTrainer')) { _linkReading = null; _linkLookFirst = false; } });
   IvritSaves.attach({
     tool: 'TorahTrainer',
     status: '#cloudSavesPanel',
@@ -12914,6 +12931,7 @@ function linkViewRevert() {
   // re-read it: the cloud-download path already repaints every control and the reading from it.
   if (_saveTimer) { clearTimeout(_saveTimer); _saveTimer = null; }
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(storedSettings())); } catch (e) {}
+  _linkLookFirst = false;   // the reader's own settings, not the link's look kept over a first sync
   cloudReread();
   showHintToast(I18n.t('torah.share.view_reverted'));
 }

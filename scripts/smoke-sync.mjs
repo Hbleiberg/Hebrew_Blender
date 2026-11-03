@@ -154,6 +154,10 @@
  *      and the next visit (no "setup is back" bar), and a device still holding the older setup, opened after it, shows
  *      the defaults and leaves the marker alone (the next load's flush wrote the defaults over it, and the other
  *      device sent its old setup back).
+ *  D43. A Torah Trainer practice link's look (?s=) on a device whose account another device has moved: the look stays
+ *      on screen over the downloaded settings, unsaved, with its banner and ?s= (it used to vanish with them a moment
+ *      after it showed); with no move it stays as well (control); Keep then sends it, and Use my settings shows the
+ *      account's own and sends nothing of it.
  *
 
  * Every scenario asserts 0 pageerrors. Run from the repo root:
@@ -2174,6 +2178,47 @@ try {
     check('D42: a device still holding the older setup shows the defaults once the marker lands, and leaving it keeps the marker', onB.letters > 20 && onB.bar === 'none' && acc().pristine === true && !reqs(cloud, from, 'PATCH').length, JSON.stringify({ onB, account: JSON.stringify(acc()).slice(0, 60), calls: methods(cloud, from) }));
     check('D42: 0 pageerrors', a.errors.length === 0 && b.errors.length === 0, a.errors.concat(b.errors).join(' | '));
     await ctxA.close(); await ctxB.close();
+  }
+
+  // ---- D43. a Torah Trainer practice link's look over an account another device has moved: it stays, unsaved ----
+  if (want('D43')) {
+    const look = { v: 1, colorCodeNikkud: true, showTranslit: true, hebFontSize: 2.8 };   // the ?s= object (LINK_DISPLAY)
+    const sParam = Buffer.from(JSON.stringify(look), 'utf8').toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    const moveRow = (cloud, patch) => { const r = cloud.find('settings', 'default', 'TorahTrainer'); r.data = Object.assign({}, r.data, patch); r.data_hash = hashOf(r.data); r.bytes = Buffer.byteLength(canonJson(r.data)); r.updated_at = cloud.stamp(); return r; };
+    const state = (page) => page.evaluate(() => ({ view: !!_linkView, banner: !document.getElementById('ttLinkView').hidden, nik: settings.colorCodeNikkud, translit: settings.showTranslit, size: settings.hebFontSize, key: settings.parshahKey, s: new URL(location.href).searchParams.has('s') }));
+    // This device syncs Bereshit at size 2.2, another device then moves the account (`move`), and this device opens the link;
+    // `btn` then presses one of the banner's buttons by a real click.
+    const run = async (move, btn) => {
+      const cloud = new FakeCloud(CLOUD_ROWS().concat([{ tool: 'TorahTrainer', kind: 'settings', name: 'default', data: { parshahKey: 'Bereshit', scope: 'parsha-full', hebFontSize: 2.2 } }]));
+      const ctx = await openContext(browser, cloud, SEED({ extra: { hebrewTorahTrainer_tourSeen: '1' } }));
+      const { page, errors } = await openPage(ctx, 'torah_trainer.html', { tools: TORAH_TOOLS });
+      await page.waitForTimeout(2600); await settled(page, TORAH_TOOLS);
+      if (move) moveRow(cloud, move);
+      await page.goto(BASE + '/torah_trainer.html?s=' + sParam, { waitUntil: 'domcontentloaded' });
+      await waitSignedIn(page); await settled(page, TORAH_TOOLS, HYDRATE_MS); await page.waitForTimeout(WRITE_MS); await settled(page, TORAH_TOOLS);
+      const synced = await state(page);
+      let pressed = false, end = null;
+      if (btn) {
+        const b = page.locator('#ttLinkView button[onclick="' + (btn === 'keep' ? 'linkViewKeep()' : 'linkViewRevert()') + '"]');
+        pressed = await b.isVisible().catch(() => false);
+        if (pressed) await b.click();
+        await page.waitForTimeout(WRITE_MS); await settled(page, TORAH_TOOLS);
+        end = await state(page);
+      }
+      const out = { synced, pressed, end, account: cloud.find('settings', 'default', 'TorahTrainer').data, errors };
+      await ctx.close();
+      return out;
+    };
+    const lookOn = (x) => x.view && x.banner && x.nik === true && x.translit === true && x.size === 2.8 && x.s;
+    const ctl = await run(null);
+    check('D43: no move (control) → the link\'s look on screen with its banner, nothing of it sent', lookOn(ctl.synced) && ctl.account.hebFontSize === 2.2 && ctl.account.colorCodeNikkud !== true, JSON.stringify({ synced: ctl.synced, account: [ctl.account.hebFontSize, ctl.account.colorCodeNikkud] }));
+    const mv = await run({ parshahKey: 'Noach', hebFontSize: 2.4 });
+    check('D43: an account moved to Noach at size 2.4 → the look stays on screen with its banner and ?s=, over the account\'s Noach; the account keeps 2.4', lookOn(mv.synced) && mv.synced.key === 'Noach' && mv.account.hebFontSize === 2.4 && mv.account.colorCodeNikkud !== true, JSON.stringify({ synced: mv.synced, account: [mv.account.parshahKey, mv.account.hebFontSize, mv.account.colorCodeNikkud] }));
+    const k = await run({ parshahKey: 'Noach', hebFontSize: 2.4 }, 'keep');
+    check('D43: then Keep these settings → the look is the reader\'s, here and in the account (Noach kept)', k.pressed && !k.end.view && !k.end.banner && k.end.size === 2.8 && k.end.nik === true && !k.end.s && k.account.hebFontSize === 2.8 && k.account.colorCodeNikkud === true && k.account.parshahKey === 'Noach', JSON.stringify({ pressed: k.pressed, end: k.end, account: [k.account.parshahKey, k.account.hebFontSize, k.account.colorCodeNikkud] }));
+    const r = await run({ parshahKey: 'Noach', hebFontSize: 2.4 }, 'revert');
+    check('D43: then Use my settings → the account\'s own (size 2.4) on screen, the banner and ?s= gone, nothing of the look sent', r.pressed && !r.end.view && !r.end.banner && r.end.size === 2.4 && r.end.nik !== true && r.end.key === 'Noach' && !r.end.s && r.account.hebFontSize === 2.4 && r.account.colorCodeNikkud !== true, JSON.stringify({ pressed: r.pressed, end: r.end, account: [r.account.parshahKey, r.account.hebFontSize, r.account.colorCodeNikkud] }));
+    check('D43: 0 pageerrors', [ctl, mv, k, r].every(x => x.errors.length === 0), [ctl, mv, k, r].flatMap(x => x.errors).join(' | '));
   }
 } finally {
   await browser.close();
