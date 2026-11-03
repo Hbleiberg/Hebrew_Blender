@@ -374,6 +374,15 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
 .wn-x:hover{background:var(--warm-gray);color:var(--text);}
 .wn-pop :focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;}
 @media (max-width:767px){.wn-pop{top:calc(12px + env(safe-area-inset-top, 0px));bottom:auto;inset-inline:16px;width:auto;animation-name:wnDown;}}
+/* While the card shows it reserves its edge (html.wn-open, --wn-h its live height; whatsNewInit): the root's scroll
+   padding keeps a control that takes keyboard focus clear of it, and the body's padding lets the page's last band (on
+   a phone, its header) clear it too. Pattern focus-hidden-under-a-sticky-bar. */
+html.wn-open{scroll-padding-block-end:calc(var(--wn-h, 0px) + 28px);}
+html.wn-open body{padding-block-end:calc(var(--wn-h, 0px) + 28px);}
+@media (max-width:767px){
+  html.wn-open{scroll-padding-block-end:0;scroll-padding-block-start:calc(var(--wn-h, 0px) + 20px + env(safe-area-inset-top, 0px));}
+  html.wn-open body{padding-block-end:0;padding-block-start:calc(var(--wn-h, 0px) + 20px + env(safe-area-inset-top, 0px));}
+}
 /* "Show me" brings the Discover card into view and rings it once. */
 .page-card-group.wn-flash{animation:wnFlash 1.6s ease-out;}
 @keyframes wnFlash{0%,40%{box-shadow:0 0 0 4px var(--gold);border-color:var(--gold);}100%{box-shadow:0 0 0 0 transparent;}}
@@ -2256,9 +2265,15 @@ function whatsNewInit() {
   if (ieWindowOpen() || document.querySelector('.ivsav-overlay, .ivacct-modal')) return;
   try { localStorage.setItem(WN_KEY, WN_ID); } catch (e) { return; }
   const pop = document.getElementById('wnPop');
+  // The card's edge stays reserved while it shows (html.wn-open + --wn-h: the CSS beside .wn-pop), released on every close.
+  const root = document.documentElement;
+  let ro = null;
+  const reserve = () => root.style.setProperty('--wn-h', pop.offsetHeight + 'px');
+  const release = () => { if (ro) { ro.disconnect(); ro = null; } root.classList.remove('wn-open'); root.style.removeProperty('--wn-h'); };
   const close = () => {
     const had = pop.contains(document.activeElement);
     pop.hidden = true;
+    release();
     document.removeEventListener('keydown', onKey);
     if (had) document.getElementById('mainContent').focus({ preventScroll: true });
   };
@@ -2266,9 +2281,10 @@ function whatsNewInit() {
   document.addEventListener('keydown', onKey);
   document.getElementById('wnClose').addEventListener('click', close);
   document.getElementById('wnOk').addEventListener('click', close);
-  pop.querySelectorAll('.wn-list a').forEach(a => a.addEventListener('click', () => { pop.hidden = true; }));
+  pop.querySelectorAll('.wn-list a').forEach(a => a.addEventListener('click', () => { pop.hidden = true; release(); }));
   document.getElementById('wnShow').addEventListener('click', () => {
     pop.hidden = true;
+    release();
     document.removeEventListener('keydown', onKey);
     const card = document.querySelector('.page-card-group[aria-labelledby="tropeTitle"]');   // the newest: the Trope card's Atlas
     if (!card) return;
@@ -2280,6 +2296,8 @@ function whatsNewInit() {
     if (b) b.focus({ preventScroll: true });
   });
   pop.hidden = false;
+  reserve(); root.classList.add('wn-open');
+  if (window.ResizeObserver) { ro = new ResizeObserver(reserve); ro.observe(pop); }
 }
 document.addEventListener('DOMContentLoaded', () => {
   try {
