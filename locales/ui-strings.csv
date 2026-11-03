@@ -7203,7 +7203,7 @@ torah.assign.link_signin,This link opens one of your assignments. Sign in with y
 torah.assign.code_head,Have a code word from your teacher?,יש לכם מילת קוד מהמורה?,Torah Trainer: heading over the code form in the student panel,
 torah.assign.inbox_title.one,You have {n} assignment,יש לכם משימה אחת,Torah Trainer: the student panel's heading (count of open assignments),template
 torah.assign.inbox_title.other,You have {n} assignments,יש לכם {n} משימות,Torah Trainer: the student panel's heading (count of open assignments),template
-torah.assign.inbox_note,Press Open the reading on an assignment to see it and record it.,לחצו על ״הצגת הקריאה״ במשימה כדי לראות אותה ולהקליט.,Torah Trainer: under the inbox heading,
+torah.assign.inbox_note,Press Show the reading on an assignment to see it and record it.,לחצו על ״הצגת הקריאה״ במשימה כדי לראות אותה ולהקליט.,Torah Trainer: under the inbox heading,
 torah.assign.verse_skipped,not part of the assignment,לא חלק מהמשימה,Torah Trainer: the tag on a verse the teacher left out,
 torah.assign.dlg_who,Who,למי,Torah Trainer: assign dialog field,
 torah.assign.dlg_who_code,Anyone of my students who types the code word,כל תלמיד שלי שיקליד את מילת הקוד,Torah Trainer: assign dialog option,

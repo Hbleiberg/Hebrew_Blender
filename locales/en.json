@@ -5866,7 +5866,7 @@
   "torah.assign.dlg_who_pick": "Chosen students…",
   "torah.assign.feedback_label": "Your teacher says:",
   "torah.assign.hide_btn": "Hide",
-  "torah.assign.inbox_note": "Press Open the reading on an assignment to see it and record it.",
+  "torah.assign.inbox_note": "Press Show the reading on an assignment to see it and record it.",
   "torah.assign.inbox_title.one": "You have {n} assignment",
   "torah.assign.inbox_title.other": "You have {n} assignments",
   "torah.assign.link_signin": "This link opens one of your assignments. Sign in with your student username to see it.",
