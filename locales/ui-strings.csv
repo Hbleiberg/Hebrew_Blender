@@ -3707,7 +3707,7 @@ resources.filters.flic_ofl,OFL,OFL,filter button,license code
 resources.filters.flic_other,Other,אחר,filter button,
 resources.filters.ftype_all,All fonts,כל הגופנים,filter button,
 resources.filters.ftype_block,Block (Print),בלוק (דפוס),filter button,
-resources.filters.ftype_cursive,Cursive (כתב),כתב יד,filter button,mixed (inline Hebrew)
+resources.filters.ftype_cursive,"Cursive (<span lang=""he"">כתב</span>)",כתב יד,filter button,html
 resources.filters.ftype_label,Type,סוג,filter row label,
 resources.filters.ftype_other,Other,אחר,filter button,
 resources.filters.ftype_torah,Torah,תורה,filter button,

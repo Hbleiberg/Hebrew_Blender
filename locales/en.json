@@ -5279,7 +5279,7 @@
   "resources.filters.flic_other": "Other",
   "resources.filters.ftype_all": "All fonts",
   "resources.filters.ftype_block": "Block (Print)",
-  "resources.filters.ftype_cursive": "Cursive (כתב)",
+  "resources.filters.ftype_cursive": "Cursive (<span lang=\"he\">כתב</span>)",
   "resources.filters.ftype_label": "Type",
   "resources.filters.ftype_other": "Other",
   "resources.filters.ftype_torah": "Torah",
