@@ -950,6 +950,12 @@ footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-co
      the Learn chart it was also the margin that pushed a ninth Letter sheet out in Hebrew. */
   .tu-intro { display:none !important; }
   footer { padding:6px 0 0; font-size:0.66rem; }
+  /* Paper ends on the last card: the plate's and the page's screen padding under it, the FAQ block's empty wrapper
+     (its margin) and the Contact link (a dead link on paper) pushed the credits onto a sheet of their own under a full
+     last sheet of cards (pattern print-trailing-padding-adds-a-sheet). The credits stay one block. */
+  main.tu-page, .tu-view { padding-block-end:0; }
+  footer > div:has(> details), footer .footer-credits > span:has(> a[href="contact.html"]) { display:none !important; }
+  footer .footer-credits { break-inside:avoid; page-break-inside:avoid; }
   /* One credit per line, not a wrapped flex row. :not([hidden]) — this author display outranks the UA's [hidden], and
      the Total Torah credit (#tuFooterAudioTT, shown only with the Conservative melody) printed under every chart. */
   footer .footer-credits, footer .footer-credits > span:not([hidden]) { display:block; line-height:1.35; }
