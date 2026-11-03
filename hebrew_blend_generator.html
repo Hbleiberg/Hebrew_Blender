@@ -2393,6 +2393,10 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
        still flow across pages at cell boundaries. (.bingo-card, .caller-item,
        .match-item already carry this.) */
     .blend-cell, .ws-cell, .cw-cell, .rw-card { page-break-inside: avoid; break-inside: avoid; }
+    /* A ★ card's gold outline (the Identify key, a starred reading card: set inline) is drawn inside the card on
+       paper, as the word-search key's is: outside it, the top 2px of a card the rule above moved to the next page
+       stayed behind as a gold line at the foot of the page before. */
+    .rw-card { outline-offset: -2px; }
     /* Keep whole puzzle blocks intact too: a single clue / word-bank entry must
        never split mid-item, and a crossword or word-search grid should stay on
        one page (a crossword split mid-puzzle is unreadable). Best-effort — a
