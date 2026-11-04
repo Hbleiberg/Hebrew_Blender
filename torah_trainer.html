@@ -2293,6 +2293,29 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
   /* Toggle-switch knob: snap the slide (its transition is now transform-only). */
   .slider::before { transition: none !important; }
 }
+/* High Contrast (forced colours) paints every fill Canvas and drops box-shadow, so the karaoke word, the chosen chip,
+   toggle, font card and vowel scheme and the chosen favourite colour read exactly like their neighbours (pattern
+   selected-state-lost-in-forced-colors; the open drawer tab keeps its underline there, measured). System colours are kept
+   in that mode, so the chosen ones take the theme's selection pair; the dark twins are named, and the block ends the page's own CSS so it outranks the hover
+   rules above it in source order, with :hover twins for the ones whose hover sets a colour (after a click the pointer
+   still rests on the button, and `.tt-loop:hover:not(:disabled)` outranks `.tt-loop.active`: gold on the fill).
+   forced-color-adjust:none on the filled rules: Chromium paints a Canvas backplate behind
+   every text run it adjusts, and on a Highlight fill it hides the HighlightText glyphs; opted out, the explicit system
+   colours still follow the theme (S548). The karaoke word and the swatch take an outline instead, which needs no opt-out
+   (a word keeps its own text colours), and the follow rules above still clear it on the side that is not followed. */
+@media (forced-colors:active) {
+  .tt-speak.active, .tt-loop.active, .tt-tune.active, .tt-tuneall.active, .tt-jump-chip.active, .tt-holiday-opt.active,
+  .tt-ref-hdr .tt-readall.active, .vowel-scheme-btn.active, body.dark .vowel-scheme-btn.active,
+  .tt-fs-text[aria-pressed="true"],
+  .tt-speak.active:hover, .tt-loop.active:hover:not(:disabled), .tt-tune.active:hover, .tt-jump-chip.active:hover,
+  .tt-ref-hdr .tt-readall.active:hover, .tt-fs-text[aria-pressed="true"]:hover { background: Highlight; border-color: Highlight; color: HighlightText; forced-color-adjust: none; }
+  .tt-fs-text[aria-pressed="true"] { box-shadow: none; }   /* opted out, its gold inset stripe came back on the fill */
+  .font-opt.active, body.dark .font-opt.active { background: Highlight; border-color: Highlight; color: HighlightText; forced-color-adjust: none; }
+  .font-opt.active .font-opt-preview, body.dark .font-opt.active .font-opt-preview, .font-opt.active .font-opt-name,
+  .font-opt.active .font-opt-attr, body.dark .font-opt.active .font-opt-attr, .font-opt.active .font-opt-default { color: HighlightText; }
+  body.kar-style-highlight .tt-word.active { outline: 2px solid Highlight; outline-offset: 1px; }
+  .tt-fav-swatch[aria-pressed="true"] { outline: 3px solid Highlight; outline-offset: 2px; }
+}
 </style>
 </head>
 <body>
