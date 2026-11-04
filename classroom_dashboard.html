@@ -813,7 +813,9 @@
   .pick-msg { font-family: 'Source Sans 3', sans-serif; font-size: clamp(1.1rem, 4vw, 2rem);
     color: #d9e2f2; text-align: center; max-width: 22ch; line-height: 1.4; }
   .pick-controls { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
-  .pick-btn { font-size: clamp(0.95rem, 2.4vw, 1.25rem); padding: 12px 26px; min-height: 48px; }
+  /* Both result buttons read from across the room at one size: scoped to the controls row so it outranks .btn's
+     0.85rem / 7px 14px (which sits later in the sheet and left Pick Again at 13.6px beside a 20px Close). */
+  .pick-controls .pick-btn { font-size: clamp(0.95rem, 2.4vw, 1.25rem); padding: 12px 26px; min-height: 48px; }
   /* The overlay is dark in both themes, so its outlined Close cannot wear the page's .btn-secondary colours
      (navy text in the light theme, 1.3:1 on this ground; a warm-gray hover): the .pick-close idiom instead. */
   #pickOverlay .btn-secondary { color: #fff; border-color: rgba(255,255,255,0.45); }
@@ -7720,7 +7722,7 @@ function mountSidebarResize(cfg) {
     const stage = document.getElementById('pickStage');
     const controls = document.getElementById('pickControls');
     if (stage) { stage.innerHTML = ''; const d = document.createElement('div'); d.className = 'pick-msg'; d.textContent = msg; stage.appendChild(d); }
-    if (controls) { controls.innerHTML = ''; addPickBtn(controls, I18n.t('dashboard.picker.close'), 'btn-secondary', closePickOverlay); }
+    if (controls) { controls.innerHTML = ''; addPickBtn(controls, I18n.t('dashboard.picker.close'), 'btn btn-secondary', closePickOverlay); }
   }
   function renderPickResult(name) {
     const stage = document.getElementById('pickStage');
@@ -7735,7 +7737,7 @@ function mountSidebarResize(cfg) {
     if (controls) {
       controls.innerHTML = '';
       addPickBtn(controls, I18n.t('dashboard.picker.pick_again'), 'btn', pickOne);
-      addPickBtn(controls, I18n.t('dashboard.picker.close'), 'btn-secondary', closePickOverlay);
+      addPickBtn(controls, I18n.t('dashboard.picker.close'), 'btn btn-secondary', closePickOverlay);
     }
   }
   function animatePick(winner, pool, done) {
@@ -7854,7 +7856,7 @@ function mountSidebarResize(cfg) {
     if (controls) {
       controls.innerHTML = '';
       addPickBtn(controls, I18n.t('dashboard.groups.reshuffle'), 'btn', renderGroups);
-      addPickBtn(controls, I18n.t('dashboard.picker.close'), 'btn-secondary', closePickOverlay);
+      addPickBtn(controls, I18n.t('dashboard.picker.close'), 'btn btn-secondary', closePickOverlay);
     }
   }
 
