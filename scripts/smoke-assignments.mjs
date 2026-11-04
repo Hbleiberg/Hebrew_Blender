@@ -682,8 +682,9 @@ try {
   {
     const ctx = await newCtx(browser, cloud, { session: teacherSession });
     const { page, errors, dialogs } = await openPage(ctx, 'reading_assignments.html');
-    // the class view: both students submitted; a third student, not enrolled, gets an Add button
-    await page.waitForFunction(() => document.querySelectorAll('#cvHost tbody tr').length === 2, null, { timeout: 15000 });
+    // the class view: both students submitted; a third student, not enrolled, gets an Add button. The rows can paint
+    // before their status badges, so wait for both rows' badge and link; a timeout still reports the grid below.
+    await page.waitForFunction(() => { const rows = [...document.querySelectorAll('#cvHost tbody tr')]; return rows.length === 2 && rows.every(tr => tr.querySelector('td .badge') && tr.querySelector('a[href*="assignTo="]')); }, null, { timeout: 15000 }).catch(() => {});
     const grid = await page.evaluate(() => [...document.querySelectorAll('#cvHost tbody tr')].map(tr => [tr.querySelector('th').textContent, tr.querySelector('td .badge') ? tr.querySelector('td .badge').textContent : null, !!tr.querySelector('a[href*="assignTo="]')]));
     check('C: the class view lists both students as Submitted, each with Assign a new reading…', grid.length === 2 && grid.every(r => r[1] === 'Submitted' && r[2]), JSON.stringify(grid));
     cloud.manageStudents({ action: 'create', students: [{ display_name: 'Tal', username: 'tal.r', password: 'river-cat-55' }] }, { id: T1, role: 'teacher' });
