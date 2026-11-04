@@ -96446,3 +96446,42 @@ _(prior)_ **Next session (S609):** **Branch `claude/adoring-brown-9udi22` (S608,
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 - P accounts & cloud (one surface): 2026-11-04 (**S609 — 21st P, `trope_tutor.html` (first since S507; 38 commits, the traditions and the Drill's melody among them) + `hebrew_dictionary.html` (first since S521): smoke-tools both pages, sync 236 + migration with the pinned SDK, 8 new signed-in scenarios (Q1–Q5 the melodies and traditions, R1–R3 the dictionary's own word-list writes), arms 3–7 static 57/57 behind 7 plants, the live project read-only. FOUND 0 on both, every control fired; + 2 gate-2 fixes from the queue. P-next: name_tags (S535), parsha_emojis (S546).**)
+
+_(prior)_ **Next session (S610):** **Branch `claude/adoring-brown-9udi22` (S608–S609, draft PR 394): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1252**, FM **5.59**, corpus ?v=7. ⚑ drift: main=4f03455 sw=v1252 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: M dashboard (S508), G letter_learner (S509), D letter_learner (S510), H generator (S512), C fontmaker (S513), N chrome (S520), P name_tags (S535); suite E (S531), L (S532), K (S533). ⚑ Harnesses: trope + dictionary P `p609/` (`sync609.mjs` = smoke-sync + Q1–Q5 / R1–R3 under `SMOKE_ONLY`, `static.mjs`), dashboard N `n608/`, dashboard C `c607/`, chrome H `h606/`, dictionary D `d605/`. ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
+⚑ Sync P2 (S573): D31 still fails alone about 1 in 3 (S602: HEAD 2/3, tree 3/3). ⚑ The S602 gate-4 answer also covers the landscape blend-sheet P3 — S604: `body.landscape-mode .blends-grid` (0,2,1) outranks the floor rule, and Export PDF's clone is laid out with screen media, so measure the landscape PDF before any change — and the SE Bingo / Word Search P4s. ⚑ The footer's dangling "·" (the S588 line, 13 carriers) needs a session whose caps leave the dashboard free. ⚑ Two gate-3 P4s are small but gated: the Letter Learner's final-form cards 10px high, the dictionary's long headword. ⚑ Ports at the next A: `m554/`–`m603/`, `g604/`, `d605/`, `t605/`, `h606/`, `c607/`, `n608/`, `p609/`; traps 352, 356–523. ⚑ The dashboard's bulk-edit Save (S576 P4, 203 ms @4×) is the 9k-node modal's close, not script: leave it unless the modal changes. ⚑ Queues (first file of each candidate): FM 26, generator 19, torah 11, dashboard 9, dictionary 8, name_tags 7, parsha_emojis 7, trope 6; the rest ≤ 4.
+
+
+<!-- archived by compact-ledger at the S611 boundary, 2026-11-04 -->
+## Compaction (S611, 2026-11-04) — moved verbatim from the live ledger
+
+### from Candidates (prioritized, top = next)
+
+- [ ] P4 (**NEW S610 M — CLAUDE.md's header-icons rule; pattern `decorative-glyph-carrier-exposed-to-assistive-tech`**) | classroom_dashboard.html, locales | **Nine control strings still lead with a glyph**: ↔ Move panels, 📍 Current Location (drawer + setup card), ✨ Quick-start layouts…, + Add period, 🎲 Pick Again, 🔀 Reshuffle, 🔄 New round, ✅ Everyone's here; the picture belongs in markup (`hi-plus`, `hi-dice`, `hi-retry`, `hi-check` exist; a pin and a two-way arrow would be new). | found S610
+
+- [ ] P4 (**NEW S568 M — S578: page-wide, census first; S610: the generator FIXED `263ed754`**) | torah, dashboard, FM | **Buttons render in the UA font (Arial), not Source Sans 3**: the dashboard's bare `.btn-xs` (Reset, Refresh, Test, + Add period, Import calendar, Print week, New round, the size-row ↺), its Hebrew font tiles (`.font-opt`, which the generator and dictionary give `font-family:inherit`) and `#fsExitBtn` (S610: on every view); torah 7, FM 3; one `button { font-family:inherit }` per page, then every changed width checked. | found S568
+
+### from Done
+
+- [x] 2026-11-04 | `263ed754` | hebrew_blend_generator.html, sw.js | (S610; the S568 P4's generator half) **The generator's buttons take the page's face** (`button { font-family:inherit }`): Exit Full Screen and the sidebar toggle. | census 5 practice × 8 worksheet types + fullscreen × 2 cells: Arial buttons 2 → 0 per cell; 8 cells vs HEAD, the toggle's box unchanged, Exit Full Screen 100–102 × 57 (was 103–108 × 55)
+
+- [x] 2026-11-04 | (S605 close-out) | branch/deploy note | **S605 = D on the dictionary (its first since S496; 53 commits): cold 10 cells, 40 interaction arms by real input × 3 cells, profiles, a layout trace and two interleaved A/Bs. FOUND 1, FIXED 1 (the language switch's double layout); 1 refuted (the Translation sort); + 3 from the queue (the Trainer in High Contrast, the class view's case, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-04 | `8f520b80` | hebrew_dictionary.html, sw.js | (S605, the S556 M P4) **The emoji category counts, Shoresh pattern sub-labels and TTS slider ends reach the page's hint size** (9.6 / 9.92 → 10.88 px). | 10 cells by real clicks: no overflow, no name newly truncated, the tree's height unchanged; tiles 1 px taller
+
+- [x] 2026-11-04 | `577b5c80` | reading_assignments.html, sw.js | (S605, the S599 H P4) **The class view shows student names and assignment titles as the teacher typed them** (`th.cv-typed`; the column labels stay uppercase). | fake cloud, 4 cells: typed 4/4 (HEAD 0/4); smoke-assignments 135/135 ×2, test-rls 167/167
+
+- [x] 2026-11-04 | `09bf98dd` | torah_trainer.html, sw.js | (S605, the S571 C P3) **The karaoke word and every chosen control stand out in High Contrast** (the page's first forced-colours block; pattern `selected-state-lost-in-forced-colors`). | census 11 groups flat on HEAD; real clicks × 4 cells: selection share 0–7 % → 14–77 %, swatch Δ 0 → 151; outside HC = HEAD 28/28
+
+- [x] 2026-11-04 | `2f1ff394` | hebrew_dictionary.html, sw.js | (S605 D) **A language switch lays the page out once, not twice** (the hide-tab's rect read after the card rebuild; pattern `layout-read-per-grid-at-build`). | A/B ×6 @4×: layout 189 → 112 ms, long-task sum 609 → 509; the tab = HEAD 24/24, a plant 0/2
+
+### from Per-session log (one line per session)
+
+- 2026-11-01 | **S590** | iters: 5 | tools: generator ×2, resources, dashboard, scripts/loop, sw | patterns fixed: cdn-library-parser-blocking-for-one-action ×1, fixed-surface-missing-from-the-print-hide-list ×1, contrast-below-AA-on-a-tinted-or-coloured-plate ×1, layout-read-per-grid-at-build ×1 | …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S610 (2026-11-04):** dashboard, torah, generator, sw.js, loop docs S610 · trope, locales, sw.js, loop docs S609 · dashboard, sw.js, loop docs S608 · dashboard, generator, dictionary, smoke-assignments, sw.js, dashboard.md, loop docs S607 · 404, privacy, account, js/ivrit-account.js, locales, sw.js, loop docs S606 · dictionary, torah, reading_assignments, sw.js, loop docs S605 · dashboard, index, dictionary, locales, sw.js, CLAUDE.md, loop docs S604 · index, contact, privacy, terms, account, sw.js, loop docs S603 · torah, generator, sw.js, scripts/smoke-sync, loop docs S602 · …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- M aesthetics & visual design (one surface): 2026-11-04 (**S610 — 37th M, `classroom_dashboard.html` (first since S508; 55 commits): 17 views × 8 cells (EN/HE × light/dark × 1280/800) with real fonts, 7 census arms behind plants, a UA-face arm, section rhythm, the board message's direction. FOUND 7: 2 FIXED (one gate 3), 4 P4, the S568 P4 re-measured. M-next: parsha_emojis (S522), letter_learner (S536).**)
