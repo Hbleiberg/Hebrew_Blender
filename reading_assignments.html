@@ -126,6 +126,7 @@ body.dark .btn.danger:hover{background:#bb4a41;}
 table{width:100%;border-collapse:collapse;margin-block:8px 10px;}
 th,td{text-align:start;padding:7px 8px;border-bottom:1px solid var(--border);vertical-align:top;}
 th{font-size:0.8rem;text-transform:uppercase;letter-spacing:0.04em;color:var(--muted);}
+th.cv-typed{text-transform:none;letter-spacing:normal;}   /* the class view's student names and assignment titles are the teacher's own words, not labels ("NOAM LEVI") */
 td.actions .btn{margin-inline-end:4px;}
 .cell-input{width:100%;min-width:7ch;border:1px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);padding:5px 7px;font-family:inherit;font-size:0.9rem;}
 .code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:1.02rem;letter-spacing:0.02em;direction:ltr;unicode-bidi:isolate;}
@@ -777,12 +778,12 @@ function renderClassView() {
   if (!rows.length || !cols.length) { host.appendChild(el('p', 'muted', t('assign.classview.none'))); return; }
   const table = el('table', 'cv-table'); const thead = el('thead'), tr = el('tr');
   tr.appendChild(el('th', '', t('assign.classview.col_student')));
-  cols.forEach(a => { const th = el('th', '', a.title); th.title = a.ref_label; tr.appendChild(th); });
+  cols.forEach(a => { const th = el('th', 'cv-typed', a.title); th.title = a.ref_label; tr.appendChild(th); });
   tr.appendChild(el('th', '', t('assign.students.col_actions')));
   thead.appendChild(tr); table.appendChild(thead);
   const tbody = el('tbody');
   rows.forEach(s => {
-    const r = el('tr'); r.appendChild(el('th', '', studentLabel(s))).scope = 'row';
+    const r = el('tr'); r.appendChild(el('th', 'cv-typed', studentLabel(s))).scope = 'row';
     cols.forEach(a => {
       const td = el('td'); const st = gridStatus(a, s);
       if (!st) {
