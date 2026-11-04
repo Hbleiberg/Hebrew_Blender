@@ -178,6 +178,9 @@
   // What a sign-out will do, in one confirm (the chip and the name step's Sign out instead ask the same question):
   // the account's items leave this device, anything not in the account yet stays, preferences and My Fonts stay.
   function signOutConfirmText() {
+    // A student account keeps no saved items (the saves module never attaches for one), so the teacher's lines about
+    // what leaves this device and what stays would describe an account the student does not have.
+    if (currentUser && currentUser.role === 'student') return t('shared.account.sign_out_confirm_student', 'Sign out of this student account?');
     var n = 0, unknown = false;
     try { var S = window.IvritSaves; if (S && typeof S.pendingSignOut === 'function') { var ps = S.pendingSignOut() || {}; n = Number(ps.unsynced) || 0; unknown = !!ps.unknown; } } catch (e) { n = 0; }
     var msg = unknown

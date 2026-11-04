@@ -5417,6 +5417,7 @@
   "shared.account.sign_out_confirm": "Sign out? Your saved items stay in your account and are removed from this device. Your preferences and My Fonts stay here.",
   "shared.account.sign_out_confirm_kept.one": "Sign out? Your saved items stay in your account and are removed from this device. 1 item on this device is not in your account yet and stays here as this device's own data. Your preferences and My Fonts stay here.",
   "shared.account.sign_out_confirm_kept.other": "Sign out? Your saved items stay in your account and are removed from this device. {n} items on this device are not in your account yet and stay here as this device's own data. Your preferences and My Fonts stay here.",
+  "shared.account.sign_out_confirm_student": "Sign out of this student account?",
   "shared.account.sign_out_confirm_unknown": "Sign out? What your account holds is removed from this device. This page could not check everything with your account just now, so anything not in your account yet stays here as this device's own data. Your preferences and My Fonts stay here.",
   "shared.account.signed_in_as": "Signed in as {email}",
   "shared.account.signed_in_student": "Signed in as {name} (student account)",
