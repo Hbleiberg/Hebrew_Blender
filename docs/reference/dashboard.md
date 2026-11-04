@@ -130,7 +130,8 @@ function getNikudColor(key, paper) {
 }
 ```
 Checks `settings.nikudColorOverrides` first (user customizations), then falls back to the scheme's light/dark defaults;
-`paper` asks for the light palette whatever the theme.
+`paper` asks for the light palette whatever the theme, and a third argument `onDark` the dark palette whatever the theme
+(text on a ground that is dark in both themes).
 
 ### `colorizeHebrew(text, mode)`
 Walks the string character by character. For each Hebrew letter, collects the following nikkud marks, determines the color key (with special-case logic for vav-holam and shuruk; skips bare dagesh), then wraps the letter+marks in a `<span>`:
@@ -151,6 +152,12 @@ function hebDisplay(s) {
 }
 ```
 Single entry point for all Hebrew text rendering. Call this everywhere instead of using the raw string.
+`hebDisplay(s, true)` passes `onDark` through `colorizeHebrew(text, mode, onDark)`: the board's column titles and the
+video panel's label sit on the navy bands, dark in both themes, so `updateColTitles()` asks for the dark palette there
+(the light palette measured 2.3:1 on them). On a coloured day plate (`.day-item.colored`, `colorDays` on) the day name
+and its badge words take the plate's own ink instead of the vowel colours — a screen-only rule beside `.ink-dark` that
+neutralizes `.nik-lt` / `.nik-hl` / `.nik-ul` there (the maintainer's choice: two taught colour conventions on top of
+each other left most syllables under 3:1); paper keeps the colour-coding through the print block's `--nik-paper`.
 
 ### `initColorPickers()`
 Dynamically builds `<div class="color-pick-row">` entries inside `#colorPickerList`. Each row: example glyph · vowel name · `<input type="color">`. On `input` event, writes to `settings.nikudColorOverrides[key]` and re-renders all Hebrew content.

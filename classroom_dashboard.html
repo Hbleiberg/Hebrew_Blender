@@ -616,6 +616,13 @@
     .day-item.colored.ink-dark { color: var(--navy-deep); }
     .day-item.colored.ink-dark .day-eng { color: rgba(13,18,32,0.82); }
     .day-item.colored.ink-dark .day-badge { background: rgba(0,0,0,0.45); }
+    /* Colour-coded nikkud on a coloured plate: two taught colour conventions on top of each other, and most syllables
+       fell under 3:1 against their plate (a green resh on Wednesday's green, 1.1:1). The maintainer's choice: on a
+       plate the day name and its badge words take the plate's own ink, as with colour-coding off; the vowel colours
+       stay everywhere else, and on paper (no plates there; the print block's --nik-paper rule). */
+    .day-item.colored .nik-lt { color: inherit !important; }
+    .day-item.colored .nik-hl { background-color: transparent !important; }
+    .day-item.colored .nik-ul { text-decoration: none !important; }
   }
   .day-item.day-today { box-shadow: 0 0 0 3px var(--gold); transform: scale(1.02); }
   body.dark .day-item:not(.colored) { background: #232b40; color: var(--text); }
@@ -4208,15 +4215,16 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
 
   function stripNikkud(s) { return s.replace(NIKKUD_RE, ''); }
 
-  function getNikudColor(key, paper) {
+  function getNikudColor(key, paper, onDark) {
     // Only trust a valid hex override (what the color picker produces). A crafted value from an
     // imported settings blob could otherwise break out of the style="color:…" attribute this feeds.
     const ov = settings.nikudColorOverrides && settings.nikudColorOverrides[key];
     if (typeof ov === 'string' && /^#[0-9a-fA-F]{3,8}$/.test(ov)) return ov;
-    return activeNikudDefaults(!paper && document.body.classList.contains('dark'))[key] || '#888';   // paper: the light palette, whatever the theme
+    // paper: the light palette, whatever the theme; onDark: text on a ground that is dark in both themes (the navy title bands)
+    return activeNikudDefaults(!paper && (onDark || document.body.classList.contains('dark')))[key] || '#888';
   }
 
-  function colorizeHebrew(text, mode) {
+  function colorizeHebrew(text, mode, onDark) {
     const DAGESH = '\u05BC';
     const chars = [...text];
     const out = [];
@@ -4241,7 +4249,7 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
         if (k) { key = k; break; }
       }
       if (!key) { out.push(esc(ch + marks)); i = j; continue; }
-      const color = getNikudColor(key);
+      const color = getNikudColor(key, false, onDark);
       const syl = ch + marks;
       // --nik-paper and the nik-* class are read only by the print block (pattern dark-palette-baked-into-paper)
       const paper = `--nik-paper:${getNikudColor(key, true)};`;
@@ -4257,10 +4265,10 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
     return out.join('');
   }
 
-  function hebDisplay(s) {
+  function hebDisplay(s, onDark) {   // onDark: the navy title bands, dark in both themes, take the dark palette
     let out;
     if (!settings.showNikkud) out = stripNikkud(s);
-    else if (settings.colorCodeNikkud) out = colorizeHebrew(s, settings.colorCodingMode);
+    else if (settings.colorCodeNikkud) out = colorizeHebrew(s, settings.colorCodingMode, onDark);
     else out = s;
     return '<span lang="he" dir="rtl">' + out + '</span>';
   }
@@ -11783,19 +11791,19 @@ else ivritInit();
       const isHeb = lang === 'he';
       dowTitle.style.direction = isHeb ? 'rtl' : '';
       wxTitle.style.direction = isHeb ? 'rtl' : '';
-      dowTitle.innerHTML = `<span style="flex:1;text-align:center;">${isHeb ? hebDisplay('אֵיזֶה יוֹם הַיוֹם?') : 'Days of the Week'}</span><span></span>`;
-      wxTitle.innerHTML  = `<span style="flex:1;text-align:center;">${isHeb ? hebDisplay('מַה יֵש בַּחוּץ?') : 'Weather'}</span><span></span>`;
+      dowTitle.innerHTML = `<span style="flex:1;text-align:center;">${isHeb ? hebDisplay('אֵיזֶה יוֹם הַיוֹם?', true) : 'Days of the Week'}</span><span></span>`;
+      wxTitle.innerHTML  = `<span style="flex:1;text-align:center;">${isHeb ? hebDisplay('מַה יֵש בַּחוּץ?', true) : 'Weather'}</span><span></span>`;
       if (tmTitle) {
         tmTitle.style.display = '';
         tmTitle.style.direction = isHeb ? 'rtl' : '';
-        tmTitle.innerHTML = `<span style="flex:1;text-align:center;">${isHeb ? hebDisplay('כַּמָה זְמַן נִשְׁאַר?') : 'Timer'}</span><span></span>`;
+        tmTitle.innerHTML = `<span style="flex:1;text-align:center;">${isHeb ? hebDisplay('כַּמָה זְמַן נִשְׁאַר?', true) : 'Timer'}</span><span></span>`;
       }
       if (pkTitle) {
         pkTitle.style.display = '';
         pkTitle.style.direction = isHeb ? 'rtl' : '';
         // The trailing slot is a compact class switcher. stopPropagation so operating it never
         // toggles the card's collapse (the header itself is the collapse click target).
-        pkTitle.innerHTML = `<span style="flex:1;text-align:center;">${isHeb ? hebDisplay('מִי הַתּוֹר?') : 'Student Picker'}</span>` +
+        pkTitle.innerHTML = `<span style="flex:1;text-align:center;">${isHeb ? hebDisplay('מִי הַתּוֹר?', true) : 'Student Picker'}</span>` +
           `<select id="pickerClassSelCard" class="picker-class-switch" dir="ltr" title="${I18n.t('dashboard.picker.switch_class')}" aria-label="${I18n.t('dashboard.picker.switch_class')}"` +
           ` onclick="event.stopPropagation()" onmousedown="event.stopPropagation()" onkeydown="event.stopPropagation()"` +
           ` onchange="switchClass(this.value)">${classOptionsHTML(settings.activeRosterId)}</select>`;
@@ -11804,7 +11812,7 @@ else ivritInit();
     const vLabel = document.getElementById('videoHeaderLabel');
     if (vLabel) {
       const isHebV = (settings.headerLang || 'he') === 'he';
-      vLabel.innerHTML = isHebV ? hebDisplay('וִידֵאוֹ') : 'Video';   // i18n-ignore — projected widget CONTENT: follows headerLang, not I18n.lang; hebDisplay like its sibling titles
+      vLabel.innerHTML = isHebV ? hebDisplay('וִידֵאוֹ', true) : 'Video';   // i18n-ignore — projected widget CONTENT: follows headerLang, not I18n.lang; hebDisplay like its sibling titles
       vLabel.style.direction = isHebV ? 'rtl' : '';
     }
   }
