@@ -96386,3 +96386,28 @@ _(prior)_ **Next session (S607):** **Branch `claude/improveloop-s597` (S597–S6
 ### from Tool coverage (last-touched date per tool)
 
 - **Snapshot S607 (2026-11-04):** dashboard, generator, dictionary, smoke-assignments, sw.js, dashboard.md, loop docs S607 · 404, privacy, account, js/ivrit-account.js, locales, sw.js, loop docs S606 · dictionary, torah, reading_assignments, sw.js, loop docs S605 · dashboard, index, dictionary, locales, sw.js, CLAUDE.md, loop docs S604 · index, contact, privacy, terms, account, sw.js, loop docs S603 · torah, generator, sw.js, scripts/smoke-sync, loop docs S602 · dictionary, resources, fontmaker, dashboard, name_tags, torah, reading_assignments, sw.js, loop docs S601 · torah, index, resources, locales, sw.js, loop docs S600 · …[full text: IMPROVEMENT_ARCHIVE.md]
+
+_(prior)_ **Next session (S608):** **Branch `claude/improveloop-s597` (S597–S607, PR #393): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1248**, FM **5.59**, corpus ?v=7. ⚑ drift: main=baaaaae sw=v1248 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: N dashboard (S506), P trope (S507), M dashboard (S508), G letter_learner (S509), D letter_learner (S510), H generator (S512), C fontmaker (S513); suite E (S531), L (S532), K (S533). ⚑ Harnesses: dashboard C `c607/`, chrome H `h606/`, dictionary D `d605/`, Trainer forced colours `t605/`, dashboard G `g604/`. ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
+⚑ Sync P2 (S573): D31 still fails alone about 1 in 3 (S602: HEAD 2/3, tree 3/3). ⚑ The S602 gate-4 answer also covers the landscape blend-sheet P3 — S604: `body.landscape-mode .blends-grid` (0,2,1) outranks the floor rule, and Export PDF's clone is laid out with screen media, so measure the landscape PDF before any change — and the SE Bingo / Word Search P4s. ⚑ The footer's dangling "·" (the S588 line, 13 carriers) needs a session whose caps leave the dashboard free. ⚑ Two gate-3 P4s are small but gated: the Letter Learner's final-form cards 10px high, the dictionary's long headword. ⚑ Ports at the next A: `m554/`–`m603/`, `g604/`, `d605/`, `t605/`, `h606/`, `c607/`; traps 352, 356–521. ⚑ The dashboard's bulk-edit Save (S576 P4, 203 ms @4×) is the 9k-node modal's close, not script: leave it unless the modal changes. ⚑ Queues (first file of each candidate): FM 26, generator 19, torah 11, dictionary 9, dashboard 9, name_tags 7, parsha_emojis 7, trope 6; the rest ≤ 4.
+
+
+<!-- archived by compact-ledger at the S609 boundary, 2026-11-04 -->
+## Compaction (S609, 2026-11-04) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-11-03 | (S603 close-out) | branch/deploy note | **S603 = M on the chrome bundle (the hub's first M since S246, the account page's since S408): 84 full-page cells + the hub's states, the signed-in account page, Resources' Fonts view and suggest form; 6 arms behind plants. FOUND 3, FIXED 3; 1 amended, 4 settled. PR #393, sw v1233; deploy on merge.** No gate asked (a gate-3 idea …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-03 | `09e2ca28` | index.html, sw.js | (S603 M) **A tool card's button label that wraps is centred in its button** (it hugged the start edge, up to 171px off-centre). | EN/HE × 1280/1024/800/390 + dark: 156/156 (HEAD 127/156, 29 labels); 132 button boxes identical to HEAD
+
+- [x] 2026-11-03 | `918d4924` | contact.html, privacy.html, terms.html, account.html, sw.js | (S603 M) **The header title is bold again on the four pages whose h1 became a div** (an h1 is bold by default); the phone rule drops the 0.01em tracking so the Contact title keeps one line at 360px. | 7 pages × 18 cells: 504/504 (HEAD 432/504); header geometry = HEAD in 72/72 cells; smoke-account-page …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-03 | `21874438` | index.html, sw.js | (S603 M) **In dark mode the hub's 11 tool-card buttons and the Import / Export primaries take the suite's dark navy fill** (1.03:1 on their card before; pattern `dark-navy-fill-matches-its-ground`). | EN/HE × light/dark × 1280/800, real hovers: 104/104 (HEAD 76/104); print navy; light unchanged
+
+### from Per-session log (one line per session)
+
+- 2026-10-31 | **S588** | iters: 5 | tools: flash ×2, dashboard, fontmaker, locales, scripts/loop, sw | patterns fixed: flex-box-drops-a-sentence-space ×1 (NEW), decorative-glyph-carrier-exposed-to-assistive-tech ×2 | pass run: M (flash, first since S450) | SW: v1171→v1175
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S608 (2026-11-04):** dashboard, sw.js, loop docs S608 · dashboard, generator, dictionary, smoke-assignments, sw.js, dashboard.md, loop docs S607 · 404, privacy, account, js/ivrit-account.js, locales, sw.js, loop docs S606 · dictionary, torah, reading_assignments, sw.js, loop docs S605 · dashboard, index, dictionary, locales, sw.js, CLAUDE.md, loop docs S604 · index, contact, privacy, terms, account, sw.js, loop docs S603 · torah, generator, sw.js, scripts/smoke-sync, loop docs S602 · dictionary, resources, fontmaker, dashboard, name_tags, torah, …[full text: IMPROVEMENT_ARCHIVE.md]
