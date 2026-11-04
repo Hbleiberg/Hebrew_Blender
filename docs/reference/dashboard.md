@@ -122,22 +122,25 @@ sh:'#8833bb'                       sh:'#bb66ee'
 
 **`VOWEL_COLOR_DEFS`** — ordered list of `{ key, name, example }` used to build the color picker rows. 13 entries (kamatz through shva), including vav-holam and shuruk.
 
-### `getNikudColor(key)`
+### `getNikudColor(key, paper)`
 ```js
-function getNikudColor(key) {
-  if (settings.nikudColorOverrides?.[key] !== undefined)
-    return settings.nikudColorOverrides[key];
-  return (document.body.classList.contains('dark')
-    ? NIKUD_DEFAULTS_DARK : NIKUD_DEFAULTS_LIGHT)[key] || '#888';
+function getNikudColor(key, paper) {
+  // a valid hex override (what the colour picker produces) wins
+  return activeNikudDefaults(!paper && document.body.classList.contains('dark'))[key] || '#888';
 }
 ```
-Checks `settings.nikudColorOverrides` first (user customizations), then falls back to light/dark defaults.
+Checks `settings.nikudColorOverrides` first (user customizations), then falls back to the scheme's light/dark defaults;
+`paper` asks for the light palette whatever the theme.
 
 ### `colorizeHebrew(text, mode)`
 Walks the string character by character. For each Hebrew letter, collects the following nikkud marks, determines the color key (with special-case logic for vav-holam and shuruk; skips bare dagesh), then wraps the letter+marks in a `<span>`:
 - `'letter'` mode → `style="color:…"`
 - `'highlight'` mode → `style="background-color:…50"` (50 = 31% opacity hex)
 - `'underline'` mode → `style="text-decoration:underline solid …"`
+
+Each span also carries a `nik-lt` / `nik-hl` / `nik-ul` class and `--nik-paper` (the syllable's light-palette colour, or
+the override), read only by the print block: paper takes the light palette from either theme, and Highlight, a tint the
+print dialog drops by default, prints as the Underline mode's line (the dictionary's and the generator's shape).
 
 ### `hebDisplay(s)`
 ```js

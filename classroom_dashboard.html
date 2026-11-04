@@ -2327,6 +2327,15 @@ button:focus-visible, a:focus-visible { outline:2px solid var(--focus-ring); out
        colour and a white shadow that vanishes on paper. The light theme's pair, as a light page prints them. */
     body.dark .fx-glow { --fx-glow: 0 0 0.08em var(--gold), 0 0 0.3em var(--gold-light); }
     body.dark .fx-shadow { --fx-shadow: 0.06em 0.08em 0.12em rgba(0, 0, 0, 0.45); }
+    /* Colour-coded nikkud (pattern dark-palette-baked-into-paper): colorizeHebrew bakes the screen theme's palette into
+       each syllable's inline style, so a board printed from dark mode put its pale cyan / yellow / lavender syllables on
+       white at 1.9–2.2:1. Every coloured syllable also carries --nik-paper (the light palette, or the teacher's own
+       colour), and paper takes that. Highlight is a background tint the print dialog's background-graphics-off default
+       drops, so the colour coding left the sheet: it prints as the Underline mode's line instead (the dictionary's and
+       the generator's print shape). */
+    .nik-lt { color: var(--nik-paper) !important; }
+    .nik-ul { text-decoration-color: var(--nik-paper) !important; }
+    .nik-hl { background: none !important; text-decoration: underline solid var(--nik-paper) !important; text-decoration-thickness: 2px !important; text-underline-offset: 0.4em !important; }
     /* Literals the remap cannot reach — white text on the navy plates print drops, and the
        dark theme's literal dark slabs (these surface only when the teacher prints with
        background graphics ON). (.star keeps brand --gold: a mark, not text.) */
@@ -4191,12 +4200,12 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
 
   function stripNikkud(s) { return s.replace(NIKKUD_RE, ''); }
 
-  function getNikudColor(key) {
+  function getNikudColor(key, paper) {
     // Only trust a valid hex override (what the color picker produces). A crafted value from an
     // imported settings blob could otherwise break out of the style="color:…" attribute this feeds.
     const ov = settings.nikudColorOverrides && settings.nikudColorOverrides[key];
     if (typeof ov === 'string' && /^#[0-9a-fA-F]{3,8}$/.test(ov)) return ov;
-    return activeNikudDefaults(document.body.classList.contains('dark'))[key] || '#888';
+    return activeNikudDefaults(!paper && document.body.classList.contains('dark'))[key] || '#888';   // paper: the light palette, whatever the theme
   }
 
   function colorizeHebrew(text, mode) {
@@ -4226,12 +4235,14 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
       if (!key) { out.push(esc(ch + marks)); i = j; continue; }
       const color = getNikudColor(key);
       const syl = ch + marks;
+      // --nik-paper and the nik-* class are read only by the print block (pattern dark-palette-baked-into-paper)
+      const paper = `--nik-paper:${getNikudColor(key, true)};`;
       if (mode === 'highlight') {
-        out.push(`<span style="background-color:${color}50;border-radius:2px;">${esc(syl)}</span>`);
+        out.push(`<span class="nik-hl" style="${paper}background-color:${color}50;border-radius:2px;">${esc(syl)}</span>`);
       } else if (mode === 'underline') {
-        out.push(`<span style="text-decoration:underline solid ${color};text-decoration-thickness:2px;text-underline-offset:0.4em;">${esc(syl)}</span>`);
+        out.push(`<span class="nik-ul" style="${paper}text-decoration:underline solid ${color};text-decoration-thickness:2px;text-underline-offset:0.4em;">${esc(syl)}</span>`);
       } else {
-        out.push(`<span style="color:${color}">${esc(syl)}</span>`);
+        out.push(`<span class="nik-lt" style="${paper}color:${color}">${esc(syl)}</span>`);
       }
       i = j;
     }
