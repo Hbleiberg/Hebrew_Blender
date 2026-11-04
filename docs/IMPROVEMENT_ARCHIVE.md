@@ -96362,3 +96362,27 @@ _(prior)_ **Next session (S606):** **Branch `claude/improveloop-s597` (S597–S6
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 - H teacher walkthrough / paper-cuts (one tool): 2026-11-04 (**S606 — chrome (index, resources, privacy, 404, account signed in and as a student; the bundle's first H — the account page's first since S426, the hub's since S468): 5 lessons + the student cell by real input on the account smoke's fake cloud. FOUND 6: 4 FIXED (four gate-2 answers), 1 P4, 1 settled as S596's. H-next: generator (S512), letter_learner (S526).**)
+
+_(prior)_ **Next session (S607):** **Branch `claude/improveloop-s597` (S597–S606, PR #393): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1245**, FM **5.59**, corpus ?v=7. ⚑ drift: main=baaaaae sw=v1245 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: C dashboard (S499), N dashboard (S506), P trope (S507), M dashboard (S508), G letter_learner (S509), D letter_learner (S510), H generator (S512); suite E (S531), L (S532), K (S533). ⚑ Harnesses: chrome H `h606/` (`cloud.mjs` = the account smoke's fake cloud, any page), dictionary D `d605/`, Trainer forced colours `t605/`, dashboard G `g604/`. ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
+⚑ Sync P2 (S573): D31 still fails alone about 1 in 3 (S602: HEAD 2/3, tree 3/3). ⚑ The S602 gate-4 answer also covers the landscape blend-sheet P3 — S604: `body.landscape-mode .blends-grid` (0,2,1) outranks the floor rule, and Export PDF's clone is laid out with screen media, so measure the landscape PDF before any change — and the SE Bingo / Word Search P4s. ⚑ The footer's dangling "·" (the S588 line, 13 carriers) needs a session whose caps leave the dashboard free. ⚑ Two gate-3 P4s are small but gated: the Letter Learner's final-form cards 10px high, the dictionary's long headword. ⚑ Ports at the next A: `m554/`–`m603/`, `g604/`, `d605/`, `t605/`, `h606/`; traps 352, 356–518. ⚑ The dashboard's bulk-edit Save (S576 P4, 203 ms @4×) is the 9k-node modal's close, not script: leave it unless the modal changes. ⚑ Queues (first file of each candidate): FM 26, generator 19, torah 11, dictionary 9, name_tags 7, parsha_emojis 7, trope 6, dashboard 6; the rest ≤ 4.
+
+
+<!-- archived by compact-ledger at the S608 boundary, 2026-11-04 -->
+## Compaction (S608, 2026-11-04) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-11-04 | (S607 close-out) | branch/deploy note | **S607 = C on the dashboard (its first since S499; 61 commits): a census of 21 states × 8 cells, Tab walks, a sticky-bar walk, motion, forced colours, 1.4.12 and 320px reflow. FOUND 6: 2 FIXED (one by a gate-3 answer), 3 P4, 1 settled; + 2 queue fixes. PR #393, sw v1248; deploy on merge.** Gates asked: 1 (gate 3) → the recommended option. No live action.
+
+
+- [x] 2026-11-03 | (S602 close-out) | branch/deploy note | **S602 = P on the Torah Trainer (first since S493): four smokes + 3 new signed-in scenarios, arms 3–7 static, the live project read-only. FOUND 1, FIXED 1 (a new pattern); + the generator's blend sheets on a phone (gate 4). PR #393, sw v1230; deploy on merge.** One gate 4 asked and answered; no live action.
+
+- [x] 2026-11-03 | `afea099b` | torah_trainer.html, scripts/smoke-sync.mjs, torah-and-trope.md, sw.js | (S602 P) **A practice link's look stays on screen when the load's own sync downloads another device's settings** (pattern `link-undone-by-its-loads-first-sync`). | smoke-sync D43 6/6 (HEAD 3/6); sync 235/236 (D31 flake), migration 47, assignments 135, tools 18; signed out 24/24
+
+### from Per-session log (one line per session)
+
+- 2026-10-31 | **S587** | iters: 5 | tools: torah ×2, name_tags, letter_learner, sw | patterns fixed: decorative-glyph-carrier-exposed-to-assistive-tech ×2 | pass run: N (torah, first since S448) | SW: v1164→v1168
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S607 (2026-11-04):** dashboard, generator, dictionary, smoke-assignments, sw.js, dashboard.md, loop docs S607 · 404, privacy, account, js/ivrit-account.js, locales, sw.js, loop docs S606 · dictionary, torah, reading_assignments, sw.js, loop docs S605 · dashboard, index, dictionary, locales, sw.js, CLAUDE.md, loop docs S604 · index, contact, privacy, terms, account, sw.js, loop docs S603 · torah, generator, sw.js, scripts/smoke-sync, loop docs S602 · dictionary, resources, fontmaker, dashboard, name_tags, torah, reading_assignments, sw.js, loop docs S601 · torah, index, resources, locales, sw.js, loop docs S600 · …[full text: IMPROVEMENT_ARCHIVE.md]

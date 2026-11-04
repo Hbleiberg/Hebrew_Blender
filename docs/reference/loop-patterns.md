@@ -20,7 +20,8 @@
 ## Active, draft and guard patterns (166; newest first, as the ledger lists them)
 
 ## `focus-hidden-under-a-sticky-bar`
-- **Status:** ACTIVE · **Owner:** C · **Consequence:** normal · **Last:** S600 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** C · **Consequence:** normal · **Last:** S607 · **Streak:** 0 · **Detector:** recipe
+- **Record (S607):** a new carrier, the dashboard's Bulk preset edit (`cea1a1e1` stuck its Save bar to the modal's foot beside the sticky master-row head, both inside the modal's own scroller): 5–130 of 188 stops wholly hidden per cell, Shift+Tab worst (`c607/stickywalk.mjs`, 8 cells) → 0 (`fa2f71ee`: the modal's `scroll-padding-block` from `--bpe-head-h` / `--bpe-foot-h`, a `ResizeObserver` armed at the first open; the phone and short-screen rules that let the head scroll away reset the start padding). A planted 260 px head fired on HEAD (52 + 150) and stayed 0 on the tree.
 - **Record (S600):** a new carrier, the hub's one-time What's-new card (fixed, bottom inline-end; the top on a phone): 72 stops wholly + 52 partly under it in 6 cells (`c600/wnwalk.mjs`) → 0 + 4 (`7ed01731`: `html.wn-open` and `--wn-h` from a `ResizeObserver` while it shows — the root's scroll padding plus the body's padding on the card's edge, so the page's last band, or on a phone its header, can clear it). A card, toast or banner that appears by itself is a bar for this pattern too.
 - **Record (S594):** the generator clean — Tab walks at a human pace (200–250 ms) at load (114 stops), after Generate (114) and in Real Words (123), × 4 cells: 0 covered, 0 off-screen, every stop ringed; a 0 ms walk lands once on the frozen Generate bar's fading duplicate (trap 478, not a defect).
 - **Record (S569):** letter_learner — the card dialog scrolls under its own sticky head: a Tab / Shift+Tab walk of every tab (`g569/llwalk.mjs`) found the Vowels tab wholly hidden on the way back up (1280 / 800, EN / HE) and 3 Coloring radios wholly + 1 partly on an iPhone 13 → 0 in 6 cells (`3c04af41`: the dialog's `scroll-padding-block-start` from `--ll-head-h`, a `ResizeObserver` in `wireDialog`); a planted 260px head fired (findings S569).
@@ -463,7 +464,8 @@
 - **Record (ledger row at S544):** - **`logical-inset-mirrors-onto-pinned-content`** (NEW S440; FIXED `23b7bb0f`): ACTIVE, streak 0. A logical inset over physically pinned content lands on it in Hebrew. Detection: HE, text Range rects ∩ the control's box.
 
 ## `tip-name-joins-its-field's-name`
-- **Status:** ACTIVE · **Owner:** A · **Consequence:** normal · **Last:** S488 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** A · **Consequence:** normal · **Last:** S607 · **Streak:** 0 · **Detector:** recipe
+- **Record (S607):** the header twin — a collapse header (`role=button`) holding a control takes its name too: the generator's Saved Presets title ("… More information", its tip) and the dictionary's 7 letter-position headers ("1st Letter א Clear") → `aa3808ab`, each header `aria-labelledby` its label (the dictionary's also its chosen-letter badges). Detection: CDP `getPartialAXTree` on every `[role=button]` collapse header, a name holding an inner control's name.
 - **Shape:** A `<label>` holding a `.
 - **Detection:** the AX tree with every panel and drawer tab …[full text: IMPROVEMENT_ARCHIVE.md]
 - **Record (ledger row at S544):** - **`tip-name-joins-its-field's-name`** (NEW S430; generator `10a0c18f`; torah ×3 `d477e15c`; S488 dashboard `f722eeba`): ACTIVE, streak 0 (no open carrier). A `<label>` holding a `.tip-wrap` names its field "… More information".
