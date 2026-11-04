@@ -1022,7 +1022,10 @@ body.translit-under .tt-wtl {
   white-space:nowrap; letter-spacing:0; word-spacing:0; margin-block-start:0.12em;
   direction:ltr; unicode-bidi:isolate;
 }
-body.translit-under.trope-underline-fallback .tt-wtl { margin-block-start:0.4em; }   /* room for the 4px clause line at 0.68em */
+/* Room for the 4px clause line at 0.68em. The line's offset is the Hebrew's em, the margin the Latin's, so above the
+   default Hebrew size the margin grows with it (the staff cell's rule below does the same); at 1.5rem and under it is
+   the 0.4em it always was. Without the term the line met the Latin from 2.5rem (3.5rem: 2.8px into it). */
+body.translit-under.trope-underline-fallback .tt-wtl { margin-block-start:calc(0.4em + max(0px, var(--tt-heb-size, 1.5rem) - 1.5rem) * 0.17); }
 body.kar-style-highlight .tt-word.active > .tt-wtl { color:inherit; }   /* muted grey on gold fails contrast; the cell's navy reads */
 body.translit-under.kar-style-underline .tt-word.active { text-decoration:none; }
 body.translit-under.kar-style-underline .tt-word.active > .tt-wh {
