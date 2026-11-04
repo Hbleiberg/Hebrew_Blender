@@ -2345,6 +2345,9 @@ button:focus-visible, a:focus-visible { outline:2px solid var(--focus-ring); out
     /* body.dark .col-title (0,1,1) outranks the bare class: without the twin, a dark-source print
        with background graphics on shipped the titles as #0a0f1c slabs under remapped-navy text (1.29:1). */
     .col-title, body.dark .col-title { color: var(--navy); background: #fff; border-block-end: 2px solid var(--gold); }
+    /* The fold triangle is the title's collapse control, not board content (the edit pencil's reasoning above): on
+       paper it was a stray gold ▾ beside every panel name. */
+    .col-title::after { content: none; }
     .day-item.colored { color: var(--text); }
     .day-item.colored .day-eng { color: var(--muted); }
     body.dark .dash-col { background: var(--white); box-shadow: none; }
