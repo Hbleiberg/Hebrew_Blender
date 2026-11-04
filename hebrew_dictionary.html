@@ -3052,13 +3052,15 @@ function initPosFilters() {
   </label>`;
   body.appendChild(ctrlRow);
   const labels = ['1st','2nd','3rd','4th','5th','6th'];
+  // A header is a collapse button (bindHdrA11y) holding its own Clear button: named by its label and its chosen letters
+  // (aria-labelledby), so "Clear" no longer joins the header's name ("1st Letter Clear").
   labels.forEach((lbl, i) => {
     const sec = document.createElement('div');
     sec.className = 'pos-sec';
     sec.innerHTML = `
-      <div class="pos-sec-hdr" onclick="togglePosSec(${i})">
+      <div class="pos-sec-hdr" onclick="togglePosSec(${i})" aria-labelledby="pl${i} pb${i}">
         <div class="hdr-left">
-          <span class="lbl">${esc(I18n.t('dictionary.filters.pos_letter_heading', { ordinal: I18n.t('dictionary.ordinal_' + lbl) }))}</span>
+          <span class="lbl" id="pl${i}">${esc(I18n.t('dictionary.filters.pos_letter_heading', { ordinal: I18n.t('dictionary.ordinal_' + lbl) }))}</span>
           <div class="pos-badges" id="pb${i}"></div>
         </div>
         <button class="pos-clear" onclick="event.stopPropagation();clearPos(${i})" title="${esc(I18n.t('dictionary.filters.pos_clear_title'))}" aria-label="${esc(I18n.t('dictionary.filters.pos_clear_title'))}"><svg class="hi hi-sm hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
@@ -3079,9 +3081,9 @@ function initPosFilters() {
   const anySec = document.createElement('div');
   anySec.className = 'pos-sec';
   anySec.innerHTML = `
-    <div class="pos-sec-hdr" onclick="this.parentElement.classList.toggle('open')">
+    <div class="pos-sec-hdr" onclick="this.parentElement.classList.toggle('open')" aria-labelledby="plAny pbAny">
       <div class="hdr-left">
-        <span class="lbl">${esc(I18n.t('dictionary.filters.any_letters_head'))}</span>
+        <span class="lbl" id="plAny">${esc(I18n.t('dictionary.filters.any_letters_head'))}</span>
         <div class="pos-badges" id="pbAny"></div>
       </div>
       <button class="pos-clear" onclick="event.stopPropagation();clearAnyLetters()" title="${esc(I18n.t('dictionary.filters.pos_clear_title'))}" aria-label="${esc(I18n.t('dictionary.filters.pos_clear_title'))}"><svg class="hi hi-sm hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>

@@ -3832,7 +3832,7 @@ html[lang="he"] .beta-tag { letter-spacing: normal; text-transform: none; }   /*
 
     <!-- Presets -->
     <div class="panel" id="panelPresets" style="margin-top:4px;">
-      <div class="panel-title"><span style="display:inline-flex;align-items:center;"><span data-i18n="worksheet.presets.panel_title">Saved Presets</span>&nbsp;<span class="tooltip-wrap" style="font-size:0.65rem;font-weight:400;">?<span class="tooltip-box" data-i18n="worksheet.presets.panel_tooltip">Save your current letter, vowel, and layout settings as a named preset. Load it later to instantly restore everything — great for switching between class levels or drill types.</span></span></span></div>
+      <div class="panel-title" aria-labelledby="presetsPanelTitle"><span style="display:inline-flex;align-items:center;"><span id="presetsPanelTitle" data-i18n="worksheet.presets.panel_title">Saved Presets</span>&nbsp;<span class="tooltip-wrap" style="font-size:0.65rem;font-weight:400;">?<span class="tooltip-box" data-i18n="worksheet.presets.panel_tooltip">Save your current letter, vowel, and layout settings as a named preset. Load it later to instantly restore everything — great for switching between class levels or drill types.</span></span></span></div>
       <div class="panel-body">
         <div class="preset-row">
           <input type="text" id="presetName" placeholder="Preset name..." data-i18n-placeholder="worksheet.presets.name_placeholder" aria-label="Preset name..." data-i18n-aria-label="worksheet.presets.name_placeholder" oninput="onPresetNameInput()" onkeydown="if(event.key==='Enter')savePreset()">
