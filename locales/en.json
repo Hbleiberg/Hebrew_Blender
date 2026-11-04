@@ -13,6 +13,7 @@
   "account.delete.backup_incomplete": "Download again before deleting to try for them: once the account is deleted, they are gone.",
   "account.delete.before_assign": "Torah Trainer reading assignments are not in this .zip. If you made student logins, deleting your account also deletes them, with your classes, assignments, and every recording and piece of feedback in them. Download each assignment's recordings first on the <a href=\"reading_assignments.html\">Reading assignments</a> page.",
   "account.delete.before_continue": "Continue without downloading",
+  "account.delete.before_continue_done": "Continue",
   "account.delete.before_empty": "Your account holds nothing to download.",
   "account.delete.before_head": "Before you delete: download your backup",
   "account.delete.before_note": "Deleting the account removes everything it holds, for good. Download everything first — the .zip is the only copy once the account is gone.",

@@ -652,6 +652,7 @@ async function downloadAll(btnId, statusId) {
   const date = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
   try {
     say(statusId, () => t('account.download.prep_items'));
+    showLine(statusId);
     const bundle = await IvritSaves.bundleAll();
     const rows = await IvritProjects.list({ fresh: true });
     if (!bundle.count && !rows.length) { say(statusId, () => t('account.download.nothing')); return; }
@@ -686,12 +687,23 @@ async function downloadAll(btnId, statusId) {
     say(statusId, () => t('account.download.done', { items: plural('account.count.items', n), and_projects: plural('account.count.and_projects', p), size: size })
       + (missingPhotos ? ' ' + plural('account.download.photos_missing', missingPhotos) : '')
       + (missingFonts ? ' ' + plural('account.download.fonts_missing', missingFonts) : ''));
-    if (statusId === 'delDlStatus') lastDelDlMissing = (missingPhotos || missingFonts) ? { photos: missingPhotos, fonts: missingFonts } : null;
+    if (statusId === 'delDlStatus') { lastDelDlMissing = (missingPhotos || missingFonts) ? { photos: missingPhotos, fonts: missingFonts } : null; setContinueLabel(true); }
   } catch (err) {
     say(statusId, () => IvritSaves.errorText(err), true);
   } finally {
     busyDl = false; syncDlButtons();
+    showLine(statusId);
   }
+}
+// A download's status line, scrolled to the nearest edge of the viewport when any of it is outside: the pre-deletion
+// box opens at the foot of the page, so its "Downloaded…" line (and a missing-photos warning) landed under the fold.
+function showLine(id) { const n = $(id); if (n && n.textContent && !n.closest('[hidden]')) n.scrollIntoView({ block: 'nearest' }); }
+// The backup box's Continue reads "Continue without downloading" until a zip downloads from that box, then "Continue";
+// closing the box puts the first label back. The key moves with the label, so a language switch keeps it.
+function setContinueLabel(done) {
+  const b = $('delContinue');
+  b.setAttribute('data-i18n', done ? 'account.delete.before_continue_done' : 'account.delete.before_continue');
+  if (window.I18n) b.textContent = t(b.getAttribute('data-i18n'));
 }
 
 // The two Download everything buttons share one lock: busy while a zip builds, otherwise on when the account
@@ -748,7 +760,7 @@ function cancelDel() {
 }
 function closeDel() {
   $('delConfirm').hidden = true; $('delBefore').hidden = true; $('delBtn').hidden = false;
-  say('delDlStatus', null);
+  say('delDlStatus', null); setContinueLabel(false);
   lastDelDlMissing = null; say('delWarn', null); $('delWarn').hidden = true;
 }
 // The account under the page changed (signed out, or another account signed in from another tab): close the delete

@@ -13,6 +13,7 @@
   "account.delete.backup_incomplete": "הורידו שוב לפני המחיקה כדי לנסות לקבל אותם: אחרי שהחשבון נמחק, הם אבודים.",
   "account.delete.before_assign": "משימות הקריאה של מאמן הקריאה בתורה אינן בקובץ ה-.zip הזה. אם יצרתם חשבונות תלמידים, מחיקת החשבון מוחקת גם אותם, יחד עם הכיתות, המשימות וכל ההקלטות והמשובים שבהן. הורידו קודם את ההקלטות של כל משימה בדף <a href=\"reading_assignments.html\">משימות קריאה</a>.",
   "account.delete.before_continue": "המשך בלי להוריד",
+  "account.delete.before_continue_done": "המשך",
   "account.delete.before_empty": "אין בחשבון דבר להורדה.",
   "account.delete.before_head": "לפני המחיקה: הורידו את הגיבוי שלכם",
   "account.delete.before_note": "מחיקת החשבון מסירה את כל מה שבו, לצמיתות. הורידו הכול קודם — ה-.zip הוא העותק היחיד ברגע שהחשבון נמחק.",
