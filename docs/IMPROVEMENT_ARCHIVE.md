@@ -96263,3 +96263,42 @@ _(prior)_ **Next session (S603):** **Branch `claude/improveloop-s597` (S597–S6
 ### from Tool coverage (last-touched date per tool)
 
 - **Snapshot S603 (2026-11-03):** index, contact, privacy, terms, account, sw.js, loop docs S603 · torah, generator, sw.js, scripts/smoke-sync, loop docs S602 · dictionary, resources, fontmaker, dashboard, name_tags, torah, reading_assignments, sw.js, loop docs S601 · torah, index, resources, locales, sw.js, loop docs S600 · reading_assignments, torah, trope, locales, llms, sw.js, loop docs S599 · trope, fontmaker, generator, sw.js, loop docs S598 · trope, generator, sw.js, scripts/loop, loop docs S597 · account, index, flash, locales, sw.js, loop docs S596 · fontmaker, generator, locales, sw.js, loop docs …[full text: IMPROVEMENT_ARCHIVE.md]
+
+_(prior)_ **Next session (S604):** **Branch `claude/improveloop-s597` (S597–S603, PR #393): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1233**, FM **5.59**, corpus ?v=7. ⚑ drift: main=baaaaae sw=v1233 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: G dashboard (S495), D dictionary (S496), H chrome (S498), C dashboard (S499), N dashboard (S506), P trope (S507), M dashboard (S508); suite E (S531), L (S532), K (S533). ⚑ Harnesses: chrome M `m603/` (`arms.mjs` 6 arms with `--plant`, `inpage.mjs`, the trio's font sheet derived from the hub's), torah P `p602/`, generator blend sheets `p602/gen/`. ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
+⚑ Sync P2 (S573): D31 still fails alone about 1 in 3 (S602: HEAD 2/3, tree 3/3). ⚑ The S602 gate-4 answer (fewer, wider columns on screen where they don't fit; paper unchanged) also covers the landscape blend-sheet P3 and the SE Bingo / Word Search P4s. ⚑ The hub has 2 open items for its next touch: the 🔤 / ✉️ labels (the S530 line) and the footer's dangling "·" (the S588 line, 13 carriers). ⚑ Ports at the next A: `m554/`–`m603/`; traps 352, 356–511. ⚑ The dashboard's bulk-edit Save (S576 P4, 203 ms @4×) is the 9k-node modal's close, not script: leave it unless the modal changes. ⚑ Queues (first file of each candidate): FM 26, generator 19, torah 12, dictionary 11, name_tags 7, parsha_emojis 7, trope 6, dashboard 6; the rest ≤ 4.
+
+
+<!-- archived by compact-ledger at the S605 boundary, 2026-11-04 -->
+## Compaction (S605, 2026-11-04) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-11-04 | (S604 close-out) | branch/deploy note | **S604 = G on the dashboard (its first since S495; 64 commits): the board on paper (8 cells × Letter/A4 × backgrounds off/on, three colouring modes), 14 states for fixed surfaces × 4 cells, the week sheet by its real Print button (64 PDFs), the `.ivrit` round trip and the manual Export box. FOUND 2, FIXED 2; + 2 from the queue (hub, dictionary). PR #393, sw v1237; deploy on merge.** No gate asked; no live action.
+
+- [x] 2026-11-03 | `463443aa` | reading_assignments.html, sw.js | (S599 H queue) **A class's student count stays after its name in either UI** (`dir=auto` isolates the name). | fix601b.mjs signed in, 3 rows × 4 cells 12/12 (HEAD 8/12); smoke-assignments 135/135
+
+- [x] 2026-11-03 | `77164342` | torah_trainer.html, sw.js | (S599 H queue) **After Create, the Assign dialog's Create button is gone** (pattern `author-display-defeats-the-hidden-attribute`). | fix601.mjs signed in 4 cells: not drawn, focus on Close, reopen live, a 2nd create 4/4 (HEAD 0/4); smoke-assignments 135/135
+
+- [x] 2026-11-03 | `be5fb04c` | locales, sw.js | (S599 H queue) **The student panel's EN note names the list's button, Show the reading.** | fix3.mjs by real sign-in 4/4 (HEAD 2/4, EN)
+
+- [x] 2026-11-03 | `aa30956e` | torah_trainer.html, sw.js | (S599 gate, built S600) **A take recording behind full screen shows its clock and Stop.** | fix1.mjs 4 cells by real clicks (a phone, reduced motion): clock ticks, Stop 44px, clear of the bars, stop → exit → Play 4/4 (HEAD 0/4); smoke-assignments 135/135
+
+- [x] 2026-11-03 | (S599 close-out) | branch/deploy note | **S599 = H on the Torah Trainer (first since S482) + the reading assignments' first H, on the fake cloud; FOUND 10: 3 FIXED (2 by gate), 7 logged. PR #393 continued, sw v1220; deploy on merge.** 4 gate questions answered; no live action.
+
+- [x] 2026-11-03 | `8536175e` | reading_assignments.html, torah_trainer.html, locales, sw.js | (S599 H) **An assignment titled with its reading's label shows it once** (card, Recordings subtitle, the student's row and line). | fix3.mjs 4 cells: once on 5 surfaces, renamed keeps both 4/4 (HEAD 0/4); smoke 135/135
+
+- [x] 2026-11-03 | `3e7a3159` | torah_trainer.html, trope_tutor.html, locales, llms-full.txt, sw.js | (S599 H, gate 2 answered) **PocketTorah's recordings are named a Reform melody, Spiro dropped** (14 strings EN + HE, defaults, the FAQ JSON-LD). | fix2.mjs 2 pages × 8 cells: keys, credits, page sweep 16/16 (HEAD 0/16)
+
+- [x] 2026-11-03 | `64d6c42f` | reading_assignments.html, sw.js | (S599 H, gate 2 answered) **Edit → Class gives the assignment to that class** (its students enrolled; nobody taken off; a failed enrol reported, the row kept). | fix1.mjs 4 cells: enrolled once, seen with no code, a refusal named 4/4 (HEAD 0/4); smoke 135/135
+
+### from Per-session log (one line per session)
+
+- 2026-10-31 | **S584** | iters: 4 | tools: trope_atlas ×2, torah, generator, sw | patterns fixed: — | pass run: M (atlas, first) | SW: v1153→v1156
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S604 (2026-11-04):** dashboard, index, dictionary, locales, sw.js, CLAUDE.md, loop docs S604 · index, contact, privacy, terms, account, sw.js, loop docs S603 · torah, generator, sw.js, scripts/smoke-sync, loop docs S602 · dictionary, resources, fontmaker, dashboard, name_tags, torah, reading_assignments, sw.js, loop docs S601 · torah, index, resources, locales, sw.js, loop docs S600 · reading_assignments, torah, trope, locales, llms, sw.js, loop docs S599 · trope, fontmaker, generator, sw.js, loop docs S598 · trope, generator, sw.js, scripts/loop, loop docs S597 · account, index, flash, locales, sw.js, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- G print & export fidelity (one tool): 2026-11-04 (**S604 — `classroom_dashboard.html` (first since S495; 64 commits: Bulk preset edit's switches, Make Groups, the parsha popup, the Name Tags class copy among them): the board on paper (8 cells × Letter/A4 × backgrounds off/on; Letter, Highlight and Underline colouring), 14 states for fixed surfaces × 4 cells, the week sheet by its real Print button (4 variants × 4 cells × Letter/A4), the `.ivrit` round trip (Replace, Merge) and the manual Export box. FOUND 2, FIXED 2; + 2 from the queue (hub, dictionary). G-next: letter_learner (S509), dictionary (S523).**)

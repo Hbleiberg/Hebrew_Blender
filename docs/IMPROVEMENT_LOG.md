@@ -62,8 +62,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
 
-- [ ] P4 (**NEW S601 N — the dictionary at the cap**) | hebrew_dictionary.html | **Typing a search and turning the phone (or a window resized across 680px) drops the field's focus and caret**: `enterMobile`/`exitMobile` move the search box between the phone bar and the sidebar, which blurs it; restore focus and selection after the move when the box held them. | found S601
-
 - [ ] P4 (**NEW S599 H**) | reading_assignments.html | **The class view uppercases teacher-typed text**: the `th` rule also styles the student-name row headers and the title columns ("NOAM LEVI"). | found S599
 
 - [ ] P4 (**NEW S599 H**) | torah_trainer.html | **After Create, the Assign dialog's fields stay live** (New code word changes only the box); the feedback label sits at its textarea's foot. | found S599
@@ -186,6 +184,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S534 N — gate 4**) | name_tags.html | **On a phone Remove sits 120–270px off-screen** until the table scrolls. | found S534
 
+- [ ] P4 (**NEW S530 A — glyph census, rule first; S604: the hub's two control labels FIXED `7c33a1d8`**) | dictionary, resources, flash, torah, FM | **Category and option emoji are still heard** (findings S530): content or decoration is unruled. | found S530
+
 - [ ] P4 (**NEW S523 G — gate 3**) | hebrew_dictionary.html | **A long one-word headword overflows its card** (paper and phone). | found S523
 
 - [ ] P4 (**NEW S522 M — gate 4**) | parsha_emojis.html | **On a phone (≤600px) Print still takes a row of its own** (EN 390: four rows). | found S522
@@ -193,8 +193,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S522 M — gate 3 since S524**) | parsha_emojis.html, torah_trainer.html | **This week's badge drops its card's name 23px below its row-mates'**: on the border it needs ~9.5px of a 12/10px row gap (findings S524). | found S522
 
 - [ ] P4 (**NEW S522 M — gate 3**) | parsha_emojis.html | **Today's lone card stops at 840px under a 1052px heading rule.** | found S522
-
-- [ ] P4 (**NEW S530 A — glyph census, rule first; S603 M: the hub's two are control labels, the host contract's — `hi-type` is ready for 🔤**) | dictionary, resources, flash, torah, FM, index | **Category and option emoji are still heard** (findings S530): content or decoration is unruled. The hub's "🔤 Hebrew Fonts →" (Resources' own Fonts toggle took `hi-type`) and "✉️ Contact & Support" (no …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S596 P — the "only if they have students" half of gate 2**) | account.html | **The account page lists and downloads none of a teacher's reading-assignment data** (classes, student logins, assignments, recordings): the listing and the .zip cover saves and Font Maker projects only; counting them needs `js/ivrit-assignments.js` on that page (CLAUDE.md accounts rule 2 names its …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -436,6 +434,16 @@ _(none)_
 
 ## Done
 
+- [x] 2026-11-04 | (S604 close-out) | branch/deploy note | **S604 = G on the dashboard (its first since S495; 64 commits): the board on paper (8 cells × Letter/A4 × backgrounds off/on, three colouring modes), 14 states for fixed surfaces × 4 cells, the week sheet by its real Print button (64 PDFs), the `.ivrit` round trip and the manual Export box. FOUND 2, FIXED 2; + 2 from the queue (hub, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-04 | `f3921689` | hebrew_dictionary.html, sw.js | (S604, the S601 N P4) **A search being typed keeps its focus and caret when the phone turns or the window crosses 680px** (a blur the layout makes before the media query's event is remembered). | EN/HE × light/dark, both ways + a phone load: 40/40 in 3 runs (HEAD 20/40); focus elsewhere never pulled in
+
+- [x] 2026-11-04 | `7c33a1d8` | index.html, locales, sw.js | (S604, the S530 / S603 line) **The hub's Hebrew Fonts and Contact & Support links carry an icon, not an emoji in the string** (`hi-type`, a new `hi-mail`; pattern `decorative-glyph-carrier-exposed-to-assistive-tech`). | 12 cells: AX names, icons on the line, a live switch, click + Enter: 92/92 (HEAD 40/92)
+
+- [x] 2026-11-04 | `2dc62d0f` | classroom_dashboard.html, sw.js | (S604 G) **The panel titles' fold triangles stay off paper, and the titles print centred** (4.2 → 0.0 px). | 16 cells: 72/72 (HEAD 40/72); PDF ▾ 0; pages = HEAD 16/16
+
+- [x] 2026-11-04 | `e1531d5c` | classroom_dashboard.html, CLAUDE.md, dashboard.md, sw.js | (S604 G) **Colour-coded nikkud prints in the light palette from dark mode, and Highlight prints as an underline** (pattern `dark-palette-baked-into-paper`). | 22 cells × modes + Talam + overrides: 90/90 (HEAD 70/90); screen = HEAD in 20/20 cells (1,109 syllables)
+
 - [x] 2026-11-03 | (S603 close-out) | branch/deploy note | **S603 = M on the chrome bundle (the hub's first M since S246, the account page's since S408): 84 full-page cells + the hub's states, the signed-in account page, Resources' Fonts view and suggest form; 6 arms behind plants. FOUND 3, FIXED 3; 1 amended, 4 settled. PR #393, sw v1233; deploy on merge.** No gate asked (a gate-3 idea …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-11-03 | `09e2ca28` | index.html, sw.js | (S603 M) **A tool card's button label that wraps is centred in its button** (it hugged the start edge, up to 171px off-centre). | EN/HE × 1280/1024/800/390 + dark: 156/156 (HEAD 127/156, 29 labels); 132 button boxes identical to HEAD
@@ -450,10 +458,6 @@ _(none)_
 
 - [x] 2026-11-03 | (S601 close-out) | branch/deploy note | **S601 = N on the dictionary (first since S492): FOUND 4, FIXED 2 (one gate 4) + 2 from the S599 queue. PR #393, sw v1228; deploy on merge.** One gate 4 answered; no live action.
 
-- [x] 2026-11-03 | `463443aa` | reading_assignments.html, sw.js | (S599 H queue) **A class's student count stays after its name in either UI** (`dir=auto` isolates the name). | fix601b.mjs signed in, 3 rows × 4 cells 12/12 (HEAD 8/12); smoke-assignments 135/135
-
-- [x] 2026-11-03 | `77164342` | torah_trainer.html, sw.js | (S599 H queue) **After Create, the Assign dialog's Create button is gone** (pattern `author-display-defeats-the-hidden-attribute`). | fix601.mjs signed in 4 cells: not drawn, focus on Close, reopen live, a 2nd create 4/4 (HEAD 0/4); smoke-assignments 135/135
-
 - [x] 2026-11-03 | `1c14d49a` | hebrew_dictionary.html, sw.js | (S601 N, gate 4) **On a phone, Return in the search and Shoresh boxes lowers the keyboard** (`enterkeyhint="search"`; desktop keeps the focus). | fix2.mjs 4 touch + 2 desktop cells 6/6 (HEAD 0/6)
 
 - [x] 2026-11-03 | `617243e1` | 5 keyboard carriers, shared-components.md, sw.js | (S601 N) **The on-screen Hebrew keyboard no longer raises the phone's own keyboard on each key** (no `focus()` under `pointer:coarse`; re-sha'd). | fix1.mjs 5 carriers × touch/mouse, caret mid-text 10/10 (HEAD 5/10)
@@ -462,23 +466,13 @@ _(none)_
 
 - [x] 2026-11-03 | `d52e92da` | resources.html, locales, sw.js | (S600 C) **The Fonts view's Cursive chip marks its Hebrew word `lang="he"`** in the English UI (3.1.2; an html cell). | fix4.mjs: no bare Hebrew, live switch both ways, filter unchanged 8/8 (HEAD 0/8)
 
-- [x] 2026-11-03 | `be5fb04c` | locales, sw.js | (S599 H queue) **The student panel's EN note names the list's button, Show the reading.** | fix3.mjs by real sign-in 4/4 (HEAD 2/4, EN)
-
 - [x] 2026-11-03 | `7ed01731` | index.html, sw.js | (S600 C, gate 4) **The What's-new card keeps keyboard focus in view** (pattern `focus-hidden-under-a-sticky-bar`; a phone starts the page below it). | wnwalk.mjs 6 cells: wholly hidden 72 → 0, partly 52 → 4; fix2.mjs every close releases it 24/24
-
-- [x] 2026-11-03 | `aa30956e` | torah_trainer.html, sw.js | (S599 gate, built S600) **A take recording behind full screen shows its clock and Stop.** | fix1.mjs 4 cells by real clicks (a phone, reduced motion): clock ticks, Stop 44px, clear of the bars, stop → exit → Play 4/4 (HEAD 0/4); smoke-assignments 135/135
-
-- [x] 2026-11-03 | (S599 close-out) | branch/deploy note | **S599 = H on the Torah Trainer (first since S482) + the reading assignments' first H, on the fake cloud; FOUND 10: 3 FIXED (2 by gate), 7 logged. PR #393 continued, sw v1220; deploy on merge.** 4 gate questions answered; no live action.
-
-- [x] 2026-11-03 | `8536175e` | reading_assignments.html, torah_trainer.html, locales, sw.js | (S599 H) **An assignment titled with its reading's label shows it once** (card, Recordings subtitle, the student's row and line). | fix3.mjs 4 cells: once on 5 surfaces, renamed keeps both 4/4 (HEAD 0/4); smoke 135/135
-
-- [x] 2026-11-03 | `3e7a3159` | torah_trainer.html, trope_tutor.html, locales, llms-full.txt, sw.js | (S599 H, gate 2 answered) **PocketTorah's recordings are named a Reform melody, Spiro dropped** (14 strings EN + HE, defaults, the FAQ JSON-LD). | fix2.mjs 2 pages × 8 cells: keys, credits, page sweep 16/16 (HEAD 0/16)
-
-- [x] 2026-11-03 | `64d6c42f` | reading_assignments.html, sw.js | (S599 H, gate 2 answered) **Edit → Class gives the assignment to that class** (its students enrolled; nobody taken off; a failed enrol reported, the row kept). | fix1.mjs 4 cells: enrolled once, seen with no code, a refusal named 4/4 (HEAD 0/4); smoke 135/135
 
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-11-04 | **S604** | iters: 5 | tools: dashboard ×2, index, dictionary, locales, sw | patterns fixed: dark-palette-baked-into-paper ×1, decorative-glyph-carrier-exposed-to-assistive-tech ×1 | pass run: G (dashboard, first since S495) | SW: v1233→v1237
 
 - 2026-11-03 | **S603** | iters: 4 | tools: index, contact, privacy, terms, account, sw | patterns fixed: dark-navy-fill-matches-its-ground ×1 | pass run: M (chrome, first since S494) | SW: v1230→v1233
 
@@ -518,11 +512,9 @@ _(none)_
 
 - 2026-10-31 | **S585** | iters: 5 | tools: dictionary ×2, name_tags, contact, sw | patterns fixed: print-trailing-padding-adds-a-sheet ×1 | pass run: H (dictionary, first since S440) | SW: v1156→v1160
 
-- 2026-10-31 | **S584** | iters: 4 | tools: trope_atlas ×2, torah, generator, sw | patterns fixed: — | pass run: M (atlas, first) | SW: v1153→v1156
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S603 (2026-11-03):** index, contact, privacy, terms, account, sw.js, loop docs S603 · torah, generator, sw.js, scripts/smoke-sync, loop docs S602 · dictionary, resources, fontmaker, dashboard, name_tags, torah, reading_assignments, sw.js, loop docs S601 · torah, index, resources, locales, sw.js, loop docs S600 · reading_assignments, torah, trope, locales, llms, sw.js, loop docs S599 · trope, fontmaker, generator, sw.js, loop docs S598 · trope, generator, sw.js, scripts/loop, loop docs S597 · account, index, flash, locales, sw.js, …[full text: IMPROVEMENT_ARCHIVE.md]
+- **Snapshot S604 (2026-11-04):** dashboard, index, dictionary, locales, sw.js, CLAUDE.md, loop docs S604 · index, contact, privacy, terms, account, sw.js, loop docs S603 · torah, generator, sw.js, scripts/smoke-sync, loop docs S602 · dictionary, resources, fontmaker, dashboard, name_tags, torah, reading_assignments, sw.js, loop docs S601 · torah, index, resources, locales, sw.js, loop docs S600 · reading_assignments, torah, trope, locales, llms, sw.js, loop docs S599 · trope, fontmaker, generator, sw.js, loop docs S598 · trope, generator, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -558,7 +550,7 @@ _(none)_
 
 - `layout-read-per-grid-at-build` | ACTIVE | owner D | det: recipe | last S590 | streak 0
 
-- `dark-palette-baked-into-paper` | ACTIVE | owner G | det: recipe | last S563 | streak 1
+- `dark-palette-baked-into-paper` | ACTIVE | owner G | det: recipe | last S604 | streak 0
 
 - `tour-not-following-a-live-switch` | ACTIVE | owner K | det: recipe | last S522 | streak 0
 
@@ -652,7 +644,7 @@ _(none)_
 
 - `button-focus-lost-to-its-own-rebuild` | ACTIVE | owner F | det: recipe | last S571 | streak 0
 
-- `dark-literal-escapes-the-print-tokens` | ACTIVE | owner G | det: recipe | last S575 | streak 1
+- `dark-literal-escapes-the-print-tokens` | ACTIVE | owner G | det: recipe | last S604 | streak 2
 
 - `editor-re-parse-caps-a-merged-list` | ACTIVE | owner P | det: recipe | last S421 | streak 0
 
@@ -722,7 +714,7 @@ _(none)_
 
 - `save-over-an-existing-name-without-confirm` | ACTIVE | owner A | det: recipe | last S371 | streak 0
 
-- `fixed-surface-missing-from-the-print-hide-list` | ACTIVE | owner G | det: recipe | last S591 | streak 0
+- `fixed-surface-missing-from-the-print-hide-list` | ACTIVE | owner G | det: recipe | last S604 | streak 1
 
 - `control-class-without-a-hover-state` | ACTIVE | owner L | det: recipe | last S373 | streak 0
 
@@ -804,7 +796,7 @@ _(none)_
 
 - `rebuild-where-a-class-swap-would-do` | ACTIVE | owner A | det: recipe | last S220 | streak 0 | hits 1
 
-- `decorative-glyph-carrier-exposed-to-assistive-tech` | ACTIVE | owner A | det: recipe | last S595 | streak 0
+- `decorative-glyph-carrier-exposed-to-assistive-tech` | ACTIVE | owner A | det: recipe | last S604 | streak 0
 
 - `error-status-clobbered-by-a-later-routine-write` | DRAFT | owner A | det: none | last S411 | streak 0
 
@@ -888,7 +880,7 @@ _(none)_
 
 - A recurring-pattern sweep: 2026-10-31 (**S581 — 42nd A, scoped to the outside-loop reading-assignments landing (`a7fa5f1..aab737c`, 18 of its 53 commits; `reading_assignments.html`, `js/ivrit-assignments.js`, the Trainer's +838): the security arms (no `innerHTML`, reviver-safe parses, URL sinks, an anonymous Trainer loads no assignments module), then two catalog recipes committed as detectors …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- G print & export fidelity (one tool): 2026-11-03 (**S597 — `trope_tutor.html` (first since S479; 50 commits, the Conservative melody and 20 traditions among them): 232 real-button PDFs, a tradition's .ivrit round trip, deep links, Ctrl+P paths, 5,036 printed cards for overflow. FOUND 3: 2 FIXED (one partial), 1 P4; + 1 generator from the queue. G-next: dashboard (S495), letter_learner (S509).**)
+- G print & export fidelity (one tool): 2026-11-04 (**S604 — `classroom_dashboard.html` (first since S495; 64 commits: Bulk preset edit's switches, Make Groups, the parsha popup, the Name Tags class copy among them): the board on paper (8 cells × Letter/A4 × backgrounds off/on; Letter, Highlight and Underline colouring), 14 states for fixed surfaces × 4 cells, the week sheet by its real Print …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - D performance (one tool): 2026-11-03 (**S598 — `trope_tutor.html` (first since S480; 51 commits: the Conservative melody, 20 traditions, the Drill melody): cold 10 cells (0 tasks >200, worst 120 @4×; ready 254–341 / 964–1225 ms, the phrase file 221 → 499 KB), 104 interactions by real input × 3 cells, a split + profile + trace of the key step, a drill @4×, a 30-cycle leak arm (nodes flat, …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -908,5 +900,5 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-22 (**S542 — 40th F, loading states (first since S189): 14 surfaces held, then aborted. FOUND 7, FIXED 4. F-next: long-build progress.**)
 
-**Next session (S604):** **Branch `claude/improveloop-s597` (S597–S603, PR #393): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1233**, FM **5.59**, corpus ?v=7. ⚑ drift: main=baaaaae sw=v1233 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: G dashboard (S495), D dictionary (S496), H chrome (S498), C dashboard (S499), N dashboard (S506), P trope (S507), M dashboard (S508); suite E (S531), L (S532), K (S533). ⚑ Harnesses: chrome M `m603/` (`arms.mjs` 6 arms with `--plant`, `inpage.mjs`, the trio's font sheet derived from the hub's), torah P `p602/`, generator blend sheets `p602/gen/`. ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
-⚑ Sync P2 (S573): D31 still fails alone about 1 in 3 (S602: HEAD 2/3, tree 3/3). ⚑ The S602 gate-4 answer (fewer, wider columns on screen where they don't fit; paper unchanged) also covers the landscape blend-sheet P3 and the SE Bingo / Word Search P4s. ⚑ The hub has 2 open items for its next touch: the 🔤 / ✉️ labels (the S530 line) and the footer's dangling "·" (the S588 line, 13 carriers). ⚑ Ports at the next A: `m554/`–`m603/`; traps 352, 356–511. ⚑ The dashboard's bulk-edit Save (S576 P4, 203 ms @4×) is the 9k-node modal's close, not script: leave it unless the modal changes. ⚑ Queues (first file of each candidate): FM 26, generator 19, torah 12, dictionary 11, name_tags 7, parsha_emojis 7, trope 6, dashboard 6; the rest ≤ 4.
+**Next session (S605):** **Branch `claude/improveloop-s597` (S597–S604, PR #393): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1237**, FM **5.59**, corpus ?v=7. ⚑ drift: main=baaaaae sw=v1237 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: D dictionary (S496), H chrome (S498), C dashboard (S499), N dashboard (S506), P trope (S507), M dashboard (S508), G letter_learner (S509); suite E (S531), L (S532), K (S533). ⚑ Harnesses: dashboard G `g604/` (`seedBoard()` in its `lib.mjs`; `board.mjs` paper inks + PDFs, `census.mjs` 14 states, `sheet.mjs`, `roundtrip.mjs`), chrome M `m603/`, torah P `p602/`. ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
+⚑ Sync P2 (S573): D31 still fails alone about 1 in 3 (S602: HEAD 2/3, tree 3/3). ⚑ The S602 gate-4 answer also covers the landscape blend-sheet P3 — S604: `body.landscape-mode .blends-grid` (0,2,1) outranks the floor rule, and Export PDF's clone is laid out with screen media, so measure the landscape PDF before any change — and the SE Bingo / Word Search P4s. ⚑ The footer's dangling "·" (the S588 line, 13 carriers) needs a session whose caps leave the dashboard free. ⚑ Ports at the next A: `m554/`–`m603/`, `g604/`; traps 352, 356–513. ⚑ The dashboard's bulk-edit Save (S576 P4, 203 ms @4×) is the 9k-node modal's close, not script: leave it unless the modal changes. ⚑ Queues (first file of each candidate): FM 26, generator 19, torah 12, dictionary 10, name_tags 7, parsha_emojis 7, trope 6, dashboard 6; the rest ≤ 4.
