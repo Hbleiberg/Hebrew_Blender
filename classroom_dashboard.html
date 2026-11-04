@@ -2001,7 +2001,9 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
   .bpe-mgroup.bpe-mgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(205px, 1fr)); }   /* a preset group's boxes in aligned columns, so a wrapped row lines up under the first */
   .bpe-mchip { display: inline-flex; align-items: center; gap: 6px; font-size: 0.78rem; cursor: pointer; min-height: 26px; }   /* a 26px row to tap (WCAG 2.5.8); the box itself stays 15px */
   .bpe-mchip input { accent-color: var(--gold); width: 15px; height: 15px; margin: 0; cursor: pointer; flex-shrink: 0; }
-  .bpe-msize input[type=number] { width: 64px; font-family: inherit; font-size: 0.78rem; padding: 2px 4px; }
+  .bpe-msize input[type=number] { width: 64px; height: auto; font-family: inherit; font-size: 0.78rem; padding: 2px 4px; }   /* height: not the checkboxes' 15px above, which cut its digits */
+  /* Under a finger 16px, as every other field (the page's pointer:coarse rule, which this selector outranks): iOS zooms into a focused field under 16px. */
+  @media (pointer: coarse) { .bpe-msize input[type=number] { font-size: 16px; } }
   /* Text size and the board-wide switches are set apart from the per-preset switches above them by one rule. */
   .bpe-master .bpe-msep, .bpe-master .bpe-msep-c { border-block-start: 1px dashed var(--border); margin-block-start: 6px; padding-block-start: 6px; align-self: stretch; display: flex; align-items: center; }
   .bpe-boardwide-hint, .bpe-boardwide-off { font-size: 0.72rem; color: var(--muted); }
