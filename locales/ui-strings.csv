@@ -798,7 +798,7 @@ dictionary.card.google_title,Look up on Google,חיפוש בגוגל,word card s
 dictionary.card.hear_title,Hear pronunciation,השמעת הגייה,word card speak button title/aria,aria-label only
 dictionary.card.form_fem_only,♀ Feminine (only form),♀ נקבה (הצורה היחידה),emoji card gender label when only this form exists,leading-emoji
 dictionary.card.form_masc_only,♂ Masculine (only form),♂ זכר (הצורה היחידה),emoji card gender label when only this form exists,leading-emoji
-dictionary.chips.any_letters,Any: {letters},כל אחת מ: {letters},active filter chip,mixed UI+content — do not translate {…}
+dictionary.chips.any_letters,All: {letters},כל אחת מ: {letters},active filter chip,mixed UI+content — do not translate {…}
 dictionary.chips.any_only_suffix,(only),(בלבד),active filter chip suffix,
 dictionary.chips.body_aria,{label} — show filter,{label} — הצגת המסנן,filter chip body aria-label,aria-label only
 dictionary.chips.categories,Categories: {count}/{total},קטגוריות: {count}/{total},active filter chip (emoji),
@@ -869,7 +869,7 @@ dictionary.faq.q_print,Can I print the Hebrew word list?,אפשר להדפיס �
 dictionary.faq.q_share,Can I share or save my filters?,האם ניתן לשתף או לשמור את המסננים שלי?,footer FAQ question,
 dictionary.faq.summary,Frequently Asked Questions,שאלות נפוצות,footer FAQ summary,
 dictionary.filters.all_words,All Words,כל המילים,word-length checkbox,
-dictionary.filters.any_letters_head,Any of these letters,כל אחת מהאותיות האלה,any-letter section header,
+dictionary.filters.any_letters_head,All of these letters,כל אחת מהאותיות האלה,any-letter section header,
 dictionary.filters.any_no_others,No other letters?,ללא אותיות אחרות?,any-letter checkbox,
 dictionary.filters.dagesh_tav,Dagesh Tav / Sav,תו דגושה / תו רפה,letter filter toggle,REVIEW: 'Dagesh Tav / Sav' rendered תו דגושה / תו רפה — confirm phrasing
 dictionary.filters.emoji_all,All,הכול,emoji category select-all,
