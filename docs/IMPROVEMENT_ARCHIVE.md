@@ -96411,3 +96411,38 @@ _(prior)_ **Next session (S608):** **Branch `claude/improveloop-s597` (S597–S6
 ### from Tool coverage (last-touched date per tool)
 
 - **Snapshot S608 (2026-11-04):** dashboard, sw.js, loop docs S608 · dashboard, generator, dictionary, smoke-assignments, sw.js, dashboard.md, loop docs S607 · 404, privacy, account, js/ivrit-account.js, locales, sw.js, loop docs S606 · dictionary, torah, reading_assignments, sw.js, loop docs S605 · dashboard, index, dictionary, locales, sw.js, CLAUDE.md, loop docs S604 · index, contact, privacy, terms, account, sw.js, loop docs S603 · torah, generator, sw.js, scripts/smoke-sync, loop docs S602 · dictionary, resources, fontmaker, dashboard, name_tags, torah, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+_(prior)_ **Next session (S609):** **Branch `claude/adoring-brown-9udi22` (S608, draft PR): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1250**, FM **5.59**, corpus ?v=7. ⚑ drift: main=4f03455 sw=v1250 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: P trope (S507), M dashboard (S508), G letter_learner (S509), D letter_learner (S510), H generator (S512), C fontmaker (S513), N chrome (S520); suite E (S531), L (S532), K (S533). ⚑ Harnesses: dashboard N `n608/` (+ `tipL.mjs`, the four tip carriers sideways), dashboard C `c607/`, chrome H `h606/`, dictionary D `d605/`, dashboard G `g604/`. ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
+⚑ Sync P2 (S573): D31 still fails alone about 1 in 3 (S602: HEAD 2/3, tree 3/3). ⚑ The S602 gate-4 answer also covers the landscape blend-sheet P3 — S604: `body.landscape-mode .blends-grid` (0,2,1) outranks the floor rule, and Export PDF's clone is laid out with screen media, so measure the landscape PDF before any change — and the SE Bingo / Word Search P4s. ⚑ The footer's dangling "·" (the S588 line, 13 carriers) needs a session whose caps leave the dashboard free. ⚑ Two gate-3 P4s are small but gated: the Letter Learner's final-form cards 10px high, the dictionary's long headword. ⚑ Ports at the next A: `m554/`–`m603/`, `g604/`, `d605/`, `t605/`, `h606/`, `c607/`, `n608/`; traps 352, 356–521. ⚑ The dashboard's bulk-edit Save (S576 P4, 203 ms @4×) is the 9k-node modal's close, not script: leave it unless the modal changes. ⚑ Queues (first file of each candidate): FM 26, generator 19, torah 11, dictionary 9, dashboard 9, name_tags 7, parsha_emojis 7, trope 6; the rest ≤ 4.
+
+
+<!-- archived by compact-ledger at the S610 boundary, 2026-11-04 -->
+## Compaction (S610, 2026-11-04) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-11-04 | (S609 close-out) | branch/deploy note | **S609 = P on the Trope Tutor (first since S507; 38 commits to the page, 12 to the account modules) + the dictionary (first since S521; a clean surface buys a second). FOUND 0 on both; every arm behind a control that fired. + 2 queue fixes by gate 2. Branch `claude/adoring-brown-9udi22` (PR 394), sw v1252; deploy on merge.** Gates: 2 (gate 2 ×2) → the recommended options. No live action; arm 8 read-only.
+
+- [x] 2026-11-04 | `26f8eb83` | trope_tutor.html, locales, sw.js | (S609; S557's Learn half — its Drill half went with `608bf115`, which plays a chart's tunes) **The High Holiday, Haftarah and megillah melody notes say the Learn examples are PocketTorah's year-round reading** (gate 2). | 16 cells vs HEAD: the five notes name the source 0 → 5, the two others unchanged, 12 example buttons per melody from the PocketTorah index
+
+- [x] 2026-11-04 | (S604 close-out) | branch/deploy note | **S604 = G on the dashboard (its first since S495; 64 commits): the board on paper (8 cells × Letter/A4 × backgrounds off/on, three colouring modes), 14 states for fixed surfaces × 4 cells, the week sheet by its real Print button (64 PDFs), the `.ivrit` round trip and the manual Export box. FOUND 2, FIXED 2; + 2 from the queue (hub, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-04 | `f3921689` | hebrew_dictionary.html, sw.js | (S604, the S601 N P4) **A search being typed keeps its focus and caret when the phone turns or the window crosses 680px** (a blur the layout makes before the media query's event is remembered). | EN/HE × light/dark, both ways + a phone load: 40/40 in 3 runs (HEAD 20/40); focus elsewhere never pulled in
+
+- [x] 2026-11-04 | `7c33a1d8` | index.html, locales, sw.js | (S604, the S530 / S603 line) **The hub's Hebrew Fonts and Contact & Support links carry an icon, not an emoji in the string** (`hi-type`, a new `hi-mail`; pattern `decorative-glyph-carrier-exposed-to-assistive-tech`). | 12 cells: AX names, icons on the line, a live switch, click + Enter: 92/92 (HEAD 40/92)
+
+- [x] 2026-11-04 | `2dc62d0f` | classroom_dashboard.html, sw.js | (S604 G) **The panel titles' fold triangles stay off paper, and the titles print centred** (4.2 → 0.0 px). | 16 cells: 72/72 (HEAD 40/72); PDF ▾ 0; pages = HEAD 16/16
+
+- [x] 2026-11-04 | `e1531d5c` | classroom_dashboard.html, CLAUDE.md, dashboard.md, sw.js | (S604 G) **Colour-coded nikkud prints in the light palette from dark mode, and Highlight prints as an underline** (pattern `dark-palette-baked-into-paper`). | 22 cells × modes + Talam + overrides: 90/90 (HEAD 70/90); screen = HEAD in 20/20 cells (1,109 syllables)
+
+### from Per-session log (one line per session)
+
+- 2026-10-31 | **S589** | iters: 5 | tools: torah ×2, flash ×2, dashboard, locales, scripts/loop, sw | patterns fixed: — | pass run: G (torah, first since S451) | SW: v1175→v1179
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S609 (2026-11-04):** trope, locales, sw.js, loop docs S609 · dashboard, sw.js, loop docs S608 · dashboard, generator, dictionary, smoke-assignments, sw.js, dashboard.md, loop docs S607 · 404, privacy, account, js/ivrit-account.js, locales, sw.js, loop docs S606 · dictionary, torah, reading_assignments, sw.js, loop docs S605 · dashboard, index, dictionary, locales, sw.js, CLAUDE.md, loop docs S604 · index, contact, privacy, terms, account, sw.js, loop docs S603 · torah, generator, sw.js, scripts/smoke-sync, loop docs S602 · dictionary, resources, fontmaker, dashboard, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- P accounts & cloud (one surface): 2026-11-04 (**S609 — 21st P, `trope_tutor.html` (first since S507; 38 commits, the traditions and the Drill's melody among them) + `hebrew_dictionary.html` (first since S521): smoke-tools both pages, sync 236 + migration with the pinned SDK, 8 new signed-in scenarios (Q1–Q5 the melodies and traditions, R1–R3 the dictionary's own word-list writes), arms 3–7 static 57/57 behind 7 plants, the live project read-only. FOUND 0 on both, every control fired; + 2 gate-2 fixes from the queue. P-next: name_tags (S535), parsha_emojis (S546).**)
