@@ -443,7 +443,7 @@ from `parsha_emojis` by `scripts/build-parsha-pages.mjs`, so it cannot drift); t
   needed nothing), `hi-layout` and `hi-weather` (the dashboard's drawer tabs Display and Weather — a board with
   a header bar and a side column, and a sun behind a cloud; the dashboard is their only carrier so far, markup
   only as well; the strip's other five tabs reuse `hi-calendar`, `hi-group`, `hi-pencil`, `hi-bookmark` and
-  `hi-gear`), `hi-target` (the Trope Tutor's Drill tab — two rings round a filled centre; its only carrier, markup only), `hi-type` (the Resources page's Fonts view toggle, beside Links' `hi-book` — a serifed T, symmetric so it needs no RTL flip; it replaced the colour 🔤 in that label; its only carrier, markup only),
+  `hi-gear`), `hi-target` (the Trope Tutor's Drill tab — two rings round a filled centre; its only carrier, markup only), `hi-type` (the Resources page's Fonts view toggle, beside Links' `hi-book`, and the hub's *Hebrew Fonts* link on the Resources card — a serifed T, symmetric so it needs no RTL flip; it replaced the colour 🔤 in both labels; markup only), `hi-mail` (the hub's *Contact & Support* link — an envelope, symmetric as well; it replaced ✉️ in that label; its only carrier, markup only),
   `hi-cloud`, `hi-keyboard`, `hi-search`, `hi-warning`,
   `hi-undo` / `hi-redo`, `hi-up` / `hi-down`, `hi-book` (now also on `torah_trainer.html`, its drawer's Text
   tab, copied verbatim from the Trope Tutor), `hi-folder` / `hi-folder-plus` and `hi-move` —
