@@ -5616,7 +5616,6 @@ function applyI18n() {
   renderBulkCount();     // the Bulk Copy count, written otherwise only when a card is ticked
   updatePrintSizeNote();   // t()-built too, and the wlFilterOverride branch below never reaches dictAfterFilter
   if (typeof window._updateMobileFiltersBtn === 'function') window._updateMobileFiltersBtn();
-  positionSidebarTab();   // the live language switch flips dir without a resize event
   if (_hk) _hk.applyI18n();   // read-only re-render of the on-screen keyboard labels
   rebuildFilterChips();
   document.querySelectorAll('.emoji-cat-arrow').forEach(a => a.setAttribute('aria-label', I18n.t('dictionary.filters.emoji_subcats_aria', { name: a.dataset.cat })));
@@ -5642,6 +5641,10 @@ function applyI18n() {
       onFilter();
     }
   } catch (e) {}
+  // The live language switch flips dir without a resize event, so the fixed hide-tab is placed again — after the
+  // re-render above: its rect read forces a layout, and made before the 100 cards were rebuilt, the next frame laid
+  // the page out a second time (S605 Pass D; pattern layout-read-per-grid-at-build).
+  positionSidebarTab();
   // Live-update the tour card if a tour is in progress: its texts in the new language, the spotlight back on its
   // mirrored target (the generator's call). _tourActive is `let`-declared in a LATER <script> block, so an
   // applyI18n() that runs before that block has executed hits the temporal dead zone — typeof is the only safe read from here.
