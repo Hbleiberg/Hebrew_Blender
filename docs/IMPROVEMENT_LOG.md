@@ -24,8 +24,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW S571 C — not small**) | hebrew_dictionary.html | **A word card is one `role=button` holding its select box, Copy, Hear and Google controls** (a button's children are presentational): move the details action onto the headword, the card a group. | found S571
 
-- [ ] P3 (**NEW S571 C — census first**) | torah_trainer.html | **No forced-colors block: in High Contrast the chosen font card and the open sidebar tab read like their neighbours** (computed styles). | found S571
-
 - [ ] P3 (**NEW S565 D — verify first, signed in**) | Hebrew_Font_Maker.html | **The cloud autosave still clones the whole project with its photos**: `fmCloudPack` runs `JSON.parse(JSON.stringify(p))` on every 10 s save of a dirty cloud project — the copy `c85bdd1` took out of the local autosave; measure with smoke-fontmaker's `--sdk` fixture and 8 phone photos. | found S565
 
 - [ ] P3 (**NEW S559 H — gate 2, copy**) | Hebrew_Font_Maker.html | **Help (Uploading, Download Templates) and the after-upload status still say "drag a box around each glyph"**: Auto-detect letters and Trace all (v5.59) are never named in the instructions, so the one-sheet path reads as 27 hand-drawn boxes. | found S559
@@ -62,7 +60,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
 
-- [ ] P4 (**NEW S599 H**) | reading_assignments.html | **The class view uppercases teacher-typed text**: the `th` rule also styles the student-name row headers and the title columns ("NOAM LEVI"). | found S599
+- [ ] P4 (**NEW S605 — found running the smoke for `577b5c80`**) | scripts/smoke-assignments.mjs | **C ("the class view lists both students as Submitted") can read the grid before its badges**: it waits for two rows, not their statuses — once in three tree runs every badge read `null` (HEAD 1/1, tree 2/2 green otherwise); wait for a `.badge` per row. | found S605
 
 - [ ] P4 (**NEW S599 H**) | torah_trainer.html | **After Create, the Assign dialog's fields stay live** (New code word changes only the box); the feedback label sits at its textarea's foot. | found S599
 
@@ -145,8 +143,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S557 H — gate 2, copy**) | trope_tutor.html | **Under the High Holiday, Haftarah and megillah melodies the Learn examples and the Drill's Hear and Melody questions still sound PocketTorah's year-round reading**; only the Phrases examples are named (the HH note), the drill start says nothing. | found S557
 
 - [ ] P4 (**NEW S556 M — gate 2, a title per mode**) | hebrew_dictionary.html | **The sidebar's first panel says "Word Length" in every mode**, yet in Emojis it holds the mode switcher, the gender toggle and the category tree, in Shoresh only the switcher. | found S556
-
-- [ ] P4 (**NEW S556 M — type scale; the dictionary at the cap**) | hebrew_dictionary.html | **The last sub-10px labels: the emoji category counts (`.emoji-cat-count` 0.6rem = 9.6px), the shoresh pattern sub-labels (`.pat-sub` 9.6px) and the TTS slider's Slower / Fast (9.92px)** — the page's hints are 0.68rem. | found S556
 
 - [ ] P4 (**NEW S551 H — gate 2, copy**) | name_tags.html | **The Avery note never names a product's twins** (8395, 5895, 15395, 25395, 45395 and 48395 share 5395's layout): a teacher holding an 8395 pack cannot tell that the "Avery 5395" tile fits it. | found S551
 
@@ -434,6 +430,16 @@ _(none)_
 
 ## Done
 
+- [x] 2026-11-04 | (S605 close-out) | branch/deploy note | **S605 = D on the dictionary (its first since S496; 53 commits): cold 10 cells, 40 interaction arms by real input × 3 cells, profiles, a layout trace and two interleaved A/Bs. FOUND 1, FIXED 1 (the language switch's double layout); 1 refuted (the Translation sort); + 3 from the queue (the Trainer in High Contrast, the class view's case, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-04 | `8f520b80` | hebrew_dictionary.html, sw.js | (S605, the S556 M P4) **The emoji category counts, Shoresh pattern sub-labels and TTS slider ends reach the page's hint size** (9.6 / 9.92 → 10.88 px). | 10 cells by real clicks: no overflow, no name newly truncated, the tree's height unchanged; tiles 1 px taller
+
+- [x] 2026-11-04 | `577b5c80` | reading_assignments.html, sw.js | (S605, the S599 H P4) **The class view shows student names and assignment titles as the teacher typed them** (`th.cv-typed`; the column labels stay uppercase). | fake cloud, 4 cells: typed 4/4 (HEAD 0/4); smoke-assignments 135/135 ×2, test-rls 167/167
+
+- [x] 2026-11-04 | `09bf98dd` | torah_trainer.html, sw.js | (S605, the S571 C P3) **The karaoke word and every chosen control stand out in High Contrast** (the page's first forced-colours block; pattern `selected-state-lost-in-forced-colors`). | census 11 groups flat on HEAD; real clicks × 4 cells: selection share 0–7 % → 14–77 %, swatch Δ 0 → 151; outside HC = HEAD 28/28
+
+- [x] 2026-11-04 | `2f1ff394` | hebrew_dictionary.html, sw.js | (S605 D) **A language switch lays the page out once, not twice** (the hide-tab's rect read after the card rebuild; pattern `layout-read-per-grid-at-build`). | A/B ×6 @4×: layout 189 → 112 ms, long-task sum 609 → 509; the tab = HEAD 24/24, a plant 0/2
+
 - [x] 2026-11-04 | (S604 close-out) | branch/deploy note | **S604 = G on the dashboard (its first since S495; 64 commits): the board on paper (8 cells × Letter/A4 × backgrounds off/on, three colouring modes), 14 states for fixed surfaces × 4 cells, the week sheet by its real Print button (64 PDFs), the `.ivrit` round trip and the manual Export box. FOUND 2, FIXED 2; + 2 from the queue (hub, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-11-04 | `f3921689` | hebrew_dictionary.html, sw.js | (S604, the S601 N P4) **A search being typed keeps its focus and caret when the phone turns or the window crosses 680px** (a blur the layout makes before the media query's event is remembered). | EN/HE × light/dark, both ways + a phone load: 40/40 in 3 runs (HEAD 20/40); focus elsewhere never pulled in
@@ -462,15 +468,11 @@ _(none)_
 
 - [x] 2026-11-03 | `617243e1` | 5 keyboard carriers, shared-components.md, sw.js | (S601 N) **The on-screen Hebrew keyboard no longer raises the phone's own keyboard on each key** (no `focus()` under `pointer:coarse`; re-sha'd). | fix1.mjs 5 carriers × touch/mouse, caret mid-text 10/10 (HEAD 5/10)
 
-- [x] 2026-11-03 | (S600 close-out) | branch/deploy note | **S600 = C on the chrome bundle (first since S483; account signed out and in): FOUND 2, FIXED 2 + the Stop strip + the EN note. PR #393, sw v1224; deploy on merge.** One gate 4 answered; no live action.
-
-- [x] 2026-11-03 | `d52e92da` | resources.html, locales, sw.js | (S600 C) **The Fonts view's Cursive chip marks its Hebrew word `lang="he"`** in the English UI (3.1.2; an html cell). | fix4.mjs: no bare Hebrew, live switch both ways, filter unchanged 8/8 (HEAD 0/8)
-
-- [x] 2026-11-03 | `7ed01731` | index.html, sw.js | (S600 C, gate 4) **The What's-new card keeps keyboard focus in view** (pattern `focus-hidden-under-a-sticky-bar`; a phone starts the page below it). | wnwalk.mjs 6 cells: wholly hidden 72 → 0, partly 52 → 4; fix2.mjs every close releases it 24/24
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-11-04 | **S605** | iters: 5 | tools: dictionary ×2, torah, reading_assignments, sw | patterns fixed: layout-read-per-grid-at-build ×1, selected-state-lost-in-forced-colors ×1 | pass run: D (dictionary, first since S496) | SW: v1237→v1241
 
 - 2026-11-04 | **S604** | iters: 5 | tools: dashboard ×2, index, dictionary, locales, sw | patterns fixed: dark-palette-baked-into-paper ×1, decorative-glyph-carrier-exposed-to-assistive-tech ×1 | pass run: G (dashboard, first since S495) | SW: v1233→v1237
 
@@ -510,11 +512,9 @@ _(none)_
 
 - 2026-10-31 | **S586** | iters: 5 | tools: torah ×2, dictionary, generator, sw | patterns fixed: contrast-below-AA-on-a-tinted-or-coloured-plate ×1 | pass run: C (torah, first since S441) | SW: v1160→v1164
 
-- 2026-10-31 | **S585** | iters: 5 | tools: dictionary ×2, name_tags, contact, sw | patterns fixed: print-trailing-padding-adds-a-sheet ×1 | pass run: H (dictionary, first since S440) | SW: v1156→v1160
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S604 (2026-11-04):** dashboard, index, dictionary, locales, sw.js, CLAUDE.md, loop docs S604 · index, contact, privacy, terms, account, sw.js, loop docs S603 · torah, generator, sw.js, scripts/smoke-sync, loop docs S602 · dictionary, resources, fontmaker, dashboard, name_tags, torah, reading_assignments, sw.js, loop docs S601 · torah, index, resources, locales, sw.js, loop docs S600 · reading_assignments, torah, trope, locales, llms, sw.js, loop docs S599 · trope, fontmaker, generator, sw.js, loop docs S598 · trope, generator, …[full text: IMPROVEMENT_ARCHIVE.md]
+- **Snapshot S605 (2026-11-04):** dictionary, torah, reading_assignments, sw.js, loop docs S605 · dashboard, index, dictionary, locales, sw.js, CLAUDE.md, loop docs S604 · index, contact, privacy, terms, account, sw.js, loop docs S603 · torah, generator, sw.js, scripts/smoke-sync, loop docs S602 · dictionary, resources, fontmaker, dashboard, name_tags, torah, reading_assignments, sw.js, loop docs S601 · torah, index, resources, locales, sw.js, loop docs S600 · reading_assignments, torah, trope, locales, llms, sw.js, loop docs S599 · trope, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -536,7 +536,7 @@ _(none)_
 
 - `defaults-filed-as-the-device's-own-at-first-sign-in` | ACTIVE | owner P | det: recipe | last S546 | streak 0 | hits 6
 
-- `selected-state-lost-in-forced-colors` | ACTIVE | owner C | det: recipe | last S594 | streak 1
+- `selected-state-lost-in-forced-colors` | ACTIVE | owner C | det: recipe | last S605 | streak 0
 
 - `live-region-shown-with-its-text` | ACTIVE | owner G | det: recipe | last S553 | streak 0
 
@@ -548,7 +548,7 @@ _(none)_
 
 - `unseen-hit-box-over-controls` | ACTIVE | owner C | det: recipe | last S530 | streak 1
 
-- `layout-read-per-grid-at-build` | ACTIVE | owner D | det: recipe | last S590 | streak 0
+- `layout-read-per-grid-at-build` | ACTIVE | owner D | det: recipe | last S605 | streak 0
 
 - `dark-palette-baked-into-paper` | ACTIVE | owner G | det: recipe | last S604 | streak 0
 
@@ -882,7 +882,7 @@ _(none)_
 
 - G print & export fidelity (one tool): 2026-11-04 (**S604 — `classroom_dashboard.html` (first since S495; 64 commits: Bulk preset edit's switches, Make Groups, the parsha popup, the Name Tags class copy among them): the board on paper (8 cells × Letter/A4 × backgrounds off/on; Letter, Highlight and Underline colouring), 14 states for fixed surfaces × 4 cells, the week sheet by its real Print …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- D performance (one tool): 2026-11-03 (**S598 — `trope_tutor.html` (first since S480; 51 commits: the Conservative melody, 20 traditions, the Drill melody): cold 10 cells (0 tasks >200, worst 120 @4×; ready 254–341 / 964–1225 ms, the phrase file 221 → 499 KB), 104 interactions by real input × 3 cells, a split + profile + trace of the key step, a drill @4×, a 30-cycle leak arm (nodes flat, …[full text: IMPROVEMENT_ARCHIVE.md]
+- D performance (one tool): 2026-11-04 (**S605 — `hebrew_dictionary.html` (first since S496; 53 commits: the Hebrew search ranking, the phone bar's focus keeping, the drawn fold triangles among them): cold 10 cells (@1× 0 tasks >200, ready 399–449 ms; @4× one task of 293–364), 40 arms by real input × 3 cells, profiles, a layout trace, two interleaved A/Bs. FOUND 1: FIXED (the language switch's …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - I first-load & empty-state: 2026-10-22 (**S539 — 40th I, S525 → S538 (93 commits; name_tags' first I, parsha_emojis' under its name): 63 virgin cells (plants 334/336); 69 seeds; 27 tours; ~250 openers; 280 bad URLs; failure paths 20. FOUND 2, FIXED 1.**)
 
@@ -900,5 +900,5 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-22 (**S542 — 40th F, loading states (first since S189): 14 surfaces held, then aborted. FOUND 7, FIXED 4. F-next: long-build progress.**)
 
-**Next session (S605):** **Branch `claude/improveloop-s597` (S597–S604, PR #393): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1237**, FM **5.59**, corpus ?v=7. ⚑ drift: main=baaaaae sw=v1237 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: D dictionary (S496), H chrome (S498), C dashboard (S499), N dashboard (S506), P trope (S507), M dashboard (S508), G letter_learner (S509); suite E (S531), L (S532), K (S533). ⚑ Harnesses: dashboard G `g604/` (`seedBoard()` in its `lib.mjs`; `board.mjs` paper inks + PDFs, `census.mjs` 14 states, `sheet.mjs`, `roundtrip.mjs`), chrome M `m603/`, torah P `p602/`. ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
-⚑ Sync P2 (S573): D31 still fails alone about 1 in 3 (S602: HEAD 2/3, tree 3/3). ⚑ The S602 gate-4 answer also covers the landscape blend-sheet P3 — S604: `body.landscape-mode .blends-grid` (0,2,1) outranks the floor rule, and Export PDF's clone is laid out with screen media, so measure the landscape PDF before any change — and the SE Bingo / Word Search P4s. ⚑ The footer's dangling "·" (the S588 line, 13 carriers) needs a session whose caps leave the dashboard free. ⚑ Ports at the next A: `m554/`–`m603/`, `g604/`; traps 352, 356–513. ⚑ The dashboard's bulk-edit Save (S576 P4, 203 ms @4×) is the 9k-node modal's close, not script: leave it unless the modal changes. ⚑ Queues (first file of each candidate): FM 26, generator 19, torah 12, dictionary 10, name_tags 7, parsha_emojis 7, trope 6, dashboard 6; the rest ≤ 4.
+**Next session (S606):** **Branch `claude/improveloop-s597` (S597–S605, PR #393): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1241**, FM **5.59**, corpus ?v=7. ⚑ drift: main=baaaaae sw=v1241 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: H chrome (S498), C dashboard (S499), N dashboard (S506), P trope (S507), M dashboard (S508), G letter_learner (S509), D letter_learner (S510); suite E (S531), L (S532), K (S533). ⚑ Harnesses: dictionary D `d605/` (`lib.mjs`, `cold`, `inter` + `inter2`, `profclick`, `tracelang`, `ablang`), Trainer forced colours `t605/` (`fc.mjs` census, `fix2` / `fix2sw` on `h599/`'s Sefaria stand-in — `SDK=` even signed out), dashboard G `g604/`. ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
+⚑ Sync P2 (S573): D31 still fails alone about 1 in 3 (S602: HEAD 2/3, tree 3/3). ⚑ The S602 gate-4 answer also covers the landscape blend-sheet P3 — S604: `body.landscape-mode .blends-grid` (0,2,1) outranks the floor rule, and Export PDF's clone is laid out with screen media, so measure the landscape PDF before any change — and the SE Bingo / Word Search P4s. ⚑ The footer's dangling "·" (the S588 line, 13 carriers) needs a session whose caps leave the dashboard free. ⚑ Two gate-3 P4s are small but gated: the Letter Learner's final-form cards 10px high, the dictionary's long headword. ⚑ Ports at the next A: `m554/`–`m603/`, `g604/`, `d605/`, `t605/`; traps 352, 356–515. ⚑ The dashboard's bulk-edit Save (S576 P4, 203 ms @4×) is the 9k-node modal's close, not script: leave it unless the modal changes. ⚑ Queues (first file of each candidate): FM 26, generator 19, torah 11, dictionary 9, name_tags 7, parsha_emojis 7, trope 6, dashboard 6; the rest ≤ 4.

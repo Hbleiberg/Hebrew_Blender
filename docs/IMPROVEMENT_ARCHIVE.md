@@ -96302,3 +96302,32 @@ _(prior)_ **Next session (S604):** **Branch `claude/improveloop-s597` (S597–S6
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 - G print & export fidelity (one tool): 2026-11-04 (**S604 — `classroom_dashboard.html` (first since S495; 64 commits: Bulk preset edit's switches, Make Groups, the parsha popup, the Name Tags class copy among them): the board on paper (8 cells × Letter/A4 × backgrounds off/on; Letter, Highlight and Underline colouring), 14 states for fixed surfaces × 4 cells, the week sheet by its real Print button (4 variants × 4 cells × Letter/A4), the `.ivrit` round trip (Replace, Merge) and the manual Export box. FOUND 2, FIXED 2; + 2 from the queue (hub, dictionary). G-next: letter_learner (S509), dictionary (S523).**)
+
+_(prior)_ **Next session (S605):** **Branch `claude/improveloop-s597` (S597–S604, PR #393): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1237**, FM **5.59**, corpus ?v=7. ⚑ drift: main=baaaaae sw=v1237 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: D dictionary (S496), H chrome (S498), C dashboard (S499), N dashboard (S506), P trope (S507), M dashboard (S508), G letter_learner (S509); suite E (S531), L (S532), K (S533). ⚑ Harnesses: dashboard G `g604/` (`seedBoard()` in its `lib.mjs`; `board.mjs` paper inks + PDFs, `census.mjs` 14 states, `sheet.mjs`, `roundtrip.mjs`), chrome M `m603/`, torah P `p602/`. ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
+⚑ Sync P2 (S573): D31 still fails alone about 1 in 3 (S602: HEAD 2/3, tree 3/3). ⚑ The S602 gate-4 answer also covers the landscape blend-sheet P3 — S604: `body.landscape-mode .blends-grid` (0,2,1) outranks the floor rule, and Export PDF's clone is laid out with screen media, so measure the landscape PDF before any change — and the SE Bingo / Word Search P4s. ⚑ The footer's dangling "·" (the S588 line, 13 carriers) needs a session whose caps leave the dashboard free. ⚑ Ports at the next A: `m554/`–`m603/`, `g604/`; traps 352, 356–513. ⚑ The dashboard's bulk-edit Save (S576 P4, 203 ms @4×) is the 9k-node modal's close, not script: leave it unless the modal changes. ⚑ Queues (first file of each candidate): FM 26, generator 19, torah 12, dictionary 10, name_tags 7, parsha_emojis 7, trope 6, dashboard 6; the rest ≤ 4.
+
+
+<!-- archived by compact-ledger at the S606 boundary, 2026-11-04 -->
+## Compaction (S606, 2026-11-04) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-11-04 | (S605 close-out) | branch/deploy note | **S605 = D on the dictionary (its first since S496; 53 commits): cold 10 cells, 40 interaction arms by real input × 3 cells, profiles, a layout trace and two interleaved A/Bs. FOUND 1, FIXED 1 (the language switch's double layout); 1 refuted (the Translation sort); + 3 from the queue (the Trainer in High Contrast, the class view's case, the dictionary's last sub-10px labels). PR #393, sw v1241; deploy on merge.** No gate asked; no live action.
+
+- [x] 2026-11-03 | (S600 close-out) | branch/deploy note | **S600 = C on the chrome bundle (first since S483; account signed out and in): FOUND 2, FIXED 2 + the Stop strip + the EN note. PR #393, sw v1224; deploy on merge.** One gate 4 answered; no live action.
+
+- [x] 2026-11-03 | `d52e92da` | resources.html, locales, sw.js | (S600 C) **The Fonts view's Cursive chip marks its Hebrew word `lang="he"`** in the English UI (3.1.2; an html cell). | fix4.mjs: no bare Hebrew, live switch both ways, filter unchanged 8/8 (HEAD 0/8)
+
+- [x] 2026-11-03 | `7ed01731` | index.html, sw.js | (S600 C, gate 4) **The What's-new card keeps keyboard focus in view** (pattern `focus-hidden-under-a-sticky-bar`; a phone starts the page below it). | wnwalk.mjs 6 cells: wholly hidden 72 → 0, partly 52 → 4; fix2.mjs every close releases it 24/24
+
+### from Per-session log (one line per session)
+
+- 2026-10-31 | **S585** | iters: 5 | tools: dictionary ×2, name_tags, contact, sw | patterns fixed: print-trailing-padding-adds-a-sheet ×1 | pass run: H (dictionary, first since S440) | SW: v1156→v1160
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S605 (2026-11-04):** dictionary, torah, reading_assignments, sw.js, loop docs S605 · dashboard, index, dictionary, locales, sw.js, CLAUDE.md, loop docs S604 · index, contact, privacy, terms, account, sw.js, loop docs S603 · torah, generator, sw.js, scripts/smoke-sync, loop docs S602 · dictionary, resources, fontmaker, dashboard, name_tags, torah, reading_assignments, sw.js, loop docs S601 · torah, index, resources, locales, sw.js, loop docs S600 · reading_assignments, torah, trope, locales, llms, sw.js, loop docs S599 · trope, fontmaker, generator, sw.js, loop docs S598 · trope, generator, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- D performance (one tool): 2026-11-04 (**S605 — `hebrew_dictionary.html` (first since S496; 53 commits: the Hebrew search ranking, the phone bar's focus keeping, the drawn fold triangles among them): cold 10 cells (@1× 0 tasks >200, ready 399–449 ms; @4× one task of 293–364), 40 arms by real input × 3 cells, profiles, a layout trace, two interleaved A/Bs. FOUND 1: FIXED (the language switch's double layout, `layout-read-per-grid-at-build`); the Translation sort refuted (ICU's first-use build). D-next: letter_learner (S510), flash (S524).**)
