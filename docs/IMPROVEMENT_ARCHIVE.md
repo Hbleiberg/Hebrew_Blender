@@ -96331,3 +96331,34 @@ _(prior)_ **Next session (S605):** **Branch `claude/improveloop-s597` (S597–S6
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 - D performance (one tool): 2026-11-04 (**S605 — `hebrew_dictionary.html` (first since S496; 53 commits: the Hebrew search ranking, the phone bar's focus keeping, the drawn fold triangles among them): cold 10 cells (@1× 0 tasks >200, ready 399–449 ms; @4× one task of 293–364), 40 arms by real input × 3 cells, profiles, a layout trace, two interleaved A/Bs. FOUND 1: FIXED (the language switch's double layout, `layout-read-per-grid-at-build`); the Translation sort refuted (ICU's first-use build). D-next: letter_learner (S510), flash (S524).**)
+
+_(prior)_ **Next session (S606):** **Branch `claude/improveloop-s597` (S597–S605, PR #393): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1241**, FM **5.59**, corpus ?v=7. ⚑ drift: main=baaaaae sw=v1241 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: H chrome (S498), C dashboard (S499), N dashboard (S506), P trope (S507), M dashboard (S508), G letter_learner (S509), D letter_learner (S510); suite E (S531), L (S532), K (S533). ⚑ Harnesses: dictionary D `d605/` (`lib.mjs`, `cold`, `inter` + `inter2`, `profclick`, `tracelang`, `ablang`), Trainer forced colours `t605/` (`fc.mjs` census, `fix2` / `fix2sw` on `h599/`'s Sefaria stand-in — `SDK=` even signed out), dashboard G `g604/`. ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
+⚑ Sync P2 (S573): D31 still fails alone about 1 in 3 (S602: HEAD 2/3, tree 3/3). ⚑ The S602 gate-4 answer also covers the landscape blend-sheet P3 — S604: `body.landscape-mode .blends-grid` (0,2,1) outranks the floor rule, and Export PDF's clone is laid out with screen media, so measure the landscape PDF before any change — and the SE Bingo / Word Search P4s. ⚑ The footer's dangling "·" (the S588 line, 13 carriers) needs a session whose caps leave the dashboard free. ⚑ Two gate-3 P4s are small but gated: the Letter Learner's final-form cards 10px high, the dictionary's long headword. ⚑ Ports at the next A: `m554/`–`m603/`, `g604/`, `d605/`, `t605/`; traps 352, 356–515. ⚑ The dashboard's bulk-edit Save (S576 P4, 203 ms @4×) is the 9k-node modal's close, not script: leave it unless the modal changes. ⚑ Queues (first file of each candidate): FM 26, generator 19, torah 11, dictionary 9, name_tags 7, parsha_emojis 7, trope 6, dashboard 6; the rest ≤ 4.
+
+
+<!-- archived by compact-ledger at the S607 boundary, 2026-11-04 -->
+## Compaction (S607, 2026-11-04) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-11-04 | (S606 close-out) | branch/deploy note | **S606 = H on the chrome bundle (its first bundle H; the account page's first since S426, the hub's since S468): 5 lessons (the account page signed in, this week's parasha from the hub, a font on Resources, a broken bookmark on the 404, a parent on the privacy policy) + the student cell, by real input on the account smoke's fake cloud. FOUND 6, FIXED 4 (each by a gate-2 answer), 1 P4, 1 already S596's. PR #393, sw v1245; deploy on merge.** Gates asked: 4 (gate 2) → the recommended option each time. No live action.
+
+- [x] 2026-11-04 | `a5daa9e0` | js/ivrit-account.js, locales, sw.js | (S606 H, the student cell; gate 2) **A student account's Sign out asks "Sign out of this student account?"** (it spoke of saved items and My Fonts a student account does not have). | hub / Trainer / Flash Cards × EN/HE by real clicks: student 6/6 (HEAD the teacher's text 6/6), teacher = HEAD 6/6; the backend smokes with SDK 2.116.0
+
+- [x] 2026-11-03 | (S601 close-out) | branch/deploy note | **S601 = N on the dictionary (first since S492): FOUND 4, FIXED 2 (one gate 4) + 2 from the S599 queue. PR #393, sw v1228; deploy on merge.** One gate 4 answered; no live action.
+
+- [x] 2026-11-03 | `1c14d49a` | hebrew_dictionary.html, sw.js | (S601 N, gate 4) **On a phone, Return in the search and Shoresh boxes lowers the keyboard** (`enterkeyhint="search"`; desktop keeps the focus). | fix2.mjs 4 touch + 2 desktop cells 6/6 (HEAD 0/6)
+
+- [x] 2026-11-03 | `617243e1` | 5 keyboard carriers, shared-components.md, sw.js | (S601 N) **The on-screen Hebrew keyboard no longer raises the phone's own keyboard on each key** (no `focus()` under `pointer:coarse`; re-sha'd). | fix1.mjs 5 carriers × touch/mouse, caret mid-text 10/10 (HEAD 5/10)
+
+### from Per-session log (one line per session)
+
+- 2026-10-31 | **S586** | iters: 5 | tools: torah ×2, dictionary, generator, sw | patterns fixed: contrast-below-AA-on-a-tinted-or-coloured-plate ×1 | pass run: C (torah, first since S441) | SW: v1160→v1164
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S606 (2026-11-04):** 404, privacy, account, js/ivrit-account.js, locales, sw.js, loop docs S606 · dictionary, torah, reading_assignments, sw.js, loop docs S605 · dashboard, index, dictionary, locales, sw.js, CLAUDE.md, loop docs S604 · index, contact, privacy, terms, account, sw.js, loop docs S603 · torah, generator, sw.js, scripts/smoke-sync, loop docs S602 · dictionary, resources, fontmaker, dashboard, name_tags, torah, reading_assignments, sw.js, loop docs S601 · torah, index, resources, locales, sw.js, loop docs S600 · reading_assignments, torah, trope, locales, llms, sw.js, loop docs S599 · trope, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- H teacher walkthrough / paper-cuts (one tool): 2026-11-04 (**S606 — chrome (index, resources, privacy, 404, account signed in and as a student; the bundle's first H — the account page's first since S426, the hub's since S468): 5 lessons + the student cell by real input on the account smoke's fake cloud. FOUND 6: 4 FIXED (four gate-2 answers), 1 P4, 1 settled as S596's. H-next: generator (S512), letter_learner (S526).**)
