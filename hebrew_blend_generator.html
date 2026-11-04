@@ -442,6 +442,9 @@ body.dark .hi-sun{display:inline-block;}
     min-height: 100vh;
     margin: 0;
   }
+  /* A button does not inherit the page's face (the UA gives it its own): one with no font-family rule of its own (Exit
+     Full Screen, the sidebar's ‹ toggle) drew in Arial. A type selector, so every class rule that names a face still wins. */
+  button { font-family: inherit; }
   /* Placeholders take the page's muted text color, as the dictionary's search box always did: the browser's own
      gray (#757575) read 3.3-4.1:1 on the dark fields and 4.3:1 on cream, under the 4.5:1 floor. */
   input::placeholder, textarea::placeholder { color: var(--muted); }
