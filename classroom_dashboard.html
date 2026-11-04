@@ -853,6 +853,13 @@
        Hebrew here; none of the curated English fonts do — keep it that way when adding fonts later. */
     font-family: var(--eng-font), var(--heb-font);
   }
+  /* The message is the teacher's own words in either script, whatever the UI language: each paragraph runs in
+     its own direction (an English line in the Hebrew UI ends with its full stop on the right, a Hebrew line in
+     the English UI on the left), on the board and in the drawer's editor alike. plaintext, not dir="auto": one
+     direction for the whole message would still flip a Hebrew line under an English one, and an empty message
+     keeps the page's direction for its placeholder. Pattern RTL-inheritance-on-a-Latin-script-container. */
+  #dashTextDisplay, #dashEditor,
+  :is(#dashTextDisplay, #dashEditor) :is(div, p, li, blockquote, h1, h2, h3, h4, h5, h6) { unicode-bidi: plaintext; }
 
   /* ───── Weather ───── */
   .weather-block { text-align: center; padding: 4px 0; }
