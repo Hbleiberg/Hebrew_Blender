@@ -6487,7 +6487,30 @@ function dictActiveGroupCount() {
     filtersBtn.innerHTML = ICON_GEAR + esc(I18n.t('dictionary.filters.mobile_button') + (n ? ' (' + n + ')' : ''));
   }
   window._updateMobileFiltersBtn = updateMobileFiltersBtn;
-  const onChange = e => (e.matches ? enterMobile() : exitMobile());
+  // Moving a node blurs whatever inside it held focus: a teacher typing a search who turns the phone (or resizes a window
+  // across 680px) lost the field's focus and caret. Hand them back after the move, scrolling nothing. Widening, the CSS
+  // hides the phone bar before this event fires and the browser has already taken focus away: a blur that leaves its
+  // element unrendered is the layout's (a click elsewhere leaves it rendered), so it is remembered for the move too.
+  const MOVED = '.search-wrap, #modeSwitcher';
+  const selOf = el => (typeof el.selectionStart === 'number') ? [el.selectionStart, el.selectionEnd, el.selectionDirection] : null;
+  let lostToLayout = null;
+  document.addEventListener('focusout', e => {
+    const t = e.target;
+    if (!e.relatedTarget && t && t.closest && t.closest(MOVED) && !t.getClientRects().length) lostToLayout = { el: t, sel: selOf(t) };
+  }, true);
+  document.addEventListener('focusin', () => { lostToLayout = null; }, true);
+  const onChange = e => {
+    const a = document.activeElement;
+    let held = a && a.closest && a.closest(MOVED) ? a : null;
+    let sel = held ? selOf(held) : null;
+    if (!held && lostToLayout && (!a || a === document.body)) { held = lostToLayout.el; sel = lostToLayout.sel; }
+    lostToLayout = null;
+    e.matches ? enterMobile() : exitMobile();
+    if (held && document.activeElement !== held && held.isConnected) {
+      held.focus({ preventScroll: true });
+      if (sel) try { held.setSelectionRange(sel[0], sel[1], sel[2] || 'none'); } catch (err) {}
+    }
+  };
   if (mq.addEventListener) mq.addEventListener('change', onChange); else if (mq.addListener) mq.addListener(onChange);
   if (mq.matches) enterMobile();
 })();
