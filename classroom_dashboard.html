@@ -2026,6 +2026,10 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
     margin: 14px -24px -22px; padding: 12px 24px 14px; }   /* Save stays on screen however long the list of cards is */
   body.dark .bpe-footer { background: var(--navy-deep); }
   .bpe-footer .bpe-note { margin-inline-end: auto; font-size: 0.74rem; color: var(--muted); }
+  /* Tab and Shift+Tab scroll the next control into the dialog's own scroller, where it could land wholly under the
+     sticky head or footer: the scroll padding reserves their live heights (--bpe-head-h / --bpe-foot-h, written by
+     bpeTrackStickies). Pattern focus-hidden-under-a-sticky-bar. */
+  .bpe-modal { scroll-padding-block: calc(var(--bpe-head-h, 0px) + 8px) calc(var(--bpe-foot-h, 0px) + 8px); }
   /* ── Parsha popup (openParshaPopup): the week's parsha emojis, each with its summary and why that picture, opened
      from the parsha line. A teacher-opened card, so it follows the UI language (I18n.lang), unlike the projected line
      it comes from; the text is sized to be read from the back of the room. ── */
@@ -2055,6 +2059,7 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
     .bpe-chips { columns: 1; }
     .bpe-modal { padding: 18px 14px; }
     .bpe-head { margin-inline: -14px; padding-inline: 14px; position: static; }   /* a phone's screen is the head's height; it scrolls with the cards there */
+    .bpe-modal { scroll-padding-block-start: 8px; }   /* a head that scrolls away covers nothing */
     .bpe-footer { inset-block-end: -18px; margin: 14px -14px -18px; padding-inline: 14px; }
     .bpe-master { grid-template-columns: 1fr; }   /* a group's name above its boxes */
     .bpe-mgroup-lbl { padding-block-start: 6px; }
@@ -2062,7 +2067,7 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
   }
   /* A phone turned sideways is wider than 560px but ~340px tall: the sticky head (~300px there) would cover the
      cards and Save as they scroll under it, so a short screen lets it scroll away too. */
-  @media (max-height: 500px) { .bpe-head { position: static; } }
+  @media (max-height: 500px) { .bpe-head { position: static; } .bpe-modal { scroll-padding-block-start: 8px; } }
 
   /* ── In-place dashboard text editing ── */
   #dashTextWrap { position: relative; }
@@ -8362,8 +8367,22 @@ function mountSidebarResize(cfg) {
     renderBpeCards(); renderBpeMaster(); bpeRefreshNote();
     document.getElementById('bpeBackdrop').classList.add('open');
     document.getElementById('bpeModal').classList.add('open');
+    bpeTrackStickies();
     document.addEventListener('keydown', bpeKey, true);
     const c = document.querySelector('#bpeModal .fr-close'); if (c) c.focus();
+  }
+  // The modal's scroll padding reserves the sticky head's and footer's live heights (the .bpe-modal CSS), so a control
+  // Tab or Shift+Tab scrolls into view lands clear of them. One observer for the page's life: a closed modal reports 0.
+  let _bpeStickyRO = null;
+  function bpeTrackStickies() {
+    if (_bpeStickyRO || typeof ResizeObserver !== 'function') return;
+    const m = document.getElementById('bpeModal'), h = m.querySelector('.bpe-head'), f = m.querySelector('.bpe-footer');
+    if (!h || !f) return;
+    _bpeStickyRO = new ResizeObserver(() => {
+      m.style.setProperty('--bpe-head-h', h.offsetHeight + 'px');
+      m.style.setProperty('--bpe-foot-h', f.offsetHeight + 'px');
+    });
+    _bpeStickyRO.observe(h); _bpeStickyRO.observe(f);
   }
   function bpeKey(e) {
     if (e.key === 'Escape') {
