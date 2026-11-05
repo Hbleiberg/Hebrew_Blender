@@ -830,6 +830,9 @@
   .pick-group-title { font-family: 'Libre Baskerville', serif; font-weight: 700; color: var(--navy);
     font-size: clamp(0.95rem, 2vw, 1.35rem); margin-bottom: 8px; text-align: center; letter-spacing: 0.03em; }
   body.dark .pick-group-title { color: var(--gold-light); }
+  /* The tracking is for "Group 1": the header language decides the title's script in either UI, and hebDisplay's span
+     inherits the 0.03em as a length, so the reset sits on that span (it spaced the letters of קְבוּצָה apart). */
+  .pick-group-title :lang(he) { letter-spacing: normal; }
   .pick-group-members { display: flex; flex-direction: column; gap: 5px; }
   .pick-group-member { font-family: var(--heb-font); direction: rtl; unicode-bidi: plaintext;
     font-size: clamp(1rem, 2.2vw, 1.5rem); color: var(--text); text-align: center; line-height: 1.2; }
