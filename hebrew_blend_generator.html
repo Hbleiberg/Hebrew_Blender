@@ -11798,6 +11798,9 @@ function _relocateStarRealRow(forIdentify) {
 
 function setRealWordDrill(type) {
   rwDrillType = type;
+  // Bingo's "Need at least 24 words" note describes Bingo's grid only: left standing, it blocked Word Search and the
+  // others on a list they draw from happily, under Bingo's message (the empty-pool note's clear, in renderRealWords' pool step).
+  if (type !== 'bingo' && _genNoteKey === 'worksheet.validation.bingo_need_words') _setGenerateNote(null);
   document.querySelectorAll('.rw-drill-btn[data-drill]').forEach(b => b.classList.toggle('active', b.dataset.drill === type));   // [data-drill] only: the Word Source, number gender/display and match-target rows share the class and keep their own pick
 
   // Show only the matching drill description below the buttons.
