@@ -60,15 +60,15 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
 
-- [ ] P4 (**NEW S611 G — the picture's own call**) | letter_learner.html | **The hello picture's sleeve (a cuff drawn to y 103 of its 0–100 frame) touches שָׁלוֹם under it on the cursive coloring sheets** (3–8px of ink at 60 dpi, cursive landscape and portrait at 100%; 0.1–0.6px clear in Block). | found S611
+- [ ] P4 (**NEW S612 D — measure first**) | parsha_emojis.html | **Its seven size factors (`--s-*`) are set on each sheet and inherited by every node of its drawing**, the shape `85b19cd4` stopped at the Letter Learner's svg (style −70–75% a size step there); its preview already skips off-screen sheets, so measure a drag at 4 a sheet with copies before changing it. | found S612
 
-- [ ] P4 (**NEW S610 M**) | classroom_dashboard.html | **The drawer's Current Location is a second full-width gold primary under Update**; the setup card's is the outlined secondary. | found S610
+- [ ] P4 (**NEW S611 G — the picture's own call**) | letter_learner.html | **The hello picture's sleeve (a cuff drawn to y 103 of its 0–100 frame) touches שָׁלוֹם under it on the cursive coloring sheets** (3–8px of ink at 60 dpi, cursive landscape and portrait at 100%; 0.1–0.6px clear in Block). | found S611
 
 - [ ] P4 (**NEW S609 P — gate 2, copy; the `26f8eb83` sentence for the traditions**) | trope_tutor.html | **An approved tradition's note (`trope.learn.melody_trad_note_m`) does not say its Learn cards' examples are PocketTorah's year-round reading**, as the five chart notes now do: one sentence in `fillTradNote`'s note (EN + HE). | found S609
 
 - [ ] P4 (**NEW S608 N — verify on an iPhone first**) | classroom_dashboard.html | **The board's text editor and Bulk preset edit's five message editors are contenteditable at 15.2px under a finger** (`.editor` 0.95rem): if iOS zooms into a focused editor as into a field, 1.05×; the coarse rule covers inputs only. | found S608
 
-- [ ] P4 (**NEW S607 C — three small ones**) | classroom_dashboard.html | **The week editor's armed chip shows only a bold name in High Contrast; four drawer radios' "עברית" and the colour examples lack `lang="he"` in English; the week ✕ (17×16) sits within 24px of a target.** | found S607
+- [ ] P4 (**NEW S607 C — two small ones left; S612: the radios' `lang` FIXED `a59dab12`**) | classroom_dashboard.html | **The week editor's armed chip shows only a bold name in High Contrast; the week ✕ (17×16) sits within 24px of a target.** | found S607
 
 - [ ] P4 (**NEW S606 H — the student cell**) | account.html | **A student account's page keeps the lede and header subtitle promising its holdings, a download and deletion** above the student tile that says none of it applies. | found S606
 
@@ -185,12 +185,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S530 A — glyph census, rule first; S604: the hub's two control labels FIXED `7c33a1d8`**) | dictionary, resources, flash, torah, FM | **Category and option emoji are still heard** (findings S530): content or decoration is unruled. | found S530
 
 - [ ] P4 (**NEW S523 G — gate 3**) | hebrew_dictionary.html | **A long one-word headword overflows its card** (paper and phone). | found S523
-
-- [ ] P4 (**NEW S522 M — gate 4**) | parsha_emojis.html | **On a phone (≤600px) Print still takes a row of its own** (EN 390: four rows). | found S522
-
-- [ ] P4 (**NEW S522 M — gate 3 since S524**) | parsha_emojis.html, torah_trainer.html | **This week's badge drops its card's name 23px below its row-mates'**: on the border it needs ~9.5px of a 12/10px row gap (findings S524). | found S522
-
-- [ ] P4 (**NEW S522 M — gate 3**) | parsha_emojis.html | **Today's lone card stops at 840px under a 1052px heading rule.** | found S522
 
 - [ ] P4 (**NEW S610 M — CLAUDE.md's header-icons rule; pattern `decorative-glyph-carrier-exposed-to-assistive-tech`**) | classroom_dashboard.html, locales | **Nine control strings still lead with a glyph**: ↔ Move panels, 📍 Current Location (drawer + setup card), ✨ Quick-start layouts…, + Add period, 🎲 Pick Again, 🔀 Reshuffle, 🔄 New round, ✅ Everyone's here; the picture belongs in markup …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -432,6 +426,14 @@ _(none)_
 
 ## Done
 
+- [x] 2026-11-05 | (S612 close-out) | branch/deploy note | **S612 = D on the Letter Learner (first since S510; 112 commits to the page: the coloring sheets, bulk print, the cursive tiles; 1.02 MB, 198 KB gzip). FOUND 2, FIXED 2 (the bulk preview's size drag and its off-screen sheets); cold, the cards, tabs, modes, the language and dark switches and steady animation clean (S510's per-frame …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-05 | `8e4d49ac` | letter_learner.html, sw.js | (S612 D; pattern `offscreen-sheets-laid-out-on-every-rebuild`, 4th carrier) **The bulk print preview skips the sheets out of view** (`content-visibility:auto` on `#llBpPages`' own pages and papers, Parsha Emojis' shape). | A/B @4× ×3 vs the tree before it: 4 a sheet × 3 copies, a copies change 497–583 → 120–214 ms, the worst size step …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-05 | `9912441e` | classroom_dashboard.html, sw.js | (S610's P4) **The drawer's Current Location is the outlined `.btn-secondary`**, as on the setup card, under the gold Update. | Weather tab by real clicks × 8 cells: background / border / text = the setup card's, ≠ Update's (HEAD 0/8, tree 8/8); hover = `.btn-secondary`'s
+
+- [x] 2026-11-05 | `85b19cd4` | letter_learner.html, sw.js | (S612 D) **A coloring-sheet size drag no longer restyles every drawing** (the drawings' svg resets the five size factors). | A/B @4× ×4: style per 5 steps 1,534–1,899 → 429–447 ms (4 a sheet × 3 copies), 687–791 → 214–274, 352–398 → 105–138; worst step 660–742 → 258–341; every sheet still resizes; the bulk PDF identical 8/8 pages × 8 …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [x] 2026-11-05 | (S611 close-out) | branch/deploy note | **S611 = G on the Letter Learner (first since S509; 115 commits to the page: the coloring sheets, bulk print, 1/2/4 a sheet, the paper size, the cursive tiles). FOUND 2: 1 FIXED, 1 P4; the grid, the card tabs, both coloring-sheet prints, the links and the `.ivrit` arm clean. + 2 dashboard P4s from S610's queue. Branch …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-11-05 | `02067797` | classroom_dashboard.html, sw.js | (S610's P4) **The drawer's Hebrew Settings section gets the 22px above it** (`.tt-set ~ .tt-set`: the English font's file input sat between it and Intermission). | the drawer's tabs by real clicks × 8 cells: Hebrew Settings 0 → 22px (HEAD 0/8, tree 8/8); every other section and each tab's first unchanged
@@ -464,19 +466,11 @@ _(none)_
 
 - [x] 2026-11-04 | `da7adab7` | classroom_dashboard.html, sw.js | (S608 N) **Bulk preset edit's text-size box is 16px under a finger and tall enough for its digits** (pattern `text-field-under-16px-zooms-on-ios-focus`). | 24 cells vs HEAD: 12.48 → 16px on 4 phones; digits cut 24/24 → 0; desktop = HEAD
 
-- [x] 2026-11-04 | (S607 close-out) | branch/deploy note | **S607 = C on the dashboard (first since S499). FOUND 6: 2 FIXED (one gate 3), 3 P4, 1 settled; + 2 queue fixes. PR #393, sw v1248; deploy on merge.** Gates: 1 (gate 3) → the recommended option. No live action.
-
-- [x] 2026-11-04 | `3f362c0e` | scripts/smoke-assignments.mjs | (S607; S605's P4) **C waits for the class view's badges.** | 135/135 ×3
-
-- [x] 2026-11-04 | `aa3808ab` | generator, dictionary, sw.js | (S607; S594's C P4) **A collapse header is named by its own label, not its inner control.** | AX names 16/16 cells vs HEAD
-
-- [x] 2026-11-04 | `522271ea` | classroom_dashboard.html, dashboard.md, sw.js | (S607 C; gate 3) **Colour-coded nikkud stays legible on the day plates and the title bands.** | 12 cells vs HEAD: plate syllables under 3:1 35/36 → 0; titles 2.28 → 4.28:1; paper = HEAD
-
-- [x] 2026-11-04 | `fa2f71ee` | classroom_dashboard.html, sw.js | (S607 C) **Bulk preset edit keeps a Tab stop clear of its sticky head and Save bar.** | 8 cells × 188 stops: wholly hidden 5–130 → 0
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-11-05 | **S612** | iters: 5 | tools: letter_learner ×2, dashboard ×2, sw | patterns fixed: offscreen-sheets-laid-out-on-every-rebuild ×1 | pass run: D (letter_learner, first since S510) | SW: v1259→v1263
 
 - 2026-11-05 | **S611** | iters: 4 | tools: letter_learner, dashboard ×2, sw | patterns fixed: latin-tracking-on-hebrew-labels ×1 | pass run: G (letter_learner, first since S509) | SW: v1256→v1259
 
@@ -516,11 +510,9 @@ _(none)_
 
 - 2026-11-01 | **S593** | iters: 5 | tools: fontmaker ×2, name_tags, dashboard, scripts/loop, sw | patterns fixed: RTL-inheritance-on-a-Latin-script-container ×1, decorative-glyph-carrier-exposed-to-assistive-tech ×1 | pass run: G (fontmaker, first since S465) | SW: v1191→v1195
 
-- 2026-11-01 | **S592** | iters: 5 | tools: generator ×2, dashboard, torah, dictionary, flash, delete-account (function, deployed v7), smoke-sync, scripts/loop, locales, sw | patterns fixed: account-wide-delete-confirm-without-signed-in-wording ×5 carriers (gate 2) | pass run: P (generator, first …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S611 (2026-11-05):** letter_learner, dashboard, sw.js, loop docs S611 · dashboard, torah, generator, sw.js, loop docs S610 · trope, locales, sw.js, loop docs S609 · dashboard, sw.js, loop docs S608 · dashboard, generator, dictionary, smoke-assignments, sw.js, dashboard.md, loop docs S607 · 404, privacy, account, js/ivrit-account.js, locales, sw.js, loop docs S606 · dictionary, torah, reading_assignments, sw.js, loop docs S605 · dashboard, index, dictionary, locales, sw.js, CLAUDE.md, loop docs S604 · index, contact, privacy, …[full text: IMPROVEMENT_ARCHIVE.md]
+- **Snapshot S612 (2026-11-05):** letter_learner, dashboard, sw.js, loop docs S612 · letter_learner, dashboard, sw.js, loop docs S611 · dashboard, torah, generator, sw.js, loop docs S610 · trope, locales, sw.js, loop docs S609 · dashboard, sw.js, loop docs S608 · dashboard, generator, dictionary, smoke-assignments, sw.js, dashboard.md, loop docs S607 · 404, privacy, account, js/ivrit-account.js, locales, sw.js, loop docs S606 · dictionary, torah, reading_assignments, sw.js, loop docs S605 · dashboard, index, dictionary, locales, sw.js, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -536,7 +528,7 @@ _(none)_
 
 - `latin-sentence-boundary-in-hebrew-prose` | ACTIVE | owner M | det: scripts/loop/detect-latin-sentence-boundary-in-hebrew-prose.mjs | last S554 | streak 0
 
-- `offscreen-sheets-laid-out-on-every-rebuild` | ACTIVE | owner D | det: recipe | last S576 | streak 0
+- `offscreen-sheets-laid-out-on-every-rebuild` | ACTIVE | owner D | det: recipe | last S612 | streak 0
 
 - `dated-surface-walk` | DRAFT | owner A | det: none | last S544 | streak 0
 
@@ -888,7 +880,7 @@ _(none)_
 
 - G print & export fidelity (one tool): 2026-11-05 (**S611 — `letter_learner.html` (first since S509; 115 commits: the coloring sheets, bulk print, 1/2/4 a sheet, the paper size, the cursive tiles): the grid × 3 modes × 4 cells × Letter/A4, 7 cards' tabs × 4 cells × 2 papers, the tab's sheet 260 prints, the bulk run 96 combos (A/B clip), a per-part overlap arm (16 combos × 31 sheets), links, …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- D performance (one tool): 2026-11-04 (**S605 — `hebrew_dictionary.html` (first since S496; 53 commits: the Hebrew search ranking, the phone bar's focus keeping, the drawn fold triangles among them): cold 10 cells (@1× 0 tasks >200, ready 399–449 ms; @4× one task of 293–364), 40 arms by real input × 3 cells, profiles, a layout trace, two interleaved A/Bs. FOUND 1: FIXED (the language switch's …[full text: IMPROVEMENT_ARCHIVE.md]
+- D performance (one tool): 2026-11-05 (**S612 — `letter_learner.html` (first since S510; 112 commits: the coloring sheets, bulk print, the cursive tiles; the page 1.02 MB, 198 KB gzip): cold 10 cells (@1× 0 long tasks; @4× max 138, none over 200), 52 arms by real input × 3 cells, steady on all 31 cards, the bulk popup at 1/4 a sheet × 1/3 copies under Performance metrics and profiles, two …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - I first-load & empty-state: 2026-10-22 (**S539 — 40th I, S525 → S538 (93 commits; name_tags' first I, parsha_emojis' under its name): 63 virgin cells (plants 334/336); 69 seeds; 27 tours; ~250 openers; 280 bad URLs; failure paths 20. FOUND 2, FIXED 1.**)
 
@@ -906,5 +898,5 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-22 (**S542 — 40th F, loading states (first since S189): 14 surfaces held, then aborted. FOUND 7, FIXED 4. F-next: long-build progress.**)
 
-**Next session (S612):** **Branch `claude/adoring-brown-9udi22` (S608–S611, draft PR 394): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1259**, FM **5.59**, corpus ?v=7. ⚑ drift: main=4f03455 sw=v1259 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: D letter_learner (S510), H generator (S512), C fontmaker (S513), N chrome (S520), M parsha_emojis (S522), G dictionary (S523), P name_tags (S535); suite E (S531), L (S532), K (S533). ⚑ Harnesses: Letter Learner G `g611/` (`lib.mjs`; `grid.mjs`, `card.mjs`, `cs.mjs`, `bp.mjs` + `abdiff.py` = A/B clip, `ovl.mjs` + `ovl.py` = each part alone, ink AND ink; `misc.mjs`, `rt.mjs`, `bbox.mjs` = pictures past their frame), dashboard M `m610/`, trope + dictionary P `p609/`. ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
-⚑ Sync P2 (S573): D31 still fails alone about 1 in 3 (S602: HEAD 2/3, tree 3/3). ⚑ The S602 gate-4 answer also covers the landscape blend-sheet P3 — measure Export PDF landscape first (S604). ⚑ The dashboard's two S610 P4s left (nine glyph control strings, the drawer's second gold primary) and its half of the S568 Arial P4 wait for a session whose caps leave the dashboard free; the footer's dangling "·" (S588, 13 carriers) too. ⚑ Two gate-3 P4s are small but gated: the Letter Learner's final-form cards 10px high, the dictionary's long headword. ⚑ Ports at the next A: `m554/`–`m610/`, `g604/`, `d605/`, `t605/`, `h606/`, `c607/`, `n608/`, `p609/`, `g611/`; traps 352, 356–527. ⚑ Queues (first file of each candidate): FM 26, generator 19, dashboard 10, torah 9, dictionary 8, name_tags 7, parsha_emojis 7, trope 6; the rest ≤ 4.
+**Next session (S613):** **Branch `claude/adoring-brown-9udi22` (S608–S612, draft PR 394): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1263**, FM **5.59**, corpus ?v=7. ⚑ drift: main=4f03455 sw=v1263 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: H generator (S512), C fontmaker (S513), N chrome (S520), M parsha_emojis (S522), G dictionary (S523), D flash (S524), P name_tags (S535); suite E (S531), L (S532), K (S533). ⚑ Harnesses: Letter Learner D `d612/` and G `g611/`, dashboard `m610/` (receipts: findings S612, S611). ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
+⚑ Sync P2 (S573): D31 still fails alone about 1 in 3 (S602: HEAD 2/3, tree 3/3). ⚑ The S602 gate-4 answer also covers the landscape blend-sheet P3 — measure Export PDF landscape first (S604). ⚑ The dashboard's last S610 P4 (nine glyph control strings) and its half of the S568 Arial P4 wait for a session whose caps leave the dashboard free (S612 spent 2 on it); the footer's dangling "·" (S588, 13 carriers) too. ⚑ Two gate-3 P4s are small but gated: the Letter Learner's final-form cards 10px high, the dictionary's long headword. ⚑ Ports at the next A: `m554/`–`m610/`, `g604/`, `d605/`, `t605/`, `h606/`, `c607/`, `n608/`, `p609/`, `g611/`, `d612/`; traps 352, 356–528. ⚑ Queues (first file of each candidate): FM 26, generator 19, dashboard 9, torah 9, dictionary 8, name_tags 7, parsha_emojis 8, trope 6; the rest ≤ 4.
