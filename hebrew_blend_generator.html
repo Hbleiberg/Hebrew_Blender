@@ -10320,8 +10320,8 @@ function renderGematriaSheet(ws, items, showTranslit = false, showTranslation = 
       const hebHtml = colorizeHebrew(b.hebrewDisplay, colorCodingMode);
       const trFront = (rwTrOnSheet && b.translit)    ? `<span style="font-size:0.75rem;color:var(--muted);font-style:italic;margin-top:4px;">${esc(b.translit)}</span>` : '';
       const trBack  = (rwTrOnKey   && b.translit)    ? `<span style="font-size:0.8rem;color:var(--gold-light);font-style:italic;margin-top:4px;">${esc(b.translit)}</span>`  : '';
-      const tnFront = (rwTnOnSheet && b.translation) ? `<span class="gem-tn" style="font-size:0.78rem;color:var(--gold-text);font-weight:600;margin-top:2px;">${esc(b.translation)}</span>` : '';
-      const tnBack  = (rwTnOnKey   && b.translation) ? `<span style="font-size:0.85rem;color:var(--gold-light);font-weight:600;margin-top:2px;">${esc(b.translation)}</span>` : '';
+      const tnFront = (rwTnOnSheet && b.translation) ? `<span class="gem-tn" style="font-size:0.78rem;color:var(--gold-text);font-weight:600;margin-top:2px;">${escTn(b.translation)}</span>` : '';
+      const tnBack  = (rwTnOnKey   && b.translation) ? `<span style="font-size:0.85rem;color:var(--gold-light);font-weight:600;margin-top:2px;">${escTn(b.translation)}</span>` : '';
       const front = inverse
         ? `<span style="font-size:2.2rem;font-weight:700;color:var(--text);">${val}</span>
            ${trFront}${tnFront}
@@ -10376,7 +10376,7 @@ function renderGematriaSheet(ws, items, showTranslit = false, showTranslation = 
       cell.className = 'blend-cell';
       cell.style.minHeight = '80px';
       const trExtra = (rwTrOnSheet && b.translit)    ? `<div style="font-size:0.7rem;color:var(--muted);font-style:italic;direction:ltr;margin-top:2px;">${esc(b.translit)}</div>` : '';
-      const tnExtra = (rwTnOnSheet && b.translation) ? `<div class="gem-tn" style="font-size:0.72rem;color:var(--gold-text);font-weight:600;direction:ltr;margin-top:2px;">${esc(b.translation)}</div>` : '';
+      const tnExtra = (rwTnOnSheet && b.translation) ? `<div class="gem-tn" style="font-size:0.72rem;color:var(--gold-text);font-weight:600;direction:ltr;margin-top:2px;">${escTn(b.translation)}</div>` : '';
       if (inverse) {
         const val = calcGematria(b.hebrewDisplay);
         cell.innerHTML = `
@@ -10430,7 +10430,7 @@ function renderGematriaSheet(ws, items, showTranslit = false, showTranslation = 
         <div style="font-size:0.6rem;color:var(--muted);align-self:flex-start;width:100%;padding-bottom:2px;direction:ltr;text-align:right;">${idx + 1}</div>
         <div class="blend-hebrew" lang="he">${colorizeHebrew(b.hebrewDisplay, colorCodingMode)}</div>
         ${showTr && b.translit ? `<div style="font-size:0.7rem;color:var(--muted);font-style:italic;direction:ltr;margin-top:2px;">${esc(b.translit)}</div>` : ''}
-        ${showTn && b.translation ? `<div class="gem-tn" style="font-size:0.72rem;color:var(--gold-text);font-weight:600;direction:ltr;margin-top:2px;">${esc(b.translation)}</div>` : ''}
+        ${showTn && b.translation ? `<div class="gem-tn" style="font-size:0.72rem;color:var(--gold-text);font-weight:600;direction:ltr;margin-top:2px;">${escTn(b.translation)}</div>` : ''}
         ${showGematriaVal ? `<div class="gematria-value">${val}</div>` : ''}`;
       keyGrid.appendChild(cell);
     });
@@ -12377,14 +12377,14 @@ function generateRealWords(reuse) {
             <span class="rw-pos-tag">${esc(w.pos)}</span>
             <span class="rw-heb" lang="he">${esc(w.heb)}</span>
             ${vocabTrlOnFront && w.translit ? `<span class="rw-translit">${esc(w.translitDisplay ?? w.translit)}</span>` : ''}
-            ${vocabTnOnFront && w.translation ? `<span class="rw-translation">${esc(w.translation)}</span>` : ''}
+            ${vocabTnOnFront && w.translation ? `<span class="rw-translation">${escTn(w.translation)}</span>` : ''}
             <span class="rw-translit rw-flip-hint" style="font-size:0.65rem;">${esc(I18n.t('worksheet.selfcheck.tap_to_flip_hint'))}</span>
           </div>
           <div class="rw-flip-back">
             <span class="rw-num">${idx + 1}</span>
             <span class="rw-heb" lang="he" style="font-size:1.3rem;">${esc(w.heb)}</span>
             ${vocabTrlOnBack && w.translit ? `<span class="rw-translit">${esc(w.translitDisplay ?? w.translit)}</span>` : ''}
-            ${vocabTnOnBack && w.translation ? `<span class="rw-translation">${esc(w.translation)}</span>` : ''}
+            ${vocabTnOnBack && w.translation ? `<span class="rw-translation">${escTn(w.translation)}</span>` : ''}
           </div>
         </div>`;
       wireFlipCard(wrapper, wrapper.querySelector('.rw-flip-inner'));
@@ -12396,9 +12396,9 @@ function generateRealWords(reuse) {
       // 3-way placement — fall back to whichever is available if the user
       // turned both off so the card always shows something to translate.
       let prompts = '';
-      if (showTranslInline && w.translation)  prompts += `<span style="font-size:0.88rem;font-weight:600;color:var(--text);text-align:center;">${esc(w.translation)}</span>`;
+      if (showTranslInline && w.translation)  prompts += `<span style="font-size:0.88rem;font-weight:600;color:var(--text);text-align:center;">${escTn(w.translation)}</span>`;
       if (showTranslitInline && w.translit)   prompts += `<span class="rw-translit">${esc(w.translitDisplay ?? w.translit)}</span>`;
-      if (!prompts) prompts = `<span style="font-size:0.88rem;font-weight:600;color:var(--text);text-align:center;">${esc(w.translation || (w.translitDisplay ?? w.translit))}</span>`;
+      if (!prompts) prompts = `<span style="font-size:0.88rem;font-weight:600;color:var(--text);text-align:center;">${(w.translation ? escTn(w.translation) : esc(w.translitDisplay ?? w.translit))}</span>`;
       card.innerHTML = `
         <span class="rw-num">${idx + 1}</span>
         <span class="rw-pos-tag">${esc(w.pos)}</span>
@@ -12412,7 +12412,7 @@ function generateRealWords(reuse) {
         <span class="rw-num">${idx + 1}</span>
         <span class="rw-heb" lang="he">${esc(w.heb)}</span>
         ${showTranslitInline && w.translit ? `<span class="rw-translit">${esc(w.translitDisplay ?? w.translit)}</span>` : ''}
-        ${showTranslInline && w.translation ? `<span class="rw-translation">${esc(w.translation)}</span>` : ''}
+        ${showTranslInline && w.translation ? `<span class="rw-translation">${escTn(w.translation)}</span>` : ''}
         <div style="border-bottom:1.5px solid var(--border);width:90%;margin-top:8px;min-height:20px;"></div>`;
       grid.appendChild(card);
     } else {
@@ -12425,7 +12425,7 @@ function generateRealWords(reuse) {
         <span class="rw-pos-tag">${esc(w.pos)}</span>
         <span class="rw-heb" lang="he">${esc(w.heb)}</span>
         ${showTranslitInline ? `<span class="rw-translit">${esc(w.translitDisplay ?? w.translit)}</span>` : ''}
-        ${showTranslInline && w.translation ? `<span class="rw-translation">${esc(w.translation)}</span>` : ''}`;
+        ${showTranslInline && w.translation ? `<span class="rw-translation">${escTn(w.translation)}</span>` : ''}`;
       grid.appendChild(card);
     }
   });
@@ -12482,7 +12482,7 @@ function generateRealWords(reuse) {
         <span class="rw-pos-tag">${esc(w.pos)}</span>
         <span class="rw-heb" lang="he">${esc(w.heb)}</span>
         ${translitOnKey ? `<span class="rw-translit">${esc(w.translitDisplay ?? w.translit)}</span>` : ''}
-        ${translOnKey && w.translation ? `<span class="rw-translation">${esc(w.translation)}</span>` : ''}`;
+        ${translOnKey && w.translation ? `<span class="rw-translation">${escTn(w.translation)}</span>` : ''}`;
       keyGrid.appendChild(card);
     });
     keySheet.appendChild(keyGrid);
@@ -12558,7 +12558,7 @@ function cwClueFor(w) {
 function matchTargetHTML(w) {
   if (matchTarget === 'emoji')    return '<span class="match-target emoji">' + (w._emoji || '') + '</span>';
   if (matchTarget === 'translit') return '<span class="match-target">' + esc(w.translitDisplay ?? w.translit ?? '') + '</span>';
-  return '<span class="match-target">' + esc(w.translation || '') + '</span>';
+  return '<span class="match-target">' + escTn(w.translation || '') + '</span>';
 }
 
 // Plain-text target (answer-key rows use textContent).
@@ -12740,7 +12740,7 @@ function renderMatchingSheets(ws, versionsItems, opts) {
         const heb = document.createElement('span'); heb.className = 'match-ak-heb'; heb.lang = 'he'; heb.innerHTML = colorizeHebrew(it.heb, colorMode);
         const arrow = document.createElement('span'); arrow.textContent = '→'; arrow.style.color = 'var(--muted)';
         const let_ = document.createElement('span'); let_.className = 'match-ak-let'; let_.textContent = letter;
-        const tgt = document.createElement('span'); tgt.style.color = 'var(--muted)'; tgt.textContent = it.targetText;
+        const tgt = document.createElement('span'); tgt.style.color = 'var(--muted)'; tgt.innerHTML = escTn(it.targetText);   // a definition's quoted Hebrew marked, like the sheet's
         if (it.big) tgt.style.fontSize = '1.4rem';
         row.appendChild(num); row.appendChild(heb); row.appendChild(arrow); row.appendChild(let_); row.appendChild(tgt);
         list.appendChild(row);
@@ -12959,7 +12959,7 @@ function generateWordSearch(pool, reuse) {
       item.className = 'ws-wordbank-item';
       let html = `<span class="ws-wordbank-heb" lang="he">${esc(w.heb)}</span>`;
       if (showTr && w.translit)    html += `<span class="ws-wordbank-tr">${esc(w.translitDisplay ?? w.translit)}</span>`;
-      if (showTn && w.translation) html += `<span class="ws-wordbank-tn">${esc(w.translation)}</span>`;
+      if (showTn && w.translation) html += `<span class="ws-wordbank-tn">${escTn(w.translation)}</span>`;
       item.innerHTML = html;
       wb.appendChild(item);
     });
@@ -13339,7 +13339,7 @@ function renderRealWordsFillVowels(ws, words, trOnSheet, tnOnSheet, trOnKey, tnO
     let inner = `<span class="rw-num">${idx + 1}</span>`;
     inner += `<div class="rw-heb" lang="he">${stripped}</div>`;
     if (trOnSheet && w.translit) inner += `<div class="rw-translit">${esc(w.translitDisplay ?? w.translit)}</div>`;
-    if (tnOnSheet && w.translation) inner += `<div class="rw-translation">${esc(w.translation)}</div>`;
+    if (tnOnSheet && w.translation) inner += `<div class="rw-translation">${escTn(w.translation)}</div>`;
     card.innerHTML = inner;
     grid.appendChild(card);
   });
@@ -13378,7 +13378,7 @@ function renderRealWordsFillVowels(ws, words, trOnSheet, tnOnSheet, trOnKey, tnO
     let inner = `<span class="rw-num">${idx + 1}</span>`;
     inner += `<div class="rw-heb" lang="he">${esc(w.heb)}</div>`;
     if (trOnKey && w.translit) inner += `<div class="rw-translit">${esc(w.translitDisplay ?? w.translit)}</div>`;
-    if (tnOnKey && w.translation) inner += `<div class="rw-translation">${esc(w.translation)}</div>`;
+    if (tnOnKey && w.translation) inner += `<div class="rw-translation">${escTn(w.translation)}</div>`;
     card.innerHTML = inner;
     akGrid.appendChild(card);
   });
@@ -13429,7 +13429,7 @@ function generateIdentifyDrill(pool, count, trOnSheet, tnOnSheet, trOnKey, tnOnK
         <span class="rw-pos-tag">${reveal ? esc(w.pos) : ''}</span>
         <span class="rw-heb" lang="he">${esc(w.heb)}</span>
         ${showTr ? `<span class="rw-translit">${esc(w.translitDisplay ?? w.translit)}</span>` : ''}
-        ${showTn && w.isReal && w.translation ? `<span class="rw-translation">${esc(w.translation)}</span>` : ''}
+        ${showTn && w.isReal && w.translation ? `<span class="rw-translation">${escTn(w.translation)}</span>` : ''}
         ${!reveal ? `<div style="margin-top:6px;width:20px;height:20px;border:1.5px solid var(--border);border-radius:50%;"></div>` : ''}`;
       grid.appendChild(card);
     });
@@ -13575,7 +13575,7 @@ function generateRealWordsBingo(pool) {
           cellEl.innerHTML = '<span style="font-size:1rem;">✡︎</span><span>FREE</span>';
         } else {
           cellEl.className = cls;
-          cellEl.innerHTML = `<span class="heb" lang="he" style="font-size:1.2rem;">${esc(cell.heb)}</span>${translitOnCard ? `<span class="sound">${esc(cell.translit)}</span>` : ''}${translOnCard && cell.translation ? `<span class="sound" style="font-size:0.6rem;">${esc(cell.translation)}</span>` : ''}`;
+          cellEl.innerHTML = `<span class="heb" lang="he" style="font-size:1.2rem;">${esc(cell.heb)}</span>${translitOnCard ? `<span class="sound">${esc(cell.translit)}</span>` : ''}${translOnCard && cell.translation ? `<span class="sound" style="font-size:0.6rem;">${escTn(cell.translation)}</span>` : ''}`;
         }
         gridEl.appendChild(cellEl);
       });
@@ -13606,7 +13606,7 @@ function generateRealWordsBingo(pool) {
       const item = document.createElement('div');
       item.className = 'caller-item';
       item.onclick = () => item.classList.toggle('called');
-      item.innerHTML = `<span class="num">${i + 1}</span><span class="heb" lang="he">${esc(w.heb)}</span>${translitOnCaller ? `<span class="sound">${esc(w.translitDisplay ?? w.translit)}</span>` : ''}${translOnCaller && w.translation ? `<span class="sound" style="font-size:0.6rem;font-style:italic;">${esc(w.translation)}</span>` : ''}`;
+      item.innerHTML = `<span class="num">${i + 1}</span><span class="heb" lang="he">${esc(w.heb)}</span>${translitOnCaller ? `<span class="sound">${esc(w.translitDisplay ?? w.translit)}</span>` : ''}${translOnCaller && w.translation ? `<span class="sound" style="font-size:0.6rem;font-style:italic;">${escTn(w.translation)}</span>` : ''}`;
       grid.appendChild(item);
     });
     sheet.appendChild(grid);
@@ -13774,6 +13774,11 @@ let _myFontsLoaded = false;   // the My Fonts store has answered once (before th
 function ivEsc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c])); }
 // Canonical HTML-escaper for user/remote strings interpolated into innerHTML (escapes all 5 metachars incl. ').
 function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
+// A word's English definition can quote Hebrew ("(זָכָר, zakhar) m.: masculine gender": 340 of 13,081 corpus words, and
+// any imported list). Escaped like esc(), with each Hebrew run marked lang="he" so a screen reader and the font
+// fallback take it as Hebrew while the English around it keeps the sheet's language (UX rule 8: the run, never the
+// majority-English container). Only for element content, never an attribute value.
+function escTn(s) { return esc(s).replace(/[\u0591-\u05F4\uFB1D-\uFB4F]+(?:[ \u05BE-]+[\u0591-\u05F4\uFB1D-\uFB4F]+)*/g, '<span lang="he">$&</span>'); }
 function allFonts() { return MY_FONTS.concat(HEB_FONTS); }
 async function refreshMyFonts() {
   try {
