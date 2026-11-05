@@ -426,6 +426,12 @@ _(none)_
 
 ## Done
 
+- [x] 2026-11-05 | (S616 close-out) | branch/deploy note | **S616 = M on `parsha_emojis.html` (first since S522; 20 commits: the coloring-sheets popup, its loading and Try again, the size factors) + its generated `parsha/` pages (their first audit of any kind): 7 views × 8 cells in the real fonts, the census arms, a header-control arm at 1px steps. FOUND 2, FIXED 2; 0 gates. PR 394, sw v1276; …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-05 | `ae1432a7` | scripts/build-parsha-pages.mjs, parsha/*.html | (S616 M) **In the Hebrew UI "על הפרשה" heads the Hebrew text** (it sat under the Hebrew, over the English). | 2 pages × 8 cells: EN byte-identical, HE h2 > Hebrew > English; a11y headings unchanged
+
+- [x] 2026-11-05 | `a9247724` | parsha_emojis.html, scripts/build-parsha-pages.mjs, parsha/*.html, shared-components.md, sw.js | (S616 M) **The header's Hebrew "דף הבית" stays on one line** (broke from 822px / 764px down); the wrap gate re-measured 541/551 → 550/560. | 1px sweep 320–900 × 16 cells × 2 pages: 0 breaks, 0 overflow (HEAD 278–281 / 124–137 broken)
+
 - [x] 2026-11-05 | (S615 close-out) | branch/deploy note | **S615 = N on the chrome bundle (first bundle N; index since S420, resources S246, contact S462, privacy/terms/404 S520, account never) — clean — + `name_tags.html` (since S534) — clean; 1 gate-4 answer (leave the grip), 1 P4. Fixes from the queue: the generator's word-list hand-off (gate 2) and the S568 Arial buttons on its last three …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-11-05 | `99351ec9` | Hebrew_Font_Maker.html, sw.js | (S615; S568's P4, its last page) **Buttons take the page's face, not Arial** (full screen's Exit / Show Panels, the tour ✕). | DOM census × 4 cells: HEAD 3, tree 0; full-screen plates measured
@@ -460,13 +466,11 @@ _(none)_
 
 - [x] 2026-11-05 | `85b19cd4` | letter_learner.html, sw.js | (S612 D) **A coloring-sheet size drag no longer restyles every drawing** (the drawings' svg resets the five size factors). | A/B @4× ×4: style per 5 steps 1,534–1,899 → 429–447 ms (4 a sheet × 3 copies), 687–791 → 214–274, 352–398 → 105–138; worst step 660–742 → 258–341; every sheet still resizes; the bulk PDF identical 8/8 pages × 8 …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-11-05 | (S611 close-out) | branch/deploy note | **S611 = G on the Letter Learner (first since S509; 115 commits to the page: the coloring sheets, bulk print, 1/2/4 a sheet, the paper size, the cursive tiles). FOUND 2: 1 FIXED, 1 P4; the grid, the card tabs, both coloring-sheet prints, the links and the `.ivrit` arm clean. + 2 dashboard P4s from S610's queue. Branch …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-05 | `0427358c` | letter_learner.html, sw.js | (S611 G) **The angel fits its picture frame** (the drawing at 90% inside 0–100; its cloud reached y 112.6 and covered the lamed and patach of מַלְאָךְ). | overlap arm (each part printed alone, ink AND ink): Final Chaf 16/16 combos → 0/16, no other page changed; the card tile's ink inside the tile 8/8 (HEAD 0/8); 0 page errors
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-11-05 | **S616** | iters: 3 | tools: parsha_emojis ×2 (+ the generated parsha pages), shared-components.md, sw | patterns fixed: — | pass run: M (parsha_emojis, first since S522; + its parsha/ pages) | SW: v1275→v1276
 
 - 2026-11-05 | **S615** | iters: 5 | tools: generator, dashboard, torah, fontmaker, locales, sw | patterns fixed: — | pass run: N (chrome, first bundle N; + name_tags) | SW: v1271→v1275
 
@@ -506,11 +510,9 @@ _(none)_
 
 - 2026-11-03 | **S597** | iters: 4 | tools: trope ×2, generator, scripts/loop, sw | patterns fixed: author-display-defeats-the-hidden-attribute ×1, print-trailing-padding-adds-a-sheet ×1 | pass run: G (trope, first since S479) | SW: v1210→v1213
 
-- 2026-11-01 | **S596** | iters: 5 | tools: account, index, flash ×2, locales, sw | patterns fixed: — | pass run: P (chrome, first since S477) | SW: v1203→v1207
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S615 (2026-11-05):** generator, dashboard, torah, fontmaker, locales, sw.js, loop docs S615 · fontmaker, generator, flash, dashboard, torah, index, locales, sw.js, storage-and-backup.md, loop docs S614 · generator, dashboard, parsha_emojis, sw.js, loop docs S613 · letter_learner, dashboard, sw.js, loop docs S612 · letter_learner, dashboard, sw.js, loop docs S611 · dashboard, torah, generator, sw.js, loop docs S610 · trope, locales, sw.js, loop docs S609 · dashboard, sw.js, loop docs S608 · dashboard, generator, dictionary, …[full text: IMPROVEMENT_ARCHIVE.md]
+- **Snapshot S616 (2026-11-05):** parsha_emojis, parsha/ + build-parsha-pages, shared-components.md, sw.js, loop docs S616 · generator, dashboard, torah, fontmaker, locales, sw.js, loop docs S615 · fontmaker, generator, flash, dashboard, torah, index, locales, sw.js, storage-and-backup.md, loop docs S614 · generator, dashboard, parsha_emojis, sw.js, loop docs S613 · letter_learner, dashboard, sw.js, loop docs S612 · letter_learner, dashboard, sw.js, loop docs S611 · dashboard, torah, generator, sw.js, loop docs S610 · trope, locales, sw.js, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -868,7 +870,7 @@ _(none)_
 
 - N mobile & touch-device (one surface): 2026-11-05 (**S615 — 38th N, chrome (the bundle's first N; index since S420, resources S246, contact S462, privacy/terms/404 S520, account never) + name_tags (since S534; 41 commits): 196 + 24 phone cells by real taps, the signed-in account on 20, touch flows, flips, 4× CPU. FOUND 1 P4 + 1 gate-4 answer (leave the grip). N-next: letter_learner (S545), …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- M aesthetics & visual design (one surface): 2026-11-04 (**S610 — 37th M, `classroom_dashboard.html` (first since S508; 55 commits): 17 views × 8 cells (EN/HE × light/dark × 1280/800) with real fonts, 7 census arms behind plants, a UA-face arm, section rhythm, the board message's direction. FOUND 7: 2 FIXED (one gate 3), 4 P4, the S568 P4 re-measured. M-next: parsha_emojis (S522), letter_learner …[full text: IMPROVEMENT_ARCHIVE.md]
+- M aesthetics & visual design (one surface): 2026-11-05 (**S616 — 38th M, `parsha_emojis.html` (first since S522; 20 commits: the coloring-sheets popup, its loading and Try again, the size factors) with its generated `parsha/` pages (their first audit): 7 views × 8 cells (EN/HE × light/dark × 1280/800) in the real fonts, the S610 census arms + a UA-face arm, the popup's options scrolled, a …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - K i18n / localization audit: 2026-10-21 (**S533 — 36th K, `db80feb4..843984b3` (111 commits; parsha_emojis' first): CSV +209 (all resolve), 12 reworded, 0 removed; static 5,502 refs + 2,974 fallback sites (the html arm, lapsed since S475); blind 0/4,328 lines; 102 states by the real switcher (twins = base + 5 known); retry 4/4; 10 surfaces by real input + a switch mid-state. FOUND 4, FIXED 4.**)
 
@@ -896,5 +898,5 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-22 (**S542 — 40th F, loading states (first since S189): 14 surfaces held, then aborted. FOUND 7, FIXED 4. F-next: long-build progress.**)
 
-**Next session (S616):** **Branch `claude/adoring-brown-9udi22` (S608–S615, draft PR 394): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1275**, FM **5.59**, corpus ?v=7. ⚑ drift: main=4f03455 sw=v1275 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: C letter_learner (S527), M parsha_emojis (S522), G dictionary (S523), D flash (S524), H letter_learner (S526), P name_tags (S535), N letter_learner (S545); suite E (S531), L (S532), K (S533). ⚑ Harnesses: `n615/` (findings), `c614/`. ⚑ 57 seeds.
-⚑ Sync P2 (S573): D31 fails alone ~1 in 3. ⚑ The S602 gate-4 answer covers the landscape blend-sheet P3 (measure Export PDF first). ⚑ S568's Arial buttons are closed on every page (generator S610, the rest S615). ⚑ The generator's Self-Check back clip (S613 P4) needs a layout call, not a one-liner. ⚑ Dashboard: the S610 glyph strings; the footer "·" (S588, 13 carriers). ⚑ Gate-3 P4s, small: LL final-form cards, the dictionary headword. ⚑ Ports at the next A: `m554/`–`m610/`, `g604/`, `d605/`, `t605/`, `h606/`, `c607/`, `n608/`, `p609/`, `g611/`, `d612/`, `h613/`, `c614/`, `n615/`; traps 352, 356–533. ⚑ Queues: FM 26, generator 21, dashboard 8, torah 9, dictionary 8, name_tags 7, parsha_emojis 7, trope 6; the rest ≤ 4.
+**Next session (S617):** **Branch `claude/adoring-brown-9udi22` (S608–S616, draft PR 394): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1276**, FM **5.59**, corpus ?v=7. ⚑ drift: main=4f03455 sw=v1276 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: C letter_learner (S527), G dictionary (S523), D flash (S524), H letter_learner (S526), P name_tags (S535), M letter_learner (S536), N letter_learner (S545); suite E (S531), L (S532), K (S533). ⚑ Harnesses: `m616/` (`gate.mjs` / `sweep.mjs` measure a header's wrap gate and broken labels), `n615/`. ⚑ 57 seeds.
+⚑ Sync P2 (S573): D31 fails alone ~1 in 3. ⚑ The S602 gate-4 answer covers the landscape blend-sheet P3 (measure Export PDF first). ⚑ A header's button row that shrinks breaks a two-word Hebrew label long before any overflow (S616; every other page measured one-line). ⚑ The generator's Self-Check back clip (S613 P4) needs a layout call, not a one-liner. ⚑ Dashboard: the S610 glyph strings; the footer "·" (S588, 13 carriers). ⚑ Ports at the next A: `m554/`–`m616/`, `g604/`, `d605/`, `t605/`, `h606/`, `c607/`, `n608/`, `p609/`, `g611/`, `d612/`, `h613/`, `c614/`, `n615/`, `m616/`; traps 352, 356–534. ⚑ Queues: FM 26, generator 21, dashboard 8, torah 9, dictionary 8, name_tags 7, parsha_emojis 7, trope 6; the rest ≤ 4.
