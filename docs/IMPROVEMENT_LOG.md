@@ -104,8 +104,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S574 M — H's**) | hebrew_blend_generator.html | **The crossword's "Not placed:" note can list 50+ pool words on the student's sheet.** | found S574
 
-- [ ] P4 (**NEW S574 M — UX rule 8; S595: the sidebar half FIXED `a339e56`**) | hebrew_blend_generator.html | **Hebrew inside the English Real Words definitions sits under `lang="en"`** (findings S595). | found S574
-
 - [ ] P4 (**NEW S574 M — component consistency**) | hebrew_blend_generator.html | **The Advanced panel's TTS speed box is not a sub-panel** like its five navy-bar neighbours. | found S574
 
 - [ ] P4 (**NEW S572 N — pattern `horizontal-overflow-at-narrow-widths`**) | hebrew_blend_generator.html | **On an iPhone SE Real Words Bingo's caller list and Word Search's grid scroll sideways** (82 / 73 px). | found S572
@@ -426,6 +424,12 @@ _(none)_
 
 ## Done
 
+- [x] 2026-11-05 | (S617 close-out) | branch/deploy note | **S617 = G on `hebrew_dictionary.html` (first since S523; 43 commits to the page): 5 views × 8 cells × Letter/A4 (40 PDFs), a Shoresh heading census (16 roots × EN/HE × Letter/A4, 280 headings), exports by real clicks (Bulk Anki/Quizlet + the Word Lists window, EN/HE), colour coding from dark × 3 modes. FOUND 1, FIXED 1; + 2 generator …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-05 | `077fa568` | hebrew_blend_generator.html, sw.js | (S617, found verifying `c58e5ecb`) **Bingo's "Need at least 24 words" note stays with Bingo**: a drill switch kept it, and Generate's aria-disabled, under Word Search / Crossword / Vocabulary / Matching on a 16-word list. | real clicks, 4 drills × 4 cells: HEAD 16/16 kept it, tree 16/16 free and render; back on Bingo the note …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-05 | `e45d6283` | hebrew_dictionary.html, sw.js, probe | (S617 G; `print-block-split-at-a-sheet-foot`) **On paper a Shoresh group heading stays with its words** (and the patterns title). | 280 headings × 64 prints: stranded 23 → 0, titles 0 → 0, sheets equal; probe `S617-dictionary-shoresh-headings-keep-their-words.mjs` (HEAD fails 24 + 6)
+
 - [x] 2026-11-05 | (S616 close-out) | branch/deploy note | **S616 = M on `parsha_emojis.html` (first since S522; 20 commits: the coloring-sheets popup, its loading and Try again, the size factors) + its generated `parsha/` pages (their first audit of any kind): 7 views × 8 cells in the real fonts, the census arms, a header-control arm at 1px steps. FOUND 2, FIXED 2; 0 gates. PR 394, sw v1276; …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-11-05 | `ae1432a7` | scripts/build-parsha-pages.mjs, parsha/*.html | (S616 M) **In the Hebrew UI "על הפרשה" heads the Hebrew text** (it sat under the Hebrew, over the English). | 2 pages × 8 cells: EN byte-identical, HE h2 > Hebrew > English; a11y headings unchanged
@@ -454,21 +458,15 @@ _(none)_
 
 - [x] 2026-11-05 | (S613 close-out) | branch/deploy note | **S613 = H on the generator (its 5th; a food-vocabulary unit from a Dictionary word list + the Self-Check student cell). FOUND 5: 2 FIXED, 1 P3 + 2 P4 at the cap; + 2 queue fixes (dashboard, parsha_emojis). PR 394 open, sw v1263 → v1267; deploy after merge. No gates asked.**
 
-- [x] 2026-11-05 | `89490c62` | parsha_emojis.html, sw.js | (S612's P4) **A size drag stops at the drawings** (the svg resets the size factors). | A/B @4× × 8: style median 376 → 220 ms; print PDF byte-identical
-
 - [x] 2026-11-05 | `ad37dd9e` | hebrew_blend_generator.html, sw.js | (S613 H) **The crossword keeps the fullest of up to 30 tries.** | 40 regenerations, HEAD → tree: 14 words 4–6 → 7–10; 5 words too-few 22/40 → 4 placed 40/40; All Words 10 ×40
 
 - [x] 2026-11-05 | `1779582b` | hebrew_blend_generator.html, sw.js | (S613 H; UX rule 7) **Every Self-Check card turns by the keyboard** (a button, Enter/Space, `aria-pressed`). | 5 card kinds × 4 cells: HEAD never focusable; tree Tab-reachable, Enter/Space flip, Reveal/Hide All in step, 0 errors
 
-- [x] 2026-11-05 | (S612 close-out) | branch/deploy note | **S612 = D on the Letter Learner (first since S510; 112 commits to the page: the coloring sheets, bulk print, the cursive tiles; 1.02 MB, 198 KB gzip). FOUND 2, FIXED 2 (the bulk preview's size drag and its off-screen sheets); cold, the cards, tabs, modes, the language and dark switches and steady animation clean (S510's per-frame …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-05 | `8e4d49ac` | letter_learner.html, sw.js | (S612 D; pattern `offscreen-sheets-laid-out-on-every-rebuild`, 4th carrier) **The bulk print preview skips the sheets out of view** (`content-visibility:auto` on `#llBpPages`' own pages and papers, Parsha Emojis' shape). | A/B @4× ×3 vs the tree before it: 4 a sheet × 3 copies, a copies change 497–583 → 120–214 ms, the worst size step …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-05 | `85b19cd4` | letter_learner.html, sw.js | (S612 D) **A coloring-sheet size drag no longer restyles every drawing** (the drawings' svg resets the five size factors). | A/B @4× ×4: style per 5 steps 1,534–1,899 → 429–447 ms (4 a sheet × 3 copies), 687–791 → 214–274, 352–398 → 105–138; worst step 660–742 → 258–341; every sheet still resizes; the bulk PDF identical 8/8 pages × 8 …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-11-05 | **S617** | iters: 4 | tools: dictionary, generator ×2, sw | patterns fixed: print-block-split-at-a-sheet-foot ×1 | pass run: G (dictionary, first since S523) | SW: v1276→v1279
 
 - 2026-11-05 | **S616** | iters: 3 | tools: parsha_emojis ×2 (+ the generated parsha pages), shared-components.md, sw | patterns fixed: — | pass run: M (parsha_emojis, first since S522; + its parsha/ pages) | SW: v1275→v1276
 
@@ -508,15 +506,13 @@ _(none)_
 
 - 2026-11-03 | **S598** | iters: 5 | tools: trope ×2, fontmaker, generator, sw | patterns fixed: dark-navy-fill-matches-its-ground ×1 | pass run: D (trope, first since S480) | SW: v1213→v1217
 
-- 2026-11-03 | **S597** | iters: 4 | tools: trope ×2, generator, scripts/loop, sw | patterns fixed: author-display-defeats-the-hidden-attribute ×1, print-trailing-padding-adds-a-sheet ×1 | pass run: G (trope, first since S479) | SW: v1210→v1213
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S616 (2026-11-05):** parsha_emojis, parsha/ + build-parsha-pages, shared-components.md, sw.js, loop docs S616 · generator, dashboard, torah, fontmaker, locales, sw.js, loop docs S615 · fontmaker, generator, flash, dashboard, torah, index, locales, sw.js, storage-and-backup.md, loop docs S614 · generator, dashboard, parsha_emojis, sw.js, loop docs S613 · letter_learner, dashboard, sw.js, loop docs S612 · letter_learner, dashboard, sw.js, loop docs S611 · dashboard, torah, generator, sw.js, loop docs S610 · trope, locales, sw.js, …[full text: IMPROVEMENT_ARCHIVE.md]
+- **Snapshot S617 (2026-11-05):** dictionary, generator, sw.js, loop probe, loop docs S617 · parsha_emojis, parsha/ + build-parsha-pages, shared-components.md, sw.js, loop docs S616 · generator, dashboard, torah, fontmaker, locales, sw.js, loop docs S615 · fontmaker, generator, flash, dashboard, torah, index, locales, sw.js, storage-and-backup.md, loop docs S614 · generator, dashboard, parsha_emojis, sw.js, loop docs S613 · letter_learner, dashboard, sw.js, loop docs S612 · letter_learner, dashboard, sw.js, loop docs S611 · dashboard, torah, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
-- `print-block-split-at-a-sheet-foot` | ACTIVE | owner G | det: scripts/loop/probes/S575-chrome-print-whole-blocks.mjs | last S575 | streak 0
+- `print-block-split-at-a-sheet-foot` | ACTIVE | owner G | det: scripts/loop/probes/S575-chrome-print-whole-blocks.mjs | last S617 | streak 0
 
 - `focus-hidden-under-a-sticky-bar` | ACTIVE | owner C | det: recipe | last S607 | streak 0
 
@@ -878,7 +874,7 @@ _(none)_
 
 - A recurring-pattern sweep: 2026-10-31 (**S581 — 42nd A, scoped to the outside-loop reading-assignments landing (`a7fa5f1..aab737c`, 18 of its 53 commits; `reading_assignments.html`, `js/ivrit-assignments.js`, the Trainer's +838): the security arms (no `innerHTML`, reviver-safe parses, URL sinks, an anonymous Trainer loads no assignments module), then two catalog recipes committed as detectors …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- G print & export fidelity (one tool): 2026-11-05 (**S611 — `letter_learner.html` (first since S509; 115 commits: the coloring sheets, bulk print, 1/2/4 a sheet, the paper size, the cursive tiles): the grid × 3 modes × 4 cells × Letter/A4, 7 cards' tabs × 4 cells × 2 papers, the tab's sheet 260 prints, the bulk run 96 combos (A/B clip), a per-part overlap arm (16 combos × 31 sheets), links, …[full text: IMPROVEMENT_ARCHIVE.md]
+- G print & export fidelity (one tool): 2026-11-05 (**S617 — `hebrew_dictionary.html` (its 7th: … S377 → S523 → S617; 43 commits: the Hebrew search order, a loaded list without filter chips, the Quizlet-safe corpus ?v=7, the dimmed export): 5 views × EN/HE × light/dark × Letter/A4 (40 PDFs), a Shoresh heading census by out-of-flow markers (16 roots, 280 headings, 64 prints), exports by real …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - D performance (one tool): 2026-11-05 (**S612 — `letter_learner.html` (first since S510; 112 commits: the coloring sheets, bulk print, the cursive tiles; the page 1.02 MB, 198 KB gzip): cold 10 cells (@1× 0 long tasks; @4× max 138, none over 200), 52 arms by real input × 3 cells, steady on all 31 cards, the bulk popup at 1/4 a sheet × 1/3 copies under Performance metrics and profiles, two …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -898,5 +894,5 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-22 (**S542 — 40th F, loading states (first since S189): 14 surfaces held, then aborted. FOUND 7, FIXED 4. F-next: long-build progress.**)
 
-**Next session (S617):** **Branch `claude/adoring-brown-9udi22` (S608–S616, draft PR 394): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1276**, FM **5.59**, corpus ?v=7. ⚑ drift: main=4f03455 sw=v1276 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: C letter_learner (S527), G dictionary (S523), D flash (S524), H letter_learner (S526), P name_tags (S535), M letter_learner (S536), N letter_learner (S545); suite E (S531), L (S532), K (S533). ⚑ Harnesses: `m616/` (`gate.mjs` / `sweep.mjs` measure a header's wrap gate and broken labels), `n615/`. ⚑ 57 seeds.
-⚑ Sync P2 (S573): D31 fails alone ~1 in 3. ⚑ The S602 gate-4 answer covers the landscape blend-sheet P3 (measure Export PDF first). ⚑ A header's button row that shrinks breaks a two-word Hebrew label long before any overflow (S616; every other page measured one-line). ⚑ The generator's Self-Check back clip (S613 P4) needs a layout call, not a one-liner. ⚑ Dashboard: the S610 glyph strings; the footer "·" (S588, 13 carriers). ⚑ Ports at the next A: `m554/`–`m616/`, `g604/`, `d605/`, `t605/`, `h606/`, `c607/`, `n608/`, `p609/`, `g611/`, `d612/`, `h613/`, `c614/`, `n615/`, `m616/`; traps 352, 356–534. ⚑ Queues: FM 26, generator 21, dashboard 8, torah 9, dictionary 8, name_tags 7, parsha_emojis 7, trope 6; the rest ≤ 4.
+**Next session (S618):** **Branch `claude/adoring-brown-9udi22` (S608–S617, draft PR 394): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1279**, FM **5.59**, corpus ?v=7. ⚑ drift: main=4f03455 sw=v1279 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: C letter_learner (S527), D flash (S524), H letter_learner (S526), P name_tags (S535), M letter_learner (S536), G parsha_emojis (S537), N letter_learner (S545); suite E (S531), L (S532), K (S533). ⚑ Harnesses: `g617/` (`p2.mjs` the Shoresh heading census, `fix2.mjs` Real Words lang census with a seeded Math.random, `lib.mjs` takes `seed: true`), `m616/`, `n615/`. ⚑ 57 seeds.
+⚑ Sync P2 (S573): D31 fails alone ~1 in 3. ⚑ The S602 gate-4 answer covers the landscape blend-sheet P3 (measure Export PDF first). ⚑ Real Words Bingo, Word Search and Crossword need 24 list words; a test list shorter than that renders nothing for them (S617). ⚑ The generator's answer-key footer P4 (S563) needs a seeded Math.random to reproduce: words are drawn at random. ⚑ The generator's Self-Check back clip (S613 P4) needs a layout call. ⚑ Dashboard: the S610 glyph strings; the footer "·" (S588, 13 carriers). ⚑ Ports at the next A: `m554/`–`m616/`, `g604/`, `d605/`, `t605/`, `h606/`, `c607/`, `n608/`, `p609/`, `g611/`, `d612/`, `h613/`, `c614/`, `n615/`, `m616/`, `g617/`; traps 352, 356–537. ⚑ Queues: FM 26, generator 20, dashboard 8, torah 9, dictionary 8, name_tags 7, parsha_emojis 7, trope 6; the rest ≤ 4.

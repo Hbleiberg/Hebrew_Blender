@@ -96721,3 +96721,38 @@ _(prior)_ **Next session (S616):** **Branch `claude/adoring-brown-9udi22` (S608�
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 - M aesthetics & visual design (one surface): 2026-11-05 (**S616 — 38th M, `parsha_emojis.html` (first since S522; 20 commits: the coloring-sheets popup, its loading and Try again, the size factors) with its generated `parsha/` pages (their first audit): 7 views × 8 cells (EN/HE × light/dark × 1280/800) in the real fonts, the S610 census arms + a UA-face arm, the popup's options scrolled, a header-control arm at 1px steps 320–900 × mouse/touch. FOUND 2, FIXED 2 (the Hebrew "דף הבית" broke onto two lines from 822px; the parsha pages' Hebrew text sat above its heading). M-next: letter_learner (S536), name_tags (S552).**)
+
+_(prior)_ **Next session (S617):** **Branch `claude/adoring-brown-9udi22` (S608–S616, draft PR 394): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1276**, FM **5.59**, corpus ?v=7. ⚑ drift: main=4f03455 sw=v1276 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: C letter_learner (S527), G dictionary (S523), D flash (S524), H letter_learner (S526), P name_tags (S535), M letter_learner (S536), N letter_learner (S545); suite E (S531), L (S532), K (S533). ⚑ Harnesses: `m616/` (`gate.mjs` / `sweep.mjs` measure a header's wrap gate and broken labels), `n615/`. ⚑ 57 seeds.
+⚑ Sync P2 (S573): D31 fails alone ~1 in 3. ⚑ The S602 gate-4 answer covers the landscape blend-sheet P3 (measure Export PDF first). ⚑ A header's button row that shrinks breaks a two-word Hebrew label long before any overflow (S616; every other page measured one-line). ⚑ The generator's Self-Check back clip (S613 P4) needs a layout call, not a one-liner. ⚑ Dashboard: the S610 glyph strings; the footer "·" (S588, 13 carriers). ⚑ Ports at the next A: `m554/`–`m616/`, `g604/`, `d605/`, `t605/`, `h606/`, `c607/`, `n608/`, `p609/`, `g611/`, `d612/`, `h613/`, `c614/`, `n615/`, `m616/`; traps 352, 356–534. ⚑ Queues: FM 26, generator 21, dashboard 8, torah 9, dictionary 8, name_tags 7, parsha_emojis 7, trope 6; the rest ≤ 4.
+
+
+<!-- archived by compact-ledger at the S618 boundary, 2026-11-05 -->
+## Compaction (S618, 2026-11-05) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-11-05 | (S617 close-out) | branch/deploy note | **S617 = G on `hebrew_dictionary.html` (first since S523; 43 commits to the page): 5 views × 8 cells × Letter/A4 (40 PDFs), a Shoresh heading census (16 roots × EN/HE × Letter/A4, 280 headings), exports by real clicks (Bulk Anki/Quizlet + the Word Lists window, EN/HE), colour coding from dark × 3 modes. FOUND 1, FIXED 1; + 2 generator fixes (the S574 P4's sheet half, a stale Bingo note found verifying it). 0 gates. PR 394, sw v1279; merge, then confirm the Pages deploy.** | closeout.mjs clean
+
+- [x] 2026-11-05 | `077fa568` | hebrew_blend_generator.html, sw.js | (S617, found verifying `c58e5ecb`) **Bingo's "Need at least 24 words" note stays with Bingo**: a drill switch kept it, and Generate's aria-disabled, under Word Search / Crossword / Vocabulary / Matching on a 16-word list. | real clicks, 4 drills × 4 cells: HEAD 16/16 kept it, tree 16/16 free and render; back on Bingo the note returns 32/32
+
+- [x] 2026-11-05 | `c58e5ecb` | hebrew_blend_generator.html, sw.js | (S574's P4, the sheet half; UX rule 8) **Hebrew quoted in a Real Words definition carries lang="he"** (`escTn()`, 18 sites + the matching key). | 11 drills × 4 cells, Math.random seeded, HEAD vs tree: EN unmarked 304 → 0 and 560 → 0; a plain-English list byte-equal (HTML + shots)
+
+- [x] 2026-11-05 | `89490c62` | parsha_emojis.html, sw.js | (S612's P4) **A size drag stops at the drawings** (the svg resets the size factors). | A/B @4× × 8: style median 376 → 220 ms; print PDF byte-identical
+
+- [x] 2026-11-05 | (S612 close-out) | branch/deploy note | **S612 = D on the Letter Learner (first since S510; 112 commits to the page: the coloring sheets, bulk print, the cursive tiles; 1.02 MB, 198 KB gzip). FOUND 2, FIXED 2 (the bulk preview's size drag and its off-screen sheets); cold, the cards, tabs, modes, the language and dark switches and steady animation clean (S510's per-frame …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-05 | `8e4d49ac` | letter_learner.html, sw.js | (S612 D; pattern `offscreen-sheets-laid-out-on-every-rebuild`, 4th carrier) **The bulk print preview skips the sheets out of view** (`content-visibility:auto` on `#llBpPages`' own pages and papers, Parsha Emojis' shape). | A/B @4× ×3 vs the tree before it: 4 a sheet × 3 copies, a copies change 497–583 → 120–214 ms, the worst size step …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-05 | `85b19cd4` | letter_learner.html, sw.js | (S612 D) **A coloring-sheet size drag no longer restyles every drawing** (the drawings' svg resets the five size factors). | A/B @4× ×4: style per 5 steps 1,534–1,899 → 429–447 ms (4 a sheet × 3 copies), 687–791 → 214–274, 352–398 → 105–138; worst step 660–742 → 258–341; every sheet still resizes; the bulk PDF identical 8/8 pages × 8 …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Per-session log (one line per session)
+
+- 2026-11-03 | **S597** | iters: 4 | tools: trope ×2, generator, scripts/loop, sw | patterns fixed: author-display-defeats-the-hidden-attribute ×1, print-trailing-padding-adds-a-sheet ×1 | pass run: G (trope, first since S479) | SW: v1210→v1213
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S617 (2026-11-05):** dictionary, generator, sw.js, loop probe, loop docs S617 · parsha_emojis, parsha/ + build-parsha-pages, shared-components.md, sw.js, loop docs S616 · generator, dashboard, torah, fontmaker, locales, sw.js, loop docs S615 · fontmaker, generator, flash, dashboard, torah, index, locales, sw.js, storage-and-backup.md, loop docs S614 · generator, dashboard, parsha_emojis, sw.js, loop docs S613 · letter_learner, dashboard, sw.js, loop docs S612 · letter_learner, dashboard, sw.js, loop docs S611 · dashboard, torah, generator, sw.js, loop docs S610 · trope, locales, sw.js, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- G print & export fidelity (one tool): 2026-11-05 (**S617 — `hebrew_dictionary.html` (its 7th: … S377 → S523 → S617; 43 commits: the Hebrew search order, a loaded list without filter chips, the Quizlet-safe corpus ?v=7, the dimmed export): 5 views × EN/HE × light/dark × Letter/A4 (40 PDFs), a Shoresh heading census by out-of-flow markers (16 roots, 280 headings, 64 prints), exports by real clicks (Bulk Anki + Quizlet incl. the inactive press, the Word Lists window's two, EN/HE), colour coding from dark × 3 modes. FOUND 1, FIXED 1 (`e45d6283`). G-next: parsha_emojis (S537), name_tags (S550).**)

@@ -5,6 +5,32 @@
 > by `scripts/compact-ledger.mjs`; they are records, not open work. Full history: `docs/IMPROVEMENT_ARCHIVE.md`.
 
 
+## S617 (2026-11-05) — pass G on `hebrew_dictionary.html` (its 7th: S65 → S94 → S127 → S252 → S377 → S523 → S617; 43 commits to the page since; FOUND 1, FIXED 1) + the generator's Real Words definitions' Hebrew and a stale Bingo note from the queue
+
+- [ ] P4 (**NEW S617 Pass G — its receipts, so the next G on the dictionary starts here**) | hebrew_dictionary.html |
+  - **Harness `g617/` (scratchpad):** `lib.mjs` (m616's: SW blocked, foreign origins aborted, real Google Fonts from the `fc/` cache, `seed: true` replaces `Math.random` with a seeded mulberry32 before load), local HTTP :8080 + a `git archive` HEAD copy on :8091, Chromium under `LANG=C.UTF-8` (trap 98), PDFs by `page.pdf` under `emulateMedia('print')` with `beforeprint`/`afterprint` dispatched; `an.py` (pdfplumber: sheets, off-page glyphs, dark fills, the first lines), `pdftoppm` contact sheets.
+  - **Matrix (`p1.mjs`):** "water" (41 words, 3 sheets), the Hebrew search מים (30 words, 2), Emojis "dog" (5 emojis, 1), Shoresh כתב (20 related words, 3), a saved list loaded by real clicks (4 words, 1) × EN/HE × light/dark × Letter/A4 at 0.4in = 40 PDFs: 0 off-page glyphs, 0 dark fills, 0 empty sheets, 0 page errors; the print header names the view (a list's header the date only and its banner below, a Shoresh header the count and the root card), the loaded list's filter chips off paper (`4715e222`).
+  - **Shoresh headings (`p2.mjs`):** out-of-flow white markers at each group heading, its first card's first and last text, the patterns title and its first pattern; 16 roots (כתב למד שמר אכל הלך ספר דבר עבד שבר פתח סגר כנס שלח זכר קרא חשב) × EN/HE × Letter/A4: 280 headings, 64 prints, 189 sheets. HEAD 23 stranded (the FIX), 0 titles stranded; after the headings alone 0 + 4 titles stranded; after both 0 + 0, sheets equal, 0 first cards cut.
+  - **Exports (`p3.mjs`, real clicks, EN light / HE dark):** Bulk Copy Mode's inactive Anki press downloads nothing and says "Select words using Bulk Copy Mode first." (aria-disabled true → false after 3 ticks, "3 words selected for export."); Bulk Anki (3 header lines, 6 tab fields, era/pos tags) and Quizlet (BOM, `Term,Definition`, RFC quoting); the Word Lists window's two exports of a list named `Noach מַיִם 💧 week 2` keep the name in the file name; a tab in a translation folds to a space in Anki.
+  - **Colour coding (`p4.mjs`):** "water" with colour coding on by real clicks × Letter / Highlight / Underline × light and dark: 114 syllables each, the PDF's Hebrew glyph colours equal light = dark in all 3 modes, Highlight prints 46 underlines like Underline (S523's `70531135` holds).
+  | found S617
+
+- [ ] P4 (**NEW S617 — settled, so no pass re-derives them**) | hebrew_dictionary.html |
+  - **(a)** The Shoresh patterns panel prints its ▾ fold arrow, recoloured navy by the print block on purpose; a panel collapsed on screen prints collapsed. **(b)** The Quizlet CSV quotes `"`, `,` and `\n` but not a lone `\r` or a tab: an unquoted tab is legal CSV, the corpus holds neither (S523 (7)), and a saved list's words come from the dictionary's own cards. **(c)** pdftotext prints Hebrew lines reversed (`ירבע ןולימו`): read order, not a defect.
+  | found S617
+
+- [ ] P4 (**S617 — the fixes' receipts**) | hebrew_dictionary.html, hebrew_blend_generator.html |
+  - **`e45d6283`** (`p2.mjs` HEAD vs tree; the committed probe passes on the tree and fails on HEAD with 24 headings + 6 titles stranded in the fallback faces); Words and Emojis carry no `.shoresh-group-hdr`, their 16 fix PDFs = HEAD's sheet counts.
+  - **`c58e5ecb`** (`fix2.mjs`): a list quoting Hebrew in 3 of its definitions and a plain-English twin, every Real Words drill by real clicks with its translation on (the toggle is on by default; placement Both where offered) and Generate pressed × 4 cells, `Math.random` seeded: unmarked Hebrew in the English UI 304 → 0 (vocab, matching + its key, identify, reading, reverse, idpos, gematria, fill vowels) and 560 → 0 (bingo at 26 words); the twin's worksheet HTML and screenshot byte-equal to HEAD in every drill and cell. The Hebrew UI's sheets sit under the page's `lang="he"` (0 unmarked either way). The crossword's clues already mark a clue holding Hebrew.
+  - **`077fa568`** (`fix3.mjs`): a 16-word list, Bingo's Generate pressed (the note), then Word Search / Crossword / Vocabulary / Matching: HEAD 16/16 kept Bingo's note and `aria-disabled="true"` (a press still generates: the button is not dimmed and `generate()` clears the note first, `dbg3.mjs`), tree 16/16 free and the sheet renders; back on Bingo the note returns 32/32.
+  | found S617
+
+- [ ] P4 (**NEW S617 — traps**) | probes |
+  - **(535)** A fix can move the stranding to the next heading-like block: after `break-after: avoid` on the Shoresh group headings, the patterns panel's title (0 stranded on HEAD) stranded in 4 prints. Re-run the whole census after the first rule.
+  - **(536)** The generator's Real Words translation toggle is on by default: a probe that "turns it on" by clicking the slider turns it off. Read `#rwShowTranslation` first. And a drill pick does not re-render: press Generate.
+  - **(537)** Real Words Bingo, Word Search and Crossword need 24 words (a 5×5 card): a shorter test list renders nothing for them and, after a Bingo press, left its note on the next drill (fixed `077fa568`). Real Words shuffles with `Math.random`: a HEAD-vs-tree byte comparison needs it seeded.
+  | found S617
+
 ## S616 (2026-11-05) — pass M on `parsha_emojis.html` (its 2nd M: S522 → S616; 20 commits to the page since: the coloring-sheets popup, its loading and Try again, the size factors) with its generated `parsha/` coloring pages (their first audit of any kind; FOUND 2, FIXED 2)
 
 - [ ] P4 (**NEW S616 Pass M — the arms and their receipts, so the next M on this page or the parsha pages starts here**) | parsha_emojis.html, parsha/*.html, scripts/build-parsha-pages.mjs |
