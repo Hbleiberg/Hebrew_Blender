@@ -1162,7 +1162,7 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
   @container (max-width: 318px) { .settings-modal .tt-tab { font-size:0.58rem; } }
 
   /* ───── Sections: a serif heading over a hairline rule (the Trope Tutor's .tu-set-title, the Trainer's .tt-set-title); flat, nothing collapses ───── */
-  .tt-set + .tt-set { margin-block-start:22px; }
+  .tt-set ~ .tt-set { margin-block-start:22px; }   /* ~, not +: the English font's file input sits between Intermission and Hebrew Settings */
   .tt-set-title { font-family:'Libre Baskerville',serif; font-size:0.84rem; font-weight:400; letter-spacing:0.02em; color:var(--navy); padding-block-end:4px; border-block-end:1px solid var(--border); margin:0; margin-block-end:12px; display:flex; align-items:center; gap:6px; }
   body.dark .tt-set-title { color:var(--gold-light); }
   .tt-set-title:focus { outline:none; }            /* openSettingsAtPanel's programmatic target */
