@@ -332,7 +332,8 @@
 - **Record (ledger row at S544):** - **`header-wrap-gate-below-its-ceiling`** (NEW S478 M; ×8 `92a21164`; S489 `f620c768`; S520 touch ×8 `186ea5f4`): ACTIVE, streak 0. Detection: `n520/gates2.mjs` (1px 320-1000, EN/HE × themes, mouse+touch, real fonts); HEAD the control.
 
 ## `latin-tracking-on-hebrew-labels`
-- **Status:** ACTIVE · **Owner:** H · **Consequence:** normal · **Last:** S570 · **Streak:** 0 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** H · **Consequence:** normal · **Last:** S611 · **Streak:** 0 · **Detector:** recipe
+- **Record (S611, queue):** FIXED dashboard `26560c58` — `.pick-group-title :lang(he) { letter-spacing: normal }`: the reset sits on the span `hebDisplay` makes, because letter-spacing inherits as a computed length (a reset on an ancestor of the tracked rule is too late, one on the tracked element misses the English UI). Make Groups × 8 cells × header he/en: Hebrew 0.48–0.65px → normal, "Group N" keeps 0.03em (HEAD 8/16, tree 16/16; `m610/fix611b.mjs`).
 - **Record (S610, M dashboard):** 1 open hit — Make Groups' `.pick-group-title` (0.03em) tracks "קְבוּצָה N" at 0.48–0.65px in both UIs (the header language decides the script, so an `html[lang=he]` reset alone would miss the English UI: `:lang(he)`); P4 at the dashboard's cap.
 - **Record (S570, queue):** FIXED flash `5a04c5a8` — the certificate's `.fcc-suite` and `.fcc-seal-w` take the `html[lang="he"]` reset (letter-spacing and the uppercase); tracked Hebrew 1 → 0 by the census (the suite line "IvritSuite · כרטיסיות" counts as Latin-majority there, so it was read on the rendered page). Open: none known.
 - **Record (S569, G flash):** FOUND on paper — the HE certificate's `.fcc-suite` (0.18em, uppercase) and seal word `.fcc-seal-w` (0.14em) track Hebrew letters; print-only CSS, so the screen censuses never saw it (`g569/report.mjs`; a planted tracked line fired). Open: flash (P3, at the cap).

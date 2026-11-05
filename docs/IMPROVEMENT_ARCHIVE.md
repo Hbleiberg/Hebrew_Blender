@@ -96485,3 +96485,40 @@ _(prior)_ **Next session (S610):** **Branch `claude/adoring-brown-9udi22` (S608�
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 - M aesthetics & visual design (one surface): 2026-11-04 (**S610 — 37th M, `classroom_dashboard.html` (first since S508; 55 commits): 17 views × 8 cells (EN/HE × light/dark × 1280/800) with real fonts, 7 census arms behind plants, a UA-face arm, section rhythm, the board message's direction. FOUND 7: 2 FIXED (one gate 3), 4 P4, the S568 P4 re-measured. M-next: parsha_emojis (S522), letter_learner (S536).**)
+
+_(prior)_ **Next session (S611):** **Branch `claude/adoring-brown-9udi22` (S608–S610, draft PR 394): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1256**, FM **5.59**, corpus ?v=7. ⚑ drift: main=4f03455 sw=v1256 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: G letter_learner (S509), D letter_learner (S510), H generator (S512), C fontmaker (S513), N chrome (S520), M parsha_emojis (S522), P name_tags (S535); suite E (S531), L (S532), K (S533). ⚑ Harnesses: dashboard M `m610/` (`lib.mjs` = Google Fonts by curl into `fc/`; `shots.mjs` + `census.js`, `uafont.mjs`, `gaps.mjs`; `tt.mjs` routes Sefaria, esm.sh and jsdelivr through curl so the Trainer's text and transliteration load), trope + dictionary P `p609/`, dashboard N `n608/`, C `c607/`. ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
+⚑ Sync P2 (S573): D31 still fails alone about 1 in 3 (S602: HEAD 2/3, tree 3/3). ⚑ The S602 gate-4 answer also covers the landscape blend-sheet P3 — measure Export PDF landscape first (S604). ⚑ The dashboard's four S610 P4s (the Hebrew Settings gap, nine glyph control strings, the drawer's second gold primary, the group titles' tracking) and its half of the S568 Arial P4 wait for a session whose caps leave the dashboard free; the footer's dangling "·" (S588, 13 carriers) too. ⚑ Two gate-3 P4s are small but gated: the Letter Learner's final-form cards 10px high, the dictionary's long headword. ⚑ Ports at the next A: `m554/`–`m610/`, `g604/`, `d605/`, `t605/`, `h606/`, `c607/`, `n608/`, `p609/`; traps 352, 356–525. ⚑ Queues (first file of each candidate): FM 26, generator 19, dashboard 12, torah 9, dictionary 8, name_tags 7, parsha_emojis 7, trope 6; the rest ≤ 4.
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- G print & export fidelity (one tool): 2026-11-04 (**S604 — `classroom_dashboard.html` (first since S495; 64 commits: Bulk preset edit's switches, Make Groups, the parsha popup, the Name Tags class copy among them): the board on paper (8 cells × Letter/A4 × backgrounds off/on; Letter, Highlight and Underline colouring), 14 states for fixed surfaces × 4 cells, the week sheet by its real Print …[full text: IMPROVEMENT_ARCHIVE.md]
+
+
+<!-- archived by compact-ledger at the S612 boundary, 2026-11-05 -->
+## Compaction (S612, 2026-11-05) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-11-05 | (S611 close-out) | branch/deploy note | **S611 = G on the Letter Learner (first since S509; 115 commits to the page: the coloring sheets, bulk print, 1/2/4 a sheet, the paper size, the cursive tiles). FOUND 2: 1 FIXED, 1 P4; the grid, the card tabs, both coloring-sheet prints, the links and the `.ivrit` arm clean. + 2 dashboard P4s from S610's queue. Branch `claude/adoring-brown-9udi22` (PR 394), sw v1259; deploy on merge.** Gates: none. No live action. Deferred: none.
+
+- [x] 2026-11-04 | (S606 close-out) | branch/deploy note | **S606 = H on the chrome bundle (the account page's first H since S426): 5 lessons + the student cell on the account smoke's fake cloud. FOUND 6, FIXED 4 (gate 2 ×4, the recommended option each), 1 P4, 1 S596's. PR #393, sw v1245; deploy on merge.** No live action.
+
+- [x] 2026-11-04 | `a5daa9e0` | js/ivrit-account.js, locales, sw.js | (S606 H) **A student account's Sign out asks "Sign out of this student account?"** | student 6/6 (HEAD 0/6), teacher = HEAD 6/6; backend smokes green (sync's D31 flake alone 3/3)
+
+- [x] 2026-11-04 | `a36f255e` | account.html, locales, sw.js | (S606 H) **After a download from the delete step, its line is in view and Continue reads "Continue"** | 12/12 (HEAD 0/12); smoke-account-page 65/65
+
+- [x] 2026-11-04 | `aa6a09a9` | privacy.html, locales, sw.js | (S606 H) **The policy's "(Section N)" references link to their sections** (EN + HE, words unchanged) | 8/8 (HEAD 0 links); text = HEAD 8/8
+
+- [x] 2026-11-04 | `c76bbbc5` | 404.html, locales, sw.js | (S606 H) **The 404 links every listed tool** (it linked 4) | 12/12 at a missing path (HEAD 0/12)
+
+### from Per-session log (one line per session)
+
+- 2026-11-01 | **S591** | iters: 5 | tools: trope ×2, dictionary, index, scripts/loop, sw | patterns fixed: contrast-below-AA-on-a-tinted-or-coloured-plate ×1, fixed-surface-missing-from-the-print-hide-list ×1 | pass run: C (trope, first since S455) | SW: v1183→v1187
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S611 (2026-11-05):** letter_learner, dashboard, sw.js, loop docs S611 · dashboard, torah, generator, sw.js, loop docs S610 · trope, locales, sw.js, loop docs S609 · dashboard, sw.js, loop docs S608 · dashboard, generator, dictionary, smoke-assignments, sw.js, dashboard.md, loop docs S607 · 404, privacy, account, js/ivrit-account.js, locales, sw.js, loop docs S606 · dictionary, torah, reading_assignments, sw.js, loop docs S605 · dashboard, index, dictionary, locales, sw.js, CLAUDE.md, loop docs S604 · index, contact, privacy, terms, account, sw.js, loop docs S603 · torah, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- G print & export fidelity (one tool): 2026-11-05 (**S611 — `letter_learner.html` (first since S509; 115 commits: the coloring sheets, bulk print, 1/2/4 a sheet, the paper size, the cursive tiles): the grid × 3 modes × 4 cells × Letter/A4, 7 cards' tabs × 4 cells × 2 papers, the tab's sheet 260 prints, the bulk run 96 combos (A/B clip), a per-part overlap arm (16 combos × 31 sheets), links, Ctrl+P, collation, colour, the `.ivrit`. FOUND 2: 1 FIXED, 1 P4. G-next: dictionary (S523), parsha_emojis (S537).**)
