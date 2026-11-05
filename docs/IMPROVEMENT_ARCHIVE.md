@@ -96569,3 +96569,58 @@ _(prior)_ **Next session (S612):** **Branch `claude/adoring-brown-9udi22` (S608�
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 - D performance (one tool): 2026-11-05 (**S612 — `letter_learner.html` (first since S510; 112 commits: the coloring sheets, bulk print, the cursive tiles; the page 1.02 MB, 198 KB gzip): cold 10 cells (@1× 0 long tasks; @4× max 138, none over 200), 52 arms by real input × 3 cells, steady on all 31 cards, the bulk popup at 1/4 a sheet × 1/3 copies under Performance metrics and profiles, two interleaved A/Bs. FOUND 2, FIXED 2 (the size drag's restyle of every drawing; the preview's off-screen sheets). D-next: flash (S524), parsha_emojis (S538).**)
+
+_(prior)_ **Next session (S613):** **Branch `claude/adoring-brown-9udi22` (S608–S612, draft PR 394): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1263**, FM **5.59**, corpus ?v=7. ⚑ drift: main=4f03455 sw=v1263 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: H generator (S512), C fontmaker (S513), N chrome (S520), M parsha_emojis (S522), G dictionary (S523), D flash (S524), P name_tags (S535); suite E (S531), L (S532), K (S533). ⚑ Harnesses: Letter Learner D `d612/` and G `g611/`, dashboard `m610/` (receipts: findings S612, S611). ⚑ Closeout ~2.5 min. ⚑ 57 seeds.
+⚑ Sync P2 (S573): D31 still fails alone about 1 in 3 (S602: HEAD 2/3, tree 3/3). ⚑ The S602 gate-4 answer also covers the landscape blend-sheet P3 — measure Export PDF landscape first (S604). ⚑ The dashboard's last S610 P4 (nine glyph control strings) and its half of the S568 Arial P4 wait for a session whose caps leave the dashboard free (S612 spent 2 on it); the footer's dangling "·" (S588, 13 carriers) too. ⚑ Two gate-3 P4s are small but gated: the Letter Learner's final-form cards 10px high, the dictionary's long headword. ⚑ Ports at the next A: `m554/`–`m610/`, `g604/`, `d605/`, `t605/`, `h606/`, `c607/`, `n608/`, `p609/`, `g611/`, `d612/`; traps 352, 356–528. ⚑ Queues (first file of each candidate): FM 26, generator 19, dashboard 9, torah 9, dictionary 8, name_tags 7, parsha_emojis 8, trope 6; the rest ≤ 4.
+
+
+<!-- archived by compact-ledger at the S614 boundary, 2026-11-05 -->
+## Compaction (S614, 2026-11-05) — moved verbatim from the live ledger
+
+### from Candidates — aged P4 (found more than 90 sessions before S614)
+
+- [ ] P4 (**NEW S523 G — gate 3**) | hebrew_dictionary.html | **A long one-word headword overflows its card** (paper and phone). | found S523
+
+### from Candidates (prioritized, top = next)
+
+- [ ] P3 (**NEW S613 H — the generator's cap was spent**) | hebrew_blend_generator.html | **"Practice these in Flash Cards" under Real Words → My Word Lists hands Flash Cards the blend letters, not the list**: a teacher on a Food words list gets 2-letter blends of the whole alef-bet; Flash Cards takes `?wl=<id>` (the Dictionary's link), and the button's title ("these letters and vowels") would need its list twin (gate 2). | found S613
+
+### from Done
+
+- [x] 2026-11-05 | (S613 close-out) | branch/deploy note | **S613 = H on the generator (its 5th: S130 → S251 → S363 → S512 → S613; a 4th-grade food-vocabulary unit from a Dictionary word list: the `?wl=` landing, Word Search, Crossword, Bingo, Matching, Self-Check, Gematria, a Hebrew header on A4 landscape, a preset, Copy link, a colleague's open, the list edited in the Dictionary, the Flash Cards hand-off; the student cell on the Self-Check cards). FOUND 5: 2 FIXED (the cards' keyboard, the crossword's fill), 1 P3 + 2 P4 logged at the cap; the list edit, preset, reload and link settled. + 2 queue fixes (the dashboard's armed chip in High Contrast, Parsha Emojis' size factors). Branch `claude/adoring-brown-9udi22` (PR 394, open), sw v1263 → v1267; deploy after merge. Decisions deferred: none asked (gate 2 ×2 logged: the hand-off title, the bingo note).**
+
+- [x] 2026-11-05 | `89490c62` | parsha_emojis.html, sw.js | (S612's P4, measured first) **A coloring-sheet size drag stops at the drawings** (the drawing's svg resets the seven size factors and `--k`, the Letter Learner's `85b19cd4` shape). | interleaved A/B @4× × 8, all 54 at 1 a sheet: style per 5 steps median 376 → 220 ms (the worst task unchanged, median 170 → 184); drawing sizes, the print PDF (byte-identical, 1 and 4 a sheet, light and dark) and the preview identical
+
+- [x] 2026-11-05 | `84f17450` | classroom_dashboard.html, sw.js | (S607's P4; pattern `selected-state-lost-in-forced-colors`) **The week editor's armed chip keeps a Highlight ring in High Contrast** (an outline: its swatch and name unchanged). | real click on a chip × forced/normal × light/dark, HEAD vs tree: armed vs unarmed 14.3 / 14.8 → 47.1 / 37.8; outside forced colours pixel-identical
+
+- [x] 2026-11-05 | `ad37dd9e` | hebrew_blend_generator.html, sw.js | (S613 H) **The crossword keeps the fullest of up to 30 tries** (longest-first first, then shuffled orders). | 40 regenerations each, HEAD vs tree: a 14-word list 4 (34) / 6 (6) → 7–10 (10 in 23); 5 words: the too-few page 22/40 → 4 placed 40/40; All Words 0 ×3 → 10 ×40; @4× a build's longest task 51–75 → 53–100 ms; every clue numbered on the grid; 2 cells
+
+- [x] 2026-11-05 | `1779582b` | hebrew_blend_generator.html, sw.js | (S613 H student cell; UX rule 7) **Every Self-Check card turns by the keyboard** (its face a button in the tab order, Enter/Space, `aria-pressed` kept in step by Reveal / Hide All and the Gematria reset; the ring off paper). | 5 card kinds (Real Words, blends, Name the Letter, Gematria, Number Practice) × 4 cells: HEAD never focusable, Enter nothing; tree 15–22 Tabs from Generate, Enter/Space flip and back, mouse flips, reveal mismatches 0, print outline none, 0 errors
+
+- [x] 2026-11-04 | (S608 close-out) | branch/deploy note | **S608 = N on the dashboard (first since S506; 54 commits). FOUND 2, FIXED 2, + 1 P4 (verify on a device); the S562 tip carriers measured and settled. Branch `claude/adoring-brown-9udi22`, draft PR, sw v1250; deploy on merge.** Gates: none. No live action. 4 iterations: the queue's next small items sit at gates or the dashboard cap.
+
+- [x] 2026-11-04 | (measured) | torah, dictionary, flash, dashboard | (S608; the S562 N P4) **Struck: every real tip fits a sideways phone** — 36 tips × 4 cells, 0 past the window; a planted long tip fired 16/16; the missing bottom clamp stays latent (findings S608). | no change
+
+- [x] 2026-11-04 | `7a2027bd` | classroom_dashboard.html, sw.js | (S608 N) **Schedule Sync's empty-week hint stands upright in the Hebrew UI** (pattern `hebrew-faux-italic`). | 16 cells + a live switch: Hebrew italic 16/16 → 0; English italic kept
+
+- [x] 2026-11-04 | `da7adab7` | classroom_dashboard.html, sw.js | (S608 N) **Bulk preset edit's text-size box is 16px under a finger and tall enough for its digits** (pattern `text-field-under-16px-zooms-on-ios-focus`). | 24 cells vs HEAD: 12.48 → 16px on 4 phones; digits cut 24/24 → 0; desktop = HEAD
+
+### from Per-session log (one line per session)
+
+- 2026-11-01 | **S593** | iters: 5 | tools: fontmaker ×2, name_tags, dashboard, scripts/loop, sw | patterns fixed: RTL-inheritance-on-a-Latin-script-container ×1, decorative-glyph-carrier-exposed-to-assistive-tech ×1 | pass run: G (fontmaker, first since S465) | SW: v1191→v1195
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S613 (2026-11-05):** generator, dashboard, parsha_emojis, sw.js, loop docs S613 · letter_learner, dashboard, sw.js, loop docs S612 · letter_learner, dashboard, sw.js, loop docs S611 · dashboard, torah, generator, sw.js, loop docs S610 · trope, locales, sw.js, loop docs S609 · dashboard, sw.js, loop docs S608 · dashboard, generator, dictionary, smoke-assignments, sw.js, dashboard.md, loop docs S607 · 404, privacy, account, js/ivrit-account.js, locales, sw.js, loop docs S606 · dictionary, torah, reading_assignments, sw.js, loop docs S605 · dashboard, index, dictionary, locales, sw.js, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- H teacher walkthrough / paper-cuts (one tool): 2026-11-05 (**S613 — `hebrew_blend_generator.html` (its 5th, first since S512): a food-vocabulary unit from a Dictionary word list by real clicks — the `?wl=` landing, 6 Real Words drills, a Hebrew header on A4 landscape, a preset, Copy link and a colleague's open, the list edited in the Dictionary, the Flash Cards hand-off — + the student cell (Self-Check at 1366 and full-screen 1024, EN/HE). FOUND 5: 2 FIXED (the cards' keyboard, the crossword's fill), 1 P3 + 2 P4. H-next: letter_learner (S526), parsha_emojis (S540).**)
+
+
+<!-- archived by compact-ledger at the S614 boundary, 2026-11-05 -->
+## Compaction (S614, 2026-11-05) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-11-05 | `84f17450` | classroom_dashboard.html, sw.js | (S607's P4; `selected-state-lost-in-forced-colors`) **The week editor's armed chip keeps a Highlight ring in High Contrast.** | clips, forced light/dark: armed vs unarmed 14 → 47 / 38; normal pixel-identical
