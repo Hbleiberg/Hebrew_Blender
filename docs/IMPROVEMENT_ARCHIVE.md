@@ -96624,3 +96624,28 @@ _(prior)_ **Next session (S613):** **Branch `claude/adoring-brown-9udi22` (S608�
 ### from Done
 
 - [x] 2026-11-05 | `84f17450` | classroom_dashboard.html, sw.js | (S607's P4; `selected-state-lost-in-forced-colors`) **The week editor's armed chip keeps a Highlight ring in High Contrast.** | clips, forced light/dark: armed vs unarmed 14 → 47 / 38; normal pixel-identical
+
+_(prior)_ **Next session (S614):** **Branch `claude/adoring-brown-9udi22` (S608–S613, draft PR 394): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1267**, FM **5.59**, corpus ?v=7. ⚑ drift: main=4f03455 sw=v1267 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: C fontmaker (S513), N chrome (S520), M parsha_emojis (S522), G dictionary (S523), D flash (S524), H letter_learner (S526), P name_tags (S535); suite E (S531), L (S532), K (S533). ⚑ Harnesses: `h613/`, `d612/`, `g611/` (findings S611–S613). ⚑ Closeout ~3 min. ⚑ 57 seeds.
+⚑ Sync P2 (S573): D31 fails alone ~1 in 3. ⚑ The S602 gate-4 answer covers the landscape blend-sheet P3 (measure Export PDF first). ⚑ The generator's S613 P3 (Flash Cards hand-off under My Word Lists) is small; its title is gate 2. ⚑ Dashboard waits for free caps: the S610 glyph strings, the S568 Arial half, the S607 week ✕; the footer "·" (S588, 13 carriers). ⚑ Gate-3 P4s, small: LL final-form cards, the dictionary headword. ⚑ Ports at the next A: `m554/`–`m610/`, `g604/`, `d605/`, `t605/`, `h606/`, `c607/`, `n608/`, `p609/`, `g611/`, `d612/`, `h613/`; traps 352, 356–529. ⚑ Queues: FM 26, generator 22, dashboard 9, torah 9, dictionary 8, name_tags 7, parsha_emojis 7, trope 6; the rest ≤ 4.
+
+
+<!-- archived by compact-ledger at the S615 boundary, 2026-11-05 -->
+## Compaction (S615, 2026-11-05) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-11-05 | `58f7ceaa` | classroom_dashboard.html, sw.js | (S607's P4; `sub-floor touch target`) **The week editor's Remove-period ✕ keeps 24×24.** | 8 cells: a click 10px off the icon removes 4/4 (HEAD 0/4); Enter unchanged; 0 errors
+
+- [x] 2026-11-04 | (S609 close-out) | branch/deploy note | **S609 = P on the Trope Tutor (first since S507; 38 commits to the page, 12 to the account modules) + the dictionary (first since S521; a clean surface buys a second). FOUND 0 on both; every arm behind a control that fired. + 2 queue fixes by gate 2. Branch `claude/adoring-brown-9udi22` (PR 394), sw v1252; deploy on merge.** Gates: 2 …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-04 | `26f8eb83` | trope_tutor.html, locales, sw.js | (S609; S557's Learn half — its Drill half went with `608bf115`, which plays a chart's tunes) **The High Holiday, Haftarah and megillah melody notes say the Learn examples are PocketTorah's year-round reading** (gate 2). | 16 cells vs HEAD: the five notes name the source 0 → 5, the two others unchanged, 12 example buttons per …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-04 | `784cc1af` | locales, sw.js | (S609; the 2026-10-03 P4) **The dictionary's letter filter that requires every ticked letter says "All of these letters" / "All:" in English** (gate 2). | 16 cells vs HEAD by real clicks: header and chip "All", 24 words each holding both letters (= HEAD); Hebrew unchanged
+
+### from Per-session log (one line per session)
+
+- 2026-11-01 | **S594** | iters: 5 | tools: generator ×2, dictionary ×2, locales, sw | patterns fixed: hover-tip-not-dismissible-or-hoverable ×1, help-affordance-inside-a-label-forwards-its-tap ×1, sub-floor touch target ×1, decorative-glyph-carrier-exposed-to-assistive-tech ×1 | pass run: C …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S614 (2026-11-05):** fontmaker, generator, flash, dashboard, torah, index, locales, sw.js, storage-and-backup.md, loop docs S614 · generator, dashboard, parsha_emojis, sw.js, loop docs S613 · letter_learner, dashboard, sw.js, loop docs S612 · letter_learner, dashboard, sw.js, loop docs S611 · dashboard, torah, generator, sw.js, loop docs S610 · trope, locales, sw.js, loop docs S609 · dashboard, sw.js, loop docs S608 · dashboard, generator, dictionary, smoke-assignments, sw.js, dashboard.md, loop docs S607 · 404, privacy, account, js/ivrit-account.js, locales, sw.js, loop docs S606 · dictionary, torah, reading_assignments, sw.js, loop docs …[full text: IMPROVEMENT_ARCHIVE.md]
