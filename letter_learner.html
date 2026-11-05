@@ -715,7 +715,10 @@ html[lang="he"] .ll-vgroup { letter-spacing:normal; text-transform:none; }
 .ll-cs-word { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:0; min-width:0; text-align:center; }
 .ll-cs-pic { flex:0 1 auto; min-height:0; max-width:100%; width:calc(var(--cs-pic-base) * var(--cs-pic)); height:calc(var(--cs-pic-base) * var(--cs-pic)); }
 .ll-cs-art { flex:0 1 auto; min-height:0; width:100%; height:calc(var(--cs-main-base) * var(--cs-main)); }
-.ll-cs-pic svg, .ll-cs-art svg { display:block; width:100%; height:100%; overflow:visible; }
+.ll-cs-pic svg, .ll-cs-art svg { display:block; width:100%; height:100%; overflow:visible;
+  /* No drawing reads the size factors, so they stop here: a size drag otherwise restyles every node of every drawing on
+     every sheet in the bulk preview (a third of a second a step on a slow laptop at four to a sheet with copies). */
+  --cs-main:initial; --cs-pic:initial; --cs-he:initial; --cs-tr:initial; --cs-en:initial; }
 .ll-cs-he { font-size:calc(7cqmin * var(--cs-he)); line-height:1.2; white-space:nowrap; }
 .ll-cs-tr { font-size:calc(3.3cqmin * var(--cs-tr)); font-style:italic; line-height:1.25; }
 .ll-cs-en { font-size:calc(3.3cqmin * var(--cs-en)); line-height:1.25; }
