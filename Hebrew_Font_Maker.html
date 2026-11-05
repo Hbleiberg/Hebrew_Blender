@@ -595,7 +595,7 @@ body.dark .hi-sun{display:inline-block;}
   .size-slider-col { flex: 1 1 300px; min-width: 240px; max-width: 460px; display: flex; flex-direction: column; gap: 7px; }
   .size-slider-line { display: flex; align-items: center; gap: 8px; white-space: nowrap; font-size: 0.82rem; }
   .size-slider-line label { flex: 0 0 auto; min-width: 108px; }
-  .size-slider-line input[type='range'] { flex: 1 1 auto; min-width: 90px; }
+  .size-slider-line input[type='range'] { flex: 1 1 auto; min-width: 90px; height: 24px; /* the slider floor (3ae6891 pattern) — native default is ~16px */ }
   /* Confirm / Reset actions grouped in a panel to the right of the sliders */
   .anchor-confirm-panel { flex: 0 0 auto; display: flex; flex-direction: column; align-items: stretch; text-align: center; gap: 8px; padding: 12px; min-width: 196px; border: 1px solid var(--border); border-radius: 8px; background: var(--cream); }
   .anchor-confirm-panel .ctl-row { justify-content: center; }
@@ -17023,7 +17023,7 @@ function renderAnchorLeft(L, l) {
       <div class="ws-side-title">${I18n.t('fontmaker.panels.meteg_title')}</div>
       <div class="ctl-row" style="margin-top:6px;align-items:center;gap:6px;">
         <span style="font-size:0.72rem;color:var(--muted);white-space:nowrap;">${I18n.t('fontmaker.panels.meteg_gap')}</span>
-        <input type="range" id="metegGapSlider" min="0" max="200" step="5" value="${metegGap()}" oninput="setMetegGap(this.value)" onchange="udSliderCommit('metegGapSlider')" style="flex:1;" aria-label="${esc(I18n.t('fontmaker.panels.meteg_gap'))}">
+        <input type="range" id="metegGapSlider" min="0" max="200" step="5" value="${metegGap()}" oninput="setMetegGap(this.value)" onchange="udSliderCommit('metegGapSlider')" style="flex:1;height:24px;" aria-label="${esc(I18n.t('fontmaker.panels.meteg_gap'))}">
         <span id="metegGapV" class="readout">${metegGap()}</span>
         <button class="ctl-btn" title="${esc(I18n.t('fontmaker.panels.meteg_auto_title'))}" onclick="setMetegGapAuto()">${I18n.t('fontmaker.panels.meteg_auto')}</button>
       </div>
