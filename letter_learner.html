@@ -806,6 +806,10 @@ body.dark .ll-bp-main { background:var(--cream); }   /* dark --warm-gray is the 
 .ll-cs-sheetbox .ll-cs-paper { position:absolute; inset:0; box-sizing:border-box; }
 .ll-cs-sheetbox .ll-cs-sheet { width:100%; height:100%; min-height:0; aspect-ratio:auto; border:none; box-shadow:none; }
 .ll-bp-thumb .ll-cs-sheetbox { width:100%; align-self:start; }
+/* A page or sheet of paper out of view skips its style, layout and paint: a size drag or a copies change otherwise styles
+   and lays out every one of them (pattern offscreen-sheets-laid-out-on-every-rebuild, Parsha Emojis' shape). Only the
+   preview's own: the held pages and the print area are untouched. Their size is explicit, so the grid never moves. */
+#llBpPages > .ll-bp-thumb > .ll-bp-host > .ll-cs-sheet, #llBpPages .ll-cs-sheetbox { content-visibility:auto; }
 /* The bulk popup's pages while sheets of paper are shown: built and measured out of sight, copied into the papers. */
 .ll-bp-hold { position:fixed; inset-block-start:0; inset-inline-start:-30000px; width:320px; visibility:hidden; pointer-events:none; }
 .ll-cs-per-ico svg { width:100%; height:100%; }
