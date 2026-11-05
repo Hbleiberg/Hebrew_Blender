@@ -529,7 +529,9 @@ html[lang="he"] .et-cs-set legend,html[lang="he"] .et-cs-legend{letter-spacing:n
 .et-cs-ref[lang="he"]{font-family:var(--heb-font);}
 .et-cs-body{flex:1;min-height:0;display:flex;flex-direction:column;gap:2cqmin;}
 .et-cs-pic{flex:1 1 0;min-height:18cqmin;max-height:calc(78cqmin * var(--s-pic));position:relative;}
-.et-cs-pic svg{position:absolute;inset:0;width:100%;height:100%;display:block;overflow:visible;}
+.et-cs-pic svg{position:absolute;inset:0;width:100%;height:100%;display:block;overflow:visible;
+  /* No drawing reads the sheet's factors (etCsColorSvg refuses a var()), so they stop here: a size drag otherwise restyles every node of every drawing */
+  --s-pic:initial;--s-en:initial;--s-he:initial;--s-ref:initial;--s-sum:initial;--s-why:initial;--s-name:initial;--k:initial;}
 .et-cs-text{flex:none;display:flex;flex-direction:column;gap:1.4cqmin;}
 .et-cs-sum{margin:0;font-size:calc(3.3cqmin * var(--s-sum) * var(--k));line-height:1.4;}
 .et-cs-why{margin:0;font-size:calc(3cqmin * var(--s-why) * var(--k));line-height:1.4;}
