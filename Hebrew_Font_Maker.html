@@ -448,7 +448,7 @@ body.dark .hi-sun{display:inline-block;}
   /* "Unconfirmed" / "carried over — review" pill shown next to the Confirm button on the placement step */
   .placement-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 0.68rem; font-weight: 700; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
   .placement-pill.unconfirmed { background: rgba(208,140,42,0.16); color: #7f5a13; border: 1px solid #d08c2a; }   /* #9a6612 read 4.03:1 on the tint; this is the --gold-text value, 5.1:1 */
-  .placement-pill.inherited { background: rgba(208,140,42,0.10); color: #9a6612; border: 1px dashed #d08c2a; }
+  .placement-pill.inherited { background: rgba(208,140,42,0.10); color: #7f5a13; border: 1px dashed #d08c2a; }   /* #9a6612 read 4.24:1 on the tint, as .unconfirmed's did */
   body.dark .placement-pill.unconfirmed, body.dark .placement-pill.inherited { color: #f0c060; }
   /* Composed-tab tiles whose source base letter(s) aren't traced yet (display-only gating) */
   .ltile.locked { opacity: 0.55; }
@@ -6157,7 +6157,7 @@ function updateTracedReadout() {
   const el = document.getElementById('tracedReadout'); if (!el || !project) return;
   const s = coreLetterStats();
   el.textContent = I18n.t('fontmaker.panels.traced_readout', { traced: s.traced, total: s.total });
-  el.style.color = (s.traced === s.total) ? 'var(--gold)' : 'var(--muted)';
+  el.style.color = (s.traced === s.total) ? 'var(--gold-text)' : 'var(--muted)';   // --gold read 2.6:1 on the light panel; --gold-text is --gold in dark
   if (s.traced >= 1) maybePrefetchEngine();   // user has committed — warm the export engine in the background
 }
 let englishCase = 'upper';
@@ -10107,7 +10107,7 @@ async function renderStage() {
 function renderLegend() {
   const el = document.getElementById('stageLegend');
   if (isCropSelect(curLetter())) {
-    el.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;">${combinedNavHTML()}<span>${_pT('combined_drag_hint', "Click and drag a box around the letter on the sheet, then release to bring it into the editor. <span style='opacity:0.75;'>Keyboard: arrows move the box, +/− resize, Enter to crop.</span>")}</span></div>`;
+    el.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;">${combinedNavHTML()}<span>${_pT('combined_drag_hint', "Click and drag a box around the letter on the sheet, then release to bring it into the editor. <span>Keyboard: arrows move the box, +/− resize, Enter to crop.</span>")}</span></div>`;
     return;
   }
   if (workMode === 'draw') {

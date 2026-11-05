@@ -3650,7 +3650,7 @@
   "fontmaker.panels.clear_outline": "Clear outline",
   "fontmaker.panels.combined_allowed_img": "Allowed: any image file — PNG, JPG, GIF, WebP. You can add several sheets and flip between them.",
   "fontmaker.panels.combined_count": "{i} of {n}",
-  "fontmaker.panels.combined_drag_hint": "Click and drag a box around the letter on the sheet, then release to bring it into the editor. <span style='opacity:0.75;'>Keyboard: arrows move the box, +/− resize, Enter to crop.</span>",
+  "fontmaker.panels.combined_drag_hint": "Click and drag a box around the letter on the sheet, then release to bring it into the editor. <span>Keyboard: arrows move the box, +/− resize, Enter to crop.</span>",
   "fontmaker.panels.combined_drop_img": "Drop your sheet(s) here, or click to browse — add more than one for multi-page templates.",
   "fontmaker.panels.combined_drop_svg": "Drop your <b>SVG</b> sheet(s) here, or click to browse — name elements like <code>id=\"uni05D0\"</code> for auto-split, or box each letter.",
   "fontmaker.panels.combined_form_tile_title": "Place the {name} for {composed} — opens Special & precomposed forms.",
