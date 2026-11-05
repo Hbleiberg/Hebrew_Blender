@@ -288,7 +288,7 @@ body.dark header{background:var(--navy-deep);}
 header .star{font-size:32px;color:var(--gold);}
 header .brand-title{font-family:'Libre Baskerville',serif;font-size:1.5rem;letter-spacing:0.01em;}
 header p{font-size:0.85rem;color:var(--gold-light);margin-top:3px;}
-header .hright{margin-inline-start:auto;display:flex;gap:10px;align-items:center;}
+header .hright{margin-inline-start:auto;display:flex;gap:10px;align-items:center;flex-shrink:0;}/* the controls keep their one-line labels (Hebrew's "דף הבית" broke onto two lines from 822px down); the title block wraps instead */
 .hbtn{background:none;border:1px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:5px 14px;font-size:0.8rem;cursor:pointer;font-family:'Source Sans 3',sans-serif;text-decoration:none;min-height:30px;display:inline-flex;align-items:center;gap:6px;justify-content:center;}
 .hbtn:hover{background:rgba(255,255,255,0.1);}
 .dark-btn{background:none;border:1px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:5px 14px;font-size:0.8rem;cursor:pointer;font-family:'Source Sans 3',sans-serif;min-height:30px;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
@@ -561,12 +561,12 @@ html[lang="he"] .et-cs-set legend,html[lang="he"] .et-cs-legend{letter-spacing:n
    page sideways (WCAG 1.4.10 reflow). max-width is the operative half — nothing makes the row
    wrap until something caps its width, and the header has to wrap too or the title block and
    the button row keep competing for one line.
-   541px is this page's MEASURED overflow ceiling in the real UI fonts, with the account chip mounted
-   (docs/reference/shared-components.md → The header's wrap gate): the one-row header spills from 541px down and fits
-   above it (English, dark — the "Light" label is the widest; Hebrew stops at 532px). Under a finger the language
-   select is 10px wider and the ceiling is 551px; the second query holds that band without moving a mouse layout.
-   Re-measure whenever a header control changes width. */
-@media (max-width:541px), (pointer:coarse) and (max-width:551px){
+   550px is this page's MEASURED overflow ceiling in the real UI fonts, with the account chip mounted
+   (docs/reference/shared-components.md → The header's wrap gate): the one-row header spills from 550px down and fits
+   above it (Hebrew, dark — the button row does not shrink, so "דף הבית" stays on one line and Hebrew sets the gate;
+   English stops at 541px). Under a finger the language select is 10px wider and the ceiling is 560px; the second
+   query holds that band without moving a mouse layout. Re-measure whenever a header control changes width. */
+@media (max-width:550px), (pointer:coarse) and (max-width:560px){
   header{flex-wrap:wrap;}
   header .hright{flex-wrap:wrap;max-width:100%;justify-content:flex-end;}
 }

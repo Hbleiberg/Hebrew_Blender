@@ -549,7 +549,10 @@ with the Playwright recipe in light + dark and EN + HE (the arrow must mirror, t
 Each page lets its header wrap onto a second row only below a `max-width` that is that page's **measured
 overflow ceiling** (its comment names the number): the widest width at which the one-row header still
 spills past the screen, found at 1 px steps across 400–900 in EN and HE, light and dark — the dark theme's
-"Light" label is the widest, and English sets the gate. Anything that widens a header control (an icon, a
+"Light" label is the widest, and English usually sets the gate (a page whose button row holds a two-word Hebrew
+label such as "דף הבית" can be set by Hebrew). The button row (`.hright`) does not shrink, so a control's label stays
+on one line and the title block wraps instead; a shrinking row breaks a two-word label onto two lines long before
+anything spills, which no overflow measurement sees. Anything that widens a header control (an icon, a
 label, padding, a new control) moves every ceiling it touches, so re-measure all carriers and move the gates
 in the same change; below the gate the page wraps, above it nothing moves. Never ungate the rules or give the
 title block a zero flex-basis instead — both move layouts that already fit. Under a finger the language select
