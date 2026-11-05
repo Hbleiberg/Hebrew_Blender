@@ -7766,23 +7766,35 @@ function fcsMirrorRows(chunk) {
 // it fits the narrowest cell the sheet is laid out for, A4 at 1in margins: a third of 6.27in wide and 2.6in
 // tall, less the 1px border and 6pt padding, and less the emoji line on an emoji card. Measured on screen
 // in the face's own font (the print-only sheet cannot be measured), so a teacher's own font fits too.
+// Every distinct front is laid out at every size in one go and only then read: writing a size and reading it
+// back cost one forced layout per try, and the page's :has() rules make each of those re-check the document
+// (200 cards: ~1 s of frozen page at a 4× slower CPU).
 const FCS_FIT_W = 182, FCS_FIT_H = 231, FCS_EMOJI_H = 48, FCS_SIZES = [34, 28, 24, 20, 17, 14];
 function fcsFitSizes(deck) {
-  const probe = document.createElement('div');
-  probe.style.cssText = 'position:fixed;inset-block-start:0;inset-inline-start:0;visibility:hidden;pointer-events:none;'
+  const host = document.createElement('div');
+  host.style.cssText = 'position:fixed;inset-block-start:0;inset-inline-start:0;visibility:hidden;pointer-events:none;'
     + `inline-size:${FCS_FIT_W}px;font-family:var(--heb-font);line-height:1.25;direction:rtl;`;
-  document.body.appendChild(probe);
+  const probes = new Map();   // front text → one block per size, largest first
+  deck.forEach(c => {
+    const text = (c && c.heb) || '';
+    if (!c || probes.has(text)) return;
+    probes.set(text, FCS_SIZES.map(pt => {
+      const d = document.createElement('div');
+      d.style.fontSize = pt + 'pt';
+      d.textContent = text;
+      host.appendChild(d);
+      return d;
+    }));
+  });
+  document.body.appendChild(host);
   const fit = new Map();
   deck.forEach(c => {
     if (!c || fit.has(c)) return;
-    probe.textContent = c.heb || '';
     const room = FCS_FIT_H - (c.emoji ? FCS_EMOJI_H : 0);
-    fit.set(c, FCS_SIZES.find(pt => {
-      probe.style.fontSize = pt + 'pt';
-      return probe.scrollWidth <= FCS_FIT_W && probe.scrollHeight <= room;
-    }) || FCS_SIZES[FCS_SIZES.length - 1]);
+    const i = probes.get(c.heb || '').findIndex(d => d.scrollWidth <= FCS_FIT_W && d.scrollHeight <= room);
+    fit.set(c, i < 0 ? FCS_SIZES[FCS_SIZES.length - 1] : FCS_SIZES[i]);
   });
-  probe.remove();
+  host.remove();
   return fit;
 }
 function fcsCell(card, isBack, pt) {
