@@ -355,6 +355,10 @@ mountFolderTree({ treeKey, container, listItemNames(), buildItemRow(name)→acti
   destination re-renders the tree and puts focus on the moved node's own Move button.
 - Folder CRUD: New folder / New subfolder / Rename (`prompt`) / Delete (`confirm`; children move up
   — underlying items are NEVER deleted). Collapse state lives on the folder node (persists + backs up).
+  The folder **name is its disclosure button** (`button.ft-folder-name`, `aria-expanded`): a click
+  anywhere on the head still toggles, Enter/Space on the name toggle it, and because a toggle
+  re-renders the tree, focus is put back on the folder's new name button; the ▾ twisty only draws the
+  state (`aria-hidden`). Without it a collapsed folder's items have no keyboard path at all.
 
 ### Rule for any new preset-bearing list
 1. Render it with `mountFolderTree(cfg)` (don't hand-roll rows; reuse the existing action functions
