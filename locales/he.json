@@ -6748,7 +6748,7 @@
   "trope.learn.melody_meg_note": "החמשות מציגות את המנגינה לשיר השירים (פסח), רות (שבועות) וקהלת (סוכות) — הטבלה מתוך The Art of Cantillation (פורטנוי ו-וולף), עם צירוף משלה לסיום הספר. הדוגמאות בכל כרטיס הן הקלטות של PocketTorah לקריאת התורה במנגינת כל השנה.",
   "trope.learn.melody_torah_note": "החמשות מציגות את מנגינת כל השנה, לקריאת התורה בשבת, בימי חול ובחגים — טבלת אייברי/בינדר (רפורמי), בסולם לָה מז'ור.",
   "trope.learn.melody_trad_lacks_m": "אין בו מנגינה לטעמים: {marks}.",
-  "trope.learn.melody_trad_note_m": "החמשות מציגות את {melody}, אחד הנוסחים האחרים.",
+  "trope.learn.melody_trad_note_m": "החמשות מציגות את {melody}, אחד הנוסחים האחרים. הדוגמאות בכל כרטיס הן הקלטות של PocketTorah לקריאת התורה במנגינת כל השנה.",
   "trope.learn.melody_trad_sample": "הטבלה שלו מציבה כל טעם בהקשר לדוגמה, ולא תמיד בצירוף מן המקרא, והשם שמתחת לתווים הוא שם הטעם.",
   "trope.learn.motif_aria": "מתאר המנגינה של {name}",
   "trope.learn.motif_aria_m": "מתאר המנגינה של {name} ({melody})",

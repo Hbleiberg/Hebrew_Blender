@@ -6748,7 +6748,7 @@
   "trope.learn.melody_meg_note": "These staffs show the melody for Shir HaShirim (Pesach), Ruth (Shavuot) and Kohelet (Sukkot) — The Art of Cantillation's chart (Portnoy & Wolff), with its own phrase for the end of a book. The examples on each card are PocketTorah's recordings of the year-round Torah reading.",
   "trope.learn.melody_torah_note": "These staffs show the year-round melody, for the Torah reading on Shabbat, weekdays and festivals — the Avery/Binder (Reform) chart, in A major.",
   "trope.learn.melody_trad_lacks_m": "It prints no figure for {marks}.",
-  "trope.learn.melody_trad_note_m": "These staffs show {melody}, one of the other traditions.",
+  "trope.learn.melody_trad_note_m": "These staffs show {melody}, one of the other traditions. The examples on each card are PocketTorah's recordings of the year-round Torah reading.",
   "trope.learn.melody_trad_sample": "Its table sets each sign in a sample context, not always a phrase of the text, and the name under the notes is the sign's.",
   "trope.learn.motif_aria": "Melody contour for {name}",
   "trope.learn.motif_aria_m": "Melody contour for {name} ({melody})",
