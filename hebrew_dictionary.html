@@ -1051,6 +1051,11 @@ footer details > summary:hover{text-decoration:underline;}   /* FAQ / How-To row
   .content { padding-bottom:0; }
   .results-grid { margin-bottom:0; }
   .word-card, .emoji-card { break-inside:avoid; }
+  /* A Shoresh group heading ("Noun (14)") keeps its first row (pattern print-block-split-at-a-sheet-foot): with
+     the cards whole, a heading near a sheet foot printed alone and its words opened the next sheet. The patterns
+     panel's title too: once the groups move whole, it is the one left at the foot. Each is a block sibling of what
+     follows it, not a grid item, so the engine moves the heading rather than cutting a card. */
+  .shoresh-group-hdr, .shoresh-patterns-title { break-after:avoid; page-break-after:avoid; }
   /* The print header (fillPrintHead): the tool, the date, the count and the filters, once, at the top
      of sheet 1 — the page header, toolbar and chips that name the view on screen are all hidden above.
      Inset like #wlActiveBanner, which prints right under it. */
