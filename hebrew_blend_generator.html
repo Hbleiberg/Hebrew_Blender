@@ -13044,8 +13044,7 @@ function generateCrossword(pool, reuse) {
   }
   candidates.sort((a, b) => b.cells.length - a.cells.length);
 
-  const grid = Array.from({ length: gridSize }, () => Array(gridSize).fill(null));
-  const placements = [];
+  let grid, placements;          // one attempt's board (placeAll below); the helpers read the current one
   const center = (gridSize - 1) / 2;
   const inBounds = (r, c) => r >= 0 && r < gridSize && c >= 0 && c < gridSize;
 
@@ -13127,17 +13126,33 @@ function generateCrossword(pool, reuse) {
     return false;
   }
 
-  const placedWords = [];
-  const setAside = [];
-  for (const w of candidates) {
-    if (placedWords.length >= wantCount) break;
-    if (tryPlaceWord(w)) placedWords.push(w); else setAside.push(w);
+  function placeAll(order) {
+    grid = Array.from({ length: gridSize }, () => Array(gridSize).fill(null));
+    placements = [];
+    const placedWords = [];
+    const setAside = [];
+    for (const w of order) {
+      if (placedWords.length >= wantCount) break;
+      if (tryPlaceWord(w)) placedWords.push(w); else setAside.push(w);
+    }
+    const unplaced = [];
+    for (const w of setAside) {
+      if (placedWords.length >= wantCount) break;
+      if (tryPlaceWord(w)) placedWords.push(w); else unplaced.push(w);
+    }
+    return { grid, placements, placedWords, unplaced };
   }
-  const unplaced = [];
-  for (const w of setAside) {
-    if (placedWords.length >= wantCount) break;
-    if (tryPlaceWord(w)) placedWords.push(w); else unplaced.push(w);
+  // One greedy pass strands most of a short list: a teacher's 14-word list placed 4 of the 10 asked in
+  // 34 of 40 builds. Longest-first goes first (a big pool fills from it at once, as before); short of the
+  // count, shuffled orders follow and the fullest board wins (the same list: 8–10 every build).
+  const target = Math.min(wantCount, candidates.length);
+  let best = placeAll(candidates);
+  for (let t = 1; t < 30 && best.placedWords.length < target; t++) {
+    const next = placeAll(rwShuffle(candidates));
+    if (next.placedWords.length > best.placedWords.length) best = next;
   }
+  ({ grid, placements } = best);
+  const { placedWords, unplaced } = best;
 
   if (placedWords.length < 4) {
     ws.innerHTML = emptyStateHTML('worksheet.empty.too_few_intersect');
