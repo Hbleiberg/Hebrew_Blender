@@ -14,10 +14,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P2 (**S567 P; S573 P root-caused — a shared module, not small**) | js/ivrit-saves.js | **A page write made after a hydration planned its uploads, before it ends, is not sent, and the tab's next sync downloads the account's copy over it**: the hook is not armed yet, and step 4's `snapshotNames` takes the post-write hash as the tab's seen view, so `actionFor` reads it as another tab's write. …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] P3 (**NEW S618 D — not small: the cache's contract is "another tab wrote"**) | flash_cards.html | **`readProfiles()` compares the whole stored profiles string on every call** (about twice per profile per render): with 12 students × 100 results (4 MB) one switch of the active student holds the page 1.1–1.7 s @4× (`readProfiles` 700–1,100 ms self); a write counter or the `storage` event could …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [ ] P3 (**NEW S618 D — a shared module + the shared engine block, not small**) | js/ivrit-saves.js, .ivrit engine | **A large profiles store is reviver-parsed twice at every Flash Cards load, signed out too**: `attach()`'s `snapshotLocal` (`safeParse`, 410 ms @4×) and `readProfiles` (`ivritSafeParse`, 665) on the 4 MB class; a fast path (plain `JSON.parse` when the text holds no `__proto__` / …[full text: IMPROVEMENT_ARCHIVE.md]
-
 - [ ] P3 (**NEW S602 — found verifying `3ab8b385`; its gate-4 answer covers it, measure Export PDF landscape first**) | hebrew_blend_generator.html | **With Landscape Print on, the on-screen blend sheet keeps ten columns where they do not fit**: Inverse 46–61px past the sheet at 1280/1600; on an iPhone 13 Reading 106–119px, Inverse 445px (paper unchanged). | found S602
 
 - [ ] P3 (**NEW S593 G — verify on a Mac first**) | Hebrew_Font_Maker.html | **Every font named only in Hebrew exports with nameID 6 `MyHebrewFont-Regular` (and `MyHebrewFont.ttf`)**: two such fonts share one PostScript name, which Font Book and Mac apps key fonts by; a stem from the name (a short hash or a transliteration) would keep them apart. | found S593
@@ -44,6 +40,10 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**S410 D; S480 re-measured; `content-visibility` reverted**) | Hebrew_Font_Maker.html | **The Spacing tab rebuilds all kerning rows on each show, pair click, add and delete**: 2,000 pairs 213–251ms @1×, 1.0–1.2s @4× (S565: 302–502 @1×). Next: a pair click rebuilds the editor only (findings S480). | found S410
 
+- [ ] P3 (**NEW S618 D — not small: the cache's contract is "another tab wrote"**) | flash_cards.html | **`readProfiles()` compares the whole stored profiles string on every call** (about twice per profile per render): with 12 students × 100 results (4 MB) one switch of the active student holds the page 1.1–1.7 s @4× (`readProfiles` 700–1,100 ms self); a write counter or the `storage` event could …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] P3 (**NEW S618 D — a shared module + the shared engine block, not small**) | js/ivrit-saves.js, .ivrit engine | **A large profiles store is reviver-parsed twice at every Flash Cards load, signed out too**: `attach()`'s `snapshotLocal` (`safeParse`, 410 ms @4×) and `readProfiles` (`ivritSafeParse`, 665) on the 4 MB class; a fast path (plain `JSON.parse` when the text holds no `__proto__` / …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [ ] P3 (**NEW S595 N — needs the tour-engine extraction, UX rule 1**) | Hebrew_Font_Maker.html, hebrew_dictionary.html, tour engine | **On a landscape phone (750×342) the tour card falls back onto its own target**: the starting-font tour's steps 2, 3, 7 covered 93–100%; the shared engine shares the fallback; the dictionary's own engine (S601 N) covers 31–54% of steps 2–5 at 750×342 and 863×360. …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P3 (**NEW S570 D — not small: yield per verse or a worker**) | torah_trainer.html | **Turning Translit on freezes the page for the reading's first transliteration pass**: one task of 520 ms @1× / 2.45 s @4× on Vayera (2,085 words; the Trope staff 447 / 2,691), and a cold load with Translit on 536–582 / 2,751–2,948 — the library's syllabification; the memos spare only re-renders (findings …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -64,8 +64,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
 
-- [ ] P4 (**NEW S618 D — the tool's cap this session**) | flash_cards.html | **`fcTrackStickies()` forces the page's first layout mid-boot** (its synchronous `set()` reads `offsetHeight` before panel memory and the translated labels change the page, which lays out again): 48 ms of layout + 35 of style @4× in the DOMContentLoaded task; the ResizeObserver's first callback already delivers both …[full text: IMPROVEMENT_ARCHIVE.md]
-
 - [ ] P4 (**NEW S615 N — verify on an iPhone first; a shared module, its own iteration**) | js/ivrit-account.js | **The student sign-in's Username field sets `autocapitalize=none` but not `autocorrect=off`**: every other name field in the suite carries both, and iOS may "correct" a typed login. | found S615
 
 - [ ] P4 (**NEW S614 C — the tour engine's**) | Hebrew_Font_Maker.html | **Tab out of an open tour and back leaves its Close and Next off-screen** (the fixed card follows its target out of view). | found S614
@@ -75,8 +73,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S613 H — the S590 PDF spill's on-screen twin**) | hebrew_blend_generator.html | **A Self-Check card's back clips a long translation**: the faces are absolute in a 90px card, so "olive (a dark yellowish-green color…)" needs 111px and its last line is cut (1024 full-screen and every width). | found S613
 
 - [ ] P4 (**NEW S611 G — the picture's own call**) | letter_learner.html | **The hello picture's sleeve (a cuff drawn to y 103 of its 0–100 frame) touches שָׁלוֹם under it on the cursive coloring sheets** (3–8px of ink at 60 dpi, cursive landscape and portrait at 100%; 0.1–0.6px clear in Block). | found S611
-
-- [ ] P4 (**NEW S609 P — gate 2, copy; the `26f8eb83` sentence for the traditions**) | trope_tutor.html | **An approved tradition's note (`trope.learn.melody_trad_note_m`) does not say its Learn cards' examples are PocketTorah's year-round reading**, as the five chart notes now do: one sentence in `fillTradNote`'s note (EN + HE). | found S609
 
 - [ ] P4 (**NEW S608 N — verify on an iPhone first**) | classroom_dashboard.html | **The board's text editor and Bulk preset edit's five message editors are contenteditable at 15.2px under a finger** (`.editor` 0.95rem): if iOS zooms into a focused editor as into a field, 1.05×; the coarse rule covers inputs only. | found S608
 
@@ -158,7 +154,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S550 G — gate 2; the file-name half FIXED S593 `96f562e`**) | name_tags.html | **The CSV carries only a per-student extra line, never the list's**: a list moved by file loses "Grade 4" on every tag. | found S550
 
-- [ ] P4 (**NEW S549 D**) | name_tags.html | **A load renders the preview five times and the table twice** (the list, the font, the library's arrival or failure, the locale): 200 students → 5 renders of ~60 ms at 1× behind the 451 ms of load-time long tasks left after `2499371`; coalesce them behind one frame. | found S549
+- [ ] P4 (**NEW S549 D; S618 re-measured: the five builds are 120–1,300 ms apart — after the fonts, the locale and the library land — so a frame coalescer merges none; the lever is skipping the builds a pending font / locale load will redo**) | name_tags.html | **A load renders the preview five times and the table twice**: 200 students → 5 builds, 3.3 s of long tasks @4×. | found S549
 
 - [ ] P4 (**NEW S549 D**) | name_tags.html | **A keyboard move (↑/↓) rebuilds the whole table and every sheet per press** (three presses on 200 students: 3 table rebuilds + 3 renders, 425 ms at 1× before `2499371`, 227 after) — swap the two rows and renumber instead. | found S549
 
@@ -191,6 +187,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S534 N — gate 4**) | name_tags.html | **On a phone Remove sits 120–270px off-screen** until the table scrolls. | found S534
 
 - [ ] P4 (**NEW S530 A — glyph census, rule first; S604: the hub's two control labels FIXED `7c33a1d8`**) | dictionary, resources, flash, torah, FM | **Category and option emoji are still heard** (findings S530): content or decoration is unruled. | found S530
+
+- [ ] P4 (**NEW S618 D — the tool's cap this session**) | flash_cards.html | **`fcTrackStickies()` forces the page's first layout mid-boot** (its synchronous `set()` reads `offsetHeight` before panel memory and the translated labels change the page, which lays out again): 48 ms of layout + 35 of style @4× in the DOMContentLoaded task; the ResizeObserver's first callback already delivers both …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S610 M — CLAUDE.md's header-icons rule; pattern `decorative-glyph-carrier-exposed-to-assistive-tech`**) | classroom_dashboard.html, locales | **Nine control strings still lead with a glyph**: ↔ Move panels, 📍 Current Location (drawer + setup card), ✨ Quick-start layouts…, + Add period, 🎲 Pick Again, 🔀 Reshuffle, 🔄 New round, ✅ Everyone's here; the picture belongs in markup …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -274,9 +272,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] S | parsha_emojis.html | **A split week names the other schedule's parasha** ("In Israel: Sh'lach"): an Israeli teacher sees the Diaspora card unless the Torah Trainer says Israel. | found S540 H
 
-- [ ] S | letter_learner.html | **An open card puts `?letter=` in the URL.** **Picked S526.** | found S526 H
-
-- [ ] S | letter_learner.html | **"Vowels to show": Select all / Clear.** **Picked S526.** | found S526 H
+- [ ] S | letter_learner.html | **"Vowels to show": Select all / Clear** (keeping two vowels is 11 clicks). **Picked S526; offered again S619, the address mirror taken instead.** | found S526 H
 
 - [ ] S | resources.html | **The Links filters live in the address** (`?cat=&age=`): bookmarkable, kept on reload. | found S454 H
 
@@ -430,6 +426,10 @@ _(none)_
 
 ## Done
 
+- [x] 2026-11-05 | (S619 close-out) | branch/deploy note | **S619 = H on `letter_learner.html` (first since S526; 34 commits to the page): 5 lessons × 2 cells by real clicks + the student cell. FOUND 3: the `?letter=` seed SHIPPED as the micro-feature (gate 1), the Vowels Select all / Clear seed stays, 1 gate-2 copy left as is; + the Trope Tutor's tradition note (gate 2, S609's P4). PR 394, sw …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-05 | `63867b8c` | letter_learner.html, CLAUDE.md, sw.js, probe | (S619 micro-feature, gate 1; the S526 seed) **The open card is in the address bar** (`?letter=bet&tab=coloring` / `?vowel=segol`; a close takes it out; the pasted address reopens it). | 13 address steps × EN light 1280 / HE dark 800 by real clicks, a planted param kept, history untouched; HEAD fails 16; probe …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [x] 2026-11-05 | (S618 close-out) | branch/deploy note | **S618 = D on `flash_cards.html` (first since S524; 45 commits to the page): cold 10 cells, 16 arms × 3 cells by real input, a 12-profile class (4 MB), profiles + a trace. FOUND 5: FIXED 2, 2 P3 + 1 P4 logged; the `:has()` cost measured (findings). PR 394 (its head ref still at `09bc416c`: GitHub has not taken the branch since S617's …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-11-05 | `394b6aaf` | flash_cards.html, sw.js | (S618 D) **A student's Results History (and the progress report's table) formats its dates with one formatter** (toLocaleDateString built one per row). | 12 profiles × 100 results, a real select × 2 cells × 3 vs HEAD: the rows' script 317–394 → 67–96 ms @4× per render; history + report text identical
@@ -456,19 +456,11 @@ _(none)_
 
 - [x] 2026-11-05 | `7dd3bb87` | classroom_dashboard.html, sw.js | (S615; S568's P4) **Buttons take the page's face, not Arial** (the bare `.btn-xs`, drawer, font-tile labels, week editor). | board + 7 tabs + week × 4 cells: HEAD 70, tree 0; widths −1–4px, no overflow
 
-- [x] 2026-11-05 | (S614 close-out) | branch/deploy note | **S614 = C on the Font Maker (first since S513): S513's arms on new surfaces + forced colours, spacing, reflow. FOUND 3: 2 FIXED, 1 P4; + the folder trees' keyboard gap and the dashboard ✕. PR 394, sw v1271; deploy after merge.**
-
-- [x] 2026-11-05 | `58f7ceaa` | classroom_dashboard.html, sw.js | (S614; S607's P4; `sub-floor touch target`) **The week editor's Remove-period ✕ keeps 24×24.** | 8 cells: a click 10px off the icon hits 4/4 (HEAD 0/4)
-
-- [x] 2026-11-05 | `ac65ce98` | 5 folder-tree carriers, storage-and-backup.md, sw.js | (S614) **A folder opens and closes from the keyboard** (the name a `<button aria-expanded>`; sha-verified). | 4 tools × 2 cells: HEAD 0/8, tree 8/8; probe committed
-
-- [x] 2026-11-05 | `8427c736` | Hebrew_Font_Maker.html, locales, sw.js | (S614 C) **Three text sites pass 4.5:1**: the traced readout 2.60 → 5.88, the Carried-over pill 4.24 → 5.39, the sheet hint 2.96 → 4.69. | 8 cells vs HEAD; dark unchanged
-
-- [x] 2026-11-05 | `adf223d1` | Hebrew_Font_Maker.html, sw.js | (S614 C; `sub-floor touch target`) **The Place Nikkud sliders reach 24px.** | a click 10px above each track × 8 cells: HEAD 0/16, tree 16/16
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-11-05 | **S619** | iters: 4 | tools: letter_learner, trope (locales), CLAUDE.md, sw | patterns fixed: — | pass run: H (letter_learner, first since S526) | SW: v1281→v1283
 
 - 2026-11-05 | **S618** | iters: 3 | tools: flash ×2, sw | patterns fixed: — | pass run: D (flash, first since S524) | SW: v1279→v1281
 
@@ -508,11 +500,9 @@ _(none)_
 
 - 2026-11-03 | **S600** | iters: 5 | tools: torah ×2, index, resources, locales, sw | patterns fixed: focus-hidden-under-a-sticky-bar ×1 | pass run: C (chrome, first since S483) | SW: v1220→v1224
 
-- 2026-11-03 | **S599** | iters: 4 | tools: reading_assignments ×2, torah ×2, trope, locales, sw | patterns fixed: — | pass run: H (torah + the reading assignments, first since S482) | SW: v1217→v1220
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S618 (2026-11-05):** flash, sw.js, loop probe, loop docs S618 · dictionary, generator, sw.js, loop probe, loop docs S617 · parsha_emojis, parsha/ + build-parsha-pages, shared-components.md, sw.js, loop docs S616 · generator, dashboard, torah, fontmaker, locales, sw.js, loop docs S615 · fontmaker, generator, flash, dashboard, torah, index, locales, sw.js, storage-and-backup.md, loop docs S614 · generator, dashboard, parsha_emojis, sw.js, loop docs S613 · letter_learner, dashboard, sw.js, loop docs S612 · letter_learner, dashboard, …[full text: IMPROVEMENT_ARCHIVE.md]
+- **Snapshot S619 (2026-11-05):** letter_learner, trope (locales), CLAUDE.md, sw.js, loop probe, loop docs S619 · flash, sw.js, loop probe, loop docs S618 · dictionary, generator, sw.js, loop probe, loop docs S617 · parsha_emojis, parsha/ + build-parsha-pages, shared-components.md, sw.js, loop docs S616 · generator, dashboard, torah, fontmaker, locales, sw.js, loop docs S615 · fontmaker, generator, flash, dashboard, torah, index, locales, sw.js, storage-and-backup.md, loop docs S614 · generator, dashboard, parsha_emojis, sw.js, loop docs S613 …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -892,11 +882,11 @@ _(none)_
 
 - L SEO & discoverability audit: 2026-10-21 (**S532 — 29th L, `18a7e6a3..ca9b9618` (110 commits; LL's launch, parsha_emojis' first L): 20 arms + 3 on 20 pages (plants 29/29); SEO surface unchanged 16/18; LL + parsha JSON-LD claims by real clicks; FAQ twins 10/10. FOUND 1 (gate 2), FIXED 4; S432 struck.**)
 
-- H teacher walkthrough / paper-cuts (one tool): 2026-11-05 (**S613 — `hebrew_blend_generator.html` (its 5th, first since S512): a food-vocabulary unit from a Dictionary word list by real clicks — the `?wl=` landing, 6 Real Words drills, a Hebrew header on A4 landscape, a preset, Copy link and a colleague's open, the list edited in the Dictionary, the Flash Cards hand-off — + the student cell …[full text: IMPROVEMENT_ARCHIVE.md]
+- H teacher walkthrough / paper-cuts (one tool): 2026-11-05 (**S619 — `letter_learner.html` (its 2nd: S526 → S619; 34 commits to the page since: the coloring-sheet tiles, bulk print, cursive tiles, the arrow keys): 5 lessons by real clicks (Bet as letter of the week with words aloud and a printed sheet, a 775-page class packet from the sheets section, a two-vowel unit, 2nd-grade cursive, memory …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - E freshness/site-health: 2026-10-21 (**S531 — 41st E, `d7c58446..48286048` (108 commits; parsha_emojis' first): 16 arms + carrier lists (plants 18/18), docs, CSP 40 cells (plant 40/40), the stub. FOUND 2, FIXED 4.**)
 
 - F cross-tool consistency: 2026-10-22 (**S542 — 40th F, loading states (first since S189): 14 surfaces held, then aborted. FOUND 7, FIXED 4. F-next: long-build progress.**)
 
-**Next session (S619):** **Branch `claude/adoring-brown-9udi22` (S608–S618, draft PR 394): open → continue on it; merged → fresh branch off `origin/main`. ⚑ PR 394's head ref was still `09bc416c` (S616) after S618's pushes while the branch moved on: check `git ls-remote origin claude/adoring-brown-9udi22 refs/pull/394/head` first, and tell the maintainer if they still differ.** `sw.js` **v1281**, FM **5.59**, corpus ?v=7. ⚑ drift: main=4f03455 sw=v1281 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: H letter_learner (S526), C letter_learner (S527), P name_tags (S535), M letter_learner (S536), G parsha_emojis (S537), D parsha_emojis (S538), N letter_learner (S545); suite E (S531), L (S532), K (S533). ⚑ Harnesses: `d618/` (`lib.mjs` the flash D harness, `inter.mjs` 16 arms, `prof.mjs` / `profboot.mjs` a 12-profile class, `fix1ab.mjs`, `fix2ab.mjs`, `fitdiag*.mjs` the `:has()` A/B, `nt.mjs` Name Tags' load count), `g617/`, `m616/`. ⚑ 57 seeds.
-⚑ Trap 538 (S618): Playwright's `click()` scrolls a target inside Flash Cards' sticky Start bar (the root's scroll-padding counts the bar), and the print menu closes on any scroll — click the box with `page.mouse` instead; a real mouse click opens it fine. ⚑ Flash Cards' next three: `fcTrackStickies` (P4), `readProfiles`' compare (P3), the reviver parses (P3, shared). ⚑ Sync P2 (S573): D31 fails alone ~1 in 3. ⚑ The S602 gate-4 answer covers the landscape blend-sheet P3 (measure Export PDF first). ⚑ Real Words Bingo, Word Search and Crossword need 24 list words (S617). ⚑ The generator's answer-key footer P4 (S563) needs a seeded Math.random. ⚑ Ports at the next A: `m554/`–`m616/`, `g604/`, `d605/`, `t605/`, `h606/`, `c607/`, `n608/`, `p609/`, `g611/`, `d612/`, `h613/`, `c614/`, `n615/`, `m616/`, `g617/`, `d618/`; traps 352, 356–538. ⚑ Queues: FM 26, generator 20, flash 10, dashboard 8, torah 9, dictionary 8, name_tags 7, parsha_emojis 7, trope 6; the rest ≤ 4.
+**Next session (S620):** **Branch `claude/adoring-brown-9udi22` (S608–S619, draft PR 394): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1283**, FM **5.59**, corpus ?v=7. ⚑ drift: main=4f03455 sw=v1283 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: C letter_learner (S527), P name_tags (S535), M letter_learner (S536), G parsha_emojis (S537), D parsha_emojis (S538), H parsha_emojis (S540), N letter_learner (S545); suite E (S531), L (S532), K (S533). ⚑ Harnesses: `h619/` (`lib.mjs` the LL walkthrough lib with speech + confirm stubs, `lessons.mjs` 5 lessons by cell, `student.mjs`, `tradnote.mjs`), `d618/`, `g617/`. ⚑ 56 seeds.
+⚑ The LL's address now carries the open card (`?letter=`/`?vowel=`, `&tab=`): a probe that reads `location.search` after a card click must expect it. ⚑ Trap 538 (S618): Playwright's `click()` scrolls a target inside Flash Cards' sticky Start bar and the print menu closes — click the box with `page.mouse`. ⚑ Flash Cards' next three: `fcTrackStickies` (P4), `readProfiles`' compare (P3), the reviver parses (P3, shared). ⚑ Sync P2 (S573): D31 fails alone ~1 in 3. ⚑ The S602 gate-4 answer covers the landscape blend-sheet P3 (measure Export PDF first). ⚑ Real Words Bingo, Word Search and Crossword need 24 list words (S617). ⚑ The generator's answer-key footer P4 (S563) needs a seeded Math.random. ⚑ Ports at the next A: `m554/`–`m616/`, `g604/`, `d605/`, `t605/`, `h606/`, `c607/`, `n608/`, `p609/`, `g611/`, `d612/`, `h613/`, `c614/`, `n615/`, `m616/`, `g617/`, `d618/`, `h619/`; traps 352, 356–538. ⚑ Queues: FM 26, generator 20, flash 10, dashboard 8, torah 9, dictionary 8, name_tags 7, parsha_emojis 7, trope 5; the rest ≤ 4.

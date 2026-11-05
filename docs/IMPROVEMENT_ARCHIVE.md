@@ -96797,3 +96797,40 @@ _(prior)_ **Next session (S617):** **Branch `claude/adoring-brown-9udi22` (S608�
 
 _(prior)_ **Next session (S618):** **Branch `claude/adoring-brown-9udi22` (S608–S617, draft PR 394): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1279**, FM **5.59**, corpus ?v=7. ⚑ drift: main=4f03455 sw=v1279 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: C letter_learner (S527), D flash (S524), H letter_learner (S526), P name_tags (S535), M letter_learner (S536), G parsha_emojis (S537), N letter_learner (S545); suite E (S531), L (S532), K (S533). ⚑ Harnesses: `g617/` (`p2.mjs` the Shoresh heading census, `fix2.mjs` Real Words lang census with a seeded Math.random, `lib.mjs` takes `seed: true`), `m616/`, `n615/`. ⚑ 57 seeds.
 ⚑ Sync P2 (S573): D31 fails alone ~1 in 3. ⚑ The S602 gate-4 answer covers the landscape blend-sheet P3 (measure Export PDF first). ⚑ Real Words Bingo, Word Search and Crossword need 24 list words; a test list shorter than that renders nothing for them (S617). ⚑ The generator's answer-key footer P4 (S563) needs a seeded Math.random to reproduce: words are drawn at random. ⚑ The generator's Self-Check back clip (S613 P4) needs a layout call. ⚑ Dashboard: the S610 glyph strings; the footer "·" (S588, 13 carriers). ⚑ Ports at the next A: `m554/`–`m616/`, `g604/`, `d605/`, `t605/`, `h606/`, `c607/`, `n608/`, `p609/`, `g611/`, `d612/`, `h613/`, `c614/`, `n615/`, `m616/`, `g617/`; traps 352, 356–537. ⚑ Queues: FM 26, generator 20, dashboard 8, torah 9, dictionary 8, name_tags 7, parsha_emojis 7, trope 6; the rest ≤ 4.
+
+
+<!-- archived by compact-ledger at the S620 boundary, 2026-11-05 -->
+## Compaction (S620, 2026-11-05) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-11-05 | (S619 close-out) | branch/deploy note | **S619 = H on `letter_learner.html` (first since S526; 34 commits to the page): 5 lessons × 2 cells by real clicks + the student cell. FOUND 3: the `?letter=` seed SHIPPED as the micro-feature (gate 1), the Vowels Select all / Clear seed stays, 1 gate-2 copy left as is; + the Trope Tutor's tradition note (gate 2, S609's P4). PR 394, sw v1281 → v1283; deploy after merge. Gates asked 3 → answered 3; no deferrals.**
+
+- [x] 2026-11-05 | `17b1c9bf` | locales (trope_tutor.html), sw.js | (S609's P4; gate 2 answered) **An approved tradition's melody note says the Learn examples are PocketTorah's year-round reading** (the one melody note without `26f8eb83`'s sentence). | a real pick of an approved tradition × EN/HE: the sentence present, HEAD's note without it, 0 errors
+
+- [x] 2026-11-05 | `63867b8c` | letter_learner.html, CLAUDE.md, sw.js, probe | (S619 micro-feature, gate 1; the S526 seed) **The open card is in the address bar** (`?letter=bet&tab=coloring` / `?vowel=segol`; a close takes it out; the pasted address reopens it). | 13 address steps × EN light 1280 / HE dark 800 by real clicks, a planted param kept, history untouched; HEAD fails 16; probe `S619-letter-learner-card-in-the-address`
+
+- [x] 2026-11-05 | (S614 close-out) | branch/deploy note | **S614 = C on the Font Maker (first since S513): S513's arms on new surfaces + forced colours, spacing, reflow. FOUND 3: 2 FIXED, 1 P4; + the folder trees' keyboard gap and the dashboard ✕. PR 394, sw v1271; deploy after merge.**
+
+- [x] 2026-11-05 | `58f7ceaa` | classroom_dashboard.html, sw.js | (S614; S607's P4; `sub-floor touch target`) **The week editor's Remove-period ✕ keeps 24×24.** | 8 cells: a click 10px off the icon hits 4/4 (HEAD 0/4)
+
+- [x] 2026-11-05 | `ac65ce98` | 5 folder-tree carriers, storage-and-backup.md, sw.js | (S614) **A folder opens and closes from the keyboard** (the name a `<button aria-expanded>`; sha-verified). | 4 tools × 2 cells: HEAD 0/8, tree 8/8; probe committed
+
+- [x] 2026-11-05 | `8427c736` | Hebrew_Font_Maker.html, locales, sw.js | (S614 C) **Three text sites pass 4.5:1**: the traced readout 2.60 → 5.88, the Carried-over pill 4.24 → 5.39, the sheet hint 2.96 → 4.69. | 8 cells vs HEAD; dark unchanged
+
+- [x] 2026-11-05 | `adf223d1` | Hebrew_Font_Maker.html, sw.js | (S614 C; `sub-floor touch target`) **The Place Nikkud sliders reach 24px.** | a click 10px above each track × 8 cells: HEAD 0/16, tree 16/16
+
+### from Per-session log (one line per session)
+
+- 2026-11-03 | **S599** | iters: 4 | tools: reading_assignments ×2, torah ×2, trope, locales, sw | patterns fixed: — | pass run: H (torah + the reading assignments, first since S482) | SW: v1217→v1220
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S619 (2026-11-05):** letter_learner, trope (locales), CLAUDE.md, sw.js, loop probe, loop docs S619 · flash, sw.js, loop probe, loop docs S618 · dictionary, generator, sw.js, loop probe, loop docs S617 · parsha_emojis, parsha/ + build-parsha-pages, shared-components.md, sw.js, loop docs S616 · generator, dashboard, torah, fontmaker, locales, sw.js, loop docs S615 · fontmaker, generator, flash, dashboard, torah, index, locales, sw.js, storage-and-backup.md, loop docs S614 · generator, dashboard, parsha_emojis, sw.js, loop docs S613 · letter_learner, dashboard, sw.js, loop docs S612 · letter_learner, dashboard, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- H teacher walkthrough / paper-cuts (one tool): 2026-11-05 (**S619 — `letter_learner.html` (its 2nd: S526 → S619; 34 commits to the page since: the coloring-sheet tiles, bulk print, cursive tiles, the arrow keys): 5 lessons by real clicks (Bet as letter of the week with words aloud and a printed sheet, a 775-page class packet from the sheets section, a two-vowel unit, 2nd-grade cursive, memory and Reset) × EN light 1280 + HE dark 800, the colleague's open of the copied address, + the student cell at 1366×768 and fullscreen 1024×768. FOUND 3: 2 seeds picked in S526 and never shipped (1 SHIPPED `63867b8c`, 1 stays), 1 gate-2 copy (answered: leave). H-next: parsha_emojis (S540), trope (S557).**)
+
+_(prior)_ **Next session (S619):** **Branch `claude/adoring-brown-9udi22` (S608–S618, draft PR 394): open → continue on it; merged → fresh branch off `origin/main`. ⚑ PR 394's head ref was still `09bc416c` (S616) after S618's pushes while the branch moved on: check `git ls-remote origin claude/adoring-brown-9udi22 refs/pull/394/head` first, and tell the maintainer if they still differ.** `sw.js` **v1281**, FM **5.59**, corpus ?v=7. ⚑ drift: main=4f03455 sw=v1281 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: H letter_learner (S526), C letter_learner (S527), P name_tags (S535), M letter_learner (S536), G parsha_emojis (S537), D parsha_emojis (S538), N letter_learner (S545); suite E (S531), L (S532), K (S533). ⚑ Harnesses: `d618/` (`lib.mjs` the flash D harness, `inter.mjs` 16 arms, `prof.mjs` / `profboot.mjs` a 12-profile class, `fix1ab.mjs`, `fix2ab.mjs`, `fitdiag*.mjs` the `:has()` A/B, `nt.mjs` Name Tags' load count), `g617/`, `m616/`. ⚑ 57 seeds.
+⚑ Trap 538 (S618): Playwright's `click()` scrolls a target inside Flash Cards' sticky Start bar (the root's scroll-padding counts the bar), and the print menu closes on any scroll — click the box with `page.mouse` instead; a real mouse click opens it fine. ⚑ Flash Cards' next three: `fcTrackStickies` (P4), `readProfiles`' compare (P3), the reviver parses (P3, shared). ⚑ Sync P2 (S573): D31 fails alone ~1 in 3. ⚑ The S602 gate-4 answer covers the landscape blend-sheet P3 (measure Export PDF first). ⚑ Real Words Bingo, Word Search and Crossword need 24 list words (S617). ⚑ The generator's answer-key footer P4 (S563) needs a seeded Math.random. ⚑ Ports at the next A: `m554/`–`m616/`, `g604/`, `d605/`, `t605/`, `h606/`, `c607/`, `n608/`, `p609/`, `g611/`, `d612/`, `h613/`, `c614/`, `n615/`, `m616/`, `g617/`, `d618/`; traps 352, 356–538. ⚑ Queues: FM 26, generator 20, flash 10, dashboard 8, torah 9, dictionary 8, name_tags 7, parsha_emojis 7, trope 6; the rest ≤ 4.
