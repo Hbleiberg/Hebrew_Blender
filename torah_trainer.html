@@ -332,6 +332,10 @@ html.dark-early body, body.dark {
 /* Placeholders take the page's muted text color, as the dictionary's search box always did: the browser's own
    gray (#757575) read 3.3-4.1:1 on the dark fields and 4.3:1 on cream, under the 4.5:1 floor. */
 input::placeholder, textarea::placeholder { color: var(--muted); }
+/* A button does not inherit the page's face (the UA gives it its own): one with no font-family rule of its own (Exit Full
+   Screen's label, the audio bar's collapse toggle, the drawer's icon buttons) drew in Arial. A type selector, so every
+   class rule that names a face still wins. */
+button { font-family: inherit; }
 body {
   font-family:'Source Sans 3', sans-serif;
   background:var(--cream); color:var(--text);
