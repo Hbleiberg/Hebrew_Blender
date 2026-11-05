@@ -96649,3 +96649,48 @@ _(prior)_ **Next session (S614):** **Branch `claude/adoring-brown-9udi22` (S608�
 ### from Tool coverage (last-touched date per tool)
 
 - **Snapshot S614 (2026-11-05):** fontmaker, generator, flash, dashboard, torah, index, locales, sw.js, storage-and-backup.md, loop docs S614 · generator, dashboard, parsha_emojis, sw.js, loop docs S613 · letter_learner, dashboard, sw.js, loop docs S612 · letter_learner, dashboard, sw.js, loop docs S611 · dashboard, torah, generator, sw.js, loop docs S610 · trope, locales, sw.js, loop docs S609 · dashboard, sw.js, loop docs S608 · dashboard, generator, dictionary, smoke-assignments, sw.js, dashboard.md, loop docs S607 · 404, privacy, account, js/ivrit-account.js, locales, sw.js, loop docs S606 · dictionary, torah, reading_assignments, sw.js, loop docs …[full text: IMPROVEMENT_ARCHIVE.md]
+
+_(prior)_ **Next session (S615):** **Branch `claude/adoring-brown-9udi22` (S608–S614, draft PR 394): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1271**, FM **5.59**, corpus ?v=7. ⚑ drift: main=4f03455 sw=v1271 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: C letter_learner (S527), N chrome (S520), M parsha_emojis (S522), G dictionary (S523), D flash (S524), H letter_learner (S526), P name_tags (S535); suite E (S531), L (S532), K (S533). ⚑ Harnesses: `c614/`, `h613/` (findings). ⚑ 57 seeds.
+⚑ Sync P2 (S573): D31 fails alone ~1 in 3. ⚑ The S602 gate-4 answer covers the landscape blend-sheet P3 (measure Export PDF first). ⚑ The generator's S613 P3 (Flash Cards hand-off under My Word Lists) is small; its title is gate 2. ⚑ Dashboard waits for free caps: the S610 glyph strings, the S568 Arial half; the footer "·" (S588, 13 carriers). ⚑ Gate-3 P4s, small: LL final-form cards, the dictionary headword. ⚑ Ports at the next A: `m554/`–`m610/`, `g604/`, `d605/`, `t605/`, `h606/`, `c607/`, `n608/`, `p609/`, `g611/`, `d612/`, `h613/`, `c614/`; traps 352, 356–531. ⚑ Queues: FM 26, generator 22, dashboard 8, torah 9, dictionary 8, name_tags 7, parsha_emojis 7, trope 6; the rest ≤ 4.
+
+
+<!-- archived by compact-ledger at the S616 boundary, 2026-11-05 -->
+## Compaction (S616, 2026-11-05) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-11-05 | (S615 close-out) | branch/deploy note | **S615 = N on the chrome bundle (first bundle N; index since S420, resources S246, contact S462, privacy/terms/404 S520, account never) — clean — + `name_tags.html` (since S534) — clean; 1 gate-4 answer (leave the grip), 1 P4. Fixes from the queue: the generator's word-list hand-off (gate 2) and the S568 Arial buttons on its last three pages. PR 394, sw v1275; deploy after merge.**
+
+- [x] 2026-11-05 | `99351ec9` | Hebrew_Font_Maker.html, sw.js | (S568's P4, its last page) **Buttons take the page's face, not Arial** (full screen's Exit / Show Panels, the tour ✕). | DOM census × 4 cells: HEAD 3, tree 0; full-screen plates measured
+
+- [x] 2026-11-05 | `5adad2c9` | torah_trainer.html, sw.js | (S568's P4) **Buttons take the page's face, not Arial** (Exit Full Screen, the audio collapse, the drawer's icons). | reading + 8 tabs × 4 cells: HEAD 16, tree 0; Exit by a real click
+
+- [x] 2026-11-05 | `7dd3bb87` | classroom_dashboard.html, sw.js | (S568's P4) **Buttons take the page's face, not Arial** (the bare `.btn-xs`, drawer, font-tile labels, week editor). | board + 7 tabs + week × 4 cells: HEAD 70, tree 0; widths −1–4px, no overflow
+
+- [x] 2026-11-05 | `9912441e` | classroom_dashboard.html, sw.js | (S610's P4) **The drawer's Current Location is the outlined `.btn-secondary`**, as on the setup card, under the gold Update. | Weather tab by real clicks × 8 cells: background / border / text = the setup card's, ≠ Update's (HEAD 0/8, tree 8/8); hover = `.btn-secondary`'s
+
+- [x] 2026-11-05 | `02067797` | classroom_dashboard.html, sw.js | (S610's P4) **The drawer's Hebrew Settings section gets the 22px above it** (`.tt-set ~ .tt-set`: the English font's file input sat between it and Intermission). | the drawer's tabs by real clicks × 8 cells: Hebrew Settings 0 → 22px (HEAD 0/8, tree 8/8); every other section and each tab's first unchanged
+
+- [x] 2026-11-05 | `26560c58` | classroom_dashboard.html, sw.js | (S610's P4; pattern `latin-tracking-on-hebrew-labels`) **Make Groups' Hebrew titles are not tracked** (`.pick-group-title :lang(he)`, the span hebDisplay makes). | Make Groups by real clicks × 8 cells × header he/en: Hebrew text nodes 0.48–0.65px → normal (HEAD 8/16, tree 16/16), "Group N" keeps 0.03em
+
+- [x] 2026-11-04 | (S610 close-out) | branch/deploy note | **S610 = M on the dashboard (first since S508; 55 commits to the page). FOUND 7: 2 FIXED (one by gate 3), 4 P4 + the S568 P4 re-measured; + 2 queue fixes (torah, generator). Branch `claude/adoring-brown-9udi22` (PR 394), sw v1256; deploy on merge.** Gates: 3 (the overlay buttons) → "Both large". No live action. Deferred: none.
+
+- [x] 2026-11-04 | `263ed754` | hebrew_blend_generator.html, sw.js | (S610; the S568 P4's generator half) **The generator's buttons take the page's face** (`button { font-family:inherit }`): Exit Full Screen and the sidebar toggle. | census 5 practice × 8 worksheet types + fullscreen × 2 cells: Arial buttons 2 → 0 per cell; 8 cells vs HEAD, the toggle's box unchanged, Exit Full Screen 100–102 × …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-04 | `18c7ee9b` | torah_trainer.html, sw.js | (S610; the S568 P4) **The trope clause line clears the Latin under each word at every Hebrew size** (the margin grows with `--tt-heb-size` above 1.5rem, as the staff's does). | Bereshit, 1,931 words × 5 sizes × 4 cells × 3 reading layouts: gap HEAD 2.6 → −2.8px, tree 2.1–3.1; staff and paper equal to HEAD
+
+- [x] 2026-11-04 | `997c446b` | classroom_dashboard.html, sw.js | (S610 M) **Pick One and Make Groups show their two result buttons at one size** (gate 3: "Both large"): Close takes the base `.btn`, the size rule outranks `.btn`. | 8 cells × Pick / Groups / message: HEAD 0/8, tree 8/8 (Source Sans 3 bold, 5px, clamp size, ≥ 48px); hovers by the real mouse; 390 / 320 one row
+
+- [x] 2026-11-04 | `962f6c62` | classroom_dashboard.html, sw.js | (S610 M) **Each line of the board message runs in its own script's direction** (`unicode-bidi: plaintext` on the board and the drawer's editor; pattern `RTL-inheritance-on-a-Latin-script-container`). | 8 cells × board / editor / fullscreen / empty: HEAD 0/8, tree 8/8; the English default and both placeholders pixel-identical to HEAD
+
+### from Per-session log (one line per session)
+
+- 2026-11-01 | **S595** | iters: 5 | tools: fontmaker ×2, generator ×2, locales, sw | patterns fixed: text-field-under-16px-zooms-on-ios-focus ×1, decorative-glyph-carrier-exposed-to-assistive-tech ×1 | pass run: N (fontmaker) | SW: v1199→v1203
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S615 (2026-11-05):** generator, dashboard, torah, fontmaker, locales, sw.js, loop docs S615 · fontmaker, generator, flash, dashboard, torah, index, locales, sw.js, storage-and-backup.md, loop docs S614 · generator, dashboard, parsha_emojis, sw.js, loop docs S613 · letter_learner, dashboard, sw.js, loop docs S612 · letter_learner, dashboard, sw.js, loop docs S611 · dashboard, torah, generator, sw.js, loop docs S610 · trope, locales, sw.js, loop docs S609 · dashboard, sw.js, loop docs S608 · dashboard, generator, dictionary, smoke-assignments, sw.js, dashboard.md, loop docs S607 · 404, privacy, account, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- N mobile & touch-device (one surface): 2026-11-05 (**S615 — 38th N, chrome (the bundle's first N; index since S420, resources S246, contact S462, privacy/terms/404 S520, account never) + name_tags (since S534; 41 commits): 196 + 24 phone cells by real taps, the signed-in account on 20, touch flows, flips, 4× CPU. FOUND 1 P4 + 1 gate-4 answer (leave the grip). N-next: letter_learner (S545), parsha_emojis (S547).**)
