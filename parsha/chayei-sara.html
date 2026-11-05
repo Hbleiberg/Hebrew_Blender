@@ -200,13 +200,13 @@ html[lang="he"] .pp-title-en{color:var(--muted);font-size:0.8em;}
 body.dark .pp-btn.pp-primary{background:var(--gold);border-color:var(--gold);color:#1a2744;}
 .pp-btn .hi{width:16px;height:16px;}
 .pp-note{margin-block-start:8px;font-size:0.88rem;color:var(--muted);}
-.pp-about{margin-block-start:22px;}
-.pp-about h2{font-family:'Libre Baskerville',serif;font-size:1.15rem;color:var(--navy);padding-block-end:6px;border-block-end:1px solid var(--border);margin-block-end:10px;}
-body.dark .pp-about h2{color:var(--gold-light);}
+.pp-lang h2{order:-2;font-family:'Libre Baskerville',serif;font-size:1.15rem;color:var(--navy);padding-block-end:6px;border-block-end:1px solid var(--border);margin-block-end:10px;}
+body.dark .pp-lang h2{color:var(--gold-light);}
 .pp-about h3{font-size:1rem;color:var(--navy);margin-block:14px 2px;}
 body.dark .pp-about h3{color:var(--gold-light);}
 .pp-about p{font-size:1rem;}
-.pp-lang{display:flex;flex-direction:column;}
+.pp-lang{display:flex;flex-direction:column;margin-block-start:22px;}
+/* the heading leads both languages: in the Hebrew UI the Hebrew text moves up under it, never above it */
 html[lang="he"] .pp-he{order:-1;}
 .pp-he{margin-block-start:18px;}
 html[lang="he"] .pp-he{margin-block:0 18px;}
@@ -308,20 +308,20 @@ body.dark .hi-sun{display:inline-block;}
         <a class="pp-btn" href="/torah_trainer.html?parsha=Chayei%20Sara" data-i18n="parshapage.trainer">Practice the reading in the Torah Trainer</a>
       </div>
       <p class="pp-note" data-i18n="parshapage.print_note">Print opens the sheet with its options: Letter or A4, outline or colored in, English or Hebrew text, and one, two or four to a page.</p>
-      <div class="pp-lang">
-        <section class="pp-about" aria-labelledby="ppAboutTitle">
-          <h2 id="ppAboutTitle" data-i18n="parshapage.about">About this parasha</h2>
+      <section class="pp-lang" aria-labelledby="ppAboutTitle">
+        <h2 id="ppAboutTitle" data-i18n="parshapage.about">About this parasha</h2>
+        <div class="pp-about">
           <p lang="en" dir="ltr">After Sarah dies, Abraham buys the Cave of Machpelah in Hebron to bury her, and his servant finds Rebecca at the well, where her kindness to his camels shows she is the right wife for Isaac.</p>
           <h3><span data-i18n="parshapage.picture">The picture:</span> <span lang="en" dir="ltr">Rebecca at the well</span></h3>
           <p lang="en" dir="ltr">The well and Rebecca’s water jar (Genesis 24:15–20).</p>
           <h3 data-i18n="parshapage.why">Why this picture?</h3>
           <p lang="en" dir="ltr">The longest story in the parasha is the search for a wife for Isaac, and it turns on the well, where Rebecca’s kindness in drawing water for the servant and all his camels shows who she is.</p>
-        </section>
-        <section class="pp-about pp-he" lang="he" dir="rtl">
+        </div>
+        <div class="pp-about pp-he" lang="he" dir="rtl">
           <p><strong>תקציר:</strong> אחרי מות שרה אברהם קונה את מערת המכפלה בחברון כדי לקבור אותה, ועבדו מוצא את רבקה ליד הבאר, שם החסד שהיא עושה עם הגמלים שלו מראה שהיא האישה הנכונה ליצחק.</p>
           <p><strong>למה האימוג׳י הזה:</strong> הסיפור הארוך ביותר בפרשה הוא החיפוש אחר אישה ליצחק, והוא סובב סביב הבאר, שבה רבקה שואבת מים לעבד ולכל גמליו, ומעשה החסד הזה מראה מי היא.</p>
-        </section>
-      </div>
+        </div>
+      </section>
     </div>
   </div>
   <nav class="pp-pager" aria-label="Other parshiyot" data-i18n-aria-label="parshapage.pager.aria">

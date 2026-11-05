@@ -123,13 +123,13 @@ html[lang="he"] .pp-title-en{color:var(--muted);font-size:0.8em;}
 body.dark .pp-btn.pp-primary{background:var(--gold);border-color:var(--gold);color:#1a2744;}
 .pp-btn .hi{width:16px;height:16px;}
 .pp-note{margin-block-start:8px;font-size:0.88rem;color:var(--muted);}
-.pp-about{margin-block-start:22px;}
-.pp-about h2{font-family:'Libre Baskerville',serif;font-size:1.15rem;color:var(--navy);padding-block-end:6px;border-block-end:1px solid var(--border);margin-block-end:10px;}
-body.dark .pp-about h2{color:var(--gold-light);}
+.pp-lang h2{order:-2;font-family:'Libre Baskerville',serif;font-size:1.15rem;color:var(--navy);padding-block-end:6px;border-block-end:1px solid var(--border);margin-block-end:10px;}
+body.dark .pp-lang h2{color:var(--gold-light);}
 .pp-about h3{font-size:1rem;color:var(--navy);margin-block:14px 2px;}
 body.dark .pp-about h3{color:var(--gold-light);}
 .pp-about p{font-size:1rem;}
-.pp-lang{display:flex;flex-direction:column;}
+.pp-lang{display:flex;flex-direction:column;margin-block-start:22px;}
+/* the heading leads both languages: in the Hebrew UI the Hebrew text moves up under it, never above it */
 html[lang="he"] .pp-he{order:-1;}
 .pp-he{margin-block-start:18px;}
 html[lang="he"] .pp-he{margin-block:0 18px;}
@@ -311,20 +311,20 @@ ${ic.spelled.length ? `    <p><span data-i18n="parshapage.also_spelled">Also spe
         <a class="pp-btn" href="/torah_trainer.html?parsha=${encodeURIComponent(ic.en)}" data-i18n="parshapage.trainer">Practice the reading in the Torah Trainer</a>
       </div>
       <p class="pp-note" data-i18n="parshapage.print_note">Print opens the sheet with its options: Letter or A4, outline or colored in, English or Hebrew text, and one, two or four to a page.</p>
-      <div class="pp-lang">
-        <section class="pp-about" aria-labelledby="ppAboutTitle">
-          <h2 id="ppAboutTitle" data-i18n="parshapage.about">About this parasha</h2>
+      <section class="pp-lang" aria-labelledby="ppAboutTitle">
+        <h2 id="ppAboutTitle" data-i18n="parshapage.about">About this parasha</h2>
+        <div class="pp-about">
           <p lang="en" dir="ltr">${esc(ic.summary.en)}</p>
           <h3><span data-i18n="parshapage.picture">The picture:</span> <span lang="en" dir="ltr">${esc(ic.emoji.title)}</span></h3>
           <p lang="en" dir="ltr">${esc(ic.emoji.text)}</p>
           <h3 data-i18n="parshapage.why">Why this picture?</h3>
           <p lang="en" dir="ltr">${esc(ic.why.en)}</p>
-        </section>
-        <section class="pp-about pp-he" lang="he" dir="rtl">
+        </div>
+        <div class="pp-about pp-he" lang="he" dir="rtl">
           <p><strong>תקציר:</strong> ${esc(ic.summary.he)}</p>
           <p><strong>למה האימוג׳י הזה:</strong> ${esc(ic.why.he)}</p>
-        </section>
-      </div>
+        </div>
+      </section>
     </div>
   </div>
   <nav class="pp-pager" aria-label="Other parshiyot" data-i18n-aria-label="parshapage.pager.aria">
