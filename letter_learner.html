@@ -2527,6 +2527,7 @@ function llOpen(id) {
   llFillDialog(id, false);
   ov.hidden = false;
   document.body.classList.add('ll-dlg-open');   // print keys on it: paper gets the open letter, not the grid behind it
+  llMirrorUrl();
   // Focus lands on the step control (Next; Prev on the last card; Close when there is one card), so ←/→ and a clicker step
   // at once — on a tab those arrows move along the tab strip, its own keys.
   setTimeout(() => { try { ['llNext', 'llPrev', 'llClose'].map(i => document.getElementById(i)).find(b => !b.disabled).focus(); } catch (e) {} }, 0);
@@ -2536,12 +2537,31 @@ function llClose() {
   if (ov.hidden) return;
   ov.hidden = true;
   document.body.classList.remove('ll-dlg-open');
+  llMirrorUrl();
   llCsPageStyle();   // the grid prints on the browser's own page again
   try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e) {}
   const card = _llId ? document.querySelector('.ll-card[data-id="' + _llId + '"]') : null;
   const back = (_llOpener && document.contains(_llOpener) && _llOpener !== document.body) ? _llOpener : card;
   _llOpener = null;
   try { back && back.focus(); } catch (e) {}
+}
+// The open card in the address bar — ?letter=bet (&tab=coloring past the first tab) or ?vowel=segol — so a teacher can
+// copy the address to a colleague or bookmark a letter; a closed card takes them out again. llOpenFromUrl reads the
+// same params at load, so a reload or the pasted address opens that card on that tab. As llSetMode's mirror: a
+// replaceState that edits letter / tab / vowel and nothing else (the auth params stay for the SDK, every other URL
+// contract survives) and keeps history.state; the mode param is llSetMode's.
+function llMirrorUrl() {
+  try {
+    const open = !document.getElementById('llOverlay').hidden && _llId && llCard(_llId);
+    const u = new URL(location.href);
+    u.searchParams.delete('letter'); u.searchParams.delete('tab'); u.searchParams.delete('vowel');
+    if (open) {
+      const card = llCard(_llId);
+      u.searchParams.set(card.kind === 'vowel' ? 'vowel' : 'letter', _llId);
+      if (_llTab && _llTab !== llTabsFor(card)[0]) u.searchParams.set('tab', _llTab);
+    }
+    if (u.toString() !== location.href) history.replaceState(history.state, '', u.toString());
+  } catch (e) {}
 }
 // The house modal keys for one dialog (the letter dialog, the bulk print popup): Escape closes, Tab wraps over the box's
 // visible controls. On the document, not the overlay: a click on the dialog's own text leaves the focus on <body>, where
@@ -2651,6 +2671,7 @@ function llSelectTab(name) {
   });
   document.body.dataset.llTab = name;   // the print CSS prints a Coloring sheet alone
   llCsPageStyle();
+  llMirrorUrl();   // a no-op while the dialog is still hidden (llOpen mirrors once it shows)
   if (name === 'font') llRenderFontTab(llCard(_llId));
   if (name === 'coloring') llRenderColoringTab(llCard(_llId));
 }
