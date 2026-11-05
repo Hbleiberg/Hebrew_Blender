@@ -7565,6 +7565,7 @@ const _MODE_FLEX_IDS = new Set([
 const _MODE_BLOCK_IDS = new Set(['threeLetterOptions']);
 
 function updateModeVisibility() {
+  if (typeof syncFcHandoffTitle === 'function') syncFcHandoffTitle();   // the Flash Cards hand-off names the word lists while Real Words draws from them (defined in a later script; the first call runs before it)
   const s = computeModeState();
   const blends = s.source === 'blends';
   // Test-taking modes hide setup panels so the student only sees the
@@ -14392,7 +14393,31 @@ function announce(msg) { const s = document.getElementById('a11yStatus'); if (s)
    Deliberately partial: everything a worksheet knows that a drill does not (layout, answer key,
    timer, locks) is left out, so flash cards applies its own defaults for the rest. */
 const FC_BLEND_MODE = { one: 1, two: 2, three: 3 };
+// Real Words drawn from My Word Lists: the worksheet is those lists' words, so Flash Cards gets the lists (a Words drill
+// over the same ids, read from this device's shared store), not the alef-bet blends of the letter grid. A ?s= share pool
+// keeps the letters hand-off: its lists may not be on this device.
+function fcHandoffIsLists() {
+  return !!document.getElementById('realWordsToggle')?.checked && rwSource === 'lists' && !rwInlinePool;
+}
+function syncFcHandoffTitle() {
+  const b = document.getElementById('fcHandoffBtn');
+  const k = fcHandoffIsLists() ? 'worksheet.actions.practice_flashcards_lists_title' : 'worksheet.actions.practice_flashcards_title';
+  if (b && window.I18n && I18n.has(k)) b.title = I18n.t(k);   // before the locale lands, the markup's own title stands
+}
 function openInFlashCards() {
+  if (fcHandoffIsLists()) {
+    const lists = wlReadStoreLocal().lists;
+    const ids = [...selectedWordListIds].filter(id => !!lists[id]);
+    if (!ids.length) {
+      _setShareNotice(I18n.t('worksheet.realwords.pool_no_lists'));
+      announce(I18n.t('worksheet.realwords.pool_no_lists'));
+      return;
+    }
+    _setShareNotice('');
+    const payload = { otherModeActive: true, otherSubMode: 'words', wordsSource: 'mylists', selectedWordListIds: ids };
+    window.open('flash_cards.html?s=' + shareB64Encode(JSON.stringify(payload)), '_blank', 'noopener');
+    return;
+  }
   let s;
   try { s = getSettings(); } catch (e) { return; }
   if (!s.selectedLetters.length || !s.selectedVowels.length) {

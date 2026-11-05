@@ -5037,6 +5037,7 @@ worksheet.actions.generate_mob,Generate,צור,mobile FAB button,svg-icon-in-mar
 worksheet.actions.pdf_mob,PDF,PDF,mobile FAB button,leading-emoji
 worksheet.actions.practice_flashcards,🃏 Practice these in Flash Cards,🃏 תרגלו את אלה בכרטיסיות,generator hand-off button to flash cards,leading-emoji
 worksheet.actions.practice_flashcards_title,Open these letters and vowels as a Flash Cards drill,פתיחת האותיות והתנועות האלה כתרגול כרטיסיות,generator hand-off button title/aria,aria-label only
+worksheet.actions.practice_flashcards_lists_title,Open these word lists as a Flash Cards drill,פתיחת רשימות המילים האלה כתרגול כרטיסיות,generator hand-off button title while Real Words draws from My Word Lists,aria-label only
 worksheet.actions.print,Print,הדפס,action button,leading-emoji
 worksheet.actions.print_count.one,📄 {count} page to print,📄 עמוד אחד להדפסה,page count under the Print / Export PDF buttons (also the frozen footer),plural;leading-emoji
 worksheet.actions.print_count.other,📄 {count} pages to print,📄 {count} עמודים להדפסה,page count under the Print / Export PDF buttons (also the frozen footer),plural;leading-emoji
