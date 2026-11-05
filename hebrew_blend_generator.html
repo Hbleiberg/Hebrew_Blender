@@ -2062,6 +2062,7 @@ body.dark .hi-sun{display:inline-block;}
     transition: transform 0.45s;
     transform-style: preserve-3d;
   }
+  .flip-card-inner:focus-visible, .rw-flip-inner:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; border-radius: 8px; }
   .flip-card.flipped .flip-card-inner {
     transform: rotateY(180deg);
   }
@@ -2455,6 +2456,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
        Paper shows the face the screen shows (the front; the back once flipped, as Reveal All does), unmirrored;
        exportPDF's clone does the same. */
     .flip-card-inner, .rw-flip-inner, .flip-card-back, .rw-flip-back { transform: none !important; }
+    .flip-card-inner, .rw-flip-inner { outline: none !important; }   /* a focused card's ring is for the screen */
     .flip-card:not(.flipped) .flip-card-back, .rw-flip:not(.flipped) .rw-flip-back,
     .flip-card.flipped .flip-card-front, .rw-flip.flipped .rw-flip-front { display: none !important; }
     body.dark .match-dot { background:#fff; border-color:#1a2744; }
@@ -8042,7 +8044,7 @@ function renderNameTheLetter(ws) {
             ${back}
           </div>
         </div>`;
-      card.querySelector('.flip-card-inner').addEventListener('click', () => card.classList.toggle('flipped'));
+      wireFlipCard(card, card.querySelector('.flip-card-inner'));
       grid.appendChild(card);
     });
     return;
@@ -8653,7 +8655,7 @@ function renderNumberPracticeSelfCheck(ws, items, title, subtitle, audioOn, show
           ${back}
         </div>
       </div>`;
-    card.querySelector('.flip-card-inner').addEventListener('click', () => card.classList.toggle('flipped'));
+    wireFlipCard(card, card.querySelector('.flip-card-inner'));
     grid.appendChild(card);
   });
 }
@@ -10343,7 +10345,7 @@ function renderGematriaSheet(ws, items, showTranslit = false, showTranslation = 
           <button class="score-btn correct"   onclick="markScore(true,  this.closest('.flip-card'))">${esc(I18n.t('worksheet.selfcheck.got_it'))}</button>
           <button class="score-btn incorrect" onclick="markScore(false, this.closest('.flip-card'))">${esc(I18n.t('worksheet.selfcheck.missed'))}</button>
         </div>`;
-      card.querySelector('.flip-card-inner').addEventListener('click', () => card.classList.toggle('flipped'));
+      wireFlipCard(card, card.querySelector('.flip-card-inner'));
       grid.appendChild(card);
     });
   } else {
@@ -10437,7 +10439,8 @@ function renderGematriaSheet(ws, items, showTranslit = false, showTranslation = 
 function resetGematriaCheck() {
   scoreCorrect = 0; scoreIncorrect = 0;
   document.querySelectorAll('.flip-card').forEach(c => {
-    c.classList.remove('flipped','scored-correct','scored-incorrect');
+    c.classList.remove('scored-correct','scored-incorrect');
+    flipCardSet(c, false);
   });
   updateScoreBar();
 }
@@ -11119,7 +11122,7 @@ function renderSelfCheck(ws, cols, title, subtitle) {
         <button class="score-btn correct" onclick="markScore(true, this.closest('.flip-card'))">${esc(I18n.t('worksheet.selfcheck.got_it'))}</button>
         <button class="score-btn incorrect" onclick="markScore(false, this.closest('.flip-card'))">${esc(I18n.t('worksheet.selfcheck.missed'))}</button>
       </div>`;
-    card.querySelector('.flip-card-inner').addEventListener('click', () => card.classList.toggle('flipped'));
+    wireFlipCard(card, card.querySelector('.flip-card-inner'));
     grid.appendChild(card);
   });
 }
@@ -11132,9 +11135,25 @@ function setSCCols(n, btn) {
 }
 
 function flipAllCards(reveal) {
-  document.querySelectorAll('.flip-card').forEach(c => {
-    if (reveal) c.classList.add('flipped');
-    else c.classList.remove('flipped');
+  document.querySelectorAll('.flip-card').forEach(c => flipCardSet(c, !!reveal));
+}
+
+// A Self-Check card turns by the keyboard as by a tap (UX rule 7): its face (not the card, which also
+// holds Got it / Missed) is a button in the tab order, Enter or Space turns it, and aria-pressed says
+// which side is up. Every writer of .flipped goes through flipCardSet so the state never drifts.
+function flipCardSet(card, on) {
+  card.classList.toggle('flipped', on);
+  const face = card.querySelector('.flip-card-inner, .rw-flip-inner');
+  if (face) face.setAttribute('aria-pressed', String(on));
+}
+function wireFlipCard(card, face) {
+  face.tabIndex = 0;
+  face.setAttribute('role', 'button');
+  face.setAttribute('aria-pressed', 'false');
+  const turn = () => flipCardSet(card, !card.classList.contains('flipped'));
+  face.addEventListener('click', turn);
+  face.addEventListener('keydown', e => {
+    if ((e.key === 'Enter' || e.key === ' ') && !e.repeat) { e.preventDefault(); turn(); }
   });
 }
 
@@ -12361,7 +12380,7 @@ function generateRealWords(reuse) {
             ${vocabTnOnBack && w.translation ? `<span class="rw-translation">${esc(w.translation)}</span>` : ''}
           </div>
         </div>`;
-      wrapper.querySelector('.rw-flip-inner').addEventListener('click', () => wrapper.classList.toggle('flipped'));
+      wireFlipCard(wrapper, wrapper.querySelector('.rw-flip-inner'));
       grid.appendChild(wrapper);
     } else if (drill === 'reverse') {
       const card = document.createElement('div');
