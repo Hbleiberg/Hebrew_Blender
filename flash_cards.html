@@ -5899,6 +5899,14 @@ function renderProfiles() {
   renderLadderCard();
 }
 
+// "Nov 5, 2026" in the UI language, not the browser locale. The formatter is made once per render and reused per
+// row; an unreadable date keeps toLocaleDateString's "Invalid Date" (Intl's format() would throw instead).
+function fcDateFormatter() {
+  const loc = (window.I18n && I18n.lang) || undefined, opts = { month: 'short', day: 'numeric', year: 'numeric' };
+  let f = null;
+  try { f = new Intl.DateTimeFormat(loc, opts); } catch (e) {}
+  return d => (f && !isNaN(d)) ? f.format(d) : d.toLocaleDateString(loc, opts);
+}
 function renderProfileHistory(name) {
   const detail = document.getElementById('profileDetail');
   const histList = document.getElementById('profileHistory');
@@ -5912,6 +5920,9 @@ function renderProfileHistory(name) {
   // Whole heading via t() (drops the static "Results History — <span>" split so it translates cleanly).
   headingEl.textContent = I18n.t('flashcards.teachertools.results_history_heading', { name: name });
   const results = (db.profiles[name].results || []).slice().reverse(); // newest first
+  // One formatter for the whole list: toLocaleDateString builds a new one per call (~1.4 ms each at a 4× slower
+  // CPU, so a student's 100 saved results held every render of this panel ~150 ms).
+  const fmtDate = fcDateFormatter();
   histList.innerHTML = '';
   if (results.length === 0) {
     histEmpty.style.display = '';
@@ -5921,7 +5932,7 @@ function renderProfileHistory(name) {
       const li = document.createElement('li');
       li.className = 'result-item';
       const d = new Date(r.savedAt);
-      const dateStr = d.toLocaleDateString((window.I18n && I18n.lang) || undefined, { month: 'short', day: 'numeric', year: 'numeric' });   // UI language, not browser locale
+      const dateStr = fmtDate(d);
       const timeStr = r.timeSec != null ? ` · ${formatTimerSecs(r.timeSec)}` : '';
       li.style.cssText = 'display:flex;align-items:center;gap:8px;';
       const shown = resultShown(r);
@@ -6770,7 +6781,7 @@ function _reportEnter(name) {
   const results = prof.results || [];
   if (!results.length) return;
 
-  const fmtDate = iso => new Date(iso).toLocaleDateString((window.I18n && I18n.lang) || undefined, { month: 'short', day: 'numeric', year: 'numeric' });   // UI language, not browser locale
+  const fmtDay = fcDateFormatter(), fmtDate = iso => fmtDay(new Date(iso));
   const stamps = results.map(r => r.savedAt).filter(Boolean).sort();
   const shownAll = results.map(resultShown);   // answered cards only, as the history shows them
   const totalCards = shownAll.reduce((n, x) => n + x.den, 0);
