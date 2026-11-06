@@ -1331,7 +1331,7 @@
   "dictionary.export.err_select_first": "בחרו מילים באמצעות מצב העתקה מרובה תחילה.",
   "dictionary.export.head": "ייצוא מילים נבחרות",
   "dictionary.export.hint": "פעיל כאשר מצב העתקה מרובה מופעל ולפחות מילה אחת נבחרה.",
-  "dictionary.export.instructions": "Anki: ייבוא דרך File ← Import.‏ Quizlet: השתמשו ב-Import from Word/Excel בדף יצירת סט הלימוד.",
+  "dictionary.export.instructions": "Anki: ייבוא דרך File → Import.‏ Quizlet: השתמשו ב-Import from Word/Excel בדף יצירת סט הלימוד.",
   "dictionary.export.quizlet_button": "ייצוא ל-Quizlet",
   "dictionary.faq.a_era": "כן. סננו לפי תקופה — עברית מקראית, משנאית, ימי-ביניימית ומודרנית.",
   "dictionary.faq.a_free": "כן. חינמי תחת רישיון CC BY-NC-SA 4.0; נתוני המילים ממקור Kaikki.org.",

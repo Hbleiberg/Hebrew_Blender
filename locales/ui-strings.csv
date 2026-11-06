@@ -851,7 +851,7 @@ dictionary.export.count.other,{count} words selected for export.,{count} מיל�
 dictionary.export.err_select_first,Select words using Bulk Copy Mode first.,בחרו מילים באמצעות מצב העתקה מרובה תחילה.,export error / word-list error,
 dictionary.export.head,Export Selected Words,ייצוא מילים נבחרות,export subheading,
 dictionary.export.hint,Active when Bulk Copy Mode is on and at least one word is selected.,פעיל כאשר מצב העתקה מרובה מופעל ולפחות מילה אחת נבחרה.,export hint,
-dictionary.export.instructions,Anki: import via File → Import. Quizlet: use Import from Word/Excel on the study set creation page.,Anki: ייבוא דרך File ← Import.‏ Quizlet: השתמשו ב-Import from Word/Excel בדף יצירת סט הלימוד.,export instructions,
+dictionary.export.instructions,Anki: import via File → Import. Quizlet: use Import from Word/Excel on the study set creation page.,Anki: ייבוא דרך File → Import.‏ Quizlet: השתמשו ב-Import from Word/Excel בדף יצירת סט הלימוד.,export instructions,
 dictionary.export.quizlet_button,Export for Quizlet,ייצוא ל-Quizlet,export button,leading-emoji
 dictionary.faq.a_era,"Yes. Filter by era — biblical, mishnaic, medieval, and modern Hebrew.","כן. סננו לפי תקופה — עברית מקראית, משנאית, ימי-ביניימית ומודרנית.",footer FAQ answer,
 dictionary.faq.a_free,Yes. Free under CC BY-NC-SA 4.0; word data sourced from Kaikki.org.,כן. חינמי תחת רישיון CC BY-NC-SA 4.0; נתוני המילים ממקור Kaikki.org.,footer FAQ answer,
