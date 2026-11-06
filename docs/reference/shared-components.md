@@ -423,7 +423,7 @@ buttons was overlooked); its Holiday Torah Readings (calendar) and Share (link) 
 drawer, so the calendar glyph is the Calendar tab's and the link glyph the Share tab's (and its Copy link's).
 Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_dashboard`, `flash_cards`,
 `torah_trainer`, `trope_tutor`, `Hebrew_Font_Maker`, `resources`, `contact`, `privacy`, `terms`,
-`account`, `404`, `letter_learner`, `parsha_emojis`, `name_tags`, `trope_atlas`, and the generated `parsha/` pages (their copy is taken
+`account`, `404`, `letter_learner`, `parsha_emojis`, `name_tags`, `trope_atlas`, `reading_assignments`, and the generated `parsha/` pages (their copy is taken
 from `parsha_emojis` by `scripts/build-parsha-pages.mjs`, so it cannot drift); the chip's glyph lives in `js/ivrit-account.js` (`ICON_USER`).
 
 ### The two byte-identical parts
@@ -1090,7 +1090,7 @@ const PANEL_MEM_CFG = {
 
 ### 10. Header skip link — the keyboard bypass, on every page
 An `<a class="skip-link">` as the **first child of `<body>`**, hidden off-screen until it takes keyboard
-focus, then dropping in at the top inline start. One rule, sha-identical on all 18 carriers modulo
+focus, then dropping in at the top inline start. One rule, sha-identical on all 19 carriers modulo
 indentation — paste it, do not re-author it:
 ```css
 .skip-link {
