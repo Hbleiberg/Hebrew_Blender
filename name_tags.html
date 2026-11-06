@@ -3273,6 +3273,7 @@ function tourStart() {
   document.addEventListener('keydown', _tourKey, true);
   window.addEventListener('resize', _tourReposition);
   window.addEventListener('scroll', _tourReposition, true);
+  document.getElementById('tourCard').addEventListener('focusin', _tourFocusIn);
   tourNext();
 }
 function _resolveStep(idx) {
@@ -3318,6 +3319,7 @@ function tourEnd(completed) {
   document.removeEventListener('keydown', _tourKey, true);
   window.removeEventListener('resize', _tourReposition);
   window.removeEventListener('scroll', _tourReposition, true);
+  document.getElementById('tourCard').removeEventListener('focusin', _tourFocusIn);
   if (_tourRepoTimer) { clearTimeout(_tourRepoTimer); _tourRepoTimer = null; }
   document.getElementById('tourSpot').hidden = true;
   document.getElementById('tourCard').hidden = true;
@@ -3347,6 +3349,18 @@ function _tourReposition() {
   if (left + cw > vw - 8) left = vw - cw - 8;
   card.style.left = left + 'px';
   card.style.top = top + 'px';
+}
+// A keyboard user who Tabs away from the card scrolls the page as they go, and the fixed card follows its target off
+// the screen; when the focus comes back to the card (Shift+Tab, or Tab round the page) the target comes back into view
+// first, so Back, Next and End are where the focus is.
+function _tourFocusIn() {
+  if (!_tourActive) return;
+  const r = document.getElementById('tourCard').getBoundingClientRect();
+  if (r.top >= 0 && r.left >= 0 && r.bottom <= document.documentElement.clientHeight && r.right <= document.documentElement.clientWidth) return;
+  const step = TOUR_STEPS[_tourIdx];
+  let el = null; try { el = step && step.target(); } catch (e) {}
+  if (_tourVisible(el)) { try { el.scrollIntoView({ block: 'center', inline: 'center' }); } catch (e) {} }
+  _tourReposition();
 }
 function _tourKey(e) {
   if (!_tourActive) return;
