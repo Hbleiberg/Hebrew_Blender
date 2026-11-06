@@ -1669,6 +1669,8 @@
   "emojitorah.badge.this_week": "This week's parasha",
   "emojitorah.card.coloring_link": "Coloring page",
   "emojitorah.card.coloring_link_aria": "Coloring page: {name}",
+  "emojitorah.card.sheet_btn": "Print coloring sheet",
+  "emojitorah.card.sheet_btn_aria": "Print coloring sheet: {name}",
   "emojitorah.card.trainer_link": "View in Torah Trainer ↗",
   "emojitorah.card.trainer_link_aria": "View in Torah Trainer: {name} (opens in a new tab)",
   "emojitorah.coloring.all": "Select all",

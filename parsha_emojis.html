@@ -366,10 +366,11 @@ body.dark .et-name{color:var(--gold-light);}
 .et-ref{margin:2px 0 6px;font-size:0.78rem;color:var(--muted);}
 .et-sum,.et-why{margin:0 0 6px;font-size:0.88rem;line-height:1.5;}
 .et-why{margin-block-end:0;}
-.et-go-row{margin:auto 0 0;padding-block-start:8px;font-size:0.82rem;display:flex;flex-wrap:wrap;gap:0 16px;}   /* the coloring page, then the Torah Trainer */
+.et-go-row{margin:auto 0 0;padding-block-start:8px;font-size:0.82rem;display:flex;flex-wrap:wrap;gap:0 16px;}   /* the coloring page, its sheet in the popup, then the Torah Trainer */
 /* inline-block + block padding: a >=24px tap target (WCAG 2.5.8) without moving the text; min-height holds it in Hebrew, whose line box is 1px shorter. */
 .et-go{display:inline-block;padding-block:4px;min-height:24px;color:var(--gold-text);font-weight:600;text-decoration:none;}
 .et-go:hover{color:var(--gold-text-hover);text-decoration:underline;}
+.et-go-btn{background:none;border:0;padding-inline:0;font:inherit;font-weight:600;cursor:pointer;}   /* the card's Print coloring sheet: a button in the row's link dress */
 /* Today's parasha: the week's card (both of a doubled week) larger, in one column up to a reading width. */
 .et-list.et-featured{grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));max-width:840px;}
 .et-featured .et-card{padding:16px 18px;gap:16px;}
@@ -1000,6 +1001,7 @@ function etCard(p, week, featured) {
   const href = 'torah_trainer.html?parsha=' + encodeURIComponent(p.en);
   const goAria = I18n.t('emojitorah.card.trainer_link_aria', { name: ui === 'he' ? p.he : p.en });
   const pageAria = I18n.t('emojitorah.card.coloring_link_aria', { name: ui === 'he' ? p.he : p.en });
+  const sheetAria = I18n.t('emojitorah.card.sheet_btn_aria', { name: ui === 'he' ? p.he : p.en });
   return `<li class="et-card" data-n="${p.n}" aria-labelledby="${id}"${on ? ' aria-current="true"' : ''}>`
     + (window.ParashaIcons ? ParashaIcons.html(i) : '') + '<div class="et-text">'
     + (on ? `<span class="et-badge">${esc(I18n.t(week.holiday ? 'emojitorah.badge.next' : 'emojitorah.badge.this_week'))}</span>` : '')
@@ -1008,6 +1010,7 @@ function etCard(p, week, featured) {
     + (sum ? `<p class="et-sum"${etLangAttr(sum.lang)}>${esc(sum.text)}</p>` : '')
     + (wy ? `<p class="et-why"><strong>${esc(I18n.t('torah.emojis.why_label'))}</strong> <span${etLangAttr(wy.lang)}>${esc(wy.text)}</span></p>` : '')
     + `<p class="et-go-row"><a class="et-go" href="${esc(etPageOf(p))}" aria-label="${esc(pageAria)}">${esc(I18n.t('emojitorah.card.coloring_link'))}</a>`
+    + `<button type="button" class="et-go et-go-btn" data-sheet="${i}" aria-label="${esc(sheetAria)}">${esc(I18n.t('emojitorah.card.sheet_btn'))}</button>`
     + `<a class="et-go" href="${esc(href)}" target="_blank" rel="noopener" aria-label="${esc(goAria)}">${esc(I18n.t('emojitorah.card.trainer_link'))}</a></p>`
     + '</div></li>';
 }
@@ -1954,6 +1957,14 @@ document.addEventListener('DOMContentLoaded', () => {
     etShowTop();
   });
   document.getElementById('etPrint').addEventListener('click', () => window.print());
+  // A card's Print coloring sheet opens the popup on that parasha alone (the deep link's path); the button is focused
+  // first so Close returns to it on every browser (Safari does not focus a clicked button).
+  document.getElementById('etCards').addEventListener('click', e => {
+    const b = e.target.closest('.et-go-btn[data-sheet]');
+    if (!b) return;
+    try { b.focus(); } catch (err) {}
+    etCsOpen([Number(b.dataset.sheet)]);
+  });
   etCsLoad();
   etCsWire();
   etTrackBar();

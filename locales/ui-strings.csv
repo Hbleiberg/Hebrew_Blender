@@ -6765,6 +6765,8 @@ emojitorah.badge.next,Next parasha,הפרשה הבאה,badge on the card(s) show
 emojitorah.card.trainer_link,View in Torah Trainer ↗,צפייה במאמן התורה ↗,link at the foot of every card: opens that parasha in the Torah Trainer in a new tab,
 emojitorah.card.trainer_link_aria,View in Torah Trainer: {name} (opens in a new tab),צפייה במאמן התורה: פרשת {name} (נפתח בכרטיסייה חדשה),"aria-label of a card's Torah Trainer link; {name} is the parasha's name in the UI's language. It opens with the link's visible words (emojitorah.card.trainer_link without the ↗), so a speech user can say them",
 emojitorah.card.coloring_link,Coloring page,דף צביעה,link at the foot of every card: that parasha's own coloring page (parsha/<slug>.html),
+emojitorah.card.sheet_btn,Print coloring sheet,הדפסת דף צביעה,"button at the foot of every card: opens the Print coloring sheets popup with that parasha alone, with the teacher's saved paper, size and copies options",
+emojitorah.card.sheet_btn_aria,Print coloring sheet: {name},הדפסת דף צביעה: פרשת {name},aria-label of a card's Print coloring sheet button; {name} is the parasha's name in the UI's language,
 emojitorah.card.coloring_link_aria,Coloring page: {name},דף צביעה: פרשת {name},aria-label of a card's coloring-page link; {name} is the parasha's name in the UI's language. It opens with the link's visible words,
 emojitorah.loading,Loading the parsha emojis…,טוען את אימוג׳י הפרשות…,status line while data/parshiyot.json loads,
 emojitorah.load_failed,The parsha emojis could not load. Check your connection and reload the page.,לא ניתן היה לטעון את אימוג׳י הפרשות. בדקו את החיבור וטענו את הדף מחדש.,status line when data/parshiyot.json fails to load,

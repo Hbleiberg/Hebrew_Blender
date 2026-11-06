@@ -1669,6 +1669,8 @@
   "emojitorah.badge.this_week": "פרשת השבוע",
   "emojitorah.card.coloring_link": "דף צביעה",
   "emojitorah.card.coloring_link_aria": "דף צביעה: פרשת {name}",
+  "emojitorah.card.sheet_btn": "הדפסת דף צביעה",
+  "emojitorah.card.sheet_btn_aria": "הדפסת דף צביעה: פרשת {name}",
   "emojitorah.card.trainer_link": "צפייה במאמן התורה ↗",
   "emojitorah.card.trainer_link_aria": "צפייה במאמן התורה: פרשת {name} (נפתח בכרטיסייה חדשה)",
   "emojitorah.coloring.all": "בחירת הכול",
