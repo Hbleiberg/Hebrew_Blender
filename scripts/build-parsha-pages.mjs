@@ -192,8 +192,13 @@ function page(ic, imgHash) {
   const [IMG_W, IMG_H] = imgSize(ic);
   const slug = slugOf(ic.en), url = `${SITE}${DIR}/${slug}.html`, heName = unpoint(ic.he);
   const prev = byN.get(ic.n === 1 ? 54 : ic.n - 1), next = byN.get(ic.n === 54 ? 1 : ic.n + 1), pair = pairOf(ic.n);
-  const title = `Parshat ${ic.en} Coloring Page — Free Printable | IvritSuite`;
-  const desc = `Free printable Parshat ${ic.en} coloring page (${pretty(ic.ref)}): ${lowerFirst(ic.alt)} to color, with a short summary in English and Hebrew.`;
+  // A result shows about 60 title and 160 description characters: the title keeps the name, the page's kind and the
+  // site (37–51 characters over the 54 names); a description that would run past 160 drops its summary clause (the
+  // summary itself stays on the page) and keeps the picture.
+  const title = `Parshat ${ic.en} Coloring Page | IvritSuite`;
+  const descHead = `Free printable Parshat ${ic.en} coloring page (${pretty(ic.ref)}): ${lowerFirst(ic.alt)} to color`;
+  const descTail = ', with a short summary in English and Hebrew.';
+  const desc = (descHead + descTail).length > 160 ? descHead + '.' : descHead + descTail;
   const img = `/${imgRel(ic)}?v=${imgHash.slice(0, 8)}`, imgAbs = `${SITE}${imgRel(ic)}`;
   const imgAlt = `Parshat ${ic.en} coloring page: ${lowerFirst(ic.alt)}`;
   const names = [ic.en, ...ic.spelled];
