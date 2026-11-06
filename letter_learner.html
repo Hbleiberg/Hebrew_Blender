@@ -441,6 +441,8 @@ html[lang="he"] .panel-title { letter-spacing:normal; text-transform:none; }
 fieldset.ll-vowel-set { border:none; padding:0; margin:0; min-width:0; }
 .ll-vowel-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(118px, 1fr)); gap:2px 10px; }
 .ll-vowel-grid .ll-opt { font-size:0.86rem; min-height:26px; }   /* twelve rows: tight enough for the whole sidebar to fit a laptop screen */
+.ll-vowel-btns { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:6px; }   /* Select all / Clear over the twelve boxes, the bulk popup's pair */
+.panel-body .ll-vowel-btns .ll-btn { margin-top:0; padding:4px 10px; font-size:0.8rem; min-height:24px; }
 .ll-vowel-sample { font-family:var(--heb-font); font-size:1.35rem; line-height:1; min-width:1.6em; text-align:center; color:var(--text); }
 #llNoSpeech { display:none; }
 body.ll-no-speech #llNoSpeech { display:block; }
@@ -1102,6 +1104,10 @@ body.dark #appToast { background: #0a0f1c; }
       <div class="panel-body">
         <fieldset class="ll-vowel-set">
           <legend class="vh" data-i18n="letterlearner.options.vowels_legend">Vowels to show</legend>
+          <div class="ll-vowel-btns">
+            <button type="button" class="ll-btn ghost" id="llVowAll" data-i18n="letterlearner.options.vowels_all">Select all</button>
+            <button type="button" class="ll-btn ghost" id="llVowNone" data-i18n="letterlearner.options.vowels_none">Clear</button>
+          </div>
           <div class="ll-vowel-grid" id="llVowelGrid"></div>
         </fieldset>
       </div>
@@ -2321,7 +2327,18 @@ function renderOptions() {
   document.getElementById('optWordAudio').checked = !!settings.wordAudio;
   llCsSyncControls();
 }
+// Select all / Clear over "Vowels to show": every box at once, then what one box's change does (the grid in Vowels
+// mode, the open card's Vowels tab). Clearing every vowel is allowed, as unticking the last box is: the grid says so.
+function llSetAllVowels(on) {
+  VOWELS.forEach(v => { settings.vowels[v.id] = on; });
+  document.querySelectorAll('#llVowelGrid input').forEach(cb => { cb.checked = on; });
+  llSaveSettings();
+  if (_llMode === 'vowels') renderGrid();
+  llRefillOrClose();
+}
 function wireOptions() {
+  document.getElementById('llVowAll').addEventListener('click', () => llSetAllVowels(true));
+  document.getElementById('llVowNone').addEventListener('click', () => llSetAllVowels(false));
   document.getElementById('optFontTab').addEventListener('change', e => {
     llSetSetting('fontTab', e.target.checked);
     llRefillOrClose();
