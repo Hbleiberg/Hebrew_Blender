@@ -6888,6 +6888,9 @@ nametags.table.move_head,Order,סדר,Visually hidden header of the reorder (dra
 nametags.table.move_aria,"Move student {n}: drag, or press the up or down arrow key","הזזת תלמיד {n}: גררו, או הקישו על החץ למעלה או למטה",title + aria-label of a row's drag handle (a focused handle also moves its row with the arrow keys),aria
 nametags.table.moved,{name} — now in place {pos} of {count}.,{name} — עכשיו במקום {pos} מתוך {count}.,Screen-reader announcement after a student is moved in the class list,aria
 nametags.table.tr_auto,Back to the automatic transliteration,חזרה לתעתיק האוטומטי,title + aria-label of the reset button in a transliteration cell,aria
+nametags.table.print_all_aria,Print every student's tag,הדפסת התג של כל התלמידים,aria-label + title of the header checkbox of the Print column (ticks or clears every row; reads mixed while some are out),aria
+nametags.table.print_aria,Print the tag of student {n},הדפסת התג של תלמיד {n},aria-label of a row's Print checkbox (unticked: the student is left out of the preview and the print this session),aria
+nametags.preview.printing_some,Printing {n} of {count} students — tick the box beside a name to add it back.,מדפיסים {n} מתוך {count} תלמידים — סמנו את התיבה שליד שם כדי להחזיר אותו.,Preview status line while some students' Print boxes are unticked,
 nametags.table.tr_type,Type it here,הקלידו כאן,Placeholder of a transliteration cell in Typed-only mode,
 nametags.csv.import,Import a CSV,ייבוא קובץ CSV,Button (file picker),svg-icon-in-markup
 nametags.csv.import_title,"Import a CSV or spreadsheet file (Hebrew, English, Transliteration and Extra columns)","ייבוא קובץ CSV או גיליון (עמודות לשם העברי, לשם באנגלית, לתעתיק ולשורה נוספת)",title of the import button,

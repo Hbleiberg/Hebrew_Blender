@@ -105,6 +105,7 @@ transliterations still print.
   5163 (10). Sizes, first-label offsets and pitches are the gLabels template database's; measured from a printed PDF
   the label corners land within the pixel and corner-radius tolerance. *Print the label outlines too* adds the
   label shapes to the print (a test page on plain paper).
+- **Print only the students chosen.** Each row has a Print box (ticked by default; the header's box ticks or clears every row and reads mixed while some are out): an unticked student is left out of the preview and the print (`ntPrintableRows`), and the preview's status line says "Printing n of m". The choice is held on the row object in memory (`_ntSkip`, a WeakSet) for this session only — it is deliberately not a setting, never saved, synced or carried in a file, so a reload prints everyone again.
 - **The preview is the print.** Each sheet is drawn at its real size in a frame scaled by `--nt-k`; print CSS drops
   the scale and everything around the sheets, and `#ntPageSize` holds the `@page` rule `ntPageStyle` writes on every
   render. On paper each sheet's box is a hair (0.02in) shorter than the printable area so rounding never adds a blank

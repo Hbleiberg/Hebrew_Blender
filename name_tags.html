@@ -464,6 +464,8 @@ html[lang="he"] .nt-table th { letter-spacing:normal; text-transform:none; }
 .nt-table td { padding:3px 4px; border-bottom:1px solid var(--warm-gray); vertical-align:middle; }
 .nt-table tr:last-child td { border-bottom:none; }
 .nt-table .nt-num { width:2.4em; text-align:center; color:var(--muted); font-size:0.78rem; font-variant-numeric:tabular-nums; }
+.nt-table .nt-print { width:2.4em; text-align:center; }   /* the Print column: a box per student, this session only (S623) */
+.nt-table input[type="checkbox"] { width:18px; height:18px; min-width:0; padding:0; margin:0; vertical-align:middle; accent-color:var(--gold); }
 .nt-table input { width:100%; min-width:8em; font:inherit; font-size:0.95rem; padding:6px 8px; border:1.5px solid transparent; border-radius:5px; background:transparent; color:var(--text); }
 .nt-table input:hover { border-color:var(--warm-gray); }
 .nt-table input:focus { border-color:var(--focus-ring); box-shadow:inset 0 0 0 1px var(--focus-ring); background:var(--cream); outline:none; }   /* the ring colour, not --gold: gold on the white row is 2.75:1, under 1.4.11's 3:1 for a state indicator; the inset shadow brings the 1.5px border to the suite's 2px without moving the cell (S548 pass C) */
@@ -963,6 +965,7 @@ body.dark #appToast { background: #0a0f1c; }
           <thead>
             <tr>
               <th scope="col" class="nt-num">#</th>
+              <th scope="col" class="nt-print"><input type="checkbox" id="ntPrintAll" checked aria-label="Print every student's tag" data-i18n-aria-label="nametags.table.print_all_aria" title="Print every student's tag" data-i18n-title="nametags.table.print_all_aria"></th>
               <th scope="col" class="nt-col-he" data-i18n="nametags.table.he">Hebrew name</th>
               <th scope="col" class="nt-col-tr" data-i18n="nametags.table.tr">Transliteration</th>
               <th scope="col" class="nt-col-en" data-i18n="nametags.table.en">English name</th>
@@ -1363,6 +1366,13 @@ function ntRowEl(row, i, isNew) {
   const tr = el('tr', isNew ? 'nt-new' : null);
   const n = i + 1;
   tr.appendChild(el('td', 'nt-num', isNew ? '' : String(n)));
+  const tdPr = el('td', 'nt-print');
+  if (!isNew) {
+    const pr = el('input'); pr.type = 'checkbox'; pr.dataset.print = String(i); pr.checked = !_ntSkip.has(row);
+    pr.setAttribute('aria-label', _fbT('nametags.table.print_aria', 'Print the tag of student {n}', { n }));
+    tdPr.appendChild(pr);
+  }
+  tr.appendChild(tdPr);
   const cell = (f, attrs) => {
     const inp = el('input');
     inp.type = 'text';
@@ -1438,7 +1448,7 @@ function ntRenderTable() {
   if (!tb) return;
   const a = document.activeElement;
   let keep = null;
-  if (a && tb.contains(a)) keep = { r: a.dataset.r || a.dataset.del || a.dataset.auto || a.dataset.move, f: a.dataset.f || (a.dataset.del != null ? 'del' : a.dataset.move != null ? 'move' : 'auto'), s: a.selectionStart, e: a.selectionEnd };
+  if (a && tb.contains(a)) keep = { r: a.dataset.r || a.dataset.del || a.dataset.auto || a.dataset.move || a.dataset.print, f: a.dataset.f || (a.dataset.del != null ? 'del' : a.dataset.move != null ? 'move' : a.dataset.print != null ? 'print' : 'auto'), s: a.selectionStart, e: a.selectionEnd };
   tb.textContent = '';
   const rows = ntRows();
   rows.forEach((row, i) => tb.appendChild(ntRowEl(row, i, false)));
@@ -1446,11 +1456,12 @@ function ntRenderTable() {
   document.getElementById('ntTable').classList.toggle('nt-no-extra', !ntSet.extra);
   document.getElementById('ntExtraRow').hidden = !ntSet.extra;
   if (keep) {
-    const sel = keep.f === 'del' ? '[data-del="' + keep.r + '"]' : keep.f === 'move' ? '[data-move="' + keep.r + '"]' : keep.f === 'auto' ? 'input[data-f="tr"][data-r="' + keep.r + '"]' : 'input[data-f="' + keep.f + '"][data-r="' + keep.r + '"]';
+    const sel = keep.f === 'del' ? '[data-del="' + keep.r + '"]' : keep.f === 'move' ? '[data-move="' + keep.r + '"]' : keep.f === 'print' ? '[data-print="' + keep.r + '"]' : keep.f === 'auto' ? 'input[data-f="tr"][data-r="' + keep.r + '"]' : 'input[data-f="' + keep.f + '"][data-r="' + keep.r + '"]';
     const t = tb.querySelector(sel) || tb.querySelector('input[data-f="he"][data-r="' + Math.max(0, Math.min(Number(keep.r) || 0, rows.length)) + '"]');
     if (t) { t.focus(); if (typeof keep.s === 'number' && t.setSelectionRange) { try { t.setSelectionRange(keep.s, keep.e); } catch (e) {} } }
   }
   ntUpdateTrNote();
+  ntPrintAllSync();
 }
 function ntEditCell(r, f, value) {
   const v = String(value).slice(0, NT_MAX_FIELD);
@@ -2080,7 +2091,22 @@ function ntTagEl(row, idx, w, h, L, cls, full) {
   lines.forEach((l, i) => tag.appendChild(ntLineSvg(l, slots[i], iw)));
   return tag;
 }
-function ntPrintableRows() { return ntRows().filter(r => !ntRowEmpty(r) && ntLinesFor(r).length); }
+/* Print only the students chosen: a box per row (ticked by default) leaves a student out of the preview and the
+   print for this session only — the choice lives on the row object, never in the list, so it never saves, syncs or
+   travels in a file (a new student mid-year prints alone without reprinting the class). The header box ticks or
+   clears every row and reads mixed while some are out. (S623 micro-feature) */
+const _ntSkip = new WeakSet();
+function ntSkipped() { return ntRows().filter(r => !ntRowEmpty(r) && _ntSkip.has(r)).length; }
+function ntPrintAllSync() {
+  const all = document.getElementById('ntPrintAll'); if (!all) return;
+  const n = ntRows().filter(r => !ntRowEmpty(r)).length, skipped = ntSkipped();
+  all.checked = !skipped; all.indeterminate = skipped > 0 && skipped < n;
+}
+function ntSetPrintAll(on) {
+  ntRows().forEach(r => { if (on) _ntSkip.delete(r); else _ntSkip.add(r); });
+  ntRenderTable(); ntQueuePreview();
+}
+function ntPrintableRows() { return ntRows().filter(r => !ntRowEmpty(r) && !_ntSkip.has(r) && ntLinesFor(r).length); }
 let _ntPreviewQueued = false;
 function ntQueuePreview() {
   if (_ntPreviewQueued) return;
@@ -2154,7 +2180,7 @@ function ntRenderPreview() {
   pages.textContent = sample ? '' : _fbN('nametags.preview.pages', sheets, '{count} page', '{count} pages');
   const btn = document.getElementById('ntPrintBtn');
   btn.setAttribute('aria-disabled', sample ? 'true' : 'false');
-  if (!sample) document.getElementById('ntPrintNote').textContent = '';
+  if (!sample) { const skipped = ntSkipped(); document.getElementById('ntPrintNote').textContent = skipped ? _fbT('nametags.preview.printing_some', 'Printing {n} of {count} students — tick the box beside a name to add it back.', { n: rows.length, count: rows.length + skipped }) : ''; }
 }
 // The preview's scale: a sheet fills the column, never bigger than life.
 function ntFitPreview() {
@@ -2668,6 +2694,15 @@ function ntWireTable() {
     const next = tb.querySelector('input[data-f="' + t.dataset.f + '"][data-r="' + (Number(t.dataset.r) + 1) + '"]');
     if (next) next.focus();
   });
+  tb.addEventListener('change', e => {
+    const pr = e.target.closest('[data-print]');
+    if (!pr || !tb.contains(pr)) return;
+    const row = ntRows()[Number(pr.dataset.print)]; if (!row) return;
+    if (pr.checked) _ntSkip.delete(row); else _ntSkip.add(row);
+    ntPrintAllSync(); ntQueuePreview();
+  });
+  const all = document.getElementById('ntPrintAll');
+  if (all) all.addEventListener('change', () => ntSetPrintAll(all.checked));
   tb.addEventListener('click', e => {
     const del = e.target.closest('[data-del]');
     if (del && tb.contains(del)) { ntRemoveRow(Number(del.dataset.del)); return; }
