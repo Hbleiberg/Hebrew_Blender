@@ -258,8 +258,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] S | trope_tutor.html | **A staff size for the projector**: the Learn staff stays 182×52 px (about 5 px between lines) at every width and Hebrew size while the example word grows to 69 px; a size setting, or one card shown big, lets the class read the melody from the back. | found S557 H
 
-- [ ] S | name_tags.html | **Print only the students chosen** (a checkbox per row, or "this page only"): a new student mid-year prints the whole class again (25 students = 4 pages for one tag). | found S551 H
-
 - [ ] S | name_tags.html | **The "no Classroom Dashboard classes" note links to the dashboard**, and the dashboard's class picker links back: the bridge is 3 clicks each way once a class exists, a dead end before. | found S551 H
 
 - [ ] S | parsha_emojis.html | **A split week names the other schedule's parasha** ("In Israel: Sh'lach"): an Israeli teacher sees the Diaspora card unless the Torah Trainer says Israel. | found S540 H
@@ -416,6 +414,14 @@ _(none)_
 
 ## Done
 
+- [x] 2026-11-06 | (S623 close-out) | branch/deploy note | **S623 = K (the 37th; the suite over `843984b3..2d9e7e23`, 525 commits — the Trope Atlas', Name Tags', the assignments and review pages' and the `parsha/` pages' first K): the CSV delta (+925, −2, 67 reworded), 5,956 static refs, 3,460 fallback sites, the blind arm over 12,102 added lines, 42 live-switch cells on the tree and the base, 12 …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-06 | `3a3650a0` | reading_assignments.html, torah_trainer.html, sw.js | (S623 K; pattern `stale-html-fallback-behind-its-csv-value`) **Four HTML fallbacks spell their apostrophe as the CSV value does** (the framed-page heading, two peer-listening notes, the student notice) | `static.py`'s stale arm 4 text hits → 0 outside the generator's known `<br>` normalisation; check-inline-js …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-06 | `ce2b5a5c` | name_tags.html, locales, docs/reference/name-tags.md, sw.js, probe | (S623 micro-feature, gate 1; the S551 seed) **Name Tags prints only the students chosen**: a Print box per row (ticked by default), the header's box for all (mixed while some are out), the preview's "Printing n of m" line; held on the row in memory for the session only, never saved or synced | …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-06 | `33496264` | locales/ui-strings.csv (he), sw.js | (S623 K, the arrow sweep) **The dictionary's Hebrew export note reads "File → Import"** — between two Latin words the arrow takes their direction, so ← pointed the menu path backwards | measured in a Hebrew box: File at x 698, the arrow 728, Import 749 — → now points along the path; the other 7 Hebrew arrows are forward (between …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [x] 2026-11-06 | (S622 close-out) | branch/deploy note | **S622 = L (the 30th; the suite over `ca9b9618..b816c43d`, 527 commits — the Trope Atlas', Name Tags', the assignments page's, the review page's and the 54 `parsha/` pages' first L): 20 static arms + the delta pages' claims by real clicks (the Atlas's 27 signs, 26 melodies, play and Key; a parsha page's picture, print link and EN + HE …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-11-06 | `782b67f8` | hebrew_dictionary.html, sw.js, probe | (S622 micro-feature, gate 1; the S440 seed) **Save as Word List proposes a name read off the active filters** (the search, the letters anywhere and by position, up to three lengths, two parts of speech, one era and up to three vowels, as the panel labels them, joined by middle dots; empty with no filter and in the Emoji and …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -444,15 +450,11 @@ _(none)_
 
 - [x] 2026-11-05 | `63867b8c` | letter_learner.html, CLAUDE.md, sw.js, probe | (S619 micro-feature, gate 1; the S526 seed) **The open card is in the address bar** (`?letter=bet&tab=coloring` / `?vowel=segol`; a close takes it out; the pasted address reopens it). | 13 address steps × EN light 1280 / HE dark 800 by real clicks, a planted param kept, history untouched; HEAD fails 16; probe …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-11-05 | (S618 close-out) | branch/deploy note | **S618 = D on `flash_cards.html` (first since S524; 45 commits to the page): cold 10 cells, 16 arms × 3 cells by real input, a 12-profile class (4 MB), profiles + a trace. FOUND 5: FIXED 2, 2 P3 + 1 P4 logged; the `:has()` cost measured (findings). PR 394 (its head ref still at `09bc416c`: GitHub has not taken the branch since S617's …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-05 | `394b6aaf` | flash_cards.html, sw.js | (S618 D) **A student's Results History (and the progress report's table) formats its dates with one formatter** (toLocaleDateString built one per row). | 12 profiles × 100 results, a real select × 2 cells × 3 vs HEAD: the rows' script 317–394 → 67–96 ms @4× per render; history + report text identical
-
-- [x] 2026-11-05 | `0e6e77eb` | flash_cards.html, sw.js, probe | (S618 D) **The printable card sheet sizes every front in one layout** (one forced layout per card per size before). | 4×, 3 × 2 cells vs HEAD: menu 200 letters 545–1,293 → 189–291 ms, words 316–895 → 221–346, Print This Card Set 425–1,416 → 130–264; sheets byte-identical; fit equal on 927 fronts; probe …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-11-06 | **S623** | iters: 5 | tools: locales (dictionary he), name_tags, reading_assignments, torah, sw | patterns fixed: stale-html-fallback-behind-its-csv-value ×1 | pass run: K (suite, first since S533; 525 commits) | SW: v1291→v1294
 
 - 2026-11-06 | **S622** | iters: 5 | tools: trope_atlas, parsha pages (build-parsha-pages), dictionary, sw | patterns fixed: — | pass run: L (suite, first since S532; 527 commits) | SW: v1289→v1291
 
@@ -492,11 +494,9 @@ _(none)_
 
 - 2026-11-04 | **S604** | iters: 5 | tools: dashboard ×2, index, dictionary, locales, sw | patterns fixed: dark-palette-baked-into-paper ×1, decorative-glyph-carrier-exposed-to-assistive-tech ×1 | pass run: G (dashboard, first since S495) | SW: v1233→v1237
 
-- 2026-11-03 | **S603** | iters: 4 | tools: index, contact, privacy, terms, account, sw | patterns fixed: dark-navy-fill-matches-its-ground ×1 | pass run: M (chrome, first since S494) | SW: v1230→v1233
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S622 (2026-11-06):** trope_atlas, parsha/ + build-parsha-pages, dictionary, sw.js, loop probe, loop docs S622 · parsha_emojis, dictionary, README, manifest, ops.md, i18n.md, shared-components.md, locales, sw.js, loop probes ×2, loop docs S621 · letter_learner ×2, trope_atlas, trope, name_tags, locales, sw.js, loop probes ×3, shared-components.md, loop docs S620 · letter_learner, trope (locales), CLAUDE.md, sw.js, loop probe, loop docs S619 · flash, sw.js, loop probe, loop docs S618 · dictionary, generator, sw.js, loop probe, loop …[full text: IMPROVEMENT_ARCHIVE.md]
+- **Snapshot S623 (2026-11-06):** name_tags, reading_assignments, torah, locales, name-tags.md, sw.js, loop probe, loop docs S623 · trope_atlas, parsha/ + build-parsha-pages, dictionary, sw.js, loop probe, loop docs S622 · parsha_emojis, dictionary, README, manifest, ops.md, i18n.md, shared-components.md, locales, sw.js, loop probes ×2, loop docs S621 · letter_learner ×2, trope_atlas, trope, name_tags, locales, sw.js, loop probes ×3, shared-components.md, loop docs S620 · letter_learner, trope (locales), CLAUDE.md, sw.js, loop probe, loop docs …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -534,7 +534,7 @@ _(none)_
 
 - `dark-palette-baked-into-paper` | ACTIVE | owner G | det: recipe | last S604 | streak 0
 
-- `tour-not-following-a-live-switch` | ACTIVE | owner K | det: recipe | last S522 | streak 0
+- `tour-not-following-a-live-switch` | ACTIVE | owner K | det: recipe | last S623 | streak 1
 
 - `overlay-scoped-dialog-keys` | ACTIVE | owner F | det: recipe | last S530 | streak 1
 
@@ -658,11 +658,11 @@ _(none)_
 
 - `text-field-under-16px-zooms-on-ios-focus` | ACTIVE | owner N | det: recipe | last S608 | streak 0
 
-- `textContent-rewrite-erases-a-control-icon` | ACTIVE | owner K | det: recipe | last S501 | streak 0
+- `textContent-rewrite-erases-a-control-icon` | ACTIVE | owner K | det: recipe | last S623 | streak 1
 
-- `english-literal-passed-to-a-message-helper` | ACTIVE | owner K | det: recipe | last S533 | streak 1
+- `english-literal-passed-to-a-message-helper` | ACTIVE | owner K | det: recipe | last S623 | streak 2
 
-- `translated-key-exists-page-hardcodes-english` | ACTIVE | owner K | det: recipe | last S533 | streak 1
+- `translated-key-exists-page-hardcodes-english` | ACTIVE | owner K | det: recipe | last S623 | streak 2
 
 - `per-page-code-inside-a-shared-block` | DRAFT | owner E | det: none | last S416 | streak 0
 
@@ -680,7 +680,7 @@ _(none)_
 
 - `hover-feedback-survives-the-disabled-state` | ACTIVE | owner F | det: recipe | last S394 | streak 0
 
-- `physical-property-that-never-mirrors` | ACTIVE | owner K | det: recipe | last S534 | streak 0
+- `physical-property-that-never-mirrors` | ACTIVE | owner K | det: recipe | last S623 | streak 1
 
 - `tile-grid-built-hidden-never-roved` | DRAFT | owner P | det: none | last S382 | streak 0
 
@@ -732,7 +732,7 @@ _(none)_
 
 - `fixed-width-third-party-embed-inflates-phone-layout` | ACTIVE | owner N | det: recipe | last S276 | streak 0 | hits 2
 
-- `stale-html-fallback-behind-its-csv-value` | ACTIVE | owner K | det: recipe | last S533 | streak 0
+- `stale-html-fallback-behind-its-csv-value` | ACTIVE | owner K | det: recipe | last S623 | streak 0 | hits 4
 
 - `undocumented-global-keyboard-shortcut` | ACTIVE | owner A | det: recipe | last S357 | streak 2 | hits 0
 
@@ -760,7 +760,7 @@ _(none)_
 
 - `mobile-input-hints` | DRAFT | owner I | det: none | last S534 | streak 0
 
-- `i18n cross-column parity (placeholders, plurals, inline markup)` | ACTIVE | owner K | det: recipe | last S533 | streak 2 | hits 0
+- `i18n cross-column parity (placeholders, plurals, inline markup)` | ACTIVE | owner K | det: recipe | last S623 | streak 3 | hits 0
 
 - `horizontal-overflow-at-narrow-widths` | ACTIVE | owner N | det: recipe | last S602 | streak 0 | hits 6
 
@@ -856,7 +856,7 @@ _(none)_
 
 - M aesthetics & visual design (one surface): 2026-11-05 (**S616 — 38th M, `parsha_emojis.html` (first since S522; 20 commits: the coloring-sheets popup, its loading and Try again, the size factors) with its generated `parsha/` pages (their first audit): 7 views × 8 cells (EN/HE × light/dark × 1280/800) in the real fonts, the S610 census arms + a UA-face arm, the popup's options scrolled, a …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- K i18n / localization audit: 2026-10-21 (**S533 — 36th K, `db80feb4..843984b3` (111 commits; parsha_emojis' first): CSV +209 (all resolve), 12 reworded, 0 removed; static 5,502 refs + 2,974 fallback sites (the html arm, lapsed since S475); blind 0/4,328 lines; 102 states by the real switcher (twins = base + 5 known); retry 4/4; 10 surfaces by real input + a switch mid-state. FOUND 4, FIXED 4.**)
+- K i18n / localization audit: 2026-11-06 (**S623 — 37th K, `843984b3..2d9e7e23` (525 commits; the Trope Atlas', Name Tags', the assignments and review pages' and the `parsha/` pages' first K): CSV +925 / −2 / 67 reworded (parity, arrows, plurals read); static 5,956 refs (0 missing) + 3,460 fallback sites; blind 0/12,102 added lines; 42 live-switch cells on the tree and the base (raw keys 0, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - C accessibility (one tool): 2026-11-06 (**S620 — `letter_learner.html` (first since S527; 36 commits to the page since) + `parsha_emojis.html` (first since S541; 20 commits since): census + Tab walks over 22 LL and 9 PE surfaces by real clicks, contrast in 4 cells, forced colours, motion with its control, reflow at 320, the dialogs and the tour by keys, PE's failed load. CLEAN on both (FOUND 0; …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -882,5 +882,5 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-22 (**S542 — 40th F, loading states (first since S189): 14 surfaces held, then aborted. FOUND 7, FIXED 4. F-next: long-build progress.**)
 
-**Next session (S623):** **Branch `claude/adoring-brown-9udi22` (S608–S622, draft PR 394): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1291**, FM **5.59**, corpus ?v=7. ⚑ drift: main=4f03455 sw=v1291 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: suite K (S533) outranks every surface — then P name_tags (S535), M letter_learner (S536), G parsha_emojis (S537), D parsha_emojis (S538), H parsha_emojis (S540), N letter_learner (S545), C name_tags (S548). ⚑ Harnesses: `l622/` (`claims.mjs`, `key.mjs`: the Atlas + parsha claims by real clicks; the static L arms were inline python), `e621/` (`arms.py`, `cspr.mjs`), `c620/` (`lib.mjs`, `openPE`), `h619/`, `d618/`. ⚑ 53 seeds.
-⚑ Trap 547 (S622, findings): the dictionary's bulk controls are three folds deep (Advanced → Copy section → bulk mode) — open each before `Select all matching` / `#wlSaveBtn` exist on screen. ⚑ The Atlas FAQ: gate 2 asked S622, "log it only" — do not re-ask. ⚑ Traps 544–546 (S621, in the findings): a `<link>` is a CSP load only by its `rel` and a `content=` value a link only when path-shaped; PE's Today view at the fixed date holds one card (controls run in View All); the Worker's `npm test` needs an installed wrangler. ⚑ Trap 539 (S620): the LL Fonts tab is ON by default — a probe that "ticks" `#optFontTab` switches it off. ⚑ Trap 538 (S618): `click()` scrolls a Flash Cards sticky-bar target and the print menu closes — use `page.mouse`. ⚑ The FM's own tour engine still loses its card off-screen (S614 P4): `79654c0f` is the recipe. ⚑ Flash Cards' next three: `fcTrackStickies` (P4), `readProfiles`' compare (P3), the reviver parses (P3, shared). ⚑ Ports at the next A: `m554/`–`m616/`, `g604/`, `d605/`, `t605/`, `h606/`, `c607/`, `n608/`, `p609/`, `g611/`, `d612/`, `h613/`, `c614/`, `n615/`, `m616/`, `g617/`, `d618/`, `h619/`, `c620/`, `e621/`, `l622/`; traps 352, 356–547. ⚑ Queues: FM 26, generator 20, flash 10, dashboard 8, torah 9, dictionary 7, name_tags 7, parsha_emojis 7, trope 5; the rest ≤ 4.
+**Next session (S624):** **Branch `claude/adoring-brown-9udi22` (S608–S623, draft PR 394): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1294**, FM **5.59**, corpus ?v=7. ⚑ drift: main=4f03455 sw=v1294 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: P name_tags (S535), then M letter_learner (S536), G parsha_emojis (S537), D parsha_emojis (S538), H parsha_emojis (S540), N letter_learner (S545), C name_tags (S548); the three stale suite passes E, L and K ran S621–S623. ⚑ Harnesses: `k623/` (`csvdelta.py`, `static.py` refs + stale fallbacks, `blind.py`, `rt.mjs` the live-switch arm with `BASE=`, `dyn.mjs` mid-state switches, `bidi.mjs`; the base tree at `k623/base`), `l622/`, `e621/`, `c620/`. ⚑ 52 seeds.
+⚑ Traps 547–548 (S622–S623, in the findings): the dictionary's bulk controls are three folds deep; a text census must not exclude the root's `dir=ltr`; a HE arrow between two Latin words takes their direction (measure with a Range); Name Tags' mixed header Print box ticks everyone first. ⚑ Atlas FAQ: gate 2 asked S622, log only — do not re-ask. ⚑ Traps 544–546 (S621, findings): a `<link>` is a CSP load only by its `rel`; PE's Today view at the fixed date holds one card; the Worker's `npm test` needs wrangler. ⚑ Trap 539 (S620): the LL Fonts tab is ON by default — a probe that "ticks" `#optFontTab` switches it off. ⚑ Trap 538 (S618): `click()` scrolls a Flash Cards sticky-bar target and the print menu closes — use `page.mouse`. ⚑ Flash Cards' next three: `fcTrackStickies` (P4), `readProfiles`' compare (P3), the reviver parses (P3, shared). ⚑ Ports at the next A: every session's scratch dir `m554/` … `k623/`; traps 352, 356–548. ⚑ Queues: FM 26, generator 20, flash 10, dashboard 8, torah 9, dictionary 7, name_tags 7, parsha_emojis 7, trope 5; the rest ≤ 4.
