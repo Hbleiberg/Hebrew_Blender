@@ -5,6 +5,29 @@
 > by `scripts/compact-ledger.mjs`; they are records, not open work. Full history: `docs/IMPROVEMENT_ARCHIVE.md`.
 
 
+## S622 (2026-11-06) — pass L on the S532 → S621 delta (the 30th L; the Trope Atlas', Name Tags', the assignments page's, the review page's and the 54 `parsha/` coloring pages' first L; FOUND 3, all gate 2, FIXED 2 + the micro-feature)
+
+- [ ] P4 (**NEW S622 Pass L — receipts over `ca9b9618..b816c43d` (527 commits), so the next L extends rather than repeats them**) | suite-wide |
+  - **Delta:** 75 crawler files; new: `trope_atlas.html`, `name_tags.html` (unlisted, noindex), `reading_assignments.html` and `trope_review.html` (noindex, nofollow), the 54 `parsha/<slug>.html` pages with their forwarder; the hub gained the Atlas card and ItemList entry.
+  - **Harness (scratchpad):** the static arms ran as inline python over the 24 root + 55 `parsha/` pages; `l622/claims.mjs` and `key.mjs` the Atlas and parsha-page claims by real clicks; `l622/dbg.mjs` the dictionary's panel chain.
+  - **Census:** 79 pages, 70 indexable (24 root − 8 noindex + 54 parsha), every one reachable from the hub by static links (the Atlas through 2 inbound links; the assignments page is reachable but noindex by design); 0 duplicate titles or descriptions; canonicals right on 70/70; og = twitter image 70/70 and every og image on disk at its declared 1200×630 (56 distinct files); JSON-LD 0 parse failures, 70 breadcrumb trails resolving with their last item = the canonical, every `url` = canonical; the hub's ItemList = its 11 cards in order (… Trope Tutor, Trope Atlas, Font Maker, Letter Learner, Parsha Emojis, Resources); FAQ twins: 10 pages' JSON-LD questions each have a visible `<summary>` (LL, parsha, FM, trope word for word; the older six paraphrase, as S532 found); one `h1` on every page (Flash Cards' two extra are inside script templates for its printed report and certificate); every content `<img>` has alt (the two "missing" were code comments); no hreflang anywhere (one URL serves both languages, by design).
+  - **Claims, by real clicks (EN light 1280 + HE dark 800; 0 page errors):**
+    - **Trope Atlas** (WebApplication): 27 signs × 7 columns (sign, Hebrew, Ashkenazi and Sephardi names, Unicode, rank, role); 26 melodies in the table (9 of them the Jewish Encyclopedia's historical and regional readings, approved in `trope_approvals.json`); a play starts 2 oscillators; the Key select (10 keys) rewrites the first figure's signature (♯♯♯ → ♯♯); 8 phrase rows in the default clause; 19 rows in the poetic-signs section; the Contents drawer.
+    - **A parsha page** (LearningResource): the picture loads with its alt; "Print this coloring page" leads to `parsha_emojis.html?parsha=<slug>` (the popup on that parasha); the range and alternate spellings; About in English (4 blocks) and Hebrew (the `.pp-he` block); a 3-link pager.
+  - **Found 3 (all gate 2, asked and answered):** the Atlas's 74-character title, 209-character description and missing og:image:alt (→ shorten both, `4e49b4b0`); the parsha pages' "— Free Printable" titles (54–68, 12 over 60) and 24 descriptions over 160 (→ shorten titles, trim the clause, `2f6dde72`; two picture clauses still reach 162–164); the Atlas without a FAQ (→ log it only; the S621 candidate stays, marked).
+  - **Triaged, not defects:** og vs twitter title/description differ on 9 tool pages (the twitter pair is the shorter "| IvritSuite" form, unchanged since S518); the older FAQ twins paraphrase their JSON-LD; `name_tags.html`'s 195-character description (unlisted, noindex); `emoji_torah.html` and `parsha/index.html` canonical to `parsha_emojis.html` (forwarders).
+
+  | found S622
+- [ ] P4 (**NEW S622 — the micro-feature's receipts**) | hebrew_dictionary.html |
+  - **`782b67f8`** (`S622-dictionary-word-list-name-from-filters.mjs`, 4 cells, real clicks through the Advanced → Copy section): with no filter the name box is empty (13,080 words selected); with one length (3-Letter), the letter ב in "All of these letters" and Biblical alone, the box reads "ב · 3-Letter · Biblical" (HE: the panel's own labels), 359 words; the theme path (Animals) still prefills its theme name over the suggestion; HEAD fails step 2 in 4/4 cells.
+  - Design: the parts are read from the panel's labels (already translated), never new strings; up to three lengths, two parts of speech and three vowels are named, more are left out (a name is not a query); the Emoji and Shoresh views propose nothing (their selections are not the filters' work).
+
+  | found S622
+- [ ] P4 (**S622 — probe trap 547**) | probes |
+  - **(547)** The dictionary's bulk controls sit three folds deep (`#panelAdvanced` → `#copyOptsSec.adv-section.collapsed` → `#bulkPanel`, the last shown only in bulk mode): open the panel title, then the section title, tick `#bulkModeCb`, and only then do `Select all matching` and `#wlSaveBtn` have a box to click; with 30-second click timeouts the first draft ran 20 minutes without a line of output.
+
+  | found S622
+
 ## S621 (2026-11-06) — pass E on the S531 → S620 delta (the 42nd E; the Trope Atlas', Name Tags', the assignments page's, the `parsha/` pages' and the audio Worker's first E; FOUND 5, all P4, FIXED 3 + the gates' 2)
 
 - [ ] P4 (**NEW S621 Pass E — receipts, so the next E extends rather than repeats them**) | repo-wide | **Delta `48286048..6985aaf4`: 530 commits, 82 files modified, 6,052 added** (the `parsha/` pages, `docs/parasha-emojis/`, the loop's probes, Total Torah and leyning data among them): `name_tags.html`, `trope_atlas.html`, `trope_review.html`, `reading_assignments.html`, `js/ivrit-assignments.js`, `js/parsha-page.js`, migrations 0006–0012, `db/functions/manage-students/`, `workers/audio/`, the Akoderf faces, `docs/trope-traditions.md`, loop S531–S620. **No drift** (the S620 handoff's line held: main `4f03455`, sw v1286, FM 5.59, 0012 live, functions `eb3e7ad`, SDK 2.116.0). The rotation: E (S531) had become the stalest of all — every surface pass's oldest surface was S535 or newer — so the suite pass ran for the first time since S581's scoped A. **Harness `e621/` (scratchpad; `e531/` was gone, rebuilt in Python + Playwright):**
@@ -4140,3 +4163,9 @@ rule, the surviving passes) is in the S544 draft PR; the protocol lives in `.cla
 ### trope_atlas.html
 
 - [ ] P3 (**S579 D — measured, no small fix**) | trope_atlas.html, js/trope-staff.js | **The atlas's load and its Stacked / Grid / key re-draws are style + layout of ~32,000 SVG nodes (594 staffs × ~53), not script**: at 4× CPU layout 520 + style 416 of 2.7 s; `content-visibility:auto` on the cells cuts 36 % but 594 of 598 sing buttons leave the accessibility tree (refuted, findings S579), `contain:` and `table-layout` move nothing — the way down is fewer nodes per staff in the shared engine (proved by the tutor's staff snapshot). | found S577
+
+## Moved from the ledger's Candidates at the S623 boundary (2026-11-06)
+
+### trope_atlas.html
+
+- [ ] P4 (**NEW S621 E; S622 L: GATE 2 ASKED, the maintainer chose "log it only" — do not re-ask**) | trope_atlas.html | **The Trope Atlas is the one tool page without FAQPage JSON-LD** (`update-llms-txt --check` names it; its ten sibling tool pages each carry a FAQ twin). | found S621

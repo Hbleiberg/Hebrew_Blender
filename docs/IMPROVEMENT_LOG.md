@@ -62,8 +62,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
 
-- [ ] P4 (**NEW S621 E — L's: JSON-LD, gate 2**) | trope_atlas.html | **The Trope Atlas is the one tool page without FAQPage JSON-LD** (`update-llms-txt --check` names it; its ten sibling tool pages each carry a FAQ twin). | found S621
-
 - [ ] P4 (**NEW S615 N — verify on an iPhone first; a shared module, its own iteration**) | js/ivrit-account.js | **The student sign-in's Username field sets `autocapitalize=none` but not `autocorrect=off`**: every other name field in the suite carries both, and iOS may "correct" a typed login. | found S615
 
 - [ ] P4 (**NEW S614 C — the tour engine's**) | Hebrew_Font_Maker.html | **Tab out of an open tour and back leaves its Close and Next off-screen** (the fixed card follows its target out of view); S620 FIXED on the shared block's three carriers `79654c0f` — this page's own engine stays. | found S614
@@ -250,8 +248,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Feature seeds (micro-features only; see the Micro-feature track in the session prompt)
 
-- [ ] S | hebrew_dictionary.html | **Save as Word List from a filtered view proposes no name** (the theme path prefills "Animals"): a name built from the active filters ("3-letter · ב · kamatz, patach") would save the typing. | found S585 H
-
 - [ ] S | trope_atlas.html | **From a melody-table figure to its phrases**: a teacher at Haftarah's zakef katon scrolls to the phrase browser, picks Haftarah and then the zakef clause by hand; a link on the figure (or its column heading) opening that melody at the clause that holds the sign would make it one click. | found S583 H
 
 - [ ] S | trope_atlas.html | **Print one melody's phrases as a handout**: printing is all or nothing (Stacked 79–84 pages; filtered to Torah + Haftarah still 48), so a one-melody sheet means a PDF and a page range; a "Print these phrases" on the phrase browser that prints its melody and group alone. | found S583 H
@@ -420,6 +416,14 @@ _(none)_
 
 ## Done
 
+- [x] 2026-11-06 | (S622 close-out) | branch/deploy note | **S622 = L (the 30th; the suite over `ca9b9618..b816c43d`, 527 commits — the Trope Atlas', Name Tags', the assignments page's, the review page's and the 54 `parsha/` pages' first L): 20 static arms + the delta pages' claims by real clicks (the Atlas's 27 signs, 26 melodies, play and Key; a parsha page's picture, print link and EN + HE …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-06 | `782b67f8` | hebrew_dictionary.html, sw.js, probe | (S622 micro-feature, gate 1; the S440 seed) **Save as Word List proposes a name read off the active filters** (the search, the letters anywhere and by position, up to three lengths, two parts of speech, one era and up to three vowels, as the panel labels them, joined by middle dots; empty with no filter and in the Emoji and …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-06 | `2f6dde72` | scripts/build-parsha-pages.mjs, parsha/*.html | (S622 L, gate 2 → shorten titles and trim) **The 54 parsha coloring pages are titled "Parshat X Coloring Page | IvritSuite" (37–55 characters, was 54–68) and a description past 160 drops its summary clause** (22 pages; two long picture descriptions still reach 162–164) | `build-parsha-pages --check` clean; the diff is …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-06 | `4e49b4b0` | trope_atlas.html, sw.js | (S622 L, gate 2 → shorten both) **The Trope Atlas's title is 60 characters and its description 154** (was 74 / 209), and its social card carries the Trope Tutor's og:image:alt | the head re-read: 60 / 154 / alt present; `update-llms-txt --check` clean
+
 - [x] 2026-11-06 | (S621 close-out) | branch/deploy note | **S621 = E (the 42nd; the suite over `48286048..6985aaf4`, 530 commits — the Trope Atlas', Name Tags', the assignments page's, the `parsha/` pages' and the Worker's first E): 31 static arms + the generators' checks + a 54-cell runtime arm, FOUND 5 (all P4: the README's missing Trope Atlas and "eight" tours, four stale counts in the …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-11-06 | `8e6cca3b` | hebrew_dictionary.html, sw.js, probe | (S621; the S585 H P4, gate 2 → within one word) **A Hebrew search matches inside one word of a phrase, or a run of its words, never across a word gap** ("כלב" no longer lists the saying whose letters run …כֵּל בַּ…; "כלב ים" now finds כֶּלֶב יָם; single words, English and transliteration untouched) | probe …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -446,15 +450,11 @@ _(none)_
 
 - [x] 2026-11-05 | `0e6e77eb` | flash_cards.html, sw.js, probe | (S618 D) **The printable card sheet sizes every front in one layout** (one forced layout per card per size before). | 4×, 3 × 2 cells vs HEAD: menu 200 letters 545–1,293 → 189–291 ms, words 316–895 → 221–346, Print This Card Set 425–1,416 → 130–264; sheets byte-identical; fit equal on 927 fronts; probe …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-11-05 | (S617 close-out) | branch/deploy note | **S617 = G on `hebrew_dictionary.html` (first since S523; 43 commits to the page): 5 views × 8 cells × Letter/A4 (40 PDFs), a Shoresh heading census (16 roots × EN/HE × Letter/A4, 280 headings), exports by real clicks (Bulk Anki/Quizlet + the Word Lists window, EN/HE), colour coding from dark × 3 modes. FOUND 1, FIXED 1; + 2 generator …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-05 | `077fa568` | hebrew_blend_generator.html, sw.js | (S617, found verifying `c58e5ecb`) **Bingo's "Need at least 24 words" note stays with Bingo**: a drill switch kept it, and Generate's aria-disabled, under Word Search / Crossword / Vocabulary / Matching on a 16-word list. | real clicks, 4 drills × 4 cells: HEAD 16/16 kept it, tree 16/16 free and render; back on Bingo the note …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-05 | `e45d6283` | hebrew_dictionary.html, sw.js, probe | (S617 G; `print-block-split-at-a-sheet-foot`) **On paper a Shoresh group heading stays with its words** (and the patterns title). | 280 headings × 64 prints: stranded 23 → 0, titles 0 → 0, sheets equal; probe `S617-dictionary-shoresh-headings-keep-their-words.mjs` (HEAD fails 24 + 6)
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-11-06 | **S622** | iters: 5 | tools: trope_atlas, parsha pages (build-parsha-pages), dictionary, sw | patterns fixed: — | pass run: L (suite, first since S532; 527 commits) | SW: v1289→v1291
 
 - 2026-11-06 | **S621** | iters: 5 | tools: README, manifest, ops.md, i18n.md, shared-components.md, parsha_emojis, dictionary, locales, sw | patterns fixed: — | pass run: E (suite, first since S531; 530 commits) | SW: v1286→v1289
 
@@ -494,11 +494,9 @@ _(none)_
 
 - 2026-11-03 | **S603** | iters: 4 | tools: index, contact, privacy, terms, account, sw | patterns fixed: dark-navy-fill-matches-its-ground ×1 | pass run: M (chrome, first since S494) | SW: v1230→v1233
 
-- 2026-11-03 | **S602** | iters: 3 | tools: torah, generator, sw | patterns fixed: link-undone-by-its-loads-first-sync ×1, horizontal-overflow-at-narrow-widths ×1 | pass run: P (torah, first since S493) | SW: v1228→v1230
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S621 (2026-11-06):** parsha_emojis, dictionary, README, manifest, ops.md, i18n.md, shared-components.md, locales, sw.js, loop probes ×2, loop docs S621 · letter_learner ×2, trope_atlas, trope, name_tags, locales, sw.js, loop probes ×3, shared-components.md, loop docs S620 · letter_learner, trope (locales), CLAUDE.md, sw.js, loop probe, loop docs S619 · flash, sw.js, loop probe, loop docs S618 · dictionary, generator, sw.js, loop probe, loop docs S617 · parsha_emojis, parsha/ + build-parsha-pages, shared-components.md, sw.js, loop …[full text: IMPROVEMENT_ARCHIVE.md]
+- **Snapshot S622 (2026-11-06):** trope_atlas, parsha/ + build-parsha-pages, dictionary, sw.js, loop probe, loop docs S622 · parsha_emojis, dictionary, README, manifest, ops.md, i18n.md, shared-components.md, locales, sw.js, loop probes ×2, loop docs S621 · letter_learner ×2, trope_atlas, trope, name_tags, locales, sw.js, loop probes ×3, shared-components.md, loop docs S620 · letter_learner, trope (locales), CLAUDE.md, sw.js, loop probe, loop docs S619 · flash, sw.js, loop probe, loop docs S618 · dictionary, generator, sw.js, loop probe, loop …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -790,7 +788,7 @@ _(none)_
 
 - `false-positive-validator-on-the-app's-own-content` | ACTIVE | owner A | det: recipe | last S194 | streak 0
 
-- `JSON-LD ↔ visible-content parity` | ACTIVE | owner L | det: recipe | last S432 | streak 0
+- `JSON-LD ↔ visible-content parity` | ACTIVE | owner L | det: recipe | last S622 | streak 1
 
 - `wired-then-clobbered label` | ACTIVE | owner A | det: recipe | last S371 | streak 0
 
@@ -876,7 +874,7 @@ _(none)_
 
 - V offline & service-worker runtime (suite): 2026-10-23 (**S553 — 1st V: the installed worker live (no block), the origin stopped by `closeAllConnections`: 17 precached pages + `/` + `?lang=he` + the unlisted page + an unknown path × light 1280 / dark 800 = 40 cells served by the worker, 0 errors, the UI strings and the self-hosted faces from the cache; the data cache seeded by 2 pages and read …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- L SEO & discoverability audit: 2026-10-21 (**S532 — 29th L, `18a7e6a3..ca9b9618` (110 commits; LL's launch, parsha_emojis' first L): 20 arms + 3 on 20 pages (plants 29/29); SEO surface unchanged 16/18; LL + parsha JSON-LD claims by real clicks; FAQ twins 10/10. FOUND 1 (gate 2), FIXED 4; S432 struck.**)
+- L SEO & discoverability audit: 2026-11-06 (**S622 — 30th L, `ca9b9618..b816c43d` (527 commits; the Trope Atlas', Name Tags', the assignments page's, the review page's and the 54 `parsha/` pages' first L): 20 static arms over 79 pages (titles, descriptions, canonicals, robots, OG = Twitter + the images on disk and at 1200×630, every JSON-LD block parsing with its breadcrumbs resolving and its …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - H teacher walkthrough / paper-cuts (one tool): 2026-11-05 (**S619 — `letter_learner.html` (its 2nd: S526 → S619; 34 commits to the page since: the coloring-sheet tiles, bulk print, cursive tiles, the arrow keys): 5 lessons by real clicks (Bet as letter of the week with words aloud and a printed sheet, a 775-page class packet from the sheets section, a two-vowel unit, 2nd-grade cursive, memory …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -884,5 +882,5 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-22 (**S542 — 40th F, loading states (first since S189): 14 surfaces held, then aborted. FOUND 7, FIXED 4. F-next: long-build progress.**)
 
-**Next session (S622):** **Branch `claude/adoring-brown-9udi22` (S608–S621, draft PR 394): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1289**, FM **5.59**, corpus ?v=7. ⚑ drift: main=4f03455 sw=v1289 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: suite L (S532) and K (S533) outrank every surface — then P name_tags (S535), M letter_learner (S536), G parsha_emojis (S537), D parsha_emojis (S538), H parsha_emojis (S540), N letter_learner (S545), C name_tags (S548). ⚑ Harnesses: `e621/` (`arms.py ROOT --base=<commit> [-v]`, the 31 static E arms; `cspr.mjs` the runtime CSP / error / anonymous-request arm over every page, `PLANT=1` the control; `shots.mjs`), `c620/` (`lib.mjs`: the LL + PE a11y lib, `openPE`), `h619/`, `d618/`. ⚑ 54 seeds.
-⚑ Traps 544–546 (S621, in the findings): a `<link>` is a CSP load only by its `rel` and a `content=` value a link only when path-shaped; PE's Today view at the fixed date holds one card (controls run in View All); the Worker's `npm test` needs an installed wrangler. ⚑ Trap 539 (S620): the Letter Learner's Fonts tab is ON by default (`LL_DEFAULTS.fontTab`), so a probe that "ticks" `#optFontTab` switches it off — S619's receipts call it opt-in; only the word speakers are. ⚑ Trap 538 (S618): Playwright's `click()` scrolls a target inside Flash Cards' sticky Start bar and the print menu closes — click the box with `page.mouse`. ⚑ The Font Maker's own tour engine still loses its card off-screen (S614 P4): the shared block's fix `79654c0f` is the recipe when the FM moves onto the block. ⚑ Flash Cards' next three: `fcTrackStickies` (P4), `readProfiles`' compare (P3), the reviver parses (P3, shared). ⚑ Sync P2 (S573): D31 fails alone ~1 in 3. ⚑ Ports at the next A: `m554/`–`m616/`, `g604/`, `d605/`, `t605/`, `h606/`, `c607/`, `n608/`, `p609/`, `g611/`, `d612/`, `h613/`, `c614/`, `n615/`, `m616/`, `g617/`, `d618/`, `h619/`, `c620/`, `e621/`; traps 352, 356–546. ⚑ Queues: FM 26, generator 20, flash 10, dashboard 8, torah 9, dictionary 7, name_tags 7, parsha_emojis 7, trope 5; the rest ≤ 4.
+**Next session (S623):** **Branch `claude/adoring-brown-9udi22` (S608–S622, draft PR 394): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1291**, FM **5.59**, corpus ?v=7. ⚑ drift: main=4f03455 sw=v1291 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: suite K (S533) outranks every surface — then P name_tags (S535), M letter_learner (S536), G parsha_emojis (S537), D parsha_emojis (S538), H parsha_emojis (S540), N letter_learner (S545), C name_tags (S548). ⚑ Harnesses: `l622/` (`claims.mjs`, `key.mjs`: the Atlas + parsha claims by real clicks; the static L arms were inline python), `e621/` (`arms.py`, `cspr.mjs`), `c620/` (`lib.mjs`, `openPE`), `h619/`, `d618/`. ⚑ 53 seeds.
+⚑ Trap 547 (S622, findings): the dictionary's bulk controls are three folds deep (Advanced → Copy section → bulk mode) — open each before `Select all matching` / `#wlSaveBtn` exist on screen. ⚑ The Atlas FAQ: gate 2 asked S622, "log it only" — do not re-ask. ⚑ Traps 544–546 (S621, in the findings): a `<link>` is a CSP load only by its `rel` and a `content=` value a link only when path-shaped; PE's Today view at the fixed date holds one card (controls run in View All); the Worker's `npm test` needs an installed wrangler. ⚑ Trap 539 (S620): the LL Fonts tab is ON by default — a probe that "ticks" `#optFontTab` switches it off. ⚑ Trap 538 (S618): `click()` scrolls a Flash Cards sticky-bar target and the print menu closes — use `page.mouse`. ⚑ The FM's own tour engine still loses its card off-screen (S614 P4): `79654c0f` is the recipe. ⚑ Flash Cards' next three: `fcTrackStickies` (P4), `readProfiles`' compare (P3), the reviver parses (P3, shared). ⚑ Ports at the next A: `m554/`–`m616/`, `g604/`, `d605/`, `t605/`, `h606/`, `c607/`, `n608/`, `p609/`, `g611/`, `d612/`, `h613/`, `c614/`, `n615/`, `m616/`, `g617/`, `d618/`, `h619/`, `c620/`, `e621/`, `l622/`; traps 352, 356–547. ⚑ Queues: FM 26, generator 20, flash 10, dashboard 8, torah 9, dictionary 7, name_tags 7, parsha_emojis 7, trope 5; the rest ≤ 4.
