@@ -1138,10 +1138,46 @@ function setGroups(list) { settings.groups = list && list.length ? list : null; 
 // Paper has no sideways scroll, so the Grid's one column per melody would print the first one or two: the sheet gets
 // the Stacked cards (never stored) and the screen its Grid back, scrolled where it was, once the dialog closes.
 let _printCards = null;   // the Grid's scroll offsets while the cards stand in for it on paper
+// One Tab stop per sign in the melody table (its row in the Grid, its card in Stacked): the Sing buttons were one stop
+// each, 594 between the table and the phrase browser. Inside a row the arrows move along the figures (Left / Right by
+// the page's direction, Home / End to its ends) and Up / Down to the same tradition's figure in the next row (the
+// nearest figure where that tradition prints none). The stop a row keeps is the last figure focused there, by key or
+// by click, so Shift+Tab comes back to it. Rebuilt with the table (a view, filter or language change).
+function roveRows(host) {
+  host.querySelectorAll('tr, .at-card').forEach((row) => { row.querySelectorAll('.at-sing').forEach((b, i) => { b.tabIndex = i ? -1 : 0; }); });
+}
+function roveTo(row, to) {
+  row.querySelectorAll('.at-sing').forEach((b) => { b.tabIndex = b === to ? 0 : -1; });
+  to.focus();
+}
+function roveKey(e) {
+  const host = document.getElementById('atTable'), b = e.target.closest('.at-sing');
+  if (!b || !host.contains(b) || e.altKey || e.ctrlKey || e.metaKey) return;
+  const row = b.closest('tr, .at-card'); if (!row) return;
+  const sings = [...row.querySelectorAll('.at-sing')], i = sings.indexOf(b);
+  let to = null;
+  if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+    const fwd = (e.key === 'ArrowRight') !== (document.documentElement.dir === 'rtl');
+    to = sings[i + (fwd ? 1 : -1)] || null;
+  } else if (e.key === 'Home') to = sings[0];
+  else if (e.key === 'End') to = sings[sings.length - 1];
+  else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+    const rows = [...host.querySelectorAll('tr, .at-card')].filter((r) => r.querySelector('.at-sing'));
+    const next = rows[rows.indexOf(row) + (e.key === 'ArrowDown' ? 1 : -1)]; if (!next) return;
+    const sys = (b.closest('[data-sing]')?.dataset.sing || '').split(':')[1];   // g:<tradition>:<sign>
+    const same = next.querySelector('[data-sing$=":' + sys + ':' + (next.id || '').replace(/^atlas-/, '') + '"] .at-sing');
+    const list = [...next.querySelectorAll('.at-sing')];
+    to = same || list[Math.min(i, list.length - 1)] || null;
+  }
+  if (!to || to === b) return;
+  e.preventDefault();
+  roveTo(to.closest('tr, .at-card'), to);
+}
 function buildAtlas() {
   const host = document.getElementById('atTable');
   host.textContent = '';
   if (viewVal() === 'grid' && !_printCards) buildGrid(host); else buildCards(host);
+  roveRows(host);
   document.getElementById('atViewGrid').setAttribute('aria-pressed', viewVal() === 'grid' ? 'true' : 'false');
   document.getElementById('atViewCards').setAttribute('aria-pressed', viewVal() === 'cards' ? 'true' : 'false');
   document.getElementById('atNames').checked = namesOn();
@@ -1306,6 +1342,8 @@ function fillKeySelect() {
 }
 document.getElementById('atKey').addEventListener('change', (e) => { settings.key = e.target.value; saveSettings(); singStop(); renderStaffs(); });
 document.getElementById('atNames').addEventListener('change', (e) => { settings.names = e.target.checked; saveSettings(); singStop(); renderStaffs(); });
+document.getElementById('atTable').addEventListener('keydown', roveKey);
+document.getElementById('atTable').addEventListener('focusin', (e) => { const b = e.target.closest('.at-sing'); const row = b && b.closest('tr, .at-card'); if (row && b.tabIndex !== 0) roveTo(row, b); });   // a click makes that figure the row's stop
 document.getElementById('atViewGrid').addEventListener('click', () => { settings.view = 'grid'; saveSettings(); singStop(); buildAtlas(); });
 document.getElementById('atViewCards').addEventListener('click', () => { settings.view = 'cards'; saveSettings(); singStop(); buildAtlas(); });
 document.getElementById('atMel').addEventListener('change', (e) => selectMel(e.target.value, false));
