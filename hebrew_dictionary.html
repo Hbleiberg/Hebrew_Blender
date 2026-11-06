@@ -2157,6 +2157,30 @@ function wlEl(tag, props, txt) {
   return e;
 }
 // Save-selection modal
+// A list name proposed from the filters that shaped the selection — the search, the letters (anywhere, then by
+// position), the lengths, the parts of speech, the era and the vowels, each as the label the panel shows, joined
+// by middle dots — so a filtered view saves without typing, as the theme path has done since S151. Empty when no
+// filter narrows the words, and in the Emoji and Shoresh views (their selections are not the filters' work).
+function wlSuggestedName() {
+  if (emojiMode || shoreshMode) return '';
+  const parts = [];
+  const labelOf = cb => { const s = cb.parentElement && cb.parentElement.querySelector('span'); return (s ? s.textContent : '').trim(); };
+  const some = (sel) => { const all = [...document.querySelectorAll(sel)], on = all.filter(c => c.checked); return on.length && on.length < all.length ? on : null; };
+  const q = (document.getElementById('searchInput').value || '').trim();
+  if (q) parts.push(q);
+  if (anyLetterFilter.size) parts.push([...anyLetterFilter].join(' '));
+  const ORD = ['1st', '2nd', '3rd', '4th', '5th', '6th'];
+  posFilters.forEach((s, i) => { if (s.size) parts.push([...s].join(' ') + ' (' + I18n.t('dictionary.filters.pos_letter_heading', { ordinal: I18n.t('dictionary.ordinal_' + ORD[i]) }) + ')'); });
+  const lens = some('.lcb'); if (lens && lens.length <= 3) parts.push(lens.map(labelOf).join(', '));
+  const pos = some('#panelPos .pcb'); if (pos && pos.length <= 2) parts.push(pos.map(labelOf).join(', '));
+  const bib = document.getElementById('eraBib'), mod = document.getElementById('eraMod');
+  if (bib && mod && bib.checked !== mod.checked) parts.push(labelOf(bib.checked ? bib : mod));
+  if (vowelFilters.size && vowelFilters.size < VOWEL_DEFS.length) {
+    const on = VOWEL_DEFS.filter(v => vowelFilters.has(v.u));
+    if (on.length <= 3) parts.push(on.map(v => glyphVowelName(v.label)).join(', '));
+  }
+  return parts.join(' · ');
+}
 function wlOpenSaveModal() {
   const sel = wlSelectedWords();
   if (!sel.length) {
@@ -2175,7 +2199,10 @@ function wlOpenSaveModal() {
   // Create new
   body.appendChild(wlEl('label', { htmlFor: 'wlNewName', style: 'display:block;font-size:0.72rem;font-weight:600;color:var(--text);margin-bottom:4px;' }, I18n.t('dictionary.wordlist.create_new')));
   const nameIn = wlEl('input', { id: 'wlNewName', type: 'text', maxLength: 80, placeholder: I18n.t('dictionary.wordlist.name_placeholder'), style: 'width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);font-family:inherit;font-size:0.85rem;margin-bottom:6px;' });
-  if (_wlPrefillName) { nameIn.value = _wlPrefillName.slice(0, 80); _wlPrefillName = ''; }   // one-shot; only the theme bridge sets it
+  // The theme bridge's one-shot name first; otherwise a name read off the active filters (nothing when none is on).
+  const prefill = _wlPrefillName || wlSuggestedName();
+  _wlPrefillName = '';
+  if (prefill) nameIn.value = prefill.slice(0, 80);
   body.appendChild(nameIn);
   const createBtn = wlEl('button', { cls: 'wm-root-btn', type: 'button' }, I18n.t('dictionary.wordlist.save_as_new'));
   body.appendChild(createBtn);
