@@ -18,8 +18,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW S593 G — verify on a Mac first**) | Hebrew_Font_Maker.html | **Every font named only in Hebrew exports with nameID 6 `MyHebrewFont-Regular` (and `MyHebrewFont.ttf`)**: two such fonts share one PostScript name, which Font Book and Mac apps key fonts by; a stem from the name (a short hash or a transliteration) would keep them apart. | found S593
 
-- [ ] P3 (**NEW S580 C — design call**) | trope_atlas.html | **The melody table is 594 tab stops (one sing button per figure)**: a keyboard user crosses the whole table to reach the phrase section; a roving tabindex (one stop per row, arrows between) or a skip past the table would fix it. | found S580
-
 - [ ] P3 (**NEW S574 M — verify paper first**) | hebrew_blend_generator.html | **The crossword's grid is never cropped to its words**: a 10-word puzzle in a 12×12 black square (~70% black). | found S574
 
 - [ ] P3 (**NEW S571 C — not small**) | hebrew_dictionary.html | **A word card is one `role=button` holding its select box, Copy, Hear and Google controls** (a button's children are presentational): move the details action onto the headword, the card a group. | found S571
@@ -66,7 +64,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S615 N — verify on an iPhone first; a shared module, its own iteration**) | js/ivrit-account.js | **The student sign-in's Username field sets `autocapitalize=none` but not `autocorrect=off`**: every other name field in the suite carries both, and iOS may "correct" a typed login. | found S615
 
-- [ ] P4 (**NEW S614 C — the tour engine's**) | Hebrew_Font_Maker.html | **Tab out of an open tour and back leaves its Close and Next off-screen** (the fixed card follows its target out of view). | found S614
+- [ ] P4 (**NEW S614 C — the tour engine's**) | Hebrew_Font_Maker.html | **Tab out of an open tour and back leaves its Close and Next off-screen** (the fixed card follows its target out of view); S620 FIXED on the shared block's three carriers `79654c0f` — this page's own engine stays. | found S614
 
 - [ ] P4 (**NEW S613 H — gate 2, copy**) | hebrew_blend_generator.html | **Real Words Bingo's too-few note never names a grid that fits**: 14 words at 5×5 says "Need at least 24…"; 3×3 builds 30 cards from them, and the Grid size select sits in Bingo Options below. | found S613
 
@@ -186,8 +184,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S534 N — gate 4**) | name_tags.html | **On a phone Remove sits 120–270px off-screen** until the table scrolls. | found S534
 
-- [ ] P4 (**NEW S530 A — glyph census, rule first; S604: the hub's two control labels FIXED `7c33a1d8`**) | dictionary, resources, flash, torah, FM | **Category and option emoji are still heard** (findings S530): content or decoration is unruled. | found S530
-
 - [ ] P4 (**NEW S618 D — the tool's cap this session**) | flash_cards.html | **`fcTrackStickies()` forces the page's first layout mid-boot** (its synchronous `set()` reads `offsetHeight` before panel memory and the translated labels change the page, which lays out again): 48 ms of layout + 35 of style @4× in the DOMContentLoaded task; the ResizeObserver's first callback already delivers both …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S610 M — CLAUDE.md's header-icons rule; pattern `decorative-glyph-carrier-exposed-to-assistive-tech`**) | classroom_dashboard.html, locales | **Nine control strings still lead with a glyph**: ↔ Move panels, 📍 Current Location (drawer + setup card), ✨ Quick-start layouts…, + Add period, 🎲 Pick Again, 🔀 Reshuffle, 🔄 New round, ✅ Everyone's here; the picture belongs in markup …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -271,8 +267,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] S | parsha_emojis.html | **Each card prints its own coloring sheet** (the popup with that parasha alone, as a Letter Learner card does): next week's sheet is 4 clicks and no chip marks this week's. | found S540 H
 
 - [ ] S | parsha_emojis.html | **A split week names the other schedule's parasha** ("In Israel: Sh'lach"): an Israeli teacher sees the Diaspora card unless the Torah Trainer says Israel. | found S540 H
-
-- [ ] S | letter_learner.html | **"Vowels to show": Select all / Clear** (keeping two vowels is 11 clicks). **Picked S526; offered again S619, the address mirror taken instead.** | found S526 H
 
 - [ ] S | resources.html | **The Links filters live in the address** (`?cat=&age=`): bookmarkable, kept on reload. | found S454 H
 
@@ -426,6 +420,14 @@ _(none)_
 
 ## Done
 
+- [x] 2026-11-06 | (S620 close-out) | branch/deploy note | **S620 = C on `letter_learner.html` (first since S527; 36 commits to the page) + `parsha_emojis.html` (first since S541; 20 commits) — both CLEAN (0 found; a clean surface bought the second) — then 3 fixes from the queue and the gates: the LL Vowels Select all / Clear micro-feature (gate 1), the atlas's one-stop-per-row table (the S580 …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-06 | `79654c0f` | letter_learner.html, trope_tutor.html, name_tags.html, sw.js, probe | (S620; the S614 P4's shape, the shared block) **The tour card comes back into view when the keyboard focus returns to it** (Tab round the page left Back / Next / End 600–2,100 px above the screen). | probe `S620-tour-card-back-in-view-on-focus.mjs`: 3 carriers × EN light 1280 / HE dark 800 by …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-06 | `4b1bce32` | trope_atlas.html, sw.js, probe | (S620; the S580 C P3, gate 2 → the roving stop) **The melody table is one Tab stop per sign; arrows move along a row and keep the tradition up and down** (594 stops → 26, Grid and Stacked). | probe `S620-trope-atlas-melody-table-one-stop-per-row.mjs` × 2 cells by real keys and a click; the table pixel-identical to HEAD in 4 cells
+
+- [x] 2026-11-06 | `99fcf535` | letter_learner.html, locales, sw.js, probe | (S620 micro-feature, gate 1; the S526 seed) **"Vowels to show" has Select all / Clear** (keeping two vowels was 11 clicks). | probe `S620-letter-learner-vowels-select-all.mjs`: 12 steps × 2 cells by real clicks and Enter, a reload keeps either, the Vowels grid and Bet's Vowels tab follow; HEAD has no buttons
+
 - [x] 2026-11-05 | (S619 close-out) | branch/deploy note | **S619 = H on `letter_learner.html` (first since S526; 34 commits to the page): 5 lessons × 2 cells by real clicks + the student cell. FOUND 3: the `?letter=` seed SHIPPED as the micro-feature (gate 1), the Vowels Select all / Clear seed stays, 1 gate-2 copy left as is; + the Trope Tutor's tradition note (gate 2, S609's P4). PR 394, sw …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-11-05 | `63867b8c` | letter_learner.html, CLAUDE.md, sw.js, probe | (S619 micro-feature, gate 1; the S526 seed) **The open card is in the address bar** (`?letter=bet&tab=coloring` / `?vowel=segol`; a close takes it out; the pasted address reopens it). | 13 address steps × EN light 1280 / HE dark 800 by real clicks, a planted param kept, history untouched; HEAD fails 16; probe …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -448,17 +450,11 @@ _(none)_
 
 - [x] 2026-11-05 | `a9247724` | parsha_emojis.html, scripts/build-parsha-pages.mjs, parsha/*.html, shared-components.md, sw.js | (S616 M) **The header's Hebrew "דף הבית" stays on one line** (broke from 822px / 764px down); the wrap gate re-measured 541/551 → 550/560. | 1px sweep 320–900 × 16 cells × 2 pages: 0 breaks, 0 overflow (HEAD 278–281 / 124–137 broken)
 
-- [x] 2026-11-05 | (S615 close-out) | branch/deploy note | **S615 = N on the chrome bundle (first bundle N; index since S420, resources S246, contact S462, privacy/terms/404 S520, account never) — clean — + `name_tags.html` (since S534) — clean; 1 gate-4 answer (leave the grip), 1 P4. Fixes from the queue: the generator's word-list hand-off (gate 2) and the S568 Arial buttons on its last three …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-05 | `99351ec9` | Hebrew_Font_Maker.html, sw.js | (S615; S568's P4, its last page) **Buttons take the page's face, not Arial** (full screen's Exit / Show Panels, the tour ✕). | DOM census × 4 cells: HEAD 3, tree 0; full-screen plates measured
-
-- [x] 2026-11-05 | `5adad2c9` | torah_trainer.html, sw.js | (S615; S568's P4) **Buttons take the page's face, not Arial** (Exit Full Screen, the audio collapse, the drawer's icons). | reading + 8 tabs × 4 cells: HEAD 16, tree 0; Exit by a real click
-
-- [x] 2026-11-05 | `7dd3bb87` | classroom_dashboard.html, sw.js | (S615; S568's P4) **Buttons take the page's face, not Arial** (the bare `.btn-xs`, drawer, font-tile labels, week editor). | board + 7 tabs + week × 4 cells: HEAD 70, tree 0; widths −1–4px, no overflow
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-11-06 | **S620** | iters: 5 | tools: letter_learner ×2, trope_atlas, trope, name_tags, locales, sw | patterns fixed: — | pass run: C (letter_learner, first since S527 + parsha_emojis, first since S541) | SW: v1283→v1286
 
 - 2026-11-05 | **S619** | iters: 4 | tools: letter_learner, trope (locales), CLAUDE.md, sw | patterns fixed: — | pass run: H (letter_learner, first since S526) | SW: v1281→v1283
 
@@ -498,11 +494,9 @@ _(none)_
 
 - 2026-11-03 | **S601** | iters: 5 | tools: dictionary ×2, resources, fontmaker, dashboard, name_tags, torah, reading_assignments, sw | patterns fixed: author-display-defeats-the-hidden-attribute ×1 | pass run: N (dictionary, first since S492) | SW: v1224→v1228
 
-- 2026-11-03 | **S600** | iters: 5 | tools: torah ×2, index, resources, locales, sw | patterns fixed: focus-hidden-under-a-sticky-bar ×1 | pass run: C (chrome, first since S483) | SW: v1220→v1224
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S619 (2026-11-05):** letter_learner, trope (locales), CLAUDE.md, sw.js, loop probe, loop docs S619 · flash, sw.js, loop probe, loop docs S618 · dictionary, generator, sw.js, loop probe, loop docs S617 · parsha_emojis, parsha/ + build-parsha-pages, shared-components.md, sw.js, loop docs S616 · generator, dashboard, torah, fontmaker, locales, sw.js, loop docs S615 · fontmaker, generator, flash, dashboard, torah, index, locales, sw.js, storage-and-backup.md, loop docs S614 · generator, dashboard, parsha_emojis, sw.js, loop docs S613 …[full text: IMPROVEMENT_ARCHIVE.md]
+- **Snapshot S620 (2026-11-06):** letter_learner ×2, trope_atlas, trope, name_tags, locales, sw.js, loop probes ×3, shared-components.md, loop docs S620 · letter_learner, trope (locales), CLAUDE.md, sw.js, loop probe, loop docs S619 · flash, sw.js, loop probe, loop docs S618 · dictionary, generator, sw.js, loop probe, loop docs S617 · parsha_emojis, parsha/ + build-parsha-pages, shared-components.md, sw.js, loop docs S616 · generator, dashboard, torah, fontmaker, locales, sw.js, loop docs S615 · fontmaker, generator, flash, dashboard, torah, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -864,7 +858,7 @@ _(none)_
 
 - K i18n / localization audit: 2026-10-21 (**S533 — 36th K, `db80feb4..843984b3` (111 commits; parsha_emojis' first): CSV +209 (all resolve), 12 reworded, 0 removed; static 5,502 refs + 2,974 fallback sites (the html arm, lapsed since S475); blind 0/4,328 lines; 102 states by the real switcher (twins = base + 5 known); retry 4/4; 10 surfaces by real input + a switch mid-state. FOUND 4, FIXED 4.**)
 
-- C accessibility (one tool): 2026-11-05 (**S614 — `Hebrew_Font_Maker.html` (first since S513; 44 commits): S513's arms on a photo, Trace, Draw, full screen, the tour, a starting font, the sheet view + forced colours, spacing, reflow. FOUND 3: 2 FIXED, 1 P4. C-next: letter_learner (S527), parsha_emojis (S541).**)
+- C accessibility (one tool): 2026-11-06 (**S620 — `letter_learner.html` (first since S527; 36 commits to the page since) + `parsha_emojis.html` (first since S541; 20 commits since): census + Tab walks over 22 LL and 9 PE surfaces by real clicks, contrast in 4 cells, forced colours, motion with its control, reflow at 320, the dialogs and the tour by keys, PE's failed load. CLEAN on both (FOUND 0; …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - A recurring-pattern sweep: 2026-10-31 (**S581 — 42nd A, scoped to the outside-loop reading-assignments landing (`a7fa5f1..aab737c`, 18 of its 53 commits; `reading_assignments.html`, `js/ivrit-assignments.js`, the Trainer's +838): the security arms (no `innerHTML`, reviver-safe parses, URL sinks, an anonymous Trainer loads no assignments module), then two catalog recipes committed as detectors …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -888,5 +882,5 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-22 (**S542 — 40th F, loading states (first since S189): 14 surfaces held, then aborted. FOUND 7, FIXED 4. F-next: long-build progress.**)
 
-**Next session (S620):** **Branch `claude/adoring-brown-9udi22` (S608–S619, draft PR 394): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1283**, FM **5.59**, corpus ?v=7. ⚑ drift: main=4f03455 sw=v1283 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: C letter_learner (S527), P name_tags (S535), M letter_learner (S536), G parsha_emojis (S537), D parsha_emojis (S538), H parsha_emojis (S540), N letter_learner (S545); suite E (S531), L (S532), K (S533). ⚑ Harnesses: `h619/` (`lib.mjs` the LL walkthrough lib with speech + confirm stubs, `lessons.mjs` 5 lessons by cell, `student.mjs`, `tradnote.mjs`), `d618/`, `g617/`. ⚑ 56 seeds.
-⚑ The LL's address now carries the open card (`?letter=`/`?vowel=`, `&tab=`): a probe that reads `location.search` after a card click must expect it. ⚑ Trap 538 (S618): Playwright's `click()` scrolls a target inside Flash Cards' sticky Start bar and the print menu closes — click the box with `page.mouse`. ⚑ Flash Cards' next three: `fcTrackStickies` (P4), `readProfiles`' compare (P3), the reviver parses (P3, shared). ⚑ Sync P2 (S573): D31 fails alone ~1 in 3. ⚑ The S602 gate-4 answer covers the landscape blend-sheet P3 (measure Export PDF first). ⚑ Real Words Bingo, Word Search and Crossword need 24 list words (S617). ⚑ The generator's answer-key footer P4 (S563) needs a seeded Math.random. ⚑ Ports at the next A: `m554/`–`m616/`, `g604/`, `d605/`, `t605/`, `h606/`, `c607/`, `n608/`, `p609/`, `g611/`, `d612/`, `h613/`, `c614/`, `n615/`, `m616/`, `g617/`, `d618/`, `h619/`; traps 352, 356–538. ⚑ Queues: FM 26, generator 20, flash 10, dashboard 8, torah 9, dictionary 8, name_tags 7, parsha_emojis 7, trope 5; the rest ≤ 4.
+**Next session (S621):** **Branch `claude/adoring-brown-9udi22` (S608–S620, draft PR 394): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1286**, FM **5.59**, corpus ?v=7. ⚑ drift: main=4f03455 sw=v1286 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: P name_tags (S535), M letter_learner (S536), G parsha_emojis (S537), D parsha_emojis (S538), H parsha_emojis (S540), N letter_learner (S545), C name_tags (S548); suite E (S531), L (S532), K (S533). ⚑ Harnesses: `c620/` (`lib.mjs` the LL + PE a11y lib: CENSUS, tabwalk, CON, HC, ANIM, `openPE` with a 503 route and a fixed date; `s1.mjs`–`s4.mjs` the LL arms, `pe.mjs <arm>` the PE arms, `tour.mjs`, `atlaspix.mjs`), `h619/`, `d618/`. ⚑ 55 seeds.
+⚑ Trap 539 (S620): the Letter Learner's Fonts tab is ON by default (`LL_DEFAULTS.fontTab`), so a probe that "ticks" `#optFontTab` switches it off — S619's receipts call it opt-in; only the word speakers are. ⚑ The LL's address carries the open card (`?letter=`/`?vowel=`, `&tab=`): a probe reading `location.search` after a card click must expect it. ⚑ Trap 538 (S618): Playwright's `click()` scrolls a target inside Flash Cards' sticky Start bar and the print menu closes — click the box with `page.mouse`. ⚑ The Font Maker's own tour engine still loses its card off-screen (S614 P4): the shared block's fix `79654c0f` is the recipe when the FM moves onto the block. ⚑ Flash Cards' next three: `fcTrackStickies` (P4), `readProfiles`' compare (P3), the reviver parses (P3, shared). ⚑ Sync P2 (S573): D31 fails alone ~1 in 3. ⚑ The S602 gate-4 answer covers the landscape blend-sheet P3 (measure Export PDF first). ⚑ Real Words Bingo, Word Search and Crossword need 24 list words (S617). ⚑ Ports at the next A: `m554/`–`m616/`, `g604/`, `d605/`, `t605/`, `h606/`, `c607/`, `n608/`, `p609/`, `g611/`, `d612/`, `h613/`, `c614/`, `n615/`, `m616/`, `g617/`, `d618/`, `h619/`, `c620/`; traps 352, 356–539. ⚑ Queues: FM 26, generator 20, flash 10, dashboard 8, torah 9, dictionary 8, name_tags 7, parsha_emojis 7, trope 5; the rest ≤ 4.

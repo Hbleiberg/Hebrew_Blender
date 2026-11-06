@@ -782,7 +782,9 @@ These lines are a snapshot — verify by grep before relying on them, and update
 ### 1. Guided tour engine
 Non-modal spotlight: a dim full-page overlay with a spotlight cutout computed from the target's
 `getBoundingClientRect()`, a floating card (title, 1–2 sentences, "Step X of N", Back / Next / ✕ End),
-Escape to end, arrow keys to navigate, resize-safe, `scrollIntoView` the target first, and **zero project/
+Escape to end, arrow keys to navigate, resize-safe, `scrollIntoView` the target first (the shared block also brings
+the target back into view when the keyboard focus re-enters the card after a Tab walk round the page, so the fixed
+card is never focused off the screen; the per-file engines still leave it where the target went), and **zero project/
 settings mutations**. It **never auto-launches** — entry is a header **Tour** button (the shared `hi-help` icon + the word) with a one-time
 first-visit pulse gated by a `hebrew<Tool>_tourSeen` flag (set once so the pulse never returns).
 - **Implemented on:** `hebrew_blend_generator.html`, `hebrew_dictionary.html`, `classroom_dashboard.html`,

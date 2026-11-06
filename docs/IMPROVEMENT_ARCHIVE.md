@@ -96834,3 +96834,37 @@ _(prior)_ **Next session (S618):** **Branch `claude/adoring-brown-9udi22` (S608�
 
 _(prior)_ **Next session (S619):** **Branch `claude/adoring-brown-9udi22` (S608–S618, draft PR 394): open → continue on it; merged → fresh branch off `origin/main`. ⚑ PR 394's head ref was still `09bc416c` (S616) after S618's pushes while the branch moved on: check `git ls-remote origin claude/adoring-brown-9udi22 refs/pull/394/head` first, and tell the maintainer if they still differ.** `sw.js` **v1281**, FM **5.59**, corpus ?v=7. ⚑ drift: main=4f03455 sw=v1281 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: H letter_learner (S526), C letter_learner (S527), P name_tags (S535), M letter_learner (S536), G parsha_emojis (S537), D parsha_emojis (S538), N letter_learner (S545); suite E (S531), L (S532), K (S533). ⚑ Harnesses: `d618/` (`lib.mjs` the flash D harness, `inter.mjs` 16 arms, `prof.mjs` / `profboot.mjs` a 12-profile class, `fix1ab.mjs`, `fix2ab.mjs`, `fitdiag*.mjs` the `:has()` A/B, `nt.mjs` Name Tags' load count), `g617/`, `m616/`. ⚑ 57 seeds.
 ⚑ Trap 538 (S618): Playwright's `click()` scrolls a target inside Flash Cards' sticky Start bar (the root's scroll-padding counts the bar), and the print menu closes on any scroll — click the box with `page.mouse` instead; a real mouse click opens it fine. ⚑ Flash Cards' next three: `fcTrackStickies` (P4), `readProfiles`' compare (P3), the reviver parses (P3, shared). ⚑ Sync P2 (S573): D31 fails alone ~1 in 3. ⚑ The S602 gate-4 answer covers the landscape blend-sheet P3 (measure Export PDF first). ⚑ Real Words Bingo, Word Search and Crossword need 24 list words (S617). ⚑ The generator's answer-key footer P4 (S563) needs a seeded Math.random. ⚑ Ports at the next A: `m554/`–`m616/`, `g604/`, `d605/`, `t605/`, `h606/`, `c607/`, `n608/`, `p609/`, `g611/`, `d612/`, `h613/`, `c614/`, `n615/`, `m616/`, `g617/`, `d618/`; traps 352, 356–538. ⚑ Queues: FM 26, generator 20, flash 10, dashboard 8, torah 9, dictionary 8, name_tags 7, parsha_emojis 7, trope 6; the rest ≤ 4.
+
+
+<!-- archived by compact-ledger at the S621 boundary, 2026-11-06 -->
+## Compaction (S621, 2026-11-06) — moved verbatim from the live ledger
+
+### from Candidates — aged P4 (found more than 90 sessions before S621)
+
+- [ ] P4 (**NEW S530 A — glyph census, rule first; S604: the hub's two control labels FIXED `7c33a1d8`**) | dictionary, resources, flash, torah, FM | **Category and option emoji are still heard** (findings S530): content or decoration is unruled. | found S530
+
+### from Done
+
+- [x] 2026-11-06 | (S620 close-out) | branch/deploy note | **S620 = C on `letter_learner.html` (first since S527; 36 commits to the page) + `parsha_emojis.html` (first since S541; 20 commits) — both CLEAN (0 found; a clean surface bought the second) — then 3 fixes from the queue and the gates: the LL Vowels Select all / Clear micro-feature (gate 1), the atlas's one-stop-per-row table (the S580 P3, gate 2), the shared tour block's focus return (the S614 P4's shape on its three carriers).** Drift: none. sw v1283→v1286; no FM bump; gates 1 + 2 asked and answered. Branch `claude/adoring-brown-9udi22`, PR 394 updated; deploy after the merge.
+
+- [x] 2026-11-06 | `79654c0f` | letter_learner.html, trope_tutor.html, name_tags.html, sw.js, probe | (S620; the S614 P4's shape, the shared block) **The tour card comes back into view when the keyboard focus returns to it** (Tab round the page left Back / Next / End 600–2,100 px above the screen). | probe `S620-tour-card-back-in-view-on-focus.mjs`: 3 carriers × EN light 1280 / HE dark 800 by real keys, HEAD fails 18 steps; the block sha-identical on the three
+
+- [x] 2026-11-05 | (S615 close-out) | branch/deploy note | **S615 = N on the chrome bundle (first bundle N; index since S420, resources S246, contact S462, privacy/terms/404 S520, account never) — clean — + `name_tags.html` (since S534) — clean; 1 gate-4 answer (leave the grip), 1 P4. Fixes from the queue: the generator's word-list hand-off (gate 2) and the S568 Arial buttons on its last three …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-05 | `99351ec9` | Hebrew_Font_Maker.html, sw.js | (S615; S568's P4, its last page) **Buttons take the page's face, not Arial** (full screen's Exit / Show Panels, the tour ✕). | DOM census × 4 cells: HEAD 3, tree 0; full-screen plates measured
+
+- [x] 2026-11-05 | `5adad2c9` | torah_trainer.html, sw.js | (S615; S568's P4) **Buttons take the page's face, not Arial** (Exit Full Screen, the audio collapse, the drawer's icons). | reading + 8 tabs × 4 cells: HEAD 16, tree 0; Exit by a real click
+
+- [x] 2026-11-05 | `7dd3bb87` | classroom_dashboard.html, sw.js | (S615; S568's P4) **Buttons take the page's face, not Arial** (the bare `.btn-xs`, drawer, font-tile labels, week editor). | board + 7 tabs + week × 4 cells: HEAD 70, tree 0; widths −1–4px, no overflow
+
+### from Per-session log (one line per session)
+
+- 2026-11-03 | **S600** | iters: 5 | tools: torah ×2, index, resources, locales, sw | patterns fixed: focus-hidden-under-a-sticky-bar ×1 | pass run: C (chrome, first since S483) | SW: v1220→v1224
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S620 (2026-11-06):** letter_learner ×2, trope_atlas, trope, name_tags, locales, sw.js, loop probes ×3, shared-components.md, loop docs S620 · letter_learner, trope (locales), CLAUDE.md, sw.js, loop probe, loop docs S619 · flash, sw.js, loop probe, loop docs S618 · dictionary, generator, sw.js, loop probe, loop docs S617 · parsha_emojis, parsha/ + build-parsha-pages, shared-components.md, sw.js, loop docs S616 · generator, dashboard, torah, fontmaker, locales, sw.js, loop docs S615 · fontmaker, generator, flash, dashboard, torah, index, locales, sw.js, storage-and-backup.md, loop docs S614 · generator, dashboard, parsha_emojis, sw.js, loop docs S613 …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- C accessibility (one tool): 2026-11-06 (**S620 — `letter_learner.html` (first since S527; 36 commits to the page since) + `parsha_emojis.html` (first since S541; 20 commits since): census + Tab walks over 22 LL and 9 PE surfaces by real clicks, contrast in 4 cells, forced colours, motion with its control, reflow at 320, the dialogs and the tour by keys, PE's failed load. CLEAN on both (FOUND 0; the clean first surface bought the second); the queue's S580 atlas P3 and the S614 tour shape FIXED. C-next: name_tags (S548), flash (S560).**)
