@@ -2539,7 +2539,7 @@ let _dictPreQuery = [];
 // The one text-match predicate. Both the filter pass and the empty-state gate call it, so the
 // two can never drift apart (they were hand-copied, and had).
 function dictTextMatch(w, s) {
-  return w.word.includes(s) || w.bare.includes(s) ||
+  return w.word.includes(s) || (w.bareWords || w.bare).includes(s) ||
          w.translitLower.includes(s) || w.translationLower.includes(s);
 }
 // An English search lists the words whose meaning IS the query first: "dog" matches 15 glosses and כֶּלֶב sorted 8th,
@@ -2661,9 +2661,13 @@ function loadWordCorpus() {   // callable (not a bare top-level chain) so the fa
         // never from translitDisplay, which mutates with the transliteration style.
         const vowelSet = new Set();
         for (const vd of VOWEL_DEFS) if (w.word.includes(vd.u)) vowelSet.add(vd.u);
+        // A phrase's bare letters with its word gaps kept ("כלב ים"): a Hebrew search then matches inside one word of
+        // it, or a run of its words, never across a gap (bare has none, so "כלב" found "…כֵּל בַּ…"). Single words keep bare.
+        const heWords = String(w.word || '').replace(/[\u0591-\u05C7]/g, '').split(/[^א-ת]+/).filter(Boolean);
         ALL_WORDS.push({
           word: w.word,
           bare: w.bare || '',
+          bareWords: heWords.length > 1 ? heWords.join(' ') : '',
           gem: calcGematria(w.bare || ''),
           cons: Array.isArray(w.letters) ? w.letters : [],
           translit: w.translit || '',
