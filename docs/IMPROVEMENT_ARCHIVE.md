@@ -96979,3 +96979,42 @@ _(prior)_ **Next session (S623):** **Branch `claude/adoring-brown-9udi22` (S608�
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 - K i18n / localization audit: 2026-11-06 (**S623 — 37th K, `843984b3..2d9e7e23` (525 commits; the Trope Atlas', Name Tags', the assignments and review pages' and the `parsha/` pages' first K): CSV +925 / −2 / 67 reworded (parity, arrows, plurals read); static 5,956 refs (0 missing) + 3,460 fallback sites; blind 0/12,102 added lines; 42 live-switch cells on the tree and the base (raw keys 0, unfilled 0, missing 0, lang/dir 84/84; Latin-in-HE 981 → 1,415, every growth content: trope names, scheme examples, the legal text, brands); 12 mid-state cells on the new surfaces (0 left behind beyond content); HE attributes by design. FOUND 2, FIXED 2.**)
+
+
+<!-- archived by compact-ledger at the S625 boundary, 2026-11-07 -->
+## Compaction (S625, 2026-11-07) — moved verbatim from the live ledger
+
+### from Candidates — aged P4 (found more than 90 sessions before S625)
+
+- [ ] P4 (**NEW S534 N — gate 4**) | name_tags.html | **On a phone Remove sits 120–270px off-screen** until the table scrolls. | found S534
+
+### from Candidates (prioritized, top = next)
+
+- [ ] P4 (**NEW S624 P — a shared module + every carrier, not small**) | js/ivrit-account.js (+ 38 `_cloud` confirms on 11 pages, the restore dialogs) | **A stored student session counts as a syncing teacher's**: every `_cloud` confirm and the `.ivrit` / AllTools restore's Merge-only rule read `hasStoredSession()`, though a student account never syncs (Name Tags' delete says "removed from your account and from every device"; Replace is withheld). | found S624
+
+### from Done
+
+- [x] 2026-11-07 | (S624 close-out) | branch/deploy note | **S624 = P on `name_tags.html` (the 22nd P; its 2nd: S535 → S624, 35 commits): smoke-tools 18/18, sync 236, migration 47, 4 signed-in scenarios by real clicks on the fake cloud (N1–N4), arms 3–7 48/48 behind 7 plants, arm 8 read-only (12 migrations live, advisors as recorded, keep-alive #56 green). FOUND 2, FIXED 1; + the micro-feature (gate 1) and the S615 P4. Branch `claude/loving-goodall-wh4spb`; deploy on merge.**
+
+- [x] 2026-11-07 | `831d9006` | hebrew_dictionary.html, locales, sw.js, probe | (S624 micro-feature, gate 1; the S440 seed) **The Word Lists window offers "Save the N selected words…" while words are selected** (it said only "No word lists yet… select words"); it opens the save window on that selection | probe `S624-dictionary-manager-saves-the-selection.mjs`: 6 steps × 4 cells by real clicks, Tab and Enter (the old tree fails 2–6); recipe 8/8; smoke-tools dictionary 22/22
+
+- [x] 2026-11-07 | `66025d1d` | name_tags.html, docs/reference/name-tags.md, sw.js, probe | (S624 P) **Name Tags' Print choice follows its list when the rows are read again** (another tab's list or design edit, a download, a restore, a list switch): an unchanged row keeps it, a changed row prints | probe `S624-name-tags-print-choice-follows-its-list.mjs`: 7 steps × 2 cells (the old tree fails 8); the S623 probe; smoke-tools 18/18; signed-in N2 keeps the choice
+
+- [x] 2026-11-05 | (S619 close-out) | branch/deploy note | **S619 = H on `letter_learner.html` (first since S526; 34 commits to the page): 5 lessons × 2 cells by real clicks + the student cell. FOUND 3: the `?letter=` seed SHIPPED as the micro-feature (gate 1), the Vowels Select all / Clear seed stays, 1 gate-2 copy left as is; + the Trope Tutor's tradition note (gate 2, S609's P4). PR 394, sw …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-05 | `63867b8c` | letter_learner.html, CLAUDE.md, sw.js, probe | (S619 micro-feature, gate 1; the S526 seed) **The open card is in the address bar** (`?letter=bet&tab=coloring` / `?vowel=segol`; a close takes it out; the pasted address reopens it). | 13 address steps × EN light 1280 / HE dark 800 by real clicks, a planted param kept, history untouched; HEAD fails 16; probe …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Per-session log (one line per session)
+
+- 2026-11-04 | **S604** | iters: 5 | tools: dashboard ×2, index, dictionary, locales, sw | patterns fixed: dark-palette-baked-into-paper ×1, decorative-glyph-carrier-exposed-to-assistive-tech ×1 | pass run: G (dashboard, first since S495) | SW: v1233→v1237
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S624 (2026-11-07):** name_tags, name-tags.md, dictionary, locales, js/ivrit-account.js, sw.js, loop probes ×3, loop docs S624 · name_tags, reading_assignments, torah, locales, name-tags.md, sw.js, loop probe, loop docs S623 · trope_atlas, parsha/ + build-parsha-pages, dictionary, sw.js, loop probe, loop docs S622 · parsha_emojis, dictionary, README, manifest, ops.md, i18n.md, shared-components.md, locales, sw.js, loop probes ×2, loop docs S621 · letter_learner ×2, trope_atlas, trope, name_tags, locales, sw.js, loop probes ×3, shared-components.md, loop docs S620 · letter_learner, trope (locales), CLAUDE.md, sw.js, loop probe, loop docs …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- P accounts & cloud (one surface): 2026-11-07 (**S624 — 22nd P, `name_tags.html` (its 2nd: S535 → S624; 35 commits: the Print box, the UTF-16 rosters, the typed transliteration): smoke-tools 18/18 + sync 236 + migration 47 with the pinned SDK, N1–N4 signed in by real clicks, arms 3–7 48/48 (7 plants red), arm 8 read-only clean. FOUND 2, FIXED 1. P-next: parsha_emojis (S546), fontmaker (S561), letter_learner (S561).**)
+
+_(prior)_ **Next session (S624):** **Branch `claude/adoring-brown-9udi22` (S608–S623, draft PR 394): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1294**, FM **5.59**, corpus ?v=7. ⚑ drift: main=4f03455 sw=v1294 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: P name_tags (S535), then M letter_learner (S536), G parsha_emojis (S537), D parsha_emojis (S538), H parsha_emojis (S540), N letter_learner (S545), C name_tags (S548); the three stale suite passes E, L and K ran S621–S623. ⚑ Harnesses: `k623/` (`csvdelta.py`, `static.py` refs + stale fallbacks, `blind.py`, `rt.mjs` the live-switch arm with `BASE=`, `dyn.mjs` mid-state switches, `bidi.mjs`; the base tree at `k623/base`), `l622/`, `e621/`, `c620/`. ⚑ 52 seeds.
+⚑ Traps 547–548 (S622–S623, in the findings): the dictionary's bulk controls are three folds deep; a text census must not exclude the root's `dir=ltr`; a HE arrow between two Latin words takes their direction (measure with a Range); Name Tags' mixed header Print box ticks everyone first. ⚑ Atlas FAQ: gate 2 asked S622, log only — do not re-ask. ⚑ Traps 544–546 (S621, findings): a `<link>` is a CSP load only by its `rel`; PE's Today view at the fixed date holds one card; the Worker's `npm test` needs wrangler. ⚑ Trap 538 (S618): `click()` scrolls a Flash Cards sticky-bar target and the print menu closes — use `page.mouse`. ⚑ Ports at the next A: every session's scratch dir `m554/` … `k623/`; traps 352, 356–548. ⚑ Queues: FM 26, generator 20, flash 10, dashboard 8, torah 9, dictionary 7, name_tags 7, parsha_emojis 7, trope 5; the rest ≤ 4.
