@@ -1652,6 +1652,8 @@
   "dictionary.wordlist.rename_save": "Save",
   "dictionary.wordlist.save_as_new": "Save as new list",
   "dictionary.wordlist.save_modal_title": "Save as Word List",
+  "dictionary.wordlist.save_selected.one": "Save the selected word…",
+  "dictionary.wordlist.save_selected.other": "Save the {count} selected words…",
   "dictionary.wordlist.saved.one": "Saved \"{name}\" with {count} word.",
   "dictionary.wordlist.saved.other": "Saved \"{name}\" with {count} words.",
   "dictionary.wordlist.selected_count.one": "{count} word selected",

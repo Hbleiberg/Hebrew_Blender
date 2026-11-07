@@ -1652,6 +1652,8 @@
   "dictionary.wordlist.rename_save": "שמירה",
   "dictionary.wordlist.save_as_new": "שמירה כרשימה חדשה",
   "dictionary.wordlist.save_modal_title": "שמירה כרשימת מילים",
+  "dictionary.wordlist.save_selected.one": "שמירת המילה שנבחרה…",
+  "dictionary.wordlist.save_selected.other": "שמירת המילים שנבחרו ({count})…",
   "dictionary.wordlist.saved.one": "נשמרה \"{name}\" עם מילה אחת.",
   "dictionary.wordlist.saved.other": "נשמרה \"{name}\" עם {count} מילים.",
   "dictionary.wordlist.selected_count.one": "מילה אחת נבחרה",

@@ -1150,6 +1150,8 @@ dictionary.wordlist.rename_prompt,Rename word list:,שינוי שם רשימת �
 dictionary.wordlist.rename_save,Save,שמירה,inline rename editor confirm button,
 dictionary.wordlist.rename_cancel,Cancel,ביטול,inline rename editor cancel button,
 dictionary.wordlist.save_as_new,Save as new list,שמירה כרשימה חדשה,save word-list button,
+dictionary.wordlist.save_selected.one,Save the selected word…,שמירת המילה שנבחרה…,word-lists manager button while one word is selected (opens the save window),plural
+dictionary.wordlist.save_selected.other,Save the {count} selected words…,שמירת המילים שנבחרו ({count})…,word-lists manager button while words are selected (opens the save window),plural
 dictionary.wordlist.save_modal_title,Save as Word List,שמירה כרשימת מילים,save word-list modal title,
 dictionary.wordlist.saved.one,"Saved ""{name}"" with {count} word.","נשמרה ""{name}"" עם מילה אחת.",save word-list status,plural; mixed UI+content — do not translate {…}
 dictionary.wordlist.saved.other,"Saved ""{name}"" with {count} words.","נשמרה ""{name}"" עם {count} מילים.",save word-list status,plural; mixed UI+content — do not translate {…}

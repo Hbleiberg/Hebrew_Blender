@@ -2337,10 +2337,19 @@ function wlRenderManagerInto(root) {
     root.appendChild(host);
     IvritSaves.mountStatus(host, 'Dictionary');
   }
+  // Words selected in Bulk Copy Mode: the manager offers to save them (the header's Word Lists button is where a
+  // teacher looks, and the empty state's "select words…" would describe what they have already done). (S624)
+  const selCount = wlSelectedWords().length;
+  if (selCount) {
+    const sv = wlEl('button', { cls: 'wm-root-btn', type: 'button', style: 'margin:0 0 12px;' }, I18n.t(selCount === 1 ? 'dictionary.wordlist.save_selected.one' : 'dictionary.wordlist.save_selected.other', { count: selCount }));
+    sv.dataset.wlFocus = 'save-selected';
+    sv.addEventListener('click', () => wlOpenSaveModal());
+    root.appendChild(sv);
+  }
   const store = wlReadStore();
   const ids = Object.keys(store.lists).sort((a, b) => (store.lists[b].updated || 0) - (store.lists[a].updated || 0));
   if (!ids.length) {
-    root.appendChild(wlEl('div', { style: 'text-align:center;color:var(--muted);font-size:0.85rem;padding:16px 6px;line-height:1.5;' }, I18n.t('dictionary.wordlist.manager_empty')));
+    if (!selCount) root.appendChild(wlEl('div', { style: 'text-align:center;color:var(--muted);font-size:0.85rem;padding:16px 6px;line-height:1.5;' }, I18n.t('dictionary.wordlist.manager_empty')));
     return;
   }
   ids.forEach(id => {
