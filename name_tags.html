@@ -1169,9 +1169,10 @@ function ntNewListValue() { return { v: 1, rows: [], extra: '' }; }
 function ntLoadCurrent(want) {
   const { raw, obj } = ntReadLists();
   _ntListsLastWritten = raw;
+  ntSkipRemember();
   const names = ntListNames(obj);
   let name = [want, ntCur.stored ? ntCur.name : null, ntActiveGet()].find(n => n && names.includes(n)) || names[0];
-  if (name) { ntCur = { name, val: obj[name], stored: true }; _ntVirtualDefault = false; return; }
+  if (name) { ntCur = { name, val: obj[name], stored: true }; _ntVirtualDefault = false; ntSkipRestore(); return; }
   if (ntCur.name && !ntCur.stored && !_ntVirtualDefault) return;   // an unsaved list the teacher named keeps its name
   ntCur = { name: ntDefaultListName(), val: ntNewListValue(), stored: false };
   _ntVirtualDefault = true;
@@ -2096,6 +2097,21 @@ function ntTagEl(row, idx, w, h, L, cls, full) {
    travels in a file (a new student mid-year prints alone without reprinting the class). The header box ticks or
    clears every row and reads mixed while some are out. (S623 micro-feature) */
 const _ntSkip = new WeakSet();
+/* The choice follows its list when the rows are read again from the store (a design or list change from another tab or
+   the account, a restore, another list opened and this one back): a row whose four fields are unchanged keeps it, a
+   changed or new row prints — never a different student left out. Held only while that list is not the open one. (S624) */
+const _ntSkipMem = new Map();
+function ntRowKey(r) { return JSON.stringify(['he', 'en', 'tr', 'ex'].map(f => ntRowField(r, f))); }
+function ntSkipRemember() {
+  if (!ntCur.stored || !ntCur.val) return;
+  const keys = ntRows().filter(r => !ntRowEmpty(r) && _ntSkip.has(r)).map(ntRowKey);
+  if (keys.length) _ntSkipMem.set(ntCur.name, keys); else _ntSkipMem.delete(ntCur.name);
+}
+function ntSkipRestore() {
+  const left = _ntSkipMem.get(ntCur.name);
+  _ntSkipMem.delete(ntCur.name);
+  if (left) ntRows().forEach(r => { const k = left.indexOf(ntRowKey(r)); if (k >= 0) { _ntSkip.add(r); left.splice(k, 1); } });
+}
 function ntSkipped() { return ntRows().filter(r => !ntRowEmpty(r) && _ntSkip.has(r)).length; }
 function ntPrintAllSync() {
   const all = document.getElementById('ntPrintAll'); if (!all) return;
