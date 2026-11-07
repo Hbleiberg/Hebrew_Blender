@@ -446,6 +446,7 @@
     input.maxLength = 80;
     input.autocomplete = 'name';
     input.setAttribute('autocapitalize', 'words');
+    input.setAttribute('autocorrect', 'off');   // a person's name, never "corrected" by a phone's keyboard
     input.setAttribute('data-ivk', 'name');
     card.appendChild(label);
     card.appendChild(input);
@@ -1063,7 +1064,7 @@
       var uLabel = el('label', 'ivacct-label', t('shared.account.student_username', 'Username'));
       var uInput = el('input', 'ivacct-input');
       uInput.setAttribute('data-ivk', 'username'); uInput.type = 'text'; uInput.name = 'username'; uInput.autocomplete = 'username';
-      uInput.autocapitalize = 'none'; uInput.spellcheck = false; uInput.dir = 'ltr'; uInput.required = true; uInput.maxLength = 30;
+      uInput.autocapitalize = 'none'; uInput.setAttribute('autocorrect', 'off'); uInput.spellcheck = false; uInput.dir = 'ltr'; uInput.required = true; uInput.maxLength = 30;
       uInput.value = lastUsername;
       uLabel.appendChild(uInput);
       var pLabel = el('label', 'ivacct-label', t('shared.account.student_password', 'Password'));
