@@ -6539,7 +6539,7 @@
   "torah.tour.s4_title": "Read, chant, or loop",
   "torah.tour.s5_body": "Click any Hebrew word to chant from exactly that spot.",
   "torah.tour.s5_title": "The text itself",
-  "torah.tour.s6_body": "Seven tabs: Favorites (readings you save), Text (layout, transliteration, translation), Colors, Audio, Calendar (schedule, holiday readings), Share (links, copying and printing) and More.",
+  "torah.tour.s6_body": "Eight tabs: Favorites (readings you save), Text (layout, transliteration, translation), Colors, Audio, Calendar (schedule, holiday readings), Share (links, copying and printing), Teacher (assigning readings to students) and More.",
   "torah.tour.s6_title": "Settings",
   "torah.trans.footer_line": "Translation: <em>{version}</em> · {license} (via <a href=\"https://www.sefaria.org\" target=\"_blank\" rel=\"noopener\">Sefaria</a>)",
   "torah.trans.footer_none": "Translation: (none selected — toggle Translation off or pick a version)",

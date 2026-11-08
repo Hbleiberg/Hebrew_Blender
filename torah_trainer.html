@@ -2721,7 +2721,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
       <button class="settings-close" onclick="closeSettings()" title="Close" data-i18n-title="torah.settings.close_title" aria-label="Close settings" data-i18n-aria-label="torah.settings.close_aria"><svg class="hi hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
     </div>
   </div>
-  <!-- Seven tabs of flat sections (nothing collapses; the panel-collapse memory this page carried is retired —
+  <!-- Eight tabs of flat sections (nothing collapses; the panel-collapse memory this page carried is retired —
        an older blob's panelsCollapsed rides along unread, as on the Trope Tutor). The drawer always opens
        on Text (setSettingsTab in openSettings); openSettingsAtPanel(key) picks a tab + section by data-set.
        Icons: the shared header-icons set; the label keeps its data-i18n on the .hi-lbl span. -->
@@ -9174,7 +9174,7 @@ function maybeEnsureTranslit() {
    SETTINGS DRAWER + FORM SYNC
    ══════════════════════════════════════════════════════ */
 /* ── Drawer tabs (APG tablist) ──
-   Seven tabs of flat sections; nothing collapses, so this page carries no panel-collapse memory any more
+   Eight tabs of flat sections; nothing collapses, so this page carries no panel-collapse memory any more
    (an older blob's panelsCollapsed rides along unread through ivritSafeAssign, and the cloud row's
    '*Collapsed' omit still covers karaokeBarCollapsed). setSettingsTab is the one writer of tab state;
    the drawer always opens on Favorites (no tab memory — see openSettings), and openSettingsAtPanel(key)
