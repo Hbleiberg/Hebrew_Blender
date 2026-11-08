@@ -6586,6 +6586,7 @@
   "trope.drill.back_to_learn": "חזרה ללימוד",
   "trope.drill.chart_not_loaded": "לא ניתן היה לטעון את הטבלה של המנגינה הזו, ולכן אין מה לתרגל בה — נסו שוב או בחרו מנגינה אחרת.",
   "trope.drill.choices_aria": "אפשרויות תשובה",
+  "trope.drill.choices_label": "מכמה תשובות לבחור?",
   "trope.drill.choose_again": "בחרו שוב כדי לענות",
   "trope.drill.correct": "✓ נכון — {name}",
   "trope.drill.drill_again": "תרגול נוסף",

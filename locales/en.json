@@ -6586,6 +6586,7 @@
   "trope.drill.back_to_learn": "Back to Learn",
   "trope.drill.chart_not_loaded": "This melody's chart couldn't be loaded, so it has nothing to drill — try again, or choose another melody.",
   "trope.drill.choices_aria": "Answer choices",
+  "trope.drill.choices_label": "How many answers to choose from?",
   "trope.drill.choose_again": "choose again to answer",
   "trope.drill.correct": "✓ Correct — {name}",
   "trope.drill.drill_again": "Drill again",

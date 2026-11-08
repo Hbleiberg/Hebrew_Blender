@@ -1284,6 +1284,10 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
           <label for="drillLenSel" data-i18n="trope.drill.len_label">How many questions?</label>
           <select id="drillLenSel" onchange="setDrillLength(this.value)"></select>
         </div>
+        <div class="tu-scope-row">
+          <label for="drillChoicesSel" data-i18n="trope.drill.choices_label">How many answers to choose from?</label>
+          <select id="drillChoicesSel" onchange="setDrillChoices(this.value)"></select>
+        </div>
         <button class="btn btn-lg" id="drillStartBtn" onclick="startDrill()" data-i18n="trope.drill.start_button">Start drill</button>
         <div class="tu-note" id="drillStartNote" role="status"></div>
         <!-- The results screen's call to action, repeated here: a Learn detour ("Study →", a mastery
@@ -1687,6 +1691,7 @@ const DEFAULTS = {
   drillMelody: true,
   drillScope: 'all',            // 'all' | a TROPE_FAMILY_DEFS key — answers-only filter (distractors stay global)
   drillLength: 10,              // questions per session; one of DRILL_LENGTHS, validated on every read
+  drillChoices: 4,              // answers to choose from per question; one of DRILL_CHOICES (2 for a first grade), validated on every read
   playbackRate: 1.0,
 };
 let settings = JSON.parse(JSON.stringify(DEFAULTS));
@@ -3677,8 +3682,9 @@ function openLearnFor(key) {
    DRILL MODE
    ══════════════════════════════════════════════════════ */
 const DRILL_LENGTHS = [5, 10, 20];   // a warm-up, the house default, a test
+const DRILL_CHOICES = [2, 3, 4];     // answers per question: two for a first grade, four the house default
 const QUESTIONS_PER_SESSION = 10;    // the default only — startDrill() reads drillLength()
-const drill = { active: false, melody: null, qs: [], i: -1, correct: 0, results: [], best: 0 };   // melody: the session's, its recordings or its chart's tunes (drillMelody)
+const drill = { active: false, melody: null, choices: 4, qs: [], i: -1, correct: 0, results: [], best: 0 };   // melody: the session's, its recordings or its chart's tunes (drillMelody); choices: its answers per question (drillChoices)
 
 function enabledTypes() {
   const types = [];
@@ -3733,6 +3739,28 @@ function scopedDrillPool(m = drillMelody()) {
 function drillLength() {
   const v = parseInt(settings.drillLength, 10);
   return DRILL_LENGTHS.indexOf(v) >= 0 ? v : QUESTIONS_PER_SESSION;
+}
+/* ─── Answers per question: 2, 3 or 4 (the default), validated on every read like drillLength() ─── */
+function drillChoices() {
+  const v = parseInt(settings.drillChoices, 10);
+  return DRILL_CHOICES.indexOf(v) >= 0 ? v : 4;
+}
+function buildDrillChoicesSel() {
+  const sel = document.getElementById('drillChoicesSel');
+  if (!sel) return;
+  sel.innerHTML = '';
+  for (const n of DRILL_CHOICES) {
+    const o = document.createElement('option');
+    o.value = String(n);
+    o.textContent = String(n);   // i18n-ignore: a bare numeral, the same in every language
+    sel.appendChild(o);
+  }
+  sel.value = String(drillChoices());
+}
+function setDrillChoices(v) {
+  settings.drillChoices = parseInt(v, 10);
+  saveSettings();
+  updateDrillStart();
 }
 function buildDrillScopeSel() {
   const sel = document.getElementById('drillScopeSel');
@@ -3846,7 +3874,7 @@ function renderTradSources() {
    updateDrillStart(): that runs on every tab switch, and rebuilding a <select> under the
    teacher's cursor is its own defect (a melody chosen elsewhere moves the melody box's value only:
    syncMelodyNote). */
-function syncDrillSelects() { buildMelodySelects(); buildDrillScopeSel(); buildDrillLenSel(); }
+function syncDrillSelects() { buildMelodySelects(); buildDrillScopeSel(); buildDrillLenSel(); buildDrillChoicesSel(); }
 function updateDrillStart() {
   const types = enabledTypes();
   const names = { identify: I18n.t('trope.drill.type_identify'), hear: I18n.t('trope.drill.type_hear'), melody: I18n.t('trope.drill.type_melody') };
@@ -4027,6 +4055,7 @@ function startDrill() {
 
   drill.active = true;
   drill.melody = mel;
+  drill.choices = drillChoices();   // read once, like the length: a download mid-session never changes a question's buttons
   drill.qs = qs.slice(0, n);
   drill.i = -1;
   drill.correct = 0;
@@ -4098,8 +4127,10 @@ function renderQuestion(q, regenDepth) {
   document.getElementById('qPrompt').focus();
 }
 
+// The wrong answers a question shows beside the right one: the session's answer count less one.
+function drillDistractors() { return (DRILL_CHOICES.indexOf(drill.choices) >= 0 ? drill.choices : drillChoices()) - 1; }
 function buildNameChoices(q, t) {
-  const keys = shuffle([q.key, ...pickDistractors(q.key, 3)]);
+  const keys = shuffle([q.key, ...pickDistractors(q.key, drillDistractors())]);
   const choices = document.getElementById('qChoices');
   for (const k of keys) {
     const kt = TROPE_BY_KEY[k];
@@ -4117,7 +4148,7 @@ function buildNameChoices(q, t) {
   }
 }
 function buildSymbolChoices(q, t) {
-  const keys = shuffle([q.key, ...pickDistractors(q.key, 3, true)]);
+  const keys = shuffle([q.key, ...pickDistractors(q.key, drillDistractors(), true)]);
   const choices = document.getElementById('qChoices');
   for (const k of keys) {
     const kt = TROPE_BY_KEY[k];
@@ -4136,7 +4167,7 @@ function buildSymbolChoices(q, t) {
   }
 }
 function buildMelodyChoices(q, t, regenDepth) {
-  const distractors = pickDistractors(q.key, 3, true);
+  const distractors = pickDistractors(q.key, drillDistractors(), true);
   // In a melody nobody recorded each choice is a mark's tune from the chart: nothing to fetch, nothing to fail.
   const mel = drillMelody(), tunes = drillUsesTunes(mel);
   const prefer = clipFileKey(q.ex);

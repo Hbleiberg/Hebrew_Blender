@@ -4675,6 +4675,7 @@ trope.drill.incorrect,✗ It was {name},✗ זה היה {name},answer feedback,l
 trope.drill.index_not_loaded,"Drill needs the example index, which didn’t load. Check your connection and refresh.","התרגול זקוק למפתח הדוגמאות, שלא נטען. בדקו את החיבור ורעננו.",drill start note,
 trope.drill.tt_index_not_loaded,"The Total Torah clips couldn't be loaded, so this melody has nothing to drill — try again, or choose another melody.","לא ניתן היה לטעון את קטעי Total Torah, ולכן אין מה לתרגל במנגינה הזו — נסו שוב או בחרו מנגינה אחרת.",drill start note when the Total Torah clip index failed to load (the Conservative melody),do-not-translate Total Torah
 trope.drill.len_label,How many questions?,כמה שאלות?,drill length select label,
+trope.drill.choices_label,How many answers to choose from?,מכמה תשובות לבחור?,"drill start screen: the select of how many answer buttons each question shows (2, 3 or 4; two for a first grade)",
 trope.drill.mastered_vh,mastered,נשלט,mastery cell (visually hidden),
 trope.drill.mastery_aria,Mastery by trope,שליטה לפי טעם,mastery grid aria,aria-label only
 trope.drill.mastery_cell_title,{name} — {r} right / {w} wrong,{name} — {r} נכון / {w} שגוי,mastery cell title,do-not-translate {name}/{r}/{w}

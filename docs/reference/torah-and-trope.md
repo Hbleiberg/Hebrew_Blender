@@ -772,6 +772,12 @@ to Learn), and a caller that opens something inside the new tab (`openLearnFor`)
     `updateDrillStart` and named by the select's `aria-describedby`) says what the drill sounds like in that melody:
     PocketTorah's recordings (`trope.drill.src_pockettorah`), Cantor Brown's Total Torah recordings
     (`trope.drill.src_totaltorah`), or the chart's tunes (`trope.drill.src_tunes`).
+  - **How many answers** (`#drillChoicesSel`, *How many answers to choose from?*, under the question count): 2, 3 or 4
+    (`settings.drillChoices`, one of `DRILL_CHOICES`, 4 by default — two for a first grade), validated on every read
+    by `drillChoices()` as `drillLength()` is, and read once per session into `drill.choices`: every question builder asks
+    `pickDistractors` for `drillDistractors()` = that count less one, so Identify, Hear and Melody questions all show it
+    (a Melody question in a recorded melody can show fewer when a distractor has no clip, as before). It travels with
+    the settings row like the question count.
   - **A melody nobody recorded** (`MELODY_INFO.drillTunes`: High Holidays, Haftarah, Esther, the three Megillot,
     Eicha — PocketTorah's reading is the year-round melody, so its clips would drill the wrong melody) plays each
     mark's figure from its own motif file instead, exactly as the Learn card's tune button sounds it (the Sing along
