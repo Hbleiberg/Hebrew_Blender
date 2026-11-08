@@ -62,6 +62,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
 
+- [ ] P4 (**NEW S628 I — the page at its 2-touch cap this session**) | trope_atlas.html | **While the charts load, or after they fail, the Key and Melody selects sit empty and enabled** (0 options; the Key hint still says it "moves every staff"): disable them, or fill Key from `KEY_CHOICES` at once, until the charts land. | found S628
+
 - [ ] P4 (**NEW S627 — found verifying the micro-feature; HEAD alike**) | hebrew_dictionary.html | **In the English UI every Filter by Letter grid is 265px in its 245px box** (`repeat(7,1fr)` cannot go under "Samech" / "Shin/Sin" at the 11.2px floor), so its alef column spills ~7px past the panel's edge; the Hebrew UI fits. How the names wrap is M's call. | found S627
 
 - [ ] P4 (**NEW S614 C — the tour engine's**) | Hebrew_Font_Maker.html | **Tab out of an open tour and back leaves its Close and Next off-screen** (the fixed card follows its target out of view); S620 FIXED on the shared block's three carriers `79654c0f` — this page's own engine stays. | found S614
@@ -167,8 +169,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S540 H — gate 4**) | parsha_emojis.html, letter_learner.html | **At ≤800px the bulk-print popup's preview sits under every option** (PE 1.6k px down at 800, 2.7k on a phone; LL 1.0k / 1.8k). | found S540
 
 - [ ] P4 (**NEW S539 I — gate 2**) | letter_learner.html | **The cursive tour's card step names neither the Vowels nor the Fonts tab** every cursive card shows. | found S539
-
-- [ ] P4 (**NEW S538 D; S627 re-measured**) | parsha_emojis.html | **The first open from View All still measures every drawing**: 240–357 ms @4× (61 @1×), the shape reads, not their layout (21 of 89 ms); build the geometry with the icons. | found S538
 
 - [ ] P4 (**NEW S624 P — a shared module + every carrier, not small**) | js/ivrit-account.js (+ 38 `_cloud` confirms on 11 pages, the restore dialogs) | **A stored student session counts as a syncing teacher's**: every `_cloud` confirm and the `.ivrit` / AllTools restore's Merge-only rule read `hasStoredSession()`, though a student account never syncs (Name Tags' delete says "removed from your …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -396,6 +396,14 @@ _(none)_
 
 ## Done
 
+- [x] 2026-11-08 | (S628 close-out) | branch/deploy note | **S628 = I on the whole suite (its 41st: S539 → S627, 503 commits; the Trope Atlas', reading assignments', the review page's and the 55 `parsha/` pages' first I): 81 virgin cells (plants 482/486), first-visit storage vs the S539 tree, 88 seeds, the Atlas' load paths, 27 tours, ~260 openers + the Trainer's 8 drawer tabs, 164 bad URLs, all …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-08 | `0839647a` | torah_trainer.html, locales, sw.js, probe | (S628 I, gate 2 answered) **The tour's Settings step names the Teacher tab**: "Seven tabs … and More" → "Eight tabs … Teacher (assigning readings to students) and More" (EN + HE); the two code comments that counted seven | probe `S628-torah-tour-names-every-drawer-tab.mjs`: the tour by real clicks against the drawer's …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-08 | `20b63850` | trope_atlas.html, sw.js, probe | (S628 I) **A built-in name in the address or settings is no melody**: `#sys-__proto__` / `#sys-constructor` or a stored `mel` of either threw and left the phrase browser empty; a stored clause `constructor` showed nothing — the two lookups have no prototype now | probe `S628-trope-atlas-built-in-names.mjs`: 8 cases + controls × 2 …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-08 | `67ff76a5` | trope_atlas.html, sw.js, probe | (S628 I) **Grid and Stacked wait for the charts instead of throwing**: while loading or failed, a press built the table from no charts (a TypeError each); now the pressed state and stored view follow and the table opens in that view once the charts land | probe `S628-trope-atlas-view-before-the-charts.mjs`: failed / held / working …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [x] 2026-11-08 | (S627 close-out) | branch/deploy note | **S627 = D on `parsha_emojis.html` (its 2nd: S538 → S627, 14 commits to the page since) + its 54 `parsha/` pages (their first D): cold 8 cells, 33 arms by real input × 2 cells × 1×/4× behind a 300 ms control, profiles, idle, 60 open/close cycles, scroll, the parsha pages @1×/4×. FOUND 1, FIXED 1 (Colored in re-measured every drawing) + …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-11-08 | `7aed3724` | hebrew_dictionary.html, locales, sw.js, probe | (S627 micro-feature, gate 1; the 2026-10-03 seed) **Filter by Letter has a Last Letter row** ("אות אחרונה"): words ending in ה or ת, any of its tiles, combined with the other rows; one list (`POS_ORD`) drives the rows, filter, chips, print header and restore; a six-position state or `?s=` link restores with the row …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -428,17 +436,11 @@ _(none)_
 
 - [x] 2026-11-07 | `66025d1d` | name_tags.html, docs/reference/name-tags.md, sw.js, probe | (S624 P) **Name Tags' Print choice follows its list when the rows are read again** (another tab's list or design edit, a download, a restore, a list switch): an unchanged row keeps it, a changed row prints | probe `S624-name-tags-print-choice-follows-its-list.mjs`: 7 steps × 2 cells (the old tree fails 8); …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-11-06 | (S623 close-out) | branch/deploy note | **S623 = K (the 37th; the suite over `843984b3..2d9e7e23`, 525 commits — the Trope Atlas', Name Tags', the assignments and review pages' and the `parsha/` pages' first K): the CSV delta (+925, −2, 67 reworded), 5,956 static refs, 3,460 fallback sites, the blind arm over 12,102 added lines, 42 live-switch cells on the tree and the base, 12 …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-06 | `3a3650a0` | reading_assignments.html, torah_trainer.html, sw.js | (S623 K; pattern `stale-html-fallback-behind-its-csv-value`) **Four HTML fallbacks spell their apostrophe as the CSV value does** (the framed-page heading, two peer-listening notes, the student notice) | `static.py`'s stale arm 4 text hits → 0 outside the generator's known `<br>` normalisation; check-inline-js …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-06 | `ce2b5a5c` | name_tags.html, locales, docs/reference/name-tags.md, sw.js, probe | (S623 micro-feature, gate 1; the S551 seed) **Name Tags prints only the students chosen**: a Print box per row (ticked by default), the header's box for all (mixed while some are out), the preview's "Printing n of m" line; held on the row in memory for the session only, never saved or synced | …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-06 | `33496264` | locales/ui-strings.csv (he), sw.js | (S623 K, the arrow sweep) **The dictionary's Hebrew export note reads "File → Import"** — between two Latin words the arrow takes their direction, so ← pointed the menu path backwards | measured in a Hebrew box: File at x 698, the arrow 728, Import 749 — → now points along the path; the other 7 Hebrew arrows are forward (between …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-11-08 | **S628** | iters: 4 | tools: trope_atlas ×2, torah_trainer, locales, sw | patterns fixed: — | pass run: I (suite, first since S539; 503 commits) | SW: v1304→v1307
 
 - 2026-11-08 | **S627** | iters: 4 | tools: parsha_emojis, hebrew_dictionary, locales, sw | patterns fixed: — | pass run: D (parsha_emojis, first since S538; + its parsha/ pages, their first D) + micro-feature | SW: v1302→v1304
 
@@ -478,11 +480,9 @@ _(none)_
 
 - 2026-11-04 | **S609** | iters: 3 | tools: trope, dictionary (locales), sw | patterns fixed: — | pass run: P (trope, first since S507 + dictionary, first since S521) | SW: v1250→v1252
 
-- 2026-11-04 | **S608** | iters: 4 | tools: dashboard ×2, sw | patterns fixed: text-field-under-16px-zooms-on-ios-focus ×1, hebrew-faux-italic ×1 | pass run: N (dashboard, first since S506) | SW: v1248→v1250
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S627 (2026-11-08):** parsha_emojis, hebrew_dictionary, locales, sw.js, loop probes ×2, loop docs S627 · parsha/ ×54 + build-parsha-pages, parsha_emojis, classroom_dashboard, shared-components.md, dashboard.md, locales, sw.js, loop probes ×3, loop docs S626 · letter_learner ×2, flash_cards, locales, sw.js, loop probes ×3, loop docs S625 · name_tags, name-tags.md, dictionary, locales, js/ivrit-account.js, sw.js, loop probes ×3, loop docs S624 · name_tags, reading_assignments, torah, locales, name-tags.md, sw.js, loop probe, loop …[full text: IMPROVEMENT_ARCHIVE.md]
+- **Snapshot S628 (2026-11-08):** trope_atlas ×2, torah_trainer, locales, sw.js, loop probes ×3, loop docs S628 · parsha_emojis, hebrew_dictionary, locales, sw.js, loop probes ×2, loop docs S627 · parsha/ ×54 + build-parsha-pages, parsha_emojis, classroom_dashboard, shared-components.md, dashboard.md, locales, sw.js, loop probes ×3, loop docs S626 · letter_learner ×2, flash_cards, locales, sw.js, loop probes ×3, loop docs S625 · name_tags, name-tags.md, dictionary, locales, js/ivrit-account.js, sw.js, loop probes ×3, loop docs S624 · …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -852,7 +852,7 @@ _(none)_
 
 - D performance (one tool): 2026-11-08 (**S627 — `parsha_emojis.html` (its 2nd: S538 → S627; 14 commits to the page since: the card's Print coloring sheet button, the off-screen preview skip, the size-drag stop, the fit note) + its 54 generated `parsha/` pages (their first D): cold 8 cells (@1× 0 long tasks; @4× top 54–68), 33 arms by real input × 2 cells × 1×/4× behind a 300 ms control (@1× all …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- I first-load & empty-state: 2026-10-22 (**S539 — 40th I, S525 → S538 (93 commits; name_tags' first I, parsha_emojis' under its name): 63 virgin cells (plants 334/336); 69 seeds; 27 tours; ~250 openers; 280 bad URLs; failure paths 20. FOUND 2, FIXED 1.**)
+- I first-load & empty-state: 2026-11-08 (**S628 — 41st I, S539 → S627 (503 commits; the Trope Atlas', reading assignments', the review page's and the 55 `parsha/` pages' first I): 81 virgin cells (plants 482/486); storage = S539's; 88 seeds; 27 tours; ~260 openers + 24 drawer tabs; 164 bad URLs; the Atlas' load paths; 55 parsha pages. FOUND 4, FIXED 3.**)
 
 - B console/error audit: 2026-10-22 (**S543 — 41st B, 78 commits (name_tags' first): 84 cells; name_tags, 9 tours, PE, LL, 8 retries by real input; iPhone ×42. FOUND 2, FIXED 1.**)
 
@@ -868,4 +868,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-22 (**S542 — 40th F, loading states (first since S189): 14 surfaces held, then aborted. FOUND 7, FIXED 4. F-next: long-build progress.**)
 
-**Next session (S628):** **Branch `claude/loving-goodall-wh4spb` (S624–S627, draft PR 395): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1304**, FM **5.59**, corpus ?v=7. ⚑ drift: main=0ed6056 sw=v1304 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: suite I (S539), then H parsha_emojis (S540), F (S542), B (S543), N letter_learner (S545), P parsha_emojis (S546), C name_tags (S548), D name_tags (S549), G name_tags (S550). ⚑ Harnesses: `d627/` (`lib.mjs` = g626's server + routes, a buffered longtask observer, CDP throttling, `arm()`; `cold.mjs`, `heavy.mjs` (33 arms), `prof.mjs`, `idle.mjs`, `leak.mjs`, `split.mjs`, `pp.mjs`, `copies.mjs`, `fixeq.mjs`, `ab.mjs`, `gridov.mjs`), `g626/`, `m625/`. ⚑ `print-media-leak` still has unjudged `leak.mjs` hits on 6 pages (dashboard, dictionary, LL, resources, FM, 404) for each page's next G. ⚑ 48 seeds.
+**Next session (S629):** **Branch `claude/loving-goodall-wh4spb` (S624–S628, draft PR 395): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1307**, FM **5.59**, corpus ?v=7. ⚑ drift: main=0ed6056 sw=v1307 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: H parsha_emojis (S540), then F (S542), B (S543), N letter_learner (S545), P parsha_emojis (S546), C name_tags (S548), D name_tags (S549), G name_tags (S550), M name_tags (S552), V (S553). ⚑ Harnesses: `i628/` (`lib.mjs` = a virgin context per cell, foreign hosts counted, the account layer by request or CSP report, storage writes, `SCAN` + 9 `PLANT`s; `gates`, `seeds`, `ttseed`, `atlas*`, `tours` and `openers` (PLANT=1 each), `ttdrawer`, `urls`, `parsha54`, `ra`), `d627/`, `g626/`, `m625/`. ⚑ `print-media-leak` still has unjudged `leak.mjs` hits on 6 pages (dashboard, dictionary, LL, resources, FM, 404) for each page's next G. ⚑ 48 seeds.
