@@ -439,7 +439,7 @@ html[lang="he"] .panel-title { letter-spacing:normal; text-transform:none; }
 .ll-opt input[type="checkbox"] { width:18px; height:18px; accent-color:var(--gold); flex-shrink:0; }
 .ll-opt select { font:inherit; font-size:0.86rem; padding:5px 8px; border:1.5px solid var(--border); border-radius:6px; background:var(--white); color:var(--text); max-width:100%; }
 fieldset.ll-vowel-set { border:none; padding:0; margin:0; min-width:0; }
-.ll-vowel-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(118px, 1fr)); gap:2px 10px; }
+.ll-vowel-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(10rem, 1fr)); gap:2px 10px; }   /* 10rem: the longest name, "Chataf Kamatz", stays on one line (118px broke it at 500–800 and in a widened sidebar) */
 .ll-vowel-grid .ll-opt { font-size:0.86rem; min-height:26px; }   /* twelve rows: tight enough for the whole sidebar to fit a laptop screen */
 .ll-vowel-btns { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:6px; }   /* Select all / Clear over the twelve boxes, the bulk popup's pair */
 .panel-body .ll-vowel-btns .ll-btn { margin-top:0; padding:4px 10px; font-size:0.8rem; min-height:24px; }
