@@ -1576,6 +1576,14 @@ body.dark .sub { color: #99a2b8; }
 /* The drill timer's Pause: beside the readout; while paused the card, its marks and its navigation are inert and dimmed
    (End Practice Early stays live). No transition, so nothing to neutralize under reduced motion. */
 #timerPauseBtn { margin-inline-start: 8px; vertical-align: middle; }
+/* Voice speed in the drill: the Advanced slider's twin under the navigation, shown only while a word can be heard (audio
+   on, or a listening round). Its −/+ are 40px touch targets; at either end of the range the button is aria-disabled
+   (not disabled: a disabled button drops the focus a keyboard user just pressed it with). */
+.fc-speed { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 10px 0 0; font-size: 0.8rem; color: var(--muted); }
+.fc-speed[hidden] { display: none; }
+.fc-speed .btn-xs { min-width: 40px; min-height: 40px; font-size: 1.1rem; line-height: 1; }
+.fc-speed .btn-xs[aria-disabled="true"] { opacity: 0.4; cursor: default; }
+#fcSpeedVal { min-width: 3.2em; text-align: center; color: var(--text); }
 #screenCard.fc-paused .fc-perspective, #screenCard.fc-paused #fcListen, #screenCard.fc-paused .fc-mark-row, #screenCard.fc-paused .fc-nav, #screenCard.fc-paused .fc-kh-set { opacity: 0.4; }   /* the key hints too: those keys wait as well */
 /* ===== Session stats bar (card screen) ===== */
 .stats-bar {
@@ -2373,6 +2381,15 @@ html[lang="he"] .beta-tag { letter-spacing: normal; text-transform: none; }   /*
     <button class="nav-btn" id="prevBtn" title="Previous card (←)" data-i18n-title="flashcards.card.prev_key_title"><span aria-hidden="true">‹</span> <span data-i18n="flashcards.card.prev">Prev</span></button>
     <button class="nav-btn flip" id="flipBtn" title="Flip the card (Space or Enter)" aria-label="Flip" data-i18n-aria-label="flashcards.card.flip_title" data-i18n-title="flashcards.card.flip_key_title">↺</button>
     <button class="nav-btn" id="nextBtn" title="Next card (→)" data-i18n-title="flashcards.card.next_key_title"><span data-i18n="flashcards.card.next">Next</span> <span aria-hidden="true">›</span></button>
+  </div>
+
+  <!-- Voice speed: −/+ step the Advanced tab's Hebrew TTS Reading Speed slider (which speakWord reads), so a slower Hear
+       no longer costs End Practice Early → Advanced → restart. fcSpeedSync() shows it and keeps it in step. -->
+  <div class="fc-speed" id="fcSpeed" role="group" aria-labelledby="fcSpeedLbl" hidden>
+    <span id="fcSpeedLbl" data-i18n="flashcards.card.speed_label">Voice speed</span>
+    <button type="button" class="btn-xs" id="fcSpeedDown" title="Slower" aria-label="Slower" data-i18n-title="flashcards.card.speed_slower" data-i18n-aria-label="flashcards.card.speed_slower">−</button>
+    <span id="fcSpeedVal" class="bidi-isolate" aria-live="polite">0.75×</span>
+    <button type="button" class="btn-xs" id="fcSpeedUp" title="Faster" aria-label="Faster" data-i18n-title="flashcards.card.speed_faster" data-i18n-aria-label="flashcards.card.speed_faster">+</button>
   </div>
 
   <!-- Keyboard hints. The drill's shortcuts were documented only in the buttons' hover title=,
@@ -8081,6 +8098,26 @@ function speakWord(text) {
   if ((speechSynthesis.getVoices() || []).length) go();
   else { speechSynthesis.addEventListener('voiceschanged', go, { once: true }); setTimeout(go, 400); }
 }
+// Voice speed in the drill: −/+ step #ttsRateSlider (the setting speakWord reads and saveSettings keeps) by 0.1 within
+// its own min–max, through the slider's own input handler (its readout and the save). Shown while a word can be heard.
+const FC_SPEED_STEP = 0.1;
+function fcSpeedSync() {
+  const row = document.getElementById('fcSpeed'), sl = document.getElementById('ttsRateSlider');
+  if (!row || !sl) return;
+  row.hidden = !(audioEnabled || isListeningActive());
+  const v = parseFloat(sl.value), val = document.getElementById('fcSpeedVal'), txt = v.toFixed(2) + '×';
+  if (val.textContent !== txt) val.textContent = txt;   // only a change is announced, not every card
+  document.getElementById('fcSpeedDown').setAttribute('aria-disabled', String(v <= parseFloat(sl.min) + 1e-9));
+  document.getElementById('fcSpeedUp').setAttribute('aria-disabled', String(v >= parseFloat(sl.max) - 1e-9));
+}
+function fcSpeedStep(dir) {
+  const sl = document.getElementById('ttsRateSlider');
+  const lo = parseFloat(sl.min), hi = parseFloat(sl.max), was = parseFloat(sl.value);
+  const v = Math.min(hi, Math.max(lo, Math.round((was + dir * FC_SPEED_STEP) * 20) / 20));
+  if (v === was) return;
+  sl.value = v;
+  sl.dispatchEvent(new Event('input', { bubbles: true }));
+}
 
 function renderCurrentCard() {
   if (currentCards.length === 0) return;
@@ -8094,6 +8131,7 @@ function renderCurrentCard() {
 
   // 🎧 Listening view takes over the card area when active; skip the normal face painting.
   setListenChrome(isListeningActive());
+  fcSpeedSync();
   if (isListeningActive()) { renderListeningCard(card); return; }
 
   const fcCard = document.getElementById('fcCard');
@@ -8662,6 +8700,9 @@ function wireCardScreen() {
   document.getElementById('markYes').addEventListener('click', markCorrect);
   document.getElementById('markNo').addEventListener('click', markIncorrect);
   document.getElementById('timerPauseBtn').addEventListener('click', toggleTimerPause);
+  document.getElementById('fcSpeedDown').addEventListener('click', () => fcSpeedStep(-1));
+  document.getElementById('fcSpeedUp').addEventListener('click', () => fcSpeedStep(1));
+  document.getElementById('ttsRateSlider').addEventListener('input', fcSpeedSync);
   document.getElementById('endEarlyBtn').addEventListener('click', () => {
     if (confirm(I18n.t('flashcards.card.end_early_confirm'))) showResults();
   });

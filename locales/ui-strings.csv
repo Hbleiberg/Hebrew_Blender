@@ -5599,6 +5599,9 @@ flashcards.teachertools.preset_overwrite_current_confirm,"Overwrite preset ""{na
 flashcards.teachertools.preset_name_required,Enter a preset name to save.,הזינו שם להגדרה כדי לשמור.,Inline note when Save pressed with empty preset name,
 flashcards.results.no_results_to_save,No drill results to save.,אין תוצאות תרגול לשמירה.,Guard when tapping Save Results with nothing to save,
 flashcards.card.end_early_confirm,End practice and see results so far?,לסיים את התרגול ולראות את התוצאות עד כה?,Confirm dialog for the End Practice Early button,
+flashcards.card.speed_label,Voice speed,מהירות הקול,"drill screen, under Prev / Next: the label of the − / + pair that sets how fast the Hebrew voice reads (the Advanced tab's Hebrew TTS Reading Speed)",
+flashcards.card.speed_slower,Slower,לאט יותר,drill screen: the − button's name and tooltip (the Hebrew voice reads slower),
+flashcards.card.speed_faster,Faster,מהר יותר,drill screen: the + button's name and tooltip (the Hebrew voice reads faster),
 flashcards.advanced.color_reset_confirm,Are you sure? This resets your custom vowel colors for both the Default and TaL AM schemes.,האם אתם בטוחים? פעולה זו תאפס את צבעי הניקוד המותאמים שלכם בשתי ערכות הצבע — ברירת המחדל וגם תל-עם.,Confirm for the color-scheme Reset button,"REVIEW: phrasing of ""resets both schemes"""
 flashcards.advanced.color_reset_confirm_cloud,"Are you sure? This resets your custom vowel colors for both the Default and TaL AM schemes. You are signed in, so your colors are reset on every device.","האם אתם בטוחים? פעולה זו תאפס את צבעי הניקוד המותאמים שלכם בשתי ערכות הצבע — ברירת המחדל וגם תל-עם. אתם מחוברים, ולכן הצבעים יתאפסו בכל מכשיר.",confirm dialog while signed in (the reset reaches the account and every device),REVIEW: HE draft
 shared.range.min_aria,Minimum,מינימום,aria-label for the lower box of a min–max number pair (composed after the pair's visible label),aria-label only
