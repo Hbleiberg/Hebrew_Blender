@@ -1175,13 +1175,14 @@ function roveKey(e) {
   roveTo(to.closest('tr, .at-card'), to);
 }
 function buildAtlas() {
+  document.getElementById('atViewGrid').setAttribute('aria-pressed', viewVal() === 'grid' ? 'true' : 'false');
+  document.getElementById('atViewCards').setAttribute('aria-pressed', viewVal() === 'cards' ? 'true' : 'false');
+  document.getElementById('atNames').checked = namesOn();
+  if (!SETS) return;   // the charts have not landed (loading, or failed with its Try again): the view waits for them
   const host = document.getElementById('atTable');
   host.textContent = '';
   if (viewVal() === 'grid' && !_printCards) buildGrid(host); else buildCards(host);
   roveRows(host);
-  document.getElementById('atViewGrid').setAttribute('aria-pressed', viewVal() === 'grid' ? 'true' : 'false');
-  document.getElementById('atViewCards').setAttribute('aria-pressed', viewVal() === 'cards' ? 'true' : 'false');
-  document.getElementById('atNames').checked = namesOn();
   buildFilter();
 }
 
