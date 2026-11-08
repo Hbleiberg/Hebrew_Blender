@@ -21933,12 +21933,20 @@ async function fidelityApplyFixes(opts) {
 /* ════════════════════════════════════════════════════════════════════════
    PREVIEW PDF — FontFace(generated TTF) → specimen DOM → html2canvas → jsPDF
    ════════════════════════════════════════════════════════════════════════ */
+// One preview at a time: building the font and drawing the sheet take seconds, and a second press of the toolbar's
+// Preview PDF ran a second build alongside and saved the PDF twice.
+let _previewPdfBusy = false;
 async function generatePreviewPDF() {
+  if (_previewPdfBusy) return;
+  _previewPdfBusy = true;
+  try { await _generatePreviewPDF(); } finally { _previewPdfBusy = false; }
+}
+async function _generatePreviewPDF() {
   if (!project) return;
   if (!project.letters.some(l => l.contours)) { status(I18n.t('fontmaker.status.trace_first_preview')); return; }
+  status(I18n.t('fontmaker.status.building_font_preview'), true);   // before the library: a cold cdnjs fetch is 563 KB of silence
   await ensurePdfLib('pdf');
-  if (pdfLibsMissing(false)) { askModal(I18n.t('fontmaker.modals.preview_error_title'), I18n.t('fontmaker.modals.pdf_libs_offline_body'), [{ label:I18n.t('fontmaker.modals.ok') }]); return; }
-  status(I18n.t('fontmaker.status.building_font_preview'), true);
+  if (pdfLibsMissing(false)) { status(''); askModal(I18n.t('fontmaker.modals.preview_error_title'), I18n.t('fontmaker.modals.pdf_libs_offline_body'), [{ label:I18n.t('fontmaker.modals.ok') }]); return; }
   let fontBytes;
   try { fontBytes = await buildFontBytes(); }            // build the TTF on demand — no separate Export needed
   catch (e) { console.error(e); status(''); askModal(I18n.t('fontmaker.modals.preview_error_title'), '<span class="warn">'+(e.message||e)+'</span>', [{label:I18n.t('fontmaker.modals.ok')}]); return; }
@@ -22229,11 +22237,22 @@ function ensurePdfLib(which) {
 function pdfLibsMissing(needCanvas) {
   return !(window.jspdf && window.jspdf.jsPDF) || (needCanvas && typeof html2canvas !== 'function');
 }
+// One template at a time: a sheet takes a few seconds to draw, and a second press (the Help's PDF twice, or the wizard's
+// link) drew it again alongside and saved it twice.
+let _templateBusy = false;
 async function downloadTemplate(kind, fmt) {
+  if (_templateBusy) return;
+  _templateBusy = true;
+  try { await _downloadTemplate(kind, fmt); } finally { _templateBusy = false; }
+}
+async function _downloadTemplate(kind, fmt) {
   const spec = TEMPLATE_SPECS[kind];
   if (!spec) return;
+  // Said before the libraries load: a cold cdnjs fetch (563 KB) left the press unanswered until they arrived.
+  status(I18n.t('fontmaker.status.building_template', {title: I18n.t(spec.titleKey)}), true);
   await Promise.all([ensurePdfLib('canvas'), fmt === 'pdf' ? ensurePdfLib('pdf') : null]);
   if (typeof html2canvas !== 'function' || (fmt === 'pdf' && pdfLibsMissing(false))) {
+    status('');
     // Name the builder that is actually missing. A PNG sheet needs only html2canvas, so the PDF
     // message sent a teacher who asked for an image looking for the wrong thing; and a PDF whose
     // jsPDF arrived but whose html2canvas did not is an image failure too.
@@ -22242,7 +22261,6 @@ async function downloadTemplate(kind, fmt) {
     askModal(I18n.t('fontmaker.modals.template_error_title'), I18n.t(bodyKey), [{ label:I18n.t('fontmaker.modals.ok') }]);
     return;
   }
-  status(I18n.t('fontmaker.status.building_template', {title: I18n.t(spec.titleKey)}), true);
   try {
     const canvases = await renderTemplateCanvases(kind);
     const stem = spec.title.replace(/[^a-z0-9]+/gi, '_').replace(/^_|_$/g, '') + '_template';

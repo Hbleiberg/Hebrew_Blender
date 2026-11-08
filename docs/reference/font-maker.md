@@ -310,7 +310,11 @@ negative pair keeps its order after a Hebrew word and the word still reads first
 jsPDF (the specimen and the template PDFs) and html2canvas (the template sheets, PDF or PNG) load from
 cdnjs on the first click that needs each — `ensurePdfLib('pdf' | 'canvas')`, which never rejects and
 keeps no failed load — not in `<head>`, where they held every visit's first paint for the CDN; the
-callers' `pdfLibsMissing` checks then run as before and name the missing builder.
+callers' `pdfLibsMissing` checks then run as before and name the missing builder. Both callers are thin
+wrappers over `_downloadTemplate` / `_generatePreviewPDF` holding a busy flag (`_templateBusy`,
+`_previewPdfBusy`), so a second press while one runs does nothing (it drew or built again alongside and
+saved a second file), and each says its building sentence on the status line **before** the library
+load, cleared again when a library is missing.
 
 ### Undo / dirty / autosave contract — the big one
 **Never mutate `project` directly.** Route every mutation through `udDo(scopes, label, fn)`
