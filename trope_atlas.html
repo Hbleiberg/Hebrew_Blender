@@ -875,7 +875,8 @@ async function loadData() {
     _loading = false; renderStatus();
     return;
   }
-  const base = _phraseSetsFrom(pj) || {}, trads = _tradSystemsFrom(pj), out = {};
+  // out has no prototype: an address (#sys-<id>) or a stored melody naming __proto__ or constructor finds nothing in it
+  const base = _phraseSetsFrom(pj) || {}, trads = _tradSystemsFrom(pj), out = Object.create(null);
   for (const s of SYSTEMS) {
     if (s.base) {
       const set = base[s.id];
@@ -1234,7 +1235,7 @@ function buildPhrases() {
   info.appendChild(h('p', { class: 'keyline' }, k === 'orig' ? I18n.t('atlas.phrases.key_written_m', { key: keyText(s.key) })
     : I18n.t('atlas.phrases.key_shown_m', { key: keyText(drawKey(s)), orig: keyText(s.key) })));
   // the clause chips, each with its count; a stored group this melody lacks falls to the first it has
-  const counts = {};
+  const counts = Object.create(null);   // no prototype: a stored clause named constructor counts nothing
   for (const r of rowsAll) { const c = clauseOf(r); counts[c] = (counts[c] || 0) + 1; }
   let clause = settings.clause === 'all' || counts[settings.clause] ? settings.clause : null;
   if (!clause) { const f = CLAUSES.find(([id]) => counts[id]); clause = f ? f[0] : 'all'; }
