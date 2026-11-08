@@ -134,7 +134,17 @@ Both are **one-time copies**; nothing links a list to its source afterwards.
   them (`/`, `|`, `·`, brackets, a free-standing dash), so "David / דָּוִד", "דוד כהן David Cohen" and
   "בַּת־שֶׁבַע - Batsheva" each fill both; a hyphenated or maqaf name stays whole. The rows then take the CSV import's
   path (Add / New list, named after the class / Replace), so copying a class into a list that already has it adds
-  only its new students (*Add matches by name*, below).
+  only its new students (*Add matches by name*, below). The menu's values are the dashboard's class ids
+  (`ntDashClasses()` keeps them; `ntFillDash(pickId)` rebuilds the menu and note, keeping the chosen class), and the
+  box re-reads them while open when the dashboard's `hebrewDashboard_settings` changes in another tab (the storage
+  listener's `ntDashRefresh()`) and on a language switch.
+- **The way between the two pages:** the box's *Open the Classroom Dashboard's class lists ↗* (`#ntDashLink`, a new
+  tab) opens `classroom_dashboard.html?settings=picker` — Settings on the Student Picker, where classes are made — so a
+  class made there is in the open box on return. The dashboard's *Open Name Tags ↗* (`#pickerNtLink`, beside its
+  Name Tags button, so only on a device that holds Name Tags lists) opens **`?from=dashboard`**: `ntFromDashboard()`
+  (after `I18n.ready`) opens this box on the class that is live on the dashboard (`activeRosterId`) with the menu
+  focused, unfolding the class list for the visit without rewriting its remembered fold, and drops the param with
+  `history.replaceState` (the others and the hash stay), so a reload does not open the box again.
 - **Name Tags → Dashboard:** the dashboard's *Make a class from a Name Tags list* (`docs/reference/dashboard.md` →
   Student Picker), shown only on a device that holds Name Tags lists.
 

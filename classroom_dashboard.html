@@ -1312,6 +1312,8 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
   .btn-xs:not(.btn) { background: var(--white); color: var(--text); border: 1px solid var(--border); }
   /* A class from a Name Tags list: .form-row's display:flex would otherwise outrank the [hidden] attribute. */
   #pickerFromNtRow[hidden], #pickerFromNt[hidden] { display: none !important; }
+  .pick-nt-bar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .pick-nt-bar a.btn-xs { text-decoration: none; }
   #pickerFromNt { display: flex; flex-direction: column; gap: 6px; }
   .pick-ntuse { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; font-size: 0.8rem; }
   .form-row .pick-ntuse label { flex: none; font-weight: 500; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 4px; }
@@ -3329,9 +3331,14 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
           <span id="pickerClassNote" style="font-size:0.72rem;color:var(--gold-text);display:none;"></span>
         </div>
         <!-- A class from a Name Tags list (name_tags.html): a one-time copy of the list's names. The row shows only on a
-             device that holds Name Tags lists (renderFromNameTags), since that page is not linked from the hub. -->
+             device that holds Name Tags lists (renderFromNameTags), since that page is not linked from the hub; its
+             "Open Name Tags" link (a new tab, ?from=dashboard) opens that page's From the Classroom Dashboard box on
+             the class that is live here. -->
         <div class="form-row" id="pickerFromNtRow" style="flex-direction:column;align-items:stretch;gap:6px;" hidden>
-          <button type="button" class="btn-xs hi-btn" id="pickerFromNtBtn" aria-expanded="false" aria-controls="pickerFromNt" onclick="toggleFromNameTags()" style="align-self:flex-start;"><svg class="hi hi-sm hi-group" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7.5" r="3.4"/><path d="M2.5 20.5v-1.6a4.2 4.2 0 0 1 4.2-4.2h4.6a4.2 4.2 0 0 1 4.2 4.2v1.6"/><path d="M15.6 4.3a3.2 3.2 0 0 1 0 6.4"/><path d="M21.5 20.5v-1.6a4.2 4.2 0 0 0-3.2-4.1"/></svg><span class="hi-lbl" data-i18n="dashboard.picker.from_nt_open">Make a class from a Name Tags list</span></button>
+          <div class="pick-nt-bar">
+            <button type="button" class="btn-xs hi-btn" id="pickerFromNtBtn" aria-expanded="false" aria-controls="pickerFromNt" onclick="toggleFromNameTags()"><svg class="hi hi-sm hi-group" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7.5" r="3.4"/><path d="M2.5 20.5v-1.6a4.2 4.2 0 0 1 4.2-4.2h4.6a4.2 4.2 0 0 1 4.2 4.2v1.6"/><path d="M15.6 4.3a3.2 3.2 0 0 1 0 6.4"/><path d="M21.5 20.5v-1.6a4.2 4.2 0 0 0-3.2-4.1"/></svg><span class="hi-lbl" data-i18n="dashboard.picker.from_nt_open">Make a class from a Name Tags list</span></button>
+            <a class="btn-xs" id="pickerNtLink" href="name_tags.html?from=dashboard" target="_blank" rel="noopener" data-i18n="dashboard.picker.open_nametags">Open Name Tags ↗</a>
+          </div>
           <div id="pickerFromNt" hidden>
             <label for="pickerFromNtSel" data-i18n="dashboard.picker.from_nt_list">Name Tags list</label>
             <select id="pickerFromNtSel" style="max-width:none;"></select>
@@ -12677,7 +12684,14 @@ async function onUploadEngFontPick(input){
     }
     // A fresh device with a stored session: the account's settings may be about to land — the starter card
     // then has nothing to set up, so it waits for the first hydration and opens only if no settings row came.
-    if (isFirstVisit && !localStorage.getItem('hebrewDashboard_setupSeen')) {
+    // ?settings=<section> (Name Tags' link to the class lists: picker) opens Settings on that section's tab once the
+    // strings are in, in place of this visit's first-run card (it still comes on the next visit). Any other value is
+    // ignored; the param is dropped at once (the others and the hash stay), so a reload opens the board.
+    const _linkPanel = (() => { const q = new URLSearchParams(location.search), k = q.get('settings'); if (k === null) return null;
+      q.delete('settings'); const qs = q.toString(); try { history.replaceState(history.state, '', location.pathname + (qs ? '?' + qs : '') + location.hash); } catch (e) {}
+      return Object.prototype.hasOwnProperty.call(TT_SECTION_TAB, k) ? k : null; })();
+    if (_linkPanel) { const go = () => openSettingsAtPanel(_linkPanel); if (window.I18n) I18n.ready.then(go, go); else go(); }
+    if (isFirstVisit && !_linkPanel && !localStorage.getItem('hebrewDashboard_setupSeen')) {
       const pending = !!(window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession() && window.IvritSaves);
       if (!pending) openFirstRun();
       else {

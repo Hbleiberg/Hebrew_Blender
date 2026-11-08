@@ -447,6 +447,7 @@ html[lang="he"] fieldset.nt-set legend, html[lang="he"] .nt-head { letter-spacin
 .nt-inline[hidden] { display:none; }
 .nt-inline .nt-field { flex:1 1 14em; }
 .nt-inline p { flex-basis:100%; font-size:0.86rem; }
+.nt-inline .nt-dash-go a { display:inline-block; padding:4px 0; color:var(--gold-text); font-weight:600; }
 .nt-inline textarea { flex-basis:100%; min-height:7em; font:inherit; font-size:0.9rem; padding:8px; border:1.5px solid var(--border); border-radius:6px; background:var(--cream); color:var(--text); }
 .nt-field[aria-invalid="true"] { border-color:var(--danger-text); }
 .nt-extra-row { display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; margin-top:12px; font-size:0.88rem; }
@@ -947,6 +948,9 @@ body.dark #appToast { background: #0a0f1c; }
         <button type="button" class="nt-btn" id="ntDashAdd" data-i18n="nametags.dash.bring">Bring in these students</button>
         <button type="button" class="nt-btn ghost" id="ntDashCancel" data-i18n="nametags.list.rename_cancel">Cancel</button>
         <p class="nt-note" id="ntDashNote"></p>
+        <!-- The dashboard opens in a new tab on its class lists (?settings=picker); the menu above re-reads its classes
+             when that tab saves them (the storage listener in init), so a class made there is here on return. -->
+        <p class="nt-note nt-dash-go"><a id="ntDashLink" href="classroom_dashboard.html?settings=picker" target="_blank" rel="noopener" data-i18n="nametags.dash.open_dashboard">Open the Classroom Dashboard's class lists ↗</a></p>
       </div>
       <div class="nt-inline" id="ntImportChoice" role="group" aria-labelledby="ntImportMsg" hidden>
         <p id="ntImportMsg"></p>
@@ -1838,14 +1842,17 @@ function ntReadCsvFile(file) {
    device holds them — the account's arrive when the dashboard opens here). A roster line is one student, typed any
    way: its Hebrew words are the Hebrew name and the rest the English name ("David / דָּוִד", "דוד כהן David Cohen"),
    the separators between them dropped. ── */
-function ntDashClasses() {
+function ntDashSettings() {
   let st = null;
   try { st = ivritSafeParse(localStorage.getItem('hebrewDashboard_settings') || 'null'); } catch (e) { st = null; }
-  const r = (st && typeof st === 'object' && st.rosters && typeof st.rosters === 'object' && !Array.isArray(st.rosters)) ? st.rosters : {};
+  return (st && typeof st === 'object' && !Array.isArray(st)) ? st : {};
+}
+function ntDashClasses() {
+  const st = ntDashSettings();
+  const r = (st.rosters && typeof st.rosters === 'object' && !Array.isArray(st.rosters)) ? st.rosters : {};
   const c = ntCollator();
-  return Object.keys(r).map(id => r[id])
-    .filter(x => x && typeof x === 'object' && !Array.isArray(x) && Array.isArray(x.names))
-    .map(x => ({ name: (typeof x.name === 'string' && x.name.trim()) || _fbT('nametags.list.default_name', 'My class'), names: x.names.filter(n => typeof n === 'string' && n.trim()) }))
+  return Object.keys(r).filter(id => { const x = r[id]; return x && typeof x === 'object' && !Array.isArray(x) && Array.isArray(x.names); })
+    .map(id => { const x = r[id]; return { id, name: (typeof x.name === 'string' && x.name.trim()) || _fbT('nametags.list.default_name', 'My class'), names: x.names.filter(n => typeof n === 'string' && n.trim()) }; })
     .filter(x => x.names.length)
     .sort((a, b) => c ? c.compare(a.name, b.name) : 0);
 }
@@ -1857,29 +1864,55 @@ function ntSplitName(line) {
   });
   return { he: he.join(' ').slice(0, NT_MAX_FIELD), en: en.join(' ').slice(0, NT_MAX_FIELD) };
 }
-function ntOpenDash() {
-  const row = document.getElementById('ntDashRow'), btn = document.getElementById('ntDashOpen');
-  const open = row.hidden;
-  ntCloseInline();
-  if (!open) return;
+// The box's menu and note, (re)built: on open, when the dashboard saves its classes in another tab, on a language
+// switch. The chosen class is kept by its id (`pickId`, or the one chosen before); focus is left where it is.
+function ntFillDash(pickId) {
   const classes = ntDashClasses(), sel = document.getElementById('ntDashSel');
+  const want = typeof pickId === 'string' ? pickId : sel.value;
   sel.textContent = '';
-  classes.forEach((c, i) => {
+  classes.forEach(c => {
     const o = el('option', null, _fbN('nametags.list.option', c.names.length, '{name} ({count} student)', '{name} ({count} students)', { name: c.name }));
-    o.value = String(i);
+    o.value = c.id;
     sel.appendChild(o);
   });
+  if (classes.some(c => c.id === want)) sel.value = want;
   sel.disabled = !classes.length;
   document.getElementById('ntDashAdd').disabled = !classes.length;
   let note = classes.length ? '' : _fbT('nametags.dash.none', 'There are no class lists in the Classroom Dashboard on this device yet.');
   if (ntSignedIn()) note = (note ? note + ' ' : '') + _fbT('nametags.dash.signed_in', 'These are the classes on this device: to bring in the ones in your account, open the Classroom Dashboard here once.');
   document.getElementById('ntDashNote').textContent = note;
+  return classes;
+}
+function ntDashRefresh() { const row = document.getElementById('ntDashRow'); if (row && !row.hidden) ntFillDash(); }
+function ntOpenDash(pickId) {   // a click passes its event: only a string is a class to choose
+  const row = document.getElementById('ntDashRow'), btn = document.getElementById('ntDashOpen');
+  const open = row.hidden;
+  ntCloseInline();
+  if (!open) return;
+  const classes = ntFillDash(typeof pickId === 'string' ? pickId : null);
   row.hidden = false;
   btn.setAttribute('aria-expanded', 'true');
-  (classes.length ? sel : document.getElementById('ntDashCancel')).focus();
+  (classes.length ? document.getElementById('ntDashSel') : document.getElementById('ntDashCancel')).focus();
+}
+// ?from=dashboard (the Classroom Dashboard's "Open Name Tags" link): the box opens on arrival with the dashboard's
+// current class chosen, the class list unfolded for the visit (its remembered fold is not rewritten). The param is
+// dropped at once (the others and the hash stay), so a reload does not open the box again.
+function ntFromDashboard() {
+  const q = new URLSearchParams(location.search);
+  if (q.get('from') !== 'dashboard') return;
+  q.delete('from');
+  const qs = q.toString();
+  try { history.replaceState(history.state, '', location.pathname + (qs ? '?' + qs : '') + location.hash); } catch (e) {}
+  const sec = document.getElementById('ntListSection');
+  if (sec && sec.classList.contains('collapsed')) { sec.classList.remove('collapsed'); ntSyncListToggle(); }
+  if (!document.getElementById('ntDashRow').hidden) return;
+  const active = ntDashSettings().activeRosterId;
+  ntOpenDash(typeof active === 'string' ? active : null);
+  document.getElementById('ntDashRow').scrollIntoView({ block: 'nearest' });
 }
 function ntBringDash() {
-  const c = ntDashClasses()[Number(document.getElementById('ntDashSel').value)];
+  const id = document.getElementById('ntDashSel').value;
+  const c = ntDashClasses().find(x => x.id === id);
   if (!c) return;
   const rows = c.names.map(ntSplitName).filter(r => r.he || r.en).slice(0, NT_MAX_ROWS);
   ntOfferImport(rows, c.name, { listName: c.name, msg: _fbN('nametags.dash.found', rows.length, '{count} student in the Classroom Dashboard class "{name}".', '{count} students in the Classroom Dashboard class "{name}".', { name: c.name }) });
@@ -3639,6 +3672,7 @@ function applyI18n() {
   ntRenderTable();
   ntRenderPreview();
   if (_hk) _hk.applyI18n();
+  ntDashRefresh();
   ntPositionSidebarTab();   // the direction may have flipped, and with it the sidebar's edge
   // An open tour card: its texts in the new language, the spotlight back on its mirrored target.
   if (_tourActive && _tourIdx >= 0) _tourShow(_tourIdx, 1);
@@ -3674,10 +3708,12 @@ function init() {
   window.addEventListener('storage', e => {
     if (e.key === NT_SET_KEY) ntSetAdopt();
     else if (e.key === NT_LISTS_KEY) ntListsAdopt();
-    else if (e.key === null) { ntSetAdopt(); ntListsAdopt(); }
+    else if (e.key === 'hebrewDashboard_settings') ntDashRefresh();   // a class made in the dashboard's tab
+    else if (e.key === null) { ntSetAdopt(); ntListsAdopt(); ntDashRefresh(); }
   });
   initCloudSaves();
   if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); }
+  if (window.I18n) I18n.ready.then(ntFromDashboard, ntFromDashboard); else ntFromDashboard();
 }
 document.addEventListener('DOMContentLoaded', init);
 </script>

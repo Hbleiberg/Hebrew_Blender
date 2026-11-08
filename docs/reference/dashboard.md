@@ -421,8 +421,14 @@ body.dark #tipFloat { background: #0a0f1c; }
   `parseRoster` (de-duplicated, at most `PICKER_MAX`; the class note says when names were left out), under
   `ROSTER_MAX_CLASSES`, named `uniqueClassName(list name)`. A one-time copy: nothing links the two afterwards.
   `#pickerFromNtRow` shows only on a device that holds Name Tags lists (`renderFromNameTags()`, from
-  `renderClassManager()` and a `storage` listener), since that page is not linked from the hub. The reverse copy
-  lives on the Name Tags page (`docs/reference/name-tags.md` → *From the Classroom Dashboard*).
+  `renderClassManager()` and a `storage` listener), since that page is not linked from the hub; beside its button,
+  *Open Name Tags ↗* (`#pickerNtLink`, a new tab) opens `name_tags.html?from=dashboard`, that page's *From the
+  Classroom Dashboard* box on the class live here. The reverse copy lives on the Name Tags page
+  (`docs/reference/name-tags.md` → *From the Classroom Dashboard*).
+- **`?settings=<section>`** (Name Tags' link to the class lists sends `picker`): Settings opens through
+  `openSettingsAtPanel(section)` once `I18n.ready` resolves, in place of that visit's first-run card (which still
+  comes on the next visit); a value that is not a `TT_SECTION_TAB` key opens nothing. The param is dropped at once
+  with `history.replaceState` (the others and the hash stay), so a reload opens the board.
 - **Column titles:** the four card titles (and the video panel's label) are projected content, so they follow
   `headerLang` (`'none'` hides them), never `I18n.lang`. `updateColTitles()` writes them — and rebuilds the picker
   title's class switcher — at init, on the `headerLang` radios, in `applyI18n` and in `applySettings`, so a
