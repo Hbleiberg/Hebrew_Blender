@@ -1220,6 +1220,7 @@ const ET_CS_LIGHT = { line: '#1a2744', gold: '#c9922a', 'gold-lt': '#f0d080', pa
 const ET_CS_GEOM = ['d', 'points', 'x', 'y', 'width', 'height', 'rx', 'ry', 'cx', 'cy', 'r', 'x1', 'y1', 'x2', 'y2', 'transform'];
 const ET_CS_SHAPES = 'path, circle, ellipse, rect, line, polyline, polygon';
 const _etCsArt = new Map();   // 'index:l|c' → the converted drawing (the measuring is the costly part), cloned per use
+const _etCsGeo = new Map();   // index → its drawing's measured geometry: the line art and the colored copy share one measuring
 function etCsArt(i, colored) {
   const k = i + ':' + (colored ? 'c' : 'l');
   if (!_etCsArt.has(k)) _etCsArt.set(k, etCsDrawing(i, colored));
@@ -1236,7 +1237,7 @@ function etCsDrawing(i, colored) {
   if (!svg) return null;
   [['fill', 'none'], ['stroke', 'var(--hol-line)'], ['stroke-width', '2'], ['stroke-linecap', 'round'], ['stroke-linejoin', 'round']]
     .forEach(([a, v]) => { if (!svg.hasAttribute(a)) svg.setAttribute(a, v); });
-  try { etCsConvert(svg, colored); } catch (e) { try { console.warn('[coloring] parasha ' + (i + 1) + ': ' + e.message); } catch (x) {} }
+  try { etCsConvert(svg, colored, i); } catch (e) { try { console.warn('[coloring] parasha ' + (i + 1) + ': ' + e.message); } catch (x) {} }
   return svg;
 }
 // Geometry the paint rules need, measured once on a hidden copy of the drawing (shape i ↔ the i-th shape): each shape's
@@ -1297,8 +1298,9 @@ function etCsMeasure(svg) {
   } finally { host.remove(); }
   return out;
 }
-function etCsConvert(svg, colored) {
-  const geo = etCsMeasure(svg);
+function etCsConvert(svg, colored, i) {
+  let geo = i == null ? null : _etCsGeo.get(i);   // the same drawing measures the same whichever way it is painted
+  if (!geo) { geo = etCsMeasure(svg); if (i != null) _etCsGeo.set(i, geo); }
   const f = ET_CS_WEIGHT, e = 2 * f;
   const tok = v => { const m = /^var\(--hol-([a-z-]+)\)$/.exec(v || ''); return m ? m[1] : (v === 'none' || !v ? '' : '?'); };
   const isInk = v => tok(v) === 'line';
