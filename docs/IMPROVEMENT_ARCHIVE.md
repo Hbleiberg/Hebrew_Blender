@@ -97168,3 +97168,45 @@ _(prior)_ **Next session (S627):** **Branch `claude/loving-goodall-wh4spb` (S624
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 _(prior)_ **Next session (S628):** **Branch `claude/loving-goodall-wh4spb` (S624–S627, draft PR 395): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1304**, FM **5.59**, corpus ?v=7. ⚑ drift: main=0ed6056 sw=v1304 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: suite I (S539), then H parsha_emojis (S540), F (S542), B (S543), N letter_learner (S545), P parsha_emojis (S546), C name_tags (S548), D name_tags (S549), G name_tags (S550). ⚑ Harnesses: `d627/` (`lib.mjs` = g626's server + routes, a buffered longtask observer, CDP throttling, `arm()`; `cold.mjs`, `heavy.mjs` (33 arms), `prof.mjs`, `idle.mjs`, `leak.mjs`, `split.mjs`, `pp.mjs`, `copies.mjs`, `fixeq.mjs`, `ab.mjs`, `gridov.mjs`), `g626/`, `m625/`. ⚑ `print-media-leak` still has unjudged `leak.mjs` hits on 6 pages (dashboard, dictionary, LL, resources, FM, 404) for each page's next G. ⚑ 48 seeds.
+
+
+<!-- archived by compact-ledger at the S630 boundary, 2026-11-08 -->
+## Compaction (S630, 2026-11-08) — moved verbatim from the live ledger
+
+### from Candidates — aged P4 (found more than 90 sessions before S630)
+
+- [ ] P4 (**NEW S539 I — gate 2**) | letter_learner.html | **The cursive tour's card step names neither the Vowels nor the Fonts tab** every cursive card shows. | found S539
+
+### from Done
+
+- [x] 2026-11-08 | (S629 close-out) | branch/deploy note | **S629 = H on `parsha_emojis.html` (its 2nd: S540 → S629) + its `parsha/` pages, then the Trope Tutor (its 6th: S557 → S629; a clean surface buys a second): 11 lessons + 2 student cells by real clicks, 0 page errors. FOUND 2 (both fixed) + 1 seed; the micro-feature (gate 1) and the S544 corpus word (gate 2) shipped.** Branch `claude/loving-goodall-wh4spb`, draft PR 395 (S624–S629); `sw.js` v1307 → v1309, corpus ?v=8. Deploy: confirm after the merge.
+
+- [x] 2026-11-08 | `9d56bb25` | data/hebrew_words.json, the 3 fetchers, ops.md, README, sw.js, probe | (S629, the S544 candidate, gate 2 approved) **"To plaster" reads טִיֵּחַ**: the patach stacked on the yod is the het's furtive patach; corpus ?v=7 → 8 on the dictionary, generator and flash cards | probe `S629-corpus-one-vowel-per-letter.mjs`: 0 stacked letters in 146,588 strings (planted control), one ?v= everywhere, the dictionary in 2 cells; HEAD fails 4; recipe 8/8 × 3 pages
+
+- [x] 2026-11-08 | `40ccdbaa` | scripts/build-parsha-pages.mjs, parsha/ ×54, shared-components.md, probe | (S629 H) **A coloring page's reading line names its book in the UI's language**: the Hebrew UI read "Genesis 6:9–11:32" where the page's card reads "בראשית"; the book is a `torah.custom.book_*` span now | probe `S629-parsha-pages-reading-line-in-the-ui-language.mjs`: 54 pages × 2 cells vs the cards + live switches; HEAD fails every cell; smoke-parsha-pages 482/482
+
+- [x] 2026-11-08 | `97b5fa86` | trope_tutor.html, locales, torah-and-trope.md, sw.js, probe | (S629 micro-feature, gate 1) **The drill offers 2, 3 or 4 answers per question**: "How many answers to choose from?" on the Drill start screen, `settings.drillChoices` validated on read and read once per session | probe `S629-trope-drill-answer-count.mjs`: 4 cells by real clicks (2, 3, the default 4, High Holidays, a reload, 3 junk values); HEAD fails every cell; AllTools round-trip; recipe 8/8
+
+- [x] 2026-11-07 | (S624 close-out) | branch/deploy note | **S624 = P on `name_tags.html` (the 22nd P; its 2nd: S535 → S624, 35 commits): smoke-tools 18/18, sync 236, migration 47, 4 signed-in scenarios by real clicks on the fake cloud (N1–N4), arms 3–7 48/48 behind 7 plants, arm 8 read-only (12 migrations live, advisors as recorded, keep-alive #56 green). FOUND 2, FIXED 1; + the micro-feature …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-07 | `2ad11a2a` | js/ivrit-account.js, sw.js, probe | (S624; the S615 N P4) **The student sign-in's Username and the name step's "Your name" carry `autocorrect=off`**, as every other name field in the suite does | probe `S624-account-name-fields-not-autocorrected.mjs` (the old tree fails both); the eight backend smokes with the pinned SDK all green (sync's D31 flake: trap 550)
+
+- [x] 2026-11-07 | `831d9006` | hebrew_dictionary.html, locales, sw.js, probe | (S624 micro-feature, gate 1; the S440 seed) **The Word Lists window offers "Save the N selected words…" while words are selected** (it said only "No word lists yet… select words"); it opens the save window on that selection | probe `S624-dictionary-manager-saves-the-selection.mjs`: 6 steps × 4 cells by real clicks, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-07 | `66025d1d` | name_tags.html, docs/reference/name-tags.md, sw.js, probe | (S624 P) **Name Tags' Print choice follows its list when the rows are read again** (another tab's list or design edit, a download, a restore, a list switch): an unchanged row keeps it, a changed row prints | probe `S624-name-tags-print-choice-follows-its-list.mjs`: 7 steps × 2 cells (the old tree fails 8); …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Per-session log (one line per session)
+
+- 2026-11-08 | **S629** | iters: 5 | tools: trope_tutor, parsha/ + build-parsha-pages, data/hebrew_words.json + dictionary/generator/flash (?v=), locales, sw | patterns fixed: — | pass run: H (parsha_emojis, first since S540; + its parsha/ pages + trope_tutor, first since S557) + micro-feature | SW: v1307→v1309
+
+- 2026-11-04 | **S609** | iters: 3 | tools: trope, dictionary (locales), sw | patterns fixed: — | pass run: P (trope, first since S507 + dictionary, first since S521) | SW: v1250→v1252
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S629 (2026-11-08):** trope_tutor, torah-and-trope.md, parsha/ ×54 + build-parsha-pages, shared-components.md, data/hebrew_words.json, hebrew_dictionary + hebrew_blend_generator + flash_cards (?v=), ops.md, README, locales, sw.js, loop probes ×3, loop docs S629 · trope_atlas ×2, torah_trainer, locales, sw.js, loop probes ×3, loop docs S628 · parsha_emojis, hebrew_dictionary, locales, sw.js, loop probes ×2, loop docs S627 · parsha/ ×54 + build-parsha-pages, parsha_emojis, classroom_dashboard, shared-components.md, dashboard.md, locales, sw.js, loop probes ×3, loop docs S626 · letter_learner ×2, flash_cards, locales, sw.js, loop probes ×3, loop docs S625 · name_tags, name-tags.md, dictionary, locales, js/ivrit-account.js, sw.js, loop probes ×3, loop docs S624 · …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- H teacher walkthrough / paper-cuts (one tool): 2026-11-08 (**S629 — `parsha_emojis.html` (its 2nd: S540 → S629; 11 commits to the page since: the card's Print coloring sheet button, the `parsha/` pages, `?parsha=`) + `trope_tutor.html` (its 6th: S557 → S629; 24 commits since: the Drill tab's melody, the Conservative melody, the traditions): 11 lessons + 2 student cells by real clicks, 0 errors. FOUND 2, FIXED 2 + 1 seed. H-next: fontmaker (S559), name_tags (S559), dashboard (S564).**)
+
+_(prior)_ **Next session (S629):** **Branch `claude/loving-goodall-wh4spb` (S624–S628, draft PR 395): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1307**, FM **5.59**, corpus ?v=7. ⚑ drift: main=0ed6056 sw=v1307 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: H parsha_emojis (S540), then F (S542), B (S543), N letter_learner (S545), P parsha_emojis (S546), C name_tags (S548), D name_tags (S549), G name_tags (S550), M name_tags (S552), V (S553). ⚑ Harnesses: `i628/` (`lib.mjs` = a virgin context per cell, foreign hosts counted, the account layer by request or CSP report, storage writes, `SCAN` + 9 `PLANT`s; `gates`, `seeds`, `ttseed`, `atlas*`, `tours` and `openers` (PLANT=1 each), `ttdrawer`, `urls`, `parsha54`, `ra`), `d627/`, `g626/`, `m625/`. ⚑ `print-media-leak` still has unjudged `leak.mjs` hits on 6 pages (dashboard, dictionary, LL, resources, FM, 404) for each page's next G. ⚑ 48 seeds.
