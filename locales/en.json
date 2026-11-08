@@ -2164,6 +2164,8 @@
   "flashcards.timer.mode_off": "No Timer",
   "flashcards.timer.mode_track": "Record Time",
   "flashcards.timer.panel_title": "Timer",
+  "flashcards.timer.pause": "Pause",
+  "flashcards.timer.resume": "Resume",
   "flashcards.timer.show_countdown": "Show countdown on screen",
   "flashcards.timer.show_timer": "Show timer on screen",
   "flashcards.timer.time_limit_label": "Time limit:",

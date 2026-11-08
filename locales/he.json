@@ -2164,6 +2164,8 @@
   "flashcards.timer.mode_off": "ללא טיימר",
   "flashcards.timer.mode_track": "מדוד זמן",
   "flashcards.timer.panel_title": "טיימר",
+  "flashcards.timer.pause": "השהה",
+  "flashcards.timer.resume": "המשך",
   "flashcards.timer.show_countdown": "הצג ספירה לאחור על המסך",
   "flashcards.timer.show_timer": "הצג טיימר על המסך",
   "flashcards.timer.time_limit_label": "מגבלת זמן:",

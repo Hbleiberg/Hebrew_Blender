@@ -1573,6 +1573,10 @@ body.dark .sub { color: #99a2b8; }
 #wordsEmptyState a { color: var(--gold-text); text-decoration: underline; }   /* WCAG-readable gold on light (S71 Pass F — matches generator #rwListEmptyState a) */
 .btn-xs { font-size: 0.72rem; padding: 3px 8px; min-height: 30px; min-width: 30px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--border); border-radius: 4px; background: var(--white); cursor: pointer; font-family: inherit; color: var(--ink); transition: background 0.15s; }
 .btn-xs:hover { background: var(--paper); }
+/* The drill timer's Pause: beside the readout; while paused the card, its marks and its navigation are inert and dimmed
+   (End Practice Early stays live). No transition, so nothing to neutralize under reduced motion. */
+#timerPauseBtn { margin-inline-start: 8px; vertical-align: middle; }
+#screenCard.fc-paused .fc-perspective, #screenCard.fc-paused #fcListen, #screenCard.fc-paused .fc-mark-row, #screenCard.fc-paused .fc-nav, #screenCard.fc-paused .fc-kh-set { opacity: 0.4; }   /* the key hints too: those keys wait as well */
 /* ===== Session stats bar (card screen) ===== */
 .stats-bar {
   display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
@@ -2322,7 +2326,7 @@ html[lang="he"] .beta-tag { letter-spacing: normal; text-transform: none; }   /*
   <div class="progress"><span id="progressBar" style="width:0%"></span></div>
   <p class="card-meta bidi-isolate" id="cardMeta">Card 1 of 10</p>
   <p id="skipReshowHeader" class="fc-skip-header" style="display:none;" data-i18n="flashcards.card.skipped_header">↻ Skipped Card</p>
-  <p id="timerDisplay" class="bidi-isolate" style="display:none;text-align:center;font-size:0.85rem;color:var(--muted);margin:0 0 4px;"></p>
+  <p id="timerDisplay" class="bidi-isolate" style="display:none;text-align:center;font-size:0.85rem;color:var(--muted);margin:0 0 4px;"><span id="timerText"></span><button id="timerPauseBtn" class="btn-xs hi-btn" type="button"><svg class="hi hi-sm hi-pause" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6.8" y="5" width="3.6" height="14" rx="1.4" fill="currentColor"/><rect x="13.6" y="5" width="3.6" height="14" rx="1.4" fill="currentColor"/></svg><span data-i18n="flashcards.timer.pause">Pause</span></button></p>
 
   <div class="stats-bar" id="statsBar">
     <div class="stat streak"><div class="stat-value bidi-isolate" id="statStreak">🔥 0</div><div class="stat-label" data-i18n="flashcards.card.stat_streak">Streak</div></div>
@@ -3017,6 +3021,7 @@ let timeLimitSeconds = 60;
 let timerInterval = null;
 let timerElapsed = 0;
 let timerRemaining = 0;
+let timerPaused = false;      // the drill clock stopped by its Pause button (transient: every drill starts running)
 let vowelPositions = new Set([2]);
 let anyVowelLock = false;
 let vowelLocks = {
@@ -7914,25 +7919,24 @@ function formatTimerSecs(secs) {
 function updateTimerDisplay() {
   const el = document.getElementById('timerDisplay');
   if (!el) return;
+  const txt = document.getElementById('timerText') || el;
   if (timerMode === 'track') {
-    el.textContent = `⏱ ${formatTimerSecs(timerElapsed)}`;
+    txt.textContent = `⏱ ${formatTimerSecs(timerElapsed)}`;
   } else if (timerMode === 'limit') {
-    el.textContent = `⏳ ${formatTimerSecs(timerRemaining)}`;
+    txt.textContent = `⏳ ${formatTimerSecs(timerRemaining)}`;
   }
 }
-function stopTimer() {
-  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
-  const el = document.getElementById('timerDisplay');
-  if (el) el.style.display = 'none';
+// Pause / Resume: the clock stops and the drill waits with it (the card, its marks, Prev / Next and the keys) — a
+// tracked time leaves the pause out, a time limit is not spent by it. Resume carries on from the same second.
+const _FC_PAUSE_FREEZE = ['.fc-perspective', '#fcListen', '.fc-mark-row', '.fc-nav'];
+function _fcPauseUi() {
+  const b = document.getElementById('timerPauseBtn');
+  if (b && window.I18n) b.innerHTML = (timerPaused ? ICON_PLAY_SM : ICON_PAUSE_SM) + esc(I18n.t(timerPaused ? 'flashcards.timer.resume' : 'flashcards.timer.pause'));
+  const scr = document.getElementById('screenCard');
+  scr.classList.toggle('fc-paused', timerPaused);
+  _FC_PAUSE_FREEZE.forEach(sel => { const n = scr.querySelector(sel); if (n) n.inert = timerPaused; });
 }
-function startTimer() {
-  stopTimer();
-  if (timerMode === 'off') return;
-  // Reset before the first paint: painted first, a new drill showed the last one's time for a second.
-  if (timerMode === 'track') timerElapsed = 0;
-  else if (timerMode === 'limit') timerRemaining = timeLimitSeconds;
-  const el = document.getElementById('timerDisplay');
-  if (timerShowOnScreen && el) { el.style.display = ''; updateTimerDisplay(); }
+function _fcTimerRun() {
   if (timerMode === 'track') {
     timerInterval = setInterval(() => {
       timerElapsed++;
@@ -7945,6 +7949,28 @@ function startTimer() {
       if (timerRemaining <= 0) { stopTimer(); showResults(); }
     }, 1000);
   }
+}
+function toggleTimerPause() {
+  if (timerMode === 'off' || !document.getElementById('screenCard').classList.contains('active')) return;
+  if (timerPaused) { timerPaused = false; if (!timerInterval) _fcTimerRun(); }
+  else { if (timerInterval) { clearInterval(timerInterval); timerInterval = null; } timerPaused = true; }
+  _fcPauseUi();
+}
+function stopTimer() {
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+  const el = document.getElementById('timerDisplay');
+  if (el) el.style.display = 'none';
+  if (timerPaused) { timerPaused = false; _fcPauseUi(); }
+}
+function startTimer() {
+  stopTimer();
+  if (timerMode === 'off') return;
+  // Reset before the first paint: painted first, a new drill showed the last one's time for a second.
+  if (timerMode === 'track') timerElapsed = 0;
+  else if (timerMode === 'limit') timerRemaining = timeLimitSeconds;
+  const el = document.getElementById('timerDisplay');
+  if (timerShowOnScreen && el) { el.style.display = ''; updateTimerDisplay(); _fcPauseUi(); }
+  _fcTimerRun();
 }
 
 function startPractice() {
@@ -8635,11 +8661,13 @@ function wireCardScreen() {
   document.getElementById('prevBtn').addEventListener('click', prevCard);
   document.getElementById('markYes').addEventListener('click', markCorrect);
   document.getElementById('markNo').addEventListener('click', markIncorrect);
+  document.getElementById('timerPauseBtn').addEventListener('click', toggleTimerPause);
   document.getElementById('endEarlyBtn').addEventListener('click', () => {
     if (confirm(I18n.t('flashcards.card.end_early_confirm'))) showResults();
   });
   document.addEventListener('keydown', e => {
     if (!document.getElementById('screenCard').classList.contains('active')) return;
+    if (timerPaused) return;   // a paused drill waits: no flip, no marks, no card steps (the buttons keep their own keys)
     // Enter keeps its activation meaning on a focused control — the preventDefault below
     // would otherwise make every button and link on this screen keyboard-inert (End Practice
     // Early's confirm never fires; the header dark/fullscreen/tour buttons and even the nav
@@ -9002,6 +9030,7 @@ function toggleFullscreen() {
 const ICON_CLOSE_SM = '<svg class="hi hi-sm hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg>';
 const ICON_SOUND = '<svg class="hi hi-sm hi-sound" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.2L12 5.4v13.2L7.2 14.5H4z" fill="currentColor"/><path d="M15.6 9.4a3.6 3.6 0 0 1 0 5.2M18.2 6.6a7.5 7.5 0 0 1 0 10.8"/></svg>';
 const ICON_PLAY_SM = '<svg class="hi hi-sm hi-play" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 5.4 19 12 8.5 18.6Z" fill="currentColor"/></svg>';
+const ICON_PAUSE_SM = '<svg class="hi hi-sm hi-pause" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6.8" y="5" width="3.6" height="14" rx="1.4" fill="currentColor"/><rect x="13.6" y="5" width="3.6" height="14" rx="1.4" fill="currentColor"/></svg>';
 const FS_ENTER_ICON = '<svg class="hi hi-fs-enter" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg>';
 const FS_EXIT_ICON = '<svg class="hi hi-fs-exit" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4v5H4M20 9h-5V4M15 20v-5h5M4 15h5v5"/></svg>';
 function _syncFsBtn() {
@@ -9264,6 +9293,7 @@ function applyI18n() {
     if (currentCards.length) renderCurrentCard();
     updateStatsBar();
     updateTimerDisplay();
+    _fcPauseUi();
   }
   if (document.getElementById('screenResults').classList.contains('active') && currentCards.length) showResults();
   // Live-update the tour card if a tour is in progress.
