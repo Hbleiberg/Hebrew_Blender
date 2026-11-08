@@ -466,6 +466,10 @@ body.ll-no-speech .ll-speak, body.ll-no-speech #llVoiceRow, body.ll-no-speech #o
 .ll-card-sound { font-size:0.74rem; color:var(--muted); font-family:'Libre Baskerville', serif; }
 .ll-badge { font-size:0.7rem; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; color:var(--gold-text); margin-top:3px; }
 html[lang="he"] .ll-badge { letter-spacing:normal; text-transform:none; }
+/* A card without a badge keeps an empty badge line, so a final form's glyph, name and sound line up with its row-mates'
+   (centred, the badge's line would otherwise lift them 10px). The alt-less content stays out of the card's name; a browser
+   without the "/ ''" syntax drops the second declaration and keeps the first. */
+.ll-grid .ll-card:not(.ll-vcard):not(.is-final):not(.is-soon)::after { content:'\a0'; content:'\a0' / ''; font-size:0.7rem; font-weight:700; margin-top:3px; }
 .ll-card.is-soon .ll-card-glyph { opacity:0.72; }
 /* Cursive mode: the same cards in the handwriting face (its body is larger than Frank Ruhl's, so a size down keeps the rows). */
 .ll-ccard .ll-card-glyph { font-family:var(--heb-cursive-font); font-size:2.5rem; }
