@@ -3822,13 +3822,30 @@ async function llCsFontsReady(card, glyphs) {
     await Promise.race([wait, new Promise(r => setTimeout(r, 4000))]);
   } catch (e) {}
 }
+// One print a press: the font wait can take seconds while a picker face arrives, so the button says what it waits for
+// and takes no second press until the print dialog has come and gone (the bulk popup's _llBpPrinting, for the card).
+let _llCsPrinting = false;
 async function llCsPrint() {
-  llCsPageStyle();
-  const card = llCard(_llId);
-  if (card && card.kind !== 'vowel') await llCsFontsReady(card, card.glyph);
-  if (_llCsBuilt && _llCsBuilt.fit) _llCsBuilt.fit();   // the face is in: measure the letter once more before copying
-  llCsFillTab();
-  window.print();
+  if (_llCsPrinting) return;
+  _llCsPrinting = true;
+  const btn = document.getElementById('llCsPrint'), lbl = btn && (btn.querySelector('.hi-lbl') || btn);
+  const hadFocus = !!btn && document.activeElement === btn;
+  try {
+    llCsPageStyle();
+    const card = llCard(_llId);
+    if (card && card.kind !== 'vowel') {
+      if (lbl) { lbl.textContent = _fbT('letterlearner.font.loading', 'Loading fonts…'); btn.disabled = true; }
+      await llCsFontsReady(card, card.glyph);
+    }
+    if (_llCsBuilt && _llCsBuilt.fit) _llCsBuilt.fit();   // the face is in: measure the letter once more before copying
+    llCsFillTab();
+    window.print();
+  } finally {
+    if (lbl) lbl.textContent = _fbT('letterlearner.coloring.print', 'Print');
+    // the focus a disabled button dropped (or a press on it gave its panel) comes back; a control chosen meanwhile keeps it
+    if (btn) { btn.disabled = false; const ae = document.activeElement; if (hadFocus && (!ae || ae === document.body || ae.contains(btn))) btn.focus(); }
+    _llCsPrinting = false;
+  }
 }
 function llCsWire() {
   document.querySelectorAll('input[name="llCsOrient"]').forEach(r => r.addEventListener('change', () => { if (r.checked) llCsSet('colorOrient', r.value); }));
