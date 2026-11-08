@@ -3941,7 +3941,7 @@ let _wordsFetchP = null;   // the in-flight fetch: a shared link's wait and the 
 function fetchAllWordsData() {
   if (_wordsFetchP) return _wordsFetchP;
   _wordsLoadFailed = false;
-  return (_wordsFetchP = fetch('data/hebrew_words.json?v=7')
+  return (_wordsFetchP = fetch('data/hebrew_words.json?v=8')
     .then(r => r.json())
     .then(data => { ALL_WORDS_DATA = data; updateWordsCount(); })
     .catch(() => {
