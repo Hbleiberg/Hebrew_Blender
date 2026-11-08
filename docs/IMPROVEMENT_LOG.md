@@ -62,6 +62,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
 
+- [ ] P4 (**NEW S627 — found verifying the micro-feature; HEAD alike**) | hebrew_dictionary.html | **In the English UI every Filter by Letter grid is 265px in its 245px box** (`repeat(7,1fr)` cannot go under "Samech" / "Shin/Sin" at the 11.2px floor), so its alef column spills ~7px past the panel's edge; the Hebrew UI fits. How the names wrap is M's call. | found S627
+
 - [ ] P4 (**NEW S614 C — the tour engine's**) | Hebrew_Font_Maker.html | **Tab out of an open tour and back leaves its Close and Next off-screen** (the fixed card follows its target out of view); S620 FIXED on the shared block's three carriers `79654c0f` — this page's own engine stays. | found S614
 
 - [ ] P4 (**NEW S613 H — gate 2, copy**) | hebrew_blend_generator.html | **Real Words Bingo's too-few note never names a grid that fits**: 14 words at 5×5 says "Need at least 24…"; 3×3 builds 30 cards from them, and the Grid size select sits in Bingo Options below. | found S613
@@ -166,9 +168,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S539 I — gate 2**) | letter_learner.html | **The cursive tour's card step names neither the Vowels nor the Fonts tab** every cursive card shows. | found S539
 
-- [ ] P4 (**NEW S538 D**) | parsha_emojis.html | **40 copies × 4 per sheet clone 240 sheets into the preview** (1.3 s @4×). | found S538
-
-- [ ] P4 (**NEW S538 D**) | parsha_emojis.html | **The first open still measures every drawing** (~950 ms @4×); build the geometry with the icons. | found S538
+- [ ] P4 (**NEW S538 D; S627 re-measured**) | parsha_emojis.html | **The first open from View All still measures every drawing**: 240–357 ms @4× (61 @1×), the shape reads, not their layout (21 of 89 ms); build the geometry with the icons. | found S538
 
 - [ ] P4 (**NEW S624 P — a shared module + every carrier, not small**) | js/ivrit-account.js (+ 38 `_cloud` confirms on 11 pages, the restore dialogs) | **A stored student session counts as a syncing teacher's**: every `_cloud` confirm and the `.ivrit` / AllTools restore's Merge-only rule read `hasStoredSession()`, though a student account never syncs (Name Tags' delete says "removed from your …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -326,8 +326,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] S–M | hebrew_dictionary.html | **"Every word must have: [vowel]"** for this week's vowel. | found: 2026-10-03, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] S (dual) | hebrew_dictionary.html | **A "Last letter" row in Filter by Letter** (words ending in ה or ת). | found: 2026-10-03, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
-
 - [ ] M | hebrew_dictionary.html | **"Letters taught so far": words made only from allowed letters.** | found: 2026-10-03, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] S–M (dual) | Hebrew_Font_Maker.html | **Auto-detect reads the English (and other-alphabet) template sheets.** | found: 2026-10-03, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -398,6 +396,14 @@ _(none)_
 
 ## Done
 
+- [x] 2026-11-08 | (S627 close-out) | branch/deploy note | **S627 = D on `parsha_emojis.html` (its 2nd: S538 → S627, 14 commits to the page since) + its 54 `parsha/` pages (their first D): cold 8 cells, 33 arms by real input × 2 cells × 1×/4× behind a 300 ms control, profiles, idle, 60 open/close cycles, scroll, the parsha pages @1×/4×. FOUND 1, FIXED 1 (Colored in re-measured every drawing) + …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-08 | `7aed3724` | hebrew_dictionary.html, locales, sw.js, probe | (S627 micro-feature, gate 1; the 2026-10-03 seed) **Filter by Letter has a Last Letter row** ("אות אחרונה"): words ending in ה or ת, any of its tiles, combined with the other rows; one list (`POS_ORD`) drives the rows, filter, chips, print header and restore; a six-position state or `?s=` link restores with the row …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-08 | `6a00b351` | parsha_emojis.html, sw.js, probe | (S627 D) **The coloring sheets measure each drawing once, line art or colored in**: the geometry is kept by parasha (the measuring is ~70% of a conversion) | `fixeq.mjs`: 108 conversions × line-first / colored-first equal HEAD's in EN and HE, the popup's sheets + fit + note through on → off equal; Colored in on @4× median of 5 …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-08 | `887e8c54` (not this session's) | parsha_emojis.html | (S627 D, struck) **The S538 Candidate "40 copies × 4 per sheet clone 240 sheets into the preview"** is settled by the off-screen preview skip | `copies.mjs`: `887e8c54^` vs the tree on one machine, 3 alternated loads @4×: 395 / 633 / 395 → 201 / 124 / 152 ms
+
 - [x] 2026-11-08 | (S626 close-out) | branch/deploy note | **S626 = G on `parsha_emojis.html` (its 2nd: S537 → S626, 18 commits to the page since: the card's Print coloring sheet button, the off-screen preview skip, the size-drag reset, the copies field) + its 54 generated `parsha/` pages (their first G): the cards' Print in 7 views × EN/HE × light/dark × Letter/A4 (56 PDFs, split and junk plants …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-11-08 | `d1f021c4` | classroom_dashboard.html, docs/reference/dashboard.md, locales, sw.js, probe | (S626 micro-feature, gate 1; the 2026-10-03 seed) **The Intermission screen shows the running countdown under its words**: a copy of the timer panel's display (text, last-10-s mark, "Time!") kept by one observer, shown while it runs, is paused part-way or says "Time!", hidden at rest; …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -430,17 +436,11 @@ _(none)_
 
 - [x] 2026-11-06 | `33496264` | locales/ui-strings.csv (he), sw.js | (S623 K, the arrow sweep) **The dictionary's Hebrew export note reads "File → Import"** — between two Latin words the arrow takes their direction, so ← pointed the menu path backwards | measured in a Hebrew box: File at x 698, the arrow 728, Import 749 — → now points along the path; the other 7 Hebrew arrows are forward (between …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-11-06 | (S622 close-out) | branch/deploy note | **S622 = L (the 30th; the suite over `ca9b9618..b816c43d`, 527 commits — the Trope Atlas', Name Tags', the assignments page's, the review page's and the 54 `parsha/` pages' first L): 20 static arms + the delta pages' claims by real clicks (the Atlas's 27 signs, 26 melodies, play and Key; a parsha page's picture, print link and EN + HE …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-06 | `782b67f8` | hebrew_dictionary.html, sw.js, probe | (S622 micro-feature, gate 1; the S440 seed) **Save as Word List proposes a name read off the active filters** (the search, the letters anywhere and by position, up to three lengths, two parts of speech, one era and up to three vowels, as the panel labels them, joined by middle dots; empty with no filter and in the Emoji and …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-06 | `2f6dde72` | scripts/build-parsha-pages.mjs, parsha/*.html | (S622 L, gate 2 → shorten titles and trim) **The 54 parsha coloring pages are titled "Parshat X Coloring Page | IvritSuite" (37–55 characters, was 54–68) and a description past 160 drops its summary clause** (22 pages; two long picture descriptions still reach 162–164) | `build-parsha-pages --check` clean; the diff is …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-06 | `4e49b4b0` | trope_atlas.html, sw.js | (S622 L, gate 2 → shorten both) **The Trope Atlas's title is 60 characters and its description 154** (was 74 / 209), and its social card carries the Trope Tutor's og:image:alt | the head re-read: 60 / 154 / alt present; `update-llms-txt --check` clean
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-11-08 | **S627** | iters: 4 | tools: parsha_emojis, hebrew_dictionary, locales, sw | patterns fixed: — | pass run: D (parsha_emojis, first since S538; + its parsha/ pages, their first D) + micro-feature | SW: v1302→v1304
 
 - 2026-11-08 | **S626** | iters: 5 | tools: parsha/ + build-parsha-pages, parsha_emojis, classroom_dashboard, locales, sw | patterns fixed: print-media-leak ×1 | pass run: G (parsha_emojis, first since S537; + its parsha/ pages, their first G) + micro-feature | SW: v1300→v1302
 
@@ -480,11 +480,9 @@ _(none)_
 
 - 2026-11-04 | **S608** | iters: 4 | tools: dashboard ×2, sw | patterns fixed: text-field-under-16px-zooms-on-ios-focus ×1, hebrew-faux-italic ×1 | pass run: N (dashboard, first since S506) | SW: v1248→v1250
 
-- 2026-11-04 | **S607** | iters: 5 | tools: dashboard ×2, generator, dictionary, smoke-assignments, sw | patterns fixed: focus-hidden-under-a-sticky-bar ×1, tip-name-joins-its-field's-name ×1 | pass run: C (dashboard, first since S499) | SW: v1245→v1248
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S626 (2026-11-08):** parsha/ ×54 + build-parsha-pages, parsha_emojis, classroom_dashboard, shared-components.md, dashboard.md, locales, sw.js, loop probes ×3, loop docs S626 · letter_learner ×2, flash_cards, locales, sw.js, loop probes ×3, loop docs S625 · name_tags, name-tags.md, dictionary, locales, js/ivrit-account.js, sw.js, loop probes ×3, loop docs S624 · name_tags, reading_assignments, torah, locales, name-tags.md, sw.js, loop probe, loop docs S623 · trope_atlas, parsha/ + build-parsha-pages, dictionary, sw.js, loop probe, …[full text: IMPROVEMENT_ARCHIVE.md]
+- **Snapshot S627 (2026-11-08):** parsha_emojis, hebrew_dictionary, locales, sw.js, loop probes ×2, loop docs S627 · parsha/ ×54 + build-parsha-pages, parsha_emojis, classroom_dashboard, shared-components.md, dashboard.md, locales, sw.js, loop probes ×3, loop docs S626 · letter_learner ×2, flash_cards, locales, sw.js, loop probes ×3, loop docs S625 · name_tags, name-tags.md, dictionary, locales, js/ivrit-account.js, sw.js, loop probes ×3, loop docs S624 · name_tags, reading_assignments, torah, locales, name-tags.md, sw.js, loop probe, loop …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -852,7 +850,7 @@ _(none)_
 
 - G print & export fidelity (one tool): 2026-11-08 (**S626 — `parsha_emojis.html` (its 2nd: S537 → S626; 18 commits to the page since: the card's Print coloring sheet button, the off-screen preview skip, the size-drag reset, the copies field) + its 54 generated `parsha/` pages (their first G): the cards' Print 56 PDFs (split / junk plants fired), the popup's 72 combos × the A/B clip truth (2,280 …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- D performance (one tool): 2026-11-05 (**S618 — `flash_cards.html` (its 6th: S75 → S170 → S266 → S393 → S524 → S618; 45 commits to the page since): cold 10 cells (@1× top 58–90 ms; @4× one DOMContentLoaded task 320–512), 16 arms by real input × 3 cells (a 200-card drill graded to results, both print paths, Practice Mistakes, Redo, share, All Dictionary 200), a class of 12 profiles × 100 results …[full text: IMPROVEMENT_ARCHIVE.md]
+- D performance (one tool): 2026-11-08 (**S627 — `parsha_emojis.html` (its 2nd: S538 → S627; 14 commits to the page since: the card's Print coloring sheet button, the off-screen preview skip, the size-drag stop, the fit note) + its 54 generated `parsha/` pages (their first D): cold 8 cells (@1× 0 long tasks; @4× top 54–68), 33 arms by real input × 2 cells × 1×/4× behind a 300 ms control (@1× all …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - I first-load & empty-state: 2026-10-22 (**S539 — 40th I, S525 → S538 (93 commits; name_tags' first I, parsha_emojis' under its name): 63 virgin cells (plants 334/336); 69 seeds; 27 tours; ~250 openers; 280 bad URLs; failure paths 20. FOUND 2, FIXED 1.**)
 
@@ -870,4 +868,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-22 (**S542 — 40th F, loading states (first since S189): 14 surfaces held, then aborted. FOUND 7, FIXED 4. F-next: long-build progress.**)
 
-**Next session (S627):** **Branch `claude/loving-goodall-wh4spb` (S624–S626, draft PR 395): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1302**, FM **5.59**, corpus ?v=7. ⚑ drift: main=0ed6056 sw=v1302 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: D parsha_emojis (S538), then suite I (S539), H parsha_emojis (S540), F (S542), B (S543), N letter_learner (S545), P parsha_emojis (S546), C name_tags (S548), G name_tags (S550). ⚑ Harnesses: `g626/` (`lib.mjs` = local server + real Google Fonts from `m625/fc/`, a fixed date; `cards.mjs`, `cs.mjs` + `rast.py` (the A/B clip truth), `misc.mjs`, `rt.mjs`, `pp.mjs`, `ppm.mjs`, `leak.mjs` — the narrow-rules-on-paper arm), `m625/`, `p624/`. ⚑ `print-media-leak` is ACTIVE with a recipe: `leak.mjs` lists, on 7 other pages, rules a screen breakpoint applies to paper at 739px (dashboard, dictionary, LL, resources, FM, 404) — each page's next G judges them by PDF (findings S626). ⚑ 49 seeds.
+**Next session (S628):** **Branch `claude/loving-goodall-wh4spb` (S624–S627, draft PR 395): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1304**, FM **5.59**, corpus ?v=7. ⚑ drift: main=0ed6056 sw=v1304 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: suite I (S539), then H parsha_emojis (S540), F (S542), B (S543), N letter_learner (S545), P parsha_emojis (S546), C name_tags (S548), D name_tags (S549), G name_tags (S550). ⚑ Harnesses: `d627/` (`lib.mjs` = g626's server + routes, a buffered longtask observer, CDP throttling, `arm()`; `cold.mjs`, `heavy.mjs` (33 arms), `prof.mjs`, `idle.mjs`, `leak.mjs`, `split.mjs`, `pp.mjs`, `copies.mjs`, `fixeq.mjs`, `ab.mjs`, `gridov.mjs`), `g626/`, `m625/`. ⚑ `print-media-leak` still has unjudged `leak.mjs` hits on 6 pages (dashboard, dictionary, LL, resources, FM, 404) for each page's next G. ⚑ 48 seeds.
