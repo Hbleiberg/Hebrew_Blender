@@ -747,7 +747,8 @@ lowercased, apostrophes dropped and spaces turned into hyphens (`chayei-sara`, `
   bare `/parsha/` to the list (`noindex`, the `emoji_torah.html` stub's pattern).
 - **What each holds:** the title, description, OG/Twitter and JSON-LD (`BreadcrumbList`, and a `LearningResource`
   whose `ImageObject` carries the CC BY-NC-SA `license`, `acquireLicensePage`, `creditText` and creator, for Google
-  Images' licensable badge); the breadcrumb; an `h1` in English and Hebrew; the reading; **Also spelled:** (the
+  Images' licensable badge); the breadcrumb; an `h1` in English and Hebrew; the reading (its book a `torah.custom.book_*`
+  span in the UI's language, as the parsha emojis page's cards write it, then the verses in a left-to-right `bdi`); **Also spelled:** (the
   catalog's optional `**Also spelled:**` line — other English spellings, comma-separated, checked by the parser); the
   seven often-doubled parshiyot's partner (`PAIRS` in the script); the sheet's picture; **Print this coloring page**
   (`/parsha_emojis.html?parsha=<slug>`: every print option, no second copy of the sheet builder); the Torah Trainer

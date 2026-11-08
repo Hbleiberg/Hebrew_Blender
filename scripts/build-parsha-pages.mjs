@@ -63,6 +63,14 @@ const unpoint = (he) => he.replace(/[֑-ֽֿ-ׇ]/g, '');
 const lowerFirst = (s) => s.charAt(0).toLowerCase() + s.slice(1);
 const hash = (s) => createHash('sha256').update(s).digest('hex');
 const pretty = (ref) => ref.replace(/\s*-\s*/g, '–');
+// The reading line: the book's name in the UI's language (the Torah Trainer's book keys, as the parsha emojis page's cards
+// write it), then the verses, which read left to right in either.
+const BOOK_KEYS = { Genesis: 'genesis', Exodus: 'exodus', Leviticus: 'leviticus', Numbers: 'numbers', Deuteronomy: 'deuteronomy' };
+function refLine(ref) {
+  const m = /^(\S+) (.+)$/.exec(ref), key = m && BOOK_KEYS[m[1]];
+  if (!key) return `<bdi dir="ltr">${esc(pretty(ref))}</bdi>`;
+  return `<span data-i18n="torah.custom.book_${key}">${esc(m[1])}</span> <bdi dir="ltr">${esc(pretty(m[2]))}</bdi>`;
+}
 
 // ── What parsha_emojis.html already carries, copied so the two pages can never drift apart ──────────────────────
 const src = readFileSync(path.join(ROOT, SOURCE_PAGE), 'utf8');
@@ -305,7 +313,7 @@ ${CSS}
   </nav>
   <h1 class="pp-title"><span class="pp-title-en" lang="en" dir="ltr">Parshat ${esc(ic.en)} Coloring Page</span><span class="pp-title-he" lang="he" dir="rtl">דף צביעה לפרשת ${esc(heName)}</span></h1>
   <div class="pp-meta">
-    <p><bdi dir="ltr">${esc(pretty(ic.ref))}</bdi></p>
+    <p>${refLine(ic.ref)}</p>
 ${ic.spelled.length ? `    <p><span data-i18n="parshapage.also_spelled">Also spelled:</span> <span lang="en" dir="ltr">${esc(ic.spelled.join(', '))}</span></p>\n` : ''}${pair ? `    <p id="ppPair" data-combo-en="${esc(comboEn)}" data-combo-he="${esc(comboHe)}">Often read together with ${esc(pair.en)}, as ${esc(comboEn)}.</p>\n` : ''}    <p id="ppNext" aria-live="polite"></p>
   </div>
   <div class="pp-grid">
