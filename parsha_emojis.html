@@ -1716,10 +1716,13 @@ function etCsUpdateChrome() {
   _etCsSheets.forEach(entry => { entry.li.querySelector('.et-cs-badge').textContent = badge; entry.li.querySelector('.et-cs-cap').dir = dir; });
   const name = i => { const p = etData.find(x => x.n === i + 1); return p ? (he ? p.he : p.en) : ''; };
   const shrunk = [], over = [];
-  _etCsSheets.forEach((entry, i) => { if (entry.over) over.push(name(i)); else if (entry.k < 1) shrunk.push(name(i)); });
+  list.forEach(p => { const entry = _etCsSheets.get(p.n - 1); if (!entry) return; if (entry.over) over.push(name(p.n - 1)); else if (entry.k < 1) shrunk.push(name(p.n - 1)); });
+  // In Torah order; a long list names its first five and counts the rest (landscape with both languages shrinks all 54:
+  // a 539-character note, read out after every change).
+  const names = l => l.length > 6 ? I18n.t('emojitorah.coloring.names_more', { names: l.slice(0, 5).join(', '), count: l.length - 5 }) : l.join(', ');
   const notes = [];
-  if (shrunk.length) notes.push(I18n.t('emojitorah.coloring.fit_note', { names: shrunk.join(', ') }));
-  if (over.length) notes.push(I18n.t('emojitorah.coloring.over_note', { names: over.join(', ') }));
+  if (shrunk.length) notes.push(I18n.t('emojitorah.coloring.fit_note', { names: names(shrunk) }));
+  if (over.length) notes.push(I18n.t('emojitorah.coloring.over_note', { names: names(over) }));
   if (pages > 500) notes.push(I18n.t('emojitorah.coloring.big_note', { count: pages }));
   if (per > 1 && papers > ET_CS_PREVIEW_PAPERS) notes.push(I18n.t('emojitorah.coloring.preview_capped', { shown: ET_CS_PREVIEW_PAPERS, count: papers }));
   const note = document.getElementById('etCsNote'), text = notes.join(' ');
