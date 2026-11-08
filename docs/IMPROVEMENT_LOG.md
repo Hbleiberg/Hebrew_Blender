@@ -172,11 +172,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S537 G — gate 2**) | parsha_emojis.html | **With every sheet shrunk (landscape, Both) the popup's note names all 54 parshiyot** (539 chars). | found S537
 
-- [ ] P4 (**NEW S536 M — gate 3**) | letter_learner.html | **A final-form card's glyph and name sit 10px above its row-mates'.** | found S536
-
 - [ ] P4 (**NEW S536 M — F's**) | suite-wide | **In dark mode an unticked checkbox or radio is a white square.** | found S536
-
-- [ ] P4 (**NEW S535 P — gate 2**) | classroom_dashboard.html | **Four confirms on synced data lack the `_cloud` wording** (text sizes, intermission, a day, a period). | found S535
 
 - [ ] P4 (**NEW S624 P — a shared module + every carrier, not small**) | js/ivrit-account.js (+ 38 `_cloud` confirms on 11 pages, the restore dialogs) | **A stored student session counts as a syncing teacher's**: every `_cloud` confirm and the `.ivrit` / AllTools restore's Merge-only rule read `hasStoredSession()`, though a student account never syncs (Name Tags' delete says "removed from your …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -267,8 +263,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] S | flash_cards.html | **Find a child in Save Results' profile list.** With 25 profiles the picker opens scrolled to its new-name box (its title out of view) and a child is a scroll away; typing could filter the list (typing an existing name already saves to that child, unsaid). | found: S566 Pass H
 
 - [ ] S | flash_cards.html | **Speech speed reachable mid-drill.** `speakWord()` reads `#ttsRateSlider` live, but the slider sits in `#panelAdvanced` on the setup screen, so a slower 🔊 Hear costs End Practice Early → Advanced → drag → restart. A −/+ pair beside `#fcSpeakBtn` writing the same slider is the torah `#ttLoopPauseBar` mirror shape; ~35 lines, 2 CSV keys, no storage. | found: …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [ ] S | flash_cards.html | **Pause the drill timer.** `startTimer()` is a bare `setInterval`, `stopTimer()` is terminal (clears AND hides `#timerDisplay`; callers: `showResults`, `returnToSetup`, `startTimer`), so an interruption inflates a tracked time or burns a limit. A pause chip on `#timerDisplay` reusing `formatTimerSecs`/`updateTimerDisplay`; ~40 lines, 2 CSV keys, transient state. | …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] S–M | classroom_dashboard.html | **One-deep undo in the week editor.** `applyCalendarImport` replaces `settings.scheduleWeek` wholesale, `clearWeekDay` / `copyWeekDayToWeekdays` / `removeWeekPeriod` guard with a native `confirm()` at most, and `weekChanged()` (the choke point) saves immediately with no history. A `weekSnapshot()` at the head of the ~8 mutators + `undoWeek()` + one toolbar …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -410,6 +404,14 @@ _(none)_
 
 ## Done
 
+- [x] 2026-11-08 | (S625 close-out) | branch/deploy note | **S625 = M on `letter_learner.html` (the 39th M; its 2nd: S536 → S625, 36 commits): 13 views × 8 cells in the real fonts (104 shots, 0 errors), the census arms behind 4 planted controls (0 hits), a row census of 5 grids × 8 widths × EN/HE, a control census, a cross-page header arm. FOUND 2, FIXED 2 (the S536 final-form offset by its …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-08 | `77ead232` | flash_cards.html, locales, sw.js, probe | (S625 micro-feature, gate 1; the S367 seed) **The drill timer has Pause / Resume beside its readout**: the clock stops and the drill waits with it (card, marks, Prev / Next, keys inert and dimmed; End Practice Early live), a recorded time leaves the pause out, a limit is not spent by it | probe …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-08 | `554f180d` | letter_learner.html, sw.js, probe | (S625 M) **"Vowels to show" keeps every name on one line** (columns 118px → 10rem: "Chataf Kamatz" needs 153; two to four names wrapped at 500–800 and in a widened sidebar) | probe `S625-letter-learner-vowel-options-one-line.mjs`: 8 layouts × EN/HE + a real click; HEAD fails 7; the row census 0 wraps in the real fonts
+
+- [x] 2026-11-08 | `01399e62` | letter_learner.html, sw.js, probe | (S625 M; the S536 gate-3 Candidate → C, keep centred) **The final-form cards line up with their row-mates**: every card without a badge keeps an empty badge line, so a final form's glyph, name and sound no longer sit 10px high | probe `S625-letter-learner-final-cards-line-up.mjs`: Block / Cursive / Vowels × 3 cells; HEAD fails …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [x] 2026-11-07 | (S624 close-out) | branch/deploy note | **S624 = P on `name_tags.html` (the 22nd P; its 2nd: S535 → S624, 35 commits): smoke-tools 18/18, sync 236, migration 47, 4 signed-in scenarios by real clicks on the fake cloud (N1–N4), arms 3–7 48/48 behind 7 plants, arm 8 read-only (12 migrations live, advisors as recorded, keep-alive #56 green). FOUND 2, FIXED 1; + the micro-feature …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-11-07 | `2ad11a2a` | js/ivrit-account.js, sw.js, probe | (S624; the S615 N P4) **The student sign-in's Username and the name step's "Your name" carry `autocorrect=off`**, as every other name field in the suite does | probe `S624-account-name-fields-not-autocorrected.mjs` (the old tree fails both); the eight backend smokes with the pinned SDK all green (sync's D31 flake: trap 550)
@@ -442,17 +444,11 @@ _(none)_
 
 - [x] 2026-11-06 | `dc2ba1fd` | README.md, manifest.webmanifest, ops.md, i18n.md, shared-components.md, sw.js | (S621 E; gate 2 for the manifest → name every tool) **The tool censuses re-trued**: README gains the Trope Atlas (Tools + Files) and counts nine tours (Name Tags has one); the app description names every tool; ops.md names the nine font-picker pages and the assignments page among the …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-11-06 | (S620 close-out) | branch/deploy note | **S620 = C on `letter_learner.html` (first since S527; 36 commits to the page) + `parsha_emojis.html` (first since S541; 20 commits) — both CLEAN (0 found; a clean surface bought the second) — then 3 fixes from the queue and the gates: the LL Vowels Select all / Clear micro-feature (gate 1), the atlas's one-stop-per-row table (the S580 …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-06 | `79654c0f` | letter_learner.html, trope_tutor.html, name_tags.html, sw.js, probe | (S620; the S614 P4's shape, the shared block) **The tour card comes back into view when the keyboard focus returns to it** (Tab round the page left Back / Next / End 600–2,100 px above the screen). | probe `S620-tour-card-back-in-view-on-focus.mjs`: 3 carriers × EN light 1280 / HE dark 800 by …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-06 | `4b1bce32` | trope_atlas.html, sw.js, probe | (S620; the S580 C P3, gate 2 → the roving stop) **The melody table is one Tab stop per sign; arrows move along a row and keep the tradition up and down** (594 stops → 26, Grid and Stacked). | probe `S620-trope-atlas-melody-table-one-stop-per-row.mjs` × 2 cells by real keys and a click; the table pixel-identical to HEAD in 4 cells
-
-- [x] 2026-11-06 | `99fcf535` | letter_learner.html, locales, sw.js, probe | (S620 micro-feature, gate 1; the S526 seed) **"Vowels to show" has Select all / Clear** (keeping two vowels was 11 clicks). | probe `S620-letter-learner-vowels-select-all.mjs`: 12 steps × 2 cells by real clicks and Enter, a reload keeps either, the Vowels grid and Bet's Vowels tab follow; HEAD has no buttons
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-11-08 | **S625** | iters: 5 | tools: letter_learner ×2, flash_cards, locales, sw | patterns fixed: — | pass run: M (letter_learner, first since S536) + micro-feature | SW: v1297→v1300
 
 - 2026-11-07 | **S624** | iters: 5 | tools: name_tags, dictionary, ivrit-account (shared), locales, sw | patterns fixed: — | pass run: P (name_tags, first since S535) + micro-feature | SW: v1294→v1297
 
@@ -492,11 +488,9 @@ _(none)_
 
 - 2026-11-04 | **S606** | iters: 5 | tools: 404, privacy, account, ivrit-account.js, locales, sw | patterns fixed: — | pass run: H (chrome, the bundle's first H; the account page's first since S426) | SW: v1241→v1245
 
-- 2026-11-04 | **S605** | iters: 5 | tools: dictionary ×2, torah, reading_assignments, sw | patterns fixed: layout-read-per-grid-at-build ×1, selected-state-lost-in-forced-colors ×1 | pass run: D (dictionary, first since S496) | SW: v1237→v1241
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S624 (2026-11-07):** name_tags, name-tags.md, dictionary, locales, js/ivrit-account.js, sw.js, loop probes ×3, loop docs S624 · name_tags, reading_assignments, torah, locales, name-tags.md, sw.js, loop probe, loop docs S623 · trope_atlas, parsha/ + build-parsha-pages, dictionary, sw.js, loop probe, loop docs S622 · parsha_emojis, dictionary, README, manifest, ops.md, i18n.md, shared-components.md, locales, sw.js, loop probes ×2, loop docs S621 · letter_learner ×2, trope_atlas, trope, name_tags, locales, sw.js, loop probes ×3, …[full text: IMPROVEMENT_ARCHIVE.md]
+- **Snapshot S625 (2026-11-08):** letter_learner ×2, flash_cards, locales, sw.js, loop probes ×3, loop docs S625 · name_tags, name-tags.md, dictionary, locales, js/ivrit-account.js, sw.js, loop probes ×3, loop docs S624 · name_tags, reading_assignments, torah, locales, name-tags.md, sw.js, loop probe, loop docs S623 · trope_atlas, parsha/ + build-parsha-pages, dictionary, sw.js, loop probe, loop docs S622 · parsha_emojis, dictionary, README, manifest, ops.md, i18n.md, shared-components.md, locales, sw.js, loop probes ×2, loop docs S621 · …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -854,7 +848,7 @@ _(none)_
 
 - N mobile & touch-device (one surface): 2026-11-05 (**S615 — 38th N, chrome (the bundle's first N; index since S420, resources S246, contact S462, privacy/terms/404 S520, account never) + name_tags (since S534; 41 commits): 196 + 24 phone cells by real taps, the signed-in account on 20, touch flows, flips, 4× CPU. FOUND 1 P4 + 1 gate-4 answer (leave the grip). N-next: letter_learner (S545), …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- M aesthetics & visual design (one surface): 2026-11-05 (**S616 — 38th M, `parsha_emojis.html` (first since S522; 20 commits: the coloring-sheets popup, its loading and Try again, the size factors) with its generated `parsha/` pages (their first audit): 7 views × 8 cells (EN/HE × light/dark × 1280/800) in the real fonts, the S610 census arms + a UA-face arm, the popup's options scrolled, a …[full text: IMPROVEMENT_ARCHIVE.md]
+- M aesthetics & visual design (one surface): 2026-11-08 (**S625 — 39th M, `letter_learner.html` (its 2nd: S536 → S625; 36 commits to the page since: the coloring-sheet tiles, the bulk popup, the cursive tiles, the address mirror, Select all / Clear): 13 views × 8 cells (EN/HE × light/dark × 1280/800) in the real fonts, the S616 census arms over scrolled pages and dialogs behind 4 planted …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - K i18n / localization audit: 2026-11-06 (**S623 — 37th K, `843984b3..2d9e7e23` (525 commits; the Trope Atlas', Name Tags', the assignments and review pages' and the `parsha/` pages' first K): CSV +925 / −2 / 67 reworded (parity, arrows, plurals read); static 5,956 refs (0 missing) + 3,460 fallback sites; blind 0/12,102 added lines; 42 live-switch cells on the tree and the base (raw keys 0, …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -882,4 +876,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-22 (**S542 — 40th F, loading states (first since S189): 14 surfaces held, then aborted. FOUND 7, FIXED 4. F-next: long-build progress.**)
 
-**Next session (S625):** **Branch `claude/loving-goodall-wh4spb` (S624, draft PR 395): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1297**, FM **5.59**, corpus ?v=7. ⚑ drift: main=0ed6056 sw=v1297 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: M letter_learner (S536), then G parsha_emojis (S537), D parsha_emojis (S538), suite I (S539), H parsha_emojis (S540), F (S542), B (S543), N letter_learner (S545), P parsha_emojis (S546). ⚑ Harnesses: `p624/` (`lib.part` = smoke-sync 168–537 with `P_ROOT`/`P_PORT`/`P_SDK`, `nt.mjs` N1–N4, `static.mjs` arms 3–7, `recipe.mjs` beside it), `k623/`, `l622/`, `e621/`. ⚑ Trap 550: smoke-sync beside five other smokes flaked D31 once — rerun it alone. ⚑ 51 seeds.
+**Next session (S626):** **Branch `claude/loving-goodall-wh4spb` (S624–S625, draft PR 395): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1300**, FM **5.59**, corpus ?v=7. ⚑ drift: main=0ed6056 sw=v1300 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: G parsha_emojis (S537), then D parsha_emojis (S538), suite I (S539), H parsha_emojis (S540), F (S542), B (S543), N letter_learner (S545), P parsha_emojis (S546), M name_tags (S552). ⚑ Harnesses: `m625/` (`lib.mjs` = local server + real Google Fonts from `fc/`, `shots.mjs` 13 views, `census.js`, `rows.mjs`, `btns.mjs`, `hdr.mjs`, `pdf.mjs`), `p624/`, `k623/`. ⚑ Trap 551: a harness root with `..` 404s every file — resolve it. ⚑ 50 seeds.

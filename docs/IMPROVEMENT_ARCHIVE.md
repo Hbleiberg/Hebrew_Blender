@@ -97018,3 +97018,41 @@ _(prior)_ **Next session (S623):** **Branch `claude/adoring-brown-9udi22` (S608�
 
 _(prior)_ **Next session (S624):** **Branch `claude/adoring-brown-9udi22` (S608–S623, draft PR 394): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1294**, FM **5.59**, corpus ?v=7. ⚑ drift: main=4f03455 sw=v1294 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: P name_tags (S535), then M letter_learner (S536), G parsha_emojis (S537), D parsha_emojis (S538), H parsha_emojis (S540), N letter_learner (S545), C name_tags (S548); the three stale suite passes E, L and K ran S621–S623. ⚑ Harnesses: `k623/` (`csvdelta.py`, `static.py` refs + stale fallbacks, `blind.py`, `rt.mjs` the live-switch arm with `BASE=`, `dyn.mjs` mid-state switches, `bidi.mjs`; the base tree at `k623/base`), `l622/`, `e621/`, `c620/`. ⚑ 52 seeds.
 ⚑ Traps 547–548 (S622–S623, in the findings): the dictionary's bulk controls are three folds deep; a text census must not exclude the root's `dir=ltr`; a HE arrow between two Latin words takes their direction (measure with a Range); Name Tags' mixed header Print box ticks everyone first. ⚑ Atlas FAQ: gate 2 asked S622, log only — do not re-ask. ⚑ Traps 544–546 (S621, findings): a `<link>` is a CSP load only by its `rel`; PE's Today view at the fixed date holds one card; the Worker's `npm test` needs wrangler. ⚑ Trap 538 (S618): `click()` scrolls a Flash Cards sticky-bar target and the print menu closes — use `page.mouse`. ⚑ Ports at the next A: every session's scratch dir `m554/` … `k623/`; traps 352, 356–548. ⚑ Queues: FM 26, generator 20, flash 10, dashboard 8, torah 9, dictionary 7, name_tags 7, parsha_emojis 7, trope 5; the rest ≤ 4.
+
+
+<!-- archived by compact-ledger at the S626 boundary, 2026-11-08 -->
+## Compaction (S626, 2026-11-08) — moved verbatim from the live ledger
+
+### from Candidates — aged P4 (found more than 90 sessions before S626)
+
+- [ ] P4 (**NEW S535 P — gate 2**) | classroom_dashboard.html | **Four confirms on synced data lack the `_cloud` wording** (text sizes, intermission, a day, a period). | found S535
+
+### from Done
+
+- [x] 2026-11-08 | (S625 close-out) | branch/deploy note | **S625 = M on `letter_learner.html` (the 39th M; its 2nd: S536 → S625, 36 commits): 13 views × 8 cells in the real fonts (104 shots, 0 errors), the census arms behind 4 planted controls (0 hits), a row census of 5 grids × 8 widths × EN/HE, a control census, a cross-page header arm. FOUND 2, FIXED 2 (the S536 final-form offset by its gate-3 answer, the vowel options' wrap); + the micro-feature (flash cards' Pause). Gates: 3 → C (keep centred), 1 → flash cards: pause timer. Branch `claude/loving-goodall-wh4spb`, draft PR 395 (S624–S625); deploy after the merge.** | `scripts/loop/closeout.mjs` clean; the three probes pass on the tree and fail on HEAD
+
+- [x] 2026-11-08 | `77ead232` | flash_cards.html, locales, sw.js, probe | (S625 micro-feature, gate 1; the S367 seed) **The drill timer has Pause / Resume beside its readout**: the clock stops and the drill waits with it (card, marks, Prev / Next, keys inert and dimmed; End Practice Early live), a recorded time leaves the pause out, a limit is not spent by it | probe `S625-flash-cards-pause-the-drill-timer.mjs`: 18 steps × EN light 1280 / HE dark 800 on a faked clock by real clicks and keys; HEAD 8 failures; running / paused × 8 cells, 0 errors
+
+- [x] 2026-11-08 | `01399e62` | letter_learner.html, sw.js, probe | (S625 M; the S536 gate-3 Candidate → C, keep centred) **The final-form cards line up with their row-mates**: every card without a badge keeps an empty badge line, so a final form's glyph, name and sound no longer sit 10px high | probe `S625-letter-learner-final-cards-line-up.mjs`: Block / Cursive / Vowels × 3 cells; HEAD fails 12; the row census 0 offsets in 32 cells (HEAD 32); 24 PDFs 1 sheet each, HEAD and tree
+
+- [x] 2026-11-06 | (S620 close-out) | branch/deploy note | **S620 = C on `letter_learner.html` (first since S527; 36 commits to the page) + `parsha_emojis.html` (first since S541; 20 commits) — both CLEAN (0 found; a clean surface bought the second) — then 3 fixes from the queue and the gates: the LL Vowels Select all / Clear micro-feature (gate 1), the atlas's one-stop-per-row table (the S580 …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-06 | `79654c0f` | letter_learner.html, trope_tutor.html, name_tags.html, sw.js, probe | (S620; the S614 P4's shape, the shared block) **The tour card comes back into view when the keyboard focus returns to it** (Tab round the page left Back / Next / End 600–2,100 px above the screen). | probe `S620-tour-card-back-in-view-on-focus.mjs`: 3 carriers × EN light 1280 / HE dark 800 by …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-06 | `4b1bce32` | trope_atlas.html, sw.js, probe | (S620; the S580 C P3, gate 2 → the roving stop) **The melody table is one Tab stop per sign; arrows move along a row and keep the tradition up and down** (594 stops → 26, Grid and Stacked). | probe `S620-trope-atlas-melody-table-one-stop-per-row.mjs` × 2 cells by real keys and a click; the table pixel-identical to HEAD in 4 cells
+
+- [x] 2026-11-06 | `99fcf535` | letter_learner.html, locales, sw.js, probe | (S620 micro-feature, gate 1; the S526 seed) **"Vowels to show" has Select all / Clear** (keeping two vowels was 11 clicks). | probe `S620-letter-learner-vowels-select-all.mjs`: 12 steps × 2 cells by real clicks and Enter, a reload keeps either, the Vowels grid and Bet's Vowels tab follow; HEAD has no buttons
+
+### from Per-session log (one line per session)
+
+- 2026-11-04 | **S605** | iters: 5 | tools: dictionary ×2, torah, reading_assignments, sw | patterns fixed: layout-read-per-grid-at-build ×1, selected-state-lost-in-forced-colors ×1 | pass run: D (dictionary, first since S496) | SW: v1237→v1241
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S625 (2026-11-08):** letter_learner ×2, flash_cards, locales, sw.js, loop probes ×3, loop docs S625 · name_tags, name-tags.md, dictionary, locales, js/ivrit-account.js, sw.js, loop probes ×3, loop docs S624 · name_tags, reading_assignments, torah, locales, name-tags.md, sw.js, loop probe, loop docs S623 · trope_atlas, parsha/ + build-parsha-pages, dictionary, sw.js, loop probe, loop docs S622 · parsha_emojis, dictionary, README, manifest, ops.md, i18n.md, shared-components.md, locales, sw.js, loop probes ×2, loop docs S621 · letter_learner ×2, trope_atlas, trope, name_tags, locales, sw.js, loop probes ×3, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- M aesthetics & visual design (one surface): 2026-11-08 (**S625 — 39th M, `letter_learner.html` (its 2nd: S536 → S625; 36 commits to the page since: the coloring-sheet tiles, the bulk popup, the cursive tiles, the address mirror, Select all / Clear): 13 views × 8 cells (EN/HE × light/dark × 1280/800) in the real fonts, the S616 census arms over scrolled pages and dialogs behind 4 planted controls, a row census (5 grids × 8 widths × EN/HE), a control census, a cross-page header arm. FOUND 2, FIXED 2 (the S536 final-form offset → gate 3 → keep centred; the vowel options' wrap at 500–800); + the micro-feature (flash cards' Pause). M-next: name_tags (S552), fontmaker (S554), dictionary (S556).**)
+
+_(prior)_ **Next session (S625):** **Branch `claude/loving-goodall-wh4spb` (S624, draft PR 395): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1297**, FM **5.59**, corpus ?v=7. ⚑ drift: main=0ed6056 sw=v1297 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: M letter_learner (S536), then G parsha_emojis (S537), D parsha_emojis (S538), suite I (S539), H parsha_emojis (S540), F (S542), B (S543), N letter_learner (S545), P parsha_emojis (S546). ⚑ Harnesses: `p624/` (`lib.part` = smoke-sync 168–537 with `P_ROOT`/`P_PORT`/`P_SDK`, `nt.mjs` N1–N4, `static.mjs` arms 3–7, `recipe.mjs` beside it), `k623/`, `l622/`, `e621/`. ⚑ Trap 550: smoke-sync beside five other smokes flaked D31 once — rerun it alone. ⚑ 51 seeds.
