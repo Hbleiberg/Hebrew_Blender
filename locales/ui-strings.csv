@@ -5611,6 +5611,7 @@ flashcards.profile.saved_count,{count} saved,{count} שמורים,Sub-label on e
 flashcards.profile.active_marker,★ ,★ ,Prefix marking the active profile row,symbol only
 flashcards.teachertools.play_button,Play,נגן,Play button on a saved preset row (loads + starts the drill),
 worksheet.actions.pdf_generating,⏳ Generating...,⏳ יוצר...,PDF export button (busy state),leading-emoji
+worksheet.actions.pdf_page_progress,⏳ Page {i} of {n}…,⏳ עמוד {i} מתוך {n}…,"PDF export buttons (the sidebar's and the sticky footer's) while each page of the worksheet is captured; {i} = this page, {n} = all pages",leading-emoji
 worksheet.actions.regen_title,New random draw with the same settings,הגרלה אקראית חדשה עם אותן הגדרות,Regenerate button title (enabled),
 worksheet.empty.not_enough_blends,Not enough blends to match.,אין מספיק צירופים להתאמה.,worksheet empty state,print-adjacent empty state
 worksheet.empty.number_range_small_body,"A {gridSize}×{gridSize} card needs at least {needed} unique numbers, but the range {min}–{max} only has {range}. Widen the range or pick a smaller grid.","כרטיס {gridSize}×{gridSize} דורש לפחות {needed} מספרים ייחודיים, אך בטווח {min}–{max} יש רק {range}. הרחיבו את הטווח או בחרו רשת קטנה יותר.",worksheet empty state,print-adjacent empty state; {gridSize}/{needed}/{min}/{max}/{range} numeric

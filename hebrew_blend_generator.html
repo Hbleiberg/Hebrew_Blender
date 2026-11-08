@@ -9607,22 +9607,29 @@ function addCallerPdfPages(pdf, canvas, rowTops, first) {
   }
 }
 
+let _pdfExporting = false;
 async function exportPDF() {
+  // One export at a time: a class set takes about a second a page, and a second press (the sticky footer's PDF while the
+  // sidebar's is busy, or the footer's twice) ran a second capture alongside and saved the same PDF twice.
+  if (_pdfExporting) return;
+  _pdfExporting = true;
   flushWorksheetBuild();   // the export reads every on-screen .sheet — finish any chunked build first
   const ws = document.getElementById('worksheet');
   const title = document.getElementById('wsTitle').value || 'Hebrew Blends';
 
-  const pdfBtn = document.getElementById('pdfBtn');
+  // Both Export PDF buttons — the sidebar's and the sticky footer's — wear the busy state: the footer's is the one in reach
+  // ~2,500px down the options, and it said nothing while the sidebar's, off screen, read "Generating".
+  const pdfBtns = [document.getElementById('pdfBtn'), ...document.querySelectorAll('#genFabActions .btn[onclick="exportPDF()"]')].filter(Boolean);
   // Disabling the focused button throws its focus to <body>: the ring vanished, a second Enter did nothing and a screen
   // reader lost its place. Read it first, and hand it back when the export lands unless the teacher has moved on meanwhile.
-  const hadFocus = document.activeElement === pdfBtn;
+  const focusedBtn = pdfBtns.find(b => b === document.activeElement) || null;
   // The label span, not the button (as flash cards' copyShareCode): rewriting the button deleted its icon and the span's
   // data-i18n, so after one export it read "Export PDF" bare, in the language of that export. The busy string carries
   // its own ⏳, so the download icon steps aside meanwhile.
-  const pdfLbl = pdfBtn.querySelector('.hi-lbl') || pdfBtn, pdfIco = pdfBtn.querySelector('svg');
-  pdfLbl.textContent = I18n.t('worksheet.actions.pdf_generating');
-  if (pdfIco) pdfIco.style.display = 'none';
-  pdfBtn.disabled = true;
+  const pdfParts = pdfBtns.map(b => { const lbl = b.querySelector('.hi-lbl') || b; return { b, lbl, key: lbl.getAttribute('data-i18n'), ico: b.querySelector('svg') }; });
+  const pdfBusy = text => pdfParts.forEach(p => { p.lbl.textContent = text; });
+  pdfBusy(I18n.t('worksheet.actions.pdf_generating'));
+  pdfParts.forEach(p => { if (p.ico) p.ico.style.display = 'none'; p.b.disabled = true; });
   // The sheet is fluid on screen and the capture takes it as laid out, so a narrow window (a tablet,
   // a half-screen laptop) exported a narrow layout: at 800px the bingo cells ran into each other and a
   // reading sheet became a 281px strip stretched over the page. Pin the worksheet at its own
@@ -9702,6 +9709,10 @@ async function exportPDF() {
 
     for (let i = 0; i < sheets.length; i++) {
       const sheet = sheets[i];
+      // Each capture holds the page about a second: count them, and let the count paint before this one starts (the timer
+      // alone in a background tab, where no frame comes, so the export goes on while the teacher is elsewhere).
+      pdfBusy(I18n.t('worksheet.actions.pdf_page_progress', { i: i + 1, n: sheets.length }));
+      await new Promise(r => { requestAnimationFrame(() => setTimeout(r, 0)); setTimeout(r, 100); });
       const isBingoPage = sheet.classList.contains('bingo-page');
       const isFourUp = isBingoPage && sheet.classList.contains('four-up');
       const isTwoUp = isBingoPage && sheet.classList.contains('two-up');
@@ -9922,10 +9933,9 @@ async function exportPDF() {
   } finally {
     ws.style.width = wsPin.width;
     ws.style.maxWidth = wsPin.maxWidth;
-    pdfLbl.textContent = I18n.t('worksheet.actions.export_pdf');
-    if (pdfIco) pdfIco.style.display = '';
-    pdfBtn.disabled = false;
-    if (hadFocus && (!document.activeElement || document.activeElement === document.body)) pdfBtn.focus();
+    pdfParts.forEach(p => { p.lbl.textContent = I18n.t(p.key || 'worksheet.actions.export_pdf'); if (p.ico) p.ico.style.display = ''; p.b.disabled = false; });
+    if (focusedBtn && (!document.activeElement || document.activeElement === document.body)) focusedBtn.focus();
+    _pdfExporting = false;
   }
 }
 

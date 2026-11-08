@@ -6962,6 +6962,7 @@
   "worksheet.actions.generate_mob": "Generate",
   "worksheet.actions.pdf_generating": "⏳ Generating...",
   "worksheet.actions.pdf_mob": "PDF",
+  "worksheet.actions.pdf_page_progress": "⏳ Page {i} of {n}…",
   "worksheet.actions.practice_flashcards": "🃏 Practice these in Flash Cards",
   "worksheet.actions.practice_flashcards_lists_title": "Open these word lists as a Flash Cards drill",
   "worksheet.actions.practice_flashcards_title": "Open these letters and vowels as a Flash Cards drill",

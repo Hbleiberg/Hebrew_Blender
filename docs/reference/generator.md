@@ -261,6 +261,13 @@ one unit though Print and Export PDF both give a long one several pages (an 8-ca
 three). The sidebar's `padding-bottom` and
 the mobile `.main-content` padding reserve the footer's taller post-Generate height.
 
+**While Export PDF runs** (about a second a unit — each `html2canvas` capture is one long task), one export at a
+time (`_pdfExporting`; a second press returns), and both Export PDF buttons — the sidebar's `#pdfBtn` and the
+footer's PDF — are disabled with their `.hi-lbl` reading `worksheet.actions.pdf_generating` while the libraries load,
+then `worksheet.actions.pdf_page_progress` ("⏳ Page {i} of {n}…", units as above) before each capture, which waits
+for a frame (a 100 ms timer in a background tab) so the count paints. `finally` puts back each label from its own
+`data-i18n` key, the icons and the enabled state, and returns the focus to whichever of the two had it.
+
 ---
 
 ## Settings restore guard
