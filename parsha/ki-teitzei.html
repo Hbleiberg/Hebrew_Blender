@@ -243,12 +243,14 @@ html[lang="he"] footer [style*="letter-spacing:0.08em"]{letter-spacing:normal !i
   .pp-pager li:nth-child(2){order:3;grid-column:1/-1;}   /* previous and next share a row, the list under them */
 }
 /* Paper: Ctrl+P on this page prints the sheet's picture alone, filling the page; the Print button's sheet (the Parsha
-   Emojis popup) is the sharp one, with every option. */
+   Emojis popup) is the sharp one, with every option. A page is narrower than 760px (Letter 739, A4 717 at the usual
+   margins), so the narrow screens' 440px cap on the picture would hold on paper too: it is lifted here. */
 @media print{
   header,footer,.skip-link,.pp-crumbs,.pp-title,.pp-meta,.pp-side,.pp-pager,#pwaInstallBanner{display:none !important;}
   body,body.dark,html.dark-early body{background:#fff !important;}
   main{max-width:none;padding:0;}
   .pp-grid{display:block;margin:0;}
+  .pp-sheet{max-width:none;}
   .pp-sheet img{width:100%;max-height:100vh;object-fit:contain;border:none;box-shadow:none;border-radius:0;}
 }
 /* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner, parsha_emojis, name_tags, trope_atlas, the generated parsha/ pages (copied from parsha_emojis by scripts/build-parsha-pages.mjs) (docs/reference/shared-components.md → Header icons).

@@ -753,7 +753,8 @@ lowercased, apostrophes dropped and spaces turned into hyphens (`chayei-sara`, `
   (`/parsha_emojis.html?parsha=<slug>`: every print option, no second copy of the sheet builder); the Torah Trainer
   link; the English summary, the drawing's title and description and why it was chosen, then the Hebrew summary and
   reason (both languages whatever the UI's, the Hebrew first in the Hebrew UI); the previous and next parasha (the
-  cycle wraps) and the list. Ctrl+P on the page prints the picture alone.
+  cycle wraps) and the list. Ctrl+P on the page prints the picture alone, filling the page (a printed page is under the
+  760px breakpoint, so the print block lifts the narrow screens' cap on the picture).
 - **Copied from `parsha_emojis.html` at build time**, so they cannot drift: the gtag snippet with the cleaned
   `page_location`, the Google Fonts links, both no-flash IIFEs, the palette, the header icons and the header-icons CSS
   block (the generated pages are listed among its carriers). The page CSS is inline (pages are network-first; an
