@@ -2169,8 +2169,7 @@ function wlSuggestedName() {
   const q = (document.getElementById('searchInput').value || '').trim();
   if (q) parts.push(q);
   if (anyLetterFilter.size) parts.push([...anyLetterFilter].join(' '));
-  const ORD = ['1st', '2nd', '3rd', '4th', '5th', '6th'];
-  posFilters.forEach((s, i) => { if (s.size) parts.push([...s].join(' ') + ' (' + I18n.t('dictionary.filters.pos_letter_heading', { ordinal: I18n.t('dictionary.ordinal_' + ORD[i]) }) + ')'); });
+  posFilters.forEach((s, i) => { if (s.size) parts.push([...s].join(' ') + ' (' + I18n.t('dictionary.filters.pos_letter_heading', { ordinal: I18n.t('dictionary.ordinal_' + POS_ORD[i]) }) + ')'); });
   const lens = some('.lcb'); if (lens && lens.length <= 3) parts.push(lens.map(labelOf).join(', '));
   const pos = some('#panelPos .pcb'); if (pos && pos.length <= 2) parts.push(pos.map(labelOf).join(', '));
   const bib = document.getElementById('eraBib'), mod = document.getElementById('eraMod');
@@ -2602,7 +2601,11 @@ function glossTier(w, needle, keyNeedle) {   // the needles are '|' + query + '|
 let shown = 0;
 const PAGE = 100;
 let wlFilterOverride = null; // when set, results show a fixed Word List instead of ALL_WORDS; cleared by any real filter change
-const posFilters = Array.from({length:6}, () => new Set());
+// Filter by Letter's rows: the 1st to 6th letters counted from the start, then the word's last letter (a final ה or ת,
+// a feminine ending: what a count from the start cannot ask).
+const POS_ORD = ['1st', '2nd', '3rd', '4th', '5th', '6th', 'last'], POS_LAST = POS_ORD.length - 1;
+const posLetterAt = (w, i) => w.cons[i === POS_LAST ? w.cons.length - 1 : i];
+const posFilters = POS_ORD.map(() => new Set());
 let anyLetterFilter = new Set();
 let anyLetterOnly = false;
 let dageshTavEnabled = false;
@@ -3096,10 +3099,9 @@ function initPosFilters() {
     ${esc(I18n.t('dictionary.filters.dagesh_tav'))}
   </label>`;
   body.appendChild(ctrlRow);
-  const labels = ['1st','2nd','3rd','4th','5th','6th'];
   // A header is a collapse button (bindHdrA11y) holding its own Clear button: named by its label and its chosen letters
   // (aria-labelledby), so "Clear" no longer joins the header's name ("1st Letter Clear").
-  labels.forEach((lbl, i) => {
+  POS_ORD.forEach((lbl, i) => {
     const sec = document.createElement('div');
     sec.className = 'pos-sec';
     sec.innerHTML = `
@@ -3268,9 +3270,10 @@ function onFilter() {
     else if (era === 'Biblical' && !eraBib) return false;
     else if (era === 'Modern' && !eraMod) return false;
 
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < posFilters.length; i++) {
       if (posFilters[i].size === 0) continue;
-      if (!w.cons[i] || !posFilters[i].has(w.cons[i])) return false;
+      const c = posLetterAt(w, i);
+      if (!c || !posFilters[i].has(c)) return false;
     }
 
     if (anyLetterFilter.size > 0) {
@@ -5853,7 +5856,7 @@ function applyDictState(s) {
 
     // 4. per-position letters
     if (Array.isArray(s.posLetters)) {
-      for (let i = 0; i < 6; i++) {
+      for (let i = 0; i < posFilters.length; i++) {   // a state saved before the Last letter row holds six: the seventh reads as none
         posFilters[i] = new Set(dictKnownMembers(s.posLetters[i], '#pg' + i + ' .lpt', 'h'));
         document.querySelectorAll('#pg' + i + ' .lpt').forEach(t => t.classList.toggle('selected', posFilters[i].has(t.dataset.h)));
         syncLptAria('#pg' + i + ' .lpt');
@@ -6103,8 +6106,7 @@ function computeActiveChips() {
     });
     if (vowelFilters.size !== VOWEL_DEFS.length) chips.push({ key: 'vowels', label: I18n.t('dictionary.chips.vowels', { count: vowelFilters.size, total: VOWEL_DEFS.length }), panel: '#panelVowel' });
     if (hideNoVowels) chips.push({ key: 'noVowel', label: I18n.t('dictionary.chips.hiding_vowelless'), panel: '#panelVowel' });
-    const ord = ['1st', '2nd', '3rd', '4th', '5th', '6th'];
-    for (let i = 0; i < 6; i++) if (posFilters[i].size) chips.push({ key: 'pos' + i, label: I18n.t('dictionary.chips.position_letters', { ordinal: I18n.t('dictionary.ordinal_' + ord[i]), letters: [...posFilters[i]].join(' ') }), panel: '#panelLetter' });
+    for (let i = 0; i < posFilters.length; i++) if (posFilters[i].size) chips.push({ key: 'pos' + i, label: I18n.t('dictionary.chips.position_letters', { ordinal: I18n.t('dictionary.ordinal_' + POS_ORD[i]), letters: [...posFilters[i]].join(' ') }), panel: '#panelLetter' });
     if (anyLetterFilter.size) chips.push({ key: 'any', label: I18n.t('dictionary.chips.any_letters', { letters: [...anyLetterFilter].join(' ') }) + (anyLetterOnly ? ' ' + I18n.t('dictionary.chips.any_only_suffix') : ''), panel: '#panelLetter' });
     const gt = document.getElementById('gematriaFilterType');
     if (gt && gt.value !== 'none') {

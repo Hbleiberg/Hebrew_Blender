@@ -1006,6 +1006,7 @@ dictionary.ordinal_3rd,3rd,שלישית,letter-position ordinal,
 dictionary.ordinal_4th,4th,רביעית,letter-position ordinal,
 dictionary.ordinal_5th,5th,חמישית,letter-position ordinal,
 dictionary.ordinal_6th,6th,שישית,letter-position ordinal,
+dictionary.ordinal_last,Last,אחרונה,letter-position ordinal: the word's last letter (Filter by Letter's last row),"""Last Letter"" / ""אות אחרונה"" in the heading and the chip"
 dictionary.pos.adjective,Adjective,שם תואר,part-of-speech filter label,
 dictionary.pos.adjective_noun,Adjective/Noun,שם תואר/שם עצם,part-of-speech filter label,REVIEW: HE draft
 dictionary.pos.adverb,Adverb,תואר הפועל,part-of-speech filter label,
