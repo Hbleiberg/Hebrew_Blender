@@ -776,6 +776,7 @@
   "dashboard.intermission.reset_confirm": "Replace your intermission words with the default word?",
   "dashboard.intermission.reset_confirm_cloud": "Replace your intermission words with the default word? You are signed in, so they are replaced on every device.",
   "dashboard.intermission.show": "Show screen",
+  "dashboard.intermission.timer_aria": "Timer",
   "dashboard.layout.bar_aria": "Move panels",
   "dashboard.layout.done_button": "Done",
   "dashboard.layout.edit_hint": "Use the arrow buttons on each panel to move it. Changes save automatically.",

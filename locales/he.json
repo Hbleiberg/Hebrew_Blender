@@ -776,6 +776,7 @@
   "dashboard.intermission.reset_confirm": "להחליף את מילות ההפסקה שלכם במילת ברירת המחדל?",
   "dashboard.intermission.reset_confirm_cloud": "להחליף את מילות ההפסקה שלכם במילת ברירת המחדל? אתם מחוברים, ולכן הן יוחלפו בכל מכשיר.",
   "dashboard.intermission.show": "הצגת המסך",
+  "dashboard.intermission.timer_aria": "טיימר",
   "dashboard.layout.bar_aria": "הזזת פאנלים",
   "dashboard.layout.done_button": "סיום",
   "dashboard.layout.edit_hint": "השתמשו בכפתורי החצים שעל כל פאנל כדי להזיז אותו. השינויים נשמרים אוטומטית.",

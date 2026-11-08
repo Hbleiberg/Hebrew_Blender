@@ -492,6 +492,13 @@ body.dark #tipFloat { background: #0a0f1c; }
   scroller for a message too tall for the screen, and the text centres with `margin: auto`: a scroller on
   the text itself became a Tab stop on every one-word screen, because a font's ascent/descent outgrows
   `line-height: 1.2` by a few pixels.
+- **The countdown on the Intermission screen:** `#imTimer` (`role="timer"`, above the hint row) is a copy of the
+  timer panel's `#timerDisplay` — its text and its `warn` / `done` state — that `imTimerSync()` writes from one
+  `MutationObserver` on the display and on `#timerCol` (set up in `initTimer`), so every writer of the display
+  reaches it with no hook of its own (a tick, the finish, the repeat alert, a language switch). It shows while a
+  countdown runs, is paused part-way or says "Time!", and is hidden at rest; `has-timer` on the sheet lengthens its
+  end padding by the line's height, so a long message never runs under it, and it hides while the words are edited.
+  No setting and no stored state.
 - **The drawer's Intermission screen section** (Text tab, under Dashboard Text) is the sheet's mirror in the
   settings: `#intermissionPreview`, a 16:9 black card that is a size container, holds `#intermissionPreviewText`, and
   `renderIntermission()` fills both surfaces from the same words through `renderIntermissionInto(el, interactive)` —
