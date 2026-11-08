@@ -170,10 +170,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S538 D**) | parsha_emojis.html | **The first open still measures every drawing** (~950 ms @4×); build the geometry with the icons. | found S538
 
-- [ ] P4 (**NEW S537 G — gate 2**) | parsha_emojis.html | **With every sheet shrunk (landscape, Both) the popup's note names all 54 parshiyot** (539 chars). | found S537
-
-- [ ] P4 (**NEW S536 M — F's**) | suite-wide | **In dark mode an unticked checkbox or radio is a white square.** | found S536
-
 - [ ] P4 (**NEW S624 P — a shared module + every carrier, not small**) | js/ivrit-account.js (+ 38 `_cloud` confirms on 11 pages, the restore dialogs) | **A stored student session counts as a syncing teacher's**: every `_cloud` confirm and the `.ivrit` / AllTools restore's Merge-only rule read `hasStoredSession()`, though a student account never syncs (Name Tags' delete says "removed from your …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S621 E — the loop's tooling**) | scripts/loop/ | **E's shape-drift arm has no fixtures or static check yet** (`scripts/loop/fixtures/` was never created; the arm has been defined in loop-passes.md since S543's jsDelivr hit): lift the smokes' canned Sefaria / Hebcal / Open-Meteo / Nominatim / Web3Forms responses with a dropped-field control and check each parser reads only fields …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -316,8 +312,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] M | hebrew_blend_generator.html (reads the dashboard's class lists) | **Each child's name on their Class Set version, from a dashboard class list.** | found: 2026-10-03, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] S (dual) | classroom_dashboard.html | **The running timer stays visible on the Intermission screen.** | found: 2026-10-03, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
-
 - [ ] S–M (dual) | classroom_dashboard.html | **Today's whole schedule as a strip on the board**, not just Now and Next. | found: 2026-10-03, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] S–M | flash_cards.html | **"All N words, once each" for a word-list deck.** | found: 2026-10-03, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -404,6 +398,14 @@ _(none)_
 
 ## Done
 
+- [x] 2026-11-08 | (S626 close-out) | branch/deploy note | **S626 = G on `parsha_emojis.html` (its 2nd: S537 → S626, 18 commits to the page since: the card's Print coloring sheet button, the off-screen preview skip, the size-drag reset, the copies field) + its 54 generated `parsha/` pages (their first G): the cards' Print in 7 views × EN/HE × light/dark × Letter/A4 (56 PDFs, split and junk plants …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-08 | `d1f021c4` | classroom_dashboard.html, docs/reference/dashboard.md, locales, sw.js, probe | (S626 micro-feature, gate 1; the 2026-10-03 seed) **The Intermission screen shows the running countdown under its words**: a copy of the timer panel's display (text, last-10-s mark, "Time!") kept by one observer, shown while it runs, is paused part-way or says "Time!", hidden at rest; …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-08 | `345a6301` | parsha_emojis.html, locales, sw.js, probe | (S626 G; the S537 gate-2 Candidate → "first 5, then 'and N more'") **The coloring sheets' fit notes name five sheets and count the rest** (all 54 shrink in landscape × Both: 539 characters in a live region), in Torah order (a later tick was listed last) | probe `S626-parsha-emojis-fit-note-names-five.mjs`: 2 cells × 2 …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-08 | `036667da` | scripts/build-parsha-pages.mjs, parsha/*.html (54), shared-components.md, probe | (S626 G; pattern `print-media-leak`) **Ctrl+P on a parsha coloring page prints its picture filling the page**: paper is under the 760px breakpoint (Letter 739, A4 717 at 0.4in), so the narrow screens' 440px cap held — 4.59 × 6.07in in a 7.7 × 10.2in box on every page | probe …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [x] 2026-11-08 | (S625 close-out) | branch/deploy note | **S625 = M on `letter_learner.html` (the 39th M; its 2nd: S536 → S625, 36 commits): 13 views × 8 cells in the real fonts (104 shots, 0 errors), the census arms behind 4 planted controls (0 hits), a row census of 5 grids × 8 widths × EN/HE, a control census, a cross-page header arm. FOUND 2, FIXED 2 (the S536 final-form offset by its …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-11-08 | `77ead232` | flash_cards.html, locales, sw.js, probe | (S625 micro-feature, gate 1; the S367 seed) **The drill timer has Pause / Resume beside its readout**: the clock stops and the drill waits with it (card, marks, Prev / Next, keys inert and dimmed; End Practice Early live), a recorded time leaves the pause out, a limit is not spent by it | probe …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -436,17 +438,11 @@ _(none)_
 
 - [x] 2026-11-06 | `4e49b4b0` | trope_atlas.html, sw.js | (S622 L, gate 2 → shorten both) **The Trope Atlas's title is 60 characters and its description 154** (was 74 / 209), and its social card carries the Trope Tutor's og:image:alt | the head re-read: 60 / 154 / alt present; `update-llms-txt --check` clean
 
-- [x] 2026-11-06 | (S621 close-out) | branch/deploy note | **S621 = E (the 42nd; the suite over `48286048..6985aaf4`, 530 commits — the Trope Atlas', Name Tags', the assignments page's, the `parsha/` pages' and the Worker's first E): 31 static arms + the generators' checks + a 54-cell runtime arm, FOUND 5 (all P4: the README's missing Trope Atlas and "eight" tours, four stale counts in the …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-06 | `8e6cca3b` | hebrew_dictionary.html, sw.js, probe | (S621; the S585 H P4, gate 2 → within one word) **A Hebrew search matches inside one word of a phrase, or a run of its words, never across a word gap** ("כלב" no longer lists the saying whose letters run …כֵּל בַּ…; "כלב ים" now finds כֶּלֶב יָם; single words, English and transliteration untouched) | probe …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-06 | `df23a89e` | parsha_emojis.html, locales, sw.js, probe | (S621 micro-feature, gate 1; the S540 seed) **Every parasha card has a Print coloring sheet button** (the popup on that parasha alone with the teacher's saved options; Close returns to the button; dressed as its link neighbours, 24px, named) | probe `S621-parsha-emojis-card-prints-its-sheet.mjs`: 5 steps × 2 cells by real …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-06 | `dc2ba1fd` | README.md, manifest.webmanifest, ops.md, i18n.md, shared-components.md, sw.js | (S621 E; gate 2 for the manifest → name every tool) **The tool censuses re-trued**: README gains the Trope Atlas (Tools + Files) and counts nine tours (Name Tags has one); the app description names every tool; ops.md names the nine font-picker pages and the assignments page among the …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-11-08 | **S626** | iters: 5 | tools: parsha/ + build-parsha-pages, parsha_emojis, classroom_dashboard, locales, sw | patterns fixed: print-media-leak ×1 | pass run: G (parsha_emojis, first since S537; + its parsha/ pages, their first G) + micro-feature | SW: v1300→v1302
 
 - 2026-11-08 | **S625** | iters: 5 | tools: letter_learner ×2, flash_cards, locales, sw | patterns fixed: — | pass run: M (letter_learner, first since S536) + micro-feature | SW: v1297→v1300
 
@@ -486,11 +482,9 @@ _(none)_
 
 - 2026-11-04 | **S607** | iters: 5 | tools: dashboard ×2, generator, dictionary, smoke-assignments, sw | patterns fixed: focus-hidden-under-a-sticky-bar ×1, tip-name-joins-its-field's-name ×1 | pass run: C (dashboard, first since S499) | SW: v1245→v1248
 
-- 2026-11-04 | **S606** | iters: 5 | tools: 404, privacy, account, ivrit-account.js, locales, sw | patterns fixed: — | pass run: H (chrome, the bundle's first H; the account page's first since S426) | SW: v1241→v1245
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S625 (2026-11-08):** letter_learner ×2, flash_cards, locales, sw.js, loop probes ×3, loop docs S625 · name_tags, name-tags.md, dictionary, locales, js/ivrit-account.js, sw.js, loop probes ×3, loop docs S624 · name_tags, reading_assignments, torah, locales, name-tags.md, sw.js, loop probe, loop docs S623 · trope_atlas, parsha/ + build-parsha-pages, dictionary, sw.js, loop probe, loop docs S622 · parsha_emojis, dictionary, README, manifest, ops.md, i18n.md, shared-components.md, locales, sw.js, loop probes ×2, loop docs S621 · …[full text: IMPROVEMENT_ARCHIVE.md]
+- **Snapshot S626 (2026-11-08):** parsha/ ×54 + build-parsha-pages, parsha_emojis, classroom_dashboard, shared-components.md, dashboard.md, locales, sw.js, loop probes ×3, loop docs S626 · letter_learner ×2, flash_cards, locales, sw.js, loop probes ×3, loop docs S625 · name_tags, name-tags.md, dictionary, locales, js/ivrit-account.js, sw.js, loop probes ×3, loop docs S624 · name_tags, reading_assignments, torah, locales, name-tags.md, sw.js, loop probe, loop docs S623 · trope_atlas, parsha/ + build-parsha-pages, dictionary, sw.js, loop probe, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -800,7 +794,7 @@ _(none)_
 
 - `lazily-loaded-dependency-renders-an-empty-shell` | DRAFT | owner A | det: none | last S416 | streak 0
 
-- `print-media-leak / var-chain-overridden-by-a-literal` | DRAFT | owner A | det: none | last S0 | streak 0
+- `print-media-leak / var-chain-overridden-by-a-literal` | ACTIVE | owner A | det: recipe | last S626 | streak 0 | hits 1
 
 - `incomplete-print-token-reset` | ACTIVE | owner A | det: recipe | last S569 | streak 0
 
@@ -856,7 +850,7 @@ _(none)_
 
 - A recurring-pattern sweep: 2026-10-31 (**S581 — 42nd A, scoped to the outside-loop reading-assignments landing (`a7fa5f1..aab737c`, 18 of its 53 commits; `reading_assignments.html`, `js/ivrit-assignments.js`, the Trainer's +838): the security arms (no `innerHTML`, reviver-safe parses, URL sinks, an anonymous Trainer loads no assignments module), then two catalog recipes committed as detectors …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- G print & export fidelity (one tool): 2026-11-05 (**S617 — `hebrew_dictionary.html` (its 7th: … S377 → S523 → S617; 43 commits: the Hebrew search order, a loaded list without filter chips, the Quizlet-safe corpus ?v=7, the dimmed export): 5 views × EN/HE × light/dark × Letter/A4 (40 PDFs), a Shoresh heading census by out-of-flow markers (16 roots, 280 headings, 64 prints), exports by real …[full text: IMPROVEMENT_ARCHIVE.md]
+- G print & export fidelity (one tool): 2026-11-08 (**S626 — `parsha_emojis.html` (its 2nd: S537 → S626; 18 commits to the page since: the card's Print coloring sheet button, the off-screen preview skip, the size-drag reset, the copies field) + its 54 generated `parsha/` pages (their first G): the cards' Print 56 PDFs (split / junk plants fired), the popup's 72 combos × the A/B clip truth (2,280 …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - D performance (one tool): 2026-11-05 (**S618 — `flash_cards.html` (its 6th: S75 → S170 → S266 → S393 → S524 → S618; 45 commits to the page since): cold 10 cells (@1× top 58–90 ms; @4× one DOMContentLoaded task 320–512), 16 arms by real input × 3 cells (a 200-card drill graded to results, both print paths, Practice Mistakes, Redo, share, All Dictionary 200), a class of 12 profiles × 100 results …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -876,4 +870,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-22 (**S542 — 40th F, loading states (first since S189): 14 surfaces held, then aborted. FOUND 7, FIXED 4. F-next: long-build progress.**)
 
-**Next session (S626):** **Branch `claude/loving-goodall-wh4spb` (S624–S625, draft PR 395): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1300**, FM **5.59**, corpus ?v=7. ⚑ drift: main=0ed6056 sw=v1300 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: G parsha_emojis (S537), then D parsha_emojis (S538), suite I (S539), H parsha_emojis (S540), F (S542), B (S543), N letter_learner (S545), P parsha_emojis (S546), M name_tags (S552). ⚑ Harnesses: `m625/` (`lib.mjs` = local server + real Google Fonts from `fc/`, `shots.mjs` 13 views, `census.js`, `rows.mjs`, `btns.mjs`, `hdr.mjs`, `pdf.mjs`), `p624/`, `k623/`. ⚑ Trap 551: a harness root with `..` 404s every file — resolve it. ⚑ 50 seeds.
+**Next session (S627):** **Branch `claude/loving-goodall-wh4spb` (S624–S626, draft PR 395): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1302**, FM **5.59**, corpus ?v=7. ⚑ drift: main=0ed6056 sw=v1302 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: D parsha_emojis (S538), then suite I (S539), H parsha_emojis (S540), F (S542), B (S543), N letter_learner (S545), P parsha_emojis (S546), C name_tags (S548), G name_tags (S550). ⚑ Harnesses: `g626/` (`lib.mjs` = local server + real Google Fonts from `m625/fc/`, a fixed date; `cards.mjs`, `cs.mjs` + `rast.py` (the A/B clip truth), `misc.mjs`, `rt.mjs`, `pp.mjs`, `ppm.mjs`, `leak.mjs` — the narrow-rules-on-paper arm), `m625/`, `p624/`. ⚑ `print-media-leak` is ACTIVE with a recipe: `leak.mjs` lists, on 7 other pages, rules a screen breakpoint applies to paper at 739px (dashboard, dictionary, LL, resources, FM, 404) — each page's next G judges them by PDF (findings S626). ⚑ 49 seeds.
