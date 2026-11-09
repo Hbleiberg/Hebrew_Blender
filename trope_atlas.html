@@ -202,6 +202,7 @@ html[lang="he"] .at-lbl { letter-spacing:normal; text-transform:none; }
   padding:4px 8px; border-radius:5px; font:inherit; font-size:0.86rem; min-height:30px;
 }
 body.dark .at-sel { background:var(--navy-deep); color:var(--text); }
+.at-sel:disabled { opacity:0.55; cursor:default; }   /* empty until the charts land (renderStatus) */
 .at-keyhint { color:var(--muted); font-size:0.78rem; line-height:1.35; max-width:52ch; }
 @media (pointer:coarse) { .at-sel { font-size:16px; } }   /* iOS zooms into a focused field under 16px */
 .at-idxbtn {
@@ -526,7 +527,7 @@ body.dark .hi-sun{display:inline-block;}
     <a class="at-bartitle" href="#top"><span data-i18n="atlas.header.title">Trope Atlas</span> <span class="at-he" lang="he" dir="rtl">טַעֲמֵי הַמִּקְרָא</span></a>
     <div class="at-keypick">
       <label class="at-lbl" for="atKey" data-i18n="trope.key.label">Key</label>
-      <select class="at-sel" id="atKey" aria-describedby="atKeyHint"></select>
+      <select class="at-sel" id="atKey" aria-describedby="atKeyHint" disabled></select>
       <span id="atKeyHint" class="at-keyhint" data-i18n="atlas.key.hint">Moves every staff so its key note lands on the one you pick, for side-by-side comparison. The play buttons follow.</span>
     </div>
   </div>
@@ -628,7 +629,7 @@ body.dark .hi-sun{display:inline-block;}
   <p class="at-intro" data-i18n="atlas.phrases.intro">The te’amim are usually learned in phrases rather than one at a time, because a conjunctive sign takes its tune from the pause it leads into, and many pauses are sung differently at the end of a verse or a reading. Choose a melody, then a group of phrases: each pattern shows the Hebrew sign names above the staff and the names sung syllable by syllable beneath it. A dashed line marks where one sign’s notes end and the next begin. Press ▶ beside any staff to hear it, sung an octave below the written notes; press ■ to stop.</p>
   <div class="at-phrasebar">
     <label class="at-lbl" for="atMel" data-i18n="trope.melody.label">Melody</label>
-    <select class="at-sel" id="atMel"></select>
+    <select class="at-sel" id="atMel" disabled></select>
     <span class="at-count" id="atMelCount"></span>
   </div>
   <div id="atMelInfo" class="at-melinfo"></div>
@@ -1353,6 +1354,9 @@ document.getElementById('atMel').addEventListener('change', (e) => selectMel(e.t
 
 /* ── rendering ── */
 function renderStatus() {
+  // The Key and Melody selects have nothing to offer until the charts land (loading, or failed with its Try again): an
+  // empty select that still takes a press, beside a hint that it "moves every staff", read as broken. They wait, disabled.
+  document.getElementById('atKey').disabled = document.getElementById('atMel').disabled = !SETS;
   const el = document.getElementById('atStatus');
   el.textContent = '';
   el.classList.remove('error');
