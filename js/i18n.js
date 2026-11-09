@@ -217,9 +217,12 @@
     var css =
       // direction:ltr keeps the flag+label order and the caret side stable on RTL pages.
       // appearance:none guarantees the custom bg/color apply (so dark mode is correct on Safari too);
-      // the caret is a ::after pseudo (var(--muted) → theme-adaptive), not a fixed-color SVG.
+      // the caret is a ::after pseudo (var(--muted) → theme-adaptive), not a fixed-color SVG. Its content takes the
+      // empty alt ("\25BE" / ""), so it is drawn, not read: generated text is in the accessibility tree, and a
+      // screen reader announced "down-pointing triangle" beside the language menu on every page (pattern
+      // decorative-glyph-carrier-exposed-to-assistive-tech); the plain content before it is the fallback.
       '.i18n-switch{position:relative;display:inline-flex;direction:ltr;vertical-align:middle;font-family:inherit;}' +
-      '.i18n-switch::after{content:"\\25BE";position:absolute;inset-inline-end:8px;top:50%;transform:translateY(-50%);' +
+      '.i18n-switch::after{content:"\\25BE";content:"\\25BE" / "";position:absolute;inset-inline-end:8px;top:50%;transform:translateY(-50%);' +
       'font-size:0.7rem;color:var(--muted,#6b6050);pointer-events:none;}' +
       '.i18n-switch select.i18n-select{appearance:none;-webkit-appearance:none;margin:0;cursor:pointer;' +
       'font-family:inherit;font-size:0.78rem;font-weight:600;line-height:1.3;direction:ltr;' +
