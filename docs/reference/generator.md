@@ -349,6 +349,11 @@ A Self-Check's screen rows (score and timer bars, both control rows, a flipped c
 selector, `SC_SCREEN_ROWS`, the twin of the print block's `display:none` list: the `onclone` drops them, and the
 canvas height is the sheet's measured with them out for a moment, so the page is not shrunk around a blank band.
 A new screen-only row joins both lists.
+A Self-Check card's two faces (`.flip-card-front` / `-back`, `.rw-flip-front` / `-back`) share one grid cell of their
+inner, never absolute boxes in a fixed height: the card is as tall as its taller face (90px at least), so a long
+translation or the Real Words Gematria back (the word, its value, the transliteration and the translation) stays
+inside it on screen, on paper and in the export. A Real Words card fills its grid row (one height a row); a
+`.flip-card` keeps its own height, since a flipped card's Got it / Missed would stretch its neighbours.
 
 ## Real Words card grids (`.rw-grid`)
 

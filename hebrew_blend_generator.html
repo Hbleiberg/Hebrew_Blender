@@ -1580,19 +1580,24 @@ body.dark .hi-sun{display:inline-block;}
   .cw-unplaced [lang="he"] { font-style: normal; }   /* Hebrew has no italic: the browser only slants the letters (pattern hebrew-faux-italic) */
 
   /* Flip cards for vocab drill */
-  .rw-flip { perspective: 600px; cursor: pointer; }
+  .rw-flip { perspective: 600px; cursor: pointer; display: grid; }   /* the card fills its grid row, so a row's cards stay one height */
+  /* The two faces share one grid cell (not absolute boxes in a fixed height), so the card is as tall as its taller face:
+     a long translation on the back is no longer cut off or run into the next row (on screen, on paper or in Export PDF);
+     a card whose faces fit stays 90px. The .flip-card family does the same, but keeps its own height in the row (a
+     flipped card's Got it / Missed would otherwise stretch its unflipped neighbours). */
   .rw-flip-inner {
     position: relative;
+    display: grid;
     transition: transform 0.4s;
     transform-style: preserve-3d;
     min-height: 90px;
   }
   .rw-flip.flipped .rw-flip-inner { transform: rotateY(180deg); }
   .rw-flip-front, .rw-flip-back {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    /* width/height 100% + 10px padding + 1.5px border: without border-box each face is 23px
+    grid-area: 1 / 1;
+    position: relative;
+    min-width: 0;
+    /* 10px padding + 1.5px border inside the face's box: without border-box each face was 23px
        wider and taller than its grid cell, so it laid over the next card (truncating that
        card's part-of-speech tag) and the last column ran off the paper. */
     box-sizing: border-box;
@@ -2055,10 +2060,11 @@ body.dark .hi-sun{display:inline-block;}
     cursor: pointer;
     position: relative;
   }
-  .flip-card-inner {
+  .flip-card-inner {   /* the faces share one grid cell, as .rw-flip-inner's do: the card holds its taller face */
     position: relative;
+    display: grid;
     width: 100%;
-    height: 90px;
+    min-height: 90px;
     transition: transform 0.45s;
     transform-style: preserve-3d;
   }
@@ -2067,8 +2073,9 @@ body.dark .hi-sun{display:inline-block;}
     transform: rotateY(180deg);
   }
   .flip-card-front, .flip-card-back {
-    position: absolute;
-    inset: 0;
+    grid-area: 1 / 1;
+    position: relative;
+    min-width: 0;
     border-radius: 8px;
     backface-visibility: hidden;
     display: flex;
