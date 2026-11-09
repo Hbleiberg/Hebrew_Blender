@@ -5122,6 +5122,7 @@
   "nametags.preview.pages.other": "{count} pages",
   "nametags.preview.print": "Print",
   "nametags.preview.print_empty": "Add a student to the list first — the sample tags do not print.",
+  "nametags.preview.print_none": "No student is ticked to print — tick the box beside a name to add it back.",
   "nametags.preview.printing_some": "Printing {n} of {count} students — tick the box beside a name to add it back.",
   "nametags.preview.sample": "A sample — type a name to see your own tags",
   "nametags.preview.tags.one": "{count} tag",

@@ -5122,6 +5122,7 @@
   "nametags.preview.pages.other": "{count} עמודים",
   "nametags.preview.print": "הדפסה",
   "nametags.preview.print_empty": "הוסיפו קודם תלמיד לרשימה — תגי הדוגמה לא מודפסים.",
+  "nametags.preview.print_none": "אף תלמיד לא מסומן להדפסה — סמנו את התיבה שליד שם כדי להחזיר אותו.",
   "nametags.preview.printing_some": "מדפיסים {n} מתוך {count} תלמידים — סמנו את התיבה שליד שם כדי להחזיר אותו.",
   "nametags.preview.sample": "דוגמה — הקלידו שם כדי לראות את התגים שלכם",
   "nametags.preview.tags.one": "תג אחד",

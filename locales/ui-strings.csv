@@ -6914,6 +6914,7 @@ nametags.table.tr_auto,Back to the automatic transliteration,חזרה לתעתי
 nametags.table.print_all_aria,Print every student's tag,הדפסת התג של כל התלמידים,aria-label + title of the header checkbox of the Print column (ticks or clears every row; reads mixed while some are out),aria
 nametags.table.print_aria,Print the tag of student {n},הדפסת התג של תלמיד {n},aria-label of a row's Print checkbox (unticked: the student is left out of the preview and the print this session),aria
 nametags.preview.printing_some,Printing {n} of {count} students — tick the box beside a name to add it back.,מדפיסים {n} מתוך {count} תלמידים — סמנו את התיבה שליד שם כדי להחזיר אותו.,Preview status line while some students' Print boxes are unticked,
+nametags.preview.print_none,No student is ticked to print — tick the box beside a name to add it back.,אף תלמיד לא מסומן להדפסה — סמנו את התיבה שליד שם כדי להחזיר אותו.,Preview status line and Print's inline note while the list has students but every Print box is unticked (the sample shows),
 nametags.table.tr_type,Type it here,הקלידו כאן,Placeholder of a transliteration cell in Typed-only mode,
 nametags.csv.import,Import a CSV,ייבוא קובץ CSV,Button (file picker),svg-icon-in-markup
 nametags.csv.import_title,"Import a CSV or spreadsheet file (Hebrew, English, Transliteration and Extra columns)","ייבוא קובץ CSV או גיליון (עמודות לשם העברי, לשם באנגלית, לתעתיק ולשורה נוספת)",title of the import button,

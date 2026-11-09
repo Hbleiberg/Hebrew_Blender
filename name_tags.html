@@ -2248,12 +2248,17 @@ function ntRenderPreview() {
   }
   host.replaceChildren(frag);
   ntFitPreview();
-  const tags = document.getElementById('ntPrevTags'), pages = document.getElementById('ntPrevPages');
-  tags.textContent = sample ? _fbT('nametags.preview.sample', 'A sample — type a name to see your own tags') : _fbN('nametags.preview.tags', rows.length, '{count} tag', '{count} tags');
+  // A list whose every student is unticked shows the sample too, but says so — not "type a name" or "add a student" (the
+  // list has students) — and the note never keeps an earlier "Printing n of m"; an empty list keeps Print's own message.
+  const tags = document.getElementById('ntPrevTags'), pages = document.getElementById('ntPrevPages'), skipped = ntSkipped();
+  tags.textContent = sample ? (skipped ? '' : _fbT('nametags.preview.sample', 'A sample — type a name to see your own tags')) : _fbN('nametags.preview.tags', rows.length, '{count} tag', '{count} tags');
   pages.textContent = sample ? '' : _fbN('nametags.preview.pages', sheets, '{count} page', '{count} pages');
   const btn = document.getElementById('ntPrintBtn');
   btn.setAttribute('aria-disabled', sample ? 'true' : 'false');
-  if (!sample) { const skipped = ntSkipped(); document.getElementById('ntPrintNote').textContent = skipped ? _fbT('nametags.preview.printing_some', 'Printing {n} of {count} students — tick the box beside a name to add it back.', { n: rows.length, count: rows.length + skipped }) : ''; }
+  const note = document.getElementById('ntPrintNote'), empty = _fbT('nametags.preview.print_empty', 'Add a student to the list first — the sample tags do not print.');
+  note.textContent = skipped ? (sample ? _fbT('nametags.preview.print_none', 'No student is ticked to print — tick the box beside a name to add it back.')
+    : _fbT('nametags.preview.printing_some', 'Printing {n} of {count} students — tick the box beside a name to add it back.', { n: rows.length, count: rows.length + skipped }))
+    : (sample && note.textContent === empty ? empty : '');
 }
 // The preview's scale: a sheet fills the column, never bigger than life.
 function ntFitPreview() {
@@ -2265,7 +2270,9 @@ function ntFitPreview() {
 }
 function ntPrint() {
   if (!ntPrintableRows().length) {
-    document.getElementById('ntPrintNote').textContent = _fbT('nametags.preview.print_empty', 'Add a student to the list first — the sample tags do not print.');
+    document.getElementById('ntPrintNote').textContent = ntSkipped()
+      ? _fbT('nametags.preview.print_none', 'No student is ticked to print — tick the box beside a name to add it back.')
+      : _fbT('nametags.preview.print_empty', 'Add a student to the list first — the sample tags do not print.');
     return;
   }
   ntRenderPreview();
