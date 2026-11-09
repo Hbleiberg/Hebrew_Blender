@@ -62,10 +62,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
 
-- [ ] P4 (**NEW S628 I — the page at its 2-touch cap this session**) | trope_atlas.html | **While the charts load, or after they fail, the Key and Melody selects sit empty and enabled** (0 options; the Key hint still says it "moves every staff"): disable them, or fill Key from `KEY_CHOICES` at once, until the charts land. | found S628
-
-- [ ] P4 (**NEW S627 — found verifying the micro-feature; HEAD alike**) | hebrew_dictionary.html | **In the English UI every Filter by Letter grid is 265px in its 245px box** (`repeat(7,1fr)` cannot go under "Samech" / "Shin/Sin" at the 11.2px floor), so its alef column spills ~7px past the panel's edge; the Hebrew UI fits. How the names wrap is M's call. | found S627
-
 - [ ] P4 (**NEW S614 C — the tour engine's**) | Hebrew_Font_Maker.html | **Tab out of an open tour and back leaves its Close and Next off-screen** (the fixed card follows its target out of view); S620 FIXED on the shared block's three carriers `79654c0f` — this page's own engine stays. | found S614
 
 - [ ] P4 (**NEW S613 H — gate 2, copy**) | hebrew_blend_generator.html | **Real Words Bingo's too-few note never names a grid that fits**: 14 words at 5×5 says "Need at least 24…"; 3×3 builds 30 cards from them, and the Grid size select sits in Bingo Options below. | found S613
@@ -132,8 +128,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S563 G**) | hebrew_blend_generator.html | **Blend Bingo hides Page Size (and Header Labels, Landscape) where Real Words Bingo shows them**: on A4 paper a teacher sets the size only from another mode first (the pill's value still applies). | found S563
 
-- [ ] P4 (**NEW S563 — glyph census; dictionary, generator FIXED**) | Hebrew_Font_Maker.html | **CSS-drawn ▾ in control names: count it with a project open.** | found S563
-
 - [ ] P4 (**NEW S562 N — touch parity**) | trope_tutor.html | **A Phrases chip lights its notes on the staff only by hover or focus**: a tap opens the mark's Learn card at once, so a touch user never sees which notes a chip names (`mouseenter` / `focus` → `.is-hl`; measured: the highlight flashes, then the tab changes). | found S562
 
 - [ ] P4 (**NEW S560 C — gate 3**) | Hebrew_Font_Maker.html | **The fullscreen Exit button's no-wrap label spills 13px past its 60px plate** (EN "Exit Full Screen" 86px wide): after `f00f4bc` it still grazes 3% of Help / Tour at 1024 and 800, and a strip wide enough for it wraps the Hebrew toolbar at 1280; a plate that fits its label (or a two-line label) changes the button's look. | found S560
@@ -160,7 +154,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S548 C**) | name_tags.html | **After a keyboard Remove, the Undo sits behind the focus**: the note is before the table, so from the 12th row Undo is 64 Shift+Tabs back (the live region does announce it). | found S548
 
-- [ ] P4 (**NEW S542 F — gate 2**) | FM, js/ivrit-saves.js, torah, parsha_emojis | **Retry copy diverges from "Try again / נסו שוב"** (FM, cloud status, the staff's HE; Parsha Emojis' "reload the page"). | found S542
+- [ ] P4 (**NEW S627 — found verifying the micro-feature; HEAD alike; S632 measured: gate 2/3, findings S632**) | hebrew_dictionary.html | **In the English UI every Filter by Letter grid is 265px in its 245px box** (`repeat(7,1fr)` cannot go under "Samech" / "Shin/Sin" at the 11.2px floor), so its alef column spills ~7px past the panel's edge; the Hebrew UI fits. How the names wrap is M's call. | …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S624 P — a shared module + every carrier, not small**) | js/ivrit-account.js (+ 38 `_cloud` confirms on 11 pages, the restore dialogs) | **A stored student session counts as a syncing teacher's**: every `_cloud` confirm and the `.ivrit` / AllTools restore's Merge-only rule read `hasStoredSession()`, though a student account never syncs (Name Tags' delete says "removed from your …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -388,6 +382,14 @@ _(none)_
 
 ## Done
 
+- [x] 2026-11-09 | (S632 close-out) | branch/deploy note | **S632 = N on `letter_learner.html` (its 2nd N: S545 → S632, 23 commits) + `parsha_emojis.html` (its 2nd: S547 → S632) with its 54 `parsha/` pages (their first N): 384 + 144 + 146 phone views on iPhone SE / 13 / Pixel 7 / 13 landscape × EN/HE × light/dark, touch by taps and CDP finger drags (52/52 + 26/26), rotation mid-dialog, the iOS …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-09 | `33bb87b6` | Hebrew_Font_Maker.html, sw.js, probe | (S632; the S563 census's last page, pattern `decorative-glyph-carrier-exposed-to-assistive-tech`) **The Font Maker's fold triangles are drawn, not read**: `.npnl-disc summary::before` (▸, the Points step's four disclosures) and `.panel-title::after` (▾, display:none in the tabbed layout) take the empty alt | probe …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-09 | `c82fa766` | js/i18n.js, sw.js, probe | (S632, found running the FM census; pattern `decorative-glyph-carrier-exposed-to-assistive-tech`; the session's one shared-script iteration) **The language switcher's caret is drawn, not read**: `.i18n-switch::after` (\25BE) was a StaticText "▾" beside the language menu on every page; it takes the empty alt | probe …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-09 | `c079ee79` | trope_atlas.html, sw.js, probe | (S632; the S628 P4) **The Atlas' Key and Melody selects wait for the charts**: `disabled` in the markup, `renderStatus` enables them only once `SETS` has landed (loading or failed, they sat empty and enabled beside "moves every staff"); `.at-sel:disabled` fades | probe `S632-trope-atlas-selects-wait-for-the-charts.mjs` 36/36 in 4 …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [x] 2026-11-08 | (S631 close-out) | branch/deploy note | **S631 = B on the S543 → S630 delta (the 42nd B; 503 commits: the Trope Atlas', reading assignments', the review page's and the 54 `parsha/` pages' first B): controls 72/72; a load census of 25 root URLs × 4 cells + 54 parsha pages × 2 (210); the 10 tours to their end and by Escape; a control crawl by real clicks over 19 pages × 2 cells …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-11-08 | `d6b9e003` | letter_learner.html, sw.js, probe | (S631; the S630 P4, pattern `async-export-runs-twice-on-a-second-press`) **The card's coloring-sheet Print runs once a press, and says it waits for fonts**: `_llCsPrinting`, the button disabled and reading the page's own "Loading fonts…" during the up-to-4 s face wait (a second press printed twice), its label and focus back at …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -422,17 +424,11 @@ _(none)_
 
 - [x] 2026-11-08 | `67ff76a5` | trope_atlas.html, sw.js, probe | (S628 I) **Grid and Stacked wait for the charts instead of throwing**: while loading or failed, a press built the table from no charts (a TypeError each); now the pressed state and stored view follow and the table opens in that view once the charts land | probe `S628-trope-atlas-view-before-the-charts.mjs`: failed / held / working …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-11-08 | (S627 close-out) | branch/deploy note | **S627 = D on `parsha_emojis.html` (its 2nd: S538 → S627, 14 commits to the page since) + its 54 `parsha/` pages (their first D): cold 8 cells, 33 arms by real input × 2 cells × 1×/4× behind a 300 ms control, profiles, idle, 60 open/close cycles, scroll, the parsha pages @1×/4×. FOUND 1, FIXED 1 (Colored in re-measured every drawing) + …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-08 | `7aed3724` | hebrew_dictionary.html, locales, sw.js, probe | (S627 micro-feature, gate 1; the 2026-10-03 seed) **Filter by Letter has a Last Letter row** ("אות אחרונה"): words ending in ה or ת, any of its tiles, combined with the other rows; one list (`POS_ORD`) drives the rows, filter, chips, print header and restore; a six-position state or `?s=` link restores with the row …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-08 | `6a00b351` | parsha_emojis.html, sw.js, probe | (S627 D) **The coloring sheets measure each drawing once, line art or colored in**: the geometry is kept by parasha (the measuring is ~70% of a conversion) | `fixeq.mjs`: 108 conversions × line-first / colored-first equal HEAD's in EN and HE, the popup's sheets + fit + note through on → off equal; Colored in on @4× median of 5 …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-08 | `887e8c54` (not this session's) | parsha_emojis.html | (S627 D, struck) **The S538 Candidate "40 copies × 4 per sheet clone 240 sheets into the preview"** is settled by the off-screen preview skip | `copies.mjs`: `887e8c54^` vs the tree on one machine, 3 alternated loads @4×: 395 / 633 / 395 → 201 / 124 / 152 ms
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-11-09 | **S632** | iters: 4 | tools: trope_atlas, js/i18n.js (every page), fontmaker, sw | patterns fixed: decorative-glyph-carrier-exposed-to-assistive-tech ×2 | pass run: N (letter_learner, first since S545 + parsha_emojis, first since S547, with the `parsha/` pages' first) | SW: …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - 2026-11-08 | **S631** | iters: 5 | tools: the 9 font pickers, name_tags, dashboard, letter_learner, locales, sw | patterns fixed: async-export-runs-twice-on-a-second-press ×1 | pass run: B (suite, S543 → S630, 503 commits) + micro-feature | SW: v1312→v1315
 
@@ -472,11 +468,9 @@ _(none)_
 
 - 2026-11-05 | **S613** | iters: 5 | tools: generator ×2, dashboard, parsha_emojis, sw | patterns fixed: selected-state-lost-in-forced-colors ×1 | pass run: H (generator, first since S512) | SW: v1263→v1267
 
-- 2026-11-05 | **S612** | iters: 5 | tools: letter_learner ×2, dashboard ×2, sw | patterns fixed: offscreen-sheets-laid-out-on-every-rebuild ×1 | pass run: D (letter_learner, first since S510) | SW: v1259→v1263
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S631 (2026-11-08):** the 9 font pickers (generator, dictionary, flash, torah, trope, dashboard, fontmaker, letter_learner, name_tags), name_tags, name-tags.md, classroom_dashboard, dashboard.md, letter_learner, locales, sw.js, loop probes ×3, loop docs S631 · hebrew_blend_generator, generator.md, Hebrew_Font_Maker, font-maker.md, flash_cards, locales, sw.js, loop probes ×3, loop docs S630 · trope_tutor, torah-and-trope.md, parsha/ ×54 + build-parsha-pages, shared-components.md, data/hebrew_words.json, hebrew_dictionary + …[full text: IMPROVEMENT_ARCHIVE.md]
+- **Snapshot S632 (2026-11-09):** trope_atlas, js/i18n.js, Hebrew_Font_Maker, sw.js, loop probes ×3, loop docs S632 · the 9 font pickers (generator, dictionary, flash, torah, trope, dashboard, fontmaker, letter_learner, name_tags), name_tags, name-tags.md, classroom_dashboard, dashboard.md, letter_learner, locales, sw.js, loop probes ×3, loop docs S631 · hebrew_blend_generator, generator.md, Hebrew_Font_Maker, font-maker.md, flash_cards, locales, sw.js, loop probes ×3, loop docs S630 · trope_tutor, torah-and-trope.md, parsha/ ×54 + …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -760,7 +754,7 @@ _(none)_
 
 - `rebuild-where-a-class-swap-would-do` | ACTIVE | owner A | det: recipe | last S220 | streak 0 | hits 1
 
-- `decorative-glyph-carrier-exposed-to-assistive-tech` | ACTIVE | owner A | det: recipe | last S604 | streak 0
+- `decorative-glyph-carrier-exposed-to-assistive-tech` | ACTIVE | owner A | det: recipe | last S632 | streak 0
 
 - `error-status-clobbered-by-a-later-routine-write` | DRAFT | owner A | det: none | last S411 | streak 0
 
@@ -834,7 +828,7 @@ _(none)_
 
 - O deslop — AI-design-tell sweep (one surface): SKIP since S403 — the sandbox refuses to execute the third-party detector ("Code from External"); runs again once the maintainer commits a `.claude/settings.json` permission rule for it (`docs/reference/deslop-detector.md`). Last run 2026-09-08 (S346, `flash_cards.html`, 6th O; the S399/S403 refusals are in the archive).
 
-- N mobile & touch-device (one surface): 2026-11-05 (**S615 — 38th N, chrome (the bundle's first N; index since S420, resources S246, contact S462, privacy/terms/404 S520, account never) + name_tags (since S534; 41 commits): 196 + 24 phone cells by real taps, the signed-in account on 20, touch flows, flips, 4× CPU. FOUND 1 P4 + 1 gate-4 answer (leave the grip). N-next: letter_learner (S545), …[full text: IMPROVEMENT_ARCHIVE.md]
+- N mobile & touch-device (one surface): 2026-11-09 (**S632 — 39th N, letter_learner (its 2nd: S545 → S632; 23 commits: the sheet tiles, the cursive tiles, the address mirror, Select all / Clear) + parsha_emojis (its 2nd: S547 → S632; the card's Print coloring sheet, with the 54 `parsha/` pages' first N): 384 + 144 + 146 phone views on 4 devices × EN/HE × light/dark, 52 + 26 touch steps by taps …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - M aesthetics & visual design (one surface): 2026-11-08 (**S625 — 39th M, `letter_learner.html` (its 2nd: S536 → S625; 36 commits to the page since: the coloring-sheet tiles, the bulk popup, the cursive tiles, the address mirror, Select all / Clear): 13 views × 8 cells (EN/HE × light/dark × 1280/800) in the real fonts, the S616 census arms over scrolled pages and dialogs behind 4 planted …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -864,4 +858,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-11-08 (**S630 — 41st F, long-build progress (S542's F-next; the affordance's first F): 13 presses that build before they answer, by real clicks with an animation-frame recorder, real PDF libraries from a cache, a held CDN, double presses at raw points. FOUND 2, FIXED 2 (+1 P4). F-next: destructive-action confirms.**)
 
-**Next session (S632):** **Branch `claude/loving-goodall-wh4spb` (S624–S631, draft PR 395): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1315**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=0ed6056 sw=v1315 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: N letter_learner (S545), then P parsha_emojis (S546), C name_tags (S548), D name_tags (S549), G name_tags (S550), M name_tags (S552), V (S553), H fontmaker (S559), A (S581). ⚑ Harnesses: `b631/` (`lib.mjs` = g626's server + cached Google Fonts + a recorder of pageerrors, console, same-origin failures, CSP reports, dialogs, foreign hosts and account calls; `live: true` fetches the libraries and data hosts for real by curl into `live/`; `census`, `tours`, `crawl` (RETAG / REVERSE / SCOPE + OPEN for a dialog's tabs), `tt` (both recording sources), `phone`, `controls`), `f630/`, `h629/`, `i628/`, `d627/`, `g626/`. ⚑ `print-media-leak` still has unjudged `leak.mjs` hits on 6 pages (dashboard, dictionary, LL, resources, FM, 404) for each page's next G. ⚑ 47 seeds.
+**Next session (S633):** **Branch `claude/loving-goodall-wh4spb` (S624–S632, draft PR 395): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1320**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=0ed6056 sw=v1320 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: P parsha_emojis (S546), C name_tags (S548), D name_tags (S549), G name_tags (S550), M name_tags (S552), V (S553), N flash (S555), H fontmaker (S559), A (S581). ⚑ Harnesses: `n632/` (`lib.mjs` on m625's server and cached fonts: a real device descriptor, SW blocked, `MEASURE` (document overflow, ancestor-clipped escapes, self-cut text, the dialog's ✕) and `COVER`; `arm1` / `pe1` / `pp` (the parsha pages) / `arm4` / `pe4` / `arm57` / `hdr` / `ctl`; contact sheets `ll-contact-*.png`), `b631/`, `f630/`, `h629/`, `i628/`, `d627/`, `g626/`. ⚑ The Resources additions (`4de12811`, `5d40fd91`) landed between S631 and S632 at the maintainer's request (sw v1315 → v1317). ⚑ `print-media-leak` still has unjudged `leak.mjs` hits on 6 pages (dashboard, dictionary, LL, resources, FM, 404) for each page's next G. ⚑ 47 seeds.

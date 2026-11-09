@@ -97290,3 +97290,49 @@ _(prior)_ **Next session (S630):** **Branch `claude/loving-goodall-wh4spb` (S624
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 _(prior)_ **Next session (S631):** **Branch `claude/loving-goodall-wh4spb` (S624–S630, draft PR 395): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1312**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=0ed6056 sw=v1312 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: B (S543), then N letter_learner (S545), P parsha_emojis (S546), C name_tags (S548), D name_tags (S549), G name_tags (S550), M name_tags (S552), V (S553), H fontmaker (S559), A (S581). ⚑ Harnesses: `f630/` (`lib.mjs` = h629's `openAt` / `realClick` + cdnjs's html2canvas and jsPDF from `f630/cdn/` by route (`routeCdn`, a delay or an abort) + `REC`, an animation-frame recorder of new busy text, live regions, long tasks and the largest frame gap; `gen`, `fm`, `prints`, `pdfcheck` (seeded `Math.random`, tree vs HEAD rasters), `shot`, `fcshot`), `h629/`, `i628/`, `d627/`, `g626/`. ⚑ `print-media-leak` still has unjudged `leak.mjs` hits on 6 pages (dashboard, dictionary, LL, resources, FM, 404) for each page's next G. ⚑ 48 seeds.
+
+
+<!-- archived by compact-ledger at the S633 boundary, 2026-11-09 -->
+## Compaction (S633, 2026-11-09) — moved verbatim from the live ledger
+
+### from Candidates — aged P4 (found more than 90 sessions before S633)
+
+- [ ] P4 (**NEW S542 F — gate 2**) | FM, js/ivrit-saves.js, torah, parsha_emojis | **Retry copy diverges from "Try again / נסו שוב"** (FM, cloud status, the staff's HE; Parsha Emojis' "reload the page"). | found S542
+
+### from Candidates (prioritized, top = next)
+
+- [ ] P4 (**NEW S627 — found verifying the micro-feature; HEAD alike; S632 measured: gate 2/3, findings S632**) | hebrew_dictionary.html | **In the English UI every Filter by Letter grid is 265px in its 245px box** (`repeat(7,1fr)` cannot go under "Samech" / "Shin/Sin" at the 11.2px floor), so its alef column spills ~7px past the panel's edge; the Hebrew UI fits. How the names wrap is M's call. | found S627
+
+### from Done
+
+- [x] 2026-11-09 | (S632 close-out) | branch/deploy note | **S632 = N on `letter_learner.html` (its 2nd N: S545 → S632, 23 commits) + `parsha_emojis.html` (its 2nd: S547 → S632) with its 54 `parsha/` pages (their first N): 384 + 144 + 146 phone views on iPhone SE / 13 / Pixel 7 / 13 landscape × EN/HE × light/dark, touch by taps and CDP finger drags (52/52 + 26/26), rotation mid-dialog, the iOS install hint, typed fields, 4× CPU, both header gates 1000 → 320; every arm's control fired. CLEAN on both (FOUND 0). From the queue: the Atlas' selects (S628 P4), the switcher's caret (found running the FM census) and the FM's triangles (the S563 census's last page). Gate 1 skipped (the session resumed unattended after a worker restart). Branch `claude/loving-goodall-wh4spb` (S624–S632), draft PR 395; the Pages deploy is checked after the merge.**
+
+- [x] 2026-11-09 | `33bb87b6` | Hebrew_Font_Maker.html, sw.js, probe | (S632; the S563 census's last page, pattern `decorative-glyph-carrier-exposed-to-assistive-tech`) **The Font Maker's fold triangles are drawn, not read**: `.npnl-disc summary::before` (▸, the Points step's four disclosures) and `.panel-title::after` (▾, display:none in the tabbed layout) take the empty alt | probe `S632-fontmaker-fold-triangles-drawn-not-read.mjs` 24/24 in 4 cells (a wizard project by real clicks, the carriers built as the page builds them under its stylesheet): names "Transform"…"Contours", 0 triangle names, still painted (HEAD: "▸ Transform" ×4, 22 names a cell); recipe 8/8
+
+- [x] 2026-11-09 | `c82fa766` | js/i18n.js, sw.js, probe | (S632, found running the FM census; pattern `decorative-glyph-carrier-exposed-to-assistive-tech`; the session's one shared-script iteration) **The language switcher's caret is drawn, not read**: `.i18n-switch::after` (\25BE) was a StaticText "▾" beside the language menu on every page; it takes the empty alt | probe `S632-language-switcher-caret-drawn-not-read.mjs`: 0 carets inside the switcher on 54 loads (every root page + a parsha page, 2–4 cells; HEAD 54), still painted, the switcher's 2× clip byte-identical to HEAD in 4 cells; recipe 8/8 on index and the Letter Learner
+
+- [x] 2026-11-09 | `c079ee79` | trope_atlas.html, sw.js, probe | (S632; the S628 P4) **The Atlas' Key and Melody selects wait for the charts**: `disabled` in the markup, `renderStatus` enables them only once `SETS` has landed (loading or failed, they sat empty and enabled beside "moves every staff"); `.at-sel:disabled` fades | probe `S632-trope-atlas-selects-wait-for-the-charts.mjs` 36/36 in 4 cells: held, failed + Try again by a real click, a plain load with a Key change redrawing (HEAD: 8 fail); before/after shots after a failed load; recipe 8/8
+
+- [x] 2026-11-08 | (S627 close-out) | branch/deploy note | **S627 = D on `parsha_emojis.html` (its 2nd: S538 → S627, 14 commits to the page since) + its 54 `parsha/` pages (their first D): cold 8 cells, 33 arms by real input × 2 cells × 1×/4× behind a 300 ms control, profiles, idle, 60 open/close cycles, scroll, the parsha pages @1×/4×. FOUND 1, FIXED 1 (Colored in re-measured every drawing) + …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-08 | `7aed3724` | hebrew_dictionary.html, locales, sw.js, probe | (S627 micro-feature, gate 1; the 2026-10-03 seed) **Filter by Letter has a Last Letter row** ("אות אחרונה"): words ending in ה or ת, any of its tiles, combined with the other rows; one list (`POS_ORD`) drives the rows, filter, chips, print header and restore; a six-position state or `?s=` link restores with the row …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-08 | `6a00b351` | parsha_emojis.html, sw.js, probe | (S627 D) **The coloring sheets measure each drawing once, line art or colored in**: the geometry is kept by parasha (the measuring is ~70% of a conversion) | `fixeq.mjs`: 108 conversions × line-first / colored-first equal HEAD's in EN and HE, the popup's sheets + fit + note through on → off equal; Colored in on @4× median of 5 …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-08 | `887e8c54` (not this session's) | parsha_emojis.html | (S627 D, struck) **The S538 Candidate "40 copies × 4 per sheet clone 240 sheets into the preview"** is settled by the off-screen preview skip | `copies.mjs`: `887e8c54^` vs the tree on one machine, 3 alternated loads @4×: 395 / 633 / 395 → 201 / 124 / 152 ms
+
+### from Per-session log (one line per session)
+
+- 2026-11-09 | **S632** | iters: 4 | tools: trope_atlas, js/i18n.js (every page), fontmaker, sw | patterns fixed: decorative-glyph-carrier-exposed-to-assistive-tech ×2 | pass run: N (letter_learner, first since S545 + parsha_emojis, first since S547, with the `parsha/` pages' first) | SW: v1317→v1320
+
+- 2026-11-05 | **S612** | iters: 5 | tools: letter_learner ×2, dashboard ×2, sw | patterns fixed: offscreen-sheets-laid-out-on-every-rebuild ×1 | pass run: D (letter_learner, first since S510) | SW: v1259→v1263
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S632 (2026-11-09):** trope_atlas, js/i18n.js, Hebrew_Font_Maker, sw.js, loop probes ×3, loop docs S632 · the 9 font pickers (generator, dictionary, flash, torah, trope, dashboard, fontmaker, letter_learner, name_tags), name_tags, name-tags.md, classroom_dashboard, dashboard.md, letter_learner, locales, sw.js, loop probes ×3, loop docs S631 · hebrew_blend_generator, generator.md, Hebrew_Font_Maker, font-maker.md, flash_cards, locales, sw.js, loop probes ×3, loop docs S630 · trope_tutor, torah-and-trope.md, parsha/ ×54 + build-parsha-pages, shared-components.md, data/hebrew_words.json, hebrew_dictionary + …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- N mobile & touch-device (one surface): 2026-11-09 (**S632 — 39th N, letter_learner (its 2nd: S545 → S632; 23 commits: the sheet tiles, the cursive tiles, the address mirror, Select all / Clear) + parsha_emojis (its 2nd: S547 → S632; the card's Print coloring sheet, with the 54 `parsha/` pages' first N): 384 + 144 + 146 phone views on 4 devices × EN/HE × light/dark, 52 + 26 touch steps by taps and finger drags, rotation, the install hint, 4× CPU, the header gates; controls fired. CLEAN on both (FOUND 0). N-next: flash (S555), trope (S562).**)
+
+_(prior)_ **Next session (S632):** **Branch `claude/loving-goodall-wh4spb` (S624–S631, draft PR 395): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1315**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=0ed6056 sw=v1315 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: N letter_learner (S545), then P parsha_emojis (S546), C name_tags (S548), D name_tags (S549), G name_tags (S550), M name_tags (S552), V (S553), H fontmaker (S559), A (S581). ⚑ Harnesses: `b631/` (`lib.mjs` = g626's server + cached Google Fonts + a recorder of pageerrors, console, same-origin failures, CSP reports, dialogs, foreign hosts and account calls; `live: true` fetches the libraries and data hosts for real by curl into `live/`; `census`, `tours`, `crawl` (RETAG / REVERSE / SCOPE + OPEN for a dialog's tabs), `tt` (both recording sources), `phone`, `controls`), `f630/`, `h629/`, `i628/`, `d627/`, `g626/`. ⚑ `print-media-leak` still has unjudged `leak.mjs` hits on 6 pages (dashboard, dictionary, LL, resources, FM, 404) for each page's next G. ⚑ 47 seeds.
