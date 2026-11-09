@@ -463,7 +463,12 @@ function safeStem(name, keepDot) {   // a zip entry name: no path characters, no
   const s = String(name || '').replace(/[\\/:*?"<>|\x00-\x1f]+/g, '_').replace(/^\.+/, '').trim().slice(0, 80);
   return s || (keepDot ? 'file' : 'project');
 }
-function show(which) { ['acctOut', 'acctBusy', 'acctIn', 'acctGone', 'acctStudent'].forEach(id => { $(id).hidden = id !== which; }); }
+function show(which) {
+  ['acctOut', 'acctBusy', 'acctIn', 'acctGone', 'acctStudent'].forEach(id => { $(id).hidden = id !== which; });
+  // A student account holds nothing here: the tagline and lede promise holdings, a download and deletion.
+  const stu = which === 'acctStudent';
+  document.querySelectorAll('[data-i18n="account.header.tagline"], main .lede').forEach(n => { n.hidden = stu; });
+}
 
 /* ── state ── */
 function onAccount(u, status) {
