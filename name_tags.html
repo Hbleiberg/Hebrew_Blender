@@ -482,6 +482,11 @@ body.dark .nt-table input:not(:focus):hover { border-color:var(--border); }
 .nt-del:hover { color:var(--danger-text); border-color:var(--danger-text); }
 .nt-table tr.nt-new .nt-del, .nt-table tr.nt-new .nt-grip { visibility:hidden; }
 .nt-table tr.nt-new td { background:rgba(201,146,42,0.05); }
+/* The blank row is where the next student is typed, but its tint alone (1.03:1) left an empty list's table a blank band
+   under its headings: its name fields show at rest the edge a hovered cell shows, so the row reads as a place to type.
+   :not(:focus) keeps the focus ring. */
+.nt-table tr.nt-new input:not([type="checkbox"]):not(:focus) { border-color:var(--warm-gray); }
+body.dark .nt-table tr.nt-new input:not([type="checkbox"]):not(:focus) { border-color:var(--border); }
 /* The reorder handle: pointer events, not HTML5 drag-and-drop (which never fires on touch), so touch-action keeps a
    finger on the grip from panning the page; the row being carried takes a gold tint. */
 .nt-grip { cursor:grab; touch-action:none; -webkit-user-select:none; user-select:none; }
