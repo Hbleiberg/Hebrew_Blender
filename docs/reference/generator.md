@@ -354,6 +354,8 @@ inner, never absolute boxes in a fixed height: the card is as tall as its taller
 translation or the Real Words Gematria back (the word, its value, the transliteration and the translation) stays
 inside it on screen, on paper and in the export. A Real Words card fills its grid row (one height a row); a
 `.flip-card` keeps its own height, since a flipped card's Got it / Missed would stretch its neighbours.
+`.self-check-grid` is right-to-left for the cards' order, so what a card holds says its own direction: its Latin
+lines `ltr`, and its chrome (the "tap to reveal" hint, Got it / Missed) the UI's — `ltr` in the English UI.
 
 ## Real Words card grids (`.rw-grid`)
 

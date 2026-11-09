@@ -263,7 +263,7 @@ it consumes only the pre-built static index plus PocketTorah MP3 streams. Its CS
 stop and reconsider. Shell (dark mode, tooltips, tour, toast, My Fonts) is copied from
 `torah_trainer.html`. **Settings are the last tab**
 (Learn | Phrases | Drill | Settings) laid out like the Font Maker's Settings tab: a serif heading per group over a
-hairline rule, the group's items in a grid (three across, two below 1024px, one below 640px) with small
+hairline rule (`.tu-set-title`, the Font Maker's `.adv-group-title` twin: 0.98rem bold, so a group outranks its items), the group's items in a grid (three across, two below 1024px, one below 640px) with small
 uppercase item labels, and nothing to collapse — so the page carries no panel-collapse memory. The
 groups are names and tradition (primary names, and a pointer to the two Melody dropdowns), sing along (key, voice, note
 names, tune speed, play each tune and the sing-back pause — see *Key and voice*, *Note names* and *Tune practice*
