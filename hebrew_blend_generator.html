@@ -2114,6 +2114,11 @@ body.dark .hi-sun{display:inline-block;}
     font-family: 'Source Sans 3', sans-serif;
     margin-top: 2px;
   }
+  /* A card's chrome speaks the UI's language, but inherits .self-check-grid's right-to-left (the cards' order on a Hebrew
+     sheet): in the English UI "✓ Got it" read "Got ✓ / it" and Missed stood first. The hint and the score buttons take the
+     UI's direction; the Hebrew UI is unchanged (pattern RTL-inheritance-on-a-Latin-script-container). Screen only. */
+  html:not([dir="rtl"]) .self-check-grid .flip-card-hint,
+  html:not([dir="rtl"]) .self-check-grid .flip-card-score-btns { direction: ltr; }
   .self-check-controls {
     display: flex;
     gap: 8px;
