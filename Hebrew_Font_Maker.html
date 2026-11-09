@@ -338,7 +338,7 @@ body.dark .hi-sun{display:inline-block;}
     display: flex; justify-content: space-between; align-items: center;
   }
   body.dark .panel-title { background: #0d1220; }
-  .panel-title::after { content: '▾'; color: var(--gold-light); font-size: 1rem; transition: transform 0.2s; }
+  .panel-title::after { content: '▾'; content: '▾' / ''; color: var(--gold-light); font-size: 1rem; transition: transform 0.2s; }   /* drawn, not read: the panel's name is its title (pattern decorative-glyph-carrier-exposed-to-assistive-tech) */
   .panel.collapsed .panel-title::after { transform: rotate(-90deg); }
   .panel.collapsed .panel-body { display: none; }
   .panel-body { padding: 12px; display: flex; flex-direction: column; gap: 9px; }
@@ -743,7 +743,7 @@ body.dark .hi-sun{display:inline-block;}
   .npnl-disc { margin: 0; border-top: 1px solid var(--border); padding: 6px 0 4px; }
   .npnl-disc summary { display: flex; align-items: center; gap: 6px; list-style: none; padding: 3px 0; }
   .npnl-disc summary::-webkit-details-marker { display: none; }
-  .npnl-disc summary::before { content: '▸'; color: var(--muted); font-size: 0.7rem; transition: transform 0.15s; }
+  .npnl-disc summary::before { content: '▸'; content: '▸' / ''; color: var(--muted); font-size: 0.7rem; transition: transform 0.15s; }   /* drawn, not read: "Transform", not "▸ Transform" */
   .npnl-disc[open] > summary::before { transform: rotate(90deg); }
   .npnl-disc summary:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
   /* tip line + help */
