@@ -5118,6 +5118,8 @@
   "nametags.panel.look": "מראה",
   "nametags.panel.text": "על כל תג",
   "nametags.preview.heading": "תצוגה מקדימה",
+  "nametags.preview.no_line.one": "לתלמיד אחד אין מה להדפיס לפי הבחירות שתחת „על כל תג”, ולכן אין לו תג.",
+  "nametags.preview.no_line.other": "ל־{count} תלמידים אין מה להדפיס לפי הבחירות שתחת „על כל תג”, ולכן אין להם תג.",
   "nametags.preview.pages.one": "עמוד אחד",
   "nametags.preview.pages.other": "{count} עמודים",
   "nametags.preview.print": "הדפסה",

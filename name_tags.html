@@ -2248,17 +2248,26 @@ function ntRenderPreview() {
   }
   host.replaceChildren(frag);
   ntFitPreview();
-  // A list whose every student is unticked shows the sample too, but says so — not "type a name" or "add a student" (the
-  // list has students) — and the note never keeps an earlier "Printing n of m"; an empty list keeps Print's own message.
-  const tags = document.getElementById('ntPrevTags'), pages = document.getElementById('ntPrevPages'), skipped = ntSkipped();
-  tags.textContent = sample ? (skipped ? '' : _fbT('nametags.preview.sample', 'A sample — type a name to see your own tags')) : _fbN('nametags.preview.tags', rows.length, '{count} tag', '{count} tags');
+  // A list with students but none to print shows the sample too, with no count beside it and never "type a name" or "add
+  // a student" (the list has students); the note says why (ntPrintWhy) and never keeps an earlier one; an empty list
+  // keeps Print's own message.
+  const tags = document.getElementById('ntPrevTags'), pages = document.getElementById('ntPrevPages'), why = ntPrintWhy(rows.length);
+  tags.textContent = sample ? (why.total ? '' : _fbT('nametags.preview.sample', 'A sample — type a name to see your own tags')) : _fbN('nametags.preview.tags', rows.length, '{count} tag', '{count} tags');
   pages.textContent = sample ? '' : _fbN('nametags.preview.pages', sheets, '{count} page', '{count} pages');
   const btn = document.getElementById('ntPrintBtn');
   btn.setAttribute('aria-disabled', sample ? 'true' : 'false');
   const note = document.getElementById('ntPrintNote'), empty = _fbT('nametags.preview.print_empty', 'Add a student to the list first — the sample tags do not print.');
-  note.textContent = skipped ? (sample ? _fbT('nametags.preview.print_none', 'No student is ticked to print — tick the box beside a name to add it back.')
-    : _fbT('nametags.preview.printing_some', 'Printing {n} of {count} students — tick the box beside a name to add it back.', { n: rows.length, count: rows.length + skipped }))
-    : (sample && note.textContent === empty ? empty : '');
+  note.textContent = why.text || (sample && note.textContent === empty ? empty : '');
+}
+// Who on the list is left out of the print, and why: the students unticked, and those whose tag would carry no line
+// under "On each tag" (an English name alone with the English name off, an extra line alone with the extra line off),
+// who used to drop out of the preview and the count without a word. `total` counts every student on the list.
+function ntPrintWhy(printable) {
+  const total = ntRows().filter(r => !ntRowEmpty(r)).length, skipped = ntSkipped(), blank = total - skipped - printable, parts = [];
+  if (skipped) parts.push(skipped === total ? _fbT('nametags.preview.print_none', 'No student is ticked to print — tick the box beside a name to add it back.')
+    : _fbT('nametags.preview.printing_some', 'Printing {n} of {count} students — tick the box beside a name to add it back.', { n: printable, count: total }));
+  if (blank > 0) parts.push(_fbN('nametags.preview.no_line', blank, 'One student has nothing to print with the choices under “On each tag”, so they get no tag.', '{count} students have nothing to print with the choices under “On each tag”, so they get no tag.'));
+  return { total, text: parts.join(' ') };
 }
 // The preview's scale: a sheet fills the column, never bigger than life.
 function ntFitPreview() {
@@ -2270,9 +2279,8 @@ function ntFitPreview() {
 }
 function ntPrint() {
   if (!ntPrintableRows().length) {
-    document.getElementById('ntPrintNote').textContent = ntSkipped()
-      ? _fbT('nametags.preview.print_none', 'No student is ticked to print — tick the box beside a name to add it back.')
-      : _fbT('nametags.preview.print_empty', 'Add a student to the list first — the sample tags do not print.');
+    document.getElementById('ntPrintNote').textContent = ntPrintWhy(0).text
+      || _fbT('nametags.preview.print_empty', 'Add a student to the list first — the sample tags do not print.');
     return;
   }
   ntRenderPreview();

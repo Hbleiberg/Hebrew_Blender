@@ -5118,6 +5118,8 @@
   "nametags.panel.look": "Look",
   "nametags.panel.text": "On each tag",
   "nametags.preview.heading": "Preview",
+  "nametags.preview.no_line.one": "One student has nothing to print with the choices under “On each tag”, so they get no tag.",
+  "nametags.preview.no_line.other": "{count} students have nothing to print with the choices under “On each tag”, so they get no tag.",
   "nametags.preview.pages.one": "{count} page",
   "nametags.preview.pages.other": "{count} pages",
   "nametags.preview.print": "Print",
