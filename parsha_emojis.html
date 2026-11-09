@@ -1542,7 +1542,12 @@ function etCsClose() {
   document.getElementById('etCsPrintArea').textContent = '';
   _etCsSheets.clear();
   etCsPageStyle();
-  const back = (_etCsOpener && document.contains(_etCsOpener) && _etCsOpener !== document.body) ? _etCsOpener : document.getElementById('etCsOpen');
+  let back = _etCsOpener;
+  // A card's button rebuilt while the popup was open (a language switch re-renders the cards — the account's own
+  // preference can land then): focus its new twin, not the toolbar.
+  if (back && !document.contains(back) && back.dataset && back.dataset.sheet != null)
+    back = document.querySelector('.et-go-btn[data-sheet="' + back.dataset.sheet + '"]');
+  if (!back || !document.contains(back) || back === document.body) back = document.getElementById('etCsOpen');
   _etCsOpener = null;
   try { back && back.focus(); } catch (e) {}
 }
