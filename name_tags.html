@@ -1553,7 +1553,13 @@ function ntMoveRow(from, to) {
     if (_ntUndo) { _ntUndo = null; ntListNote(''); }
     ntSaveList();
   }
-  ntRenderTable();   // also puts back a drag that ended where it started (or was cancelled)
+  // A move changes only the places from one end to the other, so only those rows are drawn again — a carried row's
+  // live place lies between them too (each ↑/↓ press rebuilt all 200 rows: ~300 ms of a slow machine). A drag that
+  // ended where it started, or was cancelled, is put back by a full rebuild.
+  const tb = document.getElementById('ntRows');
+  if (ok && tb && tb.children.length === rows.length + (rows.length < NT_MAX_ROWS ? 1 : 0)) {
+    for (let k = Math.min(from, to); k <= Math.max(from, to); k++) tb.replaceChild(ntRowEl(rows[k], k, false), tb.children[k]);
+  } else ntRenderTable();
   const at = ok ? to : from;
   const g = document.querySelector('#ntRows [data-move="' + at + '"]');
   if (g) g.focus();
