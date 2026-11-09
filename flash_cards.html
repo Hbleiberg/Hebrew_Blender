@@ -7102,8 +7102,9 @@ function fcTrackStickies() {
     const el = document.querySelector(sel);
     if (!el) return;
     const set = () => document.documentElement.style.setProperty(v, el.offsetHeight + 'px');
-    set();
-    if (window.ResizeObserver) new ResizeObserver(set).observe(el); else window.addEventListener('resize', set);
+    // The observer's first callback (after the first layout, before the first paint) delivers the height: a read here
+    // would force a layout mid-boot that panel memory and the translated labels then redo.
+    if (window.ResizeObserver) new ResizeObserver(set).observe(el); else { set(); window.addEventListener('resize', set); }
   });
 }
 
