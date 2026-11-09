@@ -984,8 +984,30 @@ function etThisWeek() {
       r = HebCal.parshaForDate(next, { israel });
     }
     if (!r || r.kind !== 'parsha' || !Array.isArray(r.idx) || !r.idx.length) return null;
-    return { idx: r.idx.slice(), date: r.date, holiday };
+    // The other schedule on the same Shabbat: after a festival day the Diaspora keeps and Israel does not, Israel reads
+    // a parasha ahead for a few weeks (other.idx null: the Diaspora reads a festival portion that Shabbat).
+    let other = null;
+    try {
+      const o = HebCal.parshaForDate(r.date, { israel: !israel });
+      const oIdx = o && o.kind === 'parsha' && Array.isArray(o.idx) && o.idx.length ? o.idx.slice() : null;
+      if (o && (!oIdx || oIdx.join() !== r.idx.join())) other = { israel: !israel, idx: oIdx };
+    } catch (e) {}
+    return { idx: r.idx.slice(), date: r.date, holiday, other };
   } catch (e) { return null; }
+}
+// A split week's line under the heading: the other schedule's reading that Shabbat, its names in the UI's language.
+function etOtherNote(week) {
+  const o = week && week.other;
+  if (!o) return '';
+  const he = etLang() === 'he';
+  let text = '';
+  if (o.idx) {
+    const names = o.idx.map(i => etData.find(p => p.n === i + 1)).filter(Boolean).map(p => he ? p.he : p.en);
+    if (!names.length) return '';
+    const name = names.length > 1 ? I18n.t('emojitorah.today.other_pair', { first: names[0], second: names[1] }) : names[0];
+    text = I18n.t(o.israel ? 'emojitorah.today.other_israel' : 'emojitorah.today.other_diaspora', { name });
+  } else if (!o.israel) text = I18n.t('emojitorah.today.other_diaspora_holiday');
+  return text ? `<p class="et-sub et-other">${esc(text)}</p>` : '';
 }
 
 // One card: the gallery's markup (icon, names in the UI's order, the book and its range isolated left to right, the
@@ -1027,6 +1049,7 @@ function etTodayHTML(week) {
   return `<section class="et-sec" aria-labelledby="etWeekHead"><h2 class="et-week" id="etWeekHead">${esc(I18n.t('emojitorah.today.heading', { date }))}</h2>`
     + (week.holiday ? `<p class="et-sub">${esc(I18n.t('emojitorah.today.holiday_note'))}</p>` : '')
     + (cards.length > 1 ? `<p class="et-sub">${esc(I18n.t('emojitorah.today.doubled_note'))}</p>` : '')
+    + etOtherNote(week)
     + `<ul class="et-list et-featured">${cards.map(p => etCard(p, week, true)).join('')}</ul></section>`;
 }
 function etRender() {

@@ -670,7 +670,11 @@ header-icons and holiday-icons CSS blocks.
 - **This week** is `HebCal.parshaForDate(today)` on the Torah Trainer's own Diaspora/Israel choice
   (`hebrewTorahTrainer_settings.schedule`, read through `ivritSafeParse` and never written; Diaspora when absent).
   A Shabbat that reads a festival portion steps on a week at a time (up to four) to the next parasha, with a note and
-  a *Next parasha* badge instead of *This week's parasha*; a doubled week shows both cards with a note. *Today's
+  a *Next parasha* badge instead of *This week's parasha*; a doubled week shows both cards with a note. A split week
+  (after the Diaspora's eighth day of Pesach or second of Shavuot falls on Shabbat, Israel reads a parasha ahead) adds
+  one line naming the other schedule's reading on that same Shabbat — "In Israel: {name}", "Outside Israel: {name}" or
+  "Outside Israel: a holiday reading" (`HebCal.parshaForDate(date, { israel: !israel })`; a pair joined by
+  `emojitorah.today.other_pair`); a week both schedules share has none. *Today's
   parasha* shows the week's card(s) larger under "Shabbat, {date}" (`Intl.DateTimeFormat` in `I18n.lang`); the
   other views mark them in place with the gallery's gold border and the badge. Without `HebCal`, *Today's parasha*
   says so and shows every card.
