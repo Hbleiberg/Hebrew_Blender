@@ -1198,7 +1198,7 @@ function mountFolderTree(cfg){
     closeMenu();
     const menu = document.createElement('div'); menu.className = 'ft-move-menu'; menu.setAttribute('role','menu'); menu.setAttribute('aria-label', btn.title || btn.textContent);
     ftPaths(tree, node.t==='folder' ? node.id : null).forEach(p => {
-      const b = document.createElement('button'); b.type='button'; b.setAttribute('role','menuitem'); b.textContent = p.label; if (p.id !== null) b.insertAdjacentHTML('afterbegin', FT_ICON_FOLDER);
+      const b = document.createElement('button'); b.type='button'; b.setAttribute('role','menuitem'); b.textContent = p.label; if (p.id !== null) b.insertAdjacentHTML('afterbegin', FT_ICON_FOLDER); else b.className = 'ft-move-root';
       b.addEventListener('click', () => { const mv = ftRemove(tree, x => x===node); if (mv){ ftFolderArray(tree, p.id).push(mv); commit(); const fb = moveBtnFor(node); if (fb) fb.focus(); } closeMenu(); });
       menu.appendChild(b);
     });

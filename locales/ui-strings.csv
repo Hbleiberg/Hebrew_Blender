@@ -3824,10 +3824,10 @@ shared.folders.empty_item,No saved items yet.,אין עדיין פריטים ש�
 shared.folders.empty_preset,No saved presets yet.,אין עדיין הגדרות שמורות.,"Empty list placeholder — one row per list noun, because Hebrew cannot interpolate the noun (it must agree in gender and number with the adjective)",shared; HE noun follows the term the panels already use
 shared.folders.empty_profile,No saved profiles yet.,אין עדיין פרופילים שמורים.,"Empty list placeholder — one row per list noun, because Hebrew cannot interpolate the noun (it must agree in gender and number with the adjective)",shared; HE noun follows the term the panels already use
 shared.folders.empty_schedule,No saved schedules yet.,אין עדיין מערכות שעות שמורות.,"Empty list placeholder — one row per list noun, because Hebrew cannot interpolate the noun (it must agree in gender and number with the adjective)",shared; HE noun follows the term the panels already use
-shared.folders.move_button,Move ▾,העבר ▾,Preset/profile item move button,"shared (carriers: generator, dashboard, flash_cards)"
+shared.folders.move_button,Move,העבר,Preset/profile item move button (its ▾ is drawn by the folder-tree CSS),"shared (carriers: generator, dashboard, flash_cards)"
 shared.folders.move_folder,Move folder,העבר תיקייה,Folder-tree action (title on ↗ mini-button),shared
 shared.folders.move_path,{path},{path},Move-menu folder target,svg-icon-in-markup; mixed UI+content — do not translate {path}; shared
-shared.folders.move_root,⌂ Root,⌂ שורש,Move-menu top-level target,leading-symbol; shared
+shared.folders.move_root,Root,שורש,Move-menu top-level target (its ⌂ is drawn by the folder-tree CSS),shared
 shared.folders.new_folder,New folder,תיקייה חדשה,Folder-tree button,svg-icon-in-markup; shared
 shared.folders.new_subfolder,New subfolder,תיקיית משנה חדשה,Folder-tree action (title on ＋ mini-button),shared
 shared.folders.prompt_new_folder,New folder name:,שם תיקייה חדשה:,Folder create prompt,shared

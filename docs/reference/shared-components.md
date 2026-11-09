@@ -536,7 +536,8 @@ from `parsha_emojis` by `scripts/build-parsha-pages.mjs`, so it cannot drift); t
   but both arms are I18n keys.
 - **Still text by decision, not by oversight:** the `▾` dropdown caret (a text caret in a text control, it
   mirrors correctly in RTL, and the panel twisty is pure CSS `content`), the folder tree's `⌂ Root` row and
-  its `⠿` drag handle, and every `✓`/`✗` that is a *status mark* rather than a button — a saved or exported
+  its `⠿` drag handle (the Move button's `▾` and the `⌂` before Root are the folder-tree block's CSS `content` with
+  an empty alt — `content: ' ▾' / ''` — so their strings are the words alone and a screen reader reads only those), and every `✓`/`✗` that is a *status mark* rather than a button — a saved or exported
   confirmation, the flash-card and worksheet practice answers, the Trope Tutor's score line. Converting a
   status mark is a different job from converting a control; don't sweep them together.
 

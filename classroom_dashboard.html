@@ -2490,6 +2490,8 @@ html[lang="he"] .ft-empty-folder { font-style:normal; }   /* Hebrew has no itali
 .ft-move-wrap { position:relative; display:inline-flex; flex:0 0 auto; }
 .ft-move-btn { font-size:.7rem; cursor:pointer; font-family:inherit; background:transparent; border:1px solid var(--border,#c8bfa8); border-radius:3px; padding:2px 6px; color:var(--text,#1a2744); min-block-size:24px; }
 .ft-move-btn:hover { background:var(--warm-gray,#e8e0d0); }
+.ft-move-btn::after { content:' ▾'; content:' ▾' / ''; }   /* drawn, not read: the button's name is the word (pattern decorative-glyph-carrier-exposed-to-assistive-tech) */
+.ft-move-menu .ft-move-root::before { content:'⌂ '; content:'⌂ ' / ''; }   /* the top level's mark, drawn, not read */
 .ft-move-menu { position:fixed; z-index:9999; background:var(--white,#fff); border:1px solid var(--border,#c8bfa8); border-radius:6px; box-shadow:0 2px 10px rgba(0,0,0,.22); min-width:150px; max-height:260px; overflow:auto; padding:4px; }
 .ft-move-menu button { display:block; width:100%; text-align:start; background:none; border:none; padding:5px 8px; cursor:pointer; font-size:.78rem; border-radius:4px; color:var(--text,#1a2744); font-family:inherit; white-space:nowrap; }
 .ft-move-menu button:hover { background:var(--warm-gray,#e8e0d0); }
@@ -8675,7 +8677,7 @@ function mountFolderTree(cfg){
     closeMenu();
     const menu = document.createElement('div'); menu.className = 'ft-move-menu'; menu.setAttribute('role','menu'); menu.setAttribute('aria-label', btn.title || btn.textContent);
     ftPaths(tree, node.t==='folder' ? node.id : null).forEach(p => {
-      const b = document.createElement('button'); b.type='button'; b.setAttribute('role','menuitem'); b.textContent = p.label; if (p.id !== null) b.insertAdjacentHTML('afterbegin', FT_ICON_FOLDER);
+      const b = document.createElement('button'); b.type='button'; b.setAttribute('role','menuitem'); b.textContent = p.label; if (p.id !== null) b.insertAdjacentHTML('afterbegin', FT_ICON_FOLDER); else b.className = 'ft-move-root';
       b.addEventListener('click', () => { const mv = ftRemove(tree, x => x===node); if (mv){ ftFolderArray(tree, p.id).push(mv); commit(); const fb = moveBtnFor(node); if (fb) fb.focus(); } closeMenu(); });
       menu.appendChild(b);
     });
