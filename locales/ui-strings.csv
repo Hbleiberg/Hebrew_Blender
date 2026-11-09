@@ -182,8 +182,10 @@ dashboard.datetime.parsha_open_title,Open this reading in the Torah Trainer (new
 dashboard.datetime.parsha_popup_title,"This week's parsha: its emoji, a summary and why that picture","פרשת השבוע: האימוג׳י שלה, תקציר ולמה נבחר הציור",parsha line button title (opens the parsha popup),
 dashboard.parsha.popup_close_aria,Close,סגירה,parsha popup close button (aria-label),aria/title
 dashboard.parsha.popup_emojis,Open Parsha Emojis ↗,פתיחת אימוג׳י הפרשות ↗,parsha popup link to parsha_emojis.html (new tab),
+dashboard.parsha.popup_emojis_aria,Open Parsha Emojis (opens in a new tab),פתיחת אימוג׳י הפרשות (נפתח בכרטיסייה חדשה),"aria-label of the dashboard.parsha.popup_emojis link: its visible words without the ↗, then that it opens a new tab (the arrow is not read)",new-tab arrow
 dashboard.parsha.popup_title,This week's parsha,פרשת השבוע,parsha popup heading,
 dashboard.parsha.popup_trainer,View in Torah Trainer ↗,צפייה במאמן התורה ↗,parsha popup link to the Torah Trainer (new tab),
+dashboard.parsha.popup_trainer_aria,View in Torah Trainer (opens in a new tab),צפייה במאמן התורה (נפתח בכרטיסייה חדשה),"aria-label of the dashboard.parsha.popup_trainer link: its visible words without the ↗, then that it opens a new tab (the arrow is not read)",new-tab arrow
 dashboard.datetime.parsha_schedule,Parsha schedule,לוח הפרשות,settings label (Diaspora / Israel),
 dashboard.datetime.show_eng_dow,Show day of the week,הצג את יום השבוע,settings label,
 dashboard.datetime.show_holiday_countdown,Show Countdown to Next Holiday,הצג ספירה לחג הבא,settings label,
@@ -344,6 +346,7 @@ dashboard.picker.from_nt_note,A one-time copy: later changes to either list stay
 dashboard.picker.from_nt_done.one,"Made the class ""{name}"" with {count} name.","נוצרה הכיתה ""{name}"" עם שם אחד.",Class note after making a class from a Name Tags list,plural; has {name}
 dashboard.picker.from_nt_done.other,"Made the class ""{name}"" with {count} names.","נוצרה הכיתה ""{name}"" עם {count} שמות.",Class note after making a class from a Name Tags list,plural; has {name}
 dashboard.picker.open_nametags,Open Name Tags ↗,פתיחת תגי השם ↗,"Student picker settings: link (new tab) to name_tags.html, opening its From the Classroom Dashboard box on the class that is live here; shown only on a device that has Name Tags lists",new-tab arrow
+dashboard.picker.open_nametags_aria,Open Name Tags (opens in a new tab),פתיחת תגי השם (נפתח בכרטיסייה חדשה),"aria-label of the dashboard.picker.open_nametags link: its visible words without the ↗, then that it opens a new tab (the arrow is not read)",new-tab arrow
 dashboard.picker.from_nt_done_capped,"Made the class ""{name}"" with the first {max} names (a class holds up to {max}).","נוצרה הכיתה ""{name}"" עם {max} השמות הראשונים (כיתה יכולה להכיל עד {max}).",Class note when the list had more names than a class holds,has {name}
 dashboard.picker.class_option,{name} ({count}),{name} ({count}),class-switcher option,mixed UI+content — do not translate {…}
 dashboard.picker.close,Close,סגור,pick overlay close button,
@@ -997,6 +1000,7 @@ dictionary.modal.era_bib_mod,Bib + Mod,מקראית + מודרנית,era badge (
 dictionary.modal.form_feminine,♀ Feminine,♀ נקבה,emoji modal form label,leading-emoji
 dictionary.modal.form_masculine,♂ Masculine,♂ זכר,emoji modal form label,leading-emoji
 dictionary.modal.google,Look up on Google ↗,חיפוש בגוגל ↗,word modal Google link,leading-emoji
+dictionary.modal.google_aria,Look up on Google (opens in a new tab),חיפוש בגוגל (נפתח בכרטיסייה חדשה),"aria-label of the dictionary.modal.google link: its visible words without the ↗, then that it opens a new tab (the arrow is not read)",new-tab arrow
 dictionary.modal.hear_form_aria,Hear {label},השמעת {label},emoji modal form speak aria-label,aria-label only
 dictionary.modal.in_bulk_list,In bulk list,ברשימה המרובה,word modal bulk button (added),svg-icon-in-markup
 dictionary.modal.pronounce,Pronounce,הגייה,word modal speak button,leading-emoji
@@ -6034,6 +6038,7 @@ fontmaker.ospick.title,Start from an existing font,התחלה מגופן קיי�
 fontmaker.ospick.back,← Back,→ חזרה,starting-font picker header button + failure-modal button,
 fontmaker.ospick.intro,"{count} editable Hebrew fonts from {partner}. Pick one to open it as a fresh project of your own — its letters, marks and spacing come along.","{count} גופנים עבריים הניתנים לעריכה מתוך {partner}. בחרו אחד כדי לפתוח אותו כפרויקט חדש משלכם — האותיות, הסימנים והריווח שלו עוברים יחד איתו.",starting-font picker intro line,"params count, partner; REVIEW: machine-drafted HE — confirm"
 fontmaker.ospick.partner_link,About these fonts ↗,על הגופנים האלה ↗,starting-font picker intro link to the partner fonts page,
+fontmaker.ospick.partner_link_aria,About these fonts (opens in a new tab),על הגופנים האלה (נפתח בכרטיסייה חדשה),"aria-label of the fontmaker.ospick.partner_link link: its visible words without the ↗, then that it opens a new tab (the arrow is not read)",new-tab arrow
 fontmaker.ospick.search_label,Search,חיפוש,starting-font picker search field label,
 fontmaker.ospick.search_ph,Font or designer name,שם גופן או מעצב,starting-font picker search placeholder,
 fontmaker.ospick.preview_label,Preview text,טקסט לתצוגה מקדימה,starting-font picker preview-text field label,
@@ -6425,6 +6430,7 @@ torah.recsrc.chip_tip,"The Chant buttons play Cantor Arianne Brown's ""Tricks of
 torah.recsrc.credit_prefix,Recording:,הקלטה:,audio bar + Audio tab credit: the word before the linked Total Torah credit,
 torah.recsrc.credit_name,"Cantor Arianne Brown, Adas Israel Congregation — Tricks of the Trope: Total Torah","Cantor Arianne Brown, Adas Israel Congregation — Tricks of the Trope: Total Torah",the linked Total Torah credit (links to the Adas Israel trope page); a brand credit kept in English in both UIs,"do-not-translate (brand credit, per the permission terms)"
 torah.recsrc.watch_youtube,Watch the full aliyah on YouTube ↗,לצפייה בעלייה המלאה ב-YouTube ↗,link beside the Total Torah credit to the verse's complete video,do-not-translate YouTube
+torah.recsrc.watch_youtube_aria,Watch the full aliyah on YouTube (opens in a new tab),לצפייה בעלייה המלאה ב-YouTube (נפתח בכרטיסייה חדשה),"aria-label of the torah.recsrc.watch_youtube link: its visible words without the ↗, then that it opens a new tab (the arrow is not read)",new-tab arrow; do-not-translate YouTube
 torah.recsrc.this_reading,"This reading: Total Torah video — {parsha}, Year {year} · Aliyah {aliyah}","הקריאה הזו: סרטון Total Torah — {parsha}, שנה {year} · עלייה {aliyah}","Audio tab, under the Total Torah credit: which triennial aliyah video the verses on screen come from",template; do-not-translate Total Torah
 torah.recsrc.this_reading_direct,"Also: {parsha} verses Cantor Brown recorded for this site (no video of them)","וגם: פסוקים מפרשת {parsha} שהחזנית בראון הקליטה עבור האתר (אין להם סרטון)","Audio tab, under the Total Torah credit: verses on screen that come from a recording Cantor Brown sent directly, not from a series video (so there is no YouTube link)",template
 torah.recsrc.karaoke_note,"Word-by-word follow isn't available for this Total Torah recording yet, so the whole verse highlights while it plays.","מעקב מילה-מילה עדיין לא זמין להקלטת Total Torah הזו, ולכן כל הפסוק מודגש בזמן הנגינה.",Karaoke section note while a Total Torah verse on screen has no verified word timings,do-not-translate Total Torah
@@ -6943,6 +6949,7 @@ nametags.dash.signed_in,"These are the classes on this device: to bring in the o
 nametags.dash.found.one,"{count} student in the Classroom Dashboard class ""{name}"".","תלמיד אחד בכיתה ""{name}"" שבלוח המחוונים.",Inline message before Add / New list / Replace,plural; has {name}
 nametags.dash.found.other,"{count} students in the Classroom Dashboard class ""{name}"".","{count} תלמידים בכיתה ""{name}"" שבלוח המחוונים.",Inline message before Add / New list / Replace,plural; has {name}
 nametags.dash.open_dashboard,Open the Classroom Dashboard's class lists ↗,פתיחת רשימות הכיתה בלוח המחוונים לכיתה ↗,"Link in the From the Classroom Dashboard box: opens the dashboard in a new tab on its Student Picker settings, where classes are made; the menu above re-reads them when that tab saves",new-tab arrow
+nametags.dash.open_dashboard_aria,Open the Classroom Dashboard's class lists (opens in a new tab),פתיחת רשימות הכיתה בלוח המחוונים לכיתה (נפתח בכרטיסייה חדשה),"aria-label of the nametags.dash.open_dashboard link: its visible words without the ↗, then that it opens a new tab (the arrow is not read)",new-tab arrow
 nametags.translit.failed,"The automatic transliteration could not load (are you offline?). Type the transliterations, or try again when you are online.","התעתיק האוטומטי לא נטען (אולי אין חיבור לאינטרנט?). הקלידו את התעתיקים, או נסו שוב כשתהיו מחוברים.",Note under the table,
 nametags.translit.no_nikkud.one,"{count} Hebrew name has no nikkud, so it has no automatic transliteration. Add the vowels (the keyboard's Nikkud tab) or type one.","לשם עברי אחד אין ניקוד, ולכן אין לו תעתיק אוטומטי. הוסיפו ניקוד (בלשונית הניקוד של המקלדת) או הקלידו תעתיק.",Note under the table,plural
 nametags.translit.no_nikkud.other,"{count} Hebrew names have no nikkud, so they have no automatic transliteration. Add the vowels (the keyboard's Nikkud tab) or type one.","ל־{count} שמות עבריים אין ניקוד, ולכן אין להם תעתיק אוטומטי. הוסיפו ניקוד (בלשונית הניקוד של המקלדת) או הקלידו תעתיק.",Note under the table,plural

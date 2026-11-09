@@ -8007,7 +8007,7 @@ function pocketCreditHTML() {
 function ttCreditHTML(entry, linkStyle) {
   const st = linkStyle ? ` style="${linkStyle}"` : '';
   let h = `${esc(I18n.t('torah.recsrc.credit_prefix'))} <a href="${TT_CREDIT_URL}" target="_blank" rel="noopener" dir="ltr" lang="en"${st}>${esc(I18n.t('torah.recsrc.credit_name'))}</a>`;
-  if (entry && TT_VIDEO_RE.test(entry.video)) h += ` · <a class="tt-credit-yt" href="https://youtu.be/${esc(entry.video)}" target="_blank" rel="noopener"${st}>${esc(I18n.t('torah.recsrc.watch_youtube'))}</a>`;
+  if (entry && TT_VIDEO_RE.test(entry.video)) h += ` · <a class="tt-credit-yt" href="https://youtu.be/${esc(entry.video)}" target="_blank" rel="noopener" aria-label="${esc(I18n.t('torah.recsrc.watch_youtube_aria'))}"${st}>${esc(I18n.t('torah.recsrc.watch_youtube'))}</a>`;
   return h;
 }
 function syncAudioCredit() {
@@ -8047,7 +8047,7 @@ function syncRecSrcControls() {
       const st = 'color:var(--gold-text);';
       ttDiv.innerHTML = `<div>${ttCreditHTML(null, st)}</div>` + ents.videos.map(e => e.direct
         ? `<div style="margin-top:4px;">${esc(I18n.t('torah.recsrc.this_reading_direct', { parsha: e.parsha }))}</div>`
-        : `<div style="margin-top:4px;">${esc(I18n.t('torah.recsrc.this_reading', { parsha: e.parsha, year: e.year, aliyah: e.aliyah }))} · <a href="https://youtu.be/${esc(e.video)}" target="_blank" rel="noopener" style="${st}">${esc(I18n.t('torah.recsrc.watch_youtube'))}</a></div>`).join('');
+        : `<div style="margin-top:4px;">${esc(I18n.t('torah.recsrc.this_reading', { parsha: e.parsha, year: e.year, aliyah: e.aliyah }))} · <a href="https://youtu.be/${esc(e.video)}" target="_blank" rel="noopener" aria-label="${esc(I18n.t('torah.recsrc.watch_youtube_aria'))}" style="${st}">${esc(I18n.t('torah.recsrc.watch_youtube'))}</a></div>`).join('');
     }
   }
   if (pocketDiv) pocketDiv.hidden = active;

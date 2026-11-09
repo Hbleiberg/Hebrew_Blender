@@ -2851,8 +2851,8 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
   <h2 class="fr-h" id="ppTitle" data-i18n="dashboard.parsha.popup_title">This week's parsha</h2>
   <div id="ppCards"></div>
   <div class="pp-footer">
-    <a class="btn btn-secondary" id="ppTrainer" href="torah_trainer.html" target="_blank" rel="noopener" data-i18n="dashboard.parsha.popup_trainer">View in Torah Trainer ↗</a>
-    <a class="btn" id="ppEmojis" href="parsha_emojis.html" target="_blank" rel="noopener" data-i18n="dashboard.parsha.popup_emojis">Open Parsha Emojis ↗</a>
+    <a class="btn btn-secondary" id="ppTrainer" href="torah_trainer.html" target="_blank" rel="noopener" aria-label="View in Torah Trainer (opens in a new tab)" data-i18n="dashboard.parsha.popup_trainer" data-i18n-aria-label="dashboard.parsha.popup_trainer_aria">View in Torah Trainer ↗</a>
+    <a class="btn" id="ppEmojis" href="parsha_emojis.html" target="_blank" rel="noopener" aria-label="Open Parsha Emojis (opens in a new tab)" data-i18n="dashboard.parsha.popup_emojis" data-i18n-aria-label="dashboard.parsha.popup_emojis_aria">Open Parsha Emojis ↗</a>
   </div>
 </div>
 <!-- ───── Guided tour coach-mark (non-modal spotlight) ───── -->
@@ -3339,7 +3339,7 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
         <div class="form-row" id="pickerFromNtRow" style="flex-direction:column;align-items:stretch;gap:6px;" hidden>
           <div class="pick-nt-bar">
             <button type="button" class="btn-xs hi-btn" id="pickerFromNtBtn" aria-expanded="false" aria-controls="pickerFromNt" onclick="toggleFromNameTags()"><svg class="hi hi-sm hi-group" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7.5" r="3.4"/><path d="M2.5 20.5v-1.6a4.2 4.2 0 0 1 4.2-4.2h4.6a4.2 4.2 0 0 1 4.2 4.2v1.6"/><path d="M15.6 4.3a3.2 3.2 0 0 1 0 6.4"/><path d="M21.5 20.5v-1.6a4.2 4.2 0 0 0-3.2-4.1"/></svg><span class="hi-lbl" data-i18n="dashboard.picker.from_nt_open">Make a class from a Name Tags list</span></button>
-            <a class="btn-xs" id="pickerNtLink" href="name_tags.html?from=dashboard" target="_blank" rel="noopener" data-i18n="dashboard.picker.open_nametags">Open Name Tags ↗</a>
+            <a class="btn-xs" id="pickerNtLink" href="name_tags.html?from=dashboard" target="_blank" rel="noopener" aria-label="Open Name Tags (opens in a new tab)" data-i18n="dashboard.picker.open_nametags" data-i18n-aria-label="dashboard.picker.open_nametags_aria">Open Name Tags ↗</a>
           </div>
           <div id="pickerFromNt" hidden>
             <label for="pickerFromNtSel" data-i18n="dashboard.picker.from_nt_list">Name Tags list</label>

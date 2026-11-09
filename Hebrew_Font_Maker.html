@@ -24145,6 +24145,7 @@ function osPickRender(fonts) {
   if (typeof first.partnerUrl === 'string' && /^https:\/\//.test(first.partnerUrl)) {
     const a = document.createElement('a'); a.href = first.partnerUrl; a.target = '_blank'; a.rel = 'noopener';
     a.textContent = osPickT('fontmaker.ospick.partner_link');
+    a.setAttribute('aria-label', osPickT('fontmaker.ospick.partner_link_aria'));   // the ↗ is not read; the name says it opens a new tab
     intro.appendChild(a);
   }
   // The mark is one partner's, so it shows only while the whole library is theirs. A second partner's

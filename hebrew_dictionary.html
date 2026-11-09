@@ -6361,7 +6361,7 @@ function openWordModal(w) {
   }
 
   const footer = document.createElement('div'); footer.className = 'wm-footer';
-  const g = document.createElement('a'); g.className = 'wm-google'; g.href = 'https://www.google.com/search?q=' + encodeURIComponent(w.word); g.target = '_blank'; g.rel = 'noopener'; g.textContent = I18n.t('dictionary.modal.google');
+  const g = document.createElement('a'); g.className = 'wm-google'; g.href = 'https://www.google.com/search?q=' + encodeURIComponent(w.word); g.target = '_blank'; g.rel = 'noopener'; g.textContent = I18n.t('dictionary.modal.google'); g.setAttribute('aria-label', I18n.t('dictionary.modal.google_aria'));
   footer.appendChild(g); b.appendChild(footer);
 
   _openWordModal(b);
