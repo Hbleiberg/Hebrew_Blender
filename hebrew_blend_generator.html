@@ -10337,10 +10337,14 @@ function renderGematriaSheet(ws, items, showTranslit = false, showTranslation = 
       const card = document.createElement('div');
       card.className = 'flip-card';
       const hebHtml = colorizeHebrew(b.hebrewDisplay, colorCodingMode);
-      const trFront = (rwTrOnSheet && b.translit)    ? `<span style="font-size:0.75rem;color:var(--muted);font-style:italic;margin-top:4px;">${esc(b.translit)}</span>` : '';
-      const trBack  = (rwTrOnKey   && b.translit)    ? `<span style="font-size:0.8rem;color:var(--gold-light);font-style:italic;margin-top:4px;">${esc(b.translit)}</span>`  : '';
-      const tnFront = (rwTnOnSheet && b.translation) ? `<span class="gem-tn" style="font-size:0.78rem;color:var(--gold-text);font-weight:600;margin-top:2px;">${escTn(b.translation)}</span>` : '';
-      const tnBack  = (rwTnOnKey   && b.translation) ? `<span style="font-size:0.85rem;color:var(--gold-light);font-weight:600;margin-top:2px;">${escTn(b.translation)}</span>` : '';
+      // The card sits in the right-to-left .self-check-grid, so its Latin lines pin their own direction (as the sheet's
+      // .gem-tn lines do): inherited, "A vacation (especially from school)." printed as "A vacation )especially from
+      // .school(" (pattern RTL-inheritance-on-a-Latin-script-container). Each span is a flex item, so a block; a wrapped
+      // translation is centred like the lines above it, clear of the card's edge (the face has no padding).
+      const trFront = (rwTrOnSheet && b.translit)    ? `<span style="font-size:0.75rem;color:var(--muted);font-style:italic;margin-top:4px;direction:ltr;">${esc(b.translit)}</span>` : '';
+      const trBack  = (rwTrOnKey   && b.translit)    ? `<span style="font-size:0.8rem;color:var(--gold-light);font-style:italic;margin-top:4px;direction:ltr;">${esc(b.translit)}</span>`  : '';
+      const tnFront = (rwTnOnSheet && b.translation) ? `<span class="gem-tn" style="font-size:0.78rem;color:var(--gold-text);font-weight:600;margin-top:2px;direction:ltr;text-align:center;padding-inline:6px;">${escTn(b.translation)}</span>` : '';
+      const tnBack  = (rwTnOnKey   && b.translation) ? `<span style="font-size:0.85rem;color:var(--gold-light);font-weight:600;margin-top:2px;direction:ltr;text-align:center;padding-inline:6px;">${escTn(b.translation)}</span>` : '';
       const front = inverse
         ? `<span style="font-size:2.2rem;font-weight:700;color:var(--text);">${val}</span>
            ${trFront}${tnFront}
