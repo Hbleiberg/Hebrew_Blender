@@ -62,11 +62,11 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
 
+- [ ] P4 (**NEW S636 — found fixing `da85a53a`; pattern `RTL-inheritance-on-a-Latin-script-container`, screen chrome**) | hebrew_blend_generator.html | **In the English UI a Self-Check card's "tap to reveal" hint and its "✓ Got it" / "✗ Missed" inherit `.self-check-grid`'s right-to-left**: the leading glyph lands at the end ("Got ✓ / it" when it wraps); screen only, never printed. | found S636
+
 - [ ] P4 (**NEW S614 C — the tour engine's**) | Hebrew_Font_Maker.html | **Tab out of an open tour and back leaves its Close and Next off-screen** (the fixed card follows its target out of view); S620 FIXED on the shared block's three carriers `79654c0f` — this page's own engine stays. | found S614
 
 - [ ] P4 (**NEW S613 H — gate 2, copy**) | hebrew_blend_generator.html | **Real Words Bingo's too-few note never names a grid that fits**: 14 words at 5×5 says "Need at least 24…"; 3×3 builds 30 cards from them, and the Grid size select sits in Bingo Options below. | found S613
-
-- [ ] P4 (**NEW S613 H — the S590 PDF spill's on-screen twin**) | hebrew_blend_generator.html | **A Self-Check card's back clips a long translation**: the faces are absolute in a 90px card, so "olive (a dark yellowish-green color…)" needs 111px and its last line is cut (1024 full-screen and every width). | found S613
 
 - [ ] P4 (**NEW S611 G — the picture's own call**) | letter_learner.html | **The hello picture's sleeve (a cuff drawn to y 103 of its 0–100 frame) touches שָׁלוֹם under it on the cursive coloring sheets** (3–8px of ink at 60 dpi, cursive landscape and portrait at 100%; 0.1–0.6px clear in Block). | found S611
 
@@ -79,8 +79,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S595 N**) | Hebrew_Font_Maker.html | **A window opened mid-tour opens under the tour's card**: on a phone the card covers its Close (the card's ✕ still ends the tour). | found S595
 
 - [ ] P4 (**NEW S595 N — gate 2/4**) | Hebrew_Font_Maker.html | **A phone turned sideways gets the tablet notice** (tiered by width alone); one over 820px gets none. | found S595
-
-- [ ] P4 (**NEW S590 — found verifying `d37fd204`**) | hebrew_blend_generator.html | **Real Words Gematria Self-Check's flipped card spills its back in Export PDF**: the translation runs past the card's edge and the Hebrew word sits above it (print not checked). | found S590
 
 - [ ] P4 (**NEW S589 G**) | torah_trainer.html | **Side by side at the Hebrew size's maximum (3.5rem) with transliteration under each word, a verse row taller than a Letter sheet leaves its bottom rule alone on the next sheet** (4 of 50 sheets; A4 none). | found S589
 
@@ -144,9 +142,9 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S549 D; S618 re-measured: the five builds are 120–1,300 ms apart — after the fonts, the locale and the library land — so a frame coalescer merges none; the lever is skipping the builds a pending font / locale load will redo**) | name_tags.html | **A load renders the preview five times and the table twice**: 200 students → 5 builds, 3.3 s of long tasks @4×. | found S549
 
-- [ ] P4 (**NEW S549 D; S635: a translit mode, the extra toggle and the header Print box FIXED `577019e1`, a move `f620a674`**) | name_tags.html | **A structural edit rebuilds the 200-row table** (S635 @4×: 98–168 ms of script + 147–196 of layout; @1× 66–113: the first key in the new row, Remove, Undo, a list switch, a paste or import) — its three icon buttons are parsed from `innerHTML` 600 …[full text: IMPROVEMENT_ARCHIVE.md]
-
 - [ ] P4 (**NEW S548 C**) | name_tags.html | **After a keyboard Remove, the Undo sits behind the focus**: the note is before the table, so from the 12th row Undo is 64 Shift+Tabs back (the live region does announce it). | found S548
+
+- [ ] P4 (**NEW S549 D; S635: a translit mode, the extra toggle and the header Print box FIXED `577019e1`, a move `f620a674`**) | name_tags.html | **A structural edit rebuilds the 200-row table** (S635 @4×: 98–168 ms of script + 147–196 of layout; @1× 66–113: the first key in the new row, Remove, Undo, a list switch, a paste or import) — its three icon buttons are parsed from `innerHTML` 600 …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S627 — found verifying the micro-feature; HEAD alike; S632 measured: gate 2/3, findings S632**) | hebrew_dictionary.html | **In the English UI every Filter by Letter grid is 265px in its 245px box** (`repeat(7,1fr)` cannot go under "Samech" / "Shin/Sin" at the 11.2px floor), so its alef column spills ~7px past the panel's edge; the Hebrew UI fits. How the names wrap is M's call. | …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -372,6 +370,16 @@ _(none)_
 
 ## Done
 
+- [x] 2026-11-09 | (S636 close-out) | branch/deploy note | **S636 = G on `name_tags.html` (its 2nd G: S550 → S636; 29 commits to the page since: the Print column, the typed transliteration, the omitted line, the roster import): the paper census 28 layouts × EN light 1280 / HE dark 800 on 24 students with 3 unticked (56 PDFs, 4 plants fired), mid-typing print, CSV and `.ivrit` round trips, the …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-09 | `da85a53a` | hebrew_blend_generator.html, sw.js, probe | (S636, found verifying `48782373`; pattern `RTL-inheritance-on-a-Latin-script-container`) **A Real Words Gematria card's English lines read left to right**: its four Latin lines pin `direction:ltr` (the sheet's `.gem-tn` already did), a wrapped translation centred | probe …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-09 | `48782373` | hebrew_blend_generator.html, generator.md, sw.js, probe | (S636, the S590 + S613 P4s) **A Self-Check card holds its answer**: the two faces share one grid cell, not absolute boxes in a fixed 90px card; a Real Words card fills its row | probe `S636-generator-selfcheck-card-holds-its-answer` 22/22, 8 fail on HEAD (every RW Gematria back 116–161px in 90; up to 5 vocab …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-09 | `6f2d63b3` | name_tags.html, locales, name-tags.md, sw.js, probe | (S636 G) **A student with nothing to print is counted, not dropped silently**: a ticked student whose tag carries no line under "On each tag" is counted in the note (`nametags.preview.no_line`), "of m" counts the list (`ntPrintWhy`) | probe `S636-name-tags-a-student-with-no-line-is-named` 14/14, 10 fail on HEAD; …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-09 | `fd7203b7` | name_tags.html, locales, name-tags.md, sw.js, probe | (S636 G) **A list with nobody ticked to print says so**: the note and a Print press say "No student is ticked to print" (`nametags.preview.print_none`), the sample stands without "type a name", no stale "Printing n of m" | probe `S636-name-tags-nobody-ticked-says-so` 12/12, 8 fail on HEAD (the empty-list and …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [x] 2026-11-09 | (S635 close-out) | branch/deploy note | **S635 = D on `name_tags.html` (its 2nd D: S549 → S635; 46 commits to the page since: the Print column, the row grips, the Dashboard link both ways, the roster import): cold 12 cells (0/24/200 students × 1×/4× × EN light / HE dark), 48 arms by real input × 4 cells behind a 300 ms control (301–306), a script/layout split, a load trace. …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-11-09 | `d89d9b8c` | flash_cards.html, sw.js, probe | (S635, the S618 D P4) **The sticky bars' heights are read after the first layout, not mid-boot**: `fcTrackStickies()` leaves the first read to its ResizeObserver (a browser without one keeps the direct read) | `fcab.mjs` medians of 5, HEAD vs tree: the DOMContentLoaded task @4× 220 → 202, 239 → 221, 230 → 191 ms; the vars and scroll …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -404,17 +412,11 @@ _(none)_
 
 - [x] 2026-11-09 | `c079ee79` | trope_atlas.html, sw.js, probe | (S632; the S628 P4) **The Atlas' Key and Melody selects wait for the charts**: `disabled` in the markup, `renderStatus` enables them only once `SETS` has landed (loading or failed, they sat empty and enabled beside "moves every staff"); `.at-sel:disabled` fades | probe `S632-trope-atlas-selects-wait-for-the-charts.mjs` 36/36 in 4 …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-11-08 | (S631 close-out) | branch/deploy note | **S631 = B on the S543 → S630 delta (the 42nd B; 503 commits: the Trope Atlas', reading assignments', the review page's and the 54 `parsha/` pages' first B): controls 72/72; a load census of 25 root URLs × 4 cells + 54 parsha pages × 2 (210); the 10 tours to their end and by Escape; a control crawl by real clicks over 19 pages × 2 cells …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-08 | `d6b9e003` | letter_learner.html, sw.js, probe | (S631; the S630 P4, pattern `async-export-runs-twice-on-a-second-press`) **The card's coloring-sheet Print runs once a press, and says it waits for fonts**: `_llCsPrinting`, the button disabled and reading the page's own "Loading fonts…" during the up-to-4 s face wait (a second press printed twice), its label and focus back at …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-08 | `48ea9057` | name_tags.html, classroom_dashboard.html, locales, name-tags.md, dashboard.md, sw.js, probe | (S631 micro-feature, gate 1; the S551 seed) **Name Tags and the Classroom Dashboard link to each other's class lists**: Name Tags' From the Classroom Dashboard box carries "Open the Classroom Dashboard's class lists ↗" (`?settings=picker`: Settings on the Student Picker, …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-08 | `abafae2b` | 9 font pickers, sw.js, probe | (S631 B) **Shlomo loads from its real path**: every picker pointed it at `…/Shlomo Orbach (OFL)/Shlomo/Shlomo.ttf`, a folder jsDelivr answers 404 for (both spellings), so Shlomo drew the fallback serif on screen, paper and exports; the file is one folder up | probe `S631-shlomo-font-loads-from-its-real-path.mjs` 48/48 in 4 cells × 9 …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-11-09 | **S636** | iters: 5 | tools: name_tags ×2, generator ×2, locales, name-tags.md, generator.md, sw | patterns fixed: RTL-inheritance-on-a-Latin-script-container ×1 | pass run: G (name_tags, first since S550; FOUND 2, FIXED 2) + the S590/S613 generator P4s | SW: v1329→v1333
 
 - 2026-11-09 | **S635** | iters: 4 | tools: name_tags ×2, flash, name-tags.md, sw | patterns fixed: rebuild-where-a-class-swap-would-do ×1 | pass run: D (name_tags, first since S549; FOUND 2, FIXED 2) + the S618 flash P4 | SW: v1326→v1329
 
@@ -454,11 +456,9 @@ _(none)_
 
 - 2026-11-05 | **S617** | iters: 4 | tools: dictionary, generator ×2, sw | patterns fixed: print-block-split-at-a-sheet-foot ×1 | pass run: G (dictionary, first since S523) | SW: v1276→v1279
 
-- 2026-11-05 | **S616** | iters: 3 | tools: parsha_emojis ×2 (+ the generated parsha pages), shared-components.md, sw | patterns fixed: — | pass run: M (parsha_emojis, first since S522; + its parsha/ pages) | SW: v1275→v1276
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S635 (2026-11-09):** name_tags ×2, flash_cards, name-tags.md, sw.js, loop probes ×3, loop docs S635 · name_tags, the folder-tree block (generator, flash, dashboard, torah, index), classroom_dashboard, hebrew_dictionary, Hebrew_Font_Maker, torah_trainer, locales, i18n.md, shared-components.md, sw.js, loop probes ×3, loop docs S634 · parsha_emojis, account.html, locales, shared-components.md, sw.js, loop probes ×3, loop docs S633 · trope_atlas, js/i18n.js, Hebrew_Font_Maker, sw.js, loop probes ×3, loop docs S632 · the 9 font pickers …[full text: IMPROVEMENT_ARCHIVE.md]
+- **Snapshot S636 (2026-11-09):** name_tags ×2, hebrew_blend_generator ×2, locales, name-tags.md, generator.md, sw.js, loop probes ×4, loop docs S636 · name_tags ×2, flash_cards, name-tags.md, sw.js, loop probes ×3, loop docs S635 · name_tags, the folder-tree block (generator, flash, dashboard, torah, index), classroom_dashboard, hebrew_dictionary, Hebrew_Font_Maker, torah_trainer, locales, i18n.md, shared-components.md, sw.js, loop probes ×3, loop docs S634 · parsha_emojis, account.html, locales, shared-components.md, sw.js, loop probes ×3, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -590,7 +590,7 @@ _(none)_
 
 - `button-focus-lost-to-its-own-rebuild` | ACTIVE | owner F | det: recipe | last S633 | streak 0
 
-- `dark-literal-escapes-the-print-tokens` | ACTIVE | owner G | det: recipe | last S604 | streak 2
+- `dark-literal-escapes-the-print-tokens` | ACTIVE | owner G | det: recipe | last S636 | streak 3
 
 - `editor-re-parse-caps-a-merged-list` | ACTIVE | owner P | det: recipe | last S421 | streak 0
 
@@ -660,7 +660,7 @@ _(none)_
 
 - `save-over-an-existing-name-without-confirm` | ACTIVE | owner A | det: recipe | last S371 | streak 0
 
-- `fixed-surface-missing-from-the-print-hide-list` | ACTIVE | owner G | det: recipe | last S604 | streak 1
+- `fixed-surface-missing-from-the-print-hide-list` | ACTIVE | owner G | det: recipe | last S636 | streak 2
 
 - `control-class-without-a-hover-state` | ACTIVE | owner L | det: recipe | last S373 | streak 0
 
@@ -762,7 +762,7 @@ _(none)_
 
 - `invalid-SVG-geometry-from-an-unclamped-difference` | DRAFT | owner A | det: none | last S187 | streak 0
 
-- `RTL-inheritance-on-a-Latin-script-container` | ACTIVE | owner A | det: recipe | last S610 | streak 0 | hits 3
+- `RTL-inheritance-on-a-Latin-script-container` | ACTIVE | owner A | det: recipe | last S636 | streak 0 | hits 4
 
 - `silent-external-media-failure` | ACTIVE | owner A | det: recipe | last S0 | streak 0
 
@@ -826,7 +826,7 @@ _(none)_
 
 - A recurring-pattern sweep: 2026-10-31 (**S581 — 42nd A, scoped to the outside-loop reading-assignments landing (`a7fa5f1..aab737c`, 18 of its 53 commits; `reading_assignments.html`, `js/ivrit-assignments.js`, the Trainer's +838): the security arms (no `innerHTML`, reviver-safe parses, URL sinks, an anonymous Trainer loads no assignments module), then two catalog recipes committed as detectors …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- G print & export fidelity (one tool): 2026-11-08 (**S626 — `parsha_emojis.html` (its 2nd: S537 → S626; 18 commits to the page since: the card's Print coloring sheet button, the off-screen preview skip, the size-drag reset, the copies field) + its 54 generated `parsha/` pages (their first G): the cards' Print 56 PDFs (split / junk plants fired), the popup's 72 combos × the A/B clip truth (2,280 …[full text: IMPROVEMENT_ARCHIVE.md]
+- G print & export fidelity (one tool): 2026-11-09 (**S636 — `name_tags.html` (its 2nd G: S550 → S636; 29 commits to the page since: the Print column, the typed transliteration, the omitted line, the roster import): 28 layouts × EN light 1280 / HE dark 800 on 24 students, 3 unticked (56 PDFs; pages, paper, margin, each page's letters = its frame's; 4 plants fired; dark = light), mid-typing print, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - D performance (one tool): 2026-11-09 (**S635 — `name_tags.html` (its 2nd D: S549 → S635; 46 commits to the page since: the Print column, the row grips, the Dashboard link both ways, the roster import): cold 12 cells (200 students @1× 458–588 ms of long tasks, @4× 2,725–3,099; S549 after its fix 451 / 3,660), 48 arms by real input × 4 cells behind a 300 ms control; every table rebuild @4× …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -846,4 +846,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-11-08 (**S630 — 41st F, long-build progress (S542's F-next; the affordance's first F): 13 presses that build before they answer, by real clicks with an animation-frame recorder, real PDF libraries from a cache, a held CDN, double presses at raw points. FOUND 2, FIXED 2 (+1 P4). F-next: destructive-action confirms.**)
 
-**Next session (S636):** **Branch `claude/pensive-davinci-wtu93g` (S633–S635, draft PR Hbleiberg/Hebrew_Blender#396): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1329**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=1c4c48a sw=v1329 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: G name_tags (S550), M name_tags (S552), V (S553), N flash (S555), H fontmaker + name_tags (S559), C flash (S560), P fontmaker (S561), D fontmaker (S565), A (S581). ⚑ Harnesses: `d635/` (`lib.mjs` serves the transliteration library from a local esm.sh cache — `crawl.py` → `esm/`, 17 modules — with a buffered long-task observer, render counters and CDP throttling; `cold.mjs`, `why.mjs` the load's render trace, `heavy.mjs` 48 arms, `split.mjs`, `ident.mjs` / `ident2.mjs` + `cmp.mjs`, `ab1.mjs`, `ab2.mjs`, `fcab.mjs`, `fcshot.mjs`), `c634/`, `p633/`. ⚑ Name Tags' D queue: the load's 5 preview builds (S549 P4), the rebuilds a new row, Remove, Undo, a list switch and an import still make (P4, re-scoped); the library's 200 names under Ashkenazi are 393–508 ms @4× by themselves. ⚑ Traps 590–592 (findings S635): a list at 200 has no blank row; a drag held near the window's edge auto-scrolls; time a HEAD-vs-HEAD baseline before a cold-load A/B. ⚑ `print-media-leak` still has unjudged `leak.mjs` hits on 6 pages (dashboard, dictionary, LL, resources, FM, 404) for each page's next G. ⚑ 46 seeds.
+**Next session (S637):** **Branch `claude/pensive-davinci-wtu93g` (S633–S636, draft PR Hbleiberg/Hebrew_Blender#396): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1333**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=1c4c48a sw=v1333 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: M name_tags (S552), V (S553), N flash (S555), H fontmaker + name_tags (S559), C flash (S560), P fontmaker (S561), G generator (S563), D fontmaker (S565), A (S581). ⚑ Harnesses: `g636/` (`lib.mjs` on `d635/`'s opener + Google Fonts from a curl cache and PDF facts; `paper.mjs` the 56-cell census with `PLANT=footer|fixed|push|tall`, `arms.mjs`, `armd.mjs`, `typing.mjs`, `csv.mjs`, `ivrit.mjs`, `leakfixed.mjs`, `clip.mjs`), `f636/` (the generator's Self-Check cards: `measure.mjs`, `ident.mjs`, `export.mjs` with html2canvas + jsPDF from `libs/`, `bidi.mjs` the Latin-led-rtl census), `d635/`. ⚑ Traps 593–596 (findings S636): pdftotext's order; flex items hide a fixed box's overflow; a clip plant at the sheet's edge; page.pdf fires beforeprint. ⚑ `print-media-leak` still has unjudged `leak.mjs` hits on 6 pages (dashboard, dictionary, LL, resources, FM, 404) for each page's next G — the generator's G is next. ⚑ 46 seeds.
