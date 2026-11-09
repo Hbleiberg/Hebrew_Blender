@@ -1435,6 +1435,24 @@ function ntRowEl(row, i, isNew) {
   ntDecorateTr(tr, row, i);
   return tr;
 }
+// A change that alters only how the rows read — the transliteration's mode or style, the extra column, the header's
+// Print box — updates them in place: rebuilding 200 rows costs ~300 ms of a slow machine's main thread for the same
+// DOM. Each row is found by its own index (data-r), so a row carried mid-drag keeps its student.
+function ntRefreshTable() {
+  const tb = document.getElementById('ntRows');
+  if (!tb) return;
+  const rows = ntRows();
+  tb.querySelectorAll('tr').forEach(tr => {
+    const he = tr.querySelector('input[data-f="he"]'); if (!he) return;
+    const i = Number(he.dataset.r), row = rows[i] || {};
+    ntDecorateTr(tr, row, i);
+    const pr = tr.querySelector('[data-print]'); if (pr) pr.checked = !_ntSkip.has(row);
+  });
+  document.getElementById('ntTable').classList.toggle('nt-no-extra', !ntSet.extra);
+  document.getElementById('ntExtraRow').hidden = !ntSet.extra;
+  ntUpdateTrNote();
+  ntPrintAllSync();
+}
 // The transliteration cell's placeholder (the automatic one) and its back-to-automatic button.
 function ntDecorateTr(tr, row, i) {
   const inp = tr.querySelector('input[data-f="tr"]'), back = tr.querySelector('.nt-auto');
@@ -2153,7 +2171,7 @@ function ntPrintAllSync() {
 }
 function ntSetPrintAll(on) {
   ntRows().forEach(r => { if (on) _ntSkip.delete(r); else _ntSkip.add(r); });
-  ntRenderTable(); ntQueuePreview();
+  ntRefreshTable(); ntQueuePreview();
 }
 function ntPrintableRows() { return ntRows().filter(r => !ntRowEmpty(r) && !_ntSkip.has(r) && ntLinesFor(r).length); }
 let _ntPreviewQueued = false;
@@ -2556,15 +2574,15 @@ function ntSyncEnable() {
 }
 function ntWireControls() {
   const onSet = (key, v) => { ntSetSet(key, v); ntSyncEnable(); ntQueuePreview(); };
-  document.querySelectorAll('input[name="ntTranslit"]').forEach(r => r.addEventListener('change', () => { onSet('translit', r.value); ntRenderTable(); ntMaybeLoadTranslit(); }));
-  document.querySelectorAll('input[name="ntStyle"]').forEach(r => r.addEventListener('change', () => { onSet('translitStyle', r.value); ntRenderTable(); }));
+  document.querySelectorAll('input[name="ntTranslit"]').forEach(r => r.addEventListener('change', () => { onSet('translit', r.value); ntRefreshTable(); ntMaybeLoadTranslit(); }));
+  document.querySelectorAll('input[name="ntStyle"]').forEach(r => r.addEventListener('change', () => { onSet('translitStyle', r.value); ntRefreshTable(); }));
   document.querySelectorAll('input[name="ntBubbleFill"]').forEach(r => r.addEventListener('change', () => onSet('bubbleFill', r.value)));
   document.querySelectorAll('input[name="ntPaperMode"]').forEach(r => r.addEventListener('change', () => onSet('paperMode', r.value)));
   document.querySelectorAll('input[name="ntPer"]').forEach(r => r.addEventListener('change', () => onSet('perPage', Number(r.value))));
   document.querySelectorAll('input[name="ntPaper"]').forEach(r => r.addEventListener('change', () => onSet('paper', r.value)));
   [['ntOptEnglish', 'english'], ['ntOptNikkud', 'nikkud'], ['ntOptBubble', 'bubble'], ['ntOptTent', 'tent'], ['ntOptOutline', 'averyOutline']].forEach(([id, k]) =>
     document.getElementById(id).addEventListener('change', e => onSet(k, e.target.checked)));
-  document.getElementById('ntOptExtra').addEventListener('change', e => { onSet('extra', e.target.checked); ntRenderTable(); });
+  document.getElementById('ntOptExtra').addEventListener('change', e => { onSet('extra', e.target.checked); ntRefreshTable(); });
   document.getElementById('ntBorder').addEventListener('change', e => onSet('border', e.target.value));
   document.getElementById('ntBg').addEventListener('change', e => onSet('bg', e.target.value));
   document.getElementById('ntFont').addEventListener('change', e => { onSet('font', e.target.value); ntFillFonts(); ntApplyFont(); });
