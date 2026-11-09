@@ -543,7 +543,9 @@ body.dark .hi-sun{display:inline-block;}
   @media (max-width: 1024px) { body.layout-tabbed #catHost .col-split.adv-grid { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 640px)  { body.layout-tabbed #catHost .col-split.adv-grid { grid-template-columns: 1fr; } }
   /* Settings group headings — a level above the per-toggle .ctl-label */
-  .adv-group-title { font-family: 'Libre Baskerville', serif; font-size: 0.8rem; color: var(--text); padding-bottom: 4px; border-bottom: 1px solid var(--border); margin-bottom: 2px; }
+  /* A group outranks its items: at 0.8rem regular the heading read lighter than its own items' bold uppercase .ctl-label;
+     the size and weight are the help modal's h4 (the Trope Tutor's .tu-set-title is its twin). */
+  .adv-group-title { font-family: 'Libre Baskerville', serif; font-size: 0.98rem; font-weight: 700; color: var(--text); padding-bottom: 4px; border-bottom: 1px solid var(--border); margin-bottom: 2px; }
   .adv-group-gap { margin-top: 12px; }
   /* Tabbed: the work-mode steps (Align/Trace/Nikkud/Trop) drop below the picker, just above the stage */
   body.layout-tabbed .workspace { display: flex; flex-direction: column; }

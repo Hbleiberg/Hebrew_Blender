@@ -713,7 +713,9 @@ body.dark .btn-secondary[aria-disabled="true"]:hover, body.dark .btn-secondary:d
    an even grid (its .adv-grid: three columns, two below 1024px, one below 640px), each item led by a small
    uppercase label (its .ctl-label). Groups are flat: no card, no navy bar, nothing to collapse. */
 .tu-set { display:flex; flex-direction:column; gap:22px; }
-.tu-set-title { font-family:'Libre Baskerville', serif; font-size:0.8rem; font-weight:400; color:var(--text); padding-bottom:4px; border-bottom:1px solid var(--border); margin:0 0 12px; }
+/* A group outranks its items (the Font Maker's .adv-group-title, its twin): at 0.8rem regular it read lighter than its
+   own items' bold uppercase .tu-set-label. */
+.tu-set-title { font-family:'Libre Baskerville', serif; font-size:0.98rem; font-weight:700; color:var(--text); padding-bottom:4px; border-bottom:1px solid var(--border); margin:0 0 12px; }
 .tu-set-grid, .tu-set-row { display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:18px 30px; align-items:start; }
 .tu-set-wide { grid-column:1 / -1; }
 @media (max-width:1024px) { .tu-set-grid, .tu-set-row { grid-template-columns:repeat(2, minmax(0, 1fr)); } }
