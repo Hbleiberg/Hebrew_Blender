@@ -84,8 +84,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S589 G**) | torah_trainer.html | **Side by side at the Hebrew size's maximum (3.5rem) with transliteration under each word, a verse row taller than a Letter sheet leaves its bottom rule alone on the next sheet** (4 of 50 sheets; A4 none). | found S589
 
-- [ ] P4 (**NEW S588 M — glyph pattern; shared block; S614: the twisty FIXED `ac65ce98`**) | folder-tree block (5 carriers) | **The strings "Move ▾" and "⌂ Root" are read** (the CSV keys carry the glyphs). | found S588
-
 - [ ] P4 (**NEW S588 M — 13 carriers**) | footer About column | **At ~800px the licence line wraps after a separator** ("CC BY-NC-SA 4.0 · GitHub ·" / "Contact & Support"). | found S588
 
 - [ ] P4 (**NEW S584 M — verify on a real device**) | trope_atlas.html | **The sof pasuk mark (׃) in the sign table's role text has zero advance in headless Chromium on Linux** ("the two dots ׃ close" draws as "dots :close"): the cell's stack is `"Source Sans 3", sans-serif`, no Hebrew face; check a Mac / iPhone before wrapping ׃ and ׀ in a Hebrew-font span (the strings are i18n). | found S584
@@ -378,6 +376,14 @@ _(none)_
 
 ## Done
 
+- [x] 2026-11-09 | (S634 close-out) | branch/deploy note | **S634 = C on `name_tags.html` (the page's 2nd C: S548 → S634, 32 commits to it — the Print column, the Dashboard link both ways, Escape on its rows, the roster import): a census of 16 surfaces × 6 cells (92 surface-cells; plants 8/8 kinds in all 6), real-Tab walks over 3 surfaces × 5 cells, keys, reflow at 320, motion with its control, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-09 | `bc559384` | name_tags.html, classroom_dashboard.html, hebrew_dictionary.html, Hebrew_Font_Maker.html, torah_trainer.html, locales, i18n.md, sw.js, probe | (S634 C, found on Name Tags) **Seven new-tab links name the new tab instead of reading the ↗**: each takes an `_aria` twin — its visible words, then "(opens in a new tab)" / "(נפתח בכרטיסייה חדשה)", the Trainer's and Parsha …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-09 | `519c7150` | folder-tree block (generator, flash, dashboard, torah; the JS also index), locales, shared-components.md, sw.js, probe | (S634; the S588 P4, pattern `decorative-glyph-carrier-exposed-to-assistive-tech`) **The folder tree's Move ▾ and ⌂ Root are drawn, not read**: the strings are the words; the block's CSS draws both glyphs with an empty alt | probe …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-09 | `88566812` | name_tags.html, sw.js, probe | (S634 C, P2) **A Print box shows its focus ring when reached by Tab**: the text cells' `input:focus { outline:none }` also matched the Print checkboxes (S623), which paint neither its border nor its inset shadow; the rule is now the text cells' only | probe `S634-name-tags-print-box-shows-its-focus-ring.mjs` 5 cells: 768 ring pixels …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [x] 2026-11-09 | (S633 close-out) | branch/deploy note | **S633 = P on `parsha_emojis.html` (the 23rd P; its 2nd: S546 → S633, 11 commits to the page + the modules' student guards): smoke-tools 17/17, smoke-sync 236, smoke-migration 47 with the pinned SDK; `pe.mjs` W1–W8 by real clicks against the fake cloud (the card's Print, `?parsha=`, two tabs, another device, Sign out, a student session, a …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-11-09 | `2dd3daaf` | parsha_emojis.html, locales, shared-components.md, sw.js, probe | (S633 micro-feature, gate 1; the S540 seed) **A split week names the other schedule's parasha**: one line under Today's heading — "In Israel: Beha'alotcha", "Outside Israel: Nasso", "Outside Israel: a holiday reading", a pair joined (maqaf in Hebrew); none in a shared week | probe 6 split cases + 2 …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -410,19 +416,11 @@ _(none)_
 
 - [x] 2026-11-08 | `9e560815` | hebrew_blend_generator.html, locales, generator.md, sw.js, probe | (S630 F; the count gate 2, approved) **Export PDF runs once and counts its pages on both buttons**: a 10-version class set took 11–13 s while the sticky footer's PDF said nothing and stayed live (a second press saved the PDF twice); now `_pdfExporting`, both buttons disabled and reading "⏳ Page 3 of …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-11-08 | (S629 close-out) | branch/deploy note | **S629 = H on `parsha_emojis.html` (its 2nd: S540 → S629) + its `parsha/` pages, then the Trope Tutor (its 6th: S557 → S629; a clean surface buys a second): 11 lessons + 2 student cells by real clicks, 0 page errors. FOUND 2 (both fixed) + 1 seed; the micro-feature (gate 1) and the S544 corpus word (gate 2) shipped.** Branch …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-08 | `9d56bb25` | data/hebrew_words.json, the 3 fetchers, ops.md, README, sw.js, probe | (S629, the S544 candidate, gate 2 approved) **"To plaster" reads טִיֵּחַ**: the patach stacked on the yod is the het's furtive patach; corpus ?v=7 → 8 on the dictionary, generator and flash cards | probe `S629-corpus-one-vowel-per-letter.mjs`: 0 stacked letters in 146,588 strings (planted …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-08 | `40ccdbaa` | scripts/build-parsha-pages.mjs, parsha/ ×54, shared-components.md, probe | (S629 H) **A coloring page's reading line names its book in the UI's language**: the Hebrew UI read "Genesis 6:9–11:32" where the page's card reads "בראשית"; the book is a `torah.custom.book_*` span now | probe `S629-parsha-pages-reading-line-in-the-ui-language.mjs`: 54 pages × 2 cells vs …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-08 | `97b5fa86` | trope_tutor.html, locales, torah-and-trope.md, sw.js, probe | (S629 micro-feature, gate 1) **The drill offers 2, 3 or 4 answers per question**: "How many answers to choose from?" on the Drill start screen, `settings.drillChoices` validated on read and read once per session | probe `S629-trope-drill-answer-count.mjs`: 4 cells by real clicks (2, 3, the default 4, …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-08 | (struck S629) | data/hebrew_words.json | (S544 candidate) **One entry stacks tsere and patah** — FIXED `9d56bb25` (gate 2 approved)
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-11-09 | **S634** | iters: 4 | tools: name_tags ×2, classroom_dashboard ×2, torah_trainer ×2, flash, generator, index, dictionary, fontmaker, locales, sw | patterns fixed: decorative-glyph-carrier-exposed-to-assistive-tech ×1 | pass run: C (name_tags, first since S548; FOUND 2, FIXED 2) + the …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - 2026-11-09 | **S633** | iters: 5 | tools: parsha_emojis ×2 (+ micro), account, locales, sw | patterns fixed: button-focus-lost-to-its-own-rebuild ×1 | pass run: P (parsha_emojis, first since S546; FOUND 1, FIXED 1) + the S606 account P4 + micro-feature (gate 1: split-week line) | SW: v1320→v1323
 
@@ -462,11 +460,9 @@ _(none)_
 
 - 2026-11-05 | **S615** | iters: 5 | tools: generator, dashboard, torah, fontmaker, locales, sw | patterns fixed: — | pass run: N (chrome, first bundle N; + name_tags) | SW: v1271→v1275
 
-- 2026-11-05 | **S614** | iters: 5 | tools: fontmaker ×2, generator, flash, dashboard ×2, torah, index, locales, sw | patterns fixed: sub-floor touch target ×2 | pass run: C (fontmaker, first since S513) | SW: v1267→v1271
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S633 (2026-11-09):** parsha_emojis, account.html, locales, shared-components.md, sw.js, loop probes ×3, loop docs S633 · trope_atlas, js/i18n.js, Hebrew_Font_Maker, sw.js, loop probes ×3, loop docs S632 · the 9 font pickers (generator, dictionary, flash, torah, trope, dashboard, fontmaker, letter_learner, name_tags), name_tags, name-tags.md, classroom_dashboard, dashboard.md, letter_learner, locales, sw.js, loop probes ×3, loop docs S631 · hebrew_blend_generator, generator.md, Hebrew_Font_Maker, font-maker.md, flash_cards, …[full text: IMPROVEMENT_ARCHIVE.md]
+- **Snapshot S634 (2026-11-09):** name_tags, the folder-tree block (generator, flash, dashboard, torah, index), classroom_dashboard, hebrew_dictionary, Hebrew_Font_Maker, torah_trainer, locales, i18n.md, shared-components.md, sw.js, loop probes ×3, loop docs S634 · parsha_emojis, account.html, locales, shared-components.md, sw.js, loop probes ×3, loop docs S633 · trope_atlas, js/i18n.js, Hebrew_Font_Maker, sw.js, loop probes ×3, loop docs S632 · the 9 font pickers (generator, dictionary, flash, torah, trope, dashboard, fontmaker, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -750,7 +746,7 @@ _(none)_
 
 - `rebuild-where-a-class-swap-would-do` | ACTIVE | owner A | det: recipe | last S220 | streak 0 | hits 1
 
-- `decorative-glyph-carrier-exposed-to-assistive-tech` | ACTIVE | owner A | det: recipe | last S632 | streak 0
+- `decorative-glyph-carrier-exposed-to-assistive-tech` | ACTIVE | owner A | det: recipe | last S634 | streak 0
 
 - `error-status-clobbered-by-a-later-routine-write` | DRAFT | owner A | det: none | last S411 | streak 0
 
@@ -830,7 +826,7 @@ _(none)_
 
 - K i18n / localization audit: 2026-11-06 (**S623 — 37th K, `843984b3..2d9e7e23` (525 commits; the Trope Atlas', Name Tags', the assignments and review pages' and the `parsha/` pages' first K): CSV +925 / −2 / 67 reworded (parity, arrows, plurals read); static 5,956 refs (0 missing) + 3,460 fallback sites; blind 0/12,102 added lines; 42 live-switch cells on the tree and the base (raw keys 0, …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- C accessibility (one tool): 2026-11-06 (**S620 — `letter_learner.html` (first since S527; 36 commits to the page since) + `parsha_emojis.html` (first since S541; 20 commits since): census + Tab walks over 22 LL and 9 PE surfaces by real clicks, contrast in 4 cells, forced colours, motion with its control, reflow at 320, the dialogs and the tour by keys, PE's failed load. CLEAN on both (FOUND 0; …[full text: IMPROVEMENT_ARCHIVE.md]
+- C accessibility (one tool): 2026-11-09 (**S634 — `name_tags.html` (its 2nd C: S548 → S634; 32 commits to the page since: the Print column, the Dashboard link both ways, Escape on its rows, the roster import): a census of 16 surfaces × 6 cells (92; plants 8/8 kinds), real-Tab walks over 3 surfaces × 5 cells, keys, reflow at 320, motion with its control, forced colours, hover. FOUND 2, FIXED 2: …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - A recurring-pattern sweep: 2026-10-31 (**S581 — 42nd A, scoped to the outside-loop reading-assignments landing (`a7fa5f1..aab737c`, 18 of its 53 commits; `reading_assignments.html`, `js/ivrit-assignments.js`, the Trainer's +838): the security arms (no `innerHTML`, reviver-safe parses, URL sinks, an anonymous Trainer loads no assignments module), then two catalog recipes committed as detectors …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -854,4 +850,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-11-08 (**S630 — 41st F, long-build progress (S542's F-next; the affordance's first F): 13 presses that build before they answer, by real clicks with an animation-frame recorder, real PDF libraries from a cache, a held CDN, double presses at raw points. FOUND 2, FIXED 2 (+1 P4). F-next: destructive-action confirms.**)
 
-**Next session (S634):** **Branch `claude/pensive-davinci-wtu93g` (S633, draft PR): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1323**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=1c4c48a sw=v1323 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: C name_tags (S548), D name_tags (S549), G name_tags (S550), M name_tags (S552), V (S553), N flash (S555), H fontmaker (S559), P fontmaker (S561), A (S581). ⚑ Harnesses: `p633/` (`lib.part` = smoke-sync 168–537 with `P_ROOT`; `pe.mjs` W1–W8 on the fake cloud, `static.mjs <root>` arms 3–7, `plant/` `plant2/` `plant3/` the controls, the SDK fixture in `sdk/`), `n632/`, `b631/`, `f630/`, `h629/`. ⚑ `print-media-leak` still has unjudged `leak.mjs` hits on 6 pages (dashboard, dictionary, LL, resources, FM, 404) for each page's next G. ⚑ 46 seeds.
+**Next session (S635):** **Branch `claude/pensive-davinci-wtu93g` (S633 + S634, draft PR Hbleiberg/Hebrew_Blender#396): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1326**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=1c4c48a sw=v1326 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: D name_tags (S549), G name_tags (S550), M name_tags (S552), V (S553), N flash (S555), H fontmaker (S559), C flash (S560), P fontmaker (S561), A (S581). ⚑ Harnesses: `c634/` (`census.js` + `census.mjs` 16 surfaces × 6 cells, `tab.mjs`, `ring.mjs` the pixel ring check, `keys.mjs`, `misc.mjs`, `hover.mjs`, `ftident.mjs`, `head/`), `p633/`, `n632/`, `b631/`, `f630/`. ⚑ A ring check on the computed style passes a native checkbox that paints nothing (trap 587): measure pixels outside the control. ⚑ `print-media-leak` still has unjudged `leak.mjs` hits on 6 pages (dashboard, dictionary, LL, resources, FM, 404) for each page's next G. ⚑ 46 seeds.
