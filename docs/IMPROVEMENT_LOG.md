@@ -144,9 +144,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S549 D; S618 re-measured: the five builds are 120–1,300 ms apart — after the fonts, the locale and the library land — so a frame coalescer merges none; the lever is skipping the builds a pending font / locale load will redo**) | name_tags.html | **A load renders the preview five times and the table twice**: 200 students → 5 builds, 3.3 s of long tasks @4×. | found S549
 
-- [ ] P4 (**NEW S549 D**) | name_tags.html | **A keyboard move (↑/↓) rebuilds the whole table and every sheet per press** (three presses on 200 students: 3 table rebuilds + 3 renders, 425 ms at 1× before `2499371`, 227 after) — swap the two rows and renumber instead. | found S549
-
-- [ ] P4 (**NEW S549 D**) | name_tags.html | **A structural edit rebuilds the 200-row table** (30 ms of script + the layout, ~55–75 ms at 1×, ~300 at 4×: the first key in the new row, Remove, Undo, a translit mode, the extra toggle, a list switch, a paste) — its three icon buttons are parsed from `innerHTML` 600 times; a template clone or an in-place row would do. | found S549
+- [ ] P4 (**NEW S549 D; S635: a translit mode, the extra toggle and the header Print box FIXED `577019e1`, a move `f620a674`**) | name_tags.html | **A structural edit rebuilds the 200-row table** (S635 @4×: 98–168 ms of script + 147–196 of layout; @1× 66–113: the first key in the new row, Remove, Undo, a list switch, a paste or import) — its three icon buttons are parsed from `innerHTML` 600 …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S548 C**) | name_tags.html | **After a keyboard Remove, the Undo sits behind the focus**: the note is before the table, so from the 12th row Undo is 64 Shift+Tabs back (the live region does announce it). | found S548
 
@@ -155,8 +153,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S624 P — a shared module + every carrier, not small**) | js/ivrit-account.js (+ 38 `_cloud` confirms on 11 pages, the restore dialogs) | **A stored student session counts as a syncing teacher's**: every `_cloud` confirm and the `.ivrit` / AllTools restore's Merge-only rule read `hasStoredSession()`, though a student account never syncs (Name Tags' delete says "removed from your …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S621 E — the loop's tooling**) | scripts/loop/ | **E's shape-drift arm has no fixtures or static check yet** (`scripts/loop/fixtures/` was never created; the arm has been defined in loop-passes.md since S543's jsDelivr hit): lift the smokes' canned Sefaria / Hebcal / Open-Meteo / Nominatim / Web3Forms responses with a dropped-field control and check each parser reads only fields …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [ ] P4 (**NEW S618 D — the tool's cap this session**) | flash_cards.html | **`fcTrackStickies()` forces the page's first layout mid-boot** (its synchronous `set()` reads `offsetHeight` before panel memory and the translated labels change the page, which lays out again): 48 ms of layout + 35 of style @4× in the DOMContentLoaded task; the ResizeObserver's first callback already delivers both …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S610 M — CLAUDE.md's header-icons rule; pattern `decorative-glyph-carrier-exposed-to-assistive-tech`**) | classroom_dashboard.html, locales | **Nine control strings still lead with a glyph**: ↔ Move panels, 📍 Current Location (drawer + setup card), ✨ Quick-start layouts…, + Add period, 🎲 Pick Again, 🔀 Reshuffle, 🔄 New round, ✅ Everyone's here; the picture belongs in markup …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -376,6 +372,14 @@ _(none)_
 
 ## Done
 
+- [x] 2026-11-09 | (S635 close-out) | branch/deploy note | **S635 = D on `name_tags.html` (its 2nd D: S549 → S635; 46 commits to the page since: the Print column, the row grips, the Dashboard link both ways, the roster import): cold 12 cells (0/24/200 students × 1×/4× × EN light / HE dark), 48 arms by real input × 4 cells behind a 300 ms control (301–306), a script/layout split, a load trace. …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-09 | `d89d9b8c` | flash_cards.html, sw.js, probe | (S635, the S618 D P4) **The sticky bars' heights are read after the first layout, not mid-boot**: `fcTrackStickies()` leaves the first read to its ResizeObserver (a browser without one keeps the direct read) | `fcab.mjs` medians of 5, HEAD vs tree: the DOMContentLoaded task @4× 220 → 202, 239 → 221, 230 → 191 ms; the vars and scroll …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-09 | `f620a674` | name_tags.html, sw.js, probe | (S635 D; the S549 keyboard-move P4) **Moving a student redraws only the rows it moves past**: `ntMoveRow` replaces the rows from the old place to the new one; a drag put back or cancelled still rebuilds | `ident2.mjs` 728 comparisons HEAD vs tree, 0 differences (a planted off-by-one: 72); @4× an arrow press's max task 413–536 → …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-09 | `577019e1` | name_tags.html, sw.js, probe | (S635 D; pattern `rebuild-where-a-class-swap-would-do`) **Four controls update the class list's rows in place**: the transliteration's mode and style, the extra-line box and the header's Print box re-decorate each row (`ntRefreshTable`) instead of rebuilding 200 | `ident.mjs` 960 comparisons HEAD vs tree, 0 differences (a planted …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [x] 2026-11-09 | (S634 close-out) | branch/deploy note | **S634 = C on `name_tags.html` (the page's 2nd C: S548 → S634, 32 commits to it — the Print column, the Dashboard link both ways, Escape on its rows, the roster import): a census of 16 surfaces × 6 cells (92 surface-cells; plants 8/8 kinds in all 6), real-Tab walks over 3 surfaces × 5 cells, keys, reflow at 320, motion with its control, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-11-09 | `bc559384` | name_tags.html, classroom_dashboard.html, hebrew_dictionary.html, Hebrew_Font_Maker.html, torah_trainer.html, locales, i18n.md, sw.js, probe | (S634 C, found on Name Tags) **Seven new-tab links name the new tab instead of reading the ↗**: each takes an `_aria` twin — its visible words, then "(opens in a new tab)" / "(נפתח בכרטיסייה חדשה)", the Trainer's and Parsha …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -408,17 +412,11 @@ _(none)_
 
 - [x] 2026-11-08 | `abafae2b` | 9 font pickers, sw.js, probe | (S631 B) **Shlomo loads from its real path**: every picker pointed it at `…/Shlomo Orbach (OFL)/Shlomo/Shlomo.ttf`, a folder jsDelivr answers 404 for (both spellings), so Shlomo drew the fallback serif on screen, paper and exports; the file is one folder up | probe `S631-shlomo-font-loads-from-its-real-path.mjs` 48/48 in 4 cells × 9 …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-11-08 | (S630 close-out) | branch/deploy note | **S630 = F on long-build progress (the 41st F; S542's F-next, the affordance's first F): a census of every press that builds before it answers — the generator's Export PDF, the Font Maker's template, Preview PDF, export and Trace all, the print buttons of Name Tags, the Letter Learner, Parsha Emojis, the dictionary and the dashboard, …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-08 | `c0e9ea50` | flash_cards.html, locales, sw.js, probe | (S630 micro-feature, gate 1; the S367 seed) **The drill sets its voice speed**: "Voice speed − 0.75× +" under Prev / Next while a word can be heard (Audio on, or a listening round), stepping the Advanced tab's slider by 0.1 within 0.5–1.5 through its own input handler (readout, saveSettings, the next Hear); an end of the …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-08 | `5f760af5` | Hebrew_Font_Maker.html, font-maker.md, sw.js, probe | (S630 F) **The template and Preview PDF run once a press, and speak first**: thin wrappers with a busy flag (a second press drew or built again and saved a second file), and the template's "Building … template…" before the cdnjs load (3.1 s of silence with the library held 3 s) | probe …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-08 | `9e560815` | hebrew_blend_generator.html, locales, generator.md, sw.js, probe | (S630 F; the count gate 2, approved) **Export PDF runs once and counts its pages on both buttons**: a 10-version class set took 11–13 s while the sticky footer's PDF said nothing and stayed live (a second press saved the PDF twice); now `_pdfExporting`, both buttons disabled and reading "⏳ Page 3 of …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-11-09 | **S635** | iters: 4 | tools: name_tags ×2, flash, name-tags.md, sw | patterns fixed: rebuild-where-a-class-swap-would-do ×1 | pass run: D (name_tags, first since S549; FOUND 2, FIXED 2) + the S618 flash P4 | SW: v1326→v1329
 
 - 2026-11-09 | **S634** | iters: 4 | tools: name_tags ×2, classroom_dashboard ×2, torah_trainer ×2, flash, generator, index, dictionary, fontmaker, locales, sw | patterns fixed: decorative-glyph-carrier-exposed-to-assistive-tech ×1 | pass run: C (name_tags, first since S548; FOUND 2, FIXED 2) + the …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -458,11 +456,9 @@ _(none)_
 
 - 2026-11-05 | **S616** | iters: 3 | tools: parsha_emojis ×2 (+ the generated parsha pages), shared-components.md, sw | patterns fixed: — | pass run: M (parsha_emojis, first since S522; + its parsha/ pages) | SW: v1275→v1276
 
-- 2026-11-05 | **S615** | iters: 5 | tools: generator, dashboard, torah, fontmaker, locales, sw | patterns fixed: — | pass run: N (chrome, first bundle N; + name_tags) | SW: v1271→v1275
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S634 (2026-11-09):** name_tags, the folder-tree block (generator, flash, dashboard, torah, index), classroom_dashboard, hebrew_dictionary, Hebrew_Font_Maker, torah_trainer, locales, i18n.md, shared-components.md, sw.js, loop probes ×3, loop docs S634 · parsha_emojis, account.html, locales, shared-components.md, sw.js, loop probes ×3, loop docs S633 · trope_atlas, js/i18n.js, Hebrew_Font_Maker, sw.js, loop probes ×3, loop docs S632 · the 9 font pickers (generator, dictionary, flash, torah, trope, dashboard, fontmaker, …[full text: IMPROVEMENT_ARCHIVE.md]
+- **Snapshot S635 (2026-11-09):** name_tags ×2, flash_cards, name-tags.md, sw.js, loop probes ×3, loop docs S635 · name_tags, the folder-tree block (generator, flash, dashboard, torah, index), classroom_dashboard, hebrew_dictionary, Hebrew_Font_Maker, torah_trainer, locales, i18n.md, shared-components.md, sw.js, loop probes ×3, loop docs S634 · parsha_emojis, account.html, locales, shared-components.md, sw.js, loop probes ×3, loop docs S633 · trope_atlas, js/i18n.js, Hebrew_Font_Maker, sw.js, loop probes ×3, loop docs S632 · the 9 font pickers …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -744,7 +740,7 @@ _(none)_
 
 - `async-store-backed-choice-clobbered-by-a-sync-fallback` | ACTIVE | owner A | det: recipe | last S226 | streak 1
 
-- `rebuild-where-a-class-swap-would-do` | ACTIVE | owner A | det: recipe | last S220 | streak 0 | hits 1
+- `rebuild-where-a-class-swap-would-do` | ACTIVE | owner A | det: recipe | last S635 | streak 0 | hits 2
 
 - `decorative-glyph-carrier-exposed-to-assistive-tech` | ACTIVE | owner A | det: recipe | last S634 | streak 0
 
@@ -832,7 +828,7 @@ _(none)_
 
 - G print & export fidelity (one tool): 2026-11-08 (**S626 — `parsha_emojis.html` (its 2nd: S537 → S626; 18 commits to the page since: the card's Print coloring sheet button, the off-screen preview skip, the size-drag reset, the copies field) + its 54 generated `parsha/` pages (their first G): the cards' Print 56 PDFs (split / junk plants fired), the popup's 72 combos × the A/B clip truth (2,280 …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- D performance (one tool): 2026-11-08 (**S627 — `parsha_emojis.html` (its 2nd: S538 → S627; 14 commits to the page since: the card's Print coloring sheet button, the off-screen preview skip, the size-drag stop, the fit note) + its 54 generated `parsha/` pages (their first D): cold 8 cells (@1× 0 long tasks; @4× top 54–68), 33 arms by real input × 2 cells × 1×/4× behind a 300 ms control (@1× all …[full text: IMPROVEMENT_ARCHIVE.md]
+- D performance (one tool): 2026-11-09 (**S635 — `name_tags.html` (its 2nd D: S549 → S635; 46 commits to the page since: the Print column, the row grips, the Dashboard link both ways, the roster import): cold 12 cells (200 students @1× 458–588 ms of long tasks, @4× 2,725–3,099; S549 after its fix 451 / 3,660), 48 arms by real input × 4 cells behind a 300 ms control; every table rebuild @4× …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - I first-load & empty-state: 2026-11-08 (**S628 — 41st I, S539 → S627 (503 commits; the Trope Atlas', reading assignments', the review page's and the 55 `parsha/` pages' first I): 81 virgin cells (plants 482/486); storage = S539's; 88 seeds; 27 tours; ~260 openers + 24 drawer tabs; 164 bad URLs; the Atlas' load paths; 55 parsha pages. FOUND 4, FIXED 3.**)
 
@@ -850,4 +846,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-11-08 (**S630 — 41st F, long-build progress (S542's F-next; the affordance's first F): 13 presses that build before they answer, by real clicks with an animation-frame recorder, real PDF libraries from a cache, a held CDN, double presses at raw points. FOUND 2, FIXED 2 (+1 P4). F-next: destructive-action confirms.**)
 
-**Next session (S635):** **Branch `claude/pensive-davinci-wtu93g` (S633 + S634, draft PR Hbleiberg/Hebrew_Blender#396): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1326**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=1c4c48a sw=v1326 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: D name_tags (S549), G name_tags (S550), M name_tags (S552), V (S553), N flash (S555), H fontmaker (S559), C flash (S560), P fontmaker (S561), A (S581). ⚑ Harnesses: `c634/` (`census.js` + `census.mjs` 16 surfaces × 6 cells, `tab.mjs`, `ring.mjs` the pixel ring check, `keys.mjs`, `misc.mjs`, `hover.mjs`, `ftident.mjs`, `head/`), `p633/`, `n632/`, `b631/`, `f630/`. ⚑ A ring check on the computed style passes a native checkbox that paints nothing (trap 587): measure pixels outside the control. ⚑ `print-media-leak` still has unjudged `leak.mjs` hits on 6 pages (dashboard, dictionary, LL, resources, FM, 404) for each page's next G. ⚑ 46 seeds.
+**Next session (S636):** **Branch `claude/pensive-davinci-wtu93g` (S633–S635, draft PR Hbleiberg/Hebrew_Blender#396): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1329**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=1c4c48a sw=v1329 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: G name_tags (S550), M name_tags (S552), V (S553), N flash (S555), H fontmaker + name_tags (S559), C flash (S560), P fontmaker (S561), D fontmaker (S565), A (S581). ⚑ Harnesses: `d635/` (`lib.mjs` serves the transliteration library from a local esm.sh cache — `crawl.py` → `esm/`, 17 modules — with a buffered long-task observer, render counters and CDP throttling; `cold.mjs`, `why.mjs` the load's render trace, `heavy.mjs` 48 arms, `split.mjs`, `ident.mjs` / `ident2.mjs` + `cmp.mjs`, `ab1.mjs`, `ab2.mjs`, `fcab.mjs`, `fcshot.mjs`), `c634/`, `p633/`. ⚑ Name Tags' D queue: the load's 5 preview builds (S549 P4), the rebuilds a new row, Remove, Undo, a list switch and an import still make (P4, re-scoped); the library's 200 names under Ashkenazi are 393–508 ms @4× by themselves. ⚑ Traps 590–592 (findings S635): a list at 200 has no blank row; a drag held near the window's edge auto-scrolls; time a HEAD-vs-HEAD baseline before a cold-load A/B. ⚑ `print-media-leak` still has unjudged `leak.mjs` hits on 6 pages (dashboard, dictionary, LL, resources, FM, 404) for each page's next G. ⚑ 46 seeds.

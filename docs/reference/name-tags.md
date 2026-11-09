@@ -38,6 +38,12 @@ the AllTools registration of its keys, a tour, and the backend smokes.
   `ntMoveRow` (which also keeps the on-screen keyboard on the same student and drops a remove-Undo from the old
   order). A focused grip moves its row with ↑/↓; Escape, a cancelled pointer or a re-render mid-drag (a sync's
   `onLocalChanged('list')`) puts the order back.
+- **The table is rebuilt only when its rows change.** A change to how the rows read — the transliteration's mode or
+  style, the extra column, the header's Print box — updates each row in place (`ntRefreshTable`, which finds a row by
+  its own `data-r`, so a row carried mid-drag keeps its student); a move redraws only the rows from its old place to its
+  new one (a drag put back, or a table whose row count is not the list's, rebuilds). A new row, Remove, Undo, a list
+  switch, an import and a language switch rebuild the table (`ntRenderTable`); a rebuild of 200 rows is a few hundred
+  milliseconds on a slow machine, so a new control that changes only what a row shows takes the in-place path.
 
 ## Layout: the class list's fold and the hidden sidebar
 - **The class list folds** from its heading (`#ntListToggle`, a real button) so the preview rises beside the options;
