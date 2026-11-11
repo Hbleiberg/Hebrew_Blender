@@ -1829,13 +1829,20 @@ function ntApplyImport(how) {
   }
   const target = ntEnsureRows();
   if (how === 'replace') target.length = 0;
+  // A class's one extra line (a Homeroom column of "3B" on every row) is the list's extra line, not each student's own:
+  // an empty list without one takes it there, and a row repeating the list's line carries none — so the box above the
+  // table ("Extra line on every tag in this list") still changes every tag. A row's own different line stays its own.
+  const exOf = r => ntRowField(r, 'ex').trim(), noEx = r => { const c = Object.assign({}, r); delete c.ex; return c; };
+  let listEx = ntStr(ntCur.val && ntCur.val.extra).trim(), sharedEx = false;
+  if (!listEx && rows.length && !target.some(r => !ntRowEmpty(r)) && exOf(rows[0]) && rows.every(r => exOf(r) === exOf(rows[0]))) { listEx = ntCur.val.extra = exOf(rows[0]); }
+  if (listEx) rows = rows.map(r => { if (exOf(r) !== listEx) return r; sharedEx = true; return noEx(r); });
   const m = ntMergeRows(target, rows), matched = m.filled + m.same;
   const room = NT_MAX_ROWS - target.length, added = m.fresh.slice(0, Math.max(0, room)), refused = m.fresh.length - added.length;
   added.forEach(r => target.push(r));
   _ntUndo = null;
   ntCloseInline();
   if (!ntSaveList()) return;
-  if (!ntSet.extra && (m.ex || added.some(r => r.ex))) { ntSetSet('extra', true); ntSyncControls(); }   // the file brought an extra line: show it
+  if (!ntSet.extra && (sharedEx || m.ex || added.some(r => r.ex))) { ntSetSet('extra', true); ntSyncControls(); }   // the file brought an extra line: show it
   const msgs = [];
   if (!added.length && !refused && matched) msgs.push(_fbT('nametags.csv.all_there', 'Every student is already on "{name}".', { name: ntCur.name }));
   else {
@@ -1969,7 +1976,9 @@ function ntExportCsv() {
   const rows = ntRows().filter(r => !ntRowEmpty(r));
   if (!rows.length) { ntListNote(_fbT('nametags.csv.err_empty', 'This list has no students to export yet.'), true); return; }
   ntClearListWarn();
-  const lines = [NT_CSV_HEAD.join(',')].concat(rows.map(r => ['he', 'en', 'tr', 'ex'].map(f => ntCsvCell(ntRowField(r, f))).join(',')));
+  // The Extra column is the line each tag prints: a student's own, else the list's (an import gives a shared one back to the list).
+  const listEx = ntStr(ntCur.val && ntCur.val.extra).trim();
+  const lines = [NT_CSV_HEAD.join(',')].concat(rows.map(r => ['he', 'en', 'tr', 'ex'].map(f => ntCsvCell(f === 'ex' ? (ntRowField(r, f).trim() || listEx) : ntRowField(r, f))).join(',')));
   // A character a file name cannot hold becomes a space, and the run it leaves collapses ("Kitah Dalet / 2026" made
   // "Kitah Dalet   2026.csv", which an import names the new list after).
   ntDownload((ntCur.name.replace(/[\\/:*?"<>|]+/g, ' ').replace(/\s+/g, ' ').trim() || 'class') + '.csv', lines.join('\r\n') + '\r\n');

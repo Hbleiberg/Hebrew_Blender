@@ -168,7 +168,7 @@ names under שם פרטי / שם משפחה, "דָּוִד David" in one Name co
 student. A file is decoded as UTF-16 when it carries a byte-order mark or its NULs sit on one side of every byte pair (Excel's
 "Unicode Text"), else as UTF-8, falling back to windows-1255.
 The import offers Add / New list (named from the file) / Replace (a `confirm()` naming the account-wide effect when
-signed in); an import that brings extra-line values turns the extra line on.
+signed in); an import that brings extra-line values turns the extra line on. **A class's one extra line is the list's:** an import into an empty list without a line of its own, whose every row carries the same value (a Homeroom column of "3B"), sets the list's extra line instead of each row's, and a row repeating the list's line carries none — so the box above the table (*Extra line on every tag in this list*) still changes every tag; a row's own different line stays its own. Export writes each row's printed line in the Extra column (its own, else the list's), so the file round-trips.
 
 **Add matches by name** (`ntMergeRows`, every Add: a file, a paste, a Dashboard class). Names are compared by
 `ntMatchKey` — capitals, spacing and nikkud ignored, a maqaf read as a hyphen and a geresh as an apostrophe. An
