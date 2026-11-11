@@ -14,8 +14,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P2 (**S567 P; S573 P root-caused — a shared module, not small**) | js/ivrit-saves.js | **A page write made after a hydration planned its uploads, before it ends, is not sent, and the tab's next sync downloads the account's copy over it**: the hook is not armed yet, and step 4's `snapshotNames` takes the post-write hash as the tab's seen view, so `actionFor` reads it as another tab's write. …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] P3 (**NEW S639 M — the FM at the cap**) | Hebrew_Font_Maker.html | **QA Check's warning lines are red #c0392b on the dark modal, 2.82:1** (`.qa-tall`, 13.4px); the page's dark twin is `body.dark .warn { color:#ff8a7a }`. | found S639
-
 - [ ] P3 (**NEW S602 — found verifying `3ab8b385`; its gate-4 answer covers it, measure Export PDF landscape first**) | hebrew_blend_generator.html | **With Landscape Print on, the on-screen blend sheet keeps ten columns where they do not fit**: Inverse 46–61px past the sheet at 1280/1600; on an iPhone 13 Reading 106–119px, Inverse 445px (paper unchanged). | found S602
 
 - [ ] P3 (**NEW S593 G — verify on a Mac first**) | Hebrew_Font_Maker.html | **Every font named only in Hebrew exports with nameID 6 `MyHebrewFont-Regular` (and `MyHebrewFont.ttf`)**: two such fonts share one PostScript name, which Font Book and Mac apps key fonts by; a stem from the name (a short hash or a transliteration) would keep them apart. | found S593
@@ -39,6 +37,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P3 (**NEW S436 M — layout, gate 3/4**) | hebrew_blend_generator.html | **The bingo preview is unreadable in a narrow window**: at 800px a 4-up card is ~120px and its blends overrun their cells (print/PDF fine since `141aa8f7`). | found S436
 
 - [ ] P3 (**S410 D; S480 re-measured; `content-visibility` reverted**) | Hebrew_Font_Maker.html | **The Spacing tab rebuilds all kerning rows on each show, pair click, add and delete**: 2,000 pairs 213–251ms @1×, 1.0–1.2s @4× (S565: 302–502 @1×). Next: a pair click rebuilds the editor only (findings S480). | found S410
+
+- [ ] P3 (**NEW S640 — found verifying `eeb5640a`; the FM at the cap**) | Hebrew_Font_Maker.html | **The page's green status ink #10b981 (`--center`) reads 2.54:1 as text on white in light**: QA Check's all-clear (`.qa-ok`), the build check's Ready (`.qa-bc-ok`), Auto-detect's matched count (`.ad-match`), `.form-ready`, the re-check line, the done tab's ✓, and white on the green "saved" placement …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P3 (**NEW S618 D — not small: the cache's contract is "another tab wrote"**) | flash_cards.html | **`readProfiles()` compares the whole stored profiles string on every call** (about twice per profile per render): with 12 students × 100 results (4 MB) one switch of the active student holds the page 1.1–1.7 s @4× (`readProfiles` 700–1,100 ms self); a write counter or the `storage` event could …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -65,8 +65,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
 
 - [ ] P4 (**NEW S639 M — the FM at the cap**) | Hebrew_Font_Maker.html | **The Spacing tab's three slider tracks start and end at different x** (each `.inline` row sized by its label and readout); `.size-slider-line`'s label column is the page's aligned form. | found S639
-
-- [ ] P4 (**NEW S639 M**) | Hebrew_Font_Maker.html | **Draw's "Actual size" tag reads 4.22:1 in dark**: `--muted` under the tag's `opacity:0.88` on the preview plate (9.6px); light passes — a dark ink twin (#9aa4ba, S513's plate precedent) or the opacity on the plate only. | found S639
 
 - [ ] P4 (**NEW S639 M**) | Hebrew_Font_Maker.html | **The toolbar's export-format select gives no hover** where its outlined neighbours brighten (`.tbtn:hover`'s filter); it is styled as a toolbar button. | found S639
 
@@ -153,8 +151,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S556 M — gate 2, a title per mode**) | hebrew_dictionary.html | **The sidebar's first panel says "Word Length" in every mode**, yet in Emojis it holds the mode switcher, the gender toggle and the category tree, in Shoresh only the switcher. | found S556
 
 - [ ] P4 (**NEW S551 H — gate 2, copy**) | name_tags.html | **The Avery note never names a product's twins** (8395, 5895, 15395, 25395, 45395 and 48395 share 5395's layout): a teacher holding an 8395 pack cannot tell that the "Avery 5395" tile fits it. | found S551
-
-- [ ] P4 (**NEW S550 G — gate 2; the file-name half FIXED S593 `96f562e`**) | name_tags.html | **The CSV carries only a per-student extra line, never the list's**: a list moved by file loses "Grade 4" on every tag. | found S550
 
 - [ ] P4 (**NEW S549 D; S635: a translit mode, the extra toggle and the header Print box FIXED `577019e1`, a move `f620a674`**) | name_tags.html | **A structural edit rebuilds the 200-row table** (S635 @4×: 98–168 ms of script + 147–196 of layout; @1× 66–113: the first key in the new row, Remove, Undo, a list switch, a paste or import) — its three icon buttons are parsed from `innerHTML` 600 …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -382,6 +378,16 @@ _(none)_
 
 ## Done
 
+- [x] 2026-11-11 | (S640 close-out) | branch/deploy note | **S640 = N on `flash_cards.html` (its 4th N: S244 → S361 → S555 → S640; 37 commits to the page since: the drill's Pause and voice speed, the compact results, the sticky bars' measured heights, the printable card sheet, the folder tree's keys): 18 views × 16 phone cells by real taps on a store made by real drills, the two windows the …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-11 | `e97aaa42` | Hebrew_Font_Maker.html, sw.js | (S640, the S639 M P4; pattern `contrast-below-AA-on-a-tinted-or-coloured-plate`) **Draw's "Actual size" tag reads in dark**: `body.dark .draw-preview-tag { color:#9aa4ba }` (the wizard tiles' dark ink; the tag's 0.88 opacity kept) | `m639/fix4.mjs` × EN light 1280 / HE dark 800 / EN dark 1280 / HE light 800 on a fresh Draw project, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-11 | `eeb5640a` | Hebrew_Font_Maker.html, sw.js | (S640, the S639 M P3; pattern `contrast-below-AA-on-a-tinted-or-coloured-plate`) **QA Check's and Auto-detect's warnings read in dark**: `.qa-tall`, `.qa-bc-warn` and `#adSummary .ad-warn` take the page's `.warn` twin #ff8a7a in dark | `m639/fix3.mjs` × 4 cells, QA Check by a real click on `?start=simple-clm` (its real `.qa-tall`) + …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-11 | `356ed1f8` | flash_cards.html, sw.js, loop-patterns.md | (S640 N; pattern `mobile-input-hints`, DRAFT → ACTIVE with its recipe) **The student-name box keeps a name as typed on a phone's keyboard**: `#newProfileNameInput` takes `autocomplete=off autocapitalize=words autocorrect=off spellcheck=false` (the dashboard's and Name Tags' name boxes) | `n640/fix2.mjs`: both entrances …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-11 | `e1a80f62` | flash_cards.html, sw.js | (S640 N; pattern `install-banner-over-a-sheet's-bottom-controls`) **The install hint steps aside while a window is open on a phone**: the hide rule's `:has()` adds `[aria-modal="true"]` (fcModalize's windows and the restore question) | `n640/fix1.mjs`, iPhone SE / 13 / 13 sideways / Pixel 7 × EN/HE × light/dark with the iOS hint forced, 5 …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [x] 2026-11-11 | (S639 close-out) | branch/deploy note | **S639 = M on `Hebrew_Font_Maker.html` (its 4th M: S225 → S335 → S554 → S639; 28 commits to the page since, all the loop's): 20 views × EN light 1280 / HE dark 800 / EN dark 1280 / HE light 800 on a starting-font project (`?start=simple-clm`, every tile state filled) and a fresh one (the wizard, Draw); 19,704 text readings (plant 80/80), …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-11-11 | `b5216226` | sw.js, ops.md, probe | (S639, the S638 V P3) **One offline copy of a page, whatever its query**: the network-first put keys by the path (`url.origin + url.pathname`); the lookups already ignore the query | probe `S639-sw-one-copy-per-page` 6 query visits → 0 query-keyed copies (HEAD and `--control` 6, ~4.6 MB), offline `?parsha=Bereshit` / `?s=never-seen` 200 from …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -416,17 +422,11 @@ _(none)_
 
 - [x] 2026-11-09 | `fd7203b7` | name_tags.html, locales, name-tags.md, sw.js, probe | (S636 G) **A list with nobody ticked to print says so**: the note and a Print press say "No student is ticked to print" (`nametags.preview.print_none`), the sample stands without "type a name", no stale "Printing n of m" | probe `S636-name-tags-nobody-ticked-says-so` 12/12, 8 fail on HEAD (the empty-list and …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-11-09 | (S635 close-out) | branch/deploy note | **S635 = D on `name_tags.html` (its 2nd D: S549 → S635; 46 commits to the page since: the Print column, the row grips, the Dashboard link both ways, the roster import): cold 12 cells (0/24/200 students × 1×/4× × EN light / HE dark), 48 arms by real input × 4 cells behind a 300 ms control (301–306), a script/layout split, a load trace. …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-09 | `d89d9b8c` | flash_cards.html, sw.js, probe | (S635, the S618 D P4) **The sticky bars' heights are read after the first layout, not mid-boot**: `fcTrackStickies()` leaves the first read to its ResizeObserver (a browser without one keeps the direct read) | `fcab.mjs` medians of 5, HEAD vs tree: the DOMContentLoaded task @4× 220 → 202, 239 → 221, 230 → 191 ms; the vars and scroll …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-09 | `f620a674` | name_tags.html, sw.js, probe | (S635 D; the S549 keyboard-move P4) **Moving a student redraws only the rows it moves past**: `ntMoveRow` replaces the rows from the old place to the new one; a drag put back or cancelled still rebuilds | `ident2.mjs` 728 comparisons HEAD vs tree, 0 differences (a planted off-by-one: 72); @4× an arrow press's max task 413–536 → …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-09 | `577019e1` | name_tags.html, sw.js, probe | (S635 D; pattern `rebuild-where-a-class-swap-would-do`) **Four controls update the class list's rows in place**: the transliteration's mode and style, the extra-line box and the header's Print box re-decorate each row (`ntRefreshTable`) instead of rebuilding 200 | `ident.mjs` 960 comparisons HEAD vs tree, 0 differences (a planted …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-11-11 | **S640** | iters: 5 | tools: flash_cards ×2, Hebrew_Font_Maker ×2, sw ×4, loop-patterns | patterns fixed: install-banner-over-a-sheet's-bottom-controls ×1, mobile-input-hints ×1, contrast-below-AA-on-a-tinted-or-coloured-plate ×2 | pass run: N (flash_cards, first since S555; FOUND 2, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - 2026-11-11 | **S639** | iters: 4 | tools: Hebrew_Font_Maker ×2, sw ×3, ops.md, loop probe, loop README | patterns fixed: contrast-below-AA-on-a-tinted-or-coloured-plate ×1, native-control-outside-the-field-rule ×1 | pass run: M (Hebrew_Font_Maker, first since S554; FOUND 7, FIXED 2) + the S638 P3 …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -466,11 +466,9 @@ _(none)_
 
 - 2026-11-06 | **S621** | iters: 5 | tools: README, manifest, ops.md, i18n.md, shared-components.md, parsha_emojis, dictionary, locales, sw | patterns fixed: — | pass run: E (suite, first since S531; 530 commits) | SW: v1286→v1289
 
-- 2026-11-06 | **S620** | iters: 5 | tools: letter_learner ×2, trope_atlas, trope, name_tags, locales, sw | patterns fixed: — | pass run: C (letter_learner, first since S527 + parsha_emojis, first since S541) | SW: v1283→v1286
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S639 (2026-11-11):** Hebrew_Font_Maker ×2, sw.js ×3, ops.md, loop probe, loop README, loop docs S639 · sw.js ×2, ops.md, torah-and-trope.md, loop probes ×3, loop README, loop docs S638 · name_tags ×2, Hebrew_Font_Maker, trope_tutor, hebrew_blend_generator, sw.js, loop probes ×4, loop docs S637 · name_tags ×2, hebrew_blend_generator ×2, locales, name-tags.md, generator.md, sw.js, loop probes ×4, loop docs S636 · name_tags ×2, flash_cards, name-tags.md, sw.js, loop probes ×3, loop docs S635 · name_tags, the folder-tree block …[full text: IMPROVEMENT_ARCHIVE.md]
+- **Snapshot S640 (2026-11-11):** flash_cards ×2, Hebrew_Font_Maker ×2, sw.js ×4, loop docs S640 · Hebrew_Font_Maker ×2, sw.js ×3, ops.md, loop probe, loop README, loop docs S639 · sw.js ×2, ops.md, torah-and-trope.md, loop probes ×3, loop README, loop docs S638 · name_tags ×2, Hebrew_Font_Maker, trope_tutor, hebrew_blend_generator, sw.js, loop probes ×4, loop docs S637 · name_tags ×2, hebrew_blend_generator ×2, locales, name-tags.md, generator.md, sw.js, loop probes ×4, loop docs S636 · name_tags ×2, flash_cards, name-tags.md, sw.js, loop …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -608,7 +606,7 @@ _(none)_
 
 - `window-taller-than-a-phone-without-a-scroll` | ACTIVE | owner N | det: recipe | last S595 | streak 4
 
-- `install-banner-over-a-sheet's-bottom-controls` | ACTIVE | owner N | det: scripts/loop/probes/S572-install-hint-tours.mjs | last S578 | streak 0
+- `install-banner-over-a-sheet's-bottom-controls` | ACTIVE | owner N | det: scripts/loop/probes/S572-install-hint-tours.mjs | last S640 | streak 0
 
 - `flash-restores-captured-text-not-its-key` | ACTIVE | owner E | det: recipe | last S417 | streak 0
 
@@ -734,7 +732,7 @@ _(none)_
 
 - `translated-sibling stray` | DRAFT | owner H | det: none | last S336 | streak 0
 
-- `mobile-input-hints` | DRAFT | owner I | det: none | last S534 | streak 0
+- `mobile-input-hints` | ACTIVE | owner I | det: recipe | last S640 | streak 0
 
 - `i18n cross-column parity (placeholders, plurals, inline markup)` | ACTIVE | owner K | det: recipe | last S623 | streak 3 | hits 0
 
@@ -748,7 +746,7 @@ _(none)_
 
 - `dark-override-outranks-hover` | ACTIVE | owner A | det: recipe | last S357 | streak 1 | hits 0
 
-- `contrast-below-AA-on-a-tinted-or-coloured-plate` | ACTIVE | owner M | det: recipe | last S639 | streak 0
+- `contrast-below-AA-on-a-tinted-or-coloured-plate` | ACTIVE | owner M | det: recipe | last S640 | streak 0
 
 - `native-control-outside-the-field-rule` | ACTIVE | owner M | det: recipe | last S639 | streak 0 | hits 2
 
@@ -830,7 +828,7 @@ _(none)_
 
 - O deslop — AI-design-tell sweep (one surface): SKIP since S403 — the sandbox refuses to execute the third-party detector ("Code from External"); runs again once the maintainer commits a `.claude/settings.json` permission rule for it (`docs/reference/deslop-detector.md`). Last run 2026-09-08 (S346, `flash_cards.html`, 6th O; the S399/S403 refusals are in the archive).
 
-- N mobile & touch-device (one surface): 2026-11-09 (**S632 — 39th N, letter_learner (its 2nd: S545 → S632; 23 commits: the sheet tiles, the cursive tiles, the address mirror, Select all / Clear) + parsha_emojis (its 2nd: S547 → S632; the card's Print coloring sheet, with the 54 `parsha/` pages' first N): 384 + 144 + 146 phone views on 4 devices × EN/HE × light/dark, 52 + 26 touch steps by taps …[full text: IMPROVEMENT_ARCHIVE.md]
+- N mobile & touch-device (one surface): 2026-11-11 (**S640 — 40th N, `flash_cards.html` (its 4th: S244 → S361 → S555 → S640; 37 commits to the page since: the drill's Pause and voice speed, the compact results, the sticky bars' measured heights, the printable card sheet, the folder tree's keys): 18 views × 16 cells (iPhone SE, 13, 13 sideways, Pixel 7 × EN/HE × light/dark) by real taps on a …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - M aesthetics & visual design (one surface): 2026-11-11 (**S639 — 41st M, `Hebrew_Font_Maker.html` (its 4th: S225 → S335 → S554 → S639; 28 commits to the page since, all the loop's: the dark primary buttons, number boxes and tile hover, the contrast and touch-floor fixes, the drawn carets, the Settings headings): 20 views × 4 cells on a starting-font project and a fresh one, 19,704 text readings …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -860,4 +858,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-11-08 (**S630 — 41st F, long-build progress (S542's F-next; the affordance's first F): 13 presses that build before they answer, by real clicks with an animation-frame recorder, real PDF libraries from a cache, a held CDN, double presses at raw points. FOUND 2, FIXED 2 (+1 P4). F-next: destructive-action confirms.**)
 
-**Next session (S640):** **Branch `claude/lucid-brahmagupta-t4hdnh` (S638 + S639, draft PR Hbleiberg/Hebrew_Blender#399): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1344**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=ad39f20 sw=v1344 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: N flash (S555), M dictionary (S556), H fontmaker + name_tags (S559), C flash (S560), P fontmaker (S561), G generator (S563), D fontmaker (S565), A (S581). ⚑ The FM's S639 queue (the governor stopped at two): the QA red in dark (P3), then the four P4s. ⚑ Harness `m639/`; traps 604–606 (findings S639): audit the FM on a starting-font project, not a fresh one. ⚑ `print-media-leak`: unjudged `leak.mjs` hits on 6 pages for each page's next G (the generator's next). ⚑ 46 seeds.
+**Next session (S641):** **Branch `claude/lucid-brahmagupta-t4hdnh` (S638–S640, draft PR Hbleiberg/Hebrew_Blender#399): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1348**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=ad39f20 sw=v1348 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: M dictionary (S556), H fontmaker + name_tags (S559), C flash (S560), P fontmaker (S561), N trope (S562), G generator (S563), D fontmaker (S565), A (S581). ⚑ The FM's queue: the green status ink in light (P3, S640), then the S639 P4s (ten blue sliders, the ragged Spacing sliders, the format select's hover). ⚑ Harness `n640/` (flash on phones: a seeded store by real drills, `audit.js`, the iOS hint forced); traps 607–611 (findings S640). ⚑ `print-media-leak`: unjudged `leak.mjs` hits on 6 pages for each page's next G (the generator's next). ⚑ 46 seeds.
