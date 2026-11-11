@@ -369,7 +369,10 @@ body.dark .hi-sun{display:inline-block;}
   .side-slider { width: 100%; min-width: 0; box-sizing: border-box; accent-color: var(--gold); margin: 2px 0 2px; height: 24px; /* operable box at the slider floor (3ae6891 pattern) — native default is ~16px */ }
   .chk { display: flex; align-items: center; gap: 7px; font-size: 0.78rem; cursor: pointer; min-height: 24px; /* checkbox row at the 24px touch floor (387a6a1 pattern) — line-height alone gave ~21px */ }
   .chk input { accent-color: var(--gold); width: 15px; height: 15px; }
-  #drawSmoothingSel { min-height: 24px; /* select at the 24px touch floor — native height was ~19px */ }
+  /* Draw's Smoothing select and the point editor's Rotate / Scale boxes sit outside a label.fld, so they kept the
+     browser's control: Arial, a square or inset edge, and a white plate on the dark panels. The page's field look, as
+     .guide-pos (the grid step and guide boxes) and #adToolbar's fields; min-height = the 24px touch floor (native ~19-21px). */
+  #drawSmoothingSel, #nodeRotAngle, #nodeScalePct { min-height: 24px; padding: 3px 5px; border: 1px solid var(--border); border-radius: 5px; background: var(--white); color: var(--text); font: inherit; font-size: 0.78rem; box-sizing: border-box; }
   .hint { font-size: 0.7rem; color: var(--muted); line-height: 1.4; }
   /* .hint's color does not cascade into its anchors — the UA's own `a` rule wins, leaving them
      #0000EE, which measures 1.81:1 on the dark panel. `footer a` already uses this token; it just
