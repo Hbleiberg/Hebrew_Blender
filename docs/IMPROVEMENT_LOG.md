@@ -62,17 +62,13 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
 
-- [ ] P4 (**NEW S641 M — the dictionary at the cap**) | hebrew_dictionary.html | **Bulk Copy's "Select page" / "Select all matching" buttons and the export panel's three hints sit at 10.4px**, under the page's 10.88px hint tier (the filter notes, the emoji counts, the pattern sub-labels S605 raised). | found S641
+- [ ] P4 (**NEW S642 M — a suite question: the other tools' intros run full width too**) | trope_tutor.html | **The Learn intro runs ~170 characters a line at 1280** (six lines since the Conservative melody's sentences joined it): a measure near 75ch would read easier. | found S642
 
 - [ ] P4 (**NEW S639 M — the FM at the cap**) | Hebrew_Font_Maker.html | **The Spacing tab's three slider tracks start and end at different x** (each `.inline` row sized by its label and readout); `.size-slider-line`'s label column is the page's aligned form. | found S639
 
 - [ ] P4 (**NEW S639 M**) | Hebrew_Font_Maker.html | **The toolbar's export-format select gives no hover** where its outlined neighbours brighten (`.tbtn:hover`'s filter); it is styled as a toolbar button. | found S639
 
-- [ ] P4 (**NEW S639 M — the FM at the cap**) | Hebrew_Font_Maker.html | **Ten sliders keep the browser's blue beside eleven gold ones** (meteg gap, the three size sliders, trop spread, the point editor's four): one page-wide range `accent-color` rule. | found S639
-
 - [ ] P4 (**NEW S638 V — intermittent, measure first**) | sw.js | **After a deploy the previous version's cache can come back**: the fetch handler's `caches.open(CACHE).then(put)` runs outside `waitUntil`, so an old worker answering after the activate's delete reopens `ivritsuite-v<old>` (4 of 7 S638 runs; partial, never the approvals), kept until the next deploy. | found S638
-
-- [ ] P4 (**NEW S637 M**) | name_tags.html | **The inline rows' labels (Rename's "List name", Paste's sentence, the Dashboard row's) inherit 16px** beside 13.76px fields and 13.12px buttons, where the extra-line row's label is 14.08px and the sidebar's 14.4px (findings S637). | found S637
 
 - [ ] P4 (**NEW S637 M — 6 carriers, one with name_tags: a suite question for F or K**) | name_tags, letter_learner, hebrew_blend_generator, hebrew_dictionary, flash_cards, Hebrew_Font_Maker | **In the Hebrew UI a collapsed panel's triangle (`▾` turned −90°) points right, back at its own title**; a right-to-left disclosure points left. | found S637
 
@@ -368,11 +364,23 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW S546 P — a shared-module rule, the maintainer's call before a loop fix**) | js/ivrit-saves.js (flash_cards, torah_trainer, trope_tutor, classroom_dashboard, index) | **A brand-new device's first sign-in says "Your account's … settings replaced the ones this device had before you signed in" and offers a download of nothing but the page's defaults** on those five pages (each writes …[full text: IMPROVEMENT_ARCHIVE.md]
 
+- [ ] P4 (**NEW S642 M — the maintainer's view only**) | trope_tutor.html | **The `?preview=traditions` banner sits between the tabs and their panel**, so the active tab no longer joins its panel (it floats over a dashed box); placed inside the panel's top, or above the tabs, the join stays. | found S642
+
 ## In progress
 
 _(none)_
 
 ## Done
+
+- [x] 2026-11-11 | (S642 close-out) | branch/deploy note | **S642 = M on `trope_tutor.html` (its 4th M: S245 → S376 → S558 → S642; 23 commits to the page and `js/trope-staff.js` since: the Year Round [Conservative] melody with Total Torah clips, the 20 traditions, the Drill's melody menu and its 2 / 3 / 4 answers, the tour engine's return): 23 views × 8 cells (EN/HE × light/dark × 1280/800) by …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-11 | `07617924` | name_tags.html, sw.js | (S642, the S637 M P4) **The Paste, Dashboard and Rename rows' labels at the form's size**: `.nt-inline > label { font-size:0.88rem }`, the extra-line row's label size | `m641/fix4s642.mjs` × 8 cells vs a HEAD copy, each row opened by a real click: 16.00 → 14.08px beside 13.76–14.4px fields and 13.12px buttons; Paste adds three students, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-11 | `0de12299` | hebrew_dictionary.html, sw.js | (S642, the S641 M P4) **Bulk Copy's Select buttons and the export hints at the page's sizes**: the two Select buttons drop their inline 10.4px for `.pos-all-btn`'s 11.52px (their Clear / Copy All siblings'); the export hint, its instructions and the Word Lists description 10.4 → 10.88px (the Bulk Copy hint's) | `m641/fix3s642.mjs` × …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-11 | `9dbf8295` | Hebrew_Font_Maker.html, sw.js | (S642, the S639 M P4) **Every slider gold**: one page-wide `input[type=range]{accent-color:var(--gold)}`, the per-slider rules unchanged | `m639/fix6.mjs` × EN light 1280 / HE dark 800 / EN dark 1280 / HE light 800 on `?start=simple-clm` (Nikkud, Place Trop, the point editor's four sections open, Spacing): HEAD 10 of 27 visible …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-11 | `7295d598` | trope_tutor.html, sw.js | (S642 M) **The mastery grid's Geresh group keeps Pazer on its row**: `.tu-mgrid` max-width 720 → 760px | `m642/fix1.mjs` × 8 cells, the start screen and the results of a real 5-question drill vs a HEAD copy: at 1280 the Geresh row 2 lines → 1 (its cells need 598px, had 594, now 634), every other family one line as before; at 800 the page …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-11-11 | (S641 close-out) | branch/deploy note | **S641 = M on `hebrew_dictionary.html` (its 4th M: S237 → S362 → S556 → S641; 29 commits to the page since): 24 views × 8 cells (EN/HE × light/dark × 1280/800) by real clicks, 192 loads, 103,384 text readings (plant 140/140), 0 page errors; hover 953 controls × both themes (plant 3/3); a new fill-vs-ground census in both themes (plant …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -408,19 +416,11 @@ _(none)_
 
 - [x] 2026-11-11 | `5eea8de8` + `7f69672e` | sw.js, torah-and-trope.md, probe | (S638 V) **The traditions' approvals survive a deploy offline**: the network-first copy moves from the versioned cache (deleted by every activate) to `ivritsuite-data-v1` | probe `S638-sw-approvals-survive-a-deploy` Tutor 27 / Atlas 26 offline after a bump; `--control` and HEAD 7 / 6; `7f69672e` waits for 'activated'
 
-- [x] 2026-11-09 | (S637 close-out) | branch/deploy note | **S637 = M on `name_tags.html` (its 2nd M: S552 → S637; 25 commits to the page since: the Print column, the row grips, the Dashboard row both ways, the roster import, the print notes): 15 views × EN light 1280 / HE dark 800 / EN dark 1280 / HE light 800 in the real fonts, contrast 9,056 readings (plant 4/4; only disabled controls under …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-09 | `f9fa1c2f` | hebrew_blend_generator.html, sw.js, probe | (S637, the S636 P4; pattern `RTL-inheritance-on-a-Latin-script-container`) **A Self-Check card's hint and score buttons read in the UI's direction**: `html:not([dir="rtl"])` gives the hint and Got it / Missed `ltr` in the English UI ("✓ Got it", Got it first); the Hebrew UI unchanged | probe …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-09 | `f3de68b1` | Hebrew_Font_Maker.html, trope_tutor.html, sw.js, probe | (S637, the S554 M P4) **A Settings group's heading outranks its items**: `.adv-group-title` and its Tutor twin `.tu-set-title` 0.8rem / 400 → 0.98rem / 700 (the FM help h4), one line each | probe `S637-settings-group-headings-outrank-their-items` 14/14 (the FM through its wizard), 4 fail on HEAD; real-font …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-09 | `f72366f2` | name_tags.html, sw.js, probe | (S637 M) **The blank row reads as a place to type**: its Hebrew, transliteration and English fields show at rest the edge a hovered cell shows (light #e8e0d0, dark `--border`); student rows unchanged, the focus ring kept | probe `S637-name-tags-blank-row-reads-as-fields` 36/36, 16 fail on HEAD (the edges and the next blank row, every …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-09 | `98e2fffe` | name_tags.html, sw.js, probe | (S637 M; pattern `dark-hover-resolves-to-the-rest-colour`) **The class list keeps its row lines in dark mode**: the rules and a name cell's hover were `--warm-gray`, the dark table's own `--white`; dark takes `--border`, `:not(:focus)` keeps the ring | probe `S637-name-tags-dark-class-list-keeps-its-row-lines` 20/20, 6 fail on HEAD …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-11-11 | **S642** | iters: 5 | tools: trope_tutor, Hebrew_Font_Maker, hebrew_dictionary, name_tags, sw ×4 | patterns fixed: — | pass run: M (trope_tutor, first since S558; FOUND 3, FIXED 1) + 3 queue P4s (the FM, the dictionary, Name Tags) | SW: v1352→v1356
 
 - 2026-11-11 | **S641** | iters: 5 | tools: hebrew_dictionary ×2, Hebrew_Font_Maker, name_tags, sw ×4, loop-patterns | patterns fixed: dark-base-rule-outranks-variant ×1, dark-navy-fill-matches-its-ground ×1, contrast-below-AA-on-a-tinted-or-coloured-plate ×1 | pass run: M (hebrew_dictionary, first …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -460,11 +460,9 @@ _(none)_
 
 - 2026-11-06 | **S623** | iters: 5 | tools: locales (dictionary he), name_tags, reading_assignments, torah, sw | patterns fixed: stale-html-fallback-behind-its-csv-value ×1 | pass run: K (suite, first since S533; 525 commits) | SW: v1291→v1294
 
-- 2026-11-06 | **S622** | iters: 5 | tools: trope_atlas, parsha pages (build-parsha-pages), dictionary, sw | patterns fixed: — | pass run: L (suite, first since S532; 527 commits) | SW: v1289→v1291
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S641 (2026-11-11):** hebrew_dictionary ×2, Hebrew_Font_Maker, name_tags, sw.js ×4, loop docs S641 · flash_cards ×2, Hebrew_Font_Maker ×2, sw.js ×4, loop docs S640 · Hebrew_Font_Maker ×2, sw.js ×3, ops.md, loop probe, loop README, loop docs S639 · sw.js ×2, ops.md, torah-and-trope.md, loop probes ×3, loop README, loop docs S638 · name_tags ×2, Hebrew_Font_Maker, trope_tutor, hebrew_blend_generator, sw.js, loop probes ×4, loop docs S637 · name_tags ×2, hebrew_blend_generator ×2, locales, name-tags.md, generator.md, sw.js, loop …[full text: IMPROVEMENT_ARCHIVE.md]
+- **Snapshot S642 (2026-11-11):** trope_tutor, Hebrew_Font_Maker, hebrew_dictionary, name_tags, sw.js ×4, loop docs S642 · hebrew_dictionary ×2, Hebrew_Font_Maker, name_tags, sw.js ×4, loop docs S641 · flash_cards ×2, Hebrew_Font_Maker ×2, sw.js ×4, loop docs S640 · Hebrew_Font_Maker ×2, sw.js ×3, ops.md, loop probe, loop README, loop docs S639 · sw.js ×2, ops.md, torah-and-trope.md, loop probes ×3, loop README, loop docs S638
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -826,7 +824,7 @@ _(none)_
 
 - N mobile & touch-device (one surface): 2026-11-11 (**S640 — 40th N, `flash_cards.html` (its 4th: S244 → S361 → S555 → S640; 37 commits to the page since: the drill's Pause and voice speed, the compact results, the sticky bars' measured heights, the printable card sheet, the folder tree's keys): 18 views × 16 cells (iPhone SE, 13, 13 sideways, Pixel 7 × EN/HE × light/dark) by real taps on a …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- M aesthetics & visual design (one surface): 2026-11-11 (**S641 — 42nd M, `hebrew_dictionary.html` (its 4th: S237 → S362 → S556 → S641; 29 commits to the page since: the Last Letter row, Save as Word List's proposed name, the Word Lists window saving the selection, a Hebrew search inside one word): 24 views × 8 cells by real clicks, 192 loads, 103,384 text readings (plant 140/140), hover 953 …[full text: IMPROVEMENT_ARCHIVE.md]
+- M aesthetics & visual design (one surface): 2026-11-11 (**S642 — 43rd M, `trope_tutor.html` (its 4th: S245 → S376 → S558 → S642; 23 commits to the page and `js/trope-staff.js` since: the Conservative melody, the traditions, the Drill's melody and answer count): 23 views × 8 cells by real clicks, 184 loads, 21,355 text readings (plant 184/184), hover 619 × 2 themes (plant 11/11), fills 0 …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - K i18n / localization audit: 2026-11-06 (**S623 — 37th K, `843984b3..2d9e7e23` (525 commits; the Trope Atlas', Name Tags', the assignments and review pages' and the `parsha/` pages' first K): CSV +925 / −2 / 67 reworded (parity, arrows, plurals read); static 5,956 refs (0 missing) + 3,460 fallback sites; blind 0/12,102 added lines; 42 live-switch cells on the tree and the base (raw keys 0, …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -854,4 +852,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-11-08 (**S630 — 41st F, long-build progress (S542's F-next; the affordance's first F): 13 presses that build before they answer, by real clicks with an animation-frame recorder, real PDF libraries from a cache, a held CDN, double presses at raw points. FOUND 2, FIXED 2 (+1 P4). F-next: destructive-action confirms.**)
 
-**Next session (S642):** **Branch `claude/lucid-brahmagupta-t4hdnh` (S638–S641, draft PR Hbleiberg/Hebrew_Blender#399): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1352**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=ad39f20 sw=v1352 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: M trope (S558), H fontmaker + name_tags (S559), C flash (S560), P fontmaker (S561), N trope (S562), G generator (S563), D fontmaker (S565), A (S581). ⚑ The FM's queue: the S639 P4s (ten blue sliders, the ragged Spacing sliders, the format select's hover); the dictionary's: Bulk Copy's 10.4px labels (P4, S641). ⚑ Harness `m641/` (the dictionary's 24 views × 8 cells, `fills.mjs` — the chip-vanishes-in-dark census, reusable on any page); traps 612–615 (findings S641). ⚑ `print-media-leak`: unjudged `leak.mjs` hits on 6 pages for each page's next G (the generator's next). ⚑ 46 seeds.
+**Next session (S643):** **Branch `claude/lucid-brahmagupta-t4hdnh` (S638–S642, draft PR Hbleiberg/Hebrew_Blender#399): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1356**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=ad39f20 sw=v1356 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: H fontmaker + name_tags (S559), C flash (S560), P fontmaker + letter_learner (S561), N trope (S562), G generator (S563), D fontmaker (S565), M torah (S568), A (S581). ⚑ Queue: the FM's last two S639 P4s (the ragged Spacing sliders, the format select's hover); the Tutor's two S642 P4s (the preview banner, the intro's measure). ⚑ Harness `m642/` (the Tutor's 23 views × 8 cells with a silent recording; `hover.mjs` and `fills.mjs` with plants that fire on the Tutor); `census-page.js` there skips a closed `<details>`' content — carry it into the next copy (trap 616); traps 616–618 (findings S642). ⚑ `print-media-leak`: unjudged `leak.mjs` hits on 6 pages for each page's next G (the generator's next). ⚑ 46 seeds.
