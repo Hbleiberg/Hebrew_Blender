@@ -71,17 +71,21 @@ const upd = await page.evaluate(async () => {
   await reg.update();
   return Promise.race([changed, new Promise(ok => setTimeout(() => ok('no controllerchange in 30s'), 30000))]);
 });
-await page.waitForTimeout(1000);
+// controllerchange fires as the new worker activates, before its activate handler has deleted the old cache: wait for
+// the worker's 'activated' state (the deletions done), or the old copy would still answer offline and the control could
+// read as kept. An old-version cache listed after that is one the old worker's late put recreated (not the deleted one).
+const activated = await page.waitForFunction(() => navigator.serviceWorker.controller && navigator.serviceWorker.controller.state === 'activated', null, { timeout: 15000, polling: 100 }).then(() => true, () => false);
 const keys = await page.evaluate(() => caches.keys());
+const orphan = await page.evaluate(async k => (await caches.has(k)) ? (await (await caches.open(k)).keys()).map(r => new URL(r.url).pathname) : null, 'ivritsuite-' + version);
 await new Promise(ok => { server.close(() => ok()); server.closeAllConnections(); for (const s of sockets) s.destroy(); });
 let refused = false; try { await fetch(BASE + '/index.html'); } catch (e) { refused = true; }
 const offline = { tutor: (await visit('/trope_tutor.html')).tutor, atlas: (await visit('/trope_atlas.html')).atlas };
 await browser.close();
 const kept = offline.tutor === online.tutor && offline.atlas === online.atlas;
-const rec = { control: CONTROL, from: version, to: bumped, update: upd, keys, refused, online, offline, kept, errors };
+const rec = { control: CONTROL, from: version, to: bumped, update: upd, activated, keys, orphan, refused, online, offline, kept, errors };
 if (JSON_OUT) console.log(JSON.stringify(rec));
-const summary = `S638 the traditions' approvals offline after a deploy (${CONTROL ? 'control: the copy in the versioned cache' : 'sw.js as committed'}): ${version} → ${bumped} ${upd}; Tutor melodies ${online.tutor} online → ${offline.tutor} offline, Atlas ${online.atlas} → ${offline.atlas}; caches ${keys.join(', ')}; ${errors.length} page errors`;
-if (!refused || online.tutor < 8 || online.atlas < 7) { console.log(summary + ' → INCONCLUSIVE (the outage or the online traditions did not hold)'); process.exit(2); }
+const summary = `S638 the traditions' approvals offline after a deploy (${CONTROL ? 'control: the copy in the versioned cache' : 'sw.js as committed'}): ${version} → ${bumped} ${upd}; Tutor melodies ${online.tutor} online → ${offline.tutor} offline, Atlas ${online.atlas} → ${offline.atlas}; caches ${keys.join(', ')}${orphan ? ` (${'ivritsuite-' + version} recreated with ${orphan.length}: ${orphan.join(' ')})` : ''}; ${errors.length} page errors`;
+if (!refused || !activated || (orphan && orphan.includes('/data/trope/trope_approvals.json')) || online.tutor < 8 || online.atlas < 7) { console.log(summary + ' → INCONCLUSIVE (the outage, the activation, the deletion of the old copy or the online traditions did not hold)'); process.exit(2); }
 if (CONTROL) { console.log(summary + ' → ' + (kept ? 'CONTROL SILENT' : 'control fired')); process.exit(kept ? 1 : 0); }
 const ok = kept && upd === 'controllerchange' && errors.length === 0;
 console.log(summary + ' → ' + (ok ? 'PASS' : 'FAIL'));
