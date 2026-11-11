@@ -367,6 +367,12 @@ body.dark .hi-sun{display:inline-block;}
   .inline { display: flex; align-items: center; gap: 7px; font-size: 0.78rem; font-weight: 600; }
   input[type=range] { accent-color: var(--gold); }   /* every slider in the page's gold: ten script-built ones (the meteg gap, the three mark sizes, trop spread, the point editor's four) kept the browser's blue beside eleven gold */
   .inline input[type=range] { flex: 1; accent-color: var(--gold); min-width: 0; height: 24px; /* operable box at the slider floor (3ae6891 pattern) — native default is ~16px */ }
+  /* the Spacing tab's three sliders: one label column, one readout column (monospace, 3ch: "-40", "600"), so the tracks
+     start and end together and keep their length while a value changes width (each row sized itself as a flex line) */
+  .sp-sliders { display: grid; grid-template-columns: max-content minmax(0, 1fr) max-content; column-gap: 7px; align-items: center; font-size: 0.78rem; font-weight: 600; }
+  .sp-sliders > .inline { display: contents; }
+  .sp-sliders > .hint { grid-column: 1 / -1; }
+  .sp-sliders .readout { min-width: 3ch; text-align: end; }
   /* stacked slider for narrow side columns: label + value on one line, full-width track below */
   .side-slider-label { display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; font-weight: 600; gap: 8px; }
   .side-slider { width: 100%; min-width: 0; box-sizing: border-box; accent-color: var(--gold); margin: 2px 0 2px; height: 24px; /* operable box at the slider floor (3ae6891 pattern) — native default is ~16px */ }
@@ -15686,10 +15692,12 @@ function renderSpacingPanel() {
     <div class="col-split">
     <div>
     <div class="ctl-label" style="margin-bottom:6px;">${I18n.t('fontmaker.panels.spacing_title')}</div>
+    <div class="sp-sliders">
     <div class="inline">${I18n.t('fontmaker.panels.letter_spacing')} <input type="range" min="-40" max="200" step="5" value="${sp.letterSpacing}" oninput="setLetterSpacing(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.letter_spacing'))}"> <span id="lsV" class="readout">${sp.letterSpacing}</span></div>
     <div class="inline">${I18n.t('fontmaker.panels.word_spacing')} <input type="range" min="80" max="600" step="10" value="${sp.wordSpacing}" oninput="setWordSpacing(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.word_spacing'))}"> <span id="wsV" class="readout">${sp.wordSpacing}</span></div>
     <div class="hint" style="margin-top:-4px;">${I18n.t('fontmaker.panels.word_spacing_hint')}</div>
     <div class="inline">${I18n.t('fontmaker.panels.line_spacing')} <input type="range" min="0" max="500" step="10" value="${sp.lineSpacing}" oninput="setLineSpacing(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.line_spacing'))}"> <span id="lnV" class="readout">${sp.lineSpacing}</span></div>
+    </div>
     <label class="fld">${I18n.t('fontmaker.panels.sample_text')} <input type="text" id="spacingSample" autocapitalize="off" autocorrect="off" spellcheck="false" dir="auto" value="${esc(sp.sample)}" oninput="setSpacingSample(this.value)" onchange="udBurstCommit()"></label>
     ${(project.font.addCustomGlyphs && customBaseLetters().length) ? `<div class="ctl-row" style="flex-wrap:wrap;gap:4px;margin-top:2px;">${customBaseLetters().map(l => `<button class="ctl-btn" style="padding:2px 8px;font-size:0.68rem;" onclick="insertSampleGlyph('${l.codepoint}')" title="${esc(window.I18n ? I18n.t('fontmaker.tip.add_glyph_sample', {name: l.name || ('U+' + l.codepoint)}) : "Add " + (l.name || ('U+' + l.codepoint)) + " to the sample text (it can't be typed on a keyboard)")}">${esc(_pT('add_glyph_sample', '+ ' + (l.name || ('U+' + l.codepoint)), {name: l.name || ('U+' + l.codepoint)}))}</button>`).join('')}</div>` : ''}
     ${project.font.nikkud.enabled ? `<div class="ctl-row" style="flex-wrap:wrap;gap:4px;margin-top:2px;align-items:center;"><span class="hint" style="font-size:0.7rem;">${I18n.t('fontmaker.panels.test_combos_label')}</span>${SAMPLE_TEST_COMBOS.map(c => { const s = sampleComboStr(c); return `<button class="ctl-btn" style="padding:2px 8px;font-size:0.8rem;" onclick="insertSampleCombo('${c}')" title="${esc(I18n.t('fontmaker.panels.test_combos_tip', { combo: s }))}">+ <span lang="he" style="font-family:var(--heb-font);direction:rtl;">${s}</span></button>`; }).join('')}</div>` : ''}
