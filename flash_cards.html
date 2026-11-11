@@ -856,9 +856,12 @@ body.dark .count-custom.active { background: var(--navy-deep); border-color: var
    bar: it rides above the hint by the space pwa.js publishes while the hint shows. The Letter Learner's rule for the tour
    and a modal: the hint steps aside while that state is open (the CSS state, so a hint built after the tour opened is
    covered too) and is back the moment it closes; a running drill takes the same, its marks being the action there. Only
-   the teacher's ✕ dismisses the hint for good. (S555 Pass N, pattern install-banner-over-a-sheet's-bottom-controls) */
+   the teacher's ✕ dismisses the hint for good. (S555 Pass N, pattern install-banner-over-a-sheet's-bottom-controls)
+   Every window the page builds is one too (fcModalize and the restore question mark the box aria-modal="true" while it
+   is open): the hint had sat over the Learning Path's last rows on an iPhone SE and, on a phone turned sideways, over
+   Practice My Weaknesses' Start and Cancel and Save results to…'s Cancel, a real tap timing out. (S640 Pass N) */
 @media (max-width: 767px) { .start-cta { bottom: var(--pwa-banner-space, 0px); } }
-body:has(#tourCard:not([hidden]), #screenCard.active) #pwaInstallBanner { visibility: hidden; }
+body:has(#tourCard:not([hidden]), #screenCard.active, [aria-modal="true"]) #pwaInstallBanner { visibility: hidden; }
 /* Keyboard focus the browser scrolls to an edge lands clear of the sticky header and, on the setup screen, of this bar
    (and the install hint under it on a phone): with the panels open, Tab put 34 of the setup's 155 stops wholly under the
    bar and Shift+Tab 8–17 under the header (WCAG 2.4.11). --fc-head-h / --fc-cta-h are their live heights, kept by
