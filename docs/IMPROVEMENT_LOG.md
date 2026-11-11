@@ -14,7 +14,9 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P2 (**S567 P; S573 P root-caused — a shared module, not small**) | js/ivrit-saves.js | **A page write made after a hydration planned its uploads, before it ends, is not sent, and the tab's next sync downloads the account's copy over it**: the hook is not armed yet, and step 4's `snapshotNames` takes the post-write hash as the tab's seen view, so `actionFor` reads it as another tab's write. …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] P3 (**NEW S643 H**) | name_tags.html | **A file or paste with no header row reads its class column as the transliteration**: "דָּוִד ⇥ David ⇥ 3B" prints "3B" under the Hebrew name (the content search takes the second Latin column as `tr`, overriding the automatic one); a column of short values with a digit, or one value on every row, is the extra line. | found S643
+- [ ] P3 (**NEW S644 H**) | Hebrew_Font_Maker.html | **A drawn project's saves keep a PNG per drawn letter** (1.32 of 1.44 MB of a 27-letter `.hebrewfont`): `drawEnsureRaster` rebuilds them on load and the cloud pack already strips them. | found S644
+
+- [ ] P3 (**NEW S644 H — not small**) | Hebrew_Font_Maker.html | **Below 1181px the fullscreen Draw canvas window (`100vh − 300px`) clips its drawing**: at 1024×768 the baseline sits 16px under its edge. | found S644
 
 - [ ] P3 (**NEW S602 — found verifying `3ab8b385`; its gate-4 answer covers it, measure Export PDF landscape first**) | hebrew_blend_generator.html | **With Landscape Print on, the on-screen blend sheet keeps ten columns where they do not fit**: Inverse 46–61px past the sheet at 1280/1600; on an iPhone 13 Reading 106–119px, Inverse 445px (paper unchanged). | found S602
 
@@ -63,6 +65,12 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P3 (**NEW 2026-09-26**) | trope_tutor.html (trope_index.json) | **8 Learn example clips sit where PocketTorah's taps slip by a word** (`build-trope-phrases.mjs` TIMING_SLIPS), so each likely plays a neighbouring word; the index builder could skip those verses. **S454: not small** (findings S454). | found 2026-09-26
 
 - [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
+
+- [ ] P4 (**NEW S644 H**) | Hebrew_Font_Maker.html | **Continue reopens on Alef**, not the letter left on (`applyProjectData`). | found S644
+
+- [ ] P4 (**NEW S644 H**) | Hebrew_Font_Maker.html | **At 1366×768 a tile pick leaves the canvas below the fold** (stage 555–1025). | found S644
+
+- [ ] P4 (**NEW S644 H**) | Hebrew_Font_Maker.html | **Fullscreen's floating Exit / Show Panels plates cover the workspace's top controls** (mode buttons, zoom Reset). | found S644
 
 - [ ] P4 (**NEW S642 M — a suite question: the other tools' intros run full width too**) | trope_tutor.html | **The Learn intro runs ~170 characters a line at 1280** (six lines since the Conservative melody's sentences joined it): a measure near 75ch would read easier. | found S642
 
@@ -370,6 +378,14 @@ _(none)_
 
 ## Done
 
+- [x] 2026-11-11 | (S644 close-out) | branch/deploy note | **S644 = H on `Hebrew_Font_Maker.html` (its 6th H: S97 → S163 → S241 → S380 → S559 → S644; 33 commits to the page since): 3 lessons by real input × EN light 1280 / HE dark 800 (a class font drawn letter by letter → QA Check → Export → My Fonts → the generator; save to the computer → a fresh browser → rename → export; Simple CLM from the …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-11 | `6679ae8e` | name_tags.html, sw.js, name-tags.md | (S644, the S643 P3) **A headerless class column is the extra line, not the transliteration** | `h644/fix3.mjs`, 12 cases × 4 cells vs HEAD by real input: 8 as meant, 4 byte-identical; 0 errors
+
+- [x] 2026-11-11 | `b2011e0f` | Hebrew_Font_Maker.html, sw.js | (S644 H) **Full Screen in Draw scrolls the canvas up to the screen** | `h644/fix2.mjs` × 4 sizes vs HEAD by the real press: baseline in the window 1 / 4 → 4 / 4, stroke + Save traced 4 / 4; Trace-step control unmoved; 0 errors
+
+- [x] 2026-11-11 | `f76afd83` | Hebrew_Font_Maker.html, locales, sw.js | (S644 H) **The Continue prompts' {time} in Hebrew** (8 `fontmaker.modals.reltime.*` keys) | `h644/fix1.mjs`, a real reload × 4 cells vs HEAD: English byte-identical, Hebrew English phrases 9 / 9 → 0 / 9; 0 errors
+
 - [x] 2026-11-11 | (S643 close-out) | branch/deploy note | **S643 = H on `name_tags.html` (its 2nd H: S551 → S643; 29 commits to the page since: the Print column, the roster import, the Dashboard link both ways, the row grips, the omitted line): 6 lessons by real input × EN light 1280 / HE dark 800 (the office's First / Last / Hebrew / Homeroom spreadsheet → 2-a-page tent cards in Ashkenazi; two …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-11-11 | `7d3411f4` | Hebrew_Font_Maker.html, sw.js | (S643, the S639 M P4) **The export-format menu answers the mouse**: `.tbtn-select:hover` takes `.tbtn:hover`'s brightness | `m639/hv643.mjs` by the real mouse × 4 cells vs a HEAD archive: the select's hover filter none → brightness(1.06), its outlined neighbour's the same (the control); 0 errors
@@ -410,17 +426,11 @@ _(none)_
 
 - [x] 2026-11-11 | `e1a80f62` | flash_cards.html, sw.js | (S640 N; pattern `install-banner-over-a-sheet's-bottom-controls`) **The install hint steps aside while a window is open on a phone**: the hide rule's `:has()` adds `[aria-modal="true"]` (fcModalize's windows and the restore question) | `n640/fix1.mjs`, iPhone SE / 13 / 13 sideways / Pixel 7 × EN/HE × light/dark with the iOS hint forced, 5 …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-11-11 | (S639 close-out) | branch/deploy note | **S639 = M on `Hebrew_Font_Maker.html` (its 4th M: S225 → S335 → S554 → S639; 28 commits to the page since, all the loop's): 20 views × EN light 1280 / HE dark 800 / EN dark 1280 / HE light 800 on a starting-font project (`?start=simple-clm`, every tile state filled) and a fresh one (the wizard, Draw); 19,704 text readings (plant 80/80), …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-11 | `b5216226` | sw.js, ops.md, probe | (S639, the S638 V P3) **One offline copy of a page, whatever its query**: the network-first put keys by the path (`url.origin + url.pathname`); the lookups already ignore the query | probe `S639-sw-one-copy-per-page` 6 query visits → 0 query-keyed copies (HEAD and `--control` 6, ~4.6 MB), offline `?parsha=Bereshit` / `?s=never-seen` 200 from …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-11 | `08f44838` | Hebrew_Font_Maker.html, sw.js | (S639 M; pattern `native-control-outside-the-field-rule`) **Draw's Smoothing and the point editor's Rotate / Scale boxes take the page's field look**: the `.guide-pos` / `#adToolbar` rule (border, 5px radius, `--white` / `--text`, the page's face at 0.78rem, 24px floor) | `m639/fix2.mjs` × 4 cells: HEAD Arial, a square or inset edge, …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-11 | `39298d4e` | Hebrew_Font_Maker.html, sw.js | (S639 M; pattern `contrast-below-AA-on-a-tinted-or-coloured-plate`) **The letter tiles' status letters read at 4.5:1**: the export button's ink #1a1a1a on the unchanged fills, the hollow ✓ `--gold-text` | `m639/fix1.mjs` × 4 cells, real states (traced, anchored, carried over, Confirm placement by a click, an image by a real upload) + …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-11-11 | **S644** | iters: 4 | tools: Hebrew_Font_Maker ×2, name_tags, locales, name-tags.md, sw ×3 | patterns fixed: — | pass run: H (fontmaker, first since S559; FOUND 7, FIXED 2) + Name Tags' S643 P3 | SW: v1360→v1363
 
 - 2026-11-11 | **S643** | iters: 5 | tools: name_tags ×2, Hebrew_Font_Maker ×2, name-tags.md, sw ×4 | patterns fixed: — | pass run: H (name_tags, first since S551; FOUND 3, FIXED 2) + the FM's two S639 P4s | SW: v1356→v1360
 
@@ -460,11 +470,9 @@ _(none)_
 
 - 2026-11-08 | **S625** | iters: 5 | tools: letter_learner ×2, flash_cards, locales, sw | patterns fixed: — | pass run: M (letter_learner, first since S536) + micro-feature | SW: v1297→v1300
 
-- 2026-11-07 | **S624** | iters: 5 | tools: name_tags, dictionary, ivrit-account (shared), locales, sw | patterns fixed: — | pass run: P (name_tags, first since S535) + micro-feature | SW: v1294→v1297
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S643 (2026-11-11):** name_tags ×2, Hebrew_Font_Maker ×2, name-tags.md, sw.js ×4, loop docs S643 · trope_tutor, Hebrew_Font_Maker, hebrew_dictionary, name_tags, sw.js ×4, loop docs S642 · hebrew_dictionary ×2, Hebrew_Font_Maker, name_tags, sw.js ×4, loop docs S641 · flash_cards ×2, Hebrew_Font_Maker ×2, sw.js ×4, loop docs S640 · Hebrew_Font_Maker ×2, sw.js ×3, ops.md, loop probe, loop README, loop docs S639
+- **Snapshot S644 (2026-11-11):** Hebrew_Font_Maker ×2, name_tags, locales, name-tags.md, sw.js ×3, loop docs S644 · name_tags ×2, Hebrew_Font_Maker ×2, name-tags.md, sw.js ×4, loop docs S643 · trope_tutor, Hebrew_Font_Maker, hebrew_dictionary, name_tags, sw.js ×4, loop docs S642 · hebrew_dictionary ×2, Hebrew_Font_Maker, name_tags, sw.js ×4, loop docs S641 · flash_cards ×2, Hebrew_Font_Maker ×2, sw.js ×4, loop docs S640
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -848,10 +856,10 @@ _(none)_
 
 - L SEO & discoverability audit: 2026-11-06 (**S622 — 30th L, `ca9b9618..b816c43d` (527 commits; the Trope Atlas', Name Tags', the assignments page's, the review page's and the 54 `parsha/` pages' first L): 20 static arms over 79 pages (titles, descriptions, canonicals, robots, OG = Twitter + the images on disk and at 1200×630, every JSON-LD block parsing with its breadcrumbs resolving and its …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- H teacher walkthrough / paper-cuts (one tool): 2026-11-11 (**S643 — `name_tags.html` (its 2nd: S551 → S643; 29 commits to the page since: the Print column, the roster import, the Dashboard link both ways, the row grips, the omitted line): 6 lessons by real input × EN light 1280 / HE dark 800, 0 errors; the student cell has no screen here (the printed tag is the student's artifact). FOUND 3, …[full text: IMPROVEMENT_ARCHIVE.md]
+- H teacher walkthrough / paper-cuts (one tool): 2026-11-11 (**S644 — `Hebrew_Font_Maker.html` (its 6th: S97 → S163 → S241 → S380 → S559 → S644; 33 commits to the page since): 3 lessons by real input × EN light 1280 / HE dark 800 (a drawn class font → Export → My Fonts → the generator; a next-day file → rename → export; Simple CLM → a moved qamats → Preview PDF → Export) + the student cell (Draw …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - E freshness/site-health: 2026-11-06 (**S621 — 42nd E, `48286048..6985aaf4` (530 commits; the Trope Atlas', Name Tags', the assignments page's, the `parsha/` pages' and the Worker's first E): 31 static arms rebuilt (`e621/arms.py`: precache both ways + the loaded scripts, `?v=` agreement + ops.md, 2,045 refs + md links, og = twitter, CSP first / account origins / 279 external refs, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - F cross-tool consistency: 2026-11-08 (**S630 — 41st F, long-build progress (S542's F-next; the affordance's first F): 13 presses that build before they answer, by real clicks with an animation-frame recorder, real PDF libraries from a cache, a held CDN, double presses at raw points. FOUND 2, FIXED 2 (+1 P4). F-next: destructive-action confirms.**)
 
-**Next session (S644):** **Branch `claude/lucid-brahmagupta-t4hdnh` (S638–S643, draft PR Hbleiberg/Hebrew_Blender#399): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1360**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=ad39f20 sw=v1360 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: H fontmaker (S559), C flash (S560), P fontmaker + letter_learner (S561), N trope (S562), G generator (S563), D fontmaker (S565), M torah (S568), A (S581). ⚑ Queue: Name Tags' headerless class column (the S643 P3); the Tutor's two S642 P4s (the preview banner, the intro's measure). ⚑ Harness `h643/` (Name Tags: esm.sh, Google Fonts and jsDelivr from a curl-filled cache, `lessons.mjs` / `lessons2.mjs`, `fix1.mjs`, `fix2.mjs`, a `head/` archive); the FM probes `sp643*.mjs` and `hv643.mjs` sit in `m639/`; traps 619–621 (findings S643). ⚑ `print-media-leak`: unjudged `leak.mjs` hits on 6 pages for each page's next G (the generator's next). ⚑ 46 seeds.
+**Next session (S645):** **Branch `claude/lucid-brahmagupta-t4hdnh` (S638–S644, draft PR Hbleiberg/Hebrew_Blender#399): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1363**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=ad39f20 sw=v1363 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: C flash (S560), P fontmaker + letter_learner (S561), N trope (S562), G generator (S563), H dashboard (S564), D fontmaker (S565), M torah (S568), A (S581). ⚑ Queue: the FM's drawn-letter PNGs (S644 P3); the Tutor's S642 P4. ⚑ Harness `h644/`, traps 622–625 (findings S644). ⚑ `print-media-leak`: `leak.mjs` hits on 6 pages for each page's next G. ⚑ 46 seeds.
