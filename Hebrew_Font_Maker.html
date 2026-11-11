@@ -1172,6 +1172,9 @@ body.dark .hi-sun{display:inline-block;}
   #adSummary { font-size: 0.84rem; color: var(--muted); margin: 0 0 10px; line-height: 1.5; flex: 0 0 auto; }
   #adSummary b { color: var(--text); }
   #adSummary .ad-warn { color: #c0392b; font-weight: 600; }
+  /* The three warning inks above had no dark twin: #c0392b on the dark modal read 2.82:1 (QA Check's outline and
+     too-tall lines, its build check's "needs", Auto-detect's warnings) — the page's own .warn twin, 5.4:1+ there. */
+  body.dark #qaSummary .qa-tall, body.dark .qa-bc-warn, body.dark #adSummary .ad-warn { color: #ff8a7a; }
   #adSummary .ad-match { color: #10b981; font-weight: 700; }
   #adToolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0 0 10px; font-size: 0.8rem; color: var(--text); flex: 0 0 auto; }
   #adToolbar .ad-ctl { display: inline-flex; align-items: center; gap: 6px; }
