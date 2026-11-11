@@ -2075,9 +2075,10 @@ function ntLinesFor(row) {
   const heStack = ntHeStack();
   if (he) out.push({ kind: 'he', text: he, pct: ntSet.sizeHe, color: ntSet.colorHe, family: heStack, weight: '400', rtl: true, lang: 'he', ref: 'לאקְ', bubble: ntSet.bubble });
   const tr = ntTrFor(row), en = ntRowField(row, 'en').trim();
-  // A transliteration that spells the English name (David / David, most of a class) is not printed twice: the line stays
-  // in the list as omitted, so the tag keeps the slider sizes (it is not a tag missing a line) and the class set stays uniform.
-  if (tr) out.push({ kind: 'tr', text: tr, pct: ntSet.sizeTr, color: ntSet.colorTr, family: NT_LATIN, weight: '400', rtl: false, lang: 'en', ref: 'Ag', omit: !!(ntSet.english && en && ntSameLatin(tr, en)) });
+  // A transliteration that spells the English name (David / David, most of a class) or its first name (David / David Cohen,
+  // an office file's first and last name) is not printed twice: the line stays in the list as omitted, so the tag keeps the
+  // slider sizes (it is not a tag missing a line) and the class set stays uniform.
+  if (tr) out.push({ kind: 'tr', text: tr, pct: ntSet.sizeTr, color: ntSet.colorTr, family: NT_LATIN, weight: '400', rtl: false, lang: 'en', ref: 'Ag', omit: !!(ntSet.english && en && ntSameLatinLead(tr, en)) });
   if (ntSet.english && en) out.push({ kind: 'en', text: en, pct: ntSet.sizeEn, color: ntSet.colorEn, family: NT_LATIN, weight: '700', rtl: NT_HEB_RE.test(en) && !/[A-Za-z]/.test(en), lang: NT_HEB_RE.test(en) && !/[A-Za-z]/.test(en) ? 'he' : 'en', ref: 'Ag' });
   const ex = (ntRowField(row, 'ex').trim() || ntStr(ntCur.val && ntCur.val.extra).trim());
   if (ntSet.extra && ex) {
@@ -2090,6 +2091,11 @@ function ntLinesFor(row) {
 function ntSameLatin(a, b) {
   const k = s => String(s || '').normalize('NFD').replace(/[^A-Za-z]/g, '').toLowerCase();
   return k(a) === k(b);
+}
+// …or the same as the English name's first words, as many as the transliteration has ("David" / "David Cohen"; not "Dovid").
+function ntSameLatinLead(tr, en) {
+  const n = String(tr).trim().split(/\s+/).length, w = String(en).trim().split(/\s+/);
+  return ntSameLatin(tr, en) || (w.length > n && ntSameLatin(tr, w.slice(0, n).join(' ')));
 }
 // The size (% of the tag) of each kind of line any tag in the list carries (an omitted line counts: the tag has the kind).
 function ntFullLines(list) {
