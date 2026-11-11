@@ -1735,6 +1735,11 @@ function ntImportRows(table) {
       if (taken.has(i)) continue;
       const vals = body.map(r => (r[i] || '').trim()).filter(Boolean);
       if (!vals.length) continue;
+      // A class or room column ("3B", "Room 12", "ג1" — a name or a transliteration carries no digit — or one value on
+      // every row, "Kindergarten") is the extra line, never the transliteration under the name. A column of bare numbers
+      // (an ID) stays unread, as before.
+      if (!('ex' in map) && (vals.every(v => v.length <= 12 && /\d/.test(v) && /[A-Za-zא-ת]/.test(v))
+          || (vals.length >= 3 && vals.every(v => v === vals[0])))) { map.ex = i; continue; }
       if (vals.filter(v => NT_HEB_RE.test(v)).length * 2 >= vals.length) { if (!('he' in map)) map.he = i; }
       else if (vals.some(v => /[A-Za-z]/.test(v))) latin.push(i);
     }
