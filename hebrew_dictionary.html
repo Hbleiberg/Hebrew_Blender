@@ -1338,15 +1338,15 @@ html[lang="he"] .beta-tag { letter-spacing: normal; text-transform: none; }   /*
                 <button class="pos-all-btn" onclick="clearBulkSelection()" data-i18n="dictionary.copy.bulk_clear">Clear</button>
               </div>
               <div style="display:flex;gap:4px;margin-bottom:6px;">
-                <button class="pos-all-btn" style="flex:1;font-size:0.65rem;" onclick="selectAllOnPage()" data-i18n="dictionary.copy.select_page">Select page</button>
-                <button class="pos-all-btn" style="flex:1;font-size:0.65rem;" onclick="selectAllMatching()" data-i18n="dictionary.copy.select_all_matching">Select all matching</button>
+                <button class="pos-all-btn" onclick="selectAllOnPage()" data-i18n="dictionary.copy.select_page">Select page</button>
+                <button class="pos-all-btn" onclick="selectAllMatching()" data-i18n="dictionary.copy.select_all_matching">Select all matching</button>
               </div>
               <textarea id="bulkTextarea" readonly rows="6" aria-label="Bulk-copied words" data-i18n-aria-label="dictionary.copy.bulk_textarea_aria" style="width:100%;font-size:0.75rem;font-family:var(--heb-font);direction:ltr;resize:vertical;border:1px solid var(--border);border-radius:5px;padding:6px 8px;background:var(--white);color:var(--text);box-sizing:border-box;"></textarea>
               <button class="pos-all-btn" style="width:100%;margin-top:5px;" onclick="copyBulkText(this)" data-i18n="dictionary.copy.copy_all">Copy All</button>
             </div>
             <hr style="border:none;border-top:1px solid var(--border);margin:10px 0;">
             <div style="font-size:0.72rem;font-weight:600;margin-bottom:2px;color:var(--text);" data-i18n="dictionary.export.head">Export Selected Words</div>
-            <div style="font-size:0.65rem;color:var(--muted);margin-bottom:6px;" data-i18n="dictionary.export.hint">Active when Bulk Copy Mode is on and at least one word is selected.</div>
+            <div style="font-size:0.68rem;color:var(--muted);margin-bottom:6px;" data-i18n="dictionary.export.hint">Active when Bulk Copy Mode is on and at least one word is selected.</div>
             <div id="exportBox" class="export-disabled">
               <div style="display:flex;gap:5px;">
                 <button class="pos-all-btn hi-btn" style="flex:1;" onclick="exportAnki()" aria-disabled="true"><svg class="hi hi-sm hi-download" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.4v11.2"/><path d="M7.6 10.4 12 14.8l4.4-4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="dictionary.export.anki_button">Export for Anki</span></button>
@@ -1354,11 +1354,11 @@ html[lang="he"] .beta-tag { letter-spacing: normal; text-transform: none; }   /*
               </div>
               <div id="exportCount" class="bidi-isolate" style="font-size:0.7rem;color:var(--muted);margin-top:5px;">0 words selected for export.</div>
               <div id="exportErr" role="status" aria-live="polite" style="font-size:0.72rem;color:var(--danger-text);margin-top:3px;min-height:1em;"></div>
-              <div style="font-size:0.65rem;color:var(--muted);margin-top:5px;line-height:1.4;" data-i18n="dictionary.export.instructions">Anki: import via File → Import. Quizlet: use Import from Word/Excel on the study set creation page.</div>
+              <div style="font-size:0.68rem;color:var(--muted);margin-top:5px;line-height:1.4;" data-i18n="dictionary.export.instructions">Anki: import via File → Import. Quizlet: use Import from Word/Excel on the study set creation page.</div>
             </div>
             <hr style="border:none;border-top:1px solid var(--border);margin:10px 0;">
             <div style="font-size:0.72rem;font-weight:600;margin-bottom:2px;color:var(--text);"><span data-i18n="dictionary.wordlists.head">Word Lists</span> <span class="tip-wrap" data-i18n-tip="dictionary.wordlists.head_tip" data-tip="Save selected words as a named list stored across the whole site, so you can reuse it in other tools."><i class="tip-icon">?</i></span></div>
-            <div style="font-size:0.65rem;color:var(--muted);margin-bottom:6px;" data-i18n="dictionary.wordlists.head_desc">Save selected words as a named list you can reuse elsewhere on the site.</div>
+            <div style="font-size:0.68rem;color:var(--muted);margin-bottom:6px;" data-i18n="dictionary.wordlists.head_desc">Save selected words as a named list you can reuse elsewhere on the site.</div>
             <div style="display:flex;gap:5px;">
               <button id="wlSaveBtn" class="pos-all-btn hi-btn" style="flex:1;" onclick="wlOpenSaveModal()" disabled><svg class="hi hi-sm hi-bookmark" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 4.4h11a1 1 0 0 1 1 1v14.2l-6.5-4-6.5 4V5.4a1 1 0 0 1 1-1Z"/></svg><span class="hi-lbl" data-i18n="dictionary.wordlists.save_button">Save as Word List…</span></button>
               <button class="pos-all-btn hi-btn" style="flex:1;" onclick="wlOpenManager()"><svg class="hi hi-sm hi-book" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7.2v12.4"/><path d="M12 7.2S10 5.4 6 5.4a18 18 0 0 0-2.4.2v12.6A18 18 0 0 1 6 18c4 0 6 1.6 6 1.6s2-1.6 6-1.6a18 18 0 0 1 2.4.2V5.6A18 18 0 0 0 18 5.4c-4 0-6 1.8-6 1.8Z"/></svg><span class="hi-lbl" data-i18n="dictionary.wordlists.manager_button">Word Lists</span></button>
