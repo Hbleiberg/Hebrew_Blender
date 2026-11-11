@@ -23189,13 +23189,14 @@ async function autosaveNow() {
 // Flush a pending debounced autosave while the page is still alive (tab hidden / closing) so the last
 // edit isn't lost in the 3s debounce window and "Continue where you left off" stays current.
 function flushAutosave() { if (project && _projectDirty) { clearTimeout(_autosaveTimer); autosaveNow(); } }
-function _autosaveRelTime(iso) {
-  const t = Date.parse(iso); if (!isFinite(t)) return 'earlier';
+function _autosaveRelTime(iso) {   // "{time}" in the Continue prompts — a phrase of the UI's language, never English inside Hebrew
+  const rt = (k, n) => I18n.t('fontmaker.modals.reltime.' + k + (n == null ? '' : (n === 1 ? '.one' : '.other')), n == null ? undefined : { count: n });
+  const t = Date.parse(iso); if (!isFinite(t)) return rt('earlier');
   const s = Math.max(0, Math.round((Date.now() - t) / 1000));
-  if (s < 60) return 'just now';
-  const m = Math.round(s / 60); if (m < 60) return m + (m === 1 ? ' minute' : ' minutes') + ' ago';
-  const h = Math.round(m / 60); if (h < 24) return h + (h === 1 ? ' hour' : ' hours') + ' ago';
-  const d = Math.round(h / 24); return d + (d === 1 ? ' day' : ' days') + ' ago';
+  if (s < 60) return rt('just_now');
+  const m = Math.round(s / 60); if (m < 60) return rt('minutes', m);
+  const h = Math.round(m / 60); if (h < 24) return rt('hours', h);
+  const d = Math.round(h / 24); return rt('days', d);
 }
 let _autosavePromptDeferred = false;   // set when the boot launch decision was held back behind a first-run dialog/tour
 let _launchDecided = false;   // one-shot: the boot launch flow ran (or a project load / wizard Create preempted it)

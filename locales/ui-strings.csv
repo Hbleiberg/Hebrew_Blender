@@ -2211,10 +2211,18 @@ fontmaker.modals.confirm_replace_cp,U+{cp} is already {who}. Adding this will RE
 fontmaker.modals.confirm_reset_trop_sides,Reset all Left/Right trop positions on every letter to the default spread? Per-letter fine-tuning of the side columns will be lost (you can undo).,לאפס את כל מיקומי הטעמים שמאל/ימין בכל אות לפיזור ברירת המחדל? הכוונון העדין לכל אות של עמודות הצד יאבד (אפשר לבטל).,confirm dialog,
 fontmaker.modals.confirm_this_guide,this guide,קו העזר הזה,confirm default,
 fontmaker.modals.continue,Continue,המשך,dialog button,
-fontmaker.modals.continue_body,Reopen your most recent work from {time}?,לפתוח מחדש את העבודה האחרונה שלכם מ-{time}?,dialog body,
+fontmaker.modals.continue_body,Reopen your most recent work from {time}?,"לפתוח מחדש את העבודה האחרונה שלכם, שנשמרה {time}?",dialog body,"time = a fontmaker.modals.reltime.* phrase (pre-bolded)"
 fontmaker.modals.continue_stripped,"Your browser couldn't keep the source photos this time — traced outlines remain, but uploaded scans may be missing.","הדפדפן שלכם לא הצליח לשמור את תמונות המקור הפעם — המתארים העקובים נשארים, אך סריקות שהועלו עשויות להיות חסרות.",dialog body fragment,
 fontmaker.modals.continue_title,Continue where you left off?,להמשיך מהמקום שבו הפסקתם?,dialog title,
 fontmaker.modals.continue_untouched,Your saved files are untouched either way.,הקבצים השמורים שלכם אינם משתנים כך או כך.,dialog body fragment,
+fontmaker.modals.reltime.just_now,just now,ממש עכשיו,dialog body fragment,"how long ago the work was saved; fills {time} in continue_body and osfont.boot_pick_body"
+fontmaker.modals.reltime.minutes.one,1 minute ago,לפני דקה,dialog body fragment,"fills {time} in continue_body and osfont.boot_pick_body"
+fontmaker.modals.reltime.minutes.other,{count} minutes ago,לפני {count} דקות,dialog body fragment,"fills {time} in continue_body and osfont.boot_pick_body"
+fontmaker.modals.reltime.hours.one,1 hour ago,לפני שעה,dialog body fragment,"fills {time} in continue_body and osfont.boot_pick_body"
+fontmaker.modals.reltime.hours.other,{count} hours ago,לפני {count} שעות,dialog body fragment,"fills {time} in continue_body and osfont.boot_pick_body"
+fontmaker.modals.reltime.days.one,1 day ago,לפני יום,dialog body fragment,"fills {time} in continue_body and osfont.boot_pick_body"
+fontmaker.modals.reltime.days.other,{count} days ago,לפני {count} ימים,dialog body fragment,"fills {time} in continue_body and osfont.boot_pick_body"
+fontmaker.modals.reltime.earlier,earlier,קודם לכן,dialog body fragment,"when the save time cannot be read; fills {time} in continue_body and osfont.boot_pick_body"
 fontmaker.modals.copyoutline_cancel,Cancel,ביטול,button,
 fontmaker.modals.copyoutline_copy,Copy outline,העתק מתאר,button,
 fontmaker.modals.copyoutline_desc,"Drops a letter's traced outline into <b>this letter</b> as a starting point — then reshape it (e.g. copy <b>Tav</b> and delete the toe to make <b>Het</b>, <b>He</b> or <b>Resh</b>) with <b>✎ Edit points</b>. The current letter's width & spacing stay as they are. You can undo it.","מכניס מתאר עקוב של אות ל<b>אות זו</b> כנקודת התחלה — ואז עצבו אותו מחדש (למשל העתיקו <b>תו</b> ומחקו את הרגל כדי ליצור <b>חית</b>, <b>הא</b> או <b>ריש</b>) עם <b>✎ עריכת נקודות</b>. הרוחב והריווח של האות הנוכחית נשארים כפי שהם. אפשר לבטל.",dialog body,html
