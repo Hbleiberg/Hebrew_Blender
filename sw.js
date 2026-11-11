@@ -1,5 +1,5 @@
 /* IvritSuite service worker — bump VERSION to invalidate the cache on deploy. */
-const VERSION = 'v1343';
+const VERSION = 'v1344';
 const CACHE = 'ivritsuite-' + VERSION;
 // Version-independent cache for the big data/ corpora (dictionary words / emoji / parshiyot /
 // pockettorah). Kept OUT of the version-scoped CACHE so a routine VERSION bump no longer evicts
@@ -183,7 +183,10 @@ self.addEventListener('fetch', (event) => {
         .then((res) => {
           if (res && res.ok && res.type === 'basic') {
             const copy = res.clone();
-            caches.open(CACHE).then((cache) => cache.put(req, copy));
+            // Kept under the path alone: a page's bytes never vary by its query (GitHub Pages ignores it; the page reads
+            // it in the browser) and the lookups below ignore it, while a key per ?parsha= / ?s= / ?code= kept one full
+            // copy of the page each until the next deploy.
+            caches.open(CACHE).then((cache) => cache.put(url.origin + url.pathname, copy));
           }
           return res;
         })

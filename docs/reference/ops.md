@@ -59,7 +59,8 @@ Notes:
 
 - **Pages and scripts (`pwa.js`) are network-first:** when online the browser
   always gets the fresh file, so a deploy is never hidden behind a stale cached
-  page. The cache is only the offline fallback for these. A navigation it cannot answer gets the hub: its shell at
+  page. The cache is only the offline fallback for these, one copy per path: the copy is stored without its query
+  (`?parsha=`, `?s=`, a sign-in's `?code=` — a page's bytes never vary by it) and looked up ignoring it. A navigation it cannot answer gets the hub: its shell at
   the same URL for a root-level path, a redirect to `/` for a path under a folder (an unvisited `parsha/` page) —
   the hub's links are relative, so its shell inside a folder would send every link back into that folder.
 - **Static media (icons, splash images, manifest) is cache-first** for speed.
