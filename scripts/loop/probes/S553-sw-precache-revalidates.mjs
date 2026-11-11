@@ -13,7 +13,8 @@
 // Serves the repo root in-process with max-age=600 (nothing on disk is written; the "deploy" is an override map on the
 // same port: sw.js bumped, a marker in resources.html, favicon.svg and js/tt-pitch-worklet.js), loads the hub in a
 // context whose worker is live (never serviceWorkers:'block'), swaps the deploy in, calls reg.update(), awaits
-// controllerchange and reads the new cache's bytes. Foreign origins fail at DNS (no proxy), so nothing hangs.
+// controllerchange and reads the new cache's bytes. Foreign origins fail at DNS (no proxy), so nothing hangs; no
+// Playwright route is set, since routing disables the HTTP cache this probe is about.
 import pkg from '/opt/node22/lib/node_modules/playwright/index.js';
 import http from 'node:http';
 import fs from 'node:fs';
@@ -58,7 +59,8 @@ const BASE = 'http://localhost:' + server.address().port;
 
 const browser = await chromium.launch({ args: ['--proxy-server=direct://', '--host-resolver-rules=MAP * ~NOTFOUND, EXCLUDE localhost'] });
 const ctx = await browser.newContext();
-await ctx.route('**/*', r => (r.request().url().startsWith(BASE) ? r.continue() : r.abort()));
+// No route: Playwright (1.63) routes the worker's own fetches too, and routing disables the HTTP cache — the control
+// then reads fresh and the probe proves nothing (S638). Foreign origins already fail at DNS (the launch args).
 const page = await ctx.newPage();
 const errors = []; page.on('pageerror', e => errors.push(String(e.message)));
 await page.goto(BASE + '/index.html', { waitUntil: 'load' });
