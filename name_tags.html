@@ -437,6 +437,7 @@ html[lang="he"] fieldset.nt-set legend, html[lang="he"] .nt-head { letter-spacin
 .nt-list-toggle { display:inline-flex; align-items:center; gap:8px; min-height:24px; /* the target floor: the heading's line box alone is 23.5px */ font:inherit; color:inherit; background:none; border:none; padding:0; cursor:pointer; text-align:start; }
 .nt-list-toggle::after { content:'▾'; content:'▾' / ''; font-size:1rem; color:var(--gold-text); transition:transform 0.2s; }
 .nt-lists.collapsed .nt-list-toggle::after { transform:rotate(-90deg); }
+.nt-list-toggle:hover { color:var(--gold-text); }   /* the heading is the toggle, yet only it never answered the mouse where the sidebar's panel titles do: the suite's text-disclosure hover (the dictionary's section titles, the dashboard's master toggle) */
 .nt-lists.collapsed .nt-list-body { display:none; }
 .nt-list-sum { font-size:0.86rem; color:var(--muted); }
 .nt-lists:not(.collapsed) .nt-list-sum { display:none; }
