@@ -664,12 +664,13 @@ body.dict-audio-on .wc-speak{display:flex;}
 [dir="rtl"] .wc-transl{text-align:right;}
 .wc-badges{display:flex;gap:3px;flex-wrap:wrap;margin-top:5px;}
 .badge{font-size:0.7rem;padding:2px 5px;border-radius:3px;font-weight:600;text-transform:uppercase;letter-spacing:0.03em;white-space:nowrap;}
-.b-pos{background:var(--warm-gray);color:var(--muted);}
+.b-pos,.b-gem{background:var(--warm-gray);color:var(--muted);}
 .b-bib{background:var(--era-bib-bg);color:var(--era-bib-text);}
 .b-mod{background:var(--era-mod-bg);color:var(--era-mod-text);}
 .b-both{background:var(--warm-gray);color:var(--muted);}
 .b-len{background:var(--navy);color:var(--gold-light);}
 body.dark .b-len,body.dark .ec-tag.cat{background:#2a4070;}   /* dark --navy stays #1a2744, 1.03:1 on the dark card: the length badge and the emoji card's category tag vanished and their gold labels floated; the suite's dark navy-control fill (pattern dark-navy-fill-matches-its-ground). Print keeps its transparent rule. */
+@media screen{body.dark .b-pos,body.dark .b-gem,body.dark .b-both,body.dark .ec-tag:not(.cat){background:rgba(221,228,240,0.1);color:#aab8d8;}}   /* dark --warm-gray is the card itself (#1e2535): the part-of-speech, "Bib + Mod" and gematria badges and the emoji cards' subcategory tag lost their chip (1.00:1, light 1.20–1.31) and their muted labels floated; the Resources page's dark badge (1.31:1, label 5.90:1 — dark --muted on the tint would read 3.85). Screen only: paper keeps the light chips (pattern dark-navy-fill-matches-its-ground) */
 .load-more-wrap{text-align:center;padding:14px 0;}
 /* Emoji mode */
 body.emoji-mode .word-mode-panel{display:none;}
@@ -3614,7 +3615,7 @@ function buildWordCard(w) {
       ${w.pos ? `<span class="badge b-pos">${escHe(posLabel(w.pos))}</span>` : ''}
       <span class="badge ${ec}">${el}</span>
       <span class="badge b-len">${w.len}L</span>
-      ${showGematria ? `<span class="badge" style="background:var(--warm-gray);color:var(--muted);">${escHe('\u05D2')} ${calcGematria(w.bare)}</span>` : ''}
+      ${showGematria ? `<span class="badge b-gem">${escHe('\u05D2')} ${calcGematria(w.bare)}</span>` : ''}
     </div>`;
   while (inner.firstChild) card.appendChild(inner.firstChild);
   return card;
@@ -3872,7 +3873,7 @@ function renderShoreshHeader(rootEntry, rootCons) {
     const el = rootEntry.era === 'Both' ? I18n.t('dictionary.modal.era_bib_mod') : rootEntry.era === 'Biblical' ? I18n.t('dictionary.filters.era_biblical') : rootEntry.era === 'Modern' ? I18n.t('dictionary.filters.era_modern') : rootEntry.era;
     badges += `<span class="badge ${ec}">${esc(el)}</span>`;
   }
-  if (showGematria) badges += `<span class="badge" style="background:var(--warm-gray);color:var(--muted);">&#x05D2; ${calcGematria(rootCons.join(''))}</span>`;
+  if (showGematria) badges += `<span class="badge b-gem">&#x05D2; ${calcGematria(rootCons.join(''))}</span>`;
   hdr.innerHTML = `
     <div class="shoresh-root-big">${colorizeHebrew(bigHeb)}</div>
     ${tr ? `<div class="shoresh-root-translit">${tr}</div>` : ''}
@@ -6328,7 +6329,7 @@ function openWordModal(w) {
   if (w.pos) { const pb = _wmBadge('b-pos', ''); pb.innerHTML = escHe(posLabel(w.pos)); badges.appendChild(pb); }
   badges.appendChild(_wmBadge(ec, el));
   badges.appendChild(_wmBadge('b-len', w.len + 'L'));
-  const gb = _wmBadge('', ''); gb.innerHTML = escHe('ג ' + calcGematria(w.bare)); gb.style.background = 'var(--warm-gray)'; gb.style.color = 'var(--muted)'; badges.appendChild(gb);
+  const gb = _wmBadge('b-gem', ''); gb.innerHTML = escHe('ג ' + calcGematria(w.bare)); badges.appendChild(gb);
   b.appendChild(badges);
 
   const actions = document.createElement('div'); actions.className = 'wm-actions';
