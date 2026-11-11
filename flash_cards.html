@@ -5817,9 +5817,11 @@ function chooseProfileModal(opts) {
       });
       html += '</div>';
     }
+    // The student's name: a capital per word, and no autocorrect or spelling marks — a phone's keyboard "corrected" an
+    // unusual name as it was typed (Save commits the correction), the dashboard's and Name Tags' name boxes' hints.
     html += `<div style="font-size:0.82rem;font-weight:600;margin-bottom:5px;">${esc(I18n.t('flashcards.profile.new_profile_heading'))}</div>`
       + '<div style="display:flex;gap:6px;">'
-      + `<input type="text" id="newProfileNameInput" maxlength="40" placeholder="${esc(I18n.t('flashcards.profile.student_name_placeholder'))}" aria-label="${esc(I18n.t('flashcards.profile.student_name_placeholder'))}" style="flex:1;min-width:0;padding:8px 10px;border:1px solid var(--border,#ccc);border-radius:6px;background:var(--white,#fff);color:inherit;font-family:inherit;font-size:0.88rem;">`
+      + `<input type="text" id="newProfileNameInput" maxlength="40" autocomplete="off" autocapitalize="words" autocorrect="off" spellcheck="false" placeholder="${esc(I18n.t('flashcards.profile.student_name_placeholder'))}" aria-label="${esc(I18n.t('flashcards.profile.student_name_placeholder'))}" style="flex:1;min-width:0;padding:8px 10px;border:1px solid var(--border,#ccc);border-radius:6px;background:var(--white,#fff);color:inherit;font-family:inherit;font-size:0.88rem;">`
       + `<button data-act="create" class="fc-dlg-btn">${esc(I18n.t(confirmKey))}</button>`
       + '</div>'
       + `<button data-act="cancel" class="fc-dlg-btn fc-dlg-wide">${esc(I18n.t('flashcards.profile.cancel'))}</button>`;
