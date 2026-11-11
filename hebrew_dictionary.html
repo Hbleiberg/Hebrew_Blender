@@ -565,6 +565,7 @@ body.fullscreen .app{height:100vh;min-height:unset;}
 .dict-tool-btn:hover{background:var(--warm-gray);border-color:var(--gold);}
 body.dark .dict-tool-btn:hover{background:#2a3349;}   /* dark --warm-gray is the button's rest fill (--white, #1e2535): only the border moved; the page's .emoji-gender-btn hover (pattern dark-hover-resolves-to-the-rest-colour) */
 .dict-tool-btn.copied{background:var(--gold);border-color:var(--gold);color:var(--navy);}
+body.dark .dict-tool-btn.copied:hover{background:var(--gold);}   /* the dark hover above outranks .copied: under the pointer that just clicked, Copy link's navy "Copied!" sat on #2a3349 (1.18:1); .wm-act.copied's twin (pattern dark-base-rule-outranks-variant) */
 /* Section 2: active-filter chip row */
 .filter-chips{display:flex;flex-wrap:wrap;gap:6px;padding:0 20px;background:var(--cream);border-bottom:1px solid var(--border);align-items:center;overflow:hidden;}
 .filter-chips:empty{display:none;}
