@@ -59,7 +59,9 @@ Notes:
 
 - **Pages and scripts (`pwa.js`) are network-first:** when online the browser
   always gets the fresh file, so a deploy is never hidden behind a stale cached
-  page. The cache is only the offline fallback for these.
+  page. The cache is only the offline fallback for these. A navigation it cannot answer gets the hub: its shell at
+  the same URL for a root-level path, a redirect to `/` for a path under a folder (an unvisited `parsha/` page) —
+  the hub's links are relative, so its shell inside a folder would send every link back into that folder.
 - **Static media (icons, splash images, manifest) is cache-first** for speed.
 - **The install asks for every precached asset with `cache: 'no-cache'`** (`cache.add(new Request(url, …))`):
   GitHub Pages sends `cache-control: max-age=600` on every file, so a plain `cache.add(url)` run by a `VERSION`

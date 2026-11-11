@@ -1,5 +1,5 @@
 /* IvritSuite service worker — bump VERSION to invalidate the cache on deploy. */
-const VERSION = 'v1340';
+const VERSION = 'v1341';
 const CACHE = 'ivritsuite-' + VERSION;
 // Version-independent cache for the big data/ corpora (dictionary words / emoji / parshiyot /
 // pockettorah). Kept OUT of the version-scoped CACHE so a routine VERSION bump no longer evicts
@@ -187,8 +187,13 @@ self.addEventListener('fetch', (event) => {
           }
           return res;
         })
-        .catch(() => caches.match(req, { ignoreSearch: true }).then(
-          (cached) => cached || (req.mode === 'navigate' ? caches.match('/index.html') : Response.error())))
+        .catch(() => caches.match(req, { ignoreSearch: true }).then((cached) => {
+          if (cached) return cached;
+          if (req.mode !== 'navigate') return Response.error();
+          // The hub's links are relative: its shell answered under a folder (a parsha/ page never visited online) would
+          // send every link back into that folder, each opening the hub again. There the worker redirects to the root.
+          return url.pathname.indexOf('/', 1) > 0 ? Response.redirect('/', 302) : caches.match('/index.html');
+        }))
     );
     return;
   }
