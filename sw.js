@@ -1,5 +1,5 @@
 /* IvritSuite service worker — bump VERSION to invalidate the cache on deploy. */
-const VERSION = 'v1339';
+const VERSION = 'v1340';
 const CACHE = 'ivritsuite-' + VERSION;
 // Version-independent cache for the big data/ corpora (dictionary words / emoji / parshiyot /
 // pockettorah). Kept OUT of the version-scoped CACHE so a routine VERSION bump no longer evicts
@@ -92,14 +92,16 @@ self.addEventListener('fetch', (event) => {
   // The trope traditions' approvals (hand-edited, one line per tradition; docs/reference/torah-and-trope.md →
   // Traditions): network-first like the starting-font manifest below, never cache-first like the rest of /data/, so
   // an approval reaches returning users with no ?v= or VERSION bump. Offline: the copy last fetched, else nothing —
-  // and nothing approves nothing, which is the safe side.
+  // and nothing approves nothing, which is the safe side. The copy lives in DATA_CACHE, not the versioned CACHE: a
+  // deploy's activate deletes CACHE, and an offline Tutor, Atlas or Trainer would lose every approved tradition until
+  // its next online visit.
   if (url.pathname === '/data/trope/trope_approvals.json') {
     event.respondWith(
       fetch(req, { cache: 'no-store' })
         .then((res) => {
           if (res && res.ok && res.type === 'basic') {
             const copy = res.clone();
-            caches.open(CACHE).then((cache) => cache.put(req, copy));
+            caches.open(DATA_CACHE).then((cache) => cache.put(req, copy));
           }
           return res;
         })

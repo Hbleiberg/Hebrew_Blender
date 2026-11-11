@@ -1060,7 +1060,8 @@ from the "Ta'amei HaMikra Trope Atlas", transcribed from scans with AI help; the
   tradition's rows hides it again until it is re-approved. A page offers a tradition only while the two agree, or on a
   `?preview=traditions` visit (read once, never saved or synced), which offers the rest marked *Unverified
   transcription* (`shared.trad.unverified`). The approvals file has no `?v=`: `sw.js` serves it network-first, so an
-  approval is live once deployed; offline, the last copy fetched, else nothing (nothing approved).
+  approval is live once deployed; offline, the last copy fetched (kept in the version-independent data cache, so a
+  deploy's `VERSION` bump does not drop it), else nothing (nothing approved).
 - **Review.** `trope_review.html` (unlisted, `noindex`, English, in check-i18n's `SKIP_HTML`; not in the sitemap,
   `llms.txt` or `CORE_ASSETS`) draws every row of every tradition on a staff beside its source, its `src`, its doc line and
   what to check (chromatic notes as drawn, `3!` brackets, pickups, fermatas). Its **Approve** names the approvals
