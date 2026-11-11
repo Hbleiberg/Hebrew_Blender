@@ -97528,3 +97528,45 @@ _(prior)_ **Next session (S636):** **Branch `claude/pensive-davinci-wtu93g` (S63
 - M aesthetics & visual design (one surface): 2026-11-09 (**S637 — 40th M, `name_tags.html` (its 2nd: S552 → S637; 25 commits to the page since: the Print column, the row grips, the Dashboard row both ways, the roster import, the print notes): 15 views by real input × EN light 1280 / HE dark 800 / EN dark 1280 / HE light 800 in the real fonts, contrast 9,056 readings (plant 4/4), 278 hovers × 2 themes on HEAD, the inline rows' type, pixel columns of the table. FOUND 2, FIXED 2: the dark list's row rules and name-cell hover (`98e2fffe`), the blank row's fields (`f72366f2`); 3 P4 logged. M-next: fontmaker (S554), dictionary (S556), trope (S558).**)
 
 _(prior)_ **Next session (S637):** **Branch `claude/pensive-davinci-wtu93g` (S633–S636, draft PR Hbleiberg/Hebrew_Blender#396): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1333**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=1c4c48a sw=v1333 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: M name_tags (S552), V (S553), N flash (S555), H fontmaker + name_tags (S559), C flash (S560), P fontmaker (S561), G generator (S563), D fontmaker (S565), A (S581). ⚑ Harnesses: `g636/` (`lib.mjs` on `d635/`'s opener + Google Fonts from a curl cache and PDF facts; `paper.mjs` the 56-cell census with `PLANT=footer|fixed|push|tall`, `arms.mjs`, `armd.mjs`, `typing.mjs`, `csv.mjs`, `ivrit.mjs`, `leakfixed.mjs`, `clip.mjs`), `f636/` (the generator's Self-Check cards: `measure.mjs`, `ident.mjs`, `export.mjs` with html2canvas + jsPDF from `libs/`, `bidi.mjs` the Latin-led-rtl census), `d635/`. ⚑ Traps 593–596 (findings S636): pdftotext's order; flex items hide a fixed box's overflow; a clip plant at the sheet's edge; page.pdf fires beforeprint. ⚑ `print-media-leak` still has unjudged `leak.mjs` hits on 6 pages (dashboard, dictionary, LL, resources, FM, 404) for each page's next G — the generator's G is next. ⚑ 46 seeds.
+
+
+<!-- archived by compact-ledger at the S639 boundary, 2026-11-11 -->
+## Compaction (S639, 2026-11-11) — moved verbatim from the live ledger
+
+### from Candidates — aged P4 (found more than 90 sessions before S639)
+
+- [ ] P4 (**NEW S548 C**) | name_tags.html | **After a keyboard Remove, the Undo sits behind the focus**: the note is before the table, so from the 12th row Undo is 64 Shift+Tabs back (the live region does announce it). | found S548
+
+### from Candidates (prioritized, top = next)
+
+- [ ] P3 (**NEW S638 V — sw.js; key navigations by pathname**) | sw.js | **The shell cache keeps a full copy of a page per distinct query string until the next deploy**: a Trainer `?parsha=` 948 KB each, a generator `?s=` 867 KB, `?lang=he` one more, and a sign-in return's `?code=` URL stays a cache key; the offline lookups already `ignoreSearch`, so a pathname key loses nothing (findings S638). | found S638
+
+### from Done
+
+- [x] 2026-11-11 | (S638 close-out) | branch/deploy note | **S638 = V, the 2nd V (suite: S553 → S638, 480 commits; the Trope Atlas', the `parsha/` pages', the precached assignments module's and the approvals branch's first V): the outage 48 cells (0 errors), VERSION+1, plants 2/2, a signed-in device offline, the `?v=` eviction, the S553 probe. FOUND 6, FIXED 3 (+1 P3, 1 P4, 1 Awaiting). Branch `claude/lucid-brahmagupta-t4hdnh`, draft PR Hbleiberg/Hebrew_Blender#399; `sw.js` v1339 → v1341; deploy: after the merge.** | ledger, findings S638
+
+- [x] 2026-11-11 | `37570984` | scripts/loop/probes/S553-sw-precache-revalidates.mjs, scripts/loop/README.md | (S638 V, arm 4) **The S553 precache probe proves its fix again**: Playwright 1.63 routes a worker's own fetches and routing disables the HTTP cache, so its `--control` read fresh 3/3; the route is gone | PASS fresh 3/3; `--control` stale 3/3 (fired); the old copy's control fresh 3/3 (silent)
+
+- [x] 2026-11-11 | `a71b0e46` | sw.js, ops.md, probe | (S638 V) **Offline, a parsha page never visited online leads back to the tools**: a navigation under a folder the worker cannot answer redirects to `/` (the hub's relative links resolved into `parsha/` and looped); a root-level unknown path keeps the hub at its URL | probe `S638-sw-offline-folder-page-reaches-the-tools` PASS; `--control` and HEAD loop; 48 offline cells 0 errors; a visited page opens itself
+
+- [x] 2026-11-09 | (S633 close-out) | branch/deploy note | **S633 = P on `parsha_emojis.html` (the 23rd P; its 2nd: S546 → S633, 11 commits to the page + the modules' student guards): smoke-tools 17/17, smoke-sync 236, smoke-migration 47 with the pinned SDK; `pe.mjs` W1–W8 by real clicks against the fake cloud (the card's Print, `?parsha=`, two tabs, another device, Sign out, a student session, a …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-09 | `2dd3daaf` | parsha_emojis.html, locales, shared-components.md, sw.js, probe | (S633 micro-feature, gate 1; the S540 seed) **A split week names the other schedule's parasha**: one line under Today's heading — "In Israel: Beha'alotcha", "Outside Israel: Nasso", "Outside Israel: a holiday reading", a pair joined (maqaf in Hebrew); none in a shared week | probe 6 split cases + 2 …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-09 | `941f30d2` | account.html, sw.js, probe | (S633; the S606 P4) **A student account's page no longer promises holdings, a download and deletion**: the header tagline and the lede hide while the student tile shows | probe student / teacher / signed out × 4 cells with the SDK (base fails the student step 4/4); smoke-account-page 65/65, smoke-account 112/112
+
+- [x] 2026-11-09 | `584b27ed` | parsha_emojis.html, sw.js, probe | (S633 P, pattern `button-focus-lost-to-its-own-rebuild`) **Close finds the card that opened it after a language switch**: a card-opened popup under a language switch (signed in, the account's preference landing) closed to the bar's button; now the card's rebuilt twin | `pe.mjs` W8 through the fake cloud; probe 6 steps × 4 cells …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Per-session log (one line per session)
+
+- 2026-11-05 | **S618** | iters: 3 | tools: flash ×2, sw | patterns fixed: — | pass run: D (flash, first since S524) | SW: v1279→v1281
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S638 (2026-11-11):** sw.js ×2, ops.md, torah-and-trope.md, loop probes ×3, loop README, loop docs S638 · name_tags ×2, Hebrew_Font_Maker, trope_tutor, hebrew_blend_generator, sw.js, loop probes ×4, loop docs S637 · name_tags ×2, hebrew_blend_generator ×2, locales, name-tags.md, generator.md, sw.js, loop probes ×4, loop docs S636 · name_tags ×2, flash_cards, name-tags.md, sw.js, loop probes ×3, loop docs S635 · name_tags, the folder-tree block (generator, flash, dashboard, torah, index), classroom_dashboard, hebrew_dictionary, Hebrew_Font_Maker, torah_trainer, locales, i18n.md, shared-components.md, sw.js, loop …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- V offline & service-worker runtime (suite): 2026-11-11 (**S638 — 2nd V, `c349f98e..ad39f20` (480 commits; the Trope Atlas', the `parsha/` pages', the precached assignments module's and the approvals branch's first V): the outage 24 paths × light 1280 EN / dark 800 HE = 48 cells from the worker, 0 errors, 0 raw keys; VERSION+1 (the old cache gone, the data cache kept); plants 2/2; a signed-in device offline; the `?v=` eviction; the S553 probe (its control silent under Playwright 1.63 — fixed). FOUND 6, FIXED 3 (+1 P3, 1 P4, 1 Awaiting). V-next: the per-query page copies, the late-put orphan cache, a phone's installed PWA.**)
+
+_(prior)_ **Next session (S638):** **Branch `claude/pensive-davinci-wtu93g` (S633–S637, draft PR Hbleiberg/Hebrew_Blender#396): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1337**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=1c4c48a sw=v1337 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: V (S553), M fontmaker (S554), N flash (S555), H fontmaker + name_tags (S559), C flash (S560), P fontmaker (S561), G generator (S563), D fontmaker (S565), A (S581). ⚑ Harnesses: `m637/` (`lib.mjs` on `g636/`'s opener with the four M cells, `vdefs.mjs` 15 Name Tags views, `census.mjs` contrast, `hover.mjs` — add text inputs to its selector first (trap 598), `fmset.mjs` the FM Settings tab through the wizard, `tuset.mjs`, `scchrome.mjs`), `g636/`, `f636/`, `d635/`. ⚑ Traps 597–599 (findings S637). ⚑ V is the stalest pass: its last run (S553) is the only V; its harness `v553/` is gone — rebuild from its findings entry. ⚑ `print-media-leak` still has unjudged `leak.mjs` hits on 6 pages for each page's next G (the generator's G is next). ⚑ 46 seeds.
