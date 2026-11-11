@@ -2549,6 +2549,17 @@ function toggleFullscreen() {
 }
 document.addEventListener('fullscreenchange', () => {
   document.body.classList.toggle('fullscreen', !!document.fullscreenElement);
+  // Fullscreen Draw sizes the workspace to the screen, but Full Screen is pressed from the header, so the page
+  // arrives at its top with the canvas under the letter grid (its baseline below a 768px window): bring the
+  // workspace up to meet the screen it was sized for, and where the two-column layout runs a few pixels past the
+  // screen, far enough that the Save row shows whole. Two frames later: the canvas re-fits to the new window one
+  // frame after the change (the page grows ~50px), and a scroll made before that stops short at the old bottom.
+  if (document.fullscreenElement && document.body.classList.contains('mode-draw')) requestAnimationFrame(() => requestAnimationFrame(() => {
+    const g = document.querySelector('.ws-grid'), sb = document.getElementById('stageBelow'); if (!g) return;
+    g.scrollIntoView({ block: 'start' });
+    const over = sb ? sb.getBoundingClientRect().bottom - window.innerHeight : 0;
+    if (over > 0) window.scrollBy(0, Math.min(over + 4, 48));
+  }));
 });
 /* Fullscreen draw mode gives the canvas the whole screen by folding the settings column away
    (v5.25). That is the right default for drawing, but not for the moments mid-letter when you
