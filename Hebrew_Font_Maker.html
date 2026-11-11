@@ -441,14 +441,17 @@ body.dark .hi-sun{display:inline-block;}
   .ltile.sel .mark-prev { color: #fff; }
   /* Status dot. Colour PLUS a distinct glyph (I/T/A/✓) so state is never conveyed by colour alone.
      Empty (not started) stays a small grey dot; any real status grows to a 13px badge with its letter. */
-  .lt-dot { position: absolute; top: 3px; inset-inline-start: 3px; width: 7px; height: 7px; border-radius: 50%; background: var(--border); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 8px; font-weight: 700; line-height: 1; }
+  /* The status letter (T, A, I, ✓, !) is the dot's non-colour cue, so it is text and reads at 4.5:1: white on the blue,
+     green and amber fills was 3.68 / 2.54 / 2.81, the export button's dark ink on the same fills 4.73 / 6.86 / 6.19 —
+     the fills stay, so the legend's colours still match in both themes. */
+  .lt-dot { position: absolute; top: 3px; inset-inline-start: 3px; width: 7px; height: 7px; border-radius: 50%; background: var(--border); display: flex; align-items: center; justify-content: center; color: #1a1a1a; font-size: 8px; font-weight: 700; line-height: 1; }
   .lt-dot.img { background: #d08c2a; width: 13px; height: 13px; top: 2px; inset-inline-start: 2px; }
   .lt-dot.traced { background: #3b82f6; width: 13px; height: 13px; top: 2px; inset-inline-start: 2px; }
   .lt-dot.anchored { background: #10b981; width: 13px; height: 13px; top: 2px; inset-inline-start: 2px; }
-  .lt-dot.saved { background: #10b981; color: #fff; width: 13px; height: 13px; top: 2px; inset-inline-start: 2px; font-size: 9px; }
+  .lt-dot.saved { background: #10b981; width: 13px; height: 13px; top: 2px; inset-inline-start: 2px; font-size: 9px; }
   /* Placement review states: confirmed = solid green ✓ (.saved); carried-over = hollow amber ✓; unconfirmed = solid amber !. Glyph + fill differ so it's never colour-only. */
-  .lt-dot.inherited { background: var(--white); border: 2px solid #d08c2a; color: #d08c2a; width: 13px; height: 13px; top: 2px; inset-inline-start: 2px; font-size: 8px; }
-  .lt-dot.unconfirmed { background: #d08c2a; color: #fff; width: 13px; height: 13px; top: 2px; inset-inline-start: 2px; font-size: 10px; }
+  .lt-dot.inherited { background: var(--white); border: 2px solid #d08c2a; color: var(--gold-text); width: 13px; height: 13px; top: 2px; inset-inline-start: 2px; font-size: 8px; }
+  .lt-dot.unconfirmed { background: #d08c2a; width: 13px; height: 13px; top: 2px; inset-inline-start: 2px; font-size: 10px; }
   /* "Unconfirmed" / "carried over — review" pill shown next to the Confirm button on the placement step */
   .placement-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 0.68rem; font-weight: 700; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
   .placement-pill.unconfirmed { background: rgba(208,140,42,0.16); color: #7f5a13; border: 1px solid #d08c2a; }   /* #9a6612 read 4.03:1 on the tint; this is the --gold-text value, 5.1:1 */
