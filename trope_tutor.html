@@ -4947,6 +4947,10 @@ function dismissToast() {
   document.addEventListener('DOMContentLoaded', () => document.querySelectorAll('.tip-wrap').forEach(bindTip));
   document.addEventListener('click', () => { if (openWrap) hide(openWrap); });       // tap outside closes
   window.addEventListener('scroll', () => { if (openWrap) hide(openWrap); }, true);   // reposition-free: close on scroll
+  // ...and on a resize: a phone turned with a tip open kept the bubble at its old place, wholly below or beside the new
+  // window whenever the turn moved no scroll offset (Hebrew: 4 of 24 turns), and the next tap on its icon only closed
+  // the bubble nobody could see. (S647, pattern fixed-control-positioned-outside-the-viewport)
+  window.addEventListener('resize', () => { if (openWrap) hide(openWrap); });
   // Dismissible (WCAG 1.4.13): Escape closes a shown bubble wherever the focus is, and only the bubble — a tip opened
   // by hover ignored Escape unless its icon had the focus. (S566, pattern hover-tip-not-dismissible-or-hoverable;
   // the Torah Trainer's fix)
