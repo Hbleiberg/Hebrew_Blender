@@ -5045,7 +5045,10 @@ function toggleNameDate(on) {
 function toggleLandscape(on) {
   document.body.classList.toggle('landscape-mode', on);
   _applyPageSizeStyle();   // re-emit @page with/without the landscape keyword so window.print() rotates
-  if (blends.length) renderWorksheet(false);
+  // The same items re-laid (a Real Words grid's columns follow the paper): rerenderCurrentSheet routes the Real Words
+  // and number drills too, which renderWorksheet alone skipped; a restore before the first Generate draws nothing.
+  if (document.querySelector('#worksheet .sheet')) rerenderCurrentSheet();
+  else if (blends.length) renderWorksheet(false);
 }
 
 // ══════════════════════════════════════════════
@@ -9992,6 +9995,12 @@ function autoCols(count) {
   return 10;
 }
 
+// A Real Words card grid's columns: Landscape Print turns the paper, so the grid takes two more there, as blend sheets
+// take ten (in portrait columns a 30-word sheet's last row and footer ran onto a second landscape page; S648, gate 3).
+function rwGridCols(cols) {
+  return cols + (document.body.classList.contains('landscape-mode') ? 2 : 0);
+}
+
 function generate(animate = false) {
   _setGenerateNote(null);   // a fresh attempt clears the previous "can't generate yet" note
   rememberSetup(true);      // this setup is what the next visit reopens (deliberate: it replaces a held one too)
@@ -12392,7 +12401,7 @@ function generateRealWords(reuse) {
     ${wsMetaHTML()}`;
   sheet.appendChild(header);
 
-  const cols = items.length <= 20 ? 4 : items.length <= 40 ? 5 : 6;
+  const cols = rwGridCols(items.length <= 20 ? 4 : items.length <= 40 ? 5 : 6);
   const grid = document.createElement('div');
   grid.className = 'rw-grid';
   grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
@@ -13356,7 +13365,7 @@ function renderRealWordsFillVowels(ws, words, trOnSheet, tnOnSheet, trOnKey, tnO
   const keepDagesh = document.getElementById('rwFillVowelsDagesh')?.checked ?? false;
   const title    = esc(document.getElementById('wsTitle').value || 'Hebrew Words');
   const subtitle = esc(document.getElementById('wsSubtitle').value);
-  const cols     = autoCols(words.length);
+  const cols     = rwGridCols(autoCols(words.length));
 
   const sheet = document.createElement('div');
   sheet.className = 'sheet';
@@ -13448,7 +13457,7 @@ function generateIdentifyDrill(pool, count, trOnSheet, tnOnSheet, trOnKey, tnOnK
   ws.innerHTML = '';
 
   function makeGrid(items, reveal) {
-    const cols = items.length <= 20 ? 4 : 5;
+    const cols = rwGridCols(items.length <= 20 ? 4 : 5);
     const grid = document.createElement('div');
     grid.className = 'rw-grid';
     grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;

@@ -360,7 +360,9 @@ lines `ltr`, and its chrome (the "tap to reveal" hint, Got it / Missed) the UI's
 ## Real Words card grids (`.rw-grid`)
 
 Every builder of a Real Words card grid sets `grid-template-columns: repeat(cols, 1fr)` inline (4–6 from the
-item count) **and** writes the same count to `--rw-cols`. On screen only, `.rw-grid[style*="--rw-cols"]`
+item count, passed through `rwGridCols`, which adds two under Landscape Print as blend sheets take ten) **and**
+writes the same count to `--rw-cols`. The Landscape toggle re-lays the drawn sheet through `rerenderCurrentSheet`
+(same items), so a new grid builder takes its count from `rwGridCols` too. On screen only, `.rw-grid[style*="--rw-cols"]`
 lets a narrow sheet (a phone, a window with the sidebar beside it) take fewer columns, never one narrower
 than 100px, and keeps exactly `--rw-cols` wherever they fit; print is not screen and the PDF capture pins
 `#worksheet` at full width, so paper and the PDF keep the builder's columns. A new card grid writes both.
