@@ -4462,6 +4462,10 @@ function initPanelCollapse() {
   }, true);
   document.addEventListener('click', () => { if (openEl) hide(); });
   window.addEventListener('scroll', () => { if (openEl) hide(); }, true);
+  // ...and on a resize: a phone turned with a tip open kept the bubble at its old place, below or beside the new window
+  // while its icon stayed in view (18 of 48 turns), and the next tap on the icon only closed the bubble nobody could see.
+  // (S648, pattern fixed-control-positioned-outside-the-viewport; the Trope Tutor's and the Torah Trainer's twin)
+  window.addEventListener('resize', () => { if (openEl) hide(); });
 })();
 
 /* ═══ Guided tour (ported from hebrew_blend_generator.html — keep the engines in sync) ═══ */
