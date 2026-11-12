@@ -368,7 +368,10 @@ drops; every other zone keeps the first-file contract.
 left (alef top-right) — and Auto-detect reads every sheet right to left: a page `adMatchTemplate`
 recognises takes that page's letter order cell by cell, a free-form sheet the untraced letters in order.
 A template's direction never follows the UI language: a photographed page cannot say which interface
-printed it, and a Hebrew-UI page read in the English order swapped every letter in its row.
+printed it, and a Hebrew-UI page read in the English order swapped every letter in its row. The sheet
+view offers Auto-detect only on the Letters tab (`catTabFor(curKind, curCp) === 'letter'`): it assigns
+the Hebrew letters (`_adCoreLetters`), so another tab's template would get them and Apply would replace
+their photos and outlines.
 
 **Sheet sizing.** Auto-detect crops each letter to its own ink box, so the per-crop fit
 (`defaultFitTransform`: the crop's height onto the glyph's band) stretched a yod up to alef's height

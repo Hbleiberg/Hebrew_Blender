@@ -8388,8 +8388,10 @@ function combinedNavHTML() {
   const next = n > 1 ? `<button class="ctl-btn" ${i >= n - 1 ? 'disabled' : ''} onclick="combinedNav(1)">${_pT('combined_next', 'Next ›')}</button>` : '';
   const rm = `<button class="ctl-btn ghost cn-remove" title="${esc(window.I18n ? I18n.t('fontmaker.panels.combined_remove_title') : 'Remove this sheet from the set')}" aria-label="${esc(window.I18n ? I18n.t('fontmaker.panels.combined_remove_title') : 'Remove this sheet from the set')}" onclick="removeCombinedSheet()"><svg class="hi hi-sm hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>`;
   // Auto-detect lives here, right under the sheet it operates on (raster sheets only). Moved out of
-  // the left upload panel so it sits where you're already looking when boxing letters.
-  const auto = !svgUploadOn()
+  // the left upload panel so it sits where you're already looking when boxing letters. Only on the Letters tab:
+  // it assigns the Hebrew letters (_adCoreLetters), so on English, punctuation or another alphabet's tab it gave
+  // that tab's template the Hebrew letters and Apply replaced their photos and outlines.
+  const auto = !svgUploadOn() && catTabFor(curKind, curCp) === 'letter'
     ? `<button class="ctl-btn cn-autodetect" onclick="openAutoDetect()" title="${esc((window.I18n ? I18n.t('fontmaker.panels.autodetect_btn_title') : 'Find every letter on this sheet automatically and review the proposed boxes'))}">${_pT('autodetect_btn', '▦ Auto-detect letters')}</button>`
     : '';
   return `<div class="combined-nav">${prev}${counter}${next}${rm}${auto}</div>`;
