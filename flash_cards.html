@@ -1090,6 +1090,15 @@ body.dark .lc-replay { color: var(--gold-light); }
 .lc-tile:disabled { cursor: default; }
 .lc-tile.good { background: var(--good-soft); border-color: var(--good); }
 .lc-tile.bad  { background: var(--bad-soft);  border-color: var(--bad); }
+/* The answer's ✓ / ✗ beside its colour: for red-green colour blindness the two tints are 1.09:1 apart, so the colour
+   alone never said which tile was right. The card badge's circle in the corner opposite the key number — ltr like
+   .lc-key, whose own direction puts it top-left in both UIs; aria-hidden — the status line speaks the outcome.
+   Dark: the deep navy, as white on the dark tokens reads 2.4–3.2:1. */
+.lc-mark { position: absolute; inset-block-start: 6px; inset-inline-end: 6px; direction: ltr; width: 22px; height: 22px; border-radius: 50%;
+           display: flex; align-items: center; justify-content: center; font-size: 0.78rem; font-weight: 700; line-height: 1; color: #fff; }
+.lc-mark.good { background: var(--good); }
+.lc-mark.bad  { background: var(--bad); }
+body.dark .lc-mark { color: var(--navy-deep); }
 /* Keyboard hints — the visible home for the drill's shortcuts (see #fcKeyHintsNormal). Both the
    hint rows and the tiles' number badges are gated on (pointer: fine): a touch-only device has no
    keys to press, so the hint would be noise on a phone and on the projected board's touch panel. */
@@ -8498,7 +8507,7 @@ function renderListeningCard(card) {
     listenLocked = true;
     grid.querySelectorAll('.lc-tile').forEach(t => {
       t.disabled = true;
-      if (t.dataset.heb === card.heb) t.classList.add('good');
+      if (t.dataset.heb === card.heb) { t.classList.add('good'); t.appendChild(lcMark(true)); }
     });
   }
   replay.onclick = () => { speakWord(card.heb); listenHeard = true; setListenHint(); };
@@ -8506,6 +8515,12 @@ function renderListeningCard(card) {
   if (currentListenChoices.length < 2) {   // degenerate universe: only the answer exists
     document.getElementById('lcHint').textContent = I18n.t('flashcards.card.listen_degenerate');
   }
+}
+function lcMark(good) {
+  const m = document.createElement('span');
+  m.className = 'lc-mark ' + (good ? 'good' : 'bad'); m.setAttribute('aria-hidden', 'true');
+  m.textContent = good ? '✓' : '✗';   // i18n-ignore — a mark, as the results list's
+  return m;
 }
 function chooseTile(chosen, answer, tileEl) {
   if (listenLocked) return;
@@ -8515,9 +8530,21 @@ function chooseTile(chosen, answer, tileEl) {
   const grid = document.getElementById('lcChoices');
   grid.querySelectorAll('.lc-tile').forEach(t => {
     t.disabled = true;
-    if (t.dataset.heb === answer.heb) t.classList.add('good');
+    if (t.dataset.heb === answer.heb) { t.classList.add('good'); t.appendChild(lcMark(true)); }
   });
-  if (!ok) tileEl.classList.add('bad');
+  if (!ok) { tileEl.classList.add('bad'); tileEl.appendChild(lcMark(false)); }
+  // The outcome for a screen reader, whose student otherwise heard nothing before the next card; a miss names the
+  // right word as its tile shows it, in that word's own language.
+  if (ok) announce(I18n.t('flashcards.card.listen_right'));
+  else {
+    const good = grid.querySelector('.lc-tile.good');
+    const word = good ? (good.querySelector('.lc-heb, .lc-num') || good).textContent.trim() : answer.heb;
+    const [pre, post = ''] = I18n.t('flashcards.card.listen_wrong').split('{word}');
+    announce(pre);
+    const w = document.createElement('span'); w.textContent = word;
+    if (/[\u0590-\u05FF]/.test(word)) w.lang = 'he';
+    document.getElementById('a11yStatus').append(w, post);
+  }
   // Auto-advance after a beat — but only if the student hasn't navigated away meanwhile,
   // so a stale timer can't jump them forward and resurface old feedback on another card.
   const from = currentIndex;

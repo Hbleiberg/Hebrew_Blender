@@ -1231,6 +1231,8 @@ flashcards.card.kbd_pick,Pick an answer,בחירת תשובה,keyboard hint row 
 flashcards.card.kbd_replay,Play it again,השמעה חוזרת,keyboard hint row label for the space key in a listening round,
 flashcards.card.kbd_space,Space,רווח,name of the space bar in the keyboard hint row,
 flashcards.card.listen_hint_tap,Tap 🔊 to hear,הקישו 🔊 כדי לשמוע,listening prompt before playing,leading-emoji
+flashcards.card.listen_right,Correct!,נכון!,listening round: spoken to a screen reader after a right pick (the status line),screen-reader only
+flashcards.card.listen_wrong,Not quite — the answer was {word}.,לא בדיוק — התשובה הייתה {word}.,listening round: spoken to a screen reader after a wrong pick; {word} is the right answer as its tile shows it,screen-reader only; {word} is set in its own language
 flashcards.card.mark_no,✗ No,✗ לא,mark-wrong button,leading-emoji
 flashcards.card.mark_yes,✓ Yes,✓ כן,mark-right button,leading-emoji
 flashcards.card.meta,Card {count} of {total},כרטיס {count} מתוך {total},card progress meta,

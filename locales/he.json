@@ -1837,6 +1837,8 @@
   "flashcards.card.listen_degenerate": "הוסיפו עוד אותיות/תנועות כדי לקבל אפשרויות בחירה.",
   "flashcards.card.listen_hint_heard": "איזה שמעתם?",
   "flashcards.card.listen_hint_tap": "הקישו 🔊 כדי לשמוע",
+  "flashcards.card.listen_right": "נכון!",
+  "flashcards.card.listen_wrong": "לא בדיוק — התשובה הייתה {word}.",
   "flashcards.card.mark_no": "✗ לא",
   "flashcards.card.mark_no_key_title": "סמנו כשגוי (N)",
   "flashcards.card.mark_yes": "✓ כן",
