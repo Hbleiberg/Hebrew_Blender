@@ -14,8 +14,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P2 (**S567 P; S573 P root-caused — a shared module, not small**) | js/ivrit-saves.js | **A page write made after a hydration planned its uploads, before it ends, is not sent, and the tab's next sync downloads the account's copy over it**: the hook is not armed yet, and step 4's `snapshotNames` takes the post-write hash as the tab's seen view, so `actionFor` reads it as another tab's write. …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] P3 (**NEW S645 C — flash at the cap**) | flash_cards.html | **In dark mode the drill card's ✓ / ✗ badge reads 2.43 / 3.20:1** (white on the dark `--good` / `--bad`; a graded card revisited by Prev): the listening tiles' `.lc-mark` takes the deep navy (8.13 / 6.18). | found S645
-
 - [ ] P3 (**NEW S644 H — not small**) | Hebrew_Font_Maker.html | **Below 1181px the fullscreen Draw canvas window (`100vh − 300px`) clips its drawing**: at 1024×768 the baseline sits 16px under its edge. | found S644
 
 - [ ] P3 (**NEW S602 — found verifying `3ab8b385`; its gate-4 answer covers it, measure Export PDF landscape first**) | hebrew_blend_generator.html | **With Landscape Print on, the on-screen blend sheet keeps ten columns where they do not fit**: Inverse 46–61px past the sheet at 1280/1600; on an iPhone 13 Reading 106–119px, Inverse 445px (paper unchanged). | found S602
@@ -25,8 +23,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P3 (**NEW S574 M — verify paper first**) | hebrew_blend_generator.html | **The crossword's grid is never cropped to its words**: a 10-word puzzle in a 12×12 black square (~70% black). | found S574
 
 - [ ] P3 (**NEW S571 C — not small**) | hebrew_dictionary.html | **A word card is one `role=button` holding its select box, Copy, Hear and Google controls** (a button's children are presentational): move the details action onto the headword, the card a group. | found S571
-
-- [ ] P3 (**NEW S565 D — verify first, signed in**) | Hebrew_Font_Maker.html | **The cloud autosave still clones the whole project with its photos**: `fmCloudPack` runs `JSON.parse(JSON.stringify(p))` on every 10 s save of a dirty cloud project — the copy `c85bdd1` took out of the local autosave; measure with smoke-fontmaker's `--sdk` fixture and 8 phone photos. | found S565
 
 - [ ] P3 (**NEW S559 H — gate 2, copy**) | Hebrew_Font_Maker.html | **Help (Uploading, Download Templates) and the after-upload status still say "drag a box around each glyph"**: Auto-detect letters and Trace all (v5.59) are never named in the instructions, so the one-sheet path reads as 27 hand-drawn boxes. | found S559
 
@@ -58,13 +54,13 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW S492 N — needs the tour-engine extraction, UX rule 1**) | 7 tools' tour engines | **A tour does not follow a rotation**: `resize` re-places the card but never scrolls its target back; 4 of 7 dictionary steps strand it off-screen (findings S492; S562's census, not the clamp's: the dictionary 4/4, the generator EN 7/7, the dashboard's last step — `n562/tourflip-suite.mjs`). | found …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] P3 (**NEW S559 H — the FM at the cap**) | Hebrew_Font_Maker.html | **Auto-detect is offered on every tab's sheet view but knows only the Hebrew letters**: on the English tab the English template's 30 boxes are assigned צ ץ ק … and then the traced Hebrew letters, and Apply would replace their photos and outlines (one Ctrl+Z). Hide it off the Letters tab, or make it tab-aware (seed). | found …[full text: IMPROVEMENT_ARCHIVE.md]
-
 - [ ] P3 (**NEW S557 H — gate 2, the Trainer's deep-link contract**) | trope_tutor.html → torah_trainer.html | **A Learn card's "See it in the parsha →" replaces the Trainer's saved reading**: `?parsha=` saves the parsha with `scope:'parsha-full'` and drops a holiday, so a student on aliyah 3 of Ki Tavo or on Rosh Hashanah day 1 reopens the Trainer on Bereshit (both measured, 2 cells); a …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P3 (**NEW 2026-09-26**) | trope_tutor.html (trope_index.json) | **8 Learn example clips sit where PocketTorah's taps slip by a word** (`build-trope-phrases.mjs` TIMING_SLIPS), so each likely plays a neighbouring word; the index builder could skip those verses. **S454: not small** (findings S454). | found 2026-09-26
 
 - [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
+
+- [ ] P4 (**NEW S646 P — attribute first**) | Hebrew_Font_Maker.html | **On a project of 8 phone photos the local snapshot still makes long tasks after every edit**: 4 of 51–77 ms @1× (the S565 probe) and, in a cloud autosave's window (two snapshots), ~25 of 200–290 ms @4× on HEAD and the tree alike — the gzip stream over 29 M chars is the likely source (findings S646). | found S646
 
 - [ ] P4 (**NEW S645 C**) | flash_cards.html | **A listening tile picked by Tab + Enter is disabled under the focus**, which falls to `<body>` through the auto-advance (Chromium's start point still sends the next Tab to the next card's first tile). | found S645
 
@@ -149,8 +145,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S559 H — verify first**) | Hebrew_Font_Maker.html | **Noto Sans's fidelity report opens on Start editing having measured 0 letter+mark combos (1,072 "unexpected shaping results") and ends "Every measured combo lands within 3 units"**: a vacuous all-clear, and the census's one stop (it covers Export). | found S559
 
 - [ ] P4 (**NEW S558 M — gate 2, copy**) | trope_tutor.html | **The Phrases chips write the clause names in sentence case ("Sof pasuk clause", "Zakef katon clause") where the Learn chips, the drill grid and the printed chart's legend use title case ("Sof Pasuk clause")**: one casing for a mark's name across the page. | found S558
-
-- [ ] P4 (**NEW S556 M — gate 2, a title per mode**) | hebrew_dictionary.html | **The sidebar's first panel says "Word Length" in every mode**, yet in Emojis it holds the mode switcher, the gender toggle and the category tree, in Shoresh only the switcher. | found S556
 
 - [ ] P4 (**NEW S549 D; S635: a translit mode, the extra toggle and the header Print box FIXED `577019e1`, a move `f620a674`**) | name_tags.html | **A structural edit rebuilds the 200-row table** (S635 @4×: 98–168 ms of script + 147–196 of layout; @1× 66–113: the first key in the new row, Remove, Undo, a list switch, a paste or import) — its three icon buttons are parsed from `innerHTML` 600 …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -380,6 +374,14 @@ _(none)_
 
 ## Done
 
+- [x] 2026-11-12 | (S646 close-out) | branch/deploy note | **S646 = P on `Hebrew_Font_Maker.html` (its 2nd P alone: S561 → S646; 31 commits to the page since) + `letter_learner.html` (its 2nd alone: S561 → S646; a clean surface buys a second): all seven smokes with the pinned SDK green (fontmaker 63, sync 236, tools 220, account 112, account-page 65, migration 47, saves 15); arms 3–7 10/10 behind …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-12 | `14cafd37` | Hebrew_Font_Maker.html, font-maker.md, sw.js | (S646, the S559 P3) **Auto-detect is offered only on the Letters tab** (it assigns the Hebrew letters; on English it gave A–Z's template א ב ג ד and Apply replaced their photos) | `p646/fix3ad.mjs`, the wizard + a 30-box sheet by real clicks × 4 cells vs HEAD: HEAD both tabs, 05D0–05D3 on English's A; now Letters 30 …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-12 | `3138f5db` | flash_cards.html, sw.js | (S646, the S645 P3) **A graded card's ✓ / ✗ badge reads in dark mode** (the deep navy, as `.lc-mark`) | `c645/fix4.mjs`, a real drill + Prev, front and back × 5 cells vs HEAD: dark 2.43 / 3.20 → 8.13 / 6.18, light 5.66 / 6.28 unchanged; 0 errors
+
+- [x] 2026-11-12 | `365e4f70` | Hebrew_Font_Maker.html, font-maker.md, sw.js, probes | (S646 P, the S565 P3) **The account copy no longer clones the project** (names the photos, then one replacer pass) | `p646/fix1eq.mjs` EQUIVALENT on every slot kind (control DIFFERENT); `w2.mjs` signed in, 8 photos: before its first yield 123–125 → 1 ms @1×, 512–600 → 4–5 @4×; smoke-fontmaker 63/63; probe …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [x] 2026-11-12 | (S645 close-out) | branch/deploy note | **S645 = C on `flash_cards.html` (its 7th dedicated C: … S381 → S560 → S645; 33 commits to the page since: the drill's Pause and voice speed, the compact results, the card sheet's layout, the folder trees' keys, the install hint's step-aside): census 18 views × 8 desktop cells + 4 phones (9 plant kinds in every view), real-Tab and …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-11-12 | `767db918` | Hebrew_Font_Maker.html, sw.js | (S645, the S644 P3) **A drawn letter's picture leaves the saved file when the strokes rebuild it exactly** (same PNG, same placement) | `c645/fix3.mjs`, 27 letters by real strokes + one unsaved stroke × EN light 1280 / HE dark 800: 798,516 → 34,309 B, the unsaved letter keeps its picture; the file and a full copy reopen equal (also …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -416,19 +418,11 @@ _(none)_
 
 - [x] 2026-11-11 | `7295d598` | trope_tutor.html, sw.js | (S642 M) **The mastery grid's Geresh group keeps Pazer on its row**: `.tu-mgrid` max-width 720 → 760px | `m642/fix1.mjs` × 8 cells, the start screen and the results of a real 5-question drill vs a HEAD copy: at 1280 the Geresh row 2 lines → 1 (its cells need 598px, had 594, now 634), every other family one line as before; at 800 the page …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-11-11 | (S641 close-out) | branch/deploy note | **S641 = M on `hebrew_dictionary.html` (its 4th M: S237 → S362 → S556 → S641; 29 commits to the page since): 24 views × 8 cells (EN/HE × light/dark × 1280/800) by real clicks, 192 loads, 103,384 text readings (plant 140/140), 0 page errors; hover 953 controls × both themes (plant 3/3); a new fill-vs-ground census in both themes (plant …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-11 | `1ac0e3b6` | name_tags.html, sw.js | (S641, the S637 M P4) **The "Class list" heading answers the mouse**: `.nt-list-toggle:hover { color:var(--gold-text) }`, the suite's text-disclosure hover | `m641/fix4.mjs` × EN light 1280 / HE dark 800 / EN dark 1280 / HE light 800 by the real mouse vs a HEAD copy: HEAD unmoved, now 5.88 (light) / 7.96 (dark); a click still folds the list; …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-11 | `aafc2a92` | Hebrew_Font_Maker.html, sw.js | (S641, the S640 P3; pattern `contrast-below-AA-on-a-tinted-or-coloured-plate`) **The green status text reads in light**: a `--ok-ink` token (#116635 light = `.co-ok`, #10b981 dark) on `.qa-ok`, `.qa-bc-ok`, `.ad-match`, `.form-ready`, the re-check line and the tabs' done ✓; the confirmed-placement button's label takes the tile dots' …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-11 | `cbde26c5` | hebrew_dictionary.html, sw.js | (S641 M; pattern `dark-navy-fill-matches-its-ground`) **The word badges keep their chip in dark**: `.b-pos`, `.b-both`, the new `.b-gem` (the three gematria badges, two inline-styled) and `.ec-tag:not(.cat)` take the Resources page's dark badge under `@media screen` | `m641/fix2.mjs` × 4 cells vs a HEAD copy, gematria on by a real …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-11 | `4c846d80` | hebrew_dictionary.html, sw.js | (S641 M; pattern `dark-base-rule-outranks-variant`) **Copy link's "Copied!" reads in dark**: `body.dark .dict-tool-btn.copied:hover{background:var(--gold)}` (`.wm-act.copied`'s twin) | `m641/fix1.mjs` × 4 cells vs a HEAD copy, each copy control clicked by the real mouse and measured while hovered: dark 1.18 → 6.92, light 5.38 …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-11-12 | **S646** | iters: 4 | tools: Hebrew_Font_Maker ×2, flash_cards, font-maker.md ×2, sw ×3, probes | patterns fixed: — | pass run: P (fontmaker, first since S561; + letter_learner, a clean surface buys a second; FOUND 0 new) + 3 queue items (the S565, S645 and S559 P3s) | SW: v1366→v1369
 
 - 2026-11-12 | **S645** | iters: 4 | tools: flash_cards ×2, Hebrew_Font_Maker, locales, sw ×3 | patterns fixed: — | pass run: C (flash_cards, first since S560; FOUND 4, FIXED 2) + the FM's S644 P3 | SW: v1363→v1366
 
@@ -468,11 +462,9 @@ _(none)_
 
 - 2026-11-08 | **S627** | iters: 4 | tools: parsha_emojis, hebrew_dictionary, locales, sw | patterns fixed: — | pass run: D (parsha_emojis, first since S538; + its parsha/ pages, their first D) + micro-feature | SW: v1302→v1304
 
-- 2026-11-08 | **S626** | iters: 5 | tools: parsha/ + build-parsha-pages, parsha_emojis, classroom_dashboard, locales, sw | patterns fixed: print-media-leak ×1 | pass run: G (parsha_emojis, first since S537; + its parsha/ pages, their first G) + micro-feature | SW: v1300→v1302
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S645 (2026-11-12):** flash_cards ×2, Hebrew_Font_Maker, locales, sw.js ×3, loop docs S645 · Hebrew_Font_Maker ×2, name_tags, locales, name-tags.md, sw.js ×3, loop docs S644 · name_tags ×2, Hebrew_Font_Maker ×2, name-tags.md, sw.js ×4, loop docs S643 · trope_tutor, Hebrew_Font_Maker, hebrew_dictionary, name_tags, sw.js ×4, loop docs S642 · hebrew_dictionary ×2, Hebrew_Font_Maker, name_tags, sw.js ×4, loop docs S641
+- **Snapshot S646 (2026-11-12):** Hebrew_Font_Maker ×2, flash_cards, font-maker.md ×2, sw.js ×3, probes, loop docs S646 · flash_cards ×2, Hebrew_Font_Maker, locales, sw.js ×3, loop docs S645 · Hebrew_Font_Maker ×2, name_tags, locales, name-tags.md, sw.js ×3, loop docs S644 · name_tags ×2, Hebrew_Font_Maker ×2, name-tags.md, sw.js ×4, loop docs S643 · trope_tutor, Hebrew_Font_Maker, hebrew_dictionary, name_tags, sw.js ×4, loop docs S642 · hebrew_dictionary ×2, Hebrew_Font_Maker, name_tags, sw.js ×4, loop docs S641
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -828,7 +820,7 @@ _(none)_
 
 ### Discovery-pass rotation (run one per session, stalest first)
 
-- P accounts & cloud (one surface): 2026-11-09 (**S633 — 23rd P, `parsha_emojis.html` (its 2nd: S546 → S633; 11 commits: the card's Print coloring sheet, the size-drag stop, the fit note, the measure-once; the modules' student guards): smoke-tools 17/17 + sync 236 + migration 47 with the pinned SDK, W1–W8 signed in by real clicks 34/34 (two plant sets red), arms 3–7 17/17 (9 plants → 10 red), arm …[full text: IMPROVEMENT_ARCHIVE.md]
+- P accounts & cloud (one surface): 2026-11-12 (**S646 — 24th P, `Hebrew_Font_Maker.html` (its 2nd alone, S561 → S646; 31 commits — the autosave without its copy, the deleted-copy unlink, the slimmer drawn-letter file, the Continue prompt's Hebrew time) + `letter_learner.html` (its 2nd alone, S561 → S646; 14 commits — the open card in the address bar, Select all / Clear): all seven smokes with …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - O deslop — AI-design-tell sweep (one surface): SKIP since S403 — the sandbox refuses to execute the third-party detector ("Code from External"); runs again once the maintainer commits a `.claude/settings.json` permission rule for it (`docs/reference/deslop-detector.md`). Last run 2026-09-08 (S346, `flash_cards.html`, 6th O; the S399/S403 refusals are in the archive).
 
@@ -862,4 +854,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-11-08 (**S630 — 41st F, long-build progress (S542's F-next; the affordance's first F): 13 presses that build before they answer, by real clicks with an animation-frame recorder, real PDF libraries from a cache, a held CDN, double presses at raw points. FOUND 2, FIXED 2 (+1 P4). F-next: destructive-action confirms.**)
 
-**Next session (S646):** **Branch `claude/lucid-brahmagupta-t4hdnh` (S638–S645, draft PR Hbleiberg/Hebrew_Blender#399): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1366**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=ad39f20 sw=v1366 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: P fontmaker + letter_learner (S561), N trope (S562), G generator (S563), H dashboard (S564), D fontmaker (S565), M torah (S568), C dictionary (S571), A (S581). ⚑ Queue: flash's dark card badge (S645 P3); the Tutor's S642 P4. ⚑ A suite question for the next F or C: do other tools show an answer's right / wrong by colour alone (S645's listening tiles did)? ⚑ Harness `c645/`, traps 626–630 (findings S645). ⚑ `print-media-leak`: `leak.mjs` hits on 6 pages for each page's next G. ⚑ 46 seeds.
+**Next session (S647):** **Branch `claude/lucid-brahmagupta-t4hdnh` (S638–S646, draft PR Hbleiberg/Hebrew_Blender#399): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1369**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=ad39f20 sw=v1369 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: N trope (S562), G generator (S563), H dashboard (S564), D fontmaker (S565), P dashboard (S567), M torah (S568), C dictionary (S571), A (S581). ⚑ Queue: the FM's S644 P3 (fullscreen Draw clips below 1181px, not small); the local snapshot's long tasks on a photo project (S646 P4, attribute first). ⚑ A suite question for the next F or C: do other tools show an answer's right / wrong by colour alone (S645's listening tiles did)? ⚑ Harness `p646/` (the smoke-fontmaker slice + `h644` strokes), traps 631–635 (findings S646). ⚑ `print-media-leak`: `leak.mjs` hits on 6 pages for each page's next G. ⚑ 46 seeds.
