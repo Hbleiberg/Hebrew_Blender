@@ -12479,6 +12479,10 @@ window.addEventListener('afterprint', _handoutExit);
   document.addEventListener('DOMContentLoaded', () => document.querySelectorAll('.tip-wrap').forEach(bindTip));
   document.addEventListener('click', () => { if (openWrap) hide(openWrap); });       // tap outside closes
   window.addEventListener('scroll', () => { if (openWrap) hide(openWrap); }, true);   // reposition-free: close on scroll
+  // ...and on a resize: a phone turned with a Settings tip open kept the bubble at its old place, beside or below the new
+  // window, while its icon stayed in view and the next tap on it only closed the bubble nobody could see. (S647, pattern
+  // fixed-control-positioned-outside-the-viewport; the Trope Tutor's twin)
+  window.addEventListener('resize', () => { if (openWrap) hide(openWrap); });
   // Dismissible (WCAG 1.4.13): Escape closes a shown bubble wherever the focus is, and only the bubble — a tip hovered
   // in the settings drawer stayed up while the drawer's own Escape closed the drawer under it. (S564, pattern
   // hover-tip-not-dismissible-or-hoverable)
