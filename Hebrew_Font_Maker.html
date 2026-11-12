@@ -22548,29 +22548,38 @@ async function fmHashBytes(blob) {   // 16 hex chars of SHA-256; an FNV-1a pair 
   for (let i = 0; i < u8.length; i++) { h1 = Math.imul(h1 ^ u8[i], 0x01000193) >>> 0; h2 = Math.imul(h2 ^ u8[i], 0x01000195) >>> 0; }
   return h1.toString(16).padStart(8, '0') + h2.toString(16).padStart(8, '0');
 }
+// No copy of the project: a JSON.parse(JSON.stringify()) of eight phone photos held the page 0.1 s (0.6 s on a 4×
+// slower laptop) at every 10 s save. Every photo is named first (hashing may yield, and repeats until a pass names
+// nothing new); then one synchronous pass reads the slots and writes the JSON with a replacer, so the copy is still a
+// single moment's project, byte for byte what the clone produced.
 async function fmCloudPack(p) {
-  const c = JSON.parse(JSON.stringify(p));
-  const sources = [], manifest = {}, seen = new Set();
-  for (const slot of fmRasterSlots(c)) {
-    const u = slot.o[slot.k];
-    if (typeof u !== 'string' || !u || u.startsWith(CLOUD_PREFIX)) continue;
-    if (slot.draw) { slot.o[slot.k] = null; continue; }               // drawEnsureRaster() rebuilds it from the strokes on open
-    if (/^data:image\/svg\+xml/i.test(u)) continue;                     // text: stays inline
-    let entry = _cloudNames.get(u);
-    if (!entry) {
+  const skip = (slot, u) => typeof u !== 'string' || !u || u.startsWith(CLOUD_PREFIX) || slot.draw || /^data:image\/svg\+xml/i.test(u);   // svg: text, stays inline
+  for (let named = true; named; ) {
+    named = false;
+    for (const slot of fmRasterSlots(p)) {
+      const u = slot.o[slot.k];
+      if (skip(slot, u) || _cloudNames.has(u)) continue;
       let blob = fmDataUrlToBlob(u); if (!blob) continue;
       let ext = fmCloudExt(blob.type);
       if (!ext) { blob = await fmToPng(u); ext = 'png'; }
       const hash = await fmHashBytes(blob);
-      entry = { name: hash + '.' + ext, size: blob.size, type: blob.type, blob };
-      _cloudNames.set(u, entry);
+      _cloudNames.set(u, { name: hash + '.' + ext, size: blob.size, type: blob.type, blob });
+      named = true;
     }
-    slot.o[slot.k] = CLOUD_PREFIX + entry.name;
+  }
+  const sources = [], manifest = {}, seen = new Set(), put = new Map();   // holder → what its dataUrl becomes
+  for (const slot of fmRasterSlots(p)) {
+    const u = slot.o[slot.k];
+    if (typeof u !== 'string' || !u || u.startsWith(CLOUD_PREFIX)) continue;
+    if (slot.draw) { put.set(slot.o, null); continue; }                // drawEnsureRaster() rebuilds it from the strokes on open
+    const entry = skip(slot, u) ? null : _cloudNames.get(u); if (!entry) continue;   // an unreadable data URL stays inline, as before
+    put.set(slot.o, CLOUD_PREFIX + entry.name);
     if (!seen.has(entry.name)) { seen.add(entry.name); manifest[entry.name] = entry.size; sources.push({ name: entry.name, size: entry.size, label: slot.label, blob: entry.blob }); }
   }
-  c.cloudSources = manifest;
-  delete c.cloudRev;   // the row's revision is remembered locally, never inside the account copy
-  return { json: JSON.stringify(c), sources };
+  const top = Object.assign({}, p);
+  top.cloudSources = manifest;
+  delete top.cloudRev;   // the row's revision is remembered locally, never inside the account copy
+  return { json: JSON.stringify(top, function (k, v) { return (k === 'dataUrl' && put.has(this)) ? put.get(this) : v; }), sources };
 }
 async function fmCloudUnpack(data, id, onProgress) {
   const slots = fmRasterSlots(data).filter(s => typeof s.o[s.k] === 'string' && s.o[s.k].startsWith(CLOUD_PREFIX));

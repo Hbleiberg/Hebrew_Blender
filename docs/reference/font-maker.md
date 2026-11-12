@@ -45,12 +45,14 @@ The page loads `/js/supabase-config.js`, `/js/ivrit-account.js`, `/js/ivrit-save
   not undoable content. Absent = never saved to an account. `commitSaveAs` deletes both from the copy (a copy
   is a new project); `loadProjectFile` keeps a file's `cloudId` only when the signed-in account's list has it
   (`fmCloudClaim`); `newProject()` and `applyProjectData()` call `fmCloudReset()`.
-- **Pack / unpack at the boundary, never inside the live project**: `fmCloudPack(project)` deep-clones and,
-  at every raster slot (`fmRasterSlots`: letters' and marks' `source.dataUrl`, `combinedSheets[].dataUrl`,
-  `font[cat].combinedImage.dataUrl`), decodes the data URL by hand (`fmDataUrlToBlob` — the CSP has no
-  `data:` in `connect-src`), keeps the ORIGINAL bytes and type (jpeg / png / webp; anything else is redrawn
-  to PNG), hashes them (`fmHashBytes`, 16 hex of SHA-256) and writes the string `'cloud:<hash>.<ext>'` in the
-  clone; drawn letters (`source.kind === 'draw'`) are stripped to `null` (`drawEnsureRaster` rebuilds them),
+- **Pack / unpack at the boundary, never inside the live project**: `fmCloudPack(project)` never copies the
+  project (a deep clone of a photo project froze the page at every 10 s save). At every raster slot
+  (`fmRasterSlots`: letters' and marks' `source.dataUrl`, `combinedSheets[].dataUrl`,
+  `font[cat].combinedImage.dataUrl`) it first names each new photo — decodes the data URL by hand
+  (`fmDataUrlToBlob` — the CSP has no `data:` in `connect-src`), keeps the ORIGINAL bytes and type (jpeg / png /
+  webp; anything else is redrawn to PNG), hashes them (`fmHashBytes`, 16 hex of SHA-256) — repeating until a
+  pass names nothing new, then in one synchronous pass writes the JSON with a replacer that puts the string
+  `'cloud:<hash>.<ext>'` in each slot (so the file is one moment's project); drawn letters (`source.kind === 'draw'`) are stripped to `null` (`drawEnsureRaster` rebuilds them),
   SVG sheets and `template.customFonts[].dataB64` stay inline; a `cloudSources` manifest is added. The runtime
   `_cloudNames` map (data URL → object name) means an unchanged photo is never re-encoded or re-uploaded.
   `fmCloudUnpack(data, id)` downloads the referenced objects (4 at a time) and puts data URLs back BEFORE
