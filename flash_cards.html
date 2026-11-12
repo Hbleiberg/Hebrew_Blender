@@ -8741,6 +8741,11 @@ function wireCardScreen() {
   document.getElementById('endEarlyBtn').addEventListener('click', () => {
     if (confirm(I18n.t('flashcards.card.end_early_confirm'))) showResults();
   });
+  // How a control's focus came, read when it comes: the keyboard sets :focus-visible on focus and a mouse click does
+  // not — but any key pressed afterwards sets it too, so the Space handler cannot ask then. A press of the pointer
+  // on an already-focused control counts as a click.
+  document.addEventListener('focusin', e => { if (e.target instanceof Element) e.target._fcKbFocus = e.target.matches(':focus-visible'); });
+  document.addEventListener('pointerdown', e => { const c = e.target instanceof Element && e.target.closest('button,input,select,summary'); if (c) c._fcKbFocus = false; }, true);
   document.addEventListener('keydown', e => {
     if (!document.getElementById('screenCard').classList.contains('active')) return;
     if (timerPaused) return;   // a paused drill waits: no flip, no marks, no card steps (the buttons keep their own keys)
@@ -8748,10 +8753,13 @@ function wireCardScreen() {
     // would otherwise make every button and link on this screen keyboard-inert (End Practice
     // Early's confirm never fires; the header dark/fullscreen/tour buttons and even the nav
     // links go dead — the card flips instead). #fcCard stays exempt: it IS the drill surface.
-    // Space deliberately stays the global flip everywhere: it's the taught key, and a mouse
-    // user who just clicked Next (focus now on that button) expects Space to flip, not re-Next.
+    // Space stays the flip for a mouse user who just clicked Next (focus now on that button): they expect Space to
+    // flip, not re-Next. A control the KEYBOARD reached (_fcKbFocus, below) answers Space as Enter, as any button
+    // does: Pause, the voice speed's − / +, End Practice Early, a listening tile. A link keeps the flip (Space never
+    // follows a link; the page would scroll).
     const tgt = e.target instanceof Element && e.target.closest('a,button,input,select,textarea,summary,[role="button"],[tabindex]');
     if (e.key === 'Enter' && tgt && tgt.id !== 'fcCard') return;
+    if (e.key === ' ' && tgt && tgt.matches('button,input,select,summary') && tgt._fcKbFocus) return;
     if (isListeningActive()) {
       // Listening rounds: no flip / no y-n grading (would corrupt the round).
       if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); document.getElementById('lcReplay').click(); }
