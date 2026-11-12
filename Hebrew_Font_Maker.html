@@ -22344,7 +22344,16 @@ function saveProject() {
 async function saveToComputer() {
   project.savedAt = new Date().toISOString();
   onMetaChange();
-  const json = JSON.stringify(project);
+  // A drawn letter's picture is rebuilt from its strokes when the file opens (drawEnsureRaster, as the account copy
+  // already relies on), so the file leaves it out when that rebuild gives it back exactly — the same PNG and the same
+  // placement: 27 drawn letters were 1.3 of a 1.4 MB file. Strokes changed since the last Save letter keep theirs
+  // (it is the one the outline was traced from).
+  const rebuilt = new Set(project.letters.filter(l => {
+    if (!(l.source && l.source.kind === 'draw' && l.source.dataUrl && l.draw && l.draw.strokes.length)) return false;
+    const fr = drawFrame(l.draw), t = [SC, 0, 0, SC, fx(fr.x0), fy(fr.y1)];
+    return Array.isArray(l.transform) && t.every((v, i) => v === l.transform[i]) && drawRenderCanvas(l.draw, fr).toDataURL('image/png') === l.source.dataUrl;
+  }).map(l => l.source));
+  const json = JSON.stringify(project, function (k, v) { return (k === 'dataUrl' && rebuilt.has(this)) ? null : v; });
   const d = new Date(), mon = d.toLocaleString('en-US',{month:'long'});
   const stamp = `${fontFileStem()}_${mon}_${d.getDate()}_${d.getFullYear()}`;   // the font's name (its .ttf's stem), then the day
   if (typeof CompressionStream !== 'undefined') {
