@@ -1091,6 +1091,9 @@ body.dark .lc-replay { color: var(--gold-light); }
 .lc-tile:disabled { cursor: default; }
 .lc-tile.good { background: var(--good-soft); border-color: var(--good); }
 .lc-tile.bad  { background: var(--bad-soft);  border-color: var(--bad); }
+/* Until its word has been played a card's answers wait (renderListeningCard): disabled, and dimmed so the speaker
+   reads as the first step. An answered card's tiles are disabled too, at full strength, to show the result. */
+.lc-choices.lc-wait .lc-tile { opacity: 0.45; }
 /* The answer's ✓ / ✗ beside its colour: for red-green colour blindness the two tints are 1.09:1 apart, so the colour
    alone never said which tile was right. The card badge's circle in the corner opposite the key number — ltr like
    .lc-key, whose own direction puts it top-left in both UIs; aria-hidden — the status line speaks the outcome.
@@ -8518,17 +8521,28 @@ function renderListeningCard(card) {
       b.setAttribute('aria-keyshortcuts', String(i + 1));
     }
     b.addEventListener('click', () => chooseTile(c, card, b));
+    b.disabled = true;   // the answers wait for the speaker (below)
     grid.appendChild(b);
   });
   // Revisiting an already-graded card (via Prev): lock and reveal the correct tile.
-  if (scores[currentIndex] === true || scores[currentIndex] === false) {
+  const graded = scores[currentIndex] === true || scores[currentIndex] === false;
+  if (graded) {
     listenLocked = true;
     grid.querySelectorAll('.lc-tile').forEach(t => {
-      t.disabled = true;
       if (t.dataset.heb === card.heb) { t.classList.add('good'); t.appendChild(lcMark(true)); }
     });
   }
-  replay.onclick = () => { speakWord(card.heb); listenHeard = true; setListenHint(); };
+  // Every card starts silent, so a tile chosen before the first play would be graded as a listening answer to a
+  // word nobody heard. The tiles stay disabled and dimmed (.lc-wait) until the speaker is pressed on this card. The
+  // press opens them, not the sound: a device with no Hebrew voice says so in a toast and the drill still moves.
+  grid.classList.toggle('lc-wait', !graded);
+  replay.onclick = () => {
+    speakWord(card.heb); listenHeard = true; setListenHint();
+    if (grid.classList.contains('lc-wait')) {
+      grid.classList.remove('lc-wait');
+      grid.querySelectorAll('.lc-tile').forEach(t => { t.disabled = false; });
+    }
+  };
   setListenHint();
   if (currentListenChoices.length < 2) {   // degenerate universe: only the answer exists
     document.getElementById('lcHint').textContent = I18n.t('flashcards.card.listen_degenerate');
@@ -8541,7 +8555,7 @@ function lcMark(good) {
   return m;
 }
 function chooseTile(chosen, answer, tileEl) {
-  if (listenLocked) return;
+  if (listenLocked || !listenHeard) return;
   listenLocked = true;
   const ok = (chosen.heb === answer.heb);   // graded against the PROMPT card, not the tapped tile
   applyMark(ok);
