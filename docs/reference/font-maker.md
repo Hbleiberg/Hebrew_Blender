@@ -529,6 +529,15 @@ from `ב` on the Hebrew top line, and the family's own `O` and `o` then land on 
 guides by themselves. (It used to measure every character's own ink and stretch each one to the top
 line, which is what made O and o identical on the stage and squashed lamed down to alef's height.)
 
+`templateMetrics(family, ch)` is the measurement under it (two 560×560 canvas scans a glyph) and is
+cached per family and glyph, but only while `document.fonts.check('24px <primary>', ch)` says the
+face that draws **that glyph** is loaded — asked with no text, `check()` asks about a space, which in
+a family split by `unicode-range` is the Latin file and never loads for a Hebrew letter, so nothing
+would be cached and every stage redraw would measure again. A family with no face at all also answers
+true (a stylesheet linked by `loadHebFont` may still be on its way), so the key carries whether the
+family has a face (`_tplFamilyHasFace`): what was measured on the fallback is never read once the real
+face exists.
+
 Which letters leave the body band is a per-letter `.asc` / `.desc` flag on the letter table — the same
 two booleans Hebrew has always carried for lamed and the finals. Those were classified by measuring
 every glyph against its own font's cap height across the same corpus, so they are readings rather than

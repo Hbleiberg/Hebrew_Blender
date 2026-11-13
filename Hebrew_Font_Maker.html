@@ -9777,10 +9777,20 @@ function templateGlyphSVG() {
    font-size by rendering to a canvas and scanning pixels — SVG getBBox returns the font's
    ascent-inclusive layout box, which can't be trusted. Cached per font+glyph. */
 const _tplMetricsCache = {};
+function _tplFamilyHasFace(primary) {   // does the page hold any @font-face / FontFace for this family yet?
+  const n = primary.replace(/^['"]|['"]$/g, '').toLowerCase();
+  for (const f of document.fonts) if (String(f.family).replace(/^['"]|['"]$/g, '').toLowerCase() === n) return true;
+  return false;
+}
 function templateMetrics(family, ch) {
   const primary = String(family).split(',')[0].trim();   // test the real font, not the always-available generic fallback (which makes check() spuriously true)
-  const loaded = !document.fonts || document.fonts.check('24px ' + primary);
-  const key = family + '|' + ch;
+  // Ask about this glyph's own face. With no text check() asks about a space, and in a family split by
+  // unicode-range that is the Latin file, which a Hebrew letter never loads — the answer stayed false,
+  // nothing was ever cached, and every stage redraw scanned four canvases.
+  const loaded = !document.fonts || document.fonts.check('24px ' + primary, ch);
+  // A family with no face yet answers true as well (its stylesheet may still be on its way), so what is
+  // measured then is kept apart from what is measured once the family has faces.
+  const key = family + '|' + ch + (document.fonts && _tplFamilyHasFace(primary) ? '|w' : '');
   if (loaded && _tplMetricsCache[key]) return _tplMetricsCache[key];
   let m = { capRatio: 0.7, leftRatio: -0.3, widthRatio: 0.62, native: true };
   try {
