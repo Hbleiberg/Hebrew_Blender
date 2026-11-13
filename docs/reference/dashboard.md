@@ -421,8 +421,15 @@ body.dark #tipFloat { background: #0a0f1c; }
   carries `lang="he" dir="rtl"`; otherwise it is `dir="ltr"` and only its Hebrew runs are marked (`David K. / דָּוִד`),
   so a Latin name keeps its last mark last (`David K.`, `Maya!`). `colorizeHebrew` takes the raw text, since it
   escapes for itself.
+- **The first real class takes the starter's slot.** A fresh device holds one class it made for itself, an untouched
+  `My class` with no names (`isUntouchedDefaultClass`, the seed the sync registry never uploads). While one is listed
+  (`starterClassId()`), `newClass()` and `classFromNameTags()` write the new class into that slot — the same id, its own
+  name through `uniqueClassName(name, starter)`, and no count against `ROSTER_MAX_CLASSES` — so no empty `My class (0)`
+  stays beside it in the three switchers. A starter the teacher renamed or typed names into is a class like any other,
+  and the next class is added beside it. A preset names its class by name, so one saved on the starter simply leaves
+  the picker where it is, as after any rename.
 - **A class from a Name Tags list:** `classFromNameTags()` copies one of `name_tags.html`'s lists
-  (`hebrewNameTags_lists`, read as this device holds it) into a **new** class — one roster line per student: the
+  (`hebrewNameTags_lists`, read as this device holds it) into a **new** class (or the starter's slot, above) — one roster line per student: the
   English name, the Hebrew name, or both (`"David / דָּוִד"`), a student with only one keeping it — through
   `parseRoster` (de-duplicated, at most `PICKER_MAX`; the class note says when names were left out), under
   `ROSTER_MAX_CLASSES`, named `uniqueClassName(list name)`. A one-time copy: nothing links the two afterwards.

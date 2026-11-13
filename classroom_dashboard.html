@@ -7555,15 +7555,24 @@ function mountSidebarResize(cfg) {
     if (window.I18n) showAppToast(I18n.t('dashboard.picker.merged_same_name', { name: landed.name }));
     return true;
   }
+  // The slot a new class takes. While this device still holds the starter it made for itself (an untouched "My class",
+  // no names), the first real class takes that slot under its own name, so no empty "My class (0)" stays beside it in
+  // every switcher and a Name Tags list called "My class" keeps its name (the maintainer's choice). A starter the teacher
+  // renamed or typed names into is a class like any other. The account never holds the seed (the sync registry skips
+  // its upload), so the slot's first upload is the real class.
+  function starterClassId() {
+    return Object.keys(settings.rosters || {}).find(id => isUntouchedDefaultClass(settings.rosters[id])) || null;
+  }
   function newClass() {
-    if (Object.keys(settings.rosters).length >= ROSTER_MAX_CLASSES) {
+    const starter = starterClassId();
+    if (!starter && Object.keys(settings.rosters).length >= ROSTER_MAX_CLASSES) {
       pickerClassNote('dashboard.picker.class_limit', { max: ROSTER_MAX_CLASSES });
       return;
     }
     const raw = prompt(I18n.t('dashboard.picker.new_class_prompt'));
     if (raw === null) return;
-    const id = newRosterId();
-    settings.rosters[id] = { name: uniqueClassName(raw.trim() || 'My class'), names: [] };
+    const id = starter || newRosterId();
+    settings.rosters[id] = { name: uniqueClassName(raw.trim() || 'My class', starter), names: [] };
     switchClass(id);
   }
   function renameClass() {
@@ -7624,15 +7633,16 @@ function mountSidebarResize(cfg) {
     const sel = document.getElementById('pickerFromNtSel');
     const list = nameTagLists().find(l => sel && l.name === sel.value);
     if (!list) return;
-    if (Object.keys(settings.rosters).length >= ROSTER_MAX_CLASSES) {
+    const starter = starterClassId();   // the untouched starter's slot, when there is one (newClass)
+    if (!starter && Object.keys(settings.rosters).length >= ROSTER_MAX_CLASSES) {
       pickerClassNote('dashboard.picker.class_limit', { max: ROSTER_MAX_CLASSES });
       return;
     }
     const use = (document.querySelector('input[name="pickerFromNtUse"]:checked') || {}).value || 'en';
     const lines = list.rows.map(r => use === 'he' ? (r.he || r.en) : use === 'both' ? (r.en && r.he ? r.en + ' / ' + r.he : (r.en || r.he)) : (r.en || r.he));
     const names = parseRoster(lines.join('\n'));   // trimmed, de-duplicated, at most PICKER_MAX
-    const id = newRosterId();
-    settings.rosters[id] = { name: uniqueClassName(list.name), names };
+    const id = starter || newRosterId();
+    settings.rosters[id] = { name: uniqueClassName(list.name, starter), names };
     toggleFromNameTags(false);
     switchClass(id);   // saves, and repaints the switchers, the roster box and the chips
     const params = { name: settings.rosters[id].name, count: names.length, max: PICKER_MAX };
