@@ -5070,16 +5070,36 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
   const HOLIDAY_CACHE_KEY = 'hebrewDashboard_holidayCache';
   const HOLIDAY_MAX_AGE = 12 * 60 * 60 * 1000; // 12h
 
+  const holidayFeedUrl = year => 'https://www.hebcal.com/hebcal?v=1&cfg=json&maj=on&min=off&nx=off&year=' + year + '&month=x&ss=off&mf=off&c=off&geo=none&M=on&s=off';
+  // Does the list hold a holiday today or later? The countdown's own test (renderHolidayCountdown).
+  function holidayAhead(items) {
+    const n = new Date(), today = new Date(n.getFullYear(), n.getMonth(), n.getDate());
+    return (items || []).some(it => {
+      if (it.category && it.category !== 'holiday') return false;
+      const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(it.date || '');
+      return !!m && new Date(+m[1], +m[2] - 1, +m[3]) >= today;
+    });
+  }
+
   async function fetchHolidays() {
-    // Reuse cached items if fresh (<12h)
+    // Reuse cached items if fresh (<12h) and still holding a day ahead (a list cached on the year's last holiday has
+    // none the morning after)
     try {
       const c = JSON.parse(sessionStorage.getItem(HOLIDAY_CACHE_KEY) || 'null');
-      if (c && c.items && (Date.now() - c.ts) < HOLIDAY_MAX_AGE) { renderHolidayCountdown(c.items); return; }
+      if (c && c.items && (Date.now() - c.ts) < HOLIDAY_MAX_AGE && holidayAhead(c.items)) { renderHolidayCountdown(c.items); return; }
     } catch (e) {}
     try {
-      const res = await fetch('https://www.hebcal.com/hebcal?v=1&cfg=json&maj=on&min=off&nx=off&year=now&month=x&ss=off&mf=off&c=off&geo=none&M=on&s=off');
+      const res = await fetch(holidayFeedUrl('now'));
       const data = await res.json();
-      const items = (data && data.items) || [];
+      let items = (data && data.items) || [];
+      // The feed is one calendar year. After its last holiday (the day after Chanukah, in a year when Chanukah ends
+      // before 31 December) nothing later exists, and the line would be gone until 1 January with Purim ahead: ask
+      // for the next year as well. The year after the feed's own last item, since its "now" is the server's clock.
+      if (!holidayAhead(items)) {
+        const last = items.length ? /^(\d{4})/.exec(items[items.length - 1].date || '') : null;
+        const more = await (await fetch(holidayFeedUrl((last ? +last[1] : new Date().getFullYear()) + 1))).json();
+        items = items.concat((more && more.items) || []);
+      }
       try { sessionStorage.setItem(HOLIDAY_CACHE_KEY, JSON.stringify({ items, ts: Date.now() })); } catch (e) {}
       renderHolidayCountdown(items);
     } catch (e) {

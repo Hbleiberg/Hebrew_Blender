@@ -835,6 +835,14 @@ an empty cup in every other branch (`Chanukah: 8th Day` shows all eight); every 
 `holidayIconFor()`. `.hol-ico` is sized in em, so the `--holiday-size` slider and the fullscreen scale rule
 size it with the text, and the dark block of the CSS swaps its palette without a re-render.
 
+**The feed is one calendar year, so the page asks for the next one once this year's holidays are over.**
+`fetchHolidays()` requests `year=now`; when that list holds no holiday today or later (`holidayAhead()`, the
+countdown's own test: the day after Chanukah in a year when Chanukah ends before 31 December), it requests the
+year after the feed's own last item as well and keeps both lists, so the line counts to Purim instead of
+hiding until 1 January. The year comes from the feed, not from this clock, because the feed's "now" is the
+server's. A cached list with nothing ahead is not reused, and a failed second request caches nothing, so the
+next load asks again.
+
 **Before the day the line names the holiday, not the feed's name for its first day.** While the next item is
 still ahead (`days > 0`), `renderHolidayCountdown()` reads `Chanukah: 1 Candle` as `Chanukah` and a first day
 numbered `… I` as the bare name, the Hebrew likewise (`חנוכה: א׳ נר` → `חנוכה`), and the icon follows that
