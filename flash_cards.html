@@ -6857,9 +6857,11 @@ function _reportEnter(name) {
     <div class="fcr-meta">
       <span class="bidi-isolate">${esc(I18n.t('flashcards.report.generated', { date: fmtDate(new Date().toISOString()) }))}</span>`;
   if (stamps.length) {
-    html += `<span class="bidi-isolate">${esc(stamps.length > 1
-      ? I18n.t('flashcards.report.period', { from: fmtDate(stamps[0]), to: fmtDate(stamps[stamps.length - 1]) })
-      : I18n.t('flashcards.report.period_one', { date: fmtDate(stamps[0]) }))}</span>`;
+    // One date when every drill fell on one day: several drills saved in one sitting read "Nov 13, 2026 – Nov 13, 2026".
+    const from = fmtDate(stamps[0]), to = fmtDate(stamps[stamps.length - 1]);
+    html += `<span class="bidi-isolate">${esc(from !== to
+      ? I18n.t('flashcards.report.period', { from, to })
+      : I18n.t('flashcards.report.period_one', { date: from }))}</span>`;
   }
   html += `</div></div>`;
 
