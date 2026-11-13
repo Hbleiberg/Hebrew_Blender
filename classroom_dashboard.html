@@ -4340,7 +4340,7 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
       inp.addEventListener('input', () => {
         if (!settings.nikudColorOverrides) settings.nikudColorOverrides = {};
         settings.nikudColorOverrides[def.key] = inp.value;
-        if (settings.colorCodeNikkud) { updateDateTimeDisplay(); renderDaysList(); renderWeather(); }
+        if (settings.colorCodeNikkud) { updateDateTimeDisplay(); renderDaysList(); renderWeather(); updateColTitles(); renderStudentPicker(); }
       });
       row.appendChild(ex);
       row.appendChild(lbl);
@@ -4352,7 +4352,7 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
     if (!confirm(I18n.t((window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession()) ? 'dashboard.color.reset_confirm_cloud' : 'dashboard.color.reset_confirm'))) return;
     settings.nikudColorOverrides = {};
     initColorPickers();
-    if (settings.colorCodeNikkud) { updateDateTimeDisplay(); renderDaysList(); renderWeather(); }
+    if (settings.colorCodeNikkud) { updateDateTimeDisplay(); renderDaysList(); renderWeather(); updateColTitles(); renderStudentPicker(); }
   }
   function syncSchemeButtons() {
     const scheme = settings.vowelColorScheme || 'default';
@@ -4367,7 +4367,7 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
     settings.nikudColorOverrides = {};   // show the scheme's clean palette
     initColorPickers();                  // re-order + re-seed colors
     syncSchemeButtons();
-    if (settings.colorCodeNikkud) { updateDateTimeDisplay(); renderDaysList(); renderWeather(); }
+    if (settings.colorCodeNikkud) { updateDateTimeDisplay(); renderDaysList(); renderWeather(); updateColTitles(); renderStudentPicker(); }
   }
 
   /* ────────── DASHBOARD TEXT SIZE ────────── */
@@ -6819,7 +6819,7 @@ function mountSidebarResize(cfg) {
       tabs[next].focus();
       tabs[next].click();
     });
-    const refreshAll = () => { updateDateTimeDisplay(); renderDaysList(); renderWeather(); renderIntermission(); };   // the Intermission preview shows the default word through hebDisplay, so nikkud switches reach it too
+    const refreshAll = () => { updateDateTimeDisplay(); renderDaysList(); renderWeather(); renderIntermission(); updateColTitles(); renderStudentPicker(); };   // the Intermission preview shows the default word through hebDisplay, so nikkud switches reach it too; so do the four column titles and the name chips
     document.getElementById('showHolidayCountdown').addEventListener('change', e => {
       settings.showHolidayCountdown = e.target.checked;
       saveSettingsToStorage();
@@ -12115,7 +12115,7 @@ async function onUploadEngFontPick(input){
     _db.setAttribute('aria-pressed', isDark ? 'true' : 'false');
     const _db2 = document.getElementById('drawerDarkBtn');
     if (_db2) _db2.setAttribute('aria-pressed', _db.getAttribute('aria-pressed'));
-    if (settings.colorCodeNikkud) { updateDateTimeDisplay(); renderDaysList(); renderWeather(); updateOmerDisplay(); initColorPickers(); }
+    if (settings.colorCodeNikkud) { updateDateTimeDisplay(); renderDaysList(); renderWeather(); updateOmerDisplay(); updateColTitles(); renderStudentPicker(); initColorPickers(); }
   }
   function initDark() {
     const s = localStorage.getItem('hebrewBlender_darkMode');

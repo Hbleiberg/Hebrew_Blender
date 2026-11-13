@@ -56,6 +56,13 @@ function toggleDark() {
 ```
 After toggling, any nikkud-colorized content must be re-rendered because `getNikudColor()` reads `document.body.classList.contains('dark')` at call time.
 
+**Every control that changes how nikkud shows repaints every Hebrew surface, the script-built ones included.** The
+form's `refreshAll` (Show nikkud, Color-code nikkud, the colour mode) and the four colour paths (a vowel's picker,
+Reset, the scheme buttons, the colour-coded dark toggle) each end with `updateColTitles()` and
+`renderStudentPicker()` after the date, the days and the weather — the four Hebrew column titles and the Student
+Picker's name chips are built through `hebDisplay` / `pickerNameHTML` once and would otherwise keep the old
+display until a reload. A new surface that draws Hebrew through `hebDisplay` joins these five sites.
+
 ---
 
 ## Hebrew Font UI (`classroom_dashboard.html`)
