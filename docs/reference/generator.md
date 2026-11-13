@@ -366,3 +366,14 @@ writes the same count to `--rw-cols`. The Landscape toggle re-lays the drawn she
 lets a narrow sheet (a phone, a window with the sidebar beside it) take fewer columns, never one narrower
 than 100px, and keeps exactly `--rw-cols` wherever they fit; print is not screen and the PDF capture pins
 `#worksheet` at full width, so paper and the PDF keep the builder's columns. A new card grid writes both.
+
+## Blend grids (`.blends-grid`)
+
+A blend sheet's builder sets its columns inline (`autoCols`), and where its cells cannot shrink below their content
+(Inverse's write box, Gematria, Name the Letter) calls `blendGridFit(grid, cols, floor)`, which writes `--bg-cols` and
+`--bg-floor`: on screen only, such a grid takes fewer columns on a narrow sheet, none narrower than the floor, and
+exactly `--bg-cols` wherever they fit. Landscape Print is ten columns on paper (the print block). On screen, and in
+Export PDF's capture — screen media, with `#worksheet` pinned at its 760px — `body.landscape-mode .blends-grid` takes
+ten where they fit and fewer where they do not (the floor is `--bg-floor`, or 46px where a grid carries none), so an
+Inverse sheet shows and exports seven whole columns rather than ten with the last one past the sheet's edge. A new
+blend grid whose cells have a hard minimum width calls `blendGridFit`.

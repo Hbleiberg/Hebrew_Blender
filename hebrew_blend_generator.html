@@ -1808,6 +1808,13 @@ body.dark .hi-sun{display:inline-block;}
      keep the builder's columns. A grid with no floor (Reading, Fill the vowels: they fit) is untouched. (S602, gate 4) */
   @media screen {
     .blends-grid[style*="--bg-floor"] { grid-template-columns: repeat(auto-fill, minmax(max(var(--bg-floor), (100% - (var(--bg-cols) - 1) * 14px) / var(--bg-cols) - 0.5px), 1fr)) !important; }
+    /* Landscape Print is the paper's ten columns, and the rule that sets them (LANDSCAPE PRINT, above) reaches the
+       screen too, where ten do not always fit: Inverse's ten need 966px of a 760px sheet, and beside the sidebar at
+       800px no sheet's fit — the row's last cells ran past the sheet, and Export PDF, which captures the screen's
+       layout with the worksheet pinned at 760px, cut each Inverse row's tenth cell off the page. On screen the row
+       takes as many columns as fit, none narrower than the builder's floor (46px, the reading cells' widest, where a
+       grid carries none); with room for ten it is exactly ten. Paper keeps its ten. */
+    body.landscape-mode .blends-grid { grid-template-columns: repeat(auto-fill, minmax(max(var(--bg-floor, 46px), (100% - 9 * 14px) / 10 - 0.5px), 1fr)) !important; }
   }
   /* ── MATCHING DRILL (real words) ── */
   .match-wrap { display: flex; justify-content: space-between; align-items: flex-start; gap: 36px; direction: ltr; margin-top: 10px; }
