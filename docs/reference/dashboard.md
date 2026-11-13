@@ -415,6 +415,12 @@ body.dark #tipFloat { background: #0a0f1c; }
   persist across days on purpose. `resetPickerCycle()` empties `picked` ("🔄 New round");
   `clearAbsences()` empties `absent` ("✅ Everyone's here", rendered in `#pickerProgress` only while someone
   is marked absent, whether or not the fair cycle is on). Both act on the active class only.
+- **A student's name on the board** (the chips, the picked name, the groups) is `pickerNameHTML(name)`: escaped, its
+  nikkud shown, stripped or colour-coded by the switches `hebDisplay` reads — but never through `hebDisplay`, which
+  marks its whole argument Hebrew. A name runs in the direction of its own first letter: Hebrew first, the whole name
+  carries `lang="he" dir="rtl"`; otherwise it is `dir="ltr"` and only its Hebrew runs are marked (`David K. / דָּוִד`),
+  so a Latin name keeps its last mark last (`David K.`, `Maya!`). `colorizeHebrew` takes the raw text, since it
+  escapes for itself.
 - **A class from a Name Tags list:** `classFromNameTags()` copies one of `name_tags.html`'s lists
   (`hebrewNameTags_lists`, read as this device holds it) into a **new** class — one roster line per student: the
   English name, the Hebrew name, or both (`"David / דָּוִד"`), a student with only one keeping it — through

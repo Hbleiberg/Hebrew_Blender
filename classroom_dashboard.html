@@ -7406,9 +7406,19 @@ function mountSidebarResize(cfg) {
     return rosterNames().filter(n => !absent.includes(n));
   }
 
-  // XSS-safe + nikkud-aware name rendering: esc() neutralizes <b>/&/quotes, hebDisplay() then adds
-  // nikkud coloring for Hebrew and passes Latin/emoji through inertly. Always assigned to innerHTML.
-  function pickerNameHTML(name) { return hebDisplay(esc(name)); }
+  // XSS-safe + nikkud-aware name rendering, always assigned to innerHTML. A name runs in the direction of its own first
+  // letter: Hebrew first, the whole name is Hebrew (lang="he" dir="rtl", as hebDisplay marks it); otherwise it is left to
+  // right and only its Hebrew runs are marked ("David K. / דָּוִד"). Through hebDisplay every name was Hebrew, so a Latin
+  // name's last mark led it (".David K", "!Maya" on the chips, the picked name and the groups), and its already-escaped
+  // text was escaped again by colorizeHebrew ("O&#39;Brien" with Color-code nikkud on).
+  function pickerNameHTML(name) {
+    const s = String(name == null ? '' : name);
+    // nikkud shown, stripped or colour-coded, as hebDisplay decides; colorizeHebrew escapes for itself
+    const inner = t => !settings.showNikkud ? esc(stripNikkud(t)) : settings.colorCodeNikkud ? colorizeHebrew(t, settings.colorCodingMode) : esc(t);
+    const heb = t => '<span lang="he" dir="rtl">' + inner(t) + '</span>';
+    if (/^[^A-Za-zÀ-ɏͰ-ϿЀ-ӿ֐-׿]*[֐-׿]/.test(s)) return heb(s);
+    return '<span dir="ltr">' + s.split(/([֐-׿]+(?:[ '’-]+[֐-׿]+)*)/).map((part, i) => i % 2 ? heb(part) : esc(part)).join('') + '</span>';
+  }
 
   function updateGroupNLabel() {
     const lbl = document.getElementById('groupNLabel');
