@@ -841,7 +841,9 @@ countdown's own test: the day after Chanukah in a year when Chanukah ends before
 year after the feed's own last item as well and keeps both lists, so the line counts to Purim instead of
 hiding until 1 January. The year comes from the feed, not from this clock, because the feed's "now" is the
 server's. A cached list with nothing ahead is not reused, and a failed second request caches nothing, so the
-next load asks again.
+next load asks again. The request itself lives in `loadHolidayItems()`, and callers that arrive while it is in
+flight share it (`_holidayLoad`): the page's start-up and `applyI18n`'s re-render both call `fetchHolidays()`
+before the first answer is cached, and each renders from the one answer.
 
 **Before the day the line names the holiday, not the feed's name for its first day.** While the next item is
 still ahead (`days > 0`), `renderHolidayCountdown()` reads `Chanukah: 1 Candle` as `Chanukah` and a first day

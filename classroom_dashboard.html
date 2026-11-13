@@ -5081,6 +5081,23 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
     });
   }
 
+  // The feed's items for the countdown: this calendar year's, plus the next year's once nothing is left ahead. The
+  // feed is one calendar year: after its last holiday (the day after Chanukah, in a year when Chanukah ends before
+  // 31 December) nothing later exists, and the line would be gone until 1 January with Purim ahead. The year after
+  // the feed's own last item, since its "now" is the server's clock. Cached on success only.
+  async function loadHolidayItems() {
+    const data = await (await fetch(holidayFeedUrl('now'))).json();
+    let items = (data && data.items) || [];
+    if (!holidayAhead(items)) {
+      const last = items.length ? /^(\d{4})/.exec(items[items.length - 1].date || '') : null;
+      const more = await (await fetch(holidayFeedUrl((last ? +last[1] : new Date().getFullYear()) + 1))).json();
+      items = items.concat((more && more.items) || []);
+    }
+    try { sessionStorage.setItem(HOLIDAY_CACHE_KEY, JSON.stringify({ items, ts: Date.now() })); } catch (e) {}
+    return items;
+  }
+  let _holidayLoad = null;   // the request in flight: a second caller before it lands (applyI18n's re-render at load) shares it
+
   async function fetchHolidays() {
     // Reuse cached items if fresh (<12h) and still holding a day ahead (a list cached on the year's last holiday has
     // none the morning after)
@@ -5089,19 +5106,8 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
       if (c && c.items && (Date.now() - c.ts) < HOLIDAY_MAX_AGE && holidayAhead(c.items)) { renderHolidayCountdown(c.items); return; }
     } catch (e) {}
     try {
-      const res = await fetch(holidayFeedUrl('now'));
-      const data = await res.json();
-      let items = (data && data.items) || [];
-      // The feed is one calendar year. After its last holiday (the day after Chanukah, in a year when Chanukah ends
-      // before 31 December) nothing later exists, and the line would be gone until 1 January with Purim ahead: ask
-      // for the next year as well. The year after the feed's own last item, since its "now" is the server's clock.
-      if (!holidayAhead(items)) {
-        const last = items.length ? /^(\d{4})/.exec(items[items.length - 1].date || '') : null;
-        const more = await (await fetch(holidayFeedUrl((last ? +last[1] : new Date().getFullYear()) + 1))).json();
-        items = items.concat((more && more.items) || []);
-      }
-      try { sessionStorage.setItem(HOLIDAY_CACHE_KEY, JSON.stringify({ items, ts: Date.now() })); } catch (e) {}
-      renderHolidayCountdown(items);
+      if (!_holidayLoad) _holidayLoad = loadHolidayItems().finally(() => { _holidayLoad = null; });
+      renderHolidayCountdown(await _holidayLoad);
     } catch (e) {
       // graceful fallback: try any stale cache, else hide
       try {
