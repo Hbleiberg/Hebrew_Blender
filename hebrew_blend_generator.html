@@ -1092,7 +1092,7 @@ body.dark .hi-sun{display:inline-block;}
   }
   .blend-write-box.answer-shown {
     border-color: var(--gold);
-    color: var(--gold);
+    color: var(--gold-text);   /* the Inverse key's answers in the readable gold (brand --gold read 2.75:1 on the white box) */
     font-weight: 700;
   }
 
@@ -2486,7 +2486,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
        numbers stay legible on a monochrome printer. After the dark-reset, so it
        wins in both light and dark print by source order; non-!important so
        intentional inline nikkud color-coding still overrides. */
-    .gematria-value, .blend-answer, .rw-translation, .ws-wordbank-tn, .cw-clue-num, .ntl-ak-name, .match-ak-row .match-ak-let, .ws-version-label { color:#6b4e12; }
+    .gematria-value, .blend-answer, .blend-write-box.answer-shown, .rw-translation, .ws-wordbank-tn, .cw-clue-num, .ntl-ak-name, .match-ak-row .match-ak-let, .ws-version-label { color:#6b4e12; }
     /* The "…Answer Key — Teacher Copy" subtitles (and the ?ak= view's answers) wear an inline gold on screen
        (both themes). An inline color beats any class selector, so darkening it
        for B/W print needs !important — scoped to this teacher-copy-only class,
