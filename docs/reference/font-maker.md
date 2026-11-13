@@ -536,7 +536,10 @@ a family split by `unicode-range` is the Latin file and never loads for a Hebrew
 would be cached and every stage redraw would measure again. A family with no face at all also answers
 true (a stylesheet linked by `loadHebFont` may still be on its way), so the key carries whether the
 family has a face (`_tplFamilyHasFace`): what was measured on the fallback is never read once the real
-face exists.
+face exists. The stage is redrawn when a face of the reference family lands (`document.fonts`'
+`loadingdone`, beside `init()`'s one `fonts.ready` redraw): a stylesheet still on its way when the stage was
+drawn has registered no face, so `fonts.ready` is already settled and nothing else would re-seat the letter
+before the next click. A face of any other family redraws nothing.
 
 Which letters leave the body band is a per-letter `.asc` / `.desc` flag on the letter table — the same
 two booleans Hebrew has always carried for lamed and the finals. Those were classified by measuring

@@ -24575,6 +24575,15 @@ function init() {
   onExportFormatChange();   // sync the Export button label to the format picker (browsers may restore its value on reload)
   // re-measure the template glyph once web fonts settle
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (project) renderStage(); });
+  // …and whenever a face of the reference font lands after that. A stylesheet still on its way when the stage was
+  // drawn had registered no face, so fonts.ready was already settled, and the reference letter kept the fallback
+  // font's seat and size until the next click.
+  if (document.fonts && document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', e => {
+    if (!project || !project.template) return;
+    const fam = v => String(v).split(',')[0].trim().replace(/^['"]|['"]$/g, '').toLowerCase();
+    const want = fam(project.template.font), faces = e && e.fontfaces;
+    if (!faces || faces.some(f => fam(f.family) === want)) renderStage();
+  });
   if (!window.WebAssembly || !window.FontFace) {
     const _noWasm = () => status(I18n.t('fontmaker.status.export_no_wasm'), true);   // same guard: wait for translations
     if (window.I18n) I18n.ready.then(_noWasm); else _noWasm();
