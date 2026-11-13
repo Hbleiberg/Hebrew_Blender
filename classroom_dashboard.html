@@ -9859,7 +9859,7 @@ else ivritInit();
     if (n < cur) {
       const dropped = weekAllCells(week).slice(Math.max(1, n));
       if (dropped.some(c => WEEK_KEYS.some(d => c[d].some(Boolean))) &&
-          !confirm(I18n.t('dashboard.schedule.cycle_shrink_confirm', { option: I18n.t('dashboard.schedule.cycle_' + n), letter: weekLetter(n - 1) }))) {
+          !confirm(I18n.t((window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession()) ? 'dashboard.schedule.cycle_shrink_confirm_cloud' : 'dashboard.schedule.cycle_shrink_confirm', { option: I18n.t('dashboard.schedule.cycle_' + n), letter: weekLetter(n - 1) }))) {
         renderCycleBar();   // the radio snaps back to the cycle as it is
         return;
       }
@@ -10588,7 +10588,7 @@ else ivritInit();
     // in response to a user action.
   }
   function purgeLegacySchedule() {
-    if (!confirm(I18n.t('dashboard.schedule.purge_confirm'))) return;
+    if (!confirm(I18n.t((window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession()) ? 'dashboard.schedule.purge_confirm_cloud' : 'dashboard.schedule.purge_confirm'))) return;
     settings.currentSchedule = [];
     _lastScheduleKey = null;
     saveSettingsToStorage();

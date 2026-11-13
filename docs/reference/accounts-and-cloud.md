@@ -770,7 +770,8 @@ other signed-in device at its next load. While a session is stored (`IvritAccoun
 confirm names the account-wide effect (`torah.confirm.reset_all_cloud`, `trope.confirm.reset_all_cloud`,
 `trope.confirm.reset_progress_cloud`, the `*_delete_confirm_cloud` keys of presets, schedules, classes,
 favorites, word lists and student profiles, `flashcards.profile.delete_result_confirm_cloud` for one saved result,
-`worksheet.lastsetup.start_fresh_title_cloud`). Some resets
+`worksheet.lastsetup.start_fresh_title_cloud`, and the dashboard's schedule edits that remove classes: a period,
+a day, a cycle's later weeks and the old daily rows). Some resets
 need more than a write: the Trope Tutor's progress reset stamps `resetAt` (the registry's `watermark`) so the
 lossless merge cannot bring older mastery back; and a reset never removes a `single` row's key — a row gone from
 the account would be re-inserted by another device's copy, while a written value travels as the newer one — so
