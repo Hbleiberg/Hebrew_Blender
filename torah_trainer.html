@@ -1671,8 +1671,11 @@ body.dark .radio-group label { color:#99a2b8; }
    the tab order, and the vowel and trope color lists replaced keyboard-operable switches. */
 .radio-group input { position:absolute; opacity:0; width:1px; height:1px; margin:0; pointer-events:none; }
 .radio-group input:focus-visible + label { outline:2px solid var(--focus-ring); outline-offset:1px; }
-/* The Colors tab's two lists — and, by the same classes, the Layout row and the three copy-format
-   pill rows: a group that does not fit beside its label drops whole to the next line. A choice never breaks mid-label. The vowel list's four choices
+/* The Colors tab's two lists — and, by the same classes, the Layout row, the three copy-format
+   pill rows and the drawer's other choice rows whose labels broke in two (Show it, the karaoke Style, the staff's
+   Words / Voice / Note names, the Reading cycle, the handout's Font size: the row rule's flex:1 reaches a group's
+   own labels and splits it evenly, so the longer label wrapped inside a group that had room beside it):
+   a group that does not fit beside its label drops whole to the next line. A choice never breaks mid-label. The vowel list's four choices
    sit in a 2×2 block: in English they need about 321px, and a row that breaks leaves one choice
    alone on a second line. Measured in the tabbed drawer (no panel padding any more): the section
    row is 347px at the default 380px width and 287px at the 320px minimum, where the English
@@ -2828,9 +2831,9 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
           <label for="ttShowTranslit" data-i18n="torah.controls.translit_toggle">Show transliteration</label>
           <label class="toggle"><input type="checkbox" id="ttShowTranslit"><span class="slider"></span></label>
         </div>
-        <div class="form-row">
+        <div class="form-row tt-color-row" style="flex-wrap:wrap;">
           <label id="lblTranslitPlace" data-i18n="torah.trans.place_label">Show it</label>
-          <span class="radio-group" role="group" aria-labelledby="lblTranslitPlace">
+          <span class="radio-group tt-color-list" role="group" aria-labelledby="lblTranslitPlace" style="margin-inline-start:auto;">
             <input type="radio" name="optTranslitPlace" id="tpRow"  value="row"><label for="tpRow" data-i18n="torah.trans.place_row">Own line</label>
             <input type="radio" name="optTranslitPlace" id="tpWord" value="word"><label for="tpWord" data-i18n="torah.trans.place_word">Under each word</label>
           </span>
@@ -2973,9 +2976,9 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
         <h3 class="tt-set-title" tabindex="-1" id="lblKaraokeHdr" data-i18n="torah.settings.panel_karaoke">Karaoke highlighting</h3>
         <!-- The two karaoke groups take this heading into their names: a bare "Style" with its Highlight
              choice would sound like the vowel and trope color lists to a screen reader. -->
-        <div class="form-row">
+        <div class="form-row tt-color-row" style="flex-wrap:wrap;">
           <label id="lblKarStyle" data-i18n="torah.display.style_label">Style</label>
-          <span class="radio-group" role="group" aria-labelledby="lblKaraokeHdr lblKarStyle">
+          <span class="radio-group tt-color-list" role="group" aria-labelledby="lblKaraokeHdr lblKarStyle" style="margin-inline-start:auto;">
             <input type="radio" name="optKarStyle" id="ksHighlight" value="highlight"><label for="ksHighlight" data-i18n="torah.display.style_highlight">Highlight</label>
             <input type="radio" name="optKarStyle" id="ksOutline"   value="outline"><label for="ksOutline" data-i18n="torah.display.style_outline">Outline</label>
             <input type="radio" name="optKarStyle" id="ksUnderline" value="underline"><label for="ksUnderline" data-i18n="torah.display.style_under">Under</label>
@@ -3028,9 +3031,9 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
           <summary data-i18n="torah.staff.sources_title">Sources of the staff traditions</summary>
           <ul id="staffTradSourcesList"></ul>
         </details>
-        <div class="form-row">
+        <div class="form-row tt-color-row" style="flex-wrap:wrap;">
           <label id="lblStaffWords" data-i18n="torah.staff.words_label">Words</label>
-          <span class="radio-group" role="group" aria-labelledby="lblStaffWords" aria-describedby="staffWordsNote" style="margin-inline-start:auto;">
+          <span class="radio-group tt-color-list" role="group" aria-labelledby="lblStaffWords" aria-describedby="staffWordsNote" style="margin-inline-start:auto;">
             <input type="radio" name="optStaffWords" id="swBoth" value="both"><label for="swBoth" data-i18n="torah.staff.words_both">Hebrew + transliteration</label>
             <input type="radio" name="optStaffWords" id="swTranslit" value="translit"><label for="swTranslit" data-i18n="torah.staff.words_translit">Transliteration only</label>
           </span>
@@ -3052,16 +3055,16 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
           <button class="sreset" onclick="resetStaffShift()" type="button" title="Restore default" aria-label="Restore default" data-i18n-aria-label="torah.display.restore_default" data-i18n-title="torah.display.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
         </div>
         <div id="optStaffShiftNote" style="font-size:0.72rem;color:var(--muted);margin-top:-4px;margin-bottom:10px;line-height:1.4;"></div>
-        <div class="form-row">
+        <div class="form-row tt-color-row" style="flex-wrap:wrap;">
           <label id="lblStaffVoice" data-i18n="torah.staff.voice_label">Voice</label>
-          <span class="radio-group" role="group" aria-labelledby="lblStaffVoice" style="margin-inline-start:auto;">
+          <span class="radio-group tt-color-list" role="group" aria-labelledby="lblStaffVoice" style="margin-inline-start:auto;">
             <input type="radio" name="optStaffVoice" id="svHigh" value="high"><label for="svHigh" data-i18n="torah.staff.voice_high">High voices</label>
             <input type="radio" name="optStaffVoice" id="svLow" value="low"><label for="svLow" data-i18n="torah.staff.voice_low">Low voices</label>
           </span>
         </div>
-        <div class="form-row">
+        <div class="form-row tt-color-row" style="flex-wrap:wrap;">
           <label id="lblStaffNames" data-i18n="torah.staff.names_label">Note names</label>
-          <span class="radio-group" role="group" aria-labelledby="lblStaffNames" style="margin-inline-start:auto;">
+          <span class="radio-group tt-color-list" role="group" aria-labelledby="lblStaffNames" style="margin-inline-start:auto;">
             <input type="radio" name="optStaffNames" id="snOff" value="off"><label for="snOff" data-i18n="torah.staff.names_off">Off</label>
             <input type="radio" name="optStaffNames" id="snLetters" value="letters"><label for="snLetters" data-i18n="torah.staff.names_letters">A B C</label>
             <input type="radio" name="optStaffNames" id="snSolfa" value="solfa"><label for="snSolfa" data-i18n="torah.staff.names_solfa">Do re mi</label>
@@ -3092,9 +3095,9 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
              the year from the calendar unless chosen below); Weekday the Monday/Thursday reading (the coming
              parasha's first aliyah in three, data/leyning/weekday.json). Neither choice travels in a practice
              link — the schedule never does — and both ride the settings blob like the calendar. -->
-        <div class="form-row">
+        <div class="form-row tt-color-row" style="flex-wrap:wrap;">
           <label><span id="lblCycle" data-i18n="torah.schedule.cycle_label">Reading cycle</span> <span class="tip-wrap" data-i18n-tip="torah.schedule.cycle_tip" data-tip="Full: the whole parasha in its seven aliyot, as read on Shabbat morning. Triennial: the three-year division used in many Conservative congregations (a third of the parasha each year, in seven aliyot). Weekday: the Monday, Thursday and Shabbat-afternoon reading — the coming parasha's first aliyah, in three."><i class="tip-icon">?</i></span></label>
-          <span class="radio-group" role="group" aria-labelledby="lblCycle">
+          <span class="radio-group tt-color-list" role="group" aria-labelledby="lblCycle" style="margin-inline-start:auto;">
             <input type="radio" name="optCycle" id="cycFull" value="full"><label for="cycFull" data-i18n="torah.schedule.cycle_full">Full (annual)</label>
             <input type="radio" name="optCycle" id="cycTriennial" value="triennial"><label for="cycTriennial" data-i18n="torah.schedule.cycle_triennial">Triennial</label>
             <input type="radio" name="optCycle" id="cycWeekday" value="weekday"><label for="cycWeekday" data-i18n="torah.schedule.cycle_weekday">Weekday (Mon/Thu)</label>
@@ -3248,9 +3251,9 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
           <label for="ttHandoutHideNums" data-i18n="torah.handout.hide_nums">Hide verse numbers</label>
           <label class="toggle"><input type="checkbox" id="ttHandoutHideNums"><span class="slider"></span></label>
         </div>
-        <div class="form-row">
+        <div class="form-row tt-color-row" style="flex-wrap:wrap;">
           <label id="lblHandoutSize" data-i18n="torah.handout.font_size">Font size</label>
-          <span class="radio-group" role="group" aria-labelledby="lblHandoutSize">
+          <span class="radio-group tt-color-list" role="group" aria-labelledby="lblHandoutSize" style="margin-inline-start:auto;">
             <input type="radio" name="ttHandoutSize" id="hsNormal" value="normal"><label for="hsNormal" data-i18n="torah.handout.size_normal">Normal</label>
             <input type="radio" name="ttHandoutSize" id="hsLarge" value="large"><label for="hsLarge" data-i18n="torah.handout.size_large">Large</label>
             <input type="radio" name="ttHandoutSize" id="hsXL" value="xl"><label for="hsXL" data-i18n="torah.handout.size_xl">Extra large</label>
