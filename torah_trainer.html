@@ -619,7 +619,9 @@ body.dark .tt-ref-hdr .tt-chantall:hover { background:var(--navy); }   /* one st
 .tt-chant:hover:not(:disabled) { border-color:var(--gold); color:var(--gold-text); }
 .tt-chant:disabled { opacity:0.45; cursor:not-allowed; }
 .tt-loop:hover:not(:disabled) { border-color:var(--gold); color:var(--gold-text); }
-.tt-loop.active { background:var(--gold); border-color:var(--gold); color:var(--navy); }
+/* The hover twin: right after a press the pointer still rests on the chip, and the hover rule above is (0,3,0) —
+   it outranked the chosen one and wrote "Stop loop" in gold on its own gold fill (2.26:1 light, 1:1 dark). */
+.tt-loop.active, .tt-loop.active:hover:not(:disabled) { background:var(--gold); border-color:var(--gold); color:var(--navy); }
 .tt-tune:hover { border-color:var(--gold); color:var(--gold-text); }
 .tt-tune.active { background:var(--gold); border-color:var(--gold); color:var(--navy); }
 .tt-copy:hover { border-color:var(--gold); color:var(--gold-text); }
@@ -669,6 +671,11 @@ body.dark .tt-bulk-selected .tt-rowlabel { color:#adb6c9; }
 /* The verse's Read / Chant / Tune / Loop / Copy chips are --muted on the same plate: 4.15:1. :where() keeps this at
    (0,1,0), so the chips' gold hover text and an active chip's navy on gold still win. */
 :where(body.dark .tt-bulk-selected) :is(.tt-speak, .tt-chant, .tt-loop, .tt-copy, .tt-tune) { color:#adb6c9; }
+/* The looping verse's plate (rgb(50,48,43)) does the same to every --muted run in its row — the number, the row
+   labels, the chips, the transliteration: 4.33:1 — and the selected plate above to the runs those two rules do not
+   name (the transliteration, Side by side's number, the staff's Latin: 4.15:1). Both plates lift the token for their
+   own subtree, so whatever is drawn in --muted there reads at the same lighter grey. */
+body.dark .tt-looping, body.dark .tt-bulk-selected { --muted:#adb6c9; }
 body.tt-bulk-mode #ttReading [data-vk] { cursor:pointer; }
 /* Per-verse bulk-select checkbox — hidden until "Select verses" mode is on
    (mirrors the dictionary's .wc-bulk-cb). Placement per layout: absolute
