@@ -98142,3 +98142,63 @@ _(prior)_ **Next session (S651):** **Branch `claude/lucid-brahmagupta-t4hdnh` (S
 - P accounts & cloud (one surface): 2026-11-13 (**S652 — 25th P, `classroom_dashboard.html` (its 3rd alone: S421 → S567 → S652; 37 commits to the page since): all seven smokes with `--sdk` 758 / 758 before and after the fixes; arms 3–7 static 13 / 13 behind 13 plants; arm 8 live read-only as at S646. FOUND 3, FIXED 1 (two schedule confirms that removed synced classes without the signed-in sentence: the pattern) + 1 gate 2 deferred unattended (the empty starter class on a new signed-in device). P-next: flash (S573), then atlas (S578).**)
 
 _(prior)_ **Next session (S652):** **Branch `claude/lucid-brahmagupta-t4hdnh` (S638–S651, draft PR Hbleiberg/Hebrew_Blender#399): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1386**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=ad39f20 sw=v1386 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: P dashboard (S567), M torah (S568), G flash (S569), D torah (S570), C dictionary (S571), N generator (S572), A (S581), H atlas (S583). ⚑ Queue, small: flash's S651 P3 and P4 (cap 2), the dashboard's double holiday request. ⚑ Flash links: `?s=`, or `#s=` past 8,000 characters; a listening tile waits for its speaker (findings S651). ⚑ Next E: other pages' links vs the host's 8,190 bytes. ⚑ Next F/A: Hebrew-only wrappers on typed text (S649). ⚑ G: `leak.mjs`, 6 pages. ⚑ 47 seeds.
+
+
+<!-- archived by compact-ledger at the S654 boundary, 2026-11-13 -->
+## Compaction (S654, 2026-11-13) — moved verbatim from the live ledger
+
+### from Candidates — aged P4 (found more than 90 sessions before S654)
+
+- [ ] P4 (**NEW S563 G**) | hebrew_blend_generator.html | **"N pages to print" under-counts a Real Words sheet that runs on**: Identify (60) prints 4 pages under "2 pages to print" (8/8 cells), and the reading, ID Parts of Speech, Gematria, Fill Vowels and Reverse keys print 3 under "2" in some cells; `generator.md` names only the caller sheet as a known gap. | found S563
+
+- [ ] P4 (**NEW S563 G**) | hebrew_blend_generator.html | **A long Real Words answer key can print its footer alone on a page** (Letter: reading EN/HE, ID Parts of Speech EN, Reverse HE; A4: reading + QR EN, Gematria EN — 6 of 48 cells, the definitions' lengths decide; S648: the Reverse student sheet too, EN Letter): `break-before: avoid` on the key's footer, or fit the key. | found S563
+
+- [ ] P4 (**NEW S563 G**) | hebrew_blend_generator.html | **Blend Bingo hides Page Size (and Header Labels, Landscape) where Real Words Bingo shows them**: on A4 paper a teacher sets the size only from another mode first (the pill's value still applies). | found S563
+
+### from Awaiting the maintainer (an action or an answer only the maintainer can give; a session that resolves one moves it to Done)
+
+- [ ] P3 (**NEW S653 M — GATE 2 asked, unanswered; deferred**) | torah_trainer.html | **With Chanting set to Total Torah, the audio bar's own ▶ plays PocketTorah's Reform recording of the aliyah** (the bar is pre-loaded with it; Chant all and the verse chips play Cantor Brown; the credit line is accurate). Proposed: the bar's ▶ starts the Total Torah chant; or the bar stays closed until something is chanted. Not small (the karaoke loader). | found S653
+
+### from Done
+
+- [x] 2026-11-13 | (S653 close-out) | branch/deploy note | **S653 = M on `torah_trainer.html` (its 3rd: S422 → S568 → S653; 38 commits to the page since: reading assignments and the Teacher tab, per-mark trope colours, the Total Torah picker): 44 views × 8 cells by real clicks on the real texts (352 loads, 227,906 text nodes, plant 352/352, 0 page errors), a mid-label arm over 160 drawer groups, a ring-against-ink arm, 938 hovers + 425 presses read under the pointer. FOUND 8: 3 FIXED in two commits, 3 P4, 2 gates deferred (asked, unanswered). + 2 from the queue (generator). Decisions deferred to maintainer: the Total Torah bar's ▶ (gate 2), the drawer's tab labels (gate 3). Branch `claude/lucid-brahmagupta-t4hdnh`, draft PR Hbleiberg/Hebrew_Blender#399; `sw.js` v1394; deploy = after the merge.**
+
+- [x] 2026-11-13 | `d03afc0b` | hebrew_blend_generator.html, sw.js | (S653, the S648 P4) **A printed blend Self-Check sheet no longer says "Tap each card to reveal the pronunciation."** (the stand-in subtitle carries `.sc-tap-sub`, dropped by the print block and the capture; a typed subtitle prints) | `m653/fix4.mjs`, 3 sheet kinds × 4 cells from `page.pdf`: the tap line on paper 12/12 on HEAD, 0/12 now; the typed subtitle 12/12 on both
+
+- [x] 2026-11-13 | `d707bc8a` | hebrew_blend_generator.html, generator.md, sw.js | (S653, the S602 P3; pattern horizontal-overflow-at-narrow-widths) **With Landscape Print on, a blend sheet stays inside its sheet on screen and in the exported PDF** (on screen the row takes as many columns as fit, ten where there is room; paper keeps ten). Export PDF had cut every Inverse row's tenth cell off the page | `m653/genland.mjs`, 6 shapes × 5 cells, the capture read through `onclone`: past the edge 16 → 0 of 49
+
+- [x] 2026-11-13 | `478070e6` | torah_trainer.html, sw.js | (S653 M) **Seven Settings choice rows no longer break an option's label in two** ("High / voices", "Do re / mi", "Extra / large", "Full / (annual)"…: the row rule's flex:1 split each group evenly; the rows take the Layout row's two classes) | `m653/armA.mjs`, 160 drawer groups × EN/HE × 3 drawer widths + a phone: breaks in these rows 51 → 0
+
+- [x] 2026-11-13 | `d56d1f84` | torah_trainer.html, sw.js | (S653 M; patterns contrast-inverted-by-a-hover-or-active-state, contrast-below-AA-on-a-tinted-or-coloured-plate) **A looping verse's Stop chip and small text stay readable** (under the resting pointer the chip was gold on its own gold: 2.26:1 light, 1:1 dark; in dark the looping and selected rows' grey text 4.15–4.33:1) | `m653/fix1.mjs`, 8 cells × 3 layouts by real clicks: under AA 24/24 on HEAD, 0/24 now
+
+- [x] 2026-11-12 | (S648 close-out) | branch/deploy note | **S648 = G on `hebrew_blend_generator.html` (its 5th G: S137 → S265 → S392 → S563 → S648; 44 commits to the page since): 32 shapes × EN light 1280 / HE dark 800 printed on Letter and A4 (128 PDFs) + a print-media audit (plants 5/5), Export PDF 18 shapes × 2 cells, the `.ivrit` file and share link round trips (0 of 142 fields; a planted …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-12 | `7f36b38d` | flash_cards.html, sw.js | (S648, the S647 P4) **A tip open when the phone turns closes instead of staying off the screen** (a resize closes it, as a scroll does); the dictionary, its other carrier, measured clean (40/40 close) | `g648/tipturn.mjs`, 6 tips × both turns × 4 iPhone 13 cells by real taps: HEAD 18/48 outside with the icon in view → 0; desktop = HEAD …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-12 | `6a06d1fe` | hebrew_blend_generator.html, generator.md, sw.js | (S648 G, gate 3 answered) **In landscape a Real Words card grid takes two more columns, and the toggle re-lays the sheet** (`rwGridCols`, `rerenderCurrentSheet`; on Identify the toggle had replaced the sheet and key with a blend sheet) | `g648/fix2.mjs`, 6 drills × 2 cells vs HEAD: Reading / Parts of Speech 4 → 3 …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-12 | `ed1c4d5d` | hebrew_blend_generator.html, sw.js | (S648 G, gate 2 answered) **A Self-Check drill's bottom bar no longer offers Print and PDF** (it follows the sidebar: `no-output`) | `g648/fix1.mjs`, 8 cases × 4 cells (an iPhone 13 among them) at the top and scrolled: tree 32/32, HEAD 16/32; never an empty bar or two Generates; 0 page errors
+
+### from Per-session log (one line per session)
+
+- 2026-11-13 | **S653** | iters: 5 | tools: torah_trainer ×2, hebrew_blend_generator ×2, generator.md, sw ×4 | patterns fixed: contrast-inverted-by-a-hover-or-active-state ×1, contrast-below-AA-on-a-tinted-or-coloured-plate ×1, horizontal-overflow-at-narrow-widths ×1 | pass run: M (torah_trainer, first since S568; FOUND 8, FIXED 3 + 2 from the queue) | SW: v1390→v1394
+
+- 2026-11-09 | **S633** | iters: 5 | tools: parsha_emojis ×2 (+ micro), account, locales, sw | patterns fixed: button-focus-lost-to-its-own-rebuild ×1 | pass run: P (parsha_emojis, first since S546; FOUND 1, FIXED 1) + the S606 account P4 + micro-feature (gate 1: split-week line) | SW: v1320→v1323
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- M aesthetics & visual design (one surface): 2026-11-13 (**S653 — 44th M, `torah_trainer.html` (its 3rd: S422 → S568 → S653; 38 commits to the page since: reading assignments and the Teacher tab, per-mark trope colours, the Total Torah picker): 44 views × 8 cells by real clicks on the real texts (352 loads, plant 352/352), a mid-label arm over 160 drawer groups, a ring-against-ink arm, 938 hovers + 425 presses read under the pointer. FOUND 8, FIXED 3 + 3 P4 + 2 gates deferred. M-next: generator (S574), then atlas (S584).**)
+
+_(prior)_ **Next session (S653):** **Branch `claude/lucid-brahmagupta-t4hdnh` (S638–S652, draft PR Hbleiberg/Hebrew_Blender#399): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1390**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=ad39f20 sw=v1390 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: M torah (S568), G flash (S569), D torah (S570), C dictionary (S571), N generator (S572), P flash (S573), A (S581), H atlas (S583). ⚑ Queue: flash's S651 P4. ⚑ Awaiting (S652): the starter class. ⚑ E: other pages' links vs the host's 8,190 bytes (S651). ⚑ F/A: Hebrew-only wrappers on typed text (S649). ⚑ G: `leak.mjs`, 6 pages. ⚑ 47 seeds.
+
+
+<!-- archived by compact-ledger at the S654 boundary, 2026-11-13 -->
+## Compaction (S654, 2026-11-13) — moved verbatim from the live ledger
+
+### from Per-session log (one line per session)
+
+- 2026-11-13 | **S653** | iters: 5 | tools: torah_trainer ×2, hebrew_blend_generator ×2, generator.md, sw ×4 | patterns fixed: contrast-inverted-by-a-hover-or-active-state ×1, horizontal-overflow-at-narrow-widths ×1 | pass run: M (torah_trainer, first since S568; FOUND 8, FIXED 3 + 2 from the queue) | SW: v1390→v1394
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- M aesthetics & visual design (one surface): 2026-11-13 (**S653 — 44th M, `torah_trainer.html` (its 3rd: S422 → S568 → S653; 38 commits to the page since): 44 views × 8 cells by real clicks on the real texts (352 loads, plant 352/352), three arms (mid-label breaks, ring against ink, contrast under the pointer). FOUND 8, FIXED 3 + 3 P4 + 2 gates deferred. M-next: generator (S574), then atlas (S584).**)
