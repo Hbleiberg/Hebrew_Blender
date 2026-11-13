@@ -852,7 +852,13 @@ Writing a link **never navigates**; loading a link **never clobbers** the user's
   `hebrew_blend_generator.html` (`shareB64Encode`, auto-restores on load) both write `?s=` **and** mirror
   it into the address bar with `history.replaceState`. `flash_cards.html` ships **both** mechanisms — the
   paste-in teacher share code (`shareCodeEncode`/`shareCodeDecode`) **and** a `?s=` URL twin
-  (`copyShareLink`) read back at init; it is NOT paste-code-only. The same link is also offered on the
+  (`copyShareLink`) read back at init; it is NOT paste-code-only. **A code too long for the host rides
+  after `#s=`** (`_fcShareUrl`): the live host answers "URI Too Long" past 8,190 bytes of path + query, and a
+  My Word Lists deck carries its words in the code (about 40 fit), so past `FC_LINK_QUERY_MAX` the same code
+  goes in the fragment, which a browser never sends; `_fcLinkCode()` reads either form at init, and a
+  `hashchange` that brings a code that decodes reloads the page (a link that differs from the open tab only
+  in its fragment loads nothing by itself). A sign-in started on a `#s=` page returns to the setup, not the
+  drill: `redirectTarget()` drops the fragment. The same link is also offered on the
   results screen (`#shareDeckBtn`, `copyDeckShareLink`): settings, not the shuffled cards, so it opens a
   fresh drill on the same rules, and it hides under Save-as-Preset's rule (a ladder level, or a
   Mistakes / Weak-cards deck, which no setting describes). Both carry the whole
@@ -893,7 +899,8 @@ Writing a link **never navigates**; loading a link **never clobbers** the user's
   (Torah's receiving side drops its consumed `?s=` once the reader decides, the generator's
   `_stripShareParams` shape; the emitter still never touches the bar.)
 - **Rule:** any tool that gains shareable state uses `?s=` (a paste code may coexist where one already
-  does; readable params are acceptable where the link is meant to be human-legible, as torah's is).
+  does; readable params are acceptable where the link is meant to be human-legible, as torah's is; a code
+  that can outgrow the host's address limit moves to `#s=` past it, as flash cards' does).
 - **Button icon:** the affordance carries the shared `hi-link` glyph on all four carriers (in the markup,
   never a 🔗 in the label) — a link, not a clipboard or paperclip, which read as "copy text" and
   "attachment" rather than "link".

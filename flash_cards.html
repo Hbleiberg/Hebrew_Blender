@@ -5445,11 +5445,24 @@ function copyDeckShareLink() {
   _copyShareLinkFrom('shareDeckBtn', 'flashcards.results.share_link',
     capWarn => showAppToast(capWarn || I18n.t('flashcards.results.share_link_copied')));
 }
+// The live host refuses an address longer than 8,190 bytes of path + query ("URI Too Long"), and a My Word Lists deck
+// carries its words in the code (about 40 fit). A code too long for that rides after "#s=" instead: the part of an
+// address a browser keeps to itself, so the link opens at any size. Every other link keeps "?s=".
+const FC_LINK_QUERY_MAX = 8000;
+function _fcShareUrl(code) {
+  const tail = location.pathname + '?s=' + code;
+  return location.origin + (tail.length > FC_LINK_QUERY_MAX ? location.pathname + '#s=' + code : tail);
+}
+// The code a link brought: "?s=", or "#s=" for a long one.
+function _fcLinkCode() {
+  try { return new URLSearchParams(location.search).get('s') || new URLSearchParams(location.hash.replace(/^#/, '')).get('s') || ''; }
+  catch (e) { return ''; }
+}
 function _copyShareLinkFrom(btnId, labelKey, onCopied) {
   const capWarn = generateShareCode();   // fresh payload from current settings + the words-cap warning, same as Copy Code
   const out = document.getElementById('shareCodeOutput');
   if (!out || !out.value) return;
-  const url = location.origin + location.pathname + '?s=' + out.value.replace(/\+/g, '-').replace(/\//g, '_');
+  const url = _fcShareUrl(out.value.replace(/\+/g, '-').replace(/\//g, '_'));
   const done = () => {
     if (onCopied) onCopied(capWarn);   // its toast is a status region of its own
     else announce(I18n.t('flashcards.share.copied'));
@@ -9227,9 +9240,18 @@ document.addEventListener('DOMContentLoaded', () => {
   // on. I18n.ready-gated like ?path so the drill UI builds translated. The param is never
   // stripped — parents bookmark the link, and a refresh re-entering the drill is the point. The
   // link is a drill to run, not a change to the teacher's own settings: nothing is saved while it
-  // runs (_sharedDrill), and the setup screen brings the stored settings back.
+  // runs (_sharedDrill), and the setup screen brings the stored settings back. A long code arrives as
+  // #s=<code> (_fcShareUrl). Opened in a tab already on this page, such a link changes only the fragment,
+  // which loads nothing: the hashchange below reloads for a code that decodes, and stays silent on garbage.
   try {
-    const sParam = new URLSearchParams(location.search).get('s');
+    window.addEventListener('hashchange', () => {
+      try {
+        const code = new URLSearchParams(location.hash.replace(/^#/, '')).get('s');
+        const payload = code ? shareCodeDecode(code) : null;
+        if (payload && typeof payload === 'object') location.reload();
+      } catch (e) {}
+    });
+    const sParam = _fcLinkCode();
     if (sParam) {
       const enterSharedDrill = () => {
         try {
