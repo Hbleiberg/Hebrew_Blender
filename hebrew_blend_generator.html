@@ -7637,7 +7637,7 @@ function updateModeVisibility() {
     // Name the Letter sub-options (the toggle row itself is replaced by the
     // Worksheet Type button; the options panel still appears underneath).
     rowNameTheLetter:    false,
-    nameTheLetterOptions: isNtl && !testMode,
+    nameTheLetterOptions: isNtl && !gemSC && !stdSC,   // its own Self-Check switch lives here: hidden under ntlSC, it could not be turned off
 
     // Legacy slider rows — replaced by Worksheet Type buttons.
     rowInverse:        false,
@@ -8243,6 +8243,9 @@ function toggleNameTheLetterUI() {
 }
 
 function onNtlOptionChange() {
+  // Self-Check is a mode: Print / Export PDF (and the frozen footer's copies) follow it at once. Without this they kept
+  // the last mode's state: still offered after Self-Check went on, still hidden after it went off on a restored setup.
+  updateModeVisibility();
   if (document.getElementById('worksheet').querySelector('.blend-cell, .flip-card')) {
     renderWorksheet(false);
   }
