@@ -14,8 +14,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P2 (**S567 P; S573 P root-caused — a shared module, not small**) | js/ivrit-saves.js | **A page write made after a hydration planned its uploads, before it ends, is not sent, and the tab's next sync downloads the account's copy over it**: the hook is not armed yet, and step 4's `snapshotNames` takes the post-write hash as the tab's seen view, so `actionFor` reads it as another tab's write. …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] P3 (**NEW S651 H — small; flash was at the cap**) | flash_cards.html | **View Weaknesses opens on an empty Vowels tab while another tab holds the data** ("Not enough data yet" for a child who drilled letter names). | found S651
-
 - [ ] P3 (**NEW S644 H — not small**) | Hebrew_Font_Maker.html | **Below 1181px the fullscreen Draw canvas window (`100vh − 300px`) clips its drawing**: at 1024×768 the baseline sits 16px under its edge. | found S644
 
 - [ ] P3 (**NEW S602 — found verifying `3ab8b385`; its gate-4 answer covers it, measure Export PDF landscape first**) | hebrew_blend_generator.html | **With Landscape Print on, the on-screen blend sheet keeps ten columns where they do not fit**: Inverse 46–61px past the sheet at 1280/1600; on an iPhone 13 Reading 106–119px, Inverse 445px (paper unchanged). | found S602
@@ -64,9 +62,9 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
 
-- [ ] P4 (**NEW S651 — C's, verify first**) | flash_cards.html | **A click on empty page, then a key, rings the whole content column** (`main#mainContent` takes the focus). | found S651
+- [ ] P4 (**NEW S651 H — two small ones**) | flash_cards.html | **(1)** fullscreen 1024×768 with a timer: the ✓ / ✗ row ends 19px under the fold; **(2)** K's: the Hebrew profile list says "1 שמורים", and the active row offers *Set Active*. | found S651
 
-- [ ] P4 (**NEW S651**) | classroom_dashboard.html | **The holiday feed is requested twice at every load** (two `fetchHolidays()` callers run before the first answer is cached). | found S651
+- [ ] P4 (**NEW S651 — C's, verify first**) | flash_cards.html | **A click on empty page, then a key, rings the whole content column** (`main#mainContent` takes the focus). | found S651
 
 - [ ] P4 (**NEW S649 H — what `17657ca3` leaves**) | classroom_dashboard.html | **A Hebrew-first name with a Latin part still leads that part with its last mark** ("דָּוִד / David K." shows ".David K / דָּוִד"): the Latin run would need its own isolate. | found S649
 
@@ -147,8 +145,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S563 G**) | hebrew_blend_generator.html | **A long Real Words answer key can print its footer alone on a page** (Letter: reading EN/HE, ID Parts of Speech EN, Reverse HE; A4: reading + QR EN, Gematria EN — 6 of 48 cells, the definitions' lengths decide; S648: the Reverse student sheet too, EN Letter): `break-before: avoid` on the key's footer, or fit the key. | found S563
 
 - [ ] P4 (**NEW S563 G**) | hebrew_blend_generator.html | **Blend Bingo hides Page Size (and Header Labels, Landscape) where Real Words Bingo shows them**: on A4 paper a teacher sets the size only from another mode first (the pill's value still applies). | found S563
-
-- [ ] P4 (**NEW S562 N — touch parity**) | trope_tutor.html | **A Phrases chip lights its notes on the staff only by hover or focus**: a tap opens the mark's Learn card at once, so a touch user never sees which notes a chip names (`mouseenter` / `focus` → `.is-hl`; measured: the highlight flashes, then the tab changes). | found S562
 
 - [ ] P4 (**NEW S649 H — GATE 3: a default placement; `h649/out/st-en-light-1280-windowed-1366x768-01.png`**) | classroom_dashboard.html | **A Student Picker turned on lands under Weather and Timer in the end rail**: at 1366×768 its chips and both buttons are below the fold (814–944 of 768), at 1280×900 the buttons; Full Screen's strip has Pick, and the start rail has room under the days. | found …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -324,6 +320,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P1 (**NEW — the reading-assignments build's live actions; BACKEND BOUNDARY**) | workers/audio/ | **Backend live: 0008, both functions, the Worker on `recordings.ivritsuite.com` (secret, cron, lifecycle rules), the null-MX + SPF records. Left: the Supabase Auth password settings (dashboard), the merge, the iPad hand test (PWA mic, `audio/mp4`, WebM on Safari < 17.4).** | found this build
 
+- [ ] P4 (**NEW S652 P — GATE 2 asked, unanswered; deferred**) | classroom_dashboard.html | **On a new signed-in device the empty starter "My class (0)" stays listed beside the account's classes** (by rule; smoke-sync check 2). Proposal: drop it when they land. | found S652
+
 - [ ] P4 (**NEW S577 N — GATE 2: a phone's default layout; deferred unattended; `n577/sheets/atlas-phone-i13.png`**) | trope_atlas.html | **On a phone the melody table opens as the Grid, where a figure shows its clef only; Stacked shows whole figures**: open Stacked under 560px while no layout is stored? | found S577
 
 - [ ] P3 (**NEW — the maintainer's review, by design**) | trope_review.html, data/trope/trope_approvals.json | **All 20 trope traditions approved; 19 (2026-10-28, at the maintainer's request) without the row-by-row check against their scans.** Still worth checking on `trope_review.html`: the 14 printed 3s kept as written and the raised-fifth spellings of six JE columns; a corrected row hides its …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -382,6 +380,16 @@ _(none)_
 
 ## Done
 
+- [x] 2026-11-13 | (S652 close-out) | branch/deploy note | **S652 = P on `classroom_dashboard.html` (its 3rd alone: S421 → S567 → S652; 37 commits to the page since: the six resets' signed-in wording, Bulk preset edit's switches, Schedule Sync's edits reaching the board, the Name Tags class copy, the starter class's slot): all …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-13 | `3b9b592d` | flash_cards.html, ui-strings.csv, sw.js | (S652, the S651 P4) **The progress report names one date when a child's drills share a day** (the one-date wording is chosen by the two dates as printed, not by the drill count) | `h651/s652fix4.mjs`, three children by real drills with the clock moved …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-13 | `7cb3f3a6` | flash_cards.html, sw.js | (S652, the S651 P3) **View Weaknesses opens on the first tab that holds rows** | `h651/s652fix3.mjs`, four children by real drills × 4 cells: blends → Vowels 4 rows (both pages), letter names → Letters 5 rows, words → Other 1 row (the old page: Vowels, "Not enough data …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-13 | `69c7c509` | classroom_dashboard.html, dashboard.md, sw.js | (S652, the S651 P4) **The holiday calendar is asked once at a load, not twice** (`loadHolidayItems()` holds the request; callers in flight share `_holidayLoad`) | `h651/fix3.mjs` with the real 2026–2029 feeds, 12 dated cases × 4 cells: 48 lines and …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-13 | `b22ea1b8` | classroom_dashboard.html, ui-strings.csv + locales, accounts-and-cloud.md, loop-patterns.md, sw.js | (S652 P; pattern account-wide-delete-confirm-without-signed-in-wording) **Signed in, shrinking the schedule cycle and deleting the old daily rows say they reach every device** …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [x] 2026-11-13 | (S651 close-out) | branch/deploy note | **S651 = H on `flash_cards.html` (its 4th counted H: S264 → S412 → S566 → S651; 32 commits to the page since: the drill's Pause and voice speed, the listening marks, Space on a focused button, the compact results, the card sheet's one layout, the `?wl=` list from the account, a preset Load keeping the device's own switches): 3 lessons + …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-11-13 | `f49c6bbc` | Hebrew_Font_Maker.html, font-maker.md, sw.js | (S651, the S650 P4) **A reference font that arrives late is drawn when it lands** (`document.fonts`' `loadingdone` redraws the stage for a face of the reference family; any other family redraws nothing) | `d650/fix4late.mjs`, the real Continue path with Alef's stylesheet 4 s late × EN light 1280 / HE dark 800: the old …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -420,15 +428,11 @@ _(none)_
 
 - [x] 2026-11-12 | `ed1c4d5d` | hebrew_blend_generator.html, sw.js | (S648 G, gate 2 answered) **A Self-Check drill's bottom bar no longer offers Print and PDF** (it follows the sidebar: `no-output`) | `g648/fix1.mjs`, 8 cases × 4 cells (an iPhone 13 among them) at the top and scrolled: tree 32/32, HEAD 16/32; never an empty bar or two Generates; 0 page errors
 
-- [x] 2026-11-12 | (S647 close-out) | branch/deploy note | **S647 = N on `trope_tutor.html` (its 4th N: S248 → S389 → S562 → S647; 21 commits to the page and `js/trope-staff.js` since): 24 views × 16 phone cells by real taps (384 loads) + 40 with the iOS hint, 0 page errors, every arm clean but one — a tip open across a turn stayed beside or below the window (HE 4/24 on the page, 14/24 on the …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-12 | `75d8800e` | torah_trainer.html, sw.js | (S647, the N finding's twin) **A Settings tip open when the phone turns closes instead of staying off the screen** (a resize closes it, as a scroll does) | `n647/tipflip-tt.mjs`, 3 drawer tips × both turns × 4 cells: HEAD 14/24 outside → 0/24; `fix2-verify.mjs` 6 phone + 8 desktop cells identical to HEAD; 0 errors
-
-- [x] 2026-11-12 | `2daa39ca` | trope_tutor.html, sw.js | (S647 N) **A tip open when the phone turns closes instead of staying off the screen** (a resize closes it, as a scroll does) | `n647/tipflip.mjs`, 3 tips × both turns × 4 cells: HEAD 4/24 outside → 0/24; the tap contract × 6 phone cells and `fix1-desk.mjs` × 8 desktop cells identical to HEAD; one tap after the Tradition tip's turn: HEAD …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-11-13 | **S652** | iters: 5 | tools: classroom_dashboard ×2, flash_cards ×2, locales, sw ×4 | patterns fixed: account-wide-delete-confirm-without-signed-in-wording ×1 | pass run: P (classroom_dashboard, first since S567; FOUND 3, FIXED 1 + 3 from the queue) | SW: v1386→v1390
 
 - 2026-11-13 | **S651** | iters: 5 | tools: flash_cards ×2, classroom_dashboard, Hebrew_Font_Maker, shared-components.md, dashboard.md, font-maker.md, CLAUDE.md, sw ×4 | patterns fixed: — | pass run: H (flash_cards, first since S566; FOUND 7, FIXED 2 + 2 from the queue) | SW: v1382→v1386
 
@@ -468,11 +472,9 @@ _(none)_
 
 - 2026-11-09 | **S633** | iters: 5 | tools: parsha_emojis ×2 (+ micro), account, locales, sw | patterns fixed: button-focus-lost-to-its-own-rebuild ×1 | pass run: P (parsha_emojis, first since S546; FOUND 1, FIXED 1) + the S606 account P4 + micro-feature (gate 1: split-week line) | SW: v1320→v1323
 
-- 2026-11-09 | **S632** | iters: 4 | tools: trope_atlas, js/i18n.js (every page), fontmaker, sw | patterns fixed: decorative-glyph-carrier-exposed-to-assistive-tech ×2 | pass run: N (letter_learner, first since S545 + parsha_emojis, first since S547, with the `parsha/` pages' first) | SW: …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S651 (2026-11-13):** flash_cards ×2, classroom_dashboard, Hebrew_Font_Maker, shared-components.md, dashboard.md, font-maker.md, CLAUDE.md, sw.js ×4, loop docs S651 · Hebrew_Font_Maker ×2, classroom_dashboard ×2, font-maker.md ×2, dashboard.md ×2, sw.js ×4, loop docs S650 · classroom_dashboard ×2, hebrew_blend_generator ×2, dashboard.md ×2, sw.js ×4, loop docs S649 · hebrew_blend_generator ×2, flash_cards, generator.md, sw.js ×3, loop docs S648 · trope_tutor, torah_trainer, sw.js ×2, loop docs S647 · Hebrew_Font_Maker ×2, …[full text: IMPROVEMENT_ARCHIVE.md]
+- **Snapshot S652 (2026-11-13):** classroom_dashboard ×2, flash_cards ×2, locales, accounts-and-cloud.md, dashboard.md, sw.js ×4, loop docs S652 · flash_cards ×2, classroom_dashboard, Hebrew_Font_Maker, shared-components.md, dashboard.md, font-maker.md, CLAUDE.md, sw.js ×4, loop docs S651 · Hebrew_Font_Maker ×2, classroom_dashboard ×2, font-maker.md ×2, dashboard.md ×2, sw.js ×4, loop docs S650 · classroom_dashboard ×2, hebrew_blend_generator ×2, dashboard.md ×2, sw.js ×4, loop docs S649
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -592,7 +594,7 @@ _(none)_
 
 - `tip-escape-drops-focus` | ACTIVE | owner C | det: recipe | last S441 | streak 0
 
-- `account-wide-delete-confirm-without-signed-in-wording` | ACTIVE | owner P | det: recipe | last S596 | streak 1
+- `account-wide-delete-confirm-without-signed-in-wording` | ACTIVE | owner P | det: recipe | last S652 | streak 0
 
 - `logical-inset-mirrors-onto-pinned-content` | ACTIVE | owner H | det: recipe | last S440 | streak 0
 
@@ -828,7 +830,7 @@ _(none)_
 
 ### Discovery-pass rotation (run one per session, stalest first)
 
-- P accounts & cloud (one surface): 2026-11-12 (**S646 — 24th P, `Hebrew_Font_Maker.html` (its 2nd alone, S561 → S646; 31 commits — the autosave without its copy, the deleted-copy unlink, the slimmer drawn-letter file, the Continue prompt's Hebrew time) + `letter_learner.html` (its 2nd alone, S561 → S646; 14 commits — the open card in the address bar, Select all / Clear): all seven smokes with …[full text: IMPROVEMENT_ARCHIVE.md]
+- P accounts & cloud (one surface): 2026-11-13 (**S652 — 25th P, `classroom_dashboard.html` (its 3rd alone: S421 → S567 → S652; 37 commits since): seven smokes 758 / 758 twice; arms 3–7 static 13 / 13 behind 13 plants; arm 8 as at S646. FOUND 3, FIXED 1 (two schedule confirms: the pattern) + 1 gate 2 deferred. P-next: flash (S573), then atlas (S578).**)
 
 - O deslop — AI-design-tell sweep (one surface): SKIP since S403 — the sandbox refuses to execute the third-party detector ("Code from External"); runs again once the maintainer commits a `.claude/settings.json` permission rule for it (`docs/reference/deslop-detector.md`). Last run 2026-09-08 (S346, `flash_cards.html`, 6th O; the S399/S403 refusals are in the archive).
 
@@ -862,4 +864,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-11-08 (**S630 — 41st F, long-build progress (S542's F-next; the affordance's first F): 13 presses that build before they answer, by real clicks with an animation-frame recorder, real PDF libraries from a cache, a held CDN, double presses at raw points. FOUND 2, FIXED 2 (+1 P4). F-next: destructive-action confirms.**)
 
-**Next session (S652):** **Branch `claude/lucid-brahmagupta-t4hdnh` (S638–S651, draft PR Hbleiberg/Hebrew_Blender#399): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1386**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=ad39f20 sw=v1386 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: P dashboard (S567), M torah (S568), G flash (S569), D torah (S570), C dictionary (S571), N generator (S572), A (S581), H atlas (S583). ⚑ Queue, small: flash's S651 P3 and P4 (cap 2), the dashboard's double holiday request. ⚑ Flash links: `?s=`, or `#s=` past 8,000 characters; a listening tile waits for its speaker (findings S651). ⚑ Next E: other pages' links vs the host's 8,190 bytes. ⚑ Next F/A: Hebrew-only wrappers on typed text (S649). ⚑ G: `leak.mjs`, 6 pages. ⚑ 47 seeds.
+**Next session (S653):** **Branch `claude/lucid-brahmagupta-t4hdnh` (S638–S652, draft PR Hbleiberg/Hebrew_Blender#399): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1390**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=ad39f20 sw=v1390 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: M torah (S568), G flash (S569), D torah (S570), C dictionary (S571), N generator (S572), P flash (S573), A (S581), H atlas (S583). ⚑ Queue: flash's S651 P4. ⚑ Awaiting (S652): the starter class. ⚑ E: other pages' links vs the host's 8,190 bytes (S651). ⚑ F/A: Hebrew-only wrappers on typed text (S649). ⚑ G: `leak.mjs`, 6 pages. ⚑ 47 seeds.

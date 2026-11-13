@@ -98096,3 +98096,49 @@ _(prior)_ **Next session (S651):** **Branch `claude/lucid-brahmagupta-t4hdnh` (S
 ### from Candidates (prioritized, top = next)
 
 - [ ] P4 (**NEW S651 H — three small ones; receipts in findings S651**) | flash_cards.html | **(1)** the progress report reads "Covering Nov 13, 2026 – Nov 13, 2026" when the drills share a day; **(2)** in fullscreen at 1024×768 with a timer the ✓ / ✗ row ends 19px under the fold; **(3)** K's: the Hebrew profile list says "1 שמורים", and the active profile still offers *Set Active*. | found S651
+
+
+<!-- archived by compact-ledger at the S653 boundary, 2026-11-13 -->
+## Compaction (S653, 2026-11-13) — moved verbatim from the live ledger
+
+### from Candidates — aged P4 (found more than 90 sessions before S653)
+
+- [ ] P4 (**NEW S562 N — touch parity**) | trope_tutor.html | **A Phrases chip lights its notes on the staff only by hover or focus**: a tap opens the mark's Learn card at once, so a touch user never sees which notes a chip names (`mouseenter` / `focus` → `.is-hl`; measured: the highlight flashes, then the tab changes). | found S562
+
+### from Awaiting the maintainer (an action or an answer only the maintainer can give; a session that resolves one moves it to Done)
+
+- [ ] P4 (**NEW S652 P — GATE 2 asked, unanswered; deferred unattended**) | classroom_dashboard.html | **On a new signed-in device the empty starter "My class (0)" stays in the three class menus beside the account's classes** (`adoptClassFromAccount()` keeps it by rule, and smoke-sync check 2 asserts it), where a class made on the device takes the starter's slot since S649. Proposal: drop the untouched starter when the account's classes land. | found S652
+
+### from Done
+
+- [x] 2026-11-13 | (S652 close-out) | branch/deploy note | **S652 = P on `classroom_dashboard.html` (its 3rd alone: S421 → S567 → S652; 37 commits to the page since: the six resets' signed-in wording, Bulk preset edit's switches, Schedule Sync's edits reaching the board, the Name Tags class copy, the starter class's slot): all seven smokes with the pinned SDK, 758 / 758 before the fixes and again after; arms 3–7 static, 13 checks behind 13 plants that fired; arm 8 live and read-only (12 migrations = the README's, the advisors as at S646, both functions v9 with their JWT check on, the repo's delete-account source byte-equal to the copy compared at S646, the keep-alive's last three runs green). FOUND 3: FIXED 1 (two schedule confirms, the pattern), 1 gate-2 question deferred unattended (the empty starter class on a new signed-in device); + 3 from the queue (the dashboard's double holiday request, flash's View Weaknesses tab and report period). Gate 1 not asked. `regress.mjs` still does not exist. Branch `claude/lucid-brahmagupta-t4hdnh`, draft PR Hbleiberg/Hebrew_Blender#399; `sw.js` v1386 → v1390. After the merge: confirm the Pages run; no backend, migration or function change.** | `closeout.mjs` clean
+
+- [x] 2026-11-13 | `3b9b592d` | flash_cards.html, ui-strings.csv, sw.js | (S652, the S651 P4) **The progress report names one date when a child's drills share a day** (the one-date wording is chosen by the two dates as printed, not by the drill count) | `h651/s652fix4.mjs`, three children by real drills with the clock moved between saves × 4 cells: two drills in one sitting "Covering Nov 10, 2026" (the old page "Nov 10, 2026 – Nov 10, 2026"), one drill and a three-day range as before; 0 errors
+
+- [x] 2026-11-13 | `7cb3f3a6` | flash_cards.html, sw.js | (S652, the S651 P3) **View Weaknesses opens on the first tab that holds rows** | `h651/s652fix3.mjs`, four children by real drills × 4 cells: blends → Vowels 4 rows (both pages), letter names → Letters 5 rows, words → Other 1 row (the old page: Vowels, "Not enough data yet" for both), nothing saved → the button off; the selected tab is the one tab stop, End and Escape as before; 0 errors
+
+- [x] 2026-11-13 | `69c7c509` | classroom_dashboard.html, dashboard.md, sw.js | (S652, the S651 P4) **The holiday calendar is asked once at a load, not twice** (`loadHolidayItems()` holds the request; callers in flight share `_holidayLoad`) | `h651/fix3.mjs` with the real 2026–2029 feeds, 12 dated cases × 4 cells: 48 lines and cached lists equal to the old page's, requests "now, now" → "now" (20), four → two in the gap (24), none on a fresh cache (4); `fix2c.mjs`: a language switch re-renders with no request, a refused next-year request is asked again at the next fetch; 0 errors
+
+- [x] 2026-11-13 | `b22ea1b8` | classroom_dashboard.html, ui-strings.csv + locales, accounts-and-cloud.md, loop-patterns.md, sw.js | (S652 P; pattern account-wide-delete-confirm-without-signed-in-wording) **Signed in, shrinking the schedule cycle and deleting the old daily rows say they reach every device** (`cycle_shrink_confirm_cloud`, `purge_confirm_cloud`: the plain text + the ratified sentence, on `hasStoredSession()`) | `p652/fix1.mjs`, real presses in the week editor × signed out / a stored session × 4 cells: 16 / 16 name the account-wide effect exactly when a session is stored, the old page fails the 8 signed in; `p652/static.mjs` 13 / 13 with 13 plants fired; 0 errors
+
+- [x] 2026-11-12 | (S647 close-out) | branch/deploy note | **S647 = N on `trope_tutor.html` (its 4th N: S248 → S389 → S562 → S647; 21 commits to the page and `js/trope-staff.js` since): 24 views × 16 phone cells by real taps (384 loads) + 40 with the iOS hint, 0 page errors, every arm clean but one — a tip open across a turn stayed beside or below the window (HE 4/24 on the page, 14/24 on the …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-12 | `75d8800e` | torah_trainer.html, sw.js | (S647, the N finding's twin) **A Settings tip open when the phone turns closes instead of staying off the screen** (a resize closes it, as a scroll does) | `n647/tipflip-tt.mjs`, 3 drawer tips × both turns × 4 cells: HEAD 14/24 outside → 0/24; `fix2-verify.mjs` 6 phone + 8 desktop cells identical to HEAD; 0 errors
+
+- [x] 2026-11-12 | `2daa39ca` | trope_tutor.html, sw.js | (S647 N) **A tip open when the phone turns closes instead of staying off the screen** (a resize closes it, as a scroll does) | `n647/tipflip.mjs`, 3 tips × both turns × 4 cells: HEAD 4/24 outside → 0/24; the tap contract × 6 phone cells and `fix1-desk.mjs` × 8 desktop cells identical to HEAD; one tap after the Tradition tip's turn: HEAD …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Per-session log (one line per session)
+
+- 2026-11-13 | **S652** | iters: 5 | tools: classroom_dashboard ×2, flash_cards ×2, locales, accounts-and-cloud.md, dashboard.md, loop-patterns.md, sw ×4 | patterns fixed: account-wide-delete-confirm-without-signed-in-wording ×1 | pass run: P (classroom_dashboard, first since S567; FOUND 3, FIXED 1 + 3 from the queue, 1 gate deferred) | SW: v1386→v1390
+
+- 2026-11-09 | **S632** | iters: 4 | tools: trope_atlas, js/i18n.js (every page), fontmaker, sw | patterns fixed: decorative-glyph-carrier-exposed-to-assistive-tech ×2 | pass run: N (letter_learner, first since S545 + parsha_emojis, first since S547, with the `parsha/` pages' first) | SW: …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Tool coverage (last-touched date per tool)
+
+- **Snapshot S652 (2026-11-13):** classroom_dashboard ×2, flash_cards ×2, locales, accounts-and-cloud.md, dashboard.md, sw.js ×4, loop docs S652 · flash_cards ×2, classroom_dashboard, Hebrew_Font_Maker, shared-components.md, dashboard.md, font-maker.md, CLAUDE.md, sw.js ×4, loop docs S651 · Hebrew_Font_Maker ×2, classroom_dashboard ×2, font-maker.md ×2, dashboard.md ×2, sw.js ×4, loop docs S650 · classroom_dashboard ×2, hebrew_blend_generator ×2, dashboard.md ×2, sw.js ×4, loop docs S649 · hebrew_blend_generator ×2, flash_cards, generator.md, sw.js ×3, loop docs S648 · trope_tutor, torah_trainer, sw.js ×2, loop docs S647
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- P accounts & cloud (one surface): 2026-11-13 (**S652 — 25th P, `classroom_dashboard.html` (its 3rd alone: S421 → S567 → S652; 37 commits to the page since): all seven smokes with `--sdk` 758 / 758 before and after the fixes; arms 3–7 static 13 / 13 behind 13 plants; arm 8 live read-only as at S646. FOUND 3, FIXED 1 (two schedule confirms that removed synced classes without the signed-in sentence: the pattern) + 1 gate 2 deferred unattended (the empty starter class on a new signed-in device). P-next: flash (S573), then atlas (S578).**)
+
+_(prior)_ **Next session (S652):** **Branch `claude/lucid-brahmagupta-t4hdnh` (S638–S651, draft PR Hbleiberg/Hebrew_Blender#399): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1386**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=ad39f20 sw=v1386 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: P dashboard (S567), M torah (S568), G flash (S569), D torah (S570), C dictionary (S571), N generator (S572), A (S581), H atlas (S583). ⚑ Queue, small: flash's S651 P3 and P4 (cap 2), the dashboard's double holiday request. ⚑ Flash links: `?s=`, or `#s=` past 8,000 characters; a listening tile waits for its speaker (findings S651). ⚑ Next E: other pages' links vs the host's 8,190 bytes. ⚑ Next F/A: Hebrew-only wrappers on typed text (S649). ⚑ G: `leak.mjs`, 6 pages. ⚑ 47 seeds.
