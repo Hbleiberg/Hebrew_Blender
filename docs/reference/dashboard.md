@@ -828,6 +828,13 @@ an empty cup in every other branch (`Chanukah: 8th Day` shows all eight); every 
 `holidayIconFor()`. `.hol-ico` is sized in em, so the `--holiday-size` slider and the fullscreen scale rule
 size it with the text, and the dark block of the CSS swaps its palette without a re-render.
 
+**Before the day the line names the holiday, not the feed's name for its first day.** While the next item is
+still ahead (`days > 0`), `renderHolidayCountdown()` reads `Chanukah: 1 Candle` as `Chanukah` and a first day
+numbered `… I` as the bare name, the Hebrew likewise (`חנוכה: א׳ נר` → `חנוכה`), and the icon follows that
+name — so the count to Chanukah shows the family's full chanukiah, and the night's own candles appear on the
+night. The day itself keeps the feed's title ("Today is Chanukah: 3 Candles!"), and so does every other title:
+Erev days, `Rosh Hashana 5787`, a `… II`.
+
 ## The teacher's own event countdown (`classroom_dashboard.html`)
 
 A second `heb-holiday-line` under the holiday countdown, `#eventCountdown`, counts down to a day the teacher

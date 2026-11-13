@@ -5181,9 +5181,15 @@ function holidayIconFor(title) {
     }
     if (!next) { el.style.display = 'none'; return; }
     const days = Math.round((nextDate - today) / 86400000);
-    const heb = next.hebrew ? ` <span class="heb-name">(${hebDisplay(next.hebrew)})</span>` : '';
-    const title = escapeHtmlDash(next.title);   // {title} stays as-is (mixed UI+content); framing follows the UI language
-    const ico = dashHolidayIcon(next.title);   // one icon per holiday family (Chanukah: that night's candles); replaces the 🎉 / 🕯️ the strings once carried
+    // Before the day the line names the holiday, not the feed's name for its first day: "Chanukah: 1 Candle" counts down
+    // to "Chanukah", a first day numbered "… I" to the bare name, the Hebrew likewise (and the icon is the family's).
+    // The day itself keeps the feed's title ("Today is Chanukah: 3 Candles!"); so does every other title (Erev days,
+    // "Rosh Hashana 5787", a "… II").
+    const nTitle = days > 0 ? String(next.title || '').replace(/:\s*1 Candle$/i, '').replace(/\s+I$/, '') : next.title;
+    const nHebrew = days > 0 ? String(next.hebrew || '').replace(/:\s*א[׳'] נר$/, '').replace(/\s+א[׳']$/, '') : next.hebrew;
+    const heb = nHebrew ? ` <span class="heb-name">(${hebDisplay(nHebrew)})</span>` : '';
+    const title = escapeHtmlDash(nTitle);   // {title} stays as-is (mixed UI+content); framing follows the UI language
+    const ico = dashHolidayIcon(nTitle);   // one icon per holiday family (Chanukah: that night's candles); replaces the 🎉 / 🕯️ the strings once carried
     if (days === 0) {
       el.innerHTML = ico + (isSolemnHoliday(next)
         ? I18n.t('dashboard.days.holiday_today_solemn', { title })
