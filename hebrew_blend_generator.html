@@ -2390,6 +2390,9 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
     /* Self-Check's "tap to flip" / "tap to reveal" are instructions for the screen; on paper there is nothing to tap
        (exportPDF hides them too). */
     .rw-flip-hint, .flip-card-hint { display: none !important; }
+    /* …and the Self-Check sheet's own stand-in subtitle, "Tap each card to reveal…" (shown when the Subtitle box is
+       empty): the last tap instruction left on paper. A subtitle the teacher typed prints. */
+    .sc-tap-sub { display: none !important; }
     .app { display: block; min-height: unset; }
     .main { padding: 0; overflow: visible; }
     /* The on-screen layout pads .main-content by 28px on top — without
@@ -8043,7 +8046,7 @@ function renderNameTheLetter(ws) {
     scoreCorrect = 0; scoreIncorrect = 0; stopTimer();
     const scHeader = document.createElement('div');
     scHeader.className = 'ws-header';
-    scHeader.innerHTML = `<div><div class="ws-title">${title}</div><div class="ws-subtitle">${subtitle || esc(inverse ? I18n.t('worksheet.selfcheck.subtitle_ntl_inverse') : I18n.t('worksheet.selfcheck.subtitle_ntl'))}</div></div>`;
+    scHeader.innerHTML = `<div><div class="ws-title">${title}</div><div class="ws-subtitle${subtitle ? '' : ' sc-tap-sub'}">${subtitle || esc(inverse ? I18n.t('worksheet.selfcheck.subtitle_ntl_inverse') : I18n.t('worksheet.selfcheck.subtitle_ntl'))}</div></div>`;
     ws.appendChild(scHeader);
     const controls = document.createElement('div');
     controls.className = 'sc-controls';
@@ -8644,7 +8647,7 @@ function renderNumberPracticeSelfCheck(ws, items, title, subtitle, audioOn, show
   scHeader.innerHTML = `
     <div>
       <div class="ws-title">${title}</div>
-      <div class="ws-subtitle">${subtitle || esc(I18n.t('worksheet.selfcheck.subtitle_answer'))}</div>
+      <div class="ws-subtitle${subtitle ? '' : ' sc-tap-sub'}">${subtitle || esc(I18n.t('worksheet.selfcheck.subtitle_answer'))}</div>
     </div>`;
   ws.appendChild(scHeader);
 
@@ -9801,7 +9804,7 @@ async function exportPDF() {
           }
           // The QR's "too many items" notice is for the teacher on screen, not the student's copy, nor are Self-Check's
           // "tap to flip" / "tap to reveal" (the print block's twins)
-          el.querySelectorAll('.qr-ak-note, .rw-flip-hint, .flip-card-hint').forEach(n => { n.style.visibility = 'hidden'; });
+          el.querySelectorAll('.qr-ak-note, .rw-flip-hint, .flip-card-hint, .sc-tap-sub').forEach(n => { n.style.visibility = 'hidden'; });
           el.querySelectorAll(SC_SCREEN_ROWS).forEach(n => n.style.setProperty('display', 'none', 'important'));
           // html2canvas flattens the Self-Check flip as print does (both faces, the back mirrored on top): keep the face
           // the screen shows, unmirrored (the print block's twin)
@@ -11107,7 +11110,7 @@ function renderSelfCheck(ws, cols, title, subtitle) {
   scHeader.innerHTML = `
     <div>
       <div class="ws-title">${title}</div>
-      <div class="ws-subtitle">${subtitle || esc(I18n.t('worksheet.selfcheck.subtitle_pronunciation'))}</div>
+      <div class="ws-subtitle${subtitle ? '' : ' sc-tap-sub'}">${subtitle || esc(I18n.t('worksheet.selfcheck.subtitle_pronunciation'))}</div>
     </div>`;
   ws.appendChild(scHeader);
 
