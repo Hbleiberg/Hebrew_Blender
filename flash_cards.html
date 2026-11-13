@@ -6400,7 +6400,10 @@ function openWeaknessView(name) {
     tabs[next].focus();
     selectTab(tabs[next].dataset.tab);
   });
-  selectTab('vowels');
+  // Open on the first tab that holds rows. A child who has only drilled letter names, words, emoji, numbers or
+  // colours has nothing under Vowels, and "Not enough data yet" there, over a full tab beside it, read as no data
+  // at all. Vowels when no tab holds any.
+  selectTab(['vowels', 'letters', 'combos', 'other'].find(t => Object.keys(stats[t] || {}).length) || 'vowels');
   const close = () => { if (ov.parentNode) document.body.removeChild(ov); };
   box.querySelector('[data-act=close]').addEventListener('click', close);
   ov.addEventListener('click', e => { if (e.target === ov) close(); });
