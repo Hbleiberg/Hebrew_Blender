@@ -17595,6 +17595,8 @@ let pyodide = null, pyodideLoading = null;
 let _pyoPhase = 'idle';        // 'idle' | 'download' | 'install' | 'ready'
 let _exportPreparing = false;  // true while a click-to-export is waiting on the engine
 let _pyoPrefetched = false;
+let _pyoWarming = false;       // true while the background download of the engine's files runs
+const PYO_BASE = 'https://cdn.jsdelivr.net/pyodide/v0.26.2/full/';
 // Resolved at call time (not load time) so it tracks the live UI language.
 function _pyoPhaseLabel(phase) {
   if (phase === 'download') return '⬇ ' + I18n.t('fontmaker.status.pyo_downloading');
@@ -17611,7 +17613,7 @@ function _setPyoPhase(phase) {
     else btn.textContent = _pyoPhaseLabel(phase);
   }
   const badge = document.getElementById('engineBadge');
-  if (badge) badge.hidden = _exportPreparing || (phase !== 'download' && phase !== 'install');
+  if (badge) badge.hidden = _exportPreparing || (phase !== 'download' && phase !== 'install' && !_pyoWarming);
 }
 // A <script> load failure rejects with a bare Event, which every catch site that prints e.message
 // rendered as "[object Event]"; reject with a real Error carrying the localized engine message.
@@ -17624,8 +17626,8 @@ async function ensurePyodide(opts) {
     try {
       if (!background) status(I18n.t('fontmaker.status.loading_engine'), true);
       _setPyoPhase('download');
-      if (!window.loadPyodide) await loadScript('https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js');
-      pyodide = await loadPyodide({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.26.2/full/' });
+      if (!window.loadPyodide) await loadScript(PYO_BASE + 'pyodide.js');
+      pyodide = await loadPyodide({ indexURL: PYO_BASE });
       if (!background) status(I18n.t('fontmaker.status.installing_fonttools'), true);
       _setPyoPhase('install');
       await pyodide.loadPackage('fonttools');
@@ -17643,15 +17645,31 @@ async function ensurePyodide(opts) {
   })();
   return pyodideLoading;
 }
-// Once the user commits (first traced letter), warm the ~8 MB engine during idle time so the first
-// export is near-instant. Runs at most once; silent on failure; skipped for data-saver users.
+// Once the user commits (first traced letter), download the ~8 MB engine's files during idle time so
+// the first export does not wait on the network. Download only: starting the engine is seconds of
+// work on the page's own thread, and started here it froze the pen of whoever was drawing the second
+// letter — it starts when Export or an import asks (ensurePyodide), where the wait is expected and
+// the files now come from the browser's cache. Runs at most once; silent on failure; skipped for
+// data-saver users.
 function maybePrefetchEngine() {
   if (_pyoPrefetched || pyodide || pyodideLoading) return;
   try { if (navigator.connection && navigator.connection.saveData) return; } catch (e) {}
   _pyoPrefetched = true;
-  // Swallow the async rejection too — a failed prefetch must be completely silent (ensurePyodide
-  // resets its own state so a later explicit export still retries).
-  const run = () => { try { ensurePyodide({ background: true }).catch(() => {}); } catch (e) {} };
+  // each file is read to its end so the cache keeps all of it; nothing is held or run here
+  const drain = async r => { if (!r.ok || !r.body) return; const rd = r.body.getReader(); while (!(await rd.read()).done) {} };
+  const get = f => fetch(PYO_BASE + f).then(drain);
+  const run = async () => {
+    _pyoWarming = true; _setPyoPhase(_pyoPhase);
+    try {
+      // the fontTools wheel's file name comes from the lock file the engine itself reads
+      const wheel = fetch(PYO_BASE + 'pyodide-lock.json').then(r => r.ok ? r.json() : null).then(j => {
+        const f = j && j.packages && j.packages.fonttools && j.packages.fonttools.file_name;
+        return (typeof f === 'string' && /^[\w.+-]+\.whl$/.test(f)) ? get(f) : null;
+      });
+      await Promise.all(['pyodide.js', 'pyodide.asm.js', 'pyodide.asm.wasm', 'python_stdlib.zip'].map(get).concat(wheel));
+    } catch (e) {}   // a failed download must be completely silent: a later export loads the engine itself
+    _pyoWarming = false; _setPyoPhase(_pyoPhase);
+  };
   if (window.requestIdleCallback) requestIdleCallback(run, { timeout: 5000 });
   else setTimeout(run, 3000);
 }

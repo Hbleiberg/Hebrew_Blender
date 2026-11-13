@@ -722,8 +722,11 @@ as the head's FAQPage JSON-LD — restyle, don't re-column it.
   typing / modal open / tour active).
 - **Engine warm-up**: `ensurePyodide(opts)` — `opts.background: true` suppresses status toasts;
   phases via `_setPyoPhase` (`download`→`install`→`ready`, resets to `idle` on failure so retry
-  works); `maybePrefetchEngine()` prefetches once at idle after the first traced letter, skipped for
-  `navigator.connection.saveData`.
+  works); `maybePrefetchEngine()` runs once at idle after the first traced letter and only downloads
+  the engine's files into the browser's HTTP cache (each read to its end, the fontTools wheel named by
+  the lock file; skipped for `navigator.connection.saveData`) — it never starts the engine: that start
+  is seconds of main-thread work, so it happens only where `ensurePyodide()` is awaited (Export, an
+  import), never under a teacher who is drawing; `_pyoWarming` keeps the toolbar badge up meanwhile.
 - **Next-step hint**: `renderNextStepHint()` (called from `renderLetterGrid()`) — the "what's next?"
   line under the letter grid.
 
