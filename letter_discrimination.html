@@ -758,7 +758,6 @@ function ldRenderFonts() {
     cb.addEventListener('change', () => {
       if (cb.checked) { if (S.fonts.indexOf(f.name) < 0) S.fonts.push(f.name); }
       else S.fonts = S.fonts.filter(n => n !== f.name);
-      if (cb.checked) ldLoadHebFont(f);   // warm it, so its sample (and its round) is ready
       ldValidate();
     });
     const nm = el('span', '', f.name); nm.dir = 'auto';
@@ -766,7 +765,7 @@ function ldRenderFonts() {
     smp.lang = 'he'; smp.dir = 'rtl'; smp.style.fontFamily = ldTaamimStack(f.stack); smp.setAttribute('aria-hidden', 'true');
     lab.appendChild(cb); lab.appendChild(nm); lab.appendChild(smp);
     box.appendChild(lab);
-    if (cb.checked) ldLoadHebFont(f);
+    ldLoadHebFont(f);   // every face, ticked or not: the sample beside a name must be drawn in that font
   });
 }
 function ldSetupNote(msg, ok) { const n = $('ldSetupNote'); n.textContent = msg || ''; n.classList.toggle('ok', !!ok); }
