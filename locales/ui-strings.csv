@@ -7558,3 +7558,71 @@ assign.error.generic,Something went wrong. Try again in a moment.,משהו הש�
 account.student.head,A student account,חשבון תלמיד/ה,Account page: a student account signed in,
 account.student.body,"This account was made by your teacher for Torah Trainer reading assignments. It keeps no saved items here, and only your teacher can change its password or remove it. Your recordings and feedback are in the Torah Trainer.","החשבון הזה נוצר על ידי המורה שלכם למשימות הקריאה במאמן הקריאה בתורה. הוא לא שומר כאן פריטים, ורק המורה יכול/ה לשנות את הסיסמה או להסיר אותו. ההקלטות והמשוב שלכם נמצאים במאמן הקריאה בתורה.",Account page: a student account signed in,
 account.student.link,Go to the Torah Trainer,למאמן הקריאה בתורה,Account page: a student account signed in,
+letterdisc.a11y.skip_to_main,Skip to the activity,דילוג לפעילות,"Letter Discrimination (beta, unlisted): Skip-link (a11y)",aria/skip-link
+letterdisc.header.title,Letter Discrimination,הבחנה בין אותיות,"Letter Discrimination (beta, unlisted): Page header title",
+letterdisc.header.subtitle,"A research prototype — color look-alike Hebrew letters by the key, one font per round.","אב-טיפוס מחקרי — צובעים אותיות עבריות דומות לפי המקרא, גופן אחד בכל סבב.","Letter Discrimination (beta, unlisted): Page header subtitle",
+letterdisc.header.home,Home,דף הבית,"Letter Discrimination (beta, unlisted): Header Home link label",svg-icon-in-markup
+letterdisc.beta.badge,Beta,בטא,"Letter Discrimination (beta, unlisted): Badge above the setup",
+letterdisc.beta.note,A research prototype. Nothing is sent anywhere: results stay in this browser tab until you download them.,אב-טיפוס מחקרי. דבר אינו נשלח לשום מקום: התוצאות נשארות בלשונית הדפדפן הזו עד שתורידו אותן.,"Letter Discrimination (beta, unlisted): Note beside the Beta badge",
+letterdisc.setup.title,Set up the study,הגדרת המחקר,"Letter Discrimination (beta, unlisted): Setup heading",
+letterdisc.setup.intro,"Each round shows the same letters in a different font. The participant picks a color from the key, then taps every letter that matches it.",בכל סבב מוצגות אותן אותיות בגופן אחר. המשתתף/ת בוחר/ת צבע מהמקרא ואז מקיש/ה על כל אות שמתאימה לו.,"Letter Discrimination (beta, unlisted): Setup intro",
+letterdisc.setup.letters_legend,Letters,אותיות,"Letter Discrimination (beta, unlisted): Setup fieldset legend",
+letterdisc.setup.letters_hint,"Tap a look-alike group to add or remove it, or pick single letters below. Two to eight letters.","הקישו על קבוצת אותיות דומות כדי להוסיף או להסיר אותה, או בחרו אותיות בודדות למטה. שתיים עד שמונה אותיות.","Letter Discrimination (beta, unlisted): Setup hint",
+letterdisc.setup.colors_legend,Color for each letter,צבע לכל אות,"Letter Discrimination (beta, unlisted): Setup fieldset legend",
+letterdisc.setup.color_aria,Color for {letter},צבע עבור {letter},"Letter Discrimination (beta, unlisted): Color input aria-label",do not translate {…}
+letterdisc.setup.grid_legend,Grid size,גודל הטבלה,"Letter Discrimination (beta, unlisted): Setup fieldset legend",
+letterdisc.setup.rows,Rows,שורות,"Letter Discrimination (beta, unlisted): Number input label",
+letterdisc.setup.cols,Columns,עמודות,"Letter Discrimination (beta, unlisted): Number input label",
+letterdisc.setup.fonts_legend,Fonts in the study,הגופנים במחקר,"Letter Discrimination (beta, unlisted): Setup fieldset legend",
+letterdisc.setup.fonts_hint,"One round per font, in a new shuffled order for every participant. The font's name is hidden during the round.","סבב אחד לכל גופן, בסדר אקראי חדש לכל משתתף/ת. שם הגופן מוסתר במהלך הסבב.","Letter Discrimination (beta, unlisted): Setup hint",
+letterdisc.setup.participant_legend,Participant,משתתף/ת,"Letter Discrimination (beta, unlisted): Setup fieldset legend",
+letterdisc.setup.participant_hint,"Optional. Use a code, not a name — it is written into the CSV.",לא חובה. השתמשו בקוד ולא בשם — הוא נכתב בקובץ ה-CSV.,"Letter Discrimination (beta, unlisted): Setup hint",
+letterdisc.setup.participant_label,Participant code,קוד משתתף/ת,"Letter Discrimination (beta, unlisted): Text input label (visually hidden)",
+letterdisc.setup.participant_placeholder,P-01,P-01,"Letter Discrimination (beta, unlisted): Text input placeholder",do-not-translate
+letterdisc.setup.start,Start,התחלה,"Letter Discrimination (beta, unlisted): Primary button",
+letterdisc.setup.link,Copy study link,העתקת קישור למחקר,"Letter Discrimination (beta, unlisted): Button",svg-icon-in-markup
+letterdisc.setup.link_title,Copy a link that opens this exact setup on another device,העתקת קישור שפותח בדיוק את ההגדרות האלה במכשיר אחר,"Letter Discrimination (beta, unlisted): Button title",
+letterdisc.setup.link_copied,Link copied. It opens this exact setup on any device.,הקישור הועתק. הוא פותח בדיוק את ההגדרות האלה בכל מכשיר.,"Letter Discrimination (beta, unlisted): Inline status after copying",
+letterdisc.setup.link_copied_mine,"Link copied. Fonts from My Fonts are on this device only, so the link leaves them out.","הקישור הועתק. גופנים מ״הגופנים שלי״ נמצאים רק במכשיר הזה, ולכן הקישור אינו כולל אותם.","Letter Discrimination (beta, unlisted): Inline status after copying",
+letterdisc.setup.link_failed,Could not copy. The link is: {url},ההעתקה נכשלה. הקישור הוא: {url},"Letter Discrimination (beta, unlisted): Inline status when the clipboard is blocked",do not translate {…}
+letterdisc.setup.reset,Worksheet defaults,ברירות המחדל של דף העבודה,"Letter Discrimination (beta, unlisted): Button: back to the default letters, colors, grid and fonts",
+letterdisc.setup.err_letters,Choose at least two letters.,בחרו לפחות שתי אותיות.,"Letter Discrimination (beta, unlisted): Inline validation",
+letterdisc.setup.err_max_letters,Eight letters is the most a key can hold. Remove one first.,המקרא מכיל שמונה אותיות לכל היותר. הסירו אחת קודם.,"Letter Discrimination (beta, unlisted): Inline validation",
+letterdisc.setup.err_colors,Two letters share a color. Give each letter its own.,שתי אותיות חולקות אותו צבע. תנו לכל אות צבע משלה.,"Letter Discrimination (beta, unlisted): Inline validation",
+letterdisc.setup.err_grid,The grid is too small to hold every letter.,הטבלה קטנה מכדי להכיל את כל האותיות.,"Letter Discrimination (beta, unlisted): Inline validation",
+letterdisc.setup.err_fonts,Choose at least two fonts to compare.,בחרו לפחות שני גופנים להשוואה.,"Letter Discrimination (beta, unlisted): Inline validation",
+letterdisc.setup.summary.one,{count} round of {cells} squares.,סבב אחד של {cells} משבצות.,"Letter Discrimination (beta, unlisted): Setup summary line (plural)",do not translate {…}
+letterdisc.setup.summary.other,{count} rounds of {cells} squares each.,"{count} סבבים, {cells} משבצות בכל אחד.","Letter Discrimination (beta, unlisted): Setup summary line (plural)",do not translate {…}
+letterdisc.round.heading,Round {n} of {total},סבב {n} מתוך {total},"Letter Discrimination (beta, unlisted): Round heading",do not translate {…}
+letterdisc.round.quit,Stop session,עצירת המפגש,"Letter Discrimination (beta, unlisted): Button",
+letterdisc.round.quit_confirm,Stop this session? The round in progress is not saved; finished rounds are kept.,לעצור את המפגש? הסבב הנוכחי לא יישמר; סבבים שהסתיימו נשמרים.,"Letter Discrimination (beta, unlisted): confirm() before stopping",
+letterdisc.round.loading,Getting the next page ready…,מכינים את הדף הבא…,"Letter Discrimination (beta, unlisted): Shown while the round font loads",
+letterdisc.round.ready,"Pick a color, then tap every letter that matches it. Press Done when you finish.",בחרו צבע ואז הקישו על כל אות שמתאימה לו. בסיום לחצו על ״סיימתי״.,"Letter Discrimination (beta, unlisted): Instructions before a round",
+letterdisc.round.go,Start,התחלה,"Letter Discrimination (beta, unlisted): Button that reveals the grid and starts the clock",
+letterdisc.round.eraser,Eraser,מחק,"Letter Discrimination (beta, unlisted): Tool button",
+letterdisc.round.eraser_title,Eraser (0),מחק (0),"Letter Discrimination (beta, unlisted): Tool button title with its shortcut",
+letterdisc.round.done,Done,סיימתי,"Letter Discrimination (beta, unlisted): Button that ends the round",
+letterdisc.round.pick_first,Pick a color from the key first.,בחרו קודם צבע מהמקרא.,"Letter Discrimination (beta, unlisted): Inline note",
+letterdisc.round.blank_warn.one,{count} square is not colored yet. Press Done again to finish anyway.,משבצת אחת עדיין לא נצבעה. לחצו שוב על ״סיימתי״ כדי לסיים בכל זאת.,"Letter Discrimination (beta, unlisted): Inline warning (plural)",do not translate {…}
+letterdisc.round.blank_warn.other,{count} squares are not colored yet. Press Done again to finish anyway.,{count} משבצות עדיין לא נצבעו. לחצו שוב על ״סיימתי״ כדי לסיים בכל זאת.,"Letter Discrimination (beta, unlisted): Inline warning (plural)",do not translate {…}
+letterdisc.round.cell_aria_blank,"{letter}, row {row}, column {col}, not colored","{letter}, שורה {row}, עמודה {col}, לא צבועה","Letter Discrimination (beta, unlisted): Grid square aria-label",do not translate {…}
+letterdisc.round.cell_aria_painted,"{letter}, row {row}, column {col}, colored like {as}","{letter}, שורה {row}, עמודה {col}, צבועה כמו {as}","Letter Discrimination (beta, unlisted): Grid square aria-label",do not translate {…}
+letterdisc.round.swatch_title,Color for {letter} ({key}),הצבע של {letter} ({key}),"Letter Discrimination (beta, unlisted): Key swatch title/aria-label with its number shortcut",do not translate {…}
+letterdisc.results.title,Results,תוצאות,"Letter Discrimination (beta, unlisted): Results heading",
+letterdisc.results.sub,Session {id}{code} — {rounds} rounds finished.,מפגש {id}{code} — {rounds} סבבים הושלמו.,"Letter Discrimination (beta, unlisted): Results subtitle",do not translate {…}
+letterdisc.results.none,"No round was finished, so there is nothing to score.","לא הושלם אף סבב, ולכן אין מה לחשב.","Letter Discrimination (beta, unlisted): Results subtitle when empty",
+letterdisc.results.skipped,Skipped because the font did not load: {fonts},דולגו כי הגופן לא נטען: {fonts},"Letter Discrimination (beta, unlisted): Results warning",do not translate {…}
+letterdisc.results.by_font,By font,לפי גופן,"Letter Discrimination (beta, unlisted): Results section heading",
+letterdisc.results.col_round,Round,סבב,"Letter Discrimination (beta, unlisted): Table column",
+letterdisc.results.col_font,Font,גופן,"Letter Discrimination (beta, unlisted): Table column",
+letterdisc.results.col_accuracy,Accuracy,דיוק,"Letter Discrimination (beta, unlisted): Table column",
+letterdisc.results.col_correct,Correct,נכון,"Letter Discrimination (beta, unlisted): Table column",
+letterdisc.results.col_wrong,Wrong,שגוי,"Letter Discrimination (beta, unlisted): Table column",
+letterdisc.results.col_blank,Not colored,לא נצבע,"Letter Discrimination (beta, unlisted): Table column",
+letterdisc.results.col_time,Seconds,שניות,"Letter Discrimination (beta, unlisted): Table column",
+letterdisc.results.confusion,Which letters were mixed up,אילו אותיות התבלבלו,"Letter Discrimination (beta, unlisted): Results section heading",
+letterdisc.results.confusion_hint,Each row is the letter in the square; each column is the letter whose color it was given.,כל שורה היא האות שבמשבצת; כל עמודה היא האות שבצבעה נצבעה המשבצת.,"Letter Discrimination (beta, unlisted): Results hint",
+letterdisc.results.csv.one,Download CSV ({count} session),הורדת CSV (מפגש אחד),"Letter Discrimination (beta, unlisted): Button (plural)",do not translate {…}
+letterdisc.results.csv.other,Download CSV ({count} sessions),הורדת CSV ({count} מפגשים),"Letter Discrimination (beta, unlisted): Button (plural)",do not translate {…}
+letterdisc.results.csv_saved,Downloaded. The file holds every session since this page was opened.,הקובץ הורד. הוא כולל את כל המפגשים מאז שהדף נפתח.,"Letter Discrimination (beta, unlisted): Inline status after download",
+letterdisc.results.again,Next participant,המשתתף/ת הבא/ה,"Letter Discrimination (beta, unlisted): Button back to setup",

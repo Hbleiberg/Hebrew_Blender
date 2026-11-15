@@ -17,7 +17,7 @@ The store + helpers are delivered as one copy-identical block (like the `.ivrit`
   `saveUserFont(name, bytes, family)` (upsert; auto-prunes to the newest 10); `deleteUserFont(name)`;
   `loadUserFont(name)` → registers the stored bytes as a CSS-usable `FontFace` named exactly `name`.
 
-Present (verbatim — sha-verify when you touch it) in **11 files**: `index.html`, `Hebrew_Font_Maker.html`, the eight
+Present (verbatim — sha-verify when you touch it) in **12 files**: `letter_discrimination.html` (the unlisted research beta: a checklist of study fonts, not a picker grid), `index.html`, `Hebrew_Font_Maker.html`, the eight
 font-selector tools (generator, flash cards, dashboard, dictionary, torah trainer, trope tutor, letter learner, name tags), and
 `resources.html` (a store *consumer* — its font gallery reads `listUserFonts` but has no picker/uploader; its
 "Use in IvritSuite" writes through `saveUserFont`, and when that would evict, it first asks with the fonts it would
@@ -35,7 +35,7 @@ at init. (Use `family` or `stack` to match whatever property that tool's `setHeb
 ### "Upload your own font?" — byte-identical block + per-page pick handler
 A second shared block `/* ═══ My Fonts uploader (shared, identical across pages) ═══ */` defines
 `ivUploadFontFromFile(file)` (validates via `new FontFace(name, bytes).load()`, de-dupes the name,
-`saveUserFont`s it). The block contains ONLY that function (identical across all 9 carriers); the thin **pick handler lives BELOW the end marker and is per-page**: the six grid pickers
+`saveUserFont`s it). The block contains ONLY that function (identical across all 10 carriers); the thin **pick handler lives BELOW the end marker and is per-page**: the six grid pickers
 use `onUploadFontPick(input)` (`refreshMyFonts()` + `setHebFont(name)`), the Letter Learner's routes the new font into
 its Coloring sheet's word font (`llCsSet('colorFont', name)`), the Name Tags page's makes it the tags' Hebrew font, the dashboard and flash cards add an extra
 `onUploadEngFontPick` (routes to `setEngFont`), and `index.html`'s gear-modal manager uses
@@ -423,7 +423,7 @@ buttons was overlooked); its Holiday Torah Readings (calendar) and Share (link) 
 drawer, so the calendar glyph is the Calendar tab's and the link glyph the Share tab's (and its Copy link's).
 Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_dashboard`, `flash_cards`,
 `torah_trainer`, `trope_tutor`, `Hebrew_Font_Maker`, `resources`, `contact`, `privacy`, `terms`,
-`account`, `404`, `letter_learner`, `parsha_emojis`, `name_tags`, `trope_atlas`, `reading_assignments`, and the generated `parsha/` pages (their copy is taken
+`account`, `404`, `letter_learner`, `parsha_emojis`, `name_tags`, `trope_atlas`, `reading_assignments`, `letter_discrimination`, and the generated `parsha/` pages (their copy is taken
 from `parsha_emojis` by `scripts/build-parsha-pages.mjs`, so it cannot drift); the chip's glyph lives in `js/ivrit-account.js` (`ICON_USER`).
 
 ### The two byte-identical parts

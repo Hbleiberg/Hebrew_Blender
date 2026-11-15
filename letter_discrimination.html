@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!-- Content-Security-Policy (defense-in-depth). Placed right after <meta charset> so it applies before
+     any script/style loads. script-src keeps 'unsafe-inline' because all app JS is inline by design.
+     This is a research instrument: it carries NO analytics and no account layer, so there is no
+     googletagmanager, analytics or Supabase origin here, and connect-src is 'self' only (results never
+     leave the device). cdn.jsdelivr.net in font-src is the font list's self-hosted faces (Ezra SIL,
+     Shlomo, Dyslexia Hebrew, Shmulik CLM). Update this when adding any external script/font/fetch/iframe
+     (see CLAUDE.md). -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: blob:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=2">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=2">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=2">
+<link rel="manifest" href="manifest.webmanifest?v=3">
+<meta name="theme-color" content="#1a2744">
+<script src="/pwa.js" defer></script>
+<script src="/js/i18n.js" defer></script>
+<title>Hebrew Letter Discrimination (beta) — Font Research Tool | IvritSuite</title>
+<meta name="description" content="A research prototype: color a grid of look-alike Hebrew letters by a color key, one font per round, scored for accuracy and time, with the results downloadable as a CSV.">
+<link rel="canonical" href="https://ivritsuite.com/letter_discrimination.html">
+<!-- Unlisted beta: no link from the home page, not in sitemap.xml or llms.txt, and kept out of search. -->
+<meta name="robots" content="noindex, follow">
+<meta name="author" content="Harrison Bleiberg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" media="print" onload="this.media='all'" rel="stylesheet">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet"></noscript>
+<style>@font-face{font-family:'Frank Ruhl Libre';src:url('/fonts/FrankRuhlLibre-Regular.ttf') format('truetype');font-weight:400;font-display:swap;}@font-face{font-family:'IvritSuite Taamim';src:url('/fonts/NotoSerifHebrew-Taamim.ttf') format('truetype');font-weight:400;font-display:swap;}
+footer a { display: inline-block; padding-block: 5px; }
+/* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner, parsha_emojis, name_tags, trope_atlas, the generated parsha/ pages (copied from parsha_emojis by scripts/build-parsha-pages.mjs) (docs/reference/shared-components.md → Header icons).
+   The header controls and the in-page control buttons (play, pause, stop, reset, retry, loop, sound) carry inline
+   SVGs from one shared set (.hi-*); ink is currentColor, so each button's own colour applies. .hi-sm is the 13px
+   size the tiny settings buttons take, .hi-btn lines an icon up with its label inside a button.
+   The dark toggle holds both the moon and the sun and body.dark picks one; scripts change only the .hi-lbl text beside it. */
+.hi{width:16px;height:16px;flex-shrink:0;display:inline-block;vertical-align:-0.2em;}
+.hi-sm{width:13px;height:13px;}
+.hi-btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;}
+.hi-sun{display:none;}
+body.dark .hi-moon{display:none;}
+body.dark .hi-sun{display:inline-block;}
+[dir="rtl"] .hi-arrow{transform:scaleX(-1);}
+/* ═══ end header-icons CSS ═══ */
+</style>
+<!-- Early dark mode (avoid flash) -->
+<script>(function(){try{var s=localStorage.getItem('hebrewBlender_darkMode');if(s==='1'||(s===null&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark-early');}}catch(e){}})()</script>
+<!-- Early language/dir (avoid LTR->RTL flash); authoritative set later in /js/i18n.js -->
+<script>(function(){try{var p=new URLSearchParams(location.search).get('lang');var l=(p==='en'||p==='he')?p:(localStorage.getItem('hebrewBlender_lang')||'en');if(l!=='en'&&l!=='he')l='en';document.documentElement.lang=l;document.documentElement.dir=(l==='he'?'rtl':'ltr');}catch(e){}})()</script>
+<style>
+/* ───── Design tokens (the Name Tags page's) ───── */
+:root {
+  --navy:#1a2744; --navy-deep:#0d1220;
+  --gold:#c9922a; --focus-ring:#a0701c; --gold-light:#f0d080;
+  --gold-text:#7f5a13;
+  --cream:#fdf8ef; --warm-gray:#e8e0d0;
+  --text:#1a2744; --muted:#6b6050;
+  --border:#c8bfa8; --white:#ffffff;
+  --danger-text:#a93226;
+  --heb-font:'Frank Ruhl Libre', 'IvritSuite Taamim', serif;
+  --shadow-sm:0 2px 8px rgba(26,39,68,0.05);
+  --shadow-md:0 4px 16px rgba(26,39,68,0.08);
+}
+html.dark-early body, body.dark {
+  --navy:#1a2744; --gold:#e0a832; --focus-ring:var(--gold); --gold-light:#f5d97a;
+  --gold-text:var(--gold);
+  --cream:#161c2a; --warm-gray:#1e2535;
+  --text:#dde4f0; --muted:#8a94a8;
+  --border:#2a3349; --white:#1e2535;
+  --danger-text:#f08a7e;
+  --shadow-sm:0 2px 8px rgba(0,0,0,0.40);
+  --shadow-md:0 4px 16px rgba(0,0,0,0.45);
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+body {
+  font-family:'Source Sans 3', sans-serif;
+  background:var(--cream); color:var(--text);
+  min-height:100vh; display:flex; flex-direction:column;
+  line-height:1.4;
+}
+[hidden] { display:none !important; }
+
+/* ───── Header (house pattern) ───── */
+.skip-link {
+  position:absolute; inset-inline-start:8px; top:-48px; z-index:200;
+  background:var(--navy); color:#fff; padding:8px 14px;
+  border-radius:0 0 6px 6px; font-size:0.8rem; font-weight:600;
+  text-decoration:none;
+}
+.skip-link:focus { top:0; outline:2px solid var(--focus-ring); outline-offset:2px; }
+header {
+  background:var(--navy); color:#fff;
+  padding:14px 28px;
+  display:flex; align-items:center; gap:16px;
+  border-bottom:4px solid var(--gold); flex-shrink:0;
+}
+body.dark header { background:var(--navy-deep); }
+.star { font-size:28px; color:var(--gold); flex-shrink:0; }
+.htitle { flex:1; min-width:0; }
+header h1 { font-family:'Libre Baskerville',serif; font-size:1.35rem; color:#fff; line-height:1.2; }
+header p { font-size:0.78rem; color:var(--gold-light); margin-top:2px; }
+.hright { display:flex; gap:6px; align-items:center; flex-shrink:0; }
+.dir-arrow { display:inline-block; }
+[dir="rtl"] .dir-arrow { transform:scaleX(-1); }
+.hbtn {
+  background:rgba(255,255,255,0.08); color:#fff;
+  border:1px solid rgba(255,255,255,0.18);
+  padding:7px 12px; border-radius:6px;
+  min-height:35px;
+  font-family:inherit; font-size:0.82rem; font-weight:600;
+  cursor:pointer; text-decoration:none;
+  display:inline-flex; align-items:center; gap:6px;
+  transition:all 0.15s;
+}
+.hbtn:hover { background:rgba(255,255,255,0.18); border-color:rgba(255,255,255,0.3); }
+.hbtn.icon-btn { padding:7px 10px; font-size:1rem; }
+:focus-visible { outline:2px solid var(--focus-ring); outline-offset:2px; }
+.vh { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap; }
+.vh-file { position:absolute; width:1px; height:1px; opacity:0; overflow:hidden; clip-path:inset(50%); }
+label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline-offset:2px; }
+
+/* ───── Page ───── */
+.ld-main { flex:1; width:100%; max-width:1100px; margin-inline:auto; padding:20px 16px 32px; }
+.ld-card { background:var(--white); border:1px solid var(--border); border-radius:12px; box-shadow:var(--shadow-sm); padding:20px 22px; }
+.ld-card h2 { font-family:'Libre Baskerville',serif; font-size:1.2rem; margin-bottom:6px; }
+.ld-card h2:focus { outline:none; }
+.ld-beta { font-size:0.85rem; color:var(--muted); margin-bottom:14px; }
+.ld-beta strong { display:inline-block; background:var(--gold); color:#1a2744; border-radius:999px; padding:1px 10px; font-size:0.75rem; letter-spacing:0.04em; text-transform:uppercase; margin-inline-end:6px; }
+.ld-field { border:0; border-top:1px solid var(--border); padding-block:14px; min-width:0; }
+.ld-field legend { font-weight:700; font-size:0.95rem; padding-inline-end:10px; float:inline-start; width:100%; margin-bottom:6px; }
+.ld-field legend + * { clear:both; }
+.ld-hint { font-size:0.83rem; color:var(--muted); margin-bottom:8px; }
+.ld-chips { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; }
+.ld-chip {
+  font-family:inherit; font-size:0.9rem; font-weight:600; color:var(--text);
+  background:var(--cream); border:1px solid var(--border); border-radius:8px;
+  min-height:38px; min-width:38px; padding:4px 10px; cursor:pointer;
+}
+.ld-chip.he { font-family:var(--heb-font); font-size:1.35rem; line-height:1; padding:4px 8px; }
+.ld-chip[aria-pressed="true"] { background:var(--navy); color:#fff; border-color:var(--navy); }
+body.dark .ld-chip[aria-pressed="true"] { background:#2a4070; border-color:#4a6aaa; }
+.ld-chip:hover { border-color:var(--gold); }
+.ld-colors { display:flex; flex-wrap:wrap; gap:8px; }
+.ld-color { display:inline-flex; align-items:center; gap:6px; border:1px solid var(--border); border-radius:8px; padding:4px 8px; background:var(--cream); }
+.ld-color span { font-family:var(--heb-font); font-size:1.4rem; line-height:1; min-width:1.1em; text-align:center; }
+.ld-color input { inline-size:38px; block-size:30px; border:1px solid var(--border); border-radius:4px; background:none; padding:0; cursor:pointer; }
+.ld-row { display:flex; flex-wrap:wrap; gap:14px; align-items:center; }
+.ld-row label { font-size:0.9rem; display:inline-flex; align-items:center; gap:6px; }
+.ld-input {
+  font-family:inherit; font-size:0.95rem; color:var(--text); background:var(--cream);
+  border:1px solid var(--border); border-radius:6px; padding:6px 8px; min-height:36px;
+}
+input.ld-num { inline-size:70px; }
+.ld-fonts { display:grid; grid-template-columns:repeat(auto-fill, minmax(210px, 1fr)); gap:4px 14px; margin-bottom:8px; }
+.ld-fonts h3 { grid-column:1 / -1; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--muted); margin-top:6px; }
+.ld-font { display:flex; align-items:center; gap:8px; font-size:0.9rem; min-height:34px; cursor:pointer; }
+.ld-font input { inline-size:18px; block-size:18px; accent-color:var(--gold); flex-shrink:0; }
+.ld-font .smp { font-size:1.25rem; margin-inline-start:auto; color:var(--muted); }
+.ld-upload { display:inline-flex; align-items:center; gap:5px; font-size:0.83rem; color:var(--gold-text); cursor:pointer; text-decoration:underline; position:relative; }
+.ld-actions { display:flex; flex-wrap:wrap; gap:10px; align-items:center; border-top:1px solid var(--border); padding-top:16px; }
+.ld-btn {
+  font-family:inherit; font-size:0.95rem; font-weight:700; cursor:pointer;
+  border-radius:8px; padding:9px 18px; min-height:42px;
+  background:var(--navy); color:#fff; border:1px solid var(--navy);
+}
+body.dark .ld-btn { background:#2a4070; border-color:#4a6aaa; }
+.ld-btn:hover { background:var(--gold); border-color:var(--gold); color:#1a2744; }
+.ld-btn.ghost { background:transparent; color:var(--text); border-color:var(--border); }
+.ld-btn.ghost:hover { background:var(--cream); border-color:var(--gold); color:var(--text); }
+.ld-btn[aria-disabled="true"] { opacity:0.5; cursor:not-allowed; }
+.ld-btn.big { font-size:1.15rem; padding:14px 34px; }
+.ld-note { font-size:0.88rem; color:var(--danger-text); min-height:1.3em; flex-basis:100%; }
+.ld-note.ok { color:var(--muted); }
+
+/* ───── Round ─────
+   The paper is the stimulus: white with black ink in light AND dark mode, and its layout never mirrors with the
+   UI language (the grid on the left, the key on the right, as on the printed worksheet) — a participant in the
+   Hebrew UI must see exactly what one in the English UI sees. */
+.ld-roundbar { display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:12px; }
+.ld-roundbar h2 { font-family:'Libre Baskerville',serif; font-size:1.1rem; flex:1; }
+.ld-roundbar h2:focus { outline:none; }
+.ld-ready { text-align:center; padding:48px 16px; }
+.ld-ready p { font-size:1.05rem; margin-bottom:18px; }
+.ld-paper { background:#fff; color:#111; border:1px solid var(--border); border-radius:10px; padding:18px; box-shadow:var(--shadow-md); }
+.ld-stage { direction:ltr; display:flex; gap:26px; align-items:flex-start; justify-content:center; }
+.ld-gridwrap { flex:1 1 auto; min-width:0; max-width:calc((100vh - 250px) * var(--ld-cols, 9) / var(--ld-rows, 9)); container-type:inline-size; }
+.ld-grid {
+  display:grid; grid-template-columns:repeat(var(--ld-cols, 9), minmax(0, 1fr));
+  border-top:1.5px solid #111; border-inline-start:1.5px solid #111;
+  touch-action:none; user-select:none; -webkit-user-select:none;
+}
+.ld-cell {
+  aspect-ratio:1; border:0; border-bottom:1.5px solid #111; border-inline-end:1.5px solid #111;
+  background:#fff; color:#111; cursor:pointer; padding:0;
+  font-size:calc(100cqw / var(--ld-cols, 9) * 0.56); line-height:1;
+  display:flex; align-items:center; justify-content:center;
+  -webkit-tap-highlight-color:transparent;
+}
+.ld-cell.painted { box-shadow:inset 0 0 0 3px rgba(0,0,0,0.42); }
+.ld-cell:focus-visible { outline:3px solid #0b57d0; outline-offset:-3px; position:relative; z-index:1; }
+.ld-side { flex:0 0 clamp(150px, 22%, 230px); display:flex; flex-direction:column; gap:12px; direction:ltr; }
+.ld-key { display:grid; grid-template-columns:1fr 1fr; border:2px solid #111; }
+.ld-swatch {
+  position:relative; aspect-ratio:1 / 1.15; border:1px solid #111; cursor:pointer; padding:0;
+  font-size:clamp(2rem, 5.5vw, 3.4rem); line-height:1;
+  display:flex; align-items:center; justify-content:center;
+}
+.ld-swatch[aria-pressed="true"] { outline:5px solid #0b57d0; outline-offset:-5px; z-index:1; }
+.ld-swatch[aria-pressed="true"]::after {
+  content:''; position:absolute; inset-block-start:6px; inset-inline-start:6px; inline-size:14px; block-size:14px;
+  border-radius:50%; background:#0b57d0; border:2px solid #fff;
+}
+.ld-swatch kbd, .ld-tool kbd {
+  display:none; position:absolute; inset-block-end:3px; inset-inline-end:4px;
+  font-family:'Source Sans 3', sans-serif; font-size:0.68rem; font-weight:700; line-height:1;
+  background:rgba(255,255,255,0.88); color:#111; border:1px solid #777; border-radius:3px; padding:1px 4px;
+}
+.ld-tool kbd { position:static; margin-inline-start:6px; }
+@media (pointer:fine) { .ld-swatch kbd { display:block; } .ld-tool kbd { display:inline-block; } }
+.ld-tool {
+  font-family:'Source Sans 3', sans-serif; font-size:0.95rem; font-weight:700; cursor:pointer;
+  border:2px solid #111; border-radius:8px; background:#fff; color:#111; min-height:46px; padding:8px 10px;
+}
+.ld-tool[aria-pressed="true"] { outline:4px solid #0b57d0; outline-offset:1px; }
+.ld-tool.done { background:#1a2744; color:#fff; }
+.ld-roundnote { font-family:'Source Sans 3', sans-serif; font-size:0.9rem; color:#7a1f14; min-height:2.6em; }
+
+/* ───── Results ───── */
+.ld-tablewrap { overflow-x:auto; margin-block:10px 18px; }
+.ld-table { border-collapse:collapse; font-size:0.92rem; min-width:100%; }
+.ld-table th, .ld-table td { border:1px solid var(--border); padding:6px 10px; text-align:center; }
+.ld-table th { background:var(--cream); font-weight:700; }
+.ld-table th[scope="row"], .ld-table td.name { text-align:start; }
+.ld-table .he { font-family:var(--heb-font); font-size:1.25rem; }
+.ld-table td.diag { font-weight:700; background:rgba(87,187,108,0.22); }
+.ld-table td.err { background:rgba(217,54,74,0.16); }
+.ld-table td.zero { color:var(--muted); }
+.ld-card h3 { font-size:1rem; margin-top:8px; }
+.ld-skipped { font-size:0.88rem; color:var(--danger-text); margin-bottom:10px; }
+
+footer { border-top:1px solid var(--border); padding:16px 20px 22px; text-align:center; font-size:0.78rem; color:var(--muted); }
+footer a { color:var(--gold-text); }
+
+@media (max-width: 820px) {
+  header { padding:12px 14px; gap:10px; }
+  header p { display:none; }
+  .ld-paper { padding:10px; }
+  .ld-stage { gap:12px; }
+  .ld-side { flex-basis:118px; }
+}
+@media (max-width: 560px) {
+  header h1 { font-size:1rem; }
+  .star, header .hbtn[href="/"] .hi-lbl { display:none; }
+  .ld-stage { flex-direction:column; align-items:stretch; }
+  .ld-gridwrap { max-width:none; }
+  .ld-side { flex-basis:auto; }
+  .ld-key { grid-template-columns:repeat(4, 1fr); }
+  .ld-swatch { aspect-ratio:1; }
+}
+@media print { header, footer, .skip-link, .ld-actions, #a11yStatus { display:none !important; } }
+/* Reduced motion: the universal neutralizer (0.001ms rather than 0 so animationend still fires). */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#ldMain" data-i18n="letterdisc.a11y.skip_to_main">Skip to the activity</a>
+<header>
+  <div class="star" aria-hidden="true">✡︎</div>
+  <div class="htitle">
+    <h1 data-i18n="letterdisc.header.title">Letter Discrimination</h1>
+    <p data-i18n="letterdisc.header.subtitle">A research prototype — color look-alike Hebrew letters by the key, one font per round.</p>
+  </div>
+  <div class="hright">
+    <a class="hbtn" href="/" aria-label="Home" data-i18n-aria-label="letterdisc.header.home"><svg class="hi hi-arrow dir-arrow" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/></svg><span class="hi-lbl" data-i18n="letterdisc.header.home">Home</span></a>
+    <div data-i18n-switcher></div>
+    <button id="darkBtn" class="hbtn icon-btn" onclick="toggleDark()" title="Toggle dark mode" aria-label="Toggle dark mode" data-i18n-title="shared.darkmode.toggle_title" data-i18n-aria-label="shared.darkmode.toggle_title" aria-pressed="false"><svg class="hi hi-moon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15.5A7 7 0 0 1 8.5 6a7 7 0 1 0 9.5 9.5z"/><path d="M17.5 2.5l.9 2.4 2.4.9-2.4.9-.9 2.4-.9-2.4-2.4-.9 2.4-.9z" fill="currentColor" stroke="none"/></svg><svg class="hi hi-sun" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></svg></button>
+  </div>
+</header>
+
+<main id="ldMain" class="ld-main">
+
+  <!-- ══ 1. Setup (the researcher's screen) ══ -->
+  <section id="ldSetup" class="ld-card" aria-labelledby="ldSetupH">
+    <p class="ld-beta"><strong data-i18n="letterdisc.beta.badge">Beta</strong><span data-i18n="letterdisc.beta.note">A research prototype. Nothing is sent anywhere: results stay in this browser tab until you download them.</span></p>
+    <h2 id="ldSetupH" tabindex="-1" data-i18n="letterdisc.setup.title">Set up the study</h2>
+    <p class="ld-hint" data-i18n="letterdisc.setup.intro">Each round shows the same letters in a different font. The participant picks a color from the key, then taps every letter that matches it.</p>
+
+    <fieldset class="ld-field">
+      <legend data-i18n="letterdisc.setup.letters_legend">Letters</legend>
+      <p class="ld-hint" data-i18n="letterdisc.setup.letters_hint">Tap a look-alike group to add or remove it, or pick single letters below. Two to eight letters.</p>
+      <div class="ld-chips" id="ldGroups"></div>
+      <div class="ld-chips" id="ldAlefbet" dir="rtl" lang="he"></div>
+    </fieldset>
+
+    <fieldset class="ld-field">
+      <legend data-i18n="letterdisc.setup.colors_legend">Color for each letter</legend>
+      <div class="ld-colors" id="ldColors"></div>
+    </fieldset>
+
+    <fieldset class="ld-field">
+      <legend data-i18n="letterdisc.setup.grid_legend">Grid size</legend>
+      <div class="ld-row">
+        <label><span data-i18n="letterdisc.setup.rows">Rows</span> <input type="number" id="ldRows" class="ld-input ld-num" min="2" max="12" step="1" inputmode="numeric"></label>
+        <label><span data-i18n="letterdisc.setup.cols">Columns</span> <input type="number" id="ldCols" class="ld-input ld-num" min="2" max="12" step="1" inputmode="numeric"></label>
+      </div>
+    </fieldset>
+
+    <fieldset class="ld-field">
+      <legend data-i18n="letterdisc.setup.fonts_legend">Fonts in the study</legend>
+      <p class="ld-hint" data-i18n="letterdisc.setup.fonts_hint">One round per font, in a new shuffled order for every participant. The font's name is hidden during the round.</p>
+      <div class="ld-fonts" id="ldFonts"></div>
+      <label class="ld-upload" title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" data-i18n-title="shared.fonts.upload_title"><svg class="hi hi-sm hi-upload" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.2V4"/><path d="M7.6 8.4 12 4l4.4 4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="shared.fonts.upload_label">Upload your own font?</span><input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPick(this)"></label>
+    </fieldset>
+
+    <fieldset class="ld-field">
+      <legend data-i18n="letterdisc.setup.participant_legend">Participant</legend>
+      <p class="ld-hint" data-i18n="letterdisc.setup.participant_hint">Optional. Use a code, not a name — it is written into the CSV.</p>
+      <label><span class="vh" data-i18n="letterdisc.setup.participant_label">Participant code</span><input type="text" id="ldCode" class="ld-input" maxlength="40" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="P-01" data-i18n-placeholder="letterdisc.setup.participant_placeholder"></label>
+    </fieldset>
+
+    <div class="ld-actions">
+      <button type="button" id="ldStartBtn" class="ld-btn" data-i18n="letterdisc.setup.start">Start</button>
+      <button type="button" id="ldLinkBtn" class="ld-btn ghost hi-btn" title="Copy a link that opens this exact setup on another device" data-i18n-title="letterdisc.setup.link_title"><svg class="hi hi-sm hi-link" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 13.7a4 4 0 0 0 5.7 0l3-3a4 4 0 1 0-5.7-5.7l-1.7 1.7"/><path d="M13.7 10.3a4 4 0 0 0-5.7 0l-3 3a4 4 0 1 0 5.7 5.7l1.7-1.7"/></svg><span class="hi-lbl" data-i18n="letterdisc.setup.link">Copy study link</span></button>
+      <button type="button" id="ldResetBtn" class="ld-btn ghost" data-i18n="letterdisc.setup.reset">Worksheet defaults</button>
+      <button type="button" id="ldCsvBtnSetup" class="ld-btn ghost" hidden></button>
+      <p class="ld-note" id="ldSetupNote" role="status" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <!-- ══ 2. Round (the participant's screen) ══ -->
+  <section id="ldRound" hidden aria-labelledby="ldRoundH">
+    <div class="ld-roundbar">
+      <h2 id="ldRoundH" tabindex="-1"></h2>
+      <button type="button" id="ldQuitBtn" class="ld-btn ghost" data-i18n="letterdisc.round.quit">Stop session</button>
+    </div>
+    <div class="ld-card ld-ready" id="ldReady">
+      <p id="ldReadyMsg"></p>
+      <button type="button" id="ldGoBtn" class="ld-btn big" data-i18n="letterdisc.round.go">Start</button>
+    </div>
+    <div class="ld-paper" id="ldPaper" hidden>
+      <div class="ld-stage">
+        <div class="ld-gridwrap"><div class="ld-grid" id="ldGrid" dir="rtl" lang="he"></div></div>
+        <div class="ld-side">
+          <div class="ld-key" id="ldKey" dir="rtl" lang="he"></div>
+          <button type="button" id="ldEraser" class="ld-tool" aria-pressed="false" aria-keyshortcuts="0" title="Eraser (0)" data-i18n-title="letterdisc.round.eraser_title"><span data-i18n="letterdisc.round.eraser">Eraser</span><kbd aria-hidden="true">0</kbd></button>
+          <button type="button" id="ldDoneBtn" class="ld-tool done" data-i18n="letterdisc.round.done">Done</button>
+          <p class="ld-roundnote" id="ldRoundNote" role="status" aria-live="polite"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 3. Results ══ -->
+  <section id="ldResults" class="ld-card" hidden aria-labelledby="ldResultsH">
+    <h2 id="ldResultsH" tabindex="-1" data-i18n="letterdisc.results.title">Results</h2>
+    <p class="ld-hint" id="ldResultsSub"></p>
+    <p class="ld-skipped" id="ldSkipped" hidden></p>
+    <h3 data-i18n="letterdisc.results.by_font">By font</h3>
+    <div class="ld-tablewrap"><table class="ld-table" id="ldFontTable"></table></div>
+    <h3 data-i18n="letterdisc.results.confusion">Which letters were mixed up</h3>
+    <p class="ld-hint" data-i18n="letterdisc.results.confusion_hint">Each row is the letter in the square; each column is the letter whose color it was given.</p>
+    <div class="ld-tablewrap"><table class="ld-table" id="ldConfTable"></table></div>
+    <div class="ld-actions">
+      <button type="button" id="ldCsvBtn" class="ld-btn"></button>
+      <button type="button" id="ldAgainBtn" class="ld-btn ghost" data-i18n="letterdisc.results.again">Next participant</button>
+      <p class="ld-note ok" id="ldResultsNote" role="status" aria-live="polite"></p>
+    </div>
+  </section>
+</main>
+<span id="a11yStatus" role="status" aria-live="polite" class="vh"></span>
+
+<footer>
+  <!-- pinned-English credits (never translated): dir="ltr" keeps each phrase in English order in the RTL UI -->
+  <span dir="ltr" lang="en">Created by <a href="https://harrisonbleiberg.wpcomstaging.com/" target="_blank" rel="noopener" style="font-weight:600;">Harrison Bleiberg</a></span><br>
+  <a href="privacy.html" data-i18n="shared.footer.privacy_link">Privacy Policy</a> &nbsp;·&nbsp;
+  <a href="terms.html" data-i18n="shared.footer.terms_link">Terms of Use</a>
+</footer>
+
+<script>
+/* ══════════════════════════════════════════════════════
+   LETTER DISCRIMINATION (beta) — a research instrument (docs/reference/letter-discrimination.md).
+   A grid of look-alike Hebrew letters is colored by a key, one font per round, and scored for accuracy and time.
+   Nothing is stored: the setup lives in memory and travels in a study link (?s= / #s=), the results live in
+   memory until they are downloaded as a CSV. No localStorage key of its own, no account layer, no analytics.
+   ══════════════════════════════════════════════════════ */
+const DARK_KEY = 'hebrewBlender_darkMode';
+const LD_ALEFBET = Array.from('אבגדהוזחטיכךלמםנןסעפףצץקרשת'); // i18n-ignore (Hebrew instructional content)
+const LD_GROUPS = [['ד', 'ר'], ['ד', 'ר', 'ך'], ['ב', 'כ', 'פ'], ['ו', 'ז', 'ן'], ['ה', 'ח', 'ת'], ['ם', 'ס'], ['ע', 'צ'], ['ג', 'נ'], ['ט', 'מ']]; // i18n-ignore
+const LD_DEF_LETTERS = ['ד', 'ר', 'ב', 'כ', 'ז', 'ו', 'ע', 'צ']; // i18n-ignore — the paper worksheet's set
+const LD_PALETTE = ['#d9364a', '#e06b36', '#f9de6f', '#57bb6c', '#1f4aa8', '#bf73e0', '#a6a6a6', '#ffffff'];
+const LD_DEF_FONTS = ['Frank Ruhl Libre', 'Noto Sans Hebrew', 'Alef', 'Dyslexia Hebrew'];
+const LD_MAX_LETTERS = 8, LD_MIN_DIM = 2, LD_MAX_DIM = 12, LD_FONT_WAIT_MS = 7000;
+
+/* ── Small helpers ── */
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+function el(tag, cls, text) {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text != null) n.textContent = text;
+  return n;
+}
+// t() with its English value for the stretch before I18n.ready, when t() still returns the key (the flash cards' _fbT).
+function _fbT(k, en, p) {
+  let v = window.I18n ? I18n.t(k, p) : k;
+  if (v === k) { v = en; if (p) for (const x in p) v = v.split('{' + x + '}').join(String(p[x])); }
+  return v;
+}
+function _fbN(k, n, one, other, p) { return _fbT(k + (n === 1 ? '.one' : '.other'), n === 1 ? one : other, Object.assign({ count: n }, p || {})); }
+function announce(msg) { const s = document.getElementById('a11yStatus'); if (s) s.textContent = msg; }
+function $(id) { return document.getElementById(id); }
+// Parse JSON from untrusted input (a study link), dropping keys that could pollute Object.prototype (CLAUDE.md, Security 1).
+function ivritSafeParse(str) {
+  return JSON.parse(str, (k, v) =>
+    (k === '__proto__' || k === 'constructor' || k === 'prototype') ? undefined : v);
+}
+function ldClampInt(v, lo, hi, dflt) { v = Math.round(Number(v)); return Number.isFinite(v) ? Math.min(hi, Math.max(lo, v)) : dflt; }
+function ldHex(v, dflt) { return (typeof v === 'string' && /^#[0-9a-fA-F]{6}$/.test(v)) ? v.toLowerCase() : dflt; }
+// Black or white ink, whichever reads on that fill (WCAG relative luminance).
+function ldInk(hex) {
+  const c = [1, 3, 5].map(i => parseInt(hex.substr(i, 2), 16) / 255).map(u => u <= 0.03928 ? u / 12.92 : Math.pow((u + 0.055) / 1.055, 2.4));
+  return (0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]) > 0.32 ? '#111111' : '#ffffff';
+}
+// A small seeded generator, so a session's grids and font order can be rebuilt from the seed in its CSV.
+function ldRng(seed) {
+  let a = seed >>> 0;
+  return function () {
+    a = (a + 0x6D2B79F5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function ldShuffle(arr, rnd) {
+  for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); const x = arr[i]; arr[i] = arr[j]; arr[j] = x; }
+  return arr;
+}
+function ldRandomSeed() {
+  try { const u = new Uint32Array(1); crypto.getRandomValues(u); return u[0]; } catch (e) { return Math.floor(Math.random() * 4294967296); }
+}
+
+/* ══════════════════════════════════════════════════════
+   FONTS — the picker contract (docs/reference/shared-components.md): the shared store and uploader blocks below,
+   a "My Fonts" group from refreshMyFonts() at init, the "Upload your own font?" control under the list.
+   HEB_FONTS is the Dictionary's list.
+   ══════════════════════════════════════════════════════ */
+const HEB_FONTS = [
+  // ── Block Fonts ──────────────────────────────
+  {
+    section: 'Block',
+    name: 'Frank Ruhl Libre',
+    stack: "'Frank Ruhl Libre', serif",
+    attr: 'Yanek Iontef — OFL',
+    link: 'https://github.com/fontef/frankruhllibre',
+    load: null
+  },
+  {
+    section: 'Block',
+    name: 'Noto Serif Hebrew',
+    stack: "'Noto Serif Hebrew', serif",
+    attr: 'Google / Noto Team — OFL',
+    link: 'https://fonts.google.com/noto/specimen/Noto+Serif+Hebrew',
+    load: { type: 'gfonts', url: 'https://fonts.googleapis.com/css2?family=Noto+Serif+Hebrew:wght@400;700&display=swap' }
+  },
+  {
+    section: 'Block',
+    name: 'Noto Sans Hebrew',
+    stack: "'Noto Sans Hebrew', sans-serif",
+    attr: 'Google / Noto Team — OFL',
+    link: 'https://fonts.google.com/noto/specimen/Noto+Sans+Hebrew',
+    load: { type: 'gfonts', url: 'https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@400;700&display=swap' }
+  },
+  {
+    section: 'Block',
+    name: 'Alef',
+    stack: "'Alef', sans-serif",
+    attr: 'HaGilda & Mushon Zer-Aviv — OFL',
+    link: 'https://alef.hagilda.com/',
+    load: { type: 'gfonts', url: 'https://fonts.googleapis.com/css2?family=Alef:wght@400;700&display=swap' }
+  },
+  {
+    section: 'Block',
+    name: 'Ezra SIL',
+    stack: "'Ezra SIL', serif",
+    attr: 'SIL International — OFL',
+    link: 'https://software.sil.org/ezra/',
+    load: { type: 'face', css: "@font-face{font-family:'Ezra SIL';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/SIL%20(OFL)/Ezra%20SIL/SILEOT.ttf') format('truetype');font-weight:normal;font-style:normal;}" }
+  },
+  {
+    section: 'Block',
+    name: 'Shlomo',
+    stack: "'Shlomo', serif",
+    attr: 'Shlomo Orbach — OFL',
+    link: 'https://github.com/aharonium/fonts',
+    load: { type: 'face', css: "@font-face{font-family:'Shlomo';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/Shlomo%20Orbach%20(OFL)/Shlomo.ttf') format('truetype');font-weight:normal;font-style:normal;}" }
+  },
+  {
+    section: 'Block',
+    name: 'Dyslexia Hebrew',
+    stack: "'DyslexiaHebrew', sans-serif",
+    attr: 'Jake Shoag — OFL',
+    link: 'https://github.com/aharonium/fonts',
+    load: { type: 'face', css: "@font-face{font-family:'DyslexiaHebrew';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts@master/Fonts/Hebrew%20Letters%20with%20Vowels%20(no%20cantillation)/Shoag%2C%20Jake%20(OFL)/DyslexiaHebrew-Regular.otf') format('opentype');font-weight:normal;font-style:normal;}" }
+  },
+  // ── Cursive / Script Fonts ───────────────────
+  {
+    section: 'Cursive',
+    name: 'Solitreo',
+    stack: "'Solitreo', cursive",
+    attr: 'Nathan Gross & Bryan Kirschen — OFL',
+    link: 'https://fonts.google.com/specimen/Solitreo',
+    load: { type: 'gfonts', url: 'https://fonts.googleapis.com/css2?family=Solitreo&display=swap' }
+  },
+  {
+    section: 'Cursive',
+    name: 'Gveret Levin',
+    stack: "'Gveret Levin', cursive",
+    attr: 'Gili Levin / Google Fonts — OFL',
+    link: 'https://fonts.google.com/specimen/Gveret+Levin',
+    load: { type: 'gfonts', url: 'https://fonts.googleapis.com/css2?family=Gveret+Levin&display=swap' }
+  },
+  {
+    section: 'Cursive',
+    name: 'Noto Rashi Hebrew',
+    stack: "'Noto Rashi Hebrew', serif",
+    attr: 'Google / Noto Team — OFL',
+    link: 'https://fonts.google.com/noto/specimen/Noto+Rashi+Hebrew',
+    load: { type: 'gfonts', url: 'https://fonts.googleapis.com/css2?family=Noto+Rashi+Hebrew:wght@400;700&display=swap' }
+  },
+  {
+    section: 'Cursive',
+    name: 'Playpen Sans Hebrew',
+    stack: "'Playpen Sans Hebrew', cursive",
+    attr: 'TypeTogether — OFL',
+    link: 'https://fonts.google.com/specimen/Playpen+Sans+Hebrew',
+    load: { type: 'gfonts', url: 'https://fonts.googleapis.com/css2?family=Playpen+Sans+Hebrew&display=swap' }
+  },
+  {
+    section: 'Cursive',
+    name: 'Shmulik CLM',
+    stack: "'Shmulik CLM', cursive",
+    attr: 'Yoram Gnat / Culmus Project — GPL+FE',
+    link: 'https://culmus.sourceforge.io/',
+    load: { type: 'face', css: "@font-face{font-family:'Shmulik CLM';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts/Fonts/Hebrew%20Letters%20with%20Vowels%20(no%20cantillation)/Culmus%20Project%20(GPL%20and%20GPL%2BFE)/Yoram%20Gnat%20(GPL%2BFE)/Shmulik%20CLM/ShmulikCLM.ttf') format('truetype');font-weight:normal;font-style:normal;}" }
+  },
+];
+/* ═══ shared: ivritsuite-fonts ═══════════════════════════════════════════════
+   User-made fonts: saved here by Hebrew_Font_Maker, consumed by Torah Trainer
+   (and, later, other IvritSuite tools). TTFs are too big for localStorage, so
+   they live in IndexedDB. This works ACROSS tools because every IvritSuite page
+   is served from the same origin (ivritsuite.com) and IndexedDB is partitioned
+   per-origin — so one DB ("ivritsuite-fonts") is automatically shared by all of
+   them. Keep this block byte-identical in every consuming page. No library is
+   needed (indexedDB + FontFace are built in), so it loads nothing at page load. */
+const IV_FONTS_DB = 'ivritsuite-fonts', IV_FONTS_STORE = 'fonts', IV_FONTS_CAP = 10;
+function _ivOpenFontsDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(IV_FONTS_DB, 1);
+    req.onupgradeneeded = () => { const db = req.result;
+      if (!db.objectStoreNames.contains(IV_FONTS_STORE)) db.createObjectStore(IV_FONTS_STORE, { keyPath: 'name' }); };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+function _ivTx(mode, fn) {
+  return _ivOpenFontsDB().then(db => new Promise((resolve, reject) => {
+    const tx = db.transaction(IV_FONTS_STORE, mode), req = fn(tx.objectStore(IV_FONTS_STORE));
+    tx.oncomplete = () => resolve(req && req.result);
+    tx.onerror = () => reject(tx.error); tx.onabort = () => reject(tx.error);
+  }));
+}
+function listUserFonts() {   // → [{name, family, created, size}] newest-first; no bytes
+  return _ivTx('readonly', os => os.getAll()).then(rows => (rows || [])
+    .map(r => ({ name: r.name, family: r.family, created: r.created || 0, size: (r.bytes && r.bytes.byteLength) || 0 }))
+    .sort((a, b) => b.created - a.created));
+}
+function getUserFont(name) { return _ivTx('readonly', os => os.get(name)); }
+function deleteUserFont(name) { return _ivTx('readwrite', os => os.delete(name)); }
+function saveUserFont(name, bytes, family) {   // bytes: Uint8Array | ArrayBuffer
+  const buf = bytes.buffer ? bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) : bytes;
+  return listUserFonts().then(list => {
+    const stale = list.filter(f => f.name !== name).slice(IV_FONTS_CAP - 1);   // keep newest CAP-1 others + this one
+    return Promise.all(stale.map(f => deleteUserFont(f.name)))
+      .then(() => _ivTx('readwrite', os => os.put({ name: name, family: family || name, bytes: buf, created: Date.now() })));
+  });
+}
+function loadUserFont(name) {   // register the stored TTF as a CSS-usable FontFace named `name`
+  return getUserFont(name).then(rec => {
+    if (!rec) throw new Error('Font not found: ' + name);
+    return new FontFace(name, rec.bytes).load().then(f => { document.fonts.add(f); return f; });
+  });
+}
+/* ═══ end shared: ivritsuite-fonts ═══════════════════════════════════════════ */
+/* ═══ My Fonts uploader (shared, identical across pages) ═══ */
+async function ivUploadFontFromFile(file){
+  if (!file) return null;
+  if (!window.indexedDB || !window.FontFace){ alert(I18n.t('shared.fonts.err_no_store')); return null; }
+  let base = (file.name || 'My Font').replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').trim() || 'My Font';
+  try {
+    const buf = await file.arrayBuffer();
+    try { await new FontFace(base, buf).load(); }
+    catch (e) { alert(I18n.t('shared.fonts.err_bad_font')); return null; }
+    const existing = (await listUserFonts()).map(f => f.name);
+    let name = base, i = 2; while (existing.includes(name)) name = base + ' ' + (i++);
+    await saveUserFont(name, new Uint8Array(buf), name);
+    return name;
+  } catch (e) { console.error(e); alert(I18n.t('shared.fonts.err_unreadable')); return null; }
+}
+/* ═══ end My Fonts uploader ═══ */
+/* Per-page wiring below the shared blocks: the My Fonts consumer, the pick handler and the loader. */
+let MY_FONTS = []; const _loadedUserFonts = new Set();
+function allFonts() { return MY_FONTS.concat(HEB_FONTS); }
+async function refreshMyFonts() {
+  try {
+    MY_FONTS = (await listUserFonts()).map(f => ({
+      section: 'My Fonts', name: f.name,
+      stack: "'" + String(f.name).replace(/['"\\<>]/g, '') + "', serif",
+      attr: 'made with IvritSuite Font Maker', link: null, load: { type: 'userfont' } }));
+  } catch (e) { MY_FONTS = []; }
+  ldRenderFonts(); ldValidate();
+}
+async function onUploadFontPick(input) {
+  const name = await ivUploadFontFromFile(input.files && input.files[0]);
+  input.value = '';
+  if (name) { if (S.fonts.indexOf(name) < 0) S.fonts.push(name); await refreshMyFonts(); }
+}
+// Load a face (the Name Tags page's loader); resolves once the browser can draw it, or gives up quietly.
+function ldLoadHebFont(font) {
+  if (!font || !font.load) return Promise.resolve();
+  const id = 'font-' + font.name.replace(/\s+/g, '-');
+  if (font.load.type === 'userfont') {
+    if (_loadedUserFonts.has(font.name)) return Promise.resolve();
+    _loadedUserFonts.add(font.name);
+    return loadUserFont(font.name).catch(e => { _loadedUserFonts.delete(font.name); console.warn('user font load failed', font.name, e); });
+  }
+  if (document.getElementById(id)) return Promise.resolve();
+  if (font.load.type === 'gfonts') {
+    return new Promise(res => {
+      const link = document.createElement('link');
+      link.id = id; link.rel = 'stylesheet'; link.href = font.load.url;
+      link.onload = () => res(); link.onerror = () => { link.remove(); res(); };
+      document.head.appendChild(link);
+    });
+  }
+  if (font.load.type === 'face') {
+    const style = document.createElement('style');
+    style.id = id; style.textContent = font.load.css;
+    document.head.appendChild(style);
+  }
+  return Promise.resolve();
+}
+// Most faces carry no te'amim: the self-hosted fallback goes in BEFORE the generic family (CLAUDE.md, Hebrew fonts).
+function ldTaamimStack(stack) {
+  const m = /^(.*?),\s*(serif|sans-serif|cursive|fantasy|monospace|system-ui)\s*$/.exec(stack);
+  return m ? m[1] + ", 'IvritSuite Taamim', " + m[2] : stack + ", 'IvritSuite Taamim'";
+}
+function ldFontFamily(font) { const m = /^\s*'([^']+)'/.exec(font.stack); return m ? m[1] : font.name; }
+function ldWait(ms) { return new Promise(res => setTimeout(res, ms)); }
+// True only when the round's own face really loaded: a round drawn in a fallback face would be recorded under the
+// wrong font, which is worse for the data than a skipped round. document.fonts.check() cannot tell (it answers
+// true for a family nobody declared), so the FontFaceSet is read directly.
+async function ldFontUsable(font, sample) {
+  try {
+    await Promise.race([ldLoadHebFont(font), ldWait(LD_FONT_WAIT_MS)]);
+    await Promise.race([document.fonts.load('40px ' + font.stack, sample).catch(() => {}), ldWait(LD_FONT_WAIT_MS)]);
+  } catch (e) {}
+  const fam = ldFontFamily(font);
+  let ok = false;
+  document.fonts.forEach(ff => { if (String(ff.family).replace(/^["']|["']$/g, '') === fam && ff.status === 'loaded') ok = true; });
+  return ok;
+}
+function ldFontSectionLabel(sec) {
+  const KEYS = { 'My Fonts': ['shared.fonts.section_my_fonts', 'My Fonts'], 'Cursive': ['shared.fonts.section_cursive', 'Cursive / Script'],
+                 'Block': ['shared.fonts.section_block', 'Block Fonts'] };
+  return Object.prototype.hasOwnProperty.call(KEYS, sec) ? _fbT(KEYS[sec][0], KEYS[sec][1]) : _fbT('shared.fonts.section_generic', '{section} Fonts', { section: sec });
+}
+
+/* ══════════════════════════════════════════════════════
+   SETUP — S is the whole study: letters (their order is the key's order), a color per letter slot, the grid size
+   and the fonts. It is never written to localStorage; "Copy study link" is how it travels.
+   ══════════════════════════════════════════════════════ */
+function ldDefaults() {
+  return { letters: LD_DEF_LETTERS.slice(), colors: LD_PALETTE.slice(), rows: 9, cols: 9,
+           fonts: LD_DEF_FONTS.filter(n => HEB_FONTS.some(f => f.name === n)) };
+}
+let S = ldDefaults();
+let RUN = null;            // the session in progress (or just finished)
+let ALL_ROWS = [];         // CSV rows of every session finished since the page was opened
+let SESSIONS_DONE = 0, ROWS_SAVED = 0;
+let SCREEN = 'setup';
+
+function ldRenderGroups() {
+  const box = $('ldGroups'); box.textContent = '';
+  LD_GROUPS.forEach(g => {
+    const on = g.every(l => S.letters.indexOf(l) >= 0);
+    const b = el('button', 'ld-chip he', g.join(' '));
+    b.type = 'button'; b.lang = 'he'; b.dir = 'rtl';
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    b.addEventListener('click', () => {
+      if (on) S.letters = S.letters.filter(l => g.indexOf(l) < 0);
+      else g.forEach(l => { if (S.letters.indexOf(l) < 0 && S.letters.length < LD_MAX_LETTERS) S.letters.push(l); });
+      ldRenderSetup();
+    });
+    box.appendChild(b);
+  });
+}
+function ldRenderAlefbet() {
+  const box = $('ldAlefbet'); box.textContent = '';
+  LD_ALEFBET.forEach(l => {
+    const on = S.letters.indexOf(l) >= 0;
+    const b = el('button', 'ld-chip he', l);
+    b.type = 'button';
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    b.addEventListener('click', () => {
+      if (on) S.letters = S.letters.filter(x => x !== l);
+      else if (S.letters.length < LD_MAX_LETTERS) S.letters.push(l);
+      else { ldSetupNote(_fbT('letterdisc.setup.err_max_letters', 'Eight letters is the most a key can hold. Remove one first.'), false); return; }
+      ldRenderSetup();
+      const again = Array.from(box.children).find(x => x.textContent === l); if (again) again.focus();
+    });
+    box.appendChild(b);
+  });
+}
+function ldRenderColors() {
+  const box = $('ldColors'); box.textContent = '';
+  S.letters.forEach((l, i) => {
+    const wrap = el('label', 'ld-color');
+    const sp = el('span', '', l); sp.lang = 'he'; sp.dir = 'rtl';
+    const inp = document.createElement('input');
+    inp.type = 'color'; inp.value = S.colors[i];
+    inp.setAttribute('aria-label', _fbT('letterdisc.setup.color_aria', 'Color for {letter}', { letter: l }));
+    inp.addEventListener('input', () => { S.colors[i] = ldHex(inp.value, S.colors[i]); ldValidate(); });
+    wrap.appendChild(sp); wrap.appendChild(inp);
+    box.appendChild(wrap);
+  });
+}
+function ldRenderFonts() {
+  const box = $('ldFonts'); if (!box) return;
+  box.textContent = '';
+  const fonts = allFonts();
+  S.fonts = S.fonts.filter(n => fonts.some(f => f.name === n));
+  let sec = null;
+  fonts.forEach(f => {
+    if (f.section !== sec) { sec = f.section; box.appendChild(el('h3', '', ldFontSectionLabel(sec))); }
+    const lab = el('label', 'ld-font');
+    const cb = document.createElement('input');
+    cb.type = 'checkbox'; cb.checked = S.fonts.indexOf(f.name) >= 0;
+    cb.addEventListener('change', () => {
+      if (cb.checked) { if (S.fonts.indexOf(f.name) < 0) S.fonts.push(f.name); }
+      else S.fonts = S.fonts.filter(n => n !== f.name);
+      if (cb.checked) ldLoadHebFont(f);   // warm it, so its sample (and its round) is ready
+      ldValidate();
+    });
+    const nm = el('span', '', f.name); nm.dir = 'auto';
+    const smp = el('span', 'smp', S.letters.slice(0, 3).join('') || 'אבג'); // i18n-ignore
+    smp.lang = 'he'; smp.dir = 'rtl'; smp.style.fontFamily = ldTaamimStack(f.stack); smp.setAttribute('aria-hidden', 'true');
+    lab.appendChild(cb); lab.appendChild(nm); lab.appendChild(smp);
+    box.appendChild(lab);
+    if (cb.checked) ldLoadHebFont(f);
+  });
+}
+function ldSetupNote(msg, ok) { const n = $('ldSetupNote'); n.textContent = msg || ''; n.classList.toggle('ok', !!ok); }
+function ldProblem() {
+  if (S.letters.length < 2) return _fbT('letterdisc.setup.err_letters', 'Choose at least two letters.');
+  const used = S.colors.slice(0, S.letters.length);
+  if (new Set(used).size < used.length) return _fbT('letterdisc.setup.err_colors', 'Two letters share a color. Give each letter its own.');
+  if (S.rows * S.cols < S.letters.length) return _fbT('letterdisc.setup.err_grid', 'The grid is too small to hold every letter.');
+  if (S.fonts.length < 2) return _fbT('letterdisc.setup.err_fonts', 'Choose at least two fonts to compare.');
+  return '';
+}
+function ldValidate() {
+  const p = ldProblem();
+  $('ldStartBtn').setAttribute('aria-disabled', p ? 'true' : 'false');
+  $('ldLinkBtn').setAttribute('aria-disabled', p ? 'true' : 'false');
+  ldSetupNote(p || _fbN('letterdisc.setup.summary', S.fonts.length, '{count} round of {cells} squares.', '{count} rounds of {cells} squares each.', { cells: S.rows * S.cols }), !p);
+  return !p;
+}
+function ldRenderSetup() {
+  ldRenderGroups(); ldRenderAlefbet(); ldRenderColors(); ldRenderFonts();
+  $('ldRows').value = S.rows; $('ldCols').value = S.cols;
+  ldRenderCsvButtons();
+  ldValidate();
+}
+
+/* ── Study link: ?s= carries a diff against the worksheet defaults (base64url JSON); a long one rides after #s=.
+   Silent on garbage, never navigates. Fonts travel by name, so only the built-in ones can (My Fonts live on a device). ── */
+function ldB64Enc(str) {
+  const bytes = new TextEncoder().encode(str); let bin = '';
+  bytes.forEach(b => { bin += String.fromCharCode(b); });
+  return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+function ldB64Dec(code) {
+  const bin = atob(code.replace(/-/g, '+').replace(/_/g, '/'));
+  return new TextDecoder().decode(Uint8Array.from(bin, c => c.charCodeAt(0)));
+}
+function ldStudyCode() {
+  const d = ldDefaults(), o = {};
+  if (S.letters.join('') !== d.letters.join('')) o.l = S.letters.join('');
+  if (S.colors.join() !== d.colors.join()) o.c = S.colors.slice();
+  if (S.rows !== d.rows) o.r = S.rows;
+  if (S.cols !== d.cols) o.k = S.cols;
+  const builtIn = S.fonts.filter(n => HEB_FONTS.some(f => f.name === n));
+  if (builtIn.join('|') !== d.fonts.join('|')) o.f = builtIn;
+  return Object.keys(o).length ? ldB64Enc(JSON.stringify(o)) : '';
+}
+function ldApplyCode(code) {
+  let o = null;
+  try { o = ivritSafeParse(ldB64Dec(String(code))); } catch (e) { return false; }
+  if (!o || typeof o !== 'object' || Array.isArray(o)) return false;
+  const next = ldDefaults();
+  if (typeof o.l === 'string') {
+    const ls = []; Array.from(o.l).forEach(ch => { if (LD_ALEFBET.indexOf(ch) >= 0 && ls.indexOf(ch) < 0 && ls.length < LD_MAX_LETTERS) ls.push(ch); });
+    if (ls.length >= 2) next.letters = ls;
+  }
+  if (Array.isArray(o.c)) next.colors = next.colors.map((dflt, i) => ldHex(o.c[i], dflt));
+  next.rows = ldClampInt(o.r ?? next.rows, LD_MIN_DIM, LD_MAX_DIM, next.rows);
+  next.cols = ldClampInt(o.k ?? next.cols, LD_MIN_DIM, LD_MAX_DIM, next.cols);
+  if (Array.isArray(o.f)) {
+    const fs = []; o.f.forEach(n => { if (typeof n === 'string' && HEB_FONTS.some(f => f.name === n) && fs.indexOf(n) < 0) fs.push(n); });
+    if (fs.length) next.fonts = fs;
+  }
+  S = next;
+  return true;
+}
+function ldReadUrl() {
+  let code = null;
+  try {
+    code = new URLSearchParams(location.search).get('s');
+    if (!code && /^#s=/.test(location.hash)) code = location.hash.slice(3);
+  } catch (e) {}
+  if (code) ldApplyCode(code);
+}
+function ldUrlSeed() {
+  try { const v = new URLSearchParams(location.search).get('seed'); if (v && /^\d{1,10}$/.test(v)) return Number(v) >>> 0; } catch (e) {}
+  return null;
+}
+async function ldCopyLink() {
+  if (!ldValidate()) return;
+  const code = ldStudyCode(), base = location.origin + location.pathname;
+  let url = code ? base + '?s=' + code : base;
+  if (url.length > 1800) url = base + '#s=' + code;
+  const hasMine = S.fonts.some(n => MY_FONTS.some(f => f.name === n));
+  let ok = false;
+  try { await navigator.clipboard.writeText(url); ok = true; } catch (e) {
+    try { const ta = el('textarea'); ta.value = url; document.body.appendChild(ta); ta.select(); ok = document.execCommand('copy'); ta.remove(); } catch (e2) {}
+  }
+  const msg = !ok ? _fbT('letterdisc.setup.link_failed', 'Could not copy. The link is: {url}', { url: url })
+    : hasMine ? _fbT('letterdisc.setup.link_copied_mine', 'Link copied. Fonts from My Fonts are on this device only, so the link leaves them out.')
+    : _fbT('letterdisc.setup.link_copied', 'Link copied. It opens this exact setup on any device.');
+  ldSetupNote(msg, ok);
+}
+
+/* ══════════════════════════════════════════════════════
+   SESSION — one participant, one round per font. A round's clock runs from the moment its grid is on screen
+   (after the participant presses Start) to Done, read from performance.now(); no interval timer runs.
+   ══════════════════════════════════════════════════════ */
+function ldShow(screen) {
+  SCREEN = screen;
+  $('ldSetup').hidden = screen !== 'setup';
+  $('ldRound').hidden = screen !== 'round';
+  $('ldResults').hidden = screen !== 'results';
+  const h = $(screen === 'setup' ? 'ldSetupH' : screen === 'round' ? 'ldRoundH' : 'ldResultsH');
+  if (h) { try { h.focus({ preventScroll: true }); } catch (e) {} }
+  window.scrollTo(0, 0);
+}
+function ldStart() {
+  if (!ldValidate()) return;
+  const urlSeed = ldUrlSeed();
+  const seed = urlSeed != null ? urlSeed : ldRandomSeed();
+  const fonts = allFonts();
+  const cfg = { letters: S.letters.slice(), colors: S.colors.slice(0, S.letters.length), rows: S.rows, cols: S.cols };
+  const rnd = ldRng(seed);
+  RUN = {
+    id: ldRandomSeed().toString(16).padStart(8, '0'),
+    code: $('ldCode').value.trim().slice(0, 40),
+    seed: seed, startedAt: new Date().toISOString(), cfg: cfg, rnd: rnd,
+    order: ldShuffle(S.fonts.map(n => fonts.find(f => f.name === n)).filter(Boolean), rnd),
+    idx: -1, rounds: [], skipped: [], round: null, finished: false
+  };
+  ldShow('round');
+  ldNextRound();
+}
+// A balanced grid: every letter the same number of times (±1 when the squares don't divide evenly), shuffled.
+function ldMakeCells(cfg, rnd) {
+  const n = cfg.letters.length, total = cfg.rows * cfg.cols, out = [];
+  const base = Math.floor(total / n);
+  for (let i = 0; i < n; i++) for (let j = 0; j < base; j++) out.push(i);
+  const extra = ldShuffle(cfg.letters.map((_, i) => i), rnd).slice(0, total - out.length);
+  extra.forEach(i => out.push(i));
+  ldShuffle(out, rnd);
+  return out.map(i => ({ letter: i, chosen: null, paints: 0, lastMs: null }));
+}
+async function ldNextRound() {
+  const run = RUN;
+  $('ldPaper').hidden = true; $('ldReady').hidden = false;
+  $('ldGoBtn').hidden = true;
+  for (;;) {
+    run.idx++;
+    if (run.idx >= run.order.length) { ldFinish(); return; }
+    ldRoundHeading();
+    $('ldReadyMsg').textContent = _fbT('letterdisc.round.loading', 'Getting the next page ready…');
+    const font = run.order[run.idx];
+    const ok = await ldFontUsable(font, run.cfg.letters.join(''));
+    if (RUN !== run) return;                       // the session was stopped while the font loaded
+    if (ok) break;
+    run.skipped.push(font.name);
+  }
+  ldRoundHeading();
+  run.round = { n: run.rounds.length + 1, font: run.order[run.idx], cells: ldMakeCells(run.cfg, run.rnd), crayon: undefined,
+                t0: null, ms: null, firstMs: null, armed: false, done: false };
+  $('ldReadyMsg').textContent = _fbT('letterdisc.round.ready', 'Pick a color, then tap every letter that matches it. Press Done when you finish.');
+  $('ldGoBtn').hidden = false;
+  try { $('ldGoBtn').focus({ preventScroll: true }); } catch (e) {}
+}
+// Rounds that can be played: a font that did not load is skipped and does not count.
+function ldRoundsTotal(run) { return Math.max(1, run.order.length - run.skipped.length); }
+function ldRoundHeading() {
+  if (!RUN) return;
+  $('ldRoundH').textContent = _fbT('letterdisc.round.heading', 'Round {n} of {total}', { n: Math.min(RUN.rounds.length + 1, ldRoundsTotal(RUN)), total: ldRoundsTotal(RUN) });
+}
+function ldGo() {
+  const R = RUN && RUN.round; if (!R || R.t0 != null) return;
+  const cfg = RUN.cfg, stack = ldTaamimStack(R.font.stack);
+  const grid = $('ldGrid'), key = $('ldKey');
+  grid.textContent = ''; key.textContent = '';
+  grid.style.fontFamily = stack; key.style.fontFamily = stack;
+  const wrap = grid.parentNode;
+  wrap.style.setProperty('--ld-cols', cfg.cols); wrap.style.setProperty('--ld-rows', cfg.rows);
+  R.cells.forEach((c, i) => {
+    const b = el('button', 'ld-cell', cfg.letters[c.letter]);
+    b.type = 'button'; b.dataset.i = i; b.tabIndex = i === 0 ? 0 : -1;
+    grid.appendChild(b);
+  });
+  cfg.letters.forEach((l, i) => {
+    const b = el('button', 'ld-swatch', l);
+    b.type = 'button'; b.dataset.k = i;
+    b.style.background = cfg.colors[i]; b.style.color = ldInk(cfg.colors[i]);
+    b.setAttribute('aria-pressed', 'false'); b.setAttribute('aria-keyshortcuts', String(i + 1));
+    const k = el('kbd', '', String(i + 1)); k.setAttribute('aria-hidden', 'true'); k.dir = 'ltr'; k.lang = 'en';
+    b.appendChild(k);
+    key.appendChild(b);
+  });
+  $('ldEraser').setAttribute('aria-pressed', 'false');
+  $('ldRoundNote').textContent = '';
+  ldRelabelRound();
+  $('ldReady').hidden = true; $('ldPaper').hidden = false;
+  // The clock starts once the grid has really been painted to the screen (two frames on).
+  requestAnimationFrame(() => requestAnimationFrame(() => { if (RUN && RUN.round === R && R.t0 == null) R.t0 = performance.now(); }));
+  try { key.firstChild.focus({ preventScroll: true }); } catch (e) {}
+}
+// Labels only — safe to call from applyI18n mid-round (it never touches the cells' state or the clock).
+function ldRelabelRound() {
+  const R = RUN && RUN.round; if (!R) return;
+  const cfg = RUN.cfg;
+  Array.from($('ldGrid').children).forEach((b, i) => {
+    const c = R.cells[i]; if (!c) return;
+    const row = Math.floor(i / cfg.cols) + 1, col = (i % cfg.cols) + 1;
+    b.setAttribute('aria-label', c.chosen == null
+      ? _fbT('letterdisc.round.cell_aria_blank', '{letter}, row {row}, column {col}, not colored', { letter: cfg.letters[c.letter], row: row, col: col })
+      : _fbT('letterdisc.round.cell_aria_painted', '{letter}, row {row}, column {col}, colored like {as}', { letter: cfg.letters[c.letter], row: row, col: col, as: cfg.letters[c.chosen] }));
+  });
+  Array.from($('ldKey').children).forEach((b, i) => {
+    b.title = _fbT('letterdisc.round.swatch_title', 'Color for {letter} ({key})', { letter: cfg.letters[i], key: i + 1 });
+    b.setAttribute('aria-label', b.title);
+  });
+}
+function ldRoundNote(msg) { $('ldRoundNote').textContent = msg || ''; }
+function ldPickCrayon(v) {
+  const R = RUN && RUN.round; if (!R || R.done || R.t0 == null) return;
+  R.crayon = v; R.armed = false;
+  Array.from($('ldKey').children).forEach((b, i) => b.setAttribute('aria-pressed', i === v ? 'true' : 'false'));
+  $('ldEraser').setAttribute('aria-pressed', v === -1 ? 'true' : 'false');
+  ldRoundNote('');
+}
+function ldStyleCell(i) {
+  const R = RUN.round, c = R.cells[i], b = $('ldGrid').children[i]; if (!b) return;
+  if (c.chosen == null) { b.style.background = ''; b.style.color = ''; b.classList.remove('painted'); }
+  else { const hex = RUN.cfg.colors[c.chosen]; b.style.background = hex; b.style.color = ldInk(hex); b.classList.add('painted'); }
+}
+function ldPaint(i) {
+  const R = RUN && RUN.round; if (!R || R.done || R.t0 == null) return;
+  const c = R.cells[i]; if (!c) return;
+  if (R.crayon === undefined) { ldRoundNote(_fbT('letterdisc.round.pick_first', 'Pick a color from the key first.')); return; }
+  const v = R.crayon === -1 ? null : R.crayon;
+  if (c.chosen === v) return;
+  c.chosen = v; c.paints++;
+  c.lastMs = Math.round(performance.now() - R.t0);
+  if (R.firstMs == null) R.firstMs = c.lastMs;
+  R.armed = false;
+  ldStyleCell(i); ldRelabelCell(i);
+}
+function ldRelabelCell(i) {
+  const R = RUN.round, cfg = RUN.cfg, c = R.cells[i], b = $('ldGrid').children[i]; if (!b) return;
+  const row = Math.floor(i / cfg.cols) + 1, col = (i % cfg.cols) + 1;
+  b.setAttribute('aria-label', c.chosen == null
+    ? _fbT('letterdisc.round.cell_aria_blank', '{letter}, row {row}, column {col}, not colored', { letter: cfg.letters[c.letter], row: row, col: col })
+    : _fbT('letterdisc.round.cell_aria_painted', '{letter}, row {row}, column {col}, colored like {as}', { letter: cfg.letters[c.letter], row: row, col: col, as: cfg.letters[c.chosen] }));
+}
+function ldDone() {
+  const R = RUN && RUN.round; if (!R || R.done || R.t0 == null) return;
+  const blank = R.cells.filter(c => c.chosen == null).length;
+  if (blank && !R.armed) {
+    R.armed = true;   // one inline warning, then a second press finishes anyway (never a dialog in front of a child)
+    ldRoundNote(_fbN('letterdisc.round.blank_warn', blank, '{count} square is not colored yet. Press Done again to finish anyway.', '{count} squares are not colored yet. Press Done again to finish anyway.'));
+    return;
+  }
+  R.ms = Math.round(performance.now() - R.t0); R.done = true;
+  RUN.rounds.push(R); RUN.round = null;
+  ldNextRound();
+}
+function ldScore(R) {
+  let correct = 0, wrong = 0, blank = 0;
+  R.cells.forEach(c => { if (c.chosen == null) blank++; else if (c.chosen === c.letter) correct++; else wrong++; });
+  return { correct: correct, wrong: wrong, blank: blank, total: R.cells.length, acc: R.cells.length ? correct / R.cells.length : 0 };
+}
+function ldFinish() {
+  const run = RUN; run.round = null; run.finished = true;
+  if (run.rounds.length) {
+    ALL_ROWS = ALL_ROWS.concat(ldRowsFor(run)); SESSIONS_DONE++;
+  }
+  ldRenderResults();
+  ldShow('results');
+}
+function ldQuit() {
+  if (!RUN || RUN.finished) { ldShow('setup'); return; }
+  if (!confirm(_fbT('letterdisc.round.quit_confirm', 'Stop this session? The round in progress is not saved; finished rounds are kept.'))) return;
+  ldFinish();
+}
+
+/* ── Grid interaction: tap or drag to paint; arrow keys move, Space/Enter paints, 1–8 pick a color, 0 the eraser. ── */
+let _ldDrag = false;
+function ldCellAt(x, y) { const t = document.elementFromPoint(x, y); return t && t.classList && t.classList.contains('ld-cell') ? Number(t.dataset.i) : -1; }
+function ldWireRound() {
+  const grid = $('ldGrid');
+  grid.addEventListener('pointerdown', e => {
+    const t = e.target.closest ? e.target.closest('.ld-cell') : null; if (!t) return;
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    _ldDrag = true;
+    try { if (t.hasPointerCapture && t.hasPointerCapture(e.pointerId)) t.releasePointerCapture(e.pointerId); } catch (err) {}
+    ldPaint(Number(t.dataset.i));
+  });
+  grid.addEventListener('pointermove', e => { if (!_ldDrag) return; const i = ldCellAt(e.clientX, e.clientY); if (i >= 0) ldPaint(i); });
+  ['pointerup', 'pointercancel'].forEach(ev => window.addEventListener(ev, () => { _ldDrag = false; }));
+  // A keyboard "click" (Space/Enter on the focused cell) has detail 0; pointer taps were already handled above.
+  grid.addEventListener('click', e => { const t = e.target.closest ? e.target.closest('.ld-cell') : null; if (t && e.detail === 0) ldPaint(Number(t.dataset.i)); });
+  grid.addEventListener('keydown', e => {
+    const t = e.target; if (!t.classList || !t.classList.contains('ld-cell') || !RUN || !RUN.round) return;
+    const cols = RUN.cfg.cols, n = RUN.round.cells.length; let i = Number(t.dataset.i), j = i;
+    // The grid is right-to-left: the next square in reading order is the one to the LEFT.
+    if (e.key === 'ArrowLeft') j = (i % cols < cols - 1) ? i + 1 : i;
+    else if (e.key === 'ArrowRight') j = (i % cols > 0) ? i - 1 : i;
+    else if (e.key === 'ArrowDown') j = i + cols < n ? i + cols : i;
+    else if (e.key === 'ArrowUp') j = i - cols >= 0 ? i - cols : i;
+    else if (e.key === 'Home') j = i - (i % cols);
+    else if (e.key === 'End') j = Math.min(n - 1, i - (i % cols) + cols - 1);
+    else return;
+    e.preventDefault();
+    if (j !== i) { t.tabIndex = -1; const nx = grid.children[j]; nx.tabIndex = 0; nx.focus(); }
+  });
+  $('ldKey').addEventListener('click', e => { const t = e.target.closest ? e.target.closest('.ld-swatch') : null; if (t) ldPickCrayon(Number(t.dataset.k)); });
+  $('ldEraser').addEventListener('click', () => ldPickCrayon(-1));
+  $('ldDoneBtn').addEventListener('click', ldDone);
+  $('ldGoBtn').addEventListener('click', ldGo);
+  $('ldQuitBtn').addEventListener('click', ldQuit);
+  document.addEventListener('keydown', e => {
+    if (SCREEN !== 'round' || !RUN || !RUN.round || RUN.round.t0 == null) return;
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    const tg = e.target; if (tg && /^(INPUT|TEXTAREA|SELECT)$/.test(tg.tagName)) return;
+    if (/^[1-8]$/.test(e.key)) { const k = Number(e.key) - 1; if (k < RUN.cfg.letters.length) { ldPickCrayon(k); e.preventDefault(); } }
+    else if (e.key === '0') { ldPickCrayon(-1); e.preventDefault(); }
+  });
+}
+
+/* ══════════════════════════════════════════════════════
+   RESULTS + CSV — one CSV row per square (long format), with its round's totals repeated on every row.
+   ══════════════════════════════════════════════════════ */
+function ldSecs(ms) { return (ms / 1000).toFixed(1); }
+function ldPct(x) { return Math.round(x * 1000) / 10 + '%'; }
+function ldRenderResults() {
+  const run = RUN; if (!run) return;
+  const cfg = run.cfg;
+  $('ldResultsSub').textContent = run.rounds.length
+    ? _fbT('letterdisc.results.sub', 'Session {id}{code} — {rounds} rounds finished.', { id: run.id, code: run.code ? ' · ' + run.code : '', rounds: run.rounds.length })
+    : _fbT('letterdisc.results.none', 'No round was finished, so there is nothing to score.');
+  const sk = $('ldSkipped');
+  sk.hidden = !run.skipped.length;
+  sk.textContent = run.skipped.length ? _fbT('letterdisc.results.skipped', 'Skipped because the font did not load: {fonts}', { fonts: run.skipped.join(', ') }) : '';
+
+  const ft = $('ldFontTable'); ft.textContent = '';
+  const hr = ft.insertRow();
+  [['letterdisc.results.col_round', 'Round'], ['letterdisc.results.col_font', 'Font'], ['letterdisc.results.col_accuracy', 'Accuracy'],
+   ['letterdisc.results.col_correct', 'Correct'], ['letterdisc.results.col_wrong', 'Wrong'], ['letterdisc.results.col_blank', 'Not colored'],
+   ['letterdisc.results.col_time', 'Seconds']].forEach(h => { const th = el('th', '', _fbT(h[0], h[1])); th.scope = 'col'; hr.appendChild(th); });
+  run.rounds.forEach(R => {
+    const s = ldScore(R), tr = ft.insertRow();
+    tr.appendChild(el('td', '', String(R.n)));
+    const nm = el('td', 'name', R.font.name); nm.dir = 'auto'; tr.appendChild(nm);
+    [ldPct(s.acc), s.correct + ' / ' + s.total, String(s.wrong), String(s.blank), ldSecs(R.ms)].forEach(v => tr.appendChild(el('td', '', v)));
+  });
+
+  // Confusion: actual letter (row) × the letter whose color it was given (column), over the whole session.
+  const n = cfg.letters.length, m = cfg.letters.map(() => new Array(n + 1).fill(0));
+  run.rounds.forEach(R => R.cells.forEach(c => { m[c.letter][c.chosen == null ? n : c.chosen]++; }));
+  const ct = $('ldConfTable'); ct.textContent = '';
+  const ch = ct.insertRow();
+  ch.appendChild(el('td', ''));
+  cfg.letters.forEach(l => { const th = el('th', 'he', l); th.scope = 'col'; th.lang = 'he'; ch.appendChild(th); });
+  const thb = el('th', '', _fbT('letterdisc.results.col_blank', 'Not colored')); thb.scope = 'col'; ch.appendChild(thb);
+  cfg.letters.forEach((l, i) => {
+    const tr = ct.insertRow();
+    const th = el('th', 'he', l); th.scope = 'row'; th.lang = 'he'; tr.appendChild(th);
+    m[i].forEach((v, j) => tr.appendChild(el('td', j === i ? 'diag' : !v ? 'zero' : j < n ? 'err' : '', String(v))));
+  });
+  ldRenderCsvButtons();
+}
+function ldRenderCsvButtons() {
+  const label = _fbN('letterdisc.results.csv', SESSIONS_DONE, 'Download CSV ({count} session)', 'Download CSV ({count} sessions)');
+  const a = $('ldCsvBtn'), b = $('ldCsvBtnSetup');
+  a.textContent = label; a.setAttribute('aria-disabled', ALL_ROWS.length ? 'false' : 'true');
+  b.textContent = label; b.hidden = !ALL_ROWS.length;
+}
+const LD_CSV_COLS = ['session_id', 'participant_code', 'started_at', 'seed', 'round', 'rounds_total', 'font', 'font_section',
+  'row', 'col', 'letter', 'expected_color', 'chosen_letter', 'chosen_color', 'correct', 'blank', 'last_paint_ms', 'paint_count',
+  'round_ms', 'first_paint_ms', 'round_correct', 'round_wrong', 'round_blank', 'round_accuracy',
+  'grid_rows', 'grid_cols', 'letter_set', 'skipped_fonts', 'theme', 'ui_lang', 'viewport', 'user_agent'];   // i18n-ignore (data column names stay English)
+function ldRowsFor(run) {
+  const cfg = run.cfg, rows = [];
+  const theme = document.body.classList.contains('dark') ? 'dark' : 'light';
+  const lang = (window.I18n && I18n.lang) || document.documentElement.lang || 'en';
+  const vp = window.innerWidth + 'x' + window.innerHeight;
+  run.rounds.forEach(R => {
+    const s = ldScore(R);
+    R.cells.forEach((c, i) => {
+      rows.push([run.id, run.code, run.startedAt, run.seed, R.n, ldRoundsTotal(run), R.font.name, R.font.section,
+        Math.floor(i / cfg.cols) + 1, (i % cfg.cols) + 1, cfg.letters[c.letter], cfg.colors[c.letter],
+        c.chosen == null ? '' : cfg.letters[c.chosen], c.chosen == null ? '' : cfg.colors[c.chosen],
+        c.chosen === c.letter ? 1 : 0, c.chosen == null ? 1 : 0, c.lastMs == null ? '' : c.lastMs, c.paints,
+        R.ms, R.firstMs == null ? '' : R.firstMs, s.correct, s.wrong, s.blank, s.acc.toFixed(4),
+        cfg.rows, cfg.cols, cfg.letters.join(' '), run.skipped.join('; '), theme, lang, vp, navigator.userAgent]);
+    });
+  });
+  return rows;
+}
+function ldCsvCell(s) {
+  s = String(s == null ? '' : s);
+  if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;   // a spreadsheet would run a cell that starts like a formula
+  return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+}
+function ldDownload(name, text) {
+  const blob = new Blob(['\uFEFF' + text], { type: 'text/csv;charset=utf-8' });   // the BOM tells Excel the file is UTF-8 (Hebrew)
+  const url = URL.createObjectURL(blob), a = document.createElement('a');
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
+}
+function ldCsvText() { return [LD_CSV_COLS].concat(ALL_ROWS).map(r => r.map(ldCsvCell).join(',')).join('\r\n') + '\r\n'; }
+function ldExportCsv() {
+  if (!ALL_ROWS.length) return;
+  const d = new Date(), p = n => String(n).padStart(2, '0');
+  const stamp = d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + '_' + p(d.getHours()) + p(d.getMinutes());
+  ldDownload('letter-discrimination_' + stamp + '.csv', ldCsvText());
+  ROWS_SAVED = ALL_ROWS.length;
+  const msg = _fbT('letterdisc.results.csv_saved', 'Downloaded. The file holds every session since this page was opened.');
+  if (SCREEN === 'results') $('ldResultsNote').textContent = msg; else ldSetupNote(msg, true);
+}
+function ldAgain() {
+  $('ldCode').value = ''; $('ldResultsNote').textContent = '';
+  ldRenderSetup(); ldShow('setup');
+  try { $('ldCode').focus({ preventScroll: true }); } catch (e) {}
+}
+
+/* ══════════════════════════════════════════════════════
+   DARK MODE (house pattern)
+   ══════════════════════════════════════════════════════ */
+function toggleDark() {
+  document.documentElement.classList.remove('dark-early');
+  document.body.classList.toggle('dark');
+  const isDark = document.body.classList.contains('dark');
+  try { localStorage.setItem(DARK_KEY, isDark ? '1' : '0'); } catch (e) {}
+  document.getElementById('darkBtn').setAttribute('aria-pressed', isDark ? 'true' : 'false');
+}
+function initDark() {
+  let s = null;
+  try { s = localStorage.getItem(DARK_KEY); } catch (e) {}
+  if (s === '1' || (s === null && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches)) {
+    document.body.classList.add('dark');
+    document.getElementById('darkBtn').setAttribute('aria-pressed', 'true');
+  }
+  document.documentElement.classList.remove('dark-early');
+}
+
+/* ══════════════════════════════════════════════════════
+   INIT + i18n — applyI18n is read-only: it re-labels what is on screen and never touches a round's cells or clock.
+   ══════════════════════════════════════════════════════ */
+function applyI18n() {
+  if (window.I18n) I18n.applyStaticI18n();
+  ldRenderSetup();
+  ldRoundHeading(); ldRelabelRound();
+  if (SCREEN === 'results') ldRenderResults();
+}
+function init() {
+  initDark();
+  ldReadUrl();
+  ldRenderSetup();
+  ldWireRound();
+  ['ldRows', 'ldCols'].forEach(id => $(id).addEventListener('input', () => {
+    const k = id === 'ldRows' ? 'rows' : 'cols', raw = $(id).value;
+    if (raw !== '') { S[k] = ldClampInt(raw, LD_MIN_DIM, LD_MAX_DIM, S[k]); ldValidate(); }
+  }));
+  ['ldRows', 'ldCols'].forEach(id => $(id).addEventListener('change', () => { $(id).value = S[id === 'ldRows' ? 'rows' : 'cols']; }));
+  $('ldStartBtn').addEventListener('click', ldStart);
+  $('ldLinkBtn').addEventListener('click', ldCopyLink);
+  $('ldResetBtn').addEventListener('click', () => { S = ldDefaults(); ldRenderSetup(); });
+  $('ldCsvBtn').addEventListener('click', ldExportCsv);
+  $('ldCsvBtnSetup').addEventListener('click', ldExportCsv);
+  $('ldAgainBtn').addEventListener('click', ldAgain);
+  // Results live only in this tab: warn before a close would lose rows nobody has downloaded.
+  window.addEventListener('beforeunload', e => { if (ALL_ROWS.length > ROWS_SAVED) { e.preventDefault(); e.returnValue = ''; } });
+  refreshMyFonts();
+  if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); }
+}
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
