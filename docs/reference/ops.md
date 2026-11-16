@@ -37,7 +37,7 @@ VERSION = "1.2"   # shown as "v{VERSION}" on the splash — bump whatever value 
 2. Run `python3 splash/gen_splash.py` — re-renders every `splash/splash-*.png`
    and rewrites `splash/apple-startup-links.html`.
 3. Only if `DEVICES` changed (NOT for a plain version bump): re-sync the
-   `apple-touch-startup-image` block in **17 HTML pages** (every root page but `account.html`, the `emoji_torah.html` forwarding stub, `trope_review.html`, the unlisted `reading_assignments.html` and `letter_discrimination.html`, and the three test harnesses: 404,
+   `apple-touch-startup-image` block in **17 HTML pages** (every root page but `account.html`, the `emoji_torah.html` forwarding stub, `trope_review.html`, the maintainer's `Stein_School.html`, the unlisted `reading_assignments.html` and `letter_discrimination.html`, and the three test harnesses: 404,
    Hebrew_Font_Maker, classroom_dashboard, contact, flash_cards, hebrew_blend_generator,
    hebrew_dictionary, index, letter_learner, name_tags, parsha_emojis, privacy, resources, terms, torah_trainer, trope_atlas, trope_tutor) from
    `splash/apple-startup-links.html` (the block is identical in each). A version
@@ -314,6 +314,19 @@ push, is what updates the live site.
   every `<lastmod>` collapses to one inflated date while the script reports success. Run
   `git fetch --unshallow` first — and treat the same caution as standing for **any** date-based
   receipt from `git log`/`git diff` in this container.
+- **`Stein_School.html` is not a suite page.** It is the maintainer's own presentation — a 3D walk-through of a
+  paper, locked with a password — kept at this address and reached by it only: `<meta name="robots"
+  content="noindex, nofollow">`, no `<url>` block in `sitemap.xml` (so neither generator lists it), no link from any
+  page, not in `sw.js` `CORE_ASSETS`. Unlike an unlisted page it is never launched, and the suite's page rules do not
+  reach it: no `js/i18n.js` and English only (it is in check-i18n's `SKIP_HTML`), no gtag, no account layer, no
+  `pwa.js`, splash block, skip link, dark mode or AllTools key (it writes one `sessionStorage` entry and no
+  `localStorage`). **It is a generated file, built outside this repo and replaced whole by a new build — never
+  edited by hand:** everything it says is a sealed table inside the page, opened in the browser with the password, so
+  the page holds no readable text to edit, and its sources and its password are kept out of this public repo on
+  purpose — never add either, here or in a commit message, an issue or a PR. Replacing it needs no `sw.js` bump (the
+  worker serves an unprecached page network-first; offline, the cached copy still opens and falls back to its reading
+  version when the three.js CDN is out of reach). What still holds: the CSP meta tag right after `<meta charset>` (its
+  allowlist is in the list below) and `check-inline-js`, which parses its inline scripts like any page's.
 - **`llms.txt` + `llms-full.txt` are GENERATED — regenerate them, never hand-edit them.**
   `node scripts/update-llms-txt.mjs` (plain Node, no deps) rewrites both: the curated plain-text site
   map for LLMs and fetching agents ([llmstxt.org](https://llmstxt.org)). `llms.txt` is the **short
@@ -363,6 +376,10 @@ pages, not the other way round — `grep -o 'Content-Security-Policy[^>]*' *.htm
   `scripts/build-parsha-pages.mjs`. Their forwarder `parsha/index.html` allows only `'self'`, like the stub below.
 - **The `emoji_torah.html` forwarding stub** (the Parsha Emojis page's address before its launch) allows only
   `'self'`: no gtag (the hop would count twice), no Google Fonts, no `data:`/`blob:`; it loads `/js/i18n.js` and the favicon.
+- **`Stein_School.html`** (the maintainer's presentation, not a suite page — Deploy, above): `cdnjs.cloudflare.com` in
+  `script-src` (three.js, its one outside script, a plain `<script src>` at the end of `<body>`), Google Fonts, `data:` in
+  `img-src` (its empty favicon), `connect-src 'self'` (the page requests nothing) and `frame-src 'none'`; no gtag or
+  analytics origin, no account origins.
 - **Pages that offer accounts** (Home, Generator, Flash Cards, Dictionary, Torah Trainer, Trope Tutor, Dashboard, Letter Learner, Parsha Emojis, Name Tags, Font Maker, the account page `account.html`, the reading-assignments page `reading_assignments.html`, `account-test.html`, `saves-test.html`): `cdn.jsdelivr.net` in `script-src` (the
   pinned Supabase SDK) and `hhkmqwpjsyxdeuhvcyis.supabase.co` in `connect-src` — exactly those two origins, nothing else
   (avatars are initials, Realtime is not used). The two harnesses carry no gtag.

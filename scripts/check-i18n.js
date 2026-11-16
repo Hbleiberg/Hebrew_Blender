@@ -65,7 +65,9 @@ const BASELINE_PATH = path.join(__dirname, 'check-i18n-baseline.txt');
 
 // Files whose *.html we deliberately do NOT scan (the i18n dev harness).
 // trope_review.html is the maintainer's English-only review of the trope traditions (not linked, noindex).
-const SKIP_HTML = new Set(['i18n-test.html', 'account-test.html', 'saves-test.html', 'trope_review.html']);
+// Stein_School.html is the maintainer's own password-locked presentation, not a suite page (not linked, noindex,
+// English only; a generated file whose text is encrypted inside it — docs/reference/ops.md → Deploy).
+const SKIP_HTML = new Set(['i18n-test.html', 'account-test.html', 'saves-test.html', 'trope_review.html', 'Stein_School.html']);
 // Keys whose empty cell is intentional English (Check B allowlist — applies to every language column).
 // Currently empty, and that is the healthy state: the corpus has no untranslated cell to excuse.
 // `worksheet.layout.title_default` sat here from the first localization pass until S308, which
