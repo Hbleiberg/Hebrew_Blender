@@ -173,7 +173,10 @@ handler goes through the real setters (`setMarkEnabled`, `setAdd*`, `setInputMod
 ### UI primitives — never hand-roll these
 - **Modals**: `.overlay`/`.modal` markup opened via `aOpenModal(id, closeFn)` / closed via
   `aCloseModal(id)`. `_activeModal` + the global keydown provide the focus trap and Escape-to-close —
-  never add your own trap.
+  never add your own trap. Every `.overlay` shares `z-index: 200`, so DOM order alone decides which paints
+  on top; `aOpenModal` therefore lifts a modal opened over another open one to one layer above the highest
+  open `.overlay` (an inline `z-index` that `aCloseModal` clears). Without it, Help opened from the wizard's
+  license "?" (and Shortcuts reached from that Help) painted beneath the wizard, which sits later in the page.
 - **Confirmations**: `askModal(title, bodyHtml, buttons)` with `[{label, cls:'ghost'?, onClick}]`.
   `#askOverlay` sits one z-index layer above the other `.overlay`s, so a confirmation raised over the
   wizard, help, QA, My Fonts or mobile-warn overlay is the one under the pointer.

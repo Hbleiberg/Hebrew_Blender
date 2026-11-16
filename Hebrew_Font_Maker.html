@@ -4571,12 +4571,19 @@ function _focusables(el) {
 function aOpenModal(id, closeFn) {
   const ov = document.getElementById(id); if (!ov) return;
   _activeModal = { id, close: closeFn || (() => aCloseModal(id)), opener: document.activeElement };
+  // Every .overlay shares one z-index, so DOM order decides which paints on top — a modal opened OVER an
+  // open one that sits later in the page (Help from the wizard's license "?", which the user saw as Help
+  // stuck behind the wizard) painted beneath it. The newest modal is lifted above every open one.
+  ov.style.zIndex = '';
+  let top = 0;
+  document.querySelectorAll('.overlay.open').forEach(o => { if (o !== ov) top = Math.max(top, parseInt(getComputedStyle(o).zIndex, 10) || 0); });
+  if (top && top >= (parseInt(getComputedStyle(ov).zIndex, 10) || 0)) ov.style.zIndex = String(top + 1);
   ov.classList.add('open');
   const f = _focusables(ov); if (f.length) setTimeout(() => f[0].focus(), 0);
 }
 function aCloseModal(id) {
-  const ov = document.getElementById(id); if (ov) ov.classList.remove('open');
-  const ret = (_activeModal && _activeModal.id === id) ? _activeModal.opener : null;
+  const ov = document.getElementById(id); if (ov) { ov.classList.remove('open'); ov.style.zIndex = ''; }
+  const ret =(_activeModal && _activeModal.id === id) ? _activeModal.opener : null;
   if (_activeModal && _activeModal.id === id) _activeModal = null;
   // <body> is not an opener: a modal that auto-opens on load (the onboarding wizard) captures it
   // because nothing was focused yet, and re-focusing <body> restores nothing — the browser keeps the
