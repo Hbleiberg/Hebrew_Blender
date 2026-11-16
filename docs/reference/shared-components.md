@@ -1125,6 +1125,6 @@ indentation — paste it, do not re-author it:
 - The **label names the destination** (maintainer's call, S397): one key per page under that page's own
   prefix — `home.a11y.skip_to_tools`, `worksheet.a11y.skip_to_worksheet`, `dashboard.a11y.skip_to_board`,
   and so on. Hebrew uses the `דילוג ל…` form and that page's own vocabulary. Never a single shared label.
-- **Implemented on:** all 18 root pages (every one but the harnesses, the `emoji_torah.html` stub, `trope_review.html` and `Stein_School.html`). The dictionary's separate `.skip-results` is a *mid-page* bypass
+- **Implemented on:** all 18 root pages (every one but the harnesses, the `emoji_torah.html` stub and `trope_review.html`). The dictionary's separate `.skip-results` is a *mid-page* bypass
   of the results grid — a different affordance, not a second header skip link.
 - **Rule:** a new page ships this block, an anchored target with `tabindex="-1"`, and its own label key.
