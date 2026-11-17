@@ -12,7 +12,8 @@
  *     closed, the page prints as a page;
  *   - the sheet maker: every holiday with symbols draws six on one page at the defaults with no palette token left on
  *     paper and no conversion warning; 1 / 2 / 4 / 6 a page give ceil(n / per) pages with the right rows and columns;
- *     each option changes the sheet (labels, nikkud with the catalog's plain spelling, the title, the cut line, the
+ *     each option changes the sheet (the Hebrew / transliteration / English lines, the four size sliders, nikkud
+ *     with the catalog's plain spelling, a short row centred, the title, the cut line, the
  *     name line, the meanings on Sukkot only, coloured in); unticking a symbol reflows the pages and none leaves a
  *     note with Print waiting; a holiday's own symbol ticked alone (or a holiday still without symbols) prints as one
  *     big picture; the options survive a reload and the holiday and ticks do not; a long title is fitted inside its
@@ -94,13 +95,17 @@ const sheets = (pg) => pg.evaluate(() => [...document.querySelectorAll('#hgPages
   per: s.dataset.per, rows: s.querySelectorAll('.hg-grow').length, cells: s.querySelectorAll('.hg-cell:not(.hg-cell-empty)').length,
   cols: s.querySelector('.hg-grow') ? s.querySelector('.hg-grow').children.length : 0,
   he: [...s.querySelectorAll('.hg-he')].map((n) => n.textContent), en: [...s.querySelectorAll('.hg-en')].map((n) => n.textContent),
+  tr: [...s.querySelectorAll('.hg-tr')].map((n) => n.textContent),
   title: [...s.querySelectorAll('.hg-bubble')].map((n) => n.textContent), cut: s.querySelectorAll('.hg-cut').length,
   name: s.querySelectorAll('.hg-nameline').length, mean: s.querySelectorAll('.hg-mean svg').length,
   pics: s.querySelectorAll('.hg-pic svg').length, token: /var\(/.test(s.innerHTML), colour: /#(c0392b|3a7d44|3b6fb6|c9922a|f0d080|f0a030)/i.test(s.innerHTML),
   // every label and the title inside the sheet's own box
-  inside: (() => { const b = s.getBoundingClientRect(); return [...s.querySelectorAll('.hg-bubble, .hg-he, .hg-en')].every((n) => { const r = n.getBoundingClientRect(); return r.left >= b.left - 1 && r.right <= b.right + 1; }); })(),
+  inside: (() => { const b = s.getBoundingClientRect(); return [...s.querySelectorAll('.hg-bubble, .hg-he, .hg-tr, .hg-en')].every((n) => { const r = n.getBoundingClientRect(); return r.left >= b.left - 1 && r.right <= b.right + 1; }); })(),
 })));
 const pick = async (pg, sel) => { await pg.locator(sel).check(); await ready(pg); };
+const untick = async (pg, sel) => { await pg.locator(sel).uncheck(); await ready(pg); };
+// A size slider moved the way a drag ends: its input event (the sheets resize live), then change (the value is stored).
+const slide = async (pg, id, v) => { await pg.locator('#' + id).fill(String(v)); await pg.waitForTimeout(60); };
 
 try {
   /* 1) The countdown and the order, date by date. */
@@ -207,19 +212,31 @@ try {
       ok(s.every((x) => x.inside), `builder per ${per}`, 'a label leaves its sheet');
       eq(await pg.evaluate(() => document.getElementById('hgCount').textContent), `${pages} ${pages === 1 ? 'page' : 'pages'} · Sukkot`, `builder per ${per}`, 'the page count');
     }
-    await pick(pg, 'input[name="hgLabels"][value="he"]');
+    // the three label lines are three checkboxes: Hebrew, transliteration, English
+    eq(await pg.evaluate(() => ['hgLblHe', 'hgLblTr', 'hgLblEn'].map((id) => document.getElementById(id).checked).concat(['hgSizeHe', 'hgSizeTr', 'hgSizeEn', 'hgSizePic'].map((id) => document.getElementById(id).disabled))),
+      [true, false, true, false, true, false, false], 'builder labels', 'Hebrew and English ticked at the defaults, and the transliteration slider waiting for its line');
+    await pick(pg, '#hgLblTr');
     let s = (await sheets(pg))[0];
-    eq([s.en.length, s.he.length, s.title], [0, 6, [suk.he]], 'builder labels he', 'Hebrew only, title too');
+    eq([s.tr, s.he.length, s.en.length, s.title], [suk.symbols.map((x) => x.tr), 6, 6, [suk.en, suk.he]], 'builder transliteration', 'every symbol\'s transliteration, with both other lines and the title in both');
+    eq(await pg.evaluate(() => [[...document.querySelector('#hgPages .hg-cap').children].map((n) => n.className), document.getElementById('hgSizeTr').disabled, getComputedStyle(document.querySelector('#hgPages .hg-tr')).fontStyle]),
+      [['hg-he', 'hg-tr', 'hg-en'], false, 'italic'], 'builder transliteration', 'Hebrew, then the transliteration in italics, then English; its slider enabled');
+    ok(s.inside, 'builder transliteration', 'a label leaves its sheet');
+    await untick(pg, '#hgLblHe'); await untick(pg, '#hgLblEn');
+    s = (await sheets(pg))[0];
+    eq([s.tr.length, s.he.length, s.en.length, s.title], [6, 0, 0, [suk.en]], 'builder transliteration only', 'the transliteration alone, under an English title');
+    await untick(pg, '#hgLblTr'); await pick(pg, '#hgLblHe');
+    s = (await sheets(pg))[0];
+    eq([s.en.length, s.tr.length, s.he.length, s.title], [0, 0, 6, [suk.he]], 'builder labels he', 'Hebrew only, title too');
     eq(await pg.evaluate(() => document.querySelector('#hgPages .hg-grid').dir), 'rtl', 'builder labels he', 'a Hebrew-only sheet reads from the right');
     await pg.locator('#hgOptNikkud').uncheck(); await ready(pg);
     s = (await sheets(pg))[0];
     eq([s.he, s.title], [suk.symbols.map((x) => x.plain), [suk.plain]], 'builder nikkud off', 'the plain spellings (סוכה, not סכה)');
-    await pick(pg, 'input[name="hgLabels"][value="en"]');
+    await pick(pg, '#hgLblEn'); await untick(pg, '#hgLblHe');
     s = (await sheets(pg))[0];
     eq([s.en.length, s.he.length, s.title], [6, 0, [suk.en]], 'builder labels en', 'English only');
-    await pick(pg, 'input[name="hgLabels"][value="none"]');
+    await untick(pg, '#hgLblEn');
     s = (await sheets(pg))[0];
-    eq([s.en.length, s.he.length, s.title.length], [0, 0, 2], 'builder labels none', 'no labels, the title in both');
+    eq([s.en.length, s.he.length, s.tr.length, s.title.length], [0, 0, 0, 2], 'builder labels none', 'no labels, the title in both');
     await pg.locator('#hgOptTitle').uncheck(); await pg.locator('#hgOptCut').uncheck(); await pg.locator('#hgOptName').check(); await pg.locator('#hgOptMeanings').check();
     await pick(pg, 'input[name="hgColored"][value="1"]');
     s = (await sheets(pg))[0];
@@ -227,12 +244,36 @@ try {
     ok(s.colour && !s.token, 'builder coloured in', 'the light palette\'s colours on paper and no token');
     // the options are stored; the holiday and the ticks are not
     const stored = await pg.evaluate(() => JSON.parse(localStorage.getItem('hebrewHolidayGuide_settings')));
-    eq([stored.per, stored.labels, stored.nikkud, stored.title, stored.cut, stored.name, stored.meanings, stored.colored, stored.paper, 'holiday' in stored], [6, 'none', false, false, false, true, true, true, 'letter', false], 'builder storage', 'what is stored');
+    eq([stored.per, stored.lblHe, stored.lblTr, stored.lblEn, 'labels' in stored, stored.nikkud, stored.title, stored.cut, stored.name, stored.meanings, stored.colored, stored.paper, 'holiday' in stored], [6, false, false, false, false, false, false, false, true, true, true, 'letter', false], 'builder storage', 'what is stored');
+    // the size sliders: the words from half to half as big again, the pictures down to half; a drag resizes the sheet
+    // without rebuilding it, and the value is stored when the drag ends
+    await pg.locator('#hgOptMeanings').uncheck(); await pick(pg, 'input[name="hgColored"][value="0"]');
+    await pick(pg, '#hgLblHe'); await pick(pg, '#hgLblTr'); await pick(pg, '#hgLblEn');
+    eq(await pg.evaluate(() => ['hgSizePic', 'hgSizeHe', 'hgSizeTr', 'hgSizeEn'].map((id) => { const r = document.getElementById(id); return [r.min, r.max, r.step, r.value, r.nextElementSibling.textContent]; })),
+      [['50', '100', '5', '100', '100%'], ['50', '150', '5', '100', '100%'], ['50', '150', '5', '100', '100%'], ['50', '150', '5', '100', '100%']], 'builder sizes', 'the four sliders at 100%');
+    const measure = () => pg.evaluate(() => { const q = (c) => document.querySelector('#hgPages .hg-cell ' + c); const px = (c) => parseFloat(getComputedStyle(q(c)).fontSize);
+      return { he: px('.hg-he'), tr: px('.hg-tr'), en: px('.hg-en'), pic: q('.hg-pic svg').getBoundingClientRect().width, node: (q('.hg-he').dataset.mark = q('.hg-he').dataset.mark || 'kept') }; });
+    const m0 = await measure();
+    await slide(pg, 'hgSizeHe', 70); await slide(pg, 'hgSizeTr', 150); await slide(pg, 'hgSizeEn', 50); await slide(pg, 'hgSizePic', 50);
+    const m1 = await measure();
+    const near = (a, b) => Math.abs(a - b) < 0.03;
+    ok(near(m1.he / m0.he, 0.7) && near(m1.tr / m0.tr, 1.5) && near(m1.en / m0.en, 0.5), 'builder sizes', `the words follow their sliders (${(m1.he / m0.he).toFixed(2)}, ${(m1.tr / m0.tr).toFixed(2)}, ${(m1.en / m0.en).toFixed(2)}; expected 0.70, 1.50, 0.50)`);
+    ok(m1.pic < m0.pic * 0.75 && m1.pic > m0.pic * 0.4, 'builder sizes', `the pictures did not shrink with their slider (${m0.pic.toFixed(0)}px → ${m1.pic.toFixed(0)}px)`);
+    eq(m1.node, 'kept', 'builder sizes', 'a drag resizes the sheet in place, without rebuilding it');
+    ok((await sheets(pg))[0].inside, 'builder sizes', 'a label leaves its sheet');
+    const sized = await pg.evaluate(() => JSON.parse(localStorage.getItem('hebrewHolidayGuide_settings')));
+    eq([sized.sizePic, sized.sizeHe, sized.sizeTr, sized.sizeEn], [50, 70, 150, 50], 'builder sizes', 'the sizes are stored');
+    await slide(pg, 'hgSizeHe', 100); await slide(pg, 'hgSizeTr', 100); await slide(pg, 'hgSizeEn', 100); await slide(pg, 'hgSizePic', 100);
+    await untick(pg, '#hgLblTr');
     // ticks: untick two → four symbols; none → a note and Print waits
-    await pick(pg, 'input[name="hgLabels"][value="both"]');
     await pg.locator('#hgSyms input[value="0"]').uncheck(); await pg.locator('#hgSyms input[value="5"]').uncheck(); await ready(pg);
     s = await sheets(pg);
     eq([s.length, s[0].cells, s[0].en], [1, 4, suk.symbols.slice(1, 5).map((x) => x.en)], 'builder ticks', 'four symbols left, in order');
+    // a row that is not full is centred, its cell as wide as a full row's (three above, one below it in the middle)
+    const rowsNow = await pg.evaluate(() => { const sh = document.querySelector('#hgPages .hg-sheet'), b = sh.querySelector('.hg-grid').getBoundingClientRect();
+      return [...sh.querySelectorAll('.hg-grow')].map((r) => { const c = [...r.querySelectorAll('.hg-cell')].map((x) => x.getBoundingClientRect()); return { n: c.length, w: c.length ? c[0].width : 0, off: c.length ? ((c[0].left + c[c.length - 1].right) / 2) - (b.left + b.width / 2) : 0 }; }); });
+    eq(rowsNow.map((r) => r.n), [3, 1], 'builder centred row', 'three symbols, then one');
+    ok(Math.abs(rowsNow[1].off) < 1 && Math.abs(rowsNow[1].w - rowsNow[0].w) < 1 && Math.abs(rowsNow[0].off) < 1, 'builder centred row', `the short row is not centred at a full row's cell width (${JSON.stringify(rowsNow)})`);
     await pg.locator('#hgSymNone').click();
     eq(await pg.evaluate(() => [document.querySelectorAll('#hgPages .hg-sheet').length, document.getElementById('hgNote').textContent, document.getElementById('hgPrint').getAttribute('aria-disabled')]),
       [0, 'Tick at least one symbol to make a sheet.', 'true'], 'builder no symbols', 'no page, the note, Print waiting');
@@ -261,7 +302,20 @@ try {
     eq(await isOpen(pg), false, 'builder reload', 'the sheet maker is closed after a reload');
     await openMaker(pg);
     eq(await pg.evaluate(() => [(document.querySelector('#hgPick input:checked') || {}).value, document.querySelectorAll('#hgSyms input:checked').length, document.getElementById('hgOptName').checked, document.querySelector('input[name="hgColored"]:checked').value]),
-      ['chanukah', 6, true, '1'], 'builder reload', 'the next holiday, six ticks, the stored options');
+      ['chanukah', 6, true, '0'], 'builder reload', 'the next holiday, six ticks, the stored options (the name line on, to color in)');
+    await ctx.close();
+  }
+
+  // An older device's stored choice (one `labels` field) still means what it meant, and unknown or broken sizes are
+  // read as 100%.
+  {
+    const { ctx, pg, errs } = await open('holiday_guide.html?holiday=purim', { ls: { hebrewHolidayGuide_settings: JSON.stringify({ v: 1, labels: 'he', sizeHe: 'big', sizeEn: 999, sizePic: 20 }) } });
+    await ready(pg);
+    const st = await pg.evaluate(() => ({ boxes: ['hgLblHe', 'hgLblTr', 'hgLblEn'].map((id) => document.getElementById(id).checked), sizes: ['hgSizePic', 'hgSizeHe', 'hgSizeEn'].map((id) => document.getElementById(id).value) }));
+    eq([st.boxes, st.sizes], [[true, false, false], ['50', '100', '150']], 'stored labels, version 1', 'Hebrew only; sizes clamped to their sliders, a non-number read as 100');
+    const sh = (await sheets(pg))[0];
+    eq([sh.he.length, sh.en.length, sh.tr.length], [6, 0, 0], 'stored labels, version 1', 'the sheet it draws');
+    eq(errs, [], 'stored labels, version 1', 'page errors');
     await ctx.close();
   }
 

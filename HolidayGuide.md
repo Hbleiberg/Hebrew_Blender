@@ -62,6 +62,8 @@ Never edit an output. The format and every rule are in the header of `scripts/ho
 
 **Key:** shabbat
 
+**Transliteration:** shabbat
+
 **Also spelled:** Shabbos, Sabbath
 
 **When:** Every week, from Friday at sundown until Saturday night.
@@ -82,6 +84,8 @@ challah and festive meals together, and take a break from work to rest, pray, si
 
 <img src="docs/holiday-guide/shabbat-1.svg" width="72" height="72" alt="Two lit candles in candlesticks">
 
+**Transliteration:** nerot
+
 **Caption:** Two candles are lit on Friday before sunset to welcome Shabbat into the home.
 
 **כיתוב:** מדליקים שני נרות ביום שישי לפני השקיעה כדי לקבל את השבת.
@@ -93,6 +97,8 @@ challah and festive meals together, and take a break from work to rest, pray, si
 #### 2. Challah · חַלָּה
 
 <img src="docs/holiday-guide/shabbat-2.svg" width="72" height="72" alt="A braided loaf of challah">
+
+**Transliteration:** challah
 
 **Caption:** Challah is the braided bread of Shabbat; two loaves are placed on the table.
 
@@ -108,6 +114,8 @@ challah and festive meals together, and take a break from work to rest, pray, si
 
 **Unpointed:** כוס קידוש
 
+**Transliteration:** kos kiddush
+
 **Caption:** Kiddush, the blessing that makes Shabbat holy, is said over a full cup.
 
 **כיתוב:** על כוס מלאה אומרים קידוש, הברכה שמקדשת את השבת.
@@ -119,6 +127,8 @@ challah and festive meals together, and take a break from work to rest, pray, si
 #### 4. Wine · יַיִן
 
 <img src="docs/holiday-guide/shabbat-4.svg" width="72" height="72" alt="A bottle of wine and a bunch of grapes">
+
+**Transliteration:** yayin
 
 **Caption:** Wine or grape juice fills the kiddush cup on Friday night and on Shabbat day.
 
@@ -134,6 +144,8 @@ challah and festive meals together, and take a break from work to rest, pray, si
 
 **Unpointed:** קופת צדקה
 
+**Transliteration:** kupat tzedakah
+
 **Caption:** Before the candles are lit, many families drop coins in the tzedakah box to help others.
 
 **כיתוב:** לפני הדלקת הנרות נוהגים לשים מטבעות בקופת הצדקה כדי לעזור לאחרים.
@@ -148,6 +160,8 @@ challah and festive meals together, and take a break from work to rest, pray, si
 
 **Unpointed:** סידור
 
+**Transliteration:** siddur
+
 **Caption:** The siddur is the prayer book, with the prayers and songs of Shabbat.
 
 **כיתוב:** הסידור הוא ספר התפילה, ובו התפילות והזמירות של שבת.
@@ -161,6 +175,8 @@ challah and festive meals together, and take a break from work to rest, pray, si
 <img src="docs/holiday-guide/havdalah.svg" width="96" height="96" alt="A spice box, a braided Havdalah candle and a kiddush cup">
 
 **Key:** havdalah
+
+**Transliteration:** havdalah
 
 **Also spelled:** Havdallah, Havdala
 
@@ -181,6 +197,8 @@ this short ceremony says goodbye to Shabbat and welcomes the new week.
 
 <img src="docs/holiday-guide/havdalah-1.svg" width="72" height="72" alt="A braided candle with one large flame">
 
+**Transliteration:** ner havdalah
+
 **Caption:** The Havdalah candle is braided, with several wicks that burn together as one flame.
 
 **כיתוב:** נר ההבדלה קלוע, ויש בו כמה פתילות שדולקות יחד כאבוקה אחת.
@@ -192,6 +210,8 @@ this short ceremony says goodbye to Shabbat and welcomes the new week.
 #### 2. Spices · בְּשָׂמִים
 
 <img src="docs/holiday-guide/havdalah-2.svg" width="72" height="72" alt="A spice box shaped like a small tower">
+
+**Transliteration:** besamim
 
 **Caption:** Sweet-smelling spices are passed around to cheer everyone up as Shabbat leaves.
 
@@ -205,6 +225,8 @@ this short ceremony says goodbye to Shabbat and welcomes the new week.
 
 <img src="docs/holiday-guide/havdalah-3.svg" width="72" height="72" alt="A cup of wine overflowing onto a saucer">
 
+**Transliteration:** kos yayin
+
 **Caption:** The cup is filled until it overflows, a sign of a week full of blessing.
 
 **כיתוב:** ממלאים את הכוס עד שהיא עולה על גדותיה, סימן לשבוע מלא ברכה.
@@ -216,6 +238,8 @@ this short ceremony says goodbye to Shabbat and welcomes the new week.
 #### 4. Three Stars · שְׁלוֹשָׁה כּוֹכָבִים
 
 <img src="docs/holiday-guide/havdalah-4.svg" width="72" height="72" alt="Three stars in the night sky">
+
+**Transliteration:** shloshah kochavim
 
 **Caption:** Shabbat ends when three stars can be seen in the night sky.
 
@@ -229,6 +253,8 @@ this short ceremony says goodbye to Shabbat and welcomes the new week.
 
 <img src="docs/holiday-guide/havdalah-5.svg" width="72" height="72" alt="A tall flame">
 
+**Transliteration:** esh
+
 **Caption:** A blessing is said over the fire, and people hold their hands up to its light.
 
 **כיתוב:** מברכים על האש ומקרבים את הידיים אל אורה.
@@ -240,6 +266,8 @@ this short ceremony says goodbye to Shabbat and welcomes the new week.
 #### 6. Moon · יָרֵחַ
 
 <img src="docs/holiday-guide/havdalah-6.svg" width="72" height="72" alt="A crescent moon above a cloud">
+
+**Transliteration:** yareach
 
 **Caption:** The moon rises on Saturday night as the new week begins.
 
@@ -256,6 +284,8 @@ this short ceremony says goodbye to Shabbat and welcomes the new week.
 <img src="docs/holiday-guide/rosh-hashanah.svg" width="96" height="96" alt="An apple and a jar of honey">
 
 **Key:** rosh_hashanah
+
+**Transliteration:** rosh hashanah
 
 **Also spelled:** Rosh Hashana, Rosh Hashonah
 
@@ -275,6 +305,8 @@ good and sweet year, and eat apples dipped in honey and other foods that stand f
 
 <img src="docs/holiday-guide/rosh-hashanah-1.svg" width="72" height="72" alt="An apple with a leaf">
 
+**Transliteration:** tapuach
+
 **Caption:** A slice of apple is dipped in honey with a wish for a good and sweet new year.
 
 **כיתוב:** טובלים פרוסת תפוח בדבש ומבקשים שנה טובה ומתוקה.
@@ -287,6 +319,8 @@ good and sweet year, and eat apples dipped in honey and other foods that stand f
 
 <img src="docs/holiday-guide/rosh-hashanah-2.svg" width="72" height="72" alt="A jar of honey and a honey dipper">
 
+**Transliteration:** dvash
+
 **Caption:** Honey stands for the sweetness everyone hopes the new year will bring.
 
 **כיתוב:** הדבש הוא סימן למתיקות שמקווים שתביא השנה החדשה.
@@ -298,6 +332,8 @@ good and sweet year, and eat apples dipped in honey and other foods that stand f
 #### 3. Fish · דָּג
 
 <img src="docs/holiday-guide/rosh-hashanah-3.svg" width="72" height="72" alt="A fish">
+
+**Transliteration:** dag
 
 **Caption:** Fish is eaten with a wish to grow and multiply like the fish of the sea.
 
@@ -313,6 +349,8 @@ good and sweet year, and eat apples dipped in honey and other foods that stand f
 
 **Unpointed:** חלה עגולה
 
+**Transliteration:** challah agulah
+
 **Caption:** The challah is baked round like a crown, or like the circle of the year.
 
 **כיתוב:** אופים חלה עגולה, כמו כתר וכמו מעגל השנה.
@@ -324,6 +362,8 @@ good and sweet year, and eat apples dipped in honey and other foods that stand f
 #### 5. Shofar · שׁוֹפָר
 
 <img src="docs/holiday-guide/rosh-hashanah-5.svg" width="72" height="72" alt="A shofar, a curved ram’s horn">
+
+**Transliteration:** shofar
 
 **Caption:** The shofar is a ram’s horn; its sound wakes people up to become their best selves.
 
@@ -338,6 +378,8 @@ good and sweet year, and eat apples dipped in honey and other foods that stand f
 <img src="docs/holiday-guide/rosh-hashanah-6.svg" width="72" height="72" alt="A pomegranate with its crown">
 
 **Unpointed:** רימון
+
+**Transliteration:** rimon
 
 **Caption:** A pomegranate is full of seeds; people hope to be just as full of good deeds.
 
@@ -354,6 +396,8 @@ good and sweet year, and eat apples dipped in honey and other foods that stand f
 **Key:** yom_kippur
 
 **Unpointed:** יום כיפור
+
+**Transliteration:** yom kippur
 
 **Also spelled:** Yom Kipur
 
@@ -373,6 +417,8 @@ people say sorry to one another and to God, and everyone makes a fresh start for
 
 <img src="docs/holiday-guide/yom-kippur-1.svg" width="72" height="72" alt="An open book with a ribbon">
 
+**Transliteration:** sefer hachayim
+
 **Caption:** On Yom Kippur people pray to be written in the Book of Life for a good year.
 
 **כיתוב:** ביום כיפור מתפללים להיכתב בספר החיים לשנה טובה.
@@ -384,6 +430,8 @@ people say sorry to one another and to God, and everyone makes a fresh start for
 #### 2. Shofar · שׁוֹפָר
 
 <img src="docs/holiday-guide/yom-kippur-2.svg" width="72" height="72" alt="A shofar sounding">
+
+**Transliteration:** shofar
 
 **Caption:** One long blast of the shofar ends Yom Kippur as night falls.
 
@@ -397,6 +445,8 @@ people say sorry to one another and to God, and everyone makes a fresh start for
 
 <img src="docs/holiday-guide/yom-kippur-3.svg" width="72" height="72" alt="A tallit with stripes and fringes">
 
+**Transliteration:** tallit
+
 **Caption:** The tallit is a prayer shawl; on Yom Kippur it is worn in the evening too.
 
 **כיתוב:** הטלית נלבשת בתפילה, וביום כיפור מתעטפים בה גם בערב.
@@ -408,6 +458,8 @@ people say sorry to one another and to God, and everyone makes a fresh start for
 #### 4. Machzor · מַחְזוֹר
 
 <img src="docs/holiday-guide/yom-kippur-4.svg" width="72" height="72" alt="A thick prayer book with a ribbon">
+
+**Transliteration:** machzor
 
 **Caption:** The machzor is the prayer book for the High Holidays.
 
@@ -421,6 +473,8 @@ people say sorry to one another and to God, and everyone makes a fresh start for
 
 <img src="docs/holiday-guide/yom-kippur-5.svg" width="72" height="72" alt="A big fish spouting water">
 
+**Transliteration:** dag gadol
+
 **Caption:** In the afternoon the Book of Jonah is read, about the prophet and the big fish.
 
 **כיתוב:** במנחה קוראים את ספר יונה, על הנביא ועל הדג הגדול.
@@ -432,6 +486,8 @@ people say sorry to one another and to God, and everyone makes a fresh start for
 #### 6. Gates · שְׁעָרִים
 
 <img src="docs/holiday-guide/yom-kippur-6.svg" width="72" height="72" alt="A pair of arched gates">
+
+**Transliteration:** she’arim
 
 **Caption:** The last prayer, Ne’ilah, is said as the gates of heaven are closing.
 
@@ -448,6 +504,8 @@ people say sorry to one another and to God, and everyone makes a fresh start for
 **Key:** sukkot
 
 **Unpointed:** סוכות
+
+**Transliteration:** sukkot
 
 **Also spelled:** Succot, Sukkos, Succos, Sukkoth
 
@@ -468,6 +526,8 @@ myrtle and willow.
 
 <img src="docs/holiday-guide/sukkot-1.svg" width="72" height="72" alt="A closed palm branch in a woven holder">
 
+**Transliteration:** lulav
+
 **Caption:** The lulav is a closed branch of a date palm, tall and straight like a backbone.
 
 **כיתוב:** הלולב הוא ענף סגור של עץ התמר, גבוה וישר כמו שדרה.
@@ -485,6 +545,8 @@ myrtle and willow.
 #### 2. Hadas · הֲדַס
 
 <img src="docs/holiday-guide/sukkot-2.svg" width="72" height="72" alt="A myrtle branch with small leaves in pairs">
+
+**Transliteration:** hadas
 
 **Caption:** The hadas is a myrtle branch; its small leaves are shaped like eyes.
 
@@ -504,6 +566,8 @@ myrtle and willow.
 
 <img src="docs/holiday-guide/sukkot-3.svg" width="72" height="72" alt="A willow branch with long narrow leaves">
 
+**Transliteration:** aravah
+
 **Caption:** The aravah is a willow branch; its long leaves are shaped like lips.
 
 **כיתוב:** הערבה היא ענף שעליו הארוכים דומים לשפתיים.
@@ -522,6 +586,8 @@ myrtle and willow.
 
 <img src="docs/holiday-guide/sukkot-4.svg" width="72" height="72" alt="An etrog, a citrus fruit">
 
+**Transliteration:** etrog
+
 **Caption:** The etrog is a sweet-smelling citrus fruit, shaped like a heart.
 
 **כיתוב:** האתרוג הוא פרי הדר ריחני, שצורתו דומה ללב.
@@ -539,6 +605,8 @@ myrtle and willow.
 #### 5. Lulav and Etrog · לוּלָב וְאֶתְרוֹג
 
 <img src="docs/holiday-guide/sukkot-5.svg" width="72" height="72" alt="A lulav bound with myrtle and willow, beside an etrog">
+
+**Transliteration:** lulav ve’etrog
 
 **Caption:** The four species are held together and waved in every direction, like every part of a person working
 together.
@@ -561,6 +629,8 @@ together.
 
 **Unpointed:** סוכה
 
+**Transliteration:** sukkah
+
 **Caption:** The sukkah is a hut with a roof of branches, where families eat for seven days.
 
 **כיתוב:** הסוכה היא מבנה שגגו סכך, ובה אוכלים שבעה ימים.
@@ -581,6 +651,8 @@ together.
 
 **Key:** shmini_atzeret
 
+**Transliteration:** shmini atzeret / simchat torah
+
 **Also spelled:** Shmini Atzeret, Simchas Torah, Simhat Torah
 
 **When:** 22 Tishrei, right after Sukkot (and 23 Tishrei outside Israel).
@@ -599,6 +671,8 @@ the Torah is finished and begun again, and everyone sings and dances with the To
 
 <img src="docs/holiday-guide/shemini-atzeret-simchat-torah-1.svg" width="72" height="72" alt="A Torah scroll in its cover">
 
+**Transliteration:** sefer torah
+
 **Caption:** On Simchat Torah all the Torah scrolls are taken out of the ark.
 
 **כיתוב:** בשמחת תורה מוציאים את כל ספרי התורה מארון הקודש.
@@ -610,6 +684,8 @@ the Torah is finished and begun again, and everyone sings and dances with the To
 #### 2. Flag · דֶּגֶל
 
 <img src="docs/holiday-guide/shemini-atzeret-simchat-torah-2.svg" width="72" height="72" alt="A flag on a stick with an apple on top">
+
+**Transliteration:** degel
 
 **Caption:** Children wave flags as they march and sing behind the Torah scrolls.
 
@@ -625,6 +701,8 @@ the Torah is finished and begun again, and everyone sings and dances with the To
 
 **Unpointed:** ריקודים
 
+**Transliteration:** rikudim
+
 **Caption:** Everyone dances seven circles, called hakafot, with the Torah.
 
 **כיתוב:** כולם רוקדים שבע הקפות עם ספרי התורה.
@@ -636,6 +714,8 @@ the Torah is finished and begun again, and everyone sings and dances with the To
 #### 4. Rain · גֶּשֶׁם
 
 <img src="docs/holiday-guide/shemini-atzeret-simchat-torah-4.svg" width="72" height="72" alt="A cloud with raindrops">
+
+**Transliteration:** geshem
 
 **Caption:** On Shemini Atzeret the prayer for rain is said for the winter ahead.
 
@@ -649,6 +729,8 @@ the Torah is finished and begun again, and everyone sings and dances with the To
 
 <img src="docs/holiday-guide/shemini-atzeret-simchat-torah-5.svg" width="72" height="72" alt="A Torah pointer shaped like a hand">
 
+**Transliteration:** yad
+
 **Caption:** The yad is a pointer shaped like a hand, used to follow the words of the Torah.
 
 **כיתוב:** היד היא מצביע בצורת כף יד, ובעזרתה עוקבים אחרי המילים בתורה.
@@ -660,6 +742,8 @@ the Torah is finished and begun again, and everyone sings and dances with the To
 #### 6. Torah Crown · כֶּתֶר תּוֹרָה
 
 <img src="docs/holiday-guide/shemini-atzeret-simchat-torah-6.svg" width="72" height="72" alt="A crown with bells">
+
+**Transliteration:** keter torah
 
 **Caption:** A crown sits on top of the Torah scroll to show how precious it is.
 
@@ -676,6 +760,8 @@ the Torah is finished and begun again, and everyone sings and dances with the To
 **Key:** chanukah
 
 **Unpointed:** חנוכה
+
+**Transliteration:** chanukah
 
 **Also spelled:** Hanukkah, Hanukah, Hannukah, Chanukkah, Channukah
 
@@ -696,6 +782,8 @@ eat latkes and sufganiyot.
 
 <img src="docs/holiday-guide/chanukah-1.svg" width="72" height="72" alt="A dreidel with the letter gimel">
 
+**Transliteration:** sevivon
+
 **Caption:** The dreidel is a spinning top with four Hebrew letters, one on each side.
 
 **כיתוב:** הסביבון מסתובב, ועל כל אחד מארבעת צדדיו אות עברית.
@@ -710,6 +798,8 @@ eat latkes and sufganiyot.
 
 **Unpointed:** חנוכייה
 
+**Transliteration:** chanukiyah
+
 **Caption:** The chanukiah holds eight candles and the shamash, the helper candle that lights them.
 
 **כיתוב:** בחנוכייה שמונה נרות ושמש, הנר שמדליק את כולם.
@@ -721,6 +811,8 @@ eat latkes and sufganiyot.
 #### 3. Latke · לְבִיבָה
 
 <img src="docs/holiday-guide/chanukah-3.svg" width="72" height="72" alt="Two latkes on a plate">
+
+**Transliteration:** levivah
 
 **Caption:** Latkes are potato pancakes fried in oil, in memory of the oil that lasted.
 
@@ -736,6 +828,8 @@ eat latkes and sufganiyot.
 
 **Unpointed:** סופגנייה
 
+**Transliteration:** sufganiyah
+
 **Caption:** A sufganiyah is a jelly doughnut, another treat fried in oil.
 
 **כיתוב:** הסופגנייה ממולאת בריבה ומטוגנת בשמן, כמו הלביבות.
@@ -748,6 +842,8 @@ eat latkes and sufganiyot.
 
 <img src="docs/holiday-guide/chanukah-5.svg" width="72" height="72" alt="A seven-branched menorah">
 
+**Transliteration:** menorah
+
 **Caption:** The menorah in the Temple had seven branches and burned pure olive oil.
 
 **כיתוב:** למנורה שבבית המקדש היו שבעה קנים, ודלק בה שמן זית זך.
@@ -759,6 +855,8 @@ eat latkes and sufganiyot.
 #### 6. Oil · שֶׁמֶן
 
 <img src="docs/holiday-guide/chanukah-6.svg" width="72" height="72" alt="A small jug of oil and a drop">
+
+**Transliteration:** shemen
 
 **Caption:** One small jar of oil was enough for a single day, yet it burned for eight.
 
@@ -773,6 +871,8 @@ eat latkes and sufganiyot.
 <img src="docs/holiday-guide/tu-bishvat.svg" width="96" height="96" alt="A fruit tree">
 
 **Key:** tu_bishvat
+
+**Transliteration:** tu bishvat
 
 **Also spelled:** Tu B'Shvat, Tu B'Shevat, Tu BiShevat
 
@@ -794,6 +894,8 @@ trees, eat fruits that grow in the Land of Israel, and think about caring for th
 
 <img src="docs/holiday-guide/tu-bishvat-1.svg" width="72" height="72" alt="A tree with a branching trunk">
 
+**Transliteration:** etz
+
 **Caption:** Tu BiShvat is the birthday of the trees, when a tree’s new year begins.
 
 **כיתוב:** ט״ו בשבט הוא יום ההולדת של העצים, ובו מתחילה שנתם החדשה.
@@ -805,6 +907,8 @@ trees, eat fruits that grow in the Land of Israel, and think about caring for th
 #### 2. Leaves · עָלִים
 
 <img src="docs/holiday-guide/tu-bishvat-2.svg" width="72" height="72" alt="Two leaves">
+
+**Transliteration:** alim
 
 **Caption:** Leaves catch the sunlight and turn it into food for the whole tree.
 
@@ -820,6 +924,8 @@ trees, eat fruits that grow in the Land of Israel, and think about caring for th
 
 **Unpointed:** שורשים
 
+**Transliteration:** shorashim
+
 **Caption:** Roots hold the tree firmly in the ground and drink water from the soil.
 
 **כיתוב:** השורשים מחזיקים את העץ באדמה ושותים ממנה מים.
@@ -831,6 +937,8 @@ trees, eat fruits that grow in the Land of Israel, and think about caring for th
 #### 4. Fruit · פְּרִי
 
 <img src="docs/holiday-guide/tu-bishvat-4.svg" width="72" height="72" alt="A bowl of fruit">
+
+**Transliteration:** pri
 
 **Caption:** People eat fruits of the Land of Israel, such as figs, dates, grapes and olives.
 
@@ -844,6 +952,8 @@ trees, eat fruits that grow in the Land of Israel, and think about caring for th
 
 <img src="docs/holiday-guide/tu-bishvat-5.svg" width="72" height="72" alt="A glass of juice with a straw and a slice of orange">
 
+**Transliteration:** mitz
+
 **Caption:** At a Tu BiShvat seder four cups of juice are poured, from white to red.
 
 **כיתוב:** בסדר ט״ו בשבט מוזגים ארבע כוסות מיץ, מלבן ועד אדום.
@@ -855,6 +965,8 @@ trees, eat fruits that grow in the Land of Israel, and think about caring for th
 #### 6. Flowers · פְּרָחִים
 
 <img src="docs/holiday-guide/tu-bishvat-6.svg" width="72" height="72" alt="An almond blossom">
+
+**Transliteration:** prachim
 
 **Caption:** The almond tree is the first to blossom in Israel, right around Tu BiShvat.
 
@@ -869,6 +981,8 @@ trees, eat fruits that grow in the Land of Israel, and think about caring for th
 <img src="docs/holiday-guide/purim.svg" width="96" height="96" alt="A Purim mask">
 
 **Key:** purim
+
+**Transliteration:** purim
 
 **When:** 14 Adar, a month before Pesach.
 
@@ -889,6 +1003,8 @@ a festive meal.
 
 **Unpointed:** מגילה
 
+**Transliteration:** megillah
+
 **Caption:** The megillah is the scroll of Esther, read aloud at night and again in the morning.
 
 **כיתוב:** המגילה היא מגילת אסתר, וקוראים אותה בערב ושוב בבוקר.
@@ -900,6 +1016,8 @@ a festive meal.
 #### 2. Gragger · רַעֲשָׁן
 
 <img src="docs/holiday-guide/purim-2.svg" width="72" height="72" alt="A gragger, a noisemaker on a handle">
+
+**Transliteration:** ra’ashan
 
 **Caption:** Graggers make a loud noise every time Haman’s name is read.
 
@@ -915,6 +1033,8 @@ a festive meal.
 
 **Unpointed:** אוזני המן
 
+**Transliteration:** oznei haman
+
 **Caption:** Hamantaschen are three-cornered cookies with a sweet filling.
 
 **כיתוב:** אוזני המן הן עוגיות משולשות עם מילוי מתוק.
@@ -926,6 +1046,8 @@ a festive meal.
 #### 4. Mask · מַסֵּכָה
 
 <img src="docs/holiday-guide/purim-4.svg" width="72" height="72" alt="A mask with three feathers">
+
+**Transliteration:** masechah
 
 **Caption:** People wear masks and costumes, because in the Purim story nothing is what it seems.
 
@@ -939,6 +1061,8 @@ a festive meal.
 
 <img src="docs/holiday-guide/purim-5.svg" width="72" height="72" alt="A crown with jewels">
 
+**Transliteration:** keter
+
 **Caption:** Esther wore the crown of a queen and bravely spoke up to save her people.
 
 **כיתוב:** אסתר ענדה כתר מלכות ודיברה באומץ כדי להציל את עמה.
@@ -950,6 +1074,8 @@ a festive meal.
 #### 6. Mishloach Manot · מִשְׁלוֹחַ מָנוֹת
 
 <img src="docs/holiday-guide/purim-6.svg" width="72" height="72" alt="A basket of treats with a bow">
+
+**Transliteration:** mishloach manot
 
 **Caption:** Friends send each other gifts of food, called mishloach manot.
 
@@ -964,6 +1090,8 @@ a festive meal.
 <img src="docs/holiday-guide/pesach.svg" width="96" height="96" alt="A square of matzah">
 
 **Key:** pesach
+
+**Transliteration:** pesach
 
 **Also spelled:** Passover, Pesah
 
@@ -984,6 +1112,8 @@ other chametz is eaten.
 
 <img src="docs/holiday-guide/pesach-1.svg" width="72" height="72" alt="A round matzah">
 
+**Transliteration:** matzah
+
 **Caption:** Matzah is flat bread, baked quickly because there was no time for the dough to rise.
 
 **כיתוב:** המצה היא לחם שטוח שנאפה במהירות, כי הבצק לא הספיק לתפוח.
@@ -995,6 +1125,8 @@ other chametz is eaten.
 #### 2. Seder Plate · קַעֲרַת הַסֵּדֶר
 
 <img src="docs/holiday-guide/pesach-2.svg" width="72" height="72" alt="A seder plate with six small dishes">
+
+**Transliteration:** ka’arat haseder
 
 **Caption:** The seder plate holds the special foods that help tell the story of the Exodus.
 
@@ -1008,6 +1140,8 @@ other chametz is eaten.
 
 <img src="docs/holiday-guide/pesach-3.svg" width="72" height="72" alt="Four cups of wine">
 
+**Transliteration:** arba kosot
+
 **Caption:** Four cups of wine or grape juice are poured at the seder, one for each promise of freedom.
 
 **כיתוב:** בליל הסדר מוזגים ארבע כוסות יין או מיץ ענבים, כנגד ארבע לשונות של גאולה.
@@ -1019,6 +1153,8 @@ other chametz is eaten.
 #### 4. Haggadah · הַגָּדָה
 
 <img src="docs/holiday-guide/pesach-4.svg" width="72" height="72" alt="A Haggadah with a cup on its cover">
+
+**Transliteration:** haggadah
 
 **Caption:** The Haggadah is the book read at the seder, with the story, the questions and the songs.
 
@@ -1032,6 +1168,8 @@ other chametz is eaten.
 
 <img src="docs/holiday-guide/pesach-5.svg" width="72" height="72" alt="A horseradish root with its leaves">
 
+**Transliteration:** maror
+
 **Caption:** Maror is a bitter herb, eaten to remember how bitter slavery was.
 
 **כיתוב:** המרור הוא ירק מר, ואוכלים אותו כדי לזכור כמה מרה הייתה העבדות.
@@ -1043,6 +1181,8 @@ other chametz is eaten.
 #### 6. Frog · צְפַרְדֵּעַ
 
 <img src="docs/holiday-guide/pesach-6.svg" width="72" height="72" alt="A smiling frog">
+
+**Transliteration:** tzfardea
 
 **Caption:** Frogs were the second of the ten plagues in Egypt.
 
@@ -1057,6 +1197,8 @@ other chametz is eaten.
 <img src="docs/holiday-guide/yom-hashoah.svg" width="96" height="96" alt="A memorial candle with a Star of David">
 
 **Key:** yom_hashoah
+
+**Transliteration:** yom hashoah
 
 **Also spelled:** Holocaust Remembrance Day, Yom HaShoa
 
@@ -1081,6 +1223,8 @@ forgotten.
 
 **Unpointed:** נר זיכרון
 
+**Transliteration:** ner zikaron
+
 **Caption:** A memorial candle burns for a whole day in memory of those who died.
 
 **כיתוב:** נר זיכרון דולק יום שלם לזכר הנספים.
@@ -1095,6 +1239,8 @@ forgotten.
 
 **Unpointed:** שישה נרות
 
+**Transliteration:** shishah nerot
+
 **Caption:** Six candles are lit at ceremonies, for the six million.
 
 **כיתוב:** בטקסים מדליקים שישה נרות, לזכר ששת המיליונים.
@@ -1106,6 +1252,8 @@ forgotten.
 #### 3. Butterfly · פַּרְפַּר
 
 <img src="docs/holiday-guide/yom-hashoah-3.svg" width="72" height="72" alt="A butterfly">
+
+**Transliteration:** parpar
 
 **Caption:** The butterfly comes from a poem written by a boy in the Terezin ghetto, and stands for the children.
 
@@ -1119,6 +1267,8 @@ forgotten.
 
 <img src="docs/holiday-guide/yom-hashoah-4.svg" width="72" height="72" alt="A Star of David">
 
+**Transliteration:** magen david
+
 **Caption:** The Star of David is a sign of the Jewish people, who remember together.
 
 **כיתוב:** מגן דוד הוא סמלו של העם היהודי, שזוכר יחד.
@@ -1131,6 +1281,8 @@ forgotten.
 
 <img src="docs/holiday-guide/yom-hashoah-5.svg" width="72" height="72" alt="A diary and a pencil">
 
+**Transliteration:** yoman
+
 **Caption:** Diaries and stories, like Anne Frank’s, help us remember each person.
 
 **כיתוב:** יומנים וסיפורים, כמו יומנה של אנה פרנק, עוזרים לנו לזכור כל אדם.
@@ -1142,6 +1294,8 @@ forgotten.
 #### 6. Flower · פֶּרַח
 
 <img src="docs/holiday-guide/yom-hashoah-6.svg" width="72" height="72" alt="A flower on its stem">
+
+**Transliteration:** perach
 
 **Caption:** Flowers are laid at memorials as a sign of respect and of hope.
 
@@ -1158,6 +1312,8 @@ forgotten.
 **Key:** yom_hazikaron
 
 **Unpointed:** יום הזיכרון
+
+**Transliteration:** yom hazikaron
 
 **Also spelled:** Israel Memorial Day, Yom HaZikkaron
 
@@ -1181,6 +1337,8 @@ remember the soldiers who fell defending Israel and the victims of terror.
 
 **Unpointed:** נר זיכרון
 
+**Transliteration:** ner zikaron
+
 **Caption:** Families and schools light a memorial candle for those who fell.
 
 **כיתוב:** משפחות ובתי ספר מדליקים נר זיכרון לזכר הנופלים.
@@ -1195,6 +1353,8 @@ remember the soldiers who fell defending Israel and the victims of terror.
 
 **Unpointed:** דגל בחצי התורן
 
+**Transliteration:** degel bachatzi hatoren
+
 **Caption:** Flags are lowered to half-mast as a sign of mourning.
 
 **כיתוב:** מורידים את הדגל לחצי התורן לאות אבל.
@@ -1207,6 +1367,8 @@ remember the soldiers who fell defending Israel and the victims of terror.
 
 <img src="docs/holiday-guide/yom-hazikaron-3.svg" width="72" height="72" alt="Two small red flowers">
 
+**Transliteration:** dam hamakabim
+
 **Caption:** This small red flower, called Dam HaMaccabim, is worn as a sticker on Yom HaZikaron.
 
 **כיתוב:** הפרח האדום הקטן, דם המכבים, הוא סמל יום הזיכרון ועונדים אותו כמדבקה.
@@ -1218,6 +1380,8 @@ remember the soldiers who fell defending Israel and the victims of terror.
 #### 4. Siren · צְפִירָה
 
 <img src="docs/holiday-guide/yom-hazikaron-4.svg" width="72" height="72" alt="A siren on a pole">
+
+**Transliteration:** tzfirah
 
 **Caption:** When the siren sounds, everyone in Israel stops and stands in silence.
 
@@ -1233,6 +1397,8 @@ remember the soldiers who fell defending Israel and the victims of terror.
 
 **Unpointed:** לפיד זיכרון
 
+**Transliteration:** lapid zikaron
+
 **Caption:** A memorial torch is lit at ceremonies when Yom HaZikaron begins.
 
 **כיתוב:** מדליקים לפיד זיכרון בטקסים עם כניסת יום הזיכרון.
@@ -1244,6 +1410,8 @@ remember the soldiers who fell defending Israel and the victims of terror.
 #### 6. Monument · אַנְדַּרְטָה
 
 <img src="docs/holiday-guide/yom-hazikaron-6.svg" width="72" height="72" alt="A stone monument with a flame">
+
+**Transliteration:** andartah
 
 **Caption:** Monuments in towns across Israel carry the names of those who are remembered.
 
@@ -1258,6 +1426,8 @@ remember the soldiers who fell defending Israel and the victims of terror.
 <img src="docs/holiday-guide/yom-haatzmaut.svg" width="96" height="96" alt="The flag of Israel">
 
 **Key:** yom_haatzmaut
+
+**Transliteration:** yom ha’atzmaut
 
 **Also spelled:** Israel Independence Day
 
@@ -1279,6 +1449,8 @@ celebrate with flags, songs, dancing, fireworks and picnics.
 
 <img src="docs/holiday-guide/yom-haatzmaut-1.svg" width="72" height="72" alt="The flag of Israel waving">
 
+**Transliteration:** degel
+
 **Caption:** The blue and white flag of Israel flies from homes, cars and schools.
 
 **כיתוב:** דגל ישראל בכחול ולבן מתנוסס על בתים, מכוניות ובתי ספר.
@@ -1293,6 +1465,8 @@ celebrate with flags, songs, dancing, fireworks and picnics.
 
 **Unpointed:** זיקוקים
 
+**Transliteration:** zikukim
+
 **Caption:** Fireworks light up the sky on the night Independence Day begins.
 
 **כיתוב:** זיקוקים מאירים את השמיים בערב יום העצמאות.
@@ -1304,6 +1478,8 @@ celebrate with flags, songs, dancing, fireworks and picnics.
 #### 3. Falafel · פָלָאפֶל
 
 <img src="docs/holiday-guide/yom-haatzmaut-3.svg" width="72" height="72" alt="Falafel balls in a pita">
+
+**Transliteration:** falafel
 
 **Caption:** Falafel in a pita is a favorite Israeli street food.
 
@@ -1317,6 +1493,8 @@ celebrate with flags, songs, dancing, fireworks and picnics.
 
 <img src="docs/holiday-guide/yom-haatzmaut-4.svg" width="72" height="72" alt="A map of Israel beside the sea">
 
+**Transliteration:** mapat yisrael
+
 **Caption:** The map shows the Land of Israel, from the Galilee in the north to Eilat in the south.
 
 **כיתוב:** המפה מראה את ארץ ישראל, מהגליל בצפון ועד אילת בדרום.
@@ -1329,6 +1507,8 @@ celebrate with flags, songs, dancing, fireworks and picnics.
 
 <img src="docs/holiday-guide/yom-haatzmaut-5.svg" width="72" height="72" alt="A shield with a menorah between olive branches">
 
+**Transliteration:** semel hamedinah
+
 **Caption:** The emblem of Israel is a menorah between two olive branches.
 
 **כיתוב:** סמל המדינה הוא מנורה בין שני ענפי זית.
@@ -1340,6 +1520,8 @@ celebrate with flags, songs, dancing, fireworks and picnics.
 #### 6. Barbecue · מַנְגָּל
 
 <img src="docs/holiday-guide/yom-haatzmaut-6.svg" width="72" height="72" alt="A small grill with skewers">
+
+**Transliteration:** mangal
 
 **Caption:** Families celebrate outdoors with a barbecue, called a mangal.
 
@@ -1356,6 +1538,8 @@ celebrate with flags, songs, dancing, fireworks and picnics.
 **Key:** lag_baomer
 
 **Unpointed:** ל״ג בעומר
+
+**Transliteration:** lag ba’omer
 
 **Also spelled:** Lag B'Omer
 
@@ -1377,6 +1561,8 @@ on picnics and play with bows and arrows, remembering Rabbi Akiva’s students a
 
 <img src="docs/holiday-guide/lag-baomer-1.svg" width="72" height="72" alt="A bonfire with sparks">
 
+**Transliteration:** medurah
+
 **Caption:** Bonfires are lit on Lag BaOmer night, and people sing around them.
 
 **כיתוב:** בליל ל״ג בעומר מדליקים מדורות ושרים סביבן.
@@ -1388,6 +1574,8 @@ on picnics and play with bows and arrows, remembering Rabbi Akiva’s students a
 #### 2. Bow and Arrow · חֵץ וָקֶשֶׁת
 
 <img src="docs/holiday-guide/lag-baomer-2.svg" width="72" height="72" alt="A bow with an arrow">
+
+**Transliteration:** chetz vakeshet
 
 **Caption:** Children play with bows and arrows in the fields.
 
@@ -1401,6 +1589,8 @@ on picnics and play with bows and arrows, remembering Rabbi Akiva’s students a
 
 <img src="docs/holiday-guide/lag-baomer-3.svg" width="72" height="72" alt="A potato roasting over embers">
 
+**Transliteration:** tapuach adamah
+
 **Caption:** Potatoes are wrapped up and roasted in the embers of the bonfire.
 
 **כיתוב:** עוטפים תפוחי אדמה וצולים אותם בגחלי המדורה.
@@ -1412,6 +1602,8 @@ on picnics and play with bows and arrows, remembering Rabbi Akiva’s students a
 #### 4. Picnic · פִּיקְנִיק
 
 <img src="docs/holiday-guide/lag-baomer-4.svg" width="72" height="72" alt="A picnic basket">
+
+**Transliteration:** piknik
 
 **Caption:** Lag BaOmer is a day for picnics and trips outdoors.
 
@@ -1425,6 +1617,8 @@ on picnics and play with bows and arrows, remembering Rabbi Akiva’s students a
 
 <img src="docs/holiday-guide/lag-baomer-5.svg" width="72" height="72" alt="Carob pods hanging from a branch">
 
+**Transliteration:** charuv
+
 **Caption:** A carob tree fed Rabbi Shimon bar Yochai while he hid in a cave.
 
 **כיתוב:** עץ חרוב הזין את רבי שמעון בר יוחאי כשהסתתר במערה.
@@ -1436,6 +1630,8 @@ on picnics and play with bows and arrows, remembering Rabbi Akiva’s students a
 #### 6. Cave · מְעָרָה
 
 <img src="docs/holiday-guide/lag-baomer-6.svg" width="72" height="72" alt="A cave in a hillside">
+
+**Transliteration:** me’arah
 
 **Caption:** Rabbi Shimon and his son hid in a cave for years and studied Torah there.
 
@@ -1450,6 +1646,8 @@ on picnics and play with bows and arrows, remembering Rabbi Akiva’s students a
 <img src="docs/holiday-guide/yom-yerushalayim.svg" width="96" height="96" alt="The walls of Jerusalem with a gate and a tower">
 
 **Key:** yom_yerushalayim
+
+**Transliteration:** yom yerushalayim
 
 **Also spelled:** Jerusalem Day
 
@@ -1473,6 +1671,8 @@ thousand years ago, and its reunification in 1967, with songs, flags and visits 
 
 **Unpointed:** הכותל
 
+**Transliteration:** hakotel
+
 **Caption:** The Kotel, the Western Wall, is the last wall left standing around the Temple Mount.
 
 **כיתוב:** הכותל המערבי הוא שריד מן החומה שהקיפה את הר הבית.
@@ -1484,6 +1684,8 @@ thousand years ago, and its reunification in 1967, with songs, flags and visits 
 #### 2. Tower of David · מִגְדַּל דָּוִד
 
 <img src="docs/holiday-guide/yom-yerushalayim-2.svg" width="72" height="72" alt="A tall tower above the city wall">
+
+**Transliteration:** migdal david
 
 **Caption:** The Tower of David stands beside Jaffa Gate at the entrance to the Old City.
 
@@ -1497,6 +1699,8 @@ thousand years ago, and its reunification in 1967, with songs, flags and visits 
 
 <img src="docs/holiday-guide/yom-yerushalayim-3.svg" width="72" height="72" alt="An arched gate in the city wall">
 
+**Transliteration:** sha’ar
+
 **Caption:** The Old City has great stone gates in its walls.
 
 **כיתוב:** בחומות העיר העתיקה יש שערי אבן גדולים.
@@ -1509,6 +1713,8 @@ thousand years ago, and its reunification in 1967, with songs, flags and visits 
 
 <img src="docs/holiday-guide/yom-yerushalayim-4.svg" width="72" height="72" alt="A sitting lion with a full mane">
 
+**Transliteration:** aryeh
+
 **Caption:** The lion is the symbol of Jerusalem and of the tribe of Judah.
 
 **כיתוב:** האריה הוא סמלה של ירושלים ושל שבט יהודה.
@@ -1520,6 +1726,8 @@ thousand years ago, and its reunification in 1967, with songs, flags and visits 
 #### 5. Olive Tree · עֵץ זַיִת
 
 <img src="docs/holiday-guide/yom-yerushalayim-5.svg" width="72" height="72" alt="An olive tree with olives">
+
+**Transliteration:** etz zayit
 
 **Caption:** Olive trees have grown on the hills of Jerusalem for thousands of years.
 
@@ -1535,6 +1743,8 @@ thousand years ago, and its reunification in 1967, with songs, flags and visits 
 
 **Unpointed:** כינור
 
+**Transliteration:** kinor
+
 **Caption:** King David, who made Jerusalem his city, played the harp.
 
 **כיתוב:** דוד המלך, שקבע את ירושלים לעירו, ניגן בכינור.
@@ -1548,6 +1758,8 @@ thousand years ago, and its reunification in 1967, with songs, flags and visits 
 <img src="docs/holiday-guide/shavuot.svg" width="96" height="96" alt="The two tablets of the Ten Commandments">
 
 **Key:** shavuot
+
+**Transliteration:** shavuot
 
 **Also spelled:** Shavuos, Shavuoth, Shevuot
 
@@ -1568,6 +1780,8 @@ cheesecake.
 
 <img src="docs/holiday-guide/shavuot-1.svg" width="72" height="72" alt="The two tablets joined together">
 
+**Transliteration:** luchot habrit
+
 **Caption:** The Ten Commandments were written on two tablets of stone.
 
 **כיתוב:** עשרת הדיברות נכתבו על שני לוחות אבן.
@@ -1580,6 +1794,8 @@ cheesecake.
 
 <img src="docs/holiday-guide/shavuot-2.svg" width="72" height="72" alt="A mountain with a cloud, lightning and flowers">
 
+**Transliteration:** har sinai
+
 **Caption:** The Torah was given at Mount Sinai, which bloomed with flowers.
 
 **כיתוב:** התורה ניתנה בהר סיני, שפרח כולו.
@@ -1591,6 +1807,8 @@ cheesecake.
 #### 3. Cheesecake · עוּגַת גְּבִינָה
 
 <img src="docs/holiday-guide/shavuot-3.svg" width="72" height="72" alt="A slice of cheesecake with a strawberry">
+
+**Transliteration:** ugat gvinah
 
 **Caption:** Dairy foods like cheesecake are eaten on Shavuot.
 
@@ -1606,6 +1824,8 @@ cheesecake.
 
 **Unpointed:** ביכורים
 
+**Transliteration:** bikurim
+
 **Caption:** Farmers brought baskets of their first fruits to the Temple in Jerusalem.
 
 **כיתוב:** החקלאים הביאו סלים של ביכורים לבית המקדש בירושלים.
@@ -1620,6 +1840,8 @@ cheesecake.
 
 **Unpointed:** חיטה
 
+**Transliteration:** chitah
+
 **Caption:** Shavuot comes at the time of the wheat harvest.
 
 **כיתוב:** שבועות חל בזמן קציר החיטים.
@@ -1631,6 +1853,8 @@ cheesecake.
 #### 6. Milk and Honey · חָלָב וּדְבַשׁ
 
 <img src="docs/holiday-guide/shavuot-6.svg" width="72" height="72" alt="A bottle of milk and a jar of honey">
+
+**Transliteration:** chalav udvash
 
 **Caption:** The Torah is compared to milk and honey, sweet and good for you.
 
@@ -1645,6 +1869,8 @@ cheesecake.
 <img src="docs/holiday-guide/tisha-bav.svg" width="96" height="96" alt="The stones of the Western Wall">
 
 **Key:** tisha_bav
+
+**Transliteration:** tish’ah be’av
 
 **Also spelled:** Tisha BeAv, Tishah B'Av
 
@@ -1664,6 +1890,8 @@ sit low to the ground and read the Book of Lamentations, and everyone hopes for 
 
 <img src="docs/holiday-guide/tisha-bav-1.svg" width="72" height="72" alt="The Temple with its steps and columns">
 
+**Transliteration:** beit hamikdash
+
 **Caption:** The Temple stood in Jerusalem; Tisha B’Av remembers the day it was destroyed.
 
 **כיתוב:** בית המקדש עמד בירושלים, ובתשעה באב זוכרים את יום חורבנו.
@@ -1678,6 +1906,8 @@ sit low to the ground and read the Book of Lamentations, and everyone hopes for 
 
 **Unpointed:** מגילת איכה
 
+**Transliteration:** megillat eichah
+
 **Caption:** The Book of Lamentations, Eicha, is read in a quiet, sad tune.
 
 **כיתוב:** קוראים את מגילת איכה בניגון שקט ועצוב.
@@ -1689,6 +1919,8 @@ sit low to the ground and read the Book of Lamentations, and everyone hopes for 
 #### 3. Candle · נֵר
 
 <img src="docs/holiday-guide/tisha-bav-3.svg" width="72" height="72" alt="A candle in a holder">
+
+**Transliteration:** ner
 
 **Caption:** Eicha is read at night in dim light, sometimes by candlelight.
 
@@ -1702,6 +1934,8 @@ sit low to the ground and read the Book of Lamentations, and everyone hopes for 
 
 <img src="docs/holiday-guide/tisha-bav-4.svg" width="72" height="72" alt="A low wooden stool">
 
+**Transliteration:** shrafraf
+
 **Caption:** People sit on low stools or on the floor, as mourners do.
 
 **כיתוב:** יושבים על שרפרף נמוך או על הרצפה, כמנהג אבלים.
@@ -1714,6 +1948,8 @@ sit low to the ground and read the Book of Lamentations, and everyone hopes for 
 
 <img src="docs/holiday-guide/tisha-bav-5.svg" width="72" height="72" alt="A teardrop">
 
+**Transliteration:** dim’ah
+
 **Caption:** Tisha B’Av is a sad day, and it ends with hope for comfort.
 
 **כיתוב:** תשעה באב הוא יום עצוב, ובסופו מקווים לנחמה.
@@ -1725,6 +1961,8 @@ sit low to the ground and read the Book of Lamentations, and everyone hopes for 
 #### 6. Stones · אֲבָנִים
 
 <img src="docs/holiday-guide/tisha-bav-6.svg" width="72" height="72" alt="A pile of fallen stones with a green sprout">
+
+**Transliteration:** avanim
 
 **Caption:** The broken stones remind us of what was lost, and of the hope to rebuild.
 

@@ -7,8 +7,8 @@
  *
  * readHolidayCatalog(catalogPath) → { holidays, problems }. `problems` lists every rule a section breaks (empty when
  * the catalog is valid); `holidays` has one entry per section that could be read, in order:
- *   { n, key, slug, en, he, plain, weekly, spelled: [...], alt, icon, iconFrom, when: { en, he }, about: { en, he },
- *     symbols: [ { n, en, he, plain, alt, svg, caption: { en, he }, meaning: { en, he, plain, svg } | null } ] }
+ *   { n, key, slug, en, he, plain, tr, weekly, spelled: [...], alt, icon, iconFrom, when: { en, he }, about: { en, he },
+ *     symbols: [ { n, en, he, plain, tr, alt, svg, caption: { en, he }, meaning: { en, he, plain, svg } | null } ] }
  *
  * The catalog. Seventeen "### N. Name · שֵׁם" sections in a fixed order — Shabbat and Havdalah (the weekly ones:
  * `weekly`, never counted down to), then the fifteen dated holidays in js/hebrew-calendar.js's HOLIDAY_KEYS order.
@@ -16,6 +16,7 @@
  *   <img src="docs/holiday-guide/<slug>.svg" … alt="what the holiday's symbol shows">
  *   **Key:** shabbat | havdalah | a HOLIDAY_KEYS key
  *   **Unpointed:** the name as it is spelled without nikkud (optional — see below)
+ *   **Transliteration:** the Hebrew name in Latin letters, lower case (a sheet can print it as a line of its own)
  *   **Also spelled:** other English spellings (optional; the coloring pages show them and search engines read them)
  *   **When:** one short sentence          **About:** the brief description, 60–600 characters
  *   **מתי:** and **על החג:**               their Hebrew twins (unpointed, as the parasha catalog's Hebrew)
@@ -26,6 +27,7 @@
  * subsections, each:
  *   <img src="docs/holiday-guide/<slug>-<n>.svg" … alt="what the drawing shows">
  *   **Unpointed:** the name as it is spelled without nikkud (optional)
+ *   **Transliteration:** the Hebrew name in Latin letters, lower case
  *   **Caption:** one sentence, 20–220 characters        **כיתוב:** its Hebrew twin
  *   **Meaning:** English · עִבְרִית (optional: what the symbol stands for, as Sukkot's four species do; a third
  *   " · unpointed" part when its plain spelling differs)
@@ -33,7 +35,9 @@
  * Every Hebrew *name* (a holiday's, a symbol's, a meaning's) is pointed — the sheets print it as vocabulary and strip
  * the points when asked — while the Hebrew *sentences* are unpointed. `plain` is the name for a sheet printed without
  * nikkud: the pointed name with its points removed, unless **Unpointed:** gives the full spelling Hebrew is written
- * in without them (חֲנֻכָּה is חנוכה, not חנכה; סֻכָּה is סוכה) — give one wherever the two differ.
+ * in without them (חֲנֻכָּה is חנוכה, not חנכה; סֻכָּה is סוכה) — give one wherever the two differ. `tr` is how the
+ * Hebrew name sounds, in the Letter Learner's spelling (ch for ח and כ, tz for צ, a final -ah, ’ between two vowels
+ * that are said apart): the Hebrew word's own sound, not the English name (סְבִיבוֹן is sevivon, not dreidel).
  */
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
@@ -70,13 +74,13 @@ export function sharedHolidayIcons() {
 }
 
 const HOLIDAY_PARAS = [
-  ['img', /^<img src="/], ['key', /^\*\*Key:\*\* \S/], ['plain', /^\*\*Unpointed:\*\* \S/], ['spelled', /^\*\*Also spelled:\*\* \S/],
+  ['img', /^<img src="/], ['key', /^\*\*Key:\*\* \S/], ['plain', /^\*\*Unpointed:\*\* \S/], ['tr', /^\*\*Transliteration:\*\* \S/], ['spelled', /^\*\*Also spelled:\*\* \S/],
   ['when.en', /^\*\*When:\*\*\s/, '**When:**'], ['about.en', /^\*\*About:\*\*\s/, '**About:**'],
   ['when.he', /^\*\*מתי:\*\*\s/u, '**מתי:**'], ['about.he', /^\*\*על החג:\*\*\s/u, '**על החג:**'],
   ['symbol', /^\*\*Symbol:\*\* \S/], ['html', /^```html\n/],
 ];
 const SYMBOL_PARAS = [
-  ['img', /^<img src="/], ['plain', /^\*\*Unpointed:\*\* \S/], ['caption.en', /^\*\*Caption:\*\*\s/, '**Caption:**'], ['caption.he', /^\*\*כיתוב:\*\*\s/u, '**כיתוב:**'],
+  ['img', /^<img src="/], ['plain', /^\*\*Unpointed:\*\* \S/], ['tr', /^\*\*Transliteration:\*\* \S/], ['caption.en', /^\*\*Caption:\*\*\s/, '**Caption:**'], ['caption.he', /^\*\*כיתוב:\*\*\s/u, '**כיתוב:**'],
   ['meaning', /^\*\*Meaning:\*\* \S/], ['html', /^```html\n/], ['html2', /^```html\n/],
 ];
 const LIMITS = { 'when.en': { min: 8, max: 140 }, 'when.he': { min: 6, max: 140 }, 'about.en': { min: 60, max: 600 }, 'about.he': { min: 40, max: 600 },
@@ -84,6 +88,8 @@ const LIMITS = { 'when.en': { min: 8, max: 140 }, 'when.he': { min: 6, max: 140 
 // A pointed Hebrew name: letters, vowel points and the shin/sin dots, spaces, maqaf, geresh/gershayim and " / ".
 const HE_NAME = /^[א-תְ-ׇּׁׂ ־׳״/]+$/u;
 const EN_NAME = /^[A-Za-z][A-Za-z '’/-]*$/;
+// A transliteration: lower-case Latin words, ’ where two vowels are said apart, " / " where the name has one.
+const TR_NAME = /^[a-z]+(?:’[a-z]+)*(?:(?: \/ | )[a-z]+(?:’[a-z]+)*)*$/;
 const HE_PLAIN = /^[\u05d0-\u05ea \u05be\u05f3\u05f4/]+$/u;
 const MARKS = /[\u0591-\u05bd\u05bf\u05c1\u05c2\u05c4\u05c5\u05c7]/gu;
 export const stripPoints = (he) => he.replace(MARKS, '');
@@ -108,6 +114,13 @@ export function readHolidayCatalog(catalogPath = path.join(ROOT, CATALOG)) {
     if (!HE_PLAIN.test(given)) fail(where, `**Unpointed:** «${given}» — Hebrew letters only, no points`);
     else if (given === stripped) fail(where, `**Unpointed:** «${given}» is the pointed name without its points: leave it out`);
     return given;
+  };
+  const trOf = (where, para, he) => {
+    const tr = para.slice('**Transliteration:** '.length).trim();
+    if (!para) return '';   // sort() has already said the paragraph is missing
+    if (!TR_NAME.test(tr) || tr.length > 48) fail(where, `**Transliteration:** «${tr}» — lower-case Latin words (’ between vowels said apart), at most 48 characters`);
+    else if (tr.split(/ \/ | /).length !== he.split(/ \/ |[ ־]/).length) fail(where, `**Transliteration:** «${tr}» has ${tr.split(/ \/ | /).length} word(s) and «${he}» has ${he.split(/ \/ |[ ־]/).length}`);
+    return tr;
   };
   const enName = (where, what, en) => { if (!EN_NAME.test(en)) fail(where, `${what} «${en}» — letters with spaces, hyphens, apostrophes or " / " between them`); };
   // A section's paragraphs against its list: every one recognised, in order, the optional ones possibly absent.
@@ -158,6 +171,7 @@ export function readHolidayCatalog(catalogPath = path.join(ROOT, CATALOG)) {
     const subs = [...section.matchAll(/^#### (\d+)\. (.+?) · (.+?)\s*$/gm)];
     const head = sort(where, subs.length ? section.slice(0, subs[0].index) : section, HOLIDAY_PARAS, new Set(['plain', 'spelled', 'symbol', 'html']));
     const plain = plainOf(where, he, head.para('plain').slice('**Unpointed:** '.length).trim());
+    const tr = trOf(where, head.para('tr'), he);
     const key = head.para('key').slice('**Key:** '.length).trim();
     if (key !== order[i]) fail(where, `**Key:** is ${key || '(none)'}, expected ${order[i] || '(no such holiday)'} — the order is ${order.join(', ')}`);
     const alt = altOf(where, head.para('img'), `${PREVIEW_DIR}/${slug}.svg`);
@@ -179,6 +193,7 @@ export function readHolidayCatalog(catalogPath = path.join(ROOT, CATALOG)) {
       const body = section.slice(a, j + 1 < subs.length ? subs[j + 1].index : section.length);
       const sub = sort(sw, body, SYMBOL_PARAS, new Set(['plain', 'meaning', 'html2']));
       const splain = plainOf(sw, she, sub.para('plain').slice('**Unpointed:** '.length).trim());
+      const str = trOf(sw, sub.para('tr'), she);
       const salt = altOf(sw, sub.para('img'), `${PREVIEW_DIR}/${slug}-${j + 1}.svg`);
       const svg = sub.has('html') ? drawingOf(sw, sub.para('html')) : '';
       let meaning = null;
@@ -191,11 +206,11 @@ export function readHolidayCatalog(catalogPath = path.join(ROOT, CATALOG)) {
           meaning = { en: m[1], he: m[2].trim(), plain: plainOf(sw + ' (meaning)', m[2].trim(), (m[3] || '').trim()), svg: drawingOf(sw + ' (meaning)', sub.para('html2')) };
         }
       }
-      symbols.push({ n: j + 1, en: sen, he: she, plain: splain, alt: salt, svg, caption: { en: sub.text['caption.en'], he: sub.text['caption.he'] }, meaning });
+      symbols.push({ n: j + 1, en: sen, he: she, plain: splain, tr: str, alt: salt, svg, caption: { en: sub.text['caption.en'], he: sub.text['caption.he'] }, meaning });
     });
     if (symbols.length && symbols.length !== SYMBOLS_PER_HOLIDAY) fail(where, `${symbols.length} symbols: a holiday has none yet or exactly ${SYMBOLS_PER_HOLIDAY}`);
     if (new Set(symbols.map((s) => s.en)).size !== symbols.length) fail(where, 'two symbols share a name');
-    holidays.push({ n: i + 1, key, slug, en, he, plain, weekly: WEEKLY_KEYS.includes(key), spelled, alt, icon, iconFrom,
+    holidays.push({ n: i + 1, key, slug, en, he, plain, tr, weekly: WEEKLY_KEYS.includes(key), spelled, alt, icon, iconFrom,
       when: { en: head.text['when.en'], he: head.text['when.he'] }, about: { en: head.text['about.en'], he: head.text['about.he'] }, symbols });
   });
   if (heads.length !== order.length) fail(CATALOG, `${heads.length} "### N. Name · שֵׁם" sections, expected ${order.length} (${order.join(', ')})`);

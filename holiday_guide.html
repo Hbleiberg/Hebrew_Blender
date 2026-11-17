@@ -158,7 +158,7 @@
       "name": "How do I print a holiday coloring sheet?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Choose the holiday, tick the symbols you want and press Print. You can put one, two, four or six symbols on a page, label them in Hebrew, English or both, show or hide the Hebrew vowels, add a line for the child’s name and a dashed line for cutting the page in half, and print on Letter or A4 paper."
+        "text": "Choose the holiday, tick the symbols you want and press Print. You can put one, two, four or six symbols on a page, label them in Hebrew, in transliteration and in English, make the pictures and the words bigger or smaller, show or hide the Hebrew vowels, add a line for the child’s name and a dashed line for cutting the page in half, and print on Letter or A4 paper."
       }
     },
     {
@@ -329,6 +329,11 @@ html[lang="he"] .hg-set legend{letter-spacing:normal;text-transform:none;}
 .hg-opt{display:flex;align-items:center;gap:8px;font-size:0.9rem;min-height:30px;}
 .hg-opt[hidden]{display:none;}
 .hg-opt input{width:18px;height:18px;accent-color:var(--gold);flex-shrink:0;margin:0;}
+/* A size slider, as the Letter Learner's: its name, the slider, the percentage. */
+.hg-size{display:grid;grid-template-columns:minmax(7.5em,max-content) minmax(90px,1fr) 3.2em;align-items:center;gap:2px 8px;font-size:0.9rem;min-height:30px;}
+.hg-size input[type="range"]{width:100%;height:24px;accent-color:var(--gold);margin:0;}
+.hg-size input[type="range"]:disabled{opacity:0.4;}
+.hg-size output{font-variant-numeric:tabular-nums;color:var(--muted);font-size:0.82rem;}
 .hg-btns{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px;}
 .hg-btn{font-family:inherit;font-size:0.8rem;font-weight:700;padding:4px 10px;min-height:30px;border-radius:6px;border:1.5px solid var(--border);background:transparent;color:var(--text);cursor:pointer;}
 .hg-btn:hover{border-color:var(--gold);}
@@ -381,23 +386,27 @@ html[lang="he"] .hg-set legend{letter-spacing:normal;text-transform:none;}
 .hg-bubble-he{font-family:var(--heb-font);font-size:calc(10.5cqmin * var(--tk));line-height:1.5;}
 @supports not (-webkit-text-stroke:1px #000){ .hg-bubble{color:#000;} }
 .hg-grid{flex:1;min-height:0;display:flex;flex-direction:column;}
-.hg-grow{flex:1 1 0;min-height:0;display:flex;gap:2cqmin;}
+/* A row that is not full (five symbols on a six-symbol page) is centred: every cell keeps a full row's width. */
+.hg-grow{flex:1 1 0;min-height:0;display:flex;justify-content:center;gap:2cqmin;}
 .hg-grid[dir="rtl"] .hg-grow{flex-direction:row;}
 .hg-cut{flex:none;margin-block:1.4cqmin;border-block-start:0.45cqmin dashed #1a2744;}
 .hg-gap{flex:none;height:2.4cqmin;}
-.hg-cell{flex:1 1 0;min-width:0;min-height:0;display:flex;flex-direction:column;align-items:center;gap:0.6cqmin;margin:0;}
-.hg-cell-empty{visibility:hidden;}
+.hg-cell{flex:0 0 calc((100% - (var(--cols,3) - 1) * 2cqmin) / var(--cols,3));min-width:0;min-height:0;display:flex;flex-direction:column;align-items:center;gap:0.6cqmin;margin:0;}
 .hg-pic{flex:1 1 0;min-height:0;width:100%;position:relative;}
-.hg-pic svg{position:absolute;inset:0;width:100%;height:100%;display:block;overflow:visible;}
+/* The size sliders (hgApplySizes) set --sz-pic / --sz-he / --sz-tr / --sz-en on the sheet. A picture fills the room
+   its row leaves it, so it can be made smaller, and it grows when the words under it are made smaller; a word that
+   outgrows its cell is fitted back (hgFit). */
+.hg-pic svg{position:absolute;inset:0;margin:auto;width:calc(100% * var(--sz-pic,1));height:calc(100% * var(--sz-pic,1));display:block;overflow:visible;}
 .hg-cap{flex:none;width:100%;display:flex;flex-direction:column;align-items:center;text-align:center;white-space:nowrap;overflow:hidden;}
-.hg-he{font-family:var(--heb-font);font-size:calc(var(--he,6.4cqmin) * var(--k,1));line-height:1.5;}
-.hg-en{font-weight:600;font-size:calc(var(--en,4.6cqmin) * var(--k,1));line-height:1.2;}
+.hg-he{font-family:var(--heb-font);font-size:calc(var(--he,6.4cqmin) * var(--sz-he,1) * var(--k,1));line-height:1.5;}
+.hg-tr{font-style:italic;font-size:calc(var(--tr,4.2cqmin) * var(--sz-tr,1) * var(--k,1));line-height:1.25;}
+.hg-en{font-weight:600;font-size:calc(var(--en,4.6cqmin) * var(--sz-en,1) * var(--k,1));line-height:1.2;}
 .hg-mean{display:block;width:var(--mean,9cqmin);height:var(--mean,9cqmin);margin-block-start:0.8cqmin;}
 .hg-mean svg{width:100%;height:100%;display:block;overflow:visible;}
-.hg-sheet[data-per="6"]{--he:6.4cqmin;--en:4.6cqmin;--mean:8.5cqmin;}
-.hg-sheet[data-per="4"]{--he:7.4cqmin;--en:5.2cqmin;--mean:10cqmin;}
-.hg-sheet[data-per="2"]{--he:7.8cqmin;--en:5.4cqmin;--mean:10cqmin;}
-.hg-sheet[data-per="1"]{--he:10cqmin;--en:6.6cqmin;--mean:13cqmin;}
+.hg-sheet[data-per="6"]{--he:6.4cqmin;--tr:4.2cqmin;--en:4.6cqmin;--mean:8.5cqmin;}
+.hg-sheet[data-per="4"]{--he:7.4cqmin;--tr:4.8cqmin;--en:5.2cqmin;--mean:10cqmin;}
+.hg-sheet[data-per="2"]{--he:7.8cqmin;--tr:5cqmin;--en:5.4cqmin;--mean:10cqmin;}
+.hg-sheet[data-per="1"]{--he:10cqmin;--tr:6cqmin;--en:6.6cqmin;--mean:13cqmin;}
 .hg-credit{flex:none;font-size:1.8cqmin;color:#555;text-align:end;}
 
 /* ───── The guide: every holiday, its symbol, when it falls, what it is and the symbols that go with it. ───── */
@@ -602,7 +611,7 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="holidayguide.faq.q1">What is the Holiday Guide?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="holidayguide.faq.a1">A page of Jewish holiday coloring sheets and a picture guide to the holidays. Every holiday has its own symbol, a short description and when it falls, and six symbols drawn to color and named in Hebrew and English.</p></details>
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="holidayguide.faq.q2">Which holidays have coloring sheets?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="holidayguide.faq.a2">All seventeen: Shabbat, Havdalah, Rosh Hashanah, Yom Kippur, Sukkot, Shemini Atzeret and Simchat Torah, Chanukah, Tu BiShvat, Purim, Pesach, Yom HaShoah, Yom HaZikaron, Yom HaAtzmaut, Lag BaOmer, Yom Yerushalayim, Shavuot and Tisha B’Av. Each has a full sheet of six symbols and a page of its own.</p></details>
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="holidayguide.faq.q3">Which holiday does the page show first?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="holidayguide.faq.a3">The next one. The page opens with the next holiday on the calendar and how many days are left until the evening it begins, and Make its coloring sheet opens its sheet. Shabbat and Havdalah come every week, so they are not counted down to.</p></details>
-        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="holidayguide.faq.q4">How do I print a holiday coloring sheet?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="holidayguide.faq.a4">Choose the holiday, tick the symbols you want and press Print. You can put one, two, four or six symbols on a page, label them in Hebrew, English or both, show or hide the Hebrew vowels, add a line for the child’s name and a dashed line for cutting the page in half, and print on Letter or A4 paper.</p></details>
+        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="holidayguide.faq.q4">How do I print a holiday coloring sheet?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="holidayguide.faq.a4">Choose the holiday, tick the symbols you want and press Print. You can put one, two, four or six symbols on a page, label them in Hebrew, in transliteration and in English, make the pictures and the words bigger or smaller, show or hide the Hebrew vowels, add a line for the child’s name and a dashed line for cutting the page in half, and print on Letter or A4 paper.</p></details>
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="holidayguide.faq.q5">Are the Hebrew words written with vowels?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="holidayguide.faq.a5">Yes. Every Hebrew word on a sheet is printed with nikkud, the Hebrew vowel marks, so that new readers can sound it out. Turn the vowels off to print the words as they are usually written.</p></details>
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="holidayguide.faq.q6">Can I print the pictures already colored?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="holidayguide.faq.a6">Yes. Choose Colored in and the same sheet prints in color, for a poster or a matching game.</p></details>
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="holidayguide.faq.q7">Is the Holiday Guide free?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="holidayguide.faq.a7">Yes. Free for non-commercial educational use under CC BY-NC-SA 4.0, with nothing to sign up for.</p></details>
@@ -674,10 +683,9 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
         <fieldset class="hg-set">
           <legend data-i18n="holidayguide.builder.labels">Labels</legend>
           <div class="hg-row">
-            <label class="hg-opt"><input type="radio" name="hgLabels" value="both"><span data-i18n="holidayguide.builder.labels_both">Hebrew and English</span></label>
-            <label class="hg-opt"><input type="radio" name="hgLabels" value="he"><span data-i18n="holidayguide.builder.labels_he">Hebrew</span></label>
-            <label class="hg-opt"><input type="radio" name="hgLabels" value="en"><span data-i18n="holidayguide.builder.labels_en">English</span></label>
-            <label class="hg-opt"><input type="radio" name="hgLabels" value="none"><span data-i18n="holidayguide.builder.labels_none">None</span></label>
+            <label class="hg-opt"><input type="checkbox" id="hgLblHe"><span data-i18n="holidayguide.builder.labels_he">Hebrew</span></label>
+            <label class="hg-opt"><input type="checkbox" id="hgLblTr"><span data-i18n="holidayguide.builder.labels_tr">Transliteration</span></label>
+            <label class="hg-opt"><input type="checkbox" id="hgLblEn"><span data-i18n="holidayguide.builder.labels_en">English</span></label>
           </div>
         </fieldset>
         <fieldset class="hg-set">
@@ -687,6 +695,13 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
           <label class="hg-opt"><input type="checkbox" id="hgOptCut"><span data-i18n="holidayguide.builder.cut">Dashed cut line between the rows</span></label>
           <label class="hg-opt" id="hgOptMeaningsRow"><input type="checkbox" id="hgOptMeanings"><span data-i18n="holidayguide.builder.meanings">What each symbol stands for</span></label>
           <label class="hg-opt"><input type="checkbox" id="hgOptName"><span data-i18n="holidayguide.builder.name_line">A line for the child's name</span></label>
+        </fieldset>
+        <fieldset class="hg-set">
+          <legend data-i18n="holidayguide.builder.sizes">Sizes</legend>
+          <div class="hg-size"><label for="hgSizePic" data-i18n="holidayguide.builder.size_pic">Pictures</label><input type="range" id="hgSizePic" data-size="sizePic" min="50" max="100" step="5"><output for="hgSizePic"></output></div>
+          <div class="hg-size"><label for="hgSizeHe" data-i18n="holidayguide.builder.size_he">Hebrew</label><input type="range" id="hgSizeHe" data-size="sizeHe" min="50" max="150" step="5"><output for="hgSizeHe"></output></div>
+          <div class="hg-size"><label for="hgSizeTr" data-i18n="holidayguide.builder.size_tr">Transliteration</label><input type="range" id="hgSizeTr" data-size="sizeTr" min="50" max="150" step="5"><output for="hgSizeTr"></output></div>
+          <div class="hg-size"><label for="hgSizeEn" data-i18n="holidayguide.builder.size_en">English</label><input type="range" id="hgSizeEn" data-size="sizeEn" min="50" max="150" step="5"><output for="hgSizeEn"></output></div>
         </fieldset>
         <fieldset class="hg-set">
           <legend data-i18n="holidayguide.builder.drawings">Drawings</legend>
@@ -764,9 +779,15 @@ function hgNamesHTML(o) {
 /* ── The sheet's options (hebrewHolidayGuide_settings): per device, registered in the hub's AllTools export, import and
    erase. Fields this build does not know are kept as they came (a newer build's, or an import's). ── */
 const HG_KEY = 'hebrewHolidayGuide_settings';
-const HG_DEFAULTS = { v: 1, per: 6, labels: 'both', nikkud: true, cut: true, title: true, meanings: false, name: false, colored: false, paper: 'letter' };
-const HG_PER = [1, 2, 4, 6], HG_LABELS = ['both', 'he', 'en', 'none'], HG_PAPER = ['letter', 'a4'];
-const HG_BOOL = ['nikkud', 'cut', 'title', 'meanings', 'name', 'colored'];
+const HG_DEFAULTS = { v: 2, per: 6, lblHe: true, lblTr: false, lblEn: true, sizePic: 100, sizeHe: 100, sizeTr: 100, sizeEn: 100, nikkud: true, cut: true, title: true, meanings: false, name: false, colored: false, paper: 'letter' };
+const HG_PER = [1, 2, 4, 6], HG_PAPER = ['letter', 'a4'];
+const HG_BOOL = ['lblHe', 'lblTr', 'lblEn', 'nikkud', 'cut', 'title', 'meanings', 'name', 'colored'];
+// The size sliders: a percentage of the sheet's own size for that part, in steps of 5. A picture already fills its
+// place at 100, so its slider only goes down; the words go from half to half as big again.
+const HG_SIZES = { sizePic: ['--sz-pic', 50, 100], sizeHe: ['--sz-he', 50, 150], sizeTr: ['--sz-tr', 50, 150], sizeEn: ['--sz-en', 50, 150] };
+const hgSizeVal = (k, v) => { const n = Math.round(Number(v) / 5) * 5, [, lo, hi] = HG_SIZES[k]; return typeof v === 'number' && Number.isFinite(n) ? Math.min(hi, Math.max(lo, n)) : 100; };
+// Which lines a version-1 blob's one `labels` choice asked for (Hebrew and English, one of them, or neither).
+const HG_OLD_LABELS = { both: [true, true], he: [true, false], en: [false, true], none: [false, false] };
 let hg = Object.assign({}, HG_DEFAULTS), _hgRaw = {};
 function hgLoad() {
   let raw = null;
@@ -774,13 +795,15 @@ function hgLoad() {
   _hgRaw = raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {};
   const s = Object.assign({}, HG_DEFAULTS);
   if (HG_PER.includes(_hgRaw.per)) s.per = _hgRaw.per;
-  if (HG_LABELS.includes(_hgRaw.labels)) s.labels = _hgRaw.labels;
   if (HG_PAPER.includes(_hgRaw.paper)) s.paper = _hgRaw.paper;
+  if (typeof _hgRaw.labels === 'string' && Object.prototype.hasOwnProperty.call(HG_OLD_LABELS, _hgRaw.labels)) [s.lblHe, s.lblEn] = HG_OLD_LABELS[_hgRaw.labels];   // then its own fields, when it has them
   HG_BOOL.forEach(k => { if (typeof _hgRaw[k] === 'boolean') s[k] = _hgRaw[k]; });
+  Object.keys(HG_SIZES).forEach(k => { if (_hgRaw[k] != null) s[k] = hgSizeVal(k, _hgRaw[k]); });
   hg = s;
 }
 function hgSave() {
   _hgRaw = Object.assign({}, _hgRaw, hg);
+  delete _hgRaw.labels;   // version 1's field: the three lbl* fields say it now
   try { localStorage.setItem(HG_KEY, JSON.stringify(_hgRaw)); } catch (e) {}
 }
 
@@ -898,7 +921,7 @@ function hgRenderGuide() {
 // What a holiday can put on a sheet: its six symbols, or — until it has them — its own symbol alone (index -1, which a
 // holiday with symbols may add as a seventh picture).
 function hgItems(h) {
-  const own = { i: -1, en: h.en, he: h.he, plain: h.plain, svg: h.icon, alt: h.alt, meaning: null, own: true };
+  const own = { i: -1, en: h.en, he: h.he, plain: h.plain, tr: h.tr, svg: h.icon, alt: h.alt, meaning: null, own: true };
   return h.symbols.length ? h.symbols.map((s, i) => Object.assign({ i }, s)).concat([own]) : [own];
 }
 function hgSetHoliday(key, keepFocus) {
@@ -925,10 +948,26 @@ function hgRenderSyms() {
   soon.textContent = h.symbols.length ? '' : I18n.t('holidayguide.builder.soon', { name: hgName(h) });
   document.getElementById('hgSymBtns').hidden = !h.symbols.length;
 }
+function hgSizeLabel(r) {
+  const txt = r.value + '%';   // i18n-ignore: a number and a percent sign
+  r.setAttribute('aria-valuetext', txt);
+  r.nextElementSibling.textContent = txt;
+}
+// A size slider whose line is switched off under Labels is disabled: nothing on the sheet to resize.
+function hgSizeState() {
+  document.getElementById('hgSizeHe').disabled = !hg.lblHe;
+  document.getElementById('hgSizeTr').disabled = !hg.lblTr;
+  document.getElementById('hgSizeEn').disabled = !hg.lblEn;
+}
 function hgSyncControls() {
   const h = HG.get(hgHoliday);
   const set = (name, v) => document.querySelectorAll(`input[name="${name}"]`).forEach(r => { r.checked = r.value === String(v); });
-  set('hgPer', hg.per); set('hgLabels', hg.labels); set('hgPaper', hg.paper); set('hgColored', hg.colored ? 1 : 0);
+  set('hgPer', hg.per); set('hgPaper', hg.paper); set('hgColored', hg.colored ? 1 : 0);
+  document.getElementById('hgLblHe').checked = hg.lblHe;
+  document.getElementById('hgLblTr').checked = hg.lblTr;
+  document.getElementById('hgLblEn').checked = hg.lblEn;
+  document.querySelectorAll('.hg-size input[type="range"]').forEach(r => { r.value = String(hg[r.dataset.size]); hgSizeLabel(r); });
+  hgSizeState();
   document.getElementById('hgOptNikkud').checked = hg.nikkud;
   document.getElementById('hgOptTitle').checked = hg.title;
   document.getElementById('hgOptCut').checked = hg.cut;
@@ -973,6 +1012,8 @@ function hgBuildSheet(h, items, per) {
   sheet.dataset.per = String(per);
   sheet.style.setProperty('--cs-aw', String(W));
   sheet.style.setProperty('--cs-ah', String(H));
+  sheet.style.setProperty('--cols', String(cols));
+  hgApplySizes(sheet);
   sheet.dir = 'ltr';
   sheet.lang = 'en';
   const add = (parent, tag, cls, text, l) => {
@@ -983,7 +1024,9 @@ function hgBuildSheet(h, items, per) {
     parent.appendChild(n);
     return n;
   };
-  const heOnly = hg.labels === 'he', showHe = hg.labels === 'both' || heOnly, showEn = hg.labels === 'both' || hg.labels === 'en';
+  // The lines under a picture: the Hebrew name, how it sounds, the English name. A sheet whose only words are Hebrew
+  // is a Hebrew sheet (its title, its name line, its reading direction); one with no Hebrew line has an English title.
+  const showHe = hg.lblHe, showTr = hg.lblTr, showEn = hg.lblEn, heOnly = showHe && !showTr && !showEn, noHe = !showHe && (showTr || showEn);
   const pg = add(sheet, 'div', 'hg-page');
   if (hg.name) {
     const row = add(pg, 'div', 'hg-nameline', null, heOnly ? 'he' : 'en');
@@ -992,8 +1035,8 @@ function hgBuildSheet(h, items, per) {
   }
   if (hg.title) {
     const head = add(pg, 'div', 'hg-headline');
-    if (hg.labels !== 'he') add(head, 'span', 'hg-bubble hg-bubble-en', h.en);
-    if (hg.labels !== 'en') add(head, 'span', 'hg-bubble hg-bubble-he', hgHe(h), 'he');
+    if (!heOnly) add(head, 'span', 'hg-bubble hg-bubble-en', h.en);
+    if (!noHe) add(head, 'span', 'hg-bubble hg-bubble-he', hgHe(h), 'he');
   }
   const grid = add(pg, 'div', 'hg-grid');
   if (heOnly) grid.dir = 'rtl';   // a Hebrew-only sheet reads from the right: its first symbol sits there
@@ -1001,10 +1044,9 @@ function hgBuildSheet(h, items, per) {
     const rowItems = items.slice(r * cols, (r + 1) * cols);
     if (r > 0) add(grid, 'div', hg.cut && rowItems.length ? 'hg-cut' : 'hg-gap');
     const row = add(grid, 'div', 'hg-grow');
-    for (let c = 0; c < cols; c++) {
-      const it = rowItems[c];
-      const cell = add(row, 'figure', 'hg-cell' + (it ? '' : ' hg-cell-empty'));
-      if (!it) continue;
+    // Only the cells there are symbols for: a row that is not full is centred (an empty row keeps its place).
+    for (const it of rowItems) {
+      const cell = add(row, 'figure', 'hg-cell');
       const pic = add(cell, 'div', 'hg-pic');
       const svg = hgArt(it.own ? h.slug : h.slug + '/' + (it.i + 1), it.svg, hg.colored);
       if (svg) { svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', it.alt || it.en); pic.appendChild(svg); }
@@ -1012,6 +1054,7 @@ function hgBuildSheet(h, items, per) {
       // The holiday's own symbol under the title that already names it carries no second label.
       const labelled = !(it.own && hg.title);
       if (labelled && showHe) add(cap, 'span', 'hg-he', hgHe(it), 'he');
+      if (labelled && showTr && it.tr) add(cap, 'span', 'hg-tr', it.tr);
       if (labelled && showEn) add(cap, 'span', 'hg-en', it.en);
       if (hg.meanings && it.meaning) {
         const m = add(cap, 'span', 'hg-mean');
@@ -1029,7 +1072,7 @@ function hgBuildSheet(h, items, per) {
 // paper. Each pass reads, then writes.
 function hgFit(sheet) {
   const head = sheet.querySelector('.hg-headline');
-  const labels = [...sheet.querySelectorAll('.hg-he, .hg-en')];
+  const labels = [...sheet.querySelectorAll('.hg-he, .hg-tr, .hg-en')];
   sheet.style.setProperty('--tk', '1');
   if (head) head.classList.remove('hg-stack');
   labels.forEach(l => l.style.removeProperty('--k'));
@@ -1049,6 +1092,9 @@ function hgFit(sheet) {
   labels.forEach((l, i) => { if (ks[i] < 1) l.style.setProperty('--k', ks[i].toFixed(3)); });
 }
 function hgFitAll() { document.querySelectorAll('#hgPages .hg-sheet').forEach(hgFit); }
+// The size sliders' factors on a sheet (and, during a drag, on every sheet on screen: no rebuild, then the fit again).
+function hgApplySizes(sheet) { Object.keys(HG_SIZES).forEach(k => sheet.style.setProperty(HG_SIZES[k][0], String(hg[k] / 100))); }
+function hgApplySizesAll() { document.querySelectorAll('#hgPages .hg-sheet').forEach(hgApplySizes); hgFitAll(); }
 function hgPageStyle() {
   const st = document.getElementById('hgPageSize');
   if (st) st.textContent = '@page { size: ' + (hg.paper === 'a4' ? 'A4' : 'letter') + ' portrait; margin: 0.35in; }';   // i18n-ignore: CSS, not text
@@ -1144,7 +1190,14 @@ function hgWire() {
   document.getElementById('hgSymNone').addEventListener('click', () => { hgChosen = new Set(); hgRenderSyms(); hgBuild(); });
   const onOpt = () => { hgSave(); hgBuild(); };
   document.querySelectorAll('input[name="hgPer"]').forEach(r => r.addEventListener('change', () => { if (r.checked) { hg.per = Number(r.value); onOpt(); } }));
-  document.querySelectorAll('input[name="hgLabels"]').forEach(r => r.addEventListener('change', () => { if (r.checked) { hg.labels = r.value; onOpt(); } }));
+  [['hgLblHe', 'lblHe'], ['hgLblTr', 'lblTr'], ['hgLblEn', 'lblEn']]
+    .forEach(([id, k]) => document.getElementById(id).addEventListener('change', e => { hg[k] = e.target.checked; hgSizeState(); onOpt(); }));
+  // A size drag resizes the sheets live (CSS factors and the fit, no rebuild); the value is saved once, when it ends.
+  document.querySelectorAll('.hg-size input[type="range"]').forEach(r => {
+    const k = r.dataset.size;
+    r.addEventListener('input', () => { hg[k] = hgSizeVal(k, Number(r.value)); hgApplySizesAll(); hgSizeLabel(r); });
+    r.addEventListener('change', () => { hg[k] = hgSizeVal(k, Number(r.value)); hgSave(); });
+  });
   document.querySelectorAll('input[name="hgPaper"]').forEach(r => r.addEventListener('change', () => { if (r.checked) { hg.paper = r.value; onOpt(); } }));
   document.querySelectorAll('input[name="hgColored"]').forEach(r => r.addEventListener('change', () => { if (r.checked) { hg.colored = r.value === '1'; onOpt(); } }));
   [['hgOptNikkud', 'nikkud'], ['hgOptTitle', 'title'], ['hgOptCut', 'cut'], ['hgOptName', 'name'], ['hgOptMeanings', 'meanings']]

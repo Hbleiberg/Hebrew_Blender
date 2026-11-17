@@ -43,7 +43,10 @@ every row), `node scripts/build-holiday-pages.mjs`, `node scripts/smoke-holiday-
 - **Names are vocabulary, sentences are prose.** Every Hebrew name (a holiday's, a symbol's, a meaning's) is pointed;
   `plain` is the name for a sheet printed without nikkud — the points removed, unless `**Unpointed:**` gives the full
   spelling Hebrew uses without them (חֲנֻכָּה is חנוכה; סֻכָּה is סוכה). The parser refuses an `**Unpointed:**` that is
-  only the points removed. Sentences follow the parasha catalog's rules (`scripts/parasha-catalog.mjs` →
+  only the points removed. `tr` (`**Transliteration:**`, required on every holiday and symbol) is how the Hebrew name
+  sounds, in lower-case Latin letters and the Letter Learner's spelling (ch, tz, a final -ah, ’ between vowels said
+  apart): the Hebrew word's own sound, not the English name — סְבִיבוֹן is *sevivon* beside *Dreidel* — and the
+  parser checks it has as many words as the Hebrew. Sentences follow the parasha catalog's rules (`scripts/parasha-catalog.mjs` →
   `catalogChecks`, shared): plain text with curly quotes, the Hebrew unpointed with ה׳ and no Latin letters.
 - **A meaning** (`**Meaning:** English · עִבְרִית` and a second drawing) is the small picture a symbol can carry under
   its label — what Sukkot's four species stand for. The builder offers *What each symbol stands for* only on a
@@ -86,13 +89,24 @@ every row), `node scripts/build-holiday-pages.mjs`, `node scripts/smoke-holiday-
   (`hgDeepLink`, letters-only matching) opens the popup on that holiday; the address is never rewritten. It is where
   a generated page's Print button lands, and how `build-holiday-pages.mjs` reaches each sheet to photograph it.
 - **Options** (`hebrewHolidayGuide_settings`, one blob, per device, registered in the hub's AllTools functions and
-  `IVRIT_CFG`; unknown fields are kept): `per` (1, 2, 4, 6 symbols a page), `labels` (`both` / `he` / `en` / `none`),
-  `nikkud`, `title`, `cut`, `meanings`, `name`, `colored`, `paper` (`letter` / `a4`). One picture alone fills its
-  page whatever `per` says.
+  `IVRIT_CFG`; unknown fields are kept): `per` (1, 2, 4, 6 symbols a page), the three label lines `lblHe`, `lblTr`,
+  `lblEn` (the Hebrew name, its transliteration, the English name — three checkboxes; a version-1 blob's single
+  `labels` field is read once and dropped on the next save), the size sliders `sizePic` (50–100), `sizeHe`,
+  `sizeTr`, `sizeEn` (50–150, percent, steps of 5, as the Letter Learner's), `nikkud`, `title`, `cut`, `meanings`,
+  `name`, `colored`, `paper` (`letter` / `a4`). One picture alone fills its page whatever `per` says.
+- **Sizes** are factors on the sheet (`--sz-pic`, `--sz-he`, `--sz-tr`, `--sz-en`, set by `hgApplySizes`): a drag
+  resizes the sheets on screen and fits them again without rebuilding, and the value is stored when the drag ends. A
+  picture fills the room its row leaves it, so its slider only goes down — it grows when the words under it are made
+  smaller — and a word that outgrows its cell is fitted back by `hgFit`. A slider whose line is off is disabled.
+- **A row that is not full is centred** (five symbols on a six-symbol page): a row holds only the cells it has
+  symbols for, each as wide as a full row's (`--cols`), and an empty row keeps its place so the pictures above it do
+  not swell.
 - **The sheet** (`hgBuildSheet`) is literal white paper and black ink in both themes, laid out left to right, every
   size in `cqmin` (the sheet is a size container) so the preview and the printed page scale alike; its proportions
   are the printed box's (`HG_BOX`, the paper less the 0.35in `@page` margins — `parsha_emojis.html`'s `ET_CS_BOX`).
-  A Hebrew-only sheet's grid is `dir="rtl"`. The title is real text, hollow: white fill inside a black
+  A sheet whose only label line is Hebrew is a Hebrew sheet (its grid is `dir="rtl"`, its title and name line
+  Hebrew); one with no Hebrew line has an English title; with no lines at all the title is in both. The title is
+  real text, hollow: white fill inside a black
   `-webkit-text-stroke` with `paint-order: stroke fill`, so the nikkud stay hollow dots (Name Tags' two-layer bubble
   swallows them, which is why it strips them).
 - **Fit, never wrap or clip** (`hgFit`): the title gets `--tk` and each label its own `--k`; a title that would
@@ -164,6 +178,6 @@ sitemap block) and both generators.
 
 ## Adding a holiday's symbols
 
-Write its six `####` subsections in `HolidayGuide.md` (and `**Unpointed:**` wherever a name's plain spelling is not
-its points removed), run the four commands under *The parts*, add its line to `#hgSheets` in `holiday_guide.html`
+Write its six `####` subsections in `HolidayGuide.md` (each with its `**Transliteration:**`, and `**Unpointed:**`
+wherever a name's plain spelling is not its points removed), run the four commands under *The parts*, add its line to `#hgSheets` in `holiday_guide.html`
 (the page builder prints it), and update `holidayguide.faq.a2` (with its fallback text and the FAQ JSON-LD in the page), which names the holidays that have a sheet.
