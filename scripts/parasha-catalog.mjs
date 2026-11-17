@@ -39,18 +39,25 @@ const PARAS = [
 const OPTIONAL = new Set(['spelled']);
 // Plain text: the gallery shows it through textContent-equivalent escaping, and nothing in it needs escaping in JS.
 const PROSE_BANNED = /[<>&`\\$*_~[\]"'\u0000-\u001f\u007f\u00a0\u200b-\u200f\u2028\u2029\u202a-\u202e\u2066-\u2069\ufeff]/u;
-const POINTS = /[\u0591-\u05bd\u05bf-\u05c7]/u;          // nikkud and cantillation (the maqaf, U+05BE, is punctuation)
+export const POINTS = /[\u0591-\u05bd\u05bf-\u05c7]/u;          // nikkud and cantillation (the maqaf, U+05BE, is punctuation)
 const DIVINE = /יהוה|אלהים|אלוהים/u;
-const HEB = /[\u05d0-\u05ea]/u, LATIN = /[A-Za-z]/, SENTENCE_END = /[.!?][”’)]*$/u;
+export const HEB = /[\u05d0-\u05ea]/u, LATIN = /[A-Za-z]/;
+const SENTENCE_END = /[.!?][”’)]*$/u;
 const SPELLING = /^[A-Za-z]+(?:[ '-][A-Za-z]+)*$/;
 const cp = (c) => 'U+' + c.codePointAt(0).toString(16).toUpperCase().padStart(4, '0');
 
 export const keyOf = (en) => en.toLowerCase().replace(/[^a-z]/g, '');
 
-export function readCatalog(catalogPath = path.join(ROOT, CATALOG)) {
-  const problems = [];
-  const fail = (where, msg) => problems.push(`${where}: ${msg}`);
-
+/**
+ * The checks a catalog's drawings and prose are held to, for a parser to call with its own `fail(where, msg)`:
+ * this file's readCatalog and scripts/holiday-catalog.mjs (HolidayGuide.md) share them, so a drawing or a sentence
+ * that passes in one catalog passes in the other.
+ *   checkDrawing(where, svg)                 the inner markup of one 48×48 drawing
+ *   prose(where, kind, para, label, limits)  one labelled sentence; kind ending '.he' is Hebrew; limits { min, max }
+ *                                            are its length in characters (40–400 unless given)
+ *   spellings(where, para, en)               an **Also spelled:** list
+ */
+export function catalogChecks(fail) {
   // Every character of a drawing belongs to an allowed tag; attributes and colours as above; <g> balanced.
   function checkDrawing(where, svg) {
     if (/[\n'\\`]|\$\{|<\/script/i.test(svg)) fail(where, 'the drawing must be one line with no single quote, backslash, backtick, ${ or </script');
@@ -79,14 +86,15 @@ export function readCatalog(catalogPath = path.join(ROOT, CATALOG)) {
   }
 
   // One summary or reason: the label stripped, wrapped lines joined, then held to the rules in the header.
-  function prose(where, kind, para, label) {
+  function prose(where, kind, para, label, limits) {
+    const { min = 40, max = 400 } = limits || {};
     if (/[-–־]\n/u.test(para)) fail(where, `${label} breaks a line after a hyphen, dash or maqaf (the lines are joined with a space)`);
     const t = para.slice(label.length).replace(/\s*\n\s*/g, ' ').trim();
     if (!t) { fail(where, `${label} is empty`); return ''; }
     const bad = t.match(PROSE_BANNED);
     if (bad) fail(where, `${label} has ${JSON.stringify(bad[0])} (${cp(bad[0])}): plain text only — curly quotes “ ” ’, Hebrew geresh ׳ and gershayim ״`);
     if (!SENTENCE_END.test(t)) fail(where, `${label} does not end a sentence`);
-    if (t.length < 40 || t.length > 400) fail(where, `${label} is ${t.length} characters (one sentence of 40–400)`);
+    if (t.length < min || t.length > max) fail(where, `${label} is ${t.length} characters (one sentence of ${min}–${max})`);
     if (kind.endsWith('.he')) {
       if (!HEB.test(t)) fail(where, `${label} has no Hebrew letters`);
       if (LATIN.test(t)) fail(where, `${label} has Latin letters`);
@@ -108,6 +116,15 @@ export function readCatalog(catalogPath = path.join(ROOT, CATALOG)) {
     }
     return items;
   }
+
+  return { checkDrawing, prose, spellings };
+}
+
+export function readCatalog(catalogPath = path.join(ROOT, CATALOG)) {
+  const problems = [];
+  const fail = (where, msg) => problems.push(`${where}: ${msg}`);
+
+  const { checkDrawing, prose, spellings } = catalogChecks(fail);
 
   const parshiyot = JSON.parse(readFileSync(path.join(ROOT, 'data/parshiyot.json'), 'utf8'));
   if (parshiyot.length !== 54) fail('data/parshiyot.json', `${parshiyot.length} entries, expected 54`);
