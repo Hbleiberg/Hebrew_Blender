@@ -60,13 +60,15 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
 
+- [ ] P4 (**NEW S655 D — profile first**) | classroom_dashboard.html | **Opening Bulk preset edit over 40 presets takes twice as long as at S576**: its first task 185–225 ms @4× (event 304–344) against 98–123 (152–184) on S576's tree, alternating — since the grouped switch columns and the master row's form (findings S655). | found S655
+
 - [ ] P4 (**NEW S653 M**) | torah_trainer.html | **A looping or selected verse's gold ring runs through its verse number** (0px from the ink); a wrapped holiday chip centres its second line. | found S653
 
 - [ ] P4 (**NEW S653 M**) | torah_trainer.html | **With vowel colours on, a hovered word's gold fill drops its coloured letters to 1.5–2.5:1**; the fullscreen bar's chosen Translit / Translation is 4.18:1 under the pointer. | found S653
 
 - [ ] P4 (**NEW S653 — what `d707bc8a` leaves; G's, gate 3**) | hebrew_blend_generator.html | **A landscape Inverse sheet exports seven columns where paper prints ten** (the capture is the 760px screen sheet). | found S653
 
-- [ ] P4 (**NEW S651 H — two small ones**) | flash_cards.html | **(1)** fullscreen 1024×768 with a timer: the ✓ / ✗ row ends 19px under the fold; **(2)** K's: the Hebrew profile list says "1 שמורים", and the active row offers *Set Active*. | found S651
+- [ ] P4 (**NEW S651 H; S655: its K half FIXED `bed40548`**) | flash_cards.html | **Fullscreen at 1024×768 with a timer, the ✓ / ✗ row ends 19px under the fold.** | found S651
 
 - [ ] P4 (**NEW S651 — C's, verify first**) | flash_cards.html | **A click on empty page, then a key, rings the whole content column** (`main#mainContent` takes the focus). | found S651
 
@@ -128,15 +130,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S570 D**) | torah_trainer.html | **A cold Trope-staff load still draws the reading twice**: `ensureStaffData()` starts only when the first render asks, so the words-only fallback draws first (31–50 ms @1×, 115–180 @4×) and the staff replaces it; starting the phrase file in `init` when the layout is the staff would draw once. | found S570
 
-- [ ] P4 (**NEW S570 D**) | torah_trainer.html | **init's synchronous work before the Sefaria request grew ~120 ms @4× since S424**: `wireSettingsForm` 55–64 ms (4–5 then: two `lookupRender` for the closed Calendar tab, ~25 each), `staffInitWatchers`' `document.fonts.ready` read forces a style + layout (30), `buildHolidayPicker` 13–15 (findings S570). | found S570
-
 - [ ] P4 (**NEW S566 H — gate 2, copy**) | flash_cards.html | **The results actions mix the Hebrew register**: "שמור תוצאות" (singular) among "שמרו / חזרו / תרגלו / הדפיסו / שתפו" (plural); a preset row's Play / Load / Save are singular too. One register per screen. | found S566
-
-- [ ] P4 (**NEW S565 D**) | Hebrew_Font_Maker.html | **Save Project (.hebrewfont) still serializes in one string**: `JSON.stringify` + `gzipBlob`, 1.6 s @1× with 8 phone photos, once per click; `autosaveParts` would serve it. | found S565
-
-- [ ] P4 (**NEW S565 D**) | Hebrew_Font_Maker.html | **QA Check opens in one task**: 205–230 ms @1× on FreeSerif (346 glyphs), 795 ms @4× on a 27-letter sheet project (`qaBuild` + `qaRenderGrid`). | found S565
-
-- [ ] P4 (**NEW S565 D**) | Hebrew_Font_Maker.html | **A cold load @4× has three tasks over 200 ms**: parse 391–441, `init` 687–757, the `I18n.ready` re-render 207–324 (S410: two, 306–365 + 492–560); 1× has none (top 150–160, was 96–102). | found S565
 
 - [ ] P4 (**NEW S649 H — GATE 3: a default placement; `h649/out/st-en-light-1280-windowed-1366x768-01.png`**) | classroom_dashboard.html | **A Student Picker turned on lands under Weather and Timer in the end rail**: at 1366×768 its chips and both buttons are below the fold (814–944 of 768), at 1280×900 the buttons; Full Screen's strip has Pick, and the start rail has room under the days. | found …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -376,6 +370,14 @@ _(none)_
 
 ## Done
 
+- [x] 2026-11-17 | (S655 close-out) | branch/deploy note | **S655 = D on `torah_trainer.html` (6th D; 41 commits since) + `classroom_dashboard.html` (7th; a clean surface buys a second): FOUND 1 (the dashboard's Bulk open, P4); the S570 P4 root-caused and FIXED in 2 commits; + flash's S651 K half. Branch `claude/adoring-hawking-h59ir2`, draft PR #406; `sw.js` v1404; deploy after the merge.**
+
+- [x] 2026-11-17 | `bed40548` | flash_cards.html, ui-strings.csv + locales, sw.js | (S655, the S651 P4's K half) **A profile row's count agrees with its number in Hebrew** ("תוצאה שמורה אחת", "{n} תוצאות שמורות") **and the active row offers no Set Active** | `d655/fix3.mjs`, 3 profiles × 4 cells, a real Set Active click: tree 0, before 7 of 18
+
+- [x] 2026-11-17 | `219d7d0a` | torah_trainer.html, torah-and-trope.md, sw.js | (S655 D, the S570 P4's rest) **The staff's `fonts.ready` read waits a task**: init's sync work before the reading's request 186–192 → 49–74 ms @4× | the S655 probe: 0 `.ready` reads before the request (fix 1's tree 1); S570's staff + manifest probes pass; recipe 8 cells
+
+- [x] 2026-11-17 | `d34f126d` | torah_trainer.html, torah-and-trope.md, sw.js | (S655 D, the S570 P4) **The Calendar tab's date lookup is drawn when the tab opens, not before the reading's request** (its first `toLocaleDateString`: 36–67 ms @4×) | `S655-torah-calendar-lookup-off-the-first-request.mjs`: 0 date formats before it (HEAD 1/cell); 10 Calendar states = HEAD's; recipe 8 cells
+
 - [x] 2026-11-17 | (S654 close-out) | branch/deploy note | **S654 = G on `flash_cards.html` (6th G; 34 commits since): 6 arms × 2 cells, plants fired. FOUND 3, FIXED in 1 commit; the S569 gate 2 answered; + 2 queue fixes; + 1 detector hit at close-out (a 6th commit). Branch `claude/adoring-hawking-h59ir2`, draft PR; `sw.js` v1401; deploy after the merge.**
 
 - [x] 2026-11-17 | `bcbb5193` | letter_discrimination.html, sw.js | (S654 close-out: a committed detector's hit on the page that landed outside the loop; pattern placeholder-keeps-the-browser-gray) **The participant-code box's placeholder reads at AA** (`.ld-input::placeholder` → --muted, opacity 1: 4.36 / 3.69 → 5.8 / 5.6:1) | the detector: 2 hits → 0 over 88 fields on 21 pages × light/dark; …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -418,19 +420,11 @@ _(none)_
 
 - [x] 2026-11-13 | `92c93088` | flash_cards.html, shared-components.md, CLAUDE.md, sw.js | (S651 H, P2, gate 2 answered) **A class link for a big word list opens instead of "URI Too Long"** (a code past `FC_LINK_QUERY_MAX` rides after `#s=`; `_fcLinkCode()` reads either form; a `hashchange` bringing a code that decodes reloads) | the live host bisected with a dummy query (8,190 bytes of path + …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-11-13 | (S650 close-out) | branch/deploy note | **S650 = D on `Hebrew_Font_Maker.html` (its 5th D: S196 → S294 → S410 → S565 → S650; 29 commits to the page since: the autosave without its copy, the drawn letter's picture out of the saved file, Full Screen in Draw, Auto-detect on the Letters tab only, the gold sliders): cold load, a 346-glyph starting font through the real engine (every …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-13 | `280c02ba` | classroom_dashboard.html, dashboard.md, sw.js | (S650, the S649 P3) **The nikkud switches reach the name chips and the four Hebrew column titles** (the form's `refreshAll` and the four colour paths — a vowel's picker, Reset, the scheme, the colour-coded dark toggle — end with `updateColTitles()` + `renderStudentPicker()`) | `d650/fix4.mjs`, 13 controls by real …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-13 | `39406b8b` | classroom_dashboard.html, dashboard.md, sw.js | (S650, the S649 P3 — gate 2 answered in S649) **The holiday countdown names the holiday before the day** ("21 days until Chanukah (חנוכה)" for "… Chanukah: 1 Candle (חנוכה: א׳ נר)"; a first day numbered "… I" likewise; the icon follows the name; the day itself, Erev days and "Rosh Hashana 5787" as they were) | …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-13 | `e3541e2f` | Hebrew_Font_Maker.html, font-maker.md, sw.js | (S650 D) **The reference letter is measured once, not on every stage redraw** (`templateMetrics` asks `document.fonts.check` about the glyph itself, and its key carries whether the family has a face: 4 → 0 canvas scans a redraw, 10.2–10.7 → 2.2–2.3 ms; a late stylesheet no longer leaves the fallback's measurements for …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-13 | `dceb38cc` | Hebrew_Font_Maker.html, font-maker.md, sw.js | (S650 D, gate 2 answered) **The engine's warm-up no longer freezes the pen on the second letter** (`maybePrefetchEngine` only downloads the engine's six files into the HTTP cache; Pyodide starts where `ensurePyodide()` is awaited) | `d650/prefetch.mjs`, real strokes after Save letter & next: long tasks 1,406 + 861 → …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-11-17 | **S655** | iters: 4 | tools: torah_trainer ×2, flash_cards, locales, torah-and-trope.md ×2, sw ×3, probe S655 | patterns fixed: — | pass run: D (torah, first since S570 + dashboard, since S576; FOUND 1, the S570 P4 FIXED ×2) + flash's S651 K half | SW: v1401→v1404
 
 - 2026-11-17 | **S654** | iters: 5 +1 | tools: flash ×2, generator, torah, letter_discrimination, locales, sw ×5 | patterns fixed: fixed-surface-missing-from-the-print-hide-list, placeholder-keeps-the-browser-gray | pass run: G (flash, first since S569; FOUND 3, FIXED 3) + 3 | SW: v1396→v1401
 
@@ -470,11 +464,9 @@ _(none)_
 
 - 2026-11-09 | **S636** | iters: 5 | tools: name_tags ×2, generator ×2, locales, name-tags.md, generator.md, sw | patterns fixed: RTL-inheritance-on-a-Latin-script-container ×1 | pass run: G (name_tags, first since S550; FOUND 2, FIXED 2) + the S590/S613 generator P4s | SW: v1329→v1333
 
-- 2026-11-09 | **S635** | iters: 4 | tools: name_tags ×2, flash, name-tags.md, sw | patterns fixed: rebuild-where-a-class-swap-would-do ×1 | pass run: D (name_tags, first since S549; FOUND 2, FIXED 2) + the S618 flash P4 | SW: v1326→v1329
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S654 (2026-11-17):** flash_cards ×2, hebrew_blend_generator, torah_trainer, letter_discrimination, locales, torah-and-trope.md, sw.js ×5, loop docs, probes S654 · torah_trainer ×2, hebrew_blend_generator ×2, generator.md, sw.js ×4, loop docs S653
+- **Snapshot S655 (2026-11-17):** torah_trainer ×2, flash_cards, locales, torah-and-trope.md ×2, sw.js ×3, loop docs, probe S655 · flash_cards ×2, hebrew_blend_generator, torah_trainer, letter_discrimination, locales, torah-and-trope.md, sw.js ×5, loop docs, probes S654
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -846,7 +838,7 @@ _(none)_
 
 - G print & export fidelity (one tool): 2026-11-17 (**S654 — `flash_cards.html` (its 6th G: … S423 → S569 → S654; 34 commits to the page since: the drill's Pause and voice speed, the listening marks, the sheet's one-layout fit, the report's answered-only counts, the `#s=` link): six arms × EN light 1280 / HE dark 800 with the real web fonts (the drill on paper, 48 sheets, 8 report shapes + the …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- D performance (one tool): 2026-11-13 (**S650 — `Hebrew_Font_Maker.html` (its 5th D: S196 → S294 → S410 → S565 → S650; 29 commits to the page since: the autosave without its copy, the drawn letter's picture out of the saved file, Full Screen in Draw, Auto-detect on the Letters tab only): cold 8 cells; a 346-glyph starting font through the real engine (41 arms × 1× and 4×), 8 phone photos, the …[full text: IMPROVEMENT_ARCHIVE.md]
+- D performance (one tool): 2026-11-17 (**S655 — `torah_trainer.html` (its 6th D, S570 → S655, 41 commits since) + `classroom_dashboard.html` (its 7th, S576 → S655, 38 commits): the Trainer cold against S570's tree alternating (+5%), 19 interactions @4×, idle, heap, the request waterfall; the dashboard cold + 15 interactions against S576's. FOUND 1 (P4); the S570 P4 FIXED in 2 commits (190 → 50 …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - I first-load & empty-state: 2026-11-08 (**S628 — 41st I, S539 → S627 (503 commits; the Trope Atlas', reading assignments', the review page's and the 55 `parsha/` pages' first I): 81 virgin cells (plants 482/486); storage = S539's; 88 seeds; 27 tours; ~260 openers + 24 drawer tabs; 164 bad URLs; the Atlas' load paths; 55 parsha pages. FOUND 4, FIXED 3.**)
 
@@ -864,4 +856,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-11-08 (**S630 — 41st F, long-build progress (S542's F-next; the affordance's first F): 13 presses that build before they answer, by real clicks with an animation-frame recorder, real PDF libraries from a cache, a held CDN, double presses at raw points. FOUND 2, FIXED 2 (+1 P4). F-next: destructive-action confirms.**)
 
-**Next session (S655):** **Branch `claude/adoring-hawking-h59ir2` (S654, draft PR — see the close-out): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1401**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=8541401 sw=v1401 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b (main + sw moved outside the loop since S653: `letter_discrimination.html`, `Stein_School/`, the Font Maker's wizard Help) ⚑ New page: `letter_discrimination.html` (the unlisted research beta, outside the loop) — its first N and P are due within 14 sessions (rotation override 4; its placeholder FIXED S654 at close-out), and it is not yet a surface in `loop-passes.md` / `coverage.mjs`. ⚑ Stalest now: D torah (S570), C dictionary (S571), N generator (S572), P flash (S573), M generator (S574), G chrome (S575), A (S581), H atlas (S583). ⚑ Queue: torah's two S653 P4 (the ring through the verse number, the hovered word's gold fill), flash's S651 P4. ⚑ Awaiting: the Total Torah bar's ▶ and the drawer's tab labels (S653), the starter class (S652). ⚑ E: other pages' links vs the host's 8,190 bytes (S651; flash's `#s=` measured S654). ⚑ F/A: Hebrew-only wrappers on typed text (S649). ⚑ G: `leak.mjs`, 6 pages. ⚑ 47 seeds.
+**Next session (S656):** **Branch `claude/adoring-hawking-h59ir2` (S654–S655, draft PR #406): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1404**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=8541401 sw=v1404 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ New page: `letter_discrimination.html` — its first N and P are due within 14 sessions of S654 (rotation override 4); not yet a surface in `loop-passes.md` / `coverage.mjs`. ⚑ Stalest now: C dictionary (S571), N generator (S572), P flash (S573), M generator (S574), G chrome (S575), D atlas (S579), A (S581), H atlas (S583). ⚑ Queue: the dashboard's Bulk open (S655, profile first) beside its S576 Save; torah's two S653 P4; the S570 staff double draw. ⚑ Awaiting: the Total Torah bar's ▶ and the drawer's tab labels (S653), the starter class (S652). ⚑ E: other pages' links vs the host's 8,190 bytes (S651). ⚑ F/A: Hebrew-only wrappers on typed text (S649). ⚑ G: `leak.mjs`, 6 pages. ⚑ 47 seeds.
