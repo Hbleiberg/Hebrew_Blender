@@ -4348,7 +4348,18 @@ function syncCycleControls() {
 let _lookupTarget = null;   // { parsha, second } | { holiday } — what Open loads
 const LOOKUP_DAY_HOLIDAYS = ['pesach', 'sukkot', 'shavuot', 'rosh_hashanah'];   // the festivals whose day is named
 function lookupTodayISO() { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+// Drawn only while the Calendar tab shows: a call with the tab hidden (init's, applyI18n's, a Text-tab switch's) marks it
+// stale and setSettingsTab draws it, still hidden, as the tab opens — so its live region announces nothing on opening,
+// and the date line's first toLocaleDateString (the locale's date data: 40–70 ms at 4× CPU) never runs before the
+// reading's request goes out.
+let _lookupStale = false;
 function lookupRender() {
+  const panel = document.getElementById('ttTabPanelCalendar');
+  if (panel && panel.hidden) { _lookupStale = true; return; }
+  _lookupDraw();
+}
+function _lookupDraw() {
+  _lookupStale = false;
   const out = document.getElementById('lookupResult'), row = document.getElementById('lookupOpenRow'), inp = document.getElementById('lookupDate');
   if (!out || !inp || !window.I18n) return;
   out.textContent = '';
@@ -9211,6 +9222,7 @@ const TT_SECTION_TAB = {
 };
 function setSettingsTab(name) {
   if (!Object.prototype.hasOwnProperty.call(TT_TAB_IDS, name)) name = 'favorites';
+  if (name === 'calendar' && _lookupStale) _lookupDraw();   // before the panel shows (lookupRender)
   for (const n of Object.keys(TT_TAB_IDS)) {
     const on = n === name, tab = document.getElementById(TT_TAB_IDS[n]);
     tab.setAttribute('aria-selected', on ? 'true' : 'false');
@@ -10383,7 +10395,7 @@ function wireSettingsForm() {
   const ld = document.getElementById('lookupDate');
   if (ld) {
     ld.value = lookupTodayISO();
-    lookupRender();   // raw keys until I18n.ready, whose applyI18n renders it again
+    lookupRender();   // the Calendar tab is hidden at load: this only marks the lookup for its first opening
     ld.addEventListener('input', lookupRender);
     ld.addEventListener('change', lookupRender);
   }

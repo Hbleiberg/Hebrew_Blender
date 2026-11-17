@@ -1627,7 +1627,10 @@ aliyah on their own cycle: other verses).
   picker's own writes, or the festival reading when `holidayKeyForCal` names one. Open, Open the special reading and
   the tab's Jump to this week's parsha close the drawer first, as a favorite's Open does (the reading loads behind the
   modal drawer, under all of it on a phone); the holiday lists keep it open, their pressed button being the feedback. The calendar radios, the
-  cycle radios and `applyI18n` re-render it.
+  cycle radios and `applyI18n` re-render it — but only while the Calendar tab shows: with the tab hidden (init's call
+  among them) `lookupRender()` marks the lookup stale and `setSettingsTab('calendar')` draws it (`_lookupDraw`) before
+  unhiding the panel, so its `aria-live` result announces nothing on opening and the date line's first
+  `toLocaleDateString` (the locale's date data) never runs before the reading's request goes out.
 - **Parasha icons** (`js/parasha-icons.js`, `window.ParashaIcons`; the module and its catalog:
   `docs/reference/shared-components.md` → Parasha icons) lead a weekly reading's `.tt-ref-hdr` and the lookup's
   result line while the Display section's *Show parsha emojis* (`showParshaIcons`, default on, read as `!== false`)
