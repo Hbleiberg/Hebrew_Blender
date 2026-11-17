@@ -205,7 +205,7 @@ recipe:
   clock fixed with `page.clock.setFixedTime`, so the countdown is checked on known dates) covers `holiday_guide.html`
   — the holiday that leads and its sentence on twelve dates and both schedules, the builder and every option, the
   PDF's page count and paper box, Hebrew / dark / 360px — and the generated `holidays/` pages, their links and the
-  forwarder, and that the hidden state agrees everywhere (`holiday-guide.md` → *Publishing*). Run it after
+  forwarder, and that the published state agrees everywhere (`holiday-guide.md` → *Publishing*). Run it after
   `HolidayGuide.md`, the page or `build-holiday-pages.mjs` changes; a change to `js/coloring-art.js` also needs the
   parsha proof (`holiday-guide.md` → *The line art*).
 
@@ -311,7 +311,7 @@ push, is what updates the live site.
   that session's commit. It's idempotent (re-running with no new commits is a no-op) and produces
   per-file dates. When you add a new page, add its `<url>` block to `sitemap.xml` first, then run
   the script. Sits alongside the `sw.js VERSION` bump in the end-of-session checklist above.
-- **An unlisted page** (today: `name_tags.html`, while it is new, the research beta `letter_discrimination.html`, and `holiday_guide.html` with its generated `holidays/` pages, which one switch publishes — `holiday-guide.md` → *Publishing*) is a production page reached by its address
+- **An unlisted page** (today: `name_tags.html`, while it is new, and the research beta `letter_discrimination.html`; `holiday_guide.html` and its generated `holidays/` pages were launched from here, and one switch would hide them again — `holiday-guide.md` → *Publishing*) is a production page reached by its address
   only: `<meta name="robots" content="noindex, follow">`, no `<url>` block in `sitemap.xml` (so neither generator
   ever lists it — both read their page set from the sitemap), no card, link or `ItemList` entry on `index.html`, and
   not in `sw.js` `CORE_ASSETS` (an unannounced page costs no visitor's install; it is still cached network-first on
@@ -387,7 +387,7 @@ pages, not the other way round — `grep -o 'Content-Security-Policy[^>]*' *.htm
 - **The generated parsha coloring pages** (`parsha/<slug>.html`) carry the everywhere set above without `data:` /
   `blob:` (they export nothing) and without the account origins (no sign-in); the CSP is written by
   `scripts/build-parsha-pages.mjs`. Their forwarder `parsha/index.html` allows only `'self'`, like the stub below.
-- **`holiday_guide.html`** (unlisted) carries the everywhere set and nothing more: it offers no account and fetches
+- **`holiday_guide.html`** carries the everywhere set and nothing more: it offers no account and fetches
   no data. **The generated holiday coloring pages** (`holidays/<slug>.html`) carry the parsha pages' policy, written
   by `scripts/build-holiday-pages.mjs`, and their forwarder `holidays/index.html` allows only `'self'`.
 - **The `emoji_torah.html` forwarding stub** (the Parsha Emojis page's address before its launch) allows only

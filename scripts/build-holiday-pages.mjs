@@ -20,7 +20,7 @@
  * no "holiday coloring pages" block (one found there is removed), and holiday_guide.html must say noindex too (the
  * build fails otherwise). Set to true, the pages say index, the block lists holiday_guide.html and every page (an
  * existing <lastmod> is kept: update-sitemap.mjs owns the dates), and the hub must say index. The other steps of
- * publishing are docs/reference/holiday-guide.md → Publishing.
+ * being public (and of hiding it again) are docs/reference/holiday-guide.md → Publishing.
  *
  * holiday_guide.html's static list of these pages (#hgSheets) is hand-kept: the build fails while it does not name
  * exactly the holidays that have their symbols, in the catalog's order.
@@ -44,7 +44,7 @@ import { createHash } from 'node:crypto';
 import { spawn, spawnSync } from 'node:child_process';
 import { ROOT, readHolidayCatalog } from './holiday-catalog.mjs';
 
-const PUBLISHED = false;   // hidden until the maintainer publishes the Holiday Guide (see the header)
+const PUBLISHED = true;   // published: set false (and the hub's robots tag to noindex) to hide it again (see the header)
 const RENDER_VERSION = 1;
 const SITE = 'https://ivritsuite.com/';
 const DIR = 'holidays';

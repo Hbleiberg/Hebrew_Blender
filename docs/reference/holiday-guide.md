@@ -2,10 +2,11 @@
 
 Jewish holiday coloring sheets and a picture guide to the holidays: every holiday's own symbol, when it falls and
 what it is, the symbols that go with it, and a builder that prints those symbols as a coloring sheet. The page is
-**unlisted** (`docs/reference/ops.md` → *An unlisted page*): `noindex`, no hub card or link, absent from
-`sitemap.xml`, `llms*.txt` and `sw.js` `CORE_ASSETS`. In every other respect it is a page of the suite: CSP, i18n
-(`holidayguide.*`, and `holidaypage.*` on the generated pages), the AllTools registration of its key, its smoke. It
-offers no account, carries no tour (as `parsha_emojis.html`) and fetches no data.
+**published**: the home page's Discover card links it (its third button), it is in `sitemap.xml`, `llms*.txt` and
+`sw.js` `CORE_ASSETS`, and the tool pages' *Related Hebrew Tools* footers and the 404 page link it. It is a page of
+the suite in every respect: CSP, i18n (`holidayguide.*`, and `holidaypage.*` on the generated pages), the AllTools
+registration of its key, its smoke. It offers no account, carries no tour (as `parsha_emojis.html`) and fetches no
+data.
 
 ## The parts
 
@@ -126,7 +127,7 @@ to move them needs `RENDER_VERSION` bumped in both page builders.
 
 ## Search
 
-The SEO markup is written and stays ready while the page is hidden: the hub's title and description target "Jewish
+The hub's title and description target "Jewish
 holiday coloring sheets", with `WebApplication`, `BreadcrumbList`, `FAQPage` and `HowTo` JSON-LD (the FAQ's English
 mirrors the footer's, `holidayguide.faq.*`); each generated page's title carries the holiday's best-known other
 spelling ("Chanukah (Hanukkah) Coloring Page"), its description names the six symbols, and its `LearningResource`
@@ -135,17 +136,22 @@ it. `<title>` and the descriptions are English and carry no `data-i18n`.
 
 ## Publishing
 
-`PUBLISHED` in `scripts/build-holiday-pages.mjs` is the one switch. While it is `false` every generated page says
-`noindex, follow`, `sitemap.xml` has no *holiday coloring pages* block (one found there is removed), and the build
-fails unless `holiday_guide.html`'s robots tag says `noindex, follow` too. To publish:
+`PUBLISHED` in `scripts/build-holiday-pages.mjs` is the one switch, and it is `true`: every generated page says
+`index, follow`, `sitemap.xml` carries the *holiday coloring pages* block (the hub and every page), and the build
+fails unless `holiday_guide.html`'s robots tag says `index, follow` too. Being public is these things together, and
+`node scripts/smoke-holiday-pages.mjs` fails while one of them disagrees with the switch:
 
-1. Set `PUBLISHED = true` and change `holiday_guide.html`'s robots tag to `index, follow` (remove the comment above it).
-2. `node scripts/build-holiday-pages.mjs` — the pages turn `index`, and the sitemap gains the hub and every page.
-3. Add the hub's card, `ItemList` entry and What's-new line to `index.html` with their strings.
-4. Add `/holiday_guide.html`, `/js/holiday-guide-data.js` and `/js/holiday-page.js` to `sw.js` `CORE_ASSETS`; bump `VERSION`.
-5. `node scripts/update-sitemap.mjs`, then `node scripts/update-llms-txt.mjs` (it lists the pages as one line).
-6. Move the page out of `ops.md`'s unlisted list and drop "unlisted" here and in `README.md`.
-7. `node scripts/smoke-holiday-pages.mjs` — its last section checks that every one of those agrees.
+- the switch and the hub's robots tag;
+- `index.html`: the Discover card's *Holiday Guide* button (`home.card.discover.cta_holidayguide`), the `ItemList`
+  and navigation entries, and the What's-new line that announced it;
+- `/holiday_guide.html`, `/js/holiday-guide-data.js` and `/js/holiday-page.js` in `sw.js` `CORE_ASSETS`;
+- `sitemap.xml` (the builder's block; `node scripts/update-sitemap.mjs` owns the dates) and `llms*.txt`
+  (`node scripts/update-llms-txt.mjs` lists the holiday pages as one line).
+
+To hide it again, undo each: `PUBLISHED = false` and the hub's robots tag back to `noindex, follow`, the button and
+the two JSON-LD entries out of `index.html` (with the footer links on the tool pages and the 404 page's link), the
+three `CORE_ASSETS` entries out and `VERSION` bumped, then `node scripts/build-holiday-pages.mjs` (it removes the
+sitemap block) and both generators.
 
 ## Adding a holiday's symbols
 

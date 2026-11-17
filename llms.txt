@@ -21,6 +21,7 @@ incorporating PocketTorah audio is CC BY-SA 4.0).
 - [Hebrew Font Maker](https://ivritsuite.com/Hebrew_Font_Maker.html): Turn handwritten Hebrew letters into a real, installable font with nikkud and cantillation; export TTF, WOFF2, or UFO.
 - [Letter Learner](https://ivritsuite.com/letter_learner.html): Free printable aleph bet coloring sheets for every Hebrew letter, plus a picture to remember it by, illustrated words, its vowels read aloud and cursive handwriting.
 - [Parsha Emojis](https://ivritsuite.com/parsha_emojis.html): Free printable parsha coloring sheets for all 54 weekly Torah portions, each an emoji drawing with a one-sentence summary and why that picture was chosen.
+- [Holiday Guide](https://ivritsuite.com/holiday_guide.html): Free printable Jewish holiday coloring sheets: six symbols for each of seventeen holidays, named in Hebrew and English, with a short guide to each holiday and a countdown to the next one.
 - [Hebrew Teaching Resources](https://ivritsuite.com/resources.html): A curated directory of free Hebrew learning resources, printables, and Jewish education tools.
 
 ## Optional
@@ -30,6 +31,7 @@ incorporating PocketTorah audio is CC BY-SA 4.0).
 - [Contact & Support](https://ivritsuite.com/contact.html): Get in touch with the maker of IvritSuite, and support the project. IvritSuite is free and always will be — donations via PayPal, Venmo, or Zelle.
 - [Your Account](https://ivritsuite.com/account.html): Manage your optional IvritSuite account: see what it holds, download everything in it as one file, or delete the account and everything in it.
 - [Parsha coloring pages](https://ivritsuite.com/parsha_emojis.html#etSheets): 54 pages, one per weekly Torah portion (https://ivritsuite.com/parsha/bereshit.html … https://ivritsuite.com/parsha/vzot-haberachah.html): the parasha's emoji drawing as a free printable coloring page, with its summary in English and Hebrew.
+- [Holiday coloring pages](https://ivritsuite.com/holiday_guide.html#hgSheets): 17 pages, one per Jewish holiday (https://ivritsuite.com/holidays/shabbat.html … https://ivritsuite.com/holidays/tisha-bav.html): the holiday's symbols as a free printable coloring page, each named in Hebrew and English.
 - [Source code](https://github.com/hbleiberg/Hebrew_Blender): The full static site, hand-authored and open source.
 - [llms-full.txt](https://ivritsuite.com/llms-full.txt): The expanded version of this file — every tool with its how-to steps and questions & answers.
 

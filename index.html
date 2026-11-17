@@ -109,7 +109,7 @@
       "name": "IvritSuite Tools",
       "description": "Free Hebrew literacy tools offered by IvritSuite.",
       "itemListOrder": "https://schema.org/ItemListOrderAscending",
-      "numberOfItems": 11,
+      "numberOfItems": 12,
       "itemListElement": [
         { "@type": "ListItem", "position": 1, "name": "Hebrew Worksheet Generator", "url": "https://ivritsuite.com/hebrew_blend_generator.html", "description": "Create printable Hebrew decoding worksheets, bingo cards, and vocabulary drills with nikkud." },
         { "@type": "ListItem", "position": 2, "name": "Hebrew Word Lookup", "url": "https://ivritsuite.com/hebrew_dictionary.html", "description": "Browse and filter Hebrew vocabulary by theme, length, part of speech, era, and letter position." },
@@ -121,7 +121,8 @@
         { "@type": "ListItem", "position": 8, "name": "Hebrew Font Maker", "url": "https://ivritsuite.com/Hebrew_Font_Maker.html", "description": "Turn handwritten Hebrew letters into a real, installable font with nikkud and cantillation; export TTF, WOFF2, or UFO." },
         { "@type": "ListItem", "position": 9, "name": "Letter Learner", "url": "https://ivritsuite.com/letter_learner.html", "description": "Free printable aleph bet coloring sheets for every Hebrew letter, plus a picture to remember it by, illustrated words, its vowels read aloud and cursive handwriting." },
         { "@type": "ListItem", "position": 10, "name": "Parsha Emojis", "url": "https://ivritsuite.com/parsha_emojis.html", "description": "Free printable parsha coloring sheets for all 54 weekly Torah portions, each an emoji drawing with a one-sentence summary and why that picture was chosen." },
-        { "@type": "ListItem", "position": 11, "name": "Hebrew Teaching Resources", "url": "https://ivritsuite.com/resources.html", "description": "A curated directory of free Hebrew learning resources, printables, and Jewish education tools." }
+        { "@type": "ListItem", "position": 11, "name": "Holiday Guide", "url": "https://ivritsuite.com/holiday_guide.html", "description": "Free printable Jewish holiday coloring sheets: six symbols for each of seventeen holidays, named in Hebrew and English, with a short guide to each holiday and a countdown to the next one." },
+        { "@type": "ListItem", "position": 12, "name": "Hebrew Teaching Resources", "url": "https://ivritsuite.com/resources.html", "description": "A curated directory of free Hebrew learning resources, printables, and Jewish education tools." }
       ]
     },
     {
@@ -138,6 +139,7 @@
         "Hebrew Font Maker",
         "Letter Learner",
         "Parsha Emojis",
+        "Holiday Guide",
         "Hebrew Teaching Resources"
       ],
       "url": [
@@ -151,6 +153,7 @@
         "https://ivritsuite.com/Hebrew_Font_Maker.html",
         "https://ivritsuite.com/letter_learner.html",
         "https://ivritsuite.com/parsha_emojis.html",
+        "https://ivritsuite.com/holiday_guide.html",
         "https://ivritsuite.com/resources.html"
       ]
     }
@@ -251,7 +254,7 @@ header .hright{margin-inline-start:auto;display:flex;gap:10px;align-items:center
 .page-card p{font-size:0.82rem;color:var(--muted);text-align:center;line-height:1.5;}
 .page-card .go-btn{margin-top:6px;background:var(--navy);color:var(--gold-light);border:none;border-radius:7px;padding:9px 28px;font-size:0.88rem;font-family:'Source Sans 3',sans-serif;font-weight:600;cursor:pointer;letter-spacing:0.02em;transition:background 0.15s;text-align:center;}   /* centred: a label that wraps fills the card's width, and its lines would otherwise hug the start edge of a centred card */
 .page-card:hover .go-btn{background:var(--gold);color:var(--navy);}
-/* The Discover and Trope cards hold two links each, so each is a role="group" div, not a link: the card keeps its hover frame, the
+/* The Discover card holds three links and the Trope card two, so each is a role="group" div, not a link: the card keeps its hover frame, the
    buttons stack full width, and each lights on its own hover or keyboard focus instead of both at once. */
 .page-card-group{cursor:default;}
 .page-card-group .go-links{display:flex;flex-direction:column;align-items:stretch;gap:10px;width:100%;margin-top:6px;}
@@ -460,11 +463,9 @@ html.wn-open body{padding-block-end:calc(var(--wn-h, 0px) + 28px);}
 <div class="wn-pop" id="wnPop" role="dialog" aria-modal="false" aria-labelledby="wnTitle" hidden>
   <button type="button" class="wn-x" id="wnClose" aria-label="Close" data-i18n-aria-label="home.whatsnew.close_aria"><svg class="hi hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
   <h2 class="wn-title" id="wnTitle" data-i18n="home.whatsnew.title">New on IvritSuite</h2>
-  <p class="wn-lede" data-i18n="home.whatsnew.lede">A new reference in the Trope card, and two new tools in the Discover card:</p>
+  <p class="wn-lede" data-i18n="home.whatsnew.lede">A new tool in the Discover card:</p>
   <ul class="wn-list">
-    <li data-i18n-html="home.whatsnew.item_tropeatlas"><a href="trope_atlas.html">Trope Atlas</a>: every cantillation sign on a staff in each reading tradition, side by side, from today’s Reform and Conservative melodies to older Ashkenazi and Sephardi readings, and every staff plays aloud.</li>
-    <li data-i18n-html="home.whatsnew.item_letterlearner"><a href="letter_learner.html">Letter Learner</a>: every Hebrew letter with a picture, words, its vowels read aloud, cursive and coloring sheets.</li>
-    <li data-i18n-html="home.whatsnew.item_parshaemojis"><a href="parsha_emojis.html">Parsha Emojis</a>: an emoji drawing for every weekly parasha, with a summary and coloring sheets.</li>
+    <li data-i18n-html="home.whatsnew.item_holidayguide"><a href="holiday_guide.html">Holiday Guide</a>: the symbols of every Jewish holiday, a countdown to the next one, and coloring sheets to print.</li>
   </ul>
   <div class="wn-actions">
     <button type="button" class="wn-ok" id="wnOk" data-i18n="home.whatsnew.ok">Got it</button>
@@ -665,7 +666,7 @@ html.wn-open body{padding-block-end:calc(var(--wn-h, 0px) + 28px);}
       <div class="go-btn" data-i18n="home.card.fontmaker.cta">Make your own Hebrew font →</div>
     </a>
 
-    <!-- Discover: two tools in one card, so the card is a group, not a link (a link cannot hold two links). -->
+    <!-- Discover: three tools in one card, so the card is a group, not a link (a link cannot hold other links). -->
     <div class="page-card page-card-group" role="group" aria-labelledby="discoverTitle">
       <div class="icon"><svg viewBox="0 0 64 64" width="58" height="58" aria-hidden="true" focusable="false" fill="none" stroke="var(--ik-ink)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
         <path class="ik-gs" d="M41 41 L57 57" stroke="var(--ik-gold)" stroke-width="6.5"/>
@@ -675,10 +676,11 @@ html.wn-open body{padding-block-end:calc(var(--wn-h, 0px) + 28px);}
         <path d="M13 19 A13 13 0 0 1 19 12.8" stroke-width="1.7" stroke-opacity="0.45"/>
       </svg></div>
       <h2 id="discoverTitle" data-i18n="home.card.discover.name">Discover</h2>
-      <p data-i18n="home.card.discover.desc">Meet the alef-bet and the weekly parsha: a picture, words and sounds for every Hebrew letter, an emoji drawing for every Torah portion, and coloring sheets for both.</p>
+      <p data-i18n="home.card.discover.desc">Meet the alef-bet, the weekly parsha and the Jewish holidays: a picture, words and sounds for every Hebrew letter, an emoji drawing for every Torah portion, the symbols of every holiday, and coloring sheets for all three.</p>
       <div class="go-links">
         <a class="go-btn" href="letter_learner.html" data-i18n="home.card.discover.cta_letterlearner">Letter Learner →</a>
         <a class="go-btn" href="parsha_emojis.html" data-i18n="home.card.discover.cta_parshaemojis">Parsha Emojis →</a>
+        <a class="go-btn" href="holiday_guide.html" data-i18n="home.card.discover.cta_holidayguide">Holiday Guide →</a>
       </div>
     </div>
 
@@ -2281,7 +2283,7 @@ function applyI18n() {
    who saw this one sees that one once. A first visit (no suite key in this browser before this load — read in <head>,
    before the page's own writes) marks the current id seen and shows nothing: the hub it just met already has the
    tools. The flag is set when the card shows, so a tab closed before a click does not bring it back. ── */
-const WN_ID = '2026-10-trope-atlas', WN_KEY = 'hebrewBlender_whatsNewSeen';
+const WN_ID = '2026-11-holiday-guide', WN_KEY = 'hebrewBlender_whatsNewSeen';
 function whatsNewInit() {
   let seen;
   try { seen = localStorage.getItem(WN_KEY); } catch (e) { return; }
@@ -2313,13 +2315,13 @@ function whatsNewInit() {
     pop.hidden = true;
     release();
     document.removeEventListener('keydown', onKey);
-    const card = document.querySelector('.page-card-group[aria-labelledby="tropeTitle"]');   // the newest: the Trope card's Atlas
+    const card = document.querySelector('.page-card-group[aria-labelledby="discoverTitle"]');   // the newest: the Discover card's Holiday Guide
     if (!card) return;
     const still = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
     card.scrollIntoView({ behavior: still ? 'auto' : 'smooth', block: 'center' });
     card.classList.remove('wn-flash'); void card.offsetWidth; card.classList.add('wn-flash');
     card.addEventListener('animationend', () => card.classList.remove('wn-flash'), { once: true });
-    const b = card.querySelector('.go-btn[href="trope_atlas.html"]') || card.querySelector('.go-btn');
+    const b = card.querySelector('.go-btn[href="holiday_guide.html"]') || card.querySelector('.go-btn');
     if (b) b.focus({ preventScroll: true });
   });
   pop.hidden = false;

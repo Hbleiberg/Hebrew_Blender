@@ -18,7 +18,7 @@
  *   - each generated page: no page error, its picture loaded, one h1 naming the holiday, the countdown line filled
  *     (none on the weekly two), the Print link landing the builder on that holiday; every internal link answers 200;
  *     two pages in Hebrew, dark, 390px; holidays/ (the forwarder) lands on the list;
- *   - the hidden state agrees everywhere: the hub's robots tag, every page's and the forwarder's, sitemap.xml,
+ *   - hidden or published, the state agrees everywhere: the hub's robots tag, every page's and the forwarder's, sitemap.xml,
  *     llms.txt, sw.js's precache list and index.html's links — all hidden, or (once published) all public.
  * Usage: node scripts/smoke-holiday-pages.mjs [--port 8095]. Needs the preinstalled Playwright + Chromium
  * (docs/reference/ops.md → the headless recipe); starts its own python3 -m http.server and aborts every other origin.
@@ -47,6 +47,7 @@ await new Promise((r) => setTimeout(r, 900));
 const browser = await chromium.launch();
 const fails = [];
 let checks = 0;
+let visibility = "hidden";
 const ok = (cond, where, msg) => { checks++; if (!cond) fails.push(`${where}: ${msg}`); };
 const eq = (got, want, where, what) => ok(JSON.stringify(got) === JSON.stringify(want), where, `${what}: got ${JSON.stringify(got)}, expected ${JSON.stringify(want)}`);
 
@@ -317,11 +318,20 @@ try {
     eq(robots(read('holidays/index.html')), 'noindex, follow', 'visibility', 'the forwarder is never indexed');
     const sm = /holiday_guide\.html|\/holidays\//.test(read('sitemap.xml'));
     eq(sm, published, 'visibility', 'sitemap.xml names the Holiday Guide');
+    const inLlms = /holiday_guide\.html/.test(read('llms.txt')) && /holiday_guide\.html/.test(read('llms-full.txt'));
+    const sw = read('sw.js');
+    const inSw = ['/holiday_guide.html', '/js/holiday-guide-data.js', '/js/holiday-page.js'].map((f) => sw.includes("'" + f + "'"));
+    const linked = /href="holiday_guide\.html"/.test(read('index.html'));
     if (!published) {
       ok(!/holiday_guide|\/holidays\//.test(read('llms.txt') + read('llms-full.txt')), 'visibility', 'llms.txt names the Holiday Guide while it is hidden');
-      ok(!/holiday_guide|holiday-guide-data|\/holidays\//.test(read('sw.js')), 'visibility', 'sw.js precaches the Holiday Guide while it is hidden');
+      ok(!/holiday_guide|holiday-guide-data|\/holidays\//.test(sw), 'visibility', 'sw.js precaches the Holiday Guide while it is hidden');
       ok(!/href="[^"]*(holiday_guide|holidays\/)/.test(read('index.html')), 'visibility', 'index.html links the Holiday Guide while it is hidden');
+    } else {
+      ok(inLlms, 'visibility', 'llms.txt and llms-full.txt do not name the published Holiday Guide (node scripts/update-llms-txt.mjs)');
+      ok(inSw.every(Boolean), 'visibility', 'sw.js CORE_ASSETS lacks the published Holiday Guide\'s page or one of its two modules');
+      ok(linked, 'visibility', 'index.html does not link the published Holiday Guide');
     }
+    visibility = published ? 'published' : 'hidden';
   }
 } finally {
   await browser.close();
@@ -331,4 +341,4 @@ if (fails.length) {
   console.error(`smoke-holiday-pages: ${fails.length} of ${checks} checks failed:\n  ` + fails.join('\n  '));
   process.exit(1);
 }
-console.log(`smoke-holiday-pages: ${checks} checks passed (the countdown on ${12} dates, the builder and its options, printing on Letter and A4, Hebrew / dark / 360px, ${complete.length} holiday pages and their links, the forwarder, the hidden state).`);
+console.log(`smoke-holiday-pages: ${checks} checks passed (the countdown on ${12} dates, the builder and its options, printing on Letter and A4, Hebrew / dark / 360px, ${complete.length} holiday pages and their links, the forwarder, the ${visibility} state).`);
