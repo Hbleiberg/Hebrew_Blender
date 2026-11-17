@@ -1394,6 +1394,7 @@ function exportAllSettings() {
     nameTagSettings:    lsJSON('hebrewNameTags_settings', {}),
     nameTagLists:       lsJSON('hebrewNameTags_lists', {}),
     tropeAtlasSettings: lsJSON('hebrewTropeAtlas_settings', {}),
+    holidayGuideSettings: lsJSON('hebrewHolidayGuide_settings', {}),
     tropeTutorProgress:  lsJSON('hebrewTropeTutor_progress', {}),
     inputMode:           localStorage.getItem('hebrewBlender_inputMode') || 'auto',
     hebFont:             localStorage.getItem('hebrewBlender_hebFont') || '',
@@ -1553,6 +1554,11 @@ async function importAllSettings() {
     if (parsed.tropeAtlasSettings && Object.keys(parsed.tropeAtlasSettings).length) {
       const existing = ivritSafeParse(localStorage.getItem('hebrewTropeAtlas_settings') || '{}');
       localStorage.setItem('hebrewTropeAtlas_settings', JSON.stringify(ivritSafeAssign(existing, parsed.tropeAtlasSettings)));
+    }
+    // Holiday Guide: its coloring sheets' options (symbols per page, labels, nikkud, paper…), one blob, flat merge
+    if (parsed.holidayGuideSettings && Object.keys(parsed.holidayGuideSettings).length) {
+      const existing = ivritSafeParse(localStorage.getItem('hebrewHolidayGuide_settings') || '{}');
+      localStorage.setItem('hebrewHolidayGuide_settings', JSON.stringify(ivritSafeAssign(existing, parsed.holidayGuideSettings)));
     }
     if (parsed.tropeTutorSettings && Object.keys(parsed.tropeTutorSettings).length) {
       const existing = ivritSafeParse(localStorage.getItem('hebrewTropeTutor_settings') || '{}');
@@ -1763,6 +1769,7 @@ async function eraseAllSettings() {
     'hebrewNameTags_settings',
     'hebrewNameTags_lists',
     'hebrewTropeAtlas_settings',
+    'hebrewHolidayGuide_settings',
     'hebrewTropeTutor_progress',
     'hebrewBlender_inputMode',
     // per-device, export-exempt: when this device last saved an AllTools .ivrit (the line under the inventory)
@@ -1848,6 +1855,7 @@ const IVRIT_CFG = {
       nameTagSettings:    lsJSON('hebrewNameTags_settings', {}),
       nameTagLists:       lsJSON('hebrewNameTags_lists', {}),
       tropeAtlasSettings: lsJSON('hebrewTropeAtlas_settings', {}),
+      holidayGuideSettings: lsJSON('hebrewHolidayGuide_settings', {}),
       tropeTutorProgress:  lsJSON('hebrewTropeTutor_progress',      {}),
       inputMode:           localStorage.getItem('hebrewBlender_inputMode') || 'auto',
       hebFont:             localStorage.getItem('hebrewBlender_hebFont') || '',
@@ -1919,6 +1927,7 @@ const IVRIT_CFG = {
     if (data.nameTagSettings && Object.keys(data.nameTagSettings).length) { mergeObj('hebrewNameTags_settings', data.nameTagSettings); touched = true; }
     if (data.nameTagLists && Object.keys(data.nameTagLists).length) { mergeObj('hebrewNameTags_lists', data.nameTagLists); touched = true; }   // by list name, like presets
     if (data.tropeAtlasSettings && Object.keys(data.tropeAtlasSettings).length) { mergeObj('hebrewTropeAtlas_settings', data.tropeAtlasSettings); touched = true; }
+    if (data.holidayGuideSettings && Object.keys(data.holidayGuideSettings).length) { mergeObj('hebrewHolidayGuide_settings', data.holidayGuideSettings); touched = true; }
     if (data.tropeTutorProgress && Object.keys(data.tropeTutorProgress).length) { tropeProgressMerge(data.tropeTutorProgress, mode === 'replace'); touched = true; }
     if (data.wordLists)           { wlMergeIntoStorage(data.wordLists, mode === 'replace', mode === 'fill'); touched = true; }
     if (data.dictAudioEnabled  !== undefined) { setPref('hebrewDictionary_audioEnabled', data.dictAudioEnabled);  touched = true; }
