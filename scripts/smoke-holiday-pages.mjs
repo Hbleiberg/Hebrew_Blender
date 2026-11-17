@@ -6,10 +6,10 @@
  *   - the hub on ten dates (and Israel's schedule on two): the holiday that leads, its countdown sentence (days,
  *     one day, tonight, under way, the day of several), the date line, and that the builder opens on the same holiday;
  *     Shabbat and Havdalah never lead; seventeen cards, the weekly two first, the year in order from the next one;
- *   - the tiles: one a holiday with its sheet as a picture, the next holiday first and the weekly two last; the sheet
- *     maker is a popup that is closed when the page opens — a tile, a card's button and the hero's open it on that
- *     holiday, focus goes to its close button and stays inside it, and Escape, the close button and the backdrop
- *     close it and hand focus back; closed, the page prints as a page;
+ *   - the sheet maker is a popup, closed when the page opens, and nothing of it sits in the page (no section, no
+ *     option, no sheet picture): the hero's button and a card's link open it on that holiday, focus goes to its
+ *     close button and stays inside it, and Escape, the close button and the backdrop close it and hand focus back;
+ *     closed, the page prints as a page;
  *   - the sheet maker: every holiday with symbols draws six on one page at the defaults with no palette token left on
  *     paper and no conversion warning; 1 / 2 / 4 / 6 a page give ceil(n / per) pages with the right rows and columns;
  *     each option changes the sheet (labels, nikkud with the catalog's plain spelling, the title, the cut line, the
@@ -70,12 +70,12 @@ async function open(url, { date = '2026-11-17', lang = 'en', dark = false, width
   await pg.goto(BASE + '/' + url, { waitUntil: 'load' });
   return { ctx, pg, errs };
 }
-// The page is drawn once its tiles are; the sheet maker's pages are fitted (`ready`) only while its popup is open.
-const drawn = (pg) => pg.waitForSelector('#hgTiles[data-ready="1"]', { timeout: 15000 });
+// The page is drawn once its cards are; the sheet maker's pages are fitted (`ready`) only while its popup is open.
+const drawn = (pg) => pg.waitForSelector('#hgCards[data-ready="1"]', { timeout: 15000 });
 const ready = (pg) => pg.waitForSelector('#hgPages[data-ready="1"]', { timeout: 15000 });
 const isOpen = (pg) => pg.evaluate(() => !document.getElementById('hgOverlay').hidden);
-// Open the sheet maker from a holiday's tile (the first tile, the next holiday, when no key is given).
-const openMaker = async (pg, key) => { await pg.locator(key ? `#hgTiles .hg-tile[data-make="${key}"]` : '#hgTiles .hg-tile').first().click(); await ready(pg); };
+// Open the sheet maker: from a holiday's card, or (no key) from the hero's button, which is the next holiday's.
+const openMaker = async (pg, key) => { await pg.locator(key ? `#hgCards .hg-card[data-key="${key}"] [data-make]` : '#hgHero [data-make]').first().click(); await ready(pg); };
 const hub = (pg) => pg.evaluate(() => ({
   hero: (document.querySelector('#hgHero .hg-hero-name span') || {}).textContent || '',
   count: (document.getElementById('hgCountLine') || {}).textContent || '',
@@ -83,8 +83,9 @@ const hub = (pg) => pg.evaluate(() => ({
   kicker: (document.querySelector('#hgHero .hg-kicker') || {}).textContent || '',
   pick: (document.querySelector('#hgPick input:checked') || {}).value || '',
   open: !document.getElementById('hgOverlay').hidden,
-  tiles: [...document.querySelectorAll('#hgTiles .hg-tile')].map((t) => t.dataset.make),
-  tileNow: [...document.querySelectorAll('#hgTiles .hg-tile[aria-current="true"]')].map((t) => t.dataset.make),
+  heroMake: (document.querySelector('#hgHero [data-make]') || { dataset: {} }).dataset.make || '',
+  // nothing of a sheet maker in the page itself: no "Make a coloring sheet" section, no option, no sheet picture
+  inPage: document.querySelectorAll('#mainContent #hgBuilder, #mainContent .hg-tile, #mainContent #hgPick, #mainContent #hgPages, #mainContent img[src*="coloring-page"]').length,
   built: document.querySelectorAll('#hgPages .hg-sheet').length,
   cards: [...document.querySelectorAll('#hgCards .hg-card')].map((c) => c.dataset.key),
   current: [...document.querySelectorAll('#hgCards .hg-card[aria-current="true"]')].map((c) => c.dataset.key),
@@ -128,7 +129,7 @@ try {
     eq(h.kicker, kicker, where, 'the badge');
     eq(h.pick, key, where, 'the sheet maker is set to the leading holiday');
     eq([h.open, h.built], [false, 0], where, 'the sheet maker is closed when the page opens, and no sheet is built');
-    eq([h.tiles.length, h.tiles[0], h.tiles.slice(-2), h.tileNow], [17, key, ['shabbat', 'havdalah'], [key]], where, 'the tiles: the leading holiday first and marked, the weekly two last');
+    eq([h.heroMake, h.inPage], [key, 0], where, 'the hero\'s button makes the leading holiday\'s sheet, and no sheet maker sits in the page');
     eq(h.cards.length, 17, where, 'cards');
     eq(h.cards.slice(0, 3), ['shabbat', 'havdalah', key], where, 'the weekly two, then the leading holiday');
     eq(h.current, [key], where, 'the marked card');
@@ -155,17 +156,14 @@ try {
     await ctx.close();
   }
 
-  /* 2) The sheet maker: a popup that a tile, the hero or a card opens. */
+  /* 2) The sheet maker: a popup that the hero's button or a card's link opens. */
   {
     const { ctx, pg, errs } = await open('holiday_guide.html');
     await drawn(pg);
-    const imgs = await pg.evaluate(() => [...document.querySelectorAll('#hgTiles .hg-tile img')].map((i) => i.getAttribute('src')));
-    eq(imgs.length, complete.length, 'tiles', 'a sheet picture on every holiday that has its symbols');
-    for (const src of imgs) { const r = await pg.request.get(BASE + '/' + src); ok(r.status() === 200 && /^holidays\/img\/[a-z-]+-coloring-page\.png\?v=[0-9a-f]+$/.test(src), 'tiles', `${src} answers ${r.status()}`); }
-    // a tile opens it on that holiday with the ✕ focused; Escape closes it and focus goes back to the tile
+    // a card's link opens it on that holiday with the ✕ focused; Escape closes it and focus goes back to the link
     await openMaker(pg, 'purim');
     eq(await pg.evaluate(() => [!document.getElementById('hgOverlay').hidden, document.body.classList.contains('hg-open'), (document.querySelector('#hgPick input:checked') || {}).value, document.querySelectorAll('#hgPages .hg-sheet').length]),
-      [true, true, 'purim', 1], 'popup', 'a tile opens the sheet maker on its holiday with one sheet');
+      [true, true, 'purim', 1], 'popup', 'a card\'s link opens the sheet maker on its holiday with one sheet');
     await pg.waitForFunction(() => document.activeElement && document.activeElement.id === 'hgClose', null, { timeout: 5000 }).catch(() => {});
     eq(await pg.evaluate(() => document.activeElement.id), 'hgClose', 'popup', 'focus moves to the close button');
     await pg.keyboard.press('Shift+Tab');
@@ -173,9 +171,9 @@ try {
     await pg.keyboard.press('Tab');
     eq(await pg.evaluate(() => document.activeElement.id), 'hgClose', 'popup', 'Tab from the last control wraps to the first');
     await pg.keyboard.press('Escape');
-    eq(await pg.evaluate(() => [document.getElementById('hgOverlay').hidden, document.body.classList.contains('hg-open'), document.querySelectorAll('#hgPages .hg-sheet').length, document.activeElement.dataset.make, !!document.activeElement.closest('#hgTiles')]),
-      [true, false, 0, 'purim', true], 'popup', 'Escape closes it, clears its pages and returns focus to the tile');
-    // a card's button and the hero's open it too; the ✕ and the backdrop close it
+    eq(await pg.evaluate(() => [document.getElementById('hgOverlay').hidden, document.body.classList.contains('hg-open'), document.querySelectorAll('#hgPages .hg-sheet').length, document.activeElement.dataset.make, !!document.activeElement.closest('#hgCards .hg-card[data-key="purim"]')]),
+      [true, false, 0, 'purim', true], 'popup', 'Escape closes it, clears its pages and returns focus to the card\'s link');
+    // another card's link and the hero's button open it too; the ✕ and the backdrop close it
     await pg.locator('#hgCards .hg-card[data-key="pesach"] [data-make]').click(); await ready(pg);
     eq(await pg.evaluate(() => (document.querySelector('#hgPick input:checked') || {}).value), 'pesach', 'popup', 'a card\'s button opens it on that card\'s holiday');
     await pg.locator('#hgClose').click();
@@ -183,7 +181,7 @@ try {
     await pg.locator('#hgHero [data-make]').click(); await ready(pg);
     eq(await pg.evaluate(() => (document.querySelector('#hgPick input:checked') || {}).value), 'chanukah', 'popup', 'the hero\'s button opens it on the next holiday');
     await pg.mouse.click(4, 4);
-    eq(await isOpen(pg), false, 'popup', 'a click on the backdrop closes it');
+    eq(await pg.evaluate(() => [document.getElementById('hgOverlay').hidden, !!document.activeElement.closest('#hgHero'), document.activeElement.tagName]), [true, true, 'BUTTON'], 'popup', 'a click on the backdrop closes it and focus returns to the hero\'s button');
     await openMaker(pg);
     for (const h of complete) {
       const where = `builder ${h.slug}`;
@@ -400,4 +398,4 @@ if (fails.length) {
   console.error(`smoke-holiday-pages: ${fails.length} of ${checks} checks failed:\n  ` + fails.join('\n  '));
   process.exit(1);
 }
-console.log(`smoke-holiday-pages: ${checks} checks passed (the countdown on ${12} dates, the tiles and the popup, the sheet maker and its options, printing on Letter and A4, Hebrew / dark / 360px, ${complete.length} holiday pages and their links, the forwarder, the ${visibility} state).`);
+console.log(`smoke-holiday-pages: ${checks} checks passed (the countdown on ${12} dates, the popup and what opens it, the sheet maker and its options, printing on Letter and A4, Hebrew / dark / 360px, ${complete.length} holiday pages and their links, the forwarder, the ${visibility} state).`);

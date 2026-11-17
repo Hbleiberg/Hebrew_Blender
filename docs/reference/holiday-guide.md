@@ -73,18 +73,14 @@ every row), `node scripts/build-holiday-pages.mjs`, `node scripts/smoke-holiday-
 
 ## The hub's builder
 
-- **A popup, opened from a tile.** Under *Make a coloring sheet* the page shows one tile a holiday
-  (`hgRenderTiles`: the year from the next holiday on, then the weekly two; the next one marked `aria-current`), each
-  with its sheet as a picture — the one its own page shows, `holidays/img/<slug>-coloring-page.png`, addressed with
-  a hash of what is drawn on it (`hgSheetImg`), so a changed drawing is a new address; a re-render that changes no
-  drawing (`RENDER_VERSION`) reaches a returning visitor with the next `sw.js` bump, as on the parsha pages. A
-  picture that does not arrive is replaced by the holiday's own symbol. A tile, the hero's and a card's *Make its
-  coloring sheet* (`[data-make]`) call `hgOpen(key, opener)`, which shows `#hgOverlay` (`role="dialog"`,
-  `aria-modal`), sets `body.hg-open` and focuses the ✕; Escape, the ✕ and a click on the backdrop call `hgClose`,
-  which clears the pages and returns focus to the opener (found again by its box and holiday when a language switch
-  redrew it). Tab stays inside the dialog. The pages are built only while it is open (`hgBuild` returns early
-  otherwise: the fit is measured on screen). Below 860px the popup fills the screen and shows the sheet before its
-  options. The markup and behaviour follow `parsha_emojis.html`'s coloring popup.
+- **A popup, opened from the page's own links.** Nothing of the sheet maker sits in the page. *Make its coloring
+  sheet* — a gold button in the hero (`hgActions(h, true)`), a text link on every card — carries `[data-make]` and
+  calls `hgOpen(key, opener)`, which shows `#hgOverlay` (`role="dialog"`, `aria-modal`), sets `body.hg-open` and
+  focuses the ✕; Escape, the ✕ and a click on the backdrop call `hgClose`, which clears the pages and returns focus
+  to the opener (found again by its box and holiday when a language switch redrew it). Tab stays inside the dialog.
+  The pages are built only while it is open (`hgBuild` returns early otherwise: the fit is measured on screen).
+  Below 860px the popup fills the screen and shows the sheet before its options. The markup and behaviour follow
+  `parsha_emojis.html`'s coloring popup. `#hgCards[data-ready="1"]` marks the page as drawn.
 - The holiday (`hgHoliday`) and the ticked symbols (`hgChosen`, `-1` = the holiday's own symbol, offered as a seventh
   picture) are **never stored**; every opening starts with that holiday's six ticked. `?holiday=<slug>`
   (`hgDeepLink`, letters-only matching) opens the popup on that holiday; the address is never rewritten. It is where

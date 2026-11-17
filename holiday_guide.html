@@ -150,7 +150,7 @@
       "name": "Which holiday does the page show first?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "The next one. The page opens with the next holiday on the calendar and how many days are left until the evening it begins, and its coloring sheet comes first under Make a coloring sheet. Shabbat and Havdalah come every week, so they are not counted down to."
+        "text": "The next one. The page opens with the next holiday on the calendar and how many days are left until the evening it begins, and Make its coloring sheet opens its sheet. Shabbat and Havdalah come every week, so they are not counted down to."
       }
     },
     {
@@ -202,7 +202,7 @@
     {
       "@type": "HowToStep",
       "position": 2,
-      "text": "Under Make a coloring sheet, choose a holiday: its sheet opens. Tick the symbols you want."
+      "text": "Choose Make its coloring sheet on any holiday: its sheet opens. Tick the symbols you want."
     },
     {
       "@type": "HowToStep",
@@ -298,28 +298,11 @@ body.dark .hg-hero-name{color:var(--gold-light);}
 .hg-go{display:inline-block;padding-block:4px;min-height:24px;color:var(--gold-text);font-weight:600;text-decoration:none;}
 .hg-go:hover{color:var(--gold-text-hover);text-decoration:underline;}
 .hg-go-btn{background:none;border:0;padding-inline:0;font:inherit;font-weight:600;cursor:pointer;}
-.hg-go:focus-visible,.hg-btn:focus-visible,.hg-print:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;}
-
-/* ───── The holidays to choose from: a tile each — its sheet as a picture, its name, how soon it comes — the next
-   holiday first. A tile opens the sheet maker on that holiday. ───── */
-.hg-tiles{list-style:none;margin:14px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:14px;}
-.hg-tiles > li{min-width:0;display:flex;}
-.hg-tile{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 10px 12px;background:var(--white);border:1px solid var(--border);border-radius:12px;color:var(--text);font:inherit;text-align:center;cursor:pointer;}
-.hg-tile:hover{border-color:var(--gold);box-shadow:0 4px 14px rgba(26,39,68,0.12);}
-body.dark .hg-tile:hover{box-shadow:0 4px 14px rgba(0,0,0,0.45);}
-.hg-tile:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;}
-.hg-tile[aria-current="true"]{border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold);}
-/* The picture is paper: white in both themes, as it prints. */
-.hg-tile-pic{display:grid;place-items:center;width:100%;aspect-ratio:1120/1482;background:#fff;border:1px solid var(--border);border-radius:6px;overflow:hidden;}
-.hg-tile-pic img{display:block;width:100%;height:100%;object-fit:cover;}
-.hg-tile-pic .hol-ico{width:56%;height:auto;aspect-ratio:1;margin:0;--hol-line:#1a2744;--hol-gold:#c9922a;--hol-gold-lt:#f0d080;--hol-paper:#fffaf0;--hol-navy:#2a3b66;--hol-red:#c0392b;--hol-green:#3a7d44;--hol-blue:#3b6fb6;--hol-flame:#f0a030;--hol-ground:#fdf8ef;}
-.hg-tile-name{font-weight:600;font-size:0.92rem;line-height:1.25;overflow-wrap:anywhere;}
-.hg-tile-name > span{display:block;}
-.hg-tile-name [lang="he"]{font-family:var(--heb-font);font-size:1.1em;}
-.hg-tile-name .hg-alt{font-weight:400;color:var(--muted);font-size:0.86em;}
-.hg-tile-name .hg-alt[lang="he"]{font-size:1em;}
-.hg-tile .hg-badge{align-self:center;margin:0;}
-.hg-tile[aria-current="true"] .hg-badge{background:var(--gold);color:#1a2744;}
+/* The hero's "Make its coloring sheet": the page's main way into the sheet maker, so a button, not a link. */
+.hg-go-primary{font-family:inherit;font-size:0.95rem;font-weight:700;padding:9px 18px;min-height:40px;border:none;border-radius:6px;background:var(--gold);color:#1a1a1a;cursor:pointer;}
+.hg-go-primary:hover{filter:brightness(1.06);}
+.hg-hero .hg-go-row{align-items:center;gap:10px 18px;margin-block-start:14px;}
+.hg-go:focus-visible,.hg-go-primary:focus-visible,.hg-btn:focus-visible,.hg-print:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;}
 
 /* ───── The sheet maker, a popup: the options in a column at the inline-start, the pages it makes beside them, the page
    count and Print pinned underneath. ───── */
@@ -569,14 +552,6 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
   <!-- The next holiday: drawn by hgRenderHero from js/holiday-guide-data.js and the calendar. -->
   <section class="hg-hero" id="hgHero" aria-labelledby="hgHeroName"></section>
 
-  <!-- The holidays to choose from: one tile a holiday, the next one first (hgRenderTiles). A tile opens the sheet maker
-       (the popup #hgOverlay, below the footer) on that holiday. -->
-  <section id="hgBuilder" aria-labelledby="hgBuilderTitle">
-    <h2 class="hg-h2" id="hgBuilderTitle" data-i18n="holidayguide.builder.title">Make a coloring sheet</h2>
-    <p class="hg-sub" data-i18n="holidayguide.builder.intro">Choose a holiday to open its coloring sheet. There you can pick its symbols and how the page is laid out, then print.</p>
-    <ul class="hg-tiles" id="hgTiles" aria-labelledby="hgBuilderTitle"></ul>
-  </section>
-
   <section id="hgGuide" aria-labelledby="hgGuideTitle">
     <h2 class="hg-h2" id="hgGuideTitle" data-i18n="holidayguide.guide.title">The holidays and their symbols</h2>
     <p class="hg-note" id="hgGuideNote" role="status"></p>
@@ -626,7 +601,7 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
       <div style="padding:4px 0;max-width:640px;margin:0 auto;text-align:start;">
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="holidayguide.faq.q1">What is the Holiday Guide?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="holidayguide.faq.a1">A page of Jewish holiday coloring sheets and a picture guide to the holidays. Every holiday has its own symbol, a short description and when it falls, and six symbols drawn to color and named in Hebrew and English.</p></details>
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="holidayguide.faq.q2">Which holidays have coloring sheets?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="holidayguide.faq.a2">All seventeen: Shabbat, Havdalah, Rosh Hashanah, Yom Kippur, Sukkot, Shemini Atzeret and Simchat Torah, Chanukah, Tu BiShvat, Purim, Pesach, Yom HaShoah, Yom HaZikaron, Yom HaAtzmaut, Lag BaOmer, Yom Yerushalayim, Shavuot and Tisha B’Av. Each has a full sheet of six symbols and a page of its own.</p></details>
-        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="holidayguide.faq.q3">Which holiday does the page show first?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="holidayguide.faq.a3">The next one. The page opens with the next holiday on the calendar and how many days are left until the evening it begins, and its coloring sheet comes first under Make a coloring sheet. Shabbat and Havdalah come every week, so they are not counted down to.</p></details>
+        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="holidayguide.faq.q3">Which holiday does the page show first?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="holidayguide.faq.a3">The next one. The page opens with the next holiday on the calendar and how many days are left until the evening it begins, and Make its coloring sheet opens its sheet. Shabbat and Havdalah come every week, so they are not counted down to.</p></details>
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="holidayguide.faq.q4">How do I print a holiday coloring sheet?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="holidayguide.faq.a4">Choose the holiday, tick the symbols you want and press Print. You can put one, two, four or six symbols on a page, label them in Hebrew, English or both, show or hide the Hebrew vowels, add a line for the child’s name and a dashed line for cutting the page in half, and print on Letter or A4 paper.</p></details>
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="holidayguide.faq.q5">Are the Hebrew words written with vowels?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="holidayguide.faq.a5">Yes. Every Hebrew word on a sheet is printed with nikkud, the Hebrew vowel marks, so that new readers can sound it out. Turn the vowels off to print the words as they are usually written.</p></details>
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="holidayguide.faq.q6">Can I print the pictures already colored?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="holidayguide.faq.a6">Yes. Choose Colored in and the same sheet prints in color, for a poster or a matching game.</p></details>
@@ -638,7 +613,7 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
       <div style="max-width:640px;margin:0 auto;text-align:start;">
         <ol style="padding:6px 0 4px;padding-inline-start:20px;margin:0;font-size:0.78rem;line-height:1.55;">
           <li data-i18n="holidayguide.howto.step1">The page opens on the next holiday, with the days left until it begins.</li>
-          <li data-i18n="holidayguide.howto.step2">Under Make a coloring sheet, choose a holiday: its sheet opens. Tick the symbols you want.</li>
+          <li data-i18n="holidayguide.howto.step2">Choose Make its coloring sheet on any holiday: its sheet opens. Tick the symbols you want.</li>
           <li data-i18n="holidayguide.howto.step3">Choose how many symbols go on a page, the labels and what else is printed.</li>
           <li data-i18n="holidayguide.howto.step4">Press Print, or read about every holiday and its symbols in the guide below.</li>
         </ol>
@@ -664,7 +639,7 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
 
 <!-- The print run: one paper per page of the sheet (hgFillPrint); display:none on screen. A child of <body>, so the
      print rules can show it alone. -->
-<!-- The sheet maker: a popup opened by a holiday's tile, the hero's or a card's "Make its coloring sheet", or
+<!-- The sheet maker: a popup opened by the hero's or a card's "Make its coloring sheet", or by
      ?holiday=<slug> (hgOpen / hgClose). Escape, the ✕ and a click on the backdrop close it. -->
 <div class="hg-overlay" id="hgOverlay" hidden>
   <div class="hg-dialog" role="dialog" aria-modal="true" aria-labelledby="hgDlgTitle">
@@ -860,9 +835,10 @@ const hgPageOf = h => 'holidays/' + h.slug + '.html';   // the holiday's own col
 /* ── The page: the next holiday, then every holiday's card ── */
 let hgHoliday = null;                 // the builder's holiday (a key): the next one at load, never stored
 let hgChosen = new Set();             // the ticked symbols of that holiday: indexes, and -1 for the holiday's own symbol
-function hgActions(h) {
+// "Make its coloring sheet" opens the sheet maker on that holiday (hgOpen); in the hero it is the page's main button.
+function hgActions(h, primary) {
   const name = hgName(h);
-  return `<p class="hg-go-row"><button type="button" class="hg-go hg-go-btn" data-make="${esc(h.key)}" aria-label="${esc(I18n.t('holidayguide.card.make_aria', { name }))}">${esc(I18n.t('holidayguide.card.make'))}</button>`
+  return `<p class="hg-go-row"><button type="button" class="${primary ? 'hg-go-primary' : 'hg-go hg-go-btn'}" data-make="${esc(h.key)}" aria-label="${esc(I18n.t('holidayguide.card.make_aria', { name }))}">${esc(I18n.t('holidayguide.card.make'))}</button>`
     + (h.symbols.length ? `<a class="hg-go" href="${esc(hgPageOf(h))}" aria-label="${esc(I18n.t('holidayguide.card.page_aria', { name }))}">${esc(I18n.t('holidayguide.card.page'))}</a>` : '')
     + '</p>';
 }
@@ -876,7 +852,7 @@ function hgRenderHero() {
     + `<p class="hg-count-line" id="hgCountLine">${esc(hgCountLine(h, o))}</p>`
     + (when ? `<p class="hg-when-line" id="hgWhenLine">${esc(when)}</p>` : '')
     + `<p class="hg-about"${hgLangAttr(about.lang)}>${esc(about.text)}</p>`
-    + hgActions(h) + '</div>';
+    + hgActions(h, true) + '</div>';
 }
 function hgCard(h, o, current) {
   const about = hgPick(h.about), when = hgPick(h.when), badge = hgBadge(h, o), id = 'hgName-' + h.slug;
@@ -903,33 +879,10 @@ function hgDated() {
   if (dated.every(x => x.o)) dated.sort((a, b) => (a.o.state === 'during' ? -1 : a.o.eve) - (b.o.state === 'during' ? -1 : b.o.eve));
   return dated;
 }
-// A holiday's sheet as a picture: the one its own page shows (holidays/img/, rendered by build-holiday-pages.mjs). The
-// address carries a hash of what is drawn on it, so a changed drawing is a new address (static media is cached first).
-function hgSheetImg(h) {
-  const src = JSON.stringify([h.en, h.he, h.symbols.map(s => [s.en, s.he, s.svg])]);
-  let x = 2166136261;
-  for (let i = 0; i < src.length; i++) { x ^= src.charCodeAt(i); x = Math.imul(x, 16777619); }
-  return 'holidays/img/' + h.slug + '-coloring-page.png?v=' + (x >>> 0).toString(16);
-}
-// The tiles under "Make a coloring sheet": the year from the next holiday on, then the weekly two.
-function hgRenderTiles() {
-  const box = document.getElementById('hgTiles');
-  delete box.dataset.ready;
-  if (!HG.list.length) { box.innerHTML = ''; return; }
-  const next = hgNext(), he = hgLang() === 'he';
-  const all = hgDated().concat(HG.list.filter(h => h.weekly).map(h => ({ h, o: null })));
-  box.innerHTML = all.map(({ h, o }) => {
-    const badge = hgBadge(h, o), current = !!(next && next.h.key === h.key);
-    return `<li><button type="button" class="hg-tile" data-make="${esc(h.key)}"${current ? ' aria-current="true"' : ''} aria-label="${esc(I18n.t('holidayguide.card.make_aria', { name: hgName(h) }))}">`
-      + '<span class="hg-tile-pic">' + (h.symbols.length ? `<img src="${esc(hgSheetImg(h))}" alt="" width="1120" height="1482" loading="lazy" decoding="async">` : HG.icon(h.key)) + '</span>'
-      + `<span class="hg-tile-name"><span${hgLangAttr(he ? 'he' : 'en')}>${esc(he ? h.he : h.en)}</span><span class="hg-alt"${hgLangAttr(he ? 'en' : 'he')}>${esc(he ? h.en : h.he)}</span></span>`
-      + (badge ? `<span class="hg-badge">${esc(badge)}</span>` : '') + '</button></li>';
-  }).join('');
-  box.dataset.ready = '1';
-}
 function hgRenderGuide() {
   const box = document.getElementById('hgCards'), note = document.getElementById('hgGuideNote');
   note.textContent = '';
+  delete box.dataset.ready;   // set once the cards are drawn (what the smoke waits for)
   if (!HG.list.length) { box.innerHTML = ''; note.textContent = I18n.t('holidayguide.load_failed'); return; }
   const weekly = HG.list.filter(h => h.weekly);
   const dated = hgDated();
@@ -938,6 +891,7 @@ function hgRenderGuide() {
     + `<ul class="hg-cards" aria-labelledby="hgWeeklyHead">${weekly.map(h => hgCard(h, null, false)).join('')}</ul>`
     + `<h3 class="hg-h3" id="hgYearHead">${esc(I18n.t('holidayguide.guide.year'))}</h3>`
     + `<ul class="hg-cards" aria-labelledby="hgYearHead">${dated.map(x => hgCard(x.h, x.o, !!(next && next.h.key === x.h.key))).join('')}</ul>`;
+  box.dataset.ready = '1';
 }
 
 /* ── The builder's choices ── */
@@ -1145,7 +1099,7 @@ function hgPrint() {
   hgFillPrint();
   window.print();
 }
-// The sheet maker is a popup. A tile, the hero's or a card's "Make its coloring sheet" opens it on that holiday;
+// The sheet maker is a popup. The hero's or a card's "Make its coloring sheet" opens it on that holiday;
 // Escape, the ✕ and a click on the backdrop close it, and focus goes back to whatever opened it.
 let _hgOpener = null;
 const HG_FOCUS = 'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
@@ -1155,7 +1109,7 @@ function hgOpen(key, opener) {
   if (!h) return;
   if (!hgIsOpen()) {
     // What to return to, by where it sits and which holiday it names: a language switch redraws the buttons.
-    const el = opener || null, box = el && el.closest ? el.closest('#hgHero, #hgTiles, #hgCards') : null;
+    const el = opener || null, box = el && el.closest ? el.closest('#hgHero, #hgCards') : null;
     _hgOpener = { el, box: box ? box.id : '', key: h.key };
   }
   document.getElementById('hgOverlay').hidden = false;
@@ -1174,7 +1128,7 @@ function hgClose() {
   const o = _hgOpener || {};
   _hgOpener = null;
   let back = o.el && document.contains(o.el) ? o.el : null;
-  if (!back && o.key) back = document.querySelector((o.box ? '#' + o.box : '#hgTiles') + ' [data-make="' + o.key + '"]') || document.querySelector('#hgTiles [data-make="' + o.key + '"]');
+  if (!back && o.key) back = document.querySelector((o.box ? '#' + o.box : '#hgCards') + ' [data-make="' + o.key + '"]') || document.querySelector('#hgCards [data-make="' + o.key + '"]');
   if (!back) back = document.getElementById('mainContent');
   try { back.focus(); } catch (e) {}
 }
@@ -1200,11 +1154,6 @@ function hgWire() {
     const b = e.target.closest('[data-make]');
     if (b) hgOpen(b.dataset.make, b);
   });
-  // A tile whose picture did not arrive (offline before its first visit) shows the holiday's own symbol instead.
-  document.getElementById('hgTiles').addEventListener('error', e => {
-    const img = e.target, tile = img && img.tagName === 'IMG' ? img.closest('.hg-tile') : null;
-    if (tile) img.parentNode.innerHTML = HG.icon(tile.dataset.make);
-  }, true);
   const ov = document.getElementById('hgOverlay'), dlg = ov.querySelector('.hg-dialog');
   ov.addEventListener('click', e => { if (e.target === ov) hgClose(); });
   document.getElementById('hgClose').addEventListener('click', hgClose);
@@ -1260,11 +1209,11 @@ function applyI18n() {
     hgHoliday = next ? next.h.key : (HG.list[0] ? HG.list[0].key : null);
     const h = HG.get(hgHoliday);
     hgChosen = new Set(h ? (h.symbols.length ? h.symbols.map((s, i) => i) : [-1]) : []);
-    hgRenderHero(); hgRenderTiles(); hgRenderGuide(); hgRenderPick(); hgRenderSyms(); hgSyncControls(); hgBuild();
+    hgRenderHero(); hgRenderGuide(); hgRenderPick(); hgRenderSyms(); hgSyncControls(); hgBuild();
     hgDeepLink();
     return;
   }
-  hgRenderHero(); hgRenderTiles(); hgRenderGuide(); hgRenderPick(); hgRenderSyms(); hgSyncControls(); hgBuild();
+  hgRenderHero(); hgRenderGuide(); hgRenderPick(); hgRenderSyms(); hgSyncControls(); hgBuild();
 }
 document.addEventListener('DOMContentLoaded', () => {
   try {
