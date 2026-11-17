@@ -73,10 +73,22 @@ every row), `node scripts/build-holiday-pages.mjs`, `node scripts/smoke-holiday-
 
 ## The hub's builder
 
-- In the page, not a popup. The holiday (`hgHoliday`) and the ticked symbols (`hgChosen`, `-1` = the holiday's own
-  symbol, offered as a seventh picture) are **never stored**; every visit starts on the next holiday with its six
-  ticked. `?holiday=<slug>` (`hgDeepLink`, letters-only matching) opens the builder on that holiday and scrolls to it;
-  the address is never rewritten. It is where a generated page's Print button lands.
+- **A popup, opened from a tile.** Under *Make a coloring sheet* the page shows one tile a holiday
+  (`hgRenderTiles`: the year from the next holiday on, then the weekly two; the next one marked `aria-current`), each
+  with its sheet as a picture — the one its own page shows, `holidays/img/<slug>-coloring-page.png`, addressed with
+  a hash of what is drawn on it (`hgSheetImg`), so a changed drawing is a new address; a re-render that changes no
+  drawing (`RENDER_VERSION`) reaches a returning visitor with the next `sw.js` bump, as on the parsha pages. A
+  picture that does not arrive is replaced by the holiday's own symbol. A tile, the hero's and a card's *Make its
+  coloring sheet* (`[data-make]`) call `hgOpen(key, opener)`, which shows `#hgOverlay` (`role="dialog"`,
+  `aria-modal`), sets `body.hg-open` and focuses the ✕; Escape, the ✕ and a click on the backdrop call `hgClose`,
+  which clears the pages and returns focus to the opener (found again by its box and holiday when a language switch
+  redrew it). Tab stays inside the dialog. The pages are built only while it is open (`hgBuild` returns early
+  otherwise: the fit is measured on screen). Below 860px the popup fills the screen and shows the sheet before its
+  options. The markup and behaviour follow `parsha_emojis.html`'s coloring popup.
+- The holiday (`hgHoliday`) and the ticked symbols (`hgChosen`, `-1` = the holiday's own symbol, offered as a seventh
+  picture) are **never stored**; every opening starts with that holiday's six ticked. `?holiday=<slug>`
+  (`hgDeepLink`, letters-only matching) opens the popup on that holiday; the address is never rewritten. It is where
+  a generated page's Print button lands, and how `build-holiday-pages.mjs` reaches each sheet to photograph it.
 - **Options** (`hebrewHolidayGuide_settings`, one blob, per device, registered in the hub's AllTools functions and
   `IVRIT_CFG`; unknown fields are kept): `per` (1, 2, 4, 6 symbols a page), `labels` (`both` / `he` / `en` / `none`),
   `nikkud`, `title`, `cut`, `meanings`, `name`, `colored`, `paper` (`letter` / `a4`). One picture alone fills its
@@ -91,9 +103,10 @@ every row), `node scripts/build-holiday-pages.mjs`, `node scripts/smoke-holiday-
   shrink below two thirds takes two lines, English over Hebrew, and is fitted again. It runs after every build and
   once more when the fonts have loaded, then sets `#hgPages[data-ready="1"]` (what the picture renderer and the
   smoke wait for).
-- **Printing** is the sheets alone: `#hgPrintArea` (a child of `<body>`) gets one `.hg-paper` per page
-  (`hgFillPrint`, also on `beforeprint`, so Ctrl+P prints the same run), the print rules hide every other child of
-  `<body>`, and `<style id="hgPageSize">` always holds the `@page` rule for the chosen paper.
+- **Printing**, while the popup is open, is the sheets alone: `#hgPrintArea` (a child of `<body>`) gets one
+  `.hg-paper` per page (`hgFillPrint`, also on `beforeprint`, so Ctrl+P prints the same run), the print rules — keyed
+  on `body.hg-open` — hide every other child of `<body>`, and `<style id="hgPageSize">` always holds the `@page` rule
+  for the chosen paper. With the popup closed the page prints as any page.
 - Printed words follow the sheet's own languages, not the UI's (`HG_PRINTED`, `i18n-ignore`).
 - `applyI18n` re-renders everything the script draws and is read-only: it keeps the builder's holiday and ticks.
 

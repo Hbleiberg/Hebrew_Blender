@@ -454,7 +454,7 @@ Free printable Jewish holiday coloring sheets and a picture guide to the holiday
 ### How to print a Jewish holiday coloring sheet
 
 1. The page opens on the next holiday, with the days left until it begins.
-2. In Make a coloring sheet, choose a holiday and tick the symbols you want.
+2. Under Make a coloring sheet, choose a holiday: its sheet opens. Tick the symbols you want.
 3. Choose how many symbols go on a page, the labels and what else is printed.
 4. Press Print, or read about every holiday and its symbols in the guide below.
 
@@ -470,7 +470,7 @@ All seventeen: Shabbat, Havdalah, Rosh Hashanah, Yom Kippur, Sukkot, Shemini Atz
 
 **Which holiday does the page show first?**
 
-The next one. The page opens with the next holiday on the calendar and how many days are left until the evening it begins, and its coloring sheet is ready in the sheet maker. Shabbat and Havdalah come every week, so they are not counted down to.
+The next one. The page opens with the next holiday on the calendar and how many days are left until the evening it begins, and its coloring sheet comes first under Make a coloring sheet. Shabbat and Havdalah come every week, so they are not counted down to.
 
 **How do I print a holiday coloring sheet?**
 

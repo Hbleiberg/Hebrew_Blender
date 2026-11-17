@@ -7651,14 +7651,15 @@ holidayguide.badge.now,Now,עכשיו,Holiday Guide: card badge: under way,
 holidayguide.badge.tonight,Begins tonight,מתחיל הערב,Holiday Guide: card badge: the eve,
 holidayguide.badge.days.one,In {count} day,בעוד {count} יום,Holiday Guide: card badge (singular),do not translate {…}
 holidayguide.badge.days.other,In {count} days,בעוד {count} ימים,Holiday Guide: card badge (plural),do not translate {…}
-holidayguide.card.make,Make its coloring sheet,הכנת דף צביעה,Holiday Guide: card button: opens the sheet maker on that holiday,
+holidayguide.card.make,Make its coloring sheet,הכנת דף צביעה,Holiday Guide: card button: opens the sheet maker popup on that holiday,
 holidayguide.card.make_aria,Make a coloring sheet for {name},הכנת דף צביעה: {name},Holiday Guide: card button aria-label,do not translate {…}
 holidayguide.card.page,Coloring page,דף הצביעה,Holiday Guide: card link to the holiday’s own page,
 holidayguide.card.page_aria,{name} coloring page,דף הצביעה: {name},Holiday Guide: card link aria-label,do not translate {…}
 holidayguide.card.spelled,Also spelled:,נכתב גם:,Holiday Guide: label before the other English spellings of a holiday’s name,
 holidayguide.card.soon,"More symbols for this holiday are coming soon. For now, its own symbol can be printed as one big picture to color.",סמלים נוספים לחג הזה יתווספו בקרוב. בינתיים אפשר להדפיס את סמל החג כציור גדול אחד לצביעה.,Holiday Guide: card note for a holiday without its six symbols yet,
 holidayguide.builder.title,Make a coloring sheet,הכנת דף צביעה,Holiday Guide: sheet maker heading,
-holidayguide.builder.intro,"Choose a holiday and its symbols, then how the page is laid out. The sheet below changes as you choose; Print sends it to your printer.","בחרו חג ואת הסמלים שלו, ואז את סידור הדף. הדף שלמטה משתנה לפי הבחירות, וכפתור ההדפסה שולח אותו למדפסת.",Holiday Guide: sheet maker intro,
+holidayguide.builder.intro,"Choose a holiday to open its coloring sheet. There you can pick its symbols and how the page is laid out, then print.","בחרו חג כדי לפתוח את דף הצביעה שלו. שם בוחרים את הסמלים ואת סידור הדף, ומדפיסים.",Holiday Guide: intro over the holiday tiles (a tile opens the sheet maker popup),
+holidayguide.builder.close,Close,סגירה,Holiday Guide: the sheet maker popup close button (title + aria-label),aria/title
 holidayguide.builder.holiday,Holiday,חג,Holiday Guide: sheet maker group,
 holidayguide.builder.symbols,Symbols on the sheet,הסמלים בדף,Holiday Guide: sheet maker group,
 holidayguide.builder.all,All,הכול,Holiday Guide: tick all six symbols,
@@ -7704,7 +7705,7 @@ holidayguide.faq.a1,"A page of Jewish holiday coloring sheets and a picture guid
 holidayguide.faq.q2,Which holidays have coloring sheets?,לאילו חגים יש דפי צביעה?,Holiday Guide: FAQ,
 holidayguide.faq.a2,"All seventeen: Shabbat, Havdalah, Rosh Hashanah, Yom Kippur, Sukkot, Shemini Atzeret and Simchat Torah, Chanukah, Tu BiShvat, Purim, Pesach, Yom HaShoah, Yom HaZikaron, Yom HaAtzmaut, Lag BaOmer, Yom Yerushalayim, Shavuot and Tisha B’Av. Each has a full sheet of six symbols and a page of its own.","לכל שבעה־עשר החגים: שבת, הבדלה, ראש השנה, יום כיפור, סוכות, שמיני עצרת ושמחת תורה, חנוכה, ט״ו בשבט, פורים, פסח, יום השואה, יום הזיכרון, יום העצמאות, ל״ג בעומר, יום ירושלים, שבועות ותשעה באב. לכל אחד מהם דף מלא של שישה סמלים ודף משלו.",Holiday Guide: FAQ — names every holiday,
 holidayguide.faq.q3,Which holiday does the page show first?,איזה חג מוצג ראשון?,Holiday Guide: FAQ,
-holidayguide.faq.a3,"The next one. The page opens with the next holiday on the calendar and how many days are left until the evening it begins, and its coloring sheet is ready in the sheet maker. Shabbat and Havdalah come every week, so they are not counted down to.","החג הבא. הדף נפתח בחג הבא בלוח השנה ובמספר הימים שנותרו עד הערב שבו הוא מתחיל, ודף הצביעה שלו מוכן להדפסה. שבת והבדלה חלות בכל שבוע, ולכן אין להן ספירה לאחור.",Holiday Guide: FAQ,
+holidayguide.faq.a3,"The next one. The page opens with the next holiday on the calendar and how many days are left until the evening it begins, and its coloring sheet comes first under Make a coloring sheet. Shabbat and Havdalah come every week, so they are not counted down to.","החג הבא. הדף נפתח בחג הבא בלוח השנה ובמספר הימים שנותרו עד הערב שבו הוא מתחיל, ודף הצביעה שלו מופיע ראשון תחת ״הכנת דף צביעה״. שבת והבדלה חלות בכל שבוע, ולכן אין להן ספירה לאחור.",Holiday Guide: FAQ,
 holidayguide.faq.q4,How do I print a holiday coloring sheet?,איך מדפיסים דף צביעה לחג?,Holiday Guide: FAQ,
 holidayguide.faq.a4,"Choose the holiday, tick the symbols you want and press Print. You can put one, two, four or six symbols on a page, label them in Hebrew, English or both, show or hide the Hebrew vowels, add a line for the child’s name and a dashed line for cutting the page in half, and print on Letter or A4 paper.","בוחרים חג, מסמנים את הסמלים הרצויים ולוחצים על הדפסה. אפשר לשים סמל אחד, שניים, ארבעה או שישה בעמוד, לכתוב את השמות בעברית, באנגלית או בשתיהן, להציג או להסתיר את הניקוד, להוסיף שורה לשם הילד וקו מקווקו לגזירת הדף לשניים, ולהדפיס על נייר Letter או A4.",Holiday Guide: FAQ,
 holidayguide.faq.q5,Are the Hebrew words written with vowels?,האם המילים בעברית מנוקדות?,Holiday Guide: FAQ,
@@ -7715,7 +7716,7 @@ holidayguide.faq.q7,Is the Holiday Guide free?,האם מדריך החגים בח
 holidayguide.faq.a7,"Yes. Free for non-commercial educational use under CC BY-NC-SA 4.0, with nothing to sign up for.","כן. חינם לשימוש חינוכי לא מסחרי ברישיון CC BY-NC-SA 4.0, בלי הרשמה.",Holiday Guide: FAQ,
 holidayguide.howto.summary,How To Use,איך משתמשים,Holiday Guide: footer How-To heading,
 holidayguide.howto.step1,"The page opens on the next holiday, with the days left until it begins.","הדף נפתח בחג הבא, עם מספר הימים שנותרו עד שיתחיל.",Holiday Guide: How-To step,
-holidayguide.howto.step2,"In Make a coloring sheet, choose a holiday and tick the symbols you want.",ב״הכנת דף צביעה״ בוחרים חג ומסמנים את הסמלים הרצויים.,Holiday Guide: How-To step,
+holidayguide.howto.step2,"Under Make a coloring sheet, choose a holiday: its sheet opens. Tick the symbols you want.","תחת ״הכנת דף צביעה״ בוחרים חג, והדף שלו נפתח. מסמנים את הסמלים הרצויים.",Holiday Guide: How-To step,
 holidayguide.howto.step3,"Choose how many symbols go on a page, the labels and what else is printed.","בוחרים כמה סמלים יהיו בעמוד, אילו תוויות יודפסו ומה עוד יופיע בדף.",Holiday Guide: How-To step,
 holidayguide.howto.step4,"Press Print, or read about every holiday and its symbols in the guide below.","לוחצים על הדפסה, או קוראים על כל חג ועל סמליו במדריך שלמטה.",Holiday Guide: How-To step,
 holidaypage.a11y.skip,Skip to the coloring page,דילוג לדף הצביעה,"Holiday coloring pages (holidays/*.html): skip link",aria/skip-link

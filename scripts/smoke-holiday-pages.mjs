@@ -6,7 +6,11 @@
  *   - the hub on ten dates (and Israel's schedule on two): the holiday that leads, its countdown sentence (days,
  *     one day, tonight, under way, the day of several), the date line, and that the builder opens on the same holiday;
  *     Shabbat and Havdalah never lead; seventeen cards, the weekly two first, the year in order from the next one;
- *   - the builder: every holiday with symbols draws six on one page at the defaults with no palette token left on
+ *   - the tiles: one a holiday with its sheet as a picture, the next holiday first and the weekly two last; the sheet
+ *     maker is a popup that is closed when the page opens — a tile, a card's button and the hero's open it on that
+ *     holiday, focus goes to its close button and stays inside it, and Escape, the close button and the backdrop
+ *     close it and hand focus back; closed, the page prints as a page;
+ *   - the sheet maker: every holiday with symbols draws six on one page at the defaults with no palette token left on
  *     paper and no conversion warning; 1 / 2 / 4 / 6 a page give ceil(n / per) pages with the right rows and columns;
  *     each option changes the sheet (labels, nikkud with the catalog's plain spelling, the title, the cut line, the
  *     name line, the meanings on Sukkot only, coloured in); unticking a symbol reflows the pages and none leaves a
@@ -66,13 +70,22 @@ async function open(url, { date = '2026-11-17', lang = 'en', dark = false, width
   await pg.goto(BASE + '/' + url, { waitUntil: 'load' });
   return { ctx, pg, errs };
 }
+// The page is drawn once its tiles are; the sheet maker's pages are fitted (`ready`) only while its popup is open.
+const drawn = (pg) => pg.waitForSelector('#hgTiles[data-ready="1"]', { timeout: 15000 });
 const ready = (pg) => pg.waitForSelector('#hgPages[data-ready="1"]', { timeout: 15000 });
+const isOpen = (pg) => pg.evaluate(() => !document.getElementById('hgOverlay').hidden);
+// Open the sheet maker from a holiday's tile (the first tile, the next holiday, when no key is given).
+const openMaker = async (pg, key) => { await pg.locator(key ? `#hgTiles .hg-tile[data-make="${key}"]` : '#hgTiles .hg-tile').first().click(); await ready(pg); };
 const hub = (pg) => pg.evaluate(() => ({
   hero: (document.querySelector('#hgHero .hg-hero-name span') || {}).textContent || '',
   count: (document.getElementById('hgCountLine') || {}).textContent || '',
   when: (document.getElementById('hgWhenLine') || {}).textContent || '',
   kicker: (document.querySelector('#hgHero .hg-kicker') || {}).textContent || '',
   pick: (document.querySelector('#hgPick input:checked') || {}).value || '',
+  open: !document.getElementById('hgOverlay').hidden,
+  tiles: [...document.querySelectorAll('#hgTiles .hg-tile')].map((t) => t.dataset.make),
+  tileNow: [...document.querySelectorAll('#hgTiles .hg-tile[aria-current="true"]')].map((t) => t.dataset.make),
+  built: document.querySelectorAll('#hgPages .hg-sheet').length,
   cards: [...document.querySelectorAll('#hgCards .hg-card')].map((c) => c.dataset.key),
   current: [...document.querySelectorAll('#hgCards .hg-card[aria-current="true"]')].map((c) => c.dataset.key),
 }));
@@ -108,12 +121,14 @@ try {
   for (const [date, sched, key, count, day, kicker] of DATES) {
     const where = `hub ${date} ${sched}`;
     const { ctx, pg, errs } = await open('holiday_guide.html', { date, ls: sched === 'I' ? { hebrewTorahTrainer_settings: JSON.stringify({ schedule: 'israel' }) } : {} });
-    await ready(pg);
+    await drawn(pg);
     const h = await hub(pg);
     eq(h.count, count, where, 'the countdown');
     ok(day ? h.when.includes(day) : h.when === '', where, `the date line "${h.when}" should ${day ? 'name ' + day : 'be empty'}`);
     eq(h.kicker, kicker, where, 'the badge');
-    eq(h.pick, key, where, 'the builder opens on the leading holiday');
+    eq(h.pick, key, where, 'the sheet maker is set to the leading holiday');
+    eq([h.open, h.built], [false, 0], where, 'the sheet maker is closed when the page opens, and no sheet is built');
+    eq([h.tiles.length, h.tiles[0], h.tiles.slice(-2), h.tileNow], [17, key, ['shabbat', 'havdalah'], [key]], where, 'the tiles: the leading holiday first and marked, the weekly two last');
     eq(h.cards.length, 17, where, 'cards');
     eq(h.cards.slice(0, 3), ['shabbat', 'havdalah', key], where, 'the weekly two, then the leading holiday');
     eq(h.current, [key], where, 'the marked card');
@@ -124,7 +139,7 @@ try {
   // A year of days: Shabbat and Havdalah never lead, and the cards after the weekly two are in the order of their eves.
   {
     const { ctx, pg, errs } = await open('holiday_guide.html');
-    await ready(pg);
+    await drawn(pg);
     const bad = await pg.evaluate(() => {
       const out = [];
       for (let i = 0; i < 400; i += 7) {
@@ -140,10 +155,36 @@ try {
     await ctx.close();
   }
 
-  /* 2) The builder. */
+  /* 2) The sheet maker: a popup that a tile, the hero or a card opens. */
   {
     const { ctx, pg, errs } = await open('holiday_guide.html');
-    await ready(pg);
+    await drawn(pg);
+    const imgs = await pg.evaluate(() => [...document.querySelectorAll('#hgTiles .hg-tile img')].map((i) => i.getAttribute('src')));
+    eq(imgs.length, complete.length, 'tiles', 'a sheet picture on every holiday that has its symbols');
+    for (const src of imgs) { const r = await pg.request.get(BASE + '/' + src); ok(r.status() === 200 && /^holidays\/img\/[a-z-]+-coloring-page\.png\?v=[0-9a-f]+$/.test(src), 'tiles', `${src} answers ${r.status()}`); }
+    // a tile opens it on that holiday with the ✕ focused; Escape closes it and focus goes back to the tile
+    await openMaker(pg, 'purim');
+    eq(await pg.evaluate(() => [!document.getElementById('hgOverlay').hidden, document.body.classList.contains('hg-open'), (document.querySelector('#hgPick input:checked') || {}).value, document.querySelectorAll('#hgPages .hg-sheet').length]),
+      [true, true, 'purim', 1], 'popup', 'a tile opens the sheet maker on its holiday with one sheet');
+    await pg.waitForFunction(() => document.activeElement && document.activeElement.id === 'hgClose', null, { timeout: 5000 }).catch(() => {});
+    eq(await pg.evaluate(() => document.activeElement.id), 'hgClose', 'popup', 'focus moves to the close button');
+    await pg.keyboard.press('Shift+Tab');
+    ok(await pg.evaluate(() => document.querySelector('.hg-dialog').contains(document.activeElement) && document.activeElement.id === 'hgPrint'), 'popup', 'Shift+Tab from the first control wraps to the last, inside the popup');
+    await pg.keyboard.press('Tab');
+    eq(await pg.evaluate(() => document.activeElement.id), 'hgClose', 'popup', 'Tab from the last control wraps to the first');
+    await pg.keyboard.press('Escape');
+    eq(await pg.evaluate(() => [document.getElementById('hgOverlay').hidden, document.body.classList.contains('hg-open'), document.querySelectorAll('#hgPages .hg-sheet').length, document.activeElement.dataset.make, !!document.activeElement.closest('#hgTiles')]),
+      [true, false, 0, 'purim', true], 'popup', 'Escape closes it, clears its pages and returns focus to the tile');
+    // a card's button and the hero's open it too; the ✕ and the backdrop close it
+    await pg.locator('#hgCards .hg-card[data-key="pesach"] [data-make]').click(); await ready(pg);
+    eq(await pg.evaluate(() => (document.querySelector('#hgPick input:checked') || {}).value), 'pesach', 'popup', 'a card\'s button opens it on that card\'s holiday');
+    await pg.locator('#hgClose').click();
+    eq(await pg.evaluate(() => [document.getElementById('hgOverlay').hidden, !!document.activeElement.closest('#hgCards .hg-card[data-key="pesach"]')]), [true, true], 'popup', 'the close button closes it and focus returns to the card\'s button');
+    await pg.locator('#hgHero [data-make]').click(); await ready(pg);
+    eq(await pg.evaluate(() => (document.querySelector('#hgPick input:checked') || {}).value), 'chanukah', 'popup', 'the hero\'s button opens it on the next holiday');
+    await pg.mouse.click(4, 4);
+    eq(await isOpen(pg), false, 'popup', 'a click on the backdrop closes it');
+    await openMaker(pg);
     for (const h of complete) {
       const where = `builder ${h.slug}`;
       await pick(pg, `#hgPick input[value="${h.key}"]`);
@@ -218,7 +259,9 @@ try {
     }
     eq(errs, [], 'builder', 'page errors and conversion warnings');
     // a reload keeps the options and returns to the next holiday with every symbol ticked
-    await pg.reload({ waitUntil: 'load' }); await ready(pg);
+    await pg.reload({ waitUntil: 'load' }); await drawn(pg);
+    eq(await isOpen(pg), false, 'builder reload', 'the sheet maker is closed after a reload');
+    await openMaker(pg);
     eq(await pg.evaluate(() => [(document.querySelector('#hgPick input:checked') || {}).value, document.querySelectorAll('#hgSyms input:checked').length, document.getElementById('hgOptName').checked, document.querySelector('input[name="hgColored"]:checked').value]),
       ['chanukah', 6, true, '1'], 'builder reload', 'the next holiday, six ticks, the stored options');
     await ctx.close();
@@ -242,16 +285,32 @@ try {
     await ctx.close();
   }
 
+  // With the sheet maker closed, the page prints as a page: nothing is hidden for a run that is not there.
+  {
+    const { ctx, pg, errs } = await open('holiday_guide.html');
+    await drawn(pg);
+    await pg.evaluate(() => window.dispatchEvent(new Event('beforeprint')));
+    await pg.emulateMedia({ media: 'print' });
+    eq(await pg.evaluate(() => [getComputedStyle(document.getElementById('mainContent')).display !== 'none', getComputedStyle(document.getElementById('hgPrintArea')).display, document.querySelectorAll('#hgPrintArea .hg-paper').length]),
+      [true, 'none', 0], 'print, sheet maker closed', 'the page itself prints');
+    eq(errs, [], 'print, sheet maker closed', 'page errors');
+    await ctx.close();
+  }
+
   /* 4) Hebrew, dark, narrow. */
   for (const width of [800, 360]) {
     const where = `hub he dark ${width}`;
     const { ctx, pg, errs } = await open('holiday_guide.html', { lang: 'he', dark: true, width });
-    await ready(pg);
+    await drawn(pg);
     const st = await pg.evaluate(() => ({ dir: document.documentElement.dir, dark: document.body.classList.contains('dark'), count: document.getElementById('hgCountLine').textContent,
       title: document.querySelector('.hg-title').textContent, over: document.documentElement.scrollWidth - document.documentElement.clientWidth, raw: /holidayguide\.|holidaypage\./.test(document.body.innerText) }));
     eq([st.dir, st.dark, st.count, st.title, st.raw], ['rtl', true, 'עוד 17 ימים עד חֲנֻכָּה', 'דפי צביעה לחגי ישראל', false], where, 'Hebrew, dark, no raw key');
     ok(st.over <= 0, where, `the page scrolls sideways by ${st.over}px`);
-    ok((await sheets(pg)).every((x) => x.inside), where, 'a label leaves its sheet');
+    await openMaker(pg);
+    const sh = await sheets(pg);
+    ok(sh.length === 1 && sh.every((x) => x.inside), where, 'a label leaves its sheet in the popup');
+    const box = await pg.evaluate(() => { const d = document.querySelector('.hg-dialog').getBoundingClientRect(), f = document.getElementById('hgPrint').getBoundingClientRect(); return { over: document.documentElement.scrollWidth - document.documentElement.clientWidth, in: d.left >= -1 && d.right <= innerWidth + 1 && d.bottom <= innerHeight + 1, print: f.bottom <= innerHeight + 1 && f.top >= 0 }; });
+    ok(box.over <= 0 && box.in && box.print, where, `the popup does not fit the screen (${JSON.stringify(box)})`);
     eq(errs, [], where, 'page errors');
     await ctx.close();
   }
@@ -285,7 +344,7 @@ try {
   for (const h of [complete[0], complete[complete.length - 1]]) {
     const { ctx, pg, errs } = await open(`holiday_guide.html?holiday=${h.slug}`);
     await ready(pg);
-    eq(await pg.evaluate(() => [(document.querySelector('#hgPick input:checked') || {}).value, document.querySelectorAll('#hgPages .hg-sheet').length, location.search]), [h.key, 1, `?holiday=${h.slug}`], `?holiday=${h.slug}`, 'the builder\'s holiday, one sheet, the address kept');
+    eq(await pg.evaluate(() => [!document.getElementById('hgOverlay').hidden, (document.querySelector('#hgPick input:checked') || {}).value, document.querySelectorAll('#hgPages .hg-sheet').length, location.search]), [true, h.key, 1, `?holiday=${h.slug}`], `?holiday=${h.slug}`, 'the sheet maker open on that holiday, one sheet, the address kept');
     eq(errs, [], `?holiday=${h.slug}`, 'page errors');
     await ctx.close();
   }
@@ -341,4 +400,4 @@ if (fails.length) {
   console.error(`smoke-holiday-pages: ${fails.length} of ${checks} checks failed:\n  ` + fails.join('\n  '));
   process.exit(1);
 }
-console.log(`smoke-holiday-pages: ${checks} checks passed (the countdown on ${12} dates, the builder and its options, printing on Letter and A4, Hebrew / dark / 360px, ${complete.length} holiday pages and their links, the forwarder, the ${visibility} state).`);
+console.log(`smoke-holiday-pages: ${checks} checks passed (the countdown on ${12} dates, the tiles and the popup, the sheet maker and its options, printing on Letter and A4, Hebrew / dark / 360px, ${complete.length} holiday pages and their links, the forwarder, the ${visibility} state).`);
