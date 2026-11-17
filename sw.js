@@ -1,5 +1,5 @@
 /* IvritSuite service worker — bump VERSION to invalidate the cache on deploy. */
-const VERSION = 'v1404';
+const VERSION = 'v1405';
 const CACHE = 'ivritsuite-' + VERSION;
 // Version-independent cache for the big data/ corpora (dictionary words / emoji / parshiyot /
 // pockettorah). Kept OUT of the version-scoped CACHE so a routine VERSION bump no longer evicts
@@ -42,6 +42,7 @@ const CORE_ASSETS = [
   '/js/hebrew-calendar.js',
   '/js/parasha-icons.js',
   '/js/parasha-notes.js',
+  '/js/coloring-art.js',
   '/js/trope-staff.js',
   '/locales/en.json',
   '/locales/he.json',
