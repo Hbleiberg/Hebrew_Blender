@@ -7717,3 +7717,21 @@ holidayguide.howto.step1,"The page opens on the next holiday, with the days left
 holidayguide.howto.step2,"In Make a coloring sheet, choose a holiday and tick the symbols you want.",ב״הכנת דף צביעה״ בוחרים חג ומסמנים את הסמלים הרצויים.,Holiday Guide (unlisted): How-To step,
 holidayguide.howto.step3,"Choose how many symbols go on a page, the labels and what else is printed.","בוחרים כמה סמלים יהיו בעמוד, אילו תוויות יודפסו ומה עוד יופיע בדף.",Holiday Guide (unlisted): How-To step,
 holidayguide.howto.step4,"Press Print, or read about every holiday and its symbols in the guide below.","לוחצים על הדפסה, או קוראים על כל חג ועל סמליו במדריך שלמטה.",Holiday Guide (unlisted): How-To step,
+holidaypage.a11y.skip,Skip to the coloring page,דילוג לדף הצביעה,"Holiday coloring pages (holidays/*.html, unlisted): skip link",aria/skip-link
+holidaypage.header.title,IvritSuite — Holiday Coloring Pages,IvritSuite — דפי צביעה לחגים,"Holiday coloring pages (holidays/*.html, unlisted): header title",
+holidaypage.header.tagline,Free coloring pages for the Jewish holidays,דפי צביעה חינמיים לחגי ישראל,"Holiday coloring pages (holidays/*.html, unlisted): header subtitle",
+holidaypage.header.home,Home,דף הבית,"Holiday coloring pages (holidays/*.html, unlisted): header Home link label",svg-icon-in-markup
+holidaypage.crumbs.aria,Breadcrumb,נתיב ניווט,"Holiday coloring pages (holidays/*.html, unlisted): aria-label of the breadcrumb nav (IvritSuite › Holiday Guide › the holiday)",aria-label only
+holidaypage.crumbs.guide,Holiday Guide,מדריך החגים,"Holiday coloring pages (holidays/*.html, unlisted): the breadcrumb's link to holiday_guide.html",
+holidaypage.also_spelled,Also spelled:,נכתב גם:,"Holiday coloring pages (holidays/*.html, unlisted): lead-in before the other English spellings of the holiday's name (Hanukkah, Hanukah)",
+holidaypage.print,Print this coloring page,הדפסת דף הצביעה,"Holiday coloring pages (holidays/*.html, unlisted): the main button — opens the sheet in the Holiday Guide's builder (holiday_guide.html?holiday=<slug>)",svg-icon-in-markup
+holidaypage.print_note,"Print opens the sheet with its options: which symbols, one to six on a page, Hebrew or English labels, with or without vowels, to color or colored in, Letter or A4.","ההדפסה פותחת את הדף עם האפשרויות שלו: אילו סמלים, סמל אחד עד שישה בעמוד, תוויות בעברית או באנגלית, עם ניקוד או בלי, לצביעה או צבועים, Letter או A4.","Holiday coloring pages (holidays/*.html, unlisted): note under the buttons",
+holidaypage.guide_link,See every holiday in the Holiday Guide,כל החגים במדריך החגים,"Holiday coloring pages (holidays/*.html, unlisted): link to the guide on holiday_guide.html",
+holidaypage.about,About the holiday,על החג,"Holiday coloring pages (holidays/*.html, unlisted): heading of the description (English and Hebrew)",
+holidaypage.symbols,The symbols on this page,הסמלים בדף,"Holiday coloring pages (holidays/*.html, unlisted): heading of the list of the six symbols",
+holidaypage.stands_for,Stands for:,כנגד:,"Holiday coloring pages (holidays/*.html, unlisted): lead-in before what a symbol stands for (Sukkot: the lulav stands for the spine); כנגד is the traditional wording",
+holidaypage.img_alt,{name} coloring page,דף צביעה: {name},"Holiday coloring pages (holidays/*.html, unlisted): alt text of the sheet picture (set in applyI18n; the English UI adds the symbols after a colon)",alt only; do not translate {…}
+holidaypage.pager.aria,Other holidays,חגים נוספים,"Holiday coloring pages (holidays/*.html, unlisted): aria-label of the previous / all / next nav",aria-label only
+holidaypage.pager.prev,Previous holiday:,החג הקודם:,"Holiday coloring pages (holidays/*.html, unlisted): visually hidden lead-in of the previous-holiday link (the names follow)",
+holidaypage.pager.next,Next holiday:,החג הבא:,"Holiday coloring pages (holidays/*.html, unlisted): visually hidden lead-in of the next-holiday link (the names follow)",
+holidaypage.pager.all,All holiday coloring pages,כל דפי הצביעה לחגים,"Holiday coloring pages (holidays/*.html, unlisted): link to the list on holiday_guide.html (#hgSheets); also the holidays/ forwarder's link",

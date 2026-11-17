@@ -20,7 +20,7 @@
  *                               (names, URLs, order, one-line descriptions)
  *   - each page's JSON-LD    -> WebApplication/CollectionPage description, HowTo steps, FAQPage Q&A
  *   - each page's <head>     -> <title> and <meta name="description">
- * The ONLY hand-maintained prose is SITE_INTRO below (and the one-line summary of the generated parsha/ coloring
+ * The ONLY hand-maintained prose is SITE_INTRO below (and the one-line summaries of the generated parsha/ and holidays/ coloring
  * pages, which are listed as one line rather than 54). Edit those here, never in the output.
  *
  * Note on expectations: no major AI provider consumes llms.txt in production, and Google
@@ -225,8 +225,12 @@ const listed = new Set(tools.map((t) => t.url));
 // the list on parsha_emojis.html links them all.
 const isParshaPage = (loc) => new URL(loc).pathname.startsWith('/parsha/');
 const parshaPages = locs.filter((loc) => isParshaPage(loc) && pages.has(loc));
+// The generated holiday coloring pages (holidays/<slug>.html, scripts/build-holiday-pages.mjs) are one line too, once
+// that script's PUBLISHED switch puts them in the sitemap: the list on holiday_guide.html links them all.
+const isHolidayPage = (loc) => new URL(loc).pathname.startsWith('/holidays/');
+const holidayPages = locs.filter((loc) => isHolidayPage(loc) && pages.has(loc));
 const secondary = locs
-  .filter((loc) => loc !== indexLoc && !listed.has(loc) && pages.has(loc) && !isParshaPage(loc))
+  .filter((loc) => loc !== indexLoc && !listed.has(loc) && pages.has(loc) && !isParshaPage(loc) && !isHolidayPage(loc))
   .map((loc) => {
     const page = pages.get(loc);
     return { name: page.name, url: loc, desc: page.desc || '' };
@@ -235,6 +239,12 @@ if (parshaPages.length) secondary.push({
   name: 'Parsha coloring pages',
   url: SITE_URL + 'parsha_emojis.html#etSheets',
   desc: `${parshaPages.length} pages, one per weekly Torah portion (${parshaPages[0]} … ${parshaPages[parshaPages.length - 1]}): the parasha's emoji drawing as a free printable coloring page, with its summary in English and Hebrew.`,
+});
+
+if (holidayPages.length) secondary.push({
+  name: 'Holiday coloring pages',
+  url: SITE_URL + 'holiday_guide.html#hgSheets',
+  desc: `${holidayPages.length} pages, one per Jewish holiday (${holidayPages[0]} … ${holidayPages[holidayPages.length - 1]}): the holiday's symbols as a free printable coloring page, each named in Hebrew and English.`,
 });
 
 // ── Render ────────────────────────────────────────────────────────────────────
