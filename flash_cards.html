@@ -7913,7 +7913,7 @@ function printCardSheet(deck) {
   }
   const fit = fcsFitSizes(deck);
   document.getElementById('fcSheet').innerHTML = pages.map((p, i) =>
-    `<div class="fcs-page"><div class="fcs-head"><span>${esc(I18n.t('flashcards.sheet.button'))}</span>`
+    `<div class="fcs-page"><div class="fcs-head"><span>${esc(I18n.t('flashcards.sheet.page_head'))}</span>`
     + `<span>${i + 1} / ${pages.length}</span></div>`
     + `<div class="fcs-grid">${p.cards.map(c => fcsCell(c, p.back, fit.get(c))).join('')}</div></div>`).join('');
   document.body.classList.add('fc-sheet-mode');

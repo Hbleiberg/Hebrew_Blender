@@ -2133,6 +2133,7 @@
   "flashcards.sheet.duplex_tip": "Prints a matching answer page after each card page. Flip on the long edge so each answer lands behind its own card.",
   "flashcards.sheet.err_empty": "No cards to print — choose some letters and vowels first.",
   "flashcards.sheet.menu_title": "Card sheet options",
+  "flashcards.sheet.page_head": "Flash cards",
   "flashcards.sheet.practiced": "Print the deck we just practiced",
   "flashcards.sheet.practiced_tip": "Prints the exact cards from the practice run you just finished — same cards, same order — instead of a fresh random draw.",
   "flashcards.sheet.print_now": "Print",
