@@ -14,13 +14,15 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P2 (**S567 P; S573 P root-caused — a shared module, not small**) | js/ivrit-saves.js | **A page write made after a hydration planned its uploads, before it ends, is not sent, and the tab's next sync downloads the account's copy over it**: the hook is not armed yet, and step 4's `snapshotNames` takes the post-write hash as the tab's seen view, so `actionFor` reads it as another tab's write. …[full text: IMPROVEMENT_ARCHIVE.md]
 
+- [ ] P3 (**NEW S656 C**) | hebrew_dictionary.html | **Bulk Copy's Select page, Select all matching and Clear change "N selected" with nothing spoken**: `#bulkCount` is not a live region and the three buttons leave `#a11yStatus` untouched (13,080 words picked in silence); announce the count from the three. | found S656
+
 - [ ] P3 (**NEW S644 H — not small**) | Hebrew_Font_Maker.html | **Below 1181px the fullscreen Draw canvas window (`100vh − 300px`) clips its drawing**: at 1024×768 the baseline sits 16px under its edge. | found S644
 
 - [ ] P3 (**NEW S593 G — verify on a Mac first**) | Hebrew_Font_Maker.html | **Every font named only in Hebrew exports with nameID 6 `MyHebrewFont-Regular` (and `MyHebrewFont.ttf`)**: two such fonts share one PostScript name, which Font Book and Mac apps key fonts by; a stem from the name (a short hash or a transliteration) would keep them apart. | found S593
 
 - [ ] P3 (**NEW S574 M — verify paper first**) | hebrew_blend_generator.html | **The crossword's grid is never cropped to its words**: a 10-word puzzle in a 12×12 black square (~70% black). | found S574
 
-- [ ] P3 (**NEW S571 C — not small**) | hebrew_dictionary.html | **A word card is one `role=button` holding its select box, Copy, Hear and Google controls** (a button's children are presentational): move the details action onto the headword, the card a group. | found S571
+- [ ] P3 (**NEW S571 C — not small**) | hebrew_dictionary.html | **A word card is one `role=button` holding its select box, Copy, Hear and Google controls** (a button's children are presentational): move the details action onto the headword, the card a group. S656: the 8 Filter by Letter headers hold their Clear the same way. | found S571
 
 - [ ] P3 (**NEW S559 H — gate 2, copy**) | Hebrew_Font_Maker.html | **Help (Uploading, Download Templates) and the after-upload status still say "drag a box around each glyph"**: Auto-detect letters and Trace all (v5.59) are never named in the instructions, so the one-sheet path reads as 27 hand-drawn boxes. | found S559
 
@@ -59,6 +61,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P3 (**NEW 2026-09-26**) | trope_tutor.html (trope_index.json) | **8 Learn example clips sit where PocketTorah's taps slip by a word** (`build-trope-phrases.mjs` TIMING_SLIPS), so each likely plays a neighbouring word; the index builder could skip those verses. **S454: not small** (findings S454). | found 2026-09-26
 
 - [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
+
+- [ ] P4 (**NEW S656 C**) | hebrew_dictionary.html | **`COPY_ICON` and `CHECK_ICON` carry no `aria-hidden`**: every card's two copy controls expose an unnamed `image` (200 per 100 cards; the buttons' own names are right). Add `aria-hidden="true" focusable="false"`, the header icons' form. | found S656
 
 - [ ] P4 (**NEW S655 D — profile first**) | classroom_dashboard.html | **Opening Bulk preset edit over 40 presets takes twice as long as at S576**: its first task 185–225 ms @4× (event 304–344) against 98–123 (152–184) on S576's tree, alternating — since the grouped switch columns and the master row's form (findings S655). | found S655
 
@@ -129,8 +133,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S572 N**) | hebrew_blend_generator.html | **A Real Words card's longest part-of-speech tags still run into its number** ("prepositional phrase" at 104–144px, a full desktop too). | found S572
 
 - [ ] P4 (**NEW S570 D**) | torah_trainer.html | **A cold Trope-staff load still draws the reading twice**: `ensureStaffData()` starts only when the first render asks, so the words-only fallback draws first (31–50 ms @1×, 115–180 @4×) and the staff replaces it; starting the phrase file in `init` when the layout is the staff would draw once. | found S570
-
-- [ ] P4 (**NEW S566 H — gate 2, copy**) | flash_cards.html | **The results actions mix the Hebrew register**: "שמור תוצאות" (singular) among "שמרו / חזרו / תרגלו / הדפיסו / שתפו" (plural); a preset row's Play / Load / Save are singular too. One register per screen. | found S566
 
 - [ ] P4 (**NEW S649 H — GATE 3: a default placement; `h649/out/st-en-light-1280-windowed-1366x768-01.png`**) | classroom_dashboard.html | **A Student Picker turned on lands under Weather and Timer in the end rail**: at 1366×768 its chips and both buttons are below the fold (814–944 of 768), at 1280×900 the buttons; Full Screen's strip has Pick, and the start rail has room under the days. | found …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -370,6 +372,12 @@ _(none)_
 
 ## Done
 
+- [x] 2026-11-17 | (S656 close-out) | branch/deploy note | **S656 = C on `hebrew_dictionary.html` (its 4th dedicated C; 27 commits since): FOUND 4, FIXED 2 (the Word List windows' status spoken, the chips' ✕ at 24 px), 1 P3 + 1 P4 logged. Branch `claude/inspiring-hawking-ema04x`, draft PR (see the PR list); `sw.js` v1408; deploy after the merge.**
+
+- [x] 2026-11-17 | `52437110` | hebrew_dictionary.html, sw.js | (S656 C) **A filter chip's ✕ is a 24×24 target** (was 20×22, flush against the chip's own button; pattern `sub-floor touch target`) | `c656/fix2.mjs`, 3 chips × 4 cells: 24×24 (before 20×22 ×12), chip +0.23 px, an edge click removes the filter; target census 0 ✕; chip row shots
+
+- [x] 2026-11-17 | `1acda03e` | hebrew_dictionary.html, sw.js | (S656 C) **The Save as Word List and Add to Word List windows speak their status line** (`role=status`, polite, from the first paint, as the rename editor's) | `S656-dictionary-wordlist-status-is-live.mjs`, keyboard only × 4 cells: 24/24 (the previous tree fails every live step); window pixels identical
+
 - [x] 2026-11-17 | (S655 close-out) | branch/deploy note | **S655 = D on `torah_trainer.html` (6th D; 41 commits since) + `classroom_dashboard.html` (7th; a clean surface buys a second): FOUND 1 (the dashboard's Bulk open, P4); the S570 P4 root-caused and FIXED in 2 commits; + flash's S651 K half. Branch `claude/adoring-hawking-h59ir2`, draft PR #406; `sw.js` v1404; deploy after the merge.**
 
 - [x] 2026-11-17 | `bed40548` | flash_cards.html, ui-strings.csv + locales, sw.js | (S655, the S651 P4's K half) **A profile row's count agrees with its number in Hebrew** ("תוצאה שמורה אחת", "{n} תוצאות שמורות") **and the active row offers no Set Active** | `d655/fix3.mjs`, 3 profiles × 4 cells, a real Set Active click: tree 0, before 7 of 18
@@ -410,19 +418,11 @@ _(none)_
 
 - [x] 2026-11-13 | `b22ea1b8` | classroom_dashboard.html, ui-strings.csv + locales, accounts-and-cloud.md, loop-patterns.md, sw.js | (S652 P; pattern account-wide-delete-confirm-without-signed-in-wording) **Signed in, shrinking the schedule cycle and deleting the old daily rows say they reach every device** …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-11-13 | (S651 close-out) | branch/deploy note | **S651 = H on `flash_cards.html` (its 4th counted H: S264 → S412 → S566 → S651; 32 commits to the page since: the drill's Pause and voice speed, the listening marks, Space on a focused button, the compact results, the card sheet's one layout, the `?wl=` list from the account, a preset Load keeping the device's own switches): 3 lessons + …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-13 | `f49c6bbc` | Hebrew_Font_Maker.html, font-maker.md, sw.js | (S651, the S650 P4) **A reference font that arrives late is drawn when it lands** (`document.fonts`' `loadingdone` redraws the stage for a face of the reference family; any other family redraws nothing) | `d650/fix4late.mjs`, the real Continue path with Alef's stylesheet 4 s late × EN light 1280 / HE dark 800: the old …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-13 | `d03ad474` | classroom_dashboard.html, dashboard.md, sw.js | (S651, the S650 P4 — timely) **The holiday countdown keeps counting after the calendar year's last holiday** (`fetchHolidays` asks for the year after the feed's own last item when nothing is ahead; a cached list with nothing ahead is not reused) | `h651/fix3.mjs`, the real 2026–2029 feeds by route, 12 dated cases × 4 …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-13 | `392379e2` | flash_cards.html, sw.js | (S651 H, gate 2 answered) **A listening card's answers wait for the speaker** (the tiles are disabled and dimmed, `.lc-wait`, until the speaker is pressed on that card; `chooseTile` refuses an unheard card) | `h651/fix2.mjs`, 2-letter and word-list decks × 4 cells + an iPhone 13 by taps + a device with no Hebrew voice, by real clicks and …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-13 | `92c93088` | flash_cards.html, shared-components.md, CLAUDE.md, sw.js | (S651 H, P2, gate 2 answered) **A class link for a big word list opens instead of "URI Too Long"** (a code past `FC_LINK_QUERY_MAX` rides after `#s=`; `_fcLinkCode()` reads either form; a `hashchange` bringing a code that decodes reloads) | the live host bisected with a dummy query (8,190 bytes of path + …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-11-17 | **S656** | iters: 3 | tools: hebrew_dictionary ×2, sw ×2, probe S656 | patterns fixed: sub-floor touch target ×1 | pass run: C (hebrew_dictionary, first since S571; FOUND 4, FIXED 2) | SW: v1406→v1408
 
 - 2026-11-17 | **S655** | iters: 4 | tools: torah_trainer ×2, flash_cards, locales, torah-and-trope.md ×2, sw ×3, probe S655 | patterns fixed: — | pass run: D (torah, first since S570 + dashboard, since S576; FOUND 1, the S570 P4 FIXED ×2) + flash's S651 K half | SW: v1401→v1404
 
@@ -462,11 +462,9 @@ _(none)_
 
 - 2026-11-09 | **S637** | iters: 5 | tools: name_tags ×2, Hebrew_Font_Maker, trope_tutor, hebrew_blend_generator, sw | patterns fixed: dark-hover-resolves-to-the-rest-colour ×1, RTL-inheritance-on-a-Latin-script-container ×1 | pass run: M (name_tags, first since S552; FOUND 2, FIXED 2) + the S554 …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- 2026-11-09 | **S636** | iters: 5 | tools: name_tags ×2, generator ×2, locales, name-tags.md, generator.md, sw | patterns fixed: RTL-inheritance-on-a-Latin-script-container ×1 | pass run: G (name_tags, first since S550; FOUND 2, FIXED 2) + the S590/S613 generator P4s | SW: v1329→v1333
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S655 (2026-11-17):** torah_trainer ×2, flash_cards, locales, torah-and-trope.md ×2, sw.js ×3, loop docs, probe S655 · flash_cards ×2, hebrew_blend_generator, torah_trainer, letter_discrimination, locales, torah-and-trope.md, sw.js ×5, loop docs, probes S654
+- **Snapshot S656 (2026-11-17):** hebrew_dictionary ×2, sw.js ×2, loop docs, probe S656 · torah_trainer ×2, flash_cards, locales, torah-and-trope.md ×2, sw.js ×3, loop docs, probe S655
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -678,7 +676,7 @@ _(none)_
 
 - `light-literal-text-on-the-gold-token` | ACTIVE | owner A | det: recipe | last S399 | streak 0
 
-- `sub-floor touch target` | ACTIVE | owner E | det: recipe | last S614 | streak 0
+- `sub-floor touch target` | ACTIVE | owner E | det: recipe | last S656 | streak 0
 
 - `vh-capped-sheet-without-dvh-twin` | ACTIVE | owner A | det: recipe | last S385 | streak 1
 
@@ -832,7 +830,7 @@ _(none)_
 
 - K i18n / localization audit: 2026-11-06 (**S623 — 37th K, `843984b3..2d9e7e23` (525 commits; the Trope Atlas', Name Tags', the assignments and review pages' and the `parsha/` pages' first K): CSV +925 / −2 / 67 reworded (parity, arrows, plurals read); static 5,956 refs (0 missing) + 3,460 fallback sites; blind 0/12,102 added lines; 42 live-switch cells on the tree and the base (raw keys 0, …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- C accessibility (one tool): 2026-11-12 (**S645 — `flash_cards.html` (its 7th dedicated C: S381 → S560 → S645; 33 commits to the page since): census 18 views × 8 cells + 4 phones (9 plant kinds in every view), Tab and Shift+Tab walks over 5 screens (ringless plant 5/5), dialogs, the drill keys, reflow, motion, forced colours, hover, 1.4.12 (plant 6/6). FOUND 4, FIXED 2 (gate 2 both): a listening …[full text: IMPROVEMENT_ARCHIVE.md]
+- C accessibility (one tool): 2026-11-17 (**S656 — `hebrew_dictionary.html` (its 4th dedicated C: S285 → S427 → S571 → S656; 27 commits since): census 136 loads × 17 views (plants 9 kinds), Tab / Shift+Tab walks of 5 views (1,954 stops, 0 ringless), keyboard scenarios, 320 px reflow + 1.4.12. FOUND 4, FIXED 2 (the Word List windows' status spoken; the chips' ✕ 24 px), 1 P3 + 1 P4. C-next: atlas …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - A recurring-pattern sweep: 2026-10-31 (**S581 — 42nd A, scoped to the outside-loop reading-assignments landing (`a7fa5f1..aab737c`, 18 of its 53 commits; `reading_assignments.html`, `js/ivrit-assignments.js`, the Trainer's +838): the security arms (no `innerHTML`, reviver-safe parses, URL sinks, an anonymous Trainer loads no assignments module), then two catalog recipes committed as detectors …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -856,4 +854,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-11-08 (**S630 — 41st F, long-build progress (S542's F-next; the affordance's first F): 13 presses that build before they answer, by real clicks with an animation-frame recorder, real PDF libraries from a cache, a held CDN, double presses at raw points. FOUND 2, FIXED 2 (+1 P4). F-next: destructive-action confirms.**)
 
-**Next session (S656):** **Branch `claude/adoring-hawking-h59ir2` (S654–S655, draft PR #406): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1404**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=8541401 sw=v1404 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ New page: `letter_discrimination.html` — its first N and P are due within 14 sessions of S654 (rotation override 4); not yet a surface in `loop-passes.md` / `coverage.mjs`. ⚑ Stalest now: C dictionary (S571), N generator (S572), P flash (S573), M generator (S574), G chrome (S575), D atlas (S579), A (S581), H atlas (S583). ⚑ Queue: the dashboard's Bulk open (S655, profile first) beside its S576 Save; torah's two S653 P4; the S570 staff double draw. ⚑ Awaiting: the Total Torah bar's ▶ and the drawer's tab labels (S653), the starter class (S652). ⚑ E: other pages' links vs the host's 8,190 bytes (S651). ⚑ F/A: Hebrew-only wrappers on typed text (S649). ⚑ G: `leak.mjs`, 6 pages. ⚑ 47 seeds.
+**Next session (S657):** **Branch `claude/inspiring-hawking-ema04x` (S656, draft PR): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1408**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=4dd4383 sw=v1408 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b (main moved since S655: the Holiday Guide, published) ⚑ New pages: the Holiday Guide (`holiday_guide.html` + 17 `holidays/` pages; offers accounts; first N and P by S670) and `letter_discrimination.html` (by S668; no account wiring) — override 4; neither is a surface in `loop-passes.md` / `coverage.mjs` yet. ⚑ Stalest now: N generator (S572), P flash (S573), M generator (S574), G chrome (S575), D atlas (S579), C atlas (S580), A (S581), H atlas (S583). ⚑ Queue: the dictionary's S656 P3 (Bulk Copy's silent count) + P4 (card icons' `aria-hidden`); the dashboard's Bulk open (S655); torah's two S653 P4 (the ring spans three layouts); the S570 staff double draw. ⚑ Awaiting: the Total Torah bar's ▶ and the drawer's tab labels (S653), the starter class (S652). ⚑ E: links vs the host's 8,190 bytes (S651). ⚑ F/A: Hebrew-only wrappers on typed text (S649); save windows whose status line is not live (S656: sweep the other tools). ⚑ G: `leak.mjs`, 6 pages. ⚑ 47 seeds.

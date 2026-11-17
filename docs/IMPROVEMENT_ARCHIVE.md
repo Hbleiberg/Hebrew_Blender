@@ -98280,3 +98280,33 @@ _(prior)_ **Next session (S654):** **Branch `claude/lucid-brahmagupta-t4hdnh` (S
 - D performance (one tool): 2026-11-17 (**S655 — `torah_trainer.html` (its 6th D, S570 → S655, 41 commits since) + `classroom_dashboard.html` (its 7th, S576 → S655, 38 commits): the Trainer cold against S570's tree alternating (+5%), 19 interactions @4×, idle, heap, the request waterfall; the dashboard cold + 15 interactions against S576's. FOUND 1 (P4); the S570 P4 FIXED in 2 commits (190 → 50 ms @4×). D-next: atlas (S579), then generator (S590).**)
 
 _(prior)_ **Next session (S655):** **Branch `claude/adoring-hawking-h59ir2` (S654, draft PR — see the close-out): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1401**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=8541401 sw=v1401 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b (main + sw moved outside the loop since S653: `letter_discrimination.html`, `Stein_School/`, the Font Maker's wizard Help) ⚑ New page: `letter_discrimination.html` (the unlisted research beta, outside the loop) — its first N and P are due within 14 sessions (rotation override 4; its placeholder FIXED S654 at close-out), and it is not yet a surface in `loop-passes.md` / `coverage.mjs`. ⚑ Stalest now: D torah (S570), C dictionary (S571), N generator (S572), P flash (S573), M generator (S574), G chrome (S575), A (S581), H atlas (S583). ⚑ Queue: torah's two S653 P4 (the ring through the verse number, the hovered word's gold fill), flash's S651 P4. ⚑ Awaiting: the Total Torah bar's ▶ and the drawer's tab labels (S653), the starter class (S652). ⚑ E: other pages' links vs the host's 8,190 bytes (S651; flash's `#s=` measured S654). ⚑ F/A: Hebrew-only wrappers on typed text (S649). ⚑ G: `leak.mjs`, 6 pages. ⚑ 47 seeds.
+
+_(prior)_ **Next session (S656):** **Branch `claude/adoring-hawking-h59ir2` (S654–S655, draft PR #406): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1404**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=8541401 sw=v1404 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ New page: `letter_discrimination.html` — its first N and P are due within 14 sessions of S654 (rotation override 4); not yet a surface in `loop-passes.md` / `coverage.mjs`. ⚑ Stalest now: C dictionary (S571), N generator (S572), P flash (S573), M generator (S574), G chrome (S575), D atlas (S579), A (S581), H atlas (S583). ⚑ Queue: the dashboard's Bulk open (S655, profile first) beside its S576 Save; torah's two S653 P4; the S570 staff double draw. ⚑ Awaiting: the Total Torah bar's ▶ and the drawer's tab labels (S653), the starter class (S652). ⚑ E: other pages' links vs the host's 8,190 bytes (S651). ⚑ F/A: Hebrew-only wrappers on typed text (S649). ⚑ G: `leak.mjs`, 6 pages. ⚑ 47 seeds.
+
+
+<!-- archived by compact-ledger at the S657 boundary, 2026-11-17 -->
+## Compaction (S657, 2026-11-17) — moved verbatim from the live ledger
+
+### from Candidates — aged P4 (found more than 90 sessions before S657)
+
+- [ ] P4 (**NEW S566 H — gate 2, copy**) | flash_cards.html | **The results actions mix the Hebrew register**: "שמור תוצאות" (singular) among "שמרו / חזרו / תרגלו / הדפיסו / שתפו" (plural); a preset row's Play / Load / Save are singular too. One register per screen. | found S566
+
+### from Done
+
+- [x] 2026-11-13 | (S651 close-out) | branch/deploy note | **S651 = H on `flash_cards.html` (its 4th counted H: S264 → S412 → S566 → S651; 32 commits to the page since: the drill's Pause and voice speed, the listening marks, Space on a focused button, the compact results, the card sheet's one layout, the `?wl=` list from the account, a preset Load keeping the device's own switches): 3 lessons + …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-13 | `f49c6bbc` | Hebrew_Font_Maker.html, font-maker.md, sw.js | (S651, the S650 P4) **A reference font that arrives late is drawn when it lands** (`document.fonts`' `loadingdone` redraws the stage for a face of the reference family; any other family redraws nothing) | `d650/fix4late.mjs`, the real Continue path with Alef's stylesheet 4 s late × EN light 1280 / HE dark 800: the old …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-13 | `d03ad474` | classroom_dashboard.html, dashboard.md, sw.js | (S651, the S650 P4 — timely) **The holiday countdown keeps counting after the calendar year's last holiday** (`fetchHolidays` asks for the year after the feed's own last item when nothing is ahead; a cached list with nothing ahead is not reused) | `h651/fix3.mjs`, the real 2026–2029 feeds by route, 12 dated cases × 4 …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-13 | `392379e2` | flash_cards.html, sw.js | (S651 H, gate 2 answered) **A listening card's answers wait for the speaker** (the tiles are disabled and dimmed, `.lc-wait`, until the speaker is pressed on that card; `chooseTile` refuses an unheard card) | `h651/fix2.mjs`, 2-letter and word-list decks × 4 cells + an iPhone 13 by taps + a device with no Hebrew voice, by real clicks and …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-13 | `92c93088` | flash_cards.html, shared-components.md, CLAUDE.md, sw.js | (S651 H, P2, gate 2 answered) **A class link for a big word list opens instead of "URI Too Long"** (a code past `FC_LINK_QUERY_MAX` rides after `#s=`; `_fcLinkCode()` reads either form; a `hashchange` bringing a code that decodes reloads) | the live host bisected with a dummy query (8,190 bytes of path + …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Per-session log (one line per session)
+
+- 2026-11-09 | **S636** | iters: 5 | tools: name_tags ×2, generator ×2, locales, name-tags.md, generator.md, sw | patterns fixed: RTL-inheritance-on-a-Latin-script-container ×1 | pass run: G (name_tags, first since S550; FOUND 2, FIXED 2) + the S590/S613 generator P4s | SW: v1329→v1333
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- C accessibility (one tool): 2026-11-17 (**S656 — `hebrew_dictionary.html` (its 4th dedicated C: S285 → S427 → S571 → S656; 27 commits since): census 136 loads × 17 views (plants 9 kinds), Tab / Shift+Tab walks of 5 views (1,954 stops, 0 ringless), keyboard scenarios, 320 px reflow + 1.4.12. FOUND 4, FIXED 2 (the Word List windows' status spoken; the chips' ✕ 24 px), 1 P3 + 1 P4. C-next: atlas (S580), then torah (S586).**)
