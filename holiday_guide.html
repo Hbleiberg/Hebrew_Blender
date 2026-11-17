@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!-- Content-Security-Policy (defense-in-depth). Placed right after <meta charset> so it applies before
+     any script/style loads. script-src keeps 'unsafe-inline' because all app JS is inline by design; the
+     value here is blocking REMOTE script injection, object/base-uri hijacks, and unexpected connect/frame
+     origins. Everything this page shows is same-origin (the js/ modules; it fetches no data and offers no
+     account). Note: meta CSP can't express frame-ancestors or report-uri and does not cover content parsed
+     before this tag. Update this when adding any external script/font/fetch/iframe (see CLAUDE.md). -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=2">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=2">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=2">
+<link rel="manifest" href="manifest.webmanifest?v=3">
+<meta name="theme-color" content="#1a2744">
+<script src="/pwa.js" defer></script>
+<script src="/js/i18n.js" defer></script>
+<!-- iOS standalone + launch (splash) screens — regenerate with splash/gen_splash.py -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="IvritSuite">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-750x1334.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1242x2208.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1125x2436.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-828x1792.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1242x2688.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1170x2532.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1284x2778.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1179x2556.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1290x2796.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1206x2622.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1320x2868.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 744px) and (device-height: 1133px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-1488x2266.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-1536x2048.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-1620x2160.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 820px) and (device-height: 1180px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-1640x2360.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-1668x2224.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-1668x2388.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-2048x2732.png">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-CMLC81Z0HC"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  // The sign-in return leg carries ?code= (and ?error…): the Supabase SDK still needs them in the URL,
+  // and js/ivrit-account.js strips them — but only once it has run, which is after this tag. Report the
+  // cleaned URL so no authorization code or error text ever reaches Analytics. The key list mirrors
+  // AUTH_QUERY_KEYS in js/ivrit-account.js; a deferred module cannot be read from here. An emailed
+  // sign-in link lands with its code in the hash (#ivsignin=, LINK_HASH_KEY there): that hash is dropped.
+  gtag('config', 'G-CMLC81Z0HC', { page_location: (function () {
+    try { var u = new URL(location.href); ['code', 'error', 'error_code', 'error_description'].forEach(function (k) { u.searchParams.delete(k); }); if (/(^#|&)ivsignin=/.test(u.hash)) u.hash = ''; return u.toString(); }
+    catch (e) { return location.href; }
+  })() });
+</script>
+<title>Free Jewish Holiday Coloring Sheets and Symbols | IvritSuite</title>
+<meta name="description" content="Free printable Jewish holiday coloring sheets: the symbols of Chanukah, Rosh Hashanah, Sukkot, Purim, Tu BiShvat and Shabbat, labelled in Hebrew and English.">
+<link rel="canonical" href="https://ivritsuite.com/holiday_guide.html">
+<!-- Unlisted until the maintainer publishes it: no sitemap entry, no hub card, and this noindex. PUBLISHED in
+     scripts/build-holiday-pages.mjs is the switch (it fails while the two disagree): docs/reference/holiday-guide.md
+     → Publishing. -->
+<meta name="robots" content="noindex, follow">
+<meta name="author" content="Harrison Bleiberg">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="IvritSuite">
+<meta property="og:title" content="Holiday Guide — Free Jewish Holiday Coloring Sheets">
+<meta property="og:description" content="Printable coloring sheets for the Jewish holidays: six symbols for each holiday, drawn to color and named in Hebrew and English, with a short guide to what each one means. Free.">
+<meta property="og:url" content="https://ivritsuite.com/holiday_guide.html">
+<meta property="og:image" content="https://ivritsuite.com/holiday-coloring-sheets.png?v=1">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Three printable Jewish holiday coloring sheets: Chanukah, Rosh Hashanah and Sukkot, each with six symbols to color and their names in Hebrew and English">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Holiday Guide — Free Jewish Holiday Coloring Sheets">
+<meta name="twitter:description" content="Printable coloring sheets for the Jewish holidays: six symbols for each holiday, drawn to color and named in Hebrew and English, with a short guide to what each one means. Free.">
+<meta name="twitter:image" content="https://ivritsuite.com/holiday-coloring-sheets.png?v=1">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Holiday Guide",
+  "url": "https://ivritsuite.com/holiday_guide.html",
+  "description": "Free printable Jewish holiday coloring sheets and a picture guide to the holidays: each holiday's own symbol, when it falls and what it is, and six symbols for each finished holiday (Chanukah, Rosh Hashanah, Sukkot, Tu BiShvat, Purim, Shabbat and Havdalah) drawn to color and named in Hebrew with vowels and in English — one, two, four or six to a page, with the next holiday first and the days left until it begins.",
+  "image": "https://ivritsuite.com/holiday-coloring-sheets.png",
+  "applicationCategory": "EducationalApplication",
+  "operatingSystem": "Any (web browser)",
+  "isAccessibleForFree": true,
+  "inLanguage": "en",
+  "keywords": "Jewish holiday coloring sheets, Jewish holiday coloring pages, Hanukkah coloring pages, Chanukah coloring sheets, Rosh Hashanah coloring pages, Sukkot coloring pages, Purim coloring pages, Tu BiShvat coloring pages, Shabbat coloring pages, Havdalah coloring page, Jewish holiday symbols, Hebrew holiday vocabulary, Hebrew school, Jewish education",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "IvritSuite",
+    "url": "https://ivritsuite.com/"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "IvritSuite",
+      "item": "https://ivritsuite.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Holiday Guide",
+      "item": "https://ivritsuite.com/holiday_guide.html"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is the Holiday Guide?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A page of Jewish holiday coloring sheets and a picture guide to the holidays. Every holiday has its own symbol, a short description and when it falls, and the holidays that are finished have six symbols each, drawn to color and named in Hebrew and English."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Which holidays have coloring sheets?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Chanukah, Rosh Hashanah, Sukkot, Tu BiShvat, Purim, Shabbat and Havdalah each have a full sheet of six symbols. The other holidays of the year, from Yom Kippur to Tisha B’Av, have a description and their own symbol to color, and their six symbols are on the way."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Which holiday does the page show first?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The next one. The page opens with the next holiday on the calendar and how many days are left until the evening it begins, and its coloring sheet is ready in the sheet maker. Shabbat and Havdalah come every week, so they are not counted down to."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I print a holiday coloring sheet?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Choose the holiday, tick the symbols you want and press Print. You can put one, two, four or six symbols on a page, label them in Hebrew, English or both, show or hide the Hebrew vowels, add a line for the child’s name and a dashed line for cutting the page in half, and print on Letter or A4 paper."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Are the Hebrew words written with vowels?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Every Hebrew word on a sheet is printed with nikkud, the Hebrew vowel marks, so that new readers can sound it out. Turn the vowels off to print the words as they are usually written."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I print the pictures already colored?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Choose Colored in and the same sheet prints in color, for a poster or a matching game."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is the Holiday Guide free?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Free for non-commercial educational use under CC BY-NC-SA 4.0, with nothing to sign up for."
+      }
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "How to print a Jewish holiday coloring sheet",
+  "step": [
+    {
+      "@type": "HowToStep",
+      "position": 1,
+      "text": "The page opens on the next holiday, with the days left until it begins."
+    },
+    {
+      "@type": "HowToStep",
+      "position": 2,
+      "text": "In Make a coloring sheet, choose a holiday and tick the symbols you want."
+    },
+    {
+      "@type": "HowToStep",
+      "position": 3,
+      "text": "Choose how many symbols go on a page, the labels and what else is printed."
+    },
+    {
+      "@type": "HowToStep",
+      "position": 4,
+      "text": "Press Print, or read about every holiday and its symbols in the guide below."
+    }
+  ]
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" media="print" onload="this.media='all'" rel="stylesheet">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet"></noscript>
+<script>(function(){try{var s=localStorage.getItem('hebrewBlender_darkMode');if(s==='1'||(s===null&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark-early');}}catch(e){}})()</script>
+<script>
+  /* No-flash UI-language IIFE — mirrors the dark-mode one; sets dir/lang before paint so Hebrew
+     never flashes LTR->RTL. Authoritative set happens later in /js/i18n.js. */
+  (function () {
+    try {
+      var p = new URLSearchParams(location.search).get('lang');
+      var l = (p === 'en' || p === 'he') ? p : (localStorage.getItem('hebrewBlender_lang') || 'en');
+      if (l !== 'en' && l !== 'he') l = 'en';
+      document.documentElement.lang = l;
+      document.documentElement.dir = (l === 'he' ? 'rtl' : 'ltr');
+    } catch (e) {}
+  })();
+</script>
+<style>
+@font-face{font-family:'Frank Ruhl Libre';src:url('/fonts/FrankRuhlLibre-Regular.ttf') format('truetype');font-weight:400;font-display:swap;}
+@font-face{font-family:'IvritSuite Taamim';src:url('/fonts/NotoSerifHebrew-Taamim.ttf') format('truetype');font-weight:400;font-display:swap;}
+:root {
+  --navy:#1a2744;--navy-deep:#0d1220;--gold:#c9922a;--focus-ring:#a0701c;--gold-light:#f0d080;--cream:#fdf8ef;
+  --warm-gray:#e8e0d0;--text:#1a2744;--muted:#6b6050;--border:#c8bfa8;--white:#ffffff;
+  --gold-text:#7f5a13;   /* readable gold for small text on light surfaces (WCAG ≥4.5:1) */
+  --gold-text-hover:#5c4010;
+  --heb-font:'Frank Ruhl Libre', 'IvritSuite Taamim', serif;
+}
+html.dark-early body,body.dark {
+  --navy:#1a2744;--gold:#e0a832;--focus-ring:var(--gold);--gold-light:#f5d97a;--cream:#161c2a;
+  --warm-gray:#1e2535;--text:#dde4f0;--muted:#8a94a8;--border:#2a3349;--white:#1e2535;--gold-text:var(--gold);--gold-text-hover:var(--gold-light);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+/* ───── Skip link (house pattern; the same rule on every page) ───── */
+/* Visually hidden until keyboard focus reaches it, then it drops in at the top inline start. */
+.skip-link {
+  position:absolute; inset-inline-start:8px; top:-48px; z-index:200;
+  background:var(--navy); color:#fff; padding:8px 14px;
+  border-radius:0 0 6px 6px; font-size:0.8rem; font-weight:600;
+  text-decoration:none;
+}
+.skip-link:focus { top:0; outline:2px solid var(--focus-ring); outline-offset:2px; }
+header{background:var(--navy);color:#fff;padding:22px 40px;display:flex;align-items:center;gap:16px;border-bottom:4px solid var(--gold);}
+body.dark header{background:var(--navy-deep);}
+header .star{font-size:32px;color:var(--gold);}
+header .brand-title{font-family:'Libre Baskerville',serif;font-size:1.5rem;letter-spacing:0.01em;}
+header p{font-size:0.85rem;color:var(--gold-light);margin-top:3px;}
+header .hright{margin-inline-start:auto;display:flex;gap:10px;align-items:center;flex-shrink:0;}
+.hbtn{background:none;border:1px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:5px 14px;font-size:0.8rem;cursor:pointer;font-family:'Source Sans 3',sans-serif;text-decoration:none;min-height:30px;display:inline-flex;align-items:center;gap:6px;justify-content:center;}
+.hbtn:hover{background:rgba(255,255,255,0.1);}
+.dark-btn{background:none;border:1px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:5px 14px;font-size:0.8rem;cursor:pointer;font-family:'Source Sans 3',sans-serif;min-height:30px;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
+.dark-btn:hover{background:rgba(255,255,255,0.1);}
+
+main{flex:1;width:100%;max-width:1180px;margin:0 auto;padding:32px 24px 56px;}
+main:focus{outline:none;}
+.hg-title{font-family:'Libre Baskerville',serif;font-size:1.9rem;color:var(--text);margin-bottom:8px;}
+.hg-lead{font-size:1rem;line-height:1.6;max-width:820px;color:var(--text);}
+.hg-h2{font-family:'Libre Baskerville',serif;font-size:1.3rem;color:var(--navy);margin:36px 0 0;padding-block-end:6px;border-block-end:1px solid var(--border);}
+.hg-h3{font-family:'Libre Baskerville',serif;font-size:1.08rem;color:var(--navy);margin:22px 0 0;}
+body.dark .hg-h2,body.dark .hg-h3{color:var(--gold-light);}
+.hg-sub{margin:10px 0 0;font-size:0.95rem;color:var(--muted);line-height:1.5;max-width:820px;}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;}
+
+/* ───── The next holiday: its symbol, the countdown, what it is — the first thing on the page. ───── */
+.hg-hero{margin-block-start:20px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:20px;align-items:start;padding:20px 22px;background:var(--white);border:1px solid var(--gold);border-radius:12px;box-shadow:inset 0 0 0 1px var(--gold),0 0 0 3px rgba(201,146,42,0.2);}
+.hg-hero:empty{display:none;}
+.hg-hero .hol-ico{width:112px;height:112px;margin:0;vertical-align:top;}
+.hg-kicker{align-self:flex-start;display:inline-block;margin-block-end:6px;padding:2px 10px;border-radius:999px;background:var(--gold);color:#1a2744;font-size:0.72rem;font-weight:700;}
+.hg-hero-name{font-family:'Libre Baskerville',serif;font-size:1.5rem;color:var(--navy);line-height:1.3;margin:0;overflow-wrap:anywhere;}
+body.dark .hg-hero-name{color:var(--gold-light);}
+.hg-hero-name [lang="he"],.hg-name [lang="he"]{font-family:var(--heb-font);font-size:1.12em;font-weight:400;}
+.hg-alt{font-weight:400;color:var(--muted);}
+.hg-count-line{margin:8px 0 0;font-size:1.3rem;font-weight:700;color:var(--text);line-height:1.3;}
+.hg-when-line{margin:2px 0 0;font-size:0.98rem;color:var(--muted);}
+.hg-about{margin:10px 0 0;font-size:0.98rem;line-height:1.55;max-width:760px;}
+.hg-go-row{margin:10px 0 0;font-size:0.9rem;display:flex;flex-wrap:wrap;gap:0 18px;}
+/* inline-block + block padding: a >=24px tap target (WCAG 2.5.8) without moving the text. */
+.hg-go{display:inline-block;padding-block:4px;min-height:24px;color:var(--gold-text);font-weight:600;text-decoration:none;}
+.hg-go:hover{color:var(--gold-text-hover);text-decoration:underline;}
+.hg-go-btn{background:none;border:0;padding-inline:0;font:inherit;font-weight:600;cursor:pointer;}
+.hg-go:focus-visible,.hg-btn:focus-visible,.hg-print:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;}
+
+/* ───── The sheet builder: the options in a column at the inline-start, the pages it makes beside them, the page count
+   and Print underneath. In the page, not a popup: the next holiday's sheet is on screen when the page opens. ───── */
+.hg-builder-box{margin-block-start:14px;background:var(--white);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.hg-panes{display:grid;grid-template-columns:minmax(300px,380px) minmax(0,1fr);}
+.hg-side{padding:14px 16px 18px;border-inline-end:1px solid var(--border);display:flex;flex-direction:column;gap:16px;min-width:0;}
+.hg-main{background:var(--warm-gray);padding:16px;min-width:0;}
+body.dark .hg-main{background:var(--cream);}   /* dark --warm-gray is the box's own surface */
+.hg-set{border:none;margin:0;padding:0;min-width:0;display:flex;flex-direction:column;gap:2px;}
+.hg-set legend{font-size:0.78rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);padding:0;margin-bottom:4px;}
+html[lang="he"] .hg-set legend{letter-spacing:normal;text-transform:none;}
+.hg-row{display:flex;flex-wrap:wrap;gap:4px 22px;}
+.hg-opt{display:flex;align-items:center;gap:8px;font-size:0.9rem;min-height:30px;}
+.hg-opt[hidden]{display:none;}
+.hg-opt input{width:18px;height:18px;accent-color:var(--gold);flex-shrink:0;margin:0;}
+.hg-btns{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px;}
+.hg-btn{font-family:inherit;font-size:0.8rem;font-weight:700;padding:4px 10px;min-height:30px;border-radius:6px;border:1.5px solid var(--border);background:transparent;color:var(--text);cursor:pointer;}
+.hg-btn:hover{border-color:var(--gold);}
+.hg-chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(98px,1fr));gap:6px;}
+.hg-chip{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 4px 5px;border:1.5px solid var(--border);border-radius:8px;background:var(--cream);color:var(--text);cursor:pointer;text-align:center;min-width:0;}
+.hg-chip input{position:absolute;inset-block-start:4px;inset-inline-start:4px;width:14px;height:14px;margin:0;accent-color:var(--gold);}
+.hg-chip:has(input:checked){border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold);}
+.hg-chip:has(input:focus-visible){outline:2px solid var(--focus-ring);outline-offset:2px;}
+.hg-chip .hol-ico{width:32px;height:32px;margin:0;}
+.hg-chip-name{font-size:0.74rem;line-height:1.2;overflow-wrap:anywhere;}
+.hg-chip-name[lang="he"]{font-family:var(--heb-font);font-size:0.88rem;}
+.hg-chip-soon{font-size:0.66rem;color:var(--muted);line-height:1.2;}
+.hg-note{margin:0 0 10px;font-size:0.9rem;color:var(--text);}
+.hg-note:empty{margin:0;}   /* empty, it collapses by margin, not display:none: a hidden role=status leaves the accessibility tree */
+.hg-pages{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,270px),1fr));gap:18px 16px;align-items:start;}
+.hg-pages[data-count="1"]{grid-template-columns:minmax(0,560px);justify-content:center;}
+.hg-pages[data-count="2"]{grid-template-columns:repeat(2,minmax(0,420px));justify-content:center;}
+.hg-thumb{min-width:0;}
+.hg-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:8px 14px;padding:10px 16px;border-block-start:1px solid var(--border);}
+.hg-count{margin-inline-end:auto;font-weight:700;font-variant-numeric:tabular-nums;}
+.hg-print{font-family:inherit;font-size:0.95rem;font-weight:700;padding:9px 18px;min-height:40px;border:none;border-radius:6px;background:var(--gold);color:#1a1a1a;cursor:pointer;}
+.hg-print[aria-disabled="true"]{opacity:0.45;cursor:default;}
+#hgPrintArea{display:none;}   /* the run prints from here (hgFillPrint); never shown on screen */
+
+/* The sheet is the page that prints: literal white paper and black ink in both themes, laid out left to right, every
+   size in cqmin (the sheet is a size container), so the preview and the printed page scale alike. Its proportions are
+   the printed box's (hgBox sets --cs-aw / --cs-ah): the paper less the 0.35in @page margins, Letter 7.8 × 10.3in,
+   A4 7.57 × 10.99in. --tk is the title's fit factor and each label carries its own --k (hgFit: a long name is
+   shrunk to its place, never wrapped or clipped). */
+.hg-sheet{
+  --cs-aw:7.8; --cs-ah:10.3; --tk:1;
+  container-type:size; position:relative; box-sizing:border-box; width:100%; aspect-ratio:var(--cs-aw) / var(--cs-ah);
+  background:#fff; color:#000; border:1px solid var(--border); box-shadow:0 4px 16px rgba(26,39,68,0.08);
+  overflow:hidden; font-family:'Source Sans 3', sans-serif;
+}
+/* The page's layout sits one level in: a container's own padding and gap would resolve cqmin against the viewport. */
+.hg-page{position:absolute;inset:0;box-sizing:border-box;display:flex;flex-direction:column;gap:1.6cqmin;padding:3.2cqmin 4cqmin 2cqmin;overflow:hidden;}
+.hg-nameline{flex:none;display:flex;align-items:flex-end;gap:1.2cqmin;font-family:'Libre Baskerville',serif;font-size:3.2cqmin;}
+.hg-nameline[lang="he"]{font-family:var(--heb-font);}
+.hg-blank{display:inline-block;width:45cqmin;border-block-end:0.3cqmin solid #000;}
+/* The title in letters to colour in: white inside a black outline (the stroke is painted first, so the fill keeps the
+   letter's shape and the nikkud stay hollow dots). English at the left and Hebrew at the right, as in a Chumash. */
+.hg-headline{flex:none;display:flex;justify-content:space-evenly;align-items:center;gap:4cqmin;white-space:nowrap;overflow:hidden;min-height:13cqmin;}
+.hg-headline.hg-stack{flex-direction:column;justify-content:center;gap:0;}
+.hg-stack .hg-bubble-en{font-size:calc(7cqmin * var(--tk));}
+.hg-stack .hg-bubble-he{font-size:calc(8cqmin * var(--tk));line-height:1.35;}
+.hg-bubble{font-weight:700;color:#fff;-webkit-text-stroke:calc(0.55cqmin * var(--tk)) #000;paint-order:stroke fill;line-height:1.2;}
+.hg-bubble-en{font-size:calc(9cqmin * var(--tk));letter-spacing:0.02em;}
+.hg-bubble-he{font-family:var(--heb-font);font-size:calc(10.5cqmin * var(--tk));line-height:1.5;}
+@supports not (-webkit-text-stroke:1px #000){ .hg-bubble{color:#000;} }
+.hg-grid{flex:1;min-height:0;display:flex;flex-direction:column;}
+.hg-grow{flex:1 1 0;min-height:0;display:flex;gap:2cqmin;}
+.hg-grid[dir="rtl"] .hg-grow{flex-direction:row;}
+.hg-cut{flex:none;margin-block:1.4cqmin;border-block-start:0.45cqmin dashed #1a2744;}
+.hg-gap{flex:none;height:2.4cqmin;}
+.hg-cell{flex:1 1 0;min-width:0;min-height:0;display:flex;flex-direction:column;align-items:center;gap:0.6cqmin;margin:0;}
+.hg-cell-empty{visibility:hidden;}
+.hg-pic{flex:1 1 0;min-height:0;width:100%;position:relative;}
+.hg-pic svg{position:absolute;inset:0;width:100%;height:100%;display:block;overflow:visible;}
+.hg-cap{flex:none;width:100%;display:flex;flex-direction:column;align-items:center;text-align:center;white-space:nowrap;overflow:hidden;}
+.hg-he{font-family:var(--heb-font);font-size:calc(var(--he,6.4cqmin) * var(--k,1));line-height:1.5;}
+.hg-en{font-weight:600;font-size:calc(var(--en,4.6cqmin) * var(--k,1));line-height:1.2;}
+.hg-mean{display:block;width:var(--mean,9cqmin);height:var(--mean,9cqmin);margin-block-start:0.8cqmin;}
+.hg-mean svg{width:100%;height:100%;display:block;overflow:visible;}
+.hg-sheet[data-per="6"]{--he:6.4cqmin;--en:4.6cqmin;--mean:8.5cqmin;}
+.hg-sheet[data-per="4"]{--he:7.4cqmin;--en:5.2cqmin;--mean:10cqmin;}
+.hg-sheet[data-per="2"]{--he:7.8cqmin;--en:5.4cqmin;--mean:10cqmin;}
+.hg-sheet[data-per="1"]{--he:10cqmin;--en:6.6cqmin;--mean:13cqmin;}
+.hg-credit{flex:none;font-size:1.8cqmin;color:#555;text-align:end;}
+
+/* ───── The guide: every holiday, its symbol, when it falls, what it is and the symbols that go with it. ───── */
+.hg-cards{list-style:none;margin:0;padding:12px 0 0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,480px),1fr));gap:14px;}
+.hg-card{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:start;padding:14px 16px;background:var(--white);border:1px solid var(--border);border-radius:10px;scroll-margin-block-start:12px;}
+.hg-card > .hol-ico{width:64px;height:64px;margin:0;vertical-align:top;}
+.hg-card[aria-current="true"]{border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold);}
+.hg-text{min-width:0;display:flex;flex-direction:column;}
+.hg-badge{align-self:flex-start;margin-block-end:4px;padding:2px 8px;border-radius:999px;background:var(--warm-gray);color:var(--text);font-size:0.7rem;font-weight:700;}
+.hg-card[aria-current="true"] .hg-badge{background:var(--gold);color:#1a2744;}
+.hg-name{margin:0;font-size:1.08rem;font-weight:700;color:var(--navy);line-height:1.3;overflow-wrap:anywhere;}
+body.dark .hg-name{color:var(--gold-light);}
+.hg-when{margin:2px 0 0;font-size:0.8rem;color:var(--muted);line-height:1.45;}
+.hg-card .hg-about{font-size:0.9rem;margin-block-start:6px;}
+.hg-spelled{margin:6px 0 0;font-size:0.78rem;color:var(--muted);}
+.hg-syms{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,200px),1fr));gap:8px 12px;}
+.hg-sym{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;align-items:start;}
+.hg-sym .hol-ico{width:40px;height:40px;margin:0;vertical-align:top;}
+.hg-sym-name{font-size:0.86rem;font-weight:700;line-height:1.3;}
+.hg-sym-name [lang="he"]{font-family:var(--heb-font);font-size:1.1em;font-weight:400;}
+.hg-sym-cap{font-size:0.8rem;line-height:1.45;color:var(--text);margin:1px 0 0;}
+.hg-soon{margin:10px 0 0;font-size:0.84rem;color:var(--muted);font-style:italic;}
+html[lang="he"] .hg-soon{font-style:normal;}
+.hg-card .hg-go-row{font-size:0.84rem;margin-block-start:auto;padding-block-start:8px;}
+
+/* ───── The coloring pages: each finished holiday's own page, by name. Screen only. ───── */
+.hg-sheets-list{list-style:none;margin:12px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr));gap:2px 18px;}
+.hg-sheets-link{display:inline-flex;flex-wrap:wrap;align-items:baseline;gap:0 6px;padding-block:3px;min-height:24px;font-size:0.92rem;font-weight:600;color:var(--gold-text);text-decoration:none;}
+.hg-sheets-link:hover{color:var(--gold-text-hover);text-decoration:underline;}
+.hg-sheets-link:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;}
+.hg-sheets-he{font-family:var(--heb-font);font-size:1.08em;font-weight:400;}
+html[lang="he"] .hg-sheets-he{order:-1;}
+
+footer{text-align:center;padding:16px;font-size:0.75rem;color:var(--muted);border-top:1px solid var(--border);background:var(--white);}
+footer a{color:var(--gold-text);text-decoration:none;}
+footer a:hover{text-decoration:underline;}
+footer details > summary:hover { text-decoration: underline; }
+/* The Hebrew UI's footer heads: their inline 0.08em caps are English small caps; Hebrew has no capitals. */
+html[lang="he"] footer [style*="letter-spacing:0.08em"] { letter-spacing: normal !important; text-transform: none !important; }
+/* Footer links are the page's smallest tap targets: inline-block + block padding grows each link's box to >=24px. */
+footer a { display: inline-block; padding-block: 5px; }
+
+@media (max-width:860px){
+  /* One column: the options, then the pages. */
+  .hg-panes{grid-template-columns:1fr;}
+  .hg-side{border-inline-end:none;border-block-end:1px solid var(--border);}
+  .hg-pages[data-count="2"]{grid-template-columns:repeat(auto-fill,minmax(min(100%,270px),1fr));}
+}
+@media (max-width:640px){
+  header{padding:16px 20px;}
+  header .brand-title{font-size:1.2rem;}
+  main{padding:22px 14px 44px;}
+  .hg-title{font-size:1.45rem;}
+  .hg-hero{grid-template-columns:1fr;padding:16px;}
+  .hg-hero .hol-ico{width:80px;height:80px;}
+  .hg-card{grid-template-columns:1fr;}
+  .hg-card > .hol-ico{width:52px;height:52px;}
+  .hg-count-line{font-size:1.12rem;}
+}
+@media (pointer:coarse){
+  .hg-opt{min-height:44px;}
+  .hg-btn{min-height:40px;}
+  .hg-chip{min-height:56px;}
+}
+/* Phone widths: the header's button row wraps onto a second line instead of pushing the page sideways (WCAG 1.4.10).
+   The gate is the header's measured overflow ceiling in the real UI fonts, Hebrew and English (docs/reference/
+   shared-components.md → The header's wrap gate); re-measure whenever a header control changes width. */
+@media (max-width:620px), (pointer:coarse) and (max-width:630px){
+  header{flex-wrap:wrap;}
+  header .hright{flex-wrap:wrap;max-width:100%;justify-content:flex-end;}
+}
+/* Print: the sheets alone. #hgPrintArea holds one paper per page of the run (hgFillPrint, also on Ctrl+P through
+   beforeprint); 100vh is the page area, and the break sits BEFORE each paper after the first, so no blank page trails
+   the run. body is a flex column on screen, and a forced break inside a flex item is ignored by some engines: paper
+   gets a plain block. */
+@media print {
+  body, body.dark, html.dark-early body { display:block; min-height:0; background:#fff !important; color:#000 !important; }
+  body > :not(#hgPrintArea) { display:none !important; }
+  #hgPrintArea { display:block !important; }
+  .hg-paper { width:100%; height:100vh; break-inside:avoid; }
+  .hg-paper + .hg-paper { break-before:page; }
+  #hgPrintArea .hg-sheet { width:100%; height:100%; min-height:0; aspect-ratio:auto; border:none; box-shadow:none; }
+}
+/* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner, parsha_emojis, name_tags, trope_atlas, letter_discrimination, reading_assignments, holiday_guide, the generated parsha/ pages (copied from parsha_emojis by scripts/build-parsha-pages.mjs) and the generated holidays/ pages (copied from holiday_guide by scripts/build-holiday-pages.mjs) (docs/reference/shared-components.md → Header icons).
+   The header controls and the in-page control buttons (play, pause, stop, reset, retry, loop, sound) carry inline
+   SVGs from one shared set (.hi-*); ink is currentColor, so each button's own colour applies. .hi-sm is the 13px
+   size the tiny settings buttons take, .hi-btn lines an icon up with its label inside a button.
+   The dark toggle holds both the moon and the sun and body.dark picks one; scripts change only the .hi-lbl text beside it. */
+.hi{width:16px;height:16px;flex-shrink:0;display:inline-block;vertical-align:-0.2em;}
+.hi-sm{width:13px;height:13px;}
+.hi-btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;}
+.hi-sun{display:none;}
+body.dark .hi-moon{display:none;}
+body.dark .hi-sun{display:inline-block;}
+[dir="rtl"] .hi-arrow{transform:scaleX(-1);}
+/* ═══ end header-icons CSS ═══ */
+
+/* ═══ holiday-icons CSS ═══ shared block, byte-identical on: classroom_dashboard, holiday_guide, parsha_emojis, torah_trainer (docs/reference/shared-components.md → Holiday icons).
+   One flat 48×48 SVG per holiday family, drawn by holidayIconFor() (the holiday-icons JS block). The --hol-* tokens are
+   the icon palette; the dark block swaps the outline and paper fills (a navy outline vanishes on the dark surface), so a
+   dark toggle needs no re-render. .hol-ico is sized in em, so it scales with the text it leads. */
+.hol-ico {
+  --hol-line: #1a2744; --hol-gold: #c9922a; --hol-gold-lt: #f0d080; --hol-paper: #fffaf0; --hol-navy: #2a3b66;
+  --hol-red: #c0392b; --hol-green: #3a7d44; --hol-blue: #3b6fb6; --hol-flame: #f0a030; --hol-ground: #fdf8ef;
+  display: inline-block; width: 1.5em; height: 1.5em; vertical-align: -0.42em; margin-inline-end: 0.3em; flex: 0 0 auto;
+}
+html.dark-early body .hol-ico, body.dark .hol-ico {
+  --hol-line: #e8e0d0; --hol-gold: #e0a832; --hol-gold-lt: #f5d97a; --hol-paper: #e8e0d0; --hol-navy: #5a6d9c;
+  --hol-red: #e0584a; --hol-green: #5aa865; --hol-blue: #6a9ae0; --hol-flame: #f6b84a; --hol-ground: #161c2a;
+}
+/* Paper is white whatever the theme (both carriers' print blocks turn a dark page light), so print keeps the light
+   palette: from a dark page the cream outline printed at 1.31:1 and the chanukiah all but vanished. */
+@media print {
+  html.dark-early body .hol-ico, body.dark .hol-ico {
+    --hol-line: #1a2744; --hol-gold: #c9922a; --hol-gold-lt: #f0d080; --hol-paper: #fffaf0; --hol-navy: #2a3b66;
+    --hol-red: #c0392b; --hol-green: #3a7d44; --hol-blue: #3b6fb6; --hol-flame: #f0a030; --hol-ground: #fdf8ef;
+  }
+}
+.hol-ico svg { display: block; width: 100%; height: 100%; stroke: var(--hol-line); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+/* ═══ end holiday-icons CSS ═══ */
+</style>
+<!-- @page size for the sheets (hgPageStyle keeps it in step with the Paper choice: the page prints nothing else). -->
+<style id="hgPageSize"></style>
+</head>
+<body><a class="skip-link" href="#mainContent" data-i18n="holidayguide.a11y.skip">Skip to the holiday guide</a>
+<header>
+  <span class="star" aria-hidden="true">✡︎</span>
+  <div>
+    <div class="brand-title" data-i18n="holidayguide.header.title">IvritSuite — Holiday Guide</div>
+    <p data-i18n="holidayguide.header.tagline">Symbols and coloring sheets for every Jewish holiday</p>
+  </div>
+  <div class="hright">
+    <a class="hbtn" href="/"><svg class="hi hi-arrow dir-arrow" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/></svg><span class="hi-lbl" data-i18n="holidayguide.header.home">Home</span></a>
+    <div data-i18n-switcher></div>
+    <button class="dark-btn" id="darkBtn" onclick="toggleDark()" aria-pressed="false" aria-label="Toggle dark mode" data-i18n-aria-label="shared.darkmode.toggle_title" data-i18n-title="shared.darkmode.toggle_title"><svg class="hi hi-moon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15.5A7 7 0 0 1 8.5 6a7 7 0 1 0 9.5 9.5z"/><path d="M17.5 2.5l.9 2.4 2.4.9-2.4.9-.9 2.4-.9-2.4-2.4-.9 2.4-.9z" fill="currentColor" stroke="none"/></svg><svg class="hi hi-sun" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></svg><span class="hi-lbl" data-i18n="shared.darkmode.label_dark">Dark</span></button>
+  </div>
+</header>
+
+<main id="mainContent" tabindex="-1">
+  <h1 class="hg-title" data-i18n="holidayguide.title">Jewish Holiday Coloring Sheets</h1>
+  <p class="hg-lead" data-i18n="holidayguide.lead">Free printable coloring sheets for the Jewish holidays. Each sheet shows the symbols of one holiday to color in, labelled in Hebrew and English, and the guide below explains what every symbol means.</p>
+
+  <!-- The next holiday: drawn by hgRenderHero from js/holiday-guide-data.js and the calendar. -->
+  <section class="hg-hero" id="hgHero" aria-labelledby="hgHeroName"></section>
+
+  <section id="hgBuilder" aria-labelledby="hgBuilderTitle">
+    <h2 class="hg-h2" id="hgBuilderTitle" data-i18n="holidayguide.builder.title">Make a coloring sheet</h2>
+    <p class="hg-sub" data-i18n="holidayguide.builder.intro">Choose a holiday and its symbols, then how the page is laid out. The sheet below changes as you choose; Print sends it to your printer.</p>
+    <div class="hg-builder-box">
+      <div class="hg-panes">
+        <div class="hg-side">
+          <fieldset class="hg-set">
+            <legend data-i18n="holidayguide.builder.holiday">Holiday</legend>
+            <div class="hg-chips" id="hgPick"></div>
+          </fieldset>
+          <fieldset class="hg-set">
+            <legend data-i18n="holidayguide.builder.symbols">Symbols on the sheet</legend>
+            <div class="hg-btns" id="hgSymBtns">
+              <button type="button" class="hg-btn" id="hgSymAll" data-i18n="holidayguide.builder.all">All</button>
+              <button type="button" class="hg-btn" id="hgSymNone" data-i18n="holidayguide.builder.none">None</button>
+            </div>
+            <div class="hg-chips" id="hgSyms"></div>
+            <p class="hg-chip-soon" id="hgSymSoon" hidden></p>
+          </fieldset>
+          <fieldset class="hg-set">
+            <legend data-i18n="holidayguide.builder.per">Symbols per page</legend>
+            <div class="hg-row">
+              <label class="hg-opt"><input type="radio" name="hgPer" value="6"><span data-i18n="holidayguide.builder.per_6">6</span></label>
+              <label class="hg-opt"><input type="radio" name="hgPer" value="4"><span data-i18n="holidayguide.builder.per_4">4</span></label>
+              <label class="hg-opt"><input type="radio" name="hgPer" value="2"><span data-i18n="holidayguide.builder.per_2">2</span></label>
+              <label class="hg-opt"><input type="radio" name="hgPer" value="1"><span data-i18n="holidayguide.builder.per_1">1 (one big picture)</span></label>
+            </div>
+          </fieldset>
+          <fieldset class="hg-set">
+            <legend data-i18n="holidayguide.builder.labels">Labels</legend>
+            <div class="hg-row">
+              <label class="hg-opt"><input type="radio" name="hgLabels" value="both"><span data-i18n="holidayguide.builder.labels_both">Hebrew and English</span></label>
+              <label class="hg-opt"><input type="radio" name="hgLabels" value="he"><span data-i18n="holidayguide.builder.labels_he">Hebrew</span></label>
+              <label class="hg-opt"><input type="radio" name="hgLabels" value="en"><span data-i18n="holidayguide.builder.labels_en">English</span></label>
+              <label class="hg-opt"><input type="radio" name="hgLabels" value="none"><span data-i18n="holidayguide.builder.labels_none">None</span></label>
+            </div>
+          </fieldset>
+          <fieldset class="hg-set">
+            <legend data-i18n="holidayguide.builder.show">On the sheet</legend>
+            <label class="hg-opt"><input type="checkbox" id="hgOptNikkud"><span data-i18n="holidayguide.builder.nikkud">Hebrew vowels (nikkud)</span></label>
+            <label class="hg-opt"><input type="checkbox" id="hgOptTitle"><span data-i18n="holidayguide.builder.title_opt">The holiday's name in letters to color</span></label>
+            <label class="hg-opt"><input type="checkbox" id="hgOptCut"><span data-i18n="holidayguide.builder.cut">Dashed cut line between the rows</span></label>
+            <label class="hg-opt" id="hgOptMeaningsRow"><input type="checkbox" id="hgOptMeanings"><span data-i18n="holidayguide.builder.meanings">What each symbol stands for</span></label>
+            <label class="hg-opt"><input type="checkbox" id="hgOptName"><span data-i18n="holidayguide.builder.name_line">A line for the child's name</span></label>
+          </fieldset>
+          <fieldset class="hg-set">
+            <legend data-i18n="holidayguide.builder.drawings">Drawings</legend>
+            <div class="hg-row">
+              <label class="hg-opt"><input type="radio" name="hgColored" value="0"><span data-i18n="holidayguide.builder.lineart">To color in</span></label>
+              <label class="hg-opt"><input type="radio" name="hgColored" value="1"><span data-i18n="holidayguide.builder.colored">Colored in</span></label>
+            </div>
+          </fieldset>
+          <fieldset class="hg-set">
+            <legend data-i18n="holidayguide.builder.paper">Paper</legend>
+            <div class="hg-row">
+              <label class="hg-opt"><input type="radio" name="hgPaper" value="letter"><span data-i18n="holidayguide.builder.paper_letter">Letter</span></label>
+              <label class="hg-opt"><input type="radio" name="hgPaper" value="a4"><span data-i18n="holidayguide.builder.paper_a4">A4</span></label>
+            </div>
+          </fieldset>
+        </div>
+        <div class="hg-main">
+          <p class="hg-note" id="hgNote" role="status"></p>
+          <ol class="hg-pages" id="hgPages" aria-label="Pages" data-i18n-aria-label="holidayguide.builder.pages_aria"></ol>
+        </div>
+      </div>
+      <div class="hg-foot">
+        <span class="hg-count" id="hgCount"></span>
+        <button type="button" class="hg-print hi-btn" id="hgPrint"><svg class="hi hi-print" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9.2V3.6h10v5.6"/><path d="M7 9.2H5.6A2.1 2.1 0 0 0 3.5 11.3v3.6a2.1 2.1 0 0 0 2.1 2.1H7"/><path d="M17 9.2h1.4a2.1 2.1 0 0 1 2.1 2.1v3.6a2.1 2.1 0 0 1-2.1 2.1H17"/><rect x="7" y="14.2" width="10" height="6.2" rx="1.2"/><circle cx="17.6" cy="12" r="1" fill="currentColor" stroke="none"/></svg><span class="hi-lbl" data-i18n="holidayguide.builder.print">Print</span></button>
+      </div>
+    </div>
+  </section>
+
+  <section id="hgGuide" aria-labelledby="hgGuideTitle">
+    <h2 class="hg-h2" id="hgGuideTitle" data-i18n="holidayguide.guide.title">The holidays and their symbols</h2>
+    <p class="hg-note" id="hgGuideNote" role="status"></p>
+    <!-- Every holiday's card: drawn by hgRenderGuide (the weekly two, then the year from the next holiday on). -->
+    <div id="hgCards"></div>
+  </section>
+
+  <!-- The holidays that have a coloring page of their own (holidays/<slug>.html, written by
+       scripts/build-holiday-pages.mjs, which checks this list against the catalog: add a link here when a holiday
+       gets its six symbols). Static, so the links are in the page's own HTML. -->
+  <section class="hg-sheets" id="hgSheets" aria-labelledby="hgSheetsTitle">
+    <h2 class="hg-h2" id="hgSheetsTitle" data-i18n="holidayguide.sheets.title">Holiday coloring pages</h2>
+    <p class="hg-sub" data-i18n="holidayguide.sheets.intro">Each of these holidays has a page of its own with its coloring sheet, a description and its symbols in Hebrew and English.</p>
+    <ul class="hg-sheets-list">
+      <li><a class="hg-sheets-link" href="holidays/shabbat.html"><span lang="en" dir="ltr">Shabbat</span> <span class="hg-sheets-he" lang="he" dir="rtl">שַׁבָּת</span></a></li>
+      <li><a class="hg-sheets-link" href="holidays/havdalah.html"><span lang="en" dir="ltr">Havdalah</span> <span class="hg-sheets-he" lang="he" dir="rtl">הַבְדָּלָה</span></a></li>
+      <li><a class="hg-sheets-link" href="holidays/rosh-hashanah.html"><span lang="en" dir="ltr">Rosh Hashanah</span> <span class="hg-sheets-he" lang="he" dir="rtl">רֹאשׁ הַשָּׁנָה</span></a></li>
+      <li><a class="hg-sheets-link" href="holidays/sukkot.html"><span lang="en" dir="ltr">Sukkot</span> <span class="hg-sheets-he" lang="he" dir="rtl">סֻכּוֹת</span></a></li>
+      <li><a class="hg-sheets-link" href="holidays/chanukah.html"><span lang="en" dir="ltr">Chanukah</span> <span class="hg-sheets-he" lang="he" dir="rtl">חֲנֻכָּה</span></a></li>
+      <li><a class="hg-sheets-link" href="holidays/tu-bishvat.html"><span lang="en" dir="ltr">Tu BiShvat</span> <span class="hg-sheets-he" lang="he" dir="rtl">ט״וּ בִּשְׁבָט</span></a></li>
+      <li><a class="hg-sheets-link" href="holidays/purim.html"><span lang="en" dir="ltr">Purim</span> <span class="hg-sheets-he" lang="he" dir="rtl">פּוּרִים</span></a></li>
+    </ul>
+  </section>
+</main>
+
+<footer>
+  <!-- pinned-English credits (never translated): dir="ltr" keeps each phrase in English order in the RTL UI, and lang="en" has a screen reader voice it in English -->
+  <span dir="ltr" lang="en">Created by <a href="https://harrisonbleiberg.wpcomstaging.com/" target="_blank" style="font-weight:600;">Harrison Bleiberg</a></span><br>
+  <span data-i18n="shared.footer.license_note">Free to use and adapt for non-commercial educational purposes with attribution</span> &nbsp;·&nbsp;
+  <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> &nbsp;·&nbsp;
+  <a href="https://github.com/hbleiberg/Hebrew_Blender" target="_blank">GitHub</a> &nbsp;·&nbsp;
+  <a href="privacy.html" data-i18n="shared.footer.privacy_link">Privacy Policy</a> &nbsp;·&nbsp;
+  <a href="terms.html" data-i18n="shared.footer.terms_link">Terms of Use</a>
+  <div style="margin-top:10px;">
+    <details>
+      <summary style="cursor:pointer;font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);padding:5px 0;" data-i18n="holidayguide.faq.summary">Frequently Asked Questions</summary>
+      <div style="padding:4px 0;max-width:640px;margin:0 auto;text-align:start;">
+        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="holidayguide.faq.q1">What is the Holiday Guide?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="holidayguide.faq.a1">A page of Jewish holiday coloring sheets and a picture guide to the holidays. Every holiday has its own symbol, a short description and when it falls, and the holidays that are finished have six symbols each, drawn to color and named in Hebrew and English.</p></details>
+        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="holidayguide.faq.q2">Which holidays have coloring sheets?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="holidayguide.faq.a2">Chanukah, Rosh Hashanah, Sukkot, Tu BiShvat, Purim, Shabbat and Havdalah each have a full sheet of six symbols. The other holidays of the year, from Yom Kippur to Tisha B’Av, have a description and their own symbol to color, and their six symbols are on the way.</p></details>
+        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="holidayguide.faq.q3">Which holiday does the page show first?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="holidayguide.faq.a3">The next one. The page opens with the next holiday on the calendar and how many days are left until the evening it begins, and its coloring sheet is ready in the sheet maker. Shabbat and Havdalah come every week, so they are not counted down to.</p></details>
+        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="holidayguide.faq.q4">How do I print a holiday coloring sheet?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="holidayguide.faq.a4">Choose the holiday, tick the symbols you want and press Print. You can put one, two, four or six symbols on a page, label them in Hebrew, English or both, show or hide the Hebrew vowels, add a line for the child’s name and a dashed line for cutting the page in half, and print on Letter or A4 paper.</p></details>
+        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="holidayguide.faq.q5">Are the Hebrew words written with vowels?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="holidayguide.faq.a5">Yes. Every Hebrew word on a sheet is printed with nikkud, the Hebrew vowel marks, so that new readers can sound it out. Turn the vowels off to print the words as they are usually written.</p></details>
+        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="holidayguide.faq.q6">Can I print the pictures already colored?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="holidayguide.faq.a6">Yes. Choose Colored in and the same sheet prints in color, for a poster or a matching game.</p></details>
+        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="holidayguide.faq.q7">Is the Holiday Guide free?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="holidayguide.faq.a7">Yes. Free for non-commercial educational use under CC BY-NC-SA 4.0, with nothing to sign up for.</p></details>
+      </div>
+    </details>
+    <details style="margin-top:6px;">
+      <summary style="cursor:pointer;font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);padding:5px 0;" data-i18n="holidayguide.howto.summary">How To Use</summary>
+      <div style="max-width:640px;margin:0 auto;text-align:start;">
+        <ol style="padding:6px 0 4px;padding-inline-start:20px;margin:0;font-size:0.78rem;line-height:1.55;">
+          <li data-i18n="holidayguide.howto.step1">The page opens on the next holiday, with the days left until it begins.</li>
+          <li data-i18n="holidayguide.howto.step2">In Make a coloring sheet, choose a holiday and tick the symbols you want.</li>
+          <li data-i18n="holidayguide.howto.step3">Choose how many symbols go on a page, the labels and what else is printed.</li>
+          <li data-i18n="holidayguide.howto.step4">Press Print, or read about every holiday and its symbols in the guide below.</li>
+        </ol>
+      </div>
+    </details>
+  </div>
+  <nav aria-label="Related Hebrew Tools" data-i18n-aria-label="shared.nav.header" style="margin-top:10px;border-top:1px solid var(--border);padding-top:10px;">
+    <div style="font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;" data-i18n="shared.nav.header">Related Hebrew Tools</div>
+    <ul style="list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;justify-content:center;gap:2px 18px;">
+      <li><a href="parsha_emojis.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_parshaemojis">parsha emojis and coloring pages →</a></li>
+      <li><a href="torah_trainer.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_torah">Torah reading practice →</a></li>
+      <li><a href="trope_tutor.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_trope">learn Torah trope (cantillation) →</a></li>
+      <li><a href="letter_learner.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_letterlearner">aleph bet letters and coloring sheets →</a></li>
+      <li><a href="flash_cards.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_flashcards">Hebrew alphabet flash cards →</a></li>
+      <li><a href="hebrew_blend_generator.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_worksheets">printable Hebrew worksheets →</a></li>
+      <li><a href="hebrew_dictionary.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_dictionary">Hebrew word lookup →</a></li>
+      <li><a href="classroom_dashboard.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_dashboard">Hebrew classroom display →</a></li>
+      <li><a href="Hebrew_Font_Maker.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_fontmaker">make your own Hebrew font →</a></li>
+      <li><a href="resources.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_resources">free Hebrew teaching resources →</a></li>
+    </ul>
+  </nav>
+</footer>
+
+<!-- The print run: one paper per page of the sheet (hgFillPrint); display:none on screen. A child of <body>, so the
+     print rules can show it alone. -->
+<div id="hgPrintArea" aria-hidden="true"></div>
+
+<!-- The calendar, the catalog and the line-art engine (each a classic script: window.HebCal, window.HolidayGuide,
+     etCsConvert), before the inline script that draws the page with them. -->
+<script src="/js/hebrew-calendar.js"></script>
+<script src="/js/holiday-guide-data.js"></script>
+<script src="/js/coloring-art.js"></script>
+<script>
+/* ───── The Holiday Guide: every Jewish holiday's symbol, when it falls, what it is and the symbols that go with it,
+   with a builder for a printable coloring sheet of those symbols. The catalog is js/holiday-guide-data.js
+   (window.HolidayGuide, built from HolidayGuide.md); the dates come from js/hebrew-calendar.js (HebCal.nextHoliday,
+   HebCal.holidayOccurrence) on the Torah Trainer's own Diaspora/Israel choice, read and never written; the line art
+   is js/coloring-art.js's (etCsConvert, the engine parsha_emojis.html shares — nothing here may declare one of its
+   top-level names). The page opens on the next holiday: its card leads, and the builder shows its sheet. Shabbat and
+   Havdalah are weekly and are never the "next" one. ?holiday=<slug> opens the builder on that holiday, which is where
+   a holidays/<slug>.html page's Print button lands. The page stores one thing, the sheet's options
+   (hebrewHolidayGuide_settings, per device); the holiday and the ticked symbols are never stored. ───── */
+const HG = window.HolidayGuide || { list: [], get: () => null, icon: () => '', symbol: () => '', count: 0 };
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+// Parse JSON from possibly-imported input, dropping keys that could pollute Object.prototype.
+function ivritSafeParse(str) {
+  return JSON.parse(str, (k, v) =>
+    (k === '__proto__' || k === 'constructor' || k === 'prototype') ? undefined : v);
+}
+const hgLang = () => (window.I18n && I18n.lang) || 'en';
+const hgName = h => (hgLang() === 'he' ? h.he : h.en);
+// Hebrew always carries its lang and dir (UX rule 8); other text only where it is not the UI's language.
+function hgLangAttr(lang) {
+  if (lang === 'he') return ' lang="he" dir="rtl"';
+  return lang !== hgLang() ? ` lang="${esc(lang)}" dir="ltr"` : '';
+}
+// A catalog sentence in the UI's language, else English: { text, lang }.
+function hgPick(pair) {
+  const lang = hgLang();
+  if (pair && pair[lang]) return { text: pair[lang], lang };
+  return { text: (pair && pair.en) || '', lang: 'en' };
+}
+// A holiday's names, the UI's language first: "Chanukah · חֲנֻכָּה".
+function hgNamesHTML(o) {
+  const en = `<span${hgLangAttr('en')}>${esc(o.en)}</span>`, he = `<span${hgLangAttr('he')}>${esc(o.he)}</span>`;
+  return hgLang() === 'he' ? `${he} <span class="hg-alt">· ${en}</span>` : `${en} <span class="hg-alt">· ${he}</span>`;
+}
+
+/* ── The sheet's options (hebrewHolidayGuide_settings): per device, registered in the hub's AllTools export, import and
+   erase. Fields this build does not know are kept as they came (a newer build's, or an import's). ── */
+const HG_KEY = 'hebrewHolidayGuide_settings';
+const HG_DEFAULTS = { v: 1, per: 6, labels: 'both', nikkud: true, cut: true, title: true, meanings: false, name: false, colored: false, paper: 'letter' };
+const HG_PER = [1, 2, 4, 6], HG_LABELS = ['both', 'he', 'en', 'none'], HG_PAPER = ['letter', 'a4'];
+const HG_BOOL = ['nikkud', 'cut', 'title', 'meanings', 'name', 'colored'];
+let hg = Object.assign({}, HG_DEFAULTS), _hgRaw = {};
+function hgLoad() {
+  let raw = null;
+  try { raw = ivritSafeParse(localStorage.getItem(HG_KEY) || 'null'); } catch (e) {}
+  _hgRaw = raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {};
+  const s = Object.assign({}, HG_DEFAULTS);
+  if (HG_PER.includes(_hgRaw.per)) s.per = _hgRaw.per;
+  if (HG_LABELS.includes(_hgRaw.labels)) s.labels = _hgRaw.labels;
+  if (HG_PAPER.includes(_hgRaw.paper)) s.paper = _hgRaw.paper;
+  HG_BOOL.forEach(k => { if (typeof _hgRaw[k] === 'boolean') s[k] = _hgRaw[k]; });
+  hg = s;
+}
+function hgSave() {
+  _hgRaw = Object.assign({}, _hgRaw, hg);
+  try { localStorage.setItem(HG_KEY, JSON.stringify(_hgRaw)); } catch (e) {}
+}
+
+/* ── The calendar ── */
+// The Torah Trainer's Diaspora/Israel choice on this device (hebrewTorahTrainer_settings.schedule), Diaspora when it
+// has none. Read only.
+function hgIsrael() {
+  try {
+    const s = ivritSafeParse(localStorage.getItem('hebrewTorahTrainer_settings') || 'null');
+    return !!(s && typeof s === 'object' && s.schedule === 'israel');
+  } catch (e) { return false; }
+}
+// A dated holiday's coming occurrence (HebCal.holidayOccurrence), or null: a weekly one, or no calendar module.
+function hgOcc(h) {
+  if (!window.HebCal || !h || h.weekly) return null;
+  try { return HebCal.holidayOccurrence(h.key, new Date(), { israel: hgIsrael() }); } catch (e) { return null; }
+}
+// The holiday under way, or else the one whose eve comes first; null without the calendar.
+function hgNext() {
+  try {
+    const o = window.HebCal ? HebCal.nextHoliday(new Date(), { israel: hgIsrael() }) : null;
+    const h = o ? HG.get(o.key) : null;
+    return h ? { h, o } : null;
+  } catch (e) { return null; }
+}
+function hgDate(g) {
+  const d = new Date(g.y, g.m - 1, g.d);
+  try { return new Intl.DateTimeFormat(hgLang(), { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(d); }
+  catch (e) { return d.toDateString(); }
+}
+// The countdown sentence, then the date sentence under it ('' when there is nothing to add).
+function hgCountLine(h, o) {
+  const name = hgName(h);
+  if (o.state === 'during') return o.days > 1 ? I18n.t('holidayguide.count.today_day', { name, day: o.day, days: o.days }) : I18n.t('holidayguide.count.today', { name });
+  if (o.state === 'eve') return I18n.t('holidayguide.count.tonight', { name });
+  return I18n.t(o.daysToEve === 1 ? 'holidayguide.count.days.one' : 'holidayguide.count.days.other', { name, count: o.daysToEve });
+}
+function hgWhenLine(o) {
+  if (o.state === 'before') return I18n.t('holidayguide.count.begins', { date: hgDate(o.eveDate) });
+  if (o.state === 'eve') return I18n.t('holidayguide.count.first_day', { date: hgDate(o.startDate) });
+  return o.days > 1 && o.day < o.days ? I18n.t('holidayguide.count.ends', { date: hgDate(o.endDate) }) : '';
+}
+function hgBadge(h, o) {
+  if (h.weekly) return I18n.t('holidayguide.badge.weekly');
+  if (!o) return '';
+  if (o.state === 'during') return I18n.t('holidayguide.badge.now');
+  if (o.state === 'eve') return I18n.t('holidayguide.badge.tonight');
+  return I18n.t(o.daysToEve === 1 ? 'holidayguide.badge.days.one' : 'holidayguide.badge.days.other', { count: o.daysToEve });
+}
+const hgPageOf = h => 'holidays/' + h.slug + '.html';   // the holiday's own coloring page, once it has its symbols
+
+/* ── The page: the next holiday, then every holiday's card ── */
+let hgHoliday = null;                 // the builder's holiday (a key): the next one at load, never stored
+let hgChosen = new Set();             // the ticked symbols of that holiday: indexes, and -1 for the holiday's own symbol
+function hgActions(h) {
+  const name = hgName(h);
+  return `<p class="hg-go-row"><button type="button" class="hg-go hg-go-btn" data-make="${esc(h.key)}" aria-label="${esc(I18n.t('holidayguide.card.make_aria', { name }))}">${esc(I18n.t('holidayguide.card.make'))}</button>`
+    + (h.symbols.length ? `<a class="hg-go" href="${esc(hgPageOf(h))}" aria-label="${esc(I18n.t('holidayguide.card.page_aria', { name }))}">${esc(I18n.t('holidayguide.card.page'))}</a>` : '')
+    + '</p>';
+}
+function hgRenderHero() {
+  const box = document.getElementById('hgHero'), next = hgNext();
+  if (!next) { box.innerHTML = ''; return; }
+  const { h, o } = next, about = hgPick(h.about), when = hgWhenLine(o);
+  box.innerHTML = HG.icon(h.key) + '<div class="hg-text">'
+    + `<span class="hg-kicker">${esc(I18n.t(o.state === 'during' ? 'holidayguide.hero.now' : 'holidayguide.hero.next'))}</span>`
+    + `<h2 class="hg-hero-name" id="hgHeroName">${hgNamesHTML(h)}</h2>`
+    + `<p class="hg-count-line" id="hgCountLine">${esc(hgCountLine(h, o))}</p>`
+    + (when ? `<p class="hg-when-line" id="hgWhenLine">${esc(when)}</p>` : '')
+    + `<p class="hg-about"${hgLangAttr(about.lang)}>${esc(about.text)}</p>`
+    + hgActions(h) + '</div>';
+}
+function hgCard(h, o, current) {
+  const about = hgPick(h.about), when = hgPick(h.when), badge = hgBadge(h, o), id = 'hgName-' + h.slug;
+  const line = o ? (o.state === 'before' ? hgWhenLine(o) : hgCountLine(h, o)) : '';
+  const syms = h.symbols.map((s, i) => {
+    const cap = hgPick(s.caption);
+    return '<li class="hg-sym">' + HG.symbol(h.key, i) + `<div><div class="hg-sym-name">${hgNamesHTML(s)}</div>`
+      + `<p class="hg-sym-cap"${hgLangAttr(cap.lang)}>${esc(cap.text)}</p></div></li>`;
+  }).join('');
+  return `<li class="hg-card" id="hg-${esc(h.slug)}" data-key="${esc(h.key)}" aria-labelledby="${id}"${current ? ' aria-current="true"' : ''}>`
+    + HG.icon(h.key) + '<div class="hg-text">'
+    + (badge ? `<span class="hg-badge">${esc(badge)}</span>` : '')
+    + `<h4 class="hg-name" id="${id}">${hgNamesHTML(h)}</h4>`
+    + `<p class="hg-when"><span${hgLangAttr(when.lang)}>${esc(when.text)}</span>${line ? ' ' + esc(line) : ''}</p>`
+    + `<p class="hg-about"${hgLangAttr(about.lang)}>${esc(about.text)}</p>`
+    + (h.spelled.length ? `<p class="hg-spelled">${esc(I18n.t('holidayguide.card.spelled'))} <span lang="en" dir="ltr">${esc(h.spelled.join(', '))}</span></p>` : '')
+    + (syms ? `<ul class="hg-syms">${syms}</ul>` : `<p class="hg-soon">${esc(I18n.t('holidayguide.card.soon'))}</p>`)
+    + hgActions(h) + '</div></li>';
+}
+function hgRenderGuide() {
+  const box = document.getElementById('hgCards'), note = document.getElementById('hgGuideNote');
+  note.textContent = '';
+  if (!HG.list.length) { box.innerHTML = ''; note.textContent = I18n.t('holidayguide.load_failed'); return; }
+  const weekly = HG.list.filter(h => h.weekly);
+  // The year from the next holiday on: the one under way first, then by the evening each begins. Without the
+  // calendar, the catalog's own order (from Rosh Hashanah).
+  const dated = HG.list.filter(h => !h.weekly).map(h => ({ h, o: hgOcc(h) }));
+  if (dated.every(x => x.o)) dated.sort((a, b) => (a.o.state === 'during' ? -1 : a.o.eve) - (b.o.state === 'during' ? -1 : b.o.eve));
+  const next = hgNext();
+  box.innerHTML = `<h3 class="hg-h3" id="hgWeeklyHead">${esc(I18n.t('holidayguide.guide.weekly'))}</h3>`
+    + `<ul class="hg-cards" aria-labelledby="hgWeeklyHead">${weekly.map(h => hgCard(h, null, false)).join('')}</ul>`
+    + `<h3 class="hg-h3" id="hgYearHead">${esc(I18n.t('holidayguide.guide.year'))}</h3>`
+    + `<ul class="hg-cards" aria-labelledby="hgYearHead">${dated.map(x => hgCard(x.h, x.o, !!(next && next.h.key === x.h.key))).join('')}</ul>`;
+}
+
+/* ── The builder's choices ── */
+// What a holiday can put on a sheet: its six symbols, or — until it has them — its own symbol alone (index -1, which a
+// holiday with symbols may add as a seventh picture).
+function hgItems(h) {
+  const own = { i: -1, en: h.en, he: h.he, plain: h.plain, svg: h.icon, alt: h.alt, meaning: null, own: true };
+  return h.symbols.length ? h.symbols.map((s, i) => Object.assign({ i }, s)).concat([own]) : [own];
+}
+function hgSetHoliday(key, keepFocus) {
+  const h = HG.get(key);
+  if (!h) return;
+  hgHoliday = h.key;
+  hgChosen = new Set(h.symbols.length ? h.symbols.map((s, i) => i) : [-1]);
+  hgRenderPick(); hgRenderSyms(); hgSyncControls(); hgBuild();
+  if (keepFocus) { const r = document.querySelector('#hgPick input:checked'); if (r) try { r.focus({ preventScroll: true }); } catch (e) {} }
+}
+function hgRenderPick() {
+  const box = document.getElementById('hgPick'), ui = hgLang();
+  box.innerHTML = HG.list.map(h => `<label class="hg-chip"><input type="radio" name="hgHoliday" value="${esc(h.key)}"${h.key === hgHoliday ? ' checked' : ''}>`
+    + HG.icon(h.key) + `<span class="hg-chip-name"${hgLangAttr(ui === 'he' ? 'he' : 'en')}>${esc(ui === 'he' ? h.he : h.en)}</span></label>`).join('');
+}
+function hgRenderSyms() {
+  const box = document.getElementById('hgSyms'), soon = document.getElementById('hgSymSoon'), h = HG.get(hgHoliday), ui = hgLang();
+  if (!h) { box.innerHTML = ''; return; }
+  box.innerHTML = hgItems(h).map(it => `<label class="hg-chip"><input type="checkbox" value="${it.i}"${hgChosen.has(it.i) ? ' checked' : ''}>`
+    + (it.own ? HG.icon(h.key) : HG.symbol(h.key, it.i))
+    + `<span class="hg-chip-name"${hgLangAttr(ui === 'he' ? 'he' : 'en')}>${esc(ui === 'he' ? it.he : it.en)}</span>`
+    + (it.own && h.symbols.length ? `<span class="hg-chip-soon">${esc(I18n.t('holidayguide.builder.own_symbol'))}</span>` : '') + '</label>').join('');
+  soon.hidden = !!h.symbols.length;
+  soon.textContent = h.symbols.length ? '' : I18n.t('holidayguide.builder.soon', { name: hgName(h) });
+  document.getElementById('hgSymBtns').hidden = !h.symbols.length;
+}
+function hgSyncControls() {
+  const h = HG.get(hgHoliday);
+  const set = (name, v) => document.querySelectorAll(`input[name="${name}"]`).forEach(r => { r.checked = r.value === String(v); });
+  set('hgPer', hg.per); set('hgLabels', hg.labels); set('hgPaper', hg.paper); set('hgColored', hg.colored ? 1 : 0);
+  document.getElementById('hgOptNikkud').checked = hg.nikkud;
+  document.getElementById('hgOptTitle').checked = hg.title;
+  document.getElementById('hgOptCut').checked = hg.cut;
+  document.getElementById('hgOptName').checked = hg.name;
+  document.getElementById('hgOptMeanings').checked = hg.meanings;
+  // "What each symbol stands for" is offered only where the holiday has it (Sukkot's four species).
+  document.getElementById('hgOptMeaningsRow').hidden = !(h && h.symbols.some(s => s.meaning));
+}
+
+/* ── The sheet ── */
+// Printed content follows the sheet's own languages, not the site's (CLAUDE.md i18n rule 4).
+const HG_PRINTED = { en: { name: 'Name:' }, he: { name: 'שם:' } };   // i18n-ignore: printed content
+// The printed box in inches, portrait: the paper less the 0.35in @page margins (parsha_emojis.html's ET_CS_BOX).
+const HG_BOX = { letter: [7.8, 10.3], a4: [7.57, 10.99] };
+const HG_COLS = { 1: 1, 2: 1, 4: 2, 6: 3 };
+const _hgArt = new Map();   // 'key:l|c' → the converted drawing, cloned per use
+// One drawing for paper: its markup as an <svg> with the outline written as attributes, then redrawn by
+// js/coloring-art.js. `key` names it in that module's geometry cache, so the line art and the coloured copy of one
+// drawing are measured once. null when it cannot be drawn.
+function hgArt(key, inner, colored) {
+  const k = key + ':' + (colored ? 'c' : 'l');
+  if (!_hgArt.has(k)) {
+    let svg = null;
+    if (inner && typeof etCsConvert === 'function') {
+      const tpl = document.createElement('template');
+      tpl.innerHTML = '<svg viewBox="0 0 48 48" focusable="false">' + inner + '</svg>';   // generated from the catalog and checked by scripts/build-holiday-guide.mjs
+      svg = tpl.content.querySelector('svg');
+      [['fill', 'none'], ['stroke', 'var(--hol-line)'], ['stroke-width', '2'], ['stroke-linecap', 'round'], ['stroke-linejoin', 'round']]
+        .forEach(([a, v]) => svg.setAttribute(a, v));
+      try { etCsConvert(svg, colored, key); } catch (e) { svg = null; try { console.warn('[coloring] holiday ' + key + ': ' + e.message); } catch (x) {} }
+    }
+    _hgArt.set(k, svg);
+  }
+  const svg = _hgArt.get(k);
+  return svg ? svg.cloneNode(true) : null;
+}
+const hgHe = o => (hg.nikkud ? o.he : o.plain);
+function hgBuildSheet(h, items, per) {
+  const [W, H] = HG_BOX[hg.paper] || HG_BOX.letter, cols = HG_COLS[per] || 3, rows = per / cols;
+  const sheet = document.createElement('div');
+  sheet.className = 'hg-sheet';
+  sheet.dataset.per = String(per);
+  sheet.style.setProperty('--cs-aw', String(W));
+  sheet.style.setProperty('--cs-ah', String(H));
+  sheet.dir = 'ltr';
+  sheet.lang = 'en';
+  const add = (parent, tag, cls, text, l) => {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    if (l === 'he') { n.lang = 'he'; n.dir = 'rtl'; }
+    parent.appendChild(n);
+    return n;
+  };
+  const heOnly = hg.labels === 'he', showHe = hg.labels === 'both' || heOnly, showEn = hg.labels === 'both' || hg.labels === 'en';
+  const pg = add(sheet, 'div', 'hg-page');
+  if (hg.name) {
+    const row = add(pg, 'div', 'hg-nameline', null, heOnly ? 'he' : 'en');
+    add(row, 'span', null, HG_PRINTED[heOnly ? 'he' : 'en'].name);
+    add(row, 'span', 'hg-blank');
+  }
+  if (hg.title) {
+    const head = add(pg, 'div', 'hg-headline');
+    if (hg.labels !== 'he') add(head, 'span', 'hg-bubble hg-bubble-en', h.en);
+    if (hg.labels !== 'en') add(head, 'span', 'hg-bubble hg-bubble-he', hgHe(h), 'he');
+  }
+  const grid = add(pg, 'div', 'hg-grid');
+  if (heOnly) grid.dir = 'rtl';   // a Hebrew-only sheet reads from the right: its first symbol sits there
+  for (let r = 0; r < rows; r++) {
+    const rowItems = items.slice(r * cols, (r + 1) * cols);
+    if (r > 0) add(grid, 'div', hg.cut && rowItems.length ? 'hg-cut' : 'hg-gap');
+    const row = add(grid, 'div', 'hg-grow');
+    for (let c = 0; c < cols; c++) {
+      const it = rowItems[c];
+      const cell = add(row, 'figure', 'hg-cell' + (it ? '' : ' hg-cell-empty'));
+      if (!it) continue;
+      const pic = add(cell, 'div', 'hg-pic');
+      const svg = hgArt(it.own ? h.slug : h.slug + '/' + (it.i + 1), it.svg, hg.colored);
+      if (svg) { svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', it.alt || it.en); pic.appendChild(svg); }
+      const cap = add(cell, 'figcaption', 'hg-cap');
+      // The holiday's own symbol under the title that already names it carries no second label.
+      const labelled = !(it.own && hg.title);
+      if (labelled && showHe) add(cap, 'span', 'hg-he', hgHe(it), 'he');
+      if (labelled && showEn) add(cap, 'span', 'hg-en', it.en);
+      if (hg.meanings && it.meaning) {
+        const m = add(cap, 'span', 'hg-mean');
+        const ms = hgArt(h.slug + '/' + (it.i + 1) + '/m', it.meaning.svg, hg.colored);
+        if (ms) { ms.setAttribute('role', 'img'); ms.setAttribute('aria-label', heOnly ? hgHe(it.meaning) : it.meaning.en); m.appendChild(ms); }
+      }
+    }
+  }
+  add(pg, 'div', 'hg-credit', 'IvritSuite.com');   // i18n-ignore: brand credit
+  return sheet;
+}
+// A long name is shrunk to its place, never wrapped or clipped: the title as one line (--tk on the sheet), each label
+// on its own (--k). A title that would shrink below two thirds takes two lines instead, English over Hebrew (Shemini
+// Atzeret / Simchat Torah), and is fitted again. Sizes are all cqmin, so the factor found on the preview holds on
+// paper. Each pass reads, then writes.
+function hgFit(sheet) {
+  const head = sheet.querySelector('.hg-headline');
+  const labels = [...sheet.querySelectorAll('.hg-he, .hg-en')];
+  sheet.style.setProperty('--tk', '1');
+  if (head) head.classList.remove('hg-stack');
+  labels.forEach(l => l.style.removeProperty('--k'));
+  // The title's own width against its line's: the parts side by side with their gap, or the wider of the two when
+  // stacked (a centred line overflows at both ends, which scrollWidth counts only at one).
+  const need = () => {
+    if (!head) return 1;
+    const ws = [...head.children].map(c => c.getBoundingClientRect().width);
+    const stack = head.classList.contains('hg-stack'), gaps = stack ? 0 : (parseFloat(getComputedStyle(head).columnGap) || 0) * Math.max(0, ws.length - 1);
+    const text = stack ? Math.max(0, ...ws) : ws.reduce((x, y) => x + y, 0), room = head.clientWidth - gaps;
+    return text > room + 1 && room > 0 ? Math.max(0.35, (room / text) * 0.97) : 1;
+  };
+  let tk = need();
+  if (tk < 0.67 && head.children.length > 1) { head.classList.add('hg-stack'); tk = need(); }
+  const ks = labels.map(l => { const w = l.parentNode.clientWidth; return l.scrollWidth > w + 1 && w > 0 ? Math.max(0.4, (w / l.scrollWidth) * 0.97) : 1; });
+  if (tk < 1) sheet.style.setProperty('--tk', tk.toFixed(3));
+  labels.forEach((l, i) => { if (ks[i] < 1) l.style.setProperty('--k', ks[i].toFixed(3)); });
+}
+function hgFitAll() { document.querySelectorAll('#hgPages .hg-sheet').forEach(hgFit); }
+function hgPageStyle() {
+  const st = document.getElementById('hgPageSize');
+  if (st) st.textContent = '@page { size: ' + (hg.paper === 'a4' ? 'A4' : 'letter') + ' portrait; margin: 0.35in; }';   // i18n-ignore: CSS, not text
+}
+// The pages the choices make: the ticked symbols in the catalog's order, hg.per to a page.
+function hgBuild() {
+  const list = document.getElementById('hgPages'), note = document.getElementById('hgNote'), count = document.getElementById('hgCount'), print = document.getElementById('hgPrint');
+  const h = HG.get(hgHoliday);
+  list.textContent = '';
+  hgPageStyle();
+  if (!h) { list.dataset.count = '0'; count.textContent = ''; print.setAttribute('aria-disabled', 'true'); return; }
+  const items = hgItems(h).filter(it => hgChosen.has(it.i));
+  const per = items.length === 1 ? 1 : hg.per;   // one picture alone fills its page, whatever the grid
+  const pages = [];
+  for (let i = 0; i < items.length; i += per) pages.push(items.slice(i, i + per));
+  pages.forEach((p, i) => {
+    const li = document.createElement('li');
+    li.className = 'hg-thumb';
+    li.setAttribute('aria-label', I18n.t('holidayguide.builder.page_n', { n: i + 1, total: pages.length }));
+    li.appendChild(hgBuildSheet(h, p, per));
+    list.appendChild(li);
+  });
+  list.dataset.count = String(pages.length);
+  note.textContent = pages.length ? '' : I18n.t('holidayguide.builder.none_chosen');
+  count.textContent = pages.length ? I18n.t(pages.length === 1 ? 'holidayguide.builder.count.one' : 'holidayguide.builder.count.other', { count: pages.length, name: hgName(h) }) : '';
+  print.setAttribute('aria-disabled', pages.length ? 'false' : 'true');
+  hgFitAll();
+  // The fit is measured in the real faces: once more when they have loaded (a web font arrives after the first build).
+  if (document.fonts && document.fonts.ready) { const sig = ++_hgBuildNo; document.fonts.ready.then(() => { if (sig === _hgBuildNo) { hgFitAll(); list.dataset.ready = '1'; } }); }
+  else list.dataset.ready = '1';
+}
+let _hgBuildNo = 0;
+function hgFillPrint() {
+  const area = document.getElementById('hgPrintArea');
+  area.textContent = '';
+  document.querySelectorAll('#hgPages .hg-sheet').forEach(s => {
+    const paper = document.createElement('div');
+    paper.className = 'hg-paper';
+    paper.appendChild(s.cloneNode(true));
+    area.appendChild(paper);
+  });
+}
+function hgPrint() {
+  if (document.getElementById('hgPrint').getAttribute('aria-disabled') === 'true') return;   // the note above the pages says why
+  hgPageStyle();
+  hgFillPrint();
+  window.print();
+}
+// A card's or the hero's "Make its coloring sheet": the builder takes that holiday and comes into view.
+function hgMake(key) {
+  hgSetHoliday(key);
+  const b = document.getElementById('hgBuilder');
+  const calm = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  try { b.scrollIntoView({ behavior: calm ? 'auto' : 'smooth', block: 'start' }); } catch (e) { b.scrollIntoView(); }
+  const r = document.querySelector('#hgPick input:checked');
+  if (r) try { r.focus({ preventScroll: true }); } catch (e) {}
+}
+function hgWire() {
+  document.getElementById('hgPick').addEventListener('change', e => { if (e.target.name === 'hgHoliday') hgSetHoliday(e.target.value, true); });
+  document.getElementById('hgSyms').addEventListener('change', e => {
+    if (e.target.type !== 'checkbox') return;
+    const i = Number(e.target.value);
+    if (e.target.checked) hgChosen.add(i); else hgChosen.delete(i);
+    hgBuild();
+  });
+  document.getElementById('hgSymAll').addEventListener('click', () => { const h = HG.get(hgHoliday); if (!h) return; hgChosen = new Set(h.symbols.map((s, i) => i)); hgRenderSyms(); hgBuild(); });
+  document.getElementById('hgSymNone').addEventListener('click', () => { hgChosen = new Set(); hgRenderSyms(); hgBuild(); });
+  const onOpt = () => { hgSave(); hgBuild(); };
+  document.querySelectorAll('input[name="hgPer"]').forEach(r => r.addEventListener('change', () => { if (r.checked) { hg.per = Number(r.value); onOpt(); } }));
+  document.querySelectorAll('input[name="hgLabels"]').forEach(r => r.addEventListener('change', () => { if (r.checked) { hg.labels = r.value; onOpt(); } }));
+  document.querySelectorAll('input[name="hgPaper"]').forEach(r => r.addEventListener('change', () => { if (r.checked) { hg.paper = r.value; onOpt(); } }));
+  document.querySelectorAll('input[name="hgColored"]').forEach(r => r.addEventListener('change', () => { if (r.checked) { hg.colored = r.value === '1'; onOpt(); } }));
+  [['hgOptNikkud', 'nikkud'], ['hgOptTitle', 'title'], ['hgOptCut', 'cut'], ['hgOptName', 'name'], ['hgOptMeanings', 'meanings']]
+    .forEach(([id, k]) => document.getElementById(id).addEventListener('change', e => { hg[k] = e.target.checked; onOpt(); }));
+  document.getElementById('hgPrint').addEventListener('click', hgPrint);
+  document.getElementById('mainContent').addEventListener('click', e => {
+    const b = e.target.closest('[data-make]');
+    if (b) hgMake(b.dataset.make);
+  });
+  // Ctrl+P prints the same run as the button; another tab's change of the options arrives here.
+  window.addEventListener('beforeprint', () => { hgPageStyle(); hgFillPrint(); });
+  window.addEventListener('storage', e => { if (e.key === HG_KEY) { hgLoad(); hgSyncControls(); hgBuild(); } });
+  let rt = 0;
+  window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(hgFitAll, 150); });
+}
+// ?holiday=<slug>: the builder opens on that holiday (a holidays/ page's Print button lands here), in view. An unknown
+// name is ignored; the address is never rewritten, so a bookmark keeps landing on the sheet.
+function hgDeepLink() {
+  let slug = '';
+  try { slug = new URLSearchParams(location.search).get('holiday') || ''; } catch (e) {}
+  const want = slug.toLowerCase().replace(/[^a-z]/g, '');
+  const h = want ? HG.list.find(x => x.slug.replace(/[^a-z]/g, '') === want || x.key.replace(/[^a-z]/g, '') === want) : null;
+  if (!h) return false;
+  hgSetHoliday(h.key);
+  const b = document.getElementById('hgBuilder');
+  try { b.scrollIntoView({ block: 'start' }); } catch (e) {}
+  return true;
+}
+
+function toggleDark() {
+  const dark = document.body.classList.toggle('dark');
+  document.documentElement.classList.remove('dark-early');
+  try { localStorage.setItem('hebrewBlender_darkMode', dark ? '1' : '0'); } catch(e) {}
+  const _db = document.getElementById('darkBtn');
+  (_db.querySelector('.hi-lbl') || _db).textContent = dark ? (window.I18n ? I18n.t('shared.darkmode.label_light') : 'Light') : (window.I18n ? I18n.t('shared.darkmode.label_dark') : 'Dark');
+  _db.setAttribute('aria-pressed', dark ? 'true' : 'false');
+}
+
+/* ── i18n: fill static chrome + re-sync dark label + re-render everything the script draws, on load + on live
+   language switch. Read-only: it writes no option and keeps the builder's holiday and ticked symbols. Wired inside
+   DOMContentLoaded because /js/i18n.js is deferred. ── */
+let _hgStarted = false;
+function applyI18n() {
+  if (!window.I18n) return;
+  I18n.applyStaticI18n();
+  try { const _db = document.getElementById('darkBtn'); if (_db) (_db.querySelector('.hi-lbl') || _db).textContent = document.body.classList.contains('dark') ? I18n.t('shared.darkmode.label_light') : I18n.t('shared.darkmode.label_dark'); } catch (e) {}
+  if (!_hgStarted) {
+    _hgStarted = true;
+    const next = hgNext();
+    hgHoliday = next ? next.h.key : (HG.list[0] ? HG.list[0].key : null);
+    const h = HG.get(hgHoliday);
+    hgChosen = new Set(h ? (h.symbols.length ? h.symbols.map((s, i) => i) : [-1]) : []);
+    hgRenderHero(); hgRenderGuide(); hgRenderPick(); hgRenderSyms(); hgSyncControls(); hgBuild();
+    hgDeepLink();
+    return;
+  }
+  hgRenderHero(); hgRenderGuide(); hgRenderPick(); hgRenderSyms(); hgSyncControls(); hgBuild();
+}
+document.addEventListener('DOMContentLoaded', () => {
+  try {
+    const s = localStorage.getItem('hebrewBlender_darkMode');
+    if (s === '1' || (s === null && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.body.classList.add('dark');
+      const _db = document.getElementById('darkBtn');
+      (_db.querySelector('.hi-lbl') || _db).textContent = (window.I18n ? I18n.t('shared.darkmode.label_light') : 'Light');
+      _db.setAttribute('aria-pressed', 'true');
+    }
+  } catch(e) {}
+  hgLoad();
+  hgWire();
+  if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); }
+});
+</script>
+</body>
+</html>

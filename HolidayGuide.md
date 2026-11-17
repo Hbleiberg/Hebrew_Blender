@@ -19,7 +19,8 @@ Never edit an output. The format and every rule are in the header of `scripts/ho
 - **A holiday has no symbols yet, or exactly six.** With six it gets a coloring page under `holidays/`; without,
   the guide says more symbols are coming and offers the holiday's own symbol as one big picture.
 - **Names are vocabulary**: every Hebrew name (holiday, symbol, meaning) is pointed; the sheets print it and strip
-  the points when asked. **Sentences are plain text**: curly quotes and apostrophes only, the Hebrew unpointed, with
+  the points when asked — `**Unpointed:**` gives the spelling for that wherever it is not simply the points removed
+  (חֲנֻכָּה is written חנוכה). **Sentences are plain text**: curly quotes and apostrophes only, the Hebrew unpointed, with
   ה׳ for God, geresh and gershayim for abbreviations, and no Latin letters.
 - **A drawing** is the inner markup of a 48×48 SVG on one line, in the parasha emojis' style: the outline comes
   from the page (`--hol-line`, width 2, round caps and joins), every fill and stroke is `none` or a `var(--hol-*)`
@@ -105,6 +106,8 @@ challah and festive meals together, and take a break from work to rest, pray, si
 
 <img src="docs/holiday-guide/shabbat-3.svg" width="72" height="72" alt="A kiddush cup filled with wine">
 
+**Unpointed:** כוס קידוש
+
 **Caption:** Kiddush, the blessing that makes Shabbat holy, is said over a full cup.
 
 **כיתוב:** על כוס מלאה אומרים קידוש, הברכה שמקדשת את השבת.
@@ -129,6 +132,8 @@ challah and festive meals together, and take a break from work to rest, pray, si
 
 <img src="docs/holiday-guide/shabbat-5.svg" width="72" height="72" alt="A tzedakah box with a coin dropping in">
 
+**Unpointed:** קופת צדקה
+
 **Caption:** Before the candles are lit, many families drop coins in the tzedakah box to help others.
 
 **כיתוב:** לפני הדלקת הנרות נוהגים לשים מטבעות בקופת הצדקה כדי לעזור לאחרים.
@@ -140,6 +145,8 @@ challah and festive meals together, and take a break from work to rest, pray, si
 #### 6. Siddur · סִדּוּר
 
 <img src="docs/holiday-guide/shabbat-6.svg" width="72" height="72" alt="A prayer book with a Star of David on its cover">
+
+**Unpointed:** סידור
 
 **Caption:** The siddur is the prayer book, with the prayers and songs of Shabbat.
 
@@ -304,6 +311,8 @@ good and sweet year, and eat apples dipped in honey and other foods that stand f
 
 <img src="docs/holiday-guide/rosh-hashanah-4.svg" width="72" height="72" alt="A round spiral challah">
 
+**Unpointed:** חלה עגולה
+
 **Caption:** The challah is baked round like a crown, or like the circle of the year.
 
 **כיתוב:** אופים חלה עגולה, כמו כתר וכמו מעגל השנה.
@@ -328,6 +337,8 @@ good and sweet year, and eat apples dipped in honey and other foods that stand f
 
 <img src="docs/holiday-guide/rosh-hashanah-6.svg" width="72" height="72" alt="A pomegranate with its crown">
 
+**Unpointed:** רימון
+
 **Caption:** A pomegranate is full of seeds; people hope to be just as full of good deeds.
 
 **כיתוב:** הרימון מלא גרעינים, ומבקשים שנהיה מלאים מצוות כרימון.
@@ -341,6 +352,8 @@ good and sweet year, and eat apples dipped in honey and other foods that stand f
 <img src="docs/holiday-guide/yom-kippur.svg" width="96" height="96" alt="A pair of scales">
 
 **Key:** yom_kippur
+
+**Unpointed:** יום כיפור
 
 **Also spelled:** Yom Kipur
 
@@ -361,6 +374,8 @@ people say sorry to one another and to God, and everyone makes a fresh start for
 <img src="docs/holiday-guide/sukkot.svg" width="96" height="96" alt="A sukkah with a roof of branches">
 
 **Key:** sukkot
+
+**Unpointed:** סוכות
 
 **Also spelled:** Succot, Sukkos, Succos, Sukkoth
 
@@ -403,7 +418,7 @@ myrtle and willow.
 
 **כיתוב:** ההדס הוא ענף שעליו הקטנים דומים לעיניים.
 
-**Meaning:** Eyes · עֵינַיִם
+**Meaning:** Eyes · עֵינַיִם · עיניים
 
 ```html
 <path d="M24 44.5 V9" stroke-width="2"/><path d="M24 40 Q29.2 40.2 32.1 35 Q26.1 35.3 24 40Z M24 40 Q21.9 35.3 15.9 35 Q18.8 40.2 24 40Z M24 33.5 Q29.2 33.7 32.1 28.5 Q26.1 28.8 24 33.5Z M24 33.5 Q21.9 28.8 15.9 28.5 Q18.8 33.7 24 33.5Z M24 27 Q29.2 27.2 32.1 22 Q26.1 22.3 24 27Z M24 27 Q21.9 22.3 15.9 22 Q18.8 27.2 24 27Z M24 20.5 Q29.2 20.7 32.1 15.5 Q26.1 15.8 24 20.5Z M24 20.5 Q21.9 15.8 15.9 15.5 Q18.8 20.7 24 20.5Z M24 14 Q29.2 14.2 32.1 9 Q26.1 9.3 24 14Z M24 14 Q21.9 9.3 15.9 9 Q18.8 14.2 24 14Z M24 10.5 Q26.4 7.1 24 3 Q21.6 7.1 24 10.5Z" fill="var(--hol-green)" stroke-width="1.5"/>
@@ -421,7 +436,7 @@ myrtle and willow.
 
 **כיתוב:** הערבה היא ענף שעליו הארוכים דומים לשפתיים.
 
-**Meaning:** Lips · שְׂפָתַיִם
+**Meaning:** Lips · שְׂפָתַיִם · שפתיים
 
 ```html
 <path d="M24 44.5 C24 32 24.6 18 26 6" stroke="var(--hol-red)" stroke-width="2"/><path d="M24 38 Q31.1 37.5 37.9 32.4 Q29.4 33.4 24 38Z M24.3 32.5 Q18.9 27.9 10.4 26.9 Q17.2 32 24.3 32.5Z M24.7 27 Q31.7 26.5 38.6 21.4 Q30.1 22.4 24.7 27Z M25 21.5 Q19.6 16.9 11.1 15.9 Q17.9 21 25 21.5Z M25.3 16 Q32.4 15.5 39.2 10.4 Q30.8 11.4 25.3 16Z M25.6 10.5 Q20.2 5.9 11.7 4.9 Q18.6 10 25.6 10.5Z M26 7 Q27.9 4.5 26.6 1 Q24.7 4.1 26 7Z" fill="var(--hol-green)" stroke-width="1.5"/>
@@ -472,6 +487,8 @@ together.
 
 <img src="docs/holiday-guide/sukkot-6.svg" width="72" height="72" alt="A sukkah with lattice walls, hanging fruit and branches on its roof">
 
+**Unpointed:** סוכה
+
 **Caption:** The sukkah is a hut with a roof of branches, where families eat for seven days.
 
 **כיתוב:** הסוכה היא מבנה שגגו סכך, ובה אוכלים שבעה ימים.
@@ -512,6 +529,8 @@ the Torah is finished and begun again, and everyone sings and dances with the To
 
 **Key:** chanukah
 
+**Unpointed:** חנוכה
+
 **Also spelled:** Hanukkah, Hanukah, Hannukah, Chanukkah, Channukah
 
 **When:** 25 Kislev, for eight days.
@@ -543,6 +562,8 @@ eat latkes and sufganiyot.
 
 <img src="docs/holiday-guide/chanukah-2.svg" width="72" height="72" alt="A chanukiah with eight candles and the shamash">
 
+**Unpointed:** חנוכייה
+
 **Caption:** The chanukiah holds eight candles and the shamash, the helper candle that lights them.
 
 **כיתוב:** בחנוכייה שמונה נרות ושמש, הנר שמדליק את כולם.
@@ -566,6 +587,8 @@ eat latkes and sufganiyot.
 #### 4. Sufganiyah · סֻפְגָּנִיָּה
 
 <img src="docs/holiday-guide/chanukah-4.svg" width="72" height="72" alt="A jelly doughnut">
+
+**Unpointed:** סופגנייה
 
 **Caption:** A sufganiyah is a jelly doughnut, another treat fried in oil.
 
@@ -649,6 +672,8 @@ trees, eat fruits that grow in the Land of Israel, and think about caring for th
 
 <img src="docs/holiday-guide/tu-bishvat-3.svg" width="72" height="72" alt="A sprout above the ground and its roots below">
 
+**Unpointed:** שורשים
+
 **Caption:** Roots hold the tree firmly in the ground and drink water from the soil.
 
 **כיתוב:** השורשים מחזיקים את העץ באדמה ושותים ממנה מים.
@@ -716,6 +741,8 @@ a festive meal.
 
 <img src="docs/holiday-guide/purim-1.svg" width="72" height="72" alt="An open scroll on one roller">
 
+**Unpointed:** מגילה
+
 **Caption:** The megillah is the scroll of Esther, read aloud at night and again in the morning.
 
 **כיתוב:** המגילה היא מגילת אסתר, וקוראים אותה בערב ושוב בבוקר.
@@ -739,6 +766,8 @@ a festive meal.
 #### 3. Hamantaschen · אָזְנֵי הָמָן
 
 <img src="docs/holiday-guide/purim-3.svg" width="72" height="72" alt="A three-cornered cookie with jam in the middle">
+
+**Unpointed:** אוזני המן
 
 **Caption:** Hamantaschen are three-cornered cookies with a sweet filling.
 
@@ -834,6 +863,8 @@ forgotten.
 
 **Key:** yom_hazikaron
 
+**Unpointed:** יום הזיכרון
+
 **Also spelled:** Israel Memorial Day, Yom HaZikkaron
 
 **When:** 4 Iyar, the day before Yom HaAtzmaut.
@@ -877,6 +908,8 @@ celebrate with flags, songs, dancing, fireworks and picnics.
 <img src="docs/holiday-guide/lag-baomer.svg" width="96" height="96" alt="A bonfire">
 
 **Key:** lag_baomer
+
+**Unpointed:** ל״ג בעומר
 
 **Also spelled:** Lag B'Omer
 
