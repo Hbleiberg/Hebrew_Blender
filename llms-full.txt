@@ -474,7 +474,7 @@ The next one. The page opens with the next holiday on the calendar and how many 
 
 **How do I print a holiday coloring sheet?**
 
-Choose the holiday, tick the symbols you want and press Print. You can put one, two, four or six symbols on a page, label them in Hebrew, in transliteration and in English, make the pictures and the words bigger or smaller, show or hide the Hebrew vowels, add a line for the child’s name and a dashed line for cutting the page in half, and print on Letter or A4 paper.
+Choose the holiday, tick the symbols you want and press Print. You can put one, two, four or six symbols on a page, label them in Hebrew, in transliteration and in English, make the pictures and the words bigger or smaller, show or hide the Hebrew vowels, add a line for the child’s name and a dashed dividing line between the rows, and print on Letter or A4 paper.
 
 **Are the Hebrew words written with vowels?**
 

@@ -13,7 +13,7 @@
  *   - the sheet maker: every holiday with symbols draws six on one page at the defaults with no palette token left on
  *     paper and no conversion warning; 1 / 2 / 4 / 6 a page give ceil(n / per) pages with the right rows and columns;
  *     each option changes the sheet (the Hebrew / transliteration / English lines, the four size sliders, nikkud
- *     with the catalog's plain spelling, a short row centred, the title, the cut line, the
+ *     with the catalog's plain spelling, a short row centred, the title, the dividing line, the
  *     name line, the meanings on Sukkot only, coloured in); unticking a symbol reflows the pages and none leaves a
  *     note with Print waiting; a holiday's own symbol ticked alone (or a holiday still without symbols) prints as one
  *     big picture; the options survive a reload and the holiday and ticks do not; a long title is fitted inside its
@@ -193,7 +193,7 @@ try {
       await pick(pg, `#hgPick input[value="${h.key}"]`);
       const s = await sheets(pg);
       eq(s.length, 1, where, 'pages at the defaults');
-      eq([s[0].per, s[0].rows, s[0].cols, s[0].cells, s[0].pics, s[0].cut], ['6', 2, 3, 6, 6, 1], where, 'six symbols, three by two, one cut line');
+      eq([s[0].per, s[0].rows, s[0].cols, s[0].cells, s[0].pics, s[0].cut], ['6', 2, 3, 6, 6, 1], where, 'six symbols, three by two, one dividing line');
       eq(s[0].he, h.symbols.map((x) => x.he), where, 'the pointed Hebrew labels');
       eq(s[0].en, h.symbols.map((x) => x.en), where, 'the English labels');
       eq(s[0].title, [h.en, h.he], where, 'the title');
@@ -240,7 +240,7 @@ try {
     await pg.locator('#hgOptTitle').uncheck(); await pg.locator('#hgOptCut').uncheck(); await pg.locator('#hgOptName').check(); await pg.locator('#hgOptMeanings').check();
     await pick(pg, 'input[name="hgColored"][value="1"]');
     s = (await sheets(pg))[0];
-    eq([s.title.length, s.cut, s.name, s.mean], [0, 0, 1, 6], 'builder toggles', 'no title, no cut line, a name line, six meanings');
+    eq([s.title.length, s.cut, s.name, s.mean], [0, 0, 1, 6], 'builder toggles', 'no title, no dividing line, a name line, six meanings');
     ok(s.colour && !s.token, 'builder coloured in', 'the light palette\'s colours on paper and no token');
     // the options are stored; the holiday and the ticks are not
     const stored = await pg.evaluate(() => JSON.parse(localStorage.getItem('hebrewHolidayGuide_settings')));

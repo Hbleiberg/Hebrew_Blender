@@ -92,7 +92,7 @@ every row), `node scripts/build-holiday-pages.mjs`, `node scripts/smoke-holiday-
   `IVRIT_CFG`; unknown fields are kept): `per` (1, 2, 4, 6 symbols a page), the three label lines `lblHe`, `lblTr`,
   `lblEn` (the Hebrew name, its transliteration, the English name — three checkboxes; a version-1 blob's single
   `labels` field is read once and dropped on the next save), the size sliders `sizePic` (50–100), `sizeHe`,
-  `sizeTr`, `sizeEn` (50–150, percent, steps of 5, as the Letter Learner's), `nikkud`, `title`, `cut`, `meanings`,
+  `sizeTr`, `sizeEn` (50–150, percent, steps of 5, as the Letter Learner's), `nikkud`, `title`, `cut` (the dashed dividing line between the rows — the field keeps its first name), `meanings`,
   `name`, `colored`, `paper` (`letter` / `a4`). One picture alone fills its page whatever `per` says.
 - **Sizes** are factors on the sheet (`--sz-pic`, `--sz-he`, `--sz-tr`, `--sz-en`, set by `hgApplySizes`): a drag
   resizes the sheets on screen and fits them again without rebuilding, and the value is stored when the drag ends. A

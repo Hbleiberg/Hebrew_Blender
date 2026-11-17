@@ -454,7 +454,7 @@ async function render(list) {
   const browser = await chromium.launch();
   try {
     // A fresh context: no stored options, so every sheet is drawn at the builder's defaults (six symbols, both labels,
-    // nikkud, the title, the cut line, to color in, Letter).
+    // nikkud, the title, the dividing line, to color in, Letter).
     const ctx = await browser.newContext({ viewport: { width: 1400, height: 1100 }, deviceScaleFactor: 2, serviceWorkers: 'block', colorScheme: 'light' });
     const pg = await ctx.newPage();
     const errors = [];
