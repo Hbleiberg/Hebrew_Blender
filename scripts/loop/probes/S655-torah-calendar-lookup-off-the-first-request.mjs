@@ -1,16 +1,17 @@
 #!/usr/bin/env node
-// S655 — the Torah Trainer: the Calendar tab's date lookup is drawn when that tab opens, not during init. Its date line's
-// toLocaleDateString is the page's only date format on a visit, and the first one loads the locale's date data
-// (36–67 ms at 4× CPU); init drew the lookup, for a tab that is hidden at load, before the reading's Sefaria request
-// went out — and its DOM writes left the style dirty, so staffInitWatchers' document.fonts.ready read forced a recalc
-// there too.
+// S655 — the Torah Trainer: two pieces of init's synchronous work no longer run before the reading's Sefaria request.
+// (1) The Calendar tab's date lookup is drawn when that tab opens: its date line's toLocaleDateString is the page's only
+// date format on a visit, and the first one loads the locale's date data (36–67 ms at 4× CPU), for a tab hidden at
+// load. (2) staffInitWatchers reads document.fonts.ready in the next task: the read brings the page's style up to date
+// (50–85 ms at 4× once the lookup was gone). Together: 186–192 → 50–56 ms of init before the request at 4×.
 //
 //   node scripts/loop/probes/S655-torah-calendar-lookup-off-the-first-request.mjs
 //   EN light 1280 / HE dark 800, Sefaria stubbed, every other foreign origin aborted, SW blocked: exit 1 when a date is
-//   formatted before the reading's request starts, when the Calendar tab opens without its result or its Open row,
+//   formatted or document.fonts.ready is read before the reading's request starts, when the Calendar tab opens
+//   without its result or its Open row,
 //   when the result is written while its panel shows (its aria-live region would announce on opening), or on a page
-//   error. ROOT=<a git archive of the tree> runs another copy (the tree before S655 fails 2: one date formatted before
-//   the request in each cell).
+//   error. ROOT=<a git archive of the tree> runs another copy (the tree before S655 fails 4: one date formatted and one
+//   .ready read before the request in each cell).
 import pkg from '/opt/node22/lib/node_modules/playwright/index.js';
 import http from 'node:http';
 import fs from 'node:fs';
@@ -42,6 +43,8 @@ for (const cell of [{ lang: 'en', dark: false, w: 1280 }, { lang: 'he', dark: tr
   await page.addInitScript(([lang, dark]) => {
     localStorage.setItem('hebrewBlender_lang', lang); localStorage.setItem('hebrewBlender_darkMode', dark ? '1' : '0'); localStorage.setItem('hebrewTorahTrainer_tourSeen', '1');
     window.__fmt = []; const rec = () => window.__fmt.push(performance.now());
+    window.__ready = []; const rd = Object.getOwnPropertyDescriptor(FontFaceSet.prototype, 'ready');
+    Object.defineProperty(FontFaceSet.prototype, 'ready', { configurable: true, get() { window.__ready.push(performance.now()); return rd.get.call(this); } });
     const d = Date.prototype.toLocaleDateString; Date.prototype.toLocaleDateString = function (...a) { rec(); return d.apply(this, a); };
     const D = Intl.DateTimeFormat; Intl.DateTimeFormat = function (...a) { rec(); return new D(...a); }; Intl.DateTimeFormat.prototype = D.prototype; Intl.DateTimeFormat.supportedLocalesOf = D.supportedLocalesOf;
   }, [cell.lang, cell.dark]);
@@ -52,6 +55,8 @@ for (const cell of [{ lang: 'en', dark: false, w: 1280 }, { lang: 'he', dark: tr
   const early = await page.evaluate(s => window.__fmt.filter(t => t <= s).length, start);
   ok(sefaria > 0 && start !== null, `${L} the reading came from the stubbed request (${sefaria} hit${sefaria === 1 ? '' : 's'})`);
   ok(early === 0, `${L} dates formatted before the reading's request: ${early}`);
+  const earlyReady = await page.evaluate(s => window.__ready.filter(t => t <= s).length, start);
+  ok(earlyReady === 0, `${L} document.fonts.ready reads before the reading's request: ${earlyReady}`);
   await page.evaluate(() => {
     document.querySelectorAll('.overlay.open').forEach(o => o.classList.remove('open'));
     window.__draws = []; const el = document.getElementById('lookupResult'), panel = document.getElementById('ttTabPanelCalendar');

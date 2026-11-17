@@ -6719,7 +6719,9 @@ function staffInitWatchers() {
   const root = document.getElementById('ttReading');
   if (root && window.ResizeObserver) new ResizeObserver(() => staffRelayoutSoon(false)).observe(root);
   if (document.fonts) {
-    document.fonts.ready.then(() => { if (staffRemeasure()) staffRelayoutSoon(true); }).catch(() => {});
+    // Read in the next task: reading .ready brings the page's style up to date, and init calls this before the
+    // reading's request goes out (nothing is measured before the first staff render, so the wait loses nothing).
+    setTimeout(() => { document.fonts.ready.then(() => { if (staffRemeasure()) staffRelayoutSoon(true); }).catch(() => {}); }, 0);
     document.fonts.addEventListener('loadingdone', () => { if (staffRemeasure()) staffRelayoutSoon(true); });
   }
   const a = document.getElementById('ttAudio');

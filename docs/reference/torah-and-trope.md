@@ -919,7 +919,9 @@ beta leaves open.
   font's name, not its load state, so `fonts.ready` and `loadingdone` first call `staffRemeasure()`: it re-takes
   every width remembered in the probes' current fonts (dropping the rest) and the re-wrap runs only when one moved —
   a width taken in the fallback before the face arrived never outlives it, and a load that changes nothing
-  (the UI's faces, a face the words already had) re-renders nothing.
+  (the UI's faces, a face the words already had) re-renders nothing. `staffInitWatchers` reads `fonts.ready` in
+  the task after init's (a timer of 0): the read brings the page's style up to date, and init calls it before the
+  reading's Sefaria request goes out; nothing is measured before the first staff render, so the wait loses nothing.
 - **A system's box and its scaling.** Each `.tt-staff-sys` is a size container (`container-type:inline-size`)
   whose box is the system's natural width on screen; `.tt-staff-words` restates `--tt-heb-size` and
   `--tt-translit-size` in `cqw` of that box (`staffFontPx` — at full width they equal the page's sizes, so the
