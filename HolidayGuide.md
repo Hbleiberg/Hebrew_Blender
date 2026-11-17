@@ -47,7 +47,7 @@ Never edit an output. The format and every rule are in the header of `scripts/ho
 | 9 | Purim | פּוּרִים | <img src="docs/holiday-guide/purim.svg" width="28" height="28" alt=""> | Megillah, Gragger, Hamantaschen, Mask, Crown, Mishloach Manot |
 | 10 | Pesach | פֶּסַח | <img src="docs/holiday-guide/pesach.svg" width="28" height="28" alt=""> | Matzah, Seder Plate, Four Cups, Haggadah, Maror, Frog |
 | 11 | Yom HaShoah | יוֹם הַשּׁוֹאָה | <img src="docs/holiday-guide/yom-hashoah.svg" width="28" height="28" alt=""> | Memorial Candle, Six Candles, Butterfly, Star of David, Diary, Flower |
-| 12 | Yom HaZikaron | יוֹם הַזִּכָּרוֹן | <img src="docs/holiday-guide/yom-hazikaron.svg" width="28" height="28" alt=""> | Memorial Candle, Flag at Half-Mast, Red Everlasting, Siren, Wreath, Monument |
+| 12 | Yom HaZikaron | יוֹם הַזִּכָּרוֹן | <img src="docs/holiday-guide/yom-hazikaron.svg" width="28" height="28" alt=""> | Memorial Candle, Flag at Half-Mast, Red Everlasting, Siren, Memorial Torch, Monument |
 | 13 | Yom HaAtzmaut | יוֹם הָעַצְמָאוּת | <img src="docs/holiday-guide/yom-haatzmaut.svg" width="28" height="28" alt=""> | Flag, Fireworks, Falafel, Map of Israel, State Emblem, Barbecue |
 | 14 | Lag BaOmer | ל״ג בָּעֹמֶר | <img src="docs/holiday-guide/lag-baomer.svg" width="28" height="28" alt=""> | Bonfire, Bow and Arrow, Potato, Picnic, Carob, Cave |
 | 15 | Yom Yerushalayim | יוֹם יְרוּשָׁלַיִם | <img src="docs/holiday-guide/yom-yerushalayim.svg" width="28" height="28" alt=""> | Kotel, Tower of David, Gate, Lion, Olive Tree, Harp |
@@ -158,7 +158,7 @@ challah and festive meals together, and take a break from work to rest, pray, si
 
 ### 2. Havdalah · הַבְדָּלָה
 
-<img src="docs/holiday-guide/havdalah.svg" width="96" height="96" alt="A braided Havdalah candle with a tall flame and three stars">
+<img src="docs/holiday-guide/havdalah.svg" width="96" height="96" alt="A spice box, a braided Havdalah candle and a kiddush cup">
 
 **Key:** havdalah
 
@@ -174,7 +174,7 @@ this short ceremony says goodbye to Shabbat and welcomes the new week.
 **על החג:** הבדלה היא פרידה מן השבת. בנר קלוע, בבשמים ריחניים ובכוס יין נפרדים מן השבת ומקבלים את פני השבוע החדש.
 
 ```html
-<rect x="19" y="18" width="10" height="25" rx="2" fill="var(--hol-blue)"/><path d="M19 25 L29 21 M19 31 L29 27 M19 37 L29 33 M20.5 42.3 L29 39" stroke="var(--hol-paper)" stroke-width="1.6"/><path d="M24 3 C26.2 7.1 30.5 10 30.2 13.2 C29.9 16.1 27.1 17.5 24 17.5 C20.9 17.5 18.1 16.1 17.8 13.2 C17.5 10 21.8 7.1 24 3Z" fill="var(--hol-flame)"/><path d="M24 9.2 C25 11.2 26.9 12.6 26.8 14.1 C26.7 15.5 25.4 16.2 24 16.2 C22.6 16.2 21.3 15.5 21.2 14.1 C21.1 12.6 23 11.2 24 9.2Z" fill="var(--hol-gold-lt)" stroke="none"/><path d="M8 6.4 Q8.8 9.2 11.6 10 Q8.8 10.8 8 13.6 Q7.2 10.8 4.4 10 Q7.2 9.2 8 6.4Z M40 10 Q40.7 12.3 43 13 Q40.7 13.7 40 16 Q39.3 13.7 37 13 Q39.3 12.3 40 10Z M9.5 27.4 Q10.1 29.4 12.1 30 Q10.1 30.6 9.5 32.6 Q8.9 30.6 6.9 30 Q8.9 29.4 9.5 27.4Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/>
+<rect x="4.5" y="39.5" width="11" height="3.5" rx="1" fill="var(--hol-gold)"/><path d="M10 39.5 V35.5" stroke-width="2.4"/><rect x="5.5" y="25" width="9" height="10.5" rx="1" fill="var(--hol-gold-lt)"/><circle cx="8.4" cy="28.6" r="0.9" fill="var(--hol-navy)" stroke="none"/><circle cx="11.6" cy="28.6" r="0.9" fill="var(--hol-navy)" stroke="none"/><circle cx="8.4" cy="32" r="0.9" fill="var(--hol-navy)" stroke="none"/><circle cx="11.6" cy="32" r="0.9" fill="var(--hol-navy)" stroke="none"/><path d="M4.5 25 L10 16.5 L15.5 25Z" fill="var(--hol-gold)"/><circle cx="10" cy="15" r="1.5" fill="var(--hol-gold-lt)" stroke-width="1.3"/><path d="M24 19 V16" stroke-width="1.4"/><ellipse cx="21.3" cy="21.3" rx="4.1" ry="2.2" fill="var(--hol-blue)" stroke-width="1.4" transform="rotate(30 21.3 21.3)"/><ellipse cx="26.7" cy="23.2" rx="4.1" ry="2.2" fill="var(--hol-paper)" stroke-width="1.4" transform="rotate(-30 26.7 23.2)"/><ellipse cx="21.3" cy="25" rx="4.1" ry="2.2" fill="var(--hol-gold-lt)" stroke-width="1.4" transform="rotate(30 21.3 25)"/><ellipse cx="26.7" cy="26.9" rx="4.1" ry="2.2" fill="var(--hol-blue)" stroke-width="1.4" transform="rotate(-30 26.7 26.9)"/><ellipse cx="21.3" cy="28.7" rx="4.1" ry="2.2" fill="var(--hol-paper)" stroke-width="1.4" transform="rotate(30 21.3 28.7)"/><ellipse cx="26.7" cy="30.6" rx="4.1" ry="2.2" fill="var(--hol-gold-lt)" stroke-width="1.4" transform="rotate(-30 26.7 30.6)"/><ellipse cx="21.3" cy="32.4" rx="4.1" ry="2.2" fill="var(--hol-blue)" stroke-width="1.4" transform="rotate(30 21.3 32.4)"/><ellipse cx="26.7" cy="34.3" rx="4.1" ry="2.2" fill="var(--hol-paper)" stroke-width="1.4" transform="rotate(-30 26.7 34.3)"/><ellipse cx="21.3" cy="36.1" rx="4.1" ry="2.2" fill="var(--hol-gold-lt)" stroke-width="1.4" transform="rotate(30 21.3 36.1)"/><ellipse cx="26.7" cy="38" rx="4.1" ry="2.2" fill="var(--hol-blue)" stroke-width="1.4" transform="rotate(-30 26.7 38)"/><ellipse cx="21.3" cy="39.8" rx="4.1" ry="2.2" fill="var(--hol-paper)" stroke-width="1.4" transform="rotate(30 21.3 39.8)"/><rect x="19.3" y="39.8" width="9.4" height="3.2" rx="1" fill="var(--hol-gold)" stroke-width="1.5"/><path d="M24 4.5 C25.6 8 28.8 10.5 28.6 13.2 C28.4 15.8 26.3 17 24 17 C21.7 17 19.6 15.8 19.4 13.2 C19.2 10.5 22.4 8 24 4.5Z" fill="var(--hol-flame)"/><path d="M24 10.2 C24.7 11.9 26.2 13.1 26.1 14.4 C26 15.6 25.1 16.2 24 16.2 C22.9 16.2 22 15.6 21.9 14.4 C21.8 13.1 23.3 11.9 24 10.2Z" fill="var(--hol-gold-lt)" stroke="none"/><path d="M32.5 22.5 H43.5 C43.5 30 41.5 33.5 38 33.5 C34.5 33.5 32.5 30 32.5 22.5Z" fill="var(--hol-gold-lt)"/><path d="M32.5 22.5 H43.5 C43.4 24.4 43.2 26 42.9 27.4 H33.1 C32.8 26 32.6 24.4 32.5 22.5Z" fill="var(--hol-red)" stroke-width="1.4"/><path d="M38 33.5 V39.5" stroke-width="2.4"/><rect x="33.5" y="39.5" width="9" height="3.5" rx="1" fill="var(--hol-gold)"/><path d="M8 4.4 Q8.6 6.4 10.6 7 Q8.6 7.6 8 9.6 Q7.4 7.6 5.4 7 Q7.4 6.4 8 4.4Z M39.5 6.1 Q40.2 8.3 42.4 9 Q40.2 9.7 39.5 11.9 Q38.8 9.7 36.6 9 Q38.8 8.3 39.5 6.1Z M33 13.5 Q33.5 15 35 15.5 Q33.5 16 33 17.5 Q32.5 16 31 15.5 Q32.5 15 33 13.5Z" fill="var(--hol-gold-lt)" stroke-width="1.2"/>
 ```
 
 #### 1. Havdalah Candle · נֵר הַבְדָּלָה
@@ -186,7 +186,7 @@ this short ceremony says goodbye to Shabbat and welcomes the new week.
 **כיתוב:** נר ההבדלה קלוע, ויש בו כמה פתילות שדולקות יחד כאבוקה אחת.
 
 ```html
-<path d="M17 19 H31 V41 A2 2 0 0 1 29 43 H19 A2 2 0 0 1 17 41Z" fill="var(--hol-paper)"/><path d="M17 24 L31 19.5 V24.5 L17 29Z M17 34 L31 29.5 V34.5 L17 39Z" fill="var(--hol-blue)" stroke-width="1.5"/><path d="M17 29 L31 24.5 V29.5 L17 34Z M17 39 L31 34.5 V39.5 L20 43 H19 A2 2 0 0 1 17 41Z" fill="var(--hol-red)" stroke-width="1.5"/><path d="M17 19 H31 V41 A2 2 0 0 1 29 43 H19 A2 2 0 0 1 17 41Z"/><path d="M20.5 19 V17 M24 19 V16.5 M27.5 19 V17" stroke-width="1.4"/><path d="M24 3.5 C26.3 7.4 30.8 10.2 30.5 13.3 C30.2 16.1 27.2 17.5 24 17.5 C20.8 17.5 17.8 16.1 17.5 13.3 C17.2 10.2 21.7 7.4 24 3.5Z" fill="var(--hol-flame)"/><path d="M24 9.3 C25.1 11.3 27.1 12.7 27 14.2 C26.9 15.6 25.5 16.3 24 16.3 C22.5 16.3 21.1 15.6 21 14.2 C20.9 12.7 22.9 11.3 24 9.3Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/>
+<path d="M21.4 20 L23 16.4 M24 19.5 V16 M26.6 20 L25 16.4" stroke-width="1.4"/><ellipse cx="20.5" cy="21.8" rx="5.2" ry="2.7" fill="var(--hol-blue)" stroke-width="1.5" transform="rotate(30 20.5 21.8)"/><ellipse cx="27.5" cy="23.8" rx="5.2" ry="2.7" fill="var(--hol-paper)" stroke-width="1.5" transform="rotate(-30 27.5 23.8)"/><ellipse cx="20.5" cy="25.7" rx="5.2" ry="2.7" fill="var(--hol-gold-lt)" stroke-width="1.5" transform="rotate(30 20.5 25.7)"/><ellipse cx="27.5" cy="27.6" rx="5.2" ry="2.7" fill="var(--hol-blue)" stroke-width="1.5" transform="rotate(-30 27.5 27.6)"/><ellipse cx="20.5" cy="29.6" rx="5.2" ry="2.7" fill="var(--hol-paper)" stroke-width="1.5" transform="rotate(30 20.5 29.6)"/><ellipse cx="27.5" cy="31.6" rx="5.2" ry="2.7" fill="var(--hol-gold-lt)" stroke-width="1.5" transform="rotate(-30 27.5 31.6)"/><ellipse cx="20.5" cy="33.5" rx="5.2" ry="2.7" fill="var(--hol-blue)" stroke-width="1.5" transform="rotate(30 20.5 33.5)"/><ellipse cx="27.5" cy="35.5" rx="5.2" ry="2.7" fill="var(--hol-paper)" stroke-width="1.5" transform="rotate(-30 27.5 35.5)"/><ellipse cx="20.5" cy="37.4" rx="5.2" ry="2.7" fill="var(--hol-gold-lt)" stroke-width="1.5" transform="rotate(30 20.5 37.4)"/><ellipse cx="27.5" cy="39.4" rx="5.2" ry="2.7" fill="var(--hol-blue)" stroke-width="1.5" transform="rotate(-30 27.5 39.4)"/><ellipse cx="20.5" cy="41.3" rx="5.2" ry="2.7" fill="var(--hol-paper)" stroke-width="1.5" transform="rotate(30 20.5 41.3)"/><path d="M17.2 40.6 H30.8 L29.4 44.6 H18.6Z" fill="var(--hol-gold)" stroke-width="1.7"/><path d="M24 3 C26.2 7 30.7 9.8 30.4 12.9 C30.1 15.8 27.2 17.2 24 17.2 C20.8 17.2 17.9 15.8 17.6 12.9 C17.3 9.8 21.8 7 24 3Z" fill="var(--hol-flame)"/><path d="M24 9 C25.1 11 27.1 12.5 27 14 C26.9 15.5 25.5 16.2 24 16.2 C22.5 16.2 21.1 15.5 21 14 C20.9 12.5 22.9 11 24 9Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/>
 ```
 
 #### 2. Spices · בְּשָׂמִים
@@ -330,7 +330,7 @@ good and sweet year, and eat apples dipped in honey and other foods that stand f
 **כיתוב:** השופר הוא קרן של איל, וקולו מעורר את הלב לתשובה.
 
 ```html
-<path d="M5.5 36 C4.5 34 5.5 32.3 7.2 32 C16 30.5 24.5 26.5 28 18.5 C29.5 15 29.8 11 30.2 7.2 C30.6 4.5 33.3 3.3 36 4.3 C40 5.8 43 9 43 12.2 C43 13.8 41.5 14.3 40.3 13.7 C40.8 22.5 36.2 31.5 28 37 C22 41 13 41.5 8.3 40 C6.3 39.4 5.8 37.7 5.5 36Z" fill="var(--hol-gold-lt)"/><ellipse cx="36.6" cy="8.9" rx="5.3" ry="2.9" fill="var(--hol-gold)" transform="rotate(38 36.6 8.9)"/><path d="M12 31.5 C13.3 34 13.3 37.5 12.2 40.4 M18.5 29.5 C20.3 32.5 20.3 36.5 19.2 39.7 M24.8 25.5 C27.5 28.5 28 33 26.8 36.8" stroke-width="1.4"/>
+<path d="M3.4 30.8 C4.2 31.6 6.3 34.3 8.2 35.7 C10.2 37.2 12.5 38.5 14.9 39.4 C17.3 40.3 19.9 41 22.6 41 C25.2 41 28.1 40.5 30.7 39.4 C33.2 38.3 36 36.3 37.9 34.3 C39.9 32.3 41.3 29.8 42.4 27.3 C43.6 24.7 44.3 21.7 44.9 19.3 C45.5 16.8 45.9 13.7 46.1 12.5 L30.9 11.5 C31 12.6 31.5 16.2 31.5 18.2 C31.6 20.2 31.7 21.8 31.4 23.5 C31.1 25.2 30.7 27 29.9 28.4 C29.1 29.8 28.1 31 26.8 31.9 C25.5 32.9 23.8 33.8 22.1 34.1 C20.3 34.5 18.2 34.4 16.4 34.1 C14.5 33.8 12.6 33.3 10.8 32.3 C9 31.3 6.5 28.9 5.6 28.2 Q2 27.4 3.4 30.8Z" fill="var(--hol-gold-lt)"/><ellipse cx="38.5" cy="12" rx="7.6" ry="3.1" fill="var(--hol-gold)" transform="rotate(4.1 38.5 12)"/><path d="M19.7 40.4 Q21.1 37.6 20.1 34.6 M28.7 39.7 Q28.4 35.9 25.9 32.9 M36.9 34.9 Q34.2 31.1 30 29.1 M42 27.1 Q37.3 24.2 31.9 23.6" stroke-width="1.4"/><path d="M6.9 34.1 Q8.4 33.1 9.2 31.5" stroke-width="1.4"/>
 ```
 
 #### 6. Pomegranate · רִמּוֹן
@@ -390,7 +390,7 @@ people say sorry to one another and to God, and everyone makes a fresh start for
 **כיתוב:** תקיעת שופר ארוכה אחת מסיימת את יום כיפור עם רדת הלילה.
 
 ```html
-<path d="M42.5 36 C43.5 34 42.5 32.3 40.8 32 C32 30.5 23.5 26.5 20 18.5 C18.5 15 18.2 11 17.8 7.2 C17.4 4.5 14.7 3.3 12 4.3 C8 5.8 5 9 5 12.2 C5 13.8 6.5 14.3 7.7 13.7 C7.2 22.5 11.8 31.5 20 37 C26 41 35 41.5 39.7 40 C41.7 39.4 42.2 37.7 42.5 36 Z" fill="var(--hol-gold-lt)"/><ellipse cx="11.4" cy="8.9" rx="5.3" ry="2.9" fill="var(--hol-gold)" transform="rotate(-38 11.4 8.9)"/><path d="M36 31.5 C34.7 34 34.7 37.5 35.8 40.4 M29.5 29.5 C27.7 32.5 27.7 36.5 28.8 39.7 M23.2 25.5 C20.5 28.5 20 33 21.2 36.8" stroke-width="1.4"/><path d="M5.2 3.6 L3 2.4 M3.6 12.6 L2 14.4 M21.5 4.5 L23.5 2.6" stroke="var(--hol-blue)" stroke-width="1.7"/>
+<path d="M42.7 31.9 C42 32.7 40.2 35.6 38.7 36.6 C37.3 37.6 35.8 37.9 34.2 38.1 C32.6 38.3 30.7 38.1 29.2 37.5 C27.6 37 26.1 36.1 24.9 35 C23.8 34 22.9 32.8 22.2 31.4 C21.4 30 20.8 28.2 20.6 26.7 C20.3 25.2 20.4 24.3 20.6 22.6 C20.8 20.8 21.4 17.3 21.6 16.3 L6.4 16.7 C6.5 17.8 6.7 20.6 7.2 23 C7.8 25.4 8.6 28.7 9.8 31.1 C10.9 33.4 12.4 35.5 14.2 37.3 C16 39.2 18.3 41 20.6 42.2 C22.9 43.3 25.4 44.1 27.9 44.3 C30.4 44.5 33 44.3 35.3 43.5 C37.6 42.7 40.2 41.1 41.9 39.5 C43.5 38 44.8 35 45.3 34.1 Q46 30.5 42.7 31.9Z" fill="var(--hol-gold-lt)"/><ellipse cx="14" cy="16.5" rx="7.6" ry="3.1" fill="var(--hol-gold)" transform="rotate(-1.5 14 16.5)"/><path d="M30.8 38.2 Q29.6 41.1 30.7 44.1 M25.7 36.1 Q23 38.8 22.4 42.6 M22.1 32.2 Q17.9 34 15.1 37.8 M20.1 26.9 Q14.7 27.8 10.2 30.9" stroke-width="1.4"/><path d="M40.1 35.7 Q41.1 37.1 42.8 37.8" stroke-width="1.4"/><path d="M9.7 10.8 A7.2 7.2 0 0 1 18 10.5 M8.7 7.3 A10.6 10.6 0 0 1 18.8 7.1" stroke="var(--hol-blue)" stroke-width="1.8"/>
 ```
 
 #### 3. Tallit · טַלִּית
@@ -654,7 +654,7 @@ the Torah is finished and begun again, and everyone sings and dances with the To
 **כיתוב:** היד היא מצביע בצורת כף יד, ובעזרתה עוקבים אחרי המילים בתורה.
 
 ```html
-<g transform="rotate(35 24 24)"><rect x="21.6" y="8" width="4.8" height="19" rx="2.2" fill="var(--hol-gold-lt)"/><circle cx="24" cy="6.4" r="3.8" fill="var(--hol-gold)"/><path d="M21.6 14 H26.4 M21.6 18 H26.4" stroke-width="1.4"/><rect x="19.4" y="27" width="9.2" height="4" rx="1.2" fill="var(--hol-gold)"/><path d="M19.8 31 H28.2 V37.4 A1.6 1.6 0 0 1 26.6 39 H25.6 V43.4 A1.5 1.5 0 0 1 22.6 43.4 V39 H21.4 A1.6 1.6 0 0 1 19.8 37.4Z" fill="var(--hol-gold-lt)" stroke-width="1.6"/></g>
+<g transform="rotate(38 24 24)"><rect x="21.4" y="6.5" width="5.2" height="17.5" rx="2" fill="var(--hol-gold-lt)"/><circle cx="24" cy="4.4" r="3.3" fill="var(--hol-gold)"/><path d="M21.4 11 H26.6 M21.4 14.2 H26.6" stroke-width="1.4"/><ellipse cx="24" cy="18.8" rx="4.5" ry="2.1" fill="var(--hol-gold)"/><rect x="18.2" y="23.6" width="11.6" height="3.9" rx="1.3" fill="var(--hol-gold)"/><path d="M17.6 27.5 H30.4 V35 A2.4 2.4 0 0 1 28 37.4 H23.4 V43.4 A2.9 2.9 0 0 1 17.6 43.4Z" fill="var(--hol-gold-lt)"/><path d="M25.8 33 V37.4 M28.1 33 V37.2 M23.4 37.4 V33.4" stroke-width="1.3"/><path d="M30.4 29.6 H26.6 A1.75 1.75 0 0 0 26.6 33.1 H30.4" stroke-width="1.3"/><path d="M19 43.9 V42.3 A1.5 1.5 0 0 1 22 42.3 V43.9" stroke-width="1.1"/><path d="M18.6 39.6 Q20.5 38.9 22.4 39.6" stroke-width="1.1"/></g>
 ```
 
 #### 6. Torah Crown · כֶּתֶר תּוֹרָה
@@ -694,14 +694,14 @@ eat latkes and sufganiyot.
 
 #### 1. Dreidel · סְבִיבוֹן
 
-<img src="docs/holiday-guide/chanukah-1.svg" width="72" height="72" alt="A dreidel with the letter nun">
+<img src="docs/holiday-guide/chanukah-1.svg" width="72" height="72" alt="A dreidel with the letter gimel">
 
 **Caption:** The dreidel is a spinning top with four Hebrew letters, one on each side.
 
 **כיתוב:** הסביבון מסתובב, ועל כל אחד מארבעת צדדיו אות עברית.
 
 ```html
-<g transform="rotate(-14 24 25)"><rect x="21.3" y="4" width="5.4" height="12" rx="1.8" fill="var(--hol-gold)"/><path d="M12 15.5 H36 V30 L24 43.5 L12 30Z" fill="var(--hol-blue)"/><path d="M20.5 20.5 H27 V30 H20.2" stroke="var(--hol-gold-lt)" stroke-width="2.6"/></g>
+<g transform="rotate(-14 24 25)"><rect x="21.3" y="4" width="5.4" height="12" rx="1.8" fill="var(--hol-gold)"/><path d="M12 15.5 H36 V30 L24 43.5 L12 30Z" fill="var(--hol-blue)"/><path d="M20.6 20.6 H25.4 L26.4 30.6 M26.1 27.2 Q24.6 30.2 20.3 30.6" stroke="var(--hol-gold-lt)" stroke-width="2.6"/></g>
 ```
 
 #### 2. Chanukiah · חֲנֻכִּיָּה
@@ -1049,7 +1049,7 @@ other chametz is eaten.
 **כיתוב:** הצפרדעים היו המכה השנייה מעשר המכות במצרים.
 
 ```html
-<circle cx="16" cy="14.5" r="5.6" fill="var(--hol-green)"/><circle cx="32" cy="14.5" r="5.6" fill="var(--hol-green)"/><path d="M9 38 C6 39 4.8 41.6 6.4 43.4 H14.5 M39 38 C42 39 43.2 41.6 41.6 43.4 H33.5" stroke-width="2"/><path d="M8 30 C8 20.5 15 16 24 16 C33 16 40 20.5 40 30 C40 37 33 41 24 41 C15 41 8 37 8 30Z" fill="var(--hol-green)"/><ellipse cx="24" cy="34.5" rx="7.5" ry="4" fill="var(--hol-gold-lt)" stroke="none"/><circle cx="16" cy="14.2" r="3.1" fill="var(--hol-paper)" stroke-width="1.3"/><circle cx="32" cy="14.2" r="3.1" fill="var(--hol-paper)" stroke-width="1.3"/><circle cx="16" cy="14.6" r="1.4" fill="var(--hol-navy)" stroke="none"/><circle cx="32" cy="14.6" r="1.4" fill="var(--hol-navy)" stroke="none"/><path d="M15 26.5 C19 31.5 29 31.5 33 26.5" stroke-width="1.8"/>
+<ellipse cx="11" cy="34" rx="6" ry="7.4" fill="var(--hol-green)" transform="rotate(-18 11 34)"/><ellipse cx="37" cy="34" rx="6" ry="7.4" fill="var(--hol-green)" transform="rotate(18 37 34)"/><path d="M15.5 44 H3.6 Q2.8 41.6 5.4 41.6 Q5.6 39.4 8 40.4 Q9.2 38.6 11.2 40 Q14.4 39.6 15.5 44Z" fill="var(--hol-green)" stroke-width="1.6"/><path d="M32.5 44 H44.4 Q45.2 41.6 42.6 41.6 Q42.4 39.4 40 40.4 Q38.8 38.6 36.8 40 Q33.6 39.6 32.5 44Z" fill="var(--hol-green)" stroke-width="1.6"/><circle cx="16" cy="14" r="5.5" fill="var(--hol-green)"/><circle cx="32" cy="14" r="5.5" fill="var(--hol-green)"/><path d="M24 15.5 C33.5 15.5 39.5 20.5 39.5 27 C39.5 30 38.2 31.8 36.8 33.6 C37.4 39 32 42.5 24 42.5 C16 42.5 10.6 39 11.2 33.6 C9.8 31.8 8.5 30 8.5 27 C8.5 20.5 14.5 15.5 24 15.5Z" fill="var(--hol-green)"/><path d="M17.4 33.4 C19.4 31 28.6 31 30.6 33.4 C31.6 38 29 41.2 24 41.2 C19 41.2 16.4 38 17.4 33.4Z" fill="var(--hol-gold-lt)" stroke-width="1.4"/><path d="M14.4 44.6 Q13.8 41.4 16.4 41.6 Q17.5 40 19 41.3 Q20.6 40.2 21.4 41.8 Q23.2 42 22.6 44.6Z" fill="var(--hol-green)" stroke-width="1.5"/><path d="M33.6 44.6 Q34.2 41.4 31.6 41.6 Q30.5 40 29 41.3 Q27.4 40.2 26.6 41.8 Q24.8 42 25.4 44.6Z" fill="var(--hol-green)" stroke-width="1.5"/><circle cx="16" cy="13.8" r="3.2" fill="var(--hol-paper)" stroke-width="1.3"/><circle cx="32" cy="13.8" r="3.2" fill="var(--hol-paper)" stroke-width="1.3"/><circle cx="16.5" cy="14.2" r="1.5" fill="var(--hol-navy)" stroke="none"/><circle cx="31.5" cy="14.2" r="1.5" fill="var(--hol-navy)" stroke="none"/><circle cx="22.2" cy="21.6" r="0.7" fill="var(--hol-navy)" stroke="none"/><circle cx="25.8" cy="21.6" r="0.7" fill="var(--hol-navy)" stroke="none"/><path d="M13.4 25.2 C18 30 30 30 34.6 25.2 M12.4 24.2 L14 25.9 M35.6 24.2 L34 25.9" stroke-width="1.7"/>
 ```
 
 ### 11. Yom HaShoah · יוֹם הַשּׁוֹאָה
@@ -1200,7 +1200,7 @@ remember the soldiers who fell defending Israel and the victims of terror.
 **כיתוב:** מורידים את הדגל לחצי התורן לאות אבל.
 
 ```html
-<path d="M10 6 V44" stroke-width="2.8"/><circle cx="10" cy="5" r="2" fill="var(--hol-gold)" stroke-width="1.4"/><rect x="10" y="20" width="27" height="17.5" fill="var(--hol-paper)"/><rect x="10" y="22.6" width="27" height="2.6" fill="var(--hol-blue)" stroke="none"/><rect x="10" y="32.3" width="27" height="2.6" fill="var(--hol-blue)" stroke="none"/><path d="M23.5 26.1 L25.8 30.2 H21.2Z M23.5 31.5 L25.8 27.4 H21.2Z" stroke="var(--hol-blue)" stroke-width="1.4"/><path d="M5 44 H15.5" stroke-width="2.6"/>
+<path d="M11.5 5.5 V44" stroke-width="2.8"/><circle cx="11.5" cy="4.4" r="2" fill="var(--hol-gold)" stroke-width="1.4"/><path d="M5.5 44 H17.5" stroke-width="2.8"/><path d="M13.4 7 L14.6 24.4" stroke-width="1"/><path d="M11.5 25 C12.6 24.7 15.7 22.8 17.8 23.1 C19.9 23.4 21.9 26.4 23.9 26.7 C25.8 27 27.8 25.6 29.5 25.2 C31.2 24.8 33.2 24.4 34 24.2 L34 36.6 C33.2 36.8 31.2 37.2 29.5 37.6 C27.8 38 25.8 39.5 23.9 39.1 C21.9 38.8 19.9 35.8 17.8 35.5 C15.7 35.2 12.6 37.1 11.5 37.4Z" fill="var(--hol-paper)"/><path d="M11.5 26.9 C12.6 26.6 15.7 24.7 17.8 25 C19.9 25.3 21.9 28.2 23.9 28.6 C25.8 28.9 27.8 27.5 29.5 27.1 C31.2 26.7 33.2 26.3 34 26.1 L34 28.3 C33.2 28.5 31.2 28.9 29.5 29.3 C27.8 29.7 25.8 31.1 23.9 30.8 C21.9 30.5 19.9 27.5 17.8 27.2 C15.7 26.9 12.6 28.8 11.5 29.1Z" fill="var(--hol-blue)" stroke="none"/><path d="M11.5 33.3 C12.6 33 15.7 31.1 17.8 31.4 C19.9 31.7 21.9 34.6 23.9 35 C25.8 35.4 27.8 33.9 29.5 33.5 C31.2 33.1 33.2 32.7 34 32.5 L34 34.7 C33.2 34.9 31.2 35.3 29.5 35.7 C27.8 36.1 25.8 37.6 23.9 37.2 C21.9 36.9 19.9 33.9 17.8 33.6 C15.7 33.3 12.6 35.2 11.5 35.5Z" fill="var(--hol-blue)" stroke="none"/><path d="M23.2 29 L25.2 32.5 H21.2Z M23.2 33.6 L25.2 30.2 H21.2Z" stroke="var(--hol-blue)" stroke-width="1.3"/>
 ```
 
 #### 3. Red Everlasting · דַּם הַמַּכַּבִּים
@@ -1227,16 +1227,18 @@ remember the soldiers who fell defending Israel and the victims of terror.
 <path d="M11 26 V43.5 M5.5 43.5 H16.5" stroke-width="2.4"/><rect x="7.5" y="17.5" width="7" height="9" rx="1.2" fill="var(--hol-gold)"/><path d="M14.5 18 L29 10.5 V33.5 L14.5 26Z" fill="var(--hol-gold-lt)"/><path d="M33 16 C36.2 19 36.2 25 33 28 M37.5 11.5 C43 17 43 27 37.5 32.5" stroke="var(--hol-blue)" stroke-width="2.2"/>
 ```
 
-#### 5. Wreath · זֵר
+#### 5. Memorial Torch · לַפִּיד זִכָּרוֹן
 
-<img src="docs/holiday-guide/yom-hazikaron-5.svg" width="72" height="72" alt="A wreath of leaves with a ribbon">
+<img src="docs/holiday-guide/yom-hazikaron-5.svg" width="72" height="72" alt="A memorial torch with a tall flame">
 
-**Caption:** Wreaths of leaves and flowers are laid at memorials.
+**Unpointed:** לפיד זיכרון
 
-**כיתוב:** מניחים זרים של עלים ופרחים ליד האנדרטאות.
+**Caption:** A memorial torch is lit at ceremonies when Yom HaZikaron begins.
+
+**כיתוב:** מדליקים לפיד זיכרון בטקסים עם כניסת יום הזיכרון.
 
 ```html
-<circle cx="24" cy="21" r="13" stroke="var(--hol-gold)" stroke-width="1.5"/><path d="M37 21 Q33.4 24 34.8 29.1 Q38.6 25.4 37 21Z M35.3 27.5 Q30.7 28.3 29.3 33.4 Q34.5 32.1 35.3 27.5Z M30.5 32.3 Q26.1 30.6 22.4 34.4 Q27.5 35.8 30.5 32.3Z M24 34 Q21 30.4 15.9 31.8 Q19.6 35.6 24 34Z M17.5 32.3 Q16.7 27.7 11.6 26.3 Q12.9 31.5 17.5 32.3Z M12.7 27.5 Q14.4 23.1 10.6 19.4 Q9.2 24.5 12.7 27.5Z M11 21 Q14.6 18 13.2 12.9 Q9.4 16.6 11 21Z M12.7 14.5 Q17.3 13.7 18.7 8.6 Q13.5 9.9 12.7 14.5Z M17.5 9.7 Q21.9 11.4 25.6 7.6 Q20.5 6.2 17.5 9.7Z M24 8 Q27 11.6 32.1 10.2 Q28.4 6.4 24 8Z M30.5 9.7 Q31.3 14.3 36.4 15.7 Q35.1 10.5 30.5 9.7Z M35.3 14.5 Q33.6 18.9 37.4 22.6 Q38.8 17.5 35.3 14.5Z" fill="var(--hol-green)" stroke-width="1.4"/><path d="M24 34.5 L16.5 43.5 L20.8 43.8 L24 39.6 L27.2 43.8 L31.5 43.5Z" fill="var(--hol-red)" stroke-width="1.5"/><circle cx="24" cy="34.5" r="2.5" fill="var(--hol-red)" stroke-width="1.5"/>
+<path d="M20.6 26.5 H27.4 L25.7 41 H22.3Z" fill="var(--hol-blue)"/><path d="M21.3 31 H26.7 M21.8 35.4 H26.2" stroke-width="1.4"/><rect x="16.5" y="41" width="15" height="3.6" rx="1.2" fill="var(--hol-gold)"/><path d="M15.5 20.5 H32.5 L29.4 26.5 H18.6Z" fill="var(--hol-gold)"/><rect x="13.8" y="17.6" width="20.4" height="3.4" rx="1.6" fill="var(--hol-gold-lt)"/><path d="M24 2.6 C26.6 6.8 31.8 9.8 31.4 13.1 C31 16.1 27.7 17.6 24 17.6 C20.3 17.6 17 16.1 16.6 13.1 C16.2 9.8 21.4 6.8 24 2.6Z" fill="var(--hol-flame)"/><path d="M24 9 C25.2 11.1 27.6 12.6 27.4 14.3 C27.2 15.8 25.7 16.6 24 16.6 C22.3 16.6 20.8 15.8 20.6 14.3 C20.4 12.6 22.8 11.1 24 9Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/>
 ```
 
 #### 6. Monument · אַנְדַּרְטָה
@@ -1320,7 +1322,7 @@ celebrate with flags, songs, dancing, fireworks and picnics.
 **כיתוב:** המפה מראה את ארץ ישראל, מהגליל בצפון ועד אילת בדרום.
 
 ```html
-<path d="M7 13 Q9 11.4 11 13 T15 13 M5.5 22 Q7.5 20.4 9.5 22 T13.5 22 M7 31 Q9 29.4 11 31 T15 31" stroke="var(--hol-blue)" stroke-width="1.9"/><path d="M22.5 4 L27.5 4.4 L30.6 7 L29.4 11.2 L31.8 13.6 L31.2 19 L32.8 22.2 L31.2 27.2 L29.8 31.2 L27.8 36.6 L25.6 44.4 L23 37 L20 30 L17.4 24.4 L18.8 20 L19.8 14.4 L21 9.6Z" fill="var(--hol-gold-lt)"/><circle cx="29.2" cy="9.2" r="1.3" fill="var(--hol-blue)" stroke="none"/><ellipse cx="30.4" cy="22.6" rx="1" ry="2.8" fill="var(--hol-blue)" stroke="none"/><path d="M25.6 18.1 L26.2 19.8 L28 19.8 L26.6 20.9 L27.1 22.6 L25.6 21.7 L24.1 22.6 L24.6 20.9 L23.2 19.8 L25 19.8Z" fill="var(--hol-red)" stroke-width="1.1"/>
+<path d="M5 11.5 Q7 9.9 9 11.5 T13 11.5 M7.5 19 Q9.5 17.4 11.5 19 T15.5 19 M4 27.5 Q6 25.9 8 27.5 T12 27.5 M8 35.5 Q10 33.9 12 35.5 T16 35.5" stroke="var(--hol-blue)" stroke-width="1.8"/><path d="M21 25.4 L23.5 22.6 L25.6 18.7 L26.7 15.3 L27.7 9.7 L28.7 9.2 L29 6.8 L30.7 6.7 L31.2 7.2 L32.4 6.8 L33 4.8 L33.5 5.2 L35 4.2 L35.5 3.5 L35 4.3 L35.3 4.5 L35 4.9 L35.5 5.8 L35.4 6.6 L35.7 6.7 L36.1 8.3 L34.9 10.4 L33.1 11.5 L33.3 13.1 L33 14 L33.2 15.7 L32.8 17.6 L33.1 20.7 L32.4 22 L32.2 24.5 L31.7 26 L32.1 27.6 L29.4 34.7 L29.6 35.4 L29.3 36.6 L29.4 37.9 L28.9 38.8 L28 42.8 L27.3 44.5 L26.8 43.9 L25.8 39 L24.6 35.6 L23.9 34.9 L24 34.1 L23.5 32.3Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/><ellipse cx="33.35" cy="9.7" rx="0.85" ry="1.25" fill="var(--hol-blue)" stroke-width="0.9"/><ellipse cx="32.35" cy="24.1" rx="0.9" ry="3.4" fill="var(--hol-blue)" stroke-width="0.9" transform="rotate(5 32.35 24.1)"/><circle cx="30" cy="20.5" r="1.2" fill="var(--hol-red)" stroke-width="1"/><circle cx="40.5" cy="36.5" r="5" fill="var(--hol-paper)" stroke-width="1.4"/><path d="M40.5 30 L42 35 L47 36.5 L42 38 L40.5 43 L39 38 L34 36.5 L39 35Z" fill="var(--hol-gold)" stroke-width="1.2"/><path d="M40.5 30 L42 35 L39 35Z" fill="var(--hol-red)" stroke-width="1.2"/>
 ```
 
 #### 5. State Emblem · סֵמֶל הַמְּדִינָה
@@ -1421,14 +1423,14 @@ on picnics and play with bows and arrows, remembering Rabbi Akiva’s students a
 
 #### 5. Carob · חָרוּב
 
-<img src="docs/holiday-guide/lag-baomer-5.svg" width="72" height="72" alt="Two carob pods">
+<img src="docs/holiday-guide/lag-baomer-5.svg" width="72" height="72" alt="Carob pods hanging from a branch">
 
 **Caption:** A carob tree fed Rabbi Shimon bar Yochai while he hid in a cave.
 
 **כיתוב:** עץ חרוב הזין את רבי שמעון בר יוחאי כשהסתתר במערה.
 
 ```html
-<path d="M9 9.5 C11 7 14 6.5 16.5 8" stroke-width="1.8"/><path d="M12 8 Q10.8 4.3 6.4 4.8 Q8.2 8.8 12 8Z M14 7 Q17.9 7.1 19 2.8 Q14.6 3.1 14 7Z" fill="var(--hol-green)" stroke-width="1.4"/><path d="M9 11 C18 9 31 15.5 39.5 32.5 C40.6 35 38.2 36.8 36.4 34.8 C28.5 22 17.5 16.5 9.8 15.2 C7.2 14.7 6.6 11.8 9 11Z" fill="var(--hol-gold)"/><path d="M15.5 12.5 L14.7 15.9 M21.6 14.8 L20.3 18 M27.3 18.6 L25.7 21.5 M32.4 23.6 L30.5 26.2 M36.4 29.4 L34.5 31.6" stroke-width="1.3"/><path d="M6 24 C13 23.5 22 29.5 27 42 C27.8 44.2 25.5 45.5 24 43.8 C19 34.5 12.5 29.5 6.6 28.2 C4.4 27.6 4 24.7 6 24Z" fill="var(--hol-gold)"/><path d="M11 25.4 L10.2 28.6 M16 28 L14.6 30.9 M20.4 32.6 L18.5 35 M23.8 38 L21.7 40" stroke-width="1.3"/>
+<path d="M3.5 9.5 C13 4.5 27 4 44.5 8.5" stroke-width="2.4"/><path d="M31 5.6 L40.5 24.5" stroke-width="1.6"/><ellipse cx="36.9" cy="8.6" rx="3.9" ry="2.4" fill="var(--hol-green)" stroke-width="1.4" transform="rotate(1.3 36.9 8.6)"/><ellipse cx="29.9" cy="12.1" rx="3.9" ry="2.4" fill="var(--hol-green)" stroke-width="1.4" transform="rotate(125.3 29.9 12.1)"/><ellipse cx="39.5" cy="13.9" rx="3.9" ry="2.4" fill="var(--hol-green)" stroke-width="1.4" transform="rotate(1.3 39.5 13.9)"/><ellipse cx="32.6" cy="17.4" rx="3.9" ry="2.4" fill="var(--hol-green)" stroke-width="1.4" transform="rotate(125.3 32.6 17.4)"/><ellipse cx="42.2" cy="19.2" rx="3.9" ry="2.4" fill="var(--hol-green)" stroke-width="1.4" transform="rotate(1.3 42.2 19.2)"/><ellipse cx="35.2" cy="22.7" rx="3.9" ry="2.4" fill="var(--hol-green)" stroke-width="1.4" transform="rotate(125.3 35.2 22.7)"/><ellipse cx="41.7" cy="26.8" rx="3.9" ry="2.4" fill="var(--hol-green)" stroke-width="1.4" transform="rotate(63.3 41.7 26.8)"/><path d="M12.3 7.9 L11 11" stroke-width="1.8"/><path d="M9.5 10.4 C9.1 10.8 7.9 11.9 7.4 12.9 C6.8 13.9 6.7 15.1 6.2 16.3 C5.7 17.4 4.7 18.7 4.4 19.9 C4.2 21.1 4.7 22.3 4.7 23.5 C4.6 24.8 4 26 4.2 27.3 C4.4 28.5 5.3 29.6 5.7 30.8 C6.1 32.1 6.3 33.6 6.9 34.7 C7.5 35.7 8.8 36.3 9.6 37.2 C10.4 38 10.8 39.2 11.5 40 C12.3 40.8 13.7 41.6 14.2 42 Q17 43.1 16.8 40 C16.6 39.5 16 37.8 15.3 36.9 C14.7 35.9 13.7 35.4 13.2 34.5 C12.7 33.6 12.6 32.4 12.2 31.5 C11.8 30.6 10.9 30.1 10.7 29.3 C10.4 28.5 10.9 27.4 10.8 26.4 C10.6 25.4 9.9 24.5 9.9 23.5 C9.8 22.6 10.4 21.5 10.5 20.6 C10.6 19.6 10.2 18.7 10.4 17.8 C10.6 16.9 11.4 16.1 11.8 15 C12.2 14 12.4 12.2 12.5 11.6Z" fill="var(--hol-gold)" stroke-width="1.7"/><path d="M7 16.5 L9.6 17.5 M5.7 23.5 L8.9 23.5 M6.6 30.5 L9.7 29.6 M10.3 36.6 L12.5 35" stroke-width="1.2"/><path d="M20.9 5.6 L21 9" stroke-width="1.8"/><path d="M19.4 9.1 C19.2 9.6 18.6 11.1 18.6 12.2 C18.5 13.3 18.9 14.4 18.9 15.5 C18.8 16.7 18.3 18 18.4 19.1 C18.5 20.3 19.3 21.2 19.6 22.4 C19.9 23.5 19.5 24.8 19.9 25.9 C20.3 27 21.4 27.8 22 28.9 C22.6 30 22.8 31.4 23.5 32.3 C24.3 33.2 25.6 33.6 26.4 34.4 C27.2 35.2 27.7 36.2 28.5 36.9 C29.3 37.6 30.8 38.3 31.3 38.6 Q34.2 39.4 33.7 36.4 C33.4 35.9 32.7 34.3 32 33.5 C31.3 32.6 30.3 32.2 29.7 31.4 C29.1 30.6 28.9 29.4 28.4 28.6 C27.9 27.8 27 27.4 26.6 26.6 C26.2 25.7 26.5 24.6 26.2 23.7 C25.8 22.7 24.9 22 24.6 21.1 C24.3 20.1 24.7 19 24.5 18.1 C24.2 17.1 23.5 16.3 23.3 15.3 C23.2 14.3 23.6 13.3 23.5 12.2 C23.4 11.1 22.8 9.5 22.6 8.9Z" fill="var(--hol-gold)" stroke-width="1.7"/><path d="M19.7 15.5 L22.5 15.3 M20.5 22.1 L23.7 21.3 M22.9 28.5 L25.8 27 M27 33.8 L29.1 31.9" stroke-width="1.2"/>
 ```
 
 #### 6. Cave · מְעָרָה
@@ -1505,14 +1507,14 @@ thousand years ago, and its reunification in 1967, with songs, flags and visits 
 
 #### 4. Lion · אַרְיֵה
 
-<img src="docs/holiday-guide/yom-yerushalayim-4.svg" width="72" height="72" alt="A lion’s face">
+<img src="docs/holiday-guide/yom-yerushalayim-4.svg" width="72" height="72" alt="A sitting lion with a full mane">
 
 **Caption:** The lion is the symbol of Jerusalem and of the tribe of Judah.
 
 **כיתוב:** האריה הוא סמלה של ירושלים ושל שבט יהודה.
 
 ```html
-<circle cx="37.2" cy="23.5" r="5.2" fill="var(--hol-gold)" stroke-width="1.6"/><circle cx="34.7" cy="31.3" r="5.2" fill="var(--hol-gold)" stroke-width="1.6"/><circle cx="28.1" cy="36.1" r="5.2" fill="var(--hol-gold)" stroke-width="1.6"/><circle cx="19.9" cy="36.1" r="5.2" fill="var(--hol-gold)" stroke-width="1.6"/><circle cx="13.3" cy="31.3" r="5.2" fill="var(--hol-gold)" stroke-width="1.6"/><circle cx="10.8" cy="23.5" r="5.2" fill="var(--hol-gold)" stroke-width="1.6"/><circle cx="13.3" cy="15.7" r="5.2" fill="var(--hol-gold)" stroke-width="1.6"/><circle cx="19.9" cy="10.9" r="5.2" fill="var(--hol-gold)" stroke-width="1.6"/><circle cx="28.1" cy="10.9" r="5.2" fill="var(--hol-gold)" stroke-width="1.6"/><circle cx="34.7" cy="15.7" r="5.2" fill="var(--hol-gold)" stroke-width="1.6"/><circle cx="14.5" cy="13.5" r="3.4" fill="var(--hol-gold-lt)" stroke-width="1.6"/><circle cx="33.5" cy="13.5" r="3.4" fill="var(--hol-gold-lt)" stroke-width="1.6"/><circle cx="24" cy="24.5" r="11.6" fill="var(--hol-gold-lt)"/><circle cx="19.4" cy="22" r="1.5" fill="var(--hol-navy)" stroke="none"/><circle cx="28.6" cy="22" r="1.5" fill="var(--hol-navy)" stroke="none"/><path d="M21.8 26.4 H26.2 L24 29.2Z" fill="var(--hol-navy)" stroke-width="1.2"/><path d="M24 29.2 V31 M24 31 C22.6 33.2 20.4 33.2 19.4 31.6 M24 31 C25.4 33.2 27.6 33.2 28.6 31.6" stroke-width="1.5"/>
+<path d="M13 42.7Q14.8 32.6 24 32.6Q33.2 32.6 35 42.7Z" fill="var(--hol-flame)"/><path d="M34.6 40Q42.4 39 41.5 33.1" stroke-width="2.2"/><circle cx="41.5" cy="31.6" r="2.2" fill="var(--hol-gold)" stroke-width="1.4"/><ellipse cx="16.6" cy="42.7" rx="3.5" ry="2.1" fill="var(--hol-flame)" stroke-width="1.5"/><ellipse cx="31.4" cy="42.7" rx="3.5" ry="2.1" fill="var(--hol-flame)" stroke-width="1.5"/><path d="M15.5 42.9 V44 M17.7 42.9 V44 M30.3 42.9 V44 M32.5 42.9 V44" stroke-width="1"/><path d="M37.8 20.6Q41.6 24.1 36.7 25.9Q38.9 30.6 33.8 30.4Q34 35.5 29.3 33.4Q27.5 38.3 24 34.4Q20.5 38.3 18.7 33.4Q14 35.5 14.2 30.4Q9.1 30.6 11.3 25.9Q6.4 24.1 10.2 20.6Q6.4 17.1 11.3 15.4Q9.1 10.7 14.2 10.9Q14 5.7 18.7 7.9Q20.5 3 24 6.8Q27.5 3 29.3 7.9Q34 5.7 33.8 10.9Q38.9 10.7 36.7 15.4Q41.6 17.1 37.8 20.6Z" fill="var(--hol-gold)" stroke-width="1.6"/><circle cx="15.3" cy="12.8" r="2.9" fill="var(--hol-flame)" stroke-width="1.4"/><circle cx="32.7" cy="12.8" r="2.9" fill="var(--hol-flame)" stroke-width="1.4"/><circle cx="24" cy="20.6" r="10.6" fill="var(--hol-flame)"/><circle cx="15.3" cy="12.8" r="1.2" fill="var(--hol-gold-lt)" stroke="none"/><circle cx="32.7" cy="12.8" r="1.2" fill="var(--hol-gold-lt)" stroke="none"/><ellipse cx="24" cy="25.2" rx="5.1" ry="3.7" fill="var(--hol-gold-lt)" stroke="none"/><circle cx="20.3" cy="18.9" r="1.4" fill="var(--hol-navy)" stroke="none"/><circle cx="27.7" cy="18.9" r="1.4" fill="var(--hol-navy)" stroke="none"/><path d="M18.4 16.4 Q20.3 15 22.2 16.4 M25.8 16.4 Q27.7 15 29.6 16.4" stroke-width="1.2"/><path d="M22.2 22.5 H25.8 L24 24.8Z" fill="var(--hol-navy)" stroke-width="1.1"/><path d="M24 24.8 V26.6 M24 26.6 Q22.2 28 20.8 26.6 M24 26.6 Q25.8 28 27.2 26.6" stroke-width="1.3"/><path d="M18.4 24.4 L13.9 23.5 M18.4 25.7 L13.9 26.2 M29.6 24.4 L34.1 23.5 M29.6 25.7 L34.1 26.2" stroke-width="1"/>
 ```
 
 #### 5. Olive Tree · עֵץ זַיִת
