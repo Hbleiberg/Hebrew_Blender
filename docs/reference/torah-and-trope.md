@@ -1203,7 +1203,9 @@ never a practice link (`LINK_DISPLAY` says how a reading looks, never how it sou
 - **Two controls, one writer.** The controls bar's **Chanting** picker (`#ttRecSrcBar`, beside the Translit /
   Translation switches: *PocketTorah (Reform)* / *Total Torah (Conservative)*) is the Audio tab's Recording radios as
   a `<select>`. `setRecordingSource` writes for both; `syncRecSrcControls` sets the picker's value, disables its Total
-  Torah option and swaps its title for the *no recording* note exactly as it does for the radio.
+  Torah option and swaps its title for the *no recording* note exactly as it does for the radio. On a reading neither
+  source records — no parsha behind it (`parshahEntry` null: a megillah, a holiday haftarah) and no Total Torah verse —
+  the bar's picker is `hidden` (it would name PocketTorah over a reading that plays nothing); the radios stay, as the setting.
 - **One engine.** A loaded verse file is a one-verse "aliyah" to the karaoke engine: `loadTotalTorahVerse` sets
   verse-local `currentTimings`, `_holidayKaraoke = { map: { [vk]: 0 } }` (so `updateKaraokeWordRefs` lights only that
   verse's words), `_loadedChantKey = 'tt|' + vk` (so `chantHolidayWord` never matches it) and `_ttLoaded = { vk,

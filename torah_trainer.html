@@ -8045,6 +8045,10 @@ function syncRecSrcControls() {
   total.setAttribute('aria-disabled', none ? 'true' : 'false');
   total.checked = active;
   pocket.checked = !active;
+  // A reading neither source records — no parsha behind it (a megillah, a holiday haftarah: PocketTorah has none) and no
+  // Total Torah verse — leaves the bar's picker nothing to choose, and it read "PocketTorah (Reform)" over a reading that
+  // plays nothing: it steps aside there. The Audio tab's radios stay (they are the setting, for every reading).
+  if (ctrl && none && currentReadingCtx && !currentReadingCtx.parshahEntry) ctrl.hidden = true;
   if (sel) {   // the Chanting picker mirrors the radios: the same value, the same disabled option, the note as its title
     sel.value = active ? 'totaltorah' : 'pockettorah';
     sel.querySelector('option[value="totaltorah"]').disabled = none;
