@@ -1482,6 +1482,7 @@
   "dictionary.modal.era_bib_mod": "מקראית + מודרנית",
   "dictionary.modal.form_feminine": "♀ נקבה",
   "dictionary.modal.form_masculine": "♂ זכר",
+  "dictionary.modal.gematria_find_title": "הצגת כל המילים בערך גימטרייה {value}",
   "dictionary.modal.google": "חיפוש בגוגל ↗",
   "dictionary.modal.google_aria": "חיפוש בגוגל (נפתח בכרטיסייה חדשה)",
   "dictionary.modal.hear_form_aria": "השמעת {label}",

@@ -1482,6 +1482,7 @@
   "dictionary.modal.era_bib_mod": "Bib + Mod",
   "dictionary.modal.form_feminine": "♀ Feminine",
   "dictionary.modal.form_masculine": "♂ Masculine",
+  "dictionary.modal.gematria_find_title": "Show every word with gematria {value}",
   "dictionary.modal.google": "Look up on Google ↗",
   "dictionary.modal.google_aria": "Look up on Google (opens in a new tab)",
   "dictionary.modal.hear_form_aria": "Hear {label}",

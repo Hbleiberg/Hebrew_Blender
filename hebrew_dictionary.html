@@ -621,6 +621,12 @@ body.dark .wm-act:hover{background:#2a3349;}   /* dark --warm-gray equals dark -
 .wm-act:hover{border-color:var(--gold);background:var(--warm-gray);}
 .wm-act.copied{background:var(--gold);color:var(--navy);border-color:var(--gold);}
 body.dark .wm-act.copied,body.dark .wm-act.copied:hover{background:var(--gold);}   /* body.dark .wm-act and its :hover outrank .wm-act.copied: the navy "Copied!" sat on the dark surface (1.03:1) */
+/* The window's gematria badge is a button (every word of that value): the badge's look plus an edge, a magnifier and
+   the 24px target floor. Its dark hover is restated: body.dark .b-gem (0,2,1) outranks .wm-gem-btn:hover (0,2,0). */
+.wm-gem-btn{display:inline-flex;align-items:center;gap:3px;min-height:24px;border:1px solid var(--border);font-family:inherit;cursor:pointer;}
+.wm-gem-btn .hi{width:12px;height:12px;flex-shrink:0;}
+.wm-gem-btn:hover,body.dark .wm-gem-btn:hover{border-color:var(--gold);color:var(--gold-text);}
+.wm-gem-btn:focus-visible{outline:2px solid var(--focus-ring);outline-offset:1px;}
 .wm-root-row{margin-bottom:12px;}
 .wm-root-btn{width:100%;padding:9px 12px;border:1px solid var(--gold);border-radius:6px;background:var(--gold);color:var(--navy);font-size:0.85rem;font-family:inherit;font-weight:600;cursor:pointer;}
 .wm-root-btn:hover{background:var(--gold-light);color:var(--navy);}
@@ -6334,7 +6340,14 @@ function openWordModal(w) {
   if (w.pos) { const pb = _wmBadge('b-pos', ''); pb.innerHTML = escHe(posLabel(w.pos)); badges.appendChild(pb); }
   badges.appendChild(_wmBadge(ec, el));
   badges.appendChild(_wmBadge('b-len', w.len + 'L'));
-  const gb = _wmBadge('b-gem', ''); gb.innerHTML = escHe('ג ' + calcGematria(w.bare)); badges.appendChild(gb);
+  // The gematria badge is a button: every word of the same value (findSameGematria). Its name is what it shows
+  // ("ג 26"), its title says what a press does.
+  const gv = calcGematria(w.bare);
+  const gb = document.createElement('button'); gb.type = 'button'; gb.className = 'badge b-gem wm-gem-btn';
+  gb.innerHTML = ICON_SEARCH_SM + escHe('ג ' + gv);
+  gb.title = I18n.t('dictionary.modal.gematria_find_title', { value: gv });
+  gb.addEventListener('click', () => findSameGematria(gv));
+  badges.appendChild(gb);
   b.appendChild(badges);
 
   const actions = document.createElement('div'); actions.className = 'wm-actions';
@@ -6372,6 +6385,23 @@ function openWordModal(w) {
   footer.appendChild(g); b.appendChild(footer);
 
   _openWordModal(b);
+}
+
+// The word window's gematria button: the Words list filtered to that exact value. The search is cleared (it named
+// the word just opened, and would leave only that word); every other filter stays, each a chip with its ✕. Show
+// Gematria Value turns on, so each card shows the value it matched and the filter's own controls are in Advanced.
+// The window's opener card is rebuilt away, so the focus lands on the first result, as "Words from this root" does.
+function findSameGematria(value) {
+  closeWordModal();
+  if (shoreshMode || emojiMode) setDictMode('words');
+  document.getElementById('searchInput').value = '';
+  const cb = document.getElementById('showGematriaCb');
+  if (cb && !cb.checked) { cb.checked = true; showGematria = true; document.getElementById('gematriaFilterPanel').style.display = 'block'; }
+  document.getElementById('gematriaFilterType').value = 'exact';
+  document.getElementById('gematriaVal1').value = String(value);
+  onGematriaFilterChange(true);
+  const to = document.querySelector('#resultsGrid .word-card') || document.getElementById('searchInput');
+  if (to) to.focus();
 }
 
 function toggleWordBulk(w, btn) {
