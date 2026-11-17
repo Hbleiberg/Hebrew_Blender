@@ -325,9 +325,10 @@
 - **Record (ledger row at S544):** - **`enter-ignored-beside-its-own-button`** (NEW S471; dashboard ×5, generator ×2; S472 torah range ×3 `60229f0f`): ACTIVE, streak 0. Detection: `a472/enter.py`, then typed Enter vs the button.
 
 ## `placeholder-keeps-the-browser-gray`
-- **Status:** ACTIVE · **Owner:** F · **Consequence:** normal · **Last:** S581 · **Streak:** 1 · **Detector:** `scripts/loop/detect-placeholder-keeps-the-browser-gray.mjs`
+- **Status:** ACTIVE · **Owner:** F · **Consequence:** normal · **Last:** S654 · **Streak:** 0 · **Detector:** `scripts/loop/detect-placeholder-keeps-the-browser-gray.mjs`
 - **Shape:** a field's placeholder keeps the browser's default gray, or a token too faint for its field, and reads under 4.5:1 (dark mode most of all).
 - **Detection:** rendered, committed S581 — every root page but the harnesses (check-i18n's `SKIP_HTML`, read from that file) in light and dark at 1280: each `input`/`textarea` with a placeholder, its `::placeholder` colour (alpha and opacity folded in) against the first opaque background up its ancestors, < 4.5:1 a hit; `--plant` adds a #d8d8d8-on-white field (1.4:1) to the hub; a run that measures no field fails.
+- **Record (S654, closeout.mjs):** 1 HIT, FIXED `bcbb5193` — `letter_discrimination.html` (landed outside the loop) kept the UA gray on its participant-code box: 4.36:1 light, 3.69:1 dark → --muted at opacity 1; the detector 0 over 88 fields on 21 pages after.
 - **Record (S581):** clean — 86 fields on 20 pages × light/dark, the reading-assignments page's included; the only sub-4.5 fields were `account-test.html`'s two (3.32:1 dark, the UA gray), a harness, out of scope by design.
 - **Record (ledger row at S544):** - **`placeholder-keeps-the-browser-gray`** (NEW S470 `45a3073e`): ACTIVE, streak 0. Detection: `f470/ph.mjs` < 4.5:1 (plant 1.3:1).
 
@@ -518,7 +519,8 @@
 - **Archived full text (latest compaction copy):** - **`button-focus-lost-to-its-own-rebuild`** (**S542 dictionary corpus Try again ×2 `72b005c1`, parsha_emojis' new Try again built to it `20823f85`; S513 FM glyph tiles `a54e6d2`; S500 hebrew-keyboard tabs + layout, 4 carriers `1c701fc9`; S499 torah Try again ×2 `80c0a440`; S488 trope Try again ×2 `183605ba`; S483 hub `ab1a235e`; S474 flash Return to Options `3235f8eb`; S473 …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `dark-literal-escapes-the-print-tokens`
-- **Status:** ACTIVE · **Owner:** G · **Consequence:** normal · **Last:** S636 · **Streak:** 3 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** G · **Consequence:** normal · **Last:** S654 · **Streak:** 4 · **Detector:** recipe
+- **Record (S654, G flash):** clean — the results after a listening round and an ended-early drill, one DOM printed from both themes: the only difference is the Results heading (navy from dark, `#7f5a13` from light, both ≥ 6:1); the card screen, report and certificate read the same ink census from HE dark as from EN light; a planted `body.dark` literal fired (`g654/arm4.mjs`, `plants.mjs`).
 - **Record (S636, G name_tags):** clean — 28 layouts printed from HE dark 800 = EN light 1280 (Avery identical; plain only S550's 1 px RTL shift and its anti-aliasing; ≤ 3 extra near-black px), the sheet's ink literal (`g636/paper.mjs` + a 40/100 dpi diff).
 - **Record (S604, G dashboard):** clean — every visible text run of a seeded board printed from dark reads ≥ 3:1 on white but the colour-coded nikkud (fixed under its own pattern), the off-page skip link and the brand star (a mark); the week sheet from dark is pixel-equal to light's in 15 of 16 PDFs (the 16th: a hover outline).
 - **Record (S575, G chrome):** clean — 7 pages + the Resources Fonts view × EN/HE × Letter/A4, dark ink = light on every sheet (`g575/print.mjs`, `ink.py`); trap 442 first read pale dark A4 sheets that were the harness printing screen media.
@@ -769,7 +771,8 @@
 - **Archived full text (latest compaction copy):** - **`save-over-an-existing-name-without-confirm`**: ACTIVE **S371 (Pass A): 3rd carrier FIXED `b85b579` — the dashboard's `saveWeekScheduleAs` (its comment even said "same-name save overwrites, like savePreset" — from before savePreset confirmed). Census: every other …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ## `fixed-surface-missing-from-the-print-hide-list`
-- **Status:** ACTIVE · **Owner:** G · **Consequence:** normal · **Last:** S636 · **Streak:** 2 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** G · **Consequence:** normal · **Last:** S654 · **Streak:** 0 · **Detector:** recipe
+- **Record (S654, G flash):** 1 HIT, FIXED `2abe7d15` — the in-flow family again, on controls added after the print block: the drill's Pause and voice-speed row, the listening speaker and its "Tap 🔊 to hear" line printed; "Results ▾" printed its triangle, a perfect drill a bare heading (the list folds on screen), and the `.lc-wait` choices at 45% ink. Recipe: a plain `page.pdf` of each drill state → pdftotext for every control's label (`S654-flash-drill-prints-without-its-screen-controls.mjs`; HEAD 12 failures).
 - **Record (S636, G name_tags):** clean — 8 states opened by real clicks (the keyboard, the paste and Dashboard rows, the import choice, Remove + Undo, the toast, the sidebar hidden, the tour; each handle read) × EN light 1280 / HE dark 800 in print media: only the sheets paint; a planted fixed box is caught (`g636/leakfixed.mjs`). The shared `.ivrit` ask overlay stays the S550 Candidate.
 - **Record (S604, G dashboard):** clean — 13 states opened by real input (drawer, parsha popup, Bulk preset edit, the week editor and its ⋯ day menu, Pick One, Make Groups, Intermission, blackout, tour, a tip, in-place edit) × EN/HE × light/dark, `g604/census.mjs`: 0 fixed boxes under print but the day menu (`.ft-move-menu` reused; it opens only from the print-hidden editor — S495 (a)'s exemption); plant 4/4.
 - **Record (S591, the hub from the queue S575):** 1 hit, FIXED `61d3a8ab` — the in-flow family again: the hub's Bookmark and Import / Export buttons printed as dead ink under the tool cards (the print block hid the header's controls and the What's-new card only). Both off paper; the Contact link prints (it names a destination). `page.pdf` × 8 cells: the labels 8 → 0, other text word-for-word, sheets unchanged.

@@ -98202,3 +98202,47 @@ _(prior)_ **Next session (S653):** **Branch `claude/lucid-brahmagupta-t4hdnh` (S
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 - M aesthetics & visual design (one surface): 2026-11-13 (**S653 — 44th M, `torah_trainer.html` (its 3rd: S422 → S568 → S653; 38 commits to the page since): 44 views × 8 cells by real clicks on the real texts (352 loads, plant 352/352), three arms (mid-label breaks, ring against ink, contrast under the pointer). FOUND 8, FIXED 3 + 3 P4 + 2 gates deferred. M-next: generator (S574), then atlas (S584).**)
+
+
+<!-- archived by compact-ledger at the S655 boundary, 2026-11-17 -->
+## Compaction (S655, 2026-11-17) — moved verbatim from the live ledger
+
+### from Candidates — aged P4 (found more than 90 sessions before S655)
+
+- [ ] P4 (**NEW S564 H**) | classroom_dashboard.html | **A `.ivrit` Merge onto a fresh device lists "My class (0)" twice**: the device's empty starter class and the file's are merged by id, so both stay; an empty default class could yield to a same-named incoming one. | found S564
+
+### from Done
+
+- [x] 2026-11-17 | (S654 close-out) | branch/deploy note | **S654 = G on `flash_cards.html` (its 6th G: … S423 → S569 → S654; 34 commits since): six arms × EN light 1280 / HE dark 800 with the real web fonts (the drill on paper, 48 card sheets, 8 report shapes + the certificate on Letter / A4, the results, `.ivrit` 0/12, 20 share links each way incl. `#s=`), plants fired. FOUND 3 (1 P3 + 2 P4 twins), FIXED in one commit; + the S569 gate 2 answered; + 2 from the queue (generator, torah). Branch `claude/adoring-hawking-h59ir2`, draft PR; `sw.js` v1400; deploy = after the merge.**
+
+- [x] 2026-11-17 | `2abe7d15` | flash_cards.html, sw.js | (S654 G; pattern fixed-surface-missing-from-the-print-hide-list) **A printed drill or results page carries no screen controls** (Pause, the voice-speed row, the listening speaker and its hint, "Results ▾"; a perfect drill's list prints; the waiting choices at full ink) | `S654-flash-drill-prints-without-its-screen-controls.mjs`: tree PASS, HEAD 12 failures; sheet, report, certificate unchanged
+
+- [x] 2026-11-13 | (S649 close-out) | branch/deploy note | **S649 = H on `classroom_dashboard.html` (its 5th H: S107 → S278 → S395 → S564 → S649; 38 commits to the page since: the Name Tags class copy, the Intermission countdown, Bulk preset edit's switches and master row, Schedule Sync's edits reaching the board): 3 lessons + the student cell by real input × EN light 1280 / HE dark 800 (a class …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-13 | `39dedbd1` | hebrew_blend_generator.html, sw.js | (S649, the S648 P4 — a dead end under it) **Name the Letter's Self-Check switch reaches Print and Export PDF at once, and stays on screen to turn off** (`onNtlOptionChange` runs `updateModeVisibility`; the options block no longer hides in its own Self-Check: reopened with it on, the switch was gone) | `h649/fix4.mjs`, 8 checks × …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-13 | `c8f5d61f` | hebrew_blend_generator.html, sw.js | (S649, the S648 P3; pattern contrast-below-AA-on-a-tinted-or-coloured-plate) **The Inverse answer key's answers take the readable gold on screen and the print ink on paper** (`.blend-write-box.answer-shown`: `--gold-text` 6.22:1 light, dark 7.16 unchanged; #6b4e12 7.71:1 in print) | `h649/fix3.mjs`, 2- and 3-letter × 4 cells × …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-13 | `4727426a` | classroom_dashboard.html, dashboard.md, sw.js | (S649 H, gate 2 answered) **The first real class takes the empty starter's place** (New class and Make a class from a Name Tags list write into an untouched "My class" slot: no "My class (0)" left in the three switchers, a list called "My class" keeps its name) | `h649/fix2.mjs`, 15 checks × 4 cells by real clicks and …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-13 | `17657ca3` | classroom_dashboard.html, dashboard.md, sw.js | (S649 H; pattern RTL-inheritance-on-a-Latin-script-container) **A student's name runs in its own direction, and an apostrophe stays an apostrophe** ("David K." showed ".David K", "Maya!" "!Maya" on the chips, the picked name at 143–176px and the groups; "O'Brien" showed "O&#39;Brien" with Color-code nikkud on: …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Per-session log (one line per session)
+
+- 2026-11-17 | **S654** | iters: 5 | tools: flash_cards ×2, hebrew_blend_generator, torah_trainer, locales, torah-and-trope.md, sw ×4, probes | patterns fixed: fixed-surface-missing-from-the-print-hide-list ×1 | pass run: G (flash_cards, first since S569; FOUND 3, FIXED 3 in one commit + the S569 gate 2) + 2 from the queue | SW: v1396→v1400
+
+- 2026-11-09 | **S634** | iters: 4 | tools: name_tags ×2, classroom_dashboard ×2, torah_trainer ×2, flash, generator, index, dictionary, fontmaker, locales, sw | patterns fixed: decorative-glyph-carrier-exposed-to-assistive-tech ×1 | pass run: C (name_tags, first since S548; FOUND 2, FIXED 2) + the …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- G print & export fidelity (one tool): 2026-11-17 (**S654 — `flash_cards.html` (its 6th G: … S423 → S569 → S654; 34 commits to the page since: the drill's Pause and voice speed, the listening marks, the sheet's one-layout fit, the report's answered-only counts, the `#s=` link): six arms × EN light 1280 / HE dark 800 with the real web fonts (the drill on paper, 48 sheets, 8 report shapes + the certificate, the results, `.ivrit` 0/12, 40 share links), plants fired. FOUND 3, FIXED 3 in one commit + the S569 gate 2 answered. G-next: chrome (S575), then atlas (S582).**)
+
+_(prior)_ **Next session (S654):** **Branch `claude/lucid-brahmagupta-t4hdnh` (S638–S653, draft PR Hbleiberg/Hebrew_Blender#399): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1394**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=ad39f20 sw=v1394 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest now: G flash (S569), D torah (S570), C dictionary (S571), N generator (S572), P flash (S573), M generator (S574), A (S581), H atlas (S583). ⚑ Queue: torah's three S653 P4, flash's S651 P4. ⚑ Awaiting: the Total Torah bar's ▶ and the drawer's tab labels (S653), the starter class (S652). ⚑ E: other pages' links vs the host's 8,190 bytes (S651). ⚑ F/A: Hebrew-only wrappers on typed text (S649). ⚑ G: `leak.mjs`, 6 pages. ⚑ 47 seeds.
+
+
+<!-- archived by compact-ledger at the S655 boundary, 2026-11-17 -->
+## Compaction (S655, 2026-11-17) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-11-17 | `bcbb5193` | letter_discrimination.html, sw.js | (S654 close-out: a committed detector's hit on the page that landed outside the loop; pattern placeholder-keeps-the-browser-gray) **The participant-code box's placeholder reads at AA** (`.ld-input::placeholder` → --muted, opacity 1: 4.36 / 3.69 → 5.8 / 5.6:1) | the detector: 2 hits → 0 over 88 fields on 21 pages × light/dark; recipe 8 cells
