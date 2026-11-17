@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<!-- Preview of Yom Yerushalayim: Olive Tree (HolidayGuide.md): the holiday-icons palette, light and dark. -->
+<style>
+svg{--hol-line:#1a2744;--hol-gold:#c9922a;--hol-gold-lt:#f0d080;--hol-paper:#fffaf0;--hol-navy:#2a3b66;--hol-red:#c0392b;--hol-green:#3a7d44;--hol-blue:#3b6fb6;--hol-flame:#f0a030;--hol-ground:#fdf8ef;stroke:var(--hol-line);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+@media (prefers-color-scheme:dark){svg{--hol-line:#e8e0d0;--hol-gold:#e0a832;--hol-gold-lt:#f5d97a;--hol-paper:#e8e0d0;--hol-navy:#5a6d9c;--hol-red:#e0584a;--hol-green:#5aa865;--hol-blue:#6a9ae0;--hol-flame:#f6b84a;--hol-ground:#161c2a}}
+</style>
+<path d="M17.5 43.5 C18.6 37.5 15.6 33 18.6 27.5 C20.2 29.8 22.4 30.2 23.4 27.8 C24 30.8 26 31.4 28 28.8 C30.6 33 28.6 37.5 30.5 43.5Z" fill="var(--hol-gold)"/><path d="M21.5 34 C22.5 36.5 22 39.5 21 42 M26 35 C25.4 37.5 26 40 27 42" stroke-width="1.3"/><path d="M24 5.5 C31 4.5 38 8 41 13.5 C44 19 42 25.5 36 28 C32 30 16 30 12 28 C6 25.5 4 19 7 13.5 C10 8 17 4.5 24 5.5Z" fill="var(--hol-green)"/><circle cx="14" cy="16" r="1.6" fill="var(--hol-navy)" stroke="none"/><circle cx="22" cy="11.5" r="1.6" fill="var(--hol-navy)" stroke="none"/><circle cx="31" cy="14" r="1.6" fill="var(--hol-navy)" stroke="none"/><circle cx="36" cy="21" r="1.6" fill="var(--hol-navy)" stroke="none"/><circle cx="19" cy="22" r="1.6" fill="var(--hol-navy)" stroke="none"/><circle cx="27" cy="23" r="1.6" fill="var(--hol-navy)" stroke="none"/><path d="M5 43.5 H43" stroke-width="2.4"/>
+</svg>

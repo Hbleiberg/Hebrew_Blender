@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<!-- Preview of Yom Yerushalayim: Tower of David (HolidayGuide.md): the holiday-icons palette, light and dark. -->
+<style>
+svg{--hol-line:#1a2744;--hol-gold:#c9922a;--hol-gold-lt:#f0d080;--hol-paper:#fffaf0;--hol-navy:#2a3b66;--hol-red:#c0392b;--hol-green:#3a7d44;--hol-blue:#3b6fb6;--hol-flame:#f0a030;--hol-ground:#fdf8ef;stroke:var(--hol-line);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+@media (prefers-color-scheme:dark){svg{--hol-line:#e8e0d0;--hol-gold:#e0a832;--hol-gold-lt:#f5d97a;--hol-paper:#e8e0d0;--hol-navy:#5a6d9c;--hol-red:#e0584a;--hol-green:#5aa865;--hol-blue:#6a9ae0;--hol-flame:#f6b84a;--hol-ground:#161c2a}}
+</style>
+<rect x="19" y="12" width="10" height="24" fill="var(--hol-gold-lt)"/><path d="M19.6 12 L24 3.5 L28.4 12Z" fill="var(--hol-gold)"/><rect x="17" y="17.5" width="14" height="3.6" rx="1" fill="var(--hol-gold)"/><path d="M24 24.5 V29" stroke-width="2.2"/><path d="M5 43.5 V32 H9 V35 H13 V32 H17 V35 H31 V32 H35 V35 H39 V32 H43 V43.5Z" fill="var(--hol-gold-lt)"/><path d="M9.5 39.5 H14 M34 39.5 H38.5 M20 39.5 H28" stroke="var(--hol-gold)" stroke-width="1.5"/>
+</svg>

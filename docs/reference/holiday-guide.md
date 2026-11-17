@@ -35,7 +35,7 @@ every row), `node scripts/build-holiday-pages.mjs`, `node scripts/smoke-holiday-
   in `classroom_dashboard.html`, so the Dashboard, the Torah Trainer and the guide show one drawing and no second copy
   exists — or, where that block has no family for it, its own drawing. Swapping a shared family's drawing therefore
   also changes the guide: re-run both builders.
-- **No symbols yet, or exactly six.** With six a holiday is *complete*: it gets a page under `holidays/` and a line in
+- **No symbols yet, or exactly six** (all seventeen have theirs; the empty case stays for a holiday added later). With six a holiday is *complete*: it gets a page under `holidays/` and a line in
   the hub's hand-kept list (`#hgSheets` — the page builder fails while that list and the catalog disagree, and prints
   the lines it should hold). Without, the hub says more symbols are coming and its builder prints the holiday's own
   symbol as one big picture.
@@ -151,4 +151,4 @@ fails unless `holiday_guide.html`'s robots tag says `noindex, follow` too. To pu
 
 Write its six `####` subsections in `HolidayGuide.md` (and `**Unpointed:**` wherever a name's plain spelling is not
 its points removed), run the four commands under *The parts*, add its line to `#hgSheets` in `holiday_guide.html`
-(the page builder prints it), and update `holidayguide.faq.a2`, which names the complete holidays.
+(the page builder prints it), and update `holidayguide.faq.a2` (with its fallback text and the FAQ JSON-LD in the page), which names the holidays that have a sheet.

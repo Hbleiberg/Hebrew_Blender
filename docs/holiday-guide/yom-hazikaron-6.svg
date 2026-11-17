@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<!-- Preview of Yom HaZikaron: Monument (HolidayGuide.md): the holiday-icons palette, light and dark. -->
+<style>
+svg{--hol-line:#1a2744;--hol-gold:#c9922a;--hol-gold-lt:#f0d080;--hol-paper:#fffaf0;--hol-navy:#2a3b66;--hol-red:#c0392b;--hol-green:#3a7d44;--hol-blue:#3b6fb6;--hol-flame:#f0a030;--hol-ground:#fdf8ef;stroke:var(--hol-line);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+@media (prefers-color-scheme:dark){svg{--hol-line:#e8e0d0;--hol-gold:#e0a832;--hol-gold-lt:#f5d97a;--hol-paper:#e8e0d0;--hol-navy:#5a6d9c;--hol-red:#e0584a;--hol-green:#5aa865;--hol-blue:#6a9ae0;--hol-flame:#f6b84a;--hol-ground:#161c2a}}
+</style>
+<path d="M24 9.6 c-1.9 -1.9 -1.6 -4.7 0 -6.6 c1.6 1.9 1.9 4.7 0 6.6Z" fill="var(--hol-flame)" stroke-width="1.4"/><path d="M17 34.5 L19.6 9.5 H28.4 L31 34.5Z" fill="var(--hol-paper)"/><rect x="12" y="34.5" width="24" height="4.5" fill="var(--hol-gold-lt)"/><rect x="8" y="39" width="32" height="4.5" fill="var(--hol-gold-lt)"/><path d="M21.4 16.5 H26.6 M21 21 H27 M20.6 25.5 H27.4 M20.2 30 H27.8" stroke-width="1.4"/>
+</svg>

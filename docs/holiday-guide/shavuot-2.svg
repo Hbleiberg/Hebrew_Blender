@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<!-- Preview of Shavuot: Mount Sinai (HolidayGuide.md): the holiday-icons palette, light and dark. -->
+<style>
+svg{--hol-line:#1a2744;--hol-gold:#c9922a;--hol-gold-lt:#f0d080;--hol-paper:#fffaf0;--hol-navy:#2a3b66;--hol-red:#c0392b;--hol-green:#3a7d44;--hol-blue:#3b6fb6;--hol-flame:#f0a030;--hol-ground:#fdf8ef;stroke:var(--hol-line);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+@media (prefers-color-scheme:dark){svg{--hol-line:#e8e0d0;--hol-gold:#e0a832;--hol-gold-lt:#f5d97a;--hol-paper:#e8e0d0;--hol-navy:#5a6d9c;--hol-red:#e0584a;--hol-green:#5aa865;--hol-blue:#6a9ae0;--hol-flame:#f6b84a;--hol-ground:#161c2a}}
+</style>
+<path d="M4 42.5 L19.5 13.5 C21.5 10 26.5 10 28.5 13.5 L44 42.5Z" fill="var(--hol-gold-lt)"/><path d="M15.5 14.5 A4.4 4.4 0 0 1 16.4 6.2 A6.4 6.4 0 0 1 28.4 5 A5.2 5.2 0 0 1 33.5 14.5Z" fill="var(--hol-paper)"/><path d="M25.5 17 L22 24 H25.6 L22.6 31" stroke="var(--hol-flame)" stroke-width="2"/><path d="M11 42.5 V38.5 M18 42.5 V36 M31 42.5 V37 M37 42.5 V39.5" stroke="var(--hol-green)" stroke-width="1.7"/><circle cx="11" cy="37" r="2" fill="var(--hol-red)" stroke-width="1.2"/><circle cx="18" cy="34.5" r="2" fill="var(--hol-blue)" stroke-width="1.2"/><circle cx="31" cy="35.5" r="2" fill="var(--hol-red)" stroke-width="1.2"/><circle cx="37" cy="38" r="2" fill="var(--hol-blue)" stroke-width="1.2"/><path d="M2.5 42.5 H45.5" stroke-width="2.4"/>
+</svg>

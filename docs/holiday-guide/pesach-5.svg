@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<!-- Preview of Pesach: Maror (HolidayGuide.md): the holiday-icons palette, light and dark. -->
+<style>
+svg{--hol-line:#1a2744;--hol-gold:#c9922a;--hol-gold-lt:#f0d080;--hol-paper:#fffaf0;--hol-navy:#2a3b66;--hol-red:#c0392b;--hol-green:#3a7d44;--hol-blue:#3b6fb6;--hol-flame:#f0a030;--hol-ground:#fdf8ef;stroke:var(--hol-line);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+@media (prefers-color-scheme:dark){svg{--hol-line:#e8e0d0;--hol-gold:#e0a832;--hol-gold-lt:#f5d97a;--hol-paper:#e8e0d0;--hol-navy:#5a6d9c;--hol-red:#e0584a;--hol-green:#5aa865;--hol-blue:#6a9ae0;--hol-flame:#f6b84a;--hol-ground:#161c2a}}
+</style>
+<path d="M22.5 21 Q21.8 13.8 14.5 9.5 Q15.9 17.9 22.5 21Z M25.5 21 Q32.1 17.9 33.5 9.5 Q26.2 13.8 25.5 21Z M24 21 Q28.2 13.6 24 4.5 Q19.8 13.6 24 21Z" fill="var(--hol-green)" stroke-width="1.5"/><path d="M19 20.5 C17 26.5 19 34.5 23.5 44 C28 34.5 30.5 26.5 29 20.5Z" fill="var(--hol-paper)"/><path d="M19.6 26 H23.5 M25 30.5 H28.2 M21.2 35 H24 M23.5 39 H25.5" stroke-width="1.3"/>
+</svg>

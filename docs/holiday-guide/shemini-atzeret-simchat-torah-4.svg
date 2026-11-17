@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<!-- Preview of Shemini Atzeret / Simchat Torah: Rain (HolidayGuide.md): the holiday-icons palette, light and dark. -->
+<style>
+svg{--hol-line:#1a2744;--hol-gold:#c9922a;--hol-gold-lt:#f0d080;--hol-paper:#fffaf0;--hol-navy:#2a3b66;--hol-red:#c0392b;--hol-green:#3a7d44;--hol-blue:#3b6fb6;--hol-flame:#f0a030;--hol-ground:#fdf8ef;stroke:var(--hol-line);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+@media (prefers-color-scheme:dark){svg{--hol-line:#e8e0d0;--hol-gold:#e0a832;--hol-gold-lt:#f5d97a;--hol-paper:#e8e0d0;--hol-navy:#5a6d9c;--hol-red:#e0584a;--hol-green:#5aa865;--hol-blue:#6a9ae0;--hol-flame:#f6b84a;--hol-ground:#161c2a}}
+</style>
+<path d="M13 24 H35 A7.5 7.5 0 0 0 34.5 9 A10 10 0 0 0 15.5 8.5 A8 8 0 0 0 13 24Z" fill="var(--hol-paper)"/><path d="M13 27.5 C14.5 30.3 15.4 31.6 15.4 33 A2.4 2.4 0 0 1 10.6 33 C10.6 31.6 11.5 30.3 13 27.5Z M24 27.5 C25.5 30.3 26.4 31.6 26.4 33 A2.4 2.4 0 0 1 21.6 33 C21.6 31.6 22.5 30.3 24 27.5Z M35 27.5 C36.5 30.3 37.4 31.6 37.4 33 A2.4 2.4 0 0 1 32.6 33 C32.6 31.6 33.5 30.3 35 27.5Z M18.5 35.5 C20 38.3 20.9 39.6 20.9 41 A2.4 2.4 0 0 1 16.1 41 C16.1 39.6 17 38.3 18.5 35.5Z M29.5 35.5 C31 38.3 31.9 39.6 31.9 41 A2.4 2.4 0 0 1 27.1 41 C27.1 39.6 28 38.3 29.5 35.5Z" fill="var(--hol-blue)" stroke-width="1.4"/>
+</svg>

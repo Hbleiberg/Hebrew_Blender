@@ -208,8 +208,9 @@ body.dark .hp-sec h2{color:var(--gold-light);}
 .hp-about{display:flex;flex-direction:column;gap:10px;}
 .hp-about p{font-size:1rem;}
 .hp-about [lang="he"],.hp-sym [lang="he"]{font-family:var(--heb-font);font-size:1.1em;line-height:1.6;}
-/* in the Hebrew UI the Hebrew sentence leads, under the heading */
-html[lang="he"] .hp-about [lang="he"],html[lang="he"] .hp-sym-text [lang="he"]{order:-1;}
+/* in the Hebrew UI the Hebrew sentence leads, under the heading (a symbol's name stays first) */
+html[lang="he"] .hp-about [lang="he"],html[lang="he"] .hp-sym-text > p[lang="he"]{order:-1;}
+html[lang="he"] .hp-sym-name{order:-2;}
 .hp-syms{list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:14px 22px;}
 .hp-sym{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:start;}
 .hp-sym .hol-ico{width:56px;height:56px;margin:0;vertical-align:top;}
@@ -393,9 +394,9 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
   </section>
   <nav class="hp-pager" aria-label="Other holidays" data-i18n-aria-label="holidaypage.pager.aria">
     <ul>
-      <li><a href="/holidays/rosh-hashanah.html" rel="prev"><span class="dir-arrow" aria-hidden="true">←</span><span class="vh" data-i18n="holidaypage.pager.prev">Previous holiday:</span><span lang="en" dir="ltr">Rosh Hashanah</span><span class="hp-he-name" lang="he" dir="rtl">רֹאשׁ הַשָּׁנָה</span></a></li>
+      <li><a href="/holidays/yom-kippur.html" rel="prev"><span class="dir-arrow" aria-hidden="true">←</span><span class="vh" data-i18n="holidaypage.pager.prev">Previous holiday:</span><span lang="en" dir="ltr">Yom Kippur</span><span class="hp-he-name" lang="he" dir="rtl">יוֹם כִּפּוּר</span></a></li>
       <li><a href="/holiday_guide.html#hgSheets" data-i18n="holidaypage.pager.all">All holiday coloring pages</a></li>
-      <li><a href="/holidays/chanukah.html" rel="next"><span class="vh" data-i18n="holidaypage.pager.next">Next holiday:</span><span lang="en" dir="ltr">Chanukah</span><span class="hp-he-name" lang="he" dir="rtl">חֲנֻכָּה</span><span class="dir-arrow" aria-hidden="true">→</span></a></li>
+      <li><a href="/holidays/shemini-atzeret-simchat-torah.html" rel="next"><span class="vh" data-i18n="holidaypage.pager.next">Next holiday:</span><span lang="en" dir="ltr">Shemini Atzeret / Simchat Torah</span><span class="hp-he-name" lang="he" dir="rtl">שְׁמִינִי עֲצֶרֶת / שִׂמְחַת תּוֹרָה</span><span class="dir-arrow" aria-hidden="true">→</span></a></li>
     </ul>
   </nav>
 </main>

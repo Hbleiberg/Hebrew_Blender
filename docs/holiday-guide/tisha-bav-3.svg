@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<!-- Preview of Tisha B'Av: Candle (HolidayGuide.md): the holiday-icons palette, light and dark. -->
+<style>
+svg{--hol-line:#1a2744;--hol-gold:#c9922a;--hol-gold-lt:#f0d080;--hol-paper:#fffaf0;--hol-navy:#2a3b66;--hol-red:#c0392b;--hol-green:#3a7d44;--hol-blue:#3b6fb6;--hol-flame:#f0a030;--hol-ground:#fdf8ef;stroke:var(--hol-line);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+@media (prefers-color-scheme:dark){svg{--hol-line:#e8e0d0;--hol-gold:#e0a832;--hol-gold-lt:#f5d97a;--hol-paper:#e8e0d0;--hol-navy:#5a6d9c;--hol-red:#e0584a;--hol-green:#5aa865;--hol-blue:#6a9ae0;--hol-flame:#f6b84a;--hol-ground:#161c2a}}
+</style>
+<ellipse cx="22" cy="40.5" rx="14.5" ry="3.6" fill="var(--hol-gold-lt)"/><circle cx="39.2" cy="38.5" r="3.2" stroke-width="2"/><rect x="17.8" y="20.5" width="8.4" height="19.5" rx="1" fill="var(--hol-paper)"/><path d="M17.8 25 C17.8 27.6 20 27.6 20 25.4" stroke-width="1.4"/><path d="M22 20.5 V17.5" stroke-width="1.6"/><path d="M22 7.6 C23.2 10.4 25.7 12.4 25.5 14.6 C25.3 16.6 23.8 17.6 22 17.6 C20.2 17.6 18.7 16.6 18.5 14.6 C18.3 12.4 20.8 10.4 22 7.6Z" fill="var(--hol-flame)"/>
+</svg>

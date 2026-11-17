@@ -10,8 +10,9 @@
  *     paper and no conversion warning; 1 / 2 / 4 / 6 a page give ceil(n / per) pages with the right rows and columns;
  *     each option changes the sheet (labels, nikkud with the catalog's plain spelling, the title, the cut line, the
  *     name line, the meanings on Sukkot only, coloured in); unticking a symbol reflows the pages and none leaves a
- *     note with Print waiting; a holiday without symbols prints its own symbol as one big picture; the options
- *     survive a reload and the holiday and ticks do not; a long title is fitted inside its sheet;
+ *     note with Print waiting; a holiday's own symbol ticked alone (or a holiday still without symbols) prints as one
+ *     big picture; the options survive a reload and the holiday and ticks do not; a long title is fitted inside its
+ *     sheet;
  *   - printing: the PDF has one page per sheet page, Letter and A4 (the @page box);
  *   - the hub in Hebrew, dark, at 800px and at 360px: Hebrew sentences, dark on, no horizontal scroll;
  *   - each generated page: no page error, its picture loaded, one h1 naming the holiday, the countdown line filled
@@ -197,14 +198,21 @@ try {
       [0, 'Tick at least one symbol to make a sheet.', 'true'], 'builder no symbols', 'no page, the note, Print waiting');
     await pg.locator('#hgSymAll').click(); await ready(pg);
     eq((await sheets(pg))[0].cells, 6, 'builder All', 'all six back');
-    // a holiday without symbols: its own symbol as one big picture, whatever the grid; a long title fitted
-    const bare = holidays.find((h) => !h.symbols.length && h.en.length > 20) || holidays.find((h) => !h.symbols.length);
+    // one picture alone fills its page, whatever the grid: the holiday's own symbol ticked by itself, under the longest
+    // title (two lines, fitted) — and, while one exists, a holiday still without symbols, which offers nothing else
+    await pg.locator('#hgOptTitle').check();
+    const long = holidays.reduce((a, b) => (b.en.length > a.en.length ? b : a));
+    await pick(pg, `#hgPick input[value="${long.key}"]`);
+    if (long.symbols.length) { await pg.locator('#hgSymNone').click(); await pg.locator('#hgSyms input[value="-1"]').check(); await ready(pg); }
+    s = await sheets(pg);
+    eq([s.length, s[0].per, s[0].cells, s[0].pics, s[0].en.length, s[0].title], [1, '1', 1, 1, 0, [long.en, long.plain]], `builder ${long.slug}, its own symbol`, 'one big picture under the title (nikkud is off here)');
+    ok(s[0].inside, `builder ${long.slug}, its own symbol`, 'the long title leaves its sheet');
+    ok(await pg.evaluate(() => document.querySelector('#hgPages .hg-headline').classList.contains('hg-stack')), `builder ${long.slug}`, 'the long title did not take two lines');
+    const bare = holidays.find((h) => !h.symbols.length);
     if (bare) {
-      await pg.locator('#hgOptTitle').check();
       await pick(pg, `#hgPick input[value="${bare.key}"]`);
       s = await sheets(pg);
       eq([s.length, s[0].per, s[0].cells, s[0].pics, s[0].en.length], [1, '1', 1, 1, 0], `builder ${bare.slug}`, 'one big picture under the title');
-      ok(s[0].inside, `builder ${bare.slug}`, 'the long title leaves its sheet');
       ok(/coming soon/.test(await pg.evaluate(() => document.getElementById('hgSymSoon').textContent)), `builder ${bare.slug}`, 'the coming-soon note');
     }
     eq(errs, [], 'builder', 'page errors and conversion warnings');

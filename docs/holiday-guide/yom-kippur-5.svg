@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<!-- Preview of Yom Kippur: Big Fish (HolidayGuide.md): the holiday-icons palette, light and dark. -->
+<style>
+svg{--hol-line:#1a2744;--hol-gold:#c9922a;--hol-gold-lt:#f0d080;--hol-paper:#fffaf0;--hol-navy:#2a3b66;--hol-red:#c0392b;--hol-green:#3a7d44;--hol-blue:#3b6fb6;--hol-flame:#f0a030;--hol-ground:#fdf8ef;stroke:var(--hol-line);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+@media (prefers-color-scheme:dark){svg{--hol-line:#e8e0d0;--hol-gold:#e0a832;--hol-gold-lt:#f5d97a;--hol-paper:#e8e0d0;--hol-navy:#5a6d9c;--hol-red:#e0584a;--hol-green:#5aa865;--hol-blue:#6a9ae0;--hol-flame:#f6b84a;--hol-ground:#161c2a}}
+</style>
+<path d="M5 27 C5 18 13 12 23 12 C32 12 38 17 39.5 24 C41 23 43 20.5 43.5 17 C45.5 19 46 23 44.5 26.5 C46 28 46.5 31 45.5 33.5 C43 33 41 31.5 39.8 29.5 C38 36 31 40 23 40 C13 40 5 35 5 27Z" fill="var(--hol-blue)"/><path d="M7 32 C13 35.5 27 36.5 36.5 32" stroke="var(--hol-paper)" stroke-width="1.7"/><circle cx="13.5" cy="23.5" r="1.7" fill="var(--hol-navy)" stroke="none"/><path d="M5.4 29.2 C8 30.4 10.6 30 12.6 28.4" stroke-width="1.5"/><path d="M21 11.5 V8 M21 8 C19 5.8 16.8 6.2 16.2 8.4 M21 8 C23 5.8 25.2 6.2 25.8 8.4" stroke="var(--hol-blue)" stroke-width="1.8"/>
+</svg>

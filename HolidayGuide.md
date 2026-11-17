@@ -39,20 +39,20 @@ Never edit an output. The format and every rule are in the header of `scripts/ho
 | 1 | Shabbat | שַׁבָּת | <img src="docs/holiday-guide/shabbat.svg" width="28" height="28" alt=""> | Candles, Challah, Kiddush Cup, Wine, Tzedakah Box, Siddur |
 | 2 | Havdalah | הַבְדָּלָה | <img src="docs/holiday-guide/havdalah.svg" width="28" height="28" alt=""> | Havdalah Candle, Spices, Wine Cup, Three Stars, Flame, Moon |
 | 3 | Rosh Hashanah | רֹאשׁ הַשָּׁנָה | <img src="docs/holiday-guide/rosh-hashanah.svg" width="28" height="28" alt=""> | Apple, Honey, Fish, Round Challah, Shofar, Pomegranate |
-| 4 | Yom Kippur | יוֹם כִּפּוּר | <img src="docs/holiday-guide/yom-kippur.svg" width="28" height="28" alt=""> | — |
+| 4 | Yom Kippur | יוֹם כִּפּוּר | <img src="docs/holiday-guide/yom-kippur.svg" width="28" height="28" alt=""> | Book of Life, Shofar, Tallit, Machzor, Big Fish, Gates |
 | 5 | Sukkot | סֻכּוֹת | <img src="docs/holiday-guide/sukkot.svg" width="28" height="28" alt=""> | Lulav, Hadas, Aravah, Etrog, Lulav and Etrog, Sukkah |
-| 6 | Shemini Atzeret / Simchat Torah | שְׁמִינִי עֲצֶרֶת / שִׂמְחַת תּוֹרָה | <img src="docs/holiday-guide/shemini-atzeret-simchat-torah.svg" width="28" height="28" alt=""> | — |
+| 6 | Shemini Atzeret / Simchat Torah | שְׁמִינִי עֲצֶרֶת / שִׂמְחַת תּוֹרָה | <img src="docs/holiday-guide/shemini-atzeret-simchat-torah.svg" width="28" height="28" alt=""> | Torah Scroll, Flag, Dancing, Rain, Yad, Torah Crown |
 | 7 | Chanukah | חֲנֻכָּה | <img src="docs/holiday-guide/chanukah.svg" width="28" height="28" alt=""> | Dreidel, Chanukiah, Latke, Sufganiyah, Menorah, Oil |
 | 8 | Tu BiShvat | ט״וּ בִּשְׁבָט | <img src="docs/holiday-guide/tu-bishvat.svg" width="28" height="28" alt=""> | Tree, Leaves, Roots, Fruit, Juice, Flowers |
 | 9 | Purim | פּוּרִים | <img src="docs/holiday-guide/purim.svg" width="28" height="28" alt=""> | Megillah, Gragger, Hamantaschen, Mask, Crown, Mishloach Manot |
-| 10 | Pesach | פֶּסַח | <img src="docs/holiday-guide/pesach.svg" width="28" height="28" alt=""> | — |
-| 11 | Yom HaShoah | יוֹם הַשּׁוֹאָה | <img src="docs/holiday-guide/yom-hashoah.svg" width="28" height="28" alt=""> | — |
-| 12 | Yom HaZikaron | יוֹם הַזִּכָּרוֹן | <img src="docs/holiday-guide/yom-hazikaron.svg" width="28" height="28" alt=""> | — |
-| 13 | Yom HaAtzmaut | יוֹם הָעַצְמָאוּת | <img src="docs/holiday-guide/yom-haatzmaut.svg" width="28" height="28" alt=""> | — |
-| 14 | Lag BaOmer | ל״ג בָּעֹמֶר | <img src="docs/holiday-guide/lag-baomer.svg" width="28" height="28" alt=""> | — |
-| 15 | Yom Yerushalayim | יוֹם יְרוּשָׁלַיִם | <img src="docs/holiday-guide/yom-yerushalayim.svg" width="28" height="28" alt=""> | — |
-| 16 | Shavuot | שָׁבוּעוֹת | <img src="docs/holiday-guide/shavuot.svg" width="28" height="28" alt=""> | — |
-| 17 | Tisha B'Av | תִּשְׁעָה בְּאָב | <img src="docs/holiday-guide/tisha-bav.svg" width="28" height="28" alt=""> | — |
+| 10 | Pesach | פֶּסַח | <img src="docs/holiday-guide/pesach.svg" width="28" height="28" alt=""> | Matzah, Seder Plate, Four Cups, Haggadah, Maror, Frog |
+| 11 | Yom HaShoah | יוֹם הַשּׁוֹאָה | <img src="docs/holiday-guide/yom-hashoah.svg" width="28" height="28" alt=""> | Memorial Candle, Six Candles, Butterfly, Star of David, Diary, Flower |
+| 12 | Yom HaZikaron | יוֹם הַזִּכָּרוֹן | <img src="docs/holiday-guide/yom-hazikaron.svg" width="28" height="28" alt=""> | Memorial Candle, Flag at Half-Mast, Red Everlasting, Siren, Wreath, Monument |
+| 13 | Yom HaAtzmaut | יוֹם הָעַצְמָאוּת | <img src="docs/holiday-guide/yom-haatzmaut.svg" width="28" height="28" alt=""> | Flag, Fireworks, Falafel, Map of Israel, State Emblem, Barbecue |
+| 14 | Lag BaOmer | ל״ג בָּעֹמֶר | <img src="docs/holiday-guide/lag-baomer.svg" width="28" height="28" alt=""> | Bonfire, Bow and Arrow, Potato, Picnic, Carob, Cave |
+| 15 | Yom Yerushalayim | יוֹם יְרוּשָׁלַיִם | <img src="docs/holiday-guide/yom-yerushalayim.svg" width="28" height="28" alt=""> | Kotel, Tower of David, Gate, Lion, Olive Tree, Harp |
+| 16 | Shavuot | שָׁבוּעוֹת | <img src="docs/holiday-guide/shavuot.svg" width="28" height="28" alt=""> | Tablets, Mount Sinai, Cheesecake, First Fruits, Wheat, Milk and Honey |
+| 17 | Tisha B'Av | תִּשְׁעָה בְּאָב | <img src="docs/holiday-guide/tisha-bav.svg" width="28" height="28" alt=""> | Temple, Scroll of Eicha, Candle, Low Stool, Tear, Stones |
 
 ## Every week
 
@@ -369,6 +369,78 @@ people say sorry to one another and to God, and everyone makes a fresh start for
 
 **Symbol:** holiday-icons:yomkippur
 
+#### 1. Book of Life · סֵפֶר הַחַיִּים
+
+<img src="docs/holiday-guide/yom-kippur-1.svg" width="72" height="72" alt="An open book with a ribbon">
+
+**Caption:** On Yom Kippur people pray to be written in the Book of Life for a good year.
+
+**כיתוב:** ביום כיפור מתפללים להיכתב בספר החיים לשנה טובה.
+
+```html
+<path d="M5 37 V40.5 C11 38.5 19 39 24 42.5 C29 39 37 38.5 43 40.5 V37" fill="var(--hol-blue)"/><path d="M24 13 C19 9.5 11 9 5 11 V37 C11 35 19 35.5 24 39 C29 35.5 37 35 43 37 V11 C37 9 29 9.5 24 13Z" fill="var(--hol-paper)"/><path d="M24 13 V39" stroke-width="1.6"/><path d="M9 16.5 C13 15.8 17 16.3 20.5 18 M9 21.5 C13 20.8 17 21.3 20.5 23 M9 26.5 C13 25.8 17 26.3 20.5 28 M9 31.5 C13 30.8 17 31.3 20.5 33 M27.5 23 C31 21.3 35 20.8 39 21.5 M27.5 28 C31 26.3 35 25.8 39 26.5 M27.5 33 C31 31.3 35 30.8 39 31.5" stroke-width="1.4"/><path d="M31.5 10.4 V19.5 L34 17.3 L36.5 19.5 V9.6" fill="var(--hol-red)" stroke-width="1.5"/>
+```
+
+#### 2. Shofar · שׁוֹפָר
+
+<img src="docs/holiday-guide/yom-kippur-2.svg" width="72" height="72" alt="A shofar sounding">
+
+**Caption:** One long blast of the shofar ends Yom Kippur as night falls.
+
+**כיתוב:** תקיעת שופר ארוכה אחת מסיימת את יום כיפור עם רדת הלילה.
+
+```html
+<path d="M42.5 36 C43.5 34 42.5 32.3 40.8 32 C32 30.5 23.5 26.5 20 18.5 C18.5 15 18.2 11 17.8 7.2 C17.4 4.5 14.7 3.3 12 4.3 C8 5.8 5 9 5 12.2 C5 13.8 6.5 14.3 7.7 13.7 C7.2 22.5 11.8 31.5 20 37 C26 41 35 41.5 39.7 40 C41.7 39.4 42.2 37.7 42.5 36 Z" fill="var(--hol-gold-lt)"/><ellipse cx="11.4" cy="8.9" rx="5.3" ry="2.9" fill="var(--hol-gold)" transform="rotate(-38 11.4 8.9)"/><path d="M36 31.5 C34.7 34 34.7 37.5 35.8 40.4 M29.5 29.5 C27.7 32.5 27.7 36.5 28.8 39.7 M23.2 25.5 C20.5 28.5 20 33 21.2 36.8" stroke-width="1.4"/><path d="M5.2 3.6 L3 2.4 M3.6 12.6 L2 14.4 M21.5 4.5 L23.5 2.6" stroke="var(--hol-blue)" stroke-width="1.7"/>
+```
+
+#### 3. Tallit · טַלִּית
+
+<img src="docs/holiday-guide/yom-kippur-3.svg" width="72" height="72" alt="A tallit with stripes and fringes">
+
+**Caption:** The tallit is a prayer shawl; on Yom Kippur it is worn in the evening too.
+
+**כיתוב:** הטלית נלבשת בתפילה, וביום כיפור מתעטפים בה גם בערב.
+
+```html
+<rect x="7" y="7" width="34" height="29" fill="var(--hol-paper)"/><rect x="7" y="11.5" width="34" height="2.8" fill="var(--hol-blue)" stroke="none"/><rect x="7" y="16" width="34" height="1.6" fill="var(--hol-blue)" stroke="none"/><rect x="7" y="27" width="34" height="1.6" fill="var(--hol-blue)" stroke="none"/><rect x="7" y="30.2" width="34" height="2.8" fill="var(--hol-blue)" stroke="none"/><rect x="16" y="7" width="16" height="3.2" fill="var(--hol-gold-lt)" stroke-width="1.4"/><path d="M8.5 36 V44 M11.5 36 V42.5 M36.5 36 V42.5 M39.5 36 V44" stroke-width="1.6"/><path d="M16 36 V38.6 M20 36 V38.6 M24 36 V38.6 M28 36 V38.6 M32 36 V38.6" stroke-width="1.3"/>
+```
+
+#### 4. Machzor · מַחְזוֹר
+
+<img src="docs/holiday-guide/yom-kippur-4.svg" width="72" height="72" alt="A thick prayer book with a ribbon">
+
+**Caption:** The machzor is the prayer book for the High Holidays.
+
+**כיתוב:** המחזור הוא ספר התפילה של הימים הנוראים.
+
+```html
+<path d="M36 8.5 L40.5 10.8 V43 L36 40.5Z" fill="var(--hol-paper)"/><path d="M12 40.5 H36 L40.5 43 H16.5Z" fill="var(--hol-paper)"/><rect x="12" y="6" width="24" height="34.5" rx="2" fill="var(--hol-red)"/><rect x="16" y="10.5" width="16" height="25.5" rx="1" stroke="var(--hol-gold-lt)" stroke-width="1.5"/><path d="M19.5 17 H28.5 M19.5 21.5 H28.5 M21.5 26 H26.5" stroke="var(--hol-gold-lt)" stroke-width="1.7"/><path d="M21 40.5 V45 L22.8 43.6 L24.6 45 V40.5" fill="var(--hol-blue)" stroke-width="1.3"/>
+```
+
+#### 5. Big Fish · דָּג גָּדוֹל
+
+<img src="docs/holiday-guide/yom-kippur-5.svg" width="72" height="72" alt="A big fish spouting water">
+
+**Caption:** In the afternoon the Book of Jonah is read, about the prophet and the big fish.
+
+**כיתוב:** במנחה קוראים את ספר יונה, על הנביא ועל הדג הגדול.
+
+```html
+<path d="M5 27 C5 18 13 12 23 12 C32 12 38 17 39.5 24 C41 23 43 20.5 43.5 17 C45.5 19 46 23 44.5 26.5 C46 28 46.5 31 45.5 33.5 C43 33 41 31.5 39.8 29.5 C38 36 31 40 23 40 C13 40 5 35 5 27Z" fill="var(--hol-blue)"/><path d="M7 32 C13 35.5 27 36.5 36.5 32" stroke="var(--hol-paper)" stroke-width="1.7"/><circle cx="13.5" cy="23.5" r="1.7" fill="var(--hol-navy)" stroke="none"/><path d="M5.4 29.2 C8 30.4 10.6 30 12.6 28.4" stroke-width="1.5"/><path d="M21 11.5 V8 M21 8 C19 5.8 16.8 6.2 16.2 8.4 M21 8 C23 5.8 25.2 6.2 25.8 8.4" stroke="var(--hol-blue)" stroke-width="1.8"/>
+```
+
+#### 6. Gates · שְׁעָרִים
+
+<img src="docs/holiday-guide/yom-kippur-6.svg" width="72" height="72" alt="A pair of arched gates">
+
+**Caption:** The last prayer, Ne’ilah, is said as the gates of heaven are closing.
+
+**כיתוב:** תפילת נעילה נאמרת בסוף היום, כששערי שמיים ננעלים.
+
+```html
+<path d="M9 43 V20 A15 15 0 0 1 39 20 V43Z" fill="var(--hol-gold-lt)"/><path d="M24 5 V43" stroke-width="1.8"/><path d="M13.5 20 A10.5 10.5 0 0 1 24 9.5 M34.5 20 A10.5 10.5 0 0 0 24 9.5" stroke="var(--hol-gold)" stroke-width="1.6"/><rect x="13" y="24" width="7.5" height="15" rx="1" stroke="var(--hol-gold)" stroke-width="1.6"/><rect x="27.5" y="24" width="7.5" height="15" rx="1" stroke="var(--hol-gold)" stroke-width="1.6"/><circle cx="21.9" cy="31.5" r="1.1" fill="var(--hol-navy)" stroke="none"/><circle cx="26.1" cy="31.5" r="1.1" fill="var(--hol-navy)" stroke="none"/><path d="M4.5 43 H43.5" stroke-width="2.4"/>
+```
+
 ### 5. Sukkot · סֻכּוֹת
 
 <img src="docs/holiday-guide/sukkot.svg" width="96" height="96" alt="A sukkah with a roof of branches">
@@ -522,6 +594,80 @@ the Torah is finished and begun again, and everyone sings and dances with the To
 ורוקדים עם ספרי התורה.
 
 **Symbol:** holiday-icons:simchattorah
+
+#### 1. Torah Scroll · סֵפֶר תּוֹרָה
+
+<img src="docs/holiday-guide/shemini-atzeret-simchat-torah-1.svg" width="72" height="72" alt="A Torah scroll in its cover">
+
+**Caption:** On Simchat Torah all the Torah scrolls are taken out of the ark.
+
+**כיתוב:** בשמחת תורה מוציאים את כל ספרי התורה מארון הקודש.
+
+```html
+<rect x="15.2" y="4" width="3.6" height="10" rx="1.6" fill="var(--hol-gold-lt)"/><rect x="29.2" y="4" width="3.6" height="10" rx="1.6" fill="var(--hol-gold-lt)"/><rect x="15.6" y="41.5" width="2.8" height="3.6" rx="1.2" fill="var(--hol-gold-lt)" stroke-width="1.5"/><rect x="29.6" y="41.5" width="2.8" height="3.6" rx="1.2" fill="var(--hol-gold-lt)" stroke-width="1.5"/><path d="M12 13.5 H36 V40 A2 2 0 0 1 34 42 H14 A2 2 0 0 1 12 40Z" fill="var(--hol-blue)"/><path d="M24 19 L29.2 28 H18.8Z M24 31 L29.2 22 H18.8Z" stroke="var(--hol-gold-lt)" stroke-width="1.8"/><path d="M12 36.5 H36" stroke="var(--hol-gold-lt)" stroke-width="1.7"/>
+```
+
+#### 2. Flag · דֶּגֶל
+
+<img src="docs/holiday-guide/shemini-atzeret-simchat-torah-2.svg" width="72" height="72" alt="A flag on a stick with an apple on top">
+
+**Caption:** Children wave flags as they march and sing behind the Torah scrolls.
+
+**כיתוב:** הילדים מנופפים בדגלים וצועדים בשירה אחרי ספרי התורה.
+
+```html
+<path d="M10 44 V10" stroke-width="2.6"/><circle cx="10" cy="6.5" r="3.3" fill="var(--hol-red)" stroke-width="1.6"/><rect x="10" y="12" width="30" height="19" fill="var(--hol-paper)"/><rect x="21" y="16" width="8" height="11" fill="var(--hol-gold-lt)" stroke-width="1.4"/><path d="M19.5 14.5 V28.5 M30.5 14.5 V28.5" stroke-width="2.2"/><path d="M13.5 16 L14.5 17 M35.5 16 L36.5 17 M13.5 27 L14.5 28 M35.5 27 L36.5 28" stroke="var(--hol-blue)" stroke-width="1.8"/>
+```
+
+#### 3. Dancing · רִקּוּדִים
+
+<img src="docs/holiday-guide/shemini-atzeret-simchat-torah-3.svg" width="72" height="72" alt="Two children dancing hand in hand">
+
+**Unpointed:** ריקודים
+
+**Caption:** Everyone dances seven circles, called hakafot, with the Torah.
+
+**כיתוב:** כולם רוקדים שבע הקפות עם ספרי התורה.
+
+```html
+<path d="M12.6 17 L5 11.5 M15.4 17 L24 12.5 M32.6 17 L24 12.5 M35.4 17 L43 11.5" stroke-width="2"/><path d="M12 30 V40.5 M16 30 V40.5 M32 30 V40.5 M36 30 V40.5" stroke-width="2"/><path d="M14 14 L9 30 H19Z" fill="var(--hol-blue)"/><path d="M34 14 L29 30 H39Z" fill="var(--hol-red)"/><circle cx="14" cy="10" r="4.2" fill="var(--hol-paper)"/><circle cx="34" cy="10" r="4.2" fill="var(--hol-paper)"/><path d="M4.5 42 H43.5" stroke-width="2.4"/>
+```
+
+#### 4. Rain · גֶּשֶׁם
+
+<img src="docs/holiday-guide/shemini-atzeret-simchat-torah-4.svg" width="72" height="72" alt="A cloud with raindrops">
+
+**Caption:** On Shemini Atzeret the prayer for rain is said for the winter ahead.
+
+**כיתוב:** בשמיני עצרת אומרים את תפילת הגשם לקראת החורף.
+
+```html
+<path d="M13 24 H35 A7.5 7.5 0 0 0 34.5 9 A10 10 0 0 0 15.5 8.5 A8 8 0 0 0 13 24Z" fill="var(--hol-paper)"/><path d="M13 27.5 C14.5 30.3 15.4 31.6 15.4 33 A2.4 2.4 0 0 1 10.6 33 C10.6 31.6 11.5 30.3 13 27.5Z M24 27.5 C25.5 30.3 26.4 31.6 26.4 33 A2.4 2.4 0 0 1 21.6 33 C21.6 31.6 22.5 30.3 24 27.5Z M35 27.5 C36.5 30.3 37.4 31.6 37.4 33 A2.4 2.4 0 0 1 32.6 33 C32.6 31.6 33.5 30.3 35 27.5Z M18.5 35.5 C20 38.3 20.9 39.6 20.9 41 A2.4 2.4 0 0 1 16.1 41 C16.1 39.6 17 38.3 18.5 35.5Z M29.5 35.5 C31 38.3 31.9 39.6 31.9 41 A2.4 2.4 0 0 1 27.1 41 C27.1 39.6 28 38.3 29.5 35.5Z" fill="var(--hol-blue)" stroke-width="1.4"/>
+```
+
+#### 5. Yad · יָד
+
+<img src="docs/holiday-guide/shemini-atzeret-simchat-torah-5.svg" width="72" height="72" alt="A Torah pointer shaped like a hand">
+
+**Caption:** The yad is a pointer shaped like a hand, used to follow the words of the Torah.
+
+**כיתוב:** היד היא מצביע בצורת כף יד, ובעזרתה עוקבים אחרי המילים בתורה.
+
+```html
+<g transform="rotate(35 24 24)"><rect x="21.6" y="8" width="4.8" height="19" rx="2.2" fill="var(--hol-gold-lt)"/><circle cx="24" cy="6.4" r="3.8" fill="var(--hol-gold)"/><path d="M21.6 14 H26.4 M21.6 18 H26.4" stroke-width="1.4"/><rect x="19.4" y="27" width="9.2" height="4" rx="1.2" fill="var(--hol-gold)"/><path d="M19.8 31 H28.2 V37.4 A1.6 1.6 0 0 1 26.6 39 H25.6 V43.4 A1.5 1.5 0 0 1 22.6 43.4 V39 H21.4 A1.6 1.6 0 0 1 19.8 37.4Z" fill="var(--hol-gold-lt)" stroke-width="1.6"/></g>
+```
+
+#### 6. Torah Crown · כֶּתֶר תּוֹרָה
+
+<img src="docs/holiday-guide/shemini-atzeret-simchat-torah-6.svg" width="72" height="72" alt="A crown with bells">
+
+**Caption:** A crown sits on top of the Torah scroll to show how precious it is.
+
+**כיתוב:** כתר מונח על ספר התורה כדי להראות כמה הוא יקר.
+
+```html
+<path d="M12 39 V41.8 M36 39 V41.8" stroke-width="1.5"/><circle cx="12" cy="43" r="1.7" fill="var(--hol-gold-lt)" stroke-width="1.3"/><circle cx="36" cy="43" r="1.7" fill="var(--hol-gold-lt)" stroke-width="1.3"/><path d="M11 31.5 C4.5 22 13 12.5 24 12.5 C35 12.5 43.5 22 37 31.5 M24 12.5 V31.5 M18 31.5 C14.5 23.5 18.5 15.5 24 12.5 M30 31.5 C33.5 23.5 29.5 15.5 24 12.5" stroke="var(--hol-gold)" stroke-width="3.2"/><rect x="8.5" y="31" width="31" height="8" rx="1.6" fill="var(--hol-gold-lt)"/><circle cx="24" cy="8.6" r="3.4" fill="var(--hol-gold-lt)"/><circle cx="15" cy="35" r="1.9" fill="var(--hol-red)" stroke-width="1.3"/><circle cx="24" cy="35" r="1.9" fill="var(--hol-blue)" stroke-width="1.3"/><circle cx="33" cy="35" r="1.9" fill="var(--hol-red)" stroke-width="1.3"/>
+```
 
 ### 7. Chanukah · חֲנֻכָּה
 
@@ -834,6 +980,78 @@ other chametz is eaten.
 
 **Symbol:** holiday-icons:pesach
 
+#### 1. Matzah · מַצָּה
+
+<img src="docs/holiday-guide/pesach-1.svg" width="72" height="72" alt="A round matzah">
+
+**Caption:** Matzah is flat bread, baked quickly because there was no time for the dough to rise.
+
+**כיתוב:** המצה היא לחם שטוח שנאפה במהירות, כי הבצק לא הספיק לתפוח.
+
+```html
+<path d="M24 5.5 C30 5 36.5 7.5 40 13 C43.5 18.5 43.5 27 41 33 C38 39.5 31 43 24 42.5 C16.5 43 9.5 39.5 6.5 32.5 C4 26.5 4.5 18 8.5 12.5 C12 7.5 18 5.5 24 5.5Z" fill="var(--hol-gold-lt)"/><path d="M11 15 H37 M7.5 21 H40.5 M7 27 H41 M8.5 33 H39.5 M13 38.5 H35" stroke-width="1.4" stroke-dasharray="2 2.6"/><circle cx="16" cy="11.5" r="1.1" fill="var(--hol-gold)" stroke="none"/><circle cx="30" cy="11" r="1.1" fill="var(--hol-gold)" stroke="none"/><circle cx="24" cy="18" r="1.1" fill="var(--hol-gold)" stroke="none"/><circle cx="12" cy="24" r="1.1" fill="var(--hol-gold)" stroke="none"/><circle cx="34" cy="24" r="1.1" fill="var(--hol-gold)" stroke="none"/><circle cx="20" cy="30" r="1.1" fill="var(--hol-gold)" stroke="none"/><circle cx="30" cy="36" r="1.1" fill="var(--hol-gold)" stroke="none"/><circle cx="16" cy="36" r="1.1" fill="var(--hol-gold)" stroke="none"/>
+```
+
+#### 2. Seder Plate · קַעֲרַת הַסֵּדֶר
+
+<img src="docs/holiday-guide/pesach-2.svg" width="72" height="72" alt="A seder plate with six small dishes">
+
+**Caption:** The seder plate holds the special foods that help tell the story of the Exodus.
+
+**כיתוב:** בקערת הסדר מונחים המאכלים המיוחדים שעוזרים לספר את סיפור יציאת מצרים.
+
+```html
+<circle cx="24" cy="24" r="19.5" fill="var(--hol-paper)"/><circle cx="24" cy="24" r="15.6" stroke-width="1.3"/><circle cx="24" cy="13.8" r="3.9" fill="var(--hol-green)" stroke-width="1.4"/><circle cx="32.8" cy="18.9" r="3.9" fill="var(--hol-flame)" stroke-width="1.4"/><circle cx="32.8" cy="29.1" r="3.9" fill="var(--hol-paper)" stroke-width="1.4"/><circle cx="24" cy="34.2" r="3.9" fill="var(--hol-green)" stroke-width="1.4"/><circle cx="15.2" cy="29.1" r="3.9" fill="var(--hol-gold)" stroke-width="1.4"/><circle cx="15.2" cy="18.9" r="3.9" fill="var(--hol-red)" stroke-width="1.4"/><circle cx="24" cy="24" r="2.8" fill="var(--hol-gold-lt)" stroke-width="1.4"/>
+```
+
+#### 3. Four Cups · אַרְבַּע כּוֹסוֹת
+
+<img src="docs/holiday-guide/pesach-3.svg" width="72" height="72" alt="Four cups of wine">
+
+**Caption:** Four cups of wine or grape juice are poured at the seder, one for each promise of freedom.
+
+**כיתוב:** בליל הסדר מוזגים ארבע כוסות יין או מיץ ענבים, כנגד ארבע לשונות של גאולה.
+
+```html
+<path d="M4 13 H12 C12 19.5 10.5 23.5 8 23.5 C5.5 23.5 4 19.5 4 13Z M14.7 13 H22.7 C22.7 19.5 21.2 23.5 18.7 23.5 C16.2 23.5 14.7 19.5 14.7 13Z M25.3 13 H33.3 C33.3 19.5 31.8 23.5 29.3 23.5 C26.8 23.5 25.3 19.5 25.3 13Z M36 13 H44 C44 19.5 42.5 23.5 40 23.5 C37.5 23.5 36 19.5 36 13Z" fill="var(--hol-gold-lt)"/><path d="M8 23.5 V33.5 M18.7 23.5 V33.5 M29.3 23.5 V33.5 M40 23.5 V33.5" stroke-width="2"/><path d="M4.4 34.5 H11.6 M15.1 34.5 H22.3 M25.7 34.5 H32.9 M36.4 34.5 H43.6" stroke-width="2.6"/><ellipse cx="8" cy="13" rx="4" ry="1.4" fill="var(--hol-red)" stroke-width="1.3"/><ellipse cx="18.7" cy="13" rx="4" ry="1.4" fill="var(--hol-red)" stroke-width="1.3"/><ellipse cx="29.3" cy="13" rx="4" ry="1.4" fill="var(--hol-red)" stroke-width="1.3"/><ellipse cx="40" cy="13" rx="4" ry="1.4" fill="var(--hol-red)" stroke-width="1.3"/>
+```
+
+#### 4. Haggadah · הַגָּדָה
+
+<img src="docs/holiday-guide/pesach-4.svg" width="72" height="72" alt="A Haggadah with a cup on its cover">
+
+**Caption:** The Haggadah is the book read at the seder, with the story, the questions and the songs.
+
+**כיתוב:** ההגדה היא הספר שקוראים בליל הסדר, ובה הסיפור, הקושיות והשירים.
+
+```html
+<path d="M10 40.5 H38 V43.5 H13 A3 3 0 0 1 10 40.5Z" fill="var(--hol-paper)"/><rect x="10" y="5" width="28" height="36" rx="2.5" fill="var(--hol-green)"/><path d="M14.5 5 V41" stroke-width="1.5"/><path d="M19.5 11 H33" stroke="var(--hol-gold-lt)" stroke-width="1.8"/><path d="M21 17.5 H31 C31 22.5 29 25.5 26 25.5 C23 25.5 21 22.5 21 17.5Z" fill="var(--hol-gold-lt)" stroke-width="1.5"/><path d="M26 25.5 V30.5 M22.5 31.5 H29.5" stroke="var(--hol-gold-lt)" stroke-width="1.8"/><path d="M20 36 H32" stroke="var(--hol-gold-lt)" stroke-width="1.8"/>
+```
+
+#### 5. Maror · מָרוֹר
+
+<img src="docs/holiday-guide/pesach-5.svg" width="72" height="72" alt="A horseradish root with its leaves">
+
+**Caption:** Maror is a bitter herb, eaten to remember how bitter slavery was.
+
+**כיתוב:** המרור הוא ירק מר, ואוכלים אותו כדי לזכור כמה מרה הייתה העבדות.
+
+```html
+<path d="M22.5 21 Q21.8 13.8 14.5 9.5 Q15.9 17.9 22.5 21Z M25.5 21 Q32.1 17.9 33.5 9.5 Q26.2 13.8 25.5 21Z M24 21 Q28.2 13.6 24 4.5 Q19.8 13.6 24 21Z" fill="var(--hol-green)" stroke-width="1.5"/><path d="M19 20.5 C17 26.5 19 34.5 23.5 44 C28 34.5 30.5 26.5 29 20.5Z" fill="var(--hol-paper)"/><path d="M19.6 26 H23.5 M25 30.5 H28.2 M21.2 35 H24 M23.5 39 H25.5" stroke-width="1.3"/>
+```
+
+#### 6. Frog · צְפַרְדֵּעַ
+
+<img src="docs/holiday-guide/pesach-6.svg" width="72" height="72" alt="A smiling frog">
+
+**Caption:** Frogs were the second of the ten plagues in Egypt.
+
+**כיתוב:** הצפרדעים היו המכה השנייה מעשר המכות במצרים.
+
+```html
+<circle cx="16" cy="14.5" r="5.6" fill="var(--hol-green)"/><circle cx="32" cy="14.5" r="5.6" fill="var(--hol-green)"/><path d="M9 38 C6 39 4.8 41.6 6.4 43.4 H14.5 M39 38 C42 39 43.2 41.6 41.6 43.4 H33.5" stroke-width="2"/><path d="M8 30 C8 20.5 15 16 24 16 C33 16 40 20.5 40 30 C40 37 33 41 24 41 C15 41 8 37 8 30Z" fill="var(--hol-green)"/><ellipse cx="24" cy="34.5" rx="7.5" ry="4" fill="var(--hol-gold-lt)" stroke="none"/><circle cx="16" cy="14.2" r="3.1" fill="var(--hol-paper)" stroke-width="1.3"/><circle cx="32" cy="14.2" r="3.1" fill="var(--hol-paper)" stroke-width="1.3"/><circle cx="16" cy="14.6" r="1.4" fill="var(--hol-navy)" stroke="none"/><circle cx="32" cy="14.6" r="1.4" fill="var(--hol-navy)" stroke="none"/><path d="M15 26.5 C19 31.5 29 31.5 33 26.5" stroke-width="1.8"/>
+```
+
 ### 11. Yom HaShoah · יוֹם הַשּׁוֹאָה
 
 <img src="docs/holiday-guide/yom-hashoah.svg" width="96" height="96" alt="A memorial candle with a Star of David">
@@ -855,6 +1073,82 @@ forgotten.
 
 ```html
 <path d="M24 6 C25.5 9.2 28.4 11.5 28.2 14.1 C28 16.4 26.1 17.5 24 17.5 C21.9 17.5 20 16.4 19.8 14.1 C19.6 11.5 22.5 9.2 24 6Z" fill="var(--hol-flame)"/><path d="M24 17.5 V21" stroke-width="1.6"/><path d="M14 21 H34 V40 A3 3 0 0 1 31 43 H17 A3 3 0 0 1 14 40Z" fill="var(--hol-paper)"/><path d="M14 26 H34" stroke-width="1.4"/><path d="M24 29 L28.3 36.5 H19.7Z M24 39 L28.3 31.5 H19.7Z" stroke="var(--hol-blue)" stroke-width="1.5"/>
+```
+
+#### 1. Memorial Candle · נֵר זִכָּרוֹן
+
+<img src="docs/holiday-guide/yom-hashoah-1.svg" width="72" height="72" alt="A memorial candle burning in its tin">
+
+**Unpointed:** נר זיכרון
+
+**Caption:** A memorial candle burns for a whole day in memory of those who died.
+
+**כיתוב:** נר זיכרון דולק יום שלם לזכר הנספים.
+
+```html
+<path d="M24 7.5 V4.5 M14.5 13.5 L11.8 11.6 M33.5 13.5 L36.2 11.6" stroke="var(--hol-gold)" stroke-width="1.7"/><path d="M24 10.5 C25.4 13.7 28.2 16 28 18.6 C27.8 20.9 26 22 24 22 C22 22 20.2 20.9 20 18.6 C19.8 16 22.6 13.7 24 10.5Z" fill="var(--hol-flame)"/><path d="M13 26.5 H35 V40 A3 3 0 0 1 32 43 H16 A3 3 0 0 1 13 40Z" fill="var(--hol-gold-lt)"/><ellipse cx="24" cy="26.5" rx="11" ry="3" fill="var(--hol-paper)"/><path d="M24 26.5 V22" stroke-width="1.6"/><path d="M13 33.5 C17 35.6 31 35.6 35 33.5" stroke="var(--hol-gold)" stroke-width="1.5"/>
+```
+
+#### 2. Six Candles · שִׁשָּׁה נֵרוֹת
+
+<img src="docs/holiday-guide/yom-hashoah-2.svg" width="72" height="72" alt="Six lit candles in a row">
+
+**Unpointed:** שישה נרות
+
+**Caption:** Six candles are lit at ceremonies, for the six million.
+
+**כיתוב:** בטקסים מדליקים שישה נרות, לזכר ששת המיליונים.
+
+```html
+<path d="M4.6 21 H8.4 V38 H4.6Z M11.6 21 H15.4 V38 H11.6Z M18.6 21 H22.4 V38 H18.6Z M25.6 21 H29.4 V38 H25.6Z M32.6 21 H36.4 V38 H32.6Z M39.6 21 H43.4 V38 H39.6Z" fill="var(--hol-paper)" stroke-width="1.6"/><rect x="3" y="38" width="42" height="4.5" rx="1.6" fill="var(--hol-gold-lt)"/><path d="M6.5 19.6 c-2.3 -2.3 -1.9 -5.7 0 -8 c1.9 2.3 2.3 5.7 0 8Z M13.5 19.6 c-2.3 -2.3 -1.9 -5.7 0 -8 c1.9 2.3 2.3 5.7 0 8Z M20.5 19.6 c-2.3 -2.3 -1.9 -5.7 0 -8 c1.9 2.3 2.3 5.7 0 8Z M27.5 19.6 c-2.3 -2.3 -1.9 -5.7 0 -8 c1.9 2.3 2.3 5.7 0 8Z M34.5 19.6 c-2.3 -2.3 -1.9 -5.7 0 -8 c1.9 2.3 2.3 5.7 0 8Z M41.5 19.6 c-2.3 -2.3 -1.9 -5.7 0 -8 c1.9 2.3 2.3 5.7 0 8Z" fill="var(--hol-flame)" stroke-width="1.4"/>
+```
+
+#### 3. Butterfly · פַּרְפַּר
+
+<img src="docs/holiday-guide/yom-hashoah-3.svg" width="72" height="72" alt="A butterfly">
+
+**Caption:** The butterfly comes from a poem written by a boy in the Terezin ghetto, and stands for the children.
+
+**כיתוב:** הפרפר לקוח משיר שכתב נער בגטו טרזין, והוא סמל לזכר הילדים.
+
+```html
+<path d="M23 17 C22 12.5 20 10.5 17.5 10 M25 17 C26 12.5 28 10.5 30.5 10" stroke-width="1.5"/><path d="M24 23 C20 12.5 9 8.5 6 13.5 C3.5 18.5 9 25.5 24 24.5Z M24 23 C28 12.5 39 8.5 42 13.5 C44.5 18.5 39 25.5 24 24.5Z" fill="var(--hol-blue)"/><path d="M24 25.5 C14 25.5 9 31.5 11.5 36.5 C14 41.5 21 37.5 24 28.5Z M24 25.5 C34 25.5 39 31.5 36.5 36.5 C34 41.5 27 37.5 24 28.5Z" fill="var(--hol-flame)"/><circle cx="13.5" cy="17" r="2.4" fill="var(--hol-gold-lt)" stroke-width="1.3"/><circle cx="34.5" cy="17" r="2.4" fill="var(--hol-gold-lt)" stroke-width="1.3"/><circle cx="16.5" cy="33" r="1.8" fill="var(--hol-gold-lt)" stroke-width="1.3"/><circle cx="31.5" cy="33" r="1.8" fill="var(--hol-gold-lt)" stroke-width="1.3"/><ellipse cx="24" cy="25.5" rx="1.9" ry="9.5" fill="var(--hol-navy)" stroke-width="1.5"/>
+```
+
+#### 4. Star of David · מָגֵן דָּוִד
+
+<img src="docs/holiday-guide/yom-hashoah-4.svg" width="72" height="72" alt="A Star of David">
+
+**Caption:** The Star of David is a sign of the Jewish people, who remember together.
+
+**כיתוב:** מגן דוד הוא סמלו של העם היהודי, שזוכר יחד.
+
+```html
+<path d="M24 6.5 L39.2 32.8 H8.8Z M24 41.5 L39.2 15.2 H8.8Z" stroke="var(--hol-blue)" stroke-width="3.6"/>
+```
+
+#### 5. Diary · יוֹמָן
+
+<img src="docs/holiday-guide/yom-hashoah-5.svg" width="72" height="72" alt="A diary and a pencil">
+
+**Caption:** Diaries and stories, like Anne Frank’s, help us remember each person.
+
+**כיתוב:** יומנים וסיפורים, כמו יומנה של אנה פרנק, עוזרים לנו לזכור כל אדם.
+
+```html
+<path d="M9 40 H33 V43.5 H12 A3 3 0 0 1 9 40.5Z" fill="var(--hol-paper)"/><rect x="9" y="7" width="24" height="33.5" rx="2.5" fill="var(--hol-gold)"/><path d="M13.5 7 V40.5" stroke-width="1.5"/><rect x="17" y="12.5" width="12" height="5.5" rx="1" fill="var(--hol-paper)" stroke-width="1.3"/><rect x="26" y="22.5" width="9.5" height="5" rx="1.2" fill="var(--hol-gold-lt)" stroke-width="1.4"/><circle cx="31.5" cy="25" r="1" fill="var(--hol-navy)" stroke="none"/><g transform="rotate(18 38 26)"><rect x="36.2" y="12" width="3.8" height="21" fill="var(--hol-flame)" stroke-width="1.5"/><path d="M36.2 33 L38.1 38.5 L40 33Z" fill="var(--hol-paper)" stroke-width="1.3"/><rect x="36.2" y="9" width="3.8" height="3" fill="var(--hol-red)" stroke-width="1.3"/></g>
+```
+
+#### 6. Flower · פֶּרַח
+
+<img src="docs/holiday-guide/yom-hashoah-6.svg" width="72" height="72" alt="A flower on its stem">
+
+**Caption:** Flowers are laid at memorials as a sign of respect and of hope.
+
+**כיתוב:** מניחים פרחים ליד אנדרטאות כאות כבוד ותקווה.
+
+```html
+<path d="M24 26 C24.8 32 23.4 38 24 44.5" stroke-width="2.2"/><path d="M24 37 Q30.3 37.3 33.8 30.9 Q26.5 31.2 24 37Z" fill="var(--hol-green)" stroke-width="1.5"/><path d="M24 16 Q28.9 19.3 35 16 Q28.9 12.7 24 16Z M24 16 Q25.2 21.8 31.8 23.8 Q29.8 17.2 24 16Z M24 16 Q20.7 20.9 24 27 Q27.3 20.9 24 16Z M24 16 Q18.2 17.2 16.2 23.8 Q22.8 21.8 24 16Z M24 16 Q19.1 12.7 13 16 Q19.1 19.3 24 16Z M24 16 Q22.8 10.2 16.2 8.2 Q18.2 14.8 24 16Z M24 16 Q27.3 11.1 24 5 Q20.7 11.1 24 16Z M24 16 Q29.8 14.8 31.8 8.2 Q25.2 10.2 24 16Z" fill="var(--hol-paper)" stroke-width="1.5"/><circle cx="24" cy="16" r="3.6" fill="var(--hol-gold-lt)" stroke-width="1.5"/>
 ```
 
 ### 12. Yom HaZikaron · יוֹם הַזִּכָּרוֹן
@@ -881,6 +1175,82 @@ remember the soldiers who fell defending Israel and the victims of terror.
 <path d="M24 44 C24 37 23.2 31 24 24.5" stroke-width="2.2"/><path d="M24 36 C19 35.5 14.5 32 13.5 27 C18.8 27.5 22.5 30.5 24 36Z" fill="var(--hol-green)"/><path d="M24 40 C29 39.5 33.5 36 34.5 31 C29.2 31.5 25.5 34.5 24 40Z" fill="var(--hol-green)"/><circle cx="30.4" cy="15" r="3.9" fill="var(--hol-red)" stroke-width="1.5"/><circle cx="27.2" cy="20.5" r="3.9" fill="var(--hol-red)" stroke-width="1.5"/><circle cx="20.8" cy="20.5" r="3.9" fill="var(--hol-red)" stroke-width="1.5"/><circle cx="17.6" cy="15" r="3.9" fill="var(--hol-red)" stroke-width="1.5"/><circle cx="20.8" cy="9.5" r="3.9" fill="var(--hol-red)" stroke-width="1.5"/><circle cx="27.2" cy="9.5" r="3.9" fill="var(--hol-red)" stroke-width="1.5"/><circle cx="24" cy="15" r="3.4" fill="var(--hol-gold-lt)" stroke-width="1.5"/>
 ```
 
+#### 1. Memorial Candle · נֵר זִכָּרוֹן
+
+<img src="docs/holiday-guide/yom-hazikaron-1.svg" width="72" height="72" alt="A tall memorial candle">
+
+**Unpointed:** נר זיכרון
+
+**Caption:** Families and schools light a memorial candle for those who fell.
+
+**כיתוב:** משפחות ובתי ספר מדליקים נר זיכרון לזכר הנופלים.
+
+```html
+<ellipse cx="24" cy="42.6" rx="12.5" ry="2.4" fill="var(--hol-gold-lt)" stroke-width="1.6"/><rect x="18" y="18.5" width="12" height="24" rx="1.5" fill="var(--hol-paper)"/><path d="M18 23 C18 26 20.6 26 20.6 23.6 M27 18.5 V22 C27 24 30 24 30 22" stroke-width="1.4"/><path d="M24 18.5 V15.5" stroke-width="1.6"/><path d="M24 4.8 C25.3 7.8 28 10 27.8 12.4 C27.6 14.5 25.9 15.6 24 15.6 C22.1 15.6 20.4 14.5 20.2 12.4 C20 10 22.7 7.8 24 4.8Z" fill="var(--hol-flame)"/><path d="M24 10.2 C24.6 11.5 25.7 12.4 25.6 13.4 C25.5 14.3 24.8 14.8 24 14.8 C23.2 14.8 22.5 14.3 22.4 13.4 C22.3 12.4 23.4 11.5 24 10.2Z" fill="var(--hol-gold-lt)" stroke="none"/>
+```
+
+#### 2. Flag at Half-Mast · דֶּגֶל בַּחֲצִי הַתֹּרֶן
+
+<img src="docs/holiday-guide/yom-hazikaron-2.svg" width="72" height="72" alt="The flag of Israel halfway down its pole">
+
+**Unpointed:** דגל בחצי התורן
+
+**Caption:** Flags are lowered to half-mast as a sign of mourning.
+
+**כיתוב:** מורידים את הדגל לחצי התורן לאות אבל.
+
+```html
+<path d="M10 6 V44" stroke-width="2.8"/><circle cx="10" cy="5" r="2" fill="var(--hol-gold)" stroke-width="1.4"/><rect x="10" y="20" width="27" height="17.5" fill="var(--hol-paper)"/><rect x="10" y="22.6" width="27" height="2.6" fill="var(--hol-blue)" stroke="none"/><rect x="10" y="32.3" width="27" height="2.6" fill="var(--hol-blue)" stroke="none"/><path d="M23.5 26.1 L25.8 30.2 H21.2Z M23.5 31.5 L25.8 27.4 H21.2Z" stroke="var(--hol-blue)" stroke-width="1.4"/><path d="M5 44 H15.5" stroke-width="2.6"/>
+```
+
+#### 3. Red Everlasting · דַּם הַמַּכַּבִּים
+
+<img src="docs/holiday-guide/yom-hazikaron-3.svg" width="72" height="72" alt="Two small red flowers">
+
+**Caption:** This small red flower, called Dam HaMaccabim, is worn as a sticker on Yom HaZikaron.
+
+**כיתוב:** הפרח האדום הקטן, דם המכבים, הוא סמל יום הזיכרון ועונדים אותו כמדבקה.
+
+```html
+<path d="M18 20 C18 30 21 36 23 44.5 M32 24.5 C31 32 27 38 24.6 44.5" stroke-width="2"/><path d="M20 31 Q16.2 27.9 10.3 28.4 Q15.1 31.8 20 31Z M27.6 36 Q32.7 36.1 37.3 32.1 Q31.2 32.4 27.6 36Z M22.4 40 Q20 36.5 15 35.8 Q18.2 39.6 22.4 40Z" fill="var(--hol-green)" stroke-width="1.4"/><circle cx="18" cy="12.5" r="7.8" fill="var(--hol-red)"/><circle cx="32" cy="18.5" r="6.2" fill="var(--hol-red)"/><path d="M20.6 12.5 L23.4 12.5 M19.8 14.3 L21.8 16.3 M18 15.1 L18 17.9 M16.2 14.3 L14.2 16.3 M15.4 12.5 L12.6 12.5 M16.2 10.7 L14.2 8.7 M18 9.9 L18 7.1 M19.8 10.7 L21.8 8.7 M34 19.3 L35.9 20.1 M32.9 20.5 L33.6 22.4 M31.2 20.5 L30.4 22.4 M30 19.4 L28.1 20.1 M30 17.7 L28.1 16.9 M31.1 16.5 L30.4 14.6 M32.8 16.5 L33.6 14.6 M34 17.6 L35.9 16.9" stroke="var(--hol-gold-lt)" stroke-width="1.4"/><circle cx="18" cy="12.5" r="1.9" fill="var(--hol-flame)" stroke-width="1.3"/><circle cx="32" cy="18.5" r="1.6" fill="var(--hol-flame)" stroke-width="1.3"/>
+```
+
+#### 4. Siren · צְפִירָה
+
+<img src="docs/holiday-guide/yom-hazikaron-4.svg" width="72" height="72" alt="A siren on a pole">
+
+**Caption:** When the siren sounds, everyone in Israel stops and stands in silence.
+
+**כיתוב:** כשנשמעת הצפירה כולם בישראל עוצרים ועומדים בדומייה.
+
+```html
+<path d="M11 26 V43.5 M5.5 43.5 H16.5" stroke-width="2.4"/><rect x="7.5" y="17.5" width="7" height="9" rx="1.2" fill="var(--hol-gold)"/><path d="M14.5 18 L29 10.5 V33.5 L14.5 26Z" fill="var(--hol-gold-lt)"/><path d="M33 16 C36.2 19 36.2 25 33 28 M37.5 11.5 C43 17 43 27 37.5 32.5" stroke="var(--hol-blue)" stroke-width="2.2"/>
+```
+
+#### 5. Wreath · זֵר
+
+<img src="docs/holiday-guide/yom-hazikaron-5.svg" width="72" height="72" alt="A wreath of leaves with a ribbon">
+
+**Caption:** Wreaths of leaves and flowers are laid at memorials.
+
+**כיתוב:** מניחים זרים של עלים ופרחים ליד האנדרטאות.
+
+```html
+<circle cx="24" cy="21" r="13" stroke="var(--hol-gold)" stroke-width="1.5"/><path d="M37 21 Q33.4 24 34.8 29.1 Q38.6 25.4 37 21Z M35.3 27.5 Q30.7 28.3 29.3 33.4 Q34.5 32.1 35.3 27.5Z M30.5 32.3 Q26.1 30.6 22.4 34.4 Q27.5 35.8 30.5 32.3Z M24 34 Q21 30.4 15.9 31.8 Q19.6 35.6 24 34Z M17.5 32.3 Q16.7 27.7 11.6 26.3 Q12.9 31.5 17.5 32.3Z M12.7 27.5 Q14.4 23.1 10.6 19.4 Q9.2 24.5 12.7 27.5Z M11 21 Q14.6 18 13.2 12.9 Q9.4 16.6 11 21Z M12.7 14.5 Q17.3 13.7 18.7 8.6 Q13.5 9.9 12.7 14.5Z M17.5 9.7 Q21.9 11.4 25.6 7.6 Q20.5 6.2 17.5 9.7Z M24 8 Q27 11.6 32.1 10.2 Q28.4 6.4 24 8Z M30.5 9.7 Q31.3 14.3 36.4 15.7 Q35.1 10.5 30.5 9.7Z M35.3 14.5 Q33.6 18.9 37.4 22.6 Q38.8 17.5 35.3 14.5Z" fill="var(--hol-green)" stroke-width="1.4"/><path d="M24 34.5 L16.5 43.5 L20.8 43.8 L24 39.6 L27.2 43.8 L31.5 43.5Z" fill="var(--hol-red)" stroke-width="1.5"/><circle cx="24" cy="34.5" r="2.5" fill="var(--hol-red)" stroke-width="1.5"/>
+```
+
+#### 6. Monument · אַנְדַּרְטָה
+
+<img src="docs/holiday-guide/yom-hazikaron-6.svg" width="72" height="72" alt="A stone monument with a flame">
+
+**Caption:** Monuments in towns across Israel carry the names of those who are remembered.
+
+**כיתוב:** על אנדרטאות ברחבי הארץ חקוקים שמות הנופלים.
+
+```html
+<path d="M24 9.6 c-1.9 -1.9 -1.6 -4.7 0 -6.6 c1.6 1.9 1.9 4.7 0 6.6Z" fill="var(--hol-flame)" stroke-width="1.4"/><path d="M17 34.5 L19.6 9.5 H28.4 L31 34.5Z" fill="var(--hol-paper)"/><rect x="12" y="34.5" width="24" height="4.5" fill="var(--hol-gold-lt)"/><rect x="8" y="39" width="32" height="4.5" fill="var(--hol-gold-lt)"/><path d="M21.4 16.5 H26.6 M21 21 H27 M20.6 25.5 H27.4 M20.2 30 H27.8" stroke-width="1.4"/>
+```
+
 ### 13. Yom HaAtzmaut · יוֹם הָעַצְמָאוּת
 
 <img src="docs/holiday-guide/yom-haatzmaut.svg" width="96" height="96" alt="The flag of Israel">
@@ -901,6 +1271,80 @@ celebrate with flags, songs, dancing, fireworks and picnics.
 
 ```html
 <rect x="9" y="8" width="34" height="23" fill="var(--hol-paper)"/><rect x="9" y="11.5" width="34" height="3.2" fill="var(--hol-blue)" stroke="none"/><rect x="9" y="24.3" width="34" height="3.2" fill="var(--hol-blue)" stroke="none"/><path d="M26 15.9 L29.1 21.3 H22.9Z M26 23.1 L29.1 17.7 H22.9Z" stroke="var(--hol-blue)" stroke-width="1.5"/><path d="M9 4.5 V44" stroke-width="2.8"/>
+```
+
+#### 1. Flag · דֶּגֶל
+
+<img src="docs/holiday-guide/yom-haatzmaut-1.svg" width="72" height="72" alt="The flag of Israel waving">
+
+**Caption:** The blue and white flag of Israel flies from homes, cars and schools.
+
+**כיתוב:** דגל ישראל בכחול ולבן מתנוסס על בתים, מכוניות ובתי ספר.
+
+```html
+<path d="M8 8 C14 5 20 11 26 8 C32 5 38 11 43.5 8 V29 C38 32 32 26 26 29 C20 32 14 26 8 29Z" fill="var(--hol-paper)"/><path d="M8 12.2 C14 9.2 20 15.2 26 12.2 C32 9.2 38 15.2 43.5 12.2 M8 24.8 C14 21.8 20 27.8 26 24.8 C32 21.8 38 27.8 43.5 24.8" stroke="var(--hol-blue)" stroke-width="3.2"/><path d="M25.8 15.3 L28.6 20.1 H23Z M25.8 21.7 L28.6 16.9 H23Z" stroke="var(--hol-blue)" stroke-width="1.5"/><path d="M8 5 V44" stroke-width="2.8"/>
+```
+
+#### 2. Fireworks · זִקּוּקִים
+
+<img src="docs/holiday-guide/yom-haatzmaut-2.svg" width="72" height="72" alt="Fireworks bursting">
+
+**Unpointed:** זיקוקים
+
+**Caption:** Fireworks light up the sky on the night Independence Day begins.
+
+**כיתוב:** זיקוקים מאירים את השמיים בערב יום העצמאות.
+
+```html
+<path d="M20.6 15 L27.5 15 M19.7 17.7 L25.3 21.8 M17.4 19.4 L19.6 25.9 M14.6 19.4 L12.4 25.9 M12.3 17.7 L6.7 21.8 M11.4 15 L4.5 15 M12.3 12.3 L6.7 8.2 M14.6 10.6 L12.4 4.1 M17.4 10.6 L19.6 4.1 M19.7 12.3 L25.3 8.2" stroke="var(--hol-red)" stroke-width="2"/><path d="M37.5 24.4 L42.3 26.4 M35.5 26.5 L37.5 31.3 M32.6 26.5 L30.6 31.3 M30.5 24.5 L25.7 26.5 M30.5 21.6 L25.7 19.6 M32.5 19.5 L30.5 14.7 M35.4 19.5 L37.4 14.7 M37.5 21.5 L42.3 19.5" stroke="var(--hol-blue)" stroke-width="2"/><path d="M22.2 36 L26 36 M21.3 38.3 L23.9 40.9 M19 39.2 L19 43 M16.7 38.3 L14.1 40.9 M15.8 36 L12 36 M16.7 33.7 L14.1 31.1 M19 32.8 L19 29 M21.3 33.7 L23.9 31.1" stroke="var(--hol-flame)" stroke-width="2"/><path d="M16 11.6 L16.9 13.8 L19.2 13.9 L17.4 15.5 L18 17.8 L16 16.5 L14 17.8 L14.6 15.5 L12.8 13.9 L15.1 13.8Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/><path d="M34 20.2 L34.7 22 L36.7 22.1 L35.1 23.4 L35.6 25.3 L34 24.2 L32.4 25.3 L32.9 23.4 L31.3 22.1 L33.3 22Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/><path d="M19 33.6 L19.6 35.2 L21.3 35.3 L20 36.3 L20.4 37.9 L19 37 L17.6 37.9 L18 36.3 L16.7 35.3 L18.4 35.2Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/><path d="M39 5.6 Q39.6 7.4 41.4 8 Q39.6 8.6 39 10.4 Q38.4 8.6 36.6 8 Q38.4 7.4 39 5.6Z M37 38 Q37.5 39.5 39 40 Q37.5 40.5 37 42 Q36.5 40.5 35 40 Q36.5 39.5 37 38Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/>
+```
+
+#### 3. Falafel · פָלָאפֶל
+
+<img src="docs/holiday-guide/yom-haatzmaut-3.svg" width="72" height="72" alt="Falafel balls in a pita">
+
+**Caption:** Falafel in a pita is a favorite Israeli street food.
+
+**כיתוב:** פלאפל בפיתה הוא מאכל רחוב ישראלי אהוב.
+
+```html
+<circle cx="14" cy="18.5" r="5.2" fill="var(--hol-gold)"/><circle cx="24" cy="16.5" r="5.6" fill="var(--hol-gold)"/><circle cx="34" cy="18.5" r="5.2" fill="var(--hol-gold)"/><path d="M12.5 16.5 L13.5 17.5 M22.5 14 L23.6 15 M26 18 L27 18.8 M33 16.5 L34 17.5" stroke-width="1.3"/><path d="M5.5 22 H42.5 C42.5 34 34.5 43.5 24 43.5 C13.5 43.5 5.5 34 5.5 22Z" fill="var(--hol-gold-lt)"/><path d="M6.5 22.2 Q9.4 18.4 12.3 22.2 T18.1 22.2 T23.9 22.2 T29.7 22.2 T35.5 22.2 T41.3 22.2" stroke="var(--hol-green)" stroke-width="2.6"/><circle cx="17" cy="26.5" r="2.4" fill="var(--hol-red)" stroke-width="1.3"/><circle cx="30" cy="27" r="2.4" fill="var(--hol-red)" stroke-width="1.3"/><path d="M14 33 L15.2 34 M22 36.5 L23.4 37 M31 34 L32.2 34.8 M25 30 L26.2 30.6" stroke="var(--hol-gold)" stroke-width="1.6"/>
+```
+
+#### 4. Map of Israel · מַפַּת יִשְׂרָאֵל
+
+<img src="docs/holiday-guide/yom-haatzmaut-4.svg" width="72" height="72" alt="A map of Israel beside the sea">
+
+**Caption:** The map shows the Land of Israel, from the Galilee in the north to Eilat in the south.
+
+**כיתוב:** המפה מראה את ארץ ישראל, מהגליל בצפון ועד אילת בדרום.
+
+```html
+<path d="M7 13 Q9 11.4 11 13 T15 13 M5.5 22 Q7.5 20.4 9.5 22 T13.5 22 M7 31 Q9 29.4 11 31 T15 31" stroke="var(--hol-blue)" stroke-width="1.9"/><path d="M22.5 4 L27.5 4.4 L30.6 7 L29.4 11.2 L31.8 13.6 L31.2 19 L32.8 22.2 L31.2 27.2 L29.8 31.2 L27.8 36.6 L25.6 44.4 L23 37 L20 30 L17.4 24.4 L18.8 20 L19.8 14.4 L21 9.6Z" fill="var(--hol-gold-lt)"/><circle cx="29.2" cy="9.2" r="1.3" fill="var(--hol-blue)" stroke="none"/><ellipse cx="30.4" cy="22.6" rx="1" ry="2.8" fill="var(--hol-blue)" stroke="none"/><path d="M25.6 18.1 L26.2 19.8 L28 19.8 L26.6 20.9 L27.1 22.6 L25.6 21.7 L24.1 22.6 L24.6 20.9 L23.2 19.8 L25 19.8Z" fill="var(--hol-red)" stroke-width="1.1"/>
+```
+
+#### 5. State Emblem · סֵמֶל הַמְּדִינָה
+
+<img src="docs/holiday-guide/yom-haatzmaut-5.svg" width="72" height="72" alt="A shield with a menorah between olive branches">
+
+**Caption:** The emblem of Israel is a menorah between two olive branches.
+
+**כיתוב:** סמל המדינה הוא מנורה בין שני ענפי זית.
+
+```html
+<path d="M9.5 6 H38.5 V27 C38.5 35.5 32.5 40.5 24 44 C15.5 40.5 9.5 35.5 9.5 27Z" fill="var(--hol-blue)"/><path d="M15.5 14 V16.5 A8.5 8.5 0 0 0 32.5 16.5 V14 M18.4 14 V16.5 A5.6 5.6 0 0 0 29.6 16.5 V14 M21.2 14 V16.5 A2.8 2.8 0 0 0 26.8 16.5 V14 M24 13 V28.5 M19.5 30.5 H28.5" stroke="var(--hol-gold-lt)" stroke-width="1.8"/><path d="M13 21 C13 29 16.5 34.5 22 37.5 M35 21 C35 29 31.5 34.5 26 37.5" stroke="var(--hol-gold-lt)" stroke-width="1.5"/><path d="M13.4 26 Q12.4 24.3 10.2 24.8 Q11.6 26.6 13.4 26Z M15 30.6 Q13.8 29 11.7 29.7 Q13.2 31.4 15 30.6Z M34.6 26 Q36.4 26.6 37.8 24.8 Q35.6 24.3 34.6 26Z M33 30.6 Q34.8 31.4 36.3 29.7 Q34.2 29 33 30.6Z" fill="var(--hol-gold-lt)" stroke="none"/>
+```
+
+#### 6. Barbecue · מַנְגָּל
+
+<img src="docs/holiday-guide/yom-haatzmaut-6.svg" width="72" height="72" alt="A small grill with skewers">
+
+**Caption:** Families celebrate outdoors with a barbecue, called a mangal.
+
+**כיתוב:** משפחות חוגגות בחיק הטבע ועושות מנגל.
+
+```html
+<path d="M17 11.5 C15.4 9.4 18.6 7.9 17 5.8 M24.5 10.5 C22.9 8.4 26.1 6.9 24.5 4.8 M32 11.5 C30.4 9.4 33.6 7.9 32 5.8" stroke-width="1.5"/><path d="M5.5 19 H42.5" stroke-width="1.7"/><rect x="12" y="15.8" width="5.4" height="6.4" rx="1.5" fill="var(--hol-red)" stroke-width="1.4"/><rect x="21.3" y="15.8" width="5.4" height="6.4" rx="1.5" fill="var(--hol-green)" stroke-width="1.4"/><rect x="30.6" y="15.8" width="5.4" height="6.4" rx="1.5" fill="var(--hol-flame)" stroke-width="1.4"/><path d="M14.5 32 L11 44 M33.5 32 L37 44" stroke-width="2.4"/><path d="M8.5 23.5 H39.5 L36.5 32.5 H11.5Z" fill="var(--hol-navy)"/><path d="M13.5 27 H34.5" stroke="var(--hol-flame)" stroke-width="2.4"/>
 ```
 
 ### 14. Lag BaOmer · ל״ג בָּעֹמֶר
@@ -927,6 +1371,78 @@ on picnics and play with bows and arrows, remembering Rabbi Akiva’s students a
 <path d="M24 4 C27 10.5 34.5 14 34.5 23.5 C34.5 30 29.8 34.5 24 34.5 C18.2 34.5 13.5 30 13.5 23.5 C13.5 19.5 15.5 17.2 17 14.5 C18 17 19.2 18.2 21 18.8 C20.5 13.5 22 8.5 24 4Z" fill="var(--hol-flame)"/><path d="M24 18.5 C26 22 29 24 29 27.5 C29 30.8 26.8 32.6 24 32.6 C21.2 32.6 19 30.8 19 27.5 C19 24.5 21.8 22.5 24 18.5Z" fill="var(--hol-gold-lt)" stroke-width="1.4"/><path d="M6.5 37.5 L36.5 43.5 L37.5 39.5 L7.5 33.5Z" fill="var(--hol-gold)"/><path d="M41.5 37.5 L11.5 43.5 L10.5 39.5 L40.5 33.5Z" fill="var(--hol-gold)"/>
 ```
 
+#### 1. Bonfire · מְדוּרָה
+
+<img src="docs/holiday-guide/lag-baomer-1.svg" width="72" height="72" alt="A bonfire with sparks">
+
+**Caption:** Bonfires are lit on Lag BaOmer night, and people sing around them.
+
+**כיתוב:** בליל ל״ג בעומר מדליקים מדורות ושרים סביבן.
+
+```html
+<path d="M24 5 C27.5 12 34 17 34 26 C34 33 29.5 37.5 24 37.5 C18.5 37.5 14 33 14 26 C14 21.5 16.2 19 17.8 16 C18.8 18.8 20 20 21.6 20.6 C21 14.5 22.2 9.5 24 5Z" fill="var(--hol-flame)"/><path d="M24 21 C26 25 29 27 29 31 C29 34.2 26.8 36 24 36 C21.2 36 19 34.2 19 31 C19 27.8 21.8 25.5 24 21Z" fill="var(--hol-gold-lt)" stroke-width="1.4"/><path d="M13 43.5 L21 24.5 L24.4 25.8 L17.8 43.5Z" fill="var(--hol-gold)"/><path d="M35 43.5 L27 24.5 L23.6 25.8 L30.2 43.5Z" fill="var(--hol-gold)"/><circle cx="8.5" cy="41.5" r="3.2" fill="var(--hol-paper)" stroke-width="1.6"/><circle cx="39.5" cy="41.5" r="3.2" fill="var(--hol-paper)" stroke-width="1.6"/><path d="M9 10.4 Q9.6 12.4 11.6 13 Q9.6 13.6 9 15.6 Q8.4 13.6 6.4 13 Q8.4 12.4 9 10.4Z M39 13.8 Q39.5 15.5 41.2 16 Q39.5 16.5 39 18.2 Q38.5 16.5 36.8 16 Q38.5 15.5 39 13.8Z M35 4.1 Q35.4 5.6 36.9 6 Q35.4 6.4 35 7.9 Q34.6 6.4 33.1 6 Q34.6 5.6 35 4.1Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/>
+```
+
+#### 2. Bow and Arrow · חֵץ וָקֶשֶׁת
+
+<img src="docs/holiday-guide/lag-baomer-2.svg" width="72" height="72" alt="A bow with an arrow">
+
+**Caption:** Children play with bows and arrows in the fields.
+
+**כיתוב:** הילדים משחקים בחץ וקשת בשדות.
+
+```html
+<path d="M15 5.5 V42.5" stroke-width="1.4"/><path d="M15 5.5 C34 11 34 37 15 42.5" stroke="var(--hol-gold)" stroke-width="3.4"/><path d="M5 24 H38" stroke-width="1.9"/><path d="M44 24 L36.5 19.8 V28.2Z" fill="var(--hol-red)" stroke-width="1.6"/><path d="M5 24 L2.6 21 M5 24 L2.6 27 M8.2 24 L5.8 21 M8.2 24 L5.8 27" stroke-width="1.5"/>
+```
+
+#### 3. Potato · תַּפּוּחַ אֲדָמָה
+
+<img src="docs/holiday-guide/lag-baomer-3.svg" width="72" height="72" alt="A potato roasting over embers">
+
+**Caption:** Potatoes are wrapped up and roasted in the embers of the bonfire.
+
+**כיתוב:** עוטפים תפוחי אדמה וצולים אותם בגחלי המדורה.
+
+```html
+<path d="M17 9 C15.4 6.9 18.6 5.6 17 3.6 M25 8 C23.4 5.9 26.6 4.6 25 2.6 M33 9 C31.4 6.9 34.6 5.6 33 3.6" stroke-width="1.5"/><path d="M7.5 25 C6.5 17.5 13.5 12 22.5 12.5 C32 12 41 17 41 25 C41 32.5 34 37 25 37 C15 37.5 8.5 33 7.5 25Z" fill="var(--hol-gold)"/><path d="M14.5 21.5 L16.2 22.6 M27 17.5 L28.6 18.2 M32.5 26.5 L33.8 27.8 M20 30.5 L21.6 31 M23 23.5 L24.4 24.2" stroke-width="1.6"/><path d="M12 19 C13.5 16.8 15.5 15.6 18 15.2" stroke="var(--hol-gold-lt)" stroke-width="1.7"/><path d="M11 43.5 c-1.4 -1.4 -1.2 -3.6 0 -5 c1.2 1.4 1.4 3.6 0 5Z M19.5 43.5 c-1.2 -1.2 -0.9 -2.8 0 -4 c0.9 1.2 1.2 2.8 0 4Z M28.5 43.5 c-1.2 -1.2 -0.9 -2.8 0 -4 c0.9 1.2 1.2 2.8 0 4Z M37 43.5 c-1.4 -1.4 -1.2 -3.6 0 -5 c1.2 1.4 1.4 3.6 0 5Z" fill="var(--hol-flame)" stroke-width="1.3"/>
+```
+
+#### 4. Picnic · פִּיקְנִיק
+
+<img src="docs/holiday-guide/lag-baomer-4.svg" width="72" height="72" alt="A picnic basket">
+
+**Caption:** Lag BaOmer is a day for picnics and trips outdoors.
+
+**כיתוב:** ל״ג בעומר הוא יום של פיקניקים וטיולים בטבע.
+
+```html
+<path d="M13 22 C13 6.5 35 6.5 35 22" stroke-width="2.6"/><g transform="rotate(-28 31 15)"><rect x="28.4" y="5" width="5.2" height="19" rx="2.6" fill="var(--hol-gold-lt)" stroke-width="1.6"/><path d="M28.4 10 H33.6 M28.4 14 H33.6" stroke-width="1.2"/></g><path d="M8.5 22 H39.5 L36.5 42.5 H11.5Z" fill="var(--hol-gold)"/><path d="M9.4 28 H38.6 M10.2 33 H37.8 M11 38 H37 M17 22 L18.4 42.5 M24 22 V42.5 M31 22 L29.6 42.5" stroke-width="1.3"/><path d="M8.5 22 H39.5 L38.6 27.5 C34.5 25 30.5 29.5 24 26.8 C17.5 29.5 13.5 25 9.4 27.5Z" fill="var(--hol-red)" stroke-width="1.6"/><path d="M15 22.5 V26 M21 22.5 V27.3 M27 22.5 V27.3 M33 22.5 V26" stroke="var(--hol-paper)" stroke-width="1.6"/>
+```
+
+#### 5. Carob · חָרוּב
+
+<img src="docs/holiday-guide/lag-baomer-5.svg" width="72" height="72" alt="Two carob pods">
+
+**Caption:** A carob tree fed Rabbi Shimon bar Yochai while he hid in a cave.
+
+**כיתוב:** עץ חרוב הזין את רבי שמעון בר יוחאי כשהסתתר במערה.
+
+```html
+<path d="M9 9.5 C11 7 14 6.5 16.5 8" stroke-width="1.8"/><path d="M12 8 Q10.8 4.3 6.4 4.8 Q8.2 8.8 12 8Z M14 7 Q17.9 7.1 19 2.8 Q14.6 3.1 14 7Z" fill="var(--hol-green)" stroke-width="1.4"/><path d="M9 11 C18 9 31 15.5 39.5 32.5 C40.6 35 38.2 36.8 36.4 34.8 C28.5 22 17.5 16.5 9.8 15.2 C7.2 14.7 6.6 11.8 9 11Z" fill="var(--hol-gold)"/><path d="M15.5 12.5 L14.7 15.9 M21.6 14.8 L20.3 18 M27.3 18.6 L25.7 21.5 M32.4 23.6 L30.5 26.2 M36.4 29.4 L34.5 31.6" stroke-width="1.3"/><path d="M6 24 C13 23.5 22 29.5 27 42 C27.8 44.2 25.5 45.5 24 43.8 C19 34.5 12.5 29.5 6.6 28.2 C4.4 27.6 4 24.7 6 24Z" fill="var(--hol-gold)"/><path d="M11 25.4 L10.2 28.6 M16 28 L14.6 30.9 M20.4 32.6 L18.5 35 M23.8 38 L21.7 40" stroke-width="1.3"/>
+```
+
+#### 6. Cave · מְעָרָה
+
+<img src="docs/holiday-guide/lag-baomer-6.svg" width="72" height="72" alt="A cave in a hillside">
+
+**Caption:** Rabbi Shimon and his son hid in a cave for years and studied Torah there.
+
+**כיתוב:** רבי שמעון ובנו הסתתרו במערה שנים רבות ולמדו בה תורה.
+
+```html
+<path d="M3.5 42.5 C5.5 22 14 8.5 25 8.5 C36 8.5 43 22 44.5 42.5Z" fill="var(--hol-gold-lt)"/><path d="M16 42.5 C16 31 19.5 24.5 25 24.5 C30.5 24.5 34 31 34 42.5Z" fill="var(--hol-navy)"/><path d="M11 27 C13 25.2 15.4 25.6 16.6 27.6 M30.5 15.5 C32.6 14.2 35 15 36 17.2 M19 14 C20.6 12.8 22.6 13 23.8 14.5" stroke-width="1.4"/><path d="M7 42.5 L8 39 M9.6 42.5 L10.4 40 M38.5 42.5 L39.3 39.5 M41 42.5 L41.6 40.4" stroke="var(--hol-green)" stroke-width="1.8"/><path d="M2.5 42.5 H45.5" stroke-width="2.4"/>
+```
+
 ### 15. Yom Yerushalayim · יוֹם יְרוּשָׁלַיִם
 
 <img src="docs/holiday-guide/yom-yerushalayim.svg" width="96" height="96" alt="The walls of Jerusalem with a gate and a tower">
@@ -947,6 +1463,82 @@ thousand years ago, and its reunification in 1967, with songs, flags and visits 
 
 ```html
 <path d="M27 26 V13 H37 V26Z" fill="var(--hol-gold-lt)"/><path d="M26 13 L32 4.5 L38 13Z" fill="var(--hol-gold)"/><path d="M32 17 V21" stroke-width="1.8"/><path d="M4 43 V24 H8.5 V27.5 H13 V24 H17.5 V27.5 H22 V24 H26.5 V27.5 H31 V24 H35.5 V27.5 H40 V24 H44 V43Z" fill="var(--hol-gold-lt)"/><path d="M18.5 43 V36.5 A5.5 5.5 0 0 1 29.5 36.5 V43Z" fill="var(--hol-navy)"/><path d="M8 33 H13 M35 33 H40 M10 38 H14 M34 38 H38" stroke="var(--hol-gold)" stroke-width="1.5"/>
+```
+
+#### 1. Kotel · הַכֹּתֶל
+
+<img src="docs/holiday-guide/yom-yerushalayim-1.svg" width="72" height="72" alt="The stones of the Western Wall">
+
+**Unpointed:** הכותל
+
+**Caption:** The Kotel, the Western Wall, is the last wall left standing around the Temple Mount.
+
+**כיתוב:** הכותל המערבי הוא שריד מן החומה שהקיפה את הר הבית.
+
+```html
+<rect x="4" y="6" width="12" height="8" fill="var(--hol-gold-lt)" stroke-width="1.6"/><rect x="17" y="6" width="16" height="8" fill="var(--hol-gold-lt)" stroke-width="1.6"/><rect x="34" y="6" width="10" height="8" fill="var(--hol-gold-lt)" stroke-width="1.6"/><rect x="4" y="15" width="8" height="8" fill="var(--hol-gold-lt)" stroke-width="1.6"/><rect x="13" y="15" width="14" height="8" fill="var(--hol-gold-lt)" stroke-width="1.6"/><rect x="28" y="15" width="16" height="8" fill="var(--hol-gold-lt)" stroke-width="1.6"/><rect x="4" y="24" width="14" height="8" fill="var(--hol-gold-lt)" stroke-width="1.6"/><rect x="19" y="24" width="11" height="8" fill="var(--hol-gold-lt)" stroke-width="1.6"/><rect x="31" y="24" width="13" height="8" fill="var(--hol-gold-lt)" stroke-width="1.6"/><rect x="4" y="33" width="9" height="8" fill="var(--hol-gold-lt)" stroke-width="1.6"/><rect x="14" y="33" width="16" height="8" fill="var(--hol-gold-lt)" stroke-width="1.6"/><rect x="31" y="33" width="13" height="8" fill="var(--hol-gold-lt)" stroke-width="1.6"/><path d="M17 15 C16.2 12 14.6 11 13 11 M17 15 C18 12.4 19.6 11.8 21.2 12.4 M31 24 C30.4 21.4 29 20.4 27.4 20.4 M31 24 C32 21.8 33.6 21.3 35.2 21.8 M14 33 C13.4 30.6 12 29.8 10.6 29.8 M14 33 C15 31 16.4 30.5 17.8 31" stroke="var(--hol-green)" stroke-width="1.8"/><path d="M2.5 43 H45.5" stroke-width="2.4"/>
+```
+
+#### 2. Tower of David · מִגְדַּל דָּוִד
+
+<img src="docs/holiday-guide/yom-yerushalayim-2.svg" width="72" height="72" alt="A tall tower above the city wall">
+
+**Caption:** The Tower of David stands beside Jaffa Gate at the entrance to the Old City.
+
+**כיתוב:** מגדל דוד ניצב ליד שער יפו, בכניסה לעיר העתיקה.
+
+```html
+<rect x="19" y="12" width="10" height="24" fill="var(--hol-gold-lt)"/><path d="M19.6 12 L24 3.5 L28.4 12Z" fill="var(--hol-gold)"/><rect x="17" y="17.5" width="14" height="3.6" rx="1" fill="var(--hol-gold)"/><path d="M24 24.5 V29" stroke-width="2.2"/><path d="M5 43.5 V32 H9 V35 H13 V32 H17 V35 H31 V32 H35 V35 H39 V32 H43 V43.5Z" fill="var(--hol-gold-lt)"/><path d="M9.5 39.5 H14 M34 39.5 H38.5 M20 39.5 H28" stroke="var(--hol-gold)" stroke-width="1.5"/>
+```
+
+#### 3. Gate · שַׁעַר
+
+<img src="docs/holiday-guide/yom-yerushalayim-3.svg" width="72" height="72" alt="An arched gate in the city wall">
+
+**Caption:** The Old City has great stone gates in its walls.
+
+**כיתוב:** בחומות העיר העתיקה יש שערי אבן גדולים.
+
+```html
+<path d="M6 43.5 V13.5 H10 V16.5 H14 V13.5 H18 V16.5 H30 V13.5 H34 V16.5 H38 V13.5 H42 V43.5Z" fill="var(--hol-gold-lt)"/><path d="M17 43.5 V30.5 A7 7 0 0 1 31 30.5 V43.5Z" fill="var(--hol-navy)"/><path d="M14.6 30.5 A9.4 9.4 0 0 1 33.4 30.5" stroke="var(--hol-gold)" stroke-width="1.7"/><path d="M10.5 23 V27.5 M37.5 23 V27.5" stroke-width="2.2"/><path d="M3.5 43.5 H44.5" stroke-width="2.4"/>
+```
+
+#### 4. Lion · אַרְיֵה
+
+<img src="docs/holiday-guide/yom-yerushalayim-4.svg" width="72" height="72" alt="A lion’s face">
+
+**Caption:** The lion is the symbol of Jerusalem and of the tribe of Judah.
+
+**כיתוב:** האריה הוא סמלה של ירושלים ושל שבט יהודה.
+
+```html
+<circle cx="37.2" cy="23.5" r="5.2" fill="var(--hol-gold)" stroke-width="1.6"/><circle cx="34.7" cy="31.3" r="5.2" fill="var(--hol-gold)" stroke-width="1.6"/><circle cx="28.1" cy="36.1" r="5.2" fill="var(--hol-gold)" stroke-width="1.6"/><circle cx="19.9" cy="36.1" r="5.2" fill="var(--hol-gold)" stroke-width="1.6"/><circle cx="13.3" cy="31.3" r="5.2" fill="var(--hol-gold)" stroke-width="1.6"/><circle cx="10.8" cy="23.5" r="5.2" fill="var(--hol-gold)" stroke-width="1.6"/><circle cx="13.3" cy="15.7" r="5.2" fill="var(--hol-gold)" stroke-width="1.6"/><circle cx="19.9" cy="10.9" r="5.2" fill="var(--hol-gold)" stroke-width="1.6"/><circle cx="28.1" cy="10.9" r="5.2" fill="var(--hol-gold)" stroke-width="1.6"/><circle cx="34.7" cy="15.7" r="5.2" fill="var(--hol-gold)" stroke-width="1.6"/><circle cx="14.5" cy="13.5" r="3.4" fill="var(--hol-gold-lt)" stroke-width="1.6"/><circle cx="33.5" cy="13.5" r="3.4" fill="var(--hol-gold-lt)" stroke-width="1.6"/><circle cx="24" cy="24.5" r="11.6" fill="var(--hol-gold-lt)"/><circle cx="19.4" cy="22" r="1.5" fill="var(--hol-navy)" stroke="none"/><circle cx="28.6" cy="22" r="1.5" fill="var(--hol-navy)" stroke="none"/><path d="M21.8 26.4 H26.2 L24 29.2Z" fill="var(--hol-navy)" stroke-width="1.2"/><path d="M24 29.2 V31 M24 31 C22.6 33.2 20.4 33.2 19.4 31.6 M24 31 C25.4 33.2 27.6 33.2 28.6 31.6" stroke-width="1.5"/>
+```
+
+#### 5. Olive Tree · עֵץ זַיִת
+
+<img src="docs/holiday-guide/yom-yerushalayim-5.svg" width="72" height="72" alt="An olive tree with olives">
+
+**Caption:** Olive trees have grown on the hills of Jerusalem for thousands of years.
+
+**כיתוב:** עצי זית צומחים על הרי ירושלים אלפי שנים.
+
+```html
+<path d="M17.5 43.5 C18.6 37.5 15.6 33 18.6 27.5 C20.2 29.8 22.4 30.2 23.4 27.8 C24 30.8 26 31.4 28 28.8 C30.6 33 28.6 37.5 30.5 43.5Z" fill="var(--hol-gold)"/><path d="M21.5 34 C22.5 36.5 22 39.5 21 42 M26 35 C25.4 37.5 26 40 27 42" stroke-width="1.3"/><path d="M24 5.5 C31 4.5 38 8 41 13.5 C44 19 42 25.5 36 28 C32 30 16 30 12 28 C6 25.5 4 19 7 13.5 C10 8 17 4.5 24 5.5Z" fill="var(--hol-green)"/><circle cx="14" cy="16" r="1.6" fill="var(--hol-navy)" stroke="none"/><circle cx="22" cy="11.5" r="1.6" fill="var(--hol-navy)" stroke="none"/><circle cx="31" cy="14" r="1.6" fill="var(--hol-navy)" stroke="none"/><circle cx="36" cy="21" r="1.6" fill="var(--hol-navy)" stroke="none"/><circle cx="19" cy="22" r="1.6" fill="var(--hol-navy)" stroke="none"/><circle cx="27" cy="23" r="1.6" fill="var(--hol-navy)" stroke="none"/><path d="M5 43.5 H43" stroke-width="2.4"/>
+```
+
+#### 6. Harp · כִּנּוֹר
+
+<img src="docs/holiday-guide/yom-yerushalayim-6.svg" width="72" height="72" alt="A harp">
+
+**Unpointed:** כינור
+
+**Caption:** King David, who made Jerusalem his city, played the harp.
+
+**כיתוב:** דוד המלך, שקבע את ירושלים לעירו, ניגן בכינור.
+
+```html
+<path d="M20 13.5 V38 M24 13.5 V38 M28 13.5 V38" stroke-width="1.3"/><path d="M17 43 C11.5 36.5 11.5 26 15 13.5 L18.6 14.4 C16.4 25 17 33 20.6 38 H27.4 C31 33 31.6 25 29.4 14.4 L33 13.5 C36.5 26 36.5 36.5 31 43Z" fill="var(--hol-gold)"/><rect x="10.5" y="9.5" width="27" height="4.4" rx="2.2" fill="var(--hol-gold-lt)"/><circle cx="10.5" cy="11.7" r="2" fill="var(--hol-gold)" stroke-width="1.4"/><circle cx="37.5" cy="11.7" r="2" fill="var(--hol-gold)" stroke-width="1.4"/>
 ```
 
 ### 16. Shavuot · שָׁבוּעוֹת
@@ -970,6 +1562,82 @@ cheesecake.
 
 **Symbol:** holiday-icons:shavuot
 
+#### 1. Tablets · לוּחוֹת הַבְּרִית
+
+<img src="docs/holiday-guide/shavuot-1.svg" width="72" height="72" alt="The two tablets joined together">
+
+**Caption:** The Ten Commandments were written on two tablets of stone.
+
+**כיתוב:** עשרת הדיברות נכתבו על שני לוחות אבן.
+
+```html
+<path d="M10.5 6.5 L8.5 4 M24 5 V2.4 M37.5 6.5 L39.5 4" stroke="var(--hol-gold)" stroke-width="1.7"/><path d="M7 42.5 V17 A8.5 8.5 0 0 1 24 17 A8.5 8.5 0 0 1 41 17 V42.5Z" fill="var(--hol-gold-lt)"/><path d="M24 17 V42.5" stroke-width="1.6"/><path d="M11.5 22 H19.5 M11.5 26.5 H19.5 M11.5 31 H19.5 M11.5 35.5 H19.5 M28.5 22 H36.5 M28.5 26.5 H36.5 M28.5 31 H36.5 M28.5 35.5 H36.5" stroke-width="1.6"/>
+```
+
+#### 2. Mount Sinai · הַר סִינַי
+
+<img src="docs/holiday-guide/shavuot-2.svg" width="72" height="72" alt="A mountain with a cloud, lightning and flowers">
+
+**Caption:** The Torah was given at Mount Sinai, which bloomed with flowers.
+
+**כיתוב:** התורה ניתנה בהר סיני, שפרח כולו.
+
+```html
+<path d="M4 42.5 L19.5 13.5 C21.5 10 26.5 10 28.5 13.5 L44 42.5Z" fill="var(--hol-gold-lt)"/><path d="M15.5 14.5 A4.4 4.4 0 0 1 16.4 6.2 A6.4 6.4 0 0 1 28.4 5 A5.2 5.2 0 0 1 33.5 14.5Z" fill="var(--hol-paper)"/><path d="M25.5 17 L22 24 H25.6 L22.6 31" stroke="var(--hol-flame)" stroke-width="2"/><path d="M11 42.5 V38.5 M18 42.5 V36 M31 42.5 V37 M37 42.5 V39.5" stroke="var(--hol-green)" stroke-width="1.7"/><circle cx="11" cy="37" r="2" fill="var(--hol-red)" stroke-width="1.2"/><circle cx="18" cy="34.5" r="2" fill="var(--hol-blue)" stroke-width="1.2"/><circle cx="31" cy="35.5" r="2" fill="var(--hol-red)" stroke-width="1.2"/><circle cx="37" cy="38" r="2" fill="var(--hol-blue)" stroke-width="1.2"/><path d="M2.5 42.5 H45.5" stroke-width="2.4"/>
+```
+
+#### 3. Cheesecake · עוּגַת גְּבִינָה
+
+<img src="docs/holiday-guide/shavuot-3.svg" width="72" height="72" alt="A slice of cheesecake with a strawberry">
+
+**Caption:** Dairy foods like cheesecake are eaten on Shavuot.
+
+**כיתוב:** בשבועות אוכלים מאכלי חלב, כמו עוגת גבינה.
+
+```html
+<ellipse cx="24" cy="41" rx="20" ry="3.4" fill="var(--hol-paper)" stroke-width="1.6"/><path d="M8 20 L10 28.5 V39.5 L8 31Z" fill="var(--hol-gold-lt)"/><path d="M10 28.5 L40 21.5 V32.5 L10 39.5Z" fill="var(--hol-paper)"/><path d="M10 36.2 L40 29.2 V32.5 L10 39.5Z" fill="var(--hol-gold)" stroke-width="1.5"/><path d="M8 20 L38 13 L40 21.5 L10 28.5Z" fill="var(--hol-red)"/><circle cx="22" cy="16.5" r="3.4" fill="var(--hol-red)" stroke-width="1.5"/><path d="M22 13.6 Q21.5 11.1 18.6 10.8 Q19.5 13.6 22 13.6Z M22 13.6 Q24.5 13.6 25.4 10.8 Q22.5 11.1 22 13.6Z" fill="var(--hol-green)" stroke-width="1.2"/>
+```
+
+#### 4. First Fruits · בִּכּוּרִים
+
+<img src="docs/holiday-guide/shavuot-4.svg" width="72" height="72" alt="A basket of fruit and wheat">
+
+**Unpointed:** ביכורים
+
+**Caption:** Farmers brought baskets of their first fruits to the Temple in Jerusalem.
+
+**כיתוב:** החקלאים הביאו סלים של ביכורים לבית המקדש בירושלים.
+
+```html
+<path d="M33 24 C33.5 17 35 12 37.5 8 M37.5 8 L35.4 10.6 M37.5 8 L39.4 10.8 M36.2 12 L34 14.2 M36.2 12 L38.4 14.4 M34.9 16 L32.8 18 M34.9 16 L37 18.2" stroke-width="1.5"/><path d="M13.6 13.5 L12.6 8.5 L15.6 10.6 L17 7.5 L18.4 10.6 L21.4 8.5 L20.4 13.5Z" fill="var(--hol-red)" stroke-width="1.5"/><circle cx="17" cy="19" r="6.2" fill="var(--hol-red)"/><circle cx="25.5" cy="16.5" r="2.5" fill="var(--hol-blue)" stroke-width="1.3"/><circle cx="30" cy="16.5" r="2.5" fill="var(--hol-blue)" stroke-width="1.3"/><circle cx="23.3" cy="20.6" r="2.5" fill="var(--hol-blue)" stroke-width="1.3"/><circle cx="27.8" cy="20.6" r="2.5" fill="var(--hol-blue)" stroke-width="1.3"/><circle cx="25.5" cy="24.5" r="2.5" fill="var(--hol-blue)" stroke-width="1.3"/><path d="M8 25 H40 L36.5 42.5 H11.5Z" fill="var(--hol-gold)"/><path d="M9 30 H39 M10 34.5 H38 M10.8 39 H37.2 M16.5 25 L18 42.5 M24 25 V42.5 M31.5 25 L30 42.5" stroke-width="1.3"/>
+```
+
+#### 5. Wheat · חִטָּה
+
+<img src="docs/holiday-guide/shavuot-5.svg" width="72" height="72" alt="Three stalks of wheat tied together">
+
+**Unpointed:** חיטה
+
+**Caption:** Shavuot comes at the time of the wheat harvest.
+
+**כיתוב:** שבועות חל בזמן קציר החיטים.
+
+```html
+<g transform="rotate(-20 24 38)"><path d="M24 44 V20" stroke-width="1.6"/><path d="M24 22 Q27.1 20.6 27.4 16.6 Q23.9 18.6 24 22Z M24 22 Q24.1 18.6 20.6 16.6 Q20.9 20.6 24 22Z M24 17.5 Q27.1 16.1 27.4 12.1 Q23.9 14.1 24 17.5Z M24 17.5 Q24.1 14.1 20.6 12.1 Q20.9 16.1 24 17.5Z M24 13 Q27.1 11.6 27.4 7.6 Q23.9 9.6 24 13Z M24 13 Q24.1 9.6 20.6 7.6 Q20.9 11.6 24 13Z M24 10.5 Q25.9 7.5 24 3.9 Q22.1 7.5 24 10.5Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/></g><g transform="rotate(20 24 38)"><path d="M24 44 V20" stroke-width="1.6"/><path d="M24 22 Q27.1 20.6 27.4 16.6 Q23.9 18.6 24 22Z M24 22 Q24.1 18.6 20.6 16.6 Q20.9 20.6 24 22Z M24 17.5 Q27.1 16.1 27.4 12.1 Q23.9 14.1 24 17.5Z M24 17.5 Q24.1 14.1 20.6 12.1 Q20.9 16.1 24 17.5Z M24 13 Q27.1 11.6 27.4 7.6 Q23.9 9.6 24 13Z M24 13 Q24.1 9.6 20.6 7.6 Q20.9 11.6 24 13Z M24 10.5 Q25.9 7.5 24 3.9 Q22.1 7.5 24 10.5Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/></g><path d="M24 44 V20" stroke-width="1.6"/><path d="M24 22 Q27.1 20.6 27.4 16.6 Q23.9 18.6 24 22Z M24 22 Q24.1 18.6 20.6 16.6 Q20.9 20.6 24 22Z M24 17.5 Q27.1 16.1 27.4 12.1 Q23.9 14.1 24 17.5Z M24 17.5 Q24.1 14.1 20.6 12.1 Q20.9 16.1 24 17.5Z M24 13 Q27.1 11.6 27.4 7.6 Q23.9 9.6 24 13Z M24 13 Q24.1 9.6 20.6 7.6 Q20.9 11.6 24 13Z M24 10.5 Q25.9 7.5 24 3.9 Q22.1 7.5 24 10.5Z" fill="var(--hol-gold-lt)" stroke-width="1.3"/><path d="M19.5 33.5 H28.5 V36.6 H19.5Z" fill="var(--hol-red)" stroke-width="1.4"/>
+```
+
+#### 6. Milk and Honey · חָלָב וּדְבַשׁ
+
+<img src="docs/holiday-guide/shavuot-6.svg" width="72" height="72" alt="A bottle of milk and a jar of honey">
+
+**Caption:** The Torah is compared to milk and honey, sweet and good for you.
+
+**כיתוב:** התורה נמשלה לחלב ולדבש, מתוקה וטובה.
+
+```html
+<path d="M10 8 H18 V13.5 C18 16.5 22 18 22 22.5 V40.5 A2.5 2.5 0 0 1 19.5 43 H8.5 A2.5 2.5 0 0 1 6 40.5 V22.5 C6 18 10 16.5 10 13.5Z" fill="var(--hol-paper)"/><rect x="9.4" y="4.6" width="9.2" height="3.8" rx="1.2" fill="var(--hol-blue)" stroke-width="1.5"/><path d="M6 27 H22 M6 34.5 H22" stroke="var(--hol-blue)" stroke-width="1.7"/><path d="M28 24.5 H42 C44.2 30.5 44 37.5 41 43 H29 C26 37.5 25.8 30.5 28 24.5Z" fill="var(--hol-gold-lt)"/><rect x="27" y="20.6" width="16" height="4" rx="1.7" fill="var(--hol-gold)"/><path d="M35 28.5 L38.2 30.3 V34 L35 35.8 L31.8 34 V30.3Z" stroke="var(--hol-gold)" stroke-width="1.5"/><path d="M35 8.5 C36.4 11.1 37.3 12.4 37.3 13.8 A2.3 2.3 0 0 1 32.7 13.8 C32.7 12.4 33.6 11.1 35 8.5Z" fill="var(--hol-flame)" stroke-width="1.4"/>
+```
+
 ### 17. Tisha B'Av · תִּשְׁעָה בְּאָב
 
 <img src="docs/holiday-guide/tisha-bav.svg" width="96" height="96" alt="The stones of the Western Wall">
@@ -989,3 +1657,77 @@ sit low to the ground and read the Book of Lamentations, and everyone hopes for 
 ומקווים לבניין ירושלים בשלום.
 
 **Symbol:** holiday-icons:tishabav
+
+#### 1. Temple · בֵּית הַמִּקְדָּשׁ
+
+<img src="docs/holiday-guide/tisha-bav-1.svg" width="72" height="72" alt="The Temple with its steps and columns">
+
+**Caption:** The Temple stood in Jerusalem; Tisha B’Av remembers the day it was destroyed.
+
+**כיתוב:** בית המקדש עמד בירושלים, ובתשעה באב זוכרים את יום חורבנו.
+
+```html
+<rect x="5" y="39.5" width="38" height="4" fill="var(--hol-gold-lt)"/><rect x="9" y="35" width="30" height="4.5" fill="var(--hol-gold-lt)"/><rect x="12" y="14" width="24" height="21" fill="var(--hol-paper)"/><path d="M15.8 14.5 V35 M32.2 14.5 V35" stroke="var(--hol-gold-lt)" stroke-width="3.2"/><path d="M20 35 V25 A4 4 0 0 1 28 25 V35Z" fill="var(--hol-gold)"/><rect x="10" y="9.5" width="28" height="4.6" fill="var(--hol-gold)"/><path d="M12.5 9.5 V6 H16.5 V9.5 M22 9.5 V6 H26 V9.5 M31.5 9.5 V6 H35.5 V9.5" stroke-width="1.6"/>
+```
+
+#### 2. Scroll of Eicha · מְגִלַּת אֵיכָה
+
+<img src="docs/holiday-guide/tisha-bav-2.svg" width="72" height="72" alt="An open scroll">
+
+**Unpointed:** מגילת איכה
+
+**Caption:** The Book of Lamentations, Eicha, is read in a quiet, sad tune.
+
+**כיתוב:** קוראים את מגילת איכה בניגון שקט ועצוב.
+
+```html
+<rect x="11" y="11.5" width="26" height="25" fill="var(--hol-paper)"/><path d="M15 17 H33 M15 21.5 H33 M15 26 H33 M15 30.5 H26.5" stroke-width="1.5"/><rect x="7.5" y="6" width="33" height="6.2" rx="3.1" fill="var(--hol-gold-lt)"/><rect x="7.5" y="35.8" width="33" height="6.2" rx="3.1" fill="var(--hol-gold-lt)"/><path d="M7.5 9.1 H4.5 M40.5 9.1 H43.5 M7.5 38.9 H4.5 M40.5 38.9 H43.5" stroke-width="2.4"/>
+```
+
+#### 3. Candle · נֵר
+
+<img src="docs/holiday-guide/tisha-bav-3.svg" width="72" height="72" alt="A candle in a holder">
+
+**Caption:** Eicha is read at night in dim light, sometimes by candlelight.
+
+**כיתוב:** את איכה קוראים בלילה באור עמום, ולפעמים לאור נר.
+
+```html
+<ellipse cx="22" cy="40.5" rx="14.5" ry="3.6" fill="var(--hol-gold-lt)"/><circle cx="39.2" cy="38.5" r="3.2" stroke-width="2"/><rect x="17.8" y="20.5" width="8.4" height="19.5" rx="1" fill="var(--hol-paper)"/><path d="M17.8 25 C17.8 27.6 20 27.6 20 25.4" stroke-width="1.4"/><path d="M22 20.5 V17.5" stroke-width="1.6"/><path d="M22 7.6 C23.2 10.4 25.7 12.4 25.5 14.6 C25.3 16.6 23.8 17.6 22 17.6 C20.2 17.6 18.7 16.6 18.5 14.6 C18.3 12.4 20.8 10.4 22 7.6Z" fill="var(--hol-flame)"/>
+```
+
+#### 4. Low Stool · שְׁרַפְרַף
+
+<img src="docs/holiday-guide/tisha-bav-4.svg" width="72" height="72" alt="A low wooden stool">
+
+**Caption:** People sit on low stools or on the floor, as mourners do.
+
+**כיתוב:** יושבים על שרפרף נמוך או על הרצפה, כמנהג אבלים.
+
+```html
+<path d="M13 27 L11 42.5 H15.2 L16.6 27Z" fill="var(--hol-gold-lt)"/><path d="M35 27 L37 42.5 H32.8 L31.4 27Z" fill="var(--hol-gold-lt)"/><rect x="15" y="33" width="18" height="3.2" fill="var(--hol-gold-lt)" stroke-width="1.5"/><rect x="8.5" y="21.5" width="31" height="5.5" rx="1.6" fill="var(--hol-gold)"/><path d="M12 24.2 H36" stroke="var(--hol-gold-lt)" stroke-width="1.5"/><path d="M4 42.5 H44" stroke-width="2.4"/>
+```
+
+#### 5. Tear · דִּמְעָה
+
+<img src="docs/holiday-guide/tisha-bav-5.svg" width="72" height="72" alt="A teardrop">
+
+**Caption:** Tisha B’Av is a sad day, and it ends with hope for comfort.
+
+**כיתוב:** תשעה באב הוא יום עצוב, ובסופו מקווים לנחמה.
+
+```html
+<path d="M22 5 C27 14 34 20 34 29 C34 36 28.6 41.5 22 41.5 C15.4 41.5 10 36 10 29 C10 20 17 14 22 5Z" fill="var(--hol-blue)"/><path d="M15 29 C15 25.4 16.6 22.2 18.8 20" stroke="var(--hol-paper)" stroke-width="1.9"/><path d="M39.5 30 C41.1 33 42.1 34.4 42.1 36 A2.6 2.6 0 0 1 36.9 36 C36.9 34.4 37.9 33 39.5 30Z" fill="var(--hol-blue)" stroke-width="1.5"/>
+```
+
+#### 6. Stones · אֲבָנִים
+
+<img src="docs/holiday-guide/tisha-bav-6.svg" width="72" height="72" alt="A pile of fallen stones with a green sprout">
+
+**Caption:** The broken stones remind us of what was lost, and of the hope to rebuild.
+
+**כיתוב:** האבנים השבורות מזכירות את מה שאבד, ואת התקווה לבנות מחדש.
+
+```html
+<path d="M10.5 30 L13 20.5 L24 19.5 L25.5 30.5Z" fill="var(--hol-gold-lt)"/><path d="M27 30.5 L28.5 24 L37.5 22.5 L38.5 32.5Z" fill="var(--hol-gold-lt)"/><path d="M5 43 L7 31 L17.5 29.5 L19.5 43Z" fill="var(--hol-gold-lt)"/><path d="M19.5 43 L18.5 33 L30.5 30.5 L33 43Z" fill="var(--hol-gold-lt)"/><path d="M33 43 L31.8 35 L41 33 L43.5 43Z" fill="var(--hol-gold-lt)"/><path d="M15 24 L17 27 M30 26.5 L32.5 28 M9 36 L11.5 39 M24 35 L26 39.5 M37 37 L38.8 40" stroke-width="1.3"/><path d="M27 19.5 C26.4 16.5 24.8 15 23 14.8 M27 19.5 C28 17 29.8 16 31.6 16.4" stroke="var(--hol-green)" stroke-width="1.8"/><path d="M3 43 H45.5" stroke-width="2.4"/>
+```

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<!-- Preview of Yom HaAtzmaut: State Emblem (HolidayGuide.md): the holiday-icons palette, light and dark. -->
+<style>
+svg{--hol-line:#1a2744;--hol-gold:#c9922a;--hol-gold-lt:#f0d080;--hol-paper:#fffaf0;--hol-navy:#2a3b66;--hol-red:#c0392b;--hol-green:#3a7d44;--hol-blue:#3b6fb6;--hol-flame:#f0a030;--hol-ground:#fdf8ef;stroke:var(--hol-line);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+@media (prefers-color-scheme:dark){svg{--hol-line:#e8e0d0;--hol-gold:#e0a832;--hol-gold-lt:#f5d97a;--hol-paper:#e8e0d0;--hol-navy:#5a6d9c;--hol-red:#e0584a;--hol-green:#5aa865;--hol-blue:#6a9ae0;--hol-flame:#f6b84a;--hol-ground:#161c2a}}
+</style>
+<path d="M9.5 6 H38.5 V27 C38.5 35.5 32.5 40.5 24 44 C15.5 40.5 9.5 35.5 9.5 27Z" fill="var(--hol-blue)"/><path d="M15.5 14 V16.5 A8.5 8.5 0 0 0 32.5 16.5 V14 M18.4 14 V16.5 A5.6 5.6 0 0 0 29.6 16.5 V14 M21.2 14 V16.5 A2.8 2.8 0 0 0 26.8 16.5 V14 M24 13 V28.5 M19.5 30.5 H28.5" stroke="var(--hol-gold-lt)" stroke-width="1.8"/><path d="M13 21 C13 29 16.5 34.5 22 37.5 M35 21 C35 29 31.5 34.5 26 37.5" stroke="var(--hol-gold-lt)" stroke-width="1.5"/><path d="M13.4 26 Q12.4 24.3 10.2 24.8 Q11.6 26.6 13.4 26Z M15 30.6 Q13.8 29 11.7 29.7 Q13.2 31.4 15 30.6Z M34.6 26 Q36.4 26.6 37.8 24.8 Q35.6 24.3 34.6 26Z M33 30.6 Q34.8 31.4 36.3 29.7 Q34.2 29 33 30.6Z" fill="var(--hol-gold-lt)" stroke="none"/>
+</svg>

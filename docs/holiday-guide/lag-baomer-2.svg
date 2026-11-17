@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<!-- Preview of Lag BaOmer: Bow and Arrow (HolidayGuide.md): the holiday-icons palette, light and dark. -->
+<style>
+svg{--hol-line:#1a2744;--hol-gold:#c9922a;--hol-gold-lt:#f0d080;--hol-paper:#fffaf0;--hol-navy:#2a3b66;--hol-red:#c0392b;--hol-green:#3a7d44;--hol-blue:#3b6fb6;--hol-flame:#f0a030;--hol-ground:#fdf8ef;stroke:var(--hol-line);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+@media (prefers-color-scheme:dark){svg{--hol-line:#e8e0d0;--hol-gold:#e0a832;--hol-gold-lt:#f5d97a;--hol-paper:#e8e0d0;--hol-navy:#5a6d9c;--hol-red:#e0584a;--hol-green:#5aa865;--hol-blue:#6a9ae0;--hol-flame:#f6b84a;--hol-ground:#161c2a}}
+</style>
+<path d="M15 5.5 V42.5" stroke-width="1.4"/><path d="M15 5.5 C34 11 34 37 15 42.5" stroke="var(--hol-gold)" stroke-width="3.4"/><path d="M5 24 H38" stroke-width="1.9"/><path d="M44 24 L36.5 19.8 V28.2Z" fill="var(--hol-red)" stroke-width="1.6"/><path d="M5 24 L2.6 21 M5 24 L2.6 27 M8.2 24 L5.8 21 M8.2 24 L5.8 27" stroke-width="1.5"/>
+</svg>

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<!-- Preview of Yom HaZikaron: Wreath (HolidayGuide.md): the holiday-icons palette, light and dark. -->
+<style>
+svg{--hol-line:#1a2744;--hol-gold:#c9922a;--hol-gold-lt:#f0d080;--hol-paper:#fffaf0;--hol-navy:#2a3b66;--hol-red:#c0392b;--hol-green:#3a7d44;--hol-blue:#3b6fb6;--hol-flame:#f0a030;--hol-ground:#fdf8ef;stroke:var(--hol-line);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+@media (prefers-color-scheme:dark){svg{--hol-line:#e8e0d0;--hol-gold:#e0a832;--hol-gold-lt:#f5d97a;--hol-paper:#e8e0d0;--hol-navy:#5a6d9c;--hol-red:#e0584a;--hol-green:#5aa865;--hol-blue:#6a9ae0;--hol-flame:#f6b84a;--hol-ground:#161c2a}}
+</style>
+<circle cx="24" cy="21" r="13" stroke="var(--hol-gold)" stroke-width="1.5"/><path d="M37 21 Q33.4 24 34.8 29.1 Q38.6 25.4 37 21Z M35.3 27.5 Q30.7 28.3 29.3 33.4 Q34.5 32.1 35.3 27.5Z M30.5 32.3 Q26.1 30.6 22.4 34.4 Q27.5 35.8 30.5 32.3Z M24 34 Q21 30.4 15.9 31.8 Q19.6 35.6 24 34Z M17.5 32.3 Q16.7 27.7 11.6 26.3 Q12.9 31.5 17.5 32.3Z M12.7 27.5 Q14.4 23.1 10.6 19.4 Q9.2 24.5 12.7 27.5Z M11 21 Q14.6 18 13.2 12.9 Q9.4 16.6 11 21Z M12.7 14.5 Q17.3 13.7 18.7 8.6 Q13.5 9.9 12.7 14.5Z M17.5 9.7 Q21.9 11.4 25.6 7.6 Q20.5 6.2 17.5 9.7Z M24 8 Q27 11.6 32.1 10.2 Q28.4 6.4 24 8Z M30.5 9.7 Q31.3 14.3 36.4 15.7 Q35.1 10.5 30.5 9.7Z M35.3 14.5 Q33.6 18.9 37.4 22.6 Q38.8 17.5 35.3 14.5Z" fill="var(--hol-green)" stroke-width="1.4"/><path d="M24 34.5 L16.5 43.5 L20.8 43.8 L24 39.6 L27.2 43.8 L31.5 43.5Z" fill="var(--hol-red)" stroke-width="1.5"/><circle cx="24" cy="34.5" r="2.5" fill="var(--hol-red)" stroke-width="1.5"/>
+</svg>
