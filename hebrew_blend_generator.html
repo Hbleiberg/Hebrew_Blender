@@ -7708,6 +7708,7 @@ function updateModeVisibility() {
   // The frozen footer's Print / PDF follow the sidebar's: in a self-check drill the bar offered both, its PDF a shrunken
   // capture of the whole screen under a blank page count (S648, gate 2 answered).
   document.getElementById('genFab')?.classList.toggle('no-output', !v.printBtn);
+  syncPrintTip();   // the sidebar's tip about the print dialog follows its Print button the same way
   onClassSetChange();   // the Generate label names versions only in a mode that prints them
 
   // Suppress the output-options divider when no option rows sit between it
@@ -9487,6 +9488,13 @@ function regenerate() {
   generate(true); // pass animate flag
 }
 
+// The sidebar's Print tip (the print dialog's Headers and footers) goes with the Print button it is about: shown once a
+// worksheet exists and only while Print is offered. A Self-Check drill hides Print and PDF (updateModeVisibility), and
+// kept the tip under nothing.
+function syncPrintTip() {
+  const tip = document.getElementById('printTip'), btn = document.getElementById('printBtn');
+  if (tip && btn) tip.style.display = !btn.disabled && btn.style.display !== 'none' ? 'block' : 'none';
+}
 function enableButtons() {
   ['printBtn','regenBtn','pdfBtn'].forEach(id => {
     const btn = document.getElementById(id);
@@ -9506,8 +9514,7 @@ function enableButtons() {
       btn.removeAttribute('title');
     }
   });
-  const tip = document.getElementById('printTip');
-  if (tip) tip.style.display = 'block';
+  syncPrintTip();
   // Reveal the frozen footer's post-Generate actions (Print / PDF) now that a worksheet exists.
   const _fab = document.getElementById('genFab');
   if (_fab) {
