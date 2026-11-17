@@ -423,8 +423,8 @@ buttons was overlooked); its Holiday Torah Readings (calendar) and Share (link) 
 drawer, so the calendar glyph is the Calendar tab's and the link glyph the Share tab's (and its Copy link's).
 Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_dashboard`, `flash_cards`,
 `torah_trainer`, `trope_tutor`, `Hebrew_Font_Maker`, `resources`, `contact`, `privacy`, `terms`,
-`account`, `404`, `letter_learner`, `parsha_emojis`, `name_tags`, `trope_atlas`, `reading_assignments`, `letter_discrimination`, and the generated `parsha/` pages (their copy is taken
-from `parsha_emojis` by `scripts/build-parsha-pages.mjs`, so it cannot drift); the chip's glyph lives in `js/ivrit-account.js` (`ICON_USER`).
+`account`, `404`, `letter_learner`, `parsha_emojis`, `name_tags`, `trope_atlas`, `reading_assignments`, `letter_discrimination`, `holiday_guide`, and the generated `parsha/` and `holidays/` pages (their copies are taken
+from `parsha_emojis` by `scripts/build-parsha-pages.mjs` and from `holiday_guide` by `scripts/build-holiday-pages.mjs`, so they cannot drift); the chip's glyph lives in `js/ivrit-account.js` (`ICON_USER`).
 
 ### The two byte-identical parts
 - **The `/* ═══ header-icons CSS ═══ */` block**, pasted before the main stylesheet's `</style>` on every
@@ -570,8 +570,12 @@ Simchat Torah (open Torah), Chanukah (chanukiah), Purim (mask), Pesach (matzah),
 Tish'a B'Av (Kotel) and `generic` (a calendar page, for any title the matcher does not know). Carriers:
 `classroom_dashboard` (the holiday countdown line, and the parsha line on a festival Shabbat) and `torah_trainer`
 (the Calendar tab's seventeen `HOLIDAY_READINGS` buttons, the loaded reading's `.tt-ref-hdr` and the date lookup's
-festival line); `parsha_emojis` carries the CSS block only, for its parasha cards. The weekly parasha icons reuse the
-CSS block's `.hol-ico` and palette (*Parasha icons* below).
+festival line); `parsha_emojis` carries the CSS block only, for its parasha cards, and so do `holiday_guide` and the
+generated `holidays/` pages (copied from it by `scripts/build-holiday-pages.mjs`), for the Holiday Guide's drawings.
+The weekly parasha icons reuse the CSS block's `.hol-ico` and palette (*Parasha icons* below). **The Holiday Guide
+reads nine of these drawings out of this block** (`HolidayGuide.md` → `**Symbol:** holiday-icons:<family>`,
+`holiday-guide.md` → *The catalog*): after swapping one, re-run `build-holiday-guide.mjs` and
+`build-holiday-pages.mjs` as well.
 
 ### The two byte-identical blocks
 - **`/* ═══ holiday-icons CSS ═══ */`**, pasted right after the header-icons CSS block: `.hol-ico` carries the
@@ -712,7 +716,8 @@ header-icons and holiday-icons CSS blocks.
   `#etCsPrintArea` (a child of `<body>`) with the clones in the chosen order, grouped into `.et-cs-paper` grids of one,
   two or four with a dashed cut line in each gutter, and the print CSS under `body.et-cs-open` hides everything else;
   `beforeprint` fills it for Ctrl+P.
-- **The line art** (`etCsDrawing` → `etCsConvert`) is derived from the drawings at run time, never stored: every
+- **The line art** (`etCsDrawing` → `etCsConvert`; the conversion and its measuring live in `js/coloring-art.js`, the
+  engine this page shares with `holiday_guide.html` — `holiday-guide.md` → *The line art*) is derived from the drawings at run time, never stored: every
   token is a `var(--hol-*)`, so the conversion reads paint by walking up to the root, measures the geometry once on a
   hidden attached copy (box area, the largest separately drawn piece, the topmost earlier fill under each shape; every
   piece is added before the first read, and `etCsSync` appends the sheets only after building them all, so no read lays
@@ -745,7 +750,7 @@ One static, indexable page per parasha for searches like "Parshat Noach coloring
 an output; `--check` exits 1 when a page, the sitemap block or a picture is stale. The slug is the English name
 lowercased, apostrophes dropped and spaces turned into hyphens (`chayei-sara`, `vzot-haberachah`), the same as
 `etPageOf` and the `?parsha=` links.
-- **The one folder of pages outside the root.** Every path in them is absolute (`/js/…`, `/parsha_emojis.html`,
+- **A folder of pages outside the root** (the Holiday Guide's `holidays/` is the other: `holiday-guide.md` → *The generated pages*). Every path in them is absolute (`/js/…`, `/parsha_emojis.html`,
   `/manifest.webmanifest`) and they fetch no data, so the root rule's reason (relative `data/` fetches) does not
   apply; the folder keeps 54 generated files out of every root-page census. They are not precached (network-first on
   a visit, like any page) and carry no account wiring, no splash block and no tour. `parsha/index.html` forwards a

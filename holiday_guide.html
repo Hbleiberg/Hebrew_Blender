@@ -448,9 +448,12 @@ footer a { display: inline-block; padding-block: 5px; }
   .hg-chip{min-height:56px;}
 }
 /* Phone widths: the header's button row wraps onto a second line instead of pushing the page sideways (WCAG 1.4.10).
-   The gate is the header's measured overflow ceiling in the real UI fonts, Hebrew and English (docs/reference/
-   shared-components.md → The header's wrap gate); re-measure whenever a header control changes width. */
-@media (max-width:620px), (pointer:coarse) and (max-width:630px){
+   463px is this page's MEASURED overflow ceiling in the real UI fonts (docs/reference/shared-components.md → The
+   header's wrap gate): the one-row header spills from 463px down and fits above it (Hebrew, dark — the button row does
+   not shrink, so "דף הבית" stays on one line and Hebrew sets the gate). Under a finger the language select is 10px
+   wider and the ceiling is 473px; the second query holds that band without moving a mouse layout. Re-measure whenever
+   a header control changes width (this page mounts no account chip). */
+@media (max-width:463px), (pointer:coarse) and (max-width:473px){
   header{flex-wrap:wrap;}
   header .hright{flex-wrap:wrap;max-width:100%;justify-content:flex-end;}
 }

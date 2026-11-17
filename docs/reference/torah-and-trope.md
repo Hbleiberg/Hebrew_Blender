@@ -1529,6 +1529,10 @@ became **seven tabs of flat sections**, the Trope Tutor's Settings-tab idiom ins
 
 ## Reading schedule, reading cycle & portion lookup (`torah_trainer.html`)
 
+`js/hebrew-calendar.js` also dates the holidays themselves (`holidaysOfYear`, `holidayOccurrence`, `nextHoliday`: the
+Holiday Guide's countdown, proved by the same smoke) — `holiday-guide.md` → *The dates and the countdown*. Those
+functions are additive; nothing below reads them.
+
 The drawer's *Reading schedule* section (Calendar tab) holds the calendar (`settings.schedule`, `'diaspora'` | `'israel'`), the
 reading cycle (`settings.readingCycle`, `'full'` | `'triennial'` | `'weekday'`, read through `cycleKey()`: an unknown
 stored value reads Full and stays stored) and the triennial year (`settings.triennialYear`, `'auto'` | 1 | 2 | 3,

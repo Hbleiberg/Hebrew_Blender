@@ -37,9 +37,9 @@ VERSION = "1.2"   # shown as "v{VERSION}" on the splash — bump whatever value 
 2. Run `python3 splash/gen_splash.py` — re-renders every `splash/splash-*.png`
    and rewrites `splash/apple-startup-links.html`.
 3. Only if `DEVICES` changed (NOT for a plain version bump): re-sync the
-   `apple-touch-startup-image` block in **17 HTML pages** (every root page but `account.html`, the `emoji_torah.html` forwarding stub, `trope_review.html`, the unlisted `reading_assignments.html` and `letter_discrimination.html`, and the three test harnesses: 404,
+   `apple-touch-startup-image` block in **18 HTML pages** (every root page but `account.html`, the `emoji_torah.html` forwarding stub, `trope_review.html`, the unlisted `reading_assignments.html` and `letter_discrimination.html`, and the three test harnesses: 404,
    Hebrew_Font_Maker, classroom_dashboard, contact, flash_cards, hebrew_blend_generator,
-   hebrew_dictionary, index, letter_learner, name_tags, parsha_emojis, privacy, resources, terms, torah_trainer, trope_atlas, trope_tutor) from
+   hebrew_dictionary, holiday_guide, index, letter_learner, name_tags, parsha_emojis, privacy, resources, terms, torah_trainer, trope_atlas, trope_tutor) from
    `splash/apple-startup-links.html` (the block is identical in each). A version
    bump alone keeps the same filenames, so the pages need no change.
 4. Commit & push.
@@ -61,7 +61,7 @@ Notes:
   always gets the fresh file, so a deploy is never hidden behind a stale cached
   page. The cache is only the offline fallback for these, one copy per path: the copy is stored without its query
   (`?parsha=`, `?s=`, a sign-in's `?code=` — a page's bytes never vary by it) and looked up ignoring it. A navigation it cannot answer gets the hub: its shell at
-  the same URL for a root-level path, a redirect to `/` for a path under a folder (an unvisited `parsha/` page) —
+  the same URL for a root-level path, a redirect to `/` for a path under a folder (an unvisited `parsha/` or `holidays/` page) —
   the hub's links are relative, so its shell inside a folder would send every link back into that folder.
 - **Static media (icons, splash images, manifest) is cache-first** for speed.
 - **The install asks for every precached asset with `cache: 'no-cache'`** (`cache.add(new Request(url, …))`):
@@ -201,6 +201,13 @@ recipe:
   aborted) loads all 54 plus the forwarder and checks each: 0 page errors, its picture loaded, the Print link landing
   on the Parsha Emojis popup with that parasha alone, the Trainer, pager and list links resolving, the Hebrew UI and
   dark mode, and no horizontal scroll at 360px. Run it after `build-parsha-pages.mjs` writes anything.
+- **The Holiday Guide:** `node scripts/smoke-holiday-pages.mjs` (its own server; every foreign origin aborted; the
+  clock fixed with `page.clock.setFixedTime`, so the countdown is checked on known dates) covers `holiday_guide.html`
+  — the holiday that leads and its sentence on twelve dates and both schedules, the builder and every option, the
+  PDF's page count and paper box, Hebrew / dark / 360px — and the generated `holidays/` pages, their links and the
+  forwarder, and that the hidden state agrees everywhere (`holiday-guide.md` → *Publishing*). Run it after
+  `HolidayGuide.md`, the page or `build-holiday-pages.mjs` changes; a change to `js/coloring-art.js` also needs the
+  parsha proof (`holiday-guide.md` → *The line art*).
 
 ### Backend smokes — the accounts / cloud layer
 
@@ -291,10 +298,11 @@ push, is what updates the live site.
 - **Pages must stay at repo root**: every tool fetches its data by relative path
   (`fetch('data/…')`), and cross-page links/manifest/sw registrations assume root. Never move a
   page into a subfolder (this is also why extensionless "clean URLs" via `foo/index.html`
-  restructuring was evaluated and rejected — it breaks every relative `data/` fetch). The two exceptions are
+  restructuring was evaluated and rejected — it breaks every relative `data/` fetch). The three exceptions are
   `parsha/`: the 54 generated parsha coloring pages and their forwarder, written by
   `scripts/build-parsha-pages.mjs` with only absolute paths and no data fetch (`shared-components.md` → The parsha
-  coloring pages), and `Stein_School/`, which holds no suite page and loads nothing from this site (its entry is
+  coloring pages); `holidays/`: the generated holiday coloring pages and their forwarder, written the same way by
+  `scripts/build-holiday-pages.mjs` (`holiday-guide.md` → The generated pages); and `Stein_School/`, which holds no suite page and loads nothing from this site (its entry is
   below).
 - **Keep `sitemap.xml` `<lastmod>` fresh** with `node scripts/update-sitemap.mjs` (plain Node, no
   deps). It maps each `<loc>` to its file, reads that file's last commit date via
@@ -303,7 +311,7 @@ push, is what updates the live site.
   that session's commit. It's idempotent (re-running with no new commits is a no-op) and produces
   per-file dates. When you add a new page, add its `<url>` block to `sitemap.xml` first, then run
   the script. Sits alongside the `sw.js VERSION` bump in the end-of-session checklist above.
-- **An unlisted page** (today: `name_tags.html`, while it is new, and the research beta `letter_discrimination.html`) is a production page reached by its address
+- **An unlisted page** (today: `name_tags.html`, while it is new, the research beta `letter_discrimination.html`, and `holiday_guide.html` with its generated `holidays/` pages, which one switch publishes — `holiday-guide.md` → *Publishing*) is a production page reached by its address
   only: `<meta name="robots" content="noindex, follow">`, no `<url>` block in `sitemap.xml` (so neither generator
   ever lists it — both read their page set from the sitemap), no card, link or `ItemList` entry on `index.html`, and
   not in `sw.js` `CORE_ASSETS` (an unannounced page costs no visitor's install; it is still cached network-first on
@@ -320,7 +328,7 @@ push, is what updates the live site.
   reached by its address only (`/Stein_School/Stein_School.html`; the folder has no index): `<meta name="robots"
   content="noindex, nofollow">`, no `<url>` block in `sitemap.xml` (so neither generator lists it), no link from any
   page, not in `sw.js` `CORE_ASSETS`. It is never launched, and neither the suite's page rules nor its gates reach it
-  (`check-i18n`, `check-inline-js` and the loop's rendered detectors walk the root pages and `parsha/` only): no
+  (`check-i18n` and `check-inline-js` walk the root pages, `parsha/` and `holidays/` only, and the loop's rendered detectors the root pages and `parsha/`): no
   `js/i18n.js` and English only, no gtag, no account layer, no `pwa.js`, splash block, skip link, dark mode or AllTools
   key (it writes one `sessionStorage` entry and no `localStorage`), and it loads nothing from this site, which is why
   it may live in a folder. **The page is a generated file, replaced whole by a new build and never edited by hand:**
@@ -379,6 +387,9 @@ pages, not the other way round — `grep -o 'Content-Security-Policy[^>]*' *.htm
 - **The generated parsha coloring pages** (`parsha/<slug>.html`) carry the everywhere set above without `data:` /
   `blob:` (they export nothing) and without the account origins (no sign-in); the CSP is written by
   `scripts/build-parsha-pages.mjs`. Their forwarder `parsha/index.html` allows only `'self'`, like the stub below.
+- **`holiday_guide.html`** (unlisted) carries the everywhere set and nothing more: it offers no account and fetches
+  no data. **The generated holiday coloring pages** (`holidays/<slug>.html`) carry the parsha pages' policy, written
+  by `scripts/build-holiday-pages.mjs`, and their forwarder `holidays/index.html` allows only `'self'`.
 - **The `emoji_torah.html` forwarding stub** (the Parsha Emojis page's address before its launch) allows only
   `'self'`: no gtag (the hop would count twice), no Google Fonts, no `data:`/`blob:`; it loads `/js/i18n.js` and the favicon.
 - **`Stein_School/Stein_School.html`** (the maintainer's presentation, not a suite page — Deploy, above): `cdnjs.cloudflare.com` in
