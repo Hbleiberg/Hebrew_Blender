@@ -372,7 +372,9 @@ _(none)_
 
 ## Done
 
-- [x] 2026-11-17 | (S656 close-out) | branch/deploy note | **S656 = C on `hebrew_dictionary.html` (its 4th dedicated C; 27 commits since): FOUND 4, FIXED 2 (the Word List windows' status spoken, the chips' ✕ at 24 px), 1 P3 + 1 P4 logged. Branch `claude/inspiring-hawking-ema04x`, draft PR (see the PR list); `sw.js` v1408; deploy after the merge.**
+- [x] 2026-11-17 | (S656 close-out) | branch/deploy note | **S656 = C on `hebrew_dictionary.html` (its 4th dedicated C; 27 commits since): FOUND 4, FIXED 2 (the Word List windows' status spoken, the chips' ✕ at 24 px), 1 P3 + 1 P4 logged; + a micro-feature the maintainer asked for (the gematria badge's lookup). Branch `claude/inspiring-hawking-ema04x`, draft PR #409; `sw.js` v1409; deploy after …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-17 | `de223003` | hebrew_dictionary.html, ui-strings.csv + locales, sw.js | (S656 micro-feature, gate 1 answered: the maintainer asked for it after a roots site's "tap a number" lookup) **A word window's gematria badge is a button listing every word of that value** (search cleared, other filters kept as chips, Show Gematria Value on, focus on the first result) | …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-11-17 | `52437110` | hebrew_dictionary.html, sw.js | (S656 C) **A filter chip's ✕ is a 24×24 target** (was 20×22, flush against the chip's own button; pattern `sub-floor touch target`) | `c656/fix2.mjs`, 3 chips × 4 cells: 24×24 (before 20×22 ×12), chip +0.23 px, an edge click removes the filter; target census 0 ✕; chip row shots
 
@@ -422,7 +424,7 @@ _(none)_
 
 ### Per-session log (one line per session)
 
-- 2026-11-17 | **S656** | iters: 3 | tools: hebrew_dictionary ×2, sw ×2, probe S656 | patterns fixed: sub-floor touch target ×1 | pass run: C (hebrew_dictionary, first since S571; FOUND 4, FIXED 2) | SW: v1406→v1408
+- 2026-11-17 | **S656** | iters: 5 | tools: hebrew_dictionary ×3, locales, sw ×3, probes S656 ×2 | patterns fixed: sub-floor touch target ×1 | pass run: C (hebrew_dictionary, first since S571; FOUND 4, FIXED 2) + the gematria lookup micro-feature (asked) | SW: v1406→v1409
 
 - 2026-11-17 | **S655** | iters: 4 | tools: torah_trainer ×2, flash_cards, locales, torah-and-trope.md ×2, sw ×3, probe S655 | patterns fixed: — | pass run: D (torah, first since S570 + dashboard, since S576; FOUND 1, the S570 P4 FIXED ×2) + flash's S651 K half | SW: v1401→v1404
 
@@ -464,7 +466,7 @@ _(none)_
 
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S656 (2026-11-17):** hebrew_dictionary ×2, sw.js ×2, loop docs, probe S656 · torah_trainer ×2, flash_cards, locales, torah-and-trope.md ×2, sw.js ×3, loop docs, probe S655
+- **Snapshot S656 (2026-11-17):** hebrew_dictionary ×3, locales, sw.js ×3, loop docs, probes S656 ×2 · torah_trainer ×2, flash_cards, locales, torah-and-trope.md ×2, sw.js ×3, loop docs, probe S655
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -854,4 +856,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-11-08 (**S630 — 41st F, long-build progress (S542's F-next; the affordance's first F): 13 presses that build before they answer, by real clicks with an animation-frame recorder, real PDF libraries from a cache, a held CDN, double presses at raw points. FOUND 2, FIXED 2 (+1 P4). F-next: destructive-action confirms.**)
 
-**Next session (S657):** **Branch `claude/inspiring-hawking-ema04x` (S656, draft PR): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1408**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=4dd4383 sw=v1408 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b (main moved since S655: the Holiday Guide, published) ⚑ New pages: the Holiday Guide (`holiday_guide.html` + 17 `holidays/` pages; offers accounts; first N and P by S670) and `letter_discrimination.html` (by S668; no account wiring) — override 4; neither is a surface in `loop-passes.md` / `coverage.mjs` yet. ⚑ Stalest now: N generator (S572), P flash (S573), M generator (S574), G chrome (S575), D atlas (S579), C atlas (S580), A (S581), H atlas (S583). ⚑ Queue: the dictionary's S656 P3 (Bulk Copy's silent count) + P4 (card icons' `aria-hidden`); the dashboard's Bulk open (S655); torah's two S653 P4 (the ring spans three layouts); the S570 staff double draw. ⚑ Awaiting: the Total Torah bar's ▶ and the drawer's tab labels (S653), the starter class (S652). ⚑ E: links vs the host's 8,190 bytes (S651). ⚑ F/A: Hebrew-only wrappers on typed text (S649); save windows whose status line is not live (S656: sweep the other tools). ⚑ G: `leak.mjs`, 6 pages. ⚑ 47 seeds.
+**Next session (S657):** **Branch `claude/inspiring-hawking-ema04x` (S656, draft PR #409): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1409**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=4dd4383 sw=v1409 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b (main moved since S655: the Holiday Guide, published) ⚑ New pages: the Holiday Guide (`holiday_guide.html` + 17 `holidays/` pages; offers accounts; first N and P by S670) and `letter_discrimination.html` (by S668; no account wiring) — override 4; neither is a surface in `loop-passes.md` / `coverage.mjs` yet. ⚑ Stalest now: N generator (S572), P flash (S573), M generator (S574), G chrome (S575), D atlas (S579), C atlas (S580), A (S581), H atlas (S583). ⚑ Queue: the dictionary's S656 P3 (Bulk Copy's silent count) + P4 (card icons' `aria-hidden`); the dashboard's Bulk open (S655); torah's two S653 P4 (the ring spans three layouts); the S570 staff double draw. ⚑ Awaiting: the Total Torah bar's ▶ and the drawer's tab labels (S653), the starter class (S652). ⚑ E: links vs the host's 8,190 bytes (S651). ⚑ F/A: Hebrew-only wrappers on typed text (S649); save windows whose status line is not live (S656: sweep the other tools). ⚑ G: `leak.mjs`, 6 pages. ⚑ 47 seeds.

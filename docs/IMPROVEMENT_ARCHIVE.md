@@ -98310,3 +98310,13 @@ _(prior)_ **Next session (S656):** **Branch `claude/adoring-hawking-h59ir2` (S65
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 - C accessibility (one tool): 2026-11-17 (**S656 — `hebrew_dictionary.html` (its 4th dedicated C: S285 → S427 → S571 → S656; 27 commits since): census 136 loads × 17 views (plants 9 kinds), Tab / Shift+Tab walks of 5 views (1,954 stops, 0 ringless), keyboard scenarios, 320 px reflow + 1.4.12. FOUND 4, FIXED 2 (the Word List windows' status spoken; the chips' ✕ 24 px), 1 P3 + 1 P4. C-next: atlas (S580), then torah (S586).**)
+
+
+<!-- archived by compact-ledger at the S657 boundary, 2026-11-17 -->
+## Compaction (S657, 2026-11-17) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-11-17 | (S656 close-out) | branch/deploy note | **S656 = C on `hebrew_dictionary.html` (its 4th dedicated C; 27 commits since): FOUND 4, FIXED 2 (the Word List windows' status spoken, the chips' ✕ at 24 px), 1 P3 + 1 P4 logged; + a micro-feature the maintainer asked for (the gematria badge's lookup). Branch `claude/inspiring-hawking-ema04x`, draft PR #409; `sw.js` v1409; deploy after the merge.**
+
+- [x] 2026-11-17 | `de223003` | hebrew_dictionary.html, ui-strings.csv + locales, sw.js | (S656 micro-feature, gate 1 answered: the maintainer asked for it after a roots site's "tap a number" lookup) **A word window's gematria badge is a button listing every word of that value** (search cleared, other filters kept as chips, Show Gematria Value on, focus on the first result) | `S656-dictionary-gematria-badge-finds-its-value.mjs` 28/28 × 4 cells (the previous tree fails every step); 8-cell shots
