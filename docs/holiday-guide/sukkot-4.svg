@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<!-- Preview of Sukkot: Etrog (HolidayGuide.md): the holiday-icons palette, light and dark. -->
+<style>
+svg{--hol-line:#1a2744;--hol-gold:#c9922a;--hol-gold-lt:#f0d080;--hol-paper:#fffaf0;--hol-navy:#2a3b66;--hol-red:#c0392b;--hol-green:#3a7d44;--hol-blue:#3b6fb6;--hol-flame:#f0a030;--hol-ground:#fdf8ef;stroke:var(--hol-line);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+@media (prefers-color-scheme:dark){svg{--hol-line:#e8e0d0;--hol-gold:#e0a832;--hol-gold-lt:#f5d97a;--hol-paper:#e8e0d0;--hol-navy:#5a6d9c;--hol-red:#e0584a;--hol-green:#5aa865;--hol-blue:#6a9ae0;--hol-flame:#f6b84a;--hol-ground:#161c2a}}
+</style>
+<path d="M24 9.5 C30 10 37.5 17 37.5 26.5 C37.5 35.5 31.5 41.5 24 42 C16.5 41.5 10.5 35.5 10.5 26.5 C10.5 17 18 10 24 9.5Z" fill="var(--hol-gold-lt)"/><path d="M22.3 9.6 C22.3 7 22.8 5 24 5 C25.2 5 25.7 7 25.7 9.6Z" fill="var(--hol-gold)" stroke-width="1.5"/><path d="M24 42 V44.6" stroke-width="2.2"/><path d="M17 18.5 C15 23.5 15 30 17.5 35 M24 14.5 V37.5 M31 18.5 C33 23.5 33 30 30.5 35" stroke="var(--hol-gold)" stroke-width="1.5"/>
+</svg>

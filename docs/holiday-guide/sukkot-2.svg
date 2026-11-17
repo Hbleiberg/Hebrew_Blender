@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<!-- Preview of Sukkot: Hadas (HolidayGuide.md): the holiday-icons palette, light and dark. -->
+<style>
+svg{--hol-line:#1a2744;--hol-gold:#c9922a;--hol-gold-lt:#f0d080;--hol-paper:#fffaf0;--hol-navy:#2a3b66;--hol-red:#c0392b;--hol-green:#3a7d44;--hol-blue:#3b6fb6;--hol-flame:#f0a030;--hol-ground:#fdf8ef;stroke:var(--hol-line);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+@media (prefers-color-scheme:dark){svg{--hol-line:#e8e0d0;--hol-gold:#e0a832;--hol-gold-lt:#f5d97a;--hol-paper:#e8e0d0;--hol-navy:#5a6d9c;--hol-red:#e0584a;--hol-green:#5aa865;--hol-blue:#6a9ae0;--hol-flame:#f6b84a;--hol-ground:#161c2a}}
+</style>
+<path d="M24 44.5 V9" stroke-width="2"/><path d="M24 40 Q29.2 40.2 32.1 35 Q26.1 35.3 24 40Z M24 40 Q21.9 35.3 15.9 35 Q18.8 40.2 24 40Z M24 33.5 Q29.2 33.7 32.1 28.5 Q26.1 28.8 24 33.5Z M24 33.5 Q21.9 28.8 15.9 28.5 Q18.8 33.7 24 33.5Z M24 27 Q29.2 27.2 32.1 22 Q26.1 22.3 24 27Z M24 27 Q21.9 22.3 15.9 22 Q18.8 27.2 24 27Z M24 20.5 Q29.2 20.7 32.1 15.5 Q26.1 15.8 24 20.5Z M24 20.5 Q21.9 15.8 15.9 15.5 Q18.8 20.7 24 20.5Z M24 14 Q29.2 14.2 32.1 9 Q26.1 9.3 24 14Z M24 14 Q21.9 9.3 15.9 9 Q18.8 14.2 24 14Z M24 10.5 Q26.4 7.1 24 3 Q21.6 7.1 24 10.5Z" fill="var(--hol-green)" stroke-width="1.5"/>
+</svg>

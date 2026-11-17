@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<!-- Preview of Shabbat: Tzedakah Box (HolidayGuide.md): the holiday-icons palette, light and dark. -->
+<style>
+svg{--hol-line:#1a2744;--hol-gold:#c9922a;--hol-gold-lt:#f0d080;--hol-paper:#fffaf0;--hol-navy:#2a3b66;--hol-red:#c0392b;--hol-green:#3a7d44;--hol-blue:#3b6fb6;--hol-flame:#f0a030;--hol-ground:#fdf8ef;stroke:var(--hol-line);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+@media (prefers-color-scheme:dark){svg{--hol-line:#e8e0d0;--hol-gold:#e0a832;--hol-gold-lt:#f5d97a;--hol-paper:#e8e0d0;--hol-navy:#5a6d9c;--hol-red:#e0584a;--hol-green:#5aa865;--hol-blue:#6a9ae0;--hol-flame:#f6b84a;--hol-ground:#161c2a}}
+</style>
+<circle cx="26" cy="7.5" r="4.5" fill="var(--hol-gold-lt)"/><path d="M26 5.4 V9.6" stroke="var(--hol-gold)" stroke-width="1.5"/><path d="M7 21 L12 14 H42 L37 21Z" fill="var(--hol-blue)"/><path d="M37 21 L42 14 V36 L37 43Z" fill="var(--hol-navy)"/><rect x="7" y="21" width="30" height="22" fill="var(--hol-blue)"/><path d="M19 17.5 H30" stroke-width="2.6"/><path d="M22 37 C19.5 34.8 16.2 32.2 16.2 30 C16.2 27.2 20.2 26.2 22 29.2 C23.8 26.2 27.8 27.2 27.8 30 C27.8 32.2 24.5 34.8 22 37Z" fill="var(--hol-red)" stroke-width="1.5"/>
+</svg>

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<!-- Preview of Sukkot: Aravah (HolidayGuide.md): the holiday-icons palette, light and dark. -->
+<style>
+svg{--hol-line:#1a2744;--hol-gold:#c9922a;--hol-gold-lt:#f0d080;--hol-paper:#fffaf0;--hol-navy:#2a3b66;--hol-red:#c0392b;--hol-green:#3a7d44;--hol-blue:#3b6fb6;--hol-flame:#f0a030;--hol-ground:#fdf8ef;stroke:var(--hol-line);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+@media (prefers-color-scheme:dark){svg{--hol-line:#e8e0d0;--hol-gold:#e0a832;--hol-gold-lt:#f5d97a;--hol-paper:#e8e0d0;--hol-navy:#5a6d9c;--hol-red:#e0584a;--hol-green:#5aa865;--hol-blue:#6a9ae0;--hol-flame:#f6b84a;--hol-ground:#161c2a}}
+</style>
+<path d="M24 44.5 C24 32 24.6 18 26 6" stroke="var(--hol-red)" stroke-width="2"/><path d="M24 38 Q31.1 37.5 37.9 32.4 Q29.4 33.4 24 38Z M24.3 32.5 Q18.9 27.9 10.4 26.9 Q17.2 32 24.3 32.5Z M24.7 27 Q31.7 26.5 38.6 21.4 Q30.1 22.4 24.7 27Z M25 21.5 Q19.6 16.9 11.1 15.9 Q17.9 21 25 21.5Z M25.3 16 Q32.4 15.5 39.2 10.4 Q30.8 11.4 25.3 16Z M25.6 10.5 Q20.2 5.9 11.7 4.9 Q18.6 10 25.6 10.5Z M26 7 Q27.9 4.5 26.6 1 Q24.7 4.1 26 7Z" fill="var(--hol-green)" stroke-width="1.5"/>
+</svg>

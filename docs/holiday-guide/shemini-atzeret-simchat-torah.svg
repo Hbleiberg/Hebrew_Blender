@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<!-- Preview of the Shemini Atzeret / Simchat Torah symbol (HolidayGuide.md): the holiday-icons palette, light and dark. -->
+<style>
+svg{--hol-line:#1a2744;--hol-gold:#c9922a;--hol-gold-lt:#f0d080;--hol-paper:#fffaf0;--hol-navy:#2a3b66;--hol-red:#c0392b;--hol-green:#3a7d44;--hol-blue:#3b6fb6;--hol-flame:#f0a030;--hol-ground:#fdf8ef;stroke:var(--hol-line);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+@media (prefers-color-scheme:dark){svg{--hol-line:#e8e0d0;--hol-gold:#e0a832;--hol-gold-lt:#f5d97a;--hol-paper:#e8e0d0;--hol-navy:#5a6d9c;--hol-red:#e0584a;--hol-green:#5aa865;--hol-blue:#6a9ae0;--hol-flame:#f6b84a;--hol-ground:#161c2a}}
+</style>
+<rect x="11" y="13" width="26" height="22" fill="var(--hol-paper)"/><rect x="5" y="9" width="7" height="30" rx="2.5" fill="var(--hol-gold-lt)"/><rect x="36" y="9" width="7" height="30" rx="2.5" fill="var(--hol-gold-lt)"/><path d="M8.5 9 V5 M8.5 39 V43 M39.5 9 V5 M39.5 39 V43" stroke-width="2.6"/><path d="M16 19 H32 M16 24 H32 M16 29 H26" stroke-width="1.5"/>
+</svg>

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<!-- Preview of Shabbat: Challah (HolidayGuide.md): the holiday-icons palette, light and dark. -->
+<style>
+svg{--hol-line:#1a2744;--hol-gold:#c9922a;--hol-gold-lt:#f0d080;--hol-paper:#fffaf0;--hol-navy:#2a3b66;--hol-red:#c0392b;--hol-green:#3a7d44;--hol-blue:#3b6fb6;--hol-flame:#f0a030;--hol-ground:#fdf8ef;stroke:var(--hol-line);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+@media (prefers-color-scheme:dark){svg{--hol-line:#e8e0d0;--hol-gold:#e0a832;--hol-gold-lt:#f5d97a;--hol-paper:#e8e0d0;--hol-navy:#5a6d9c;--hol-red:#e0584a;--hol-green:#5aa865;--hol-blue:#6a9ae0;--hol-flame:#f6b84a;--hol-ground:#161c2a}}
+</style>
+<path d="M4 27 C4 23.5 7 21.5 10 22.5 C11.5 18.5 17 17.5 19.5 20.5 C21.5 16.5 28 16.5 30 20.5 C32.5 17.5 37.5 18.5 38.5 22.5 C41.5 21.5 44 23.5 44 27 C44 30.5 41.5 32.5 38.5 31.5 C37.5 35.5 32 36.5 29.5 33.5 C27.5 37.5 21 37.5 19 33.5 C16.5 36.5 11 35.5 10 31.5 C7 32.5 4 30.5 4 27Z" fill="var(--hol-gold)"/><path d="M10 22.5 C13.5 24.5 16 29 19 33.5 M19.5 20.5 C23 23.5 26 29 29.5 33.5 M30 20.5 C33 23 35.5 27.5 38.5 31.5" stroke-width="1.6"/><path d="M13.5 21.5 L14.5 22.6 M24 19.6 L25 20.8 M34 21.2 L35 22.3 M16.5 31.5 L17.4 32.6 M26.5 31.6 L27.4 32.8 M36 28.6 L36.9 29.7" stroke="var(--hol-paper)" stroke-width="1.7"/>
+</svg>

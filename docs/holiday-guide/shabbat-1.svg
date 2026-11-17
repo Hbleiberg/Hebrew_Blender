@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<!-- Preview of Shabbat: Candles (HolidayGuide.md): the holiday-icons palette, light and dark. -->
+<style>
+svg{--hol-line:#1a2744;--hol-gold:#c9922a;--hol-gold-lt:#f0d080;--hol-paper:#fffaf0;--hol-navy:#2a3b66;--hol-red:#c0392b;--hol-green:#3a7d44;--hol-blue:#3b6fb6;--hol-flame:#f0a030;--hol-ground:#fdf8ef;stroke:var(--hol-line);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+@media (prefers-color-scheme:dark){svg{--hol-line:#e8e0d0;--hol-gold:#e0a832;--hol-gold-lt:#f5d97a;--hol-paper:#e8e0d0;--hol-navy:#5a6d9c;--hol-red:#e0584a;--hol-green:#5aa865;--hol-blue:#6a9ae0;--hol-flame:#f6b84a;--hol-ground:#161c2a}}
+</style>
+<path d="M9 43 C9 40.5 12 39.5 13.5 38.5 H18.5 C20 39.5 23 40.5 23 43Z M25 43 C25 40.5 28 39.5 29.5 38.5 H34.5 C36 39.5 39 40.5 39 43Z" fill="var(--hol-gold)"/><path d="M14.5 31 V38.5 H17.5 V31Z M30.5 31 V38.5 H33.5 V31Z" fill="var(--hol-gold)"/><path d="M11 27.5 H21 C20.5 30 18.5 31 17.5 31 H14.5 C13.5 31 11.5 30 11 27.5Z M27 27.5 H37 C36.5 30 34.5 31 33.5 31 H30.5 C29.5 31 27.5 30 27 27.5Z" fill="var(--hol-gold)"/><rect x="13.2" y="14.5" width="5.6" height="13" rx="1" fill="var(--hol-paper)"/><rect x="29.2" y="14.5" width="5.6" height="13" rx="1" fill="var(--hol-paper)"/><path d="M16 14.5 V12.6 M32 14.5 V12.6" stroke-width="1.4"/><path d="M16 4 C17.2 6.6 19.5 8.4 19.3 10.4 C19.1 12.3 17.6 13.2 16 13.2 C14.3 13.2 12.9 12.3 12.7 10.4 C12.5 8.4 14.8 6.6 16 4Z M32 4 C33.2 6.6 35.5 8.4 35.3 10.4 C35.1 12.3 33.6 13.2 32 13.2 C30.4 13.2 28.9 12.3 28.7 10.4 C28.5 8.4 30.8 6.6 32 4Z" fill="var(--hol-flame)"/>
+</svg>

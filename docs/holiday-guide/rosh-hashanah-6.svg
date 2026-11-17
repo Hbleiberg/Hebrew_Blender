@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<!-- Preview of Rosh Hashanah: Pomegranate (HolidayGuide.md): the holiday-icons palette, light and dark. -->
+<style>
+svg{--hol-line:#1a2744;--hol-gold:#c9922a;--hol-gold-lt:#f0d080;--hol-paper:#fffaf0;--hol-navy:#2a3b66;--hol-red:#c0392b;--hol-green:#3a7d44;--hol-blue:#3b6fb6;--hol-flame:#f0a030;--hol-ground:#fdf8ef;stroke:var(--hol-line);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+@media (prefers-color-scheme:dark){svg{--hol-line:#e8e0d0;--hol-gold:#e0a832;--hol-gold-lt:#f5d97a;--hol-paper:#e8e0d0;--hol-navy:#5a6d9c;--hol-red:#e0584a;--hol-green:#5aa865;--hol-blue:#6a9ae0;--hol-flame:#f6b84a;--hol-ground:#161c2a}}
+</style>
+<path d="M18.5 13.5 L16.8 5.5 L21.3 9 L24 4.5 L26.7 9 L31.2 5.5 L29.5 13.5Z" fill="var(--hol-red)"/><path d="M24 12 C33.3 12 40.5 18.5 40.5 27.2 C40.5 36.2 33.3 43.2 24 43.2 C14.7 43.2 7.5 36.2 7.5 27.2 C7.5 18.5 14.7 12 24 12Z" fill="var(--hol-red)"/><path d="M13.5 25 C14 21.5 16 18.8 19.2 17.7" stroke="var(--hol-paper)" stroke-width="1.8"/><path d="M24 43.2 V44.8" stroke-width="1.6"/>
+</svg>

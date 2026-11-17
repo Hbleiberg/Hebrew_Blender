@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<!-- Preview of Shabbat: Kiddush Cup (HolidayGuide.md): the holiday-icons palette, light and dark. -->
+<style>
+svg{--hol-line:#1a2744;--hol-gold:#c9922a;--hol-gold-lt:#f0d080;--hol-paper:#fffaf0;--hol-navy:#2a3b66;--hol-red:#c0392b;--hol-green:#3a7d44;--hol-blue:#3b6fb6;--hol-flame:#f0a030;--hol-ground:#fdf8ef;stroke:var(--hol-line);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+@media (prefers-color-scheme:dark){svg{--hol-line:#e8e0d0;--hol-gold:#e0a832;--hol-gold-lt:#f5d97a;--hol-paper:#e8e0d0;--hol-navy:#5a6d9c;--hol-red:#e0584a;--hol-green:#5aa865;--hol-blue:#6a9ae0;--hol-flame:#f6b84a;--hol-ground:#161c2a}}
+</style>
+<path d="M16 42.5 C16 39.5 19.5 37.5 24 37.5 C28.5 37.5 32 39.5 32 42.5Z" fill="var(--hol-gold-lt)"/><rect x="22.4" y="26" width="3.2" height="11.5" fill="var(--hol-gold-lt)"/><circle cx="24" cy="30.5" r="2.8" fill="var(--hol-gold)"/><path d="M12.5 8 H35.5 C35.5 18.5 31.5 26 24 26 C16.5 26 12.5 18.5 12.5 8Z" fill="var(--hol-gold-lt)"/><ellipse cx="24" cy="8" rx="11.5" ry="2.7" fill="var(--hol-red)"/><path d="M15 16.5 C19 19.5 29 19.5 33 16.5" stroke="var(--hol-gold)" stroke-width="1.6"/>
+</svg>

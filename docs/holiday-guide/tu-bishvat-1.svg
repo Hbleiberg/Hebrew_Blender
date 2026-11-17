@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<!-- Preview of Tu BiShvat: Tree (HolidayGuide.md): the holiday-icons palette, light and dark. -->
+<style>
+svg{--hol-line:#1a2744;--hol-gold:#c9922a;--hol-gold-lt:#f0d080;--hol-paper:#fffaf0;--hol-navy:#2a3b66;--hol-red:#c0392b;--hol-green:#3a7d44;--hol-blue:#3b6fb6;--hol-flame:#f0a030;--hol-ground:#fdf8ef;stroke:var(--hol-line);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+@media (prefers-color-scheme:dark){svg{--hol-line:#e8e0d0;--hol-gold:#e0a832;--hol-gold-lt:#f5d97a;--hol-paper:#e8e0d0;--hol-navy:#5a6d9c;--hol-red:#e0584a;--hol-green:#5aa865;--hol-blue:#6a9ae0;--hol-flame:#f6b84a;--hol-ground:#161c2a}}
+</style>
+<path d="M24 4 C30.5 4 35 7.5 35.5 12.5 C40.5 13 43.5 17 43 22 C42.5 27 38 30.5 33 30 C30.5 32.5 17.5 32.5 15 30 C10 30.5 5.5 27 5 22 C4.5 17 7.5 13 12.5 12.5 C13 7.5 17.5 4 24 4Z" fill="var(--hol-green)"/><path d="M20.5 43.5 L21.6 30.5 L15 24 L17.2 21.8 L22.4 27 V18.5 H25.6 V26 L30.8 20.8 L33 23 L26.4 29.6 L27.5 43.5Z" fill="var(--hol-gold)"/><path d="M7 43.5 H41" stroke-width="2.4"/>
+</svg>

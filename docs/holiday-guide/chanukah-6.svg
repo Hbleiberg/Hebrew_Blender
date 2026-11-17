@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<!-- Preview of Chanukah: Oil (HolidayGuide.md): the holiday-icons palette, light and dark. -->
+<style>
+svg{--hol-line:#1a2744;--hol-gold:#c9922a;--hol-gold-lt:#f0d080;--hol-paper:#fffaf0;--hol-navy:#2a3b66;--hol-red:#c0392b;--hol-green:#3a7d44;--hol-blue:#3b6fb6;--hol-flame:#f0a030;--hol-ground:#fdf8ef;stroke:var(--hol-line);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+@media (prefers-color-scheme:dark){svg{--hol-line:#e8e0d0;--hol-gold:#e0a832;--hol-gold-lt:#f5d97a;--hol-paper:#e8e0d0;--hol-navy:#5a6d9c;--hol-red:#e0584a;--hol-green:#5aa865;--hol-blue:#6a9ae0;--hol-flame:#f6b84a;--hol-ground:#161c2a}}
+</style>
+<path d="M26 14.5 C33.5 14 36 20 32.5 25.5" stroke-width="2.2"/><path d="M17.5 12.5 H25.5 V20 C31.5 23.5 34.5 29 34 34.5 C33.5 40 29 43.5 21.5 43.5 C14 43.5 9.5 40 9 34.5 C8.5 29 11.5 23.5 17.5 20Z" fill="var(--hol-gold-lt)"/><rect x="15.5" y="8.5" width="12" height="4" rx="1.6" fill="var(--hol-gold)"/><path d="M9.6 31 C16 34 27 34 33.4 31" stroke="var(--hol-gold)" stroke-width="1.7"/><path d="M41 27 C42.5 30 44.5 32 44.5 34.5 A3.5 3.5 0 0 1 37.5 34.5 C37.5 32 39.5 30 41 27Z" fill="var(--hol-flame)" stroke-width="1.5"/>
+</svg>

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<!-- Preview of the Purim symbol (HolidayGuide.md): the holiday-icons palette, light and dark. -->
+<style>
+svg{--hol-line:#1a2744;--hol-gold:#c9922a;--hol-gold-lt:#f0d080;--hol-paper:#fffaf0;--hol-navy:#2a3b66;--hol-red:#c0392b;--hol-green:#3a7d44;--hol-blue:#3b6fb6;--hol-flame:#f0a030;--hol-ground:#fdf8ef;stroke:var(--hol-line);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+@media (prefers-color-scheme:dark){svg{--hol-line:#e8e0d0;--hol-gold:#e0a832;--hol-gold-lt:#f5d97a;--hol-paper:#e8e0d0;--hol-navy:#5a6d9c;--hol-red:#e0584a;--hol-green:#5aa865;--hol-blue:#6a9ae0;--hol-flame:#f6b84a;--hol-ground:#161c2a}}
+</style>
+<path d="M5 20 C5 11.5 13.5 12 24 16.5 C34.5 12 43 11.5 43 20 C43 30 37 34 30.5 32 C27.5 31 25.5 28 24 28 C22.5 28 20.5 31 17.5 32 C11 34 5 30 5 20Z" fill="var(--hol-blue)"/><ellipse cx="15.5" cy="21.5" rx="4.2" ry="3" fill="var(--hol-ground)"/><ellipse cx="32.5" cy="21.5" rx="4.2" ry="3" fill="var(--hol-ground)"/><path d="M9 15.5 L7 11 M39 15.5 L41 11 M24 15 V11" stroke="var(--hol-gold)" stroke-width="2"/><path d="M38.5 30.5 L45 42" stroke-width="2.4"/>
+</svg>
