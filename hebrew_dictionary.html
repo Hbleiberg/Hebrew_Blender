@@ -573,7 +573,7 @@ body.dark .dict-tool-btn.copied:hover{background:var(--gold);}   /* the dark hov
 .fchip{display:inline-flex;align-items:center;background:var(--white);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:border-color 0.15s;}
 .fchip:hover{border-color:var(--gold);}
 .fchip-body{font-size:0.74rem;background:transparent;border:none;color:var(--text);cursor:pointer;font-family:inherit;padding:3px 6px 3px 10px;line-height:1.5;white-space:nowrap;}
-.fchip-x{display:inline-flex;align-items:center;justify-content:center;width:20px;height:22px;background:transparent;color:var(--muted);font-size:0.72rem;line-height:1;border:none;border-inline-start:1px solid var(--border);cursor:pointer;flex-shrink:0;padding:0;}
+.fchip-x{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;   /* the 2.5.8 floor: flush against the chip's own button, 20×22 had no spacing to borrow (pattern sub-floor touch target) */background:transparent;color:var(--muted);font-size:0.72rem;line-height:1;border:none;border-inline-start:1px solid var(--border);cursor:pointer;flex-shrink:0;padding:0;}
 .fchip-x:hover{background:var(--gold);color:var(--navy);}
 /* "Load as filter" active-list banner — makes the saved-list view visible (and exitable)
    so it no longer silently vanishes when the next filter change clears wlFilterOverride. */
