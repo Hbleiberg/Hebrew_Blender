@@ -1366,6 +1366,15 @@ body.dark .ladder-strip-line { color: var(--gold-light); }
   /* The drill's keyboard hints and the results screen's actions (a Learning Path level's Next / Try again / Back
      to the path among them) are screen controls, inert ink on paper. */
   .fc-kh-set, .results-savedeck, .results-actions, .ladder-strip-actions { display:none !important; }
+  /* So are the timer's Pause, the voice-speed row, a listening round's speaker and its "tap to hear" line, and a
+     panel's fold triangle (the results' "Results ▾"). The per-card list is folded on screen after a perfect score (and
+     whenever the teacher folds it), which on paper left a "Results" heading over nothing: paper always carries it.
+     A listening round's choices print at full ink: until the speaker is pressed they are dimmed (.lc-wait), a screen
+     state that printed them at 45%. */
+  #timerPauseBtn, #fcSpeed, #lcReplay, .lc-hint { display:none !important; }
+  .panel-title::after { content:none !important; }
+  #panelResults.collapsed .panel-body { display:block !important; }
+  .lc-choices.lc-wait .lc-tile { opacity:1 !important; }
   /* A box-shadow is a DRAWING, not a background, so printBackground:false never drops it — the
      dark theme's .panel shadow (rgba(0,0,0,.4)) printed as a 7in slab of 40% black behind the
      results screen's auto-expanded per-card list. Shadows are a screen affordance with no paper
