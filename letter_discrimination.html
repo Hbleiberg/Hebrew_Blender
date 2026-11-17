@@ -153,6 +153,9 @@ body.dark .ld-chip[aria-pressed="true"] { background:#2a4070; border-color:#4a6a
   font-family:inherit; font-size:0.95rem; color:var(--text); background:var(--cream);
   border:1px solid var(--border); border-radius:6px; padding:6px 8px; min-height:36px;
 }
+/* The browser's gray placeholder read 4.36:1 on the cream field and 3.69:1 in dark mode; --muted flips with the theme
+   (5.8 / 5.6:1), and opacity:1 because Firefox fades a placeholder by default. */
+.ld-input::placeholder { color:var(--muted); opacity:1; }
 input.ld-num { inline-size:70px; }
 .ld-fonts { display:grid; grid-template-columns:repeat(auto-fill, minmax(210px, 1fr)); gap:4px 14px; margin-bottom:8px; }
 .ld-fonts h3 { grid-column:1 / -1; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--muted); margin-top:6px; }
