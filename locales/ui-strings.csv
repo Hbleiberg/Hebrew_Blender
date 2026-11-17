@@ -5627,7 +5627,8 @@ shared.tip.aria_more_info,More information,מידע נוסף,Default aria-label 
 shared.folders.duplicate,Duplicate,שכפול,Title on the duplicate button in the folder-tree row,
 flashcards.count.custom_placeholder,Custom,מותאם,Placeholder on the custom card-count input,
 flashcards.count.custom_aria,Custom card count ({min} to {max}),מספר כרטיסים מותאם ({min} עד {max}),aria-label on the custom card-count input,has {min} {max}
-flashcards.profile.saved_count,{count} saved,{count} שמורים,Sub-label on each profile row (saved-results count),has {count}
+flashcards.profile.saved_count.one,{count} saved,תוצאה שמורה אחת,Sub-label on each profile row: its one saved result,"plural; the Hebrew as the save-to-profile button's (button_label.one)"
+flashcards.profile.saved_count.other,{count} saved,{count} תוצאות שמורות,Sub-label on each profile row: its saved results (results: feminine),"plural; has {count}; was one row reading ""1 שמורים"" (S655)"
 flashcards.profile.active_marker,★ ,★ ,Prefix marking the active profile row,symbol only
 flashcards.teachertools.play_button,Play,נגן,Play button on a saved preset row (loads + starts the drill),
 worksheet.actions.pdf_generating,⏳ Generating...,⏳ יוצר...,PDF export button (busy state),leading-emoji
