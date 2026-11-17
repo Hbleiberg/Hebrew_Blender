@@ -2235,6 +2235,9 @@ function wlOpenSaveModal() {
   }
 
   const status = wlEl('div', { style: 'font-size:0.78rem;margin-top:12px;min-height:1.1em;text-align:center;' });
+  // A live region from the window's first paint, as the rename editor's is: "Saved…", "Enter a name" and a taken
+  // name are spoken, not only shown, while the focus stays on the field or the button pressed.
+  status.setAttribute('role', 'status'); status.setAttribute('aria-live', 'polite');
   body.appendChild(status);
   // Revealed after a successful save — the strongest moment to carry the new list into Flash Cards.
   const useFcLink = wlEl('a', { cls: 'wm-root-btn', href: '#', style: 'display:none;box-sizing:border-box;text-align:center;text-decoration:none;margin-top:10px;' }, I18n.t('dictionary.wordlist.use_in_flashcards'));
@@ -2291,6 +2294,7 @@ function wlOpenAddToListModal(w) {
   const addBtn = wlEl('button', { cls: 'wm-root-btn', type: 'button' }, I18n.t('dictionary.wordlist.add_to_selected'));
   body.appendChild(addBtn);
   const status = wlEl('div', { style: 'font-size:0.78rem;margin-top:12px;min-height:1.1em;text-align:center;' });
+  status.setAttribute('role', 'status'); status.setAttribute('aria-live', 'polite');   // "Added…" spoken, as the Save window's
   body.appendChild(status);
   addBtn.addEventListener('click', () => {
     const r = wlMergeIntoList(sel2.value, [wlWordFromDict(w)]);
