@@ -1,7 +1,9 @@
 /* ══════════════════════════════════════════════════════
    IvritSuite — the Hebrew calendar and the weekly parasha: js/hebrew-calendar.js
    Loaded by torah_trainer.html and classroom_dashboard.html (its parsha line), each
-   as a classic script placed before the page's inline <script> (window.HebCal).
+   as a classic script placed before the page's inline <script> (window.HebCal); by
+   parsha_emojis.html and the parsha/ pages (this week's parasha, a parasha's next
+   reading), and by holiday_guide.html and the holidays/ pages (the next holiday).
    It reads no `settings`, no `I18n` and no DOM: dates
    go in as {y, m, d} or a Date, readings come out as parasha indices (0 =
    Bereshit … 53 = V'Zot HaBerachah, parshiyot.json's `n` − 1) and holiday keys;
@@ -13,7 +15,8 @@
    traditional anchors and doubling preferences — docs/reference/torah-and-trope.md
    → Reading schedule), the special Shabbatot (the maftir and haftarah that replace a
    parasha's own: specialShabbat, a port of @hebcal/leyning's precedence, which is
-   BSD-2-Clause), and the triennial-cycle helpers.
+   BSD-2-Clause), the triennial-cycle helpers, and the holidays of a year by date
+   (holidaysOfYear, holidayOccurrence, nextHoliday: the Holiday Guide's countdown).
    ══════════════════════════════════════════════════════ */
 'use strict';
 (function () {
@@ -315,10 +318,75 @@
     return null;
   }
 
+  /* ────────── THE HOLIDAYS OF A YEAR — the Holiday Guide's countdown ──────────
+     The fifteen dated holidays, in calendar order from Tishrei, as keys (the page owns every name).
+     holidaysOfYear(hy, opts) → { key: { start, days } }: the JDN of the holiday's first day in Hebrew
+     year hy and how many days it lasts. Fixed dates, with the rules that move one: Purim is 14 Adar
+     (Adar II in a leap year); Yom HaShoah is 27 Nisan, a day earlier when that is a Friday and a day
+     later when it is a Sunday; Yom HaAtzmaut is 5 Iyar, moved to the Thursday before when it falls on a
+     Friday or a Shabbat and to Tuesday when it falls on a Monday, with Yom HaZikaron the day before it;
+     Tisha B'Av is 9 Av, or 10 Av when the 9th is a Shabbat. Israel and the Diaspora differ only in the
+     second days (Shemini Atzeret 1 day or 2 — Simchat Torah is its second day in the Diaspora —, Pesach
+     7 or 8, Shavuot 1 or 2).
+     A Hebrew day begins the evening before, so every occurrence also has an `eve`: the civil day whose
+     evening opens the holiday (start − 1). holidayOccurrence(key, date, opts) is the occurrence of one
+     holiday that has not ended by `date`: { key, hyear, start, end, eve, days, state, daysToEve, day,
+     eveDate, startDate, endDate } — state 'before' (daysToEve ≥ 1), 'eve' (it begins tonight) or 'during'
+     (`day` is 1…days); the dates are {y, m, d}. nextHoliday(date, opts) is the holiday under way, or else
+     the one whose eve comes first. Shabbat is not a holiday here. */
+  const HOLIDAY_KEYS = ['rosh_hashanah', 'yom_kippur', 'sukkot', 'shmini_atzeret', 'chanukah', 'tu_bishvat', 'purim', 'pesach',
+    'yom_hashoah', 'yom_hazikaron', 'yom_haatzmaut', 'lag_baomer', 'yom_yerushalayim', 'shavuot', 'tisha_bav'];
+  function holidaysOfYear(hy, opts) {
+    const israel = !!(opts && opts.israel), nis = nisanOf(hy);
+    const at = (m, d) => hebrewToJDN(hy, m, d);
+    let shoah = at(nis, 27);
+    if (dayOfWeek(shoah) === 5) shoah -= 1; else if (dayOfWeek(shoah) === 0) shoah += 1;
+    let atzmaut = at(nis + 1, 5);
+    const w = dayOfWeek(atzmaut);
+    if (w === 5) atzmaut -= 1; else if (w === 6) atzmaut -= 2; else if (w === 1) atzmaut += 1;
+    let av = at(nis + 4, 9);
+    if (dayOfWeek(av) === 6) av += 1;
+    return {
+      rosh_hashanah: { start: at(1, 1), days: 2 }, yom_kippur: { start: at(1, 10), days: 1 },
+      sukkot: { start: at(1, 15), days: 7 }, shmini_atzeret: { start: at(1, 22), days: israel ? 1 : 2 },
+      chanukah: { start: at(3, 25), days: 8 }, tu_bishvat: { start: at(5, 15), days: 1 },
+      purim: { start: at(nis - 1, 14), days: 1 }, pesach: { start: at(nis, 15), days: israel ? 7 : 8 },
+      yom_hashoah: { start: shoah, days: 1 }, yom_hazikaron: { start: atzmaut - 1, days: 1 }, yom_haatzmaut: { start: atzmaut, days: 1 },
+      lag_baomer: { start: at(nis + 1, 18), days: 1 }, yom_yerushalayim: { start: at(nis + 1, 28), days: 1 },
+      shavuot: { start: at(nis + 2, 6), days: israel ? 1 : 2 }, tisha_bav: { start: av, days: 1 },
+    };
+  }
+  function holidayOccurrence(key, date, opts) {
+    const j = toJDN(date);
+    if (j === null || !HOLIDAY_KEYS.includes(key)) return null;
+    const hy0 = jdnToHebrew(j).year;
+    for (const hy of [hy0, hy0 + 1]) {          // this year's, unless it has ended: then the next year's
+      const h = holidaysOfYear(hy, opts)[key];
+      const end = h.start + h.days - 1, eve = h.start - 1;
+      if (end < j) continue;
+      const state = j < eve ? 'before' : j === eve ? 'eve' : 'during';
+      return { key, hyear: hy, start: h.start, end, eve, days: h.days, state, daysToEve: Math.max(0, eve - j),
+        day: state === 'during' ? j - h.start + 1 : 0,
+        eveDate: jdnToGregorian(eve), startDate: jdnToGregorian(h.start), endDate: jdnToGregorian(end) };
+    }
+    return null;
+  }
+  function nextHoliday(date, opts) {
+    let best = null;
+    for (const key of HOLIDAY_KEYS) {
+      const o = holidayOccurrence(key, date, opts);
+      if (!o) continue;
+      if (o.state === 'during') return o;       // one at most: no two of the fifteen share a day
+      if (!best || o.eve < best.eve) best = o;
+    }
+    return best;
+  }
+
   window.HebCal = {
     gregorianToJDN, jdnToGregorian, hebrewToJDN, jdnToHebrew, hebrewLeapYear, hebrewYearLength, daysInHebrewMonth,
     toJDN, dayOfWeek, shabbatOnOrAfter, monthKeyOf, MONTH_KEYS_LEAP, MONTH_KEYS_REGULAR,
     sedraForYear, parshaForDate, nextOccurrence, festivalShabbatot, specialShabbat, SPECIAL_KEYS,
     triennialYear, triennialCycleStart, doubledPattern, doubledFirstOf, DOUBLED_FIRSTS, P,
+    HOLIDAY_KEYS, holidaysOfYear, holidayOccurrence, nextHoliday,
   };
 })();

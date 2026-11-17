@@ -2,11 +2,13 @@
 /* smoke-hebrew-calendar.mjs — checks js/hebrew-calendar.js (the Torah Trainer's parasha-by-date) without a
  * browser: the module is loaded in a vm, the converter is round-tripped over two centuries, the weekly
  * reading table is pinned by dates whose parasha is known, on both schedules, and the special Shabbatot
- * (specialShabbat) by dates whose maftir and haftarah are known. Zero dependencies. Exits non-zero on the
+ * (specialShabbat) by dates whose maftir and haftarah are known, and the holidays of a year (the Holiday
+ * Guide's countdown) by known first days and countdown cases. Zero dependencies. Exits non-zero on the
  * first failure. Run: node scripts/smoke-hebrew-calendar.mjs
  *
  * --hebcal: also compares every Shabbat of 5700–5900 (1939–2140), Diaspora and Israel, against Hebcal's
- * year-type tables, and its special reading against @hebcal/leyning's. That needs @hebcal/core (GPL-2.0 — a
+ * year-type tables, its special reading against @hebcal/leyning's, and the fifteen holidays' first days of
+ * 5765–5900 against Hebcal's calendar. That needs @hebcal/core (GPL-2.0 — a
  * dev-time oracle only; nothing of it is copied or shipped) and @hebcal/leyning (BSD-2-Clause, the source
  * the special-Shabbat rules are ported from): run `npm install --no-save @hebcal/core @hebcal/leyning` in a
  * directory outside the repo and point at it with HEBCAL_DIR=<that dir>, or install them in the repo root
@@ -131,6 +133,67 @@ assert.equal(H.doubledFirstOf(H.P.PEKUDEI), H.P.VAYAKHEL); assert.equal(H.double
   ok('triennial year, cycle start, doubled pattern, next occurrence');
 }
 
+// 2c. the holidays of a year (the Holiday Guide's countdown): first days pinned by known dates, the rules that
+// move a day (Yom HaShoah off a Friday or a Sunday, Yom HaAtzmaut off a Friday, a Shabbat or a Monday with Yom
+// HaZikaron the day before, Tisha B'Av off a Shabbat, Purim in Adar II), the second days by schedule, and the
+// countdown: before, the eve, under way, and the next one after it.
+{
+  const iso = (j) => { const g = H.jdnToGregorian(j); return `${g.y}-${String(g.m).padStart(2, '0')}-${String(g.d).padStart(2, '0')}`; };
+  const first = (hy, key, israel) => iso(H.holidaysOfYear(hy, { israel })[key].start);
+  assert.equal(H.HOLIDAY_KEYS.length, 15);
+  const FIRST = [
+    [5785, 'yom_hashoah', '2025-04-24'], [5785, 'yom_hazikaron', '2025-04-30'], [5785, 'yom_haatzmaut', '2025-05-01'], [5785, 'tisha_bav', '2025-08-03'],
+    [5786, 'rosh_hashanah', '2025-09-23'], [5786, 'yom_kippur', '2025-10-02'], [5786, 'sukkot', '2025-10-07'], [5786, 'shmini_atzeret', '2025-10-14'],
+    [5786, 'chanukah', '2025-12-15'], [5786, 'tu_bishvat', '2026-02-02'], [5786, 'purim', '2026-03-03'], [5786, 'pesach', '2026-04-02'],
+    [5786, 'yom_hashoah', '2026-04-14'], [5786, 'yom_hazikaron', '2026-04-21'], [5786, 'yom_haatzmaut', '2026-04-22'], [5786, 'lag_baomer', '2026-05-05'],
+    [5786, 'yom_yerushalayim', '2026-05-15'], [5786, 'shavuot', '2026-05-22'], [5786, 'tisha_bav', '2026-07-23'],
+    [5787, 'rosh_hashanah', '2026-09-12'], [5787, 'yom_kippur', '2026-09-21'], [5787, 'sukkot', '2026-09-26'], [5787, 'shmini_atzeret', '2026-10-03'],
+    [5787, 'chanukah', '2026-12-05'], [5787, 'tu_bishvat', '2027-01-23'], [5787, 'purim', '2027-03-23'], [5787, 'pesach', '2027-04-22'],
+    [5787, 'yom_hashoah', '2027-05-04'], [5787, 'yom_haatzmaut', '2027-05-12'], [5787, 'lag_baomer', '2027-05-25'], [5787, 'shavuot', '2027-06-11'],
+    [5787, 'tisha_bav', '2027-08-12'],
+    [5788, 'yom_hashoah', '2028-04-24'], [5788, 'yom_hazikaron', '2028-05-01'], [5788, 'yom_haatzmaut', '2028-05-02'],
+    [5789, 'yom_haatzmaut', '2029-04-19'], [5789, 'tisha_bav', '2029-07-22'],
+  ];
+  for (const [hy, key, want] of FIRST) assert.equal(first(hy, key, false), want, `${key} ${hy}`);
+  // the weekday each moved day lands on: Yom HaAtzmaut never Friday, Shabbat or Monday; Yom HaShoah never Friday or
+  // Sunday; Tisha B'Av never Shabbat; and the fifteen in calendar order with no two sharing a day, 5660–5900
+  for (let y = 5660; y <= 5900; y++) for (const israel of [false, true]) {
+    const h = H.holidaysOfYear(y, { israel });
+    assert.ok(![5, 6, 1].includes(H.dayOfWeek(h.yom_haatzmaut.start)), `${y}: Yom HaAtzmaut's weekday`);
+    assert.equal(h.yom_hazikaron.start, h.yom_haatzmaut.start - 1);
+    assert.ok(![5, 0].includes(H.dayOfWeek(h.yom_hashoah.start)), `${y}: Yom HaShoah's weekday`);
+    assert.notEqual(H.dayOfWeek(h.tisha_bav.start), 6, `${y}: Tisha B'Av's weekday`);
+    let prevEnd = -Infinity;
+    for (const key of H.HOLIDAY_KEYS) { assert.ok(h[key].start > prevEnd, `${y} ${israel}: ${key} follows the one before it`); prevEnd = h[key].start + h[key].days - 1; }
+    assert.ok(prevEnd < H.holidaysOfYear(y + 1, { israel }).rosh_hashanah.start - 1, `${y}: Tisha B'Av ends before the next Erev Rosh Hashanah`);
+    assert.equal(h.purim.start, H.hebrewToJDN(y, H.hebrewLeapYear(y) ? 7 : 6, 14), `${y}: Purim is in the Adar before Nisan`);
+  }
+  same([H.holidaysOfYear(5787, {}).shmini_atzeret.days, H.holidaysOfYear(5787, {}).pesach.days, H.holidaysOfYear(5787, {}).shavuot.days], [2, 8, 2], 'Diaspora second days');
+  same([H.holidaysOfYear(5787, { israel: true }).shmini_atzeret.days, H.holidaysOfYear(5787, { israel: true }).pesach.days, H.holidaysOfYear(5787, { israel: true }).shavuot.days], [1, 7, 1], 'Israel: one day');
+  ok(`${FIRST.length} holiday first days; the moved days' weekdays, the order and the second days over 5660–5900`);
+
+  // [date, schedule, key, state, daysToEve, day]
+  const NEXT = [
+    ['2026-11-17', 'D', 'chanukah', 'before', 17, 0], ['2026-12-03', 'D', 'chanukah', 'before', 1, 0], ['2026-12-04', 'D', 'chanukah', 'eve', 0, 0],
+    ['2026-12-05', 'D', 'chanukah', 'during', 0, 1], ['2026-12-12', 'D', 'chanukah', 'during', 0, 8], ['2026-12-13', 'D', 'tu_bishvat', 'before', 40, 0],
+    ['2026-10-02', 'D', 'sukkot', 'during', 0, 7], ['2026-10-04', 'D', 'shmini_atzeret', 'during', 0, 2], ['2026-10-04', 'I', 'chanukah', 'before', 61, 0],
+    ['2027-04-29', 'D', 'pesach', 'during', 0, 8], ['2027-04-29', 'I', 'yom_hashoah', 'before', 4, 0],
+    ['2027-05-11', 'D', 'yom_hazikaron', 'during', 0, 1], ['2027-05-12', 'D', 'yom_haatzmaut', 'during', 0, 1],
+    ['2029-07-21', 'D', 'tisha_bav', 'eve', 0, 0], ['2028-09-20', 'D', 'rosh_hashanah', 'eve', 0, 0], ['2028-09-01', 'D', 'rosh_hashanah', 'before', 19, 0],
+  ];
+  for (const [d, s, key, state, toEve, day] of NEXT) {
+    const o = H.nextHoliday(d, { israel: s === 'I' });
+    same([o.key, o.state, o.daysToEve, o.day], [key, state, toEve, day], `nextHoliday ${d} ${s}`);
+  }
+  const ch = H.holidayOccurrence('chanukah', '2026-11-17', {});
+  same([ch.hyear, ch.eveDate, ch.startDate, ch.endDate, ch.days], [5787, { d: 4, m: 12, y: 2026 }, { d: 5, m: 12, y: 2026 }, { d: 12, m: 12, y: 2026 }, 8], 'Chanukah 5787');
+  assert.equal(H.dayOfWeek(ch.eve), 5, 'its first candle is a Friday evening');
+  assert.equal(H.holidayOccurrence('chanukah', '2026-12-13', {}).hyear, 5788, 'once over, the next year\'s');
+  assert.equal(H.holidayOccurrence('rosh_hashanah', '2026-09-11', {}).state, 'eve', 'Erev Rosh Hashanah is in the year before');
+  assert.equal(H.holidayOccurrence('shabbat', '2026-11-17', {}), null); assert.equal(H.holidayOccurrence('purim', 'nonsense', {}), null);
+  ok(`${NEXT.length} countdown cases: before, the eve, under way, the next one, both schedules, across the year`);
+}
+
 // 4. --hebcal: the oracle, every Shabbat of 5700–5900 on both schedules
 if (process.argv.includes('--hebcal')) {
   const dir = process.env.HEBCAL_DIR || root;
@@ -183,6 +246,28 @@ if (process.argv.includes('--hebcal')) {
   }
   assert.equal(sbad, 0, `${sbad} of ${sc} parasha Shabbatot differ from @hebcal/leyning on the special reading`);
   ok(`--hebcal: ${sc} parasha Shabbatot of 5700–5900 on both schedules agree with @hebcal/leyning on the special reading`);
+  // the fifteen holidays' first days, 5765–5900 on both schedules (Hebcal dates Chanukah's first candle on the eve,
+  // 24 Kislev: a day before the first day; the moved days carry "(observed)" in some versions)
+  const HOLIDAY_NAME = [[/^Rosh Hashana \d+$/, 'rosh_hashanah', 0], [/^Yom Kippur$/, 'yom_kippur', 0], [/^Sukkot I$/, 'sukkot', 0],
+    [/^Shmini Atzeret$/, 'shmini_atzeret', 0], [/^Chanukah: 1 Candle$/, 'chanukah', 1], [/^Tu BiShvat$/, 'tu_bishvat', 0], [/^Purim$/, 'purim', 0],
+    [/^Pesach I$/, 'pesach', 0], [/^Yom HaShoah$/, 'yom_hashoah', 0], [/^Yom HaZikaron$/, 'yom_hazikaron', 0], [/^Yom HaAtzma.ut$/, 'yom_haatzmaut', 0],
+    [/^Lag BaOmer$/, 'lag_baomer', 0], [/^Yom Yerushalayim$/, 'yom_yerushalayim', 0], [/^Shavuot( I)?$/, 'shavuot', 0], [/^Tish.a B.Av( \(observed\))?$/, 'tisha_bav', 0]];
+  let hc = 0, hbad = 0;
+  for (let y = 5765; y <= 5900; y++) for (const israel of [false, true]) {
+    const mine = H.holidaysOfYear(y, { israel }), theirs = {};
+    for (const e of core.HebrewCalendar.calendar({ year: y, isHebrewYear: true, il: israel })) {
+      const hit = HOLIDAY_NAME.find(([re]) => re.test(e.getDesc()));
+      if (!hit) continue;
+      const g = e.getDate().greg();
+      theirs[hit[1]] = H.gregorianToJDN(g.getFullYear(), g.getMonth() + 1, g.getDate()) + hit[2];
+    }
+    for (const key of H.HOLIDAY_KEYS) {
+      hc++;
+      if (theirs[key] !== mine[key].start) { hbad++; if (hbad <= 20) console.log(`  MISMATCH ${key} ${y} ${israel ? 'IL' : 'D'}: hebcal ${theirs[key]}, ours ${mine[key].start}`); }
+    }
+  }
+  assert.equal(hbad, 0, `${hbad} of ${hc} holiday first days differ from Hebcal`);
+  ok(`--hebcal: ${hc} holiday first days of 5765–5900 on both schedules agree with Hebcal`);
 }
 
 console.log(`smoke-hebrew-calendar: ${n} checks passed`);
