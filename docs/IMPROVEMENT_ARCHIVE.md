@@ -98426,3 +98426,45 @@ _(prior)_ **Next session (S658):** **Branch `claude/inspiring-hawking-ema04x` (S
 - P accounts & cloud (one surface): 2026-11-18 (**S659 — 26th P, `flash_cards.html` (its 2nd alone since S435: S573 → S659; the lockup headers landed outside the loop): seven smokes 758 / 758; arms 3–7 static 70 / 70 behind 8 / 8 plants; arm 8 as at S652; + the chip signed in across 16 pages × 1px. FOUND 2 (3 pages' gates measured signed out; flash's squeezed title), FIXED 2. P-next: atlas (S578), then generator (S592).**)
 
 _(prior)_ **Next session (S659):** **Branch `claude/gifted-wright-dosphg` (the Name Tags launch + S658, draft PR #410): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1414**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=7cb948e sw=v1414 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ New pages: the Holiday Guide (first N and P by S670) and `letter_discrimination.html` (by S668) — override 4; neither is a surface in `loop-passes.md` / `coverage.mjs` yet; Name Tags is public (`392ec76d`). ⚑ Stalest now: P flash (S573), M generator (S574), G chrome (S575), N atlas (S577), D atlas (S579), C atlas (S580), A (S581). ⚑ Queue: the generator's two S657 P3s in order (findings S657); the dictionary's S656 P4 (card icons' `aria-hidden`); the dashboard's Bulk open (S655); torah's two S653 P4; the S570 staff double draw. ⚑ Awaiting: the Total Torah bar's ▶ and the drawer's tab labels (S653), the starter class (S652). ⚑ E: links vs the host's 8,190 bytes (S651). ⚑ F/A: Hebrew-only wrappers on typed text (S649); save windows whose status line is not live (S656); overflow past a scroller's start edge on the other sheet pages (S657). ⚑ L (S658): no tool footer lists Name Tags yet (offered, not taken up); triage in findings S658. ⚑ G: `leak.mjs`, 6 pages. ⚑ 47 seeds.
+
+
+<!-- archived by compact-ledger at the S661 boundary, 2026-11-18 -->
+## Compaction (S661, 2026-11-18) — moved verbatim from the live ledger
+
+### from Candidates — aged P4 (found more than 90 sessions before S661)
+
+- [ ] P4 (**NEW S570 D**) | torah_trainer.html | **A cold Trope-staff load still draws the reading twice**: `ensureStaffData()` starts only when the first render asks, so the words-only fallback draws first (31–50 ms @1×, 115–180 @4×) and the staff replaces it; starting the phrase file in `init` when the layout is the staff would draw once. | found S570
+
+### from Candidates (prioritized, top = next)
+
+- [ ] P3 (**NEW S657 N — do first (the key's floor FIXED `b6546cd9`); pattern `overflow-past-a-scrollers-start-edge`**) | hebrew_blend_generator.html | **In the Hebrew UI a left-to-right grid wider than its window runs off the right edge, out of reach**: Word Search 15 × 15 71–163 px on phones and 96 at 800, 18 × 18 161–253 / 186, the Bingo caller list 3–139 / 25–32. Fix: `.main-content { direction: ltr }`, the status …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] P4 (**NEW S660 M**) | hebrew_blend_generator.html | **In the Hebrew UI the blend Self-Check's timer, score bar and controls row run left to right** (they inherit `.worksheet`'s `ltr`): Start / Pause read backwards, the counts start at the left; the Self-Check options' indent and rule (and Number Practice's two sub-rows) use `padding-left` / `border-left`, so in Hebrew the rule stands at the far left. | found S660
+
+### from Done
+
+- [x] 2026-11-18 | (S660 close-out) | branch/deploy note | **S660 = M on `hebrew_blend_generator.html` (its 3rd: S436 → S574 → S660; 49 commits since): 34 views × 6 cells by real clicks (204 loads, 0 page errors), the text census, a dark-fill arm, the frozen bar across widths and resizes. FOUND 5, FIXED 1 + the S657 P3 from the queue, 4 logged (the governor's cap).** Branch `claude/eager-goldberg-70ry8p`, draft PR #414 (S659 + S660); the deploy is the merge's Pages run. Gates: none asked. No backend change.
+
+- [x] 2026-11-18 | `b6546cd9` | hebrew_blend_generator.html, generator.md, sw.js, probe S660 | (the S657 P3 from the queue; pattern overflow-past-a-scrollers-start-edge) **The Real Words Gematria answer key stays inside a narrow sheet** (a 100px floor: phones 3 columns, 800 two, 1280 five; paper five) | probe 6 / 6 (HEAD 1 / 6, 63–165px past); the portrait PDF capture 5 columns as before; recipe 0 errors
+
+- [x] 2026-11-18 | `66f1ef15` | hebrew_blend_generator.html, sw.js, probe S660 | (S660 M; pattern fixed-control-positioned-outside-the-viewport) **In the Hebrew UI the frozen Generate bar stays under the sidebar when the window resizes** (it was off the screen after 1440 → 800) | probe 12 / 12 (HEAD 8 / 12, the four Hebrew resizes above 700px); a collapse and reopen still re-place it; recipe 4 cells 0 errors
+
+- [x] 2026-11-17 | (S655 close-out) | branch/deploy note | **S655 = D on `torah_trainer.html` (6th D; 41 commits since) + `classroom_dashboard.html` (7th; a clean surface buys a second): FOUND 1 (the dashboard's Bulk open, P4); the S570 P4 root-caused and FIXED in 2 commits; + flash's S651 K half. Branch `claude/adoring-hawking-h59ir2`, draft PR #406; `sw.js` v1404; deploy after the merge.**
+
+- [x] 2026-11-17 | `bed40548` | flash_cards.html, ui-strings.csv + locales, sw.js | (S655, the S651 P4's K half) **A profile row's count agrees with its number in Hebrew** ("תוצאה שמורה אחת", "{n} תוצאות שמורות") **and the active row offers no Set Active** | `d655/fix3.mjs`, 3 profiles × 4 cells, a real Set Active click: tree 0, before 7 of 18
+
+- [x] 2026-11-17 | `219d7d0a` | torah_trainer.html, torah-and-trope.md, sw.js | (S655 D, the S570 P4's rest) **The staff's `fonts.ready` read waits a task**: init's sync work before the reading's request 186–192 → 49–74 ms @4× | the S655 probe: 0 `.ready` reads before the request (fix 1's tree 1); S570's staff + manifest probes pass; recipe 8 cells
+
+- [x] 2026-11-17 | `d34f126d` | torah_trainer.html, torah-and-trope.md, sw.js | (S655 D, the S570 P4) **The Calendar tab's date lookup is drawn when the tab opens, not before the reading's request** (its first `toLocaleDateString`: 36–67 ms @4×) | `S655-torah-calendar-lookup-off-the-first-request.mjs`: 0 date formats before it (HEAD 1/cell); 10 Calendar states = HEAD's; recipe 8 cells
+
+### from Per-session log (one line per session)
+
+- 2026-11-18 | **S660** | iters: 3 | tools: hebrew_blend_generator ×2, generator.md, sw ×2, probes S660 ×2 | patterns fixed: fixed-control-positioned-outside-the-viewport ×1, overflow-past-a-scrollers-start-edge ×1 | pass run: M (hebrew_blend_generator, first since S574; FOUND 5, FIXED 1 + 1 from the queue) | SW: v1425→v1427
+
+- 2026-11-11 | **S640** | iters: 5 | tools: flash_cards ×2, Hebrew_Font_Maker ×2, sw ×4, loop-patterns | patterns fixed: install-banner-over-a-sheet's-bottom-controls ×1, mobile-input-hints ×1, contrast-below-AA-on-a-tinted-or-coloured-plate ×2 | pass run: N (flash_cards, first since S555; FOUND 2, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- M aesthetics & visual design (one surface): 2026-11-18 (**S660 — 45th M, `hebrew_blend_generator.html` (its 3rd: S436 → S574 → S660; 49 commits to the page since): 34 views × 6 cells by real clicks (204 loads, 0 page errors), the text census, a dark-fill arm (light vs dark), the frozen bar over 113 widths × 3 states and 12 resizes. FOUND 5, FIXED 1 + the S657 P3; 4 logged. M-next: atlas (S584), then flash (S588).**)
+
+_(prior)_ **Next session (S660):** **Branch `claude/eager-goldberg-70ry8p` (S659, draft PR #414): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1425**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=109656c sw=v1425 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ New pages: the Holiday Guide (first N and P by S670; it carries no account scripts, so its P is arms 5–6 only) and `letter_discrimination.html` (by S668) — override 4; neither is a surface in `loop-passes.md` / `coverage.mjs` yet. ⚑ Stalest now: M generator (S574), G chrome (S575), N atlas (S577), P atlas (S578; it loads no account scripts: arms 5–6, then a clean surface buys a second), D atlas (S579), C atlas (S580), A (S581). ⚑ Queue: the generator's two S657 P3s in order (the Gematria key's floor first; findings S657); the dashboard's Bulk open (S655); torah's two S653 P4; the S570 staff double draw. ⚑ Awaiting: the Total Torah bar's ▶ and the drawer's tab labels (S653), the starter class (S652). ⚑ A: port `header-wrap-gate-below-its-ceiling`'s recipe to a detector with the signed-in arm (S659's probe is its core). ⚑ E: links vs the host's 8,190 bytes (S651). ⚑ F/A: Hebrew-only wrappers on typed text (S649); save windows whose status line is not live (S656); overflow past a scroller's start edge on the other sheet pages (S657). ⚑ G: `leak.mjs`, 6 pages. ⚑ 47 seeds.
