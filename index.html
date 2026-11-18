@@ -393,10 +393,19 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
    Since then the brand lockup alone became the heading (no star, no text title, no tagline) and the
    phone padding came down to 20px, so the one-row header now overflows only up to 450px (English, dark;
    Hebrew 445; the real UI fonts) and 460px under a finger: the gate moved down to that ceiling, giving
-   451–519px the one-row header. */
+   451–519px the one-row header.
+   That measure was signed out. Signed in, the chip shows the avatar and a first name (up to 16 letters,
+   62px wider than "Sign in"), and the one-row header spilled up to 511px (English; Hebrew 510) and 521px
+   under a finger — the dark toggle cut off again on a teacher's phone. The second block wraps there only
+   while the chip shows a name (its avatar): signed out, 451–470px still fits one row (the button row
+   runs into the header's side padding, never past the screen), and a wrap would add a row nobody needs. */
 @media (max-width:450px), (pointer:coarse) and (max-width:460px){
   header{flex-wrap:wrap;}
   header .hright{flex-wrap:wrap;max-width:100%;justify-content:flex-end;}
+}
+@media (max-width:511px), (pointer:coarse) and (max-width:521px){
+  header:has(.ivacct-avatar){flex-wrap:wrap;}
+  header:has(.ivacct-avatar) .hright{flex-wrap:wrap;max-width:100%;justify-content:flex-end;}
 }
 
 /* What's new (whatsNewInit): a non-modal card for a returning visitor, shown once per announcement. Bottom inline-end
