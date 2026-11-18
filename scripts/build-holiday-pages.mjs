@@ -64,9 +64,14 @@ if (problems.length) die(`HolidayGuide.md has ${problems.length} problem(s) — 
 const pages = holidays.filter((h) => h.symbols.length);   // a holiday gets a page once it has its six symbols
 
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const lowerFirst = (s) => s.charAt(0).toLowerCase() + s.slice(1);
 const hash = (s) => createHash('sha256').update(s).digest('hex');
-const listOf = (a) => (a.length > 1 ? a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1] : a.join(''));
+// A list in prose: "A, B and C" — with a comma before the last "and" when one of the last two names holds its own
+// "and" ("Lulav and Etrog, and Sukkah"), so a name's "and" never reads as the list's.
+const listOf = (a) => {
+  if (a.length < 2) return a.join('');
+  const serial = a.length > 2 && a.slice(-2).some((x) => / and /.test(x));
+  return a.slice(0, -1).join(', ') + (serial ? ', and ' : ' and ') + a[a.length - 1];
+};
 const ico = (svg) => `<span class="hol-ico" aria-hidden="true"><svg viewBox="0 0 48 48" focusable="false">${svg}</svg></span>`;
 
 // ── What holiday_guide.html already carries, copied so the pages can never drift from it ─────────────────────────
@@ -215,7 +220,8 @@ function page(h, imgHash) {
   const [IMG_W, IMG_H] = imgSize(h);
   const url = `${SITE}${DIR}/${h.slug}.html`, i = pages.indexOf(h);
   const prev = pages[(i + pages.length - 1) % pages.length], next = pages[(i + 1) % pages.length];
-  const symList = listOf(h.symbols.map((s) => lowerFirst(s.en)));
+  // Each symbol by its name as the catalog writes it (and the sheet prints it): "Seder Plate", "Star of David".
+  const symList = listOf(h.symbols.map((s) => s.en));
   // A result shows about 60 title and 160 description characters: the title keeps the name, its best-known other
   // spelling, the page's kind and the site; the description names the six symbols.
   const alt1 = h.spelled[0];
