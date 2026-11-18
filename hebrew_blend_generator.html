@@ -7044,8 +7044,11 @@ document.addEventListener('DOMContentLoaded', () => {
       fab.style.width = r.width + 'px';
     };
     sizeFab();
+    // The observer hears the sidebar change SIZE (a drag, a collapse), never MOVE: in the Hebrew UI it is the right-hand
+    // column, so a wider or narrower window moves it at the same width and the bar kept its old place — wholly off the
+    // screen after 1440 → 800, over the worksheet after 1000 → 1440. The window's resize re-places it as well.
     if ('ResizeObserver' in window) new ResizeObserver(sizeFab).observe(sidebar);
-    else window.addEventListener('resize', sizeFab);
+    window.addEventListener('resize', sizeFab);
     // The bar's live height (0 while it is not displayed) for the root's scroll-padding, so focus never lands under it.
     const fabH = () => document.documentElement.style.setProperty('--gen-fab-h', fab.offsetHeight + 'px');
     fabH();
