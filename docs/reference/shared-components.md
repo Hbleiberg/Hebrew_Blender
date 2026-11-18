@@ -574,8 +574,9 @@ the standard lockup with a navy wordmark, both precached in `sw.js`.
   second `(pointer:coarse)` query 10px higher for the touch language select; the Trope Atlas, whose title only ever
   overflows sideways, uses the width at which its title stops overflowing its own box. The generator keeps its own
   tablet rules (their numbers moved by the lockup's 117px), the home page and the 404 need none (the lockup is the
-  title there), and the flash cards' grid header has no title column to squeeze. Re-measure a page's title row
-  whenever its title, its tagline or a header control changes width.
+  title there). The flash cards' grid header squeezes its title's `1fr` column the same way, so its one stacking
+  rule takes the measured title-row width as its gate (it moves the title onto its own row and shrinks the
+  controls together). Re-measure a page's title row whenever its title, its tagline or a header control changes width.
 
 ### Footer social links (every page with a footer)
 IvritSuite's Instagram, Facebook and Threads accounts are the last row of every footer: a `.footer-social` group
@@ -603,6 +604,12 @@ reads at 16px (`js/i18n.js`, so iOS does not zoom into it) and is 10px wider, so
 with a mouse and with a touch context (`hasTouch` + `isMobile`, which flips `pointer:coarse`) — and where the
 finger's ceiling is higher the gate carries it as a second query, `(pointer:coarse) and (max-width:…)`, so no
 mouse layout moves. Measure in the real UI fonts: the fallback faces are wider and invent bands that are not there.
+**Measure signed in too.** The account chip is a header control whose label changes: "Sign in" signed out, the
+avatar and a first name of up to 16 characters signed in (`shortName()` in `js/ivrit-account.js`), up to 62px
+wider. Measure each ceiling with a stored session and a 16-letter first name as well (the chip shows the cached
+name while the SDK loads: hold the SDK request and seed `ivritSuite_accountCache`), and let the gate cover that
+overflow ceiling. A title-row width stays the signed-out measure: above it a long name may give the title a second
+line, which spills nothing.
 
 ## Holiday icons — shared block (the dashboard's countdown and the Torah Trainer's holiday readings)
 

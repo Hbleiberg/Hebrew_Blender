@@ -495,14 +495,16 @@ body.fs-idle #fsBtn:not(:focus-visible) { opacity: 0; pointer-events: none; }
 .h-right { display: flex; gap: 6px; align-items: center; }
 /* Narrow screens: the header now also carries the language switcher, so shrink the controls
    (and the title) to keep everything on one row without horizontal overflow.
-   664px is this page's MEASURED overflow ceiling in the real UI fonts, not a device width: the header
-   overflows up to 664px (English; the controls' icons carried it up from 486px to 526px, and the brand
-   lockup, a grid column of its own, from 526px) and fits above it, so the gate ends where the break does.
-   Under a finger the language select is 10px wider and the ceiling is 673px; the second query holds that
-   band without moving a mouse layout. The title's own row move is part of the lever here — the grid's
-   auto track only yields once the 1fr column is empty — so the whole block moves together. Re-measure
-   when a header control changes width. */
-@media (max-width: 664px), (pointer: coarse) and (max-width: 673px) {
+   794px is this page's MEASURED title-row width in the real UI fonts, not a device width: below it the
+   one-row header is taller than this stacked one (English, either theme; Hebrew 735px), because the brand
+   lockup squeezes the title's 1fr column to a word or two a line — 87–153px of sticky header from 794px
+   down, where the stacked one is 79px. It covers the overflow ceiling too: signed out the one-row header
+   spills only up to 664px, but signed in the account chip carries a first name (up to 16 letters, 62px
+   wider than "Sign in"), which spilled it up to 726px. Under a finger the language select is 10px wider:
+   803px; the second query holds that band without moving a mouse layout. The title's own row move is part
+   of the lever here — the grid's auto track only yields once the 1fr column is empty — so the whole block
+   moves together. Re-measure when a header control changes width, signed out and signed in. */
+@media (max-width: 794px), (pointer: coarse) and (max-width: 803px) {
   .app-header { gap: 4px; padding-inline: 8px; }
   /* The title shares a grid row with the Home button and the whole right-hand cluster, so at
      phone widths its 1fr column collapses to ~53px and the h1 breaks into six lines — 21.5%
