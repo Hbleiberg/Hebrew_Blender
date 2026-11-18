@@ -148,7 +148,7 @@ Yes. Click the Tour button in the top bar for a quick walkthrough, and first-tim
 
 https://ivritsuite.com/name_tags.html
 
-Printable Hebrew name tags from a class list: each student's Hebrew name with an automatic or typed transliteration and the English name, bubble letters, Avery label sheets, desk tent cards and CSV import.
+Printable Hebrew name tags from a class list: each Hebrew name with a transliteration and English name, bubble letters, Avery labels and desk tent cards.
 
 ### How to make Hebrew name tags for a class (about 5 minutes)
 
