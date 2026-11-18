@@ -441,7 +441,7 @@ body.dark #tipFloat { background: #0a0f1c; }
   `parseRoster` (de-duplicated, at most `PICKER_MAX`; the class note says when names were left out), under
   `ROSTER_MAX_CLASSES`, named `uniqueClassName(list name)`. A one-time copy: nothing links the two afterwards.
   `#pickerFromNtRow` shows only on a device that holds Name Tags lists (`renderFromNameTags()`, from
-  `renderClassManager()` and a `storage` listener), since that page is not linked from the hub; beside its button,
+  `renderClassManager()` and a `storage` listener), as there is nothing to copy otherwise; beside its button,
   *Open Name Tags ↗* (`#pickerNtLink`, a new tab) opens `name_tags.html?from=dashboard`, that page's *From the
   Classroom Dashboard* box on the class live here. The reverse copy lives on the Name Tags page
   (`docs/reference/name-tags.md` → *From the Classroom Dashboard*).

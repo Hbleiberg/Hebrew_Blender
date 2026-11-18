@@ -88,8 +88,8 @@ Cold load + one heavy interaction; log main-thread blocks >200 ms with profile e
 ## E — Freshness & site health (suite)
 
 Sitemap `lastmod` vs git (`node scripts/update-sitemap.mjs --check`), broken internal links, SW precache
-list vs files (both directions — the four backend `js/` modules and `account.html` belong in it; the
-unlisted `name_tags.html` deliberately does not), each page's CSP allowlist against what that page
+list vs files (both directions — the four backend `js/` modules and `account.html` belong in it; an
+unlisted page deliberately does not), each page's CSP allowlist against what that page
 actually loads (`docs/reference/ops.md`; the two account origins must be present exactly where the
 account scripts are), THIRD_PARTY_LICENSES vs deps, robots/CNAME present and parsing, README /
 CLAUDE.md / `docs/reference/*` accuracy. Indexability *semantics* are L's.
@@ -151,7 +151,7 @@ Audit the static HTML source, offline: unique `<title>` (~50–60) and descripti
 `rel=canonical` = `https://ivritsuite.com/<page>.html` (homepage: bare root); `404.html`,
 `i18n-test.html`, `account-test.html` and `saves-test.html` stay out of the indexable set (the last two
 are `noindex` harnesses, absent from the sitemap, `llms.txt` and the precache by design), and so does
-the unlisted `name_tags.html` (`docs/reference/ops.md` → *An unlisted page*: never "fix" it by linking
+an unlisted page (`docs/reference/ops.md` → *An unlisted page* names them: never "fix" one by linking
 or listing it); `account.html` is **in** it; OG/Twitter parity and `og:image` resolving (strip `?v=`);
 every JSON-LD block parses and its claims match the visible UI; sitemap = indexable set,
 sitemap↔canonical agreement; crawl-graph from the homepage via static `<a href>`; one `h1`, alt text on

@@ -3578,7 +3578,8 @@ home.bookmark.button,Bookmark this page,הוספת העמוד לסימניות,b
 home.bookmark.tip_desktop,Press {key}+D to bookmark this page.,הקישו {key}+D כדי להוסיף את העמוד לסימניות.,tip below bookmark button,template ({key}=⌘/Ctrl)
 home.bookmark.tip_mobile,"Tap the share/menu button in your browser and choose ""Add to Home Screen"" or ""Add Bookmark"".","הקישו על כפתור השיתוף/התפריט בדפדפן שלכם ובחרו ""הוספה למסך הבית"" או ""הוספת סימנייה"".",tip below bookmark button,
 home.card.dashboard.cta,Open the Hebrew classroom display →,פתחו את תצוגת כיתת העברית ←,tool card button,
-home.card.dashboard.desc,"Live Hebrew date, time, weather, and days of the week for the Hebrew classroom — SmartBoard and projector ready, free for teachers.","תאריך עברי, שעה, מזג אוויר וימות השבוע בזמן אמת עבור כיתת העברית — מוכן ללוח חכם ולמקרן, חינם למורים.",tool card description,scope-ambiguous (card desc)
+home.card.dashboard.cta_nametags,Name Tags →,תגי שם ←,Classroom Dashboard card's second button (the Name Tags page: printable name tags from a class list),
+home.card.dashboard.desc,"Live Hebrew date, time, weather, and days of the week for the Hebrew classroom — SmartBoard and projector ready — plus printable Hebrew name tags and desk tents from your class list. Free for teachers.","תאריך עברי, שעה, מזג אוויר וימות השבוע בזמן אמת עבור כיתת העברית — מוכן ללוח חכם ולמקרן — ועוד תגי שם ושלטי שולחן בעברית להדפסה מרשימת הכיתה. חינם למורים.",tool card description,scope-ambiguous (card desc)
 home.card.dashboard.name,Hebrew Classroom Dashboard,לוח מחוונים לכיתת עברית,tool card title,
 home.card.discover.cta_letterlearner,Letter Learner →,לומדים אותיות ←,Discover card button (the Letter Learner),
 home.card.discover.cta_parshaemojis,Parsha Emojis →,אימוג׳י הפרשות ←,Discover card button (the Parsha Emojis),
@@ -3633,6 +3634,7 @@ notfound.link.fontmaker,Font Maker,יוצר הגופנים,tool link,
 notfound.link.letterlearner,Letter Learner,לומדים אותיות,tool link,
 notfound.link.parshaemojis,Parsha Emojis,אימוג׳י הפרשות,tool link,
 notfound.link.holidayguide,Holiday Guide,מדריך החגים,tool link,
+notfound.link.nametags,Name Tags,תגי שם,tool link,
 notfound.link.resources,Resources,משאבים,tool link,
 notfound.link.trope,Trope Tutor,מאמן הטעמים,tool link,
 notfound.quip,"We tried to blend it back together from a few stray letters — but without the nikkud, nobody could agree on how to pronounce it.","ניסינו להרכיב אותו מחדש מכמה אותיות תועות — אבל בלי הניקוד, אף אחד לא הצליח להסכים איך להגות אותו.",hero quip,

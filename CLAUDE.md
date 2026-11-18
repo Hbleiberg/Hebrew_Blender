@@ -31,7 +31,7 @@ index below) — read the file for the area you are touching before you touch it
 | `classroom_dashboard.html` (dark mode, font picker, nikkud colors, drawer, tooltips) | `docs/reference/dashboard.md` |
 | `hebrew_blend_generator.html` selectors or worksheet build | `docs/reference/generator.md` |
 | `letter_discrimination.html` (the unlisted research beta: a grid of look-alike Hebrew letters colored by a key, one font per round, scored for accuracy and time, CSV out) | `docs/reference/letter-discrimination.md` |
-| `name_tags.html` (the unlisted Name Tags page: class lists, CSV, transliteration schemes, bubble letters, plain / Avery / tent layouts) | `docs/reference/name-tags.md` |
+| `name_tags.html` (the Name Tags page, linked from the hub's Classroom Dashboard card: class lists, CSV, transliteration schemes, bubble letters, plain / Avery / tent layouts) | `docs/reference/name-tags.md` |
 | `holiday_guide.html` (the Holiday Guide: the next holiday and its countdown, the coloring-sheet builder), `HolidayGuide.md` and its builders, the generated `holidays/` pages, `js/holiday-page.js`, `js/coloring-art.js` (the line-art engine it shares with the Parsha Emojis page), the holiday dates in `js/hebrew-calendar.js` | `docs/reference/holiday-guide.md` |
 | `torah_trainer.html` / `trope_tutor.html`, the Trope Atlas `trope_atlas.html`, `js/trope-staff.js`, vowel color schemes, trope coloring, the Trope staff layout, the other trope traditions (`docs/trope-traditions.md`, `data/trope/trope_approvals.json`, `trope_review.html`) | `docs/reference/torah-and-trope.md` |
 | `sw.js`, `splash/`, deploy, sitemap/`llms.txt`, the Playwright recipe | `docs/reference/ops.md` |

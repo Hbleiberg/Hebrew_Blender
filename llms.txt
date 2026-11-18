@@ -14,6 +14,7 @@ incorporating PocketTorah audio is CC BY-SA 4.0).
 - [Hebrew Worksheet Generator](https://ivritsuite.com/hebrew_blend_generator.html): Create printable Hebrew decoding worksheets, bingo cards, and vocabulary drills with nikkud.
 - [Hebrew Word Lookup](https://ivritsuite.com/hebrew_dictionary.html): Browse and filter Hebrew vocabulary by theme, length, part of speech, era, and letter position.
 - [Hebrew Classroom Dashboard](https://ivritsuite.com/classroom_dashboard.html): Live Hebrew date, time, weather, and days of the week for SmartBoard or projector display.
+- [Hebrew Name Tags](https://ivritsuite.com/name_tags.html): Printable Hebrew name tags from a class list: each student's Hebrew name with a transliteration and English name, bubble letters, Avery label sheets and desk tent cards.
 - [Hebrew Flash Cards](https://ivritsuite.com/flash_cards.html): Decode one, two, or three Hebrew letters at a time with full nikkud support.
 - [Torah Trainer](https://ivritsuite.com/torah_trainer.html): Read the weekly parsha with vowel coloring, transliteration, translation, and chanted-audio karaoke — plus the holiday readings and the five Megillot.
 - [Trope Tutor](https://ivritsuite.com/trope_tutor.html): Learn the Torah cantillation marks — symbols, Ashkenazi and Sephardi names, and melodies — with real chanted examples and three drill modes.

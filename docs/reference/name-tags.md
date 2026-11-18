@@ -1,9 +1,14 @@
 # Name Tags (`name_tags.html`)
 
-Printable student name tags from a class list. The page is **unlisted** (no link or card on the hub, `noindex`,
-absent from `sitemap.xml`, `llms*.txt` and `sw.js` `CORE_ASSETS` — `docs/reference/ops.md` → *An unlisted page*);
-in every other respect it is a full tool page: CSP, i18n (`nametags.*`), the account chip and sync, `.ivrit` files,
-the AllTools registration of its keys, a tour, and the backend smokes.
+Printable student name tags from a class list. The page is **public**: the home page's Classroom Dashboard card
+links it (its second button, `home.card.dashboard.cta_nametags` — the two tools copy class lists to each other, below),
+it is `index, follow` with its own social tags (the shared `og-card.png`) and JSON-LD, and it is in `sitemap.xml`,
+`llms*.txt`, `sw.js` `CORE_ASSETS` and the 404 page's tool list. It is a full tool page: CSP, i18n (`nametags.*`),
+the account chip and sync, `.ivrit` files, the AllTools registration of its keys, a tour, and the backend smokes.
+
+- **The hub's Classroom Dashboard card** holds two links, so it is a `role="group"` card like Trope and Discover, found
+  by `aria-labelledby="dashboardTitle"`; its description names both tools. The tool pages' *Related Hebrew Tools*
+  footers do not list Name Tags yet.
 
 ## Storage
 

@@ -144,6 +144,44 @@ Yes. Click the Tour button in the top bar for a quick walkthrough, and first-tim
 
 ---
 
+## Hebrew Name Tags
+
+https://ivritsuite.com/name_tags.html
+
+Printable Hebrew name tags from a class list: each student's Hebrew name with an automatic or typed transliteration and the English name, bubble letters, Avery label sheets, desk tent cards and CSV import.
+
+### How to make Hebrew name tags for a class (about 5 minutes)
+
+1. **Make a class list** — Type each student's Hebrew and English names, or bring them in from a CSV file or the Classroom Dashboard.
+2. **Choose the transliteration** — Pick an automatic Modern or Ashkenazi transliteration, or type your own for any student.
+3. **Design the tags** — Pick a Hebrew font, bubble letters, a size and color for each line, a border and a background.
+4. **Choose the paper** — Choose plain paper and how many tags a page, an Avery label sheet, or desk tent cards.
+5. **Print** — Press Print and print at 100 percent, then cut out the tags or peel the labels.
+
+### Questions
+
+**What does the Hebrew name tag maker print?**
+
+A name tag for every student on a class list: the Hebrew name, a transliteration and the English name, with an optional extra line such as the class, grade or school.
+
+**Can it transliterate Hebrew names automatically?**
+
+Yes. From a name typed with nikkud it writes the transliteration in a Modern or an Ashkenazi style (Dovid, Avrohom). You can also type a student's transliteration yourself, which always wins, or leave it off.
+
+**Which paper and label sheets does it print on?**
+
+Plain Letter or A4 paper with cut lines, 1 to 10 tags a page; Avery label sheets 5165, 5126, 5168, 5164, 5395 and 5163; or desk tent cards folded in half, one or two to a page.
+
+**Can I bring in my class list?**
+
+Yes. Open a CSV file or paste rows from a spreadsheet: the columns are found by their English or Hebrew headers. A class list from the Hebrew Classroom Dashboard can be brought in too.
+
+**Is the Hebrew name tag maker free?**
+
+Yes. It is free to use under CC BY-NC-SA 4.0 for non-commercial educational purposes. No account is needed: class lists are saved on your device, and an optional free account keeps them on your other devices too.
+
+---
+
 ## Hebrew Flash Cards
 
 https://ivritsuite.com/flash_cards.html
