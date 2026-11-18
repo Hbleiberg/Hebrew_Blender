@@ -10,7 +10,8 @@ the account chip and sync, `.ivrit` files, the AllTools registration of its keys
   by `aria-labelledby="dashboardTitle"`; its description names both tools. Every tool page's *Related Hebrew Tools*
   footer links it (`shared.nav.link_nametags`) right after the classroom display, and first on the Dashboard's own
   list (its class lists' companion); the parsha and holiday pages carry it through their builders' copied footer.
-  The Trope Atlas's short trope-only list leaves it out, as it leaves out the Dashboard.
+  The Trope Atlas's short trope-only list leaves it out, as it leaves out the Dashboard. Name Tags' own footer carries
+  the same *Related Hebrew Tools* list (after its FAQ and How-To fold-outs), the Dashboard first.
 
 ## Storage
 
