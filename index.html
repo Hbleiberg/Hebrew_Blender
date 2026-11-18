@@ -466,9 +466,10 @@ html.wn-open body{padding-block-end:calc(var(--wn-h, 0px) + 28px);}
 <div class="wn-pop" id="wnPop" role="dialog" aria-modal="false" aria-labelledby="wnTitle" hidden>
   <button type="button" class="wn-x" id="wnClose" aria-label="Close" data-i18n-aria-label="home.whatsnew.close_aria"><svg class="hi hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
   <h2 class="wn-title" id="wnTitle" data-i18n="home.whatsnew.title">New on IvritSuite</h2>
-  <p class="wn-lede" data-i18n="home.whatsnew.lede">A new tool in the Hebrew Classroom Dashboard card:</p>
+  <p class="wn-lede" data-i18n="home.whatsnew.lede">A new tool in the Hebrew Classroom Dashboard card, and one in the Discover card:</p>
   <ul class="wn-list">
     <li data-i18n-html="home.whatsnew.item_nametags"><a href="name_tags.html">Name Tags</a>: printable Hebrew name tags and desk tents from your class list, with transliteration, bubble letters and Avery label sheets.</li>
+    <li data-i18n-html="home.whatsnew.item_holidayguide"><a href="holiday_guide.html">Holiday Guide</a>: the symbols of every Jewish holiday, a countdown to the next one, and coloring sheets to print.</li>
   </ul>
   <div class="wn-actions">
     <button type="button" class="wn-ok" id="wnOk" data-i18n="home.whatsnew.ok">Got it</button>
@@ -2322,7 +2323,7 @@ function whatsNewInit() {
     pop.hidden = true;
     release();
     document.removeEventListener('keydown', onKey);
-    const card = document.querySelector('.page-card-group[aria-labelledby="dashboardTitle"]');   // the newest: the Classroom Dashboard card's Name Tags
+    const card = document.querySelector('.page-card-group[aria-labelledby="dashboardTitle"]');   // the first item: the Classroom Dashboard card's Name Tags
     if (!card) return;
     const still = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
     card.scrollIntoView({ behavior: still ? 'auto' : 'smooth', block: 'center' });

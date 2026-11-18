@@ -12,8 +12,8 @@ the account chip and sync, `.ivrit` files, the AllTools registration of its keys
   list (its class lists' companion); the parsha and holiday pages carry it through their builders' copied footer.
   The Trope Atlas's short trope-only list leaves it out, as it leaves out the Dashboard. Name Tags' own footer carries
   the same *Related Hebrew Tools* list (after its FAQ and How-To fold-outs), the Dashboard first.
-  The hub's one-time What's-new card announces it (`WN_ID` `2026-11-name-tags`, `home.whatsnew.item_nametags`); its
-  *Show me* scrolls to the Classroom Dashboard card and focuses the Name Tags button.
+  The hub's one-time What's-new card announces it with the Holiday Guide (`WN_ID` `2026-11-name-tags`,
+  `home.whatsnew.item_nametags` first); its *Show me* scrolls to the Classroom Dashboard card and focuses the Name Tags button.
 
 ## Storage
 
