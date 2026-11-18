@@ -1872,6 +1872,10 @@ function toggleBulkMode(on) {
   rerender();
 }
 
+// "N selected" is a plain line beside the buttons: Clear, Select page and Select all matching change it with the focus on
+// the button pressed, so each speaks the new count through the page's status region (a card's own box speaks its state).
+function announceBulkCount() { announce(I18n.t('dictionary.copy.bulk_count', { count: bulkSelected.size })); }
+
 function clearBulkSelection() {
   bulkSelected.clear();
   updateBulkTextarea();
@@ -1879,12 +1883,14 @@ function clearBulkSelection() {
     cb.checked = false;
     setCardBulkState(cb.closest('.word-card,.emoji-card'), false);
   });
+  announceBulkCount();
 }
 
 function selectAllOnPage() {
   document.querySelectorAll('.wc-bulk-cb').forEach(cb => {
     if (!cb.checked) { cb.checked = true; cb.dispatchEvent(new Event('change', {bubbles:true})); }
   });
+  announceBulkCount();
 }
 
 function selectAllMatching() {
@@ -1902,6 +1908,7 @@ function selectAllMatching() {
     cb.checked = true;
     setCardBulkState(cb.closest('.word-card,.emoji-card'), true);
   });
+  announceBulkCount();
 }
 
 // One-click bridge from the Browse-by-Theme results → save the whole themed set as a Word List.
