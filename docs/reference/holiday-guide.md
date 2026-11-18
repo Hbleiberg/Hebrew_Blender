@@ -169,7 +169,7 @@ fails unless `holiday_guide.html`'s robots tag says `index, follow` too. Being p
 
 - the switch and the hub's robots tag;
 - `index.html`: the Discover card's *Holiday Guide* button (`home.card.discover.cta_holidayguide`), the `ItemList`
-  and navigation entries, and the What's-new line that announced it;
+  and navigation entries (the What's-new card announced it until Name Tags took that card over);
 - `/holiday_guide.html`, `/js/holiday-guide-data.js` and `/js/holiday-page.js` in `sw.js` `CORE_ASSETS`;
 - `sitemap.xml` (the builder's block; `node scripts/update-sitemap.mjs` owns the dates) and `llms*.txt`
   (`node scripts/update-llms-txt.mjs` lists the holiday pages as one line).

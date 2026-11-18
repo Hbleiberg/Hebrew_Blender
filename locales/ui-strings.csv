@@ -3616,10 +3616,10 @@ home.header.brand,IvritSuite,IvritSuite,header wordmark,brand name
 home.header.tagline,Tools for Hebrew literacy instruction,כלים להוראת אוריינות עברית,header subtitle,
 home.hero.subtitle,Free Hebrew Learning Tools for Teachers and Students,כלים חינמיים ללימוד עברית למורים ולתלמידים,hero subheading,
 home.whatsnew.close_aria,Close,סגירה,What's-new card close button (aria-label),aria/title
-home.whatsnew.item_holidayguide,"<a href=""holiday_guide.html"">Holiday Guide</a>: the symbols of every Jewish holiday, a countdown to the next one, and coloring sheets to print.","<a href=""holiday_guide.html"">מדריך החגים</a>: הסמלים של כל חג, ספירה לאחור עד החג הבא, ודפי צביעה להדפסה.",What's-new card item (links the Holiday Guide),html
-home.whatsnew.lede,A new tool in the Discover card:,כלי חדש בכרטיס “גלו”:,What's-new card intro line,
+home.whatsnew.item_nametags,"<a href=""name_tags.html"">Name Tags</a>: printable Hebrew name tags and desk tents from your class list, with transliteration, bubble letters and Avery label sheets.","<a href=""name_tags.html"">תגי שם</a>: תגי שם ושלטי שולחן בעברית להדפסה מרשימת הכיתה, עם תעתיק, אותיות בועה ודפי מדבקות Avery.",What's-new card item (links the Name Tags page),html
+home.whatsnew.lede,A new tool in the Hebrew Classroom Dashboard card:,כלי חדש בכרטיס “לוח מחוונים לכיתת עברית”:,What's-new card intro line,
 home.whatsnew.ok,Got it,הבנתי,What's-new card dismiss button,
-home.whatsnew.show,Show me,הראו לי,What's-new card button: scrolls to the Discover card (its Holiday Guide button),
+home.whatsnew.show,Show me,הראו לי,What's-new card button: scrolls to the Classroom Dashboard card (its Name Tags button),
 home.whatsnew.title,New on IvritSuite,חדש ב־IvritSuite,What's-new card title (shown once to a returning visitor),
 notfound.a11y.skip_to_links,Skip to the links,דילוג לקישורים,Skip-link (a11y),aria/skip-link
 notfound.header.brand,IvritSuite,IvritSuite,header wordmark,brand name
