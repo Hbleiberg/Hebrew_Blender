@@ -374,6 +374,16 @@ _(none)_
 
 ## Done
 
+- [x] 2026-11-18 | (S658 close-out) | branch/deploy note | **S658 = L (the 31st; the suite over `b816c43d..392ec76d`, 193 commits — the Holiday Guide's, its 17 `holidays/` pages', the newly public Name Tags', `letter_discrimination.html`'s and `Stein_School/`'s first L): 20 static arms over 100 pages, 25/25 plants fired, + the delta pages' claims by real clicks. FOUND 4 (all gate 2, answered), …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-18 | `ff0e2d3b` | scripts/build-holiday-pages.mjs, holidays/ | (S658 L, gate 2 → drop the re-spelling only) **A holiday page's title past 60 leaves out an other spelling that repeats a word of the name** (Shemini Atzeret 75 → 58); the three English names stay (62–66) | probe `S658-holiday-pages-name-symbols-as-the-catalog.mjs` step 2 (the tree before fails Shemini); …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-18 | `a1cca6de` | scripts/build-holiday-pages.mjs, holidays/ ×17, sitemap.xml | (S658 L, gate 2 → as on the sheets) **The holiday pages name each symbol as the catalog writes it** ("Seder Plate", "Star of David"; was "seder Plate", "torah Scroll") in the description, social cards, caption and picture alt, a serial comma when a name holds "and" | probe step 1: 17/17 (the tree before …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-18 | `4f8ff3b8` | name_tags.html, llms-full.txt, sw.js | (S658 L, gate 2 → the 153 version) **Name Tags' search description fits a result** (153 characters, was 195; the meta and the WebApplication description) | the audit's description arm; `update-llms-txt`; recipe 8 cells
+
+- [x] 2026-11-18 | `0f291544` | name_tags.html, ui-strings.csv + locales, sw.js | (S658 L, gate 2 → show them; pattern `JSON-LD ↔ visible-content parity`) **Name Tags' FAQ (5) and How-To (5) show in the footer**, the visible twins of its JSON-LD, EN + HE | probe `S658-faq-jsonld-has-a-visible-twin.mjs` 12/12 pages (the tree before fails Name Tags: 0 summaries); `l658/fix1.mjs` 8 cells by real …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [x] 2026-11-18 | (S657 close-out) | branch/deploy note | **S657 = N on `hebrew_blend_generator.html` (its 4th; 52 commits since): FOUND 3 (one shape, new pattern `overflow-past-a-scrollers-start-edge`), FIXED 1 (the zoom's start edge), 1 attempted and reverted, 2 P3 logged in the order that avoids a regression; + the dictionary's S656 Bulk Copy P3 FIXED.** Branch …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-11-18 | `da340a85` | hebrew_dictionary.html, sw.js | (S657, the S656 queue) **Bulk Copy's Select page, Select all matching and Clear speak the new count** through the polite status region | probe `S657-dictionary-bulk-count-is-spoken.mjs`, keyboard only × 4 cells: 16/16 (HEAD 0/16); the theme bridge still opens its window; the S656 probes PASS
@@ -410,19 +420,11 @@ _(none)_
 
 - [x] 2026-11-17 | `2abe7d15` | flash_cards.html, sw.js | (S654 G; pattern fixed-surface-missing-from-the-print-hide-list) **A printed drill or results page carries no screen controls** (Pause, the voice-speed row, the listening speaker and its hint, "Results ▾"; a perfect drill's list prints; the waiting choices at full ink) | `S654-flash-drill-prints-without-its-screen-controls.mjs`: tree PASS, …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-11-13 | (S653 close-out) | branch/deploy note | **S653 = M on `torah_trainer.html` (its 3rd: S422 → S568 → S653): 44 views × 8 cells, three arms. FOUND 8: 3 FIXED, 3 P4, 2 gates deferred (asked, unanswered). + 2 from the queue (generator). Branch `claude/lucid-brahmagupta-t4hdnh`, draft PR #399; `sw.js` v1394; deploy = after the merge.** …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-13 | `d03afc0b` | hebrew_blend_generator.html, sw.js | (S653, the S648 P4) **A printed blend Self-Check sheet no longer says "Tap each card to reveal the pronunciation."** | `m653/fix4.mjs`, 3 sheet kinds × 4 cells from `page.pdf`: 12/12 on HEAD, 0/12 now …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-13 | `d707bc8a` | hebrew_blend_generator.html, generator.md, sw.js | (S653, the S602 P3; pattern horizontal-overflow-at-narrow-widths) **With Landscape Print on, a blend sheet stays inside its sheet on screen and in the exported PDF** (Export PDF had cut every Inverse row's tenth cell) | `m653/genland.mjs`: past the edge 16 → 0 of 49 …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-13 | `478070e6` | torah_trainer.html, sw.js | (S653 M) **Seven Settings choice rows no longer break an option's label in two** ("High / voices", "Do re / mi", "Extra / large"…) | `m653/armA.mjs`, 160 drawer groups × EN/HE × 3 widths + a phone: 51 → 0 …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-13 | `d56d1f84` | torah_trainer.html, sw.js | (S653 M; pattern contrast-inverted-by-a-hover-or-active-state) **A looping verse's Stop chip and small text stay readable** (the chip was gold on its own gold under the pointer) | `m653/fix1.mjs`: under AA 24/24 on HEAD, 0/24 now …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-11-18 | **S658** | iters: 5 | tools: name_tags ×2, holidays/ + build-holiday-pages ×2, locales, llms-full, sitemap, sw ×2, probes S658 ×2 | patterns fixed: JSON-LD ↔ visible-content parity ×1 | pass run: L (suite, first since S622; 193 commits; FOUND 4, FIXED 4) | SW: v1412→v1414
 
 - 2026-11-18 | **S657** | iters: 4 | tools: hebrew_blend_generator ×2 (1 reverted), hebrew_dictionary, sw ×2, probes S657 ×2 | patterns fixed: overflow-past-a-scrollers-start-edge ×1 (new) | pass run: N (hebrew_blend_generator, first since S572; FOUND 3, FIXED 1) + the dictionary's S656 Bulk Copy …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -462,11 +464,9 @@ _(none)_
 
 - 2026-11-11 | **S639** | iters: 4 | tools: Hebrew_Font_Maker ×2, sw ×3, ops.md, loop probe, loop README | patterns fixed: contrast-below-AA-on-a-tinted-or-coloured-plate ×1, native-control-outside-the-field-rule ×1 | pass run: M (Hebrew_Font_Maker, first since S554; FOUND 7, FIXED 2) + the S638 P3 …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- 2026-11-11 | **S638** | iters: 4 | tools: sw ×2, loop probes ×3, ops.md, torah-and-trope.md, loop README | patterns fixed: — | pass run: V (suite, first since S553; 480 commits; FOUND 6, FIXED 3) | SW: v1339→v1341
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S657 (2026-11-18):** hebrew_blend_generator (+1 reverted), hebrew_dictionary, sw.js ×2, loop docs, probes S657 ×2 · hebrew_dictionary ×3, locales, sw.js ×3, loop docs, probes S656 ×2
+- **Snapshot S658 (2026-11-18):** name_tags ×2, holidays/ + build-holiday-pages ×2, locales, llms-full, sitemap, sw.js ×2, loop docs, probes S658 ×2 · hebrew_blend_generator (+1 reverted), hebrew_dictionary, sw.js ×2, loop docs, probes S657 ×2
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -764,7 +764,7 @@ _(none)_
 
 - `false-positive-validator-on-the-app's-own-content` | ACTIVE | owner A | det: recipe | last S194 | streak 0
 
-- `JSON-LD ↔ visible-content parity` | ACTIVE | owner L | det: recipe | last S622 | streak 1
+- `JSON-LD ↔ visible-content parity` | ACTIVE | owner L | det: recipe | last S658 | streak 0
 
 - `wired-then-clobbered label` | ACTIVE | owner A | det: recipe | last S371 | streak 0
 
@@ -850,7 +850,7 @@ _(none)_
 
 - V offline & service-worker runtime (suite): 2026-11-11 (**S638 — 2nd V, `c349f98e..ad39f20` (480 commits; the Trope Atlas', the `parsha/` pages', the precached assignments module's and the approvals branch's first V): the outage 24 paths × light 1280 EN / dark 800 HE = 48 cells from the worker, 0 errors, 0 raw keys; VERSION+1 (the old cache gone, the data cache kept); plants 2/2; a signed-in …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- L SEO & discoverability audit: 2026-11-06 (**S622 — 30th L, `ca9b9618..b816c43d` (527 commits; the Trope Atlas', Name Tags', the assignments page's, the review page's and the 54 `parsha/` pages' first L): 20 static arms over 79 pages (titles, descriptions, canonicals, robots, OG = Twitter + the images on disk and at 1200×630, every JSON-LD block parsing with its breadcrumbs resolving and its …[full text: IMPROVEMENT_ARCHIVE.md]
+- L SEO & discoverability audit: 2026-11-18 (**S658 — 31st L, `b816c43d..392ec76d` (193 commits; the Holiday Guide's, its 17 `holidays/` pages', the newly public Name Tags', `letter_discrimination.html`'s and `Stein_School/`'s first L): 20 static arms over 100 pages (89 indexable, all reached from the hub; 25/25 plants fired), the generators' checks, the claims by real clicks (Name Tags 13, the …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - H teacher walkthrough / paper-cuts (one tool): 2026-11-13 (**S651 — `flash_cards.html` (its 4th counted: S264 → S412 → S566 → S651; 32 commits to the page since): 3 lessons by real input × EN light 1280 / HE dark 800 (a kindergarten letter week for two children with the weak cards and the progress report; the Dictionary's Holidays theme → a Word List → a listening round → the card sheet → a …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -858,4 +858,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-11-08 (**S630 — 41st F, long-build progress (S542's F-next; the affordance's first F): 13 presses that build before they answer, by real clicks with an animation-frame recorder, real PDF libraries from a cache, a held CDN, double presses at raw points. FOUND 2, FIXED 2 (+1 P4). F-next: destructive-action confirms.**)
 
-**Next session (S658):** **Branch `claude/inspiring-hawking-ema04x` (S656–S657, draft PR #409): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1411**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=4dd4383 sw=v1411 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ New pages: the Holiday Guide (first N and P by S670) and `letter_discrimination.html` (by S668) — override 4; neither is a surface in `loop-passes.md` / `coverage.mjs` yet. ⚑ Stalest now: P flash (S573), M generator (S574), G chrome (S575), N atlas (S577), D atlas (S579), C atlas (S580), A (S581). ⚑ Queue: the generator's two S657 P3s in their order (the Gematria key's floor, then the Hebrew UI's scroller; findings S657 has the design and the probe to rebuild); the dictionary's S656 P4 (card icons' `aria-hidden`); the dashboard's Bulk open (S655); torah's two S653 P4; the S570 staff double draw. ⚑ Awaiting: the Total Torah bar's ▶ and the drawer's tab labels (S653), the starter class (S652). ⚑ E: links vs the host's 8,190 bytes (S651). ⚑ F/A: Hebrew-only wrappers on typed text (S649); save windows whose status line is not live (S656); overflow past a scroller's start edge on the other sheet pages (S657). ⚑ G: `leak.mjs`, 6 pages. ⚑ 47 seeds.
+**Next session (S659):** **Branch `claude/gifted-wright-dosphg` (the Name Tags launch + S658, draft PR #410): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1414**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=7cb948e sw=v1414 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ New pages: the Holiday Guide (first N and P by S670) and `letter_discrimination.html` (by S668) — override 4; neither is a surface in `loop-passes.md` / `coverage.mjs` yet; Name Tags is public (`392ec76d`). ⚑ Stalest now: P flash (S573), M generator (S574), G chrome (S575), N atlas (S577), D atlas (S579), C atlas (S580), A (S581). ⚑ Queue: the generator's two S657 P3s in order (findings S657); the dictionary's S656 P4 (card icons' `aria-hidden`); the dashboard's Bulk open (S655); torah's two S653 P4; the S570 staff double draw. ⚑ Awaiting: the Total Torah bar's ▶ and the drawer's tab labels (S653), the starter class (S652). ⚑ E: links vs the host's 8,190 bytes (S651). ⚑ F/A: Hebrew-only wrappers on typed text (S649); save windows whose status line is not live (S656); overflow past a scroller's start edge on the other sheet pages (S657). ⚑ L (S658): no tool footer lists Name Tags yet (offered, not taken up); triage in findings S658. ⚑ G: `leak.mjs`, 6 pages. ⚑ 47 seeds.

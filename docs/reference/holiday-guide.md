@@ -153,7 +153,10 @@ to move them needs `RENDER_VERSION` bumped in both page builders.
 The hub's title and description target "Jewish
 holiday coloring sheets", with `WebApplication`, `BreadcrumbList`, `FAQPage` and `HowTo` JSON-LD (the FAQ's English
 mirrors the footer's, `holidayguide.faq.*`); each generated page's title carries the holiday's best-known other
-spelling ("Chanukah (Hanukkah) Coloring Page"), its description names the six symbols, and its `LearningResource`
+spelling ("Chanukah (Hanukkah) Coloring Page") — past 60 characters, an other spelling that repeats a word of the
+name is left out ("Shemini Atzeret / Simchat Torah Coloring Page"), an English name kept ("Yom HaShoah (Holocaust
+Remembrance Day)") — its description names the six symbols as the catalog writes them ("Seder Plate, Four Cups"),
+the same list as the picture's alt text, and its `LearningResource`
 carries a licensed `ImageObject`. The other spellings are on the page (`**Also spelled:**`) so a search for one finds
 it. `<title>` and the descriptions are English and carry no `data-i18n`.
 
