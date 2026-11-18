@@ -70,7 +70,7 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--
 header{background:var(--navy);color:#fff;padding:22px 40px;display:flex;align-items:center;gap:16px;border-bottom:4px solid var(--gold);}
 header .brand-title{font-family:'Libre Baskerville',serif;font-size:1.5rem;letter-spacing:0.01em;}
 header p{font-size:0.85rem;color:var(--gold-light);margin-top:3px;}
-header .hright{margin-inline-start:auto;display:flex;gap:10px;align-items:center;}
+header .hright{margin-inline-start:auto;display:flex;gap:10px;align-items:center;flex-shrink:0;}   /* never shrinks: a shrinking row breaks a two-word label onto two lines long before anything spills — the title block wraps instead */
 .hbtn{background:none;border:1px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:5px 14px;font-size:0.8rem;cursor:pointer;font-family:'Source Sans 3',sans-serif;text-decoration:none;min-height:30px;display:inline-flex;align-items:center;gap:6px;justify-content:center;}
 .hbtn:hover{background:rgba(255,255,255,0.1);}
 .dark-btn{background:none;border:1px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:5px 14px;font-size:0.8rem;cursor:pointer;font-family:'Source Sans 3',sans-serif;min-height:30px;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
@@ -162,7 +162,12 @@ footer a:hover{text-decoration:underline;}
   header{padding:16px 20px;} header .brand-title{font-size:1.2rem;} main{padding:24px 16px 48px;} main h1.page-title{font-size:1.45rem;} .tile{padding:16px 14px;}
   table,thead,tbody,tr,th,td{display:block;} thead{display:none;} td{border:0;padding:3px 0;} tr{border-bottom:1px solid var(--border);padding-block:8px;} td.actions{white-space:normal;}
 }
-@media (max-width:535px), (pointer:coarse) and (max-width:545px){ header{flex-wrap:wrap;} header .hright{flex-wrap:wrap;max-width:100%;justify-content:flex-end;} }
+/* The header's wrap gate (docs/reference/shared-components.md → The header's wrap gate): 773px is this page's MEASURED
+   overflow ceiling in the real UI fonts — the one-row header spills from 773px down (English, dark; Hebrew 729) and fits
+   above it; the brand lockup (141px where the star was) and the button row that no longer shrinks carried it up from 535.
+   Under a finger the language select is 10px wider and the ceiling is 783px; the second query holds that band without
+   moving a mouse layout. Re-measure whenever a header control changes width. */
+@media (max-width:773px), (pointer:coarse) and (max-width:783px){ header{flex-wrap:wrap;} header .hright{flex-wrap:wrap;max-width:100%;justify-content:flex-end;} }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important; } }
 #framedOut{display:none;}
 html.ivframed #framedOut{display:block;max-inline-size:34rem;margin:18vh auto 0;padding:0 24px;text-align:center;}
@@ -178,6 +183,15 @@ html.ivframed #framedOut p{color:var(--muted);margin-block-end:20px;}
   .card dt{font-size:8pt;text-transform:uppercase;letter-spacing:0.05em;color:#555;margin-top:3mm;}
   .card dd{font-family:ui-monospace,Menlo,monospace;font-size:13pt;direction:ltr;}
   .card .card-site{font-size:8pt;color:#555;margin-top:4mm;}
+}
+/* The header's title row (docs/reference/shared-components.md → Header lockup): up to 923px the title beside the
+   buttons is squeezed — measured in the real UI fonts (English sets it), the one-row header is taller there than the
+   lockup and title on one row with the buttons on a row of their own — so the buttons take their own row (the
+   generator's tablet rule, generalized). 933px under a finger, where the language select is 10px wider. Re-measure
+   whenever the title, the tagline or a header control changes width. */
+@media (max-width:923px), (pointer:coarse) and (max-width:933px){
+  header{flex-wrap:wrap;row-gap:8px;}
+  header > .brand-lockup + *{flex-basis:calc(100% - var(--bl-row));}
 }
 /* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner, parsha_emojis, name_tags, trope_atlas, letter_discrimination, reading_assignments, holiday_guide, the generated parsha/ pages (copied from parsha_emojis by scripts/build-parsha-pages.mjs) and the generated holidays/ pages (copied from holiday_guide by scripts/build-holiday-pages.mjs) (docs/reference/shared-components.md → Header icons).
    The header controls and the in-page control buttons (play, pause, stop, reset, retry, loop, sound) carry inline
@@ -200,7 +214,8 @@ body.dark .hi-sun{display:inline-block;}
 .bl-div{padding-inline-end:14px;border-inline-end:1px solid rgba(253,248,239,0.3);}
 .bl-img{display:block;height:var(--lockup-h,38px);width:auto;max-width:none;}
 .bl-print{display:none;}
-@media (max-width:600px){.bl-img{height:var(--lockup-h-sm,32px);}}
+header{--bl-row:160px;}   /* the lockup, its divider and the header's gap: what a page's title-row rule leaves beside the title */
+@media (max-width:600px){.bl-img{height:var(--lockup-h-sm,32px);}header{--bl-row:140px;}}
 @media print{.bl-screen{display:none !important;}.bl-print{display:block !important;}.bl-div{border-inline-end-color:#c5ccd8;}}
 /* ═══ end header-icons CSS ═══ */
 </style>

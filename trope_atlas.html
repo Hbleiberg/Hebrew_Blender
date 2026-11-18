@@ -447,8 +447,8 @@ html[lang="he"] footer [style*="letter-spacing:0.08em"] { letter-spacing:normal 
   .hbtn { padding:6px 9px; font-size:0.78rem; }
 }
 /* Phone widths: let the header button row wrap onto a second line instead of pushing the page sideways (WCAG 1.4.10).
-   322px is this page's MEASURED overflow ceiling, not a device width: the one-row header spills past the screen up to 322px (the dark theme's "Light" label is the widest) and fits above it, so the gate ends where the break does. Re-measure when a header control changes width; ungating moves layouts that already fit. */
-@media (max-width:322px) {
+   420px is this page's MEASURED overflow ceiling in the real UI fonts, not a device width: the one-row header spills past the screen up to 420px (English, the dark theme's "Light" label is the widest; the brand lockup, 141px where the star was, carried it up from 322px) and fits above it, so the gate ends where the break does. Under a finger the language select is 10px wider and the ceiling is 430px; the second query holds that band without moving a mouse layout. Re-measure when a header control changes width; ungating moves layouts that already fit. */
+@media (max-width:420px), (pointer:coarse) and (max-width:430px) {
   header { flex-wrap:wrap; row-gap:8px; }
   .hright { flex-wrap:wrap; max-width:100%; justify-content:flex-end; }
 }
@@ -490,6 +490,14 @@ html[lang="he"] footer [style*="letter-spacing:0.08em"] { letter-spacing:normal 
   .at-chip[aria-pressed="true"], .at-sing[aria-pressed="true"] { background:Highlight; color:HighlightText; border-color:Highlight; forced-color-adjust:none; }
   .at-chip[aria-pressed="true"] .n { color:HighlightText; }
 }
+/* The header's title row (docs/reference/shared-components.md → Header lockup): up to 491px the title squeezed beside the
+   buttons is narrower than its own longest word, which then paints past it (English, the real UI fonts; Hebrew 480),
+   so the buttons take a row of their own. 501px under a finger, where the language select is 10px wider. Re-measure
+   whenever the title or a header control changes width. */
+@media (max-width:491px), (pointer:coarse) and (max-width:501px){
+  header{flex-wrap:wrap;row-gap:8px;}
+  header > .brand-lockup + *{flex-basis:calc(100% - var(--bl-row));}
+}
 /* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner, parsha_emojis, name_tags, trope_atlas, letter_discrimination, reading_assignments, holiday_guide, the generated parsha/ pages (copied from parsha_emojis by scripts/build-parsha-pages.mjs) and the generated holidays/ pages (copied from holiday_guide by scripts/build-holiday-pages.mjs) (docs/reference/shared-components.md → Header icons).
    The header controls and the in-page control buttons (play, pause, stop, reset, retry, loop, sound) carry inline
    SVGs from one shared set (.hi-*); ink is currentColor, so each button's own colour applies. .hi-sm is the 13px
@@ -511,7 +519,8 @@ body.dark .hi-sun{display:inline-block;}
 .bl-div{padding-inline-end:14px;border-inline-end:1px solid rgba(253,248,239,0.3);}
 .bl-img{display:block;height:var(--lockup-h,38px);width:auto;max-width:none;}
 .bl-print{display:none;}
-@media (max-width:600px){.bl-img{height:var(--lockup-h-sm,32px);}}
+header{--bl-row:160px;}   /* the lockup, its divider and the header's gap: what a page's title-row rule leaves beside the title */
+@media (max-width:600px){.bl-img{height:var(--lockup-h-sm,32px);}header{--bl-row:140px;}}
 @media print{.bl-screen{display:none !important;}.bl-print{display:block !important;}.bl-div{border-inline-end-color:#c5ccd8;}}
 /* ═══ end header-icons CSS ═══ */
 </style>

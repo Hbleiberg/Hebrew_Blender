@@ -476,12 +476,12 @@ footer a { display: inline-block; padding-block: 5px; }
   .hg-chip{min-height:56px;}
 }
 /* Phone widths: the header's button row wraps onto a second line instead of pushing the page sideways (WCAG 1.4.10).
-   463px is this page's MEASURED overflow ceiling in the real UI fonts (docs/reference/shared-components.md → The
-   header's wrap gate): the one-row header spills from 463px down and fits above it (Hebrew, dark — the button row does
-   not shrink, so "דף הבית" stays on one line and Hebrew sets the gate). Under a finger the language select is 10px
-   wider and the ceiling is 473px; the second query holds that band without moving a mouse layout. Re-measure whenever
-   a header control changes width (this page mounts no account chip). */
-@media (max-width:463px), (pointer:coarse) and (max-width:473px){
+   530px is this page's MEASURED overflow ceiling in the real UI fonts (docs/reference/shared-components.md → The
+   header's wrap gate): the one-row header spills from 530px down and fits above it (English, dark; the button row does
+   not shrink, so "דף הבית" stays on one line — the brand lockup (141px where the star was) carried it up from 463, where Hebrew had set it). Under a finger the
+   language select is 10px wider and the ceiling is 540px; the second query holds that band without moving a mouse
+   layout. Re-measure whenever a header control changes width (this page mounts no account chip). */
+@media (max-width:530px), (pointer:coarse) and (max-width:540px){
   header{flex-wrap:wrap;}
   header .hright{flex-wrap:wrap;max-width:100%;justify-content:flex-end;}
 }
@@ -497,6 +497,15 @@ footer a { display: inline-block; padding-block: 5px; }
   .hg-paper { width:100%; height:100vh; break-inside:avoid; }
   .hg-paper + .hg-paper { break-before:page; }
   #hgPrintArea .hg-sheet { width:100%; height:100%; min-height:0; aspect-ratio:auto; border:none; box-shadow:none; }
+}
+/* The header's title row (docs/reference/shared-components.md → Header lockup): up to 714px the title beside the
+   buttons is squeezed — measured in the real UI fonts (English sets it), the one-row header is taller there than the
+   lockup and title on one row with the buttons on a row of their own — so the buttons take their own row (the
+   generator's tablet rule, generalized). 724px under a finger, where the language select is 10px wider. Re-measure
+   whenever the title, the tagline or a header control changes width. */
+@media (max-width:714px), (pointer:coarse) and (max-width:724px){
+  header{flex-wrap:wrap;row-gap:8px;}
+  header > .brand-lockup + *{flex-basis:calc(100% - var(--bl-row));}
 }
 /* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner, parsha_emojis, name_tags, trope_atlas, letter_discrimination, reading_assignments, holiday_guide, the generated parsha/ pages (copied from parsha_emojis by scripts/build-parsha-pages.mjs) and the generated holidays/ pages (copied from holiday_guide by scripts/build-holiday-pages.mjs) (docs/reference/shared-components.md → Header icons).
    The header controls and the in-page control buttons (play, pause, stop, reset, retry, loop, sound) carry inline
@@ -519,7 +528,8 @@ body.dark .hi-sun{display:inline-block;}
 .bl-div{padding-inline-end:14px;border-inline-end:1px solid rgba(253,248,239,0.3);}
 .bl-img{display:block;height:var(--lockup-h,38px);width:auto;max-width:none;}
 .bl-print{display:none;}
-@media (max-width:600px){.bl-img{height:var(--lockup-h-sm,32px);}}
+header{--bl-row:160px;}   /* the lockup, its divider and the header's gap: what a page's title-row rule leaves beside the title */
+@media (max-width:600px){.bl-img{height:var(--lockup-h-sm,32px);}header{--bl-row:140px;}}
 @media print{.bl-screen{display:none !important;}.bl-print{display:block !important;}.bl-div{border-inline-end-color:#c5ccd8;}}
 /* ═══ end header-icons CSS ═══ */
 

@@ -175,7 +175,8 @@ body.dark .hi-sun{display:inline-block;}
 .bl-div{padding-inline-end:14px;border-inline-end:1px solid rgba(253,248,239,0.3);}
 .bl-img{display:block;height:var(--lockup-h,38px);width:auto;max-width:none;}
 .bl-print{display:none;}
-@media (max-width:600px){.bl-img{height:var(--lockup-h-sm,32px);}}
+header{--bl-row:160px;}   /* the lockup, its divider and the header's gap: what a page's title-row rule leaves beside the title */
+@media (max-width:600px){.bl-img{height:var(--lockup-h-sm,32px);}header{--bl-row:140px;}}
 @media print{.bl-screen{display:none !important;}.bl-print{display:block !important;}.bl-div{border-inline-end-color:#c5ccd8;}}
 /* ═══ end header-icons CSS ═══ */
 </style>
@@ -2187,29 +2188,33 @@ body.dark .hi-sun{display:inline-block;}
 
   @page { margin: 0.35in; }
 
-  /* The header's overflow band sits just ABOVE the MOBILE gate: the switcher and the account
-     chip widened the nav row, and the controls' icons widened it again, so it overflows from
-     702px up to 749px (measured, English in the dark theme) while the rest of the page is still
-     correctly in its desktop layout there. So the header's wrap lever gets its own gate at that
-     measured ceiling, and the MOBILE block — which stacks the sidebar and rebuilds the whole
-     layout — keeps its 700px scope. Re-measure when a header control changes width. Under a
-     finger the language select reads at 16px (js/i18n.js, so iOS does not zoom into it) and is
-     10px wider, which carries the ceiling to 759px there — an iPhone held sideways is 750px — so
-     the second query holds that band without moving a mouse layout. */
-  @media (max-width: 749px), (pointer: coarse) and (max-width: 759px) {
+  /* The header's overflow band sits ABOVE the MOBILE gate: the switcher, the account chip, the
+     controls' icons and then the brand lockup (141px where the star was) widened the one-row header,
+     so it overflows from 702px up to 866px (measured in the real fonts, English in the dark theme;
+     Hebrew stops at 782px) while the rest of the page is still correctly in its desktop layout there.
+     So the header's wrap lever gets its own gate at that measured ceiling, and the MOBILE block —
+     which stacks the sidebar and rebuilds the whole layout — keeps its 700px scope. The tablet rules
+     below already wrap that band in both languages; this gate is the floor under them. Re-measure
+     when a header control changes width. Under a finger the language select reads at 16px
+     (js/i18n.js, so iOS does not zoom into it) and is 10px wider, which carries the ceiling to 876px
+     there, so the second query holds that band without moving a mouse layout. */
+  @media (max-width: 866px), (pointer: coarse) and (max-width: 876px) {
     header { flex-wrap: wrap; row-gap: 8px; }
   }
   /* Above the MOBILE gate, at tablet widths (an iPad held upright), the title column shrank to 125–250px beside
-     the buttons: three lines of title over a tagline of up to seven, a header 142–223px tall. There the title
-     and tagline take the whole first row and the buttons wrap to their own (~122px). Hebrew's shorter title
-     keeps one line beside the buttons to ~860px, so its gate starts lower. The maintainer's choice (gate 3). */
-  @media (min-width: 701px) and (max-width: 960px) {
+     the buttons: three lines of title over a tagline of up to seven, a header 142–223px tall. There the lockup,
+     title and tagline take the whole first row and the buttons wrap to their own (~122px); the title's basis is
+     the row less the lockup (141px) and the header's 16px gap. Hebrew's shorter title keeps one line beside the
+     buttons to ~977px, so its gate starts lower. The maintainer's choice (gate 3), set at 960 / 860 before the
+     brand lockup; the lockup moved the title's first wrap 117px wider in both languages (EN 997 → 1114, HE
+     844 → 961, measured in the real fonts with these rules removed), and both gates moved with it. */
+  @media (min-width: 701px) and (max-width: 1077px) {
     html:not([lang="he"]) header { flex-wrap: wrap; row-gap: 8px; }
-    html:not([lang="he"]) header > .hdr-title { flex-basis: calc(100% - 48px); }
+    html:not([lang="he"]) header > .hdr-title { flex-basis: calc(100% - 157px); }
   }
-  @media (min-width: 701px) and (max-width: 860px) {
+  @media (min-width: 701px) and (max-width: 977px) {
     html[lang="he"] header { flex-wrap: wrap; row-gap: 8px; }
-    html[lang="he"] header > .hdr-title { flex-basis: calc(100% - 48px); }
+    html[lang="he"] header > .hdr-title { flex-basis: calc(100% - 157px); }
   }
 
   /* ── MOBILE ── */

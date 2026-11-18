@@ -157,6 +157,15 @@ html[lang="he"] footer [style*="letter-spacing:0.08em"] { letter-spacing: normal
    hold) and the font picker's group heads. The print is left as it is. */
 html[lang="he"] .tu-key-lbl, html[lang="he"] .tu-rare-tag, html[lang="he"] .tu-pex-title, html[lang="he"] .tu-mfam-label,
 html[lang="he"] .tu-set-label, html[lang="he"] .font-section-hdr { letter-spacing: normal; text-transform: none; }
+/* The header's title row (docs/reference/shared-components.md → Header lockup): up to 844px the title beside the
+   buttons is squeezed — measured in the real UI fonts (English sets it), the one-row header is taller there than the
+   lockup and title on one row with the buttons on a row of their own — so the buttons take their own row (the
+   generator's tablet rule, generalized). 854px under a finger, where the language select is 10px wider. Re-measure
+   whenever the title, the tagline or a header control changes width. */
+@media (max-width:844px), (pointer:coarse) and (max-width:854px){
+  header{flex-wrap:wrap;row-gap:8px;}
+  header > .brand-lockup + *{flex-basis:calc(100% - var(--bl-row));}
+}
 /* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner, parsha_emojis, name_tags, trope_atlas, letter_discrimination, reading_assignments, holiday_guide, the generated parsha/ pages (copied from parsha_emojis by scripts/build-parsha-pages.mjs) and the generated holidays/ pages (copied from holiday_guide by scripts/build-holiday-pages.mjs) (docs/reference/shared-components.md → Header icons).
    The header controls and the in-page control buttons (play, pause, stop, reset, retry, loop, sound) carry inline
    SVGs from one shared set (.hi-*); ink is currentColor, so each button's own colour applies. .hi-sm is the 13px
@@ -178,7 +187,8 @@ body.dark .hi-sun{display:inline-block;}
 .bl-div{padding-inline-end:14px;border-inline-end:1px solid rgba(253,248,239,0.3);}
 .bl-img{display:block;height:var(--lockup-h,38px);width:auto;max-width:none;}
 .bl-print{display:none;}
-@media (max-width:600px){.bl-img{height:var(--lockup-h-sm,32px);}}
+header{--bl-row:160px;}   /* the lockup, its divider and the header's gap: what a page's title-row rule leaves beside the title */
+@media (max-width:600px){.bl-img{height:var(--lockup-h-sm,32px);}header{--bl-row:140px;}}
 @media print{.bl-screen{display:none !important;}.bl-print{display:block !important;}.bl-div{border-inline-end-color:#c5ccd8;}}
 /* ═══ end header-icons CSS ═══ */
 </style>

@@ -53,7 +53,8 @@ body.dark .hi-sun{display:inline-block;}
 .bl-div{padding-inline-end:14px;border-inline-end:1px solid rgba(253,248,239,0.3);}
 .bl-img{display:block;height:var(--lockup-h,38px);width:auto;max-width:none;}
 .bl-print{display:none;}
-@media (max-width:600px){.bl-img{height:var(--lockup-h-sm,32px);}}
+header{--bl-row:160px;}   /* the lockup, its divider and the header's gap: what a page's title-row rule leaves beside the title */
+@media (max-width:600px){.bl-img{height:var(--lockup-h-sm,32px);}header{--bl-row:140px;}}
 @media print{.bl-screen{display:none !important;}.bl-print{display:block !important;}.bl-div{border-inline-end-color:#c5ccd8;}}
 /* ═══ end header-icons CSS ═══ */
 </style>
@@ -272,6 +273,17 @@ footer a { color:var(--gold-text); }
   .ld-side { flex-basis:auto; }
   .ld-key { grid-template-columns:repeat(4, 1fr); }
   .ld-swatch { aspect-ratio:1; }
+}
+/* The header's wrap gate (docs/reference/shared-components.md → The header's wrap gate). The star this page hid on
+   phones became the brand lockup, which stays. The title block may shrink to nothing (.htitle's min-width:0), so the
+   one-row header never spills: it squeezes the title instead, whose longest word then paints over the buttons — up to
+   569px in English (Hebrew 397; the real UI fonts), the ceiling here, and 579px under a finger, where the language select
+   is 10px wider (the second query). Below it the title keeps its own width (a zero basis would never wrap) and the
+   button row takes a line of its own. Re-measure whenever a header control changes width. */
+@media (max-width: 569px), (pointer: coarse) and (max-width: 579px) {
+  header { flex-wrap:wrap; row-gap:8px; }
+  .htitle { flex-basis:auto; }
+  .hright { flex-wrap:wrap; max-width:100%; justify-content:flex-end; }
 }
 @media print { header, footer, .skip-link, .ld-actions, #a11yStatus { display:none !important; } }
 /* Reduced motion: the universal neutralizer (0.001ms rather than 0 so animationend still fires). */

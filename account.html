@@ -229,13 +229,13 @@ footer a:hover{text-decoration:underline;}
   .tile{padding:18px 16px;}
 }
 /* Phone widths: let the header button row wrap onto a second line instead of pushing the page
-   sideways (WCAG 1.4.10 reflow). 535px is this page's MEASURED overflow ceiling, not a device
-   width: since the header controls took their icons the row overflows from 432px up to 535px
-   (English, the dark theme's "Light" label the widest) and fits above it, so the gate ends where
+   sideways (WCAG 1.4.10 reflow). 677px is this page's MEASURED overflow ceiling in the real UI fonts, not a
+   device width: the one-row header overflows up to 677px (English, the dark theme's "Light" label the widest;
+   the brand lockup (141px where the star was) carried it up from 535) and fits above it, so the gate ends where
    the break does. Re-measure when a header control changes width; ungating moves layouts that fit.
    Under a finger the language select reads at 16px (js/i18n.js, so iOS does not zoom into it) and is 10px
-   wider, which carries the ceiling to 545px there; the second query holds that band without moving a mouse layout. */
-@media (max-width:535px), (pointer:coarse) and (max-width:545px){
+   wider, which carries the ceiling to 687px there; the second query holds that band without moving a mouse layout. */
+@media (max-width:677px), (pointer:coarse) and (max-width:687px){
   header{flex-wrap:wrap;}
   header .hright{flex-wrap:wrap;max-width:100%;justify-content:flex-end;}
 }
@@ -269,6 +269,15 @@ html.ivframed #framedOut p { color: var(--muted); margin-block-end: 20px; }
      third sheet of its own. The print dialog's page margin already holds the footer off the paper edge. */
   main { padding-block-end: 0; }
 }
+/* The header's title row (docs/reference/shared-components.md → Header lockup): up to 786px the title beside the
+   buttons is squeezed — measured in the real UI fonts (English sets it), the one-row header is taller there than the
+   lockup and title on one row with the buttons on a row of their own — so the buttons take their own row (the
+   generator's tablet rule, generalized). 796px under a finger, where the language select is 10px wider. Re-measure
+   whenever the title, the tagline or a header control changes width. */
+@media (max-width:786px), (pointer:coarse) and (max-width:796px){
+  header{flex-wrap:wrap;row-gap:8px;}
+  header > .brand-lockup + *{flex-basis:calc(100% - var(--bl-row));}
+}
 /* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner, parsha_emojis, name_tags, trope_atlas, letter_discrimination, reading_assignments, holiday_guide, the generated parsha/ pages (copied from parsha_emojis by scripts/build-parsha-pages.mjs) and the generated holidays/ pages (copied from holiday_guide by scripts/build-holiday-pages.mjs) (docs/reference/shared-components.md → Header icons).
    The header controls and the in-page control buttons (play, pause, stop, reset, retry, loop, sound) carry inline
    SVGs from one shared set (.hi-*); ink is currentColor, so each button's own colour applies. .hi-sm is the 13px
@@ -290,7 +299,8 @@ body.dark .hi-sun{display:inline-block;}
 .bl-div{padding-inline-end:14px;border-inline-end:1px solid rgba(253,248,239,0.3);}
 .bl-img{display:block;height:var(--lockup-h,38px);width:auto;max-width:none;}
 .bl-print{display:none;}
-@media (max-width:600px){.bl-img{height:var(--lockup-h-sm,32px);}}
+header{--bl-row:160px;}   /* the lockup, its divider and the header's gap: what a page's title-row rule leaves beside the title */
+@media (max-width:600px){.bl-img{height:var(--lockup-h-sm,32px);}header{--bl-row:140px;}}
 @media print{.bl-screen{display:none !important;}.bl-print{display:block !important;}.bl-div{border-inline-end-color:#c5ccd8;}}
 /* ═══ end header-icons CSS ═══ */
 </style>

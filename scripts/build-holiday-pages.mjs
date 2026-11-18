@@ -182,6 +182,15 @@ html[lang="he"] footer [style*="letter-spacing:0.08em"]{letter-spacing:normal !i
   .hp-grid{grid-template-columns:1fr;}
   .hp-sheet{max-width:440px;}
 }
+/* The header's title row (docs/reference/shared-components.md → Header lockup): up to 775px the title beside the
+   buttons is squeezed — measured in the real UI fonts (English sets it), the one-row header is taller there than the
+   lockup and title on one row with the buttons on a row of their own — so the buttons take their own row (the
+   generator's tablet rule, generalized). 785px under a finger, where the language select is 10px wider. Re-measure
+   whenever the title, the tagline or a header control changes width. */
+@media (max-width:775px), (pointer:coarse) and (max-width:785px){
+  header{flex-wrap:wrap;row-gap:8px;}
+  header > .brand-lockup + *{flex-basis:calc(100% - var(--bl-row));}
+}
 @media (max-width:640px){
   header{padding:16px 20px;flex-wrap:wrap;}
   header .brand-title{font-size:1.2rem;}

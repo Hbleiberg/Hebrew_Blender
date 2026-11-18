@@ -139,6 +139,15 @@ footer a { display: inline-block; padding-block: 5px; }
 /* The Hebrew UI's footer heads (FAQ, How To, About, Related Hebrew Tools): their inline 0.08em caps are English small
    caps; Hebrew has no capitals, and the tracking only spaced its letters apart. !important outranks the inline style. */
 html[lang="he"] footer [style*="letter-spacing:0.08em"] { letter-spacing: normal !important; text-transform: none !important; }
+/* The header's title row (docs/reference/shared-components.md → Header lockup): up to 700px the title beside the
+   buttons is squeezed — measured in the real UI fonts (English sets it), the one-row header is taller there than the
+   lockup and title on one row with the buttons on a row of their own — so the buttons take their own row (the
+   generator's tablet rule, generalized). 710px under a finger, where the language select is 10px wider. Re-measure
+   whenever the title, the tagline or a header control changes width. */
+@media (max-width:700px), (pointer:coarse) and (max-width:710px){
+  header{flex-wrap:wrap;row-gap:8px;}
+  header > .brand-lockup + *{flex-basis:calc(100% - var(--bl-row));}
+}
 /* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner, parsha_emojis, name_tags, trope_atlas, letter_discrimination, reading_assignments, holiday_guide, the generated parsha/ pages (copied from parsha_emojis by scripts/build-parsha-pages.mjs) and the generated holidays/ pages (copied from holiday_guide by scripts/build-holiday-pages.mjs) (docs/reference/shared-components.md → Header icons).
    The header controls and the in-page control buttons (play, pause, stop, reset, retry, loop, sound) carry inline
    SVGs from one shared set (.hi-*); ink is currentColor, so each button's own colour applies. .hi-sm is the 13px
@@ -160,7 +169,8 @@ body.dark .hi-sun{display:inline-block;}
 .bl-div{padding-inline-end:14px;border-inline-end:1px solid rgba(253,248,239,0.3);}
 .bl-img{display:block;height:var(--lockup-h,38px);width:auto;max-width:none;}
 .bl-print{display:none;}
-@media (max-width:600px){.bl-img{height:var(--lockup-h-sm,32px);}}
+header{--bl-row:160px;}   /* the lockup, its divider and the header's gap: what a page's title-row rule leaves beside the title */
+@media (max-width:600px){.bl-img{height:var(--lockup-h-sm,32px);}header{--bl-row:140px;}}
 @media print{.bl-screen{display:none !important;}.bl-print{display:block !important;}.bl-div{border-inline-end-color:#c5ccd8;}}
 /* ═══ end header-icons CSS ═══ */
 </style>
@@ -290,14 +300,15 @@ footer a:hover{text-decoration:underline;}   /* the only hover feedback the foot
    page sideways (WCAG 1.4.10 reflow). max-width is the operative half — nothing makes the row
    wrap until something caps its width, and the header has to wrap too or the title block and
    the button row keep competing for one line.
-   466px is this page's MEASURED overflow ceiling, not a device width: since the header controls
+   564px is this page's MEASURED overflow ceiling in the real UI fonts, not a device width (the brand lockup (141px where the star was) carried it up from 466;
+   English, dark, sets it). Before the lockup: since the header controls
    took their icons the row overflows from 431px up to 466px (English; the dark theme's "Light"
    label is the widest) and fits above it, so the gate ends where the break does — the old 430px
    left a 440px iPhone Pro Max scrolling sideways.
    Re-measure whenever a header control changes width; ungating moves layouts that already fit.
    Under a finger the language select reads at 16px (js/i18n.js, so iOS does not zoom into it) and is 10px
-   wider, which carries the ceiling to 476px there; the second query holds that band without moving a mouse layout. */
-@media(max-width:466px), (pointer:coarse) and (max-width:476px){
+   wider, which carries the ceiling to 574px there; the second query holds that band without moving a mouse layout. */
+@media(max-width:564px), (pointer:coarse) and (max-width:574px){
   header{flex-wrap:wrap;}
   header .hright{flex-wrap:wrap;max-width:100%;justify-content:flex-end;}
 }

@@ -170,7 +170,8 @@ body.dark .hi-sun{display:inline-block;}
 .bl-div{padding-inline-end:14px;border-inline-end:1px solid rgba(253,248,239,0.3);}
 .bl-img{display:block;height:var(--lockup-h,38px);width:auto;max-width:none;}
 .bl-print{display:none;}
-@media (max-width:600px){.bl-img{height:var(--lockup-h-sm,32px);}}
+header{--bl-row:160px;}   /* the lockup, its divider and the header's gap: what a page's title-row rule leaves beside the title */
+@media (max-width:600px){.bl-img{height:var(--lockup-h-sm,32px);}header{--bl-row:140px;}}
 @media print{.bl-screen{display:none !important;}.bl-print{display:block !important;}.bl-div{border-inline-end-color:#c5ccd8;}}
 /* ═══ end header-icons CSS ═══ */
 </style>
@@ -483,12 +484,14 @@ body.fs-idle #fsBtn:not(:focus-visible) { opacity: 0; pointer-events: none; }
 .h-right { display: flex; gap: 6px; align-items: center; }
 /* Narrow screens: the header now also carries the language switcher, so shrink the controls
    (and the title) to keep everything on one row without horizontal overflow.
-   526px is this page's MEASURED overflow ceiling, not a device width: the header overflows from
-   442px up to 526px (English; the controls' icons carried it up from 486px) and fits above it,
-   so the gate ends where the break does. The title's own row move is part of the lever here —
-   the grid's auto track only yields once the 1fr column is empty — so the whole block moves
-   together. Re-measure when a header control changes width. */
-@media (max-width: 526px) {
+   664px is this page's MEASURED overflow ceiling in the real UI fonts, not a device width: the header
+   overflows up to 664px (English; the controls' icons carried it up from 486px to 526px, and the brand
+   lockup, a grid column of its own, from 526px) and fits above it, so the gate ends where the break does.
+   Under a finger the language select is 10px wider and the ceiling is 673px; the second query holds that
+   band without moving a mouse layout. The title's own row move is part of the lever here — the grid's
+   auto track only yields once the 1fr column is empty — so the whole block moves together. Re-measure
+   when a header control changes width. */
+@media (max-width: 664px), (pointer: coarse) and (max-width: 673px) {
   .app-header { gap: 4px; padding-inline: 8px; }
   /* The title shares a grid row with the Home button and the whole right-hand cluster, so at
      phone widths its 1fr column collapses to ~53px and the h1 breaks into six lines — 21.5%

@@ -563,6 +563,19 @@ the standard lockup with a navy wordmark, both precached in `sw.js`.
   set 50 / 42 on their heading. The `<img>`'s `width`/`height` attributes keep the aspect ratio before the file loads.
 - The lockup never shrinks (`flex-shrink:0`), so it moves every page's wrap gate: a change to its size or to the
   divider is a header-control change (below).
+- **The title row.** Beside the lockup and the button row, a tool page's title column can be squeezed long before
+  anything spills: one word per line, a tagline of a dozen lines, or (where the title block may shrink to nothing) a
+  longest word painting over the buttons. Each such page carries a title-row rule just above the shared block: up to
+  its measured width the header wraps and the title takes the rest of the lockup's row (`header > .brand-lockup + *`,
+  `flex-basis: calc(100% - var(--bl-row))`; the block sets `--bl-row` to what the lockup, its divider and the gap
+  take, smaller under 600px with the smaller lockup), so the buttons get a row of their own — the generator's tablet
+  rule (gate 3), generalized. The width is measured, not chosen: the widest width at which the one-row header is
+  taller than the stacked one, in the real UI fonts, dark theme (its "Light" label is the widest), EN and HE, with a
+  second `(pointer:coarse)` query 10px higher for the touch language select; the Trope Atlas, whose title only ever
+  overflows sideways, uses the width at which its title stops overflowing its own box. The generator keeps its own
+  tablet rules (their numbers moved by the lockup's 117px), the home page and the 404 need none (the lockup is the
+  title there), and the flash cards' grid header has no title column to squeeze. Re-measure a page's title row
+  whenever its title, its tagline or a header control changes width.
 
 ### The header's wrap gate (every page)
 Each page lets its header wrap onto a second row only below a `max-width` that is that page's **measured

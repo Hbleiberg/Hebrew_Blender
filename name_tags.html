@@ -141,6 +141,15 @@
 <noscript><link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet"></noscript>
 <style>@font-face{font-family:'Frank Ruhl Libre';src:url('/fonts/FrankRuhlLibre-Regular.ttf') format('truetype');font-weight:400;font-display:swap;}@font-face{font-family:'IvritSuite Taamim';src:url('/fonts/NotoSerifHebrew-Taamim.ttf') format('truetype');font-weight:400;font-display:swap;}
 footer a { display: inline-block; padding-block: 5px; }
+/* The header's title row (docs/reference/shared-components.md → Header lockup): up to 814px the title beside the
+   buttons is squeezed — measured in the real UI fonts (English sets it), the one-row header is taller there than the
+   lockup and title on one row with the buttons on a row of their own — so the buttons take their own row (the
+   generator's tablet rule, generalized). 824px under a finger, where the language select is 10px wider. Re-measure
+   whenever the title, the tagline or a header control changes width. */
+@media (max-width:814px), (pointer:coarse) and (max-width:824px){
+  header{flex-wrap:wrap;row-gap:8px;}
+  header > .brand-lockup + *{flex-basis:calc(100% - var(--bl-row));}
+}
 /* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner, parsha_emojis, name_tags, trope_atlas, letter_discrimination, reading_assignments, holiday_guide, the generated parsha/ pages (copied from parsha_emojis by scripts/build-parsha-pages.mjs) and the generated holidays/ pages (copied from holiday_guide by scripts/build-holiday-pages.mjs) (docs/reference/shared-components.md → Header icons).
    The header controls and the in-page control buttons (play, pause, stop, reset, retry, loop, sound) carry inline
    SVGs from one shared set (.hi-*); ink is currentColor, so each button's own colour applies. .hi-sm is the 13px
@@ -162,7 +171,8 @@ body.dark .hi-sun{display:inline-block;}
 .bl-div{padding-inline-end:14px;border-inline-end:1px solid rgba(253,248,239,0.3);}
 .bl-img{display:block;height:var(--lockup-h,38px);width:auto;max-width:none;}
 .bl-print{display:none;}
-@media (max-width:600px){.bl-img{height:var(--lockup-h-sm,32px);}}
+header{--bl-row:160px;}   /* the lockup, its divider and the header's gap: what a page's title-row rule leaves beside the title */
+@media (max-width:600px){.bl-img{height:var(--lockup-h-sm,32px);}header{--bl-row:140px;}}
 @media print{.bl-screen{display:none !important;}.bl-print{display:block !important;}.bl-div{border-inline-end-color:#c5ccd8;}}
 /* ═══ end header-icons CSS ═══ */
 </style>
@@ -748,11 +758,11 @@ body.dark #appToast { background: #0a0f1c; }
   .nt-per label { min-height:48px; justify-content:center; }
 }
 /* The header's wrap gate: the row of controls drops under the title only below this page's MEASURED overflow
-   ceiling (docs/reference/shared-components.md → "The header's wrap gate"). 576px is where the unwrapped row (Home,
-   the language switcher, the account chip, Tour, dark) stops fitting beside the title — 574px in EN, 576px in HE
-   (Playwright, 2px steps, 900→320px); the second query holds the 16px touch language select's wider band. Re-measure
-   when a control is added or relabelled. */
-@media (max-width: 576px), (pointer: coarse) and (max-width: 585px) {
+   ceiling (docs/reference/shared-components.md → "The header's wrap gate"). 604px is where the unwrapped row (Home,
+   the language switcher, the account chip, Tour, dark) stops fitting beside the brand lockup and the title — Hebrew
+   sets it (1px steps, 1000→320px, the real UI fonts; the brand lockup (141px where the star was) carried it up from 576); the second query (614px) holds the 16px
+   touch language select's wider band. Re-measure when a control is added or relabelled. */
+@media (max-width: 604px), (pointer: coarse) and (max-width: 614px) {
   header { flex-wrap:wrap; padding:10px 12px; gap:10px; row-gap:8px; }
   header h1 { font-size:1.1rem; }
   header p { display:none; }
