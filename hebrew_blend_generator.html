@@ -1362,6 +1362,12 @@ body.dark .hi-sun{display:inline-block;}
     transform-origin: top center;
     transition: transform 0.2s;
   }
+  /* Zoomed in from the top centre, half the growth ran off the sheet's start edge, where its scroll area cannot reach:
+     at 200% the title and the first column of blends (English) or the Name / Date lines (Hebrew), 146–386px of the sheet
+     at 1280, 136–182px on a phone. Above 100% it grows from its top start corner, toward the scroll area's own end;
+     zoomed out it still shrinks to the top centre. (S657 Pass N) */
+  .worksheet-scaler.zoomed-in { transform-origin: top left; }
+  html[lang="he"] .worksheet-scaler.zoomed-in { transform-origin: top right; }
 
   /* ── SHUFFLE ANIMATION ── */
   @keyframes cardFlip {
@@ -6830,7 +6836,9 @@ function toggleSidebar() {
   if (hadFocus === (collapsed ? hideBtn : showBtn)) (collapsed ? showBtn : hideBtn).focus();
 }
 function applyZoom(val) {
-  document.getElementById('worksheetScaler').style.transform = `scale(${val/100})`;
+  const scaler = document.getElementById('worksheetScaler');
+  scaler.style.transform = `scale(${val/100})`;
+  scaler.classList.toggle('zoomed-in', val > 100);
   document.getElementById('zoomLabel').textContent = `${val}%`;
   localStorage.setItem('hebrewBlender_zoom', val);
 }
