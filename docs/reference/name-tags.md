@@ -7,8 +7,10 @@ it is `index, follow` with its own social tags (the shared `og-card.png`) and JS
 the account chip and sync, `.ivrit` files, the AllTools registration of its keys, a tour, and the backend smokes.
 
 - **The hub's Classroom Dashboard card** holds two links, so it is a `role="group"` card like Trope and Discover, found
-  by `aria-labelledby="dashboardTitle"`; its description names both tools. The tool pages' *Related Hebrew Tools*
-  footers do not list Name Tags yet.
+  by `aria-labelledby="dashboardTitle"`; its description names both tools. Every tool page's *Related Hebrew Tools*
+  footer links it (`shared.nav.link_nametags`) right after the classroom display, and first on the Dashboard's own
+  list (its class lists' companion); the parsha and holiday pages carry it through their builders' copied footer.
+  The Trope Atlas's short trope-only list leaves it out, as it leaves out the Dashboard.
 
 ## Storage
 
