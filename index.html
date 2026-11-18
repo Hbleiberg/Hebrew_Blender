@@ -250,10 +250,10 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--
   text-decoration:none;
 }
 .skip-link:focus { top:0; outline:2px solid var(--focus-ring); outline-offset:2px; }
-header{background:var(--navy);color:#fff;padding:22px 40px;display:flex;align-items:center;gap:16px;border-bottom:4px solid var(--gold);}
-header .brand-lockup{--lockup-h:50px;--lockup-h-sm:42px;margin-bottom:4px;}
+header{background:var(--navy);color:#fff;padding:14px 40px;display:flex;align-items:center;gap:16px;border-bottom:4px solid var(--gold);}   /* the lockup alone is the heading: no tagline, so a slimmer bar */
+header .brand-lockup{--lockup-h:50px;--lockup-h-sm:42px;}
+@media (max-width:600px){header{padding:12px 20px;}}   /* the 404's phone padding: 40px sides cost a phone header its one row */
 header h1{font-family:'Libre Baskerville',serif;font-size:1.8rem;letter-spacing:0.01em;}
-header p{font-size:0.88rem;color:var(--gold-light);margin-top:3px;}
 header .hright{margin-inline-start:auto;display:flex;gap:10px;align-items:center;}
 .dark-btn{background:none;border:1px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:5px 14px;font-size:0.8rem;cursor:pointer;font-family:'Source Sans 3',sans-serif;min-height:30px;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
 .dark-btn:hover{background:rgba(255,255,255,0.1);}
@@ -380,8 +380,8 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
    page sideways (WCAG 1.4.10 reflow). max-width is the operative half — nothing makes the row
    wrap until something caps its width, and the header has to wrap too or the title block and
    the button row keep competing for one line.
-   519px is this page's MEASURED overflow ceiling, not a device width: the row overflows from
-   432px up to 519px (English, the dark theme's "Light" label the widest) and fits above it, so
+   450px is this page's MEASURED overflow ceiling, not a device width (see the last paragraph): the row
+   overflows up to it (English, the dark theme's "Light" label the widest) and fits above it, so
    the gate ends exactly where the break does and no width that already fits is touched.
    Re-measure whenever a header control changes width — the switcher and the account chip
    carried the ceiling past the old 430px (a 440pt iPhone 16 Pro Max clipped the dark toggle
@@ -390,11 +390,11 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
    377 layouts that currently fit (measured, all 14 pages). Under a finger the language select reads
    at 16px (js/i18n.js, so iOS does not zoom into it) and is 10px wider, which carries the ceiling to
    529px there; the second query holds that band without moving a mouse layout.
-   The brand lockup took the place of the star and the text heading and is narrower than the two were,
-   so the one-row header now fits down to 471px (481px under a finger; the real UI fonts). The gate stays
-   at 519 / 529 rather than follow it down: between them the one-row header would only fit by squeezing
-   the tagline into four lines beside the controls, where today it wraps cleanly. */
-@media (max-width:519px), (pointer:coarse) and (max-width:529px){
+   Since then the brand lockup alone became the heading (no star, no text title, no tagline) and the
+   phone padding came down to 20px, so the one-row header now overflows only up to 450px (English, dark;
+   Hebrew 445; the real UI fonts) and 460px under a finger: the gate moved down to that ceiling, giving
+   451–519px the one-row header. */
+@media (max-width:450px), (pointer:coarse) and (max-width:460px){
   header{flex-wrap:wrap;}
   header .hright{flex-wrap:wrap;max-width:100%;justify-content:flex-end;}
 }
@@ -478,7 +478,6 @@ html.wn-open body{padding-block-end:calc(var(--wn-h, 0px) + 28px);}
 <header>
   <div>
     <h1 class="brand-lockup"><img class="bl-img bl-screen" src="/brand/ivritsuite-lockup-english-dark.svg" alt="IvritSuite" width="166" height="50"><img class="bl-img bl-print" src="/brand/ivritsuite-lockup-english.svg" alt="" width="166" height="50"></h1>
-    <p data-i18n="home.header.tagline">Tools for Hebrew literacy instruction</p>
   </div>
   <div class="hright">
     <div data-i18n-switcher></div>

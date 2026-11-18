@@ -3612,7 +3612,6 @@ home.card.trope.cta_atlas,Trope Atlas →,אטלס הטעמים ←,Trope card's
 home.card.trope.desc,"Learn the Torah cantillation marks (trope / te'amim) — symbols, Ashkenazi and Sephardi names, and melodies with real chanted examples — then drill yourself with three quiz modes.","למדו את טעמי המקרא (trope / te'amim) — הסימנים, השמות האשכנזיים והספרדיים, והמנגינות עם דוגמאות הקראה אמיתיות — ואז תרגלו את עצמכם בשלושה מצבי חידון.",tool card description,scope-ambiguous (card desc)
 home.card.trope.name,Trope Tutor,מאמן הטעמים,tool card title,
 home.contact_link,Contact & Support,יצירת קשר ותמיכה,link button,the hi-mail icon is markup
-home.header.tagline,Tools for Hebrew literacy instruction,כלים להוראת אוריינות עברית,header subtitle,
 home.hero.subtitle,Free Hebrew Learning Tools for Teachers and Students,כלים חינמיים ללימוד עברית למורים ולתלמידים,hero subheading,
 home.whatsnew.close_aria,Close,סגירה,What's-new card close button (aria-label),aria/title
 home.whatsnew.item_holidayguide,"<a href=""holiday_guide.html"">Holiday Guide</a>: the symbols of every Jewish holiday, a countdown to the next one, and coloring sheets to print.","<a href=""holiday_guide.html"">מדריך החגים</a>: הסמלים של כל חג, ספירה לאחור עד החג הבא, ודפי צביעה להדפסה.",What's-new card item (links the Holiday Guide),html
@@ -3622,7 +3621,6 @@ home.whatsnew.ok,Got it,הבנתי,What's-new card dismiss button,
 home.whatsnew.show,Show me,הראו לי,What's-new card button: scrolls to the Classroom Dashboard card (its Name Tags button),
 home.whatsnew.title,New on IvritSuite,חדש ב־IvritSuite,What's-new card title (shown once to a returning visitor),
 notfound.a11y.skip_to_links,Skip to the links,דילוג לקישורים,Skip-link (a11y),aria/skip-link
-notfound.header.tagline,Tools for Hebrew literacy instruction,כלים להוראת אוריינות עברית,header subtitle,
 notfound.home_button,Back to the Promised Home Page,חזרה לדף הבית המובטח,primary button,the arrow is the shared hi-arrow icon in the markup (mirrors in RTL)
 notfound.link.dictionary,Dictionary,מילון,tool link,
 notfound.link.flashcards,Flash Cards,כרטיסי זיכרון,tool link,

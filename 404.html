@@ -110,10 +110,9 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--
   text-decoration:none;
 }
 .skip-link:focus { top:0; outline:2px solid var(--focus-ring); outline-offset:2px; }
-header{background:var(--navy);color:#fff;padding:22px 40px;display:flex;align-items:center;gap:16px;border-bottom:4px solid var(--gold);}
-header .brand-lockup{--lockup-h:50px;--lockup-h-sm:42px;margin-bottom:4px;}
+header{background:var(--navy);color:#fff;padding:14px 40px;display:flex;align-items:center;gap:16px;border-bottom:4px solid var(--gold);}   /* the lockup alone is the heading: no tagline, so a slimmer bar */
+header .brand-lockup{--lockup-h:50px;--lockup-h-sm:42px;}
 header h1{font-family:'Libre Baskerville',serif;font-size:1.8rem;letter-spacing:0.01em;}
-header p{font-size:0.88rem;color:var(--gold-light);margin-top:3px;}
 header .hright{margin-inline-start:auto;display:flex;gap:10px;align-items:center;}
 .dark-btn{background:none;border:1px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:5px 14px;font-size:0.8rem;cursor:pointer;font-family:'Source Sans 3',sans-serif;min-height:30px;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
 .dark-btn:hover{background:rgba(255,255,255,0.1);}
@@ -162,7 +161,7 @@ footer{text-align:center;padding:16px;font-size:0.75rem;color:var(--muted);borde
 footer a{color:var(--gold-text);text-decoration:none;}
 footer a:hover{text-decoration:underline;}   /* the only hover feedback the footer links had was the cursor; underline is the chrome pages' link idiom (theme-proof, no token) */
 
-@media (max-width:600px){header{padding:18px 20px;}header h1{font-size:1.4rem;}}
+@media (max-width:600px){header{padding:12px 20px;}}
 /* Footer links are the page's smallest tap targets (12-15px line boxes ~19px apart —
    under the WCAG 2.5.8 24px floor with no qualifying spacing). inline-block + block
    padding grows each link's BOX to >=24px; prose flow and wrapping are unaffected. */
@@ -225,7 +224,6 @@ header{--bl-row:160px;}   /* the lockup, its divider and the header's gap: what 
 <header>
   <div>
     <h1 class="brand-lockup"><a href="/" aria-label="IvritSuite home page" data-i18n-aria-label="shared.header.logo_home"><img class="bl-img bl-screen" src="/brand/ivritsuite-lockup-english-dark.svg" alt="IvritSuite" width="166" height="50"><img class="bl-img bl-print" src="/brand/ivritsuite-lockup-english.svg" alt="" width="166" height="50"></a></h1>
-    <p data-i18n="notfound.header.tagline">Tools for Hebrew literacy instruction</p>
   </div>
   <div class="hright">
     <div data-i18n-switcher></div>
