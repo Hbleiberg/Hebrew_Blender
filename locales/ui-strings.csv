@@ -3878,6 +3878,7 @@ shared.footer.github,GitHub,GitHub,Footer link,do-not-translate; shared
 shared.footer.license_link,CC BY-NC-SA 4.0,CC BY-NC-SA 4.0,Footer license link,do-not-translate; shared
 shared.footer.license_note,Free to use and adapt for non-commercial educational purposes with attribution,חינמי לשימוש ולהתאמה למטרות חינוכיות לא-מסחריות עם קרדיט,Footer license sentence (landing pages),shared
 shared.footer.privacy_link,Privacy Policy,מדיניות פרטיות,Footer link (landing pages),shared
+shared.footer.social_label,IvritSuite on social media,IvritSuite ברשתות החברתיות,"Footer: aria-label of the group of social links (Instagram, Facebook, Threads); the platform names themselves are brand names, not translated",shared
 shared.footer.terms_link,Terms of Use,תנאי שימוש,Footer link (landing pages),shared (HE REVIEW)
 shared.fullscreen.enter_title,Present fullscreen,מצב מסך מלא,Fullscreen button title (enter),shared by all 7 tools with one value everywhere; the old note claimed a dictionary variant that no longer exists
 shared.fullscreen.exit_title,Exit fullscreen,צא ממסך מלא,Fullscreen button title (exit),shared

@@ -2538,6 +2538,12 @@ body.dark .hi-sun{display:inline-block;}
 header{--bl-row:160px;}   /* the lockup, its divider and the header's gap: what a page's title-row rule leaves beside the title */
 @media (max-width:600px){.bl-img{height:var(--lockup-h-sm,32px);}header{--bl-row:140px;}}
 @media print{.bl-screen{display:none !important;}.bl-print{display:block !important;}.bl-div{border-inline-end-color:#c5ccd8;}}
+/* The footer's social links (docs/reference/shared-components.md → Footer social links): each platform's mark beside its
+   name, the last row of every footer (inline among the Font Maker's one-row credits, .is-inline); the ink is the
+   page's own footer link colour, and the page's 5px link padding keeps each a 24px target. */
+.footer-social{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:0 18px;margin-block-start:6px;}
+.footer-social a{display:inline-flex;align-items:center;gap:5px;}
+.footer-social.is-inline{display:inline-flex;margin-block-start:0;gap:0 12px;}
 /* ═══ end header-icons CSS ═══ */
 
 /* ═══ holiday-icons CSS ═══ shared block, byte-identical on: classroom_dashboard, holiday_guide, parsha_emojis, torah_trainer, the generated holidays/ pages (copied from holiday_guide by scripts/build-holiday-pages.mjs) (docs/reference/shared-components.md → Holiday icons).

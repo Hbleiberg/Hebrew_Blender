@@ -577,6 +577,17 @@ the standard lockup with a navy wordmark, both precached in `sw.js`.
   title there), and the flash cards' grid header has no title column to squeeze. Re-measure a page's title row
   whenever its title, its tagline or a header control changes width.
 
+### Footer social links (every page with a footer)
+IvritSuite's Instagram, Facebook and Threads accounts are the last row of every footer: a `.footer-social` group
+(`role="group"`, named by `shared.footer.social_label`) of three links that open in a new tab, each the platform's mark
+(drawn for this suite in the header icons' outline style, `.hi`, no third-party icon set) beside its name. The names are
+brand names, pinned English like the credits (`dir="ltr" lang="en"`, never a key). The row's CSS rides inside the
+header-icons CSS block; the ink is each page's own footer link colour, and a page that styles its footer links inline
+(the flash cards, the generator) restates that look for the row in one page rule. The Font Maker's footer is one compact
+row by design, so there the group sits inline among its credits (`.footer-social.is-inline`). The generated `parsha/`
+and `holidays/` pages take the row from their generators' templates. An account address changes in every footer and
+both templates at once.
+
 ### The header's wrap gate (every page)
 Each page lets its header wrap onto a second row only below a `max-width` that is that page's **measured
 overflow ceiling** (its comment names the number): the widest width at which the one-row header still
