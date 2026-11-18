@@ -161,6 +161,17 @@ html[lang="he"] .fc-back-q, html[lang="he"] .fc-skip-header, html[lang="he"] .sh
 body.dark .hi-moon{display:none;}
 body.dark .hi-sun{display:inline-block;}
 [dir="rtl"] .hi-arrow{transform:scaleX(-1);}
+/* The brand lockup leads every header (docs/reference/shared-components.md → Header lockup): the cube and the
+   IvritSuite wordmark as drawn for the navy bar (brand/ivritsuite-lockup-english-dark.svg) — the home page's and the
+   404's <h1>, a link home before the page's own title everywhere else (.bl-div draws the divider between them).
+   Every page prints economy, so paper drops the navy bar: print swaps in the standard lockup (navy wordmark). */
+.brand-lockup{display:flex;align-items:center;flex-shrink:0;margin:0;line-height:0;text-decoration:none;}
+.brand-lockup a{display:block;}
+.bl-div{padding-inline-end:14px;border-inline-end:1px solid rgba(253,248,239,0.3);}
+.bl-img{display:block;height:var(--lockup-h,38px);width:auto;max-width:none;}
+.bl-print{display:none;}
+@media (max-width:600px){.bl-img{height:var(--lockup-h-sm,32px);}}
+@media print{.bl-screen{display:none !important;}.bl-print{display:block !important;}.bl-div{border-inline-end-color:#c5ccd8;}}
 /* ═══ end header-icons CSS ═══ */
 </style>
 <script>
@@ -434,7 +445,7 @@ input, select, textarea, button { font-family: inherit; color: inherit; }
   background: var(--navy);
   color: var(--white);
   display: grid;
-  grid-template-columns: 44px 1fr auto;
+  grid-template-columns: auto 44px 1fr auto;   /* the brand lockup, Home, the title, the controls */
   align-items: center;
   gap: 8px;
   padding: 10px 14px;
@@ -1731,6 +1742,7 @@ html[lang="he"] .beta-tag { letter-spacing: normal; text-transform: none; }   /*
 <body><a class="skip-link" href="#mainContent" data-i18n="flashcards.a11y.skip_to_cards">Skip to the cards</a>
 <!-- ============== HEADER ============== -->
 <header class="app-header">
+  <a class="brand-lockup bl-div" href="/" aria-label="IvritSuite home page" data-i18n-aria-label="shared.header.logo_home"><img class="bl-img bl-screen" src="/brand/ivritsuite-lockup-english-dark.svg" alt="IvritSuite" width="126" height="38"><img class="bl-img bl-print" src="/brand/ivritsuite-lockup-english.svg" alt="" width="126" height="38"></a>
   <a href="/" class="h-btn" id="homeBtn" title="Home" aria-label="Home" data-i18n-title="flashcards.header.home_label" data-i18n-aria-label="flashcards.header.home_label"><svg class="hi hi-arrow dir-arrow" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/></svg></a>
   <h1 data-i18n="flashcards.header.h1">Hebrew Flash Cards for Reading Practice</h1>
   <div class="h-right">

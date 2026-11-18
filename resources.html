@@ -151,6 +151,17 @@ html[lang="he"] footer [style*="letter-spacing:0.08em"] { letter-spacing: normal
 body.dark .hi-moon{display:none;}
 body.dark .hi-sun{display:inline-block;}
 [dir="rtl"] .hi-arrow{transform:scaleX(-1);}
+/* The brand lockup leads every header (docs/reference/shared-components.md → Header lockup): the cube and the
+   IvritSuite wordmark as drawn for the navy bar (brand/ivritsuite-lockup-english-dark.svg) — the home page's and the
+   404's <h1>, a link home before the page's own title everywhere else (.bl-div draws the divider between them).
+   Every page prints economy, so paper drops the navy bar: print swaps in the standard lockup (navy wordmark). */
+.brand-lockup{display:flex;align-items:center;flex-shrink:0;margin:0;line-height:0;text-decoration:none;}
+.brand-lockup a{display:block;}
+.bl-div{padding-inline-end:14px;border-inline-end:1px solid rgba(253,248,239,0.3);}
+.bl-img{display:block;height:var(--lockup-h,38px);width:auto;max-width:none;}
+.bl-print{display:none;}
+@media (max-width:600px){.bl-img{height:var(--lockup-h-sm,32px);}}
+@media print{.bl-screen{display:none !important;}.bl-print{display:block !important;}.bl-div{border-inline-end-color:#c5ccd8;}}
 /* ═══ end header-icons CSS ═══ */
 </style>
 <script>(function(){try{var s=localStorage.getItem('hebrewBlender_darkMode');if(s==='1'||(s===null&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark-early');}}catch(e){}})()</script>
@@ -189,7 +200,6 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--
 }
 .skip-link:focus { top:0; outline:2px solid var(--focus-ring); outline-offset:2px; }
 header{background:var(--navy);color:#fff;padding:16px 32px;display:flex;align-items:center;gap:14px;border-bottom:4px solid var(--gold);}
-header .star{font-size:28px;color:var(--gold);flex-shrink:0;}
 header h1{font-family:'Libre Baskerville',serif;font-size:1.5rem;letter-spacing:0.01em;}
 header p{font-size:0.82rem;color:var(--gold-light);margin-top:2px;}
 header .hright{margin-inline-start:auto;display:flex;align-items:center;gap:8px;}
@@ -527,7 +537,7 @@ body.dark #fontToast{background:#2a4070;}
 </head>
 <body><a class="skip-link" href="#mainContent" data-i18n="resources.a11y.skip_to_resources">Skip to the resources</a>
 <header>
-  <span class="star" aria-hidden="true">✡︎</span>
+  <a class="brand-lockup bl-div" href="/" aria-label="IvritSuite home page" data-i18n-aria-label="shared.header.logo_home"><img class="bl-img bl-screen" src="/brand/ivritsuite-lockup-english-dark.svg" alt="IvritSuite" width="126" height="38"><img class="bl-img bl-print" src="/brand/ivritsuite-lockup-english.svg" alt="" width="126" height="38"></a>
   <div>
     <h1 data-i18n="resources.header.title">Teaching Resources</h1>
     <p data-i18n="resources.header.tagline">Hebrew literacy tools and references</p>

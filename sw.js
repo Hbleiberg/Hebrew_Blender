@@ -51,6 +51,8 @@ const CORE_ASSETS = [
   '/locales/en.json',
   '/locales/he.json',
   '/favicon.svg',
+  '/brand/ivritsuite-lockup-english-dark.svg',
+  '/brand/ivritsuite-lockup-english.svg',
   '/apple-touch-icon.png',
   '/icon-192.png',
   '/icon-512.png',

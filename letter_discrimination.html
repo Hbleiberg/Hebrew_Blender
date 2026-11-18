@@ -44,6 +44,17 @@ footer a { display: inline-block; padding-block: 5px; }
 body.dark .hi-moon{display:none;}
 body.dark .hi-sun{display:inline-block;}
 [dir="rtl"] .hi-arrow{transform:scaleX(-1);}
+/* The brand lockup leads every header (docs/reference/shared-components.md → Header lockup): the cube and the
+   IvritSuite wordmark as drawn for the navy bar (brand/ivritsuite-lockup-english-dark.svg) — the home page's and the
+   404's <h1>, a link home before the page's own title everywhere else (.bl-div draws the divider between them).
+   Every page prints economy, so paper drops the navy bar: print swaps in the standard lockup (navy wordmark). */
+.brand-lockup{display:flex;align-items:center;flex-shrink:0;margin:0;line-height:0;text-decoration:none;}
+.brand-lockup a{display:block;}
+.bl-div{padding-inline-end:14px;border-inline-end:1px solid rgba(253,248,239,0.3);}
+.bl-img{display:block;height:var(--lockup-h,38px);width:auto;max-width:none;}
+.bl-print{display:none;}
+@media (max-width:600px){.bl-img{height:var(--lockup-h-sm,32px);}}
+@media print{.bl-screen{display:none !important;}.bl-print{display:block !important;}.bl-div{border-inline-end-color:#c5ccd8;}}
 /* ═══ end header-icons CSS ═══ */
 </style>
 <!-- Early dark mode (avoid flash) -->
@@ -98,7 +109,6 @@ header {
   border-bottom:4px solid var(--gold); flex-shrink:0;
 }
 body.dark header { background:var(--navy-deep); }
-.star { font-size:28px; color:var(--gold); flex-shrink:0; }
 .htitle { flex:1; min-width:0; }
 header h1 { font-family:'Libre Baskerville',serif; font-size:1.35rem; color:#fff; line-height:1.2; }
 header p { font-size:0.78rem; color:var(--gold-light); margin-top:2px; }
@@ -256,7 +266,7 @@ footer a { color:var(--gold-text); }
 }
 @media (max-width: 560px) {
   header h1 { font-size:1rem; }
-  .star, header .hbtn[href="/"] .hi-lbl { display:none; }
+  header .hbtn[href="/"] .hi-lbl { display:none; }
   .ld-stage { flex-direction:column; align-items:stretch; }
   .ld-gridwrap { max-width:none; }
   .ld-side { flex-basis:auto; }
@@ -278,7 +288,7 @@ footer a { color:var(--gold-text); }
 <body>
 <a class="skip-link" href="#ldMain" data-i18n="letterdisc.a11y.skip_to_main">Skip to the activity</a>
 <header>
-  <div class="star" aria-hidden="true">✡︎</div>
+  <a class="brand-lockup bl-div" href="/" aria-label="IvritSuite home page" data-i18n-aria-label="shared.header.logo_home"><img class="bl-img bl-screen" src="/brand/ivritsuite-lockup-english-dark.svg" alt="IvritSuite" width="126" height="38"><img class="bl-img bl-print" src="/brand/ivritsuite-lockup-english.svg" alt="" width="126" height="38"></a>
   <div class="htitle">
     <h1 data-i18n="letterdisc.header.title">Letter Discrimination</h1>
     <p data-i18n="letterdisc.header.subtitle">A research prototype — color look-alike Hebrew letters by the key, one font per round.</p>

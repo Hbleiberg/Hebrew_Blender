@@ -509,7 +509,7 @@ from `parsha_emojis` by `scripts/build-parsha-pages.mjs` and from `holiday_guide
   teacher projects on the board, the flash cards' ↺ flips a card rather than resetting anything, the resources
   directory's category chips (🖨️ Printables, 🇮🇱 Hebrew…) are one emoji set the whole listing shares, the
   generator's printed Caller Sheet is worksheet output, the Torah Trainer's 💡 tip toast, its ✦ aliyah
-  divider and the ✡︎ star on its header and empty card are ornaments rather than controls, and prose that
+  divider and the ✡︎ star on its empty card are ornaments rather than controls, and prose that
   mentions a control ("Tap ▶ to hear the melody") stays prose — leave all of them alone.
 - **The Font Maker's two button helpers take an optional icon**: `fmActBtn(id, key, icon)` and a modal button
   descriptor's `icon` field, which makes `askModal` write `innerHTML` instead of `textContent`.
@@ -545,6 +545,24 @@ from `parsha_emojis` by `scripts/build-parsha-pages.mjs` and from `holiday_guide
 Paste the CSS block, copy the snippets from any carrier (never redraw them), put labels in `.hi-lbl` spans,
 add the page to the carrier list in every block's header comment, sha-verify, and check the header headless
 with the Playwright recipe in light + dark and EN + HE (the arrow must mirror, the toggle must swap moon for sun).
+
+### Header lockup (every page with the header)
+The IvritSuite lockup — the cube and the wordmark — leads every header in place of the old ✡︎ star. Its CSS rides
+inside the header-icons CSS block (so the generated `parsha/` and `holidays/` pages get it with the block); the files
+are `brand/ivritsuite-lockup-english-dark.svg`, drawn for a dark ground, and `brand/ivritsuite-lockup-english.svg`,
+the standard lockup with a navy wordmark, both precached in `sw.js`.
+- **The header is navy in both themes, so the screen always shows the dark-ground lockup.** Every page prints
+  `economy`, so paper drops the navy bar: the markup carries both images (`.bl-screen`, `.bl-print`) and the block's
+  print rule swaps them, the print copy with an empty `alt`.
+- **The home page's heading is the lockup** (`<h1 class="brand-lockup">`, `alt="IvritSuite"`; the brand name is the
+  same in both languages, so the alt has no key) and the 404's is the same heading with a link home inside it. **On
+  every other page the lockup is a link home** before the page's own title, `.bl-div` drawing the divider between them,
+  named by `shared.header.logo_home` (`data-i18n-aria-label`); the page's Home or Back button stays. A page title no
+  longer repeats the brand ("Contact & Support", not "IvritSuite — Contact & Support").
+- **Size is a custom property:** `--lockup-h` (38px) and `--lockup-h-sm` (32px under 600px); the home page and the 404
+  set 50 / 42 on their heading. The `<img>`'s `width`/`height` attributes keep the aspect ratio before the file loads.
+- The lockup never shrinks (`flex-shrink:0`), so it moves every page's wrap gate: a change to its size or to the
+  divider is a header-control change (below).
 
 ### The header's wrap gate (every page)
 Each page lets its header wrap onto a second row only below a `max-width` that is that page's **measured

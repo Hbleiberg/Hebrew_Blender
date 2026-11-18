@@ -166,7 +166,6 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--
 .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;}
 header{background:var(--navy);color:#fff;padding:22px 40px;display:flex;align-items:center;gap:16px;border-bottom:4px solid var(--gold);}
 body.dark header{background:var(--navy-deep);}
-header .star{font-size:32px;color:var(--gold);}
 header .brand-title{font-family:'Libre Baskerville',serif;font-size:1.5rem;letter-spacing:0.01em;}
 header p{font-size:0.85rem;color:var(--gold-light);margin-top:3px;}
 header .hright{margin-inline-start:auto;display:flex;gap:10px;align-items:center;flex-shrink:0;}
@@ -270,6 +269,17 @@ html[lang="he"] footer [style*="letter-spacing:0.08em"]{letter-spacing:normal !i
 body.dark .hi-moon{display:none;}
 body.dark .hi-sun{display:inline-block;}
 [dir="rtl"] .hi-arrow{transform:scaleX(-1);}
+/* The brand lockup leads every header (docs/reference/shared-components.md → Header lockup): the cube and the
+   IvritSuite wordmark as drawn for the navy bar (brand/ivritsuite-lockup-english-dark.svg) — the home page's and the
+   404's <h1>, a link home before the page's own title everywhere else (.bl-div draws the divider between them).
+   Every page prints economy, so paper drops the navy bar: print swaps in the standard lockup (navy wordmark). */
+.brand-lockup{display:flex;align-items:center;flex-shrink:0;margin:0;line-height:0;text-decoration:none;}
+.brand-lockup a{display:block;}
+.bl-div{padding-inline-end:14px;border-inline-end:1px solid rgba(253,248,239,0.3);}
+.bl-img{display:block;height:var(--lockup-h,38px);width:auto;max-width:none;}
+.bl-print{display:none;}
+@media (max-width:600px){.bl-img{height:var(--lockup-h-sm,32px);}}
+@media print{.bl-screen{display:none !important;}.bl-print{display:block !important;}.bl-div{border-inline-end-color:#c5ccd8;}}
 /* ═══ end header-icons CSS ═══ */
 
 /* ═══ holiday-icons CSS ═══ shared block, byte-identical on: classroom_dashboard, holiday_guide, parsha_emojis, torah_trainer, the generated holidays/ pages (copied from holiday_guide by scripts/build-holiday-pages.mjs) (docs/reference/shared-components.md → Holiday icons).
@@ -300,9 +310,9 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
 <body>
 <a class="skip-link" href="#hpMain" data-i18n="holidaypage.a11y.skip">Skip to the coloring page</a>
 <header>
-  <span class="star" aria-hidden="true">✡︎</span>
+  <a class="brand-lockup bl-div" href="/" aria-label="IvritSuite home page" data-i18n-aria-label="shared.header.logo_home"><img class="bl-img bl-screen" src="/brand/ivritsuite-lockup-english-dark.svg" alt="IvritSuite" width="126" height="38"><img class="bl-img bl-print" src="/brand/ivritsuite-lockup-english.svg" alt="" width="126" height="38"></a>
   <div>
-    <div class="brand-title" data-i18n="holidaypage.header.title">IvritSuite — Holiday Coloring Pages</div>
+    <div class="brand-title" data-i18n="holidaypage.header.title">Holiday Coloring Pages</div>
     <p data-i18n="holidaypage.header.tagline">Free coloring pages for the Jewish holidays</p>
   </div>
   <div class="hright">

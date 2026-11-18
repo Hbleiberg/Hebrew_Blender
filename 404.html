@@ -111,7 +111,7 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--
 }
 .skip-link:focus { top:0; outline:2px solid var(--focus-ring); outline-offset:2px; }
 header{background:var(--navy);color:#fff;padding:22px 40px;display:flex;align-items:center;gap:16px;border-bottom:4px solid var(--gold);}
-header .star{font-size:32px;color:var(--gold);flex-shrink:0;}
+header .brand-lockup{--lockup-h:50px;--lockup-h-sm:42px;margin-bottom:4px;}
 header h1{font-family:'Libre Baskerville',serif;font-size:1.8rem;letter-spacing:0.01em;}
 header p{font-size:0.88rem;color:var(--gold-light);margin-top:3px;}
 header .hright{margin-inline-start:auto;display:flex;gap:10px;align-items:center;}
@@ -200,14 +200,24 @@ footer a { display: inline-block; padding-block: 5px; }
 body.dark .hi-moon{display:none;}
 body.dark .hi-sun{display:inline-block;}
 [dir="rtl"] .hi-arrow{transform:scaleX(-1);}
+/* The brand lockup leads every header (docs/reference/shared-components.md → Header lockup): the cube and the
+   IvritSuite wordmark as drawn for the navy bar (brand/ivritsuite-lockup-english-dark.svg) — the home page's and the
+   404's <h1>, a link home before the page's own title everywhere else (.bl-div draws the divider between them).
+   Every page prints economy, so paper drops the navy bar: print swaps in the standard lockup (navy wordmark). */
+.brand-lockup{display:flex;align-items:center;flex-shrink:0;margin:0;line-height:0;text-decoration:none;}
+.brand-lockup a{display:block;}
+.bl-div{padding-inline-end:14px;border-inline-end:1px solid rgba(253,248,239,0.3);}
+.bl-img{display:block;height:var(--lockup-h,38px);width:auto;max-width:none;}
+.bl-print{display:none;}
+@media (max-width:600px){.bl-img{height:var(--lockup-h-sm,32px);}}
+@media print{.bl-screen{display:none !important;}.bl-print{display:block !important;}.bl-div{border-inline-end-color:#c5ccd8;}}
 /* ═══ end header-icons CSS ═══ */
 </style>
 </head>
 <body><a class="skip-link" href="#mainContent" data-i18n="notfound.a11y.skip_to_links">Skip to the links</a>
 <header>
-  <span class="star" aria-hidden="true">✡︎</span>
   <div>
-    <h1 data-i18n="notfound.header.brand">IvritSuite</h1>
+    <h1 class="brand-lockup"><a href="/" aria-label="IvritSuite home page" data-i18n-aria-label="shared.header.logo_home"><img class="bl-img bl-screen" src="/brand/ivritsuite-lockup-english-dark.svg" alt="IvritSuite" width="166" height="50"><img class="bl-img bl-print" src="/brand/ivritsuite-lockup-english.svg" alt="" width="166" height="50"></a></h1>
     <p data-i18n="notfound.header.tagline">Tools for Hebrew literacy instruction</p>
   </div>
   <div class="hright">

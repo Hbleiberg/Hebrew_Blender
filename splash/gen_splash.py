@@ -6,17 +6,20 @@ To bump the version shown on the splash screen, edit VERSION below and run:
     python3 splash/gen_splash.py
 
 Requires Python 3 + Pillow (`pip install Pillow`). Fonts are bundled in
-splash/fonts/ so this renders offline. It (re)writes:
+splash/fonts/ so this renders offline. The logo is two committed rasters of the
+brand lockup drawn for dark grounds (brand/ivritsuite-lockup-english-dark.svg):
+splash/logo-cube.png and splash/logo-wordmark.png. When the lockup changes,
+re-render them first with `node scripts/render-splash-logo.mjs` (the one step
+that needs a browser). It (re)writes:
   - splash/splash-<w>x<h>.png        one image per unique device resolution
   - splash/apple-startup-links.html  the <link rel="apple-touch-startup-image">
                                      block that lives in index.html's <head>
 
 Android draws its own splash from manifest.webmanifest, so no image is needed there.
 """
-import math
 import os
 
-from PIL import Image, ImageDraw, ImageFont, ImageChops
+from PIL import Image, ImageDraw, ImageFont
 
 # ---------------------------------------------------------------------------
 VERSION = "1.2"          # <<< shown as "v{VERSION}" at the bottom of the splash
@@ -24,17 +27,16 @@ VERSION = "1.2"          # <<< shown as "v{VERSION}" at the bottom of the splash
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 FONT_DIR = os.path.join(HERE, "fonts")
-FONT_BOLD = os.path.join(FONT_DIR, "LibreBaskerville-Bold.ttf")
 FONT_REG = os.path.join(FONT_DIR, "LibreBaskerville-Regular.ttf")
 FALLBACK = "/usr/share/fonts/truetype/liberation/LiberationSerif-Regular.ttf"
 
 NAVY_TOP = (26, 39, 68)       # #1a2744
 NAVY_BOT = (13, 18, 32)       # #0d1220
-GOLD = (201, 146, 42)         # #c9922a
 GOLD_LT = (240, 208, 128)     # #f0d080
-CREAM = (253, 248, 239)       # #fdf8ef
 CREAM_MUTED = (208, 200, 186)
 VERSION_MUTED = (138, 148, 168)
+LOGO_CUBE = os.path.join(HERE, "logo-cube.png")          # square, the cube centred
+LOGO_WORD = os.path.join(HERE, "logo-wordmark.png")      # the wordmark, tight
 
 # (css_width, css_height, device_pixel_ratio, label) — portrait orientation
 DEVICES = [
@@ -80,39 +82,9 @@ def render(out_w, out_h):
             round(NAVY_TOP[1] + (NAVY_BOT[1] - NAVY_TOP[1]) * t),
             round(NAVY_TOP[2] + (NAVY_BOT[2] - NAVY_TOP[2]) * t)))
 
-    # Bold Star of David: two overlapping thick triangle frames (matches the app icon)
-    cx, cy = w // 2, int(h * 0.40)
-    R = int(w * 0.165)
-    K = 0.70  # inner/outer radius ratio -> band thickness
-
-    def tri(up, radius):
-        base = -90 if up else 90
-        return [(cx + radius * math.cos(math.radians(base + k * 120)),
-                 cy + radius * math.sin(math.radians(base + k * 120))) for k in range(3)]
-
-    def frame_mask(up):
-        m = Image.new("L", (w, h), 0)
-        d = ImageDraw.Draw(m)
-        d.polygon(tri(up, R), fill=255)
-        d.polygon(tri(up, R * K), fill=0)
-        return m
-
-    star = ImageChops.lighter(frame_mask(True), frame_mask(False))
-    img.paste(Image.new("RGBA", (w, h), GOLD + (255,)), (0, 0), star)
-
     def center(top_y, text, fnt, fill):
         b = draw.textbbox((0, 0), text, font=fnt)
         draw.text(((w - (b[2] - b[0])) // 2 - b[0], top_y - b[1]), text, font=fnt, fill=fill)
-
-    # Wordmark (shrink to fit width)
-    word = "IvritSuite"
-    ws = int(w * 0.135)
-    while ws > 10:
-        wf = font(FONT_BOLD, ws)
-        if draw.textbbox((0, 0), word, font=wf)[2] <= w * 0.78:
-            break
-        ws -= 2
-    center(cy + R + int(h * 0.030), word, wf, CREAM)
 
     # Footer: credit, license, version
     ff = font(FONT_REG, int(w * 0.034))
@@ -121,7 +93,23 @@ def render(out_w, out_h):
     center(int(h * 0.884), "CC BY-NC-SA 4.0", ff, GOLD_LT)
     center(int(h * 0.920), "v" + VERSION, vf, VERSION_MUTED)
 
-    return img.resize((out_w, out_h), Image.LANCZOS)
+    img = img.resize((out_w, out_h), Image.LANCZOS)
+
+    # The brand lockup, stacked: the cube (its navy face reads on the navy ground through its cream
+    # outline, as the dark-ground lockup is drawn) and the IvritSuite wordmark under it. Pasted at the
+    # final size, so the large rasters are resampled once and never enlarged.
+    cube_src = Image.open(LOGO_CUBE).convert("RGBA")
+    word_src = Image.open(LOGO_WORD).convert("RGBA")
+    cx, cy = out_w // 2, int(out_h * 0.40)
+    cs = int(min(out_w * 0.40, out_h * 0.25))            # the cube raster's square (the cube ~93% of it); the
+                                                          # height cap keeps the wider iPad screens in proportion
+    cube = cube_src.resize((cs, cs), Image.LANCZOS)
+    img.paste(cube, (cx - cs // 2, cy - cs // 2), cube)
+    ww = int(cs * 1.55)                                   # the wordmark's width
+    wh = round(ww * word_src.height / word_src.width)
+    word = word_src.resize((ww, wh), Image.LANCZOS)
+    img.paste(word, (cx - ww // 2, cy + cs // 2 + int(out_h * 0.026)), word)
+    return img
 
 
 def main():

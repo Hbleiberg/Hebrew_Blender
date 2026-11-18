@@ -100,7 +100,6 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--
 .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;}
 header{background:var(--navy);color:#fff;padding:22px 40px;display:flex;align-items:center;gap:16px;border-bottom:4px solid var(--gold);}
 body.dark header{background:var(--navy-deep);}
-header .star{font-size:32px;color:var(--gold);}
 header .brand-title{font-family:'Libre Baskerville',serif;font-size:1.5rem;letter-spacing:0.01em;}
 header p{font-size:0.85rem;color:var(--gold-light);margin-top:3px;}
 header .hright{margin-inline-start:auto;display:flex;gap:10px;align-items:center;flex-shrink:0;}
@@ -288,9 +287,9 @@ ${CSS}
 <body>
 <a class="skip-link" href="#ppMain" data-i18n="parshapage.a11y.skip">Skip to the coloring page</a>
 <header>
-  <span class="star" aria-hidden="true">✡︎</span>
+  <a class="brand-lockup bl-div" href="/" aria-label="IvritSuite home page" data-i18n-aria-label="shared.header.logo_home"><img class="bl-img bl-screen" src="/brand/ivritsuite-lockup-english-dark.svg" alt="IvritSuite" width="126" height="38"><img class="bl-img bl-print" src="/brand/ivritsuite-lockup-english.svg" alt="" width="126" height="38"></a>
   <div>
-    <div class="brand-title" data-i18n="parshapage.header.title">IvritSuite — Parsha Coloring Pages</div>
+    <div class="brand-title" data-i18n="parshapage.header.title">Parsha Coloring Pages</div>
     <p data-i18n="parshapage.header.tagline">A free coloring page for every weekly Torah portion</p>
   </div>
   <div class="hright">
