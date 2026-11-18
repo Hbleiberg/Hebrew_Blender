@@ -370,7 +370,8 @@ than 100px, and keeps exactly `--rw-cols` wherever they fit; print is not screen
 ## Blend grids (`.blends-grid`)
 
 A blend sheet's builder sets its columns inline (`autoCols`), and where its cells cannot shrink below their content
-(Inverse's write box, Gematria, Name the Letter) calls `blendGridFit(grid, cols, floor)`, which writes `--bg-cols` and
+(Inverse's write box, Gematria and the Real Words Gematria answer key, Name the Letter) calls
+`blendGridFit(grid, cols, floor)`, which writes `--bg-cols` and
 `--bg-floor`: on screen only, such a grid takes fewer columns on a narrow sheet, none narrower than the floor, and
 exactly `--bg-cols` wherever they fit. Landscape Print is ten columns on paper (the print block). On screen, and in
 Export PDF's capture — screen media, with `#worksheet` pinned at its 760px — `body.landscape-mode .blends-grid` takes

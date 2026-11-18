@@ -10528,6 +10528,10 @@ function renderGematriaSheet(ws, items, showTranslit = false, showTranslation = 
     keyGrid.className = 'blends-grid';
     keyGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
     keyGrid.style.direction = 'rtl';
+    // The key's cells hold the word with its reading, gloss and value, so they cannot shrink below their content: without a
+    // floor its 1fr columns grew past a narrow sheet (off the left edge in the English UI, out of reach). Widest cells over
+    // the corpus: p99 96px on a phone, 124 at 800, where any floor from 97 up gives two 133px columns.
+    blendGridFit(keyGrid, cols, 100);
     items.forEach((b, idx) => {
       const val = calcGematria(b.hebrewDisplay);
       const cell = document.createElement('div');
