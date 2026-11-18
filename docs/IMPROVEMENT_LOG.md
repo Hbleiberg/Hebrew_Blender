@@ -14,8 +14,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P2 (**S567 P; S573 P root-caused — a shared module, not small**) | js/ivrit-saves.js | **A page write made after a hydration planned its uploads, before it ends, is not sent, and the tab's next sync downloads the account's copy over it**: the hook is not armed yet, and step 4's `snapshotNames` takes the post-write hash as the tab's seen view, so `actionFor` reads it as another tab's write. …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] P3 (**NEW S656 C**) | hebrew_dictionary.html | **Bulk Copy's Select page, Select all matching and Clear change "N selected" with nothing spoken**: `#bulkCount` is not a live region and the three buttons leave `#a11yStatus` untouched (13,080 words picked in silence); announce the count from the three. | found S656
-
 - [ ] P3 (**NEW S644 H — not small**) | Hebrew_Font_Maker.html | **Below 1181px the fullscreen Draw canvas window (`100vh − 300px`) clips its drawing**: at 1024×768 the baseline sits 16px under its edge. | found S644
 
 - [ ] P3 (**NEW S593 G — verify on a Mac first**) | Hebrew_Font_Maker.html | **Every font named only in Hebrew exports with nameID 6 `MyHebrewFont-Regular` (and `MyHebrewFont.ttf`)**: two such fonts share one PostScript name, which Font Book and Mac apps key fonts by; a stem from the name (a short hash or a transliteration) would keep them apart. | found S593
@@ -37,6 +35,10 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P3 (**NEW S436 M — layout, gate 3/4**) | hebrew_blend_generator.html | **The bingo preview is unreadable in a narrow window**: at 800px a 4-up card is ~120px and its blends overrun their cells (print/PDF fine since `141aa8f7`). | found S436
 
 - [ ] P3 (**S410 D; S480 re-measured; `content-visibility` reverted**) | Hebrew_Font_Maker.html | **The Spacing tab rebuilds all kerning rows on each show, pair click, add and delete**: 2,000 pairs 213–251ms @1×, 1.0–1.2s @4× (S565: 302–502 @1×). Next: a pair click rebuilds the editor only (findings S480). | found S410
+
+- [ ] P3 (**NEW S657 N — do first; pattern `overflow-past-a-scrollers-start-edge`**) | hebrew_blend_generator.html | **The Real Words Gematria answer key has no narrow-sheet floor** (`3ab8b385` gave its student grid `blendGridFit`, not the key): the right-to-left grid runs off the sheet's left edge, out of reach in the English UI (28–104 px on phones, 5–27 at 800). Corpus widths: p95 79 / 97 px …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] P3 (**NEW S657 N — after the key's floor; pattern `overflow-past-a-scrollers-start-edge`**) | hebrew_blend_generator.html | **In the Hebrew UI a left-to-right grid wider than its window runs off the right edge, out of reach**: Word Search 15 × 15 71–163 px on phones and 96 at 800, 18 × 18 161–253 / 186, the Bingo caller list 3–139 / 25–32. Fix: `.main-content { direction: ltr }`, the status …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P3 (**NEW S648 G — what `6a06d1fe`'s columns leave**) | hebrew_blend_generator.html | **Real Words in landscape still runs on where cards are tall or the sheet is not a card grid**: Reverse's long definitions (HE 4 sheets for 2), the Word Search key's and the Crossword sheet's word banks, Gematria by its words, a long-definition key (Reading 3 for 2), Letter and A4 (findings S648). | found …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -372,6 +374,14 @@ _(none)_
 
 ## Done
 
+- [x] 2026-11-18 | (S657 close-out) | branch/deploy note | **S657 = N on `hebrew_blend_generator.html` (its 4th; 52 commits since): FOUND 3 (one shape, new pattern `overflow-past-a-scrollers-start-edge`), FIXED 1 (the zoom's start edge), 1 attempted and reverted, 2 P3 logged in the order that avoids a regression; + the dictionary's S656 Bulk Copy P3 FIXED.** Branch …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-18 | `da340a85` | hebrew_dictionary.html, sw.js | (S657, the S656 queue) **Bulk Copy's Select page, Select all matching and Clear speak the new count** through the polite status region | probe `S657-dictionary-bulk-count-is-spoken.mjs`, keyboard only × 4 cells: 16/16 (HEAD 0/16); the theme bridge still opens its window; the S656 probes PASS
+
+- [x] 2026-11-18 | `33d8509b` | hebrew_blend_generator.html, sw.js | (S657 N; pattern `overflow-past-a-scrollers-start-edge`) **Zoomed in, the sheet grows from its top start corner**, so its title and first column stay in reach (146–386 px were out at 1280) | probe `S657-generator-zoom-keeps-its-start-edge.mjs` 16/16 (HEAD 8/16); a saved zoom, a language switch, print and Export PDF = HEAD
+
+- [x] 2026-11-18 | attempted, reverted | hebrew_blend_generator.html | (S657 N) **`.worksheet { min-width: min-content }` on screen** reached every cut grid (0 in 64 cells; print and PDF widths unchanged) but added 8–83 px of sideways scroll to sheets that only spilled into the margin | `regress1.mjs`, 135 view-cells against HEAD; the order that avoids it is in the two P3s
+
 - [x] 2026-11-17 | (S656 close-out) | branch/deploy note | **S656 = C on `hebrew_dictionary.html` (its 4th dedicated C; 27 commits since): FOUND 4, FIXED 2 (the Word List windows' status spoken, the chips' ✕ at 24 px), 1 P3 + 1 P4 logged; + a micro-feature the maintainer asked for (the gematria badge's lookup). Branch `claude/inspiring-hawking-ema04x`, draft PR #409; `sw.js` v1409; deploy after …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-11-17 | `de223003` | hebrew_dictionary.html, ui-strings.csv + locales, sw.js | (S656 micro-feature, gate 1 answered: the maintainer asked for it after a roots site's "tap a number" lookup) **A word window's gematria badge is a button listing every word of that value** (search cleared, other filters kept as chips, Show Gematria Value on, focus on the first result) | …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -410,19 +420,11 @@ _(none)_
 
 - [x] 2026-11-13 | `d56d1f84` | torah_trainer.html, sw.js | (S653 M; pattern contrast-inverted-by-a-hover-or-active-state) **A looping verse's Stop chip and small text stay readable** (the chip was gold on its own gold under the pointer) | `m653/fix1.mjs`: under AA 24/24 on HEAD, 0/24 now …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-11-13 | (S652 close-out) | branch/deploy note | **S652 = P on `classroom_dashboard.html` (its 3rd alone: S421 → S567 → S652; 37 commits to the page since: the six resets' signed-in wording, Bulk preset edit's switches, Schedule Sync's edits reaching the board, the Name Tags class copy, the starter class's slot): all …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-13 | `3b9b592d` | flash_cards.html, ui-strings.csv, sw.js | (S652, the S651 P4) **The progress report names one date when a child's drills share a day** (the one-date wording is chosen by the two dates as printed, not by the drill count) | `h651/s652fix4.mjs`, three children by real drills with the clock moved …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-13 | `7cb3f3a6` | flash_cards.html, sw.js | (S652, the S651 P3) **View Weaknesses opens on the first tab that holds rows** | `h651/s652fix3.mjs`, four children by real drills × 4 cells: blends → Vowels 4 rows (both pages), letter names → Letters 5 rows, words → Other 1 row (the old page: Vowels, "Not enough data …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-13 | `69c7c509` | classroom_dashboard.html, dashboard.md, sw.js | (S652, the S651 P4) **The holiday calendar is asked once at a load, not twice** (`loadHolidayItems()` holds the request; callers in flight share `_holidayLoad`) | `h651/fix3.mjs` with the real 2026–2029 feeds, 12 dated cases × 4 cells: 48 lines and …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-13 | `b22ea1b8` | classroom_dashboard.html, ui-strings.csv + locales, accounts-and-cloud.md, loop-patterns.md, sw.js | (S652 P; pattern account-wide-delete-confirm-without-signed-in-wording) **Signed in, shrinking the schedule cycle and deleting the old daily rows say they reach every device** …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-11-18 | **S657** | iters: 4 | tools: hebrew_blend_generator ×2 (1 reverted), hebrew_dictionary, sw ×2, probes S657 ×2 | patterns fixed: overflow-past-a-scrollers-start-edge ×1 (new) | pass run: N (hebrew_blend_generator, first since S572; FOUND 3, FIXED 1) + the dictionary's S656 Bulk Copy …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - 2026-11-17 | **S656** | iters: 5 | tools: hebrew_dictionary ×3, locales, sw ×3, probes S656 ×2 | patterns fixed: sub-floor touch target ×1 | pass run: C (hebrew_dictionary, first since S571; FOUND 4, FIXED 2) + the gematria lookup micro-feature (asked) | SW: v1406→v1409
 
@@ -462,11 +464,9 @@ _(none)_
 
 - 2026-11-11 | **S638** | iters: 4 | tools: sw ×2, loop probes ×3, ops.md, torah-and-trope.md, loop README | patterns fixed: — | pass run: V (suite, first since S553; 480 commits; FOUND 6, FIXED 3) | SW: v1339→v1341
 
-- 2026-11-09 | **S637** | iters: 5 | tools: name_tags ×2, Hebrew_Font_Maker, trope_tutor, hebrew_blend_generator, sw | patterns fixed: dark-hover-resolves-to-the-rest-colour ×1, RTL-inheritance-on-a-Latin-script-container ×1 | pass run: M (name_tags, first since S552; FOUND 2, FIXED 2) + the S554 …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S656 (2026-11-17):** hebrew_dictionary ×3, locales, sw.js ×3, loop docs, probes S656 ×2 · torah_trainer ×2, flash_cards, locales, torah-and-trope.md ×2, sw.js ×3, loop docs, probe S655
+- **Snapshot S657 (2026-11-18):** hebrew_blend_generator (+1 reverted), hebrew_dictionary, sw.js ×2, loop docs, probes S657 ×2 · hebrew_dictionary ×3, locales, sw.js ×3, loop docs, probes S656 ×2
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -628,7 +628,7 @@ _(none)_
 
 - `aria-disabled-lock-no-handler-checks` | ACTIVE | owner P | det: recipe | last S407 | streak 0
 
-- `text-field-under-16px-zooms-on-ios-focus` | ACTIVE | owner N | det: recipe | last S608 | streak 0
+- `text-field-under-16px-zooms-on-ios-focus` | ACTIVE | owner N | det: recipe | last S657 | streak 1
 
 - `textContent-rewrite-erases-a-control-icon` | ACTIVE | owner K | det: recipe | last S623 | streak 1
 
@@ -712,7 +712,7 @@ _(none)_
 
 - `legibility-destroyed-by-a-second-dimming-layer` | ACTIVE | owner A | det: recipe | last S263 | streak 0 | hits 1
 
-- `fixed-control-positioned-outside-the-viewport` | ACTIVE | owner N | det: recipe | last S648 | streak 0 | hits 6
+- `fixed-control-positioned-outside-the-viewport` | ACTIVE | owner N | det: recipe | last S657 | streak 1 | hits 6
 
 - `executable-javascript-in-a-localization-cell` | ACTIVE | owner A | det: recipe | last S357 | streak 1 | hits 0
 
@@ -738,7 +738,9 @@ _(none)_
 
 - `fixed-columns-crush-a-narrow-sheet` | ACTIVE | owner N | det: scripts/loop/probes/S572-generator-realwords-narrow-cards.mjs | last S572 | streak 0 | hits 1
 
-- `hover-only-affordance-under-a-synthetic-mouse-event` | ACTIVE | owner N | det: recipe | last S595 | streak 4 | hits 1
+- `hover-only-affordance-under-a-synthetic-mouse-event` | ACTIVE | owner N | det: recipe | last S657 | streak 5 | hits 1
+
+- `overflow-past-a-scrollers-start-edge` | ACTIVE | owner N | det: recipe | last S657 | streak 0 | hits 1
 
 - `contrast-inverted-by-a-hover-or-active-state` | ACTIVE | owner C | det: recipe | last S653 | streak 0
 
@@ -826,7 +828,7 @@ _(none)_
 
 - O deslop — AI-design-tell sweep (one surface): SKIP since S403 — the sandbox refuses to execute the third-party detector ("Code from External"); runs again once the maintainer commits a `.claude/settings.json` permission rule for it (`docs/reference/deslop-detector.md`). Last run 2026-09-08 (S346, `flash_cards.html`, 6th O; the S399/S403 refusals are in the archive).
 
-- N mobile & touch-device (one surface): 2026-11-12 (**S647 — 41st N, `trope_tutor.html` (its 4th: S248 → S389 → S562 → S647; 21 commits to the page and `js/trope-staff.js` since: the Year Round [Conservative] melody, the 20 traditions, the Drill's melody menu and its 2 / 3 / 4 answers, the tour's return): 24 views × 16 cells (iPhone SE, 13, 13 sideways, Pixel 7 × EN/HE × light/dark) by real taps …[full text: IMPROVEMENT_ARCHIVE.md]
+- N mobile & touch-device (one surface): 2026-11-18 (**S657 — 42nd N, `hebrew_blend_generator.html` (its 4th: S262 → S434 → S572 → S657; 52 commits since): 34 views × 16 phone cells by real taps (544 loads, plants 26/28, the 2 misses the finding) + a new unreachable-overflow arm on phones and 1280 / 800; arms 2–7. FOUND 3 (pattern `overflow-past-a-scrollers-start-edge`), FIXED 1 (the zoom's start …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - M aesthetics & visual design (one surface): 2026-11-13 (**S653 — 44th M, `torah_trainer.html` (its 3rd: S422 → S568 → S653; 38 commits to the page since): 44 views × 8 cells by real clicks on the real texts (352 loads, plant 352/352), three arms (mid-label breaks, ring against ink, contrast under the pointer). FOUND 8, FIXED 3 + 3 P4 + 2 gates deferred. M-next: generator (S574), then atlas …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -856,4 +858,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-11-08 (**S630 — 41st F, long-build progress (S542's F-next; the affordance's first F): 13 presses that build before they answer, by real clicks with an animation-frame recorder, real PDF libraries from a cache, a held CDN, double presses at raw points. FOUND 2, FIXED 2 (+1 P4). F-next: destructive-action confirms.**)
 
-**Next session (S657):** **Branch `claude/inspiring-hawking-ema04x` (S656, draft PR #409): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1409**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=4dd4383 sw=v1409 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b (main moved since S655: the Holiday Guide, published) ⚑ New pages: the Holiday Guide (`holiday_guide.html` + 17 `holidays/` pages; offers accounts; first N and P by S670) and `letter_discrimination.html` (by S668; no account wiring) — override 4; neither is a surface in `loop-passes.md` / `coverage.mjs` yet. ⚑ Stalest now: N generator (S572), P flash (S573), M generator (S574), G chrome (S575), D atlas (S579), C atlas (S580), A (S581), H atlas (S583). ⚑ Queue: the dictionary's S656 P3 (Bulk Copy's silent count) + P4 (card icons' `aria-hidden`); the dashboard's Bulk open (S655); torah's two S653 P4 (the ring spans three layouts); the S570 staff double draw. ⚑ Awaiting: the Total Torah bar's ▶ and the drawer's tab labels (S653), the starter class (S652). ⚑ E: links vs the host's 8,190 bytes (S651). ⚑ F/A: Hebrew-only wrappers on typed text (S649); save windows whose status line is not live (S656: sweep the other tools). ⚑ G: `leak.mjs`, 6 pages. ⚑ 47 seeds.
+**Next session (S658):** **Branch `claude/inspiring-hawking-ema04x` (S656–S657, draft PR #409): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1411**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=4dd4383 sw=v1411 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ New pages: the Holiday Guide (first N and P by S670) and `letter_discrimination.html` (by S668) — override 4; neither is a surface in `loop-passes.md` / `coverage.mjs` yet. ⚑ Stalest now: P flash (S573), M generator (S574), G chrome (S575), N atlas (S577), D atlas (S579), C atlas (S580), A (S581). ⚑ Queue: the generator's two S657 P3s in their order (the Gematria key's floor, then the Hebrew UI's scroller; findings S657 has the design and the probe to rebuild); the dictionary's S656 P4 (card icons' `aria-hidden`); the dashboard's Bulk open (S655); torah's two S653 P4; the S570 staff double draw. ⚑ Awaiting: the Total Torah bar's ▶ and the drawer's tab labels (S653), the starter class (S652). ⚑ E: links vs the host's 8,190 bytes (S651). ⚑ F/A: Hebrew-only wrappers on typed text (S649); save windows whose status line is not live (S656); overflow past a scroller's start edge on the other sheet pages (S657). ⚑ G: `leak.mjs`, 6 pages. ⚑ 47 seeds.

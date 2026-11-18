@@ -98320,3 +98320,39 @@ _(prior)_ **Next session (S656):** **Branch `claude/adoring-hawking-h59ir2` (S65
 - [x] 2026-11-17 | (S656 close-out) | branch/deploy note | **S656 = C on `hebrew_dictionary.html` (its 4th dedicated C; 27 commits since): FOUND 4, FIXED 2 (the Word List windows' status spoken, the chips' ✕ at 24 px), 1 P3 + 1 P4 logged; + a micro-feature the maintainer asked for (the gematria badge's lookup). Branch `claude/inspiring-hawking-ema04x`, draft PR #409; `sw.js` v1409; deploy after the merge.**
 
 - [x] 2026-11-17 | `de223003` | hebrew_dictionary.html, ui-strings.csv + locales, sw.js | (S656 micro-feature, gate 1 answered: the maintainer asked for it after a roots site's "tap a number" lookup) **A word window's gematria badge is a button listing every word of that value** (search cleared, other filters kept as chips, Show Gematria Value on, focus on the first result) | `S656-dictionary-gematria-badge-finds-its-value.mjs` 28/28 × 4 cells (the previous tree fails every step); 8-cell shots
+
+_(prior)_ **Next session (S657):** **Branch `claude/inspiring-hawking-ema04x` (S656, draft PR #409): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1409**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=4dd4383 sw=v1409 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b (main moved since S655: the Holiday Guide, published) ⚑ New pages: the Holiday Guide (`holiday_guide.html` + 17 `holidays/` pages; offers accounts; first N and P by S670) and `letter_discrimination.html` (by S668; no account wiring) — override 4; neither is a surface in `loop-passes.md` / `coverage.mjs` yet. ⚑ Stalest now: N generator (S572), P flash (S573), M generator (S574), G chrome (S575), D atlas (S579), C atlas (S580), A (S581), H atlas (S583). ⚑ Queue: the dictionary's S656 P3 (Bulk Copy's silent count) + P4 (card icons' `aria-hidden`); the dashboard's Bulk open (S655); torah's two S653 P4 (the ring spans three layouts); the S570 staff double draw. ⚑ Awaiting: the Total Torah bar's ▶ and the drawer's tab labels (S653), the starter class (S652). ⚑ E: links vs the host's 8,190 bytes (S651). ⚑ F/A: Hebrew-only wrappers on typed text (S649); save windows whose status line is not live (S656: sweep the other tools). ⚑ G: `leak.mjs`, 6 pages. ⚑ 47 seeds.
+
+
+<!-- archived by compact-ledger at the S658 boundary, 2026-11-18 -->
+## Compaction (S658, 2026-11-18) — moved verbatim from the live ledger
+
+### from Candidates (prioritized, top = next)
+
+- [ ] P3 (**NEW S657 N — do first; pattern `overflow-past-a-scrollers-start-edge`**) | hebrew_blend_generator.html | **The Real Words Gematria answer key has no narrow-sheet floor** (`3ab8b385` gave its student grid `blendGridFit`, not the key): the right-to-left grid runs off the sheet's left edge, out of reach in the English UI (28–104 px on phones, 5–27 at 800). Corpus widths: p95 79 / 97 px (phone / 800), p99 96 / 124 (findings S657). | found S657
+
+- [ ] P3 (**NEW S657 N — after the key's floor; pattern `overflow-past-a-scrollers-start-edge`**) | hebrew_blend_generator.html | **In the Hebrew UI a left-to-right grid wider than its window runs off the right edge, out of reach**: Word Search 15 × 15 71–163 px on phones and 96 at 800, 18 × 18 161–253 / 186, the Bingo caller list 3–139 / 25–32. Fix: `.main-content { direction: ltr }`, the status line kept in the UI's; a paper-grows rule was reverted (findings S657). | found S657
+
+### from Done
+
+- [x] 2026-11-18 | (S657 close-out) | branch/deploy note | **S657 = N on `hebrew_blend_generator.html` (its 4th; 52 commits since): FOUND 3 (one shape, new pattern `overflow-past-a-scrollers-start-edge`), FIXED 1 (the zoom's start edge), 1 attempted and reverted, 2 P3 logged in the order that avoids a regression; + the dictionary's S656 Bulk Copy P3 FIXED.** Branch `claude/inspiring-hawking-ema04x`, draft PR #409; sw v1409 → v1411. Deploy `success` to confirm after the merge.
+
+- [x] 2026-11-13 | (S652 close-out) | branch/deploy note | **S652 = P on `classroom_dashboard.html` (its 3rd alone: S421 → S567 → S652; 37 commits to the page since: the six resets' signed-in wording, Bulk preset edit's switches, Schedule Sync's edits reaching the board, the Name Tags class copy, the starter class's slot): all …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-13 | `3b9b592d` | flash_cards.html, ui-strings.csv, sw.js | (S652, the S651 P4) **The progress report names one date when a child's drills share a day** (the one-date wording is chosen by the two dates as printed, not by the drill count) | `h651/s652fix4.mjs`, three children by real drills with the clock moved …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-13 | `7cb3f3a6` | flash_cards.html, sw.js | (S652, the S651 P3) **View Weaknesses opens on the first tab that holds rows** | `h651/s652fix3.mjs`, four children by real drills × 4 cells: blends → Vowels 4 rows (both pages), letter names → Letters 5 rows, words → Other 1 row (the old page: Vowels, "Not enough data …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-13 | `69c7c509` | classroom_dashboard.html, dashboard.md, sw.js | (S652, the S651 P4) **The holiday calendar is asked once at a load, not twice** (`loadHolidayItems()` holds the request; callers in flight share `_holidayLoad`) | `h651/fix3.mjs` with the real 2026–2029 feeds, 12 dated cases × 4 cells: 48 lines and …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-13 | `b22ea1b8` | classroom_dashboard.html, ui-strings.csv + locales, accounts-and-cloud.md, loop-patterns.md, sw.js | (S652 P; pattern account-wide-delete-confirm-without-signed-in-wording) **Signed in, shrinking the schedule cycle and deleting the old daily rows say they reach every device** …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Per-session log (one line per session)
+
+- 2026-11-18 | **S657** | iters: 4 | tools: hebrew_blend_generator ×2 (1 reverted), hebrew_dictionary, sw ×2, probes S657 ×2 | patterns fixed: overflow-past-a-scrollers-start-edge ×1 (new) | pass run: N (hebrew_blend_generator, first since S572; FOUND 3, FIXED 1) + the dictionary's S656 Bulk Copy P3 | SW: v1409→v1411
+
+- 2026-11-09 | **S637** | iters: 5 | tools: name_tags ×2, Hebrew_Font_Maker, trope_tutor, hebrew_blend_generator, sw | patterns fixed: dark-hover-resolves-to-the-rest-colour ×1, RTL-inheritance-on-a-Latin-script-container ×1 | pass run: M (name_tags, first since S552; FOUND 2, FIXED 2) + the S554 …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- N mobile & touch-device (one surface): 2026-11-18 (**S657 — 42nd N, `hebrew_blend_generator.html` (its 4th: S262 → S434 → S572 → S657; 52 commits since): 34 views × 16 phone cells by real taps (544 loads, plants 26/28, the 2 misses the finding) + a new unreachable-overflow arm on phones and 1280 / 800; arms 2–7. FOUND 3 (pattern `overflow-past-a-scrollers-start-edge`), FIXED 1 (the zoom's start edge), 1 reverted, 2 P3. N-next: atlas (S577), then torah (S587).**)
