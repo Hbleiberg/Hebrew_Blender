@@ -64,8 +64,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
 
-- [ ] P4 (**NEW S656 C**) | hebrew_dictionary.html | **`COPY_ICON` and `CHECK_ICON` carry no `aria-hidden`**: every card's two copy controls expose an unnamed `image` (200 per 100 cards; the buttons' own names are right). Add `aria-hidden="true" focusable="false"`, the header icons' form. | found S656
-
 - [ ] P4 (**NEW S655 D — profile first**) | classroom_dashboard.html | **Opening Bulk preset edit over 40 presets takes twice as long as at S576**: its first task 185–225 ms @4× (event 304–344) against 98–123 (152–184) on S576's tree, alternating — since the grouped switch columns and the master row's form (findings S655). | found S655
 
 - [ ] P4 (**NEW S653 M**) | torah_trainer.html | **A looping or selected verse's gold ring runs through its verse number** (0px from the ink); a wrapped holiday chip centres its second line. | found S653
@@ -374,6 +372,14 @@ _(none)_
 
 ## Done
 
+- [x] 2026-11-18 | (S659 close-out) | branch/deploy note | **S659 = P on `flash_cards.html` (its first P alone since S573) + a suite arm on the account chip in the new lockup headers: seven smokes 758 / 758; arms 3–7 static 70 / 70 behind 8 / 8 plants; arm 8 as at S652. FOUND 2 (the wrap gates measured signed out, 3 pages; Flash Cards' squeezed title), FIXED both (gate 4 answered) + the …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-18 | `4a5a0e2` | index.html, trope_tutor.html, sw.js, probe S659 | (S659 P, the suite arm; pattern header-wrap-gate-below-its-ceiling) **A signed-in name no longer pushes the home page's or the Trope Tutor's header off a phone screen** (511 / 521 and 499 / 509px; the home page's wrap scoped to `header:has(.ivacct-avatar)`) | `S659-header-gates-hold-signed-in.mjs` 24 / 24 (before: 12 …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-18 | `ecd98d7` | flash_cards.html, shared-components.md, sw.js | (S659 P, gate 4 → 794px; pattern header-wrap-gate-below-its-ceiling) **Flash Cards' title takes its own row from 794px (803 by touch)**: the signed-in overflow at 668–726px and the 87–153px squeezed header from 794px down both gone | 1px 1000 → 320 × 24 cells: 0 overflow; signed out never taller than stacked; recipe 0 …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-18 | `c8564cd` | hebrew_dictionary.html, sw.js | (S659, the S656 P4; pattern decorative-glyph-carrier-exposed-to-assistive-tech) **A word card's copy icon is hidden from screen readers** (`COPY_ICON` / `CHECK_ICON` `aria-hidden`) | CDP AX tree: unnamed images in the copy buttons 100 → 0, after a real Copy too, EN light 1280 / HE dark 800; recipe 0 errors
+
 - [x] 2026-11-18 | (S658 close-out) | branch/deploy note | **S658 = L (the 31st; the suite over `b816c43d..392ec76d`, 193 commits — the Holiday Guide's, its 17 `holidays/` pages', the newly public Name Tags', `letter_discrimination.html`'s and `Stein_School/`'s first L): 20 static arms over 100 pages, 25/25 plants fired, + the delta pages' claims by real clicks. FOUND 4 (all gate 2, answered), …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-11-18 | `ff0e2d3b` | scripts/build-holiday-pages.mjs, holidays/ | (S658 L, gate 2 → drop the re-spelling only) **A holiday page's title past 60 leaves out an other spelling that repeats a word of the name** (Shemini Atzeret 75 → 58); the three English names stay (62–66) | probe `S658-holiday-pages-name-symbols-as-the-catalog.mjs` step 2 (the tree before fails Shemini); …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -408,21 +414,11 @@ _(none)_
 
 - [x] 2026-11-17 | `d34f126d` | torah_trainer.html, torah-and-trope.md, sw.js | (S655 D, the S570 P4) **The Calendar tab's date lookup is drawn when the tab opens, not before the reading's request** (its first `toLocaleDateString`: 36–67 ms @4×) | `S655-torah-calendar-lookup-off-the-first-request.mjs`: 0 date formats before it (HEAD 1/cell); 10 Calendar states = HEAD's; recipe 8 cells
 
-- [x] 2026-11-17 | (S654 close-out) | branch/deploy note | **S654 = G on `flash_cards.html` (6th G; 34 commits since): 6 arms × 2 cells, plants fired. FOUND 3, FIXED in 1 commit; the S569 gate 2 answered; + 2 queue fixes; + 1 detector hit at close-out (a 6th commit). Branch `claude/adoring-hawking-h59ir2`, draft PR; `sw.js` v1401; deploy after the merge.**
-
-- [x] 2026-11-17 | `bcbb5193` | letter_discrimination.html, sw.js | (S654 close-out: a committed detector's hit on the page that landed outside the loop; pattern placeholder-keeps-the-browser-gray) **The participant-code box's placeholder reads at AA** (`.ld-input::placeholder` → --muted, opacity 1: 4.36 / 3.69 → 5.8 / 5.6:1) | the detector: 2 hits → 0 over 88 fields on 21 pages × light/dark; …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-17 | `ae8b2cde` | torah_trainer.html, torah-and-trope.md, sw.js | (S654, the S653 P4) **On a megillah or a holiday haftarah the Chanting picker steps aside instead of naming PocketTorah** (`syncRecSrcControls`: no `parshahEntry` and no Total Torah verse) | `g654/fix4.mjs`, readings by the drawer's Calendar buttons, Sefaria stubbed: tree 0 failures, HEAD 4; recipe 8 cells
-
-- [x] 2026-11-17 | `0fa5c8a7` | hebrew_blend_generator.html, sw.js | (S654, the S648 P4) **A Self-Check drill no longer keeps the sidebar's Print tip with no Print button** (`syncPrintTip()` from `enableButtons` and `updateModeVisibility`) | `g654/fix3.mjs`, both orders × 2 cells by real clicks: tree 0, HEAD 6; recipe 8 cells
-
-- [x] 2026-11-17 | `e7c8a9d1` | flash_cards.html, ui-strings.csv + locales, sw.js | (S654, the S569 P4, gate 2 answered: "Flash cards 1 / 3") **The printed card sheet is headed "Flash cards" / "כרטיסיות", not the button's "Print card sheet"** (`flashcards.sheet.page_head`) | `g654/fix2.mjs`, single and two-sided × 2 cells from `page.pdf`: the head on every page, the label on none; HEAD 0/4
-
-- [x] 2026-11-17 | `2abe7d15` | flash_cards.html, sw.js | (S654 G; pattern fixed-surface-missing-from-the-print-hide-list) **A printed drill or results page carries no screen controls** (Pause, the voice-speed row, the listening speaker and its hint, "Results ▾"; a perfect drill's list prints; the waiting choices at full ink) | `S654-flash-drill-prints-without-its-screen-controls.mjs`: tree PASS, …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-11-18 | **S659** | iters: 4 | tools: flash_cards, index, trope_tutor, hebrew_dictionary, shared-components.md, sw ×3, probe S659 | patterns fixed: header-wrap-gate-below-its-ceiling ×2 (its signed-in arm), decorative-glyph-carrier-exposed-to-assistive-tech ×1 | pass run: P (flash_cards, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - 2026-11-18 | **S658** | iters: 5 | tools: name_tags ×2, holidays/ + build-holiday-pages ×2, locales, llms-full, sitemap, sw ×2, probes S658 ×2 | patterns fixed: JSON-LD ↔ visible-content parity ×1 | pass run: L (suite, first since S622; 193 commits; FOUND 4, FIXED 4) | SW: v1412→v1414
 
@@ -462,11 +458,9 @@ _(none)_
 
 - 2026-11-11 | **S640** | iters: 5 | tools: flash_cards ×2, Hebrew_Font_Maker ×2, sw ×4, loop-patterns | patterns fixed: install-banner-over-a-sheet's-bottom-controls ×1, mobile-input-hints ×1, contrast-below-AA-on-a-tinted-or-coloured-plate ×2 | pass run: N (flash_cards, first since S555; FOUND 2, …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- 2026-11-11 | **S639** | iters: 4 | tools: Hebrew_Font_Maker ×2, sw ×3, ops.md, loop probe, loop README | patterns fixed: contrast-below-AA-on-a-tinted-or-coloured-plate ×1, native-control-outside-the-field-rule ×1 | pass run: M (Hebrew_Font_Maker, first since S554; FOUND 7, FIXED 2) + the S638 P3 …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S658 (2026-11-18):** name_tags ×2, holidays/ + build-holiday-pages ×2, locales, llms-full, sitemap, sw.js ×2, loop docs, probes S658 ×2 · hebrew_blend_generator (+1 reverted), hebrew_dictionary, sw.js ×2, loop docs, probes S657 ×2
+- **Snapshot S659 (2026-11-18):** flash_cards, index, trope_tutor, hebrew_dictionary, shared-components.md, sw.js ×3, loop docs, probe S659 · name_tags ×2, holidays/ + build-holiday-pages ×2, locales, llms-full, sitemap, sw.js ×2, loop docs, probes S658 ×2
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -552,7 +546,7 @@ _(none)_
 
 - `placeholder-keeps-the-browser-gray` | ACTIVE | owner F | det: scripts/loop/detect-placeholder-keeps-the-browser-gray.mjs | last S654 | streak 0
 
-- `header-wrap-gate-below-its-ceiling` | ACTIVE | owner M | det: recipe | last S584 | streak 1
+- `header-wrap-gate-below-its-ceiling` | ACTIVE | owner M | det: recipe | last S659 | streak 0
 
 - `latin-tracking-on-hebrew-labels` | ACTIVE | owner H | det: recipe | last S611 | streak 0
 
@@ -754,7 +748,7 @@ _(none)_
 
 - `rebuild-where-a-class-swap-would-do` | ACTIVE | owner A | det: recipe | last S635 | streak 0 | hits 2
 
-- `decorative-glyph-carrier-exposed-to-assistive-tech` | ACTIVE | owner A | det: recipe | last S634 | streak 0
+- `decorative-glyph-carrier-exposed-to-assistive-tech` | ACTIVE | owner A | det: recipe | last S659 | streak 0
 
 - `error-status-clobbered-by-a-later-routine-write` | DRAFT | owner A | det: none | last S411 | streak 0
 
@@ -824,7 +818,7 @@ _(none)_
 
 ### Discovery-pass rotation (run one per session, stalest first)
 
-- P accounts & cloud (one surface): 2026-11-13 (**S652 — 25th P, `classroom_dashboard.html` (its 3rd alone: S421 → S567 → S652; 37 commits since): seven smokes 758 / 758 twice; arms 3–7 static 13 / 13 behind 13 plants; arm 8 as at S646. FOUND 3, FIXED 1 (two schedule confirms: the pattern) + 1 gate 2 deferred. P-next: flash (S573), then atlas (S578).**)
+- P accounts & cloud (one surface): 2026-11-18 (**S659 — 26th P, `flash_cards.html` (its 2nd alone since S435: S573 → S659; the lockup headers landed outside the loop): seven smokes 758 / 758; arms 3–7 static 70 / 70 behind 8 / 8 plants; arm 8 as at S652; + the chip signed in across 16 pages × 1px. FOUND 2 (3 pages' gates measured signed out; flash's squeezed title), FIXED 2. P-next: atlas …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - O deslop — AI-design-tell sweep (one surface): SKIP since S403 — the sandbox refuses to execute the third-party detector ("Code from External"); runs again once the maintainer commits a `.claude/settings.json` permission rule for it (`docs/reference/deslop-detector.md`). Last run 2026-09-08 (S346, `flash_cards.html`, 6th O; the S399/S403 refusals are in the archive).
 
@@ -858,4 +852,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-11-08 (**S630 — 41st F, long-build progress (S542's F-next; the affordance's first F): 13 presses that build before they answer, by real clicks with an animation-frame recorder, real PDF libraries from a cache, a held CDN, double presses at raw points. FOUND 2, FIXED 2 (+1 P4). F-next: destructive-action confirms.**)
 
-**Next session (S659):** **Branch `claude/gifted-wright-dosphg` (the Name Tags launch + S658, draft PR #410): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1414**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=7cb948e sw=v1414 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ New pages: the Holiday Guide (first N and P by S670) and `letter_discrimination.html` (by S668) — override 4; neither is a surface in `loop-passes.md` / `coverage.mjs` yet; Name Tags is public (`392ec76d`). ⚑ Stalest now: P flash (S573), M generator (S574), G chrome (S575), N atlas (S577), D atlas (S579), C atlas (S580), A (S581). ⚑ Queue: the generator's two S657 P3s in order (findings S657); the dictionary's S656 P4 (card icons' `aria-hidden`); the dashboard's Bulk open (S655); torah's two S653 P4; the S570 staff double draw. ⚑ Awaiting: the Total Torah bar's ▶ and the drawer's tab labels (S653), the starter class (S652). ⚑ E: links vs the host's 8,190 bytes (S651). ⚑ F/A: Hebrew-only wrappers on typed text (S649); save windows whose status line is not live (S656); overflow past a scroller's start edge on the other sheet pages (S657). ⚑ L (S658): no tool footer lists Name Tags yet (offered, not taken up); triage in findings S658. ⚑ G: `leak.mjs`, 6 pages. ⚑ 47 seeds.
+**Next session (S660):** **Branch `claude/eager-goldberg-70ry8p` (S659, draft PR #414): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1425**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=109656c sw=v1425 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ New pages: the Holiday Guide (first N and P by S670; it carries no account scripts, so its P is arms 5–6 only) and `letter_discrimination.html` (by S668) — override 4; neither is a surface in `loop-passes.md` / `coverage.mjs` yet. ⚑ Stalest now: M generator (S574), G chrome (S575), N atlas (S577), P atlas (S578; it loads no account scripts: arms 5–6, then a clean surface buys a second), D atlas (S579), C atlas (S580), A (S581). ⚑ Queue: the generator's two S657 P3s in order (the Gematria key's floor first; findings S657); the dashboard's Bulk open (S655); torah's two S653 P4; the S570 staff double draw. ⚑ Awaiting: the Total Torah bar's ▶ and the drawer's tab labels (S653), the starter class (S652). ⚑ A: port `header-wrap-gate-below-its-ceiling`'s recipe to a detector with the signed-in arm (S659's probe is its core). ⚑ E: links vs the host's 8,190 bytes (S651). ⚑ F/A: Hebrew-only wrappers on typed text (S649); save windows whose status line is not live (S656); overflow past a scroller's start edge on the other sheet pages (S657). ⚑ G: `leak.mjs`, 6 pages. ⚑ 47 seeds.
