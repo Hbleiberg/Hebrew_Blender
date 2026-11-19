@@ -98506,3 +98506,45 @@ _(prior)_ **Next session (S660):** **Branch `claude/eager-goldberg-70ry8p` (S659
 - G print & export fidelity (one tool): 2026-11-19 (**S661 — the chrome bundle (its first G since S575; 40 commits to the pages since: the lockup headers, the footer's social row, the What's-new card, Name Tags and the Holiday Guide in AllTools): 64 PDFs with the real web fonts (dark = light on all), printed controls and overflow under print media, the S575 probe 20/20, the leak arm on 7 pages, the AllTools round trip by real clicks (46 fields + a font). FOUND 5, FIXED 4, 1 P4. G-next: atlas (S582), then torah (S589).**)
 
 _(prior)_ **Next session (S661):** **Branch `claude/eager-goldberg-70ry8p` (S659 + S660, draft PR #414): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1427**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=109656c sw=v1427 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ New pages: the Holiday Guide (first N and P by S670; P = arms 5–6) and `letter_discrimination.html` (by S668) — override 4; not yet surfaces. ⚑ Stalest now: G chrome (S575), N atlas (S577), P atlas (S578), D atlas (S579), C atlas (S580), A (S581). ⚑ Queue: the generator's S657 Word Search P3 (do first; findings S657), then its four S660 items (footer first; findings S660); the dashboard's Bulk open (S655); torah's two S653 P4; the S570 staff double draw. ⚑ Awaiting: the Total Torah bar's ▶ and the drawer's tab labels (S653), the starter class (S652). ⚑ A: port `header-wrap-gate-below-its-ceiling`'s recipe to a detector with the signed-in arm (S659's probe); the RTL-inheritance inverse (S660). ⚑ E: links vs the host's 8,190 bytes (S651). ⚑ F/A: Hebrew-only wrappers (S649); save windows' status lines (S656); start-edge overflow on other sheet pages (S657); fixed boxes placed by a ResizeObserver alone (S660). ⚑ G: `leak.mjs`, 6 pages. ⚑ 47 seeds.
+
+
+<!-- archived by compact-ledger at the S663 boundary, 2026-11-19 -->
+## Compaction (S663, 2026-11-19) — moved verbatim from the live ledger
+
+### from Candidates — aged P4 (found more than 90 sessions before S663)
+
+- [ ] P4 (**NEW S572 N — pattern `horizontal-overflow-at-narrow-widths`**) | hebrew_blend_generator.html | **On an iPhone SE Real Words Bingo's caller list and Word Search's grid scroll sideways** (82 / 73 px). | found S572
+
+- [ ] P4 (**NEW S572 N**) | hebrew_blend_generator.html | **A Real Words card's longest part-of-speech tags still run into its number** ("prepositional phrase" at 104–144px, a full desktop too). | found S572
+
+### from Candidates (prioritized, top = next)
+
+- [ ] P3 (**NEW S657 N; S662: not small — the Hebrew zoom conflicts; pattern `overflow-past-a-scrollers-start-edge`**) | hebrew_blend_generator.html | **In the Hebrew UI a left-to-right grid wider than its window runs off the right edge, out of reach** (Word Search 15 × 15 71–163 px on phones, 18 × 18 161–253; the Bingo caller list 3–139). `.main-content { direction: ltr }` would undo S657's Hebrew zoom, which grows from the top right and would then run off an LTR scroller's start: the zoom would have to grow from the top left, the Hebrew sheet's start a scroll away (findings S657, S662). | found S657
+
+### from Awaiting the maintainer (an action or an answer only the maintainer can give; a session that resolves one moves it to Done)
+
+- [ ] P4 (**NEW S577 N — GATE 2: a phone's default layout; S662 re-measured, asked, unanswered; `n662/gate-atlas-phone-grid-vs-stacked.png`**) | trope_atlas.html | **On a phone the melody table opens as the Grid; since `e325fbf2` a row's first figure shows whole in 14 / 26 rows on an iPhone 13 (SE 2 / 26, the rest 33–98 %), while Stacked shows every figure whole**: open Stacked under 560px while no layout is stored? | found S577
+
+### from Done
+
+- [x] 2026-11-19 | (S662 close-out) | branch/deploy note | **S662 = N on `trope_atlas.html` (its 2nd, S577 → S662) + `torah_trainer.html` (a clean surface buys a second; its 5th, S587 → S662): 32 phone cells by real taps, the start-edge arm, flips, 4× CPU, a field census; every plant fired. FOUND 2 (one pattern), FIXED 2 + 2 from the queue; probe S662. Gate 2 (the atlas's phone layout) asked, unanswered: deferred.** Branch `claude/eager-goldberg-70ry8p`, draft PR #414 (S659–S662); deploy unverified until the merge.
+
+- [x] 2026-11-18 | (S657 close-out) | branch/deploy note | **S657 = N on `hebrew_blend_generator.html` (its 4th; 52 commits since): FOUND 3 (one shape, new pattern `overflow-past-a-scrollers-start-edge`), FIXED 1 (the zoom's start edge), 1 attempted and reverted, 2 P3 logged in the order that avoids a regression; + the dictionary's S656 Bulk Copy P3 FIXED.** Branch …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-18 | `da340a85` | hebrew_dictionary.html, sw.js | (S657, the S656 queue) **Bulk Copy's Select page, Select all matching and Clear speak the new count** through the polite status region | probe `S657-dictionary-bulk-count-is-spoken.mjs`, keyboard only × 4 cells: 16/16 (HEAD 0/16); the theme bridge still opens its window; the S656 probes PASS
+
+- [x] 2026-11-18 | `33d8509b` | hebrew_blend_generator.html, sw.js | (S657 N; pattern `overflow-past-a-scrollers-start-edge`) **Zoomed in, the sheet grows from its top start corner**, so its title and first column stay in reach (146–386 px were out at 1280) | probe `S657-generator-zoom-keeps-its-start-edge.mjs` 16/16 (HEAD 8/16); a saved zoom, a language switch, print and Export PDF = HEAD
+
+- [x] 2026-11-18 | attempted, reverted | hebrew_blend_generator.html | (S657 N) **`.worksheet { min-width: min-content }` on screen** reached every cut grid (0 in 64 cells; print and PDF widths unchanged) but added 8–83 px of sideways scroll to sheets that only spilled into the margin | `regress1.mjs`, 135 view-cells against HEAD; the order that avoids it is in the two P3s
+
+### from Per-session log (one line per session)
+
+- 2026-11-19 | **S662** | iters: 5 | tools: trope_atlas, torah_trainer, hebrew_blend_generator, resources, sw ×4, probe S662 | patterns fixed: text-field-under-16px-zooms-on-ios-focus ×2 | pass run: N (trope_atlas, first since S577; + torah_trainer, a clean surface buys a second; FOUND 2, FIXED 2) + 2 from the queue | SW: v1431→v1435
+
+- 2026-11-11 | **S642** | iters: 5 | tools: trope_tutor, Hebrew_Font_Maker, hebrew_dictionary, name_tags, sw ×4 | patterns fixed: — | pass run: M (trope_tutor, first since S558; FOUND 3, FIXED 1) + 3 queue P4s (the FM, the dictionary, Name Tags) | SW: v1352→v1356
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- N mobile & touch-device (one surface): 2026-11-19 (**S662 — 43rd N, `trope_atlas.html` (its 2nd, S577 → S662, 23 commits; the lockup header and the social row since) + `torah_trainer.html` (a clean surface buys a second; its 5th, S587 → S662, 40 commits): the atlas 16 cells × 12 views by real taps, the start-edge arm, flips and a sign's jump, 4× CPU = S577's tree here; the Trainer 16 cells × 17 views; a field census on both; every plant fired. FOUND 2 (one pattern), FIXED 2 + 2 from the queue. N-next: fontmaker (S595), dictionary (S601), dashboard (S608).**)
+
+_(prior)_ **Next session (S662):** **Branch `claude/eager-goldberg-70ry8p` (S659 + S660 + S661, draft PR #414): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1431**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=109656c sw=v1431 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ New pages (override 4, not yet surfaces): Holiday Guide (N + P arms 5–6 by S670), `letter_discrimination.html` (by S668). ⚑ Stalest: N atlas (S577), P atlas (S578), D atlas (S579), C atlas (S580), A (S581), G atlas (S582). ⚑ Queue: the generator's S657 Word Search P3 first, then its four S660 items (footer first); the dashboard's Bulk open (S655); torah's two S653 P4; the S570 staff double draw; Resources' footer disclosures on paper (S661). ⚑ Awaiting: the Total Torah bar's ▶ and the drawer's tab labels (S653), the starter class (S652). ⚑ A: `header-wrap-gate-below-its-ceiling` as a detector with the signed-in arm (S659); the RTL-inheritance inverse (S660); a fixed card's reserved padding in a width query reaching paper, other pages (S661). ⚑ E: links vs the host's 8,190 bytes (S651). ⚑ F/A: Hebrew-only wrappers (S649); save windows' status lines (S656); start-edge overflow on other sheet pages (S657); fixed boxes placed by a ResizeObserver alone (S660). ⚑ G: `leak.mjs` on dashboard, dictionary, Letter Learner, Font Maker; re-measure one-sheet fits when a footer row lands (S661). ⚑ 47 seeds.
