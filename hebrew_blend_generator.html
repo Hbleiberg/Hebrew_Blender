@@ -5609,6 +5609,23 @@ function applySettings(s) {
     drillToRestore = 'numpractice';
   }
   if (drillToRestore) setRealWordDrill(drillToRestore);
+  // setRealWordDrill() gives a drill its default display state — what a click on the drill means — and so
+  // undid the saved choices restored above: a preset, the remembered setup, a share link or an .ivrit file
+  // that hid the transliteration, or put it on the worksheet, came back showing it on the answer key (and
+  // the next save wrote that back). The saved choices go on top of the defaults: a switch as stored, a
+  // placement only when this drill's own row offers it (a value of another drill's row keeps the default).
+  if (drillToRestore) {
+    const flavor = _RW_PAGE_FLAVOR[drillToRestore];
+    const inRow = (kind, v) => !!flavor && typeof v === 'string' &&
+      Array.from(document.querySelectorAll('.rw-' + kind + '-page-' + flavor + ' [data-' + kind + ']'), b => b.dataset[kind]).includes(v);
+    if (typeof s.rwShowTranslit === 'boolean')    document.getElementById('rwShowTranslit').checked = s.rwShowTranslit;
+    if (typeof s.rwShowTranslation === 'boolean') document.getElementById('rwShowTranslation').checked = s.rwShowTranslation;
+    if (inRow('translit', s.rwTranslitPage)) rwTranslitPage = s.rwTranslitPage;
+    if (inRow('transl', s.rwTranslPage))     rwTranslPage = s.rwTranslPage;
+    if (typeof s.rwStarReal === 'boolean') document.getElementById('rwStarReal').checked = s.rwStarReal;
+    if (isOffered(s.rwStarPage, '[data-star]', 'star')) { rwStarPage = s.rwStarPage; document.querySelectorAll('[data-star]').forEach(b => b.classList.toggle('active', b.dataset.star === rwStarPage)); }
+    toggleRwTranslitPageRow(); toggleRwTranslPageRow(); toggleRwStarPageRow();
+  }
 
   // Number Practice sub-row visibility (within the np options panel).
   onNpTranslitChange();

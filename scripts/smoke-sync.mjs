@@ -158,6 +158,10 @@
  *      on screen over the downloaded settings, unsaved, with its banner and ?s= (it used to vanish with them a moment
  *      after it showed); with no move it stays as well (control); Keep then sends it, and Use my settings shows the
  *      account's own and sends nothing of it.
+ *  D44. The generator's Real Words display choices travel: the account's remembered setup hides the transliteration
+ *      and puts the translation on the worksheet; a device opening the page shows those choices, and two loads and a
+ *      page leave send nothing over them (the restore put the drill's defaults back, and the leave's flush sent
+ *      them up, so the choice was lost on every device).
  *
 
  * Every scenario asserts 0 pageerrors. Run from the repo root:
@@ -2219,6 +2223,42 @@ try {
     const r = await run({ parshahKey: 'Noach', hebFontSize: 2.4 }, 'revert');
     check('D43: then Use my settings → the account\'s own (size 2.4) on screen, the banner and ?s= gone, nothing of the look sent', r.pressed && !r.end.view && !r.end.banner && r.end.size === 2.4 && r.end.nik !== true && r.end.key === 'Noach' && !r.end.s && r.account.hebFontSize === 2.4 && r.account.colorCodeNikkud !== true, JSON.stringify({ pressed: r.pressed, end: r.end, account: [r.account.parshahKey, r.account.hebFontSize, r.account.colorCodeNikkud] }));
     check('D43: 0 pageerrors', [ctl, mv, k, r].every(x => x.errors.length === 0), [ctl, mv, k, r].flatMap(x => x.errors).join(' | '));
+  }
+
+  // ---- D44. the generator's Real Words display choices land on another device and stay in the account ----
+  if (want('D44')) {
+    // the setup as a teacher makes it, by real clicks on one anonymous load
+    const capCtx = await browser.newContext({ serviceWorkers: 'block' });
+    await capCtx.route('**/*', r => (r.request().url().startsWith(BASE) || r.request().url().startsWith('data:')) ? r.continue() : r.abort());
+    const capPage = await capCtx.newPage();
+    await capPage.addInitScript(() => { try { localStorage.setItem('hebrewBlender_tourSeen', '1'); } catch (e) {} });
+    await capPage.goto(BASE + '/hebrew_blend_generator.html', { waitUntil: 'domcontentloaded' });
+    await capPage.waitForFunction(() => typeof getSettings === 'function' && !!SHARE_DEFAULTS, null, { timeout: HYDRATE_MS });
+    await capPage.click('.blend-type-btn[data-type="realwords"]');
+    await capPage.click('.rw-drill-btn[data-drill="reading"]');
+    await capPage.click('label.toggle:has(#rwShowTranslit)');
+    await capPage.click('.rw-transl-page-reading [data-transl="same"]');
+    const SETUP = await capPage.evaluate(() => getSettings());
+    await capCtx.close();
+    const made = SETUP.realWords === true && SETUP.rwDrillType === 'reading' && SETUP.rwShowTranslit === false && SETUP.rwTranslPage === 'same';
+    const cloud = new FakeCloud([{ tool: 'Worksheet', kind: 'lastState', name: 'default', data: SETUP }]);
+    const acc = () => (cloud.find('lastState', 'default', 'Worksheet') || {}).data || {};
+    const view = (page) => page.evaluate(() => { const s = getSettings(); return { rw: s.realWords, drill: s.rwDrillType, translit: s.rwShowTranslit, transl: s.rwTranslPage, bar: getComputedStyle(document.getElementById('lastSetupBar')).display }; });
+    // another device of the account: signed in before, nothing of the generator on it
+    const ctxB = await openContext(browser, cloud, SEED({ extra: { hebrewBlender_tourSeen: '1' } }));
+    const b = await openPage(ctxB, 'hebrew_blend_generator.html', { tools: GEN_TOOLS });
+    await b.page.waitForTimeout(WRITE_MS); await settled(b.page, GEN_TOOLS);
+    await b.page.reload({ waitUntil: 'domcontentloaded' });
+    await b.page.waitForFunction(() => window.IvritSaves && IvritSaves._test.settled(['Worksheet', 'Suite', 'Dictionary']), null, { timeout: HYDRATE_MS });
+    await b.page.waitForTimeout(WRITE_MS); await settled(b.page, GEN_TOOLS);
+    const onB = await view(b.page);
+    await b.page.goto(BASE + '/index.html', { waitUntil: 'domcontentloaded' });   // the generator's pagehide flush
+    await sleep(WRITE_MS);
+    check('D44: the clicks made the setup (Real Words Reading, transliteration hidden, translation on the worksheet)', made, JSON.stringify([SETUP.realWords, SETUP.rwDrillType, SETUP.rwShowTranslit, SETUP.rwTranslPage]));
+    check('D44: another device shows the account\'s Real Words choices', onB.rw === true && onB.drill === 'reading' && onB.translit === false && onB.transl === 'same' && onB.bar === 'flex', JSON.stringify(onB));
+    check('D44: two loads and a page leave send nothing over them — the account keeps the choices', acc().rwShowTranslit === false && acc().rwTranslPage === 'same' && !reqs(cloud, 0, 'PATCH').length, JSON.stringify({ account: [acc().rwShowTranslit, acc().rwTranslPage], calls: methods(cloud, 0) }));
+    check('D44: 0 pageerrors', b.errors.length === 0, b.errors.join(' | '));
+    await ctxB.close();
   }
 } finally {
   await browser.close();
