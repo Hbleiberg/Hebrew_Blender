@@ -530,8 +530,10 @@ body.dark #fontToast{background:#2a4070;}
   }
   /* The tokens above reach only what reads a token; these dark rules name literal colours (or
      --gold-light), so on paper they kept pale ink -- the cards' badge, grades line and link. */
-  body.dark .card-cat-badge, body.dark .card-link, body.dark .font-badge,
-  body.dark .font-actions a, body.dark .font-actions button { color: var(--navy); }
+  body.dark .card-cat-badge, body.dark .card-link, body.dark .font-badge { color: var(--navy); }
+  /* A font card's Preview, Download and Use in IvritSuite are buttons, dead ink on paper (18 a sheet): they go, and the
+     card still names the font, its type, its maker, its nikkud and trope support and its licence. */
+  .font-actions { display: none !important; }
   body.dark .card-grade { color: var(--gold-text); }
   body.dark .fp-yes { color: #2e7d3f; }
   body.dark .fp-no { color: #c0392b; }
