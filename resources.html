@@ -555,6 +555,10 @@ body.dark #fontToast{background:#2a4070;}
      view in Hebrew on Letter) moved there whole, leaving sheet 1 the heading alone and a sheet more (pattern
      print-trailing-padding-adds-a-sheet). */
   main { padding-block-end: 0; }
+  /* The footer's three disclosures (Frequently Asked Questions, How To Use, Finding A Font) printed closed as headings
+     with nothing under them. A closed one stays off paper, and so does an open FAQ whose questions are all closed; what
+     the teacher opened prints. */
+  footer details:not([open]), footer details:has(details):not(:has(details[open])) { display: none !important; }
 }
 </style>
 </head>
