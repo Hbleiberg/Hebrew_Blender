@@ -5366,6 +5366,14 @@ function applySettings(s) {
 
   // Blend type & mode
   const blendType = s.blendType || (s.nikudOnly ? 'nikud' : s.oneLetter ? 'one' : s.threeLetter ? 'three' : 'two');
+  // A blend setup landing on a page that is in Real Words or Number Practice: leave that source first. The
+  // blend type lives only in its button's highlight, and setBlendType() ends in updateModeVisibility(), which
+  // clears every blend button while either source switch is still on — a 1-Letter preset loaded from Real
+  // Words came back as 2-Letter. (Both switches are set from the setup again below, with the rest of it.)
+  if (s.numberPractice === false && s.realWords === false) {
+    document.getElementById('numberPracticeToggle').checked = false;
+    document.getElementById('realWordsToggle').checked = false;
+  }
   setBlendType(blendType);
   if (s.vowelPosition) {
     document.getElementById('vowelOnFirst').checked  = s.vowelPosition !== 'second';
@@ -5607,6 +5615,15 @@ function applySettings(s) {
   let drillToRestore = isOffered(s.rwDrillType, '.rw-drill-btn', 'drill', 'rwDrillType') ? s.rwDrillType : undefined;
   if (s.numberPractice && (!drillToRestore || drillToRestore === 'reading')) {
     drillToRestore = 'numpractice';
+  }
+  // The other way round: a setup made after a visit to Number Practice still names it as the Real Words drill
+  // last used (the Real Words button returns to it) while the setup itself is a blend sheet. setRealWordDrill
+  // ('numpractice') would switch the page into Number Practice — a remembered 2-Letter sheet came back as a
+  // numbers sheet. Keep the memory (the drill and its highlighted button) and leave the mode as saved.
+  if (drillToRestore === 'numpractice' && !s.numberPractice && !s.realWords) {
+    rwDrillType = 'numpractice';
+    document.querySelectorAll('.rw-drill-btn[data-drill]').forEach(b => b.classList.toggle('active', b.dataset.drill === 'numpractice'));
+    drillToRestore = undefined;
   }
   if (drillToRestore) setRealWordDrill(drillToRestore);
   // setRealWordDrill() gives a drill its default display state — what a click on the drill means — and so
