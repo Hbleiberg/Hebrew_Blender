@@ -370,6 +370,12 @@ _(none)_
 
 ## Done
 
+- [x] 2026-11-19 | (S663 close-out) | branch/deploy note | **S663 = P on `trope_atlas.html` (its 2nd, S578 → S663: no account by design, clean) + `hebrew_blend_generator.html` (a clean surface buys a second; its 9th, S592 → S663): seven smokes 758 / 758 (+ the new D44 → sync 240), the atlas's arm 1 40 / 40, the generator's arms 3–7 67 / 67 behind 8 / 8 plants, arm 8 read-only as at S659, a new …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-19 | `4bec6585` | hebrew_blend_generator.html, sw.js | (S663 P; pattern restore-step-undoes-a-saved-choice) **A blend setup keeps its practice type across Real Words and Number Practice** (made after Number Practice it reopened as a numbers sheet; a 1-Letter preset loaded from Real Words came back 2-Letter) | probe S663 62 / 62 (before 30 / 62); matrix 24 / 24 (before 6); smokes …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-19 | `469dff30` | hebrew_blend_generator.html, scripts/smoke-sync.mjs, ops.md, sw.js | (S663 P; pattern restore-step-undoes-a-saved-choice) **A Real Words setup keeps its transliteration and translation choices** (a preset, the remembered setup, a link or a file re-took the drill's defaults; signed in, a second device overwrote the account's copy) | probe S663 54 / 54 (before 20 / …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [x] 2026-11-19 | (S662 close-out) | branch/deploy note | **S662 = N on `trope_atlas.html` (its 2nd, S577 → S662) + `torah_trainer.html` (a clean surface buys a second; its 5th, S587 → S662): 32 phone cells by real taps, the start-edge arm, flips, 4× CPU, a field census; every plant fired. FOUND 2 (one pattern), FIXED 2 + 2 from the queue; probe S662. Gate 2 (the atlas's phone layout) asked, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-11-19 | `08fe02cc` | resources.html, sw.js | (S662, the S661 P4) **The printed footer leaves its closed sections off paper** (FAQ, How To Use, Finding A Font printed as bare headings; what the teacher opens still prints) | `n662/fix4.mjs` 16/16 closed + 16/16 opened (HEAD fails 32), sheets unchanged; S661 / S575 probes 12/12, 20/20; recipe 8/8 identical; probe S662
@@ -404,19 +410,11 @@ _(none)_
 
 - [x] 2026-11-18 | `c8564cd` | hebrew_dictionary.html, sw.js | (S659, the S656 P4; pattern decorative-glyph-carrier-exposed-to-assistive-tech) **A word card's copy icon is hidden from screen readers** (`COPY_ICON` / `CHECK_ICON` `aria-hidden`) | CDP AX tree: unnamed images in the copy buttons 100 → 0, after a real Copy too, EN light 1280 / HE dark 800; recipe 0 errors
 
-- [x] 2026-11-18 | (S658 close-out) | branch/deploy note | **S658 = L (the 31st; the suite over `b816c43d..392ec76d`, 193 commits — the Holiday Guide's, its 17 `holidays/` pages', the newly public Name Tags', `letter_discrimination.html`'s and `Stein_School/`'s first L): 20 static arms over 100 pages, 25/25 plants fired, + the delta pages' claims by real clicks. FOUND 4 (all gate 2, answered), …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-18 | `ff0e2d3b` | scripts/build-holiday-pages.mjs, holidays/ | (S658 L, gate 2 → drop the re-spelling only) **A holiday page's title past 60 leaves out an other spelling that repeats a word of the name** (Shemini Atzeret 75 → 58); the three English names stay (62–66) | probe `S658-holiday-pages-name-symbols-as-the-catalog.mjs` step 2 (the tree before fails Shemini); …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-18 | `a1cca6de` | scripts/build-holiday-pages.mjs, holidays/ ×17, sitemap.xml | (S658 L, gate 2 → as on the sheets) **The holiday pages name each symbol as the catalog writes it** ("Seder Plate", "Star of David"; was "seder Plate", "torah Scroll") in the description, social cards, caption and picture alt, a serial comma when a name holds "and" | probe step 1: 17/17 (the tree before …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-18 | `4f8ff3b8` | name_tags.html, llms-full.txt, sw.js | (S658 L, gate 2 → the 153 version) **Name Tags' search description fits a result** (153 characters, was 195; the meta and the WebApplication description) | the audit's description arm; `update-llms-txt`; recipe 8 cells
-
-- [x] 2026-11-18 | `0f291544` | name_tags.html, ui-strings.csv + locales, sw.js | (S658 L, gate 2 → show them; pattern `JSON-LD ↔ visible-content parity`) **Name Tags' FAQ (5) and How-To (5) show in the footer**, the visible twins of its JSON-LD, EN + HE | probe `S658-faq-jsonld-has-a-visible-twin.mjs` 12/12 pages (the tree before fails Name Tags: 0 summaries); `l658/fix1.mjs` 8 cells by real …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-11-19 | **S663** | iters: 3 | tools: hebrew_blend_generator ×2, smoke-sync, ops.md, sw ×2, probes S663 ×2, a detector | patterns fixed: restore-step-undoes-a-saved-choice ×2 | pass run: P (trope_atlas, first since S578, clean; + hebrew_blend_generator, a clean surface buys a second; FOUND 3, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - 2026-11-19 | **S662** | iters: 5 | tools: trope_atlas, torah_trainer, hebrew_blend_generator, resources, sw ×4, probe S662 | patterns fixed: text-field-under-16px-zooms-on-ios-focus ×2 | pass run: N (trope_atlas, first since S577; + torah_trainer, a clean surface buys a second; FOUND 2, FIXED 2) …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -456,13 +454,13 @@ _(none)_
 
 - 2026-11-11 | **S644** | iters: 4 | tools: Hebrew_Font_Maker ×2, name_tags, locales, name-tags.md, sw ×3 | patterns fixed: — | pass run: H (fontmaker, first since S559; FOUND 7, FIXED 2) + Name Tags' S643 P3 | SW: v1360→v1363
 
-- 2026-11-11 | **S643** | iters: 5 | tools: name_tags ×2, Hebrew_Font_Maker ×2, name-tags.md, sw ×4 | patterns fixed: — | pass run: H (name_tags, first since S551; FOUND 3, FIXED 2) + the FM's two S639 P4s | SW: v1356→v1360
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S662 (2026-11-19):** trope_atlas, torah_trainer, hebrew_blend_generator, resources, sw.js ×4, loop docs, probe S662 · index, contact, resources ×2, sw.js ×4, loop docs, probe S661
+- **Snapshot S663 (2026-11-19):** hebrew_blend_generator ×2, smoke-sync, ops.md, sw.js ×2, loop docs, probes S663 ×2, detector restore-step-undoes-a-saved-choice · trope_atlas, torah_trainer, hebrew_blend_generator, resources, sw.js ×4, loop docs, probe S662
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
+
+- `restore-step-undoes-a-saved-choice` | ACTIVE | owner P | det: scripts/loop/detect-restore-step-undoes-a-saved-choice.mjs | last S663 | streak 0 | hits 3
 
 - `async-export-runs-twice-on-a-second-press` | ACTIVE | owner F | det: recipe | last S631 | streak 0 | hits 3
 
@@ -554,7 +552,7 @@ _(none)_
 
 - `share-link-writes-the-teachers-saved-preferences` | ACTIVE | owner P | det: recipe | last S472 | streak 1
 
-- `link-undone-by-its-loads-first-sync` | ACTIVE | owner P | det: scripts/smoke-sync.mjs | last S602 | streak 0 | hits 1
+- `link-undone-by-its-loads-first-sync` | ACTIVE | owner P | det: scripts/smoke-sync.mjs | last S663 | streak 1 | hits 1
 
 - `bulk-apply-skips-a-renderer-the-control-runs` | ACTIVE | owner K | det: recipe | last S472 | streak 1
 
@@ -580,7 +578,7 @@ _(none)_
 
 - `tip-escape-drops-focus` | ACTIVE | owner C | det: recipe | last S441 | streak 0
 
-- `account-wide-delete-confirm-without-signed-in-wording` | ACTIVE | owner P | det: recipe | last S652 | streak 0
+- `account-wide-delete-confirm-without-signed-in-wording` | ACTIVE | owner P | det: recipe | last S663 | streak 1
 
 - `logical-inset-mirrors-onto-pinned-content` | ACTIVE | owner H | det: recipe | last S440 | streak 0
 
@@ -818,7 +816,7 @@ _(none)_
 
 ### Discovery-pass rotation (run one per session, stalest first)
 
-- P accounts & cloud (one surface): 2026-11-18 (**S659 — 26th P, `flash_cards.html` (its 2nd alone since S435: S573 → S659; the lockup headers landed outside the loop): seven smokes 758 / 758; arms 3–7 static 70 / 70 behind 8 / 8 plants; arm 8 as at S652; + the chip signed in across 16 pages × 1px. FOUND 2 (3 pages' gates measured signed out; flash's squeezed title), FIXED 2. P-next: atlas …[full text: IMPROVEMENT_ARCHIVE.md]
+- P accounts & cloud (one surface): 2026-11-19 (**S663 — 27th P, `trope_atlas.html` (its 2nd, S578 → S663; no account by design) + `hebrew_blend_generator.html` (a clean surface buys a second; its 9th, S592 → S663, 42 commits): seven smokes 758 / 758, the atlas's arm 1 40 / 40, the generator's arms 3–7 67 / 67 behind 8 / 8 plants, arm 8 as at S659, + a save-and-restore arm (189 round trips, now a …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - O deslop — AI-design-tell sweep (one surface): SKIP since S403 — the sandbox refuses to execute the third-party detector ("Code from External"); runs again once the maintainer commits a `.claude/settings.json` permission rule for it (`docs/reference/deslop-detector.md`). Last run 2026-09-08 (S346, `flash_cards.html`, 6th O; the S399/S403 refusals are in the archive).
 
@@ -852,4 +850,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-11-08 (**S630 — 41st F, long-build progress (S542's F-next; the affordance's first F): 13 presses that build before they answer, by real clicks with an animation-frame recorder, real PDF libraries from a cache, a held CDN, double presses at raw points. FOUND 2, FIXED 2 (+1 P4). F-next: destructive-action confirms.**)
 
-**Next session (S663):** **Branch `claude/eager-goldberg-70ry8p` (S659–S662, draft PR #414): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1435**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=109656c sw=v1435 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ New pages (override 4, not yet surfaces): Holiday Guide (N + P arms 5–6 by S670), `letter_discrimination.html` (by S668). ⚑ Stalest: P atlas (S578), D atlas (S579), C atlas (S580), A (S581), G atlas (S582), H atlas (S583). ⚑ Queue: the generator's S660 P4s (the Hebrew Self-Check first; its S657 P3 waits on a zoom design call); the dashboard's Bulk open (S655); torah's S653 P4s; the S570 staff double draw. ⚑ Awaiting: the atlas's phone layout (asked S662, unanswered), the Total Torah bar's ▶ and the drawer's tab labels (S653), the starter class (S652). ⚑ A: the header-wrap gate as a detector (S659); the RTL-inheritance inverse (S660); a fixed card's reserved band on paper, other pages (S661). ⚑ E: links vs the host's 8,190 bytes (S651). ⚑ F/A: Hebrew-only wrappers (S649); save windows' status lines (S656); start-edge overflow on other sheet pages (S657); fixed boxes placed by a ResizeObserver alone (S660). ⚑ N: a later classed rule beats a coarse one — census every field (S662). ⚑ G: `leak.mjs` on the dashboard, dictionary, LL, FM (S661). ⚑ 47 seeds.
+**Next session (S664):** **Branch `claude/admiring-archimedes-8rhn8d` (S663, draft PR #416): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1439**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=3e4fca7 sw=v1439 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ New pages (override 4, not yet surfaces): Holiday Guide (N + P arms 5–6 by S670), `letter_discrimination.html` (by S668), `jewish-coloring-pages.html` (N by S677). ⚑ Stalest: D atlas (S579), C atlas (S580), A (S581), G atlas (S582), H atlas (S583), M atlas (S584). ⚑ Queue: the generator's S660 P4s (the Hebrew Self-Check first; the S657 P3 waits on a zoom call); the dashboard's Bulk open (S655); torah's S653 P4s; the S570 staff double draw. ⚑ Awaiting: the atlas's phone layout (asked S662), the Total Torah ▶ and the drawer tabs (S653), the starter class (S652). ⚑ A: the restore detector on Flash Cards and the dashboard, by hand first (S663); the header-wrap gate as a detector (S659); the RTL-inheritance inverse (S660); a fixed card's reserved band on paper (S661). ⚑ E: links vs the host's 8,190 bytes (S651). ⚑ F/A: Hebrew-only wrappers (S649); save windows' status lines (S656); start-edge overflow on other sheet pages (S657); ResizeObserver-only boxes (S660). ⚑ N: census every field (S662). ⚑ G: `leak.mjs` on the dashboard, dictionary, LL, FM (S661). ⚑ P: the sync smoke in a lane of at most three (S663). ⚑ 47 seeds.
