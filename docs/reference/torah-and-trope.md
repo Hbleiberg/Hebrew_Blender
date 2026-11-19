@@ -1127,7 +1127,11 @@ traditions were imported from, and was rebuilt on the suite's own pieces, so it 
   `shared.trad.unverified`, its select option `shared.trad.option_unverified_m`). The intro's second sentence
   (`atlas.intro.historical`) shows only while a Jewish Encyclopedia tradition is offered, and a source in the list
   shows only while an offered melody cites it — the `[n]` beside a melody's note counts the shown ones.
-- **`SYSTEMS`** is the page's order of the melodies, each with its reading (`group`) and the source it cites; a
+- **`SYSTEMS`** is the page's order of the melodies, each with its reading (`group`) and, only for a public-domain
+  source, the source it cites (`cite`). **The page names no copyrighted chart, book, author, publisher or teaching
+  institution as a melody's source** (the maintainer's call): the Sources list holds only the public-domain *Jewish
+  Encyclopedia*, and the other melodies are named and described by community and occasion alone (`atlas.sys.<id>.*`),
+  with no `[n]`; a tradition from a copyrighted source joins the same way, without a `cite`. A
   melody the phrase file adds is shown only once it has a row there and its `atlas.sys.<id>.name` / `.trad` / `.sub`
   / `.note` strings (a Jewish Encyclopedia note is followed by `atlas.sys.je_note`). `MARKS` is the sign table's
   order with each sign's glyph and names (taught content, never translated).

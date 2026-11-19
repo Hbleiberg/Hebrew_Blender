@@ -171,7 +171,7 @@ The melodies themselves are traditional and belong to no one. What this reposito
 - the common (Lithuanian) Torah and haftarah melodies, from a Conservative congregation's printed learner's charts;
 - Hazzan Pinchas Spiro's High Holy Day Torah trope chart.
 
-Each tradition names its own source and terms in the JSON (`source`, `license`) and in both pages' sources lists. The melodies are traditional; the transcriptions are CC BY-SA 4.0, like the rest of the trope data, and reproduce no page image or text of their sources.
+Each tradition names its own source and terms in the JSON (`source`, `license`) and in the Trope Tutor's sources list; the Trope Atlas cites only its public-domain source, the *Jewish Encyclopedia*. The melodies are traditional; the transcriptions are CC BY-SA 4.0, like the rest of the trope data, and reproduce no page image or text of their sources.
 
 ---
 
