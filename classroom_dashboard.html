@@ -2080,7 +2080,11 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
   .bpe-footer .bpe-note { margin-inline-end: auto; font-size: 0.74rem; color: var(--muted); }
   /* Tab and Shift+Tab scroll the next control into the dialog's own scroller, where it could land wholly under the
      sticky head or footer: the scroll padding reserves their live heights (--bpe-head-h / --bpe-foot-h, written by
-     bpeTrackStickies). Pattern focus-hidden-under-a-sticky-bar. */
+     bpeTrackStickies). Pattern focus-hidden-under-a-sticky-bar. Registered and non-inherited like the rail widths
+     above: the dialog is the only reader, and a plain custom property written on it restyled all of its cards (6,300
+     elements over 40 presets) each time the head or the footer was measured. */
+  @property --bpe-head-h { syntax: '<length>'; inherits: false; initial-value: 0px; }
+  @property --bpe-foot-h { syntax: '<length>'; inherits: false; initial-value: 0px; }
   .bpe-modal { scroll-padding-block: calc(var(--bpe-head-h, 0px) + 8px) calc(var(--bpe-foot-h, 0px) + 8px); }
   /* ── Parsha popup (openParshaPopup): the week's parsha emojis, each with its summary and why that picture, opened
      from the parsha line. A teacher-opened card, so it follows the UI language (I18n.lang), unlike the projected line
