@@ -702,8 +702,10 @@ surfaces, so Ctrl+P with the editor open prints the board underneath, as with th
   live settings, so a chip shows `draft[key] ?? PRISTINE_DEFAULTS[key]` but a key is written only when the teacher
   touched it (`_bpeTouched`): an untouched absent key stays absent, and an untouched preset stays byte-identical.
   `BPE_GROUPS` is the census of switches, in the order both the master row and each card show them (Board cards /
-  Date & time / Countdowns / Hebrew text — a card lays them out as `columns` of labelled groups, switch before words,
-  so the two long groups and the two short ones balance into three columns; "Hide dashboard
+  Date & time / Countdowns / Hebrew text — a card lays them out as labelled groups on a grid, switch before words: the
+  two long groups take a column each and the two short ones share the third (two columns below 716px of card width,
+  with the last three groups stacked; one below 468px and on a phone — `.bpe-chipwrap` is the width the columns
+  answer to). Never a multi-column box (`columns`): balancing 40 cards' columns was over half of the editor's layout; "Hide dashboard
   text" is `enableDashText` inverted) — a new switch is one row there, with the drawer's own label key.
 - **Each card has its own toolbar**, above its editor as in the drawer: `bpeBuildToolbar(id)` builds it from
   `EDITOR_COMMANDS` with `data-editor` naming the card's editor and wires the two listeners the page gives the

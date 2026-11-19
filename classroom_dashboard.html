@@ -2053,8 +2053,23 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
   .bpe-pick-foot .bpe-link:hover, .bpe-pick-foot .bpe-link:focus-visible { color: var(--text); text-decoration-thickness: 2px; }   /* the links had no hover state at all */
   /* A card's switches: the master row's groups as balanced columns (Board cards | Date & time | Countdowns + Hebrew
      text), each switch before its words so the switches line up in one column and a long label wraps under itself. */
-  .bpe-chips { columns: 3 220px; column-gap: 28px; margin-block-start: 4px; padding-block-start: 10px; border-block-start: 1px dashed var(--border); }
-  .bpe-cgroup { break-inside: avoid; margin-block-end: 10px; }
+  /* The same three arrangements a balanced `columns: 3 220px` gave (one column; from 468px Board cards | the other
+     three; from 716px the two short groups sharing the third column), placed on a grid: balancing 40 cards' columns
+     was most of the editor's layout (over half of its open). The breakpoints are the multi-column ones. */
+  .bpe-chipwrap { container-type: inline-size; }
+  .bpe-chips { display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; column-gap: 28px; padding-block-start: 10px; border-block-start: 1px dashed var(--border); }
+  .bpe-cgroup { margin-block-end: 10px; }
+  @container (min-width: 468px) {
+    .bpe-chips { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: auto auto 1fr; }
+    .bpe-cgroup:nth-child(1) { grid-row: 1 / -1; }
+    .bpe-cgroup:nth-child(n+2) { grid-column: 2; }
+    .bpe-cgroup:nth-child(1), .bpe-cgroup:last-child { margin-block-end: 0; }   /* a column's last group ends at the card's padding */
+  }
+  @container (min-width: 716px) {
+    .bpe-chips { grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: auto 1fr; }
+    .bpe-cgroup:nth-child(2) { grid-row: 1 / -1; margin-block-end: 0; }
+    .bpe-cgroup:nth-child(n+3) { grid-column: 3; }
+  }
   .bpe-cgroup-lbl { display: block; font-size: 0.68rem; color: var(--muted); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-block-end: 4px; }
   .bpe-chip { display: flex; align-items: center; gap: 10px; font-size: 0.8rem; line-height: 1.3; cursor: pointer; min-height: 30px; padding-block: 2px; }
   .bpe-onboard { font-size: 0.7rem; font-weight: 700; color: var(--gold-text); border: 1px solid currentColor; border-radius: 999px; padding: 1px 8px; }
@@ -2093,7 +2108,8 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
   @media (max-width: 520px) { .pp-card { flex-direction: column; gap: 6px; } }
   .bpe-empty { font-size: 0.85rem; color: var(--muted); padding: 20px 0; }
   @media (max-width: 560px) {
-    .bpe-chips { columns: 1; }
+    .bpe-chips { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; }
+    .bpe-cgroup:nth-child(n) { grid-row: auto; grid-column: auto; margin-block-end: 10px; }
     .bpe-modal { padding: 18px 14px; }
     .bpe-head { margin-inline: -14px; padding-inline: 14px; position: static; }   /* a phone's screen is the head's height; it scrolls with the cards there */
     .bpe-modal { scroll-padding-block-start: 8px; }   /* a head that scrolls away covers nothing */
@@ -8349,7 +8365,8 @@ function mountSidebarResize(cfg) {
       g.items.forEach(t => grp.appendChild(bpeChip(name, t)));
       chips.appendChild(grp);
     });
-    card.appendChild(chips);
+    const wrap = document.createElement('div'); wrap.className = 'bpe-chipwrap'; wrap.appendChild(chips);   // the width the columns answer to
+    card.appendChild(wrap);
     host.appendChild(card);
   }
   function bpeSyncChips(key) {   // after a master switch: every card's chip for that key, in place
