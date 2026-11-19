@@ -401,6 +401,9 @@ body.dark .at-card { background:var(--navy-deep); }
 .at-phrasebar { display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; padding:10px 14px; border:1px solid var(--border); border-radius:8px; background:var(--white); margin:16px 0 12px; }
 body.dark .at-phrasebar { background:var(--navy-deep); }
 .at-phrasebar .at-sel { flex:1 1 260px; font-size:0.94rem; }
+/* …which outranked the coarse-pointer rule above, so under a finger the Melody select was 15.04px and iOS zoomed the
+   page into it on every tap (pattern text-field-under-16px-zooms-on-ios-focus). */
+@media (pointer:coarse) { .at-phrasebar .at-sel { font-size:16px; } }
 .at-count { font-size:0.8rem; color:var(--muted); font-variant-numeric:tabular-nums; }
 .at-melinfo .syshead { display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 14px; margin:4px 0; scroll-margin-top:calc(var(--at-bar-h) + 8px); }
 .at-melinfo .syshead h3 { margin:0; }
