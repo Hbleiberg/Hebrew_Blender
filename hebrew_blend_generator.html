@@ -2163,6 +2163,12 @@ header{--bl-row:160px;}   /* the lockup, its divider and the header's gap: what 
      UI's direction; the Hebrew UI is unchanged (pattern RTL-inheritance-on-a-Latin-script-container). Screen only. */
   html:not([dir="rtl"]) .self-check-grid .flip-card-hint,
   html:not([dir="rtl"]) .self-check-grid .flip-card-score-btns { direction: ltr; }
+  /* The other way round for the rows above the cards (the timer, the score bar, Reveal All / Hide All and the per-row
+     buttons): the page's own controls in the UI's language, but inside the worksheet, which is left-to-right. In the
+     Hebrew UI Start / Pause / Reset and the counts ran from the left and the score bar's Reset stood at the right; they
+     take the UI's direction there (the clock stays m:ss). The English UI is unchanged; paper and the PDF never carry them. */
+  html[dir="rtl"] :is(.timer-bar, .score-bar, .self-check-controls, .sc-controls) { direction: rtl; }
+  html[dir="rtl"] .timer-display { direction: ltr; }
   .self-check-controls {
     display: flex;
     gap: 8px;
@@ -10433,7 +10439,7 @@ function renderGematriaSheet(ws, items, showTranslit = false, showTranslation = 
       <span class="score-correct">✓ 0</span>
       <span class="score-incorrect">✗ 0</span>
       <span class="score-remaining">${esc(I18n.t('worksheet.selfcheck.remaining', { count: items.length }))}</span>
-      <button class="btn-xs" style="margin-left:auto;" onclick="resetGematriaCheck()">${ICON_RESET_SM}${esc(I18n.t('worksheet.selfcheck.reset'))}</button>`;
+      <button class="btn-xs" style="margin-inline-start:auto;" onclick="resetGematriaCheck()">${ICON_RESET_SM}${esc(I18n.t('worksheet.selfcheck.reset'))}</button>`;
     ws.appendChild(scoreBar);
 
     const controls = document.createElement('div');
@@ -11233,7 +11239,7 @@ function renderSelfCheck(ws, cols, title, subtitle) {
     <span class="score-correct">✓ 0</span>
     <span class="score-incorrect">✗ 0</span>
     <span class="score-remaining">${esc(I18n.t('worksheet.selfcheck.remaining', { count: blends.length }))}</span>
-    <button class="btn-xs" style="margin-left:auto;" onclick="resetSelfCheck()">${ICON_RESET_SM}${esc(I18n.t('worksheet.selfcheck.reset'))}</button>`;
+    <button class="btn-xs" style="margin-inline-start:auto;" onclick="resetSelfCheck()">${ICON_RESET_SM}${esc(I18n.t('worksheet.selfcheck.reset'))}</button>`;
   ws.appendChild(scoreBar);
 
   // Controls
