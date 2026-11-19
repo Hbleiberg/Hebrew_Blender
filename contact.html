@@ -318,6 +318,9 @@ footer a { display: inline-block; padding-block: 5px; }
      footer printed alone on sheet 2 (pattern print-trailing-padding-adds-a-sheet). */
   main { padding-block: 20px 12px; }
   .donate-sub { margin-bottom: 8px; }
+  /* The footer's social row (its last line) then printed alone on a second Letter sheet, 8px past the first. A link's 5px
+     block padding is its 24px touch target, nothing on paper: without it the footer is 30px shorter. */
+  footer a { padding-block: 0; }
 }
 /* The header's title row (docs/reference/shared-components.md → Header lockup): up to 714px the title beside the
    buttons is squeezed — measured in the real UI fonts (English sets it), the one-row header is taller there than the
