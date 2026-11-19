@@ -64,6 +64,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
 
+- [ ] P4 (**NEW S661 G**) | resources.html | **The printed footer shows its three closed disclosures (Frequently Asked Questions, How To Use, Finding A Font) as headings with nothing under them**, both views, EN + HE: open them on paper or leave them off, then re-measure the Fonts view's two sheets (findings S661). | found S661
+
 - [ ] P4 (**NEW S660 M; pattern `dark-navy-fill-matches-its-ground`**) | hebrew_blend_generator.html | **In dark mode the Self-Check timer and score bars and the sidebar's Print tip vanish**: `--warm-gray` is the dark card colour, so each plate reads 1.00:1 on its ground (light 1.31). S641's tint would do, but the score counts need lighter greens and reds on it (#27ae60 → 4.08:1). | found S660
 
 - [ ] P4 (**NEW S660 M**) | hebrew_blend_generator.html | **A blend Self-Check in an 800px window keeps five 47px cards**: two-digit numbers run into the Hebrew, every hint wraps, and the controls row wraps to three lines (the sheet is 363px beside the sidebar). | found S660
@@ -124,8 +126,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S576 D**) | classroom_dashboard.html | **Bulk preset edit's Save over 40 changed presets is one 203 ms task @4×** (unprofiled). | found S576
 
-- [ ] P4 (**NEW S575 G — pattern `print-block-split-at-a-sheet-foot`; whole cards cost a sheet here; S591: its dead buttons FIXED `61d3a8ab` — re-measure the sheets**) | index.html | **Printed, the hub cuts a tool card across sheets (EN Letter, HE A4)**; whole cards alone added a footer-only sheet (EN Letter). | found S575
-
 - [ ] P4 (**NEW S575 G — pattern `print-trailing-padding-adds-a-sheet`**) | privacy.html | **In English on Letter the footer prints alone on a 6th sheet** ; main's padding off does not fit it (and splits Terms' footer). | found S575
 
 - [ ] P4 (**NEW S574 M — H's**) | hebrew_blend_generator.html | **The crossword's "Not placed:" note can list 50+ pool words on the student's sheet.** | found S574
@@ -135,6 +135,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S572 N — pattern `horizontal-overflow-at-narrow-widths`**) | hebrew_blend_generator.html | **On an iPhone SE Real Words Bingo's caller list and Word Search's grid scroll sideways** (82 / 73 px). | found S572
 
 - [ ] P4 (**NEW S572 N**) | hebrew_blend_generator.html | **A Real Words card's longest part-of-speech tags still run into its number** ("prepositional phrase" at 104–144px, a full desktop too). | found S572
+
+- [ ] P4 (**NEW S575 G — pattern `print-block-split-at-a-sheet-foot`; whole cards cost a sheet here; S591: its dead buttons FIXED `61d3a8ab`; S661 re-measured: 3 sheets in every cell once the What's-new band FIXED `22ea650b`, cards still cut**) | index.html | **Printed, the hub cuts a tool card across sheets (EN Letter, HE A4)**; whole cards alone added a footer-only sheet (EN Letter). | found …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S660 M**) | hebrew_blend_generator.html | **In the Hebrew UI the blend Self-Check's timer, score bar and controls row run left to right** (they inherit `.worksheet`'s `ltr`): Start / Pause read backwards, the counts start at the left; the Self-Check options' indent and rule (and Number Practice's two sub-rows) use `padding-left` / `border-left`, so in Hebrew the rule stands at the …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -376,6 +378,16 @@ _(none)_
 
 ## Done
 
+- [x] 2026-11-19 | (S661 close-out) | branch/deploy note | **S661 = G on the chrome bundle (index, resources, contact, privacy + terms, 404, account; its first G since S575, 40 commits to the pages since: the lockup headers, the footer's social row, the What's-new card, Name Tags and the Holiday Guide in AllTools): 64 PDFs (8 views × EN/HE × light/dark × Letter/A4) with the real web fonts, dark …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-19 | `1739bd22` | resources.html, sw.js | (S661 G; pattern fixed-surface-missing-from-the-print-hide-list) **A printed font list leaves out its cards' Preview, Download and Use in IvritSuite** (18 dead labels a sheet; the card keeps its name, type, maker, nikkud / trope and licence) | `g661/fix3.mjs` DEAD=1 16/16 (the tree before fails the 8 Fonts cells), sheets unchanged; recipe 16 …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-19 | `6f401fb1` | resources.html, sw.js | (S661 G; pattern print-trailing-padding-adds-a-sheet) **The Hebrew Fonts view prints its cards on the first sheet** (on Letter main's 32px trailing padding moved the whole grid to sheet 2, the heading alone on sheet 1: 3 → 2 sheets) | `g661/fix3.mjs` 16/16 with the web and the system fonts (the tree before fails HE Letter ×2), other cells …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-19 | `056aa510` | contact.html, sw.js | (S661 G; pattern print-trailing-padding-adds-a-sheet) **The printed Contact page is one sheet again, its social row included** (it printed alone on a second Letter sheet, 8px over; a footer link's touch padding dropped on paper) | `g661/fix2.mjs` 8/8, room 22px on Letter, 46–88 on A4 (system fonts 21–126; the tree before −8px, 2 sheets ×4); …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-19 | `22ea650b` | index.html, sw.js | (S661 G; pattern print-media-leak) **A home page printed while the What's-new card shows starts at the top of the sheet** (the card's reserved band reached paper below 767px: first text 357 → 128pt, EN Letter 4 → 3 sheets) | `g661/fix1.mjs` card vs no card 8/8 (the tree before fails 8/8); on-screen reservation unchanged at 1280 / 390; recipe 8 …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [x] 2026-11-18 | (S660 close-out) | branch/deploy note | **S660 = M on `hebrew_blend_generator.html` (its 3rd: S436 → S574 → S660; 49 commits since): 34 views × 6 cells by real clicks (204 loads, 0 page errors), the text census, a dark-fill arm, the frozen bar across widths and resizes. FOUND 5, FIXED 1 + the S657 P3 from the queue, 4 logged (the governor's cap).** Branch …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-11-18 | `b6546cd9` | hebrew_blend_generator.html, generator.md, sw.js, probe S660 | (the S657 P3 from the queue; pattern overflow-past-a-scrollers-start-edge) **The Real Words Gematria answer key stays inside a narrow sheet** (a 100px floor: phones 3 columns, 800 two, 1280 five; paper five) | probe 6 / 6 (HEAD 1 / 6, 63–165px past); the portrait PDF capture 5 columns as before; recipe …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -408,17 +420,11 @@ _(none)_
 
 - [x] 2026-11-18 | attempted, reverted | hebrew_blend_generator.html | (S657 N) **`.worksheet { min-width: min-content }` on screen** reached every cut grid (0 in 64 cells; print and PDF widths unchanged) but added 8–83 px of sideways scroll to sheets that only spilled into the margin | `regress1.mjs`, 135 view-cells against HEAD; the order that avoids it is in the two P3s
 
-- [x] 2026-11-17 | (S656 close-out) | branch/deploy note | **S656 = C on `hebrew_dictionary.html` (its 4th dedicated C; 27 commits since): FOUND 4, FIXED 2 (the Word List windows' status spoken, the chips' ✕ at 24 px), 1 P3 + 1 P4 logged; + a micro-feature the maintainer asked for (the gematria badge's lookup). Branch `claude/inspiring-hawking-ema04x`, draft PR #409; `sw.js` v1409; deploy after …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-17 | `de223003` | hebrew_dictionary.html, ui-strings.csv + locales, sw.js | (S656 micro-feature, gate 1 answered: the maintainer asked for it after a roots site's "tap a number" lookup) **A word window's gematria badge is a button listing every word of that value** (search cleared, other filters kept as chips, Show Gematria Value on, focus on the first result) | …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-17 | `52437110` | hebrew_dictionary.html, sw.js | (S656 C) **A filter chip's ✕ is a 24×24 target** (was 20×22, flush against the chip's own button; pattern `sub-floor touch target`) | `c656/fix2.mjs`, 3 chips × 4 cells: 24×24 (before 20×22 ×12), chip +0.23 px, an edge click removes the filter; target census 0 ✕; chip row shots
-
-- [x] 2026-11-17 | `1acda03e` | hebrew_dictionary.html, sw.js | (S656 C) **The Save as Word List and Add to Word List windows speak their status line** (`role=status`, polite, from the first paint, as the rename editor's) | `S656-dictionary-wordlist-status-is-live.mjs`, keyboard only × 4 cells: 24/24 (the previous tree fails every live step); window pixels identical
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-11-19 | **S661** | iters: 5 | tools: index, contact, resources ×2, sw ×4, probe S661 | patterns fixed: print-media-leak ×1, print-trailing-padding-adds-a-sheet ×2, fixed-surface-missing-from-the-print-hide-list ×1 | pass run: G (chrome, first since S575; FOUND 5, FIXED 4) | SW: v1427→v1431
 
 - 2026-11-18 | **S660** | iters: 3 | tools: hebrew_blend_generator ×2, generator.md, sw ×2, probes S660 ×2 | patterns fixed: fixed-control-positioned-outside-the-viewport ×1, overflow-past-a-scrollers-start-edge ×1 | pass run: M (hebrew_blend_generator, first since S574; FOUND 5, FIXED 1 + 1 from …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -458,17 +464,15 @@ _(none)_
 
 - 2026-11-11 | **S642** | iters: 5 | tools: trope_tutor, Hebrew_Font_Maker, hebrew_dictionary, name_tags, sw ×4 | patterns fixed: — | pass run: M (trope_tutor, first since S558; FOUND 3, FIXED 1) + 3 queue P4s (the FM, the dictionary, Name Tags) | SW: v1352→v1356
 
-- 2026-11-11 | **S641** | iters: 5 | tools: hebrew_dictionary ×2, Hebrew_Font_Maker, name_tags, sw ×4, loop-patterns | patterns fixed: dark-base-rule-outranks-variant ×1, dark-navy-fill-matches-its-ground ×1, contrast-below-AA-on-a-tinted-or-coloured-plate ×1 | pass run: M (hebrew_dictionary, first …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S660 (2026-11-18):** hebrew_blend_generator ×2, generator.md, sw.js ×2, loop docs, probes S660 ×2 · flash_cards, index, trope_tutor, hebrew_dictionary, shared-components.md, sw.js ×3, loop docs, probe S659
+- **Snapshot S661 (2026-11-19):** index, contact, resources ×2, sw.js ×4, loop docs, probe S661 · hebrew_blend_generator ×2, generator.md, sw.js ×2, loop docs, probes S660 ×2
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
 - `async-export-runs-twice-on-a-second-press` | ACTIVE | owner F | det: recipe | last S631 | streak 0 | hits 3
 
-- `print-block-split-at-a-sheet-foot` | ACTIVE | owner G | det: scripts/loop/probes/S575-chrome-print-whole-blocks.mjs | last S617 | streak 0
+- `print-block-split-at-a-sheet-foot` | ACTIVE | owner G | det: scripts/loop/probes/S575-chrome-print-whole-blocks.mjs | last S661 | streak 1
 
 - `focus-hidden-under-a-sticky-bar` | ACTIVE | owner C | det: recipe | last S607 | streak 0
 
@@ -494,7 +498,7 @@ _(none)_
 
 - `empty-result-not-announced` | ACTIVE | owner F | det: recipe | last S530 | streak 1
 
-- `print-trailing-padding-adds-a-sheet` | ACTIVE | owner H | det: recipe | last S597 | streak 0
+- `print-trailing-padding-adds-a-sheet` | ACTIVE | owner H | det: scripts/loop/probes/S661-chrome-print-no-stray-sheet.mjs | last S661 | streak 0
 
 - `unseen-hit-box-over-controls` | ACTIVE | owner C | det: recipe | last S530 | streak 1
 
@@ -510,7 +514,7 @@ _(none)_
 
 - `infinite-box-shadow-pulse-repaints-every-frame` | ACTIVE | owner D | det: recipe | last S511 | streak 0
 
-- `new-page-print-block-without-the-ink-remap` | ACTIVE | owner G | det: recipe | last S575 | streak 2
+- `new-page-print-block-without-the-ink-remap` | ACTIVE | owner G | det: recipe | last S661 | streak 3
 
 - `page-drops-a-field-it-cannot-apply` | ACTIVE | owner P | det: recipe | last S507 | streak 0
 
@@ -594,7 +598,7 @@ _(none)_
 
 - `button-focus-lost-to-its-own-rebuild` | ACTIVE | owner F | det: recipe | last S633 | streak 0
 
-- `dark-literal-escapes-the-print-tokens` | ACTIVE | owner G | det: recipe | last S654 | streak 4
+- `dark-literal-escapes-the-print-tokens` | ACTIVE | owner G | det: recipe | last S661 | streak 5
 
 - `editor-re-parse-caps-a-merged-list` | ACTIVE | owner P | det: recipe | last S421 | streak 0
 
@@ -664,7 +668,7 @@ _(none)_
 
 - `save-over-an-existing-name-without-confirm` | ACTIVE | owner A | det: recipe | last S371 | streak 0
 
-- `fixed-surface-missing-from-the-print-hide-list` | ACTIVE | owner G | det: recipe | last S654 | streak 0
+- `fixed-surface-missing-from-the-print-hide-list` | ACTIVE | owner G | det: recipe | last S661 | streak 0
 
 - `control-class-without-a-hover-state` | ACTIVE | owner L | det: recipe | last S373 | streak 0
 
@@ -778,7 +782,7 @@ _(none)_
 
 - `lazily-loaded-dependency-renders-an-empty-shell` | DRAFT | owner A | det: none | last S416 | streak 0
 
-- `print-media-leak / var-chain-overridden-by-a-literal` | ACTIVE | owner A | det: recipe | last S626 | streak 0 | hits 1
+- `print-media-leak / var-chain-overridden-by-a-literal` | ACTIVE | owner A | det: recipe | last S661 | streak 0 | hits 2
 
 - `incomplete-print-token-reset` | ACTIVE | owner A | det: recipe | last S569 | streak 0
 
@@ -834,7 +838,7 @@ _(none)_
 
 - A recurring-pattern sweep: 2026-10-31 (**S581 — 42nd A, scoped to the outside-loop reading-assignments landing (`a7fa5f1..aab737c`, 18 of its 53 commits; `reading_assignments.html`, `js/ivrit-assignments.js`, the Trainer's +838): the security arms (no `innerHTML`, reviver-safe parses, URL sinks, an anonymous Trainer loads no assignments module), then two catalog recipes committed as detectors …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- G print & export fidelity (one tool): 2026-11-17 (**S654 — `flash_cards.html` (its 6th G: … S423 → S569 → S654; 34 commits to the page since: the drill's Pause and voice speed, the listening marks, the sheet's one-layout fit, the report's answered-only counts, the `#s=` link): six arms × EN light 1280 / HE dark 800 with the real web fonts (the drill on paper, 48 sheets, 8 report shapes + the …[full text: IMPROVEMENT_ARCHIVE.md]
+- G print & export fidelity (one tool): 2026-11-19 (**S661 — the chrome bundle (its first G since S575; 40 commits to the pages since: the lockup headers, the footer's social row, the What's-new card, Name Tags and the Holiday Guide in AllTools): 64 PDFs with the real web fonts (dark = light on all), printed controls and overflow under print media, the S575 probe 20/20, the leak arm on 7 pages, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - D performance (one tool): 2026-11-17 (**S655 — `torah_trainer.html` (its 6th D, S570 → S655, 41 commits since) + `classroom_dashboard.html` (its 7th, S576 → S655, 38 commits): the Trainer cold against S570's tree alternating (+5%), 19 interactions @4×, idle, heap, the request waterfall; the dashboard cold + 15 interactions against S576's. FOUND 1 (P4); the S570 P4 FIXED in 2 commits (190 → 50 …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -854,4 +858,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-11-08 (**S630 — 41st F, long-build progress (S542's F-next; the affordance's first F): 13 presses that build before they answer, by real clicks with an animation-frame recorder, real PDF libraries from a cache, a held CDN, double presses at raw points. FOUND 2, FIXED 2 (+1 P4). F-next: destructive-action confirms.**)
 
-**Next session (S661):** **Branch `claude/eager-goldberg-70ry8p` (S659 + S660, draft PR #414): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1427**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=109656c sw=v1427 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ New pages: the Holiday Guide (first N and P by S670; P = arms 5–6) and `letter_discrimination.html` (by S668) — override 4; not yet surfaces. ⚑ Stalest now: G chrome (S575), N atlas (S577), P atlas (S578), D atlas (S579), C atlas (S580), A (S581). ⚑ Queue: the generator's S657 Word Search P3 (do first; findings S657), then its four S660 items (footer first; findings S660); the dashboard's Bulk open (S655); torah's two S653 P4; the S570 staff double draw. ⚑ Awaiting: the Total Torah bar's ▶ and the drawer's tab labels (S653), the starter class (S652). ⚑ A: port `header-wrap-gate-below-its-ceiling`'s recipe to a detector with the signed-in arm (S659's probe); the RTL-inheritance inverse (S660). ⚑ E: links vs the host's 8,190 bytes (S651). ⚑ F/A: Hebrew-only wrappers (S649); save windows' status lines (S656); start-edge overflow on other sheet pages (S657); fixed boxes placed by a ResizeObserver alone (S660). ⚑ G: `leak.mjs`, 6 pages. ⚑ 47 seeds.
+**Next session (S662):** **Branch `claude/eager-goldberg-70ry8p` (S659 + S660 + S661, draft PR #414): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1431**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=109656c sw=v1431 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ New pages (override 4, not yet surfaces): Holiday Guide (N + P arms 5–6 by S670), `letter_discrimination.html` (by S668). ⚑ Stalest: N atlas (S577), P atlas (S578), D atlas (S579), C atlas (S580), A (S581), G atlas (S582). ⚑ Queue: the generator's S657 Word Search P3 first, then its four S660 items (footer first); the dashboard's Bulk open (S655); torah's two S653 P4; the S570 staff double draw; Resources' footer disclosures on paper (S661). ⚑ Awaiting: the Total Torah bar's ▶ and the drawer's tab labels (S653), the starter class (S652). ⚑ A: `header-wrap-gate-below-its-ceiling` as a detector with the signed-in arm (S659); the RTL-inheritance inverse (S660); a fixed card's reserved padding in a width query reaching paper, other pages (S661). ⚑ E: links vs the host's 8,190 bytes (S651). ⚑ F/A: Hebrew-only wrappers (S649); save windows' status lines (S656); start-edge overflow on other sheet pages (S657); fixed boxes placed by a ResizeObserver alone (S660). ⚑ G: `leak.mjs` on dashboard, dictionary, Letter Learner, Font Maker; re-measure one-sheet fits when a footer row lands (S661). ⚑ 47 seeds.
