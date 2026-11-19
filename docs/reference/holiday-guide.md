@@ -1,6 +1,6 @@
 # Holiday Guide (`holiday_guide.html`, `holidays/<slug>.html`)
 
-Jewish holiday coloring sheets and a picture guide to the holidays: every holiday's own symbol, when it falls and
+Jewish holiday coloring pages and a picture guide to the holidays: every holiday's own symbol, when it falls and
 what it is, the symbols that go with it, and a builder that prints those symbols as a coloring sheet. The page is
 **published**: the home page's Discover card links it (its third button), it is in `sitemap.xml`, `llms*.txt` and
 `sw.js` `CORE_ASSETS`, and the tool pages' *Related Hebrew Tools* footers and the 404 page link it. It is a page of
@@ -150,8 +150,8 @@ to move them needs `RENDER_VERSION` bumped in both page builders.
 
 ## Search
 
-The hub's title and description target "Jewish
-holiday coloring sheets", with `WebApplication`, `BreadcrumbList`, `FAQPage` and `HowTo` JSON-LD (the FAQ's English
+The hub's title, description and `h1` target "Jewish
+holiday coloring pages" (the builder and its buttons keep saying *coloring sheet*, the thing it prints), with `WebApplication`, `BreadcrumbList`, `FAQPage` and `HowTo` JSON-LD (the FAQ's English
 mirrors the footer's, `holidayguide.faq.*`); each generated page's title carries the holiday's best-known other
 spelling ("Chanukah (Hanukkah) Coloring Page") — past 60 characters, an other spelling that repeats a word of the
 name is left out ("Shemini Atzeret / Simchat Torah Coloring Page"), an English name kept ("Yom HaShoah (Holocaust

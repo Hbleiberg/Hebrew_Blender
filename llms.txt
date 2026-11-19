@@ -1,6 +1,6 @@
 # IvritSuite
 
-> Free Hebrew worksheets, flash cards, alef-bet cards, a dictionary, a weekly parsha reader, parsha emojis and classroom tools — for teachers and students.
+> Free Hebrew worksheets, flash cards, alef bet and Jewish coloring pages, a dictionary, a weekly parsha reader and classroom tools — for teachers and students.
 
 Everything runs in the browser. There are no ads, and no account is needed: presets,
 settings and custom fonts are saved on your own device and backed up by downloading a
@@ -20,9 +20,10 @@ incorporating PocketTorah audio is CC BY-SA 4.0).
 - [Trope Tutor](https://ivritsuite.com/trope_tutor.html): Learn the Torah cantillation marks — symbols, Ashkenazi and Sephardi names, and melodies — with real chanted examples and three drill modes.
 - [Trope Atlas](https://ivritsuite.com/trope_atlas.html): A side-by-side reference to the cantillation signs of the Hebrew Bible: each sign's names, rank and role, and its melody on a staff in every reading tradition, playable and movable into a common key.
 - [Hebrew Font Maker](https://ivritsuite.com/Hebrew_Font_Maker.html): Turn handwritten Hebrew letters into a real, installable font with nikkud and cantillation; export TTF, WOFF2, or UFO.
-- [Letter Learner](https://ivritsuite.com/letter_learner.html): Free printable aleph bet coloring sheets for every Hebrew letter, plus a picture to remember it by, illustrated words, its vowels read aloud and cursive handwriting.
-- [Parsha Emojis](https://ivritsuite.com/parsha_emojis.html): Free printable parsha coloring sheets for all 54 weekly Torah portions, each an emoji drawing with a one-sentence summary and why that picture was chosen.
-- [Holiday Guide](https://ivritsuite.com/holiday_guide.html): Free printable Jewish holiday coloring sheets: six symbols for each of seventeen holidays, named in Hebrew and English, with a short guide to each holiday and a countdown to the next one.
+- [Letter Learner](https://ivritsuite.com/letter_learner.html): Free printable alef bet (aleph bet) coloring pages for every Hebrew letter, plus a picture to remember it by, illustrated words, its vowels read aloud and cursive handwriting.
+- [Parsha Emojis](https://ivritsuite.com/parsha_emojis.html): Free printable parsha (parasha) coloring pages for all 54 weekly Torah portions, each an emoji drawing with a one-sentence summary and why that picture was chosen.
+- [Holiday Guide](https://ivritsuite.com/holiday_guide.html): Free printable Jewish holiday coloring pages: six symbols for each of seventeen holidays, named in Hebrew and English, with a short guide to each holiday and a countdown to the next one.
+- [Jewish Coloring Pages](https://ivritsuite.com/jewish-coloring-pages.html): Every free printable coloring page on the site in one place: the Hebrew alef bet, all 54 weekly Torah portions and the Jewish holidays, each named in Hebrew and English, with this week's parsha and the next holiday first.
 - [Hebrew Teaching Resources](https://ivritsuite.com/resources.html): A curated directory of free Hebrew learning resources, printables, and Jewish education tools.
 
 ## Optional

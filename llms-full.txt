@@ -1,6 +1,6 @@
 # IvritSuite
 
-> Free Hebrew worksheets, flash cards, alef-bet cards, a dictionary, a weekly parsha reader, parsha emojis and classroom tools — for teachers and students.
+> Free Hebrew worksheets, flash cards, alef bet and Jewish coloring pages, a dictionary, a weekly parsha reader and classroom tools — for teachers and students.
 
 Everything runs in the browser. There are no ads, and no account is needed: presets,
 settings and custom fonts are saved on your own device and backed up by downloading a
@@ -387,7 +387,7 @@ Yes. As you build each letter you can anchor its nikkud and trop marks, and the 
 
 https://ivritsuite.com/letter_learner.html
 
-Free printable aleph bet coloring sheets and an alef-bet tool for beginning readers. Every Hebrew letter has a coloring sheet (the letter in outline beside four illustrated words to color, in block print or Israeli cursive, on Letter or A4 paper), a picture to remember it by, the letter with every vowel read aloud, and how it looks in different fonts — plus a Cursive mode with every letter in Israeli handwriting and the letters it is easy to mix up with, and a Vowels mode with a name, gesture and color for every vowel family.
+Free printable alef bet (aleph bet) coloring pages and an alef-bet tool for beginning readers. Every Hebrew letter has a coloring page (the letter in outline beside four illustrated words to color, in block print or Israeli cursive, on Letter or A4 paper), a picture to remember it by, the letter with every vowel read aloud, and how it looks in different fonts — plus a Cursive mode with every letter in Israeli handwriting and the letters it is easy to mix up with, and a Vowels mode with a name, gesture and color for every vowel family.
 
 ### How to teach the Hebrew letters with the Letter Learner (about 2 minutes)
 
@@ -419,9 +419,9 @@ In Vowels, every vowel has its own card, and each vowel family has three cues th
 
 With your device's own Hebrew voice (its built-in text-to-speech). The Options card chooses the voice and whether each word gets a speaker. A device with no Hebrew voice can add one in its speech settings.
 
-**Can I print aleph bet coloring sheets?**
+**Can I print aleph bet coloring pages?**
 
-Yes, free. Every letter of the alef-bet has its own coloring sheet: the letter in outline (or with its picture hint inside), four illustrated words that start with it, and a line for the child's name. Open a letter's card for its sheet, or press Print coloring sheets to print many letters at once: choose the letters, the copies and their order, block or cursive, Letter or A4 paper, one, two or four pages to a sheet, and outlines or already colored in.
+Yes, free. Every letter of the alef-bet has its own coloring page: the letter in outline (or with its picture hint inside), four illustrated words that start with it, and a line for the child's name. Open a letter's card for its sheet, or press Print coloring sheets to print many letters at once: choose the letters, the copies and their order, block or cursive, Letter or A4 paper, one, two or four pages to a sheet, and outlines or already colored in.
 
 **Can I link straight to one letter?**
 
@@ -437,7 +437,7 @@ Yes. Free for non-commercial educational use under CC BY-NC-SA 4.0, with nothing
 
 https://ivritsuite.com/parsha_emojis.html
 
-Free printable parsha coloring sheets for all 54 weekly Torah portions: each parasha's own emoji drawing to color (or already colored in), with its English and Hebrew names, its verses, a one-sentence summary and why that picture was chosen, in English and Hebrew — with this week's parsha first and a link to practice each one in the Torah Trainer.
+Free printable parsha (parasha) coloring pages for all 54 weekly Torah portions: each parasha's own emoji drawing to color (or already colored in), with its English and Hebrew names, its verses, a one-sentence summary and why that picture was chosen, in English and Hebrew — with this week's parsha first and a link to practice each one in the Torah Trainer.
 
 ### How to teach the weekly parsha with the Parsha Emojis (about 2 minutes)
 
@@ -457,7 +457,7 @@ A picture for every weekly Torah portion: all 54 parshiyot, each drawn as an emo
 
 This week's. The page opens on the parasha read this Shabbat, with both when two are read together, and the next one when a holiday reading takes its place. Choose a book of the Torah or View All to see the others.
 
-**Can I print parsha coloring sheets?**
+**Can I print parsha coloring pages?**
 
 Yes, free, for every Torah portion. Each sheet has the parasha's emoji drawing in outline (or already colored in), its English and Hebrew names, its verses, a short summary, why that picture was chosen and a line for the child's name. Press Print coloring sheets and choose the parshiyot, the copies and their order, the paper size, one, two or four pages to a sheet, the text language and which parts print.
 
@@ -487,7 +487,7 @@ Yes. Free for non-commercial educational use under CC BY-NC-SA 4.0, with nothing
 
 https://ivritsuite.com/holiday_guide.html
 
-Free printable Jewish holiday coloring sheets and a picture guide to the holidays: each holiday's own symbol, when it falls and what it is, and six symbols for each of the seventeen — Shabbat, Havdalah and every holiday from Rosh Hashanah, Yom Kippur and Sukkot through Chanukah, Purim and Pesach to Shavuot and Tisha B'Av — drawn to color and named in Hebrew with vowels and in English — one, two, four or six to a page, with the next holiday first and the days left until it begins.
+Free printable Jewish holiday coloring pages and a picture guide to the holidays: each holiday's own symbol, when it falls and what it is, and six symbols for each of the seventeen — Shabbat, Havdalah and every holiday from Rosh Hashanah, Yom Kippur and Sukkot through Chanukah, Purim and Pesach to Shavuot and Tisha B'Av — drawn to color and named in Hebrew with vowels and in English — one, two, four or six to a page, with the next holiday first and the days left until it begins.
 
 ### How to print a Jewish holiday coloring sheet
 
@@ -500,9 +500,9 @@ Free printable Jewish holiday coloring sheets and a picture guide to the holiday
 
 **What is the Holiday Guide?**
 
-A page of Jewish holiday coloring sheets and a picture guide to the holidays. Every holiday has its own symbol, a short description and when it falls, and six symbols drawn to color and named in Hebrew and English.
+Free Jewish holiday coloring pages and a picture guide to the holidays. Every holiday has its own symbol, a short description and when it falls, and six symbols drawn to color and named in Hebrew and English.
 
-**Which holidays have coloring sheets?**
+**Which holidays have coloring pages?**
 
 All seventeen: Shabbat, Havdalah, Rosh Hashanah, Yom Kippur, Sukkot, Shemini Atzeret and Simchat Torah, Chanukah, Tu BiShvat, Purim, Pesach, Yom HaShoah, Yom HaZikaron, Yom HaAtzmaut, Lag BaOmer, Yom Yerushalayim, Shavuot and Tisha B’Av. Each has a full sheet of six symbols and a page of its own.
 
@@ -525,6 +525,36 @@ Yes. Choose Colored in and the same sheet prints in color, for a poster or a mat
 **Is the Holiday Guide free?**
 
 Yes. Free for non-commercial educational use under CC BY-NC-SA 4.0, with nothing to sign up for.
+
+---
+
+## Jewish Coloring Pages
+
+https://ivritsuite.com/jewish-coloring-pages.html
+
+Free printable Jewish and Hebrew coloring pages in three sets: an alef bet coloring page for every Hebrew letter (the letter in outline beside four illustrated words, in block print or Israeli cursive), a parsha coloring page for each of the 54 weekly Torah portions (one picture that carries the parasha's story, with its names, verses and a short summary), and Jewish holiday coloring pages with six symbols for each of 15 holidays and for Shabbat and Havdalah, each named in Hebrew and English. The page shows this week's parasha and the next holiday first.
+
+### Questions
+
+**Are these Jewish coloring pages free?**
+
+Yes. Every page is free to print and to copy for a class, a Hebrew school, a synagogue or your family, under CC BY-NC-SA 4.0. There are no ads and nothing to sign up for.
+
+**What Hebrew coloring pages are there?**
+
+Three sets. The alef bet has a page for every Hebrew letter, in block print or cursive. The weekly parsha has a page for each of the 54 Torah portions. The Jewish holidays have six symbols to color for every holiday, and for Shabbat and Havdalah.
+
+**Can I choose the paper size and the language?**
+
+Yes. Print opens a page with its options: Letter or A4 paper, and outlines to color or already colored in. The parsha pages print their text in English or Hebrew, the holiday pages label each symbol in Hebrew or English, with or without vowels, and the alef bet pages come in block print or Israeli cursive.
+
+**What ages are the pages for?**
+
+Preschool through the early elementary grades: Jewish preschools and kindergartens, first and second grade, Hebrew school and Sunday school, and families at home.
+
+**Is there a coloring page for this week's parsha?**
+
+Yes. This page shows this week's Torah portion and the next holiday first, and every parasha has a page of its own that says when it is next read.
 
 ---
 

@@ -423,8 +423,8 @@ buttons was overlooked); its Holiday Torah Readings (calendar) and Share (link) 
 drawer, so the calendar glyph is the Calendar tab's and the link glyph the Share tab's (and its Copy link's).
 Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_dashboard`, `flash_cards`,
 `torah_trainer`, `trope_tutor`, `Hebrew_Font_Maker`, `resources`, `contact`, `privacy`, `terms`,
-`account`, `404`, `letter_learner`, `parsha_emojis`, `name_tags`, `trope_atlas`, `reading_assignments`, `letter_discrimination`, `holiday_guide`, and the generated `parsha/` and `holidays/` pages (their copies are taken
-from `parsha_emojis` by `scripts/build-parsha-pages.mjs` and from `holiday_guide` by `scripts/build-holiday-pages.mjs`, so they cannot drift); the chip's glyph lives in `js/ivrit-account.js` (`ICON_USER`).
+`account`, `404`, `letter_learner`, `parsha_emojis`, `name_tags`, `trope_atlas`, `reading_assignments`, `letter_discrimination`, `holiday_guide`, and the generated `parsha/` and `holidays/` pages and `jewish-coloring-pages` (their copies are taken
+from `parsha_emojis` by `scripts/build-parsha-pages.mjs` and `scripts/build-coloring-hub.mjs`, and from `holiday_guide` by `scripts/build-holiday-pages.mjs`, so they cannot drift); the chip's glyph lives in `js/ivrit-account.js` (`ICON_USER`).
 
 ### The two byte-identical parts
 - **The `/* ═══ header-icons CSS ═══ */` block**, pasted before the main stylesheet's `</style>` on every
@@ -783,7 +783,7 @@ header-icons and holiday-icons CSS blocks.
   re-renders, it re-runs `etLoad()` and, after a keyboard press, hands the focus to the new button or the chosen
   view). Without `ParashaNotes` the cards show the icon, names and range only. `applyI18n` re-renders the cards,
   read-only.
-- **Under the cards, *Parsha coloring sheets for every Torah portion*** (`#etSheets`, screen only) names all 54 by
+- **Under the cards, *Parsha coloring pages for every Torah portion*** (`#etSheets`, screen only) names all 54 by
   book, English and Hebrew (the Hebrew leads in the Hebrew UI), each linking to that parasha's coloring page
   (`parsha/<slug>.html`, below); the cards cover this week's alone until a book is chosen, so this static list is what
   a search engine reads of the rest. Each card's foot also carries *Coloring page* (`etPageOf(p)`, same tab) before the
@@ -832,6 +832,40 @@ lowercased, apostrophes dropped and spaces turned into hyphens (`chayei-sara`, `
   `sitemap.xml` (keeping each `<lastmod>`, which `update-sitemap.mjs` owns); `update-llms-txt.mjs` lists the 54 as one
   line. `check-i18n` and `check-inline-js` scan `parsha/` too, and `node scripts/smoke-parsha-pages.mjs` loads every
   page.
+
+### The coloring pages hub (`jewish-coloring-pages.html`, generated)
+The one page that lists every coloring page on the site, for searches like "Jewish coloring pages" and "Hebrew
+coloring pages": the alef bet (each letter a link to its sheet in the Letter Learner,
+`/letter_learner.html?letter=<id>&tab=coloring`), the 54 parsha pages by book and the holiday pages, each as its
+sheet's picture with its English and Hebrew names. **Generated** by `node scripts/build-coloring-hub.mjs`; never edit
+the page. Run it after `build-parsha-pages.mjs` or `build-holiday-pages.mjs` writes anything (the page carries each
+picture's `?v=`, and its footer nav is copied) and after the Letter Learner's list of sheets changes; `--check` exits
+1 when the page is stale.
+- **Nothing is written twice:** the letters are read from `#llSheets` in `letter_learner.html` (the script fails when
+  that list's markup no longer matches its pattern), the parshiyot from `ParashaEmojis.md`, the holidays from
+  `HolidayGuide.md` (the ones that have their symbols), each picture's `?v=` from its own builder's
+  `img/inputs.json`. The script also fails while a page or picture it would link is missing, or while `sitemap.xml`
+  does not list the page.
+- **A root page with a hyphenated name** (the address is the search phrase; every other root page is a tool named
+  with underscores). Every path on it is absolute, it fetches no data, has no account wiring and stores nothing. Its
+  chrome is copied from `parsha_emojis.html` at build time, as the parsha pages copy it, and its CSP is theirs.
+- **Its inline script** owns the dark toggle, `applyI18n` (the static chrome and every picture's alt, through the
+  parsha and holiday pages' own `parshapage.img_alt` / `holidaypage.img_alt`) and **This week**: copies of the cards
+  of the parasha read this Shabbat (both when two are read together; the next one when a festival's portion takes the
+  Shabbat) and of the holiday under way or coming next (`HebCal.parshaForDate` / `nextHoliday`, on the Trainer's
+  Diaspora/Israel choice, read and never written). Without the calendar module the row stays hidden.
+- **Search:** the title, description, `h1` and the three section headings carry the phrases people type ("alef bet
+  coloring pages" with its other spellings in the paragraph, "parsha coloring pages", "Jewish holiday coloring
+  pages"); JSON-LD is a `BreadcrumbList`, a `CollectionPage` whose `ItemList` names the three sets, and a `FAQPage`
+  that mirrors the page's questions (`coloringhub.faq.*`). The three sets' own pages say "coloring pages" in their
+  title, description and headings too, and each links up to this page under its list of sheets
+  (`shared.coloring.all_link`); every footer's Related Hebrew Tools nav links it (`shared.nav.link_coloringpages`).
+- **The social card** (`jewish-coloring-pages.png`, 1200 × 630) is one sheet of each set: Noach's and Chanukah's
+  pictures and the Alef sheet cut out of the Letter Learner's own card. `--og` re-renders it (bump `OG_V` in the
+  script so a shared link refetches it); it is rendered by itself only when missing.
+- **Listed like a tool:** its `<url>` in `sitemap.xml` (hand-kept, beside the tools'), the hub's `ItemList` and
+  navigation entries (so `llms.txt`'s Tools), the Discover card's *All coloring pages* button, the 404 page's link,
+  and `sw.js` `CORE_ASSETS`. The strings are `coloringhub.*`.
 
 ## Shared UX components — the conventions all tools are converging on
 
