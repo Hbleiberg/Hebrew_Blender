@@ -472,6 +472,9 @@ html.wn-open body{padding-block-end:calc(var(--wn-h, 0px) + 28px);}
      rule is the same on every one, so a future page copies one line, not a judgement call. */
   header .hright { display: none !important; }
   .wn-pop { display: none !important; }   /* a position:fixed box repeats on every printed sheet */
+  /* …and the edge it reserves goes with it: a printed page is narrower than 767px, so the phone rule's band (the card's
+     height + 20px) opened every sheet's first page about 3in down, a sheet more on Letter (pattern print-media-leak). */
+  html.wn-open body { padding-block: 0; }
   .bookmark-btn, button.ie-btn { display: none !important; }   /* Bookmark and Import / Export do nothing on paper (the Contact link keeps its name) */
 }
 /* High Contrast (forced colours) paints both Backup mode buttons Canvas on CanvasText, so the pressed Automatic / Manual
