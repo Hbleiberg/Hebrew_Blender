@@ -549,6 +549,10 @@ body.dark #fontToast{background:#2a4070;}
   .resource-card { break-inside: avoid; }
   .view-toggle, .filter-bar { display: none !important; }
   footer { break-inside: avoid; }
+  /* Main's 32px trailing padding is screen spacing. With it, a card grid that only just fit its first sheet (the Fonts
+     view in Hebrew on Letter) moved there whole, leaving sheet 1 the heading alone and a sheet more (pattern
+     print-trailing-padding-adds-a-sheet). */
+  main { padding-block-end: 0; }
 }
 </style>
 </head>
