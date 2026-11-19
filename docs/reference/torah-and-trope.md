@@ -1149,7 +1149,9 @@ traditions were imported from, and was rebuilt on the suite's own pieces, so it 
 - **Storage:** one blob, `hebrewTropeAtlas_settings` (`key`, `view`, `groups`, `names`, `mel`, `clause`), each
   field read through a validator so an unknown stored value shows the default and stays stored; registered at the
   hub's AllTools sites (export, import, erase, `IVRIT_CFG.gather/apply`) and not synced (no registry row; the page
-  offers no account). A `#sys-<id>` address opens that melody without storing it.
+  offers no account). A `#sys-<id>` address opens that melody without storing it. A contents link is a real
+  address: a reading's `#grp-<reading>` opens that reading's first offered melody the same way (what its click
+  picks), and a Ctrl / ⌘ / Shift click is left to the browser, so the new tab lands by its address.
 - **Layout.** A sticky bar (the contents button below 1000px, the title, the Key select), a contents rail (a drawer
   below 1000px: Escape and an outside click close it, focus goes to its first link and back to the button, and pwa.js's
   install hint steps aside while it is open), the

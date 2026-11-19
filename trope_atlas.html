@@ -1319,7 +1319,7 @@ function setIndexOpen(o) {
 idxBtn.addEventListener('click', () => setIndexOpen(!idxNav.classList.contains('open')));
 idxNav.addEventListener('click', (e) => {
   const a = e.target.closest('a');
-  if (!a) return;
+  if (!a || e.ctrlKey || e.metaKey || e.shiftKey) return;   // a new tab or window is the browser's: the address lands there by itself
   const href = a.getAttribute('href');
   let id = null;
   if (href.startsWith('#sys-')) id = href.slice(5);
@@ -1453,8 +1453,13 @@ document.addEventListener('DOMContentLoaded', () => {
   Promise.all([window.I18n ? I18n.ready : null, loadData()]).then(() => {
     if (!SETS) return;
     const ha = /^#atlas-([a-z_]+)$/.exec(location.hash);
+    const hg = /^#grp-([a-z]+)$/.exec(location.hash);   // a contents link to a reading, opened in a new tab or sent on
     let el = null;
     if (hm && SETS[hm[1]]) el = document.getElementById('sys-' + hm[1]);
+    else if (hg) {   // its first offered melody, as the link's click picks, and like #sys-<id> never stored
+      const s = Object.values(SETS).find((x) => x.group === hg[1]);
+      if (s) { _hashMel = s.id; buildPhrases(); spySoon(); el = document.getElementById('sys-' + s.id); }
+    }
     else if (ha) { jumpToMark(ha[1]); return; }
     else if (/^#[a-z][a-z0-9_-]*$/.test(location.hash)) el = document.getElementById(location.hash.slice(1));
     if (el) el.scrollIntoView();
