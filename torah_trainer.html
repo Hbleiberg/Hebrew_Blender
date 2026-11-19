@@ -1639,6 +1639,8 @@ body.dark .form-row select, body.dark .form-row input[type="text"], body.dark .f
 @media (pointer:coarse) {
   .tt-ctrl select, .tt-ctrl input[type="number"], .tt-ctrl input[type="text"], .tt-empty select, .tt-audio-pause select,
   .form-row select, .form-row input[type="text"], .form-row input[type="number"], .form-row input[type="date"] { font-size:16px; }
+  /* The Copy bar's preview is read-only, but a tap to select its text still focuses it (0.9rem, 14.4px). */
+  #ttCopyTextarea { font-size:16px; }
 }
 /* The two drawer selects whose options outgrow the 170px cap: the transliteration Style ("Modern Israeli [DEFAULT]"
    showed as "…[DEFAU") and the Trope staff's Melody ("Year Round [Binder-Reform]" as "…[Binder-Re"). Their short
