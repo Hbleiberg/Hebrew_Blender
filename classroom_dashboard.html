@@ -10192,6 +10192,18 @@ else ivritInit();
       setWeekFocus(+cell.dataset.day, +cell.dataset.period, false);
       applyArmedToCell(cell);
     });
+    // Keyboard focus never rests under the sticky Start / End column or past the box's edge: the browser's own focus
+    // scroll stops at the box's edge, which the column covers, and leaves a partly shown control where it is. A pointer
+    // press stays put (its click or drag-paint would miss the cell). (pattern focus-hidden-under-a-sticky-bar)
+    grid.addEventListener('focusin', e => {
+      const el = e.target, wrap = grid.parentElement, lead = grid.querySelector('.swm-timecell');
+      if (!lead || el.matches(':active') || !(el.tagName === 'INPUT' || el.matches(':focus-visible'))) return;   // a time field entered backwards does not match :focus-visible
+      // the room the column takes while it sticks (it slides away with the grid's last columns, so its own place is no guide); a time field inside it only has to be in the box
+      const r = el.getBoundingClientRect(), w = wrap.getBoundingClientRect(), pad = el.closest('.swm-timecell') ? 6 : lead.offsetWidth + 6;
+      const rtl = getComputedStyle(wrap).direction === 'rtl';
+      const left = w.left + (rtl ? 6 : pad), right = w.right - (rtl ? pad : 6);
+      if (r.left < left) wrap.scrollLeft -= left - r.left; else if (r.right > right) wrap.scrollLeft += r.right - right;
+    });
     grid.addEventListener('pointerdown', e => {
       if (e.pointerType !== 'mouse' || e.button !== 0) return;
       const cell = e.target.closest('.swm-cell');
