@@ -452,6 +452,9 @@ input, select, textarea, button { font-family: inherit; color: inherit; }
   text-decoration:none;
 }
 .skip-link:focus { top:0; outline:2px solid var(--focus-ring); outline-offset:2px; }
+/* The skip link's target takes the focus without a ring of its own: a click on bare page ground focuses it too, and
+   the next key press would ring the whole column (pattern skip-target-rings-the-whole-column). */
+main:focus { outline:none; }
 .app-header {
   position: sticky; top: 0; z-index: 50;
   background: var(--navy);

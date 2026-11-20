@@ -62,6 +62,14 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
 
+- [ ] P3 (**NEW S665 C**) | trope_atlas.html | **In forced colours with a stored theme opposite the system palette every staff is unreadable** (ink 1.28–1.42:1 on the forced ground: `.tu-pstaff { color: var(--text) }` is the page's own, never forced; `c665/c5.mjs`, `forced-mismatch-*.png`): `CanvasText` in the forced-colours block; check the Tutor and the Trainer for the same rule. | found S665
+
+- [ ] P3 (**NEW S665 C**) | trope_atlas.html | **Below 1000px, Tab past the open contents drawer's last link leaves it open over the focused control** (the sign table's first link 54 × 38px under it, both UIs): close it when focus leaves, as Escape does. | found S665
+
+- [ ] P4 (**NEW S665 C; pattern `selected-state-lost-in-forced-colors`**) | trope_atlas.html | **The contents rail's "you are here" link is colour alone**: in forced colours every link is LinkText and each sub-link's transparent 2px edge shows, so `.cur` reads like the rest (`aria-current` is set). | found S665
+
+- [ ] P4 (**NEW S665 C**) | trope_atlas.html | **At 1000px and up, Enter on a contents link to a melody or a reading leaves focus in the rail** (the page scrolls to the phrases; the next Tab is the rail's next link), while a section link moves it to its section and the drawer's lands on the Melody select. | found S665
+
 - [ ] P4 (**NEW S660 M; pattern `dark-navy-fill-matches-its-ground`**) | hebrew_blend_generator.html | **In dark mode the Self-Check timer and score bars and the sidebar's Print tip vanish**: `--warm-gray` is the dark card colour, so each plate reads 1.00:1 on its ground (light 1.31). S641's tint would do, but the score counts need lighter greens and reds on it (#27ae60 → 4.08:1). | found S660
 
 - [ ] P4 (**NEW S660 M**) | hebrew_blend_generator.html | **A blend Self-Check in an 800px window keeps five 47px cards**: two-digit numbers run into the Hebrew, every hint wraps, and the controls row wraps to three lines (the sheet is 363px beside the sidebar). | found S660
@@ -455,6 +463,8 @@ _(none)_
 - **Snapshot S664 (2026-11-19):** trope_atlas, hebrew_blend_generator, classroom_dashboard ×2, torah-and-trope.md, dashboard.md, sw.js ×4, loop docs, probes S664 ×4 · hebrew_blend_generator ×2, smoke-sync, ops.md, sw.js ×2, loop docs, probes S663 ×2, detector restore-step-undoes-a-saved-choice
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
+
+- `skip-target-rings-the-whole-column` | ACTIVE | owner C | det: recipe | last S665 | streak 0 | hits 1
 
 - `restore-step-undoes-a-saved-choice` | ACTIVE | owner P | det: scripts/loop/detect-restore-step-undoes-a-saved-choice.mjs | last S663 | streak 0 | hits 3
 
