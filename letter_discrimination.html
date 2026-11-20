@@ -174,6 +174,8 @@ body.dark .ld-chip[aria-pressed="true"] { background:#2a4070; border-color:#4a6a
    (5.8 / 5.6:1), and opacity:1 because Firefox fades a placeholder by default. */
 .ld-input::placeholder { color:var(--muted); opacity:1; }
 input.ld-num { inline-size:70px; }
+/* iOS zooms the page into any focused field under 16px (and leaves it zoomed): the suite's house rule under a finger. */
+@media (pointer: coarse) { .ld-input { font-size:16px; } }
 .ld-fonts { display:grid; grid-template-columns:repeat(auto-fill, minmax(210px, 1fr)); gap:4px 14px; margin-bottom:8px; }
 .ld-fonts h3 { grid-column:1 / -1; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--muted); margin-top:6px; }
 .ld-font { display:flex; align-items:center; gap:8px; font-size:0.9rem; min-height:34px; cursor:pointer; }
@@ -378,7 +380,7 @@ footer a { color:var(--gold-text); }
     <fieldset class="ld-field">
       <legend data-i18n="letterdisc.setup.participant_legend">Participant</legend>
       <p class="ld-hint" data-i18n="letterdisc.setup.participant_hint">Optional. Use a code, not a name — it is written into the CSV.</p>
-      <label><span class="vh" data-i18n="letterdisc.setup.participant_label">Participant code</span><input type="text" id="ldCode" class="ld-input" maxlength="40" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="P-01" data-i18n-placeholder="letterdisc.setup.participant_placeholder"></label>
+      <label><span class="vh" data-i18n="letterdisc.setup.participant_label">Participant code</span><input type="text" id="ldCode" class="ld-input" maxlength="40" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="P-01" data-i18n-placeholder="letterdisc.setup.participant_placeholder"></label>
     </fieldset>
 
     <div class="ld-actions">

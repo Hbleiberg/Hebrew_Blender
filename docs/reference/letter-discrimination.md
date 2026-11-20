@@ -52,7 +52,9 @@ worksheet: 9×9, ד ר ב כ ז ו ע צ, its eight colors.
   viewport and never drops below `min(360px, the screen − 24px)`, so a landscape phone's grid fills the screen once the
   page scrolls past the header; a portrait phone's grid still fills the width (the 560px rule). `ldFitPaper()` opens a
   paper that does not fit below the round bar from its own top edge (a phone: the grid, the key and Done on one
-  screen), because the swipe made to reach the rest would land on the grid and paint. A mouse sees neither.
+  screen), because the swipe made to reach the rest would land on the grid and paint. A mouse sees neither. The
+  setup's Rows, Columns and code fields (`.ld-input`) are 16px under a finger, or iOS zooms the page into the focused
+  field; the code field is never autocorrected or capitalised.
 - **The key column fits the window's height** (the maintainer's call): above 820px it is 22% of the stage, capped so the
   key (`--ld-krows` rows, set when a round starts) and the tools under it end inside the window (the column starts
   ~170px down, the tools take 165px), with a 100px floor; at 820px and down it keeps 118px. The key's letter is capped
