@@ -14,6 +14,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P2 (**S567 P; S573 P root-caused — a shared module, not small**) | js/ivrit-saves.js | **A page write made after a hydration planned its uploads, before it ends, is not sent, and the tab's next sync downloads the account's copy over it**: the hook is not armed yet, and step 4's `snapshotNames` takes the post-write hash as the tab's seen view, so `actionFor` reads it as another tab's write. …[full text: IMPROVEMENT_ARCHIVE.md]
 
+- [ ] P3 (**NEW S669 G — pattern `header-ink-on-a-plate-print-drops`; held by the variety cap**) | trope_atlas.html | **Printed, the header's title is white on white (Chrome greys it to #ababab, 2.3:1), its tagline gold-light at 1.5:1**: the seven pages' rule (`62ed3626`) in the atlas's print block, then the atlas out of the S669 header probe's `OPEN`. | found S669
+
 - [ ] P3 (**NEW S644 H — not small**) | Hebrew_Font_Maker.html | **Below 1181px the fullscreen Draw canvas window (`100vh − 300px`) clips its drawing**: at 1024×768 the baseline sits 16px under its edge. | found S644
 
 - [ ] P3 (**NEW S593 G — verify on a Mac first**) | Hebrew_Font_Maker.html | **Every font named only in Hebrew exports with nameID 6 `MyHebrewFont-Regular` (and `MyHebrewFont.ttf`)**: two such fonts share one PostScript name, which Font Book and Mac apps key fonts by; a stem from the name (a short hash or a transliteration) would keep them apart. | found S593
@@ -61,6 +63,12 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P3 (**NEW 2026-09-26**) | trope_tutor.html (trope_index.json) | **8 Learn example clips sit where PocketTorah's taps slip by a word** (`build-trope-phrases.mjs` TIMING_SLIPS), so each likely plays a neighbouring word; the index builder could skip those verses. **S454: not small** (findings S454). | found 2026-09-26
 
 - [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
+
+- [ ] P4 (**NEW S669 G — pattern `header-ink-on-a-plate-print-drops`**) | Hebrew_Font_Maker.html | **Ctrl+P prints the whole app, the header's white title and gold-light controls pale on white**: decide first whether the page gets a print block at all (its PDFs come from its own exports), then out of the header probe's `OPEN`. | found S669
+
+- [ ] P4 (**NEW S669 G**) | trope_atlas.html | **Printed, the phrase section never names the chosen phrase group** (its chips are off paper): a one-group handout shows rows keeping their numbers in the whole chart, under the melody's name alone. | found S669
+
+- [ ] P4 (**NEW S669 G**) | reading_assignments.html | **Printed signed out, the page's Sign in button prints** (a dead control on paper). | found S669
 
 - [ ] P4 (**NEW S666 A; pattern `svg-ink-keeps-the-page-theme-in-forced-colors` — a shared block**) | `holiday-icons` (holiday_guide, `holidays/`, classroom_dashboard, torah_trainer) | **In a light contrast theme with the site left in dark mode the holiday icons draw dark-theme ink on white** (10 icons on the Holiday Guide below 2:1). | found S666
 
@@ -362,6 +370,16 @@ _(none)_
 
 ## Done
 
+- [x] 2026-11-20 | (S669 close-out) | branch/deploy note | **S669 = G on `trope_atlas.html` (its 2nd, S582 → S669): FOUND 3 + 1 suite shape + 1 by the way; FIXED 2 on the atlas, the shape on 7 pages (new pattern `header-ink-on-a-plate-print-drops`) and the Holiday Guide's dark print; 3 logged.** Draft PR #417 (continued), `sw.js` v1459 → v1463; nothing live changed.
+
+- [x] 2026-11-20 | `6401b024` | holiday_guide.html, holiday-guide.md, sw.js | (S669, found by fix 3's PDFs; pattern `new-page-print-block-without-the-ink-remap`) **Printed from dark mode, the Holiday Guide takes the light palette** | dark = light 40 / 40 sheets (before 0 / 40); the light prints and the maker's run unchanged
+
+- [x] 2026-11-20 | `62ed3626` | account, contact, privacy, terms, resources, holiday_guide, reading_assignments, shared-components.md, sw.js | (S669, the G pass's suite shape; NEW pattern `header-ink-on-a-plate-print-drops`) **Printed, the header names the page in navy ink, not white on white** | probe S669 22 / 22 pages (before 15); 56 PDFs title ink 135–171 → 38, sheets equal
+
+- [x] 2026-11-20 | `ce1e6fc8` | trope_atlas.html, torah-and-trope.md, sw.js | (S669 G) **The printed sheet names the key its staffs are drawn in** (the bar's Key label and choice, the select as text) | probe S669 key 12 / 12 (before 0); no sheet count changed
+
+- [x] 2026-11-20 | `295e3868` | trope_atlas.html, torah-and-trope.md, sw.js | (S669 G; pattern `print-block-split-at-a-sheet-foot`) **Printed, a sign's card head stays with its first figure and a heading with its text** | probe S669 8 / 8, web and system faces (before 0 / 8); 24 PDFs dark = light; the screen pixel-equal 16 / 16
+
 - [x] 2026-11-20 | (S668 close-out) | branch/deploy note | **S668 = P on `letter_discrimination.html` (its first, override 4: no account by design) + chrome (a clean surface buys a second; S596 → S668): both clean; FIXED 4 from the queue.** Draft PR #417 (continued), `sw.js` v1455 → v1459; nothing live changed; the eight smokes 897 / 897 (`--sdk` 2.116.0).
 
 - [x] 2026-11-20 | `e1d2bfb9` | classroom_dashboard.html, dashboard.md, sw.js | (S668, the S666 P4) **Schedule Sync's Start / End column holds at the week grid's far end with the weekend shown** (`min-width: min-content`, not 540px) | probe S668 24 / 24 (before 20); 36 / 36 pixel-equal at scroll 0
@@ -404,19 +422,11 @@ _(none)_
 
 - [x] 2026-11-20 | `02cfbe51` | trope_atlas.html, torah-and-trope.md, sw.js | (S665 C; pattern focus-hidden-under-a-sticky-bar) **Keyboard focus never rests under the sticky bar or the Grid's sticky heads** (7–10 of 84 arrow presses and 9–15 of 80 Tab stops per cell were covered; the page's and the box's scroll padding + a sideways step) | probe S665 23 / 23 (before 9 / 23); S664's address probe …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-11-19 | (S664 close-out) | branch/deploy note | **S664 = D on `trope_atlas.html` (its 2nd, S579 → S664) + `hebrew_blend_generator.html` (a clean surface buys a second; S590 → S664): both at their last D's cost against that D's tree, alternating — the atlas cold, ten starting states, 20 interactions, scrolling, keys, the singer, paper, heap, a per-frame trace; the generator cold ×7, 50 …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-19 | `6844f638` | classroom_dashboard.html, sw.js | (S664, the S655 P4's second half) **Bulk preset edit's sticky-height properties restyle the dialog, not every card** (`--bpe-head-h` / `--bpe-foot-h` registered `inherits: false`: a fold of the master row restyled 6,856 elements over 40 presets, 21–35 ms @1×; now 3) | `restyle.mjs` trace counts; open's style 163 / 158 → 120 / 121 …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-19 | `7f3ba7d2` | classroom_dashboard.html, dashboard.md, sw.js | (S664, the S655 P4) **Bulk preset edit lays out its switch groups on a grid, at half the layout cost** (a balanced `columns` box per card was over half of the editor's layout) | `bulk.mjs` 40 presets @4× alternating: layout 308 / 420 → 144 / 181 ms, first task 115–133 → 95–110, all cards 814–945 → 661–710; …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-19 | `0d70a64c` | hebrew_blend_generator.html, sw.js | (S664, the S660 P4; pattern RTL-inheritance-on-a-Latin-script-container, the inverse) **In the Hebrew UI a Self-Check's timer, score bar and controls read from the right** (Start / Pause / Reset and the counts ran from the left, Reset stood at the right; five Self-Checks) | probe S664 14 / 14 (before 9 / 14); S590 off-paper 6 / …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-19 | `65332711` | trope_atlas.html, torah-and-trope.md, sw.js | (S664 D, found by the load-path arm) **A contents link to a reading lands on its melodies in a new tab** (`#grp-<reading>` opened at the top on the Torah melody; a Ctrl / ⌘ / Shift click switched the melody in place and opened nothing) | probe S664 28 / 28 by address, Ctrl+click and middle click (before 10 / 28)
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-11-20 | **S669** | iters: 5 | tools: trope_atlas ×2, account, contact, privacy, terms, resources, holiday_guide ×2, reading_assignments, 4 reference docs, sw ×4, probes S669 ×3 | patterns fixed: print-block-split-at-a-sheet-foot ×1, header-ink-on-a-plate-print-drops ×7 (new), …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - 2026-11-20 | **S668** | iters: 5 | tools: letter_discrimination, reading_assignments, flash_cards, classroom_dashboard, 2 reference docs, sw ×4, probes S668 ×2 | patterns fixed: text-field-under-16px-zooms-on-ios-focus ×1, vh-capped-sheet-without-dvh-twin ×1 | pass run: P (letter_discrimination, …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -456,11 +466,9 @@ _(none)_
 
 - 2026-11-13 | **S650** | iters: 5 | tools: Hebrew_Font_Maker ×2, classroom_dashboard ×2, font-maker.md ×2, dashboard.md ×2, sw ×4 | patterns fixed: — | pass run: D (Hebrew_Font_Maker, first since S565; FOUND 4, FIXED 2 + 2 from the queue) | SW: v1378→v1382
 
-- 2026-11-13 | **S649** | iters: 5 | tools: classroom_dashboard ×2, hebrew_blend_generator ×2, dashboard.md ×2, sw ×4 | patterns fixed: RTL-inheritance-on-a-Latin-script-container ×1, contrast-below-AA-on-a-tinted-or-coloured-plate ×1 | pass run: H (classroom_dashboard, first since S564; FOUND 7, …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S668 (2026-11-20):** letter_discrimination, reading_assignments, flash_cards, classroom_dashboard, 2 reference docs, sw.js ×4, loop docs, probes S668 ×2 · S667: letter_discrimination ×2, trope_atlas ×2, 2 reference docs, sw.js ×4, probes S667 ×4
+- **Snapshot S669 (2026-11-20):** trope_atlas ×2, account, contact, privacy, terms, resources, holiday_guide ×2, reading_assignments, 4 reference docs, sw.js ×4, loop docs, probes S669 ×3 · S668: letter_discrimination, reading_assignments, flash_cards, classroom_dashboard, 2 reference docs, sw.js ×4, probes S668 ×2
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -474,7 +482,7 @@ _(none)_
 
 - `async-export-runs-twice-on-a-second-press` | ACTIVE | owner F | det: recipe | last S631 | streak 0 | hits 3
 
-- `print-block-split-at-a-sheet-foot` | ACTIVE | owner G | det: scripts/loop/probes/S575-chrome-print-whole-blocks.mjs | last S661 | streak 1
+- `print-block-split-at-a-sheet-foot` | ACTIVE | owner G | det: scripts/loop/probes/S575-chrome-print-whole-blocks.mjs | last S669 | streak 0
 
 - `focus-hidden-under-a-sticky-bar` | ACTIVE | owner C | det: recipe | last S666 | streak 0
 
@@ -500,7 +508,7 @@ _(none)_
 
 - `empty-result-not-announced` | ACTIVE | owner F | det: recipe | last S530 | streak 1
 
-- `print-trailing-padding-adds-a-sheet` | ACTIVE | owner H | det: scripts/loop/probes/S661-chrome-print-no-stray-sheet.mjs | last S661 | streak 0
+- `print-trailing-padding-adds-a-sheet` | ACTIVE | owner H | det: scripts/loop/probes/S661-chrome-print-no-stray-sheet.mjs | last S669 | streak 0
 
 - `unseen-hit-box-over-controls` | ACTIVE | owner C | det: recipe | last S530 | streak 1
 
@@ -602,7 +610,7 @@ _(none)_
 
 - `button-focus-lost-to-its-own-rebuild` | ACTIVE | owner F | det: recipe | last S633 | streak 0
 
-- `dark-literal-escapes-the-print-tokens` | ACTIVE | owner G | det: recipe | last S661 | streak 5
+- `dark-literal-escapes-the-print-tokens` | ACTIVE | owner G | det: recipe | last S669 | streak 0
 
 - `editor-re-parse-caps-a-merged-list` | ACTIVE | owner P | det: recipe | last S421 | streak 0
 
@@ -842,7 +850,7 @@ _(none)_
 
 - A recurring-pattern sweep: 2026-11-20 (**S666 — 43rd A with the A2 parse classification, `6f9a5992..26421db7` (the first full sweep since S530: 18,315 added lines over 37 files; Name Tags', the Trope Atlas', the Holiday Guide's, `letter_discrimination.html`'s, the coloring hub's and `trope_review.html`'s first A): 32 static arms over the added lines (plants 32 / 32), 10 new storage keys, 44 …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- G print & export fidelity (one tool): 2026-11-19 (**S661 — the chrome bundle (its first G since S575; 40 commits to the pages since: the lockup headers, the footer's social row, the What's-new card, Name Tags and the Holiday Guide in AllTools): 64 PDFs with the real web fonts (dark = light on all), printed controls and overflow under print media, the S575 probe 20/20, the leak arm on 7 pages, …[full text: IMPROVEMENT_ARCHIVE.md]
+- G print & export fidelity (one tool): 2026-11-20 (**S669 — `trope_atlas.html` (its 2nd G, S582 → S669; 22 commits to the page since): 24 PDFs with the real web fonts (the Grid's swapped-in cards / Stacked with a common key, note names and the Eicha phrases / the preview × EN/HE × light/dark × Letter/A4; dark = light on all), sheet markers, print media at 739 / 718 (controls fired), the singer …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - D performance (one tool): 2026-11-19 (**S664 — `trope_atlas.html` (its 2nd D, S579 → S664, 25 commits since) + `hebrew_blend_generator.html` (a clean surface buys a second; S590 → S664, 40 commits): each against its last D's tree, alternating — the atlas cold, ten starting states, 20 interactions @4×, scrolling, keys, the singer, paper, heap, a per-frame trace (a repaint is one 12–22 ms …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -862,4 +870,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-11-08 (**S630 — 41st F, long-build progress (S542's F-next; the affordance's first F): 13 presses that build before they answer, by real clicks with an animation-frame recorder, real PDF libraries from a cache, a held CDN, double presses at raw points. FOUND 2, FIXED 2 (+1 P4). F-next: destructive-action confirms.**)
 
-**Next session (S669):** **Branch `claude/sharp-shannon-3u51ut` (S667–S668, draft PR #417): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1459**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=9e702ae sw=v1459 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ New pages (override 4): Holiday Guide's N by S670 (its P arms 5–6 met by S668's static arms); `jewish-coloring-pages.html` (N by S677). ⚑ Stalest next: G/H/M atlas (S582–S584). ⚑ Queue: S666's P4s (`holiday-icons` in forced colours; `trope_review` below 340px); the atlas's S665 P4s; the generator's S660 P4s; torah's S653 P4s; the S570 staff double draw. ⚑ Awaiting: the atlas's phone layout (S662), the Trainer's ▶ and drawer tabs (S653), the starter class (S652). ⚑ N: the Font Maker's Draw window (S644 P3). ⚑ C / H on the Font Maker: the QA table's sticky row labels (S666). ⚑ E: links vs 8,190 bytes (S651). ⚑ F/A: Hebrew-only wrappers (S649); status lines (S656); ResizeObserver boxes (S660). ⚑ G: `leak.mjs` on 4 tools (S661). ⚑ P: the sync smoke in a lane of ≤ 3 (held at S668). ⚑ 47 seeds.
+**Next session (S670):** **Branch `claude/sharp-shannon-3u51ut` (S667–S669, draft PR #417): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1463**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=9e702ae sw=v1463 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ **Due (override 4): the Holiday Guide's first N at S670** (its P arms 5–6 met at S668, its page print fixed at S669); `jewish-coloring-pages.html` (N by S677). ⚑ Stalest next: H / M atlas (S583–S584). ⚑ Queue top: the atlas's header on paper (S669 P3, one rule; then out of the header probe's `OPEN`). ⚑ Queue: S666's P4s; the atlas's S665 P4s; the generator's S660 P4s; torah's S653 P4s; the S570 staff double draw. ⚑ Awaiting: the atlas's phone layout (S662), the Trainer's ▶ and drawer tabs (S653), the starter class (S652). ⚑ N: the Font Maker's Draw window (S644 P3). ⚑ E: links vs 8,190 bytes (S651). ⚑ F/A: Hebrew-only wrappers (S649); status lines (S656); ResizeObserver boxes (S660). ⚑ G: `leak.mjs` on 4 tools (S661). ⚑ P: the sync smoke in a lane of ≤ 3. ⚑ 47 seeds.
