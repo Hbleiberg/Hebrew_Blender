@@ -480,6 +480,19 @@ html[lang="he"] footer [style*="letter-spacing:0.08em"] { letter-spacing:normal 
   /* Nor does a long figure scroll in its row: it shrinks to the sheet's column, whole. */
   .at-stf { overflow:visible; min-width:0; }
   .at-stf svg { max-width:100%; height:auto; }
+  /* A heading never ends a sheet alone: a section's heading stays with the text under it and a sign's card head with
+     its first figure (each print left one to seven card heads at a sheet's foot, their staffs over the page under no
+     name); a figure with its melody's name, a phrase row and the footer stay whole (the head's rule alone is met by a
+     figure's top border, its staff over the page). The cards and rows stack as blocks on paper: as grid rows Chrome
+     kept no head with its figure, and with these rules it printed three blank sheets. */
+  .at-cards, .at-rows { display:block; }
+  .at-card + .at-card { margin-block-start:14px; }
+  main h2, main h3, .at-card .head, .at-melinfo .syshead { break-after:avoid; }
+  .at-card .trad, .at-prow, footer { break-inside:avoid; }
+  /* The sheet that costs is paid back (pattern print-trailing-padding-adds-a-sheet): main's 40px screen padding under
+     the sources and a footer link's 5px touch padding are nothing on paper, and English A4 printed its footer alone. */
+  .at-main { padding-block-end:0; }
+  footer a { padding-block:0; }
 }
 /* Reduced motion: the universal neutralizer (0.001ms rather than 0 so animationend still fires). */
 @media (prefers-reduced-motion: reduce) {
