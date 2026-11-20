@@ -204,6 +204,11 @@ footer a { display: inline-block; padding-block: 5px; }
      This landed here first; it is now the same rule on all six chrome pages, on the simpler
      ground that nothing on paper can be clicked anywhere. */
   header .hright { display: none !important; }
+  /* The header's navy plate is a background, which paper drops, so its white title and gold-light tagline printed
+     white on white (the page's own name a pale grey, 2.3:1): on paper the plate is white under the lockup's navy ink
+     (with background graphics on, the plate would come back under that ink). */
+  header, body.dark header { background:#fff !important; color:#1a2744; }
+  header p { color:#6b6050; }
   /* Paper keeps the old 820px column: the sheet's width already caps the line, and the screen's 680px
      measure would only add a page to the copy a school files. */
   main { max-width: 820px; }

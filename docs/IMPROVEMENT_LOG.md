@@ -518,6 +518,8 @@ _(none)_
 
 - `new-page-print-block-without-the-ink-remap` | ACTIVE | owner G | det: recipe | last S661 | streak 3
 
+- `header-ink-on-a-plate-print-drops` | ACTIVE | owner G | det: scripts/loop/probes/S669-header-title-prints-in-ink.mjs | last S669 | streak 0 | hits 7
+
 - `page-drops-a-field-it-cannot-apply` | ACTIVE | owner P | det: recipe | last S507 | streak 0
 
 - `theme-token-on-an-always-dark-surface` | ACTIVE | owner N | det: recipe | last S572 | streak 2

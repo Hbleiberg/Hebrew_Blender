@@ -262,6 +262,11 @@ html.ivframed #framedOut p { color: var(--muted); margin-block-end: 20px; }
     background:#fff !important; color:#1a2744 !important;
   }
   header .hright { display: none !important; }
+  /* The header's navy plate is a background, which paper drops, so its white title and gold-light tagline printed
+     white on white (the page's own name a pale grey, 2.3:1): on paper the plate is white under the lockup's navy ink
+     (with background graphics on, the plate would come back under that ink). */
+  header, body.dark header { background:#fff !important; color:#1a2744; }
+  header p { color:#6b6050; }
   /* The page's buttons do nothing on paper: Save name, Refresh, Download everything, Delete my account…
      (and the delete steps' own) and each list's Show / Hide names printed as dead controls, and Delete
      alone pushed onto a sheet of its own on Letter. The names a toggle opened stay printed. */

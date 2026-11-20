@@ -304,6 +304,11 @@ footer a { display: inline-block; padding-block: 5px; }
      Suite-wide across all six chrome pages (privacy + terms took it first at 44bd07c) -- the
      rule is the same on every one, so a future page copies one line, not a judgement call. */
   header .hright { display: none !important; }
+  /* The header's navy plate is a background, which paper drops, so its white title and gold-light tagline printed
+     white on white (the page's own name a pale grey, 2.3:1): on paper the plate is white under the lockup's navy ink
+     (with background graphics on, the plate would come back under that ink). */
+  header, body.dark header { background:#fff !important; color:#1a2744; }
+  header p { color:#6b6050; }
   /* On A4 the Support tile's title printed alone at the first sheet's foot, its text and links overleaf. */
   .cs-tile { break-inside: avoid; }
   /* On paper the form is empty boxes and a Send button, and the payment tabs and "Open PayPal →" are links nobody can

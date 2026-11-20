@@ -553,7 +553,10 @@ are `brand/ivritsuite-lockup-english-dark.svg`, drawn for a dark ground, and `br
 the standard lockup with a navy wordmark, both precached in `sw.js`.
 - **The header is navy in both themes, so the screen always shows the dark-ground lockup.** Every page prints
   `economy`, so paper drops the navy bar: the markup carries both images (`.bl-screen`, `.bl-print`) and the block's
-  print rule swaps them, the print copy with an empty `alt`.
+  print rule swaps them, the print copy with an empty `alt`. The title and tagline beside it are the page's own: its
+  print block gives the header a white plate under navy ink and a muted tagline (`header, body.dark header {
+  background:#fff !important; color:#1a2744; } header p { color:#6b6050; }`, or its own equivalent) and hides
+  `header .hright` — a page that leaves the white title prints its own name pale grey on white.
 - **The home page's heading is the lockup** (`<h1 class="brand-lockup">`, `alt="IvritSuite"`; the brand name is the
   same in both languages, so the alt has no key) and the 404's is the same heading with a link home inside it. **On
   every other page the lockup is a link home** before the page's own title, `.bl-div` drawing the divider between them,

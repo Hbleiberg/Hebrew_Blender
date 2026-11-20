@@ -497,6 +497,13 @@ footer a { display: inline-block; padding-block: 5px; }
   body.hg-open, body.dark.hg-open { display:block; min-height:0; background:#fff !important; color:#000 !important; }
   body.hg-open > :not(#hgPrintArea) { display:none !important; }
   body.hg-open #hgPrintArea { display:block !important; }
+  /* Nothing on paper can be clicked: the header's links and toggles go, its identity stays (the chrome pages' rule). */
+  header .hright { display:none !important; }
+  /* The header's navy plate is a background, which paper drops, so its white title and gold-light tagline printed
+     white on white (the page's own name a pale grey, 2.3:1): on paper the plate is white under the lockup's navy ink
+     (with background graphics on, the plate would come back under that ink). */
+  header, body.dark header { background:#fff !important; color:#1a2744; }
+  header p { color:#6b6050; }
   .hg-paper { width:100%; height:100vh; break-inside:avoid; }
   .hg-paper + .hg-paper { break-before:page; }
   #hgPrintArea .hg-sheet { width:100%; height:100%; min-height:0; aspect-ratio:auto; border:none; box-shadow:none; }
