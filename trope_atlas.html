@@ -1172,19 +1172,28 @@ function buildCards(host) {
   host.style.scrollPaddingBlockStart = host.style.scrollPaddingInlineStart = '';
   host.appendChild(wrap);
 }
-function buildFilter() {
-  const host = document.getElementById('atGroups');
+// A chip row is redrawn by its own press. Where the same chips stand, only their pressed state changes: a rebuilt row
+// dropped the chip that had just been pressed, so a keyboard user's focus fell to <body> and the next Tab began again
+// from the top of the page. `specs` is the row as it should stand: [text, pressed, make()] per chip.
+function drawChips(host, specs) {
+  const old = [...host.children];
+  const same = old.length === specs.length && old.every((b, i) => b.textContent === specs[i][0]);
+  if (same) { old.forEach((b, i) => b.setAttribute('aria-pressed', specs[i][1] ? 'true' : 'false')); return; }
   host.textContent = '';
+  for (const [, on, make] of specs) { const b = make(); b.setAttribute('aria-pressed', on ? 'true' : 'false'); host.appendChild(b); }
+}
+function buildFilter() {
   const g = groupsVal();
-  const chip = (label, on, fn) => { const b = h('button', { type: 'button', class: 'at-chip', 'aria-pressed': on ? 'true' : 'false' }, label); b.addEventListener('click', fn); host.appendChild(b); };
-  chip(I18n.t('atlas.table.all'), !g, () => setGroups(null));
+  const chip = (label, on, fn) => [label, on, () => { const b = h('button', { type: 'button', class: 'at-chip' }, label); b.addEventListener('click', fn); return b; }];
+  const specs = [chip(I18n.t('atlas.table.all'), !g, () => setGroups(null))];
   for (const id of GROUPS) {
     if (!Object.values(SETS).some((s) => s.group === id)) continue;
-    chip(groupName(id), !!g && g.includes(id), () => {
+    specs.push(chip(groupName(id), !!g && g.includes(id), () => {
       const cur = groupsVal() || [];
       setGroups(cur.includes(id) ? cur.filter((x) => x !== id) : cur.concat(id));
-    });
+    }));
   }
+  drawChips(document.getElementById('atGroups'), specs);
 }
 function setGroups(list) { settings.groups = list && list.length ? list : null; saveSettings(); buildAtlas(); }
 // Paper has no sideways scroll, so the Grid's one column per melody would print the first one or two: the sheet gets
@@ -1300,15 +1309,14 @@ function buildPhrases() {
   for (const r of rowsAll) { const c = clauseOf(r); counts[c] = (counts[c] || 0) + 1; }
   let clause = settings.clause === 'all' || counts[settings.clause] ? settings.clause : null;
   if (!clause) { const f = CLAUSES.find(([id]) => counts[id]); clause = f ? f[0] : 'all'; }
-  const chips = document.getElementById('atClauses');
-  chips.textContent = '';
-  const mk = (id, label, fam, n) => {
-    const b = h('button', { type: 'button', class: 'at-chip fam' + (fam ? ' fam-' + fam : ''), 'aria-pressed': clause === id ? 'true' : 'false' }, label, h('span', { class: 'n' }, String(n)));
+  const mk = (id, label, fam, n) => [label + n, clause === id, () => {
+    const b = h('button', { type: 'button', class: 'at-chip fam' + (fam ? ' fam-' + fam : '') }, label, h('span', { class: 'n' }, String(n)));
     b.addEventListener('click', () => { settings.clause = id; saveSettings(); singStop(); buildPhrases(); });
-    chips.appendChild(b);
-  };
-  mk('all', I18n.t('atlas.table.all'), '', rowsAll.length);
-  for (const [id, fam] of CLAUSES) if (counts[id]) mk(id, I18n.t('atlas.clause.' + id), fam, counts[id]);
+    return b;
+  }];
+  const specs = [mk('all', I18n.t('atlas.table.all'), '', rowsAll.length)];
+  for (const [id, fam] of CLAUSES) if (counts[id]) specs.push(mk(id, I18n.t('atlas.clause.' + id), fam, counts[id]));
+  drawChips(document.getElementById('atClauses'), specs);
   const rows = h('div', { class: 'at-rows' });
   for (const r of rowsAll) {
     if (clause !== 'all' && clauseOf(r) !== clause) continue;
