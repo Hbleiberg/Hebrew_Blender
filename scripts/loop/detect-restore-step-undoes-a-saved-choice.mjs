@@ -9,17 +9,22 @@
 // before setting what only shows in the new one.
 //
 // Rendered: an in-process static server over the repo root, Chromium with every foreign origin aborted and the service
-// worker blocked, hebrew_blend_generator.html (the one page with a global getSettings / applySettings pair; the next
-// carriers to add are Flash Cards and the dashboard). Three deterministic arms, each "save s = getSettings(), move
-// the page elsewhere, applySettings(s), read getSettings() again" — a hit is any field that comes back different:
+// worker blocked, the three pages with a global getSettings / applySettings pair. On hebrew_blend_generator.html three
+// deterministic arms, each "save s = getSettings(), move the page elsewhere, applySettings(s), read getSettings()
+// again" — a hit is any field that comes back different:
 //   1. per Real Words drill × each display control (the two switches, their placements, the star and its placement,
 //      Mix), flipped by a click on the visible control, restored over the pristine page;
 //   2. a load matrix: the page in Blends / Real Words / Number Practice × a saved blend type × the remembered drill;
 //   3. seeded random walks over the visible sidebar controls, a second walk, then the first state over it.
+// On flash_cards.html and classroom_dashboard.html (added S666) the walk arm alone, each control group equally likely:
+// Flash Cards over the setup screen's controls (150 walks, each state also restored over the pristine page), the
+// dashboard over five tabs of its settings drawer (Display, Calendar, Weather, Class, Text; 100 walks) — class lists,
+// the schedule, presets, fonts and the message editor are left alone (they are not one-click states).
 // Exit 1 on hits.
 //   --json   { id, hits: [{ file, line, note }], measured, delta }
-//   --plant  wraps applySettings so it ends by switching Show Transliteration back on (a default re-applied after the
-//            restore) and must report it (exit 1 if not)
+//   --plant  wraps each page's applySettings so it ends by putting one control back (the generator's Show
+//            Transliteration, Flash Cards' Inverse switch, the dashboard's Omer line) and must report all three
+//            (exit 1 if not)
 import { createServer } from 'node:http';
 import { readFileSync, existsSync, statSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -142,19 +147,99 @@ try {
     return { hits, measured };
   }, PLANT);
 } catch (e) { loadErr = String(e.message || e).split('\n')[0]; }
+
+// The walk arm on the two other pages with the pair. `conf` is plain data; the walk itself runs in the page.
+const EXTRA = [
+  { file: 'flash_cards.html', seen: ['hebrewFlashCards_tourSeen'], walks: 150, first: 10, more: 8, overPristine: true, root: '#mainContent', panels: '',
+    skip: 'start|print|export|pdf|preset|share|copy|tour|reset|import|backup|ivrit|keyboard|upload|font|home|dark|lang|fullscreen|sheet|delete|save|wl|wordlist|report|progress|student|profile|hear|speak|tts|close|clear|install|account|hkToggle|ft-',
+    outside: '.ivrit-box, .overlay, [role=dialog], .hk-panel, header, footer, .tour-card, #hebFontGrid, #engFontGrid', ignore: [],
+    plant: () => { const real = applySettings; applySettings = function (s) { real(s); document.getElementById('inverseToggle').click(); }; }, plantRe: /inverse (true|false) → (true|false)/ },
+  { file: 'classroom_dashboard.html', seen: ['hebrewDashboard_tourSeen', 'hebrewDashboard_setupSeen'], walks: 100, first: 10, more: 8, overPristine: false, root: '#settingsModal', panels: '.tt-tabpanel:not([hidden]) ', tabs: ['display', 'calendar', 'weather', 'class', 'text'],
+    skip: 'print|export|pdf|preset|share|copy|tour|reset|import|backup|ivrit|keyboard|upload|font|home|dark|lang|fullscreen|delete|save|close|clear|install|account|hkToggle|ft-|bpe|roster|class|student|picker|sched|geo|locat|zip|city|video|youtube|nametag|erase|remove|add|move|ed-btn|test',
+    outside: '.tip-wrap', ignore: ['dashTextHTML'],
+    plant: () => { const real = applySettings; applySettings = function (s, o) { real(s, o); settings.showOmer = !settings.showOmer; }; }, plantRe: /showOmer (true|false) → (true|false)/ },
+];
+const extra = [];
+for (const conf of EXTRA) {
+  const c2 = await browser.newContext({ serviceWorkers: 'block', viewport: { width: 1280, height: 900 } });
+  await c2.addInitScript((keys) => { try { for (const k of keys) localStorage.setItem(k, '1'); } catch (e) {} window.print = () => {}; }, conf.seen);
+  await c2.route('**/*', r => (r.request().url().startsWith(base) || /^(data|blob):/.test(r.request().url()) ? r.continue() : r.abort()));
+  const p2 = await c2.newPage();
+  p2.on('pageerror', e => errors.push(conf.file + ': ' + String(e.message || e))); p2.on('dialog', d => d.dismiss().catch(() => {}));
+  let res = null, err = null;
+  try {
+    await p2.goto(`${base}/${conf.file}`, { waitUntil: 'load', timeout: 30000 });
+    await p2.waitForFunction(() => typeof getSettings === 'function' && typeof applySettings === 'function', null, { timeout: 20000 });
+    await p2.waitForTimeout(1200);
+    await p2.evaluate(() => { try { if (typeof frSkip === 'function' && document.querySelector('#frModal.open')) frSkip(); } catch (e) {} });
+    if (PLANT) await p2.evaluate(conf.plant);
+    res = await p2.evaluate(async ({ conf, walks }) => {
+      const tick = () => new Promise(r => setTimeout(r, 0));
+      const vis = el => !!el && el.getClientRects().length > 0 && getComputedStyle(el).visibility !== 'hidden';
+      const clone = o => JSON.parse(JSON.stringify(o));
+      const pristine = clone(getSettings());
+      const IGN = new Set(conf.ignore), SKIP = new RegExp(conf.skip, 'i');
+      const diff = (a, b) => [...new Set([...Object.keys(a), ...Object.keys(b)])].filter(k => !IGN.has(k) && JSON.stringify(a[k]) !== JSON.stringify(b[k]));
+      const root = document.querySelector(conf.root);
+      if (!root) return { hits: ['probe: ' + conf.root + ' did not resolve'], measured: 0, clicks: 0 };
+      const sel = ['button', 'input[type=checkbox]', 'input[type=radio]', 'select', '.pill', '[role=button]', '[role=switch]'].map(x => conf.panels + x).join(', ');
+      const cands = () => [...root.querySelectorAll(sel)].filter(e => !e.disabled && e.getAttribute('aria-disabled') !== 'true'
+        && ((/checkbox|radio/.test(e.type || '') && e.closest('label')) ? vis(e.closest('label')) : vis(e))
+        && !SKIP.test((e.id || '') + ' ' + (e.getAttribute('onclick') || '') + ' ' + (typeof e.className === 'string' ? e.className : '') + ' ' + (e.dataset ? Object.keys(e.dataset).join(' ') : ''))
+        && !e.closest(conf.outside));
+      const key = x => x.id || (x.dataset && Object.keys(x.dataset)[0]) || (typeof x.className === 'string' ? x.className.split(' ')[0] : '') || x.tagName;
+      const name = e => e.id || (e.dataset && Object.entries(e.dataset).filter(([k]) => !/^i18n/.test(k)).map(([k, v]) => k + '=' + v).join(',')) || key(e);
+      let seed = 12345; const rnd = () => (seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff;
+      const hits = []; let measured = 0, clicks = 0;
+      const step = async () => {
+        if (conf.tabs) { if (!root.classList.contains('open')) openSettings(); setSettingsTab(conf.tabs[Math.floor(rnd() * conf.tabs.length)]); await tick(); }
+        const groups = {}; for (const c of cands()) (groups[key(c)] = groups[key(c)] || []).push(c);
+        const gs = Object.keys(groups); if (!gs.length) return '';
+        const g = groups[gs[Math.floor(rnd() * gs.length)]], e = g[Math.floor(rnd() * g.length)];
+        try { if (e.tagName === 'SELECT') { const os = [...e.options].filter(o => !o.disabled); e.value = os[Math.floor(rnd() * os.length)].value; e.dispatchEvent(new Event('change', { bubbles: true })); } else e.click(); } catch (err) {}
+        clicks++; await tick(); return name(e);
+      };
+      const say = (s, back, keys) => keys.slice(0, 4).map(k => `${k} ${JSON.stringify(s[k]).slice(0, 80)} → ${JSON.stringify(back[k]).slice(0, 80)}`).join(', ') + (keys.length > 4 ? ` (+${keys.length - 4})` : '');
+      for (let w = 0; w < walks; w++) {
+        applySettings(clone(pristine)); await tick();
+        const trail = []; for (let i = 0; i < conf.first; i++) trail.push(await step());
+        const s = clone(getSettings());
+        for (let i = 0; i < conf.more; i++) await step();
+        applySettings(clone(s)); await tick(); measured++;
+        let back = getSettings(), keys = diff(s, back);
+        if (keys.length) hits.push('walk: ' + trail.filter(Boolean).join(' > ') + ' — ' + say(s, back, keys));
+        if (conf.overPristine) { applySettings(clone(pristine)); await tick(); applySettings(clone(s)); await tick(); measured++; back = getSettings(); keys = diff(s, back); if (keys.length) hits.push('walk (over the pristine page): ' + trail.filter(Boolean).join(' > ') + ' — ' + say(s, back, keys)); }
+      }
+      if (clicks < walks * conf.first * 0.8) hits.push('probe: the walks made only ' + clicks + ' clicks');
+      return { hits, measured, clicks };
+    }, { conf: { root: conf.root, panels: conf.panels, tabs: conf.tabs || null, skip: conf.skip, outside: conf.outside, ignore: conf.ignore, first: conf.first, more: conf.more, overPristine: conf.overPristine }, walks: PLANT ? 6 : conf.walks });
+  } catch (e) { err = String(e.message || e).split('\n')[0]; }
+  extra.push({ conf, res, err });
+  await c2.close();
+}
 await browser.close(); server.close();
 
 const hits = (out ? out.hits : []).map(n => ({ file: FILE, line: 0, note: n }));
 if (loadErr) hits.push({ file: FILE, line: 0, note: 'load failed: ' + loadErr });
 for (const e of errors) hits.push({ file: FILE, line: 0, note: 'page error: ' + e });
-const measured = out ? out.measured : 0;
+let measured = out ? out.measured : 0;
+const per = [`${FILE} ${measured}`];
+let unmeasured = !measured;
+for (const x of extra) {
+  if (x.err) hits.push({ file: x.conf.file, line: 0, note: 'load failed: ' + x.err });
+  for (const n of (x.res ? x.res.hits : [])) hits.push({ file: x.conf.file, line: 0, note: n });
+  const m = x.res ? x.res.measured : 0; measured += m; per.push(`${x.conf.file} ${m}`); if (!m) unmeasured = true;
+}
 if (PLANT) {
-  const ok = hits.some(h => /rwShowTranslit false → true/.test(h.note));
+  const missed = [];
+  if (!hits.some(h => h.file === FILE && /rwShowTranslit false → true/.test(h.note))) missed.push(FILE);
+  for (const x of extra) if (!hits.some(h => h.file === x.conf.file && x.conf.plantRe.test(h.note))) missed.push(x.conf.file);
+  const ok = !missed.length;
   if (JSON_OUT) console.log(JSON.stringify({ id: ID, plant: ok }));
-  else console.log(ok ? `${ID}: plant reported (${hits.length} hit(s) with it).` : `${ID}: PLANT NOT REPORTED.`);
+  else console.log(ok ? `${ID}: plant reported on all three pages (${hits.length} hit(s) with it).` : `${ID}: PLANT NOT REPORTED on ${missed.join(', ')}.`);
   process.exit(ok ? 0 : 1);
 }
-if (!measured) { console.log(`${ID}: nothing measured — the probe did not resolve.`); process.exit(1); }
+if (unmeasured) { console.log(`${ID}: nothing measured on a page (${per.join(', ')}) — the probe did not resolve.`); process.exit(1); }
 if (JSON_OUT) console.log(JSON.stringify({ id: ID, hits, measured, delta: null }, null, 1));
-else { console.log(`${ID}: ${hits.length} hit(s) over ${measured} save-and-restore round trips on ${FILE}.`); for (const h of hits) console.log(`  ${h.file} ${h.note}`); }
+else { console.log(`${ID}: ${hits.length} hit(s) over ${measured} save-and-restore round trips (${per.join(', ')}).`); for (const h of hits) console.log(`  ${h.file} ${h.note}`); }
 process.exit(hits.length ? 1 : 0);
