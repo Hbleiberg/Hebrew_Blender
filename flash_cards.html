@@ -1052,7 +1052,12 @@ html:fullscreen, :root:fullscreen, :-webkit-full-screen { background: var(--bg);
    behave exactly like `auto` whenever the card does fit. `80vw` caps the width, so the overhang
    can never reach a screen edge. (S249 Pass M) */
 body.fc-fullscreen #screenCard.active .fc-perspective { --fc-fs-w: min(80vw, 96vh, 1000px); width: var(--fc-fs-w); margin-inline: calc((100% - var(--fc-fs-w)) / 2); }
-body.fc-fullscreen #screenCard.active .fc-card        { height: min(60vh, 620px); }
+/* The third term fits the card to the screen's height: the rows above it (the header, the count, the timer, the
+   stats: ~240px + the 2vh padding) and under it (✓ / ✗, then Prev / Flip / Next: 130px) stay on the projector.
+   At 1024×768, 1280×720 / 800 and 1366×768 with a timer the ✓ / ✗ row ended 14–50px past the screen's foot, and
+   Prev / Next past it at every height up to 900; 1080p keeps 620px. The 300px floor keeps a very short window's card
+   a card (pattern viewport-height-fit-without-a-floor). */
+body.fc-fullscreen #screenCard.active .fc-card        { height: min(60vh, 620px, max(300px, 98vh - 380px)); }
 body.fc-fullscreen #screenCard.active .fc-heb         { font-size: clamp(4rem, 22vh, 14rem); }
 body.fc-fullscreen #screenCard.active .fc-translit    { font-size: clamp(2rem, 9vh, 4rem); }
 body.fc-fullscreen #screenCard.active                 { padding-top: 2vh; }
