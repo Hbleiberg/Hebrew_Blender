@@ -840,6 +840,13 @@ to Learn), and a caller that opens something inside the new tab (`openLearnFor`)
 
 ## Trope staff (beta) — `torah_trainer.html`
 
+**Staff ink in forced colours (the Trainer, the Tutor and the Atlas).** A staff's ink is `currentColor`, and each page
+sets `color: var(--text)` on the staff's SVG — a colour an SVG sets for itself is never replaced by forced colours, so
+each page's `@media (forced-colors:active)` block ends by naming the staff rules again: the SVG `CanvasText`, the
+note-name letters `CanvasText`, the highlighted and the sounding note `Highlight` (its head's outline `CanvasText`),
+the family bars `GrayText`, dark twins named by specificity. A new colour rule inside a staff gets its twin there, or a
+contrast theme that disagrees with the site's stored light / dark choice draws it in the wrong theme's colour.
+
 A fourth Layout (`settings.layout === 'staff'`, the radio beside Page view on the Text tab's Layout row, with the
 suite's `.beta-tag`): the
 reading drawn on a music staff, a verse at a time, the words under their notes. Engine: `js/trope-staff.js`

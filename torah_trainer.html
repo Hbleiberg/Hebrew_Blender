@@ -2367,6 +2367,17 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
   .font-opt.active .font-opt-attr, body.dark .font-opt.active .font-opt-attr, .font-opt.active .font-opt-default { color: HighlightText; }
   body.kar-style-highlight .tt-word.active { outline: 2px solid Highlight; outline-offset: 1px; }
   .tt-fav-swatch[aria-pressed="true"] { outline: 3px solid Highlight; outline-offset: 2px; }
+  /* A staff's ink is the page's own colour, and forced colours never replace a colour an SVG sets for itself: with a stored
+     theme opposite the system's, the Trope staff layout drew navy on black or cream on white (1.3:1). The ink follows the
+     system's text colour, the highlighted and the sounding note its selection colour, the family bars its muted one. */
+  .tt-staff-sys > svg, .tt-staff-sys > .tt-staff-svg { color: CanvasText; }
+  .tt-staff-sys .tu-pbar, body.trope-on:not(.trope-by-mark) .tt-staff-sys .tu-pbar[class], body.trope-on.trope-by-mark .tt-staff-sys .tu-pbar.tm { fill: GrayText; }
+  .tt-staff-sys .tu-pbar.is-hl { stroke: CanvasText; }
+  .tt-staff-sys .tu-nn { fill: CanvasText; }
+  .tt-staff-sys .tu-pn.is-hl, .tt-staff-sys .tu-pn.is-sounding, .tt-staff-sys .tu-pn.is-rest.is-sounding,
+  body.dark .tt-staff-sys .tu-pn.is-hl, body.dark .tt-staff-sys .tu-pn.is-sounding { color: Highlight; }
+  .tt-staff-sys .tu-pn.is-sounding ellipse, body.dark .tt-staff-sys .tu-pn.is-sounding ellipse { stroke: CanvasText; }
+  .tt-staff-sys .tu-pn.is-sounding .tu-nn { fill: Highlight; }
 }
 </style>
 </head>

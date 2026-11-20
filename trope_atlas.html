@@ -494,6 +494,15 @@ html[lang="he"] footer [style*="letter-spacing:0.08em"] { letter-spacing:normal 
 @media (forced-colors:active) {
   .at-chip[aria-pressed="true"], .at-sing[aria-pressed="true"] { background:Highlight; color:HighlightText; border-color:Highlight; forced-color-adjust:none; }
   .at-chip[aria-pressed="true"] .n { color:HighlightText; }
+  /* A staff's ink is the page's own colour, and forced colours never replace a colour an SVG sets for itself: with a stored
+     theme opposite the system's, every staff drew navy on black or cream on white (1.3:1). The ink follows the system's
+     text colour, the sounding note its selection colour, the family bars its muted one; the dark twins are named, by specificity. */
+  .tu-pstaff { color:CanvasText; }
+  .tu-pstaff .tu-pbar, .tu-pstaff .tu-pbar[class] { fill:GrayText; }
+  .tu-pstaff .tu-nn { fill:CanvasText; }
+  .tu-pstaff .tu-pn.is-sounding, .tu-pstaff .tu-pn.is-rest.is-sounding, body.dark .tu-pstaff .tu-pn.is-sounding { color:Highlight; }
+  .tu-pstaff .tu-pn.is-sounding ellipse, body.dark .tu-pstaff .tu-pn.is-sounding ellipse { stroke:CanvasText; }
+  .tu-pstaff .tu-pn.is-sounding .tu-nn { fill:Highlight; }
 }
 /* The header's title row (docs/reference/shared-components.md → Header lockup): up to 491px the title squeezed beside the
    buttons is narrower than its own longest word, which then paints past it (English, the real UI fonts; Hebrew 480),
