@@ -98752,3 +98752,27 @@ _(prior)_ **Next session (S667):** **Branch `claude/admiring-archimedes-8rhn8d` 
 ### from Per-session log (one line per session)
 
 - 2026-11-20 | **S667** | iters: 5 | tools: letter_discrimination ×2, trope_atlas ×2, 2 reference docs, sw ×4, probes S667 ×4 | patterns fixed: viewport-height-fit-without-a-floor ×1 (new) | pass run: N (letter_discrimination, first; FOUND 4 + 1, FIXED 2 + 2 on the atlas; 2 logged) | gates: gate 4 logged unasked | SW: v1450→v1454
+
+
+<!-- archived by compact-ledger at the S669 boundary, 2026-11-20 -->
+## Compaction (S669, 2026-11-20) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-11-19 | (S663 close-out) | branch/deploy note | **S663 = P on `trope_atlas.html` (its 2nd, S578 → S663: no account by design, clean) + `hebrew_blend_generator.html` (a clean surface buys a second; its 9th, S592 → S663): seven smokes 758 / 758 (+ the new D44 → sync 240), the atlas's arm 1 40 / 40, the generator's arms 3–7 67 / 67 behind 8 / 8 plants, arm 8 read-only as at S659, a new …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-19 | `4bec6585` | hebrew_blend_generator.html, sw.js | (S663 P; pattern restore-step-undoes-a-saved-choice) **A blend setup keeps its practice type across Real Words and Number Practice** (made after Number Practice it reopened as a numbers sheet; a 1-Letter preset loaded from Real Words came back 2-Letter) | probe S663 62 / 62 (before 30 / 62); matrix 24 / 24 (before 6); smokes …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-19 | `469dff30` | hebrew_blend_generator.html, scripts/smoke-sync.mjs, ops.md, sw.js | (S663 P; pattern restore-step-undoes-a-saved-choice) **A Real Words setup keeps its transliteration and translation choices** (a preset, the remembered setup, a link or a file re-took the drill's defaults; signed in, a second device overwrote the account's copy) | probe S663 54 / 54 (before 20 / …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Per-session log (one line per session)
+
+- 2026-11-20 | **S668** | iters: 5 | tools: letter_discrimination, reading_assignments, flash_cards, classroom_dashboard, 2 reference docs, sw ×4, probes S668 ×2 | patterns fixed: text-field-under-16px-zooms-on-ios-focus ×1, vh-capped-sheet-without-dvh-twin ×1 | pass run: P (letter_discrimination, first, clean; + chrome, S596 → S668, clean; FIXED 4 from the queue) | SW: v1455→v1459
+
+- 2026-11-12 | **S648** | iters: 4 | tools: hebrew_blend_generator ×2, flash_cards, generator.md, sw ×3 | patterns fixed: fixed-control-positioned-outside-the-viewport ×1 | pass run: G (hebrew_blend_generator, first since S563; FOUND 4, FIXED 2 + 1 from the queue) | SW: v1371→v1374
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- P accounts & cloud (one surface): 2026-11-20 (**S668 — 28th P, `letter_discrimination.html` (its first, override 4; offers no account by design) + chrome (a clean surface buys a second; its first P since S596, 41 commits to the bundle): arm 1 on the research page 5 / 5 by 51 real inputs × anonymous / a stored session (control fired); the eight smokes 897 / 897; the hub's arm 1 control 23 / 24 named its plant; arms 3–7 22 / 22 behind 5 / 5 plants; arm 8 as at S663. FOUND 0, FIXED 4 from the queue. P-next: torah (S602), dictionary / trope (S609).**)
+
+_(prior)_ **Next session (S668):** **Branch `claude/sharp-shannon-3u51ut` (S667, draft PR #417): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1455**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=9e702ae sw=v1455 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ New pages (override 4): `letter_discrimination.html`: its first P at S668; Holiday Guide (N + P arms 5–6 by S670); `jewish-coloring-pages.html` (N by S677). ⚑ Stalest next: G/H/M atlas (S582–S584). ⚑ Queue: the research page's fields (S667 P3); S666's P4s (`holiday-icons` in forced colours; the week grid's column; the assignments dialogs' `dvh` twin; `trope_review` below 340px); the atlas's S665 P4s; the generator's S660 P4s; torah's S653 P4s; the S570 staff double draw. ⚑ Awaiting: the atlas's phone layout (S662), the Trainer's ▶ and drawer tabs (S653), the starter class (S652). ⚑ N: the new pattern's related carrier, the Font Maker's Draw window (S644 P3). ⚑ C / H on the Font Maker: the QA table's sticky row labels (S666). ⚑ E: links vs 8,190 bytes (S651). ⚑ F/A: Hebrew-only wrappers (S649); status lines (S656); ResizeObserver boxes (S660). ⚑ G: `leak.mjs` on 4 tools (S661). ⚑ P: the sync smoke in a lane of ≤ 3 (S663). ⚑ 47 seeds.
