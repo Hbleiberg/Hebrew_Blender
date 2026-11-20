@@ -516,7 +516,7 @@ _(none)_
 
 - `infinite-box-shadow-pulse-repaints-every-frame` | ACTIVE | owner D | det: recipe | last S511 | streak 0
 
-- `new-page-print-block-without-the-ink-remap` | ACTIVE | owner G | det: recipe | last S661 | streak 3
+- `new-page-print-block-without-the-ink-remap` | ACTIVE | owner G | det: recipe | last S669 | streak 0
 
 - `header-ink-on-a-plate-print-drops` | ACTIVE | owner G | det: scripts/loop/probes/S669-header-title-prints-in-ink.mjs | last S669 | streak 0 | hits 7
 

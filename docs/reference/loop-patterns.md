@@ -240,7 +240,8 @@
 - **Archived full text (latest compaction copy):** - **`infinite-box-shadow-pulse-repaints-every-frame`** (NEW S510 D; letter_learner FIXED `fd6cfdc`; S511 the 6 carriers FIXED `f1cfd83` — open 0): ACTIVE, streak 0. Detection: `grep -n attnPulse *.html` → keyframes on `box-shadow`; `i511/pulse.mjs` paints per 3 s (0 = fixed; the dashboard's clock counts 6). Exempt: a once-only flash on an overflow-clipped card (trope `attnPulseShadow`).
 
 ## `new-page-print-block-without-the-ink-remap`
-- **Status:** ACTIVE · **Owner:** G · **Consequence:** normal · **Last:** S661 · **Streak:** 3 · **Detector:** recipe
+- **Status:** ACTIVE · **Owner:** G · **Consequence:** normal · **Last:** S669 · **Streak:** 0 · **Detector:** recipe
+- **Record (S669, found by fix 3's PDFs):** 1 hit, FIXED — `holiday_guide.html` (landed outside the loop; its print block carried only the coloring-sheet rules): printed from dark, all 10 sheets of the page kept the dark theme's ink (light grey text, gold-light headings; 2,300–6,500 px a sheet off light at 30 dpi), while the shared `holiday-icons` block's own comment assumed both its carriers' print blocks turn a dark page light. The dark block's 11 tokens restated + the four `body.dark` headings that name `--gold-light` back to navy (pattern `dark-literal-escapes-the-print-tokens`'s half): dark = light on 40 / 40 sheets (EN/HE × Letter/A4), the light prints and the coloring-sheet run unchanged (`g669/hg.mjs` + `ink.py`).
 - **Record (S661, G chrome):** clean — 8 views × EN/HE × Letter/A4, dark vs light pixel-identical on all 64 PDFs at 40 dpi (`g661/ink.py`); every page prints the navy lockup (`.bl-print`).
 - **Record (S575, G chrome):** clean — all seven chrome pages carry the remap: 56 PDFs × light / dark ink identical per sheet (resources' page-1 chip difference left with its filter bar, `044e1fa6`).
 - **Shape:** Detection: `--text:` inside the print block of every page with dark tokens; `g509/g509.

@@ -494,6 +494,14 @@ footer a { display: inline-block; padding-block: 5px; }
    the run. body is a flex column on screen, and a forced break inside a flex item is ignored by some engines: paper
    gets a plain block. */
 @media print {
+  /* Paper takes the light palette whatever the theme (pattern new-page-print-block-without-the-ink-remap): printed from
+     dark the page kept the dark theme's ink, light grey text and gold-light headings on white paper. The dark block's
+     every token restated, and its headings that name --gold-light by a body.dark rule back to navy. */
+  body, body.dark, html.dark-early body {
+    --gold:#c9922a;--focus-ring:#a0701c;--gold-light:#f0d080;--cream:#fdf8ef;
+    --warm-gray:#e8e0d0;--text:#1a2744;--muted:#6b6050;--border:#c8bfa8;--white:#ffffff;--gold-text:#7f5a13;--gold-text-hover:#5c4010;
+  }
+  body.dark .hg-h2, body.dark .hg-h3, body.dark .hg-hero-name, body.dark .hg-name { color:var(--navy); }
   body.hg-open, body.dark.hg-open { display:block; min-height:0; background:#fff !important; color:#000 !important; }
   body.hg-open > :not(#hgPrintArea) { display:none !important; }
   body.hg-open #hgPrintArea { display:block !important; }

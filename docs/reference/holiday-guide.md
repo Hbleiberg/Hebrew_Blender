@@ -116,7 +116,9 @@ every row), `node scripts/build-holiday-pages.mjs`, `node scripts/smoke-holiday-
 - **Printing**, while the popup is open, is the sheets alone: `#hgPrintArea` (a child of `<body>`) gets one
   `.hg-paper` per page (`hgFillPrint`, also on `beforeprint`, so Ctrl+P prints the same run), the print rules — keyed
   on `body.hg-open` — hide every other child of `<body>`, and `<style id="hgPageSize">` always holds the `@page` rule
-  for the chosen paper. With the popup closed the page prints as any page.
+  for the chosen paper. With the popup closed the page prints as any page: in the light palette whatever the theme
+  (the print block restates every token the dark block overrides, and the headings a `body.dark` rule turns gold-light
+  go back to navy), the header white under navy ink, its links and toggles off.
 - Printed words follow the sheet's own languages, not the UI's (`HG_PRINTED`, `i18n-ignore`).
 - `applyI18n` re-renders everything the script draws and is read-only: it keeps the builder's holiday and ticks.
 
