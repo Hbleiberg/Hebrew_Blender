@@ -1371,6 +1371,12 @@ idxNav.addEventListener('click', (e) => {
   if (narrow()) setIndexOpen(false);
 });
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && idxNav.classList.contains('open')) { setIndexOpen(false); idxBtn.focus(); } });
+// Tab past the drawer's last link (or Shift+Tab before its first) closes it, as Escape does: left open, it covered the
+// control the focus had moved to. The toggle keeps it, as a click on it does; a window losing focus (no relatedTarget) too.
+idxNav.addEventListener('focusout', (e) => {
+  const to = e.relatedTarget;
+  if (idxNav.classList.contains('open') && narrow() && to && !idxNav.contains(to) && !idxBtn.contains(to)) setIndexOpen(false);
+});
 document.addEventListener('click', (e) => { if (idxNav.classList.contains('open') && !idxNav.contains(e.target) && !idxBtn.contains(e.target)) setIndexOpen(false); });
 let _spyTick = false;
 function spySoon() { if (!_spyTick) { _spyTick = true; requestAnimationFrame(spy); } }
