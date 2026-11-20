@@ -1159,6 +1159,11 @@ traditions were imported from, and was rebuilt on the suite's own pieces, so it 
   on a touch screen a swipe past its first or last row goes on to the page, since the box fills a phone); a Stacked
   card's one column under 560px is `minmax(0, 1fr)`, so a long figure scrolls in its row. The staffs are
   pinned `direction:ltr`, the rest mirrors in Hebrew. The header's wrap gate is the page's measured ceiling.
+  **Focus never rests under a sticky edge:** the bar's live height (`--at-bar-h`) is the page's `scroll-padding-top`
+  (so no target carries a `scroll-margin-top` of its own — the two would add), and the Grid's box takes its heading
+  row's height and its sign column's width as its own scroll padding, written inline on the box by a
+  `ResizeObserver` (nothing inherits it). Sideways the browser's focus scroll leaves a partly seen control where it
+  is, so `clearSideways` brings a figure focused by keyboard whole into the clear part (a pointer press stays put).
 - **The hub's Trope card** holds two links, so it is a group, not a link; the What's-new card (its announcement
   of the atlas) lists it first, and its *Show me* finds the Trope card by its `aria-labelledby` (never as the first
   `.page-card-group`) and focuses the Atlas button.

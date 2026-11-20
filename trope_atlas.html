@@ -143,7 +143,9 @@ html.dark-early body, body.dark {
   --trope-revia-line:#55c06a; --trope-geresh-line:#3fbdb6; --trope-rare-line:#e07ab0;
 }
 * { box-sizing:border-box; margin:0; padding:0; }
-html { scroll-behavior:smooth; }
+/* The sticky bar's live height is the page's scroll padding, so an anchor, a jump and the browser's own focus scroll
+   (Tab, Shift+Tab, an arrow key in the melody table) all land in the clear band under it. */
+html { scroll-behavior:smooth; scroll-padding-top:calc(var(--at-bar-h) + 8px); }
 body {
   font-family:'Source Sans 3', sans-serif;
   background:var(--cream); color:var(--text);
@@ -253,7 +255,7 @@ html[lang="he"] .at-idxhead { letter-spacing:normal; text-transform:none; }
 @media (max-width:560px) { .at-bartitle { display:none; } .at-bar-in { padding-inline:12px; } .at-main { padding-inline:12px; } }
 
 /* ───── Sections ───── */
-section { padding-block:22px 10px; border-bottom:1px solid var(--border); scroll-margin-top:calc(var(--at-bar-h) + 8px); }
+section { padding-block:22px 10px; border-bottom:1px solid var(--border); }
 section:last-of-type { border-bottom:0; }
 .at-main h2 { font-family:'Libre Baskerville',serif; font-size:1.45rem; font-weight:700; margin:0 0 8px; line-height:1.25; }
 .at-main h3 { font-family:'Libre Baskerville',serif; font-size:1.1rem; font-weight:700; margin:22px 0 8px; }
@@ -294,7 +296,6 @@ table.at-signs tbody tr[id] { cursor:pointer; }
 .at-mono { font-family:ui-monospace, Menlo, Consolas, monospace; font-size:0.8rem; color:var(--muted); white-space:nowrap; }
 .at-mono span { display:block; font-family:'Source Sans 3', sans-serif; white-space:normal; font-size:0.76rem; }   /* zarka's second code point, on a line of its own */
 .at-role { color:var(--muted); min-width:24ch; }
-.at-signs tr[id], .at-card { scroll-margin-top:calc(var(--at-bar-h) + 8px); }
 .at-jump { color:var(--text); font-weight:700; text-decoration:underline; text-decoration-color:var(--border); text-underline-offset:3px; }
 .at-jump:hover { color:var(--gold-text); text-decoration-color:currentColor; }
 .at-rank { font-size:0.8rem; font-weight:600; white-space:nowrap; }
@@ -405,7 +406,7 @@ body.dark .at-phrasebar { background:var(--navy-deep); }
    page into it on every tap (pattern text-field-under-16px-zooms-on-ios-focus). */
 @media (pointer:coarse) { .at-phrasebar .at-sel { font-size:16px; } }
 .at-count { font-size:0.8rem; color:var(--muted); font-variant-numeric:tabular-nums; }
-.at-melinfo .syshead { display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 14px; margin:4px 0; scroll-margin-top:calc(var(--at-bar-h) + 8px); }
+.at-melinfo .syshead { display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 14px; margin:4px 0; }
 .at-melinfo .syshead h3 { margin:0; }
 .at-melinfo .sub { color:var(--muted); font-size:0.88rem; }
 .at-melinfo .sysnote { color:var(--muted); font-size:0.9rem; max-width:72ch; margin:0 0 6px; }
@@ -1109,6 +1110,16 @@ function figureCell(sys, m, id) {
   const row = figureRow(sys, m[0]);
   return row ? singWrap(id, row, sys, I18n.t('atlas.table.figure_aria_m', { mark: m[3], melody: sysLabel(sys) })) : null;
 }
+// The Grid scrolls under its own heading row and sign column: the box's scroll padding reserves both at their live
+// sizes (the row grows with the language, the column narrows on a phone), so a figure focused by Tab, Shift+Tab or
+// an arrow key comes into the clear part, never under them (pattern focus-hidden-under-a-sticky-bar). Written on the
+// box itself: nothing inherits it, so a write restyles one element.
+const gridPad = 'ResizeObserver' in window ? new ResizeObserver((es) => {
+  const host = document.getElementById('atTable'), th = es[es.length - 1].target;
+  if (!host.contains(th)) return;
+  host.style.scrollPaddingBlockStart = (th.offsetHeight + 6) + 'px';
+  host.style.scrollPaddingInlineStart = (th.offsetWidth + 6) + 'px';
+}) : null;
 function buildGrid(host) {
   const systems = shownSystems();
   const table = h('table', { class: 'at-atlas' });
@@ -1134,6 +1145,7 @@ function buildGrid(host) {
   host.setAttribute('role', 'region');
   host.setAttribute('aria-label', I18n.t('atlas.table.region_aria'));
   host.appendChild(table);
+  if (gridPad) { gridPad.disconnect(); gridPad.observe(head.firstChild); }
 }
 function buildCards(host) {
   const systems = shownSystems();
@@ -1156,6 +1168,8 @@ function buildCards(host) {
   }
   host.className = '';
   host.removeAttribute('tabindex'); host.removeAttribute('role'); host.removeAttribute('aria-label');
+  if (gridPad) gridPad.disconnect();
+  host.style.scrollPaddingBlockStart = host.style.scrollPaddingInlineStart = '';
   host.appendChild(wrap);
 }
 function buildFilter() {
@@ -1187,6 +1201,17 @@ function roveRows(host) {
 function roveTo(row, to) {
   row.querySelectorAll('.at-sing').forEach((b) => { b.tabIndex = b === to ? 0 : -1; });
   to.focus();
+}
+// Sideways, the browser's own focus scroll leaves a partly seen control where it is (any sliver showing counts as
+// seen), so a figure reached by keyboard at the Grid's far edge, or half under its sign column, is brought whole into
+// the clear part first. Up and down the browser's scroll does it, inside the box's scroll padding.
+function clearSideways(b) {
+  const g = b.closest('.at-grid');
+  if (!g || !b.matches(':focus-visible')) return;   // a pointer press stays put, or its click would miss the button
+  const r = b.getBoundingClientRect(), edge = g.getBoundingClientRect().left + g.clientLeft, pad = parseFloat(g.style.scrollPaddingInlineStart) || 0;
+  const rtl = getComputedStyle(g).direction === 'rtl';
+  const left = edge + (rtl ? 6 : pad), right = edge + g.clientWidth - (rtl ? pad : 6);
+  if (r.left < left) g.scrollLeft -= left - r.left; else if (r.right > right) g.scrollLeft += r.right - right;
 }
 function roveKey(e) {
   const host = document.getElementById('atTable'), b = e.target.closest('.at-sing');
@@ -1382,7 +1407,7 @@ function fillKeySelect() {
 document.getElementById('atKey').addEventListener('change', (e) => { settings.key = e.target.value; saveSettings(); singStop(); renderStaffs(); });
 document.getElementById('atNames').addEventListener('change', (e) => { settings.names = e.target.checked; saveSettings(); singStop(); renderStaffs(); });
 document.getElementById('atTable').addEventListener('keydown', roveKey);
-document.getElementById('atTable').addEventListener('focusin', (e) => { const b = e.target.closest('.at-sing'); const row = b && b.closest('tr, .at-card'); if (row && b.tabIndex !== 0) roveTo(row, b); });   // a click makes that figure the row's stop
+document.getElementById('atTable').addEventListener('focusin', (e) => { const b = e.target.closest('.at-sing'); const row = b && b.closest('tr, .at-card'); if (row && b.tabIndex !== 0) roveTo(row, b); if (b) clearSideways(b); });   // a click makes that figure the row's stop
 document.getElementById('atViewGrid').addEventListener('click', () => { settings.view = 'grid'; saveSettings(); singStop(); buildAtlas(); });
 document.getElementById('atViewCards').addEventListener('click', () => { settings.view = 'cards'; saveSettings(); singStop(); buildAtlas(); });
 document.getElementById('atMel').addEventListener('change', (e) => selectMel(e.target.value, false));
