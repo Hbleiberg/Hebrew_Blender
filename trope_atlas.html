@@ -237,7 +237,8 @@ html[lang="he"] .at-idxhead { letter-spacing:normal; text-transform:none; }
     position:sticky; top:var(--at-bar-h); align-self:start; max-height:calc(100vh - var(--at-bar-h)); overflow-y:auto;
     padding-block:16px 32px; padding-inline:24px 12px; border-inline-end:1px solid var(--border); overscroll-behavior:contain;
   }
-  .at-idxbtn { display:none; }
+  /* by its id: the header-icons block's .hi-btn{display:inline-flex}, later in the page, outranked a bare .at-idxbtn */
+  #atIdxBtn { display:none; }
 }
 @media (max-width:999.98px) {
   .at-index {
