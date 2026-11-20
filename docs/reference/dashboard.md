@@ -764,11 +764,13 @@ surfaces, so Ctrl+P with the editor open prints the board underneath, as with th
 ## Schedule Sync week grid — focus and the sticky time column (`classroom_dashboard.html`)
 
 `.swm-gridwrap` scrolls sideways; the Start / End column (`.swm-timecell`) is sticky at its inline start, and the day
-cells are one roving tab stop moved by the arrow keys (`setWeekFocus`). The browser's own focus scroll stops at the box's
-edge, which the column covers, so `wireWeekGrid`'s `focusin` listener nudges the box until a control focused by keyboard
-clears the room the column takes (its `offsetWidth`, not its current place: with the weekend shown the column slides away
-with the grid's last columns) and the box's far edge; a time field inside the column only has to be in the box. A pointer
-press (`:active`) never moves the box — its click or drag-paint would miss the cell.
+cells are one roving tab stop moved by the arrow keys (`setWeekFocus`). A sticky cell's containing block is the grid's
+own box, so `.swm-grid` is `min-width: min-content` — as wide as its tracks (88px days, the weekend's two included) —
+and never a fixed width its tracks can overflow: past such a box's end the column slides away with it. The browser's own
+focus scroll stops at the box's edge, which the column covers, so `wireWeekGrid`'s `focusin` listener nudges the box
+until a control focused by keyboard clears the room the column takes (its `offsetWidth`) and the box's far edge; a time
+field inside the column only has to be in the box. A pointer press (`:active`) never moves the box — its click or
+drag-paint would miss the cell.
 
 ## Hebrew calendar converter (`classroom_dashboard.html`)
 

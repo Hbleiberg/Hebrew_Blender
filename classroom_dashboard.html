@@ -1950,7 +1950,11 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
   /* Screen-hidden; the print block below reveals it as the printed sheet's title. */
   #swmPrintHead { display: none; }
   .swm-gridwrap { overflow-x: auto; }
-  .swm-grid { display: grid; grid-template-columns: auto repeat(var(--swm-days, 5), minmax(88px, 1fr)) auto; gap: 3px; min-width: 540px; align-items: stretch; }
+  /* min-content, not a fixed 540px: the grid's box is the sticky time column's containing block, so it must be as
+     wide as its tracks (642px for five days, 824 with the weekend). At 540 the tracks overflowed it, and scrolled
+     past its end in a narrow window the column slid away with it (127px off its edge at 390px). Wider windows are
+     unchanged: the tracks still stretch to the wrap. */
+  .swm-grid { display: grid; grid-template-columns: auto repeat(var(--swm-days, 5), minmax(88px, 1fr)) auto; gap: 3px; min-width: min-content; align-items: stretch; }
   .swm-grid, .swm-palette { user-select: none; }
   /* Paint mode is entered by a long press on touch; the ring is the only signal the finger has
      that the grid has stopped panning and started painting. Static by design — no animation to
