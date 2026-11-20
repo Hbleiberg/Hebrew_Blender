@@ -1160,7 +1160,8 @@ traditions were imported from, and was rebuilt on the suite's own pieces, so it 
   address: a reading's `#grp-<reading>` opens that reading's first offered melody the same way (what its click
   picks), and a Ctrl / ⌘ / Shift click is left to the browser, so the new tab lands by its address.
 - **Layout.** A sticky bar (the contents button below 1000px, the title, the Key select), a contents rail (a drawer
-  below 1000px: Escape and an outside click close it, focus goes to its first link and back to the button, and pwa.js's
+  below 1000px: Escape, an outside click and the keyboard focus leaving it for another control close it, focus goes to
+  its first link and back to the button, the button itself is hidden at 1000px and up by its id, and pwa.js's
   install hint steps aside while it is open), the
   sections. The melody grid scrolls in its own box so its heading row and sign column both stay (contained sideways;
   on a touch screen a swipe past its first or last row goes on to the page, since the box fills a phone); a Stacked

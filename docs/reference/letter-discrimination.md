@@ -48,6 +48,11 @@ worksheet: 9×9, ד ר ב כ ז ו ע צ, its eight colors.
 - **CSV** (`LD_CSV_COLS`, long format, one row per square, the round's totals repeated): column names stay English;
   cells go through `ldCsvCell` (formula-injection guard) and the file carries a UTF-8 BOM. `paint_count` counts every
   change to a square, erasing included.
+- **On a touch screen** the grid's height budget (the screen's height less 250px of chrome) is read from the small
+  viewport and never drops below `min(360px, the screen − 24px)`, so a landscape phone's grid fills the screen once the
+  page scrolls past the header; a portrait phone's grid still fills the width (the 560px rule). `ldFitPaper()` opens a
+  paper that does not fit below the round bar from its own top edge (a phone: the grid, the key and Done on one
+  screen), because the swipe made to reach the rest would land on the grid and paint. A mouse sees neither.
 - **Input**: tap or drag (the grid is `touch-action:none`), arrow keys in a roving-tabindex grid (Left = next square,
   the grid being right-to-left), Space/Enter paint, `1`–`8` pick a color, `0` the eraser.
 - `applyI18n` re-labels only; it never touches a round's cells or clock.
