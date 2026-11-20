@@ -67,6 +67,7 @@ input::placeholder,textarea::placeholder{color:var(--muted);}
 body{font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
 .skip-link{position:absolute;inset-inline-start:8px;top:-48px;z-index:200;background:var(--navy);color:#fff;padding:8px 14px;border-radius:0 0 6px 6px;font-size:0.8rem;font-weight:600;text-decoration:none;}
 .skip-link:focus{top:0;outline:2px solid var(--focus-ring);outline-offset:2px;}
+main:focus{outline:none;}   /* the skip link's target: it takes the focus without a ring around the whole column */
 header{background:var(--navy);color:#fff;padding:22px 40px;display:flex;align-items:center;gap:16px;border-bottom:4px solid var(--gold);}
 header .brand-title{font-family:'Libre Baskerville',serif;font-size:1.5rem;letter-spacing:0.01em;}
 header p{font-size:0.85rem;color:var(--gold-light);margin-top:3px;}

@@ -279,6 +279,7 @@ header{--bl-row:160px;}   /* the lockup, its divider and the header's gap: what 
     text-decoration:none;
   }
   .skip-link:focus { top:0; outline:2px solid var(--focus-ring); outline-offset:2px; }
+  main:focus { outline:none; }   /* the skip link's target: it takes the focus without a ring around the whole column */
   header {
     display: flex; align-items: center; gap: 10px 14px; flex-wrap: wrap;
     background: var(--navy); color: #fff;
