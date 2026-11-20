@@ -264,6 +264,16 @@ body.dark .ld-btn { background:#2a4070; border-color:#4a6aaa; }
 footer { border-top:1px solid var(--border); padding:16px 20px 22px; text-align:center; font-size:0.78rem; color:var(--muted); }
 footer a { color:var(--gold-text); }
 
+/* On a touch screen the grid's height budget is the small viewport (the browser's bars shown), and it never drops
+   below what a landscape phone shows once the page scrolls past the header: the 250px of chrome left a 70–110px grid
+   there (8–12px squares, the letters unreadable) beside a full-size key. Above 610px of height the first term wins, so
+   a tablet keeps the fit-to-screen paper; the 560px rule below still lets a portrait phone's grid fill the width. */
+@media (pointer: coarse) {
+  .ld-gridwrap {
+    max-width:calc(max(100vh - 250px, min(360px, 100vh - 24px)) * var(--ld-cols, 9) / var(--ld-rows, 9));
+    max-width:calc(max(100svh - 250px, min(360px, 100svh - 24px)) * var(--ld-cols, 9) / var(--ld-rows, 9));
+  }
+}
 @media (max-width: 820px) {
   header { padding:12px 14px; gap:10px; }
   header p { display:none; }
