@@ -2083,10 +2083,16 @@ header{--bl-row:160px;}   /* the lockup, its divider and the header's gap: what 
     /* Word Search: tinted cells don't always print on B/W; outline instead */
     .ws-cell.ws-word { background: transparent !important; outline: 2px solid #c9922a; outline-offset: -2px; }
   }
+  /* Dark --warm-gray is the dark card colour (#1e2535), so these plates sat 1.00:1 on the dark sheet and sidebar:
+     they take the suite's dark badge tint (the Dictionary's badges, the Resources page), and the counts and the
+     tip's text are lightened to stay AA on it (pattern dark-navy-fill-matches-its-ground). The Print tip's fill and
+     colour are inline var()s, so its two tokens are scoped to it. */
   body.dark .timer-bar,
-  body.dark .score-bar { background: var(--warm-gray); }
-  body.dark .score-correct { color: #27ae60; }     /* 5.33:1 on the dark bar */
-  body.dark .score-incorrect { color: #e57373; }   /* 5.13:1 */
+  body.dark .score-bar { background: rgba(221,228,240,.1); }
+  body.dark #printTip { --warm-gray: rgba(221,228,240,.1); --muted: #aab8d8; }
+  body.dark .score-correct { color: #2ecc71; }     /* 5.58:1 on the tint */
+  body.dark .score-incorrect { color: #ef8a8a; }   /* 4.85:1 */
+  body.dark .score-remaining { color: #aab8d8; }   /* 5.90:1 (the dark --muted is 3.9:1 on the tint) */
   body.dark .timer-display { color: #dde4f0; }
   body.dark .score-summary { background: #0d1220; }
   body.dark .preset-item { background: #1e2535; border-color: var(--border); color: #dde4f0; }
