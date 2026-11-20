@@ -53,6 +53,10 @@ worksheet: 9×9, ד ר ב כ ז ו ע צ, its eight colors.
   page scrolls past the header; a portrait phone's grid still fills the width (the 560px rule). `ldFitPaper()` opens a
   paper that does not fit below the round bar from its own top edge (a phone: the grid, the key and Done on one
   screen), because the swipe made to reach the rest would land on the grid and paint. A mouse sees neither.
+- **The key column fits the window's height** (the maintainer's call): above 820px it is 22% of the stage, capped so the
+  key (`--ld-krows` rows, set when a round starts) and the tools under it end inside the window (the column starts
+  ~170px down, the tools take 165px), with a 100px floor; at 820px and down it keeps 118px. The key's letter is capped
+  at `40cqi` of the key's width, and at `30cqi` where the number badges show (a mouse), so it never runs into its badge.
 - **Input**: tap or drag (the grid is `touch-action:none`), arrow keys in a roving-tabindex grid (Left = next square,
   the grid being right-to-left), Space/Enter paint, `1`–`8` pick a color, `0` the eraser.
 - `applyI18n` re-labels only; it never touches a round's cells or clock.

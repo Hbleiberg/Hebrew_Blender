@@ -221,11 +221,20 @@ body.dark .ld-btn { background:#2a4070; border-color:#4a6aaa; }
 }
 .ld-cell.painted { box-shadow:inset 0 0 0 3px rgba(0,0,0,0.42); }
 .ld-cell:focus-visible { outline:3px solid #0b57d0; outline-offset:-3px; position:relative; z-index:1; }
-.ld-side { flex:0 0 clamp(150px, 22%, 230px); display:flex; flex-direction:column; gap:12px; direction:ltr; }
-.ld-key { display:grid; grid-template-columns:1fr 1fr; border:2px solid #111; }
+/* The key column is as wide as 22% of the stage allows, but never so wide that its key (two swatches a row, each
+   1 / 1.15; --ld-krows rows, set when a round starts) and the tools under it reach past the window: the column starts
+   170px down, the tools take 165px and the paper's foot 19px, so the key gets the height less 360px. A width-only
+   column put Done under the fold of a 768px laptop, and the key's last row too in a Chromebook's ~657px window. The
+   100px floor keeps the swatches usable on a landscape phone (which scrolls to the paper); 820px and down keep 118px. */
+.ld-side {
+  flex:0 0 clamp(150px, 22%, 230px); display:flex; flex-direction:column; gap:12px; direction:ltr;
+  flex-basis:min(clamp(150px, 22%, 230px), max(100px, (100vh - 360px) * 1.739 / var(--ld-krows, 4) + 4px));
+  flex-basis:min(clamp(150px, 22%, 230px), max(100px, (100svh - 360px) * 1.739 / var(--ld-krows, 4) + 4px));
+}
+.ld-key { display:grid; grid-template-columns:1fr 1fr; border:2px solid #111; container-type:inline-size; }
 .ld-swatch {
   position:relative; aspect-ratio:1 / 1.15; border:1px solid #111; cursor:pointer; padding:0;
-  font-size:clamp(2rem, 5.5vw, 3.4rem); line-height:1;
+  font-size:min(clamp(2rem, 5.5vw, 3.4rem), 40cqi); line-height:1;   /* 40cqi: the letter shrinks with a narrow column */
   display:flex; align-items:center; justify-content:center;
 }
 .ld-swatch[aria-pressed="true"] { outline:5px solid #0b57d0; outline-offset:-5px; z-index:1; }
@@ -240,6 +249,9 @@ body.dark .ld-btn { background:#2a4070; border-color:#4a6aaa; }
 }
 .ld-tool kbd { position:static; margin-inline-start:6px; }
 @media (pointer:fine) { .ld-swatch kbd { display:block; } .ld-tool kbd { display:inline-block; } }
+/* With the number badges shown, a key letter in a narrow column (57–65px swatches) ran into its badge: 30cqi keeps
+   it clear at every column width (a 230px column still takes the 3.4rem cap). */
+@media (pointer:fine) { .ld-swatch { font-size:min(clamp(2rem, 5.5vw, 3.4rem), 30cqi); } }
 .ld-tool {
   font-family:'Source Sans 3', sans-serif; font-size:0.95rem; font-weight:700; cursor:pointer;
   border:2px solid #111; border-radius:8px; background:#fff; color:#111; min-height:46px; padding:8px 10px;
@@ -982,6 +994,7 @@ function ldGo() {
   grid.style.fontFamily = stack; key.style.fontFamily = stack;
   const wrap = grid.parentNode;
   wrap.style.setProperty('--ld-cols', cfg.cols); wrap.style.setProperty('--ld-rows', cfg.rows);
+  key.parentNode.style.setProperty('--ld-krows', Math.ceil(cfg.letters.length / 2));   // the key column's height fit
   R.cells.forEach((c, i) => {
     const b = el('button', 'ld-cell', cfg.letters[c.letter]);
     b.type = 'button'; b.dataset.i = i; b.tabIndex = i === 0 ? 0 : -1;
