@@ -1000,9 +1000,19 @@ function ldGo() {
   $('ldRoundNote').textContent = '';
   ldRelabelRound();
   $('ldReady').hidden = true; $('ldPaper').hidden = false;
+  ldFitPaper();
   // The clock starts once the grid has really been painted to the screen (two frames on).
   requestAnimationFrame(() => requestAnimationFrame(() => { if (RUN && RUN.round === R && R.t0 == null) R.t0 = performance.now(); }));
   try { key.firstChild.focus({ preventScroll: true }); } catch (e) {}
+}
+// On a touch screen a paper that does not fit below the header and the round bar opens from its own top edge: on a
+// phone the key's second row and Done sat under the fold, and the swipe made to reach them, on a grid that fills the
+// width (touch-action:none), paints squares instead, each one an answer in the data. A paper that fits stays put, and
+// a mouse never scrolls.
+function ldFitPaper() {
+  if (!window.matchMedia || !matchMedia('(pointer: coarse)').matches) return;
+  const r = $('ldPaper').getBoundingClientRect();
+  if (r.bottom > window.innerHeight) window.scrollTo(0, window.scrollY + r.top);
 }
 // Labels only — safe to call from applyI18n mid-round (it never touches the cells' state or the clock).
 function ldRelabelRound() {
