@@ -276,6 +276,24 @@ const PAGES = [
         await ctx.close();
       }
       {
+        // A share link carries the drill, never the class: with a class chosen and a profile linked to one of its
+        // students, the code and the settings it is made from name no class, no student and no profile.
+        const cls = { v: 1, classes: { c_zz1: { id: 'c_zz1', name: 'Kitah Zzyx', students: [{ id: 's_zz9', he: '', en: 'Zelda Zzyx' }] } } };
+        const prof = { activeProfile: 'Zelda Zzyx', profiles: { 'Zelda Zzyx': { created: 1, order: 1, results: [], studentId: 's_zz9' } } };
+        const { ctx, page, errors } = await openPage(browser, 'flash_cards.html', { seed: { ivritSuite_classes: JSON.stringify(cls), hebrewFlashCards_profiles: JSON.stringify(prof), hebrewFlashCards_profileClass: 'c_zz1' } });
+        const r = await page.evaluate(() => {
+          const filter = document.getElementById('profileClassSel').value, linked = !!readProfiles().profiles['Zelda Zzyx'].studentId;
+          const set = JSON.stringify(getSettings());
+          generateShareCode();
+          const out = [...document.querySelectorAll('input, textarea')].map(n => n.value).filter(v => typeof v === 'string' && v.length > 20).join('\n') + '\n' + location.href;
+          const decoded = out.split(/[^A-Za-z0-9_-]+/).filter(x => x.length > 20).map(x => { try { return decodeURIComponent(escape(atob(x.replace(/-/g, '+').replace(/_/g, '/')))); } catch (e) { return ''; } }).join('\n');
+          return { filter, linked, leak: /Zzyx|Zelda|c_zz1|s_zz9|studentId/.test(set + '\n' + out + '\n' + decoded), codeLen: decoded.length };
+        });
+        check(tag + ' E: with a class chosen and a linked profile, the share code and the settings behind it carry no class, student or profile', r.filter === 'c_zz1' && r.linked && !r.leak && r.codeLen > 20, JSON.stringify(r));
+        check(tag + ' E: 0 pageerrors (share code)', errors.length === 0, errors.join(' | '));
+        await ctx.close();
+      }
+      {
         const seedText = JSON.stringify(Object.assign({}, await captureSettings(), { mode: 2, cardCount: 12 }));
         const link = b64({ selectedLetters: ['א', 'ב', 'ג'], selectedVowels: ['a', 'patah'], mode: 1, cardCount: 6 });   // Flash Cards vowel keys (not the generator's)
         const { ctx, page, errors } = await openPage(browser, 'flash_cards.html', { seed: { hebrewFlashCards_settings: seedText }, query: '?s=' + link });

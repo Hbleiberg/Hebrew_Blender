@@ -19,7 +19,7 @@
 | `generatorPresetFolders` / `dashboardPresetFolders` / `dashboardScheduleFolders` / `flashCardPresetFolders` / `flashCardProfileFolders` / `torahTrainerFavoriteFolders` | `hebrewBlender_presetsFolders` / `hebrewDashboard_presetsFolders` / `hebrewDashboard_schedulesFolders` / `hebrewFlashCards_presetsFolders` / `hebrewFlashCards_profilesFolders` / `hebrewTorahTrainer_favoritesFolders` | The six folder trees (`{v:1,root:[…]}`) that organize the preset lists — see "Nested Folders" below. Always merged via `ftImportTree(key, incoming, false)`, **never** `Object.assign` (that clobbers `root`) |
 | `flashCardSettings` | `hebrewFlashCards_settings` | All Flash Cards live settings (mode, selected letters/vowels, color-coding, fonts, timer, number/color/emoji sub-modes, word-list selections, etc.); flat settings blob merged field-by-field via `ivritSafeAssign` |
 | `flashCardPbStreak` | `hebrewFlashCards_pbStreak` | Flash Cards personal-best streak (scalar string; imported as the **max** of existing vs incoming) |
-| `flashCardProfiles` | `hebrewFlashCards_profiles` | Flash Cards saved profiles (import merges via `mergeFlashCardProfiles`) |
+| `flashCardProfiles` | `hebrewFlashCards_profiles` | Flash Cards saved profiles (import merges via `mergeFlashCardProfiles`). A profile may carry `studentId`, its link to one student of a shared class (`classes`, below); the page's own `.ivrit` file carries the classes beside the profiles so the links find their students |
 | `dictAudioEnabled` / `dictTranslitStyle` / `dictTtsRate` / `dictEmojiSettings` | `hebrewDictionary_*` | Hebrew Dictionary settings |
 | `dictLastState` | `hebrewDictionary_lastState` | Dictionary last filter/session state (`getDictState()` minus the search query); object blob merged via `ivritSafeAssign`, empty = never-set (skipped on import) |
 | `wordLists` | `ivritSuite_wordLists` | Suite-wide saved Word Lists (`{v:1,lists:{}}`); merged one level deep via `wlMergeIntoStorage` so a shallow assign can't clobber `lists`. Written by the Dictionary's manager and by the generator's *⭑ Save as Word List* (one new list from the pasted import, the same id shape and caps); Flash Cards and the generator's picker read it |
@@ -103,7 +103,8 @@ Not every key belongs in the three AllTools functions. Split them:
   device), `hebrewBlender_pwaDismissed`, `hebrewBlender_whatsNewSeen` (the hub's
   What's-new card — see below), `hebrewFontMaker_inputMode`, `hebrewNameTags_activeClass` and the older
   `hebrewNameTags_activeList` (which class the Name Tags page last had open on this device — a per-device pointer, like
-  the dashboard's omitted `activeRosterId`), `ivritSuite_classesLegacy` (the shared roster's per-device memory),
+  the dashboard's omitted `activeRosterId`), `ivritSuite_classesLegacy` (the shared roster's per-device memory), `hebrewFlashCards_profileClass` (the class Flash
+  Cards' profile list is narrowed to),
   `hebrewBlender_lastBackupAt` (the ISO time this device last saved an AllTools `.ivrit`; drives the
   "Last backup from this device" line under the hub's inventory, gold-tinted past 30 days), and the
   Font Maker's `hebrewFontMaker_uiPrefs` workspace-prefs blob. (Per-device UI prefs like `hebrewBlender_zoom`,

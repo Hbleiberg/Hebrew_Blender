@@ -244,7 +244,7 @@ const PAGES = [
 // The tools each page hydrates (its own, Suite, and its alsoPull) — settled() is asked about exactly these.
 const TOOLS_OF = {
   'index.html': ALL_TOOLS, 'trope_tutor.html': ['TropeTutor', 'Suite'], 'torah_trainer.html': ['TorahTrainer', 'Suite'],
-  'flash_cards.html': ['FlashCards', 'Suite', 'Dictionary'], 'hebrew_blend_generator.html': ['Worksheet', 'Suite', 'Dictionary'],
+  'flash_cards.html': ['FlashCards', 'Suite', 'Dictionary', 'Classes'], 'hebrew_blend_generator.html': ['Worksheet', 'Suite', 'Dictionary'],
   'hebrew_dictionary.html': ['Dictionary', 'Suite'], 'classroom_dashboard.html': ['Dashboard', 'Suite', 'Classes'], 'letter_learner.html': ['LetterLearner', 'Suite'],
   'parsha_emojis.html': ['EmojiTorah', 'Suite'], 'name_tags.html': ['NameTags', 'Suite', 'Classes']
 };
