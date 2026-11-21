@@ -371,7 +371,7 @@ retired class and the line of a deleted student are removed, through that page's
 only write new code makes to an old key, and it only ever removes.
 
 Until that page is next opened on some device, the old row still holds the name. The delete confirm does not
-promise otherwise; see open point 4.
+promise otherwise.
 
 ### 7.8 What is never done
 
@@ -482,22 +482,17 @@ copies. They are unchanged.
   linking commit; `check-i18n`, `check-inline-js`; the Playwright recipe on all four pages (light and dark,
   desktop and ~800px, English and Hebrew).
 
-## 12. Open points for the maintainer
+## 12. Settled with the maintainer
 
-1. **A deleted student: Restore in the class, not the recovery bin.** The brief asks for the bin. The bin
-   never evicts and holds 1.5 MB in all; one whole-class copy on every other device for every routine removal
-   would fill it and raise "removed by your account" for ordinary edits. *Restore* in the editor costs nothing
-   and travels with the class. A deleted **class** does go through the bin. Say if you want the bin for
-   students anyway.
-2. **No `note` field** (§3).
-3. **No stored per-tag overrides in Name Tags** (§6.2).
-4. **The scrub runs on the owning page** (§7.7): a deleted student's name stays in the old account row until
-   the Dashboard (for a roster) or Name Tags (for a list) is next opened somewhere. Deleting a class also
-   leaves up to three recovery-bin copies on another device (the class, its old roster, its old list).
-5. **The fold rule** (§7.4): exact one-for-one only. Looser would merge more and risk a wrong merge.
-6. **The Dashboard's names change shape** (§6.1): a typed line becomes a Hebrew name and an English name, and
-   a *Names shown* setting decides what the picker prints.
-7. **Apply `0013` before the feature merges** (§4). It is safe to apply early: it only widens a list.
+| Point | Decision |
+|---|---|
+| A deleted student | *Restore* from the class's own `gone` list; no recovery-bin copy (the bin never evicts, so routine removals would fill it). A deleted **class** goes through the bin |
+| A `note` field | Left out of this version (§3) |
+| Per-tag overrides in Name Tags | None; the Print tick stays per session and follows the student id (§6.2) |
+| Removing a deleted name from the old account rows | On the owning page's next open — the Dashboard for a roster, Name Tags for a list (§7.7). Deleting a class can leave up to three recovery-bin copies on another device (the class, its old roster, its old list) |
+| Joining a roster and a list automatically | Exact one-for-one match only (§7.4); anything else is a notice and a confirmed *Merge into…* |
+| Names on the Dashboard | A *Names shown* setting: Hebrew, English or both; the default is both, Hebrew first (§6.1) |
+| Migration `0013` | Applied through the Supabase connector once Phase 1 is pushed and green, on the maintainer's word at that moment; read back afterwards (§4) |
 
 ## 13. Phases after approval
 
