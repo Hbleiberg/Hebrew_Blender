@@ -345,6 +345,7 @@ shows its old lists once, not twice (the classes are made after the card's answe
 | A and B load at the same moment, or one was offline | Both produce the same id and the same bytes; whichever uploads second meets an identical row, or merges by id |
 | A Dashboard tab and a Name Tags tab open together | Each copies only the old key whose tool it heard; both write through the one store, and the fold gives the same class from either |
 | B holds only the roster, A holds the roster and the list | Each source keeps its own id; the fold (§7.4) is a separate step with the same answer on both |
+| X holds only the list, Y only the roster | Each copies what it has; when the other's class lands, both fold the two stored classes into the roster-id class (§7.4) and hold the same bytes |
 | A deletes a class; C, which never held it, later downloads the old roster | The class id is in `retired`, which lands first; C shows nothing and uploads nothing |
 | A session that ended by itself, then offline use | Only the live view is used; nothing is copied, so nothing appears as "this device's own" at the next sign-in |
 | The first-sign-in card on a device with old lists | It lists the old lists. *Add* sends them and the classes follow; *Remove* removes them and there is nothing to copy |
@@ -357,18 +358,31 @@ agrees and they share at least one). Then the roster-id class is the class: it t
 transliterations and extra lines wherever its own are blank, records the list's id as its `fold`, and the
 list's id goes to `retired` with a fixed stamp (`1`, so every device writes the same bytes and any later edit
 of a class outranks it). The rule reads only the two sources, so every device folds the same way; a device
-holding only one of the two simply receives the folded class. A list already a class of its own, or a roster
-whose class was deleted, is never folded.
+holding only one of the two simply receives the folded class. Nothing is folded into a roster whose class was
+deleted, nor into a class that already stands for another list.
 
 **A near-match is never merged silently.** Same name but different students: both stay, and a one-time
 notice in the editor names the pair and offers *Merge them*, which a person confirms.
 
-**Where the fold does not happen (known limits).** The fold needs both old sources on one device before
-either is a stored class of its own. Two cases end as two same-named classes and the notice instead:
-a teacher who used Name Tags on one device and the Dashboard on another, never both on one (each device
-copies the only source it has); and a student removed from the roster class on a device that does not hold
-the list — the roster line is scrubbed, so the list no longer matches one for one and stays a class of its
-own, with that student still in it.
+**The two sources need not meet on one device.** After the plain rule above (the two old sources as they were
+typed, which a rename in the editor does not undo), `survey` looks at each side as the store knows it now:
+
+- **A list that is already a stored class of its own** (`nt_…`) is folded like any other list. This is the
+  teacher who used Name Tags on one device and the Dashboard on another: each device copied the only source it
+  had, and each then receives the other's class from the account. The roster side may be an old roster or a
+  stored class whose roster this device does not hold (any stored class that is not `nt_…` and has no
+  `created` — a class made in the editor is never folded). The list class leaves the store, and what it
+  carried goes to the joined class: blank fields, the extra line, a student's noted login, the
+  reading-assignments link. A device that still holds the list class's row afterwards keeps a copy in its
+  recovery bin, as for any row the account stops listing.
+- **A list student whom no student of the roster class answers to may be one that class removed** (`gone`).
+  This is the student removed on a device that does not hold the list: the Dashboard's scrub takes the line out
+  of the roster, the list still has the row, and the two no longer match one for one. They are still one class;
+  the student stays removed, and the list's row is then named by the scrub.
+
+Both give the same class on every device, because each device reads the same stored rows. What still stays
+two classes, with the notice: a list holding a student the roster class never had, a roster class holding a
+student the list lacks, and a pair whose names differ (a renamed class).
 
 ### 7.5 An edit made on an old page
 
@@ -496,7 +510,8 @@ Two per-device keys can hold copies of student names: the recovery bin and the k
   data write the same bytes and copying twice changes nothing; a rosters-only copy merges into the folded one;
   an old page's added line arrives once, and a deletion or a rename made here holds; a deleted class is never
   re-created, and a landed copy of one is removed only by the prune (a class edited since its deletion is kept);
-  deleting a class whose fold is only a view takes the list with it; a backup from such a device, and an account
+  two devices that each held one old source end with one class and the same bytes, and a student removed before
+  the list was seen stays removed in one class; deleting a class whose fold is only a view takes the list with it; a backup from such a device, and an account
   backup, restore each class once; a move stamps no class as edited; Replace and Merge into keep ids and logins; files import once, restore what was deleted and replace nothing typed; a near-match is never
   folded; the scrub names exactly the deleted sources, lines and rows; the CSV code round-trips.
 - **`scripts/smoke-migration.mjs`** (the golden replay, `--sdk` required). Along its main story the old
@@ -536,7 +551,7 @@ Two per-device keys can hold copies of student names: the recovery bin and the k
 | Per-tag overrides in Name Tags | None; the Print tick stays per session and follows the student id (§6.2) |
 | Name Tags' student table | Stays editable where it is, each edit saved into the shared class (§6.2) |
 | Removing a deleted name from the old account rows | On the owning page's next open — the Dashboard for a roster, Name Tags for a list (§7.7) |
-| Joining a roster and a list automatically | Exact one-for-one match only (§7.4); anything else is a notice and a confirmed merge |
+| Joining a roster and a list automatically | Same name and the same students one for one (§7.4) — also when each device held only one of the two, and when the only difference is a student the roster class removed; anything else is a notice and a confirmed merge |
 | Names on the Dashboard | A *Names shown* setting: Hebrew, English or both; the default is both, Hebrew first (§6.1) |
 | Flash Cards | *Make profiles for this class* beside linking existing profiles; nothing linked silently (§6.3) |
 | Reading-assignment accounts | Never created automatically; the preview is the confirmation (§6.4) |

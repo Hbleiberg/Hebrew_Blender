@@ -371,4 +371,66 @@ const LISTS = { 'Kitah Alef': { v: 1, rows: [{ he: 'נֹעָה', en: 'Noa' }, { 
   ok('a move stamps no class as edited; Replace and Merge into keep ids and logins; the scrub\'s row index is the stored one');
 }
 
+// ── 10. the fold when the two old sources never met on one device ──
+{
+  const R = { rosters: { a_0: { name: 'Kitah Alef', names: ['Noa', 'Eitan', 'David'] } }, activeRosterId: 'a_0' };
+  const L = { 'Kitah Alef': { v: 1, rows: [{ he: 'נֹעָה', en: 'Noa' }, { he: '', en: 'Eitan' }, { he: 'דָּוִד', en: 'David' }], extra: 'Room 4' } };
+  const view = (d) => J(d.C.list().map(c => c.id + ':' + c.students.map(x => x.en).join('+')));
+  const land = (to, from, id) => { const st = to.store() || { v: 1, classes: {} }; st.classes[id] = J(from.store().classes[id]); to.data[KEY] = JSON.stringify(st); };
+  // Name Tags on one device, the Dashboard on another: each copies the only source it has …
+  const X = device({ [NT]: JSON.stringify(L) }, { session: true }), Y = device({ [DASH]: JSON.stringify(R) }, { session: true });
+  const nid = X.C.idForList('Kitah Alef');
+  X.C.adopt({ dash: false, nt: true, prune: true }); Y.C.adopt({ dash: true, nt: false, prune: true });
+  assert.ok(X.store().classes[nid] && Y.store().classes.a_0);
+  // … and each then receives the other's class from the account: one class on both, before anything is written
+  land(X, Y, 'a_0'); land(Y, X, nid);
+  assert.deepEqual(view(X), ['a_0:Noa+Eitan+David'], 'the list-only device shows one class');
+  assert.deepEqual(view(Y), ['a_0:Noa+Eitan+David'], 'and so does the roster-only device');
+  X.C.adopt({ dash: false, nt: true, prune: true }); Y.C.adopt({ dash: true, nt: false, prune: true });
+  assert.ok(!X.store().classes[nid] && !Y.store().classes[nid], 'the list class leaves the store on both');
+  assert.equal(X.canon(X.store()), Y.canon(Y.store()), 'and both devices hold the same bytes');
+  assert.ok(X.store().retired[nid] === 1 && X.store().classes.a_0.fold === nid && X.store().classes.a_0.students[0].he === 'נֹעָה' && X.store().classes.a_0.extra === 'Room 4', 'the roster class took what the list adds');
+  const again = X.data[KEY]; X.C.adopt({ dash: false, nt: true, prune: true });
+  assert.equal(X.data[KEY], again, 'a second pass writes nothing');
+  // a list class that carries a login and a link hands them over
+  const X2 = device({ [NT]: JSON.stringify(L) }, { session: true });
+  X2.C.adopt({ dash: false, nt: true, prune: true });
+  X2.tick(); X2.C.setLink(nid, 'acct-1'); X2.tick(); X2.C.setStudentUsername(nid, X2.C.get(nid).students[0].id, 'noa.41');
+  land(X2, Y, 'a_0'); X2.C.adopt({ dash: false, nt: true, prune: true });
+  assert.ok(X2.C.list().length === 1 && X2.C.get('a_0').accountClassId === 'acct-1' && X2.C.get('a_0').students[0].username === 'noa.41', 'its reading-assignments link and login are carried to the joined class');
+  // not joined: a list class whose students differ, and a class made by hand in the editor
+  const X3 = device({ [NT]: JSON.stringify(L) }, { session: true });
+  X3.C.adopt({ dash: false, nt: true, prune: true }); X3.tick(); X3.C.addStudent(nid, { he: '', en: 'Extra Kid' });
+  land(X3, Y, 'a_0'); X3.C.adopt({ dash: false, nt: true, prune: true });
+  assert.equal(X3.C.list().length, 2, 'a list class with a student the roster class never had stays its own class');
+  const X4 = device({ [NT]: JSON.stringify(L) });
+  const made = X4.C.addClass('Kitah Alef', [{ he: '', en: 'Noa' }, { he: '', en: 'Eitan' }, { he: '', en: 'David' }]);
+  X4.C.adopt();
+  assert.ok(X4.C.list().length === 2 && X4.C.get(made), 'a class a teacher made by hand is never folded with a list');
+  ok('two devices that each held one old source: one class, the same bytes; differing or hand-made classes stay apart');
+}
+{
+  // a student removed from the roster class on a device that does not hold the list: the cleaned roster no longer
+  // matches the list one for one — the list's extra row is that removed student's, and the two are still one class
+  const R = { rosters: { a_0: { name: 'Kitah Alef', names: ['Noa', 'Eitan', 'David'] } }, activeRosterId: 'a_0' };
+  const L = { 'Kitah Alef': { v: 1, rows: [{ he: 'נֹעָה', en: 'Noa' }, { he: '', en: 'Eitan' }, { he: 'דָּוִד', en: 'David' }], extra: '' } };
+  const B = device({ [DASH]: JSON.stringify(R) }, { session: true });
+  B.C.adopt({ dash: true, nt: false, prune: true });
+  B.tick(); B.C.removeStudent('a_0', B.C.get('a_0').students[2].id);
+  assert.deepEqual(J(B.C.scrub('dash').lines), { a_0: ['David'] });
+  const cleaned = J(R); cleaned.rosters.a_0.names = ['Noa', 'Eitan'];   // what the Dashboard's scrub leaves, and the account then holds
+  const A = device({ [DASH]: JSON.stringify(cleaned), [NT]: JSON.stringify(L), [KEY]: B.data[KEY] }, { session: true });
+  const nid = A.C.idForList('Kitah Alef');
+  assert.deepEqual(J(A.C.list().map(c => c.students.map(x => x.en).join('+'))), ['Noa+Eitan'], 'one class, without the removed student');
+  A.C.adopt({ dash: true, nt: true, prune: true });
+  assert.ok(!A.store().classes[nid] && A.store().retired[nid] === 1 && A.store().classes.a_0.fold === nid, 'the fold is written; no second class is made');
+  assert.ok(A.C.get('a_0').students.length === 2 && A.C.get('a_0').gone.length === 1 && A.C.get('a_0').students[0].he === 'נֹעָה', 'the removed student stays removed; the others take the list\'s Hebrew');
+  assert.deepEqual(J(A.C.scrub('nt').rows), { 'Kitah Alef': [2] }, 'and the list\'s row of the removed student is named for removal');
+  // control: the list's extra row is somebody the class never had
+  const L2 = J(L); L2['Kitah Alef'].rows[2] = { he: '', en: 'Somebody Else' };
+  const A2 = device({ [DASH]: JSON.stringify(cleaned), [NT]: JSON.stringify(L2), [KEY]: B.data[KEY] }, { session: true });
+  assert.equal(A2.C.list().length, 2, 'a list with a student the class never had stays a class of its own');
+  ok('a student removed before the list was seen: still one class, the student still removed');
+}
+
 console.log(`smoke-classes: ${n} checks passed`);

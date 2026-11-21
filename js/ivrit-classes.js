@@ -459,16 +459,27 @@
   // A roster and a list are one class when they have the same name and the same students, one for one. The
   // roster-id class is then the class and takes what the list adds. Returns [{ d, n, pairs }] (pairs: list student
   // index → roster student index). Each roster folds at most one list.
+  // A side may carry `gone` — the students its class removed: a list student no student of the roster side answers
+  // to must then be one of those (the old row of a student removed since), and is not brought back.
+  function foldPairs(d, n) {
+    if (!n.cls.students.length || matchKey(d.cls.name) !== matchKey(n.cls.name)) return null;
+    var pairs = pairRows(d.cls.students, n.cls.students);
+    if (pairs.size !== d.cls.students.length) return null;              // every student of the roster side is on the list
+    if (pairs.size !== n.cls.students.length) {
+      var rest = n.cls.students.filter(function (st, k) { return !pairs.has(k); });
+      if (!d.gone || !d.gone.length || pairRows(d.gone, rest).size !== rest.length) return null;
+    }
+    return pairs;
+  }
   function findFolds(dash, nts, skipN, skipD) {
     var folds = [], usedD = dict();
     nts.forEach(function (n) {
       if (skipN(n.cls.id)) return;
-      var key = matchKey(n.cls.name);
       for (var i = 0; i < dash.length; i++) {
         var d = dash[i];
-        if (usedD[d.cls.id] || skipD(d.cls.id) || matchKey(d.cls.name) !== key || d.cls.students.length !== n.cls.students.length || !n.cls.students.length) continue;
-        var pairs = pairRows(d.cls.students, n.cls.students);
-        if (pairs.size !== n.cls.students.length) continue;
+        if (usedD[d.cls.id] || skipD(d.cls.id, n.cls.id)) continue;
+        var pairs = foldPairs(d, n);
+        if (!pairs) continue;
         usedD[d.cls.id] = true;
         folds.push({ d: d, n: n, pairs: pairs });
         return;
@@ -480,9 +491,11 @@
     var changed = false, byId = dict();
     studentsOf(target).forEach(function (s) { byId[s.id] = s; });
     fold.pairs.forEach(function (di, ni) {
-      var st = byId[fold.d.cls.students[di].id];
-      if (st && fillStudent(st, fold.n.cls.students[ni])) changed = true;
+      var st = byId[fold.d.cls.students[di].id], from = fold.n.cls.students[ni];
+      if (st && fillStudent(st, from)) changed = true;
+      if (st && !str(st.username) && str(from.username)) { st.username = from.username; changed = true; }   // (only a stored list class has one)
     });
+    if (!str(target.accountClassId) && str(fold.n.cls.accountClassId)) { target.accountClassId = fold.n.cls.accountClassId; changed = true; }
     if (!str(target.extra).trim() && !(isObj(target.t) && target.t.extra) && fold.n.cls.extra) { target.extra = fold.n.cls.extra; changed = true; }
     if (target.fold !== fold.n.cls.id) { target.fold = fold.n.cls.id; changed = true; }   // which old list this class also stands for (scrub reads it)
     return changed;
@@ -500,21 +513,67 @@
       nts: ntSourcesFrom(parseKey(NT_KEY)).map(function (s) { return { src: s, cls: classFromSource(s) }; }) };
     return _legacyMemo;
   }
+  // A class of the store as a side of a fold: its students as they are now, and (the roster side) the ones removed.
+  function storedSide(id, c) {
+    var gone = [];
+    if (isObj(c.gone)) Object.keys(c.gone).forEach(function (k) { if (isObj(c.gone[k])) gone.push(c.gone[k]); });
+    var cls = { id: id, name: str(c.name), students: studentsOf(c) };
+    if (str(c.extra).trim()) cls.extra = str(c.extra).trim();
+    if (str(c.accountClassId)) cls.accountClassId = str(c.accountClassId);
+    return { cls: cls, gone: gone, stored: true };
+  }
   function survey(store) {
     var ls = legacySources(), dash = ls.dash, nts = ls.nts;
-    // a list already a class of its own, or already retired, is never folded again
-    // (nor is anything folded into a roster whose class was deleted: its list would vanish with it)
-    var folds = findFolds(dash, nts, function (nid) { return hasOwn(store.classes, nid) || !!num(store.retired[nid]); },
-                          function (did) { return !alive(store, did); });
+    var live = function (id) { var c = hasOwn(store.classes, id) ? store.classes[id] : null; return (isObj(c) && alive(store, id)) ? c : null; };
+    // A list takes part while it is not folded or deleted already — also when it is a stored class of its own (two
+    // devices that each held one of the two old sources made two classes; they are joined like any other pair).
+    var skipN = function (nid) { return !!num(store.retired[nid]) && !live(nid); };
+    // Nothing is folded into a roster whose class was deleted (its list would vanish with it), nor into a class
+    // that already stands for another list.
+    var skipD = function (did, nid) {
+      if (!alive(store, did)) return true;
+      var c = live(did);
+      return !!(c && typeof c.fold === 'string' && c.fold && c.fold !== nid);
+    };
+    // First the two old sources as they were typed, which every device holding both reads the same way — a
+    // student renamed in the editor since does not undo it. A stored list class is left to the second pass.
+    var folds = findFolds(dash, nts, function (nid) { return skipN(nid) || !!live(nid); }, skipD);
+    var doneD = dict(), doneN = dict();
+    folds.forEach(function (f) { doneD[f.d.cls.id] = true; doneN[f.n.cls.id] = true; });
+    // Then each side as the store knows it now: a roster class with the students it removed, a list that is a
+    // stored class, and a class whose old source this device does not hold (it came from the account).
+    var D = [], N = [], seenD = dict(), seenN = dict();
+    dash.forEach(function (x) { seenD[x.cls.id] = true; if (doneD[x.cls.id]) return; var c = live(x.cls.id); D.push(c ? storedSide(x.cls.id, c) : x); });
+    nts.forEach(function (x) { seenN[x.cls.id] = true; if (doneN[x.cls.id]) return; var c = live(x.cls.id); N.push(c ? storedSide(x.cls.id, c) : x); });
+    Object.keys(store.classes).sort().forEach(function (id) {
+      var c = live(id);
+      if (!c || bad(id)) return;
+      if (id.indexOf('nt_') === 0) { if (!seenN[id]) N.push(storedSide(id, c)); }
+      else if (!seenD[id] && !num(c.created)) D.push(storedSide(id, c));   // (a class made in the editor has `created`: never a roster's)
+    });
+    findFolds(D, N, skipN, skipD).forEach(function (f) {
+      if (!f.d.stored && !f.n.stored) return;        // two plain sources: the first pass already answered
+      folds.push(f);
+    });
     var foldOfD = dict(), foldOfN = dict();
     folds.forEach(function (f) { foldOfD[f.d.cls.id] = f; foldOfN[f.n.cls.id] = f; });
     return { dash: dash, nts: nts, folds: folds, foldOfD: foldOfD, foldOfN: foldOfN };
+  }
+  // The fold is written: the roster-id class takes what the list adds and names it (`fold`), the list's id is
+  // retired with the fixed stamp, and a list that was a stored class of its own leaves the store.
+  function commitFold(store, f) {
+    var did = f.d.cls.id, nid = f.n.cls.id;
+    if (!hasOwn(store.classes, did) || !isObj(store.classes[did]) || bad(nid)) return false;
+    applyFold(store.classes[did], f);
+    if (!(num(store.retired[nid]) >= FOLD_STAMP)) store.retired[nid] = FOLD_STAMP;
+    if (hasOwn(store.classes, nid)) delete store.classes[nid];
+    return true;
   }
   // The classes as every tool sees them: the stored ones, plus a live view of each old source not yet copied.
   function buildView() {
     var store = readStore(), sv = survey(store), out = dict(), id;
     for (id in store.classes) {
-      if (!hasOwn(store.classes, id) || bad(id) || !isObj(store.classes[id]) || !alive(store, id)) continue;
+      if (!hasOwn(store.classes, id) || bad(id) || !isObj(store.classes[id]) || !alive(store, id) || sv.foldOfN[id]) continue;
       var c = clone(store.classes[id]);
       c.id = id;
       if (sv.foldOfD[id]) applyFold(c, sv.foldOfD[id]);
@@ -683,9 +742,9 @@
   function materialise(store, sv, id) {
     var x = null;
     sv.dash.concat(sv.nts).forEach(function (y) { if (y.cls.id === id) x = y; });
-    if (!x || sv.foldOfN[id]) return false;
-    if (!isObj(store.classes[id])) store.classes[id] = clone(x.cls);
-    if (sv.foldOfD[id]) { applyFold(store.classes[id], sv.foldOfD[id]); store.retired[sv.foldOfD[id].n.cls.id] = FOLD_STAMP; }
+    if (sv.foldOfN[id]) return false;
+    if (!isObj(store.classes[id])) { if (!x) return false; store.classes[id] = clone(x.cls); }
+    if (sv.foldOfD[id]) commitFold(store, sv.foldOfD[id]);
     return true;
   }
   // After the account has been heard from: every old source this page's hydration covered is copied (once, with
@@ -709,10 +768,11 @@
       store.classes[id] = clone(x.cls);
     });
     sv.folds.forEach(function (f) {
-      var did = f.d.cls.id;
-      if (!okFrom('nt') || !hasOwn(store.classes, did) || !isObj(store.classes[did])) return;   // the roster is not a class here yet: the fold stays a view
-      applyFold(store.classes[did], f);
-      store.retired[f.n.cls.id] = FOLD_STAMP;
+      // A list still only an old source is folded once this load has heard its own tool; one that is a stored
+      // class, once the account has answered for the classes (`prune`). The roster side must be a class here —
+      // until then the fold stays a view.
+      if (!(okFrom('nt') || (f.n.stored && which.prune))) return;
+      commitFold(store, f);
     });
     return writeStore(store);
   }
@@ -793,14 +853,15 @@
   // The class leaves the store and its id is recorded, so no device re-creates it from an old roster or list.
   function deleteClass(id) {
     var v = buildView(), store = v.store;
-    if (!(id in v.map)) return false;
+    // (a stored list class that a fold hides can still be deleted by id: Merge into does, once its students joined)
+    if (!(id in v.map) && !(v.sv.foldOfN[id] && hasOwn(store.classes, id))) return false;
     var cur = (hasOwn(store.classes, id) && isObj(store.classes[id])) ? store.classes[id] : null;
     store.retired[id] = Math.max(Date.now(), (cur ? classStamp(cur) : 0) + 1, num(store.retired[id]) + 1);
     // the old list folded into this class is deleted with it (until now it was only marked as folded) — also when
     // the fold was never written and is still only a view here, or the list would step forward as a class of its own
     if (cur && typeof cur.fold === 'string' && cur.fold && !bad(cur.fold)) store.retired[cur.fold] = store.retired[id];
     var viewFold = v.sv.foldOfD[id];
-    if (viewFold && !bad(viewFold.n.cls.id)) store.retired[viewFold.n.cls.id] = store.retired[id];
+    if (viewFold && !bad(viewFold.n.cls.id)) { store.retired[viewFold.n.cls.id] = store.retired[id]; if (hasOwn(store.classes, viewFold.n.cls.id)) delete store.classes[viewFold.n.cls.id]; }
     delete store.classes[id];
     return writeStore(store);
   }
@@ -972,7 +1033,7 @@
         if (!str(probe.extra).trim() && str(inc.extra).trim()) probe.extra = clip(inc.extra);
         if (canon(probe) === before) return false;
         store.classes[id] = probe;
-        if (sv.foldOfD[id]) store.retired[sv.foldOfD[id].n.cls.id] = FOLD_STAMP;
+        if (sv.foldOfD[id]) commitFold(store, sv.foldOfD[id]);
         return true;
       }
       var c = clone(inc);
