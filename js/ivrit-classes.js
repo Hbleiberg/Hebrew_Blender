@@ -483,6 +483,7 @@
       if (st && fillStudent(st, fold.n.cls.students[ni])) changed = true;
     });
     if (!str(target.extra).trim() && !(isObj(target.t) && target.t.extra) && fold.n.cls.extra) { target.extra = fold.n.cls.extra; changed = true; }
+    if (target.fold !== fold.n.cls.id) { target.fold = fold.n.cls.id; changed = true; }   // which old list this class also stands for (scrub reads it)
     return changed;
   }
   // Everything the view needs, from the store and the old keys as they are now.
@@ -568,8 +569,70 @@
     });
     return out;
   }
+  // What the page that owns an old key must take out of it, so a name a teacher deleted really leaves the device and
+  // the account: the old source of a class that was deleted (never one only folded into its roster), and the line or
+  // row of a student in a class's removed-students record. `from`: 'dash' → { sources: [rosterId], lines: { rosterId:
+  // [line] } }; 'nt' → { sources: [listName], rows: { listName: [index] } }. It only ever names things to remove; the
+  // page removes them through its own save path. Read-only here.
+  function scrub(from) {
+    var store = readStore(), ls = legacySources(), out = { sources: [], lines: {}, rows: {} };
+    var goneOf = function (classId) { var c = hasOwn(store.classes, classId) ? store.classes[classId] : null; return (isObj(c) && isObj(c.gone)) ? c.gone : null; };
+    var deleted = function (id) { return (hasOwn(store.retired, id) ? num(store.retired[id]) : 0) > FOLD_STAMP && !alive(store, id); };
+    if (from === 'dash') {
+      ls.dash.forEach(function (x) {
+        var id = x.cls.id;
+        if (deleted(id)) { out.sources.push(id); return; }
+        var gone = goneOf(id);
+        if (!gone) return;
+        var hit = x.src.lines.filter(function (line, i) { return hasOwn(gone, x.cls.students[i].id); });
+        if (hit.length) out.lines[id] = hit;
+      });
+      return out;
+    }
+    // a list folded into a roster class: that class names it (`fold`), and its rows are matched to students by name
+    var foldTarget = dict();
+    Object.keys(store.classes).forEach(function (cid) { var c = store.classes[cid]; if (isObj(c) && typeof c.fold === 'string' && !bad(cid)) foldTarget[c.fold] = cid; });
+    ls.nts.forEach(function (x) {
+      var id = x.cls.id, name = x.src.name;
+      if (deleted(id)) { out.sources.push(name); return; }
+      var own = hasOwn(store.classes, id), classId = own ? id : foldTarget[id], gone = classId ? goneOf(classId) : null;
+      if (!gone) return;
+      // the list's rows that are students (classFromSource skips a row with no name), with their places in the list
+      var named = [], at = [];
+      x.src.rows.forEach(function (r, i) { if (field(r, 'he').trim() || field(r, 'en').trim() || field(r, 'tr').trim()) { named.push(r); at.push(i); } });
+      var idx = [];
+      if (own) named.forEach(function (r, k) { if (hasOwn(gone, x.cls.students[k].id)) idx.push(at[k]); });
+      else {
+        // rows a student still in the class answers to stay; of the rest, the ones a removed student answers to go
+        var claimed = pairRows(studentsOf(store.classes[classId]), named), restRows = [], restAt = [];
+        named.forEach(function (r, k) { if (!claimed.has(k)) { restRows.push(r); restAt.push(at[k]); } });
+        var goneList = Object.keys(gone).filter(function (k) { return isObj(gone[k]); }).map(function (k) { return gone[k]; });
+        pairRows(goneList, restRows).forEach(function (gi, ri) { idx.push(restAt[ri]); });
+        idx.sort(function (p, q) { return p - q; });
+      }
+      if (idx.length) out.rows[name] = idx;
+    });
+    return out;
+  }
+  // The page that owns an old key hands its remover here; it is called with scrub(from)'s answer whenever that names
+  // something. Signed out, the device is its own: at once and after every change. With a stored session only once a
+  // hydration in this page load has answered for the classes and for that old key's own tool (`tool`), so a stale
+  // copy is never the one acted on.
+  function watchScrub(from, tool, fn) {
+    var run = function () {
+      if (hasStoredSession() && !(freshTools.Classes && freshTools[tool])) return;
+      var plan;
+      try { plan = scrub(from); } catch (e) { return; }
+      if (plan.sources.length || Object.keys(plan.lines).length || Object.keys(plan.rows).length) { try { fn(plan); } catch (e2) {} }
+    };
+    onChange(run);
+    if (root.addEventListener) root.addEventListener('ivritsuite:hydrated', run);   // after this file's own listener (added first) noted the tools
+    run();
+  }
   // The id an old Name Tags list has as a class (a page that remembered a list by name finds its class with it).
   function idForList(name) { return 'nt_' + shortHash(str(name).normalize('NFC')); }
+  // The id the student of one old Dashboard roster line has (a pick session that still names students by their line).
+  function idForLine(classId, line) { return 's' + shortHash(str(classId) + '\u0001' + str(line).trim() + '\u00010'); }
   function readLedger() {
     var l = parseKey(LEDGER_KEY) || {};
     if (!isObj(l.told)) l.told = {};
@@ -725,6 +788,8 @@
     if (!(id in v.map)) return false;
     var cur = (hasOwn(store.classes, id) && isObj(store.classes[id])) ? store.classes[id] : null;
     store.retired[id] = Math.max(Date.now(), (cur ? classStamp(cur) : 0) + 1, num(store.retired[id]) + 1);
+    // the old list folded into this class is deleted with it (until now it was only marked as folded)
+    if (cur && typeof cur.fold === 'string' && cur.fold && !bad(cur.fold)) store.retired[cur.fold] = store.retired[id];
     delete store.classes[id];
     return writeStore(store);
   }
@@ -1553,7 +1618,7 @@
 
   var api = {
     KEY: KEY, LEDGER_KEY: LEDGER_KEY, MAX_CLASSES: MAX_CLASSES, MAX_STUDENTS: MAX_STUDENTS, MAX_FIELD: MAX_FIELD,
-    list: list, get: get, onChange: onChange, landed: landed, idForList: idForList, nearMatches: nearMatches, dismissNearMatch: dismissNearMatch,
+    list: list, get: get, onChange: onChange, landed: landed, idForList: idForList, idForLine: idForLine, scrub: scrub, watchScrub: watchScrub, nearMatches: nearMatches, dismissNearMatch: dismissNearMatch,
     mergeClass: mergeClass, adopt: adopt, exportAll: exportAll, importFile: importFile,
     addClass: addClass, renameClass: renameClass, setClassExtra: setClassExtra, duplicateClass: duplicateClass, moveClass: moveClass,
     deleteClass: deleteClass, mergeInto: mergeInto, addStudents: addStudents, replaceStudents: replaceStudents,

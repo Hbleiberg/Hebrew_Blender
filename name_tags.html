@@ -1178,6 +1178,7 @@ body.dark #appToast { background: #0a0f1c; }
    ══════════════════════════════════════════════════════ */
 const NT_SET_KEY = 'hebrewNameTags_settings';
 const NT_ACTIVE_KEY = 'hebrewNameTags_activeClass';   // per device, erase-only: the class (its id) this device last had open
+const NT_LISTS_OLD_KEY = 'hebrewNameTags_lists';   // the lists as they were before the shared classes: read by js/ivrit-classes.js, written here only to take out what was deleted
 const NT_ACTIVE_OLD_KEY = 'hebrewNameTags_activeList';   // before the shared classes: the open list's name, read once to find its class
 const DARK_KEY = 'hebrewBlender_darkMode';
 const NT_MAX_LISTS = 40, NT_MAX_ROWS = 200, NT_MAX_FIELD = 120, NT_CSV_MAX_BYTES = 1000000;   // the shared classes' own limits (IvritClasses.MAX_*)
@@ -1498,6 +1499,23 @@ function ntDeleteList() {
   ntCur = { id: '', name: '', val: null, stored: false };
   ntSwitchList(null);
   ntListNote(_fbT('nametags.list.deleted', 'Deleted "{name}".', { name }));
+}
+// A class or a student a teacher deleted still has its name in the old lists key (and, signed in, in its account
+// rows): js/ivrit-classes.js names exactly those (scrub), and this — the one place that still writes
+// hebrewNameTags_lists, and only ever to take something out — removes them.
+function ntScrubOldLists(plan) {
+  let obj = null;
+  try { obj = ivritSafeParse(localStorage.getItem(NT_LISTS_OLD_KEY) || 'null'); } catch (e) { obj = null; }
+  if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return;
+  let changed = false;
+  plan.sources.forEach(name => { if (Object.prototype.hasOwnProperty.call(obj, name)) { delete obj[name]; changed = true; } });
+  Object.keys(plan.rows).forEach(name => {
+    const l = Object.prototype.hasOwnProperty.call(obj, name) ? obj[name] : null;
+    if (!l || typeof l !== 'object' || !Array.isArray(l.rows)) return;
+    const drop = new Set(plan.rows[name]), rows = l.rows.filter((r, i) => !drop.has(i));
+    if (rows.length !== l.rows.length) { l.rows = rows; changed = true; }
+  });
+  if (changed) { try { localStorage.setItem(NT_LISTS_OLD_KEY, JSON.stringify(obj)); } catch (e) {} }
 }
 // The shared roster editor (js/ivrit-classes.js): every class in one window — add, rename, merge, delete, import.
 // It writes the same classes this page shows, so the table follows it as it follows another tab.
@@ -3737,7 +3755,7 @@ function init() {
   });
   // The classes changed under this page — another tab, the account, the roster editor: read them again. (This page's
   // own operations already drew their change.)
-  if (window.IvritClasses) IvritClasses.onChange(() => { if (!_ntSelf) ntListsAdopt(); });
+  if (window.IvritClasses) { IvritClasses.onChange(() => { if (!_ntSelf) ntListsAdopt(); }); IvritClasses.watchScrub('nt', 'NameTags', ntScrubOldLists); }
   initCloudSaves();
   if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); }
   if (window.I18n) I18n.ready.then(ntFromDashboard, ntFromDashboard); else ntFromDashboard();

@@ -417,34 +417,43 @@ body.dark #tipFloat { background: #0a0f1c; }
   `showTimerFullscreen` is off, and then the visible Stop does not exist. The "tap to stop" hint is a
   **sibling** of `#timerDisplay`, never a child — `.done` runs `timerFlash`, which would strobe a child —
   and being static text it is also the only visual cue left under reduced motion, which kills that flash.
-- **Student Picker:** a class's `picked` / `absent` lists live in `settings.pickerSessions[rosterId]` —
-  localStorage only, stripped from presets, share codes, `.ivrit` files and the cloud row — and absences
-  persist across days on purpose. `resetPickerCycle()` empties `picked` ("🔄 New round");
-  `clearAbsences()` empties `absent` ("✅ Everyone's here", rendered in `#pickerProgress` only while someone
-  is marked absent, whether or not the fair cycle is on). Both act on the active class only.
-- **A student's name on the board** (the chips, the picked name, the groups) is `pickerNameHTML(name)`: escaped, its
-  nikkud shown, stripped or colour-coded by the switches `hebDisplay` reads — but never through `hebDisplay`, which
-  marks its whole argument Hebrew. A name runs in the direction of its own first letter: Hebrew first, the whole name
-  carries `lang="he" dir="rtl"`; otherwise it is `dir="ltr"` and only its Hebrew runs are marked (`David K. / דָּוִד`),
-  so a Latin name keeps its last mark last (`David K.`, `Maya!`). `colorizeHebrew` takes the raw text, since it
-  escapes for itself.
-- **The first real class takes the starter's slot.** A fresh device holds one class it made for itself, an untouched
-  `My class` with no names (`isUntouchedDefaultClass`, the seed the sync registry never uploads). While one is listed
-  (`starterClassId()`), `newClass()` and `classFromNameTags()` write the new class into that slot — the same id, its own
-  name through `uniqueClassName(name, starter)`, and no count against `ROSTER_MAX_CLASSES` — so no empty `My class (0)`
-  stays beside it in the three switchers. A starter the teacher renamed or typed names into is a class like any other,
-  and the next class is added beside it. A preset names its class by name, so one saved on the starter simply leaves
-  the picker where it is, as after any rename.
-- **A class from a Name Tags list:** `classFromNameTags()` copies one of `name_tags.html`'s lists
-  (`hebrewNameTags_lists`, read as this device holds it) into a **new** class (or the starter's slot, above) — one roster line per student: the
-  English name, the Hebrew name, or both (`"David / דָּוִד"`), a student with only one keeping it — through
-  `parseRoster` (de-duplicated, at most `PICKER_MAX`; the class note says when names were left out), under
-  `ROSTER_MAX_CLASSES`, named `uniqueClassName(list name)`. A one-time copy: nothing links the two afterwards.
-  `#pickerFromNtRow` shows only on a device that holds Name Tags lists (`renderFromNameTags()`, from
-  `renderClassManager()` and a `storage` listener), as there is nothing to copy otherwise; beside its button,
-  *Open Name Tags ↗* (`#pickerNtLink`, a new tab) opens `name_tags.html?from=dashboard`, that page's *From the
-  Classroom Dashboard* box on the class live here. The reverse copy lives on the Name Tags page
-  (`docs/reference/name-tags.md` → *From the Classroom Dashboard*).
+- **The classes are the suite's shared classes** (`js/ivrit-classes.js`, `docs/reference/class-roster.md`): Name Tags
+  and Flash Cards show the same ones. This page reads them — `classesNow()` (one read per change, dropped by
+  `classesChanged()`), `ensureActiveClass()` / `curClass()` returning `{ id, name, names }` where `names` are the
+  students' **ids** — and keeps only what is its own: which class is live on this device (`settings.activeRosterId`, a
+  class id) and each class's pick session. With no class at all `curClass()` is an empty one that is never stored: the
+  page **no longer makes an empty `My class`**, and the card offers *Edit classes…* instead. `settings.rosters` — the
+  classes as they were before — stays in the blob: the shared file reads it (each roster is a class under its own id,
+  so the live pointer of every device stayed valid) and this page writes it only to take out what a teacher deleted
+  (`scrubOldRosters`, from `IvritClasses.watchScrub('dash', 'Dashboard', …)`).
+- **The drawer** holds the class menu (`#pickerClassSel`, with its count line `#pickerRosterCount`), *Edit classes…*
+  (`#pickerEditClasses` → `openClassEditor()`, the shared roster editor opened on the live class, with this page's
+  shared on-screen Hebrew keyboard handed in as `host.mountKeyboard`), *Open Name Tags ↗* (`#pickerNtLink`, a new tab
+  on `name_tags.html?from=dashboard`, which opens the class that is live here) and *Names shown*. Adding, renaming,
+  merging and deleting a class, and typing or importing students, are the editor's. `onClassesChanged()` — the
+  shared file's `onChange`, so the editor, another tab and the account alike — re-reads the classes and redraws the
+  switchers, the picker, the column titles and the schedule's class names; it saves only when the live pointer had to
+  move (its class is gone: the first class takes over).
+- **Student Picker:** a class's `picked` / `absent` lists live in `settings.pickerSessions[classId]` and name students
+  by id — localStorage only, stripped from presets, share codes, `.ivrit` files and the cloud row — and absences
+  persist across days on purpose. A session written before the shared classes names students by their roster line:
+  `curSession()` turns each line that is still a student of that class into its id (`IvritClasses.idForLine`) and
+  drops the rest. `resetPickerCycle()` empties `picked` ("🔄 New round"); `clearAbsences()` empties `absent`
+  ("✅ Everyone's here", rendered in `#pickerProgress` only while someone is marked absent, whether or not the fair
+  cycle is on). Both act on the active class only. The picker shows a class's first `PICKER_MAX` students.
+- **A student's name on the board** (the chips, the picked name, the groups) is `pickerNameHTML(id)`: the student's
+  Hebrew name, English name or both, by `settings.pickerNames` (*Names shown*: `both` — Hebrew first — `he` or `en`; a
+  name asked for and not there falls back to the one the student has; the setting travels like any other and rides
+  presets). Each name is its own isolate — `<bdi lang="he" dir="rtl">` for the Hebrew, `<bdi dir="ltr">` for the Latin
+  — so neither leads the other with its last mark (`דָּוִד / David K.` keeps its full stop). The Hebrew is escaped with
+  its nikkud shown, stripped or colour-coded by the switches `hebDisplay` reads — but never through `hebDisplay`, which
+  marks its whole argument Hebrew; `colorizeHebrew` takes the raw text, since it escapes for itself. A line typed in
+  one script before the shared classes is that student's name exactly as typed, punctuation included.
+- **A preset carries its class as an id and a name** (`activeClassId`, `activeRosterName`; `getSettings({ forPreset })`):
+  `applySettings` takes the class with that id on this account, else the class with that name (a preset from a file or
+  another teacher), else leaves the picker where it is. `presetClassName()` resolves the same way for the weekly grid.
+  A legacy snapshot's single `roster` string becomes a class through `resolveLegacyRosterToClass` (the class that
+  already holds exactly those lines, else a new one).
 - **`?settings=<section>`** (Name Tags' link to the class lists sends `picker`): Settings opens through
   `openSettingsAtPanel(section)` once `I18n.ready` resolves, in place of that visit's first-run card (which still
   comes on the next visit); a value that is not a `TT_SECTION_TAB` key opens nothing. The param is dropped at once
@@ -608,7 +617,7 @@ dashboard only says which keys it owns and how to re-read them. Signed in, the a
 schedules, settings and class lists live: they land at every load (one listing, then only what differs) and
 every save, delete or reset reaches the account two seconds after the last write — the *Your account* section
 of the More tab holds the module's status line, nothing else. What matters here: `flush` is
-`flushRosterIfTyping()` + a non-exiting commit of the in-place editor (`syncActive()`) + `saveSettingsIfChanged()`
+a non-exiting commit of the in-place editor (`syncActive()`) + `saveSettingsIfChanged()`
 (synchronous, and it reads `#dashEditor` into `settings` first) — the module calls it at every hydration and
 before every write-through, so it must never throw a teacher out of an edit; `finalFlush` adds
 `exitInPlaceEdit(true)` and runs only on `pagehide` and sign-out, as the page's own `pagehide` handler does.
@@ -618,40 +627,33 @@ hidden-tab saves and both module callbacks go through `saveSettingsIfChanged()`,
 the end of init and at the end of each `onLocalChanged` re-read) — and writes only on a difference (a drawer setting
 kept until the drawer closes, board text still being typed). A tab that changed nothing therefore never writes its
 older copy over one another tab saved since; a tab that did still writes its whole blob, as every save here does.
-`editing` reports a live edit (`_activeEditable`, or the focus in `#pickerRoster`, `#dashEditor` or
+`editing` reports a live edit (`_activeEditable`, or the focus in `#dashEditor` or
 `#intermissionEditor`), so another tab's download waits for the next save instead of re-rendering over the typing. The
 settings row **omits** every per-device field (`*Collapsed`, `panelLayout`, `videoLayout`, `zoomLevel`,
 `hideZoomBar`, `keepAwake`, `lockPanelWidths`, `showTextSizeOptions`), the ephemeral `pickerSessions`, the
-derived `_geoCoords`, the live `activeRosterId` and the `rosters` — the class lists are their own rows on the
-same key (one per class, labelled by the class name), so a projector's zoom or layout never lands on the laptop,
+derived `_geoCoords`, the live `activeRosterId` and the `rosters` — the old class lists are their own rows on the
+same key (one per roster, labelled by its name), so a projector's zoom or layout never lands on the laptop,
 and a sign-out that removes the account's rows strips only the fields each row carries (`localStripProjected`:
 the settings blob's fields and the rosters are decided on their own). After the module writes the settings key
 the page re-reads it (`loadSettingsFromStorage()`), then runs the `IVRIT_CFG.apply` tail — `applySettings` on a
 clone, the three render caches nulled, `renderWeekSummary` / `renderScheduleUI` / the week editor — and
-`ensureActiveClass()` self-heals a dangling class pointer after a roster landed. The pointer is per device, so a
-second device that receives the account's classes would keep showing its own untouched default (`My class`, no
-names): `adoptClassFromAccount()` switches it to the first class from the account — after each roster row lands,
-and once per signed-in load (`IvritAccount.onChange`) for rows that landed on another page — and says so
-(`dashboard.picker.cloud_switched`: the drawer's class note plus a toast). A class list that lands under the same
-name as a class this device made itself and never synced (the module's last listing,
-`IvritSaves.lastPlan('Dashboard')`, said *only on this device*) is folded into the landed one —
-`foldSameNamedClass`: names unioned, pick session and pointer moved, the duplicate dropped, a toast
-(`dashboard.picker.merged_same_name`); the fold waits while the device-extras card is still asking
-(`onLocalChanged(kind, name, names, { pending })`), and a class synced before, or one that differs, stays as a
-second class. The settings branch of the hook replaces the in-memory object outright (every own key deleted,
+`ensureActiveClass()` self-heals a dangling class pointer. The classes themselves are the tool `Classes`, pulled with
+`alsoPull: ['Classes']` and merged by `IvritClasses.mergeClass` (`merges.class`): a landed `class` or `retired` row
+calls `IvritClasses.landed()`, and `onClassesChanged()` redraws. The old `roster` rows stay registered (an older tab
+of this page on another device still writes them) with their merge, `mergeRoster`; when one lands the page re-reads
+its blob — or its next save would put this tab's copy back — and the shared file reads the roster again (a line an
+older tab added arrives as one student). The settings branch of the hook replaces the in-memory object outright (every own key deleted,
 `PRISTINE_DEFAULTS` back, the stored blob on top) so a weekly grid removed elsewhere is removed here too — a
 merge could never delete a field; when `location` changed it drops `_geoCoords` and refetches weather and
 Shabbat times, and it repaints the holiday countdown, the Shabbat block and the Omer display at once. Presets
-carry the class **name** (`activeRosterName`, written by `getSettings({forPreset:true})`, never the per-device
-id): `applySettings` picks the class with that name here, else an older preset's id when it exists here, else
-keeps the current class; `presetClassName` (the schedule's class-for-preset lookup) resolves by name first.
-`IVRIT_CFG.apply` also takes class lists (`dashboardRosters` from the account backup, `roster` from a single
-row's file), merged by id, and returns whether anything landed. On a Merge it never assigns a settings blob's
-`rosters` (signed in, swapping the map would delete every class the file lacks from the account and every
-device): the blob's classes join the file's class lists in that same merge by id, and the blob's
-`pickerSessions` and `activeRosterId` are dropped, so this device's pick sessions and active class stay; a
-Replace swaps them. The hub's import and paste split a `dashboardSettings` blob the same way
-(`dashboardSettingsSplit` → `mergeDashboardRosters`). A blob a hydration wrote before this dashboard
+carry the class as an id and a name (the Student Picker contract above).
+`IVRIT_CFG.gather` carries the shared classes (`classes: IvritClasses.exportAll()`), and `IVRIT_CFG.apply` sends a
+file's classes — `classes`, or an older file's rosters (a settings blob's `rosters`, `dashboardRosters` from the
+account backup, `roster` from a single row's file) — through `IvritClasses.importFile`, and returns whether anything
+landed. A settings blob's `rosters`, `pickerSessions` and `activeRosterId` are never assigned to this page's blob, so
+this device's pick sessions and active class stay, and the old roster key is not written; the classes are the whole
+suite's, so this page's Replace never empties them. The hub's import and paste split a `dashboardSettings` blob the
+same way (`dashboardSettingsSplit`) and hand the file to `IvritClasses.importFile` too. A blob a hydration wrote before this dashboard
 was ever opened here (class lists only) still counts as a first run (`_storedBlobIsFirstRun`), and with a
 stored session the Quick-start card (`openFirstRun()`) waits for the first `ivritsuite:hydrated` naming
 `Dashboard` and opens only if no settings row landed and the last listing (`IvritSaves.lastPlan('Dashboard')`)

@@ -629,10 +629,11 @@ try {
     const settingsRow = cloud.find('settings', 'default'), stampBefore = settingsRow.updated_at;
     const { page, errors } = await openPage(ctx, 'classroom_dashboard.html');
     const d = await dashState(page), live = await liveDash(page), pk = await pickerState(page), states = await planStates(page);
-    check("2: the account's settings landed over the page's freshly written defaults, this device's own fields kept", d.enabled === true && d.periods === 2 && d.mon === 'Morning' && d.color === '#aabbcc' && d.location === 'Atlanta, GA' && d.rosters.length === 2 && d.rosters.includes('lap_0') && d.active === 'lap_0', JSON.stringify(d));
+    check("2: the account's settings landed over the page's freshly written defaults, this device's own fields kept", d.enabled === true && d.periods === 2 && d.mon === 'Morning' && d.color === '#aabbcc' && d.location === 'Atlanta, GA' && d.rosters.length === 1 && d.rosters.includes('lap_0') && d.active === 'lap_0', JSON.stringify(d));
     check('2: the preset, the schedule and the class list came with it; the row reads synced in lastPlan and every dashboard row is synced or a seed', d.presets.includes('Morning') && d.schedules.includes('2026-2027') && d.memory && states && states['settings:default'] === 'synced' && allSame(states), JSON.stringify({ d, states }));
     check('2: the live page shows Schedule Sync on with its body, the schedule and the preset — no reload', live.checked && live.bodyShown && /2026-2027/.test(live.schedules) && /Morning/.test(live.presets), JSON.stringify(live));
-    check("2: the picker adopted the account's class and said so; the empty default stays listed", pk.value === 'lap_0' && pk.options.some(o => /Kitah Alef \(2\)/.test(o)) && pk.options.some(o => /My class \(0\)/.test(o)) && /Noa/.test(pk.chips) && /Now showing Kitah Alef/.test(pk.note), JSON.stringify(pk));
+    // (the page no longer makes an empty "My class" for itself, so there is no default to move off and nothing to announce)
+    check("2: the picker shows the account's class — the only one listed (no empty default is made any more)", pk.value === 'lap_0' && pk.options.length === 1 && /Kitah Alef \(2\)/.test(pk.options[0]) && /Noa/.test(pk.chips) && pk.note === '', JSON.stringify(pk));
     const pushed = cloud.log.filter(e => e.table === 'saves' && ((e.m === 'PATCH' && param(e, 'id') === 'eq.' + settingsRow.id) || (e.m === 'POST' && e.body && e.body.kind === 'settings')));
     const changedFields = Object.keys(Object.assign({}, settingsRow.data, ACCOUNT_SETTINGS)).filter(k => canonJson(settingsRow.data[k]) !== canonJson(ACCOUNT_SETTINGS[k])).map(k => k + ': ' + canonJson(ACCOUNT_SETTINGS[k]).slice(0, 60) + ' → ' + canonJson(settingsRow.data[k]).slice(0, 60));
     // The live page's re-apply gives its seeded Default preset a class colour once the weekly grid is in (presetColors):
@@ -697,11 +698,12 @@ try {
     const A = await openPage(ctx, 'classroom_dashboard.html');
     const B = await openPage(ctx, 'classroom_dashboard.html');
     let from = cloud.log.length;
-    const id = await A.page.evaluate(() => { const id = newRosterId(); settings.rosters[id] = { name: 'Kitah Bet', names: ['Ari', 'Dana'] }; switchClass(id); return id; });
+    // (an old roster, written the way an older tab of this page writes one: the page itself no longer adds to settings.rosters)
+    const id = await A.page.evaluate(() => { const id = 'old' + Date.now().toString(36) + '_0'; settings.rosters[id] = { name: 'Kitah Bet', names: ['Ari', 'Dana'] }; saveSettingsToStorage(); return id; });
     const okA = await settled(A.page, DASH_TOOLS);
     const postedA = reqs(cloud, from, 'POST', 'roster');
     const bLive = await B.page.evaluate((id) => ({ inMemory: !!settings.rosters[id], inStore: !!(JSON.parse(localStorage.getItem('hebrewDashboard_settings')).rosters || {})[id], options: [...document.getElementById('pickerClassSel').options].map(o => o.textContent) }), id);
-    check("4: tab A's class went up (one POST); its page-write stamp left tab B's live setup alone (the class is in storage, not in B's memory or dropdown)", okA && postedA.length === 1 && postedA[0].body.name === id && bLive.inStore && !bLive.inMemory && !bLive.options.some(o => /Kitah Bet/.test(o)), JSON.stringify({ okA, posted: postedA.length, bLive }));
+    check("4: tab A's old roster went up (one POST); its page-write stamp left tab B's in-memory blob alone (the roster is in storage, not in B's memory)", okA && postedA.length === 1 && postedA[0].body.name === id && bLive.inStore && !bLive.inMemory, JSON.stringify({ okA, posted: postedA.length, bLive }));
     // B's stale whole-blob write (its in-memory settings lack the class A added)
     from = cloud.log.length;
     await B.page.evaluate(() => { settings.location = 'Haifa'; saveSettingsToStorage(); });
@@ -1014,7 +1016,7 @@ try {
       const T1 = await openPage(ctx, 'classroom_dashboard.html');
       const T2 = await openPage(ctx, 'classroom_dashboard.html');
       cloud.revoked = true;
-      await T2.page.evaluate(() => { window.__before = true; const id = newRosterId(); settings.rosters[id] = { name: 'Kitah Tet', names: ['Lior'] }; switchClass(id); });
+      await T2.page.evaluate(() => { window.__before = true; const id = 'old' + Date.now().toString(36) + '_0'; settings.rosters[id] = { name: 'Kitah Tet', names: ['Lior'] }; saveSettingsToStorage(); });
       const reloaded1 = await clickSignOut(T1.page);
       const reloaded2 = await afterReload(T2.page);
       const snap2 = await lsAtLoad(T2.page);
@@ -1110,10 +1112,8 @@ try {
     const from = cloud.log.length;
     await A.page.evaluate(() => {
       document.getElementById('locationInput').value = 'Jerusalem'; updateLocation();
-      switchClass('lap_0');
-      const ta = document.getElementById('pickerRoster');
-      ta.value = (settings.rosters.lap_0.names || []).concat(['Yael']).join('\n');
-      commitRosterFromTextarea();
+      settings.rosters.lap_0.names = (settings.rosters.lap_0.names || []).concat(['Yael']);   // the old roster, as an older tab writes it
+      saveSettingsToStorage();
     });
     const okA = await settled(A.page, DASH_TOOLS);
     const bStale = await B.page.evaluate(() => ({ location: settings.location, names: (settings.rosters.lap_0 || {}).names || [] }));
@@ -1208,8 +1208,9 @@ try {
     const ok = await settled(page, DASH_TOOLS);
     const local = (await lsJSON(page, 'hebrewDashboard_settings')) || {};
     const rl = local.rosters || {};
-    const posted = reqs(cloud, from, 'POST', 'roster').map(e => e.body.name);
-    check("D5: a Merge whose liveState lacks class lap_0 and adds zz_9 → no DELETE; lap_0 kept here and in the account; zz_9 inserted", applied === true && ok && reqs(cloud, from, 'DELETE').length === 0 && !!rl.lap_0 && (rl.lap_0.names || []).length === 2 && !!cloud.find('roster', 'lap_0') && !!rl.zz_9 && posted.includes('zz_9') && !!cloud.find('roster', 'zz_9') && cloud.find('roster', 'zz_9').data.names.length === 2, JSON.stringify({ applied, ok, rosters: Object.keys(rl), posted, calls: methods(cloud, from) }));
+    // (a file's class lists go to the shared classes — one Classes/class row — and the old roster key is not written)
+    const posted = reqs(cloud, from, 'POST', 'class').map(e => e.body.name), zz = cloud.find('class', 'zz_9');
+    check("D5: a Merge whose liveState lacks class lap_0 and adds zz_9 → no DELETE; lap_0 kept here and in the account; zz_9 inserted as a shared class, the old roster key left as it was", applied === true && ok && reqs(cloud, from, 'DELETE').length === 0 && !!rl.lap_0 && (rl.lap_0.names || []).length === 2 && !!cloud.find('roster', 'lap_0') && !rl.zz_9 && posted.includes('zz_9') && !!zz && zz.tool === 'Classes' && zz.data.students.length === 2, JSON.stringify({ applied, ok, rosters: Object.keys(rl), posted, calls: methods(cloud, from) }));
     check('D5: 0 pageerrors', errors.length === 0, errors.join(' | '));
     await ctx.close();
   }

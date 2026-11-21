@@ -245,7 +245,7 @@ const PAGES = [
 const TOOLS_OF = {
   'index.html': ALL_TOOLS, 'trope_tutor.html': ['TropeTutor', 'Suite'], 'torah_trainer.html': ['TorahTrainer', 'Suite'],
   'flash_cards.html': ['FlashCards', 'Suite', 'Dictionary'], 'hebrew_blend_generator.html': ['Worksheet', 'Suite', 'Dictionary'],
-  'hebrew_dictionary.html': ['Dictionary', 'Suite'], 'classroom_dashboard.html': ['Dashboard', 'Suite'], 'letter_learner.html': ['LetterLearner', 'Suite'],
+  'hebrew_dictionary.html': ['Dictionary', 'Suite'], 'classroom_dashboard.html': ['Dashboard', 'Suite', 'Classes'], 'letter_learner.html': ['LetterLearner', 'Suite'],
   'parsha_emojis.html': ['EmojiTorah', 'Suite'], 'name_tags.html': ['NameTags', 'Suite', 'Classes']
 };
 // Waits until the module reads settled for those tools — every hydration fired, nothing dirty, no queue busy,
@@ -684,34 +684,35 @@ try {
     errB.push(...f.errors); await f.page.close();
     const d = await openPage(ctxB, 'classroom_dashboard.html');
     const at2 = cloud.log.length;
-    await d.page.evaluate(() => { const id = Object.keys(settings.rosters).find(k => settings.rosters[k].name === 'Kitah Bet'); switchClass(id); window.confirm = () => true; deleteClass(); });
-    const del2 = await waitLog(cloud, at2, e => e.m === 'DELETE' && hasRow(e, 'Dashboard/roster/a_1'));
+    await d.page.evaluate(() => { IvritClasses.deleteClass('a_1'); });   // the class Kitah Bet, deleted the way the roster editor deletes it
+    // the class goes (one DELETE and the record of its id), and the Dashboard takes its old roster out of its own key
+    const del2 = await waitLog(cloud, at2, e => e.m === 'DELETE' && hasRow(e, 'Classes/class/a_1')) && await waitLog(cloud, at2, e => e.m === 'DELETE' && hasRow(e, 'Dashboard/roster/a_1'));
     await hydrateAndSettle(d.page, TOOLS_OF['classroom_dashboard.html']);
-    const localB = await d.page.evaluate(() => ({ profiles: Object.keys(JSON.parse(localStorage.getItem('hebrewFlashCards_profiles')).profiles), classes: Object.values(JSON.parse(localStorage.getItem('hebrewDashboard_settings')).rosters).map(r => r.name) }));
+    const localB = await d.page.evaluate(() => ({ profiles: Object.keys(JSON.parse(localStorage.getItem('hebrewFlashCards_profiles')).profiles), classes: IvritClasses.list().map(c => c.name), oldRosters: Object.values(JSON.parse(localStorage.getItem('hebrewDashboard_settings')).rosters).map(r => r.name) }));
     errB.push(...d.errors); await d.page.close();
     const dels = cloud.log.slice(at1).filter(e => e.m === 'DELETE' && e.table === 'saves');
-    check('7: B\'s deletions went up by themselves as conditional DELETEs (id and updated_at both named), and the three rows are gone from the account',
-      del1 && del2 && dels.length === 3 && dels.every(e => /id=eq\./.test(e.search) && /updated_at=eq\./.test(e.search) && e.rows.length === 1) && !cloud.find('profile', 'Dan', 'FlashCards') && !cloud.find('profile', 'Sarah', 'FlashCards') && !cloud.find('roster', 'a_1', 'Dashboard') && localB.profiles.length === 0 && !localB.classes.includes('Kitah Bet'),
+    check('7: B\'s deletions went up by themselves as conditional DELETEs (id and updated_at both named) — two students, the class, and the class\'s old roster, which the Dashboard took out of its own key — and the four rows are gone from the account',
+      del1 && del2 && dels.length === 4 && dels.every(e => /id=eq\./.test(e.search) && /updated_at=eq\./.test(e.search) && e.rows.length === 1) && !cloud.find('profile', 'Dan', 'FlashCards') && !cloud.find('profile', 'Sarah', 'FlashCards') && !cloud.find('roster', 'a_1', 'Dashboard') && !cloud.find('class', 'a_1', 'Classes') && localB.profiles.length === 0 && !localB.classes.includes('Kitah Bet') && !localB.oldRosters.includes('Kitah Bet'),
       JSON.stringify({ del1, del2, dels: dels.map(e => e.search + ' → ' + e.rows.join(',')), localB }));
     // A's next load: the untouched student and the class go here too; the edited student is re-inserted
     const before = cloud.log.length;
     const a2 = await openPage(ctxA, 'index.html');
     const writes = cloud.writesSince(before);
     const labels = writes.map(FakeCloud.label);
-    const localA = await a2.page.evaluate(() => { const p = JSON.parse(localStorage.getItem('hebrewFlashCards_profiles')); const s = JSON.parse(localStorage.getItem('hebrewDashboard_settings')); return { profiles: Object.keys(p.profiles), active: p.activeProfile, sarahResults: p.profiles.Sarah ? p.profiles.Sarah.results.length : null, classes: Object.values(s.rosters).map(r => r.name), activeClass: s.activeRosterId }; });
+    const localA = await a2.page.evaluate(() => { const p = JSON.parse(localStorage.getItem('hebrewFlashCards_profiles')); const s = JSON.parse(localStorage.getItem('hebrewDashboard_settings')); return { profiles: Object.keys(p.profiles), active: p.activeProfile, sarahResults: p.profiles.Sarah ? p.profiles.Sarah.results.length : null, classes: IvritClasses.list().map(c => c.name), oldRosters: Object.values(s.rosters).map(r => r.name), activeClass: s.activeRosterId }; });
     const sarahCloud = cloud.find('profile', 'Sarah', 'FlashCards');
     errA.push(...a2.errors); await a2.page.close();
     check('7: at A\'s next load Dan and Kitah Bet are gone here too (their hashes equalled A\'s memory), while Sarah — edited here meanwhile — was re-inserted with the edit, one POST, no DELETE',
-      same(localA.profiles, ['Sarah']) && localA.active === 'Sarah' && localA.sarahResults === 3 && !localA.classes.includes('Kitah Bet') && localA.classes.includes('Kitah Alef') && localA.activeClass === 'a_0'
+      same(localA.profiles, ['Sarah']) && localA.active === 'Sarah' && localA.sarahResults === 3 && !localA.classes.includes('Kitah Bet') && !localA.oldRosters.includes('Kitah Bet') && localA.classes.includes('Kitah Alef') && localA.activeClass === 'a_0'
       && !!sarahCloud && sarahCloud.data.results.length === 3 && writes.filter(e => e.m === 'POST').length === 1 && labels.includes('POST FlashCards/profile/Sarah') && !writes.some(e => e.m === 'DELETE'),
       JSON.stringify({ localA, cloudSarah: sarahCloud ? sarahCloud.data.results.length : null, writes: labels }));
   }
   // ---- 8. the account backup from B lands on a signed-in third device ------------------------------------
   {
     check('8: the backup carries the font too, in the shape this page\'s own export uses', !!backup.data.userFonts && ivritFontNames(backup.data.userFonts).includes(FONT_NAME), JSON.stringify(Object.keys(backup.data.userFonts || {})));
-    check('8: the backup is partial and carries the class lists, the students and the suite-wide preferences as they were before the deletions', backup.partial === true && backup.data.dashboardRosters && backup.data.dashboardRosters.rosters.a_0.names.includes('Noa') && backup.data.dashboardRosters.rosters.a_1.name === 'Kitah Bet' && backup.data.flashCardProfiles.profiles.Dan && backup.data.flashCardProfiles.profiles.Sarah.results.length === 2 && backup.data.suitePrefs && backup.data.suitePrefs.lang === 'he' && backup.data.suitePrefs.kbdLayout === 'abc' && backup.data.generatorPresets['Week 1'], Object.keys(backup.data || {}).join(','));
+    check('8: the backup is partial and carries the class lists, the students and the suite-wide preferences as they were before the deletions', backup.partial === true && backup.data.dashboardRosters && backup.data.dashboardRosters.rosters.a_0.names.includes('Noa') && backup.data.dashboardRosters.rosters.a_1.name === 'Kitah Bet' && backup.data.classes && backup.data.classes.classes.a_1.name === 'Kitah Bet' && backup.data.flashCardProfiles.profiles.Dan && backup.data.flashCardProfiles.profiles.Sarah.results.length === 2 && backup.data.suitePrefs && backup.data.suitePrefs.lang === 'he' && backup.data.suitePrefs.kbdLayout === 'abc' && backup.data.generatorPresets['Week 1'], Object.keys(backup.data || {}).join(','));
     const now = await (async () => { const b = await openPage(ctxB, 'index.html'); const f = await b.page.evaluate(() => window.IvritSaves.bundleAll().then(x => x.file)); errB.push(...b.errors); await b.page.close(); return f; })();
-    check('8: a backup taken now no longer carries what B deleted (Dan, Kitah Bet) but keeps Sarah as A re-inserted her', !now.data.flashCardProfiles.profiles.Dan && now.data.flashCardProfiles.profiles.Sarah.results.length === 3 && !(now.data.dashboardRosters.rosters || {}).a_1, JSON.stringify({ profiles: Object.keys(now.data.flashCardProfiles.profiles), rosters: Object.keys(now.data.dashboardRosters.rosters) }));
+    check('8: a backup taken now no longer carries what B deleted (Dan, Kitah Bet) but keeps Sarah as A re-inserted her', !now.data.flashCardProfiles.profiles.Dan && now.data.flashCardProfiles.profiles.Sarah.results.length === 3 && !(now.data.dashboardRosters.rosters || {}).a_1 && !now.data.classes.classes.a_1, JSON.stringify({ profiles: Object.keys(now.data.flashCardProfiles.profiles), rosters: Object.keys(now.data.dashboardRosters.rosters), classes: Object.keys(now.data.classes.classes) }));
     // a third device with a dashboard of its own (a class, a zoom): signed in, its class is an extra, the account's city wins, zoom stays
     const ctxC = await openContext(browser, cloud, withSession({ hebrewDashboard_settings: J({ location: 'Boston, MA', zoomLevel: 130, rosters: { c_1: { name: 'Mine', names: ['Lior'] } }, activeRosterId: 'c_1' }) }), { name: 'C' });
     const errC = [];
@@ -727,15 +728,15 @@ try {
       window.__asked = false; ivritAskMode = () => { window.__asked = true; return Promise.resolve('merge'); };
       await ivritRestore(text, 'account.ivrit');
       const s = JSON.parse(localStorage.getItem('hebrewDashboard_settings'));
-      return { asked: window.__asked, zoom: s.zoomLevel, rosters: Object.keys(s.rosters).sort(), mine: s.rosters.c_1 && s.rosters.c_1.names, kbd: localStorage.getItem('hebrewBlender_kbdLayout'), profiles: Object.keys(JSON.parse(localStorage.getItem('hebrewFlashCards_profiles')).profiles).sort(), status: (document.getElementById('ivritStatus') || {}).textContent || '' };
+      return { asked: window.__asked, zoom: s.zoomLevel, rosters: Object.keys(s.rosters).sort(), mine: s.rosters.c_1 && s.rosters.c_1.names, classes: IvritClasses.list().map(c => c.id).sort(), bet: (IvritClasses.get('a_1') || { students: [] }).students.map(x => x.en), kbd: localStorage.getItem('hebrewBlender_kbdLayout'), profiles: Object.keys(JSON.parse(localStorage.getItem('hebrewFlashCards_profiles')).profiles).sort(), status: (document.getElementById('ivritStatus') || {}).textContent || '' };
     }, J(backup));
-    check('8: the third device merged it without the Merge/Replace question: the class lists landed beside its own, zoom untouched, the preferences unfolded', r.asked === false && same(r.rosters, ['a_0', 'a_1', 'c_1']) && same(r.mine, ['Lior']) && r.zoom === 130 && r.kbd === 'abc' && same(r.profiles, ['Dan', 'Sarah']), JSON.stringify(r));
+    check('8: the third device merged it without the Merge/Replace question: the classes landed beside its own (in the shared classes — the old roster key was not written), zoom untouched, the preferences unfolded', r.asked === false && ['a_0', 'a_1', 'c_1'].every(id => r.classes.includes(id)) && same(r.bet, ['Ari']) && same(r.rosters, ['a_0', 'c_1']) && same(r.mine, ['Lior']) && r.zoom === 130 && r.kbd === 'abc' && same(r.profiles, ['Dan', 'Sarah']), JSON.stringify(r));
     await hydrateAndSettle(hub, ALL_TOOLS);
     const writes = cloud.writesSince(at).map(FakeCloud.label);
     const posts = writes.filter(w => w.startsWith('POST ')).sort(), others = writes.filter(w => !w.startsWith('POST '));
     const sarah = cloud.find('profile', 'Sarah', 'FlashCards');
-    check('8: signed in, the merge refilled the account with what the backup still had — the deleted student and class, one POST each — and duplicated nothing (Sarah keeps A\'s three results; no row twice; the other writes are folder trees at most)',
-      same(posts, ['POST Dashboard/roster/a_1', 'POST FlashCards/profile/Dan']) && others.every(w => /Folders\/default$/.test(w) && w.startsWith('PATCH ')) && cloud.duplicates().length === 0 && !!sarah && sarah.data.results.length === 3 && !!cloud.find('roster', 'a_1', 'Dashboard') && !!cloud.find('profile', 'Dan', 'FlashCards'),
+    check('8: signed in, the merge refilled the account with what the backup still had — the deleted student and class, one POST each (the class as a shared class; its old roster is not written again) — and duplicated nothing (Sarah keeps A\'s three results; no row twice; the other writes are folder trees at most)',
+      same(posts, ['POST Classes/class/a_1', 'POST FlashCards/profile/Dan']) && others.every(w => /Folders\/default$/.test(w) && w.startsWith('PATCH ')) && cloud.duplicates().length === 0 && !!sarah && sarah.data.results.length === 3 && !cloud.find('roster', 'a_1', 'Dashboard') && !!cloud.find('class', 'a_1', 'Classes') && cloud.find('class', 'a_1', 'Classes').data.updated > cloud.find('retired', 'default', 'Classes').data.retired.a_1 && !!cloud.find('profile', 'Dan', 'FlashCards'),
       JSON.stringify({ posts, others, duplicates: cloud.duplicates(), sarah: sarah ? sarah.data.results.length : null }));
     check('8: 0 pageerrors on the third device', errC.length === 0, errC.join(' | '));
     await hub.close();

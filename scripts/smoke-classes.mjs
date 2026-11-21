@@ -247,6 +247,29 @@ const LISTS = { 'Kitah Alef': { v: 1, rows: [{ he: 'נֹעָה', en: 'Noa' }, { 
   ok('a near-match stays two classes until a person merges them');
 }
 
+// ── 6b. what the owning page removes from its old key ──
+{
+  const A = device({ [DASH]: JSON.stringify(ROSTERS), [NT]: JSON.stringify(LISTS) });
+  assert.deepEqual(J(A.C.scrub('dash')), { sources: [], lines: {}, rows: {} }, 'nothing was deleted: nothing to remove');
+  A.C.adopt();
+  assert.deepEqual(J(A.C.scrub('nt')), { sources: [], lines: {}, rows: {} }, 'a list only folded into its roster is not a deleted class: its old list stays');
+  const noa = A.C.get('a_0').students[0].id, david = A.C.get('a_0').students[3].id;
+  A.tick(); A.C.removeStudent('a_0', noa); A.tick(); A.C.removeStudent('a_0', david);
+  assert.deepEqual(J(A.C.scrub('dash').lines), { a_0: ['Noa', 'דָּוִד / David'] }, 'a removed student\'s own line is named for removal from the old roster');
+  assert.deepEqual(J(A.C.scrub('nt').rows), { 'Kitah Alef': [0, 3] }, 'and her row in the list that was folded into that roster');
+  A.tick(); A.C.restoreStudent('a_0', noa);
+  assert.deepEqual(J(A.C.scrub('dash').lines), { a_0: ['דָּוִד / David'] }, 'a restored student is no longer named');
+  const gan = A.C.list().find((c) => c.name === 'Gan');
+  A.tick(); A.C.removeStudent(gan.id, gan.students[1].id);
+  assert.deepEqual(J(A.C.scrub('nt').rows.Gan), [1], 'of two rows with the same names, only the removed student\'s');
+  A.tick(); A.C.deleteClass('a_2'); A.C.deleteClass(gan.id);
+  assert.deepEqual(J(A.C.scrub('dash').sources), ['a_2'], 'a deleted class\'s old roster is named whole');
+  assert.deepEqual(J(A.C.scrub('nt').sources), ['Gan'], 'and a deleted class\'s old list');
+  A.tick(); A.C.deleteClass('a_0');
+  assert.deepEqual(J(A.C.scrub('nt').sources).sort(), ['Gan', 'Kitah Alef'], 'deleting the folded class names the list that was folded into it too');
+  ok('scrub: only what a teacher deleted is named, by student, and a fold is not a deletion');
+}
+
 // ── 7. CSV ──
 {
   const { C } = device();

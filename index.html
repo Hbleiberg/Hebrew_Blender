@@ -1533,10 +1533,8 @@ async function importAllSettings() {
     if (parsed.dashboardSettings) {
       const split = dashboardSettingsSplit(parsed.dashboardSettings);
       const existing = ivritSafeParse(localStorage.getItem('hebrewDashboard_settings') || '{}');
-      localStorage.setItem('hebrewDashboard_settings', JSON.stringify(ivritSafeAssign(existing, split.rest)));
-      if (split.rosters) mergeDashboardRosters(split.rosters, false);
+      localStorage.setItem('hebrewDashboard_settings', JSON.stringify(ivritSafeAssign(existing, split.rest)));   // its `rosters` (the classes as they were) go to the shared classes below
     }
-    if (parsed.dashboardRosters && parsed.dashboardRosters.rosters) mergeDashboardRosters(parsed.dashboardRosters.rosters, false);
     if (parsed.flashCardPresets) {
       const existing = ivritSafeParse(localStorage.getItem('hebrewFlashCards_presets') || '{}');
       localStorage.setItem('hebrewFlashCards_presets', JSON.stringify(ivritSafeAssign(existing, parsed.flashCardPresets)));
@@ -1609,12 +1607,10 @@ async function importAllSettings() {
       const existing = ivritSafeParse(localStorage.getItem('hebrewNameTags_settings') || '{}');
       localStorage.setItem('hebrewNameTags_settings', JSON.stringify(ivritSafeAssign(existing, parsed.nameTagSettings)));
     }
-    if (parsed.nameTagLists && typeof parsed.nameTagLists === 'object' && !Array.isArray(parsed.nameTagLists) && Object.keys(parsed.nameTagLists).length) {
-      const existing = ivritSafeParse(localStorage.getItem('hebrewNameTags_lists') || '{}');
-      localStorage.setItem('hebrewNameTags_lists', JSON.stringify(ivritSafeAssign(existing, parsed.nameTagLists)));
-    }
     // The shared class roster: the file's `classes`, and — from a file older than it — its Dashboard rosters and
     // Name Tags lists, read with ids computed from the old data (the same file imported twice makes each class once).
+    // Those old sections are no longer written into hebrewDashboard_settings.rosters or hebrewNameTags_lists: every
+    // tool reads the shared classes, and the old keys are read, never rewritten.
     if (window.IvritClasses) { try { IvritClasses.importFile(parsed, 'merge'); } catch (e) {} }
     // Trope Atlas: its view choices (key, layout, readings shown, note names, melody, phrase group), one blob, flat merge
     if (parsed.tropeAtlasSettings && Object.keys(parsed.tropeAtlasSettings).length) {
@@ -1816,6 +1812,7 @@ async function eraseAllSettings() {
     'hebrewNameTags_tourSeen',
     // per-device, export-exempt: which class list the Name Tags page last had open on this device
     'hebrewNameTags_activeList',
+    'hebrewNameTags_activeClass',
     'hebrewFontMaker_tourDone',
     'hebrewFontMaker_mobileWarnDismissed',
     'hebrewFontMaker_inputMode',
@@ -1963,12 +1960,10 @@ const IVRIT_CFG = {
     if (data.generatorPresets)    { mergeObj('hebrewBlender_presets',         data.generatorPresets);    touched = true; }
     if (data.dashboardPresets)    { mergeObj('hebrewDashboard_presets',       data.dashboardPresets);    touched = true; }
     if (data.dashboardSchedules)  { mergeObj('hebrewDashboard_schedules',     data.dashboardSchedules);  touched = true; }
-    if (data.dashboardSettings) {   // a Merge merges the class lists by id; only a Replace swaps the blob whole
-      if (mode === 'replace') mergeObj('hebrewDashboard_settings', data.dashboardSettings);
-      else { const split = dashboardSettingsSplit(data.dashboardSettings); mergeObj('hebrewDashboard_settings', split.rest); if (split.rosters) mergeDashboardRosters(split.rosters, false); }
+    if (data.dashboardSettings) {   // the blob without its `rosters`, pick sessions and class pointer: the classes go to the shared classes below
+      mergeObj('hebrewDashboard_settings', dashboardSettingsSplit(data.dashboardSettings).rest);   // (a Replace starts from an empty blob, so this device's old rosters go with the rest)
       touched = true;
     }
-    if (data.dashboardRosters && data.dashboardRosters.rosters) { mergeDashboardRosters(data.dashboardRosters.rosters, mode === 'replace'); touched = true; }   // after the settings blob: class lists live inside it
     if (data.flashCardPresets)    { mergeObj('hebrewFlashCards_presets',      data.flashCardPresets);    touched = true; }
     if (data.flashCardSettings)   { mergeObj('hebrewFlashCards_settings',     data.flashCardSettings);   touched = true; }
     if (data.flashCardProfiles && data.flashCardProfiles.profiles) { mergeFlashCardProfiles(data.flashCardProfiles, mode === 'replace'); touched = true; }
@@ -1995,9 +1990,10 @@ const IVRIT_CFG = {
     if (data.letterLearnerSettings && Object.keys(data.letterLearnerSettings).length) { mergeObj('hebrewLetterLearner_settings', data.letterLearnerSettings); touched = true; }
     if (data.emojiTorahSettings && Object.keys(data.emojiTorahSettings).length) { mergeObj('hebrewEmojiTorah_settings', data.emojiTorahSettings); touched = true; }
     if (data.nameTagSettings && Object.keys(data.nameTagSettings).length) { mergeObj('hebrewNameTags_settings', data.nameTagSettings); touched = true; }
-    if (data.nameTagLists && Object.keys(data.nameTagLists).length) { mergeObj('hebrewNameTags_lists', data.nameTagLists); touched = true; }   // by list name, like presets
-    // The shared class roster: `classes`, or an older file's rosters and lists through the same reader (a Merge restores
-    // a deleted student, a fill only adds what is missing, and only this file's Replace starts the store over).
+    // The shared class roster: `classes`, or an older file's rosters and lists through the same reader (a restore adds
+    // classes and students and brings back what was deleted; only this file's Replace starts the store over — and then
+    // this device's old lists, which that reader would show as classes again, go too). The old keys are not written.
+    if (mode === 'replace') { try { localStorage.removeItem('hebrewNameTags_lists'); } catch (e) {} }
     if (window.IvritClasses) { try { if (IvritClasses.importFile(data, mode)) touched = true; } catch (e) {} }
     if (data.tropeAtlasSettings && Object.keys(data.tropeAtlasSettings).length) { mergeObj('hebrewTropeAtlas_settings', data.tropeAtlasSettings); touched = true; }
     if (data.holidayGuideSettings && Object.keys(data.holidayGuideSettings).length) { mergeObj('hebrewHolidayGuide_settings', data.holidayGuideSettings); touched = true; }
@@ -2096,40 +2092,15 @@ function dictScalarsIfSet() {
   });
   return out;
 }
-// A Classroom Dashboard settings blob from a file, for a Merge: its class lists come apart (merged by id through
-// mergeDashboardRosters, never swapped wholesale — that would drop every class the file lacks, and signed in, delete
-// them from the account and every device), and this device's pick sessions and active class stay.
+// A Classroom Dashboard settings blob from a file: its class lists (`rosters`, the classes as they were before the
+// shared class roster) come apart — IvritClasses.importFile reads them from the file itself — and this device's pick
+// sessions and active class stay.
 function dashboardSettingsSplit(ds) {
   if (!ds || typeof ds !== 'object' || Array.isArray(ds)) return { rest: ds, rosters: null };
   const rest = Object.assign({}, ds);
   const rosters = (rest.rosters && typeof rest.rosters === 'object' && !Array.isArray(rest.rosters)) ? rest.rosters : null;
   delete rest.rosters; delete rest.pickerSessions; delete rest.activeRosterId;
   return { rest, rosters };
-}
-// Class lists from an account backup (dashboardRosters: { rosters: { id: { name, names } } }): merged by id
-// into hebrewDashboard_settings.rosters — names unioned, a class only the file has added — or, on Replace,
-// the map swapped. Never touches anything else in the blob.
-function mergeDashboardRosters(incoming, replace) {
-  const KEY = 'hebrewDashboard_settings';
-  let s; try { s = ivritSafeParse(localStorage.getItem(KEY) || '{}'); } catch (e) { s = {}; }
-  if (!s || typeof s !== 'object' || Array.isArray(s)) s = {};
-  const cur = (!replace && s.rosters && typeof s.rosters === 'object' && !Array.isArray(s.rosters)) ? s.rosters : {};
-  Object.keys(incoming || {}).forEach(id => {
-    if (id === '__proto__' || id === 'constructor' || id === 'prototype') return;
-    const inc = incoming[id];
-    if (!inc || typeof inc !== 'object' || Array.isArray(inc)) return;
-    const names = [...new Set((Array.isArray(inc.names) ? inc.names : []).filter(n => typeof n === 'string').map(n => n.trim()).filter(Boolean))];
-    const name = (typeof inc.name === 'string' && inc.name.trim()) ? inc.name.trim() : 'My class';
-    const mine = cur[id];
-    if (mine && typeof mine === 'object' && !Array.isArray(mine)) {
-      const have = (Array.isArray(mine.names) ? mine.names : []).filter(n => typeof n === 'string');
-      const seen = new Set(have);
-      mine.names = have.concat(names.filter(n => !seen.has(n)));
-      if (!mine.name || mine.name === 'My class') mine.name = name;
-    } else cur[id] = { name, names };
-  });
-  s.rosters = cur;
-  localStorage.setItem(KEY, JSON.stringify(s));
 }
 // Class lists ride in two places: a backup this device saves keeps them inside the dashboard's settings blob, an
 // account backup carries them as dashboardRosters. Counted once by id, without the empty "My class" a dashboard

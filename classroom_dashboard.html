@@ -21,6 +21,7 @@
 <script src="/js/supabase-config.js" defer></script>
 <script src="/js/ivrit-account.js" defer></script>
 <script src="/js/ivrit-saves.js" defer></script>
+<script src="/js/ivrit-classes.js" defer></script>
 <!-- iOS standalone + launch (splash) screens — regenerate with splash/gen_splash.py -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1310,13 +1311,8 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
   /* The two bare .btn-xs (Reset, ↺ Refresh) carried background:var(--white) inline, which no :hover can beat; the
      background lives here now and the hover is the drawer's own .timer-preset-btn idiom. Pattern control-class-without-a-hover-state. */
   .btn-xs:not(.btn) { background: var(--white); color: var(--text); border: 1px solid var(--border); }
-  /* A class from a Name Tags list: .form-row's display:flex would otherwise outrank the [hidden] attribute. */
-  #pickerFromNtRow[hidden], #pickerFromNt[hidden] { display: none !important; }
   .pick-nt-bar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
   .pick-nt-bar a.btn-xs { text-decoration: none; }
-  #pickerFromNt { display: flex; flex-direction: column; gap: 6px; }
-  .pick-ntuse { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; font-size: 0.8rem; }
-  .form-row .pick-ntuse label { flex: none; font-weight: 500; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 4px; }
   /* The eleven size-row ↺ buttons are bare .btn-xs, so they inherited the UA button's black text and
      2px outset black border: in dark mode that measured 1.37:1 (near-invisible) and in light the black
      outset border was the drawer's only non-`--border` control. Converged on the drawer's own idiom
@@ -3376,56 +3372,29 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
           <label class="toggle"><input type="checkbox" id="showStudentPickerFullscreen"><span class="slider"></span></label>
         </div>
         <hr>
+        <!-- The classes are the suite's shared classes (js/ivrit-classes.js): Name Tags and Flash Cards show the same
+             ones. This drawer picks the live class; adding, renaming, typing and importing students is the shared
+             editor's (Edit classes). -->
         <div class="form-row" style="flex-direction:column;align-items:stretch;gap:6px;">
           <label for="pickerClassSel" data-i18n="dashboard.picker.class_label">Class</label>
-          <div style="display:flex;gap:5px;align-items:center;">
-            <select id="pickerClassSel" onchange="switchClass(this.value)" style="flex:1;min-width:0;max-width:none;"></select>
-            <button type="button" class="btn-xs" title="New class" aria-label="New class" data-i18n-aria-label="dashboard.picker.new_class_title" data-i18n-title="dashboard.picker.new_class_title" onclick="newClass()"><svg class="hi hi-sm hi-plus" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.8v8.4M7.8 12h8.4"/></svg></button>
-            <button type="button" class="btn-xs" title="Rename class" aria-label="Rename class" data-i18n-aria-label="dashboard.picker.rename_class_title" data-i18n-title="dashboard.picker.rename_class_title" onclick="renameClass()"><svg class="hi hi-pencil" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.35-5L14.95 5.35a2.6 2.6 0 0 1 3.7 3.7L8.05 19.65Z"/><path d="M12.85 7.5l3.65 3.65"/></svg></button>
-            <button type="button" class="btn-xs" title="Delete class" aria-label="Delete class" data-i18n-aria-label="dashboard.picker.delete_class_title" data-i18n-title="dashboard.picker.delete_class_title" onclick="deleteClass()"><svg class="hi hi-sm hi-trash" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h15"/><path d="M9.5 7V5.2a1.2 1.2 0 0 1 1.2-1.2h2.6a1.2 1.2 0 0 1 1.2 1.2V7"/><path d="M6.5 7l.9 12.1a1.6 1.6 0 0 0 1.6 1.5h6a1.6 1.6 0 0 0 1.6-1.5L17.5 7"/><path d="M10.4 10.6v6.4M13.6 10.6v6.4"/></svg></button>
-          </div>
-          <span id="pickerClassNote" style="font-size:0.72rem;color:var(--gold-text);display:none;"></span>
-        </div>
-        <!-- A class from a Name Tags list (name_tags.html): a one-time copy of the list's names. The row shows only on a
-             device that holds Name Tags lists (renderFromNameTags), as there is nothing to copy otherwise; its
-             "Open Name Tags" link (a new tab, ?from=dashboard) opens that page's From the Classroom Dashboard box on
-             the class that is live here. -->
-        <div class="form-row" id="pickerFromNtRow" style="flex-direction:column;align-items:stretch;gap:6px;" hidden>
+          <select id="pickerClassSel" onchange="switchClass(this.value)" style="max-width:none;"></select>
+          <span id="pickerRosterCount" style="font-size:0.72rem;color:var(--muted);"></span>
           <div class="pick-nt-bar">
-            <button type="button" class="btn-xs hi-btn" id="pickerFromNtBtn" aria-expanded="false" aria-controls="pickerFromNt" onclick="toggleFromNameTags()"><svg class="hi hi-sm hi-group" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7.5" r="3.4"/><path d="M2.5 20.5v-1.6a4.2 4.2 0 0 1 4.2-4.2h4.6a4.2 4.2 0 0 1 4.2 4.2v1.6"/><path d="M15.6 4.3a3.2 3.2 0 0 1 0 6.4"/><path d="M21.5 20.5v-1.6a4.2 4.2 0 0 0-3.2-4.1"/></svg><span class="hi-lbl" data-i18n="dashboard.picker.from_nt_open">Make a class from a Name Tags list</span></button>
+            <button type="button" class="btn-xs hi-btn" id="pickerEditClasses" aria-haspopup="dialog" onclick="openClassEditor(this)"><svg class="hi hi-sm hi-group" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7.5" r="3.4"/><path d="M2.5 20.5v-1.6a4.2 4.2 0 0 1 4.2-4.2h4.6a4.2 4.2 0 0 1 4.2 4.2v1.6"/><path d="M15.6 4.3a3.2 3.2 0 0 1 0 6.4"/><path d="M21.5 20.5v-1.6a4.2 4.2 0 0 0-3.2-4.1"/></svg><span class="hi-lbl" data-i18n="dashboard.picker.edit_classes">Edit classes…</span></button>
             <a class="btn-xs" id="pickerNtLink" href="name_tags.html?from=dashboard" target="_blank" rel="noopener" aria-label="Open Name Tags (opens in a new tab)" data-i18n="dashboard.picker.open_nametags" data-i18n-aria-label="dashboard.picker.open_nametags_aria">Open Name Tags ↗</a>
           </div>
-          <div id="pickerFromNt" hidden>
-            <label for="pickerFromNtSel" data-i18n="dashboard.picker.from_nt_list">Name Tags list</label>
-            <select id="pickerFromNtSel" style="max-width:none;"></select>
-            <div class="pick-ntuse" role="radiogroup" aria-labelledby="pickerFromNtUseLbl">
-              <span id="pickerFromNtUseLbl" data-i18n="dashboard.picker.from_nt_use">Names to use:</span>
-              <label><input type="radio" name="pickerFromNtUse" value="en" checked><span data-i18n="dashboard.picker.from_nt_en">English</span></label>
-              <label><input type="radio" name="pickerFromNtUse" value="he"><span data-i18n="dashboard.picker.from_nt_he">Hebrew</span></label>
-              <label><input type="radio" name="pickerFromNtUse" value="both"><span data-i18n="dashboard.picker.from_nt_both">Both</span></label>
-            </div>
-            <div style="display:flex;gap:5px;flex-wrap:wrap;">
-              <button type="button" class="btn-xs" onclick="classFromNameTags()" data-i18n="dashboard.picker.from_nt_go">Make the class</button>
-              <button type="button" class="btn-xs" onclick="toggleFromNameTags(false)" data-i18n="dashboard.picker.from_nt_cancel">Cancel</button>
-            </div>
-            <span style="font-size:0.72rem;color:var(--muted);" data-i18n="dashboard.picker.from_nt_note">A one-time copy: later changes to either list stay separate.</span>
-          </div>
+          <span id="pickerClassNote" role="status" style="font-size:0.72rem;color:var(--gold-text);display:none;"></span>
         </div>
-        <div class="form-row" style="flex-direction:column;align-items:stretch;gap:4px;">
-          <label for="pickerRoster" id="pickerRosterLabel" data-i18n="dashboard.picker.roster_label">Roster — one name per line</label>
-          <textarea id="pickerRoster" autocapitalize="words" autocorrect="off" spellcheck="false" rows="6" data-i18n-placeholder="dashboard.picker.roster_placeholder" placeholder="e.g. Ava&#10;Noah&#10;&#1491;&#1464;&#1468;&#1493;&#1460;&#1491;&#10;&#1502;&#1463;&#1497;&#1464;&#1492;" style="width:100%;resize:vertical;font-family:inherit;"></textarea><!-- i18n-ignore: roster placeholder is example student names (mixed EN/HE) with encoded newlines — illustrative content, not translatable chrome -->
-          <span id="pickerRosterCount" style="font-size:0.72rem;color:var(--muted);">0 names</span>
-          <!-- On-screen Hebrew keyboard for the roster. This field's own placeholder is already
-               Hebrew names, but the teacher typing it is — per the component's founding rationale —
-               often on a school-managed device with no Hebrew layout installed. The toggle carries
-               NO data-i18n: its label is state-dependent (Show/Hide) and JS owns it, so the English
-               text here is only the pre-I18n.ready fallback; applyStaticI18n would otherwise stomp
-               the expanded-state label on a language switch. -->
-          <button type="button" class="hk-toggle" id="rosterKbdToggle" aria-expanded="false" aria-controls="rosterKbdPanel">&#9000; Show Hebrew Keyboard</button>
-          <div class="hk-panel" id="rosterKbdPanel" hidden></div>
+        <div class="form-row">
+          <label for="pickerNamesSel" data-i18n="dashboard.picker.names_shown">Names shown</label>
+          <select id="pickerNamesSel">
+            <option value="both" data-i18n="dashboard.picker.names_both">Hebrew and English</option>
+            <option value="he" data-i18n="dashboard.picker.names_he">Hebrew</option>
+            <option value="en" data-i18n="dashboard.picker.names_en">English</option>
+          </select>
         </div>
         <div class="form-row" id="pickerRosterHint" style="margin-top:2px;">
-          <span style="font-size:0.78rem;color:var(--muted);font-style:italic;" data-i18n="dashboard.picker.roster_hint">Presets and Schedule Sync remember which class is active — rosters themselves are shared, so editing a list updates it everywhere.</span>
+          <span style="font-size:0.78rem;color:var(--muted);font-style:italic;" data-i18n="dashboard.picker.roster_hint">Presets and Schedule Sync remember which class is active. The classes themselves are shared with Name Tags and Flash Cards, so editing one updates it everywhere.</span>
         </div>
         <hr>
         <div class="form-row">
@@ -4047,7 +4016,8 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
     showOmerProgress: true,
     // Student Picker / Group Maker
     rosters: {},                      // named classes: { "<id>": { name, names:[] } } — SHARED, excluded from preset snapshots
-    activeRosterId: '',               // which class is live — per device; a preset carries the class NAME instead (activeRosterName, resolved on apply)
+    activeRosterId: '',               // which class is live (a shared class's id) — per device; a preset carries the class's id and NAME (activeClassId / activeRosterName, resolved on apply)
+    pickerNames: 'both',              // which of a student's names the picker draws: 'both' | 'he' | 'en'
     showStudentPicker: false,         // opt-in feature-add (defaults off, like showVideoEmbed/scheduleEnabled)
     showStudentPickerFullscreen: true,
     pickerCollapsed: false,
@@ -6788,7 +6758,7 @@ function mountSidebarResize(cfg) {
     $('showStudentPicker').checked = settings.showStudentPicker === true;
     $('showStudentPickerFullscreen').checked = settings.showStudentPickerFullscreen !== false;
     $('pickerFairCycle').checked = settings.pickerFairCycle !== false;
-    $('pickerRoster').value = (curClass().names || []).join('\n');
+    $('pickerNamesSel').value = ['he', 'en'].includes(settings.pickerNames) ? settings.pickerNames : 'both';
     $('groupN').value = settings.groupN || 4;
     const gmRadio = document.querySelector(`input[name="groupMode"][value="${settings.groupMode || 'size'}"]`);
     if (gmRadio) gmRadio.checked = true;
@@ -6883,7 +6853,6 @@ function mountSidebarResize(cfg) {
     if (schedEnabled) renderWeekSummary();
   }
 
-  let _rosterKbd = null;   // shared Hebrew-keyboard controller for #pickerRoster
   function wireFormListeners() {
     // Drawer tabs (APG tablist): Left/Right by VISUAL direction (the strip mirrors in RTL), Home/End, wrap;
     // moving focus activates (automatic activation) — the Trope Tutor's handler, as on the Torah Trainer.
@@ -6995,20 +6964,10 @@ function mountSidebarResize(cfg) {
       e.target.value = n;
       saveSettingsToStorage();
     });
-    document.getElementById('pickerRoster').addEventListener('input', updatePickerRosterCount);
-    document.getElementById('pickerRoster').addEventListener('blur', commitRosterFromTextarea);
-    // Shared on-screen Hebrew keyboard on the roster field. onChange is REQUIRED, not optional:
-    // the engine types via setRangeText, which fires NO 'input' event, so without it the name
-    // count would silently stop updating as the teacher types. It runs the count ONLY —
-    // commitRosterFromTextarea rewrites ta.value (to re-join the parsed names) and would destroy
-    // the caret mid-word; blur still commits, exactly as before. The roster markup is static, so
-    // one mount lasts the page's life (no re-mount needed — see the block's own header).
-    _rosterKbd = mountHebrewKeyboard({
-      container: document.getElementById('rosterKbdPanel'),
-      toggleBtn: document.getElementById('rosterKbdToggle'),
-      getInput: () => document.getElementById('pickerRoster'),
-      onChange: updatePickerRosterCount,
-      getFontFlags: () => null   // a roster is names, not a font specimen — no coverage hint
+    document.getElementById('pickerNamesSel').addEventListener('change', e => {
+      settings.pickerNames = ['he', 'en'].includes(e.target.value) ? e.target.value : 'both';
+      renderStudentPicker();
+      saveSettingsToStorage();
     });
     document.querySelectorAll('input[name="engDateFmt"]').forEach(r =>
       r.addEventListener('change', () => { settings.engDateFmt = r.value; updateDateTimeDisplay(); saveSettingsToStorage(); }));
@@ -7225,14 +7184,18 @@ function mountSidebarResize(cfg) {
     }
     if (forcedActiveId) settings.activeRosterId = forcedActiveId;
     else if (s && typeof s.activeRosterName === 'string') {
-      // A preset names its class: the class with that name here, else a legacy id that exists here, else
-      // the pointer stays where it was (a name this device does not have never jumps the picker).
-      const byName = s.activeRosterName && Object.keys(settings.rosters || {}).find(id => settings.rosters[id] && settings.rosters[id].name === s.activeRosterName);
-      settings.activeRosterId = byName || ((s.activeRosterId && settings.rosters && settings.rosters[s.activeRosterId]) ? s.activeRosterId : pointerBefore);
-    } else if (s && s.activeRosterId !== undefined && !(settings.rosters && settings.rosters[s.activeRosterId])) {
+      // A preset names its class: by its id on this account, else the class with that name here (a preset from a
+      // file or another teacher), else the pointer stays where it was (a class this device does not have never
+      // jumps the picker).
+      const now = classesNow();
+      const byId = [s.activeClassId, s.activeRosterId].find(id => typeof id === 'string' && now.byId.has(id));
+      const byName = s.activeRosterName && (now.all.find(c => c.name === s.activeRosterName) || {}).id;
+      settings.activeRosterId = byId || byName || pointerBefore;
+    } else if (s && s.activeRosterId !== undefined && !classesNow().byId.has(s.activeRosterId)) {
       settings.activeRosterId = pointerBefore;   // an older preset's id from another device: keep the current class
     }
-    delete settings.activeRosterName;   // never in the live blob (nor, through it, in the settings row)
+    delete settings.activeRosterName; delete settings.activeClassId;   // never in the live blob (nor, through it, in the settings row)
+    if (!['both', 'he', 'en'].includes(settings.pickerNames)) settings.pickerNames = 'both';
     delete settings.roster;         // legacy field is gone once classes exist
     ensureActiveClass();            // guarantee a valid active class (handles a deleted-class reference)
     normalizePickerSession();
@@ -7304,9 +7267,11 @@ function mountSidebarResize(cfg) {
       // Sync would swap them at every period change. (.ivrit files and the cloud row still carry them.)
       delete out.intermissionHTML;
       delete out.eventTitle; delete out.eventDate;   // the event countdown is the board's too, not a look's
-      // Class ids are per device: a preset names its class, and applySettings resolves the name here.
-      const live = settings.rosters && settings.rosters[settings.activeRosterId];
-      out.activeRosterName = (live && typeof live.name === 'string') ? live.name : '';
+      // A preset carries its class as an id and a name: the id finds it on this account, the name on a device or in
+      // a file that knows the class only by what it is called (applySettings resolves both).
+      const live = classesNow().byId.get(settings.activeRosterId);
+      out.activeClassId = live ? live.id : '';
+      out.activeRosterName = live ? live.name : '';
       delete out.activeRosterId;
     }
     return out;
@@ -7367,21 +7332,33 @@ function mountSidebarResize(cfg) {
     migrateRostersInSettings();   // one-time: fold a legacy single roster into a named class (idempotent)
   }
 
-  /* ────────── NAMED CLASS ROSTERS ────────── */
-  const ROSTER_MAX_CLASSES = 20;
-  let _rosterIdSeq = 0;
-  // IDs: base36 timestamp + a per-session sequence suffix, so several created in the same ms stay unique.
-  function newRosterId() { return Date.now().toString(36) + '_' + (_rosterIdSeq++).toString(36); }
+  /* ────────── CLASSES ──────────
+     The classes are the suite's shared classes (js/ivrit-classes.js, the only writer of ivritSuite_classes — Name Tags
+     and Flash Cards show the same ones; docs/reference/class-roster.md). This page reads them and keeps only what is
+     its own: which class is live on this device (settings.activeRosterId, a class id) and each class's pick session
+     (settings.pickerSessions[classId], student ids). settings.rosters — the classes as they were before — stays in
+     the blob untouched: that file reads it (each roster is a class under its own id) and nothing here writes it. */
+  // The classes as they are now, read once per change (the file tells this page when they move).
+  let _classesNow = null;
+  function classesNow() {
+    if (_classesNow) return _classesNow;
+    let all = [];
+    try { if (window.IvritClasses) all = IvritClasses.list(); } catch (e) { all = []; }
+    const byId = new Map(), students = new Map();
+    all.forEach(c => { byId.set(c.id, c); c.students.forEach(s => students.set(s.id, s)); });
+    _classesNow = { all, byId, students };
+    return _classesNow;
+  }
+  function classesChanged() { _classesNow = null; }
 
-  // One-time migration (safe to re-run): guarantees settings.rosters / activeRosterId / pickerSessions
-  // are well-formed and that at least one class always exists. Folds the retired single `roster` string
-  // (and its ephemeral pickerSession) into a first class named "My class" without losing any names.
+  // The old shape is kept well-formed (the shared file reads it); a retired single `roster` string — a blob from
+  // before named classes — still becomes a roster there, so its names are not lost. No empty class is made any more.
   function migrateRostersInSettings() {
     if (!settings.rosters || typeof settings.rosters !== 'object' || Array.isArray(settings.rosters)) settings.rosters = {};
     if (!settings.pickerSessions || typeof settings.pickerSessions !== 'object' || Array.isArray(settings.pickerSessions)) settings.pickerSessions = {};
-    if (!Object.keys(settings.rosters).length) {
-      const legacyNames = typeof settings.roster === 'string' ? parseRoster(settings.roster) : [];
-      const id = newRosterId();
+    const legacyNames = typeof settings.roster === 'string' ? parseRoster(settings.roster) : [];
+    if (legacyNames.length && !Object.keys(settings.rosters).length) {
+      const id = Date.now().toString(36) + '_0';
       settings.rosters[id] = { name: 'My class', names: legacyNames };
       settings.activeRosterId = id;
       const ps = settings.pickerSession;   // carry the legacy live pick/absent state onto the new class
@@ -7392,70 +7369,43 @@ function mountSidebarResize(cfg) {
         };
       }
     }
-    if (!settings.rosters[settings.activeRosterId]) settings.activeRosterId = Object.keys(settings.rosters)[0];
     delete settings.roster;          // retired
     delete settings.pickerSession;   // retired (per-class pickerSessions replaces it)
   }
 
-  // Ensure a valid active class exists; returns it. Cheap + defensive — safe to call from any render path.
+  // The live class as the picker reads it: { id, name, names } — `names` are the students' ids, in the class's
+  // order (every picker function keys on them; pickerNameHTML draws the student). With no class at all it is an
+  // empty one that is never stored. Cheap + defensive — safe to call from any render path.
+  const NO_CLASS = Object.freeze({ id: '', name: '', names: Object.freeze([]) });
   function ensureActiveClass() {
-    if (!settings.rosters || typeof settings.rosters !== 'object' || Array.isArray(settings.rosters)) settings.rosters = {};
-    let c = settings.rosters[settings.activeRosterId];
-    if (!c) {
-      const ids = Object.keys(settings.rosters);
-      if (ids.length) { settings.activeRosterId = ids[0]; c = settings.rosters[settings.activeRosterId]; }
-      else { const id = newRosterId(); c = settings.rosters[id] = { name: 'My class', names: [] }; settings.activeRosterId = id; }
-    }
-    if (!Array.isArray(c.names)) c.names = [];
-    if (typeof c.name !== 'string' || !c.name) c.name = 'My class';
-    return c;
+    const now = classesNow();
+    let c = now.byId.get(settings.activeRosterId);
+    if (!c && now.all.length) { c = now.all[0]; settings.activeRosterId = c.id; }   // a class that is gone: the first one
+    if (!c) return NO_CLASS;
+    return { id: c.id, name: c.name, names: c.students.map(s => s.id) };
   }
   function curClass() { return ensureActiveClass(); }
-  function classList() { return Object.keys(settings.rosters || {}).map(id => ({ id, cls: settings.rosters[id] })); }
 
-  // Compare two canonicalized name arrays for exact equality (order-sensitive; parseRoster canonicalizes both).
-  function classNamesEqual(a, b) {
-    if (!Array.isArray(a) || !Array.isArray(b) || a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
-    return true;
-  }
-  function uniqueClassName(base, excludeId) {
-    base = (String(base || '').trim()) || 'Imported class';
-    const taken = Object.keys(settings.rosters || {})
-      .filter(id => id !== excludeId)
-      .map(id => settings.rosters[id] && settings.rosters[id].name);
-    if (!taken.includes(base)) return base;
-    let i = 2;
-    while (taken.includes(base + ' ' + i)) i++;
-    return base + ' ' + i;
-  }
-  // Fold a legacy roster string into a class: reuse an existing class with identical names, else create
-  // one named after the preset. Never drops names. Returns the resolved class id (always valid).
+  // A legacy snapshot (a preset or an old .ivrit from before named classes) carries its names in one `roster`
+  // string: the class that already holds exactly those lines, else a new class named after the preset.
   function resolveLegacyRosterToClass(str, presetName) {
-    ensureActiveClass();
-    const names = parseRoster(str);
-    if (!names.length) return settings.activeRosterId;   // nothing to fold — keep the current class
-    for (const id of Object.keys(settings.rosters)) {
-      if (classNamesEqual(settings.rosters[id].names, names)) return id;
-    }
-    const id = newRosterId();
-    settings.rosters[id] = { name: uniqueClassName(presetName || 'Imported class'), names };
-    return id;
+    const lines = parseRoster(str);
+    if (!lines.length || !window.IvritClasses) return settings.activeRosterId;   // nothing to fold — keep the current class
+    const split = IvritClasses.csv.splitRosterLine, key = IvritClasses.csv.matchKey;
+    const want = lines.map(l => { const s = split(l); return key(s.he) + '|' + key(s.en); }).join('\n');
+    const hit = classesNow().all.find(c => c.students.map(s => key(s.he) + '|' + key(s.en)).join('\n') === want);
+    if (hit) return hit.id;
+    const id = IvritClasses.addClass(String(presetName || '').trim() || I18n.t('dashboard.picker.default_class_name'), lines.map(split));
+    classesChanged();
+    return id || settings.activeRosterId;
   }
 
   /* ────────── STUDENT PICKER / GROUP MAKER ────────── */
   const PICKER_MAX = 60;
 
-  // Canonical roster parse: trim, drop blanks, dedupe (first wins), cap at PICKER_MAX — or at `keep` when the
-  // class already holds more: a class list merged from two devices, or restored from a backup, may exceed
-  // the picker's cap (mergeRoster is uncapped on purpose), and re-parsing it through the cap silently cut
-  // it back to 60 on the next edit or restore — a sync then carried the cut list to the account. The cap
-  // still bounds what is typed beyond what the class holds; nothing already in it is ever dropped.
-  // One class list from two sources — pure and UNCAPPED: the cloud panel's merge (IvritSaves.attach's
-  // merges.roster) for a class edited on two devices. Names are unioned (trimmed, mine first, no
-  // duplicates); a cap here would silently drop the other side's students, so a merged class may exceed
-  // PICKER_MAX until names are removed (parseRoster caps only what is typed). The name stays mine unless
-  // mine is the default.
+  // One old roster from two sources — pure and UNCAPPED: the account module's merge for the OLD roster rows
+  // (IvritSaves.attach's merges.roster), which an older tab of this page on another device still writes. Names
+  // are unioned (trimmed, mine first, no duplicates); the name stays mine unless mine is the default.
   function mergeRoster(mine, theirs) {
     const a = (mine && typeof mine === 'object') ? mine : {}, b = (theirs && typeof theirs === 'object') ? theirs : {};
     const namesOf = c => (Array.isArray(c.names) ? c.names : []).filter(n => typeof n === 'string').map(n => n.trim()).filter(Boolean);
@@ -7465,20 +7415,21 @@ function mountSidebarResize(cfg) {
     if (!a.name || a.name === 'My class') out.name = b.name || a.name || 'My class';
     return out;
   }
-  function parseRoster(str, keep) {
+  // A legacy roster string as lines: trimmed, blanks dropped, de-duplicated (first wins).
+  function parseRoster(str) {
     const seen = new Set(), out = [];
     String(str || '').split('\n').forEach(line => {
       const n = line.trim();
       if (n && !seen.has(n)) { seen.add(n); out.push(n); }
     });
-    return out.slice(0, Math.max(PICKER_MAX, keep || 0));
+    return out;
   }
-  // What the active class may hold on a re-parse: the cap, or its current size when that is larger.
-  function rosterKeep() { return (curClass().names || []).length; }
-  // The active class's roster names (already canonicalized on commit; capped defensively).
-  function rosterNames() { return (curClass().names || []).slice(0, PICKER_MAX); }
+  // The live class's students (their ids), as many as the picker shows at once.
+  function rosterNames() { return curClass().names.slice(0, PICKER_MAX); }
 
-  // The active class's ephemeral pick/absent session (auto-created; never travels in presets/.ivrit).
+  // The live class's pick/absent session (auto-created; per device, never in presets or .ivrit files). It names
+  // students by id. A session from before the shared classes names them by their roster line: each line that is
+  // still a student of this class becomes that student, the rest go (a session lasts a lesson).
   function curSession() {
     if (!settings.pickerSessions || typeof settings.pickerSessions !== 'object') settings.pickerSessions = {};
     const id = settings.activeRosterId;
@@ -7486,6 +7437,16 @@ function mountSidebarResize(cfg) {
     if (!s || typeof s !== 'object') s = settings.pickerSessions[id] = { picked: [], absent: [] };
     if (!Array.isArray(s.picked)) s.picked = [];
     if (!Array.isArray(s.absent)) s.absent = [];
+    const have = new Set(curClass().names);
+    if (have.size && window.IvritClasses) ['picked', 'absent'].forEach(k => {
+      if (s[k].every(x => have.has(x))) return;
+      const out = [];
+      s[k].forEach(x => {
+        const sid = have.has(x) ? x : (typeof x === 'string' ? IvritClasses.idForLine(id, x) : '');
+        if (have.has(sid) && !out.includes(sid)) out.push(sid);
+      });
+      s[k] = out;
+    });
     return s;
   }
   // Kept name for the many existing call sites; now normalizes + returns the active class's session.
@@ -7495,18 +7456,25 @@ function mountSidebarResize(cfg) {
     return rosterNames().filter(n => !absent.includes(n));
   }
 
-  // XSS-safe + nikkud-aware name rendering, always assigned to innerHTML. A name runs in the direction of its own first
-  // letter: Hebrew first, the whole name is Hebrew (lang="he" dir="rtl", as hebDisplay marks it); otherwise it is left to
-  // right and only its Hebrew runs are marked ("David K. / דָּוִד"). Through hebDisplay every name was Hebrew, so a Latin
-  // name's last mark led it (".David K", "!Maya" on the chips, the picked name and the groups), and its already-escaped
-  // text was escaped again by colorizeHebrew ("O&#39;Brien" with Color-code nikkud on).
-  function pickerNameHTML(name) {
-    const s = String(name == null ? '' : name);
+  // XSS-safe + nikkud-aware name rendering, always assigned to innerHTML. `id` is a student's id: the Hebrew name,
+  // the English name or both (Settings → Student Picker → Names shown), each in its own isolate — a Hebrew run
+  // right to left and marked lang="he", a Latin run left to right — so neither leads the other with its last mark
+  // ("דָּוִד / David K." kept its full stop at the wrong end while the two shared one run). A name asked for and not
+  // there falls back to the one the student has.
+  function pickerNameHTML(id) {
+    const st = classesNow().students.get(id);
+    if (!st) return '<bdi>' + esc(String(id == null ? '' : id)) + '</bdi>';
     // nikkud shown, stripped or colour-coded, as hebDisplay decides; colorizeHebrew escapes for itself
     const inner = t => !settings.showNikkud ? esc(stripNikkud(t)) : settings.colorCodeNikkud ? colorizeHebrew(t, settings.colorCodingMode) : esc(t);
-    const heb = t => '<span lang="he" dir="rtl">' + inner(t) + '</span>';
-    if (/^[^A-Za-zÀ-ɏͰ-ϿЀ-ӿ֐-׿]*[֐-׿]/.test(s)) return heb(s);
-    return '<span dir="ltr">' + s.split(/([֐-׿]+(?:[ '’-]+[֐-׿]+)*)/).map((part, i) => i % 2 ? heb(part) : esc(part)).join('') + '</span>';
+    const heb = t => '<bdi lang="he" dir="rtl">' + inner(t) + '</bdi>';
+    // a Latin name may still hold a Hebrew word ("Maya (מיה)"): that run is marked inside it
+    const lat = t => '<bdi dir="ltr">' + t.split(/([֐-׿]+(?:[ '’-]+[֐-׿]+)*)/).map((part, i) => i % 2 ? '<span lang="he">' + inner(part) + '</span>' : esc(part)).join('') + '</bdi>';
+    const he = String(st.he || '').trim(), en = String(st.en || '').trim() || (he ? '' : String(st.tr || '').trim());
+    const mode = settings.pickerNames === 'he' || settings.pickerNames === 'en' ? settings.pickerNames : 'both';
+    if (mode === 'he' && he) return heb(he);
+    if (mode === 'en' && en) return lat(en);
+    if (he && en) return heb(he) + ' / ' + lat(en);
+    return he ? heb(he) : lat(en);
   }
 
   function updateGroupNLabel() {
@@ -7526,37 +7494,16 @@ function mountSidebarResize(cfg) {
   }
   function updatePickerRosterCount() {
     const el = document.getElementById('pickerRosterCount');
-    if (!el) return;
-    const ta = document.getElementById('pickerRoster');
-    const raw = ta ? ta.value : (curClass().names || []).join('\n');
-    const n = parseRoster(raw, rosterKeep()).length;
-    el.textContent = I18n.t(n === 1 ? 'dashboard.picker.roster_count.one' : 'dashboard.picker.roster_count.other', { count: n }) + (n >= PICKER_MAX ? ' ' + I18n.t('dashboard.picker.roster_count_max_suffix', { max: PICKER_MAX }) : '');
-  }
-  // Commit the textarea into the ACTIVE class on blur; reconcile (not reset) that class's session.
-  function commitRosterFromTextarea() {
-    const ta = document.getElementById('pickerRoster');
-    if (!ta) return;
-    const names = parseRoster(ta.value, rosterKeep());
-    curClass().names = names;
-    ta.value = names.join('\n');
-    const set = new Set(names);
-    const sess = curSession();
-    sess.picked = sess.picked.filter(n => set.has(n));
-    sess.absent = sess.absent.filter(n => set.has(n));
-    updatePickerRosterCount();
-    renderClassSwitchers();   // refresh the "(N)" name counts in every class switcher
-    renderStudentPicker();
-    saveSettingsToStorage();
+    if (!el || !window.I18n) return;
+    const now = classesNow(), c = now.byId.get(settings.activeRosterId);
+    if (!now.all.length) { el.textContent = I18n.t('dashboard.picker.no_class'); return; }
+    const n = c ? c.students.length : 0;
+    el.textContent = I18n.t(n === 1 ? 'dashboard.picker.roster_count.one' : 'dashboard.picker.roster_count.other', { count: n }) + (n > PICKER_MAX ? ' ' + I18n.t('dashboard.picker.roster_count_max_suffix', { max: PICKER_MAX }) : '');
   }
 
-  // ── Class manager (settings drawer + shared with the card/fullscreen switchers) ──
+  // ── Class switchers (settings drawer, card header, fullscreen pop) ──
   function classOptionsHTML(selectedId) {
-    ensureActiveClass();
-    return Object.keys(settings.rosters).map(id => {
-      const c = settings.rosters[id];
-      const n = (c.names || []).length;
-      return `<option value="${esc(id)}"${id === selectedId ? ' selected' : ''}>${esc(c.name)} (${n})</option>`;
-    }).join('');
+    return classesNow().all.map(c => `<option value="${esc(c.id)}"${c.id === selectedId ? ' selected' : ''}>${esc(c.name)} (${c.students.length})</option>`).join('');
   }
   // Stores the i18n key (+ params), never rendered text, so applyI18n can re-render a note
   // that is still on screen after a live language switch.
@@ -7577,167 +7524,66 @@ function mountSidebarResize(cfg) {
       if (!sel) return;
       sel.innerHTML = classOptionsHTML(settings.activeRosterId);
       sel.value = settings.activeRosterId;
+      sel.disabled = !classesNow().all.length;
     });
   }
-  // Repaint the drawer class row + labeled roster textarea for the active class.
+  // Repaint the drawer's class row for the active class.
   function renderClassManager() {
     renderClassSwitchers();
-    const lbl = document.getElementById('pickerRosterLabel');
-    if (lbl) lbl.textContent = I18n.t('dashboard.picker.roster_label_named', { name: curClass().name });
-    const ta = document.getElementById('pickerRoster');
-    if (ta) ta.value = (curClass().names || []).join('\n');
     updatePickerRosterCount();
-    renderFromNameTags();
   }
   // Central class-switch used by the drawer, card-header and fullscreen selects.
   function switchClass(id) {
-    if (!settings.rosters[id]) return;
+    if (!classesNow().byId.has(id)) return;
     settings.activeRosterId = id;
     saveSettingsToStorage();
     pickerClassNote('');
-    renderClassManager();     // repaints all switchers + the drawer roster
+    renderClassManager();     // repaints all switchers + the drawer's count
     renderStudentPicker();    // swaps the chip list + this class's picked/absent state
   }
-  // After a cloud sync the account's classes are in the list, but the class pointer is per device and may
-  // still name the untouched default this device made for itself ("My class", no names) — the picker
-  // looks empty while the dropdown is full. Switch to the first real class once and say so; the default
-  // stays listed (sync never deletes; 🗑 removes it). Not inside ensureActiveClass, which runs from render
-  // paths. Every creator names the default with the literal below; the default_class_name key is compared
-  // too in case one ever switches to it.
-  function isUntouchedDefaultClass(c) {
-    if (!c || (Array.isArray(c.names) && c.names.length)) return false;
-    return c.name === 'My class' || (!!window.I18n && c.name === I18n.t('dashboard.picker.default_class_name'));
-  }
-  function adoptClassFromAccount() {
-    ensureActiveClass();
-    if (!isUntouchedDefaultClass(settings.rosters[settings.activeRosterId])) return false;
-    const id = Object.keys(settings.rosters).find(k => k !== settings.activeRosterId && !isUntouchedDefaultClass(settings.rosters[k]));
-    if (!id) return false;
-    switchClass(id);   // persists the pointer; repaints the switchers, the drawer roster and the chips
-    const params = { name: settings.rosters[id].name };
-    pickerClassNote('dashboard.picker.cloud_switched', params);   // key-based: applyI18n re-renders it
-    if (window.I18n) {
-      const say = () => showAppToast(I18n.t('dashboard.picker.cloud_switched', params));
-      if (I18n.ready && I18n.ready.then) I18n.ready.then(say); else say();   // at load the dictionary may not be in yet
-    }
-    return true;
-  }
-  // A class list that landed from the account under its own id, when this device holds a class of the
-  // same name that it made itself and never synced (the module's last listing said "only on this device"):
-  // the two are one class — this device's names join the landed one, its pick session and the pointer
-  // move over, the duplicate goes. A class that was synced before, or one that differs, stays: two classes.
-  function foldSameNamedClass(landedId) {
-    const landed = settings.rosters && settings.rosters[landedId];
-    if (!landed || !window.IvritSaves || typeof IvritSaves.lastPlan !== 'function') return false;
-    const plan = IvritSaves.lastPlan('Dashboard');
-    if (!plan || !Array.isArray(plan.rows)) return false;
-    const dupId = Object.keys(settings.rosters).find(id => id !== landedId && settings.rosters[id] && settings.rosters[id].name === landed.name
-      && plan.rows.some(r => r.kind === 'roster' && r.name === id && r.state === 'local-only'));
-    if (!dupId) return false;
-    settings.rosters[landedId] = mergeRoster(landed, settings.rosters[dupId]);   // the landed class's fields, both sides' names
-    if (!settings.pickerSessions || typeof settings.pickerSessions !== 'object') settings.pickerSessions = {};
-    if (settings.pickerSessions[dupId] && !settings.pickerSessions[landedId]) settings.pickerSessions[landedId] = settings.pickerSessions[dupId];
-    delete settings.pickerSessions[dupId];
-    delete settings.rosters[dupId];
-    if (settings.activeRosterId === dupId) settings.activeRosterId = landedId;
-    saveSettingsToStorage();
-    if (window.I18n) showAppToast(I18n.t('dashboard.picker.merged_same_name', { name: landed.name }));
-    return true;
-  }
-  // The slot a new class takes. While this device still holds the starter it made for itself (an untouched "My class",
-  // no names), the first real class takes that slot under its own name, so no empty "My class (0)" stays beside it in
-  // every switcher and a Name Tags list called "My class" keeps its name (the maintainer's choice). A starter the teacher
-  // renamed or typed names into is a class like any other. The account never holds the seed (the sync registry skips
-  // its upload), so the slot's first upload is the real class.
-  function starterClassId() {
-    return Object.keys(settings.rosters || {}).find(id => isUntouchedDefaultClass(settings.rosters[id])) || null;
-  }
-  function newClass() {
-    const starter = starterClassId();
-    if (!starter && Object.keys(settings.rosters).length >= ROSTER_MAX_CLASSES) {
-      pickerClassNote('dashboard.picker.class_limit', { max: ROSTER_MAX_CLASSES });
-      return;
-    }
-    const raw = prompt(I18n.t('dashboard.picker.new_class_prompt'));
-    if (raw === null) return;
-    const id = starter || newRosterId();
-    settings.rosters[id] = { name: uniqueClassName(raw.trim() || 'My class', starter), names: [] };
-    switchClass(id);
-  }
-  function renameClass() {
-    const c = curClass();
-    const raw = prompt(I18n.t('dashboard.picker.rename_class_prompt'), c.name);
-    if (raw === null) return;
-    const name = raw.trim();
-    if (!name) return;
-    c.name = uniqueClassName(name, settings.activeRosterId);
-    switchClass(settings.activeRosterId);
-  }
-  function deleteClass() {
-    const c = curClass();
-    const signedIn = !!(window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession());
-    if (!confirm(I18n.t(signedIn ? 'dashboard.picker.delete_class_confirm_cloud' : 'dashboard.picker.delete_class_confirm', { name: c.name }))) return;
-    const id = settings.activeRosterId;
-    delete settings.rosters[id];
-    delete settings.pickerSessions[id];
-    ensureActiveClass();   // recreates an empty "My class" if that was the last one
-    switchClass(settings.activeRosterId);
-  }
-
-  // ── A class from a Name Tags list (name_tags.html → hebrewNameTags_lists, read as this device holds it): a one-time
-  // copy — the class is a new class, and later edits to either list stay separate. Each student becomes one roster
-  // line: the English name, the Hebrew name, or both ("David / דָּוִד"); a student with only one of them keeps it. ──
-  function nameTagLists() {
-    let o = null;
-    try { o = ivritSafeParse(localStorage.getItem('hebrewNameTags_lists') || 'null'); } catch (e) { o = null; }
-    if (!o || typeof o !== 'object' || Array.isArray(o)) return [];
-    const str = v => (typeof v === 'string' ? v.trim() : '');
-    return Object.keys(o).filter(k => o[k] && typeof o[k] === 'object' && Array.isArray(o[k].rows))
-      .map(k => ({ name: k, rows: o[k].rows.filter(r => r && typeof r === 'object' && (str(r.he) || str(r.en))).map(r => ({ he: str(r.he), en: str(r.en) })) }))
-      .filter(l => l.rows.length)
-      .sort((a, b) => a.name.localeCompare(b.name));
-  }
-  function renderFromNameTags() {
-    const row = document.getElementById('pickerFromNtRow');
-    if (row) row.hidden = !nameTagLists().length;
-  }
-  function toggleFromNameTags(force) {
-    const box = document.getElementById('pickerFromNt'), btn = document.getElementById('pickerFromNtBtn');
-    if (!box || !btn) return;
-    const open = force === undefined ? box.hidden : !!force;
-    box.hidden = !open;
-    btn.setAttribute('aria-expanded', String(open));
-    if (!open) return;
-    const sel = document.getElementById('pickerFromNtSel');
-    sel.textContent = '';
-    nameTagLists().forEach(l => {
-      const o = document.createElement('option');
-      o.value = l.name;
-      o.textContent = l.name + ' (' + l.rows.length + ')';
-      sel.appendChild(o);
+  // The shared roster editor (js/ivrit-classes.js): every class in one window — add, rename, merge, delete, type and
+  // import students. It opens on the live class and writes the same classes this page shows, so the picker follows it
+  // as it follows another tab (onClassesChanged). The on-screen Hebrew keyboard is this page's shared block.
+  function openClassEditor(opener) {
+    if (!window.IvritClasses) return;
+    IvritClasses.openEditor({
+      classId: classesNow().byId.has(settings.activeRosterId) ? settings.activeRosterId : null,
+      opener: opener || document.activeElement,
+      host: { mountKeyboard: cfg => mountHebrewKeyboard(Object.assign({ getFontFlags: () => null }, cfg)) }   // names, not a font specimen: no coverage hint
     });
-    sel.focus();
   }
-  function classFromNameTags() {
-    const sel = document.getElementById('pickerFromNtSel');
-    const list = nameTagLists().find(l => sel && l.name === sel.value);
-    if (!list) return;
-    const starter = starterClassId();   // the untouched starter's slot, when there is one (newClass)
-    if (!starter && Object.keys(settings.rosters).length >= ROSTER_MAX_CLASSES) {
-      pickerClassNote('dashboard.picker.class_limit', { max: ROSTER_MAX_CLASSES });
-      return;
-    }
-    const use = (document.querySelector('input[name="pickerFromNtUse"]:checked') || {}).value || 'en';
-    const lines = list.rows.map(r => use === 'he' ? (r.he || r.en) : use === 'both' ? (r.en && r.he ? r.en + ' / ' + r.he : (r.en || r.he)) : (r.en || r.he));
-    const names = parseRoster(lines.join('\n'));   // trimmed, de-duplicated, at most PICKER_MAX
-    const id = starter || newRosterId();
-    settings.rosters[id] = { name: uniqueClassName(list.name, starter), names };
-    toggleFromNameTags(false);
-    switchClass(id);   // saves, and repaints the switchers, the roster box and the chips
-    const params = { name: settings.rosters[id].name, count: names.length, max: PICKER_MAX };
-    pickerClassNote(lines.length > names.length && names.length >= PICKER_MAX ? 'dashboard.picker.from_nt_done_capped' : 'dashboard.picker.from_nt_done' + (names.length === 1 ? '.one' : '.other'), params);
+  // A class or a student a teacher deleted still has its name in the old rosters this page's blob holds (and, signed
+  // in, in their account rows): js/ivrit-classes.js names exactly those (scrub), and this — the one place that writes
+  // settings.rosters, and only ever to take something out — removes them through the page's own save.
+  function scrubOldRosters(plan) {
+    let changed = false;
+    if (!settings.rosters || typeof settings.rosters !== 'object') return;
+    plan.sources.forEach(id => {
+      if (Object.prototype.hasOwnProperty.call(settings.rosters, id)) { delete settings.rosters[id]; changed = true; }
+      if (settings.pickerSessions && settings.pickerSessions[id]) { delete settings.pickerSessions[id]; changed = true; }
+    });
+    Object.keys(plan.lines).forEach(id => {
+      const r = Object.prototype.hasOwnProperty.call(settings.rosters, id) ? settings.rosters[id] : null;
+      if (!r || !Array.isArray(r.names)) return;
+      const kept = r.names.filter(n => !(typeof n === 'string' && plan.lines[id].includes(n.trim())));
+      if (kept.length !== r.names.length) { r.names = kept; changed = true; }
+    });
+    if (changed) saveSettingsToStorage();
   }
-  window.addEventListener('storage', e => { if (e.key === 'hebrewNameTags_lists' || e.key === null) renderFromNameTags(); });
+  // The classes moved — the editor, another tab, the account: read them again and redraw what shows them. The live
+  // pointer is this device's: when its class is gone the first class takes over (ensureActiveClass), and the pointer
+  // is saved only when it changed.
+  function onClassesChanged() {
+    classesChanged();
+    const before = settings.activeRosterId;
+    ensureActiveClass();
+    normalizePickerSession();
+    renderClassManager();
+    renderStudentPicker();
+    try { updateColTitles(); } catch (e) {}
+    try { checkSchedule(); } catch (e) {}
+    if (settings.activeRosterId !== before) saveSettingsToStorage();
+  }
 
   function applyStudentPickerVisibility() {
     const col = document.getElementById('pickerCol');
@@ -7779,8 +7625,15 @@ function mountSidebarResize(cfg) {
     if (!names.length) {
       const hint = document.createElement('div');
       hint.className = 'picker-empty';
-      hint.textContent = I18n.t('dashboard.picker.empty_card');
+      hint.textContent = I18n.t(classesNow().all.length ? 'dashboard.picker.empty_card' : 'dashboard.picker.empty_no_class');
       chips.appendChild(hint);
+      const add = document.createElement('button');
+      add.type = 'button';
+      add.className = 'btn-xs picker-edit';
+      add.textContent = I18n.t('dashboard.picker.edit_classes');
+      add.setAttribute('aria-haspopup', 'dialog');
+      add.addEventListener('click', () => openClassEditor(add));
+      chips.appendChild(add);
       if (actions) actions.style.display = 'none';
       if (progress) progress.innerHTML = '';
       return;
@@ -8970,6 +8823,7 @@ function mountFolderTree(cfg){
         schedules: JSON.parse(JSON.stringify(savedSchedules || {})),
         presetFolders: ftRead('hebrewDashboard_presetsFolders'),
         scheduleFolders: ftRead('hebrewDashboard_schedulesFolders'),
+        classes: window.IvritClasses ? IvritClasses.exportAll() : { v: 1, classes: {} },   // the suite's shared classes (js/ivrit-classes.js)
         liveState: getSettings()
       };
     },
@@ -8996,13 +8850,12 @@ function mountFolderTree(cfg){
       }
       if (sf) ftImportTree('hebrewDashboard_schedulesFolders', sf, mode === 'replace');
       if ((sch || sf) && typeof renderSavedSchedules === 'function') renderSavedSchedules();
-      // A Merge never swaps the class-list map: the file's classes are merged by id below (names unioned) and this
-      // device's pick sessions and active class stay — a settings blob carries `rosters` whole, and assigning it would
-      // drop every class the file does not have (signed in, from the account and every device too).
-      let ls = data.liveState || data.dashboardSettings, lsRosters = null;
-      if (mode !== 'replace' && ls && typeof ls === 'object' && !Array.isArray(ls)) {
+      // The file's classes go to the shared classes below (IvritClasses.importFile); a settings blob's own `rosters`
+      // map — the classes as they were — never lands in this page's blob (the old key is read, never rewritten), and
+      // this device's pick sessions and active class stay.
+      let ls = data.liveState || data.dashboardSettings;
+      if (ls && typeof ls === 'object' && !Array.isArray(ls)) {
         ls = Object.assign({}, ls);
-        if (ls.rosters && typeof ls.rosters === 'object' && !Array.isArray(ls.rosters)) lsRosters = ls.rosters;
         delete ls.rosters; delete ls.pickerSessions; delete ls.activeRosterId;
       }
       if (mode === 'fill' && !_storedBlobIsFirstRun()) ls = null;   // this device's settings stay; the class lists below still merge
@@ -9029,39 +8882,27 @@ function mountFolderTree(cfg){
         checkSchedule();   // the board takes the current period now, as after an account download
         applied = true;
       }
-      // Class lists: the account backup's key (dashboardRosters) or a single row's file (roster), both
-      // { rosters: { id: { name, names } } } — merged by id (Replace mode swaps the map), never dropped.
-      const rsFile = (data.dashboardRosters && data.dashboardRosters.rosters) || (data.roster && data.roster.rosters);
-      const rs = (lsRosters && rsFile && typeof rsFile === 'object' && !Array.isArray(rsFile)) ? Object.assign({}, lsRosters, rsFile) : (rsFile || lsRosters);
-      if (rs && typeof rs === 'object' && !Array.isArray(rs)) {
-        ensureActiveClass();
-        if (mode === 'replace') { settings.rosters = {}; settings.pickerSessions = {}; }
-        Object.keys(rs).forEach(id => {
-          if (id === '__proto__' || id === 'constructor' || id === 'prototype') return;
-          const inc = rs[id];
-          if (!inc || typeof inc !== 'object' || Array.isArray(inc)) return;
-          const incNames = (Array.isArray(inc.names) ? inc.names : []).filter(n => typeof n === 'string');
-          const clean = { name: (typeof inc.name === 'string' && inc.name) ? inc.name : 'My class', names: parseRoster(incNames.join('\n'), incNames.length) };   // a backup's class is restored whole, as the hub restores it
-          settings.rosters[id] = settings.rosters[id] ? mergeRoster(settings.rosters[id], clean) : clean;
-        });
-        ensureActiveClass();
-        normalizePickerSession();
-        saveSettingsToStorage();
-        renderClassManager();
-        renderStudentPicker();
-        applied = true;
+      // Classes: the file's `classes`, or — from a file older than the shared classes — its rosters (a settings
+      // blob's, the account backup's dashboardRosters, a single row's file), read with ids computed from the old data.
+      // A restore adds classes and students, fills what is blank and brings back what was deleted; the classes are the
+      // whole suite's, so this page's Replace never empties them (only the home page's AllTools Replace does).
+      const carries = d => !!d && typeof d === 'object' && !Array.isArray(d);
+      if (window.IvritClasses && (carries(data.classes) || carries(data.dashboardRosters) || carries(data.roster) || carries(data.liveState) || carries(data.dashboardSettings))) {
+        const file = { classes: data.classes, dashboardRosters: data.dashboardRosters || data.roster, liveState: data.liveState, dashboardSettings: data.dashboardSettings };
+        if (IvritClasses.importFile(file, mode === 'replace' ? 'merge' : mode)) applied = true;
+        onClassesChanged();
       }
       return applied;
     }
   };
 
   /* ── Cloud saves (optional accounts). Everything that talks to Supabase lives in the shared
-     js/ivrit-saves.js (its registry names this page's keys — the class lists are their own rows on the
-     settings key, which the settings row omits along with every per-device field). This page supplies
-     its merges — the two folder trees through the shared ftMergeTrees, a class list through mergeRoster —
-     and how to re-read a key the module wrote: every store here is rendered from memory, and the next
-     saveSettingsToStorage() would otherwise put the old blob straight back. After a class list lands,
-     adoptClassFromAccount() moves the per-device class pointer off this device's untouched default. ── */
+     js/ivrit-saves.js (its registry names this page's keys). The classes are the suite's shared ones, pulled as
+     the tool `Classes` and merged by js/ivrit-classes.js's own mergeClass; the old roster rows still live on the
+     settings key (the settings row omits them along with every per-device field) and keep their merge, mergeRoster,
+     for an older tab of this page. This page supplies its merges — the two folder trees through the shared
+     ftMergeTrees — and how to re-read a key the module wrote: every store here is rendered from memory, and the
+     next saveSettingsToStorage() would otherwise put the old blob straight back. ── */
   function initCloudSaves() {
     if (!window.IvritSaves) return;
     // A suite-wide preference from the account landed (the module's IvritSuite row): follow the theme now —
@@ -9088,30 +8929,29 @@ function mountFolderTree(cfg){
       // committed and the board text mirrored, but nobody is thrown out of an in-place edit — that only
       // happens in finalFlush (pagehide, sign-out), as the page's own pagehide handler does. Both write only
       // what this tab changed, so an older tab's flush never puts its copy over a newer one.
-      flush: () => { flushRosterIfTyping(); if (_activeEditable) syncActive(); saveSettingsIfChanged(); },
-      finalFlush: () => { if (_activeEditable) exitInPlaceEdit(true); flushRosterIfTyping(); saveSettingsIfChanged(); },
+      alsoPull: ['Classes'],   // the shared classes (js/ivrit-classes.js writes them; this page hands the module their merge)
+      flush: () => { if (_activeEditable) syncActive(); saveSettingsIfChanged(); },
+      finalFlush: () => { if (_activeEditable) exitInPlaceEdit(true); saveSettingsIfChanged(); },
       // a board, an Intermission screen or a class list being typed (the window may have lost the focus meanwhile):
       // another tab's download waits for the next save here instead of re-rendering over the typing
-      editing: () => { if (_activeEditable) return true; const ae = document.activeElement; return !!ae && (ae.id === 'pickerRoster' || ae.id === 'dashEditor' || ae.id === 'intermissionEditor' || (bpeOpen() && document.getElementById('bpeModal').contains(ae))); },
+      editing: () => { if (_activeEditable) return true; const ae = document.activeElement; return !!ae && (ae.id === 'dashEditor' || ae.id === 'intermissionEditor' || (bpeOpen() && document.getElementById('bpeModal').contains(ae))); },
       merges: {
         presetFolders: ftMergeTrees,
         scheduleFolders: ftMergeTrees,
-        roster: mergeRoster
+        roster: mergeRoster,   // the old roster rows (an older tab of this page still writes them)
+        class: window.IvritClasses ? IvritClasses.mergeClass : undefined
       },
       onLocalChanged: function (kind, name, names, opts) {
         if (kind === 'preset' || kind === 'presetFolders') { loadPresets(); renderPresets(); return; }
         if (kind === 'schedule' || kind === 'scheduleFolders') { loadSchedulesStorage(); renderSavedSchedules(); return; }
-        // settings and class lists share one key: re-read it, then repaint what the kind touches
+        // a shared class, or the record of deleted ones, landed: the shared file tells every reader (onClassesChanged)
+        if (kind === 'class' || kind === 'retired') { if (window.IvritClasses) IvritClasses.landed(); return; }
+        // an old roster row landed in this page's blob (an older tab on another device wrote it): re-read the blob —
+        // or the next save would put this tab's copy back over it — and let the shared file read the roster again
         if (kind === 'roster') {
           loadSettingsFromStorage();
-          if (!(opts && opts.pending)) (names || (name ? [name] : [])).forEach(foldSameNamedClass);  // a class this device made under the same name and never synced joins the one that landed — not while the device-extras card is still asking
-          ensureActiveClass();
-          normalizePickerSession();
-          renderClassManager();
-          renderStudentPicker();
-          adoptClassFromAccount();   // this device's untouched default → the first class from the account, once
-          checkSchedule();
           settingsSeenNow();
+          if (window.IvritClasses) IvritClasses.landed(); else onClassesChanged();
           return;
         }
         // A downloaded blob replaces the in-memory one outright — a merge onto it could never remove a
@@ -9142,12 +8982,6 @@ function mountFolderTree(cfg){
         settingsSeenNow();   // the re-read is what this tab now holds
       }
     });
-    // A sync that ran on another page (the home page, the generator) wrote the class lists without this
-    // page's hook: adopt the pointer when the dashboard next loads signed in. Fires once when the account
-    // state is known and on every change; an anonymous load never reaches adoptClassFromAccount.
-    if (window.IvritAccount && typeof IvritAccount.onChange === 'function') {
-      IvritAccount.onChange(function (user) { if (user) adoptClassFromAccount(); });
-    }
   }
 
 /* ═══ shared: app-toast ═══ (byte-identical across generator/dashboard/flash_cards/dictionary/letter_learner/name_tags — copy verbatim; called from the .ivrit engine restore path) ═══ */
@@ -9750,13 +9584,11 @@ else ivritInit();
   function presetClassName(presetName) {
     const snap = presets[presetName];
     if (!snap) return '';
-    if (typeof snap.activeRosterName === 'string' && snap.activeRosterName) {
-      const hit = Object.keys(settings.rosters || {}).some(id => settings.rosters[id] && settings.rosters[id].name === snap.activeRosterName);
-      return hit ? snap.activeRosterName : '';
-    }
-    if (!snap.activeRosterId) return '';
-    const c = settings.rosters && settings.rosters[snap.activeRosterId];
-    return c ? c.name : '';
+    const now = classesNow();
+    const byId = [snap.activeClassId, snap.activeRosterId].map(id => (typeof id === 'string' ? now.byId.get(id) : null)).find(Boolean);
+    if (byId) return byId.name;
+    if (typeof snap.activeRosterName === 'string' && snap.activeRosterName) return now.all.some(c => c.name === snap.activeRosterName) ? snap.activeRosterName : '';
+    return '';
   }
 
   /* ── Weekly grid: per-preset class colors ── */
@@ -12640,17 +12472,12 @@ async function onUploadEngFontPick(input){
   // mark. So this stores what is typed and touches nothing else; the box, the session lists and
   // the picker wait for the blur commit as before (the picker ignores a picked name that is not in
   // the roster). Both callers save to storage right after.
-  function flushRosterIfTyping() {
-    const ta = document.getElementById('pickerRoster');
-    if (!ta || document.activeElement !== ta) return;
-    curClass().names = parseRoster(ta.value, rosterKeep());
-  }
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') acquireWakeLock();
     // Chrome exempts an AudioContext from background throttling but clamps setInterval to ~1/min, so a
     // hidden tab would keep ringing — roughly once a minute, from a window with no dismiss surface in
     // sight. Silence it; the alert stays on screen for whenever the teacher comes back to this tab.
-    else { timerStopRinging(); flushRosterIfTyping(); saveSettingsIfChanged(); }   // see the pagehide note below
+    else { timerStopRinging(); saveSettingsIfChanged(); }   // see the pagehide note below
   });
   // Refresh/close mid-edit must not eat the text: commit the in-place edit on the way out.
   // pagehide (not beforeunload) so bfcache stays eligible; localStorage writes are sync-safe here.
@@ -12660,7 +12487,7 @@ async function onUploadEngFontPick(input){
   // because pagehide alone is unreliable on mobile. Snapshotting here is safe mid-edit: the editable
   // is #dashTextDisplay while saveSettingsToStorage reads the untouched #dashEditor source. Both write only
   // what this tab changed (saveSettingsIfChanged): an older tab closing must not put back its copy.
-  window.addEventListener('pagehide', () => { if (_activeEditable) exitInPlaceEdit(true); flushRosterIfTyping(); saveSettingsIfChanged(); });
+  window.addEventListener('pagehide', () => { if (_activeEditable) exitInPlaceEdit(true); saveSettingsIfChanged(); });
   // Reveal the strip on any pointer activity while fullscreen; keep it up while hovered
   const _fsReveal = () => { if (document.body.classList.contains('fullscreen')) showFsStrip(); };
   document.addEventListener('pointermove', _fsReveal, { passive: true });
@@ -12859,7 +12686,6 @@ async function onUploadEngFontPick(input){
       try { buildToolbar(document.getElementById('intermissionToolbar')); } catch (e) {}
       try { buildToolbar(document.getElementById('inplaceToolbarCmds')); } catch (e) {}
       try { if (bpeOpen()) { renderBpeCards(); renderBpeMaster(); bpeRefreshNote(); } } catch (e) {}   // re-label the open bulk editor from its draft (strings only; the cards carry their toolbars)
-      try { if (_rosterKbd) _rosterKbd.applyI18n(); } catch (e) {}   // key names/tips are shared.kbd.* strings
       try { updateColTitles(); } catch (e) {}
       try { updateDateTimeDisplay(); } catch (e) {}
       try { renderDaysList(); } catch (e) {}
@@ -12884,6 +12710,8 @@ async function onUploadEngFontPick(input){
     }
     if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); }
     settingsSeenNow();   // what this tab holds now is what it read: a hide or close with no change since writes nothing
+    // The shared classes moved (the roster editor, another tab, the account): the picker and the switchers follow.
+    if (window.IvritClasses) { IvritClasses.onChange(onClassesChanged); IvritClasses.watchScrub('dash', 'Dashboard', scrubOldRosters); }
     initCloudSaves();
   });
 

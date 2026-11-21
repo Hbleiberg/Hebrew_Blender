@@ -333,34 +333,23 @@ dashboard.picker.all_absent,Everyone is marked absent today.,כולם מסומנ
 dashboard.picker.chip_absent,Absent today — tap to include,נעדר היום — הקישו כדי לכלול,chip tooltip (absent),
 dashboard.picker.chip_present,Tap to mark absent for this session,הקישו כדי לסמן כנעדר לשיעור זה,chip tooltip (present),
 dashboard.picker.class_label,Class,כיתה,settings label,
-dashboard.picker.class_limit,You can have up to {max} classes. Delete one to add another.,הגעתם למגבלה של {max} כיתות. מחקו אחת כדי להוסיף נוספת.,student picker class-limit note (was a hardcoded template literal),do not translate {…}
-dashboard.picker.from_nt_open,Make a class from a Name Tags list,יצירת כיתה מרשימה של תגי השם,Student picker settings: button (shown only on a device that has Name Tags lists),svg-icon-in-markup
-dashboard.picker.from_nt_list,Name Tags list,רשימת תגי שם,Label of the Name Tags list menu,
-dashboard.picker.from_nt_use,Names to use:,השמות שישמשו:,Label of the English / Hebrew / Both radios,
-dashboard.picker.from_nt_en,English,אנגלית,Radio,
-dashboard.picker.from_nt_he,Hebrew,עברית,Radio,
-dashboard.picker.from_nt_both,Both,שניהם,"Radio: ""David / דָּוִד""",
-dashboard.picker.from_nt_go,Make the class,יצירת הכיתה,Button,
-dashboard.picker.from_nt_cancel,Cancel,ביטול,Button,
-dashboard.picker.from_nt_note,A one-time copy: later changes to either list stay separate.,העתקה חד־פעמית: שינויים מאוחרים יותר באחת הרשימות לא יעברו לשנייה.,Note under the buttons,
-dashboard.picker.from_nt_done.one,"Made the class ""{name}"" with {count} name.","נוצרה הכיתה ""{name}"" עם שם אחד.",Class note after making a class from a Name Tags list,plural; has {name}
-dashboard.picker.from_nt_done.other,"Made the class ""{name}"" with {count} names.","נוצרה הכיתה ""{name}"" עם {count} שמות.",Class note after making a class from a Name Tags list,plural; has {name}
+dashboard.picker.edit_classes,Edit classes…,עריכת הכיתות…,Student picker: button that opens the shared roster editor (settings drawer and the empty card),svg-icon-in-markup
+dashboard.picker.names_shown,Names shown,השמות שמוצגים,Student picker settings: label of the menu choosing which of a student's names the picker draws,
+dashboard.picker.names_both,Hebrew and English,עברית ואנגלית,Names shown: option,
+dashboard.picker.names_he,Hebrew,עברית,Names shown: option,
+dashboard.picker.names_en,English,אנגלית,Names shown: option,
+dashboard.picker.no_class,No class yet.,עדיין אין כיתה.,Student picker settings: the count line when there is no class,
+dashboard.picker.empty_no_class,No class yet. Add one to type or import your students.,עדיין אין כיתה. הוסיפו כיתה כדי להקליד או לייבא את התלמידים.,Student picker card: empty state when there is no class at all,
 dashboard.picker.open_nametags,Open Name Tags ↗,פתיחת תגי השם ↗,"Student picker settings: link (new tab) to name_tags.html, opening its From the Classroom Dashboard box on the class that is live here; shown only on a device that has Name Tags lists",new-tab arrow
 dashboard.picker.open_nametags_aria,Open Name Tags (opens in a new tab),פתיחת תגי השם (נפתח בכרטיסייה חדשה),"aria-label of the dashboard.picker.open_nametags link: its visible words without the ↗, then that it opens a new tab (the arrow is not read)",new-tab arrow
-dashboard.picker.from_nt_done_capped,"Made the class ""{name}"" with the first {max} names (a class holds up to {max}).","נוצרה הכיתה ""{name}"" עם {max} השמות הראשונים (כיתה יכולה להכיל עד {max}).",Class note when the list had more names than a class holds,has {name}
 dashboard.picker.class_option,{name} ({count}),{name} ({count}),class-switcher option,mixed UI+content — do not translate {…}
 dashboard.picker.close,Close,סגור,pick overlay close button,
 dashboard.picker.close_aria,Close,סגור,projector overlay close aria,aria-label only
-dashboard.picker.cloud_switched,Now showing {name} — the classes from your account are in the class list.,עכשיו מוצגת {name} — הכיתות מהחשבון שלכם נמצאות ברשימת הכיתות.,student picker note + toast after a cloud sync switched this device to a class from the account,REVIEW: Hebrew draft; mixed UI+content — do not translate {…}
-dashboard.picker.merged_same_name,"Merged your ""{name}"" with the one from your account.","""{name}"" שלכם מוזגה עם זו שבחשבון.",Toast after a class list from the account landed and a same-named class this device made (never synced) was folded into it,dashboard; picker; template
 dashboard.picker.col_title,Student Picker,בורר תלמידים,live-card column title,RTL / hebDisplay; Hebrew fork מִי הַתּוֹר?
 dashboard.picker.default_class_name,My class,הכיתה שלי,default class name,
-dashboard.picker.delete_class_confirm,"Delete class ""{name}""? Its roster and today's picks will be removed.","למחוק את הכיתה ""{name}""? רשימת התלמידים שלה והבחירות של היום יימחקו.",confirm dialog,mixed UI+content — do not translate {…}
-dashboard.picker.delete_class_confirm_cloud,"Delete class ""{name}""? Its roster and today's picks are removed here and from your account, on every device.","למחוק את הכיתה ""{name}""? הרשימה והבחירות של היום יוסרו כאן ומהחשבון שלכם, בכל מכשיר.",Confirm before deleting a class while signed in,has {name}
-dashboard.picker.delete_class_title,Delete class,מחק כיתה,icon button title,
-dashboard.picker.empty_card,"Add students to this class in Settings → Student Picker, or pick a different class from the header.","הוסיפו תלמידים לכיתה זו בהגדרות ← בורר תלמידים, או בחרו כיתה אחרת מהכותרת.",empty state (sidebar card),
-dashboard.picker.empty_groups,Add a class roster in Settings → Student Picker.,הוסיפו רשימת תלמידים לכיתה בהגדרות ← בורר תלמידים.,groups overlay empty state,
-dashboard.picker.empty_pick,Add students to this class in Settings → Student Picker.,הוסיפו תלמידים לכיתה זו בהגדרות ← בורר תלמידים.,pick overlay empty state,
+dashboard.picker.empty_card,"This class has no students yet. Add them with Edit classes, or pick a different class from the header.","בכיתה הזאת עדיין אין תלמידים. הוסיפו אותם ב”עריכת הכיתות“, או בחרו כיתה אחרת מהכותרת.",empty state (sidebar card),
+dashboard.picker.empty_groups,This class has no students yet. Add them in Settings → Student Picker → Edit classes.,בכיתה הזאת עדיין אין תלמידים. הוסיפו אותם בהגדרות ← בורר תלמידים ← עריכת הכיתות.,groups overlay empty state,
+dashboard.picker.empty_pick,This class has no students yet. Add them in Settings → Student Picker → Edit classes.,בכיתה הזאת עדיין אין תלמידים. הוסיפו אותם בהגדרות ← בורר תלמידים ← עריכת הכיתות.,pick overlay empty state,
 dashboard.picker.everyone_here,✅ Everyone's here,✅ כולם כאן,student picker — clears this class's absence marks (shown only while someone is marked absent),leading-emoji
 dashboard.picker.everyone_here_title,Clear today's absence marks for this class,ניקוי סימוני ההיעדרות של היום לכיתה זו,button title,
 dashboard.picker.fair_cycle,Don't repeat until everyone's been picked,אל תחזור עד שכולם נבחרו,settings label,
@@ -373,22 +362,15 @@ dashboard.picker.group_of_n,Groups of N,קבוצות של N,radio option,
 dashboard.picker.group_size_label,Group size (N),גודל קבוצה (N),settings label (size mode),
 dashboard.picker.make_groups,Make Groups,חלוקה לקבוצות,sidebar picker button,leading-emoji
 dashboard.picker.n_groups,N groups,N קבוצות,radio option,
-dashboard.picker.new_class_prompt,New class name:,שם כיתה חדשה:,prompt,
-dashboard.picker.new_class_title,New class,כיתה חדשה,icon button title,
 dashboard.picker.new_round,🔄 New round,🔄 סבב חדש,fair-cycle reset button + pick note,leading-emoji
 dashboard.picker.overlay_aria,Student picker,בורר תלמידים,projector overlay aria,aria-label only
 dashboard.picker.pick_again,🎲 Pick Again,🎲 הגרל שוב,pick result button,leading-emoji
 dashboard.picker.pick_one,Pick One,הגרל אחד,sidebar picker button,leading-emoji
 dashboard.picker.progress,Picked {done} / {total},נבחרו {done} / {total},fair-cycle progress,
-dashboard.picker.rename_class_prompt,Rename class:,שנה שם כיתה:,prompt,
-dashboard.picker.rename_class_title,Rename class,שנה שם כיתה,icon button title,
-dashboard.picker.roster_count.one,{count} name,{count} שם,roster name count,plural
-dashboard.picker.roster_count.other,{count} names,{count} שמות,roster name count,plural
-dashboard.picker.roster_count_max_suffix,(max {max}),(מקסימום {max}),appended to roster count at cap,
-dashboard.picker.roster_hint,"Presets and Schedule Sync remember which class is active — rosters themselves are shared, so editing a list updates it everywhere.","תבניות וסנכרון מערכת שעות זוכרים איזו כיתה פעילה — רשימות התלמידים עצמן משותפות, כך שעריכת רשימה מעדכנת אותה בכל מקום.",settings hint,
-dashboard.picker.roster_label,Roster — one name per line,רשימת תלמידים — שם אחד בכל שורה,settings label (default),
-dashboard.picker.roster_label_named,Roster for {name} — one name per line,רשימת תלמידים עבור {name} — שם אחד בכל שורה,settings label (active class),mixed UI+content — do not translate {…}
-dashboard.picker.roster_placeholder,e.g. Ava\nNoah\nדָּוִד\nמַיָה,למשל Ava\nNoah\nדָּוִד\nמַיָה,roster textarea placeholder,contains \n; mixed UI+content — do not translate {…}
+dashboard.picker.roster_count.one,{count} student,תלמיד אחד,roster name count,plural
+dashboard.picker.roster_count.other,{count} students,{count} תלמידים,roster name count,plural
+dashboard.picker.roster_count_max_suffix,(the picker shows the first {max}),(הבורר מציג את {max} הראשונים),appended to roster count at cap,
+dashboard.picker.roster_hint,"Presets and Schedule Sync remember which class is active. The classes themselves are shared with Name Tags and Flash Cards, so editing one updates it everywhere.","תבניות וסנכרון מערכת שעות זוכרים איזו כיתה פעילה. הכיתות עצמן משותפות עם תגי השם וכרטיסי הזיכרון, כך שעריכה של כיתה מעדכנת אותה בכל מקום.",settings hint,
 dashboard.picker.show_fullscreen,Show in fullscreen mode,הצג במצב מסך מלא,settings label,
 dashboard.picker.show_panel,Show Student Picker panel,הצג פאנל בורר תלמידים,settings label,
 dashboard.picker.switch_class,Switch class,החלף כיתה,class switcher (title+aria),
