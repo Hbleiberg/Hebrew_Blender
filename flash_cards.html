@@ -7149,7 +7149,7 @@ function _reportHTML(name) {
 
   let html = `<div class="fcr-head">
     <h1 class="fcr-title">${esc(I18n.t('flashcards.report.title'))}</h1>
-    <p class="fcr-name">${esc(name)}</p>
+    <p class="fcr-name"><bdi>${esc(name)}</bdi></p>
     <div class="fcr-meta">
       <span class="bidi-isolate">${esc(I18n.t('flashcards.report.generated', { date: fmtDate(new Date().toISOString()) }))}</span>`;
   if (stamps.length) {
