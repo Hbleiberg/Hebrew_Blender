@@ -1432,10 +1432,10 @@ const barObs = 'ResizeObserver' in window ? new ResizeObserver(() => {
 if (barObs) barObs.observe(document.getElementById('atBar'));
 
 /* ── the sign table: a sign's name (or anywhere on its row) jumps to its row of the melody table ── */
-function jumpToMark(k) {
+function jumpToMark(k, instant) {   // instant: a layout change keeps its place without the long glide a sign's link takes
   const t = document.getElementById('atlas-' + k);
   if (!t) return;
-  t.scrollIntoView({ block: t.offsetHeight > innerHeight / 2 ? 'start' : 'center' });   // a Stacked card is taller than the window: its heading first
+  t.scrollIntoView({ block: t.offsetHeight > innerHeight / 2 ? 'start' : 'center', behavior: instant ? 'instant' : 'auto' });   // a Stacked card is taller than the window: its heading first
   t.focus({ preventScroll: true });
   t.classList.remove('at-flash'); void t.offsetWidth; t.classList.add('at-flash');
 }
@@ -1459,8 +1459,38 @@ document.getElementById('atKey').addEventListener('change', (e) => { settings.ke
 document.getElementById('atNames').addEventListener('change', (e) => { settings.names = e.target.checked; saveSettings(); singStop(); renderStaffs(); });
 document.getElementById('atTable').addEventListener('keydown', roveKey);
 document.getElementById('atTable').addEventListener('focusin', (e) => { const b = e.target.closest('.at-sing'); const row = b && b.closest('tr, .at-card'); if (row && b.tabIndex !== 0) roveTo(row, b); if (b) clearSideways(b); });   // a click makes that figure the row's stop
-document.getElementById('atViewGrid').addEventListener('click', () => { settings.view = 'grid'; saveSettings(); singStop(); buildAtlas(); });
-document.getElementById('atViewCards').addEventListener('click', () => { settings.view = 'cards'; saveSettings(); singStop(); buildAtlas(); });
+// The sign on screen, so a layout change keeps it there (a Grid scrolled to zakef katon became Stacked at sof pasuk,
+// its card 14,000px below): the sign the focus was last in (a sign's link, a figure played) while any of it shows,
+// else the first row or card more than half in view under the bar, and in the Grid under its heading row too (the
+// heading cells are the sticky part). The first sign, or a table out of view, gives null: the new layout starts where
+// it stands.
+let _signFocus = null;
+document.getElementById('atTable').addEventListener('focusin', (e) => { const r = e.target.closest('[id^="atlas-"]'); if (r) _signFocus = r.id.slice(6); });
+function signInView() {
+  const host = document.getElementById('atTable');
+  let top = document.getElementById('atBar').getBoundingClientRect().bottom, bottom = innerHeight;
+  if (host.classList.contains('at-grid')) {
+    const r = host.getBoundingClientRect(), th = host.querySelector('thead th');
+    top = Math.max(top, r.top, th ? th.getBoundingClientRect().bottom : r.top); bottom = Math.min(bottom, r.bottom);
+  }
+  if (bottom - top < 40) return null;
+  const items = host.querySelectorAll('[id^="atlas-"]');
+  const f = _signFocus && document.getElementById('atlas-' + _signFocus);
+  if (f) { const r = f.getBoundingClientRect(); if (r.bottom > top && r.top < bottom) return f === items[0] ? null : _signFocus; }
+  for (let i = 0; i < items.length; i++) {
+    const r = items[i].getBoundingClientRect();
+    if (r.top >= bottom) return null;
+    if (r.bottom - top > Math.min(r.height, bottom - top) / 2) return i ? items[i].id.slice(6) : null;
+  }
+  return null;
+}
+function setView(v) {
+  const k = signInView();
+  settings.view = v; saveSettings(); singStop(); buildAtlas();
+  if (k) jumpToMark(k, true);
+}
+document.getElementById('atViewGrid').addEventListener('click', () => setView('grid'));
+document.getElementById('atViewCards').addEventListener('click', () => setView('cards'));
 document.getElementById('atMel').addEventListener('change', (e) => selectMel(e.target.value, false));
 
 /* ── rendering ── */

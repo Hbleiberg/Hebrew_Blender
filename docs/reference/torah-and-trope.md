@@ -1174,6 +1174,11 @@ traditions were imported from, and was rebuilt on the suite's own pieces, so it 
   row's height and its sign column's width as its own scroll padding, written inline on the box by a
   `ResizeObserver` (nothing inherits it). Sideways the browser's focus scroll leaves a partly seen control where it
   is, so `clearSideways` brings a figure focused by keyboard whole into the clear part (a pointer press stays put).
+  **A layout change keeps the sign on screen** (`signInView`): the sign the focus was last in (a sign's link, a figure
+  played) while any of it shows, else the first row or card more than half in view under the bar and the Grid's
+  heading cells (the sticky part — the `thead` itself scrolls away), is shown in the new layout at once and focused, as
+  a sign's link does; with the first sign on screen, or the table out of view, nothing moves and the focus stays on the
+  button.
 - **Paper.** Printing from the Grid prints the Stacked cards (`beforeprint` builds them, never stored; `afterprint`
   gives the Grid back where it was scrolled), in the light palette whatever the theme, with the rail, the chips, the
   Melody select and the Sing buttons off. The bar prints only its Key label and choice, the select as plain text: the
