@@ -119,18 +119,17 @@ resolve it with no page code; an empty record is never sent (`skipUpload`), and 
 - **One row per class**, named by the class id, labelled by its name.
 - **A new `saves.tool` value needs a migration** (accounts rule 7):
   `db/migrations/0013_saves_tool_classes.sql`, the same one-constraint swap as `0004`, `0005` and `0007`.
-  It is in this pull request with `Live? = no` and **is not applied**. It must be applied **before** the
-  feature reaches `main`: until then the server answers every class upload with `23514`, the status line can
-  only say "limit of saved items", and the rows never get a sync memory.
+  It is **applied** (`db/README.md` has the read-back). A project without it answers every class upload with
+  `23514`, and the status line can only say "limit of saved items".
 - **Every roster page** adds `alsoPull: ['Classes']`, `merges: { class: IvritClasses.mergeClass }` and an
   `onLocalChanged` branch for `class` / `retired` that tells the module to re-read. The hub passes the merge
   too, so a conflict it meets is resolved there rather than left.
 - **Changes to `js/ivrit-saves.js`:** `TOOLS`, `TOOL_NAMES` and the two rows — nothing else. No hook was
   added for a tool reached through `alsoPull`: the editor redraws around whatever holds the focus, keeping
   what is typed but not yet saved, so a class landing from another tab or device needs no waiting.
-- **While `0013` is not applied** the server refuses every `Classes` insert with `23514`. The class stays
-  whole on the device and goes up by itself at the first load after the migration (proved by the golden
-  replay's step 12e).
+- **Where the server refuses the tool** (a project without `0013`: every `Classes` insert answers `23514`)
+  the class stays whole on the device and goes up by itself at the first load after it is accepted (the
+  golden replay's step 12e).
 
 ### `mergeClass(a, b)` — pure, lossless, never a dialog
 
@@ -512,7 +511,7 @@ copies. They are unchanged.
 | Removing a deleted name from the old account rows | On the owning page's next open — the Dashboard for a roster, Name Tags for a list (§7.7). Deleting a class can leave up to three recovery-bin copies on another device (the class, its old roster, its old list) |
 | Joining a roster and a list automatically | Exact one-for-one match only (§7.4); anything else is a notice and a confirmed *Merge into…* |
 | Names on the Dashboard | A *Names shown* setting: Hebrew, English or both; the default is both, Hebrew first (§6.1) |
-| Migration `0013` | Applied through the Supabase connector once Phase 1 is pushed and green, on the maintainer's word at that moment; read back afterwards (§4) |
+| Migration `0013` | Applied through the Supabase connector once Phase 1 was pushed and green, on the maintainer's word, and read back (§4) |
 
 ## 13. Phases
 
