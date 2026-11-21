@@ -246,7 +246,7 @@ const TOOLS_OF = {
   'index.html': ALL_TOOLS, 'trope_tutor.html': ['TropeTutor', 'Suite'], 'torah_trainer.html': ['TorahTrainer', 'Suite'],
   'flash_cards.html': ['FlashCards', 'Suite', 'Dictionary'], 'hebrew_blend_generator.html': ['Worksheet', 'Suite', 'Dictionary'],
   'hebrew_dictionary.html': ['Dictionary', 'Suite'], 'classroom_dashboard.html': ['Dashboard', 'Suite'], 'letter_learner.html': ['LetterLearner', 'Suite'],
-  'parsha_emojis.html': ['EmojiTorah', 'Suite'], 'name_tags.html': ['NameTags', 'Suite']
+  'parsha_emojis.html': ['EmojiTorah', 'Suite'], 'name_tags.html': ['NameTags', 'Suite', 'Classes']
 };
 // Waits until the module reads settled for those tools — every hydration fired, nothing dirty, no queue busy,
 // no card pending — and stays so through a page writer's own debounce; opts.until (a predicate on the fake's

@@ -152,7 +152,7 @@ Printable Hebrew name tags from a class list: each Hebrew name with a transliter
 
 ### How to make Hebrew name tags for a class (about 5 minutes)
 
-1. **Make a class list** — Type each student's Hebrew and English names, or bring them in from a CSV file or the Classroom Dashboard.
+1. **Make a class list** — Type each student's Hebrew and English names, or bring them in from a CSV file. A class from the Classroom Dashboard is already here.
 2. **Choose the transliteration** — Pick an automatic Modern or Ashkenazi transliteration, or type your own for any student.
 3. **Design the tags** — Pick a Hebrew font, bubble letters, a size and color for each line, a border and a background.
 4. **Choose the paper** — Choose plain paper and how many tags a page, an Avery label sheet, or desk tent cards.
@@ -174,7 +174,7 @@ Plain Letter or A4 paper with cut lines, 1 to 10 tags a page; Avery label sheets
 
 **Can I bring in my class list?**
 
-Yes. Open a CSV file or paste rows from a spreadsheet: the columns are found by their English or Hebrew headers. A class list from the Hebrew Classroom Dashboard can be brought in too.
+Yes. Open a CSV file or paste rows from a spreadsheet: the columns are found by their English or Hebrew headers. A class made in the Hebrew Classroom Dashboard is already here: the two tools share their class lists.
 
 **Is the Hebrew name tag maker free?**
 

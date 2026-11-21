@@ -1,7 +1,7 @@
 # Name Tags (`name_tags.html`)
 
 Printable student name tags from a class list. The page is **public**: the home page's Classroom Dashboard card
-links it (its second button, `home.card.dashboard.cta_nametags` — the two tools copy class lists to each other, below),
+links it (its second button, `home.card.dashboard.cta_nametags` — the two tools show the same class lists, below),
 it is `index, follow` with its own social tags (the shared `og-card.png`) and JSON-LD, and it is in `sitemap.xml`,
 `llms*.txt`, `sw.js` `CORE_ASSETS` and the 404 page's tool list. It is a full tool page: CSP, i18n (`nametags.*`),
 the account chip and sync, `.ivrit` files, the AllTools registration of its keys, a tour, and the backend smokes.
@@ -19,34 +19,44 @@ the account chip and sync, `.ivrit` files, the AllTools registration of its keys
 
 | Key | Synced as | What it holds |
 |---|---|---|
-| `hebrewNameTags_lists` | `NameTags` / `list`, map/item — one row per list, named by the list | `{ "<list name>": { v: 1, rows: [{ he, en, tr?, ex? }], extra } }`. `tr` is stored only when typed (the automatic transliteration is computed at render and never stored, so it cannot differ between devices); `ex` overrides the list's `extra` for one student |
+| `ivritSuite_classes` | `Classes` / `class` (one row per class) and `retired` — the suite's shared classes | The class lists: written only by `js/ivrit-classes.js` (`docs/reference/class-roster.md`), shared with the Classroom Dashboard and Flash Cards. A student is `{ id, he, en, tr?, ex? }`; `tr` is stored only when typed (the automatic transliteration is computed at render and never stored, so it cannot differ between devices); `ex` overrides the class's `extra` for one student |
+| `hebrewNameTags_lists` | `NameTags` / `list`, map/item — still registered, **no longer written by this page** | The lists as they were before the shared classes (`{ "<list name>": { v: 1, rows, extra } }`): read by `js/ivrit-classes.js`, which shows each as a class under an id computed from its name, and never rewritten |
 | `hebrewNameTags_settings` | `NameTags` / `settings`, single/assign, no `omit` | The design and print options (`NT_DEFAULTS` is the field list and order) |
-| `hebrewNameTags_activeList` | never (per device, erase-only) | Which list this device last had open |
+| `hebrewNameTags_activeClass` | never (per device, erase-only) | Which class (its id) this device last had open. The older `hebrewNameTags_activeList` (a list name) is read once, to find that list's class |
 | `hebrewNameTags_panels` | never (AllTools only) | The shared panel-collapse map: the sidebar panels and the class list's fold (`nametags.list.heading`) |
 | `hebrewNameTags_sidebarW`, `hebrewNameTags_tourSeen` | never (erase-only) | The sidebar width and the tour's pulse flag |
 
-- **Nothing is written on load.** A first visit shows an unsaved list named by `nametags.list.default_name`; it is
-  written the moment the teacher types into it, so no seed ever reaches an account.
-- **Lists:** only the open list is held in memory (`ntCur`), edited in place so unknown fields (a newer build's)
-  survive; every save re-reads the store and writes the open list into it (`ntSaveList`), so a list another tab or
-  device sent is never overwritten. A rename rebuilds the store with the new key in the old place (a rename is a
-  delete and an add, one account row per name) and refuses a taken name; Duplicate uses `ftDuplicateName`'s
-  "X" → "X 1" rule; the list menu is sorted by name (the account does not keep key order).
+- **Nothing is written on load.** A first visit shows an unsaved class named by `nametags.list.default_name`; it is
+  made (`ntEnsureClass`) the moment the teacher types into it, so no seed ever reaches an account. A class that is
+  still only a view of an old list or Dashboard roster is copied into the shared store by its first edit.
+- **Classes:** only the open class is held in memory — `ntCur = { id, name, val: { rows, extra }, stored }`, a view of
+  `IvritClasses.get(id)` built by `ntAdoptClass`, which **keeps a row object for as long as its student is in the
+  class** (the Print boxes and a focused cell survive a re-read). Every change is one of the shared file's operations
+  through `ntOp` (`setStudentField` on each keystroke, `addStudent` for the blank row, `removeStudent` /
+  `restoreStudent` + `moveStudent` for Remove and its Undo, `moveStudent`, `setClassExtra`, `renameClass`, `addClass`,
+  `duplicateClass`, `deleteClass`); each re-reads the store, so a class another tab or device sent is never overwritten.
+  `_ntSelf` marks the page's own operation: the page has already drawn its change, so `IvritClasses.onChange` re-reads
+  (`ntListsAdopt`) only for a change from elsewhere — another tab, the account, the roster editor. A rename keeps the
+  class's id and its one account row, and refuses a name another class has; Duplicate uses the suite's "X" → "X 1" rule;
+  the menu follows the shared classes' order.
+- **Edit classes** (`#ntClassesEdit`) opens the shared roster editor on the open class, handing it the page's
+  automatic transliteration (`host.autoTranslit`) and the shared on-screen Hebrew keyboard (`host.mountKeyboard`).
 - **Settings:** the Parsha Emojis pattern — the stored object (`ntSetRaw`) is edited in place and `ntSet` is its
   normalized view; sliders and colour wells update the look on `input` and write on `change` (the sliders are 24px
   tall, the suite's slider floor — a native range is ~16px).
-- **`ntFlush`** (the module's `flush`) only applies the two-tab rule to both keys: a store that moved under this tab
-  is adopted. `onLocalChanged('settings')` adopts and writes back; `onLocalChanged('list')` re-reads and re-renders,
-  keeping the focused cell and caret, and never writes back.
-- **Limits:** 30 lists, 200 students a list, 120 characters a field or list name, a CSV of 1 MB; each refusal is an
-  inline note, never an `alert()`.
+- **`ntFlush`** (the module's `flush`) only applies the two-tab rule to the settings key: a store that moved under this
+  tab is adopted. `onLocalChanged('settings')` adopts and writes back; a landed `class`, `retired` or old `list` row
+  calls `IvritClasses.landed()`, which re-reads and re-renders, keeping the focused cell and caret, and never writes
+  back. The page attaches with `alsoPull: ['Classes']` and `merges.class`.
+- **Limits:** the shared classes' — 40 classes, 200 students a class, 120 characters a field or class name — and a CSV
+  of 1 MB; each refusal is an inline note, never an `alert()`.
 - **Row order is the `rows` array**, so the save, the sync, the CSV, the `.ivrit` file and the printed sheets all follow
   it (a tag's pastel follows its place). Each row ends in a grip (`[data-move]`): a drag uses pointer events, never
   HTML5 drag-and-drop (which does not fire on touch), with the pointer captured on the `<tbody>` (it never moves, so
   the capture survives the rows being reordered under it) and `touch-action:none` on the grip; the carried `<tr>`
   moves live, the page scrolls near the window's edge but never past the table's ends, and the drop commits through
   `ntMoveRow` (which also keeps the on-screen keyboard on the same student and drops a remove-Undo from the old
-  order). A focused grip moves its row with ↑/↓; Escape, a cancelled pointer or a re-render mid-drag (a sync's
+  order), saved as one `moveStudent`. A focused grip moves its row with ↑/↓; Escape, a cancelled pointer or a re-render mid-drag (a sync's
   `onLocalChanged('list')`) puts the order back.
 - **The table is rebuilt only when its rows change.** A change to how the rows read — the transliteration's mode or
   style, the extra column, the header's Print box — updates each row in place (`ntRefreshTable`, which finds a row by
@@ -122,7 +132,7 @@ transliterations still print.
   5163 (10). Sizes, first-label offsets and pitches are the gLabels template database's; measured from a printed PDF
   the label corners land within the pixel and corner-radius tolerance. *Print the label outlines too* adds the
   label shapes to the print (a test page on plain paper).
-- **Print only the students chosen.** Each row has a Print box (ticked by default; the header's box ticks or clears every row and reads mixed while some are out): an unticked student is left out of the preview and the print (`ntPrintableRows`), and the preview's status line says "Printing n of m". With every student unticked the preview shows the sample with no count beside it, and the note — and a Print press — says no student is ticked (`nametags.preview.print_none`), never an empty list's "type a name" / "Add a student" (those stay the empty list's). A ticked student whose tag would carry no line under *On each tag* (an English name alone with the English name off, an extra line alone with the extra line off) gets no tag, and the same note counts them (`nametags.preview.no_line`); "of m" counts the whole list (`ntPrintWhy`). The choice is held on the row object in memory (`_ntSkip`, a WeakSet) for this session only — it is deliberately not a setting, never saved, synced or carried in a file, so a reload prints everyone again. It follows its list when `ntLoadCurrent` reads the rows again (a list or design change from another tab or the account, a restore, another list opened and this one back): a row whose four fields are unchanged keeps it (`_ntSkipMem`, held only while that list is not the open one), and a changed or new row prints, so a different student is never left out.
+- **Print only the students chosen.** Each row has a Print box (ticked by default; the header's box ticks or clears every row and reads mixed while some are out): an unticked student is left out of the preview and the print (`ntPrintableRows`), and the preview's status line says "Printing n of m". With every student unticked the preview shows the sample with no count beside it, and the note — and a Print press — says no student is ticked (`nametags.preview.print_none`), never an empty list's "type a name" / "Add a student" (those stay the empty list's). A ticked student whose tag would carry no line under *On each tag* (an English name alone with the English name off, an extra line alone with the extra line off) gets no tag, and the same note counts them (`nametags.preview.no_line`); "of m" counts the whole list (`ntPrintWhy`). The choice is held on the row object in memory (`_ntSkip`, a WeakSet) for this session only — it is deliberately not a setting, never saved, synced or carried in a file, so a reload prints everyone again. It follows its student: a row object lives as long as its student does, so a re-read of the class (a change from another tab or the account, a restore, a corrected name) keeps it, and while another class is open it is held by student id (`_ntSkipMem`); a new student prints.
 - **The preview is the print.** Each sheet is drawn at its real size in a frame scaled by `--nt-k`; print CSS drops
   the scale and everything around the sheets, and `#ntPageSize` holds the `@page` rule `ntPageStyle` writes on every
   render. On paper each sheet's box is a hair (0.02in) shorter than the printable area so rounding never adds a blank
@@ -140,35 +150,20 @@ transliterations still print.
   screen pixels sit on the frame's own raster alignment (glyph edges differ from an uncontained sheet by a sub-pixel
   phase; the markup, the print and the geometry do not).
 
-## From the Classroom Dashboard, and back
+## The Classroom Dashboard's classes
 
-Both are **one-time copies**; nothing links a list to its source afterwards.
-- **Dashboard → Name Tags:** *From the Classroom Dashboard* lists the dashboard's classes that have names
-  (`hebrewDashboard_settings.rosters`, as this device holds them — signed in, the note says the account's classes
-  arrive when the dashboard opens on this device; the page does not `alsoPull` the Dashboard, whose `settings` kind
-  would reach this page's `onLocalChanged`). A roster line is one student typed any way: `ntSplitName` puts its
-  words with Hebrew letters in the Hebrew name and the rest in the English name, dropping the separators between
-  them (`/`, `|`, `·`, brackets, a free-standing dash), so "David / דָּוִד", "דוד כהן David Cohen" and
-  "בַּת־שֶׁבַע - Batsheva" each fill both; a hyphenated or maqaf name stays whole. The rows then take the CSV import's
-  path (Add / New list, named after the class / Replace), so copying a class into a list that already has it adds
-  only its new students (*Add matches by name*, below). The menu's values are the dashboard's class ids
-  (`ntDashClasses()` keeps them; `ntFillDash(pickId)` rebuilds the menu and note, keeping the chosen class), and the
-  box re-reads them while open when the dashboard's `hebrewDashboard_settings` changes in another tab (the storage
-  listener's `ntDashRefresh()`) and on a language switch.
-- **The way between the two pages:** the box's *Open the Classroom Dashboard's class lists ↗* (`#ntDashLink`, a new
-  tab) opens `classroom_dashboard.html?settings=picker` — Settings on the Student Picker, where classes are made — so a
-  class made there is in the open box on return. The dashboard's *Open Name Tags ↗* (`#pickerNtLink`, beside its
-  Name Tags button, so only on a device that holds Name Tags lists) opens **`?from=dashboard`**: `ntFromDashboard()`
-  (after `I18n.ready`) opens this box on the class that is live on the dashboard (`activeRosterId`) with the menu
-  focused, unfolding the class list for the visit without rewriting its remembered fold, and drops the param with
-  `history.replaceState` (the others and the hash stay), so a reload does not open the box again.
-- **Name Tags → Dashboard:** the dashboard's *Make a class from a Name Tags list* (`docs/reference/dashboard.md` →
-  Student Picker), shown only on a device that holds Name Tags lists.
+The two pages show **the same classes** (the shared class roster), so nothing is copied between them: a class made on
+the Dashboard is in this page's menu, and a name corrected here is corrected there. The Dashboard's *Open Name Tags ↗*
+opens **`?from=dashboard`**: `ntFromDashboard()` (after `I18n.ready`) opens the class that is live on the dashboard
+(`activeRosterId`), unfolding the class list for the visit without rewriting its remembered fold, and drops the param
+with `history.replaceState` (the others and the hash stay).
 
 ## CSV
 
-`ntParseDelimited` is `scripts/build-locales.js`'s RFC-4180 parser with the delimiter sniffed (tab, semicolon,
-comma). `ntImportRows` finds columns by an English or Hebrew header (`NT_HEADERS`: Hebrew/עברית, English/Name/First
+The parser, the header table, the script sorter and the add-by-name match now live in `js/ivrit-classes.js`
+(`IvritClasses.csv.*`), so the roster editor on any page reads a file the same way; this page's `ntParseDelimited` and
+`ntImportRows` are thin calls into it. The parser is `scripts/build-locales.js`'s RFC-4180 one with the delimiter
+sniffed (tab, semicolon, comma). `importRows` finds columns by an English or Hebrew header (`NT_HEADERS`: Hebrew/עברית, English/Name/First
 plus Last, Transliteration/Pronunciation/תעתיק, Extra/Class/Grade/כיתה) and, when no header names a name column
 (no header row, or "Full Name" / "שם מלא" / "תלמיד" beside a class), by content among the columns left: a class or
 room column — every value short and holding a digit and a letter ("3B", "Room 12", "ג1"; a name or a transliteration
@@ -177,14 +172,15 @@ letters, then the first and second Latin columns (a column of bare numbers, an I
 אנגלית, `NT_EN_NAMED`) beside a first-name column (Name / First / שם פרטי, either order) is the English name, and the
 first-name column becomes the name's first half: with the last name it fills the field of its own script. A name in the other script's column — Hebrew first and last
 names under שם פרטי / שם משפחה, "דָּוִד David" in one Name column, the two columns swapped — is sorted by script with
-`ntSplitName`, as a Dashboard roster line is; a row with no name and no transliteration (a class column alone) is not a
+`csv.splitName`; a row with no name and no transliteration (a class column alone) is not a
 student. A file is decoded as UTF-16 when it carries a byte-order mark or its NULs sit on one side of every byte pair (Excel's
 "Unicode Text"), else as UTF-8, falling back to windows-1255.
-The import offers Add / New list (named from the file) / Replace (a `confirm()` naming the account-wide effect when
-signed in); an import that brings extra-line values turns the extra line on. **A class's one extra line is the list's:** an import into an empty list without a line of its own, whose every row carries the same value (a Homeroom column of "3B"), sets the list's extra line instead of each row's, and a row repeating the list's line carries none — so the box above the table (*Extra line on every tag in this list*) still changes every tag; a row's own different line stays its own. Export writes each row's printed line in the Extra column (its own, else the list's), so the file round-trips.
+The import offers Add (`addStudents`) / New list (`addClass`, named from the file) / Replace (`replaceStudents`, after a
+`confirm()` naming the account-wide effect when signed in; the students it takes out stay in the class's
+removed-students record); an import that brings extra-line values turns the extra line on. **A class's one extra line is the list's:** an import into an empty list without a line of its own, whose every row carries the same value (a Homeroom column of "3B"), sets the list's extra line instead of each row's, and a row repeating the list's line carries none — so the box above the table (*Extra line on every tag in this list*) still changes every tag; a row's own different line stays its own. Export writes each row's printed line in the Extra column (its own, else the list's), so the file round-trips.
 
-**Add matches by name** (`ntMergeRows`, every Add: a file, a paste, a Dashboard class). Names are compared by
-`ntMatchKey` — capitals, spacing and nikkud ignored, a maqaf read as a hyphen and a geresh as an apostrophe. An
+**Add matches by name** (`csv.mergeRows`, every Add: a file or a paste). Names are compared by
+`csv.matchKey` — capitals, spacing and nikkud ignored, a maqaf read as a hyphen and a geresh as an apostrophe. An
 incoming row names a student already on the list when every name both have agrees and they share at least one
 (so "David" matches "דָּוִד / David", and "רבקה" never matches "Rivka" — they share no name); pairs agreeing on both
 names are matched first, and each student on the list is matched at most once, so two students who share a name stay

@@ -486,9 +486,20 @@
     return changed;
   }
   // Everything the view needs, from the store and the old keys as they are now.
-  function survey(store, legacy) {
-    var dash = dashSourcesFrom(legacy ? legacy.rosters : ((parseKey(DASH_KEY) || {}).rosters)).map(function (s) { return { src: s, cls: classFromSource(s) }; });
-    var nts = ntSourcesFrom(legacy ? legacy.lists : parseKey(NT_KEY)).map(function (s) { return { src: s, cls: classFromSource(s) }; });
+  // The old keys as classes, remembered while their text is unchanged: a page that saves on every keystroke reads
+  // the view each time, and hashing every old line again would be the cost of each key press. What is returned is
+  // shared and never changed by its readers (they clone before they fill).
+  var _legacyMemo = null;
+  function legacySources() {
+    var d = lsGet(DASH_KEY), n = lsGet(NT_KEY), starter = t('dashboard.picker.default_class_name', 'My class');
+    if (_legacyMemo && _legacyMemo.d === d && _legacyMemo.n === n && _legacyMemo.starter === starter) return _legacyMemo;
+    _legacyMemo = { d: d, n: n, starter: starter,
+      dash: dashSourcesFrom((parseKey(DASH_KEY) || {}).rosters).map(function (s) { return { src: s, cls: classFromSource(s) }; }),
+      nts: ntSourcesFrom(parseKey(NT_KEY)).map(function (s) { return { src: s, cls: classFromSource(s) }; }) };
+    return _legacyMemo;
+  }
+  function survey(store) {
+    var ls = legacySources(), dash = ls.dash, nts = ls.nts;
     // a list already a class of its own, or already retired, is never folded again
     // (nor is anything folded into a roster whose class was deleted: its list would vanish with it)
     var folds = findFolds(dash, nts, function (nid) { return hasOwn(store.classes, nid) || !!num(store.retired[nid]); },
@@ -557,6 +568,8 @@
     });
     return out;
   }
+  // The id an old Name Tags list has as a class (a page that remembered a list by name finds its class with it).
+  function idForList(name) { return 'nt_' + shortHash(str(name).normalize('NFC')); }
   function readLedger() {
     var l = parseKey(LEDGER_KEY) || {};
     if (!isObj(l.told)) l.told = {};
@@ -1097,6 +1110,7 @@
     '.ivc-gone li{display:flex;align-items:center;gap:8px;}',
     '.ivc-gone li span{flex:1;min-inline-size:0;overflow-wrap:anywhere;}',
     '.ivc-empty{margin:24px 0;text-align:center;color:var(--ivc-muted);}',
+    '.ivc-kbd{border-block-start:1px solid var(--ivc-line);padding:8px 16px;max-block-size:46vh;overflow:auto;}',
     '.ivc-sr{position:absolute;inline-size:1px;block-size:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;}',
     '@media (max-width:800px){.ivc-overlay{padding:0;}.ivc-dialog{border-radius:0;block-size:100%;inline-size:100%;}.ivc-body{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr);}.ivc-side{border-inline-end:0;border-block-end:1px solid var(--ivc-line);max-block-size:32vh;}}',
     '@media (forced-colors:active){.ivc-dialog,.ivc-btn,.ivc-chip,.ivc-panel,.ivc-tablewrap{border:1px solid CanvasText;}.ivc-class[aria-current="true"]{border:2px solid Highlight;}.ivc-table input.ivc-cell{border-color:CanvasText;}.ivc-overlay{background:Canvas;}}',
@@ -1475,6 +1489,17 @@
     var overlay = el('div', { cls: 'ivc-overlay' }), dialog = el('div', { cls: 'ivc-dialog', role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'ivcTitle' });
     dialog.appendChild(el('div', { cls: 'ivc-head' }, [el('h2', { id: 'ivcTitle', 'data-part': 'title', tabindex: '-1' }), el('button', { type: 'button', cls: 'ivc-btn ivc-icon', 'data-k': 'close', 'data-part': 'close', text: '×', on: { click: closeEditor } })]));
     dialog.appendChild(el('div', { cls: 'ivc-body' }, [el('nav', { cls: 'ivc-side', 'data-part': 'side' }), el('div', { cls: 'ivc-main', 'data-part': 'main' })]));
+    // The on-screen Hebrew keyboard, on a page that carries the shared block: it types into the Hebrew cell last
+    // focused, and each key is saved the way a typed one is.
+    var kbd = null;
+    if (opts.host && typeof opts.host.mountKeyboard === 'function') {
+      var kbdBtn = el('button', { type: 'button', cls: 'hk-toggle', 'data-k': 'kbd', 'aria-expanded': 'false' }), kbdPanel = el('div', { cls: 'hk-panel', hidden: true });
+      dialog.appendChild(el('div', { cls: 'ivc-kbd' }, [kbdBtn, kbdPanel]));
+      var kbdTarget = null;
+      dialog.addEventListener('focusin', function (e) { var x = e.target; if (x && x.classList && x.classList.contains('ivc-cell') && x.getAttribute('data-f') === 'he') kbdTarget = x; });
+      var kbdInput = function () { return (kbdTarget && dialog.contains(kbdTarget)) ? kbdTarget : dialog.querySelector('input.ivc-cell[data-f="he"]'); };
+      try { kbd = opts.host.mountKeyboard({ container: kbdPanel, toggleBtn: kbdBtn, getInput: kbdInput, onChange: function () { var x = kbdInput(); if (x) x.dispatchEvent(new Event('change', { bubbles: true })); } }); } catch (e) { kbd = null; }
+    }
     overlay.appendChild(dialog);
     overlay.addEventListener('mousedown', function (e) { if (e.target === overlay) closeEditor(); });
     dialog.addEventListener('change', onCellChange);
@@ -1488,7 +1513,7 @@
     ed = { root: overlay, classId: opts.classId || null, opener: opts.opener || root.document.activeElement, host: opts.host || null, onClose: opts.onClose,
            pending: null, paste: false, merge: false, note: null, quiet: false };
     var offStore = onChange(function () { if (ed) draw(); });
-    var redraw = function () { if (ed) { chrome(); draw(); } }, i18n = root.I18n;
+    var redraw = function () { if (ed) { chrome(); draw(); if (kbd && typeof kbd.applyI18n === 'function') { try { kbd.applyI18n(); } catch (e) {} } } }, i18n = root.I18n;
     if (i18n && typeof i18n.onChange === 'function') { try { i18n.onChange(redraw); } catch (e) {} }
     ed.off = offStore;
     // Heard on the document in the capture phase: a click on the dialog's own text leaves the focus on <body>,
@@ -1528,7 +1553,7 @@
 
   var api = {
     KEY: KEY, LEDGER_KEY: LEDGER_KEY, MAX_CLASSES: MAX_CLASSES, MAX_STUDENTS: MAX_STUDENTS, MAX_FIELD: MAX_FIELD,
-    list: list, get: get, onChange: onChange, landed: landed, nearMatches: nearMatches, dismissNearMatch: dismissNearMatch,
+    list: list, get: get, onChange: onChange, landed: landed, idForList: idForList, nearMatches: nearMatches, dismissNearMatch: dismissNearMatch,
     mergeClass: mergeClass, adopt: adopt, exportAll: exportAll, importFile: importFile,
     addClass: addClass, renameClass: renameClass, setClassExtra: setClassExtra, duplicateClass: duplicateClass, moveClass: moveClass,
     deleteClass: deleteClass, mergeInto: mergeInto, addStudents: addStudents, replaceStudents: replaceStudents,

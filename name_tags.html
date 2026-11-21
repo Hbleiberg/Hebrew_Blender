@@ -24,6 +24,7 @@
 <script src="/js/supabase-config.js" defer></script>
 <script src="/js/ivrit-account.js" defer></script>
 <script src="/js/ivrit-saves.js" defer></script>
+<script src="/js/ivrit-classes.js" defer></script>
 <!-- iOS standalone + launch (splash) screens — regenerate with splash/gen_splash.py -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -99,7 +100,7 @@
     { "@type": "Question", "name": "What does the Hebrew name tag maker print?", "acceptedAnswer": { "@type": "Answer", "text": "A name tag for every student on a class list: the Hebrew name, a transliteration and the English name, with an optional extra line such as the class, grade or school." } },
     { "@type": "Question", "name": "Can it transliterate Hebrew names automatically?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. From a name typed with nikkud it writes the transliteration in a Modern or an Ashkenazi style (Dovid, Avrohom). You can also type a student's transliteration yourself, which always wins, or leave it off." } },
     { "@type": "Question", "name": "Which paper and label sheets does it print on?", "acceptedAnswer": { "@type": "Answer", "text": "Plain Letter or A4 paper with cut lines, 1 to 10 tags a page; Avery label sheets 5165, 5126, 5168, 5164, 5395 and 5163; or desk tent cards folded in half, one or two to a page." } },
-    { "@type": "Question", "name": "Can I bring in my class list?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Open a CSV file or paste rows from a spreadsheet: the columns are found by their English or Hebrew headers. A class list from the Hebrew Classroom Dashboard can be brought in too." } },
+    { "@type": "Question", "name": "Can I bring in my class list?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Open a CSV file or paste rows from a spreadsheet: the columns are found by their English or Hebrew headers. A class made in the Hebrew Classroom Dashboard is already here: the two tools share their class lists." } },
     { "@type": "Question", "name": "Is the Hebrew name tag maker free?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. It is free to use under CC BY-NC-SA 4.0 for non-commercial educational purposes. No account is needed: class lists are saved on your device, and an optional free account keeps them on your other devices too." } }
   ]
 }
@@ -112,7 +113,7 @@
   "description": "Turn a class list into printable Hebrew name tags, label sheets or desk tent cards.",
   "totalTime": "PT5M",
   "step": [
-    { "@type": "HowToStep", "position": 1, "name": "Make a class list", "text": "Type each student's Hebrew and English names, or bring them in from a CSV file or the Classroom Dashboard." },
+    { "@type": "HowToStep", "position": 1, "name": "Make a class list", "text": "Type each student's Hebrew and English names, or bring them in from a CSV file. A class from the Classroom Dashboard is already here." },
     { "@type": "HowToStep", "position": 2, "name": "Choose the transliteration", "text": "Pick an automatic Modern or Ashkenazi transliteration, or type your own for any student." },
     { "@type": "HowToStep", "position": 3, "name": "Design the tags", "text": "Pick a Hebrew font, bubble letters, a size and color for each line, a border and a background." },
     { "@type": "HowToStep", "position": 4, "name": "Choose the paper", "text": "Choose plain paper and how many tags a page, an Avery label sheet, or desk tent cards." },
@@ -543,7 +544,6 @@ html[lang="he"] fieldset.nt-set legend, html[lang="he"] .nt-head { letter-spacin
 .nt-inline .nt-field { flex:1 1 14em; }
 .nt-inline p { flex-basis:100%; font-size:0.86rem; }
 .nt-inline > label { font-size:0.88rem; }   /* the extra-line row's label size: Rename's, Paste's and the Dashboard row's labels inherited 16px beside 13.76px fields and 13.12px buttons */
-.nt-inline .nt-dash-go a { display:inline-block; padding:4px 0; color:var(--gold-text); font-weight:600; }
 .nt-inline textarea { flex-basis:100%; min-height:7em; font:inherit; font-size:0.9rem; padding:8px; border:1.5px solid var(--border); border-radius:6px; background:var(--cream); color:var(--text); }
 .nt-field[aria-invalid="true"] { border-color:var(--danger-text); }
 .nt-extra-row { display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; margin-top:12px; font-size:0.88rem; }
@@ -1026,6 +1026,7 @@ body.dark #appToast { background: #0a0f1c; }
         <button type="button" class="nt-btn ghost hi-btn" id="ntListRename"><svg class="hi hi-sm hi-pencil" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.35-5L14.95 5.35a2.6 2.6 0 0 1 3.7 3.7L8.05 19.65Z"/><path d="M12.85 7.5l3.65 3.65"/></svg><span class="hi-lbl" data-i18n="nametags.list.rename">Rename</span></button>
         <button type="button" class="nt-btn ghost hi-btn" id="ntListDup"><svg class="hi hi-sm hi-copy" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8.5" y="8.5" width="11.5" height="11.5" rx="2.2"/><path d="M15.5 5.5v-.8a2.2 2.2 0 0 0-2.2-2.2H6.2A2.2 2.2 0 0 0 4 4.7v7.1a2.2 2.2 0 0 0 2.2 2.2H5"/></svg><span class="hi-lbl" data-i18n="nametags.list.duplicate">Duplicate</span></button>
         <button type="button" class="nt-btn ghost danger hi-btn" id="ntListDel"><svg class="hi hi-sm hi-trash" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h15"/><path d="M9.5 7V5.2a1.2 1.2 0 0 1 1.2-1.2h2.6a1.2 1.2 0 0 1 1.2 1.2V7"/><path d="M6.5 7l.9 12.1a1.6 1.6 0 0 0 1.6 1.5h6a1.6 1.6 0 0 0 1.6-1.5L17.5 7"/><path d="M10.4 10.6v6.4M13.6 10.6v6.4"/></svg><span class="hi-lbl" data-i18n="nametags.list.delete">Delete</span></button>
+        <button type="button" class="nt-btn ghost hi-btn" id="ntClassesEdit" aria-haspopup="dialog" title="Every class in one window: add, rename, merge or delete a class. The Classroom Dashboard and Flash Cards use the same classes." data-i18n-title="nametags.list.edit_classes_title"><svg class="hi hi-sm hi-group" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7.5" r="3.4"/><path d="M2.5 20.5v-1.6a4.2 4.2 0 0 1 4.2-4.2h4.6a4.2 4.2 0 0 1 4.2 4.2v1.6"/><path d="M15.6 4.3a3.2 3.2 0 0 1 0 6.4"/><path d="M21.5 20.5v-1.6a4.2 4.2 0 0 0-3.2-4.1"/></svg><span class="hi-lbl" data-i18n="nametags.list.edit_classes">Edit classes…</span></button>
       </div>
       <div class="nt-inline" id="ntRenameRow" hidden>
         <label for="ntRenameInput" data-i18n="nametags.list.name_label">List name</label>
@@ -1037,7 +1038,6 @@ body.dark #appToast { background: #0a0f1c; }
       <div class="nt-iobar" id="ntIoBar">
         <label class="nt-btn ghost hi-btn" title="Import a CSV or spreadsheet file (Hebrew, English, Transliteration and Extra columns)" data-i18n-title="nametags.csv.import_title"><svg class="hi hi-sm hi-upload" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.2V4"/><path d="M7.6 8.4 12 4l4.4 4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="nametags.csv.import">Import a CSV</span><input type="file" id="ntCsvFile" accept=".csv,.tsv,.txt,text/csv,text/plain" class="vh-file"></label>
         <button type="button" class="nt-btn ghost hi-btn" id="ntPasteOpen" aria-expanded="false" aria-controls="ntPasteRow"><svg class="hi hi-sm hi-page" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3H7a2.2 2.2 0 0 0-2.2 2.2v13.6A2.2 2.2 0 0 0 7 21h10a2.2 2.2 0 0 0 2.2-2.2V8.7z"/><path d="M13.5 3v5.7h5.7"/><path d="M8.6 13h6.8M8.6 16.6h4.6"/></svg><span class="hi-lbl" data-i18n="nametags.csv.paste">Paste a list</span></button>
-        <button type="button" class="nt-btn ghost hi-btn" id="ntDashOpen" aria-expanded="false" aria-controls="ntDashRow"><svg class="hi hi-sm hi-group" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7.5" r="3.4"/><path d="M2.5 20.5v-1.6a4.2 4.2 0 0 1 4.2-4.2h4.6a4.2 4.2 0 0 1 4.2 4.2v1.6"/><path d="M15.6 4.3a3.2 3.2 0 0 1 0 6.4"/><path d="M21.5 20.5v-1.6a4.2 4.2 0 0 0-3.2-4.1"/></svg><span class="hi-lbl" data-i18n="nametags.dash.open">From the Classroom Dashboard</span></button>
         <button type="button" class="nt-btn ghost hi-btn" id="ntCsvExport"><svg class="hi hi-sm hi-download" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.4v11.2"/><path d="M7.6 10.4 12 14.8l4.4-4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="nametags.csv.export">Export this list</span></button>
         <button type="button" class="nt-btn ghost hi-btn" id="ntCsvTemplate"><svg class="hi hi-sm hi-download" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.4v11.2"/><path d="M7.6 10.4 12 14.8l4.4-4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="nametags.csv.template">CSV template</span></button>
       </div>
@@ -1046,16 +1046,6 @@ body.dark #appToast { background: #0a0f1c; }
         <textarea id="ntPasteText" dir="auto" autocapitalize="words" autocorrect="off" spellcheck="false"></textarea>
         <button type="button" class="nt-btn" id="ntPasteAdd" data-i18n="nametags.csv.paste_add">Add these students</button>
         <button type="button" class="nt-btn ghost" id="ntPasteCancel" data-i18n="nametags.list.rename_cancel">Cancel</button>
-      </div>
-      <div class="nt-inline" id="ntDashRow" hidden>
-        <label for="ntDashSel" data-i18n="nametags.dash.pick_label">Classroom Dashboard class</label>
-        <select class="nt-field" id="ntDashSel"></select>
-        <button type="button" class="nt-btn" id="ntDashAdd" data-i18n="nametags.dash.bring">Bring in these students</button>
-        <button type="button" class="nt-btn ghost" id="ntDashCancel" data-i18n="nametags.list.rename_cancel">Cancel</button>
-        <p class="nt-note" id="ntDashNote"></p>
-        <!-- The dashboard opens in a new tab on its class lists (?settings=picker); the menu above re-reads its classes
-             when that tab saves them (the storage listener in init), so a class made there is here on return. -->
-        <p class="nt-note nt-dash-go"><a id="ntDashLink" href="classroom_dashboard.html?settings=picker" target="_blank" rel="noopener" aria-label="Open the Classroom Dashboard's class lists (opens in a new tab)" data-i18n="nametags.dash.open_dashboard" data-i18n-aria-label="nametags.dash.open_dashboard_aria">Open the Classroom Dashboard's class lists ↗</a></p>
       </div>
       <div class="nt-inline" id="ntImportChoice" role="group" aria-labelledby="ntImportMsg" hidden>
         <p id="ntImportMsg"></p>
@@ -1119,7 +1109,7 @@ body.dark #appToast { background: #0a0f1c; }
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="nametags.faq.q1">What does the Hebrew name tag maker print?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="nametags.faq.a1">A name tag for every student on a class list: the Hebrew name, a transliteration and the English name, with an optional extra line such as the class, grade or school.</p></details>
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="nametags.faq.q2">Can it transliterate Hebrew names automatically?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="nametags.faq.a2">Yes. From a name typed with nikkud it writes the transliteration in a Modern or an Ashkenazi style (Dovid, Avrohom). You can also type a student's transliteration yourself, which always wins, or leave it off.</p></details>
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="nametags.faq.q3">Which paper and label sheets does it print on?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="nametags.faq.a3">Plain Letter or A4 paper with cut lines, 1 to 10 tags a page; Avery label sheets 5165, 5126, 5168, 5164, 5395 and 5163; or desk tent cards folded in half, one or two to a page.</p></details>
-        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="nametags.faq.q4">Can I bring in my class list?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="nametags.faq.a4">Yes. Open a CSV file or paste rows from a spreadsheet: the columns are found by their English or Hebrew headers. A class list from the Hebrew Classroom Dashboard can be brought in too.</p></details>
+        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="nametags.faq.q4">Can I bring in my class list?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="nametags.faq.a4">Yes. Open a CSV file or paste rows from a spreadsheet: the columns are found by their English or Hebrew headers. A class made in the Hebrew Classroom Dashboard is already here: the two tools share their class lists.</p></details>
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="nametags.faq.q5">Is the Hebrew name tag maker free?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="nametags.faq.a5">Yes. It is free to use under CC BY-NC-SA 4.0 for non-commercial educational purposes. No account is needed: class lists are saved on your device, and an optional free account keeps them on your other devices too.</p></details>
       </div>
     </details>
@@ -1127,7 +1117,7 @@ body.dark #appToast { background: #0a0f1c; }
       <summary style="cursor:pointer;font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);padding:5px 0;" data-i18n="nametags.howto.summary">How To Use</summary>
       <div style="max-width:640px;margin:0 auto;text-align:start;">
         <ol style="padding:6px 0 4px;padding-inline-start:20px;margin:0;font-size:0.78rem;line-height:1.55;">
-          <li data-i18n="nametags.howto.step1">Type each student's Hebrew and English names, or bring them in from a CSV file or the Classroom Dashboard.</li>
+          <li data-i18n="nametags.howto.step1">Type each student's Hebrew and English names, or bring them in from a CSV file. A class from the Classroom Dashboard is already here.</li>
           <li data-i18n="nametags.howto.step2">Pick an automatic Modern or Ashkenazi transliteration, or type your own for any student.</li>
           <li data-i18n="nametags.howto.step3">Pick a Hebrew font, bubble letters, a size and color for each line, a border and a background.</li>
           <li data-i18n="nametags.howto.step4">Choose plain paper and how many tags a page, an Avery label sheet, or desk tent cards.</li>
@@ -1181,15 +1171,16 @@ body.dark #appToast { background: #0a0f1c; }
 /* ══════════════════════════════════════════════════════
    NAME TAGS — a class list (each student's Hebrew name, an optional typed transliteration, the English name and an
    optional extra line) printed as name tags: on plain paper with cut lines, on Avery label sheets, or as desk tent
-   cards. Two stores, both synced through js/ivrit-saves.js's registry: hebrewNameTags_lists (one row per class list)
-   and hebrewNameTags_settings (the tag design and the print layout). Which list is open is this device's own
-   (hebrewNameTags_activeList, never synced). Nothing is written until the teacher changes something.
+   cards. The class lists are the suite's shared classes (js/ivrit-classes.js, ivritSuite_classes — the Classroom
+   Dashboard and Flash Cards read the same ones); the tag design and the print layout are this page's own
+   hebrewNameTags_settings. Both sync through js/ivrit-saves.js's registry. Which class is open is this device's own
+   (hebrewNameTags_activeClass, never synced). Nothing is written until the teacher changes something.
    ══════════════════════════════════════════════════════ */
-const NT_SET_KEY = 'hebrewNameTags_settings', NT_LISTS_KEY = 'hebrewNameTags_lists';
-const NT_ACTIVE_KEY = 'hebrewNameTags_activeList';   // per device, erase-only: which list this device last had open
+const NT_SET_KEY = 'hebrewNameTags_settings';
+const NT_ACTIVE_KEY = 'hebrewNameTags_activeClass';   // per device, erase-only: the class (its id) this device last had open
+const NT_ACTIVE_OLD_KEY = 'hebrewNameTags_activeList';   // before the shared classes: the open list's name, read once to find its class
 const DARK_KEY = 'hebrewBlender_darkMode';
-const NT_MAX_LISTS = 30, NT_MAX_ROWS = 200, NT_MAX_FIELD = 120, NT_CSV_MAX_BYTES = 1000000;
-const NT_RESERVED = ['__proto__', 'constructor', 'prototype'];
+const NT_MAX_LISTS = 40, NT_MAX_ROWS = 200, NT_MAX_FIELD = 120, NT_CSV_MAX_BYTES = 1000000;   // the shared classes' own limits (IvritClasses.MAX_*)
 
 /* ── Small helpers ── */
 function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
@@ -1299,40 +1290,63 @@ function applySettings(obj) {
 }
 
 /* ══════════════════════════════════════════════════════
-   CLASS LISTS — { "<list name>": { v:1, rows:[{ he, en, tr?, ex? }], extra } }, one account row per list. Only the
-   open list is held in memory (ntCur), edited in place; every save re-reads the store first and writes the open
-   list into it, so a list another tab or device sent is never overwritten. A list that exists only in memory (a
-   first visit) is written the moment the teacher types into it.
+   CLASS LISTS — the shared class roster (js/ivrit-classes.js, the only writer of ivritSuite_classes; one account row
+   per class; docs/reference/class-roster.md). The open class is held in memory as ntCur — { id, name, val: { rows:
+   [{ id, he, en, tr?, ex? }], extra }, stored } — a view of IvritClasses.get(id): each change is one of that file's
+   operations (which re-reads the store, so a class another tab or device sent is never overwritten), and a row
+   object is kept for as long as its student is, so the Print boxes and a focused cell survive a re-read. A class
+   that exists only in memory (a first visit) is made the moment the teacher types into it. The page's own old key,
+   hebrewNameTags_lists, is no longer written: its lists are classes now (read by that file, never rewritten).
    ══════════════════════════════════════════════════════ */
-let _ntListsLastWritten = null;
-let ntCur = { name: '', val: null, stored: false };
-let _ntVirtualDefault = false;   // the open list is the unsaved default one (renamed on a language switch)
-let _ntUndo = null;              // the last removed row: { name, index, row }
-function ntReadLists() {
-  let raw = null, obj = null;
-  try { raw = localStorage.getItem(NT_LISTS_KEY); if (raw) obj = ivritSafeParse(raw); } catch (e) { obj = null; }
-  return { raw, obj: (obj && typeof obj === 'object' && !Array.isArray(obj)) ? obj : {} };
+let ntCur = { id: '', name: '', val: null, stored: false };
+let _ntVirtualDefault = false;   // the open class is the unsaved default one (renamed on a language switch)
+let _ntUndo = null;              // the last removed student: { classId, index, id }
+let _ntSelf = 0;                 // > 0 while this page's own operation runs (its change is already on screen)
+function ntC() { return window.IvritClasses || null; }
+// One operation on the shared classes; false when the file did not load or the store refused the write.
+function ntOp(fn) {
+  const C = ntC();
+  if (!C) return false;
+  _ntSelf++;
+  try { return fn(C); } catch (e) { return false; } finally { _ntSelf--; if (ntCur.stored) ntActiveSet(ntCur.id); }   // the class being worked on is the one this device reopens
 }
-function ntListOk(v) { return !!v && typeof v === 'object' && !Array.isArray(v); }
-function ntCollator() { try { return new Intl.Collator(window.I18n ? I18n.lang : undefined, { numeric: true, sensitivity: 'base' }); } catch (e) { return null; } }
-function ntListNames(obj) {
-  const c = ntCollator();
-  return Object.keys(obj).filter(k => ntListOk(obj[k])).sort((a, b) => c ? c.compare(a, b) : (a < b ? -1 : a > b ? 1 : 0));
-}
+function ntClasses() { const C = ntC(); try { return C ? C.list() : []; } catch (e) { return []; } }
+function ntMaxLists() { const C = ntC(); return C ? C.MAX_CLASSES : NT_MAX_LISTS; }
 function ntActiveGet() { try { return ntStr(localStorage.getItem(NT_ACTIVE_KEY)); } catch (e) { return ''; } }
-function ntActiveSet(name) { try { if (ntActiveGet() !== name) localStorage.setItem(NT_ACTIVE_KEY, name); } catch (e) {} }
+function ntActiveSet(id) { try { if (id && ntActiveGet() !== id) localStorage.setItem(NT_ACTIVE_KEY, id); } catch (e) {} }
+// The class this device had open before the lists became shared classes: remembered by its list's name.
+function ntActiveFromOldName(all) {
+  let name = '';
+  try { name = ntStr(localStorage.getItem(NT_ACTIVE_OLD_KEY)); } catch (e) {}
+  if (!name || !ntC()) return null;
+  const id = ntC().idForList(name);
+  return all.find(c => c.id === id) || all.find(c => c.name === name) || null;
+}
 function ntDefaultListName() { return _fbT('nametags.list.default_name', 'My class'); }
 function ntNewListValue() { return { v: 1, rows: [], extra: '' }; }
-// Pick the open list: the one asked for, else this device's last one, else the first by name, else an unsaved default.
+// The class as this page holds it: the rows a student already had keep their objects.
+function ntAdoptClass(c) {
+  const had = new Map();
+  if (ntCur.stored && ntCur.id === c.id && ntCur.val && Array.isArray(ntCur.val.rows)) ntCur.val.rows.forEach(r => { if (r && r.id) had.set(r.id, r); });
+  const rows = c.students.map(s => {
+    const r = had.get(s.id) || { id: s.id };
+    r.he = s.he; r.en = s.en;
+    if (s.tr) r.tr = s.tr; else delete r.tr;
+    if (s.ex) r.ex = s.ex; else delete r.ex;
+    return r;
+  });
+  ntCur = { id: c.id, name: c.name, val: { v: 1, rows, extra: c.extra }, stored: true };
+  _ntVirtualDefault = false;
+}
+// Pick the open class: the one asked for, else the one open now, else this device's last one, else the first, else an
+// unsaved default.
 function ntLoadCurrent(want) {
-  const { raw, obj } = ntReadLists();
-  _ntListsLastWritten = raw;
   ntSkipRemember();
-  const names = ntListNames(obj);
-  let name = [want, ntCur.stored ? ntCur.name : null, ntActiveGet()].find(n => n && names.includes(n)) || names[0];
-  if (name) { ntCur = { name, val: obj[name], stored: true }; _ntVirtualDefault = false; ntSkipRestore(); return; }
-  if (ntCur.name && !ntCur.stored && !_ntVirtualDefault) return;   // an unsaved list the teacher named keeps its name
-  ntCur = { name: ntDefaultListName(), val: ntNewListValue(), stored: false };
+  const all = ntClasses(), byId = id => (id ? all.find(c => c.id === id) : null);
+  const c = byId(want) || (ntCur.stored ? byId(ntCur.id) : null) || byId(ntActiveGet()) || ntActiveFromOldName(all) || all[0];
+  if (c) { ntAdoptClass(c); ntSkipRestore(); return; }
+  if (ntCur.name && !ntCur.stored && !_ntVirtualDefault) return;   // an unsaved class the teacher named keeps its name
+  ntCur = { id: '', name: ntDefaultListName(), val: ntNewListValue(), stored: false };
   _ntVirtualDefault = true;
 }
 function ntRows() { return (ntCur.val && Array.isArray(ntCur.val.rows)) ? ntCur.val.rows : []; }
@@ -1342,44 +1356,40 @@ function ntEnsureRows() {
 }
 function ntRowField(row, f) { return (row && typeof row === 'object') ? ntStr(row[f]) : ''; }
 function ntRowEmpty(row) { return !['he', 'en', 'tr', 'ex'].some(f => ntRowField(row, f).trim()); }
-function ntWriteLists(obj) {
-  const text = JSON.stringify(obj);
-  try { localStorage.setItem(NT_LISTS_KEY, text); _ntListsLastWritten = text; return true; }
-  catch (e) { ntListNote(_fbT('nametags.list.err_storage', 'This browser could not save the list (its storage may be full).'), true); return false; }
-}
-// Write the open list into the store as it is now.
-function ntSaveList() {
-  const { obj } = ntReadLists();
-  const isNew = !ntCur.stored;
-  if (isNew && !Object.prototype.hasOwnProperty.call(obj, ntCur.name) && ntListNames(obj).length >= NT_MAX_LISTS) {
-    ntListNote(_fbT('nametags.list.err_max_lists', 'You have {max} class lists, the most this page keeps. Delete one to start another.', { max: NT_MAX_LISTS }), true);
+function ntSaveFailed() { ntListNote(_fbT('nametags.list.err_storage', 'This browser could not save the list (its storage may be full).'), true); }
+// The open class exists in the store (an unsaved one is made now, under its name). False: there is no room for it.
+function ntEnsureClass() {
+  if (ntCur.stored) return true;
+  if (ntClasses().length >= ntMaxLists()) {
+    ntListNote(_fbT('nametags.list.err_max_lists', 'You have {max} class lists, the most this page keeps. Delete one to start another.', { max: ntMaxLists() }), true);
     return false;
   }
-  obj[ntCur.name] = ntCur.val;
-  if (!ntWriteLists(obj)) return false;
-  ntCur.stored = true;
+  const id = ntOp(C => C.addClass(ntCur.name));
+  if (!id) { ntSaveFailed(); return false; }
+  const made = ntOp(C => C.get(id));
+  ntCur.id = id; ntCur.stored = true;
+  if (made) ntCur.name = made.name;
   _ntVirtualDefault = false;
-  ntActiveSet(ntCur.name);
-  if (isNew) ntRenderListPicker();
+  ntActiveSet(id);
+  ntRenderListPicker();
   return true;
 }
-// Another tab or the account module changed the lists: re-read, keep the open list if it still exists.
+// Another tab, another device or the roster editor changed the classes: re-read, keep the open class if it still exists.
 function ntListsAdopt() {
-  ntLoadCurrent(ntCur.stored ? ntCur.name : null);
+  ntLoadCurrent(ntCur.stored ? ntCur.id : null);
   ntRenderListPicker();
   ntRenderTable();
   ntQueuePreview();
 }
 function ntFlush() {
-  let s = null, l = null;
-  try { s = localStorage.getItem(NT_SET_KEY); l = localStorage.getItem(NT_LISTS_KEY); } catch (e) {}
+  let s = null;
+  try { s = localStorage.getItem(NT_SET_KEY); } catch (e) {}
   if (s !== _ntSetLastWritten) ntSetAdopt();
-  if (l !== _ntListsLastWritten) ntListsAdopt();
 }
-function ntSwitchList(name) {
+function ntSwitchList(id) {
   _ntUndo = null;
-  ntLoadCurrent(name);
-  if (ntCur.stored) ntActiveSet(ntCur.name);
+  ntLoadCurrent(id);
+  if (ntCur.stored) ntActiveSet(ntCur.id);
   ntCloseInline();
   ntListNote('');
   ntRenderListPicker();
@@ -1398,44 +1408,29 @@ function ntListNote(msg, warn, undo) {
     n.appendChild(b);
   }
 }
-// The name rules for a list: 1–120 characters, never a reserved word, never one that is taken.
-function ntNameProblem(name, except) {
+// The name rules for a class: 1–120 characters, never one another class already has.
+function ntNameProblem(name) {
   const n = String(name || '').trim();
   if (!n) return _fbT('nametags.list.err_name_empty', 'Give the list a name.');
   if (Array.from(n).length > NT_MAX_FIELD) return _fbT('nametags.list.err_name_long', 'That name is too long.');
-  if (NT_RESERVED.includes(n)) return _fbT('nametags.list.err_name_reserved', 'Choose another name.');
-  const { obj } = ntReadLists();
-  if (n !== except && (Object.prototype.hasOwnProperty.call(obj, n) || (!ntCur.stored && n === ntCur.name && except !== ntCur.name)))
-    return _fbT('nametags.list.err_name_taken', 'There is already a list called "{name}".', { name: n });
+  if (ntClasses().some(c => c.id !== ntCur.id && c.name === n)) return _fbT('nametags.list.err_name_taken', 'There is already a list called "{name}".', { name: n });
   return '';
 }
-// "X" → "X 1" → "X 2" (the folder tree's ftDuplicateName rule).
-function ntUniqueName(name, exists) {
-  if (!exists(name)) return name;
-  const m = String(name).match(/^(.*?)\s+(\d+)$/);
-  const base = m ? m[1] : name;
-  let n = m ? parseInt(m[2], 10) : 0, cand;
-  do { n++; cand = base + ' ' + n; } while (exists(cand));
-  return cand;
-}
-function ntNameExists(obj) { return n => Object.prototype.hasOwnProperty.call(obj, n) || NT_RESERVED.includes(n); }
 
 function ntRenderListPicker() {
   const sel = document.getElementById('ntListSel');
   if (!sel) return;
-  const { obj } = ntReadLists();
-  const names = ntListNames(obj);
-  if (!ntCur.stored && !names.includes(ntCur.name)) names.unshift(ntCur.name);
+  const all = ntClasses();
   sel.textContent = '';
-  names.forEach(n => {
-    const rows = n === ntCur.name ? ntRows() : (Array.isArray(obj[n] && obj[n].rows) ? obj[n].rows : []);
-    const count = rows.filter(r => !ntRowEmpty(r)).length;
-    const o = el('option', null, _fbN('nametags.list.option', count, '{name} ({count} student)', '{name} ({count} students)', { name: n }));
-    o.value = n;
+  const opt = (value, name, count) => {
+    const o = el('option', null, _fbN('nametags.list.option', count, '{name} ({count} student)', '{name} ({count} students)', { name }));
+    o.value = value;
     sel.appendChild(o);
-  });
-  sel.value = ntCur.name;
-  const atMax = ntListNames(obj).length >= NT_MAX_LISTS;
+  };
+  if (!ntCur.stored) opt('', ntCur.name, ntRows().filter(r => !ntRowEmpty(r)).length);
+  all.forEach(c => opt(c.id, c.id === ntCur.id ? ntCur.name : c.name, (c.id === ntCur.id ? ntRows() : c.students).filter(r => !ntRowEmpty(r)).length));
+  sel.value = ntCur.stored ? ntCur.id : '';
+  const atMax = all.length >= ntMaxLists();
   document.getElementById('ntListNew').disabled = atMax;
   document.getElementById('ntListDup').disabled = atMax || !ntCur.stored;
   document.getElementById('ntListDel').disabled = !ntCur.stored;
@@ -1444,8 +1439,8 @@ function ntRenderListPicker() {
   ntSyncListToggle();
 }
 function ntCloseInline() {
-  ['ntRenameRow', 'ntPasteRow', 'ntDashRow', 'ntImportChoice'].forEach(id => { const n = document.getElementById(id); if (n) n.hidden = true; });
-  ['ntPasteOpen', 'ntDashOpen'].forEach(id => { const b = document.getElementById(id); if (b) b.setAttribute('aria-expanded', 'false'); });
+  ['ntRenameRow', 'ntPasteRow', 'ntImportChoice'].forEach(id => { const n = document.getElementById(id); if (n) n.hidden = true; });
+  ['ntPasteOpen'].forEach(id => { const b = document.getElementById(id); if (b) b.setAttribute('aria-expanded', 'false'); });
   _ntPendingImport = null;
 }
 let _ntRenameMode = 'rename';
@@ -1464,21 +1459,16 @@ function ntCommitRename() {
   const inp = document.getElementById('ntRenameInput'), note = document.getElementById('ntRenameNote');
   const name = inp.value.trim();
   if (name === ntCur.name) { ntCloseInline(); document.getElementById('ntListSel').focus(); return; }
-  const problem = ntNameProblem(name, ntCur.name);
+  const problem = ntNameProblem(name);
   if (problem) { note.textContent = problem; inp.setAttribute('aria-invalid', 'true'); inp.focus(); return; }
   if (!ntCur.stored) {
     ntCur.name = name;
     _ntVirtualDefault = false;
-    ntSaveList();
+    if (!ntEnsureClass()) return;
   } else {
-    // A rename is a delete and an add (one account row per name): rebuild the store with the new key in the old place.
-    const { obj } = ntReadLists();
-    const out = {};
-    Object.keys(obj).forEach(k => { out[k === ntCur.name ? name : k] = k === ntCur.name ? ntCur.val : obj[k]; });
-    if (!Object.prototype.hasOwnProperty.call(out, name)) out[name] = ntCur.val;
-    if (!ntWriteLists(out)) return;
+    // The class keeps its id (and its one account row): a rename no longer makes a second list.
+    if (!ntOp(C => C.renameClass(ntCur.id, name))) { ntSaveFailed(); return; }
     ntCur.name = name;
-    ntActiveSet(name);
   }
   ntCloseInline();
   ntRenderListPicker();
@@ -1486,35 +1476,41 @@ function ntCommitRename() {
   document.getElementById('ntListSel').focus();
 }
 function ntNewList() {
-  const { obj } = ntReadLists();
-  if (ntListNames(obj).length >= NT_MAX_LISTS) { ntListNote(_fbT('nametags.list.err_max_lists', 'You have {max} class lists, the most this page keeps. Delete one to start another.', { max: NT_MAX_LISTS }), true); return; }
-  const name = ntUniqueName(_fbT('nametags.list.new_name', 'New list'), ntNameExists(obj));
-  obj[name] = ntNewListValue();
-  if (!ntWriteLists(obj)) return;
-  ntSwitchList(name);
+  if (ntClasses().length >= ntMaxLists()) { ntListNote(_fbT('nametags.list.err_max_lists', 'You have {max} class lists, the most this page keeps. Delete one to start another.', { max: ntMaxLists() }), true); return; }
+  const id = ntOp(C => C.addClass(_fbT('nametags.list.new_name', 'New list')));   // a taken name becomes "New list 1"
+  if (!id) { ntSaveFailed(); return; }
+  ntSwitchList(id);
   ntOpenRename('new');
 }
 function ntDuplicateList() {
   if (!ntCur.stored) return;
-  const { obj } = ntReadLists();
-  if (ntListNames(obj).length >= NT_MAX_LISTS) { ntListNote(_fbT('nametags.list.err_max_lists', 'You have {max} class lists, the most this page keeps. Delete one to start another.', { max: NT_MAX_LISTS }), true); return; }
-  const name = ntUniqueName(ntCur.name, ntNameExists(obj));
-  obj[name] = ntClone(ntCur.val);
-  if (!ntWriteLists(obj)) return;
-  ntSwitchList(name);
-  ntListNote(_fbT('nametags.list.duplicated', 'Made a copy called "{name}".', { name }));
+  if (ntClasses().length >= ntMaxLists()) { ntListNote(_fbT('nametags.list.err_max_lists', 'You have {max} class lists, the most this page keeps. Delete one to start another.', { max: ntMaxLists() }), true); return; }
+  const id = ntOp(C => C.duplicateClass(ntCur.id));
+  if (!id) { ntSaveFailed(); return; }
+  ntSwitchList(id);
+  ntListNote(_fbT('nametags.list.duplicated', 'Made a copy called "{name}".', { name: ntCur.name }));
 }
 function ntDeleteList() {
   if (!ntCur.stored) return;
   const name = ntCur.name;
   if (!confirm(I18n.t(ntSignedIn() ? 'nametags.list.delete_confirm_cloud' : 'nametags.list.delete_confirm', { name }))) return;
-  const { obj } = ntReadLists();
-  delete obj[name];
-  if (!ntWriteLists(obj)) return;
-  ntCur = { name: '', val: null, stored: false };
+  if (!ntOp(C => C.deleteClass(ntCur.id))) { ntSaveFailed(); return; }
+  ntCur = { id: '', name: '', val: null, stored: false };
   ntSwitchList(null);
-  if (ntCur.stored) ntActiveSet(ntCur.name);
   ntListNote(_fbT('nametags.list.deleted', 'Deleted "{name}".', { name }));
+}
+// The shared roster editor (js/ivrit-classes.js): every class in one window — add, rename, merge, delete, import.
+// It writes the same classes this page shows, so the table follows it as it follows another tab.
+function ntOpenEditor() {
+  const C = ntC(), btn = document.getElementById('ntClassesEdit');
+  if (!C) return;
+  C.openEditor({
+    classId: ntCur.stored ? ntCur.id : null, opener: btn,
+    host: {
+      autoTranslit: he => (ntSet.translit === 'auto' ? ntAutoTr(he).text : ''),
+      mountKeyboard: cfg => mountHebrewKeyboard(cfg)
+    }
+  });
 }
 
 /* ── The table: one row per student, plus a blank row at the end to type the next one into ── */
@@ -1647,16 +1643,23 @@ function ntEditCell(r, f, value) {
   if (r >= rows.length) {
     if (!v.trim()) return;
     if (rows.length >= NT_MAX_ROWS) { ntListNote(_fbT('nametags.list.err_max_rows', 'A list holds up to {max} students.', { max: NT_MAX_ROWS }), true); return; }
-    rows.push({ he: '', en: '' });
+    if (!ntEnsureClass()) return;
+    const seed = {}; seed[f] = v;
+    const sid = ntOp(C => C.addStudent(ntCur.id, seed));
+    if (!sid) { ntSaveFailed(); return; }
+    const made = { id: sid, he: '', en: '' };
+    if (f === 'tr' || f === 'ex') made[f] = v; else made[f] = v;
+    rows.push(made);
     r = rows.length - 1;
     structural = true;
   }
-  let row = rows[r];
-  if (!row || typeof row !== 'object' || Array.isArray(row)) row = rows[r] = { he: '', en: '' };
-  if (f === 'tr' || f === 'ex') { if (v) row[f] = v; else delete row[f]; }
-  else row[f] = v;
+  const row = rows[r];
+  if (!structural) {
+    if (f === 'tr' || f === 'ex') { if (v) row[f] = v; else delete row[f]; }
+    else row[f] = v;
+    ntOp(C => C.setStudentField(ntCur.id, row.id, f, v));   // unchanged in the store (a trailing space) is no failure
+  }
   _ntUndo = null;
-  ntSaveList();
   if (structural) { ntRenderTable(); ntRenderListPicker(); }
   else {
     const tr = document.querySelector('#ntRows tr:nth-child(' + (r + 1) + ')');
@@ -1669,21 +1672,25 @@ function ntEditCell(r, f, value) {
 function ntRemoveRow(i) {
   const rows = ntEnsureRows();
   if (i < 0 || i >= rows.length) return;
-  const row = rows.splice(i, 1)[0];
-  ntSaveList();
-  const listName = ntCur.name;
-  _ntUndo = { name: listName, index: i, row };
+  const row = rows[i];
+  if (!ntOp(C => C.removeStudent(ntCur.id, row.id))) { ntSaveFailed(); return; }
+  rows.splice(i, 1);
+  const classId = ntCur.id;
+  _ntUndo = { classId, index: i, id: row.id };
   ntRenderTable();
   ntRenderListPicker();
   ntQueuePreview();
   const who = ntRowField(row, 'en') || ntRowField(row, 'he') || String(i + 1);
   ntListNote(_fbT('nametags.list.removed', 'Removed {name}.', { name: who }), false, () => {
-    if (!_ntUndo || _ntUndo.name !== ntCur.name) return;
-    const rs = ntEnsureRows();
-    rs.splice(Math.min(_ntUndo.index, rs.length), 0, _ntUndo.row);
+    if (!_ntUndo || _ntUndo.classId !== ntCur.id) return;
+    const u = _ntUndo;
     _ntUndo = null;
-    ntSaveList();
+    // The class keeps a record of each removed student (the editor's Restore reads it): the same student comes
+    // back, to the place she had.
+    if (!ntOp(C => C.restoreStudent(u.classId, u.id))) { ntSaveFailed(); return; }
+    ntOp(C => C.moveStudent(u.classId, u.id, u.index));
     ntListNote('');
+    ntLoadCurrent(u.classId);
     ntRenderTable();
     ntRenderListPicker();
     ntQueuePreview();
@@ -1705,7 +1712,7 @@ function ntMoveRow(from, to) {
     else if (from < _ntKbdRow && _ntKbdRow <= to) _ntKbdRow--;
     else if (to <= _ntKbdRow && _ntKbdRow < from) _ntKbdRow++;
     if (_ntUndo) { _ntUndo = null; ntListNote(''); }
-    ntSaveList();
+    ntOp(C => C.moveStudent(ntCur.id, row.id, to));
   }
   // A move changes only the places from one end to the other, so only those rows are drawn again — a carried row's
   // live place lies between them too (each ↑/↓ press rebuilt all 200 rows: ~300 ms of a slow machine). A drag that
@@ -1821,136 +1828,11 @@ function ntOnTranslitLoaded() {
    first Latin column the English name and the second one the transliteration. Imported text only ever reaches the page
    as textContent or an input's value.
    ══════════════════════════════════════════════════════ */
-function ntParseDelimited(text) {
-  if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
-  const first = text.split(/\r?\n/).find(l => l.trim()) || '';
-  const count = ch => first.split(ch).length - 1;
-  const d = count('\t') ? '\t' : (count(';') > count(',') ? ';' : ',');
-  const rows = [];
-  let row = [], field = '', q = false;
-  for (let i = 0; i < text.length; i++) {
-    const c = text[i];
-    if (q) {
-      if (c === '"') { if (text[i + 1] === '"') { field += '"'; i++; } else q = false; }
-      else field += c;
-      continue;
-    }
-    if (c === '"') q = true;
-    else if (c === d) { row.push(field); field = ''; }
-    else if (c === '\r') { /* CRLF: the LF ends the row */ }
-    else if (c === '\n') { row.push(field); rows.push(row); row = []; field = ''; }
-    else field += c;
-  }
-  if (field !== '' || row.length) { row.push(field); rows.push(row); }
-  return rows.filter(r => r.some(c => c.trim()));
-}
-const NT_HEADERS = {   // i18n-ignore: spreadsheet column names a teacher's file may use, in English and Hebrew
-  he: /^(hebrew|hebrew name|hebrew names|heb|עברית|שם עברי|שם בעברית|שם)$/,
-  en: /^(english|english name|name|first|first name|firstname|given name|student|student name|שם באנגלית|אנגלית|שם פרטי)$/,
-  last: /^(last|last name|lastname|surname|family name|שם משפחה)$/,
-  tr: /^(transliteration|translit|pronunciation|transliterated|sounds like|תעתיק|הגייה)$/,
-  ex: /^(extra|extra line|class|grade|room|homeroom|כיתה|שכבה)$/
-};
-const NT_EN_NAMED = /^(english|english name|שם באנגלית|אנגלית)$/;   // i18n-ignore: the en headers that name the language, not just a name
-function ntImportRows(table) {
-  const norm = s => String(s || '').replace(/^\uFEFF/, '').trim().toLowerCase().replace(/\s+/g, ' ');
-  const map = {};
-  let body = table;
-  (table[0] || []).forEach((c, i) => {
-    const h = norm(c);
-    for (const f in NT_HEADERS) {
-      if (!NT_HEADERS[f].test(h)) continue;
-      if (!(f in map)) { map[f] = i; break; }
-      // A first-name column beside one named for English ("שם פרטי,שם משפחה,English", "English,שם פרטי"): the English
-      // column is the English name, and the first-name column is not dropped — it is the name's first half, read below
-      // with the last name in its own script.
-      if (f === 'en' && !('first' in map) && NT_EN_NAMED.test(h) !== NT_EN_NAMED.test(norm(table[0][map.en]))) {
-        if (NT_EN_NAMED.test(h)) { map.first = map.en; map.en = i; } else map.first = i;
-        break;
-      }
-    }
-  });
-  if (Object.keys(map).length) body = table.slice(1);
-  if (!('he' in map) && !('en' in map)) {   // no column is named for a name (no header row, or a header row naming "Full Name" / "שם מלא" / "תלמיד" with the class): find them by what they hold
-    const taken = new Set(Object.values(map));
-    const cols = Math.max(0, ...body.map(r => r.length)), latin = [];
-    for (let i = 0; i < cols; i++) {
-      if (taken.has(i)) continue;
-      const vals = body.map(r => (r[i] || '').trim()).filter(Boolean);
-      if (!vals.length) continue;
-      // A class or room column ("3B", "Room 12", "ג1" — a name or a transliteration carries no digit — or one value on
-      // every row, "Kindergarten") is the extra line, never the transliteration under the name. A column of bare numbers
-      // (an ID) stays unread, as before.
-      if (!('ex' in map) && (vals.every(v => v.length <= 12 && /\d/.test(v) && /[A-Za-zא-ת]/.test(v))
-          || (vals.length >= 3 && vals.every(v => v === vals[0])))) { map.ex = i; continue; }
-      if (vals.filter(v => NT_HEB_RE.test(v)).length * 2 >= vals.length) { if (!('he' in map)) map.he = i; }
-      else if (vals.some(v => /[A-Za-z]/.test(v))) latin.push(i);
-    }
-    if (latin[0] != null) map.en = latin[0];
-    if (latin[1] != null && !('tr' in map)) map.tr = latin[1];
-  }
-  const get = (r, f) => (map[f] != null ? String(r[map[f]] || '') : '').replace(/\s+/g, ' ').trim().slice(0, NT_MAX_FIELD);
-  const out = [];
-  body.forEach(r => {
-    let he = get(r, 'he'), en = [get(r, 'en'), 'first' in map ? '' : get(r, 'last')].filter(Boolean).join(' ').slice(0, NT_MAX_FIELD);
-    if ('first' in map) {
-      const full = [get(r, 'first'), get(r, 'last')].filter(Boolean).join(' ').slice(0, NT_MAX_FIELD);
-      if (NT_HEB_RE.test(full)) { if (!he) he = full; } else if (!en) en = full;
-    }
-    // A name in the other script's column — a Hebrew first and last name under "שם פרטי / שם משפחה" (a first name is a
-    // name, whatever its letters), "דָּוִד David" in one Name column, the two columns swapped — is sorted by script, as a
-    // Dashboard roster line is.
-    if ((NT_HEB_RE.test(en) && !NT_HEB_RE.test(he)) || (!en && /[A-Za-z]/.test(he))) { const split = ntSplitName(he + ' ' + en); he = split.he; en = split.en; }
-    const row = { he, en };
-    const tr = get(r, 'tr'), ex = get(r, 'ex');
-    if (tr) row.tr = tr;
-    if (ex) row.ex = ex;
-    if (row.he || row.en || row.tr) out.push(row);   // a row with only a class or room is not a student
-  });
-  return out;
-}
+// The parser, the header table, the script sorter and the add-by-name match live in js/ivrit-classes.js (this page's
+// own, moved there so every roster-using tool reads a file the same way).
+function ntParseDelimited(text) { const C = ntC(); return C ? C.csv.parseDelimited(text) : []; }
+function ntImportRows(table) { const C = ntC(); return C ? C.csv.importRows(table) : []; }
 let _ntPendingImport = null;   // { rows, source, listName? } waiting for Add / New list / Replace
-// A name as matching sees it: capitals, spacing and nikkud ignored, a maqaf read as a hyphen, a geresh as an apostrophe.
-function ntMatchKey(s) {
-  return ntStr(s).normalize('NFC').replace(NT_MARKS_RE, '').replace(/[\u05BE\u2010-\u2015]/g, '-').replace(/[\u05F3\u2018\u2019`]/g, "'")
-    .replace(/\s+/g, ' ').trim().toLowerCase();
-}
-// Sort incoming rows into students already on the list and new ones. A row names a student when every name both
-// have agrees and they share at least one; a pair agreeing on both names is matched first, and each student on the
-// list is matched at most once, so two students who share a name stay two. A match only fills in what the list
-// lacks (a blank field, or the nikkud of an unpointed Hebrew name with the same letters) — nothing typed is replaced.
-function ntMergeRows(target, rows) {
-  const keys = r => ({ he: ntMatchKey(ntRowField(r, 'he')), en: ntMatchKey(ntRowField(r, 'en')) });
-  const have = target.map(keys), want = rows.map(keys);
-  const score = (a, b) => {
-    let agree = 0;
-    for (const f of ['he', 'en']) if (a[f] && b[f]) { if (a[f] !== b[f]) return 0; agree++; }
-    return agree;
-  };
-  const used = new Set(), pair = new Map();
-  for (const need of [2, 1]) want.forEach((w, j) => {
-    if (pair.has(j)) return;
-    const i = have.findIndex((h, k) => !used.has(k) && score(h, w) === need);
-    if (i >= 0) { used.add(i); pair.set(j, i); }
-  });
-  const out = { fresh: [], filled: 0, same: 0, ex: false };
-  rows.forEach((r, j) => {
-    if (!pair.has(j)) { out.fresh.push(r); return; }
-    const t = target[pair.get(j)];
-    let changed = false;
-    ['he', 'en', 'tr', 'ex'].forEach(f => {
-      const old = ntRowField(t, f).trim(), got = ntRowField(r, f).trim();
-      if (!got || got === old) return;
-      if (old && !(f === 'he' && !NT_VOWEL_RE.test(old) && NT_VOWEL_RE.test(got) && ntMatchKey(old) === ntMatchKey(got))) return;
-      t[f] = got;
-      changed = true;
-      if (f === 'ex') out.ex = true;
-    });
-    if (changed) out.filled++; else out.same++;
-  });
-  return out;
-}
-// opts.listName: the name a new list takes (else the file's name without its extension); opts.msg: the line to show.
 function ntOfferImport(rows, source, opts) {
   ntCloseInline();
   if (!rows.length) { ntListNote(_fbT('nametags.csv.none_found', 'No names were found in {source}. The first row can name the columns: Hebrew, English, Transliteration, Extra.', { source }), true); return; }
@@ -1967,37 +1849,41 @@ function ntApplyImport(how) {
   let rows = pend.rows;
   if (how === 'replace' && !confirm(I18n.t(ntSignedIn() ? 'nametags.csv.replace_confirm_cloud' : 'nametags.csv.replace_confirm', { name: ntCur.name }))) return;
   if (how === 'new') {
-    const { obj } = ntReadLists();
-    if (ntListNames(obj).length >= NT_MAX_LISTS) { ntListNote(_fbT('nametags.list.err_max_lists', 'You have {max} class lists, the most this page keeps. Delete one to start another.', { max: NT_MAX_LISTS }), true); return; }
+    if (ntClasses().length >= ntMaxLists()) { ntListNote(_fbT('nametags.list.err_max_lists', 'You have {max} class lists, the most this page keeps. Delete one to start another.', { max: ntMaxLists() }), true); return; }
     const base = (pend.listName != null ? String(pend.listName) : String(pend.source || '').replace(/\.[^.]+$/, '')).trim().slice(0, 100) || _fbT('nametags.list.new_name', 'New list');
-    const name = ntUniqueName(NT_RESERVED.includes(base) ? _fbT('nametags.list.new_name', 'New list') : base, ntNameExists(obj));
-    obj[name] = ntNewListValue();
-    if (!ntWriteLists(obj)) return;
-    ntLoadCurrent(name);
-  }
-  const target = ntEnsureRows();
-  if (how === 'replace') target.length = 0;
-  // A class's one extra line (a Homeroom column of "3B" on every row) is the list's extra line, not each student's own:
-  // an empty list without one takes it there, and a row repeating the list's line carries none — so the box above the
+    const id = ntOp(C => C.addClass(base));   // a taken name becomes "X 1"
+    if (!id) { ntSaveFailed(); return; }
+    ntLoadCurrent(id);
+    ntActiveSet(id);
+  } else if (!ntEnsureClass()) return;
+  const classId = ntCur.id, target = ntRows();
+  // A class's one extra line (a Homeroom column of "3B" on every row) is the class's extra line, not each student's own:
+  // an empty class without one takes it there, and a row repeating the class's line carries none — so the box above the
   // table ("Extra line on every tag in this list") still changes every tag. A row's own different line stays its own.
   const exOf = r => ntRowField(r, 'ex').trim(), noEx = r => { const c = Object.assign({}, r); delete c.ex; return c; };
+  const wasEmpty = how === 'replace' || !target.some(r => !ntRowEmpty(r));
   let listEx = ntStr(ntCur.val && ntCur.val.extra).trim(), sharedEx = false;
-  if (!listEx && rows.length && !target.some(r => !ntRowEmpty(r)) && exOf(rows[0]) && rows.every(r => exOf(r) === exOf(rows[0]))) { listEx = ntCur.val.extra = exOf(rows[0]); }
+  if (!listEx && rows.length && wasEmpty && exOf(rows[0]) && rows.every(r => exOf(r) === exOf(rows[0]))) { listEx = exOf(rows[0]); ntOp(C => C.setClassExtra(classId, listEx)); }
   if (listEx) rows = rows.map(r => { if (exOf(r) !== listEx) return r; sharedEx = true; return noEx(r); });
-  const m = ntMergeRows(target, rows), matched = m.filled + m.same;
-  const room = NT_MAX_ROWS - target.length, added = m.fresh.slice(0, Math.max(0, room)), refused = m.fresh.length - added.length;
-  added.forEach(r => target.push(r));
+  // Add matches by name (the shared file's rule: a match only fills what the student lacks); Replace starts empty, and
+  // the students it takes out stay in the class's removed-students record.
+  let res;
+  if (how === 'replace') {
+    if (!ntOp(C => C.replaceStudents(classId, rows))) { ntSaveFailed(); return; }
+    res = { added: Math.min(rows.length, NT_MAX_ROWS), filled: 0, same: 0, refused: Math.max(0, rows.length - NT_MAX_ROWS) };
+  } else res = ntOp(C => C.addStudents(classId, rows)) || { added: 0, filled: 0, same: 0, refused: 0 };
+  const matched = res.filled + res.same, refused = res.refused;
   _ntUndo = null;
   ntCloseInline();
-  if (!ntSaveList()) return;
-  if (!ntSet.extra && (sharedEx || m.ex || added.some(r => r.ex))) { ntSetSet('extra', true); ntSyncControls(); }   // the file brought an extra line: show it
+  ntLoadCurrent(classId);
+  if (!ntSet.extra && (sharedEx || rows.some(r => exOf(r)))) { ntSetSet('extra', true); ntSyncControls(); }   // the file brought an extra line: show it
   const msgs = [];
-  if (!added.length && !refused && matched) msgs.push(_fbT('nametags.csv.all_there', 'Every student is already on "{name}".', { name: ntCur.name }));
+  if (!res.added && !refused && matched) msgs.push(_fbT('nametags.csv.all_there', 'Every student is already on "{name}".', { name: ntCur.name }));
   else {
-    msgs.push(_fbN('nametags.csv.added', added.length, 'Added {count} student to "{name}".', 'Added {count} students to "{name}".', { name: ntCur.name }));
+    msgs.push(_fbN('nametags.csv.added', res.added, 'Added {count} student to "{name}".', 'Added {count} students to "{name}".', { name: ntCur.name }));
     if (matched) msgs.push(_fbN('nametags.csv.already', matched, '{count} student was already on the list.', '{count} students were already on the list.'));
   }
-  if (m.filled) msgs.push(_fbN('nametags.csv.filled', m.filled, 'Filled in what was missing for one of them.', 'Filled in what was missing for {count} of them.'));
+  if (res.filled) msgs.push(_fbN('nametags.csv.filled', res.filled, 'Filled in what was missing for one of them.', 'Filled in what was missing for {count} of them.'));
   if (refused) msgs.push(_fbT('nametags.list.err_max_rows', 'A list holds up to {max} students.', { max: NT_MAX_ROWS }));
   const msg = msgs.join(' ');
   ntListNote(msg, refused > 0);
@@ -2012,81 +1898,16 @@ function ntReadCsvFile(file) {
   if (file.size > NT_CSV_MAX_BYTES) { ntListNote(_fbT('nametags.csv.err_big', 'That file is too big for a class list (1 MB at most).'), true); return; }
   const r = new FileReader();
   r.onload = () => {
-    const buf = r.result, head = new Uint8Array(buf, 0, Math.min(512, buf.byteLength));
-    let text = '';
-    // Excel's "Unicode Text" is UTF-16 (little-endian behind a FF FE byte-order mark; FE FF big-endian), read as such — as UTF-8
-    // its NUL bytes decode without complaint, into NUL-laced "students". A file with no mark is still UTF-16 when the NULs sit
-    // on one side of every pair (a text file in UTF-8 or windows-1255 holds none). Then UTF-8; a file Excel saved in the
-    // Windows Hebrew code page falls back to windows-1255.
-    const nuls = parity => head.reduce((n, b, i) => n + (b === 0 && i % 2 === parity ? 1 : 0), 0);
-    const utf16 = head[0] === 0xFF && head[1] === 0xFE ? 'utf-16le' : head[0] === 0xFE && head[1] === 0xFF ? 'utf-16be'
-      : nuls(1) >= 4 && !nuls(0) ? 'utf-16le' : nuls(0) >= 4 && !nuls(1) ? 'utf-16be' : '';
-    try { text = new TextDecoder(utf16 || 'utf-8', { fatal: true }).decode(buf); }
-    catch (e) { try { text = new TextDecoder('windows-1255').decode(buf); } catch (e2) { text = ''; } }
+    // Excel's "Unicode Text" (UTF-16), then UTF-8, then the Windows Hebrew code page: the shared file's decoder.
+    const C = ntC(), text = C ? C.csv.decode(r.result) : '';
     ntOfferImport(ntImportRows(ntParseDelimited(text)), file.name);
   };
   r.onerror = () => ntListNote(_fbT('nametags.csv.err_read', 'That file could not be read.'), true);
   r.readAsArrayBuffer(file);
 }
-/* ── From the Classroom Dashboard: a one-time copy of one of its class lists (hebrewDashboard_settings.rosters, as this
-   device holds them — the account's arrive when the dashboard opens here). A roster line is one student, typed any
-   way: its Hebrew words are the Hebrew name and the rest the English name ("David / דָּוִד", "דוד כהן David Cohen"),
-   the separators between them dropped. ── */
-function ntDashSettings() {
-  let st = null;
-  try { st = ivritSafeParse(localStorage.getItem('hebrewDashboard_settings') || 'null'); } catch (e) { st = null; }
-  return (st && typeof st === 'object' && !Array.isArray(st)) ? st : {};
-}
-function ntDashClasses() {
-  const st = ntDashSettings();
-  const r = (st.rosters && typeof st.rosters === 'object' && !Array.isArray(st.rosters)) ? st.rosters : {};
-  const c = ntCollator();
-  return Object.keys(r).filter(id => { const x = r[id]; return x && typeof x === 'object' && !Array.isArray(x) && Array.isArray(x.names); })
-    .map(id => { const x = r[id]; return { id, name: (typeof x.name === 'string' && x.name.trim()) || _fbT('nametags.list.default_name', 'My class'), names: x.names.filter(n => typeof n === 'string' && n.trim()) }; })
-    .filter(x => x.names.length)
-    .sort((a, b) => c ? c.compare(a.name, b.name) : 0);
-}
-function ntSplitName(line) {
-  const he = [], en = [];
-  String(line || '').split(/[\s\/|·•()[\]{}]+/).forEach(tok => {
-    const t = tok.replace(/^[-–—,.;:]+|[-–—,.;:]+$/g, '');
-    if (t) (NT_HEB_RE.test(t) ? he : en).push(t);
-  });
-  return { he: he.join(' ').slice(0, NT_MAX_FIELD), en: en.join(' ').slice(0, NT_MAX_FIELD) };
-}
-// The box's menu and note, (re)built: on open, when the dashboard saves its classes in another tab, on a language
-// switch. The chosen class is kept by its id (`pickId`, or the one chosen before); focus is left where it is.
-function ntFillDash(pickId) {
-  const classes = ntDashClasses(), sel = document.getElementById('ntDashSel');
-  const want = typeof pickId === 'string' ? pickId : sel.value;
-  sel.textContent = '';
-  classes.forEach(c => {
-    const o = el('option', null, _fbN('nametags.list.option', c.names.length, '{name} ({count} student)', '{name} ({count} students)', { name: c.name }));
-    o.value = c.id;
-    sel.appendChild(o);
-  });
-  if (classes.some(c => c.id === want)) sel.value = want;
-  sel.disabled = !classes.length;
-  document.getElementById('ntDashAdd').disabled = !classes.length;
-  let note = classes.length ? '' : _fbT('nametags.dash.none', 'There are no class lists in the Classroom Dashboard on this device yet.');
-  if (ntSignedIn()) note = (note ? note + ' ' : '') + _fbT('nametags.dash.signed_in', 'These are the classes on this device: to bring in the ones in your account, open the Classroom Dashboard here once.');
-  document.getElementById('ntDashNote').textContent = note;
-  return classes;
-}
-function ntDashRefresh() { const row = document.getElementById('ntDashRow'); if (row && !row.hidden) ntFillDash(); }
-function ntOpenDash(pickId) {   // a click passes its event: only a string is a class to choose
-  const row = document.getElementById('ntDashRow'), btn = document.getElementById('ntDashOpen');
-  const open = row.hidden;
-  ntCloseInline();
-  if (!open) return;
-  const classes = ntFillDash(typeof pickId === 'string' ? pickId : null);
-  row.hidden = false;
-  btn.setAttribute('aria-expanded', 'true');
-  (classes.length ? document.getElementById('ntDashSel') : document.getElementById('ntDashCancel')).focus();
-}
-// ?from=dashboard (the Classroom Dashboard's "Open Name Tags" link): the box opens on arrival with the dashboard's
-// current class chosen, the class list unfolded for the visit (its remembered fold is not rewritten). The param is
-// dropped at once (the others and the hash stay), so a reload does not open the box again.
+// ?from=dashboard (the Classroom Dashboard's "Open Name Tags" link): the class that is live on the dashboard opens here
+// — the two pages show the same classes — with the class list unfolded for the visit (its remembered fold is not
+// rewritten). The param is dropped at once (the others and the hash stay).
 function ntFromDashboard() {
   const q = new URLSearchParams(location.search);
   if (q.get('from') !== 'dashboard') return;
@@ -2095,22 +1916,11 @@ function ntFromDashboard() {
   try { history.replaceState(history.state, '', location.pathname + (qs ? '?' + qs : '') + location.hash); } catch (e) {}
   const sec = document.getElementById('ntListSection');
   if (sec && sec.classList.contains('collapsed')) { sec.classList.remove('collapsed'); ntSyncListToggle(); }
-  if (!document.getElementById('ntDashRow').hidden) return;
-  const active = ntDashSettings().activeRosterId;
-  ntOpenDash(typeof active === 'string' ? active : null);
-  document.getElementById('ntDashRow').scrollIntoView({ block: 'nearest' });
-}
-function ntBringDash() {
-  const id = document.getElementById('ntDashSel').value;
-  const c = ntDashClasses().find(x => x.id === id);
-  if (!c) return;
-  const rows = c.names.map(ntSplitName).filter(r => r.he || r.en).slice(0, NT_MAX_ROWS);
-  ntOfferImport(rows, c.name, { listName: c.name, msg: _fbN('nametags.dash.found', rows.length, '{count} student in the Classroom Dashboard class "{name}".', '{count} students in the Classroom Dashboard class "{name}".', { name: c.name }) });
-}
-function ntCsvCell(s) {
-  s = String(s == null ? '' : s);
-  if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;   // a spreadsheet would run a cell that starts like a formula
-  return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  let live = '';
+  try { const st = ivritSafeParse(localStorage.getItem('hebrewDashboard_settings') || 'null'); if (st && typeof st.activeRosterId === 'string') live = st.activeRosterId; } catch (e) {}
+  if (live && ntClasses().some(c => c.id === live) && live !== ntCur.id) ntSwitchList(live);
+  const sel = document.getElementById('ntListSel');
+  if (sel) sel.focus();
 }
 function ntDownload(name, text) {
   const blob = new Blob(['\uFEFF' + text], { type: 'text/csv;charset=utf-8' });   // the BOM tells Excel the file is UTF-8 (Hebrew)
@@ -2119,17 +1929,14 @@ function ntDownload(name, text) {
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   setTimeout(() => URL.revokeObjectURL(url), 1500);
 }
-const NT_CSV_HEAD = ['Hebrew', 'English', 'Transliteration', 'Extra'];   // i18n-ignore: the file's column names (read back on import)
 function ntExportCsv() {
-  const rows = ntRows().filter(r => !ntRowEmpty(r));
-  if (!rows.length) { ntListNote(_fbT('nametags.csv.err_empty', 'This list has no students to export yet.'), true); return; }
+  const rows = ntRows().filter(r => !ntRowEmpty(r)), C = ntC();
+  if (!rows.length || !C) { ntListNote(_fbT('nametags.csv.err_empty', 'This list has no students to export yet.'), true); return; }
   ntClearListWarn();
-  // The Extra column is the line each tag prints: a student's own, else the list's (an import gives a shared one back to the list).
-  const listEx = ntStr(ntCur.val && ntCur.val.extra).trim();
-  const lines = [NT_CSV_HEAD.join(',')].concat(rows.map(r => ['he', 'en', 'tr', 'ex'].map(f => ntCsvCell(f === 'ex' ? (ntRowField(r, f).trim() || listEx) : ntRowField(r, f))).join(',')));
-  // A character a file name cannot hold becomes a space, and the run it leaves collapses ("Kitah Dalet / 2026" made
-  // "Kitah Dalet   2026.csv", which an import names the new list after).
-  ntDownload((ntCur.name.replace(/[\\/:*?"<>|]+/g, ' ').replace(/\s+/g, ' ').trim() || 'class') + '.csv', lines.join('\r\n') + '\r\n');
+  // The Extra column is the line each tag prints: a student's own, else the class's (an import gives a shared one back
+  // to the class). A character a file name cannot hold becomes a space, and the run it leaves collapses ("Kitah Dalet /
+  // 2026" made "Kitah Dalet   2026.csv", which an import names the new class after).
+  ntDownload((ntCur.name.replace(/[\\/:*?"<>|]+/g, ' ').replace(/\s+/g, ' ').trim() || 'class') + '.csv', C.csv.text({ extra: ntStr(ntCur.val && ntCur.val.extra), students: rows }));
 }
 // A download that worked takes away a warning an earlier try left ("no students to export yet" stayed under the
 // template it had just saved); a confirmation or a remove-Undo stays.
@@ -2139,7 +1946,7 @@ function ntClearListWarn() {
 }
 function ntCsvTemplate() {
   ntClearListWarn();
-  const lines = [NT_CSV_HEAD.join(','), 'דָּוִד,David,,', 'שִׁירָה,Shira,,'];   // i18n-ignore: sample file content
+  const lines = ['Hebrew,English,Transliteration,Extra', 'דָּוִד,David,,', 'שִׁירָה,Shira,,'];   // i18n-ignore: the file's column names (read back on import) and sample content
   ntDownload('name-tags-template.csv', lines.join('\r\n') + '\r\n');   // i18n-ignore: file name
 }
 
@@ -2328,20 +2135,19 @@ function ntTagEl(row, idx, w, h, L, cls, full) {
    travels in a file (a new student mid-year prints alone without reprinting the class). The header box ticks or
    clears every row and reads mixed while some are out. (S623 micro-feature) */
 const _ntSkip = new WeakSet();
-/* The choice follows its list when the rows are read again from the store (a design or list change from another tab or
-   the account, a restore, another list opened and this one back): a row whose four fields are unchanged keeps it, a
-   changed or new row prints — never a different student left out. Held only while that list is not the open one. (S624) */
-const _ntSkipMem = new Map();
-function ntRowKey(r) { return JSON.stringify(['he', 'en', 'tr', 'ex'].map(f => ntRowField(r, f))); }
+/* The choice follows its student: a row object lives as long as its student does (ntAdoptClass), so a re-read of the
+   class — a change from another tab or the account, a restore, a corrected name — keeps it, and a new student prints.
+   While another class is open the choice is held by student id. */
+const _ntSkipMem = new Map();   // class id → the ids of its students left out
 function ntSkipRemember() {
   if (!ntCur.stored || !ntCur.val) return;
-  const keys = ntRows().filter(r => !ntRowEmpty(r) && _ntSkip.has(r)).map(ntRowKey);
-  if (keys.length) _ntSkipMem.set(ntCur.name, keys); else _ntSkipMem.delete(ntCur.name);
+  const ids = ntRows().filter(r => !ntRowEmpty(r) && _ntSkip.has(r)).map(r => r.id);
+  if (ids.length) _ntSkipMem.set(ntCur.id, ids); else _ntSkipMem.delete(ntCur.id);
 }
 function ntSkipRestore() {
-  const left = _ntSkipMem.get(ntCur.name);
-  _ntSkipMem.delete(ntCur.name);
-  if (left) ntRows().forEach(r => { const k = left.indexOf(ntRowKey(r)); if (k >= 0) { _ntSkip.add(r); left.splice(k, 1); } });
+  const left = _ntSkipMem.get(ntCur.id);
+  _ntSkipMem.delete(ntCur.id);
+  if (left) ntRows().forEach(r => { if (left.includes(r.id)) _ntSkip.add(r); });
 }
 function ntSkipped() { return ntRows().filter(r => !ntRowEmpty(r) && _ntSkip.has(r)).length; }
 function ntPrintAllSync() {
@@ -2821,7 +2627,7 @@ function ntWireLists() {
   const ex = document.getElementById('ntExtraText');
   ex.addEventListener('input', () => {
     ntCur.val.extra = ex.value.slice(0, NT_MAX_FIELD);
-    if (ntCur.stored || ex.value.trim()) ntSaveList();
+    if ((ntCur.stored || ex.value.trim()) && ntEnsureClass()) ntOp(C => C.setClassExtra(ntCur.id, ex.value));
     document.querySelectorAll('#ntRows input[data-f="ex"]').forEach(i => { i.placeholder = ntCur.val.extra; });
     ntQueuePreviewTyping();   // the line sits on every tag, so a long list waits for the typing pause (as a cell does)
   });
@@ -2845,12 +2651,10 @@ function ntWireLists() {
     ntApplyImport('add');
     ta.value = '';
   });
-  document.getElementById('ntDashOpen').addEventListener('click', ntOpenDash);
-  document.getElementById('ntDashAdd').addEventListener('click', ntBringDash);
-  document.getElementById('ntDashCancel').addEventListener('click', () => { ntCloseInline(); document.getElementById('ntDashOpen').focus(); });
-  // Escape anywhere in the Paste or Dashboard row does what its Cancel does (the Rename field's rule): the row closes and
+  document.getElementById('ntClassesEdit').addEventListener('click', ntOpenEditor);
+  // Escape anywhere in the Paste row does what its Cancel does (the Rename field's rule): the row closes and
   // the focus goes back to the button that opened it. A key the ask dialog or the tour already handled is left alone.
-  [['ntPasteRow', 'ntPasteCancel'], ['ntDashRow', 'ntDashCancel']].forEach(([rowId, cancelId]) => {
+  [['ntPasteRow', 'ntPasteCancel']].forEach(([rowId, cancelId]) => {
     document.getElementById(rowId).addEventListener('keydown', e => {
       if (e.key === 'Escape' && !e.defaultPrevented) { e.preventDefault(); document.getElementById(cancelId).click(); }
     });
@@ -3677,20 +3481,24 @@ function _tourKey(e) {
 /* ═══ end shared: tour engine ═══ */
 
 /* ══════════════════════════════════════════════════════
-   .ivrit SAVE FILES — the class lists and the design travel in one file; Merge adds the file's lists (a list with the
-   same name takes the file's copy), Replace swaps them, and an account backup (fill) only adds what is missing.
+   .ivrit SAVE FILES — the classes and the design travel in one file. The classes go through js/ivrit-classes.js
+   (IvritClasses.importFile): a restore adds classes and students, fills what is blank and brings back what was
+   deleted, and never replaces what was typed; an older file's `nameTagLists` is read the same way. The classes are
+   the whole suite's, so this page's Replace never empties them (only the home page's AllTools Replace does).
    ══════════════════════════════════════════════════════ */
 const IVRIT_CFG = {
   tool: 'NameTags',
   gather() {
-    return { nameTagLists: ntReadLists().obj, liveState: ntSetRaw ? ntClone(ntSetRaw) : getSettings() };
+    const C = ntC();
+    return { classes: C ? C.exportAll() : { v: 1, classes: {} }, activeClass: ntCur.stored ? { id: ntCur.id, name: ntCur.name } : null,
+             liveState: ntSetRaw ? ntClone(ntSetRaw) : getSettings() };
   },
   apply(data, mode) {
     let touched = false;
-    const inc = data.nameTagLists;
-    if (inc && typeof inc === 'object' && !Array.isArray(inc)) {
-      const base = mode === 'replace' ? {} : ntReadLists().obj;
-      ntWriteLists(mode === 'fill' ? ivritSafeAssign(ivritSafeAssign({}, inc), base) : ivritSafeAssign(base, inc));   // never a bare Object.assign on an import merge
+    const C = ntC();
+    const carries = d => !!d && typeof d === 'object' && !Array.isArray(d);
+    if (C && (carries(data.classes) || carries(data.nameTagLists) || carries(data.dashboardRosters))) {
+      ntOp(X => X.importFile(data, mode === 'replace' ? 'merge' : mode));
       touched = true;
     }
     const ls = data.liveState || data.nameTagSettings;   // a tool file's live state, or the account backup's key for it
@@ -3698,6 +3506,10 @@ const IVRIT_CFG = {
     try { hasSet = localStorage.getItem(NT_SET_KEY) !== null; } catch (e) {}
     if (ls && typeof ls === 'object' && !Array.isArray(ls) && Object.keys(ls).length && !(mode === 'fill' && hasSet)) { applySettings(ls); touched = true; }
     if (!touched) return false;
+    // the class the file was saved on: by its id here, else by its name (another teacher's file)
+    const ac = carries(data.activeClass) ? data.activeClass : null, all = ntClasses();
+    const pick = ac && mode !== 'fill' ? (all.find(c => c.id === ac.id) || all.find(c => c.name === ac.name)) : null;
+    if (pick) { ntLoadCurrent(pick.id); ntActiveSet(pick.id); }
     ntListsAdopt();
     return true;
   }
@@ -3863,10 +3675,13 @@ function initCloudSaves() {
   IvritSaves.attach({
     tool: 'NameTags',
     status: '#cloudSavesPanel',
+    alsoPull: ['Classes'],   // the shared classes (js/ivrit-classes.js writes them; this page hands the module their merge)
+    merges: { class: window.IvritClasses ? IvritClasses.mergeClass : undefined },
     flush: ntFlush,   // every change is written at once; the flush only takes a newer store (the two-tab rule)
     onLocalChanged: function (kind) {
       if (kind === 'settings') { ntSetAdopt(); ntSetWrite(); return; }   // push the page's form back up (never hidden behind "Same")
-      if (kind === 'list') ntListsAdopt();
+      // a class, the record of deleted ones, or an old list (which the shared file reads): the view is read again
+      if ((kind === 'class' || kind === 'retired' || kind === 'list') && window.IvritClasses) IvritClasses.landed();
     }
   });
 }
@@ -3885,7 +3700,6 @@ function applyI18n() {
   ntRenderTable();
   ntRenderPreview();
   if (_hk) _hk.applyI18n();
-  ntDashRefresh();
   ntPositionSidebarTab();   // the direction may have flipped, and with it the sidebar's edge
   // An open tour card: its texts in the new language, the spotlight back on its mirrored target.
   if (_tourActive && _tourIdx >= 0) _tourShow(_tourIdx, 1);
@@ -3919,11 +3733,11 @@ function init() {
   window.addEventListener('translitlibfailed', ntOnTranslitLoaded);
   ntMaybeLoadTranslit();
   window.addEventListener('storage', e => {
-    if (e.key === NT_SET_KEY) ntSetAdopt();
-    else if (e.key === NT_LISTS_KEY) ntListsAdopt();
-    else if (e.key === 'hebrewDashboard_settings') ntDashRefresh();   // a class made in the dashboard's tab
-    else if (e.key === null) { ntSetAdopt(); ntListsAdopt(); ntDashRefresh(); }
+    if (e.key === NT_SET_KEY || e.key === null) ntSetAdopt();
   });
+  // The classes changed under this page — another tab, the account, the roster editor: read them again. (This page's
+  // own operations already drew their change.)
+  if (window.IvritClasses) IvritClasses.onChange(() => { if (!_ntSelf) ntListsAdopt(); });
   initCloudSaves();
   if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); }
   if (window.I18n) I18n.ready.then(ntFromDashboard, ntFromDashboard); else ntFromDashboard();

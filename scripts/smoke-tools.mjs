@@ -443,8 +443,10 @@ const PAGES = [
     rows: ['settings:default', 'list:Kitah Alef', 'list:Gan'],
     expand: `document.getElementById('cloudSavesPanel').scrollIntoView();`,
     // E. the module's flush leaves both texts byte-identical; a design change is written onto the stored object (a field
-    // this build does not know survives, and a value it cannot apply falls back on screen while staying stored); a typed
-    // name is written into its own list only, keeping that list's and that row's unknown fields
+    // this build does not know survives, and a value it cannot apply falls back on screen while staying stored). The
+    // class lists are the suite's shared classes (js/ivrit-classes.js): the old lists key is read, never rewritten; a
+    // typed name copies that one class into the shared store, and a field of a class or a student this build does not
+    // know survives the next edit
     extra: async ({ browser, tag }) => {
       const setText = JSON.stringify({ v: 1, font: 'Frank Ruhl Libre', english: true, perPage: 7, paperMode: 'plain', future: { x: 1 } });
       const listText = JSON.stringify({ 'Kitah Alef': { v: 1, rows: [{ he: 'דָּוִד', en: 'David', note: 'keep' }], extra: '', future: { y: 2 } }, Gan: { v: 1, rows: [{ he: 'נוֹעָה', en: 'Noa' }], extra: '' } });
@@ -453,17 +455,27 @@ const PAGES = [
         ntFlush();
         const sameSet = localStorage.getItem('hebrewNameTags_settings'), sameLists = localStorage.getItem('hebrewNameTags_lists');
         const per = (document.querySelector('input[name="ntPer"]:checked') || {}).value;
-        const open = document.getElementById('ntListSel').value;
+        const open = ntCur.name, before = localStorage.getItem('ivritSuite_classes');
         const cb = document.getElementById('ntOptEnglish');
         cb.checked = false; cb.dispatchEvent(new Event('change', { bubbles: true }));
-        const inp = document.querySelector('#ntRows input[data-f="en"][data-r="0"]');
-        inp.value = 'Dovid'; inp.dispatchEvent(new Event('input', { bubbles: true }));
-        const set = JSON.parse(localStorage.getItem('hebrewNameTags_settings')), lists = JSON.parse(localStorage.getItem('hebrewNameTags_lists'));
-        return { sameSet, sameLists, per, open, english: set.english, future: JSON.stringify(set.future), perStored: set.perPage, row: JSON.stringify(lists['Kitah Alef'].rows[0]), listFuture: JSON.stringify(lists['Kitah Alef'].future), gan: JSON.stringify(lists.Gan), tags: document.querySelectorAll('#ntPreview .nt-tag').length };
+        const type = (v) => { const inp = document.querySelector('#ntRows input[data-f="en"][data-r="0"]'); inp.value = v; inp.dispatchEvent(new Event('input', { bubbles: true })); };
+        type('Dovid');
+        const set = JSON.parse(localStorage.getItem('hebrewNameTags_settings'));
+        const first = JSON.parse(localStorage.getItem('ivritSuite_classes'));
+        const id = ntCur.id, copied = Object.keys(first.classes);
+        // a newer build's fields on the class and on the student, then one more edit
+        first.classes[id].future = { y: 2 }; first.classes[id].students[0].note = 'keep';
+        localStorage.setItem('ivritSuite_classes', JSON.stringify(first));
+        type('Dovid K.');
+        const cls = JSON.parse(localStorage.getItem('ivritSuite_classes')).classes[id];
+        return { sameSet, sameLists, per, open, before, english: set.english, future: JSON.stringify(set.future), perStored: set.perPage, copied, idOk: id === IvritClasses.idForList('Kitah Alef'),
+                 student: [cls.students[0].he, cls.students[0].en, cls.students[0].note], classFuture: JSON.stringify(cls.future), stamped: !!cls.updated && !!cls.students[0].t.en,
+                 listsAfter: localStorage.getItem('hebrewNameTags_lists'), active: localStorage.getItem('hebrewNameTags_activeClass'), tags: document.querySelectorAll('#ntPreview .nt-tag').length };
       });
-      check(tag + ' E: the flush leaves both texts byte-identical and the stored list opens (an unusable count shows 8)', r.sameSet === setText && r.sameLists === listText && r.per === '8' && r.open === 'Kitah Alef', JSON.stringify(r));
+      check(tag + ' E: the flush leaves both texts byte-identical and the class this device had open (remembered by its list\'s name) opens (an unusable count shows 8); nothing is written by a load', r.sameSet === setText && r.sameLists === listText && r.per === '8' && r.open === 'Kitah Alef' && r.before === null, JSON.stringify(r));
       check(tag + ' E: a design change is written onto the stored object (the unknown field and the unusable value survive)', r.english === false && r.future === '{"x":1}' && r.perStored === 7, JSON.stringify(r));
-      check(tag + ' E: a typed name lands in its own list, keeping the unknown fields; the other list is untouched', r.row === '{"he":"דָּוִד","en":"Dovid","note":"keep"}' && r.listFuture === '{"y":2}' && r.gan === '{"v":1,"rows":[{"he":"נוֹעָה","en":"Noa"}],"extra":""}' && r.tags === 1, JSON.stringify(r));
+      check(tag + ' E: a typed name copies that one class into the shared classes (under its list\'s computed id) and saves there; the old lists key is never rewritten, and the other list is not copied', r.copied.length === 1 && r.idOk && JSON.stringify(r.student.slice(0, 2)) === '["דָּוִד","Dovid K."]' && r.stamped && r.listsAfter === listText && r.active === r.copied[0] && r.tags === 1, JSON.stringify(r));
+      check(tag + ' E: a field of the class or of the student that this build does not know survives the next edit', r.classFuture === '{"y":2}' && r.student[2] === 'keep', JSON.stringify(r));
       check(tag + ' E: 0 pageerrors', errors.length === 0, errors.join(' | '));
       await ctx.close();
     }
